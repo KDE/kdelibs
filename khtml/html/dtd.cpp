@@ -315,7 +315,7 @@ bool DOM::checkChild(ushort tagID, ushort childID)
     // ### allow comments inside ANY node that can contain children
 
     if (tagID >= 1000 || childID >= 1000)
-	return true; // one or both of the elements in an XML element; just allow for now
+        return true; // one or both of the elements in an XML element; just allow for now
 
     switch(tagID)
     {
@@ -351,9 +351,8 @@ bool DOM::checkChild(ushort tagID, ushort childID)
     case ID_H6:
     case ID_Q:
     case ID_LEGEND:
-    case ID_CAPTION:
-	// _0 *
-	return check_array(childID, tag_list_0);
+        // _0 *
+        return check_array(childID, tag_list_0);
     case ID_BASEFONT:
     case ID_BR:
     case ID_AREA:
@@ -368,16 +367,16 @@ bool DOM::checkChild(ushort tagID, ushort childID)
     case ID_BASE:
     case ID_META:
     case ID_COMMENT:
-	// BASEFONT: EMPTY
-	return false;
+        // BASEFONT: EMPTY
+        return false;
     case ID_BODY:
-	// BODY: _1 * + _2
-	if( check_array(childID, tag_list_1) ) return true;
-	return check_array(childID, tag_list_2);
+        // BODY: _1 * + _2
+        if( check_array(childID, tag_list_1) ) return true;
+        return check_array(childID, tag_list_2);
     case ID_ADDRESS:
-	// ADDRESS: ( _0 | P ) *
-	if( check_array(childID, tag_list_0) ) return true;
-	return (childID == ID_P);
+        // ADDRESS: ( _0 | P ) *
+        if( check_array(childID, tag_list_0) ) return true;
+        return (childID == ID_P);
   // it is not this simple -ak
   // or maybe it is -ak
     case ID_FONT:
@@ -399,123 +398,124 @@ bool DOM::checkChild(ushort tagID, ushort childID)
     case ID_IFRAME:
     case ID_NOFRAMES:
     case ID_NOSCRIPT:
-	// DIV: _1 *
-	return check_array(childID, tag_list_1);
+    case ID_CAPTION:
+        // DIV: _1 *
+        return check_array(childID, tag_list_1);
     case ID_A:
-	// A: _0 * - A
-	if( check_array(childID, tag_list_0) ) return true;
+        // A: _0 * - A
+        if( check_array(childID, tag_list_0) ) return true;
         if ( childID == ID_TABLE ) return false; // no table in anchor
-	if( check_array(childID, tag_list_3) ) return true;
-	if( childID == ID_ADDRESS ) return true;
-	return false;
+        if( check_array(childID, tag_list_3) ) return true;
+        if( childID == ID_ADDRESS ) return true;
+        return false;
     case ID_MAP:
-	// MAP: ( _3 + | AREA + )
-	if( check_array(childID, tag_list_3) ) return true;
-	return (childID == ID_AREA);
+        // MAP: ( _3 + | AREA + )
+        if( check_array(childID, tag_list_3) ) return true;
+        return (childID == ID_AREA);
     case ID_OBJECT:
     case ID_EMBED:
     case ID_APPLET:
-	// OBJECT: _4 *
-	return check_array(childID, tag_list_4);
+        // OBJECT: _4 *
+        return check_array(childID, tag_list_4);
     case ID_PRE:
-	// PRE: _0 * - _5
-	return check_array(childID, tag_list_1);
+        // PRE: _0 * - _5
+        return check_array(childID, tag_list_1);
     case ID_DL:
-	// DL: _6 +
-	return check_array(childID, tag_list_6);
+        // DL: _6 +
+        return check_array(childID, tag_list_6);
     case ID_OL:
     case ID_UL:
-	// OL: LI +
-	if(childID == ID_LI) return true;
-	return false;
+        // OL: LI +
+        if(childID == ID_LI) return true;
+        return false;
     case ID_DIR:
     case ID_MENU:
-	// (DIR|MENU): LI + - _3
-	if(childID == ID_LI) return true;
-	return false;
+        // (DIR|MENU): LI + - _3
+        if(childID == ID_LI) return true;
+        return false;
     case ID_FORM:
-	// FORM: _1 * - FORM
-	return check_array(childID, tag_list_1);
+        // FORM: _1 * - FORM
+        return check_array(childID, tag_list_1);
     case ID_LABEL:
-	// LABEL: _0 * - LABEL
-	return check_array(childID, tag_list_0);
+        // LABEL: _0 * - LABEL
+        return check_array(childID, tag_list_0);
     case ID_SELECT:
-	// SELECT: _7 +
-	return check_array(childID, tag_list_7);
+        // SELECT: _7 +
+        return check_array(childID, tag_list_7);
     case ID_OPTGROUP:
-	// OPTGROUP: OPTION +
-	if(childID == ID_OPTION) return true;
-	return false;
+        // OPTGROUP: OPTION +
+        if(childID == ID_OPTION) return true;
+        return false;
     case ID_OPTION:
     case ID_TEXTAREA:
     case ID_TITLE:
     case ID_STYLE:
     case ID_SCRIPT:
-	// OPTION: TEXT
-	if(childID == ID_TEXT) return true;
-	return false;
+        // OPTION: TEXT
+        if(childID == ID_TEXT) return true;
+        return false;
     case ID_FIELDSET:
-	// FIELDSET: ( TEXT , LEGEND , _1 * )
-	if(childID == ID_TEXT) return true;
-	if(childID == ID_LEGEND) return true;
-	return check_array(childID, tag_list_1);
+        // FIELDSET: ( TEXT , LEGEND , _1 * )
+        if(childID == ID_TEXT) return true;
+        if(childID == ID_LEGEND) return true;
+        return check_array(childID, tag_list_1);
     case ID_BUTTON:
-	// BUTTON: _1 * - _8
-	return check_array(childID, tag_list_1);
+        // BUTTON: _1 * - _8
+        return check_array(childID, tag_list_1);
     case ID_TABLE:
-	// TABLE: ( CAPTION ? , ( COL * | COLGROUP * ) , THEAD ? , TFOOT ? , TBODY + )
-	switch(childID)
-	{
-	case ID_CAPTION:
-	case ID_COL:
-	case ID_COLGROUP:
-	case ID_THEAD:
-	case ID_TFOOT:
-	case ID_TBODY:
-	    return true;
-	default:
-	    return false;
-	}
+        // TABLE: ( CAPTION ? , ( COL * | COLGROUP * ) , THEAD ? , TFOOT ? , TBODY + )
+        switch(childID)
+        {
+        case ID_CAPTION:
+        case ID_COL:
+        case ID_COLGROUP:
+        case ID_THEAD:
+        case ID_TFOOT:
+        case ID_TBODY:
+            return true;
+        default:
+            return false;
+        }
     case ID_THEAD:
     case ID_TFOOT:
     case ID_TBODY:
-	// THEAD: TR +
-	if(childID == ID_TR) return true;
-	return false;
+        // THEAD: TR +
+        if(childID == ID_TR) return true;
+        return false;
     case ID_COLGROUP:
-	// COLGROUP: COL *
-	if(childID == ID_COL) return true;
-	return false;
+        // COLGROUP: COL *
+        if(childID == ID_COL) return true;
+        return false;
     case ID_TR:
-	// TR: _9 +
-	return check_array(childID, tag_list_9);
-	return false;
+        // TR: _9 +
+        return check_array(childID, tag_list_9);
+        return false;
     case ID_FRAMESET:
-	// FRAMESET: ( _10 + & NOFRAMES ? )
-	return check_array(childID, tag_list_10);
-	return (childID == ID_NOFRAMES);
+        // FRAMESET: ( _10 + & NOFRAMES ? )
+        return check_array(childID, tag_list_10);
+        return (childID == ID_NOFRAMES);
     case ID_HEAD:
-	// HEAD: ( TITLE & ISINDEX ? & BASE ? ) + _11
-	if(childID == ID_TITLE || childID == ID_ISINDEX || childID == ID_BASE)
-	    return true;
-	return check_array(childID, tag_list_11);
+        // HEAD: ( TITLE & ISINDEX ? & BASE ? ) + _11
+        if(childID == ID_TITLE || childID == ID_ISINDEX || childID == ID_BASE)
+            return true;
+        return check_array(childID, tag_list_11);
     case ID_HTML:
-	// HTML: ( HEAD , COMMENT, ( BODY | ( FRAMESET & NOFRAMES ? ) ) )
-	switch(childID)
-	{
-	case ID_HEAD:
-	case ID_COMMENT:
-	case ID_BODY:
-	case ID_FRAMESET:
-	case ID_NOFRAMES:
-	case ID_SCRIPT:
-	    return true;
-	default:
-	    return false;
-	}
+        // HTML: ( HEAD , COMMENT, ( BODY | ( FRAMESET & NOFRAMES ? ) ) )
+        switch(childID)
+        {
+        case ID_HEAD:
+        case ID_COMMENT:
+        case ID_BODY:
+        case ID_FRAMESET:
+        case ID_NOFRAMES:
+        case ID_SCRIPT:
+            return true;
+        default:
+            return false;
+        }
     default:
-	kdDebug( 6030 ) << "unhandled tag in dtd.cpp:checkChild(): tagID=" << tagID << "!" << endl;
-	return false;
+        kdDebug( 6030 ) << "unhandled tag in dtd.cpp:checkChild(): tagID=" << tagID << "!" << endl;
+        return false;
     }
 }
 
@@ -524,69 +524,69 @@ void DOM::addForbidden(int tagId, ushort *forbiddenTags)
     switch(tagId)
     {
     case ID_A:
-	// we allow nested anchors. The innermost one wil be taken...
-	//forbiddenTags[ID_A]++;
-	break;
+        // we allow nested anchors. The innermost one wil be taken...
+        //forbiddenTags[ID_A]++;
+        break;
     case ID_PRE:
-	//forbiddenTags[ID_IMG]++;
-	forbiddenTags[ID_OBJECT]++;
-	forbiddenTags[ID_EMBED]++;
-	forbiddenTags[ID_APPLET]++;
-	// why forbid them. We can deal with them in PRE
-	//forbiddenTags[ID_BIG]++;
-	//forbiddenTags[ID_SMALL]++;
-	//forbiddenTags[ID_SUB]++;
-	//forbiddenTags[ID_SUP]++;
-	forbiddenTags[ID_BASEFONT]++;
-	break;
+        //forbiddenTags[ID_IMG]++;
+        forbiddenTags[ID_OBJECT]++;
+        forbiddenTags[ID_EMBED]++;
+        forbiddenTags[ID_APPLET]++;
+        // why forbid them. We can deal with them in PRE
+        //forbiddenTags[ID_BIG]++;
+        //forbiddenTags[ID_SMALL]++;
+        //forbiddenTags[ID_SUB]++;
+        //forbiddenTags[ID_SUP]++;
+        forbiddenTags[ID_BASEFONT]++;
+        break;
     case ID_DIR:
     case ID_MENU:
-	forbiddenTags[ID_P]++;
-	forbiddenTags[ID_H1]++;
-	forbiddenTags[ID_H2]++;
-	forbiddenTags[ID_H3]++;
-	forbiddenTags[ID_H4]++;
-	forbiddenTags[ID_H5]++;
-	forbiddenTags[ID_H6]++;
-	forbiddenTags[ID_UL]++;
-	forbiddenTags[ID_OL]++;
-	forbiddenTags[ID_DIR]++;
-	forbiddenTags[ID_MENU]++;
-	forbiddenTags[ID_PRE]++;
-	forbiddenTags[ID_DL]++;
-	forbiddenTags[ID_DIV]++;
-	forbiddenTags[ID_CENTER]++;
-	forbiddenTags[ID_NOSCRIPT]++;
-	forbiddenTags[ID_NOFRAMES]++;
-	forbiddenTags[ID_BLOCKQUOTE]++;
-	forbiddenTags[ID_FORM]++;
-	forbiddenTags[ID_ISINDEX]++;
-	forbiddenTags[ID_HR]++;
-	forbiddenTags[ID_TABLE]++;
-	forbiddenTags[ID_FIELDSET]++;
-	forbiddenTags[ID_ADDRESS]++;
-	break;
+        forbiddenTags[ID_P]++;
+        forbiddenTags[ID_H1]++;
+        forbiddenTags[ID_H2]++;
+        forbiddenTags[ID_H3]++;
+        forbiddenTags[ID_H4]++;
+        forbiddenTags[ID_H5]++;
+        forbiddenTags[ID_H6]++;
+        forbiddenTags[ID_UL]++;
+        forbiddenTags[ID_OL]++;
+        forbiddenTags[ID_DIR]++;
+        forbiddenTags[ID_MENU]++;
+        forbiddenTags[ID_PRE]++;
+        forbiddenTags[ID_DL]++;
+        forbiddenTags[ID_DIV]++;
+        forbiddenTags[ID_CENTER]++;
+        forbiddenTags[ID_NOSCRIPT]++;
+        forbiddenTags[ID_NOFRAMES]++;
+        forbiddenTags[ID_BLOCKQUOTE]++;
+        forbiddenTags[ID_FORM]++;
+        forbiddenTags[ID_ISINDEX]++;
+        forbiddenTags[ID_HR]++;
+        forbiddenTags[ID_TABLE]++;
+        forbiddenTags[ID_FIELDSET]++;
+        forbiddenTags[ID_ADDRESS]++;
+        break;
     case ID_FORM:
-	// the parser deals with them in another way. helps supporting some broken html
-	//forbiddenTags[ID_FORM]++;
-	break;
+        // the parser deals with them in another way. helps supporting some broken html
+        //forbiddenTags[ID_FORM]++;
+        break;
     case ID_LABEL:
-	forbiddenTags[ID_LABEL]++;
-	break;
+        forbiddenTags[ID_LABEL]++;
+        break;
     case ID_BUTTON:
-	forbiddenTags[ID_A]++;
-	forbiddenTags[ID_INPUT]++;
-	forbiddenTags[ID_SELECT]++;
-	forbiddenTags[ID_TEXTAREA]++;
-	forbiddenTags[ID_LABEL]++;
-	forbiddenTags[ID_BUTTON]++;
-	forbiddenTags[ID_FORM]++;
-	forbiddenTags[ID_ISINDEX]++;
-	forbiddenTags[ID_FIELDSET]++;
-	forbiddenTags[ID_IFRAME]++;
-	break;
+        forbiddenTags[ID_A]++;
+        forbiddenTags[ID_INPUT]++;
+        forbiddenTags[ID_SELECT]++;
+        forbiddenTags[ID_TEXTAREA]++;
+        forbiddenTags[ID_LABEL]++;
+        forbiddenTags[ID_BUTTON]++;
+        forbiddenTags[ID_FORM]++;
+        forbiddenTags[ID_ISINDEX]++;
+        forbiddenTags[ID_FIELDSET]++;
+        forbiddenTags[ID_IFRAME]++;
+        break;
     default:
-	break;
+        break;
     }
 }
 
@@ -595,66 +595,66 @@ void DOM::removeForbidden(int tagId, ushort *forbiddenTags)
     switch(tagId)
     {
     case ID_A:
-	//forbiddenTags[ID_A]--;
-	break;
+        //forbiddenTags[ID_A]--;
+        break;
     case ID_PRE:
-	//forbiddenTags[ID_IMG]--;
-	forbiddenTags[ID_OBJECT]--;
-	forbiddenTags[ID_EMBED]--;
-	forbiddenTags[ID_APPLET]--;
-	//forbiddenTags[ID_BIG]--;
-	//forbiddenTags[ID_SMALL]--;
-	//forbiddenTags[ID_SUB]--;
-	//forbiddenTags[ID_SUP]--;
-	forbiddenTags[ID_BASEFONT]--;
-	break;
+        //forbiddenTags[ID_IMG]--;
+        forbiddenTags[ID_OBJECT]--;
+        forbiddenTags[ID_EMBED]--;
+        forbiddenTags[ID_APPLET]--;
+        //forbiddenTags[ID_BIG]--;
+        //forbiddenTags[ID_SMALL]--;
+        //forbiddenTags[ID_SUB]--;
+        //forbiddenTags[ID_SUP]--;
+        forbiddenTags[ID_BASEFONT]--;
+        break;
     case ID_DIR:
     case ID_MENU:
-	forbiddenTags[ID_P]--;
-	forbiddenTags[ID_H1]--;
-	forbiddenTags[ID_H2]--;
-	forbiddenTags[ID_H3]--;
-	forbiddenTags[ID_H4]--;
-	forbiddenTags[ID_H5]--;
-	forbiddenTags[ID_H6]--;
-	forbiddenTags[ID_UL]--;
-	forbiddenTags[ID_OL]--;
-	forbiddenTags[ID_DIR]--;
-	forbiddenTags[ID_MENU]--;
-	forbiddenTags[ID_PRE]--;
-	forbiddenTags[ID_DL]--;
-	forbiddenTags[ID_DIV]--;
-	forbiddenTags[ID_CENTER]--;
-	forbiddenTags[ID_NOSCRIPT]--;
-	forbiddenTags[ID_NOFRAMES]--;
-	forbiddenTags[ID_BLOCKQUOTE]--;
-	forbiddenTags[ID_FORM]--;
-	forbiddenTags[ID_ISINDEX]--;
-	forbiddenTags[ID_HR]--;
-	forbiddenTags[ID_TABLE]--;
-	forbiddenTags[ID_FIELDSET]--;
-	forbiddenTags[ID_ADDRESS]--;
-	break;
+        forbiddenTags[ID_P]--;
+        forbiddenTags[ID_H1]--;
+        forbiddenTags[ID_H2]--;
+        forbiddenTags[ID_H3]--;
+        forbiddenTags[ID_H4]--;
+        forbiddenTags[ID_H5]--;
+        forbiddenTags[ID_H6]--;
+        forbiddenTags[ID_UL]--;
+        forbiddenTags[ID_OL]--;
+        forbiddenTags[ID_DIR]--;
+        forbiddenTags[ID_MENU]--;
+        forbiddenTags[ID_PRE]--;
+        forbiddenTags[ID_DL]--;
+        forbiddenTags[ID_DIV]--;
+        forbiddenTags[ID_CENTER]--;
+        forbiddenTags[ID_NOSCRIPT]--;
+        forbiddenTags[ID_NOFRAMES]--;
+        forbiddenTags[ID_BLOCKQUOTE]--;
+        forbiddenTags[ID_FORM]--;
+        forbiddenTags[ID_ISINDEX]--;
+        forbiddenTags[ID_HR]--;
+        forbiddenTags[ID_TABLE]--;
+        forbiddenTags[ID_FIELDSET]--;
+        forbiddenTags[ID_ADDRESS]--;
+        break;
     case ID_FORM:
-	//forbiddenTags[ID_FORM]--;
-	break;
+        //forbiddenTags[ID_FORM]--;
+        break;
     case ID_LABEL:
-	forbiddenTags[ID_LABEL]--;
-	break;
+        forbiddenTags[ID_LABEL]--;
+        break;
     case ID_BUTTON:
-	forbiddenTags[ID_A]--;
-	forbiddenTags[ID_INPUT]--;
-	forbiddenTags[ID_SELECT]--;
-	forbiddenTags[ID_TEXTAREA]--;
-	forbiddenTags[ID_LABEL]--;
-	forbiddenTags[ID_BUTTON]--;
-	forbiddenTags[ID_FORM]--;
-	forbiddenTags[ID_ISINDEX]--;
-	forbiddenTags[ID_FIELDSET]--;
-	forbiddenTags[ID_IFRAME]--;
-	break;
+        forbiddenTags[ID_A]--;
+        forbiddenTags[ID_INPUT]--;
+        forbiddenTags[ID_SELECT]--;
+        forbiddenTags[ID_TEXTAREA]--;
+        forbiddenTags[ID_LABEL]--;
+        forbiddenTags[ID_BUTTON]--;
+        forbiddenTags[ID_FORM]--;
+        forbiddenTags[ID_ISINDEX]--;
+        forbiddenTags[ID_FIELDSET]--;
+        forbiddenTags[ID_IFRAME]--;
+        break;
     default:
-	break;
+        break;
     }
 }
 
