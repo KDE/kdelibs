@@ -20,7 +20,7 @@ AM_CPPFLAGS = -D_LARGEFILE64_SOURCE
 
 INCLUDES=  -I$(srcdir)/.. -I$(top_srcdir) -I$(srcdir)/../kssl $(all_includes) $(SSL_INCLUDES)
 
-SUBDIRS = . ksendbugmail kpac kdesasl kssld
+SUBDIRS = . ksendbugmail kpac kdesasl kssld kfile
 
 lib_LTLIBRARIES = kio_uiserver.la
 bin_PROGRAMS = kio_uiserver kmailservice ktelnetservice
