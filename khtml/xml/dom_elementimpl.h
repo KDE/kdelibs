@@ -117,7 +117,7 @@ public:
     virtual NodeListImpl *getElementsByTagName ( const DOMString &name, int &exceptioncode );
     virtual DOMString getAttributeNS ( const DOMString &namespaceURI, const DOMString &localName,
                                        int &exceptioncode );
-    virtual void setAttributeNS ( const DOMString &namespaceURI, const DOMString &qualifiedName, 
+    virtual void setAttributeNS ( const DOMString &namespaceURI, const DOMString &qualifiedName,
                                   const DOMString &value, int &exceptioncode );
     virtual void removeAttributeNS ( const DOMString &namespaceURI, const DOMString &localName,
                                      int &exceptioncode );
@@ -300,7 +300,7 @@ protected:
 
     Attr replaceAttr(int i, AttrImpl *attr);
     void addAttr(AttrImpl *attr);
-    Attr removeAttr(int index, AttrImpl *clearAttr);
+    Attr removeAttr(int index);
 
     Attr removeAttr( AttrImpl *oldAttr, int &exceptioncode );
 

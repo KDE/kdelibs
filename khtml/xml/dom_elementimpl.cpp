@@ -476,7 +476,7 @@ DOMString ElementImpl::getAttributeNS( const DOMString &namespaceURI, const DOMS
         return "";
 }
 
-void ElementImpl::setAttributeNS( const DOMString &namespaceURI, const DOMString &qualifiedName, 
+void ElementImpl::setAttributeNS( const DOMString &namespaceURI, const DOMString &qualifiedName,
                                   const DOMString &value, int &exceptioncode )
 {
     // NO_MODIFICATION_ALLOWED_ERR: Raised if this node is readonly.
@@ -1315,10 +1315,7 @@ Attr NamedAttrMapImpl::removeItem ( int id, const DOMString &name, const DOMStri
         return 0;
     }
 
-    DOMString nullStr;
-    AttrImpl *clearAttr = new AttrImpl(name,nullStr,element->docPtr());
-    Attr ret = removeAttr(index,clearAttr);
-    clearAttr->deref();
+    Attr ret = removeAttr(index);
 
     return ret;
 }
@@ -1412,12 +1409,11 @@ void NamedAttrMapImpl::addAttr(AttrImpl *attr)
     }
 }
 
-Attr NamedAttrMapImpl::removeAttr(int index, AttrImpl *clearAttr)
+Attr NamedAttrMapImpl::removeAttr(int index)
 {
     // Remove the attribute from the list
-    Attr ret = attrs[index];
+    AttrImpl* ret = attrs[index];
     attrs[index]->_element = 0;
-    attrs[index]->deref();
     if (len == 1) {
         delete [] attrs;
         attrs = 0;
@@ -1435,12 +1431,21 @@ Attr NamedAttrMapImpl::removeAttr(int index, AttrImpl *clearAttr)
         attrs = newAttrs;
     }
 
-    // Notify the element that the attribute has been removed, and dispatch appropriate mutation events
-    element->parseAttribute(clearAttr);
-    element->setChanged(true);
-    element->dispatchAttrRemovalEvent(ret.handle());
+    // Notify the element that the attribute has been removed
+    // dispatch appropriate mutation events
+    if (ret->_value) {
+        ret->_value->deref();
+        ret->_value = 0;
+        element->parseAttribute(ret);
+        //element->setChanged(true);
+    }
+    element->dispatchAttrRemovalEvent(ret);
     element->dispatchSubtreeModifiedEvent();
-    return ret;
+
+    // now some refcounting hackery
+    Attr a(ret);
+    ret->deref();
+    return a;
 }
 
 Attr NamedAttrMapImpl::removeAttr( AttrImpl *oldAttr, int &exceptioncode )
@@ -1449,14 +1454,7 @@ Attr NamedAttrMapImpl::removeAttr( AttrImpl *oldAttr, int &exceptioncode )
     uint i;
     for (i = 0; i < len; i++) {
         if (attrs[i] == oldAttr) {
-            AttrImpl *clearAttr;
-            if (oldAttr->attrId)
-                clearAttr = new AttrImpl(oldAttr->attrId,"",element->docPtr());
-            else
-                clearAttr = new AttrImpl(oldAttr->name(),"",element->docPtr());
-
-            Attr ret = removeAttr(i,clearAttr);
-            clearAttr->deref();
+            Attr ret = removeAttr(i);
             return ret;
         }
     }
