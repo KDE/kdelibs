@@ -27,7 +27,7 @@
 
 class KNotifyPrivate;
 
-class KNotify : public QObject, DCOPObject
+class KNotify : public QObject, public DCOPObject
 {
 Q_OBJECT
 K_DCOP
