@@ -141,12 +141,15 @@ Value FunctionImp::call(ExecState *exec, Object &thisObj, const List &args)
     popArgs(&newExec);
 
 #ifdef KJS_VERBOSE
-  if (comp.complType() == Throw)
-    printInfo(exec,"throwing", comp.value());
-  else if (comp.complType() == ReturnValue)
-    printInfo(exec,"returning", comp.value());
-  else
-    fprintf(stderr, "returning: undefined\n");
+  CString n = ident.isEmpty() ? CString("(internal)") : ident.cstring();
+  if (comp.complType() == Throw) {
+    n += " throws";
+    printInfo(exec, n.c_str(), comp.value());
+  } else if (comp.complType() == ReturnValue) {
+    n += " returns";
+    printInfo(exec, n.c_str(), comp.value());
+  } else
+    fprintf(stderr, "%s returns: undefined\n", n.c_str());
 #endif
 
   if (dbg) {
