@@ -46,8 +46,8 @@ protected:
 	queue< DataPacket<mcopbyte>* > wqueue;
 
 public:
-	static const unsigned int PACKET_COUNT = 8;
-	static const unsigned int PACKET_SIZE = 8192;
+	static const unsigned int PACKET_COUNT;
+	static const unsigned int PACKET_SIZE;
 
 	FileInputStream_impl()
 	{
@@ -182,5 +182,11 @@ public:
 };
 
 REGISTER_IMPLEMENTATION(FileInputStream_impl);
+
+const unsigned int
+FileInputStream_impl::PACKET_COUNT = 8;  
+
+const unsigned int
+FileInputStream_impl::PACKET_SIZE = 8192;
 
 };
