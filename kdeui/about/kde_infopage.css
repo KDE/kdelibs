@@ -133,7 +133,6 @@ body {margin: 0px; padding: 0px; background-color: #7ea0cb;}
 #boxT {
   width: 100%;
   height: 22px;
-  background-image: url(box-top-middle.png);
 }
 
 #boxTL {
@@ -148,6 +147,14 @@ body {margin: 0px; padding: 0px; background-color: #7ea0cb;}
   height: 22px;
   float: right;
   background-image: url(box-top-right.png);
+}
+
+#boxTC {
+  height: 22px;
+  margin-left: 25px;
+  margin-right: 25px;
+  background-image: url(box-top-middle.png);
+  background-repeat: repeat-x;
 }
 
 #boxL {
