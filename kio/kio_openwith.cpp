@@ -156,6 +156,11 @@ void KApplicationTree::parseDesktopFile( QFileInfo *fi, KAppTreeListItem *item, 
     QString file = fi->absFilePath();
     
     if( fi->isDir() ) {
+        // don't create empty directory items
+        QDir dir( file );
+	if ( dir.entryList().count() == 2 ) // . and ..
+	    return;
+	
         text_name = fi->fileName();
         file += "/.directory";
     }
