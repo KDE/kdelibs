@@ -267,7 +267,7 @@ TRANS(SocketSelectFamily) (char *family)
 
     PRMSG (3,"SocketSelectFamily(%s)\n", family, 0, 0);
 
-    for (i = 0; i < NUMSOCKETFAMILIES;i++)
+    for (i = 0; i < (int) NUMSOCKETFAMILIES;i++)
     {
         if (!strcmp (family, Sockettrans2devtab[i].transname))
 	    return i;
@@ -364,7 +364,7 @@ TRANS(SocketINETGetPeerAddr) (XtransConnInfo ciptr)
 
     return 0;
 }
-#endif //TCPCONN
+#endif /* TCPCONN */
 
 static XtransConnInfo
 TRANS(SocketOpen) (int i, int type)
@@ -712,7 +712,7 @@ static int
 set_sun_path(const char *port, const char *upath, char *path)
 {
     struct sockaddr_un s;
-    int maxlen = sizeof(s.sun_path) - 1;
+    unsigned int maxlen = sizeof(s.sun_path) - 1;
 
     if (!port || !*port || !path)
 	return -1;

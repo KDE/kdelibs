@@ -34,21 +34,71 @@ Author: Ralph Mor, X Consortium
 #include "KDE-ICE/ICEutil.h"
 
 #define _IceDefaultErrorHandler _KDE_IceDefaultErrorHandler
+
+extern void _IceDefaultErrorHandler (
+#if NeedFunctionPrototypes
+    IceConn         /* iceConn */,
+    Bool            /* swap */,
+    int             /* offendingMinorOpcode */,
+    unsigned long   /* offendingSequence */,
+    int             /* errorClass */,
+    int             /* severity */,
+    IcePointer      /* values */
+#endif
+);
+
 #define _IceDefaultIOErrorHandler _KDE_IceDefaultIOErrorHandler
 
-extern void _IceDefaultErrorHandler ();
-extern void _IceDefaultIOErrorHandler ();
+extern void _IceDefaultIOErrorHandler (
+#if NeedFunctionPrototypes
+    IceConn 		/* iceConn */
+#endif
+);
 
 #define _IcePoMagicCookie1Proc _KDE_IcePoMagicCookie1Proc
+
+extern IcePoAuthStatus _IcePoMagicCookie1Proc (
+#if NeedFunctionPrototypes
+    IceConn         /* iceConn */,
+    IcePointer *    /* authStatePtr */,
+    Bool            /* cleanUp */,
+    Bool            /* swap */,
+    int             /* authDataLen */,
+    IcePointer      /* authData */,
+    int *           /* replyDataLenRet */,
+    IcePointer *    /* replyDataRet */,
+    char **         /* errorStringRet */
+#endif
+);
+
 #define _IcePaMagicCookie1Proc _KDE_IcePaMagicCookie1Proc
 
-extern IcePoAuthStatus _IcePoMagicCookie1Proc ();
-extern IcePaAuthStatus _IcePaMagicCookie1Proc ();
+extern IcePaAuthStatus _IcePaMagicCookie1Proc (
+#if NeedFunctionPrototypes
+    IceConn         /* iceConn */,
+    IcePointer *    /* authStatePtr */,
+    Bool            /* swap */,
+    int             /* authDataLen */,
+    IcePointer      /* authData */,
+    int *           /* replyDataLenRet */,
+    IcePointer *    /* replyDataRet */,
+    char **         /* errorStringRet */
+#endif
+);
 
 #define _IceProcessCoreMessage _KDE_IceProcessCoreMessage
 
-extern void _IceProcessCoreMessage ();
-
+extern void _IceProcessCoreMessage (
+#if NeedFunctionPrototypes
+    IceConn          /* iceConn */,
+    int              /* opcode */,
+    unsigned long    /* length */,
+    Bool             /* swap */,
+    IceReplyWaitInfo * /* replyWait */,
+    Bool *           /* replyReadyRet */,
+    Bool *           /* connectionClosedRet */
+#endif
+);
 
 #define _IceConnectionObjs	_KDE_IceConnectionObjs
 #define _IceConnectionStrings	_KDE_IceConnectionStrings

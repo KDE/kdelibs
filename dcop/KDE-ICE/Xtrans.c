@@ -180,7 +180,7 @@ TRANS(SelectTransport) (char *protocol)
 
     /* Look at all of the configured protocols */
 
-    for (i = 0; i < NUMTRANS; i++)
+    for (i = 0; i < (int) NUMTRANS; i++)
     {
 	if (!strcmp (protobuf, Xtransports[i].transport->TransName))
 	    return Xtransports[i].transport;
@@ -983,7 +983,7 @@ complete_network_count (void)
      * For a complete network, we only need one LOCALCONN transport to work
      */
 
-    for (i = 0; i < NUMTRANS; i++)
+    for (i = 0; i < (int) NUMTRANS; i++)
     {
 	if (Xtransports[i].transport->flags & TRANS_ALIAS
    	 || Xtransports[i].transport->flags & TRANS_NOLISTEN)
@@ -1014,7 +1014,7 @@ TRANS(MakeAllCOTSServerListeners) (char *port, int *partial, int *count_ret,
 
     *count_ret = 0;
 
-    for (i = 0; i < NUMTRANS; i++)
+    for (i = 0; i < (int) NUMTRANS; i++)
     {
 	Xtransport *trans = Xtransports[i].transport;
 
@@ -1116,7 +1116,7 @@ TRANS(MakeAllCLTSServerListeners) (char *port, int *partial, int *count_ret,
 
     *count_ret = 0;
 
-    for (i = 0; i < NUMTRANS; i++)
+    for (i = 0; i < (int) NUMTRANS; i++)
     {
 	Xtransport *trans = Xtransports[i].transport;
 
