@@ -102,12 +102,13 @@ public:
     bool layouted() const   { return m_layouted; }
     bool blocking() const   { return m_blocking;    }
     bool parsing() const    { return m_parsing;     }
-    bool minMaxKnown() const{ return m_minMaxKnown; }
+    bool minMaxKnown() const{ return m_minMaxKnown; }    
 
     void setLayouted(bool b=true) { m_layouted = b; }
     void setBlocking(bool b=true) { m_blocking = b; }
     void setParsing(bool b=true) { m_parsing = b; }
     void setMinMaxKnown(bool b=true) { m_minMaxKnown = b; }
+    
 
     virtual short baselineOffset() const { return 0; }
     virtual short verticalPositionHint() const { return 0; }

@@ -291,7 +291,11 @@ void RenderFlow::layoutBlockChildren(bool deep)
 	margin = MAX(margin, prevMargin);
 	m_height += margin;
 
-	child->setPos(xPos + getIndent(child), m_height);
+    	// html blocks flow around floats	
+    	if (style()->htmlHacks() && !child->childrenInline()) 	    
+	    child->setPos(leftMargin(m_height) + getIndent(child), m_height);
+	else
+	    child->setPos(xPos + getIndent(child), m_height);
 
 	if(deep) child->layout(deep);
 	else if (!child->layouted())
@@ -403,12 +407,32 @@ RenderFlow::insertFloat(RenderObject *o)
     else
 	f->type = SpecialObject::FloatRight;
     f->node = o;
-
+    
     specialObjects->append(f);
 //    printf("inserting node %p number of specialobject = %d\n", o,
 //	   specialObjects->count());
 	
     positionNewFloats();
+    
+    // html blocks flow around floats, to do this add floats to parent too
+    if(style()->htmlHacks())     
+    {
+    	RenderObject* obj = parent();
+    	while ( obj && obj->childrenInline() ) obj=obj->parent();
+    	if (obj && obj->isFlow() && f->noPaint == false)
+	{
+	    RenderFlow* par = static_cast<RenderFlow*>(obj);
+	    if(!par->specialObjects) {
+		par->specialObjects = new QList<SpecialObject>;
+		par->specialObjects->setAutoDelete(true);	
+	    }
+	    SpecialObject* so = new SpecialObject(*f);
+	    so->startY = so->startY + m_y;
+	    so->endY = so->endY + m_y;
+	    so->noPaint = true;
+	    par->specialObjects->append(so);
+	}
+    }    
 }
 
 void RenderFlow::positionNewFloats()

@@ -1373,7 +1373,7 @@ void RenderTable::close()
 
 void RenderTable::updateSize()
 {
-    printf("RenderTable::updateSize()\n");
+//    printf("RenderTable::updateSize()\n");
     if (parsing())
     {
 	if (!updateTimer.isNull() && updateTimer.elapsed()<200)
@@ -1622,8 +1622,11 @@ void RenderTableCell::printObject(QPainter *p, int _x, int _y,
     QListIterator<SpecialObject> it(*specialObjects);
     for ( ; (r = it.current()); ++it )
     {
-	RenderObject *o = r->node;
-	o->printObject(p, _x, _y, _w, _h, r->left + o->marginLeft() + _tx , r->startY + o->marginTop() + _ty);
+    	if (!r->noPaint)
+	{
+	    RenderObject *o = r->node;
+	    o->printObject(p, _x, _y, _w, _h, r->left + o->marginLeft() + _tx , r->startY + o->marginTop() + _ty);
+	}
     }
 
 }

@@ -282,6 +282,9 @@ void HTMLDocumentImpl::attach(KHTMLView *w)
     m_style->setDisplay(BLOCK);
     // ### make the font stuff _really_ work!!!!
     m_style->setFont(KGlobal::generalFont());
+
+    m_style->setHtmlHacks(true); // enable html specific rendering tricks
+    
     m_render = new RenderRoot(m_style, w);
     m_render->ref();
     m_render->layout(true);

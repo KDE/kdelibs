@@ -537,6 +537,8 @@ protected:
     EWhiteSpace _white_space : 2;
     int _text_decoration : 4;
     bool _visuallyOrdered : 1;
+    
+    bool _htmlHacks :1;
 
 // don't inherit
 
@@ -799,6 +801,9 @@ public:
     void setPaddingBottom(Length v) {  surround.set()->padding.bottom = v; }
     void setPaddingLeft(Length v) {  surround.set()->padding.left = v; }
     void setPaddingRight(Length v) {  surround.set()->padding.right = v; }
+    
+    bool htmlHacks() const { return _htmlHacks; }
+    void setHtmlHacks(bool b=true) { _htmlHacks = b; }
 };
 
 } // namespace

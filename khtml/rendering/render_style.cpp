@@ -51,6 +51,8 @@ RenderStyle::setBitDefaults()
     _bg_attachment = SCROLL;
 
     _visuallyOrdered = false;
+    
+    _htmlHacks=false;
 }
 
 
@@ -119,6 +121,8 @@ RenderStyle::RenderStyle(const RenderStyle& other)
     _visuallyOrdered = other._visuallyOrdered;
 
     _display = other._display;
+    
+    _htmlHacks = other._htmlHacks;
 }
 
 RenderStyle::RenderStyle(const RenderStyle* inheritParent)
@@ -144,6 +148,8 @@ RenderStyle::RenderStyle(const RenderStyle* inheritParent)
     _text_decoration = inheritParent->_text_decoration;
     _white_space = inheritParent->_white_space;
     _visuallyOrdered = inheritParent->_visuallyOrdered;
+
+    _htmlHacks = inheritParent->_htmlHacks;
 
     _display = INLINE;
 }
@@ -200,20 +206,6 @@ RenderStyle::inheritFrom(RenderStyle* from)
 {
     if(!from) return this;
     inherited = from->inherited;
-
-#if 0
-    // text-decoration and text-shadow need special treatment
-    // since they inherit from the last block element
-    RenderStyle *parentBlock = from;
-    while(parentBlock && parentBlock->display() != BLOCK)
-	parentBlock = parentBlock->parentStyle;
-    if(parentBlock)
-    {
-	setTextDecoration(parentBlock->textDecoration());
-	setTextDecorationColor(parentBlock->textDecorationColor());
-    }
-#endif
-
 
     return this;
 }
