@@ -147,8 +147,6 @@ LIB_KFILE='$(top_builddir)/kfile/libkfile.la'
 AC_SUBST(LIB_KFILE)
 LIB_KAB='$(top_builddir)/kab/libkab.la'
 AC_SUBST(LIB_KAB)
-LIB_MEDIATOOL='$(top_builddir)/mediatool/libmediatool.la'
-AC_SUBST(LIB_MEDIATOOL)
 LIB_KHTML='$(top_builddir)/khtml/libkhtml.la'
 AC_SUBST(LIB_KHTML)
 LIB_KIMGIO='$(top_builddir)/kimgio/libkimgio.la'

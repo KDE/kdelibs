@@ -30,11 +30,6 @@ are:
     This library contains the KFileDialog in all its glory.  A reasonably
     source compatable replacement to QFileDialog.
 
-* mediatool
-    Sound related classes (such as a mixer class), for use by anything
-    that wants a rather neutral way to use sounds (and sound events)
-    within KDE apps.
-
 * kspell
     KSpell and related classes are a frontend to ispell for use within a
     GUI app.  kedit uses them already.

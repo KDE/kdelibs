@@ -23,7 +23,6 @@ kdecore: KDE core library
 kdeui: KDE user interface library
 kfmlib: KDE file manager library
 khtmlw: KDE HTML widget
-mediatool: KDE mediatool library
 
 %prep
 rm -rf $RPM_BUILD_ROOT
