@@ -1094,13 +1094,17 @@ void KSpell::check2( KProcIO * )
 
   } while( tempe>0 );
 
-  proc->ackRead();
-
-
   if ( tempe == -1 ) { //we were called, but no data seems to be ready...
+    // Make sure we don't get called directly again and make sure we do get
+    // called when new data arrives.
+    NOOUTPUT( check2 );
+    proc->enableReadSignals(true);
+    OUTPUT( check2 );
     recursive = false;
     return;
   }
+
+  proc->ackRead();
 
   //If there is more to check, then send another line to ISpell.
   if ( (unsigned int)lastline < origbuffer.length() )
