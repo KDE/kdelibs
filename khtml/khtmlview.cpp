@@ -1204,8 +1204,13 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
 	d->underMouse->ref();
 
     int exceptioncode = 0;
-    int clientX, clientY;
-    viewportToContents(_mouse->x(), _mouse->y(), clientX, clientY);
+    int mx, my;
+    viewportToContents(_mouse->x(), _mouse->y(), mx, my);
+    // clientX and clientY are in viewport coordinates
+    // At least the JS code wants event.[xy]/event.client[XY] to be in viewport coords.
+    // [that's not the same as _mouse->[xy](), since we use the clipper]
+    int clientX = mx - contentsX();
+    int clientY = my - contentsY();
     int screenX = _mouse->globalX();
     int screenY = _mouse->globalY();
     int button = -1;
@@ -1228,7 +1233,7 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
     bool metaKey = (_mouse->state() & MetaButton);
 
     // mouseout/mouseover
-    if (setUnder && (d->prevMouseX != clientX || d->prevMouseY != clientY)) {
+    if (setUnder && (d->prevMouseX != mx || d->prevMouseY != my)) {
 
         // ### this code sucks. we should save the oldUnder instead of calculating
         // it again. calculating is expensive! (Dirk)
