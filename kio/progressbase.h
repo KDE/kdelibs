@@ -22,8 +22,11 @@
 #include <qwidget.h>
 
 class KURL;
-namespace KIO { class Job; }
-
+namespace KIO {
+  class Job;
+  class CopyJob;
+  class DeleteJob;
+}
 
 namespace KIO
 {
@@ -32,7 +35,6 @@ namespace KIO
     STATUSBAR = 2,
     LIST = 3
   };
-
 };
 
 /**
@@ -72,30 +74,26 @@ class ProgressBase : public QWidget {
 
 public:
 
-  ProgressBase( QWidget *parent = 0L );
+  ProgressBase( QWidget *parent );
   ~ProgressBase() {}
 
-  virtual void setJob( KIO::Job * );
+  void setJob( KIO::Job *job, bool onlyClean = false, bool stopOnClose = true );
+  void setJob( KIO::CopyJob *job, bool onlyClean = false, bool stopOnClose = true );
+  void setJob( KIO::DeleteJob *job, bool onlyClean = false, bool stopOnClose = true );
+
   virtual void clean() {}
-
-  bool onlyClean() { return m_bOnlyClean; }
-
-  /**
-   * Use this to set whether progress dialog should also kill the KIO::Job when closed.
-   *
-   * @param  stop   if true - KIO::Job will be killed.
-   *                if false - Dialog will be closed without killing the job ( IO will continue ).
-   */
-  void setStopOnClose( bool stop ) { m_bStopOnClose = stop; }
 
 public slots:
   void stop();
 
+signals:
+  void stopped();
+
 protected:
 
   void closeEvent( QCloseEvent * );
-  void Connect();
 
+  // either we set m_pJob or two Id's
   KIO::Job* m_pJob;
 
   /**
@@ -112,7 +110,8 @@ protected:
 
   bool m_bStopOnClose;
 
-protected slots:
+
+public slots:
 
   virtual void slotTotalSize( KIO::Job*, unsigned long ) {}
   virtual void slotTotalFiles( KIO::Job*, unsigned long ) {}
@@ -129,6 +128,8 @@ protected slots:
   virtual void slotMoving( KIO::Job*, const KURL&, const KURL& ) {}
   virtual void slotDeleting( KIO::Job*, const KURL& ) {}
   virtual void slotCreatingDir( KIO::Job*, const KURL& ) {}
+
+  virtual void slotRenaming( KIO::Job*, const KURL&, const KURL& ) {}
 
   virtual void slotCanResume( KIO::Job*, bool ) {}
 };

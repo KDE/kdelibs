@@ -20,65 +20,113 @@
 #include "progressbase.h"
 
 ProgressBase::ProgressBase( QWidget *parent )
-  : QWidget( parent ) {
-  m_bOnlyClean = false;
-  m_bStopOnClose = true;
+  : QWidget( parent )
+{
+  m_pJob = 0;
 }
 
 
-void ProgressBase::Connect() {
-  connect( m_pJob, SIGNAL( totalSize( KIO::Job*, unsigned long ) ),
-	   SLOT( slotTotalSize( KIO::Job*, unsigned long ) ) );
-  connect( m_pJob, SIGNAL( totalFiles( KIO::Job*, unsigned long ) ),
-	   SLOT( slotTotalFiles( KIO::Job*, unsigned long ) ) );
-  connect( m_pJob, SIGNAL( totalDirs( KIO::Job*, unsigned long ) ),
-	   SLOT( slotTotalDirs( KIO::Job*, unsigned long ) ) );
+void ProgressBase::setJob( KIO::Job *job, bool onlyClean, bool stopOnClose )
+{
+  m_bOnlyClean = onlyClean;
+  m_bStopOnClose = stopOnClose;
 
-  connect( m_pJob, SIGNAL( processedSize( KIO::Job*, unsigned long ) ),
-	   SLOT( slotProcessedSize( KIO::Job*, unsigned long ) ) );
-  connect( m_pJob, SIGNAL( processedFiles( KIO::Job*, unsigned long ) ),
-	   SLOT( slotProcessedFiles( KIO::Job*, unsigned long ) ) );
-  connect( m_pJob, SIGNAL( processedDirs( KIO::Job*, unsigned long ) ),
-	   SLOT( slotProcessedDirs( KIO::Job*, unsigned long ) ) );
-
-  connect( m_pJob, SIGNAL( speed( KIO::Job*, unsigned long ) ),
-	   SLOT( slotSpeed( KIO::Job*, unsigned long ) ) );
-  connect( m_pJob, SIGNAL( percent( KIO::Job*, unsigned long ) ),
+  // first connect all slots
+  connect( job, SIGNAL( percent( KIO::Job*, unsigned long ) ),
 	   SLOT( slotPercent( KIO::Job*, unsigned long ) ) );
 
-  connect( m_pJob, SIGNAL( copying( KIO::Job*, const KURL& , const KURL& ) ),
-	   SLOT( slotCopying( KIO::Job*, const KURL&, const KURL& ) ) );
-  connect( m_pJob, SIGNAL( moving( KIO::Job*, const KURL& , const KURL& ) ),
-	   SLOT( slotMoving( KIO::Job*, const KURL&, const KURL& ) ) );
-  connect( m_pJob, SIGNAL( deleting( KIO::Job*, const KURL& ) ),
-	   SLOT( slotDeleting( KIO::Job*, const KURL& ) ) );
-  connect( m_pJob, SIGNAL( creatingDir( KIO::Job*, const KURL& ) ),
- 	   SLOT( slotCreatingDir( KIO::Job*, const KURL& ) ) );
-
-  connect( m_pJob, SIGNAL( canResume( KIO::Job*, bool ) ),
- 	   SLOT( slotCanResume( KIO::Job*, bool ) ) );
+  // then assign job
+  m_pJob = job;
 }
 
 
-void ProgressBase::setJob( KIO::Job *job ) {
-  if ( m_pJob ) {
-    disconnect( m_pJob ); // completely forget about that job
-  }
+void ProgressBase::setJob( KIO::CopyJob *job, bool onlyClean, bool stopOnClose )
+{
+  m_bOnlyClean = onlyClean;
+  m_bStopOnClose = stopOnClose;
 
+  // first connect all slots
+  connect( job, SIGNAL( totalSize( KIO::Job*, unsigned long ) ),
+	   SLOT( slotTotalSize( KIO::Job*, unsigned long ) ) );
+  connect( job, SIGNAL( totalFiles( KIO::Job*, unsigned long ) ),
+	   SLOT( slotTotalFiles( KIO::Job*, unsigned long ) ) );
+  connect( job, SIGNAL( totalDirs( KIO::Job*, unsigned long ) ),
+	   SLOT( slotTotalDirs( KIO::Job*, unsigned long ) ) );
+
+  connect( job, SIGNAL( processedSize( KIO::Job*, unsigned long ) ),
+	   SLOT( slotProcessedSize( KIO::Job*, unsigned long ) ) );
+  connect( job, SIGNAL( processedFiles( KIO::Job*, unsigned long ) ),
+	   SLOT( slotProcessedFiles( KIO::Job*, unsigned long ) ) );
+  connect( job, SIGNAL( processedDirs( KIO::Job*, unsigned long ) ),
+	   SLOT( slotProcessedDirs( KIO::Job*, unsigned long ) ) );
+
+  connect( job, SIGNAL( speed( KIO::Job*, unsigned long ) ),
+	   SLOT( slotSpeed( KIO::Job*, unsigned long ) ) );
+  connect( job, SIGNAL( percent( KIO::Job*, unsigned long ) ),
+	   SLOT( slotPercent( KIO::Job*, unsigned long ) ) );
+
+  connect( job, SIGNAL( copying( KIO::Job*, const KURL& , const KURL& ) ),
+	   SLOT( slotCopying( KIO::Job*, const KURL&, const KURL& ) ) );
+  connect( job, SIGNAL( moving( KIO::Job*, const KURL& , const KURL& ) ),
+	   SLOT( slotMoving( KIO::Job*, const KURL&, const KURL& ) ) );
+  connect( job, SIGNAL( creatingDir( KIO::Job*, const KURL& ) ),
+ 	   SLOT( slotCreatingDir( KIO::Job*, const KURL& ) ) );
+
+  connect( job, SIGNAL( renaming( KIO::Job*, const KURL&, const KURL& ) ),
+ 	   SLOT( slotRenaming( KIO::Job*, const KURL&, const KURL& ) ) );
+
+  connect( job, SIGNAL( canResume( KIO::Job*, bool ) ),
+ 	   SLOT( slotCanResume( KIO::Job*, bool ) ) );
+
+  // then assign job
   m_pJob = job;
-  Connect();
+}
+
+
+void ProgressBase::setJob( KIO::DeleteJob *job, bool onlyClean, bool stopOnClose )
+{
+  m_bOnlyClean = onlyClean;
+  m_bStopOnClose = stopOnClose;
+
+  // first connect all slots
+  connect( job, SIGNAL( totalSize( KIO::Job*, unsigned long ) ),
+	   SLOT( slotTotalSize( KIO::Job*, unsigned long ) ) );
+  connect( job, SIGNAL( totalFiles( KIO::Job*, unsigned long ) ),
+	   SLOT( slotTotalFiles( KIO::Job*, unsigned long ) ) );
+  connect( job, SIGNAL( totalDirs( KIO::Job*, unsigned long ) ),
+	   SLOT( slotTotalDirs( KIO::Job*, unsigned long ) ) );
+
+  connect( job, SIGNAL( processedSize( KIO::Job*, unsigned long ) ),
+	   SLOT( slotProcessedSize( KIO::Job*, unsigned long ) ) );
+  connect( job, SIGNAL( processedFiles( KIO::Job*, unsigned long ) ),
+	   SLOT( slotProcessedFiles( KIO::Job*, unsigned long ) ) );
+  connect( job, SIGNAL( processedDirs( KIO::Job*, unsigned long ) ),
+	   SLOT( slotProcessedDirs( KIO::Job*, unsigned long ) ) );
+
+  connect( job, SIGNAL( speed( KIO::Job*, unsigned long ) ),
+	   SLOT( slotSpeed( KIO::Job*, unsigned long ) ) );
+  connect( job, SIGNAL( percent( KIO::Job*, unsigned long ) ),
+	   SLOT( slotPercent( KIO::Job*, unsigned long ) ) );
+
+  connect( job, SIGNAL( deleting( KIO::Job*, const KURL& ) ),
+	   SLOT( slotDeleting( KIO::Job*, const KURL& ) ) );
+
+  // then assign job
+  m_pJob = job;
 }
 
 
 void ProgressBase::closeEvent( QCloseEvent* ) {
+  // kill job when desired
   if ( m_bStopOnClose ) {
     stop();
-  } else { // we have to do the cleaning ourselves
-    if ( m_bOnlyClean ) {
-      clean();
-    } else {
-      delete this;
-    }
+  }
+
+  // clean or delete dialog
+  if ( m_bOnlyClean ) {
+    clean();
+  } else {
+    delete this;
   }
 }
 
@@ -86,6 +134,8 @@ void ProgressBase::closeEvent( QCloseEvent* ) {
 void ProgressBase::stop() {
   if ( m_pJob ) {
     m_pJob->kill();
+  } else {
+    emit stopped();
   }
 }
 

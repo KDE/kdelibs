@@ -67,8 +67,6 @@ libkio_la_SOURCES = \
 	kurlcompletion.cpp kshellcompletion.cpp \
 	observer.cpp uiserver.stub observer.skel
 
-#listprogressdlg.cpp
-
 
 kio_uiserver_SOURCES = dummy.cpp
 kio_uiserver_LDADD = kio_uiserver.la
@@ -87,8 +85,6 @@ kioinclude_HEADERS = connection.h renamedlg.h \
         jobclasses.h paste.h slavebase.h \
 	progressbase.h defaultprogress.h \
 	statusbarprogress.h
-
-#listprogressdlg.h
 
 # Internal
 noinst_HEADERS = ksycocafactory.h kservicetypefactory.h kservicefactory.h \

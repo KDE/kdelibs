@@ -33,7 +33,7 @@ public:
   DefaultProgress();
   ~DefaultProgress() {}
 
-protected slots:
+public slots:
 
   virtual void slotTotalSize( KIO::Job*, unsigned long _bytes );
   virtual void slotTotalFiles( KIO::Job*, unsigned long _files );

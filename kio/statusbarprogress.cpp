@@ -30,7 +30,6 @@ StatusbarProgress::StatusbarProgress( QWidget* parent, bool button )
   : ProgressBase( parent ) {
 
   m_bShowButton = button;
-  m_bOnlyClean = true;  // we don't want to delete this widget, only clean
 
   int w = fontMetrics().width( " 999.9 kB/s 00:00:01 " ) + 8;
   box = new QHBoxLayout( this, 0, 0 );
@@ -61,8 +60,10 @@ StatusbarProgress::StatusbarProgress( QWidget* parent, bool button )
 }
 
 
-void StatusbarProgress::setJob( KIO::Job *job ) {
-  ProgressBase::setJob( job );
+void StatusbarProgress::setJob( KIO::Job *job )
+{
+  // we don't want to delete this widget, only clean
+  ProgressBase::setJob( job, true, false );
 
   connect( m_pButton, SIGNAL( clicked() ), this, SLOT( stop() ) );
   mode = Progress;

@@ -18,6 +18,9 @@
 */
 // -*- mode: c++; c-basic-offset: 4 -*-
 
+#include <qtimer.h>
+
+#include <kconfig.h>
 #include <kstddirs.h>
 #include <kuniqueapp.h>
 #include <kaboutdata.h>
@@ -25,13 +28,589 @@
 #include <kglobal.h>
 #include <klocale.h>
 #include <kconfig.h>
+#include <kiconloader.h>
 #include <dcopclient.h>
 #include <kdebug.h>
 #include <kmessagebox.h>
 
 #include "observer_stub.h"
-
+#include "kio/defaultprogress.h"
+#include "kio/jobclasses.h"
 #include "kio/uiserver.h"
+
+UIServer* uiserver;
+
+// ToolBar field IDs
+enum { TOOL_CANCEL };
+
+// StatusBar field IDs
+enum { ID_TOTAL_FILES = 1, ID_TOTAL_SIZE, ID_TOTAL_TIME, ID_TOTAL_SPEED };
+
+static int defaultColumnWidth[] = { 70,  // SIZE_OPERATION
+				    160, // LOCAL_FILENAME
+				    40,  // RESUME
+				    60,  // COUNT
+				    30,  // PROGRESS
+				    65,  // TOTAL
+				    70,  // SPEED
+				    70,  // REMAINING_TIME
+				    450  // URL
+};
+
+#define INIT_MAX_ITEMS 16
+#define ARROW_SPACE 15
+#define BUTTON_SPACE 4
+#define MINIMUM_SPACE 9
+
+#define NUM_COLS  9
+
+ProgressItem::ProgressItem( ProgressListView* view, QListViewItem *after, QCString app_id, int job_id )
+  : QListViewItem( view, after ) {
+
+  listView = view;
+  
+  m_sAppId = app_id;
+  m_iJobId = job_id;
+
+  defaultProgress = new DefaultProgress();
+  connect ( defaultProgress, SIGNAL( stopped() ), this, SLOT( slotCanceled() ) );
+}
+
+
+ProgressItem::~ProgressItem()
+{
+  delete defaultProgress;
+}
+
+
+void ProgressItem::totalSize( unsigned long size ) {
+  m_iTotalSize = size;
+  setText( listView->lv_total, KIO::convertSize( m_iTotalSize ) );
+
+  defaultProgress->slotTotalSize( 0, size );
+}
+
+
+void ProgressItem::totalFiles( unsigned long files ) {
+  m_iTotalFiles = files;
+
+  defaultProgress->slotTotalFiles( 0, files );
+}
+
+
+void ProgressItem::totalDirs( unsigned long dirs ) {
+  m_iTotalDirs = dirs;
+
+  defaultProgress->slotTotalDirs( 0, dirs );
+}
+
+
+void ProgressItem::processedSize( unsigned long size ) {
+  defaultProgress->slotProcessedSize( 0, size );
+}
+
+
+void ProgressItem::processedFiles( unsigned long files ) {
+  QString tmps;
+  tmps.sprintf( "%u / %u", files, m_iTotalFiles );
+  setText( listView->lv_count, tmps );
+
+  defaultProgress->slotProcessedFiles( 0, files );
+}
+
+
+void ProgressItem::processedDirs( unsigned long dirs ) {
+  defaultProgress->slotProcessedDirs( 0, dirs );
+}
+
+
+void ProgressItem::percent( unsigned long ipercent ) {
+  QString tmps = i18n( "%1 % of %2 ").arg( ipercent ).arg( KIO::convertSize(m_iTotalSize));
+
+  setText( listView->lv_progress, tmps );
+
+  defaultProgress->slotPercent( 0, ipercent );
+}
+
+
+void ProgressItem::speed( unsigned long bytes_per_second ) {
+  QString tmps, tmps2;
+  if ( bytes_per_second == 0 ) {
+    tmps = i18n( "Stalled");
+    tmps2 = tmps;
+  } else {
+    tmps = i18n( "%1/s").arg( KIO::convertSize( bytes_per_second ));
+//     tmps2 = m_pJob->getRemainingTime().toString();
+  }
+
+  setText( listView->lv_speed, tmps );
+  setText( listView->lv_remaining, tmps2 );
+
+  defaultProgress->slotSpeed( 0, bytes_per_second );
+}
+
+
+void ProgressItem::copying( const KURL& from, const KURL& to ) {
+  setText( listView->lv_operation, i18n("Copying") );
+  setText( listView->lv_url, from.path() );
+  setText( listView->lv_filename, to.filename() );
+
+  defaultProgress->slotCopying( 0, from, to );
+}
+
+
+void ProgressItem::moving( const KURL& from, const KURL& to ) {
+  setText( listView->lv_operation, i18n("Moving") );
+  setText( listView->lv_url, from.path() );
+  setText( listView->lv_filename, to.filename() );
+
+  defaultProgress->slotMoving( 0, from, to );
+}
+
+
+void ProgressItem::renaming( const KURL& old_name, const KURL& new_name ) {
+  setText( listView->lv_filename, new_name.filename() );
+
+  defaultProgress->slotRenaming( 0, old_name, new_name );
+}
+
+
+void ProgressItem::creatingDir( const KURL& dir ) {
+  setText( listView->lv_operation, i18n("Creating") );
+  setText( listView->lv_url, dir.path() );
+  setText( listView->lv_filename, dir.filename() );
+
+  defaultProgress->slotCreatingDir( 0, dir );
+}
+
+
+void ProgressItem::deleting( const KURL& url ) {
+  setText( listView->lv_operation, i18n("Deleting") );
+  setText( listView->lv_url, url.path() );
+  setText( listView->lv_filename, url.filename() );
+
+  defaultProgress->slotDeleting( 0, url );
+}
+
+
+void ProgressItem::canResume( bool _resume ) {
+  QString tmps;
+  // set canResume
+  if ( _resume ) {
+    tmps = i18n("Yes");
+  } else {
+    tmps = i18n("No");
+  }
+  setText( listView->lv_resume, tmps );
+}
+
+
+void ProgressItem::slotCanceled() {
+  emit jobCanceled( this );
+}
+
+
+void ProgressItem::showDefaultProgress() {
+  defaultProgress->show();
+}
+
+
+
+//-----------------------------------------------------------------------------
+
+ProgressListView::ProgressListView (QWidget *parent, const char *name)
+  : KListView (parent, name) {
+
+  // enable selection of more than one item
+  setMultiSelection( true );
+
+  setAllColumnsShowFocus( true );
+
+  lv_operation = addColumn( i18n("Operation") );
+  lv_filename = addColumn( i18n("Local Filename") );
+  lv_resume = addColumn( i18n("Res.") );
+  lv_count = addColumn( i18n("Count") );
+  lv_progress = addColumn( i18n("%") );
+  lv_total = addColumn( i18n("Total") );
+  lv_speed = addColumn( i18n("Speed") );
+  lv_remaining = addColumn( i18n("Rem. Time") );
+  lv_url = addColumn( i18n("Address( URL )") );
+
+  readConfig();
+}
+
+
+
+ProgressListView::~ProgressListView() {
+  writeConfig();
+}
+
+
+void ProgressListView::readConfig() {
+  KConfig config("uiserverrc");
+
+  // read listview geometry properties
+  config.setGroup( "ProgressList" );
+  for ( int i = 0; i < NUM_COLS; i++ ) {
+    QString tmps;
+    tmps.sprintf( "Col%d", i );
+    setColumnWidth( i, config.readNumEntry( tmps, defaultColumnWidth[i] ) );
+  }
+}
+
+
+void ProgressListView::writeConfig() {
+  KConfig* config = new KConfig("uiserverrc");
+
+  // write listview geometry properties
+  config->setGroup( "ProgressList" );
+  for ( int i = 0; i < NUM_COLS; i++ ) {
+    QString tmps;
+    tmps.sprintf( "Col%d", i );
+    config->writeEntry( tmps, columnWidth( i ) );
+  }
+
+  config->sync();
+}
+
+//------------------------------------------------------------
+
+
+UIServer::UIServer() : KTMainWindow( "" ), DCOPObject("UIServer")
+{
+  readSettings();
+
+  // setup toolbar
+  toolBar()->insertButton(BarIcon("delete"), TOOL_CANCEL,
+			  SIGNAL(clicked()), this,
+			  SLOT(cancelCurrent()), FALSE, i18n("Cancel"));
+
+  toolBar()->setBarPos( KToolBar::Left );
+
+  // setup statusbar
+  statusBar()->insertItem( i18n(" Files : %1 ").arg( 555 ), ID_TOTAL_FILES);
+  statusBar()->insertItem( i18n(" Size : %1 kB ").arg( "134.56" ), ID_TOTAL_SIZE);
+  statusBar()->insertItem( i18n(" Time : 00:00:00 "), ID_TOTAL_TIME);
+  statusBar()->insertItem( i18n(" %1 kB/s ").arg("123.34"), ID_TOTAL_SPEED);
+
+  // setup listview
+  myListView = new ProgressListView( this, "progresslist" );
+
+  setView( myListView, true);
+
+  connect( myListView, SIGNAL( selectionChanged() ),
+	   SLOT( slotSelection() ) );
+  connect( myListView, SIGNAL( executed( QListViewItem* ) ),
+	   SLOT( slotDefaultProgress( QListViewItem* ) ) );
+
+  // setup animation timer
+  updateTimer = new QTimer( this );
+  connect( updateTimer, SIGNAL( timeout() ),
+	   SLOT( slotUpdate() ) );
+
+  updateTimer->start( 1000 );
+
+  setCaption("Progress Dialog");
+  setMinimumSize( 350, 150 );
+  resize( 460, 150 );
+
+  hide();
+}
+
+
+UIServer::~UIServer() {
+  updateTimer->stop();
+  writeSettings();
+}
+
+
+//static
+int UIServer::s_jobId = 0;
+
+int UIServer::newJob( QCString observerAppId )
+{
+  kdDebug() << "UIServer::newJob observerAppId=" << observerAppId << ". "
+	    << "Giving id=" << s_jobId+1 << endl;
+  
+  QListViewItemIterator it( myListView );
+  for ( ; it.current(); ++it ) {
+    if ( it.current()->itemBelow() == 0L ) { // this will find the end of list
+      break;
+    }
+  }
+  
+  // increment counter
+  s_jobId++;
+
+  ProgressItem *item = new ProgressItem( myListView, it.current(), observerAppId, s_jobId );
+  connect( item, SIGNAL( jobCanceled( ProgressItem* ) ),
+ 	   SLOT( slotJobCanceled( ProgressItem* ) ) );
+
+  return s_jobId;
+}
+
+
+ProgressItem* UIServer::findItem( int id )
+{
+  QListViewItemIterator it( myListView );
+
+  ProgressItem *item;
+
+  for ( ; it.current(); ++it ) {
+    item = (ProgressItem*)it.current();
+    if ( item->jobId() == id ) {
+      return item;
+    }
+  }
+
+  return 0L;
+}
+
+
+void UIServer::jobFinished( int id )
+{
+  ProgressItem *item = findItem( id );
+
+  // remove item from the list and delete the corresponding defaultprogress
+  if ( item ) {
+    delete item;
+  }
+}
+
+
+void UIServer::totalSize( int id, unsigned long size )
+{
+  kdDebug() << "UIServer::totalSize " << id << " " << size << endl;
+
+  ProgressItem *item = findItem( id );
+  if ( item ) {
+    item->totalSize( size );
+  }
+}
+
+void UIServer::totalFiles( int id, unsigned long files )
+{
+  kdDebug() << "UIServer::totalFiles " << id << " " << files << endl;
+
+  ProgressItem *item = findItem( id );
+  if ( item ) {
+    item->totalFiles( files );
+  }
+}
+
+void UIServer::totalDirs( int id, unsigned long dirs )
+{
+  kdDebug() << "UIServer::totalDirs " << id << " " << dirs << endl;
+
+  ProgressItem *item = findItem( id );
+  if ( item ) {
+    item->totalDirs( dirs );
+  }
+}
+
+void UIServer::processedSize( int id, unsigned long size )
+{
+  kdDebug() << "UIServer::processedSize " << id << " " << size << endl;
+
+  ProgressItem *item = findItem( id );
+  if ( item ) {
+    item->processedSize( size );
+  }
+}
+
+void UIServer::processedFiles( int id, unsigned long files )
+{
+  kdDebug() << "UIServer::processedFiles " << id << " " << files << endl;
+
+  ProgressItem *item = findItem( id );
+  if ( item ) {
+    item->processedFiles( files );
+  }
+}
+
+void UIServer::processedDirs( int id, unsigned long dirs )
+{
+  kdDebug() << "UIServer::processedDirs " << id << " " << dirs << endl;
+
+  ProgressItem *item = findItem( id );
+  if ( item ) {
+    item->processedDirs( dirs );
+  }
+}
+
+void UIServer::percent( int id, unsigned long ipercent )
+{
+  kdDebug() << "UIServer::percent " << id << " " << ipercent << endl;
+
+  ProgressItem *item = findItem( id );
+  if ( item ) {
+    item->percent( ipercent );
+  }
+}
+
+void UIServer::speed( int id, unsigned long bytes_per_second )
+{
+  kdDebug() << "UIServer::speed " << id << " " << bytes_per_second << endl;
+
+  ProgressItem *item = findItem( id );
+  if ( item ) {
+    item->speed( bytes_per_second );
+  }
+}
+
+void UIServer::canResume( int id, unsigned int can_resume )
+{
+  kdDebug() << "UIServer::canResume " << id << " " << can_resume << endl;
+
+  ProgressItem *item = findItem( id );
+  if ( item ) {
+    item->canResume( can_resume );
+  }
+}
+
+void UIServer::copying( int id, KURL from, KURL to )
+{
+  kdDebug() << "UIServer::copying " << id << " " << from.path() << "  " << to.path() << endl;
+
+  ProgressItem *item = findItem( id );
+  if ( item ) {
+    item->copying( from, to );
+  }
+}
+
+void UIServer::moving( int id, KURL from, KURL to )
+{
+  kdDebug() << "UIServer::moving " << id << " " << from.path() << "  " << to.path() << endl;
+
+  ProgressItem *item = findItem( id );
+  if ( item ) {
+    item->moving( from, to );
+  }
+}
+
+void UIServer::deleting( int id, KURL url )
+{
+  kdDebug() << "UIServer::deleting " << id << " " << url.path() << endl;
+
+  ProgressItem *item = findItem( id );
+  if ( item ) {
+    item->deleting( url );
+  }
+}
+
+void UIServer::renaming( int id, KURL old_name, KURL new_name )
+{
+  kdDebug() << "UIServer::renaming " << id << " " << old_name.path() << "  " << new_name.path() << endl;
+
+  ProgressItem *item = findItem( id );
+  if ( item ) {
+    item->renaming( old_name, new_name );
+  }
+}
+
+void UIServer::creatingDir( int id, KURL dir )
+{
+  kdDebug() << "UIServer::creatingDir " << id << " " << dir.path() << endl;
+
+  ProgressItem *item = findItem( id );
+  if ( item ) {
+    item->creatingDir( dir );
+  }
+}
+
+void UIServer::killJob( QCString observerAppId, int progressId )
+{
+    // Contact the object "KIO::Observer" in the application <appId>
+    Observer_stub observer( observerAppId, "KIO::Observer" );
+    // Tell it to kill the job
+    observer.killJob( progressId );
+}
+
+
+void UIServer::closeEvent( QCloseEvent * ){
+  hide();
+}
+
+
+void UIServer::slotJobCanceled( ProgressItem *item ) {
+  // kill the corresponding job
+  killJob( item->appId(), item->jobId() );
+
+  // don't delete item, because killed job should call back jobFinished()
+}
+
+
+void UIServer::slotUpdate() {
+  if ( myListView->childCount() == 0 ) {
+    hide();
+    return;
+  }
+
+  int totalFiles = 0;
+  int totalSize = 0;
+  int totalSpeed = 0;
+  QTime totalRemTime;
+
+  // TODO :  count totals, how ?
+
+  // update statusbar
+  statusBar()->changeItem( i18n( " Files : %1 ").arg( totalFiles ), ID_TOTAL_FILES);
+  statusBar()->changeItem( i18n( " Size : %1 ").arg( KIO::convertSize( totalSize ) ),
+			   ID_TOTAL_SIZE);
+  statusBar()->changeItem( i18n( " Time : %1 ").arg( totalRemTime.toString() ), ID_TOTAL_TIME);
+  statusBar()->changeItem( i18n( " %1/s ").arg( KIO::convertSize( totalSpeed ) ),
+			   ID_TOTAL_SPEED);
+
+  show();
+}
+
+
+void UIServer::slotDefaultProgress( QListViewItem *item ) {
+  ((ProgressItem*) item )->showDefaultProgress();
+}
+
+
+void UIServer::slotSelection() {
+  QListViewItemIterator it( myListView );
+
+  for ( ; it.current(); ++it ) {
+    if ( it.current()->isSelected() ) {
+      toolBar()->setItemEnabled( TOOL_CANCEL, TRUE);
+      return;
+    }
+  }
+  toolBar()->setItemEnabled( TOOL_CANCEL, FALSE);
+}
+
+
+// TODO : read and write settings
+void UIServer::readSettings() {
+  KConfig config("uiserverrc");
+  config.setGroup( "UIServer" );
+}
+
+
+void UIServer::writeSettings() {
+  KConfig config("uiserverrc");
+  config.setGroup( "UIServer" );
+}
+
+
+void UIServer::cancelCurrent() {
+  QListViewItemIterator it( myListView );
+
+  // kill all selected jobs
+  while ( it.current() ) {
+    if ( it.current()->isSelected() ) {
+      ProgressItem *item = (ProgressItem*) it.current();
+      killJob( item->appId(), item->jobId() );
+    } else {
+      it++; // update counts
+    }
+  }
+}
+
+//------------------------------------------------------------
 
 int main(int argc, char **argv)
 {
@@ -56,108 +635,12 @@ int main(int argc, char **argv)
     if (!app.dcopClient()->isAttached())
         return 1;
 
-    (void) new UIServer;
+    uiserver =  new UIServer;
+
+    app.setMainWidget( uiserver );
 
     return app.exec();
 }
 
-UIServer::UIServer() : DCOPObject("UIServer")
-{
-}
 
-//static
-int UIServer::s_jobId = 0;
-
-int UIServer::newJob( QCString observerAppId )
-{
-    kdDebug() << "UIServer::newJob observerAppId=" << observerAppId << ". "
-              << "Giving id=" << s_jobId+1 << endl;
-    // TODO: store the appid and the job id in a dict or something,
-    // so that we know which appid to use for killJob
-    // I suppose we create the dialog box here too ?
-    // In this case, the appid can be stored into it, no ?
-    return ++s_jobId;
-}
-
-void UIServer::jobFinished( int /* id */ )
-{
-    // This is probably useful to close the dialog box for this job (David)
-}
-
-void UIServer::totalSize( int id, unsigned long size )
-{
-    kdDebug() << "UIServer::totalSize " << id << " " << size << endl;
-}
-
-void UIServer::totalFiles( int id, unsigned long files )
-{
-    kdDebug() << "UIServer::totalSize " << id << " " << files << endl;
-}
-
-void UIServer::totalDirs( int id, unsigned long dirs )
-{
-    kdDebug() << "UIServer::totalSize " << id << " " << dirs << endl;
-}
-
-void UIServer::processedSize( int id, unsigned long size )
-{
-    kdDebug() << "UIServer::processedSize " << id << " " << size << endl;
-}
-
-void UIServer::processedFiles( int id, unsigned long files )
-{
-    kdDebug() << "UIServer::processedSize " << id << " " << files << endl;
-}
-
-void UIServer::processedDirs( int id, unsigned long dirs )
-{
-    kdDebug() << "UIServer::processedSize " << id << " " << dirs << endl;
-}
-
-void UIServer::percent( int id, unsigned long ipercent )
-{
-    kdDebug() << "UIServer::processedSize " << id << " " << ipercent << endl;
-}
-
-void UIServer::speed( int id, unsigned long bytes_per_second )
-{
-    kdDebug() << "UIServer::speed " << id << " " << bytes_per_second << endl;
-}
-
-void UIServer::canResume( int id, unsigned int can_resume )
-{
-    kdDebug() << "UIServer::canResume " << id << " " << can_resume << endl;
-}
-
-void UIServer::copying( int id, KURL from, KURL to )
-{
-  kdDebug() << "UIServer::copying " << id << " " << from.path() << "  " << to.path() << endl;
-}
-
-void UIServer::moving( int id, KURL from, KURL to )
-{
-  kdDebug() << "UIServer::moving " << id << " " << from.path() << "  " << to.path() << endl;
-}
-
-void UIServer::deleting( int id, KURL from )
-{
-  kdDebug() << "UIServer::deleting " << id << " " << from.path() << endl;
-}
-
-void UIServer::renaming( int id, KURL old_name, KURL new_name )
-{
-  kdDebug() << "UIServer::renaming " << id << " " << old_name.path() << "  " << new_name.path() << endl;
-}
-
-void UIServer::creatingDir( int id, KURL dir )
-{
-    kdDebug() << "UIServer::creatingDir " << id << " " << dir.path() << endl;
-}
-
-void UIServer::killJob( QCString observerAppId, int progressId )
-{
-    // Contact the object "KIO::Observer" in the application <appId>
-    Observer_stub observer( observerAppId, "KIO::Observer" );
-    // Tell it to kill the job
-    observer.killJob( progressId );
-}
+#include "uiserver.moc"

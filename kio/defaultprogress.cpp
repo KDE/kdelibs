@@ -29,7 +29,7 @@
 
 
 DefaultProgress::DefaultProgress()
-  : ProgressBase() {
+  : ProgressBase( 0 ) {
 
   QVBoxLayout *topLayout = new QVBoxLayout( this, KDialog::marginHint(),
 					    KDialog::spacingHint() );

@@ -29,7 +29,7 @@
 class UIServer_stub;
 class KURL;
 namespace KIO {
-class Job;
+  class Job;
 };
 
 /**
@@ -103,7 +103,7 @@ public slots:
 
   virtual void slotCopying( KIO::Job*, const KURL& from, const KURL& to );
   virtual void slotMoving( KIO::Job*, const KURL& from, const KURL& to );
-  virtual void slotDeleting( KIO::Job*, const KURL& from );
+  virtual void slotDeleting( KIO::Job*, const KURL& url );
   virtual void slotCreatingDir( KIO::Job*, const KURL& dir );
 
   virtual void slotCanResume( KIO::Job*, bool can_resume );

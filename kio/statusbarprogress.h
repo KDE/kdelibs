@@ -66,10 +66,11 @@ public:
   StatusbarProgress( QWidget* parent, bool button = true );
   ~StatusbarProgress() {}
 
-  virtual void setJob( KIO::Job * );
+  void setJob( KIO::Job *job );
+
   virtual void clean();
 
-protected slots:
+public slots:
 
   virtual void slotTotalSize( KIO::Job*, unsigned long _bytes );
   virtual void slotPercent( KIO::Job*, unsigned long _bytes );
