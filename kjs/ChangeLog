@@ -1,3 +1,10 @@
+2004-10-11  Harri Porten  <porten@kde.org>
+
+	* date_object.cpp: make the Date object work outside of the
+	typical Unix range (1900-2038) by shifting other dates into this
+	range. Might still have some bugs with e.g. leap days but this is
+	a big step forward to ECMA compliancy.
+
 2004-10-02  Harri Porten  <porten@kde.org>
 
 	* lexer.cpp: parse function expressions with identifier as

@@ -58,9 +58,50 @@
 
 #include "date_object.lut.h"
 
-const time_t invalidDate = -1;
-
 using namespace KJS;
+
+// come constants
+const time_t invalidDate = -1;
+const double hoursPerDay = 24;
+const double minutesPerHour = 60;
+const double secondsPerMinute = 60;
+const double msPerSecond = 1000;
+const double msPerMinute = msPerSecond * secondsPerMinute;
+const double msPerHour = msPerMinute * minutesPerHour;
+const double msPerDay = msPerHour * hoursPerDay;
+
+static double dayFromYear(int year)
+{
+  return 365.0 * (year - 1970)
+    + floor((year - 1969) / 4.0)
+    - floor((year - 1901) / 100.0)
+    + floor((year - 1601) / 400.0);
+}
+
+// time value of the start of a year
+double timeFromYear(int year)
+{
+  return msPerDay * dayFromYear(year);
+}
+
+// year determined by time value
+int yearFromTime(double t)
+{
+  // ### there must be an easier way
+  // initial guess
+  int y = 1970 + int(t / (365.25 * msPerDay));
+  // adjustment
+  if (timeFromYear(y) > t) {
+    do {
+      --y;
+    } while (timeFromYear(y) > t);
+  } else {
+    while (timeFromYear(y + 1) < t)
+      ++y;
+  }
+
+  return y;
+}
 
 // ------------------------------ DateInstanceImp ------------------------------
 
@@ -208,41 +249,36 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
       return Number(NaN);
     }
   }
+
+  // check whether time value is outside time_t's usual range
+  // make the necessary transformations if necessary
+  int realYearOffset = 0;
+  double milliOffset = 0.0;
+  if (milli < 0 || milli >= timeFromYear(2038)) {
+    // ### ugly and probably not very precise
+    int realYear = yearFromTime(milli);
+    int y0 = (realYear / 100) * 100;
+    int base = 1900;
+    if (realYear % 100 == 0)
+      base += 100;
+    milliOffset = timeFromYear(base) - timeFromYear(y0);
+    milli += milliOffset;
+    realYearOffset = realYear - yearFromTime(milli);
+  }
+
   time_t tv = (time_t) floor(milli / 1000.0);
   int ms = int(milli - tv * 1000.0);
-
-  // As long as we're using time_t we need to 'truncate' to avoid 'wrapping'.
-  // Real long term solutions include: writing our own 64-bit-based date/time class,
-  // using wxWindow's datetime.cpp (in wxBase), using QDateTime... or shifting
-  // to a time_t range by substracting a big enough number of years....
-  if (sizeof(time_t) == 4)
-  {
-    // If time_t is signed, the bigger it can be is 2^31-1
-    if ( (time_t)-1 < 0 ) {
-      if ( floor(milli / 1000.0) > ((double)((uint)1<<31)-1) ) {
-#ifdef KJS_VERBOSE
-        fprintf(stderr, "date above time_t limit. Year seems to be %d\n", (int)(milli/(1000.0*365.25*86400)+1970));
-#endif
-        tv = ((uint)1<<31)-1;
-        ms = 0;
-      }
-    }
-    else
-      // time_t is unsigned, the bigger it can be is 2^32-1, aka (uint)-1
-      if ( floor(milli / 1000.0) > ((double)(uint)-1) ) {
-#ifdef KJS_VERBOSE
-        fprintf(stderr, "date above time_t limit. Year seems to be %d\n", (int)(milli/(1000.0*365.25*86400)+1970));
-#endif
-        tv = (uint)-1;
-        ms = 0;
-      }
-  }
 
   struct tm *t;
   if (utc)
     t = gmtime(&tv);
   else
     t = localtime(&tv);
+
+  // we had one out of range year. use that one (plus/minus
+  // offset found by calculating tm_year)
+  t->tm_year += realYearOffset;
+  milli -= milliOffset;
 
   // trick gcc. We don't want the Y2K warnings.
   const char xFormat[] = "%x";
@@ -616,7 +652,17 @@ Number KJS::makeTime(struct tm *t, int ms, bool utc)
 	t->tm_isdst = -1;
     }
 
-    return Number( ( mktime(t) + utcOffset ) * 1000.0 + ms );
+    double yearOffset = 0.0;
+    if (t->tm_year < (1970 - 1900) || t->tm_year > (2038 - 1900)) {
+      // we'll fool mktime() into believing that this year is within
+      // it's normal, portable range (1970-2038) by setting tm_year
+      // to 2000 and adding the difference in milliseconds later.
+      const double y2000 = timeFromYear(2000);
+      yearOffset = timeFromYear(t->tm_year + 1900) - y2000;
+      t->tm_year = 100;
+    }
+
+    return Number((mktime(t) + utcOffset) * 1000.0 + ms + yearOffset);
 }
 
 double KJS::KRFCDate_parseDate(const UString &_date)
