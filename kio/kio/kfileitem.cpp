@@ -213,7 +213,7 @@ void KFileItem::init( bool _determineMimeTypeOnDemand )
   }
 
   // determine the mimetype
-  if (!m_pMimeType )
+  if (!m_pMimeType && !m_url.isEmpty())
   {
       bool accurate = false;
       m_pMimeType = KMimeType::findByURL( m_url, m_fileMode, m_bIsLocalURL,
