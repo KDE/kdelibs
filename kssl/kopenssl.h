@@ -277,6 +277,10 @@ public:
     */
    void X509_STORE_CTX_set_chain(X509_STORE_CTX *v, STACK_OF(X509)* x);
 
+   /*
+    *   X509_STORE_CTX_set_purpose - set the purpose of the certificate 
+    */
+   void X509_STORE_CTX_set_purpose(X509_STORE_CTX *v, int purpose);
 
    /*
     *   X509_verify_cert - verify the certificate

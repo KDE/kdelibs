@@ -262,6 +262,8 @@ KSSLCertificate::KSSLValidation KSSLCertificate::validate() {
     // FIXME: do all the X509_STORE_CTX_set_flags(); here
     //   +----->  Note that this is for 0.9.6 or better ONLY!
 
+    d->kossl->X509_STORE_CTX_set_purpose(certStoreCTX, X509_PURPOSE_SSL_SERVER);
+
     //kdDebug(7029) << "KSSL verifying.............." << endl;
     certStoreCTX->error = X509_V_OK;
     rc = d->kossl->X509_verify_cert(certStoreCTX);
