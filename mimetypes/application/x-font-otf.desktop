@@ -1,0 +1,7 @@
+[Desktop Entry]
+Encoding=UTF-8
+Comment=Opentype Font
+Icon=font_truetype
+Type=MimeType
+MimeType=application/x-font-otf
+Patterns=*.otf;*.OTF

@@ -1,0 +1,7 @@
+[Desktop Entry]
+Encoding=UTF-8
+Comment=Truetype Font Collection
+Icon=font_truetype
+Type=MimeType
+MimeType=application/x-font-ttc
+Patterns=*.ttc;*.TTC
