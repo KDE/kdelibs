@@ -1,6 +1,0 @@
-
-zh_CNentdir = $(catdir)/zh-CN/entities
-
-zh_CNent_DATA = fdl-notice.docbook gpl-notice.docbook lgpl-notice.docbook \
-             report-bugs.docbook \
-             underArtisticLicense.docbook underBSDLicense.docbook underFDL.docbook underGPL.docbook underX11License.docbook

@@ -1,6 +1,0 @@
-#! /bin/sh
-
-# $0 is srcdir
-pwd=`dirname $0`
-pwd=`(cd $pwd && pwd)`
-KDB2HTML_UNINSTALLED=$pwd/customization /bin/sh $1 $2
