@@ -722,7 +722,7 @@ void RegressionTest::evalJS( ScriptInterpreter &interp, const QString &filename,
                 reportResult( true, QString( "Expected Failure: %1" ).arg( errmsg ) );
             }
         } else if ( saw_failure ) {
-            reportResult( filename.endsWith( "-n.js" ), "saw 'FAILED!'" );
+            reportResult( filename.endsWith( "-n.js" ), "saw 'failed!'" );
         } else {
             reportResult( !filename.endsWith( "-n.js" ), "passed" );
         }
