@@ -5,6 +5,7 @@
 #include <kapplication.h>
 #include "kruntest.h"
 #include <kdebug.h>
+#include <stdlib.h>
 
 const int MAXKRUNS = 100;
 
@@ -61,9 +62,34 @@ void Receiver::slotStart()
   stop->setEnabled(true);
 }
 
+bool check(QString txt, QString a, QString b)
+{
+  if (a.isEmpty())
+     a = QString::null;
+  if (b.isEmpty())
+     b = QString::null;
+  if (a == b) {
+    kdDebug() << txt << " : checking '" << a << "' against expected value '" << b << "'... " << "ok" << endl;
+  }
+  else {
+    kdDebug() << txt << " : checking '" << a << "' against expected value '" << b << "'... " << "KO !" << endl;
+    exit(1);
+  }
+  return true;
+}
+
 int main(int argc, char **argv)
 {
   KApplication app( argc, argv, "kruntest", true /* it _has_ a GUI ! */);
+
+  // First some non-interactive tests
+  check( "binaryName('/usr/bin/ls', true)", KRun::binaryName("/usr/bin/ls", true), "ls");
+  check( "binaryName('/usr/bin/ls', false)", KRun::binaryName("/usr/bin/ls", false), "/usr/bin/ls");
+  check( "binaryName('/path/to/wine \"long argument with path\"')", KRun::binaryName("/path/to/wine \"long argument with path\"", true), "wine" );
+  // TODO check( "binaryName('/path/with/a/sp\\ ace/exe arg1 arg2')", KRun::binaryName("/path/with/a/sp\\ ace/exe arg1 arg2", true), "exe" );
+  check( "binaryName('\"progname\" \"arg1\"')", KRun::binaryName("\"progname\" \"arg1\"", true), "progname" );
+  check( "binaryName('\'quoted\' \"arg1\"')", KRun::binaryName("'quoted' \"arg1\"", true), "quoted" );
+
   Receiver receiver;
 
   app.setMainWidget(&receiver);
