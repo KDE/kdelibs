@@ -25,7 +25,8 @@
 #include <qdialog.h>
 
 #include <kapp.h>
-#include <klineedit.h>
+//#include <klineedit.h>
+#include <kurlrequester.h>
 #include <kurl.h>
 #include <kurlcompletion.h>
 #include <klistview.h>
@@ -63,9 +64,12 @@ public:
     ~KOpenWithDlg();
 
     /**
-     * @return the value the user entered
+     * @return the text the user entered
      */
-    QString text() { return edit->text(); }
+    QString text();
+    /**
+     * @return the chosen service in the application tree
+     */
     KService::Ptr service() { return m_pService; }
 
 public slots:
@@ -78,8 +82,11 @@ public slots:
     void slotOK();
 
 protected:
-    KLineEdit *edit;
-    KURLCompletion * completion;
+    //KLineEdit *edit;
+    //KURLCompletion * completion;
+
+    KURLRequester * edit;
+    QString m_command;
 
     KApplicationTree* m_pTree;
     QLabel *label;

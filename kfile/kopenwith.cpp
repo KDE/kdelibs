@@ -344,16 +344,25 @@ KOpenWithDlg::KOpenWithDlg( const KURL::List& _urls, const QString&_text,
   topLayout->addWidget(label);
 
   QBoxLayout* l = new QHBoxLayout(topLayout);
+  /*
   edit = new KLineEdit( this );
   edit->setMinimumWidth(200);
   l->addWidget(edit);
 
   completion = new KURLCompletion();
-  
-  completion->setMode( KURLCompletion::ExeCompletion );
+  connect ( edit, SIGNAL (completion(const QString&)), completion, SLOT (make_completion()));
+  connect ( edit, SIGNAL (rotateDown()), completion, SLOT (make_rotation()));
+  // connect ( edit, SIGNAL (textChanged(const QString&)), completion, SLOT (edited(const QString&)));
+  connect ( completion, SIGNAL (setText (const QString&)), edit, SLOT ( insert(const QString&)));
+  */
 
-  edit->setCompletionObject( completion );
-  edit->setAutoDeleteCompletionObject( true );
+  edit = new KURLRequester( _value, this );
+  l->addWidget(edit);
+
+  //TODO edit->completion->setMode( KURLCompletion::ExeCompletion );
+
+  //edit->setCompletionObject( completion );
+  //edit->setAutoDeleteCompletionObject( true );
 
   connect ( edit, SIGNAL(returnPressed()), SLOT(accept()) );
 
@@ -389,7 +398,7 @@ KOpenWithDlg::KOpenWithDlg( const KURL::List& _urls, const QString&_text,
   b->layout();
   topLayout->addWidget(b);
 
-  edit->setText( _value );
+  //edit->setText( _value );
   edit->setFocus();
 }
 
@@ -405,7 +414,7 @@ KOpenWithDlg::~KOpenWithDlg()
 
 void KOpenWithDlg::slotClear()
 {
-    edit->setText(QString::null);
+    edit->setURL(QString::null);
 }
 
 
@@ -413,7 +422,7 @@ void KOpenWithDlg::slotClear()
 
 void KOpenWithDlg::slotSelected( const QString& /*_name*/, const QString& _exec )
 {
-    edit->setText( _exec );
+    edit->setURL( _exec );
 }
 
 
@@ -437,25 +446,24 @@ void KOpenWithDlg::slotOK()
     // no service was found, maybe they typed the name into the text field
     KService::List sList = KService::allServices();
     QValueListIterator<KService::Ptr> it(sList.begin());
+    QString text = edit->url();
     for (; it != sList.end(); ++it)
-      if ((*it)->exec() == edit->text() ||
-	  (*it)->name().lower() == edit->text().lower())
+      if ((*it)->exec() == text ||
+	  (*it)->name().lower() == text.lower())
 	m_pService = *it;
     if (m_pService) {
-      edit->setText(m_pService->exec());
+      edit->setURL(m_pService->exec());
       haveApp = true;
     }
   }
 
-  QString keepExec(edit->text());
   if (terminal->isChecked()) {
     KSimpleConfig conf(QString::fromLatin1("konquerorrc"), true);
     conf.setGroup(QString::fromLatin1("Misc Defaults"));
-    QString t = conf.readEntry(QString::fromLatin1("Terminal"), QString::fromLatin1("konsole"));
+    m_command = conf.readEntry(QString::fromLatin1("Terminal"), QString::fromLatin1("konsole"));
 
-    t += QString::fromLatin1(" -e ");
-    t += edit->text();
-    edit->setText(t);
+    m_command += QString::fromLatin1(" -e ");
+    m_command += edit->url();
   }
 
   if (haveApp && !remember) {
@@ -474,6 +482,7 @@ void KOpenWithDlg::slotOK()
   // if we got here, we can't seem to find a service for what they
   // wanted.  The other possibility is that they have asked for the
   // association to be remembered.  Create/update service.
+  QString keepExec(edit->url());
   QString serviceName;
   if (!haveApp) {
     if (keepExec.contains('/'))
@@ -521,6 +530,14 @@ void KOpenWithDlg::slotOK()
 
   haveApp = false;
   accept();
+}
+
+QString KOpenWithDlg::text()
+{
+    if (!m_command.isEmpty())
+        return m_command;
+    else
+        return edit->url();
 }
 
 ///////////////
