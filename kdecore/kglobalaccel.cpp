@@ -29,6 +29,7 @@
 #include <kdebug.h>
 
 #include <qstringlist.h>
+#include <qregexp.h>
 
 #include <kapp.h>
 #include <klocale.h>

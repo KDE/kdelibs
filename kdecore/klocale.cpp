@@ -28,6 +28,7 @@
 #include <qfile.h>
 #include <qdatetime.h>
 #include <qfileinfo.h>
+#include <qregexp.h>
 
 #include "kcatalogue.h"
 #include "kglobal.h"
