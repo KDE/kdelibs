@@ -299,6 +299,23 @@ public:
 
   virtual ~BrowserExtension();
 
+  typedef uint PopupFlags;
+
+  /**
+   * Set of flags passed via the popupMenu signal, to ask for some items in the popup menu.
+   * DefaultPopupItems: default value, no additional menu item
+   * ShowNavigationItems: show "back" and "forward" (usually done when clicking the background of the view, but not an item)
+   * ShowUp: show "up" (same thing, but not over e.g. HTTP). Requires ShowNavigationItems.
+   * ShowReload: show "reload" (usually done when clicking the background of the view, but not an item)
+   * ShowBookmark: show "add to bookmarks" (usually not done on the local filesystem)
+   * ShowCreateDirectory: show "create directory" (usually only done on the background of the view, or
+   *                      in hierarchical views like directory trees, where the new dir would be visible)
+   */
+  enum { DefaultPopupItems=0x0000, ShowNavigationItems=0x0001,
+         ShowUp=0x0002, ShowReload=0x0004, ShowBookmark=0x0008,
+         ShowCreateDirectory=0x0010 };
+
+
   /**
    * Set the parameters to use for opening the next URL.
    * This is called by the "hosting" application, to pass parameters to the part.
@@ -527,6 +544,8 @@ signals:
    */
   void popupMenu( KXMLGUIClient *client, const QPoint &global, const KFileItemList &items );
 
+  void popupMenu( KXMLGUIClient *client, const QPoint &global, const KFileItemList &items, const KParts::URLArgs &args, KParts::BrowserExtension::PopupFlags i );
+
   /**
    * Emit this to make the browser show a standard popup menu
    * at the point @p global for the given @p url.
@@ -562,7 +581,7 @@ signals:
    */
   void popupMenu( KXMLGUIClient *client,
                   const QPoint &global, const KURL &url,
-                  const KParts::URLArgs &args, mode_t mode = (mode_t)-1 );
+                  const KParts::URLArgs &args, KParts::BrowserExtension::PopupFlags i, mode_t mode = (mode_t)-1 );
 
   /**
    * Inform the hosting application about the current selection.
