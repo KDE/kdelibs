@@ -92,10 +92,16 @@ KMDriverDbWidget::~KMDriverDbWidget()
 void KMDriverDbWidget::setDriver(const QString& manu, const QString& model)
 {
 	QListBoxItem	*item = m_manu->findItem(manu);
+	QString		model_(model);
 	if (item)
 	{
 		m_manu->setCurrentItem(item);
-		item = m_model->findItem(model);
+		item = m_model->findItem(model_);
+		if (!item)
+			// try by stripping the manufacturer name from
+			// the beginning of the model string. This is
+			// often the case with PPD files
+			item = m_model->findItem(model_.replace(0,manu.length()+1,QString::fromLatin1("")));
 		if (item)
 			m_model->setCurrentItem(item);
 	}

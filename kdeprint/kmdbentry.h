@@ -39,7 +39,7 @@ struct KMDBEntry
 	// short driver description (if any)
 	QString	description;
 
-	bool validate();
+	bool validate(bool checkIt = true);
 };
 
 typedef QList<KMDBEntry>		KMDBEntryList;

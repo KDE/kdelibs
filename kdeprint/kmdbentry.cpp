@@ -23,14 +23,20 @@
 #include "kmfactory.h"
 #include "kmmanager.h"
 
-bool KMDBEntry::validate()
+bool KMDBEntry::validate(bool checkIt)
 {
-	// check model
+	// check model: if one of "model" or "modelname" is empty, replace
+	// by the other one. At the end, "model" must be non empty.
 	if (model.isEmpty())
 	{
 		model = modelname;
-		if (model.isEmpty()) return false;
 	}
+	if (modelname.isEmpty())
+	{
+		modelname = model;
+	}
+	if (model.isEmpty())
+		return false;
 
 	// check manufacturer
 	if (manufacturer.isEmpty())
@@ -47,5 +53,8 @@ bool KMDBEntry::validate()
 		if (model.isEmpty()) return false;
 	}
 
-	return KMFactory::self()->manager()->validateDbDriver(this);
+	if (checkIt)
+		return KMFactory::self()->manager()->validateDbDriver(this);
+	else
+		return true;
 }
