@@ -617,6 +617,58 @@ bool KHTMLPart::openURL( const KURL &url )
   kdDebug( 6050 ) << "KHTMLPart(" << this << ")::openURL " << url.url() << endl;
 
   d->m_redirectionTimer.stop();
+  
+  /**
+   * rodda: The following code is my first shot at handling error:/ sub-urls.
+   * The format of the sub-url is that two variables are passed in the query:
+   * error = int kio error code, errText = QString error text from kio
+   * The code below isn't quite right because even though the location bar URL
+   * is set, the subURL is still displayed...
+
+  if ( url.hasSubURL() ) {
+    // check to see if this is an "error://" sub URL. This is caused when an error
+    // occurs before this part was loaded, and is passed to us as a KURL subURL.
+    QStringList urls = KURL::split( url ).toStringList();
+    if ( urls.count() == 2 ) {
+      QStringList::iterator it2 = urls.end();
+      KURL subURL = *(it2++);
+
+      if ( subURL.protocol() == "error" ) {
+        // yes, this is an "error://" sub URL.
+        d->m_workingURL = KURL( *it2 );
+        kdDebug() << "Emitting fixed URL " << d->m_workingURL.prettyURL() << endl;
+        emit d->m_extension->setLocationBarURL( d->m_workingURL.prettyURL() );
+
+        QString query = subURL.query();
+        if ( query.length() > 1 ) {
+          // we have a query
+          QStringList queryElements = QStringList::split( '&', query.mid(1) );
+          int error = -1;
+          QString errorText;
+          bool eText = false;
+          for ( QStringList::iterator it = queryElements.begin();
+                it != queryElements.end(); it++ ) {
+            int loc = (*it).find( '=' );
+            if ( loc != -1 ) {
+              QString var = (*it).left( loc );
+              QString var2 = (*it).mid( loc + 1);
+              if ( var == "error" ) {
+                error = var2.toInt();
+              } else if ( var == "errText" ) {
+                errorText = var2;
+                eText = true;
+              }
+            }
+          }
+          if ( error != -1 && eText ) {
+            htmlError( error, errorText );
+            return true;
+          }
+        }
+      }
+    }
+  }*/
+
   KParts::URLArgs args( d->m_extension->urlArgs() );
   // in case we have a) no frameset (don't test m_frames.count(), iframes get in there)
   // b) the url is identical with the currently
@@ -1355,23 +1407,39 @@ void KHTMLPart::showError( KIO::Job* job )
   else
   {
     // make sure we're not executing any embedded JS
+    /**
+     * rodda: this was causing an assertion:
+     * KJS::Window::retrieveWindow at kjs_window.cpp:256
+     *
     bool bJSFO = d->m_bJScriptForce;
     bool bJSOO = d->m_bJScriptOverride;
     d->m_bJScriptForce = false;
-    d->m_bJScriptOverride = true;
-    begin();
-    QString url = d->m_workingURL.prettyURL();
-    QString errText = QString::fromLatin1( "<HTML><HEAD><TITLE>" );
-    errText += i18n( "Error while loading %1" ).arg( url );
-    errText += QString::fromLatin1( "</TITLE></HEAD><BODY><P>" );
-    errText += i18n( "An error occured while loading <B>%1</B>:" ).arg( url );
-    errText += QString::fromLatin1( "</P><P>" );
-    errText += job->errorString();
-    errText += QString::fromLatin1( "</P></BODY></HTML>" );
-    write(errText);
-    end();
+    d->m_bJScriptOverride = true;*/
+    /**
+     * FIXME
+     * rodda: I am not up to speed on the config of khtml errors...
+     * the 1 should be "if user has chosen verbose/detailed error messages"
+     */
+    if ( 1 ) {
+      htmlError( job->error(), job->errorString() );
+    } else {
+      begin();
+      QString url = d->m_workingURL.prettyURL();
+      QString errText = QString::fromLatin1( "<HTML><HEAD><TITLE>" );
+      errText += i18n( "Error while loading %1" ).arg( url );
+      errText += QString::fromLatin1( "</TITLE></HEAD><BODY><P>" );
+      errText += i18n( "An error occured while loading <B>%1</B>:" ).arg( url );
+      errText += QString::fromLatin1( "</P><P>" );
+      errText += job->errorString();
+      errText += QString::fromLatin1( "</P></BODY></HTML>" );
+      write(errText);
+      end();
+    }
+    /**
+     * rodda: see above
     d->m_bJScriptForce = bJSFO;
-    d->m_bJScriptOverride = bJSOO;
+    d->m_bJScriptOverride = bJSOO;*/
+
     // make the working url the current url, so that reload works and
     // emit the progress signals to advance one step in the history
     // (so that 'back' works)
@@ -1380,6 +1448,16 @@ void KHTMLPart::showError( KIO::Job* job )
     emit started( 0 );
     emit completed();
   }
+}
+
+void KHTMLPart::htmlError( int errorCode, const QString& text )
+{
+  begin();
+
+  write( KIO::buildHTMLErrorString( errorCode, text,
+                                    &(d->m_workingURL) ) );
+
+  end();
 }
 
 void KHTMLPart::slotFinished( KIO::Job * job )

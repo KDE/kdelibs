@@ -210,6 +210,13 @@ public:
   virtual void showError(KIO::Job* job);
 
   /**
+   * presents a detailed error message to the user.
+   * @p errorCode kio error code, eg KIO::ERR_SERVER_TIMEOUT.
+   * @p text kio additional information text.
+   */
+  void htmlError(int errorCode, const QString& text);
+
+  /**
    * Returns a reference to the DOM HTML document (for non-HTML documents, returns null)
    */
   DOM::HTMLDocument htmlDocument() const;
