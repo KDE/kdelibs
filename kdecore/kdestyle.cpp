@@ -640,36 +640,36 @@ void KDEStyle::drawSBDeco(QPainter *p, const QRect &r, const QColorGroup &g,
                          bool horiz)
 {
     if(horiz){
-        int y = r.y() + (r.height()-6)/2;
-        if(r.width() >= 32){
-            int x = r.x() + (r.width()-22)/2;
-            qDrawShadePanel(p, x, y, 6, 6, g, false, 1);
-            qDrawShadePanel(p, x+8, y, 6, 6, g, false, 1);
-            qDrawShadePanel(p, x+16, y, 6, 6, g, false, 1);
+        if(r.width() >= 15){
+            int y = r.y()+3;
+            int x = r.x() + (r.width()-7)/2;
+            int y2 = r.bottom()-3;
+            p->setPen(g.light());
+            p->drawLine(x, y, x, y2);
+            p->drawLine(x+3, y, x+3, y2);
+            p->drawLine(x+6, y, x+6, y2);
+
+            p->setPen(g.mid());
+            p->drawLine(x+1, y, x+1, y2);
+            p->drawLine(x+4, y, x+4, y2);
+            p->drawLine(x+7, y, x+7, y2);
         }
-        else if(r.width() >= 24 ){
-            int x = r.x() + (r.width()-14)/2;
-            qDrawShadePanel(p, x, y, 6, 6, g, false, 1);
-            qDrawShadePanel(p, x+8, y, 6, 6, g, false, 1);
-        }
-        else if(r.width() >= 16)
-            qDrawShadePanel(p, r.x()+(r.width()-6)/2, y, 6, 6, g, false, 1);
     }
     else{
-        int x = r.x() + (r.width()-6)/2;
-        if(r.height() >= 32){
-            int y = r.y() + (r.height()-22)/2;
-            qDrawShadePanel(p, x, y, 6, 6, g, false, 1);
-            qDrawShadePanel(p, x, y+8, 6, 6, g, false, 1);
-            qDrawShadePanel(p, x, y+16, 6, 6, g, false, 1);
+        if(r.height() >= 15){
+            int x = r.x()+3;
+            int y = r.y() + (r.height()-7)/2;
+            int x2 = r.right()-3;
+            p->setPen(g.light());
+            p->drawLine(x, y, x2, y);
+            p->drawLine(x, y+3, x2, y+3);
+            p->drawLine(x, y+6, x2, y+6);
+
+            p->setPen(g.mid());
+            p->drawLine(x, y+1, x2, y+1);
+            p->drawLine(x, y+4, x2, y+4);
+            p->drawLine(x, y+7, x2, y+7);
         }
-        else if(r.height() >= 24 ){
-            int y = r.y() + (r.height()-14)/2;
-            qDrawShadePanel(p, x, y, 6, 6, g, false, 1);
-            qDrawShadePanel(p, x, y+8, 6, 6, g, false, 1);
-        }
-        else if(r.height() >= 16)
-            qDrawShadePanel(p, x, r.y()+(r.height()-6)/2, 6, 6, g, false, 1);
     }
 }
 
