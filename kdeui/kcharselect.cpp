@@ -1,7 +1,7 @@
 /******************************************************************/
-/* KCharSelect - (c) by Reginald Stadlbauer 1999                  */
-/* Author: Reginald Stadlbauer                                    */
-/* E-Mail: reggie@kde.org                                         */
+/* KCharSelect - (c) by Reginald Stadlbauer 1999		  */
+/* Author: Reginald Stadlbauer					  */
+/* E-Mail: reggie@kde.org					  */
 /******************************************************************/
 
 #include "kcharselect.h"
@@ -18,17 +18,20 @@
 #include <qkeycode.h>
 
 #include <klocale.h>
+#include <kdialog.h>
 #include <kapp.h>
 
 #include <X11/Xlib.h>
 
 /******************************************************************/
-/* Class: KCharSelectTable                                        */
+/* Class: KCharSelectTable					  */
 /******************************************************************/
 
 //==================================================================
-KCharSelectTable::KCharSelectTable( QWidget *parent, const char *name, const QString &_font, const QChar &_chr, int _tableNum )
-    : QTableView( parent, name ), vFont( _font ), vChr( _chr ), vTableNum( _tableNum ), vPos( 0, 0 ), focusItem( _chr ), focusPos( 0, 0 )
+KCharSelectTable::KCharSelectTable( QWidget *parent, const char *name, const QString &_font, 
+				    const QChar &_chr, int _tableNum )
+    : QTableView( parent, name ), vFont( _font ), vChr( _chr ), 
+      vTableNum( _tableNum ), vPos( 0, 0 ), focusItem( _chr ), focusPos( 0, 0 )
 {
     setBackgroundColor( colorGroup().base() );
 
@@ -93,24 +96,24 @@ void KCharSelectTable::paintCell( class QPainter* p, int row, int col )
 
     if ( c == vChr.unicode() )
     {
-        p->setBrush( QBrush( colorGroup().highlight() ) );
-        p->setPen( NoPen );
-        p->drawRect( 0, 0, w, h );
-        p->setPen( colorGroup().highlightedText() );
-        vPos = QPoint( col, row );
+	p->setBrush( QBrush( colorGroup().highlight() ) );
+	p->setPen( NoPen );
+	p->drawRect( 0, 0, w, h );
+	p->setPen( colorGroup().highlightedText() );
+	vPos = QPoint( col, row );
     }
     else
     {
-        p->setBrush( QBrush( colorGroup().base() ) );
-        p->setPen( NoPen );
-        p->drawRect( 0, 0, w, h );
-        p->setPen( colorGroup().text() );
+	p->setBrush( QBrush( colorGroup().base() ) );
+	p->setPen( NoPen );
+	p->drawRect( 0, 0, w, h );
+	p->setPen( colorGroup().text() );
     }
 
     if ( c == focusItem.unicode() && hasFocus() )
     {
-        style().drawFocusRect( p, QRect( 2, 2, w - 4, h - 4 ), colorGroup() );
-        focusPos = QPoint( col, row );
+	style().drawFocusRect( p, QRect( 2, 2, w - 4, h - 4 ), colorGroup() );
+	focusPos = QPoint( col, row );
     }
 
     p->setFont( QFont( vFont ) );
@@ -123,9 +126,9 @@ void KCharSelectTable::paintCell( class QPainter* p, int row, int col )
     p->drawLine( 0, y2, x2, y2 );
 
     if ( row == 0 )
-        p->drawLine( 0, 0, x2, 0 );
+	p->drawLine( 0, 0, x2, 0 );
     if ( col == 0 )
-        p->drawLine( 0, 0, 0, y2 );
+	p->drawLine( 0, 0, 0, y2 );
 }
 
 //==================================================================
@@ -133,27 +136,27 @@ void KCharSelectTable::mouseMoveEvent( QMouseEvent *e )
 {
     if ( findRow( e->y() ) != -1 && findCol( e->x() ) != -1 )
     {
-        QPoint oldPos = vPos;
+	QPoint oldPos = vPos;
 
-        vPos.setX( findCol( e->x() ) );
-        vPos.setY( findRow( e->y() ) );
+	vPos.setX( findCol( e->x() ) );
+	vPos.setY( findRow( e->y() ) );
 
-        vChr = QChar( vTableNum * 255 + 32 * vPos.y() + vPos.x() );
+	vChr = QChar( vTableNum * 255 + 32 * vPos.y() + vPos.x() );
 
-        QPoint oldFocus = focusPos;
+	QPoint oldFocus = focusPos;
 
-        focusPos = vPos;
-        focusItem = vChr;
+	focusPos = vPos;
+	focusItem = vChr;
 
-        updateCell( oldFocus.y(), oldFocus.x(), true );
-        updateCell( oldPos.y(), oldPos.x(), true );
-        updateCell( vPos.y(), vPos.x(), true );
+	updateCell( oldFocus.y(), oldFocus.x(), true );
+	updateCell( oldPos.y(), oldPos.x(), true );
+	updateCell( vPos.y(), vPos.x(), true );
 
-        emit highlighted( vChr );
-        emit highlighted();
+	emit highlighted( vChr );
+	emit highlighted();
 
-        emit focusItemChanged( focusItem );
-        emit focusItemChanged();
+	emit focusItemChanged( focusItem );
+	emit focusItemChanged();
     }
 }
 
@@ -163,37 +166,37 @@ void KCharSelectTable::keyPressEvent( QKeyEvent *e )
     switch ( e->key() )
     {
     case Key_Left:
-        gotoLeft();
-        break;
+	gotoLeft();
+	break;
     case Key_Right:
-        gotoRight();
-        break;
+	gotoRight();
+	break;
     case Key_Up:
-        gotoUp();
-        break;
+	gotoUp();
+	break;
     case Key_Down:
-        gotoDown();
-        break;
+	gotoDown();
+	break;
     case Key_Next:
-        emit tableDown();
-        break;
+	emit tableDown();
+	break;
     case Key_Prior:
-        emit tableUp();
-        break;
+	emit tableUp();
+	break;
     case Key_Space: case Key_Enter: case Key_Return:
     {
-        QPoint oldPos = vPos;
+	QPoint oldPos = vPos;
 
-        vPos = focusPos;
-        vChr = focusItem;
+	vPos = focusPos;
+	vChr = focusItem;
 
-        updateCell( oldPos.y(), oldPos.x(), true );
-        updateCell( vPos.y(), vPos.x(), true );
+	updateCell( oldPos.y(), oldPos.x(), true );
+	updateCell( vPos.y(), vPos.x(), true );
 
-        emit activated( vChr );
-        emit activated();
-        emit highlighted( vChr );
-        emit highlighted();
+	emit activated( vChr );
+	emit activated();
+	emit highlighted( vChr );
+	emit highlighted();
     } break;
     }
 }
@@ -203,17 +206,17 @@ void KCharSelectTable::gotoLeft()
 {
     if ( focusPos.x() > 0 )
     {
-        QPoint oldPos = focusPos;
+	QPoint oldPos = focusPos;
 
-        focusPos.setX( focusPos.x() - 1 );
+	focusPos.setX( focusPos.x() - 1 );
 
-        focusItem = QChar( vTableNum * 255 + 32 * focusPos.y() + focusPos.x() );
+	focusItem = QChar( vTableNum * 255 + 32 * focusPos.y() + focusPos.x() );
 
-        updateCell( oldPos.y(), oldPos.x(), true );
-        updateCell( focusPos.y(), focusPos.x(), true );
+	updateCell( oldPos.y(), oldPos.x(), true );
+	updateCell( focusPos.y(), focusPos.x(), true );
 
-        emit focusItemChanged( vChr );
-        emit focusItemChanged();
+	emit focusItemChanged( vChr );
+	emit focusItemChanged();
     }
 }
 
@@ -222,17 +225,17 @@ void KCharSelectTable::gotoRight()
 {
     if ( focusPos.x() < 31 )
     {
-        QPoint oldPos = focusPos;
+	QPoint oldPos = focusPos;
 
-        focusPos.setX( focusPos.x() + 1 );
+	focusPos.setX( focusPos.x() + 1 );
 
-        focusItem = QChar( vTableNum * 255 + 32 * focusPos.y() + focusPos.x() );
+	focusItem = QChar( vTableNum * 255 + 32 * focusPos.y() + focusPos.x() );
 
-        updateCell( oldPos.y(), oldPos.x(), true );
-        updateCell( focusPos.y(), focusPos.x(), true );
+	updateCell( oldPos.y(), oldPos.x(), true );
+	updateCell( focusPos.y(), focusPos.x(), true );
 
-        emit focusItemChanged( vChr );
-        emit focusItemChanged();
+	emit focusItemChanged( vChr );
+	emit focusItemChanged();
     }
 }
 
@@ -241,17 +244,17 @@ void KCharSelectTable::gotoUp()
 {
     if ( focusPos.y() > 0 )
     {
-        QPoint oldPos = focusPos;
+	QPoint oldPos = focusPos;
 
-        focusPos.setY( focusPos.y() - 1 );
+	focusPos.setY( focusPos.y() - 1 );
 
-        focusItem = QChar( vTableNum * 255 + 32 * focusPos.y() + focusPos.x() );
+	focusItem = QChar( vTableNum * 255 + 32 * focusPos.y() + focusPos.x() );
 
-        updateCell( oldPos.y(), oldPos.x(), true );
-        updateCell( focusPos.y(), focusPos.x(), true );
+	updateCell( oldPos.y(), oldPos.x(), true );
+	updateCell( focusPos.y(), focusPos.x(), true );
 
-        emit focusItemChanged( vChr );
-        emit focusItemChanged();
+	emit focusItemChanged( vChr );
+	emit focusItemChanged();
     }
 }
 
@@ -260,31 +263,34 @@ void KCharSelectTable::gotoDown()
 {
     if ( focusPos.y() < 7 )
     {
-        QPoint oldPos = focusPos;
+	QPoint oldPos = focusPos;
 
-        focusPos.setY( focusPos.y() + 1 );
+	focusPos.setY( focusPos.y() + 1 );
 
-        focusItem = QChar( vTableNum * 255 + 32 * focusPos.y() + focusPos.x() );
+	focusItem = QChar( vTableNum * 255 + 32 * focusPos.y() + focusPos.x() );
 
-        updateCell( oldPos.y(), oldPos.x(), true );
-        updateCell( focusPos.y(), focusPos.x(), true );
+	updateCell( oldPos.y(), oldPos.x(), true );
+	updateCell( focusPos.y(), focusPos.x(), true );
 
-        emit focusItemChanged( vChr );
-        emit focusItemChanged();
+	emit focusItemChanged( vChr );
+	emit focusItemChanged();
     }
 }
 
 /******************************************************************/
-/* Class: KCharSelect                                             */
+/* Class: KCharSelect						  */
 /******************************************************************/
 
 //==================================================================
 KCharSelect::KCharSelect( QWidget *parent, const char *name, const QString &_font, const QChar &_chr, int _tableNum )
     : QVBox( parent, name )
 {
+    setSpacing( KDialog::spacingHint() );
+    setMargin( KDialog::marginHint() );
     QHBox *bar = new QHBox( this );
-
-    QLabel *lFont = new QLabel( i18n( "  Font:  " ), bar );
+    bar->setSpacing( KDialog::spacingHint() );
+    
+    QLabel *lFont = new QLabel( i18n( "	 Font:	" ), bar );
     lFont->resize( lFont->sizeHint() );
     lFont->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
     lFont->setMaximumWidth( lFont->sizeHint().width() );
@@ -317,7 +323,8 @@ KCharSelect::KCharSelect( QWidget *parent, const char *name, const QString &_fon
     connect( charTable, SIGNAL( highlighted() ), this, SLOT( charHighlighted() ) );
     connect( charTable, SIGNAL( activated( const QChar & ) ), this, SLOT( charActivated( const QChar & ) ) );
     connect( charTable, SIGNAL( activated() ), this, SLOT( charActivated() ) );
-    connect( charTable, SIGNAL( focusItemChanged( const QChar & ) ), this, SLOT( charFocusItemChanged( const QChar & ) ) );
+    connect( charTable, SIGNAL( focusItemChanged( const QChar & ) ), 
+	     this, SLOT( charFocusItemChanged( const QChar & ) ) );
     connect( charTable, SIGNAL( focusItemChanged() ), this, SLOT( charFocusItemChanged() ) );
     connect( charTable, SIGNAL( tableUp() ), this, SLOT( charTableUp() ) );
     connect( charTable, SIGNAL( tableDown() ), this, SLOT( charTableDown() ) );
@@ -336,17 +343,17 @@ QSize KCharSelect::sizeHint() const
 void KCharSelect::setFont( const QString &_font )
 {
     QValueList<QString>::Iterator it = fontList.find( _font );
-    
+
     if ( it != fontList.end() )
     {
-        QValueList<QString>::Iterator it2 = fontList.begin();
-        int pos = 0;
-        for ( ; it != it2; ++it2, ++pos);
-        fontCombo->setCurrentItem( pos );
-        charTable->setFont( _font );
+	QValueList<QString>::Iterator it2 = fontList.begin();
+	int pos = 0;
+	for ( ; it != it2; ++it2, ++pos);
+	fontCombo->setCurrentItem( pos );
+	charTable->setFont( _font );
     }
     else
-        warning( "Can't find Font: %s", _font.latin1() );
+	warning( "Can't find Font: %s", _font.latin1() );
 }
 
 //==================================================================
@@ -375,52 +382,52 @@ void KCharSelect::fillFontCombo()
 
     if ( !have_installed )
     {
-        kde_display = kapp->getDisplay();
+	kde_display = kapp->getDisplay();
 
-        fontNames = XListFonts( kde_display, "*", 32767, &numFonts );
-        fontNames_copy = fontNames;
+	fontNames = XListFonts( kde_display, "*", 32767, &numFonts );
+	fontNames_copy = fontNames;
 
-        for( int i = 0; i < numFonts; i++ )
-        {
-            if ( **fontNames != '-' )
-            {
-                fontNames++;
-                continue;
-            };
+	for( int i = 0; i < numFonts; i++ )
+	{
+	    if ( **fontNames != '-' )
+	    {
+		fontNames++;
+		continue;
+	    };
 
-            qfontname = "";
-            qfontname = *fontNames;
-            int dash = qfontname.find ( '-', 1, true );
+	    qfontname = "";
+	    qfontname = *fontNames;
+	    int dash = qfontname.find ( '-', 1, true );
 
-            if ( dash == -1 )
-            {
-                fontNames++;
-                continue;
-            }
+	    if ( dash == -1 )
+	    {
+		fontNames++;
+		continue;
+	    }
 
-            int dash_two = qfontname.find ( '-', dash + 1 , true );
+	    int dash_two = qfontname.find ( '-', dash + 1 , true );
 
-            if ( dash == -1 )
-            {
-                fontNames++;
-                continue;
-            }
+	    if ( dash == -1 )
+	    {
+		fontNames++;
+		continue;
+	    }
 
-            qfontname = qfontname.mid( dash +1, dash_two - dash -1 );
+	    qfontname = qfontname.mid( dash +1, dash_two - dash -1 );
 
-            if ( !qfontname.contains( "open look", true ) )
-            {
-                if ( qfontname != "nil" )
-                {
-                    if ( !fontList.contains( qfontname ) )
-                        fontList.append( qfontname );
-                }
-            }
+	    if ( !qfontname.contains( "open look", true ) )
+	    {
+		if ( qfontname != "nil" )
+		{
+		    if ( !fontList.contains( qfontname ) )
+			fontList.append( qfontname );
+		}
+	    }
 
-            fontNames++;
-        }
+	    fontNames++;
+	}
 
-        XFreeFontNames( fontNames_copy );
+	XFreeFontNames( fontNames_copy );
     }
 
     fontList.sort();
