@@ -8,11 +8,12 @@
 // License, or (at your option) any later version.
 
 
-#ifndef KIMG_SGI_H
-#define KIMG_SGI_H
+#ifndef KIMG_RGB_H
+#define KIMG_RGB_H
 
 #include <qimage.h>
-#include <qptrlist.h>
+#include <qmap.h>
+#include <qptrvector.h>
 
 
 class QImageIO;
@@ -23,19 +24,36 @@ void kimgio_rgb_write(QImageIO *);
 }
 
 
-class RLEPacket {
-	QMemArray<uchar>	m_data;
+class RLEData : public QMemArray<uchar> {
 public:
-	RLEPacket(uchar *d, uint len) { m_data.duplicate(d, len); }
-	QMemArray<uchar> *data() { return &m_data; }
+	RLEData() {}
+	RLEData(const uchar *d, uint l) { duplicate(d, l); }
+	bool operator<(const RLEData&) const;
+	void write(QDataStream& s);
+	void print(QString) const;	// FIXME
+};
+
+
+class RLEMap : public QMap<RLEData, uint> {
+public:
+	RLEMap() : m_counter(0) {}
+	uint insert(const uchar *d, uint l);
+	QPtrVector<RLEData> vector();
+private:
+	uint			m_counter;
 };
 
 
 class SGIImage {
-	enum { NORMAL, DITHERED, SCREEN, COLORMAP };		// colormap
-	typedef QPtrList<RLEPacket> RLEList;
-	typedef QPtrListIterator<RLEPacket> RLEListIterator;
+public:
+	SGIImage(QImageIO *);
+	~SGIImage();
 
+	bool readImage(QImage&);
+	bool writeImage(QImage&);
+
+	enum { NORMAL, DITHERED, SCREEN, COLORMAP };		// colormap
+private:
 	QImageIO		*m_io;
 	QIODevice		*m_dev;
 	QDataStream		m_stream;
@@ -52,22 +70,14 @@ class SGIImage {
 	Q_UINT32		*m_lengthtab;
 	QByteArray		m_data;
 	QByteArray::Iterator	m_pos;
-	RLEList			m_rlelist;
+	RLEMap			m_rlemap;
+	uint			m_numrows;
 
-public:
-	SGIImage(QImageIO *);
-	~SGIImage();
-
-	bool readImage(QImage&);
-	bool writeImage(QImage&);
-
-protected:
 	bool readData(QImage&);
 	bool getRow(uchar *dest);
 
 	bool writeData(QImage&);
 	uint compact(uchar *, uchar *);
-	void addRlePacket(uchar *, uint);
 };
 
 #endif

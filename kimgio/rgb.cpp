@@ -67,7 +67,6 @@ SGIImage::SGIImage(QImageIO *io) :
 {
 	m_dev = io->ioDevice();
 	m_stream.setDevice(m_dev);
-	m_rlelist.setAutoDelete(true);
 }
 
 
@@ -236,6 +235,8 @@ bool SGIImage::readImage(QImage& img)
 		return false;
 	}
 
+	m_numrows = m_ysize * m_zsize;
+
 	if (!img.create(m_xsize, m_ysize, 32)) {
 		kdDebug(399) << "cannot create image" << endl;
 		return false;
@@ -247,15 +248,15 @@ bool SGIImage::readImage(QImage& img)
 		kdDebug(399) << "using first 4 of " << m_zsize << " channels" << endl;
 
 	if (m_rle) {
-		long l, n = m_ysize * m_zsize;
-		m_starttab = new Q_UINT32[n];
-		for (l = 0; l < n; l++) {
+		uint l;
+		m_starttab = new Q_UINT32[m_numrows];
+		for (l = 0; l < m_numrows; l++) {
 			m_stream >> m_starttab[l];
-			m_starttab[l] -= n * 8 + 512;
+			m_starttab[l] -= 512 + m_numrows * 2 * sizeof(Q_UINT32);
 		}
 
-		m_lengthtab = new Q_UINT32[n];
-		for (l = 0; l < n; l++)
+		m_lengthtab = new Q_UINT32[m_numrows];
+		for (l = 0; l < m_numrows; l++)
 			m_stream >> m_lengthtab[l];
 	}
 
@@ -263,7 +264,7 @@ bool SGIImage::readImage(QImage& img)
 
 	// sanity ckeck
 	if (m_rle)
-		for (long o = 0; o < m_ysize * m_zsize; o++)
+		for (uint o = 0; o < m_numrows; o++)
 			if (m_starttab[o] + m_lengthtab[o] > m_data.size())
 				return false;
 	return readData(img);
@@ -273,9 +274,54 @@ bool SGIImage::readImage(QImage& img)
 ///////////////////////////////////////////////////////////////////////////////
 
 
-void SGIImage::addRlePacket(uchar *s, uint l)
+void RLEData::write(QDataStream& s)
 {
-	m_rlelist.append(new RLEPacket(s, l));
+	for (unsigned i = 0; i < this->size(); i++)
+		s << this->at(i);
+}
+
+
+bool RLEData::operator<(const RLEData& b) const
+{
+	uchar ac, bc;
+	for (unsigned i = 0; i < QMIN(this->size(), b.size()); i++) {
+		ac = at(i);
+		bc = b[i];
+		if (ac != bc)
+			return ac < bc;
+	}
+	return this->size() < b.size();
+}
+
+
+uint RLEMap::insert(const uchar *d, uint l)
+{
+	RLEData data = RLEData(d, l);
+	Iterator it = find(data);
+	if (it == end())
+		return QMap<RLEData, uint>::insert(data, m_counter++).data();
+
+	return it.data();
+}
+
+
+// FIXME for debugging purposes
+void RLEData::print(QString desc) const
+{
+	QString s = desc + ": ";
+	for (uint i = 0; i < size(); i++)
+		s += QString::number(this->at(i)) + ",";
+	kdDebug() << "--- " << s << endl;
+}
+
+
+QPtrVector<RLEData> RLEMap::vector()
+{
+	QPtrVector<RLEData> v(size());
+	for (Iterator it = begin(); it != end(); it++)
+		v.insert(it.data(), &it.key());
+
+	return v;
 }
 
 
@@ -309,8 +355,6 @@ uint SGIImage::compact(uchar *d, uchar *s)
 bool SGIImage::writeData(QImage& img)
 {
 	Q_UINT32 *start = m_starttab;
-	Q_UINT32 *length = m_lengthtab;
-	Q_UINT32 pos = 512L + m_ysize * m_zsize * 8;
 	uchar line[m_xsize * 2];
 	uchar buf[m_xsize];
 	QRgb *c;
@@ -322,10 +366,7 @@ bool SGIImage::writeData(QImage& img)
 		for (x = 0; x < m_xsize; x++)
 			buf[x] = qRed(*c++);
 		len = compact(line, buf);
-		addRlePacket(line, len);
-		*start++ = pos;
-		*length++ = len;
-		pos += len;
+		*start++ = m_rlemap.insert(line, len);
 	}
 
 	if (m_zsize == 1)
@@ -337,10 +378,7 @@ bool SGIImage::writeData(QImage& img)
 			for (x = 0; x < m_xsize; x++)
 				buf[x] = qGreen(*c++);
 			len = compact(line, buf);
-			addRlePacket(line, len);
-			*start++ = pos;
-			*length++ = len;
-			pos += len;
+			*start++ = m_rlemap.insert(line, len);
 		}
 
 		for (y = 0; y < m_ysize; y++) {
@@ -348,10 +386,7 @@ bool SGIImage::writeData(QImage& img)
 			for (x = 0; x < m_xsize; x++)
 				buf[x] = qBlue(*c++);
 			len = compact(line, buf);
-			addRlePacket(line, len);
-			*start++ = pos;
-			*length++ = len;
-			pos += len;
+			*start++ = m_rlemap.insert(line, len);
 		}
 
 		if (m_zsize == 3)
@@ -363,10 +398,7 @@ bool SGIImage::writeData(QImage& img)
 		for (x = 0; x < m_xsize; x++)
 			buf[x] = qAlpha(*c++);
 		len = compact(line, buf);
-		addRlePacket(line, len);
-		*start++ = pos;
-		*length++ = len;
-		pos += len;
+		*start++ = m_rlemap.insert(line, len);
 	}
 
 	return true;
@@ -395,7 +427,7 @@ bool SGIImage::writeImage(QImage& img)
 	m_stream << m_rle << m_bpc << m_dim << m_xsize << m_ysize << m_zsize << m_pixmin << m_pixmax;
 	m_stream << Q_UINT32(0);		// dummy
 
-	int i;
+	uint i;
 	for (i = 0; i < 80; i++)		// no name
 		m_stream << Q_UINT8(0);
 
@@ -406,25 +438,32 @@ bool SGIImage::writeImage(QImage& img)
 	if (img.depth() != 32)
 		img.convertDepth(32);
 
-	m_starttab = new Q_UINT32[m_ysize * m_zsize];
-	m_lengthtab = new Q_UINT32[m_ysize * m_zsize];
+	m_numrows = m_ysize * m_zsize;
+	m_starttab = new Q_UINT32[m_numrows];
 
-	if (!writeData(img))
+	if (!writeData(img)) {
+		kdDebug(399) << "writing error" << endl;
 		return false;
-
-	for (i = 0; i < m_ysize * m_zsize; i++)
-		m_stream << m_starttab[i];
-
-	for (i = 0; i < m_ysize * m_zsize; i++)
-		m_stream << m_lengthtab[i];
-
-	RLEListIterator it(m_rlelist);
-	RLEPacket *pack;
-	for (; (pack = it.current()); ++it) {
-		QMemArray<uchar> *a = pack->data();
-		for (unsigned j = 0; j < a->size(); j++)
-			m_stream << (*a)[j];
 	}
+
+	kdDebug(399) << "number of generated scanlines: " << m_rlemap.size() << endl;
+
+	QPtrVector<RLEData> v = m_rlemap.vector();
+
+	// write start table
+	uint offset = 512 + m_numrows * 2 * sizeof(Q_UINT32);
+	for (i = 0; i < m_numrows; i++) {
+		m_stream << Q_UINT32(offset);
+		offset += v[m_starttab[i]]->size();
+	}
+	// write length table
+	for (i = 0; i < m_numrows; i++)
+		m_stream << Q_UINT32(v[m_starttab[i]]->size());
+
+	// write data
+	for (i = 0; i < m_numrows; i++)
+		v[m_starttab[i]]->write(m_stream);
+
 	return true;
 }
 
