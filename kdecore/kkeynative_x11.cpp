@@ -54,53 +54,21 @@ const int XKeyRelease = KeyRelease;
 static KKeyNative* gx_pkey = 0;
 
 //---------------------------------------------------------------------
-// KKeyNative::Variations
-//---------------------------------------------------------------------
-
-KKeyNative::Variations::~Variations()
-{
-}
-
-// TODO: allow for sym to have variations, such as Plus => { Plus, KP_Add }
-void KKeyNative::Variations::init( const KKey& key, bool bQt )
-{
-	if( key.isNull() ) {
-		m_nVariations = 0;
-		return;
-	}
-
-	m_nVariations = 1;
-	m_rgkey[0].init( key );
-
-	if( bQt ) {
-		for( uint i = 0; i < m_nVariations; i++ )
-			m_rgkey[i].init( m_rgkey[i].keyCodeQt() );
-
-		// Two different native codes may produce a single
-		//  Qt code.  Search for duplicates.
-		for( uint i = 1; i < m_nVariations; i++ ) {
-			for( uint j = 0; j < i; j++ ) {
-				// If key is already present in list, then remove it.
-				if( m_rgkey[i] == m_rgkey[j] ) {
-					for( uint k = i; k < m_nVariations - 1; k++ )
-						m_rgkey[k] = m_rgkey[k+1];
-					m_nVariations--;
-					i--;
-					break;
-				}
-			}
-		}
-	}
-}
-
-//---------------------------------------------------------------------
 // KKeyNative
 //---------------------------------------------------------------------
 
 KKeyNative::KKeyNative()                           { clear(); }
 KKeyNative::KKeyNative( const KKey& key )          { init( key ); }
 KKeyNative::KKeyNative( const KKeyNative& key )    { init( key ); }
-KKeyNative::KKeyNative( const XEvent* pEvent )  { init( pEvent ); }
+KKeyNative::KKeyNative( const XEvent* pEvent )     { init( pEvent ); }
+
+KKeyNative::KKeyNative( uint code, uint mod, uint sym )
+{
+	m_code = code;
+	m_mod = mod;
+	m_sym = sym;
+}
+
 KKeyNative::~KKeyNative()
 	{ }
 
@@ -124,15 +92,28 @@ bool KKeyNative::init( const KKey& key )
 {
 	// Get any extra mods required by the sym.
 	//  E.g., XK_Plus requires SHIFT on the en layout.
-	m_sym = key.key();
+	m_sym = key.sym();
 	uint modExtra = KKeyServer::Sym(m_sym).getModsRequired();
 	// Get the X modifier equivalent.
 	if( !KKeyServer::modToModX( key.modFlags() | modExtra, m_mod ) ) {
+		kdWarning(125) << "Invalid modifier flags." << endl;
 		m_sym = m_mod = 0;
+		m_code = 0;
 		return false;
 	}
 
-	m_code = XKeysymToKeycode( qt_xdisplay(), m_sym );
+	// TODO: create a keysym to keycode function in KKeyServer
+	// FIXME: Accomadate non-standard layouts
+	// XKeysymToKeycode returns the wrong keycode for XK_Print and XK_Break.
+	if( m_sym == XK_Print )
+		m_code = 111;
+	else if( m_sym == XK_Break || (m_sym == XK_Pause && (m_mod & ControlMask)) )
+		m_code = 114;
+	else
+		m_code = XKeysymToKeycode( qt_xdisplay(), m_sym );
+
+	if( !m_code && m_sym )
+		kdDebug(125) << "Couldn't get code for sym" << endl;
 	// Now get the true sym formed by the modifiers
 	//  E.g., Shift+Equal => Plus on the en layout.
 	if( key.modFlags() )
@@ -205,9 +186,5 @@ bool KKeyNative::keyboardHasWinKey()
 {
 	return KKeyServer::keyboardHasWinKey();
 }
-
-//---------------------------------------------------------------------
-// KKeyNative helper functions
-//---------------------------------------------------------------------
 
 #endif // Q_WS_X11

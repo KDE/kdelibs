@@ -28,29 +28,12 @@ typedef union _XEvent XEvent;
 class KKeyNative
 {
  public:
-	class Variations
-	{
-		friend class KKeyNative;
-	 public:
-		enum { MAX_VARIATIONS = 4 };
-
-		Variations() { m_nVariations = 0; }
-		~Variations();
-
-		void init( const KKey&, bool bQt );
-
-		uint count() const { return m_nVariations; }
-		const KKey& key( uint i ) const { return m_rgkey[i]; }
-
-	 protected:
-		uint m_nVariations;
-		KKey m_rgkey[MAX_VARIATIONS];
-	};
-
 	KKeyNative();
 	KKeyNative( const XEvent* );
 	KKeyNative( const KKey& );
 	KKeyNative( const KKeyNative& );
+	/** @internal */
+	KKeyNative( uint code, uint mod, uint sym );
 	~KKeyNative();
 
 	void clear();
@@ -84,10 +67,8 @@ class KKeyNative
 	static bool keyboardHasWinKey();
 	static uint modX( KKey::ModFlag modFlag );
 
- protected:
-	uint m_code, m_mod, m_sym;
-
  private:
+	uint m_code, m_mod, m_sym;
 	class KKeyNativePrivate* d;
 };
 
