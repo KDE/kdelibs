@@ -101,9 +101,7 @@ void JSEventListener::handleEvent(DOM::Event &evt)
         if (ret.type() == QVariant::Bool && ret.toBool() == false)
             evt.preventDefault();
     }
-    DOM::DocumentImpl* doc = part->xmlDocImpl();
-    if (doc)
-      doc->updateRendering();
+    DOM::DocumentImpl::updateDocumentsRendering();
   }
 }
 

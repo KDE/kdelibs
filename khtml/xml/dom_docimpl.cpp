@@ -48,6 +48,7 @@
 #include "misc/htmlhashes.h"
 #include "misc/loader.h"
 #include <kdebug.h>
+#include <kstaticdeleter.h>
 
 #include "htmltokenizer.h"
 #include "xml_tokenizer.h"
@@ -126,6 +127,10 @@ DocumentTypeImpl *DOMImplementationImpl::createDocumentType( const DOMString &qu
 
     return new DocumentTypeImpl(this,0,qualifiedName,publicId,systemId);
 }
+
+KStaticDeleter< QList<DocumentImpl> > s_changedDocumentsDeleter;
+QList<DocumentImpl> * DocumentImpl::changedDocuments = 0;
+
 
 DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &namespaceURI, const DOMString &qualifiedName,
                                                      const DocumentType &doctype, int &exceptioncode )
@@ -274,6 +279,8 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, DocumentTypeI
 
 DocumentImpl::~DocumentImpl()
 {
+    if (changedDocuments)
+        changedDocuments->remove(this);
     document->doc = 0;
     delete m_sheet;
     delete m_styleSelector;
@@ -802,6 +809,14 @@ void DocumentImpl::setChanged(bool b)
         changedNodes.append(this);
     else
         changedNodes.remove(this);
+
+    if (!changedDocuments)
+        changedDocuments = s_changedDocumentsDeleter.setObject( new QList<DocumentImpl>() );
+
+    if (b && !changed())
+        changedDocuments->append(this);
+    else if (!b && changed())
+        changedDocuments->remove(this);
     NodeBaseImpl::setChanged(b);
 }
 
@@ -876,6 +891,16 @@ void DocumentImpl::updateRendering()
     }
     kdDebug() << "UPDATERENDERING orig="<<o<<" actual="<<a<<endl;
     changedNodes.clear();
+    setChanged(false);
+}
+
+void DocumentImpl::updateDocumentsRendering()
+{
+    if (!changedDocuments)
+        return;
+    for (QListIterator<DocumentImpl> it(*changedDocuments); it.current(); )
+        if (it.current()->changed())
+            it.current()->updateRendering();
 }
 
 void DocumentImpl::attach(KHTMLView *w)

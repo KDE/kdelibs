@@ -389,9 +389,12 @@ void NodeImpl::setChanged(bool b)
 {
     if (b && !attached()) // changed compared to what?
         return;
-
     if (b && !changed() && ownerDocument())
+    {
         ownerDocument()->changedNodes.append(this);
+        if ( this != ownerDocument() )
+            ownerDocument()->setChanged(b);
+    }
     else if (!b && changed() && ownerDocument())
         ownerDocument()->changedNodes.remove(this);
     m_changed = b;
@@ -639,8 +642,7 @@ bool NodeImpl::dispatchGenericEvent( EventImpl *evt, int &/*exceptioncode */)
     for (; it.current(); ++it)
         it.current()->deref(); // this may delete us
 
-    if (doc->document())
-        doc->document()->updateRendering();
+    DocumentImpl::updateDocumentsRendering();
     doc->deref();
 
     return !evt->defaultPrevented(); // ### what if defaultPrevented was called before dispatchEvent?
@@ -1536,11 +1538,10 @@ NodeImpl *NodeBaseImpl::addChild(NodeImpl *newChild)
 
 void NodeBaseImpl::applyChanges(bool top, bool force)
 {
-
-    setChanged(false);
-
-    if (!attached())
-	    return;
+    if (!attached()) {
+        setChanged(false);
+        return;
+    }
 
     int ow = (m_style?m_style->outlineWidth():0);
 
@@ -1555,8 +1556,10 @@ void NodeBaseImpl::applyChanges(bool top, bool force)
         n = n->nextSibling();
     }
 
-    if ( !m_render )
+    if ( !m_render ) {
+        setChanged(false);
         return;
+    }
 
     m_render->calcMinMaxWidth();
 

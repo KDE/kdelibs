@@ -389,18 +389,12 @@ void HTMLFrameSetElementImpl::parseAttribute(AttrImpl *attr)
         m_rows = attr->val()->toLengthList();
         m_totalRows = m_rows->count();
         setChanged();
-        // ### nasty - usual change handling is not enough FIXIT!
-        if (m_render)
-            m_render->layout();
         break;
     case ATTR_COLS:
         delete m_cols;
         m_cols = attr->val()->toLengthList();
         m_totalCols = m_cols->count();
         setChanged();
-        // ### nasty - usual change handling is not enough FIXIT!
-        if (m_render)
-            m_render->layout();
         break;
     case ATTR_FRAMEBORDER:
         // false or "no" or "0"..

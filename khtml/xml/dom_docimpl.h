@@ -179,9 +179,11 @@ public:
                             bool entityReferenceExpansion);
 
     QList<NodeImpl> changedNodes;
+    static QList<DocumentImpl> * changedDocuments;
     virtual void setChanged(bool b=true);
     virtual void recalcStyle();
     virtual void updateRendering();
+    static void updateDocumentsRendering();
     khtml::DocLoader *docLoader() { return m_docLoader; }
 
     void attach(KHTMLView *w=0);
@@ -270,7 +272,6 @@ public:
 
     virtual DocumentImpl *getDocument()
         { return this; }
-
     void attachNodeIterator(NodeIteratorImpl *ni);
     void detachNodeIterator(NodeIteratorImpl *ni);
     void notifyBeforeNodeRemoval(NodeImpl *n);
