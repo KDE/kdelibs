@@ -1,0 +1,7 @@
+[Desktop Entry]
+Comment=LyX - document
+Hidden=false
+Icon=dvi
+MimeType=text/x-lyx
+Patterns=*.lyx
+Type=MimeType
