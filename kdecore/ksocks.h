@@ -23,6 +23,8 @@
 #include <sys/time.h>
 #include <kstaticdeleter.h>
 
+#ifdef Q_OS_UNIX
+
 class KSocksTable;
 class KSocksPrivate;
 class KLibrary;
@@ -202,7 +204,6 @@ private:
    KSocksPrivate *d;
 };
 
+#endif //Q_OS_UNIX
 
-
-
-#endif
+#endif //_KSOCKS_H_
