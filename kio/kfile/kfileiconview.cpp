@@ -219,6 +219,14 @@ void KFileIconView::showToolTip( QIconViewItem *item )
 	toolTip->setAlignment( AlignLeft | AlignTop );
 	toolTip->move( QCursor::pos() + QPoint( 14, 14 ) );
 	toolTip->adjustSize();
+	QRect screen = QApplication::desktop()->screenGeometry(
+			QApplication::desktop()->screenNumber(QCursor::pos()));
+	if (toolTip->x()+toolTip->width() > screen.right()) {
+		toolTip->move(toolTip->x()+screen.right()-toolTip->x()-toolTip->width(), toolTip->y());
+	}
+	if (toolTip->y()+toolTip->height() > screen.bottom()) {
+		toolTip->move(toolTip->x(), screen.bottom()-toolTip->y()-toolTip->height()+toolTip->y());
+	}
 	toolTip->setFont( QToolTip::font() );
 	toolTip->setPalette( QToolTip::palette(), TRUE );
 	toolTip->show();
