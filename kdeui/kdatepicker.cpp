@@ -48,18 +48,30 @@ public:
 
 
 KDatePicker::KDatePicker(QWidget *parent, QDate dt, const char *name)
-  : QFrame(parent,name),
-    yearForward(new QToolButton(this)),
-    yearBackward(new QToolButton(this)),
-    monthForward(new QToolButton(this)),
-    monthBackward(new QToolButton(this)),
-    selectMonth(new QToolButton(this)),
-    selectYear(new QToolButton(this)),
-    line(new KLineEdit(this)),
-    val(new KDateValidator(this)),
-    table(new KDateTable(this)),
-    fontsize(10)
+  : QFrame(parent,name)
 {
+  init( dt );
+}
+
+KDatePicker::KDatePicker(QWidget *parent, QDate dt, const char *name, WFlags f)
+  : QFrame(parent,name, f)
+{
+  init( dt );
+}
+
+void KDatePicker::init( const QDate &dt )
+{
+  yearForward = new QToolButton(this);
+  yearBackward = new QToolButton(this);
+  monthForward = new QToolButton(this);
+  monthBackward = new QToolButton(this);
+  selectMonth = new QToolButton(this);
+  selectYear = new QToolButton(this);
+  line = new KLineEdit(this);
+  val = new KDateValidator(this);
+  table = new KDateTable(this);
+  fontsize = 10;
+
   d = new KDatePickerPrivate();
   d->selectWeek = new QToolButton( this );
 

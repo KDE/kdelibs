@@ -59,6 +59,15 @@ public:
   KDatePicker(QWidget *parent=0,
 	      QDate=QDate::currentDate(),
 	      const char *name=0);
+
+  /** The usual constructor.  The given date will be displayed
+   * initially.
+   **/
+  KDatePicker(QWidget *parent,
+	      QDate,
+	      const char *name,
+	      WFlags f); // ### KDE 4.0: Merge
+
   /**
    * The destructor.
    **/
@@ -192,6 +201,7 @@ private:
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
+  void init( const QDate &dt );
   class KDatePickerPrivate;
   KDatePickerPrivate *d;
   // calculate ISO 8601 week number
