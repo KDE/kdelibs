@@ -912,7 +912,7 @@ bool KHTMLView::dispatchKeyEvent( QKeyEvent *_ke )
             return filter_next_autorepeat_press;
         }
         bool ret = dispatchKeyEventHelper( _ke, false ); // keydown
-        if( dispatchKeyEventHelper( _ke, true )); // keypress
+        if( dispatchKeyEventHelper( _ke, true )) // keypress
             ret = true;
         return ret;
     }
