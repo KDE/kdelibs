@@ -85,9 +85,6 @@
  * struct KDE_DEPRECATED DeprecatedStruct { };
  * \endcode
  *
- * Also note that this behavior can be disabled (for instance when using a build
- * system where warnings are treated as errors) by defining KDE_NO_DEPRECATED.
- *
  * \note
  * It does not make much sense to use the KDE_DEPRECATED keyword for a Qt signal;
  * this is because usually get called by the class which they belong to,
@@ -105,11 +102,13 @@
  * because the dcopidl program would choke on the unexpected declaration
  * syntax.
  */
-#if (__GNUC__ - 0 > 3 || (__GNUC__ - 0 == 3 && __GNUC_MINOR__ - 0 >= 2)) \
-    && !defined(KDE_NO_DEPRECATED)
+
+#ifndef KDE_DEPRECATED
+#if __GNUC__ - 0 > 3 || (__GNUC__ - 0 == 3 && __GNUC_MINOR__ - 0 >= 2)
 # define KDE_DEPRECATED __attribute__ ((deprecated))
 #else
 # define KDE_DEPRECATED
+#endif
 #endif
 
 /**
