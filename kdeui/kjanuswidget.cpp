@@ -29,6 +29,9 @@
 #include <qtabwidget.h>
 #include <qvbox.h>
 #include <qwidgetstack.h>
+#include <qpainter.h>
+#include <qtimer.h>
+#include <qstyle.h>
 
 #include <kapp.h>
 #include <kdialog.h> // Access to some static members
@@ -767,7 +770,11 @@ QSize KJanusWidget::minimumSizeHint() const
 
     if( mFace == TreeList )
     {
+#if QT_VERSION < 300
       s1.rwidth() += style().splitterWidth();
+#else
+      s1.rwidth() += style().pixelMetric( QStyle::PM_SplitterWidth );
+#endif
       s2 = mTreeList->minimumSize();
     }
     else
