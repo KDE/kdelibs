@@ -79,6 +79,10 @@ bool PrintcapEntry::readLine(const QString& line)
 	if (l.count() > 0)
 	{
 		m_name = l[0];
+		int	p(-1);
+		// discard aliases
+		if ((p=m_name.find('|')) != -1)
+			m_name = m_name.left(p);
 		m_args.clear();
 		for (uint i=1; i<l.count(); i++)
 		{
