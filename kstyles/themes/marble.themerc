@@ -251,4 +251,5 @@ windowBackground=255,255,255
 [KDE]
 contrast=5
 widgetStyle=basicstyle.la
-WidgetStyle=marble [Pixmap]
+WidgetStyle=Marble
+
