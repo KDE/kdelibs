@@ -36,6 +36,7 @@
 #include <qfile.h>
 #include <qregexp.h>
 
+#include <kapplication.h>
 #include <kaction.h>
 #include <kdebug.h>
 #include <klocale.h>
@@ -160,6 +161,9 @@ void KBookmarkMenu::refill()
 
 void KBookmarkMenu::addAddBookmark()
 {
+  if (!kapp->authorizeKAction("bookmarks"))
+     return;
+  
   QString title = i18n( "&Add Bookmark" );
   int p;
   while ( ( p = title.find( '&' ) ) >= 0 )
@@ -180,6 +184,9 @@ void KBookmarkMenu::addAddBookmark()
 
 void KBookmarkMenu::addEditBookmarks()
 {
+  if (!kapp->authorizeKAction("bookmarks"))
+     return;
+
   KAction * m_paEditBookmarks = KStdAction::editBookmarks( m_pManager, SLOT( slotEditBookmarks() ),
                                                              m_actionCollection, "edit_bookmarks" );
   m_paEditBookmarks->plug( m_parentMenu );
@@ -189,6 +196,9 @@ void KBookmarkMenu::addEditBookmarks()
 
 void KBookmarkMenu::addNewFolder()
 {
+  if (!kapp->authorizeKAction("bookmarks"))
+     return;
+
   QString title = i18n( "&New Bookmark Folder..." );
   int p;
   while ( ( p = title.find( '&' ) ) >= 0 )
@@ -209,6 +219,9 @@ void KBookmarkMenu::addNewFolder()
 
 void KBookmarkMenu::fillBookmarkMenu()
 {
+  if (!kapp->authorizeKAction("bookmarks"))
+     return;
+
   if ( m_bIsRoot )
   {
     if ( m_bAddBookmark )
