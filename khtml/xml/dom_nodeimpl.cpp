@@ -186,6 +186,12 @@ void NodeImpl::applyChanges()
     m_render->styleChanged();
 }
 
+void NodeImpl::getCursor(int offset, int &_x, int &_y, int &height)
+{
+    m_render->cursorPos(offset, _x, _y, height);
+}
+
+
 //--------------------------------------------------------------------
 
 NodeWParentImpl::NodeWParentImpl(DocumentImpl *doc) : NodeImpl(doc)

@@ -40,6 +40,9 @@
 #include <qfontmetrics.h>
 #include <qfont.h>
 #include <qpainter.h>
+#include <qstring.h>
+#include <qcolor.h>
+#include <qrect.h>
 
 using namespace khtml;
 using namespace DOM;
@@ -262,6 +265,34 @@ bool RenderText::checkPoint(int _x, int _y, int _tx, int _ty, int &offset)
 	s=s->next();
     }
     return false;
+}
+
+void RenderText::cursorPos(int offset, int &_x, int &_y, int &height)
+{
+  _x = 0;
+  TextSlave *s = m_first;
+  int off = s->len;
+  int y = s->y;
+  
+  while(offset > off)
+  {
+      s=s->next();
+      off += s->len;
+      if( s->y != y )  // ugly hack to fix problem with space removal on line wrap
+      {
+          y = s->y;
+          offset--;
+      }
+  }   // we are now in the correct text slave
+
+  int pos = s->len - (off - offset );
+  _y = s->y;
+  height = s->m_height;
+
+  QString tekst(s->m_text, s->len);
+  _x = s->x + (fm->boundingRect(tekst, pos)).right();
+  if(pos)
+      _x += fm->rightBearing( *(s->m_text + pos - 1 ) );
 }
 
 void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,

@@ -291,6 +291,13 @@ void Node::applyChanges()
     if(!impl) return;
     impl->applyChanges();
 }
+
+void Node::getCursor(int offset, int &_x, int &_y, int &height)
+{
+    if(!impl) return;
+    impl->getCursor(offset, _x, _y, height);
+}
+
 //-----------------------------------------------------------------------------
 
 NodeList::NodeList()

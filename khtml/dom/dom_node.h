@@ -578,7 +578,8 @@ public:
     unsigned long index() const;
     DOMString toHTML(DOMString _string);
     virtual void applyChanges();
-
+    virtual void getCursor(int offset, int &_x, int &_y, int &height);
+    
 protected:
     NodeImpl *impl;
 };

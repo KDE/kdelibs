@@ -326,7 +326,7 @@ void RenderObject::styleChanged(RenderStyle *newStyle)
         if(m_style) delete m_style;
         m_style = newStyle;
     }
-    containingBlock()->updateSize();
-
-
+     containingBlock()->updateSize();
+     //     repaintObject(containingBlock(), 0, 0);
+     repaint();
 }

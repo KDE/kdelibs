@@ -58,6 +58,13 @@
 #include <qtextcodec.h>
 
 #include <unistd.h>
+#include <qstring.h>
+#include <qfont.h>
+#include <qfontinfo.h>
+#include <qobject.h>
+#include <qregexp.h>
+#include <qtimer.h>
+#include <qwidget.h>
 
 namespace khtml
 {

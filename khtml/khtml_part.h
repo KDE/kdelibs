@@ -380,7 +380,7 @@ protected:
     virtual bool mouseDoubleClickHook( QMouseEvent *, int, int, DOM::DOMString, DOM::Node, long ){ return false; }
     virtual bool mouseMoveHook(QMouseEvent *, int, int, DOM::DOMString, DOM::Node, long){ return false; }
     virtual bool mouseReleaseHook(QMouseEvent *, int, int, DOM::DOMString, DOM::Node, long){ return false; }
-
+    virtual void drawContentsHook(QPainter *) {}
 
 protected slots:
   void slotData( KIO::Job*, const QByteArray &data );

@@ -205,6 +205,8 @@ public:
     virtual DOMString toHTML(DOMString _string);
     virtual DOMString innerHTML(DOMString _string);
     virtual void applyChanges();
+    virtual void getCursor(int offset, int &_x, int &_y, int &height);
+    
 protected:
     DocumentImpl *document;
     unsigned short flags;

@@ -313,6 +313,7 @@ public:
     virtual void setSelectionState(SelectionState) {}
 
     virtual void styleChanged(RenderStyle *newStyle=0);
+    virtual void cursorPos(int /*offset*/, int &/*_x*/, int &/*_y*/, int &/*height*/){}
 
 protected:
     virtual void selectionStartEnd(int& spos, int& epos);
