@@ -136,9 +136,9 @@ void KControlApplication::help()
 int KControlApplication::exec()
 {
     if ( runGUI() )
-	KApplication::exec();
-    else
-	init();
+	return KApplication::exec();
+    init();
+    return 0;
 }
 
 #include "kcontrol.moc"
