@@ -547,7 +547,8 @@ QStringList KIconLoader::loadAnimated(const QString& name, int group, int size) 
         lst += path + fn;
     }
     closedir ( dp );
-    return lst.sort();
+    lst.sort();
+    return lst;
 }
 
 KIconTheme *KIconLoader::theme()
