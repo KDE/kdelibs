@@ -263,9 +263,9 @@ public:
 
     // Other methods (not part of DOM)
     virtual NodeImpl::Id mapId(const DOMString& namespaceURI,  const DOMString& localName,  bool readonly);
-    AttributeImpl* attributeItem(unsigned long index) const { return attrs ? attrs[index] : 0; }
+    AttributeImpl* attributeItem(unsigned long index) const { return m_attrs ? m_attrs[index] : 0; }
     AttributeImpl* getAttributeItem(NodeImpl::Id id) const;
-    virtual bool isReadOnly() { return element ? element->isReadOnly() : false; }
+    virtual bool isReadOnly() { return m_element ? m_element->isReadOnly() : false; }
 
     // used during parsing: only inserts if not already there
     // no error checking!
@@ -285,9 +285,9 @@ private:
     void detachFromElement();
 
 protected:
-    ElementImpl *element;
-    AttributeImpl **attrs;
-    uint len;
+    ElementImpl *m_element;
+    AttributeImpl **m_attrs;
+    uint m_len;
 };
 
 } //namespace
