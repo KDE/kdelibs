@@ -1,6 +1,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.2  1997/04/15 20:01:54  kalle
+// Kalles changes for 0.8
+//
 // Revision 1.1.1.1  1997/04/13 14:42:41  cvsuser
 // Source imported
 //
@@ -99,6 +102,8 @@ class KConfigData;
   configuration file with "[GroupName]". All configuration entries
   from the beginning of a configuration file to the first group
   declaration belong to a special group called the default group.
+  If there is a $ character in a entry, KConfig tries to expand
+  environment variable and uses its value instead of its name.
   */
 class KConfig
 {
