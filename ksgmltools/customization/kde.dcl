@@ -86,7 +86,7 @@ FEATURES
                   DATATAG  NO
                   OMITTAG  NO
                   RANK     NO
-                  SHORTTAG NO -- changed --
+                  SHORTTAG YES -- setting to NO requires all attributes with a default value to be explicitly present --
 
          LINK
                   SIMPLE   NO
