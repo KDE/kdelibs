@@ -44,7 +44,7 @@ class KConfigSkeleton;
  * void KCoolApp::showSettings(){
  *   if(KConfigDialog::showDialog("settings"))
  *     return;
- *   KConfigDialog *dialog = new KConfigDialog(this, "settings", KDialogBase::IconList, MySettings::self());
+ *   KConfigDialog *dialog = new KConfigDialog(this, "settings", MySettings::self(), KDialogBase::IconList);
  *   dialog->addPage(new General(0, "General"), i18n("General") );
  *   dialog->addPage(new Appearance(0, "Style"), i18n("Appearance") );
  *   connect(dialog, SIGNAL(settingsChanged()), mainWidget, SLOT(loadSettings()));
