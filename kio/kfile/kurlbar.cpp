@@ -187,7 +187,6 @@ void KURLBarItem::paint( QPainter *p )
         int h = height( box );
 
         QBrush brush = box->colorGroup().brush( QColorGroup::Highlight );
-        brush.setColor( brush.color().light( 115 ) );
         p->fillRect( 0, 0, w, h, brush );
         QPen pen = p->pen();
         QPen oldPen = pen;
