@@ -69,8 +69,8 @@ public:
 class SessionData::AuthDataList : public QPtrList<SessionData::AuthData>
 {
 public:
-    AuthDataList() { setAutoDelete(true); }
-    ~AuthDataList() { purgeCachedData(); }
+    AuthDataList();
+    ~AuthDataList();
 
     void addData( SessionData::AuthData* );
     void removeData( const QCString& );
@@ -79,7 +79,23 @@ public:
     void registerAuthData( SessionData::AuthData* );
     void unregisterAuthData( SessionData::AuthData* );
     void purgeCachedData();
+    
+private:
+    KDEsuClient * m_kdesuClient;    
 };
+
+SessionData::AuthDataList::AuthDataList()
+{
+    m_kdesuClient = new KDEsuClient;
+    setAutoDelete(true);    
+}
+
+SessionData::AuthDataList::~AuthDataList()
+{
+    purgeCachedData();
+    delete m_kdesuClient;
+    m_kdesuClient = 0;
+}
 
 void SessionData::AuthDataList::addData( SessionData::AuthData* d )
 {
@@ -108,11 +124,12 @@ void SessionData::AuthDataList::removeData( const QCString& gkey )
 
 bool SessionData::AuthDataList::pingCacheDaemon()
 {
-    KDEsuClient client;
-    int sucess = client.ping();
+    Q_ASSERT(m_kdesuClient);
+    
+    int sucess = m_kdesuClient->ping();
     if( sucess == -1 )
     {
-        sucess = client.startServer();
+        sucess = m_kdesuClient->startServer();
         if( sucess == -1 )
             return false;
     }
@@ -125,17 +142,16 @@ void SessionData::AuthDataList::registerAuthData( SessionData::AuthData* d )
         return;
 
     bool ok;
-    KDEsuClient client;
     QCString ref_key = d->key + "-refcount";
-    int count = client.getVar(ref_key).toInt( &ok );
+    int count = m_kdesuClient->getVar(ref_key).toInt( &ok );
     if( ok )
     {
         QCString val;
         val.setNum( count+1 );
-        client.setVar( ref_key, val, 0, d->group );
+        m_kdesuClient->setVar( ref_key, val, 0, d->group );
     }
     else
-        client.setVar( ref_key, "1", 0, d->group );
+        m_kdesuClient->setVar( ref_key, "1", 0, d->group );
 }
 
 void SessionData::AuthDataList::unregisterAuthData( SessionData::AuthData* d )
@@ -145,21 +161,20 @@ void SessionData::AuthDataList::unregisterAuthData( SessionData::AuthData* d )
 
     bool ok;
     int count;
-    KDEsuClient client;
     QCString ref_key = d->key + "-refcount";
 
-    count = client.getVar( ref_key ).toInt( &ok );
+    count = m_kdesuClient->getVar( ref_key ).toInt( &ok );
     if ( ok )
     {
         if ( count > 1 )
         {
             QCString val;
             val.setNum(count-1);
-            client.setVar( ref_key, val, 0, d->group );
+            m_kdesuClient->setVar( ref_key, val, 0, d->group );
         }
         else
         {
-            client.delVars(d->key);
+            m_kdesuClient->delVars(d->key);
         }
     }
 }
