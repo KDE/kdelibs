@@ -42,7 +42,8 @@ KTMainWindow::KTMainWindow( const char *name )
     KWM::setIcon(winId(), kapp->getIcon());
     KWM::setMiniIcon(winId(), kapp->getMiniIcon());
     // set a short icon text
-    XSetIconName( qt_xdisplay(), winId(), kapp->getCaption() );
+    // TODO: try to make this as unicode compatible as possible
+    XSetIconName( qt_xdisplay(), winId(), kapp->getCaption().ascii() );
 
     kmainwidgetframe = new QFrame( this );
     CHECK_PTR( kmainwidgetframe );
@@ -681,7 +682,7 @@ void KTMainWindow::savePropertiesInternal (KConfig* config, int number)
                 break;
             case KMenuBar::Floating:
                 entryList.append("Floating");
-                entryList.append(KWM::getProperties(kmenubar->winId()));
+                entryList.append(KWM::getProperties(kmenubar->winId()).ascii());
                 break;
             case KMenuBar::FloatingSystem:
                 entryList.append("FloatingSystem");
@@ -716,7 +717,7 @@ void KTMainWindow::savePropertiesInternal (KConfig* config, int number)
                 break;
             case KToolBar::Floating:
                 entryList.append("Floating");
-                entryList.append(KWM::getProperties(toolbar->winId()));
+                entryList.append(KWM::getProperties(toolbar->winId()).ascii());
                 break;
         }
         toolKey.setNum(n);

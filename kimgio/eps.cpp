@@ -53,7 +53,7 @@ void kimgio_epsf_read (QImageIO *image)
 	QString tmp;
 
 	// find bounding box
-	if ( bbox (image->fileName(), &x1, &y1, &x2, &y2) == 0 ) {
+	if ( bbox (image->fileName().ascii(), &x1, &y1, &x2, &y2) == 0 ) {
 		return;
 	}
 
@@ -90,7 +90,7 @@ void kimgio_epsf_read (QImageIO *image)
 
 	// run ghostview
 
-	ghostfd = popen (cmdBuf, "w");
+	ghostfd = popen (cmdBuf.ascii(), "w");
 
 	if ( ghostfd == 0 ) {
 		return;
@@ -100,7 +100,7 @@ void kimgio_epsf_read (QImageIO *image)
 
 	// write image to gs
 
-	imagefd = fopen( image->fileName(), "r" );
+	imagefd = fopen( image->fileName().ascii(), "r" );
 
 	if ( imagefd != 0 )
 	{

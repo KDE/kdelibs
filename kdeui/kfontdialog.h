@@ -23,6 +23,9 @@
     Boston, MA 02111-1307, USA.
   
     $Log$
+    Revision 1.15  1999/03/01 23:34:43  kulow
+    CVS_SILENT ported to Qt 2.0
+
     Revision 1.14.2.1  1999/02/14 02:39:53  granroth
     Qt 2.0 changes. Mostly changed 'const char*' to QString where needed in
     Qt SIGNALs and SLOTs
@@ -162,7 +165,7 @@ class KFontDialog : public QDialog {
 
 
 public:
-    KFontDialog( QWidget *parent = 0L, const QString& name = QString::null,
+    KFontDialog( QWidget *parent = 0L, const char *name = 0,
 			bool modal = FALSE, const QStrList* fontlist = 0L );
 
     void setFont( const QFont &font );

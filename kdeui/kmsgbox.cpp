@@ -20,6 +20,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.17  1999/03/10 19:46:55  porten
+ * ported to new qlayout
+ *
  * Revision 1.16  1999/03/02 16:22:28  kulow
  * i18n is no longer a macro, but a function defined in klocale.h. So you
  * don't need to include kapp.h when you want to use i18n. I see klocale->translate
@@ -137,7 +140,7 @@ KMsgBox::KMsgBox( QWidget *parent, const QString& caption,
 	const QString&message, int type,
 	const QString&b1text, const QString&b2text,
 	const QString&b3text, const QString&b4text )
-	: QDialog ( parent, caption, TRUE, 0 ),
+	: QDialog ( parent, caption.ascii(), TRUE, 0 ),
 	msg( 0L ), picture( 0L ),
 	b1( 0L ), b2( 0L ), b3( 0L ), b4( 0L ),
 	f1( 0L )
@@ -203,26 +206,26 @@ KMsgBox::KMsgBox( QWidget *parent, const QString& caption,
 	KButtonBox *bbox = new KButtonBox( this );
 	bbox->addStretch( 10 );
 	
-    if( b1text ) {
+    if( !b1text.isNull() ) {
 		b1 = bbox->addButton( b1text );
 		connect( b1, SIGNAL( clicked() ), this, SLOT( b1Pressed() ) );
         nr_buttons++;
     }
 
-    if( b2text ) {
+    if( !b2text.isNull() ) {
 	
         b2 = bbox->addButton( b2text );
 		connect( b2, SIGNAL( clicked() ), this, SLOT( b2Pressed() ) );
         nr_buttons++;
     }
 
-    if( b3text ) {
+    if( !b3text.isNull() ) {
 		b3 = bbox->addButton( b3text );
 		connect( b3, SIGNAL( clicked() ), this, SLOT( b3Pressed() ) );
         nr_buttons++;
     }
 
-    if( b4text ) {
+    if( !b4text.isNull() ) {
 		b4 = bbox->addButton( b4text );
 		connect( b4, SIGNAL( clicked() ), this, SLOT( b4Pressed() ) );
         nr_buttons++;

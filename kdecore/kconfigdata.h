@@ -1,6 +1,10 @@
 // $Id$
 //
 // $Log$
+// Revision 1.14  1999/04/18 09:15:10  kulow
+// taking out config.h from Header files. I don't know if I haven't noticed
+// before, but this is even very dangerous
+//
 // Revision 1.13  1999/04/08 01:39:45  torben
 // Torben: Corrected API and docu
 //
@@ -88,8 +92,8 @@ class KConfigBaseData
   friend class KConfigBase;
   friend class KSimpleConfig;
 private:
-  QCString aLocalAppFile;
-  QCString aGlobalAppFile;
+  QString aLocalAppFile;
+  QString aGlobalAppFile;
   QString aGroup;
   QString aLocaleString; // locale code
   bool bDirty; // is there any entry that has to be written back to disk?

@@ -35,7 +35,7 @@
 //----------------------------------------------------------------------
 //---------------  KICONLOADERCANVAS   ---------------------------------
 //----------------------------------------------------------------------
-KIconLoaderCanvas::KIconLoaderCanvas (QWidget *parent, const QString& name )
+KIconLoaderCanvas::KIconLoaderCanvas (QWidget *parent, const char *name )
   :QTableView( parent, name )
 {
   max_width = 0;
@@ -275,14 +275,14 @@ void KIconLoaderDialog::init()
   setMinimumSize( 470, 250 );
 }
 
-KIconLoaderDialog::KIconLoaderDialog ( QWidget *parent, const QString& name )
+KIconLoaderDialog::KIconLoaderDialog ( QWidget *parent, const char *name )
   : QDialog( parent, name, TRUE )
 {
   icon_loader = KApplication::getKApplication()->getIconLoader();
   init();
 }
 
-KIconLoaderDialog::KIconLoaderDialog ( KIconLoader *loader, QWidget *parent, const QString& name )
+KIconLoaderDialog::KIconLoaderDialog ( KIconLoader *loader, QWidget *parent, const char *name )
   : QDialog( parent, name, TRUE )
 {
   icon_loader = loader;
@@ -352,7 +352,7 @@ QPixmap KIconLoaderDialog::selectIcon( QString &name, const QString &filter)
     old_filter = filter;
   if( exec(old_filter) )
   {
-      if( (pix_name = canvas->getCurrent()) )
+      if( !(pix_name = canvas->getCurrent()).isNull() )
 	  pixmap = icon_loader->loadIcon( pix_name );
   }
   name = pix_name;

@@ -119,7 +119,7 @@ void KIntegerLine::keyPressEvent( QKeyEvent *e )
 
 int KIntegerLine::getValue(QString &s)
 {
-  return (strtol(s, 0, (int)lineType));
+  return s.toInt(0, lineType);
 }
 
 void KIntegerLine::putValue(QString &s, int val)

@@ -45,7 +45,7 @@ void kimgioRegister(void)
 	lt_dlinit();
 
 	// for the libraries that are installed in $KDEDIR/lib (kdesupport)
-	lt_dladdsearchdir(KApplication::kde_bindir() + "/../lib");
+	lt_dladdsearchdir((KApplication::kde_bindir() + "/../lib").ascii());
 /*
   Disabled by David, to fix compilation. No idea where this is defined - Stephan ?
 	int rindex = 0;
@@ -62,7 +62,7 @@ void kimgioRegister(void)
 		break;
 
 	    libname = dir.path() + "/" + libname;
-	    lt_dlhandle libhandle = lt_dlopen(libname);
+	    lt_dlhandle libhandle = lt_dlopen(libname.ascii());
 	    if (libhandle == 0) {
 		warning("couldn't dlopen %s (%s)", 
 			libname.ascii(), lt_dlerror());
@@ -71,7 +71,7 @@ void kimgioRegister(void)
 	    libname.replace(QRegExp("^.*kimg_"), "kimgio_init_");
 	    libname.replace(QRegExp("\\.la$"), "");
 	    
-	    lt_ptr_t init_func = lt_dlsym(libhandle, libname );
+	    lt_ptr_t init_func = lt_dlsym(libhandle, libname.ascii() );
 	
 	    if (init_func == NULL) {
 		warning("couldn't init module %s (%s)!", libname.ascii(), 

@@ -316,7 +316,7 @@ public:
 	auto) and grid snap (snap to grid vertically).
 	*/
   KTreeList(QWidget *parent = 0, 
-			const QString& name = QString::null,
+			const char * name = 0,
 			WFlags f = 0);
 
   virtual ~KTreeList();

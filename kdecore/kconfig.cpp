@@ -19,6 +19,10 @@
 // $Id$
 //
 // $Log$
+// Revision 1.23  1999/04/18 09:15:05  kulow
+// taking out config.h from Header files. I don't know if I haven't noticed
+// before, but this is even very dangerous
+//
 // Revision 1.22  1999/03/01 23:33:18  kulow
 // CVS_SILENT ported to Qt 2.0
 //
@@ -166,7 +170,7 @@ static QString stringToPrintable(const QString& s){
 
 KConfig::KConfig( const QString& pGlobalAppFile, const QString& pLocalAppFile )
 {
-  if( pGlobalAppFile )
+  if( !pGlobalAppFile.isNull() )
 	{
 	  data()->aGlobalAppFile = pGlobalAppFile;
 	  // the file should exist in any case
@@ -183,7 +187,7 @@ KConfig::KConfig( const QString& pGlobalAppFile, const QString& pLocalAppFile )
 		    }
 		}
 	}
-  if( pLocalAppFile )
+  if( !pLocalAppFile.isNull() )
 	{
 	  data()->aLocalAppFile = pLocalAppFile;
 	  // the file should exist in any case
@@ -197,7 +201,7 @@ KConfig::KConfig( const QString& pGlobalAppFile, const QString& pLocalAppFile )
 		      QFile file( pLocalAppFile );
 		      file.open( IO_WriteOnly );
                       // Set uid/gid (neccesary for SUID programs)
-                      chown(file.name(), getuid(), getgid());
+                      chown(file.name().ascii(), getuid(), getgid());
 		      file.close();
 		    }
 		}
@@ -290,7 +294,7 @@ bool KConfig::writeConfigFile( QFile& rConfigFile, bool bGlobal )
 
   // loop over all the groups
   QString pCurrentGroup;
-  while( (pCurrentGroup = aIt.currentKey()) )
+  while( !(pCurrentGroup = aIt.currentKey()).isNull() )
 	{
 	  QDictIterator<KEntryDictEntry> aInnerIt( *aIt.current() );
 	  // loop over all the entries
@@ -343,7 +347,7 @@ bool KConfig::writeConfigFile( QFile& rConfigFile, bool bGlobal )
 
   rConfigFile.open( IO_Truncate | IO_WriteOnly );
   // Set uid/gid (neccesary for SUID programs)
-  chown(rConfigFile.name(), getuid(), getgid());
+  chown(rConfigFile.name().ascii(), getuid(), getgid());
  
   pStream = new QTextStream( &rConfigFile );
   
@@ -375,7 +379,7 @@ bool KConfig::writeConfigFile( QFile& rConfigFile, bool bGlobal )
   while( aWriteIt.current() )
 	{
 	  // check if it's not the default group (which has already been written)
-	  if( strcmp (aWriteIt.currentKey(), "<default>" ) )
+	  if( aWriteIt.currentKey() != "<default>" )
 		{
 		  *pStream << '[' << aWriteIt.currentKey() << ']' << '\n';
 		  QDictIterator<KEntryDictEntry> aWriteInnerIt( *aWriteIt.current() );
@@ -437,7 +441,7 @@ void KConfig::sync()
 		  QFile aConfigFile( data()->aLocalAppFile );
 		  aConfigFile.open( IO_ReadWrite );
                   // Set uid/gid (neccesary for SUID programs)
-                  chown(aConfigFile.name(), getuid(), getgid());
+                  chown(aConfigFile.name().ascii(), getuid(), getgid());
  
 		  if ( aConfigFile.isWritable() )
 		    {
@@ -494,7 +498,7 @@ void KConfig::sync()
 				{
 				  aConfigFile.open( IO_ReadWrite );
                                   // Set uid/gid (neccesary for SUID programs)
-                                  chown(aConfigFile.name(), getuid(), getgid());
+                                  chown(aConfigFile.name().ascii(), getuid(), getgid());
  				  writeConfigFile( aConfigFile, true );
 				  break;
 				}

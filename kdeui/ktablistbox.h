@@ -495,9 +495,14 @@ protected:
   KTabListBox::ColumnType colType;
   KTabListBox* parent;
   KNumCheckButton *mbut;
+  QString caption;
+ 
 public:
   int (*columnSort)(const QString&, const QString&);
   bool vline; // if true print a vertical line to the end of column.
+
+  const QString& getCaption() const { return caption; }
+  void setCaption(const QString& c) { caption = c; }
 };
 
 typedef KTabListBoxColumn* KTabListBoxColumnPtr;

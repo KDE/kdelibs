@@ -23,6 +23,11 @@
     Boston, MA 02111-1307, USA.
   
     $Log$
+    Revision 1.32  1999/05/07 15:36:10  bieker
+    use KApp::localconfigdir() instead of just KApp:localkdedir() + "/share/config"
+
+    Anyway.. this should be replaced with KStddirs in the future.
+
     Revision 1.31  1999/03/02 15:56:28  kulow
     CVS_SILENT replacing klocale->translate with i18n
 
@@ -182,7 +187,7 @@
 
 #define MINSIZE(x) x->setMinimumSize(x->sizeHint());
 
-KFontDialog::KFontDialog( QWidget *parent, const QString& name, 
+KFontDialog::KFontDialog( QWidget *parent, const char* name, 
    bool modal, const QStrList* fontlist)  : QDialog( parent, name, modal )
 {
   QPushButton *button;
@@ -294,7 +299,7 @@ KFontDialog::KFontDialog( QWidget *parent, const QString& name,
   }
   MINSIZE(family_combo);
   
-  size_combo = new QComboBox( true, box1, i18n("Size") );
+  size_combo = new QComboBox( true, box1, "size" );
   box1layout->addWidget(size_combo, 1, 5);
   
   size_combo->insertItem( "4" );
@@ -332,7 +337,7 @@ KFontDialog::KFontDialog( QWidget *parent, const QString& name,
   MINSIZE(size_combo);
   
   
-  weight_combo = new QComboBox( TRUE, box1, i18n("Weight") );
+  weight_combo = new QComboBox( TRUE, box1, "weight" );
   box1layout->addWidget(weight_combo, 2, 2);
   
   weight_combo->insertItem( i18n("normal") );
@@ -346,7 +351,7 @@ KFontDialog::KFontDialog( QWidget *parent, const QString& name,
   MINSIZE(weight_combo);
   
   
-  style_combo = new QComboBox( TRUE, box1, i18n("Style") );
+  style_combo = new QComboBox( TRUE, box1, "style" );
   box1layout->addWidget(style_combo, 2, 5);
   
   style_combo->insertItem( i18n("roman") );
@@ -358,7 +363,7 @@ KFontDialog::KFontDialog( QWidget *parent, const QString& name,
   MINSIZE(style_combo);
   
   
-  charset_combo = new QComboBox( TRUE, box1, i18n("Charset") );
+  charset_combo = new QComboBox( TRUE, box1, "charset" );
   box1layout->addWidget(charset_combo, 3, 2);
   
   charset_combo->setInsertionPolicy(QComboBox::NoInsertion);
@@ -391,7 +396,7 @@ KFontDialog::KFontDialog( QWidget *parent, const QString& name,
   
   // Create displayable charsets list
   KCharsets *charsets=KApplication::getKApplication()->getCharsets();
-  QStrList lst=charsets->displayable(selFont.family());
+  QStrList lst=charsets->displayable(selFont.family().ascii());
   for(const char * chset=lst.first();chset;chset=lst.next())
     charset_combo->insertItem( chset );
   charset_combo->insertItem( "any" );
@@ -471,7 +476,7 @@ void KFontDialog::family_chosen_slot(const QString& family){
  
   // Re-create displayable charsets list
   KCharsets *charsets=KApplication::getKApplication()->getCharsets();
-  QStrList lst=charsets->displayable(selFont.family());
+  QStrList lst=charsets->displayable(selFont.family().ascii());
   charset_combo->clear();
   for(const char * chset=lst.first();chset;chset=lst.next())
       charset_combo->insertItem( chset );
@@ -594,7 +599,7 @@ void KFontDialog::setCombos(){
  // Re-create displayable charsets list
  KCharsets *charsets=KApplication::getKApplication()->getCharsets();
  const char * charset=charsets->name(selFont);
- QStrList lst=charsets->displayable(selFont.family());
+ QStrList lst=charsets->displayable(selFont.family().ascii());
  charset_combo->clear();
  i = 0;
  for(const char * chset=lst.first();chset;chset=lst.next(),++i) {
@@ -714,8 +719,8 @@ void KFontDialog::fill_family_combo(){
 
     if( !qfontname.contains("open look", TRUE)){
       if(qfontname != "nil"){
-	if(fontlist.find(qfontname) == -1)
-	  fontlist.inSort(qfontname);
+	if(fontlist.find(qfontname.ascii()) == -1)
+	  fontlist.inSort(qfontname.ascii()); // TODO: make fontList QStringList
       }
     }
   

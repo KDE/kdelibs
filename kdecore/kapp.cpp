@@ -199,7 +199,7 @@ void KApplication::init()
     bSuccess = aConfigFile.open( IO_ReadWrite );
     // Set uid/gid (neccesary for SUID programs)
     if ( bSuccess )
-      chown(aConfigFile.name(), getuid(), getgid());
+      chown(aConfigFile.name().ascii(), getuid(), getgid());
   }
   if( !bSuccess )
 	{

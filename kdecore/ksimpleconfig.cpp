@@ -19,6 +19,10 @@
 // $Id$
 //
 // $Log$
+// Revision 1.16  1999/04/18 16:24:11  denis
+// #include <qtextstream.h> to kcharsetsdata.cpp ksimpleconfig.cpp
+// #include "config.h" to kapp.cpp
+//
 // Revision 1.15  1999/04/18 09:15:12  kulow
 // taking out config.h from Header files. I don't know if I haven't noticed
 // before, but this is even very dangerous
@@ -83,7 +87,7 @@
 
 KSimpleConfig::KSimpleConfig( const QString& pFile )
 {
-  if( pFile )
+  if( !pFile.isNull() )
 	{
 	  // the file should exist in any case
 	  QFileInfo info( pFile );
@@ -104,7 +108,7 @@ KSimpleConfig::KSimpleConfig( const QString& pFile )
 
 KSimpleConfig::KSimpleConfig( const QString& pFile, bool bReadOnly )
 {
-  if( pFile )
+  if( !pFile.isNull() )
 	{
 	  if( !bReadOnly )
 		{
@@ -251,7 +255,7 @@ bool KSimpleConfig::writeConfigFile( QFile& rFile, bool )
   while( aWriteIt.current() )
 	{
 	  // check if it's not the default group (which has already been written)
-	  if( strcmp (aWriteIt.currentKey(), "<default>" ) )
+	  if( aWriteIt.currentKey() != "<default>" )
 		{
 		  *pStream << '[' << aWriteIt.currentKey() << ']' << '\n';
 		  QDictIterator<KEntryDictEntry> aWriteInnerIt( *aWriteIt.current() );

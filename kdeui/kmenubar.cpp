@@ -43,6 +43,10 @@
 
 // $Id$
 // $Log$
+// The job is quite boring, but triggers some abuses of QString. BTW:
+// I added some TODOs to the code where I was too lazy to continue.
+// Someone should start a grep for TODO in the code on a regular base ;)
+//
 // Revision 1.69  1999/05/06 04:54:03  warwick
 // myqstring = 0  becomes  myqstring = QString::null, or just remove the
 // line if it's already going to be null (default QString constructor).
@@ -751,10 +755,9 @@ void KMenuBar::setMenuBarPos(menuPosition mpos)
 	  XSetTransientForHint( qt_xdisplay(), winId(), Parent->topLevelWidget()->winId());
 	  if (mpos == FloatingSystem)
 	      KWM::setDecoration(winId(), KWM::noDecoration | KWM::standaloneMenuBar | KWM::noFocus);
-	  if (title){
+	  else
 	      KWM::setDecoration(winId(), KWM::tinyDecoration | KWM::noFocus);
-	  }
-	  else {
+	  KWM::moveToDesktop(winId(), KWM::desktop(Parent->winId()));
 	  setCaption(""); // this triggers a qt bug
 	  if (!title.isNull()){
 	      setCaption(title);

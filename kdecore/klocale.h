@@ -21,7 +21,9 @@
 
 #include <qintdict.h>
 #include <qstring.h>
-#include <qstrlist.h>
+#include <qstringlist.h>
+
+class QStrList;
 
 #ifndef klocale
 #define klocale KApplication::getKApplication()->getLocale()
@@ -54,7 +56,7 @@ public:
       * be used.
       * @param catalogue the name of the language file
       */
-    KLocale( const char* catalogue = 0 );
+    KLocale( QString catalogue = QString::null );
 
     /**
       * Destructor.
@@ -111,7 +113,7 @@ public:
       *
       * @return List of language codes
       */
-    QStrList languageList() const;
+    QStringList languageList() const;
     
     /**
       * Returns the charset name used by selected locale.
@@ -136,7 +138,7 @@ public:
      * If the catalogue does not exist for the chosen language,
      * it will be ignored and C will be used.
      **/
-    void insertCatalogue(const char *catalogue);
+    void insertCatalogue(const QString& catalogue);
 
     /**
        The category argument tells the setlocale() function which attributes to
@@ -182,8 +184,8 @@ public:
      
 private:
     QStrList *catalogues;
-    QIntDict<char> aliases;
-    QString lang;
+    QIntDict<QString> aliases;
+    const char* lang;
     QString chset;
     QString lc_numeric;
     bool numeric_enabled;

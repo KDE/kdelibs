@@ -139,15 +139,15 @@ void KLocale::splitLocale(const QString& aStr,
 
 #ifdef ENABLE_NLS
 
-KLocale::KLocale( const char *catalogue )
+KLocale::KLocale( QString catalogue ) : lang(0)
 {
 #ifdef HAVE_SETLOCALE
     /* Set locale via LC_ALL according to environment variables  */
     setlocale (LC_ALL, "");
 #endif
     chset="us-ascii";
-    if (! catalogue)
-        catalogue = kapp->appName().data();
+    if (catalogue.isNull())
+        catalogue = kapp->appName();
     
     catalogues = new QStrList(true);
     
@@ -165,19 +165,19 @@ KLocale::KLocale( const char *catalogue )
 #ifdef HAVE_SETLOCALE
 	setting = config->readEntry("Collate", "default");
 	if (setting!="default") 
-	    setlocale (LC_COLLATE, setting);
+	    setlocale (LC_COLLATE, setting.ascii());
 	setting = config->readEntry("Time", "default");
 	if (setting!="default") 
-	    setlocale (LC_TIME, setting);
+	    setlocale (LC_TIME, setting.ascii());
 	setting = config->readEntry("Monetary", "default");
 	if (setting!="default") 
-	    setlocale (LC_MONETARY, setting);
+	    setlocale (LC_MONETARY, setting.ascii());
 	setting = config->readEntry("CType", "default");
 	if (setting!="default") 
-	    setlocale (LC_CTYPE, setting);
+	    setlocale (LC_CTYPE, setting.ascii());
 	setting = config->readEntry("Numeric", "default");
 	if (setting!="default") 
-	    setlocale (LC_NUMERIC, setting);
+	    setlocale (LC_NUMERIC, setting.ascii());
 #endif
 	set_locale_vars  = config->readBoolEntry("SetLocaleVariables"
 						 , false);
@@ -204,23 +204,25 @@ KLocale::KLocale( const char *catalogue )
     QString directory(KApplication::kde_localedir());
     QString ln,ct,chrset;
    
+    QString _lang;
+
     // save languages list requested by user
     langs=languages;    
     while (1) {
       int f = languages.find(':');
 	if (f > 0) {
-	    lang = languages.left(f);
+	    _lang = languages.left(f);
 	    languages = languages.right(languages.length() - 
-					lang.length() - 1);
+					_lang.length() - 1);
 	} else {
-	    lang = languages;
+	    _lang = languages;
 	    languages = "";
 	}
 	
-	if (lang.isEmpty() || lang == "C")
+	if (_lang.isEmpty() || _lang == "C")
 	    break;
 
-        splitLocale(lang,ln,ct,chrset);	
+        splitLocale(_lang,ln,ct,chrset);	
 
 	QString lng[3];
 	lng[0]=ln+"_"+ct+"."+chrset;
@@ -229,10 +231,10 @@ KLocale::KLocale( const char *catalogue )
 	int i;
 	for(i=0; i<3; i++) {
 	  QDir d(directory + "/" + lng[i] + "/LC_MESSAGES");
-	  if (d.exists(QString(catalogue) + ".mo") &&
+	  if (d.exists(catalogue + ".mo") &&
 	      d.exists(QString(SYSTEM_MESSAGES) + ".mo")) 
 	      {
-		  lang = lng[i];
+		  _lang = lng[i];
 		  break;
 	      }
         }
@@ -240,12 +242,13 @@ KLocale::KLocale( const char *catalogue )
 	if (i != 3)
 	    break;
     }
+    lang = qstrdup(_lang.ascii()); // taking deep copy
     
     chset=chrset;
 #ifdef HAVE_SETLOCALE
     lc_numeric=setlocale(LC_NUMERIC,0);
     setlocale(LC_NUMERIC,"C");          // by default disable LC_NUMERIC
-    setlocale(LC_MESSAGES,lang);       
+    setlocale(LC_MESSAGES,lang);
     if (set_locale_vars){
         // set environment variables for all categories
 	// maybe we should treat LC_NUMERIC differently (netscape problem)
@@ -273,23 +276,26 @@ KLocale::KLocale( const char *catalogue )
     insertCatalogue( catalogue );
     insertCatalogue( SYSTEM_MESSAGES );
     if (chset.isEmpty() || !KCharset(chset).ok()) chset="us-ascii";
+
+    aliases.setAutoDelete(true);
 }
 
-void KLocale::insertCatalogue( const char* catalogue )
+void KLocale::insertCatalogue( const QString& catalogue )
 {
-    k_bindtextdomain ( catalogue , KApplication::kde_localedir() );
-    catalogues->append(catalogue);
+    k_bindtextdomain ( catalogue.ascii() , KApplication::kde_localedir().ascii() );
+    catalogues->append(catalogue.ascii());
 }
 
 KLocale::~KLocale()
 {
     delete catalogues;
+    delete [] lang;
 }
 
 const QString KLocale::translate(const char* msgid)
 {
     const char *text = msgid;
-    QString result;
+
     for (const char* catalogue = catalogues->first(); catalogue; 
 	 catalogue = catalogues->next()) 
     {
@@ -298,8 +304,7 @@ const QString KLocale::translate(const char* msgid)
 	    break;
     }
 
-    result = QString::fromLocal8Bit( text );
-    return result;
+    return QString::fromLocal8Bit( text );
 }
 
 QString KLocale::directory() 
@@ -309,7 +314,7 @@ QString KLocale::directory()
 
 void KLocale::aliasLocale( const char* text, long int index)
 {
-    aliases.insert(index, translate(text));
+    aliases.insert(index, new QString(translate(text)));
 }
 
 // Using strings seems to be more portable (for systems without locale.h
@@ -330,7 +335,7 @@ const QString KLocale::getLocale(const QString& cat){
 void KLocale::enableNumericLocale(bool on){
 #ifdef HAVE_SETLOCALE
     if (on) 
-	setlocale(LC_NUMERIC,lc_numeric);
+	setlocale(LC_NUMERIC,lc_numeric.ascii());
     else 
 	setlocale(LC_NUMERIC,"C");  
     numeric_enabled=on;
@@ -343,10 +348,10 @@ bool KLocale::numericLocaleEnabled()const{
     return numeric_enabled;
 }
  
-QStrList KLocale::languageList()const{
+QStringList KLocale::languageList()const{
 
 // a list to be returned
-    QStrList list;
+    QStringList list;
 // temporary copy of language list
     QString str(langs);
     
@@ -404,7 +409,7 @@ QStrList KLocale::languageList()const{
     return QStrList();
 }
 
-void KLocale::insertCatalogue( const char *catalogue) {
+void KLocale::insertCatalogue( const QString& catalogue) {
 }
 
 #endif /* ENABLE_NLS */
@@ -412,7 +417,7 @@ void KLocale::insertCatalogue( const char *catalogue) {
 
 const QString KLocale::getAlias(long key) const
 {
-    return aliases[key];
+    return *aliases[key];
 }
 
 QString i18n(const char* text) {

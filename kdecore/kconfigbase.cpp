@@ -262,7 +262,7 @@ QString KConfigBase::readEntry( const QString& pKey,
 	} while ( aValue[nEndPos].isNumber()
 	    || aValue[nEndPos].isLetter() || nEndPos > aValue.length() );
 	QString aVarName = aValue.mid( nDollarPos+1, nEndPos-nDollarPos-1 );
-	const char* pEnv = getenv( aVarName );
+	const char* pEnv = getenv( aVarName.ascii() );
 	if( pEnv )
 	  aValue.replace( nDollarPos, nEndPos-nDollarPos, pEnv );
 	else
@@ -364,11 +364,11 @@ int KConfigBase::readListEntry( const QString& pKey, QStrList &list, char sep ) 
 	  value += str_list[i];
 	  continue;
 	}
-      list.append( value );
+      list.append( value.ascii() );
       value.truncate(0);
     }
   if ( str_list[len-1] != sep )
-    list.append( value );
+    list.append( value.ascii() );
   return list.count();
 }
 
@@ -708,7 +708,7 @@ QColor KConfigBase::readColorEntry( const QString& pKey,
     {
       if ( aValue.left(1) == "#" ) 
         {
-	  aRetColor.setNamedColor(aValue);
+	  aRetColor.setNamedColor(aValue.ascii());
 	} 
       else
 	{
@@ -1058,10 +1058,10 @@ void KConfigBase::writeEntry( const QString& pKey, const QRect& rRect,
 {
   QStrList list;
   QString tempstr;
-  list.insert( 0, tempstr.setNum( rRect.left() ) );
-  list.insert( 1, tempstr.setNum( rRect.top() ) );
-  list.insert( 2, tempstr.setNum( rRect.width() ) );
-  list.insert( 3, tempstr.setNum( rRect.height() ) );
+  list.insert( 0, tempstr.setNum( rRect.left() ).ascii() );
+  list.insert( 1, tempstr.setNum( rRect.top() ).ascii() );
+  list.insert( 2, tempstr.setNum( rRect.width() ).ascii() );
+  list.insert( 3, tempstr.setNum( rRect.height() ).ascii() );
 
   writeEntry( pKey, list, ',', bPersistent, bGlobal, bNLS );
 }
@@ -1073,8 +1073,8 @@ void KConfigBase::writeEntry( const QString& pKey, const QPoint& rPoint,
 {
   QStrList list;
   QString tempstr;
-  list.insert( 0, tempstr.setNum( rPoint.x() ) );
-  list.insert( 1, tempstr.setNum( rPoint.y() ) );
+  list.insert( 0, tempstr.setNum( rPoint.x() ).ascii() );
+  list.insert( 1, tempstr.setNum( rPoint.y() ).ascii() );
 
   writeEntry( pKey, list, ',', bPersistent, bGlobal, bNLS );
 }
@@ -1086,8 +1086,8 @@ void KConfigBase::writeEntry( const QString& pKey, const QSize& rSize,
 {
   QStrList list;
   QString tempstr;
-  list.insert( 0, tempstr.setNum( rSize.width() ) );
-  list.insert( 1, tempstr.setNum( rSize.height() ) );
+  list.insert( 0, tempstr.setNum( rSize.width() ).ascii() );
+  list.insert( 1, tempstr.setNum( rSize.height() ).ascii() );
 
   writeEntry( pKey, list, ',', bPersistent, bGlobal, bNLS );
 }
@@ -1116,7 +1116,7 @@ void KConfigBase::rollback( bool bDeep )
   QDictIterator<KEntryDict> aIt( data()->aGroupDict );
   // loop over all the groups
   QString pCurrentGroup;
-  while( (pCurrentGroup = aIt.currentKey()) )
+  while( !(pCurrentGroup = aIt.currentKey()).isNull() )
 	{
 	  QDictIterator<KEntryDictEntry> aInnerIt( *aIt.current() );
 	  // loop over all the entries

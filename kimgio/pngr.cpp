@@ -28,7 +28,7 @@ void kimgio_png_read( QImageIO *io )
 	// open png file
 
 	QImage image;
-	FILE *fp = fopen ( io->fileName(), "r" );
+	FILE *fp = fopen ( io->fileName().ascii(), "r" );
 	int passes = 0;
 
 	if( fp == 0 ) {

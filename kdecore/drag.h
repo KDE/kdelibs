@@ -19,6 +19,11 @@
 /* $Id$
  *
  * $Log$
+ * Revision 1.28  1999/05/03 07:21:27  kulow
+ * some more warnings removed. Wouldn't it be cool to compile KDE
+ * with -ansi -pedantic -Werror? I put that into my egcs's spec file
+ * and I won't take it back ;)
+ *
  * Revision 1.27  1999/04/18 09:14:59  kulow
  * taking out config.h from Header files. I don't know if I haven't noticed
  * before, but this is even very dangerous
@@ -455,7 +460,7 @@ public:
 /**
 * Constructor.
 */
-  KDNDWidget( QWidget *_parent=0, const QString& _name=QString::null, WFlags f=0 ) :
+  KDNDWidget( QWidget *_parent=0, const char *_name=0, WFlags f=0 ) :
       QWidget( _parent, _name, f ) , drag(false), dndData(0L),
       dndSize(0), dndType(0), dndOffsetX(0), dndOffsetY(0), dndIcon(0L),
       dndLastWindow(0)

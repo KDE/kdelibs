@@ -53,7 +53,7 @@ class KIconLoaderCanvas : public QTableView
 {
   Q_OBJECT
 public:
-  KIconLoaderCanvas (QWidget *parent=0, const QString& name=QString::null);
+  KIconLoaderCanvas (QWidget *parent=0, const char* name=0);
   ~KIconLoaderCanvas ();
 
   void loadDir(QString dirname, QString filter);
@@ -113,14 +113,14 @@ public:
      same directory between two calls to selectIcon(). So it is a good idea to
      delete the KIconLoaderDialog when it is not needed anymore.
   */
-  KIconLoaderDialog ( QWidget *parent=0, const QString& name=QString::null );
+  KIconLoaderDialog ( QWidget *parent=0, const char *name=0 );
 
   /**
      If you want to use another KIconLoader you can create the KIconLoaderDialog
      with this constructor which accepts a pointer to a KIconLoader.
      Make sure that this pointer is valid.
   */
-  KIconLoaderDialog ( KIconLoader *loader, QWidget *parent=0, const QString& name=QString::null );
+  KIconLoaderDialog ( KIconLoader *loader, QWidget *parent=0, const char *name=0  );
 
   /// Destructor
   ~KIconLoaderDialog ();

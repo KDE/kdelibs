@@ -20,6 +20,9 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.21  1999/04/18 19:55:42  kulow
+   CVS_SILENT some more fixes
+
    Revision 1.20  1999/04/06 12:54:11  dfaure
    warning: extra qualification `KIconLoader::' on member `getIconPath' ignored
 
@@ -218,7 +221,7 @@ public:
 
   */
 
-  bool insertDirectory( int index, const QString &dir_name ) {
+  bool insertDirectory( int index, const char *dir_name ) {
     return pixmap_dirs.insert( index, dir_name ); }
   QStrList* getDirList() { return &pixmap_dirs; }
 

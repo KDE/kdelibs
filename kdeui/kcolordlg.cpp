@@ -578,9 +578,9 @@ void KColorDialog::slotOkPressed()
 
 void KColorDialog::slotRGBChanged()
 {
-	int red = atoi( redit->text() );
-	int grn = atoi( gedit->text() );
-	int blu = atoi( bedit->text() );
+	int red = redit->text().toInt();
+	int grn = gedit->text().toInt();
+	int blu = bedit->text().toInt();
 
 	if ( red > 255 || red < 0 ) return;
 	if ( grn > 255 || grn < 0 ) return;
@@ -606,9 +606,9 @@ void KColorDialog::slotRGBChanged()
 
 void KColorDialog::slotHSVChanged()
 {
-	int hue = atoi( hedit->text() );
-	int sat = atoi( sedit->text() );
-	int val = atoi( vedit->text() );
+	int hue = hedit->text().toInt();
+	int sat = sedit->text().toInt();
+	int val = vedit->text().toInt();
 
 	if ( hue > 359 || hue < 0 ) return;
 	if ( sat > 255 || sat < 0 ) return;

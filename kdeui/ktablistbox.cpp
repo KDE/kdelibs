@@ -207,7 +207,7 @@ void KTabListBoxColumn::paintCell(QPainter* paint, int row,
     switch(colType)
   {
   case KTabListBox::PixmapColumn:
-    if (string) pix = parent->dict().find(string);
+    if (!string.isNull()) pix = parent->dict().find(string);
     if (pix && !pix->isNull())
     {
       paint->drawPixmap(0, 0, *pix);
@@ -216,8 +216,7 @@ void KTabListBoxColumn::paintCell(QPainter* paint, int row,
     /*else output as string*/
 
   case KTabListBox::TextColumn:
-    paint->drawText(1, fm.ascent() +(fm.leading()),
-		    (const char*)string);
+    paint->drawText(1, fm.ascent() +(fm.leading()), string);
     break;
 
   case KTabListBox::MixedColumn:
@@ -235,8 +234,8 @@ void KTabListBoxColumn::paintCell(QPainter* paint, int row,
 	pix = parent->dict().find(pixName);
 	if (!pix)
 	{
-	  debug("KTabListBox "+QString(name())+
-		":\nno pixmap for\n`"+pixName+"' registered.");
+	  debug(("KTabListBox "+QString(name())+
+		":\nno pixmap for\n`"+pixName+"' registered.").ascii());
 	}
 	if (!pix->isNull()) paint->drawPixmap(x, 0, *pix);
 	x += pix->width()+1;
@@ -247,7 +246,7 @@ void KTabListBoxColumn::paintCell(QPainter* paint, int row,
     }
 
     paint->drawText(x+1, fm.ascent() +(fm.leading()),
-		    (const char*)string.mid(beg, string.length()-beg));
+		    string.mid(beg, string.length()-beg));
     break;
   }
 
@@ -289,7 +288,7 @@ void KTabListBoxColumn::paint(QPainter* paint)
       t+=parent->labelHeight-4;
     }
   }
-  paint->drawText(t,(parent->labelHeight-4+fm.ascent())/2,(const char*)name());
+  paint->drawText(t,(parent->labelHeight-4+fm.ascent())/2, getCaption());
 }
 
 
@@ -744,7 +743,7 @@ void KTabListBox::setColumn(int col, const QString& aName, int aWidth,
   if (col<0 || col>=numCols()) return;
 
   setColumnWidth(col,aWidth);
-  colList[col]->setName(aName);
+  colList[col]->setCaption(aName);
   colList[col]->setType(aType);
   colList[col]->setOrder(aOType,aOMode);
   colList[col]->vline=verticalLine;
@@ -945,7 +944,7 @@ void KTabListBox::changeItem(const QString& aStr, int row)
 
   if (row < 0 || row >= numRows()) return;
 
-  char *str = qstrdup(aStr);
+  char *str = qstrdup(aStr.ascii()); // TODO: make it really QString using
 
   sepStr[0] = sepChar;
   sepStr[1] = '\0';

@@ -224,11 +224,6 @@ public:
    operator const QString &()const
          { return cText; }
 /**
-* Operator to cast to const char * type
-*/
-   operator const char *()const
-         { return cText; }
-/**
 * Deep copy of converted string
 *
 * @return pointer to new string it must be freed after use

@@ -50,7 +50,7 @@ KTreeListItem::KTreeListItem(const QString& theText,
   parent(0),
   sibling(0)
 {
-  if(theText)
+  if(!theText.isNull())
     text = theText;
   if(thePixmap)
     pixmap = *thePixmap;
@@ -493,8 +493,8 @@ KTreeList
 
 // constructor
 KTreeList::KTreeList(QWidget *parent,
-			   const QString& name,
-			   WFlags f):
+		   const char* name,
+		   WFlags f):
   QTableView(parent, name, f),
   clearing(FALSE),
   current(-1),
@@ -1217,7 +1217,7 @@ void KTreeList::changeItem(KTreeListItem *toChange,
 			      const QPixmap *newPixmap)
 {
   int oldWidth = toChange->width(this);
-  if(newText)
+  if(!newText.isNull())
     toChange->setText(newText);
   if(newPixmap)
     toChange->setPixmap(newPixmap);
@@ -1861,7 +1861,7 @@ KTreeListItem *KTreeList::recursiveFind
   // we find the one we're looking for or run out
 
   while(currentSubTree) {
-    if(strcmp(*searchString, currentSubTree->getText()) == 0) {
+    if( *searchString == currentSubTree->getText()) {
       if(path->isEmpty()) {
 	retVal = currentSubTree; // found match and end of path
 	nextSubTree = 0;

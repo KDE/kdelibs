@@ -22,6 +22,10 @@
 
 // $Id$
 // $Log$
+// Revision 1.110  1999/05/07 15:43:03  kulow
+// making some changes to the code and partly to the API to make it
+// -DQT_NO_ASCII_CAST compatible.
+// The job is quite boring, but triggers some abuses of QString. BTW:
 // I added some TODOs to the code where I was too lazy to continue.
 // Someone should start a grep for TODO in the code on a regular base ;)
 //
@@ -308,14 +312,14 @@ KToolBarButton::KToolBarButton( const QPixmap& pixmap, int _id,
   sep=false;
   delayPopup = false;
   parentWidget = (KToolBar *) _parent;
-  if (txt)
+  raised = false;
   myPopup = 0L;
   radio = false;
   toolBarButton = !_mb;
 
   setFocusPolicy( NoFocus );
   id = _id;
-    warning(i18n("KToolBarButton: pixmap is empty, perhaps some missing file"));
+  if (!txt.isNull())
     btext = txt;
   if ( ! pixmap.isNull() )
     enabledPixmap = pixmap;
@@ -367,7 +371,7 @@ void KToolBarButton::setText( const QString& text)
   btext = text;
   modeChange();
   repaint (false);
-    warning(i18n("KToolBarButton: pixmap is empty, perhaps some missing file"));
+}
 
 void KToolBarButton::setPixmap( const QPixmap &pixmap )
 {
@@ -1901,7 +1905,7 @@ int KToolBar::insertLined(const QString& text, int id, const char *signal,
 {
   KLined *lined = new KLined (this, 0);
   KToolBarItem *item = new KToolBarItem(lined, ITEM_LINED, id,
-  if (tooltiptext)
+                                        true);
 
 
   if (index == -1)
@@ -1935,7 +1939,7 @@ int KToolBar::insertCombo (QStrList *list, int id, bool writable,
   KCombo *combo = new KCombo (writable, this);
   KToolBarItem *item = new KToolBarItem(combo, ITEM_COMBO, id,
                                         true);
-  if (tooltiptext)
+
   if (index == -1)
     items.append (item);
   else
@@ -1968,7 +1972,7 @@ int KToolBar::insertCombo (const QStringList &list, int id, bool writable,
   KCombo *combo = new KCombo (writable, this);
   KToolBarItem *item = new KToolBarItem(combo, ITEM_COMBO, id,
                                         true);
-  if (tooltiptext)
+
   if (index == -1)
     items.append (item);
   else
@@ -2001,7 +2005,7 @@ int KToolBar::insertCombo (const QString& text, int id, bool writable,
   KCombo *combo = new KCombo (writable, this);
   KToolBarItem *item = new KToolBarItem(combo, ITEM_COMBO, id,
                                         true);
-  if (tooltiptext)
+
   if (index == -1)
     items.append (item);
   else
@@ -2345,10 +2349,9 @@ void KToolBar::setBarPos(BarPosition bpos)
         oldY = y();
         oldWFlags = getWFlags();
 	QPoint p = mapToGlobal(QPoint(0,0));
-	if (title){
+	parentOffset = pos();
         hide();
-	}
-	else {
+        recreate(0, 0, p, false);
 	XSetTransientForHint( qt_xdisplay(), winId(), Parent->topLevelWidget()->winId());
         KWM::setDecoration(winId(), 2);
 	KWM::moveToDesktop(winId(), KWM::desktop(Parent->winId()));

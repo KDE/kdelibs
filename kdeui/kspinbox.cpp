@@ -286,7 +286,7 @@ KNumericSpinBox::~KNumericSpinBox()
 
 int KNumericSpinBox::getValue()
 {
-  return atoi(KSpinBox::getValue());
+  return KSpinBox::getValue().toInt();
 }
 
 
