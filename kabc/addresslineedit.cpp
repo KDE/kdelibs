@@ -2,7 +2,7 @@
     This file is part of libkabc.
     Copyright (c) 2002 Helge Deller <deller@gmx.de>
 		  2002 Lubos Lunak <llunak@suse.cz>
-                  2001 Carsten Pfeiffer <pfeiffer@kde.org>
+                  2001,2003 Carsten Pfeiffer <pfeiffer@kde.org>
                   2001 Waldo Bastian <bastian@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -25,6 +25,7 @@
 
 #include "addresslineedit.h"
 
+#include <qapplication.h>
 #include <qobject.h>
 #include <qptrlist.h>
 #include <qregexp.h>
@@ -33,6 +34,7 @@
 
 #include <kcompletionbox.h>
 #include <kconfig.h>
+#include <kcursor.h>
 #include <kstandarddirs.h>
 #include <kstaticdeleter.h>
 #include <kstdaccel.h>
@@ -550,24 +552,27 @@ void AddressLineEdit::dropEvent(QDropEvent *e)
 
 QStringList AddressLineEdit::addresses()
 {
-  QStringList result;
+  QApplication::setOverrideCursor( KCursor::waitCursor() ); // loading might take a while
 
+  QStringList result;
+  QString space = QChar(' ');
+  QString empty = ""; 
+  QRegExp needQuotes("[^ 0-9A-Za-z\\x0080-\\xFFFF]");
+  QString endQuote = "\" ";
+  QString addr, email;
+ 
   KABC::AddressBook *addressBook = KABC::StdAddressBook::self();
   KABC::AddressBook::Iterator it;
   for( it = addressBook->begin(); it != addressBook->end(); ++it ) {
     QStringList emails = (*it).emails();
-    QString n = (*it).prefix() + " " +
-		(*it).givenName() + " " +
-		(*it).additionalName() + " " +
-	        (*it).familyName() + " " +
+    QString n = (*it).prefix() + space +
+		(*it).givenName() + space +
+		(*it).additionalName() + space +
+	        (*it).familyName() + space +
 		(*it).suffix();
     n = n.simplifyWhiteSpace();
 
-    QRegExp needQuotes("[^ 0-9A-Za-z\\x0080-\\xFFFF]");
-    QString endQuote = "\" ";
-    QString empty = "";
     QStringList::ConstIterator mit;
-    QString addr, email;
 
     for ( mit = emails.begin(); mit != emails.end(); ++mit ) {
       email = *mit;
@@ -578,7 +583,7 @@ QStringList AddressLineEdit::addresses()
           if (n.find(needQuotes) != -1)
 	    addr = '"' + n + endQuote;
 	  else
-	    addr = n + ' ';
+	    addr = n + space;
 	}
 
 	if (!addr.isEmpty() && (email.find( '<' ) == -1)
@@ -594,12 +599,9 @@ QStringList AddressLineEdit::addresses()
   }
   KABC::DistributionListManager manager( addressBook );
   manager.load();
+  result += manager.listNames();
 
-  QStringList names = manager.listNames();
-  QStringList::Iterator jt;
-  for ( jt = names.begin(); jt != names.end(); ++jt)
-    result.append( *jt );
-  result.sort();
+  QApplication::restoreOverrideCursor();
 
   return result;
 }
