@@ -36,11 +36,13 @@
 #include <drag.h>
 
 #include <kapp.h>
+#include <kglobal.h>
 #include <kcharsets.h>
 #include <kdebug.h>
 #include <kdebugdialog.h>
 #include <klocale.h>
 #include <kiconloader.h>
+
 #include "kwm.h"
 
 #include <sys/types.h>
@@ -604,6 +606,8 @@ KApplication::~KApplication()
   delete pSearchPaths;
 
   delete pConfig;
+
+  KGlobal::freeAll();
 
   // Carefully shut down the process controller: It is very likely
   // that we receive a SIGCHLD while the destructor is running

@@ -8,7 +8,7 @@
 #include<qstring.h>
 #include<qdict.h>
 
-class QStrList;
+class QStringList;
 
 /**
 * Site-independent access to standard KDE directories.
@@ -26,7 +26,7 @@ class QStrList;
 * 
 * Ordinarily, you will not want to manually instantiate this class.
 * The global @ref KApplication object instantiates and provides const 
-* access to a <code>KStandardDirs</code> object via the 
+* access to a KStandardDirs object via the 
 * @ref KApplication::dirs method.
 *
 * @author Sirtaj Singh Kang <taj@kde.org>
@@ -146,8 +146,9 @@ public:
 	* @return The path of the executable. If it was not found, this string 
 	*	will be null.
 	*/
-	static QString findExe( const QString& appname, const QString& pathstr=QString::null,
-			     bool ignoreExecBit=false );
+	static QString findExe( const QString& appname, 
+		const QString& pathstr=QString::null,
+		     bool ignoreExecBit=false );
 
 	/** 
 	 * Finds all occurences of an executable in the system path.
@@ -167,8 +168,9 @@ public:
 	 *
 	 * @return The number of executables found, 0 if none were found.
 	 */
-	static int findAllExe( QStrList& list, const QString& appname,
-			const QString& pathstr=QString::null, bool ignoreExecBit=false );
+	static int findAllExe( QStringList& list, const QString& appname,
+			const QString& pathstr=QString::null, 
+			bool ignoreExecBit=false );
 
 private:
 
@@ -177,25 +179,24 @@ private:
 	 */
 	const QString closest( DirScope scope, const QString& suffix ) const;
 
-
+	const QString UserDir;
+	const QString KDEDir;
 
 	/** Application name. */
+	QString _appPath;
 	QString *_appName;
-	const QString_appPath;
 
 	// Directory dictionaries
 
 	QDict<QString> *_app;
 	QDict<QString> *_sysapp;
 	QDict<QString> *_sys;
+
 	QDict<QString> *_user;
 
-	QString UserDir;
-	const QString const KDEDir;
-
-  // Disallow assignment and copy-construction
-  KStandardDirs( const KStandardDirs& ) {};
-  KStandardDirs& operator= ( const KStandardDirs& ) {};
+	// Disallow assignment and copy-construction
+	KStandardDirs( const KStandardDirs& );
+	KStandardDirs& operator= ( const KStandardDirs& );
 };
 
 #endif // SSK_KSTDDIRS_H

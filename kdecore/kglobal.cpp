@@ -8,8 +8,6 @@
 #include<assert.h>
 #include"kglobal.h"
 
-#include<qpopupmenu.h>
-
 #include<kapp.h>
 
 #include<kconfig.h>
@@ -28,7 +26,7 @@ KApplication *KGlobal::kApp()
 KStandardDirs *KGlobal::dirs()
 {
 	if( _dirs == 0 ) {
-		_dirs = new KStandardDirs( kApp()->getAppName() );
+		_dirs = new KStandardDirs( kApp()->appName() );
 	}
 
 	return _dirs;
@@ -42,7 +40,8 @@ KGlobal::ConfigState KGlobal::configState()
 KConfig	*KGlobal::config()
 {
 	if( _config == 0 ) {
-		// TODO: Create global config
+		_config = kApp()->getConfig();
+		_configState = (KGlobal::ConfigState) kApp()->getConfigState();
 	}
 
 	return _config;
@@ -51,7 +50,7 @@ KConfig	*KGlobal::config()
 KConfig	*KGlobal::instanceConfig()
 {
 	if( _instanceConfig == 0 ) {
-		// TODO: Create instance config
+		_instanceConfig = kApp()->getSessionConfig();
 	}
 
 	return _instanceConfig;
@@ -59,9 +58,8 @@ KConfig	*KGlobal::instanceConfig()
 
 KIconLoader *KGlobal::iconLoader()
 {
-	assert( kapp != 0 );
-	
 	if( _iconLoader == 0 ) {
+		assert( kApp() );
 		_iconLoader = new KIconLoader();
 	}
 
@@ -91,18 +89,8 @@ KCharsets *KGlobal::charsets()
 	return _charsets;
 }
 
-QPopupMenu *KGlobal::helpMenu()
-
-	if( _helpMenu == 0 ) {
-		// TODO: Create help menu
-	}
-
-	return _helpMenu;
-}
-
-void KGlobal::cleanup()
+void KGlobal::freeAll()
 {	
-	delete _helpMenu;	_helpMenu = 0;
 	delete _iconLoader;	_iconLoader = 0;
 
 	delete _locale;		_locale = 0;
@@ -114,7 +102,7 @@ void KGlobal::cleanup()
 
 	delete _dirs;		_dirs = 0;
 }
-
+	
 // The Variables
 
 KApplication    *KGlobal::_kapp		= 0;
@@ -127,6 +115,3 @@ KIconLoader     *KGlobal::_iconLoader	= 0;
 
 KLocale         *KGlobal::_locale	= 0;
 KCharsets       *KGlobal::_charsets	= 0;
-
-QPopupMenu      *KGlobal::_helpMenu	= 0;
-

@@ -14,15 +14,11 @@
 #include<qdir.h>
 #include<qfileinfo.h>
 #include<qstring.h>
-#include<qstrlist.h>
+#include<qstringlist.h>
 
-#define KDEDIR "/opt/kde"
-#define KDEDIR_LEN 6
-
-static const QString& tokenize( QString& token, const QString& str, 
+static int tokenize( QStringList& token, const QString& str, 
 		const QString& delim );
-static const QString& selectStr( const QString& env, 
-		const QString& builtin );
+static QString selectStr( const QString& env, const QString& builtin );
 
 KStandardDirs::KStandardDirs( const QString& appName ) :
 	UserDir (	QDir::homeDirPath() ),
@@ -52,70 +48,69 @@ KStandardDirs::~KStandardDirs()
 }
 
 QString KStandardDirs::findExe( const QString& appname, 
-		const QString& pathstr, bool ignore)
+		const QString& pstr, bool ignore)
 {
-	if( pathstr == 0 ) {
-		pathstr = getenv( "PATH" );
+	QFileInfo info;
+	QStringList tokens;
+	QString p = pstr;
+	
+	if( p == QString::null ) {
+		p = getenv( "PATH" );
 	}
 
-	QString onepath;
-	QFileInfo info;
-
-	QString p(pathstr);
+	tokenize( tokens, p, ":\b" );
 
 	// split path using : or \b as delimiters
-        while( (p = tokenize( onepath, p, ":\b") ) != 0 ) {
-		onepath += "/";
-		onepath += appname;
+	for( unsigned i = 0; i < tokens.count(); i++ ) {
+		p = tokens[ i ];
+		p += "/";
+		p += appname;
 
 		// Check for executable in this tokenized path
-		info.setFile( onepath );
+		info.setFile( p );
 
 		if( info.exists() && ( ignore || info.isExecutable() )
 			       	&& info.isFile() ) {
-			return onepath;
+			return p;
 		}
-        }
-
-	// If we reach here, the executable wasn't found.
-	// So return empty string.
-
-	onepath = QString::null;
-
-	return onepath;
-}
-
-int KStandardDirs::findAllExe( QStrList& list, const QString& appname,
-			const QString& pathstr=QString::null, bool ignore )
-{
-	if( pathstr == 0 ) {
-		pathstr = getenv( "PATH" );
 	}
 
-	QString onepath;
-	QFileInfo info;
+       	// If we reach here, the executable wasn't found.
+	// So return empty string.
 
-	QString p(pathstr);
+	return QString::null;
+}
+
+int KStandardDirs::findAllExe( QStringList& list, const QString& appname,
+			const QString& pstr, bool ignore )
+{
+	QString p = pstr;
+	QFileInfo info;
+	QStringList tokens;
+
+	if( p == QString::null ) {
+		p = getenv( "PATH" );
+	}
 
 	list.clear();
+	tokenize( tokens, p, ":\b" );
 
-	// split path using : or \b as delimiters
-        while( (p = tokenize( onepath, p, ":\b") ) != 0 ) {
-		onepath += "/";
-		onepath += appname;
+	for ( unsigned i = 0; i < tokens.count(); i++ ) {
+		p = tokens[ i ];
+		p += "/";
+		p += appname;
 
-		// Check for executable in this tokenized path
-		info.setFile( onepath );
+		info.setFile( p );
 
 		if( info.exists() && (ignore || info.isExecutable())
 			       	&& info.isFile() ) {
-			list.append( onepath );
+			list.append( p );
 		}
-        }
+
+	}
 
 	return list.count();
 }
-
 
 const QString KStandardDirs::closest( DirScope method, 
 		const QString& suffix ) const
@@ -133,10 +128,10 @@ const QString KStandardDirs::closest( DirScope method,
 	if( found == 0 ) {
 		// not already inserted, so insert them now.
 		QString realsuffix(suffix);
-		if( !strncmp( suffix, "KDEDIR", 
-				KDEDIR_LEN ) ) {
+		int klen = strlen( KDEDIR );
+		if( !strncmp( suffix, "KDEDIR", klen ) ) {
 			// remove prefix KDEDIR from path
-			realsuffix += KDEDIR_LEN;
+			realsuffix += klen;
 		}
 
 		// system dir
@@ -299,40 +294,36 @@ const QString KStandardDirs::sound( DirScope s ) const
 	return closest( s, KDE_SOUNDDIR );
 }
 
-static const QString& tokenize( QString& token, const QString& str, 
+static int tokenize( QStringList& tokens, const QString& str, 
 		const QString& delim )
 {
-        token = "";
-
-        if( !str || !*str ) {
-                return 0;
-        }
-
-        // find first non-delimiter character
-        while( *str && strchr( delim, *str ) ) {
-                str++;
-        }
-
-        if( !*str ) {
-                return 0;
-        }
-
-        // find first delimiter or end, storing each non-qualifier into token
-        while( *str && !strchr( delim, *str ) ) {
-                token += *str;
-                str++;
-        }
-
-        return str;
-}
-
-static const QString& selectStr( const QString& env, const QString& builtin )
-{
-	QString result(getenv( env ));
-
-	if( result == 0 ) {
-		result = builtin;
+	int index = 0;
+	int len = str.length();
+	QString token = "";
+	
+	while( index < len ) {
+		if ( delim.find( str[ index ] ) >= 0 ) {
+			tokens.append( token );
+			token = "";
+		}
+		else {
+			token += str[ index ];
+		}
+	}
+	if ( token.length() > 0 ) {
+		tokens.append( token );
 	}
 
-	return result;
+	return tokens.count();
+}
+
+static QString selectStr( const QString& env, const QString& builtin )
+{
+	const char *res = getenv( env.ascii() );
+
+	if( res == 0 ) {
+		return builtin;
+	}
+
+	return res;
 }

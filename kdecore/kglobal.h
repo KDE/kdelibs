@@ -5,8 +5,6 @@
 #ifndef SSK_KGLOBAL_H
 #define SSK_KGLOBAL_H
 
-class QPopupMenu;
-
 class KApplication;
 class KStandardDirs;
 class KConfig;
@@ -30,7 +28,7 @@ class KGlobal
 {
 public:
 
-	static KApplication	*kapp();
+	static KApplication	*kApp();
 	static KStandardDirs	*dirs();
 	
 	enum ConfigState {
@@ -47,9 +45,6 @@ public:
 	static KLocale		*locale();
 	static KCharsets	*charsets();
 		
-	static QPopupMenu	*helpMenu();
-
-private:
 	KGlobal();
 	KGlobal( const KGlobal& );
 
@@ -64,10 +59,16 @@ private:
 	static 	KLocale		*_locale;
 	static 	KCharsets	*_charsets;
 
-	static 	QPopupMenu	*_helpMenu;
-	
+protected:
 	friend class KApplication;
-	static void cleanup();
+
+	/**
+	 * This will free all locally allocated objects and memory.
+	 * Access to any method after this will cause a reallocation.
+	 */
+	static void freeAll();
+
+	static bool newAppConfig();
 };
 
 #endif // SSK_KGLOBAL_H

@@ -687,15 +687,19 @@ bool KCharsetsData::setDefaultCharset(const KCharsetEntry *charset){
   return FALSE;
 }
 
-QString KCharsetsData::charsetFace(const KCharsetEntry *charset
-                                   ,const QString &face){
+QString KCharsetsData::charsetFace( const KCharsetEntry *charset,
+	const QString &face)
+{
+	config->setGroup("faces");
 
-  config->setGroup("faces");
-  const char *faceStr=config->readEntry(charset->name);
-  if (!faceStr) return face;
-  QString newFace(faceStr);
-  newFace.replace(QRegExp("\\*"),face);
-  return newFace;
+	if ( !config->hasKey( charset->name ) ) {
+		return face;
+	}
+
+	QString faceStr = config->readEntry( charset->name );
+	faceStr.replace(QRegExp("\\*"), face);
+
+	return faceStr;
 }
 
 bool KCharsetsData::charsetOfFace(const KCharsetEntry * charset,const QString &face){

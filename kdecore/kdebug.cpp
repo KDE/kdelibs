@@ -66,12 +66,13 @@ static QString getDescrFromNum(unsigned short _num)
   if (!KDebugCache)
       KDebugCache = new QList<KDebugEntry>;
 
-  for (KDebugEntry *ent=KDebugCache->first(); ent != 0; ent=KDebugCache->next()) {
-    if (ent->number == _num) {
-      return ent->descr.copy();
-    }
+  for ( KDebugEntry *ent = KDebugCache->first(); 
+		  ent != 0; ent = KDebugCache->next()) {
+	  if (ent->number == _num) {
+		  return ent->descr.copy();
+	  }
   }
- 
+
   if (!file.open(IO_ReadOnly)) {
     warning("Couldn't open %s", filename.ascii());
     file.close();
@@ -127,8 +128,8 @@ static QString getDescrFromNum(unsigned short _num)
   return "";
 }
 
-void kdebug_null( ushort nLevel, ushort nArea, 
-		  const char* pFormat, ... )
+void kdebug_null( ushort /*nLevel*/, ushort /*nArea*/, 
+		  const char* /*pFormat*/, ... )
 {
   return;
 }

@@ -27,7 +27,8 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kprocess.h kprocctrl.h klocale.h kiconloader.h kdebug.h	\
 	kstdaccel.h kwm.h krootprop.h kstring.h kpixmap.h dither.h \
 	kaccel.h kglobalaccel.h kclipboard.h krect.h ksize.h \
-	kpoint.h ltdl.h kprotocolmanager.h kregexp.h kstyle.h
+	kpoint.h ltdl.h kprotocolmanager.h kregexp.h kstyle.h \
+	kstddirs.h kglobal.h
 
 noinst_HEADERS = kdebugdialog.h kcharsetsdata.h kckey.h kregpriv.h
 
@@ -39,7 +40,7 @@ libkdecore_la_SOURCES = kconfig.cpp kconfigbase.cpp ksimpleconfig.cpp \
 	kchartables.cpp kpixmap.cpp dither.cpp \
 	kckey.cpp kaccel.cpp kglobalaccel.cpp kclipboard.cpp \
 	krect.cpp ksize.cpp kpoint.cpp kprotocolmanager.cpp\
-	kurl.cpp ltdl.c kregexp.cpp kstyle.cpp
+	kurl.cpp ltdl.c kregexp.cpp kstyle.cpp kstddirs.cpp kglobal.cpp
 
 libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 3:0
 libkdecore_la_LIBADD = $(LIB_QT) $(LIBDL)
@@ -54,13 +55,7 @@ SRCDOC_DEST=$(kde_htmldir)/en/kdelibs/kdecore
 kdebugdir = $(kde_confdir)
 kdebug_DATA = kdebug.areas
 
-## generate lib documentation
-srcdoc:
-	$(mkinstalldirs) $(SRCDOC_DEST)
-	kdoc -H -d $(SRCDOC_DEST) kdecore \
-		 $(include_HEADERS) -lqt
-
-kckey_h : generate_keys.sh $(QNAMESPACE_H)
+kckey.h : generate_keys.sh $(QNAMESPACE_H)
 	./generate_keys.sh $(QNAMESPACE_H)
 
 install-data-local: charsets.config 
@@ -70,6 +65,5 @@ install-data-local: charsets.config
 uninstall-local:
 	-rm -f $(kde_confdir)/charsets
 
-EXTRA_DIST = generate_keys.sh charsets.config $(kdebug_DATA) kdebugareas.txt \
-	kstddirs.h kstddirs.cpp
+EXTRA_DIST = generate_keys.sh charsets.config $(kdebug_DATA) kdebugareas.txt
 
