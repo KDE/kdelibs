@@ -1,6 +1,6 @@
 /**************************************************************************
 
-    gusout.cc  - class gusOut which implements support for Gravis
+    gusout.cc  - class GUSOut which implements support for Gravis
          Ultrasound cards through a /dev/sequencer device
     Copyright (C) 1998  Antonio Larrosa Jimenez
 
@@ -102,7 +102,7 @@ unsigned short get_word(unsigned char *p)
     return (short)v;
 }
 
-gusOut::gusOut(int d,int total)
+GUSOut::GUSOut(int d,int total)
 {
     seqfd = -1;
     devicetype=KMID_GUS;
@@ -112,16 +112,16 @@ gusOut::gusOut(int d,int total)
     lastcount=0.0;
     rate=100;
 #endif
-    ok=1;
+    _ok=1;
     
     use8bit=0;
     nvoices=total;
     vm=new voiceManager(nvoices);
 }
 
-gusOut::~gusOut()
+GUSOut::~GUSOut()
 {
-    delete Map;
+    delete map;
     closeDev();
     if (delete_GUS_patches_directory) 
     {
@@ -131,9 +131,9 @@ gusOut::~gusOut()
     }
 }
 
-void gusOut::openDev (int sqfd)
+void GUSOut::openDev (int sqfd)
 {
-    ok=1;
+    _ok=1;
     seqfd = sqfd;
     //vm->cleanLists();
     if (seqfd==-1)
@@ -181,9 +181,9 @@ void gusOut::openDev (int sqfd)
 
 }
 
-void gusOut::closeDev (void)
+void GUSOut::closeDev (void)
 {
-    if (!OK()) return;
+    if (!ok()) return;
 #ifdef HANDLETIMEINDEVICES
     SEQ_STOP_TIMER();
     SEQ_DUMPBUF();
@@ -194,10 +194,10 @@ void gusOut::closeDev (void)
     seqfd=-1;
 }
 
-void gusOut::initDev (void)
+void GUSOut::initDev (void)
 {
     int chn;
-    if (!OK()) return;
+    if (!ok()) return;
 #ifdef HANDLETIMEINDEVICES
     count=0.0;
     lastcount=0.0;
@@ -206,7 +206,7 @@ void gusOut::initDev (void)
     sysex(gm_reset, sizeof(gm_reset));
     for (chn=0;chn<16;chn++)
     {
-        chn_mute[chn]=0;
+        chnmute[chn]=0;
         chnPatchChange(chn,0);
         chnPressure(chn,127);
         chnPitchBender(chn, 0x00, 0x40);
@@ -226,7 +226,7 @@ void gusOut::initDev (void)
 }
 
 
-int gusOut::Patch(int p)
+int GUSOut::patch(int p)
 {
     if (patchloaded[p]==1) return p;
     printf("Not loaded %d!\n",p);
@@ -235,7 +235,7 @@ int gusOut::Patch(int p)
     return p;
 }
 
-void gusOut::noteOn  (uchar chn, uchar note, uchar vel)
+void GUSOut::noteOn  (uchar chn, uchar note, uchar vel)
 {
     if (vel==0)
     {
@@ -247,19 +247,19 @@ void gusOut::noteOn  (uchar chn, uchar note, uchar vel)
         {
             if (patchloaded[note+128]==0) return;
             else
-                if (patchloaded[chn_patch[chn]]==0) return;
+                if (patchloaded[chnpatch[chn]]==0) return;
         };
         int v=vm->allocateVoice(chn,note);
         int p;
         if (chn==PERCUSSION_CHANNEL)
-            SEQ_SET_PATCH(device,v ,p=Patch(note+128))
+            SEQ_SET_PATCH(device,v ,p=patch(note+128))
         else
-            SEQ_SET_PATCH(device,v ,p=Map->Patch(chn,chn_patch[chn])); 
-        SEQ_BENDER(device, v, chn_bender[chn]);
+            SEQ_SET_PATCH(device,v ,p=map->patch(chn,chnpatch[chn])); 
+        SEQ_BENDER(device, v, chnbender[chn]);
         
         SEQ_START_NOTE(device, v, note, vel);
-        //        SEQ_CONTROL(device, v, CTL_MAIN_VOLUME, chn_controller[chn][CTL_MAIN_VOLUME]);
-        SEQ_CHN_PRESSURE(device, v , chn_pressure[chn]);
+        //        SEQ_CONTROL(device, v, CTL_MAIN_VOLUME, chncontroller[chn][CTL_MAIN_VOLUME]);
+        SEQ_CHN_PRESSURE(device, v , chnpressure[chn]);
     }
     
 #ifdef GUSOUTDEBUG
@@ -267,7 +267,7 @@ void gusOut::noteOn  (uchar chn, uchar note, uchar vel)
 #endif
 }
 
-void gusOut::noteOff (uchar chn, uchar note, uchar vel)
+void GUSOut::noteOff (uchar chn, uchar note, uchar vel)
 {
     int i;
     vm->initSearch();
@@ -282,7 +282,7 @@ void gusOut::noteOff (uchar chn, uchar note, uchar vel)
 #endif
 }
 
-void gusOut::keyPressure (uchar chn, uchar note, uchar vel)
+void GUSOut::keyPressure (uchar chn, uchar note, uchar vel)
 {
     int i;
     vm->initSearch();
@@ -290,49 +290,37 @@ void gusOut::keyPressure (uchar chn, uchar note, uchar vel)
         SEQ_KEY_PRESSURE(device, i, note,vel);
 }
 
-void gusOut::chnPatchChange (uchar chn, uchar patch)
+void GUSOut::chnPatchChange (uchar chn, uchar patch)
 {
     if (chn==PERCUSSION_CHANNEL) return;
     int i;
     vm->initSearch();
     while ((i=vm->Search(chn))!=-1)
-        SEQ_SET_PATCH(device,i,Map->Patch(chn,patch)); 
-    chn_patch[chn]=patch;
+        SEQ_SET_PATCH(device,i,map->patch(chn,patch)); 
+    chnpatch[chn]=patch;
     
 }
 
-void gusOut::chnPressure (uchar chn, uchar vel)
+void GUSOut::chnPressure (uchar chn, uchar vel)
 {
     int i;
     vm->initSearch();
     while ((i=vm->Search(chn))!=-1)
         SEQ_CHN_PRESSURE(device, i , vel);
-    chn_pressure[chn]=vel;
+    chnpressure[chn]=vel;
 }
 
-void gusOut::chnPitchBender(uchar chn,uchar lsb, uchar msb)
+void GUSOut::chnPitchBender(uchar chn,uchar lsb, uchar msb)
 {
-    //chn_bender[chn]=(msb << 8) | (lsb & 0xFF);
-    //chn_bender[chn]=(msb << 7)+ (lsb);
-    chn_bender[chn]=((int)msb<<7) | (lsb & 0x7F);
+    chnbender[chn]=((int)msb<<7) | (lsb & 0x7F);
     
     int i;
     vm->initSearch();
     while ((i=vm->Search(chn))!=-1)
-        //   SEQ_PITCHBEND(device, i, chn_bender[chn]);
-        SEQ_BENDER(device, i, chn_bender[chn]);
-    /*
-     int i=0;
-     while (i<nvoices)
-     {
-     if ((vm->Used(i)==1)&&(vm->Channel(i)==chn))
-     SEQ_BENDER(device, i, chn_bender[chn]);
-     i++;
-     };
-     */
+        SEQ_BENDER(device, i, chnbender[chn]);
 }
 
-void gusOut::chnController (uchar chn, uchar ctl, uchar v) 
+void GUSOut::chnController (uchar chn, uchar ctl, uchar v) 
 {
     if ((ctl==11)||(ctl==7))
     {
@@ -345,24 +333,15 @@ void gusOut::chnController (uchar chn, uchar ctl, uchar v)
     while ((i=vm->Search(chn))!=-1)
         SEQ_CONTROL(device, i, ctl, v);
     
-    /*
-     int i=0;
-     while (i<nvoices)
-     {
-     if ((vm->Used(i)==1)&&(vm->Channel(i)==chn))
-     SEQ_CONTROL(device, i, ctl, v);
-     i++;
-     };
-     */
-    chn_controller[chn][ctl]=v;
+    chncontroller[chn][ctl]=v;
 }
 
-void gusOut::sysex(uchar *, ulong )
+void GUSOut::sysex(uchar *, ulong )
 {
     
 }
 
-void gusOut::setGUSPatchesDirectory(const char *dir)
+void GUSOut::setGUSPatchesDirectory(const char *dir)
 {
     if ((dir==NULL)||(dir[0]==0)) return;
     if (delete_GUS_patches_directory) delete GUS_patches_directory;
@@ -372,13 +351,13 @@ void gusOut::setGUSPatchesDirectory(const char *dir)
     delete_GUS_patches_directory=1;
 }
 
-char *gusOut::patchName(int pgm)
+char *GUSOut::patchName(int pgm)
 {
     return GUS_voice_names[pgm];
 }
 
 
-int gusOut::loadPatch(int pgm)
+int GUSOut::loadPatch(int pgm)
 {
     struct pat_header header;
     struct sample_header sample;
@@ -541,7 +520,7 @@ int gusOut::loadPatch(int pgm)
 }
 
 
-void gusOut::setPatchesToUse(int *patchesused)
+void GUSOut::setPatchesToUse(int *patchesused)
 {
     int k;
     for (k=0;k<256;k++) patchloaded[k]=0;
@@ -586,7 +565,7 @@ int compare_decreasing(const void *a,const void *b)
     return ai->used<bi->used;
 }
 
-void gusOut::getPatchesLoadingOrder(int *patchesused,int *patchesordered)
+void GUSOut::getPatchesLoadingOrder(int *patchesused,int *patchesordered)
 {
     struct instr_gm
     {
@@ -695,8 +674,8 @@ void gusOut::getPatchesLoadingOrder(int *patchesused,int *patchesordered)
     }
 }
 
-//char *gusOut::GUS_patches_directory="/mnt/dosc/gravis/patches";
-const char *gusOut::GUS_patches_directory="/dos/ultrasnd/midi";
+//char *GUSOut::GUS_patches_directory="/mnt/dosc/gravis/patches";
+const char *GUSOut::GUS_patches_directory="/dos/ultrasnd/midi";
 
-int gusOut::delete_GUS_patches_directory = 0;
+int GUSOut::delete_GUS_patches_directory = 0;
 /* No, this doesn't delete any file :-) it's just for internal use */

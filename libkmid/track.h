@@ -27,7 +27,7 @@
 #include <stdio.h>
 #include "dattypes.h"
 
-struct Midi_event
+struct MidiEvent
 {
 	uchar	command;
         uchar   chn;
@@ -48,7 +48,7 @@ struct Midi_event
 
 };
 
-class track
+class MidiTrack
 {
 private:
 	int	id;
@@ -59,8 +59,8 @@ private:
 	
         bool    note[16][128]; // Notes that are set on or off by this track
         ulong	current_ticks; // Total number of ticks since beggining of song
-	ulong    delta_ticks;   // Delta ticks from previous event to next event
-	ulong    wait_ticks;    // Wait ticks from previous event in other track
+	ulong   delta_ticks;   // Delta ticks from previous event to next event
+	ulong   wait_ticks;    // Wait ticks from previous event in other track
 					// to next event in this track
 
 	ulong	currentpos; // Some songs don't have a endoftrack event, so
@@ -69,7 +69,7 @@ private:
 
 	ulong	readVariableLengthValue(void);
 
-	uchar lastcommand;  // This is to run light without overbyte :-)
+	uchar   lastcommand;  // This is to run light without overbyte :-)
 
 
 	double	current_time; // in ms.
@@ -83,8 +83,8 @@ private:
 	int	power2to(int i);
 
 public:
-	track(FILE *file,int tpcn,int Id);
-	~track();
+	MidiTrack(FILE *file,int tpcn,int Id);
+	~MidiTrack();
 
 	int	ticksPassed (ulong ticks); // returns 0 if OK, and 1 if 
 					// you didn't handle this track well
@@ -100,7 +100,7 @@ public:
 	void 	changeTempo(ulong t);
 
 
-        void	readEvent(Midi_event *ev);
+        void	readEvent(MidiEvent *ev);
 	void	init(void);
 	void	clear(void);
 

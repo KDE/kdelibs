@@ -43,7 +43,7 @@
 //#define TRACKDEBUG
 //#define TRACKDEBUG2
 
-track::track(FILE *file,int tpcn,int Id)
+MidiTrack::MidiTrack(FILE *file,int tpcn,int Id)
 {
     id=Id;
     tPCN=tpcn;
@@ -57,7 +57,7 @@ track::track(FILE *file,int tpcn,int Id)
 	};
     size=readLong(file);
 #ifdef TRACKDEBUG
-    fprintf(stderr,"Track %d : Size %ld\n",id,size);
+    printfdebug("Track %d : Size %ld\n",id,size);
 #endif
     data=(uchar *)malloc(size);
     if (data==NULL)
@@ -81,7 +81,7 @@ track::track(FILE *file,int tpcn,int Id)
     init();
 }
 
-track::~track()
+MidiTrack::~MidiTrack()
 {
     free(data);
     endoftrack=1;
@@ -89,21 +89,12 @@ track::~track()
     size=0;
 }
 
-int track::power2to(int i)
+int MidiTrack::power2to(int i)
 {
     return 1<<i;
-    /*
-    int d=1;
-    while (i>0)
-    {
-        d*=2;
-        i--;
-    }
-    return d;
-    */
 }
 
-ulong track::readVariableLengthValue(void)
+ulong MidiTrack::readVariableLengthValue(void)
 {
     ulong dticks=0;
     
@@ -142,45 +133,45 @@ ulong track::readVariableLengthValue(void)
     }
 #endif
 #ifdef TRACKDEBUG
-    fprintf(stderr,"track(%d): DTICKS : %ld\n",id,dticks);
+    printfdebug("track(%d): DTICKS : %ld\n",id,dticks);
     usleep(10);
 #endif
     return dticks;
 }
 
-int track::ticksPassed (ulong ticks)
+int MidiTrack::ticksPassed (ulong ticks)
 {
     if (endoftrack==1) return 0;
     if (ticks>wait_ticks) 
 	{
-	fprintf(stderr, "track (%d): ERROR : TICKS PASSED > WAIT TICKS\n", id);
+	printfdebug("track (%d): ERROR : TICKS PASSED > WAIT TICKS\n", id);
 	return 1;
 	}
     wait_ticks-=ticks;
     return 0;
 }
 
-int track::msPassed (ulong ms)
+int MidiTrack::msPassed (ulong ms)
 {
     if (endoftrack==1) return 0;
     current_time+=ms;
-    //printf("old + %ld = CURR %g  ",ms,current_time);
-    if (current_time>time_at_next_event) 
+    //fprintf(stderr, "old + %ld = CURR %g  ", ms,current_time);
+    if ( current_time>time_at_next_event )
 	{
 	fprintf(stderr, "track (%d): ERROR : MS PASSED > WAIT MS\n", id);
 	return 1;
 	}
 #ifdef TRACKDEBUG
-    if (current_time==time_at_next_event) fprintf(stderr,"track(%d): _OK_",id);
+    if (current_time==time_at_next_event) printfdebug("track(%d): _OK_",id);
 #endif
     return 0;
 }
 
-int track::currentMs(double ms)
+int MidiTrack::currentMs(double ms)
 {
     if (endoftrack==1) return 0;
     current_time=ms;
-    //printf("CURR %g",current_time);
+    //printfdebug("CURR %g",current_time);
 #ifdef PEDANTIC_TRACK
     if (current_time>time_at_next_event) 
     {
@@ -192,7 +183,7 @@ int track::currentMs(double ms)
     return 0;
 }
 
-void track::readEvent(Midi_event *ev)
+void MidiTrack::readEvent(MidiEvent *ev)
 {
     int i,j;
     if (endoftrack==1) 
@@ -201,9 +192,9 @@ void track::readEvent(Midi_event *ev)
         return;
     }
     /*
-     printf("...... %d\n",id);
-     printf("current : %g , tane : %g\n",current_time,time_at_next_event);
-     printf("......\n");
+     printfdebug("...... %d\n",id);
+     printfdebug("current : %g , tane : %g\n",current_time,time_at_next_event);
+     printfdebug("......\n");
      */
     int skip_event=0;
     current_time=time_at_next_event;
@@ -246,14 +237,14 @@ void track::readEvent(Midi_event *ev)
         
 #ifdef TRACKDEBUG2
         if (ev->chn==6) {
-            if (ev->vel==0) fprintf(stderr,"Note Onf\n");
-            else fprintf (stderr,"Note On\n");
+            if (ev->vel==0) printfdebug("Note Onf\n");
+            else printfdebug("Note On\n");
         };
 #endif
 break;
     case (MIDI_NOTEOFF) :
 #ifdef TRACKDEBUG2
-        if (ev->chn==6) fprintf (stderr, "Note Off\n");
+        if (ev->chn==6) printfdebug("Note Off\n");
 #endif
         ev->note = *ptrdata;ptrdata++;currentpos++; 
         ev->vel  = *ptrdata;ptrdata++;currentpos++;
@@ -262,52 +253,52 @@ break;
         break;
     case (MIDI_KEY_PRESSURE) :
 #ifdef TRACKDEBUG2
-        if (ev->chn==6) fprintf (stderr,"Key press\n");
+        if (ev->chn==6) printfdebug ("Key press\n");
 #endif
         ev->note = *ptrdata;ptrdata++;currentpos++; 
         ev->vel  = *ptrdata;ptrdata++;currentpos++;
         break;
     case (MIDI_PGM_CHANGE) :
 #ifdef TRACKDEBUG2
-        if (ev->chn==6) fprintf (stderr, "Pgm\n");
+        if (ev->chn==6) printfdebug ("Pgm\n");
 #endif
         ev->patch = *ptrdata;ptrdata++;currentpos++; 
         break;
     case (MIDI_CHN_PRESSURE) :
 #ifdef TRACKDEBUG2
-        if (ev->chn==6) fprintf (stderr, "Chn press\n");
+        if (ev->chn==6) printfdebug ("Chn press\n");
 #endif
         ev->vel  = *ptrdata;ptrdata++;currentpos++;
         break;
     case (MIDI_PITCH_BEND) :
 #ifdef TRACKDEBUG2
-        if (ev->chn==6) fprintf (stderr, "Pitch\n");
+        if (ev->chn==6) printfdebug ("Pitch\n");
 #endif
         ev->d1 = *ptrdata;ptrdata++;currentpos++; 
         ev->d2 = *ptrdata;ptrdata++;currentpos++;
         break;
     case (MIDI_CTL_CHANGE) :
 #ifdef TRACKDEBUG2
-        if (ev->chn==6) fprintf (stderr, "Ctl\n");
+        if (ev->chn==6) printfdebug (stderr, "Ctl\n");
 #endif
         ev->ctl = *ptrdata;ptrdata++; currentpos++;
         ev->d1  = *ptrdata;ptrdata++;currentpos++;
         /*
          switch (ev->ctl)
          {
-         case (96) : fprintf(stderr,"RPN Increment\n");break;
-         case (97) : fprintf(stderr,"RPN Decrement\n");break;
-         case (98) : fprintf(stderr,"nRPN 98 %d\n",ev->d1);break;
-         case (99) : fprintf(stderr,"nRPN 99 %d\n",ev->d1);break;
-         case (100) : fprintf(stderr,"RPN 100 %d\n",ev->d1);break;
-         case (101) : fprintf(stderr,"RPN 101 %d\n",ev->d1);break;
+         case (96) : printfdebug("RPN Increment\n");break;
+         case (97) : printfdebug("RPN Decrement\n");break;
+         case (98) : printfdebug("nRPN 98 %d\n",ev->d1);break;
+         case (99) : printfdebug("nRPN 99 %d\n",ev->d1);break;
+         case (100) : printfdebug("RPN 100 %d\n",ev->d1);break;
+         case (101) : printfdebug("RPN 101 %d\n",ev->d1);break;
          };
          */
         break;
         
     case (MIDI_SYSTEM_PREFIX) :
 #ifdef TRACKDEBUG2
-        if (ev->chn==6) fprintf (stderr,"Sys Prefix\n");
+        if (ev->chn==6) printfdebug ("Sys Prefix\n");
 #endif
         switch ((ev->command|ev->chn))
         {
@@ -330,7 +321,7 @@ break;
             break;
         case (0xFE):
         case (0xF8):
-            //		fprintf(stderr,"Active sensing\n");
+            //		printfdebug("Active sensing\n");
             break;
         case (META_EVENT) : 
             ev->d1=*ptrdata;ptrdata++;currentpos++;
@@ -361,7 +352,7 @@ break;
                     delta_ticks = wait_ticks = ~0;
                     time_at_next_event=10000 * 60000L;
 #ifdef TRACKDEBUG
-                    fprintf(stderr,"EndofTrack %d event\n",id);
+                    printfdebug("EndofTrack %d event\n",id);
 #endif
                 }
                 break;
@@ -383,7 +374,7 @@ break;
                     //  ticks_from_previous_tempochange=0;
                     // 	time_at_previous_tempochange=current_time;
 #ifdef TRACKDEBUG
-                    fprintf(stderr,"Set Tempo : %ld (track %d)\n",tempo,id);
+                    printfdebug("Track %d : Set Tempo : %ld\n",id,tempo);
 #endif
 #ifdef CHANGETEMPO_ONLY_IN_TRACK0
                     if (id!=0) skip_event=1;
@@ -397,10 +388,10 @@ break;
                 ev->d4=*ptrdata;ptrdata++;currentpos++;
                 ev->d5=*ptrdata;ptrdata++;currentpos++;
 #ifdef TRACKDEBUG
-                fprintf(stderr,"TIME SIGNATURE :\n");	
-                fprintf(stderr,"%d\n",ev->d2);
-                fprintf(stderr,"----  %d metronome , %d number of 32nd notes per quarter note\n",ev->d4,ev->d5);
-                fprintf(stderr,"%d\n",ev->d3);
+                printfdebug("TIME SIGNATURE :\n");	
+                printfdebug("%d\n",ev->d2);
+                printfdebug("----  %d metronome , %d number of 32nd notes per quarter note\n",ev->d4,ev->d5);
+                printfdebug("%d\n",ev->d3);
 #endif
                 break;
             case (ME_TRACK_SEQ_NUMBER) :
@@ -469,7 +460,7 @@ break;
         endoftrack=1;
         delta_ticks = wait_ticks = ~0;	
         time_at_next_event=10000 * 60000L;
-        fprintf(stderr,"track (%d): EndofTrack reached\n",id);
+        printfdebug("track (%d): EndofTrack reached\n",id);
     }
 #endif
     if (endoftrack==0)
@@ -500,7 +491,7 @@ break;
 }
 
 
-void track::clear(void)
+void MidiTrack::clear(void)
 {
     endoftrack=1;
     ptrdata=data;
@@ -521,7 +512,7 @@ void track::clear(void)
 }
 
 
-void track::init(void)
+void MidiTrack::init(void)
 {
     if (data==0L) { clear(); return; };
     endoftrack=0;
@@ -546,29 +537,21 @@ void track::init(void)
     //printf("tane1 : %g\n",time_at_next_event);
 }
 
-void track::changeTempo(ulong t)
+void MidiTrack::changeTempo(ulong t)
 {
     if (endoftrack==1) return;
     if (tempo==t) return;
     double ticks;
-    //	printf("********-----%d, %d\n",id,tPCN);
     time_at_previous_tempochange=current_time;
-    //	printf("tane : %g , current : %g\n",time_at_next_event,current_time);
     ticks=MS2T(time_at_next_event-current_time);
-    //	printf("ticks : %g , oldtime : %g, oldtempo : %ld\n"
-    //				,ticks,time_at_next_event,tempo);
-    //	printf("ticks from previous timechange : %g\n",
-    //				ticks_from_previous_tempochange);
     tempo=t;
-    //	printf("deltaticks : %ld\n",delta_ticks);
-    //	printf("The Tempo has changed in track %d, now it is set to %ld\n",id,tempo);
     time_at_next_event=T2MS(ticks)+current_time;
-    //	printf("time : %g\n",time_at_next_event);
     ticks_from_previous_tempochange=ticks;
     
 }
+
 /*
-double track::absMsOfNextEvent (void) 
+double MidiTrack::absMsOfNextEvent (void) 
 {
     //printf("%d : %g\n",id,time_at_next_event);
     return time_at_next_event;

@@ -37,8 +37,8 @@ struct Keymap
 class MidiMapper
 {
 private:
-	int	ok;
-	uchar	channel[16]; 
+	int	_ok;
+	uchar	channelmap[16]; 
 	Keymap *channelKeymap[16]; // pointer to the keymap to use for a channel
 				// this is to make it faster
 				// The index is with the real channel (already mapped)
@@ -52,48 +52,54 @@ private:
 	Keymap *keymaps; // Real linked list of keymaps used around the program
 
 
-	char *	filename; // Stores the name of the file from which the map
-			// was loaded
+	char *	filename; 
+	   // Stores the name of the file from which the map was loaded
 
-	int mapExpressionToVolumeEvents; // Simulate expression events with volume events
+	int mapExpressionToVolumeEvents; 
+		// Simulate expression events with volume events
+
 	int mapPitchBender;  // Use or not use the next variable
-	int PitchBenderRatio; // Indicates the ratio between the standard and the Synth's Pitch Bender
-			//	engine. The number sent to the synth is multiplied by this and dividied
-			//	by 4096. Thus if PitchBenderRatio is 4096, the synth's pitch bender works as the standard
+
+	int pitchBenderRatio; 
+
+	  // Indicates the ratio between the standard and the synth's pitch
+	  // bender engine. The number sent to the synth is multiplied by this
+          // and dividied by 4096. Thus if PitchBenderRatio is 4096, the synth's
+	  // pitch bender works as the standard one
 
         void getValue(char *s,char *v);
         void removeSpaces(char *s);
         int  countWords(char *s);
-        void getWord(char *t,char *s,int w); // get from s the word in position
-                                             //  w and put it in t
+        void getWord(char *t,char *s,int w); 
+	  // get from s the word in position  w and store it in t
 
 
-        void DeallocateMaps(void);
+        void deallocateMaps(void);
         Keymap *createKeymap(char *name,uchar use_same_note=0,uchar note=0);
 	void readPatchmap(FILE *fh);
 	void readKeymap(FILE *fh,char *first_line);
 	void readChannelmap(FILE *fh);
 	void readOptions(FILE *fh);
 
-        void AddKeymap(Keymap *newkm);
-	Keymap *GiveMeKeymap(char *n);
+        void addKeymap(Keymap *newkm);
+	Keymap *keymap(char *n);
 
 public:
 	MidiMapper(const char *name);
 	~MidiMapper();
 
+	void loadFile(const char *name);	
+	int  ok(void) { return _ok; };
 
-	void LoadFile(const char *name);	
-	int  OK(void) {return ok;};
 
-
-	uchar Channel(uchar chn) { return channel[chn];};
-	uchar Patch(uchar chn,uchar pgm);
-	uchar Key(uchar chn,uchar pgm, uchar note);
-	void  PitchBender(uchar chn,uchar &lsb,uchar &msb);
-        void  Controller(uchar chn,uchar &ctl,uchar &v);
+	uchar channel(uchar chn) { return channelmap[chn];};
+	uchar patch(uchar chn,uchar pgm);
+	uchar key(uchar chn,uchar pgm, uchar note);
+	void  pitchBender(uchar chn,uchar &lsb,uchar &msb);
+        void  controller(uchar chn,uchar &ctl,uchar &v);
 
 	char *getFilename(void);
 
 };
+
 #endif

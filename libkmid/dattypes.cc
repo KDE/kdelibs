@@ -26,26 +26,69 @@
 
 ushort readShort(FILE *fh)
 {
-    uchar c1;
-    uchar c2;
-    
-    fread(&c1,1,1,fh);
-    fread(&c2,1,1,fh);
-    return (c1<<8)|c2;
-};
+  uchar c1;
+  uchar c2;
+
+  fread(&c1,1,1,fh);
+  fread(&c2,1,1,fh);
+  return (c1<<8)|c2;
+}
 
 ulong readLong(FILE *fh)
 {
-    uchar c1;
-    uchar c2;
-    uchar c3;
-    uchar c4;
-    ulong l;
-    
-    fread(&c1,1,1,fh);
-    fread(&c2,1,1,fh);
-    fread(&c3,1,1,fh);
-    fread(&c4,1,1,fh);
-    l=((c1<<24)|(c2<<16)|(c3<<8)|c4);
-    return l;
-};
+  uchar c1;
+  uchar c2;
+  uchar c3;
+  uchar c4;
+  ulong l;
+
+  fread(&c1,1,1,fh);
+  fread(&c2,1,1,fh);
+  fread(&c3,1,1,fh);
+  fread(&c4,1,1,fh);
+  l=((c1<<24)|(c2<<16)|(c3<<8)|c4);
+  return l;
+}
+
+void printfdebug(const char *format, int a, int b, int c)
+{
+  char *s=(char *)format;
+  int i=0;
+  while (*s!=0)
+  {
+    if (*s=='%') i++;
+    s++;
+  } 
+  switch (i)
+  {
+    case (1) : fprintf(stderr,format,a); break;
+    case (2) : fprintf(stderr,format,a,b); break;
+    case (3) : fprintf(stderr,format,a,b,c); break;
+    default : fprintf(stderr,format); break;
+  }
+   
+}
+
+void printfdebug(const char *format, int a, long b)
+{
+    fprintf(stderr,format,a,b);
+}
+
+void printfdebug(const char *format, double a, double b, double c)
+{
+  char *s=(char *)format;
+  int i=0;
+  while (*s!=0)
+  {
+    if (*s=='%') i++;
+    s++;
+  } 
+  switch (i)
+  {
+    case (1) : fprintf(stderr,format,a); break;
+    case (2) : fprintf(stderr,format,a,b); break;
+    case (3) : fprintf(stderr,format,a,b,c); break;
+    default : fprintf(stderr,format); break;
+  }
+   
+}

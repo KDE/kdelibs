@@ -1,7 +1,7 @@
 /**************************************************************************
 
-    player.h  - class player, which plays a set of tracks
-    Copyright (C) 1997,98  Antonio Larrosa Jimenez
+    player.h  - class MidiPlayer. Plays a set of tracks
+    Copyright (C) 1997,98,99  Antonio Larrosa Jimenez
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -94,18 +94,18 @@ struct PlayerController
     
     volatile double      ratioTempo; // ratio to multiply the tempo
     
-    volatile Midi_event	*ev;
+    volatile MidiEvent	*ev;
 };
 
 
-class midiStat;
+class MidiStatus;
 
-class player
+class MidiPlayer
 {
     
     DeviceManager *midi;
-    midifileinfo *info;
-    track **tracks;
+    MidiFileInfo *info;
+    MidiTrack **tracks;
     SpecialEvent *spev;
     NoteArray *na;
     
@@ -122,35 +122,30 @@ class player
     
 public:
 
-    player(DeviceManager *midi_,PlayerController *pctl);
-    ~player();
+    MidiPlayer(DeviceManager *midi_,PlayerController *pctl);
+    ~MidiPlayer();
     
     int loadSong(const char *filename);
     void removeSong(void); // Unload the current song, so that everything is empty
     
     int isSongLoaded(void) { return songLoaded; };
-    SpecialEvent *takeSpecialEvents() { return spev; };
-    void writeSPEV(void);
+    SpecialEvent *specialEvents() { return spev; };
+    void debugSpecialEvents(void);
+
     //NoteArray *parseNotes(void);
+
     NoteArray *getNoteArray(void) { return na; };
     
     void play(int calloutput,void output(void));
     
     void setParseSong(bool b);
     
-    midifileinfo *Info(void) {return info;};
+    MidiFileInfo *getInfo(void) { return info; };
     
-    void SetPos(ulong gotomsec,midiStat *midistat);
+    void setPos(ulong gotomsec,MidiStatus *midistat);
     
-    void changeTempoRatio(double ratio);
+    void setTempoRatio(double ratio);
     
-
-    /*
-     void pause(int i);
-     void stop(void);
-     
-     void go_to(ulong ticks);
-     */
 };
 
 #endif

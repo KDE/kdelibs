@@ -1,7 +1,7 @@
 /**************************************************************************
 
     midfile.cc - function which reads a midi file,and creates the track classes
-    Copyright (C) 1997,98  Antonio Larrosa Jimenez
+    Copyright (C) 1997,98,99  Antonio Larrosa Jimenez
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -31,6 +31,7 @@
 #include "../version.h"
 #include "sys/stat.h"
 
+int fsearch(FILE *fh,const char *text,long *ptr);
 
 /* This function gives the metronome tempo, from a tempo data as found in
  a midi file */
@@ -44,7 +45,7 @@ double metronomeTempoToTempo(ulong x)
     return ((double)60*x)/1000000;
 }
 
-int decompressFile(const char *gzname, char *tmpname)
+int uncompressFile(const char *gzname, char *tmpname)
 // Returns 0 if OK, 1 if error (tmpname not set)
 {
     char *cmd=new char[20+strlen(gzname)];
@@ -97,10 +98,10 @@ int decompressFile(const char *gzname, char *tmpname)
     return 0;
 }
 
-track **readMidiFile(const char *name,midifileinfo *info,int &ok)
+MidiTrack **readMidiFile( const char *name, MidiFileInfo *info, int &ok)
 {
     ok=1;
-    track **Tracks;
+    MidiTrack **tracks;
 
     struct stat buf;
     stat(name,&buf);
@@ -125,7 +126,7 @@ track **readMidiFile(const char *name,midifileinfo *info,int &ok)
         fclose(fh);
         char tempname[200];
         printf("Trying to open zipped midi file...\n");
-        if (decompressFile(name,tempname)!=0)
+        if (uncompressFile(name,tempname)!=0)
         {
             printf("ERROR: %s is not a (zipped) midi file\n",name);
             ok=-2;
@@ -163,8 +164,8 @@ track **readMidiFile(const char *name,midifileinfo *info,int &ok)
         return NULL;
     }
     if (header_size>6) fseek(fh,header_size-6,SEEK_CUR);
-    Tracks=new track*[info->ntracks];
-    if (Tracks==NULL)
+    tracks=new MidiTrack*[info->ntracks];
+    if (tracks==NULL)
     {
         printf("ERROR: Not enough memory\n");
         fclose(fh);
@@ -183,8 +184,8 @@ track **readMidiFile(const char *name,midifileinfo *info,int &ok)
             ok=-5;
             return NULL;
         }
-        Tracks[i]=new track(fh,info->ticksPerCuarterNote,i);
-        if (Tracks[i]==NULL)
+        tracks[i]=new MidiTrack(fh,info->ticksPerCuarterNote,i);
+        if (tracks[i]==NULL)
         {
             printf("ERROR: Not enough memory");
             fclose(fh);
@@ -196,11 +197,11 @@ track **readMidiFile(const char *name,midifileinfo *info,int &ok)
     
     fclose(fh);
     
-    return Tracks;
+    return tracks;
     
 }
 
-void parseInfoData(midifileinfo *info,track **Tracks,float ratioTempo)
+void parseInfoData(MidiFileInfo *info,MidiTrack **tracks,float ratioTempo)
 {
     
     info->ticksTotal=0;
@@ -229,13 +230,13 @@ void parseInfoData(midifileinfo *info,track **Tracks,float ratioTempo)
     int j;
     for (i=0;i<info->ntracks;i++)
     {
-        Tracks[i]->init();
-        Tracks[i]->changeTempo(tempo);
+        tracks[i]->init();
+        tracks[i]->changeTempo(tempo);
     }
     double prevms=0;
     double minTime=0;
     double maxTime;
-    Midi_event *ev=new Midi_event;
+    MidiEvent *ev=new MidiEvent;
     while (parsing)
     {
         prevms=minTime;
@@ -245,10 +246,10 @@ void parseInfoData(midifileinfo *info,track **Tracks,float ratioTempo)
         minTime=maxTime;
         while (trk<info->ntracks)
         {
-            if (Tracks[trk]->absMsOfNextEvent()<minTime)
+            if (tracks[trk]->absMsOfNextEvent()<minTime)
             {
                 minTrk=trk;
-                minTime=Tracks[minTrk]->absMsOfNextEvent();
+                minTime=tracks[minTrk]->absMsOfNextEvent();
             }
             trk++;
         }
@@ -264,12 +265,12 @@ void parseInfoData(midifileinfo *info,track **Tracks,float ratioTempo)
             trk=0;
             while (trk<info->ntracks)
             {
-                Tracks[trk]->currentMs(minTime);
+                tracks[trk]->currentMs(minTime);
                 trk++;
             }
         }
         trk=minTrk;
-        Tracks[trk]->readEvent(ev);
+        tracks[trk]->readEvent(ev);
         
         switch (ev->command)
         {
@@ -288,7 +289,7 @@ void parseInfoData(midifileinfo *info,track **Tracks,float ratioTempo)
                 tempo=(ulong)(((ev->data[0]<<16)|(ev->data[1]<<8)|(ev->data[2])) * ratioTempo);
                 for (j=0;j<info->ntracks;j++)
                 {
-                    Tracks[j]->changeTempo(tempo);
+                    tracks[j]->changeTempo(tempo);
                 }
             }
             break;
@@ -300,7 +301,7 @@ void parseInfoData(midifileinfo *info,track **Tracks,float ratioTempo)
     
     for (i=0;i<info->ntracks;i++)
     {
-        Tracks[i]->init();
+        tracks[i]->init();
     }
     
 #ifdef MIDFILEDEBUG
@@ -313,7 +314,7 @@ void parseInfoData(midifileinfo *info,track **Tracks,float ratioTempo)
 }
 
 
-void parsePatchesUsed(track **Tracks,midifileinfo *info,int gm)
+void parsePatchesUsed(MidiTrack **tracks,MidiFileInfo *info,int gm)
 {
     int i;
     for (i=0;i<256;i++)
@@ -331,13 +332,13 @@ void parsePatchesUsed(track **Tracks,midifileinfo *info,int gm)
     int j;
     for (i=0;i<info->ntracks;i++)
     {
-        Tracks[i]->init();
+        tracks[i]->init();
     }
     double prevms=0;
     double minTime=0;
     double maxTime;
     ulong tmp;
-    Midi_event *ev=new Midi_event;
+    MidiEvent *ev=new MidiEvent;
     int pgminchannel[16];
     for (i=0;i<16;i++)
     {
@@ -353,10 +354,10 @@ void parsePatchesUsed(track **Tracks,midifileinfo *info,int gm)
         minTime=maxTime;
         while (trk<info->ntracks)
         {
-            if (Tracks[trk]->absMsOfNextEvent()<minTime)
+            if (tracks[trk]->absMsOfNextEvent()<minTime)
             {
                 minTrk=trk;
-                minTime=Tracks[minTrk]->absMsOfNextEvent();
+                minTime=tracks[minTrk]->absMsOfNextEvent();
             }
             trk++;
         }
@@ -372,12 +373,12 @@ void parsePatchesUsed(track **Tracks,midifileinfo *info,int gm)
             trk=0;
             while (trk<info->ntracks)
             {
-                Tracks[trk]->currentMs(minTime);
+                tracks[trk]->currentMs(minTime);
                 trk++;
             }
         }
         trk=minTrk;
-        Tracks[trk]->readEvent(ev);
+        tracks[trk]->readEvent(ev);
         switch (ev->command)
         {
         case (MIDI_NOTEON) : 
@@ -398,7 +399,7 @@ void parsePatchesUsed(track **Tracks,midifileinfo *info,int gm)
                     //                   printf("setTempo %ld\n",tempo);
                     for (j=0;j<info->ntracks;j++)
                     {
-                        Tracks[j]->changeTempo(tempo);
+                        tracks[j]->changeTempo(tempo);
                     }
                 }
             }
@@ -410,7 +411,7 @@ void parsePatchesUsed(track **Tracks,midifileinfo *info,int gm)
     
     for (i=0;i<info->ntracks;i++)
     {
-        Tracks[i]->init();
+        tracks[i]->init();
     }
     
 }

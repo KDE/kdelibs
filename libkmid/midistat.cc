@@ -1,7 +1,7 @@
 /**************************************************************************
 
-    midistat.cc	- class midiStat, change it internally and then send it. 
-    Copyright (C) 1997,98  Antonio Larrosa Jimenez
+    midistat.cc	- class MidiStatus, change it internally and then send it. 
+    Copyright (C) 1997,98,99  Antonio Larrosa Jimenez
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@
 
 extern int MT32toGM[128];
 
-midiStat::midiStat()
+MidiStatus::MidiStatus()
 {
     int i;
     tempo=1000000;
@@ -48,29 +48,29 @@ midiStat::midiStat()
     
 }
 
-midiStat::~midiStat()
+MidiStatus::~MidiStatus()
 {
 }
 
 //    void noteOn	( uchar chn, uchar note, uchar vel );
 //    void noteOff	( uchar chn, uchar note, uchar vel );
 
-void midiStat::chnPatchChange	( uchar chn, uchar patch )
+void MidiStatus::chnPatchChange	( uchar chn, uchar patch )
 {
     chn_patch[chn]=patch;
 }
 
-void midiStat::chnPressure	( uchar chn, uchar vel )
+void MidiStatus::chnPressure	( uchar chn, uchar vel )
 {
     chn_pressure[chn]=vel;
 }
 
-void midiStat::chnPitchBender	( uchar chn, uchar lsb,  uchar msb )
+void MidiStatus::chnPitchBender	( uchar chn, uchar lsb,  uchar msb )
 {
     chn_bender[chn]=((int)msb<<8|lsb);
 }
 
-void midiStat::chnController	( uchar chn, uchar ctl , uchar v )
+void MidiStatus::chnController	( uchar chn, uchar ctl , uchar v )
 {
     if (ctl==7) chn_lastisvolumeev[chn]=1;
     else if (ctl==11) chn_lastisvolumeev[chn]=0;
@@ -78,12 +78,12 @@ void midiStat::chnController	( uchar chn, uchar ctl , uchar v )
     chn_controller[chn][ctl]=v;
 }
 
-void midiStat::tmrSetTempo(int v)
+void MidiStatus::tmrSetTempo(int v)
 {
     tempo=v;
 }
 
-void midiStat::sendData(DeviceManager *midi,int gm)
+void MidiStatus::sendData(DeviceManager *midi,int gm)
 {
     for (int chn=0;chn<N_CHANNELS;chn++)
     {

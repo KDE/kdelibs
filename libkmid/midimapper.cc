@@ -29,33 +29,33 @@
 
 MidiMapper::MidiMapper(const char *name)
 {
-    ok=1;
+    _ok=1;
     keymaps=NULL;
     filename=NULL;
     mapPitchBender=0;
     mapExpressionToVolumeEvents=0;
     if ((name==NULL)||(name[0]==0))
     {
-        DeallocateMaps();    
+        deallocateMaps();    
         int i;
         for (i=0;i<16;i++) 
         {
-            channel[i]=i;
+            channelmap[i]=i;
             channelPatchForced[i]=-1;
         }
         for (i=0;i<128;i++) patchmap[i]=i;
     }
     else
-        LoadFile(name);
+        loadFile(name);
 }
 
 MidiMapper::~MidiMapper()
 {
     if (filename!=NULL) delete filename;
-    DeallocateMaps();
+    deallocateMaps();
 }
 
-void MidiMapper::DeallocateMaps(void)
+void MidiMapper::deallocateMaps(void)
 {
     int i;
     for (i=0;i<16;i++) channelKeymap[i]=NULL;
@@ -136,15 +136,15 @@ void MidiMapper::getWord(char *t,char *s,int w)
 }
 
 
-void MidiMapper::LoadFile(const char *name)
+void MidiMapper::loadFile(const char *name)
 {
-    ok=1;
-    FILE *fh=fopen(name,"rt");
-    if (fh==NULL) {ok=-1;return;};
+    _ok=1;
+    FILE *fh = fopen(name,"rt");
+    if ( fh == NULL ) { _ok = -1; return; };
     char s[101];
-    s[0]=0;
-    if (filename!=NULL) delete filename;
-    filename=new char[strlen(name)+1];
+    s[0] = 0;
+    if ( filename != NULL ) delete filename;
+    filename = new char[ strlen(name)+1 ];
     strcpy(filename,name);
 #ifdef MIDIMAPPERDEBUG
     printf("Loading mapper ...\n");
@@ -163,9 +163,9 @@ void MidiMapper::LoadFile(const char *name)
                     else
                     {
                         printf("ERROR: Unknown DEFINE line in map file\n");
-                        ok=0;
+                        _ok=0;
                     }
-                    if (ok==0)
+                    if (_ok==0)
                     {
                         printf("The midi map file will be ignored\n");
                         fclose(fh);
@@ -192,11 +192,11 @@ Keymap *MidiMapper::createKeymap(char *name,uchar use_same_note,uchar note)
         for (i=0;i<128;i++)
             km->key[i]=i;
     }
-    AddKeymap(km);
+    addKeymap(km);
     return km;
 }
 
-void MidiMapper::AddKeymap(Keymap *newkm)
+void MidiMapper::addKeymap(Keymap *newkm)
 {
     Keymap *km=keymaps;
     if (keymaps==NULL)
@@ -211,7 +211,7 @@ void MidiMapper::AddKeymap(Keymap *newkm)
     return;
 }
 
-Keymap *MidiMapper::GiveMeKeymap(char *n)
+Keymap *MidiMapper::keymap(char *n)
 {
     Keymap *km=keymaps;
     while ((km!=NULL)&&(strcmp(km->name,n)!=0)) km=km->next;
@@ -238,7 +238,7 @@ void MidiMapper::readOptions(FILE *fh)
             removeSpaces(v);
             getWord(t,v,0);
             mapPitchBender=1;
-            PitchBenderRatio=atoi(t);
+            pitchBenderRatio=atoi(t);
         }
         else if (strncmp(s,"MapExpressionToVolumeEvents",27)==0) mapExpressionToVolumeEvents=1;
         else if (strncmp(s,"END",3)==0) 
@@ -248,7 +248,7 @@ void MidiMapper::readOptions(FILE *fh)
         else 
         {
             printf("ERROR: Invalid option in OPTIONS section of map file : (%s)\n",s);
-            ok=0;
+            _ok=0;
             return;
         }
     }
@@ -284,7 +284,7 @@ void MidiMapper::readPatchmap(FILE *fh)
                 if (j>=w) 
                 {
                     printf("ERROR: Invalid option in PATCHMAP section of map file\n");
-                    ok=0;
+                    _ok=0;
                     return;
                 }
                 getWord(t,v,j);
@@ -304,7 +304,7 @@ void MidiMapper::readPatchmap(FILE *fh)
     if (strncmp(s,"END",3)!=0)
     {
         printf("ERROR: End of section not found in map file\n");
-        ok=0;
+        _ok=0;
         return;
     }
 }
@@ -335,10 +335,10 @@ void MidiMapper::readKeymap(FILE *fh,char *first_line)
     if (strncmp(s,"END",3)!=0)
     {
         printf("ERROR: End of section not found in map file\n");
-        ok=0;
+        _ok=0;
         return;
     }
-    AddKeymap(km);
+    addKeymap(km);
 }
 
 void MidiMapper::readChannelmap(FILE *fh)
@@ -361,7 +361,7 @@ void MidiMapper::readChannelmap(FILE *fh)
         j=0;
         channelKeymap[i]=NULL;
         channelPatchForced[i]=-1;
-        channel[i]=i;
+        channelmap[i]=i;
         while (j<w)
         {
             getWord(t,v,j);
@@ -371,11 +371,11 @@ void MidiMapper::readChannelmap(FILE *fh)
                 if (j>=w) 
                 {
                     printf("ERROR: Invalid option in CHANNELMAP section of map file\n");
-                    ok=0;
+                    _ok=0;
                     return;
                 }
                 getWord(t,v,j);
-                channelKeymap[i]=GiveMeKeymap(t); 
+                channelKeymap[i]=keymap(t); 
             }
             else if (strcmp(t,"ForcePatch")==0)
             {
@@ -383,7 +383,7 @@ void MidiMapper::readChannelmap(FILE *fh)
                 if (j>=w) 
                 {
                     printf("ERROR: Invalid option in CHANNELMAP section of map file\n");
-                    ok=0;
+                    _ok=0;
                     return;
                 }
                 getWord(t,v,j);
@@ -391,7 +391,7 @@ void MidiMapper::readChannelmap(FILE *fh)
             }
             else
             {
-                channel[i]=atoi(t); 
+                channelmap[i]=atoi(t); 
             }
             j++;
         }
@@ -402,13 +402,18 @@ void MidiMapper::readChannelmap(FILE *fh)
     if (strncmp(s,"END",3)!=0)
     {
         printf("END of section not found in map file\n");
-        ok=0;
+        _ok=0;
         return;
     }
     
 }
 
-uchar MidiMapper::Key(uchar chn,uchar pgm, uchar note)
+char *MidiMapper::getFilename(void)
+{
+    return (filename!=NULL)? filename : (char *)"";
+}
+
+uchar MidiMapper::key(uchar chn,uchar pgm, uchar note)
 {
     uchar notemapped=note;
     if (patchKeymap[pgm]!=NULL) notemapped=patchKeymap[pgm]->key[note];
@@ -416,25 +421,19 @@ uchar MidiMapper::Key(uchar chn,uchar pgm, uchar note)
     return notemapped;
 }
 
-
-char *MidiMapper::getFilename(void)
-{
-    return (filename!=NULL)? filename : (char *)"";
-}
-
-uchar MidiMapper::Patch(uchar chn,uchar pgm)
+uchar MidiMapper::patch(uchar chn,uchar pgm)
 {
     return (channelPatchForced[chn] == -1) ? 
         patchmap[pgm] : (uchar)channelPatchForced[chn] ;
 }
 
-void MidiMapper::PitchBender(uchar ,uchar &lsb,uchar &msb)
+void MidiMapper::pitchBender(uchar ,uchar &lsb,uchar &msb)
 {
     if (mapPitchBender)
     {
         short pbs=((short)msb<<7) | (lsb & 0x7F);
         pbs=pbs-0x2000;
-        short pbs2=(((long)pbs*PitchBenderRatio)/4096);
+        short pbs2=(((long)pbs*pitchBenderRatio)/4096);
 #ifdef MIDIMAPPERDEBUG
         printf("Pitch Bender (%d): %d -> %d \n",chn,pbs,pbs2);
 #endif
@@ -444,7 +443,7 @@ void MidiMapper::PitchBender(uchar ,uchar &lsb,uchar &msb)
     }
 }
 
-void MidiMapper::Controller(uchar ,uchar &ctl, uchar &)
+void MidiMapper::controller(uchar ,uchar &ctl, uchar &)
 {
     if ((mapExpressionToVolumeEvents)&&(ctl==11)) ctl=7;
 }

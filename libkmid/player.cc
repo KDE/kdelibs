@@ -1,7 +1,7 @@
 /**************************************************************************
 
-    player.cc  - class player, which plays a set of tracks
-    Copyright (C) 1997,98  Antonio Larrosa Jimenez
+    player.cc  - class MidiPlayer. Plays a set of tracks
+    Copyright (C) 1997,98,99  Antonio Larrosa Jimenez
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@
 
 #define REMOVEDUPSTRINGS
 
-player::player(DeviceManager *midi_,PlayerController *pctl)
+MidiPlayer::MidiPlayer(DeviceManager *midi_,PlayerController *pctl)
 {
     midi=midi_;
     info=NULL;
@@ -50,13 +50,13 @@ player::player(DeviceManager *midi_,PlayerController *pctl)
     parseSong=true;
 }
 
-player::~player()
+MidiPlayer::~MidiPlayer()
 {
     removeSpecialEvents();
     removeSong();
 }
 
-void player::removeSong(void)
+void MidiPlayer::removeSong(void)
 {
     if ((songLoaded)&&(tracks!=NULL))
     {
@@ -80,13 +80,13 @@ void player::removeSong(void)
     songLoaded=0;
 }
 
-int player::loadSong(const char *filename)
+int MidiPlayer::loadSong(const char *filename)
 {
     removeSong();
 #ifdef PLAYERDEBUG
     printf("Loading Song : %s\n",filename);
 #endif
-    info=new midifileinfo;
+    info=new MidiFileInfo;
     int ok;
     tracks=readMidiFile(filename,info,ok);
     if (ok<0) return ok;
@@ -104,7 +104,7 @@ int player::loadSong(const char *filename)
     return 0;
 }
 
-void player::insertBeat(SpecialEvent *ev,ulong ms,int num,int den)
+void MidiPlayer::insertBeat(SpecialEvent *ev,ulong ms,int num,int den)
 {
     SpecialEvent *beat=new SpecialEvent;
     beat->next=ev->next;
@@ -117,7 +117,7 @@ void player::insertBeat(SpecialEvent *ev,ulong ms,int num,int den)
 }
 
 
-void player::generateBeats(void)
+void MidiPlayer::generateBeats(void)
 {
 #ifdef PLAYERDEBUG
     printf("player::Generating Beats...\n");
@@ -233,7 +233,7 @@ void player::generateBeats(void)
     
 }
 
-void player::removeSpecialEvents(void)
+void MidiPlayer::removeSpecialEvents(void)
 {
     SpecialEvent * ev=spev;
     while (spev!=NULL)
@@ -244,7 +244,7 @@ void player::removeSpecialEvents(void)
     }
 }
 
-void player::parseSpecialEvents(void)
+void MidiPlayer::parseSpecialEvents(void)
 {
 #ifdef PLAYERDEBUG
     printf("player::Parsing...\n");
@@ -269,7 +269,7 @@ void player::parseSpecialEvents(void)
         tracks[i]->init();
         tracks[i]->changeTempo(tempo);
     }
-    Midi_event *ev=new Midi_event;
+    MidiEvent *ev=new MidiEvent;
     //ulong mspass;
     double prevms=0;
     int spev_id=1;
@@ -427,7 +427,7 @@ void player::parseSpecialEvents(void)
     }
 }
 
-/*NoteArray *player::parseNotes(void)
+/*NoteArray *MidiPlayer::parseNotes(void)
  {
  #ifdef PLAYERDEBUG
  printf("player::Parsing Notes...\n");
@@ -514,13 +514,13 @@ return na;
 };
 */
 
-void player::play(int calloutput,void output(void))
+void MidiPlayer::play(int calloutput,void output(void))
 {		
 #ifdef PLAYERDEBUG
     printf("Playing...\n");
 #endif
     midi->openDev();
-    if (midi->OK()==0) {printf("Player :: Couldn't play !\n");ctl->error=1;return;};
+    if (midi->ok()==0) {printf("Player :: Couldn't play !\n");ctl->error=1;return;};
     midi->setVolumePercentage(ctl->volumepercentage);
     midi->initDev();
     //    parsePatchesUsed(tracks,info,ctl->gm);
@@ -539,7 +539,7 @@ void player::play(int calloutput,void output(void))
     }
     
     midi->tmrStart();
-    Midi_event *ev=new Midi_event;
+    MidiEvent *ev=new MidiEvent;
     ctl->ev=ev;
     ctl->ticksTotal=info->ticksTotal;
     ctl->ticksPlayed=0;
@@ -548,7 +548,7 @@ void player::play(int calloutput,void output(void))
     double absTimeAtChangeTempo=0;
     double absTime=0;
     double diffTime=0;
-    midiStat *midistat;
+    MidiStatus *midistat;
     //ulong mspass;
     double prevms=0;
     int j;
@@ -565,8 +565,8 @@ void player::play(int calloutput,void output(void))
         midi->sync(1);
         midi->tmrStop();
         midi->closeDev();
-        midistat = new midiStat();
-        SetPos(ctl->gotomsec,midistat);
+        midistat = new MidiStatus();
+        setPos(ctl->gotomsec,midistat);
         minTime=ctl->gotomsec;
         prevms=(ulong)minTime;
         midi->openDev();
@@ -763,14 +763,14 @@ void player::play(int calloutput,void output(void))
 }
 
 
-void player::SetPos(ulong gotomsec,midiStat *midistat)
+void MidiPlayer::setPos(ulong gotomsec,MidiStatus *midistat)
 {
     int trk,minTrk;
     ulong tempo=(ulong)(500000 * ctl->ratioTempo);
     double minTime=0,maxTime,prevms=0;
     int i,j,likeplaying=1;
     
-    Midi_event *ev=new Midi_event;
+    MidiEvent *ev=new MidiEvent;
     ctl->SPEVplayed=0;
     for (i=0;i<info->ntracks;i++)
     {
@@ -883,7 +883,7 @@ void player::SetPos(ulong gotomsec,midiStat *midistat)
 }
 
 
-void player::writeSPEV(void)
+void MidiPlayer::debugSpecialEvents(void)
 {
     SpecialEvent *pspev=spev;
     printf("**************************************\n");
@@ -895,12 +895,12 @@ void player::writeSPEV(void)
     
 }
 
-void player::setParseSong(bool b)
+void MidiPlayer::setParseSong(bool b)
 {
     parseSong=b;
 }
 
-void player::changeTempoRatio(double ratio)
+void MidiPlayer::setTempoRatio(double ratio)
 {
     if (songLoaded)
     {

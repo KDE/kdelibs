@@ -27,13 +27,13 @@
 #include "dattypes.h"
 #include "../version.h"
 
-class midiOut;
+class MidiOut;
 class MidiMapper;
 class DeviceManager
 {
 protected:
 
-midiOut **device; 	// The midi devices objects
+MidiOut **device; 	// The midi devices objects
 struct midi_info *midiinfo;   // Midi info
 struct synth_info *synthinfo; // Synth info
 int chn2dev[16];    // Stores the device thru which a channel will be sent
@@ -61,7 +61,7 @@ int initialized;
 int seqfd; // The real file handler that is opened and closed.
 int default_dev; // The device to which timer events will be sent
 
-int ok;
+   int _ok;
     void seqbuf_dump (void);
     void seqbuf_clean (void);
 
@@ -76,8 +76,8 @@ public:
 			// does nothing in other case. Returns 0 if initialized
 			// -1 if error 
 
-  midiOut *chntodev(int chn) { return device[chn2dev[chn]]; };
-  int OK(void);
+  MidiOut *chntodev(int chn) { return device[chn2dev[chn]]; };
+  int ok(void);
 
 // The following funtion are here to emulate a midi, so that the DeviceManager
 // send the events to the appropiate devices.

@@ -28,7 +28,7 @@
 #include "midiout.h"
 #include "voiceman.h"
 
-class gusOut : public midiOut
+class GUSOut : public MidiOut
 {
 private:
 friend class DeviceManager; 
@@ -48,11 +48,11 @@ friend class DeviceManager;
     int loadPatch  (int pgm);// Returns : 0 if OK, -1 if error
 
     char *patchName(int pgm);
-    int Patch(int p); //Returns p if the patch p has been loaded or another
+    int patch(int p); //Returns p if the patch p has been loaded or another
 			// patch (already loaded) if p hasn't been loaded 
 public:
-    gusOut(int d=0,int total =12);
-    ~gusOut();
+    GUSOut(int d=0,int total =12);
+    ~GUSOut();
 
     virtual void openDev	(int sqfd);
     virtual void closeDev	(void);

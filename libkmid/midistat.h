@@ -36,7 +36,7 @@
 
 
 class DeviceManager;
-class midiStat
+class MidiStatus
 {
 private:
     ulong		tempo;
@@ -49,8 +49,8 @@ private:
     int                 chn_lastisvolumeev [N_CHANNELS];
     
 public:
-    midiStat();
-    ~midiStat();
+    MidiStatus();
+    ~MidiStatus();
 
 //    void noteOn		( uchar chn, uchar note, uchar vel );
 //    void noteOff	( uchar chn, uchar note, uchar vel );

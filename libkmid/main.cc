@@ -114,13 +114,13 @@ int IsLineFeed(char c,int type, int *delta)
     return 0;
 }
 
-void displayLyrics(player *p)
+void displayLyrics(MidiPlayer *p)
 {
   int i=1;
   int delta=0;
   while (i<=5)
   { 
-    SpecialEvent *spev=p->takeSpecialEvents();
+    SpecialEvent *spev=p->specialEvents();
     while (spev!=NULL)
     {
       if (spev->type==i)
@@ -277,7 +277,7 @@ int main(int argc, char **argv)
     if (!justtext)
     {
        devman->initManager();
-       if (!devman->OK()) exit(0);
+       if (!devman->ok()) exit(0);
     };
     
     if (list_dev)
@@ -294,7 +294,7 @@ int main(int argc, char **argv)
         exit(0);
     }
     MidiMapper *map=new MidiMapper(map_path);
-    if (!map->OK()) exit(0);
+    if (!map->ok()) exit(0);
     devman->setMidiMap(map);
     
     SongList *songlist=new SongList();
@@ -314,8 +314,8 @@ int main(int argc, char **argv)
         fclose(inputfh);
     }
     
-    player *Player=new player(devman,&pctl);
-    if (!justtext) Player->setParseSong(false);
+    MidiPlayer *player=new MidiPlayer(devman,&pctl);
+    if (!justtext) player->setParseSong(false);
     pctl.message=0;
     pctl.gm=gm;
     pctl.error=0;
@@ -358,17 +358,17 @@ int main(int argc, char **argv)
         {
             if (!quiet) cout << "Loading song : " << name << endl;
             if (strncmp(name,"file:",5)==0) name+=5;
-            if (Player->loadSong(name)==0)
+            if (player->loadSong(name)==0)
                 if (!justtext)
-		  Player->play(1,consoleOutput);
+		  player->play(1,consoleOutput);
 		else
-		  displayLyrics(Player);
+		  displayLyrics(player);
             if (!quiet) cout << endl;
         }
         ok=songlist->next();
     }
     delete songlist;
-    delete Player;
+    delete player;
     delete devman;
     exit(0);
 }

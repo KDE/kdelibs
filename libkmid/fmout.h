@@ -1,8 +1,8 @@
 /**************************************************************************
 
     fmout.h	- class fmOut which handles the /dev/sequencer device
-			for fm synths
-    Copyright (C) 1998  Antonio Larrosa Jimenez
+			for FM synths
+    Copyright (C) 1998,99  Antonio Larrosa Jimenez
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -28,48 +28,48 @@
 #include "midiout.h"
 #include "voiceman.h"
 
-class fmOut : public midiOut
+class FMOut : public MidiOut
 {
 private:
 friend class DeviceManager; 
 
 
-    int patchloaded[256];
-    int opl; // 3 or 4
-    int nvoices;
+  int patchloaded[256];
+  int opl; // 3 or 4
+  int nvoices;
 
-    voiceManager *vm;
+  voiceManager *vm;
 
-    void modifyPatch(char *buf, int key);
-    void loadFMPatches  (void);
+  void modifyPatch(char *buf, int key);
+  void loadFMPatches  (void);
 
-    int Patch(int p); //Returns p if the patch p has been loaded or another
+  int patch(int p); //Returns p if the patch p has been loaded or another
 			// patch (already loaded) if p hasn't been loaded 
 public:
-    fmOut(int d=0,int total =12);
-    ~fmOut();
+  FMOut  ( int d=0, int total =12 );
+  ~FMOut ();
 
-    virtual void openDev	(int sqfd);
-    virtual void closeDev	(void);
-    virtual void initDev	(void);
+  virtual void openDev	( int sqfd );
+  virtual void closeDev	( void );
+  virtual void initDev	( void );
 
-    virtual void noteOn		( uchar chn, uchar note, uchar vel );
-    virtual void noteOff	( uchar chn, uchar note, uchar vel );
-    virtual void keyPressure	( uchar chn, uchar note, uchar vel );
-    virtual void chnPatchChange	( uchar chn, uchar patch );
-    virtual void chnPressure	( uchar chn, uchar vel );
-    virtual void chnPitchBender	( uchar chn, uchar lsb,  uchar msb );
-    virtual void chnController	( uchar chn, uchar ctl , uchar v ); 
+  virtual void noteOn		( uchar chn, uchar note, uchar vel );
+  virtual void noteOff		( uchar chn, uchar note, uchar vel );
+  virtual void keyPressure	( uchar chn, uchar note, uchar vel );
+  virtual void chnPatchChange	( uchar chn, uchar patch );
+  virtual void chnPressure	( uchar chn, uchar vel );
+  virtual void chnPitchBender	( uchar chn, uchar lsb,  uchar msb );
+  virtual void chnController	( uchar chn, uchar ctl , uchar v ); 
 
-    virtual void sysex		( uchar *data,ulong size);
-    virtual void setVolumePercentage    ( int i );
+  virtual void sysex		( uchar *data,ulong size);
+  virtual void setVolumePercentage    ( int i );
 
-    
 private:
-static const char *FM_patches_directory;
-static int delete_FM_patches_directory;
+  static const char *FMPatchesDirectory;
+  static int deleteFMPatchesDirectory;
+
 public:
-static void setFMPatchesDirectory(const char *dir);
+  static void setFMPatchesDirectory(const char *dir);
 
 };
 

@@ -68,7 +68,7 @@ DeviceManager::DeviceManager(int def)
 {
 default_dev=def;
 initialized=0;
-ok=1;
+_ok=1;
 device = NULL;
 #ifdef HANDLETIMEINDEVICES
 rate=100;
@@ -92,10 +92,10 @@ DeviceManager::~DeviceManager(void)
     }
 }
 
-int DeviceManager::OK(void)
+int DeviceManager::ok(void)
 {
-    int r=ok;
-    ok=1;
+    int r=_ok;
+    _ok=1;
     return r;
 }
 
@@ -125,7 +125,7 @@ int DeviceManager::initManager(void)
     if (seqfd==-1)
     {
         printf("ERROR: Couldn't open /dev/sequencer to get some information\n");
-        ok=0;
+        _ok=0;
         return -1;
     };
     n_synths=0;
@@ -137,12 +137,12 @@ int DeviceManager::initManager(void)
     {
         printf("ERROR: There's no midi port\n");
 /* This could be a problem if the user don't have a synth neither,
-but not having any of both things is not a normal thing */
-        //    ok=0;
+but not having any of both things is unusual */
+        //    _ok=0;
         //    return 1;
     }
     
-    device=new midiOut*[n_total];
+    device=new MidiOut*[n_total];
     midiinfo=new midi_info[n_midi];
     synthinfo=new synth_info[n_synths];
     
@@ -159,7 +159,7 @@ but not having any of both things is not a normal thing */
             printf("Device type : %d\n",midiinfo[i].dev_type);
 #endif
         }
-        device[i]=new midiOut(i);
+        device[i]=new MidiOut(i);
     }
     
     for (i=0;i<n_synths;i++)
@@ -188,12 +188,12 @@ but not having any of both things is not a normal thing */
             }
 #endif
             if (synthinfo[i].synth_type==SYNTH_TYPE_FM) 
-                device[i+n_midi]=new fmOut(i,synthinfo[i].nr_voices);
+                device[i+n_midi]=new FMOut(i,synthinfo[i].nr_voices);
             else if ((synthinfo[i].synth_type==SYNTH_TYPE_SAMPLE)&&
                      (synthinfo[i].synth_subtype==SAMPLE_TYPE_GUS))
-                device[i+n_midi]=new gusOut(i,synthinfo[i].nr_voices);
+                device[i+n_midi]=new GUSOut(i,synthinfo[i].nr_voices);
             else
-                device[i+n_midi]=new synthOut(i);
+                device[i+n_midi]=new SynthOut(i);
         }
     }
     
@@ -214,15 +214,15 @@ void DeviceManager::openDev(void)
     if (checkInit()<0) 
     {
         DEBUGPRINTF("DeviceManager::openDev : Not initialized\n");
-        ok = 0;
+        _ok = 0;
         return;
     }
-    ok=1;
+    _ok=1;
     seqfd = open("/dev/sequencer", O_WRONLY | O_NONBLOCK, 0);
     if (seqfd==-1)
     {
         printf("Couldn't open\n");
-        ok=0;
+        _ok=0;
         return;
     }
     _seqbufptr = 0;
@@ -241,11 +241,11 @@ void DeviceManager::openDev(void)
     for (int i=0;i<n_total;i++) 
     {
         device[i]->openDev(seqfd);
-        DEBUGPRINTF("%s ",device[i]->devName());
+        DEBUGPRINTF("%s ",device[i]->deviceName());
     }
     DEBUGPRINTF("\n");
-    for (int i=0;i<n_total;i++) if (!device[i]->OK()) ok=0;
-    if (ok==0)
+    for (int i=0;i<n_total;i++) if (!device[i]->ok()) _ok=0;
+    if (_ok==0)
     {
         for (int i=0;i<n_total;i++) device[i]->closeDev();
         printf("DeviceMan :: ERROR : Closing devices\n");
@@ -269,7 +269,7 @@ DEBUGPRINTF("Closing devices : ");
 if (device!=NULL) for (int i=0;i<n_total;i++) 
     {
     device[i]->initDev();
-    DEBUGPRINTF("%s ",device[i]->devName());
+    DEBUGPRINTF("%s ",device[i]->deviceName());
 	
 //	device[i]->closeDev();
     };
@@ -287,7 +287,7 @@ void DeviceManager::initDev(void)
         for (int i=0;i<n_total;i++) 
         {
             device[i]->initDev();
-            DEBUGPRINTF("%s ",device[i]->devName());
+            DEBUGPRINTF("%s ",device[i]->deviceName());
         }
         DEBUGPRINTF("\n");
     }
@@ -295,37 +295,37 @@ void DeviceManager::initDev(void)
 
 void DeviceManager::noteOn         ( uchar chn, uchar note, uchar vel )
 {
-    midiOut *midi=chntodev(chn);
+    MidiOut *midi=chntodev(chn);
     midi->noteOn(chn,note,vel);
 }
 void DeviceManager::noteOff        ( uchar chn, uchar note, uchar vel )
 {
-    midiOut *midi=chntodev(chn);
+    MidiOut *midi=chntodev(chn);
     midi->noteOff(chn,note,vel);
 }
 void DeviceManager::keyPressure    ( uchar chn, uchar note, uchar vel )
 {
-    midiOut *midi=chntodev(chn);
+    MidiOut *midi=chntodev(chn);
     midi->keyPressure(chn,note,vel);
 }
 void DeviceManager::chnPatchChange ( uchar chn, uchar patch )
 {
-    midiOut *midi=chntodev(chn);
+    MidiOut *midi=chntodev(chn);
     midi->chnPatchChange(chn,patch);
 }
 void DeviceManager::chnPressure    ( uchar chn, uchar vel )
 {
-    midiOut *midi=chntodev(chn);
+    MidiOut *midi=chntodev(chn);
     midi->chnPressure(chn,vel);
 }
 void DeviceManager::chnPitchBender ( uchar chn, uchar lsb,  uchar msb )
 {
-    midiOut *midi=chntodev(chn);
+    MidiOut *midi=chntodev(chn);
     midi->chnPitchBender(chn,lsb,msb);
 }
 void DeviceManager::chnController  ( uchar chn, uchar ctl , uchar v )
 {
-    midiOut *midi=chntodev(chn);
+    MidiOut *midi=chntodev(chn);
     midi->chnController(chn,ctl,v);
 }
 void DeviceManager::sysex          ( uchar *data,ulong size)
@@ -487,7 +487,7 @@ void DeviceManager::seqbuf_clean(void)
 
 char *DeviceManager::name(int i)
 {
-    if (checkInit()<0) {ok = 0; return NULL;}
+    if (checkInit()<0) {_ok = 0; return NULL;}
     
     if (i<n_midi) return midiinfo[i].name; 
     if (i<n_midi+n_synths) return synthinfo[i-n_midi].name;
@@ -496,7 +496,7 @@ char *DeviceManager::name(int i)
 
 const char *DeviceManager::type(int i)
 {
-    if (checkInit()<0) {ok = 0; return NULL;}
+    if (checkInit()<0) {_ok = 0; return NULL;}
     
     if (i<n_midi) 
     {
@@ -542,16 +542,16 @@ void DeviceManager::setMidiMap(MidiMapper *map)
     if (default_dev>=n_total) {default_dev=0;return;};
     if ((device==NULL)||(device[default_dev]==NULL)) 
 		return;
-    device[default_dev]->useMapper(map);
+    device[default_dev]->setMidiMapper(map);
 }
 
 int DeviceManager::setPatchesToUse(int *patchesused)
 {
     if (checkInit()<0) return -1;
     
-    if ((device[getDefaultDevice()]->devType())==KMID_GUS)
+    if ((device[getDefaultDevice()]->deviceType())==KMID_GUS)
     {
-        gusOut *gus=(gusOut *)device[getDefaultDevice()];
+        GUSOut *gus=(GUSOut *)device[getDefaultDevice()];
         gus->setPatchesToUse(patchesused);
     }
     return 0;

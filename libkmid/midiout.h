@@ -32,7 +32,7 @@
 #define N_CHANNELS 16
 #define N_CTL    256
 
-class midiOut
+class MidiOut
 {
 protected:
 friend class DeviceManager; 
@@ -51,74 +51,77 @@ friend class DeviceManager;
     double		convertrate; // A "constant" used to convert from
 				// milliseconds to the computer rate
 #endif
-    int        devicetype; //As this class is inherited by many other
+  int	devicetype; //As this class is inherited by many other
                   // classes, to support other cards, this varialbe
-                  // holds the type of card, so that polymorphism is
+                  // stores the type of card, so that polymorphism is
                   // better used.
                   // The values it can get are defined as KMID_... in midispec.h
 
-    int                 volumepercentage;
-    MidiMapper          *Map;
+  int 		volumepercentage;
+  MidiMapper	*map;
 
-    unsigned char	chn_patch	[N_CHANNELS];
-    int          	chn_bender	[N_CHANNELS];
-    unsigned char	chn_pressure	[N_CHANNELS];
-    unsigned char	chn_controller	[N_CHANNELS][N_CTL];
+  uchar	chnpatch [N_CHANNELS];
+  int  	chnbender [N_CHANNELS];
+  uchar	chnpressure [N_CHANNELS];
+  uchar	chncontroller [N_CHANNELS][N_CTL];
 
-    int			chn_mute        [N_CHANNELS];
+  int	chnmute [N_CHANNELS];
 
-    int			ok;
+  int	_ok;
 
-    void seqbuf_dump (void);
-    void seqbuf_clean(void);
+  void seqbuf_dump (void);
+  void seqbuf_clean(void);
+
 public:
-    midiOut(int d=0);
-virtual   ~midiOut();
+  	MidiOut(int d=0);
+virtual ~MidiOut();
 
 
-virtual    void openDev		(int sqfd);
-virtual    void closeDev	(void);
-virtual    void initDev		(void);
-	int 	devType		(void) const {return devicetype;};
-	const char *	devName(void) const;
+  virtual void openDev	(int sqfd);
+  virtual void closeDev	();
+  virtual void initDev	();
+  int          deviceType () const { return devicetype; };
+  const char * deviceName (void) const;
+
 #ifdef HANDLETIMEINDEVICES
-    int Rate		(void) { return rate; };
+  int  rate	(void) { return rate; };
 #endif
 
-    void useMapper		( MidiMapper *map);
+  void setMidiMapper	( MidiMapper *map );
 
-virtual    void noteOn		( uchar chn, uchar note, uchar vel );
-virtual    void noteOff		( uchar chn, uchar note, uchar vel );
-virtual    void keyPressure	( uchar chn, uchar note, uchar vel );
-virtual    void chnPatchChange	( uchar chn, uchar patch );
-virtual    void chnPressure	( uchar chn, uchar vel );
-virtual    void chnPitchBender	( uchar chn, uchar lsb,  uchar msb );
-virtual    void chnController	( uchar chn, uchar ctl , uchar v ); 
+  virtual void noteOn	( uchar chn, uchar note, uchar vel );
+  virtual void noteOff	( uchar chn, uchar note, uchar vel );
+  virtual void keyPressure	( uchar chn, uchar note, uchar vel );
+  virtual void chnPatchChange	( uchar chn, uchar patch );
+  virtual void chnPressure	( uchar chn, uchar vel );
+  virtual void chnPitchBender	( uchar chn, uchar lsb,  uchar msb );
+  virtual void chnController	( uchar chn, uchar ctl , uchar v ); 
+  virtual void sysex		( uchar *data,ulong size);
 
-virtual    void sysex		( uchar *data,ulong size);
-    void channelSilence		( uchar chn );
-    void channelMute    	( uchar chn, int a );
-virtual    void setVolumePercentage    ( int i ) {volumepercentage=i;};
 
-    
-    int OK (void) 
-    {
-        if (seqfd<0) return 0;
-        return (ok>0);
+  virtual void channelSilence	( uchar chn );
+  virtual void channelMute	( uchar chn, int a );
+
+  virtual void setVolumePercentage ( int volper ) 
+  			{ volumepercentage = volper; };
+
+  int ok (void) 
+    { if (seqfd<0) return 0;
+        return (_ok>0);
     };
 
 #ifdef HANDLETIMEINDEVICES
-    void wait (double ticks);
-    void tmrSetTempo(int v);
-    void tmrStart(void);
-    void tmrStop(void);
-    void tmrContinue(void);
-    void sync(int i=0);  // if i==1 syncronizes by cleaning the buffer
+  void wait        (double ticks);
+  void tmrSetTempo (int v);
+  void tmrStart    ();
+  void tmrStop     ();
+  void tmrContinue ();
+  void sync        (int i=0);  // if i==1 syncronizes by cleaning the buffer
 			// instead of sending it (in fact, this is what
-			// you syncronizing really means :-)
+			// syncronizing really means :-)
 #endif
 
-    char *getMidiMapFilename(void);
+  char *getMidiMapFilename ();
 
 };
 

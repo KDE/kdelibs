@@ -1,6 +1,6 @@
 /**************************************************************************
 
-    dattypes.h  - Some always useful definitions and functions 
+    dattypes.h  - Some useful definitions and functions 
     Copyright (C) 1997,98  Antonio Larrosa Jimenez
 
     This program is free software; you can redistribute it and/or modify
@@ -27,23 +27,26 @@
 #include <stdio.h>
 #include <sys/types.h>
 
-// Just in case...
 #undef uchar
 #undef ushort
 #undef ulong
 
-// Use typedefs instead of #defines, because Qt uses typedefs
 typedef unsigned char uchar;
 typedef unsigned short ushort;
 typedef unsigned long ulong;
 
-//#define uchar usigned char
-//#define ushort unsigned short
-//#ifdef __FreeBSD__
-//#define ulong unsigned long
-//#endif
-
 ushort readShort(FILE *fh);
 ulong  readLong (FILE *fh);
+
+#ifdef DEBUG
+#define printfdebug(a)
+#define printfdebug(a,b)
+#define printfdebug(a,b,c)
+#define printfdebug(a,b,c,d)
+#else
+  void printfdebug(const char *s,int a=0,int b=0, int c=0);
+  void printfdebug(const char *s,int a,long b);
+  void printfdebug(const char *s,double a,double b=0, double c=0);
+#endif
 
 #endif

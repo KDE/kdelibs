@@ -1,7 +1,7 @@
 /**************************************************************************
 
     midfile.h  - function which reads a midi file,and creates the track classes
-    Copyright (C) 1997,98  Antonio Larrosa Jimenez
+    Copyright (C) 1997,98,99  Antonio Larrosa Jimenez
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@
 #include "track.h"
 #include <stdio.h>
 
-struct midifileinfo
+struct MidiFileInfo
 {
     int format;
     int ntracks;
@@ -50,11 +50,10 @@ struct midifileinfo
 double tempoToMetronomeTempo(ulong x);
 double metronomeTempoToTempo(ulong x);
 
-track **readMidiFile(const char *name,midifileinfo *info,int &ok);
+MidiTrack **readMidiFile( const char *name, MidiFileInfo *info, int &ok);
 
-void parseInfoData(midifileinfo *info,track **Tracks,float ratioTempo);
+void parseInfoData( MidiFileInfo *info, MidiTrack **tracks, float ratioTempo);
 
-void parsePatchesUsed(track **Tracks,midifileinfo *info,int gm);
+void parsePatchesUsed( MidiTrack **tracks, MidiFileInfo *info, int gm);
 
-int fsearch(FILE *fh,const char *text,long *ptr=NULL);
 #endif
