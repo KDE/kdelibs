@@ -1,6 +1,6 @@
 /* 
 
-   $Id:$
+   $Id$
 
    This file is part of the KDE libraries
    Copyright (C) 1997 Christian Czezatke (e9025461@student.tuwien.ac.at)
@@ -20,7 +20,10 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
    
-   $Log:$
+   $Log$
+   Revision 1.19  1998/03/08 17:21:40  wuebben
+   Bernd: Fixed the segfault problem in 'KShellProcess::start()'.
+
 
 */
 
@@ -519,6 +522,10 @@ KShellProcess::KShellProcess(const char *shellname):
 }
 
 
+KShellProcess::~KShellProcess() {
+  if(shell)
+    free(shell);
+}
 
 bool KShellProcess::start(RunMode runmode, Communication comm)
 {

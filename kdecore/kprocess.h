@@ -527,6 +527,7 @@ public:
       description of this class.
   */
   KShellProcess(const char *shellname=NULL);
+  ~KShellProcess();
 
   /** 
     Starts up the process. -- For a detailed description
