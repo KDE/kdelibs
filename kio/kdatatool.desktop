@@ -1,0 +1,16 @@
+[Desktop Entry]
+Type=ServiceType
+X-KDE-ServiceType=KDataTool
+Comment=KDE Data Tool
+
+[PropertyDef::Commands]
+Type=QStringList
+
+[PropertyDef::DataType]
+Type=QString
+
+[PropertyDef::DataMimeTypes]
+Type=QStringList
+
+[PropertyDef::ExcludeFrom]
+Type=QStringList

@@ -120,7 +120,7 @@ noinst_HEADERS = kservicetypefactory.h kservicefactory.h \
 
 kde_mime_DATA = magic
 kde_servicetypes_DATA = application.desktop kurifilterplugin.desktop \
-                        kcomprfilter.desktop kscan.desktop
+                        kcomprfilter.desktop kscan.desktop kdatatool.desktop
 kde_services_DATA = kio_uiserver.desktop
 
 parserfiles = yacc.y lex.l
