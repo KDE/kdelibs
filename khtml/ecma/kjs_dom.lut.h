@@ -1,5 +1,7 @@
 /* Automatically generated from kjs_dom.cpp using ../../kjs/create_hash_table. DO NOT EDIT ! */
 
+using namespace KJS;
+
 namespace KJS {
 
 const struct HashEntry DOMNodeProtoTableEntries[] = {
@@ -24,6 +26,8 @@ const struct HashEntry DOMNodeProtoTableEntries[] = {
 const struct HashTable DOMNodeProtoTable = { 2, 16, DOMNodeProtoTableEntries, 13 };
 
 }; // namespace
+
+using namespace KJS;
 
 namespace KJS {
 
@@ -99,6 +103,8 @@ const struct HashTable DOMNodeTable = { 2, 65, DOMNodeTableEntries, 53 };
 
 }; // namespace
 
+using namespace KJS;
+
 namespace KJS {
 
 const struct HashEntry DOMAttrTableEntries[] = {
@@ -112,6 +118,8 @@ const struct HashEntry DOMAttrTableEntries[] = {
 const struct HashTable DOMAttrTable = { 2, 5, DOMAttrTableEntries, 5 };
 
 }; // namespace
+
+using namespace KJS;
 
 namespace KJS {
 
@@ -153,6 +161,8 @@ const struct HashTable DOMDocumentProtoTable = { 2, 31, DOMDocumentProtoTableEnt
 
 }; // namespace
 
+using namespace KJS;
+
 namespace KJS {
 
 const struct HashEntry DOMDocumentTableEntries[] = {
@@ -167,6 +177,8 @@ const struct HashEntry DOMDocumentTableEntries[] = {
 const struct HashTable DOMDocumentTable = { 2, 6, DOMDocumentTableEntries, 4 };
 
 }; // namespace
+
+using namespace KJS;
 
 namespace KJS {
 
@@ -196,6 +208,8 @@ const struct HashTable DOMElementProtoTable = { 2, 19, DOMElementProtoTableEntri
 
 }; // namespace
 
+using namespace KJS;
+
 namespace KJS {
 
 const struct HashEntry DOMElementTableEntries[] = {
@@ -207,6 +221,8 @@ const struct HashEntry DOMElementTableEntries[] = {
 const struct HashTable DOMElementTable = { 2, 3, DOMElementTableEntries, 3 };
 
 }; // namespace
+
+using namespace KJS;
 
 namespace KJS {
 
@@ -223,6 +239,8 @@ const struct HashTable DOMDOMImplementationProtoTable = { 2, 6, DOMDOMImplementa
 
 }; // namespace
 
+using namespace KJS;
+
 namespace KJS {
 
 const struct HashEntry DOMDocumentTypeTableEntries[] = {
@@ -238,6 +256,8 @@ const struct HashEntry DOMDocumentTypeTableEntries[] = {
 const struct HashTable DOMDocumentTypeTable = { 2, 7, DOMDocumentTypeTableEntries, 6 };
 
 }; // namespace
+
+using namespace KJS;
 
 namespace KJS {
 
@@ -259,6 +279,8 @@ const struct HashTable DOMNamedNodeMapProtoTable = { 2, 11, DOMNamedNodeMapProto
 
 }; // namespace
 
+using namespace KJS;
+
 namespace KJS {
 
 const struct HashEntry DOMProcessingInstructionTableEntries[] = {
@@ -272,6 +294,8 @@ const struct HashTable DOMProcessingInstructionTable = { 2, 4, DOMProcessingInst
 
 }; // namespace
 
+using namespace KJS;
+
 namespace KJS {
 
 const struct HashEntry DOMNotationTableEntries[] = {
@@ -284,6 +308,8 @@ const struct HashTable DOMNotationTable = { 2, 3, DOMNotationTableEntries, 2 };
 
 }; // namespace
 
+using namespace KJS;
+
 namespace KJS {
 
 const struct HashEntry DOMEntityTableEntries[] = {
@@ -295,6 +321,8 @@ const struct HashEntry DOMEntityTableEntries[] = {
 const struct HashTable DOMEntityTable = { 2, 3, DOMEntityTableEntries, 2 };
 
 }; // namespace
+
+using namespace KJS;
 
 namespace KJS {
 
@@ -318,6 +346,8 @@ const struct HashEntry NodeConstructorTableEntries[] = {
 const struct HashTable NodeConstructorTable = { 2, 14, NodeConstructorTableEntries, 11 };
 
 }; // namespace
+
+using namespace KJS;
 
 namespace KJS {
 
@@ -347,6 +377,8 @@ const struct HashTable DOMExceptionConstructorTable = { 2, 19, DOMExceptionConst
 
 }; // namespace
 
+using namespace KJS;
+
 namespace KJS {
 
 const struct HashEntry DOMCharacterDataTableEntries[] = {
@@ -358,6 +390,8 @@ const struct HashEntry DOMCharacterDataTableEntries[] = {
 const struct HashTable DOMCharacterDataTable = { 2, 3, DOMCharacterDataTableEntries, 2 };
 
 }; // namespace
+
+using namespace KJS;
 
 namespace KJS {
 
@@ -375,6 +409,8 @@ const struct HashEntry DOMCharacterDataProtoTableEntries[] = {
 const struct HashTable DOMCharacterDataProtoTable = { 2, 8, DOMCharacterDataProtoTableEntries, 7 };
 
 }; // namespace
+
+using namespace KJS;
 
 namespace KJS {
 

@@ -1,5 +1,7 @@
 /* Automatically generated from kjs_range.cpp using ../../kjs/create_hash_table. DO NOT EDIT ! */
 
+using namespace KJS;
+
 namespace KJS {
 
 const struct HashEntry DOMRangeTableEntries[] = {
@@ -16,6 +18,8 @@ const struct HashEntry DOMRangeTableEntries[] = {
 const struct HashTable DOMRangeTable = { 2, 8, DOMRangeTableEntries, 7 };
 
 }; // namespace
+
+using namespace KJS;
 
 namespace KJS {
 
@@ -48,6 +52,8 @@ const struct HashEntry DOMRangeProtoTableEntries[] = {
 const struct HashTable DOMRangeProtoTable = { 2, 23, DOMRangeProtoTableEntries, 17 };
 
 }; // namespace
+
+using namespace KJS;
 
 namespace KJS {
 

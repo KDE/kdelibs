@@ -1,5 +1,7 @@
 /* Automatically generated from kjs_traversal.cpp using ../../kjs/create_hash_table. DO NOT EDIT ! */
 
+using namespace KJS;
+
 namespace KJS {
 
 const struct HashEntry DOMNodeIteratorTableEntries[] = {
@@ -15,6 +17,8 @@ const struct HashTable DOMNodeIteratorTable = { 2, 6, DOMNodeIteratorTableEntrie
 
 }; // namespace
 
+using namespace KJS;
+
 namespace KJS {
 
 const struct HashEntry DOMNodeIteratorProtoTableEntries[] = {
@@ -27,6 +31,8 @@ const struct HashEntry DOMNodeIteratorProtoTableEntries[] = {
 const struct HashTable DOMNodeIteratorProtoTable = { 2, 4, DOMNodeIteratorProtoTableEntries, 3 };
 
 }; // namespace
+
+using namespace KJS;
 
 namespace KJS {
 
@@ -60,6 +66,8 @@ const struct HashTable NodeFilterConstructorTable = { 2, 23, NodeFilterConstruct
 
 }; // namespace
 
+using namespace KJS;
+
 namespace KJS {
 
 const struct HashEntry DOMNodeFilterProtoTableEntries[] = {
@@ -69,6 +77,8 @@ const struct HashEntry DOMNodeFilterProtoTableEntries[] = {
 const struct HashTable DOMNodeFilterProtoTable = { 2, 1, DOMNodeFilterProtoTableEntries, 1 };
 
 }; // namespace
+
+using namespace KJS;
 
 namespace KJS {
 
@@ -85,6 +95,8 @@ const struct HashEntry DOMTreeWalkerTableEntries[] = {
 const struct HashTable DOMTreeWalkerTable = { 2, 7, DOMTreeWalkerTableEntries, 5 };
 
 }; // namespace
+
+using namespace KJS;
 
 namespace KJS {
 

@@ -1,5 +1,7 @@
 /* Automatically generated from kjs_css.cpp using ../../kjs/create_hash_table. DO NOT EDIT ! */
 
+using namespace KJS;
+
 namespace KJS {
 
 const struct HashEntry DOMCSSStyleDeclarationProtoTableEntries[] = {
@@ -20,6 +22,8 @@ const struct HashTable DOMCSSStyleDeclarationProtoTable = { 2, 11, DOMCSSStyleDe
 
 }; // namespace
 
+using namespace KJS;
+
 namespace KJS {
 
 const struct HashEntry DOMCSSStyleDeclarationTableEntries[] = {
@@ -32,6 +36,8 @@ const struct HashEntry DOMCSSStyleDeclarationTableEntries[] = {
 const struct HashTable DOMCSSStyleDeclarationTable = { 2, 4, DOMCSSStyleDeclarationTableEntries, 3 };
 
 }; // namespace
+
+using namespace KJS;
 
 namespace KJS {
 
@@ -51,6 +57,8 @@ const struct HashTable DOMStyleSheetTable = { 2, 9, DOMStyleSheetTableEntries, 7
 
 }; // namespace
 
+using namespace KJS;
+
 namespace KJS {
 
 const struct HashEntry DOMStyleSheetListTableEntries[] = {
@@ -62,6 +70,8 @@ const struct HashTable DOMStyleSheetListTable = { 2, 2, DOMStyleSheetListTableEn
 
 }; // namespace
 
+using namespace KJS;
+
 namespace KJS {
 
 const struct HashEntry DOMMediaListTableEntries[] = {
@@ -72,6 +82,8 @@ const struct HashEntry DOMMediaListTableEntries[] = {
 const struct HashTable DOMMediaListTable = { 2, 2, DOMMediaListTableEntries, 2 };
 
 }; // namespace
+
+using namespace KJS;
 
 namespace KJS {
 
@@ -86,6 +98,8 @@ const struct HashTable DOMMediaListProtoTable = { 2, 4, DOMMediaListProtoTableEn
 
 }; // namespace
 
+using namespace KJS;
+
 namespace KJS {
 
 const struct HashEntry DOMCSSStyleSheetTableEntries[] = {
@@ -97,6 +111,8 @@ const struct HashEntry DOMCSSStyleSheetTableEntries[] = {
 const struct HashTable DOMCSSStyleSheetTable = { 2, 3, DOMCSSStyleSheetTableEntries, 2 };
 
 }; // namespace
+
+using namespace KJS;
 
 namespace KJS {
 
@@ -110,6 +126,8 @@ const struct HashTable DOMCSSStyleSheetProtoTable = { 2, 3, DOMCSSStyleSheetProt
 
 }; // namespace
 
+using namespace KJS;
+
 namespace KJS {
 
 const struct HashEntry DOMCSSRuleListTableEntries[] = {
@@ -121,6 +139,8 @@ const struct HashEntry DOMCSSRuleListTableEntries[] = {
 const struct HashTable DOMCSSRuleListTable = { 2, 3, DOMCSSRuleListTableEntries, 3 };
 
 }; // namespace
+
+using namespace KJS;
 
 namespace KJS {
 
@@ -137,6 +157,8 @@ const struct HashTable DOMCSSRuleTable = { 2, 6, DOMCSSRuleTableEntries, 4 };
 
 }; // namespace
 
+using namespace KJS;
+
 namespace KJS {
 
 const struct HashEntry DOMCSSStyleRuleTableEntries[] = {
@@ -147,6 +169,8 @@ const struct HashEntry DOMCSSStyleRuleTableEntries[] = {
 const struct HashTable DOMCSSStyleRuleTable = { 2, 2, DOMCSSStyleRuleTableEntries, 2 };
 
 }; // namespace
+
+using namespace KJS;
 
 namespace KJS {
 
@@ -162,6 +186,8 @@ const struct HashTable DOMCSSMediaRuleTable = { 2, 5, DOMCSSMediaRuleTableEntrie
 
 }; // namespace
 
+using namespace KJS;
+
 namespace KJS {
 
 const struct HashEntry DOMCSSFontFaceRuleTableEntries[] = {
@@ -171,6 +197,8 @@ const struct HashEntry DOMCSSFontFaceRuleTableEntries[] = {
 const struct HashTable DOMCSSFontFaceRuleTable = { 2, 1, DOMCSSFontFaceRuleTableEntries, 1 };
 
 }; // namespace
+
+using namespace KJS;
 
 namespace KJS {
 
@@ -182,6 +210,8 @@ const struct HashEntry DOMCSSPageRuleTableEntries[] = {
 const struct HashTable DOMCSSPageRuleTable = { 2, 2, DOMCSSPageRuleTableEntries, 2 };
 
 }; // namespace
+
+using namespace KJS;
 
 namespace KJS {
 
@@ -196,6 +226,8 @@ const struct HashTable DOMCSSImportRuleTable = { 2, 4, DOMCSSImportRuleTableEntr
 
 }; // namespace
 
+using namespace KJS;
+
 namespace KJS {
 
 const struct HashEntry DOMCSSCharsetRuleTableEntries[] = {
@@ -205,6 +237,8 @@ const struct HashEntry DOMCSSCharsetRuleTableEntries[] = {
 const struct HashTable DOMCSSCharsetRuleTable = { 2, 1, DOMCSSCharsetRuleTableEntries, 1 };
 
 }; // namespace
+
+using namespace KJS;
 
 namespace KJS {
 
@@ -224,6 +258,8 @@ const struct HashTable CSSRuleConstructorTable = { 2, 9, CSSRuleConstructorTable
 
 }; // namespace
 
+using namespace KJS;
+
 namespace KJS {
 
 const struct HashEntry DOMCSSValueTableEntries[] = {
@@ -235,6 +271,8 @@ const struct HashEntry DOMCSSValueTableEntries[] = {
 const struct HashTable DOMCSSValueTable = { 2, 3, DOMCSSValueTableEntries, 2 };
 
 }; // namespace
+
+using namespace KJS;
 
 namespace KJS {
 
@@ -250,6 +288,8 @@ const struct HashTable CSSValueConstructorTable = { 2, 5, CSSValueConstructorTab
 
 }; // namespace
 
+using namespace KJS;
+
 namespace KJS {
 
 const struct HashEntry DOMCSSPrimitiveValueTableEntries[] = {
@@ -259,6 +299,8 @@ const struct HashEntry DOMCSSPrimitiveValueTableEntries[] = {
 const struct HashTable DOMCSSPrimitiveValueTable = { 2, 1, DOMCSSPrimitiveValueTableEntries, 1 };
 
 }; // namespace
+
+using namespace KJS;
 
 namespace KJS {
 
@@ -276,6 +318,8 @@ const struct HashEntry DOMCSSPrimitiveValueProtoTableEntries[] = {
 const struct HashTable DOMCSSPrimitiveValueProtoTable = { 2, 8, DOMCSSPrimitiveValueProtoTableEntries, 3 };
 
 }; // namespace
+
+using namespace KJS;
 
 namespace KJS {
 
@@ -321,6 +365,8 @@ const struct HashTable CSSPrimitiveValueConstructorTable = { 2, 35, CSSPrimitive
 
 }; // namespace
 
+using namespace KJS;
+
 namespace KJS {
 
 const struct HashEntry DOMCSSValueListTableEntries[] = {
@@ -332,6 +378,8 @@ const struct HashEntry DOMCSSValueListTableEntries[] = {
 const struct HashTable DOMCSSValueListTable = { 2, 3, DOMCSSValueListTableEntries, 3 };
 
 }; // namespace
+
+using namespace KJS;
 
 namespace KJS {
 
@@ -346,6 +394,8 @@ const struct HashTable DOMRGBColorTable = { 2, 4, DOMRGBColorTableEntries, 3 };
 
 }; // namespace
 
+using namespace KJS;
+
 namespace KJS {
 
 const struct HashEntry DOMRectTableEntries[] = {
@@ -359,6 +409,8 @@ const struct HashEntry DOMRectTableEntries[] = {
 const struct HashTable DOMRectTable = { 2, 5, DOMRectTableEntries, 4 };
 
 }; // namespace
+
+using namespace KJS;
 
 namespace KJS {
 

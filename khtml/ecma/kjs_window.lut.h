@@ -1,5 +1,7 @@
 /* Automatically generated from kjs_window.cpp using ../../kjs/create_hash_table. DO NOT EDIT ! */
 
+using namespace KJS;
+
 namespace KJS {
 
 const struct HashEntry ScreenTableEntries[] = {
@@ -18,6 +20,8 @@ const struct HashEntry ScreenTableEntries[] = {
 const struct HashTable ScreenTable = { 2, 10, ScreenTableEntries, 7 };
 
 }; // namespace
+
+using namespace KJS;
 
 namespace KJS {
 
@@ -134,6 +138,8 @@ const struct HashTable WindowTable = { 2, 106, WindowTableEntries, 77 };
 
 }; // namespace
 
+using namespace KJS;
+
 namespace KJS {
 
 const struct HashEntry LocationTableEntries[] = {
@@ -158,6 +164,8 @@ const struct HashEntry LocationTableEntries[] = {
 const struct HashTable LocationTable = { 2, 16, LocationTableEntries, 11 };
 
 }; // namespace
+
+using namespace KJS;
 
 namespace KJS {
 
