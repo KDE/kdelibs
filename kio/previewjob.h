@@ -54,13 +54,19 @@ namespace KIO {
          */
         static QStringList availablePlugins();
 
+        /**
+         * @return a list of all supported MIME types. The list can
+         * contain entries like text/ * (without the space).
+         */
+        static QStringList supportedMimeTypes();
+
     signals:
         void gotPreview( const KURL &url, const QPixmap &preview );
         void gotPreview( const KFileItem *item, const QPixmap &preview );
 
     protected:
         void getOrCreateThumbnail();
-        bool statResultThumbnail( KIO::StatJob *job = 0 );
+        bool statResultThumbnail();
         void createThumbnail( QString );
 
     protected slots:

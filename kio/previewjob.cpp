@@ -54,7 +54,7 @@ struct KIO::PreviewItem
 
 struct KIO::PreviewJobPrivate
 {
-    enum { STATE_STATORIG, STATE_GETTHUMB, // if the thumbnail exists
+    enum { STATE_STATORIG, // if the thumbnail exists
            STATE_GETORIG, // if we create it
            STATE_CREATETHUMB // thumbnail:/ slave
     } state;
@@ -69,10 +69,10 @@ struct KIO::PreviewJobPrivate
     // Size of thumbnail
     int width;
     int height;
+    // named thumbnail size for caching
+    QString sizeName;
     // Whether the thumbnail should be scaled
     bool bScale;
-    // Whether we can save the thumbnail
-    bool bCanSave;
     // Whether we should save the thumbnail
     bool bSave;
     // If the file to create a thumb for was a temp file, this is its name
@@ -98,7 +98,6 @@ PreviewJob::PreviewJob( const KFileItemList &items, int width, int height,
     : KIO::Job( false /* no GUI */ )
 {
     d = new PreviewJobPrivate;
-    d->bCanSave = false;
     d->shmid = -1;
     d->shmaddr = 0;
     d->width = width;
@@ -106,8 +105,8 @@ PreviewJob::PreviewJob( const KFileItemList &items, int width, int height,
     d->iconSize = iconSize;
     d->iconAlpha = iconAlpha;
     d->deleteItems = deleteItems;
-    d->bSave = save;
     d->bScale = scale;
+    d->bSave = save && scale;
 
     // Load the list of plugins to determine which mimetypes are supported
     KTrader::OfferList plugins = KTrader::self()->query("ThumbCreator");
@@ -137,7 +136,7 @@ PreviewJob::PreviewJob( const KFileItemList &items, int width, int height,
         {
             item.plugin = *plugin;
             d->items.append(item);
-            if (save && !bNeedCache && (*plugin)->property("CacheThumbnail").toBool())
+            if (d->bSave && !bNeedCache && (*plugin)->property("CacheThumbnail").toBool())
                 bNeedCache = true;
         }
         else if (deleteItems)
@@ -145,36 +144,29 @@ PreviewJob::PreviewJob( const KFileItemList &items, int width, int height,
     }
 
   // Read configuration value for the maximum allowed size
-//  KConfig * config = KGlobal::config();
-//  KConfigGroupSaver cgs( config, "FMSettings" );
-//  m_maximumSize = config->readNumEntry( "MaximumImageSize", 1024*1024 /* 1MB */ );
-    d->maximumSize = 1024 * 1024;
-  
-/*  int size = m_iconView->iconSize() ? m_iconView->iconSize()
-    : KGlobal::iconLoader()->currentSize( KIcon::Desktop ); // if 0
+    KConfig * config = KGlobal::config();
+    KConfigGroupSaver cgs( config, "PreviewSettings" );
+    d->maximumSize = config->readNumEntry( "MaximumImageSize", 1024*1024 /* 1MB */ );
 
-  QString sizeName;
-  if (size < 28)
-  {
-    m_extent = 48;
-    sizeName = "small";
-  }
-  else if (size < 40)
-  {
-    m_extent = 64;
-    sizeName = "med";
-  }
-  else
-  {
-    m_extent = 90;
-    sizeName = "large";
-  }
+    if (bNeedCache)
+    {
+        KGlobal::dirs()->addResourceType( "thumbnails", "share/thumbnails/" );
+        if (width == height)
+        {
+            if (width == 48)
+                d->sizeName = "small";
+            else if (width == 64)
+                d->sizeName = "med";
+            else if (width == 90)
+                d->sizeName = "large";
+            else
+                d->sizeName.setNum(width);
+        }
+        else
+            d->sizeName = QString::fromLatin1("%1x%2").arg(width).arg(height);
+    }
 
-  if ( bNeedCache )
-  {
-    QString thumbPath;
-    KGlobal::dirs()->addResourceType( "thumbnails", "share/thumbnails/" );
-    // Check if we're in a thumbnail dir already
+/*    // Check if we're in a thumbnail dir already
     if ( m_iconView->url().isLocalFile() )
     {
       // there's exactly one path
@@ -182,24 +174,7 @@ PreviewJob::PreviewJob( const KFileItemList &items, int width, int height,
       QString dir = QDir::cleanDirPath( m_iconView->url().directory() );
       if ( dir.startsWith( cachePath ) )
         thumbPath = dir.mid( cachePath.length() );
-    }
-
-    if ( thumbPath.isEmpty() ) // not a thumbnail dir, generate a name
-    {
-      KURL cleanURL( m_iconView->url() );
-      // clean out the path to avoid multiple cache dirs for the same
-      // location (e.g. file:/foo/bar vs. file:/foo//bar)
-      cleanURL.setPath( QDir::cleanDirPath( m_iconView->url().path() ) );
-      HASHHEX hash;
-      KMD5 md5( QFile::encodeName( cleanURL.url() ) );
-      md5.hexDigest( hash );
-      thumbPath = QString::fromLatin1( hash, 4 ) + "/" +
-                  QString::fromLatin1( &hash[4], 4 ) + "/" +
-                  QString::fromLatin1( &hash[8] ) + "/";
-    }
-
-    m_thumbPath = locateLocal( "thumbnails", thumbPath + "/" + sizeName + "/" );
-  }*/
+    }*/
     d->currentItem.item = 0;
 
     // Return to event loop first, determineNextFile() might delete this;
@@ -232,8 +207,13 @@ void PreviewJob::removeItem( const KFileItem *item )
 
 void PreviewJob::determineNextFile()
 {
-    if (d->deleteItems && d->currentItem.item)
-        delete d->currentItem.item;
+    KURL oldURL;
+    if (d->currentItem.item)
+    {
+        oldURL = d->currentItem.item->url();
+        if (d->deleteItems)
+            delete d->currentItem.item;
+    }
     // No more items ?
     if ( d->items.isEmpty() )
     {
@@ -246,6 +226,24 @@ void PreviewJob::determineNextFile()
         d->state = PreviewJobPrivate::STATE_STATORIG;
         d->currentItem = d->items.first();
         d->items.remove(d->items.begin());
+        if (d->bSave)
+        {
+            oldURL.setPath(QDir::cleanDirPath(oldURL.path()));
+            KURL newURL = d->currentItem.item->url();
+            newURL.setPath(QDir::cleanDirPath(newURL.path()));
+            // different path, determine cache dir
+            if (oldURL != newURL)
+            {
+                HASHHEX hash;
+                KMD5 md5(QFile::encodeName(newURL.url()));
+                md5.hexDigest(hash);
+                d->thumbPath = locateLocal("thumbnails",
+                    QString::fromLatin1( hash, 4 ) + "/" +
+                    QString::fromLatin1( &hash[4], 4 ) + "/" +
+                    QString::fromLatin1( &hash[8] ) + "/" +
+                    d->sizeName + "/");
+            }
+        }
         KIO::Job *job = KIO::stat( d->currentItem.item->url(), false );
         addSubjob(job);
     }
@@ -301,28 +299,6 @@ void PreviewJob::slotResult( KIO::Job *job )
             getOrCreateThumbnail();
             return;
         }
-        case PreviewJobPrivate::STATE_GETTHUMB:
-        {
-            // We arrive here if statResultThumbnail found a remote thumbnail
-            if (job->error())
-            {
-                // Drop this one (if get fails, I wouldn't be on mkdir and put)
-                determineNextFile();
-                return;
-            }
-            QString localFile( static_cast<KIO::FileCopyJob*>(job)->destURL().path() );
-            QPixmap pix;
-            if ( pix.load( localFile ) )
-            {
-                // Found it, use it
-                emit gotPreview( d->currentItem.item, pix );
-                emit gotPreview( d->currentItem.item->url(), pix );
-            }
-            QFile::remove( localFile );
-            // Whether we suceeded or not, move to next one
-            determineNextFile();
-            return;
-        }
         case PreviewJobPrivate::STATE_GETORIG:
         {
             if (job->error())
@@ -347,58 +323,23 @@ void PreviewJob::slotResult( KIO::Job *job )
     }
 }
 
-bool PreviewJob::statResultThumbnail( KIO::StatJob * job )
+bool PreviewJob::statResultThumbnail()
 {
-/*    QString thumbPath = m_thumbPath + m_currentURL.fileName();
-    time_t tThumb = 0;
-    if ( job ) // had a job (.xvpics)
-    {
-      if (!job->error()) // found a thumbnail
-      {
-          KIO::UDSEntry entry = job->statResult();
-          KIO::UDSEntry::ConstIterator it = entry.begin();
-          for( ; it != entry.end(); it++ ) {
-            if ( (*it).m_uds == KIO::UDS_MODIFICATION_TIME ) {
-              tThumb = (time_t)((*it).m_long);
-            }
-          }
-          // Only ok if newer than the file
-      }
-    }
-    else
-    {
-      struct stat st;
-      if ( stat( QFile::encodeName( thumbPath ), &st ) == 0 )
-        tThumb = st.st_mtime;
-    }
-
-    if ( tThumb < m_tOrig )
+    QString thumbPath = d->thumbPath + d->currentItem.item->url().fileName();
+    struct stat st;
+    if ( stat( QFile::encodeName( thumbPath ), &st ) != 0 ||
+         st.st_mtime < d->tOrig )
         return false;
 
-    if ( !job || job->url().isLocalFile() )
-    {
-        QPixmap pix;
-        if ( pix.load( job ? job->url().url() : thumbPath ) )
-        {
-            // Found it, use it
-            m_iconView->setThumbnailPixmap( m_currentItem, pix );
-            determineNextIcon();
-            return true;
-        }
-    }
-    else
-    {
-        m_state = PreviewJobPrivate::STATE_GETTHUMB;
-        KTempFile localFile;
-        KURL localURL;
-        localURL.setPath( localFile.name() );*/
-//        KIO::Job * getJob = KIO::file_copy( job->url(), localURL, -1, true, false, false /* No GUI */ );
-/*        kdDebug(1203) << "KonqImagePreviewJob:: KIO::file_copy thumb " << job->url().url() << " to " << localFile.name() << endl;
-        addSubjob(getJob);
-        return true;
-    }
-    return false;*/
-    return false;
+    QPixmap pix;
+    if ( !pix.load( thumbPath ) )
+        return false;
+
+    // Found it, use it
+    emit gotPreview(d->currentItem.item, pix);
+    emit gotPreview(d->currentItem.item->url(), pix);
+    determineNextFile();
+    return true;
 }
 
 
@@ -459,7 +400,7 @@ void PreviewJob::createThumbnail( QString pixPath )
 
 void PreviewJob::slotThumbData(KIO::Job *, const QByteArray &data)
 {
-    bool save = false;//d->bCanSave && m_plugins[m_currentItem->thumbnailName()]->property("CacheThumbnail").toBool();
+    bool save = d->bSave && d->currentItem.plugin->property("CacheThumbnail").toBool();
     QPixmap pix;
     if (d->shmaddr)
     {
@@ -484,17 +425,18 @@ void PreviewJob::slotThumbData(KIO::Job *, const QByteArray &data)
         if (save)
             saveThumbnail(data);
     }
+    emit gotPreview(d->currentItem.item, pix);
     emit gotPreview(d->currentItem.item->url(), pix);
 }
 
 void PreviewJob::saveThumbnail(const QByteArray &imgData)
 {
-/*    QFile file( m_thumbPath + m_currentURL.fileName() );
+    QFile file( d->thumbPath + d->currentItem.item->url().fileName() );
     if ( file.open(IO_WriteOnly) )
     {
         file.writeBlock( imgData.data(), imgData.size() );
         file.close();
-    }*/
+    }
 }
 
 QStringList PreviewJob::availablePlugins()
@@ -503,6 +445,15 @@ QStringList PreviewJob::availablePlugins()
     KTrader::OfferList plugins = KTrader::self()->query("ThumbCreator");
     for (KTrader::OfferList::ConstIterator it = plugins.begin(); it != plugins.end(); ++it)
         result.append((*it)->desktopEntryName());
+    return result;
+}
+
+QStringList PreviewJob::supportedMimeTypes()
+{
+    QStringList result;
+    KTrader::OfferList plugins = KTrader::self()->query("ThumbCreator");
+    for (KTrader::OfferList::ConstIterator it = plugins.begin(); it != plugins.end(); ++it)
+        result += (*it)->property("MimeTypes").toStringList();
     return result;
 }
 
