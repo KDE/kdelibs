@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
   check( "KURL::isEmpty()", fileURL.isEmpty() ? "TRUE":"FALSE", "FALSE");
 
   KURL baseURL ("hTTp://www.foo.bar:80" );
-  check( "KURL::isMalformed()", baseURL.isMalformed() ? "TRUE":"FALSE", "FALSE");
+  check( "KURL::isValid()", baseURL.isValid() ? "TRUE":"FALSE", "TRUE");
   check( "KURL::protocol()", baseURL.protocol(), "http"); // lowercase
   KURL url1 ( baseURL, "//www1.foo.bar" );
   check( "KURL::url()", url1.url(), "http://www1.foo.bar");
@@ -87,13 +87,13 @@ int main(int argc, char *argv[])
   check("KURL::upURL()", url1.upURL().url(), "file:/home/dfaure/");
 
   url1 = "gg:www.kde.org";
-  check("KURL::isMalformed()", url1.isMalformed()?"TRUE":"FALSE", "FALSE" );
+  check("KURL::isValid()", url1.isValid()?"TRUE":"FALSE", "TRUE" );
 
   url1= "KDE";
-  check("KURL::isMalformed()", url1.isMalformed()?"TRUE":"FALSE", "TRUE" );
+  check("KURL::isValid()", url1.isValid()?"TRUE":"FALSE", "FALSE" );
 
   url1= "$HOME/.kde/share/config";
-  check("KURL::isMalformed()", url1.isMalformed()?"TRUE":"FALSE", "TRUE" );
+  check("KURL::isValid()", url1.isValid()?"TRUE":"FALSE", "FALSE" );
 
   u1 = "file:/opt/kde2/qt2/doc/html/showimg-main-cpp.html#QObject::connect";
   url1 = u1;
@@ -166,6 +166,8 @@ int main(int argc, char *argv[])
   check("KURL::prettyURL()", notPretty.prettyURL(), "http://ferret.lmh.ox.ac.uk/~kdecvs/");
   KURL notPretty2("file:/home/test/directory%20with%20spaces");
   check("KURL::prettyURL()", notPretty2.prettyURL(), "file:/home/test/directory with spaces");
+  KURL notPretty3("fish://foo/%23README%23");
+  check("KURL::prettyURL()", notPretty3.prettyURL(), "fish://foo/%23README%23");
   KURL url15581("http://alain.knaff.linux.lu/bug-reports/kde/spaces in url.html");
   check("KURL::prettyURL()", url15581.prettyURL(), "http://alain.knaff.linux.lu/bug-reports/kde/spaces in url.html");
   check("KURL::url()", url15581.url(), "http://alain.knaff.linux.lu/bug-reports/kde/spaces%20in%20url.html");
@@ -187,7 +189,7 @@ int main(int argc, char *argv[])
   printf("\n* Empty URL\n");
   check("KURL::url()", udir.url(), QString::null);
   check("KURL::isEmpty()", udir.isEmpty() ? "ok" : "ko", "ok");
-  check("KURL::isMalformed()", udir.isMalformed() ? "ok" : "ko", "ok");
+  check("KURL::isValid()", udir.isValid() ? "ok" : "ko", "ko");
   udir = udir.upURL();
   check("KURL::upURL()", udir.upURL().isEmpty() ? "ok" : "ko", "ok");
 
@@ -401,8 +403,15 @@ int main(int argc, char *argv[])
         "http://meine.db24.de?link=home_c_login_login");
   check("http: URL with empty path string path", waba1.path(),
         "");
-  check("http: URL with empty path string path", waba1.query(),
+  check("http: URL with empty path string query", waba1.query(),
         "?link=home_c_login_login");
+
+  waba1 = "http://a:389?b=c";
+  check( "http: URL with port, query, and empty path; url", waba1.url(), "http://a:389?b=c" );
+  check( "http: URL with port, query, and empty path; host", waba1.host(), "a" );
+  check( "http: URL with port, query, and empty path; port", QString::number( waba1.port() ), "389" );
+  check( "http: URL with port, query, and empty path; path", waba1.path(), "" );
+  check( "http: URL with port, query, and empty path; query", waba1.query(), "?b=c" );
 
   // Urls without path (BR21387)
   waba1 = "http://meine.db24.de#link=home_c_login_login";
@@ -410,6 +419,14 @@ int main(int argc, char *argv[])
         "http://meine.db24.de#link=home_c_login_login");
   check("http: URL with empty path string path", waba1.path(),
         "");
+
+  waba1 = "http://a:389#b=c";
+  check( "http: URL with port, ref, and empty path; url", waba1.url(), "http://a:389#b=c" );
+  check( "http: URL with port, ref, and empty path; host", waba1.host(), "a" );
+  check( "http: URL with port, ref, and empty path; port", QString::number( waba1.port() ), "389" );
+  check( "http: URL with port, ref, and empty path; path", waba1.path(), "" );
+  check( "http: URL with port, ref, and empty path; ref", waba1.ref(), "b=c" );
+  check( "http: URL with port, ref, and empty path; query", waba1.query(), "" );
 
   // IPV6
   waba1 = "http://[::FFFF:129.144.52.38]:81/index.html";
@@ -434,6 +451,35 @@ int main(int argc, char *argv[])
   waba1.setHost("::ffff:129.144.52.38");
   check("http: IPV6 host", waba1.url(),
         "http://[::ffff:129.144.52.38]/cgi/test.cgi");
+  waba1 = "http://[::ffff:129.144.52.38]/cgi/test.cgi";
+  assert( waba1.isValid() );
+
+  // IPV6 without path
+  waba1 = "http://[::ffff:129.144.52.38]?query";
+  assert( waba1.isValid() );
+  check("http: IPV6 without path", waba1.url(),
+        "http://[::ffff:129.144.52.38]?query");
+  check("http: IPV6 without path; query", waba1.query(),
+        "?query");
+  waba1 = "http://[::ffff:129.144.52.38]#ref";
+  assert( waba1.isValid() );
+  check("http: IPV6 without path", waba1.url(),
+        "http://[::ffff:129.144.52.38]#ref");
+  check("http: IPV6 without path; ref", waba1.ref(),
+        "ref");
+  // IPV6 without path but with a port
+  waba1 = "http://[::ffff:129.144.52.38]:81?query";
+  assert( waba1.isValid() );
+  check("http: IPV6 without path", waba1.url(),
+        "http://[::ffff:129.144.52.38]:81?query");
+  check("http: IPV6 without path; port", QString::number( waba1.port() ), "81" );
+  check("http: IPV6 without path; query", waba1.query(), "?query");
+  waba1 = "http://[::ffff:129.144.52.38]:81#ref";
+  assert( waba1.isValid() );
+  check("http: IPV6 without path", waba1.url(),
+        "http://[::ffff:129.144.52.38]:81#ref");
+  check("http: IPV6 without path; port", QString::number( waba1.port() ), "81" );
+  check("http: IPV6 without path; ref", waba1.ref(), "ref");
 
   // Broken stuff
   waba1 = "file:a";
@@ -472,25 +518,29 @@ int main(int argc, char *argv[])
   check("Broken stuff #5 valid", broken.isValid()?"VALID":"MALFORMED", "MALFORMED");
   check("Broken stuff #5 path", broken.path(), "");
 
-#if 0
+#if 0 // BROKEN?
   // UNC like names
   KURL unc1("FILE://localhost/home/root");
   check("UNC, with localhost", unc1.path(), "/home/root");
   check("UNC, with localhost", unc1.url(), "file:/home/root");
+#endif
   KURL unc2("file:///home/root");
   check("UNC, with empty host", unc2.path(), "/home/root");
   check("UNC, with empty host", unc2.url(), "file:/home/root");
 
   {
      KURL unc3("FILE://remotehost/home/root");
+#if 0 // BROKEN?
      check("UNC, with remote host", unc3.path(), "//remotehost/home/root");
+#endif
      check("UNC, with remote host", unc3.url(), "file://remotehost/home/root");
      KURL url2("file://atlas/dfaure");
-     check("KURL::host()", url2.path(), "//atlas/dfaure"); // says Waba
-     KURL url3("file:////atlas/dfaure");
-     check("KURL::host()", url3.path(), "//atlas/dfaure"); // says Waba
+     check("KURL::host()", url2.host(), "atlas");
+     check("KURL::path()", url2.path(), "/dfaure");
+     //check("KURL::path()", url3.path(), "//atlas/dfaure"); // says Waba
+     //KURL url3("file:////atlas/dfaure");
+     //check("KURL::path()", url3.path(), "//atlas/dfaure"); // says Waba
   }
-#endif
 
   KURL umail1 ( "mailto:faure@kde.org" );
   check("mailto: URL, general form", umail1.protocol(), "mailto");
@@ -512,6 +562,7 @@ int main(int argc, char *argv[])
 
   KURL ulong("https://swww.gad.de:443/servlet/CookieAccepted?MAIL=s@gad.de&VER=25901");
   check("host",ulong.host(),"swww.gad.de");
+  check("path",ulong.path(),"/servlet/CookieAccepted");
 
 #if QT_VERSION < 300
   qt_set_locale_codec( KGlobal::charsets()->codecForName( "iso-8859-1" ) );
@@ -595,11 +646,11 @@ int main(int argc, char *argv[])
 
   KURL amantia( "http://%E1.foo" );
   check("amantia.isValid()", amantia.isValid() ? "true" : "false", "true");
-#ifdef HAVE_IDNA_H  
+#ifdef HAVE_IDNA_H
   check("amantia.url()", amantia.url(), "http://xn--80a.foo");   // Non-ascii is allowed in IDN domain names.
 #else
-  check("amantia.url()", amantia.url(), "http://"); // OK, an escaped char in a hostname is really evil, not sure what should happen.
-#endif  
+  check("amantia.url()", amantia.url(), "http://?.foo"); // why not
+#endif
 
   KURL smb("smb://domain;username:password@server/share");
   check("smb.isValid()", smb.isValid() ? "true" : "false", "true");
@@ -653,7 +704,7 @@ int main(int argc, char *argv[])
   check("utf8_2.fileName()", utf8_2.fileName(), QString::fromLatin1("15/Geantraî.wav"));
 
   KURL url_newline_1("http://www.foo.bar/foo/bar\ngnork");
-  check("url_newline_1.url()", url_newline_1.url(), QString::fromLatin1("http://www.foo.bar/foo/bar%0Agnork")); 
+  check("url_newline_1.url()", url_newline_1.url(), QString::fromLatin1("http://www.foo.bar/foo/bar%0Agnork"));
 
   KURL url_newline_2("http://www.foo.bar/foo?bar\ngnork");
   check("url_newline_2.url()", url_newline_2.url(), QString::fromLatin1("http://www.foo.bar/foo?bar%0Agnork"));
@@ -678,7 +729,7 @@ int main(int argc, char *argv[])
   check("local_file_5.url()", local_file_5.url(), "file:/foo%3Fbar");
 
   QString basePath = "/home/bastian";
-  
+
   check("relativePath(\"/home/bastian\", \"/home/bastian\")", KURL::relativePath(basePath, "/home/bastian"), "./");
   bool b;
   check("relativePath(\"/home/bastian\", \"/home/bastian/src/plugins\")", KURL::relativePath(basePath, "/home/bastian/src/plugins", &b), "./src/plugins");
@@ -701,15 +752,16 @@ int main(int argc, char *argv[])
   check("relativeURL(\"http://www.kde.org/info/index.html\", \"http://www.kde.org/bugs/contact.html\")", KURL::relativeURL(baseURL, "http://www.kde.org/bugs/contact.html"), "../bugs/contact.html");
 
   baseURL = "ptal://mlc:usb:PC_970";
-  check("isMalformed()?", baseURL.isMalformed() ? "true" : "false", "true");
+  check("isValid()?", baseURL.isValid() ? "true" : "false", "false");
   check("url()", baseURL.url(), "ptal://mlc:usb:PC_970");
 
   baseURL = "http://mlc:80/";
-  check("isMalformed()?", baseURL.isMalformed() ? "true" : "false", "false");
-  check("port()?", QString("%1").arg(baseURL.port()), "80");
+  check("isValid()?", baseURL.isValid() ? "true" : "false", "true");
+  check("port()?", QString::number(baseURL.port()), "80");
+  check("path()?", baseURL.path(), "/");
 
   baseURL = "ptal://mlc:usb@PC_970"; // User=mlc, password=usb, host=PC_970
-  check("isMalformed()?", baseURL.isMalformed() ? "true" : "false", "false");
+  check("isValid()?", baseURL.isValid() ? "true" : "false", "true");
   check("host()?", baseURL.host(), "pc_970");
   check("user()?", baseURL.user(), "mlc");
   check("pass()?", baseURL.pass(), "usb");
