@@ -447,7 +447,7 @@ QString KLocale::translate( const char *index, const char *fallback) const
   }
 
   if (lang == "C")
-      return QString::null;
+      return QString::fromUtf8( fallback );
 
   char *newstring = new char[strlen(index) + strlen(fallback) + 5];
   sprintf(newstring, "_: %s\n%s", index, fallback);
