@@ -26,15 +26,18 @@
 #include <X11/Xatom.h>
 #include "kapp.h"
 #include <qtl.h>
+#include <qlist.h>
 #include "netwm.h"
 
 extern Atom net_wm_context_help;
 extern void kwin_net_create_atoms();
 
-class KWinModulePrivate : public QWidget, public NETRootInfo
+static KWinModulePrivate* static_d = 0;
+
+class KWinModulePrivate : public QWidget, public NETRootInfo, public QShared
 {
 public:
-    KWinModulePrivate( KWinModule* m  )
+    KWinModulePrivate()
 	: QWidget(0,0), NETRootInfo( qt_xdisplay(),
 				     ClientList |
 				     ClientListStacking |
@@ -48,8 +51,8 @@ public:
 				     -1, false
 				     )
     {
+	qDebug("create kwin modue private %p", this);
 	kwin_net_create_atoms();
-	module = m;
 	kapp->installX11EventFilter( this );
 	(void ) kapp->desktop(); //trigger desktop widget creation to select root window events
 	updateStackingOrder();
@@ -58,6 +61,7 @@ public:
     {
     }
 
+    QList<KWinModule> modules;
     KWinModule* module;
 
     QValueList<WId> windows;
@@ -78,13 +82,25 @@ public:
 KWinModule::KWinModule( QObject* parent )
     : QObject( parent, "kwin_module" )
 {
-    d = new KWinModulePrivate( this );
-    d->activate();
+    if ( !static_d ) {
+	static_d = new KWinModulePrivate;
+	static_d->activate();
+    } else {
+	static_d->ref();
+    }
+    
+    d = static_d;
+    d->modules.append( this );
+    
 }
 
 KWinModule::~KWinModule()
 {
-    delete d;
+    d->modules.removeRef( this );
+    if ( d->deref() == 0 ) {
+	delete d;
+	static_d = 0;
+    }
 }
 
 const QValueList<WId>& KWinModule::windows() const
@@ -114,24 +130,34 @@ bool KWinModulePrivate::x11Event( XEvent * ev )
 	int m = NETRootInfo::event( ev );
 
 	if ( m & CurrentDesktop )
-	    emit module->currentDesktopChanged( currentDesktop() );
+	    for ( module = modules.first(); module; module = modules.next() )
+		emit module->currentDesktopChanged( currentDesktop() );
 	if ( m & ActiveWindow )
-	    emit module->activeWindowChanged( activeWindow() );
+	    for ( module = modules.first(); module; module = modules.next() )
+		emit module->activeWindowChanged( activeWindow() );
 	if ( m & DesktopNames )
-	    emit module->desktopNamesChanged();
+	    for ( module = modules.first(); module; module = modules.next() )
+		emit module->desktopNamesChanged();
 	if ( m & NumberOfDesktops )
-	    emit module->numberOfDesktopsChanged( numberOfDesktops() );
+	    for ( module = modules.first(); module; module = modules.next() )
+		emit module->numberOfDesktopsChanged( numberOfDesktops() );
 	if ( m & WorkArea )
-	    emit module->workAreaChanged();
+	    for ( module = modules.first(); module; module = modules.next() )
+		emit module->workAreaChanged();
 	if ( m & ClientListStacking )
-	    emit module->stackingOrderChanged();
+	    for ( module = modules.first(); module; module = modules.next() )
+		emit module->stackingOrderChanged();
     } else  if ( windows.contains( ev->xany.window ) ){
 	NETWinInfo ni( qt_xdisplay(), ev->xany.window, qt_xrootwin(), 0 );
 	unsigned int dirty = ni.event( ev );
 	if ( !dirty && ev->type ==PropertyNotify && ev->xproperty.atom == XA_WM_HINTS )
 	    dirty |= NET::WMIcon; // support for old icons
-	emit module->windowChanged( ev->xany.window );
-	emit module->windowChanged( ev->xany.window, dirty );
+	if ( dirty ) {
+	    for ( module = modules.first(); module; module = modules.next() ) {
+		emit module->windowChanged( ev->xany.window );
+		emit module->windowChanged( ev->xany.window, dirty );
+	    }
+	}
     }
 
     return FALSE;
@@ -150,24 +176,28 @@ void KWinModulePrivate::addClient(Window w)
     if ( !QWidget::find( w ) )
 	XSelectInput( qt_xdisplay(), w, PropertyChangeMask );
     windows.append( w );
-    emit module->windowAdded( w );
+    for ( module = modules.first(); module; module = modules.next() )
+	emit module->windowAdded( w );
 }
 
 void KWinModulePrivate::removeClient(Window w)
 {
     windows.remove( w );
-    emit module->windowRemoved( w );
+    for ( module = modules.first(); module; module = modules.next() )
+	emit module->windowRemoved( w );
 }
 void KWinModulePrivate::addDockWin(Window w)
 {
     dockWindows.append( w );
-    emit module->dockWindowAdded( w );
+    for ( module = modules.first(); module; module = modules.next() )
+	emit module->dockWindowAdded( w );
 }
 
 void KWinModulePrivate::removeDockWin(Window w)
 {
     dockWindows.remove( w );
-    emit module->dockWindowRemoved( w );
+    for ( module = modules.first(); module; module = modules.next() )
+	emit module->dockWindowRemoved( w );
 }
 
 int KWinModule::currentDesktop() const

@@ -1247,7 +1247,7 @@ NETWinInfo::NETWinInfo(Display *d, Window win, Window rwin,
     p->root = rwin;
     p->mapping_state = Withdrawn;
     p->mapping_state_dirty = True;
-    p->state = Unknown;
+    p->state = 0;
     p->type = Unknown;
     p->name = (char *) 0;
     p->visible_name = (char *) 0;
@@ -1612,7 +1612,7 @@ unsigned long NETWinInfo::event(XEvent *e) {
 
 	update(dirty);
     }
-
+    
     return dirty;
 }
 
@@ -1661,7 +1661,7 @@ void NETWinInfo::update(unsigned long dirty) {
 			       &nitems_ret, &unused, &data_ret)
 	    == Success)
 	    if (data_ret) {
-		if (type_ret == net_wm_state && format_ret == 32 &&
+		if (type_ret == XA_CARDINAL && format_ret == 32 &&
 		    nitems_ret == 1)
 		    p->state = *((Q_UINT32 *) data_ret);
 
