@@ -24,7 +24,11 @@
 
 namespace KJS {
 
-  enum { IDSin, IDCos };
+  enum {
+    IDSin, IDCos, IDAbs, IDACos, IDASin, IDATan, IDATan2, IDCeil,
+    IDExp, IDFloor, IDLog, IDMax, IDMin, IDRandom, IDRound, IDSqrt,
+    IDTan
+  };
 
   class KJSMath : public KJSObject {
   public:
