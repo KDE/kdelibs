@@ -42,7 +42,7 @@ KServiceType::KServiceType( const QString & _fullpath, const char *_resource )
   m_strName = config.readEntry( "MimeType" );
 
   // Or is it a servicetype ?
-  if ( m_strName.isEmpty() ) 
+  if ( m_strName.isEmpty() )
   {
     m_strName = config.readEntry( "X-KDE-ServiceType" );
   }
@@ -79,7 +79,7 @@ KServiceType::KServiceType( const QString & _fullpath, const char *_resource )
   m_bValid = !m_strName.isEmpty();
 }
 
-KServiceType::KServiceType( const QString & _fullpath, const QString& _type, 
+KServiceType::KServiceType( const QString & _fullpath, const QString& _type,
                             const QString& _icon, const QString& _comment, const char *_resource )
 {
   m_strRelativeFilePath = KSycoca::determineRelativePath( _fullpath, _resource );
@@ -98,18 +98,18 @@ void
 KServiceType::load( QDataStream& _str )
 {
   Q_INT8 b;
-  _str >> m_strName >> m_strIcon >> m_strComment >> m_mapProps >> m_mapPropDefs 
+  _str >> m_strName >> m_strIcon >> m_strComment >> m_mapProps >> m_mapPropDefs
        >> b >> m_strRelativeFilePath;
   m_bValid = b;
 }
 
-void 
+void
 KServiceType::save( QDataStream& _str )
 {
   KSycocaEntry::save( _str );
-  // Warning adding/removing fields here involves a binary incompatible change - update version 
+  // Warning adding/removing fields here involves a binary incompatible change - update version
   // number in ksycoca.h
-  _str << m_strName << m_strIcon << m_strComment << m_mapProps << m_mapPropDefs 
+  _str << m_strName << m_strIcon << m_strComment << m_mapProps << m_mapPropDefs
        << (Q_INT8)m_bValid << m_strRelativeFilePath;
 }
 
@@ -117,7 +117,7 @@ KServiceType::~KServiceType()
 {
 }
 
-KServiceType::PropertyPtr 
+KServiceType::PropertyPtr
 KServiceType::property( const QString& _name ) const
 {
   QVariant* p = 0;
@@ -142,7 +142,7 @@ KServiceType::property( const QString& _name ) const
   return KServiceType::PropertyPtr( p );
 }
 
-QStringList 
+QStringList
 KServiceType::propertyNames() const
 {
   QStringList res;
@@ -158,16 +158,16 @@ KServiceType::propertyNames() const
   return res;
 }
 
-QVariant::Type 
+QVariant::Type
 KServiceType::propertyDef( const QString& _name ) const
 {
   QMap<QString,QVariant::Type>::ConstIterator it = m_mapPropDefs.find( _name );
   if ( it == m_mapPropDefs.end() )
-    return QVariant::Empty;
+    return QVariant::Invalid;
   return it.data();
 }
 
-QStringList 
+QStringList
 KServiceType::propertyDefNames() const
 {
   QStringList l;

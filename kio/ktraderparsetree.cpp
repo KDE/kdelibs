@@ -446,48 +446,48 @@ bool ParseTreeID::eval( ParseContext *_context ) const
 
   if ( prop->type() == QVariant::String )
   {
-    _context->str = prop->stringValue();
+    _context->str = prop->toString();
     _context->type = ParseContext::T_STRING;
     return true;
   }
 
   if ( prop->type() == QVariant::Int )
   {
-    _context->i = prop->intValue();
+    _context->i = prop->toInt();
     _context->type = ParseContext::T_NUM;
     return true;
   }
 
   if ( prop->type() == QVariant::Bool )
   {
-    _context->b = prop->boolValue();
+    _context->b = prop->toBool();
     _context->type = ParseContext::T_BOOL;
     return true;
   }
 
   if ( prop->type() == QVariant::Double )
   {
-    _context->f = prop->doubleValue();
+    _context->f = prop->toDouble();
     _context->type = ParseContext::T_DOUBLE;
     return true;
   }
 
   if ( prop->type() == QVariant::IntList )
   {
-    _context->numSeq = prop->intListValue();
+    _context->numSeq = prop->toIntList();
     return true;
   }
 
   if ( prop->type() == QVariant::DoubleList )
   {
-    _context->doubleSeq = prop->doubleListValue();
+    _context->doubleSeq = prop->toDoubleList();
     _context->type = ParseContext::T_DOUBLE_SEQ;
     return true;
   }
 
   if ( prop->type() == QVariant::StringList )
   {
-    _context->strSeq = prop->stringListValue();
+    _context->strSeq = prop->toStringList();
     _context->type = ParseContext::T_STR_SEQ;
     return true;
   }
@@ -513,13 +513,13 @@ bool ParseTreeMIN2::eval( ParseContext *_context ) const
 
   if ( prop->type() == QVariant::Int && it.data().type == PreferencesMaxima::PM_INT )
   {
-    _context->f = (double)( prop->intValue() - it.data().iMin ) /
+    _context->f = (double)( prop->toInt() - it.data().iMin ) /
                   (double)(it.data().iMax - it.data().iMin ) * (-2.0) + 1.0;
     return true;
   }
   else if ( prop->type() == QVariant::Double && it.data().type == PreferencesMaxima::PM_DOUBLE )
   {
-    _context->f = ( prop->doubleValue() - it.data().fMin ) / (it.data().fMax - it.data().fMin )
+    _context->f = ( prop->toDouble() - it.data().fMin ) / (it.data().fMax - it.data().fMin )
                   * (-2.0) + 1.0;
     return true;
   }
@@ -546,13 +546,13 @@ bool ParseTreeMAX2::eval( ParseContext *_context ) const
 
   if ( prop->type() == QVariant::Int && it.data().type == PreferencesMaxima::PM_INT )
   {
-    _context->f = (double)( prop->intValue() - it.data().iMin ) /
+    _context->f = (double)( prop->toInt() - it.data().iMin ) /
                   (double)(it.data().iMax - it.data().iMin ) * 2.0 - 1.0;
     return true;
   }
   else if ( prop->type() == QVariant::Double && it.data().type == PreferencesMaxima::PM_DOUBLE )
   {
-    _context->f = ( prop->doubleValue() - it.data().fMin ) /
+    _context->f = ( prop->toDouble() - it.data().fMin ) /
                   (it.data().fMax - it.data().fMin ) * 2.0 - 1.0;
     return true;
   }
@@ -646,31 +646,31 @@ bool ParseContext::initMaxima( const QString& _prop )
       if ( extrema.type == PreferencesMaxima::PM_INVALID_INT )
       {
 	extrema.type = PreferencesMaxima::PM_INT;
-	extrema.iMin = p->intValue();
-	extrema.iMax = p->intValue();
+	extrema.iMin = p->toInt();
+	extrema.iMax = p->toInt();
       }
       // Correct existing extrema
       else if ( extrema.type == PreferencesMaxima::PM_INT )
       {
-	if ( p->intValue() < extrema.iMin )
-	  extrema.iMin = p->intValue();
-	if ( p->intValue() > extrema.iMax )
-	  extrema.iMax = p->intValue();
+	if ( p->toInt() < extrema.iMin )
+	  extrema.iMin = p->toInt();
+	if ( p->toInt() > extrema.iMax )
+	  extrema.iMax = p->toInt();
       }
       // Determine new maximum/minimum
       else if ( extrema.type == PreferencesMaxima::PM_INVALID_DOUBLE )
       {
 	extrema.type = PreferencesMaxima::PM_DOUBLE;
-	extrema.fMin = p->doubleValue();
-	extrema.fMax = p->doubleValue();
+	extrema.fMin = p->toDouble();
+	extrema.fMax = p->toDouble();
       }
       // Correct existing extrema
       else if ( extrema.type == PreferencesMaxima::PM_DOUBLE )
       {
-	if ( p->doubleValue() < it.data().fMin )
-	  it.data().fMin = p->doubleValue();
-	if ( p->doubleValue() > it.data().fMax )
-	  it.data().fMax = p->doubleValue();
+	if ( p->toDouble() < it.data().fMin )
+	  it.data().fMin = p->toDouble();
+	if ( p->toDouble() > it.data().fMax )
+	  it.data().fMax = p->toDouble();
       }
     }
   }
