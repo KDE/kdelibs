@@ -1373,6 +1373,8 @@ void KDirOperator::resizeEvent( QResizeEvent * )
 void KDirOperator::setOnlyDoubleClickSelectsFiles( bool enable )
 {
     d->onlyDoubleClickSelectsFiles = enable;
+    if ( m_fileView )
+        m_fileView->setOnlyDoubleClickSelectsFiles( enable );
 }
 
 bool KDirOperator::onlyDoubleClickSelectsFiles() const
