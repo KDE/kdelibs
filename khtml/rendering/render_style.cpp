@@ -233,15 +233,10 @@ bool RenderStyle::operator==(const RenderStyle& o) const
 RenderStyle* RenderStyle::getPseudoStyle(PseudoId pid)
 {
     RenderStyle *ps = 0;
-    if (noninherited_flags._styleType==NOPSEUDO) {
-	ps = pseudoStyle;
-    while (ps) {
-        if (ps->noninherited_flags._styleType==pid)
+    if (noninherited_flags._styleType==NOPSEUDO)
+        for (ps = pseudoStyle; ps; ps = ps->pseudoStyle)
+            if (ps->noninherited_flags._styleType==pid)
 		break;
-
-        ps = ps->pseudoStyle;
-    }
-    }
     return ps;
 }
 
