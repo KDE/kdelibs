@@ -1,6 +1,12 @@
 /* $Id$
 
  * $Log$
+ * Revision 1.2.4.1  1999/02/26 12:24:18  dfaure
+ * *** empty log message ***
+ *
+ * Revision 1.2  1998/09/21 18:34:47  bieker
+ * Use paths.h if we can.
+ *
  * Revision 1.1  1997/10/08 19:28:33  kalle
  * Test program for KSimpleConfig
  *
@@ -27,7 +33,7 @@ int main( int argc, char **argv )
 {
   KApplication  a( argc, argv );
 
-  KSimpleConfig aConfig( _PATH_TMP"simpleconfig.cfg" );
+  KSimpleConfig aConfig( _PATH_TMP"/simpleconfig.cfg" );
 
   aConfig.setGroup( "Test group" );
   aConfig.writeEntry( "key1", "value1" );

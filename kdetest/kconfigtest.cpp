@@ -19,6 +19,12 @@
 /* $Id$
 
  * $Log$
+ * Revision 1.17.4.1  1999/02/26 12:24:17  dfaure
+ * *** empty log message ***
+ *
+ * Revision 1.17  1999/01/27 21:04:36  kulow
+ * fixing bug 395
+ *
  * Revision 1.16  1999/01/19 13:36:15  kulow
  * removed explicit settings of DISTCLEANFILES, where the only sense was
  * to remove the MOC files
@@ -354,7 +360,7 @@ int main( int argc, char **argv )
 	fprintf( stderr, "Recover file does not exist, use %s\n", pRecoverFile );
   free( pRecoverFile );
 
-  KSimpleConfig sc( _PATH_TMP"sc.cfg" );
+  KSimpleConfig sc( _PATH_TMP"/sc.cfg" );
 	/*
     sc.writeEntry( "Bua", "Brumm" );
 
