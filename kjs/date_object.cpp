@@ -51,6 +51,7 @@
 #include <stdlib.h>
 #include <locale.h>
 #include <ctype.h>
+#include <assert.h>
 
 #include "date_object.h"
 #include "error_object.h"
@@ -69,6 +70,11 @@ const double msPerSecond = 1000;
 const double msPerMinute = msPerSecond * secondsPerMinute;
 const double msPerHour = msPerMinute * minutesPerHour;
 const double msPerDay = msPerHour * hoursPerDay;
+
+static int day(double t)
+{
+  return int(floor(t / msPerDay));
+}
 
 static double dayFromYear(int year)
 {
@@ -114,6 +120,15 @@ int yearFromTime(double t)
   }
 
   return y;
+}
+
+// 0: Sunday, 1: Monday, etc.
+int weekDay(double t)
+{
+  int wd = (day(t) + 4) % 7;
+  if (wd < 0)
+    wd += 7;
+  return wd;
 }
 
 // ------------------------------ DateInstanceImp ------------------------------
@@ -267,7 +282,9 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
   // make the necessary transformations if necessary
   int realYearOffset = 0;
   double milliOffset = 0.0;
+  int realWeekDay = -1;
   if (milli < 0 || milli >= timeFromYear(2038)) {
+    realWeekDay = weekDay(milli);
     // ### ugly and probably not very precise
     int realYear = yearFromTime(milli);
     int y0 = (realYear / 100) * 100;
@@ -288,10 +305,14 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
   else
     t = localtime(&tv);
 
-  // we had one out of range year. use that one (plus/minus
-  // offset found by calculating tm_year)
-  t->tm_year += realYearOffset;
-  milli -= milliOffset;
+  // we had one out of range year. use that one (plus/minus offset
+  // found by calculating tm_year) and fix the week day calculation
+  if (realYearOffset != 0) {
+    t->tm_year += realYearOffset;
+    assert(realWeekDay != -1);
+    t->tm_wday = realWeekDay;
+    milli -= milliOffset;
+  }
 
   // trick gcc. We don't want the Y2K warnings.
   const char xFormat[] = "%x";
