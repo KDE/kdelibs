@@ -35,7 +35,7 @@
 using namespace DOM;
 using namespace khtml;
 
-QPainter *printpainter = 0;
+QPainter *khtml::printpainter = 0;
 
 void khtml::setPrintPainter( QPainter *printer )
 {
