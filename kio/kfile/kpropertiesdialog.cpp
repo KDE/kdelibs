@@ -1245,16 +1245,16 @@ const mode_t KFilePermissionsPropsPlugin::standardPermissions[4] = { 0, UniRead,
 const char *KFilePermissionsPropsPlugin::permissionsTexts[4][4] = {
   { I18N_NOOP("Forbidden"),
     I18N_NOOP("Can Read"),
-    I18N_NOOP("Can Read and Write"),
+    I18N_NOOP("Can Read & Write"),
     0 },
   { I18N_NOOP("Forbidden"),
     I18N_NOOP("Can View Content"),
-    I18N_NOOP("Can View and Modify Content"),
+    I18N_NOOP("Can View & Modify Content"),
     0 },
   { 0, 0, 0, 0}, // no texts for links
   { I18N_NOOP("Forbidden"),
-    I18N_NOOP("Can View Content and Read"),
-    I18N_NOOP("Can View/Read and Modify/Write"),
+    I18N_NOOP("Can View Content & Read"),
+    I18N_NOOP("Can View/Read & Modify/Write"),
     0 }
 };
 
@@ -1353,10 +1353,12 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   QGridLayout *gl;
 
   /* Group: Access Permissions */
-  gb = new QGroupBox ( i18n("Access Permissions"), d->m_frame );
+  gb = new QGroupBox ( 0, Qt::Vertical, i18n("Access Permissions"), d->m_frame );
+  gb->layout()->setSpacing(KDialog::spacingHint());
+  gb->layout()->setMargin(KDialog::marginHint());
   box->addWidget (gb);
 
-  gl = new QGridLayout (gb, 6, 2, KDialog::marginHint(), KDialog::spacingHint());
+  gl = new QGridLayout (gb->layout(), 6, 2);
 
   l = d->explanationLabel = new QLabel( "", gb );
   if (isLink)
