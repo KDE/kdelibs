@@ -22,28 +22,28 @@
 
 #define RPD     (0.01745329251994329577) /* radians per degree (pi/180) */
 
-const char	*dow[]= {
+const char* const dow[]= {
 	"Yaum al-Ithnain", " Yau al-Thulatha", " Yaum al-Arbi'a",
 	"Yaum al-Khamees", "Yaum al-Jumma", "Yaum al-Sabt", "Yaum al-Ahad"
 };
 
-const char *sdow[] = {
+const char* const sdow[] = {
 	 "Ith", "Thl", "Arb", "Kha", "Jum", "Sab", "Ahd"
 };
 
-const char	*mname[]= {
+const char* const mname[]= {
 	"January", "February", "March", "April",
 	"May", "June", "July", "August",
 	"September", "October", "November", "December"
 };
 
-const char  *hmname[] = {
+const char* const hmname[] = {
 	"Muharram", "Safar", "Rabi` al-Awal", "Rabi` al-Thaani",
 	"Jumaada al-Awal", "Jumaada al-Thaani", "Rajab", "Sha`ban",
 	"Ramadan", "Shawwal", "Thu al-Qi`dah", "Thu al-Hijjah"
 };
 
-const char  *hmnameshort[] = {
+const char* const hmnameshort[] = {
 	"Muharram", "Safar", "R. Awal", "R. Thaani",
 	"J. Awal", "J. Thaani", "Rajab", "Sha`ban",
 	"Ramadan", "Shawwal", "Qi`dah", "Hijjah"

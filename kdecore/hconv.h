@@ -7,7 +7,11 @@
 	extern "C" {
 #endif
 
-extern const char	*mname[], *hmname[], *dow[], *sdow[], *hmnameshort[];
+extern const char* const mname[];
+extern const char* const hmname[];
+extern const char* const dow[];
+extern const char* const sdow[];
+extern const char* const hmnameshort[];
 
 typedef struct sdate {
 	float time;
