@@ -93,6 +93,7 @@ public:
     m_manager = 0L;
     m_settings = new khtml::Settings();
     m_bClearing = false;
+    m_bCleared = false;
   }
   ~KHTMLPartPrivate()
   {
@@ -136,6 +137,7 @@ public:
   KParts::PartManager *m_manager;
 
   bool m_bClearing;
+  bool m_bCleared;
 };
 
 KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *parent, const char *name )
@@ -341,6 +343,10 @@ bool KHTMLPart::javaEnabled() const
 
 void KHTMLPart::clear()
 {
+  if ( d->m_bCleared )
+    return;
+  d->m_bCleared = true;
+
   d->m_bClearing = true;
   if ( d->m_doc )
   {
@@ -435,6 +441,7 @@ void KHTMLPart::slotFinished( KIO::Job * job )
 void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
 {
   clear();
+  d->m_bCleared = false;
 
   // ###
   //stopParser();
@@ -970,16 +977,25 @@ void KHTMLPart::childRequest( khtml::RenderFrame *frame, const QString &url, con
     qDebug( "inserting new frame into frame map" );
     khtml::ChildFrame child;
     child.m_name = frameName;
-    child.m_frame = frame;
     it = d->m_frames.insert( frameName, child );
   }
+
+  it.data().m_frame = frame;
 
   childRequest( &it.data(), completeURL( url ) );
 }
 
 void KHTMLPart::childRequest( khtml::ChildFrame *child, const KURL &url, const KParts::URLArgs &args )
 {
-  qDebug( "childRequest2" );
+  if ( child->m_bPreloaded )
+  {
+    if ( child->m_frame && child->m_part )
+      child->m_frame->setWidget( child->m_part->widget() );
+
+    child->m_bPreloaded = false;
+    return;
+  }
+
   child->m_args = args;
 
   if ( child->m_run )
@@ -1037,6 +1053,9 @@ void KHTMLPart::processChildRequest( khtml::ChildFrame *child, const KURL &url, 
 
   if ( child->m_bPreloaded )
   {
+    if ( child->m_frame && child->m_part )
+      child->m_frame->setWidget( child->m_part->widget() );
+
     child->m_bPreloaded = false;
     return;
   }
@@ -1151,7 +1170,6 @@ void KHTMLPart::popupMenu( const QString &url )
 
 void KHTMLPart::slotChildStarted( KIO::Job *job )
 {
-  kdDebug() << "slotChildStarted" << endl;
   khtml::ChildFrame *child = frame( sender() );
 
   assert( child );
@@ -1159,10 +1177,7 @@ void KHTMLPart::slotChildStarted( KIO::Job *job )
   child->m_bCompleted = false;
 
   if ( d->m_bComplete )
-  {
-    kdDebug() << "forwarding started signal!" << endl;
     emit started( job );
-  }
 }
 
 void KHTMLPart::slotChildCompleted()
@@ -1173,6 +1188,7 @@ void KHTMLPart::slotChildCompleted()
 
   child->m_bCompleted = true;
   child->m_args = KParts::URLArgs();
+
   checkCompleted();
 }
 
@@ -1336,6 +1352,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
 
   if ( u == m_url && frameCount >= 1 && frameCount == d->m_frames.count() )
   {
+    kdDebug() << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!! partial restoring !!!!!!!!!!!!!!!!!!!!!" << endl;
     emit started( 0L );
 
     FrameIt fIt = d->m_frames.begin();
@@ -1349,6 +1366,8 @@ void KHTMLPart::restoreState( QDataStream &stream )
     for (; fIt != fEnd; ++fIt, ++fNameIt, ++fServiceTypeIt, ++fURLIt, ++fBufferIt )
     {
       khtml::ChildFrame *child = &(*fIt);
+
+      kdDebug() << debugString( *fNameIt ) << " ---- " << debugString( *fServiceTypeIt ) << endl;
 
       if ( child->m_name != *fNameIt || child->m_serviceType != *fServiceTypeIt )
       {
@@ -1369,7 +1388,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
       }
     }
 
-    emit completed();
+    //    emit completed();
   }
   else
   {
@@ -1387,6 +1406,8 @@ void KHTMLPart::restoreState( QDataStream &stream )
       khtml::ChildFrame newChild;
       newChild.m_bPreloaded = true;
       newChild.m_name = *fNameIt;
+
+      kdDebug() << debugString( *fNameIt ) << " ---- " << debugString( *fServiceTypeIt ) << endl;
 
       FrameIt childFrame = d->m_frames.insert( *fNameIt, newChild );
 
@@ -1439,7 +1460,7 @@ void KHTMLPartBrowserExtension::saveState( QDataStream &stream )
 
 void KHTMLPartBrowserExtension::restoreState( QDataStream &stream )
 {
-  qDebug( "restoreState!" );
+  qDebug( "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< restoreState!" );
   m_part->restoreState( stream );
 }
 
