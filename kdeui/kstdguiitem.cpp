@@ -134,8 +134,8 @@ KGuiItem KStdGuiItem::adminMode()
 {
   return KGuiItem( i18n( "Administrator &Mode..." ), "", i18n( "Enter Administrator Mode" ),
                    i18n( "When clicking <b>Administrator Mode</b> you will be prompted "
-                         "for the administrator(root) password in order to do changes "
-                         "which requires root privileges." ) );
+                         "for the administrator (root) password in order to make changes "
+                         "which require root privileges." ) );
 }
 
 KGuiItem KStdGuiItem::clear()
