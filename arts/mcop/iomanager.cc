@@ -225,6 +225,9 @@ void StdIOManager::processOneEvent(bool blocking)
 			if(FD_ISSET(w->fd(),&efd) && (w->types() & IOType::except))
 				match |= IOType::except;
 
+			if((w->types() & IOType::reentrant) == 0 && level != 1)
+				match = 0;
+
 			if(match) {
 				tonotify++;
 				notifyStack.push(make_pair(w,match));

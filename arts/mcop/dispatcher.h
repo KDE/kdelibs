@@ -52,6 +52,7 @@ class InterfaceRepo;
 class ObjectManager;
 class Object_skel;
 class ReferenceClean;
+class DelayedReturn;
 
 extern "C" {
   typedef void (*mcop_sighandler)(int); 
@@ -198,6 +199,14 @@ public:
 	 * this will return a loopback Connection for sending requests to myself
 	 */
 	Connection *loopbackConnection();
+
+	/**
+	 * - internal usage only -
+	 *
+	 * this will cause a function to return from a request later
+	 * @see DelayedReturn
+	 */
+	DelayedReturn *delayReturn();	
 };
 };
 #endif

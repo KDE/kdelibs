@@ -849,7 +849,7 @@ long Object_skel::_lookupMethod(const MethodDef& md)
 		}
 		mcount++;
 	}
-	arts_warning("_lookupMethod %s %s failed a this is caused by "
+	arts_warning("_lookupMethod %s %s failed this might be caused by "
 	             "incompatible IDL files and is likely to result in crashes",
 				 md.type.c_str(),md.name.c_str());
 	return -1;

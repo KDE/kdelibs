@@ -79,8 +79,20 @@ struct IOType {
 	enum { read = 1, write = 2, except = 4, reentrant = 8, all = 15 };
 };
 
+/**
+ * IONotify is the base class you can derive from to receive callbacks about
+ * IO activity. You will need to call the watchFD function of the IOManager
+ * to start watching a filedescriptor.
+ */
 class IONotify {
 public:
+	/**
+	 * This is the function that gets called if something relevant happened
+	 * on the filedescriptor you watched with IOManager::watchFD.
+	 *
+	 * @param fd   is the filedescriptor that has seen some IO activity
+	 * @param type is the type of activity (as combination of IOType)
+	 */
 	virtual void notifyIO(int fd, int type) = 0;
 };
 
@@ -117,6 +129,10 @@ public:
 	void destroy();
 };
 
+/**
+ * Provides services like timers and notifications when filedescriptors get
+ * ready to read/write.
+ */
 class IOManager {
 public:
 	virtual ~IOManager() {};

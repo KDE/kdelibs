@@ -83,6 +83,10 @@ public:
 		}
 		return true;
 	}
+	inline bool pending()
+	{
+		return !todo.empty();
+	}
 };
 
 };
