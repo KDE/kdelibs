@@ -516,7 +516,7 @@ void ElementImpl::applyChanges(bool top, bool force)
     setChanged(false);
 
     if (top)
-	recalcStyle();
+	recalcStyle();   
 
     // a style change can influence the children, so we just go
     // through them and trigger an appplyChanges there too
@@ -562,8 +562,24 @@ void ElementImpl::recalcStyle()
     setStyle( document->styleSelector()->styleForElement(this, dynamicState) );
 
     if (oldDisplay != m_style->display()) {
-	detach();
-	attach(document->view());
+        if (m_style->display()==NONE)
+        {
+            // ###FIXME hack
+            // removing things from the rendering tree
+            // is not yet reliable and leads to crashes.
+            // disallowed changing to display:none after 
+            // the initial construction           
+            // fixes #19800
+            
+            // other option would be to reconstruct the entire
+            // tree, but thats not realiable yet either
+            m_style->setDisplay(oldDisplay);
+        }
+        else
+        {
+	    detach();
+	    attach(document->view());
+        }
     }
 
     m_style->setFlowAroundFloats(faf);
