@@ -29,7 +29,6 @@
 #include <qpainter.h>
 #include <qrect.h>
 #include <qtabwidget.h>
-#include <iostream.h>
 
 #include <kapp.h>
 #include <kglobal.h>
@@ -418,7 +417,7 @@ void KAboutContainerBase::show( void )
     // 2000 25 7 Matthias Ettrich: this may very well be, but without
     // this hack, the initial layout is broken. Probably a bug in
     // KDialogBase?
-    
+
     if( mPageTab != 0 )  {
 	mPageTab->setMinimumWidth( mPageTab->sizeHint().width() );
     }
@@ -518,7 +517,7 @@ KAboutContainer *KAboutContainerBase::addContainerPage( const QString &title,
 {
   if( mPageTab == 0 )
   {
-    cout << "addPage: " << "Invalid layout" << endl;
+    kdDebug(291) << "addPage: " << "Invalid layout" << endl;
     return( 0 );
   }
 
@@ -548,7 +547,7 @@ KAboutContainer *KAboutContainerBase::addScrolledContainerPage(
 {
   if( mPageTab == 0 )
   {
-    cout << "addPage: " << "Invalid layout" << endl;
+    kdDebug(291) << "addPage: " << "Invalid layout" << endl;
     return( 0 );
   }
 
@@ -577,7 +576,7 @@ QFrame *KAboutContainerBase::addEmptyPage( const QString &title )
 {
   if( mPageTab == 0 )
   {
-    cout << "addPage: " << "Invalid layout" << endl;
+    kdDebug(291) << "addPage: " << "Invalid layout" << endl;
     return( 0 );
   }
 
@@ -615,7 +614,7 @@ void KAboutContainerBase::setTitle( const QString &title )
 {
   if( mTitleLabel == 0 )
   {
-    cout << "setTitle: " << "Invalid layout" << endl;
+    kdDebug(291) << "setTitle: " << "Invalid layout" << endl;
     return;
   }
   mTitleLabel->setText(title);
@@ -626,7 +625,7 @@ void KAboutContainerBase::setImage( const QString &fileName )
 {
   if( mImageLabel == 0 )
   {
-    cout << "setImage: " << "Invalid layout" << endl;
+    kdDebug(291) << "setImage: " << "Invalid layout" << endl;
     return;
   }
   if( fileName.isNull() )
@@ -680,7 +679,7 @@ void KAboutContainerBase::setProduct( const QString &appName,
 {
   if( mIconLabel == 0 )
   {
-    cout << "setProduct: " << "Invalid layout" << endl;
+    kdDebug(291) << "setProduct: " << "Invalid layout" << endl;
     return;
   }
 

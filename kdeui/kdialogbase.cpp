@@ -21,7 +21,6 @@
  */
 
 #include "kdialogbase.h"
-#include <iostream.h>
 #include <stdlib.h>
 
 #include <qgrid.h>
