@@ -5068,7 +5068,8 @@ void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
 #ifndef KHTML_NO_SELECTION
     if ( _mouse->button() == LeftButton )
     {
-      if ( !d->m_strSelectedURL.isNull() && !isEditable() )
+      if ( (!d->m_strSelectedURL.isNull() && !isEditable())
+	        || (!d->m_mousePressNode.isNull() && d->m_mousePressNode.elementId() == ID_IMG) )
 	  return;
       if ( !innerNode.isNull()  && innerNode.handle()->renderer()) {
           int offset = 0;

@@ -1,3 +1,8 @@
+2003-10-29  Leo Savernik <l.savernik@aon.at>
+
+	* khtml_part.cpp (khtmlMousePressEvent): Fixed occasional selection
+	of image on which a drag had been initiated.
+
 2003-10-29  David Faure  <faure@kde.org>
 
 	* ecma/kjs_window.cpp (Window::openWindow): patch from Maciej to allow
