@@ -98,13 +98,13 @@ static IcePoVersionRec DCOPVersions[] = {
   { DCOPVersionMajor, DCOPVersionMinor,  DCOPProcessMessage }
 };
 
-DCOPClient::DCOPClient(const QCString &appId)
+DCOPClient::DCOPClient()
 {
   d = new DCOPClientPrivate;
   d->parent = this;
   d->iceConn = 0L;
   d->majorOpcode = 0;
-  d->appId = appId;
+  d->appId = 0;
   d->notifier = 0L;
 }
 
@@ -123,9 +123,15 @@ void DCOPClient::setServerAddress(const QCString &addr)
   DCOPClientPrivate::serverAddr = qstrdup(addr);
 }
 
-bool DCOPClient::attach()
+bool DCOPClient::attach(const QCString &appId)
 {
   char errBuf[1024];
+
+  d->appId = appId;
+
+  if (IceConnectionStatus(d->iceConn) == IceConnectAccepted) {
+    detach();
+  }
 
   if ((d->majorOpcode = IceRegisterForProtocolSetup("DCOP", DCOPVendorString,
 						    DCOPReleaseString, 1, DCOPVersions,

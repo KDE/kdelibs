@@ -17,10 +17,8 @@ class DCOPClient : public QObject
  public:
   /**
    * Creates a new DCOP client, but does not attach to any server.
-   * @param appId is a UNIQUE application/program id that the server
-   * will use to associate requests with.
    */
-  DCOPClient(const QCString &appId);
+  DCOPClient();
 
   /**
    * clean up any open connections and dynamic data.
@@ -35,10 +33,16 @@ class DCOPClient : public QObject
   static void setServerAddress(const QCString &addr);
 
   /**
-   * Attach to the DCOP server.
+   * Attach to the DCOP server.  If the connection was already attached,
+   * the connection will be re-established with the new appId.
+   *
+   * @param appId is a UNIQUE application/program id that the server
+   * will use to associate requests with.  If no appId is specified
+   * an anonymous connection will be made.
+   *
    * @return true if attaching was successful.
    */
-  bool attach();
+  bool attach(const QCString &appId);
 
   /**
    * Detach from the DCOP server.
