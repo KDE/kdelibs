@@ -282,20 +282,44 @@ void RenderFlow::layoutBlockChildren(bool deep)
     int prevMargin = 0;
     while( child != 0 )
     {
-	if(checkClear(child)) prevMargin = 0; // ### should only be 0
-	// if oldHeight+prevMargin < newHeight
-	int margin = child->marginTop();
-	margin = MAX(margin, prevMargin);
-	m_height += margin;
+#if 0
+	if(child->isFloating())
+	{
+	    printf("floating child!\n");
+	    insertFloat(child);
+	    positionNewFloats();
+	}
+	else
+#endif
+	{
+	    if(checkClear(child)) prevMargin = 0; // ### should only be 0
+	    // if oldHeight+prevMargin < newHeight
+	    int margin = child->marginTop();
+	    margin = MAX(margin, prevMargin);
+	    m_height += margin;
 
-	child->setPos(xPos + getIndent(child), m_height);
+	    if(child->isHTMLTable())
+	    {
+		//printf("htmlTable!!!\n");
+		int indent = xPos + getIndent(child);
+		RenderObject *prev = child->previousSibling();
+		if(prev && prev->isFlow())
+		{
+		    RenderFlow *previous = static_cast<RenderFlow *>(prev);
+		    indent = previous->leftMargin(m_height - previous->yPos());
+		}
+		child->setPos(indent, m_height);
+	    }
+	    else
+		child->setPos(xPos + getIndent(child), m_height);
 
-	if(deep) child->layout(deep);
-	else if (!child->layouted())
-	    _layouted = false;
+	    if(deep) child->layout(deep);
+	    else if (!child->layouted())
+		_layouted = false;
 
-	m_height += child->height();
-	prevMargin = child->marginBottom();
+	    m_height += child->height();
+	    prevMargin = child->marginBottom();
+	}
 	child = child->nextSibling();
     }
 
@@ -418,7 +442,12 @@ void RenderFlow::positionNewFloats()
 	f = aFloat;
     }
 
-    int y = currentY();
+    int y;
+    if(m_childrenInline)
+	y = currentY();
+    else
+	y = m_height;
+
     while(f)
     {
 	RenderObject *o = f->node;
@@ -1034,6 +1063,7 @@ void RenderFlow::specialHandler(BiDiObject *special)
 
     if(o->isFloating())
     {
+	printf("specialHandler: inserting float\n");
 	o->layout(true);
 	insertFloat(o);
     }

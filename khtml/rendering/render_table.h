@@ -79,6 +79,8 @@ public:
 
     virtual bool isInline() const { return false; }
     virtual bool isRendered() const { return true; }
+    virtual bool isHTMLTable() const { return m_htmlTable; }
+    virtual void setHTMLTable(bool b) { m_htmlTable = b; }
 
     int getColumnPos(int col)
 	{ return columnPos[col]; }
@@ -250,6 +252,8 @@ protected:
     int _currentCol; // keeps track of current col for col/colgroup stuff
 
     QTime updateTimer;
+
+    bool m_htmlTable;
 };
 
 // -------------------------------------------------------------------------

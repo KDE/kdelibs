@@ -68,6 +68,9 @@ template class QArray<LengthType>;
 RenderTable::RenderTable(RenderStyle *style)
     : RenderBox(style)
 {
+    // ### Should be set from HTMLTableElementImpl!!!!
+    m_htmlTable = true;
+
     tCaption = 0;
     _oldColElem = 0;
     head = 0;
@@ -1140,7 +1143,7 @@ void RenderTable::layout(bool deep)
     }
 
     // layout rows
-    
+
     for ( unsigned int r = 0; r < totalRows; r++ )
     {
     	layoutRow(r);
@@ -1167,12 +1170,12 @@ void RenderTable::layoutRow(int r)
 	    continue;
 	if ( r < totalRows - 1 && cell == cells[r+1][c] )
 	    continue;
-	    
+	
 	cell->layout(true);
 	cell->setCellTopExtra(0);
 	cell->setCellBottomExtra(0);	
     }
-    
+
     calcRowHeight(r);
 
     for ( unsigned int c = 0; c < totalCols; c++ )
@@ -1245,12 +1248,12 @@ void RenderTable::refreshRow(int r)
 	    continue;
 	if ( r < totalRows - 1 && cell == cells[r+1][c] )
 	    continue;
-	    
+	
 	cell->calcMinMaxWidth();
-    }    
-    
+    }
+
     setAvailableWidth();
-    
+
     layoutRow(r);
     repaint();
 }
@@ -1305,7 +1308,7 @@ void RenderTable::print( QPainter *p, int _x, int _y,
 #ifdef DEBUG_LAYOUT
      printf("RenderTable::print(2) %d/%d (%d/%d)\n", _tx, _ty, _x, _y);
 #endif
-     
+
 //    if(!layouted()) return;
 
     printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
@@ -1586,7 +1589,7 @@ void RenderTableCell::printObject(QPainter *p, int _x, int _y,
     RenderObject *child;
 
     // check if we need to do anything at all...
-    if(!isInline() && ((_ty-_topExtra > _y + _h) 
+    if(!isInline() && ((_ty-_topExtra > _y + _h)
     	|| (_ty + m_height+_topExtra+_bottomExtra < _y))) return;
 
     if(m_printSpecial && !isInline())
