@@ -22,6 +22,7 @@
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qaccel.h>
+#include <qhbox.h>
 
 #include <kapp.h>
 #include <kconfig.h>
@@ -74,15 +75,16 @@ PasswordDialog::~PasswordDialog()
 void PasswordDialog::init( const QString& prompt, const QString& user,
                            bool enableKeep  )
 {
+
     d = new PasswordDialogPrivate;
-    d->nRow = 0;
     d->keep = false;
+    d->nRow = 0;
 
     KConfig* cfg = KGlobal::config();
     KConfigGroupSaver saver( cfg, "Passwords" );
 
     m_pLay = new QGridLayout( this, 12, 3, 8, 0);
-    m_pLay->addColSpacing(1, 10);
+    m_pLay->addColSpacing(1, 5);
 
     // Row 0: pixmap  prompt
     QLabel* lbl;
@@ -104,7 +106,7 @@ void PasswordDialog::init( const QString& prompt, const QString& user,
         setPrompt( prompt );
 
     // Row 1: Row Spacer
-    m_pLay->addRowSpacing( 1, 10 );
+    m_pLay->addRowSpacing( 1, 7 );
 
     // Row 2-3: Reserved for an additional comment
 
@@ -112,28 +114,25 @@ void PasswordDialog::init( const QString& prompt, const QString& user,
     lbl = new QLabel( i18n("&Username:"), this );
     lbl->setAlignment( Qt::AlignVCenter | Qt::AlignLeft );
     lbl->setFixedSize( lbl->sizeHint() );
-    m_pLay->addWidget( lbl, 4, 0 );
-    QHBoxLayout* hbl = new QHBoxLayout();
-    m_pLay->addLayout( hbl, 4, 2 );
-    d->userEdit = new QLineEdit( this );
+    QHBox* hbox = new QHBox( this );
+    d->userEdit = new QLineEdit( hbox );
     lbl->setBuddy( d->userEdit );
     QSize s = d->userEdit->sizeHint();
     d->userEdit->setFixedHeight( s.height() );
     d->userEdit->setMinimumWidth( s.width() );
     lbl->setBuddy( d->userEdit );
-    hbl->addWidget( d->userEdit, 12 );
+    m_pLay->addWidget( lbl, 4, 0 );
+    m_pLay->addWidget( hbox, 4, 2 );
 
     // Row 5: Row spacer
-    m_pLay->addRowSpacing( 5, 5 );
+    m_pLay->addRowSpacing( 5, 4 );
 
-    // Row 5: Password field
+    // Row 6: Password field
     lbl = new QLabel( i18n("&Password:"), this );
     lbl->setAlignment( Qt::AlignVCenter | Qt::AlignLeft );
     lbl->setFixedSize( lbl->sizeHint() );
-    m_pLay->addWidget( lbl, 6, 0 );
-    hbl = new QHBoxLayout();
-    m_pLay->addLayout( hbl, 6, 2 );
-    d->passEdit = new QLineEdit( this );
+    hbox = new QHBox( this );
+    d->passEdit = new QLineEdit( hbox );
     if ( cfg->readEntry("EchoMode", "OneStar") == "NoEcho" )
         d->passEdit->setEchoMode( QLineEdit::NoEcho );
     else
@@ -143,37 +142,36 @@ void PasswordDialog::init( const QString& prompt, const QString& user,
     d->passEdit->setFixedHeight( s.height() );
     d->passEdit->setMinimumWidth( s.width() );
     lbl->setBuddy( d->passEdit );
-    hbl->addWidget( d->passEdit, 12 );
+    m_pLay->addWidget( lbl, 6, 0 );
+    m_pLay->addWidget( hbox, 6, 2 );
 
     if ( enableKeep )
     {
         // Row 7: Add spacer
-        m_pLay->addRowSpacing( 7, 10 );
+        m_pLay->addRowSpacing( 7, 4 );
         // Row 8: Keep Password
-        QCheckBox *cb = new QCheckBox( i18n("&Keep Password"), this );
+        hbox = new QHBox( this );
+        QCheckBox *cb = new QCheckBox( i18n("&Keep Password"), hbox );
         cb->setFixedSize( cb->sizeHint() );
         KConfigGroupSaver saver( cfg, "Passwords" );
         d->keep = cfg->readBoolEntry("Keep", false );
         cb->setChecked( d->keep );
         connect(cb, SIGNAL(toggled( bool )), SLOT(slotKeep( bool )));
-        m_pLay->addWidget( cb, 8, 2 );
+        m_pLay->addWidget( hbox, 8, 2 );
     }
 
     // Row 9: Add spacer
-    m_pLay->addRowSpacing( 9, 8 );
-
+    m_pLay->addRowSpacing( 9, 4 );
     // Row 10: Add a separator
-    hbl = new QHBoxLayout();
-    m_pLay->addMultiCellLayout( hbl, 10, 10, 0, 2 );
-    lbl = new QLabel( this );
-    lbl->setFrameStyle( QFrame::HLine|QFrame::Sunken );
+    hbox = new QHBox( this );
+    lbl = new QLabel( hbox );
+    lbl->setFrameStyle( QFrame::HLine|QFrame::Raised );
     lbl->setAlignment( Qt::AlignVCenter | Qt::AlignCenter );
     lbl->setFixedHeight( lbl->sizeHint().height() );
-    hbl->addWidget( lbl );
+    m_pLay->addMultiCellWidget( hbox, 10, 10, 0, 2 );
 
     // Row 11: Add spacer
-    m_pLay->addRowSpacing( 11, 2 );
-
+    m_pLay->addRowSpacing( 11, 1 );
     // Row 12: Add buttons
     KButtonBox *bbox = new KButtonBox( this );
     (void)bbox->addButton( i18n("&OK"), this, SLOT(accept()) );
@@ -262,7 +260,12 @@ int PasswordDialog::getNameAndPassword( QString& user, QString& pass, bool* keep
                                         const QString& comment,
                                         const QString& label )
 {
-    PasswordDialog* dlg = new PasswordDialog( prompt, user );
+    PasswordDialog* dlg;
+    if( keep )
+        dlg = new PasswordDialog( prompt, user, (*keep) );
+    else
+        dlg = new PasswordDialog( prompt, user );
+
     if ( !caption.isEmpty() )
         dlg->setPlainCaption( caption );
     else
