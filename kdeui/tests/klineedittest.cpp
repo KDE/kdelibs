@@ -12,7 +12,7 @@ int main ( int argc, char **argv)
     // Create the widget with the last argument set to "true" to
     // have KLineEdit automatically handle the completion and
     // rotation signals.
-    KLineEdit *l = new KLineEdit( w, "mylineedit", true );
+    KLineEdit *l = new KLineEdit( w, "mylineedit" );
     l->setEnableContextMenu();
     // Shows of the value of the returnPressed signals with the QString argument.
     // We simply insert the entered items into the completion object.

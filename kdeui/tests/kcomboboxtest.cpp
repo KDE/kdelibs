@@ -20,9 +20,10 @@ int main ( int argc, char **argv)
     w->resize( 500, 100 );
 
     // All the other widgets
-    KComboBox *rwc = new KComboBox( true, w, "rwcombobox", true );
+    KComboBox *rwc = new KComboBox( true, w, "rwcombobox" );
     QLabel* lblrw = new QLabel( rwc, i18n("&Editable ComboBox"), w, "rwcombolabel" );
-    KComboBox *soc = new KComboBox( w, "socombobox", true );
+    rwc->setEnableContextMenu();
+    KComboBox *soc = new KComboBox( w, "socombobox" );
     QLabel* lblso = new QLabel( soc, i18n("&Select-Only ComboBox"), w, "socombolabel" );
     QPushButton * push = new QPushButton( "E&xit", w );
 
