@@ -1,17 +1,15 @@
 #! /bin/sh
 
 if test -z "$KDB2HTML_UNINSTALLED"; then
-ksgmldir=@prefix@/share/apps/ksgmltools
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+ksgmldir=@kde_datadir@/ksgmltools
 else
 ksgmldir=$KDB2HTML_UNINSTALLED
 fi
 
 CATALOG=$ksgmldir/catalog
 DB_STYLESHEET=$ksgmldir/stylesheets/kde.dsl
-
-# This keeps all system and user variable settings untouched, but
-# consults them when needed - IMHO the best solution
-SP_C_SWITCHES="@SGML_CATALOGS@"
 
 output=HTML
 TMPDIR=DBTOHTML_OUTPUT_DIR$$
@@ -28,10 +26,7 @@ then
   exit 1
 fi
 
-if test -z "$SP_C_SWITCHES"
-then
-  echo "Warning: No catalogues were found during installation!" >&2
-fi
+exit_status=0
 
 mkdir $TMPDIR
 SAVE_PWD=`pwd`
@@ -41,8 +36,9 @@ SAVE_PWD=`pwd`
   else
     input_file=$1
   fi
-  echo jade -c $CATALOG $SP_C_SWITCHES -t sgml -d ${DB_STYLESHEET}\#html $input_file 
-  jade -c $CATALOG $SP_C_SWITCHES -t sgml -d ${DB_STYLESHEET}\#html $input_file
+  echo jw -c $CATALOG -d ${DB_STYLESHEET}\#html $input_file 
+  jw -c $CATALOG -d ${DB_STYLESHEET}\#html $input_file
+  exit_status=$?
   cd $SAVE_PWD
 )
 
@@ -54,5 +50,5 @@ if [ -d ${output} ]; then
 fi
 mv ${TMPDIR} $output
 
-exit 0
+exit $exit_status
 
