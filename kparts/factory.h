@@ -78,6 +78,29 @@ public:
      */
      Part *createPart( QWidget *parentWidget = 0, const char *widgetName = 0, QObject *parent = 0, const char *name = 0, const char *classname = "KParts::Part", const QStringList &args = QStringList() );
 
+     template <class T>
+     static T *createPart( const char *libraryName, QWidget *parentWidget = 0, const char *widgetName = 0,
+                           QObject *parent = 0, const char *name = 0, 
+                           const QStringList &args = QStringList() )
+     {
+	 KLibFactory *factory = KLibLoader::self()->factory( libraryName );
+	 if ( !factory )
+	     return 0;
+
+         KParts::Factory *partFactory = dynamic_cast<KParts::Factory *>( factory );
+         if ( !partFactory )
+             return 0;
+
+         KParts::Part *part = partFactory->createPart( parentWidget, widgetName,
+                                                       parent, name, T::staticMetaObject()->className(),
+		                                       args );
+	 T *res = dynamic_cast<T *>( part );
+	 if ( !res )
+	     delete part;
+	 return res;
+     }
+
+
 protected:
 
     /**
