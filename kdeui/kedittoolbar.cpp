@@ -331,7 +331,7 @@ bool KEditToolbarWidget::save()
     dump_xml((*it).m_document.toDocument());
 
     // if we got this far, we might as well just save it
-    save((*it).m_document, (*it).m_xmlFile);
+    KXMLGUIFactory::saveConfigFile((*it).m_document, (*it).m_xmlFile);
   }
 
   if ( !factory() )
@@ -359,28 +359,6 @@ bool KEditToolbarWidget::save()
     // finally, do all the real work
     factory()->addClient( *client );
   }
-
-  return true;
-}
-
-bool KEditToolbarWidget::save(QDomDocument& doc, const QString& xmlfile)
-{
-  QString file = xmlfile;
-  if ( file[0] != '/' )
-    file = locateLocal("data", QString(instance()->instanceName()) +"/"+ file);
-
-  QFile rc_file( file );
-  if (rc_file.open(IO_WriteOnly) == false)
-  {
-    // some error checking here
-    return false;
-  }
-
-  // write out our document
-  QTextStream ts(&rc_file);
-  ts << doc.toDocument();
-
-  rc_file.close();
 
   return true;
 }

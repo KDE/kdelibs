@@ -273,8 +273,6 @@ protected:
   void loadToolbarStyles(QDomElement& elem);
   void updateLocal(QDomElement& elem);
 
-  bool save(QDomDocument& doc, const QString& xmlfile);
-
 private:
   KListView *m_inactiveList;
   KListView *m_activeList;
