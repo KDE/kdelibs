@@ -110,6 +110,8 @@ public:
      * will be marked specially as demanding user's attention.
      * See also explanation in description of @ref activateWindow().
      *
+     * Note that often it's better to use KPassivePopup.
+     *
      * @since 3.2
      */
     static void demandAttention( WId win, bool set = true );
