@@ -614,35 +614,25 @@ void KListView::cleanDropVisualizer()
 
 void KListView::findDrop(const QPoint &pos, QListViewItem *&parent, QListViewItem *&after)
 {
-  QPoint p(pos);
-  // Move the point if the header is shown
-  if (header()->isVisible())
-    p.setY(p.y()-header()->height());
+  QPoint p (contentsToViewport(pos));
 	
   // Get the position to put it in
-  QListViewItem *atpos(itemAt(p));
+  QListViewItem *atpos = itemAt(p);
 	
   if (!atpos) // put it at the end
-    after=lastItem();
+    after = lastItem();
   else
   { // get the one closer to me..
     // That is, the space between two listviewitems
     // Since this aims to be user-friendly :)
 
     after = 
-      mapFromGlobal(p).y() - mapFromGlobal (itemRect (atpos).topLeft()).y() < (atpos->height()/2) ?
+      mapFromGlobal(p).y() - mapFromGlobal(itemRect(atpos).topLeft()).y() < (atpos->height()/2) ?
       atpos->itemAbove() : atpos;
     
-//     int dropY=mapFromGlobal(p).y();
-//     int itemHeight=atpos->height();
-//     int topY=mapFromGlobal(itemRect(atpos).topLeft()).y();
-		
-//      if ((dropY-topY)<itemHeight/2)
-//        after=atpos->itemAbove();	
-//      else
-//        after=atpos;
   }
-  parent=0;
+  
+  parenti = 0L;
 }
 
 
