@@ -2,7 +2,7 @@ Source: kdelibs
 Section: libs
 Priority: optional
 Maintainer: Christopher L Cheney <ccheney@debian.org>
-Build-Depends: debhelper (>> 4.0.18), arts-dev, automake1.7, gawk, gettext, libart-2.0-dev, libasound2-dev, libbz2-dev, libcupsys2-dev, libfam-dev, libldap2-dev, libdb2-dev, libpam0g-dev, libpcre3-dev, libsasl-dev, libssl-dev, libtiff3g-dev, libxml2-dev, libxslt1-dev, texinfo, xlibmesa3
+Build-Depends: debhelper (>> 4.0.18), arts-dev, automake1.7, gawk, gettext, libart-2.0-dev, libbz2-dev, libcupsys2-dev, libfam-dev, libldap2-dev, libdb2-dev, libpam0g-dev, libpcre3-dev, libsasl-dev, libssl-dev, libtiff3g-dev, libxml2-dev, libxslt1-dev, texinfo, xlibmesa3
 Build-Depends-Indep: doxygen
 Standards-Version: 3.5.7.0
 
