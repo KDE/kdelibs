@@ -46,7 +46,8 @@ KMDBCreator::~KMDBCreator()
 {
 	if (m_proc.isRunning())
 		m_proc.kill();
-	delete m_dlg;
+	// do not delete the progress dialog anymore: it's persistent and owned by
+	// it's parent. It will be destroyed along with its parent.
 }
 
 bool KMDBCreator::checkDriverDB(const QString& dirname, const QDateTime& d)
