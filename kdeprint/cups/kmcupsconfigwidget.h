@@ -39,7 +39,7 @@ public:
 
 protected:
 	QLineEdit	*m_host, *m_port, *m_login, *m_password;
-	QCheckBox	*m_anonymous;
+	QCheckBox	*m_anonymous, *m_savepwd;
 };
 
 #endif

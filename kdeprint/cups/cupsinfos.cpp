@@ -31,6 +31,7 @@
 #include <kapplication.h>
 #include <dcopclient.h>
 #include <kdebug.h>
+#include <kstringhandler.h>
 
 #include <cups/cups.h>
 #include <cups/ipp.h>
@@ -93,6 +94,11 @@ void CupsInfos::setPassword(const QString& s)
 	password_ = s;
 }
 
+void CupsInfos::setSavePassword( bool on )
+{
+	savepwd_ = on;
+}
+
 const char* CupsInfos::getPasswordCB()
 {
 	QPair<QString,QString> pwd = KMFactory::self()->requestPassword( count_, login_, host_, port_ );
@@ -111,7 +117,14 @@ void CupsInfos::load()
 	host_ = conf_->readEntry("Host",QString::fromLatin1(cupsServer()));
 	port_ = conf_->readNumEntry("Port",ippPort());
 	login_ = conf_->readEntry("Login",QString::fromLatin1(cupsUser()));
-	password_ = QString::null;
+	savepwd_ = conf_->readBoolEntry( "SavePassword", false );
+	if ( savepwd_ )
+	{
+		password_ = KStringHandler::obscure( conf_->readEntry( "Password", QString::null ) );
+		KMFactory::self()->initPassword( login_, password_, host_, port_ );
+	}
+	else
+		password_ = QString::null;
 	if (login_.isEmpty()) login_ = QString::null;
 	reallogin_ = cupsUser();
 
@@ -128,7 +141,11 @@ void CupsInfos::save()
 	conf_->writeEntry("Host",host_);
 	conf_->writeEntry("Port",port_);
 	conf_->writeEntry("Login",login_);
-	// don't write password for obvious security...
+	conf_->writeEntry( "SavePassword", savepwd_ );
+	if ( savepwd_ )
+		conf_->writeEntry( "Password", KStringHandler::obscure( password_ ) );
+	else
+		conf_->deleteEntry( "Password" );
 	conf_->sync();
 }
 

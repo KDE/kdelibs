@@ -33,6 +33,7 @@
 #include <klocale.h>
 #include <kcursor.h>
 #include <kconfig.h>
+#include <kstringhandler.h>
 
 class PortValidator : public QIntValidator
 {
@@ -77,6 +78,8 @@ KMCupsConfigWidget::KMCupsConfigWidget(QWidget *parent, const char *name)
 	QLabel	*m_passwordlabel = new QLabel(i18n("Pass&word:"), m_loginbox);
 	m_password = new QLineEdit(m_loginbox);
 	m_password->setEchoMode(QLineEdit::Password);
+	m_savepwd = new QCheckBox( i18n( "&Store password in configuration file" ), m_loginbox );
+	m_savepwd->setCursor( KCursor::handCursor() );
 	m_anonymous = new QCheckBox(i18n("Use &anonymous access"), m_loginbox);
 	m_anonymous->setCursor(KCursor::handCursor());
 	m_loginlabel->setBuddy(m_login);
@@ -92,17 +95,19 @@ KMCupsConfigWidget::KMCupsConfigWidget(QWidget *parent, const char *name)
 	lay2->addWidget(m_portlabel,1,0);
 	lay2->addWidget(m_host,0,1);
 	lay2->addWidget(m_port,1,1);
-	QGridLayout	*lay3 = new QGridLayout(m_loginbox->layout(), 3, 2, 10);
+	QGridLayout	*lay3 = new QGridLayout(m_loginbox->layout(), 4, 2, 10);
 	lay3->setColStretch(1,1);
 	lay3->addWidget(m_loginlabel,0,0);
 	lay3->addWidget(m_passwordlabel,1,0);
 	lay3->addWidget(m_login,0,1);
 	lay3->addWidget(m_password,1,1);
-	lay3->addMultiCellWidget(m_anonymous,2,2,0,1);
+	lay3->addMultiCellWidget(m_savepwd,2,2,0,1);
+	lay3->addMultiCellWidget(m_anonymous,3,3,0,1);
 
 	// connections
 	connect(m_anonymous,SIGNAL(toggled(bool)),m_login,SLOT(setDisabled(bool)));
 	connect(m_anonymous,SIGNAL(toggled(bool)),m_password,SLOT(setDisabled(bool)));
+	connect(m_anonymous,SIGNAL(toggled(bool)),m_savepwd,SLOT(setDisabled(bool)));
 }
 
 void KMCupsConfigWidget::load()
@@ -116,6 +121,7 @@ void KMCupsConfigWidget::load()
 	{
 		m_login->setText(inf->login());
 		m_password->setText(inf->password());
+		m_savepwd->setChecked( inf->savePassword() );
 	}
 }
 
@@ -128,11 +134,13 @@ void KMCupsConfigWidget::save(bool sync)
 	{
 		inf->setLogin(QString::null);
 		inf->setPassword(QString::null);
+		inf->setSavePassword( false );
 	}
 	else
 	{
 		inf->setLogin(m_login->text());
 		inf->setPassword(m_password->text());
+		inf->setSavePassword( m_savepwd->isChecked() );
 	}
 	if (sync) inf->save();
 }
@@ -143,6 +151,11 @@ void KMCupsConfigWidget::saveConfig(KConfig *conf)
 	conf->writeEntry("Host",m_host->text());
 	conf->writeEntry("Port",m_port->text().toInt());
 	conf->writeEntry("Login",(m_anonymous->isChecked() ? QString::null : m_login->text()));
+	conf->writeEntry( "SavePassword", ( m_anonymous->isChecked() ? false : m_savepwd->isChecked() ) );
+	if ( m_savepwd->isChecked() && !m_anonymous->isChecked() )
+		conf->writeEntry( "Password", ( m_anonymous->isChecked() ? QString::null : KStringHandler::obscure( m_password->text() ) ) );
+	else
+		conf->deleteEntry( "Password" );
 	// synchronize CupsInfos object
 	save(false);
 }

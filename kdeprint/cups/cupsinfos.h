@@ -38,11 +38,13 @@ public:
 	const QString& login() const;
 	const QString& password() const;
 	const QString& realLogin() const;
+	bool savePassword() const;
 
 	void setHost(const QString& s);
 	void setPort(int p);
 	void setLogin(const QString& s);
 	void setPassword(const QString& s);
+	void setSavePassword( bool on );
 
 	const char* getPasswordCB();
 
@@ -61,6 +63,7 @@ private:
 	QString	login_;
 	QString	password_;
 	QString	reallogin_;
+	bool savepwd_;
 
 	int	count_;
 };
@@ -79,5 +82,8 @@ inline const QString& CupsInfos::password() const
 
 inline const QString& CupsInfos::realLogin() const
 { return reallogin_; }
+
+inline bool CupsInfos::savePassword() const
+{ return savepwd_; }
 
 #endif

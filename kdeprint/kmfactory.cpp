@@ -45,6 +45,7 @@
 #include <kapplication.h>
 #include <dcopclient.h>
 #include <dcopref.h>
+#include <kio/authinfo.h>
 
 #include <unistd.h>
 
@@ -417,7 +418,7 @@ QPair<QString,QString> KMFactory::requestPassword( int& seqNbr, const QString& u
 	 *    of the password dialog)
 	 *  - KMTimer should be stopped, but it's unavailable from this object
 	 */
-	DCOPReply reply = kdeprintd.callExt( "requestPassword", DCOPRef::NoEventLoop, -1, user, host, port, seqNbr );
+	DCOPReply reply = kdeprintd.call( "requestPassword", user, host, port, seqNbr );
 	if ( reply.isValid() )
 	{
 		QString replyString = reply;
@@ -432,6 +433,18 @@ QPair<QString,QString> KMFactory::requestPassword( int& seqNbr, const QString& u
 		}
 	}
 	return QPair<QString,QString>( QString::null, QString::null );
+}
+
+void KMFactory::initPassword( const QString& user, const QString& password, const QString& host, int port )
+{
+	DCOPRef kdeprintd( "kded", "kdeprintd" );
+	/**
+	 * We do not use an internal event loop for 2 potential problems:
+	 *  - the MessageWindow modality (appearing afterwards, it pops up on top
+	 *    of the password dialog)
+	 *  - KMTimer should be stopped, but it's unavailable from this object
+	 */
+	kdeprintd.call( "initPassword", user, password, host, port );
 }
 
 #include "kmfactory.moc"

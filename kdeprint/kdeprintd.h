@@ -45,6 +45,7 @@ k_dcop:
 	QString openPassDlg(const QString& user);
 	ASYNC statusMessage(const QString& msg, int pid = -1, const QString& appName = QString::null);
 	QString requestPassword( const QString& user, const QString& host, int port, int seqNbr );
+	void initPassword( const QString& user, const QString& passwd, const QString& host, int port );
 
 protected slots:
 	void slotProcessExited(KProcess*);

@@ -307,4 +307,22 @@ void KDEPrintd::processRequest()
 		QTimer::singleShot( 0, this, SLOT( processRequest() ) );
 }
 
+void KDEPrintd::initPassword( const QString& user, const QString& passwd, const QString& host, int port )
+{
+	QByteArray params, reply;
+	QCString replyType;
+	KIO::AuthInfo info;
+
+	info.username = user;
+	info.password = passwd;
+	info.url = "print://" + user + "@" + host + ":" + QString::number(port);
+
+	QDataStream input( params, IO_WriteOnly );
+	input << info << ( long int )0;
+
+	if ( !callingDcopClient()->call( "kded", "kpasswdserver", "addAuthInfo(KIO::AuthInfo,long int)",
+			params, replyType, reply ) )
+		kdWarning( 500 ) << "Unable to initialize password, cannot communicate with kded_kpasswdserver" << endl;
+}
+
 #include "kdeprintd.moc"
