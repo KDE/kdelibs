@@ -113,6 +113,8 @@ Kded::Kded(bool checkUpdates)
 
   QTimer::singleShot(100, this, SLOT(installCrashHandler()));
 
+  QTimer::singleShot(500, this, SLOT(initModules()));
+
   m_pDirWatch = 0;
 
   m_windowIdList.setAutoDelete(true);
@@ -872,9 +874,6 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
              kded, SLOT(slotApplicationRemoved(const QCString&)));
      client->setNotifications(true);
      client->setDaemonMode( true );
-
-     kded->initModules();
-
 
      // During startup kdesktop waits for KDED to finish.
      // Send a notifyDatabaseChanged signal even if the database hasn't

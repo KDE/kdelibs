@@ -72,12 +72,12 @@ public:
    void registerWindowId(long windowId);
    void unregisterWindowId(long windowId);
    void recreate(bool initial);
+
+public slots:
    /**
     * Loads / unloads modules according to config.
     */
    void initModules();
-
-public slots:
 
    /**
     * Recreate the database file
