@@ -297,6 +297,8 @@ int KCalendarSystemHebrew::monthsInYear( const QDate & date ) const
 int KCalendarSystemHebrew::weeksInYear(int year) const
 {
   QDate temp;
+  setYMD(temp, year, 1, 1);  // don't pass an uninitialized QDate to
+                             // monthsInYear in the next call
   setYMD(temp, year, monthsInYear(temp), hndays(monthsInYear(temp), year) );
 
   int nWeekNumber = weekNumber(temp);
