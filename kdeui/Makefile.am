@@ -36,7 +36,7 @@ include_HEADERS = kledlamp.h kprogress.h kpanner.h kcolordlg.h kselect.h \
 		kwmmapp.h kbuttonbox.h ktablistbox.h kcontainer.h \
 		knewpanner.h kcontrol.h keditcl.h ktoolboxmgr.h kled.h	\
 		kdbtn.h knotebook.h ktabbar.h kwizard.h kkeydialog.h \
-		kurllabel.h
+		kurllabel.h kruler.h
 
 libkdeui_la_SOURCES = kledlamp.cpp kprogress.cpp kpanner.cpp kcolordlg.cpp\
 		kselect.cpp kdatepik.cpp kdatetbl.cpp \
@@ -49,7 +49,7 @@ libkdeui_la_SOURCES = kledlamp.cpp kprogress.cpp kpanner.cpp kcolordlg.cpp\
 		kbuttonbox.cpp ktablistbox.cpp knewpanner.cpp \
 		keditcl1.cpp keditcl2.cpp ktoolboxmgr.cpp kled.cpp	\
 		kdbtn.cpp knotebook.cpp ktabbar.cpp kwizard.cpp kcontainer.cpp \
-		kkeydialog.cpp kurllabel.cpp
+		kkeydialog.cpp kurllabel.cpp kruler.cpp
 
 BUILT_SOURCES = kledlamp.moc kprogress.moc kpanner.moc kcolordlg.moc\
 		kselect.moc ktabctl.moc kdatepik.moc \
@@ -61,7 +61,7 @@ BUILT_SOURCES = kledlamp.moc kprogress.moc kpanner.moc kcolordlg.moc\
 		kiconloaderdialog.moc kwmmapp.moc kbuttonbox.moc \
 		ktablistbox.moc knewpanner.moc kcontrol.moc keditcl.moc \
 	  	ktoolboxmgr.moc kled.moc kdbtn.moc knotebook.moc kwizard.moc \
-		ktabbar.moc kurllabel.moc
+		ktabbar.moc kurllabel.moc kruler.moc
 
 
 kledlamp.cpp:kledlamp.moc
@@ -228,6 +228,10 @@ kkeydialog.moc: kkeydialog.h
 kurllabel.cpp:kurllabel.moc
 kurllabel.moc: kurllabel.h
 	$(MOC) kurllabel.h -o kurllabel.moc
+
+kruler.cpp:kruler.moc
+kruler.moc: kruler.h
+	$(MOC) kruler.h -o kruler.moc
 
 data_DATA = error.xpm exclamation.xpm info.xpm stopsign.xpm question.xpm \
 	arrow_up.xbm arrow_down.xbm arrow_left.xbm arrow_right.xbm	
