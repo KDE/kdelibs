@@ -34,6 +34,8 @@ public:
     void runAll();
     void cleanup();
 
+    void get();
+    void twoGets();
     void copyFileToSamePartition();
     void copyDirectoryToSamePartition();
     void copyFileToOtherPartition();
@@ -42,6 +44,7 @@ public:
 
 private slots:
     void slotEntries( KIO::Job*, const KIO::UDSEntryList& lst );
+    void slotGetResult( KIO::Job* );
 
 private:
     QString homeTmpDir() const;
@@ -49,6 +52,8 @@ private:
     void copyLocalFile( const QString& src, const QString& dest );
     void copyLocalDirectory( const QString& src, const QString& dest );
 
+    int m_result;
+    QByteArray m_data;
     QStringList m_names;
 };
 

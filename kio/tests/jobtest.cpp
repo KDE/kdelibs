@@ -28,6 +28,7 @@
 #include <kcmdlineargs.h>
 
 #include <qfileinfo.h>
+#include <qeventloop.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -92,6 +93,7 @@ void JobTest::setup()
 
 void JobTest::runAll()
 {
+    get();
     copyFileToSamePartition();
     copyDirectoryToSamePartition();
     copyFileToOtherPartition();
@@ -110,7 +112,7 @@ static void createTestFile( const QString& path )
     QFile f( path );
     if ( !f.open( IO_WriteOnly ) )
         kdFatal() << "Can't create " << path << endl;
-    f.writeBlock( "Hello world", 10 );
+    f.writeBlock( "Hello world", 11 );
     f.close();
 }
 
@@ -122,6 +124,31 @@ static void createTestDirectory( const QString& path )
         kdFatal() << "couldn't create " << path << endl;
     createTestFile( path + "/testfile" );
 }
+
+void JobTest::get()
+{
+    kdDebug() << k_funcinfo << endl;
+    const QString filePath = homeTmpDir() + "fileFromHome";
+    createTestFile( filePath );
+    KURL u; u.setPath( filePath );
+    m_result = -1;
+    KIO::StoredTransferJob* job = KIO::storedGet( u );
+    connect( job, SIGNAL( result( KIO::Job* ) ),
+            this, SLOT( slotGetResult( KIO::Job* ) ) );
+    kapp->eventLoop()->enterLoop();
+    assert( m_result == 0 ); // no error
+    assert( m_data.size() == 11 );
+    assert( QCString( m_data ) == "Hello world" );
+}
+
+void JobTest::slotGetResult( KIO::Job* job )
+{
+    m_result = job->error();
+    m_data = static_cast<KIO::StoredTransferJob *>(job)->data();
+    kapp->eventLoop()->exitLoop();
+}
+
+////
 
 void JobTest::copyLocalFile( const QString& src, const QString& dest )
 {
