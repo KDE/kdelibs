@@ -466,7 +466,7 @@ protected:
     RangeImpl *impl;
     Range(RangeImpl *i);
 private:
-    void throwException(int exceptioncode);
+    void throwException(int exceptioncode) const;
 };
 
 }; // namespace

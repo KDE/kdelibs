@@ -40,16 +40,17 @@ public:
 
     ~RangeImpl();
 
-    NodeImpl *startContainer() const;
-    long startOffset() const;
-    NodeImpl *endContainer() const;
-    long endOffset() const;
-    bool collapsed() const;
+    // ### remove the get from these methods (i.e. getStartContainer() -> startContainer())
+    NodeImpl *startContainer(int &exceptioncode) const;
+    long startOffset(int &exceptioncode) const;
+    NodeImpl *endContainer(int &exceptioncode) const;
+    long endOffset(int &exceptioncode) const;
+    bool collapsed(int &exceptioncode) const;
 
-    NodeImpl *commonAncestorContainer();
+    NodeImpl *commonAncestorContainer(int &exceptioncode);
     void setStart ( NodeImpl *refNode, long offset, int &exceptioncode );
     void setEnd ( NodeImpl *refNode, long offset, int &exceptioncode );
-    void collapse ( bool toStart );
+    void collapse ( bool toStart, int &exceptioncode );
     short compareBoundaryPoints ( Range::CompareHow how, const RangeImpl *sourceRange, int &exceptioncode );
     short compareBoundaryPoints ( NodeImpl *containerA, long offsetA, NodeImpl *containerB, long offsetB );
     bool boundaryPointsValid (  );
@@ -57,11 +58,12 @@ public:
     DocumentFragmentImpl *extractContents ( int &exceptioncode );
     DocumentFragmentImpl *cloneContents ( int &exceptioncode );
     void insertNode( const NodeImpl *newNode, int &exceptioncode );
-    DOMString toString (  );
+    DOMString toString ( int &exceptioncode );
     DOMString toHTML (  );
-    void detach (  );
+    void detach ( int &exceptioncode );
     bool isDetached() const;
     DocumentFragmentImpl *masterTraverse(bool contentExtract, int &exceptioncode);
+    RangeImpl *cloneRange(int &exceptioncode);
 
     void setStartAfter( const NodeImpl *refNode, int &exceptioncode );
     void setEndBefore( const NodeImpl *refNode, int &exceptioncode );
@@ -77,8 +79,6 @@ protected:
     unsigned long m_startOffset;
     NodeImpl *m_endContainer;
     unsigned long m_endOffset;
-    NodeImpl *m_commonAncestorContainer;
-    bool m_collapsed;
     bool m_detached;
 
 private:

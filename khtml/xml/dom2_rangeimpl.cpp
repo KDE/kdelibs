@@ -46,8 +46,6 @@ RangeImpl::RangeImpl(DocumentImpl *rootContainer)
     m_endContainer = rootContainer;
     m_startOffset = 0;
     m_endOffset = 0;
-    m_commonAncestorContainer = rootContainer;
-    m_collapsed = true;
     m_detached = false;
 }
 
@@ -57,9 +55,6 @@ RangeImpl::RangeImpl(NodeImpl *sc, const long so, NodeImpl *ec, const long eo)
     m_startOffset = so;
     m_endContainer = ec;
     m_endOffset = eo;
-    m_commonAncestorContainer = commonAncestorContainer();
-    if( m_startContainer == m_endContainer && m_startOffset == m_endOffset )  m_collapsed = true;
-    else  m_collapsed = false;
     m_detached = false;
 }
 
@@ -67,31 +62,53 @@ RangeImpl::~RangeImpl()
 {
 }
 
-NodeImpl *RangeImpl::startContainer() const
+NodeImpl *RangeImpl::startContainer(int &exceptioncode) const
 {
+    if (m_detached) {
+	exceptioncode = DOMException::INVALID_STATE_ERR;
+	return 0;
+    }
+
     return m_startContainer;
 }
 
-long RangeImpl::startOffset() const
+long RangeImpl::startOffset(int &exceptioncode) const
 {
+    if (m_detached) {
+	exceptioncode = DOMException::INVALID_STATE_ERR;
+	return 0;
+    }
+
     return m_startOffset;
 }
 
-NodeImpl *RangeImpl::endContainer() const
+NodeImpl *RangeImpl::endContainer(int &exceptioncode) const
 {
+    if (m_detached) {
+	exceptioncode = DOMException::INVALID_STATE_ERR;
+	return 0;
+    }
+
     return m_endContainer;
 }
 
-long RangeImpl::endOffset() const
+long RangeImpl::endOffset(int &exceptioncode) const
 {
+    if (m_detached) {
+	exceptioncode = DOMException::INVALID_STATE_ERR;
+	return 0;
+    }
+
     return m_endOffset;
 }
 
-NodeImpl *RangeImpl::commonAncestorContainer()
+NodeImpl *RangeImpl::commonAncestorContainer(int &exceptioncode)
 {
-    // ### caching the m_commonAncestorContainer is a bit senseless
-    // if we do not have a mechanism to check if the cached value
-    // is useable
+    if (m_detached) {
+	exceptioncode = DOMException::INVALID_STATE_ERR;
+	return 0;
+    }
+
     NodeImpl *parentStart = m_startContainer;
     NodeImpl *parentEnd = m_endContainer;
 
@@ -106,20 +123,28 @@ NodeImpl *RangeImpl::commonAncestorContainer()
     }
 
     if(parentStart == parentEnd)
-        m_commonAncestorContainer = parentStart;
+        return parentStart;
     else
         return 0;
-
-    return m_commonAncestorContainer;
 }
 
-bool RangeImpl::collapsed() const
+bool RangeImpl::collapsed(int &exceptioncode) const
 {
-    return m_collapsed;
+    if (m_detached) {
+	exceptioncode = DOMException::INVALID_STATE_ERR;
+	return 0;
+    }
+
+    return (m_startContainer == m_endContainer && m_startOffset == m_endOffset);
 }
 
 void RangeImpl::setStart( NodeImpl *refNode, long offset, int &exceptioncode )
 {
+    if (m_detached) {
+	exceptioncode = DOMException::INVALID_STATE_ERR;
+	return;
+    }
+
     checkNodeWOffset( refNode, offset, exceptioncode );
     if (exceptioncode)
 	return;
@@ -127,22 +152,19 @@ void RangeImpl::setStart( NodeImpl *refNode, long offset, int &exceptioncode )
     m_startContainer = refNode;
     m_startOffset = offset;
 
-    if( m_endContainer )
-    {
-        if( m_commonAncestorContainer )
-        {
-            NodeImpl *oldCommonAncestorContainer = m_commonAncestorContainer;
-            if( oldCommonAncestorContainer != commonAncestorContainer() )
-                collapse( true );
-            if( !boundaryPointsValid() )
-                collapse( true );
-        }
-        else  commonAncestorContainer();
-    }
+    // ### check if different root container
+
+    if (compareBoundaryPoints(m_startContainer,m_startOffset,m_endContainer,m_endOffset) > 0)
+	collapse(true,exceptioncode);
 }
 
 void RangeImpl::setEnd( NodeImpl *refNode, long offset, int &exceptioncode )
 {
+    if (m_detached) {
+	exceptioncode = DOMException::INVALID_STATE_ERR;
+	return;
+    }
+
     checkNodeWOffset( refNode, offset, exceptioncode );
     if (exceptioncode)
 	return;
@@ -150,42 +172,40 @@ void RangeImpl::setEnd( NodeImpl *refNode, long offset, int &exceptioncode )
     m_endContainer = refNode;
     m_endOffset = offset;
 
-    if( m_startContainer )
-    {
-        if( m_commonAncestorContainer )
-        {
-            NodeImpl *oldCommonAncestorContainer = m_commonAncestorContainer;
-            if( oldCommonAncestorContainer != commonAncestorContainer() )
-                collapse( true );
-            if( !boundaryPointsValid() )
-                collapse( true );
-        }
-        else  commonAncestorContainer();
-    }
+    // ### check if different root container
+
+    if (compareBoundaryPoints(m_startContainer,m_startOffset,m_endContainer,m_endOffset) > 0)
+ 	collapse(false,exceptioncode);
 }
 
-void RangeImpl::collapse( bool toStart )
+void RangeImpl::collapse( bool toStart, int &exceptioncode )
 {
+    if (m_detached) {
+	exceptioncode = DOMException::INVALID_STATE_ERR;
+	return;
+    }
+
     if( toStart )   // collapse to start
     {
         m_endContainer = m_startContainer;
         m_endOffset = m_startOffset;
-        m_collapsed = true;
-        m_commonAncestorContainer = m_startContainer;
     }
     else            // collapse to end
     {
         m_startContainer = m_endContainer;
         m_startOffset = m_endOffset;
-        m_collapsed = true;
-        m_commonAncestorContainer = m_endContainer;
     }
 }
 
 short RangeImpl::compareBoundaryPoints( Range::CompareHow how, const RangeImpl *sourceRange, int &exceptioncode )
 {
+    if (m_detached) {
+	exceptioncode = DOMException::INVALID_STATE_ERR;
+	return 0;
+    }
+
     RangeImpl *noConstSourceRange = (RangeImpl*)sourceRange; // ### remove hack
-    if( commonAncestorContainer()->ownerDocument() != noConstSourceRange->commonAncestorContainer()->ownerDocument() ) {
+    if( commonAncestorContainer(exceptioncode)->ownerDocument() != noConstSourceRange->commonAncestorContainer(exceptioncode)->ownerDocument() ) {
         exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
         return 0;
     }
@@ -194,19 +214,19 @@ short RangeImpl::compareBoundaryPoints( Range::CompareHow how, const RangeImpl *
     {
     case Range::START_TO_START:
         return compareBoundaryPoints( m_startContainer, m_startOffset,
-                                      sourceRange->startContainer(), sourceRange->startOffset() );
+                                      sourceRange->startContainer(exceptioncode), sourceRange->startOffset(exceptioncode) );
         break;
     case Range::START_TO_END:
         return compareBoundaryPoints( m_startContainer, m_startOffset,
-                                      sourceRange->endContainer(), sourceRange->endOffset() );
+                                      sourceRange->endContainer(exceptioncode), sourceRange->endOffset(exceptioncode) );
         break;
     case Range::END_TO_END:
         return compareBoundaryPoints( m_endContainer, m_endOffset,
-                                      sourceRange->endContainer(), sourceRange->endOffset() );
+                                      sourceRange->endContainer(exceptioncode), sourceRange->endOffset(exceptioncode) );
         break;
     case Range::END_TO_START:
         return compareBoundaryPoints( m_endContainer, m_endOffset,
-                                      sourceRange->startContainer(), sourceRange->startOffset() );
+                                      sourceRange->startContainer(exceptioncode), sourceRange->startOffset(exceptioncode) );
         break;
     default:
 //        printf( "Function compareBoundaryPoints: Invalid CompareHow\n" );
@@ -260,15 +280,23 @@ bool RangeImpl::boundaryPointsValid(  )
 
 void RangeImpl::deleteContents( int &exceptioncode )
 {
-    NodeImpl *cmnRoot = commonAncestorContainer();
+    if (m_detached) {
+	exceptioncode = DOMException::INVALID_STATE_ERR;
+	return;
+    }
+
+    if (collapsed(exceptioncode))
+	return;
+    if (exceptioncode)
+	return;
+	
+    NodeImpl *cmnRoot = commonAncestorContainer(exceptioncode);
 //    printf("CommonAC: %s \n", cmnRoot->nodeName().string().ascii());
 //    printf("end: %d, start: %d", m_startOffset, m_endOffset);
 
+
     if(m_startContainer == m_endContainer)
     {
-//        if(m_startOffset == m_endOffset)            // we have a collapsed range
-//        {printf("m_collapsed\n");return;}
-
         // ### we need to delete the text Node if a whole text is selected!!
         if( m_startContainer->nodeType() == Node::TEXT_NODE )
         {
@@ -415,16 +443,31 @@ void RangeImpl::deleteContents( int &exceptioncode )
 
 DocumentFragmentImpl *RangeImpl::extractContents( int &exceptioncode )
 {
+    if (m_detached) {
+	exceptioncode = DOMException::INVALID_STATE_ERR;
+	return 0;
+    }
+
     return masterTraverse( true, exceptioncode );
 }
 
 DocumentFragmentImpl *RangeImpl::cloneContents( int &exceptioncode  )
 {
+    if (m_detached) {
+	exceptioncode = DOMException::INVALID_STATE_ERR;
+	return 0;
+    }
+
     return masterTraverse( false, exceptioncode );
 }
 
 void RangeImpl::insertNode( const NodeImpl *newNode, int &exceptioncode )
 {
+    if (m_detached) {
+	exceptioncode = DOMException::INVALID_STATE_ERR;
+	return;
+    }
+
     if( newNode->nodeType() == Node::ATTRIBUTE_NODE ||
         newNode->nodeType() == Node::ENTITY_NODE ||
         newNode->nodeType() == Node::NOTATION_NODE ||
@@ -456,8 +499,13 @@ void RangeImpl::insertNode( const NodeImpl *newNode, int &exceptioncode )
     }
 }
 
-DOMString RangeImpl::toString(  )
+DOMString RangeImpl::toString( int &exceptioncode )
 {
+    if (m_detached) {
+	exceptioncode = DOMException::INVALID_STATE_ERR;
+	return 0;
+    }
+
     // ###
 /*    NodeIteratorImpl iterator( m_startContainer.childNodes().item( m_startOffset ) );
     DOMString _string;
@@ -497,8 +545,13 @@ DOMString RangeImpl::toHTML(  )
     return d;
 }
 
-void RangeImpl::detach(  )
+void RangeImpl::detach( int &exceptioncode )
 {
+    if (m_detached) {
+	exceptioncode = DOMException::INVALID_STATE_ERR;
+	return;
+    }
+
     m_detached = true;
 }
 
@@ -586,9 +639,9 @@ DocumentFragmentImpl *RangeImpl::masterTraverse(bool contentExtract, int &except
      * nodes that are between these two!
      */
 
-    NodeImpl *_cmnRoot = commonAncestorContainer();
+    NodeImpl *_cmnRoot = commonAncestorContainer(exceptioncode);
     NodeImpl *_tempCurrent = m_startContainer;
-    NodeImpl *_tempPartial;
+    NodeImpl *_tempPartial = 0;
     // we still have Node _clone!!
 
     // Special case text is first:
@@ -621,7 +674,7 @@ DocumentFragmentImpl *RangeImpl::masterTraverse(bool contentExtract, int &except
 
     NodeImpl *_tempParent;                       // we use this to traverse upwords trough the tree
     NodeImpl *_cloneParent;                      // this one is used to copy the current parent
-    NodeImpl *_fragmentRoot;                     // this is eventually becomming the root of the DocumentFragment
+    NodeImpl *_fragmentRoot = 0;                 // this is eventually becomming the root of the DocumentFragment
 
 
     while( _tempCurrent != _cmnRoot )    // traversing from the Container, all the way up to the commonAncestor
@@ -681,7 +734,7 @@ DocumentFragmentImpl *RangeImpl::masterTraverse(bool contentExtract, int &except
 
     //****** we should now be FINISHED with m_startContainer **********
     _tempCurrent = m_endContainer;
-    NodeImpl *_tempEnd;
+    NodeImpl *_tempEnd = 0;
     // we still have Node _clone!!
 
     // Special case text is first:
@@ -780,8 +833,8 @@ DocumentFragmentImpl *RangeImpl::masterTraverse(bool contentExtract, int &except
     // the commonRoot
 
     NodeImpl *_clonePrevious = _endFragment->lastChild();
-    _tempCurrent = _tempEnd->previousSibling();
-    NodeImpl *_nextCurrent;
+    _tempCurrent = _tempEnd->previousSibling(); // ### _tempEnd is always 0
+    NodeImpl *_nextCurrent = 0;
 
     while( (_nextCurrent != _fragmentRoot) && _tempCurrent )
     {
@@ -877,8 +930,24 @@ void RangeImpl::checkNodeBA( const NodeImpl *n, int &exceptioncode ) const
 
 }
 
+RangeImpl *RangeImpl::cloneRange(int &exceptioncode)
+{
+    if (m_detached) {
+	exceptioncode = DOMException::INVALID_STATE_ERR;
+	return 0;
+    }
+
+    // ###
+    return 0;
+}
+
 void RangeImpl::setStartAfter( const NodeImpl *refNode, int &exceptioncode )
 {
+    if (m_detached) {
+	exceptioncode = DOMException::INVALID_STATE_ERR;
+	return;
+    }
+
     checkNodeBA( refNode, exceptioncode );
     if (exceptioncode)
 	return;
@@ -888,6 +957,11 @@ void RangeImpl::setStartAfter( const NodeImpl *refNode, int &exceptioncode )
 
 void RangeImpl::setEndBefore( const NodeImpl *refNode, int &exceptioncode )
 {
+    if (m_detached) {
+	exceptioncode = DOMException::INVALID_STATE_ERR;
+	return;
+    }
+
     checkNodeBA( refNode, exceptioncode );
     if (exceptioncode)
 	return;
@@ -897,6 +971,11 @@ void RangeImpl::setEndBefore( const NodeImpl *refNode, int &exceptioncode )
 
 void RangeImpl::setEndAfter( const NodeImpl *refNode, int &exceptioncode )
 {
+    if (m_detached) {
+	exceptioncode = DOMException::INVALID_STATE_ERR;
+	return;
+    }
+
     checkNodeBA( refNode, exceptioncode );
     if (exceptioncode)
 	return;
@@ -907,6 +986,11 @@ void RangeImpl::setEndAfter( const NodeImpl *refNode, int &exceptioncode )
 
 void RangeImpl::selectNode( const NodeImpl *refNode, int &exceptioncode )
 {
+    if (m_detached) {
+	exceptioncode = DOMException::INVALID_STATE_ERR;
+	return;
+    }
+
     checkNodeBA( refNode, exceptioncode );
     if (exceptioncode)
 	return;
@@ -919,6 +1003,11 @@ void RangeImpl::selectNode( const NodeImpl *refNode, int &exceptioncode )
 
 void RangeImpl::selectNodeContents( const NodeImpl *refNode, int &exceptioncode )
 {
+    if (m_detached) {
+	exceptioncode = DOMException::INVALID_STATE_ERR;
+	return;
+    }
+
     checkNode( refNode, exceptioncode );
     if (exceptioncode)
 	return;
@@ -931,6 +1020,11 @@ void RangeImpl::selectNodeContents( const NodeImpl *refNode, int &exceptioncode 
 
 void RangeImpl::surroundContents( const NodeImpl *newParent, int &exceptioncode )
 {
+    if (m_detached) {
+	exceptioncode = DOMException::INVALID_STATE_ERR;
+	return;
+    }
+
     if( !newParent )
         return; // ### are we supposed to throw an exception here?
 
@@ -976,9 +1070,15 @@ void RangeImpl::surroundContents( const NodeImpl *newParent, int &exceptioncode 
 
 void RangeImpl::setStartBefore( const NodeImpl *refNode, int &exceptioncode )
 {
+    if (m_detached) {
+	exceptioncode = DOMException::INVALID_STATE_ERR;
+	return;
+    }
+
     checkNodeBA( refNode, exceptioncode );
     if (exceptioncode)
 	return;
 
     setStart( refNode->parentNode(), refNode->index(), exceptioncode );
 }
+

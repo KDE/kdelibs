@@ -888,13 +888,13 @@ KJSO DOMRange:: tryGet(const UString &p) const
   else if (p == "")
     return new DOMRangeFunc(range,DOMRangeFunc::SelectNodeContents);
   else if (p == "START_TO_START")
-    return Number(0);
+    return Number(DOM::Range::START_TO_START);
   else if (p == "START_TO_END")
-    return Number(1);
+    return Number(DOM::Range::START_TO_END);
   else if (p == "END_TO_END")
-    return Number(2);
+    return Number(DOM::Range::END_TO_END);
   else if (p == "END_TO_START")
-    return Number(3);
+    return Number(DOM::Range::END_TO_START);
   else if (p == "compareBoundaryPoints")
     return new DOMRangeFunc(range,DOMRangeFunc::CompareBoundaryPoints);
   else if (p == "deleteContents")

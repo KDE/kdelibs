@@ -86,7 +86,10 @@ Node Range::startContainer() const
     if (!impl)
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 	
-    return impl->startContainer();
+    int exceptioncode = 0;
+    NodeImpl *r = impl->startContainer(exceptioncode);
+    throwException(exceptioncode);
+    return r;
 }
 
 long Range::startOffset() const
@@ -94,7 +97,11 @@ long Range::startOffset() const
     if (!impl)
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 
-    return impl->startOffset();
+    int exceptioncode = 0;
+    long r = impl->startOffset(exceptioncode);
+    throwException(exceptioncode);
+    return r;
+
 }
 
 Node Range::endContainer() const
@@ -102,7 +109,10 @@ Node Range::endContainer() const
     if (!impl)
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 
-    return impl->endContainer();
+    int exceptioncode = 0;
+    NodeImpl *r = impl->endContainer(exceptioncode);
+    throwException(exceptioncode);
+    return r;
 }
 
 long Range::endOffset() const
@@ -110,7 +120,10 @@ long Range::endOffset() const
     if (!impl)
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 
-    return impl->endOffset();
+    int exceptioncode = 0;
+    long r = impl->endOffset(exceptioncode);
+    throwException(exceptioncode);
+    return r;
 }
 
 bool Range::collapsed() const
@@ -118,7 +131,10 @@ bool Range::collapsed() const
     if (!impl)
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 
-    return impl->collapsed();
+    int exceptioncode = 0;
+    bool r = impl->collapsed(exceptioncode);
+    throwException(exceptioncode);
+    return r;
 }
 
 Node Range::commonAncestorContainer()
@@ -126,7 +142,10 @@ Node Range::commonAncestorContainer()
     if (!impl)
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 
-    return impl->commonAncestorContainer();
+    int exceptioncode = 0;
+    NodeImpl *r = impl->commonAncestorContainer(exceptioncode);
+    throwException(exceptioncode);
+    return r;
 }
 
 void Range::setStart( const Node &refNode, long offset )
@@ -195,7 +214,9 @@ void Range::collapse( bool toStart )
     if (!impl)
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 
-    impl->collapse(toStart);
+    int exceptioncode = 0;
+    impl->collapse(toStart,exceptioncode);
+    throwException(exceptioncode);
 }
 
 void Range::selectNode( const Node &refNode )
@@ -294,7 +315,10 @@ Range Range::cloneRange(  )
     if (!impl)
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 
-    return Range( impl );
+    int exceptioncode = 0;
+    RangeImpl *r = impl->cloneRange(exceptioncode);
+    throwException(exceptioncode);
+    return r;
 }
 
 DOMString Range::toString(  )
@@ -302,7 +326,11 @@ DOMString Range::toString(  )
     if (!impl)
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 
-    return impl->toString();
+    int exceptioncode = 0;
+    DOMString r = impl->toString(exceptioncode);
+    throwException(exceptioncode);
+    return r;
+
 }
 
 DOMString Range::toHTML(  )
@@ -318,7 +346,9 @@ void Range::detach(  )
     if (!impl)
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 
-    impl->detach(); // ### get rid of impl instead? (thereby becoming null)
+    int exceptioncode = 0;
+    impl->detach(exceptioncode);
+    throwException(exceptioncode);
 }
 
 bool Range::isDetached() const
@@ -339,7 +369,7 @@ bool Range::isNull() const
     return (impl == 0);
 }
 
-void Range::throwException(int exceptioncode)
+void Range::throwException(int exceptioncode) const
 {
     if (!exceptioncode)
 	return;
