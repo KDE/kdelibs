@@ -31,18 +31,18 @@ class QWidget;
  * An item for the listiew, that has a reference to its corresponding
  * @ref KFileViewItem.
  */
-class KFileListViewItem : public QListViewItem
+class KFileListViewItem : public KListViewItem
 {
 public:
     KFileListViewItem( QListView *parent, const QString &text,
 		       const QPixmap &icon, const KFileViewItem *fi )
-	: QListViewItem( parent, text ), inf( fi ) {
+	: KListViewItem( parent, text ), inf( fi ) {
 	    setPixmap( 0, icon );
     }
     KFileListViewItem( QListView *parent, const QString &text,
 		       const QPixmap &icon, const KFileViewItem *fi,
 		       QListViewItem *after)
-	: QListViewItem( parent, after ), inf( fi ) {
+	: KListViewItem( parent, after ), inf( fi ) {
 	    setPixmap( 0, icon );
 	    setText( 0, text );
     }

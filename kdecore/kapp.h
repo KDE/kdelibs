@@ -568,6 +568,14 @@ public:
    */
   const QCString startupId() const;
 
+  /**
+   * Returns the alternate background color used by @ref KListView with
+   * @ref KListViewItem. Any other list that uses alternating background
+   * colors should use this too, to obey to the user's preferences. Returns
+   * an invalid color if the user doesn't want alternating backgrounds.
+   */
+  const QColor &alternateBackground() const;
+
 public slots:
   /**
    * Tell KApplication about one more operation that should be finished
@@ -837,6 +845,9 @@ private:
 #endif
 
 // $Log$
+// Revision 1.220  2001/06/10 21:37:39  ellis
+// Add support for quit logout (i.e., without confirmation)
+//
 // Revision 1.219  2001/06/06 20:47:50  lunakl
 // More work on app startup notification.
 //

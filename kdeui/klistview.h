@@ -239,6 +239,19 @@ public:
    */
   void setFullWidth();
 
+  /**
+   * sets the alternate background background color.
+   * This only has an effect if the items are KListViewItems
+   *
+   * @param c the color to use for every other item. Set to an invalid
+   *        colour to disable alternate colours.
+   */
+  void setAlternateBackground(const QColor &c);
+  /**
+   * @return the alternate background color
+   */
+  const QColor &alternateBackground() const;
+
 signals:
 
   /**
@@ -788,4 +801,68 @@ private:
   KListViewPrivate *d;
 };
 
+/**
+ * A listview item with support for alternate background colours. It is
+ * a drop-in replacement for @ref QListViewItem
+ *
+ * @short listview item with alternate background colour support
+ */
+class KListViewItem : public QListViewItem
+{
+public:
+  /**
+   * constructors. The semantics remain as in @ref QListViewItem.
+   * Although they accept a @ref QListViewItem as parent, please
+   * don't mix KListViewItem (or subclasses) with QListViewItem
+   * (or subclasses).
+   */
+  KListViewItem(QListView *parent);
+  KListViewItem(QListViewItem *parent);
+  KListViewItem(QListView *parent, QListViewItem *after);
+  KListViewItem(QListViewItem *parent, QListViewItem *after);
+
+  KListViewItem(QListView *parent,
+    QString, QString = QString::null,
+    QString = QString::null, QString = QString::null,
+    QString = QString::null, QString = QString::null,
+    QString = QString::null, QString = QString::null);
+
+  KListViewItem(QListViewItem *parent,
+    QString, QString = QString::null,
+    QString = QString::null, QString = QString::null,
+    QString = QString::null, QString = QString::null,
+    QString = QString::null, QString = QString::null);
+
+  KListViewItem(QListView *parent, QListViewItem *after,
+    QString, QString = QString::null,
+    QString = QString::null, QString = QString::null,
+    QString = QString::null, QString = QString::null,
+    QString = QString::null, QString = QString::null);
+
+  KListViewItem(QListViewItem *parent, QListViewItem *after,
+    QString, QString = QString::null,
+    QString = QString::null, QString = QString::null,
+    QString = QString::null, QString = QString::null,
+    QString = QString::null, QString = QString::null);
+
+  virtual ~KListViewItem();
+
+  /**
+   * returns the background colour for this item
+   */
+  const QColor &backgroundColor();
+
+  virtual void paintCell(QPainter *p, const QColorGroup &cg,
+    int column, int width, int alignment);
+
+private:
+  void init();
+
+private:
+  struct KListViewItemPrivate;
+  KListViewItemPrivate *d;
+};
+
 #endif
+
+// vim: ts=2 sw=2 et

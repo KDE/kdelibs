@@ -145,6 +145,7 @@ public:
   QListViewItem *afterItemDrop;
   QListViewItem *parentItemDrop;
 
+  QColor alternateBackground;
 };
 
 
@@ -285,6 +286,7 @@ KListView::KListView( QWidget *parent, const char *name )
 
   connect (this, SIGNAL (menuShortCutPressed (KListView*, QListViewItem*)),
                    this, SLOT (emitContextMenu (KListView*, QListViewItem*)));
+  d->alternateBackground = kapp->alternateBackground();
 }
 
 
@@ -1640,6 +1642,113 @@ void KListView::resizeEvent(QResizeEvent* e)
      setColumnWidth( 0, visibleWidth() - 1 );
 }
 
+const QColor &KListView::alternateBackground() const
+{
+  return d->alternateBackground;
+}
+
+void KListView::setAlternateBackground(const QColor &c)
+{
+  d->alternateBackground = c;
+  repaint();
+}
+
+struct KListViewItem::KListViewItemPrivate
+{
+  bool odd;
+};
+
+KListViewItem::KListViewItem(QListView *parent)
+  : QListViewItem(parent)
+{
+  init();
+}
+
+KListViewItem::KListViewItem(QListViewItem *parent)
+  : QListViewItem(parent)
+{
+  init();
+}
+
+KListViewItem::KListViewItem(QListView *parent, QListViewItem *after)
+  : QListViewItem(parent, after)
+{
+  init();
+}
+
+KListViewItem::KListViewItem(QListViewItem *parent, QListViewItem *after)
+  : QListViewItem(parent, after)
+{
+  init();
+}
+
+KListViewItem::KListViewItem(QListView *parent,
+    QString label1, QString label2, QString label3, QString label4,
+    QString label5, QString label6, QString label7, QString label8)
+  : QListViewItem(parent, label1, label2, label3, label4, label5, label6, label7, label8)
+{
+  init();
+}
+
+KListViewItem::KListViewItem(QListViewItem *parent,
+    QString label1, QString label2, QString label3, QString label4,
+    QString label5, QString label6, QString label7, QString label8)
+  : QListViewItem(parent, label1, label2, label3, label4, label5, label6, label7, label8)
+{
+  init();
+}
+
+KListViewItem::KListViewItem(QListView *parent, QListViewItem *after,
+    QString label1, QString label2, QString label3, QString label4,
+    QString label5, QString label6, QString label7, QString label8)
+  : QListViewItem(parent, after, label1, label2, label3, label4, label5, label6, label7, label8)
+{
+  init();
+}
+
+KListViewItem::KListViewItem(QListViewItem *parent, QListViewItem *after,
+    QString label1, QString label2, QString label3, QString label4,
+    QString label5, QString label6, QString label7, QString label8)
+  : QListViewItem(parent, after, label1, label2, label3, label4, label5, label6, label7, label8)
+{
+  init();
+}
+
+KListViewItem::~KListViewItem()
+{
+  delete d;
+}
+
+void KListViewItem::init()
+{
+  d = new KListViewItemPrivate;
+}
+
+const QColor &KListViewItem::backgroundColor()
+{
+  KListView *lv = dynamic_cast<KListView *>(listView());
+  if (lv && lv->alternateBackground().isValid())
+  {
+    KListViewItem *above = dynamic_cast<KListViewItem *>(itemAbove());
+    d->odd = above ? !above->d->odd : false;
+    if (d->odd)
+      return lv->alternateBackground();
+  }
+  return listView()->viewport()->backgroundColor();
+}
+
+void KListViewItem::paintCell(QPainter *p, const QColorGroup &cg, int column, int width, int alignment)
+{
+  QColorGroup _cg = cg;
+  const QPixmap *pm = listView()->viewport()->backgroundPixmap();
+  if (pm && !pm->isNull())
+	_cg.setBrush(QColorGroup::Base, QBrush(backgroundColor(), *pm));
+  else
+	_cg.setColor(QColorGroup::Base, backgroundColor());
+  QListViewItem::paintCell(p, _cg, column, width, alignment);
+}
 
 #include "klistview.moc"
 #include "klistviewlineedit.moc"
+
+// vim: ts=2 sw=2 et
