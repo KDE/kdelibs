@@ -2,7 +2,7 @@
     Modified element pool for DocBook as used in the KDE documentation
     (instantiates %rdbpool;)
     
-    Copyright (C) 2001 Frederik Fouvry
+    Copyright (C) 2001,2002 Frederik Fouvry
      
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -18,8 +18,8 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
     
-    Send suggestions, comments, etc. to Frederik Fouvry 
-    <fouvry@coli.uni-sb.de>.
+    Send suggestions, comments, etc. to the KDE docbook list 
+    <kde-docbook@kde.org>.
 
     USAGE
 
@@ -75,7 +75,7 @@
 <!ENTITY % lang.attrib
         "lang           (af|ar|az|be|bg|bn|bo|br|bs|ca|cs|cy|da|de|el|en|en-GB
                         |en-US|eo|es|et|eu|fa|fi|fo|fr|ga|gl|gu|he|hi|hr|hu|id
-                        |is|it|ja|kn|km|ko|ku|lt|lv|mi|mk|mr|mt|nl|no|nb|nn|nso
+                        |is|it|ja|kn|km|ko|ku|lo|lt|lv|mi|mk|mr|mt|nl|no|nb|nn|nso
                         |oc|pl|pt|pt-BR|pt-PT|ro|ru|si|sk|sl|sq|sr|st|sv|ta|te
                         |tg|th|tr|uk|ven|vi|wa|xh|zh|zh-CN|zh-TW|zu)
                         #IMPLIED">
@@ -86,8 +86,8 @@ af      Afrikaans
 ar	Arabic
 az	Azerbaijani
 be	Belarusian
-bn	Bengali
 bg      Bulgarian
+bn	Bengali
 bo      Tibetan
 br      Breton
 bs	Bosnian
@@ -121,6 +121,7 @@ km	Khmer
 kn      Kannada
 ko      Korean
 ku	Kurdish
+lo      Lao
 lt      Lituanian
 lv	Latvian
 mi      Maori
