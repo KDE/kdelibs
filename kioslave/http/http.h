@@ -2,6 +2,7 @@
    Copyright (C) 2000,2001 Dawit Alemayehu <adawit@kde.org>
    Copyright (C) 2000,2001 Waldo Bastian <bastian@kde.org>
    Copyright (C) 2000,2001 George Staikos <staikos@kde.org>
+   Copyright (C) 2001,2002 Hamish Rodda <meddie@yoyo.cc.monash.edu.au>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -81,10 +82,14 @@ public:
     QString desturl;
     bool overwrite;
     int depth;
-    int numLocks;
-    QStringList lockURLs;
-    QStringList lockTokens;
   } DAVRequest;
+  
+  typedef struct davLockInfo
+  {
+    QString scope;
+    QString type;
+    QString owner;
+  };
 
   /** The request for the current connection **/
   typedef struct
@@ -139,13 +144,14 @@ public:
 
 //----------------- Re-implemented methods for WebDAV -----------
   virtual void listDir( const KURL& url );
-  virtual void mkdir( const KURL& url, int permissions );
+  virtual void mkdir( const KURL& url, int _permissions );
 
   virtual void rename( const KURL& src, const KURL& dest, bool overwrite );
-  virtual void copy ( const KURL& src, const KURL& dest, int permissions, bool overwrite );
-  virtual void del( const KURL& url, bool isfile );
+  virtual void copy ( const KURL& src, const KURL& dest, int _permissions, bool overwrite );
+  virtual void del( const KURL& url, bool _isfile );
 
-  void davLock( const KURL& url );
+  void davLock( const KURL& url, const QString& scope,
+                const QString& type, const QString& owner );
   void davUnlock( const KURL& url );
 //---------------------------- End WebDAV -----------------------
 
@@ -222,7 +228,9 @@ protected:
   bool httpIsConnected();      // Checks for existing connection.
 
   bool readHeader();
-  bool sendBody();
+  // where dataInternal == true, the content is to come from
+  // an internal function.
+  bool sendBody( bool dataInternal = false );
   // where dataInternal == true, the content is to be made available
   // to an internal function.
   bool readBody( bool dataInternal = false );
@@ -231,7 +239,7 @@ protected:
    * Performs a WebDAV stat or list
    */
   void davStatList( const KURL& url, bool stat = true );
-  void davParsePropstat( const QDomElement& propstat, KIO::UDSEntry& entry );
+  void davParsePropstats( const QDomNodeList& propstats, KIO::UDSEntry& entry );
 
   /**
    * Parses a date & time string

@@ -2,6 +2,7 @@
    Copyright (C) 2000,2001 Waldo Bastian <bastian@kde.org>
    Copyright (C) 2000,2001 George Staikos <staikos@kde.org>
    Copyright (C) 2000,2001 Dawit Alemayehu <adawit@kde.org>
+   Copyright (C) 2001,2002 Hamish Rodda <meddie@yoyo.cc.monash.edu.au>
 
 
    This library is free software; you can redistribute it and/or
@@ -135,7 +136,7 @@ static char * trimLead (char *orig_string)
 HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool,
                             const QCString &app )
              :TCPSlaveBase( 0, protocol , pool, app,
-                            (protocol == "https") )
+                            (protocol == "https" || protocol == "webdavs") )
 {
   m_requestQueue.setAutoDelete(true);
   m_lineBufUnget = 0;
@@ -182,7 +183,7 @@ void HTTPProtocol::reparseConfiguration()
   struct servent *sent = getservbyname(m_protocol, "tcp");
   if (!sent)
   {
-    if (m_protocol == "https")
+    if (m_protocol == "https" || m_protocol == "webdavs")
       m_iDefaultPort = DEFAULT_HTTPS_PORT;
     else if (m_protocol == "ftp")
       m_iDefaultPort = DEFAULT_FTP_PORT;
@@ -269,7 +270,8 @@ void HTTPProtocol::resetSessionSettings()
 
   setRealHost( m_request.hostname );
   // Deal with HTTP tunneling
-  if ( m_bIsSSL && m_bUseProxy && m_proxyURL.protocol() != "https" )
+  if ( m_bIsSSL && m_bUseProxy && (m_proxyURL.protocol() != "https"
+                                    || m_proxyURL.protocol() != "webdavs") )
   {
     // Tell parent class about the real hostname
     setEnableSSLTunnel( true );
@@ -417,7 +419,7 @@ void HTTPProtocol::stat(const KURL& url)
   if ( !checkRequestURL( url ) )
     return;
 
-  if ( m_protocol != "webdav" ) {
+  if ( m_protocol != "webdav" && m_protocol != "webdavs" ) {
     UDSEntry entry;
     UDSAtom atom;
     atom.m_uds = KIO::UDS_NAME;
@@ -474,51 +476,40 @@ void HTTPProtocol::davStatList( const KURL& url, bool stat )
 
     QDomElement href = thisResponse.namedItem( "href" ).toElement();
     if ( !href.isNull() ) {
-      if ( 1 ) {//!stat || href.text() == url.path() ) {
-        entry.clear();
+      entry.clear();
 
-        // remove path from url
-        QString filename = href.text().right( href.text().length() - url.path().length() );
+      // remove path from url
+      QString filename = href.text().right( href.text().length() - url.path().length() );
 
-        // strip '/' from start of directory/file
-        if ( filename[0] == '/' )
-          filename = filename.right( filename.length() - 1 );
+      // strip '/' from start of directory/file
+      if ( filename[0] == '/' )
+        filename = filename.right( filename.length() - 1 );
 
-        // strip '/' from end of directory
-        if ( filename[filename.length() - 1] == '/' )
-          filename = filename.left( filename.length() - 1 );
+      // strip '/' from end of directory
+      if ( filename[filename.length() - 1] == '/' )
+        filename = filename.left( filename.length() - 1 );
 
-        UDSAtom atom;
-        atom.m_uds = KIO::UDS_NAME;
-        atom.m_str = filename;
-        entry.append( atom );
+      // decode filename
+      filename = KURL::decode_string( filename );
 
-        for ( QDomElement propstat = thisResponse.firstChild().toElement();
-              !propstat.isNull();
-              propstat = propstat.nextSibling().toElement() ) {
+      UDSAtom atom;
+      atom.m_uds = KIO::UDS_NAME;
+      atom.m_str = filename;
+      entry.append( atom );
 
-          if ( propstat.tagName() == "propstat" ) {
-            davParsePropstat( propstat, entry );
-          }
-        }
+      QDomNodeList propstats = thisResponse.elementsByTagName( "propstat" );
 
-        if ( stat ) {
-          // return an item
-          kdDebug() << "stat()ing " << href.text() << endl;
-          statEntry( entry );
-          finished();
-          return;
+      davParsePropstats( propstats, entry );
 
-        } else {
-          kdDebug() << "list()ing " << href.text() << endl;
-          listEntry( entry, false );
-        }
+      if ( stat ) {
+        // return an item
+        statEntry( entry );
+        finished();
+        return;
 
-      } else  {
-        kdDebug(7113) << "Unexpected incorrect url: " << href.text() << " (expected "
-                  << url.path() << ")" << endl;
-
-      } // not a stat or the location is the one we want (href.text() == url.path())
+      } else {
+        listEntry( entry, false );
+      }
     } else {
       kdDebug(7113) << "Error: no URL contained in response to PROPFIND on " << url.prettyURL() << endl;
     }
@@ -532,194 +523,214 @@ void HTTPProtocol::davStatList( const KURL& url, bool stat )
   }
 }
 
-void HTTPProtocol::davParsePropstat( const QDomElement& propstat, UDSEntry& entry )
+void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& entry )
 {
-  QDomElement status = propstat.namedItem( "status" ).toElement();
-  if ( status.isNull() ) {
-    // error, no status code in this propstat
-    kdDebug(7113) << "Error, no status code in this propstat" << endl;
-    return;
-  }
-
-  int firstSpace = status.text().find( ' ' );
-  int secondSpace = status.text().find( ' ', firstSpace + 1 );
-  int code = status.text().mid( firstSpace + 1, secondSpace - firstSpace - 1 ).toInt();
-
-  if ( code != 200 ) {
-    /**
-     * 200 (OK) - The command succeeded.  As there can be a mixture of sets
-     * and removes in a body, a 201 (Created) seems inappropriate.
-     *
-     * 403 (Forbidden) - The client, for reasons the server chooses not to
-     * specify, cannot alter one of the properties.
-     *
-     * 409 (Conflict) - The client has provided a value whose semantics are
-     * not appropriate for the property.  This includes trying to set read-
-     * only properties.
-     *
-     * 423 (Locked) - The specified resource is locked and the client either
-     * is not a lock owner or the lock type requires a lock token to be
-     * submitted and the client did not submit it.
-     *
-     * 424 (Failed Dependency) - This action would have succeeded if it were
-     * not for a conflict with another property.
-     *
-     * 507 (Insufficient Storage) - The server did not have sufficient space
-     * to record the property.
-     */
-    kdDebug(7113) << "Error: status code " << code << endl;
-    return;
-  }
-
-  QDomElement prop = propstat.namedItem( "prop" ).toElement();
-  if ( prop.isNull() ) {
-    kdDebug(7113) << "Error, no prop segment in this propstat." << endl;
-    return;
-  }
-
   UDSAtom atom;
   bool foundExecutable = false;
   bool foundContentType = false;
   bool isDirectory = false;
-  int lockCount = 0;
-  int supportedLockCount = 0;
+  uint lockCount = 0;
+  uint supportedLockCount = 0;
 
-  for ( QDomElement property = prop.firstChild().toElement();
-        !property.isNull();
-        property = property.nextSibling().toElement() ) {
+  for ( uint i = 0; i < propstats.count(); i++) {
+    QDomElement propstat = propstats.item(i).toElement();
 
-    if ( property.tagName() == "creationdate" ) {
-      // Resource creation date. Should be is ISO 8601 format.
-      atom.m_uds = KIO::UDS_CREATION_TIME;
-      atom.m_long = parseDateTime( property.text(), property.attribute("dt") );
-      entry.append( atom );
+    QDomElement status = propstat.namedItem( "status" ).toElement();
+    if ( status.isNull() ) {
+      // error, no status code in this propstat
+      kdDebug(7113) << "Error, no status code in this propstat" << endl;
+      return;
+    }
 
-    } else if ( property.tagName() == "getcontentlength" ) {
-      // Content length (file size)
-      atom.m_uds = KIO::UDS_SIZE;
-      atom.m_long = property.text().toULong();
-      entry.append( atom );
+    int firstSpace = status.text().find( ' ' );
+    int secondSpace = status.text().find( ' ', firstSpace + 1 );
+    int code = status.text().mid( firstSpace + 1, secondSpace - firstSpace - 1 ).toInt();
 
-    } else if ( property.tagName() == "getcontenttype" ) {
-      // Content type (mime type)
-      // This may require adjustments for other server-side webdav implementations
-      // (tested with Apache + mod_dav 1.0.3)
-      if ( property.text() == "httpd/unix-directory" ) {
-        if ( !isDirectory ) {
+    if ( code != 200 ) {
+      /**
+      * 200 (OK) - The command succeeded.  As there can be a mixture of sets
+      * and removes in a body, a 201 (Created) seems inappropriate.
+      *
+      * 403 (Forbidden) - The client, for reasons the server chooses not to
+      * specify, cannot alter one of the properties.
+      *
+      * 409 (Conflict) - The client has provided a value whose semantics are
+      * not appropriate for the property.  This includes trying to set read-
+      * only properties.
+      *
+      * 423 (Locked) - The specified resource is locked and the client either
+      * is not a lock owner or the lock type requires a lock token to be
+      * submitted and the client did not submit it.
+      *
+      * 424 (Failed Dependency) - This action would have succeeded if it were
+      * not for a conflict with another property.
+      *
+      * 507 (Insufficient Storage) - The server did not have sufficient space
+      * to record the property.
+      */
+      kdDebug(7113) << "Error: status code " << code << endl;
+      continue;
+    }
+
+    QDomElement prop = propstat.namedItem( "prop" ).toElement();
+    if ( prop.isNull() ) {
+      kdDebug(7113) << "Error: no prop segment in this propstat." << endl;
+      return;
+    }
+
+    for ( QDomElement property = prop.firstChild().toElement();
+          !property.isNull();
+          property = property.nextSibling().toElement() ) {
+
+      if ( property.namespaceURI() != "DAV:" ) {
+        // break out - we're only interested in properties from the DAV namespace
+        continue;
+      }
+
+      if ( property.tagName() == "creationdate" ) {
+        // Resource creation date. Should be is ISO 8601 format.
+        atom.m_uds = KIO::UDS_CREATION_TIME;
+        atom.m_long = parseDateTime( property.text(), property.attribute("dt") );
+        entry.append( atom );
+
+      } else if ( property.tagName() == "getcontentlength" ) {
+        // Content length (file size)
+        atom.m_uds = KIO::UDS_SIZE;
+        atom.m_long = property.text().toULong();
+        entry.append( atom );
+
+      } else if ( property.tagName() == "displayname" ) {
+        // Name suitable for presentation to the user
+        setMetaData( "davDisplayName", property.text() );
+
+      } else if ( property.tagName() == "source" ) {
+        // Source template location
+        QDomElement source = property.namedItem( "link" ).toElement()
+                                      .namedItem( "dst" ).toElement();
+        if ( !source.isNull() )
+          setMetaData( "davSource", source.text() );
+
+      } else if ( property.tagName() == "getcontentlanguage" ) {
+        // equiv. to Content-Language header on a GET
+        setMetaData( "davContentLanguage", property.text() );
+
+      } else if ( property.tagName() == "getcontenttype" ) {
+        // Content type (mime type)
+        // This may require adjustments for other server-side webdav implementations
+        // (tested with Apache + mod_dav 1.0.3)
+        if ( property.text() == "httpd/unix-directory" ) {
+          if ( !isDirectory ) {
+            atom.m_uds = KIO::UDS_FILE_TYPE;
+            atom.m_long = S_IFDIR;
+            entry.append( atom );
+
+            isDirectory = true;
+          }
+
+        } else if ( property.text() != "" ) {
           atom.m_uds = KIO::UDS_FILE_TYPE;
-          atom.m_long = S_IFDIR;
+          atom.m_long = S_IFREG;
           entry.append( atom );
 
-          isDirectory = true;
+          atom.m_uds = KIO::UDS_MIME_TYPE;
+          atom.m_str = property.text();
+          entry.append( atom );
+
+          foundContentType = true;
+        }
+
+      } else if ( property.tagName() == "executable" ) {
+        // File executable status
+        if ( property.text() == "T" )
+          foundExecutable = true;
+
+      } else if ( property.tagName() == "getlastmodified" ) {
+        // Last modification date
+        atom.m_uds = KIO::UDS_MODIFICATION_TIME;
+        atom.m_long = parseDateTime( property.text(), property.attribute("dt") );
+        entry.append( atom );
+
+      } else if ( property.tagName() == "getetag" ) {
+        // Entity tag
+        setMetaData( "davEntityTag", property.text() );
+
+      } else if ( property.tagName() == "supportedlock" ) {
+        // Supported locking specifications
+        for ( QDomElement lockEntry = property.firstChild().toElement();
+              !lockEntry.isNull();
+              lockEntry = lockEntry.nextSibling().toElement() ) {
+          if ( lockEntry.tagName() == "lockentry" ) {
+            QDomElement lockScope = lockEntry.namedItem( "lockscope" ).toElement();
+            QDomElement lockType = lockEntry.namedItem( "locktype" ).toElement();
+            if ( !lockScope.isNull() && !lockType.isNull() ) {
+              // Lock type was properly specified
+              supportedLockCount++;
+              QString scope = lockScope.firstChild().toElement().tagName();
+              QString type = lockType.firstChild().toElement().tagName();
+
+              setMetaData( QString("davSupportedLockScope%1").arg(supportedLockCount), scope );
+              setMetaData( QString("davSupportedLockType%1").arg(supportedLockCount), type );
+            }
+          }
+        }
+
+      } else if ( property.tagName() == "lockdiscovery" ) {
+        // Lists the available locks
+        for ( QDomElement activeLock = property.firstChild().toElement();
+              !activeLock.isNull();
+              activeLock = activeLock.nextSibling().toElement() ) {
+          if ( activeLock.tagName() == "activelock" ) {
+            lockCount++;
+            // required
+            QDomElement lockScope = activeLock.namedItem( "lockscope" ).toElement();
+            QDomElement lockType = activeLock.namedItem( "locktype" ).toElement();
+            QDomElement lockDepth = activeLock.namedItem( "depth" ).toElement();
+            // optional
+            QDomElement lockOwner = activeLock.namedItem( "owner" ).toElement();
+            QDomElement lockTimeout = activeLock.namedItem( "timeout" ).toElement();
+            QDomElement lockToken = activeLock.namedItem( "locktoken" ).toElement();
+            if ( !lockScope.isNull() && !lockType.isNull() && !lockDepth.isNull() ) {
+              // lock was properly specified
+              lockCount++;
+              QString scope = lockScope.firstChild().toElement().tagName();
+              QString type = lockType.firstChild().toElement().tagName();
+              QString depth = lockDepth.text();
+
+              setMetaData( QString("davLockScope%1").arg(lockCount), scope );
+              setMetaData( QString("davLockType%1").arg(lockCount), type );
+              setMetaData( QString("davLockDepth%1").arg(lockCount), depth );
+
+              if ( !lockOwner.isNull() )
+                setMetaData( QString("davLockOwner%1").arg(lockCount), lockOwner.text() );
+
+              if ( !lockTimeout.isNull() )
+                setMetaData( QString("davLockTimeout%1").arg(lockCount), lockTimeout.text() );
+
+              if ( !lockToken.isNull() ) {
+                QDomElement tokenVal = lockScope.namedItem( "href" ).toElement();
+                if ( !tokenVal.isNull() )
+                  setMetaData( QString("davLockToken%1").arg(lockCount), tokenVal.text() );
+              }
+            }
+          }
+        }
+
+      } else if ( property.tagName() == "resourcetype" ) {
+        // Resource type. "Specifies the nature of the resource."
+        if ( !property.namedItem( "collection" ).toElement().isNull() ) {
+          // This is a collection (directory)
+          if ( !isDirectory ) {
+            atom.m_uds = KIO::UDS_FILE_TYPE;
+            atom.m_long = S_IFDIR;
+            entry.append( atom );
+
+            isDirectory = true;
+          }
         }
 
       } else {
-        atom.m_uds = KIO::UDS_FILE_TYPE;
-        atom.m_long = S_IFREG;
-        entry.append( atom );
-
-        atom.m_uds = KIO::UDS_MIME_TYPE;
-        atom.m_str = property.text();
-        entry.append( atom );
+        kdDebug(7113) << "Found unknown webdav property: " << property.tagName() << endl;
       }
-      foundContentType = true;
-
-    } else if ( property.tagName() == "executable" ) {
-      // File executable status
-      if ( property.text() == "T" )
-        foundExecutable = true;
-
-    } else if ( property.tagName() == "getlastmodified" ) {
-      // Last modification date
-      atom.m_uds = KIO::UDS_MODIFICATION_TIME;
-      atom.m_long = parseDateTime( property.text(), property.attribute("dt") );
-      entry.append( atom );
-
-    } else if ( property.tagName() == "getetag" ) {
-      // Entity tag
-      setMetaData( "davEntityTag", property.text() );
-
-    } else if ( property.tagName() == "supportedlock" ) {
-      // Supported locking specifications
-      for ( QDomElement lockEntry = property.firstChild().toElement();
-            !lockEntry.isNull();
-            lockEntry = lockEntry.nextSibling().toElement() ) {
-        if ( lockEntry.tagName() == "lockentry" ) {
-          QDomElement lockScope = lockEntry.namedItem( "lockscope" ).toElement();
-          QDomElement lockType = lockEntry.namedItem( "locktype" ).toElement();
-          if ( !lockScope.isNull() && !lockType.isNull() ) {
-            // Lock type was properly specified
-            supportedLockCount++;
-            QString scope = lockScope.firstChild().toElement().tagName();
-            QString type = lockType.firstChild().toElement().tagName();
-
-            setMetaData( QString("davSupportedLockScope%1").arg(supportedLockCount), scope );
-            setMetaData( QString("davSupportedLockType%1").arg(supportedLockCount), type );
-
-            /*kdDebug(7113) << "Resource supports lock: scope " << scope << ", type " << type << endl;*/
-          }
-        }
-      }
-
-    } else if ( property.tagName() == "lockdiscovery" ) {
-      // Lists the available locks
-      for ( QDomElement activeLock = property.firstChild().toElement();
-            !activeLock.isNull();
-            activeLock = activeLock.nextSibling().toElement() ) {
-        if ( activeLock.tagName() == "activelock" ) {
-          lockCount++;
-          // required
-          QDomElement lockScope = activeLock.namedItem( "lockscope" ).toElement();
-          QDomElement lockType = activeLock.namedItem( "locktype" ).toElement();
-          QDomElement lockDepth = activeLock.namedItem( "depth" ).toElement();
-          // optional
-          QDomElement lockOwner = activeLock.namedItem( "owner" ).toElement();
-          QDomElement lockTimeout = activeLock.namedItem( "timeout" ).toElement();
-          QDomElement lockToken = activeLock.namedItem( "locktoken" ).toElement();
-          if ( !lockScope.isNull() && !lockType.isNull() && !lockDepth.isNull() ) {
-            // lock was properly specified
-            lockCount++;
-            QString scope = lockScope.firstChild().toElement().tagName();
-            QString type = lockType.firstChild().toElement().tagName();
-            QString depth = lockDepth.text();
-
-            setMetaData( QString("davLockScope%1").arg(lockCount), scope );
-            setMetaData( QString("davLockType%1").arg(lockCount), type );
-            setMetaData( QString("davLockDepth%1").arg(lockCount), depth );
-
-            if ( !lockOwner.isNull() )
-              setMetaData( QString("davLockOwner%1").arg(lockCount), lockOwner.text() );
-
-            if ( !lockTimeout.isNull() )
-              setMetaData( QString("davLockTimeout%1").arg(lockCount), lockTimeout.text() );
-
-            if ( !lockToken.isNull() ) {
-              QDomElement tokenVal = lockScope.namedItem( "href" ).toElement();
-              if ( !tokenVal.isNull() )
-                setMetaData( QString("davLockToken%1").arg(lockCount), tokenVal.text() );
-            }
-
-            /*kdDebug(7113) << "Resource has a lock: scope " << scope << ", type " << type
-                          << ", depth " << depth << endl;*/
-          }
-        }
-      }
-
-    } else if ( property.tagName() == "resourcetype" ) {
-      // Resource type. "Specifies the nature of the resource."
-      if ( !property.namedItem( "collection" ).toElement().isNull() ) {
-        // This is a collection (directory)
-        if ( !isDirectory ) {
-          atom.m_uds = KIO::UDS_FILE_TYPE;
-          atom.m_long = S_IFDIR;
-          entry.append( atom );
-
-          isDirectory = true;
-        }
-      }
-
-    } else {
-      kdDebug(7113) << "Found unknown webdav property: " << property.tagName() << endl;
     }
   }
 
@@ -755,7 +766,14 @@ long HTTPProtocol::parseDateTime( const QString& input, const QString& type )
   } else if ( type == "dateTime.rfc1123" ) {
     return KRFCDate::parseDate( input );
   } else {
-    kdDebug(7113) << "Datetime format unrecognised: " << type << endl;
+    // format not advertised... try to parse anyway
+    time_t time = KRFCDate::parseDate( input );
+    if ( time != 0 )
+      return time;
+
+    int offset;
+    dt = parseDateISO8601( input, offset );
+    dt.addSecs( offset * 60 );
   }
 
   static const QDateTime jan1970( QDate(1970,1,1), QTime(00,00) );
@@ -888,7 +906,7 @@ QString HTTPProtocol::processLocks()
   return QString::null;
 }
 
-void HTTPProtocol::mkdir( const KURL& url, int permissions )
+void HTTPProtocol::mkdir( const KURL& url, int )
 {
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::mkdir " << url.url()
                 << endl;
@@ -951,7 +969,7 @@ void HTTPProtocol::put( const KURL &url, int, bool, bool)
   retrieveContent();
 }
 
-void HTTPProtocol::copy( const KURL& src, const KURL& dest, int permissions, bool overwrite )
+void HTTPProtocol::copy( const KURL& src, const KURL& dest, int, bool overwrite )
 {
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::copy " << src.path()
                 << " -> " << dest.prettyURL() << endl;
@@ -1027,7 +1045,7 @@ void HTTPProtocol::rename( const KURL& src, const KURL& dest, bool overwrite )
     case 412:
       // Precondition failed
       // FIXME
-      error( ERR_ACCESS_DENIED, "Parts of this command would have completed, but other parts encountered difficulties." );
+      error( ERR_ACCESS_DENIED, i18n("Parts of this command would have completed, but other parts encountered difficulties.") );
       break;
     case 500:
       // Internal Server Error
@@ -1044,7 +1062,7 @@ void HTTPProtocol::rename( const KURL& src, const KURL& dest, bool overwrite )
   }
 }
 
-void HTTPProtocol::del( const KURL& url, bool isfile )
+void HTTPProtocol::del( const KURL& url, bool )
 {
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::del " << url.prettyURL()
                 << endl;
@@ -1085,7 +1103,8 @@ void HTTPProtocol::post( const KURL& url )
   retrieveContent();
 }
 
-void HTTPProtocol::davLock( const KURL& url )
+void HTTPProtocol::davLock( const KURL& url, const QString& scope,
+                            const QString& type, const QString& owner )
 {
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::davLock "
                 << url.prettyURL() << endl;
@@ -1098,6 +1117,35 @@ void HTTPProtocol::davLock( const KURL& url )
   m_request.query = QString::null;
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
+
+  /* Create appropriate lock XML request. */
+  QDomDocument lockReq;
+
+  QDomElement lockInfo = lockReq.createElementNS( "DAV:", "lockinfo" );
+  lockReq.appendChild( lockInfo );
+
+  QDomElement lockScope = lockReq.createElement( "lockscope" );
+  lockInfo.appendChild( lockScope );
+
+  lockScope.appendChild( lockReq.createElement( scope ) );
+
+  QDomElement lockType = lockReq.createElement( "locktype" );
+  lockInfo.appendChild( lockType );
+
+  lockType.appendChild( lockReq.createElement( type ) );
+
+  if ( owner != QString::null) {
+    QDomElement ownerElement = lockReq.createElement( "owner" );
+    lockReq.appendChild( ownerElement );
+
+    QDomElement ownerHref = lockReq.createElement( "href" );
+    ownerElement.appendChild( ownerHref );
+
+    ownerHref.appendChild( lockReq.createTextNode( owner ) );
+  }
+
+  // insert the document into the POST buffer
+  m_bufPOST = lockReq.toCString();
 
   retrieveContent();
 }
@@ -1430,7 +1478,7 @@ bool HTTPProtocol::httpOpen()
   // if InitializeSSL() call failed which in
   // turn means that SSL is not supported by
   // current installation !!
-  if ( m_protocol == "https" && !m_bIsSSL )
+  if ( (m_protocol == "https" || m_protocol == "webdavs") && !m_bIsSSL )
   {
     error( ERR_UNSUPPORTED_PROTOCOL, m_protocol );
     return false;
@@ -1504,7 +1552,6 @@ bool HTTPProtocol::httpOpen()
 
   // Clean up previous POST
   bool moreData = false;
-  bool davData = true;
   // Variable to hold the entire header...
   QString header;
   QString davHeader;
@@ -1539,12 +1586,11 @@ bool HTTPProtocol::httpOpen()
       else
         davHeader += QString("%1").arg( m_request.davData.depth );
       davHeader += "\r\n";
-      davData = true;
       m_bCachedWrite = false; // Do not put any result in the cache
       break;
   case DAV_PROPPATCH:
       header = "PROPPATCH ";
-      davData = true;
+      moreData = true;
       m_bCachedWrite = false; // Do not put any result in the cache
       break;
   case DAV_MKCOL:
@@ -1564,11 +1610,23 @@ bool HTTPProtocol::httpOpen()
       break;
   case DAV_LOCK:
       header = "LOCK ";
+      davHeader = "Timeout: ";
+      {
+        uint timeout = 0;
+        if ( hasMetaData( "davTimeout" ) )
+          timeout = metaData( "davTimeout" ).toUInt();
+        if ( timeout == 0 )
+          davHeader += "Infinite";
+        else
+          davHeader += "Seconds-" + timeout;
+      }
+      davHeader += "\r\n";
       m_bCachedWrite = false; // Do not put any result in the cache
+      moreData = true;
       break;
   case DAV_UNLOCK:
       header = "UNLOCK ";
-      davHeader = "Lock-token: " + metaData("locktoken") + "\r\n";
+      davHeader = "Lock-token: " + metaData("davLockToken") + "\r\n";
       m_bCachedWrite = false; // Do not put any result in the cache
       break;
   }
@@ -1781,7 +1839,7 @@ bool HTTPProtocol::httpOpen()
   if ( davHeader != QString::null )
     header += davHeader;
 
-  if ( m_protocol == "webdav" )
+  if ( m_protocol == "webdav" || m_protocol == "webdavs" )
     header += processLocks();
 
   if ( !moreData )
@@ -2445,7 +2503,8 @@ bool HTTPProtocol::readHeader()
       return false;
     }
     if ((u.protocol() != "http") && (u.protocol() != "https") &&
-       (u.protocol() != "ftp"))
+       (u.protocol() != "ftp") && (u.protocol() != "webdav") &&
+       (u.protocol() != "webdavs"))
     {
       error(ERR_ACCESS_DENIED, u.url());
       return false;
@@ -2671,14 +2730,14 @@ void HTTPProtocol::addEncoding(QString encoding, QStringList &encs)
   }
 }
 
-bool HTTPProtocol::sendBody()
+bool HTTPProtocol::sendBody( bool dataInternal /* = false */ )
 {
   int result=-1;
   int length=0;
 
   // Loop until we got 'dataEnd'
   kdDebug(7113) << "(" << m_pid << ") Response code: " << m_responseCode << endl;
-  if ( m_responseCode == 401 || m_responseCode == 407 )
+  if ( m_responseCode == 401 || m_responseCode == 407 || dataInternal )
   {
     // For RE-POST on authentication failure the
     // buffer should not be empty...
@@ -2834,15 +2893,17 @@ void HTTPProtocol::special( const QByteArray &data )
     case 5: // WebDAV lock
     {
       KURL url;
-      stream >> url;
-      davLock( url );
+      QString scope, type, owner;
+      stream >> url >> scope >> type >> owner;
+      davLock( url, scope, type, owner );
+      break;
     }
     case 6: // WebDAV unlock
     {
       KURL url;
-      QString lockXML;
       stream >> url;
       davUnlock( url );
+      break;
     }
     default:
       // Some command we don't understand.
@@ -3082,10 +3143,17 @@ int HTTPProtocol::readUnlimited()
  * downloading the message (not the header) from the HTTP server.  It
  * is called either as a response to a client's KIOJob::dataEnd()
  * (meaning that the client is done sending data) or by 'httpOpen()'
- * (if we are in the process of a PUT/POST request).
+ * (if we are in the process of a PUT/POST request). It can also be
+ * called by a webDAV function, to recieve stat/list/property/etc.
+ * data; in this case the data is stored in m_intData.
  */
 bool HTTPProtocol::readBody( bool dataInternal )
 {
+  // Note that when dataInternal is true, we are going to:
+  // 1) save the body data to a member variable, m_intData
+  // 2) _not_ advertise the data, speed, size, etc., through the
+  //    corresponding functions.
+  // This is used for returning data to WebDAV.
   if ( dataInternal )
     m_intData = QString::null;
 
@@ -3106,9 +3174,10 @@ bool HTTPProtocol::readBody( bool dataInternal )
     m_iSize += sz;
 
   // Update the application with total size except when
-  // it is compressed.  Then we have to wait until we
-  // uncompress to find out the actual data size
-  if ( !decode )
+  // it is compressed, or when the data is to be handled
+  // internally (webDAV).  If compressed we have to wait
+  // until we uncompress to find out the actual data size
+  if ( !decode && !dataInternal )
     totalSize( (m_iSize > -1) ? m_iSize : 0 );
 
   infoMessage( i18n( "Retrieving data from "
@@ -3126,21 +3195,24 @@ bool HTTPProtocol::readBody( bool dataInternal )
         if (nbytes > 0)
         {
           m_bufReceive.setRawData( buffer, nbytes);
-          data( m_bufReceive );
-          if ( dataInternal )
+          if ( !dataInternal )
+            data( m_bufReceive );
+          else
             m_intData += m_bufReceive;
           m_bufReceive.resetRawData( buffer, nbytes );
           sz += nbytes;
         }
      }
-     processedSize( sz );
+     if ( !dataInternal )
+       processedSize( sz );
      // FINALLY, we compute our final speed and let everybody know that we
      // are done
      t_last = time(0L);
-     if (sz && t_last - t_start)
+     if (sz && t_last - t_start && !dataInternal )
        speed(sz / (t_last - t_start));
      m_bufReceive.resize( 0 );
-     data( QByteArray() );
+     if ( !dataInternal )
+       data( QByteArray() );
      return true;
   }
 
@@ -3246,18 +3318,21 @@ bool HTTPProtocol::readBody( bool dataInternal )
         // Update the message digest engine...
         if (useMD5)
           context.update( m_bufReceive );
-        // Let the world know that we have some data
-        data( m_bufReceive );
-        if ( dataInternal )
+        // Let the world know that we have some data, unless it is
+        // requested by webDAV
+        if ( !dataInternal )
+          data( m_bufReceive );
+        else
           m_intData += m_bufReceive;
 
         if (m_bCachedWrite && m_fcache)
            writeCacheEntry(m_bufReceive.data(), bytesReceived);
 
         sz += bytesReceived;
-        processedSize( sz );
+        if ( !dataInternal )
+          processedSize( sz );
         time_t t = time( 0L );
-        if ( t - t_last >= 1 )
+        if ( t - t_last >= 1 && !dataInternal )
         {
           speed( (sz - m_request.offset) / ( t - t_start ) );
           t_last = t;
@@ -3320,9 +3395,10 @@ bool HTTPProtocol::readBody( bool dataInternal )
         decodeDeflate();
     }
 
-    int bytesReceived = m_bufEncodedData.size();
-    int bytesToSend = MAX_IPC_SIZE;
-    totalSize( bytesReceived );
+    uint bytesReceived = m_bufEncodedData.size();
+    uint bytesToSend = MAX_IPC_SIZE;
+    if ( !dataInternal )
+      totalSize( bytesReceived );
     if ( bytesReceived > bytesToSend )
     {
       sz = 0;
@@ -3330,12 +3406,14 @@ bool HTTPProtocol::readBody( bool dataInternal )
       while ( 1 )
       {
         array.setRawData( m_bufEncodedData.data()+sz, bytesToSend);
-        data( array );
-        if ( dataInternal )
+        if ( !dataInternal )
+          data( array );
+        else
           m_intData += array;
         array.resetRawData( m_bufEncodedData.data()+sz, bytesToSend);
         sz += bytesToSend;
-        processedSize( sz );
+        if ( !dataInternal )
+          processedSize( sz );
         if ( sz >= bytesReceived )
           break;
         if ( bytesReceived-sz < bytesToSend )
@@ -3345,10 +3423,12 @@ bool HTTPProtocol::readBody( bool dataInternal )
     else
     {
       sz = bytesReceived;
-      data( m_bufEncodedData );
-      if ( dataInternal )
+      if ( !dataInternal ) {
+        data( m_bufEncodedData );
+        processedSize( bytesReceived );
+      } else
         m_intData += m_bufEncodedData;
-      processedSize( bytesReceived );
+
     }
 
     if ( m_bCachedWrite &&  m_fcache )
@@ -3379,10 +3459,11 @@ bool HTTPProtocol::readBody( bool dataInternal )
   // FINALLY, we compute our final speed and let
   // everybody know that we are done...
   t_last = time(0L);
-  if (t_last - t_start)
+  if (t_last - t_start && !dataInternal )
     speed((sz - m_request.offset) / (t_last - t_start));
 
-  data( QByteArray() );
+  if (!dataInternal)
+    data( QByteArray() );
   return true;
 }
 
@@ -4522,6 +4603,10 @@ QString HTTPProtocol::proxyAuthenticationHeader()
   return header;
 }
 
+/*
+
+The webDAV DTD cannot be used with Qt's DOM yet...
+
 static const char* webdavDTD =
 "<!DOCTYPE webdav-1.0 ["
 "  <!--============ XML Elements from Section 12 ==================-->"
@@ -4570,4 +4655,4 @@ static const char* webdavDTD =
 "  <!ELEMENT source (link)* >"
 "  <!ELEMENT supportedlock (lockentry)* >"
 "]>";
-
+*/
