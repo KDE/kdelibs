@@ -465,7 +465,7 @@ QString KFileBaseDialog::selectedFile()
 
     KURL u(filename_);
     QString path = u.path();
-    KURL::decodeURL(path);
+//    KURL::decodeURL(path); should be decoded already
     return path;
 }
 
@@ -821,7 +821,7 @@ void KFileBaseDialog::toolbarCallback(int i) // SLOT
 	proc << c->readEntry("FindCommandPath", DefaultFindCommand);
  
  	QString strURL( dirPath() );
- 	KURL::decodeURL( strURL );
+        // KURL::decodeURL( strURL ); should be decoded already
  	KURL url( strURL );
 
  	if( url.isLocalFile() && !url.isMalformed() ) {
@@ -1004,21 +1004,27 @@ void KFileBaseDialog::toolbarPressedCallback(int i)
 
 void KFileBaseDialog::dirActivated(KFileInfo *item)
 {
-    QString tmp = dir->url();
+    KURL tmp ( dir->url() );
+    tmp.cd(item->fileName());
+/*  QString tmp = dir->url();
     if (tmp.right(1)[0] != '/')
 	tmp += "/";
     QString tmps = item->fileName();
     KURL::encodeURL(tmps);
     tmp += tmps;
     tmp += "/";
-    debugC("dirActivated %s", tmp.data());
-    setDir(tmp, true);
+*/
+    debugC("dirActivated %s", tmp.path());
+    setDir(tmp.path(), true);
 }
 
 void KFileBaseDialog::fileActivated(KFileInfo *item)
 {
     debugC("fileAct");
 
+    KURL tmp ( dir->url() );
+    tmp.setFileName(item->fileName());
+/*
     if (acceptUrls)
 	filename_ = dir->url();
     else
@@ -1032,7 +1038,8 @@ void KFileBaseDialog::fileActivated(KFileInfo *item)
     KURL::encodeURL(tmps);
     filename_ += tmps;
     emit fileSelected(filename_);
-
+*/
+    emit fileSelected( acceptUrls ? tmp.url().data() : tmp.path() );
     if (!finished)
 	QApplication::restoreOverrideCursor();
     finished = false;
@@ -1047,6 +1054,9 @@ void KFileBaseDialog::fileHighlighted(KFileInfo *item)
 
     const QString& highlighted = item->fileName();
 
+    KURL tmp ( dir->url() ); 
+    tmp.setFileName(highlighted);
+/*
     if (acceptUrls)
 	filename_ = dir->url();
     else
@@ -1059,6 +1069,8 @@ void KFileBaseDialog::fileHighlighted(KFileInfo *item)
     KURL::encodeURL(tmp);
     filename_ += tmp;
     locationEdit->setText(filename_);
+*/
+    locationEdit->setText( acceptUrls ? tmp.url().data() : tmp.path() );
     emit fileHighlighted(highlighted);
 }
 
