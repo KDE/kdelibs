@@ -297,7 +297,7 @@ int HTTPProtocol::openStream() {
                                     " the sites address.\nIt could mean that the"
                                     " certificate has been compromised.  Are"
                                     " you sure you wish to continue?"),
-                               i18n("Ban CN Presented"));
+                               i18n("Bad Address"));
         if ( result == KMessageBox::No )
         {
           m_ssl.close();
