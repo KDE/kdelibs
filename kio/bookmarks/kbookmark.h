@@ -22,13 +22,13 @@
 
 #include <qstring.h>
 #include <qvaluelist.h>
-#include <kurl.h>
 #include <qdom.h>
+#include <kurl.h>
 
 class KBookmarkManager;
 class KBookmarkGroup;
 
-class KBookmark
+class KIO_EXPORT KBookmark
 {
     friend class KBookmarkGroup;
 public:
@@ -162,7 +162,7 @@ protected:
 /**
  * A group of bookmarks
  */
-class KBookmarkGroup : public KBookmark
+class KIO_EXPORT KBookmarkGroup : public KBookmark
 {
 public:
     /**
@@ -268,7 +268,7 @@ private:
 /**
  * @since 3.2
  */
-class KBookmarkGroupTraverser {
+class KIO_EXPORT KBookmarkGroupTraverser {
 protected:
     virtual ~KBookmarkGroupTraverser() { ; }
     void traverse(const KBookmarkGroup &);
