@@ -31,6 +31,7 @@
 
 #include <qfontmetrics.h>
 #include <qsortedlist.h>
+#include <qpainter.h>
 
 #include <kglobal.h>
 
@@ -139,8 +140,8 @@ void RenderFlow::print(QPainter *p, int _x, int _y, int _w, int _h,
             return;
         }
     }
-
-    printObject(p, _x, _y, _w, _h, _tx, _ty);
+        
+    printObject(p, _x, _y, _w, _h, _tx, _ty);    
 }
 
 void RenderFlow::printObject(QPainter *p, int _x, int _y,
@@ -154,6 +155,20 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
     if(isRelPositioned())
         relativePositionOffset(_tx, _ty);
 
+    
+    // overflow: hidden
+    // save old clip region, set a new one
+    QRegion oldClip;
+    if (style()->overflow()==OHIDDEN)
+    {
+        if (p->hasClipping())
+            oldClip = p->clipRegion();
+
+        QRect cr(_tx,_ty,m_width,m_height);
+        cr = p->xForm(cr);
+        p->setClipRegion(QRegion(cr));
+    }    
+    
     // 1. print background, borders etc
     if(hasSpecialObjects() && !isInline() && isVisible())
         printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
@@ -172,6 +187,16 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
     if(specialObjects)
 	printSpecialObjects( p,  _x, _y, _w, _h, _tx , _ty);
 
+    // overflow: hidden
+    // restore clip region
+    if (style()->overflow()==OHIDDEN)
+    {
+        if (oldClip.isNull())
+            p->setClipping(false);
+        else
+            p->setClipRegion(oldClip);        
+    }    
+    
     if(!isInline() && style()->outlineWidth())
         printOutline(p, _tx, _ty, width(), height(), style());
 
@@ -577,14 +602,15 @@ void RenderFlow::positionNewFloats()
             fwidth = ro - lo; // Never look for more than what will be available.
         if (o->style()->floating() == FLEFT)
         {
-	    int heightRemainingLeft = 1;
-	    int heightRemainingRight = 1;
+	        int heightRemainingLeft = 1;
+	        int heightRemainingRight = 1;
             int fx = leftRelOffset(y,lo, &heightRemainingLeft);
             while (rightRelOffset(y,ro, &heightRemainingRight)-fx < fwidth)
             {
                 y += QMIN( heightRemainingLeft, heightRemainingRight );
                 fx = leftRelOffset(y,lo, &heightRemainingLeft);
             }
+            if (fx<0) fx=0;
             f->left = fx;
             //kdDebug( 6040 ) << "positioning left aligned float at (" << fx + o->marginLeft()  << "/" << y + o->marginTop() << ")" << endl;
             o->setPos(fx + o->marginLeft(), y + o->marginTop());
@@ -599,10 +625,11 @@ void RenderFlow::positionNewFloats()
                 y += QMIN(heightRemainingLeft, heightRemainingRight);
                 fx = rightRelOffset(y,ro, &heightRemainingRight);
             }
+            if (fx<f->width) fx=f->width;                    
             f->left = fx - f->width;
             //kdDebug( 6040 ) << "positioning right aligned float at (" << fx - o->marginRight() - o->width() << "/" << y + o->marginTop() << ")" << endl;
             o->setPos(fx - o->marginRight() - o->width(), y + o->marginTop());
-        }
+        }        
         f->startY = y;
         f->endY = f->startY + _height;
 
@@ -803,11 +830,9 @@ int RenderFlow::rightmostPosition() const
         SpecialObject* r;
         QListIterator<SpecialObject> it(*specialObjects);
         for ( ; (r = it.current()); ++it ) {
-            if ( r->type == SpecialObject::Positioned ) {
-                int specialRight = r->node->xPos() + r->node->rightmostPosition();
-                if (specialRight > right)
-		    right = specialRight;
-            }
+            int specialRight = r->node->xPos() + r->node->rightmostPosition();
+            if (specialRight > right)
+		        right = specialRight;
         }
     }
 
@@ -1076,8 +1101,8 @@ void RenderFlow::calcMinMaxWidth()
     {
         while(child != 0)
         {
-            if(!child->minMaxKnown())
-                child->calcMinMaxWidth();
+//            if(!child->minMaxKnown())
+//                child->calcMinMaxWidth();
 
             // positioned children don't affect the minmaxwidth
             if (child->isPositioned())
