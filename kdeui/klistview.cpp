@@ -31,7 +31,7 @@
 #include <kconfig.h>
 #include <kcursor.h>
 #include <kapplication.h>
-#include <kipc.h> 
+#include <kipc.h>
 #include <kdebug.h>
 
 #include "klistview.h"
@@ -653,7 +653,7 @@ void KListView::emitExecute( QListViewItem *item, const QPoint &pos, int c )
 {
     if( isExecuteArea( viewport()->mapFromGlobal(pos) ) ) {
 	d->validDrag=false;
-	
+
         // Double click mode ?
         if ( !d->bUseSingle )
         {
@@ -887,14 +887,18 @@ void KListView::contentsDropEvent(QDropEvent* e)
     e->acceptAction();
     QListViewItem *afterme;
     QListViewItem *parent;
+    QListViewItem *onme;
+
     findDrop(e->pos(), parent, afterme);
+    QPoint vp = contentsToViewport( e->pos() );
+    onme = isExecuteArea( vp ) ? itemAt( vp ) : 0L;
 
     if (e->source() == viewport() && itemsMovable())
         movableDropEvent(parent, afterme);
     else
     {
-        emit dropped(e, afterme);
-        emit dropped(this, e, afterme);
+        emit dropped(e, onme);
+        emit dropped(this, e, onme);
         emit dropped(e, parent, afterme);
         emit dropped(this, e, parent, afterme);
     }
@@ -982,7 +986,7 @@ void KListView::contentsDragMoveEvent(QDragMoveEvent *event)
     }
     if (dropHighlighter())
     {
-      QRect tmpRect = drawItemHighlighter(0, d->afterItemDrop);
+      QRect tmpRect = drawItemHighlighter(0, d->dragOverItem);
       if (tmpRect != d->mOldDropHighlighter)
       {
         cleanItemHighlighter();
@@ -1133,7 +1137,7 @@ QDragObject *KListView::dragObject()
   if (!currentItem())
         return 0;
 
-  
+
   return new QStoredDrag("application/x-qlistviewitem", viewport());
 }
 
@@ -2027,7 +2031,7 @@ void KListView::setSorting(int column, bool ascending)
   d->sortColumn = column;
   d->sortAscending = ascending;
   QListView::setSorting(column, ascending);
-  
+
   QListViewItem* item = firstChild();
   while ( item ) {
     KListViewItem *kItem = dynamic_cast<KListViewItem*>(item);
