@@ -710,7 +710,7 @@ RenderFlow::floatBottom()
 }
 
 int
-RenderFlow::lowestPosition()
+RenderFlow::lowestPosition() const
 {
     int bottom = m_height + marginBottom();
     int lp = 0;

@@ -344,10 +344,10 @@ public:
 
     virtual void setKeyboardFocus(DOM::ActivationState b=DOM::ActivationPassive);// { hasKeyboardFocus=b; };
 
-    virtual int lowestPosition() {return 0;}
+    virtual int lowestPosition() const {return 0;}
 
     CachedImage *backgroundImage() const { return m_bgImage; }
-    
+
 protected:
     virtual void selectionStartEnd(int& spos, int& epos);
 

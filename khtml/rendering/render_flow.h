@@ -89,7 +89,7 @@ public:
     // from BiDiParagraph
     virtual unsigned short lineWidth(int y) const;
 
-    virtual int lowestPosition();
+    virtual int lowestPosition() const;
 
     inline int rightMargin(int y) const;
     // overrides BiDiParagraph
