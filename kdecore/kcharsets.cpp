@@ -36,7 +36,12 @@
 
 template class QList<QFont::CharSet>;
 
+#if QT_VERSION == 221
+#define CHARSETS_COUNT 30
+#else
 #define CHARSETS_COUNT 29
+#endif
+
 static const char * const charsetsStr[CHARSETS_COUNT] = {
     "unicode",
     "iso-8859-1",
@@ -65,7 +70,10 @@ static const char * const charsetsStr[CHARSETS_COUNT] = {
     "tscii",
     "utf-8",
     "utf-16",
-	"iso-8859-11"
+	"iso-8859-11",
+#if QT_VERSION == 221
+	"koi8u",
+#endif
 	"Any"
 };
 
@@ -100,6 +108,9 @@ static const char * const xNames[CHARSETS_COUNT] = {
     "utf8",
     "utf16",
 	"tis620-*",
+#if QT_VERSION == 221
+	"koi8-u",
+#endif
 	""  // this will always return true...
 };
 
@@ -132,6 +143,9 @@ static const QFont::CharSet charsetsIds[CHARSETS_COUNT] = {
     QFont::Unicode,
     QFont::Unicode,
 	QFont::ISO_8859_11,
+#if QT_VERSION == 221
+	QFont::KOI8U,
+#endif
 	QFont::AnyCharSet
 };
 
@@ -249,7 +263,7 @@ QChar KCharsets::fromEntity(const QString &str) const
 
     if(!e)
     {
-        kdDebug( 0 ) << "unknown entity " << str <<", len = " << str.length() << endl;
+        //kdDebug( 0 ) << "unknown entity " << str <<", len = " << str.length() << endl;
         return QChar::null;
     }
     //kdDebug() << "got entity " << str << " = " << e->code << endl;
@@ -409,18 +423,12 @@ void KCharsets::setQFont(QFont &f, QFont::CharSet charset) const
 
     QCString family = f.family().latin1();
 
+    //kdDebug() << "KCharsets::setQFont family=" << family << endl; 
+    
     QValueList<QCString> chFamilies = (*d->availableCharsets)[charset];
     if(chFamilies.contains(family)) {
 	//kdDebug() << "KCharsets::setQFont: charsetAvailable in family" << endl;
         f.setCharSet(charset);
-        return;
-    }
-
-    QValueList<QCString> ucFamilies = (*d->availableCharsets)[QFont::Unicode];
-    if(ucFamilies.contains(family)) {
-	//kdDebug() << "KCharsets::setQFont: using unicode" << endl;
-	// just setting the charset to unicode should work
-        f.setCharSet(QFont::Unicode);
         return;
     }
 
@@ -431,6 +439,14 @@ void KCharsets::setQFont(QFont &f, QFont::CharSet charset) const
 	//kdDebug() << "KCharsets::setQFont: using family " << chFamilies.first() << " in native charset " << charset << endl;
         f.setFamily(chFamilies.first());
         f.setCharSet(charset);
+        return;
+    }
+
+    QValueList<QCString> ucFamilies = (*d->availableCharsets)[QFont::Unicode];
+    if(ucFamilies.contains(family)) {
+	//kdDebug() << "KCharsets::setQFont: using unicode" << endl;
+	// just setting the charset to unicode should work
+        f.setCharSet(QFont::Unicode);
         return;
     }
 
@@ -510,8 +526,8 @@ QString KCharsets::xCharsetName(QFont::CharSet charSet) const
         return "iso8859-9";
     case QFont::ISO_8859_10:
         return "iso8859-10";
-    case QFont::ISO_8859_11:
-        return "iso8859-11";
+    case QFont::ISO_8859_11: // most of them are actually named as tis620
+        return "tis620-0";
     case QFont::ISO_8859_12:
         return "iso8859-12";
     case QFont::ISO_8859_13:
@@ -522,6 +538,10 @@ QString KCharsets::xCharsetName(QFont::CharSet charSet) const
         return "iso8859-15";
     case QFont::KOI8R:
         return "koi8-r";
+#if QT_VERSION == 221
+    case QFont::KOI8U:
+        return "koi8-u";
+#endif
     case QFont::Set_Ko:
         return "ksc5601.1987-0";
     case QFont::Set_Ja:
@@ -661,7 +681,7 @@ QFont::CharSet KCharsets::charsetForEncoding(const QString &e) const
     KConfig conf( "charsets", true );
     conf.setGroup("charsetsForEncoding");
 
-    kdDebug(0) << "list for " << encoding << " is: " << conf.readEntry(encoding) << endl;
+    //kdDebug(0) << "list for " << encoding << " is: " << conf.readEntry(encoding) << endl;
 
     QString enc = conf.readEntry(encoding);
     if(enc.isEmpty()) {
@@ -669,7 +689,7 @@ QFont::CharSet KCharsets::charsetForEncoding(const QString &e) const
 	encoding = conf.readEntry(encoding);
 	encoding = encoding.lower();
 	conf.setGroup("charsetsForEncoding");
-	kdDebug(0) << "list for " << encoding << " is: " << conf.readEntry(encoding) << endl <<endl;
+	//kdDebug(0) << "list for " << encoding << " is: " << conf.readEntry(encoding) << endl <<endl;
     }
 
     QStringList charsets;
@@ -678,10 +698,10 @@ QFont::CharSet KCharsets::charsetForEncoding(const QString &e) const
     // iterate thorugh the list and find the first charset that is available
     for ( QStringList::Iterator it = charsets.begin(); it != charsets.end(); ++it ) {
         if( const_cast<KCharsets *>(this)->isAvailable(*it) ) {
-            kdDebug(0) << *it << " available" << endl;
+            //kdDebug(0) << *it << " available" << endl;
             return nameToID(*it);
         }
-        kdDebug(0) << *it << " is not available" << endl;
+        //kdDebug(0) << *it << " is not available" << endl;
     }
     // let's hope the system has a unicode font...
     return QFont::Unicode;
