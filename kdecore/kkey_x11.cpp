@@ -144,15 +144,19 @@ static bool g_bInitialized = false;
 ((bi18n) ? i18n("QAccel", s) : QString(s))
 QString KKeySequence::toString( KKeySequence::I18N bi18n ) const
 {
-	if( m_origin == OriginUnset )
-		return (bi18n) ? i18n("Unknown Key", "Unset") : QString("Unset");
-	// TODO: calculate X codes from Qt codes if they are not already set.
-	if( m_keyMod == -1 )
-		return (bi18n) ? i18n("Unknown Key", "Unset") : QString("Unset");
-
 	QString sMods, sSym;
 	uint keyMod = m_keyModExplicit;
 	uint keySymX = m_keySymExplicit;
+
+	if( m_origin == OriginUnset )
+		return (bi18n) ? i18n("Unknown Key", "Unset") : QString("Unset");
+	// TODO: make a clearer way denoting set & unset values in KKeySequence
+	if( m_keyMod == -1 && m_keyCombQt != -1 ) {
+		KKeyX11::keyQtToKeyX( m_keyCombQt, 0, &keySymX, &keyMod );
+		keyMod = calcModExplicit( keyMod );
+	}
+	if( m_keyMod == -1 && keySymX == 0 )
+		return (bi18n) ? i18n("Unknown Key", "Unset") : QString("Unset");
 
 	if( keyMod & Mod4Mask )      sMods += ToI18N("Meta") + "+";
 	if( keyMod & Mod1Mask )      sMods += ToI18N("Alt") + "+";
@@ -230,7 +234,7 @@ KKeySequences KKeySequence::stringToKeys( QString sKey )
 					key.m_keyCode = (*it).rgCodes[iCode];
 					key.m_keyMod = calcModX( key.m_keyModExplicit | (*it).rgMods[iCode] );
 					// If the explicit modifiers are not available,
-					if( key.m_keyModExplicit && !key.m_keyMod )
+					if( key.m_keyMod == -1 )
 						key.m_keyCode = 0;
 					calcKeySym( key );
 					if( key.m_keySym != key.m_keySymExplicit || key.m_keyMod != key.m_keyModExplicit )
@@ -294,27 +298,27 @@ static int calcModX( int keyModExplicit )
 	
 	if( keyModExplicit & Mod1Mask ) {
 		if( !KKeyX11::keyModXAlt() )
-			return 0;
+			return -1;
 		keyModX |= KKeyX11::keyModXAlt();
 	}
 	if( keyModExplicit & Mod2Mask ) {
 		if( !KKeyX11::keyModXNumLock() )
-			return 0;
+			return -1;
 		keyModX |= KKeyX11::keyModXNumLock();
 	}
 	if( keyModExplicit & Mod3Mask ) {
 		if( !KKeyX11::keyModXModeSwitch() )
-			return 0;
+			return -1;
 		keyModX |= KKeyX11::keyModXModeSwitch();
 	}
 	if( keyModExplicit & Mod4Mask ) {
 		if( !KKeyX11::keyModXMeta() )
-			return 0;
+			return -1;
 		keyModX |= KKeyX11::keyModXMeta();
 	}
 	if( keyModExplicit & Mod5Mask ) {
 		if( !KKeyX11::keyModXScrollLock() )
-			return 0;
+			return -1;
 		keyModX |= KKeyX11::keyModXScrollLock();
 	}
 
@@ -397,12 +401,12 @@ static int calcKeyQt( int keySymX, int keyModExplicit )
 	if( keyCombQt ) {
 		if( keyModExplicit & Mod4Mask ) {
 			if( !KKeyX11::keyModXMeta() )
-				return 0;
+				return -1;
 			keyCombQt |= (Qt::ALT<<1);
 		}
 		if( keyModExplicit & Mod1Mask ) {
 			if( !KKeyX11::keyModXAlt() )
-				return 0;
+				return -1;
 			keyCombQt |= Qt::ALT;
 		}
 		if( keyModExplicit & ControlMask ) keyCombQt |= Qt::CTRL;
@@ -416,7 +420,7 @@ void KKeySequence::calcKeyQt()
 {
 	if( m_origin == OriginNative ) {
 		m_keyCombQtExplicit = ::calcKeyQt( m_keySymExplicit, m_keyModExplicit );
-		m_keyCombQt = ::calcKeyQt( m_keySym, m_keyMod );
+		m_keyCombQt = ::calcKeyQt( m_keySym, calcModExplicit( m_keyMod ) );
 	}
 }
 
