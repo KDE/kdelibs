@@ -136,7 +136,12 @@ void KSSLInfoDlg::setup(const QString& peername, const QString& issuer,
     layout->addWidget(new QLabel(i18n("IP Address:"), this), 0, 0);
     layout->addWidget(new QLabel(ip, this), 0, 1);
     layout->addWidget(new QLabel(i18n("URL:"), this), 1, 0);
-    KURLLabel *urlLabel = new KURLLabel(url, url, this);
+    // truncate the label if it will be too long
+    QString urllabel;
+    if (url.length() > 80) {
+      urllabel = url.left(80) + " ...";
+    } else urllabel = url;
+    KURLLabel *urlLabel = new KURLLabel(url, urllabel, this);
     layout->addWidget(urlLabel, 1, 1);
     connect(urlLabel, SIGNAL(leftClickedURL(const QString &)), SLOT(urlClicked(const QString &)));
     layout->addWidget(new QLabel(i18n("Certificate State:"), this), 2, 0);
