@@ -65,11 +65,14 @@ bool KMWLpd::isValid(QString& msg)
 	}
 
 	// check LPD queue
+kdDebug() << "checking LPD queue" << endl;
 	if (!checkLpdQueue(text(0).latin1(),text(1).latin1()))
 	{
+kdDebug() << "Invalid queue" << endl;
 		if (KMessageBox::warningYesNo(this, i18n("<nobr>Can't find queue <b>%1</b> on <b>%2</b> !</nobr><br>Do you wish to continue anyway?").arg(text(1)).arg(text(0))) == KMessageBox::No)
 			return false;
 	}
+kdDebug() << "Valid queue" << endl;
 	return true;
 }
 
@@ -77,6 +80,7 @@ void KMWLpd::updatePrinter(KMPrinter *p)
 {
 	QString	dev = QString::fromLatin1("lpd://%1/%2").arg(text(0)).arg(text(1));
 	p->setDevice(KURL(dev));
+kdDebug() << "update end" << endl;
 }
 
 //*******************************************************************************************************
@@ -123,15 +127,21 @@ kdDebug() << "connection closed" << endl;
 	}
 
 	char	buf[1024] = {0};
-	int	n;
+	int	n, tot(0);
 kdDebug() << "reading" << endl;
 	while ((n=::read(sock,res,63)) > 0)
 	{
 		res[n] = 0;
-kdDebug() << buf << endl;
-		strncat(buf,res,1023);
+		tot += n;
+		if (tot > 1024)
+			break;
+		else
+			strcat(buf,res);
 	}
+kdDebug() << "bytes read: " << buf << endl;
+kdDebug() << "closing connection" << endl;
 	close(sock);
+kdDebug() << "returning status: " << !(strlen(buf) == 0 || strstr(buf,"unknown printer") != NULL) << endl;
 	if (strlen(buf) == 0 || strstr(buf,"unknown printer") != NULL) return false;
 	else return true;
 }
