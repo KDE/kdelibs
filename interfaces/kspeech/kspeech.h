@@ -103,52 +103,10 @@
         speech engine
    @endverbatim
  *
- * The %KTTSD Plugin API is documented elsewhere.
+ * The %KTTSD Plugin API is documented in @ref PluginConf
  *
  * There is a separate GUI application, called kttsmgr, for providing %KTTSD
  * configuration and job management.
- *
- * @section Using
- *
- * Make sure your speech engine is working.  See the sections below for tips
- * on installing and configuring speech engines and plugins.
- *
- * You may need to grant Festival write access to the audio device.
- *
-   @verbatim
-     chmod a+rw /dev/dsp*
-   @endverbatim
- *
- * To configure the speech plugin for %KTTSD, run the KTTS Manager
- *
-   @verbatim
-     kttsmgr
-   @endverbatim
- *
- * If using the Festival or Festival Interactive plugins, you'll may to
- * specify the path to the voices.  On most systems, this will be
- *
-   @verbatim
-     /usr/share/festival/voices
-   @endverbatim
- *
- * or
- *
-   @verbatim
-    /usr/local/share/festival/voices
-   @endverbatim
- * 
- * Be sure to click the @e Default button after configuring a speech plugin!
- *
- * To run %KTTSD, either check the Enable Text-to-Speech System check box, or
- * in a command terminal, enter
- *
-   @verbatim
-     kttsd
-   @endverbatim
- *
- * Click the "jobs" tab.  Click the "Speak File" button and
- * pick a plain text file, then click "Resume" or "Restart" buttons.
  *
  * kttsd maintains 4 types of speech output:
  *   - Screen Reader Output
@@ -365,22 +323,20 @@
  *
  * @section talkers Talkers, Talker Codes, and Plugins
  *
- * Many of the methods permit you to specify a desired "talker".  At this time, this
- * should be a language code, such as "en" for English, "es" for Spanish, etc.
+ * Many of the methods permit you to specify a desired "talker".  This
+ * may be a simple language code, such as "en" for English, "es" for Spanish, etc.
  * Code as NULL to use the default configured talker.
  *
- * In the future, you will be able to configure more than one talker for each language,
+ * Within KTTSMGR, the user has the ability to configure more than one talker for each language,
  * with different voices, genders, volumes, and talking speeds.
- *
- * WARNING:  The following has not yet been implemented.
  *
  * Talker codes serve two functions:
  * - They identify configured plugins, and
  * - They provide a way for applications to specify the desired speaking attributes
  *   that influence the choice of plugin to speak text.
  *
- * A Talker Code consists of a series of space-separated attributes in
- * XML format.  An example of a full Talker Code with all attributes specified is
+ * A Talker Code consists of a series of XML tags and attributes.
+ * An example of a full Talker Code with all attributes specified is
  *
  *   <voice lang="en" name="kal" gender="male"/>
  *   <prosody volume="soft" rate="fast"/>
@@ -397,10 +353,11 @@
  *   lang="en" name="kal" gender="male" volume="soft" rate="fast"
  *   synthesizer="Festival"
  *
- * Since this is the preferred format for Talker Codes, the rest of the discussion
+ * The attributes may be specified in any order.
+ *
+ * For clarity, the rest of the discussion
  * will omit the @e voice, @e prosody, and @e kttsd tags.
  *
- * The attributes may be specified in any order.
  * The attributes that make up a talker code are:
  *
  * - @e lang.         Language code and optional country code.
@@ -424,7 +381,7 @@
  *
  * When the user configures %KTTSD, she configures one or more talkers and then
  * places them in preferred order, top to bottom in kttsmgr.  In effect,
- * she specifies her preferences for each of the talker attributes.
+ * she specifies her preferences for each of the talkers.
  *
  * When applications specify a talker code, they need not (and typically do not)
  * give a full specification.  An example of a talker code with only some of the
@@ -448,7 +405,7 @@
  *
  * The @e lang attribute has highest priority (attempting to speak English with
  * a Spanish synthesizer would likely be unintelligible).  So the language
- * attribute is said to have "priority".  
+ * attribute is said to have "priority".
  * If an application does not specify a language attribute, a default one will be assumed.
  * The rest of the attributes are said to be "preferred".  If %KTTSD cannot find
  * a talker with the exact preferred attributes requested, the closest matching
@@ -470,11 +427,11 @@
  *
  * - If language code is not specified by the application, assume default configured
  *   by user.  The primary language code automatically has priority.
- * - If there are no talkers configured in the language, %KTTSD will attempt
+ * - (Note: This is not yet implemented.)
+ *   If there are no talkers configured in the language, %KTTSD will attempt
  *   to automatically configure one (see automatic configuraton discussion below)
  * - The talker that matches on the most priority attributes wins.
  * - If a tie, the one that matches on the most preferred attributes wins.
- * - If still a tie, the one that matches the most user preferences wins.
  * - If there is still a tie, the one nearest the top of the kttsmgr display
  *   (first configured) will be chosen.
  *
@@ -538,13 +495,14 @@
   
   @endverbatim
  *
+ * (Note: Not yet implemented).
  * When picking a talker, %KTTSD will automatically determine if text contains
  * markup and pick a talker that supports that markup, if available.  This
  * overrides all other attributes, i.e, it is treated as an automatic "top priority"
  * attribute.
  *
  * Language codes actually consist of two parts, a language code and an optional
- * country code.  For example, en_GB is English Britain.  The language code is
+ * country code.  For example, en_GB is English (United Kingdom).  The language code is
  * treated as a priority attribute, but the country code (if specified) is treated
  * as preferred.  So for example, if an application requests the following
  * talker code
@@ -567,6 +525,7 @@
  * Here the application is indicating that a talker that speaks American English
  * has priorty over one that speaks a different form of English.
  *
+ * (Note: Not yet implemented).
  * If a language code is specified, and no plugin is currently configured
  * with a matching language code, %KTTSD will attempt to automatically
  * load and configure a plugin to support the requested language.  If
@@ -681,94 +640,7 @@
  * methods is @e not parsed into sentences.  For this reason, applications
  * should @e not send long messages with these methods.
  *
- * @section festival Using with Festival
- *
- * @bug 17 Mar 2004: The Festival plugin does not work for me.  Crashes as soon
- * as call to festival_initialize is made.  I suspect that the problem is
- * incompatible gcc compilers used to compile kttsd and the libfestival.a
- * static library, which on my system, is version 1.42. If someone can confirm or deny
- * this, I'd be appreciative.. Gary Cramblitt <garycramblitt@comcast.net>.
- * So I added the Festival (Interactive) plugin that interfaces with Festival interactively
- * via pipes ("festival --interactive").  
- *
- * Festival can be obtained from
- * <a href="http://www.cstr.ed.ac.uk/projects/festival/">http://www.cstr.ed.ac.uk/projects/festival/</a>.
- * Festival is distributed with most Linux distros.  Check your distro CDs.  Debian
- * users can simply do
- *
- *   apt-get install festival
- *
- * You will need to install at least one language.  Follow the instructions that come
- * with Festival.  (Festival in combination with mbrola does work.)
- * Additional festival voices are available from
- * <a href="<a href="http://hts.ics.nitech.ac.jp/">http://hts.ics.nitech.ac.jp/</a>.
- *
- * Start kttsmgr, choose the appropriate language code and add Festival Interactive.
- * Click the Configure button.  If the Festival voice files are not in the default
- * location (/usr/share/festival/voices/), try /usr/local/share/festival/voices/.
- * Click the Rescan button, pick a voice, and click the Test button.
- *
- * @section festivalcs Using with Festival Client/Server
- *
- * Festival (Client/Server), festivalcs, is still under development.
- *
- * @section flite Using with Festival Lite (flite)
- *
- * Obtain Festival Lite here:
- *
- * <a href="http://www.speech.cs.cmu.edu/flite/index.html">http://www.speech.cs.cmu.edu/flite/index.html</a>.
- * Debian users: apt-get install flite
- *
- * Build and install following the instructions in the README that comes with flite.
- *
- * Start KTTS Manager
- *
-   @verbatim
-     kttsmgr
-   @endverbatim
- *
- * Choose the English (en) language code. then add the Flite plugin.  Click the
- * Configure button.
- * If flite is not in the path, specify the path to the
- * flite executable.  Click the Test button to test.
- *
- * @section hadifix Using with Hadifix (mbrola and txt2pho)
- *
- * Hadifix consists of the mbrola diphone to speech synthesizer and txt2pho,
- * a utility for converting german text to diphones.
- *
- * If you do not already have Hadifix installed, do this:
- *
- * - Download mbrola binary from
- *   <a href="http://tcts.fpms.ac.be/synthesis/mbrola.html">http://tcts.fpms.ac.be/synthesis/mbrola.html</a>.
- * - Install mbrola to /usr/local/mbrola directory.
- * - Download at least one german language file from the mbrola site.
- *   Unzip to the /usr/local/mbrola directory.
- * - Download txt2pho from
- *   <a href="http://www.ikp.uni-bonn.de/dt/forsch/phonetik/hadifix/HADIFIXforMBROLA.html">
- http://www.ikp.uni-bonn.de/dt/forsch/phonetik/hadifix/HADIFIXforMBROLA.html</a>
- * - Unzip txt2pho to /usr/local/txt2pho.
- * - Edit txt2phorc file, putting correct data paths in.
- * - Either copy txt2phorc to ~/.txt2phorc or to /etc/txt2pho.  
- *   Note that you drop the "rc" in latter's file name.
- * - In kttsmgr, choose the German language (de), and add Hadifix.  On the Properties
- *   page configure a voice and the paths to mbrola and txt2pho.  Click the Test button
- *   to test.
- *
- * There are some other "txt2pho" programs available that support other languages.
- * The author has tried some of them without success, but your mileage may vary.
- *
- * @section epos Using with Epos
- *
- * Download epos from <a href="http://epos.ure.cas.cz/">http://epos.ure.cas.cz/</a>.
- *
- * Debian users: apt-get install epos.
- *
- * Start kttsmgr, choose Czeck or Slovak language code (cz or sk) and add Epos.
- * Click Configure button.  If the epos server executable and client are not
- * in your PATH, specify the paths to these executables.  The options boxes
- * permit you to pass additional options to the server and client.  In a konsole,
- * type "epos -h" or "say -h" for information.
+ * @section authors Authors
  *
  * @author José Pablo Ezequiel "Pupeno" Fernández <pupeno@kde.org>
  * @author Gary Cramblitt <garycramblitt@comcast.net>
