@@ -105,3 +105,6 @@ Type=QString
 
 [PropertyDef::X-KDE-ParentApp]
 Type=QString
+
+[PropertyDef::X-KDE-HasTempFileOption]
+Type=bool

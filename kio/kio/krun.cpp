@@ -345,6 +345,7 @@ QStringList KRun::processDesktopExec(const KService &_service, const KURL::List&
 {
   QString exec = _service.exec();
   QStringList result;
+  bool appHasTempFileOption;
 
   KRunMX1 mx1( _service );
   KRunMX2 mx2( _urls );
@@ -372,7 +373,8 @@ QStringList KRun::processDesktopExec(const KService &_service, const KURL::List&
   // FIXME: the current way of invoking kioexec disables term and su use
 
   // Check if we need "tempexec" (kioexec in fact)
-  if( tempFiles ) {
+  appHasTempFileOption = tempFiles && _service.property("X-KDE-HasTempFileOption").toBool();
+  if( tempFiles && !appHasTempFileOption ) {
     result << "kioexec" << "--tempfiles" << exec;
     result += _urls.toStringList();
     if (has_shell)
@@ -385,13 +387,19 @@ QStringList KRun::processDesktopExec(const KService &_service, const KURL::List&
     for( KURL::List::ConstIterator it = _urls.begin(); it != _urls.end(); ++it )
       if ( !(*it).isLocalFile() && !KProtocolInfo::isHelperProtocol(*it) ) {
         // We need to run the app through kioexec
-        result << "kioexec" << exec;
+        result << "kioexec";
+        if ( tempFiles )
+            result << "--tempfiles";
+        result << exec;
         result += _urls.toStringList();
         if (has_shell)
           result = KShell::joinArgs( result );
         return result;
       }
   }
+
+  if ( appHasTempFileOption )
+      exec += " --tempfile";
 
   // Did the user forget to append something like '%f'?
   // If so, then assume that '%f' is the right choice => the application
