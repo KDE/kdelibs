@@ -43,7 +43,7 @@ static KCmdLineOptions options[] = {
 };
 
 static const char appName[] = "kdontchangethehostname";
-static const char appVersion[] = "1.0";
+static const char appVersion[] = "1.1";
 
 class KHostName
 {
@@ -142,7 +142,7 @@ void KHostName::changeX()
       QCString authName = entries[1];
       QCString authKey = entries[2];
 
-      int i = netId.find(':');
+      int i = netId.findRev(':');
       if (i == -1)
          continue;
       QCString netDisplay = netId.mid(i);
@@ -196,7 +196,7 @@ void KHostName::changeDcop()
 
    if (!newName.isEmpty())
    {
-      int i = line1.find(':');
+      int i = line1.findRev(':');
       if (i == -1)
       {
          fprintf(stderr, "Warning: File '%s' has unexpected format.\n", fname.data());
@@ -325,7 +325,7 @@ void KHostName::changeSessionManager()
       fprintf(stderr, "Warning: No session management specified.\n");
       return;
    }
-   int i = sm.find(':');
+   int i = sm.findRev(':');
    if ((i == -1) || (sm.left(6) != "local/"))
    {
       fprintf(stderr, "Warning: Session Management socket '%s' has unexpected format.\n", sm.data());
