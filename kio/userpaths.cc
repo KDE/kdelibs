@@ -77,21 +77,4 @@ void UserPaths::initStatic()
     *s_trashPath += "/";
 }
 
-bool UserPaths::testLocalDir( const QString& _name )
-{
-  DIR *dp;
-  QString c = kapp->localkdedir();
-  c += _name;
-  dp = opendir( c.ascii() );
-  if ( dp == NULL )
-  {
-    ::mkdir( c.ascii(), S_IRWXU );
-    return false;
-  }
-  else
-  {
-    closedir( dp );
-    return true;
-  }
-}
 

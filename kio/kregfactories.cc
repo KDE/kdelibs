@@ -18,11 +18,12 @@
  *
  **************************************************/
 
+/*
 QString systemShareDir()
 {
- /* This is really dirty. We can't use existing kapp functions because
-    we want to add anything after share/. We should have kde_sharedir()
-    but anyway we'll switch to KStdDirs one day ... until then : dirt ;) */
+// This is really dirty. We can't use existing kapp functions because
+// we want to add anything after share/. We should have kde_sharedir()
+// but anyway we'll switch to KStdDirs one day ... until then : dirt ;) 
 
   QString tmp( "/opt/kde" );
   const char* env = getenv( "KDEDIR" );
@@ -38,6 +39,7 @@ QString userShareDir()
 {
   return ( kapp->localkdedir() + "/share" );
 }
+*/
 
 /**************************************************
  *
@@ -83,7 +85,9 @@ KServiceTypeFactory::KServiceTypeFactory( const QStringList& _path_list )
   m_pathList = _path_list;
 }
 
-KServiceTypeFactory::KServiceTypeFactory( const QString& _system_path, const QString& _user_path )
+/*
+KServiceTypeFactory::KServiceTypeFactory( const QString& _system_path, 
+					  const QString& _user_path )
 {
   if ( !_system_path.isEmpty() )
     m_pathList.append( systemShareDir() + _system_path );
@@ -93,6 +97,7 @@ KServiceTypeFactory::KServiceTypeFactory( const QString& _system_path, const QSt
   if ( !user.isEmpty() )
     m_pathList.append( userShareDir() + user );
 }
+*/
 
 KRegEntry* KServiceTypeFactory::create( KRegistry* _reg, const QString& _file, QDataStream& _str )
 {
@@ -222,10 +227,10 @@ KServiceFactory::KServiceFactory( const QStringList& _path_list )
   m_pathList = _path_list;
 }
 
-KServiceFactory::KServiceFactory( const QString& _system_path, const QString& _user_path )
+/*
+KServiceFactory::KServiceFactory( const QString& _system_path, 
+				  const QString& _user_path )
 {
-  if ( !_system_path.isEmpty() )
-    m_pathList.append( systemShareDir() + _system_path );
   if ( !_system_path.isEmpty() )
     m_pathList.append( systemShareDir() + _system_path );
   QString user = _user_path;
@@ -234,7 +239,7 @@ KServiceFactory::KServiceFactory( const QString& _system_path, const QString& _u
   if ( !user.isEmpty() )
     m_pathList.append( userShareDir() + user );
 }
-
+*/
 KRegEntry* KServiceFactory::create( KRegistry* _reg, const QString& _file, QDataStream& _str )
 {
   Q_UINT32 u;

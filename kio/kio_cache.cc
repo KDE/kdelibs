@@ -149,37 +149,17 @@ QDateTime parseDateTime(const QString &s)
     return QDateTime(QDate(year, month, day), QTime(hour, min, sec));
 }
 
-static void testDir( const char *_name )
-{
-    DIR *dp;
-    QString c = kapp->localkdedir().data();
-    c += _name;
-    dp = opendir( c.data() );
-    if ( dp == NULL )
-	::mkdir( c.data(), S_IRWXU );
-    else
-	closedir( dp );
-}
-
 void KIOCache::initStatic()
 {
-  testDir( "/share" );
-  testDir( "/share/apps" );
-  testDir( "/share/apps/kio" );
-  testDir( "/share/apps/kio/cache" );
-  
-  cachePath = kapp->localkdedir().data();
-  cachePath += "/share/apps/kio/cache/";
-
-  readConfig( *( kapp->getConfig() ) );
+    cachePath += KGlobal::dirs()->getSaveLocation("data", "kio/cache", true);
+    readConfig( *( KGlobal::config() ) );
 }
 
 void KIOCache::readConfig( KConfig &config ) 
 {
     KConfigGroupSaver gs(&config, "Cache");
 
-    QString path = kapp->localkdedir().data();
-    path += "/share/apps/kio/cache/";
+    QString path = KGlobal::dirs()->getSaveLocation("data", "kio/cache");
     cachePath = config.readEntry( "CachePath", path );
     if ( cachePath.right(1).at(1) != '/')
 	cachePath += "/";
