@@ -1,35 +1,21 @@
 // $Id$
 
-#include "kio_job.h"
-#include "kio_simpleprogress_dlg.h"
-#include "kio_listprogress_dlg.h"
-
-#include <qsocketnotifier.h>
-#include <qdialog.h>
-#include <qpushbutton.h>
-#include <qlayout.h>
-#include <qtimer.h>
-
+#ifdef HAVE_CONFIG_H
 #include <config.h>
+#endif
 
-#include <kapp.h>
-#include <kglobal.h>
-#include <klocale.h>
-#include <kwm.h>
-#include <kdebug.h>
-#include <kprotocolmanager.h>
-#include <kdialog.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/wait.h>
 
 #include <assert.h>
+#include <dirent.h>
+#include <fstab.h>
+#include <signal.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <signal.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <dirent.h>
-#include <sys/stat.h>
 #include <time.h>
-#include <sys/wait.h>
+#include <unistd.h>
 
 #ifdef HAVE_PATHS_H
 #include <paths.h>
@@ -49,6 +35,24 @@
 #ifdef HAVE_MNTENT_H
 #include <mntent.h>
 #endif
+
+#include <qsocketnotifier.h>
+#include <qdialog.h>
+#include <qpushbutton.h>
+#include <qlayout.h>
+#include <qtimer.h>
+
+#include <kapp.h>
+#include <kglobal.h>
+#include <klocale.h>
+#include <kwm.h>
+#include <kdebug.h>
+#include <kprotocolmanager.h>
+#include <kdialog.h>
+
+#include "kio_job.h"
+#include "kio_simpleprogress_dlg.h"
+#include "kio_listprogress_dlg.h"
 
 /**
  * Maximum number of slaves kept around in KIOSlavePool.
@@ -1194,15 +1198,16 @@ KIOSlavePool* KIOSlavePool::self() {
 #define SETMNTENT setmntent
 #define ENDMNTENT endmntent
 #define STRUCT_MNTENT struct mntent *
+#define STRUCT_SETMNTENT FILE *
 #define GETMNTENT(file, var) ((var = getmntent(file)) != NULL)
 #define MOUNTPOINT(var) var->mnt_dir
 #define MOUNTTYPE(var) var->mnt_type
 #define FSNAME(var) var->mnt_fsname
-#else
-#ifdef BSD
-#define SETMNTENT(x, x) 1
+#elif BSD
+#define SETMNTENT(x, y) setfsent()
 #define ENDMNTENT(x) /* nope */
 #define STRUCT_MNTENT struct fstab *
+#define STRUCT_SETMNTENT int
 #define GETMNTENT(file, var) ((var=getfsent()) != NULL)
 #define MOUNTPOINT(var) var->fs_file
 #define MOUNTTYPE(var) var->fs_vftype
@@ -1211,17 +1216,17 @@ KIOSlavePool* KIOSlavePool::self() {
 #define SETMNTENT fopen
 #define ENDMNTENT fclose
 #define STRUCT_MNTENT struct mnttab
+#define STRUCT_SETMNTENT FILE *
 #define GETMNTENT(file, var) (getmntent(file, &var) == 0)
 #define MOUNTPOINT(var) var.mnt_mountp
 #define MOUNTTYPE(var) var.mnt_fstype
 #define FSNAME(var) var.mnt_special
 #endif
-#endif
 
 QString KIOJob::findDeviceMountPoint( const char *filename )
 {
-    FILE    *mtab;
-    char    realname[MAXPATHLEN];
+    STRUCT_SETMNTENT	mtab;
+    char    		realname[MAXPATHLEN];
 
     /* If the path contains symlinks, get the real name */
     if (realpath(filename, realname) == 0) {
