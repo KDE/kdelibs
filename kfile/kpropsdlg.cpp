@@ -88,6 +88,7 @@ extern "C" {
 #include <kseparator.h>
 #include <klibloader.h>
 #include <ktrader.h>
+#include <kparts/componentfactory.h>
 
 #include "kpropsdlg.h"
 
@@ -407,40 +408,14 @@ void KPropertiesDialog::insertPages()
   KTrader::OfferList::ConstIterator end = offers.end();
   for (; it != end; ++it )
   {
-    QString libName = (*it)->library();
+    KPropsDlgPlugin *plugin = KParts::ComponentFactory
+        ::createInstanceFromLibrary<KPropsDlgPlugin>( (*it)->library().local8Bit(),
+                                                      this,
+                                                      (*it)->name().latin1() );
+    if ( !plugin )
+        continue;
 
-    if ( libName.isEmpty() )
-      continue;
-
-    kdDebug( 250 ) << "query result: " << libName << endl;
-
-    KLibrary *lib = KLibLoader::self()->library( libName.local8Bit() );
-
-    if ( !lib )
-      continue;
-
-    KLibFactory *factory = lib->factory();
-
-    if ( !factory )
-    {
-      delete lib;
-      continue;
-    }
-
-    QObject *obj = factory->create( this, (*it)->name().latin1(), "KPropsDlgPlugin" );
-    if ( !obj )
-    {
-      delete lib;
-      continue;
-    }
-
-    if ( !obj->inherits( "KPropsDlgPlugin" ) )
-    {
-      delete obj;
-      continue;
-    }
-
-    insertPlugin (static_cast<KPropsDlgPlugin *>( obj ));
+    insertPlugin( plugin );
   }
 }
 
