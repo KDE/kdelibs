@@ -51,7 +51,7 @@ static const char *charsetsStr[CHARSETS_COUNT]={
     "iso-8859-14",
     "iso-8859-15",
     "koi8r",
-    "set-ja",
+    "eucjp",
     "euckr",
     "set-th-th",
     "set-zh",
@@ -78,7 +78,7 @@ static const char *xNames[CHARSETS_COUNT]={
     "iso8859-14",
     "iso8859-15",
     "koi8",
-    "unknown",
+    "jisx0208.1983-0",
     "ksc5601.1987-0",
     "unknown",
     "unknown",
@@ -539,6 +539,7 @@ QString KCharsets::xCharsetName(QFont::CharSet charSet) const
     case QFont::Set_Ko:
 	return "ksc5601.1987-0";
     case QFont::Set_Ja:
+        return "jisx0208.1983-0";
     case QFont::Set_Th_TH:
     case QFont::Set_Zh:
     case QFont::Set_Zh_TW:

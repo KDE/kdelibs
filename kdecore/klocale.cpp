@@ -249,7 +249,7 @@ void KLocale::initLanguage(KConfig *config, const QString& catalogue)
     int f = languages.find(':');
     if (f > 0) {
       _lang = languages.left(f);
-      languages.remove(0, _lang.length() - 1);
+      languages.remove(0, _lang.length() + 1);
     } else {
       _lang = languages;
       languages = "";
@@ -270,16 +270,16 @@ void KLocale::initLanguage(KConfig *config, const QString& catalogue)
     lng[counter++]=ln;
 
     int i;
-    for(i=0; !lng[i+1].isNull(); i++)
+    for(i=0; !lng[i].isNull(); i++)
       if (!locate("locale", lng[i] + QString::fromLatin1("/LC_MESSAGES/") + catalogue + QString::fromLatin1(".mo")).isNull() &&
 	  !locate("locale", lng[i] + QString::fromLatin1("/LC_MESSAGES/" SYSTEM_MESSAGES ".mo")).isNull())
 	{
-		
 	  _lang = lng[i];
+	  i = -1;
 	  break;
 	}
 	
-    if (i != 3)
+    if (i == -1)
       break;
   }
   lang = _lang; // taking deep copy
