@@ -513,66 +513,58 @@ void KKeyChooser::updateAction( int index )
 
 void KKeyChooser::readGlobalKeys()
 {
-        //debug("KKeyChooser::readGlobalKeys()");
-	
-	globalDict->clear();
-	
-	
-	// Insert all global keys into globalDict
-	int *keyCode;
-	KConfig pConfig;
-	KEntryIterator *gIt = pConfig.entryIterator( i18n("Global Keys") );
-	if (gIt){
-	  gIt->toFirst();
-	  while ( gIt->current() ) {
-	    keyCode = new int;
-	    *keyCode = stringToKey( gIt->current()->aValue );
-	    globalDict->insert( gIt->currentKey(), keyCode);
-	    ++(*gIt);
-	  }
-	}
-	
-	// Only insert global keys which don't appear in the dictionary to be configured
-	aIt->toFirst();
-	while ( aIt->current() ) {
-		if ( globalDict->find( aIt->currentKey() ) ) {
-		  globalDict->remove( aIt->currentKey());
-		}
-		++ ( *aIt );
-	}
-	
+  //debug("KKeyChooser::readGlobalKeys()");
+  
+  globalDict->clear();
+  
+  
+  // Insert all global keys into globalDict
+  int *keyCode;
+  KConfig pConfig;
+  QMap<QString, QString> tmpMap = pConfig.entryMap(i18n("Global Keys"));
+  QMap<QString, QString>::Iterator gIt(tmpMap.begin());
+  for (; gIt != tmpMap.end(); ++gIt) {
+    keyCode = new int;
+	  *keyCode = stringToKey( *gIt );
+	  globalDict->insert( gIt.key(), keyCode);
+  }
+  
+  // Only insert global keys which don't appear in the dictionary to be configured
+  aIt->toFirst();
+  while ( aIt->current() ) {
+    if ( globalDict->find( aIt->currentKey() ) ) {
+      globalDict->remove( aIt->currentKey());
+    }
+    ++ ( *aIt );
+  }
 }
 
 void KKeyChooser::readStdKeys()
 {
-        // debug("KKeyChooser::readStdKeys()");
-	
-	stdDict->clear();
-	
-	
-	// Insert all standard keys into globalDict
-	int *keyCode;
-	KConfig pConfig;
-	KEntryIterator *sIt = pConfig.entryIterator( i18n("Keys") );
-	if (sIt){
-	  sIt->toFirst();
-	  while ( sIt->current() ) {
-	    keyCode = new int;
-	    *keyCode = stringToKey( sIt->current()->aValue );
-	    stdDict->insert( sIt->currentKey(), keyCode);
-	    ++(*sIt);
-	  }
-	}
-	
-	// Only insert std keys which don't appear in the dictionary to be configured
-	aIt->toFirst();
-	while ( aIt->current() ) {
-		if ( stdDict->find( aIt->currentKey() ) ) {
-		  stdDict->remove( aIt->currentKey());
-		}
-		++ ( *aIt );
-	}
-	
+  // debug("KKeyChooser::readStdKeys()");
+  
+  stdDict->clear();
+  
+  
+  // Insert all standard keys into globalDict
+  int *keyCode;
+  KConfig pConfig;
+  QMap<QString, QString> tmpMap = pConfig.entryMap(i18n("Keys"));
+  QMap<QString, QString>::Iterator sIt(tmpMap.begin());
+  for (; sIt != tmpMap.end(); ++sIt) {
+    keyCode = new int;
+    *keyCode = stringToKey( *sIt );
+    stdDict->insert( sIt.key(), keyCode);
+  }
+  
+  // Only insert std keys which don't appear in the dictionary to be configured
+  aIt->toFirst();
+  while ( aIt->current() ) {
+    if ( stdDict->find( aIt->currentKey() ) ) {
+      stdDict->remove( aIt->currentKey());
+    }
+    ++ ( *aIt );
+  }
 }
 
 void KKeyChooser::toChange( int index )
