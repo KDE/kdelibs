@@ -55,7 +55,7 @@ public:
     }
 };
 
-K_EXPORT_COMPONENT_FACTORY( kbzip2filter, KBzip2FilterFactory );
+K_EXPORT_COMPONENT_FACTORY( kbzip2filter, KBzip2FilterFactory )
 
 // Not really useful anymore
 class KBzip2Filter::KBzip2FilterPrivate
