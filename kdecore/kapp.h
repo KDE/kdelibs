@@ -41,7 +41,6 @@ typedef unsigned long Atom;
 
 #include <qapplication.h>
 #include <qpixmap.h>
-#include <ltdl.h> // For the style plugin, if supported. (mosfet)
 class QPopupMenu;
 class QStrList;
 class KDNDDropZone;
@@ -604,7 +603,7 @@ private:
   QPixmap aIconPixmap;
   QPixmap aMiniIconPixmap;
   KStyle *pKStyle; // A KDE style object if available (mosfet)
-  lt_dlhandle styleHandle; // A KDE style dlopen handle, if used
+  void* styleHandle; // A KDE style dlopen handle, if used
   
   void init( );
   void parseCommandLine( int&, char** ); // search for special KDE arguments
@@ -732,6 +731,9 @@ private:
 #endif
 
 // $Log$
+// Revision 1.71  1999/05/06 02:50:30  pbrown
+// refer to .desktop files not .kdelnk files.
+//
 // Revision 1.70  1999/05/03 07:02:33  garbanzo
 // Might as well bump the version string and numbers to avoid confusion.
 //

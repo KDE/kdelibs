@@ -43,6 +43,8 @@
 #include <klocale.h>
 #include <kiconloader.h>
 
+#include "ltdl.h"
+
 #include "kwm.h"
 
 #include <sys/types.h>
@@ -848,7 +850,7 @@ void KApplication::applyGUIStyle(GUIStyle /* newstyle */) {
 
     if(styleHandle){
         warning(i18n("KApp: Unloading previous style plugin."));
-        lt_dlclose(styleHandle);
+        lt_dlclose(*(lt_dlhandle*)styleHandle);
         styleHandle = NULL;
     }
 
@@ -888,6 +890,7 @@ void KApplication::applyGUIStyle(GUIStyle /* newstyle */) {
             }
         }
         styleStr = dir.path() + "/" + styleStr;
+	styleHandle = new lt_dlhandle;
         styleHandle = lt_dlopen(styleStr);
 
         if(!styleHandle){
