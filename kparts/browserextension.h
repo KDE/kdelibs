@@ -87,7 +87,7 @@ struct URLArgs
    */
   int xOffset;
   /**
-   * @p yOffset vertical scrolling position, @see xOffset
+   * @p yOffset vertical scrolling position, @ref xOffset
    */
   int yOffset;
   /**
@@ -128,7 +128,7 @@ struct URLArgs
 
   /**
    * Meta-data to associate with the next KIO operation
-   * (@see KIO::TransferJob etc.)
+   * @see KIO::TransferJob etc.
    */
   QMap<QString, QString> &metaData();
 

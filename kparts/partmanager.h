@@ -22,7 +22,7 @@
 
 #include <qobject.h>
 #include <qwidget.h>
-#include <qlist.h>
+#include <qptrlist.h>
 
 class KInstance;
 
