@@ -175,13 +175,13 @@ int main(int argc,char **argv)
   if ( args->count() == 1 ) {
     identifier = args->arg( 0 );
   } else if ( args->count() != 0 ) {
-    cerr << "Usage: testlock <identifier>" << endl;
+    std::cerr << "Usage: testlock <identifier>" << std::endl;
     return 1;
   }
 
   if ( args->isSet( "addressbook" ) ) {
     if ( args->count() == 1 ) {
-      cerr << "Ignoring resource identifier" << endl;
+      std::cerr << "Ignoring resource identifier" << std::endl;
     }
     identifier = StdAddressBook::fileName(); 
   }
