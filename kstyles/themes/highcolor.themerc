@@ -1,5 +1,7 @@
 [Misc]
 Name=HighColor B2
+Name[de]=B2 64K-Farben
 Comment=B2/KDE highcolor style
+Comment[de]=B2/KDE-Stil in 64K-Farben
 [KDE]
 widgetStyle=hcstyle.la
