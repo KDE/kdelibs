@@ -1,3 +1,4 @@
+// -*- Mode: c++; c-basic-offset: 2; indent-tabs-mode: nil; tab-width: 2; -*-
 /*  This file is part of the KDE libraries
     Copyright (C) 2000 David Faure <faure@kde.org>
 

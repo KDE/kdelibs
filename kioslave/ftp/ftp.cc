@@ -1,3 +1,4 @@
+// -*- Mode: c++; c-basic-offset: 2; indent-tabs-mode: nil; tab-width: 2; -*-
 /*  This file is part of the KDE libraries
     Copyright (C) 2000 David Faure <faure@kde.org>
 
@@ -70,6 +71,26 @@
 #define STRTOLL strtol
 #endif
 
+// JPF: somebody should find a better solution for this or move this to KIO
+// JPF: anyhow, in KDE 3.2.0 I found diffent MAX_IPC_SIZE definitions!
+namespace KIO {
+    enum buffersizes
+    {  /**
+        * largest buffer size that should be used to transfer data between
+        * KIO slaves using the data() function
+        */
+        maximumIpcSize = 32 * 1024,
+        /**
+         * this is a reasonable value for an initial read() that a KIO slave
+         * can do to obtain data via a slow network connection.
+         */
+        initialIpcSize =  2 * 1024,
+        /**
+         * recommended size of a data block passed to findBufferFileType()
+         */
+        mimimumMimeSize =     1024
+    };
+}
 
 KIO::filesize_t Ftp::UnknownSize = (KIO::filesize_t)-1;
 
@@ -122,10 +143,10 @@ Ftp::~Ftp()
 /* memccpy appeared first in BSD4.4 */
 static void *mymemccpy(void *dest, const void *src, int c, size_t n)
 {
-    char *d = (char*)dest;
-    const char *s = (const char*)src;
+  char *d = (char*)dest;
+  const char *s = (const char*)src;
 
-    while (n-- > 0)
+  while (n-- > 0)
     if ((*d++ = *s++) == c)
       return d;
 
@@ -738,7 +759,7 @@ bool Ftp::ftpOpenPASVDataConnection()
 
   // Check that we can do PASV
   if (sa != NULL && sa->family() != PF_INET)
-    return false;		// no PASV for non-PF_INET connections
+    return false;               // no PASV for non-PF_INET connections
 
   if (m_extControl & pasvUnknown)
     return false;              // already tried and got "unknown command"
@@ -779,7 +800,7 @@ bool Ftp::ftpOpenPASVDataConnection()
   // Make hostname
   host.sprintf("%d.%d.%d.%d", i[0], i[1], i[2], i[3]);
   // port number is given in network byte order
-	int port = i[4] << 8 | i[5];
+  int port = i[4] << 8 | i[5];
   ks.setAddress(host, port);
   ks.setSocketFlags(KExtendedSocket::noResolve);
   ks.setTimeout (connectTimeout());
@@ -831,10 +852,10 @@ bool Ftp::ftpOpenEPSVDataConnection()
     {
       // unknown command?
       if (rspbuf[0] == '5')
-	{
-	  kdDebug(7102) << "disabling use of EPSV" << endl;
-	  m_extControl |= epsvUnknown;
-	}
+        {
+          kdDebug(7102) << "disabling use of EPSV" << endl;
+          m_extControl |= epsvUnknown;
+        }
       return false;
     }
 
@@ -884,9 +905,9 @@ bool Ftp::ftpOpenEPRTDataConnection()
   if (m_extControl & eprtUnknown || sin == NULL)
     return false;
   ks.setHost(sin->nodeName());
-  ks.setPort(0);		// setting port to 0 will make us bind to a random, free port
+  ks.setPort(0);                // setting port to 0 will make us bind to a random, free port
   ks.setSocketFlags(KExtendedSocket::noResolve | KExtendedSocket::passiveSocket |
-		    KExtendedSocket::inetSocket);
+                    KExtendedSocket::inetSocket);
 
   if (ks.listen(1) < 0)
     {
@@ -904,17 +925,17 @@ bool Ftp::ftpOpenEPRTDataConnection()
   //  .arg(sin->port());
   QCString command;
   command.sprintf("eprt |%d|%s|%d|", sin->ianaFamily(),
-		  sin->nodeName().latin1(), sin->port());
+                  sin->nodeName().latin1(), sin->port());
 
   // FIXME! Encoding for hostnames?
   if (!ftpSendCmd(command) || rspbuf[0] != '2')
     {
       // unknown command?
       if (rspbuf[0] == '5')
-	{
-	  kdDebug(7102) << "disabling use of EPRT" << endl;
-	  m_extControl |= eprtUnknown;
-	}
+        {
+          kdDebug(7102) << "disabling use of EPRT" << endl;
+          m_extControl |= eprtUnknown;
+        }
       return false;
     }
 
@@ -969,7 +990,7 @@ bool Ftp::ftpOpenDataConnection()
   if ( KSocks::self()->getsockname( sControl, &sin.sa, &l ) < 0 )
     return false;
   if (sin.sa.sa_family != PF_INET)
-    return false;		// wrong family
+    return false;               // wrong family
 
   sDatal = socket( PF_INET, SOCK_STREAM, IPPROTO_TCP );
   if ( sDatal == 0 )
@@ -1396,12 +1417,12 @@ void Ftp::statAnswerNotFound( const QString & path, const QString & filename )
     kdDebug(7102) << "Ftp::stat statSide=" << statSide << endl;
     if ( statSide == "source" )
     {
-	kdDebug(7102) << "Not found, but assuming found, because some servers don't allow listing" << endl;
+        kdDebug(7102) << "Not found, but assuming found, because some servers don't allow listing" << endl;
         // MS Server is incapable of handling "list <blah>" in a case insensitive way
         // But "retr <blah>" works. So lie in stat(), to get going...
-	//
-	// There's also the case of ftp://ftp2.3ddownloads.com/90380/linuxgames/loki/patches/ut/ut-patch-436.run
-	// where listing permissions are denied, but downloading is still possible.
+        //
+        // There's also the case of ftp://ftp2.3ddownloads.com/90380/linuxgames/loki/patches/ut/ut-patch-436.run
+        // where listing permissions are denied, but downloading is still possible.
         shortStatAnswer( filename, false /*file, not dir*/ );
     }
     else
@@ -1802,13 +1823,13 @@ FtpEntry* Ftp::ftpParseDir( char* buffer )
               p_date_1 = p_size;
               p_size = p_group;
               p_group = 0;
-	      //kdDebug(7102) << "Size didn't have a digit -> size=" << p_size << " date_1=" << p_date_1 << endl;
+              //kdDebug(7102) << "Size didn't have a digit -> size=" << p_size << " date_1=" << p_date_1 << endl;
             }
             else
-	    {
+            {
               p_date_1 = strtok(NULL," ");
               //kdDebug(7102) << "Size has a digit -> ok. p_date_1=" << p_date_1 << endl;
-	    }
+            }
 
             if ( p_date_1 != 0 )
               if ((p_date_2 = strtok(NULL," ")) != 0)
@@ -1816,27 +1837,27 @@ FtpEntry* Ftp::ftpParseDir( char* buffer )
                   if ((p_name = strtok(NULL,"\r\n")) != 0)
                   {
 
-		    {
-		       QCString tmp( p_name );
-		       if ( p_access[0] == 'l' )
-		       {
-			 int i = tmp.findRev( " -> " );
-			 if ( i != -1 ) {
-			   de.link = remoteEncoding()->decode(p_name + i + 4);
-			   tmp.truncate( i );
-			 }
-			 else
-			   de.link = QString::null;
-		       }
-		       else
-			 de.link = QString::null;
+                    {
+                       QCString tmp( p_name );
+                       if ( p_access[0] == 'l' )
+                       {
+                         int i = tmp.findRev( " -> " );
+                         if ( i != -1 ) {
+                           de.link = remoteEncoding()->decode(p_name + i + 4);
+                           tmp.truncate( i );
+                         }
+                         else
+                           de.link = QString::null;
+                       }
+                       else
+                         de.link = QString::null;
 
-		       if (tmp.find('/') != -1)
-			 return 0L; // Don't trick us!
-		       // Some sites put more than one space between the date and the name
- 		       // e.g. ftp://ftp.uni-marburg.de/mirror/
-		       de.name     = remoteEncoding()->decode(tmp.stripWhiteSpace());
-		    }
+                       if (tmp.find('/') != -1)
+                         return 0L; // Don't trick us!
+                       // Some sites put more than one space between the date and the name
+                       // e.g. ftp://ftp.uni-marburg.de/mirror/
+                       de.name     = remoteEncoding()->decode(tmp.stripWhiteSpace());
+                    }
 
                     de.access = 0;
                     de.type = S_IFREG;
@@ -1879,12 +1900,12 @@ FtpEntry* Ftp::ftpParseDir( char* buffer )
                       de.access |= S_IWOTH;
                     if ( p_access[9] == 'x' || p_access[9] == 't' )
                       de.access |= S_IXOTH;
-		    if ( p_access[3] == 's' || p_access[3] == 'S' )
-		      de.access |= S_ISUID;
-		    if ( p_access[6] == 's' || p_access[6] == 'S' )
-		      de.access |= S_ISGID;
-		    if ( p_access[9] == 't' || p_access[9] == 'T' )
-		      de.access |= S_ISVTX;
+                    if ( p_access[3] == 's' || p_access[3] == 'S' )
+                      de.access |= S_ISUID;
+                    if ( p_access[6] == 's' || p_access[6] == 'S' )
+                      de.access |= S_ISGID;
+                    if ( p_access[9] == 't' || p_access[9] == 'T' )
+                      de.access |= S_ISVTX;
 
                     // maybe fromLocal8Bit would be better in some cases,
                     // but what proves that the ftp server is in the same encoding
@@ -1910,13 +1931,13 @@ FtpEntry* Ftp::ftpParseDir( char* buffer )
                     // Get month from first field
                     // NOTE : no, we don't want to use KLocale here
                     // It seems all FTP servers use the English way
-		    //kdDebug(7102) << "Looking for month " << p_date_1 << endl;
+                    //kdDebug(7102) << "Looking for month " << p_date_1 << endl;
                     static const char * s_months[12] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun",
                                                        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
                     for ( int c = 0 ; c < 12 ; c ++ )
                       if ( !strcmp( p_date_1, s_months[c]) )
                       {
-			//kdDebug(7102) << "Found month " << c << " for " << p_date_1 << endl;
+                        //kdDebug(7102) << "Found month " << c << " for " << p_date_1 << endl;
                         tmptr->tm_mon = c;
                         break;
                       }
@@ -1980,12 +2001,12 @@ void Ftp::get( const KURL & url )
   kdDebug(7102) << "Ftp::get " << url.url() << endl;
   if (!m_bLoggedOn)
   {
-      openConnection();
-      if (!m_bLoggedOn)
-      {
-        kdDebug(7102) << "Login failure, aborting" << endl;
-        return;
-      }
+    openConnection();
+    if (!m_bLoggedOn)
+    {
+      kdDebug(7102) << "Login failure, aborting" << endl;
+      return;
+    }
   }
   bool textMode = !metaData(QString::fromLatin1("textmode")).isEmpty();
 
@@ -1994,29 +2015,29 @@ void Ftp::get( const KURL & url )
   // If we got something else, maybe SIZE isn't supported.
   if ( !ftpSize( url.path(), textMode ? 'A' : 'I' ) && strncmp( rspbuf, "550", 3) == 0 )
   {
-      // Not a file, or doesn't exist. We need to find out.
-      QCString tmp = "cwd ";
-      tmp += remoteEncoding()->encode(url);
-      if ( ftpSendCmd( tmp ) && rspbuf[0] == '2' )
-      {
-          // Ok it's a dir in fact
-          kdDebug(7102) << "Ftp::get: it is a directory in fact" << endl;
-          error( ERR_IS_DIRECTORY, url.path() );
-      }
-      else
-      {
-          kdDebug(7102) << "Ftp::get: doesn't exist" << endl;
-          error( ERR_DOES_NOT_EXIST, url.path() );
-      }
-      return;
+    // Not a file, or doesn't exist. We need to find out.
+    QCString tmp = "cwd ";
+    tmp += remoteEncoding()->encode(url);
+    if ( ftpSendCmd( tmp ) && rspbuf[0] == '2' )
+    {
+      // Ok it's a dir in fact
+      kdDebug(7102) << "Ftp::get: it is a directory in fact" << endl;
+      error( ERR_IS_DIRECTORY, url.path() );
+    }
+    else
+    {
+      kdDebug(7102) << "Ftp::get: doesn't exist" << endl;
+      error( ERR_DOES_NOT_EXIST, url.path() );
+    }
+    return;
   }
 
   KIO::fileoffset_t offset = 0;
   QString resumeOffset = metaData(QString::fromLatin1("resume"));
   if ( !resumeOffset.isEmpty() )
   {
-      offset = resumeOffset.toLongLong();
-      kdDebug(7102) << "Ftp::get got offset from medata : " << offset << endl;
+    offset = resumeOffset.toLongLong();
+    kdDebug(7102) << "Ftp::get got offset from medata : " << offset << endl;
   }
 
   if ( !ftpOpenCommand( "retr", url.path(), textMode ? 'A' : 'I', ERR_CANNOT_OPEN_FOR_READING, offset ) ) {
@@ -2037,68 +2058,75 @@ void Ftp::get( const KURL & url )
   kdDebug(7102) << "Ftp::get starting with offset=" << offset << endl;
   KIO::fileoffset_t processed_size = offset;
 
-  char buffer[ 2048 ];
   QByteArray array;
-  QByteArray mimetypeBuffer;
-
   bool mimetypeEmitted = false;
+  char buffer[maximumIpcSize];
+  // start whith small data chunks in case of a slow data source (modem)
+  // - unfortunately this has a negative impact on performance for large
+  // - files - so we will increase the block size after a while ...
+  int iBlockSize = initialIpcSize;
+  int iBufferCur = 0;
 
-  while( m_size == UnknownSize || bytesLeft > 0 )
-  {
-    int n = ftpRead( buffer, 2048 );
-    if ( m_size != UnknownSize )
-      bytesLeft -= n;
+  while(m_size == UnknownSize || bytesLeft > 0)
+  {  // let the buffer size grow if the file is larger 64kByte ...
+    if(processed_size-offset > 1024 * 64)
+      iBlockSize = maximumIpcSize;
 
-    // Buffer the first 1024 bytes for mimetype determination
-    if ( !mimetypeEmitted )
-    {
-      int oldSize = mimetypeBuffer.size();
-      mimetypeBuffer.resize(oldSize + n);
-      memcpy(mimetypeBuffer.data()+oldSize, buffer, n);
-
-      // Found enough data - or we're arriving to the end of the file -> emit mimetype
-      if (mimetypeBuffer.size() >= 1024 || (m_size != UnknownSize && bytesLeft <= 0) )
-      {
-        KMimeMagicResult * result = KMimeMagic::self()->findBufferFileType( mimetypeBuffer, url.fileName() );
-        kdDebug(7102) << "Emitting mimetype " << result->mimeType() << endl;
-        mimeType( result->mimeType() );
-        mimetypeEmitted = true;
-        data( mimetypeBuffer );
-        mimetypeBuffer.resize(0);
-        // Emit total size AFTER mimetype
-        if ( m_size != UnknownSize )
-          totalSize( m_size );
-      }
-    }
-    else if ( n > 0 )
-    {
-      array.setRawData(buffer, n);
-      data( array );
-      array.resetRawData(buffer, n);
-    }
-    else if ( m_size == UnknownSize && n == 0 ) // this is how we detect EOF in case of unknown size
-    {
-      break;
-    }
-    else // unexpected eof. Happens when the daemon gets killed.
-    {
+    // read the data and detect EOF or error ...
+    if(iBlockSize+iBufferCur > (int)sizeof(buffer))
+      iBlockSize = sizeof(buffer) - iBufferCur;
+    int n = ftpRead( buffer+iBufferCur, iBlockSize );
+    if(n <= 0)
+    {   // this is how we detect EOF in case of unknown size
+      if( m_size == UnknownSize && n == 0 )
+        break;
+      // unexpected eof. Happens when the daemon gets killed.
       error( ERR_COULD_NOT_READ, url.path() );
       return;
     }
-
     processed_size += n;
+
+    // collect very small data chunks in buffer before processing ...
+    if(m_size != UnknownSize)
+    {
+      bytesLeft -= n;
+      iBufferCur += n;
+      if(iBufferCur < mimimumMimeSize && bytesLeft > 0)
+      {
+        processedSize( processed_size );
+        continue;
+      }
+      n = iBufferCur;
+      iBufferCur = 0;
+    }
+
+    // get the mime type and set the total size ...
+    if(!mimetypeEmitted)
+    {
+      mimetypeEmitted = true;
+      array.setRawData(buffer, n);
+      KMimeMagicResult * result = KMimeMagic::self()->findBufferFileType(array, url.fileName());
+      array.resetRawData(buffer, n);
+      kdDebug(7102) << "Get: Emitting mimetype " << result->mimeType() << endl;
+      mimeType( result->mimeType() );
+      if( m_size != UnknownSize )	// Emit total size AFTER mimetype
+        totalSize( m_size );
+    }
+
+    // deliver output data ...
+    array.setRawData(buffer, n);
+    data( array );
+    array.resetRawData(buffer, n);
     processedSize( processed_size );
   }
 
   kdDebug(7102) << "Get: done, sending empty QByteArray" << endl;
-  data( QByteArray() );
+  data(array);                 // array is empty and must be empty!
 
   kdDebug(7102) << "Get: calling ftpCloseCommand()" << endl;
-  (void) ftpCloseCommand();
-  // proceed even on error
+  ftpCloseCommand();           // can ignore error return here
 
   processedSize( m_size == UnknownSize ? processed_size : m_size );
-
   kdDebug(7102) << "Get: emitting finished()" << endl;
   finished();
 }
