@@ -101,7 +101,7 @@ KWhatsThisManager::KWhatsThisManager ()
     qApp -> installEventFilter (this);
 }
 
-bool KWhatsThisManager::eventFilter (QObject */*o*/, QEvent *e)
+bool KWhatsThisManager::eventFilter (QObject * /*o*/, QEvent *e)
 {
     if (e -> type () == QEvent::ChildInserted) {
         QChildEvent *ce = (QChildEvent *)e;
