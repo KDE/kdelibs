@@ -1,2 +1,2 @@
 libkdb-mysql: no-shlibs-control-file usr/lib/libkdb_mysql.so
-libkdb-mysql: postinst-must-call-ldconfig usr/lib/libkdb_mysql.soE
+libkdb-mysql: postinst-must-call-ldconfig usr/lib/libkdb_mysql.so
