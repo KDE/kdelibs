@@ -1,3 +1,10 @@
+/*
+ * (C)Copyright 1999
+ * Cristian Tibirna  <ctibirna@total.net>
+ * Daniel M. Duley <mosfet@kde.org>
+ * Dirk A. Mueller <dmuell@gmx.net>
+ */
+
 #ifndef __KPIXMAP_EFFECT_H
 #define __KPIXMAP_EFFECT_H
 

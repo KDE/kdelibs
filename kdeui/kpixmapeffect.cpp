@@ -1,3 +1,10 @@
+/*
+ * (C)Copyright 1999
+ * Cristian Tibirna  <ctibirna@total.net>
+ * Daniel M. Duley <mosfet@kde.org>
+ * Dirk A. Mueller <dmuell@gmx.net>
+ */
+
 #include "kpixmapeffect.h"
 #include <qimage.h>
 #include <qpainter.h>
