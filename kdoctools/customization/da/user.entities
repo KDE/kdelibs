@@ -16,7 +16,7 @@
 <!ENTITY etc    "<abbrev>osv.</abbrev>">
 <!ENTITY FAQ    '<acronym>OSS</acronym>'>
 <!ENTITY ftp    '<acronym>FTP</acronym>'>
-<!ENTITY ie     "<abbrev>altså</abbrev>">
+<!ENTITY ie     "<abbrev>altsÃ¥</abbrev>">
 <!ENTITY kcontrolcenter	"<application>&kde;'s kontrolcenter</application>">
 <!ENTITY LMB    "<mousebutton>venstre</mousebutton> museknap">
 <!ENTITY MMB    "<mousebutton>midterste</mousebutton> museknap">
