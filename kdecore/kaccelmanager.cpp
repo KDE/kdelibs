@@ -140,9 +140,9 @@ private:
 
 
 bool KAcceleratorManagerPrivate::programmers_mode = false;
-QString KAcceleratorManagerPrivate::changed_string = QString::null;
-QString KAcceleratorManagerPrivate::added_string = QString::null;
-QString KAcceleratorManagerPrivate::removed_string = QString::null;
+QString KAcceleratorManagerPrivate::changed_string;
+QString KAcceleratorManagerPrivate::added_string;
+QString KAcceleratorManagerPrivate::removed_string;
 static QStringList *kaccmp_sns = 0;
 static KStaticDeleter<QStringList> kaccmp_sns_d;
 
