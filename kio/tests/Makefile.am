@@ -20,7 +20,7 @@ INCLUDES= -I$(top_srcdir) -I$(top_srcdir)/kio $(all_includes)
 LDADD = $(top_builddir)/kio/libkio.la
 LDFLAGS = $(all_libraries) $(KDE_RPATH)
 
-check_PROGRAMS = ksycocatest getalltest kruntest ktartest \
+check_PROGRAMS = ksycocatest getalltest kruntest ktartest kziptest\
                  kioslavetest kdirwatchtest kshredtest speed kurifiltertest \
                  ktradertest kdefaultprogresstest kclipboardtest kmimemagictest \
                  kfiltertest kiopassdlgtest kscantest kdirlistertest \
@@ -57,6 +57,7 @@ kscantest_SOURCES = kscantest.cpp
 kdirlistertest_SOURCES = kdirlistertest.cpp kdirlistertest.h
 previewtest_SOURCES = previewtest.cpp previewtest.h
 ktartest_SOURCES = ktartest.cpp
+kziptest_SOURCES = kziptest.cpp
 metatest_SOURCES = metatest.cpp
 
 # kfile meta stuff. Comment this in, if you want a small
