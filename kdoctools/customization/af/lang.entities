@@ -25,6 +25,13 @@
   "entities/report-bugs.docbook"                       ><!-- level: ? -->
 <!ENTITY updating.documentation PUBLIC "-//KDE//DOCUMENT Updating Documentation//AF"
   "entities/update-doc.docbook"                     ><!-- level: para -->
+<!ENTITY help.menu.documentation PUBLIC "-//KDE//DOCUMENT Help Menu Documentation//AF"
+  "entities/help-menu.docbook"                      ><!-- level: variablelist -->
+<!ENTITY  PUBLIC "-//KDE//DOCUMENT Installation General Information//AF"
+  "entities/install-intro.docbook"                     ><!-- level: para -->
+<!ENTITY  PUBLIC "-//KDE//DOCUMENT Compilation Instructions//AF"
+  "entities/install-compile.docbook"                     ><!-- level: para -->
+
 
 <!-- FDL notice -->
 <!ENTITY FDLNotice PUBLIC "-//KDE//DOCUMENT GNU Free Documentation Notice//AF"

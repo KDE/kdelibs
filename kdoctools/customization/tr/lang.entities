@@ -1,5 +1,3 @@
-<!-- Do NOT change this file: it provides important defaults -->
-
 <!ENTITY language "tr">
 
 <!-- These entities should be translated, should therefore be stored
@@ -27,6 +25,13 @@
   "entities/report-bugs.docbook"                       ><!-- level: ? -->
 <!ENTITY updating.documentation PUBLIC "-//KDE//DOCUMENT Updating Documentation//TR"
   "entities/update-doc.docbook"                     ><!-- level: para -->
+<!ENTITY help.menu.documentation PUBLIC "-//KDE//DOCUMENT Help Menu Documentation//TR"
+  "entities/help-menu.docbook"                      ><!-- level: variablelist -->
+<!ENTITY  PUBLIC "-//KDE//DOCUMENT Installation General Information//TR"
+  "entities/install-intro.docbook"                     ><!-- level: para -->
+<!ENTITY  PUBLIC "-//KDE//DOCUMENT Compilation Instructions//TR"
+  "entities/install-compile.docbook"                     ><!-- level: para -->
+
 
 
 <!-- FDL notice -->

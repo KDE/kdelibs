@@ -88,6 +88,13 @@
 <!ENTITY % FDLFCT "IGNORE">
 <!ENTITY % FDLBCT "IGNORE">
 
+<!-- KDE web addresses
+     should probably go below, but they are not meant to be marked up
+     at all, so I put them separately -->
+<!ENTITY kde-http "http://www.kde.org/">
+<!ENTITY kde-ftp "ftp://ftp.kde.org/pub/kde/">
+
+
 <!-- These are the language-independent entities.  They can be (more
      or less) freely extended.  Keep this list sorted and sensible.  
      Make sure you always add full markup to the text.
