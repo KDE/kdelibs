@@ -1540,7 +1540,7 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
             QString oldPath = (*it).uDest.path( 1 );
             KURL newUrl( (*it).uDest );
             newUrl.setPath( newPath );
-            //emit renamed( this, (*it).uDest, newUrl );
+            emit renamed( this, (*it).uDest, newUrl ); // for e.g. kpropsdlg
 
             // Change the current one and strip the trailing '/'
             (*it).uDest = newUrl.path( -1 );
@@ -1769,7 +1769,7 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
         {
             KURL newUrl( (*it).uDest );
             newUrl.setPath( newPath );
-            //emit renamed( this, (*it).uDest, newUrl );
+            emit renamed( this, (*it).uDest, newUrl ); // for e.g. kpropsdlg
             (*it).uDest = newUrl;
         }
         break;

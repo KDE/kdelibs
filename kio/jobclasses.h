@@ -619,6 +619,10 @@ namespace KIO {
          * The job is creating the directory @dir
          */
         void creatingDir( KIO::Job *, const KURL& dir );
+        /**
+         * The user chose to rename 'from' to 'to'
+         */
+        void renamed( KIO::Job *, const KURL& from, const KURL& to );
 
         // ?
         void canResume( KIO::Job *, bool can_resume );
