@@ -259,7 +259,10 @@ void HTMLMetaElementImpl::attach()
     {
         // get delay and url
         QString str = _content.string().stripWhiteSpace();
-        int pos = str.find(QRegExp("[;, \t]"));
+        int pos = str.find(QRegExp("[;,]"));
+        if ( pos == -1 )
+            pos = str.find(QRegExp("[ \t]"));
+
         if (pos == -1) // There can be no url (David)
         {
             bool ok = false;
@@ -279,11 +282,13 @@ void HTMLMetaElementImpl::attach()
             }
             pos++;
             while(pos < (int)str.length() && str[pos].isSpace()) pos++;
-            if(pos < (int)str.length()) str = str.mid(pos);
-            if(strncasecmp(str, "url=", 4) == 0)  str = str.mid(4).simplifyWhiteSpace();
+            str = str.mid(pos);
+            if(str.find("url", 0,  false ) == 0)  str = str.mid(3);
+            str = str.stripWhiteSpace();
+            if ( str.length() && str[0] == '=' ) str = str.mid( 1 ).stripWhiteSpace();
             str = parseURL( DOMString(str) ).string();
             if ( ok )
-                v->part()->scheduleRedirection(delay, str);
+                v->part()->scheduleRedirection(delay, v->part()->completeURL( str ).url());
         }
     }
     else if(strcasecmp(_equiv, "expires") == 0 && !_content.isNull())
