@@ -4,4 +4,4 @@ Type=MimeType
 MimeType=audio/vorbis
 Icon=sound
 X-KDE-IsAlso=audio/x-vorbis
-Comment=OggVorbis Audio
+Comment=Ogg Vorbis Audio
