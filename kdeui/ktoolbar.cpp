@@ -410,6 +410,19 @@ int KToolBar::insertAnimatedWidget(int id, QObject *receiver, const char *slot,
 
 }
 
+int KToolBar::insertAnimatedWidget(int id, QObject *receiver, const char *slot,
+                                    const QString& icons, int index )
+{
+    KAnimWidget *anim = new KAnimWidget( icons, d->m_iconSize, this );
+    inserted.removeRef( anim );
+    insertWidgetInternal( anim, index, id );
+    inserted.append( anim );
+
+    if ( receiver )
+        connect( anim, SIGNAL(clicked()), receiver, slot);
+
+    return *widget2id.find( anim );
+}
 
 KAnimWidget *KToolBar::animatedWidget( int id )
 {

@@ -34,6 +34,7 @@ public:
   }
 
   QStringList            icons;
+  QString                icon_name;
   QTimer                 timer;
   int                    size;
   bool                   loadingCompleted;
@@ -42,6 +43,22 @@ public:
   QValueList<QPixmap>           pixmaps;
   QValueList<QPixmap>::Iterator iter;
 };
+
+KAnimWidget::KAnimWidget( const QString& icons, int size, QWidget *parent,
+                          const char *name )
+  : QFrame( parent, name ),
+    d( new KAnimWidgetPrivate )
+{
+  connect( &d->timer, SIGNAL(timeout()), this, SLOT(slotTimerUpdate()));
+
+  if (parent->inherits( "KToolBar" ))
+    connect(parent, SIGNAL(modechange()), this, SLOT(updateIcons()));
+
+  d->loadingCompleted = false;
+  d->size = size;
+  setIcons( icons );
+  setFrameStyle( StyledPanel | Sunken );
+}
 
 KAnimWidget::KAnimWidget( const QStringList& icons, int size,
                           QWidget *parent, const char *name )
@@ -99,6 +116,15 @@ void KAnimWidget::setIcons( const QStringList& icons )
     return;
 
   d->icons = icons;
+  updateIcons();
+}
+
+void KAnimWidget::setIcons( const QString& icons )
+{
+  if ( d->icon_name == icons )
+    return;
+
+  d->icon_name = icons;
   updateIcons();
 }
 
@@ -177,6 +203,9 @@ void KAnimWidget::updateIcons()
 {
   if (parent()->inherits( "KToolBar" ))
     d->size = ((KToolBar*)parent())->iconSize();
+
+  if (d->icon_name.isEmpty() == false)
+    d->icons = KGlobal::iconLoader()->loadAnimated(d->icon_name, KIcon::MainToolbar, d->size);
 
   d->pixmaps.clear();
   d->pixmaps.append( MainBarIcon( *d->icons.begin(), d->size ) );

@@ -58,7 +58,25 @@ class KAnimWidget : public QFrame
   Q_OBJECT
 public:	
   /**
-   * This is the most common constructor.  Pass along your list of
+   * This is the most common constructor.  Pass along the name of the
+   * animated icons to use (e.g., "kde") for the animation and an
+   * optional size to load and you're set.  If you omit the size, the
+   * default size will be used.
+   *
+   * @param icons  The icons name (e.g., "kde") to use for the animation
+   * @param size   The size to load
+   *               You don't have to set it if the parent is a
+   *               KToolBar; in this case it will use the toolbar's
+   *               size.
+   * @param parent The standard parent
+   * @param name   The standard internal name
+   */
+  KAnimWidget( const QString& icons, int size = 0,
+               QWidget *parent = 0L, const char *name = 0L );
+
+  /**
+   * This is the constructor to use if you are using custom
+   * (non-standard) icons for the animation.  Pass along your list of
    * icons to use for the animation and an optional size to load and
    * you're set.  If you omit the size, the default size will be used.
    *
@@ -106,12 +124,20 @@ public:
 
   /**
    * Set the list of icons to use for the animation.  They will all be
-   * loaded using the @p BarIcon() function so make sure that they are
-   * toolbar icons... or at least loadable using @p BarIcon().
+   * loaded using the @p MainBarIcon() function so make sure that they are
+   * toolbar icons... or at least loadable using @p MainBarIcon().
    *
    * @param icons The icons to use for the animation
    */
   void setIcons( const QStringList& icons );
+
+  /**
+   * Set the name of the animated icons to load.  This will use the
+   * KIconLoader::loadAnimated method for the actual loading.
+   *
+   * @param icons The name of the icons to use for the animation
+   */
+  void setIcons( const QString& icons );
 
 signals:
   void clicked();

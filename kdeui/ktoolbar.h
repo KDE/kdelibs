@@ -343,7 +343,7 @@ public:
    */
     int insertWidget(int id, int width, QWidget *_widget, int index=-1);
 
-    /**
+  /**
    * Insert an animated widget.  A @ref KAnimWidget will be created
    * internally using the icon list you provide.
    * This will emit a signal (clicked()) whenever the
@@ -361,6 +361,25 @@ public:
    */
     int insertAnimatedWidget(int id, QObject *receiver, const char *slot,
 			     const QStringList& icons, int index = -1);
+
+  /**
+   * Insert an animated widget.  A @ref KAnimWidget will be created
+   * internally using the icon name you provide.
+   * This will emit a signal (clicked()) whenever the
+   * animation widget is clicked.
+   *
+   * @see animatedWidget()
+   *
+   * @param id       The id for this toolbar item
+   * @param receiver The parent of your slot
+   * @param slot     The slot to receive the clicked() signal
+   * @param icons    The name of the animation icon group to use
+   * @param index    The item index
+   *
+   * @return The item index
+   */
+    int insertAnimatedWidget(int id, QObject *receiver, const char *slot,
+			     const QString& icons, int index = -1);
 
     /**
    * This will return a pointer to the given animated widget, if it
