@@ -190,8 +190,10 @@ void RenderTable::calcWidth()
     }
 
     // restrict width to what we really have in case we flow around floats
-    if ( style()->flowAroundFloats() && cb->isFlow() )
-	m_width = QMIN( static_cast<RenderFlow *>(cb)->lineWidth( m_y ), m_width );
+    if ( style()->flowAroundFloats() && cb->isFlow() ) {
+	availableWidth = static_cast<RenderFlow *>(cb)->lineWidth( m_y );
+	m_width = QMIN( availableWidth, m_width );
+    }
 
     m_width = KMAX (m_width, m_minWidth);
 
