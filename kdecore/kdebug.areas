@@ -130,6 +130,7 @@
 5051        libkmime (Codecs)
 5052        libkmime (Plugin Loader)
 5100        libkdenetwork
+5150        libkleopatra
 
 # kdepim
 5200        kitchensync
