@@ -23,12 +23,7 @@
 #define __kio_rename_dlg__ "$Id$"
 
 #include <kurl.h>
-#include <qwidget.h>
 #include <qdialog.h>
-#include <qpushbutton.h>
-#include <qlabel.h>
-#include <qlineedit.h>
-#include <qlayout.h>
 #include <qstring.h>
 #include <sys/types.h>
 

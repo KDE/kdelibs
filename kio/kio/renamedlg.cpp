@@ -24,9 +24,13 @@
 #include <stdio.h>
 #include <assert.h>
 
-#include <kmessagebox.h>
 #include <qfileinfo.h>
+#include <qlabel.h>
+#include <qlayout.h>
+#include <qlineedit.h>
 
+#include <kmessagebox.h>
+#include <kpushbutton.h>
 #include <kapplication.h>
 #include <kio/global.h>
 #include <ktrader.h>
@@ -39,7 +43,8 @@
 #include <kmimetype.h>
 #include <kwin.h>
 #include <kstringhandler.h>
-#include <qfileinfo.h>
+#include <kstdguiitem.h>
+#include <kguiitem.h>
 
 using namespace KIO;
 
@@ -47,11 +52,12 @@ class RenameDlg::RenameDlgPrivate
 {
  public:
   RenameDlgPrivate(){
-    b0 = b1 = b2 = b3 = b4 = b5 = b6 = b7 = b8 = 0L;
+    b0 = 0L;
+    b1 = b2 = b3 = b4 = b5 = b6 = b7 = b8 = 0L;
     m_pLineEdit=0L;
     m_pLayout=0L;
   }
-  QPushButton *b0;
+  KPushButton *b0;
   QPushButton *b1;
   QPushButton *b2;
   QPushButton *b3;
@@ -98,7 +104,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
 
   setCaption( _caption );
 
-  d->b0 = new QPushButton( i18n( "&Cancel" ), this );
+  d->b0 = new KPushButton( KStdGuiItem::cancel(), this );
   connect(d->b0, SIGNAL(clicked()), this, SLOT(b0Pressed()));
 
   if ( ! (_mode & M_NORENAME ) ) {
