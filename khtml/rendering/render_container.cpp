@@ -105,21 +105,20 @@ void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild
 
     if ( needsTable ) {
         RenderTable *table;
-        if( !beforeChild )
-            beforeChild = lastChild();
-        if( beforeChild && beforeChild->isAnonymousBox() && beforeChild->isTable() )
-            table = static_cast<RenderTable *>(beforeChild);
-        else {
-            //kdDebug( 6040 ) << "creating anonymous table" << endl;
-            table = new RenderTable(0 /* is anonymous */);
-            RenderStyle *newStyle = new RenderStyle();
-            newStyle->inheritFrom(style());
+	RenderObject *last = beforeChild ? beforeChild->previousSibling() : lastChild();
+        if ( last && last->isTable() && last->isAnonymousBox() ) {
+            table = static_cast<RenderTable *>(last);
+        } else {
+	    //kdDebug( 6040 ) << "creating anonymous table, before=" << beforeChild << endl;
+	    table = new RenderTable(0 /* is anonymous */);
+	    RenderStyle *newStyle = new RenderStyle();
+	    newStyle->inheritFrom(style());
 	    newStyle->setDisplay( TABLE );
 	    newStyle->setFlowAroundFloats( true );
-            table->setStyle(newStyle);
-            table->setIsAnonymousBox(true);
-            addChild(table, beforeChild);
-        }
+	    table->setStyle(newStyle);
+	    table->setIsAnonymousBox(true);
+	    addChild(table, beforeChild);
+	}
         table->addChild(newChild);
     } else {
 	// just add it...
