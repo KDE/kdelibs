@@ -654,12 +654,6 @@ int main(int argc, char **argv)
     // This app is started automatically, no need for session management
     app.disableSessionManagement();
 
-    // setup dcop communication
-    if (!app.dcopClient()->isAttached())
-        app.dcopClient()->registerAs("kio_uiserver",false);
-    if (!app.dcopClient()->isAttached())
-        return 1;
-
     uiserver =  new UIServer;
 
     app.setMainWidget( uiserver );
