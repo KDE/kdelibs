@@ -1504,6 +1504,6 @@ KDockWidget* KDockManager::findWidgetParentDock( QWidget* w )
   return found;
 }
 
-#ifndef NO_KDE2 // for Qt-only projects, because tmake doesn't take this name
+#ifndef NO_INCLUDE_MOCFILES // for Qt-only projects, because tmake doesn't take this name
 #include "kdockwidget.moc"
 #endif
