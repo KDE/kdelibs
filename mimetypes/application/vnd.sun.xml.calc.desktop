@@ -1,10 +1,30 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=OpenOffice.org Spreadsheet
-Comment[en]=OpenOffice.org Spreadsheet
-Comment[cs]=OpenOffice.org Sešit
-Comment[sk]=OpenOffice.org Zošit
+Comment[be]=Электронная табліца OpenOffice.org
+Comment[ca]=Fulla de càlcul de OpenOffice.org
+Comment[cs]=Tabulka OpenOffice.org
+Comment[cy]= Taenlen OpenOffice.org 
+Comment[da]=OpenOffice.org regneark
+Comment[el]=OpenOffice.org φύλλο εργασίας
+Comment[es]=Hoja de cálculo de OpenOffice.org
+Comment[fa]=صفحه‌گسترده‌ی OpenOffice.org
+Comment[fr]=Feuille de calcul OpenOffice.org
+Comment[hu]=OpenOffice.org munkafüzet
+Comment[is]=OpenOffice.org tafla
+Comment[pt_BR]=Planilha do OpenOffice.org
+Comment[ru]=Таблица OpenOffice.org
+Comment[sk]=Tabuľka OpenOffice.org
+Comment[sr]=OpenOffice.org-ова табела
+Comment[sv]=OpenOffice.org-kalkylark
+Comment[tr]=OpenOffice.org Hesap Tablosu
+Comment[wa]=Foye di tåvleu OpenOffice.org
+Comment[xx]=xxOpenOffice.org Spreadsheetxx
+Comment[zh_CN]=OpenOffice.org 电子表格
 Icon=004_spreadsheet_document.xpm
 Type=MimeType
 Patterns=*.sxc;*.SXC;
 MimeType=application/vnd.sun.xml.calc
+[Property::X-KDE-NativeExtension]
+Type=QString
+Value=.sxc
