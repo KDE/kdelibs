@@ -7,6 +7,7 @@ kdelibs (4:2.2-0alpha1-1) experimental; urgency=low
   * And lets list the bug fixes
          None yet..have to figure them out
   * Add flex to build-depends as well as other deps
+  * Add Debian menu items: cupsdconf
   
  -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 11 Apr 2001 12:23:00 -0700
 

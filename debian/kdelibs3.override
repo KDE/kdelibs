@@ -1,29 +1,5 @@
-# modules and whatnot
-kdelibs3: binary-without-manpage artsmessage
-kdelibs3: binary-without-manpage cupsdconf
-kdelibs3: binary-without-manpage dcop
-kdelibs3: binary-without-manpage dcopidl
-kdelibs3: binary-without-manpage dcopidl2cpp
-kdelibs3: binary-without-manpage dcopserver
-kdelibs3: binary-without-manpage kbuildsycoca
-kdelibs3: binary-without-manpage kcookiejar
-kdelibs3: binary-without-manpage kdb2html
-kdelibs3: binary-without-manpage kde-config
-kdelibs3: binary-without-manpage kded
-kdelibs3: binary-without-manpage kdeinit
-kdelibs3: binary-without-manpage kdeinit_shell
-kdelibs3: binary-without-manpage kdeinit_shutdown
-kdelibs3: binary-without-manpage kdeinit_wrapper
-kdelibs3: binary-without-manpage kdesu_stub
-kdelibs3: binary-without-manpage kio_http_cache_cleaner
-kdelibs3: binary-without-manpage kio_uiserver
-kdelibs3: binary-without-manpage klauncher
-kdelibs3: binary-without-manpage kmailservice
-kdelibs3: binary-without-manpage ksendbugmail
-kdelibs3: binary-without-manpage lnusertemp
-kdelibs3: binary-without-manpage make_driver_db_cups
-kdelibs3: binary-without-manpage make_driver_db_lpd
-kdelibs3: binary-without-manpage settheme
+# All .so files that it complains about are modules.  the licenses are in
+# docbook format for Khelpcenter's use as well as KDE's license bits
 kdelibs3: extra-license-file usr/share/apps/ksgmltools/ca/entities/underBSDLicense.docbook
 kdelibs3: extra-license-file usr/share/apps/ksgmltools/ca/entities/underArtisticLicense.docbook
 extra-license-file usr/share/apps/ksgmltools/ca/entities/underBSDLicense.docbook

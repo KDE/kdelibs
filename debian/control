@@ -1,5 +1,5 @@
 Source: kdelibs
-Build-Depends: automake, autoconf, libtool, debhelper (>> 2.0.0), gettext, libqt-dev (>= 2:2.3.0), libtiff3g-dev | libtiff-dev, libaudiofile-dev, qt-doc, jade, sgml-base, kdoc, docbook, docbook-stylesheets, libasound1-dev, libbz2-dev, libpcre3-dev, libsasl-dev, libcupsys2-dev | cupsys-dev, flex, postgresql-dev, libmysqlclient10-dev | libmysqlclient-dev, docbook-utils
+Build-Depends: automake, autoconf, debhelper (>> 2.0.0), gettext, libqt-dev (>= 2:2.3.0), libtiff3g-dev | libtiff-dev, libaudiofile-dev, qt-doc, jade, sgml-base, kdoc, docbook, docbook-stylesheets, libasound1-dev, libbz2-dev, libpcre3-dev, libsasl-dev, libcupsys2-dev | cupsys-dev, flex, postgresql-dev, libmysqlclient10-dev | libmysqlclient-dev, docbook-utils
 Section: libs
 Priority: optional
 Maintainer: Ivan E. Moore II <rkrusty@debian.org>

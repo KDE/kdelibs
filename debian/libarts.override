@@ -1,10 +1,1 @@
-# suid
-libarts: binary-without-manpage artsc-config
-libarts: binary-without-manpage artscat
-libarts: binary-without-manpage artsd
-libarts: binary-without-manpage artsdsp
-libarts: binary-without-manpage artsplay
-libarts: binary-without-manpage artsshell
-libarts: binary-without-manpage artswrapper
-libarts: binary-without-manpage mcopidl
 libarts: setuid-binary usr/bin/artswrapper 4755 root/root
