@@ -85,6 +85,7 @@ KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc)
   , m_imPreeditStartLine(0)
   , m_imPreeditStart(0)
   , m_imPreeditLength(0)
+  , m_imPreeditSelStart(0)
 {
   setMinimumSize (0,0);
 
@@ -890,6 +891,32 @@ QPoint KateViewInternal::cursorCoordinates()
 
   return QPoint(x, y);
 }
+
+
+void KateViewInternal::updateMicroFocusHint()
+{
+  int line = 0;
+  if (m_imPreeditStartLine)
+    line = m_imPreeditStartLine;
+  else
+    line = displayViewLine(displayCursor, true);
+
+  if (line == -1)
+      return;
+  
+  uint y = line * m_view->renderer()->fontHeight();
+  
+  // Cursor placement code is changed for Asian input method that
+  // shows candidate window. This behavior is same as Qt/E 2.3.7
+  // which supports Asian input methods. Asian input methods need
+  // start point of IM selection text to place candidate window as
+  // adjacent to the selection text.
+  uint preeditStrLen = m_view->renderer()->textWidth(textLine(line), cursor.col()) - m_view->renderer()->textWidth(textLine(line), m_imPreeditSelStart);
+  uint x = cXPos - m_startX - lineRanges[line].startX + lineRanges[line].xOffset() - preeditStrLen;
+  
+  setMicroFocusHint( x, y, 0, m_view->renderer()->fontHeight() );  
+}
+
 
 void KateViewInternal::doReturn()
 {
@@ -2062,8 +2089,7 @@ void KateViewInternal::updateCursor( const KateTextCursor& newCursor, bool force
   tagLine(oldDisplayCursor);
   tagLine(displayCursor);
 
-  QPoint cursorP = cursorCoordinates();
-  setMicroFocusHint( cursorP.x(), cursorP.y(), 0, m_view->renderer()->fontHeight() );
+  updateMicroFocusHint();
 
   if (m_cursorTimer.isActive ())
   {
@@ -2969,6 +2995,7 @@ void KateViewInternal::imStartEvent( QIMEvent *e )
   m_imPreeditStartLine = cursor.line();
   m_imPreeditStart = cursor.col();
   m_imPreeditLength = 0;
+  m_imPreeditSelStart = m_imPreeditStart;
 
   m_doc->setIMSelectionValue( m_imPreeditStartLine, m_imPreeditStart, 0, 0, 0, true );
 }
@@ -2993,7 +3020,9 @@ void KateViewInternal::imComposeEvent( QIMEvent *e )
 
   updateView( true );
   updateCursor( cursor, true );
+  
   m_imPreeditLength = e->text().length();
+  m_imPreeditSelStart = m_imPreeditStart + e->cursorPos();
 }
 
 void KateViewInternal::imEndEvent( QIMEvent *e )
@@ -3023,6 +3052,7 @@ void KateViewInternal::imEndEvent( QIMEvent *e )
 
   m_imPreeditStart = 0;
   m_imPreeditLength = 0;
+  m_imPreeditSelStart = 0;
 }
 
 //
