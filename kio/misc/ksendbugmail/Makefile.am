@@ -21,6 +21,6 @@ INCLUDES= -I$(srcdir)/.. $(all_includes)
 
 ksendbugmail_SOURCES = main.cpp smtp.cpp
 ksendbugmail_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-ksendbugmail_LDADD = $(LIB_KIO)
+ksendbugmail_LDADD = ../../libkio.la
 
 METASOURCES = AUTO
