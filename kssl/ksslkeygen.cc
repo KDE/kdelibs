@@ -27,9 +27,9 @@
 QStringList KSSLKeyGen::supportedKeySizes() {
 QStringList x;
 
-   x << i18n("1024 bit")
-     << i18n("768 bit")
-     << i18n("512 bit");
+   x << "1024"
+     << "768"
+     << "512";
 
 return x;
 }
