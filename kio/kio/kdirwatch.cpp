@@ -1064,6 +1064,8 @@ void KDirWatch::startScan( bool notify, bool skippedToo )
 bool KDirWatch::contains( const QString& _path ) const
 {
   KDirWatchPrivate::Entry* e = d->entry(_path);
+  if (!e)
+     return false;
 
   KDirWatchPrivate::Client* c = e->m_clients.first();
   for(;c;c=e->m_clients.next())
