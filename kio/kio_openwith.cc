@@ -17,12 +17,13 @@
 
 #include "kio_openwith.h"
 #include <kglobal.h>
+#include <kdebug.h>
 
 #define SORT_SPEC (QDir::DirsFirst | QDir::Name | QDir::IgnoreCase)
 
 // ----------------------------------------------------------------------
 
-KAppTreeListItem::KAppTreeListItem( const char *name, QPixmap *pixmap, 
+KAppTreeListItem::KAppTreeListItem( const char *name, QPixmap *pixmap,
      bool d, bool parse, bool dir, QString p, QString c )
     : KTreeListItem( name, pixmap )
 {
@@ -46,14 +47,14 @@ KApplicationTree::KApplicationTree( QWidget *parent ) : QWidget( parent )
   tree = new KTreeList( this );
   tree->setSmoothScrolling( true );
   setFocusProxy( tree );
-  
+
   QString personal = KApplication::localkdedir().data();
   personal += "/share/applnk";
   QString global   = KApplication::kde_appsdir().data();
-  
+
   parseDesktopDir( QDir(personal), tree );
   parseDesktopDir( QDir(global), tree );
-  
+
   tree->show();
   connect( tree, SIGNAL( expanded(int) ), SLOT( expanded(int) ) );
   connect( tree, SIGNAL( highlighted(int) ), SLOT( highlighted(int) ) );
@@ -71,7 +72,7 @@ bool KApplicationTree::isDesktopFile( const char* filename )
   buff[ 0 ] = 0;
   fgets( buff, 100, f );
   fclose( f );
-	  
+	
   KMimeMagicResult *result = KMimeMagic::self()->findBufferType( buff, 100 );
   if (!result)
     return false;
@@ -89,7 +90,7 @@ void KApplicationTree::parseDesktopFile( QFileInfo *fi, KTreeList *tree, KAppTre
 
   QString file = fi->absFilePath();
 
-  if( fi->isDir() ) 
+  if( fi->isDir() )
   {
     text_name = fi->fileName();
     file += "/.directory";
@@ -132,7 +133,7 @@ void KApplicationTree::parseDesktopFile( QFileInfo *fi, KTreeList *tree, KAppTre
   else
   {
      command_name = text_name;
-     pixmap = KGlobal::iconLoader()->loadApplicationMiniIcon("mini-default.xpm", 16, 16); 
+     pixmap = KGlobal::iconLoader()->loadApplicationMiniIcon("mini-default.xpm", 16, 16);
   }
 
   it2 = new KAppTreeListItem( text_name.data(), &pixmap, false, false, fi->isDir(), fi->absFilePath(), command_name );	
@@ -175,7 +176,7 @@ short KApplicationTree::parseDesktopDir( QDir d, KTreeList *tree, KAppTreeListIt
     {
       parseDesktopFile( fi, tree, item );
     }
-    else 
+    else
     {
       if( !isDesktopFile( fi->absFilePath().ascii() ) )
       {
@@ -183,10 +184,10 @@ short KApplicationTree::parseDesktopDir( QDir d, KTreeList *tree, KAppTreeListIt
 	continue;
       }
       parseDesktopFile( fi, tree, item );
-    } 
+    }
     ++it;
   }
-  
+
   return 0;
 }
 
@@ -209,11 +210,11 @@ void KApplicationTree::highlighted(int index)
 
   KAppTreeListItem *item = (KAppTreeListItem *)tree->itemAt( index );
 
-  if( ( !item->directory ) && 
-      !( item->exec.isEmpty() ) && 
+  if( ( !item->directory ) &&
+      !( item->exec.isEmpty() ) &&
       !( item->appname.isEmpty() ) )
 
-    emit highlighted( item->appname.data(), item->exec.data() ); 
+    emit highlighted( item->appname.data(), item->exec.data() );
 
 }
 
@@ -223,7 +224,7 @@ void KApplicationTree::selected(int index)
   KAppTreeListItem *item = (KAppTreeListItem *)tree->itemAt( index );
 
   if( ( !item->directory ) && !( item->exec.isEmpty() ) && !( item->appname.isEmpty() ) )
-     emit selected( item->appname.data(), item->exec.data() ); 
+     emit selected( item->appname.data(), item->exec.data() );
   else
     tree->expandOrCollapseItem( index );
 }
@@ -245,14 +246,14 @@ OpenWithDlg::OpenWithDlg( const QString&_text, const QString& _value, QWidget *p
   m_pTree = 0L;
   m_pService = 0L;
   haveApp = false;
-  
+
   setGeometry( x(), y(), 370, 100 );
-  
+
   label = new QLabel( _text , this );
   label->setGeometry( 10, 10, 350, 15 );
-  
+
   edit = new KLined( this, 0L );
-    
+
   if ( _file_mode )
   {
     completion = new KURLCompletion();
@@ -270,23 +271,23 @@ OpenWithDlg::OpenWithDlg( const QString&_text, const QString& _value, QWidget *p
 
   edit->setGeometry( 10, 35, 350, 25 );
   connect( edit, SIGNAL(returnPressed()), SLOT(accept()) );
-  
+
   ok = new QPushButton( i18n("OK"), this );
   ok->setGeometry( 10,70, 80,25 );
   connect( ok, SIGNAL(clicked()), SLOT(slotOK()) );
-  
+
   browse = new QPushButton( i18n("&Browser"), this );
   browse->setGeometry( 100, 70, 80, 25 );
   connect( browse, SIGNAL(clicked()), SLOT(slotBrowse()) );
-  
+
   clear = new QPushButton( i18n("Clear"), this );
   clear->setGeometry( 190, 70, 80, 25 );
   connect( clear, SIGNAL(clicked()), SLOT(slotClear()) );
-  
+
   cancel = new QPushButton( i18n("Cancel"), this );
   cancel->setGeometry( 280, 70, 80, 25 );
   connect( cancel, SIGNAL(clicked()), SLOT(reject()) );
-  
+
   edit->setText( _value );
   edit->setFocus();
   haveApp = false;
@@ -306,7 +307,7 @@ void OpenWithDlg::slotBrowse()
 {
   if ( m_pTree )
     return;
-  
+
   browse->setEnabled( false );
 
   ok->setGeometry( 10,280, 80,25 );
@@ -322,13 +323,13 @@ void OpenWithDlg::slotBrowse()
   m_pTree->setGeometry( 10, 70, 350, 200 );
   m_pTree->show();
   m_pTree->setFocus();
-  
+
   resize( width(), height() + 210 );
 }
 
 void OpenWithDlg::resizeEvent(QResizeEvent *)
 {
-  // someone will have to write proper geometry management 
+  // someone will have to write proper geometry management
   // but for now this will have to do ....
 
   if( m_pTree )
@@ -338,7 +339,7 @@ void OpenWithDlg::resizeEvent(QResizeEvent *)
     ok->setGeometry( 10,height() - 30, (width()-20-30)/4,25 );
     browse->setGeometry( 10 + (width()-20-30)/4 + 10
 			 ,height() - 30, (width()-20-30)/4, 25 );
-    clear->setGeometry(10 + 2*((width()-20-30)/4) + 2*10 
+    clear->setGeometry(10 + 2*((width()-20-30)/4) + 2*10
 		       ,height() - 30, (width()-20-30)/4, 25 );
     cancel->setGeometry( 10 + 3*((width()-20-30)/4) + 3*10 ,
 			 height() - 30, (width()-20-30)/4, 25 );

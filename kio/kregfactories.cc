@@ -6,6 +6,7 @@
 
 #include <kapp.h>
 #include <klocale.h>
+#include <kdebug.h>
 
 #include <stdlib.h>
 
@@ -25,9 +26,9 @@ QString systemShareDir()
   const char* env = getenv( "KDEDIR" );
   if ( env )
     tmp = env;
-  
+
   tmp += "/share";
-  
+
   return tmp;
 }
 
@@ -56,7 +57,7 @@ void KServiceTypeEntry::save( QDataStream& _str ) const
 {
   _str << (Q_UINT32)m_pServiceType->typeCode();
   _str << *m_pServiceType;
-  
+
   KRegEntry::save( _str );
 }
 
@@ -82,7 +83,7 @@ KServiceTypeFactory::KServiceTypeFactory( const QStringList& _path_list )
 KServiceTypeFactory::KServiceTypeFactory( const QString& _system_path, const QString& _user_path )
 {
   if ( !_system_path.isEmpty() )
-    m_pathList.append( systemShareDir() + _system_path );  
+    m_pathList.append( systemShareDir() + _system_path );
   QString user = _user_path;
   if ( !user.isEmpty() )
     user = _system_path;
@@ -98,7 +99,7 @@ KRegEntry* KServiceTypeFactory::create( KRegistry* _reg, const QString& _file, Q
   _str >> u;
 
   KServiceType *e;
-  
+
   switch( u )
     {
     case TC_KServiceType:
@@ -126,16 +127,16 @@ KRegEntry* KServiceTypeFactory::create( KRegistry* _reg, const QString& _file, Q
     delete e;
     return 0;
   }
-  
+
   KServiceTypeEntry* res = new KServiceTypeEntry( _reg, _file, e );
   e->deref();
   res->load( _str );
-  
+
   return res;
 }
- 
+
 KRegEntry* KServiceTypeFactory::create( KRegistry* _reg, const QString& _file, KSimpleConfig &_cfg )
-{ 
+{
   QString service = _cfg.readEntry( "ServiceType" );
   QString mime = _cfg.readEntry( "MimeType" );
 
@@ -146,9 +147,9 @@ KRegEntry* KServiceTypeFactory::create( KRegistry* _reg, const QString& _file, K
     QMessageBox::critical( 0L, i18n( "KFM Error" ), tmp, i18n( "OK" ) );
     return 0;
   }
-      
+
   KServiceType* e;
-  
+
   if ( mime == "inode/directory" )
     e = new KFolderType( _cfg );
   else if ( mime == "application/x-desktop" )
@@ -165,10 +166,10 @@ KRegEntry* KServiceTypeFactory::create( KRegistry* _reg, const QString& _file, K
     delete e;
     return 0;
   }
-  
+
   KServiceTypeEntry* res = new KServiceTypeEntry( _reg, _file, e );
   e->deref();
-  
+
   return res;
 }
 
@@ -218,9 +219,9 @@ KServiceFactory::KServiceFactory( const QStringList& _path_list )
 KServiceFactory::KServiceFactory( const QString& _system_path, const QString& _user_path )
 {
   if ( !_system_path.isEmpty() )
-    m_pathList.append( systemShareDir() + _system_path );  
+    m_pathList.append( systemShareDir() + _system_path );
   if ( !_system_path.isEmpty() )
-    m_pathList.append( systemShareDir() + _system_path );  
+    m_pathList.append( systemShareDir() + _system_path );
   QString user = _user_path;
   if ( !user.isEmpty() )
     user = _system_path;
@@ -232,21 +233,21 @@ KRegEntry* KServiceFactory::create( KRegistry* _reg, const QString& _file, QData
 {
   Q_UINT32 u;
   _str >> u;
-  
+
   ASSERT( u == TC_KService );
-  
+
   KService *s = new KService( _str );
   if ( !s->isValid() )
   {
     delete s;
     return 0;
   }
-  
+
   KServiceEntry* e = new KServiceEntry( _reg, _file, s );
   s->deref();
-  
+
   e->load( _str );
-  
+
   return e;
 }
 
@@ -258,7 +259,7 @@ KRegEntry* KServiceFactory::create( KRegistry* _reg, const QString& _file, KSimp
     delete service;
     return 0;
   }
-  
+
   KServiceEntry* e = new KServiceEntry( _reg, _file, service );
   service->deref();
 
