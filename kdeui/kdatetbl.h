@@ -310,6 +310,7 @@ protected:
     int numDaysPrevMonth;
     /**
      * unused
+     * ### remove in KDE 4.0
      */
     bool unused_hasSelection;
     /**

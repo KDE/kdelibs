@@ -110,22 +110,20 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
   QFont font=KGlobalSettings::generalFont();
   // -----
   font.setPointSize(fontsize);
+  int firstWeekDay = KGlobal::locale()->weekStartDay();
   if(row==0)
     { // we are drawing the headline
       font.setBold(true);
       painter->setFont(font);
       bool normalday = true;
       QString daystr;
-      if (KGlobal::locale()->weekStartsMonday())
-        {
-          daystr = KGlobal::locale()->weekDayName(col+1, true);
-          if (col == 5 || col == 6)
-              normalday = false;
-        } else {
-          daystr = KGlobal::locale()->weekDayName(col==0? 7 : col, true);
-          if (col == 0 || col == 6)
-              normalday = false;
-        }
+      if ( col+firstWeekDay < 8 )
+          daystr = KGlobal::locale()->weekDayName(col+firstWeekDay, true);
+      else
+          daystr = KGlobal::locale()->weekDayName(col+firstWeekDay-7, true);
+      if ( daystr==i18n("Sun") || daystr==i18n("Sat") )
+          normalday=false;
+
       if (!normalday)
         {
           painter->setPen(lightGray);
@@ -147,8 +145,10 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
     } else {
       painter->setFont(font);
       pos=7*(row-1)+col;
-      if (KGlobal::locale()->weekStartsMonday())
-          pos++;
+      if ( firstWeekDay < 4 )
+          pos += firstWeekDay;
+      else
+          pos += firstWeekDay - 7;
       if(pos<firstday || (firstday+numdays<=pos))
         { // we are either
           // ° painting a day of the previous month or
@@ -185,7 +185,7 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
 
       QDate cur_date = QDate::currentDate();
       if ( (date.year()  == cur_date.year()) &&
-           (date.month() == cur_date.month()) && 
+           (date.month() == cur_date.month()) &&
            (firstday+cur_date.day()-1 == pos) )
       {
          painter->setPen(black);
@@ -304,7 +304,8 @@ KDateTable::contentsMousePressEvent(QMouseEvent *e)
       return;
     }
 
-  int dayoff = KGlobal::locale()->weekStartsMonday() ? 1 : 0;
+  //int dayoff = KGlobal::locale()->weekStartsMonday() ? 1 : 0;
+  int dayoff = KGlobal::locale()->weekStartDay();
   // -----
   int row, col, pos, temp;
   QPoint mouseCoord;
