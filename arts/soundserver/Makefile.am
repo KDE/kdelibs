@@ -66,13 +66,13 @@ artsversion.h: artsversion-new.h
 	(cmp -s artsversion-new.h artsversion.h \
 	  || cp artsversion-new.h artsversion.h) 
 
-artscat.cc: soundserver.h
-artsd.cc: soundserver.h
-artsplay.cc: soundserver.h
-artsshell.cc: soundserver.h
-wavplayobject_impl.cc: soundserver.h
-simplesoundserver_impl.cc: soundserver.h
-soundserver_impl.cc: soundserver.h
+artscat.cc: soundserver.h artsversion.h
+artsd.cc: soundserver.h artsversion.h
+artsplay.cc: soundserver.h artsversion.h
+artsshell.cc: soundserver.h artsversion.h
+wavplayobject_impl.cc: soundserver.h artsversion.h
+simplesoundserver_impl.cc: soundserver.h artsversion.h
+soundserver_impl.cc: soundserver.h artsversion.h
 soundserverv2_impl.cc: soundserver.h artsversion.h
 
 bd = `echo '$(bindir)' |sed -e "s,\\",,g"`
