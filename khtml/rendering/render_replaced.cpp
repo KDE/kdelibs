@@ -189,7 +189,7 @@ void RenderWidget::setQWidget(QWidget *widget)
 		// ugly hack to limit the maximum size of the widget (as X11 has problems if it's bigger)
 		resizeWidget( m_widget,
 			      m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
-			      m_height-borderLeft()-borderRight()-paddingLeft()-paddingRight() );
+			      m_height-borderTop()-borderBottom()-paddingTop()-paddingBottom() );
             }
             else
                 setPos(xPos(), -500000);
@@ -205,7 +205,7 @@ void RenderWidget::layout( )
     if ( m_widget ) {
 	resizeWidget( m_widget,
 		      m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
-		      m_height-borderLeft()-borderRight()-paddingLeft()-paddingRight() );
+		      m_height-borderTop()-borderBottom()-paddingTop()-paddingBottom() );
     }
 
     setLayouted();
