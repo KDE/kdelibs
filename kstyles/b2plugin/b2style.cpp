@@ -315,17 +315,17 @@ void B2Style::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
     if ( controls & AddLine ) {
         drawSBButton(p, addB, g, activeControl == AddLine);
         drawArrow( p, horiz ? RightArrow : DownArrow,
-                   activeControl == AddLine, addB.x()+4, addB.y()+4,
+                   false, addB.x()+4, addB.y()+4,
                    addB.width()-8, addB.height()-8, g, !maxed);
     }
     if ( controls & SubLine ) {
         drawSBButton(p, subB, g, activeControl == SubLine);
         drawArrow( p, horiz ? LeftArrow : UpArrow,
-                   activeControl == SubLine, subB.x()+4, subB.y()+4,
+                   false, subB.x()+4, subB.y()+4,
                    subB.width()-8, subB.height()-8, g, !maxed);
-        drawSBButton(p, subB2, g);
+        drawSBButton(p, subB2, g, activeControl == SubLine);
         drawArrow( p, horiz ? LeftArrow : UpArrow,
-                   activeControl == SubLine, subB2.x()+4, subB2.y()+4,
+                   false, subB2.x()+4, subB2.y()+4,
                    subB2.width()-8, subB2.height()-8, g, !maxed);
     }
     if(controls & AddPage){
