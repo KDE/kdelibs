@@ -29,6 +29,9 @@
 <!ENTITY traducteurPatrickChavas      '<othercredit role="translator"> <firstname>Patrick</firstname> <surname>Chavas</surname> <affiliation><address><email>pachavas@sun.cpe.fr</email></address></affiliation> <contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurPatrickChavas       '<othercredit role="reviewer"> <firstname>Patrick</firstname> <surname>Chavas</surname> <affiliation><address><email>pachavas@sun.cpe.fr</email></address></affiliation> <contrib>Relecture de la documentation française</contrib></othercredit>'>
 
+<!ENTITY traducteurClementContet      '<othercredit role="translator"> <firstname>Clément</firstname> <surname>Contet</surname> <affiliation><address><email>keelize@yahoo.fr</email></address></affiliation> <contrib>Traduction française</contrib></othercredit>'>
+<!ENTITY relecteurClementContet       '<othercredit role="reviewer"> <firstname>Clément</firstname> <surname>Contet</surname> <affiliation><address><email>keelize@yahoo.fr</email></address></affiliation> <contrib>Relecture de la documentation française</contrib></othercredit>'>
+
 <!ENTITY traducteurJoelleCornavin      '<othercredit role="translator"> <firstname>Joëlle</firstname> <surname>Cornavin</surname> <affiliation><address><email>jcornavi@club-internet.fr</email></address></affiliation> <contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurJoelleCornavin       '<othercredit role="reviewer"> <firstname>Joëlle</firstname> <surname>Cornavin</surname> <affiliation><address><email>jcornavi@club-internet.fr</email></address></affiliation> <contrib>Relecture de la documentation française</contrib></othercredit>'>
 
@@ -157,6 +160,7 @@
 <!ENTITY DanielCartron     'Daniel Cartron <email>d.cartron@senat.fr</email>'>
 <!ENTITY GillesCaulier     'Gilles Caulier <email>caulier.gilles@free.fr</email>'>
 <!ENTITY PatrickChavas     'Patrick Chavas <email>pachavas@sun.cpe.fr</email>'>
+<!ENTITY ClementContet     'Clément Contet <email>keelize@yahoo.fr</email>'>
 <!ENTITY JoelleCornavin    'Joëlle Cornavin <email>jcornavi@club-internet.fr</email>'>
 <!ENTITY BenoitCosandier   'Benoit Cosandier <email>cosandier.benoit@bluewin.ch</email>'>
 <!ENTITY ThibautCousin     'Thibaut Cousin <email>cousin@in2p3.fr</email>'>
