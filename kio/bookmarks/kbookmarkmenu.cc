@@ -650,10 +650,11 @@ static QString pickUnusedTitle( KBookmarkGroup parentBookmark,
   return uniqueTitle;
 }
 
-KBookmarkGroup blah( KBookmarkManager *m_pManager, 
+KBookmarkGroup KBookmarkManager::addBookmarkDialog( 
                      const QString & _url, const QString & _title,
                      const QString & _parentBookmarkAddress )
 {
+  KBookmarkManager *m_pManager = this;
   QString url = _url;
   QString title = _title;
   QString parentBookmarkAddress = _parentBookmarkAddress;
@@ -691,7 +692,7 @@ KBookmarkGroup blah( KBookmarkManager *m_pManager,
 void KBookmarkMenu::slotAddBookmark()
 {
   KBookmarkGroup parentBookmark;
-  parentBookmark = blah(m_pManager, m_pOwner->currentURL(), m_pOwner->currentTitle(), m_parentAddress);
+  parentBookmark = m_pManager->addBookmarkDialog(m_pOwner->currentURL(), m_pOwner->currentTitle(), m_parentAddress);
   if (!parentBookmark.isNull())
     m_pManager->emitChanged( parentBookmark );
 }
