@@ -482,10 +482,10 @@ void HTMLRadio::slotClicked()
 
 void HTMLRadio::slotRadioSelected( const char *n, const char *v )
 {
-	if ( strcasecmp( n, elementName() ) != 0 )
+	if ( strcasecmp( n, elementName().data() ) != 0 )
 		return;
 
-	if ( strcasecmp( v, value() ) != 0 )
+	if ( strcasecmp( v, value().data() ) != 0 )
 		((QRadioButton *)widget)->setChecked( false );
 }
 

@@ -51,7 +51,7 @@ static int _getprop(Window w, Atom a, Atom type, long len, unsigned char **p){
   if (status != Success || *p == 0)
     return -1;
   if (n == 0)
-    XFree((void*) *p);
+    XFree((char*) *p);
   /* could check real_type, format, extra here... */
   return n;
 }
@@ -249,7 +249,7 @@ void KWM::enableSessionManagement(Window w){
     pn[i] = a;
     XSetWMProtocols(qt_xdisplay(), w, pn, n+1);
     if (n>0)
-      XFree(p);
+      XFree((char*)p);
     delete[] pn;	
   }
   else
@@ -309,7 +309,7 @@ void KWM::setIcon(Window w, const QPixmap &pm){
   else
     hints->flags &= ~IconMaskHint;
   XSetWMHints( qt_xdisplay(), w, hints );
-  XFree(hints);
+  XFree((char*)hints);
   delete p;
 }
 
@@ -657,7 +657,7 @@ QPixmap KWM::miniIcon(Window w, int width, int height){
       p_mask = hints->icon_mask;
     }
     if (hints)
-      XFree(hints);
+      XFree((char*)hints);
   }
   else {
     p = (Pixmap) tmp[0];
@@ -702,11 +702,11 @@ QPixmap KWM::miniIcon(Window w, int width, int height){
 	(hints->flags & WindowGroupHint)
 	&& hints->window_group != None
 	&& hints->window_group != w){
-      XFree(hints);
+      XFree((char*)hints);
       return miniIcon(hints->window_group, width, height);
     }
     if (hints)
-      XFree(hints);
+      XFree((char*)hints);
     Window trans = None;
     if (XGetTransientForHint(qt_xdisplay(), w, &trans)){
       if (trans != w)
@@ -729,7 +729,7 @@ QPixmap KWM::icon(Window w, int width, int height){
     p_mask = hints->icon_mask;
   }
   if (hints)
-    XFree(hints);
+    XFree((char*)hints);
 
   if (p != None){
     Window root;
@@ -769,11 +769,11 @@ QPixmap KWM::icon(Window w, int width, int height){
 	(hints->flags & WindowGroupHint)
 	&& hints->window_group != None
 	&& hints->window_group != w){
-      XFree(hints);
+      XFree((char*)hints);
       return icon(hints->window_group, width, height);
     }
     if (hints)
-      XFree(hints);
+      XFree((char*)hints);
     Window trans = None;
     if (XGetTransientForHint(qt_xdisplay(), w, &trans)){
       if (trans != w)
@@ -979,7 +979,7 @@ void KWM::close(Window w){
     for (i = 0; i < n; i++){
       if (p[i] == a){
 	sendClientMessage(w, ap, a);
-	XFree(p);
+	XFree((char*)p);
 	return;
       }
     }

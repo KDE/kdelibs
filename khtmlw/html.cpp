@@ -3178,7 +3178,7 @@ void KHTMLWidget::parseM( HTMLClueV *_clue, const char *str )
 		debugM( "Meta: name=%s httpequiv=%s content=%s\n",
                           (const char *)name,(const char *)httpequiv,(const char *)content );
 		if ( !httpequiv.isEmpty() &&
-		    strcasecmp(httpequiv,"content-type") == 0)
+		    strcasecmp(httpequiv.data(),"content-type") == 0)
 		{
 			stringTok->tokenize( content, " >;" );
 			while ( stringTok->hasMoreTokens() )

@@ -72,13 +72,13 @@ KFileInfo::KFileInfo(const char *dir, const char *name)
     myBaseURL = dir;
     struct stat buf;
 
-    if (lstat(dir + myName, &buf) == 0) {
+    if (lstat((dir + myName).data(), &buf) == 0) {
 	myIsDir = (buf.st_mode & S_IFDIR) != 0;
         // check if this is a symlink to a directory
 	if (S_ISLNK(buf.st_mode)) {
 	  myIsSymLink = true;
 	  struct stat st;
-	  if (stat(dir + myName, &st) == 0) 
+	  if (stat((dir + myName).data(), &st) == 0) 
 	      myIsDir = S_ISDIR(st.st_mode) != 0;
 	  else
 	      myName = ""; // indicate, that the link is broken
