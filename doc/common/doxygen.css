@@ -84,12 +84,35 @@ A:hover { text-decoration: none; background-color: #ececec }
 DL.el { margin-left: -1cm }
 DIV.fragment { width: 100%; border: none; background-color: #ffffee; padding: 12px }
 DIV.ah { background-color: navy; font-weight: bold; color: #ffffff; margin-bottom: 3px; margin-top: 3px }
-TD.md { background-color: #ececec; font-weight: bold; }
-TD.mdname1 { background-color: #ececec; font-weight: bold; color: #602020; }
-TD.mdname { background-color: #ececec; font-weight: bold; color: #602020; width: 600px; }
+TABLE.mdTable { background-color: #f8f8f8; border: .2em solid #d7d7d7; }
+TD.mdRow { padding: 8px 20px; }
+TD.md { font-weight: bold; }
+TD.mdname1 { font-weight: bold; color: #602020; }
+TD.mdname { font-weight: bold; color: #602020; width: 600px; }
 DIV.groupHeader { margin-left: 16px; margin-top: 12px; margin-bottom: 6px; font-weight: bold }
 DIV.groupText { margin-left: 16px; font-style: italic; font-size: smaller }
+
 BODY { background: white }
+
+TD.memItemLeft {
+   padding: 1px 0px 0px 8px;
+   margin: 4px;
+   border: solid .1em white;
+   border-right-style: none;
+   border-bottom-style: none;
+   border-left-style: none;
+   background-color: #f8f8f8;
+}
+TD.memItemRight {
+   padding: 1px 0px 0px 8px;
+   margin: 4px;
+   border: solid .1em white;
+   border-right-style: none;
+   border-bottom-style: none;
+   border-left-style: none;
+   background-color: #f8f8f8;
+}
+
 TD.indexkey {
    background-color: #e0eef8;
    font-weight: bold;
@@ -114,13 +137,14 @@ TD.indexvalue {
    margin-top     : 2px;
    margin-bottom  : 2px
 }
-FONT.keyword       { color: #008000 }
-FONT.keywordtype   { color: #604020 }
-FONT.keywordflow   { color: #e08000 }
-FONT.comment       { color: #800000 }
-FONT.preprocessor  { color: #806020 }
-FONT.stringliteral { color: #002080 }
-FONT.charliteral   { color: #008080 }
+
+SPAN.keyword       { color: #008000 }
+SPAN.keywordtype   { color: #604020 }
+SPAN.keywordflow   { color: #e08000 }
+SPAN.comment       { color: #800000 }
+SPAN.preprocessor  { color: #806020 }
+SPAN.stringliteral { color: #002080 }
+SPAN.charliteral   { color: #008080 }
 
 
 
