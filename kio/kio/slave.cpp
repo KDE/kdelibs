@@ -394,7 +394,7 @@ Slave* Slave::createSlave( const QString &protocol, const KURL& url, int& error,
 
        KProcess proc;
 
-       proc << "kioslave" << lib_path << protocol << "" << socketfile.name();
+       proc << locate("exe", "kioslave") << lib_path << protocol << "" << socketfile.name();
        kdDebug(7002) << "kioslave" << ", " << lib_path << ", " << protocol << ", " << QString::null << ", " << socketfile.name() << endl;
 
        proc.start(KProcess::DontCare);
