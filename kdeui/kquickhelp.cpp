@@ -197,7 +197,7 @@ void KQuickHelp::add(QWidget *w, QString s) {
       instance = new KQuickHelp();
       window = new KQuickHelpWindow();
       menu = new QPopupMenu;
-      menu->insertItem(i18n("KQuickHelp"));
+      menu->insertItem(i18n("Quickhelp"));
       connect(menu, SIGNAL(activated(int)),
 	      instance, SLOT(getKQuickHelp(int)));
       connect(window, SIGNAL(hyperlink(QString)),
