@@ -835,7 +835,7 @@ QString HTTPProtocol::davProcessLocks()
           response += " <" + metaData( QString("davLockURL%1").arg(i) ) + ">";
         }
 
-        if ( !bracketsOpen ) 
+        if ( !bracketsOpen )
         {
           response += " (";
           bracketsOpen = true;
@@ -2247,6 +2247,7 @@ bool HTTPProtocol::readHeader()
   }
 
   gets(buffer, sizeof(buffer)-1);
+
   if (m_bEOF)
   {
     kdDebug(7103) << "(" << m_pid << ")" << "HTTPProtocol::readHeader: "
@@ -2263,6 +2264,7 @@ bool HTTPProtocol::readHeader()
         error( ERR_SERVER_TIMEOUT, m_state.hostname );
         return false;
       }
+
       gets(buffer, sizeof(buffer)-1);
     }
 
@@ -2276,9 +2278,9 @@ bool HTTPProtocol::readHeader()
         // by assuming that they will be sending html.
         kdDebug(7103) << "(" << m_pid << ") HTTPPreadHeader: HEAD -> returne mimetype: " << DEFAULT_MIME_TYPE << endl;
         mimeType(QString::fromLatin1(DEFAULT_MIME_TYPE));
-           return true;
+        return true;
       }
-      
+
       kdDebug(7103) << "readHeader(3): Connnection broken ! " << endl;
       error( ERR_CONNECTION_BROKEN, m_state.hostname );
       return false;
@@ -2286,6 +2288,8 @@ bool HTTPProtocol::readHeader()
   }
 
   kdDebug(7103) << "(" << m_pid << ") ============ Received Response:"<< endl;
+
+  bool noHeader = true;
 
   do
   {
@@ -2302,7 +2306,15 @@ bool HTTPProtocol::readHeader()
       continue;
     }
 
+    // We have a response header.  This flag is a work around for
+    // servers that append a "\r\n" before the beginning of the HEADER
+    // response!!!  It only catches x number of \r\n being placed at the
+    // top of the reponse...
+    noHeader = false;
+
     kdDebug(7103) << "(" << m_pid << ") \"" << buffer << "\"" << endl;
+
+
 
     // Save broken servers from damnation!!
     char* buf = buffer;
@@ -2749,7 +2761,8 @@ bool HTTPProtocol::readHeader()
 
     // Clear out our buffer for further use.
     memset(buffer, 0, sizeof(buffer));
-  } while (len && (gets(buffer, sizeof(buffer)-1)));
+
+  } while ((len || noHeader) && (gets(buffer, sizeof(buffer)-1)));
 
 
   // Now process the HTTP/1.1 upgrade
@@ -3511,7 +3524,9 @@ int HTTPProtocol::readChunked()
 
 int HTTPProtocol::readLimited()
 {
-  if (!m_iBytesLeft) return 0;
+  if (!m_iBytesLeft)
+    return 0;
+
   m_bufReceive.resize(4096);
 
   int bytesReceived;
