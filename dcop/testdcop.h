@@ -49,6 +49,7 @@ public:
 
 public slots:
   void slotTimeout();
+  void slotCallBack(int, const QCString&, const QByteArray&);
 private:
 
   QCString m_app;

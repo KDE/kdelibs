@@ -150,13 +150,25 @@ void TestObject::slotTimeout()
 {
    QCString replyType;
    QByteArray data, reply;
-   qWarning("#2 Calling countDown");
+   qWarning("#3 Calling countDown");
 
    if (!kapp->dcopClient()->call(m_app, "object1", "countDown()", data, replyType, reply))
-      qDebug("#2 I couldn't call countDown");
+      qDebug("#3 I couldn't call countDown");
    else
-      qDebug("#2 countDown() return type was '%s'", replyType.data() ); 
+      qDebug("#3 countDown() return type was '%s'", replyType.data() ); 
    
+}
+
+void TestObject::slotCallBack(int callId, const QCString &replyType, const QByteArray &replyData)
+{
+   qWarning("Call Back! callId = %d", callId);
+   qWarning("Type = %s", replyType.data());
+   
+   QDataStream args(replyData, IO_ReadOnly);
+   QString arg1;
+   args >> arg1;
+   
+   qWarning("Value = %s", arg1.latin1());
 }
 
 int main(int argc, char **argv)
@@ -172,10 +184,12 @@ int main(int argc, char **argv)
       QCString app = argv[1];
       TestObject obj(app);
       qWarning("#1 Calling countDown");
-      if (!kapp->dcopClient()->call(app, "object1", "countDown()", data, replyType, reply, true))
-         qDebug("#1 I couldn't call countDown");
-      else
-         qDebug("#1 countDown() return type was '%s'", replyType.data() ); 
+      int result = kapp->dcopClient()->callAsync(app, "object1", "countDown()", data, &obj, SLOT(slotCallBack(int, const QCString&, const QByteArray&)));
+      qDebug("#1 countDown() call id = %d", result);
+      qWarning("#2 Calling countDown");
+      result = kapp->dcopClient()->callAsync(app, "object1", "countDown()", data, &obj, SLOT(slotCallBack(int, const QCString&, const QByteArray&)));
+      qDebug("#2 countDown() call id = %d", result);
+      kapp->exec();
     
       return 0;
   }

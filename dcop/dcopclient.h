@@ -310,6 +310,38 @@ class DCOPClient : public QObject
 	    bool useEventLoop=false);
 
   /**
+   * Performs a asynchronous send with receive callback.
+   *
+   *  The first four parameters are the same as for send.
+   *
+   * @p callBackObj and @p callBackSlot specify a call back
+   * slot that is called when an answer is received.
+   *
+   * The slot should have the following signature:
+   * callBackSlot(int callId, const QCString& replyType,
+   *              const QByteArray &replyData);
+   *
+   *
+   * @param remApp the remote application's id
+   * @param remObj the remote object id
+   * @param remFun the remote function id
+   * @param data the data to send
+   * @param callBackObj object to call back
+   * @param callBackSlot slot to call back
+   * @return 0 on failure, on success a callId > 0 is
+   * returned that will be passed as first argument of
+   * the result call back
+   *
+   * @see send()
+   * @see callback()
+   *
+   * @since 3.2
+   */
+  int callAsync(const QCString &remApp, const QCString &remObj,
+                const QCString &remFun, const QByteArray &data,
+                QObject *callBackObj, const char *callBackSlot);
+
+  /**
    * Searches for an object which matches a criteria.
    *
    * findObject calls @p remFun in the applications and objects identified
@@ -729,6 +761,17 @@ signals:
    */
   void blockUserInput( bool block );
 
+  /**
+   * @internal
+   *
+   * Signal used for callbacks of async calls.
+   * This signal is automatically connected to the call back
+   * slot specified in the async call.
+   * @see callAsync()
+   * @since 3.2
+   */
+  void callBack(int, const QCString&, const QByteArray &);
+
 public slots:
 
 protected slots:
@@ -740,8 +783,15 @@ protected slots:
 
 private slots:
   void processPostedMessagesInternal();
+  void asyncReplyReady();
 
-protected:
+public:
+  class ReplyStruct;
+  
+  /**
+   * @internal
+   **/
+  void handleAsyncReply(ReplyStruct *replyStruct);
 
 private:
 
@@ -753,6 +803,13 @@ private:
 	    const QCString &remFun, const QByteArray &data,
 	    QCString& replyType, QByteArray &replyData,
 	    bool useEventLoop, int timeout, int minor_opcode);
+
+
+  bool callInternal(const QCString &remApp, const QCString &remObjId,
+            const QCString &remFun, const QByteArray &data,
+            ReplyStruct *replyStruct,
+            bool useEventLoop, int timeout, int minor_opcode);
+
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
