@@ -1,6 +1,14 @@
+kdelibs (4:2.2.1-3) unstable; urgency=low
+
+  * Post 2.2.1 quick fixes from upstream
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 23 Sep 2001 18:42:00 -0700
+
 kdelibs (4:2.2.1-2) unstable; urgency=low
 
   * Grrrr build on alpha!
+  * Fix replaces (Closes: #112902)
+  * Fix replacement (Closes: #112901)
 
  -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 19 Sep 2001 16:27:00 -0700
 

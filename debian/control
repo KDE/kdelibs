@@ -9,9 +9,10 @@ Standards-Version: 3.5.5
 Package: kdelibs3
 Architecture: any
 Section: libs
-Replaces: kdelibs2g
+Replaces: kdelibs2g, keystone, kdebase-libs (<< 4:2.2.1-2)
 Depends: ${shlibs:Depends}, python-base, xbase-clients
 Recommends: libarts, libkmid, kdelibs3-cups, aspell | ispell
+Conflicts: keystone
 Suggests: kdelibs3-crypto, anti-aliasing-howto, gdb
 Description: KDE core libraries (runtime files)
  KDE core libraries.
