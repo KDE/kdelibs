@@ -171,8 +171,8 @@ void Scheduler::startStep()
                 newSlave = true;
                 slaveList->append(slave);
                 idleSlaves->append(slave);
-                connect(slave, SIGNAL(slaveDied(KIO::Slave *)),
-			SLOT(slotSlaveDied(KIO::Slave *)));
+                //connect(slave, SIGNAL(slaveDied(KIO::Slave *)),
+		//	SLOT(slotSlaveDied(KIO::Slave *)));
                 connect(slave, SIGNAL(slaveStatus(pid_t,const QCString &,const QString &, bool)),
                         SLOT(slotSlaveStatus(pid_t,const QCString &, const QString &, bool)));
              }
@@ -255,12 +255,15 @@ void Scheduler::_jobFinished(SimpleJob *job, Slave *slave)
     }
 }
 
+/*
+  see Slave::gotInput()
 void Scheduler::slotSlaveDied(KIO::Slave *slave)
 {
     idleSlaves->removeRef(slave);
     slaveList->removeRef(slave);
     delete slave;
 }
+*/
 
 void Scheduler::slotCleanIdleSlaves()
 {

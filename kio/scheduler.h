@@ -44,8 +44,8 @@ namespace KIO {
         void debug_info();
 
     public slots:
-        void slotSlaveDied(KIO::Slave *slave);
-	void slotSlaveStatus(pid_t pid, const QCString &protocol, 
+        //void slotSlaveDied(KIO::Slave *slave);
+	void slotSlaveStatus(pid_t pid, const QCString &protocol,
 	                     const QString &host, bool connected);
 
     protected slots:
@@ -58,7 +58,7 @@ namespace KIO {
     private:
         class ProtocolInfo;
         class ProtocolInfoDict;
-        
+
 	Scheduler(const Scheduler&);
 
 	static Scheduler *self();

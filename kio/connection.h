@@ -86,6 +86,11 @@ namespace KIO {
 
 	void queueOnly(bool queue);
 
+        /**
+         * @internal
+         */
+        static void sigpipe_handler(int);
+
     protected slots:
         void dequeue();
 	

@@ -32,6 +32,7 @@
 #include <qfile.h>
 
 #include <ksock.h>
+#include <kcrash.h>
 
 #include "kio/slavebase.h"
 #include "kio/slaveinterface.h"
@@ -52,6 +53,8 @@ SlaveBase::SlaveBase( const QCString &protocol,
       mPoolSocket( QFile::decodeName(pool_socket)),
       mAppSocket( QFile::decodeName(app_socket))
 {
+    KCrash::setCrashHandler( sigsegv_handler );
+
     appconn = new Connection();
     pendingListEntries.setAutoDelete(true);
     listEntryCurrentSize = 0;

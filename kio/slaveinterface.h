@@ -144,11 +144,11 @@ public:
     void gettingFile( const QString & ) ; // ?
     void connectFinished();
 
+protected:
     /////////////////
     // Dispatching
     ////////////////
 
- protected:
     virtual bool dispatch();
     virtual void dispatch( int _cmd, const QByteArray &data );
     void openPassDlg( const QString& head, const QString& user, const QString& pass );

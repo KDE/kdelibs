@@ -44,7 +44,7 @@ namespace KIO {
 	Q_OBJECT
 	
     public:
-	Slave(KServerSocket *unixdomain, 
+	Slave(KServerSocket *unixdomain,
 	      const QString &protocol, const QString &socketname);
 
 	void setPID(pid_t);
@@ -131,8 +131,9 @@ namespace KIO {
         void accept(KSocket *socket);
 	void gotInput();
 	void gotAnswer();
-    signals:
-        void slaveDied(KIO::Slave *slave);
+        //signals:
+        //Not needed anymore
+        //void slaveDied(KIO::Slave *slave);
 	
     private:
         QString m_protocol;

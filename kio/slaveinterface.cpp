@@ -164,7 +164,7 @@ void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
     default:
 	assert( 0 );
     }
-};
+}
 
 void SlaveInterface::openPassDlg( const QString& head, const QString& user, const QString& pass )
 {

@@ -102,7 +102,9 @@ void Slave::gotInput()
         if (!m_host.isEmpty())
             arg += "://"+m_host;
         emit error(ERR_SLAVE_DIED, arg);
-        emit slaveDied(this);
+        // no need for this, error terminates the job and that in turns
+        // tells the scheduler about the slave to delete
+        // emit slaveDied(this);
     }
 }
 
