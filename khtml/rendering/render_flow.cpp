@@ -702,9 +702,9 @@ void RenderFlow::calcMinMaxWidth()
 	    }
 	    else
 	    {
-		inlineMin = inlineMax = 0;
 		if(m_minWidth < inlineMin) m_minWidth = inlineMin;
 		if(m_maxWidth < inlineMax) m_maxWidth = inlineMax;
+		inlineMin = inlineMax = 0;
 	    }
 	    child = child->nextSibling();
 	}
