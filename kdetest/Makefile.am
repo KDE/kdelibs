@@ -45,13 +45,13 @@ check_PROGRAMS = kconfigtest kledlamptest kprogresstest \
 		kprocesstest kpannertest kbuttonboxtest ksimpleconfigtest \
 		kcharsetstest kledtest kcontainertest klocaletest krulertest \
 		knotebooktest kwizardtest kquickhelptest kurltest kformulatest \
-		kcharselecttest
+		kcharselecttest kstddirstest
 
 noinst_HEADERS = kdatepicktestdlg.h kmsgboxtest.h ktreelisttest.h \
 		ktabctltest.h kiconloadertestmain.h	\
 		kwindowtest.h klinetest.h kstatusbartest.h kspinboxtest.h \
 		kprocesstest.h kcharsetstest.h kledtest.h kcontainertest.h \
-		klocaletest.h krulertest.h kconfigtest.h kpannertest.h
+		klocaletest.h krulertest.h kconfigtest.h kpannertest.h 
 
 METASOURCES = kcharsetstest.moc kconfigtest.moc \
 	kcontainertest.moc kdatepicktestdlg.moc \
@@ -92,3 +92,4 @@ kurltest_SOURCES = kurltest.cpp
 kwindowtest_SOURCES = kwindowtest.cpp
 kwizardtest_SOURCES = kwizardtest.cpp
 kcharselecttest_SOURCES = kcharselecttest.cpp
+kstddirstest_SOURCES = kstddirstest.cpp
