@@ -179,6 +179,11 @@ void KStyle::drawKStylePrimitive( KStylePrimitive kpe,
 			bool horizontal = flags & Style_Horizontal;
 			int x,y,w,h,x2,y2;
 
+			if ((wid->width() <= 2) || (wid->height() <= 2)) {
+				p->fillRect(r, cg.highlight());
+				return;
+			}
+
 			r.rect( &x, &y, &w, &h );
 			x2 = x + w - 1;
 			y2 = y + h - 1;
@@ -196,13 +201,13 @@ void KStyle::drawKStylePrimitive( KStylePrimitive kpe,
 			else
 				pix.resize( w-2, h-2 );
 
-			pix.fill(cg.highlight());
+			QString title = wid->parentWidget()->caption();
 			QPainter p2;
 			p2.begin(&pix);
-			p2.setPen(cg.background());	// ### debug
+			p2.fillRect(pix.rect(), cg.brush(QColorGroup::Highlight));
+			p2.setPen(cg.highlightedText());
 			p2.setFont(fnt);
-			p2.drawText(pix.rect(), AlignCenter,
-						wid->caption());
+			p2.drawText(pix.rect(), AlignCenter, title);
 			p2.end();
 
 			// Draw a sunken bevel
@@ -223,7 +228,7 @@ void KStyle::drawKStylePrimitive( KStylePrimitive kpe,
 
 			break;
 		}
-			
+
 		// Reimplement the other primitives in your styles.
 		// The current implementation just paints something visibly different.
 		case KPE_ToolBarHandle:
@@ -256,26 +261,23 @@ void KStyle::drawPrimitive( PrimitiveElement pe,
 	if (pe == PE_DockWindowHandle) 
 	{
 		// Wild workarounds are here. Beware.
-		QWidget* widget;
-		
-		if (p->device()->devType() == QInternal::Widget) {
+		QWidget *widget, *parent;
+
+		if (p && p->device()->devType() == QInternal::Widget) {
 			widget = dynamic_cast<QWidget*>(p->device());
-			if (!widget) 
-				return;
+			parent = widget->parentWidget();
 		} else
 			return;		// Don't paint on non-widgets
 
 		// Check if we are a normal toolbar or a hidden dockwidget.
-		if ( widget->parent() &&
-		    (widget->parent()->inherits("QToolBar") ||		// Normal toolbar
-			(widget->parent()->inherits("QMainWindow")) ))	// Collapsed dock
+		if ( parent &&
+			(parent->inherits("QToolBar") ||		// Normal toolbar
+			(parent->inherits("QMainWindow")) ))	// Collapsed dock
 
 			// Draw a toolbar handle
 			drawKStylePrimitive( KPE_ToolBarHandle, p, widget, r, cg, flags, opt );
 
-		else if ( widget->inherits("QDockWindowHandle") &&
-				 widget->width()  > 2 &&
-				 widget->height() > 2 )
+		else if ( widget->inherits("QDockWindowHandle") )
 
 			// Draw a dock window handle
 			drawKStylePrimitive( KPE_DockWindowHandle, p, widget, r, cg, flags, opt );
