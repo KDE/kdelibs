@@ -89,18 +89,21 @@ class KGlobalAccel : public QObject
 	/** Enable or disable the action named by @p sAction. */
 	bool setEnabled( const QString& sAction, bool bEnabled );
 
+	const QString& configGroup() const;
+	void setConfigGroup( const QString& );
+
 	/**
 	 * Read all shortcuts from @p pConfig, or (if @p pConfig
 	 * is zero) from the application's configuration file
 	 * @ref KGlobal::config().
 	 */
-	void readSettings( KConfigBase* pConfig = 0 );
+	bool readSettings( KConfigBase* pConfig = 0 );
 	/**
 	 * Write the current shortcuts to @p pConfig,
 	 * or (if @p pConfig is zero) to the application's
 	 * configuration file.
 	 */
-	void writeSettings( KConfigBase* pConfig = 0 ) const;
+	bool writeSettings( KConfigBase* pConfig = 0 ) const;
 
 	/** @internal -- this a wrapper function to
 	 * KAccelActions::useFourModifierKeys(). */

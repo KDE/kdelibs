@@ -68,10 +68,16 @@ bool KGlobalAccel::setShortcut( const QString& sAction, const KShortcut& cut )
 bool KGlobalAccel::setSlot( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot )
 	{ return d->setActionSlot( sAction, pObjSlot, psMethodSlot ); }
 
-void KGlobalAccel::readSettings( KConfigBase* pConfig )
-	{ d->readSettings( pConfig ); }
-void KGlobalAccel::writeSettings( KConfigBase* pConfig ) const
-	{ d->writeSettings( pConfig ); }
+const QString& KGlobalAccel::configGroup() const
+	{ return d->configGroup(); }
+// for kdemultimedia/kmix
+void KGlobalAccel::setConfigGroup( const QString& s )
+	{ d->setConfigGroup( s ); }
+
+bool KGlobalAccel::readSettings( KConfigBase* pConfig )
+	{ d->readSettings( pConfig ); return true; }
+bool KGlobalAccel::writeSettings( KConfigBase* pConfig ) const
+	{ d->writeSettings( pConfig ); return true; }
 
 bool KGlobalAccel::useFourModifierKeys()
 	{ return KAccelAction::useFourModifierKeys(); }
