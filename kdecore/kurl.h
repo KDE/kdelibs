@@ -349,6 +349,16 @@ public:
   void addPath( const QString& _txt );
 
   /**
+   * Returns the value of a certain query item.
+   *
+   * @param _item Item whose value we want
+   *
+   * @return the value of the given query item name or QString::null if the
+   * specified item does not exist.
+   */
+  QString queryItem( const QString& _item ) const;
+
+  /**
    * In comparison to @ref addPath() this function does not assume that the current path
    * is a directory. This is only assumed if the current path ends with '/'.
    *

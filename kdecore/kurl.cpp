@@ -1660,3 +1660,30 @@ bool urlcmp( const QString& _url1, const QString& _url2, bool _ignore_trailing, 
 
   return true;
 }
+
+QString KURL::queryItem( const QString& _item ) const
+{
+  if ( m_strQuery_encoded.length() <= 1 )
+    return QString::null;
+
+  QStringList items = QStringList::split( '&', m_strQuery_encoded );
+  int _len = _item.length();
+  QString item;
+  for ( QStringList::ConstIterator it = items.begin(); it != items.end(); ++it )
+  {
+    item = (*it);
+    if ( item.startsWith( _item ) ) 
+    {
+      int len = item.length();
+      if ( len > _len && item.at( _len ) == '=' )
+      {
+        if ( len > ++_len )
+          return item.mid( _len );
+        else // empty value
+          return QString::fromLatin1("");
+      }
+    }
+  }
+
+  return QString::null;
+}

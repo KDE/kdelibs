@@ -441,6 +441,13 @@ int main(int argc, char *argv[])
   check("setEncodedPathAndQuery test#1", tobi1.query(), "?another&query");
   check("setEncodedPathAndQuery test#2", tobi1.path(), "another/path");
 
+  KURL theKow = "http://www.google.de/search?q=frerich&hlx=xx&hl=de&empty=&lr=lang_de";
+  check("queryItem (first item)", theKow.queryItem("q"), "frerich");
+  check("queryItem (middle item)", theKow.queryItem("hl"), "de");
+  check("queryItem (last item)", theKow.queryItem("lr"), "lang_de");
+  check("queryItem (invalid item)", theKow.queryItem("InterstellarCounselor"), QString::null);
+  check("queryItem (empty item)", theKow.queryItem("empty"), "");
+
   printf("\nTest OK !\n");
 }
 
