@@ -7,15 +7,15 @@
 <!-- Title information -->
 
 <title>The KSpell Handbook
-<author>David Sweet, <tt/mailto:dsweet@chaos.umd.edu/
-<date>Last updated 6 May 1999
+<author>David Sweet, <tt>&lt;dsweet@chaos.umd.edu&gt;</tt>
+<date>Last updated 5 Oct 1999
 <abstract>
-KSpell is the spelling checker used in KMail, KEdit, KWrite, and KRN. It is a
-GUI frontend to International ISpell. (If you do not have Ispell installed you
-can obtain it in RPM format from the <htmlurl url="http://ftp.redhat.com"
-name="Red Hat FTP site">, or in source form from
-the <htmlurl url="http://fmg-www.cs.ucla.edu/geoff/ispell.html"
-name="International ISpell home page">.)
+KSpell is the spelling checker used by KDE applications such as KEdit,
+KMail, KRN, and KWord. It is a GUI frontend to International ISpell
+and ASpell. (If you do not have Ispell installed you can obtain it
+from the <htmlurl url="http://fmg-www.cs.ucla.edu/geoff/ispell.html"
+name="International ISpell home page">.  ASpell is available from the
+<htmlurl url="http://metalab.unc.edu/kevina/aspell/" name="ASpell home page">.)
 
 <!-- Table of contents -->
 
@@ -57,17 +57,37 @@ Clicking on <bf/Add/ will add the misspelled word to your personal dictionary
 will not be seen by other users).
 
 <sect>Configuration Dialog 
+
+<sect1>Dictionaries
 <p>
 You can choose the dictionary to use for spell checking from the list of
 installed dictionaries.
 
-If you choose <em/Latin1/ as your <em/Encoding,/ then accented (or otherwise
-decorated characters) are recognized by KSpell. If you choose
-<em>7-Bit/ASCII</em>, then it is assumed that decorated characters were entered
-into your document as two-character combinations. For example (in Spanish), in
-the word "espa'nol", the "'n" character combination is treated as an "n" with a
-tilde over it.
+<sect1>Encodings
+<p>
+The available character encodings are:
+<descrip>
+<tag>7-Bit/ASCII</tag> This is the character set used for English text.
+<tag/Latin1/ This is used for Western European languages.
+<tag/Latin2/ This is user for Eastern European languages.
+</descrip>
 
+You should select the one that matches the character set you are using.
+In some cases, dictionaries will support more than one encoding.  A
+dictionary might, for example, accept accented characters when <em/Latin1/ is
+selected, but accept email-style character combinations (like <em/'a/ for an
+accented <em/a/) when <em>7-Bit/ASCII</em> is selected.  Please see
+your dictionary's disctribution for more information.
+
+<sect1>Spell-checking client
+<p>
+You may choose to use <em/Ispell/ or <em/Aspell/ as the spell-checking
+backend for <em/KSpell/.  <em/Ispell/ is more widely available and may
+have better international support, but <em/Aspell/ is gaining
+popularity as it claims to give better suggestions for word replacements.
+
+<sect1>Other
+<p>
 It is recommend that you do not change the first two options unless you have
 read the Interational ISpell man page.
 
@@ -78,6 +98,6 @@ url="http://www.chaos.umd.edu/~dsweet/KDE/KSpell" name="KSpell Home Page">. In
 particular, you will find information about programmng the KSpell C++ class.
 
 You mail email the author/maintainer with questions and/or comments at
-<htmlurl url="mailto:dsweet@chaos.umd.edu" name="dsweet@chaos.umd.edu">.
+<htmlurl url="mailto:dsweet@kde.org" name="dsweet@kde.org">.
 
 </article>
