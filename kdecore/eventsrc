@@ -44,7 +44,7 @@ Comment[sl]=Sistemska obvestila KDE
 Comment[tr]=KDE Sistem Bildirimleri
 
 [Textcompletion: rotation]
-Name=KCompletion End of Matches
+Name=Textcompletion: rotation
 Name[ca]=Final de coincidències KCompletion
 Name[cs]=Kcompletion konec odpovídajících položek
 Name[da]=Kkomplettering slut på tilpasninger
@@ -96,10 +96,10 @@ Comment[sl]=Dosegli smo konec seznama zadetkov.
 Comment[ta]=ெபாரு஡ஂதஙஂகளஂ படஂடியிலினஂ இறுதிைய அைடநஂதாயிறஂறு.
 Comment[tr]=Eşleşme listesinin sonuna gelindi.
 Comment[uk]=Кінець списку відповідних елементів.
-default_presentation=0
+default_presentation=1
 
 [Textcompletion: no match]
-Name=KCompletion No Match
+Name=Textcompletion: no match
 Name[ca]=Cap coincidència KCompletion
 Name[cs]=Kcompletion nenalezeny odpovídající položky
 Name[da]=Kkomplettering ingen tilpasning
@@ -125,7 +125,7 @@ Name[sr]=KCompletion nema poklapanja
 Name[ta]=KCompletion ெபாரு஡ஂதமஂ இலஂைல
 Name[tr]=KCompletion Eşleşme Yok
 Name[uk]=KCompletion відповідних значень не знайдено
-Comment=No matching completion found.
+Comment=No matching completion was found.
 Comment[ca]=No s'ha trobat cap coincidència completable.
 Comment[cs]=Nenalezena vhodná doplnění.
 Comment[da]=Ingen passende komplettering fundet.
@@ -151,10 +151,10 @@ Comment[sl]=Nismo našli ujemajočih se zadetkov.
 Comment[ta]=ெபாரு஡ஂதமான எசஂசமஂ இலஂைல.
 Comment[tr]=Eşleşen tamamlama bulunamadı.
 Comment[uk]=Відповідні елементи не знайдено.
-default_presentation=0
+default_presentation=1
 
 [Textcompletion: partial match]
-Name=KCompletion Partial Match
+Name=Textcompletion: partial match
 Name[ca]=Coincidència parcial KCompletion
 Name[cs]=Kcompletion částečná schoda položek
 Name[da]=Kcompletion delvis tilpasning
@@ -206,7 +206,7 @@ Comment[sl]=Obstaja več kot en mogoč zadetek.
 Comment[ta]=ஒனஂறுகஂகு ேமறஂபடஂட ெபாரு஡ஂதமஂ உளஂளது.
 Comment[tr]=Birden fazla muhtemel eşleşme var.
 Comment[uk]=Більше одного відповідного значення.
-default_presentation=0
+default_presentation=1
 
 [cannotopenfile]
 Name=Cannot Open File
