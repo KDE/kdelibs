@@ -58,6 +58,8 @@ KStreamSocket::KStreamSocket(const QString& node, const QString& service,
   peerResolver().setFamily(KResolver::KnownFamily);
   localResolver().setFamily(KResolver::KnownFamily);
 
+  setSocketOptions(socketOptions() & ~Blocking);
+
   QObject::connect(&d->timer, SIGNAL(timeout()), this, SLOT(timeoutSlot()));
 }
 
