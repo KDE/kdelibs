@@ -26,17 +26,17 @@ kconfigbackend.cpp	Waldo Bastian <bastian@kde.org>
 kconfigbase.cpp		Waldo Bastian <bastian@kde.org>
 kcrash.cpp		Waldo Bastian <bastian@kde.org>
 kdcoppropertyproxy.cpp
-kdebug.cpp
+kdebug.cpp		Stephan Kulow <coolo@kde.org>
 kdesktopfile.cpp
 kextsock.cpp
-kglobal.cpp
+kglobal.cpp		Stephan Kulow <coolo@kde.org>
 kglobalaccel.cpp	Ellis Whitehead <ellis@kde.org>
 kglobalaccel_x11.cpp	Ellis Whitehead <ellis@kde.org>
 kglobalsettings.cpp	David Faure <faure@kde.org>
 kiconeffect.cpp
 kiconloader.cpp
 kicontheme.cpp
-kinstance.cpp
+kinstance.cpp 		Stephan Kulow <coolo@kde.org>
 kipc.cpp
 kkey_x11.cpp		Ellis Whitehead <ellis@kde.org>
 kkeynative_x11.cpp	Ellis Whitehead <ellis@kde.org>
@@ -65,7 +65,7 @@ ksockaddr.cpp
 ksocks.cpp
 kstandarddirs.cpp	Waldo Bastian <bastian@kde.org>
 kstartupinfo.cpp	Lubos Lunak <l.lunak@kde.org>
-kstaticdeleter.cpp
+kstaticdeleter.cpp	Stephan Kulow <coolo@kde.org>
 kstdaccel.cpp		Ellis Whitehead <ellis@kde.org>
 kstringhandler.cpp
 ksycoca.cpp		Waldo Bastian <bastian@kde.org>
