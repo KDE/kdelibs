@@ -29,6 +29,7 @@ namespace KJS {
 	      Number,
 	      String,
 	      Object,
+	      Host,
 	      Reference,
 	      List,
               Completion,

@@ -34,7 +34,7 @@ noinst_HEADERS = global.h object.h nodes.h operations.h lexer.h \
 	kjsstring.h grammar.h object_object.h function_object.h \
 	bool_object.h math_object.h html_object.h array_object.h
 
-libkjs_la_LDFLAGS = -version-info 1:0 -dlopen kjs_html.la
+libkjs_la_LDFLAGS = -version-info 1:0
 libkjs_la_LIBADD = $(top_builddir)/libltdl/libltdlc.la -lm
 
 parser: $(srcdir)/grammar.y
@@ -52,6 +52,6 @@ kjs_html_la_LIBADD = $(LIB_KDECORE)
 
 ## test program
 check_PROGRAMS = testkjs
-testkjs_SOURCES = testkjs.cpp
-testkjs_LDADD = libkjs.la
+testkjs_SOURCES = testkjs.cpp $(libkjs_la_SOURCES)
+testkjs_LDADD = $(top_builddir)/libltdl/libltdlc.la -lm
 

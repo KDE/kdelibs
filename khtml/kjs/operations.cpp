@@ -32,7 +32,7 @@ using namespace KJS;
 // ECMA 9.1
 KJSO *KJS::toPrimitive(KJSO *obj, Type preferred)
 {
-  if (!obj->isA(Object)) {
+  if (!obj->isObject()) {
     return obj->ref();
   }
 
@@ -189,8 +189,15 @@ KJSO *KJS::toString(KJSO *obj)
     case String:
       return obj->ref();
     case Object:
-      tmp = toPrimitive(obj, String);
-      res = toString(tmp);
+    case Host:
+      if (obj->hasProperty("toString")) {
+	tmp = obj->get("toString");
+	// TODO: check for implementsCall() ?
+	res = tmp->executeCall(obj, 0L);
+      } else {
+	tmp = toPrimitive(obj, String);
+	res = toString(tmp);
+      }
       return res->ref();
     default:
       assert(!"toString: unhandled switch case");
@@ -222,6 +229,7 @@ KJSO *KJS::toObject(KJSO *obj)
       o = new KJSString(obj->sVal().ascii());
       break;
     case Object:
+    case Host:
     case DeclaredFunction:
     case InternalFunction:
     case AnonymousFunction:

@@ -21,6 +21,8 @@
 
 #include "khtml.h"
 #include "html_document.h"
+#include "html_element.h"
+#include "html_misc.h"
 #include "dom_string.h"
 
 #include "kjs.h"
@@ -54,34 +56,7 @@ DOM::DOMString UString::string() const
   return DOM::DOMString((QChar*) s, l);
 }
 
-HTMLDocument::HTMLDocument(KHTMLWidget *w, int id)
-  : htmlw(w)
-{
-  const int attr = DontEnum | DontDelete | ReadOnly;
-
-  if (!htmlw)
-    return;
-
-  switch (id) {
-  case IDDocument:
-    put("URL", new HTMLDocument(htmlw, IDURL), attr, true);
-    put("title", new HTMLDocument(htmlw, IDTitle), attr, true);
-    put("domain", new HTMLDocument(htmlw, IDDomain), attr, true);
-    put("write", new HTMLDocFunction(htmlw, IDDocWrite), attr, true);
-    break;
-  case IDURL:
-    put("toString", new HTMLDocFunction(htmlw, IDURL2S), attr, true);
-    break;
-  case IDTitle:
-    put("toString", new HTMLDocFunction(htmlw, IDTitle2S), attr, true);
-    break;
-  case IDDomain:
-    put("toString", new HTMLDocFunction(htmlw, IDDomain2S), attr, true);
-    break;
-  }
-}
-
-KJSO *HTMLDocFunction::execute(KJSContext *context)
+KJSO *KJS::HTMLDocFunction::execute(KJSContext *context)
 {
   KJSO *result;
   Ptr v, n;
@@ -94,18 +69,55 @@ KJSO *HTMLDocFunction::execute(KJSContext *context)
     doc.write(n->sVal().string());
     result = new KJSUndefined();
     break;
-  case IDURL2S:
-    result = new KJSString(doc.URL());
-    break;
-  case IDTitle2S:
-    result = new KJSString(doc.title());
-    break;
-  case IDDomain2S:
-    result = new KJSString(doc.domain());
-    break;
   default:
     assert((result = 0L));
   }
 
   return new KJSCompletion(Normal, result);
+}
+
+KJSO *KJS::HTMLDocument::get(const CString &p) const
+{
+  DOM::HTMLDocument doc = htmlw->htmlDocument();
+  KJSO *result;
+
+  if (p == "title")
+    result = new KJSString(doc.title());
+  else if (p == "domain")
+    result = new KJSString(doc.domain());
+  else if (p == "URL")
+    result = new KJSString(doc.URL());
+  else if (p == "body")
+    result = new HTMLElement(doc.body());
+  else if (p == "images")
+    result = new HTMLCollection(doc.images());
+  else if (p == "links")
+    result = new HTMLCollection(doc.links());
+  else if (p == "write")
+    result = new HTMLDocFunction(htmlw, IDDocWrite);
+  else {
+    fprintf(stderr, "Doc::get('%s') [undefined]\n", p.ascii());
+    result = new KJSUndefined();
+  }
+
+  return result;
+}
+
+KJSO *KJS::HTMLElement::get(const CString &p) const
+{
+  if (p == "valueOf")
+    return new KJSUndefined();
+
+  return new KJSUndefined();
+}
+
+KJSO *KJS::HTMLCollection::get(const CString &p) const
+{
+  if (p == "valueOf")
+    return new KJSUndefined();
+
+  if (p == "length")
+    return new KJSNumber(collection.length());
+
+  return new KJSUndefined();
 }

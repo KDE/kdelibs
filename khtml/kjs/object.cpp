@@ -71,6 +71,7 @@ const char *typeName[] = {
   "Number",
   "String",
   "Object",
+  "Host",
   "Reference",
   "List",
   "Completion",
@@ -561,4 +562,9 @@ int KJSList::size() const
     s++;
 
   return s;
+}
+
+KJSO *HostObject::get(const CString &p) const
+{
+  return new KJSUndefined();
 }

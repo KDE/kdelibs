@@ -24,18 +24,12 @@
 #include "object.h"
 
 class KHTMLWidget;
+class HTMLElement;
+class HTMLCollection;
 
 namespace KJS {
 
-  enum { IDDocument, IDURL, IDURL2S, IDTitle, IDTitle2S, IDDocWrite,
-	 IDDomain, IDDomain2S };
-
-  class HTMLDocument : public KJSObject {
-  public:
-    HTMLDocument(KHTMLWidget *w, int type = IDDocument);
-  private:
-    KHTMLWidget *htmlw;
-  };
+  enum { IDDocWrite };
 
   class HTMLDocFunction : public KJSInternalFunction {
   public:
@@ -44,6 +38,30 @@ namespace KJS {
   private:
     KHTMLWidget *htmlw;
     int id;
+  };
+
+  class HTMLDocument : public HostObject {
+  public:
+    HTMLDocument(KHTMLWidget *w) : htmlw(w) { }
+    virtual KJSO *get(const CString &p) const;
+  private:
+    KHTMLWidget *htmlw;
+  };
+
+  class HTMLElement : public HostObject {
+  public:
+    HTMLElement(DOM::HTMLElement e) : element(e) { }
+    virtual KJSO *get(const CString &p) const;
+  private:
+    DOM::HTMLElement element;
+  };
+
+  class HTMLCollection : public HostObject {
+  public:
+    HTMLCollection(DOM::HTMLCollection c) : collection(c) { }
+    virtual KJSO *get(const CString &p) const;
+  private:
+    DOM::HTMLCollection collection;
   };
 
 }; // namespace

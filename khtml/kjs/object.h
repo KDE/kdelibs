@@ -68,7 +68,7 @@ public:
   // Properties
   void setPrototype(KJSPrototype *p);
   KJSPrototype *prototype() const { return proto; }
-  KJSO *get(const CString &p) const;
+  virtual KJSO *get(const CString &p) const;
   bool hasProperty(const CString &p, bool recursive = true) const;
   void put(const CString &p, KJSO *v, int attr = None, bool z = false);
   void put(const CString &p, double d, int attr = None);
@@ -234,6 +234,7 @@ public:
   KJSNumber(int i) { val.d = static_cast<double>(i); }
   KJSNumber(unsigned int u) { val.d = static_cast<double>(u); }
   KJSNumber(double d) { val.d = d; }
+  KJSNumber(long unsigned int l) { val.d = static_cast<double>(l); }
   Type type() const { return Number; }
 };
 
@@ -396,6 +397,13 @@ private:
   int line;
 };
 
+  class HostObject : public KJSO {
+  public:
+    Type type() const { return Host; }
+    virtual KJSO *get(const CString &p) const;
+  };
+
 };
+
 
 #endif
