@@ -202,15 +202,24 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay)
     {
         // Choose the right list
         KSortableValueList<SPtr,QCString> & list = (*it)->isType(KST_KServiceGroup) ? glist : slist;
-        QCString key( (*it)->name().length() * 4 );
-        if( strxfrm( key.data(), (*it)->name().local8Bit().data(), key.size()) >= key.size())
-        { // didn't fit?
-            unsigned int ln = 0;
-            do
-            {
-                key.resize( key.size() * 2 );
-                ln = strxfrm( key.data(), (*it)->name().local8Bit().data(), key.size());
-            } while ( ln >= key.size());
+        QCString key( (*it)->name().length() * 4 + 1 );
+        // strxfrm() crashes on Solaris 
+#ifndef USE_SOLARIS
+        // maybe it'd be better to use wcsxfrm() where available
+        size_t ln = strxfrm( key.data(), (*it)->name().local8Bit().data(), key.size());
+        if( ln != size_t( -1 ))
+        {
+            if( ln >= key.size())
+            { // didn't fit?
+                key.resize( ln + 1 );
+                if( strxfrm( key.data(), (*it)->name().local8Bit().data(), key.size()) == size_t( -1 ))
+                    key = (*it)->name().local8Bit();
+            }
+        }
+        else
+#endif
+        {
+            key = (*it)->name().local8Bit();
         }
         list.insert(key,SPtr(*it));
     }
