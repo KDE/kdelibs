@@ -134,7 +134,6 @@ KSSLCertificateCache::KSSLCertificateCache() {
 }
 
 KSSLCertificateCache::~KSSLCertificateCache() {
-  saveToDisk();
   clearList();
 
   delete d->cfg;
