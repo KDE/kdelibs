@@ -39,7 +39,7 @@ include_HEADERS = kprogress.h kcolordlg.h kcolordialog.h kselect.h \
 		ksystemtray.h kdockwindow.h kbuttonbox.h \
 		keditcl.h kled.h keditlistbox.h \
 		kwizard.h kkeydialog.h \
-		kurllabel.h kruler.h kcursor.h kaccelmenu.h \
+		kurllabel.h kruler.h kcursor.h \
 		klineeditdlg.h \
 		kcharselect.h kcolordrag.h qxembed.h \
 		knumvalidator.h kdialog.h kdialogbase.h \
@@ -77,7 +77,7 @@ libkdeui_la_SOURCES = \
 		kbuttonbox.cpp keditcl1.cpp keditcl2.cpp \
 		kled.cpp kwizard.cpp \
 		kkeydialog.cpp kkeybutton.cpp kruler.cpp kcursor.cpp \
-		kaccelmenu.cpp klineeditdlg.cpp  \
+		klineeditdlg.cpp  \
 		kcharselect.cpp kcolordrag.cpp  \
 		knumvalidator.cpp kdialog.cpp kdialogbase.cpp \
 		kjanuswidget.cpp kaboutdialog.cpp \
