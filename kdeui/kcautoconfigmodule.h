@@ -45,7 +45,7 @@ class KConfig;
  * \endcode
  *
  *
- * @author Olivier Goffart <ogoffart@tisclinet.be>
+ * @author Olivier Goffart <ogoffart(@)tisclinet.be>
  * @since 3.2
  */
 class KCAutoConfigModule : public KCModule
@@ -122,8 +122,11 @@ class KCAutoConfigModule : public KCModule
 		virtual void defaults();
 
 
-	private slots:
-		void slotWidgetModified();
+	protected slots:
+		/**
+		 * Some setting was modified, updates buttons
+		 */
+		virtual void slotWidgetModified();
 
 	private:
 		class KCAutoConfigModulePrivate;
