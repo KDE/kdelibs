@@ -720,7 +720,8 @@ bool KFileItem::cmp( const KFileItem & item )
              && m_group == item.m_group
              && m_bLink == item.m_bLink
              && size() == item.size()
-             && time(KIO::UDS_MODIFICATION_TIME) == item.time(KIO::UDS_MODIFICATION_TIME) );
+             && time(KIO::UDS_MODIFICATION_TIME) == item.time(KIO::UDS_MODIFICATION_TIME)
+             && mimetype() == item.mimetype() );
 }
 
 void KFileItem::assign( const KFileItem & item )
