@@ -73,7 +73,6 @@ static int dynamicState;
 static RenderStyle::PseudoId dynamicPseudo;
 static int usedDynamicStates;
 static int selectorDynamicState;
-static bool lastSelectorPart;
 static CSSStyleSelector::Encodedurl *encodedurl;
 
 
@@ -95,8 +94,8 @@ CSSStyleSelector::CSSStyleSelector(DocumentImpl * doc)
 
     buildLists();
 
-    kdDebug( 6080 ) << "number of style sheets in document " << authorStyleSheets.count() << endl;
-     kdDebug( 6080 ) << "CSSStyleSelector: author style has " << authorStyle->count() << " elements"<< endl;
+    //kdDebug( 6080 ) << "number of style sheets in document " << authorStyleSheets.count() << endl;
+    //kdDebug( 6080 ) << "CSSStyleSelector: author style has " << authorStyle->count() << " elements"<< endl;
 //     if ( userStyle )
 //     kdDebug() << "CSSStyleSelector: user style has " << userStyle->count() << " elements"<< endl;
 
@@ -231,9 +230,9 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
 	    selectorCache[i].state = Invalid;
 
     }
-//     qDebug( "styleForElement( %s )", e->tagName().string().latin1() );
-//     qDebug( "%d selectors, %d checked,  %d match,  %d properties ( of %d )",
-//             selectors_size, schecked, smatch, propsToApply->count(), properties_size );
+    //qDebug( "styleForElement( %s )", e->tagName().string().latin1() );
+    //qDebug( "%d selectors, %d checked,  %d match,  %d properties ( of %d )",
+    //selectors_size, schecked, smatch, propsToApply->count(), properties_size );
 
     // inline style declarations, after all others. non css hints
     // count as author rules, and come before all other style sheets, see hack in append()
@@ -261,6 +260,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
     }
 
     if ( pseudoProps->count() != 0 ) {
+	//qDebug("%d applying %d pseudo props", e->id(), pseudoProps->count() );
 	CSSOrderedProperty *ordprop = pseudoProps->first();
 	while( ordprop ) {
 	    RenderStyle *pseudoStyle;
@@ -337,7 +337,6 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
 {
     dynamicPseudo = RenderStyle::NOPSEUDO;
     selectorDynamicState = StyleSelector::None;
-    lastSelectorPart = true;
     NodeImpl *n = e;
 
     selectorCache[ selIndex ].state = Invalid;
@@ -389,8 +388,9 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
 	    ElementImpl *elem = static_cast<ElementImpl *>(n);
 	    // a selector is invalid if something follows :first-xxx
 	    if ( dynamicPseudo == RenderStyle::FIRST_LINE ||
-		 dynamicPseudo == RenderStyle::FIRST_LETTER )
+		 dynamicPseudo == RenderStyle::FIRST_LETTER ) {
 		return;
+	    }
 	    if(!checkOneSelector(sel, elem)) return;
 	    //kdDebug() << "CSSOrderedRule::checkSelector: passed" << endl;
 	    break;
@@ -401,9 +401,10 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
     usedDynamicStates |= selectorDynamicState;
     if ((selectorDynamicState & dynamicState) != selectorDynamicState)
 	return;
-    if ( dynamicPseudo != RenderStyle::NOPSEUDO )
+    if ( dynamicPseudo != RenderStyle::NOPSEUDO ) {
 	selectorCache[selIndex].state = AppliesPseudo;
-    else
+	selectors[ selIndex ]->pseudoId = dynamicPseudo;
+    } else
 	selectorCache[ selIndex ].state = Applies;
     //qDebug( "selector %d applies", selIndex );
     //selectors[ selIndex ]->print();
@@ -460,8 +461,6 @@ static void checkPseudoState( DOM::ElementImpl *e )
 
 bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e)
 {
-    bool last = lastSelectorPart;
-    lastSelectorPart = false;
 
     if(!e)
         return false;
@@ -513,10 +512,10 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
     }
     if(sel->match == CSSSelector::Pseudo)
     {
-	//kdDebug() << "CSSOrderedRule::pseudo" << endl;
         // Pseudo elements. We need to check first child here. No dynamic pseudo
         // elements for the moment
 	const QString& value = sel->value.string();
+	//kdDebug() << "CSSOrderedRule::pseudo " << value << endl;
 	if(value == "first-child") {
 	    // first-child matches the first child that is an element!
 	    DOM::NodeImpl *n = e->parentNode()->firstChild();
@@ -524,13 +523,11 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 		n = n->nextSibling();
 	    if( n == e )
 		return true;
-	} else if ( last && value == "first-line" ) { // first-line and first-letter are only allowed at the end of a selector
+	} else if ( value == "first-line" ) { 
 	    dynamicPseudo=RenderStyle::FIRST_LINE;
-	    sel->pseudoId = dynamicPseudo;
 	    return true;
-	} else if ( last && value == "first-letter" ) {
+	} else if ( value == "first-letter" ) {
 	    dynamicPseudo=RenderStyle::FIRST_LETTER;
-	    sel->pseudoId = dynamicPseudo;
 	    return true;
 	} else if( value == "link") {
 	    if ( pseudoState == PseudoUnknown )

@@ -924,7 +924,7 @@ public:
 
     bool matchNameFamily( QString *ffamily )
     {
-      kdDebug( 6080 ) << "matchNameFamily: [" << *ffamily << "]" << endl;       kdDebug( 6080 ) << "matchNameFamily: [" << *ffamily << "]" << endl;       
+	//kdDebug( 6080 ) << "matchNameFamily: [" << *ffamily << "]" << endl;       kdDebug( 6080 ) << "matchNameFamily: [" << *ffamily << "]" << endl;       
       bool matched = false;
       if ( m_yyTok == TOK_SYMBOL || ( m_yyTok == TOK_STRING && !strictParsing ) ) {
 	// accept quoted "serif" only in non strict mode.
@@ -948,7 +948,7 @@ public:
 
     bool matchFontFamily( QString *ffamily )
     { 
-      kdDebug( 6080 ) << "matchFontFamily: [" << *ffamily << "]" << endl; 
+	//kdDebug( 6080 ) << "matchFontFamily: [" << *ffamily << "]" << endl; 
       QStringList t;
       if ( !matchFontFamily( &t ) )
 	return false;
