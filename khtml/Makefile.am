@@ -55,7 +55,7 @@ libkhtml_la_LIBADD = ./xml/libkhtmlxml.la ./html/libkhtmlhtml.la \
 	$(top_builddir)/kutils/libkutils.la \
         $(top_builddir)/kwallet/client/libkwalletclient.la
 
-dummy.cpp:
+dummy.cpp: $(srcdir)/Makefile.am
 	echo 'extern "C" void* init_libkhtml();' > $@
 	echo 'extern "C" void* init_libkhtmlpart() { return init_libkhtml(); } ' >> $@
 
