@@ -308,7 +308,7 @@ void PartManager::removePart( Part *part )
 
 void PartManager::replacePart( Part * oldPart, Part * newPart, bool setActive )
 {
-  kdDebug(1000) << QString("replacePart %1 -> %2").arg(oldPart->name()).arg(newPart->name()) << endl;
+  //kdDebug(1000) << "replacePart " << oldPart->name() << "-> " << newPart->name() << " setActive=" << setActive << endl;
   // This methods does exactly removePart + addPart but without calling setActivePart(0) in between
   if ( d->m_parts.findRef( oldPart ) == -1 )
   {
@@ -344,9 +344,12 @@ void PartManager::setActivePart( Part *part, QWidget *widget )
     }
   }
 
-  // don't active twice
+  //kdDebug() << "PartManager::setActivePart d->m_activePart=" << d->m_activePart << "<->part=" << part
+  //          << " d->m_activeWidget=" << (void*)d->m_activeWidget << "<->widget=" << (void*)widget << endl;
+
+  // don't activate twice
   if ( d->m_activePart && part && d->m_activePart == part &&
-       d->m_activeWidget == widget )
+       (!widget || d->m_activeWidget == widget) )
     return;
 
   KParts::Part *oldActivePart = d->m_activePart;
