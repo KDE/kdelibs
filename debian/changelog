@@ -1,3 +1,10 @@
+kdelibs (4:1.1.1-19990529-1) unstable; urgency=low
+
+  * New upstream CVS version
+  * New kderules script which cleans up some errors
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sat, 29 May 1999 22:05:56 -0400
+
 kdelibs (4:1.1.1-19990523-1) unstable; urgency=low
 
   * New upstream CVS version

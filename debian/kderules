@@ -4,6 +4,9 @@ use Shell qw(mv cp mkdir rm) ;
 use File::Find;
 use Cwd;
 
+$origPwd = `pwd`;
+chomp $origPwd;
+
 if (@ARGV && $ARGV[0] eq 'update') {
   @packages = `ls -1d debian/*/DEBIAN`;
   foreach $dir (@packages) {
@@ -59,22 +62,53 @@ if (@ARGV && $ARGV[0] eq 'update') {
   exit;
 }
 
-open(CHANGELOG,"debian/changelog") 
+if (@ARGV && $ARGV[0] eq 'echodirs') {
+  print STDOUT "export kde_htmldir=/usr/doc/kde/HTML\n";
+  print STDOUT "export kde_appsdir=/usr/share/applnk\n";
+  print STDOUT "export kde_icondir=/usr/share/icons\n";
+  print STDOUT "export kde_sounddir=/usr/share/sounds\n";
+  print STDOUT "export kde_datadir=/usr/share/apps\n";
+  print STDOUT "export kde_locale=/usr/share/locale\n";
+  print STDOUT "export kde_cgidir=/usr/lib/cgi-bin\n";
+  print STDOUT "export kde_confdir=/etc/kde\n";
+  print STDOUT "export kde_mimedir=/usr/share/mimelnk\n";
+  print STDOUT "export kde_toolbardir=/usr/share/toolbar\n";
+  print STDOUT "export kde_wallpaperdir=/usr/share/wallpapers\n";
+  print STDOUT "export kde_bindir=/usr/bin\n";
+  print STDOUT "export kde_partsdir=/usr/lib/parts\n";
+  print STDOUT "export includedir=/usr/include/kde\n";
+  print STDOUT "export libdir=/usr/lib\n";
+
+  exit
+}
+
+if (@ARGV && $ARGV[0]) {  
+  $package = $ARGV[0];
+} else {
+  open(CHANGELOG,"debian/changelog") 
 	or die "can't read debian/changelog : $!\n";
-$_ = <CHANGELOG>;
-close(CHANGELOG);
-/^(.*) \((.*)\) /;
-$package = $1;
+  $_ = <CHANGELOG>;
+  close(CHANGELOG);
+  /^(.*) \((.*)\) /;
+  $package = $1;
+}
 
 # Find documentation and install it
 sub docwanted {
-	if ($File::Find::dir =~ /debian/) { return 0 ; }
+        local $dir = $File::Find::dir;
+        $dir =~ s/^$origPwd//;
+	if ($dir =~ /debian/) { return 0 ; }
 	/debian/ or /INSTALL/ and return 0 ;
 	/COPYING/ and return ;
 	if ( (! /CVS/ )
-	and ( /^[A-Z]*$/ or /README/ or /docs/ or /lsm$/ or /SWALLOW/
+	and ( /^[A-Z]*$/ or /README/ or /ChangeLog/ or /lsm$/ or /SWALLOW/
 	or /TODO/ or /kdedoc/ or /Header/ or /Documentation/ or /Tutorial/ ) )
-	{	push @docs, "$File::Find::dir/$_" ;
+	{	
+		if ($dir) {
+		  $_ = "$dir/$_";
+		  $_ =~ s/^\///;
+		}
+		push @docs, "$_" ;
 	}
 }
 
@@ -97,7 +131,12 @@ if (! -d "debian/tmp/usr/share/pixmaps") {
 }
 
 if (@docs) {
+       chdir($origPwd);
        cp( "-aP", @docs, "debian/tmp/usr/doc/$package") ;
+       if (-f "debian/tmp/usr/doc/$package/ChangeLog") {
+	  mv("debian/tmp/usr/doc/$package/ChangeLog", 
+		"debian/tmp/usr/doc/$package/changelog");
+	}
 }
 
 # Create debian/menu files
@@ -168,14 +207,14 @@ foreach $file (@lnkfiles) {
 	($prog,)=split / /, $kdelnk{"Exec"} ;
 	if (! defined($type{$prog})) {
 		open MENUIN, ">>debian/menu.in" ;
-		print MENUIN "$prog x11 Apps\Misc\n";
+		print MENUIN "$prog x11 SECTION\n";
 		close MENUIN;
 		next ;
 	}
 	if ($sect{$prog} eq "NONE") { next ; }
 	$icon="";
 	if (not defined $kdelnk{"Name"}) {
-		print STDERR "No Name : $package $kdelnk";
+		print STDERR "No Name : $package $kdelnk\n";
 		next ;
 	}
 	if (defined $kdelnk{"Icon"}) {
@@ -193,8 +232,7 @@ foreach $file (@lnkfiles) {
 	print MENU "	section=$sect{$prog}\\\n" ;
 	print MENU "	title=\"$kdelnk{Name}\"\\\n" ;
 	print MENU "	command=$prog\\\n" ;
-	print MENU "	icon=\"$icon\"\n" ;
-#	print MENU "	kdelnk=$kdelnk\n\n" ;
+	print MENU "	icon=\"$icon\"\n\n" ;
 
 }
 
