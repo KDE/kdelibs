@@ -626,25 +626,17 @@ void Scheduler::slotSlaveDied(KIO::Slave *slave)
 
 void Scheduler::slotCleanIdleSlaves()
 {
-    bool keepOneFileSlave=true;
     for(Slave *slave = idleSlaves->first();slave;)
     {
         if (slave->idleTime() >= MAX_SLAVE_IDLE)
         {
-           if ((slave->slaveProtocol()=="file") && (keepOneFileSlave))
-           {
-              keepOneFileSlave=false;
-           }
-           else
-           {
-              // kdDebug(7006) << "Removing idle slave: " << slave->slaveProtocol() << " " << slave->host() << endl;
-              Slave *removeSlave = slave;
-              slave = idleSlaves->next();
-              idleSlaves->removeRef(removeSlave);
-              slaveList->removeRef(removeSlave);
-              removeSlave->connection()->close();
-              removeSlave->deref();
-           }
+           // kdDebug(7006) << "Removing idle slave: " << slave->slaveProtocol() << " " << slave->host() << endl;
+           Slave *removeSlave = slave;
+           slave = idleSlaves->next();
+           idleSlaves->removeRef(removeSlave);
+           slaveList->removeRef(removeSlave);
+           removeSlave->connection()->close();
+           removeSlave->deref();
         }
         else
         {
