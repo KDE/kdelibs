@@ -58,7 +58,7 @@ public:
     virtual short minWidth() const { return 0; }
     virtual short maxWidth() const { return 0; }
 
-    virtual short baselineOffset() const { return 0; }
+    virtual short verticalPositionHint() const { return 0; }
 
     virtual bool isBR() const { return true; }
 };
