@@ -94,13 +94,14 @@ struct KIO::PreviewJobPrivate
     bool deleteItems;
     bool succeeded;
 };
-    
+
 PreviewJob::PreviewJob( const KFileItemList &items, int width, int height,
     int iconSize, int iconAlpha, bool scale, bool save,
     const QStringList *enabledPlugins, bool deleteItems )
     : KIO::Job( false /* no GUI */ )
 {
     d = new PreviewJobPrivate;
+    d->tOrig = 0;
     d->shmid = -1;
     d->shmaddr = 0;
     d->initialItems = items;
@@ -139,7 +140,7 @@ void PreviewJob::startPreview()
         for (QStringList::ConstIterator mt = mimeTypes.begin(); mt != mimeTypes.end(); ++mt)
             mimeMap.insert(*mt, *it);
     }
-  
+
     // Look for images and store the items in our todo list :)
     bool bNeedCache = false;
     for (KFileItemListIterator it(d->initialItems); it.current(); ++it )
@@ -321,7 +322,7 @@ void PreviewJob::slotResult( KIO::Job *job )
                 determineNextFile();
                 return;
             }
-      
+
             createThumbnail( static_cast<KIO::FileCopyJob*>(job)->destURL().path() );
             return;
         }
@@ -340,6 +341,9 @@ void PreviewJob::slotResult( KIO::Job *job )
 
 bool PreviewJob::statResultThumbnail()
 {
+    if ( d->thumbPath.isEmpty() )
+        return false;
+    
     QString thumbPath = d->thumbPath + d->currentItem.item->url().fileName();
     struct stat st;
     if ( stat( QFile::encodeName( thumbPath ), &st ) != 0 ||
