@@ -180,6 +180,11 @@ public:
      * This method should either emit 'mimetype' or it
      * should send a block of data big enough to be able
      * to determine the mimetype.
+     *
+     * If the slave doesn't reimplement it, a @ref get will
+     * be issued, i.e. the whole file will be downloaded before
+     * determining the mimetype on it - this is obviously not a
+     * good thing in most cases.
      */
     virtual void mimetype( const QString& path );
 
