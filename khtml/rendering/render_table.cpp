@@ -1120,8 +1120,8 @@ void RenderTable::calcRowHeight(int r)
 
 void RenderTable::layout(bool deep)
 {
-    if (layouted())
-   	return;
+//    if (layouted())
+//   	return;
 
     // ###
     deep = true;
