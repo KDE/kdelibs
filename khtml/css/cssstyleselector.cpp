@@ -302,12 +302,10 @@ void CSSStyleSelector::addInlineDeclarations(DOM::CSSStyleDeclarationImpl *decl,
         CSSProperty *prop = values->at(i);
 	Source source = Inline;
 
-	if( prop->nonCSSHint )
-	    source = NonCSSHint;
-	else if( prop->m_bImportant )
-	    source = InlineImportant;
+        if( prop->m_bImportant ) source = InlineImportant;
+	if( prop->nonCSSHint ) source = NonCSSHint;
 
-	bool first = false;
+	bool first;
         // give special priority to font-xxx, color properties
         switch(prop->m_id)
         {
@@ -320,6 +318,7 @@ void CSSStyleSelector::addInlineDeclarations(DOM::CSSStyleDeclarationImpl *decl,
 	    first = true;
             break;
         default:
+            first = false;
             break;
         }
 
@@ -483,7 +482,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
         switch(sel->match)
         {
         case CSSSelector::Exact:
-	    if( (strictParsing && strcmp(sel->value, value)) ||
+	    if( (strictParsing && strcmp(sel->value, value) ) ||
                 (!strictParsing && strcasecmp(sel->value, value)))
                 return false;
             break;
@@ -887,7 +886,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	    break;
 	case CSS_VAL_REPEAT_X:
 	    style->setBackgroundRepeat( REPEAT_X );
-	    break;	 
+	    break;
 	case CSS_VAL_REPEAT_Y:
 	    style->setBackgroundRepeat( REPEAT_Y );
 	    break;
@@ -1081,7 +1080,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         }
         if (f!=FNONE && style->display()==LIST_ITEM)
             style->setDisplay(BLOCK);
-        
+
         style->setFloating(f);
         break;
     }
@@ -1242,7 +1241,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         style->setOverflow(o);
         return;
     }
-    break;        
+    break;
     case CSS_PROP_PAGE:
     case CSS_PROP_PAGE_BREAK_AFTER:
     case CSS_PROP_PAGE_BREAK_BEFORE:
@@ -1514,7 +1513,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
             break;
         case CSS_PROP_SCROLLBAR_TRACK_COLOR:
             style->setPaletteColor(QPalette::Active, QColorGroup::Base, col);
-            style->setPaletteColor(QPalette::Inactive, QColorGroup::Base, col);            
+            style->setPaletteColor(QPalette::Inactive, QColorGroup::Base, col);
             style->setPaletteColor(QPalette::Active, QColorGroup::Mid, col);
             style->setPaletteColor(QPalette::Inactive, QColorGroup::Mid, col);
             style->setPaletteColor(QPalette::Active, QColorGroup::Background, col);
@@ -1949,6 +1948,8 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
                 size = standardSizes[5]*toPix; break;
             case CSS_VAL_XX_LARGE:
                 size = standardSizes[6]*toPix; break;
+            case CSS_VAL__KONQ_XXX_LARGE:
+                size = ( standardSizes[6]*toPix*5 )/3; break;
             case CSS_VAL_LARGER:
                 // ### use the next bigger standardSize!!!
                 size = oldSize * 1.2;

@@ -48,6 +48,7 @@ medium, CSS_VAL_MEDIUM
 large, CSS_VAL_LARGE
 x-large, CSS_VAL_X_LARGE
 xx-large, CSS_VAL_XX_LARGE
+-konq-xxx-large, CSS_VAL__KONQ_XXX_LARGE
 smaller, CSS_VAL_SMALLER
 larger, CSS_VAL_LARGER
 wider, CSS_VAL_WIDER
