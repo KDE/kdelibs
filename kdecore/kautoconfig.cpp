@@ -195,7 +195,7 @@ bool KAutoConfig::saveSettings() {
 		      defaultValue);
 
       if(currentValue == defaultValue && savedValue != currentValue){
-        config->deleteEntry(groupWidget->name());
+        config->revertToDefault(groupWidget->name());
         widgetChanged = true;
       }
       else{
