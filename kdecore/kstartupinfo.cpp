@@ -103,7 +103,7 @@ struct KStartupInfoPrivate
 	QTimer* cleanup;
 	int flags;
 	KStartupInfoPrivate( int flags_P )
-    	    : 
+    	    :
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
 	    msgs( NET_STARTUP_MSG, NULL, false ),
 #endif
@@ -620,7 +620,11 @@ KStartupInfo::startup_t KStartupInfo::check_startup_internal( WId w_P, KStartupI
     XClassHint hint;
     if( XGetClassHint( qt_xdisplay(), w_P, &hint ) != 0 )
         { // We managed to read the class hint
-        if( find_wclass( hint.res_name, hint.res_class, id_O, data_O ))
+        QCString res_name = hint.res_name;
+        QCString res_class = hint.res_class;
+        XFree( hint.res_name );
+        XFree( hint.res_class );
+        if( find_wclass( res_name, res_class, id_O, data_O ))
             return Match;
         }
 #endif
@@ -803,7 +807,7 @@ void KStartupInfo::startups_cleanup_internal( bool age_P )
         if( age_P )
             ( *it ).age++;
 	int tout = timeout;
-	if( ( *it ).silent() == Data::Yes ) // TODO 
+	if( ( *it ).silent() == Data::Yes ) // TODO
 	    tout *= 20;
         if( ( *it ).age >= timeout )
             {
@@ -822,7 +826,7 @@ void KStartupInfo::startups_cleanup_internal( bool age_P )
         if( age_P )
             ( *it ).age++;
 	int tout = timeout;
-	if( ( *it ).silent() == Data::Yes ) // TODO 
+	if( ( *it ).silent() == Data::Yes ) // TODO
 	    tout *= 20;
         if( ( *it ).age >= timeout )
             {
@@ -1273,7 +1277,7 @@ void KStartupInfoData::setSilent( TriState state_P )
     {
     d->silent = state_P;
     }
-    
+
 KStartupInfoData::TriState KStartupInfoData::silent() const
     {
     return d->silent;
@@ -1283,17 +1287,17 @@ void KStartupInfoData::setTimestamp( unsigned long time )
     {
     d->timestamp = time;
     }
-    
+
 unsigned long KStartupInfoData::timestamp() const
     {
     return d->timestamp;
     }
-    
+
 void KStartupInfoData::setScreen( int screen )
     {
     d->screen = screen;
     }
-    
+
 int KStartupInfoData::screen() const
     {
     return d->screen;
