@@ -241,8 +241,9 @@ void KURLRequester::setURL( const QString& url )
 
 void KURLRequester::setCaption( const QString& caption )
 {
-	fileDialog()->setCaption( caption );
-	QWidget::setCaption( caption );
+   QWidget::setCaption( caption );
+   if (myFileDialog)
+      myFileDialog->setCaption( caption );
 }
 
 QString KURLRequester::url() const
@@ -297,6 +298,7 @@ KFileDialog * KURLRequester::fileDialog() const
 
 	myFileDialog->setMode( d->fileDialogMode );
         myFileDialog->setFilter( d->fileDialogFilter );
+        myFileDialog->setCaption( caption() );
     }
 
     return myFileDialog;
