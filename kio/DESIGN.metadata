@@ -39,4 +39,6 @@ charset         string          Charset of the current content as returned by a 
 content-
 disposition     string          Suggested name to Save a file as as returned by a HTTP Header Response.
 
+http-refresh    string          Passes HTTP Refresh meta-data back to the application.
+
 ** NOTE: Anything in quotes ("") under Value(s) indicates literal value.
