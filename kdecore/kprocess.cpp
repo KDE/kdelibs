@@ -459,14 +459,6 @@ bool KProcess::start(RunMode runmode, Communication comm)
       return false;
   }
 
-  // We do this in the parent because if we do it in the child process
-  // gdb gets confused when the application runs from gdb.
-  uid_t uid = getuid();
-  gid_t gid = getgid();
-#ifdef HAVE_INITGROUPS
-  struct passwd *pw = getpwuid(uid);
-#endif
-
   int fd[2];
   if (pipe(fd) < 0)
   {
@@ -502,14 +494,10 @@ bool KProcess::start(RunMode runmode, Communication comm)
 
         if (!runPrivileged())
         {
-           setgid(gid);
-#if defined( HAVE_INITGROUPS)
-	   if(pw)
-              initgroups(pw->pw_name, pw->pw_gid);
-#endif
-           setuid(uid);
+           setgid(getgid());
+           setuid(getuid());
         }
-          
+
         setupEnvironment();
 
         // Matthias
