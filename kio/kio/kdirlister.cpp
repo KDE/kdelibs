@@ -608,7 +608,63 @@ void KDirListerCache::FilesChanged( const KURL::List &fileList )
 
 void KDirListerCache::FileRenamed( const KURL &src, const KURL &dst )
 {
-  kdWarning(7004) << k_funcinfo << "NOT IMPLEMENTED YET!" << endl;
+  kdDebug(7004) << k_funcinfo << " " << src.prettyURL() << " -> " << dst.prettyURL() << endl;
+  QString oldUrl = src.url(-1);
+  // Is oldUrl a directory currently displayed/listed/updated?
+  DirItem *dir = itemsInUse.take( oldUrl );
+  if ( dir )
+  {
+    // Is oldUrl a directory being listed/updated?
+#if 0
+    QPtrList<KDirLister> *listers = urlsCurrentlyListed.take( oldUrl );
+    if ( listers ) {
+      updateDirectory( oldUrl ); // ARGL wrong URL
+    }
+#endif
+    dir->rootItem->setURL( dst );
+    itemsInUse.insert( dst.url(-1), dir );
+
+    // Emit the change in the dirlisters holding that URL
+    // ## maybe find a way to merge with code below? Just afraid
+    // that findByURL won't find it after the changes being done here...
+    KFileItemList refreshList;
+    refreshList.append( dir->rootItem );
+    QPtrList<KDirLister> *holders = urlsCurrentlyHeld.take(oldUrl);
+    urlsCurrentlyHeld.insert( dst.url(-1), holders );
+    for ( KDirLister *kdl = holders->first(); kdl; kdl = holders->next() )
+      emit kdl->refreshItems( refreshList );
+  }
+  else {
+    // Is oldUrl a directory in the cache?
+    dir = itemsCached.take(oldUrl);
+    if ( dir )
+    {
+      // Update item in cache
+      dir->rootItem->setURL( dst );
+      itemsCached.insert( dst.url(-1), dir );
+    }
+  }
+
+  // Now update any KFileItem representing that dir (not exclusive with the above!)
+  KFileItem* fileitem = findByURL( 0, oldUrl );
+  if ( fileitem )
+  {
+    fileitem->setURL( dst );
+    // Code below copied from slotFileDirty
+    // ### code should be shared. Current slotFileDirty doesn't handle renaming...
+    // Hmm, not sure if it should, in fact.
+    KFileItemList refreshList;
+    refreshList.append( fileitem );
+
+    // TODO: use urlsCurrentlyListed as well?
+
+    KURL parentDir(dst);
+    parentDir.setPath( dst.directory() );
+    QPtrList<KDirLister> *listers = urlsCurrentlyHeld[parentDir.url(-1)];
+    if ( listers )
+      for ( KDirLister *kdl = listers->first(); kdl; kdl = listers->next() )
+        emit kdl->refreshItems( refreshList );
+  }
 }
 
 KDirListerCache* KDirListerCache::self()
@@ -637,8 +693,9 @@ void KDirListerCache::slotFileDirty( const QString& _file )
     lst.append( item );
 
     // TODO: use urlsCurrentlyListed as well?
-
-    QPtrList<KDirLister> *listers = urlsCurrentlyHeld[u.url(-1)];
+    KURL parentDir(u);
+    parentDir.setPath( u.directory() );
+    QPtrList<KDirLister> *listers = urlsCurrentlyHeld[parentDir.url(-1)];
     if ( listers )
       for ( KDirLister *kdl = listers->first(); kdl; kdl = listers->next() )
         emit kdl->refreshItems( lst );
@@ -657,7 +714,7 @@ void KDirListerCache::slotDirectoryDirty( const QString& _dir )
 
 void KDirListerCache::slotURLDirty( const KURL& _dir )
 {
-  //kdDebug(7004) << k_funcinfo << _dir << endl;
+  //kdDebug(7004) << k_funcinfo << _dir.prettyURL() << endl;
 
   // this already checks for _dir being used
   updateDirectory( _dir );
@@ -793,6 +850,7 @@ void KDirListerCache::slotRedirection( KIO::Job *job, const KURL &url )
 
   // I don't think there can be dirItems that are childs of oldUrl.
   // Am I wrong here? And even if so, we don't need to delete them, right?
+  // DF: redirection happens before listDir emits any item. Makes little sense otherwise.
 
   DirItem *dir = itemsInUse.take( oldUrl.url() );
   Q_ASSERT( dir );
@@ -955,7 +1013,7 @@ void KDirListerCache::slotUpdateResult( KIO::Job * j )
 
       continue;
     }
-    
+
     // Form the complete url
     KURL u( url );
     u.addPath( name );
@@ -1366,7 +1424,7 @@ void KDirLister::setNameFilter( const QString& nameFilter )
   QStringList list = QStringList::split( ' ', nameFilter );
   for ( QStringList::Iterator it = list.begin(); it != list.end(); ++it )
     d->lstFilters.append( new QRegExp(*it, false, true ) );
-    
+
   d->changes |= NAME_FILTER;
 }
 

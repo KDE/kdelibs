@@ -47,14 +47,14 @@ public:
 
     autoErrorHandling = false;
     errorParent = 0;
-    
+
     delayedMimeTypes = false;
 
     rootFileItem = 0;
     lstNewItems = 0;
     lstRefreshItems = 0;
     lstMimeFilteredItems = 0;
-    
+
     changes = NONE;
   }
 
@@ -91,7 +91,7 @@ public:
   KFileItem *rootFileItem;
 
   KFileItemList *lstNewItems, *lstRefreshItems, *lstMimeFilteredItems;
-  
+
   int changes;
 
   QString nameFilter;
@@ -99,18 +99,30 @@ public:
   QStringList mimeFilter, oldMimeFilter;
 };
 
-
+/**
+ * Design of the cache:
+ * There is a single KDirListerCache for the whole process.
+ * It holds all the items used by the dir listers (itemsInUse)
+ * as well as a cache of the recently used items (itemsCached).
+ * Those items are grouped by directory (a DirItem represents a whole directory).
+ *
+ * KDirListerCache also runs all the jobs for listing directories, whether they are for
+ * normal listing or for updates.
+ * For faster lookups, it also stores two dicts:
+ * a URL -> dirlister holding that URL (urlsCurrentlyHeld)
+ * a URL -> dirlister currently listing that URL (urlsCurrentlyListed)
+ */
 class KDirListerCache : public QObject, KDirNotify
 {
   Q_OBJECT
 public:
   KDirListerCache( int maxCount = 10 );
   ~KDirListerCache();
-  
+
   void listDir( KDirLister* lister, const KURL &_url, bool _keep, bool _reload );
-  
+
   /**
-   * Stop all running jobs for lister 
+   * Stop all running jobs for lister
    */
   void stop( KDirLister *lister );
   void stop( KDirLister *lister, const KURL &_url );
@@ -125,6 +137,7 @@ public:
   KFileItemList* items( const KURL &_dir ) const;
 
   KFileItem* findByName( const KDirLister *lister, const QString &_name ) const;
+  // if lister == 0 all items are searched
   KFileItem* findByURL( const KDirLister *lister, const KURL &_url ) const;
 
   /**
@@ -134,7 +147,7 @@ public:
    * Reimplemented from KDirNotify.
    */
   virtual void FilesAdded( const KURL &directory );
-  
+
   /**
    * Notify that files have been deleted.
    * This call passes the exact urls of the deleted files
@@ -166,7 +179,7 @@ private slots:
 
   void slotUpdateEntries( KIO::Job *job, const KIO::UDSEntryList &entries );
   void slotUpdateResult( KIO::Job *job );
-  
+
 private:
   bool killJob( const QString &_url );
   void deleteUnmarkedItems( QPtrList<KDirLister> *, KFileItemList *, bool really );
