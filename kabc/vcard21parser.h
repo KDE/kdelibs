@@ -85,7 +85,7 @@
 #define VCARD_TEL_ISDN     "isdn"
 #define VCARD_TEL_VIDEO    "video"
 #define VCARD_TEL_PCS      "pcs"
-#define VCARD_EMAIL          "email"
+#define VCARD_EMAIL        "email"
 // types
 #define VCARD_EMAIL_PREF    "pref"
 #define VCARD_EMAIL_INTERNET "internet"
@@ -131,11 +131,6 @@
 #define VC_ERR_INTERNAL            4
 #define VC_ERR_INVALID_NAME        5
 #define VC_ERR_MISSING_MANDATORY   6
-
-enum { Home = 1, Work = 2, Msg = 4, Pref = 8, Voice = 16, Fax = 32,
-           Cell = 64, Video = 128, Bbs = 256, Modem = 512, Car = 1024,
-           Isdn = 2048, Pcs = 4096, Pager = 8192 };
-
 
 namespace KABC {
 
@@ -190,9 +185,7 @@ public:
  */
 class VCardLine
 {
-  friend class VCard21ParserImpl;
-
-protected:
+public:
   QString name;
   bool qualified;
   QValueList<QString> qualifiers;
@@ -218,7 +211,6 @@ public:
   QStringList getValues(const QString& name, const QString& qualifier);
   QStringList getValues(const QString& name);
 
-protected:
   QValueList<VCardLine> *_vcdata;
 
 private:
