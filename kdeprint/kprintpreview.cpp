@@ -40,6 +40,7 @@
 #include <kdebug.h>
 #include <kconfig.h>
 #include <ktoolbar.h>
+#include <kmimetype.h>
 
 KPreviewProc::KPreviewProc()
 : KProcess()
@@ -180,6 +181,22 @@ void KPrintPreview::initView(KLibFactory *factory)
 	}
 	if (d->gvpart_)
 	{
+		QDomNodeList l = d->gvpart_->domDocument().elementsByTagName( "ToolBar" );
+		if ( l.length() > 0 )
+		{
+			d->toolbar_->insertLineSeparator();
+			QDomNodeList acts = l.item( 0 ).toElement().elementsByTagName( "Action" );
+			for ( uint i=0; i<acts.length(); i++ )
+			{
+				QDomElement a = acts.item( i ).toElement();
+				if ( a.attribute( "name" ) == "goToPage" )
+					continue;
+				KAction *act = d->gvpart_->action( a );
+				if ( act != 0 )
+					d->plugAction( act );
+			}
+		}
+		/*
 		KAction	*act;
 		d->toolbar_->insertLineSeparator();
 		if ((act = d->gvpart_->action("zoomIn")) != 0)
@@ -191,6 +208,7 @@ void KPrintPreview::initView(KLibFactory *factory)
 			d->plugAction(act);
 		if ((act = d->gvpart_->action("nextPage")) != 0)
 			d->plugAction(act);
+			*/
 	}
 	d->toolbar_->setIconText(KToolBar::IconTextRight);
 	d->toolbar_->setBarPos(KToolBar::Top);
@@ -219,13 +237,18 @@ bool KPrintPreview::isValid() const
 
 bool KPrintPreview::preview(const QString& file, bool previewOnly, WId parentId)
 {
+	KMimeType::Ptr mime = KMimeType::findByPath( file );
+	bool isPS = ( mime->name() == "application/postscript" );
+	if ( !isPS )
+		kdDebug( 500 ) << "Previewing a non PostScript file, built-in preview disabled" << endl;
+
 	KConfig	*conf = KMFactory::self()->printConfig();
 	conf->setGroup("General");
 	KLibFactory	*factory(0);
 	bool	externalPreview = conf->readBoolEntry("ExternalPreview", false);
 	QWidget	*parentW = QWidget::find(parentId);
 	QString	exe;
-	if (!externalPreview && (factory = componentFactory()) != 0)
+	if (!externalPreview && isPS && (factory = componentFactory()) != 0)
 	{
 		KPrintPreview	dlg(parentW, previewOnly);
 		dlg.initView(factory);
@@ -244,7 +267,7 @@ bool KPrintPreview::preview(const QString& file, bool previewOnly, WId parentId)
 	// Either the PS viewer component was not found, or an external
 	// preview program has been specified
 	KPreviewProc	proc;
-	if (externalPreview)
+	if (externalPreview && isPS )
 	{
 		exe = conf->readEntry("PreviewCommand", "gv");
 		if (KStandardDirs::findExe(exe).isEmpty())
@@ -259,7 +282,7 @@ bool KPrintPreview::preview(const QString& file, bool previewOnly, WId parentId)
 	}
 	else
 	{
-		KService::Ptr serv = KServiceTypeProfile::preferredService( "application/postscript", QString::null );
+		KService::Ptr serv = KServiceTypeProfile::preferredService( mime->name(), QString::null );
 		if ( serv )
 		{
 			KURL url;
@@ -272,9 +295,15 @@ bool KPrintPreview::preview(const QString& file, bool previewOnly, WId parentId)
 		{
 			// in that case, the PS viewer component could not be loaded and no service
 			// could be found to view PS
-			QString	msg = i18n("Preview failed: neither the internal KDE PostScript "
-			                   "viewer (KGhostView) nor any other external PostScript "
-			                   "viewer could be found.");
+			QString msg;
+			if ( isPS )
+				msg = i18n("Preview failed: neither the internal KDE PostScript "
+			               "viewer (KGhostView) nor any other external PostScript "
+			               "viewer could be found.");
+			else
+				msg = i18n( "Preview failed: KDE could not found any application "
+						    "to preview files of type %1." ).arg( mime->name() );
+
 			return continuePrint(msg, parentW, previewOnly);
 		}
 	}
