@@ -20,6 +20,14 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.75  1999/10/23 16:16:23  kulow
+   here comes KInstance - "KApplication light"
+   It's a new KLibGlobal and KGlobal only keeps a pointer to a global
+   instance. KApplication is derived from KInstance - making it possible
+   to move things out of KApplication into KInstance to make Components
+   easier.
+   Needs some testings and I bet some tweaks here and there :)
+
    Revision 1.74  1999/10/16 14:00:56  reggie
    fixes for Canossa
 
@@ -392,12 +400,14 @@ QString KIconLoader::iconPath( const QString& name, bool always_valid)
       path.truncate(path.length() - 4);
       warning("stripping .xpm from icon %s", name.ascii());
     }
-    full_path = locate(iconType, path + ".png", library);
+
+    full_path = locate(iconType, path, library);
+
+    if (full_path.isNull())
+      full_path = locate(iconType, path + ".png", library);
     if (full_path.isNull())
       full_path = locate(iconType, path + ".xpm", library );
 
-    if (full_path.isNull())
-      full_path = locate(iconType, path, library);
   }
   if (full_path.isNull() && always_valid)
     full_path = locate(iconType, "unknown.png", library);
