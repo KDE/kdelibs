@@ -50,8 +50,8 @@ public:
    *       fileitem and the filename from the UDSEntry should be used.
    */
   KFileItem( const KIO::UDSEntry& _entry, const KURL& _url,
-	     bool _determineMimeTypeOnDemand = false,
-	     bool _urlIsDirectory = false );
+             bool _determineMimeTypeOnDemand = false,
+             bool _urlIsDirectory = false );
 
   /**
    * Create an item representing a file, from all the necessary info for it
@@ -68,7 +68,7 @@ public:
    *       should be determined immediately or on demand
    */
   KFileItem( mode_t _mode, mode_t _permissions, const KURL& _url,
-	     bool _determineMimeTypeOnDemand = false );
+             bool _determineMimeTypeOnDemand = false );
 
   /**
    * Create an item representing a file, for which the mimetype is already known
@@ -129,7 +129,7 @@ public:
   /**
    * @returns true if this item represents a directory
    */
-  bool isDir() const { return (S_IFDIR & m_fileMode); }
+  bool isDir() const { return S_ISDIR(m_fileMode); }
 
   /**
    * @return the link destination if isLink() == true
@@ -166,10 +166,10 @@ public:
    */
   const QString& name( bool lowerCase = false ) const {
       if ( !lowerCase )
-	  return m_strName;
+          return m_strName;
       else
-	  if ( m_strLowerCaseName.isNull() )
-	      m_strLowerCaseName = m_strName.lower();
+          if ( m_strLowerCaseName.isNull() )
+              m_strLowerCaseName = m_strName.lower();
       return m_strLowerCaseName;
   }
 
