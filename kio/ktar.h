@@ -20,361 +20,387 @@
 
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <zlib.h>
 
 #include <qdatetime.h>
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qdict.h>
 
-class KTarDirectory;
-class KTarFile;
+class KArchiveDirectory;
+class KArchiveFile;
 
 /**
- * @short generic class for reading/writing tar archives
- * Doesn't really have any reason for being separated from KTarGz anymore.
- * Will be merged with KTarGz and renamed to KTar in KDE 3.0
+ * @short generic class for reading/writing archives
  * @author David Faure <faure@kde.org>
  */
-class KTarBase
+class KArchive
 {
 protected:
-  // Deprecated
-  KTarBase();
-  KTarBase(QIODevice * dev);
-  virtual ~KTarBase();
+    /**
+     * Base constructor (protected since this is a pure virtual class)
+     * @param dev the I/O device where the archive reads its data
+     * Note that this can be a file, but also a data buffer, a compression filter, etc.
+     */
+    KArchive( QIODevice * dev );
+    virtual ~KArchive();
 
 public:
-  /**
-   * Opens the tar file/data for reading or writing.
-   *
-   * @param mode may be IO_ReadOnly or IO_WriteOnly
-   *
-   * @see #close
-   */
-  virtual bool open( int mode );
+    /**
+     * Opens the archive for reading or writing.
+     * @param mode may be IO_ReadOnly or IO_WriteOnly
+     * Inherited classes might want to reimplement openArchive instead.
+     * @see #close
+     */
+    virtual bool open( int mode );
 
-  /**
-   * Closes the tar file/data.
-   *
-   * @see #open
-   */
-  virtual void close();
+    /**
+     * Closes the archive
+     * Inherited classes might want to reimplement openArchive instead.
+     *
+     * @see #open
+     */
+    virtual void close();
 
-  /**
-   * @return true if the file is opened
-   */
-  bool isOpened() const { return m_open; }
+    /**
+     * @return true if the archive is opened
+     */
+    bool isOpened() const { return m_open; }
 
-  /**
-   * If a tar file is opened for writing then you can add new directories
-   * using this function. KTar won't write one directory twice.
-   */
-  bool writeDir( const QString& name, const QString& user, const QString& group );
-  /**
-   * If a tar file is opened for writing then you can add a new file
-   * using this function. If the file name is for example "mydir/test1" then
-   * the directory "mydir" is automatically appended first if that did not
-   * happen yet.
-   */
-  bool writeFile( const QString& name, const QString& user, const QString& group, uint size, const char* data );
+    /**
+     * @return the mode in which the archive was opened (IO_ReadOnly or IO_WriteOnly)
+     */
+    int mode() const { return m_mode; }
 
-  /**
-   * Here's another way of writing a file into a tar archive:
-   * Call @ref prepareWriting, then call write as many times as wanted,
-   * then call @ref doneWriting( totalSize )
-   * You need to know the size before hand, it is needed in the header!
-   */
-  bool prepareWriting( const QString& name, const QString& user, const QString& group, uint size );
+    /**
+     * The underlying device
+     */
+    QIODevice * device() const { return m_dev; }
 
-  /**
-   * Call @ref doneWriting after writing the data, @ref prepareWriting
-   */
-  bool doneWriting( uint size );
+    /**
+     * If an archive is opened for reading, then the contents
+     * of the archive can be accessed via this function.
+     */
+    const KArchiveDirectory* directory() const;
 
-  /**
-   * If a tar file is opened for reading, then the contents
-   * of the file can be accessed via this function.
-   */
-  const KTarDirectory* directory() const;
+    /**
+     * If an archive is opened for writing then you can add new directories
+     * using this function. KArchive won't write one directory twice.
+     */
+    virtual bool writeDir( const QString& name, const QString& user, const QString& group ) = 0;
 
-  QIODevice * device() const;
-  void setDevice( QIODevice * dev );
+    /**
+     * If an archive is opened for writing then you can add a new file
+     * using this function. If the file name is for example "mydir/test1" then
+     * the directory "mydir" is automatically appended first if that did not
+     * happen yet.
+     */
+    bool writeFile( const QString& name, const QString& user, const QString& group, uint size, const char* data );
+
+    /**
+     * Here's another way of writing a file into an archive:
+     * Call @ref prepareWriting, then call write as many times as wanted,
+     * then call @ref doneWriting( totalSize )
+     * You need to know the size before hand, it is needed in the header!
+     */
+    virtual bool prepareWriting( const QString& name, const QString& user, const QString& group, uint size ) = 0;
+
+    /**
+     * Call @ref doneWriting after writing the data
+     * @see prepareWriting
+     */
+    virtual bool doneWriting( uint size ) = 0;
 
 protected:
-  /**
-   * Read @p len data into @p buffer - reimplemented
-   * @return length read
-   */
-  virtual Q_LONG read( char * buffer, Q_ULONG len ) = 0;
+    /**
+     * Open an archive for reading or writing.
+     * Called by @ref open.
+     */
+    virtual bool openArchive( int mode ) = 0;
 
-  /**
-   * Write @p len data from @p buffer - reimplemented
-   */
-  virtual Q_LONG write( const char * buffer, Q_ULONG len ) = 0;
+    /**
+     * Close the archive.
+     * Called by @ref close.
+     */
+    virtual bool closeArchive() = 0;
 
-  /**
-   * @return the current position - reimplemented
-   */
-  virtual int position() = 0;
+    /**
+     * Retrieve or create the root directory
+     * The default implementation assumes that openArchive() did the parsing,
+     * so it creates a dummy rootdir if none was set (write mode, or no '/' in the archive).
+     * Reimplement this to provide parsing/listing on demand.
+     */
+    virtual KArchiveDirectory* rootDir();
 
-  /**
-   * Ensure path exists, create otherwise.
-   * This handles tar files missing directory entries, like mico-2.3.0.tar.gz :)
-   * @internal
-   */
-  KTarDirectory * findOrCreate( const QString & path );
+    /**
+     * Ensure path exists, create otherwise.
+     * This handles e.g. tar files missing directory entries, like mico-2.3.0.tar.gz :)
+     */
+    KArchiveDirectory * findOrCreate( const QString & path );
 
-  /**
-   * @internal
-   * Retrieve or create the root directory
-   */
-  KTarDirectory* rootDir();
+    /**
+     * @internal for inherited constructors
+     */
+    void setDevice( QIODevice *dev );
 
-  /**
-   * @internal
-   * Fills @p buffer for writing a file as required by the tar format
-   * Has to be called LAST, since it does the checksum
-   * (normally, only the name has to be filled in before)
-   * @param mode is expected to be 6 chars long, [uname and gname 31].
-   */
-  void fillBuffer( char * buffer, const char * mode, int size, char typeflag, const char * uname, const char * gname );
+    /**
+     * @internal for inherited classes
+     */
+    void setRootDir( KArchiveDirectory *rootDir );
 
-  class KTarBasePrivate;
-  KTarBasePrivate * d;
-  bool m_open;
-  QStringList m_dirList;
-  char m_mode;
+private:
+    class KArchivePrivate;
+    KArchivePrivate * d;
+    QIODevice * m_dev;
+    bool m_open;
+    char m_mode;
 };
 
 /**
- * @short A class for reading/writing optionnally-gzipped tar balls.
- * Should be named KTar and be merged back with KTarBase - in KDE 3.0.
+ * @short A class for reading/writing (optionnally compressed) tar archives.
  * @author Torben Weis <weis@kde.org>, David Faure <faure@kde.org>
  */
-class KTarGz : public KTarBase
+class KTar : public KArchive
 {
 public:
-  /**
-   * Creates an instance that operates on the given filename.
-   *
-   * @param filename has the format "/home/weis/myfile.tgz" or something
-   *        like that.
-   *
-   * @see #open
-   */
-  KTarGz( const QString& filename );
+    /**
+     * Creates an instance that operates on the given filename.
+     * using the compression filter associated to given mimetype.
+     *
+     * @param filename is a local path (e.g. "/home/weis/myfile.tgz")
+     * @param mimetype "application/x-gzip" or "application/x-bzip2"
+     * Do not use application/x-tgz or so. Only the compression layer !
+     * If the mimetype is ommitted, it will be determined from the filename.
+     */
+    KTar( const QString& filename, const QString & mimetype = QString::null );
 
-  /**
-   * Creates an instance that operates on the given file,
-   * using the compression filter associated to given mimetype.
-   * @param filename path to the file
-   * @param mimetype "application/x-gzip" or "application/x-bzip2"
-   * Do not use application/x-tgz or so. Only the compression layer !
-   *
-   * @see #open
-   */
-  KTarGz( const QString& filename, const QString & mimetype );
+    /**
+     * Creates an instance that operates on the given device.
+     * The device can be compressed (KFilterDev) or not (QFile, etc.).
+     * WARNING: don't assume that giving a QFile here will decompress the file,
+     * in case it's compressed!
+     */
+    KTar( QIODevice * dev );
 
-  /**
-   * Creates an instance that operates on the given device.
-   * The device can be compressed (KFilterDev) or not (QFile, etc.).
-   */
-  KTarGz( QIODevice * dev );
+    /**
+     * If the tar ball is still opened, then it will be
+     * closed automatically by the destructor.
+     */
+    virtual ~KTar();
 
-  /**
-   * If the tar ball is still opened, then it will be
-   * closed automatically by the destructor.
-   */
-  virtual ~KTarGz();
+    /**
+     * The name of the tar file, as passed to the constructor
+     * Null if you used the QIODevice constructor.
+     */
+    QString fileName() { return m_filename; }
 
-  /**
-   * The name of the tar file, as passed to the constructor
-   * Null if you used the QIODevice constructor.
-   */
-  QString fileName() { return m_filename; }
+    /**
+     * Special function for setting the "original file name" in the gzip header,
+     * when writing a tar.gz file. It appears when using in the "file" command,
+     * for instance. Should only be called if the underlying device is a KFilterDev!
+     */
+    void setOrigFileName( const QCString & fileName );
 
-  /**
-   * Special function for setting the "original file name" in the gzip header,
-   * when writing a tar.gz file. It appears when using in the "file" command,
-   * for instance. Should only be called if the underlying device is a KFilterDev!
-   */
-  void setOrigFileName( const QCString & fileName );
+    virtual bool writeDir( const QString& name, const QString& user, const QString& group );
+    virtual bool prepareWriting( const QString& name, const QString& user, const QString& group, uint size );
+    virtual bool doneWriting( uint size );
+
+protected:
+    /**
+     * Opens the archive for reading.
+     * Parses the directory listing of the archive
+     * and creates the KArchiveDirectory/KArchiveFile entries.
+     *
+     */
+    virtual bool openArchive( int mode );
+    virtual bool closeArchive();
 
 private:
-  /**
-   * Read @p len data into @p buffer
-   * @return length read
-   */
-  virtual Q_LONG read( char * buffer, Q_ULONG len );
+    /**
+     * @internal
+     */
+    void prepareDevice( const QString & filename, const QString & mimetype, bool forced = false );
 
-  /**
-   * Write @p len data from @p buffer
-   */
-  virtual Q_LONG write( const char * buffer, Q_ULONG len );
+    /**
+     * @internal
+     * Fills @p buffer for writing a file as required by the tar format
+     * Has to be called LAST, since it does the checksum
+     * (normally, only the name has to be filled in before)
+     * @param mode is expected to be 6 chars long, [uname and gname 31].
+     */
+    void fillBuffer( char * buffer, const char * mode, int size, char typeflag, const char * uname, const char * gname );
 
-  /**
-   * @return the current position
-   */
-  virtual int position();
-
-  void prepareDevice( const QString & filename, const QString & mimetype, bool forced = false );
-
-  class KTarGzPrivate;
-  KTarGzPrivate * d;
-  QString m_filename;
+    class KTarPrivate;
+    KTarPrivate * d;
+    QString m_filename;
 };
+
+/** Old, deprecated naming */
+#define KTarGz KTar
 
 /**
  * @short Base class for the tar-file's directory structure.
  *
- * @see KTarFile
- * @see KTarDirectory
+ * @see KArchiveFile
+ * @see KArchiveDirectory
  */
-class KTarEntry
+class KArchiveEntry
 {
 public:
-  KTarEntry( KTarBase* tar, const QString& name, int access, int date,
-             const QString& user, const QString& group,
-             const QString &symlink );
+    KArchiveEntry( KArchive* archive, const QString& name, int access, int date,
+               const QString& user, const QString& group,
+               const QString &symlink );
 
-  virtual ~KTarEntry() { }
+    virtual ~KArchiveEntry() { }
 
-  /**
-   * Creation date of the file.
-   */
-  QDateTime datetime() const;
-  int date() const { return m_date; }
+    /**
+     * Creation date of the file.
+     */
+    QDateTime datetime() const;
+    int date() const { return m_date; }
 
-  /**
-   * Name of the file without path.
-   */
-  QString name() const { return m_name; }
-  /**
-   * The permissions and mode flags as returned by the stat() function
-   * in st_mode.
-   */
-  mode_t permissions() const { return m_access; }
-  /**
-   * User who created the file.
-   */
-  QString user() const { return m_user; }
-  /**
-   * Group of the user who created the file.
-   */
-  QString group() const { return m_group; }
+    /**
+     * Name of the file without path.
+     */
+    QString name() const { return m_name; }
+    /**
+     * The permissions and mode flags as returned by the stat() function
+     * in st_mode.
+     */
+    mode_t permissions() const { return m_access; }
+    /**
+     * User who created the file.
+     */
+    QString user() const { return m_user; }
+    /**
+     * Group of the user who created the file.
+     */
+    QString group() const { return m_group; }
 
-  /**
-   * Symlink if there is one
-   */
-  QString symlink() const { return m_symlink; }
+    /**
+     * Symlink if there is one
+     */
+    QString symlink() const { return m_symlink; }
 
-  /**
-   * @return true if this entry is a file
-   */
-  virtual bool isFile() const { return false; }
-  /**
-   * @return true if this entry is a directory
-   */
-  virtual bool isDirectory() const { return false; }
+    /**
+     * @return true if this entry is a file
+     */
+    virtual bool isFile() const { return false; }
+    /**
+     * @return true if this entry is a directory
+     */
+    virtual bool isDirectory() const { return false; }
 
 protected:
-  KTarBase* tar() const { return m_tar; }
+    KArchive* archive() const { return m_archive; }
 
 private:
-  QString m_name;
-  int m_date;
-  mode_t m_access;
-  QString m_user;
-  QString m_group;
-  QString m_symlink;
-  KTarBase* m_tar;
+    QString m_name;
+    int m_date;
+    mode_t m_access;
+    QString m_user;
+    QString m_group;
+    QString m_symlink;
+    KArchive* m_archive;
 };
+
+/** Old, deprecated naming */
+#define KTarEntry KArchiveEntry
 
 /**
- * @short A file in a tar-file's directory structure.
+ * @short A file in an archive.
  *
- * @see KTar
- * @see KTarDirectory
+ * @see KArchive
+ * @see KArchiveDirectory
  */
-class KTarFile : public KTarEntry
+class KArchiveFile : public KArchiveEntry
 {
 public:
-  KTarFile( KTarBase* tar, const QString& name, int access, int date,
-            const QString& user, const QString& group, const QString &symlink,
-            int pos, int size );
+    KArchiveFile( KArchive* archive, const QString& name, int access, int date,
+              const QString& user, const QString& group, const QString &symlink,
+              int pos, int size );
 
-  virtual ~KTarFile() { }
+    virtual ~KArchiveFile() { }
 
-  /**
-   * Position of the data in the uncompressed tar file.
-   */
-  int position() const;
-  /**
-   * Size of the data.
-   */
-  int size() const;
+    /**
+     * Position of the data in the [uncompressed] archive.
+     */
+    int position() const;
+    /**
+     * Size of the data.
+     */
+    int size() const;
 
-  /**
-   * @return the content of this file.
-   */
-  QByteArray data() const;
+    /**
+     * @return the content of this file.
+     * Call data() with care (only once per file), this data isn't cached.
+     */
+    QByteArray data() const;
 
-  /**
-   * TODO : a method that returns a KLimitedIODevice (to be written)
-   * on top of the underlying QIODevice, to be used in e.g. koffice
-   */
+    /**
+     * This method returns QIODevice (internal class: KLimitedIODevice)
+     * on top of the underlying QIODevice. This is obviously for reading only.
+     * Note that the ownership of the device is being transferred to the caller,
+     * who will have to delete it.
+     * The returned device auto-opens (in readonly mode), no need to open it.
+     */
+    QIODevice *device() const;
 
-  /**
-   * @return true, since this entry is a file
-   */
-  virtual bool isFile() const { return true; }
+    /**
+     * @return true, since this entry is a file
+     */
+    virtual bool isFile() const { return true; }
 
 private:
-  int m_pos;
-  int m_size;
+    int m_pos;
+    int m_size;
 };
+
+/** Old, deprecated naming */
+#define KTarFile KArchiveFile
 
 /**
- * @short A directory in a tar-file's directory structure.
+ * @short A directory in an archive.
  *
- * @see KTar
- * @see KTarFile
+ * @see KArchive
+ * @see KArchiveFile
  */
-class KTarDirectory : public KTarEntry
+class KArchiveDirectory : public KArchiveEntry
 {
 public:
-  KTarDirectory( KTarBase* tar, const QString& name, int access, int date,
-                 const QString& user, const QString& group,
-                 const QString& symlink);
+    KArchiveDirectory( KArchive* archive, const QString& name, int access, int date,
+                   const QString& user, const QString& group,
+                   const QString& symlink);
 
-  virtual ~KTarDirectory() { }
+    virtual ~KArchiveDirectory() { }
 
-  /**
-   * @return the names of all entries in this directory (filenames, no path).
-   */
-  QStringList entries() const;
-  /**
-   * @return a pointer to the entry in the directory.
-   *
-   * @param name may be "test1", "mydir/test3", "mydir/mysubdir/test3", etc.
-   */
-  KTarEntry* entry( QString name );
-  const KTarEntry* entry( QString name ) const;
+    /**
+     * @return the names of all entries in this directory (filenames, no path).
+     */
+    QStringList entries() const;
+    /**
+     * @return a pointer to the entry in the directory.
+     *
+     * @param name may be "test1", "mydir/test3", "mydir/mysubdir/test3", etc.
+     */
+    KArchiveEntry* entry( QString name );
+    const KArchiveEntry* entry( QString name ) const;
 
-  /**
-   * @internal
-   * Adds a new entry to the directory.
-   */
-  void addEntry( KTarEntry* );
+    /**
+     * @internal
+     * Adds a new entry to the directory.
+     */
+    void addEntry( KArchiveEntry* );
 
-  /**
-   * @return true, since this entry is a directory
-   */
-  virtual bool isDirectory() const { return true; }
+    /**
+     * @return true, since this entry is a directory
+     */
+    virtual bool isDirectory() const { return true; }
 
 private:
-  QDict<KTarEntry> m_entries;
+    QDict<KArchiveEntry> m_entries;
 };
+
+/** Old, deprecated naming */
+#define KTarDirectory KArchiveDirectory
 
 #endif
