@@ -610,6 +610,7 @@ public:
   bool bKDesktopMode;
   QLabel *m_freeSpaceLabel;
   QString mimeType;
+  QString oldFileName;
   KLineEdit* m_lined;
 };
 
@@ -677,6 +678,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
       m_bFromTemplate = true;
       setDirty(); // to enforce that the copy happens
     }
+    d->oldFileName = filename;
 
     bool isDesktopFile = KDesktopPropsPlugin::supports(properties->items());
     if ( d->bKDesktopMode && isDesktopFile ) {
@@ -1160,7 +1162,7 @@ void KFilePropsPlugin::applyChanges()
 
   if (nameArea->inherits("QLineEdit"))
   {
-    QString n = KIO::encodeFileName(((QLineEdit *) nameArea)->text());
+    QString n = ((QLineEdit *) nameArea)->text();
     // Remove trailing spaces (#4345)
     while ( n[n.length()-1].isSpace() )
       n.truncate( n.length() - 1 );
@@ -1178,7 +1180,7 @@ void KFilePropsPlugin::applyChanges()
       KIO::Job * job = 0L;
       KURL oldurl = properties->kurl();
       // Tell properties. Warning, this changes the result of properties->kurl() !
-      properties->rename( n );
+      properties->rename( KIO::encodeFileName(n) );
 
       // Update also relative path (for apps and mimetypes)
       if ( !m_sRelativePath.isEmpty() )
@@ -1249,7 +1251,7 @@ void KFilePropsPlugin::slotCopyFinished( KIO::Job * job )
 
   if ( d->bKDesktopMode && isDesktopFile ) {
       // Renamed? Update Name field
-      if ( oldName != properties->kurl().fileName() || m_bFromTemplate ) {
+      if ( d->oldFileName != properties->kurl().fileName() || m_bFromTemplate ) {
           KDesktopFile config( properties->kurl().path() );
           QString nameStr = properties->kurl().fileName();
           config.writeEntry( "Name", nameStr );
