@@ -85,25 +85,38 @@ void KThemeStyle::drawBaseButton(QPainter *p, int x, int y, int w, int h,
     int offset = decoWidth(type);
     QPen oldPen = p->pen();
 
-    // This stinks. I wanted to assign a color and optional pixmap to a
-    // brush with pixmapBrush and fillRect that, but the pixmap in a brush
-    // doesn't necessarily paint at 0,0 in the pixmap. It depends on where
-    // you start painting :( Faster to just do this...
-    if((w-offset*2) > 0 && (h-offset*2) > 0){
-        if(isPixmap(type))
-            if(rounded)
-                p->drawTiledPixmap(x, y, w, h, *scalePixmap(w, h, type));
-            else
-                p->drawTiledPixmap(x+offset, y+offset, w-offset*2, h-offset*2,
-                                   *scalePixmap(w-offset*2, h-offset*2, type));
-        else
-            p->fillRect(x+offset, y+offset, w-offset*2, h-offset*2,
-                        colorGroup(g, type)->brush(QColorGroup::Button));
+    // handle reverse bevel here since it uses decowidth differently
+    if(gradientHint(type) == GrReverseBevel){
+        int i;
+        int hWidth = highlightWidth(type);
+        p->setPen(colorGroup(g, type)->text());
+        for(i=0; i < borderWidth(type); ++i, ++x, ++y, w-=2, h-=2)
+            p->drawRect(x, y, w, h);
+        KThemePixmap *pixmap = gradient(w, h, type);
+        bitBlt(p->device(), x, y, !sunken && hWidth ? pixmap->secondary() :
+               pixmap, 0, 0, w, h, Qt::CopyROP, true);
+        if(hWidth)
+            bitBlt(p->device(), x+hWidth, y+hWidth,
+                   sunken ? pixmap->secondary() : pixmap, hWidth, hWidth,
+                   w-hWidth*2, h-hWidth*2, Qt::CopyROP, true);
     }
-    
-    drawShade(p, x, y, w, h, *colorGroup(g, type), sunken, rounded,
-              highlightWidth(type), borderWidth(type), shade());
-
+    else{
+        if((w-offset*2) > 0 && (h-offset*2) > 0){
+            if(isPixmap(type))
+                if(rounded)
+                    p->drawTiledPixmap(x, y, w, h, *scalePixmap(w, h, type));
+                else
+                    p->drawTiledPixmap(x+offset, y+offset, w-offset*2,
+                                       h-offset*2,
+                                       *scalePixmap(w-offset*2, h-offset*2,
+                                                    type));
+            else
+                p->fillRect(x+offset, y+offset, w-offset*2, h-offset*2,
+                            colorGroup(g, type)->brush(QColorGroup::Button));
+        }
+        drawShade(p, x, y, w, h, *colorGroup(g, type), sunken, rounded,
+                  highlightWidth(type), borderWidth(type), shade());
+    }
     p->setPen(oldPen);
 }
 

@@ -41,19 +41,19 @@ static const char *widgetEntries[] = {"HorizScrollGroove", "VertScrollGroove",
 // because they get iterated through in a couple of places and it allows the
 // use of small for loops.
 
-#define OPTIONS 20
+#define OPTIONS 21
 
 static const char *optionEntries[]={"SButtonType", "ArrowType", "ComboDeco",
 "ShadeStyle", "RoundButton", "RoundCombo", "RoundSlider", "FrameWidth",
 "ButtonXShift", "ButtonYShift", "SliderLength", "SplitterHandle", "Name",
 "Description", "CacheSize", "SmallSliderGroove", "3DFocus", "FocusOffset",
-"ActiveTabLine", "InactiveTabLine"};
+"ActiveTabLine", "InactiveTabLine", "ReverseBevelContrast"};
 
 enum OptionLabel{OptSButtonType=0, OptArrowType, OptComboDeco, OptShadeStyle,
 OptRoundButton, OptRoundCombo, OptRoundSlider, OptFrameWidth, OptButtonXShift,
 OptButtonYShift, OptSliderLength, OptSplitterHandle, OptName, OptDescription,
 OptCacheSize, OptSmallGroove, Opt3DFocus, OptFocusOffset, OptATabLine,
-OptITabLine};
+OptITabLine, OptRBevelContrast};
 
 #define WGROUPS 10
 
@@ -70,8 +70,8 @@ WExtBackground, WExtForeground, WBorders, WHighlights, WPixmaps, WBlend};
 // bitfield is nicer :) I don't know why C++ coders don't use these more..
 // (mosfet)
 struct kthemeKeyData{
-    unsigned int id          :5;
-    unsigned int width       :14;
+    unsigned int id          :6;
+    unsigned int width       :13;
     unsigned int height      :13;
 };
 
@@ -154,6 +154,8 @@ void KThemeBase::readConfig(Qt::GUIStyle style)
         readNumEntry(optionEntries[OptSplitterHandle], 10);
     cacheSize = config.
         readNumEntry(optionEntries[OptCacheSize], 1024);
+    rBevelContrast = config.
+        readNumEntry(optionEntries[OptRBevelContrast], 0);
 
     // Read in the scale hints
     config.setGroup(wGroupEntries[WScale]);
@@ -188,6 +190,8 @@ void KThemeBase::readConfig(Qt::GUIStyle style)
             gradients[i] = GrRectangle;
         else if(tmpStr == "Elliptic")
             gradients[i] = GrElliptic;
+        else if(tmpStr == "ReverseBevel")
+            gradients[i] = GrReverseBevel;
         else{
             if(tmpStr != "None" && !tmpStr.isEmpty())
                 warning("KThemeStyle: Unrecognized gradient option %s, using None.",
@@ -604,6 +608,39 @@ KThemePixmap* KThemeBase::gradient(int w, int h, WidgetType widget)
                 KPixmapEffect::gradient(*pixmaps[widget], *grHighColors[widget],
                                         *grLowColors[widget],
                                         KPixmapEffect::HorizontalGradient);
+            }
+        }
+    }
+    else if(gradients[widget] == GrReverseBevel){
+        if(!pixmaps[widget] || pixmaps[widget]->width() != w ||
+           pixmaps[widget]->height() != h){
+            KThemePixmap *cachePix = cache->pixmap(w, h, widget);
+            if(cachePix){
+                cachePix = new KThemePixmap(*cachePix);
+                if(pixmaps[widget])
+                    cache->insert(pixmaps[widget], KThemeCache::FullScale,
+                                  widget);
+                pixmaps[widget] = cachePix;
+            }
+            else{
+                if(pixmaps[widget])
+                    cache->insert(pixmaps[widget], KThemeCache::FullScale,
+                                  widget);
+                pixmaps[widget] = new KThemePixmap;
+                pixmaps[widget]->resize(w, h);
+                KPixmap s;
+                s.resize(w, h);
+                KPixmapEffect::gradient(*pixmaps[widget],
+                                        *grHighColors[widget],
+                                        *grLowColors[widget],
+                                        KPixmapEffect::DiagonalGradient);
+                KPixmapEffect::gradient(s,
+                                        grLowColors[widget]->
+                                        dark(rBevelContrast),
+                                        grHighColors[widget]->
+                                        light(rBevelContrast),
+                                        KPixmapEffect::DiagonalGradient);
+                pixmaps[widget]->setSecondary(s);
             }
         }
     }

@@ -40,12 +40,16 @@
 class KThemePixmap : public KPixmap
 {
 public:
-    KThemePixmap() : KPixmap() {t.start();}
-    ~KThemePixmap(){;}
+    KThemePixmap() : KPixmap() {t.start(); s = NULL;}
+    ~KThemePixmap(){if(s) delete s;}
+    KPixmap* secondary(){return(s);}
+    void setSecondary(KPixmap &p){if(s) delete s; s = new KPixmap(p);}
+    void clearSecondary(){if(s) delete s; s = NULL;}
     void updateAccessed() {t.start();}
     bool isOld() {return(t.elapsed() >= 300000);} // 5 minutes
 protected:
     QTime t;
+    KPixmap *s;
 };
 
 /**
@@ -179,7 +183,7 @@ public:
      * bottom, and diagonal is upper-left to bottom-right.
      */
      enum Gradient{GrNone, GrHorizontal, GrVertical, GrDiagonal, GrPyramid,
-     GrRectangle, GrElliptic};
+     GrRectangle, GrElliptic, GrReverseBevel};
     /**
      * This provides a list of widget types that KThemeBase recognizes.
      */
@@ -231,13 +235,13 @@ public:
     /**
      * True if the user specified a 3D focus rectangle
      */
-    bool is3DFocus();
+    bool is3DFocus() const;
     /**
      * If the user specified a 3D focus rectangle, they may also specify an
      * offset from the default rectangle to use when drawing it. This returns
      * the specified offset.
      */
-    int focusOffset();
+    int focusOffset() const;
     /**
      * The border width of the specified widget.
      */
@@ -267,9 +271,13 @@ public:
      */
     int frameWidth() const;
     /**
-     * The splitter width
+     * The splitter width.
      */
     int splitWidth() const;
+    /**
+     * The contrast for reverse gradient bevels.
+     */
+    int reverseBevelContrast() const;
     /**
      * The button text X shift.
      */
@@ -378,6 +386,7 @@ private:
     int btnXShift, btnYShift;
     int sliderLen;
     int splitterWidth;
+    int rBevelContrast;
     int focus3DOffset;
     bool smallGroove;
     bool roundedButton, roundedCombo, roundedSlider;
@@ -447,14 +456,19 @@ inline bool KThemeBase::isColor(WidgetType widget) const
     return(colors[widget] != NULL);
 }
 
-inline bool KThemeBase::is3DFocus()
+inline bool KThemeBase::is3DFocus() const
 {
     return(focus3D);
 }
 
-inline int KThemeBase::focusOffset()
+inline int KThemeBase::focusOffset() const
 {
     return(focus3DOffset);
+}
+
+inline int KThemeBase::reverseBevelContrast() const
+{
+    return(rBevelContrast);
 }
 
 inline KThemeBase::ScaleHint KThemeBase::scaleHint(WidgetType widget) const
