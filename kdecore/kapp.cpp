@@ -836,9 +836,9 @@ void KApplication::propagateSessionManager()
 {
     QCString fName = QFile::encodeName(locateLocal("socket", "KSMserver"));
     QCString display = ::getenv("DISPLAY");
-    int pos = display.findRev('.');
-    if (pos != -1)
-	display.remove(pos, 10);
+    // strip the screen number from the display
+    display.replace(QRegExp("\\.[0-9]+$"), "");
+
     fName += "-"+display;
     QCString smEnv = ::getenv("SESSION_MANAGER");
     bool check = smEnv.isEmpty();
