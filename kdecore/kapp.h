@@ -23,10 +23,10 @@
 #define _KAPP_H
 
 // Version macros. Never put this further down.
-#define KDE_VERSION_STRING "1.1"
+#define KDE_VERSION_STRING "Almost 2.0 Alpha"
 #define KDE_VERSION_MAJOR 1
-#define KDE_VERSION_MINOR 1
-#define KDE_VERSION_RELEASE 3
+#define KDE_VERSION_MINOR 9
+#define KDE_VERSION_RELEASE 1
 
 #define Icon(x) kapp->getIconLoader()->loadIcon(x,0,0,false)
 #define ICON(x) kapp->getIconLoader()->loadIcon(x,0,0,false)
@@ -732,6 +732,9 @@ private:
 #endif
 
 // $Log$
+// Revision 1.69  1999/04/23 13:42:14  mosfet
+// KStyle class addition and the routines to allocate it.
+//
 // Revision 1.68  1999/04/19 15:49:31  kulow
 // cleaning up yet some more header files (fixheaders is your friend).
 // Adding copy constructor to KPixmap to avoid casting while assingment.
