@@ -68,6 +68,7 @@ protected:
 	int requestedFragmentCount;
 
 	std::string findDefaultDevice();
+	int ossBits(int format);
 
 public:
 	AudioIOOSS();
@@ -104,6 +105,15 @@ string AudioIOOSS::findDefaultDevice()
 			return device[i];
 
 	return device[0];
+}
+
+int AudioIOOSS::ossBits(int format)
+{
+	arts_return_val_if_fail (format == AFMT_U8
+			              || format == AFMT_S16_LE
+						  || format == AFMT_S16_BE, 16);
+
+	return (format == AFMT_U8)?8:16;
 }
 
 AudioIOOSS::AudioIOOSS()
