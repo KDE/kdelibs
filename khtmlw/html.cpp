@@ -62,9 +62,10 @@
 
 
 enum ID { ID_ADDRESS, ID_BIG, ID_BLOCKQUOTE, ID_B, ID_CITE, ID_CODE, ID_EM,
-ID_FONT, ID_H1, ID_H2, ID_H3, ID_H4, ID_H5, ID_H6, ID_I, ID_KBD, ID_PRE,
+ID_FONT, ID_HEADER, ID_I, ID_KBD, ID_PRE,
 ID_SAMP, ID_SMALL, ID_STRIKE, ID_STRONG, ID_S, ID_TT, ID_U, ID_CAPTION, 
 ID_TH, ID_TD, ID_TABLE, ID_DIR, ID_MENU, ID_OL, ID_UL, ID_VAR };
+
 
 //----------------------------------------------------------------------------
 // convert number to roman numerals
@@ -1734,7 +1735,6 @@ void KHTMLWidget::calcSize()
     }
     
     clue->setMaxWidth( _max_width );
-
     clue->calcSize();
     clue->setPos( 0, clue->getAscent() );
 
@@ -1781,14 +1781,16 @@ const char* KHTMLWidget::parseBody( HTMLClueV *_clue, const char *_end[], bool t
 		title += " ";
 	    else if ( flow != 0)
 	    {
-		HTMLText *t;
-		if ( url || target )
-		    t = new HTMLLinkText( " ", currentFont(), painter,
+		if ( url || target ) {
+		    HTMLLinkText *t = new HTMLLinkText( " ", currentFont(), painter,
 			url, target );
-		else
-		    t = new HTMLText( " ", currentFont(), painter );
-		t->setSeparator( true );
-		flow->append( t );
+		    t->setSeparator( true );
+		    flow->append( t );
+		}
+		else {
+		    HTMLHSpace *t = new HTMLHSpace( currentFont(), painter );
+		    flow->append( t );
+		}
 	    }
 	}
 	else if ( *str != TAG_ESCAPE )
@@ -1835,11 +1837,14 @@ const char* KHTMLWidget::parseBody( HTMLClueV *_clue, const char *_end[], bool t
 			debugM("OK\n");
 		       
 			debugM("Adding string to flow...");
+			if (*str1 == ' ')
+		   	    flow->append( new HTMLHSpace( fp, painter));
+
 		   	if ( url || target )
-		       		flow->append( new HTMLLinkText( str1, fp,
+	       		    flow->append( new HTMLLinkText( str1, fp,
 					painter, url, target,TRUE ) );
 		   	else
-		       		flow->append( new HTMLText( str1, fp,
+		       	    flow->append( new HTMLTextMaster( str1, fp,
 				        painter,TRUE ) );
 			debugM("OK\n");
 		  }		
@@ -1889,11 +1894,14 @@ const char* KHTMLWidget::parseBody( HTMLClueV *_clue, const char *_end[], bool t
 		  }
 		
 		  debugM("Adding string to flow...");
+                  if (*str == ' ')
+	              flow->append( new HTMLHSpace( fp, painter));
 		  if ( url || target )
 		      flow->append( new HTMLLinkText( str, fp, painter,
 		  	 url, target,autoDelete ) );
 		  else
-		      flow->append( new HTMLText( str, fp, painter,autoDelete ) );
+		      flow->append( new HTMLTextMaster( str, fp, painter,
+		      	 autoDelete ) );
 	  	  debugM("OK\n");
 		}      
 	    }
@@ -1919,7 +1927,7 @@ const char* KHTMLWidget::parseBody( HTMLClueV *_clue, const char *_end[], bool t
 		// tack a space on the end to ensure the previous line is not
 		// zero pixels high
 		if ( flow && !flow->hasChildren() )
-		    flow->append( new HTMLText( currentFont(), painter ) );
+		    flow->append( new HTMLHSpace( currentFont(), painter ) );
 		flow = new HTMLClueH( 0, 0, _clue->getMaxWidth() );
 		flow->setIndent( indent );
 		_clue->append( flow );
@@ -1938,7 +1946,7 @@ const char* KHTMLWidget::parseBody( HTMLClueV *_clue, const char *_end[], bool t
 	if ( toplevel )
 	{
 	    if ( parseCount <= 0 )
-		return 0;
+              return 0;
 	}
 	parseCount--;
     }
@@ -2002,18 +2010,18 @@ void KHTMLWidget::parseA( HTMLClueV *_clue, const char *str )
 	    }
 	    else if ( strncasecmp( p, "href=", 5 ) == 0 )
 	    {
-		KURL u;
 		p += 5;
 		if ( *p == '#' )
 		{// reference
-		    u = KURL( actualURL );
+		    KURL u( actualURL );
 		    u.setReference( p + 1 );
+		    href = u.url();
 		}
 		else 
 		{
-		    u = KURL( baseURL, p );
+		    KURL u( baseURL, p );
+		    href = u.url();
 		}
-                href = u.url();
 	    }
 	    else if ( strncasecmp( p, "target=", 7 ) == 0 )
 	    {
@@ -2111,19 +2119,18 @@ void KHTMLWidget::parseA( HTMLClueV *_clue, const char *str )
 	{
 	    if ( strncasecmp( p, "href=", 5 ) == 0 )
 	    {
-                KURL u;
-
 		p += 5;
 		if ( *p == '#' )
 		{// reference
-		    u = KURL( actualURL );
+		    KURL u( actualURL );
 		    u.setReference( p + 1 );
+	            tmpurl = u.url();
 		}
 		else
 		{
-                    u = KURL( baseURL, p );
+                    KURL u( baseURL, p );
+		    tmpurl = u.url();
 		}		
-                tmpurl = u.url();
 
 		visited = URLVisited( tmpurl );
 	    }
@@ -2874,14 +2881,14 @@ void KHTMLWidget::parseH( HTMLClueV *_clue, const char *str )
 		}
 		// Insert a vertical space and restore the old font at the 
 		// closing tag
-		pushBlock(ID_H1 + str[1] - '1', 2, &blockEndFont, true );
+		pushBlock(ID_HEADER, 2, &blockEndFont, true );
 	}
 	else if ( *str=='/' && *(str+1)=='h' &&
 	    ( *(str+2)=='1' || *(str+2)=='2' || *(str+2)=='3' ||
  	      *(str+2)=='4' || *(str+2)=='5' || *(str+2)=='6' ))
 	{
 		// Close tag
-		popBlock( ID_H1 + str[2] - '1', clue);
+		popBlock( ID_HEADER, clue);
 	}
 	else if ( strncmp(str, "hr", 2 ) == 0 )
 	{
@@ -2995,18 +3002,17 @@ void KHTMLWidget::parseI( HTMLClueV *_clue, const char *str )
 	    }
 	    else if ( strncasecmp( token, "usemap=", 7 ) == 0 )
 	    {
-	        KURL u;
-	        
 		if ( *(token + 7 ) == '#' )
 		{
-		    u = KURL( actualURL );
+		    KURL u( actualURL );
 		    u.setReference( token + 8 );
+                    usemap = u.url();
 		}
 		else
 		{
-		    u = KURL( baseURL, token + 7 );
+		    KURL u( baseURL, token + 7 );
+                    usemap = u.url();
 		}
-                usemap = u.url();
 	    }
 	    else if ( strncasecmp( token, "ismap", 5 ) == 0 )
 	    {
@@ -3798,11 +3804,7 @@ const char* KHTMLWidget::parseCell( HTMLClue *_clue, const char *str )
 const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 	const char *attr )
 {
-    static const char *endth[] = { "</th", "<th", "<td", "<tr", "</table", 0 };
-    static const char *endtd[] = { "</td", "<th", "<td", "<tr", "</table", 0 };
-#if 0
-    static const char *endall[] = { "<td", "<tr", "<th", "</table", 0 };
-#endif
+    static const char *endthtd[] = { "</th", "</td", "</tr", "<th", "<td", "<tr", "</table", 0 };
     static const char *endcap[] = { "</caption>", "</table>", "<tr", "<td", "<th", 0 };    
     const char* str = 0;
     bool firstRow = true;
@@ -4076,7 +4078,7 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 			    else
 				bgcolor.setNamedColor( token+8 );
 			}
-		    }
+		    } // while (hasMoreTokens)
 
 		    HTMLTableCell *cell = new HTMLTableCell(0, 0, width, percent,
 			rowSpan, colSpan, padding );
@@ -4091,13 +4093,13 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 			weight = QFont::Bold;
 			selectFont();
 			pushBlock( ID_TH, 3, &blockEndFont);
-		        str = parseBody( cell, endth );
+		        str = parseBody( cell, endthtd );
                         popBlock( ID_TH, cell );
 		    }
 		    else
 		    {
 		    	pushBlock( ID_TD, 3 );
-			str = parseBody( cell, endtd );
+			str = parseBody( cell, endthtd );
 			popBlock( ID_TD, cell );
 		    }
 
@@ -4115,7 +4117,8 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 			return 0;
 		    }
 
-		    if (strncmp( str, "</t", 3) == 0 )
+		    if ((strncmp( str, "</td", 4) == 0 ) ||
+		        (strncmp( str, "</th", 4) == 0))
 		    {
 		        // HTML Ok!
 		        break; // Get next token from 'ht'
