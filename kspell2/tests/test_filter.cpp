@@ -30,7 +30,7 @@ int main( int argc, char** argv )
 {
     KApplication app(argc, argv, "Filter");
 
-    QString buffer = QString( "This is a sample buffer. Please test me." );
+    QString buffer = QString( "This is     a sample buffer.      Please test me." );
 
     Filter filter;
     filter.setBuffer( buffer );
@@ -38,8 +38,13 @@ int main( int argc, char** argv )
     Word w;
 
     while ( ! (w=filter.nextWord()).end ) {
-        kdDebug()<< "Found word \""<< w.word << "\" which starts at position "<< w.start <<endl;
+        kdDebug()<< "Found word \""<< w.word << "\" which starts at position "
+                 << w.start <<endl;
     }
+
+    filter.setBuffer( buffer );
+
+
 
     return 0;
 }

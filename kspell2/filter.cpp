@@ -186,6 +186,11 @@ Word Filter::wordAtPosition( unsigned int pos ) const
 void Filter::setCurrentPosition( int i )
 {
     m_currentPosition = i;
+
+    //go back to the last word so that next word returns something
+    //useful
+    while ( m_buffer[m_currentPosition].isLetter() && m_currentPosition > 0 )
+        --m_currentPosition;
 }
 
 int Filter::currentPosition() const
@@ -209,16 +214,25 @@ void Filter::replace( const Word& w, const QString& newWord)
 
 QString Filter::context() const
 {
-    int len = 50;
-    bool begin = ( (m_currentPosition - len/2)<=0 ) ? true : false;
+    int len = 60;
+    //we don't want the expression underneath casted to an unsigned int
+    //which would cause it to always evaluate to false
+    int signedPosition = m_currentPosition;
+    bool begin = ( (signedPosition - len/2)<=0 ) ? true : false;
+
+
+    QString buffer = m_buffer;
+    Word word = wordAtPosition( m_currentPosition );
+    buffer = buffer.replace( word.start, word.word.length(),
+                             QString( "<b>%1</b>" ).arg( word.word ) );
 
     QString context;
     if ( begin )
         context = QString( "%1...")
-                  .arg( m_buffer.mid(  0, len ) );
+                  .arg( buffer.mid(  0, len ) );
     else
         context = QString( "...%1..." )
-                  .arg( m_buffer.mid(  m_currentPosition - 20, len ) );
+                  .arg( buffer.mid(  m_currentPosition - 20, len ) );
 
     context = context.replace( '\n', ' ' );
 
