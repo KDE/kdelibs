@@ -183,6 +183,8 @@ QFontDatabase::findFont( QFont::Script script, const QFontPrivate *fp,
 
     XFontStruct *xfs;
     xfs = XLoadQueryFont(QPaintDevice::x11AppDisplay(), xlfd.latin1() );
+    if (!xfs)
+	qFatal("we need some fonts. So make sure you have %s installed.", xlfd.latin1());
 
     if ( !xfs )
         return 0;
