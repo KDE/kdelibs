@@ -91,6 +91,7 @@ class KCrash
    * @param path the application path.
    */
   static void setApplicationPath (QString path) { appPath = qstrdup(path.local8Bit().data()); }
+  /* KDE 4: Make it const QString & */
 
   /**
    * Sets the application name @p name which should be passed to
@@ -98,6 +99,7 @@ class KCrash
    * @param name the name of the application, as shown in Dr. Konqi
    */
   static void setApplicationName (QString name) { appName = qstrdup(name.local8Bit().data()); }
+  /* KDE 4: Make it const QString & */
 
  protected:
   /**

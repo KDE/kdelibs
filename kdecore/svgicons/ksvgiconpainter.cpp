@@ -173,6 +173,7 @@ public:
 		m_tempBuffer = 0;
 	}
 
+	/* antlarr: KDE 4: shouldn't this be "const QColor &" ? */
 	Q_UINT32 toArtColor(QColor color)
 	{
 		// Convert in a libart suitable form
@@ -1274,6 +1275,7 @@ void KSVGIconPainter::setFillRule(const QString &fillRule)
 	d->helper->m_fillRule = fillRule;
 }
 
+/* antlarr: KDE 4: Make it const QString & */
 Q_UINT32 KSVGIconPainter::parseOpacity(QString data)
 {
 	int opacity = 255;

@@ -55,6 +55,7 @@
 #include "kstandarddirs.h"
 
 
+/* antlarr: KDE 4: make the parameters const QString & */
 KTempFile::KTempFile(QString filePrefix, QString fileExtension, int mode)
 {
    bAutoDelete = false;
