@@ -113,6 +113,7 @@ void HTMLWidgetElement::position( int _x, int _y, int , int _height )
 	if ( w == 0L ) // CC: HTMLHidden does not have a widget...
 		return;
 
+
 	return;
 	if ( _y > absY() + ascent + descent || _y + _height < absY() )
 	{
@@ -125,11 +126,36 @@ void HTMLWidgetElement::position( int _x, int _y, int , int _height )
 	}
 }
 
+bool HTMLWidgetElement::print( QPainter *_painter, int, int _y, int, int _height, int _tx, int _ty, bool toPrinter )
+{
+    if ( _y + _height < y - getAscent() || _y > y + getDescent() )
+	return false;
+
+    if ( toPrinter )
+    {
+	if ( _y + _height < y + descent )
+	    return true;
+	if ( isPrinted() )
+	    return false;
+	setPrinted( true );
+    }
+
+    print( _painter, _tx, _ty );
+
+    return false;
+}
+
 void HTMLWidgetElement::print( QPainter *_painter, int _tx, int _ty )
 {
     printf("in print\n");
     if ( w == 0 || p == 0 || p->isNull() )
 	return;
+    QPainter::redirect( w, p );
+    w->show();
+    // force a repaint
+    w->repaint( false );
+    w->hide();
+
     printf("in print...\n");
     _painter->drawPixmap( QPoint( _tx, _ty), *p );
 }
@@ -145,9 +171,19 @@ void HTMLWidgetElement::setWidget( QWidget *_w )
     w = _w; 
     p = new QPixmap( w->width(), w->height() );
     // redirect all paint events for the widget into the pixmap
-    QPainter::redirect( w, p );
-    // force a repaint
-    w->repaint( false );
+
+    p->fill( w->backgroundColor() );
+    
+    printf("setWidget: w->isActiveWindow = %d\n", w->isActiveWindow());
+    printf("setWidget: w->isDesktop      = %d\n", w->isDesktop());
+    printf("setWidget: w->isEnabled      = %d\n", w->isEnabled());
+    printf("setWidget: w->isFocusEnabled = %d\n", w->isFocusEnabled());
+    printf("setWidget: w->isModal        = %d\n", w->isModal());
+    printf("setWidget: w->isPopup        = %d\n", w->isPopup());
+    printf("setWidget: w->isTopLevel     = %d\n", w->isTopLevel());
+    printf("setWidget: w->isUpdatesEnabled %d\n", w->isUpdatesEnabled());
+    printf("setWidget: w->isVisible      = %d\n", w->isVisible());
+    printf("setWidget: w->isVisibleToTLW = %d\n", w->isVisibleToTLW());
 }
 //----------------------------------------------------------------------------
 
@@ -317,6 +353,8 @@ HTMLTextArea::HTMLTextArea( QWidget *parent, const char *n, int r, int c,
 {
     QWidget *w;
 	_defText = "";
+
+printf("New HTMLTextArea element! Text = \"%s\"\n", n);
 
 	w = new QMultiLineEdit( parent );
 	if( font )

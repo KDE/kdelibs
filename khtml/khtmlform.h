@@ -98,7 +98,6 @@ class HTMLWidgetElement : public QObject, public HTMLObject, public HTMLElement
 	Q_OBJECT
 protected:
 	const HTMLFont *font;
-
 public:
 	HTMLWidgetElement( const char *n, const HTMLFont *f = 0 ); 
 	virtual ~HTMLWidgetElement();
@@ -115,7 +114,9 @@ public:
 
 	virtual void calcAbsolutePos( int _x, int _y );
 	// prints the object
-	virtual void print( QPainter *, int, int );
+    virtual bool print( QPainter *_painter, int _x, int _y, int _width,
+            int _height, int _tx, int _ty, bool toPrinter );
+  	virtual void print( QPainter *, int, int );
 
     virtual const char * objectName() const { return "HTMLWidgetElement"; };
 
