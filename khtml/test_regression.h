@@ -1,7 +1,7 @@
 /**
  * This file is part of the KDE project
  *
- * (C) 2001,2003 Peter Kelly (pmk@post.com)
+ * Copyright (C) 2001,2003 Peter Kelly (pmk@post.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
