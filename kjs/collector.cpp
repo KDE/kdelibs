@@ -26,8 +26,6 @@
 
 namespace KJS {
 
-  void pruneObject(Imp *imp);
-    
   class CollectorBlock {
   public:
     CollectorBlock(int s);
@@ -151,18 +149,6 @@ void Collector::privateCollect()
     Imp **r = (Imp**)block->mem;
     for (int i = 0; i < block->filled; i++, r++)
       if (*r) {
-	assert((*r)->refcount > 0);
-	if (!(*r)->deref()) {
-	  // our memory managment can't deal with copying complex objects from
-	  // one frame to another yet. We'll therefore better prune the object.
-#ifdef KJS_DEBUG_MEM
-	  printf("Collector: leaving object %p (%s) alive for now. %d other refs\n",
-		 (*r), (*r)->typeInfo()->name, (*r)->refcount);
-#endif	  
-	  if ((Collector*)(*r)->internal == this)
-	      pruneObject(*r);
-	  continue;
-	}
 	// emulate 'operator delete()'
 	(*r)->~Imp();
 	free(*r);
@@ -185,10 +171,4 @@ void Collector::privateCollect()
 #ifdef KJS_DEBUG_MEM
   collecting = false;
 #endif
-}
-
-void KJS::pruneObject(Imp *imp)
-{
-  /* TODO: remove properties */
-  imp->setPrototype(KJSO());
 }
