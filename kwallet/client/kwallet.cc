@@ -166,7 +166,7 @@ Wallet *Wallet::openWallet(const QString& name, OpenType ot) {
 #if KDE_IS_VERSION(3,1,90)
 	DCOPReply r = DCOPRef("kded", "kwalletd").callExt("open", DCOPRef::UseEventLoop, -1, name);
 #else
-	DCOPReply r = DCOPRef("kded", "kwalletd").call("open", -1, name);
+	DCOPReply r = DCOPRef("kded", "kwalletd").call("open", name);
 #endif
 	if (r.isValid()) {
 		int drc = -1;

@@ -64,7 +64,9 @@ bool BlowFish::init() {
 		data = 0;
 		for (int k = 0; k < 4; ++k) {
 			data = (data << 8) | ((unsigned char *)_key)[j++];
-			if (j >= _keylen/8) j = 0;
+			if (j >= _keylen / 8) {
+				j = 0;
+			}
 		}
 		_P[i] = P[i] ^ data;
 	}
@@ -86,10 +88,11 @@ bool BlowFish::init() {
 	// Nice code from gpg's implementation...
 	//     check to see if the key is weak and return error if so
 	for (int i = 0; i < 255; i++) {
-		for (int j = i+1; j < 256; j++) {
+		for (int j = i + 1; j < 256; j++) {
 			if ((_S[0][i] == _S[0][j]) || (_S[1][i] == _S[1][j]) ||
-					(_S[2][i] == _S[2][j]) || (_S[3][i] == _S[3][j]))
+					(_S[2][i] == _S[2][j]) || (_S[3][i] == _S[3][j])) {
 				return false;
+			}
 		}
 	}
 

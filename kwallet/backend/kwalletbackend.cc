@@ -19,11 +19,12 @@
  */
 
 #include "kwalletbackend.h"
-#include <kglobal.h>
 #include <kdebug.h>
+#include <kglobal.h>
 #include <kmdcodec.h>
 #include <kstandarddirs.h>
 #include <qfile.h>
+#include <qfileinfo.h>
 #include "blowfish.h"
 #include "sha1.h"
 #include "cbc.h"
@@ -212,7 +213,9 @@ static int password2hash(const QByteArray& password, QByteArray& hash) {
 
 bool Backend::exists(const QString& wallet) {
 QString path = KGlobal::dirs()->saveLocation("kwallet") + "/" + wallet + ".kwl";
-return QFile::exists(path);
+	// Note: 60 bytes is presently the minimum size of a wallet file.
+	//       Anything smaller is junk.
+return QFile::exists(path) && QFileInfo(path).size() >= 60;
 }
 
 
@@ -228,7 +231,9 @@ int Backend::open(const QByteArray& password) {
 	QByteArray passhash;
 
 	// No wallet existed.  Let's create it.
-	if (!QFile::exists(path)) {
+	// Note: 60 bytes is presently the minimum size of a wallet file.
+	//       Anything smaller is junk and should be deleted.
+	if (!QFile::exists(path) || QFileInfo(path).size() < 60) {
 		QFile newfile(path);
 		if (!newfile.open(IO_ReadWrite)) {
 			return -2;   // error opening file

@@ -191,7 +191,7 @@ int KWalletD::open(const QString& wallet) {
 		} else if (wallet == KWallet::Wallet::LocalWallet() ||
 				wallet == KWallet::Wallet::NetworkWallet()) {
 			// Auto create these wallets.
-			kpd = new KPasswordDialog(KPasswordDialog::NewPassword, i18n("The application '%1' has requested to open the KDE wallet. This is used to store sensitive data in a secure fashion.  Please enter a password to use with this wallet.").arg(appid), false);
+			kpd = new KPasswordDialog(KPasswordDialog::NewPassword, i18n("The application '%1' has requested to open the KDE wallet. This is used to store sensitive data in a secure fashion.  Please enter a password to use with this wallet or cancel to deny the application's request.").arg(appid), false);
 			brandNew = true;
 			kpd->setButtonOKText(i18n("&Open"));
 		} else {
@@ -940,9 +940,7 @@ bool KWalletD::folderDoesNotExist(const QString& wallet, const QString& folder) 
 		return true;
 	}
 
-	for (QIntDictIterator<KWallet::Backend> it(_wallets);
-						it.current();
-							++it) {
+	for (QIntDictIterator<KWallet::Backend> it(_wallets); it.current(); ++it) {
 		if (it.current()->walletName() == wallet) {
 			return it.current()->folderDoesNotExist(folder);
 		}
@@ -961,9 +959,7 @@ bool KWalletD::keyDoesNotExist(const QString& wallet, const QString& folder, con
 		return true;
 	}
 
-	for (QIntDictIterator<KWallet::Backend> it(_wallets);
-						it.current();
-							++it) {
+	for (QIntDictIterator<KWallet::Backend> it(_wallets); it.current(); ++it) {
 		if (it.current()->walletName() == wallet) {
 			return it.current()->folderDoesNotExist(folder);
 		}
