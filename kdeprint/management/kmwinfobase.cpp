@@ -80,3 +80,11 @@ void KMWInfoBase::setCurrent(int i)
 		m_edits.at(i)->setFocus();
 	}
 }
+
+QLineEdit* KMWInfoBase::lineEdit( int i )
+{
+	if ( i >= 0 && i < m_nlines )
+		return m_edits.at( i );
+	else
+		return NULL;
+}
