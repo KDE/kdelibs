@@ -101,7 +101,7 @@ static const char * const xNames[CHARSETS_COUNT] = {
     "gb2312*",
     "unknown",
     "unknown",
-    "big5*-0",
+    "big5-0",
 #ifdef USE_TSCII
     "tscii-0",
 #endif
@@ -514,8 +514,12 @@ QString KCharsets::xCharsetName(QFont::CharSet charSet) const
         return "tscii-0";
 #endif
     case QFont::Set_Th_TH:
-    case QFont::Set_Zh:
+	case QFont::Set_GBK:
+	    return "set-gbk";
+	case QFont::Set_Zh:
     case QFont::Set_Zh_TW:
+    case QFont::Set_Big5:
+	return "big5-0";
     case QFont::AnyCharSet:
     default:
         break;
@@ -643,8 +647,19 @@ QFont::CharSet KCharsets::charsetForEncoding(const QString &e) const
     conf.setGroup("charsetsForEncoding");
 
     kdDebug(0) << "list for " << encoding << " is: " << conf.readEntry(encoding) << endl;
-    QStringList charsets = conf.readListEntry(encoding);
+    
+    QString enc = conf.readEntry(encoding);
+    if(enc.isEmpty()) {
+	conf.setGroup("builtin");
+	encoding = conf.readEntry(encoding);
+	encoding = encoding.lower();
+	conf.setGroup("charsetsForEncoding");
+	kdDebug(0) << "list for " << encoding << " is: " << conf.readEntry(encoding) << endl <<endl;
+    }
 
+    QStringList charsets;
+    charsets = conf.readListEntry(encoding);
+    
     // iterate thorugh the list and find the first charset that is available
     for ( QStringList::Iterator it = charsets.begin(); it != charsets.end(); ++it ) {
         if( const_cast<KCharsets *>(this)->isAvailable(*it) ) {
