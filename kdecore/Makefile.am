@@ -36,7 +36,7 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kdesktopfile.h kurl.h ksock.h kaboutdata.h kcmdlineargs.h \
 	kconfigbackend.h kapp.h kapplication.h kuniqueapp.h kuniqueapplication.h \
 	kcharsets.h kdeversion.h \
-	kprocess.h kprocctrl.h klocale.h kicontheme.h kiconloader.h kdebug.h \
+	kpty.h kprocess.h kprocctrl.h klocale.h kicontheme.h kiconloader.h kdebug.h \
 	kwinmodule.h kwin.h krootprop.h \
 	kshortcut.h kkeynative.h kaccel.h kglobalaccel.h \
 	kstdaccel.h kshortcutlist.h \
@@ -79,7 +79,7 @@ noinst_HEADERS = kaccelaction.h kaccelbase.h kaccelprivate.h kckey.h \
 libkdecore_la_SOURCES = libintl.cpp kapplication.cpp kdebug.cpp netwm.cpp  \
 	kconfigbase.cpp kconfig.cpp  ksimpleconfig.cpp kconfigbackend.cpp  \
 	kdesktopfile.cpp kstandarddirs.cpp ksock.cpp\
-	kprocess.cpp kprocctrl.cpp klocale.cpp krfcdate.cpp\
+	kpty.cpp kprocess.cpp kprocctrl.cpp klocale.cpp krfcdate.cpp\
 	kiconeffect.cpp kicontheme.cpp kiconloader.cpp \
 	kwin.cpp kwinmodule.cpp krootprop.cpp kcharsets.cpp \
 	kckey.cpp kshortcut.cpp kkeynative_x11.cpp kkeyserver_x11.cpp \
@@ -143,10 +143,19 @@ kcharsets.lo: kentities.c
 parser: kentities.gperf
 	cd $(srcdir) && gperf -a -L "ANSI-C" -C -G -c -o -t -k '*' -NfindEntity -D -Hhash_Entity -Wwordlist_Entity -s 2 kentities.gperf > kentities.c
 
-bin_PROGRAMS = kde-config
+bin_PROGRAMS = kde-config kgrantpty
+
 kde_config_SOURCES = kde-config.cpp
 kde_config_LDADD = ./libkdecore.la
 kde_config_LDFLAGS = $(KDE_RPATH) $(KDE_MT_LDFLAGS)
+
+kgrantpty_SOURCES = kgrantpty.c
+kgrantpty_LDFLAGS = $(KDE_RPATH) $(all_libraries)
+kgrantpty_LDADD = ./libkdefakes.la
+
+# kgrantpty needs to be installed setuid root
+install-exec-hook: 
+	@(chown root $(DESTDIR)$(bindir)/kgrantpty && chmod 4755 $(DESTDIR)$(bindir)/kgrantpty) || echo "Please make kgrantpty setuid root" >&2
 
 DISTCLEANFILES = kde-config.cpp
 
