@@ -327,7 +327,7 @@ QString KRootProp::writeEntry( const QString& rKey, int nValue )
 QString KRootProp::writeEntry( const QString& rKey, const QFont& rFont )
 {
   QString aValue;
-  UINT8 nFontBits = 0;
+  Q_UINT8 nFontBits = 0;
   // this mimics get_font_bits() from qfont.cpp
   if( rFont.italic() )
     nFontBits = nFontBits | 0x01;
