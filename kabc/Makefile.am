@@ -17,7 +17,6 @@ libkabc_la_SOURCES = \
   resourcefile.cpp \
   resourcefileconfig.cpp \
   binaryformat.cpp \
-  simpleformat.cpp \
   vcardformat.cpp \
   vcardformatimpl.cpp
 
@@ -29,17 +28,20 @@ kabcinclude_HEADERS = address.h addressbook.h addressee.h addresseedialog.h \
   vcard21parser.h field.h resourcefactory.h \
   resourceconfigwidget.h resourcedlg.h \
   binaryformat.h \
-  simpleformat.h \
   vcardformat.h \
   vcardformatimpl.h
 
 METASOURCES = AUTO
 
-bin_PROGRAMS = kab2kabc
+bin_PROGRAMS = kab2kabc splitformat
 
 kab2kabc_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 kab2kabc_LDADD = libkabc.la ../kab/libkab.la
 kab2kabc_SOURCES = kab2kabc.cpp
+
+splitformat_LDFLAGS = $(all_libraries) $(KDE_RPATH)
+splitformat_LDADD = libkabc.la
+splitformat_SOURCES = splitformat.cpp
 
 check_PROGRAMS = testkabc testkabcdlg testdistlist bigread bigwrite testdb \
   testaddressee kabcargl
