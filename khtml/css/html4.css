@@ -296,6 +296,7 @@ OL {
 
 LI {
         display: list-item;
+        -konq-flow-mode: -konq-around-floats
 }
 
 
