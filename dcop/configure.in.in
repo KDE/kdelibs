@@ -4,4 +4,4 @@ if test "${exec_prefix}" != NONE; then
 fi
 
 AC_DEFINE_UNQUOTED(DCOP_PATH, ["${dcop_prefix}/bin"], [Define where your dcop binary is])
-AC_CONFIG_HEADERS([dcop/dcop-path.h])
+AM_CONFIG_HEADER([dcop/dcop-path.h])
