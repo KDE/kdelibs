@@ -323,7 +323,7 @@ void KFileIconView::slotActivate( QIconViewItem *item )
 
 void KFileIconView::selected( QIconViewItem *item )
 {
-    if ( !item )
+    if ( !item || KApplication::keyboardModifiers() != 0 )
 	return;
 
     if ( KGlobalSettings::singleClick() ) {
