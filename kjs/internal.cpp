@@ -53,19 +53,23 @@ extern int kjsyyparse();
 using namespace KJS;
 
 namespace KJS {
+  /* work around some strict alignment requirements 
+     for double variables on some architectures (e.g. PA-RISC) */
+  typedef union { unsigned char b[8]; double d; } kjs_double_t;
+
 #ifdef WORDS_BIGENDIAN
-  unsigned char NaN_Bytes[] = { 0x7f, 0xf8, 0, 0, 0, 0, 0, 0 };
-  unsigned char Inf_Bytes[] = { 0x7f, 0xf0, 0, 0, 0, 0, 0, 0 };
+  static const kjs_double_t NaN_Bytes = { { 0x7f, 0xf8, 0, 0, 0, 0, 0, 0 } };
+  static const kjs_double_t Inf_Bytes = { { 0x7f, 0xf0, 0, 0, 0, 0, 0, 0 } };
 #elif defined(arm)
-  unsigned char NaN_Bytes[] = { 0, 0, 0xf8, 0x7f, 0, 0, 0, 0 };
-  unsigned char Inf_Bytes[] = { 0, 0, 0xf0, 0x7f, 0, 0, 0, 0 };
+  static const kjs_double_t NaN_Bytes = { { 0, 0, 0xf8, 0x7f, 0, 0, 0, 0 } };
+  static const kjs_double_t Inf_Bytes = { { 0, 0, 0xf0, 0x7f, 0, 0, 0, 0 } };
 #else
-  unsigned char NaN_Bytes[] = { 0, 0, 0, 0, 0, 0, 0xf8, 0x7f };
-  unsigned char Inf_Bytes[] = { 0, 0, 0, 0, 0, 0, 0xf0, 0x7f };
+  static const kjs_double_t NaN_Bytes = { { 0, 0, 0, 0, 0, 0, 0xf8, 0x7f } };
+  static const kjs_double_t Inf_Bytes = { { 0, 0, 0, 0, 0, 0, 0xf0, 0x7f } };
 #endif
 
-  const double NaN = *(const double*) NaN_Bytes;
-  const double Inf = *(const double*) Inf_Bytes;
+  const double NaN = NaN_Bytes.d;
+  const double Inf = Inf_Bytes.d;
 }
 
 // ------------------------------ UndefinedImp ---------------------------------
