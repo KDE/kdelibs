@@ -397,36 +397,38 @@ QString KStringHandler::rsqueeze( const QString & str, uint maxlen )
   else return str;
 }
 
-QString KStringHandler::lEmSqueeze( const QString &name, const QFontMetrics& fontMetrics, uint maxlen)
+QString KStringHandler::lEmSqueeze(const QString &name, const QFontMetrics& fontMetrics, uint maxlen)
 {
   return lPixelSqueeze(name, fontMetrics, fontMetrics.maxWidth() * maxlen);
 }
 
-QString KStringHandler::lPixelSqueeze( const QString& name, const QFontMetrics& fontMetrics, uint maxPixels)
+QString KStringHandler::lPixelSqueeze(const QString& name, const QFontMetrics& fontMetrics, uint maxPixels)
 {
   uint nameWidth = fontMetrics.width(name);
-  QString tmp = name;
   
   if (maxPixels < nameWidth)
   {
-    maxPixels -= fontMetrics.width("...");
+    QString tmp = name;
     const uint em = fontMetrics.maxWidth();
+    maxPixels -= fontMetrics.width("...");
+
     while (maxPixels < nameWidth && !tmp.isEmpty())
     {
       int delta = (nameWidth - maxPixels) / em;
 
       if (delta < 1) 
       {
-        break;
+        delta = 1;
       }
 
       tmp.remove(0, delta);
       nameWidth = fontMetrics.width(tmp);
     }
+
     return ("..." + tmp);
   }
 
-  return tmp;
+  return name;
 }
 
 QString KStringHandler::cEmSqueeze(const QString& name, const QFontMetrics& fontMetrics, uint maxlen)
@@ -437,29 +439,30 @@ QString KStringHandler::cEmSqueeze(const QString& name, const QFontMetrics& font
 QString KStringHandler::cPixelSqueeze(const QString& name, const QFontMetrics& fontMetrics, uint maxPixels)
 {
   uint nameWidth = fontMetrics.width(name);
-  QString tmp = name;
   
   if (maxPixels < nameWidth)
   {
-    maxPixels -= fontMetrics.width("...");
+    QString tmp = name;
     const uint em = fontMetrics.maxWidth();
+    maxPixels -= fontMetrics.width("...");
+
     while (maxPixels < nameWidth && !tmp.isEmpty())
     {
       int delta = (nameWidth - maxPixels) / em;
 
       if (delta < 1) 
       { 
-        break;
+        delta = 1;
       }
 
       tmp.remove((tmp.length() / 2) - (delta / 2), delta);
       nameWidth = fontMetrics.width(tmp);
     }
 
-    tmp.insert((tmp.length() + 1) / 2, "...");
+    return tmp.insert((tmp.length() + 1) / 2, "...");
   }
 
-  return tmp;
+  return name;
 }
 
 QString KStringHandler::rEmSqueeze(const QString& name, const QFontMetrics& fontMetrics, uint maxlen)
@@ -470,19 +473,20 @@ QString KStringHandler::rEmSqueeze(const QString& name, const QFontMetrics& font
 QString KStringHandler::rPixelSqueeze(const QString& name, const QFontMetrics& fontMetrics, uint maxPixels)
 {
   uint nameWidth = fontMetrics.width(name);
-  QString tmp = name;
 
   if (maxPixels < nameWidth)
   {
-    maxPixels -= fontMetrics.width("...");
+    QString tmp = name;
     const uint em = fontMetrics.maxWidth();
+    maxPixels -= fontMetrics.width("...");
+
     while (maxPixels < nameWidth && !tmp.isEmpty())
     {
       int delta = (nameWidth - maxPixels) / em;
 
       if (delta < 1)
       {
-        break;
+        delta = 1;
       }
 
       tmp.remove(tmp.length() - delta, delta);
@@ -492,7 +496,7 @@ QString KStringHandler::rPixelSqueeze(const QString& name, const QFontMetrics& f
     return (tmp + "...");
   }
 
-  return tmp;
+  return name;
 }
 
 ///// File name patterns (like *.txt)
