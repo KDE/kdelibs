@@ -132,12 +132,18 @@ protected:
     enum ListNumType { Numeric = 0, LowAlpha, UpAlpha, LowRoman, UpRoman };
     enum ListType { Unordered, UnorderedPlain, Ordered, Menu, Dir };
 
-	/*
-	 * This function creates a new flow adds it to '_clue' and sets 'flow'
-	 */
-	void newFlow();
+    /*
+     * This function creates a new flow adds it to '_clue' and sets _clue
+     * to the flow
+     */
+    void newFlow();
+    /*
+     * This function closes the current flow
+     */
+    void closeFlow() 
+    { if(_clue->type() == HTMLObject::Flow) _clue = _clue->close(); }
 
-	void insertText(char *str, const HTMLFont * fp);
+    void insertText(char *str, const HTMLFont * fp);
 
     /*
      * tagID
@@ -345,15 +351,15 @@ protected:
     const char *baseTarget;
 
 
-	HTMLStackElem *blockStack; 
+    HTMLStackElem *blockStack; 
 
     void pushBlock( int _id, int _level, 
-    				  blockFunc _exitFunc = 0, 
-    				  int _miscData1 = 0);
+		    HTMLObject *obj = 0, blockFunc _exitFunc = 0, 
+		    int _miscData1 = 0);
     					  
     void popBlock( int _id );
  
-	void freeBlock( void);
+    void freeBlock( void);
     
 	 /*
 	  * Code for closing-tag to restore block
@@ -456,11 +462,6 @@ protected:
      * Used to avoid inserting multiple vspaces
      */
     bool vspace_inserted;
-
-    /*
-     * The current flow box to add objects to
-     */
-    HTMLClue *flow;
 
     /*
      * Array of TAG functions, e.g.

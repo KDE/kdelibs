@@ -92,6 +92,12 @@ void HTMLClue::reset()
     curr = 0;
 }
 
+void HTMLClue::position( HTMLObject * )
+{
+    calcSize();
+}
+
+
 void HTMLClue::calcAbsolutePos( int _x, int _y )
 {
     HTMLObject *obj;
@@ -275,6 +281,7 @@ void HTMLClue::append( HTMLObject *_object )
 	tail->setNext( _object );
 	tail = _object;
     }
+    _object->setParent( this );
 }
             
 
@@ -701,10 +708,10 @@ HTMLObject* HTMLClueV::mouseEvent( int _x, int _y, int button, int state )
     return 0;
 }
 
-void HTMLClueV::calcSize( HTMLClue *parent )
+void HTMLClueV::calcSize( HTMLClue *prnt )
 {
 DEBUGL(printf("Start HTMLClueV::CalcSize( this = %p )\n", this));
-    int lmargin = parent ? parent->getLeftMargin( getYPos() ) : 0;
+    int lmargin = parent() ? ((HTMLClue *)parent())->getLeftMargin( getYPos() ) : 0;
 
 #if 0
     // If we have already called calcSize for the children, then just
@@ -736,7 +743,10 @@ DEBUGL(printf("Start HTMLClueV::CalcSize( this = %p )\n", this));
         // the top of this object is
         curr->setMaxWidth( width );
         curr->setYPos( ascent );
+#ifndef NEW_LAYOUT
+	// this should be calculated already with the new layout stuff
         curr->calcSize( this );
+#endif
         if ( curr->getWidth() > width )
         {
             printf("Layout error in HTMLClueV::calcSize(this = %p): HTMLClueV not wide enough (width = %d)!\n", 
@@ -1391,7 +1401,7 @@ bool HTMLClueH::selectText( KHTMLWidget *_htmlw, HTMLChain *_chain,
     // (de)select objects
     for ( obj = head; obj != 0; obj = obj->next() )
     {
-	if ( obj->getObjectType() == Clue )
+	if ( obj->type() == Clue || obj->type() == Flow )
 	    isSel = obj->selectText( _htmlw, _chain, _x1 - x, _y1 - (y-ascent),
 		    _x2 - x, _y2 - ( y - ascent ), _tx, _ty ) || isSel;
 	else
@@ -1404,7 +1414,7 @@ bool HTMLClueH::selectText( KHTMLWidget *_htmlw, HTMLChain *_chain,
     return isSel;
 }
 
-void HTMLClueH::calcSize( HTMLClue *parent )
+void HTMLClueH::calcSize( HTMLClue *prnt )
 {
     HTMLObject *obj;
     int x_pos = 0;
@@ -1418,8 +1428,8 @@ DEBUGL(printf("Start HTMLClueH::CalcSize( this = %p )\n", this));
     // for the situations in which we use it.
     // @@@WABA: Space management needs to be used more extensively!
    
-    if ( parent )
-	x_pos = parent->getLeftMargin( getYPos() );
+    if ( parent() )
+	x_pos = ((HTMLClue *)parent())->getLeftMargin( getYPos() );
 
     x_pos += indent;
     
@@ -1549,7 +1559,7 @@ bool HTMLClueFlow::selectText( KHTMLWidget *_htmlw, HTMLChain *_chain,
 
 	while ( obj != lineEnd )
 	{
-	    if ( obj->getObjectType() == Clue )
+	    if ( obj->type() == Clue || obj->type() == Flow )
 		isSel = obj->selectText(_htmlw,_chain,_x1 - x, _y1 - (y-ascent),
 			_x2 - x, _y2 - ( y - ascent ), _tx, _ty ) || isSel;
 	    else
@@ -1583,7 +1593,7 @@ void HTMLClueFlow::getSelectedText( QString &_str )
 // after any object.  This is much nicer and smaller code now also.  Sorry
 // if I broke something.
 // 
-void HTMLClueFlow::calcSize( HTMLClue *parent )
+void HTMLClueFlow::calcSize( HTMLClue *prnt )
 {
 DEBUGL(printf("Start HTMLClueFlow::CalcSize( this = %p )\n", this));
 
@@ -1596,10 +1606,10 @@ DEBUGL(printf("Start HTMLClueFlow::CalcSize( this = %p )\n", this));
     ascent = 0;
     descent = 0;
     
-    lmargin = parent->getLeftMargin( getYPos() );
+    lmargin = ((HTMLClue *)parent())->getLeftMargin( getYPos() );
     if ( indent > lmargin )
 	lmargin = indent;
-    rmargin = parent->getRightMargin( getYPos() );
+    rmargin = ((HTMLClue *)parent())->getRightMargin( getYPos() );
     int w = lmargin;
     int a = 0;
     int d = 0;
@@ -1657,7 +1667,7 @@ DEBUGL(printf("Start HTMLClueFlow::CalcSize( this = %p )\n", this));
 	{
 	    HTMLClueAligned *c = (HTMLClueAligned *)obj;
 
-	    if ( !parent->appended( c ) )
+	    if ( !((HTMLClue *)parent())->appended( c ) )
 	    {
                 obj->setMaxWidth( remainingWidth );
 	        obj->calcSize( this );
@@ -1667,14 +1677,14 @@ DEBUGL(printf("Start HTMLClueFlow::CalcSize( this = %p )\n", this));
 		    c->setPos( lmargin,
 		        ascent + c->getAscent() );
 
-  		    parent->appendLeftAligned( c );
+  		    ((HTMLClue *)parent())->appendLeftAligned( c );
 	        }
 	        else
 	        {
 		    c->setPos( rmargin - c->getWidth(),
 		        ascent + c->getAscent() );
 
-  		    parent->appendRightAligned( c );
+  		    ((HTMLClue *)parent())->appendRightAligned( c );
 	        }
 	    }
 	    obj = obj->next();
@@ -1759,8 +1769,8 @@ DEBUGL(printf("Start HTMLClueFlow::CalcSize( this = %p )\n", this));
  		// If not, find a rectangle with height a+b. The size of
  		// the rectangle will be rmargin-lmargin.
 
-		parent->findFreeArea(y, line->getWidth(),
-			a+d, indent, &new_y, &new_lmargin, &new_rmargin);
+		((HTMLClue *)parent())->findFreeArea(y, line->getWidth(),
+			 a+d, indent, &new_y, &new_lmargin, &new_rmargin);
 
 		if (
 		    (new_y != y) || 
@@ -1904,24 +1914,24 @@ DEBUGL(printf("Start HTMLClueFlow::CalcSize( this = %p )\n", this));
 	    {
 	    	int new_lmargin, new_rmargin;
 
-		parent->findFreeArea(oldy, width,
+		((HTMLClue *)parent())->findFreeArea(oldy, width,
 			1, 0, &y, &new_lmargin, &new_rmargin);
 	    }
 	    else if ( clear == HTMLVSpace::Left)
 	    {
-		y = parent->getLeftClear( oldy );
+		y = ((HTMLClue *)parent())->getLeftClear( oldy );
 	    }
 	    else if ( clear == HTMLVSpace::Right)
 	    {
-		y = parent->getRightClear( oldy );
+		y = ((HTMLClue *)parent())->getRightClear( oldy );
 	    }
 
 	    ascent += y-oldy;
 
-	    lmargin = parent->getLeftMargin( y );
+	    lmargin = ((HTMLClue *)parent())->getLeftMargin( y );
 	    if ( indent > lmargin )
 		lmargin = indent;
-	    rmargin = parent->getRightMargin( y );
+	    rmargin = ((HTMLClue *)parent())->getRightMargin( y );
 
 	    w = lmargin;
 	    d = 0;
@@ -2082,7 +2092,7 @@ int HTMLClueFlow::calcPreferredWidth()
 // A second difference is that the size of a HTMLClueAligned is always
 // equal to its actual contents. 
 //
-void HTMLClueAligned::calcSize( HTMLClue *parent )
+void HTMLClueAligned::calcSize( HTMLClue *prnt )
 {
     HTMLObject *obj;
     int new_width = 0;

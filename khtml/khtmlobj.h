@@ -220,13 +220,13 @@ public:
      */
     virtual void pixmapChanged( QPixmap * = 0 ) { }
 
-    enum ObjectType { Object, Clue, Table, TableCell };
+    enum ObjectType { Object, Clue, Flow, Table, TableCell };
 
     /**
      * sometimes a clue would like to know if an object is a 
      * clue or a basic object.
      */
-    virtual ObjectType getObjectType() const
+    virtual ObjectType type() const
 	    {	return Object; }
 
     /**
@@ -293,6 +293,38 @@ public:
     void setNext( HTMLObject *n ) { nextObj = n; }
     HTMLObject *next() const { return nextObj; }
 
+    /**
+     * The parent of the object in the cluetree
+     */
+    void setParent( HTMLClue *o ) { parentObj = o; }
+    HTMLClue *parent() const { return parentObj; }
+
+    /**
+      function for incremental layout. This gets called from 
+      HTMLParser::popBlock() if the Object was set during pushBlock().
+      For empty elements, this should get called directly from the parseTagX()
+      function in the parser. 
+      */
+    virtual HTMLClue *close() { 
+#ifdef NEW_LAYOUT
+	layout(); 
+#endif
+	return parentObj;
+    }
+
+    /**
+      bottom to top function for the incremental layout. Calculates
+      minimum and prefered width of the object, and calls its parent if its
+      size has changed.
+      */
+    virtual void layout( HTMLObject *caller = 0 );
+    /**
+      top to bottom. If the width of an object hasn't changed during
+      a call to layout, but it's height, the position() function of 
+      it's parent is called to recalc the position of all it's children
+      */
+    virtual void position( HTMLObject *caller = 0 );
+
     void printCount() { printf( "Object count: %d\n", objCount ); }
 
     virtual void findCells( int, int, QList<HTMLCellInfo> & ) { }
@@ -334,6 +366,7 @@ protected:
     short width;	// Actual width of object
     short flags;
     HTMLObject *nextObj;
+    HTMLClue *parentObj;
     static int objCount;
 };
 

@@ -153,8 +153,8 @@ tagFunc KHTMLParser::tagJumpTable[ID_MAX+1] =
 &KHTMLParser::parseTagBody,		0,			// ID_BODY
 &KHTMLParser::parseTagBr,		0,			// ID_BR
 &KHTMLParser::parseTagButton,		0,			// ID_BUTTON
-&KHTMLParser::parseTagCaption,		0,	                // ID_CAPTION
-&KHTMLParser::parseTagCell,		0,			// ID_CELL
+&KHTMLParser::parseTagCaption,	&KHTMLParser::parseTagEnd,      // ID_CAPTION
+&KHTMLParser::parseTagCell,	&KHTMLParser::parseTagEnd,	// ID_CELL
 &KHTMLParser::parseTagCenter,	&KHTMLParser::parseTagEnd,	// ID_CENTER
 &KHTMLParser::parseTagCite,	&KHTMLParser::parseTagEnd,	// ID_CITE
 &KHTMLParser::parseTagCode,	&KHTMLParser::parseTagEnd,	// ID_CODE
@@ -192,7 +192,7 @@ tagFunc KHTMLParser::tagJumpTable[ID_MAX+1] =
 &KHTMLParser::parseTagLabel,		0,			// ID_LABEL
 &KHTMLParser::parseTagLegend,		0,			// ID_LEGEND
 &KHTMLParser::parseTagPre,	&KHTMLParser::parseTagEnd,	// ID_LISTING
-&KHTMLParser::parseTagLi,		0,			// ID_LI
+&KHTMLParser::parseTagLi,	&KHTMLParser::parseTagEnd,	// ID_LI
 &KHTMLParser::parseTagLink,		0,			// ID_LINK
 &KHTMLParser::parseTagMap,		0,			// ID_MAP
 &KHTMLParser::parseTagUL,	&KHTMLParser::parseTagEnd,	// ID_MENU
@@ -295,11 +295,12 @@ KHTMLParser::KHTMLParser( KHTMLWidget *_parent,
     formText = 0;
     inNoframes = false;
 
-    flow = 0;
     frameSet = 0;
+    _clue = 0;
 
     listStack.clear();
     glossaryStack.clear();
+    tableStack.clear();
     
     blockStack = 0;
 
@@ -356,11 +357,11 @@ void KHTMLParser::restoreFont(void)
 }
 
 void KHTMLParser::pushBlock(int _id, int _level,
-                            blockFunc _exitFunc, 
+                            HTMLObject *_obj, blockFunc _exitFunc, 
                             int _miscData1)
 {
     HTMLStackElem *Elem = new HTMLStackElem(_id, _level, currentStyle, 
-    					    _exitFunc, _miscData1, 
+    					    _exitFunc, _obj, _miscData1, 
     					    blockStack);
 
     currentStyle = styleSheet->newStyle(currentStyle);    					    
@@ -398,6 +399,8 @@ void KHTMLParser::popBlock( int _id)
 
     	if (Elem->exitFunc != 0)
     		(this->*(Elem->exitFunc))( Elem );
+	if (Elem->obj)
+	    _clue = Elem->obj->close();
     		
     	if (Elem->style)
     	{
@@ -435,7 +438,7 @@ void KHTMLParser::freeBlock()
 void KHTMLParser::blockEnd( HTMLStackElem *Elem)
 {
     vspace_inserted = insertVSpace( vspace_inserted );
-    flow = 0;
+    closeFlow();
 }
 
 void KHTMLParser::blockEndAnchor( HTMLStackElem *Elem)
@@ -448,20 +451,19 @@ void KHTMLParser::blockEndPre( HTMLStackElem *Elem)
 {
     // We add a hidden space to get the height
     // If there is no flow box, we add one.
-    if (!flow)
-    	newFlow();
+    newFlow();
    
-    flow->append(new HTMLHSpace( currentFont(), painter, true ));
+    _clue->append(new HTMLHSpace( currentFont(), painter, true ));
 
     vspace_inserted = insertVSpace( vspace_inserted );
-    flow = 0;
+    closeFlow();
     inPre = false;
 }
 
 void KHTMLParser::blockEndAlign( HTMLStackElem *Elem)
 {
     divAlign = (HTMLClue::HAlign) Elem->miscData1;
-    flow = 0;
+    closeFlow();
 }
 
 void KHTMLParser::blockEndList( HTMLStackElem *Elem)
@@ -475,7 +477,7 @@ void KHTMLParser::blockEndList( HTMLStackElem *Elem)
     	fprintf(stderr, "%s : List stack corrupt!\n", __FILE__);
     }
     
-    flow = 0;
+    closeFlow();
 }
 
 void KHTMLParser::blockEndFrameSet( HTMLStackElem *Elem)
@@ -493,7 +495,7 @@ void KHTMLParser::blockEndFrameSet( HTMLStackElem *Elem)
 void KHTMLParser::blockEndForm( HTMLStackElem *Elem)
 {
     vspace_inserted = insertVSpace( vspace_inserted );
-    flow = 0;
+    closeFlow();
     form = 0;
 }
 
@@ -515,11 +517,10 @@ bool KHTMLParser::insertVSpace( bool _vspace_inserted )
 {
     if ( !_vspace_inserted )
     {
-	HTMLClueFlow *f = new HTMLClueFlow();
-	_clue->append( f );
+	closeFlow();
+	newFlow();
 	HTMLVSpace *t = new HTMLVSpace( settings->fontSizes[settings->fontBaseSize] );
-	f->append( t );
-	flow = 0;
+	_clue->append( t );
     }
     
     return true;
@@ -527,6 +528,11 @@ bool KHTMLParser::insertVSpace( bool _vspace_inserted )
 
 void KHTMLParser::newFlow()
 {
+    HTMLClue *flow;
+    
+    // return if we already have a flow...
+    if(_clue->type() == HTMLObject::Flow ) return;
+
     if (inPre)
          flow = new HTMLClueH();
 	    else
@@ -535,12 +541,13 @@ void KHTMLParser::newFlow()
     flow->setIndent( currentStyle->text.indent );
     flow->setHAlign( divAlign );
     _clue->append( flow );
+    _clue = flow;
 }
 
 
 // Function insertText
 // ====
-// This function inserts text in the flow. It decides whether to use
+// This function inserts text in the _clue. It decides whether to use
 // HTMLText or HTMLTextMaster objects for the text.
 // 
 // HTMLText is used if the text may not be broken.
@@ -560,6 +567,8 @@ void KHTMLParser::insertText(char *str, const HTMLFont * fp)
     bool insertSpace = false;
     bool insertNBSP = false;
     bool insertBlock = false;
+
+    newFlow();
     
     for(;;)
     {
@@ -644,18 +653,18 @@ void KHTMLParser::insertText(char *str, const HTMLFont * fp)
                 if (textType == variable)
                 {
 		    if ( url || target )
-	       		flow->append( new HTMLLinkTextMaster( str, 
+	       		_clue->append( new HTMLLinkTextMaster( str, 
 	       			      fp, painter, url, target) );
 	            else
-		       	flow->append( new HTMLTextMaster( str, fp, painter ) );
+		       	_clue->append( new HTMLTextMaster( str, fp, painter ) );
                 }
                 else
                 {
 	            if ( url || target )
-	       	        flow->append( new HTMLLinkText( str, 
+	       	        _clue->append( new HTMLLinkText( str, 
 	       	                      fp, painter, url, target ) );
 		    else
-		        flow->append( new HTMLText( str, fp, painter ) );
+		        _clue->append( new HTMLText( str, fp, painter ) );
 		}
             }
             if (insertSpace)
@@ -665,11 +674,11 @@ void KHTMLParser::insertText(char *str, const HTMLFont * fp)
 		    HTMLLinkText *sp = new HTMLLinkText( " ", fp, painter,
 			url, target );
 		    sp->setSeparator( true );
-		    flow->append( sp );
+		    _clue->append( sp );
 		}
                 else
                 {
-   	            flow->append( new HTMLHSpace( fp, painter));
+   	            _clue->append( new HTMLHSpace( fp, painter));
    	        }
             }
             else if (insertNBSP)
@@ -679,13 +688,13 @@ void KHTMLParser::insertText(char *str, const HTMLFont * fp)
 		    HTMLLinkText *sp = new HTMLLinkText( " ", fp, painter,
 			url, target );
 		    sp->setSeparator( false );
-		    flow->append( sp );
+		    _clue->append( sp );
 		}
                 else
                 {
                     HTMLHSpace *sp = new HTMLHSpace( fp, painter);
                     sp->setSeparator(false);
-   	            flow->append( sp );
+   	            _clue->append( sp );
    	        }
             }
             str = remainingStr;
@@ -713,7 +722,8 @@ int KHTMLParser::parseBody( HTMLClue *__clue, const char _end[], bool toplevel )
     // If f == 0, you have to create a new FlowBox, otherwise you can
     // use the one stored in f. Setting f to 0 means closing the FlowBox.
 
-    _clue = __clue;
+    if(!toplevel || _clue == 0)
+	_clue = __clue;
 
     if ( toplevel)
     {
@@ -749,7 +759,7 @@ int KHTMLParser::parseBody( HTMLClue *__clue, const char _end[], bool toplevel )
 		formText += " ";
 	    else if ( inTitle )
 		title += " ";
-	    else if ( flow != 0)
+	    else if ( _clue->type() == HTMLObject::Flow )
 	    {
 	    	insertText( " ", currentFont());
 	    }
@@ -769,9 +779,6 @@ int KHTMLParser::parseBody( HTMLClue *__clue, const char _end[], bool toplevel )
 	    {
 		vspace_inserted = false;
 
-	    	if (!flow)
-	            newFlow();
-		
     	        if (charsetConverter){
 		   debugM("Using charset converter...");
 		   QList<KCharsetConversionResult> rl=
@@ -831,22 +838,19 @@ int KHTMLParser::parseBody( HTMLClue *__clue, const char _end[], bool toplevel )
 	    // The tag used for line break when we are in <pre>...</pre>
 	    if ( tagID == ID_NEWLINE )
 	    {
-		if (!flow)
-		    newFlow();
+		newFlow();
 
 		// Add a hidden space to get the line-height right.
-		flow->append(new HTMLHSpace( currentFont(), painter, true ));
+		_clue->append(new HTMLHSpace( currentFont(), painter, true ));
 		vspace_inserted = false;
 	
-		newFlow(); // Explicitly make a new flow! 
+		closeFlow(); // Explicitly make a new flow! 
+		newFlow(); 
 	    }
 	    else if (tagID == ID_ENTITY)
 	    {
 		int l;
 		const char *str1;
-
-		if (!flow)
-		    newFlow();
 
 	    	const HTMLFont *fp = currentFont();
 		// Handling entities
@@ -904,6 +908,9 @@ void KHTMLParser::parseOneToken()
       printf("Unknown tag!! tagID = %d\n", tagID);
       return;
     }
+#if 1
+    printf("Parsing tag: %d\n", tagID);
+#endif
     tagFunc func = tagJumpTable[tagID];
     if (func)
         (this->*(func))();
@@ -929,6 +936,7 @@ void KHTMLParser::parseTagA(void)
     target = 0;
     bool visited = false;
     const char *p;
+    HTMLAnchor *anchor;
 
     while ( ( p = ht->nextOption() ) != 0 )
     {
@@ -950,10 +958,8 @@ void KHTMLParser::parseTagA(void)
 	}
 	else if ( strncasecmp( p, "name=", 5 ) == 0 )
 	{
-	    if ( flow == 0 )
-	        _clue->append( new HTMLAnchor( p+5 ) );
-	    else
-	        flow->append( new HTMLAnchor( p+5 ) );
+	    anchor = new HTMLAnchor( p+5 );
+	    _clue->append( anchor );
 	}
 	else if ( strncasecmp( p, "target=", 7 ) == 0 )
 	{
@@ -967,7 +973,8 @@ void KHTMLParser::parseTagA(void)
     if ( !tmpurl.isEmpty() )
     {
         vspace_inserted = false;
-        pushBlock(tagID, 2, &KHTMLParser::blockEndAnchor);
+        pushBlock(tagID, 2, 0, &KHTMLParser::blockEndAnchor);
+        //pushBlock(tagID, 2, anchor, &KHTMLParser::blockEndAnchor);
 	if ( visited )
 	    currentStyle->font.color = settings->vLinkColor;
 	else
@@ -992,11 +999,11 @@ void KHTMLParser::parseTagAcronym(void)
 
 void KHTMLParser::parseTagAddress(void)
 {
-    pushBlock(tagID, 2, &KHTMLParser::blockEnd);
+    pushBlock(tagID, 2, 0, &KHTMLParser::blockEnd);
     currentStyle->font.style = CSSStyleFont::stItalic;
     currentStyle->font.weight = CSSStyleFont::Normal;
     setFont();
-    flow = 0;
+    closeFlow();
 }
 
 void KHTMLParser::parseTagApplet(void)
@@ -1163,9 +1170,9 @@ void KHTMLParser::parseTagBlockQuote(void)
 {
     // attrs: cite, %attrs
 
-    pushBlock(tagID, 2, &KHTMLParser::blockEnd);
+    pushBlock(tagID, 2, 0, &KHTMLParser::blockEnd);
     currentStyle->text.indent += INDENT_SIZE;
-    flow = 0; 
+    closeFlow(); 
 }
 
 void KHTMLParser::parseTagBody(void)
@@ -1227,10 +1234,9 @@ void KHTMLParser::parseTagBr(void)
         }
     }
 
-    if (!flow)
-        newFlow();
+    newFlow();
 
-    flow->append( new HTMLVSpace( currentFont()->pointSize(), clear ));
+    _clue->append( new HTMLVSpace( currentFont()->pointSize(), clear ));
     vspace_inserted = false;
 }
 
@@ -1241,17 +1247,15 @@ void KHTMLParser::parseTagButton(void)
 
 void KHTMLParser::parseTagCaption(void)
 {
+    popBlock(ID_TR);
+    popBlock(ID_TD);
+    popBlock(ID_TH);
+
     HTMLTable *table = tableStack.current();
     if(!table) return;
 
     HTMLClueV *caption;
     HTMLClue::VAlign capAlign = HTMLClue::Bottom;
-
-    static const char endcap[] = { ID_CAPTION + ID_CLOSE_TAG,
-    				   ID_TABLE + ID_CLOSE_TAG,
-    				   ID_TR, ID_TD, ID_TH,
-   				   ID_BODY + ID_CLOSE_TAG, 
-    				   0 };    
 
     const char *token;
     while ( (token = ht->nextOption()) != 0)
@@ -1264,35 +1268,16 @@ void KHTMLParser::parseTagCaption(void)
     }
     caption = new HTMLClueV();
     divAlign = HTMLClue::HCenter;
-    flow = 0;
-    _clue = caption;
-    pushBlock(ID_CAPTION, 3 );
-    tagID = parseBody( _clue, endcap );
-    popBlock( ID_CAPTION );
+    closeFlow();
     table->setCaption( caption, capAlign );
-    flow = 0;
-
-    if ( tagID == 0 )
-    { 
-	// CC: Close table description in case of a malformed table
-	// before returning!
-	table->endRow();
-	table->endTable(); 
-	popBlock( ID_TABLE );
-    }
+    _clue = caption;
+    pushBlock(ID_CAPTION, 3, caption );
 }
 
 void KHTMLParser::parseTagCell(void)
 {
-    if (!flow)
-        newFlow();
-
-    static const char end[] = { ID_CELL + ID_CLOSE_TAG, 0 }; 
-    HTMLClue::HAlign olddivalign = divAlign;
-    HTMLClue *oldFlow = flow;
-    HTMLClue *__clue = flow;
-    HTMLClue *oldClue = _clue;
-    int oldindent = currentStyle->text.indent;
+    // make a new flow if we don't already have one
+    newFlow();
 
     HTMLClue::HAlign gridHAlign = HTMLClue::HCenter;// global align of all cells
     int cell_width = 90;
@@ -1317,39 +1302,27 @@ void KHTMLParser::parseTagCell(void)
     HTMLClue::HAlign halign = gridHAlign;
     
     HTMLClueV *vc = new HTMLCell( url, target );     
-    __clue->append( vc );
+    _clue->append( vc );
+    // add a hidden space after the cell
+    _clue->append( new HTMLHSpace( currentFont(), painter, true ) );
+
     vc->setFixedWidth( cell_width ); // fixed width
     vc->setVAlign( valign );
     vc->setHAlign( halign );
 
-    flow = 0;
     currentStyle->text.indent = 0;
     divAlign = HTMLClue::Left;
     _clue = vc;             
     
-    pushBlock( ID_CELL, 3 );
-    (void) parseBody( _clue, end );
-    popBlock( ID_CELL );
-
-// @@WABA What does this do?
-//    vc = new HTMLClueV( 0, 0 ); // fixed width
-//    _clue->append( vc );
-
-    currentStyle->text.indent = oldindent;
-    divAlign = olddivalign;
-    flow = oldFlow;
-    _clue = oldClue;
-
-    // Add a hidden space
-    flow->append( new HTMLHSpace( currentFont(), painter, true ) );
+    pushBlock( ID_CELL, 3, vc );
 }
 
 void KHTMLParser::parseTagCenter(void)
 {
-    pushBlock(tagID, 2, &KHTMLParser::blockEndAlign, divAlign);
+    pushBlock(tagID, 2, 0, &KHTMLParser::blockEndAlign, divAlign);
 
     divAlign = HTMLClue::HCenter;
-    flow = 0;
+    closeFlow();
 }
 
 void KHTMLParser::parseTagCite(void)
@@ -1522,7 +1495,7 @@ void KHTMLParser::parseTagDD(void)
         glossaryStack.push( new GlossaryEntry( GlossaryDD ) );
         currentStyle->text.indent += INDENT_SIZE;
     }
-    flow = 0;
+    closeFlow();
 }
 
 void KHTMLParser::parseTagDel(void)
@@ -1538,7 +1511,7 @@ void KHTMLParser::parseTagDfn(void)
 
 void KHTMLParser::parseTagDiv(void)
 {
-    pushBlock(tagID, 2, &KHTMLParser::blockEndAlign, divAlign);
+    pushBlock(tagID, 2, 0, &KHTMLParser::blockEndAlign, divAlign);
 
     const char *token;
     while ( (token = ht->nextOption()) != 0)
@@ -1554,7 +1527,7 @@ void KHTMLParser::parseTagDiv(void)
                 divAlign = HTMLClue::Left;
 	}
     }
-    flow = 0;
+    closeFlow();
 }
 
 void KHTMLParser::parseTagDL(void)
@@ -1568,7 +1541,7 @@ void KHTMLParser::parseTagDL(void)
         currentStyle->text.indent += INDENT_SIZE;
     }
     glossaryStack.push( new GlossaryEntry( GlossaryDL ) );
-    flow = 0;
+    closeFlow();
 }
 
 void KHTMLParser::parseTagDLEnd(void)
@@ -1617,7 +1590,7 @@ void KHTMLParser::parseTagDT(void)
         }
     }
     vspace_inserted = false;
-    flow = 0;
+    closeFlow();
 }
 
 void KHTMLParser::parseTagEM(void)
@@ -1704,7 +1677,7 @@ void KHTMLParser::parseTagForm(void)
     vspace_inserted = insertVSpace( vspace_inserted );
     // Lars: does not work, if forms extend over several
     // tablecells, and the form gets created in the first one.
-    //pushBlock( ID_FORM, 2, &blockEndForm);
+    //pushBlock( ID_FORM, 2, 0, &blockEndForm);
 }
 
 void KHTMLParser::parseTagFormEnd(void)
@@ -1712,7 +1685,7 @@ void KHTMLParser::parseTagFormEnd(void)
     if(form)
     {
 	vspace_inserted = insertVSpace( vspace_inserted );
-	flow = 0;
+	closeFlow();
 	form = 0;
     }
     //Lars: see above
@@ -1883,12 +1856,13 @@ void KHTMLParser::parseTagFrameset(void)
        oldFrameSet->append(frameSet);
     }
     HTMLWidget->addFrameSet( frameSet);
-    pushBlock( tagID, 4, &KHTMLParser::blockEndFrameSet, (int) oldFrameSet );
+    pushBlock( tagID, 4, 0, &KHTMLParser::blockEndFrameSet, 
+	       (int) oldFrameSet );
 }
 
 void KHTMLParser::parseTagHeader(void)
 {
-    pushBlock(ID_H1, 2, &KHTMLParser::blockEnd );
+    pushBlock(ID_H1, 2, 0, &KHTMLParser::blockEnd );
 
     char *token;
     vspace_inserted = insertVSpace( vspace_inserted );
@@ -1907,8 +1881,9 @@ void KHTMLParser::parseTagHeader(void)
 	}
     }
     // Start a new flow box
+    closeFlow();
     newFlow();
-    flow->setHAlign( align );
+    _clue->setHAlign( align );
 
     switch ( tagID )
     {
@@ -1972,8 +1947,8 @@ void KHTMLParser::parseTagHR(void)
     HTMLClue::HAlign oldAlign = divAlign;
     bool shade = TRUE;
 
-    if ( flow )
-        oldAlign = align = flow->getHAlign();
+    if ( _clue->type() == HTMLObject::Flow )
+        oldAlign = align = _clue->getHAlign();
 
     const char* token;
     
@@ -2014,11 +1989,11 @@ void KHTMLParser::parseTagHR(void)
     divAlign = align;
     newFlow();
 
-    flow->append( new HTMLRule( length, percent, size, shade ) );
+    _clue->append( new HTMLRule( length, percent, size, shade ) );
 printf("HR: length = %d, percent = %d, size = %d, shade = %d\n",
 	length, percent, size, shade);
 
-    flow = 0;
+    closeFlow();
     divAlign = oldAlign;
 
     vspace_inserted = false;
@@ -2113,8 +2088,7 @@ void KHTMLParser::parseTagImg(void)
       
         KURL kurl( HTMLWidget->getBaseURL(), filename );
         // Do we need a new FlowBox ?
-        if ( !flow )
-            newFlow();
+	newFlow();
 
 	HTMLImage *image;
 
@@ -2146,28 +2120,28 @@ void KHTMLParser::parseTagImg(void)
 
 	if ( align == HTMLClue::HNone )
 	{
-	    flow->append( image );
+	    _clue->append( image );
 #if 0
 	    	if ( valign == HTMLClue::VNone)
 	    	{
-		    flow->append( image );
+		    _clue->append( image );
 		}
                 else
 	    	{
 		    HTMLClueH *valigned = new HTMLClueH();
 		    valigned->setVAlign( valign );
 		    valigned->append( image );
-		    flow->append( valigned );
+		    _clue->append( valigned );
 	    	}
 #endif
         }
 	// we need to put the image in a HTMLClueAligned
 	else
 	{
-	    HTMLClueAligned *aligned = new HTMLClueAligned( flow );
+	    HTMLClueAligned *aligned = new HTMLClueAligned( _clue );
 	    aligned->setHAlign( align );
 	    aligned->append( image );
-	    flow->append( aligned );
+	    _clue->append( aligned );
 	}
     } 
 }
@@ -2177,8 +2151,7 @@ void KHTMLParser::parseTagInput(void)
     if ( form == 0 )
 	return;
 
-    if ( !flow )
-         newFlow();
+    newFlow();
 
     enum InputType { CheckBox, Hidden, Radio, Reset, Submit, Text, Image,
 	    Button, Password, Undefined };
@@ -2275,7 +2248,7 @@ void KHTMLParser::parseTagInput(void)
 						     checked, currentFont() );
 		cb->setForm( form );
 		form->addElement( cb );
-		flow->append( cb );
+		_clue->append( cb );
 	    }
 	    break;
 
@@ -2293,7 +2266,7 @@ void KHTMLParser::parseTagInput(void)
 						  checked, currentFont() );
 		radio->setForm( form );
 		form->addElement( radio );
-		flow->append( radio );
+		_clue->append( radio );
 		QObject::connect(radio,SIGNAL(radioSelected(const char *,const char *)),
 		    form, SLOT(slotRadioSelected(const char *, const char *)));
 		QObject::connect(form,SIGNAL( radioSelected(const char*,const char *) ),
@@ -2307,7 +2280,7 @@ void KHTMLParser::parseTagInput(void)
 						  currentFont() );
 		reset->setForm( form );
 		form->addElement( reset );
-		flow->append( reset );
+		_clue->append( reset );
 		QObject::connect( reset, SIGNAL( resetForm() ),
 			form, SLOT( slotReset() ) );
 	    }
@@ -2319,7 +2292,7 @@ void KHTMLParser::parseTagInput(void)
 						     currentFont() );
 		submit->setForm( form );
 		form->addElement( submit );
-		flow->append( submit );
+		_clue->append( submit );
 		QObject::connect( submit, SIGNAL( submitForm() ),
 			form, SLOT( slotSubmit() ) );
 	    }
@@ -2331,7 +2304,7 @@ void KHTMLParser::parseTagInput(void)
 						     handlers, currentFont() );
 		button->setForm( form );
 		form->addElement( button );
-		flow->append( button );
+		_clue->append( button );
 		break;
 	    }
 
@@ -2344,7 +2317,7 @@ void KHTMLParser::parseTagInput(void)
 						       currentFont() );
 		ti->setForm( form );
 		form->addElement( ti );
-		flow->append( ti );
+		_clue->append( ti );
 		QObject::connect( ti, SIGNAL( submitForm() ),
 			form, SLOT( slotSubmit() ) );
 	    }
@@ -2358,7 +2331,7 @@ void KHTMLParser::parseTagInput(void)
 							 name );
 		ii->setForm( form );
 		form->addElement( ii );
-		flow->append( ii );
+		_clue->append( ii );
 		QObject::connect( ii, SIGNAL( submitForm() ),
 			form, SLOT( slotSubmit() ) );
 	    }
@@ -2401,7 +2374,10 @@ void KHTMLParser::parseTagLegend(void)
 
 void KHTMLParser::parseTagLi(void)
 {
+    HTMLClue *flow;
+
     popBlock(ID_A); // Close any <A..> tags
+    popBlock(ID_LI);
     QString item;
     ListType listType = Unordered;
     ListNumType listNumType = Numeric;
@@ -2421,6 +2397,9 @@ void KHTMLParser::parseTagLi(void)
     HTMLClueH *c = new HTMLClueH();
     c->setVAlign( HTMLClue::Top );
     f->append( c );
+
+    // next list element should restore the old clue (parent of f).
+    pushBlock(ID_LI, 1, f);
 
 //@@WABA: This should be handled differently
 
@@ -2484,6 +2463,7 @@ void KHTMLParser::parseTagLi(void)
     vc->append( flow );
     if ( listStack.count() > 0 )
 	listStack.top()->itemNumber++;
+    _clue = flow;
 }
 
 void KHTMLParser::parseTagLink(void)
@@ -2601,11 +2581,11 @@ void KHTMLParser::parseTagOl(void)
     if ( listStack.isEmpty() )
     {
         vspace_inserted = insertVSpace( vspace_inserted );
-	pushBlock( tagID, 2, &KHTMLParser::blockEndList, true);
+	pushBlock( tagID, 2, 0, &KHTMLParser::blockEndList, true);
     }
     else
     {
-        pushBlock( tagID, 2, &KHTMLParser::blockEndList, false);
+        pushBlock( tagID, 2, 0, &KHTMLParser::blockEndList, false);
     }
 
     ListNumType listNumType = Numeric;
@@ -2637,7 +2617,9 @@ void KHTMLParser::parseTagOl(void)
     }
 
     listStack.push( new HTMLList( Ordered, listNumType ) );
-    currentStyle->text.indent += INDENT_SIZE;
+    currentStyle->text.indent = INDENT_SIZE;
+
+    closeFlow();
 }
 
 void KHTMLParser::parseTagOptgroup(void)
@@ -2702,11 +2684,11 @@ void KHTMLParser::parseTagP(void)
 		align = HTMLClue::Left;
 	}
     }
-    if ( flow == 0 && align != divAlign )
-        newFlow();
-
     if ( align != divAlign )
-        flow->setHAlign( align );
+    {
+        newFlow();
+        _clue->setHAlign( align );
+    }
 }
 
 void KHTMLParser::parseTagPEnd(void)
@@ -2725,14 +2707,14 @@ void KHTMLParser::parseTagPre(void)
     // Used by PRE and LISTING!!
     vspace_inserted = insertVSpace( vspace_inserted );
 
-    pushBlock(tagID, 2, &KHTMLParser::blockEndPre);
+    pushBlock(tagID, 2, 0, &KHTMLParser::blockEndPre);
 
     currentStyle->font.family = settings->fixedFontFace;
     currentStyle->font.style = CSSStyleFont::stNormal;
     currentStyle->font.weight = CSSStyleFont::Normal;
     setFont();    
 
-    flow = 0;
+    closeFlow();
     inPre = true;
 }
 
@@ -2789,10 +2771,9 @@ void KHTMLParser::parseTagSelect()
 				     currentFont() );
     formSelect->setForm( form );
     form->addElement( formSelect );
-    if ( !flow )
-        newFlow();
+    newFlow();
 
-    flow->append( formSelect );
+    _clue->append( formSelect );
 }
 
 void KHTMLParser::parseTagSelectEnd()
@@ -2853,8 +2834,8 @@ void KHTMLParser::parseTagSup()
 void KHTMLParser::parseTagTable(void)
 {
     popBlock(ID_A); // Close any <A..> tags
-    if ( !vspace_inserted || !flow )
-        newFlow();
+
+    insertVSpace(vspace_inserted);
 
     int padding = 1;
     int spacing = 2;
@@ -2913,7 +2894,6 @@ void KHTMLParser::parseTagTable(void)
     table->setOldDivAlign( divAlign );
     table->setOldIndent( currentStyle->text.indent );
     table->setOldClue( _clue );
-    table->setOldFlow( flow );
 
     if ( align != HTMLClue::Left && align != HTMLClue::Right )
     {
@@ -2928,23 +2908,21 @@ void KHTMLParser::parseTagTable(void)
     }
 
     _clue = table;
-    flow = 0;
     currentStyle->text.indent = 0;
-    pushBlock( ID_TABLE, 4 );
+    pushBlock( ID_TABLE, 4, table );
     tableStack.push( table );
 }
 
 void KHTMLParser::parseTagTableEnd(void)
 {
+    closeFlow();
     popBlock( ID_TABLE );
     HTMLTable *table = tableStack.pop();
-    table->endTable();
+    if(!table) return;
     currentStyle->text.indent = table->oldIndent();
     divAlign = table->oldDivAlign();
-    flow = table->oldFlow();
     _clue = table->oldClue();
 
-    flow = 0;
 }
 
 void KHTMLParser::parseTagTD(void)
@@ -2956,6 +2934,8 @@ void KHTMLParser::parseTagTD(void)
     // close open <td> or <th> tags
     popBlock(ID_TD);
     popBlock(ID_TH);
+    // just to be sure...
+    popBlock(ID_CAPTION);
 
     // tell table the last cell has ended
     table->endCell();
@@ -3032,16 +3012,16 @@ void KHTMLParser::parseTagTD(void)
     HTMLTableCell *cell;
     cell = table->append( cellWidth, colType, rowSpan, colSpan, 
 			  bgcolor, valign );
-    flow = 0;
+    closeFlow();
     _clue = cell;
     if ( heading )
     {
-	pushBlock( ID_TH, 3 );
+	pushBlock( ID_TH, 3, cell );
 	currentStyle->font.weight = CSSStyleFont::Bold;
 	setFont();
     }
     else
-	pushBlock( ID_TD, 3 );
+	pushBlock( ID_TD, 3, cell );
 
     vspace_inserted = true;
 }	
@@ -3080,21 +3060,20 @@ void KHTMLParser::parseTagTextarea(void)
 						 currentFont() );
     formTextArea->setForm( form );
     form->addElement( formTextArea );
-    if ( !flow )
-        newFlow();
+    newFlow();
 
-    flow->append( formTextArea );
+    _clue->append( formTextArea );
 
     formText = "";
     inTextArea = true;
-    pushBlock(tagID, 3, &KHTMLParser::blockEndTextarea);
+    pushBlock(tagID, 3, 0, &KHTMLParser::blockEndTextarea);
 }
 
 void KHTMLParser::parseTagTitle(void)
 {
     title = "";
     inTitle = true;
-    pushBlock(tagID, 3, &KHTMLParser::blockEndTitle);
+    pushBlock(tagID, 3, 0, &KHTMLParser::blockEndTitle);
 }
 
 
@@ -3105,6 +3084,8 @@ void KHTMLParser::parseTagTR(void)
     
     // close open <tr> tag
     popBlock(ID_TR);
+    // just to be sure...
+    popBlock(ID_CAPTION);
 
     table->endRow();
     table->startRow();
@@ -3171,11 +3152,11 @@ void KHTMLParser::parseTagUL(void)
     if ( listStack.isEmpty() )
     {
 	vspace_inserted = insertVSpace( vspace_inserted );
-	pushBlock( tagID, 2, &KHTMLParser::blockEndList, true);
+	pushBlock( tagID, 2, 0, &KHTMLParser::blockEndList, true);
     }
     else
     {
-	pushBlock( tagID, 2, &KHTMLParser::blockEndList, false);
+	pushBlock( tagID, 2, 0, &KHTMLParser::blockEndList, false);
     }
 
     ListType type = Unordered;
@@ -3189,8 +3170,8 @@ void KHTMLParser::parseTagUL(void)
     }
 
     listStack.push( new HTMLList( type ) );
-    currentStyle->text.indent += INDENT_SIZE;
-    flow = 0;
+    currentStyle->text.indent = INDENT_SIZE;
+    closeFlow();
 }
 
 void KHTMLParser::parseTagVar(void)

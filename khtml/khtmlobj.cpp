@@ -35,6 +35,7 @@
 #include "khtml.h"
 #include "khtmlcache.h"
 #include "khtmltoken.h"
+#include "khtmlclue.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -67,8 +68,36 @@ HTMLObject::HTMLObject()
     descent = 0;
     objCount++;
     nextObj = 0;
+    parentObj = 0;
     x = 0;
     y = 0;
+}
+
+void HTMLObject::layout( HTMLObject * )
+{
+    int w = width;
+    int min_width = calcMinWidth();
+    calcPreferredWidth();
+    
+    if( min_width > w )
+    {
+	// width has to be changed
+	width = min_width;
+	if(parentObj) parentObj->layout();
+    }
+    else
+    {
+	// no need to change width
+	int old_height = getHeight();
+	calcSize();
+	if( getHeight() != old_height )
+	    if(parentObj) parentObj->position( this );
+    }
+}
+
+void HTMLObject::position( HTMLObject * )
+{
+    // nothing to do, since HTMLObjects don't have children...
 }
 
 HTMLObject* HTMLObject::checkPoint( int _x, int _y )
@@ -1374,10 +1403,14 @@ void HTMLImage::setPixmap( QPixmap *p )
     }
     else
     {
+#ifdef NEW_LAYOUT
+	layout();
+#else
         // Image dimensions have been changed, recalculate layout
 	htmlWidget->calcSize();
 	htmlWidget->calcAbsolutePos();
 	htmlWidget->scheduleUpdate( true );
+#endif
     }
 }
 

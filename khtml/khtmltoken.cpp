@@ -440,7 +440,7 @@ void HTMLTokenizer::parseEntity( const char * &src)
 	    charEntity = false;
             memcpy(dest,searchBuffer+1, searchCount);
 	    dest += searchCount;
-	    //*dest++ = *src++;
+	    // *dest++ = *src++;
 	    if ( pre )
 	        prePos += searchCount;	    
 	    searchCount = 0;
@@ -708,8 +708,12 @@ printf("Unknown tag: \"%s\"\n", tagStr);
 		select = startTag;
 	    }
 	    else if (( tagID == ID_FRAMESET ) ||
+#ifdef NEW_LAYOUT
            	     ( tagID == ID_CELL ) ||
                      ( tagID == ID_TABLE ))
+#else
+           	     ( tagID == ID_CELL ))
+#endif
 	    {
 	        if (startTag)
 	        {

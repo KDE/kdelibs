@@ -139,7 +139,9 @@ void HTMLRowInfo::newRow()
 //	current = new Row(entry[r-1]->len);
 //    else
 	current = new Row(5);
+#ifdef TABLE_DEBUG
     printf("finished newRow()\n");
+#endif
 }
 
 void HTMLRowInfo::endRow()
@@ -174,10 +176,14 @@ void HTMLRowInfo::endRow()
     }
     if(exists)
     {
+#ifdef TABLE_DEBUG
 	printf("row existed; deleting\n");
+#endif
 	delete current;
 	current = 0;
+#ifdef TABLE_DEBUG
 	printf("finished delete\n");
+#endif
 	return;
     }
     // add the new row
@@ -245,7 +251,7 @@ void HTMLTable::append( HTMLObject *obj )
 {
     HTMLTableCell *cell;
 
-    if ( obj->getObjectType() != TableCell )
+    if ( obj->type() != TableCell )
     {
 	// start a new cell
 	cell = new HTMLTableCell( UNDEFINED, Variable, 1, 1, padding );
@@ -259,7 +265,7 @@ void HTMLTable::append( HTMLObject *obj )
 	col++;
     setCells( row, col, cell );
 
-    col++;
+    cell->setParent( this );
 }
 
 HTMLTableCell *HTMLTable::append( int width, ColType colType,
@@ -284,6 +290,8 @@ HTMLTableCell *HTMLTable::append( int width, ColType colType,
     cell->setVAlign( valign );
     if ( bgcolor.isValid() )
 	cell->setBGColor( bgcolor );
+
+    cell->setParent( this );
 
     setCells( row, col, cell );
     return cell;
@@ -337,8 +345,10 @@ void HTMLTable::endCell()
 			      pref_size, col_type);
 
     if(colInfoIndex != -1) rowInfo.append(colInfoIndex);
+#ifdef TABLE_DEBUG
     printf("EndCell: pos = %d; row = %d; min = %d pref = %d type = %d\n",
 	   rowInfo.pos(), rowInfo.row(), min_size, pref_size, col_type);
+#endif
 }
             
 void HTMLTable::startRow()
@@ -364,7 +374,7 @@ void HTMLTable::endRow()
     rowInfo.endRow();
 }
 
-void HTMLTable::endTable()
+HTMLClue *HTMLTable::close()
 {
     endRow();
 
@@ -372,6 +382,8 @@ void HTMLTable::endTable()
 
     // calculate min/max widths
     calcColInfoI();
+
+    return parentObj;
 }
 
 
@@ -587,7 +599,9 @@ void HTMLTable::reset()
 
 void HTMLTable::calcSize( HTMLClue * )
 {
+#ifdef TABLE_DEBUG
     printf("@@@@@@@@@@@@@ calcSize in table @@@@@@@@@@@@\n");
+#endif
     // only do the calculation if we have progressive layout or
     // we finished parsing the table
     if(!progressive && !finished) return;
@@ -770,9 +784,11 @@ int HTMLTable::getColInfo( int _startCol, int _colSpan )
 }
 
 void HTMLTable::addColMinWidth(int k, int delta, ColType t)
-{                   	    
+{      
+#ifdef TABLE_DEBUG             	    
 printf("Adding %d pixels to col %d: %d --> %d\n",
      delta, k, columnPos[k], columnPos[k]+delta);
+#endif
 
     columnPos[k] += delta;
 
@@ -840,8 +856,10 @@ int HTMLTable::addColsMinWidthPref(int kol, int span, int tooAdd)
     prefDiff = 0;
     for (int k = span; k; k--)
     {
+#ifdef TABLE_DEBUG
 printf("  Col = %d, type = %d, pos = %d, pref = %d\n",
    kol+k, colType[kol+k], columnPos[kol+k], columnPrefPos[kol+k]);
+#endif
         if ( colType[kol + k ] == Percent )
         {
             prefDiff += columnPrefPos[kol+k] - columnPos[kol+k];
@@ -854,7 +872,9 @@ printf("  Col = %d, type = %d, pos = %d, pref = %d\n",
         prefTooAdd = prefDiff;
     }
     // extra width across all percent columns 
+#ifdef TABLE_DEBUG
 printf("Spreading %d pixels to percent columns according to pref\n", prefTooAdd);
+#endif
     for (int k = span; k; k--)
     {
         if (prefDiff == 0)
@@ -875,8 +895,10 @@ printf("Spreading %d pixels to percent columns according to pref\n", prefTooAdd)
     prefDiff = 0;
     for (int k = span; k; k--)
     {
+#ifdef TABLE_DEBUG
 printf("  Col = %d, type = %d, pos = %d, pref = %d\n",
    kol+k, colType[kol+k], columnPos[kol+k], columnPrefPos[kol+k]);
+#endif
         if ( colType[kol + k ] == Variable )
         {
             prefDiff += columnPrefPos[kol+k] - columnPos[kol+k];
@@ -889,7 +911,9 @@ printf("  Col = %d, type = %d, pos = %d, pref = %d\n",
         prefTooAdd = prefDiff;
     }
     // extra width across all variable columns 
+#ifdef TABLE_DEBUG
 printf("Spreading %d pixels to variable columns according to pref\n", prefTooAdd);
+#endif
     for (int k = span; k; k--)
     {
         if (prefDiff == 0)
@@ -964,8 +988,9 @@ void HTMLTable::calcColInfoI( void )
     unsigned int i, r, c;
     int borderExtra = ( border == 0 ) ? 0 : 1;
 
+#ifdef TABLE_DEBUG
 printf("START calcColInfoI() this = %p\n", this);
-
+#endif
 
     columnPos.resize( totalCols + 1 );
     columnPrefPos.resize( totalCols + 1 );
@@ -1067,19 +1092,25 @@ printf("START calcColInfoI() this = %p\n", this);
         pref_width = min_width;
 
 #if 1
+#ifdef TABLE_DEBUG
     printf("--PASS 1 : Calculating width advice --\n");
     printf("---- %d ----\n", totalColInfos);
+#endif
     for(i = 0; i < totalColInfos; i++)
     {
+#ifdef TABLE_DEBUG
         printf("col #%d: %d - %d, min: %3d pref: %3d type: %d\n",
                  i,
                  colInfo[i].startCol, colInfo[i].colSpan,
                  colInfo[i].minSize, colInfo[i].prefSize,
                  (int) colInfo[i].colType);
+#endif
     }
     for(i = 0; i < rowInfo.row(); i++)
     {
+#ifdef TABLE_DEBUG
         printf("row #%d: ", i);
+#endif
         for(unsigned int j = 0; j < (unsigned int) rowInfo.len(i); j++)
         {
            if (j == 0)
@@ -1088,7 +1119,9 @@ printf("START calcColInfoI() this = %p\n", this);
               printf("- %d", rowInfo[i][j]);
         } 
     }
+#ifdef TABLE_DEBUG
     printf("min = %d, pref = %d\n", min_width, pref_width);
+#endif
 #endif
 }
 
@@ -1101,8 +1134,10 @@ void HTMLTable::calcColInfoII(void)
     unsigned int r, c, i;
     int borderExtra = ( border == 0 ) ? 0 : 1;
 
+#ifdef TABLE_DEBUG
 printf("START calcColInfoII() this = %p\n", this);
-    
+#endif    
+
     for ( r = 0; r < totalRows; r++ )
     {
         for ( c = 0; c < totalCols; c++ )
@@ -1162,19 +1197,25 @@ printf("START calcColInfoII() this = %p\n", this);
 	}
     }
 #if 1
+#ifdef TABLE_DEBUG
     printf("--PASS II --\n");
     printf("---- %d ----\n", totalColInfos);
+#endif
     for(i = 0; i < totalColInfos; i++)
     {
+#ifdef TABLE_DEBUG
         printf("col #%d: %d - %d, min: %3d pref: %3d type: %d\n",
                  i,
                  colInfo[i].startCol, colInfo[i].colSpan,
                  colInfo[i].minSize, colInfo[i].prefSize,
                  (int) colInfo[i].colType);
+#endif
     }
     for(i = 0; i < rowInfo.row(); i++)
     {
+#ifdef TABLE_DEBUG
         printf("row #%d: ", i);
+#endif
         for(unsigned int j = 0; j < (unsigned int) rowInfo.len(i); j++)
         {
            if (j == 0)
@@ -1185,7 +1226,9 @@ printf("START calcColInfoII() this = %p\n", this);
         printf("\n");
     }
 #endif
+#ifdef TABLE_DEBUG
     printf("maxColSpan = %d\n", maxColSpan);
+#endif
 
     columnPos.resize( totalCols + 1 );
     columnPrefPos.resize( totalCols + 1 );
@@ -1231,21 +1274,27 @@ printf("START calcColInfoII() this = %p\n", this);
                         break;
                     } 
 		}                
+#ifdef TABLE_DEBUG
 printf("Col = %d span = %d, fix = %d, perc = %d, var = %d\n",
-    kol, col_span, fixedCount, percentCount, varCount); 
+    kol, col_span, fixedCount, percentCount, varCount);
+#endif 
 		if (currMinSize < colInfo[index].minSize)
 		{
 		    int tooAdd = colInfo[index].minSize - currMinSize;
 		    if ( (fixedCount == col_span) || 
 		         (varCount == col_span) )
 		    {
+#ifdef TABLE_DEBUG
 printf("Spreading %d pixels equally\n", tooAdd);
+#endif
 		    	// Spread extra width across all columns equally
                         addColsMinWidthEqual(kol, col_span, tooAdd, isFixed);
             	    }
 		    else
 		    {
+#ifdef TABLE_DEBUG
 printf("Spreading %d pixels\n", tooAdd);
+#endif
                         // Look at the pref. widths first
                         tooAdd = addColsMinWidthPref(kol, col_span, tooAdd);            	        
             	        if (varCount > 0)
@@ -1317,13 +1366,17 @@ printf("Spreading %d pixels\n", tooAdd);
              int tooAdd = width - currMinSize - columnPos[0] - border;
              if (fixedCount == totalCols)
              {
+#ifdef TABLE_DEBUG
 printf("Final: Spreading %d pixels equally\n", tooAdd);
+#endif
                  // Spread extra width across all columns equally
                  addColsMinWidthEqual(0, totalCols, tooAdd, Variable);
              }
              else
              {
+#ifdef TABLE_DEBUG
 printf("Final: Spreading %d pixels\n", tooAdd);
+#endif
                  // Look at the pref. widths first
                  tooAdd = addColsMinWidthPref(0, totalCols, tooAdd);            	        
                  if (varCount > 0)
@@ -1338,7 +1391,9 @@ printf("Final: Spreading %d pixels\n", tooAdd);
             	 }
              }
          }
-printf("Done!\n");         
+#ifdef TABLE_DEBUG
+printf("Done!\n");
+#endif         
     }
 
     // Cummulate
@@ -1420,7 +1475,7 @@ void HTMLTable::setMaxWidth( int _max_width )
 
         if (_max_width < min_width)
         {
-            printf("Layout error in HTMLClue::setMaxWidth(this = %p): _max_width (%d) smaller than minimum width(%d)!\n", 
+            printf("Layout error in HTMLTable::setMaxWidth(this = %p): _max_width (%d) smaller than minimum width(%d)!\n", 
             this, _max_width, min_width);
         }
     }
@@ -1430,7 +1485,7 @@ void HTMLTable::setMaxWidth( int _max_width )
         width = fixed_width;
         if (_max_width < width)
         {
-            printf("Layout error in HTMLClue::setMaxWidth(this = %p): _max_width (%d) smaller than fixed width (%d)!\n", 
+            printf("Layout error in HTMLTable::setMaxWidth(this = %p): _max_width (%d) smaller than fixed width (%d)!\n", 
             this, _max_width, fixed_width);
         }
     }	

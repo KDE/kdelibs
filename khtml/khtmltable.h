@@ -94,7 +94,7 @@ public:
 	{ HTMLClueV::print(_painter,_obj,_x,_y,_width,_height,_tx,_ty); }
 
     virtual const char * objectName() const { return "HTMLTableCell"; };
-    virtual ObjectType getObjectType() const
+    virtual ObjectType type() const
 	    {	return TableCell; }
 
 protected:
@@ -194,7 +194,7 @@ public:
     virtual ~HTMLTable();
 
     void setCaption( HTMLClueV *cap, HTMLClue::VAlign al )
-	    {	caption = cap; capAlign = al; }
+	    { caption = cap; capAlign = al; cap->setParent(this); }
 
     enum ColType { Fixed, Percent, Relative, Variable };
 
@@ -205,9 +205,9 @@ public:
     void endCell();
     void startRow();
     void endRow();
-    void endTable();
+    virtual HTMLClue *close();
 
-    virtual ObjectType getObjectType() const
+    virtual ObjectType type() const
 	    {	return Table; }
 
     // function for incremental layout, used by <col> tag
@@ -271,8 +271,6 @@ public:
 
     void setOldClue ( HTMLClue *c ) { oldclue = c; }
     HTMLClue *oldClue() { return oldclue; }
-    void setOldFlow ( HTMLClue *c ) { oldflow = c; }
-    HTMLClue *oldFlow() { return oldflow; }
     void setOldDivAlign ( HTMLClue::HAlign a ) { olddivalign = a; }
     HTMLClue::HAlign oldDivAlign() { return olddivalign; }
     void setOldIndent ( int i ) { oldindent = i; }
@@ -399,7 +397,6 @@ protected:
     HTMLClue::HAlign rowhalign;
 
     HTMLClue *oldclue;
-    HTMLClue *oldflow;
     HTMLClue::HAlign olddivalign;
     int oldindent;
 

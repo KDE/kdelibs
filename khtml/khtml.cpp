@@ -24,7 +24,7 @@
 // KDE HTML Widget -- Main Widget
 // $Id$
 
-#undef CLUE_DEBUG
+#define CLUE_DEBUG
 
 #ifdef GrayScale
 #undef GrayScale
@@ -1566,6 +1566,7 @@ void KHTMLWidget::timerEvent( QTimerEvent * )
 
 void KHTMLWidget::calcSize()
 {
+#ifndef NEW_LAYOUT
     if ( clue == 0 )
 	return;
 
@@ -1584,6 +1585,7 @@ void KHTMLWidget::calcSize()
     clue->setPos( 0, clue->getAscent() );
 
     emit documentChanged();
+#endif
 }
 
 
