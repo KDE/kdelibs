@@ -24,13 +24,13 @@
 
 #include "config.h"
 
-#ifdef HAVE_PCREPOSIX_H
+#ifdef HAVE_PCREPOSIX
 #include <pcreposix.h>
 #else  // POSIX regex - not so good...
 extern "C" { // bug with some libc5 distributions
 #include <regex.h>
 }
-#endif //HAVE_PCREPOSIX_H
+#endif //HAVE_PCREPOSIX
 
 #include "ustring.h"
 
