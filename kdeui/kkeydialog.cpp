@@ -63,8 +63,6 @@ const int XKeyRelease = KeyRelease;
 #endif
 #endif
 
-//static KAccelActions *g_pactionsGlobal;
-
 //---------------------------------------------------------------------
 // KKeyChooserItem
 //---------------------------------------------------------------------
@@ -92,9 +90,6 @@ class KKeyChooserItem : public KListViewItem
 	uint m_iAction;
 	bool m_bModified;
 	KShortcut m_cut;
-
- private:
-	class KKeyChooserItemPrivate* d;
 };
 
 //---------------------------------------------------------------------
@@ -112,9 +107,8 @@ class KKeyChooserPrivate
 	KKeyButton *bChange;
 	QGroupBox *fCArea;
 	QButtonGroup *kbGroup;
-	//KActionCollection* pColl;
-	//KAccelActions *pActionsOrig;
-	//KAccelActions actionsNew;
+
+	QMap<QString, KShortcut> mapGlobals;
 
 	bool bAllowWinKey;
 	// If this is set, then shortcuts require a modifier:
@@ -199,8 +193,10 @@ KKeyChooser::KKeyChooser( KGlobalAccel* actions, QWidget* parent,
 
 KKeyChooser::~KKeyChooser()
 {
+	// Delete allocated KShortcutLists
+	for( uint i = 0; i < d->rgpListsAllocated.count(); i++ )
+		delete d->rgpListsAllocated[i];
 	delete d;
-	// TODO: delete rgpListsAllocated pointers
 }
 
 bool KKeyChooser::insert( KActionCollection* pColl )
@@ -532,17 +528,10 @@ void KKeyChooser::readKeysInternal( QMap<KKeySequence, QString>& map, const QStr
 
 void KKeyChooser::readGlobalKeys()
 {
-	/*
-	if( !g_pactionsGlobal )
-		g_pactionsGlobal = new KAccelActions;
-
-	// insert all global keys, even if they appear in dictionary to be configured
-	//debug("KKeyChooser::readGlobalKeys()");
-	//readKeysInternal( d->globalDict, QString::fromLatin1("Global Keys"));
-	KConfig config;
-	if( g_pactionsGlobal->count() == 0 )
-		g_pactionsGlobal->init( config, QString::fromLatin1("Global Shortcuts") );
-	*/
+	QMap<QString, QString> mapEntry = KGlobal::config()->entryMap( "Global Shortcuts" );
+	QMap<QString, QString>::Iterator it( mapEntry.begin() );
+	for( uint i = 0; it != mapEntry.end(); ++it, i++ )
+		d->mapGlobals[it.key()] = KShortcut(*it);
 }
 
 void KKeyChooser::fontChange( const QFont & )
@@ -659,44 +648,33 @@ void KKeyChooser::setShortcut( const KShortcut& cut )
 	if( !pItem )
 		return;
 
+	for( uint i = 0; i < cut.count(); i++ ) {
+		const KKeySequence& seq = cut.seq(i);
+		const KKey& key = seq.key(0);
+
+		if( !d->bAllowWinKey && (key.modFlags() & KKey::WIN) ) {
+			QString s = i18n("The Win key is not allowed in this context.");
+			KMessageBox::sorry( this, s, i18n("Invalid Shortcut Key") );
+			return;
+		}
+		if( !d->bAllowLetterShortcuts && key.modFlags() == 0 
+		    && key.key() < 0x3000 && QChar(key.key()).isLetterOrNumber() ) {
+			QString s = i18n( 	"In order to use the '%1' key as a shortcut, "
+						"it must be combined with the "
+						"Win, Alt, Ctrl, and/or Shift keys." ).arg(QChar(key.key()));
+			KMessageBox::sorry( this, s, i18n("Invalid Shortcut Key") );
+			return;
+		}
+	}
+
 	// If key isn't already in use,
 	if( !isKeyPresent( cut ) ) {
 		// Set new key code
 		pItem->setShortcut( cut );
 		// Update display
-		//updateButtons( pItem );
 		updateButtons();
 		emit keyChange();
 	}
-/*   KListViewItem *item = d->pList->currentItem();
-   if (!item || !d->mapItemToInfo.contains( item ))
-      return;
-
-   KAccelActions::Iterator it = d->mapItemToInfo[item];
-
-   if( !d->bAllowWinKey && (keyCode & (Qt::ALT<<1)) ) {
-	QString s = i18n("The Win key is not allowed in this context.");
-	KMessageBox::sorry( this, s, i18n("Invalid Shortcut Key") );
-	return;
-   }
-
-   if( keyCode < 0x1000  && !d->bAllowLetterShortcuts ) {
-	QString s = i18n( 	"In order to use the '%1' key as a shortcut, "
-				"it must be combined with the "
-				"Win, Alt, Ctrl, and/or Shift keys." ).arg(QChar(keyCode));
-	KMessageBox::sorry( this, s, i18n("Invalid Shortcut Key") );
-	return;
-   }
-
-   // If key isn't already in use,
-   if( !isKeyPresent( keyCode ) ) {
-      // Set new key code
-      (*it).aConfigKeyCode = keyCode;
-      // Update display
-      updateButtons(item);
-      emit keyChange();
-   }
-*/
 }
 
 bool KKeyChooser::isKeyPresent( const KShortcut& cut, bool bWarnUser )
@@ -718,6 +696,20 @@ bool KKeyChooser::isKeyPresent( const KShortcut& cut, bool bWarnUser )
 		}
 	}
 
+	QMap<QString, KShortcut>::ConstIterator it;
+	for( it = d->mapGlobals.begin(); it != d->mapGlobals.end(); ++it ) {
+		for( uint iSeq = 0; iSeq < cut.count(); iSeq++ ) {
+			const KKeySequence& seq = cut.seq(iSeq);
+			if( (*it).contains( seq ) ) {
+				if( m_type != Global || it.key() != pItem->actionName() ) {
+					if( bWarnUser )
+						_warning( seq, it.key(), i18n("Conflict with Global Shortcuts") );
+					return true;
+				}
+			}
+		}
+	}
+
 	// Search for shortcut conflicts with other actions in the
 	//  lists we're configuring.
 	for( uint iList = 0; iList < d->rgpLists.count(); iList++ ) {
@@ -734,71 +726,6 @@ bool KKeyChooser::isKeyPresent( const KShortcut& cut, bool bWarnUser )
 	}
 
 	return false;
-/*
-	// Search the global key codes to find if this keyCode is already used
-	//  elsewhere
-
-	QDictIterator<int> gIt( *d->globalDict );
-	for( gIt.toFirst(); gIt.current(); ++gIt ) {
-		if( (*gIt.current()) == kcode && *gIt.current() != 0 ) {
-			if( warnuser )
-				_warning( *gIt.current(), gIt.currentKey(), i18n("Global key conflict") );
-			return true;
-		}
-	}
-
-    // Search the std key codes to find if this keyCode is already used
-    //  elsewhere
-
-    QDictIterator<int> sIt( *d->stdDict );
-
-    sIt.toFirst();
-    while ( sIt.current() ) {
-        kdDebug(125) << "current " << sIt.currentKey() << ":" << *sIt.current() << " code " << kcode << endl;
-        if ( *sIt.current() == kcode && *sIt.current() != 0 ) {
-            QString actionName( (*m_pActionsOrig)[sIt.currentKey()].descr );
-            actionName.stripWhiteSpace();
-
-            QString keyName = KKeySequence::keyToString( *sIt.current(), true );
-
-            QString str =
-                i18n("The %1 key combination has already "
-                     "been allocated "
-                     "to the standard %2 action.\n"
-                     "Please choose a unique key combination.").
-                arg(keyName).arg(actionName);
-
-            KMessageBox::sorry( this, str, i18n("Standard key conflict"));
-
-            return true;
-        }
-        ++sIt;
-    }
-
-    // Search the aConfigKeyCodes to find if this keyCode is already used
-    // elsewhere
-    for (KAccelActions::ConstIterator it = m_pActionsOrig->begin();
-         it != m_pActionsOrig->end(); ++it) {
-        if ( it != d->mapItemToInfo[d->pList->currentItem()]
-             && (*it).aConfigKeyCode == kcode ) {
-            QString actionName( (*it).descr );
-            actionName.stripWhiteSpace();
-
-            QString keyName = KKeySequence::keyToString( kcode, true );
-
-            QString str =
-                i18n("The %1 key combination has already "
-                     "been allocated to the %2 action.\n"
-                     "Please choose a unique key combination.").
-                arg(keyName).arg(actionName);
-
-            KMessageBox::sorry( this, str, i18n("Key conflict"));
-
-            return true;
-        }
-    }
-*/
-    return false;
 }
 
 void KKeyChooser::_warning( const KKeySequence& cut, QString sAction, QString sTitle )
