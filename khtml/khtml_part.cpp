@@ -765,6 +765,15 @@ void KHTMLPart::setStatusMessagesEnabled( bool enable )
   d->m_statusMessagesEnabled = enable;
 }
 
+KJS::Interpreter *KHTMLPart::jScriptInterpreter()
+{
+  KJSProxy *proxy = jScript();
+  if (!proxy || proxy->paused())
+    return 0;
+
+  return proxy->interpreter();
+}
+
 bool KHTMLPart::statusMessagesEnabled() const
 {
   return d->m_statusMessagesEnabled;

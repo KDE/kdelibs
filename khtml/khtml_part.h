@@ -62,6 +62,11 @@ namespace DOM
   class EventListener;
 }
 
+namespace KJS
+{
+  class Interpreter;
+}
+
 namespace khtml
 {
   class DocLoader;
@@ -296,6 +301,25 @@ public:
    * otherwise.
    */
   bool jScriptEnabled() const;
+
+  /**
+   * Returns the JavaScript interpreter the part is using. This method is
+   * mainly intended for applications which embed and extend the part and
+   * provides a mechanism for adding additional native objects to the
+   * interpreter (or removing the built-ins).
+   *
+   * One thing people using this method to add things to the interpreter must
+   * consider, is that when you start writing new content to the part, the
+   * interpreter is cleared. This includes both use of the
+   * begin( const KURL &, int, int ) method, and the openURL( const KURL & )
+   * method. If you want your objects to have a longer lifespan, then you must
+   * retain a KJS::Object yourself to ensure that the reference count of your
+   * custom objects never reaches 0. You will also need to re-add your
+   * bindings everytime this happens - one way to detect the need for this is
+   * to connect to the docCreated() signal, another is to reimplement the
+   * begin() method.
+   */
+  KJS::Interpreter *jScriptInterpreter();
 
   /**
    * Enable/disable statusbar messages
