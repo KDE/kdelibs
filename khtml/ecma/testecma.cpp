@@ -46,8 +46,8 @@ int main(int, char **)
   kjs.enableDebug();
   DOM::Document doc;
 
-  DOMDocument dd(&doc);
-  Global::current().put("document", &dd);
+  DOMDocument *dd = new DOMDocument(&doc);
+  Global::current().put("document", KJSO(dd));
 
   printf("Entering interactive mode.\n"
 	 "You may access the DOM via the 'document' property.\n"
