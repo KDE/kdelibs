@@ -123,7 +123,7 @@ void KateBookmarks::connectMenuAndDisConnectAgain()
       connect( m, SIGNAL(aboutToHide()),
               this, SLOT(bookmarkMenuAboutToHide()) );
 
-      m_view->removeEventFilter( this );
+//       m_view->removeEventFilter( this );
       return;
     }
     // FUCKY-SUCKY -- try later
