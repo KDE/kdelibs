@@ -450,8 +450,9 @@ Completion WindowFunc::tryExecute(const List &args)
         if (newPart && newPart->inherits("KHTMLPart")) {
 	    Window *win = newWindow(static_cast<KHTMLPart*>(newPart));
 	    win->opener = part;
-	    uargs.serviceType = "";
-	    uargs.frameName = "";
+	    uargs.serviceType = QString::null;
+	    if (uargs.frameName == "_blank")
+              uargs.frameName = QString::null;
 	    emit static_cast<KHTMLPart*>(newPart)->browserExtension()->openURLRequest(url,uargs);
 	    result = win;
         } else
