@@ -151,7 +151,9 @@ protected:
 
     virtual bool dispatch();
     virtual void dispatch( int _cmd, const QByteArray &data );
+    // BCI - Remove me later and add default value to function below
     void openPassDlg( const QString& head, const QString& user, const QString& pass );
+    void openPassDlg( const QString& head, const QString& user, const QString& pass, const QString& host );
 
 protected:
     Connection * m_pConnection;

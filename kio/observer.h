@@ -28,6 +28,7 @@
 
 class UIServer_stub;
 class KURL;
+
 namespace KIO {
   class Job;
 };
@@ -71,6 +72,22 @@ public:
    * the job ended
    */
   void jobFinished( int progressId );
+
+  /**
+   * Invoke to request autorization info from the user or query the
+   * password daemon to see if one is stored.
+   *
+   * Note this is simply a forwarding method to @ref UIServer::authorize
+   * It simply returns the result of the UIServer to the calling function.
+   *
+   * @param user  the user to be allowed authorized access
+   * @param pass  the password of the authorized user
+   * @param head  the resource the requires authorization
+   * @param host  the host requesting the authorization
+   *
+   * @return true if authrization information was obtained.
+   */
+  bool authorize( QString& user, QString& pass, const QString& head, const QString& host );
 
 k_dcop:
   /**

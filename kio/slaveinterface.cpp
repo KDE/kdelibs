@@ -23,7 +23,8 @@
 #include <stdlib.h>
 #include <sys/time.h>
 #include <unistd.h>
-#include <kio/passdlg.h>
+#include <kio/observer.h>
+
 
 using namespace KIO;
 
@@ -156,9 +157,9 @@ void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 	break;
     case INF_NEED_PASSWD: {
 	kdDebug(7007) << "needs passwd\n";
-	QString user, pass;
-	stream >> str1 >> user >> pass;
-	openPassDlg(str1, user, pass);
+	QString host, user, pass;
+	stream >> host >> str1 >> user >> pass;
+	openPassDlg(str1, user, pass, host);
 	break;
     }
     default:
@@ -168,18 +169,24 @@ void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 
 void SlaveInterface::openPassDlg( const QString& head, const QString& user, const QString& pass )
 {
+	openPassDlg( head, user, pass, QString::null );
+}
+
+void SlaveInterface::openPassDlg( const QString& head, const QString& user, const QString& pass, const QString& host )
+{
     kdDebug(7007) << "openPassDlg " << head << endl;
-
-    PassDlg dlg( 0L, 0L, true, 0, head, user, pass );
     QByteArray packedArgs;
-
-    if ( dlg.exec() ) {
-	QDataStream stream( packedArgs, IO_WriteOnly );
-	stream <<  dlg.user()<< dlg.password();
-	m_pConnection->sendnow( CMD_USERPASS, packedArgs );
+  	QDataStream stream( packedArgs, IO_WriteOnly );
+  	QString u = user, p = pass;
+  	bool result = Observer::self()->authorize( u, p, head, host );
+  	if( result )
+  	{
+  	    stream << u << p;
+        m_pConnection->sendnow( CMD_USERPASS, packedArgs );
     }
     else
-	m_pConnection->sendnow( CMD_NONE, packedArgs );
+        m_pConnection->sendnow( CMD_NONE, packedArgs );		
+
 }
 
 #include "slaveinterface.moc"

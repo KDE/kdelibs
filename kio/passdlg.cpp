@@ -32,22 +32,47 @@
 using namespace KIO;
 
 PassDlg::PassDlg( QWidget* parent, const char* name, bool modal, 
-		  WFlags wflags, const QString& _head, const QString& _user,
-		  const QString& _pass )
-    : KDialog(parent, name, modal, wflags)
+		          WFlags wflags, const QString& _head,
+		          const QString& _user, const QString& _pass )
+        : KDialog(parent, name, modal, wflags)
 {
-   QVBoxLayout *layout = new QVBoxLayout( this,
-					  marginHint(),
-					  spacingHint() );
+	init( _head, _user, _pass, QString::null );
+}
 
+PassDlg::PassDlg( QWidget* parent, const char* name, bool modal,
+				  WFlags wflags, const QString& _head, const QString& _user,
+				  const QString& _pass, const QString& _host )
+        : KDialog(parent, name, modal, wflags)
+{
+	init( _head, _user, _pass, _host );
+}
+
+void PassDlg::init( const QString& _head, const QString& _user,
+		   			const QString& _pass, const QString& _host )
+{
+   QVBoxLayout *layout = new QVBoxLayout( this, marginHint(), spacingHint() );
    //
    // Bei Bedarf einen kleinen Kommentar als Label einfuegen
    //
    if ( !_head.isNull() )
    {
-       QString foo("authorization needed for ");
-       foo += _head;
-       QLabel *l = new QLabel(foo, this);
+       QString msg;
+       if( _host.isNull() )
+       {
+           msg = i18n("<qt>"
+       				  "<center><nobr>Authorization is required to access</nobr></center>"
+       				  "<center><b>%1</b></center>"
+       				  "</qt>").arg( _head );
+       }
+       else
+       {
+           msg = i18n("<qt>"
+       				  "<center><nobr>Authorization is required to access</nobr></center>"
+       				  "<center><b>%1</b> at %2</center>"
+       				  "</qt>").arg( _head ).arg( _host );
+       }
+
+       QLabel *l = new QLabel(msg, this);
        layout->addWidget( l );
    }
 
@@ -55,10 +80,12 @@ PassDlg::PassDlg( QWidget* parent, const char* name, bool modal,
    layout->addLayout( grid );
 
    QLabel *l = new QLabel( i18n( "Username:" ), this );
+   l->setAlignment( Qt::AlignVCenter | Qt::AlignRight );
    grid->addWidget( l, 0, 1 );
    m_pUser = new QLineEdit( this );
    grid->addWidget( m_pUser, 0, 3 );
    l = new QLabel( i18n( "Password:" ), this );
+   l->setAlignment( Qt::AlignVCenter | Qt::AlignRight );
    grid->addWidget( l, 2, 1 );
    m_pPass = new QLineEdit( this );
    m_pPass->setEchoMode( QLineEdit::Password );
@@ -96,7 +123,7 @@ PassDlg::PassDlg( QWidget* parent, const char* name, bool modal,
    connect( b2, SIGNAL(clicked()), SLOT(reject()) );
 
    // Fenstertitel
-   setCaption( i18n("Password Entry") );
+   setCaption( i18n("Authorization Request") );
 
    // Focus
    if ( _user.isEmpty() )

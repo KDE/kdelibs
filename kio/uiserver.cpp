@@ -32,11 +32,13 @@
 #include <dcopclient.h>
 #include <kdebug.h>
 #include <kmessagebox.h>
+#include <kdesu/client.h>
 
 #include "observer_stub.h"
 #include "kio/defaultprogress.h"
 #include "kio/jobclasses.h"
 #include "kio/uiserver.h"
+#include "kio/passdlg.h"
 
 // pointer for main instance of UIServer
 UIServer* uiserver;
@@ -120,8 +122,7 @@ void ProgressItem::setProcessedSize( unsigned long size ) {
 void ProgressItem::setProcessedFiles( unsigned long files ) {
   m_iProcessedFiles = files;
 
-  QString tmps;
-  tmps.sprintf( "%u / %u", m_iProcessedFiles, m_iTotalFiles );
+  QString tmps = i18n("%1 / %2").arg( m_iProcessedFiles ).arg( m_iTotalFiles );
   setText( listProgress->lv_count, tmps );
 
   defaultProgress->slotProcessedFiles( 0, m_iProcessedFiles );
@@ -335,7 +336,7 @@ UIServer::~UIServer() {
 
 int UIServer::newJob( QCString observerAppId )
 {
-  kdDebug() << "UIServer::newJob observerAppId=" << observerAppId << ". "
+  kdDebug(7024) << "UIServer::newJob observerAppId=" << observerAppId << ". "
 	    << "Giving id=" << s_jobId+1 << endl;
   
   QListViewItemIterator it( listProgress );
@@ -386,7 +387,7 @@ void UIServer::jobFinished( int id )
 
 void UIServer::totalSize( int id, unsigned long size )
 {
-  kdDebug() << "UIServer::totalSize " << id << " " << (unsigned int) size << endl;
+  kdDebug(7024) << "UIServer::totalSize " << id << " " << (unsigned int) size << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -396,7 +397,7 @@ void UIServer::totalSize( int id, unsigned long size )
 
 void UIServer::totalFiles( int id, unsigned long files )
 {
-  kdDebug() << "UIServer::totalFiles " << id << " " << (unsigned int) files << endl;
+  kdDebug(7024) << "UIServer::totalFiles " << id << " " << (unsigned int) files << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -406,7 +407,7 @@ void UIServer::totalFiles( int id, unsigned long files )
 
 void UIServer::totalDirs( int id, unsigned long dirs )
 {
-  kdDebug() << "UIServer::totalDirs " << id << " " << (unsigned int) dirs << endl;
+  kdDebug(7024) << "UIServer::totalDirs " << id << " " << (unsigned int) dirs << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -416,7 +417,7 @@ void UIServer::totalDirs( int id, unsigned long dirs )
 
 void UIServer::processedSize( int id, unsigned long size )
 {
-  kdDebug() << "UIServer::processedSize " << id << " " << (unsigned int) size << endl;
+  kdDebug(7024) << "UIServer::processedSize " << id << " " << (unsigned int) size << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -426,7 +427,7 @@ void UIServer::processedSize( int id, unsigned long size )
 
 void UIServer::processedFiles( int id, unsigned long files )
 {
-  kdDebug() << "UIServer::processedFiles " << id << " " << (unsigned int) files << endl;
+  kdDebug(7024) << "UIServer::processedFiles " << id << " " << (unsigned int) files << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -436,7 +437,7 @@ void UIServer::processedFiles( int id, unsigned long files )
 
 void UIServer::processedDirs( int id, unsigned long dirs )
 {
-  kdDebug() << "UIServer::processedDirs " << id << " " << (unsigned int) dirs << endl;
+  kdDebug(7024) << "UIServer::processedDirs " << id << " " << (unsigned int) dirs << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -446,7 +447,7 @@ void UIServer::processedDirs( int id, unsigned long dirs )
 
 void UIServer::percent( int id, unsigned long ipercent )
 {
-  kdDebug() << "UIServer::percent " << id << " " << (unsigned int) ipercent << endl;
+  kdDebug(7024) << "UIServer::percent " << id << " " << (unsigned int) ipercent << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -456,7 +457,7 @@ void UIServer::percent( int id, unsigned long ipercent )
 
 void UIServer::speed( int id, unsigned long bytes_per_second )
 {
-  kdDebug() << "UIServer::speed " << id << " " << (unsigned int) bytes_per_second << endl;
+  kdDebug(7024) << "UIServer::speed " << id << " " << (unsigned int) bytes_per_second << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -466,7 +467,7 @@ void UIServer::speed( int id, unsigned long bytes_per_second )
 
 void UIServer::canResume( int id, unsigned int can_resume )
 {
-  kdDebug() << "UIServer::canResume " << id << " " << can_resume << endl;
+  kdDebug(7024) << "UIServer::canResume " << id << " " << can_resume << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -476,7 +477,7 @@ void UIServer::canResume( int id, unsigned int can_resume )
 
 void UIServer::copying( int id, KURL from, KURL to )
 {
-  kdDebug() << "UIServer::copying " << id << " " << from.url() << "  " << to.url() << endl;
+  kdDebug(7024) << "UIServer::copying " << id << " " << from.url() << "  " << to.url() << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -486,7 +487,7 @@ void UIServer::copying( int id, KURL from, KURL to )
 
 void UIServer::moving( int id, KURL from, KURL to )
 {
-  kdDebug() << "UIServer::moving " << id << " " << from.url() << "  " << to.url() << endl;
+  kdDebug(7024) << "UIServer::moving " << id << " " << from.url() << "  " << to.url() << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -496,7 +497,7 @@ void UIServer::moving( int id, KURL from, KURL to )
 
 void UIServer::deleting( int id, KURL url )
 {
-  kdDebug() << "UIServer::deleting " << id << " " << url.url() << endl;
+  kdDebug(7024) << "UIServer::deleting " << id << " " << url.url() << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -506,7 +507,7 @@ void UIServer::deleting( int id, KURL url )
 
 void UIServer::renaming( int id, KURL old_name, KURL new_name )
 {
-  kdDebug() << "UIServer::renaming " << id << " " << old_name.url() << "  " << new_name.url() << endl;
+  kdDebug(7024) << "UIServer::renaming " << id << " " << old_name.url() << "  " << new_name.url() << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -516,7 +517,7 @@ void UIServer::renaming( int id, KURL old_name, KURL new_name )
 
 void UIServer::creatingDir( int id, KURL dir )
 {
-  kdDebug() << "UIServer::creatingDir " << id << " " << dir.url() << endl;
+  kdDebug(7024) << "UIServer::creatingDir " << id << " " << dir.url() << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -606,6 +607,57 @@ void UIServer::slotSelection() {
     }
   }
   toolBar()->setItemEnabled( TOOL_CANCEL, FALSE);
+}
+
+QByteArray UIServer::authorize( const QString& user, const QString& head, const QString& host )
+{
+    QByteArray packedArgs;
+  	QDataStream stream( packedArgs, IO_WriteOnly );
+  	bool isCached = false;
+   	KDEsuClient client;
+  	if( !host.isNull() )
+  	{
+        kdDebug(7024) << "Checking if password is cached for " << host.utf8() << endl;  	
+    	int sucess = client.ping();
+    	if( sucess == -1 )
+    	{
+            kdDebug(7024) << "No running kdesu daemon found. Starting one..." << endl;  	    	
+            sucess = client.startServer();
+            kdDebug(7024) << "New kdesu daemon sucessfully started..." << endl;
+        }
+    		
+		if( sucess != - 1 )
+		{
+   		    QString u = QString::fromUtf8( client.getVar( (host + "-user").utf8() ) );
+   		    // Do not retrieve password for the wrong user!!!   		
+			if( !user.isNull() && u == user )
+			{
+			    isCached = true;
+	   		    kdDebug(7024) << "Found cached Authorization for " << host.utf8() << endl;
+			    QString p = QString::fromUtf8( client.getVar( (host + "-pass").utf8() ) );
+           		stream << Q_UINT8(1) << u << p;
+	   		    kdDebug(7024) << "Sending back authorization..." << endl;           		
+           		return packedArgs;
+			}
+		}
+	}
+	if( !isCached )
+	{
+    	KIO::PassDlg dlg( 0L, 0L, true, 0, head, user, host );
+        if ( dlg.exec() )
+	    {
+	    	QString u = dlg.user();
+	    	QString p = dlg.password();
+   		    kdDebug(7024) << "Caching Authorization for " << host.utf8() << endl;
+			client.setVar( (host + "-user").utf8() , u.utf8(), 0 );
+			client.setVar( (host + "-pass").utf8() , p.utf8(), 0 );
+       		stream << Q_UINT8(1) << u << p;
+   		    kdDebug(7024) << "Authorization cached sucessfully..." << endl;       		
+       		return packedArgs;			
+		}
+	}
+	stream << Q_UINT8(0) << QString::null << QString::null;
+	return packedArgs;
 }
 
 

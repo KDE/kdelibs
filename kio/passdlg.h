@@ -42,18 +42,40 @@ namespace KIO {
      * @param pass password, if known initially
      */
     PassDlg( QWidget* parent, const char* name, bool modal, WFlags wflags,
-	     const QString& head, const QString& user, const QString& pass );
+	         const QString& head, const QString& user, const QString& pass );
+
+    /**
+     * Create a password dialog
+     * @param parent the parent widget
+     * @param name the dialog name
+     * @param modal if true, the dialog will be modal
+     * @param wflags window flags, passed to QDialog
+     * @param head the text to show in the dialog, on top of the two fields
+     * @param user user name, if known initially
+     * @param pass password, if known initially
+     * @param host name of host that requested password if known
+     */
+    PassDlg( QWidget* parent, const char* name, bool modal, WFlags wflags,
+	         const QString& head, const QString& user, const QString& pass,
+	         const QString& host );	
 
     /**
      * @return the password entered by the user
      */
     QString password() { return m_pPass->text(); }
+
     /**
      * @return the login entered by the user
      */
     QString user() { return m_pUser->text(); }
 
   private:
+  	/**
+  	 * Initializor called from the constructors.
+  	 */
+  	void init ( const QString& head, const QString& user,
+  				const QString& pass, const QString& host );
+
     QLineEdit* m_pPass;
     QLineEdit* m_pUser;
   };
