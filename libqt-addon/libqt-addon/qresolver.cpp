@@ -28,6 +28,7 @@
 // System includes
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <errno.h>
 #include <netdb.h>
 #include <time.h>
 #include <arpa/inet.h>
@@ -632,7 +633,7 @@ QStrList QResolver::protocolName(int protonum)
   do
     {
       buf = new char[buflen];
-      if (getprotobynumber_r(protonum, &protobuf, buf, buflen, &pe) != 0)
+      if (getprotobynumber_r(protonum, &protobuf, buf, buflen, &pe) == ERANGE)
 	{
 	  buflen += 1024;
 	  delete [] buf;
@@ -674,7 +675,7 @@ QStrList QResolver::protocolName(const char *protoname)
   do
     {
       buf = new char[buflen];
-      if (getprotobyname_r(protoname, &protobuf, buf, buflen, &pe) != 0)
+      if (getprotobyname_r(protoname, &protobuf, buf, buflen, &pe) == ERANGE)
 	{
 	  buflen += 1024;
 	  delete [] buf;
@@ -716,7 +717,7 @@ int QResolver::protocolNumber(const char *protoname)
   do
     {
       buf = new char[buflen];
-      if (getprotobyname_r(protoname, &protobuf, buf, buflen, &pe) != 0)
+      if (getprotobyname_r(protoname, &protobuf, buf, buflen, &pe) == ERANGE)
 	{
 	  buflen += 1024;
 	  delete [] buf;
@@ -754,7 +755,7 @@ int QResolver::servicePort(const char *servname, const char *protoname)
   do
     {
       buf = new char[buflen];
-      if (getservbyname_r(servname, protoname, &servbuf, buf, buflen, &se) != 0)
+      if (getservbyname_r(servname, protoname, &servbuf, buf, buflen, &se) == ERANGE)
 	{
 	  buflen += 1024;
 	  delete [] buf;
@@ -792,7 +793,7 @@ QStrList QResolver::serviceName(const char* servname, const char *protoname)
   do
     {
       buf = new char[buflen];
-      if (getservbyname_r(servname, protoname, &servbuf, buf, buflen, &se) != 0)
+      if (getservbyname_r(servname, protoname, &servbuf, buf, buflen, &se) == ERANGE)
 	{
 	  buflen += 1024;
 	  delete [] buf;
@@ -834,7 +835,7 @@ QStrList QResolver::serviceName(int port, const char *protoname)
   do
     {
       buf = new char[buflen];
-      if (getservbyport_r(port, protoname, &servbuf, buf, buflen, &se) != 0)
+      if (getservbyport_r(port, protoname, &servbuf, buf, buflen, &se) == ERANGE)
 	{
 	  buflen += 1024;
 	  delete [] buf;
