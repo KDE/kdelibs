@@ -164,7 +164,7 @@ void RenderListMarker::printObject(QPainter *p, int _x, int _y,
     p->setPen(m_style->color());
     QFontMetrics fm = p->fontMetrics();
     int offset = fm.ascent()*2/3;
-    
+
     int xoff = 0;
     int yoff = fm.ascent() - offset/2;
 
@@ -189,7 +189,7 @@ void RenderListMarker::printObject(QPainter *p, int _x, int _y,
     case SQUARE:
     {
 	int xp = _tx + xoff;
-	int yp = _ty + yoff;
+	int yp = _ty + fm.ascent() - offset + 1;
 	p->setBrush( QBrush( color ) );
 	QCOORD points[] = { xp,yp, xp+offset,yp, xp+offset,yp+offset, xp,yp+offset, xp,yp };
 	QPointArray a( 5, points );
@@ -198,7 +198,7 @@ void RenderListMarker::printObject(QPainter *p, int _x, int _y,
     }
     default:
 	if(item != QString::null) {
-	    _ty += fm.ascent() - fm.height()/2;
+	    _ty += fm.ascent() - fm.height()/2 + 1;
 	    if(m_style->listStylePosition() == INSIDE) {
 		if(m_style->direction() == LTR)
 		    p->drawText(_tx, _ty, 0, 0, Qt::AlignRight|Qt::DontClip, item);
@@ -234,7 +234,7 @@ void RenderListMarker::calcMinMaxWidth()
 	if(m_style->listStylePosition() == INSIDE) {
 	    QFontMetrics fm(m_style->font());
 	    m_width = fm.ascent();
-	} 
+	}
 	else
 	    m_width = 0;
 	goto end;
