@@ -31,6 +31,7 @@
 #include <signal.h>
 #include <sys/stat.h>
 #include <sys/socket.h>
+#include <netinet/in.h>  // Required for AIX
 #include <netinet/tcp.h>
 
 /*
@@ -38,7 +39,6 @@
 #include <unistd.h>
 #include <sys/time.h>
 #include <sys/wait.h>
-#include <netinet/in.h>
 */
 
 #include <qdom.h>
