@@ -38,7 +38,7 @@ public:
 
     virtual ~HTMLElementImpl();
 
-    virtual bool isHTMLElement() { return true; }
+    virtual bool isHTMLElement() const { return true; }
 
     // make it pure virtual...
     virtual ushort id() const = 0;

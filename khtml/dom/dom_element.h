@@ -357,7 +357,7 @@ public:
      * @internal
      * not part of the DOM
      */
-    bool isHTMLElement();
+    bool isHTMLElement() const;
     
 protected:
 

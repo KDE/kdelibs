@@ -488,7 +488,7 @@ long HTMLTableRowElementImpl::rowIndex() const
 {
     // some complex traversal stuff here to take into account that some rows may be in different sections
     int rIndex = 0;
-    NodeImpl *n = this;
+    const NodeImpl *n = this;
     do {
 	while (!n->previousSibling() && !(n->isElementNode() && n->id() == ID_TABLE))
 	    n = n->parentNode();
@@ -511,7 +511,7 @@ long HTMLTableRowElementImpl::rowIndex() const
 long HTMLTableRowElementImpl::sectionRowIndex() const
 {
     int rIndex = 0;
-    NodeImpl *n = this;
+    const NodeImpl *n = this;
     do {
 	n = n->previousSibling();
 	if (n && n->isElementNode() && n->id() == ID_TR)

@@ -94,7 +94,7 @@ public:
     virtual const DOMString nodeName() const;
     virtual DOMString nodeValue() const;
     virtual unsigned short nodeType() const;
-    virtual bool isTextNode() { return true; }
+    virtual bool isTextNode() const { return true; }
 
     TextImpl *splitText ( const unsigned long offset );
 

@@ -173,7 +173,7 @@ void Element::normalize()
   if (impl) ((ElementImpl *)impl)->normalize();
 }
 
-bool Element::isHTMLElement()
+bool Element::isHTMLElement() const
 {
     if(!impl) return false;
     return ((ElementImpl *)impl)->isHTMLElement();

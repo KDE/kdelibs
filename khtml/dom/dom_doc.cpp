@@ -197,7 +197,7 @@ NodeList Document::getElementsByTagName( const DOMString &tagName )
     return ((DocumentImpl *)impl)->getElementsByTagName( tagName );
 }
 
-bool Document::isHTMLDocument()
+bool Document::isHTMLDocument() const
 {
     if(!impl) return false;
     return ((DocumentImpl *)impl)->isHTMLDocument();

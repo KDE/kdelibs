@@ -71,10 +71,10 @@ public:
 
     virtual unsigned short nodeType() const;
 
-    virtual bool isElementNode() { return false; }
-    virtual bool isAttributeNode() { return false; }
-    virtual bool isTextNode() { return false; }
-    virtual bool isDocumentNode() { return false; }
+    virtual bool isElementNode() const { return false; }
+    virtual bool isAttributeNode() const { return false; }
+    virtual bool isTextNode() const { return false; }
+    virtual bool isDocumentNode() const { return false; }
 
     virtual NodeImpl *parentNode() const;
 

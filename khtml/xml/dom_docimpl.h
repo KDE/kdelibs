@@ -70,9 +70,9 @@ public:
 
     virtual const DOMString nodeName() const;
     virtual unsigned short nodeType() const;
-    virtual bool isDocumentNode() { return true; }
+    virtual bool isDocumentNode() const { return true; }
 
-    virtual bool isHTMLDocument() { return false; }
+    virtual bool isHTMLDocument() const { return false; }
 
     virtual void setStyle(khtml::RenderStyle *style) { m_style = style; }
     virtual khtml::RenderStyle *style() { return m_style; }

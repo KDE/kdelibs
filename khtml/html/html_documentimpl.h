@@ -61,7 +61,7 @@ public:
 
     ~HTMLDocumentImpl();
 
-    virtual bool isHTMLDocument() { return true; }
+    virtual bool isHTMLDocument() const { return true; }
 
     DOMString referrer() const;
     DOMString domain() const;

@@ -292,7 +292,7 @@ public:
      * @internal
      * not part of the DOM
      */
-    bool isHTMLDocument();
+    bool isHTMLDocument() const;
 
     /**
      * Introduced in DOM Level 2

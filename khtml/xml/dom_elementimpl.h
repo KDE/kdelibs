@@ -51,7 +51,7 @@ public:
 
     virtual const DOMString nodeName() const;
     virtual unsigned short nodeType() const;
-    virtual bool isAttributeNode() { return true; }
+    virtual bool isAttributeNode() const { return true; }
 
     DOMString name() const;
     bool specified() const { return _specified; }
@@ -103,9 +103,9 @@ public:
     virtual bool isInline();
 
     virtual unsigned short nodeType() const;
-    virtual bool isElementNode() { return true; }
+    virtual bool isElementNode() const { return true; }
 
-    virtual bool isHTMLElement() { return false; }
+    virtual bool isHTMLElement() const { return false; }
 
     DOMString tagName() const;
 
