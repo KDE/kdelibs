@@ -81,7 +81,7 @@ namespace KJS {
 
     const UnicodeChar* data() const { return s; }
     bool is8Bit() const;
-    int size() const { return l; }
+    unsigned int size() const { return l; }
     UnicodeChar operator[](unsigned int pos) const;
 
     double toDouble() const;

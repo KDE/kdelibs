@@ -200,8 +200,8 @@ UString::~UString()
 
 void UString::append(const UString &t)
 {
-  UnicodeChar *n = new UnicodeChar[l+t.size()];
-  memcpy(n, s, l * sizeof(UnicodeChar));
+  UnicodeChar *n = new UnicodeChar[size()+t.size()];
+  memcpy(n, s, size() * sizeof(UnicodeChar));
   memcpy(n+l, t.data(), t.size() * sizeof(UnicodeChar));
   l += t.size();
 
@@ -212,9 +212,9 @@ void UString::append(const UString &t)
 CString UString::cstring() const
 {
   char *c = new char[l+1];
-  for(unsigned int i = 0; i < l; i++)
+  for(unsigned int i = 0; i < size(); i++)
     c[i] = s[i].lo;
-  c[l] = '\0';
+  c[size()] = '\0';
   CString cstr(c);
   delete [] c;
 
@@ -248,8 +248,8 @@ UString &UString::operator=(const UString &str)
 
 bool UString::is8Bit() const
 {
-  UnicodeChar *u = s;
-  for(unsigned int i = 0; i < l; i++, u++)
+  const UnicodeChar *u = data();
+  for(unsigned int i = 0; i < size(); i++, u++)
     if (u->hi)
       return false;
 
@@ -258,10 +258,10 @@ bool UString::is8Bit() const
 
 UnicodeChar UString::operator[](unsigned int pos) const
 {
-  if (pos >= l)
+  if (pos >= size())
     return UnicodeChar();
 
-  return s[pos];
+  return data()[pos];
 }
 
 double UString::toDouble() const
@@ -327,25 +327,25 @@ double UString::toDouble() const
 
 int UString::find(const UString &f, int pos) const
 {
-  long fsize = f.l * sizeof(UnicodeChar);
+  long fsize = f.size() * sizeof(UnicodeChar);
   if (pos < 0)
     pos = 0;
-  UnicodeChar *end = s + l - f.l;
-  for (UnicodeChar *c = s + pos; c <= end; c++)
-    if (!memcmp((void*)c, (void*)f.s, fsize))
-      return (c-s);
+  const UnicodeChar *end = data() + size() - f.size();
+  for (const UnicodeChar *c = data() + pos; c <= end; c++)
+    if (!memcmp((void*)c, (void*)f.data(), fsize))
+      return (c-data());
 
   return -1;
 }
 
 int UString::rfind(const UString &f, int pos) const
 {
-  if (pos + f.l >= l)
-    pos = l - f.l;
-  long fsize = f.l * sizeof(UnicodeChar);
-  for (UnicodeChar *c = s + pos; c >= s; c--) {
-    if (!memcmp((void*)c, (void*)f.s, fsize))
-      return (c-s);
+  if (pos + f.size() >= size())
+    pos = size() - f.size();
+  long fsize = f.size() * sizeof(UnicodeChar);
+  for (const UnicodeChar *c = data() + pos; c >= data(); c--) {
+    if (!memcmp((void*)c, (void*)f.data(), fsize))
+      return (c-data());
   }
 
   return -1;
@@ -355,15 +355,15 @@ UString UString::substr(int pos, int len) const
 {
   if (pos < 0)
     pos = 0;
-  else if (pos >= (int) l)
-    pos = l;
+  else if (pos >= (int) size())
+    pos = size();
   if (len < 0)
-    len = l;
+    len = size();
   if (pos + len >= (int) l)
-    len = l - pos;
+    len = size() - pos;
 
   UnicodeChar *tmp = new UnicodeChar[len];
-  memcpy(tmp, s+pos, len * sizeof(UnicodeChar));
+  memcpy(tmp, data()+pos, len * sizeof(UnicodeChar));
   UString result(tmp, len);
   delete [] tmp;
 
