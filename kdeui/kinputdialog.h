@@ -189,9 +189,9 @@ class KInputDialog : public KDialogBase
 
     /**
      * Static convenience function to let the user select an item from a
-     * combobox. caption is the text that is displayed in the title bar.
-     * label is the text that appears as the label for the combobox. list
-     * is the string list which is inserted into the combobox, and current
+     * list. caption is the text that is displayed in the title bar.
+     * label is the text that appears as the label for the list. list
+     * is the string list which is inserted into the list, and current
      * is the number of the item which should be the selected item. If 
      * editable is true, the user can enter their own text.
      *
@@ -199,13 +199,13 @@ class KInputDialog : public KDialogBase
      * @param label    Text of the label for the spin box
      * @param list     List of item for user to choose from
      * @param current  Index of the selected item
-     * @param editable If true, user can enter the text in the combobox
+     * @param editable If true, user can enter own text
      * @param ok       This bool would be set to true if user pressed Ok
      * @param parent   Parent of the dialog widget
      * @param name     Name of the dialog widget
      *
-     * @return Text of the current item, or if @p editable is true, the 
-     *         current text of the combobox.
+     * @return Text of the selected item. If @p editable is true this can be
+     *         a text entered by the user.
      */
     static QString getItem( const QString &caption, const QString &label,
         const QStringList &list, int current=0, bool editable=false,
