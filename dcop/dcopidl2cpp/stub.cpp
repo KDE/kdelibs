@@ -157,7 +157,7 @@ void generateStub( const QString& idl, const QString& filename, QDomElement de)
 		if (s.tagName() == "FUNC") {
 		    QDomElement r = s.firstChild().toElement();
 		    Q_ASSERT( r.tagName() == "TYPE" );
-		    str << "    ";
+		    str << "    virtual "; // KDE4 - I really don't think these need to be virtual
 		    if ( r.hasAttribute( "qleft" ) )
 			str << r.attribute("qleft") << " ";
 		    str << r.firstChild().toText().data();
