@@ -1245,6 +1245,7 @@ int KDockWidget::forcedFixedHeight()
 void KDockWidget::restoreFromForcedFixedSize()
 {
 	d->forcedWidth=-1;
+	d->forcedHeight=-1;
 	setMinimumWidth(0);
 	setMaximumWidth(32000);
 	setMinimumHeight(0);
