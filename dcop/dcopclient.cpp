@@ -560,9 +560,9 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
             else
             {
                 dcopSrv = QString::fromLatin1(contents.left( pos ));
-#ifndef NDEBUG
-                qDebug("dcopserver address: %s", dcopSrv.latin1());
-#endif
+//#ifndef NDEBUG
+//                qDebug("dcopserver address: %s", dcopSrv.latin1());
+//#endif
             }
 	}
 	d->serverAddr = qstrdup( const_cast<char *>(dcopSrv.latin1()) );
