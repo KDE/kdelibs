@@ -2198,7 +2198,7 @@ const QColor &KListViewItem::backgroundColor()
   return listView()->viewport()->colorGroup().base();
 }
 
-const QColor KListViewItem::backgroundColor(int column)
+QColor KListViewItem::backgroundColor(int column)
 {
   KListView* view = static_cast< KListView* >(listView());
   QColor color = isAlternate() ?

@@ -1066,7 +1066,7 @@ public:
    * ### only 1 column
    * @since 3.4
    */
-  const QColor backgroundColor(int column);
+  QColor backgroundColor(int column);
 
   virtual void paintCell(QPainter *p, const QColorGroup &cg,
     int column, int width, int alignment);
