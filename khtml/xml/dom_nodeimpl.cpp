@@ -1050,6 +1050,9 @@ NodeImpl *NodeBaseImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild, i
     NodeImpl *child = isFragment ? newChild->firstChild() : newChild;
 
     NodeImpl *prev = refChild->previousSibling();
+    if ( prev == newChild || refChild == newChild ) // nothing to do
+	return newChild;
+    
     while (child) {
         nextChild = isFragment ? child->nextSibling() : 0;
 
@@ -1092,6 +1095,9 @@ NodeImpl *NodeBaseImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, i
 {
     exceptioncode = 0;
 
+    if ( oldChild == newChild ) // nothing to do
+	return oldChild;
+    
     // Make sure adding the new child is ok
     checkAddChild(newChild, exceptioncode);
     if (exceptioncode)
@@ -1243,6 +1249,9 @@ NodeImpl *NodeBaseImpl::appendChild ( NodeImpl *newChild, int &exceptioncode )
     checkAddChild(newChild, exceptioncode);
     if (exceptioncode)
         return 0;
+    
+    if ( newChild == _last ) // nothing to do
+	return newChild;
 
     bool isFragment = newChild->nodeType() == Node::DOCUMENT_FRAGMENT_NODE;
 
