@@ -3,7 +3,9 @@
     Copyright (C) 1997 Martin Jones (mjones@kde.org)
               (C) 1997 Torben Weis (weis@kde.org)
 
-    with some minor changes by Norman Markgarf
+    With some minor changes by:
+        Norman Markgraf (Norman.Markgraf@rz.ruhr-uni-bochum.de)
+ 
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -25,7 +27,7 @@
 #define  Nrm (0)         // normal font face
 #define  Sym (1)         // 'symbol' font face
 
-// --> 127
+// --> 165
 
 ampseq_s AmpSequences[] = {
         {"AElig"   	,   0, 198},	// 31
@@ -39,7 +41,7 @@ ampseq_s AmpSequences[] = {
 	{"Auml"   	,   0, 196},
 	{"Beta"         , Sym,  66},
 	{"Ccedil"   	,   0, 199},
-	{"Chi"          , Sym,  'X'},
+	{"Chi"          , Sym,  'C'},
 	{"Delta"        , Sym,  68},
 	{"ETH"   	,   0, 208},
 	{"Eacute"   	,   0, 201},
@@ -69,7 +71,7 @@ ampseq_s AmpSequences[] = {
 	{"Oslash"   	,   0, 216},
 	{"Otilde"   	,   0, 213},
 	{"Ouml"   	,   0, 214},
-	{"Phi"          ,   0,  86},
+	{"Phi"          , Sym,  'F'},
 	{"Pi"           , Sym,  80},
 	{"Psi"          , Sym,  'Y'},
 	{"QUOT"   	,   0,  34},
@@ -149,6 +151,7 @@ ampseq_s AmpSequences[] = {
 	{"ocirc"   	,   0, 244},
 	{"ograve"   	,   0, 242},
 	{"omega"        , Sym, 'w'},
+	{"omnicron"     ,   0, 'o'},
 	{"ordf"   	,   0, 170},
 	{"ordm"   	,   0, 186},
 	{"oslash"   	,   0, 248},
@@ -156,7 +159,7 @@ ampseq_s AmpSequences[] = {
 	{"ouml"   	,   0, 246},
 	{"para"   	,   0, 182},
 	{"phi"          , Sym, 'j'},
-	{"pi"           , Sym, 'p'},
+	{"pi;"          , Sym, 'p'}, // NOT "pi" because there is a "piv" !
 	{"piv"          , Sym, 'v'},
 	{"plusmn"   	,   0, 177},
 	{"pound"   	,   0, 163},
@@ -167,17 +170,17 @@ ampseq_s AmpSequences[] = {
 	{"rho"          , Sym, 'r'},
 	{"sect"   	,   0, 167},
 	{"shy"   	,   0, 173},
-	{"sigma"        , Sym, 's'},
+	{"sigma;"       , Sym, 's'}, // NOT "sigma" because of "sigmaf" !
 	{"sigmaf"       , Sym, 'V'},
-	{"sub"          , Sym, 'L'},
+	{"sub;"         , Sym, 'L'}, // NOT "sub" because of "sube" !
 	{"sube"         , Sym, 'M'},
-	{"sup"          , Sym, 'I'},
+	{"sup;"         , Sym, 'I'}, // NOT "sup" because of "sub1",... !
 	{"sup1"   	,   0, 185},
 	{"sup2"   	,   0, 178},
 	{"sup3"   	,   0, 179},
 	{"szlig"   	,   0, 223},
 	{"tau"          , Sym, 't'},
-	{"theta"        , Sym, 'q'},
+	{"theta;"       , Sym, 'q'}, // NOT "theta" because of "thetasym"
 	{"thetasym"     , Sym, 'J'},
 	{"thorn"   	,   0, 254},
 	{"times"   	,   0, 215},
@@ -189,10 +192,10 @@ ampseq_s AmpSequences[] = {
 	{"upsih"        , Sym, 'u'},
 	{"upsilon"      , Sym, 'u'},
 	{"uuml"   	,   0, 252},
-	{"xi"           , Sym, 'c'},
+	{"xi"           , Sym, 'x'},
 	{"yacute"   	,   0, 253},
 	{"yen"   	,   0, 165},
-	{"zeta"         , Sym, 'z'}, // 195 - 31 = 164
+	{"zeta"         , Sym, 'z'}, // 196 - 31 = 165
 };
 
 char*   AmpSeqFontFaces[]=

@@ -3,7 +3,8 @@
     Copyright (C) 1997 Martin Jones (mjones@kde.org)
               (C) 1997 Torben Weis (weis@kde.org)
 
-    With some minor changes by Norman Markgraf
+    With some minor changes by:
+	Norman Markgraf (Norman.Markgraf@rz.ruhr-uni-bochum.de)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -24,7 +25,7 @@
 #ifndef AMPSEQ_H
 #define AMPSEQ_H
 
-#define NUM_AMPSEQ      164
+#define NUM_AMPSEQ      165
 
 struct ampseq_s
 {
