@@ -155,7 +155,6 @@ struct KFileDialogPrivate
     // The file class used for KRecentDirs
     QString fileClass;
 
-    QDockArea *toolBarDock;
 };
 
 KURL *KFileDialog::lastDirectory; // to set the start path
@@ -183,9 +182,7 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     d->completionLock = false;
     d->myStatusLine = 0;
 
-    d->toolBarDock = new QDockArea( Horizontal, QDockArea::Normal, 
-                                    d->mainWidget, "KFileDialog::toolBarDock" );
-    toolbar= new KToolBar( d->toolBarDock, "KFileDialog::toolbar", true);
+    toolbar= new KToolBar( d->mainWidget, "KFileDialog::toolbar", true);
 
     KURLComboBox *combo = new KURLComboBox( KURLComboBox::Directories, true,
                                             toolbar, "path combo" );
@@ -858,8 +855,7 @@ void KFileDialog::initGUI()
         delete d->boxLayout; // deletes all sub layouts
 
     d->boxLayout = new QVBoxLayout( d->mainWidget, 0, KDialog::spacingHint());
-    //d->boxLayout->addWidget(toolbar, AlignTop);
-    d->boxLayout->addWidget(d->toolBarDock);
+    d->boxLayout->addWidget(toolbar, AlignTop);
     d->boxLayout->addWidget(ops, 4);
     d->boxLayout->addSpacing(3);
 
