@@ -78,13 +78,9 @@ Value ArrayInstanceImp::get(ExecState *exec, const Identifier &propertyName) con
 
   bool ok;
   unsigned index = propertyName.toULong(&ok);
-  if (ok) {
-    if (index >= length)
-      return Undefined();
-    if (index < storageLength) {
-      ValueImp *v = storage[index];
-      return v ? Value(v) : Undefined();
-    }
+  if (ok && UString::from(index) == propertyName.ustring() && index < length && index < storageLength) {
+    ValueImp *v = storage[index];
+    return v ? Value(v) : Undefined();
   }
 
   return ObjectImp::get(exec, propertyName);
@@ -118,7 +114,7 @@ void ArrayInstanceImp::put(ExecState *exec, const Identifier &propertyName, cons
   
   bool ok;
   unsigned index = propertyName.toULong(&ok);
-  if (ok) {
+  if (ok && UString::from(index) == propertyName.ustring()) {
     put(exec, index, value, attr);
     return;
   }
@@ -152,7 +148,7 @@ bool ArrayInstanceImp::hasProperty(ExecState *exec, const Identifier &propertyNa
   
   bool ok;
   unsigned index = propertyName.toULong(&ok);
-  if (ok) {
+  if (ok && UString::from(index) == propertyName.ustring()) {
     if (index >= length)
       return false;
     if (index < storageLength) {
@@ -182,8 +178,8 @@ bool ArrayInstanceImp::deleteProperty(ExecState *exec, const Identifier &propert
     return false;
   
   bool ok;
-  unsigned long index = propertyName.toULong(&ok);
-  if (ok) {
+  unsigned index = propertyName.toULong(&ok);
+  if (ok && UString::from(index) == propertyName.ustring()) {
     if (index >= length)
       return true;
     if (index < storageLength) {
@@ -320,14 +316,18 @@ static int compareWithCompareFunctionForQSort(const void *a, const void *b)
     CompareWithCompareFunctionArguments *args = compareWithCompareFunctionArguments;
     
     args->arguments.clear();
-// delme
-    args->arguments.append(Value(*(ValueImp **)a));
-    args->arguments.append(Value(*(ValueImp **)b));
-// fixme
-//     args->arguments.append(*(ValueImp **)a);
-//     args->arguments.append(*(ValueImp **)b);
-    return args->compareFunction->call(args->exec, args->globalObject, args->arguments)
-        .toInt32(args->exec);
+    args->arguments.append(*(ValueImp **)a);
+    args->arguments.append(*(ValueImp **)b);
+    double v = args->compareFunction->call(args->exec, args->globalObject, args->arguments)
+        .toNumber(args->exec);
+
+    // v may be outside integer range; check sign
+    if (v > 0)
+      return 1;
+    else if (v < 0)
+      return -1;
+    else
+      return 0;
 }
 
 void ArrayInstanceImp::sort(ExecState *exec, Object &compareFunction)
@@ -453,7 +453,7 @@ Value ArrayProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args
     UString separator = ",";
     UString str = "";
 
-    if (args.size() > 0)
+    if (args.size() > 0 && !args[0].isA(UndefinedType))
       separator = args[0].toString(exec);
     for (unsigned int k = 0; k < length; k++) {
       if (k >= 1)
@@ -635,7 +635,7 @@ Value ArrayProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args
         for ( unsigned int j = i+1 ; j<length ; ++j )
           {
             Value jObj = thisObj.get(exec,j);
-            int cmp;
+            double cmp;
             if (jObj.type() == UndefinedType) {
               cmp = 1;
             } else if (minObj.type() == UndefinedType) {
@@ -644,7 +644,7 @@ Value ArrayProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args
                 List l;
                 l.append(jObj);
                 l.append(minObj);
-                cmp = sortFunction.call(exec, exec->interpreter()->globalObject(), l).toInt32(exec);
+                cmp = sortFunction.call(exec, exec->interpreter()->globalObject(), l).toNumber(exec);
             } else {
               cmp = (jObj.toString(exec) < minObj.toString(exec)) ? -1 : 1;
             }
