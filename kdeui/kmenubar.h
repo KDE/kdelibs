@@ -20,6 +20,9 @@
 
 //$Id$
 //$Log$
+//Revision 1.10  1998/11/11 14:32:12  radej
+//sven: *Bars can be made flat by MMB (Like in Netscape, but this works)
+//
 //Revision 1.9  1998/08/31 00:52:12  torben
 //Torben: One new function and made others virtual
 //=> binary incompatible. Sorry. Please use virtual whenever it is
@@ -47,10 +50,13 @@ class _menuBar : public QMenuBar
 
 #include <qmenubar.h>
  * This is floatable toolbar. It can be set to float, Top, or Bottom
- * of KTopLevelWidget. It can be used without of KTopLevelWidget,
- * but then you should maintain items (toolbars, menubar, statusbar)
- * yourself. Interface is the same as QMenuBar, except that you can't
+class KToolBoxManager;
+
+/**
+ * Floatable menu bar. It can be set to float, Top, or Bottom
+ * of KTopLevelWidget. It can be used without KTopLevelWidget, but
  * then you should maintain items (toolbars, menubar, statusbar)
+ * yourself.
  *
  * Interface is the same as QMenuBar, except that you can't
  * add pixmaps.
@@ -93,7 +99,7 @@ class KMenuBar : public QFrame
     * Returns menubar position.
     */
    menuPosition menuBarPos() {return position;};
-   void enableFloating (bool flag = TRUE);
+
    /**
     * Enables/disables floating.
     */
@@ -113,6 +119,7 @@ class KMenuBar : public QFrame
    virtual int insertItem(const char *text,
     * details.
     */
+   virtual uint count();
    virtual int insertItem(const char *text, int id=-1, int index=-1 );
    virtual int insertItem(const char *text, QPopupMenu *popup,
                   int accel=0 );
@@ -149,7 +156,7 @@ class KMenuBar : public QFrame
    void mousePressEvent ( QMouseEvent *m );
    void resizeEvent( QResizeEvent *e );
    
- private:
+ protected:
    void leaveEvent (QEvent *e);
    bool eventFilter(QObject *, QEvent *);
 
@@ -170,6 +177,7 @@ private:
 
 signals:
     /**
+     * This signal is connected to @ref KTopLevel::updateRects. It is
      * emited when menu bar changes its position.
      */
     void moved (menuPosition);
@@ -180,7 +188,7 @@ signals:
     void highlighted(int id);
 
     /**
- private:
+ protected:
      */
     void activated(int id);
 

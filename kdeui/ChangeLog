@@ -1,0 +1,6 @@
+1998-11-09  Alex Zepeda  <garbanzo@hooked.net>
+
+	* kmenubar.h: Fix up some of the comments so they're gramatically
+	correct and make a bit more sense.  Make private members protected, 
+	in the spirit of reusable code.
+
