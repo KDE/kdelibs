@@ -33,7 +33,7 @@ AC_REQUIRE([AM_PROG_NM])dnl
 AC_REQUIRE([AC_PROG_LN_S])dnl
 dnl
 # Always use our own libtool.
-LIBTOOL='$(SHELL) $(top_builddir)/libtool --silent'
+LIBTOOL='$(SHELL) $(top_builddir)/libtool'
 AC_SUBST(LIBTOOL)dnl
 
 # Check for any special flags to pass to ltconfig.
@@ -84,8 +84,9 @@ $libtool_flags --no-verify $ac_aux_dir/ltmain.sh $host \
 # Usage: AM_ENABLE_SHARED[(DEFAULT)]
 #   Where DEFAULT is either `yes' or `no'.  If omitted, it defaults to
 #   `yes'.
-AC_DEFUN(AM_ENABLE_SHARED,
+AC_DEFUN(AM_ENABLE_SHARED_EX,
 [define([AM_ENABLE_SHARED_DEFAULT], ifelse($1, no, no, yes))dnl
+AC_PROVIDE(AM_ENABLE_SHARED)
 AC_ARG_ENABLE(shared,
 changequote(<<, >>)dnl
 <<  --enable-shared         build shared libraries [default=>>AM_ENABLE_SHARED_DEFAULT]
@@ -111,6 +112,23 @@ esac],
 enable_shared=AM_ENABLE_SHARED_DEFAULT)dnl
 ])
 
+AC_DEFUN(AM_ENABLE_SHARED,
+[define([AM_ENABLE_SHARED_DEFAULT], ifelse($1, no, no, yes))dnl
+AC_ARG_ENABLE(shared,
+changequote(<<, >>)dnl
+<<  --enable-shared         build shared libraries [default=>>AM_ENABLE_SHARED_DEFAULT],
+changequote([, ])dnl
+[
+if test "$enableval" = no; then
+  enable_shared=no
+else
+  enable_shared=yes
+fi
+],
+enable_shared=AM_ENABLE_SHARED_DEFAULT)dnl
+])
+
+
 # AM_DISABLE_SHARED - set the default shared flag to --disable-shared
 AC_DEFUN(AM_DISABLE_SHARED,
 [AM_ENABLE_SHARED(no)])
@@ -123,8 +141,9 @@ AC_DEFUN(AM_DISABLE_STATIC,
 # Usage: AM_ENABLE_STATIC[(DEFAULT)]
 #   Where DEFAULT is either `yes' or `no'.  If omitted, it defaults to
 #   `yes'.
-AC_DEFUN(AM_ENABLE_STATIC,
+AC_DEFUN(AM_ENABLE_STATIC_EX,
 [define([AM_ENABLE_STATIC_DEFAULT], ifelse($1, no, no, yes))dnl
+AC_PROVIDE(AM_ENABLE_STATIC)
 AC_ARG_ENABLE(static,
 changequote(<<, >>)dnl
 <<  --enable-static         build static libraries [default=>>AM_ENABLE_STATIC_DEFAULT]
@@ -150,6 +169,27 @@ esac],
 enable_static=AM_ENABLE_STATIC_DEFAULT)dnl
 ])
 
+AC_DEFUN(AM_ENABLE_STATIC,
+[define([AM_ENABLE_STATIC_DEFAULT], ifelse($1, no, no, yes))dnl
+AC_ARG_ENABLE(static,
+changequote(<<, >>)dnl
+<<  --enable-static         build static libraries [default=>>AM_ENABLE_STATIC_DEFAULT],
+changequote([, ])dnl
+[if test "$enableval" = no; then
+  enable_static=no
+else
+  enable_static=yes
+fi],
+enable_static=AM_ENABLE_STATIC_DEFAULT)dnl
+])
+
+AC_DEFUN(AM_DISABLE_LIBRARIES,
+[
+AC_PROVIDE([AM_ENABLE_STATIC])
+AC_PROVIDE([AM_ENABLE_SHARED])
+enable_static=no
+enable_shared=no
+])
 
 # AM_PROG_LD - find the path to the GNU or non-GNU linker
 AC_DEFUN(AM_PROG_LD,

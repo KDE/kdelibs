@@ -1102,14 +1102,15 @@ EOF
 dnl just a wrapper to clean up configure.in
 AC_DEFUN(KDE_PROG_LIBTOOL,
 [
+AC_REQUIRE([AM_ENABLE_SHARED])
+AC_REQUIRE([AM_ENABLE_STATIC])
 dnl libtool is only for C, so I must force him
 dnl to find the correct flags for C++
 ac_save_cc=$CC
 ac_save_cflags=$CFLAGS
 CC=$CXX
 CFLAGS=$CXXFLAGS
-AM_ENABLE_SHARED(yes)
-AM_ENABLE_STATIC(no)
+silent=yes
 AM_PROG_LIBTOOL dnl for libraries
 CC=$ac_save_cc
 CFLAGS=$ac_save_cflags
