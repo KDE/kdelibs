@@ -157,9 +157,9 @@ public:
 
     /**
      * Sets an @p icon and a  @p miniIcon on window @p win
-     * @param win the id of the window 
+     * @param win the id of the window
      * @param icon the new icon
-     * @param miniIcon the new mini icon 
+     * @param miniIcon the new mini icon
      */
     static void  setIcons( WId win, const QPixmap& icon, const QPixmap& miniIcon );
 
@@ -169,8 +169,8 @@ public:
      * Possible values are NET::Normal, NET::Desktop, NET::Dock,
      * NET::Tool, NET::Menu, NET::Dialog, NET::Override (== no
      * decoration frame) or NET::TopMenu
-     * 
-     * @param win the id of the window 
+     *
+     * @param win the id of the window
      * @param windowType the type of the window
      */
     static void setType( WId win, NET::WindowType windowType );
@@ -181,8 +181,8 @@ public:
      * Possible values are or'ed combinations of NET::Modal,
      * NET::Sticky, NET::MaxVert, NET::MaxHoriz, NET::Shaded,
      * NET::SkipTaskbar, NET::StaysOnTop, NET::SkipPager
-     * 
-     * @param win the id of the window 
+     *
+     * @param win the id of the window
      * @param state the new flags that will be set
      */
     static void setState( WId win, unsigned long state );
@@ -193,8 +193,8 @@ public:
      * Possible values are or'ed combinations of NET::Modal,
      * NET::Sticky, NET::MaxVert, NET::MaxHoriz, NET::Shaded,
      * NET::SkipTaskbar, NET::StaysOnTop, NET::SkipPager
-     * 
-     * @param win the id of the window 
+     *
+     * @param win the id of the window
      * @param state the flags that will be cleared
      */
     static void clearState( WId win, unsigned long  state );
@@ -202,25 +202,25 @@ public:
     /**
      * Sets window @p win to be present on all virtual desktops if @p
      * is true. Otherwise the window lives only on one single desktop.
-     * 
-     * @param win the id of the window 
-     * @param b true to show the window on all desktops, false 
+     *
+     * @param win the id of the window
+     * @param b true to show the window on all desktops, false
      *          otherwise
      */
     static void setOnAllDesktops( WId win, bool b );
 
     /**
      * Moves window @p win to desktop @p desktop.
-     * 
-     * @param win the id of the window 
+     *
+     * @param win the id of the window
      * @param desktop the number of the new desktop
      */
     static void setOnDesktop( WId win, int desktop);
 
     /**
      * Sets the strut of window @p win to @p left, @p right, @p top, @p bottom.
-     * 
-     * @param win the id of the window 
+     *
+     * @param win the id of the window
      * @param left the left strut
      * @param right the right strut
      * @param top the top strut
@@ -253,7 +253,7 @@ public:
      * Iconifies a window. Compatible to XIconifyWindow but has an
      * additional parameter @p animation.
      *
-     * @param win the id of the window 
+     * @param win the id of the window
      * @param animation true to show an animation
      * @see deIconifyWindow()
      */
@@ -263,19 +263,20 @@ public:
      * DeIconifies a window. Compatible to XMapWindow but has an
      * additional parameter @p animation.
      *
-     * @param win the id of the window 
+     * @param win the id of the window
      * @param animation true to show an animation
      * @see iconifyWindow()
      */
     static void deIconifyWindow( WId win, bool animation = true );
 
-#ifndef KDE_NO_COMPAT
+#ifdef KDE_NO_COMPAT
+private:
+#endif
     /**
      * @deprecated
      * Use @ref KStartupInfo::appStarted
      */
     static void appStarted();
-#endif
 };
 
 #endif

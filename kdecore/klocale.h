@@ -187,17 +187,6 @@ public:
 		     unsigned long n) const;
 
   /**
-   * @deprecated Changes the current charset used for fonts.
-   *
-   * @param charset The new charset
-   *
-   * @return True on success.
-   */
-#ifndef KDE_NO_COMPAT
-  bool setCharset(const QString & charset);
-#endif
-
-  /**
    * Changes the current encoding.
    *
    * @param mibEnum The mib of the preferred codec
@@ -367,18 +356,6 @@ public:
 		      int digits = -1) const;
 
   /**
-   * @deprecated This function differs from the above only in that it can take
-   * a QString as the argument for convenience.
-   *
-   * @param numStr The string you want to reformat.
-   *
-   * @return The number of money as a localized string
-   */
-#ifndef KDE_NO_COMPAT
-  QString formatMoney(const QString &numStr) const;
-#endif
-
-  /**
    * Given a double, converts that to a numeric string containing
    * the localized numeric equivalent.
    *
@@ -391,18 +368,6 @@ public:
    * @return The number as a localized string
    */
   QString formatNumber(double num, int precision = -1) const;
-
-  /**
-   * @deprecated This function differs from the above only in that it can take
-   * a QString as the argument for convenience.
-   *
-   * @param numStr The string you want to convert.
-   *
-   * @return The number as a formated string
-   */
-#ifndef KDE_NO_COMPAT
-  QString formatNumber(const QString &numStr) const;
-#endif
 
   /**
    * Use this to determine whether nouns are declined in
@@ -589,15 +554,6 @@ public:
   QString country() const;
 
   /**
-   * @deprecated Returns the languages selected by user.
-   *
-   * @return String containing language codes separated by colons
-   */
-#ifndef KDE_NO_COMPAT
-  QString languages() const;
-#endif
-
-  /**
    * Returns the preferred languages as ISO 639-1 codes. This means
    * that information about country is removed. If the internal language
    * code might be represented by more than one 639-1 code, they will all be
@@ -621,20 +577,6 @@ public:
    * @see languagesTwoAlpha
    */
   QStringList languageList() const;
-
-  /**
-   * @deprecated Returns the charset name by selected locale.
-   * This will be the charset defined in the config file.
-   * NOTE: This is no longer the same as encoding.
-   * "iso-8859-1" is default
-   *
-   * @return Name of the preferred charset for fonts
-   *
-   * @see encoding
-   */
-#ifndef KDE_NO_COMPAT
-  QString charset() const;
-#endif
 
   /**
    * Returns the user's preferred encoding.
@@ -1003,6 +945,42 @@ public:
    * @internal Called from KConfigBackend to initialize language.
    */
   static QString _initLanguage(KConfigBase *config);
+
+#ifdef KDE_NO_COMPAT
+private:
+#endif
+
+  /**
+   * @deprecated
+   * use formatMoney(double)
+   */
+  QString formatMoney(const QString &numStr) const;
+
+  /**
+   * @deprecated
+   * use formatNumber(double)
+   */
+  QString formatNumber(const QString &numStr) const;
+
+  /**
+   * @deprecated
+   * Use languageList()
+   *
+   * @return String containing language codes separated by colons
+   */
+  QString languages() const;
+
+  /**
+   * @deprecated
+   * @return True
+   */
+  bool setCharset(const QString & charset) { return true; }
+
+  /**
+   * @deprecated
+   * @see encoding
+   */
+  QString charset() const { return "UTF-8"; }
 
 protected:
   /**
