@@ -676,3 +676,23 @@ return false;
 }
 
 
+bool Backend::folderDoesNotExist(const QString& folder) const {
+	KMD5 md5;
+	md5.update(folder.utf8());
+	return !_hashes.contains(MD5Digest(md5.rawDigest()));
+}
+
+
+bool Backend::entryDoesNotExist(const QString& folder, const QString& entry) const {
+	KMD5 md5;
+	md5.update(folder.utf8());
+	HashMap::const_iterator i = _hashes.find(MD5Digest(md5.rawDigest()));
+	if (i != _hashes.end()) {
+		md5.reset();
+		md5.update(entry.utf8());
+		return !i.data().contains(MD5Digest(md5.rawDigest()));
+	}
+	return true;
+}
+
+

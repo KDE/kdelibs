@@ -100,6 +100,10 @@ class Backend {
 
 		static bool exists(const QString& wallet);
 
+		bool folderDoesNotExist(const QString& folder) const;
+
+		bool entryDoesNotExist(const QString& folder, const QString& entry) const;
+
 	private:
 		class BackendPrivate;
 		BackendPrivate *d;
@@ -121,6 +125,7 @@ class Backend {
 class MD5Digest : public QByteArray {
 	public:
 		MD5Digest() : QByteArray(16) {}
+		MD5Digest(const KMD5::Digest d) : QByteArray() { duplicate(reinterpret_cast<const char *>(d), 16); }
 		virtual ~MD5Digest() {}
 
 		int operator<(const MD5Digest& r) const {
