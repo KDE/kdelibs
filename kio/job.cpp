@@ -1233,19 +1233,34 @@ void CopyJob::slotResultStating( Job *job )
             return;
         }
         else // (case 3)
+        {
             // otherwise dest is new name for toplevel dir
             // so the destination exists, in fact, from now on.
             // (This even works with other src urls in the list, since the
             //  dir has effectively been created)
             destinationState = DEST_IS_DIR;
+        }
 
-        state = STATE_LISTING;
-        ListJob *newjob = listRecursive( srcurl, false );
-        connect(newjob, SIGNAL(entries( KIO::Job *,
-                                        const KIO::UDSEntryList& )),
-                SLOT( slotEntries( KIO::Job*,
-                                   const KIO::UDSEntryList& )));
-        addSubjob( newjob );
+        // If moving,
+        // Before going for the full list+copy[+del] thing, try to rename
+        if ( m_move )
+        {
+            if ((srcurl.protocol() == m_currentDest.protocol()) &&
+                (srcurl.host() == m_currentDest.host()) &&
+                (srcurl.port() == m_currentDest.port()) &&
+                (srcurl.user() == m_currentDest.user()) &&
+                (srcurl.pass() == m_currentDest.pass()))
+            {
+                kdDebug(7007) << "This seems to be a suitable case for trying to rename the dir before copy+del" << endl;
+                KIO_ARGS << srcurl.path() << m_currentDest.path() << (Q_INT8) false /*m_overwrite*/;
+                state = STATE_RENAMING;
+                Job * newJob = new SimpleJob(srcurl, CMD_RENAME, packedArgs, false);
+                addSubjob( newJob );
+                return;
+            }
+        }
+
+        startListing( srcurl );
     }
     else
     {
@@ -1261,6 +1276,17 @@ void CopyJob::slotResultStating( Job *job )
         state = STATE_COPYING_FILES;
         copyNextFile();
     }
+}
+
+void CopyJob::startListing( const KURL & src )
+{
+    state = STATE_LISTING;
+    ListJob * newjob = listRecursive( src, false );
+    connect(newjob, SIGNAL(entries( KIO::Job *,
+                                    const KIO::UDSEntryList& )),
+            SLOT( slotEntries( KIO::Job*,
+                               const KIO::UDSEntryList& )));
+    addSubjob( newjob );
 }
 
 void CopyJob::slotResultCreatingDirs( Job * job )
@@ -1767,6 +1793,24 @@ void CopyJob::slotResult( Job *job )
         case STATE_STATING: // We were trying to stat a src url or the dest
             slotResultStating( job );
             break;
+        case STATE_RENAMING: // We were trying to rename a directory
+        {
+            bool err = job->error() != 0;
+            subjobs.remove( job );
+            assert ( subjobs.isEmpty() ); // We should have only one job at a time ...
+            if ( err )
+            {
+                kdDebug(7007) << "Couldn't rename, starting listing, for copy and del" << endl;
+                startListing( *(m_srcList.begin()) );
+            }
+            else
+            {
+                kdDebug(7007) << "Renaming succeeded, move on" << endl;
+                m_srcList.remove(m_srcList.begin()); // done with this url
+                startNextJob(); // done
+            }
+        }
+        break;
         case STATE_LISTING: // recursive listing finished
 	    kdDebug() << "totalSize: " << m_totalSize << " files: " << files.count() << " dirs: " << dirs.count() << endl;
             // Was there an error ?

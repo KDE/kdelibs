@@ -480,7 +480,7 @@ namespace KIO {
         off_t size; // 0 for dirs
     };
 
-    // Copy or Move
+    // Copy or Move, files or directories
     class CopyJob : public Job {
     Q_OBJECT
 
@@ -515,6 +515,7 @@ namespace KIO {
 
         // Those aren't slots but submethods for slotResult.
         void slotResultStating( KIO::Job * job );
+        void startListing( const KURL & src );
         void slotResultCreatingDirs( KIO::Job * job );
         void slotResultConflictCreatingDirs( KIO::Job * job );
         void createNextDir();
@@ -534,8 +535,9 @@ namespace KIO {
     private:
         bool m_move;
         enum { DEST_NOT_STATED, DEST_IS_DIR, DEST_IS_FILE, DEST_DOESNT_EXIST } destinationState;
-        enum { STATE_STATING, STATE_LISTING, STATE_CREATING_DIRS, STATE_CONFLICT_CREATING_DIRS,
-               STATE_COPYING_FILES, STATE_CONFLICT_COPYING_FILES, STATE_DELETING_DIRS } state;
+        enum { STATE_STATING, STATE_RENAMING, STATE_LISTING, STATE_CREATING_DIRS,
+               STATE_CONFLICT_CREATING_DIRS, STATE_COPYING_FILES, STATE_CONFLICT_COPYING_FILES,
+               STATE_DELETING_DIRS } state;
         unsigned long m_totalSize;
         unsigned long m_processedSize;
         unsigned long m_fileProcessedSize;
@@ -569,6 +571,8 @@ namespace KIO {
         void processedSize( KIO::Job *, unsigned long size );
         void processedFiles( KIO::Job *, unsigned long files );
         void processedDirs( KIO::Job *, unsigned long dirs );
+        // Never emitted, but connected in deleteNextDir...
+        void speed( KIO::Job *, unsigned long bytes_per_second );
 
         void deleting( KIO::Job *, const KURL& file );
 
