@@ -50,17 +50,5 @@ main(int argc, char *argv[])
      debug((*it).service()->name());
    }
 
-/*
- // Works fine but very verbose
-   debug("All services");
-   KServiceList * services = KService::allServices();
-   debug("got %d services", services->count());
-   QListIterator<KService> s ( *services );
-   for ( ; s.current() ; ++s )
-   {
-     debug(s.current()->name());
-   }
-*/
-   
    debug("done");
 }

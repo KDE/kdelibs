@@ -165,13 +165,13 @@ KServiceType::propertyDefNames() const
 KServiceType* 
 KServiceType::serviceType( const QString& _name )
 {
-  return KServiceTypeFactory::findServiceTypeByName( _name );
+  return KServiceTypeFactory::self()->findServiceTypeByName( _name );
 }
 
 KServiceList* KServiceType::offers( const QString& _servicetype )
 {
-  KServiceType * serv = KServiceTypeFactory::findServiceTypeByName( _servicetype );
-  return KServiceFactory::offers( serv->offset() );
+  KServiceType * serv = KServiceTypeFactory::self()->findServiceTypeByName( _servicetype );
+  return KServiceFactory::self()->offers( serv->offset() );
 }
 
 /*

@@ -36,7 +36,9 @@
 class KServiceList;
 /**
  * Represents a service, i.e. an application bound to one or several mimetypes
- * as written in its desktop entry file. A service may be a library, too.
+ * (or servicetypes) as written in its desktop entry file. 
+ * A service may be a library, too.
+ * The starting point you need is often the static methods.
  *
  * @author Torben Weis <weis@kde.org>
  */

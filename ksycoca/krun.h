@@ -33,23 +33,6 @@
  * Implements a generic runner, i.e. the 'exec' functionality of KDE
  * It can execute any desktop entry, as well as any file, using
  * default binding (service) or another bound service.
- *
- * IMPORTANT : to use this class, you must do 
- * the following registry initialisation (in main() for instance)
- * <pre>
- * #include <kregistry.h>
- * #include <kregfactories.h> 
- *
- *   KRegistry registry;
- *   registry.addFactory( new KServiceTypeFactory );
- *   registry.addFactory( new KServiceFactory );
- *   registry.load();
- * </pre>
- *
- * This was the memory-eating solution.
- * Alternatively, create a KDEDInstance and a KTraderServiceProvider instance
- * (see ktrader.h) in order to use KRun without those registries loaded.
- * You need to link to libkded in this case, of course.
  */
 class KRun : public QObject
 {

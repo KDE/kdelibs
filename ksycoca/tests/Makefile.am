@@ -20,8 +20,12 @@ INCLUDES= -I$(top_srcdir)/ksycoca $(all_includes)    # to be fixed, of course
 
 CXXFLAGS := $(CXXFLAGS) -Wall @NOREPO@
 
-bin_PROGRAMS = ksycocatest
+bin_PROGRAMS = ksycocatest getalltest
 ksycocatest_LDADD = $(top_builddir)/ksycoca/libkio.la # to be fixed, of course
 ksycocatest_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 ksycocatest_SOURCES = ksycocatest.cpp
+
+getalltest_LDADD = $(top_builddir)/ksycoca/libkio.la # to be fixed, of course
+getalltest_LDFLAGS = $(all_libraries) $(KDE_RPATH)
+getalltest_SOURCES = getalltest.cpp
 

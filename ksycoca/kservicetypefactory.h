@@ -35,10 +35,11 @@ class KFolderType;
 class KDEDesktopMimeType;
 class KExecMimeType;
 
-class KServiceTypeList;
+class KMimeTypeList;
 
 /**
- * A registry factory for service types (e.g. mimetypes)
+ * @internal
+ * A sycoca factory for service types (e.g. mimetypes)
  * It loads the service types from parsing directories (e.g. mimelnk/)
  * but can also create service types from data streams or single config files
  */
@@ -59,14 +60,27 @@ public:
    */
   virtual KSycocaEntry *createEntry(const QString &file);
 
-  static KServiceType *findServiceTypeByName( const QString &_name);
+  /**
+   * Find a service type
+   */
+  KServiceType *findServiceTypeByName( const QString &_name);
+
+  /**
+   * Return all mimetypes
+   * Slow and memory consuming, avoid using
+   */
+  KMimeTypeList * allMimeTypes();
+
+  /**
+   * @return the unique servicetype factory, creating it if necessary
+   */
+  static KServiceTypeFactory * self();
 
 protected:
-  KServiceType *_findServiceTypeByName( const QString &_name);
   KServiceType *createServiceType(int offset);
 
 private:
-  static KServiceTypeFactory *self;
+  static KServiceTypeFactory *_self;
 };
 
 #endif

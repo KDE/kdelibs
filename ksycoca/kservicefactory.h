@@ -32,7 +32,8 @@ class KService;
 class KServiceList;
 
 /**
- * A registry factory for services (e.g. applications)
+ * @internal
+ * A sycoca factory for services (e.g. applications)
  * It loads the services from parsing directories (e.g. applnk/)
  * but can also create service from data streams or single config files
  */
@@ -55,26 +56,28 @@ public:
   /**
    * Find a service
    */
-  static KService *findServiceByName( const QString &_name );
+  KService *findServiceByName( const QString &_name );
 
   /**
    * @return the services supporting the given service type
    */
-  static KServiceList *offers( int serviceTypeOffset );
+  KServiceList *offers( int serviceTypeOffset );
 
   /**
    * @return all services. Very memory consuming, avoid using.
    */
-  static KServiceList *allServices();
+  KServiceList *allServices();
+
+  /**
+   * @return the unique service factory, creating it if necessary
+   */
+  static KServiceFactory * self();
 
 protected:
-  KService *_findServiceByName( const QString &_name);
-  KServiceList *_offers( int serviceTypeOffset );
-  KServiceList *_allServices();
   KService *createService(int offset);
 
 private:
-  static KServiceFactory *self;
+  static KServiceFactory *_self;
 };
 
 #endif

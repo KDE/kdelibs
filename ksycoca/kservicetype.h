@@ -41,7 +41,6 @@ class KServiceList;
  * instead of a type of file.
  * For instance, KOfficeFilter is a service type.
  * It is associated to services according to the user profile (kuserprofile.h)
- * and there are factories and registry entry classes for it (kservicetypefactories.h)
  */
 class KServiceType : public KSycocaEntry
 {

@@ -38,14 +38,14 @@ KServiceFactory::KServiceFactory()
       (*m_pathList) += KGlobal::dirs()->resourceDirs( "apps" );
       (*m_pathList) += KGlobal::dirs()->resourceDirs( "services" );
    }
-   self = this;
+   _self = this;
 }
 
 KServiceFactory::~KServiceFactory()
 {
 }
 
-KSycocaEntry* KServiceFactory::createEntry( const QString& file )
+KSycocaEntry * KServiceFactory::createEntry( const QString& file )
 {
   // Just a backup file ?
   if ( file.right(1) == "~" || file.right(4) == ".bak" || ( file[0] == '%' && file.right(1) == "%" ) )
@@ -64,17 +64,14 @@ KSycocaEntry* KServiceFactory::createEntry( const QString& file )
   }
 }
 
-// Static function!
-KService *
-KServiceFactory::findServiceByName(const QString &_name)
+KServiceFactory * KServiceFactory::self()
 {
-   if (!self)
-      self = new KServiceFactory();
-   return self->_findServiceByName(_name);   
+  if (!_self)
+    _self = new KServiceFactory();
+  return _self;
 }
 
-KService *
-KServiceFactory::_findServiceByName(const QString &_name)
+KService * KServiceFactory::findServiceByName(const QString &_name)
 {
    if (!m_sycocaDict) return 0; // Error!
 
@@ -97,8 +94,7 @@ KServiceFactory::_findServiceByName(const QString &_name)
    return newService;
 }
 
-KService *
-KServiceFactory::createService(int offset)
+KService * KServiceFactory::createService(int offset)
 {
    KService *newEntry = 0;
    KSycocaType type; 
@@ -122,17 +118,7 @@ KServiceFactory::createService(int offset)
    return newEntry;
 }
 
-//static
-KServiceList *
-KServiceFactory::allServices()
-{
-   if (!self)
-      self = new KServiceFactory();
-   return self->_allServices();   
-}
-
-KServiceList *
-KServiceFactory::_allServices()
+KServiceList * KServiceFactory::allServices()
 {
    KServiceList * list = new KServiceList;
    // Assume we're NOT building a database
@@ -154,15 +140,7 @@ KServiceFactory::_allServices()
    return list;
 }
 
-// static
 KServiceList *KServiceFactory::offers( int serviceTypeOffset )
-{
-   if (!self)
-      self = new KServiceFactory();
-   return self->_offers( serviceTypeOffset );   
-}
-
-KServiceList *KServiceFactory::_offers( int serviceTypeOffset )
 {
   kdebug(KDEBUG_INFO, 7011, QString("KServiceFactory::offers ( %1 )").arg(serviceTypeOffset,8,16));
   KServiceList * list = new KServiceList;
@@ -196,6 +174,6 @@ KServiceList *KServiceFactory::_offers( int serviceTypeOffset )
   return list;
 }
 
-KServiceFactory *KServiceFactory::self = 0;
+KServiceFactory *KServiceFactory::_self = 0;
 
 #include "kservicefactory.moc"

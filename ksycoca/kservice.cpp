@@ -258,11 +258,11 @@ QDataStream& operator<<( QDataStream& _str, KService& s )
 
 KServiceList* KService::allServices()
 {
-  return KServiceFactory::allServices();
+  return KServiceFactory::self()->allServices();
 }
 
 KService* KService::service( const QString& _name )
 {
-  return KServiceFactory::findServiceByName( _name );
+  return KServiceFactory::self()->findServiceByName( _name );
 }
 

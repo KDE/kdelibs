@@ -38,7 +38,7 @@ KServiceTypeFactory::KServiceTypeFactory()
       (*m_pathList) += KGlobal::dirs()->resourceDirs( "servicetypes" );
       (*m_pathList) += KGlobal::dirs()->resourceDirs( "mime" );
    }
-   self = this;
+   _self = this;
 }
 
 KSycocaEntry *
@@ -88,17 +88,14 @@ KServiceTypeFactory::~KServiceTypeFactory()
 {
 }
 
-// Static function!
-KServiceType *
-KServiceTypeFactory::findServiceTypeByName(const QString &_name)
+KServiceTypeFactory * KServiceTypeFactory::self()
 {
-   if (!self)
-      self = new KServiceTypeFactory();
-   return self->_findServiceTypeByName(_name);   
+  if (!_self)
+    _self = new KServiceTypeFactory();
+  return _self;
 }
 
-KServiceType *
-KServiceTypeFactory::_findServiceTypeByName(const QString &_name)
+KServiceType * KServiceTypeFactory::findServiceTypeByName(const QString &_name)
 {
    if (!m_sycocaDict) return 0L; // Error!
    if (KSycoca::isBuilding())
@@ -123,8 +120,32 @@ KServiceTypeFactory::_findServiceTypeByName(const QString &_name)
    }
 }
 
-KServiceType *
-KServiceTypeFactory::createServiceType(int offset)
+KMimeTypeList * KServiceTypeFactory::allMimeTypes()
+{
+   KMimeTypeList * list = new KMimeTypeList;
+   // Assume we're NOT building a database
+   // Get stream to factory start
+   QDataStream *str = KSycoca::registerFactory( factoryId() );
+   // Read the dict offset - will serve as an end point for the list of entries
+   Q_INT32 sycocaDictOffset;
+   (*str) >> sycocaDictOffset;
+
+   int offset = str->device()->at();
+   KServiceType *newServiceType;
+   while ( offset < sycocaDictOffset )
+   {
+      newServiceType = createServiceType(offset);
+      // We don't want service types, but we have to build them
+      // anyway, to skip their info
+      if (newServiceType && newServiceType->isType( KST_KMimeType ))
+         list->append( (KMimeType*)newServiceType );
+
+      offset = str->device()->at();
+   }
+   return list;
+}
+
+KServiceType * KServiceTypeFactory::createServiceType(int offset)
 {
    KServiceType *newEntry = 0;
    KSycocaType type; 
@@ -160,6 +181,6 @@ KServiceTypeFactory::createServiceType(int offset)
    return newEntry;
 }
 
-KServiceTypeFactory *KServiceTypeFactory::self = 0;
+KServiceTypeFactory *KServiceTypeFactory::_self = 0;
 
 #include "kservicetypefactory.moc"

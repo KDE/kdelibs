@@ -36,20 +36,12 @@
 #include "kservicetype.h"
 
 class KServiceTypeFactory;
+class KMimeTypeList;
 
 /**
- * Represents a mime type.
- *
- * IMPORTANT : to use the public static methods of this class, you must do 
- * the following registry initialisation (in main() for instance)
- * <pre>
- * #include <kregistry.h>
- * #include <kregfactories.h> 
- *
- *   KRegistry registry;
- *   registry.addFactory( new KServiceTypeFactory );
- *   registry.load();
- * </pre>
+ * Represents a mime type, like "text/plain".
+ * The starting point you need is often the static methods.
+ * See also KServiceType.
  */
 class KMimeType : public KServiceType
 {
@@ -168,7 +160,7 @@ public:
    * available mimetypes.  The returned dict contains a subset of the
    * entries returned by @ref KServiceType::serviceTypes 
    */
-  // TODO static const QDict<KMimeType>& allMimeTypes() { return *s_mapMimeTypes; } 
+  static KMimeTypeList * allMimeTypes();
 
 protected:
   /**
@@ -285,6 +277,12 @@ public:
 		 const QStringList& _patterns );
   KExecMimeType( KSimpleConfig& _cfg ) : KMimeType( _cfg ) { }
   KExecMimeType( QDataStream& _str, int offset ) : KMimeType( _str, offset ) { }
+};
+
+class KMimeTypeList : public QList<KMimeType>
+{
+public:
+   KMimeTypeList() { };
 };
 
 #endif

@@ -114,13 +114,18 @@ void KMimeType::errorMissingMimeType( const QString& _type )
 
 KMimeType* KMimeType::mimeType( const QString& _name )
 {
-  KServiceType * mime = KServiceTypeFactory::findServiceTypeByName( _name );
+  KServiceType * mime = KServiceTypeFactory::self()->findServiceTypeByName( _name );
     
   if ( !mime || !mime->isType( KST_KMimeType ) )
     return s_pDefaultType;
 
   // We got a mimetype
   return (KMimeType *) mime;
+}
+
+KMimeTypeList * KMimeType::allMimeTypes()
+{
+  return KServiceTypeFactory::self()->allMimeTypes();
 }
 
 KMimeType* KMimeType::findByURL( const KURL& _url, mode_t _mode,
