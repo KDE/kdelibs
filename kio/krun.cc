@@ -405,11 +405,9 @@ void KRun::slotTimeout()
   
   if ( m_bFault ){
       emit error();
-      emit errorRef(this);
   }
   if ( m_bFinished ){
       emit finished();
-      emit finishedRef(this);
   }
 
   if ( m_bScanFile )
@@ -541,11 +539,9 @@ void KRun::foundMimeType( const char *_type )
 
   if (KRun::runURL( m_strURL.ascii(), _type )){
       emit finished(); // tell owner that we finished (David)
-      emit finishedRef(this);
   }
   else{
       emit error();
-      emit errorRef(this);
   }
 
   if ( m_bAutoDelete )

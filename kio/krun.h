@@ -101,23 +101,7 @@ public:
 				 bool _allow_multiple );
   
 signals:
-  /**
-   * Emitted when the runner process has finished. WARNING: Do not save
-   * the pointer anywhere for future use, since when the slot that is
-   * connected to this signal returns KRun will probably delete itself!
-   * You should only need this if you allocate a KRun and then want to
-   * forget about it until it is done. Otherwise use finished().
-   */
-  void finishedRef(KRun *);
   void finished();
-  /**
-   * Emitted when the runner process has encountered an error. WARNING: Do not
-   * save the pointer anywhere for future use, since when the slot that is
-   * connected to this signal returns KRun will probably delete itself!
-   * You should only need this if you allocate a KRun and then want to
-   * forget about it until it is done. Otherwise use error().
-   */
-  void errorRef(KRun *);
   void error();
 
 protected slots:
