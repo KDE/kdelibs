@@ -1196,6 +1196,7 @@ void KHTMLPart::popupMenu( const QString &url )
       mode = S_IFDIR;
   }
   emit d->m_extension->popupMenu( QCursor::pos(), u, QString::fromLatin1( "text/html" ), mode );
+  emit popupMenu(url, QCursor::pos());
 }
 
 void KHTMLPart::slotChildStarted( KIO::Job *job )

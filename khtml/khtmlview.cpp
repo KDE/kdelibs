@@ -28,6 +28,7 @@
 #include "dom/dom2_range.h"
 #include "rendering/render_object.h"
 #include "misc/htmlhashes.h"
+#include "xml/dom_textimpl.h"
 
 #include <qdragobject.h>
 #include <qpixmap.h>
@@ -192,8 +193,8 @@ void KHTMLView::viewportPaintEvent ( QPaintEvent* pe  )
 	clipper()->width(), clipper()->height()
     );
     r &= rr;
-    int ex = r.x() + viewport()->x() + contentsX();;
-    int ey = r.y() + viewport()->y() + contentsY();;
+    int ex = r.x() + viewport()->x() + contentsX();
+    int ey = r.y() + viewport()->y() + contentsY();
     int ew = r.width();
     int eh = r.height();
 
@@ -240,19 +241,27 @@ void KHTMLView::viewportPaintEvent ( QPaintEvent* pe  )
 	py += PAINT_BUFFER_HEIGHT;
     }
 
-    if(d->selectionStart) {
-	paintSelection();
-    }
+//    if(d->selectionStart) {
+//	paintSelection();
+//    }
 
     //printf("TIME: print() dt=%d\n",qt.elapsed());
 }
 
 void KHTMLView::paintSelection()
 {
+    printf("painting selection\n");
+    
     if(d->selectionStart == d->selectionEnd && d->startOffset == d->endOffset) return;
 
+    printf("selection from %p/%d to %p/%d\n", d->selectionStart, d->startOffset, d->selectionEnd, d->endOffset);
+    
+#if 0
+    int xm, ym;
+    contentsToViewport(0, 0, xm, ym);
     QPainter* p = new QPainter;
     p->begin(this);
+    p->translate(-xm, -ym);
     if(d->startBeforeEnd)
 	d->selectionStart->renderer()->printSelection(p, d->startOffset,
 						      d->selectionEnd->renderer(), d->endOffset);
@@ -260,6 +269,7 @@ void KHTMLView::paintSelection()
 	d->selectionEnd->renderer()->printSelection(p, d->endOffset,
 						    d->selectionStart->renderer(), d->startOffset);
     delete p;
+#endif
 }
 
 
@@ -358,7 +368,7 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
 
     printf("Her har vi long'n: %d \n", offset);
     if(m_part->mousePressHook(_mouse, xm, ym, url, Node(innerNode), offset)) return;
-    
+
     if(url != 0)
     {
 	//printf("mouseEvent: overURL %s\n", url.string().latin1());
@@ -424,7 +434,7 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
     NodeImpl *innerNode=0;
     long offset=0;
     m_part->docImpl()->mouseEvent( xm, ym, _mouse->stateAfter(), DOM::NodeImpl::MouseMove, 0, 0, url, innerNode, offset );
-    
+
     if(m_part->mouseMoveHook(_mouse, xm, ym, url, Node(innerNode), offset)) return;
 
     // drag of URL
@@ -446,7 +456,7 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 	return;
     }
 
- 
+
 
     if ( !pressed && url.length() )
     {
@@ -456,11 +466,9 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 	    setCursor( linkCursor );
 	    overURL = surl;
 	    m_part->overURL( overURL );
-	    //	    emit onURL( overURL );
 	}
 	else if ( overURL != surl )
 	{
-	//	    emit onURL( surl );
 	    m_part->overURL( overURL );
 	    overURL = surl;
 	}
@@ -469,13 +477,12 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
     else if( overURL.length() && !url.length() )
     {
 	setCursor( arrowCursor );
-	//	emit onURL( 0 );
 	m_part->overURL( QString::null );
 	overURL = "";
     }
 
     // selection stuff
-    if( pressed ) {
+    if( pressed && innerNode->isTextNode()) {
 	d->selectionEnd = innerNode;
 	d->endOffset = offset;
 	printf("setting end of selection to %p/%d\n", innerNode, offset);
@@ -490,11 +497,11 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 	    }
 	    NodeImpl *next = n->firstChild();
 	    if(!next) n = n->nextSibling();
-	    while(n && !next) {
-		n = n->parentNode();
+	    while( !next && (n = n->parentNode()) ) {
 		next = n->nextSibling();
 	    }
 	    n = next;
+	    //viewport()->repaint(false);
 	}
     }
 }
@@ -515,7 +522,7 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 
     if(m_part->mouseReleaseHook(_mouse, xm, ym, url, Node(innerNode), offset)) return;
 
-    
+
     if ( pressed )
     {
 	// in case we started an autoscroll in MouseMove event
@@ -529,10 +536,7 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
     pressed = false;
 
 
-    if ( m_strSelectedURL.isEmpty() )
-	return;
-
-    if ( _mouse->button() != RightButton )
+    if ( !m_strSelectedURL.isEmpty() && _mouse->button() != RightButton )
     {
 	KURL u(m_strSelectedURL);
 	QString pressedTarget;
@@ -546,12 +550,14 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 	m_part->urlSelected( m_strSelectedURL, _mouse->button(), pressedTarget );
    }
 
-    printf("final range of selection to %p/%d --> %p/%d\n", d->selectionStart, d->startOffset,
-	   innerNode, offset);
-    d->selectionEnd = innerNode;
-    d->endOffset = offset;
+    if(innerNode->isTextNode()) {
+	printf("final range of selection to %p/%d --> %p/%d\n", d->selectionStart, d->startOffset,
+	       innerNode, offset);
+	d->selectionEnd = innerNode;
+	d->endOffset = offset;
+    }
 
-    // ### delete selection in case start and end position are at the same point
+    // delete selection in case start and end position are at the same point
     if(d->selectionStart == d->selectionEnd && d->startOffset == d->endOffset) {
 	d->selectionStart = 0;
 	d->selectionEnd = 0;
@@ -568,13 +574,45 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 	    }
 	    NodeImpl *next = n->firstChild();
 	    if(!next) n = n->nextSibling();
-	    while(n && !next) {
-		n = n->parentNode();
+	    while( !next && (n = n->parentNode()) ) {
 		next = n->nextSibling();
 	    }
 	    n = next;
 	}
+	if(!d->startBeforeEnd)
+	{
+	    NodeImpl *tmpNode = d->selectionStart;
+	    int tmpOffset = d->startOffset;
+	    d->selectionStart = d->selectionEnd;
+	    d->startOffset = d->endOffset;
+	    d->selectionEnd = tmpNode;
+	    d->endOffset = tmpOffset;
+	    d->startBeforeEnd = true;
+	}
+	// get selected text and paste to the clipboard
+	QString text = selectedText();
+	printf("selectedText = %s\n",text.latin1());
+	
     }
+}
+
+QString KHTMLView::selectedText() const
+{
+    QString text;
+    NodeImpl *n = d->selectionStart;
+    while(n) {
+	if(n->isTextNode()) {
+	    text += static_cast<TextImpl *>(n)->data().string();
+	}
+	if(n == d->selectionEnd) break;
+	NodeImpl *next = n->firstChild();
+	if(!next) n = n->nextSibling();
+	while( !next && (n = n->parentNode()) ) {
+	    next = n->nextSibling();
+	}
+	n = next;
+    }
+    return text;
 }
 
 void KHTMLView::keyPressEvent( QKeyEvent *_ke )

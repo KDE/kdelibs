@@ -353,7 +353,8 @@ public:
 
 signals:
   void onURL( const QString &url );
-
+    void popupMenu(const QString &url, const QPoint &point);
+    
 protected:
   virtual bool openFile();
 
@@ -376,7 +377,7 @@ protected:
 
     virtual bool keyPressHook(QKeyEvent *) { return false; }
     virtual bool keyReleaseHook(QKeyEvent*) {return false; }
-    
+
     virtual bool mousePressHook( QMouseEvent *, int, int,DOM::DOMString, DOM::Node, long ){ return false; }
     virtual bool mouseDoubleClickHook( QMouseEvent *, int, int, DOM::DOMString, DOM::Node, long ){ return false; }
     virtual bool mouseMoveHook(QMouseEvent *, int, int, DOM::DOMString, DOM::Node, long){ return false; }

@@ -149,6 +149,8 @@ public:
      */
     //    int marginHeight() { return _marginHeight; }
 
+    QString selectedText() const;
+    
 protected:
     void paintElement( khtml::RenderObject *o, int x, int y );
     void paintSelection();
