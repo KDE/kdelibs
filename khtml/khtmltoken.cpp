@@ -477,7 +477,6 @@ void HTMLTokenizer::parseTag(HTMLString &src)
 	// decide if quoted or not....
 	if ( src[0] == QChar('\"') || src[0] == QChar('\'') )
 	{ // we treat " & ' the same in tags
-	    discard = NoneDiscard;
 	    if ( !tquote )
 	    {
 		// according to HTML4 DTD, we can simplify
@@ -563,7 +562,6 @@ void HTMLTokenizer::parseTag(HTMLString &src)
 			// End Tag
 			startTag = false;
 			ptr++;
-			discard = NoneDiscard;
 			len = dest - buffer - 2;
 		    } 
 		    else 
@@ -660,6 +658,10 @@ void HTMLTokenizer::parseTag(HTMLString &src)
 		    } 
 		    else
 		    {
+#ifdef TOKEN_DEBUG
+			printf("Known attribute: \"%s\"\n", 
+			       tmp.string().ascii());
+#endif
 			dest = ptr + 1;
 			*dest++ = a->id;
 			
@@ -720,7 +722,7 @@ void HTMLTokenizer::parseTag(HTMLString &src)
 		    
 		    charEntity = true;
 		    parseEntity(src, true);
-		    ++src;
+                    break;
 		}
 		else if ( !tquote )
 		{
@@ -764,7 +766,6 @@ void HTMLTokenizer::parseTag(HTMLString &src)
 		{
 		    ++src; // discard everything, until we found the end
 		    break;
-		    
 		}
 		
 		searchCount = 0; // Stop looking for '<!--' sequence
@@ -778,8 +779,18 @@ void HTMLTokenizer::parseTag(HTMLString &src)
 #ifdef TOKEN_DEBUG
 		printf("appending Tag: %d, len = %d\n", tagID, dest-buffer);
 #endif
-		if(!startTag) tagID -= ID_CLOSE_TAG;
-		
+		if(startTag) 
+                {
+		   // Ignore CR/LF's after a start tag
+		   discard = LFDiscard;
+                }
+                else
+                {
+		   // Don't ignore CR/LF's after a close tag
+		   discard = NoneDiscard;
+                   tagID -= ID_CLOSE_TAG;
+		}
+
 		*dest = QChar::null;
 		appendToken( buffer, dest-buffer );
 		dest = buffer;
