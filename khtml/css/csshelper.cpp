@@ -121,6 +121,12 @@ DOMString khtml::parseURL(const DOMString &url)
     // another "just like Netscape" feature
     s = s.stripWhiteSpace();
 
+    int i;
+    // remove garbage
+    while((i = s.find('\n')) != -1)  s = s.remove(i, 1);
+    while((i = s.find('\r')) != -1)  s = s.remove(i, 1);
+    while((i = s.find('\t')) != -1)  s = s.remove(i, 1);
+
     return DOMString(s.unicode(), s.length());
 }
 
