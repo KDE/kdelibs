@@ -2428,6 +2428,11 @@ void KMdiMainFrm::closeViewButtonPressed()
    }
 }
 
+void KMdiMainFrm::setManagedDockPositionModeEnabled(bool enabled)
+{
+   m_managedDockPositionMode=enabled;
+}
+
 #ifndef NO_INCLUDE_MOCFILES
 #include "kmdimainfrm.moc"
 #endif

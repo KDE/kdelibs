@@ -126,7 +126,16 @@ void KMdiToolViewAccessor::show(KDockWidget::DockPosition pos, QWidget* pTargetW
          }
       }
       if (pTargetDock) {
-         pCover->manualDock( pTargetDock, pos, percent);
+	      if (mdiMainFrm->m_managedDockPositionMode && mdiMainFrm->m_pMdi) {
+			KDockWidget *dw1=pTargetDock->findNearestDockWidget(pos);
+                        if (dw1)
+                        pCover->manualDock(dw1,KDockWidget::DockCenter,percent);
+                        else
+                        pCover->manualDock ( pTargetDock, pos, 20 );
+	
+	      }
+      else
+      	pCover->manualDock( pTargetDock, pos, percent);
 //check      pCover->show();
       }
    }

@@ -267,6 +267,7 @@ protected:
 private:
    KMdiMainFrmPrivate*     d;
    KMDIPrivate::KMDIGUIClient*	   m_mdiGUIClient;
+   bool m_managedDockPositionMode;
 
 // methods
 public:
@@ -280,6 +281,9 @@ public:
    virtual ~KMdiMainFrm();
 
    void setStandardMDIMenuEnabled();
+
+   void setManagedDockPositionModeEnabled(bool enabled);
+
    /**
    * Returns whether the application's MDI views are in maximized state or not.
    */
