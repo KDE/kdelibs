@@ -541,6 +541,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     m_bFromTemplate = true;
     setDirty(); // to enforce that the copy happens
   }
+  oldName = filename;
 
   // Make it human-readable (%2F => '/', ...)
   filename = KIO::decodeFileName( filename );
@@ -651,7 +652,6 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   }
 
   grid->addWidget(nameArea, curRow++, 2);
-  oldName = filename;
 
   QLabel *l = new QLabel( d->m_frame );
   l->setFrameStyle(QFrame::HLine|QFrame::Sunken);
