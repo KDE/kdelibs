@@ -35,7 +35,7 @@ namespace KJS {
   class ObjectImpPrivate;
   class PropertyMap;
   class HashTable;
-  class HashEntry;
+  struct HashEntry;
   class ListImp;
 
   // ECMA 262-3 8.6.1
