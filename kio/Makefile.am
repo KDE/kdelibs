@@ -16,7 +16,7 @@
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
 
-INCLUDES=  -I$(srcdir)/.. $(all_includes) -I$(top_srcdir)/libltdl
+INCLUDES=  -I$(srcdir)/.. -I$(top_srcdir)/libltdl $(all_includes)
 
 SUBDIRS = . klauncher kded file tests
 
