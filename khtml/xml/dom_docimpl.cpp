@@ -1410,8 +1410,9 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
             if(str.find("url", 0,  false ) == 0)  str = str.mid(3);
             str = str.stripWhiteSpace();
             if ( str.length() && str[0] == '=' ) str = str.mid( 1 ).stripWhiteSpace();
-            if ( (pos = str.findRev(';')) > 0) str.setLength(pos);
-            if ( (pos = str.findRev(',')) > 0) str.setLength(pos);
+            while(str.length() && 
+                  (str[str.length()-1] == ';' || str[str.length()-1] == ','))
+                str.setLength(str.length()-1);
             str = parseURL( DOMString(str) ).string();
             if ( ok )
                 v->part()->scheduleRedirection(delay, getDocument()->completeURL( str ));
