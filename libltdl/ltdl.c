@@ -57,6 +57,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 #  include <memory.h>
 #endif
 
+#ifdef _AIX
+#include <errno.h>
+#include <strings.h>
+#include <sys/ldr.h>
+#endif /* _AIX */
+
 #include "ltdl.h"
 
 
@@ -158,6 +164,9 @@ struct lt_dlhandle_struct {
 #define LT_DLSET_FLAG(handle, flag) ((handle)->flags |= (flag))
 
 #define LT_DLRESIDENT_FLAG	    (0x01 << 0)
+#ifdef _AIX
+#define LT_DLNOTFOUND_FLAG	    (0x01 << 1) /* may be linked statically */
+#endif /* _AIX */
 /* ...add more flags here... */
 
 #define LT_DLIS_RESIDENT(handle)    LT_DLGET_FLAG(handle, LT_DLRESIDENT_FLAG)
@@ -571,6 +580,21 @@ rpl_realloc (ptr, size)
 #endif
 
 int lt_dlopen_flag = LT_LAZY_OR_NOW;
+
+#ifdef _AIX
+/*------------------------------------------------------------------*/
+/* implementations found at the end                                 */
+/*------------------------------------------------------------------*/
+
+static void
+sys_dl_init( );
+
+static lt_dlhandle
+sys_dl_search_by_name( const char* name );
+
+static void
+sys_dl_not_found_entry( const char* tmp );
+#endif /* _AIX */
 
 static lt_module
 sys_dl_open (loader_data, filename)
@@ -1271,6 +1295,9 @@ lt_dlinit ()
 
 #if HAVE_LIBDL && !defined(__CYGWIN__)
       errors += lt_dlloader_add (lt_dlloader_next (0), &sys_dl, "dlopen");
+#ifdef _AIX
+      sys_dl_init();
+#endif /* _AIX */
 #endif
 #if HAVE_SHL_LOAD
       errors += lt_dlloader_add (lt_dlloader_next (0), &sys_shl, "dlopen");
@@ -2379,6 +2406,38 @@ lt_dlopenext (filename)
       return handle;
     }
 
+#ifdef _AIX
+  tmp[len] = '\0';
+
+  /* find by info.name in the list */
+  handle = sys_dl_search_by_name( tmp );
+  if (handle)
+    {
+      if( LT_DLGET_FLAG (handle, LT_DLNOTFOUND_FLAG) )
+        {
+          /* don't search libm and libstdc++ over and over again,
+           * they are hardlinked and symbols are exported by the
+           * executable */
+          MUTEX_SETERROR (LT_DLSTRERROR (FILE_NOT_FOUND));
+          LT_DLFREE (tmp);
+          return 0;
+        }
+      MUTEX_SETERROR (saved_error);
+      LT_DLFREE (tmp);
+      return handle;
+    }
+
+  /* versioned shared objects can be in .a's */
+  strcat(tmp, ".a");
+  handle = lt_dlopen (tmp);
+  if (handle)
+    {
+      MUTEX_SETERROR (saved_error);
+      LT_DLFREE (tmp);
+      return handle;
+    }
+#endif /* _AIX */
+
 #ifdef LTDL_SHLIB_EXT
   /* try "filename.EXT" */
   if (strlen(shlib_ext) > 3)
@@ -2413,6 +2472,12 @@ lt_dlopenext (filename)
     {
       return handle;
     }
+
+#ifdef _AIX
+  /* put into the can't be found list */
+  tmp[len] = '\0';
+  sys_dl_not_found_entry( tmp );
+#endif /* _AIX */
 
   MUTEX_SETERROR (LT_DLSTRERROR (FILE_NOT_FOUND));
   LT_DLFREE (tmp);
@@ -3090,3 +3155,220 @@ lt_dlloader_find (loader_name)
 
   return place;
 }
+
+#ifdef _AIX
+
+/* #define DBG_PRNT(a) fprintf a ; */
+#define DBG_PRNT(a)
+
+static void
+sys_dl_debug_print_loaded( const char* filename )
+{
+    int                    ret;
+    static unsigned char   buffer[1024*1024];
+    struct ld_info*        info;
+
+    ret = loadquery( L_GETINFO, buffer, 1024*1024 );
+    if( ret >= 0 )
+      {
+        DBG_PRNT((stderr, "%d: Successfully loaded %s\n",
+	        __LINE__, filename ))
+        info = (struct ld_info*)buffer;
+        do
+          {
+	    const char* c;
+	    const char* d;
+	    c = info->ldinfo_filename;
+	    d = &c[strlen(c)];
+	    d++;
+	    DBG_PRNT((stderr, "%d: path name %s, member name %s\n",
+		    __LINE__,
+		    c,d))
+	    info = (struct ld_info*)(((char*)info)+info->ldinfo_next);
+          }
+        while( info->ldinfo_next != 0 );
+      }
+    else if( errno == ENOMEM )
+      {
+        DBG_PRNT((stderr, "%d: Successfully loaded %s, loadquery needs larger buffer\n",
+	        __LINE__, filename ))
+      }
+    else
+      {
+        DBG_PRNT((stderr, "Loadquery failure\n"))
+      }
+}
+
+static void
+sys_dl_debug_print_handle( lt_dlhandle handle )
+{
+    DBG_PRNT((stderr," > next          = %ld\n", (long)handle->next ))
+    DBG_PRNT((stderr," > loader        = %ld\n", (long)handle->loader ))
+    DBG_PRNT((stderr," > info.filename = %s\n", handle->info.filename ))
+    DBG_PRNT((stderr," > info.name     = %s\n", handle->info.name ))
+    DBG_PRNT((stderr," > info.ref_count= %d\n", handle->info.ref_count ))
+    DBG_PRNT((stderr," > depcount      = %d\n", handle->depcount ))
+    DBG_PRNT((stderr," > resident flags %s\n",
+            (LT_DLGET_FLAG (handle, LT_DLRESIDENT_FLAG)?"yes":"no")))
+    DBG_PRNT((stderr," > not found flags %s\n",
+            (LT_DLGET_FLAG (handle, LT_DLNOTFOUND_FLAG)?"yes":"no")))
+}
+
+static void
+sys_dl_init( )
+{
+  char*           buffer = NULL;
+  size_t          buf_size = 512;
+  int             ret;
+  const char*     libname;
+  const char*     modname;
+  struct ld_info* info;
+  lt_dlhandle	  cur;
+  lt_dlhandle     handle;
+  int             already_listed;
+  const char*     last_slash;
+  const char*     last_dot;
+
+  do
+    {
+      buf_size *= 2;
+      if( buffer != NULL ) LT_DLFREE( buffer );
+      buffer = LT_DLMALLOC( char, buf_size );
+      ret = loadquery( L_GETINFO, buffer, buf_size );
+    }
+  while( ret==-1 && errno==ENOMEM );
+
+  if( ret >= 0 )
+    {
+      info = (struct ld_info*)buffer;
+      do
+        {
+	  libname        = info->ldinfo_filename;
+	  modname        = &libname[strlen(libname)];
+	  modname        += 1;
+	  already_listed = 0;
+
+          cur = handles;
+	  while (cur)
+	    {
+	      if( cur->info.filename &&
+		  !strcmp( cur->info.filename, libname ) )
+	        {
+		  already_listed = 1;
+		  break;
+	        }
+              cur = cur->next;
+	    }
+
+	  if( already_listed == 0 )
+	    {
+              handle = (lt_dlhandle) LT_DLMALLOC (struct lt_dlhandle_struct, 1);
+              if (!handle)
+                {
+                  MUTEX_SETERROR (LT_DLSTRERROR (NO_MEMORY));
+		  LT_DLFREE( buffer );
+                  return;
+                }
+
+	      last_slash = strrchr( libname, '/' );
+	      if( last_slash == NULL )
+	        {
+	          last_slash = libname;
+	        }
+	      else
+	        {
+		  last_slash++;
+	        }
+	      last_dot   = strrchr( last_slash, '.' );
+	      if( last_dot == NULL )
+	        {
+	          last_dot = &last_slash[strlen(last_slash)];
+	        }
+
+              handle->info.name = LT_DLMALLOC( char, last_dot-last_slash+1 );
+	      strncpy( handle->info.name, last_slash, last_dot-last_slash );
+	      handle->info.name[last_dot-last_slash] = '\0';
+
+	      handle->loader         = lt_dlloader_find ("dlopen");
+	      handle->info.filename  = strdup( libname );
+              handle->info.ref_count = 1;
+              handle->depcount       = 0;
+              handle->deplibs        = 0;
+              handle->module         = dlopen( libname, lt_dlopen_flag );
+              handle->system         = 0;
+              handle->caller_data    = 0;
+	      LT_DLSET_FLAG (handle, LT_DLRESIDENT_FLAG);
+
+              MUTEX_LOCK ();
+              handle->next = handles;
+              handles = handle;
+              MUTEX_UNLOCK ();
+	    }
+
+	  info = (struct ld_info*)(((char*)info)+info->ldinfo_next);
+        }
+      while( info->ldinfo_next != 0 );
+    }
+
+    if( buffer != NULL ) LT_DLFREE( buffer );
+}
+
+static lt_dlhandle
+sys_dl_search_by_name( const char* name )
+{
+  lt_dlhandle cur;
+  const char* la;
+
+  cur = handles;
+
+  while (cur)
+    {
+      if( cur->info.name && name &&
+	  !strcmp( cur->info.name, name ) )
+        {
+	  if( cur->info.filename )
+	    {
+	      la = strrchr( cur->info.filename, '.' );
+	      if( !la || strcmp(la,".la") )
+	        {
+	          return cur;
+	        }
+	    }
+        }
+      cur = cur->next;
+    }
+  return NULL;
+}
+
+static void
+sys_dl_not_found_entry( const char* tmp )
+{
+    lt_dlhandle handle;
+
+    handle = (lt_dlhandle) LT_DLMALLOC (struct lt_dlhandle_struct, 1);
+    if (!handle)
+      {
+        MUTEX_SETERROR (LT_DLSTRERROR (NO_MEMORY));
+        return;
+      }
+
+    handle->loader = NULL;
+
+    handle->info.filename = strdup( tmp );
+    handle->info.name = strdup( tmp );
+    handle->info.ref_count    = 0;
+    handle->depcount          = 0;
+    handle->deplibs           = 0;
+    handle->module            = 0;
+    handle->system            = 0;
+    handle->caller_data       = 0;
+
+    LT_DLSET_FLAG (handle, LT_DLNOTFOUND_FLAG);
+
+    MUTEX_LOCK ();
+    handle->next = handles;
+    handles = handle;
+    MUTEX_UNLOCK ();
+}
+
+#endif /* _AIX */
