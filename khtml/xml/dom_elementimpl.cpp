@@ -608,15 +608,17 @@ bool ElementImpl::mouseEvent( int _x, int _y,
     {
         bool known = m_render->absolutePosition(_tx, _ty);
 
-	inside = true;
-	if( !known || (_y < _ty ) || (_y >= _ty + m_render->height() ) ||
-	    (_x < _tx ) || (_x >= _tx + m_render->width() ) )
-	    inside = false;
-	else
+	if ( known && (_y >= _ty) && (_y < _ty + m_render->height())
+                   && (_x >= _tx) && (_x < _tx + m_render->width()) )
         {
-	    ev->innerNode = Node(this);
-            ev->nodeAbsX = _tx;
-            ev->nodeAbsY = _ty;
+            if  ( ! (m_render->style() && m_render->style()->visiblity() == HIDDEN) )
+            {
+                //kdDebug(6030) << nodeName().string() << " SETTING innerNode " << endl;
+                ev->innerNode = Node(this);
+                ev->nodeAbsX = _tx;
+                ev->nodeAbsY = _ty;
+                inside = true;
+            }
         }
     }
 
@@ -628,7 +630,7 @@ bool ElementImpl::mouseEvent( int _x, int _y,
     }
 
 #ifdef EVENT_DEBUG
-    if(inside) kdDebug( 6030 ) << "    --> inside" << endl;
+    if(inside) kdDebug( 6030 ) << nodeName().string() << "    --> inside" << endl;
 #endif
 
     if(inside || mouseInside())

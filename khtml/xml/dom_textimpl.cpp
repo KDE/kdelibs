@@ -307,6 +307,9 @@ bool TextImpl::mouseEvent( int _x, int _y,
 
     if(!m_render) return false;
 
+    if (m_render->style() && m_render->style()->visiblity() == HIDDEN)
+        return false;
+
     if(m_render->parent() && m_render->parent()->isAnonymousBox())
     {
 	// we need to add the offset of the anonymous box
