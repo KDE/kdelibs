@@ -26,6 +26,10 @@
 #define INCLUDE_MENUITEM_DEF
 #endif
 
+#ifdef HAVE_LIMITS_H
+#include <limits.h>
+#endif
+
 #include <qmenudata.h>
 #include "kdestyle.h"
 #include <kapp.h>
