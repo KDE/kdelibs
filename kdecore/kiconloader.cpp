@@ -352,39 +352,56 @@ KIcon KIconLoader::findMatchingIcon(const QString& name, int size) const
 {
     KIcon icon;
 
+    const QString *ext[4];
+    int count=0;
     static const QString &png_ext = KGlobal::staticQString(".png");
-    icon = d->mpThemeRoot->findIcon(name + png_ext, size, KIcon::MatchExact);
-    if (icon.isValid())
-      return icon;
-    icon = d->mpThemeRoot->findIcon(name + png_ext, size, KIcon::MatchBest);
-    if (icon.isValid())
-      return icon;
-
+    ext[count++]=&png_ext;
 #ifdef HAVE_LIBART
     static const QString &svgz_ext = KGlobal::staticQString(".svgz");
-    icon = d->mpThemeRoot->findIcon(name + svgz_ext, size, KIcon::MatchExact);
-    if (icon.isValid())
-      return icon;
-    icon = d->mpThemeRoot->findIcon(name + svgz_ext, size, KIcon::MatchBest);
-    if (icon.isValid())
-      return icon;
-
+    ext[count++]=&svgz_ext;
     static const QString &svg_ext = KGlobal::staticQString(".svg");
-    icon = d->mpThemeRoot->findIcon(name + svg_ext, size, KIcon::MatchExact);
-    if (icon.isValid())
-      return icon;
-    icon = d->mpThemeRoot->findIcon(name + svg_ext, size, KIcon::MatchBest);
-    if (icon.isValid())
-      return icon;
+    ext[count++]=&svg_ext;
 #endif
-
     static const QString &xpm_ext = KGlobal::staticQString(".xpm");
-    icon = d->mpThemeRoot->findIcon(name + xpm_ext, size, KIcon::MatchExact);
-    if (icon.isValid())
-      return icon;
-    icon = d->mpThemeRoot->findIcon(name + xpm_ext, size, KIcon::MatchBest);
-    if (icon.isValid())
-      return icon;
+    ext[count++]=&xpm_ext;
+
+    /* antlarr: Multiple inheritance is a broken concept on icon themes, so
+       the next code doesn't support it on purpose because in fact, it was
+       never supported at all. This makes the order in which we look for an
+       icon as:
+       
+       png, svgz, svg, xpm exact match
+       next theme in inheritance tree : png, svgz, svg, xpm exact match
+       next theme in inheritance tree : png, svgz, svg, xpm exact match
+       and so on
+
+       And if the icon couldn't be found then it tries best match in the same
+       order.
+       
+       */
+    for ( KIconThemeNode *themeNode = d->mpThemeRoot ; themeNode ;
+	themeNode = themeNode->links.first() )
+    {
+	for (int i = 0 ; i < count ; i++)
+	{
+	    icon = themeNode->theme->iconPath(name + *ext[i], size, KIcon::MatchExact);
+	    if (icon.isValid())
+		return icon;
+	}
+        
+    }
+
+    for ( KIconThemeNode *themeNode = d->mpThemeRoot ; themeNode ;
+	themeNode = themeNode->links.first() )
+    {
+	for (int i = 0 ; i < count ; i++)
+	{
+	    icon = themeNode->theme->iconPath(name + *ext[i], size, KIcon::MatchBest);
+	    if (icon.isValid())
+		return icon;
+	}
+        
+    }
 
     return icon;
 }
