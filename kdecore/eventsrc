@@ -2,6 +2,7 @@
 # go = The K-icon from kicker
 IconName=go
 Comment=KDE System Notifications
+Comment[af]=kde stelsel inkennistelling
 Comment[az]=KDE Sistem Bildirişləri
 Comment[bg]=Системни съобщения на KDE
 Comment[bs]=KDE Obavijesti sustava
@@ -48,6 +49,7 @@ Comment[zh_TW.Big5]=KDE 系統通知
 
 [Textcompletion: rotation]
 Name=Textcompletion: rotation
+Name[af]=textcompletion: rotering
 Name[az]=Textcompletion: döndərmə
 Name[br]=KlokadurSrid : troerezh
 Name[bs]=Textcompletion: rotacija
@@ -91,6 +93,7 @@ Name[vi]=Textcompletion:Quay
 Name[zh_CN.GB2312]=文字补齐：轮转
 Name[zh_TW.Big5]=完整本文: 旋轉
 Comment=The end of the list of matches has been reached.
+Comment[af]=die einde van die lys van ooreenstemmende inskrywings het al bereik.
 Comment[az]=Oxşar siyahısının sonuna gəlindi.
 Comment[bg]=Достигнат е край на списъка от съвпадения.
 Comment[br]=Tizhet eo diwezh roll ar gendoareoÃ¹
@@ -139,6 +142,7 @@ default_presentation=1
 
 [Textcompletion: no match]
 Name=Textcompletion: no match
+Name[af]=textcompletion: nee ooreenstem
 Name[az]=Textcompletion: oxşarı Yoxdur
 Name[bg]=Автозавършване: няма съвпадение
 Name[br]=KlokadurSrid : kendoare ebet
@@ -184,6 +188,7 @@ Name[vi]=Textcompletion: Không phù hợp
 Name[zh_CN.GB2312]=文字补齐：没有匹配
 Name[zh_TW.Big5]=完整本文: 沒有符合
 Comment=No matching completion was found.
+Comment[af]=nee ooreenstemmende voltooiïng was gevind.
 Comment[az]=Oxşar tapıla bilmədi.
 Comment[bg]=Не е намерено съвпадение.
 Comment[br]=Kendoare ebet na voe kavet
@@ -232,6 +237,7 @@ default_presentation=1
 
 [Textcompletion: partial match]
 Name=Textcompletion: partial match
+Name[af]=textcompletion: gedeeltelike ooreenstem
 Name[az]=Textcompletion: qismi oxşar
 Name[bg]=Автозавършване: частично съвпадение
 Name[br]=KlokadurSrid : kendoare darnek
@@ -277,6 +283,7 @@ Name[vi]=Textcompletion: Phù hợp một phần
 Name[zh_CN.GB2312]=文字补齐：部分匹配
 Name[zh_TW.Big5]=完整本文: 部份符合
 Comment=There is more than one possible match.
+Comment[af]=daar is meer as een moontlik ooreenstem.
 Comment[az]=Birden çox oxşarı var.
 Comment[bg]=Намерени са повече от едно съвпадение.
 Comment[br]=Tremen ur c'hendoare a zo
@@ -325,6 +332,7 @@ default_presentation=1
 
 [cannotopenfile]
 Name=Cannot Open File
+Name[af]=kan nie open lêer
 Name[az]=Fayl Açıla bilmir
 Name[bg]=Не мога да отворя файл
 Name[br]=N'hall ket digeriÃ± restr
@@ -372,6 +380,7 @@ Name[vi]=Không thềEmềEfile
 Name[zh_CN.GB2312]=无法打开文件
 Name[zh_TW.Big5]=無法開啟檔案
 Comment=The selected file cannot be opened for reading or writing
+Comment[af]=die gekose lêer kan nie wees geöpende vir lees of om te skryf
 Comment[az]=Seçili fayl oxunmaq ya da yazılmaq üçün açıla bilmir
 Comment[bg]=Не мога да намеря избраният файл за четене или запис
 Comment[br]=N'heller ket digeriÃ± ar restr diuzet evit lenn pe skrivaÃ±
@@ -421,6 +430,7 @@ default_presentation=0
 
 [fatalerror]
 Name=Fatal Error
+Name[af]=fatale fout
 Name[az]=Ölümcül Xəta
 Name[bg]=Фатална грешка
 Name[br]=Fazi sac'hus
@@ -467,6 +477,7 @@ Name[vi]=Lỗi nghiêm trọng
 Name[zh_CN.GB2312]=致命错误
 Name[zh_TW.Big5]=致命錯誤
 Comment=There was a serious error causing the program to exit.
+Comment[af]=daar was 'n ernstige fout veroorsaak dat die program aan beïendig.
 Comment[az]=Proqramın qapanmasına səbəb olan ciddi bir xəta oldu.
 Comment[bg]=Сериозна грешка предизвикваща излизане от програмата
 Comment[br]=Ur fazi grevus a voe pennabeg mont er-maez ar goulev.
@@ -517,6 +528,7 @@ level=4
 
 [notification]
 Name=Notification
+Name[af]=inkennisstelling
 Name[az]=Xəbərdarlıq
 Name[bg]=Съобщение
 Name[br]=Kemennadenn
@@ -562,6 +574,7 @@ Name[vi]=Thông báo
 Name[zh_CN.GB2312]=通知
 Name[zh_TW.Big5]=告知
 Comment=Something Special Happened in the Program
+Comment[af]=iets spesiaal het gebeur in die program
 Comment[az]=Proqramda Xüsusi Bir Vəziyyət Meydana Gəldi
 Comment[bg]=В програмата се случи неще специално
 Comment[br]=Ur dra bennak dibar a c'hoarvezas gant ar goulev
@@ -614,6 +627,7 @@ level=1
 
 [warning]
 Name=Warning
+Name[af]=waarskuwing
 Name[az]=Diqqət
 Name[bg]=Предупреждение
 Name[br]=Kemenn
@@ -661,6 +675,7 @@ Name[wa]=Advertixhmint
 Name[zh_CN.GB2312]=警告
 Name[zh_TW.Big5]=警告
 Comment=There was an error in the program which may cause problems.
+Comment[af]=daar was 'n fout in die program wat dalk mag veroorsaak probleme.
 Comment[az]=Proqramda ciddi bir xəta oldu.
 Comment[bg]=Грешка в програмата която може да предизвика проблеми.
 Comment[br]=Ur fazi a voe er goulev a c'hellfe bezaÃ± pennabeg kudennoÃ¹.
@@ -709,6 +724,7 @@ level=2
 
 [catastrophe]
 Name=Catastrophe
+Name[af]=katastrofe
 Name[az]=Faciə
 Name[bg]=Катастрофа
 Name[br]=Gwalldaol
@@ -754,6 +770,7 @@ Name[vi]=Thảm hoạ
 Name[zh_CN.GB2312]=严重问题
 Name[zh_TW.Big5]=大災難
 Comment=A very serious error occured, at least causing the program to exit
+Comment[af]=a baie ernstige fout voorgekom, na minste veroorsaak dat die program aan beïendig
 Comment[az]=Proqramın qapanmasına səbəb olan ciddi bir xəta oldu və programdan çıxıldı.
 Comment[bg]=Възникна много сериозен проблем причиняващ излизане от програмата
 Comment[br]=Ur fazi grevus-tre a c'hoarvezas, a lakas d'an nebeutaÃ± ar goulev da vont er-maez
@@ -801,6 +818,7 @@ default_presentation=2
 level=8
 [startkde]
 Name=Login
+Name[af]=aanteken
 Name[az]=Giriş
 Name[bg]=Влизане в системата
 Name[bs]=Prijava
@@ -840,6 +858,7 @@ Name[vi]=Đăng nhập
 Name[zh_CN.GB2312]=登录
 Name[zh_TW.Big5]=登入
 Comment=KDE is Starting Up
+Comment[af]=kde is beginne begin
 Comment[az]=KDE Masa üstü Başlayır
 Comment[bg]=KDE се зарежда
 Comment[bs]=KDE se podiže
@@ -888,6 +907,7 @@ default_sound=KDE_Startup.wav
  
 [exitkde]
 Name=Logout
+Name[af]=teken af
 Name[az]=Çıxış
 Name[bg]=Излизане от KDE
 Name[bs]=Odjava
@@ -929,6 +949,7 @@ Name[uk]=Кінець сеансу
 Name[zh_CN.GB2312]=注消
 Name[zh_TW.Big5]=登出
 Comment=KDE is Exiting
+Comment[af]=kde is besig om toe te maak
 Comment[az]="KDE"dən Çıxılır
 Comment[bg]=Изход на KDE
 Comment[bs]=KDE se zatvara
@@ -977,6 +998,7 @@ default_sound=KDE_Logout.wav
 
 [printerror]
 Name=Print error
+Name[af]=druk fout
 Name[az]=Çap Edici xətası
 Name[bg]=Грешка при печат
 Name[cs]=Chyba tisku
@@ -1012,6 +1034,7 @@ Name[uk]=Помилка друку
 Name[vi]=Lỗi khi in 
 Name[zh_CN.GB2312]=打印错误
 Comment=A print error has occured
+Comment[af]=a druk fout het voorgekom
 Comment[az]=Çap Edici xətasi oldu
 Comment[bg]=Появи се грешка в печата
 Comment[cs]=Došlo k chybě tisku

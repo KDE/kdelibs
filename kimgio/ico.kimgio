@@ -2,6 +2,7 @@
 Type=ICO
 Header=^\001\001
 Name=MSWindows Icons
+Name[af]=mswindows ikoone
 Name[az]=MSWindows Timsalları
 Name[bg]=Икони на MSWindows
 Name[cs]=Ikony MS Windows

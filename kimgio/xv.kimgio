@@ -3,6 +3,7 @@ Type=XV
 Header=^P7 332
 Flags=T
 Name=XView format
+Name[af]=xview formaat
 Name[az]=XView şəkli
 Name[bg]=XView формат
 Name[br]=Furmad XView

@@ -1,6 +1,7 @@
 [KDE Print Entry]
 PrintSystem=rlpr
 Comment=RLPR environment (Remote LPD servers)
+Comment[af]=rlpr omgewing (afgeleë lpd bedieners)
 Comment[az]=RLPR vasitəsi (Uzaq LPD vericiləri)
 Comment[bg]=Среда RLPR (отдалечени LPD сървъри)
 Comment[cs]=Prostředí RLPR (Vzdálené LPD servery)
