@@ -241,24 +241,20 @@ static KAction* findPluggedAction(QPtrList<KAction> actions, KToolBar *tb, int i
 static KAction* doFunkySepThing(QPoint pos, QPtrList<KAction> actions)
 {
     static int sepIndex;
-
-    // search for a toolbarbutton at pos
     KToolBar *tb = dynamic_cast<KToolBar*>(actions.first()->container(0));
     Q_ASSERT(tb);
 
     sepToolBar = tb;
     removeTempSep();
 
-    KToolBarButton* b; 
-    b = dynamic_cast<KToolBarButton*>(tb->childAt(pos));
-    KAction *a = 0;
-    if (b)
-        a = findPluggedAction(actions, tb, b->id());
-
     int index;
+    KToolBarButton* b;
+    b = dynamic_cast<KToolBarButton*>(tb->childAt(pos)); 
+    KAction *a = 0;
 
-    if (a)
+    if (b)
     {
+        a = findPluggedAction(actions, tb, b->id());
         index = tb->itemIndex(b->id());
         QRect r = b->geometry();
 
@@ -271,7 +267,6 @@ static KAction* doFunkySepThing(QPoint pos, QPtrList<KAction> actions)
     }
     else
     {
-        goto failure_exit;
         /*
         kdDebug(7043) << tb << endl;
         kdDebug(7043) << tb->count()-1 << endl;
@@ -284,6 +279,7 @@ static KAction* doFunkySepThing(QPoint pos, QPtrList<KAction> actions)
         kdDebug(7043) << "jumping to last one" << endl;
         index = tb->count() - 1;
         */
+        goto failure_exit;
     }
 
     // search for the button at the given index
@@ -297,6 +293,7 @@ okay_exit:
     sepIndex = index + 1;
 
 failure_exit:
+    sepToolBar = tb;
     tb->insertLineSeparator(sepIndex, sepId);
     return a;
 }
