@@ -186,6 +186,8 @@ void KListViewLineEdit::load(QListViewItem *i, int c)
         setGeometry(fieldX, rect.y() - 1, fieldW, rect.height() + 2);
         show();
         setFocus();
+        qApp->processEvents(0);
+        QApplication::flushX();
         grabMouse();
 
 }
