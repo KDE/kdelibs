@@ -2269,17 +2269,19 @@ void KApplication::invokeMailer(const QString &to, const QString &cc, const QStr
    cmdTokens.remove(cmdTokens.begin());
 
    KURL url;
-   url.setProtocol( "mailto" );
-   QStringList tos = QStringList::split( ',', to );
-   url.setPath( tos.first() );
-   tos.remove( tos.begin() );
    QStringList qry;
-   for (QStringList::ConstIterator it = tos.begin(); it != tos.end(); ++it)
-      qry.append( "to=" + KURL::encode_string( *it ) );
-   QStringList ccs = QStringList::split( ',', cc );
+   if (!to.isEmpty())
+   {
+     QStringList tos = QStringList::split( ',', to );
+     url.setPath( tos.first() );
+     tos.remove( tos.begin() );
+     for (QStringList::ConstIterator it = tos.begin(); it != tos.end(); ++it)
+       qry.append( "to=" + KURL::encode_string( *it ) );
+   }
+   const QStringList ccs = QStringList::split( ',', cc );
    for (QStringList::ConstIterator it = ccs.begin(); it != ccs.end(); ++it)
       qry.append( "cc=" + KURL::encode_string( *it ) );
-   QStringList bccs = QStringList::split( ',', bcc );
+   const QStringList bccs = QStringList::split( ',', bcc );
    for (QStringList::ConstIterator it = bccs.begin(); it != bccs.end(); ++it)
       qry.append( "bcc=" + KURL::encode_string( *it ) );
    for (QStringList::ConstIterator it = attachURLs.begin(); it != attachURLs.end(); ++it)
