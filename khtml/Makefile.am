@@ -52,8 +52,7 @@ libkhtml_la_LIBADD = ./xml/libkhtmlxml.la ./html/libkhtmlhtml.la \
 	./misc/libkhtmlmisc.la ecma/libkjs_html.la ./dom/libkhtmldom.la $(LIBKJAVA) \
 	$(LIB_KPARTS) \
 	$(top_builddir)/kdeprint/libkdeprint.la  \
-	$(top_builddir)/kutils/libkutils.la \
-	$(top_builddir)/kspell/libkspell.la
+	$(top_builddir)/kutils/libkutils.la
 
 dummy.cpp:
 	echo > $@

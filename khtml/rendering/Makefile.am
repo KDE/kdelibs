@@ -41,7 +41,7 @@ noinst_HEADERS = \
 	render_br.h render_applet.h font.h table_layout.h
 
 INCLUDES = -I$(top_srcdir)/kimgio -I$(top_srcdir)/kio -I$(top_srcdir)/dcop \
- -I$(top_srcdir)/kfile -I$(top_srcdir)/khtml -I$(top_srcdir)/kspell -I$(top_srcdir) $(all_includes) 
+ -I$(top_srcdir)/kfile -I$(top_srcdir)/khtml -I$(top_srcdir) $(all_includes)
 
 SRCDOC_DEST=$(kde_htmldir)/en/kdelibs/khtml
 
