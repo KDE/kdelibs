@@ -60,6 +60,7 @@ void khtml::MouseEvent::setNodePos( int x, int y)
 // ### remove
 bool khtml::MouseEvent::isURLHandlingEnabled() const
 {
+   return false;
 }
 
 // ### remove
