@@ -1430,7 +1430,7 @@ void KHTMLPart::paint(QPainter *p, const QRect &rc, int yOff, bool *more)
 
 void KHTMLPart::stopAnimations()
 {
-  // TODO: 
+  // TODO:
   // -stop animations in all frames, not only in the current one
   // -show "Stop Animations" option only if there actually are animations
   // -stop background animations, too
@@ -3753,7 +3753,7 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
            }
        }
      }
-     else if ( !innerNode.isNull() && innerNode.elementId() == ID_IMG ) {
+     if ( !innerNode.isNull() && innerNode.elementId() == ID_IMG ) {
        HTMLImageElementImpl *i = static_cast<HTMLImageElementImpl *>(innerNode.handle());
        if ( i && i->isServerMap() )
        {
