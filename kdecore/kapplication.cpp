@@ -1561,8 +1561,9 @@ void KApplication::applyGUIStyle()
     }
     else {
         QStyle* sp = QStyleFactory::create( styleStr );
-        if ( sp )
-            setStyle(sp);
+	if ( !sp )
+	    sp = QStyleFactory::create( *(QStyleFactory::keys().begin()) );
+        setStyle(sp);
     }
 
     // Reread palette from config file.
