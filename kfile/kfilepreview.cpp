@@ -87,6 +87,9 @@ void KFilePreview::setFileView( KFileView *view )
     view->KFileView::setViewMode(All);
     view->setParentView(this);
     left = view;
+    
+    connect( left->signaler(), SIGNAL( fileHighlighted(const KFileItem*) ),
+             SLOT( slotHighlighted( const KFileItem * )));
 
     for ( uint i = 0; i < view->actionCollection()->count(); i++ )
         actionCollection()->insert( view->actionCollection()->action( i ));
@@ -203,7 +206,26 @@ KFileItem * KFilePreview::currentFileItem() const
     return left->currentFileItem();
 }
 
-void KFilePreview::ensureItemVisible(const KFileItem *item) {
+void KFilePreview::slotHighlighted(const KFileItem* item) 
+{
+    if ( item )
+        emit showPreview( item->url() );
+ 
+    else { // item = 0 -> multiselection mode
+        const KFileItemList *items = selectedItems();
+        if ( items->count() == 1 )
+            emit showPreview( items->getFirst()->url() );
+        else
+            emit clearPreview();
+    }
+ 
+    // the preview widget appears and takes some space of the left view,
+    // so we may have to scroll to make the current item visible
+    left->ensureItemVisible(item);
+ }
+
+void KFilePreview::ensureItemVisible(const KFileItem *item) 
+{
     left->ensureItemVisible(item);
 }
 

@@ -175,7 +175,7 @@ void KFileDetailView::insertItem( KFileItem *i )
     KFileView::insertItem( i );
 
     KFileListViewItem *item = new KFileListViewItem( (QListView*) this,
-                                                     i->name(),
+                                                     i->text(),
                                                    i->pixmap(KIcon::SizeSmall),
                                                      i );
 
@@ -189,7 +189,7 @@ void KFileDetailView::insertItem( KFileItem *i )
         item->setKey( sortingKey( i->size(), i->isDir(), spec ));
 
     else // Name or Unsorted
-        item->setKey( sortingKey( i->name(), i->isDir(), spec ));
+        item->setKey( sortingKey( i->text(), i->isDir(), spec ));
 
     item->setText( COL_SIZE,  KGlobal::locale()->formatNumber( i->size(), 0 ));
     item->setText( COL_DATE,  i->timeString() );

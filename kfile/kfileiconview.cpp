@@ -279,13 +279,13 @@ void KFileIconView::clearView()
 void KFileIconView::insertItem( KFileItem *i )
 {
     KFileView::insertItem( i );
-    
+
     int size = myIconSize;
     if ( d->previews->isChecked() && canPreview( i ) )
         size = myIconSize;
 
     KFileIconViewItem *item = new KFileIconViewItem( (QIconView*)this,
-                                                     i->name(),
+                                                     i->text(),
                                                      i->pixmap( size ), i);
 
     // see also setSorting()
@@ -298,9 +298,9 @@ void KFileIconView::insertItem( KFileItem *i )
         item->setKey( sortingKey( i->size(), i->isDir(), spec ));
 
     else // Name or Unsorted
-        item->setKey( sortingKey( i->name(), i->isDir(), spec ));
+        item->setKey( sortingKey( i->text(), i->isDir(), spec ));
 
-    //qDebug("** key for: %s: %s", i->name().latin1(), item->key().latin1());
+    //qDebug("** key for: %s: %s", i->text().latin1(), item->key().latin1());
 
     i->setExtraData( this, item );
 
@@ -606,7 +606,7 @@ void KFileIconView::setSorting( QDir::SortSpec spec )
     }
     else { // Name or Unsorted
         for ( ; (item = it.current()); ++it )
-            viewItem(item)->setKey( sortingKey( item->name(), item->isDir(),
+            viewItem(item)->setKey( sortingKey( item->text(), item->isDir(),
                                                 spec ));
     }
 

@@ -90,6 +90,9 @@ public:
 
     void setPreviewWidget(const QWidget *w, const KURL &u);
 
+protected slots:
+    virtual void slotHighlighted( const KFileItem * );
+    
 signals:
     void showPreview(const KURL &);
     void clearPreview();
