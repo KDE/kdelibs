@@ -179,7 +179,7 @@ void KDirLister::slotEntries( KIO::Job*, const KIO::UDSEntryList& entries )
   KIO::UDSEntryListConstIterator end = entries.end();
 
   // avoid creating these QStrings again and again
-  static const QString dot = QString::fromLatin1(".");
+  static const QString& dot = KGlobal::staticQString(".");
 
   for (; it != end; ++it) {
     QString name;
@@ -204,7 +204,7 @@ void KDirLister::slotEntries( KIO::Job*, const KIO::UDSEntryList& entries )
       //kdDebug(7003)<< "Adding " << u.url() << endl;
       KFileItem* item = createFileItem( *it, m_url, m_bDelayedMimeTypes, true);
       assert( item != 0L );
-      if ( (m_bDirOnlyMode && !S_ISDIR( item->mode() )) || !matchesFilter( item ))
+      if ( (m_bDirOnlyMode && !item->isDir()) || !matchesFilter( item ))
       {
         delete item;
         continue;
@@ -283,6 +283,8 @@ void KDirLister::slotUpdateResult( KIO::Job * job )
       (*kit)->mark(); // keep the other items
   }
 
+  static const QString& dot = KGlobal::staticQString(".");
+  static const QString& dotdot = KGlobal::staticQString("..");
   QValueListIterator<KIO::UDSEntry> it = m_buffer.begin();
   for( ; it != m_buffer.end(); ++it )
   {
@@ -296,7 +298,9 @@ void KDirLister::slotUpdateResult( KIO::Job * job )
 
     assert( !name.isEmpty() );
 
-    if ( name == "." || name == ".." )
+    // we duplicate the check for dotdot here, to avoid iterating over
+    // all items in m_lstFileItems and checking in matchesFilter() that way.
+    if ( name == dot || name == dotdot )
       continue;
 
     if ( m_isShowingDotFiles || name[0]!='.' )
@@ -322,14 +326,14 @@ void KDirLister::slotUpdateResult( KIO::Job * job )
       if ( !done )
       {
         //kdDebug(7003) << "slotUpdateFinished : inserting " << name << endl;
-        KFileItem* item = createFileItem( *it, u, m_bDelayedMimeTypes );
+        KFileItem* item = createFileItem( *it, m_url, m_bDelayedMimeTypes );
 	
-	if ( m_bDirOnlyMode && !S_ISDIR( item->mode() ) )
+	if ( (m_bDirOnlyMode && !item->isDir()) || !matchesFilter( item ))
 	{
 	  delete item;
 	  continue;
 	}
-	
+
         m_lstFileItems.append( item );
         lstNewItems.append( item );
         item->mark();
