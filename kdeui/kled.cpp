@@ -21,6 +21,13 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.10  1999/12/25 17:12:18  mirko
+ * Modified Look "round" to "raised", as the others are flat and
+ * sunken. All enums start with uppercase letters now to fit the overall
+ * KDE style.
+ * Implemented raised rectangluar look.
+ * --Mirko.
+ *
  * Revision 1.9  1999/11/12 21:17:09  antlarr
  * Fixed some bugs.
  * Added the possibility to draw a sunk rectangle as the "old" KLedLamp did.
@@ -54,27 +61,31 @@
 #include <stdio.h>
 #endif
 
+
 #include <qpainter.h>
 #include <qcolor.h>
+#include <kapp.h>
 #include <kpixmapeffect.h>
 #include "kled.h"
 
 KLed::KLed(const QColor& col, QWidget *parent, const char *name)
   : QWidget( parent, name),
     led_state(On),
-    led_look(Raised)
+    led_look(Raised),
+    led_shape(Circular)
 {
   setColor(col);
-  setShape(Circular);
+  //setShape(Circular);
 }
 
 KLed::KLed(const QColor& col, KLed::State state, 
 	   KLed::Look look, KLed::Shape shape, QWidget *parent, const char *name )
   : QWidget(parent, name),
     led_state(state),
-    led_look(look)
+    led_look(look),
+    led_shape(shape)
 {
-  setShape(shape);
+  //setShape(shape);
   setColor(col);
 }
 
@@ -86,30 +97,37 @@ KLed::paintEvent(QPaintEvent *)
     case Rectangular:
       switch (led_look) 
 	{
-	case Sunken: 
+	case Sunken :
 	  paintrectframe(false); 
 	  break;
-	case Raised:
+	case Raised :
 	  paintrectframe(true);
 	  break;
-	default  : 
+	case Flat   :
 	  paintrect();
 	  break;
+	default  :
+	  qWarning("%s: in class KLed: no KLed::Look set",kapp->argv()[0]);
 	}
       break;
     case Circular:
       switch (led_look) 
 	{
-	case Flat  : 
-	  paintflat(); 
+	case Flat   :
+	  paintflat();
 	  break;
-	case Raised : 
-	  paintround(); 
+	case Raised :
+	  paintround();
+	  break;
+	case Sunken :
+	  paintsunken();
 	  break;
 	default: 
-	  paintsunken(); 
+	  qWarning("%s: in class KLed: no KLed::Look set",kapp->argv()[0]);
 	}
-    case NoShape:
+      break;
+    default:
+      qWarning("%s: in class KLed: no KLed::Shape set",kapp->argv()[0]);
       break;
     }
 }
@@ -118,7 +136,7 @@ void
 KLed::paintflat() // paint a ROUND FLAT led lamp
 {
   QPainter p(this);
-  int x=this->x(), y=this->y(), w=width(), h=height();
+  int w=width(), h=height();
 
   // round the ellipse 
   if (w > h)
@@ -132,38 +150,113 @@ KLed::paintflat() // paint a ROUND FLAT led lamp
   c.setRgb(0xCFCFCF);
   p.setPen(c);
   //  p.drawArc(x,y,w,h, 45*16, 180*16);
-  p.drawArc(x,y,w,h, 45*16, -180*16);
+  p.drawArc(0,0,w,h, 45*16, -180*16);
 
   // draw white upper left circle
   c.setRgb(0xFFFFFF);
   p.setPen(c);
   //  p.drawArc(x,y,w,h, 90*16, 90*16);
-  p.drawArc(x,y,w,h, 0, -90*16);
+  p.drawArc(0,0,w,h, 0, -90*16);
 
   // draw dark grey lower right circle
   c.setRgb(0xA0A0A0);
   p.setPen(c);
   //  p.drawArc(x,y,w,h, 45*16, -180*16);
-  p.drawArc(x,y,w,h, 45*16, 180*16);
+  p.drawArc(0,0,w,h, 45*16, 180*16);
 
   // draw black lower right circle
   c.setRgb(0x000000);
   p.setPen(c);
   //  p.drawArc(x,y,w,h, 0, -90*16);
-  p.drawArc(x,y,w,h, 90*16, 90*16);
+  p.drawArc(0,0,w,h, 90*16, 90*16);
 
   // make led smaller for shading
   w-=2; h-=2;
-  x++; y++;
+
   // draw the flat led grounding
-  c= led_state ? led_color : led_color.dark(300);
+  c = (led_state==On) ? led_color : led_color.dark();
+  p.setPen(c);
   p.setBrush(c);
-  p.drawPie(x,y,w,h,0,5760);
+  p.drawPie(1,1,w,h,0,5760);
 }
 
 void
 KLed::paintround() // paint a ROUND RAISED led lamp
 {
+  QPainter p(this);
+  int x, y, w=width(), h=height();
+
+  // round the ellipse 
+  if (w > h)
+    w = h;
+  else if (h > w)
+    h = w;
+
+  //  QRect ring1(x,y,w,h);
+  QColor c;
+
+  // draw light grey upper left circle
+  c.setRgb(0xCFCFCF);
+  p.setPen(c);
+  //  p.drawArc(x,y,w,h, 45*16, 180*16);
+  p.drawArc(0,0,w,h, 45*16, -180*16);
+
+  // draw white upper left circle
+  c.setRgb(0xFFFFFF);
+  p.setPen(c);
+  //  p.drawArc(x,y,w,h, 90*16, 90*16);
+  p.drawArc(0,0,w,h, 0, -90*16);
+
+  // draw dark grey lower right circle
+  c.setRgb(0xA0A0A0);
+  p.setPen(c);
+  //  p.drawArc(x,y,w,h, 45*16, -180*16);
+  p.drawArc(0,0,w,h, 45*16, 180*16);
+
+  // draw black lower right circle
+  c.setRgb(0x000000);
+  p.setPen(c);
+  //  p.drawArc(x,y,w,h, 0, -90*16);
+  p.drawArc(0,0,w,h, 90*16, 90*16);
+
+  // make led smaller for shading
+  w-=2; h-=2;
+  //x++; y++;
+  // draw the flat led grounding
+  c = ( led_state ) ? led_color : led_color.dark();
+
+  p.setPen(c);
+  p.setBrush(c);
+  p.drawPie(1,1,w,h,0,5760);
+
+  // shrink the light on 2/3 the size
+  // x := x+ ( w - w*2/3)/2
+  x=w/6 +1;
+  y=w/6 +1;
+  // w := w*2/3
+  w*=2;
+  w/=3;
+  h=w;
+  
+  // now draw the bright spot on the led
+  int light_quote = (100*3/w)+100;
+  while (w) {
+    c = c.light(light_quote);
+    p.setPen( c );
+    p.drawEllipse(x,y,w,h);
+    w--; h--;
+    if (!w)
+      break;
+    p.drawEllipse(x,y,w,h);
+    w--; h--;
+    if (!w)
+      break;
+    p.drawEllipse(x,y,w,h);
+    x++; y++; w--;h--;
+  }
+
+  /* 
+   * ?? what's this use for ??
   QPainter p(this);
   KPixmap pix;
   QColor c;
@@ -175,6 +268,7 @@ KLed::paintround() // paint a ROUND RAISED led lamp
     } else {
       KPixmapEffect::gradient(pix, c, led_color, KPixmapEffect::EllipticGradient, 2^24);
     }
+  */
 }
 
 
@@ -182,7 +276,8 @@ void
 KLed::paintsunken() // paint a ROUND SUNKEN led lamp
 {
   QPainter p(this);
-  int x=this->x(), y=this->y(), w=width(), h=height();
+  //int x=this->x(), y=this->y(), w=width(), h=height();
+  int x=0, y=0, w=width(), h=height();
 
   // round the ellipse 
   if (w > h)
@@ -247,7 +342,7 @@ KLed::paintsunken() // paint a ROUND SUNKEN led lamp
   p.drawArc(ring3, (-45+ARC_WHITE_RING3)*16, -2*ARC_WHITE_RING3*16);
 
   // draw the flat led grounding
-  c=led_state ? led_color.light() : led_color.dark();
+  c= (led_state==On) ? led_color : led_color.dark();
   p.setPen(c);
   p.setBrush(c);
   p.drawPie(x,y,w,h,0,5760);
@@ -384,7 +479,7 @@ KLed::setShape(KLed::Shape s)
   if(led_shape!=s)
     {
       led_shape = s;
-      repaint(false);
+      update();
     }
 }
 
