@@ -42,7 +42,7 @@ include_HEADERS = kledlamp.h kprogress.h kcolordlg.h kselect.h \
 		klineeditdlg.h kurlcompletion.h kwidgetid.h kthemebase.h \
 		kthemestyle.h kcharselect.h kcolordrag.h \
 		qxembed.h knumvalidator.h kdialog.h dialogbase.h kaboutdialog.h \
-        kpixmapeffect.h kauthicon.h kmessagebox.h kdualcolorbtn.h
+        kpixmapeffect.h kauthicon.h kmessagebox.h kdualcolorbtn.h kpalette.h
 
 # the order of the sources isn't randomly (at least not completly).
 # the order is predictated by the use of X11 header files
@@ -61,7 +61,7 @@ libkdeui_la_SOURCES = kthemestyle.cpp kurllabel.cpp knuminput.cpp  \
 		kurlcompletion.cpp kthemebase.cpp kcharselect.cpp \
 		kcolordrag.cpp qxembed.cpp knumvalidator.cpp kdialog.cpp \
 		dialogbase.cpp kaboutdialog.cpp kpixmapeffect.cpp \
-		kauthicon.cpp kmessagebox.cpp kdualcolorbtn.cpp
+		kauthicon.cpp kmessagebox.cpp kdualcolorbtn.cpp kpalette.cpp
 
 libkdeui_la_METASOURCES = kbutton.moc kbuttonbox.moc kcolorbtn.moc \
 	kcolordlg.moc kcontainer.moc kcontrol.moc kdatepik.moc kdatetbl.moc \
