@@ -103,7 +103,7 @@ QString whatstr;
 #ifdef HAVE_SSL
   QLabel *cipherlabel = new QLabel(i18n("SSLv2 Ciphers To Use:"), tabSSL);
   grid->addWidget(cipherlabel, 2, 0);
-  
+
   SSLv2Box = new QListBox(tabSSL, "v2ciphers");
   connect(SSLv2Box, SIGNAL(selectionChanged()), SLOT(configChanged()));
   whatstr = i18n("Select the ciphers you wish to enable when using the"
@@ -119,12 +119,14 @@ QString whatstr;
 #else
   QLabel *nossllabel = new QLabel(i18n("SSL ciphers cannot be configured"
                                " because this module was not linked"
-                               " with OpenSSL."), tabSSL); 
+                               " with OpenSSL."), tabSSL);
   grid->addMultiCellWidget(nossllabel, 3, 3, 0, 1);
+  grid->addRowSpacing( 3, 100 ); // give minimum height to look better
+
 #endif
 
 #ifdef HAVE_SSL
-          cipherlabel = new QLabel(i18n("SSLv3 Ciphers To Use:"), tabSSL);
+  cipherlabel = new QLabel(i18n("SSLv3 Ciphers To Use:"), tabSSL);
   grid->addWidget(cipherlabel, 2, 1);
 
   SSLv3Box = new QListBox(tabSSL, "v3ciphers");
@@ -316,10 +318,10 @@ QString whatstr;
   grid->addMultiCellWidget(mWarnSelfSigned, 0, 0, 0, 3);
   grid->addMultiCellWidget(mWarnExpired, 1, 1, 0, 3);
   grid->addMultiCellWidget(mWarnRevoked, 2, 2, 0, 3);
-  
+
   macCert = new QLineEdit(tabSSLCOpts);
   grid->addMultiCellWidget(macCert, 4, 4, 0, 2);
-  
+
   macBox = new QListBox(tabSSLCOpts);
   whatstr = i18n("This list box shows which sites you have decided to accept"
                 " a certificate from even though the certificate might fail"
@@ -433,16 +435,16 @@ void KCryptoConfig::save()
 
   config->setGroup("SSLv2");
   config->writeEntry("Enabled", mUseSSLv2->isChecked());
-  
+
   config->setGroup("SSLv3");
   config->writeEntry("Enabled", mUseSSLv3->isChecked());
-  
+
   config->setGroup("Warnings");
   config->writeEntry("OnEnter", mWarnOnEnter->isChecked());
   config->writeEntry("OnLeave", mWarnOnLeave->isChecked());
   config->writeEntry("OnUnencrypted", mWarnOnUnencrypted->isChecked());
   config->writeEntry("OnMixed", mWarnOnMixed->isChecked());
-  
+
   config->setGroup("Validation");
   config->writeEntry("WarnSelfSigned", mWarnSelfSigned->isChecked());
   config->writeEntry("WarnExpired", mWarnExpired->isChecked());
@@ -515,12 +517,12 @@ SSL_CTX *ctx;
 SSL *ssl;
 SSL_METHOD *meth;
 int j, k;
- 
+
   meth = SSLv2_client_method();
   SSLeay_add_ssl_algorithms();
   ctx = SSL_CTX_new(meth);
   if (ctx == NULL) return;
- 
+
   ssl = SSL_new(ctx);
   if (!ssl) return;
 
@@ -542,7 +544,7 @@ int j, k;
   SSLeay_add_ssl_algorithms();
   ctx = SSL_CTX_new(meth);
   if (ctx == NULL) return;
- 
+
   ssl = SSL_new(ctx);
   if (!ssl) return;
 
@@ -577,15 +579,15 @@ int i;
 SSL_CTX *ctx;
 SSL *ssl;
 SSL_METHOD *meth;
- 
+
   meth = SSLv2_client_method();
   SSLeay_add_ssl_algorithms();
   ctx = SSL_CTX_new(meth);
   if (ctx == NULL) return false;
- 
+
   ssl = SSL_new(ctx);
   if (!ssl) return false;
- 
+
   for (i=0; ; i++) {
     int j, k;
     SSL_CIPHER *sc;
@@ -596,7 +598,7 @@ SSL_METHOD *meth;
     cname.sprintf("%s (%d of %d bits)", sc->name, k, j);
     SSLv2Box->insertItem(cname);
   }
- 
+
   if (ctx) SSL_CTX_free(ctx);
   if (ssl) SSL_free(ssl);
 
@@ -605,10 +607,10 @@ SSL_METHOD *meth;
   SSLeay_add_ssl_algorithms();
   ctx = SSL_CTX_new(meth);
   if (ctx == NULL) return false;
- 
+
   ssl = SSL_new(ctx);
   if (!ssl) return false;
- 
+
   for (i=0; ; i++) {
     int j, k;
     SSL_CIPHER *sc;
@@ -619,7 +621,7 @@ SSL_METHOD *meth;
     cname.sprintf("%s (%d of %d bits)", sc->name, k, j);
     SSLv3Box->insertItem(cname);
   }
- 
+
   if (ctx) SSL_CTX_free(ctx);
   if (ssl) SSL_free(ssl);
 
