@@ -16,156 +16,7 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
-/* $Id$
-
- * $Log$
- * Revision 1.22  1999/05/23 00:53:59  kulow
- * CVS_SILENT moving some header files that STL comes before Qt
- *
- * Revision 1.21  1999/05/20 22:21:21  kulow
- * misc fixes (not related to MICO :)
- *
- * Revision 1.20  1999/05/19 20:41:20  kulow
- * make it compile
- *
- * Revision 1.19  1999/03/01 23:33:59  kulow
- * CVS_SILENT ported to Qt 2.0
- *
- * Revision 1.18  1999/02/26 12:56:59  dfaure
- * '/' after PATH_TMP for SCO
- *
- * Revision 1.17.4.1  1999/02/26 12:24:17  dfaure
- * *** empty log message ***
- *
- * Revision 1.17  1999/01/27 21:04:36  kulow
- * fixing bug 395
- *
- * Revision 1.16  1999/01/19 13:36:15  kulow
- * removed explicit settings of DISTCLEANFILES, where the only sense was
- * to remove the MOC files
- *
- * Revision 1.15  1999/01/15 08:59:16  kulow
- * use seperate moc.cpp files - did you know that most header files herein are
- * complete hacks? ;)
- *
- * Revision 1.14  1998/09/21 18:34:46  bieker
- * Use paths.h if we can.
- *
- * Revision 1.13  1998/05/26 14:17:34  kalle
- * tests for KLed
- *
- * Revision 1.12  1998/01/16 21:29:33  kalle
- * mention the new bug site in the about dialog
- *
- * Revision 1.11  1997/10/21 20:44:56  kulow
- * removed all NULLs and replaced it with 0L or "".
- * There are some left in mediatool, but this is not C++
- *
- * Revision 1.10  1997/10/16 11:15:08  torben
- * Kalle: Copyright headers
- * kdoctoolbar removed
- *
- * Revision 1.9  1997/10/12 14:35:30  kalle
- * Compiles again, test for tempSaveName(), checkRecoverFile()
- *
- * Revision 1.8  1997/10/04 19:42:49  kalle
- * new KConfig
- *
- * Revision 1.7  1997/09/24 19:00:25  kalle
- * Iterators
- *
- * Revision 1.6  1997/09/13 05:51:42  kalle
- * new features in KDebug
- * - asserts
- * - varargs
- * - output to syslog
- * - areas implemented
- *
- * Revision 1.5  1997/09/11 19:44:57  kalle
- * New debugging scheme for KDE (binary incompatible!)
- *
- * Revision 1.4  1997/09/10 13:53:11  kdecvs
- * Kalle: Use KApplication instead of QApplication
- *
- * Revision 1.3  1997/07/08 21:21:06  kulow
- * Coolo:
- *    finally, I found the problem with automake-1.2!
- *
- *    The GNU people haven't the time to help me (I believe in this version :-),
- *    so I took all my time between my exams and fidelt with the Makefiles and
- *    now I've got the problem.
- *    The solution was that near, that I could smell it, but I couldn't find it
- *    till now.
- *    The problem was, that the moc files are created after the depency tracking
- *    and this went wrong with automake-1.2, because make stopped after this
- *    errors. The problem was, that I couldn't find the part, where the depencies
- *    are created, but now I have the solution:
- *    lines like: "ksock.cpp: ksock.h" in the Makefile solved the whole problem.
- *
- *    OK, now I'm my own hero and I can sleep very well now and you can update your
- *    automake to 1.2 (untested).
- *
- *    BTW: Martin, could you do it for me? Please!
- *
- * Revision 1.2  1997/04/15 20:01:57  kalle
- * Kalles changes for 0.8
- *
- * Revision 1.1  1997/04/13 17:49:40  kulow
- * Sources imported
- *
- * Revision 1.7  1997/03/16 22:53:19  kalle
- * KTextStream->QTextStream
- *
- * Revision 1.6  1996/12/14 14:01:53  kalle
- * method names start with small letters
- *
- * Revision 1.5  1996/11/30 19:51:21  kalle
- * open app-specific file read-write
- *
- * Revision 1.4  1996/11/23 21:16:17  kalle
- * KTextStream statt QTextStream
- *
- * Revision 1.3  1996/11/20 20:14:11  kalle
- * ValueEdit instead of ValueLabel, WriteButton added
- *
- * Revision 1.2  1996/11/15 18:22:51  kalle
- * all slots return void
- *
- * Revision 1.1  1996/11/14 20:09:06  kalle
- * Initial revision
- *
- * Revision 1.10  1996/11/03 21:01:25  kalle
- * "found in" line removed (for version 0.2)
- *
- * Revision 1.9  1996/10/26 19:09:47  kalle
- * Show the file the key/value pair was found in.
- *
- * Revision 1.8  1996/10/26 18:55:57  kalle
- * Use HasKey() in KeyEditReturnPressed()
- *
- * Revision 1.7  1996/10/26 18:49:20  kalle
- * Show value "---" if the key was not found
- *
- * Revision 1.6  1996/10/26 18:47:24  kalle
- * info messages about finding a key
- *
- * Revision 1.5  1996/10/26 18:42:44  kalle
- * call default group <default> in group message field
- *
- * Revision 1.4  1996/10/26 18:32:29  kalle
- * check for existence of app config file, open it if necessary
- *
- * Revision 1.3  1996/10/26 18:08:59  kalle
- * KeyEditReturnPressed implemented, works for simple cases
- *
- * Revision 1.2  1996/10/26 09:06:53  kalle
- * AppConfigEditReturnPressed und GroupEditReturnPressed implementiert
- *
- * Revision 1.1  1996/10/25 18:57:35  kalle
- * Initial revision
- *
- *
- */
+// $Id$
 
 //
 // configtest.cpp: libKDEcore example
@@ -350,41 +201,43 @@ int main( int argc, char **argv )
 {
   KApplication  a( argc, argv );
 
-  KConfigTestView   *w = new KConfigTestView();
-  a.setMainWidget( w );
-  w->show();
+  //  KConfigTestView   *w = new KConfigTestView();
+  // a.setMainWidget( w );
+  // w->show();
 
-  fprintf( stderr, "Autosave name for %s is %s\n", "/home/kalle/text/mytext.txt", kapp->tempSaveName( "/home/kalle/text/mytext.txt" ).ascii() );
+#define BOOLVALUE(w) (w ? "true" : "false")
+#define BOOLENTRY1 true
+#define BOOLENTRY2 false
 
-  bool bRecoverFile = false;
-  QString pRecoverFile = kapp->checkRecoverFile( "/home/kalle/text/mytext.txt", bRecoverFile );
-  if( bRecoverFile )
-	fprintf( stderr, "Recover file exists and is at %s\n", pRecoverFile.ascii());
-  else
-	fprintf( stderr, "Recover file does not exist, use %s\n", pRecoverFile.ascii() );
-
-  KSimpleConfig sc( _PATH_TMP"/sc.cfg" );
-	/*
-    sc.writeEntry( "Bua", "Brumm" );
-
-  sc.writeEntry( "boolEntry1", true );
-  sc.writeEntry( "boolEntry2", false );
+  KConfig sc( "kconfigtest" );
+  
+  sc.writeEntry( "Bua", "Brumm" );
+  sc.writeEntry( "boolEntry1", BOOLENTRY1 ); 
+  sc.writeEntry( "boolEntry2", BOOLENTRY2 );
   sc.writeEntry( "rectEntry", QRect( 10, 23, 5321, 12 ) );
   sc.writeEntry( "pointEntry", QPoint( 4351, 1234 ) );
-	*/
   
   bool b1 = sc.readBoolEntry( "boolEntry1" );
+  fprintf(stderr, "comparing boolEntry1 %s with %s -> ", BOOLVALUE(BOOLENTRY1), BOOLVALUE(b1));
+  if (b1 == BOOLENTRY1)
+    fprintf(stderr, "OK\n");
+  else {
+    fprintf(stderr, "not OK\n");
+    exit(-1);
+  }
   bool b2 = sc.readBoolEntry( "boolEntry2" );
+  fprintf(stderr, "comparing boolEntry2 %s with %s -> ", BOOLVALUE(BOOLENTRY2), BOOLVALUE(b2));
+  if (b2 == BOOLENTRY2)
+    fprintf(stderr, "OK\n");
+  else {
+    fprintf(stderr, "not OK\n");
+    exit(-1);
+  }
   QRect rect = sc.readRectEntry( "rectEntry" );
   QPoint point = sc.readPointEntry( "pointEntry" );
-  fprintf( stderr, "b1 is %s\n", b1 ? "true" : "false" );
-  fprintf( stderr, "b2 is %s\n", b2 ? "true" : "false" );
   fprintf( stderr, "rect is (%d,%d,%d,%d)\n", rect.left(), rect.top(), rect.width(), rect.height() );
   fprintf( stderr, "point is (%d,%d)\n", point.x(), point.y() );
   
-
-  a.exec();
-  delete w;
 }
 
 #include "kconfigtest.moc"
