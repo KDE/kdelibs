@@ -873,6 +873,8 @@ void KDirListerCache::slotUpdateResult( KIO::Job * j )
 
   // once we are updating dirs that are only in the cache this will fail!
   Q_ASSERT( listers );
+  if (!listers) 
+	  return;
 
   if ( job->error() )
   {
