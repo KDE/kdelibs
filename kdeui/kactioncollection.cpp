@@ -191,11 +191,6 @@ void KActionCollection::endXMLPlug()
 {
 	kdDebug(129) << "KActionCollection::endXMLPlug(): this = " <<  this << endl;
 	//s_kaccelXML = 0;
-  // activate remaining shortcuts (if autoConnect() is disabled, and action is not plugged into any GUI element)
-  for ( QAsciiDictIterator<KAction> it( d->m_actionDict ); it.current(); ++it ) {
-    KAction* pAction = it.current();
-    pAction->setShortcut( pAction->shortcut()); // will be no-op if already connected
-  }
 }
 
 void KActionCollection::prepareXMLUnplug()
