@@ -878,6 +878,7 @@ protected:
     bool autoDirectoryFollowing;
 
     KURL::List& parseSelectedURLs() const;
+    void updateLocationWhatsThis( void );
 
 protected:
     virtual void virtual_hook( int id, void* data );

@@ -694,6 +694,35 @@ void KFileDialog::multiSelectionChanged()
     locationEdit->setEditText( text.stripWhiteSpace() );
 }
 
+static QString autocompletionWhatsThisText = i18n("<p>While typing in the text area, you may be presented "
+                                                  "with possible matches. "
+                                                  "This feature can be controlled by clicking with the right mouse button "
+                                                  "and selecting a preferred mode from the <b>Text Completion</b> menu.") + "</qt>";
+void KFileDialog::updateLocationWhatsThis (void)
+{
+    QString whatsThisText;
+    if (d->operationMode == KFileDialog::Saving)
+    {
+        whatsThisText = i18n("<qt>This is the name to save the file as.") +
+                             autocompletionWhatsThisText;
+    }
+    else if (ops->mode() & KFile::Files)
+    {
+        whatsThisText = i18n("<qt>This is the list of files to open. More than "
+                             "one file can be specified by listing several "
+                             "files, separated by spaces.") +
+                              autocompletionWhatsThisText;
+    }
+    else
+    {
+        whatsThisText = i18n("<qt>This is the name of the file to open.") +
+                             autocompletionWhatsThisText;
+    }
+
+    QWhatsThis::add(d->locationLabel, whatsThisText);
+    QWhatsThis::add(locationEdit, whatsThisText);
+}
+
 void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* widget)
 {
     initStatic();
@@ -724,10 +753,6 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     toolbar->setFlat(true);
     qInstallMsgHandler( oldHandler );
 
-    QString autocompletionWhatsThisText = i18n("<p>While typing in the text area, you may be presented "
-                                               "with possible matches. "
-                                               "This feature can be controlled by clicking with the right mouse button "
-                                               "and selecting a preferred mode from the <b>Text Completion</b> menu.") + "</qt>";
     d->pathCombo = new KURLComboBox( KURLComboBox::Directories, true,
                                      toolbar, "path combo" );
     QToolTip::add( d->pathCombo, i18n("Often used directories") );
@@ -893,31 +918,14 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
              d->pathCombo, SLOT( rotateText(KCompletionBase::KeyBindingType) ));
 
     QString whatsThisText;
-    if (d->operationMode == KFileDialog::Saving)
-    {
-        whatsThisText = i18n("<qt>This is the name to save the file as.") +
-                        autocompletionWhatsThisText;
-    }
-    else if (ops->mode() & KFile::Files)
-    {
-        whatsThisText = i18n("<qt>This is the list of files to open. More than "
-                             "one file can be specified by listing several "
-                             "files, separated by spaces.") +
-                        autocompletionWhatsThisText;
-    }
-    else
-    {
-        whatsThisText = i18n("<qt>This is the name of the file to open.") +
-                        autocompletionWhatsThisText;
-    }
 
     // the Location label/edit
     d->locationLabel = new QLabel(i18n("&Location:"), d->mainWidget);
-    QWhatsThis::add(d->locationLabel, whatsThisText);
     locationEdit = new KURLComboBox(KURLComboBox::Files, true,
                                     d->mainWidget, "LocationEdit");
+    updateLocationWhatsThis ();
     d->locationLabel->setBuddy(locationEdit);
-    QWhatsThis::add(locationEdit, whatsThisText);
+
     // to get the completionbox-signals connected:
     locationEdit->setHandleSignals( true );
     (void) locationEdit->completionBox();
@@ -1744,6 +1752,7 @@ void KFileDialog::setOperationMode( OperationMode mode )
     d->keepLocation = (mode == Saving);
     filterWidget->setEditable( !d->hasDefaultFilter || mode != Saving );
     d->okButton->setGuiItem( (mode == Saving) ? KStdGuiItem::save() : KStdGuiItem::ok() );
+    updateLocationWhatsThis ();
 }
 
 KFileDialog::OperationMode KFileDialog::operationMode() const
