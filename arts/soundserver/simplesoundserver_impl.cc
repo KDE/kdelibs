@@ -68,9 +68,9 @@ PlayStreamJob::PlayStreamJob(ByteSoundProducer bsp) : sender(bsp)
 {
 	printf("Attach ByteSoundProducer!\n");
 
-//	convert->samplingRate(bsp->samplingRate());
-//	convert->channels(bsp->channels());
-//	convert->bits(bsp->bits());
+	convert.samplingRate(bsp.samplingRate());
+	convert.channels(bsp.channels());
+	convert.bits(bsp.bits());
 
 	connect(sender,"outdata",convert,"indata");
 	connect(convert,out);

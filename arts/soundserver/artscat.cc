@@ -34,6 +34,10 @@
 using namespace std;
 using namespace Arts;
 
+int cfgSamplingRate = 44100;
+int cfgBits = 16;
+int cfgChannels = 2;
+
 class Sender :	public ByteSoundProducer_skel,
 				public StdSynthModule,
 				public IONotify
@@ -69,9 +73,9 @@ public:
 		if(waiting) Dispatcher::the()->ioManager()->remove(this,IOType::read);
 	}
 
-	long samplingRate() { return 44100; }
-	long channels()     { return 2; }
-	long bits()         { return 16; }
+	long samplingRate() { return cfgSamplingRate; }
+	long channels()     { return cfgChannels; }
+	long bits()         { return cfgBits; }
 	bool finished()     { return (pfile == 0); }
 
 	void streamStart()
@@ -160,12 +164,34 @@ public:
 	}
 };
 
+static void exitUsage(const char *progname)
+{
+	fprintf(stderr,"usage: %s [ options ]\n",progname);
+	fprintf(stderr,"-r <samplingrate>   set samplingrate to use\n");
+	fprintf(stderr,"-b <bits>           set number of bits (8 or 16)\n");
+	fprintf(stderr,"-c <channels>       set number of channels (1 or 2)\n");
+	fprintf(stderr,"-h                  display this help and exit\n");
+	exit(1);	
+}
+
 int main(int argc, char **argv)
 {
-	if(argc != 1)
+	int optch;
+	while((optch = getopt(argc,argv,"r:b:c:h")) > 0)
 	{
-		cerr << "usage: " << argv[0] << endl;
-		return 1;
+		switch(optch)
+		{
+			case 'r': cfgSamplingRate = atoi(optarg);
+				break;
+			case 'b': cfgBits = atoi(optarg);
+				break;
+			case 'c': cfgChannels = atoi(optarg);
+				break;
+			case 'h':
+			default: 
+					exitUsage(argc?argv[0]:"artscat");
+				break;
+		}
 	}
 
 	Dispatcher dispatcher;
