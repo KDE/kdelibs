@@ -74,7 +74,7 @@ void KURLRequester::init()
 
     setSpacing( KDialog::spacingHint() );
     myButton->setFixedSize( myButton->sizeHint().width(),
-    			    myEdit->sizeHint().height() );
+    			    myButton->sizeHint().width() );
 
     setFocusProxy( myEdit );
 
