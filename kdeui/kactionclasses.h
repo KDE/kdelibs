@@ -6,6 +6,7 @@
               (C) 2000 Michael Koch <koch@kde.org>
               (C) 2001 Holger Freyther <freyther@kde.org>
               (C) 2002 Ellis Whitehead <ellis@kde.org>
+              (C) 2003 Andras Mantia <amantia@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -1284,17 +1285,32 @@ public:
                   QObject* parent = 0, const char* name = 0 );
     
     virtual ~KPasteTextAction();
+    
+    /**
+    * Controls the behavior of the clipboard history menu popup.
+    *
+    * @param mode If false and the clipboard contains a non-text object
+    *             the popup menu with the clipboard history will appear
+    *             immediately as the user clicks the toolbar action; if
+    *             true, the action works like the standard paste action
+    *             even if the current clipboard object is not text.
+    *             Default value is true.
+    */
+    void setMixedMode(bool mode);
+    
     virtual int plug( QWidget *widget, int index = -1 );
     
 protected slots:
     void menuAboutToShow();
     void menuItemActivated( int id);
+    virtual void slotActivated();
 
 protected:
     virtual void virtual_hook( int id, void* data );
 
 private:
     KPopupMenu *m_popup;
+    bool m_mixedMode;
     class KPasteTextActionPrivate;
     KPasteTextActionPrivate *d;
 };

@@ -7,6 +7,7 @@
               (C) 2001 Holger Freyther <freyther@kde.org>
               (C) 2002 Ellis Whitehead <ellis@kde.org>
               (C) 2002 Joseph Wenninger <jowenn@kde.org>
+              (C) 2002 Andras Mantia <amantia@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -27,6 +28,7 @@
 
 #include <assert.h>
 
+#include <qcursor.h>
 #include <qclipboard.h>
 #include <qfontdatabase.h>
 #include <qobjectlist.h>
@@ -2064,6 +2066,7 @@ KPasteTextAction::KPasteTextAction( const QString& text,
   connect(m_popup, SIGNAL(aboutToShow()), this, SLOT(menuAboutToShow()));
   connect(m_popup, SIGNAL(activated(int)), this, SLOT(menuItemActivated(int)));  
   m_popup->setCheckable(true);
+  m_mixedMode = true;
 }            
 
 KPasteTextAction::~KPasteTextAction()
@@ -2071,12 +2074,15 @@ KPasteTextAction::~KPasteTextAction()
   delete m_popup;
 }    
 
+void KPasteTextAction::setMixedMode(bool mode)
+{
+  m_mixedMode = mode;
+}
+
 int KPasteTextAction::plug( QWidget *widget, int index )
 {
   if (kapp && !kapp->authorizeKAction(name()))
     return -1;
-  // This is very related to KActionMenu::plug.
-  // In fact this class could be an interesting base class for KActionMenu
   if ( widget->inherits( "KToolBar" ) )
   {
     KToolBar *bar = (KToolBar *)widget;
@@ -2144,6 +2150,19 @@ void KPasteTextAction::menuItemActivated( int id)
         kdDebug(129) << "Clipboard: " << qApp->clipboard()->text(QClipboard::Clipboard) << endl;    
     }
     QTimer::singleShot(20, this, SLOT(slotActivated())); 
+}
+
+void KPasteTextAction::slotActivated()
+{
+  if (!m_mixedMode) {
+    QWidget *w = qApp->widgetAt(QCursor::pos(), true);
+    QMimeSource *data = QApplication::clipboard()->data();
+    if (!data->provides("text/plain") && w) {
+      m_popup->popup(w->mapToGlobal(QPoint(0, w->height())));
+    } else
+      KAction::slotActivated();     
+  } else
+    KAction::slotActivated();
 }
 
 
