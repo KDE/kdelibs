@@ -900,9 +900,6 @@ QString KLocale::getLocale(const QString& ) {
     return "C";
 }
 
-void  KLocale::enableNumericLocale(bool /* enable */) {
-}
-
 QStringList KLocale::languageList() const {
     return QStringList();
 }
@@ -911,9 +908,19 @@ void KLocale::insertCatalogue( const QString& ) {
 }
 
 void KLocale::setLanguage(
-  const QString & /* _lang */, const QString & /* _langs */,
-  const QString & /* _number */, const QString & /* _money */,
-  const QString & /* _time */)
+  const QString & /* _lang */)
+{
+}
+
+void KLocale::setCountry(
+  const QString &/*_number*/,
+  const QString &/*_money*/,
+  const QString &/*_time*/)
+{
+}
+
+void KLocale::setCountry(
+  const QString & /* _country */)
 {
 }
 
