@@ -402,7 +402,7 @@ KMessageBox::questionYesNoListWId(WId parent_id, const QString &text,
     KDialogBase *dialog= new KDialogBase(
                        caption.isEmpty() ? i18n("Question") : caption,
                        KDialogBase::Yes | KDialogBase::No,
-                       (options & Dangerous) ? KDialogBase::No : KDialogBase::Yes, KDialogBase::No,
+                       KDialogBase::Yes, KDialogBase::No,
                        parent, "questionYesNo", true, true,
                        buttonYes, buttonNo);
     if( parent == NULL && parent_id != 0 )
@@ -449,7 +449,7 @@ KMessageBox::questionYesNoCancelWId(WId parent_id,
     KDialogBase *dialog= new KDialogBase(
                        caption.isEmpty() ? i18n("Question") : caption,
                        KDialogBase::Yes | KDialogBase::No | KDialogBase::Cancel,
-                       (options & Dangerous) ? KDialogBase::No : KDialogBase::Yes, KDialogBase::Cancel,
+                       KDialogBase::Yes, KDialogBase::Cancel,
                        parent, "questionYesNoCancel", true, true,
                        buttonYes, buttonNo);
     if( parent == NULL && parent_id != 0 )
@@ -527,7 +527,7 @@ KMessageBox::warningYesNoListWId(WId parent_id, const QString &text,
     KDialogBase *dialog= new KDialogBase(
                        caption.isEmpty() ? i18n("Warning") : caption,
                        KDialogBase::Yes | KDialogBase::No,
-                       (options & Dangerous) ? KDialogBase::No : KDialogBase::Yes, KDialogBase::No,
+                       KDialogBase::No, KDialogBase::No,
                        parent, "warningYesNoList", true, true,
                        buttonYes, buttonNo);
     if( parent == NULL && parent_id != 0 )
@@ -595,7 +595,7 @@ KMessageBox::warningContinueCancelListWId(WId parent_id, const QString &text,
     KDialogBase *dialog= new KDialogBase(
                        caption.isEmpty() ? i18n("Warning") : caption,
                        KDialogBase::Yes | KDialogBase::No,
-                       (options & Dangerous) ? KDialogBase::No : KDialogBase::Yes, KDialogBase::No,
+                       KDialogBase::Yes, KDialogBase::No,
                        parent, "warningYesNo", true, true,
                        buttonContinue, KStdGuiItem::cancel() );
     if( parent == NULL && parent_id != 0 )
@@ -667,7 +667,7 @@ KMessageBox::warningYesNoCancelListWId(WId parent_id, const QString &text,
     KDialogBase *dialog= new KDialogBase(
                        caption.isEmpty() ? i18n("Warning") : caption,
                        KDialogBase::Yes | KDialogBase::No | KDialogBase::Cancel,
-                       (options & Dangerous) ? KDialogBase::Cancel : KDialogBase::Yes, KDialogBase::Cancel,
+                       KDialogBase::Yes, KDialogBase::Cancel,
                        parent, "warningYesNoCancel", true, true,
                        buttonYes, buttonNo);
     if( parent == NULL && parent_id != 0 )
