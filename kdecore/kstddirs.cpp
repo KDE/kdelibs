@@ -139,9 +139,6 @@ QString KStandardDirs::findResourceDir( const QString& type,
     }
 #endif
 
-    printf("start search: type = %s filename = %s\n", 
-	   type.ascii(), filename.ascii());
-
     QStringList candidates = getResourceDirs(type);
     const char *testfile;
     struct stat buff;
@@ -149,12 +146,9 @@ QString KStandardDirs::findResourceDir( const QString& type,
 	 it != candidates.end(); it++) 
     {
       testfile = (*it + filename).ascii();
-      debug("test: filename = %s", testfile);
       if (access(testfile, R_OK) == 0 && stat( testfile, &buff ) == 0)
-	if ( S_ISREG( buff.st_mode )) {
-	  printf("Found!\n");
+	if ( S_ISREG( buff.st_mode ))
 	  return *it;
-	}
     }
     
     debug("KStdDirs::findResDir(): can't find \"%s\" in type \"%s\".",
