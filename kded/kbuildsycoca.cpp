@@ -434,7 +434,8 @@ void KBuildSycoca::createMenu(QString caption, QString name, VFolderMenu::SubMen
 
      entry = g_bsgf->addNew(subName, subMenu->directoryFile, entry, subMenu->isDeleted);
      entry->setLayoutInfo(subMenu->layoutList);
-     createMenu(caption + entry->caption() + "/", subName, subMenu);
+     if (! (bMenuTest && entry->noDisplay()) )
+        createMenu(caption + entry->caption() + "/", subName, subMenu);
   }
   if (caption.isEmpty())
      caption += "/";
