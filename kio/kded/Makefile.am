@@ -20,18 +20,16 @@
 INCLUDES= -I$(srcdir)/.. $(all_includes)
 
 lib_LTLIBRARIES = libkded.la libkbuildsycoca.la
-#kded_LDADD = ../libkio.la
+
 libkded_la_LDFLAGS = $(all_libraries) -no-version -module
 libkded_la_LIBADD = $(LIB_KIO)
 libkded_la_SOURCES = kded.cpp kbuildservicetypefactory.cpp \
 			kbuildservicefactory.cpp
-libkded_la_METASOURCES = AUTO
 
 libkbuildsycoca_la_LDFLAGS = $(all_libraries) -no-version 1:0:0 -module
 libkbuildsycoca_la_LIBADD = $(LIB_KIO)
 libkbuildsycoca_la_SOURCES = kbuildsycoca.cpp kbuildservicetypefactory.cpp \
 				kbuildservicefactory.cpp
-libkbuildsycoca_la_METASOURCES = AUTO
 
 bin_PROGRAMS = kded kbuildsycoca
 
@@ -39,13 +37,13 @@ kded_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 kded_LDADD = $(LIB_KIO)
 kded_SOURCES = kded.cpp kbuildservicetypefactory.cpp \
 			kbuildservicefactory.cpp
-kded_METASOURCES = AUTO
 
 kbuildsycoca_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 kbuildsycoca_LDADD = $(LIB_KIO)
 kbuildsycoca_SOURCES = kbuildsycoca.cpp kbuildservicetypefactory.cpp \
 				kbuildservicefactory.cpp
-kbuildsycoca_METASOURCES = AUTO
+
+METASOURCES = AUTO
 
 noinst_HEADERS = kbuildsycoca.h kbuildservicetypefactory.h \
 		kbuildservicefactory.h
