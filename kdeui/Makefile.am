@@ -22,7 +22,7 @@ AM_CPPFLAGS = -DQT_NO_ASCII_CAST
 
 SUBDIRS = . tests
 
-INCLUDES= $(all_includes)
+INCLUDES= -I$(top_srcdir)/dcop -I$(top_srcdir)/kdecore $(all_includes)
 
 EXTRA_DIST = CHANGES.kdatepicker USERS.kdatepicker kpixmapio-perf.png
 
