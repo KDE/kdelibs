@@ -786,7 +786,6 @@ public:
 	       Role role = Client);
 
     /**
-        @deprecated
         This constructor differs from the above one only in the way it accepts
         the list of properties the client is interested in. The properties argument
         is equivalent to the first element of the properties array
@@ -794,7 +793,7 @@ public:
     **/
     NETWinInfo(Display *display, Window window,
 	       Window rootWindow, unsigned long properties,
-	       Role role = Client) KDE_DEPRECATED;
+	       Role role = Client);
 
     /**
        Creates a shared copy of the specified NETWinInfo object.
