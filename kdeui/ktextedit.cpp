@@ -19,6 +19,9 @@
 
 #include "ktextedit.h"
 
+#include <qapplication.h>
+#include <qclipboard.h>
+
 #include <kcursor.h>
 #include <kglobalsettings.h>
 #include <kstdaccel.h>
@@ -95,6 +98,16 @@ void KTextEdit::keyPressEvent( QKeyEvent *e )
         return;
     }
 
+    else if ( e->key() == Key_Insert &&
+              (e->state() == (ShiftButton | ControlButton)) )
+    {
+        QString text = QApplication::clipboard()->text( QClipboard::Selection);
+        if ( !text.isEmpty() )
+            insert( text );
+        e->accept();
+        return;
+    }
+    
     // ignore Ctrl-Return so that KDialogs can close the dialog
     else if ( e->state() == ControlButton &&
               (e->key() == Key_Return || e->key() == Key_Enter) &&
