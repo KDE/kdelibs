@@ -17,9 +17,6 @@
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
 
-top_realbuilddir = `cd $(top_builddir) && pwd`
-
-
 INCLUDES = -I$(top_srcdir)/kdecore -I$(top_srcdir)/kdeui \
 	  $(all_includes)
 
@@ -48,7 +45,7 @@ noinst_HEADERS = \
 
 METASOURCES = AUTO
 
-LDADD =  $(LIB_KDEUI)
+LDADD = ../libkdeui.la
 
 # Please keep sorted
 kaboutdialogtest_SOURCES = kaboutdialogtest.cpp
