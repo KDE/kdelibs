@@ -148,7 +148,7 @@ void KJavaAppletWidget::uniqueTitle()
 void KJavaAppletWidget::showApplet()
 {
    // Avoid flickering a la kwm! (ettrich)
-   KWM::doNotManage( swallowTitle );
+   //KWM::doNotManage( swallowTitle );
 
    connect( kwm, SIGNAL( windowAdd( WId ) ),
 	    this, SLOT( setWindow( WId ) ) );
@@ -186,9 +186,9 @@ void KJavaAppletWidget::swallowWindow( WId w )
 {
    window = w;
 
-   KWM::prepareForSwallowing( w );
+   //KWM::prepareForSwallowing( w );
 
-#warning FIXME, KWin guru! Remove this ugly sleep()
+#warning FIXME, KWin guru! Check all this stuff :)
 
    // NASTY WORKAROUND:
    // KWin reparents the window back to the root window if
@@ -224,9 +224,11 @@ void KJavaAppletWidget::resize( int w, int h)
 
 void KJavaAppletWidget::closeEvent( QCloseEvent *e )
 {
+  /*
    if ( window )
       KWM::close( window );
    else
+   */
       e->accept();
 }
 
