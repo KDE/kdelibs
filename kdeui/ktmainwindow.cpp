@@ -594,11 +594,21 @@ void KTMainWindow::setUnsavedData( bool b){
   KWM::setUnsavedDataHint(winId(), b);
 }
 
+bool KTMainWindow::event(QEvent* ev)
+{
+	/* We will get a layout hint when the view widget or a bar changes it's
+	 * size constraines. Since we might have to adjust the window size we
+	 * call updateGeometry. 
+	 * It has been added thanks to Nicolas Hadacek's hint. CS */
+    if (ev->type() == QEvent::LayoutHint)
+		updateRects();
+	
+    return QWidget::event(ev);
+}
 
 void KTMainWindow::resizeEvent(QResizeEvent *)
 {
-	/*
-	 * This is an ugly hack to work around a Qt layout management
+	/* This is an ugly hack to work around a Qt layout management
 	 * problem.  If the minimum or maximum size changes during the
 	 * execution of resizeEvent() functions this new size is not
 	 * honored. Unfortunately due to the multiple resizeEvents() this

@@ -1,3 +1,25 @@
+/*
+    This file is part of the KDE libraries
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
+
+    $Id$
+
+*/
+
 #ifndef _KWIDGET_H
 #define _KWIDGET_H
 
@@ -231,9 +253,8 @@ public:
     virtual void show ();
 
     /**
-     * Returns the geometry of the main view widget. You are strongly
-     * encouraged to use those instead of the globally visible variables
-     * view_*!
+     * Returns the geometry of the main view widget. This function is provided
+	 * for legacy reasons. Do not use it! It might be removed.
      */
     QRect mainViewGeometry() const;
 
@@ -320,6 +341,12 @@ protected:
      * nothing. You shouldn't need to override this function.
      */
     virtual void resizeEvent( QResizeEvent *e);
+
+	/**
+	 * We need to trap the layout hint. Otherwise we will miss when our
+	 * view widget or some bar changes the size constrains on it's own.
+	 */
+	virtual bool event(QEvent *);
 
     /**
      * Default implementation just calls repaint (FALSE); You may
