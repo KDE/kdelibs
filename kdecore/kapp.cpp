@@ -24,7 +24,11 @@
 
 #include "config.h"
 
-#include <qdir.h> // must be at the front
+#undef QT_NO_TRANSLATION
+#include <qtranslator.h>
+#define QT_NO_TRANSLATION
+#undef Unsorted
+#include <qdir.h> 
 #include <qcollection.h>
 #include <qwidgetlist.h>
 #include <qstrlist.h>
@@ -39,11 +43,12 @@
 #include <qmenubar.h>
 #include <qsessionmanager.h>
 #include <qlist.h>
-#include <qtranslator.h>
 #include <qstylesheet.h>
 #include <qpixmapcache.h>
 
+#undef QT_NO_TRANSLATION
 #include <kapp.h>
+#define QT_NO_TRANSLATION
 #include <kglobal.h>
 #include <kstddirs.h>
 #include <kdebug.h>
@@ -115,9 +120,7 @@
 // defined by X11 headers
 const int XKeyPress = KeyPress;
 const int XKeyRelease = KeyRelease;
-#ifdef KeyPress
 #undef KeyPress
-#endif
 
 #include <kipc.h>
 
@@ -609,7 +612,6 @@ void KApplication::iceIOErrorHandler( _IceConn *conn )
     exit( 1 );
 }
 
-#ifndef QT_NO_TRANSLATION
 class KDETranslator : public QTranslator
 {
 public:
@@ -618,7 +620,6 @@ public:
       return KGlobal::locale()->translateQt(context, message);
   }
 };
-#endif
 
 void KApplication::init(bool GUIenabled)
 {
@@ -675,9 +676,7 @@ void KApplication::init(bool GUIenabled)
     }
   }
 
-#ifndef QT_NO_TRANSLATION
   installTranslator(new KDETranslator(this));
-#endif
 
   // install appdata resource type
   KGlobal::dirs()->addResourceType("appdata", KStandardDirs::kde_default("data")

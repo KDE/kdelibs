@@ -44,10 +44,11 @@ libkdefakes_la_LDFLAGS = -version-info 3:0
 
 noinst_HEADERS = kckey.h kregpriv.h kcompletion_private.h netsupp.h
 
-libkdecore_la_SOURCES = libintl.cpp kdebug.cpp kstddirs.cpp \
-	kconfigbase.cpp kstyle.cpp kglobalaccel.cpp netwm.cpp \
+libkdecore_la_SOURCES = libintl.cpp kdebug.cpp netwm.cpp kapp.cpp \
+	kconfigbase.cpp kstyle.cpp \
 	kconfig.cpp  ksimpleconfig.cpp kdesktopfile.cpp \
-	kconfigbackend.cpp kapp.cpp kuniqueapp.cpp ksock.cpp\
+	kconfigbackend.cpp kglobalaccel.cpp  \
+        kstddirs.cpp kuniqueapp.cpp ksock.cpp\
 	kprocess.cpp kprocctrl.cpp klocale.cpp krfcdate.cpp\
 	kiconeffect.cpp kicontheme.cpp kiconloader.cpp \
 	kstdaccel.cpp kwin.cpp kwinmodule.cpp krootprop.cpp kcharsets.cpp \

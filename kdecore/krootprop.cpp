@@ -21,6 +21,7 @@
 #include "kglobal.h"
 #include "klocale.h"
 #include "kcharsets.h"
+#include "kapp.h"
 #include <qtextstream.h>
 
 #include <X11/Xlib.h>
@@ -62,7 +63,7 @@ void KRootProp::sync()
                   XA_STRING, 8, PropModeReplace,
                   (const unsigned char *)propString.utf8().data(),
                   propString.length());
-  kapp->flushX();
+  XFlush( qt_xdisplay() );
 }
 
 void KRootProp::setProp( const QString& rProp )

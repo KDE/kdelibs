@@ -19,10 +19,11 @@
 #ifndef _KROOTPROP_H
 #define _KROOTPROP_H
 
-#include <kapp.h>
-
 typedef unsigned long Atom;
 
+#include <qcolor.h>
+#include <qfont.h>
+#include <qstring.h>
 #include <qmap.h>
 #include <qstringlist.h>
 

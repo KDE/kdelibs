@@ -27,12 +27,11 @@
 #include <sys/mman.h>
 #endif
 
+#undef Unsorted
 #include <qdir.h>
 #include <qfileinfo.h>
 #include <qtextcodec.h>
 #include <qtextstream.h>
-
-#include <kapp.h>
 
 #include "kconfigbackend.h"
 #include "kconfigbase.h"
@@ -41,6 +40,7 @@
 #include <ksavefile.h>
 #include <kurl.h>
 
+extern bool checkAccess(const QString& pathname, int mode);
 /* translate escaped escape sequences to their actual values. */
 static QCString printableToString(const char *str, int l)
 {

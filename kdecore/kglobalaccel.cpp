@@ -38,6 +38,11 @@
 #include <X11/keysym.h>
 #include <string.h>
 
+#ifdef KeyPress
+const int XKeyPress = KeyPress;
+#undef KeyPress
+#endif
+
 // NOTE ABOUT CONFIGURATION CHANGES
 // Test if keys enabled because these keys have made X server grabs
 
@@ -453,7 +458,7 @@ void KGlobalAccel::writeSettings() const
 bool KGlobalAccel::x11EventFilter( const XEvent *event_ ) {
 
     if ( aKeyMap.isEmpty() ) return false;
-    if ( event_->type != KeyPress ) return false;
+    if ( event_->type != XKeyPress ) return false;
 	
     uint mod=event_->xkey.state & (ControlMask | ShiftMask | Mod1Mask);
     uint keysym= XKeycodeToKeysym(qt_xdisplay(), event_->xkey.keycode, 0);
