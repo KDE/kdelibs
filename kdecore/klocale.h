@@ -56,7 +56,6 @@ QString i18n(const char *text);
 class KLocale {
 
       friend class KGlobal;
-      friend class KLocaleAdvanced;
 public:
     /**
       * Create a KLocale with the given catalogue name.
@@ -328,6 +327,21 @@ public:
     QString language() const;
 
     /**
+      * Returns the locale used for money by object.
+      */
+    QString money() const;
+
+    /**
+      * Returns the locale used for numbers by object.
+      */
+    QString number() const;
+
+    /**
+      * Returns the locale used for time by object.
+      */
+    QString time() const;
+
+    /**
       * Returns the languages selected by user.
       *
       * @return String containing locale codes separated by colons
@@ -394,17 +408,8 @@ public:
      */
     static void setMainCatalogue(const char *catalogue);
 
-private:
-    QStrList *catalogues;
-    QIntDict<QString> aliases;
-    bool _inited;
-    QString lang;
-    QString number;
-    QString money;
-    QString time;
+protected:
     QString chset;
-    QTextCodec *_codec;
-    QString langs;
 
     // Numbers and money
     QString _decimalSymbol;
@@ -424,6 +429,17 @@ private:
     QString _timefmt;
     QString _datefmt;
     QString _datefmtshort;
+
+private:
+    QStrList *catalogues;
+    QIntDict<QString> aliases;
+    bool _inited;
+    QString lang;
+    QTextCodec *_codec;
+    QString langs;
+    QString _number;
+    QString _money;
+    QString _time;
 
     void setEncodingLang(const QString &_lang);
 

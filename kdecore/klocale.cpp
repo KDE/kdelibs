@@ -116,6 +116,24 @@ QString KLocale::language() const
     return lang;
 }
 
+QString KLocale::money() const
+{
+    ASSERT(_inited);
+    return _money;
+}
+
+QString KLocale::number() const
+{
+    ASSERT(_inited);
+    return _number;
+}
+
+QString KLocale::time() const
+{
+    ASSERT(_inited);
+    return _time;
+}
+
 QString KLocale::MonthName(int i) const
 {
     switch (i)
@@ -299,9 +317,9 @@ void KLocale::initLanguage(KConfig *config, const QString& catalogue)
 
   aliases.setAutoDelete(true);
 
-  number = config->readEntry(QString::fromLatin1("Numeric"), lang);
-  money = config->readEntry(QString::fromLatin1("Monetary"), lang);
-  time = config->readEntry(QString::fromLatin1("Time"), lang);
+  _number = config->readEntry(QString::fromLatin1("Numeric"), lang);
+  _money = config->readEntry(QString::fromLatin1("Monetary"), lang);
+  _time = config->readEntry(QString::fromLatin1("Time"), lang);
 
   _inited = true;
 }
@@ -315,7 +333,7 @@ void KLocale::initFormat(KConfig *config)
   KConfigGroupSaver saver(config, QString::fromLatin1("Locale"));
 
   // Numeric
-  KSimpleConfig numentry(locate("locale", QString::fromLatin1("l10n/") + number + QString::fromLatin1("/entry.desktop")), true);
+  KSimpleConfig numentry(locate("locale", QString::fromLatin1("l10n/") + _number + QString::fromLatin1("/entry.desktop")), true);
   QString str = config->readEntry(QString::fromLatin1("Numeric"), lang);
   numentry.setGroup(QString::fromLatin1("KCM Locale"));
 
@@ -337,7 +355,7 @@ void KLocale::initFormat(KConfig *config)
     _negativeSign = numentry.readEntry(QString::fromLatin1("NegativeSign"), QString::fromLatin1("-"));
 
   // Monetary
-  KSimpleConfig monentry(locate("locale", QString::fromLatin1("l10n/") + money + QString::fromLatin1("/entry.desktop")), true);
+  KSimpleConfig monentry(locate("locale", QString::fromLatin1("l10n/") + _money + QString::fromLatin1("/entry.desktop")), true);
   monentry.setGroup(QString::fromLatin1("KCM Locale"));
 
   _currencySymbol = config->readEntry(QString::fromLatin1("CurrencySymbol"));
@@ -371,7 +389,7 @@ void KLocale::initFormat(KConfig *config)
     _negativeMonetarySignPosition = (SignPosition)monentry.readNumEntry(QString::fromLatin1("NegativeMonetarySignPosition"), ParensAround);
 
   // date and time
-  KSimpleConfig timentry(locate("locale", QString::fromLatin1("l10n/") + time + QString::fromLatin1("/entry.desktop")), true);
+  KSimpleConfig timentry(locate("locale", QString::fromLatin1("l10n/") + _time + QString::fromLatin1("/entry.desktop")), true);
   timentry.setGroup(QString::fromLatin1("KCM Locale"));
 
   _timefmt = config->readEntry(QString::fromLatin1("TimeFormat"));
@@ -400,11 +418,11 @@ void KLocale::setLanguage(const QString &_lang)
   delete cats;
 }
 
-void KLocale::setCountry(const QString &_number, const QString &_money, const QString &_time)
+void KLocale::setCountry(const QString &number, const QString &money, const QString &time)
 {
-  if (!_number.isNull()) number = _number;
-  if (!_money.isNull()) money = _money;
-  if (!_time.isNull()) time = _time;
+  if (!_number.isNull()) _number = number;
+  if (!_money.isNull()) _money = money;
+  if (!_time.isNull()) _time = time;
 
   initFormat(KGlobal::instance()->_config);
 }
