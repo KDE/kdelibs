@@ -194,6 +194,8 @@ class Resource : public KRES::Resource
      */
     virtual bool save( Ticket *ticket ) = 0;
 
+    virtual bool asyncSave( Ticket *ticket ) = 0;
+
     /**
       This method is called by an error handler if the application
       crashed
@@ -207,6 +209,9 @@ class Resource : public KRES::Resource
 
   signals:
     void loadingFinished( Resource* );
+    void loadingError( Resource*, const QString& );
+    void savingFinished( Resource* );
+    void savingError( Resource*, const QString& );
 
   protected:
     Ticket *createTicket( Resource * );

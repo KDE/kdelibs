@@ -30,6 +30,10 @@
 class QTimer;
 class KTempFile;
 
+namespace KIO {
+class Job;
+}
+
 namespace KABC {
 
 class FormatPlugin;
@@ -39,6 +43,8 @@ class FormatPlugin;
 */
 class ResourceNet : public Resource
 {
+  Q_OBJECT
+
   public:
     ResourceNet( const KConfig* );
     ResourceNet( const KURL &url, const QString &format );
@@ -55,6 +61,7 @@ class ResourceNet : public Resource
     virtual bool load();
     virtual bool asyncLoad();
     virtual bool save( Ticket* );
+    virtual bool asyncSave( Ticket* );
 
     /**
       Set url of directory to be used for saving.
@@ -84,6 +91,10 @@ class ResourceNet : public Resource
 
   protected:
     void init( const KURL &url, const QString &format );
+
+  private slots:
+    void downloadFinished( KIO::Job* );
+    void uploadFinished( KIO::Job* );
 
   private:
     FormatPlugin *mFormat;

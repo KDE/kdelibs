@@ -178,7 +178,14 @@ bool ResourceDir::load()
 
 bool ResourceDir::asyncLoad()
 {
-  return load();
+  bool ok = load();
+  if ( !ok )
+    emit loadingError( this, i18n( "Loading resource '%1' failed!" )
+                       .arg( resourceName() ) );
+  else
+    emit loadingFinished( this );
+
+  return ok;
 }
 
 bool ResourceDir::save( Ticket* )
@@ -205,6 +212,18 @@ bool ResourceDir::save( Ticket* )
 
     file.close();
   }
+
+  return ok;
+}
+
+bool ResourceDir::asyncSave( Ticket *ticket )
+{
+  bool ok = save( ticket );
+  if ( !ok )
+    emit savingError( this, i18n( "Saving resource '%1' failed!" )
+                      .arg( resourceName() ) );
+  else
+    emit savingFinished( this );
 
   return ok;
 }

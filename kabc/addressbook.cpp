@@ -43,6 +43,8 @@ struct AddressBook::AddressBookData
   ErrorHandler *mErrorHandler;
   KConfig *mConfig;
   KRES::Manager<Resource> *mManager;
+  QPtrList<Resource> mPendingLoadResources;
+  QPtrList<Resource> mPendingSaveResources;
 };
 
 struct AddressBook::Iterator::IteratorData
@@ -344,6 +346,8 @@ bool AddressBook::asyncLoad()
   bool ok = true;
   for ( it = d->mManager->activeBegin(); it != d->mManager->activeEnd(); ++it ) {
     (*it)->setAddressBook( this );
+
+    d->mPendingLoadResources.append( *it );
     if ( !(*it)->asyncLoad() ) {
       error( i18n("Unable to load resource '%1'").arg( (*it)->resourceName() ) );
       ok = false;
@@ -360,6 +364,18 @@ bool AddressBook::save( Ticket *ticket )
   if ( ticket->resource() ) {
     deleteRemovedAddressees();
     return ticket->resource()->save( ticket );
+  }
+
+  return false;
+}
+
+bool AddressBook::asyncSave( Ticket *ticket )
+{
+  kdDebug(5700) << "AddressBook::asyncSave()"<< endl;
+
+  if ( ticket->resource() ) {
+    d->mPendingSaveResources.append( ticket->resource() );
+    return ticket->resource()->asyncSave( ticket );
   }
 
   return false;
@@ -701,6 +717,17 @@ bool AddressBook::addResource( Resource *resource )
   resource->setAddressBook( this );
 
   d->mManager->add( resource );
+
+  connect( resource, SIGNAL( loadingFinished( Resource* ) ),
+           this, SLOT( resourceLoadingFinished( Resource* ) ) );
+  connect( resource, SIGNAL( savingFinished( Resource* ) ),
+           this, SLOT( resourceSavingFinished( Resource* ) ) );
+
+  connect( resource, SIGNAL( loadingError( Resource*, const QString& ) ),
+           this, SLOT( resourceLoadingError( Resource*, const QString& ) ) );
+  connect( resource, SIGNAL( savingError( Resource*, const QString& ) ),
+           this, SLOT( resourceSavingError( Resource*, const QString& ) ) );
+
   return true;
 }
 
@@ -714,6 +741,17 @@ bool AddressBook::removeResource( Resource *resource )
   resource->setAddressBook( 0 );
 
   d->mManager->remove( resource );
+
+  disconnect( resource, SIGNAL( loadingFinished( Resource* ) ),
+              this, SIGNAL( loadingFinished( Resource* ) ) );
+  disconnect( resource, SIGNAL( savingFinished( Resource* ) ),
+              this, SIGNAL( savingFinished( Resource* ) ) );
+
+  disconnect( resource, SIGNAL( loadingError( Resource*, const QString& ) ),
+              this, SLOT( resourceError( Resource*, const QString& ) ) );
+  disconnect( resource, SIGNAL( savingError( Resource*, const QString& ) ),
+              this, SLOT( resourceError( Resource*, const QString& ) ) );
+
   return true;
 }
 
@@ -772,4 +810,36 @@ void AddressBook::cleanUp()
     if ( !(*it)->readOnly() && (*it)->isOpen() )
       (*it)->cleanUp();
   }
+}
+
+void AddressBook::resourceLoadingFinished( Resource *res )
+{
+  d->mPendingLoadResources.remove( res );
+  if ( d->mPendingLoadResources.count() == 0 )
+    emit addressBookChanged( this );
+
+  emit loadingFinished( res );
+}
+
+void AddressBook::resourceSavingFinished( Resource *res )
+{
+  d->mPendingLoadResources.remove( res );
+
+  emit savingFinished( res );
+}
+
+void AddressBook::resourceLoadingError( Resource *res, const QString &errMsg )
+{
+  error( errMsg );
+
+  d->mPendingLoadResources.remove( res );
+  if ( d->mPendingLoadResources.count() == 0 )
+    emit addressBookChanged( this );
+}
+
+void AddressBook::resourceSavingError( Resource *res, const QString &errMsg )
+{
+  error( errMsg );
+
+  d->mPendingSaveResources.remove( res );
 }

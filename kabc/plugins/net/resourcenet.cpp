@@ -22,6 +22,7 @@
 
 #include <kdebug.h>
 #include <kio/netaccess.h>
+#include <kio/scheduler.h>
 #include <klocale.h>
 #include <ktempfile.h>
 #include <kurlrequester.h>
@@ -88,9 +89,6 @@ Ticket *ResourceNet::requestSaveTicket()
 {
   kdDebug(5700) << "ResourceNet::requestSaveTicket()" << endl;
 
-  if ( !addressBook() )
-    return 0;
-
   if ( mTempFile.isEmpty() )
     return 0;
 
@@ -104,25 +102,27 @@ void ResourceNet::releaseSaveTicket( Ticket *ticket )
 
 bool ResourceNet::doOpen()
 {
+  return true;
+}
+
+void ResourceNet::doClose()
+{
+}
+
+bool ResourceNet::load()
+{
   if ( !KIO::NetAccess::exists( mUrl ) ) {
     mLocalTempFile = new KTempFile();
     mLocalTempFile->setAutoDelete( true );
     mUseLocalTempFile = true;
     mTempFile = mLocalTempFile->name();
-    return true;
   }
 
-  return KIO::NetAccess::download( mUrl, mTempFile );
-}
+  if ( !KIO::NetAccess::download( mUrl, mTempFile ) ) {
+    addressBook()->error( i18n( "Unable to download file '%1'." ).arg( mUrl.url() ) );
+    return false;
+  }
 
-void ResourceNet::doClose()
-{
-  if ( !mUseLocalTempFile )
-    KIO::NetAccess::removeTempFile( mTempFile );
-}
-
-bool ResourceNet::load()
-{
   QFile file( mTempFile );
   if ( !file.open( IO_ReadOnly ) ) {
     addressBook()->error( i18n( "Unable to open file '%1'." ).arg( mUrl.url() ) );
@@ -134,10 +134,28 @@ bool ResourceNet::load()
 
 bool ResourceNet::asyncLoad()
 {
-  return load();
+  if ( mLocalTempFile ) {
+    kdDebug(5700) << "stale temp file dedected " << mLocalTempFile->name() << endl;
+    mLocalTempFile->setAutoDelete( true );
+    delete mLocalTempFile;
+  }
+
+  mLocalTempFile = new KTempFile();
+  mUseLocalTempFile = true;
+  mTempFile = mLocalTempFile->name();
+
+  KURL dest;
+  dest.setPath( mTempFile );
+
+  KIO::Scheduler::checkSlaveOnHold( true );
+  KIO::Job * job = KIO::file_copy( mUrl, dest, -1, true, false );
+  connect( job, SIGNAL( result( KIO::Job* ) ),
+           this, SLOT( downloadFinished( KIO::Job* ) ) );
+
+  return true;
 }
 
-bool ResourceNet::save( Ticket *ticket )
+bool ResourceNet::save( Ticket* )
 {
   QFile file( mTempFile );
 
@@ -149,9 +167,30 @@ bool ResourceNet::save( Ticket *ticket )
   mFormat->saveAll( addressBook(), this, &file );
   file.close();
 
-  delete ticket;
-
   return KIO::NetAccess::upload( mTempFile, mUrl );
+}
+
+bool ResourceNet::asyncSave( Ticket* )
+{
+  QFile file( mTempFile );
+
+  if ( !file.open( IO_WriteOnly ) ) {
+    addressBook()->error( i18n( "Unable to open file '%1'." ).arg( mTempFile ) );
+    return false;
+  }
+  
+  mFormat->saveAll( addressBook(), this, &file );
+  file.close();
+
+  KURL source;
+  source.setPath( mTempFile );
+
+  KIO::Scheduler::checkSlaveOnHold( true );
+  KIO::Job * job = KIO::file_copy( source, mUrl, -1, true, false );
+  connect( job, SIGNAL( result( KIO::Job* ) ),
+           this, SLOT( uploadFinished( KIO::Job* ) ) );
+
+  return true;
 }
 
 void ResourceNet::setUrl( const KURL &url )
@@ -183,3 +222,30 @@ void ResourceNet::cleanUp()
 {
   KIO::NetAccess::removeTempFile( mTempFile );
 }
+
+void ResourceNet::downloadFinished( KIO::Job* )
+{
+  if ( !mLocalTempFile )
+    emit loadingError( this, i18n( "Download failed in some way!" ) );
+
+  QFile file( mTempFile );
+  if ( !file.open( IO_ReadOnly ) ) {
+    emit loadingError( this, i18n( "Unable to open file '%1'." ).arg( mTempFile ) );
+    return;
+  }
+
+  if ( !mFormat->loadAll( addressBook(), this, &file ) )
+    emit loadingError( this, i18n( "Problems during parsing file '%1'." ).arg( mTempFile ) );
+  else
+    emit loadingFinished( this );
+}
+
+void ResourceNet::uploadFinished( KIO::Job *job )
+{
+  if ( job->error() )
+    emit savingError( this, job->errorString() );
+  else
+    emit savingFinished( this );
+}
+
+#include "resourcenet.moc"

@@ -100,6 +100,8 @@ public:
    */
   virtual bool save( Ticket *ticket );
 
+  virtual bool asyncSave( Ticket *ticket );
+
   /**
    * Set name of file to be used for saving.
    */

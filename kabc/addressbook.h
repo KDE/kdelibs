@@ -137,6 +137,8 @@ class AddressBook : public QObject
     */
     bool save( Ticket *ticket );
 
+    bool asyncSave( Ticket *ticket );
+
     /**
       Returns a iterator for first entry of address book.
     */
@@ -296,6 +298,24 @@ class AddressBook : public QObject
       Emitted, when the address book has been unlocked.
     */
     void addressBookUnlocked( AddressBook * );
+
+    /**
+      Emitted whenever the loading has finished after calling
+      asyncLoad().
+     */
+    void loadingFinished( Resource* );
+
+    /**
+      Emitted whenever the saving has finished after calling
+      asyncSave().
+     */
+    void savingFinished( Resource* );
+
+  protected slots:
+    void resourceLoadingFinished( Resource* );
+    void resourceSavingFinished( Resource* );
+    void resourceLoadingError( Resource*, const QString &errMsg );
+    void resourceSavingError( Resource*, const QString &errMsg );
 
   protected:
     void deleteRemovedAddressees();

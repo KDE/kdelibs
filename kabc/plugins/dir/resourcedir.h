@@ -57,6 +57,7 @@ class ResourceDir : public Resource
     virtual bool load();
     virtual bool asyncLoad();
     virtual bool save( Ticket * );
+    virtual bool asyncSave( Ticket * );
 
     /**
       Set path to be used for saving.

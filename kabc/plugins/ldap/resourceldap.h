@@ -51,6 +51,7 @@ class ResourceLDAP : public Resource
     virtual bool load();
     virtual bool asyncLoad();
     virtual bool save( Ticket * );
+    virtual bool asyncSave( Ticket * );
 
     virtual void removeAddressee( const Addressee& addr );
 
