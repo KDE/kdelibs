@@ -230,6 +230,7 @@ bool AudioIOOSS::open()
 		close();
 		return false;
 	} 
+	_samplingRate = speed;
 
 	/*
 	 * set the fragment settings to what the user requested
