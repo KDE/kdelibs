@@ -90,8 +90,10 @@ void KOperaBookmarkImporter::parseOperaBookmarks( )
 
 QString KOperaBookmarkImporter::operaBookmarksFile()
 {
-   static KOperaBookmarkImporterImpl importer;
-   return importer.findDefaultLocation();
+   static KOperaBookmarkImporterImpl *p = 0;
+   if (!p) 
+       p = new KOperaBookmarkImporterImpl; 
+   return p->findDefaultLocation();
 }
 
 void KOperaBookmarkImporterImpl::parse() {

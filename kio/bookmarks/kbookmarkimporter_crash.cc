@@ -171,8 +171,10 @@ void KCrashBookmarkImporterImpl::parse()
 
 QString KCrashBookmarkImporter::crashBookmarksDir() 
 {
-    static KCrashBookmarkImporterImpl importer;
-    return importer.findDefaultLocation();
+    static KCrashBookmarkImporterImpl *p = 0;
+    if (!p)
+        p = new KCrashBookmarkImporterImpl;
+    return p->findDefaultLocation();
 }
 
 void KCrashBookmarkImporterImpl::setShouldDelete( bool shouldDelete ) 

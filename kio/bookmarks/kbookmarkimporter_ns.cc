@@ -132,16 +132,24 @@ void KNSBookmarkImporter::parseNSBookmarks( bool utf8 )
 
 QString KNSBookmarkImporter::netscapeBookmarksFile( bool forSaving )
 {
-    static KNSBookmarkImporterImpl importer;
-    importer.setUtf8(false);
-    return importer.findDefaultLocation(forSaving);
+    static KNSBookmarkImporterImpl *p = 0;
+    if (!p)
+    {
+        p = new KNSBookmarkImporterImpl;
+        p->setUtf8(false);
+    }
+    return p->findDefaultLocation(forSaving);
 }
 
 QString KNSBookmarkImporter::mozillaBookmarksFile( bool forSaving )
 {
-    static KNSBookmarkImporterImpl importer;
-    importer.setUtf8(true);
-    return importer.findDefaultLocation(forSaving);
+    static KNSBookmarkImporterImpl *p = 0;
+    if (!p)
+    {
+        p = new KNSBookmarkImporterImpl;
+        p->setUtf8(true);
+    }
+    return p->findDefaultLocation(forSaving);
 }
 
 
