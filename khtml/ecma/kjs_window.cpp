@@ -21,6 +21,7 @@
 #include <qinputdialog.h>
 #include <qstringlist.h>
 #include <qptrdict.h>
+#include <qapplication.h>
 #include <dom_string.h>
 #include <kurl.h>
 #include <kmessagebox.h>
@@ -64,6 +65,24 @@ public:
 private:
   QGuardedPtr<KHTMLPart> part;
 };
+
+class Screen : public HostImp {
+public:
+  Screen() { }
+  KJSO get(const UString &p) const;
+private:
+  KHTMLView *view;
+};
+
+KJSO Screen::get(const UString &p) const
+{
+  if (p == "height")
+    return Number(QApplication::desktop()->height());
+  else if (p == "width")
+    return Number(QApplication::desktop()->width());
+  else
+    return Undefined();
+}
 
 Window::Window(KHTMLPart *p)
   : part(p), winq(0L)
@@ -113,6 +132,8 @@ KJSO Window::get(const UString &p) const
     return String(part->name());
   else if (p == "closed")
     return Boolean(part.isNull());
+  else if (p == "screen")
+    return KJSO(new Screen());
   else if (p == "Image")
     return KJSO(new ImageConstructor(Global::current()));
   else if (p == "alert")
