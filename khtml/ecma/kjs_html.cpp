@@ -1085,6 +1085,7 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &propertyName) con
             return globalObject.get( exec, propertyName );
         }
       }
+      break;
   }
   case ID_APPLET:
   case ID_EMBED: {
@@ -2015,6 +2016,7 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &propertyName, cons
           coll.put(exec,propertyName,value);
         return;
       }
+      break;
     }
     case ID_APPLET:
     case ID_EMBED: {
