@@ -46,7 +46,7 @@ KComboBox::KComboBox( bool rw, QWidget *parent, const char *name )
 
 KComboBox::~KComboBox()
 {
-    if( !m_pEdit )
+    if( m_pEdit )
     {
         m_pEdit->removeEventFilter( this );
     }
@@ -93,12 +93,12 @@ void KComboBox::makeCompletion( const QString& text )
 	    KCompletion *comp = compObj();
 	    // We test for zero length text because for some
 	    // reason we get an extra text completion with an empty
-	    // text when the insertion policy is set to "NoInsertion"	    
+	    // text when the insertion policy is set to "NoInsertion"	
 	    if( !comp || text.length() == 0 )
 	    {
 	        return; // No Completion object or empty completion text allowed!!
 	    }
- 
+
 		QString match;
     	int pos = cursorPosition();		
     	KGlobalSettings::Completion mode = completionMode();
@@ -137,7 +137,7 @@ void KComboBox::makeCompletion( const QString& text )
             {
                 setCurrentItem( index );
             }
-            
+
             if( mode == KGlobalSettings::CompletionAuto ||
 		       	mode == KGlobalSettings::CompletionMan )
             {
@@ -159,7 +159,7 @@ void KComboBox::makeCompletion( const QString& text )
                 m_pEdit->setSelection( pos, match.length() );
                 m_pEdit->setCursorPosition( pos );
             }
-       }       
+       }
 	}
     else if( !m_pEdit )
     {
@@ -408,7 +408,7 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
     if( o == m_pEdit && ev->type() == QEvent::MouseButtonPress )
     {
         QMouseEvent* e = (QMouseEvent*) ev;
-        if( e->button() == Qt::RightButton )       
+        if( e->button() == Qt::RightButton )
         {
             if( !m_bEnableMenu )
                 return true;
@@ -416,7 +416,7 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
             QPopupMenu *popup = new QPopupMenu( this );
             insertDefaultMenuItems( popup );
             bool flag = ( m_pEdit->echoMode()==QLineEdit::Normal && !m_pEdit->isReadOnly() );
-            bool allMarked = ( m_pEdit->markedText().length() == currentText().length() );        
+            bool allMarked = ( m_pEdit->markedText().length() == currentText().length() );
             popup->setItemEnabled( KCompletionBase::Cut, flag && m_pEdit->hasMarkedText() );
             popup->setItemEnabled( KCompletionBase::Copy, flag && m_pEdit->hasMarkedText() );
             popup->setItemEnabled( KCompletionBase::Paste, flag &&
@@ -424,10 +424,10 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
             popup->setItemEnabled( KCompletionBase::Clear, flag && ( currentText().length() > 0) );
             popup->setItemEnabled( KCompletionBase::Unselect, m_pEdit->hasMarkedText() );
             popup->setItemEnabled( KCompletionBase::SelectAll, flag && m_pEdit->hasMarkedText() && !allMarked );
-        
+
             int result = popup->exec( e->globalPos() );
             delete popup;
-                
+
             if( result == KCompletionBase::Cut )
                 m_pEdit->cut();
             else if( result == KCompletionBase::Copy )
@@ -450,7 +450,7 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
                 setCompletionMode( KGlobalSettings::CompletionMan );
             else if( result == KCompletionBase::ShellCompletion )
                 setCompletionMode( KGlobalSettings::CompletionShell );
-                            
+
             return true;
         }
     }
