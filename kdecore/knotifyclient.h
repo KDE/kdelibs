@@ -75,7 +75,7 @@ public:
 	 *               your KApplication.
 	*/
 	KNotifyClient(const QString &message, const QString &text=0,
-	             Presentation present=Default,
+	             int present=Default,
 	             const QString &sound=0, const QString &file=0,
 	             DCOPClient* client=0);
 
@@ -106,7 +106,7 @@ public: //static methods
 	 * @param present The error message level, defaulting to "Default"
 	 * @param file The sound file to play if selected with present
 	 */
-	static bool userEvent(const QString &text=0, Presentation present=Default,
+	static bool userEvent(const QString &text=0, int present=Default,
 	                      const QString &sound=0, const QString &file=0);
 	
 	/**
@@ -124,7 +124,7 @@ public: //static methods
 	 *
 	 * This gets it for this app only!
 	 */
-	static QString getFile(const QString &eventname, Presentation present);
+	static QString getFile(const QString &eventname, int present);
 	
 	/**
 	 * Gets the default presentation for the event of this program.
@@ -139,7 +139,7 @@ public: //static methods
 	 * Some events don't apply to this function ("Message Box")
 	 * Some do (Sound)
 	 */
-	static QString getDefaultFile(const QString &eventname, Presentation present);
+	static QString getDefaultFile(const QString &eventname, int present);
 
 private:
 	/**
@@ -151,7 +151,7 @@ private:
 	{
 		QString message;
 		QString text;
-		Presentation present;
+		int present;
 		QString sound;
 		QString file;
 		DCOPClient *client;
