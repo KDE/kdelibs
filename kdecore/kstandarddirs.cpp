@@ -100,7 +100,7 @@ static const char* const types[] = {"html", "icon", "apps", "sound",
 			      "wallpaper", "lib", "pixmap", "templates",
 			      "module", "qtplugins",
 			      "xdgdata-apps", "xdgdata-dirs", "xdgconf-menu",
-                              "kcfg", 0 };
+			      "kcfg", "emoticons", 0 };
 
 static int tokenize( QStringList& token, const QString& str,
 		const QString& delim );
@@ -1061,6 +1061,10 @@ QString KStandardDirs::kde_default(const char *type) {
         return "menus/";
     if (!strcmp(type, "kcfg"))
 	return "share/config.kcfg";
+    if (!strcmp(type, "emoticons"))
+			return "share/emoticons";
+
+
     qFatal("unknown resource type %s", type);
     return QString::null;
 }
@@ -1438,7 +1442,7 @@ static QStringList lookupProfiles(const QString &mapFile)
     }
 
     QCString user = pw->pw_name;
-    
+
     gid_t sup_gids[512];
     int sup_gids_nr = getgroups(512, sup_gids);
 
@@ -1447,9 +1451,9 @@ static QStringList lookupProfiles(const QString &mapFile)
     if (mapCfg.hasKey(user.data()))
     {
         profiles = mapCfg.readListEntry(user.data());
-        return profiles; 
+        return profiles;
     }
-        
+
     mapCfg.setGroup("General");
     QStringList groups = mapCfg.readListEntry("groups");
 
@@ -1509,7 +1513,7 @@ bool KStandardDirs::addCustomized(KConfig *config)
         // reading the prefixes in
         QString group = QString::fromLatin1("Directories");
         config->setGroup(group);
-    
+
         QString kioskAdmin = config->readEntry("kioskAdmin");
         if (!kioskAdmin.isEmpty() && !kde_kiosk_admin)
         {
@@ -1522,16 +1526,16 @@ bool KStandardDirs::addCustomized(KConfig *config)
             hostname[ 0 ] = '\0';
             if (!gethostname( hostname, 255 ))
                 hostname[sizeof(hostname)-1] = '\0';
-                       
+
             if ((user == thisUser.loginName()) &&
                 (host.isEmpty() || (host == hostname)))
             {
                 kde_kiosk_admin = true;
             }
         }
-    
+
         bool readProfiles = true;
-    
+
         if (kde_kiosk_admin && !QCString(getenv("KDE_KIOSK_NO_PROFILES")).isEmpty())
             readProfiles = false;
 
@@ -1544,7 +1548,7 @@ bool KStandardDirs::addCustomized(KConfig *config)
         if (readProfiles)
             profiles = lookupProfiles(userMapFile);
         QString profile;
-    
+
         bool priority = false;
         while(true)
         {
@@ -1569,7 +1573,7 @@ bool KStandardDirs::addCustomized(KConfig *config)
             // iterating over all entries in the group Directories
             // to find entries that start with dir_$type
             QMap<QString, QString> entries = config->entryMap(group);
-            for (QMap<QString, QString>::ConstIterator it2 = entries.begin(); 
+            for (QMap<QString, QString>::ConstIterator it2 = entries.begin();
                  it2 != entries.end(); it2++)
             {
                 QString key = it2.key();
@@ -1598,7 +1602,7 @@ bool KStandardDirs::addCustomized(KConfig *config)
     {
         config->setGroup("KDE Resource Restrictions");
         QMap<QString, QString> entries = config->entryMap("KDE Resource Restrictions");
-        for (QMap<QString, QString>::ConstIterator it2 = entries.begin(); 
+        for (QMap<QString, QString>::ConstIterator it2 = entries.begin();
             it2 != entries.end(); it2++)
         {
             QString key = it2.key();
