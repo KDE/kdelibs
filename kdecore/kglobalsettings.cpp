@@ -137,7 +137,7 @@ int KGlobalSettings::contextMenuKey ()
     KConfigGroupSaver cgs (c, "Shortcuts");
 
     KShortcut cut (cgs.config()->readEntry ("PopupMenuContext", "Menu"));
-    return cut.keyPrimaryQt();
+    return cut.keyCodeQt();
 }
 
 bool KGlobalSettings::honorGnome()
