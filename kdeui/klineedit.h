@@ -360,6 +360,12 @@ public slots:
      */
     void setCompletedItems( const QStringList& items );
 
+    /**
+     * Reimplemented to workaround a buggy QLineEdit::clear()
+     * (changing the clipboard to the text we just had in the lineedit)
+     */
+    virtual void clear();
+    
 protected slots:
 
     /**
@@ -377,7 +383,7 @@ protected slots:
      * @deprecated.  Will be removed in the next major release!
      */
     void slotCancelled() {}
-    
+
 protected:
 
     /**
@@ -457,9 +463,9 @@ private:
      * Creates the completion box
      */
     void makeCompletionBox();
-    
+
     /**
-     * Checks whether we should/should not consume a key used as 
+     * Checks whether we should/should not consume a key used as
      * an accelerator.
      */
     bool overrideAccel (const QKeyEvent* e);

@@ -430,7 +430,7 @@ QPopupMenu *KLineEdit::createPopupMenu()
         subMenu->insertItem( i18n("Short Automatic"), SemiAutoCompletion );
 
         subMenu->setAccel( KStdAccel::completion(), ShellCompletion );
-        
+
         KGlobalSettings::Completion mode = completionMode();
         subMenu->setItemChecked( NoCompletion,
                                  mode == KGlobalSettings::CompletionNone );
@@ -687,6 +687,11 @@ void KLineEdit::create( WId id, bool initializeWindow, bool destroyOldWindow )
 {
     QLineEdit::create( id, initializeWindow, destroyOldWindow );
     KCursor::setAutoHideCursor( this, true, true );
+}
+
+void KLineEdit::clear()
+{
+    setText( QString::null );
 }
 
 void KLineEdit::virtual_hook( int id, void* data )
