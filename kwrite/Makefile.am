@@ -1,6 +1,7 @@
 # $Id$
 
-INCLUDES = $(all_includes) -I$(top_srcdir)
+INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/kdecore -I$(top_srcdir)/kdeui -I$(top_srcdir)/kio \
+	   -I$(top_srcdir)/kfile -I$(top_srcdir)/kparts -I$(top_srcdir)/kspell -I$(top_srcdir)/libltdl $(all_includes)
 
 lib_LTLIBRARIES = libkwrite.la
 
@@ -19,6 +20,9 @@ kwriteinclude_HEADERS = kwrite_part.h kwrite_factory.h kwrite.h kwrite_view.h \
 
 rcdir = $(kde_datadir)/kwrite
 rc_DATA = kwrite.rc kwrite_browser.rc
+
+kdelnkdir = $(kde_servicesdir)
+kdelnk_DATA = kwrite_part.desktop
 
 messages: rc.cpp
 	$(XGETTEXT) -ki18nop *.cpp -o $(podir)/libkwrite.pot
