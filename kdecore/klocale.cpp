@@ -66,8 +66,10 @@ char *k_bindtextdomain (const char* __domainname,
  
 #define SYSTEM_MESSAGES "kdelibs"
 
+#ifdef ENABLE_NLS
 static char *_categories[]={"LC_MESSAGES","LC_CTYPE","LC_COLLATE",
                             "LC_TIME","LC_NUMERIC","LC_MONETARY",0};
+#endif
 
 const QString KLocale::mergeLocale(const QString& lang,const QString& country,
 				   const QString& charset)
@@ -371,7 +373,7 @@ QStringList KLocale::languageList()const{
 
 #else /* ENABLE_NLS */
 
-KLocale::KLocale( const char * ) 
+KLocale::KLocale( QString ) 
 {
 }
 
@@ -391,7 +393,7 @@ QString KLocale::directory()
 
 void KLocale::aliasLocale(const char *text, long int index)
 {
-    aliases.insert(index, text);
+    aliases.insert(index, new QString(text));
 }
 
 const QString KLocale::getLocale(const QString& ){
@@ -405,11 +407,11 @@ bool  KLocale::numericLocaleEnabled()const{
     return false;
 }
  
-QStrList KLocale::languageList()const{
-    return QStrList();
+QStringList KLocale::languageList()const{
+    return QStringList();
 }
 
-void KLocale::insertCatalogue( const QString& catalogue) {
+void KLocale::insertCatalogue( const QString& ) {
 }
 
 #endif /* ENABLE_NLS */
