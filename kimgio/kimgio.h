@@ -42,7 +42,8 @@ class KImageIO
 public:
 
 	static void registerFormats() { kimgioRegister(); }
-
+	static bool canWrite(const QString& type);
+	static bool canRead(const QString& type);
 };
 
 #endif

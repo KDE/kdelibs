@@ -21,6 +21,7 @@ static int registered = 0;
 
 #include <ltdl.h>
 #include "kimgio-config.h"
+#include "kimgio.h"
 #include <klocale.h>
 
 #ifdef LINKED_png
@@ -124,11 +125,34 @@ QString kimgio_patterns() {
 	       "*.pbm *.pgm *.ppm *.pbmdraw *.pgmdraw *.ppmdraw|PNM-Pictures" );
 }
 
+bool KImageIO::canWrite(const QString& type)
+{
+#ifdef HAVE_QIMGIO
+  if (type == "JPEG")
+    return true;
+#endif
+  if (type == "XPM" || type == "XBM" || type == "PNG" || type == "BMP")
+    return true;
+
+  return false;
+}
+
+bool KImageIO::canRead(const QString& type)
+{
+  if (type == "JPEG" || 
+      type == "XPM" || type == "XBM" || type == "PNG" || type == "BMP")
+    return true;
+  
+  return false;
+}
+
 QStringList kimgio_types() {
   static QStringList types;
   if (types.isEmpty()) {
     types.append("GIF");
+#ifdef HAVE_QIMGIO
     types.append("JPEG");
+#endif
     types.append("JPG");
     types.append("XPM");
     types.append("XBM");
