@@ -23,7 +23,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "kpanelapplet.h"
 #include "kpanelapplet.moc"
-#include <kapp.h>
+#include <kapplication.h>
 #include <kconfig.h>
 
 class KPanelApplet::KPanelAppletPrivate
@@ -120,7 +120,7 @@ void KPanelApplet::action( Action a )
 
 const QPopupMenu* KPanelApplet::customMenu() const
 {
-    return d->customMenu; 
+    return d->customMenu;
 }
 
 void KPanelApplet::setCustomMenu(const QPopupMenu* menu)
