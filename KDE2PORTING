@@ -55,4 +55,20 @@ include file, though.
   These classes have been dropped. Use the Qt DND interface instead.
   A good starting point may be the Qt Drag and Drop Tutorial.
 
+//////////////////////////////////////////////////////////////////////
+// * libkfm has disappeared
+
+  Lots of other functionalities have been taken out of kfm, some being
+  now in libkio, some in libkonq. 
+  Replacement table :
+   KFM::download         -> KIONetAccess::download (kdelibs/kio/kio_netaccess.h)
+   KFM::removeTempFile   -> KIONetAccess::removeTempFile
+   refreshDesktop, sortDesktop, selectRootIcons : removed; kdesktop handles it
+   KFM::configure        -> will probably be in konqueror's IDL
+   KFM::openURL          -> KRun (kdelibs/kio/krun.h)
+   KFM::refreshDirectory -> TODO in kdebase/libkonq
+   KFM::openProperties   -> new PropertiesDialog (kdebase/libkonq/kpropsdlg.h)
+   KFM::exec             -> KRun (kdelibs/kio/krun.h)
+   KFM::copy, KFM::move  -> KIOJob (kdelibs/kio/kio_job.h)
+  DlgLocation removed. Generic dialog boxes should go in kdeui.
 
