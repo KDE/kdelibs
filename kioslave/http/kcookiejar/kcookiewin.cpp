@@ -65,6 +65,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <kiconloader.h>
 #include <kapplication.h>
 
+#ifndef Q_WS_QWS //FIXME(E): Implement for Qt Embedded
+#include <X11/Xlib.h>
+#endif
+
 #include "kcookiejar.h"
 #include "kcookiewin.h"
 
@@ -73,10 +77,11 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
            :KDialog( parent, "cookiealert", true )
 {
 #ifndef Q_WS_QWS //FIXME(E): Implement for Qt Embedded
-    KWin::setState( winId(), NET::StaysOnTop );
-    KWin::setOnDesktop(winId(), KWin::currentDesktop());
     setCaption( i18n("Cookie Alert") );
     setIcon( SmallIcon("cookie") );
+    // all cookies in the list should have the same window at this time, so let's take the first
+    if( cookieList.first()->windowIds().count() > 0 )
+        XSetTransientForHint( qt_xdisplay(), winId(), cookieList.first()->windowIds().first());
 #endif
     // Main widget's layout manager...
     QVBoxLayout* vlayout = new QVBoxLayout( this, KDialog::marginHint(), KDialog::spacingHint() );
