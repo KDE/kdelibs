@@ -194,13 +194,13 @@ QByteArray HTMLFormElementImpl::formData()
                         {
                             QCString aStr;
                             enc_string += HTMLFormElementImpl::encodeByteArray(codec->fromUnicode(
-                                QString(current->name().isEmpty() ? "x" : current->name(). string() + ".x")));
+                                QString(current->name().isEmpty() ? QString::fromLatin1("x") : current->name(). string() + ".x")));
                             aStr.setNum(i->clickX());
                             enc_string += "=";
                             enc_string += aStr;
                             enc_string += "&";
                             enc_string += HTMLFormElementImpl::encodeByteArray(codec->fromUnicode(
-                                QString(current->name().isEmpty() ? "y" : current->name().string() + ".y")));
+                                QString(current->name().isEmpty() ? QString::fromLatin1("y") : current->name().string() + ".y")));
                             enc_string += "=";
                             aStr.setNum(i->clickY());
                             enc_string += aStr;
