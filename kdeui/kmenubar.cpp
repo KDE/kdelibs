@@ -38,6 +38,9 @@
 
 // $Id$
 // $Log$
+// Torben: One new function and made others virtual
+// => binary incompatible. Sorry. Please use virtual whenever it is
+// not a performance problem.
 //
 // Revision 1.29  1998/07/23 09:43:38  radej
 // sven: Improved look under diff styles. Winlook is beetter now.
@@ -99,6 +102,10 @@ static QPixmap* miniGo = 0;
   handle->installEventFilter(this);
   handle->show();
   handle->raise();
+  buttonDownOnHandle = FALSE;
+  init();
+}
+
 int KMenuBar::idAt( int index )
 {
   return menu->idAt( index );

@@ -20,6 +20,9 @@
 
 //$Id$
 //$Log$
+//Revision 1.8  1998/05/07 23:13:23  radej
+//Moving with KToolBoxManager
+//
 //
 //Revision 1.17  1999/03/06 18:03:34  ettrich
 //the nifty "flat" feature of kmenubar/ktoolbar is now more visible:
@@ -101,25 +104,26 @@ class KMenuBar : public QFrame
     */
    void setTitle(const QString&_title) {title = _title;};
 
-   uint count();
-   int insertItem(const char *text,
+   /**
+   virtual int insertItem(const char *text,
     * details.
     */
-   int insertItem(const char *text, int id=-1, int index=-1 );
-   int insertItem(const char *text, QPopupMenu *popup,
+   virtual int insertItem(const char *text, int id=-1, int index=-1 );
+   virtual int insertItem(const char *text, QPopupMenu *popup,
                   int accel=0 );
 
-   void insertSeparator(int index=-1 );
-   void removeItem(int id);
-   void removeItemAt(int index);
-   void clear();
-   int accel(int id);
-   void setAccel(int key, int id );
-   const char *text(int id);
-   void changeItem(const char *text, int id);
-   void setItemChecked(int id , bool flag);
-   void setItemEnabled(int id, bool flag);
+   virtual int insertItem(const QString& text, int id=-1, int index=-1 );
+   virtual int insertItem(const QString& text, QPopupMenu *popup,
+                  int id=-1, int index=-1 );
 
+   virtual void insertSeparator(int index=-1 );
+   virtual void removeItem(int id);
+   virtual const char *text(int id);
+   virtual void changeItem(const char *text, int id);
+   virtual int accel(int id);
+   virtual void setAccel(int key, int id );
+   virtual QString text(int id);
+   
    int heightForWidth ( int max_width ) const; 
    virtual void setItemEnabled(int id, bool flag);
    int heightForWidth ( int max_width ) const;
