@@ -84,10 +84,10 @@ public:
     HTMLFormElement form() const;
     bool declare() const;
 
-    void setDeclare( const bool & );
+    void setDeclare( bool );
     long tabIndex() const;
 
-    void setTabIndex( const long & );
+    void setTabIndex( long );
 };
 
 // -------------------------------------------------------------------------

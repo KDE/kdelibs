@@ -203,7 +203,7 @@ bool HTMLFrameElement::noResize() const
     return ((HTMLFrameElementImpl *)impl)->noResize();
 }
 
-void HTMLFrameElement::setNoResize( const bool &_noResize )
+void HTMLFrameElement::setNoResize( bool _noResize )
 {
     // ### fix the attribute too...
     if(impl)

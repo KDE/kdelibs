@@ -61,7 +61,7 @@ long HTMLAnchorElementImpl::tabIndex() const
     return 0;
 }
 
-void HTMLAnchorElementImpl::setTabIndex( const long & )
+void HTMLAnchorElementImpl::setTabIndex( long  )
 {
 }
 

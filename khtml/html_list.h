@@ -67,7 +67,7 @@ public:
     /**
      * see @ref compact
      */
-    void setCompact( const bool & );
+    void setCompact( bool );
 };
 
 // --------------------------------------------------------------------------
@@ -104,7 +104,7 @@ public:
     /**
      * see @ref compact
      */
-    void setCompact( const bool & );
+    void setCompact( bool );
 };
 
 // --------------------------------------------------------------------------
@@ -154,7 +154,7 @@ public:
     /**
      * see @ref value
      */
-    void setValue( const long & );
+    void setValue( long );
 };
 
 // --------------------------------------------------------------------------
@@ -191,7 +191,7 @@ public:
     /**
      * see @ref compact
      */
-    void setCompact( const bool & );
+    void setCompact( bool );
 };
 
 // --------------------------------------------------------------------------
@@ -227,7 +227,7 @@ public:
     /**
      * see @ref compact
      */
-    void setCompact( const bool & );
+    void setCompact( bool );
 
     /**
      * Starting sequence number. See the <a
@@ -241,7 +241,7 @@ public:
     /**
      * see @ref start
      */
-    void setStart( const long & );
+    void setStart( long );
 
     /**
      * Numbering style. See the <a
@@ -292,7 +292,7 @@ public:
     /**
      * see @ref compact
      */
-    void setCompact( const bool & );
+    void setCompact( bool );
 
     /**
      * Bullet style. See the <a

@@ -160,7 +160,7 @@ public:
     /**
      * see @ref disabled
      */
-    void setDisabled( const bool & );
+    void setDisabled( bool );
 
     /**
      * The character encoding of the resource being linked to. See the
@@ -426,7 +426,7 @@ public:
     /**
      * see @ref defer
      */
-    void setDefer( const bool & );
+    void setDefer( bool );
 
     /**
      * URI designating an external script. See the <a
@@ -488,7 +488,7 @@ public:
     /**
      * see @ref disabled
      */
-    void setDisabled( const bool & );
+    void setDisabled( bool );
 
     /**
      * Designed for use with one or more target media. See the <a

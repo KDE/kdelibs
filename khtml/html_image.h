@@ -117,7 +117,7 @@ public:
     /**
      * see @ref noHref
      */
-    void setNoHref( const bool & );
+    void setNoHref( bool );
 
     /**
      * The shape of the active area. The coordinates are given by
@@ -145,7 +145,7 @@ public:
     /**
      * see @ref tabIndex
      */
-    void setTabIndex( const long & );
+    void setTabIndex( long );
 
     /**
      * Frame to render the resource in. See the <a
@@ -289,7 +289,7 @@ public:
     /**
      * see @ref isMap
      */
-    void setIsMap( const bool & );
+    void setIsMap( bool );
 
     /**
      * URI designating a long description of this image or frame. See

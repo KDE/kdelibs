@@ -28,6 +28,7 @@
 #include "html_miscimpl.h"
 using namespace DOM;
 
+#include "khtmlattrs.h"
 
 HTMLBaseFontElement::HTMLBaseFontElement() : HTMLElement()
 {
@@ -54,34 +55,34 @@ HTMLBaseFontElement::~HTMLBaseFontElement()
 DOMString HTMLBaseFontElement::color() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("color");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_COLOR);
 }
 
 void HTMLBaseFontElement::setColor( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("color", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_COLOR, value);
 }
 
 DOMString HTMLBaseFontElement::face() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("face");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_FACE);
 }
 
 void HTMLBaseFontElement::setFace( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("face", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_FACE, value);
 }
 
 DOMString HTMLBaseFontElement::size() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("size");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_SIZE);
 }
 
 void HTMLBaseFontElement::setSize( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("size", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_SIZE, value);
 }
 
 // --------------------------------------------------------------------------

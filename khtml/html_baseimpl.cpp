@@ -147,7 +147,7 @@ bool HTMLFrameElementImpl::noResize() const
     return false;
 }
 
-void HTMLFrameElementImpl::setNoResize( const bool & )
+void HTMLFrameElementImpl::setNoResize( bool )
 {
 }
 

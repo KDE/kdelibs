@@ -29,6 +29,7 @@
 #include "html_miscimpl.h"
 using namespace DOM;
 
+#include "khtmlattrs.h"
 
 HTMLAreaElement::HTMLAreaElement() : HTMLElement()
 {
@@ -55,45 +56,45 @@ HTMLAreaElement::~HTMLAreaElement()
 DOMString HTMLAreaElement::accessKey() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("accessKey");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_ACCESSKEY);
 }
 
 void HTMLAreaElement::setAccessKey( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("accessKey", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_ACCESSKEY, value);
 }
 
 DOMString HTMLAreaElement::alt() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("alt");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_ALT);
 }
 
 void HTMLAreaElement::setAlt( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("alt", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_ALT, value);
 }
 
 DOMString HTMLAreaElement::coords() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("coords");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_COORDS);
 }
 
 void HTMLAreaElement::setCoords( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("coords", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_COORDS, value);
 }
 
 DOMString HTMLAreaElement::href() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("href");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_HREF);
 }
 
 void HTMLAreaElement::setHref( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("href", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_HREF, value);
 }
 
 bool HTMLAreaElement::noHref() const
@@ -102,7 +103,7 @@ bool HTMLAreaElement::noHref() const
     return ((HTMLAreaElementImpl *)impl)->noHref();
 }
 
-void HTMLAreaElement::setNoHref( const bool &_noHref )
+void HTMLAreaElement::setNoHref( bool _noHref )
 {
 
     if(impl)
@@ -112,12 +113,12 @@ void HTMLAreaElement::setNoHref( const bool &_noHref )
 DOMString HTMLAreaElement::shape() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("shape");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_SHAPE);
 }
 
 void HTMLAreaElement::setShape( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("shape", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_SHAPE, value);
 }
 
 long HTMLAreaElement::tabIndex() const
@@ -126,7 +127,7 @@ long HTMLAreaElement::tabIndex() const
     return ((HTMLAreaElementImpl *)impl)->tabIndex();
 }
 
-void HTMLAreaElement::setTabIndex( const long &_tabIndex )
+void HTMLAreaElement::setTabIndex( long _tabIndex )
 {
 
     if(impl)
@@ -136,12 +137,12 @@ void HTMLAreaElement::setTabIndex( const long &_tabIndex )
 DOMString HTMLAreaElement::target() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("target");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_TARGET);
 }
 
 void HTMLAreaElement::setTarget( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("target", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_TARGET, value);
 }
 
 // --------------------------------------------------------------------------
@@ -170,79 +171,79 @@ HTMLImageElement::~HTMLImageElement()
 
 DOMString HTMLImageElement::lowSrc() const
 {
-    if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("lowSrc");
+    // DOM specs says URI for low resolution output...
+    // too bad you can't specfy it by an attribute...
+    return 0;
 }
 
-void HTMLImageElement::setLowSrc( const DOMString &value )
+void HTMLImageElement::setLowSrc( const DOMString &/*value*/ )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("lowSrc", value);
 }
 
 DOMString HTMLImageElement::name() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("name");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_NAME);
 }
 
 void HTMLImageElement::setName( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("name", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_NAME, value);
 }
 
 DOMString HTMLImageElement::align() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("align");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_ALIGN);
 }
 
 void HTMLImageElement::setAlign( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("align", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_ALIGN, value);
 }
 
 DOMString HTMLImageElement::alt() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("alt");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_ALT);
 }
 
 void HTMLImageElement::setAlt( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("alt", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_ALT, value);
 }
 
 DOMString HTMLImageElement::border() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("border");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_BORDER);
 }
 
 void HTMLImageElement::setBorder( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("border", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_BORDER, value);
 }
 
 DOMString HTMLImageElement::height() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("height");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_HEIGHT);
 }
 
 void HTMLImageElement::setHeight( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("height", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_HEIGHT, value);
 }
 
 DOMString HTMLImageElement::hspace() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("hspace");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_HSPACE);
 }
 
 void HTMLImageElement::setHspace( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("hspace", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_HSPACE, value);
 }
 
 bool HTMLImageElement::isMap() const
@@ -251,7 +252,7 @@ bool HTMLImageElement::isMap() const
     return ((HTMLImageElementImpl *)impl)->isMap();
 }
 
-void HTMLImageElement::setIsMap( const bool &_isMap )
+void HTMLImageElement::setIsMap( bool _isMap )
 {
 
     if(impl)
@@ -261,56 +262,56 @@ void HTMLImageElement::setIsMap( const bool &_isMap )
 DOMString HTMLImageElement::longDesc() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("longDesc");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_LONGDESC);
 }
 
 void HTMLImageElement::setLongDesc( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("longDesc", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_LONGDESC, value);
 }
 
 DOMString HTMLImageElement::src() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("src");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_SRC);
 }
 
 void HTMLImageElement::setSrc( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("src", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_SRC, value);
 }
 
 DOMString HTMLImageElement::useMap() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("useMap");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_USEMAP);
 }
 
 void HTMLImageElement::setUseMap( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("useMap", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_USEMAP, value);
 }
 
 DOMString HTMLImageElement::vspace() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("vspace");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_VSPACE);
 }
 
 void HTMLImageElement::setVspace( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("vspace", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_VSPACE, value);
 }
 
 DOMString HTMLImageElement::width() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("width");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_WIDTH);
 }
 
 void HTMLImageElement::setWidth( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("width", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_WIDTH, value);
 }
 
 // --------------------------------------------------------------------------
@@ -346,11 +347,11 @@ HTMLCollection HTMLMapElement::areas() const
 DOMString HTMLMapElement::name() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("name");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_NAME);
 }
 
 void HTMLMapElement::setName( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("name", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_NAME, value);
 }
 

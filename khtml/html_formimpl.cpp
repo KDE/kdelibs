@@ -373,7 +373,7 @@ bool HTMLButtonElementImpl::disabled() const
     return false;
 }
 
-void HTMLButtonElementImpl::setDisabled( const bool & )
+void HTMLButtonElementImpl::setDisabled( bool )
 {
 }
 
@@ -383,7 +383,7 @@ long HTMLButtonElementImpl::tabIndex() const
     return 0;
 }
 
-void HTMLButtonElementImpl::setTabIndex( const long & )
+void HTMLButtonElementImpl::setTabIndex( long  )
 {
 }
 
@@ -452,7 +452,7 @@ bool HTMLInputElementImpl::defaultChecked() const
     return false;
 }
 
-void HTMLInputElementImpl::setDefaultChecked( const bool & )
+void HTMLInputElementImpl::setDefaultChecked( bool )
 {
 }
 
@@ -465,11 +465,11 @@ void HTMLInputElementImpl::setChecked(bool b)
     }
 }
 
-void HTMLInputElementImpl::setDisabled( const bool & )
+void HTMLInputElementImpl::setDisabled( bool )
 {
 }
 
-void HTMLInputElementImpl::setMaxLength( const long & )
+void HTMLInputElementImpl::setMaxLength( long  )
 {
 }
 
@@ -479,7 +479,7 @@ bool HTMLInputElementImpl::readOnly() const
     return false;
 }
 
-void HTMLInputElementImpl::setReadOnly( const bool & )
+void HTMLInputElementImpl::setReadOnly( bool )
 {
 }
 
@@ -489,7 +489,7 @@ long HTMLInputElementImpl::tabIndex() const
     return 0;
 }
 
-void HTMLInputElementImpl::setTabIndex( const long & )
+void HTMLInputElementImpl::setTabIndex( long  )
 {
 }
 
@@ -937,7 +937,7 @@ long HTMLSelectElementImpl::selectedIndex() const
     return 0;
 }
 
-void HTMLSelectElementImpl::setSelectedIndex( const long & )
+void HTMLSelectElementImpl::setSelectedIndex( long  )
 {
 }
 
@@ -953,16 +953,16 @@ bool HTMLSelectElementImpl::disabled() const
     return false;
 }
 
-void HTMLSelectElementImpl::setDisabled( const bool & )
+void HTMLSelectElementImpl::setDisabled( bool )
 {
 }
 
 
-void HTMLSelectElementImpl::setMultiple( const bool & )
+void HTMLSelectElementImpl::setMultiple( bool )
 {
 }
 
-void HTMLSelectElementImpl::setSize( const long & )
+void HTMLSelectElementImpl::setSize( long  )
 {
 }
 
@@ -972,7 +972,7 @@ long HTMLSelectElementImpl::tabIndex() const
     return 0;
 }
 
-void HTMLSelectElementImpl::setTabIndex( const long & )
+void HTMLSelectElementImpl::setTabIndex( long  )
 {
 }
 
@@ -980,7 +980,7 @@ void HTMLSelectElementImpl::add( const HTMLElement &/*element*/, const HTMLEleme
 {
 }
 
-void HTMLSelectElementImpl::remove( const long &/*index*/ )
+void HTMLSelectElementImpl::remove( long /*index*/ )
 {
 }
 
@@ -1188,7 +1188,7 @@ bool HTMLOptGroupElementImpl::disabled() const
     return false;
 }
 
-void HTMLOptGroupElementImpl::setDisabled( const bool & )
+void HTMLOptGroupElementImpl::setDisabled( bool )
 {
 }
 
@@ -1219,7 +1219,7 @@ bool HTMLOptionElementImpl::defaultSelected() const
     return false;
 }
 
-void HTMLOptionElementImpl::setDefaultSelected( const bool & )
+void HTMLOptionElementImpl::setDefaultSelected( bool )
 {
 }
 
@@ -1235,7 +1235,7 @@ long HTMLOptionElementImpl::index() const
     return 0;
 }
 
-void HTMLOptionElementImpl::setIndex( const long & )
+void HTMLOptionElementImpl::setIndex( long  )
 {
 }
 
@@ -1245,7 +1245,7 @@ bool HTMLOptionElementImpl::disabled() const
     return false;
 }
 
-void HTMLOptionElementImpl::setDisabled( const bool & )
+void HTMLOptionElementImpl::setDisabled( bool )
 {
 }
 
@@ -1288,7 +1288,7 @@ long HTMLTextAreaElementImpl::cols() const
     return 0;
 }
 
-void HTMLTextAreaElementImpl::setCols( const long & )
+void HTMLTextAreaElementImpl::setCols( long  )
 {
 }
 
@@ -1298,7 +1298,7 @@ bool HTMLTextAreaElementImpl::disabled() const
     return false;
 }
 
-void HTMLTextAreaElementImpl::setDisabled( const bool & )
+void HTMLTextAreaElementImpl::setDisabled( bool )
 {
 }
 
@@ -1308,7 +1308,7 @@ bool HTMLTextAreaElementImpl::readOnly() const
     return false;
 }
 
-void HTMLTextAreaElementImpl::setReadOnly( const bool & )
+void HTMLTextAreaElementImpl::setReadOnly( bool )
 {
 }
 
@@ -1318,7 +1318,7 @@ long HTMLTextAreaElementImpl::rows() const
     return 0;
 }
 
-void HTMLTextAreaElementImpl::setRows( const long & )
+void HTMLTextAreaElementImpl::setRows( long  )
 {
 }
 
@@ -1328,7 +1328,7 @@ long HTMLTextAreaElementImpl::tabIndex() const
     return 0;
 }
 
-void HTMLTextAreaElementImpl::setTabIndex( const long & )
+void HTMLTextAreaElementImpl::setTabIndex( long  )
 {
 }
 

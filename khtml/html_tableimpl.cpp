@@ -64,7 +64,7 @@ using namespace DOM;
 	    if ( (c < totalCols - 1) && (cell == cells[r][c+1]) )     \
 	        continue;                                             \
 	    if ( (r < totalRows - 1) && (cells[r+1][c] == cell) )     \
-	        continue;                                             
+	        continue;
 
 #define END_FOR_EACH } }
 
@@ -97,7 +97,7 @@ HTMLTableElementImpl::HTMLTableElementImpl(DocumentImpl *doc)
 
     setBlocking();
     setParsing();
-    
+
     columnPos.resize( 2 );
     colMaxWidth.resize( 1 );
     colMinWidth.resize( 1 );
@@ -146,7 +146,7 @@ ushort HTMLTableElementImpl::id() const
 
 void HTMLTableElementImpl::setCaption( HTMLTableCaptionElementImpl *c )
 {
-    if(tCaption) 
+    if(tCaption)
 	replaceChild ( c, tCaption );
     else
 	insertBefore( c, firstChild() );
@@ -156,13 +156,13 @@ void HTMLTableElementImpl::setCaption( HTMLTableCaptionElementImpl *c )
 
 void HTMLTableElementImpl::setTHead( HTMLTableSectionElementImpl *s )
 {
-    if(head) 
+    if(head)
 	replaceChild ( s, head );
     else if( foot )
 	insertBefore( s, foot );
     else if( firstBody )
 	insertBefore( s, firstBody );
-    else 
+    else
 	appendChild( s );
     head = s;
     s->setTable(this);
@@ -170,11 +170,11 @@ void HTMLTableElementImpl::setTHead( HTMLTableSectionElementImpl *s )
 
 void HTMLTableElementImpl::setTFoot( HTMLTableSectionElementImpl *s )
 {
-    if(foot) 
+    if(foot)
 	replaceChild ( s, foot );
     else if( firstBody )
 	insertBefore( s, firstBody );
-    else 
+    else
 	appendChild( s );
     foot = s;
     s->setTable(this);
@@ -264,7 +264,7 @@ NodeImpl *HTMLTableElementImpl::addChild(NodeImpl *child)
     case ID_COL:
     case ID_COLGROUP:
 	// these have to come before the table definition!
-	if(head || foot || firstBody) 
+	if(head || foot || firstBody)
 	    throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
 	HTMLBlockElementImpl::addChild(child);
 	if(!cols) cols = static_cast<HTMLTableColElementImpl *>(child);
@@ -280,7 +280,7 @@ NodeImpl *HTMLTableElementImpl::addChild(NodeImpl *child)
 	break;
     case ID_TBODY:
 	if(incremental && !columnPos[totalCols]) calcColWidth();
-	if(!firstBody) 
+	if(!firstBody)
 	    firstBody = static_cast<HTMLTableSectionElementImpl *>(child);
     default:
 	child->setAvailableWidth(0);
@@ -364,7 +364,7 @@ void HTMLTableElementImpl::parseAttribute(Attribute *attr)
 	else if ( strcasecmp( attr->value(), "right" ) == 0 )
 	    halign = Right;
 	else if ( strcasecmp( attr->value(), "center" ) == 0 )
-	    halign = HCenter;	    
+	    halign = HCenter;	
 	break;
     }
     case ATTR_VSPACE:
@@ -372,7 +372,7 @@ void HTMLTableElementImpl::parseAttribute(Attribute *attr)
 	break;
     case ATTR_HSPACE:
 	hspace = attr->val()->toLength();
-	break;    
+	break;
     default:
 	HTMLBlockElementImpl::parseAttribute(attr);
     }
@@ -397,7 +397,7 @@ void HTMLTableElementImpl::addCell( HTMLTableCellElementImpl *cell )
     col++;
 }
 
-void HTMLTableElementImpl::setCells( unsigned int r, unsigned int c, 
+void HTMLTableElementImpl::setCells( unsigned int r, unsigned int c,
 				     HTMLTableCellElementImpl *cell )
 {
 #ifdef TABLE_DEBUG
@@ -435,7 +435,7 @@ void HTMLTableElementImpl::setCells( unsigned int r, unsigned int c,
 
 void HTMLTableElementImpl::addRows( int num )
 {
-    HTMLTableCellElementImpl ***newRows = 
+    HTMLTableCellElementImpl ***newRows =
 	new HTMLTableCellElementImpl ** [allocRows + num];
     memcpy( newRows, cells, allocRows * sizeof(HTMLTableCellElementImpl **) );
     delete [] cells;
@@ -471,13 +471,13 @@ void HTMLTableElementImpl::addColumns( int num )
     memset( colType.data() + totalCols , 0, num*sizeof(LengthType));
     actColWidth.resize(newCols);
     memset( actColWidth.data() + totalCols , 0, num*sizeof(LengthType));
- 
+
     for ( unsigned int r = 0; r < allocRows; r++ )
     {
 	newCells = new HTMLTableCellElementImpl * [newCols];
-	memcpy( newCells, cells[r], 
+	memcpy( newCells, cells[r],
 		totalCols * sizeof( HTMLTableCellElementImpl * ) );
-	memset( newCells + totalCols, 0, 
+	memset( newCells + totalCols, 0,
 		num * sizeof( HTMLTableCellElementImpl * ) );
 	delete [] cells[r];
 	cells[r] = newCells;
@@ -497,8 +497,8 @@ void HTMLTableElementImpl::addColInfo(HTMLTableCellElementImpl *cell)
     addColInfo(_startCol, _colSpan, _minSize, _maxSize, _width);
 }
 
-void HTMLTableElementImpl::addColInfo(int _startCol, int _colSpan, 
-				      int _minSize, int _maxSize, 
+void HTMLTableElementImpl::addColInfo(int _startCol, int _colSpan,
+				      int _minSize, int _maxSize,
 				      Length _width)
 {
 #ifdef TABLE_DEBUG
@@ -556,17 +556,17 @@ void HTMLTableElementImpl::addColInfo(int _startCol, int _colSpan,
 	    default:
 		varCount++;
 		break;
-	    } 
-	} 
+	    }
+	}
 #ifdef TABLE_DEBUG
 	printf("Col = %d span = %d, fix = %d, perc = %d, rel = %d, var = %d, min = %d, currMin = %d\n",
-	       _startCol, _colSpan, fixedCount, percentCount, relCount, 
+	       _startCol, _colSpan, fixedCount, percentCount, relCount,
 	       varCount, _minSize, currMinSize );
-#endif 
+#endif
 	if (currMinSize < _minSize)
 	{
 	    int tooAdd = _minSize - currMinSize;
-	    // lets try to add the minwidth to the minWidth of the fixed 
+	    // lets try to add the minwidth to the minWidth of the fixed
 	    // columns. This is possible as long as the minWidth is smaller
 	    // than the fixed width...
 	    if(fixedCount || percentCount)
@@ -574,12 +574,12 @@ void HTMLTableElementImpl::addColInfo(int _startCol, int _colSpan,
 #ifdef TABLE_DEBUG
 		printf("Spreading %d across nonVar cols\n", tooAdd);
 #endif
-		tooAdd = addColsMinWidthNonVar(_startCol, _colSpan, tooAdd, 
+		tooAdd = addColsMinWidthNonVar(_startCol, _colSpan, tooAdd,
 					    fixedCount + percentCount);
 	    }
 	    if ( tooAdd )
 	    {
-		if ( (fixedCount == _colSpan) || 
+		if ( (fixedCount == _colSpan) ||
 		     (percentCount == _colSpan) ||
 		     (varCount == _colSpan) ||
 		     (relCount == _colSpan) )
@@ -597,8 +597,8 @@ void HTMLTableElementImpl::addColInfo(int _startCol, int _colSpan,
 #endif
 		    if (varCount > 0)
 		    {
-			// Spread extra width across all variable columns 
-			addColsMinWidthVar(_startCol, _colSpan, tooAdd, 
+			// Spread extra width across all variable columns
+			addColsMinWidthVar(_startCol, _colSpan, tooAdd,
 					   varCount);
 		    }
 		    else
@@ -612,28 +612,28 @@ void HTMLTableElementImpl::addColInfo(int _startCol, int _colSpan,
 	if (currMaxSize < _maxSize)
 	{
 	    int tooAdd = _maxSize - currMaxSize;
-	    if ( (varCount == 0) || 
+	    if ( (varCount == 0) ||
 		 (varCount == _colSpan) )
 	    {
 		// Spread extra width across all columns equally
-		addColsMaxWidthEqual(_startCol, _colSpan, tooAdd);                        
+		addColsMaxWidthEqual(_startCol, _colSpan, tooAdd);
 	    }
 	    else
 	    {
-		// Spread extra width across all Variable columns 
+		// Spread extra width across all Variable columns
 		addColsMaxWidthVar(_startCol, _colSpan, tooAdd, varCount);
 	    }
 	}
     }
 #ifdef TABLE_DEBUG
-    printf("  end: min=%d max=%d act=%d\n", colMinWidth[_startCol], 
+    printf("  end: min=%d max=%d act=%d\n", colMinWidth[_startCol],
 	   colMaxWidth[_startCol], actColWidth[_startCol]);
-#endif    
+#endif
 }
 
 void HTMLTableElementImpl::addColMinWidth(int k, int delta)
-{     
-#ifdef TABLE_DEBUG              	    
+{
+#ifdef TABLE_DEBUG              	
 printf("Adding %d pixels to col %d: %d --> %d\n",
      delta, k, columnPos[k], columnPos[k]+delta);
 #endif
@@ -656,11 +656,11 @@ void HTMLTableElementImpl::addColsMinWidthEqual(int kol, int span, int tooAdd)
     }
 }
 
-void HTMLTableElementImpl::addColsMinWidthVar(int kol, int span, int tooAdd, 
+void HTMLTableElementImpl::addColsMinWidthVar(int kol, int span, int tooAdd,
 					      int varCount)
 {
     assert( varCount > 0);
-    // Spread extra width across all variable columns 
+    // Spread extra width across all variable columns
     for (int k = span; k; k--)
     {
         if ( colType[kol + k - 1 ] == Variable )
@@ -673,11 +673,11 @@ void HTMLTableElementImpl::addColsMinWidthVar(int kol, int span, int tooAdd,
     }
 }
 
-int HTMLTableElementImpl::addColsMinWidthNonVar(int kol, int span, 
+int HTMLTableElementImpl::addColsMinWidthNonVar(int kol, int span,
 					     int tooAdd, int count)
 {
     assert( count > 0);
-    // Spread extra width across all non-fixed columns 
+    // Spread extra width across all non-fixed columns
     int remaining = 0;
 
     for (int k = span; k; k--)
@@ -723,11 +723,11 @@ int HTMLTableElementImpl::addColsMinWidthNonVar(int kol, int span,
     return tooAdd - adding;
 }
 
-void HTMLTableElementImpl::addColsMinWidthNonFix(int kol, int span, 
+void HTMLTableElementImpl::addColsMinWidthNonFix(int kol, int span,
 						 int tooAdd, int nonFixedCount)
 {
     assert( nonFixedCount > 0);
-    // Spread extra width across all non-fixed columns 
+    // Spread extra width across all non-fixed columns
     for (int k = span; k; k--)
     {
         if ( colType[kol + k - 1] != Fixed )
@@ -751,11 +751,11 @@ void HTMLTableElementImpl::addColsMaxWidthEqual(int kol, int span, int tooAdd)
     }
 }
 
-void HTMLTableElementImpl::addColsMaxWidthVar(int kol, int span, int tooAdd, 
+void HTMLTableElementImpl::addColsMaxWidthVar(int kol, int span, int tooAdd,
 					      int varCount)
 {
     assert( varCount > 0);
-    // Spread extra width across all non-fixed columns 
+    // Spread extra width across all non-fixed columns
     for (int k = span; k; k--)
     {
         if ( colType[kol + k - 1] == Variable )
@@ -863,7 +863,7 @@ void HTMLTableElementImpl::calcColWidth()
     }
 
     // can't format, if we don't have the total width...
-    if(!width && (numVar | numRel) ) 
+    if(!width && (numVar | numRel) )
     {
 	incremental = false;
 	printf("no incremental layout possible!\n");
@@ -875,7 +875,7 @@ void HTMLTableElementImpl::calcColWidth()
 
     if(numVar || numRel)
     {
-	if(!remaining < padding) 
+	if(!remaining < padding)
 	{
 	    incremental = false;
 	    printf("no incremental layout possible!\n");
@@ -912,12 +912,12 @@ void HTMLTableElementImpl::calcColWidth()
 
 
 // layouting function used for non incremental tables
-// (autolayout algorithm)                        
+// (autolayout algorithm)
 void HTMLTableElementImpl::calcColWidthII(void)
 {
 // Even if it's almost impossible to satisfy every possible
 // combination of width given, one should still try.
-// 
+//
 // 1. calculate min and max width for every column
     // --> this step is already done during adding (see addColInfo())
 // 2. calc min and max width for the table
@@ -939,7 +939,7 @@ void HTMLTableElementImpl::calcColWidthII(void)
     int actWidth = border + border + spacing;
     maxWidth = border + border + spacing;
     int totalWidthPercent = 0;
-    int totalFixed = 0; 
+    int totalFixed = 0;
     int totalPercent = 0;
     int totalRel = 0;
     int totalVar = 0;
@@ -1021,7 +1021,7 @@ void HTMLTableElementImpl::calcColWidthII(void)
     }
     else // width of table not declared
     {
-	tableWidth = availableWidth < maxWidth ? 
+	tableWidth = availableWidth < maxWidth ?
 	    availableWidth : maxWidth;
     }
 #ifdef TABLE_DEBUG
@@ -1116,7 +1116,7 @@ void HTMLTableElementImpl::calcColWidthII(void)
 		    // ###
 		case Variable:
 		{
-		    int delta = (int)(actColWidth[i]-colMinWidth[i])*percent;
+		    int delta = (int)((actColWidth[i]-colMinWidth[i])*percent);
 		    actColWidth[i] -= delta;
 		    num--;
 		    tooAdd -= delta;
@@ -1131,7 +1131,7 @@ void HTMLTableElementImpl::calcColWidthII(void)
 	    int space = totalWidthPercent - minPercent;
 	    printf("space available = %d\n", space);
 	    if(space > tooAdd) percent = (float)tooAdd/((float)space);
-	    printf("percent = %d\n", percent);
+	    printf("percent = %lf\n", percent);
 	    for(i = 0; i < totalCols; i++)
 	    {
 		switch(colType[i])
@@ -1140,7 +1140,7 @@ void HTMLTableElementImpl::calcColWidthII(void)
 		    break;
 		case Percent:
 		{
-		    int delta =  (int)(actColWidth[i]-colMinWidth[i])*percent;
+		    int delta =  (int)((actColWidth[i]-colMinWidth[i])*percent);
 		    printf("col %d: reducing by %d\n", i+1, delta);
 		    actColWidth[i] -= delta;
 		    num--;
@@ -1161,7 +1161,7 @@ void HTMLTableElementImpl::calcColWidthII(void)
     {
     	columnPos[i] += columnPos[i-1] + actColWidth[i-1] + spacing;
 #ifdef TABLE_DEBUG
-	printf("Actual width col %d: %d pos = %d\n", i, 
+	printf("Actual width col %d: %d pos = %d\n", i,
 	       actColWidth[i-1], columnPos[i-1]);
 #endif
     }
@@ -1224,10 +1224,10 @@ void HTMLTableElementImpl::layout(bool deep)
     printf("%s(Table)::layout(%d) width=%d, layouted=%d\n", nodeName().string().ascii(), deep, width, layouted());
 #endif
 
-    if(blocking()) 
+    if(blocking())
 	calcColWidthII();
 
-    if(tCaption) 
+    if(tCaption)
     {
 	tCaption->setYPos(descent);
 	if(deep)
@@ -1236,7 +1236,7 @@ void HTMLTableElementImpl::layout(bool deep)
     }
     if(frame & Above) descent += border;
 #if 0
-    if(head) 
+    if(head)
     {
 	head->setYPos(descent);
 	head->layout();
@@ -1252,7 +1252,7 @@ void HTMLTableElementImpl::layout(bool deep)
 	child = child->nextSibling();
     }
     descent += spacing;
-    if(foot) 
+    if(foot)
     {
 	foot->setYPos(descent);
  	foot->layout();
@@ -1267,7 +1267,7 @@ void HTMLTableElementImpl::layout(bool deep)
 		cell->layout(deep);
 	    }
 	END_FOR_EACH
-    }    
+    }
 
     // We have the cell sizes now, so calculate the vertical positions
     calcRowHeights();
@@ -1285,7 +1285,7 @@ void HTMLTableElementImpl::layout(bool deep)
 	{
             HTMLTableCellElementImpl *cell = cells[r][c];
             if (!cell)
-                continue; 
+                continue;
 	    if ( c < totalCols - 1 && cell == cells[r][c+1] )
 		continue;
 	    if ( r < totalRows - 1 && cell == cells[r+1][c] )
@@ -1298,7 +1298,7 @@ void HTMLTableElementImpl::layout(bool deep)
 	    if ( ( rindx = r-cell->rowSpan()+1 ) < 0 )
 		rindx = 0;
 
-	    //printf("setting position %d/%d-%d: %d/%d \n", r, indx, c, 
+	    //printf("setting position %d/%d-%d: %d/%d \n", r, indx, c,
 	    //columnPos[indx] + padding, rowHeights[rindx]);
 	    cellHeight = rowHeights[r+1] - rowHeights[rindx] -
 		spacing;
@@ -1334,7 +1334,7 @@ void HTMLTableElementImpl::setAvailableWidth(int w)
 	END_FOR_EACH
 	return;
     }
-    
+
     calcColWidthII();
 	
     int indx;
@@ -1342,18 +1342,18 @@ void HTMLTableElementImpl::setAvailableWidth(int w)
 	{
 	    if ( ( indx = c-cell->colSpan()+1) < 0 )
 		indx = 0;
-	    int w = columnPos[c+1] - columnPos[ indx ] - spacing - 
+	    int w = columnPos[c+1] - columnPos[ indx ] - spacing -
 		padding;
 #ifdef TABLE_DEBUG
 	    printf("0x%p: setting width %d/%d-%d (0x%p): %d \n", this, r, indx, c, cell, w);
 #endif
-	    
+	
 	    cell->setAvailableWidth( w );
 	}
     END_FOR_EACH
 }
 
-void HTMLTableElementImpl::print( QPainter *p, int _x, int _y, 
+void HTMLTableElementImpl::print( QPainter *p, int _x, int _y,
 				  int _w, int _h, int _tx, int _ty)
 {
     _tx += x;
@@ -1380,7 +1380,7 @@ void HTMLTableElementImpl::print( QPainter *p, int _x, int _y,
 
 }
 
-void HTMLTableElementImpl::printObject( QPainter *p, int, int, 
+void HTMLTableElementImpl::printObject( QPainter *p, int, int,
 					int, int, int _tx, int _ty)
 {
 #ifdef DEBUG_LAYOUT
@@ -1397,7 +1397,7 @@ void HTMLTableElementImpl::printObject( QPainter *p, int, int,
 	int capOffset = 0;
 	if ( tCaption )//### && capAlign == HTMLClue::Top )
 	    capOffset = tCaption->getHeight();
-	QColorGroup colorGrp( Qt::black, Qt::lightGray, Qt::white, 
+	QColorGroup colorGrp( Qt::black, Qt::lightGray, Qt::white,
 			      Qt::darkGray, Qt::gray, Qt::black, Qt::white );
 	qDrawShadePanel( p, _tx, _ty + capOffset, width,
 	    rowHeights[totalRows] + border - padding/2, colorGrp, false, border );
@@ -1421,7 +1421,7 @@ void HTMLTableElementImpl::printObject( QPainter *p, int, int,
 }
 
 #if 0
-void HTMLTableElementImpl::print(QPainter *p, int _x, int _y, int _w, int _h, 
+void HTMLTableElementImpl::print(QPainter *p, int _x, int _y, int _w, int _h,
 				  int _tx, int _ty)
 {
     _tx += x;
@@ -1432,7 +1432,7 @@ void HTMLTableElementImpl::print(QPainter *p, int _x, int _y, int _w, int _h,
     int capOffset = 0;
     if ( tCaption ) //### && capAlign == HTMLClue::Top )
 	capOffset = tCaption->getHeight();
-    QColorGroup colorGrp( Qt::black, Qt::lightGray, Qt::white, 
+    QColorGroup colorGrp( Qt::black, Qt::lightGray, Qt::white,
 			  Qt::darkGray, Qt::gray, Qt::black, Qt::white );
 
     if ( frame == Box )
@@ -1463,7 +1463,7 @@ void HTMLTableElementImpl::print(QPainter *p, int _x, int _y, int _w, int _h,
 			     descent-capOffset, colorGrp, false, border/2 );
 	}
     }
-    
+
     if(tCaption) tCaption->print(p, _x, _y, _w, _h, _tx, _ty);
 
     // positions needed for rules...
@@ -1477,7 +1477,7 @@ void HTMLTableElementImpl::print(QPainter *p, int _x, int _y, int _w, int _h,
     {
 	head->print(p, _x, _y, _w, _h, _tx, _ty);
 	yPos += head->getHeight();
-	if(rules & RGroups) qDrawShadePanel( p, xPos, yPos, w, spacing, 
+	if(rules & RGroups) qDrawShadePanel( p, xPos, yPos, w, spacing,
 					     colorGrp, false, spacing/2 );
     }
     NodeImpl *n = firstBody;
@@ -1486,12 +1486,12 @@ void HTMLTableElementImpl::print(QPainter *p, int _x, int _y, int _w, int _h,
 	n->print(p, _x, _y, _w, _h, _tx, _ty);
 	yPos += n->getHeight() + spacing;
 	n = n->nextSibling();
-	if(n && (rules & RGroups)) qDrawShadePanel(p, xPos, yPos, w, spacing, 
+	if(n && (rules & RGroups)) qDrawShadePanel(p, xPos, yPos, w, spacing,
 						   colorGrp, false, spacing/2);
     }
-    if(foot) 
+    if(foot)
     {
-	if(rules & RGroups) qDrawShadePanel( p, xPos, yPos, w, spacing, 
+	if(rules & RGroups) qDrawShadePanel( p, xPos, yPos, w, spacing,
 					    colorGrp, false, spacing/2 );
 	foot->print(p, _x, _y, _w, _h, _tx, _ty);
     }
@@ -1505,8 +1505,8 @@ void HTMLTableElementImpl::print(QPainter *p, int _x, int _y, int _w, int _h,
 	for(i = 1; i< totalCols; i++)
 	{
 	    int pos = colPos[i] - off;
-	    qDrawShadePanel( p, _tx + pos, _ty + capOffset + border, 
-			     spacing, descent - capOffset - 2*border, 
+	    qDrawShadePanel( p, _tx + pos, _ty + capOffset + border,
+			     spacing, descent - capOffset - 2*border,
 			     colorGrp, false, spacing/2 );
 	}
     }
@@ -1521,7 +1521,7 @@ void HTMLTableElementImpl::calcMinMaxWidth()
     minWidth = border + border + spacing;
     maxWidth = border + border + spacing;
 
-    for(int i = 0; i < totalCols; i++)
+    for(int i = 0; i < (int)totalCols; i++)
     {
 	maxWidth += actColWidth[i] + spacing;
 	minWidth += colMinWidth[i] + spacing;
@@ -1543,25 +1543,25 @@ void HTMLTableElementImpl::close()
 	_parent->updateSize();
     setAvailableWidth(); // update child width
     layout(true);
-    if(layouted()) 
+    if(layouted())
 	static_cast<HTMLDocumentImpl *>(document)->print(this, true);
 }
- 
+
 void HTMLTableElementImpl::updateSize()
 {
-    calcMinMaxWidth(); 
+    calcMinMaxWidth();
     if (incremental)
     	calcColWidth();
     else
-    	calcColWidthII();   
+    	calcColWidthII();
     setLayouted(false);
-    if(_parent) _parent->updateSize(); 
+    if(_parent) _parent->updateSize();
 }
 
 // -------------------------------------------------------------------------
 
-HTMLTableSectionElementImpl::HTMLTableSectionElementImpl(DocumentImpl *doc, 
-							 ushort tagid) 
+HTMLTableSectionElementImpl::HTMLTableSectionElementImpl(DocumentImpl *doc,
+							 ushort tagid)
     : HTMLTablePartElementImpl(doc)
 {
     _id = tagid;
@@ -1619,8 +1619,8 @@ void HTMLTableSectionElementImpl::deleteRow( long index )
 }
 
 #if 0
-void HTMLTableSectionElementImpl::print(QPainter *p, int _x, int _y, 
-					int _w, int _h, 
+void HTMLTableSectionElementImpl::print(QPainter *p, int _x, int _y,
+					int _w, int _h,
 					int _tx, int _ty)
 {
     _tx += x;
@@ -1628,7 +1628,7 @@ void HTMLTableSectionElementImpl::print(QPainter *p, int _x, int _y,
 
     if((_ty > _y + _h) || (_ty + descent < _y)) return;
 
-    QColorGroup colorGrp( Qt::black, Qt::lightGray, Qt::white, 
+    QColorGroup colorGrp( Qt::black, Qt::lightGray, Qt::white,
 			  Qt::darkGray, Qt::gray, Qt::black, Qt::white );
     int spacing = table->cellSpacing();
     HTMLTableElementImpl::Rules rules = table->getRules();
@@ -1640,8 +1640,8 @@ void HTMLTableSectionElementImpl::print(QPainter *p, int _x, int _y,
 	n->print(p, _x, _y, _w, _h, _tx, _ty);
 	yPos += n->getHeight() + spacing;
 	n = n->nextSibling();
-	if(n && (rules & HTMLTableElementImpl::Rows)) 
-	    qDrawShadePanel(p, _tx, yPos, width, spacing, 
+	if(n && (rules & HTMLTableElementImpl::Rows))
+	    qDrawShadePanel(p, _tx, yPos, width, spacing,
 			    colorGrp, false, spacing/2);
     }
 }
@@ -1752,7 +1752,7 @@ NodeImpl *HTMLTableRowElementImpl::addChild(NodeImpl *child)
 #ifdef DEBUG_LAYOUT
     printf("%s(TableRow)::addChild( %s )\n", nodeName().string().ascii(), child->nodeName().string().ascii());
 #endif
- 
+
     NodeImpl *ret = HTMLBlockElementImpl::addChild(child);
 
     HTMLTableCellElementImpl *cell =
@@ -1777,7 +1777,7 @@ void HTMLTableRowElementImpl::parseAttribute(Attribute *attr)
 
 // -------------------------------------------------------------------------
 
-HTMLTableCellElementImpl::HTMLTableCellElementImpl(DocumentImpl *doc, int tag) 
+HTMLTableCellElementImpl::HTMLTableCellElementImpl(DocumentImpl *doc, int tag)
   : HTMLTablePartElementImpl(doc)
 {
   _col = -1;
@@ -1843,14 +1843,14 @@ void HTMLTableCellElementImpl::calcMinMaxWidth()
     HTMLBlockElementImpl::calcMinMaxWidth();
     if(nWrap) minWidth = maxWidth;
     table->addColInfo(this);
-    printf("cell: calcminmaxwidth %d, %d\n",width,minWidth);    
+    printf("cell: calcminmaxwidth %d, %d\n",width,minWidth);
 //    if(availableWidth && minWidth > availableWidth)
 //	if(_parent) _parent->updateSize();
 
 }
 
-void HTMLTableCellElementImpl::print(QPainter *p, int _x, int _y, 
-					int _w, int _h, 
+void HTMLTableCellElementImpl::print(QPainter *p, int _x, int _y,
+					int _w, int _h,
 					int _tx, int _ty)
 {
     int padding = table->cellPadding();
@@ -1868,7 +1868,7 @@ void HTMLTableCellElementImpl::print(QPainter *p, int _x, int _y,
     printObject(p, _x, _y, _w, _h, _tx, _ty);
 
     NodeImpl *child = firstChild();
-    while(child != 0) 
+    while(child != 0)
     {
 	child->print(p, _x, _y, _w, _h, _tx, _ty);
 	child = child->nextSibling();
@@ -1896,7 +1896,7 @@ void HTMLTableCellElementImpl::printObject(QPainter *p, int, int,
     if ( back.isValid() )
     {
 	QBrush brush( back );
-	p->fillRect( _tx - pad , _ty - pad, 
+	p->fillRect( _tx - pad , _ty - pad,
 		     width + padding, rowHeight, brush );
     }
 }
@@ -1941,7 +1941,7 @@ void HTMLTableColElementImpl::parseAttribute(Attribute *attr)
 
 // -------------------------------------------------------------------------
 
-HTMLTableCaptionElementImpl::HTMLTableCaptionElementImpl(DocumentImpl *doc) 
+HTMLTableCaptionElementImpl::HTMLTableCaptionElementImpl(DocumentImpl *doc)
   : HTMLTablePartElementImpl(doc)
 {
 }

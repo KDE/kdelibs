@@ -93,7 +93,7 @@ bool HTMLLinkElementImpl::disabled() const
 {
 }
 
-void HTMLLinkElementImpl::setDisabled( const bool & )
+void HTMLLinkElementImpl::setDisabled( bool )
 {
 }
 
@@ -141,7 +141,7 @@ bool HTMLScriptElementImpl::defer() const
 {
 }
 
-void HTMLScriptElementImpl::setDefer( const bool & )
+void HTMLScriptElementImpl::setDefer( bool )
 {
 }
 
@@ -169,7 +169,7 @@ bool HTMLStyleElementImpl::disabled() const
 {
 }
 
-void HTMLStyleElementImpl::setDisabled( const bool & )
+void HTMLStyleElementImpl::setDisabled( bool )
 {
 }
 

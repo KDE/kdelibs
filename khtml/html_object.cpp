@@ -29,6 +29,8 @@
 #include "html_element.h"
 #include "html_elementimpl.h"
 
+#include "khtmlattrs.h"
+
 HTMLAppletElement::HTMLAppletElement() : HTMLElement()
 {
 }
@@ -56,122 +58,122 @@ HTMLAppletElement::~HTMLAppletElement()
 DOMString HTMLAppletElement::align() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("align");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_ALIGN);
 }
 
 void HTMLAppletElement::setAlign( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("align", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_ALIGN, value);
 }
 
 DOMString HTMLAppletElement::alt() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("alt");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_ALT);
 }
 
 void HTMLAppletElement::setAlt( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("alt", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_ALT, value);
 }
 
 DOMString HTMLAppletElement::archive() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("archive");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_ARCHIVE);
 }
 
 void HTMLAppletElement::setArchive( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("archive", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_ARCHIVE, value);
 }
 
 DOMString HTMLAppletElement::code() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("code");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_CODE);
 }
 
 void HTMLAppletElement::setCode( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("code", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_CODE, value);
 }
 
 DOMString HTMLAppletElement::codeBase() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("codeBase");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_CODEBASE);
 }
 
 void HTMLAppletElement::setCodeBase( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("codeBase", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_CODEBASE, value);
 }
 
 DOMString HTMLAppletElement::height() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("height");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_HEIGHT);
 }
 
 void HTMLAppletElement::setHeight( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("height", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_HEIGHT, value);
 }
 
 DOMString HTMLAppletElement::hspace() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("hspace");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_HSPACE);
 }
 
 void HTMLAppletElement::setHspace( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("hspace", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_HSPACE, value);
 }
 
 DOMString HTMLAppletElement::name() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("name");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_NAME);
 }
 
 void HTMLAppletElement::setName( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("name", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_NAME, value);
 }
 
 DOMString HTMLAppletElement::object() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("object");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_OBJECT);
 }
 
 void HTMLAppletElement::setObject( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("object", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_OBJECT, value);
 }
 
 DOMString HTMLAppletElement::vspace() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("vspace");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_VSPACE);
 }
 
 void HTMLAppletElement::setVspace( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("vspace", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_VSPACE, value);
 }
 
 DOMString HTMLAppletElement::width() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("width");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_WIDTH);
 }
 
 void HTMLAppletElement::setWidth( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("width", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_WIDTH, value);
 }
 
 // --------------------------------------------------------------------------
@@ -207,78 +209,78 @@ HTMLFormElement HTMLObjectElement::form() const
 DOMString HTMLObjectElement::code() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("code");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_CODE);
 }
 
 void HTMLObjectElement::setCode( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("code", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_CODE, value);
 }
 
 DOMString HTMLObjectElement::align() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("align");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_ALIGN);
 }
 
 void HTMLObjectElement::setAlign( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("align", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_ALIGN, value);
 }
 
 DOMString HTMLObjectElement::archive() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("archive");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_ARCHIVE);
 }
 
 void HTMLObjectElement::setArchive( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("archive", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_ARCHIVE, value);
 }
 
 DOMString HTMLObjectElement::border() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("border");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_BORDER);
 }
 
 void HTMLObjectElement::setBorder( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("border", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_BORDER, value);
 }
 
 DOMString HTMLObjectElement::codeBase() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("codeBase");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_CODEBASE);
 }
 
 void HTMLObjectElement::setCodeBase( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("codeBase", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_CODEBASE, value);
 }
 
 DOMString HTMLObjectElement::codeType() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("codeType");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_CODETYPE);
 }
 
 void HTMLObjectElement::setCodeType( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("codeType", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_CODETYPE, value);
 }
 
 DOMString HTMLObjectElement::data() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("data");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_DATA);
 }
 
 void HTMLObjectElement::setData( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("data", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_DATA, value);
 }
 
 bool HTMLObjectElement::declare() const
@@ -287,7 +289,7 @@ bool HTMLObjectElement::declare() const
     return ((HTMLObjectElementImpl *)impl)->declare();
 }
 
-void HTMLObjectElement::setDeclare( const bool &_declare )
+void HTMLObjectElement::setDeclare( bool _declare )
 {
 
     if(impl)
@@ -297,45 +299,45 @@ void HTMLObjectElement::setDeclare( const bool &_declare )
 DOMString HTMLObjectElement::height() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("height");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_HEIGHT);
 }
 
 void HTMLObjectElement::setHeight( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("height", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_HEIGHT, value);
 }
 
 DOMString HTMLObjectElement::hspace() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("hspace");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_HSPACE);
 }
 
 void HTMLObjectElement::setHspace( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("hspace", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_HSPACE, value);
 }
 
 DOMString HTMLObjectElement::name() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("name");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_NAME);
 }
 
 void HTMLObjectElement::setName( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("name", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_NAME, value);
 }
 
 DOMString HTMLObjectElement::standby() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("standby");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_STANDBY);
 }
 
 void HTMLObjectElement::setStandby( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("standby", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_STANDBY, value);
 }
 
 long HTMLObjectElement::tabIndex() const
@@ -344,7 +346,7 @@ long HTMLObjectElement::tabIndex() const
     return ((HTMLObjectElementImpl *)impl)->tabIndex();
 }
 
-void HTMLObjectElement::setTabIndex( const long &_tabIndex )
+void HTMLObjectElement::setTabIndex( long _tabIndex )
 {
 
     if(impl)
@@ -354,45 +356,45 @@ void HTMLObjectElement::setTabIndex( const long &_tabIndex )
 DOMString HTMLObjectElement::type() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("type");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_TYPE);
 }
 
 void HTMLObjectElement::setType( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("type", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_TYPE, value);
 }
 
 DOMString HTMLObjectElement::useMap() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("useMap");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_USEMAP);
 }
 
 void HTMLObjectElement::setUseMap( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("useMap", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_USEMAP, value);
 }
 
 DOMString HTMLObjectElement::vspace() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("vspace");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_VSPACE);
 }
 
 void HTMLObjectElement::setVspace( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("vspace", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_VSPACE, value);
 }
 
 DOMString HTMLObjectElement::width() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("width");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_WIDTH);
 }
 
 void HTMLObjectElement::setWidth( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("width", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_WIDTH, value);
 }
 
 // --------------------------------------------------------------------------
@@ -422,44 +424,44 @@ HTMLParamElement::~HTMLParamElement()
 DOMString HTMLParamElement::name() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("name");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_NAME);
 }
 
 void HTMLParamElement::setName( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("name", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_NAME, value);
 }
 
 DOMString HTMLParamElement::type() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("type");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_TYPE);
 }
 
 void HTMLParamElement::setType( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("type", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_TYPE, value);
 }
 
 DOMString HTMLParamElement::value() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("value");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_VALUE);
 }
 
 void HTMLParamElement::setValue( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("value", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_VALUE, value);
 }
 
 DOMString HTMLParamElement::valueType() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("valueType");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_VALUETYPE);
 }
 
 void HTMLParamElement::setValueType( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("valueType", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_VALUETYPE, value);
 }
 

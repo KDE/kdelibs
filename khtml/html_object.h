@@ -353,7 +353,7 @@ public:
     /**
      * see @ref declare
      */
-    void setDeclare( const bool & );
+    void setDeclare( bool );
 
     /**
      * Override height. See the <a
@@ -422,7 +422,7 @@ public:
     /**
      * see @ref tabIndex
      */
-    void setTabIndex( const long & );
+    void setTabIndex( long );
 
     /**
      * Content type for data downloaded via <code> data </code>

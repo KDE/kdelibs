@@ -26,6 +26,7 @@
 #include "html_listimpl.h"
 using namespace DOM;
 
+#include "khtmlattrs.h"
 
 HTMLDListElement::HTMLDListElement() : HTMLElement()
 {
@@ -55,7 +56,7 @@ bool HTMLDListElement::compact() const
     return ((HTMLDListElementImpl *)impl)->compact();
 }
 
-void HTMLDListElement::setCompact( const bool &_compact )
+void HTMLDListElement::setCompact( bool _compact )
 {
 
     if(impl)
@@ -92,7 +93,7 @@ bool HTMLDirectoryElement::compact() const
     return ((HTMLDirectoryElementImpl *)impl)->compact();
 }
 
-void HTMLDirectoryElement::setCompact( const bool &_compact )
+void HTMLDirectoryElement::setCompact( bool _compact )
 {
 
     if(impl)
@@ -126,12 +127,12 @@ HTMLLIElement::~HTMLLIElement()
 DOMString HTMLLIElement::type() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("type");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_TYPE);
 }
 
 void HTMLLIElement::setType( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("type", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_TYPE, value);
 }
 
 long HTMLLIElement::value() const
@@ -140,7 +141,7 @@ long HTMLLIElement::value() const
     return ((HTMLLIElementImpl *)impl)->value();
 }
 
-void HTMLLIElement::setValue( const long &_value )
+void HTMLLIElement::setValue( long _value )
 {
 
     if(impl)
@@ -177,7 +178,7 @@ bool HTMLMenuElement::compact() const
     return ((HTMLMenuElementImpl *)impl)->compact();
 }
 
-void HTMLMenuElement::setCompact( const bool &_compact )
+void HTMLMenuElement::setCompact( bool _compact )
 {
 
     if(impl)
@@ -214,7 +215,7 @@ bool HTMLOListElement::compact() const
     return ((HTMLOListElementImpl *)impl)->compact();
 }
 
-void HTMLOListElement::setCompact( const bool &_compact )
+void HTMLOListElement::setCompact( bool _compact )
 {
 
     if(impl)
@@ -227,7 +228,7 @@ long HTMLOListElement::start() const
     return ((HTMLOListElementImpl *)impl)->start();
 }
 
-void HTMLOListElement::setStart( const long &_start )
+void HTMLOListElement::setStart( long _start )
 {
 
     if(impl)
@@ -237,12 +238,12 @@ void HTMLOListElement::setStart( const long &_start )
 DOMString HTMLOListElement::type() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("type");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_TYPE);
 }
 
 void HTMLOListElement::setType( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("type", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_TYPE, value);
 }
 
 // --------------------------------------------------------------------------
@@ -275,7 +276,7 @@ bool HTMLUListElement::compact() const
     return ((HTMLUListElementImpl *)impl)->compact();
 }
 
-void HTMLUListElement::setCompact( const bool &_compact )
+void HTMLUListElement::setCompact( bool _compact )
 {
 
     if(impl)
@@ -285,11 +286,11 @@ void HTMLUListElement::setCompact( const bool &_compact )
 DOMString HTMLUListElement::type() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("type");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_TYPE);
 }
 
 void HTMLUListElement::setType( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("type", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_TYPE, value);
 }
 

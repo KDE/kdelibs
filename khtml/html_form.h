@@ -85,7 +85,7 @@ public:
     /**
      * see @ref disabled
      */
-    void setDisabled( const bool & );
+    void setDisabled( bool );
 
     /**
      * Form control or object name when submitted with a form. See the
@@ -113,7 +113,7 @@ public:
     /**
      * see @ref tabIndex
      */
-    void setTabIndex( const long & );
+    void setTabIndex( long );
 
     /**
      * The type of button. See the <a
@@ -297,16 +297,12 @@ public:
      * Submits the form. It performs the same action as a submit
      * button.
      *
-     * @return
-     *
      */
     void submit (  );
 
     /**
      * Restores a form element's default values. It performs the same
      * action as a reset button.
-     *
-     * @return
      *
      */
     void reset (  );
@@ -360,7 +356,7 @@ public:
     /**
      * see @ref defaultChecked
      */
-    void setDefaultChecked( const bool & );
+    void setDefaultChecked( bool );
 
     /**
      * Returns the <code> FORM </code> element containing this
@@ -441,7 +437,7 @@ public:
     /**
      * see @ref checked
      */
-    void setChecked( const bool & );
+    void setChecked( bool );
 
     /**
      * The control is unavailable in this context. See the <a
@@ -454,7 +450,7 @@ public:
     /**
      * see @ref disabled
      */
-    void setDisabled( const bool & );
+    void setDisabled( bool );
 
     /**
      * Maximum number of characters for text fields, when <code> type
@@ -468,7 +464,7 @@ public:
     /**
      * see @ref maxLength
      */
-    void setMaxLength( const long & );
+    void setMaxLength( long );
 
     /**
      * Form control or object name when submitted with a form. See the
@@ -496,7 +492,7 @@ public:
     /**
      * see @ref readOnly
      */
-    void setReadOnly( const bool & );
+    void setReadOnly( bool );
 
     /**
      * Size information. The precise meaning is specific to each type
@@ -539,7 +535,7 @@ public:
     /**
      * see @ref tabIndex
      */
-    void setTabIndex( const long & );
+    void setTabIndex( long );
 
     /**
      * The type of control created. See the <a
@@ -579,15 +575,11 @@ public:
     /**
      * Removes keyboard focus from this element.
      *
-     * @return
-     *
      */
     void blur (  );
 
     /**
      * Gives keyboard focus to this element.
-     *
-     * @return
      *
      */
     void focus (  );
@@ -597,8 +589,6 @@ public:
      * elements whose <code> type </code> attribute has one of the
      * following values: "Text", "File", or "Password".
      *
-     * @return
-     *
      */
     void select (  );
 
@@ -606,9 +596,6 @@ public:
      * Simulate a mouse-click. For <code> INPUT </code> elements whose
      * <code> type </code> attribute has one of the following values:
      * "Button", "Checkbox", "Radio", "Reset", or "Submit".
-     *
-     * @return
-     *
      */
     void click (  );
 };
@@ -765,7 +752,7 @@ public:
     /**
      * see @ref disabled
      */
-    void setDisabled( const bool & );
+    void setDisabled( bool );
 
     /**
      * Assigns a label to this option group. See the <a
@@ -822,7 +809,7 @@ public:
     /**
      * see @ref selectedIndex
      */
-    void setSelectedIndex( const long & );
+    void setSelectedIndex( long );
 
     /**
      * The current form control value.
@@ -867,7 +854,7 @@ public:
     /**
      * see @ref disabled
      */
-    void setDisabled( const bool & );
+    void setDisabled( bool );
 
     /**
      * If true, multiple <code> OPTION </code> elements may be
@@ -881,7 +868,7 @@ public:
     /**
      * see @ref multiple
      */
-    void setMultiple( const bool & );
+    void setMultiple( bool );
 
     /**
      * Form control or object name when submitted with a form. See the
@@ -908,7 +895,7 @@ public:
     /**
      * see @ref size
      */
-    void setSize( const long & );
+    void setSize( long );
 
     /**
      * Index that represents the element's position in the tabbing
@@ -922,7 +909,7 @@ public:
     /**
      * see @ref tabIndex
      */
-    void setTabIndex( const long & );
+    void setTabIndex( long );
 
     /**
      * Add a new element to the collection of <code> OPTION </code>
@@ -932,8 +919,6 @@ public:
      *
      * @param before The element to insert before, or NULL for the
      * head of the list.
-     *
-     * @return
      *
      */
     void add ( const HTMLElement &element, const HTMLElement &before );
@@ -945,23 +930,17 @@ public:
      *
      * @param index The index of the item to remove.
      *
-     * @return
-     *
      */
-    void remove ( const long &index );
+    void remove ( long index );
 
     /**
      * Removes keyboard focus from this element.
-     *
-     * @return
      *
      */
     void blur (  );
 
     /**
      * Gives keyboard focus to this element.
-     *
-     * @return
      *
      */
     void focus (  );
@@ -1034,7 +1013,7 @@ public:
     /**
      * see @ref cols
      */
-    void setCols( const long & );
+    void setCols( long );
 
     /**
      * The control is unavailable in this context. See the <a
@@ -1047,7 +1026,7 @@ public:
     /**
      * see @ref disabled
      */
-    void setDisabled( const bool & );
+    void setDisabled( bool );
 
     /**
      * Form control or object name when submitted with a form. See the
@@ -1074,7 +1053,7 @@ public:
     /**
      * see @ref readOnly
      */
-    void setReadOnly( const bool & );
+    void setReadOnly( bool );
 
     /**
      * Number of text rows. See the <a
@@ -1087,7 +1066,7 @@ public:
     /**
      * see @ref rows
      */
-    void setRows( const long & );
+    void setRows( long );
 
     /**
      * Index that represents the element's position in the tabbing
@@ -1101,7 +1080,7 @@ public:
     /**
      * see @ref tabIndex
      */
-    void setTabIndex( const long & );
+    void setTabIndex( long );
 
     /**
      * The type of this form control.
@@ -1124,25 +1103,16 @@ public:
 
     /**
      * Removes keyboard focus from this element.
-     *
-     * @return
-     *
      */
     void blur (  );
 
     /**
      * Gives keyboard focus to this element.
-     *
-     * @return
-     *
      */
     void focus (  );
 
     /**
      * Select the contents of the <code> TEXTAREA </code> .
-     *
-     * @return
-     *
      */
     void select (  );
 };
@@ -1185,7 +1155,7 @@ public:
     /**
      * see @ref defaultSelected
      */
-    void setDefaultSelected( const bool & );
+    void setDefaultSelected( bool );
 
     /**
      * The text contained within the option element.
@@ -1203,7 +1173,7 @@ public:
     /**
      * see @ref index
      */
-    void setIndex( const long & );
+    void setIndex( long );
 
     /**
      * The control is unavailable in this context. See the <a
@@ -1216,7 +1186,7 @@ public:
     /**
      * see @ref disabled
      */
-    void setDisabled( const bool & );
+    void setDisabled( bool );
 
     /**
      * Option label for use in hierarchical menus. See the <a

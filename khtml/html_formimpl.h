@@ -62,7 +62,7 @@ public:
 
     virtual void attach(KHTMLWidget *w);
     virtual void detach();
- 
+
     void radioClicked( NodeImpl *caller, DOMString ident );
 
 public slots:
@@ -86,14 +86,14 @@ public:
     HTMLGenericFormElementImpl(DocumentImpl *doc);
     virtual ~HTMLGenericFormElementImpl();
 
-    HTMLFormElementImpl *form() { 
+    HTMLFormElementImpl *form() {
 	if(!_form) _form = getForm();
-	return _form; 
+	return _form;
     }
 
-    virtual bool isRendered() { return true; } 
-    
-    /* 
+    virtual bool isRendered() { return true; }
+
+    /*
      * override in derived classes to get the encoded name=value pair
      * for submitting
      */
@@ -130,10 +130,10 @@ public:
     virtual tagStatus endTag() { return BUTTONEndTag; }
 
     bool disabled() const;
-    void setDisabled( const bool & );
+    void setDisabled( bool );
 
     long tabIndex() const;
-    void setTabIndex( const long & );
+    void setTabIndex( long );
 
     DOMString type() const;
 };
@@ -157,7 +157,7 @@ public:
 // -------------------------------------------------------------------------
 
 class HTMLInputElementImpl : public QObject,
-			     public HTMLGenericFormElementImpl, 
+			     public HTMLGenericFormElementImpl,
 			     public HTMLImageRequester
 {
     Q_OBJECT
@@ -187,22 +187,22 @@ public:
     virtual tagStatus endTag() { return INPUTEndTag; }
 
     bool defaultChecked() const;
-    void setDefaultChecked( const bool & );
+    void setDefaultChecked( bool );
 
     bool checked() const { return _checked; }
     void setChecked(bool b);
 
     bool disabled() const { return _disabled; }
-    void setDisabled( const bool & );
+    void setDisabled( bool );
 
     long maxLength() const { return _maxLen; }
-    void setMaxLength( const long & );
+    void setMaxLength( long );
 
     bool readOnly() const;
-    void setReadOnly( const bool & );
+    void setReadOnly( bool );
 
     long tabIndex() const;
-    void setTabIndex( const long & );
+    void setTabIndex( long );
 
     DOMString type() const;
 
@@ -214,7 +214,7 @@ public:
     virtual void parseAttribute(Attribute *attr);
 
     virtual void attach(KHTMLWidget *w);
-    virtual void detach(); 
+    virtual void detach();
 
     virtual void layout( bool deep = false );
 
@@ -297,31 +297,31 @@ public:
     DOMString type() const;
 
     long selectedIndex() const;
-    void setSelectedIndex( const long & );
+    void setSelectedIndex( long );
 
     long length() const;
 
     bool disabled() const;
-    void setDisabled( const bool & );
+    void setDisabled( bool );
 
     bool multiple() const { return _multiple; }
-    void setMultiple( const bool & );
+    void setMultiple( bool );
 
     long size() const { return _size; }
-    void setSize( const long & );
+    void setSize( long );
 
     long tabIndex() const;
-    void setTabIndex( const long & );
+    void setTabIndex( long );
 
     void add ( const HTMLElement &element, const HTMLElement &before );
-    void remove ( const long &index );
+    void remove ( long index );
     void blur (  );
     void focus (  );
 
     virtual void parseAttribute(Attribute *attr);
 
     virtual void attach(KHTMLWidget *w);
-    virtual void detach(); 
+    virtual void detach();
 
     virtual void layout( bool deep = false );
 
@@ -356,7 +356,7 @@ public:
 
     bool disabled() const;
 
-    void setDisabled( const bool & );
+    void setDisabled( bool );
 };
 
 // ---------------------------------------------------------------------------
@@ -374,15 +374,15 @@ public:
     virtual tagStatus endTag() { return OPTIONEndTag; }
 
     bool defaultSelected() const;
-    void setDefaultSelected( const bool & );
+    void setDefaultSelected( bool );
 
     DOMString text() const;
 
     long index() const;
-    void setIndex( const long & );
+    void setIndex( long );
 
     bool disabled() const;
-    void setDisabled( const bool & );
+    void setDisabled( bool );
 
     bool selected() const;
 };
@@ -402,19 +402,19 @@ public:
     virtual tagStatus endTag() { return TEXTAREAEndTag; }
 
     long cols() const;
-    void setCols( const long & );
+    void setCols( long );
 
     bool disabled() const;
-    void setDisabled( const bool & );
+    void setDisabled( bool );
 
     bool readOnly() const;
-    void setReadOnly( const bool & );
+    void setReadOnly( bool );
 
     long rows() const;
-    void setRows( const long & );
+    void setRows( long );
 
     long tabIndex() const;
-    void setTabIndex( const long & );
+    void setTabIndex( long );
 
     DOMString type() const;
 
@@ -425,7 +425,7 @@ public:
     virtual void parseAttribute(Attribute *attr);
 
     virtual void attach(KHTMLWidget *w);
-    virtual void detach(); 
+    virtual void detach();
 
     virtual void layout( bool deep = false );
 

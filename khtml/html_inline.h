@@ -182,7 +182,7 @@ public:
     /**
      * see @ref tabIndex
      */
-    void setTabIndex( const long & );
+    void setTabIndex( long );
 
     /**
      * Frame to render the resource in. See the <a

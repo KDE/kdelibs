@@ -150,10 +150,10 @@ public:
     virtual tagStatus endTag() { return AREAEndTag; }
     bool noHref() const;
 
-    void setNoHref( const bool & );
+    void setNoHref( bool );
     long tabIndex() const;
 
-    void setTabIndex( const long & );
+    void setTabIndex( long );
     
     void parseAttribute(Attribute *attr);
     

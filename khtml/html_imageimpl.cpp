@@ -517,7 +517,7 @@ bool HTMLAreaElementImpl::noHref() const
     return false;
 }
 
-void HTMLAreaElementImpl::setNoHref( const bool & )
+void HTMLAreaElementImpl::setNoHref( bool )
 {
     // ###
 }
@@ -528,7 +528,7 @@ long HTMLAreaElementImpl::tabIndex() const
     return 0;
 }
 
-void HTMLAreaElementImpl::setTabIndex( const long & )
+void HTMLAreaElementImpl::setTabIndex( long  )
 {
     // ###
 }

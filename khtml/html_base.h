@@ -237,7 +237,7 @@ public:
     /**
      * see @ref noResize
      */
-    void setNoResize( const bool & );
+    void setNoResize( bool );
 
     /**
      * Specify whether or not the frame should have scrollbars. See

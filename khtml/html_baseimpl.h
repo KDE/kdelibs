@@ -69,7 +69,7 @@ public:
     virtual tagStatus endTag() { return FRAMEEndTag; }
     bool noResize() const;
 
-    void setNoResize( const bool & );
+    void setNoResize( bool );
 
     virtual void parseAttribute(Attribute *);
     virtual void layout(bool);

@@ -184,7 +184,7 @@ bool HTMLObjectElementImpl::declare() const
 {
 }
 
-void HTMLObjectElementImpl::setDeclare( const bool & )
+void HTMLObjectElementImpl::setDeclare( bool )
 {
 }
 
@@ -192,7 +192,7 @@ long HTMLObjectElementImpl::tabIndex() const
 {
 }
 
-void HTMLObjectElementImpl::setTabIndex( const long & )
+void HTMLObjectElementImpl::setTabIndex( long  )
 {
 }
 

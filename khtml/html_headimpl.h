@@ -78,7 +78,7 @@ public:
     virtual tagStatus endTag() { return LINKEndTag; }
     bool disabled() const;
 
-    void setDisabled( const bool & );
+    void setDisabled( bool );
 };
 
 // -------------------------------------------------------------------------
@@ -113,7 +113,7 @@ public:
     virtual tagStatus endTag() { return SCRIPTEndTag; }
     bool defer() const;
 
-    void setDefer( const bool & );
+    void setDefer( bool );
 };
 
 // -------------------------------------------------------------------------
@@ -132,7 +132,7 @@ public:
     virtual tagStatus endTag() { return STYLEEndTag; }
     bool disabled() const;
 
-    void setDisabled( const bool & );
+    void setDisabled( bool );
 };
 
 // -------------------------------------------------------------------------

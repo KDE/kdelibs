@@ -47,7 +47,7 @@ public:
     virtual tagStatus endTag() { return AEndTag; }
     long tabIndex() const;
 
-    void setTabIndex( const long & );
+    void setTabIndex( long );
     void blur (  );
     void focus (  );
 

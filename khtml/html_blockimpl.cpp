@@ -58,13 +58,13 @@ ushort HTMLBlockquoteElementImpl::id() const
     return ID_BLOCKQUOTE;
 }
 
-void HTMLBlockquoteElementImpl::setAvailableWidth(int w = -1)
+void HTMLBlockquoteElementImpl::setAvailableWidth(int w)
 {
     if(w != -1) availableWidth = w - 2*BLOCKQUOTEINDENT;
     if(availableWidth < 20) availableWidth = 20;
 
     NodeImpl *child = firstChild();
-    while(child != 0) 
+    while(child != 0)
     {
 	child->setAvailableWidth(availableWidth);
 	child = child->nextSibling();
@@ -183,7 +183,7 @@ void HTMLHRElementImpl::layout(bool)
     setLayouted();
 }
 
-void HTMLHRElementImpl::print( QPainter *p, int _x, int _y, int _w, int _h, 
+void HTMLHRElementImpl::print( QPainter *p, int _x, int _y, int _w, int _h,
 			       int _tx, int _ty)
 {
     _tx += x;
@@ -191,7 +191,7 @@ void HTMLHRElementImpl::print( QPainter *p, int _x, int _y, int _w, int _h,
     printObject(p, _x, _y, _w, _h, _tx, _ty);
 }
 
-void HTMLHRElementImpl::printObject(QPainter *p, int, int _y, 
+void HTMLHRElementImpl::printObject(QPainter *p, int, int _y,
 				    int, int _h, int _tx, int _ty)
 {
 #ifdef DEBUG_LAYOUT
@@ -200,7 +200,7 @@ void HTMLHRElementImpl::printObject(QPainter *p, int, int _y,
 
     if((_ty - ascent > _y + _h) || (_ty + descent < _y)) return;
 
-    QColorGroup colorGrp( Qt::black, Qt::black, QColor(220,220,220), QColor(100,100,100), 
+    QColorGroup colorGrp( Qt::black, Qt::black, QColor(220,220,220), QColor(100,100,100),
     Qt::gray, Qt::black, Qt::black );
 
     int l = length.width(width);
@@ -210,9 +210,9 @@ void HTMLHRElementImpl::printObject(QPainter *p, int, int _y,
     {
 	xp += (width - l)/2;
     }
-    
+
     int yp = _ty ;
-    
+
     int lw = size/2;
 
     if ( shade )
@@ -401,7 +401,7 @@ void HTMLPreElementImpl::layout( bool )
 	  printf("error: non inline element in <pre>\n");
 	  child = child->nextSibling();
 	}
-	else 
+	else
 #endif
 	    child = calcParagraph(child);
     }

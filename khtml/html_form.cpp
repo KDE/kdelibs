@@ -75,7 +75,7 @@ bool HTMLButtonElement::disabled() const
     return ((HTMLButtonElementImpl *)impl)->disabled();
 }
 
-void HTMLButtonElement::setDisabled( const bool &_disabled )
+void HTMLButtonElement::setDisabled( bool _disabled )
 {
     // ###
     if(impl)
@@ -100,7 +100,7 @@ long HTMLButtonElement::tabIndex() const
     return s.toInt();
 }
 
-void HTMLButtonElement::setTabIndex( const long &_tabIndex )
+void HTMLButtonElement::setTabIndex( long _tabIndex )
 {
     if(!impl) return;
 
@@ -312,7 +312,7 @@ bool HTMLInputElement::defaultChecked() const
     return ((HTMLInputElementImpl *)impl)->defaultChecked();
 }
 
-void HTMLInputElement::setDefaultChecked( const bool &_defaultChecked )
+void HTMLInputElement::setDefaultChecked( bool _defaultChecked )
 {
     // ###
     if(impl)
@@ -375,7 +375,7 @@ bool HTMLInputElement::checked() const
     return ((HTMLInputElementImpl *)impl)->checked();
 }
 
-void HTMLInputElement::setChecked( const bool &_checked )
+void HTMLInputElement::setChecked( bool _checked )
 {
     // ###
     if(impl)
@@ -388,7 +388,7 @@ bool HTMLInputElement::disabled() const
     return ((HTMLInputElementImpl *)impl)->disabled();
 }
 
-void HTMLInputElement::setDisabled( const bool &_disabled )
+void HTMLInputElement::setDisabled( bool _disabled )
 {
 
     if(impl)
@@ -401,7 +401,7 @@ long HTMLInputElement::maxLength() const
     return ((HTMLInputElementImpl *)impl)->maxLength();
 }
 
-void HTMLInputElement::setMaxLength( const long &_maxLength )
+void HTMLInputElement::setMaxLength( long _maxLength )
 {
 
     if(impl)
@@ -425,7 +425,7 @@ bool HTMLInputElement::readOnly() const
     return ((HTMLInputElementImpl *)impl)->readOnly();
 }
 
-void HTMLInputElement::setReadOnly( const bool &_readOnly )
+void HTMLInputElement::setReadOnly( bool _readOnly )
 {
 
     if(impl)
@@ -460,7 +460,7 @@ long HTMLInputElement::tabIndex() const
     return ((HTMLInputElementImpl *)impl)->tabIndex();
 }
 
-void HTMLInputElement::setTabIndex( const long &_tabIndex )
+void HTMLInputElement::setTabIndex( long _tabIndex )
 {
 
     if(impl)
@@ -653,7 +653,7 @@ bool HTMLOptGroupElement::disabled() const
     return ((HTMLOptGroupElementImpl *)impl)->disabled();
 }
 
-void HTMLOptGroupElement::setDisabled( const bool &_disabled )
+void HTMLOptGroupElement::setDisabled( bool _disabled )
 {
 
     if(impl)
@@ -707,7 +707,7 @@ long HTMLSelectElement::selectedIndex() const
     return ((HTMLSelectElementImpl *)impl)->selectedIndex();
 }
 
-void HTMLSelectElement::setSelectedIndex( const long &_selectedIndex )
+void HTMLSelectElement::setSelectedIndex( long _selectedIndex )
 {
 
     if(impl)
@@ -749,7 +749,7 @@ bool HTMLSelectElement::disabled() const
     return ((HTMLSelectElementImpl *)impl)->disabled();
 }
 
-void HTMLSelectElement::setDisabled( const bool &_disabled )
+void HTMLSelectElement::setDisabled( bool _disabled )
 {
 
     if(impl)
@@ -762,7 +762,7 @@ bool HTMLSelectElement::multiple() const
     return ((HTMLSelectElementImpl *)impl)->multiple();
 }
 
-void HTMLSelectElement::setMultiple( const bool &_multiple )
+void HTMLSelectElement::setMultiple( bool _multiple )
 {
 
     if(impl)
@@ -786,7 +786,7 @@ long HTMLSelectElement::size() const
     return ((HTMLSelectElementImpl *)impl)->size();
 }
 
-void HTMLSelectElement::setSize( const long &_size )
+void HTMLSelectElement::setSize( long _size )
 {
 
     if(impl)
@@ -799,7 +799,7 @@ long HTMLSelectElement::tabIndex() const
     return ((HTMLSelectElementImpl *)impl)->tabIndex();
 }
 
-void HTMLSelectElement::setTabIndex( const long &_tabIndex )
+void HTMLSelectElement::setTabIndex( long _tabIndex )
 {
 
     if(impl)
@@ -812,7 +812,7 @@ void HTMLSelectElement::add( const HTMLElement &element, const HTMLElement &befo
         ((HTMLSelectElementImpl *)impl)->add( element, before );
 }
 
-void HTMLSelectElement::remove( const long &index )
+void HTMLSelectElement::remove( long index )
 {
     if(impl)
         ((HTMLSelectElementImpl *)impl)->remove( index );
@@ -888,7 +888,7 @@ long HTMLTextAreaElement::cols() const
     return ((HTMLTextAreaElementImpl *)impl)->cols();
 }
 
-void HTMLTextAreaElement::setCols( const long &_cols )
+void HTMLTextAreaElement::setCols( long _cols )
 {
 
     if(impl)
@@ -901,7 +901,7 @@ bool HTMLTextAreaElement::disabled() const
     return ((HTMLTextAreaElementImpl *)impl)->disabled();
 }
 
-void HTMLTextAreaElement::setDisabled( const bool &_disabled )
+void HTMLTextAreaElement::setDisabled( bool _disabled )
 {
 
     if(impl)
@@ -925,7 +925,7 @@ bool HTMLTextAreaElement::readOnly() const
     return ((HTMLTextAreaElementImpl *)impl)->readOnly();
 }
 
-void HTMLTextAreaElement::setReadOnly( const bool &_readOnly )
+void HTMLTextAreaElement::setReadOnly( bool _readOnly )
 {
 
     if(impl)
@@ -938,7 +938,7 @@ long HTMLTextAreaElement::rows() const
     return ((HTMLTextAreaElementImpl *)impl)->rows();
 }
 
-void HTMLTextAreaElement::setRows( const long &_rows )
+void HTMLTextAreaElement::setRows( long _rows )
 {
 
     if(impl)
@@ -951,7 +951,7 @@ long HTMLTextAreaElement::tabIndex() const
     return ((HTMLTextAreaElementImpl *)impl)->tabIndex();
 }
 
-void HTMLTextAreaElement::setTabIndex( const long &_tabIndex )
+void HTMLTextAreaElement::setTabIndex( long _tabIndex )
 {
 
     if(impl)
@@ -1029,7 +1029,7 @@ bool HTMLOptionElement::defaultSelected() const
     return ((HTMLOptionElementImpl *)impl)->defaultSelected();
 }
 
-void HTMLOptionElement::setDefaultSelected( const bool &_defaultSelected )
+void HTMLOptionElement::setDefaultSelected( bool _defaultSelected )
 {
 
     if(impl)
@@ -1048,7 +1048,7 @@ long HTMLOptionElement::index() const
     return ((HTMLOptionElementImpl *)impl)->index();
 }
 
-void HTMLOptionElement::setIndex( const long &_index )
+void HTMLOptionElement::setIndex( long _index )
 {
 
     if(impl)
@@ -1061,7 +1061,7 @@ bool HTMLOptionElement::disabled() const
     return ((HTMLOptionElementImpl *)impl)->disabled();
 }
 
-void HTMLOptionElement::setDisabled( const bool &_disabled )
+void HTMLOptionElement::setDisabled( bool _disabled )
 {
 
     if(impl)
