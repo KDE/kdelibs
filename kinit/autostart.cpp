@@ -92,7 +92,7 @@ static bool startCondition(const QString &condition)
   if (list[0].isEmpty() || list[2].isEmpty()) 
      return true;
 
-  KConfig config(list[0]);
+  KConfig config(list[0], true, false);
   if (!list[1].isEmpty())
      config.setGroup(list[1]);
 
