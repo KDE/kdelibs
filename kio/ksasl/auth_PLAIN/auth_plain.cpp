@@ -12,21 +12,21 @@
 
 #include "auth_plain.h"
 
-PlainAuthModule::PlainAuthModule(QObject *parent, const char *name)
-	: KSASLAuthModule(parent, name)
+PlainAuthModule::PlainAuthModule (QObject *parent, const char *name)
+	: KSASLAuthModule (parent, name)
 {
 }
 
-PlainAuthModule::~PlainAuthModule()
+PlainAuthModule::~PlainAuthModule ()
 {
 }
 
-QString PlainAuthModule::auth_method()
+QString PlainAuthModule::auth_method ()
 {
 	return QString::fromLatin1("PLAIN");
 }
 
-QString PlainAuthModule::auth_response(const QString &, const KURL &auth_url)
+QString PlainAuthModule::auth_response (const QString &, const KURL &auth_url)
 {
 	QString line;
 	line.append(auth_url.user());
@@ -42,22 +42,21 @@ QString PlainAuthModule::auth_response(const QString &, const KURL &auth_url)
 PlainAuthModuleFactory::PlainAuthModuleFactory (QObject *parent, const char *name)
 	: KLibFactory (parent, name)
 {
-	s_instance = new KInstance( "authplainmodule" );
+	s_instance = new KInstance("authplainmodule");
 }
 
-PlainAuthModuleFactory::~PlainAuthModuleFactory()
+PlainAuthModuleFactory::~PlainAuthModuleFactory ()
 {
 	delete s_instance;
 }
 
-QObject *PlainAuthModuleFactory::create (QObject *parent, const char *name, const char *, const QStringList &)
+QObject *PlainAuthModuleFactory::createObject (QObject *parent, const char *name, const char *, const QStringList &)
 {
-	QObject *obj = new PlainAuthModule (parent, name);
-	emit objectCreated( obj );
+	QObject *obj = new PlainAuthModule(parent, name);
 	return obj;
 }
 
-KInstance *PlainAuthModuleFactory::instance()
+KInstance *PlainAuthModuleFactory::instance ()
 {
 	return s_instance;
 }
