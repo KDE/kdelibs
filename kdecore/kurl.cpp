@@ -1629,6 +1629,8 @@ KURL::setHost( const QString& _txt )
 {
 #ifndef KDE_QT_ONLY
    m_strHost = KIDNA::toAscii(_txt).lower();
+   if (m_strHost.isEmpty())
+      m_strHost = _txt.lower(); // No idn support?
 #else
    m_strHost = _txt.lower();
 #endif
