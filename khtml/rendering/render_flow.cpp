@@ -1133,21 +1133,8 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
 
     if (!newChild->isText())
     {
-        switch (newChild->style()->position())
-        {
-            case RELATIVE:
-            case FIXED:
+        if (newChild->style()->position() != STATIC)
                 setContainsPositioned(true);
-                break;
-            case ABSOLUTE:
-            {
-//              kdDebug( 6040 ) << "absolute found" << endl;
-                RenderObject::addChild(newChild,beforeChild);
-                return;
-            }
-            default: ;
-
-        }
     }
 
 
