@@ -23,34 +23,40 @@
 
 #include <kiconloader.h>
 #include <klocale.h>
+#include <kglobalsettings.h>
 
 #include "kwizard.h"
 
 KWizard::KWizard( QWidget *parent, const char *name, bool modal, WFlags f )
             : QWizard( parent, name, modal, f )
 {
-  QString nextIcon, backIcon;
+  bool useIcons = KGlobalSettings::showIconsOnPushButtons();
 
-  if ( QApplication::reverseLayout() )
+  if ( useIcons )
   {
-    backIcon = "forward";
-    nextIcon = "back";
+    QString nextIcon, backIcon;
+
+    if ( QApplication::reverseLayout() )
+    {
+      backIcon = "forward";
+      nextIcon = "back";
+    }
+    else
+    {
+      backIcon = "back";
+      nextIcon = "forward";
+    }
+
+    backButton()->setIconSet( SmallIconSet( backIcon ) );
+    nextButton()->setIconSet( SmallIconSet( nextIcon ) );
+
+    finishButton()->setIconSet( SmallIconSet( "apply" ) );
+    cancelButton()->setIconSet( SmallIconSet( "button_cancel" ) );
+    helpButton()->setIconSet( SmallIconSet( "help" ) );
+
+    backButton()->setText( i18n( "&Back" ) );
+    nextButton()->setText( i18n( "&Next" ) );
   }
-  else
-  {
-    backIcon = "back";
-    nextIcon = "forward";
-  }
-
-  backButton()->setIconSet( SmallIconSet( backIcon ) );
-  nextButton()->setIconSet( SmallIconSet( nextIcon ) );
-
-  finishButton()->setIconSet( SmallIconSet( "apply" ) );
-  cancelButton()->setIconSet( SmallIconSet( "button_cancel" ) );
-  helpButton()->setIconSet( SmallIconSet( "help" ) );
-
-  backButton()->setText( i18n( "&Back" ) );
-  nextButton()->setText( i18n( "&Next" ) );
 
   QFont font = titleFont();
   font.setBold( true );
