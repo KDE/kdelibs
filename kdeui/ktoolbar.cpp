@@ -1832,7 +1832,7 @@ KPopupMenu *KToolBar::contextMenu()
     return context;
 
   // construct our context popup menu
-  context = new KPopupMenu( 0, "context" );
+  context = new KPopupMenu( this, "context" );
   context->insertTitle(i18n("Toolbar Menu"));
 
   KPopupMenu *orient = new KPopupMenu( context, "orient" );
