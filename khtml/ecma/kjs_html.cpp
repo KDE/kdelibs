@@ -2905,7 +2905,10 @@ KJS::HTMLCollection::~HTMLCollection()
 // ## this breaks "for (..in..)" though.
 bool KJS::HTMLCollection::hasProperty(ExecState *exec, const UString &p) const
 {
-  if (p == "selectedIndex" || p == "length")
+  if (p == "length")
+    return true;
+  if ( collection.item(0).elementId() == ID_OPTION &&
+       ( p == "selectedIndex" || p == "value" ) )
     return true;
   return DOMObject::hasProperty(exec, p);
 }
@@ -2922,34 +2925,40 @@ Value KJS::HTMLCollection::tryGet(ExecState *exec, const UString &propertyName) 
 #endif
     return Number(collection.length());
   }
-  else if (propertyName == "selectedIndex" &&
-	   collection.item(0).elementId() == ID_OPTION) {
-    // NON-STANDARD options.selectedIndex
+
+  if (collection.item(0).elementId() == ID_OPTION) {
+    DOM::HTMLSelectElement parentSelect;
     DOM::Node node = collection.item(0).parentNode();
-    while(!node.isNull()) {
-      if(node.elementId() == ID_SELECT) {
-	DOM::HTMLSelectElement sel = static_cast<DOM::HTMLSelectElement>(node);
-	return Number(sel.selectedIndex());
-      }
+    while(!node.isNull() && parentSelect.isNull()) {
+      if(node.elementId() == ID_SELECT)
+        parentSelect = static_cast<DOM::HTMLSelectElement>(node);
       node = node.parentNode();
     }
-    return Undefined();
-  } else {
-    // Look in the prototype (for functions) before assuming it's an item's name
-    Object proto = Object::dynamicCast(prototype());
-    if (!proto.isNull() && proto.hasProperty(exec,propertyName))
-      return proto.get(exec,propertyName);
-
-    // name or index ?
-    bool ok;
-    unsigned int u = propertyName.toULong(&ok);
-    if (ok) {
-      DOM::Node node = collection.item(u);
-      return getDOMNode(exec,node);
+    if ( parentSelect.isNull() )
+      return Undefined();
+    if (propertyName == "selectedIndex") {
+      // NON-STANDARD options.selectedIndex
+      return Number(parentSelect.selectedIndex());
+    } else if ( propertyName == "value" ) {
+      // NON-STANDARD options.value
+      return String(parentSelect.value());
     }
-    else
-      return getNamedItems(exec,propertyName);
   }
+
+  // Look in the prototype (for functions) before assuming it's an item's name
+  Object proto = Object::dynamicCast(prototype());
+  if (!proto.isNull() && proto.hasProperty(exec,propertyName))
+    return proto.get(exec,propertyName);
+
+  // name or index ?
+  bool ok;
+  unsigned int u = propertyName.toULong(&ok);
+  if (ok) {
+    DOM::Node node = collection.item(u);
+    return getDOMNode(exec,node);
+  }
+  else
+    return getNamedItems(exec,propertyName);
 }
 
 // HTMLCollections are strange objects, they support both get and call,
