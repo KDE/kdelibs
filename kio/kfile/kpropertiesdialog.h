@@ -711,6 +711,7 @@ private:
   bool m_terminalCloseBool;
   bool m_suidBool;
   bool m_startupBool;
+  bool m_systrayBool;
 
   class KDesktopPropsPluginPrivate;
   KDesktopPropsPluginPrivate *d;

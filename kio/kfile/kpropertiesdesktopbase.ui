@@ -19,7 +19,7 @@
         <property name="margin">
             <number>0</number>
         </property>
-        <spacer row="4" column="3" rowspan="1" colspan="2">
+        <spacer row="5" column="3" rowspan="1" colspan="2">
             <property name="name">
                 <cstring>spacer6</cstring>
             </property>
@@ -36,7 +36,7 @@
                 </size>
             </property>
         </spacer>
-        <widget class="QLabel" row="5" column="0" rowspan="1" colspan="7">
+        <widget class="QLabel" row="6" column="0" rowspan="1" colspan="7">
             <property name="name">
                 <cstring>textLabel7</cstring>
             </property>
@@ -52,7 +52,7 @@
 &lt;p&gt;If you want to associate this application with one or more mimetypes that are not in this list, click on the button &lt;b&gt;Add&lt;/b&gt; below. If there are one or more filetypes that this application cannot handle, you may want to remove them from the list clicking on the button &lt;b&gt;Remove&lt;/b&gt; below.&lt;/p&gt;&lt;/qt&gt;</string>
             </property>
         </widget>
-        <widget class="KListView" row="6" column="0" rowspan="1" colspan="7">
+        <widget class="KListView" row="7" column="0" rowspan="1" colspan="7">
             <column>
                 <property name="text">
                     <string>Mimetype</string>
@@ -216,7 +216,29 @@ Following the command, you can have several place holders which will be replaced
                 <string>Click here to browse your file system in order to find the desired executable.</string>
             </property>
         </widget>
-        <widget class="QPushButton" row="7" column="0">
+        <widget class="QLabel" row="4" column="0" rowspan="1" colspan="2">
+            <property name="name">
+                <cstring>textLabel5</cstring>
+            </property>
+            <property name="text">
+                <string>&amp;Work Path:</string>
+            </property>
+            <property name="buddy" stdset="0">
+                <cstring>pathEdit</cstring>
+            </property>
+            <property name="whatsThis" stdset="0">
+                <string>Sets the working directory for your application.</string>
+            </property>
+        </widget>
+        <widget class="KURLRequester" row="4" column="2" rowspan="1" colspan="5">
+            <property name="name">
+                <cstring>pathEdit</cstring>
+            </property>
+            <property name="whatsThis" stdset="0">
+                <string>Sets the working directory for your application.</string>
+            </property>
+        </widget>
+        <widget class="QPushButton" row="8" column="0">
             <property name="name">
                 <cstring>addFiletypeButton</cstring>
             </property>
@@ -227,7 +249,7 @@ Following the command, you can have several place holders which will be replaced
                 <string>Click on this button if you want to add a type of file (mimetype) that your application can handle.</string>
             </property>
         </widget>
-        <spacer row="7" column="1" rowspan="1" colspan="2">
+        <spacer row="8" column="1" rowspan="1" colspan="2">
             <property name="name">
                 <cstring>spacer31_2</cstring>
             </property>
@@ -244,7 +266,7 @@ Following the command, you can have several place holders which will be replaced
                 </size>
             </property>
         </spacer>
-        <widget class="QPushButton" row="7" column="3">
+        <widget class="QPushButton" row="8" column="3">
             <property name="name">
                 <cstring>delFiletypeButton</cstring>
             </property>
@@ -255,7 +277,7 @@ Following the command, you can have several place holders which will be replaced
                 <string>If you want to remove a type of file (mimetype) that your application cannot handle, select the mimetype in the list above and click on this button.</string>
             </property>
         </widget>
-        <spacer row="7" column="4">
+        <spacer row="8" column="4">
             <property name="name">
                 <cstring>spacer31_3</cstring>
             </property>
@@ -272,7 +294,7 @@ Following the command, you can have several place holders which will be replaced
                 </size>
             </property>
         </spacer>
-        <widget class="QPushButton" row="7" column="5" rowspan="1" colspan="2">
+        <widget class="QPushButton" row="8" column="5" rowspan="1" colspan="2">
             <property name="name">
                 <cstring>advancedButton</cstring>
             </property>

@@ -2765,10 +2765,14 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
     w->nameLabel->hide();
   }
 
+  w->pathEdit->setMode(KFile::Directory | KFile::LocalOnly);
+  w->pathEdit->lineEdit()->setAcceptDrops(false);
+
   connect( w->nameEdit, SIGNAL( textChanged( const QString & ) ), this, SIGNAL( changed() ) );
   connect( w->genNameEdit, SIGNAL( textChanged( const QString & ) ), this, SIGNAL( changed() ) );
   connect( w->commentEdit, SIGNAL( textChanged( const QString & ) ), this, SIGNAL( changed() ) );
   connect( w->commandEdit, SIGNAL( textChanged( const QString & ) ), this, SIGNAL( changed() ) );
+  connect( w->pathEdit, SIGNAL( textChanged( const QString & ) ), this, SIGNAL( changed() ) );
 
   connect( w->browseButton, SIGNAL( clicked() ), this, SLOT( slotBrowseExec() ) );
   connect( w->addFiletypeButton, SIGNAL( clicked() ), this, SLOT( slotAddFiletype() ) );
@@ -2789,7 +2793,16 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
   QString genNameStr = config.readEntry( "GenericName" );
   QString commentStr = config.readEntry( "Comment" );
   QString commandStr = config.readPathEntry( "Exec" );
+  if (commandStr.left(12) == "ksystraycmd ")
+  {
+    commandStr.remove(0, 12);
+    m_systrayBool = true;
+  }
+  else
+    m_systrayBool = false;
+    
   m_origCommandStr = commandStr;
+  QString pathStr = config.readPathEntry( "Path" );
   m_terminalBool = config.readBoolEntry( "Terminal" );
   m_terminalOptionStr = config.readEntry( "TerminalOptions" );
   m_suidBool = config.readBoolEntry( "X-KDE-SubstituteUID" );
@@ -2814,6 +2827,7 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
   w->genNameEdit->setText( genNameStr );
   w->commentEdit->setText( commentStr );
   w->commandEdit->setText( commandStr );
+  w->pathEdit->lineEdit()->setText( pathStr );
   w->filetypeList->setAllColumnsShowFocus(true);
 
   KMimeType::Ptr defaultMimetype = KMimeType::defaultMimeTypePtr();
@@ -3002,7 +3016,11 @@ void KDesktopPropsPlugin::applyChanges()
   config.writeEntry( "GenericName", w->genNameEdit->text() );
   config.writeEntry( "GenericName", w->genNameEdit->text(), true, false, true ); // for compat
 
-  config.writePathEntry( "Exec", w->commandEdit->text() );
+  if (m_systrayBool)
+    config.writePathEntry( "Exec", w->commandEdit->text().prepend("ksystraycmd ") );
+  else
+    config.writePathEntry( "Exec", w->commandEdit->text() );
+  config.writePathEntry( "Path", w->pathEdit->lineEdit()->text() );
 
   // Write mimeTypes
   QStringList mimeTypes;
@@ -3105,6 +3123,7 @@ void KDesktopPropsPlugin::slotAdvanced()
   w->suidEditLabel->setEnabled(m_suidBool);
 
   w->startupInfoCheck->setChecked(m_startupBool);
+  w->systrayCheck->setChecked(m_systrayBool);
 
   if (m_dcopServiceType == "unique")
     w->dcopCombo->setCurrentItem(2);
@@ -3147,6 +3166,8 @@ void KDesktopPropsPlugin::slotAdvanced()
            this, SIGNAL( changed() ) );
   connect( w->startupInfoCheck, SIGNAL( toggled( bool ) ),
            this, SIGNAL( changed() ) );
+  connect( w->systrayCheck, SIGNAL( toggled( bool ) ),
+           this, SIGNAL( changed() ) );
   connect( w->dcopCombo, SIGNAL( highlighted( int ) ),
            this, SIGNAL( changed() ) );
 
@@ -3157,6 +3178,7 @@ void KDesktopPropsPlugin::slotAdvanced()
     m_suidBool = w->suidCheck->isChecked();
     m_suidUserStr = w->suidEdit->text().stripWhiteSpace();
     m_startupBool = w->startupInfoCheck->isChecked();
+    m_systrayBool = w->systrayCheck->isChecked();
 
     if (w->terminalCloseCheck->isChecked())
     {
