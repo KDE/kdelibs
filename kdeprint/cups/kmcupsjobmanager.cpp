@@ -282,7 +282,7 @@ QValueList<KAction*> KMCupsJobManager::createPluginActions(KActionCollection *co
 	act->setGroup("plugin");
 	list << (act = new PluginAction(2, i18n("&Decrease Priority"), "down", 0, coll, "plugin_priodown"));
 	act->setGroup("plugin");
-	list << (act = new PluginAction(3, i18n("&Edit Attributes"), "edit", 0, coll, "plugin_editjob"));
+	list << (act = new PluginAction(3, i18n("&Edit Attributes..."), "edit", 0, coll, "plugin_editjob"));
 	act->setGroup("plugin");
 
 	return list;
