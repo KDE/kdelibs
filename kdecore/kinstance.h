@@ -77,17 +77,20 @@ class KInstance
     virtual ~KInstance();
 
     /**
-     *  Returns the application standard dirs object.
+     * Returns the application standard dirs object.
+     * @return The KStandardDirs of the application.
      */
     KStandardDirs	*dirs() const;
 
     /**
-     *  Returns the general config object.
+     * Returns the general config object ("appnamerc").
+     * @return the KConfig object for the instance.
      */
     KConfig            *config() const;
 
     /**
      *  Returns an iconloader object.
+     * @return the iconloader object.
      */
     KIconLoader	       *iconLoader() const;
 
@@ -101,18 +104,22 @@ class KInstance
     /**
      *  Returns the about data of this instance
      *  Warning, can be 0L
+     * @return the about data of the instance, or 0 if it has 
+     *         not been set yet
      */
     const KAboutData *aboutData() const;
 
     /**
-     * @return the instance name
+     * Returns the name of the instance
+     * @return the instance name, can be null if the KInstance has been 
+     *         created with a null name
      */
     QCString          instanceName() const;
 
     /**
-     * @return the KMimeSourceFactory set as default for this application.
-     *
+     * Returns the @ref KMimeSourceFactory of the instance.
      * Mainly added for API completeness and future extensibility.
+     * @return the KMimeSourceFactory set as default for this application.
      */
     KMimeSourceFactory* mimeSourceFactory () const;
 
