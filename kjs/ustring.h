@@ -49,7 +49,7 @@ namespace KJS {
    * representation is compatible to XChar2b and QChar. It's therefore
    * possible to exchange data with X and Qt with shallow copies.
    */
-  struct UChar {
+  struct KJS_PACKED UChar {
     /**
      * Construct a character with value 0.
      */ 
@@ -97,8 +97,8 @@ namespace KJS {
     friend bool operator==(const UChar &c1, const UChar &c2);
     friend bool operator==(const UString& s1, const char *s2);
     friend bool operator<(const UString& s1, const UString& s2);
-    unsigned char hi KJS_PACKED;
-    unsigned char lo KJS_PACKED;
+    unsigned char hi;
+    unsigned char lo;
   };
 
   /**
