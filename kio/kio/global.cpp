@@ -799,7 +799,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
       techName = i18n( "Protocol %1 is not a Filter Protocol" ).arg( protocol );
       description = i18n( "The <strong>U</strong>niversal <strong>R</strong>esource "
         "<strong>L</strong>ocation (URL) that you entered did not refer to "
-        "vaild mechanism of accessing the specific resource, "
+        "a valid mechanism of accessing the specific resource, "
         "<strong>%1%1</strong>." )
         .arg( host != QString::null ? host + '/' : QString::null ).arg( dir );
       causes << i18n( "KDE is able to communicate through a protocol within a "
