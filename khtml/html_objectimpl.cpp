@@ -29,6 +29,7 @@ HTMLAppletElementImpl::~HTMLAppletElementImpl()
     if(base) base->deref();
     if(code) code->deref();
     if(name) name->deref();
+    if(applet) delete applet;
 }
 
 const DOMString HTMLAppletElementImpl::nodeName() const
@@ -128,6 +129,7 @@ void HTMLAppletElementImpl::attach(KHTMLWidget *_view)
 
 void HTMLAppletElementImpl::detach()
 {
+    if(applet) delete applet;
     view = 0;
 }
 
