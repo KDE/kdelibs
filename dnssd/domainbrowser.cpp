@@ -73,7 +73,7 @@ void DomainBrowser::startBrowse()
 	for (QStringList::const_iterator it=d->m_domains.begin(); it!=itEnd; ++it ) {
 		emit domainAdded(*it);
 		if (d->m_recursive) {
-			Query* b = new Query("_browse._dns-sd._udp",(*it));
+			Query* b = new Query("b._dns-sd._udp",(*it));
 			connect(b,SIGNAL(serviceAdded(DNSSD::RemoteService::Ptr)),this,
 				SLOT(gotNewDomain(DNSSD::RemoteService::Ptr)));
 			connect(b,SIGNAL(serviceRemoved(DNSSD::RemoteService::Ptr )),this,
