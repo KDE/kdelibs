@@ -16,7 +16,7 @@
 
 class QLineEdit;
 class QFrame;
-class KButton;
+class QToolButton;
 class QLabel;
 class QComboBox;
 class QTimer;
@@ -72,10 +72,10 @@ protected:
   QFrame* frameSeparator1;
   QFrame* frameSeparator2;
   BusinessCard* card;
-  KButton* buttonFirst; KButton* buttonPrevious;
-  KButton* buttonNext; KButton* buttonLast;
-  KButton* buttonAdd; KButton* buttonChange; 
-  KButton* buttonRemove; KButton* buttonSearch;
+  QToolButton* buttonFirst; QToolButton* buttonPrevious;
+  QToolButton* buttonNext; QToolButton* buttonLast;
+  QToolButton* buttonAdd; QToolButton* buttonChange; 
+  QToolButton* buttonRemove; QToolButton* buttonSearch;
   // the additional windows
   bool showSearchResults;
   SearchResults *searchResults; // zero if off
