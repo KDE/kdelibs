@@ -12,15 +12,16 @@ noinst_PROGRAMS = kconfigtest kledlamptest kprogresstest kurltest kpannertest \
 		kcolordlgtest kdatepicktest kfontdialogtest	\
 		kmsgboxtest kpopuptest ktabctltest ktreelisttest	\
 		kkeyconfigtest kseparatortest kiconloadertest		\
-		ktoolbartest
+		ktoolbartest klinetest kstatusbartest kspinboxtest
 
 noinst_HEADERS = kdatepicktestdlg.h kmsgboxtest.h ktreelisttest.h \
 		kkeyconfigtest.h ktabctltest.h kiconloadertestmain.h	\
-		ktoolbartest.h
+		ktoolbartest.h klinetest.h kstatusbartest.h kspinboxtest.h
 
 BUILT_SOURCES = ktabctltest.moc kmsgboxtest.moc kdatepicktestdlg.moc \
 		ktreelisttest.moc kkeyconfigtest.moc kiconloadertestmain.moc \
-		kconfigtest.moc kpannertest.moc ktoolbartest.moc
+		kconfigtest.moc kpannertest.moc ktoolbartest.moc klinetest.moc \
+		kstatusbartest.moc kspinboxtest.moc
 
 ktabctltest.cpp: ktabctltest.moc
 kiconloadertestmain.cpp: kiconloadertestmain.moc
@@ -31,6 +32,9 @@ kkeyconfigtest.cpp: kkeyconfigtest.moc
 kconfigtest.cpp: kconfigtest.moc
 kpannertest.cpp: kpannertest.moc
 ktoolbartest.cpp: ktoolbartest.moc
+klinetest.cpp: klinetest.moc
+kstatusbartest.cpp: kstatusbartest.moc
+kspinboxtest.cpp: kspinboxtest.moc
 
 kconfigtest_SOURCES = kconfigtest.cpp
 kledlamptest_SOURCES = kledlamptest.cpp
@@ -48,6 +52,9 @@ kkeyconfigtest_SOURCES = kkeyconfigtest.cpp
 kseparatortest_SOURCES = kseparatortest.cpp
 kiconloadertest_SOURCES = kiconloadertest.cpp kiconloadertestmain.cpp
 ktoolbartest_SOURCES = ktoolbartest.cpp
+klinetest_SOURCES = klinetest.cpp
+kstatusbartest_SOURCES = kstatusbartest.cpp
+kspinboxtest_SOURCES = kspinboxtest.cpp
 
 SUFFIXES = .moc
 LDADD =  -L$(topdir)/kdecore/.libs -L$(topdir)/kdeui/.libs -lkdeui -lkdecore @X_LDFLAGS@ -lX11 -lXext @QT_LDFLAGS@ -lqt
