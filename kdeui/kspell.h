@@ -32,13 +32,14 @@ class KSpellDlg;
 /**
  * KDE Spellchecker
  *
- * A KDE programmer's interface to International ISpell 3.1.  (GPL 1997)
+ * A KDE programmer's interface to International ISpell 3.1. ASpell and
+ * HSpell.
  * A static method, @ref modalCheck() is provided for convenient
  *  access to the spellchecker.
  *
  * @author David Sweet <dsweet@kde.org>
  * @version $Id$
- * @see KSpellConfig
+ * @see KSpellConfig, KSyntaxHighlighter
  */
 
 class KSpell : public QObject
@@ -63,6 +64,21 @@ public:
   enum spellStatus { Starting = 0, Running, Cleaning, Finished, Error, Crashed, FinishedNoMisspellingsEncountered };
 
   /**
+   * These are possible types of documents which the spell checker can check.
+   *
+   * @li @p Text  - The default type, checks every word
+   * @li @p HTML  - For HTML/SGML/XML documents, will skip the tags,
+   * @li @p TeX   - For TeX/LaTeX documents, will skip commands,
+   * @li @p Nroff - For nroff/troff documents.
+   *
+   * Please note that not every option is supported on every type of
+   * checker (e.g. ASpell doesn't support Nroff). In case a type
+   * of a document is not supported the default Text option will
+   * be used.
+   */
+  enum SpellerType { Text = 0, HTML, TeX, Nroff };
+
+  /**
    * Starts the spellchecker.
    *
    * KSpell emits @ref ready() when it has verified that
@@ -81,7 +97,29 @@ public:
    */
   KSpell(QWidget *parent, const QString &caption,
 	 QObject *receiver, const char *slot, KSpellConfig *kcs=0,
-	 bool progressbar = TRUE, bool modal = FALSE );
+	 bool progressbar = TRUE, bool modal = FALSE);
+
+  /**
+   * Starts the spellchecker.
+   *
+   * KSpell emits @ref ready() when it has verified that
+   * ISpell/ASpell is working properly. Pass the name of a slot -- do not pass zero!
+   * Be sure to call @ref cleanUp() when you are done with KSpell.
+   *
+   * If KSpell could not be started correctly, @ref death() is emitted.
+   *
+   * @param parent      Parent of @ref KSpellConfig dialog..
+   * @param caption     Caption of @ref KSpellConfig dialog.
+   * @param receiver    Receiver object for the ready(KSpell *) signal.
+   * @param slot        Receiver's slot, will be connected to the ready(KSpell *) signal.
+   * @param kcs         Configuration for KSpell.
+   * @param progressbar Indicates if progress bar should be shown.
+   * @param modal       Indicates modal or non-modal dialog.
+   * @param type        Type of the document to check
+   */
+  KSpell(QWidget *parent, const QString &caption,
+	 QObject *receiver, const char *slot, KSpellConfig *kcs,
+	 bool progressbar, bool modal, SpellerType type);
 
   /**
    * Returns the status of KSpell.
@@ -512,7 +550,10 @@ protected:
   bool cleanFputs (const QString & s, bool appendCR=TRUE);
   bool cleanFputsWord (const QString & s, bool appendCR=TRUE);
   void startIspell();
-  bool writePersonalDictionary ();
+  bool writePersonalDictionary();
+  void initialize( QWidget *_parent, const QString &_caption,
+                   QObject *obj, const char *slot, KSpellConfig *_ksc,
+                   bool _progressbar, bool _modal, SpellerType type );
 
 private:
   class KSpellPrivate;
