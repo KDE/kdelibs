@@ -237,8 +237,10 @@ AC_ARG_ENABLE(qtonly,
 [if test "$enableval" = yes; then
   AC_MSG_RESULT(yes)
   AC_DEFINE(K_WS_QTONLY,1,[Define if you want qt-only stuff under X11])
-fi])
-dnl end check fro --enable-qtonly
+else
+  AC_MSG_RESULT(no)
+fi], [AC_MSG_RESULT(no)])
+dnl end check for --enable-qtonly
 
 
 AC_SUBST(ICE_SUBDIR, 'ICE')
