@@ -69,7 +69,7 @@ RenderFlow::RenderFlow()
 void RenderFlow::setStyle(RenderStyle *style)
 {
 
-//    kdDebug( 6040 ) << (void*)this<< " renderFlow::setstyle()" << endl;
+//    kdDebug( 6040 ) << (void*)this<< " renderFlow(" << renderName() << ")::setstyle()" << endl;
 
     RenderBox::setStyle(style);
 
@@ -210,7 +210,6 @@ void RenderFlow::layout()
     if ( (!specialObjects || (isListItem() && specialObjects->count() == 1) ) && oldWidth == m_width && layouted() && !isAnonymousBox()
             && !containsPositioned() && !isPositioned()) return;
 
-
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(RenderFlow) " << this << " ::layout() width=" << m_width << ", layouted=" << layouted() << endl;
     if(containingBlock() == static_cast<RenderObject *>(this))
@@ -325,9 +324,15 @@ void RenderFlow::layoutBlockChildren()
 	    //kdDebug() << "RenderFlow::layoutBlockChildren inserting positioned into " << child->containingBlock()->renderName() << endl;
             child = child->nextSibling();
             continue;
-        } else if ( child->isReplaced() )
+        } else if ( child->isReplaced() ) {
             child->layout();
-
+	} else if ( child->isFloating() ) {
+	    insertFloat( child );
+	    positionNewFloats();
+	    child = child->nextSibling();
+	    continue;
+	}
+	
         if(checkClear(child)) prevMargin = 0; // ### should only be 0
         // if oldHeight+prevMargin < newHeight
         int margin = child->marginTop();
@@ -455,7 +460,7 @@ RenderFlow::insertPositioned(RenderObject *o)
 void
 RenderFlow::insertFloat(RenderObject *o)
 {
-//    kdDebug( 6040 ) << renderName() << " " << this << "::insertFloat()" << endl;
+//    kdDebug( 6040 ) << renderName() << " " << this << "::insertFloat(" << o <<")" << endl;
 
     // a floating element
     if(!specialObjects) {
@@ -818,7 +823,7 @@ RenderFlow::rightBottom()
 void
 RenderFlow::clearFloats()
 {
-//    kdDebug( 6040 ) << "clearFloats" << endl;
+//    kdDebug( 6040 ) << this <<" clearFloats" << endl;
 
     if (specialObjects) {
 	if( containsPositioned() ) {
@@ -840,7 +845,7 @@ RenderFlow::clearFloats()
     // find the element to copy the floats from
     // pass non-flows
     // pass fAF's unless they contain overhanging stuff
-    while (prev && (!prev->isFlow() ||
+    while (prev && (!prev->isFlow() || prev->isFloating() ||
         (prev->style()->flowAroundFloats() &&
             (static_cast<RenderFlow *>(prev)->floatBottom()+prev->yPos() < m_y ))))
             prev = prev->previousSibling();
@@ -852,7 +857,7 @@ RenderFlow::clearFloats()
         offset -= prev->yPos();
     } else {
         prev = m_parent;
-        if(!prev) return;
+	if(!prev) return;
     }
 
     // add overhanging special objects from the previous RenderFlow

@@ -283,7 +283,8 @@ void DocumentImpl::recalcStyle()
     KGlobal::charsets()->setQFont(f, settings->charset());
     m_style->setFont(f);
 
-    m_style->setHtmlHacks(true); // enable html specific rendering tricks
+    if ( parseMode() != Strict )
+	m_style->setHtmlHacks(true); // enable html specific rendering tricks
     if(m_render)
 	m_render->setStyle(m_style);
 
