@@ -26,7 +26,6 @@
 #include <qptrstack.h>
 #include <qobject.h>
 #include <qlistview.h>
-#include <qstring.h>
 
 #include <kdialogbase.h>
 #include <klocale.h>
@@ -34,6 +33,7 @@
 #include "kbookmark.h"
 #include "kbookmarkmanager.h"
 
+class QString;
 class QPopupMenu;
 class QPushButton;
 class QListView;
@@ -100,7 +100,7 @@ public:
   KBookmarkMenu( KBookmarkManager* mgr,
                  KBookmarkOwner * owner, KPopupMenu * parentMenu,
                  KActionCollection * collec, bool root, bool add = true,
-                 const QString & parentAddress = QString() );
+                 const QString & parentAddress = "" );
 
   ~KBookmarkMenu();
 
