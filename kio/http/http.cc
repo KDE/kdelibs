@@ -132,6 +132,7 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool,
              :TCPSlaveBase( 0, protocol , pool, app,
                             (protocol == "https") )
 {
+  m_lineBufUnget = 0;
   m_protocol = protocol;
   m_bKeepAlive = false;
   m_bUseCache = true;
@@ -462,9 +463,36 @@ char *HTTPProtocol::gets (char *s, int size)
   return s;
 }
 
+void HTTPProtocol::ungets(char *str, int size)
+{
+  char *newbuf = (char *) malloc(size+1+m_lineCountUnget);
+  memcpy(newbuf, str, size );
+  newbuf[size] = '\n';
+  if (m_lineCountUnget)
+     memcpy(newbuf+size+1, m_linePtrUnget, m_lineCountUnget);
+  if (m_lineBufUnget)
+     free(m_lineBufUnget);
+  m_lineBufUnget = newbuf;
+  m_linePtrUnget = newbuf;
+  m_lineCountUnget = size+1+m_lineCountUnget;
+}
+
 ssize_t HTTPProtocol::read (void *b, size_t nbytes)
 {
   ssize_t ret = 0;
+  if (m_lineCountUnget > 0)
+  {
+     ret = ( nbytes < m_lineCountUnget ? nbytes : m_lineCountUnget );
+     m_lineCountUnget -= ret;
+     memcpy(b, m_linePtrUnget, ret);
+     m_linePtrUnget += ret;
+     if (m_lineCountUnget == 0)
+     {
+        free(m_lineBufUnget);
+        m_lineBufUnget = 0;
+     }
+     return ret;
+  }
   if (m_lineCount > 0)
   {
      ret = ( nbytes < m_lineCount ? nbytes : m_lineCount );
@@ -639,6 +667,7 @@ bool HTTPProtocol::http_open()
 
   m_fcache = 0;
   m_lineCount = 0;
+  m_lineCountUnget = 0;
   m_bCachedRead = false;
   m_bCachedWrite = false;
   m_bMustRevalidate = false;
@@ -1467,6 +1496,13 @@ bool HTTPProtocol::readHeader()
           kdDebug(7113) << "Content-Disposition: " << disposition << endl;
         }
       }
+    }
+    else if (buf[0] == '<')
+    {
+      // We get XML / HTTP without a proper header
+      // put string back
+      ungets(buf, strlen(buf));
+      break;
     }
 
     // Clear out our buffer for further use.

@@ -164,7 +164,9 @@ protected:
   ssize_t read (void *b, size_t nbytes);
 
   char *gets (char *str, int size);
-
+  
+  void ungets(char *str, int size);
+  
   /**
     * Add an encoding on to the appropiate stack this
     * is nececesary because transfer encodings and
@@ -310,6 +312,9 @@ protected:
   char m_lineBuf[1024];
   char *m_linePtr;
   size_t m_lineCount;
+  char *m_lineBufUnget;
+  char *m_linePtrUnget;
+  size_t m_lineCountUnget;
 
   // Holds the POST data so it won't get lost on if we
   // happend to get a 401/407 response when submitting,
