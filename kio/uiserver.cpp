@@ -386,7 +386,7 @@ void UIServer::jobFinished( int id )
 
 void UIServer::totalSize( int id, unsigned long size )
 {
-  kdDebug() << "UIServer::totalSize " << id << " " << size << endl;
+  kdDebug() << "UIServer::totalSize " << id << " " << (unsigned int) size << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -396,7 +396,7 @@ void UIServer::totalSize( int id, unsigned long size )
 
 void UIServer::totalFiles( int id, unsigned long files )
 {
-  kdDebug() << "UIServer::totalFiles " << id << " " << files << endl;
+  kdDebug() << "UIServer::totalFiles " << id << " " << (unsigned int) files << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -406,7 +406,7 @@ void UIServer::totalFiles( int id, unsigned long files )
 
 void UIServer::totalDirs( int id, unsigned long dirs )
 {
-  kdDebug() << "UIServer::totalDirs " << id << " " << dirs << endl;
+  kdDebug() << "UIServer::totalDirs " << id << " " << (unsigned int) dirs << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -416,7 +416,7 @@ void UIServer::totalDirs( int id, unsigned long dirs )
 
 void UIServer::processedSize( int id, unsigned long size )
 {
-  kdDebug() << "UIServer::processedSize " << id << " " << size << endl;
+  kdDebug() << "UIServer::processedSize " << id << " " << (unsigned int) size << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -426,7 +426,7 @@ void UIServer::processedSize( int id, unsigned long size )
 
 void UIServer::processedFiles( int id, unsigned long files )
 {
-  kdDebug() << "UIServer::processedFiles " << id << " " << files << endl;
+  kdDebug() << "UIServer::processedFiles " << id << " " << (unsigned int) files << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -436,7 +436,7 @@ void UIServer::processedFiles( int id, unsigned long files )
 
 void UIServer::processedDirs( int id, unsigned long dirs )
 {
-  kdDebug() << "UIServer::processedDirs " << id << " " << dirs << endl;
+  kdDebug() << "UIServer::processedDirs " << id << " " << (unsigned int) dirs << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -446,7 +446,7 @@ void UIServer::processedDirs( int id, unsigned long dirs )
 
 void UIServer::percent( int id, unsigned long ipercent )
 {
-  kdDebug() << "UIServer::percent " << id << " " << ipercent << endl;
+  kdDebug() << "UIServer::percent " << id << " " << (unsigned int) ipercent << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -456,7 +456,7 @@ void UIServer::percent( int id, unsigned long ipercent )
 
 void UIServer::speed( int id, unsigned long bytes_per_second )
 {
-  kdDebug() << "UIServer::speed " << id << " " << bytes_per_second << endl;
+  kdDebug() << "UIServer::speed " << id << " " << (unsigned int) bytes_per_second << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {

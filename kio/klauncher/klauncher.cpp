@@ -324,7 +324,7 @@ KLauncher::slotKInitData(int)
      return;
    }
 
-   kdDebug(7016) << "Unexpected command from KInit (" << request_header.cmd
+   kdDebug(7016) << "Unexpected command from KInit (" << (unsigned int) request_header.cmd
                  << ")" << endl;
 }
 
