@@ -1465,6 +1465,7 @@ const KURL& KDirLister::url() const
 
 void KDirLister::emitChanges()
 {
+qDebug("**** emitChanges: %i", d->changes == NONE );
   if ( d->changes == NONE )
     return;
 
@@ -1635,7 +1636,7 @@ bool KDirLister::matchesFilter( const KFileItem *item ) const
 bool KDirLister::matchesMimeFilter( const KFileItem *item ) const
 {
   Q_ASSERT( item );
-  return matchesMimeFilter( item->mimetype() );
+  return matchesMimeFilter( item->mimeTypePtr()->name() );
 }
 
 
