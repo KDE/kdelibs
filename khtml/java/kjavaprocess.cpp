@@ -50,7 +50,6 @@ private:
     QValueList<int> tickets;
     bool processKilled;
     int sync_count;
-    int prev_sync_count;
 };
 
 KJavaProcess::KJavaProcess() : KProcess()
@@ -216,17 +215,19 @@ void KJavaProcess::sendSync( int ticket, char cmd_code, const QStringList& args 
             goto bail_out;
         } else if (KProcess::input_data) {
             KProcess::slotSendData(dummy);
+        } else if( d->BufferList.count() > 0) {
+            popBuffer();
         } else {
             int nr = ::write(in[1], data, size);
             size -= nr;
             data += nr;
         }
     } while (size > 0);
-    d->prev_sync_count = current_sync_count = d->sync_count;
+    current_sync_count = d->sync_count;
     do {
         FD_ZERO(&fds);
         FD_SET(out[0], &fds);
-        tv.tv_sec = 5;
+        tv.tv_sec = 15;
         tv.tv_usec = 0;
         kdDebug(6100) << "KJavaProcess::sendSync bf read" << endl;
         int retval = select(out[0]+1, &fds, 0L, 0L, &tv);
@@ -234,11 +235,7 @@ void KJavaProcess::sendSync( int ticket, char cmd_code, const QStringList& args 
         if (retval < 0 && errno == EINTR) {
             continue;
         } else if (retval <= 0) {
-            if (d->prev_sync_count != current_sync_count) {
-                d->prev_sync_count = current_sync_count;
-                continue;
-            }
-            kdError(6100) << "KJavaProcess::sendSync timeout " << retval << endl;
+            kdError(6100) << "KJavaProcess::sendSync timeout " << retval<< endl;
             break;
         } else {
             slotReceivedData(out[0], dummy);
@@ -323,7 +320,7 @@ void KJavaProcess::slotWroteData( )
     d->BufferList.removeFirst();  //this should delete it since we setAutoDelete(true)
     kdDebug(6100) << "slotWroteData " << d->BufferList.count() << endl;
 
-    if ( d->BufferList.count() >= 1 )
+    if ( d->BufferList.count() >= 1 && d->sync_count == 0 )
     {
         popBuffer();
     }
