@@ -20,8 +20,6 @@
 
 #include <kpixmap.h>
 
-#include <X11/X.h>
-
 class KSharedPixmapPrivate;
 
 /**
@@ -105,10 +103,6 @@ private:
     bool copy(QString id, QRect rect);
     void init();
 
-    Atom pixmap, target;
-    Atom m_Selection;
-
-    QRect m_Rect;
     KSharedPixmapPrivate *d;
 };
 

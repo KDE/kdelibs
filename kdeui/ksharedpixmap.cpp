@@ -49,25 +49,36 @@
  * KSharedPixmap
  */
 
+class KSharedPixmapPrivate
+{
+public:
+  Atom pixmap;
+  Atom target;
+  Atom selection;
+  QRect rect;
+};
+
 KSharedPixmap::KSharedPixmap()
     : QWidget(0L, "shpixmap comm window")
 {
+    d = new KSharedPixmapPrivate;
     init();
 }
 
 
 KSharedPixmap::~KSharedPixmap()
 {
+    delete d;
 }
 
 
 void KSharedPixmap::init()
 {
-    pixmap = XInternAtom(qt_xdisplay(), "PIXMAP", false);
+    d->pixmap = XInternAtom(qt_xdisplay(), "PIXMAP", false);
     QCString atom;
     atom.sprintf("target prop for window %x", winId());
-    target = XInternAtom(qt_xdisplay(), atom.data(), false);
-    m_Selection = None;
+    d->target = XInternAtom(qt_xdisplay(), atom.data(), false);
+    d->selection = None;
 }
 
 
@@ -83,24 +94,24 @@ bool KSharedPixmap::isAvailable(QString name)
 
 bool KSharedPixmap::loadFromShared(QString name, QRect rect)
 {
-    if (m_Selection != None)
+    if (d->selection != None)
 	// already active
 	return false;
 
-    m_Rect = rect;
+    d->rect = rect;
     QPixmap::resize(0, 0); // invalidate
 
     QString str = QString("KDESHPIXMAP:%1").arg(name);
-    m_Selection = XInternAtom(qt_xdisplay(), str.latin1(), true);
-    if (m_Selection == None)
+    d->selection = XInternAtom(qt_xdisplay(), str.latin1(), true);
+    if (d->selection == None)
 	return false;
-    if (XGetSelectionOwner(qt_xdisplay(), m_Selection) == None) 
+    if (XGetSelectionOwner(qt_xdisplay(), d->selection) == None) 
     {
-	m_Selection = None;
+	d->selection = None;
 	return false;
     }
 
-    XConvertSelection(qt_xdisplay(), m_Selection, pixmap, target,
+    XConvertSelection(qt_xdisplay(), d->selection, d->pixmap, d->target,
 	    winId(), CurrentTime);
     return true;
 }
@@ -112,13 +123,13 @@ bool KSharedPixmap::x11Event(XEvent *event)
 	return false;
 	
     XSelectionEvent *ev = &event->xselection;
-    if (ev->selection != m_Selection)
+    if (ev->selection != d->selection)
 	return false;
 
-    if ((ev->target != pixmap) || (ev->property == None)) 
+    if ((ev->target != d->pixmap) || (ev->property == None)) 
     {
 	kdWarning(270) << k_funcinfo << "illegal selection notify event.\n";
-	m_Selection = None;
+	d->selection = None;
 	emit done(false);
 	return true;
     }
@@ -131,7 +142,7 @@ bool KSharedPixmap::x11Event(XEvent *event)
     Atom type;
 
     XGetWindowProperty(qt_xdisplay(), winId(), ev->property, 0, 1, false,
-	    pixmap, &type, &format, &nitems, &ldummy,
+	    d->pixmap, &type, &format, &nitems, &ldummy,
 	    (unsigned char **) &pixmap_id);
 
     if (nitems != 1) 
@@ -146,13 +157,13 @@ bool KSharedPixmap::x11Event(XEvent *event)
     XGetGeometry(qt_xdisplay(), *pixmap_id, &root, &dummy, &dummy, &width,
 	    &height, &udummy, &udummy);
 
-    if (m_Rect.isEmpty()) 
+    if (d->rect.isEmpty()) 
     {
 	QPixmap::resize(width, height);
 	XCopyArea(qt_xdisplay(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(),
 		0, 0, width, height, 0, 0);
 	XDeleteProperty(qt_xdisplay(), winId(), ev->property);
-	m_Selection = None;
+	d->selection = None;
 	emit done(true);
 	return true;
     }
@@ -160,9 +171,9 @@ bool KSharedPixmap::x11Event(XEvent *event)
     // Do some more processing here: Generate a tile that can be used as a
     // background tile for the rectangle "rect".
 	
-    unsigned w = m_Rect.width(), h = m_Rect.height();
+    unsigned w = d->rect.width(), h = d->rect.height();
     unsigned tw = QMIN(width, w), th = QMIN(height, h);
-    unsigned xa = m_Rect.x() % width, ya = m_Rect.y() % height;
+    unsigned xa = d->rect.x() % width, ya = d->rect.y() % height;
     unsigned t1w = QMIN(width-xa,tw), t1h = QMIN(height-ya,th);
 
     QPixmap::resize(tw, th);
@@ -176,7 +187,7 @@ bool KSharedPixmap::x11Event(XEvent *event)
     XCopyArea(qt_xdisplay(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(),
 	    0, 0, tw-t1w, th-t1h, t1w, t1h);
 
-    m_Selection = None;
+    d->selection = None;
     XDeleteProperty(qt_xdisplay(), winId(), ev->property);
     emit done(true);
     return true;
