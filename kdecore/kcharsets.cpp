@@ -191,7 +191,6 @@ static struct Builtin
     { "unicode-1-1-utf-7", "utf-7" },
     { "ucs2", "iso-10646-ucs-2" },
     { "iso10646-1", "iso-10646-ucs-2" },
-    { "big5-0", "big5" },
     { "gb18030.2000-1", "gb18030" },
     { "gb18030.2000-0", "gb18030" },
     { "gbk-0", "gbk" },
