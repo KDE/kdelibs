@@ -7,7 +7,7 @@ bin_SCRIPTS = kdb2html
 
 # Don't add plain yet!  It may overwrite the customisations.
 # lang-conv gives problems when added
-SUBDIRS = doc customization
+SUBDIRS = customization
 
 install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(bindir)
