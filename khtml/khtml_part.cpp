@@ -84,6 +84,8 @@ using namespace DOM;
 #include <qapplication.h>
 #include <qdragobject.h>
 #include <qmetaobject.h>
+#include <qvector.h>
+
 
 namespace khtml
 {
@@ -105,6 +107,7 @@ namespace khtml
     KURL m_workingURL;
     bool m_bFrame;
     QStringList m_params;
+    uint m_index;
   };
 
 };
@@ -1927,6 +1930,7 @@ bool KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, cons
     khtml::ChildFrame child;
     kdDebug( 6050 ) << "inserting new frame into frame map" << endl;
     child.m_name = frameName;
+    child.m_index = d->m_frames.count();
     it = d->m_frames.insert( frameName, child );
   }
 
@@ -2539,6 +2543,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
       newChild.m_bPreloaded = true;
       newChild.m_name = *fNameIt;
       newChild.m_serviceName = *fServiceNameIt;
+      newChild.m_index = d->m_frames.count();
 
       kdDebug( 6050 ) << *fNameIt << " ---- " << *fServiceTypeIt << endl;
 
@@ -2685,11 +2690,13 @@ QStringList KHTMLPart::frameNames() const
 const QList<KParts::ReadOnlyPart> KHTMLPart::frames() const
 {
   QList<KParts::ReadOnlyPart> res;
+  QVector<KParts::ReadOnlyPart> vec( d->m_frames.count() );
 
   ConstFrameIt it = d->m_frames.begin();
   ConstFrameIt end = d->m_frames.end();
   for (; it != end; ++it )
-     res.append( it.data().m_part );
+      vec.insert( it.data().m_index, it.data().m_part);
+  vec.toList( &res );
 
   return res;
 }
