@@ -28,6 +28,7 @@
 #include <kmainwindow.h>
 #include <kdatastream.h>
 #include <klistview.h>
+#include <ksslcertdlg.h>
 
 class QTimer;
 class ListProgress;
@@ -274,7 +275,7 @@ k_dcop:
   /*
    * Show an SSL Certificate Selection Dialog
    */
-  void showSSLCertDialog(const QStringList& certList);
+  KSSLCertDlgRet showSSLCertDialog(const QStringList& certList);
 
 protected slots:
 

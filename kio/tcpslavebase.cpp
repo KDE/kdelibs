@@ -26,6 +26,8 @@
 #include <qdatastream.h>
 
 #include <ksslcertificatehome.h>
+#include <ksslcertdlg.h>
+#include <ksslpkcs12.h>
 #include <kapp.h>
 
 using namespace KIO;
@@ -40,6 +42,7 @@ public:
   QString host;
   QString ip;
   DCOPClient *dcc;
+  KSSLPKCS12 *pkcs;
 };
 
 
@@ -69,6 +72,7 @@ void TCPSlaveBase::doConstructorStuff()
         d->cc = NULL;
         d->usingTLS = false;
 	d->dcc = NULL;
+        d->pkcs = NULL;
 }
 
 TCPSlaveBase::~TCPSlaveBase()
@@ -76,6 +80,7 @@ TCPSlaveBase::~TCPSlaveBase()
 	CleanSSL();
         if (d->usingTLS) delete d->kssl;
         if (d->dcc) delete d->dcc;
+        if (d->pkcs) delete d->pkcs;
         delete d;
 }
 
@@ -285,6 +290,11 @@ KSSLSettings kss;
 
 void TCPSlaveBase::certificatePrompt()
 {
+  if (d->pkcs) {
+     delete d->pkcs;
+     d->pkcs = NULL;
+  }
+
   if (!d->kssl) return;
 
 QStringList certs = KSSLCertificateHome::getCertificateList();
@@ -300,13 +310,47 @@ QStringList certs = KSSLCertificateHome::getCertificateList();
      }
   }
 
-  QByteArray data, ignore;
-  QCString ignoretype;
+  QByteArray data, retval;
+  QCString rettype;
   QDataStream arg(data, IO_WriteOnly);
   arg << certs;
-  d->dcc->call("kio_uiserver", "UIServer", 
-               "showSSLCertDialog(QStringList)", data, ignoretype, ignore);
+  bool rc = d->dcc->call("kio_uiserver", "UIServer", 
+               "showSSLCertDialog(QStringList)", data, rettype, retval);
 
+  if (rc && rettype == "KSSLCertDlgRet") {
+     QDataStream retStream(retval, IO_ReadOnly);
+     KSSLCertDlgRet drc;
+     retStream >> drc;
+     if (drc.ok) {
+        if (!drc.send) {
+           if (drc.save) {
+              // FIXME
+           }
+           return;
+        }
+        kdDebug() << "Client certificate dialog results...  Send? " 
+                  << drc.send << " Save? " << drc.save << " Cert: " 
+                  << drc.choice << endl;
+        KSSLPKCS12 *pkcs = KSSLCertificateHome::getCertificateByName(drc.choice, "");
+        if (!pkcs) {
+//           do {
+// FIXME
+//           } while (!pkcs);
+        }
+
+        if (pkcs) {
+           if (drc.save) {
+           // FIXME
+           }
+           if (!d->kssl->setClientCertificate(pkcs)) {
+// FIXME:
+              kdDebug() << "ERROR: client certificate could not be set." << endl;
+              delete pkcs;
+           }
+           d->pkcs = pkcs;
+        }
+     }
+  }
 }
 
 

@@ -859,14 +859,23 @@ void UIServer::showSSLInfoDialog(const QString &url, const KIO::MetaData &meta)
    // Don't delete kid!!
 }
 
-void UIServer::showSSLCertDialog(const QStringList& certList)
+KSSLCertDlgRet UIServer::showSSLCertDialog(const QStringList& certList)
 {
-   KSSLCertDlg *kcd = new KSSLCertDlg(0L, 0L, true);
-   kcd->setup(certList);
-   kdDebug(7024) << "Showing SSL certificate dialog" << endl;
-   kcd->exec();
-   kdDebug(7024) << "SSL certificate dialog closed" << endl;
-   delete kcd;
+   KSSLCertDlgRet rc;
+   rc.ok = false;
+   if (!certList.isEmpty()) {
+      KSSLCertDlg *kcd = new KSSLCertDlg(0L, 0L, true);
+      kcd->setup(certList);
+      kdDebug(7024) << "Showing SSL certificate dialog" << endl;
+      kcd->exec();
+      rc.ok = true;
+      rc.choice = kcd->getChoice();
+      rc.save = kcd->saveChoice();
+      rc.send = kcd->wantsToSend();
+      kdDebug(7024) << "SSL certificate dialog closed" << endl;
+      delete kcd;
+   }
+   return rc;
 }
 
 
