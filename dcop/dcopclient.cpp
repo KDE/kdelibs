@@ -48,6 +48,7 @@ extern "C" {
 }
 
 template class QList<DCOPObjectProxy>;
+template class QList<DCOPClientTransaction>;
 
 class DCOPClientPrivate
 {
