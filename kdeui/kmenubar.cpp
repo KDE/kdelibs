@@ -42,6 +42,9 @@
 // $Id$
 // $Log$
 //
+// Revision 1.57  1998/12/16 00:01:38  ettrich
+// small fix for menubars
+//
 // Revision 1.56  1998/12/09 14:11:58  radej
 // sven: Bad geometry (vanishing last item) fixed. Debug output commented out.
 //
@@ -65,7 +68,7 @@
 //
 // Revision 1.51  1998/11/23 11:57:17  radej
 // sven: Mac: Force show, if on top y= -2, take icon in showEvent.
-// small improvement, hope Sven like it
+//       Still doesn't gets hidden when it's window loses focus.
 //       ToolBar does.
 //
 // Revision 1.50  1998/11/23 09:57:49  ettrich
@@ -208,7 +211,7 @@ int KMenuBar::heightForWidth ( int max_width ) const
 void KMenuBar::resizeEvent (QResizeEvent *)
 {
   if (position == Flat)
-  
+    return;
   int hwidth = 9;
   if (standalone_menubar)
     hwidth = 20;
@@ -313,7 +316,7 @@ void KMenuBar::slotReadConfig ()
     if (position != Floating)
   {
     // menu->setStyle(style()); TODO: port to real Styles
-  
+    menu->setMouseTracking(true);
     if (position != Floating && position != FloatingSystem)
       menu->setFrameStyle(NoFrame);
   }
@@ -326,6 +329,7 @@ void KMenuBar::slotReadConfig ()
     if (Parent->isVisible())
     {
       Parent->hide();
+      Parent->setGeometry(Parent->geometry());
       Parent->show();
     }
 	  setMenuBarPos( FloatingSystem );
@@ -465,7 +469,7 @@ bool KMenuBar::eventFilter(QObject *ob, QEvent *ev){
           y.prepend("0");
         //if (((QMouseEvent*)ev)->button() == LeftButton)
           KWM::sendKWMCommand(QString("kpanel:go")+x+y);
-      
+
         //  KWM::sendKWMCommand(QString("krootwm:go")+x+y);
         return false; //or true? Bah...
       buttonDownOnHandle = TRUE;
@@ -528,7 +532,7 @@ bool KMenuBar::eventFilter(QObject *ob, QEvent *ev){
       }
 
     if ((ev->type() == QEvent::Paint)||(ev->type() == QEvent::Enter)||(ev->type() == QEvent::Leave) ){
-      
+
       QColorGroup g = QWidget::colorGroup();
       QPainter paint(handle);
       QBrush b = QWidget::backgroundColor();
@@ -546,7 +550,7 @@ bool KMenuBar::eventFilter(QObject *ob, QEvent *ev){
         {
         //else
           //debug ("No go mini Go");
-        
+          int dx = ( handle->width() - miniGo->width() ) / 2;
           int dy = ( handle->height() - miniGo->height() ) / 2;
           paint.drawPixmap( dx, dy, *miniGo);
         }
