@@ -22,12 +22,14 @@
 
 #include "kwalletd.h"
 
+#include <klocale.h>
 #include <kapplication.h>
 #include <dcopclient.h>
 #include <kglobal.h>
 #include <kstddirs.h>
 #include <kdebug.h>
 #include <kwalletentry.h>
+#include <kpassdlg.h>
 
 #include <qdir.h>
 
@@ -39,18 +41,9 @@ extern "C" {
 	   return new KWalletD(name);
    }
 
-   //void *__kde_do_unload;
+   void *__kde_do_unload;
 }
 
-
-/*
-   Design issues:
-
-   - If we lose a client, do we prompt to close the wallet?
-     (perhaps at shutdown time)
-
-   - Should we have a flush() which closes the wallet then reopens?
-*/
 
 KWalletD::KWalletD(const QCString &name)
 : KDEDModule(name) {
@@ -108,15 +101,22 @@ int rc = -1;
 			}
 
 			KWallet::Backend *b = new KWallet::Backend(wallet);
+			KPasswordDialog *kpd = new KPasswordDialog(KPasswordDialog::Password, i18n("The application '%1' has requested to open the wallet '%2'.  Please enter the password for this wallet below if you wish to open it, or cancel to deny access.").arg(dc->senderId()).arg(wallet), false);
+			kpd->setCaption(i18n("KDE Wallet Service"));
+			if (kpd->exec() == KDialog::Accepted) {
+				const char *p = kpd->password();
+				b->open(QByteArray().duplicate(p, strlen(p)+1));
+			}
+			delete kpd;
 			if (!b->isOpen()) {
 				delete b;
 				return -1;
 			}
 			_wallets.insert(rc = generateHandle(), b);
-			_handles[dc->appId()].append(rc);
+			_handles[dc->senderId()].append(rc);
 			b->ref();
-		} else if (!_handles[dc->appId()].contains(rc)) {
-			_handles[dc->appId()].append(rc);
+		} else if (!_handles[dc->senderId()].contains(rc)) {
+			_handles[dc->senderId()].append(rc);
 		 	_wallets.find(rc)->ref();
 		}
 	}
@@ -159,10 +159,10 @@ DCOPClient *dc = callingDcopClient();
 KWallet::Backend *w = _wallets.find(handle);
 
 	if (dc && w) { // the handle is valid and we have a client
-		if (_handles.contains(dc->appId())) { // we know this app
-			if (_handles[dc->appId()].contains(handle)) {
+		if (_handles.contains(dc->senderId())) { // we know this app
+			if (_handles[dc->senderId()].contains(handle)) {
 				// the app owns this handle
-				_handles[dc->appId()].remove(handle);
+				_handles[dc->senderId()].remove(handle);
 			}
 		}
 
@@ -201,7 +201,7 @@ return _wallets.find(handle) != 0;
 
 QStringList KWalletD::wallets() const {
 QString path = KGlobal::dirs()->saveLocation("kwallet");
-QDir dir(path, "*.kwd");
+QDir dir(path, "*.kwl");
 QStringList rc;
 
 	dir.setFilter(QDir::Files | QDir::NoSymLinks);
@@ -379,8 +379,8 @@ DCOPClient *dc = callingDcopClient();
 KWallet::Backend *w = _wallets.find(handle);
 
 	if (dc && w) { // the handle is valid and we have a client
-		if (_handles.contains(dc->appId())) { // we know this app
-			if (_handles[dc->appId()].contains(handle)) {
+		if (_handles.contains(dc->senderId())) { // we know this app
+			if (_handles[dc->senderId()].contains(handle)) {
 				// the app owns this handle
 				return w;
 			}
