@@ -1647,10 +1647,10 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 	    } else {
 	      const QString str(value.stripWhiteSpace()); // ### Optimize
 	      if (str.left(4).lower() == "url(") {
-		DOMString value(curP, endP - curP);
-		value = khtml::parseURL(value);
-                if (!value.isEmpty())
-                    parsedValue = new CSSImageValueImpl(value, this);
+                  DOMString value(curP, endP - curP);
+                  value = khtml::parseURL(value);
+                  if (!value.isEmpty())
+                    parsedValue = new CSSImageValueImpl(DOMString(KURL(baseURL().string(), value.string()).url()), this);
 #ifdef CSS_DEBUG
 		kdDebug( 6080 ) << "image, url=" << value.string() << " base=" << baseURL().string() << endl;
 #endif
@@ -2098,7 +2098,9 @@ bool StyleBaseImpl::parseAuralValue( const QChar *curP, const QChar *endP, int p
         } else {
             DOMString value(curP, endP - curP);
             value = khtml::parseURL(value);
-            parsedValue = new CSSPrimitiveValueImpl(value, CSSPrimitiveValue::CSS_URI);
+            parsedValue = new CSSPrimitiveValueImpl(
+                DOMString(KURL(baseURL(), value).url()),
+                CSSPrimitiveValue::CSS_URI);
         }
         break;
     }
@@ -2338,7 +2340,8 @@ CSSValueImpl* StyleBaseImpl::parseContent(const QChar *curP, const QChar *endP)
             // url
 	    DOMString value(curP, endP - curP);
 	    value = khtml::parseURL(value);
-            parsedValue = new CSSImageValueImpl(value, this);
+            parsedValue = new CSSImageValueImpl(
+                DOMString(KURL(baseURL().string(), value.string()).url()), this);
     #ifdef CSS_DEBUG
 	    kdDebug( 6080 ) << "content, url=" << value.string() << " base=" << baseURL().string() << endl;
     #endif
