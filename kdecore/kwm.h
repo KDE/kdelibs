@@ -208,16 +208,25 @@ public:
    * setDecoration() even if the window is already mapped.
    *
    * KWM understands the following values at present:
-   *   0 :  Not decorated at all
-   *   1 :  Normal decoration (transient windows with dialog decoration,
-   *        shaped windows not decorated at all)
-   *   2 :  Tiny decoration (just a little frame)
+   *   noDecoration :      Not decorated at all
+   *   normalDecoration :  Normal decoration (transient windows with 
+   *                       dialog decoration, shaped windows not decorated 
+   *                       at all)
+   *                       
+   *   tinyDecoration :    Tiny decoration (just a little frame)
+   *
+   * If your window does not want the focus, you can OR the decoration
+   * property with noFocus, for example kpager:
+   *    KWM::setDecoration(winId(), KWM::tinyDecoration | KWM::noFocus);
    *
    * Note: X11R6 does not offer a standard property or protocoll for
    * this purpose. So kwm uses a KDE specific property which may have
    * no effect with other window managers.  
    */
   static void setDecoration(Window w, long value);
+  
+  enum {noDecoration = 0, normalDecoration = 1, tinyDecoration = 2,
+	noFocus = 256};
 
   /** 
    * Invokes the logout process (session management, logout dialog, ...)
