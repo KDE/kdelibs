@@ -970,7 +970,7 @@ if test -z "$show_help"; then
       freebsd)
         version_vars="$version_vars major versuffix"
         major="$current"
-	if [ $PORTOBJFORMAT = elf ]; then
+	if [ "$PORTOBJFORMAT" = elf ]; then
         versuffix="$current";
 	else
         versuffix="$current.$revision";
