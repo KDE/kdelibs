@@ -10,14 +10,17 @@
 <!ENTITY traducteurEricBischoff       '<othercredit role="translator"><firstname>Éric</firstname><surname>Bischoff</surname><affiliation><address><email>e.bischoff@noos.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurEricBischoff        '<othercredit role="reviewer"><firstname>Éric</firstname><surname>Bischoff</surname><affiliation><address><email>e.bischoff@noos.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
-<!ENTITY traducteurJeromeBlanc        '<othercredit role=\"translator\"><firstname>Jérôme</firstname><surname>Blanc</surname><affiliation><address><email>01246774@brookes.ac.uk</email></address> </affiliation><contrib>Traduction française</contrib></othercredit>'>
-<!ENTITY relecteurJeromeBlanc         '<othercredit role=\"reviewer\"><firstname>Jérôme</firstname><surname>Blanc</surname><affiliation><address><email>01246774@brookes.ac.uk</email></address> </affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
+<!ENTITY traducteurJeromeBlanc        '<othercredit role="translator"><firstname>Jérôme</firstname><surname>Blanc</surname><affiliation><address><email>01246774@brookes.ac.uk</email></address> </affiliation><contrib>Traduction française</contrib></othercredit>'>
+<!ENTITY relecteurJeromeBlanc         '<othercredit role="reviewer"><firstname>Jérôme</firstname><surname>Blanc</surname><affiliation><address><email>01246774@brookes.ac.uk</email></address> </affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
-<!ENTITY traducteurThibautCousin      '<othercredit role=\"translator\"><firstname>Thibaut</firstname><surname>Cousin</surname><affiliation><address><email>cousin@in2p3.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
-<!ENTITY relecteurThibautCousin      '<othercredit role=\"reviewer\"><firstname>Thibaut</firstname><surname>Cousin</surname><affiliation><address><email>cousin@in2p3.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
+<!ENTITY traducteurThibautCousin      '<othercredit role="translator"><firstname>Thibaut</firstname><surname>Cousin</surname><affiliation><address><email>cousin@in2p3.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
+<!ENTITY relecteurThibautCousin      '<othercredit role="reviewer"><firstname>Thibaut</firstname><surname>Cousin</surname><affiliation><address><email>cousin@in2p3.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
 <!ENTITY traducteurGerardDelafond     '<othercredit role="translator"><firstname>Gérard</firstname><surname>Delafond</surname><affiliation><address><email>g.delafond@medsyn.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurGerardDelafond      '<othercredit role="reviewer"><firstname>Gérard</firstname><surname>Delafond</surname><affiliation><address><email>g.delafond@medsyn.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
+
+<!ENTITY traducteurYvesDessertine     '<othercredit role="translator"><firstname>Yves</firstname><surname>Dessertine</surname><affiliation><address><email>yves.d@hrnet.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>                 
+<!ENTITY relecteurYvesDessertine      '<othercredit role="reviewer"><firstname>Yves</firstname><surname>Dessertine</surname><affiliation><address><email>yves.d@hrnet.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
 <!ENTITY traducteurChristopheDioux    '<othercredit role="translator"><firstname>Christophe</firstname><surname>Dioux</surname><affiliation><address><email>chdioux@club-internet.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurChristopheDioux     '<othercredit role="reviewer"><firstname>Christophe</firstname><surname>Dioux</surname><affiliation><address><email>chdioux@club-internet.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
@@ -25,23 +28,23 @@
 <!ENTITY traducteurLudovicGrossard    '<othercredit role="translator"><firstname>Ludovic</firstname><surname>Grossard</surname><affiliation><address><email>grossard@kde.org</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurLudovicGrossard     '<othercredit role="reviewer"><firstname>Ludovic</firstname><surname>Grossard</surname><affiliation><address><email>grossard@kde.org</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
-<!ENTITY traducteurRobertJacolin      '<othercredit role=\"translator\"><firstname>Robert</firstname><surname>Jacolin</surname><affiliation><address><email>rjacolin@ifrance.com</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
-<!ENTITY relecteurRobertJacolin      '<othercredit role=\"reviewer\"><firstname>Robert</firstname><surname>Jacolin</surname><affiliation><address><email>rjacolin@ifrance.com</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
+<!ENTITY traducteurRobertJacolin      '<othercredit role="translator"><firstname>Robert</firstname><surname>Jacolin</surname><affiliation><address><email>rjacolin@ifrance.com</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
+<!ENTITY relecteurRobertJacolin      '<othercredit role="reviewer"><firstname>Robert</firstname><surname>Jacolin</surname><affiliation><address><email>rjacolin@ifrance.com</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
-<!ENTITY traducteurGoneriLeBouder     '<othercredit role=\"translator\"><firstname>Gonéri</firstname><surname>Le Bouder </surname><affiliation><address><email>goneri@gnuart.org</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
-<!ENTITY relecteurGoneriLeBouder     '<othercredit role=\"reviewer\"><firstname>Gonéri</firstname><surname>Le Bouder </surname><affiliation><address><email>goneri@gnuart.org</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
+<!ENTITY traducteurGoneriLeBouder     '<othercredit role="translator"><firstname>Gonéri</firstname><surname>Le Bouder </surname><affiliation><address><email>goneri@gnuart.org</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
+<!ENTITY relecteurGoneriLeBouder     '<othercredit role="reviewer"><firstname>Gonéri</firstname><surname>Le Bouder </surname><affiliation><address><email>goneri@gnuart.org</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
-<!ENTITY traducteurChristopheLefevre  '<othercredit role=\"translator\"><firstname>Christophe</firstname><surname>Lefebvre</surname><affiliation><address><email>clefebvre@netcourrier.com</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
-<!ENTITY relecteurChristopheLefevre  '<othercredit role=\"reviewer\"><firstname>Christophe</firstname><surname>Lefebvre</surname><affiliation><address><email>clefebvre@netcourrier.com</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
+<!ENTITY traducteurChristopheLefevre  '<othercredit role="translator"><firstname>Christophe</firstname><surname>Lefebvre</surname><affiliation><address><email>clefebvre@netcourrier.com</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
+<!ENTITY relecteurChristopheLefevre  '<othercredit role="reviewer"><firstname>Christophe</firstname><surname>Lefebvre</surname><affiliation><address><email>clefebvre@netcourrier.com</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
-<!ENTITY traducteurAnneMarieMahfouf   '<othercredit role=\"translator\"><firstname>Anne-Marie</firstname><surname>Mahfouf</surname><affiliation><address><email>a-m.mahfouf@lineone.net</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
-<!ENTITY relecteurAnneMarieMahfouf   '<othercredit role=\"reviewer\"><firstname>Anne-Marie</firstname><surname>Mahfouf</surname><affiliation><address><email>a-m.mahfouf@lineone.net</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
+<!ENTITY traducteurAnneMarieMahfouf   '<othercredit role="translator"><firstname>Anne-Marie</firstname><surname>Mahfouf</surname><affiliation><address><email>a-m.mahfouf@lineone.net</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
+<!ENTITY relecteurAnneMarieMahfouf   '<othercredit role="reviewer"><firstname>Anne-Marie</firstname><surname>Mahfouf</surname><affiliation><address><email>a-m.mahfouf@lineone.net</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
-<!ENTITY traducteurRomainQuidet       '<othercredit role=\"translator\"><firstname>Romain</firstname><surname>Quidet</surname><affiliation><address><email>rquidet@yahoo.com</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
-<!ENTITY relecteurRomainQuidet       '<othercredit role=\"relecteur\"><firstname>Romain</firstname><surname>Quidet</surname><affiliation><address><email>rquidet@yahoo.com</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
+<!ENTITY traducteurRomainQuidet       '<othercredit role="translator"><firstname>Romain</firstname><surname>Quidet</surname><affiliation><address><email>rquidet@yahoo.com</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
+<!ENTITY relecteurRomainQuidet       '<othercredit role="relecteur"><firstname>Romain</firstname><surname>Quidet</surname><affiliation><address><email>rquidet@yahoo.com</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
-<!ENTITY traducteurGillesThioliere    '<othercredit role=\"translator\"><firstname>Gilles</firstname><surname>Thioliere</surname><affiliation><address><email>zhovirax@wanadoo.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
-<!ENTITY relecteurGillesThioliere    '<othercredit role=\"reviewer\"><firstname>Gilles</firstname><surname>Thioliere</surname><affiliation><address><email>zhovirax@wanadoo.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
+<!ENTITY traducteurGillesThioliere    '<othercredit role="translator"><firstname>Gilles</firstname><surname>Thioliere</surname><affiliation><address><email>zhovirax@wanadoo.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
+<!ENTITY relecteurGillesThioliere    '<othercredit role="reviewer"><firstname>Gilles</firstname><surname>Thioliere</surname><affiliation><address><email>zhovirax@wanadoo.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
 
 <!-- CREDITS FOR TRANSLATORS -->
@@ -50,6 +53,7 @@
 <!ENTITY JeromeBlanc       'Jérôme Blanc <email>01246774@brookes.ac.uk</email>'>
 <!ENTITY ThibautCousin     'Thibaut Cousin <email>cousin@in2p3.fr</email>'> 
 <!ENTITY GerardDelafond    'Gérard Delafond <email>g.delafond@medsyn.fr</email>'>
+<!ENTITY YvesDessertine    'Yves Dessertine <email>yves.d@hrnet.fr</email>'>
 <!ENTITY ChristopheDioux   'Christophe Dioux <email>chdioux@club-internet.fr</email>'>
 <!ENTITY LudovicGrossard   'Ludovic Grossard <email>grossard@kde.org</email>'>
 <!ENTITY RobertJacolin     'Robert Jacolin <email>rjacolin@ifrance.com</email>'>
