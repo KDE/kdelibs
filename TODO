@@ -71,3 +71,5 @@ that we would like to make for the next binary incompatible release.
   Make KSysTray also hold a reference to the app. Then apps that use more than one main
   window and the tray (like KSIrc and Kopete) will quit at the right time without nasty
   hacks.
+
+- Change classes that store bool data using strings ("true"/"false") to use bool calls (readBoolEntry()).  Although not technicly a binary incompatiblity... just something to bring up for possible change (for the better)
