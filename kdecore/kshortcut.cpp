@@ -103,7 +103,7 @@ bool KKey::init( const QString& sSpec )
 {
 	clear();
 
-	QString sKey = sSpec.lower().stripWhiteSpace();
+	QString sKey = sSpec.stripWhiteSpace();
 	if( sKey.startsWith( "default(" ) && sKey.endsWith( ")" ) )
 		sKey = sKey.mid( 8, sKey.length() - 9 );
 	// i.e., "Ctrl++" = "Ctrl+Plus"
@@ -114,11 +114,12 @@ bool KKey::init( const QString& sSpec )
 	uint i;
 	// Check for modifier keys first.
 	for( i = 0; i < rgs.size(); i++ ) {
-		if( rgs[i] == "shift" )     m_mod |= KKey::SHIFT;
-		else if( rgs[i] == "ctrl" ) m_mod |= KKey::CTRL;
-		else if( rgs[i] == "alt" )  m_mod |= KKey::ALT;
-		else if( rgs[i] == "win" )  m_mod |= KKey::WIN;
-		else if( rgs[i] == "meta" ) m_mod |= KKey::WIN;
+		QString s = rgs[i].lower();
+		if( s == "shift" )     m_mod |= KKey::SHIFT;
+		else if( s == "ctrl" ) m_mod |= KKey::CTRL;
+		else if( s == "alt" )  m_mod |= KKey::ALT;
+		else if( s == "win" )  m_mod |= KKey::WIN;
+		else if( s == "meta" ) m_mod |= KKey::WIN;
 		else break;
 	}
 	// If there is one non-blank key left:
