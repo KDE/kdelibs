@@ -3,7 +3,7 @@ Build-Depends: automake, debhelper, libjpeg62-dev, libqt2.2-dev (>= 2:2.2.3-4), 
 Section: libs
 Priority: optional
 Maintainer: Ivan E. Moore II <rkrusty@debian.org>
-Standards-Version: 3.1.1
+Standards-Version: 3.2.1
 
 Package: kdelibs3
 Architecture: any
@@ -19,10 +19,10 @@ Description: KDE core libraries (runtime files)
 Package: libarts
 Architecture: any
 Section: libs
-Replaces: kdelibs3 (<= 4:2.1-20010114-0), libarts-alsa
+Replaces: libarts-alsa
 Depends: ${shlibs:Depends}
 Suggests: kdelibs3
-Conflicts: kdelibs3 (<= 4:2.1-20001210-0), suidmanager (<< 0.50), libarts-alsa
+Conflicts: suidmanager (<< 0.50), libarts-alsa
 Description: aRts Sound system
  aRts is a short form for "analog realtime synthesizer". The idea of the whole
  thing is to create/process sound using small modules which do certain tasks.
@@ -35,10 +35,10 @@ Description: aRts Sound system
 Package: libarts-alsa
 Architecture: any
 Section: libs
-Replaces: kdelibs3 (<= 4:2.1-20010114-0), libarts
+Replaces: libarts
 Depends: ${shlibs:Depends}
 Suggests: kdelibs3
-Conflicts: kdelibs3 (<= 4:2.1-20001210-0), suidmanager (<< 0.50), libarts
+Conflicts: suidmanager (<< 0.50), libarts
 Provides: libarts
 Description: aRts Sound system
  aRts is a short form for "analog realtime synthesizer". The idea of the whole
