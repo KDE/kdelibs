@@ -60,7 +60,6 @@ void HTMLObjectBaseElementImpl::setServiceType(const QString & val) {
     pos = serviceType.find( "-plugin" );
     if ( pos!=-1 )
         serviceType.truncate( pos );
-    needWidgetUpdate = true;
 }
 
 void HTMLObjectBaseElementImpl::parseAttribute(AttributeImpl *attr)
@@ -73,6 +72,7 @@ void HTMLObjectBaseElementImpl::parseAttribute(AttributeImpl *attr)
 	      DOM::DOMStringImpl *stringImpl = attr->val();
 	      QString val = QConstString( stringImpl->s, stringImpl->l ).string();
 	      setServiceType( val );
+              needWidgetUpdate = true;
 	    }
             break;
         case ATTR_WIDTH:

@@ -613,10 +613,8 @@ void RenderPartObject::updateWidget()
               aStr += QString::fromLatin1("=\"");
               aStr += p->value();
               aStr += QString::fromLatin1("\"");
-              if (p->name().lower() == QString::fromLatin1("type")) {
+              if (p->name().lower() == QString::fromLatin1("type"))
                   objbase->setServiceType(p->value());
-                  objbase->needWidgetUpdate = false;
-              }
               params.append(aStr);
           }
       }
