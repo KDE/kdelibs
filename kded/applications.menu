@@ -2,7 +2,7 @@
   "http://www.freedesktop.org/standards/menu-spec/1.0/menu.dtd">
 
 <Menu>
-	<Name>KDE</Name>
+	<Name>Applications</Name>
 	<Directory>kde-main.directory</Directory>
 	<!-- Search the default locations -->
 	<KDELegacyDirs/>
