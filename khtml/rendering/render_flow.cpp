@@ -24,7 +24,7 @@
 // -------------------------------------------------------------------------
 //#define DEBUG
 //#define DEBUG_LAYOUT
-//#define BOX_DEBUG
+#define BOX_DEBUG
 
 
 #include "dom_string.h"
@@ -308,10 +308,15 @@ void RenderFlow::layoutBlockChildren()
     RenderFlow *prevFlow = 0;
 
     int prevMargin = 0;
-    if(isTableCell() && child && !child->isPositioned())
-    {
-        child->calcVerticalMargins();
-        prevMargin = -child->marginTop();
+    if(isTableCell() ) {
+	if ( child && !child->isPositioned()) {
+	    child->calcVerticalMargins();
+	    prevMargin = -child->marginTop();
+	}
+    } else if ( m_height == 0 ) {
+	// the elements and childs margin collapse if there is no border and padding.
+	prevMargin = marginTop();
+	m_height = -prevMargin;
     }
 
     //QTime t;
@@ -391,9 +396,8 @@ void RenderFlow::layoutBlockChildren()
         child = child->nextSibling();
     }
 
-    if(!isTableCell())
-	m_height += prevMargin;
-    m_height += toAdd;
+    if(!isTableCell() && toAdd != 0 )
+	m_height += prevMargin + toAdd;
 
     setLayouted(_layouted);
 
