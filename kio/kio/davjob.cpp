@@ -58,7 +58,8 @@ DavJob::DavJob( const KURL& url, int method, const QString& request, bool showPr
 
 void DavJob::slotData( const QByteArray& data ) 
 {
-  m_str_response.append( QString( data ) );
+  if(m_redirectionURL.isEmpty() || m_redirectionURL.isMalformed() || m_error)
+    m_str_response.append( QString( data ) );
 }
 
 void DavJob::slotFinished()
