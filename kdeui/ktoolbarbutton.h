@@ -281,6 +281,10 @@ protected:
   QSize minimumSizeHint() const;
   QSize minimumSize() const;
 
+  bool isRaised() const;
+  bool isActive() const;
+  int iconTextMode() const;
+
 protected slots:
   void slotClicked();
   void slotPressed();
