@@ -8,12 +8,13 @@ libkutils_la_LIBADD  = ../kio/libkio.la
 libkutils_la_SOURCES = kfind.cpp kfinddialog.cpp kreplace.cpp kreplacedialog.cpp \
                        kcmoduleinfo.cpp kcmoduleloader.cpp kcmultidialog.cpp kmultitabbar.cpp \
                        kcddispatcher.cpp kconfiguredialog.cpp kplugininfo.cpp \
-                       kpluginselector.cpp kcdpluginpage.cpp
+                       kpluginselector.cpp kcdpluginpage.cpp \
+                       kselectentriesdialog.cpp
 
 include_HEADERS = kfind.h kfinddialog.h kreplace.h kreplacedialog.h \
                   kcmoduleinfo.h kcmoduleloader.h kcmultidialog.h kmultitabbar.h \
                   kcddispatcher.h kconfiguredialog.h kplugininfo.h \
-                  kpluginselector.h kcdpluginpage.h
+                  kpluginselector.h kcdpluginpage.h kselectentriesdialog.h
 
 noinst_HEADERS = kmultitabbar_p.h kpluginselector_p.h
 
