@@ -20,6 +20,13 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.18  1999/05/07 15:42:55  kulow
+ * making some changes to the code and partly to the API to make it
+ * -DQT_NO_ASCII_CAST compatible.
+ * The job is quite boring, but triggers some abuses of QString. BTW:
+ * I added some TODOs to the code where I was too lazy to continue.
+ * Someone should start a grep for TODO in the code on a regular base ;)
+ *
  * Revision 1.17  1999/03/10 19:46:55  porten
  * ported to new qlayout
  *
@@ -140,10 +147,7 @@ KMsgBox::KMsgBox( QWidget *parent, const QString& caption,
 	const QString&message, int type,
 	const QString&b1text, const QString&b2text,
 	const QString&b3text, const QString&b4text )
-	: QDialog ( parent, caption.ascii(), TRUE, 0 ),
-	msg( 0L ), picture( 0L ),
-	b1( 0L ), b2( 0L ), b3( 0L ), b4( 0L ),
-	f1( 0L )
+	: QDialog ( parent, caption.ascii(), TRUE, 0 )
 {
     int icon;
     static int icons_initialized = 0;
@@ -257,18 +261,6 @@ KMsgBox::KMsgBox( QWidget *parent, const QString& caption,
 
 KMsgBox::~KMsgBox() 
 {
-	delete f1;
-	delete picture;
-	delete msg;
-	
-	if( b1 )
-		delete b1;
-	if( b2 )
-		delete b2;
-	if( b3 )
-		delete b3;
-	if( b4 )
-		delete b4;
 }
 
 void KMsgBox::calcOptimalSize()
