@@ -1256,26 +1256,24 @@ void KCryptoConfig::defaults()
 }
 
 void KCryptoConfig::genCAList() {
-
    _signers->regenerate();
 
 }
 
 void KCryptoConfig::slotSelectCipher(int id) {
-
     switch(id) {
-		case 1:
-			cwCompatible();
-			break;
-		case 2:
-			cwUS();
-			break;
-		case 3:
-			cwExp();
-			break;
-		case 4:
-			cwAll();
-	}
+	    case 1:
+		    cwCompatible();
+		    break;
+	    case 2:
+		    cwUS();
+		    break;
+	    case 3:
+		    cwExp();
+		    break;
+	    case 4:
+		    cwAll();
+    }
 }
 
 void KCryptoConfig::cwCompatible() {
@@ -1745,26 +1743,27 @@ QString iss;
    iss = pkcs->getCertificate()->getIssuer();
    ySubject->setValues(x ? x->getName() : QString(QString::null));
    yIssuer->setValues(iss);
-         QPalette cspl;
-         KSSLCertificate *cert = pkcs->getCertificate();
-         cspl = yValidFrom->palette();
-         if (QDateTime::currentDateTime(Qt::UTC) < cert->getQDTNotBefore()) {
-            cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
-         } else {
-            cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
-         }
-         yValidFrom->setPalette(cspl);
+   QPalette cspl;
+   KSSLCertificate *cert = pkcs->getCertificate();
+   cspl = yValidFrom->palette();
+   if (QDateTime::currentDateTime(Qt::UTC) < cert->getQDTNotBefore()) {
+	   cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
+   } else {
+	   cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
+   }
+   yValidFrom->setPalette(cspl);
 
-         cspl = yValidUntil->palette();
-         if (QDateTime::currentDateTime(Qt::UTC) > cert->getQDTNotAfter()) {
-            cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
-         } else {
-            cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
-         }
-         yValidUntil->setPalette(cspl);
+   cspl = yValidUntil->palette();
+   if (QDateTime::currentDateTime(Qt::UTC) > cert->getQDTNotAfter()) {
+	   cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
+   } else {
+	   cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
+   }
+   yValidUntil->setPalette(cspl);
 
-         yValidFrom->setText(cert->getNotBefore());
-         yValidUntil->setText(cert->getNotAfter());
+   yValidFrom->setText(cert->getNotBefore());
+   yValidUntil->setText(cert->getNotAfter());
+   yHash->setText(cert->getMD5DigestText());
    yourSSLUnlock->setEnabled(false);
    delete pkcs;
 }
@@ -1838,17 +1837,21 @@ QCString oldpass = "";
    }
 
    if (pkcs) {
-      QCString pass;
       x->setPassCache(oldpass);
       slotYourUnlock();
-      int i = KPasswordDialog::getNewPassword(pass,
-                                   i18n("Enter the new certificate password"));
+      KPasswordDialog *kpd = new KPasswordDialog(KPasswordDialog::NewPassword, false, 0, this);
+      kpd->setPrompt(i18n("Enter the new certificate password"));
+      kpd->setAllowEmptyPasswords(true);
+
+      int i = kpd->exec();
       if (i == KPasswordDialog::Accepted) {
+         QCString pass = kpd->password();
          pkcs->changePassword(QString(oldpass), QString(pass));
          x->setPKCS(pkcs->toString());
          x->setPassCache(pass);
          configChanged();
       }
+      delete kpd;
       delete pkcs;
    }
 }
