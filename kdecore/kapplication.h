@@ -1059,7 +1059,7 @@ public:
    * but it can be useful to query for the status of the modifiers at another moment
    * (e.g. some KDE apps do that upon a drop event).
    * @return the keyboard modifiers and mouse buttons state
-   * @since 3.3
+   * @since 3.4
    */
   static ButtonState keyboardMouseState();
 
