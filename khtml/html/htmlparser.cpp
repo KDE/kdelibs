@@ -1038,8 +1038,10 @@ NodeImpl *KHTMLParser::getElement(Token* t)
     case ID_SUB:
     case ID_SUP:
     case ID_SPAN:
-    case ID_NOBR:
     case ID_WBR:
+    case ID_NOBR:
+        if ( t->tid == ID_NOBR || t->tid == ID_WBR )
+            popBlock( t->tid );
     case ID_BDO:
         n = new HTMLGenericElementImpl(document, t->tid);
         break;
