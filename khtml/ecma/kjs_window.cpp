@@ -699,7 +699,7 @@ void Window::put(ExecState* exec, const UString &propertyName, const Value &valu
       QString str = value.toString(exec).qstring();
       KHTMLPart* p = Window::retrieveActive(exec)->m_part;
       if ( p )
-        m_part->scheduleRedirection(0, p->htmlDocument().completeURL(str).string());
+        m_part->scheduleRedirection(0, p->htmlDocument().completeURL(str).string(), false/*don't lock history*/);
       return;
     }
     case Onabort:
@@ -1079,14 +1079,14 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       {
           while ( part->parentPart() )
               part = part->parentPart();
-          part->scheduleRedirection(0, url.url());
+          part->scheduleRedirection(0, url.url(), false/*don't lock history*/);
           return Window::retrieve(part);
       }
       if ( uargs.frameName == "_parent" )
       {
           if ( part->parentPart() )
               part = part->parentPart();
-          part->scheduleRedirection(0, url.url());
+          part->scheduleRedirection(0, url.url(), false/*don't lock history*/);
           return Window::retrieve(part);
       }
       uargs.serviceType = "text/html";
@@ -1598,7 +1598,7 @@ void Location::put(ExecState *exec, const UString &p, const Value &v, int attr)
     return;
   }
 
-  m_part->scheduleRedirection(0, url.url());
+  m_part->scheduleRedirection(0, url.url(), false /*don't lock history*/);
 }
 
 Value Location::toPrimitive(ExecState *exec, Type) const
@@ -1630,11 +1630,11 @@ Value LocationFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       QString str = args[0].toString(exec).qstring();
       KHTMLPart* p = Window::retrieveActive(exec)->part();
       if ( p )
-        part->scheduleRedirection(0, p->htmlDocument().completeURL(str).string());
+        part->scheduleRedirection(0, p->htmlDocument().completeURL(str).string(), true /*lock history*/);
       break;
     }
     case Location::Reload:
-      part->scheduleRedirection(0, part->url().url());
+      part->scheduleRedirection(0, part->url().url(), true/*lock history*/);
       break;
     case Location::ToString:
       return String(location->toString(exec));
