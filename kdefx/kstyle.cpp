@@ -2,8 +2,10 @@
  * $Id$
  * 
  * KStyle
- * Copyright (C) 2001, 2002 Karol Szwed <gallium@kde.org>
+ * Copyright (C) 2001-2002 Karol Szwed <gallium@kde.org>
  *
+ * Many thanks to Bradley T. Hughes for the 3 button scrollbar code.
+ * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
  * License version 2 as published by the Free Software Foundation.
@@ -50,35 +52,44 @@ extern bool qt_use_xrender;
 
 
 // INTERNAL
+enum TransparencyEngine { 
+	Disabled = 0, 
+	SoftwareTint, 
+	SoftwareBlend, 
+	XRender
+};
+
 class TransparencyHandler : public QObject
 {
 	public:
-		TransparencyHandler(KStyle* style, float menuOpacity);
+		TransparencyHandler(KStyle* style, TransparencyEngine tEngine, float menuOpacity);
 		~TransparencyHandler();
 		bool eventFilter(QObject* object, QEvent* event);
 
 	protected:
 		void blendToColor(const QColor &col);
+		void blendToPixmap(const QColorGroup &cg);
 #ifdef HAVE_XRENDER
-		void renderBlendToPixmap(const QPopupMenu* p, const QColorGroup &cg);
+		void XRenderBlendToPixmap(const QPopupMenu* p);
 #endif
 	private:
 		float   opacity;
 		QPixmap pix;
 		KStyle* kstyle;
+		TransparencyEngine te;
 };
+
 
 struct KStyle::Private
 {
 	bool  highcolor                : 1;
-	bool  allowMenuTransparency    : 1;
-	bool  useMenuTransparency      : 1;
 	bool  useFilledFrameWorkaround : 1;
 	bool  etchDisabledText         : 1;
 	bool  menuAltKeyNavigation     : 1;
 	int   popupMenuDelay;
 	float menuOpacity;
 
+	TransparencyEngine   transparencyEngine;
 	KStyleScrollBarType  scrollbarType;
 	TransparencyHandler* menuHandler;
 	QStyle* winstyle;		// ### REMOVE
@@ -90,7 +101,7 @@ struct KStyle::Private
 KStyle::KStyle( KStyleFlags flags, KStyleScrollBarType sbtype )
 	: QCommonStyle(), d(new Private)
 {
-	d->allowMenuTransparency    = (flags & AllowMenuTransparency);
+	bool useMenuTransparency    = (flags & AllowMenuTransparency);
 	d->useFilledFrameWorkaround = (flags & FilledFrameWorkaround);
 	d->scrollbarType = sbtype;
 	d->highcolor = QPixmap::defaultDepth() > 8;
@@ -100,15 +111,31 @@ KStyle::KStyle( KStyleFlags flags, KStyleScrollBarType sbtype )
 	d->popupMenuDelay       = settings.readNumEntry ("/KStyle/Settings/PopupMenuDelay", 256);
 	d->etchDisabledText     = settings.readBoolEntry("/KStyle/Settings/EtchDisabledText", true);
 	d->menuAltKeyNavigation = settings.readBoolEntry("/KStyle/Settings/MenuAltKeyNavigation", true);
+	d->menuHandler = NULL;
 
-	if (d->highcolor && d->allowMenuTransparency) {
-		d->useMenuTransparency	= settings.readBoolEntry  ("/KStyle/Settings/UseMenuTransparency", false); 
-		d->menuOpacity 		= settings.readDoubleEntry("/KStyle/Settings/MenuOpacity", 0.90);
-	} else
-		d->useMenuTransparency = false;
+	if (d->highcolor && useMenuTransparency) {
+		QString effectEngine = settings.readEntry("/KStyle/Settings/MenuTransparencyEngine", "Disabled");
 
-	// Create an instance of the menu transparency handler if required
-	d->menuHandler = d->useMenuTransparency ? new TransparencyHandler(this, d->menuOpacity) : NULL;
+#ifdef HAVE_XRENDER
+		if (effectEngine == "XRender")
+			d->transparencyEngine = XRender;
+#else
+		if (effectEngine == "XRender")
+			d->transparencyEngine = SoftwareBlend;
+#endif
+		else if (effectEngine == "SoftwareBlend")
+			d->transparencyEngine = SoftwareBlend;
+		else if (effectEngine == "SoftwareTint")
+			d->transparencyEngine = SoftwareTint;
+		else
+			d->transparencyEngine = Disabled;
+
+		if (d->transparencyEngine != Disabled) {
+			// Create an instance of the menu transparency handler
+			d->menuOpacity = settings.readDoubleEntry("/KStyle/Settings/MenuOpacity", 0.90);
+			d->menuHandler = new TransparencyHandler(this, d->transparencyEngine, d->menuOpacity);
+		}
+	}
 
 	// ### Remove this ugly dependency!!!
 	d->winstyle = QStyleFactory::create("Windows");
@@ -119,12 +146,13 @@ KStyle::KStyle( KStyleFlags flags, KStyleScrollBarType sbtype )
 
 KStyle::~KStyle()
 {
-	delete d->winstyle;
-	d->winstyle    = NULL;
-	
-	delete d->menuHandler;
-	d->menuHandler = NULL;
+	if (d->winstyle)
+		delete d->winstyle;
+	if (d->menuHandler)
+		delete d->menuHandler;
 
+	d->menuHandler = NULL;
+	d->winstyle    = NULL;
 	delete d;
 }
 
@@ -176,9 +204,9 @@ void KStyle::setScrollBarType(KStyleScrollBarType sbtype)
 }
 
 
-void KStyle::renderMenuBlendPixmap( KPixmap &pix, const QColorGroup &cg )
+void KStyle::renderMenuBlendPixmap( KPixmap &pix, const QColorGroup &cg ) const
 {
-	pix.fill(cg.background());	// Just tint as the default behaviour
+	pix.fill(cg.button());	// Just tint as the default behaviour
 }
 
 
@@ -1106,11 +1134,14 @@ bool KStyle::eventFilter( QObject* object, QEvent* event )
 // I N T E R N A L -  KStyle menu transparency handler
 // -----------------------------------------------------------------------------
 
-TransparencyHandler::TransparencyHandler( KStyle* style, float menuOpacity ) 
+TransparencyHandler::TransparencyHandler( KStyle* style, 
+	TransparencyEngine tEngine, float menuOpacity ) 
 	: QObject() 
 { 
+	te = tEngine;
 	kstyle = style;
 	opacity = menuOpacity; 
+	pix.setOptimization(QPixmap::BestOptim);
 };
 
 
@@ -1121,7 +1152,7 @@ TransparencyHandler::~TransparencyHandler()
 
 bool TransparencyHandler::eventFilter( QObject* object, QEvent* event )
 {
-	// Portions of this function were borrowed from KDE2's "MegaGradient" Style,
+	// Transparency idea was borrowed from KDE2's "MegaGradient" Style,
 	// Copyright (C) 2000 Daniel M. Duley <mosfet@kde.org>
 	QPopupMenu* p = (QPopupMenu*)object;
 	QEvent::Type et = event->type();
@@ -1131,26 +1162,36 @@ bool TransparencyHandler::eventFilter( QObject* object, QEvent* event )
 		pix = QPixmap::grabWindow(qt_xrootwin(),
 				p->x(), p->y(), p->width(), p->height());
 
+		switch (te) {
 #ifdef HAVE_XRENDER
-		if (!qt_use_xrender)
-			blendToColor(p->colorGroup().background());
-		else
-			renderBlendToPixmap(p, p->colorGroup());
+			case XRender:
+				if (qt_use_xrender) {
+					XRenderBlendToPixmap(p);
+					break;
+				}
+				// Fall through intended
 #else
-		blendToColor(p->colorGroup().background());
+			case XRender:
 #endif
+			case SoftwareBlend:
+				blendToPixmap(p->colorGroup());
+				break;
 
-		p->setBackgroundPixmap(pix);
+			case SoftwareTint:
+			default:
+				blendToColor(p->colorGroup().button());
+		};
+
+		p->setErasePixmap(pix);
 	} 
 	else if (et == QEvent::Hide)
-		p->setBackgroundPixmap(QPixmap());
+		p->setErasePixmap(QPixmap());
 
 	return false;
 }
 
 
 // Blends a QImage to a predefined color, with a given opacity.
-// ### Move to KImageEffect/KPixmapEffect ?
 void TransparencyHandler::blendToColor(const QColor &col)
 {
 	QImage img = pix.convertToImage();
@@ -1159,52 +1200,98 @@ void TransparencyHandler::blendToColor(const QColor &col)
 		return;
 
 	int pixels = img.width()*img.height();
-	unsigned int *data = (unsigned int *)img.bits();
-
 	int rcol, gcol, bcol;
 	col.rgb(&rcol, &gcol, &bcol);
 
-	register int rval, gval, bval;
+#ifdef WORDS_BIGENDIAN   // ARGB (skip alpha)
+	register unsigned char *data = (unsigned char *)img.bits() + 1;
+#else                    // BGRA
+	register unsigned char *data = (unsigned char *)img.bits();
+#endif
+
 	for (register int i=0; i<pixels; i++)
 	{
-		rval = qRed(data[i]);
-		gval = qGreen(data[i]);
-		bval = qBlue(data[i]);
-
-		rval += (int)((rcol - rval)*opacity);
-		gval += (int)((gcol - gval)*opacity);
-		bval += (int)((bcol - bval)*opacity);
-
-		data[i] = qRgba(rval, gval, bval, qAlpha(data[i]));
+#ifdef WORDS_BIGENDIAN
+		*(data++) += (unsigned char)((rcol - *data) * opacity);
+		*(data++) += (unsigned char)((gcol - *data) * opacity);
+		*(data++) += (unsigned char)((bcol - *data) * opacity);
+#else
+		*(data++) += (unsigned char)((bcol - *data) * opacity);
+		*(data++) += (unsigned char)((gcol - *data) * opacity);
+		*(data++) += (unsigned char)((rcol - *data) * opacity);
+#endif
+		data++; // skip alpha
 	}
 	pix.convertFromImage(img);
 }
 
 
+void TransparencyHandler::blendToPixmap(const QColorGroup &cg)
+{
+	KPixmap blendPix;
+	blendPix.resize( pix.width(), pix.height() );
+
+	// Allow styles to define the blend pixmap - allows for some interesting effects.
+	kstyle->renderMenuBlendPixmap( blendPix, cg );
+
+	if (opacity > 1.0 ||
+		opacity < 0.0 ||
+		blendPix.width()  != pix.width() ||
+		blendPix.height() != pix.height())
+		return;
+		
+	QImage backImg  = pix.convertToImage();
+	QImage blendImg = blendPix.convertToImage();
+
+	if (backImg.depth() < 8 || blendImg.depth() < 8)
+		return;
+
+	int pixels = backImg.width() * backImg.height();
+#ifdef WORDS_BIGENDIAN   // ARGB (skip alpha)
+	register unsigned char *data1 = (unsigned char *)backImg.bits()  + 1;
+	register unsigned char *data2 = (unsigned char *)blendImg.bits() + 1;
+#else                    // BGRA
+	register unsigned char *data1 = (unsigned char *)backImg.bits();
+	register unsigned char *data2 = (unsigned char *)blendImg.bits();
+#endif
+
+	for (register int i=0; i<pixels; i++)
+	{
+#ifdef WORDS_BIGENDIAN
+		*(data1++) += (unsigned char)((*(data2++) - *data1) * opacity);
+		*(data1++) += (unsigned char)((*(data2++) - *data1) * opacity);
+		*(data1++) += (unsigned char)((*(data2++) - *data1) * opacity);
+#else
+		*(data1++) += (unsigned char)((*(data2++) - *data1) * opacity);
+		*(data1++) += (unsigned char)((*(data2++) - *data1) * opacity);
+		*(data1++) += (unsigned char)((*(data2++) - *data1) * opacity);
+#endif
+		data1++; // skip alpha
+		data2++;
+	}
+	pix.convertFromImage(backImg);
+}
+
+
 #ifdef HAVE_XRENDER
 // Here we go, use XRender in all its glory.
-// NOTE: This is actually a bit slower than the above routine
+// NOTE: This is actually a bit slower than the above routines
 // on non-accelerated displays. -- Karol.
-void TransparencyHandler::renderBlendToPixmap(const QPopupMenu* p, const QColorGroup &cg)
+void TransparencyHandler::XRenderBlendToPixmap(const QPopupMenu* p)
 {
 	KPixmap renderPix;
 	renderPix.resize( pix.width(), pix.height() );
 
 	// Allow styles to define the blend pixmap - allows for some interesting effects.
-	kstyle->renderMenuBlendPixmap( renderPix, cg );
+	kstyle->renderMenuBlendPixmap( renderPix, p->colorGroup() );
 
-//	QColor col = cg.background();
 	Display* dpy = qt_xdisplay();
 	Pixmap   alphaPixmap;
 	Picture  alphaPicture;
 	XRenderPictFormat        Rpf;
 	XRenderPictureAttributes Rpa;
 	XRenderColor clr;
-
-//	clr.red   = (col.red()   | col.red()   << 8);
-//	clr.green = (col.green() | col.green() << 8);
-//	clr.blue  = (col.blue()  | col.blue()  << 8);
-	clr.alpha = ((unsigned short)(255*(1-opacity)) << 8);
+	clr.alpha = ((unsigned short)(255*opacity) << 8);
 
 	Rpf.type  = PictTypeDirect;
 	Rpf.depth = 8;
@@ -1220,17 +1307,11 @@ void TransparencyHandler::renderBlendToPixmap(const QPopupMenu* p, const QColorG
 	XRenderFillRectangle(dpy, PictOpSrc, alphaPicture, &clr, 0, 0, 1, 1);
 
 	XRenderComposite(dpy, PictOpOver, 
-			pix.x11RenderHandle(), alphaPicture, renderPix.x11RenderHandle(), // src, mask, dst
+			renderPix.x11RenderHandle(), alphaPicture, pix.x11RenderHandle(), // src, mask, dst
 			0, 0, 	// srcx,  srcy
 			0, 0,	// maskx, masky
 			0, 0,	// dstx,  dsty
 			pix.width(), pix.height());
-
-	// Copy the result into the actual background pixmap.
-	GC gc = XCreateGC(dpy, renderPix.handle(), 0, 0);
-	XCopyArea(dpy, renderPix.handle(), pix.handle(), gc, 
-			0, 0, pix.width(), pix.height(), 0, 0);
-	XFreeGC(dpy, gc);
 
 	XRenderFreePicture(dpy, alphaPicture);
 	XFreePixmap(dpy, alphaPixmap);

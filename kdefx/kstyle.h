@@ -2,7 +2,7 @@
  * $Id$
  * 
  * KStyle
- * Copyright (C) 2001, 2002 Karol Szwed <gallium@kde.org>
+ * Copyright (C) 2001-2002 Karol Szwed <gallium@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -38,7 +38,7 @@ class KPixmap;
  *  
  * The KStyle class provides a simple internal menu transparency engine
  * which attempts to use XRender for accelerated blending where requested,
- * or falls back to a fast internal software tinting routine.
+ * or falls back to fast internal software tinting/blending routines.
  * It also simplifies more complex portions of the QStyle API, such as
  * the PopupMenuItems, ScrollBars and Sliders by providing extra "primitive
  * elements" which are simple to implement by the style writer.
@@ -151,11 +151,10 @@ class KStyle: public QCommonStyle
 		 * KStyle will then internally blend this pixmap with a snapshot of the
 		 * background behind the popupMenu to create the illusion of transparency.
 		 * 
-		 * This virtual is never called if no XRender support is available,
-		 * or if Qt's XRender support is currently not enabled. A simple internal
-		 * tinting routine is used in these cases instead.
+		 * This virtual is never called if XRender/Software blending is disabled by
+		 * the user in KDE's style control module.
 		 */
-		virtual void renderMenuBlendPixmap( KPixmap& pix, const QColorGroup& cg );
+		virtual void renderMenuBlendPixmap( KPixmap& pix, const QColorGroup& cg ) const;
 
 		/**
 		 * KStyle Primitive Elements:
