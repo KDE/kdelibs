@@ -1817,7 +1817,7 @@ int KExtendedSocket::unreadBlock(const char *, uint)
 
 int KExtendedSocket::bytesAvailable() const
 {
-  if (d->status < connected || d->status >= closing || d->flags & passiveSocket)
+  if (d->status < connected || d->flags & passiveSocket)
     return -2;
 
   // as of now, we don't do any extra processing
