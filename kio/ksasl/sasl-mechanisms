@@ -1,0 +1,86 @@
+
+SIMPLE AUTHENTICATION AND SECURITY LAYER (SASL) MECHANISMS
+----------------------------------------------------------
+
+The Simple Authentication and Security Layer (SASL) [RFC2222] is a
+method for adding authentication support to connection-based
+protocols.  To use this specification, a protocol includes a command
+for identifying and authenticating a user to a server and for
+optionally negotiating a security layer for subsequent protocol
+interactions.  The command has a required argument identifying a SASL
+mechanism.
+
+SASL mechanisms are named by strings, from 1 to 20 characters in
+length, consisting of upper-case letters, digits, hyphens, and/or
+underscores.  SASL mechanism names must be registered with the IANA.
+Procedures for registering new SASL mechanisms are given in the
+section "Registration procedures" of RFC2222.
+
+
+MECHANISMS	OWNER                                          REFERENCE
+----------      -----                                          ---------
+
+KERBEROS_V4	IESG <iesg@ietf.org>                           [RFC2222]
+
+GSSAPI		IESG <iesg@ietf.org>                           [RFC2222]   
+
+SKEY (OBSOLETE)	IESG <iesg@ietf.org>                           [RFC2444]
+
+EXTERNAL	IESG <iesg@ietf.org>                           [RFC2222]
+
+CRAM-MD5	IESG <iesg@ietf.org>      		       [RFC2195]
+
+ANONYMOUS	IESG <iesg@ietf.org>                           [RFC2245]
+
+OTP             IESG <iesg@ietf.org>                           [RFC2444]
+
+GSS-SPNEGO	Paul Leach <paulle@microsoft.com>                [Leach] 
+
+PLAIN           IESG <iesg@ietf.org>                           [RFC2595]
+
+SECURID         Magnus Nystrom <magnus@rsasecurity.com>        [RFC2808]
+
+NTLM		Paul Leach <paulle@microsoft.com>                [Leach] 
+
+NMAS_LOGIN	Mark G. Gayman <mgayman@novell.com>             [Gayman]
+
+NMAS_AUTHEN	Mark G. Gayman <mgayman@novell.com>             [Gayman]
+
+
+References
+----------
+
+[RFC2222] Myers, J., "Simple Authentication and Security Layer
+          (SASL)", RFC 2222, Netscape Communications, October 1997.
+
+[RFC2195] Klensin, J., Catoe, R., Krumviede, P. "IMAP/POP AUTHorize
+          Extension for Simple Challenge/Response", RFC 2195, MCI,
+          September 1997.
+
+[RFC2245] Newman, C., "Anonymous SASL Mechanism", RFC 2245, Innosoft,
+          November 1997. 
+
+[RFC2444] Newman, C., "The One-Time-Password SASL Mechanism", RFC
+          2444, October 1998.
+
+[RFC2595] Newman, C., "Using TLS with IMAP, POP3 and ACAP", RFC 2595,
+          Innosoft, June 1999.
+
+[RFC2808] Nystrom, M., "The SecurID(r) SASL Mechanism", RFC 2808,
+          April 2000.
+
+People
+------
+
+[Gayman] Mark G. Gayman, <mgayman@novell.com>, September 2000.
+
+[Leach] Paul Leach, <paulle@microsoft.com>, December 1998, June 2000.
+
+[]
+
+
+
+
+
+
+
