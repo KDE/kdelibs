@@ -38,7 +38,7 @@ include_HEADERS = kprogress.h kcolordlg.h kcolordialog.h kselect.h \
 		krestrictedline.h kcolorbutton.h kcolorbtn.h \
 		ksystemtray.h kdockwindow.h kbuttonbox.h \
 		keditcl.h kled.h keditlistbox.h \
-		kwizard.h kkeydialog.h \
+		kwizard.h kkeydialog.h kkeybutton.h \
 		kurllabel.h kruler.h kcursor.h \
 		klineeditdlg.h \
 		kcharselect.h kcolordrag.h qxembed.h \
@@ -99,7 +99,7 @@ libkdeui_la_SOURCES = \
                 kmainwindowiface.skel kguiitem.cpp kstdguiitem.cpp \
 		kstringvalidator.cpp
 
-noinst_HEADERS = kdockwidget_private.h klistviewlineedit.h kkeybutton.h \
+noinst_HEADERS = kdockwidget_private.h klistviewlineedit.h \
 		kdialogbase_priv.h kaboutdialog_private.h kcursor_private.h \
 		kdepackages.h kdeui-doc.h 
 
