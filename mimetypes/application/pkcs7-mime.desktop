@@ -1,0 +1,7 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=MimeType
+MimeType=application/pkcs7-mime
+Icon=encrypted
+Patterns=*.p7m;*.P7M;*.p7c;*.P7C
+Comment=PKCS#7 (S/MIME) formatted data
