@@ -230,6 +230,13 @@ void HTTPProtocol::setHost( const QString& host, int port,
   m_bUseCache = config()->readBoolEntry("UseCache");
   m_strCacheDir = config()->readEntry("CacheDir");
   m_maxCacheAge = config()->readNumEntry("MaxCacheAge");
+
+  // Store user agent for this host.
+  if ( config()->readBoolEntry("SendUserAgent", true) )
+     m_strUserAgent = metaData("UserAgent");
+  else 
+     m_strUserAgent = QString::null;
+
   if ( m_bUseCache ) { cleanCache(); }
 
   if (m_bUseCookiejar && !m_dcopClient->isApplicationRegistered("kcookiejar"))
@@ -270,6 +277,41 @@ bool HTTPProtocol::checkRequestURL( const KURL& u )
          m_request.port == oldDefaultPort )
         m_request.port = m_iDefaultPort;
   }
+
+  bool sendReferrer = config()->readBoolEntry("SendReferrer", true);
+  if ( sendReferrer )
+     m_request.referrer = metaData("referrer");
+  else
+     m_request.referrer = QString::null;
+
+  if ( config()->readBoolEntry("SendLanguageSettings", true) )
+  {
+      m_request.charsets = config()->readEntry( "Charsets",
+                                           DEFAULT_FULL_CHARSET_HEADER );
+      if ( !m_request.charsets.isEmpty() )
+        m_request.charsets += DEFAULT_PARIAL_CHARSET_HEADER;
+
+      m_request.languages = config()->readEntry( "Languages",
+                                            DEFAULT_LANGUAGE_HEADER );
+  }
+  else
+  {
+      m_request.charsets = QString::null;
+      m_request.languages = QString::null;
+  }
+  
+  // Adjust the offset value based on the "resume" meta-data.
+  QString resumeOffset = metaData("resume");
+  if ( !resumeOffset.isEmpty() )
+     m_request.offset = resumeOffset.toInt();
+  else
+     m_request.offset = 0;
+
+  m_request.disablePassDlg = config()->readBoolEntry( "DisablePassDlg", false );
+  m_request.allowCompressedPage = config()->readBoolEntry("AllowCompressedPage", true);
+
+  m_request.url = u;
+  
   return true;
 }
 
@@ -373,8 +415,6 @@ void HTTPProtocol::get( const KURL& url )
   else
     m_request.cache = DEFAULT_CACHE_CONTROL;
 
-  m_request.offset = 0;
-  m_request.url = url;
   m_request.passwd = url.pass();
   m_request.user = url.user();
   m_request.do_proxy = m_bUseProxy;
@@ -393,9 +433,7 @@ void HTTPProtocol::put( const KURL &url, int, bool, bool)
   m_request.path = url.path();
   m_request.query = QString::null;
   m_request.cache = CC_Reload;
-  m_request.offset = 0;
   m_request.do_proxy = m_bUseProxy;
-  m_request.url = url;
 
   retrieveContent();
 }
@@ -411,9 +449,7 @@ void HTTPProtocol::post( const KURL& url)
   m_request.path = url.path();
   m_request.query = url.query();
   m_request.cache = CC_Reload;
-  m_request.offset = 0;
   m_request.do_proxy = m_bUseProxy;
-  m_request.url = url;
 
   retrieveContent();
 }
@@ -763,12 +799,8 @@ bool HTTPProtocol::http_open()
                      "\r\n").arg( m_request.hostname).arg(m_request.port);
 
     // Identify who you are to the proxy server!
-    if ( config()->readBoolEntry("SendUserAgent", true) )
-    {
-      QString agent = metaData("UserAgent");
-      if( !agent.isEmpty() )
-        header += "User-Agent: " + agent + "\r\n";
-    }
+    if (!m_strUserAgent.isEmpty())
+        header += "User-Agent: " + m_strUserAgent + "\r\n";
 
     header += proxyAuthenticationHeader();
   }
@@ -797,43 +829,15 @@ bool HTTPProtocol::http_open()
     else
       header += "Connection: Keep-Alive\r\n";
 
-    if ( config()->readBoolEntry("SendUserAgent", true) )
-    {
-      QString agent = metaData("UserAgent");
-      if( !agent.isEmpty() )
-        header += "User-Agent: " + agent + "\r\n";
-    }
+    if (!m_strUserAgent.isEmpty())
+        header += "User-Agent: " + m_strUserAgent + "\r\n";
 
-    bool sendReferrer = config()->readBoolEntry("SendReferrer", true);
-    if ( sendReferrer )
+    if (!m_request.referrer.isEmpty())
     {
-      QString referrer = metaData("referrer");
-      if (!referrer.isEmpty())
-      {
-        header += "Referer: ";
-        header += referrer;
-        header += "\r\n"; //Don't try to correct spelling!
-      }
+        header += "Referer: "; //Don't try to correct spelling!
+        header += m_request.referrer;
+        header += "\r\n";     
     }
-
-/*
-    if ( !sendReferrer &&
-         config()->readBoolEntry("EnableReferrerWorkaround", true) )
-    {
-      // for privacy reasons we send the URL without the filename
-      KURL u = m_request.url;
-      u.setFileName( "" );
-      u.setRef( "" );
-      header += "Referer: ";
-      header += u.url();
-      header += "\r\n";
-    }
-*/
-
-    // Adjust the offset value based on the "resume" meta-data.
-    QString resumeOffset = metaData("resume");
-    if ( !resumeOffset.isEmpty() )
-      m_request.offset = resumeOffset.toInt();
 
     if ( m_request.offset > 0 )
     {
@@ -865,7 +869,7 @@ bool HTTPProtocol::http_open()
       header += DEFAULT_ACCEPT_HEADER;
     header += "\r\n";
 
-    if ( config()->readBoolEntry("AllowCompressedPage", true) )
+    if (m_request.allowCompressedPage)
     {
 #ifdef DO_GZIP
       // Content negotiation
@@ -874,18 +878,12 @@ bool HTTPProtocol::http_open()
 #endif
     }
 
-    if ( config()->readBoolEntry("SendLanguageSettings", true) )
-    {
-      m_strCharsets = config()->readEntry( "Charsets",
-                                           DEFAULT_FULL_CHARSET_HEADER );
-      if ( !m_strCharsets.isEmpty() )
-        m_strCharsets += DEFAULT_PARIAL_CHARSET_HEADER;
-      header += "Accept-Charset: " + m_strCharsets + "\r\n";
-
-      m_strLanguages = config()->readEntry( "Languages",
-                                            DEFAULT_LANGUAGE_HEADER );
-      header += "Accept-Language: " + m_strLanguages + "\r\n";
-    }
+    if (!m_request.charsets.isEmpty())
+      header += "Accept-Charset: " + m_request.charsets + "\r\n";
+    
+    if (!m_request.languages.isEmpty())
+      header += "Accept-Language: " + m_request.languages + "\r\n";
+ 
 
     /* support for virtual hosts and required by HTTP 1.1 */
     header += "Host: ";
@@ -1912,18 +1910,6 @@ void HTTPProtocol::slave_status()
   slaveStatus( m_state.hostname, connected );
 }
 
-void HTTPProtocol::buildURL()
-{
-  m_request.url.setProtocol( m_protocol );
-  m_request.url.setUser( m_request.user );
-  m_request.url.setPass( m_request.passwd );
-  m_request.url.setHost( m_request.hostname );
-  m_request.url.setPort( m_request.port );
-  m_request.url.setPath( m_request.path );
-  if (m_request.query.length())
-    m_request.url.setQuery( m_request.query );
-}
-
 void HTTPProtocol::mimetype( const KURL& url )
 {
   if ( !checkRequestURL( url ) )
@@ -1935,9 +1921,7 @@ void HTTPProtocol::mimetype( const KURL& url )
   m_request.path = url.path();
   m_request.query = url.query();
   m_request.cache = CC_Cache;
-  m_request.offset = 0;
   m_request.do_proxy = m_bUseProxy;
-  m_request.url = url;
 
   retrieveHeader();
 
@@ -2550,12 +2534,13 @@ QString HTTPProtocol::findCookies( const QString &url)
 
 void HTTPProtocol::cache_update( const KURL& url, bool no_cache, time_t expireDate)
 {
+  if ( !checkRequestURL( url ) )
+    return;
+
   m_request.path = url.path();
   m_request.query = url.query();
   m_request.cache = CC_Reload;
-  m_request.offset = 0;
   m_request.do_proxy = m_bUseProxy;
-  m_request.url = url;
 
   if (no_cache)
   {
@@ -3153,7 +3138,7 @@ bool HTTPProtocol::getAuthorization()
       result = true;
     else
     {
-      if ( config()->readBoolEntry( "DisablePassDlg", false ) == false )
+      if ( m_request.disablePassDlg == false )
       {
         kdDebug( 7113 ) << "About to prompt user for authorization..." << endl;
         promptInfo( info );

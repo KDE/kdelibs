@@ -87,6 +87,11 @@ public:
     bool do_proxy;
     KURL url;
     QString window;                 // Window Id this request is related to.
+    QString referrer;
+    QString charsets;
+    QString languages;
+    bool allowCompressedPage;
+    bool disablePassDlg;
   } HTTPRequest;
 
   typedef struct
@@ -106,8 +111,6 @@ public:
 
 
 //---------------------- Re-implemented methods ----------------
-  void buildURL();
-
   virtual void setHost(const QString& host, int port, const QString& user,
                        const QString& pass);
 
@@ -335,6 +338,8 @@ protected:
                                 // 16 byte expire date is stored.
   time_t m_expireDate;
 
+  QString m_strUserAgent;
+
   // Language/Encoding
   QStringList m_qTransferEncodings;
   QStringList m_qContentEncodings;
@@ -342,8 +347,6 @@ protected:
   QString m_sContentMD5;
   QString m_strMimeType;
   QString m_strCharset;
-  QString m_strCharsets;
-  QString m_strLanguages;
 
   // Proxy related members
   bool m_bUseProxy;
