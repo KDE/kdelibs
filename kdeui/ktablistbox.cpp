@@ -611,8 +611,11 @@ void KTabListBox::clear(void)
 {
   int i;
 
-  for (i=numRows()-1; i>=0; i--)
-    itemList[i]->setMarked(-2);
+  for (i=maxItems-1; i>=0; i--)
+  {
+    if (itemList[i])
+      itemList[i]->setMarked(-2);
+  }
 
   setNumRows(0);
   lbox.setTopLeftCell(0,0);
