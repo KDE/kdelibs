@@ -15,7 +15,7 @@ public class JSObject extends netscape.javascript.JSObject {
     /* JavaScript code:
      * __lc=[[JS objects],call func(index,script,appletname,isglobal)]
      */
-    private final String decls = "if(!window.__lc) window.__lc=[[window],function(i,s,a,g){var r;var len=window.__lc[0].length;if(i>=len)r='E ';else{try{r=eval((g?'':'window.__lc[0][i]')+s);}catch(e){r='E ';}finally{var t=typeof r;var v;if(t=='undefined')v='V ';else if(t=='number')v='N '+r;else if(t=='string')if(r=='E ')v='E ';else v='S '+r;else{window.__lc[0][len]=r;v=''+len+' '+(r==window.__lc?'[array]':r);}}}document.applets[a].__lc_ret=v},0]";
+    private final String decls = "if(!window.__lc) window.__lc=[[window],function(i,s,a,g){var r;var len=window.__lc[0].length;if(i>=len)r='E ';else{try{r=eval((g?'':'window.__lc[0][i]')+s);}catch(e){r='E ';}finally{var t=typeof r;var v;if(t=='undefined')v='V ';else if(t=='number')v='N '+r;else if(t=='string')if(r=='E ')v='E ';else v='S '+r;else{window.__lc[0][len]=r;v=''+len+' '+(r==window.__lc?'[array]':r);}}}a.__lc_ret=v},0]";
 
     public JSObject(Applet a, String name, int _id) {
         Main.info("JSObject.ctor: " + name);
@@ -61,10 +61,10 @@ public class JSObject extends netscape.javascript.JSObject {
         // end of replacement
          
         KJASAppletContext kc = (KJASAppletContext) applet.getAppletContext();
-        String appletname = kc.getAppletName(appletID);
+        //String appletname = kc.getAppletName(appletID);
         thread = Thread.currentThread();
 
-        kc.evaluateJavaScript("window.__lc[1](" + id + ",\\\"" + script + "\\\",\\\"" + appletname + "\\\"" + (global ? ",true)" : ")"), appletID, this);
+        kc.evaluateJavaScript("window.__lc[1](" + id + ",\\\"" + script + "\\\",this" + (global ? ",true)" : ")"), appletID, this);
         boolean timedout = true;
         try {
             Thread.currentThread().sleep(30000);
