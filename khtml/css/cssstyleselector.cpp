@@ -1847,7 +1847,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 
         float toPix = 1.; // fallback
         if ( !khtml::printpainter )
-            toPix = QPaintDevice::x11AppDpiY()/72.;
+            toPix = paintDeviceMetrics->logicalDpiY()/72.;
         if ( !khtml::printpainter && toPix < 96./72. )
             toPix = 96./72.;
 
@@ -1916,7 +1916,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 
         const KHTMLSettings *s = e->ownerDocument()->view()->part()->settings();
 
-        setFontSize( f, (int)size, s );
+        setFontSize( f, (int)size, s, paintDeviceMetrics );
 
         //KGlobal::charsets()->setQFont(f, e->ownerDocument()->view()->part()->settings()->charset);
         style->setFont(f);

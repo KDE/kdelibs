@@ -139,7 +139,7 @@ DOMString khtml::parseURL(const DOMString &url)
 }
 
 
-void khtml::setFontSize(  QFont &f,  int  pixelsize, const KHTMLSettings *s )
+void khtml::setFontSize(  QFont &f,  int  pixelsize, const KHTMLSettings *s, QPaintDeviceMetrics *devMetrics )
 {
     QFontDatabase db;
 
@@ -147,7 +147,7 @@ void khtml::setFontSize(  QFont &f,  int  pixelsize, const KHTMLSettings *s )
 
     float toPix = 1.;
     if ( !khtml::printpainter )
-        toPix = QPaintDevice::x11AppDpiY()/72.;
+        toPix = devMetrics->logicalDpiY()/72.;
 
     // ok, now some magic to get a nice unscaled font
     // ### all other font properties should be set before this one!!!!

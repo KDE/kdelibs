@@ -62,7 +62,7 @@ namespace khtml
     /*
       Sets the font to the size closest to the requested one while trying not to use a scaled bitmap font
     */
-    void setFontSize(  QFont &f,  int pixelSize, const KHTMLSettings *s );
+    void setFontSize(  QFont &f,  int pixelSize, const KHTMLSettings *s, QPaintDeviceMetrics *devMetrics );
 
 };
 
