@@ -7,7 +7,7 @@
  \mainpage The DCOP Desktop COmmunication Protocol library
 
 DCOP is a simple IPC/RPC mechanism built to operate over sockets.
-Either unix domain sockets or tcp/ip sockets are supported. DCOP is
+Either unix domain sockets or TCP/IP sockets are supported. DCOP is
 built on top of the Inter Client Exchange (ICE) protocol, which comes
 standard as a part of X11R6 and later. It also depends on Qt, but
 beyond that it does not require any other libraries. Because of this,
@@ -25,9 +25,9 @@ Two types of actions are possible with DCOP: "send and forget"
 messages, which do not block, and "calls," which block waiting for
 some data to be returned.
 
-Any data that will be sent is serialized (marshalled, for you CORBA
-types) using the built-in QDataStream operators available in all of
-the Qt classes.  This is fast and easy.  In fact it's so little work
+Any data that will be sent is serialized (also referred to as marshalling
+in CORBA speak) using the built-in QDataStream operators available in all
+of the Qt classes.  This is fast and easy.  In fact it's so little work
 that you can easily write the marshalling code by hand. In addition,
 there's a simple IDL-like compiler available (dcopidl and dcopidl2cpp)
 that generates stubs and skeletons for you. Using the dcopidl compiler
@@ -38,7 +38,7 @@ The manual method is covered first, followed by the automatic IDL method.
 
 \section establish Establishing the Connection:
 
-KApplication has gained a method called "KApplication::dcopClient()"
+KApplication has gained a method called \p KApplication::dcopClient()
 which returns a pointer to a DCOPClient instance.  The first time this
 method is called, the client class will be created.  DCOPClients have
 unique identifiers attached to them which are based on what
@@ -47,10 +47,10 @@ instance of the program running, the appId will be equal to
 KApplication::name().
 
 To actually enable DCOP communication to begin, you must use
-DCOPClient::attach().  This will attempt to attach to the DCOP server.
-If no server is found or there is any other type of error, attach()
-will return false. KApplication will catch a dcop signal and display an
-appropriate error message box in that case.
+\p DCOPClient::attach().  This will attempt to attach to the DCOP server.
+If no server is found or there is any other type of error, 
+DCOPClient::attach() will return false. KApplication will catch a dcop 
+signal and display an appropriate error message box in that case.
 
 After connecting with the server via DCOPClient::attach(), you need to
 register this appId with the server so it knows about you.  Otherwise,
@@ -59,7 +59,7 @@ DCOPClient::registerAs(const QCString &name) to do so.  In the simple
 case:
 
 \code
-appId = client->registerAs(kApp->name());
+appId = client->registerAs(kapp->name());
 \endcode
 
 If you never retrieve the DCOPClient pointer from KApplication, the
@@ -73,8 +73,8 @@ call DCOPClient::registerAs() with the new name.
 KUniqueApplication automatically registers itself to DCOP. If you
 are using KUniqueApplication you should not attach or register
 yourself, this is already done. The appId is by definition
-equal to kapp->name(). You can retrieve the registered DCOP client
-by calling kapp->dcopClient().
+equal to \p kapp->name(). You can retrieve the registered DCOP client
+by calling \p kapp->dcopClient().
 
 
 \section sending_data Sending Data to a Remote Application:
@@ -88,26 +88,26 @@ some point in the future. Then "send" requires one and "call" requires
 two data parameters.
 
 The remote object must be specified as an object hierarchy.  That is,
-if the toplevel object is called "fooObject" and has the child
-"barObject", you would reference this object as "fooObject/barObject".
+if the toplevel object is called \p fooObject and has the child
+\p barObject, you would reference this object as \p fooObject/barObject.
 Functions must be described by a full function signature.  If the
-remote function is called "doIt", and it takes an int, it would be
-described as "doIt(int)".  Please note that the return type is not
+remote function is called \p doIt, and it takes an int, it would be
+described as \p doIt(int).  Please note that the return type is not
 specified here, as it is not part of the function signature (or at
 least the C++ understanding of a function signature).  You will get
 the return type of a function back as an extra parameter to
-DCOPClient::call().  See the section on call() for more details.
+DCOPClient::call(). See the section on call() for more details.
 
 In order to actually get the data to the remote client, it must be
 "serialized" via a QDataStream operating on a QByteArray. This is how
 the data parameter is "built". A few examples will make clear how this
 works.
 
-Say you want to call "doIt" as described above, and not block (or wait
+Say you want to call \p doIt as described above, and not block (or wait
 for a response).  You will not receive the return value of the remotely
 called function, but you will not hang while the RPC is processed either.
-The return value of send() indicates whether DCOP communication succeeded
-or not.
+The return value of DCOPClient::send() indicates whether DCOP communication 
+succeeded or not.
 
 \code
 QByteArray data;
@@ -119,10 +119,10 @@ if (!client->send("someAppId", "fooObject/barObject", "doIt(int)",
 \endcode
 
 OK, now let's say we wanted to get the data back from the remotely
-called function.  You have to execute a call() instead of a send().
-The returned value will then be available in the data parameter "reply".
-The actual return value of call() is still whether or not DCOP
-communication was successful.
+called function.  You have to execute a DCOPClient::call() instead of a 
+DCOPClient::send(). The returned value will then be available in the 
+data parameter "reply".  The actual return value of call() is still 
+whether or not DCOP communication was successful.
 
 \code
 QByteArray data, replyData;
@@ -452,13 +452,29 @@ DCOP signals are very similair to Qt signals, there are some differences
 though. A DCOP signal can be connected to a DCOP function. Whenever the DCOP
 signal gets emitted, the DCOP functions to which the signal is connected are
 being called. DCOP signals are, just like Qt signals, one way. They do not
-provide a return value. 
+provide a return value. For declaration of dcop signals, the keyword 
+\p k_dcop_signals is provided. A declaration looks like this:
+
+\code
+class Example : virtual public DCOPClient
+{
+  K_DCOP
+
+  k_dcop:
+    // some ordinary dcop methods here
+  ...
+  k_dcop_signals:
+    // our dcop signal
+    void clientDied(pid_t pid);
+  ...
+}
+\endcode
 
 A DCOP signal originates from a DCOP Object/DCOP Client combination (sender). 
 It can be connected to a function of another DCOP Object/DCOP Client 
 combination (receiver).
 
-There are two major differences between connections of Qt signals and 
+\note There are two major differences between connections of Qt signals and 
 connections of DCOP signals. In DCOP, unlike Qt, a signal connections can
 have an anonymous sender and, unlike Qt, a DCOP signal connection can be
 non-volatile.
@@ -481,7 +497,7 @@ A receiver can create a non-volatile connection while the sender doesn't (yet)
 exist. An anonymous DCOP connection should always be non-volatile.
 
 The following example shows how KLauncher emits a signal whenever it notices
-that an application that was started via KLauncher terminates.
+that an application that was started via KLauncher terminates:
 
 \code
 QByteArray params;
