@@ -26,13 +26,7 @@ debug("sending configure to object KonquerorIface in konqueror");
       debug("ko");
 */
 
-debug("sending databaseChanged to object ksycoca in kdesktop");
-    if (kapp->dcopClient()->send( "kdesktop", "ksycoca", "databaseChanged()", data ))
-      debug("ok");
-    else
-      debug("ko");
-
-/// BROADCAST (currently broken)
+/// BROADCAST
 debug("sending databaseChanged to object ksycoca in all apps");
     if (kapp->dcopClient()->send( "*", "ksycoca", "databaseChanged()", data ))
       debug("ok");
