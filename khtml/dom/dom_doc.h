@@ -906,8 +906,8 @@ public:
      */
     void updateRendering();
 
-protected:
     Document( DocumentImpl *i);
+protected:
 
     friend class Node;
 };
