@@ -1,0 +1,136 @@
+Users can be associated with Profile(s)
+=======================================
+
+A user can be associated with one or more profiles. A profile indicates a 
+configuration set that applies to a group of users. Each profile has a name
+to identify it. If a user is associated with more than one profile then the
+order of the two profiles is important. Settings associated with one profile
+could override the settings in the other profile, depending on the order.
+
+
+Mapping profiles to users
+=========================
+
+A mapping file determines which profile(s) should be used for which user.
+The mapping file can be configured in /etc/kderc in the [Directories] group:
+
+	[Directories]
+	userProfileMapFile=/etc/kde-user-profile
+
+Profiles can be mapped to individual users based on username, or profiles can
+be mapped to groups of users based on the UNIX group(s) the users are part of.
+(See man 1 groups)
+
+
+Mapping profiles to individual users
+====================================
+
+The mapping file can contain a [Users] section for mapping profiles to
+an individual user. The [Users] section contains the user's account name
+followed by one or more profiles as follow:
+
+	[Users]
+	bastian=developer
+	adrians=developer,packager
+
+The above example assigns to user "bastian" the profile "developer". To user
+"adrians" it assigns the two profiles "developer" and "packager". The order
+in which the profiles are listed makes a difference, settings in earlier
+profiles overrule settings in profiles that are listed after it. In the above
+case of user "adrians", wherever the "developer" and "packager" profiles contain
+conflicting settings, the settings of the "developer" profile will take precedent.
+
+If a user has an entry under the [Users] section, this entry will determine all
+profiles that are applicable to the user. The user will not be assigned any
+additional profiles based on the groups the user is part of.
+
+Mapping profiles to user groups
+===============================
+
+If a user has no entry under the [Users] section in the mapping file, the profiles
+that are applicable to the user will be based on the UNIX group(s) the user is
+part of.
+
+The groups and the order in which the groups are considered is determined by
+the following entry in the [General] section of the mapping file:
+
+	[General]
+	groups=pkgs,devel
+
+Each of these groups should have an entry under the [Groups] section that defines
+which profile(s) belongs to that group. This looks as follows:
+
+	[Groups]
+	pkgs=packager
+	devel=developer
+	bofh=admin,packager,developer
+
+For each group that a user is part of, the corresponding profile(s) are used. The
+order in which the groups are listed in the "groups" entry, determines the resulting
+order of all the applicable profiles. If multiple profiles are applicable to a
+particular user and a profile contains settings that conflict with settings in
+another profile then the settings in the earlier listed profile take precedent.
+
+So if, based on the example above, a user is part of the "pkgs" group then the
+"packager" profile will be used for that user. If the user is part of the "devel"
+group then the "developer" profile will be used. Users that are part of the "bofh"
+group will use the "admin", "packager" as well as the "developer" profile. In case
+of conflict, settings in the "admin" profile will take precedent over settings
+in the "packager" or "developer" profiles.
+
+If the user is part of both the "pkgs" and "devel" groups, then both the "packager"
+and "developer" profiles will be used. In case of conflicting settings between the
+two profiles, the "packager" profile will take precedent because the "pkgs" group
+associated with the profile was listed before the "devel" group.
+
+The "groups" command can be used to see to which groups a user belongs:
+
+	> groups coolo
+        coolo : users uucp dialout audio video cdrecording devel
+
+Note that in general only a few groups will have profiles associated with them.
+In the example above only the "devel" group has a profile associated with it,
+the other groups do not and will be ignored.
+
+If there is no profile defined for any of the groups that the user is in, the
+user will be assigned the "default" profile.
+
+
+The Profile determines the directory prefixes
+=============================================
+
+The global KDE configuration file (e.g. kdeglobals or /etc/kderc) can
+contain config-groups that are associated with a certain user profile. 
+Such a config-group is treated similar as the [Directories] config-group.
+
+The name of a such config-group is [Directories-<ProfileName>]
+
+
+Integration with KIOSK Admin Tool
+=================================
+
+The KIOSK Admin Tool uses /etc/kderc as source for all its profile
+information. For this it uses the following keys in the
+[Directories-<ProfileName>] config-group:
+
+	# Short text describing this profile
+	ProfileDescription=
+
+	# Files will be installed with the uid of this user
+	ProfileInstallUser=
+
+The KIOSK Admin Tool uses the first directory from the prefixes= entry
+as default installation directory for this profile.
+
+
+Default setting as example
+==========================
+
+The following snipped could be added to /etc/kderc to define a "default" profile:
+
+	[Directories-default]
+	ProfileDescription=Default profile
+	ProfileDescription[de]=Defaultprofiel
+	ProfileInstallUser=root
+	prefixes=/var/run/kde-profile/default
+
