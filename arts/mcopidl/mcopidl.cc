@@ -1247,7 +1247,7 @@ void doInterfacesHeader(FILE *header)
 		fprintf(header,"\t%s_base *cache;\n",d->name.c_str());
 		fprintf(header,"\tinline %s_base *_method_call() {\n",d->name.c_str());
 		fprintf(header,"\t\t_pool->checkcreate();\n");
-		fprintf(header,"\t\tcache=dynamic_cast<%s_base *>(_pool->base);\n");
+		fprintf(header,"\t\tcache=dynamic_cast<%s_base *>(_pool->base);\n",d->name.c_str());
 		fprintf(header,"\t\tassert(cache);\n");
 		fprintf(header,"\t\tcacheOK=true;\n");
 		fprintf(header,"\t\treturn cache;\n",d->name.c_str());
