@@ -1569,7 +1569,7 @@ DocumentTypeImpl::~DocumentTypeImpl()
 const DOMString DocumentTypeImpl::name() const
 {
     // ###
-    return 0;
+    return DOMString();
 }
 
 NamedNodeMapImpl *DocumentTypeImpl::entities() const

@@ -303,15 +303,15 @@ DOMString ElementImpl::getAttribute( const DOMString &name ) const
 {
   // search in already set attributes first
     int exceptioncode; // ### propogate
-    if(!namedAttrMap) return 0;
+    if(!namedAttrMap) return DOMString();
     AttrImpl *attr = static_cast<AttrImpl*>(namedAttrMap->getNamedItem(name,exceptioncode));
     if (attr) return attr->value();
 
     // then search in default attr in case it is not yet set
     NamedAttrMapImpl* dm = defaultMap();
-    if(!dm) return 0;
+    if(!dm) return DOMString();
     AttrImpl* defattr = static_cast<AttrImpl*>(dm->getNamedItem(name, exceptioncode));
-    if(!defattr || exceptioncode) return 0;
+    if(!defattr || exceptioncode) return DOMString();
 
     return defattr->value();
 }
@@ -332,7 +332,7 @@ bool ElementImpl::hasAttribute( const DOMString &name ) const
     return true;
 }
 
-DOMString ElementImpl::getAttribute( int id )
+DOMString ElementImpl::getAttribute( int id ) const
 {
     // search in already set attributes first
     if(!namedAttrMap) return DOMString();
@@ -341,7 +341,7 @@ DOMString ElementImpl::getAttribute( int id )
 
     // then search in default attr in case it is not yet set
     NamedAttrMapImpl* dm = defaultMap();
-    if(!dm) return 0;
+    if(!dm) return DOMString();
 
     AttrImpl* defattr = static_cast<AttrImpl*>(dm->getIdItem(id));
     if(!defattr) return DOMString();
