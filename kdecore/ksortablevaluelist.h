@@ -40,7 +40,7 @@ public:
 
     // operators for sorting
     bool operator> ( const KSortableItem<T, Key>& i2 ) const {
-        return (first > i2.first);
+        return (i2.first < first);
     }
     bool operator< ( const KSortableItem<T, Key>& i2 ) const {
         return (first < i2.first);
@@ -49,7 +49,7 @@ public:
         return (first >= i2.first);
     }
     bool operator<= ( const KSortableItem<T, Key>& i2 ) const {
-        return (first <= i2.first);
+        return !(i2.first < first);
     }
     bool operator== ( const KSortableItem<T, Key>& i2 ) const {
         return (first == i2.first);
