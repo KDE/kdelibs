@@ -26,10 +26,6 @@
 
 #ifndef Q_WS_QWS
 
-/*
-  Documentation for this class is in the cpp-file!
- */
-
 
 class QXEmbedData;
 
