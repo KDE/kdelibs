@@ -959,7 +959,7 @@ int TCPSlaveBase::verifyCertificate()
                                                         "that no third party "
                                                         "will be able to "
                                                         "easily observe your "
-                                                        "data in transfer."),
+                                                        "data in transit."),
                                                    i18n("Security information"),
                                                    i18n("Display SSL "
                                                         "Information"),

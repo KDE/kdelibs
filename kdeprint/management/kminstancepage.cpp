@@ -266,7 +266,7 @@ void KMInstancePage::slotTest()
 			if (!pr.printFiles(testpage))
 				KMessageBox::error(this,i18n("Unable to send test page to %1.").arg(pr.printerName()));
 			else
-				KMessageBox::information(this,i18n("Test page succesfully sent to printer %1.").arg(pr.printerName()));
+				KMessageBox::information(this,i18n("Test page successfully sent to printer %1.").arg(pr.printerName()));
 		}
 	}
 

@@ -1162,7 +1162,7 @@ QString HTTPProtocol::davError( int code /* = -1 */, QString url )
 
   // default error message if the following code fails
   kError = ERR_INTERNAL;
-  errorString = i18n("An unexpected error (%1) occurred while attemting to %2.")
+  errorString = i18n("An unexpected error (%1) occurred while attempting to %2.")
                       .arg( code ).arg( action );
 
   switch ( code ) {
@@ -1206,7 +1206,7 @@ QString HTTPProtocol::davError( int code /* = -1 */, QString url )
           }
         }
         //kError = ERR_SLAVE_DEFINED;
-        errorString = i18n("An error occurred while attemting to %1, %2. A summary "
+        errorString = i18n("An error occurred while attempting to %1, %2. A summary "
                            "of the reasons is below.<ul>").arg( action ).arg( url );
         for ( QStringList::Iterator it = errors.begin(); it != errors.end(); ++it )
           errorString += "<li>" + *it + "</li>";
@@ -1217,7 +1217,7 @@ QString HTTPProtocol::davError( int code /* = -1 */, QString url )
     case 500: // hack: Apache mod_dav returns this instead of 403 (!)
       // 403 Forbidden
       kError = ERR_ACCESS_DENIED;
-      errorString = i18n("Access was denied while attemting to %1.").arg( action );
+      errorString = i18n("Access was denied while attempting to %1.").arg( action );
       break;
     case 405:
       // 405 Method Not Allowed

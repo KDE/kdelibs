@@ -485,7 +485,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
 
   // c == cause, s == solution
   QString sSysadmin = i18n( "Contact your appropriate computer support system, "
-    "whether the system administrator, or techincal support group for further "
+    "whether the system administrator, or technical support group for further "
     "assistance." );
   QString sServeradmin = i18n( "Contact the administrator of the server "
     "for further assistance." );
@@ -519,7 +519,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
     "connection." );
   // FIXME netconf kcontrol link
   QString cNetconf = i18n( "There may have been a problem with your network "
-    "configuration. If you have been accessing the internet with no problems "
+    "configuration. If you have been accessing the Internet with no problems "
     "recently, this is unlikely." );
   QString cNetpath = i18n( "There may have been a problem at some point along "
     "the network path between the server and this computer." );
@@ -532,7 +532,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
     "and try again." );
   QString sNetwork = i18n( "Check your network connection status." );
   QString sRoot = i18n( "If you understand the security implications, you "
-    "could start konqueror as the system administrator (root user) if required." );
+    "could start Konqueror as the system administrator (root user) if required." );
 
   switch( errorCode ) {
     case  KIO::ERR_CANNOT_OPEN_FOR_READING:
@@ -561,7 +561,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
         "to the <strong>%1</strong> protocol could not be started. This is "
         "usually due to technical reasons." ).arg( protocol );
       causes << i18n( "The program which provides compatability with this "
-        "protocol may have not been updated with your last update of KDE. "
+        "protocol may not have been updated with your last update of KDE. "
         "This can cause the program to be incompatible with the current version "
         "and thus not start." ) << cBug;
       solutions << sUpdate << sSysadmin;
@@ -594,7 +594,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
       causes << i18n( "The requested protocol may not be supported." )
         << i18n( "The versions of the %1 protocol supported by this computer and "
         "the server may be incompatible." ).arg( protocol );
-      solutions << i18n( "You may perform a search on the internet for a KDE "
+      solutions << i18n( "You may perform a search on the Internet for a KDE "
         "program (called a kioslave or ioslave) which supports this protocol. "
         "Places to search include <a href=\"http://apps.kde.com/\">"
         "http://apps.kde.com/</a> and <a href=\"http://freshmeat.net/\">"
@@ -621,7 +621,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
         "program which is implementing the <strong>%1<strong> protocol." )
         .arg( protocol );
       causes << i18n( "This error is very much dependant on the KDE program. The "
-        "additional information should give you more information than is available"
+        "additional information should give you more information than is available "
         "to the KDE input / output architecture." );
       solutions << i18n( "Attempt to find another way to accomplish the same "
         "outcome." );
@@ -675,7 +675,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
       errorName = i18n( "Unknown Host" );
       description = i18n( "An unknown host error indicates that the server with "
         "the requested name, <strong>%1</strong>, could not be "
-        "located on the internet." ).arg( host );
+        "located on the Internet." ).arg( host );
       causes << i18n( "The name that you typed, %1, may not exist: it may be "
         "incorrectly typed." ).arg( host )
         << cNetwork << cNetconf;
@@ -774,11 +774,11 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
       errorName = i18n( "Connection to Server Refused" );
       description = i18n( "The server <strong>%1</strong> refused to allow this "
         "computer to make a connection." ).arg( host );
-      causes << i18n( "The server, while currently connected to the internet, "
+      causes << i18n( "The server, while currently connected to the Internet, "
         "may not be configured to allow requests." )
-        << i18n( "The server, while currently connected to the internet, "
+        << i18n( "The server, while currently connected to the Internet, "
         "may not be running the requested service (%1)." ).arg( protocol )
-        << i18n( "A network firewall (a device which restricts internet "
+        << i18n( "A network firewall (a device which restricts Internet "
         "requests), either protecting your network or the network of the server, "
         "may have intervened, preventing this request." );
       solutions << sTryagain << sServeradmin << sSysadmin;
@@ -1022,10 +1022,10 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
       description = i18n( "While retrieving information about the specified "
         "proxy host, <strong>%1</strong>, an Unknown Host error was encountered. "
         "An unknown host error indicates that the requested name could not be "
-        "located on the internet." ).arg( errorText );
+        "located on the Internet." ).arg( errorText );
       causes << i18n( "There may have been a problem with your network "
         "configuration, specifically your proxy's hostname. If you have been "
-        "accessing the internet with no problems recently, this is unlikely." )
+        "accessing the Internet with no problems recently, this is unlikely." )
         << cNetwork;
       solutions << i18n( "Double-check your proxy settings and try again." )
         << sSysadmin;

@@ -97,7 +97,7 @@ bool KMDBCreator::createDriverDB(const QString& dirname, const QString& filename
 		           "PATH. Check that this program exists and is "
 			   "accessible in your PATH variable.").arg(exestr);
 	else if (!m_proc.start(KProcess::NotifyOnExit, KProcess::AllOutput))
-		msg = i18n("Unable to start teh creation of the driver "
+		msg = i18n("Unable to start the creation of the driver "
 		           "database. The execution of %1 failed.").arg(exestr);
 	if (!msg.isEmpty())
 	{
