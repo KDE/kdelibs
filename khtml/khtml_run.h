@@ -40,7 +40,7 @@ class KHTMLRun : public KRun
   Q_OBJECT
 public:
   KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const KURL &url, 
-            const KParts::URLArgs &args, bool showErrorDialog );
+            const KParts::URLArgs &args, bool hideErrorDialog );
 
   virtual void foundMimeType( const QString &mimetype );
 
@@ -66,7 +66,7 @@ private:
   KParts::URLArgs m_args;
   khtml::ChildFrame *m_child;
   QString m_suggestedFilename;
-  bool m_showErrorDialog;
+  bool m_hideErrorDialog;
 };
 
 #endif

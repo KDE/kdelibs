@@ -31,9 +31,9 @@
 #include <khtml_ext.h>
 
 KHTMLRun::KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const KURL &url, 
-                    const KParts::URLArgs &args, bool showErrorDialog )
+                    const KParts::URLArgs &args, bool hideErrorDialog )
 : KRun( url, 0, false, false /* No GUI */ ) , m_part( part ),
-  m_args( args ), m_child( child ), m_showErrorDialog( showErrorDialog )
+  m_args( args ), m_child( child ), m_hideErrorDialog( hideErrorDialog )
 {
 }
 
@@ -137,7 +137,7 @@ void KHTMLRun::scanFile()
 
 void KHTMLRun::slotKHTMLScanFinished(KIO::Job *job)
 {
-  if ( m_showErrorDialog && job->error() )
+  if ( m_hideErrorDialog && job->error() )
       handleError();
   else 
       KRun::slotScanFinished(job);
@@ -161,7 +161,7 @@ void KHTMLRun::slotKHTMLMimetype(KIO::Job *, const QString &type)
 
 void KHTMLRun::slotStatResult( KIO::Job *job )
 {
-    if ( m_showErrorDialog && job->error() )
+    if ( m_hideErrorDialog && job->error() )
         handleError();
     else
         KRun::slotStatResult( job );
