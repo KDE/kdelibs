@@ -24,12 +24,10 @@
 #include <qmap.h>
 #include <qpainter.h>
 #include <dom/dom_string.h>
-// ### remove me...
 #include <xml/dom_stringimpl.h>
 #include <qlist.h>
 #include <khtmllayout.h>
 #include <kstaticdeleter.h>
-//#include <kdebug.h>
 using namespace DOM;
 using namespace khtml;
 
