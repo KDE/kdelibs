@@ -153,12 +153,14 @@ void KListViewLineEdit::load(QListViewItem *i, int c)
 
         QRect rect(p->itemRect(i));
         setText(item->text(c));
+
         int fieldX = - p->contentsX();
 
-        for(int i = 0;i< c;i++)
-                fieldX += p->columnWidth(i);
+        int pos = p->header()->mapToIndex( col );
+        for ( int index = 0; index < pos; index++ )
+            fieldX += p->columnWidth( p->header()->mapToSection( index ) );
 
-        setGeometry(rect.x(), rect.y(), p->columnWidth(c)+2, rect.height() + 2);
+        setGeometry(fieldX, rect.y(), p->columnWidth(c)+2, rect.height() + 2);
         show();
         setFocus();
         grabMouse();
@@ -465,7 +467,11 @@ void KListView::contentsMousePressEvent( QMouseEvent *e )
 
   // If the row was already selected, create an editor widget.
   if (at && at->isSelected() && itemsRenameable())
-    rename(at, 0); // TODO
+  {
+    int col = header()->mapToLogical( header()->cellAt( p.x() ) );
+    if ( d->renameable.contains(col) )
+        rename(at, col);
+  }
 
   if (e->button() == LeftButton)
   {
