@@ -9,30 +9,33 @@
 // $Id$
 
 #ifdef HAVE_CONFIG_H
-#include"config.h"
+#include "config.h"
 #endif
 
 #ifdef HAVE_LIBJPEG
 
-#include<stdio.h>
-#include<assert.h>
-#include<sys/types.h>
-#include<setjmp.h>
+#include <sys/types.h>
+
+#include <assert.h>
+#include <setjmp.h>
+#include <stdio.h>
 
 // need to define this to prevent clash with jpeglib
 #define QT_CLEAN_NAMESPACE
 
-#include"qimage.h"
-#include"qdatastream.h"
-#include"qcolor.h"
-#include"qpixmap.h"
-#include"jpeg.h"
+#include <qglobal.h>
+#include <qimage.h>
+#include <qdatastream.h>
+#include <qcolor.h>
+#include <qpixmap.h>
+
+#include "jpeg.h"
 
 // this is just stupid. jpeg should handle this itself.
 #define HAVE_PROTOTYPES 
 
 extern "C" {
-#include<jpeglib.h>
+	#include <jpeglib.h>
 }
 
 //////
@@ -57,7 +60,7 @@ void kimgio_error_exit (j_common_ptr cinfo)
     kimgio_error_mgr* myerr = (kimgio_error_mgr*) cinfo->err;
     char buffer[JMSG_LENGTH_MAX];
     (*cinfo->err->format_message)(cinfo, buffer);
-    warning(buffer);
+    qWarning(buffer);
     longjmp(myerr->setjmp_buffer, 1);
 }
 
@@ -495,7 +498,7 @@ boolean qimageio_fill_input_buffer(j_decompress_ptr cinfo)
 
 	    return (boolean) FALSE;
 	}
-	fprintf(stderr, "warning: premature EOF in file.\n");
+	qWarning("warning: premature EOF in file.\n");
 
 	/* Insert a fake EOI marker */
 	ptr->buffer[0] = (JOCTET) 0xFF;
