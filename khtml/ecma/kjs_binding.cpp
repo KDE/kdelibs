@@ -180,10 +180,10 @@ DOM::Node KJS::toNode(const Value& val)
   return dobj->toNode();
 }
 
-String KJS::getString(DOM::DOMString s)
+Value KJS::getString(DOM::DOMString s)
 {
   if (s.isNull())
-    return String(0L); // null string (rep==0)
+    return Null();
   else
     return String(s);
 }

@@ -89,7 +89,7 @@ namespace KJS {
   /**
    *  Get a String object, or Null() if s is null
    */
-  String getString(DOM::DOMString s);
+  Value getString(DOM::DOMString s);
 
   bool originCheck(const KURL &kurl1, const KURL &url2);
 
