@@ -786,7 +786,7 @@ void KDEStyle::drawIndicator(QPainter *p, int x, int y, int w, int h,
 
     if(state != QButton::Off){
         if(state == QButton::On){
-            p->setPen(g.highlight());
+            p->setPen(g.foreground());
             p->drawPixmap(3, 3, xBmp);
         }
         else{
