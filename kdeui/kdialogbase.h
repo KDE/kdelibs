@@ -2,7 +2,8 @@
  *  This file is part of the KDE Libraries
  *  Copyright (C) 1999-2001 Mirko Boehm (mirko@kde.org) and 
  *  Espen Sand (espen@kde.org)
- *
+ *  Holger Freyther <freyther@kde.org>  
+ * 
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
  *  License as published by the Free Software Foundation; either
@@ -23,7 +24,9 @@
 #define _KDIALOG_BASE_H_
 
 #include <kdialog.h>
-#include <kjanuswidget.h> 
+#include <kjanuswidget.h>
+#include <kguiitem.h> 
+#include <kstdguiitem.h>
 #include <qptrlist.h>
 
 class QPushButton;
@@ -31,7 +34,7 @@ class KSeparator;
 class KURLLabel;
 class QBoxLayout;
 class QPixmap;
-
+class KGuiItem;
 /**
  * Used internally by @ref KDialogBase.
  * @internal
@@ -280,6 +283,14 @@ class KDialogBase : public KDialog
 		 const QString &user2=QString::null,
 		 const QString &user3=QString::null);
 
+    KDialogBase( QWidget *parent=0, bool showPixmap=false,const char *name=0, bool modal=true,
+		  const QString &caption=QString::null,
+		 int buttonMask=Ok|Apply|Cancel, ButtonCode defaultButton=Ok,
+		 bool separator=false, 
+		 const KGuiItem &user1=KGuiItem(),
+		 const KGuiItem &user2=KGuiItem(),
+		 const KGuiItem &user3=KGuiItem() );
+
     /** 
      * Constructor for the predefined layout mode where you specify the 
      * kind of layout (face).
@@ -310,6 +321,14 @@ class KDialogBase : public KDialog
 		 const QString &user1=QString::null,
 		 const QString &user2=QString::null,
 		 const QString &user3=QString::null);
+
+    KDialogBase( int dialogFace, const QString &caption, 
+		 int buttonMask, ButtonCode defaultButton, bool showPixmap=false, 
+		 QWidget *parent=0, const char *name=0, bool modal=true, 
+		 bool separator=false,
+		 const KGuiItem &user1=KGuiItem(),
+		 const KGuiItem &user2=KGuiItem(),
+		 const KGuiItem &user3=KGuiItem() );
 
 
     /**
@@ -350,6 +369,15 @@ class KDialogBase : public KDialog
 		 QString no = QString::null, // i18n("&No"),
 		 QString cancel = QString::null // i18n("&Cancel") 
 	       );
+
+    KDialogBase( const QString &caption, int buttonMask=Yes|No|Cancel, 
+		 ButtonCode defaultButton=Yes, ButtonCode escapeButton=Cancel, 
+		 QWidget *parent=0, bool showPixmap=false, const char *name=0, bool modal=true, 
+		 bool separator=false,
+		 KGuiItem yes = *KStdGuiItem::yes(), // i18n("&Yes")
+		 KGuiItem no = *KStdGuiItem::no(), // i18n("&No"),
+		 KGuiItem cancel = *KStdGuiItem::cancel() // i18n("&Cancel") 
+	         );
 
     /**
      * Destructor.
@@ -1371,6 +1399,11 @@ class KDialogBase : public KDialog
 			const QString &user1 = QString::null,
 			const QString &user2 = QString::null,
 			const QString &user3 = QString::null );
+
+    void makeButtonBox( int mask, ButtonCode defaultButton, 
+			const KGuiItem &user1 = KGuiItem(),
+			const KGuiItem &user2 = KGuiItem(),
+			const KGuiItem &user3 = KGuiItem() );
 
     /**
      * Sets the action button that is marked as default and has focus.

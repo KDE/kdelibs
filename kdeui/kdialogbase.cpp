@@ -2,6 +2,7 @@
  *  This file is part of the KDE Libraries
  *  Copyright (C) 1999-2001 Mirko Boehm (mirko@kde.org) and
  *  Espen Sand (espen@kde.org)
+ *  Holger Freyther <freyther@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -110,7 +111,28 @@ KDialogBase::KDialogBase( QWidget *parent, const char *name, bool modal,
   mIsActivated = true;
   setupLayout();
 }
+KDialogBase::KDialogBase( QWidget *parent, bool showPixmap, const char *name, bool modal, 
+			  const QString &caption, int buttonMask,
+			  ButtonCode defaultButton, bool separator,
+			  const KGuiItem &user1, const KGuiItem &user2,
+			  const KGuiItem &user3 )
+  :KDialog( parent, name, modal, WStyle_DialogBorder ),
+   mTopLayout(0), mMainWidget(0), mUrlHelp(0), mJanus(0), mActionSep(0),
+   mIsActivated(false), mShowTile(false), mMessageBoxMode(false),
+   mButtonOrientation(Horizontal)
+{
+  d = new KDialogBasePrivate;
+  setCaption( caption );
 
+  makeRelay();
+  connect( this, SIGNAL(layoutHintChanged()), this, SLOT(updateGeometry()) );
+
+  enableButtonSeparator( separator );
+  makeButtonBox( buttonMask, defaultButton, user1, user2, user3 );
+
+  mIsActivated = true;
+  setupLayout();
+}
 
 KDialogBase::KDialogBase( int dialogFace, const QString &caption,
 			  int buttonMask, ButtonCode defaultButton,
@@ -138,6 +160,31 @@ KDialogBase::KDialogBase( int dialogFace, const QString &caption,
   setupLayout();
 }
 
+KDialogBase::KDialogBase( int dialogFace, const QString &caption, 
+			  int buttonMask, ButtonCode defaultButton, bool showPixmap,
+			  QWidget *parent, const char *name, bool modal,
+			  bool separator, const KGuiItem &user1,
+			  const KGuiItem &user2, const KGuiItem &user3 )
+  :KDialog( parent, name, modal, WStyle_DialogBorder ),
+   mTopLayout(0), mMainWidget(0), mUrlHelp(0), mJanus(0), mActionSep(0),
+   mIsActivated(false), mShowTile(false), mMessageBoxMode(false),
+   mButtonOrientation(Horizontal)
+{
+  d = new KDialogBasePrivate;
+  setCaption( caption );
+
+  makeRelay();
+  connect( this, SIGNAL(layoutHintChanged()), this, SLOT(updateGeometry()) );
+
+  mJanus = new KJanusWidget( this, "janus", dialogFace );
+  if( mJanus == 0 || mJanus->isValid() == false ) { return; }
+
+  enableButtonSeparator( separator );
+  makeButtonBox( buttonMask, defaultButton, user1, user2, user3 );
+
+  mIsActivated = true;
+  setupLayout();
+}
 
 KDialogBase::KDialogBase( const QString &caption, int buttonMask,
 			  ButtonCode defaultButton, ButtonCode escapeButton,
@@ -168,6 +215,36 @@ KDialogBase::KDialogBase( const QString &caption, int buttonMask,
 
   makeButtonBox( buttonMask, defaultButton, no, yes, QString::null );
   setButtonCancelText( cancel );
+
+  mIsActivated = true;
+  setupLayout();
+}
+
+KDialogBase::KDialogBase( const QString &caption, int buttonMask,
+			  ButtonCode defaultButton, ButtonCode escapeButton,
+			  QWidget *parent, bool showPixmap, const char *name, bool modal,
+			  bool separator,KGuiItem yes,
+			  KGuiItem no, KGuiItem cancel )
+  :KDialog( parent, name, modal, WStyle_DialogBorder ),
+   mTopLayout(0), mMainWidget(0), mUrlHelp(0), mJanus(0), mActionSep(0),
+   mIsActivated(false), mShowTile(false), mMessageBoxMode(true),
+   mButtonOrientation(Horizontal),mEscapeButton(escapeButton)
+{
+  d = new KDialogBasePrivate;  if (yes.text().isEmpty())
+    if (cancel.text()!= i18n("&Cancel") )
+     cancel.setText( i18n("&Cancel"));
+
+  setCaption( caption );
+
+  makeRelay();
+  connect( this, SIGNAL(layoutHintChanged()), this, SLOT(updateGeometry()) );
+
+  enableButtonSeparator( separator );
+
+  buttonMask &= Details|Yes|No|Cancel;
+
+  makeButtonBox( buttonMask, defaultButton, no, yes );
+  setButtonCancelText( cancel.text() );
 
   mIsActivated = true;
   setupLayout();
@@ -616,7 +693,111 @@ void KDialogBase::makeButtonBox( int buttonMask, ButtonCode defaultButton,
   setButtonStyle( ActionStyle0 );
 }
 
+void KDialogBase::makeButtonBox( int buttonMask, ButtonCode defaultButton,
+				 const KGuiItem &user1, const KGuiItem &user2,
+				 const KGuiItem &user3 )
+{
+  if( buttonMask == 0 )
+  {
+    d->mButton.box = 0;
+    return; // When we want no button box
+  }
 
+  if( buttonMask & Cancel ) { buttonMask &= ~Close; }
+  if( buttonMask & Apply ) { buttonMask &= ~Try; }
+  if( buttonMask & Details ) { buttonMask &= ~Default; }
+
+  if( mMessageBoxMode == false )
+  {
+    mEscapeButton = (buttonMask&Cancel) ? Cancel : Close;
+  }
+
+  d->mButton.box = new QWidget( this );
+
+  d->mButton.mask = buttonMask;
+  if( d->mButton.mask & Help )
+  {
+    QPushButton *pb = d->mButton.append( Help, i18n("&Help") );
+    connect( pb, SIGNAL(clicked()), this, SLOT(slotHelp()) );
+  }
+  if( d->mButton.mask & Default )
+  {
+    QPushButton *pb = d->mButton.append( Default, i18n("&Default") );
+    connect( pb, SIGNAL(clicked()), this, SLOT(slotDefault()) );
+  }
+  if( d->mButton.mask & Details )
+  {
+    QPushButton *pb = d->mButton.append( Details, QString::null );
+    connect( pb, SIGNAL(clicked()), this, SLOT(slotDetails()) );
+    setDetails(false);
+  }
+  if( d->mButton.mask & User3 )
+  {
+    QPushButton *pb = d->mButton.append( User3, user3.text() );
+    pb->setIconSet( user3.iconSet() );
+    connect( pb, SIGNAL(clicked()), this, SLOT(slotUser3()) );
+  }
+  if( d->mButton.mask & User2 )
+  {
+    QPushButton *pb = d->mButton.append( User2, user2.text() );
+    pb->setIconSet( user2.iconSet() );
+    if( mMessageBoxMode == true )
+    {
+      connect( pb, SIGNAL(clicked()), this, SLOT(slotYes()) );
+    }
+    else
+    {
+      connect( pb, SIGNAL(clicked()), this, SLOT(slotUser2()) );
+    }
+  }
+  if( d->mButton.mask & User1 )
+  {
+    QPushButton *pb = d->mButton.append( User1, user1.text() );
+    pb->setIconSet(user1.iconSet() );
+    if( mMessageBoxMode == true )
+    {
+      connect( pb, SIGNAL(clicked()), this, SLOT(slotNo()) );
+    }
+    else
+    {
+      connect( pb, SIGNAL(clicked()), this, SLOT(slotUser1()) );
+    }
+  }
+  if( d->mButton.mask & Ok )
+  {
+    QPushButton *pb = d->mButton.append( Ok, i18n("&OK") );
+    connect( pb, SIGNAL(clicked()), this, SLOT(slotOk()) );
+  }
+  if( d->mButton.mask & Apply )
+  {
+    QPushButton *pb = d->mButton.append( Apply, i18n("&Apply") );
+    connect( pb, SIGNAL(clicked()), this, SLOT(slotApply()) );
+    connect( pb, SIGNAL(clicked()), this, SLOT(applyPressed()) );
+  }
+  if( d->mButton.mask & Try )
+  {
+    QPushButton *pb = d->mButton.append( Try, i18n("&Try") );
+    connect( pb, SIGNAL(clicked()), this, SLOT(slotTry()) );
+  }
+  if( d->mButton.mask & Cancel )
+  {
+    QPushButton *pb = d->mButton.append( Cancel, i18n("&Cancel") );
+    connect( pb, SIGNAL(clicked()), this, SLOT(slotCancel()) );
+  }
+  if( d->mButton.mask & Close )
+  {
+    QPushButton *pb = d->mButton.append( Close, i18n("&Close") );
+    connect( pb, SIGNAL(clicked()), this, SLOT(slotClose()) );
+  }
+
+  QPushButton *pb = actionButton( defaultButton );
+  if( pb != 0 )
+  {
+    setButtonFocus( pb, true, true );
+  }
+
+  setButtonStyle( ActionStyle0 );
+}
 
 
 
