@@ -173,6 +173,12 @@ namespace KIO
     ERR_IDENTICAL_FILES = 62 // src==dest when moving/copying
   };
 
+  /*
+   * Return a translated error message for @p errorCode using the
+   * additional error information provided by @p errorText.
+   */
+  QString buildErrorString(int errorCode, const QString &errorText);
+
   /**
    * Constants used to specify the type of a KUDSAtom.
    */
