@@ -844,18 +844,24 @@ void KPrintDialog::expandDialog(bool on)
 
 	if (on)
 	{
-		sz.setHeight(sz.height()+d->m_dummy->minimumSize().height()+layout()->spacing());
-		if (isVisible() || !d->m_dummy->isVisible())
+		sz.setHeight(sz.height()+d->m_dummy->minimumSize().height()+d->m_plugin->minimumSize().height()+2*layout()->spacing());
+		if (isVisible() || !d->m_dummy->isVisible() || !d->m_plugin->isVisible())
+		{
 			d->m_dummy->show();
+			d->m_plugin->show();
+		}
 		d->m_extbtn->setIconSet(SmallIconSet("up"));
 		d->m_extbtn->setText(i18n("Collaps&e"));
 		d->m_reduced = false;
 	}
 	else
 	{
-		sz.setHeight(sz.height()-d->m_dummy->height()-layout()->spacing());
-		if (!isVisible() || d->m_dummy->isVisible())
+		sz.setHeight(sz.height()-d->m_dummy->height()-d->m_plugin->height()-2*layout()->spacing());
+		if (!isVisible() || d->m_dummy->isVisible() || d->m_plugin->isVisible())
+		{
 			d->m_dummy->hide();
+			d->m_plugin->hide();
+		}
 		d->m_extbtn->setIconSet(SmallIconSet("down"));
 		d->m_extbtn->setText(i18n("&Expand"));
 		d->m_reduced = true;
