@@ -661,6 +661,8 @@ void StatJob::slotRedirection( const KURL &url)
      if (!kapp->authorizeURLAction("redirect", m_url, url))
      {
        kdWarning(7007) << "StatJob: Redirection from " << m_url.prettyURL() << " to " << url.prettyURL() << " REJECTED!" << endl;
+       m_error = ERR_ACCESS_DENIED;
+       m_errorText = url.prettyURL();
        return;
      }
      m_redirectionURL = url; // We'll remember that when the job finishes
