@@ -49,19 +49,19 @@
 
 
 <!ENTITY % kde.compulsory.datereleaseinfo "INCLUDE"		     >
-<!-- Modifications in hierarchy
-     %rdbhier2; is called in the DocBook DTD
- -->
-<!ENTITY % rdbhier2	    PUBLIC
-  "-//KDE//ELEMENTS DocBook Hierarchy Redeclarations 2 V1.0//EN"     >
-<!ENTITY % dbhier.redecl2.module "INCLUDE"			     >
-
 <!-- Modifications in pool
      %rdbpool; is called in the DocBook DTD
  -->
 <!ENTITY % rdbpool	    PUBLIC
   "-//KDE//ELEMENTS DocBook Pool Redeclarations V1.0//EN"	     >
 <!ENTITY % dbpool.redecl.module "INCLUDE"			     >
+
+<!-- Modifications in hierarchy
+     %rdbhier2; is called in the DocBook DTD
+ -->
+<!ENTITY % rdbhier2	    PUBLIC
+  "-//KDE//ELEMENTS DocBook Hierarchy Redeclarations 2 V1.0//EN"     >
+<!ENTITY % dbhier.redecl2.module "INCLUDE"			     >
 
 <!-- For better synopses (eg OO programming languages)		   
      See http://nwalsh.com/docbook/edbsyn/index.html		   

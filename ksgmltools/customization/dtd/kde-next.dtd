@@ -41,14 +41,6 @@
 <!-- Declarations in this part should only *restrict* the DocBook 
      DTD                                                           -->
 
-<!-- Modifications in hierarchy
-     %rdbhier2; is called in the DocBook DTD
-     NEEDS TO BE CHECKED ON CHANGES
- -->
-<!ENTITY % rdbhier2	    PUBLIC
-  "-//KDE//ELEMENTS DocBook Hierarchy Redeclarations 2 V1.0//EN"     >
-<!ENTITY % dbhier.redecl2.module "INCLUDE"			     >
-
 <!-- Modifications in pool
      %rdbpool; is called in the DocBook DTD
      NEEDS TO BE CHECKED ON CHANGES
@@ -56,6 +48,14 @@
 <!ENTITY % rdbpool	    PUBLIC
   "-//KDE//ELEMENTS DocBook Pool Redeclarations V1.0//EN"	     >
 <!ENTITY % dbpool.redecl.module "INCLUDE"			     >
+
+<!-- Modifications in hierarchy
+     %rdbhier2; is called in the DocBook DTD
+     NEEDS TO BE CHECKED ON CHANGES
+ -->
+<!ENTITY % rdbhier2	    PUBLIC
+  "-//KDE//ELEMENTS DocBook Hierarchy Redeclarations 2 V1.0//EN"     >
+<!ENTITY % dbhier.redecl2.module "INCLUDE"			     >
 
 
 <!-- ============================================================= -->
