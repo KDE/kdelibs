@@ -141,19 +141,19 @@ KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
   // run & stop butons
   hbLayout = new QHBoxLayout( topLayout, 15 );
 
-  pbStart = new QPushButton( "Start", main_widget );
+  pbStart = new QPushButton( "&Start", main_widget );
   pbStart->setFixedSize( pbStart->sizeHint() );
   connect( pbStart, SIGNAL(clicked()), SLOT(startJob()) );
   hbLayout->addWidget( pbStart, 5 );
 
-  pbStop = new QPushButton( "Stop", main_widget );
+  pbStop = new QPushButton( "Sto&p", main_widget );
   pbStop->setFixedSize( pbStop->sizeHint() );
   pbStop->setEnabled( false );
   connect( pbStop, SIGNAL(clicked()), SLOT(stopJob()) );
   hbLayout->addWidget( pbStop, 5 );
 
   // close button
-  close = new QPushButton( "Close", main_widget );
+  close = new QPushButton( "&Close", main_widget );
   close->setFixedSize( close->sizeHint() );
   connect(close, SIGNAL(clicked()), this, SLOT(slotQuit()));
 
