@@ -18,6 +18,7 @@
 
 #include <kapp.h>
 #include <kdebug.h>
+#include <kglobal.h>
 #include <kstddirs.h>
 
 #include "kregistry.h"
@@ -258,7 +259,7 @@ bool KRegistry::save( const QString& _dbfile ) const
 {
   QString f;
   if ( _dbfile.isEmpty() )
-    f = locate("config", "kregistry");
+    f = KGlobal::dirs()->getSaveLocation("config") + "kregistry";
   else
     f = _dbfile;
 
