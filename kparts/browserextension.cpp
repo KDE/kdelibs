@@ -19,6 +19,8 @@
 */
 #include "browserextension.h"
 
+#include <qtimer.h>
+
 using namespace KParts;
 
 const char *OpenURLEvent::s_strOpenURLEvent = "KParts/BrowserExtension/OpenURLevent";
@@ -119,18 +121,23 @@ public:
   ~BrowserExtensionPrivate()
   {
   }
+
+  KURL m_delayedURL;
+  KParts::URLArgs m_delayedArgs;
 };
 
 };
 
 BrowserExtension::BrowserExtension( KParts::ReadOnlyPart *parent,
-				    const char *name )
+                                    const char *name )
 : QObject( parent, name), m_part( parent )
 {
   d = new BrowserExtensionPrivate;
 
   connect( m_part, SIGNAL( completed() ),
-	   this, SLOT( slotCompleted() ) );
+           this, SLOT( slotCompleted() ) );
+  connect( this, SIGNAL( openURLRequest( const KURL &, const KParts::URLArgs & ) ),
+           this, SLOT( slotOpenURLRequest( const KURL &, const KParts::URLArgs & ) ) );
 }
 
 BrowserExtension::~BrowserExtension()
@@ -182,6 +189,23 @@ void BrowserExtension::slotCompleted()
 {
   //empty the argument stuff, to avoid bogus/invalid values when opening a new url
   setURLArgs( URLArgs() );
+}
+
+void BrowserExtension::slotOpenURLRequest( const KURL &url, const KParts::URLArgs &args )
+{
+    d->m_delayedURL = url;
+    d->m_delayedArgs = args;
+    QTimer::singleShot( 0, this, SLOT( slotEmitOpenURLRequestDelayed() ) );
+}
+
+void BrowserExtension::slotEmitOpenURLRequestDelayed()
+{
+    KURL u = d->m_delayedURL;
+    KParts::URLArgs args = d->m_delayedArgs;
+    d->m_delayedURL = KURL();
+    d->m_delayedArgs = URLArgs();
+    emit openURLRequestDelayed( u, args );
+    // tricky: do not do anything here! (no access to member variables, etc.)
 }
 
 QMap<QCString,QCString> BrowserExtension::actionSlotMap()

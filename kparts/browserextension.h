@@ -226,6 +226,8 @@ signals:
   // The @serviceType allows to ...
   void openURLRequest( const KURL &url, const KParts::URLArgs &args = KParts::URLArgs() );
 
+  void openURLRequestDelayed( const KURL &url, const KParts::URLArgs &args = KParts::URLArgs() );
+
   /**
    * Tell the hosting browser that the part opened a new URL (which can be
    * queried via @ref KParts::Part::url().
@@ -317,6 +319,8 @@ signals:
 
 private slots:
   void slotCompleted();
+  void slotOpenURLRequest( const KURL &url, const KParts::URLArgs &args );
+  void slotEmitOpenURLRequestDelayed();
 
 private:
   KParts::ReadOnlyPart *m_part;
@@ -333,7 +337,7 @@ class BrowserHostExtension : public QObject
   Q_OBJECT
 public:
   BrowserHostExtension( KParts::ReadOnlyPart *parent,
-			const char *name = 0L );
+                        const char *name = 0L );
 
   virtual ~BrowserHostExtension();
 
