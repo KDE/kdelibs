@@ -962,7 +962,6 @@ void KApplication::dcopFailure(const QString &msg)
 static const KCmdLineOptions qt_options[] =
 {
    { "display <displayname>", I18N_NOOP("Use the X-server display 'displayname'."), 0},
-   { "font <fontname>",  I18N_NOOP("Set default font to 'fontname'."), 0},
    { "session <sessionId>", I18N_NOOP("Restore the application for the given 'sessionId'."), 0},
    { "cmap", I18N_NOOP("Causes the application to install a private color\nmap on an 8-bit display."), 0},
    { "ncols <count>", I18N_NOOP("Limits the number of colors allocated in the color\ncube on a 8-bit display, if the application is\nusing the QApplication::ManyColor color\nspecification."), 0},
@@ -971,7 +970,7 @@ static const KCmdLineOptions qt_options[] =
    { "sync", I18N_NOOP("switches to synchronous mode for debugging."), 0},
    { "geometry <geometry>", I18N_NOOP("sets the client geometry of the main widget."), 0},
    { "fn", 0, 0},
-   { "font <font>", I18N_NOOP("defines the application font."), 0},
+   { "font <fontname>", I18N_NOOP("defines the application font."), 0},
    { "bg", 0, 0},
    { "background <color>", I18N_NOOP("sets the default background color and an\napplication palette (light and dark shades are\ncalculated)."), 0},
    { "fg", 0, 0},
