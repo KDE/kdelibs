@@ -28,11 +28,10 @@
 <refsynopsisdiv>
 <cmdsynopsis>
 <command><!-- --The command this page is about-- --></command>
-
-<group><option><!-- --Command specific options-- --></option></group>
-<group><option>KDE Generic Options</option></group>
-<group><option>Qt Generic Options</option></group>
-
+<arg choice="req"><!-- --Required command specific options-- --></arg>
+<arg choice="opt"><!-- --Optional command specific options-- --></arg>
+<arg choice="opt">KDE Generic Options</arg>
+<arg choice="opt">Qt Generic Options</arg>
 </cmdsynopsis>
 </refsynopsisdiv>
 
