@@ -51,7 +51,9 @@ namespace khtml {
     {
         delete cache;
         cache = 0;
+#ifndef HAVE_LIBTHAI
         th_brk = 0;
+#endif
     }
 
     bool isBreakableThai( const QChar *string, const int pos, const int len)
