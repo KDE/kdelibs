@@ -49,6 +49,8 @@ debian/tmp/usr/lib/libkspell.la
 debian/tmp/usr/lib/libkspell.so
 debian/tmp/usr/lib/libktexteditor.la
 debian/tmp/usr/lib/libktexteditor.so
+debian/tmp/usr/lib/libkderesources.la
+debian/tmp/usr/lib/libkderesources.so
 debian/tmp/usr/lib/libkutils.la
 debian/tmp/usr/lib/libkutils.so
 debian/tmp/usr/lib/libshellscript.la

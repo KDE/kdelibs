@@ -1,5 +1,9 @@
 debian/tmp/usr/lib/kde3/kabc_dir.la
 debian/tmp/usr/lib/kde3/kabc_dir.so
+debian/tmp/usr/lib/kde3/kabc_file.la
+debian/tmp/usr/lib/kde3/kabc_file.so
+debian/tmp/usr/lib/kde3/kabc_imap.la
+debian/tmp/usr/lib/kde3/kabc_imap.so
 debian/tmp/usr/lib/kde3/kabc_ldap.la
 debian/tmp/usr/lib/kde3/kabc_ldap.so
 debian/tmp/usr/lib/kde3/kabcformat_binary.la
@@ -44,6 +48,8 @@ debian/tmp/usr/lib/kde3/kimg_tiff.la
 debian/tmp/usr/lib/kde3/kimg_tiff.so
 debian/tmp/usr/lib/kde3/kimg_xview.la
 debian/tmp/usr/lib/kde3/kimg_xview.so
+debian/tmp/usr/lib/kde3/kio_data.la
+debian/tmp/usr/lib/kde3/kio_data.so
 debian/tmp/usr/lib/kde3/kio_file.la
 debian/tmp/usr/lib/kde3/kio_file.so
 debian/tmp/usr/lib/kde3/kio_ftp.la
@@ -101,6 +107,7 @@ debian/tmp/usr/lib/libkjs.so.*
 debian/tmp/usr/lib/libkmediaplayer.so.*
 debian/tmp/usr/lib/libkmid.so.*
 debian/tmp/usr/lib/libkparts.so.*
+debian/tmp/usr/lib/libkderesources.so.*
 debian/tmp/usr/lib/libkscreensaver.so.*
 debian/tmp/usr/lib/libkscript.so.*
 debian/tmp/usr/lib/libkspell.so.*
