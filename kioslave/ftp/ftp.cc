@@ -265,7 +265,7 @@ bool Ftp::ftpConnect( const char *_host, unsigned short int _port, const char *_
  */
 bool Ftp::ftpConnect2( const char *host, unsigned short int _port )
 {
-  struct sockaddr_in sin;
+  ksockaddr_in sin;
   struct servent *pse;
   int on = 1;
 
@@ -285,7 +285,7 @@ bool Ftp::ftpConnect2( const char *host, unsigned short int _port )
     return false;
   }
 
-  sControl = socket( PF_INET, SOCK_STREAM, IPPROTO_TCP );
+  sControl = socket( get_sin_family(sin), SOCK_STREAM, IPPROTO_TCP );
   if ( sControl == 0 ) {
     m_error = ERR_COULD_NOT_CREATE_SOCKET;
     m_errorText = host;
