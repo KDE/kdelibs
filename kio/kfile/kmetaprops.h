@@ -46,9 +46,6 @@ public:
    */
   static bool supports( KFileItemList _items );
 
-signals:
-    void changed();
-
 private:
     void createLayout();
 
