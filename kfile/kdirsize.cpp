@@ -22,7 +22,7 @@
 #include <qapplication.h>
 
 KDirSize::KDirSize( const KURL & directory )
-    : Job(false /*No GUI*/)
+    : KIO::Job(false /*No GUI*/)
 {
     m_bAsync = true;
     m_totalSize = 0L;
