@@ -36,3 +36,6 @@ Key configuration classes, bug fixes
 Michael Will <Michael.Will@student.uni-tuebingen.de>
 loading routine in KPixmap
 
+Christian Czezatke <e9025461@student.tuwien.ac.at>
+KProcess class
+

@@ -14,21 +14,25 @@ CXXFLAGS = @CXXFLAGS@ -DKDEDIR=\"@KDEDIR@\"
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS)
 
 include_HEADERS = Kconfig.h Kconfigdata.h kcolorgroup.h kapp.h\
-	kurl.h ksock.h drag.h kkeyconf.h kkeydata.h ckey.h kmisc.h
+	kurl.h ksock.h drag.h kkeyconf.h kkeydata.h ckey.h kmisc.h	\
+	kprocess.h kprocctrl.h
 
 libkdecore_la_SOURCES = Kconfig.cpp kcolorgroup.cpp kapp.cpp kurl.cpp \
-	ksock.cpp drag.cpp kkeyconf.cpp
+	ksock.cpp drag.cpp kkeyconf.cpp	kprocess.cpp kprocctrl.cpp
 
 libkdecore_la_LIBADD = @MISCOBJS@
 libkdecore_la_DEPENDENCIES = @MISCOBJS@ 
 libkdecore_la_LDFLAGS = -version-info 0:10 -rpath $(libdir) 
 
-BUILT_SOURCES = ksock.moc drag.moc kkeydata.moc kapp.moc
+BUILT_SOURCES = ksock.moc drag.moc kkeydata.moc kapp.moc kprocess.moc	\
+	kprocctrl.h
 
 ksock.cpp: ksock.moc
 drag.cpp: drag.moc
 kkeyconf.cpp: kkeydata.moc
 kapp.cpp: kapp.moc
+kprocess.cpp: kprocess.moc
+kprocctrl.cpp: kprocctrl.moc
 
 %.moc: %.h
 	$(MOC) $< -o $@
