@@ -1,17 +1,20 @@
-<para>This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public License
-as published by the Free Software Foundation; either version 2 of
-the License, or (at your option) any later version.</para>
+<para>Данное приложение является свободным программным
+обеспечением. Вы можете его распространять и/или изменять
+на условиях общественной лицензии GNU LGPL (Lesser General Public License)
+версии 2 или более
+поздней (по вашему усмотрению),
+опубликованной Фондом свободного программного обеспечения 
+(Free Software Foundation).</para>
 
-<para>This library is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty
-of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.</para>
+<para>Программа распространяется в расчёте на то, что она
+будет полезна, но без каких бы то ни было гарантий, в том числе гарантий её
+ценности или пригодности для любых конкретных задач. Подробнее об этом 
+можно прочитать в тексте лицензии GNU LGPL.</para>
 
-<para>You should have received a copy of the GNU Lesser General
-Public License along with this library; if not, write to the Free
-Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
-02111-1307 USA</para>
+<para>Копия лицензии GNU LGPL должна распространяться с данной
+программой; если она отсутствует, сообщите об этом Фонду FSF по адресу:
+Free Software Foundation, Inc. 59 Temple Place, Suite 330, Boston, 
+MA 02111-1307, USA.</para>
 <!--
 Local variables:
 mode: sgml

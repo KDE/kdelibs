@@ -52,8 +52,8 @@
 
 <varlistentry>
 <term><menuchoice>
-<guimenu>Help</guimenu>
-<guimenuitem>About KDE</guimenuitem>
+<guimenu>Помощь</guimenu>
+<guimenuitem>О KDE</guimenuitem>
 </menuchoice></term>
 <listitem><para><action>Будут выведены сведения о
 версии KDE.</action></para></listitem>
