@@ -206,6 +206,8 @@ protected:
 
   virtual void popupMenu( const QString &url );
 
+  virtual KParts::ReadOnlyPart *createFrame( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name, const QString &mimetype, QStringList &serviceTypes );
+
 protected slots:
   void slotData( KIO::Job*, const QByteArray &data );
   void slotFinished( KIO::Job* );

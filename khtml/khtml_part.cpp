@@ -931,26 +931,12 @@ void KHTMLPart::processChildRequest( khtml::ChildFrame *child, const KURL &url, 
 
   if ( !child->m_services.contains( mimetype ) )
   {
-    // ### HACK
+    KParts::ReadOnlyPart *part = createFrame( d->m_widget->viewport(), child->m_name.ascii(), this, child->m_name.ascii(), mimetype, child->m_services );
 
-    KTrader::OfferList offers = KTrader::self()->query( mimetype, "('KParts/ReadOnlyPart' in ServiceTypes) or ('Browser/View' in ServiceTypes)" );
-
-    assert( offers.count() >= 1 );
-
-    KService::Ptr service = *offers.begin();
-
-    child->m_services = service->serviceTypes();
+    if ( !part )
+      return;
+    
     child->m_serviceType = mimetype;
-
-    KLibFactory *factory = KLibLoader::self()->factory( service->library() );
-
-    KParts::ReadOnlyPart *part;
-
-    if ( factory->inherits( "KParts::Factory" ) )
-      part = (KParts::ReadOnlyPart *)((KParts::Factory *)factory)->createPart( d->m_widget->viewport(), child->m_name.ascii(), this, child->m_name.ascii(), "KParts::ReadOnlyPart" );
-    else
-      part = (KParts::ReadOnlyPart *)factory->create( d->m_widget->viewport(), child->m_name.ascii(), "KParts::ReadOnlyPart" );
-
     child->m_frame->setWidget( part->widget() );
 
     //CRITICAL STUFF
@@ -987,6 +973,34 @@ void KHTMLPart::processChildRequest( khtml::ChildFrame *child, const KURL &url, 
     child->m_extension->setURLArgs( child->m_args );
 
   child->m_part->openURL( url );
+}
+
+KParts::ReadOnlyPart *KHTMLPart::createFrame( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name, const QString &mimetype, QStringList &serviceTypes )
+{
+  KTrader::OfferList offers = KTrader::self()->query( mimetype, "'KParts/ReadOnlyPart' in ServiceTypes" );
+
+  assert( offers.count() >= 1 );
+  
+  KService::Ptr service = *offers.begin();
+  
+  KLibFactory *factory = KLibLoader::self()->factory( service->library() );
+  
+  if ( !factory )
+    return 0L;
+  
+  KParts::ReadOnlyPart *res = 0L;
+  
+  if ( factory->inherits( "KParts::Factory" ) )
+    res = static_cast<KParts::ReadOnlyPart *>(static_cast<KParts::Factory *>( factory )->createPart( parentWidget, widgetName, parent, name, "KParts::ReadOnlyPart" ));
+  else
+  res = static_cast<KParts::ReadOnlyPart *>(factory->create( parentWidget, widgetName, "KParts::ReadOnlyPart" ));
+  
+  if ( !res )
+    return res;
+  
+  serviceTypes = service->serviceTypes();
+  
+  return res;
 }
 
 KParts::PartManager *KHTMLPart::partManager()
