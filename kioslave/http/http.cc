@@ -383,6 +383,11 @@ bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data
     command += "Cache-control: no-cache\r\n"; /* for HTTP >=1.1 caches */
   }
 
+#if 0
+  // Content negotiation
+  command += "Accept-Encoding: gzip, identity\r\n";
+#endif
+
   // Charset negotiation:
   if ( !m_strCharsets.empty() )
     command += "Accept-Charset: " + m_strCharsets + "\r\n";
@@ -715,7 +720,7 @@ void HTTPProtocol::slotGet( const char *_url )
       if (m_qTransferEncodings.isEmpty() && m_qContentEncodings.isEmpty()) {
 #ifdef DO_MD5
 	if (m_sContentMD5.c_str()) {
-	  MD5Update(&context, buffer, nbytes);
+	  MD5Update(&context, (const unsigned char*)buffer, nbytes);
 	}
 #endif
 	data(buffer, nbytes);
@@ -753,7 +758,7 @@ void HTTPProtocol::slotGet( const char *_url )
     // received with a transfer-encoding, that encoding MUST be removed
     // prior to checking the Content-MD5 value against the received entity.
 #ifdef DO_MD5
-    MD5Update(&context, big_buffer.data(), big_buffer.size());
+    MD5Update(&context, (const unsigned char*)big_buffer.data(), big_buffer.size());
 #endif
     while (!m_qContentEncodings.isEmpty()) {
       enc = m_qContentEncodings.pop();
@@ -769,7 +774,7 @@ void HTTPProtocol::slotGet( const char *_url )
   }
 
 #ifdef DO_MD5
-  MD5Final(buf, &context); // Wrap everything up
+  MD5Final((unsigned char*)buf, &context); // Wrap everything up
   enc_digest = base64_encode_string(buf, 18);
   if (m_sContentMD5 != "" ) {
     int f;

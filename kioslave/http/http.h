@@ -31,9 +31,9 @@ public:
   enum HTTP_REV {HTTP_Unknown, HTTP_10, HTTP_11};
   enum HTTP_AUTH {AUTH_None, AUTH_Basic, AUTH_Digest};
 
-  string m_strRealm, m_strAuthString;
+  string m_strRealm, m_strAuthString, m_strProxyAuthString;
   enum HTTP_REV HTTP;
-  enum HTTP_AUTH Authentication;
+  enum HTTP_AUTH Authentication, ProxyAuthentication;
   QStack<char> m_qTransferEncodings, m_qContentEncodings;
   QByteArray big_buffer;
 
@@ -52,7 +52,7 @@ protected:
   string m_sContentMD5;
   void decodeChunked();
   void decodeGzip();
-  void configAuth(const char *);
+  void configAuth(const char *, bool);
   void addEncoding(QString, QStack<char> *);
   size_t sendData();
 

@@ -84,12 +84,12 @@ void CvtHex(
 
 /* calculate H(A1) as per spec */
 void DigestCalcHA1(
-    IN char * pszAlg,
-    IN char * pszUserName,
-    IN char * pszRealm,
-    IN char * pszPassword,
-    IN char * pszNonce,
-    IN char * pszCNonce,
+    IN const char * pszAlg,
+    IN const char * pszUserName,
+    IN const char * pszRealm,
+    IN const char * pszPassword,
+    IN const char * pszNonce,
+    IN const char * pszCNonce,
     OUT HASHHEX SessionKey
     )
 {
@@ -118,12 +118,12 @@ void DigestCalcHA1(
 /* calculate request-digest/response-digest as per HTTP Digest spec */
 void DigestCalcResponse(
     IN HASHHEX HA1,           /* H(A1) */
-    IN char * pszNonce,       /* nonce from server */
-    IN char * pszNonceCount,  /* 8 hex digits */
-    IN char * pszCNonce,      /* client nonce */
-    IN char * pszQop,         /* qop-value: "", "auth", "auth-int" */
-    IN char * pszMethod,      /* method from the request */
-    IN char * pszDigestUri,   /* requested URL */
+    IN const char * pszNonce,       /* nonce from server */
+    IN const char * pszNonceCount,  /* 8 hex digits */
+    IN const char * pszCNonce,      /* client nonce */
+    IN const char * pszQop,         /* qop-value: "", "auth", "auth-int" */
+    IN const char * pszMethod,      /* method from the request */
+    IN const char * pszDigestUri,   /* requested URL */
     IN HASHHEX HEntity,       /* H(entity body) if qop="auth-int" */
     OUT HASHHEX Response      /* request-digest or response-digest */
     )
