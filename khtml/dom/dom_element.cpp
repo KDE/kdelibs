@@ -65,7 +65,8 @@ Attr::~Attr()
 DOMString Attr::name() const
 {
     if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
-    return impl->getDocument()->attrName(impl->id());
+    return impl->getDocument()->attrName(
+        static_cast<AttrImpl*>(impl)->attrImpl()->id());
 }
 
 
