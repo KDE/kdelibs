@@ -145,11 +145,29 @@ KConfig	*KInstance::config() const
 {
     if( _config == 0 ) {
         if ( !d->configName.isEmpty() )
+        {
             _config = new KConfig( d->configName );
-	else if ( !_name.isEmpty() )
-	    _config = new KConfig( _name + "rc");
-	else
-	    _config = new KConfig();
+            // Check whether custom config files are allowed.
+            _config->setGroup( "KDE Action Restrictions" );
+            if (_config->readBoolEntry( "custom_config", true))
+            {
+               _config->setGroup(QString::null);
+            }
+            else
+            {
+               delete _config;
+               _config = 0;
+            }
+            
+        }
+            
+        if ( _config == 0 )
+        {
+	    if ( !_name.isEmpty() )
+	        _config = new KConfig( _name + "rc");
+	    else
+	        _config = new KConfig();
+	}
         if (_dirs)
             if (_dirs->addCustomized(_config))
                 _config->reparseConfiguration();
