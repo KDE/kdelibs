@@ -50,5 +50,10 @@ int main(int argc, char **argv) {
     QString proxy;
     QString protocol = KProtocolManager::slaveProtocol( "http://bugs.kde.org", proxy );
     assert( protocol == "http" );
+
+    QStringList capabilities = KProtocolInfo::capabilities( "imap" );
+    kdDebug() << "kio_imap capabilities: " << capabilities << endl;
+    //assert(capabilities.contains("ACL"));
+
     return 0;
 }

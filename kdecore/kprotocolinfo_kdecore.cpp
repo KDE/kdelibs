@@ -35,6 +35,7 @@ public:
   KProtocolInfo::ExtraFieldList extraFields;
   bool showPreviews;
   KURL::URIMode uriMode;
+  QStringList capabilities;
 };
 
 //
@@ -110,8 +111,10 @@ KProtocolInfo::KProtocolInfo(const QString &path)
      d->uriMode = KURL::Mailto;
   else if (tmp == "url")
      d->uriMode = KURL::URL;
-  else 
+  else
      d->uriMode = KURL::Auto;
+
+  d->capabilities = config.readListEntry( "Capabilities" );
 }
 
 KProtocolInfo::KProtocolInfo( QDataStream& _str, int offset) :
@@ -147,7 +150,9 @@ KProtocolInfo::load( QDataStream& _str)
         >> i_supportsDeleting >> i_supportsLinking
         >> i_supportsMoving
         >> i_canCopyFromFile >> i_canCopyToFile
-        >> m_config >> m_maxSlaves >> d->docPath >> d->protClass >> d->extraFields >> i_showPreviews >> i_uriMode;
+        >> m_config >> m_maxSlaves >> d->docPath >> d->protClass
+        >> d->extraFields >> i_showPreviews >> i_uriMode
+        >> d->capabilities;
    m_inputType = (Type) i_inputType;
    m_outputType = (Type) i_outputType;
    m_isSourceProtocol = (i_isSourceProtocol != 0);
@@ -207,7 +212,9 @@ KProtocolInfo::save( QDataStream& _str)
         << i_supportsDeleting << i_supportsLinking
         << i_supportsMoving
         << i_canCopyFromFile << i_canCopyToFile
-        << m_config << m_maxSlaves << d->docPath << d->protClass << d->extraFields << i_showPreviews << i_uriMode;
+        << m_config << m_maxSlaves << d->docPath << d->protClass
+        << d->extraFields << i_showPreviews << i_uriMode
+        << d->capabilities;
 }
 
 
@@ -459,6 +466,15 @@ KURL::URIMode KProtocolInfo::uriParseMode( const QString& _protocol )
     return KURL::Auto;
 
   return prot->d->uriMode;
+}
+
+QStringList KProtocolInfo::capabilities( const QString& _protocol )
+{
+  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
+  if ( !prot )
+    return QStringList();
+
+  return prot->d->capabilities;
 }
 
 QDataStream& operator>>( QDataStream& s, KProtocolInfo::ExtraField& field )  {
