@@ -19,6 +19,7 @@
 
 #include "kmfiltermanager.h"
 #include "kprintfilter.h"
+#include "kdeprintcheck.h"
 
 #include <qdir.h>
 #include <kstddirs.h>
@@ -48,10 +49,9 @@ QStringList KMFilterManager::filterList()
 		{
 			KSimpleConfig	conf(d.absFilePath(*it));
 			conf.setGroup("KDE Print Filter Entry");
-			QString	value = conf.readEntry("Require",QString::null);
-			if (value.isEmpty() || !KStandardDirs::findExe(value).isEmpty())
+			if (KdeprintChecker::check(&conf))
 			{
-				value = conf.readEntry("Name",QString::null);
+				QString	value = conf.readEntry("Name",QString::null);
 				if (!value.isEmpty())
 				{
 					m_flist.append(value);

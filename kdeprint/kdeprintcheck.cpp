@@ -1,0 +1,108 @@
+/*
+ *  This file is part of the KDE libraries
+ *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Library General Public
+ *  License version 2 as published by the Free Software Foundation.
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Library General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Library General Public License
+ *  along with this library; see the file COPYING.LIB.  If not, write to
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
+ **/
+
+/*
+ * Implementation of simple checking mechanism. Rules are defined in
+ * the form of an URI. Available syntax is:
+ *	- exec:/<execname>	->	check for an executable in
+ *					$PATH variable.
+ *	- config:/path/to/file	->      check for the existence of a file
+ *					or directory in KDE or standard
+ *					UNIX config locations
+ *	- file:/path/to/file
+ *	- dir:/path/to/dir	->	simply check the existence of the
+ *					a file or directory
+ *
+ * TO BE IMPLEMENTED:
+ *	- run:/<execname>	->	check for a running executable
+ */
+
+#include "kdeprintcheck.h"
+
+#include <kstddirs.h>
+
+static char* config_stddirs[] = {
+	"/etc/",
+	"/usr/etc/",
+	"/usr/local/etc/",
+	"/opt/etc/",
+	"/opt/local/etc/",
+	0
+};
+
+bool KdeprintChecker::check(KConfig *conf, const QString& group)
+{
+	if (!group.isEmpty())
+		conf->setGroup(group);
+	QStringList	uris = conf->readListEntry("Require");
+	return check(uris);
+}
+
+bool KdeprintChecker::check(const QStringList& uris)
+{
+	bool	state(true);
+	for (QStringList::ConstIterator it=uris.begin(); it!=uris.end() && state; ++it)
+		state = (state && checkURL(KURL(*it)));
+	return state;
+}
+
+bool KdeprintChecker::checkURL(const KURL& url)
+{
+	QString	prot(url.protocol());
+	if (prot == "config")
+		return checkConfig(url);
+	else if (prot == "exec")
+		return checkExec(url);
+	else if (prot == "file" || prot == "dir")
+		return KStandardDirs::exists(url.url());
+	return false;
+}
+
+bool KdeprintChecker::checkConfig(const KURL& url)
+{
+	// get the config filename (may contain a path)
+	QString	f(url.path().mid(1));
+	bool	state(false);
+
+	// first check for standard KDE config file
+	if (!locate("config",f).isEmpty())
+		state = true;
+	else
+	// otherwise check in standard UNIX config directories
+	{
+		char	**p = config_stddirs;
+		while (*p)
+		{
+			if (KStandardDirs::exists(QString::fromLatin1(*p)+f))
+			{
+				state = true;
+				break;
+			}
+			else
+				p++;
+		}
+	}
+	return state;
+}
+
+bool KdeprintChecker::checkExec(const KURL& url)
+{
+	QString	execname(url.path().mid(1));
+	return !(KStandardDirs::findExe(execname).isEmpty());
+}

@@ -170,6 +170,7 @@ Icon=acroread
 Command=ps2pdf -sPAPERSIZE=%psl %in %out
 File=1
 Extension=pdf
+Require=exec:/ps2pdf
 
 [Printer 2]
 Name=Send To Fax
@@ -252,6 +253,7 @@ Icon=kfax
 Command=kdeprintfax %in
 File=0
 Extension=
+Require=exec:/kdeprintfax
 
 [Printer 3]
 Command=ps2pdf -sPAPERSIZE=%psl %in %out && kmail --composer --attach file:%out && sleep 15 && rm -f %out
@@ -261,3 +263,4 @@ Extension=pdf
 File=1
 Icon=kmail
 Name=Mail PDF file
+Require=exec:/ps2pdf,exec:/kmail

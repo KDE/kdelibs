@@ -20,6 +20,7 @@
 #include "kmspecialmanager.h"
 #include "kmmanager.h"
 #include "kmprinter.h"
+#include "kdeprintcheck.h"
 
 #include <kstddirs.h>
 #include <ksimpleconfig.h>
@@ -53,6 +54,7 @@ bool KMSpecialManager::savePrinters()
 		conf.writeEntry("File",it.current()->option("kde-special-file"));
 		conf.writeEntry("Icon",it.current()->pixmap());
 		conf.writeEntry("Extension",it.current()->option("kde-special-extension"));
+		conf.writeEntry("Require",it.current()->option("kde-special-require"));
 		n++;
 	}
 	conf.setGroup("General");
@@ -81,8 +83,11 @@ bool KMSpecialManager::loadPrinters()
 		printer->setOption("kde-special-command",conf.readEntry("Command"));
 		printer->setOption("kde-special-file",conf.readEntry("File"));
 		printer->setOption("kde-special-extension",conf.readEntry("Extension"));
+		printer->setOption("kde-special-require",conf.readEntry("Require"));
 		printer->setPixmap(conf.readEntry("Icon","unknown"));
 		printer->setType(KMPrinter::Special);
+		if (!KdeprintChecker::check(&conf))
+			printer->addType(KMPrinter::Invalid);
 		printer->setState(KMPrinter::Idle);
 		m_mgr->addPrinter(printer);
 	}
@@ -99,6 +104,11 @@ void KMSpecialManager::refresh()
 		QListIterator<KMPrinter>	it(m_mgr->m_printers);
 		for (;it.current();++it)
 			if (it.current()->isSpecial())
+			{
 				it.current()->setDiscarded(false);
+				it.current()->setType(KMPrinter::Special);
+				if (KdeprintChecker::check(QStringList::split(',',it.current()->option("kde-special-require"),false)))
+					it.current()->addType(KMPrinter::Invalid);
+			}
 	}
 }
