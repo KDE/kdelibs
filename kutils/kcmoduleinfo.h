@@ -48,7 +48,9 @@ public:
    * yoruself!
    **/
   KCModuleInfo(const QString& desktopFile, const QString& baseGroup /* = QString::fromLatin1("settings")*/);
-  virtual ~KCModuleInfo();
+  KCModuleInfo( const KCModuleInfo &rhs );
+  KCModuleInfo &operator=( const KCModuleInfo &rhs );
+  ~KCModuleInfo();
 
   /** @return the filename pass in the constructor **/
   QString fileName() const { return _fileName; };
@@ -95,10 +97,12 @@ protected:
 
 private:
 
+  // when adding members, don't forget to take care about them in the assignment operator
   QStringList _groups, _keywords;
   QString     _name, _icon, _lib, _handle, _fileName, _doc, _comment;
-  bool        _needsRootPrivileges, _isHiddenByDefault;
-  bool        _allLoaded;
+  bool        _needsRootPrivileges : 1; 
+  bool        _isHiddenByDefault : 1;
+  bool        _allLoaded : 1;
 
   KService::Ptr _service;
 

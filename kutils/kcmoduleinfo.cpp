@@ -61,6 +61,36 @@ KCModuleInfo::KCModuleInfo(const QString& desktopFile, const QString& baseGroup)
   setGroups(groups);
 }
 
+KCModuleInfo::KCModuleInfo( const KCModuleInfo &rhs )
+    : d( 0 )
+{
+    ( *this ) = rhs;
+}
+
+// this re-implementation exists to ensure that other code always calls
+// our re-implementation, so in case we add data to the d pointer in the future 
+// we can be sure that we get called when we are copied.
+KCModuleInfo &KCModuleInfo::operator=( const KCModuleInfo &rhs )
+{
+    _groups = rhs._groups;
+    _keywords = rhs._keywords;
+    _name = rhs._name;
+    _icon = rhs._icon;
+    _lib = rhs._lib;
+    _handle = rhs._handle;
+    _fileName = rhs._fileName;
+    _doc = rhs._doc;
+    _comment = rhs._comment;
+    _needsRootPrivileges = rhs._needsRootPrivileges;
+    _isHiddenByDefault = rhs._isHiddenByDefault;
+    _allLoaded = rhs._allLoaded;
+    _service = rhs._service;
+
+    // d pointer ... once used.
+
+    return *this;
+}
+
 KCModuleInfo::~KCModuleInfo() { }
 
 void
