@@ -187,7 +187,7 @@
 <!ENTITY kpager "<application>KPager</application>">
 <!ENTITY kpaint "<application>KPaint</application>">
 <!ENTITY kpanel	"<application>kpanel</application>">
-<!ENTITY kpat	"<application>KPat</application>">
+<!ENTITY kpat	"<application>KPatience</application>">
 <!ENTITY kpilot	"<application>KPilot</application>">
 <!ENTITY kpm	"<application>Kpm</application>">
 <!ENTITY kpresenter "<application>KPresenter</application>">
@@ -223,7 +223,7 @@
 <!ENTITY ktron	"<application>KTron</application>">
 <!ENTITY ktuberling	"<application>KTuberling</application>">
 <!ENTITY kuser	"<application>Kuser</application>">
-<!ENTITY kview	"<application>kview</application>">
+<!ENTITY kview	"<application>KView</application>">
 <!ENTITY kvt	"<application>kvt</application>">
 <!ENTITY kworldwatch  "<application>KWorldWatch</application>">
 <!ENTITY kword "<application>KWord</application>">
