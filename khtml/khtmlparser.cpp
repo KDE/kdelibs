@@ -382,10 +382,11 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	case ID_LI:
 	    e = new HTMLUListElementImpl(document);
 	    insertNode(e);
+	    insertNode(n);
 	    return;
 	    break;
-	    
-	    // the following is a hack to move non rendered elements 
+	
+	    // the following is a hack to move non rendered elements
 	    // outside of tables.
 	    // needed for broken constructs like <table><form ...><tr>....
 	case ID_INPUT:
@@ -447,6 +448,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	    switch(current->id())
 	    {
 	    case ID_SELECT:
+		throw exception;
 		return;
 	    default:
 		break;
@@ -568,7 +570,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	if(ignore)
 	{
 	    //printf("Exception handler failed in HTMLPArser::insertNode()\n");
-	    return;
+	    throw exception;
 	}
 	
 	insertNode(n);

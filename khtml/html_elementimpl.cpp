@@ -908,6 +908,9 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
 	    renderedNodes.append(current);	
 	}	
 
+	if(current->isTextNode())
+	    (static_cast<TextImpl *>(current))->deleteSlaves();
+	
 	NodeImpl *child = current->firstChild();
 	if(child && current->childrenRendered())
 	{	
@@ -937,8 +940,8 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
     int defDescent=fm.descent();
 
     int lineAscent = 0;
-    int lineDescent = 0;    
-    
+    int lineDescent = 0;
+
     TextSlave *slave = 0;
 
     while(endNode.current())
@@ -1224,7 +1227,6 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
 	    break;
 	}
 	
-
 	while(1)
 	{
 	    current = startNode.current();
@@ -1400,7 +1402,7 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
     }
     if (lineDescent)
     	descent+=defDescent;	
-    
+
 #ifdef PAR_DEBUG
     printf("calcParagraph end\n");
 #endif

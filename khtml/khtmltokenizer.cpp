@@ -661,7 +661,7 @@ void HTMLTokenizer::parseTag(HTMLStringIt &src)
 		      // this is moslty due to a missing '"' somewhere before..
 		      // so let's start searching for a new tag
 		      tquote = NoQuote;
-		      
+		
 		      Attribute a;
 		      a.id = *buffer;
 		      if(a.id)
@@ -756,7 +756,7 @@ void HTMLTokenizer::parseTag(HTMLStringIt &src)
 	    {
 		if( tquote )
 		{
-		  // additional quote. discard it, and define as end of 
+		  // additional quote. discard it, and define as end of
 		  // attribute
 		    printf("bad HTML in parseTag: Value\n");
 		    ++src;

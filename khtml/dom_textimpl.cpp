@@ -36,13 +36,13 @@
 using namespace DOM;
 
 
-CharacterDataImpl::CharacterDataImpl(DocumentImpl *doc) : NodeWParentImpl(doc) 
+CharacterDataImpl::CharacterDataImpl(DocumentImpl *doc) : NodeWParentImpl(doc)
 {
     str = 0;
 }
 
-CharacterDataImpl::CharacterDataImpl(DocumentImpl *doc, const DOMString &_text) 
-    : NodeWParentImpl(doc) 
+CharacterDataImpl::CharacterDataImpl(DocumentImpl *doc, const DOMString &_text)
+    : NodeWParentImpl(doc)
 {
     str = _text.impl;
     str->ref();
@@ -99,7 +99,7 @@ void CharacterDataImpl::replaceData( const unsigned long /*offset*/, const unsig
 
 // ---------------------------------------------------------------------------
 
-TextImpl::TextImpl(DocumentImpl *doc, const DOMString &_text) 
+TextImpl::TextImpl(DocumentImpl *doc, const DOMString &_text)
     : CharacterDataImpl(doc, _text)
 {
     first = 0;
@@ -108,21 +108,14 @@ TextImpl::TextImpl(DocumentImpl *doc, const DOMString &_text)
     font = 0;
 }
 
-TextImpl::TextImpl(DocumentImpl *doc) 
+TextImpl::TextImpl(DocumentImpl *doc)
     : CharacterDataImpl(doc)
 {
 }
 
 TextImpl::~TextImpl()
 {
-    // delete all slaves
-    TextSlave *s = first;
-    while(s)
-    {
-	TextSlave *next = s->next();
-	delete s;
-	s = next;
-    }
+    deleteSlaves();
 }
 
 TextImpl *TextImpl::splitText( const unsigned long /*offset*/ )
@@ -141,8 +134,19 @@ unsigned short TextImpl::nodeType() const
     return Node::TEXT_NODE;
 }
 
+void TextImpl::deleteSlaves()
+{
+    // delete all slaves
+    TextSlave *s = first;
+    while(s)
+    {
+	TextSlave *next = s->next();
+	delete s;
+	s = next;
+    }    
+}
 
-void TextImpl::printObject( QPainter *p, int x, int y, int w, int h, 
+void TextImpl::printObject( QPainter *p, int x, int y, int w, int h,
 		      int tx, int ty)
 {
 #ifdef DEBUG_LAYOUT
@@ -160,7 +164,7 @@ void TextImpl::printObject( QPainter *p, int x, int y, int w, int h,
     }
 }
 
-void TextImpl::print( QPainter *p, int x, int y, int w, int h, 
+void TextImpl::print( QPainter *p, int x, int y, int w, int h,
 		      int tx, int ty)
 {
     printObject(p, x, y, w, h, tx, ty);
@@ -217,7 +221,7 @@ void TextImpl::calcMinMaxWidth()
     setMinMaxKnown();
 }
 
-bool TextImpl::mouseEvent( int _x, int _y, int, MouseEventType, 
+bool TextImpl::mouseEvent( int _x, int _y, int, MouseEventType,
 			   int _tx, int _ty, DOMString &)
 {
     //printf("Text::mouseEvent\n");
@@ -227,7 +231,7 @@ bool TextImpl::mouseEvent( int _x, int _y, int, MouseEventType,
     QFontMetrics fm(*font);
     while(s)
     {
-	if(s->checkPoint(_x, _y, _tx, _ty, fm)) 
+	if(s->checkPoint(_x, _y, _tx, _ty, fm))
 	{
 	    inside = true;
 	    break;

@@ -81,7 +81,7 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name)
     setCursor(arrowCursor);
     _isFrame = false;
     _isSelected = false;
-    
+
     paintBuffer = 0;
 
     init();
@@ -117,7 +117,12 @@ KHTMLWidget::~KHTMLWidget()
 {
   slotStop();
   lstViews->removeRef( this );
-
+  if(lstViews->isEmpty())
+  {
+      delete lstViews;
+      lstViews = 0;
+  }
+  
   clear();
 
   if(cache) delete cache;
@@ -202,7 +207,7 @@ void KHTMLWidget::clear()
 
     findPos = -1;
     findNode = 0;
-    
+
     QPainter p(viewport());
     QBrush b(defaultSettings->bgColor);
     p.fillRect(0, 0, viewport()->width(), viewport()->height(), b);
@@ -365,7 +370,7 @@ void KHTMLWidget::begin( const QString &_url, int _x_offset, int _y_offset )
 
     if(!_settings) _settings = new HTMLSettings( *defaultSettings);
 
-    
+
     document = new HTMLDocumentImpl(this, cache);
     document->ref();
     document->setURL(m_strURL);
@@ -460,7 +465,7 @@ void KHTMLWidget::openURL( const QString &_url, bool _reload, int _xoffset, int 
       if(body && body->id() == ID_FRAMESET) frameset = true;
   }
 
-  if ( !m_bReload && !frameset && urlcmp( _url, m_strURL, true, true ) 
+  if ( !m_bReload && !frameset && urlcmp( _url, m_strURL, true, true )
        && !_post_data )
   {
     KURL u( m_strWorkingURL );
@@ -547,7 +552,7 @@ void KHTMLWidget::slotRedirection( int /*_id*/, const char *_url )
 void KHTMLWidget::slotData( int _id, const char *_p, int _len )
 {
     //if(_id != m_jobId) return; // the data is still from the previous page.
-    
+
     kdebug(0,1202,"SLOT_DATA %d", _len);
 
   /** DEBUG **/
@@ -987,9 +992,9 @@ void KHTMLWidget::drawContents ( QPainter * p, int clipx,
     if(!document) return;
     NodeImpl *body = document->body();
     if(!body) return;
-    
+
     printf("drawContents x=%d,y=%d,w=%d,h=%d\n",clipx,clipy,clipw,cliph);
-    
+
     // we sometimes get doubled requests
     // last one seems always to be unneccery
     static QRect lastrect;
@@ -997,21 +1002,21 @@ void KHTMLWidget::drawContents ( QPainter * p, int clipx,
     if (lastrect==newrect)
     	return;
 
-    lastrect = newrect;    
-        
+    lastrect = newrect;
+
 #if 1
     if (paintBuffer==0)
             paintBuffer=new QPixmap(width()+100,PAINT_BUFFER_HEIGHT);
     else if ( paintBuffer->width() < width() )
     {
         delete paintBuffer;
-        paintBuffer = new QPixmap(width()+100,PAINT_BUFFER_HEIGHT);            
+        paintBuffer = new QPixmap(width()+100,PAINT_BUFFER_HEIGHT);
     }
 //    paintBuffer->fill(defaultSettings->bgColor);
 
     QTime qt;
     qt.start();
-        
+
     int py=0;
     while (py < cliph)
     {
@@ -1032,7 +1037,7 @@ void KHTMLWidget::drawContents ( QPainter * p, int clipx,
 	
 	py += PAINT_BUFFER_HEIGHT;
     }
-    
+
     printf("TIME: print() dt=%d\n",qt.elapsed());
 #else
     QBrush b(defaultSettings->bgColor);

@@ -130,7 +130,7 @@ public:
     void  addColInfo(HTMLTableCellElementImpl *cell);
     void  addColInfo(HTMLTableColElementImpl *colel);
 
-    void addColInfo(int _startCol, int _colSpan, 
+    void addColInfo(int _startCol, int _colSpan,
 		    int _minSize, int _maxSize, Length _width,
 		    HTMLTableCellElementImpl* _cell);
 
@@ -196,9 +196,9 @@ protected:
 	HTMLTableCellElementImpl* maxCell;
 	LengthType 	type;
 	int 	value;
-	int 	percentage;    
+	int 	percentage;
     };
-    
+
 
     // this function is used in case <col> or <colgroup> elements are defined
     // table layout can be done incrementally in this case
@@ -216,20 +216,31 @@ protected:
     // ### need to provide some delete* methods too...
 
     HTMLTableCellElementImpl ***cells;
-    
-    QVector<QVector<ColInfo> > colInfos;
+
+    class ColInfoLine : public QVector<ColInfo>
+    {
+    public:
+	ColInfoLine() : QVector<ColInfo>()
+	{ setAutoDelete(true); }
+	ColInfoLine(int i) : QVector<ColInfo>(i)
+	{ setAutoDelete(true); }
+	ColInfoLine(const QVector<ColInfo> &v) : QVector<ColInfo>(v)
+	{ setAutoDelete(true); }
+    };
+
+    QVector<ColInfoLine> colInfos;
 
     void calcColMinMax();
     void calcSingleColMinMax(int c, ColInfo* col);
     void calcPercentRelativeMax(int c, ColInfo* col);
     void spreadSpanMinMax(int col, int span, int min, int max, LengthType type);
     int distributeWidth(int distrib, LengthType type, int typeCols );
-    int distributeMinWidth(int distrib, LengthType distType, 
-    	    LengthType toType, int start, int span ); 
+    int distributeMinWidth(int distrib, LengthType distType,
+    	    LengthType toType, int start, int span );
     int distributeRest(int distrib, LengthType type, int divider );
-    
+
     int maxColSpan;
-    
+
     QArray<int> percentTotals;
 
     QArray<int> columnPos;
@@ -250,8 +261,8 @@ protected:
 
     unsigned int totalPercent ;
     unsigned int totalRelative ;
-    
-    HTMLTableCaptionElementImpl *tCaption;    
+
+    HTMLTableCaptionElementImpl *tCaption;
     HTMLTableSectionElementImpl *head;
     HTMLTableSectionElementImpl *foot;
     HTMLTableSectionElementImpl *firstBody;
@@ -273,7 +284,7 @@ protected:
     Rules rules;
 
     bool incremental;
-    
+
     HTMLTableColElementImpl *_oldColElem;
     int _currentCol; // keeps track of current col for col/colgroup stuff
 };
@@ -464,7 +475,7 @@ public:
 
     virtual VAlign vAlign();
     virtual HAlign hAlign();
-    
+
     virtual int getHeight();
 
 protected:
@@ -493,7 +504,7 @@ public:
 
     virtual tagStatus startTag() { return COLStartTag; }
     virtual tagStatus endTag() { return COLEndTag; }
-    
+
     void setTable(HTMLTableElementImpl *t) { table = t; }
     void setStartCol( int c ) {_startCol = _currentCol = c; }
     int col() { return _startCol; }
@@ -504,7 +515,7 @@ public:
     Length width();
 
     virtual NodeImpl *addChild(NodeImpl *child);
-    
+
     // overrides
     virtual void parseAttribute(Attribute *attr);
 
@@ -519,7 +530,7 @@ protected:
     int _span;
     Length predefinedWidth;
     HTMLTableElementImpl *table;
-    
+
     int _currentCol;
     int _startCol;
 };

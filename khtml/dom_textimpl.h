@@ -86,11 +86,13 @@ public:
     virtual bool isRendered() { return true; }
     virtual ushort id() const { return ID_TEXT; }
 
-    virtual void print( QPainter *, int x, int y, int w, int h, 
+    virtual void print( QPainter *, int x, int y, int w, int h,
 			int tx, int ty);
-    virtual void printObject( QPainter *, int x, int y, int w, int h, 
+    virtual void printObject( QPainter *, int x, int y, int w, int h,
 			int tx, int ty);
 
+    void deleteSlaves();
+    
     khtml::TextSlave *first;
 
     // overrides
@@ -98,8 +100,8 @@ public:
     virtual short getMinWidth() const { return minWidth; }
     virtual short getMaxWidth() const { return maxWidth; }
     virtual const HTMLFont *getFont() { return font; }
-    virtual bool mouseEvent( int x, int y, int button, 
-			     DOM::NodeImpl::MouseEventType, 
+    virtual bool mouseEvent( int x, int y, int button,
+			     DOM::NodeImpl::MouseEventType,
 			     int _tx, int _ty, DOMString &url);
     virtual int getXPos() const;
     virtual int getYPos() const;
