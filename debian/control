@@ -100,6 +100,7 @@ Description: aRts Sound system (built with alsa support)
 Package: libarts-dev
 Architecture: any
 Section: devel
+Replaces: libarts (<< ${Source-Version}), libarts-alsa (<< ${Source-Version})
 Depends: libarts (= ${Source-Version}) | libarts-alsa (= ${Source-Version}), libc6-dev, libaudiofile-dev
 Suggests: kdelibs-dev
 Description: aRts Sound system (development files)
