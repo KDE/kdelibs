@@ -11,7 +11,7 @@
 -->
 
 <!--The root element that must enclose all other tags in the document. -->
-<!ELEMENT kpartgui ((ActionProperties | MenuBar | ToolBar | Merge | MergeLocal | DefineGroup | MainWindow | StatusBar | Menu)*)>
+<!ELEMENT kpartgui ((ActionProperties | MenuBar | ToolBar | Merge | MergeLocal | DefineGroup | MainWindow | StatusBar | Menu | State)*)>
 <!ATTLIST kpartgui
   name CDATA #REQUIRED
   version CDATA #REQUIRED
@@ -134,3 +134,15 @@
 <!ATTLIST DefineGroup
   name CDATA #REQUIRED
 >
+
+<!-- Defines a GUI state, esp. which actions to enable and which ones to -->
+<!-- disable on entering this state (see KXMLGUIClient::stateChanged())  -->
+<!ELEMENT State ( enable | disable | enable disable )>
+<!ATTLIST State
+  name CDATA #REQUIRED
+>
+
+<!-- used in State to collect actions to be enabled and disabled, resp., -->
+<!-- on entering the state -->
+<!ELEMENT enable (Action+)>
+<!ELEMENT disable (Action+)>
