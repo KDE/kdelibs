@@ -13,6 +13,7 @@ Replaces: kdelibs2g, kdebase (<< 4:2.2-cvs20010618-1), konqueror (<< 4:2.2-cvs20
 Depends: ${shlibs:Depends}, python-base
 Recommends: libarts, libkmid, kdelibs3-cups
 Suggests: kdelibs3-crypto, anti-aliasing-howto, gdb
+Conflicts: kdelibs3-crypto (<< 4:2.2.0-0beta1-1)
 Description: KDE core libraries (runtime files)
  KDE core libraries.
  You need these files to run kde applications.
