@@ -48,7 +48,7 @@
 #include <kio/jobclasses.h>
 #include <kio/netaccess.h>
 #include <kio/previewjob.h>
-#include <kpropsdlg.h>
+#include <kpropertiesdialog.h>
 #include <kservicetypefactory.h>
 
 #include "config-kfile.h"

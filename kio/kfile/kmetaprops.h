@@ -20,7 +20,7 @@
 
 #ifndef __KMETAPROPS_H__
 #define __KMETAPROPS_H__
-#include <kpropsdlg.h>
+#include <kpropertiesdialog.h>
 
  
 class KFileMetaInfoItem;

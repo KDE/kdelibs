@@ -170,7 +170,28 @@ KPropertiesDialog::KPropertiesDialog (KFileItemList _items,
   init (modal, autoShow);
 }
 
+#ifndef KDE_NO_COMPAT
 KPropertiesDialog::KPropertiesDialog (const KURL& _url, mode_t /* _mode is now unused */,
+                                      QWidget* parent, const char* name,
+                                      bool modal, bool autoShow)
+  : KDialogBase (KDialogBase::Tabbed, i18n( "Properties for %1" ).arg(KIO::decodeFileName(_url.fileName())),
+                 KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
+                 parent, name, modal),
+  m_singleUrl( _url )
+{
+  d = new KPropertiesDialogPrivate;
+  d->modal = modal;
+  d->autoShow = autoShow;
+
+  assert(!_url.isEmpty());
+
+  KIO::StatJob * job = KIO::stat( _url );
+  connect( job, SIGNAL( result( KIO::Job * ) ),
+           SLOT( slotStatResult( KIO::Job * ) ) );
+}
+#endif
+
+KPropertiesDialog::KPropertiesDialog (const KURL& _url,
                                       QWidget* parent, const char* name,
                                       bool modal, bool autoShow)
   : KDialogBase (KDialogBase::Tabbed, i18n( "Properties for %1" ).arg(KIO::decodeFileName(_url.fileName())),

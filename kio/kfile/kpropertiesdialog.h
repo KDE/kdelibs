@@ -103,18 +103,35 @@ public:
                      QWidget *parent = 0L, const char* name = 0L,
                      bool modal = false, bool autoShow = true);
 
+#ifndef KDE_NO_COMPAT
+  /**
+   * @deprecated
+   *
+   * Brings up a Properties dialog. Convenience constructor for
+   * non-file-manager applications.
+   *
+   * @param _url the URL whose properties should be displayed
+   * @param _mode unused.
+   * @param parent is the parent of the dialog widget.
+   * @param name is the internal name.
+   * @param modal tells the dialog whether it should be modal.
+   * @param autoShow tells the dialog whethr it should show itself automatically.  */
+  KPropertiesDialog( const KURL& _url, mode_t _mode,
+                     QWidget* parent = 0L, const char* name = 0L,
+                     bool modal = false, bool autoShow = true);
+#endif
+
   /**
    * Brings up a Properties dialog. Convenience constructor for
    * non-file-manager applications.
    *
    * @param _url the URL whose properties should be displayed
-   * @param _mode the mode, as returned by stat(). Don't set if unknown.
    * @param parent is the parent of the dialog widget.
    * @param name is the internal name.
    * @param modal tells the dialog whether it should be modal.
    * @param autoShow tells the dialog whethr it should show itself automatically.
    */
-  KPropertiesDialog( const KURL& _url, mode_t _mode = (mode_t) -1,
+  KPropertiesDialog( const KURL& _url,
                      QWidget* parent = 0L, const char* name = 0L,
                      bool modal = false, bool autoShow = true);
 
