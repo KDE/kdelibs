@@ -361,16 +361,17 @@ public:
    */
   static Ptr findByFileContent( const QString &fileName, int *accuracy=0 );
 
-  /**
-   * Returns whether a file has an internal format that is human readable,
-   * or that would be human readable after decompression.
-   * @since 3.2
-   */
   struct Format{
      bool text : 1;
      enum { NoCompression=0, GZipCompression } compression : 4;
      unsigned dummy : 27;
   };
+
+  /**
+   * Returns whether a file has an internal format that is human readable,
+   * or that would be human readable after decompression.
+   * @since 3.2
+   */
   static Format findFormatByFileContent( const QString &fileName );
 
   /**
