@@ -1075,11 +1075,6 @@ QString KApplication::caption() const
 QString KApplication::makeStdCaption( const QString &userCaption,
 	                              bool withAppName, bool modified ) const
 {
-  if( userCaption.isNull() == true )
-  {
-    return( caption() );
-  }
-
   //
   // This string should be collected from a global object.
   //
@@ -1088,6 +1083,15 @@ QString KApplication::makeStdCaption( const QString &userCaption,
   {
     modified = modString.isNull() == true ? false : true;
   }
+
+  if( userCaption.isNull() == true )
+  {
+    if ( modified )
+      return QString("%1 %2").arg(modString).arg(caption());
+    else
+      return( caption() );
+  }
+
 
   // WABA:
   // Always put the "userCaption" in as last arg because it can
