@@ -52,10 +52,10 @@ compatible to IE.
 </blockquote>
 
 <p>
-KHTMLPart creates one instance of a KHTMLView (derived from QScrollView), the
-widget showing the whole thing. 
-At the same time a DOM tree is built up from the HTML or XML found in the
-specified file.
+<a href="khtml_part.h">KHTMLPart</a> creates one instance of a
+<a href="khtmlview.h">KHTMLView</a> (derived from QScrollView),
+the widget showing the whole thing.  At the same time a DOM tree
+is built up from the HTML or XML found in the specified file.
 <p>
 Let me describe this with an example.
 <p>
@@ -189,7 +189,8 @@ two sections.
 <h2>CSS</h2> The contents of the <code>&lt;style&gt;</code> element (in this
 case the <code>h1 { color: red; }</code> rule) will get passed to the
 <a href="html/html_headimpl.h">HTMLStyleElementImpl object</a>.  This object creates an
-<a href="css/cssstylesheetimpl.h">CSSStyleSheetImpl object</a> and passes the data to it. The CSS parser will take
+<a href="css/cssstylesheetimpl.h">CSSStyleSheetImpl object</a> and passes the
+data to it. The <a href="css/cssparser.h">CSS parser</a> will take
 the data, and parse it into a DOM structure for CSS (similar to the one for
 HTML, see also the DOM level 2 specs). This will be later on used to define the
 look of the HTML elements in the DOM tree.
@@ -218,8 +219,8 @@ do we get the stuff actually displayed on the screen?
 For this we have a rendering engine, that is completely based on CSS. The first
 thing that is done is to collect all style sheets that apply to the document
 and create a nice list of style rules that need to be applied to the
-elements. This is done in the CSSStyleSelector class.  It takes the
-<a href="css/html4.css">default HTML style sheet</a> (defined in css/html4.css),
+elements. This is done in the <a href="css/cssstyleselector.h">CSSStyleSelector</a> class.
+It takes the <a href="css/html4.css">default HTML style sheet</a> (defined in css/html4.css),
 an optional user defined style sheet, and all style sheets from the document,
 and combines them to a nice list of parsed style rules (optimised for fast
 lookup). The exact rules of how these style sheets should get applied to HTML
@@ -273,12 +274,6 @@ As you can see, the conversion to the rendering tree removed the head part of
 the HTML code, and inserted an anonymous render object around the string "more
 text". For an explanation why this is done, see the CSS specs.
 <p>
-A call to of layout() on the RenderRoot (the root of the rendering tree) object
-causes the rendering tree to layout itself into the available space (width)
-given by the the KHTMLView. After that, the drawContents() method of KHTMLView
-can call RenderRoot->print() with appropriate parameters to actually paint the
-document. This is not 100% correct, when parsing incrementally, but is exactly
-what happens when you resize the document.
 
 <h2>Directory structure</h2>
 
@@ -286,7 +281,8 @@ A short explanation of the subdirectories in khtml.
 <dl>
 <dt><a href="css/">css:</a>
 <dd>Contains all the stuff relevant to the CSS part of DOM Level2 (implementation classes only), 
-the CSS parser, and the stuff to create RenderStyle object out of Nodes and the CSS style sheets.
+the <a href="css/cssparser.h">CSS parser</a>, and the stuff to create
+RenderStyle object out of Nodes and the CSS style sheets.
 <dt><a href="dom/">dom: </a>
 <dd>Contains the external DOM API (the DOM interface classes) for all of the DOM
 <dt><a href="ecma/">ecma:</a>
