@@ -270,10 +270,11 @@ public:
   void setRef( const QString& _txt ) { m_strRef_encoded = _txt; }
 
   /**
-   * @return @p true if the reference part of the URL is not empty. In a URL like
-   *         http://www.kde.org/kdebase.tar#tar:/README it would return @p true, too.
+   * @return @p true if the URL has a reference part. In a URL like
+   *         http://www.kde.org/kdebase.tar#tar:/README it would 
+   *         return @p true, too.
    */
-  bool hasRef() const { return !m_strRef_encoded.isEmpty(); }
+  bool hasRef() const { return !m_strRef_encoded.isNull(); }
 
   /**
    * @return The HTML-style reference.
