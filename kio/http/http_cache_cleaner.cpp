@@ -101,7 +101,7 @@ FileInfo *readEntry( const QString &filename)
       ok = false;
 
    time_t creationDate;
-   int age;
+   int age =0;
 
    // Creation Date
    if (ok && (!fgets(buffer, 400, fs)))
@@ -252,7 +252,7 @@ int main(int argc, char **argv)
       if ((totalSize + fileInfo->size) > m_maxCacheSize)
       {
          QCString filename = QFile::encodeName( strCacheDir + "/" + fileInfo->name);
-         int result = unlink(filename.data());
+         unlink(filename.data());
 //         kdDebug () << appName << ": Cache too big, deleting '" << filename.data() << "' (" << result<< ")" << endl;
       }
       else
