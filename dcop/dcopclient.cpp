@@ -719,6 +719,11 @@ bool DCOPClient::send(const QCString &remApp, const QCString &remObjId,
 	bool b = receive(  remApp, remObjId, remFun, data, replyType, replyData );
 	if ( !b )
 	    qWarning("DCOP failure in app %s:\n   object '%s' has no function '%s'", remApp.data(), remObjId.data(), remFun.data() );
+
+	// send() returns TRUE if the data could be send to the DCOPServer,
+	// regardles of receiving the data on the other application.
+	// So we assume the data is successfully send to the (virtual) server
+	// and return TRUE in any case.
 	return true;
     }
 
