@@ -944,9 +944,10 @@ void RegressionTest::doFailureReport( const QString& test, int failures )
         renderDiff += "<pre>";
         FILE *pipe = popen( QString::fromLatin1( "diff -u baseline/%1-render output/%2-render" )
                             .arg ( test ).arg( test ).latin1(), "r" );
-        QTextIStream is( pipe );
-        for ( int line = 0; line < 100 && !is.eof(); ++line )
-            renderDiff += is.readLine() + "\n";
+        QTextIStream *is = new QTextIStream( pipe );
+        for ( int line = 0; line < 100 && !is->eof(); ++line )
+            renderDiff += is->readLine() + "\n";
+        delete is;
         pclose( pipe );
         renderDiff += "</pre>";
     }
@@ -955,9 +956,10 @@ void RegressionTest::doFailureReport( const QString& test, int failures )
         domDiff += "<pre>";
         FILE *pipe = popen( QString::fromLatin1( "diff -u baseline/%1-dom output/%2-dom" )
                             .arg ( test ).arg( test ).latin1(), "r" );
-        QTextIStream is( pipe );
-        for ( int line = 0; line < 100 && !is.eof(); ++line )
-            domDiff += is.readLine() + "\n";
+        QTextIStream *is = new QTextIStream( pipe );
+        for ( int line = 0; line < 100 && !is->eof(); ++line )
+            domDiff += is->readLine() + "\n";
+        delete is;
         pclose( pipe );
         domDiff += "</pre>";
     }
