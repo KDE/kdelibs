@@ -174,8 +174,8 @@ void  RenderWidget::resizeWidget( int w, int h )
 {
     // ugly hack to limit the maximum size of the widget ( as X11 has problems if
          // its bigger )
-    h = QMIN( h, 3072 );
-    w = QMIN( w, 2000 );
+    h = kMin( h, 3072 );
+    w = kMin( w, 2000 );
 
     if (m_widget->width() != w || m_widget->height() != h) {
         ref();
@@ -372,8 +372,8 @@ void RenderWidget::paintObject(QPainter* p, int x, int y, int w, int h, int _tx,
             }
 //             qDebug("calculated yNew=%d", yNew);
         }
-        yNew = QMIN( yNew, yPos + m_height - childh );
-        yNew = QMAX( yNew, yPos );
+        yNew = kMin( yNew, yPos + m_height - childh );
+        yNew = kMax( yNew, yPos );
         if ( yNew != childy || xNew != childx ) {
             if ( vw->contentsHeight() < yNew - yPos + childh )
                 vw->resizeContents( vw->contentsWidth(), yNew - yPos + childh );
@@ -635,11 +635,11 @@ void RenderReplacedFlow::calcMinMaxWidth()
         else if( r->isInline() )
             wi += r->maxWidth();
         else
-            maxw = QMAX( maxw, childMaxWidth );
+            maxw = kMax( maxw, childMaxWidth );
         r = r->nextSibling();
     }
 
-    maxw = QMAX( maxw, wi );
+    maxw = kMax( maxw, wi );
 
     if ( style()->width().isPercent() || style()->height().isPercent() ) {
          m_minWidth = 0;

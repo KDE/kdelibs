@@ -583,8 +583,8 @@ int RenderCanvas::docHeight() const
     RenderLayer *layer = m_layer;
     int y = 0;
     while ( layer ) {
-	h = QMAX( h, layer->yPos() + layer->height() );
-	h = QMAX( h, layer->xPos() + layer->renderer()->overflowHeight() );
+	h = kMax( h, layer->yPos() + layer->height() );
+	h = kMax( h, layer->xPos() + layer->renderer()->overflowHeight() );
 	if ( layer->firstChild() ) {
 	    y += layer->yPos();
 	    layer = layer->firstChild();
@@ -628,8 +628,8 @@ int RenderCanvas::docWidth() const
     RenderLayer *layer = m_layer;
     int x = 0;
     while ( layer ) {
-	w = QMAX( w, layer->xPos() + layer->width() );
-	w = QMAX( w, layer->xPos() + layer->renderer()->overflowWidth() );
+	w = kMax( w, layer->xPos() + layer->width() );
+	w = kMax( w, layer->xPos() + layer->renderer()->overflowWidth() );
 	if ( layer->firstChild() ) {
 	    x += layer->xPos();
 	    layer = layer->firstChild();

@@ -729,7 +729,7 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
         // a positioned or floating child.
         if ( child->style()->flowAroundFloats() && !child->isFloating() &&
              style()->width().isFixed() && child->minWidth() > lineWidth( m_height ) ) {
-            m_height = QMAX( m_height, floatBottom() );
+            m_height = kMax( m_height, floatBottom() );
             shouldCollapseChild = false;
             clearOccurred = true;
         }
@@ -744,7 +744,7 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
         int yPosEstimate = m_height;
         if (prevFlow)
         {
-            yPosEstimate += QMAX(prevFlow->collapsedMarginBottom(), child->marginTop());
+            yPosEstimate += kMax(prevFlow->collapsedMarginBottom(), child->marginTop());
             if (prevFlow->yPos()+prevFlow->floatBottom() > yPosEstimate)
                 child->setLayouted(false);
             else
@@ -1294,13 +1294,13 @@ void RenderBlock::positionNewFloats()
         if (o->style()->floating() == FLEFT)
         {
             if ( o->style()->clear() & CLEFT )
-                y = QMAX( leftBottom(), y );
+                y = kMax( leftBottom(), y );
             int heightRemainingLeft = 1;
             int heightRemainingRight = 1;
             int fx = leftRelOffset(y,lo, &heightRemainingLeft);
             while (rightRelOffset(y,ro, &heightRemainingRight)-fx < fwidth)
             {
-                y += QMIN( heightRemainingLeft, heightRemainingRight );
+                y += kMin( heightRemainingLeft, heightRemainingRight );
                 fx = leftRelOffset(y,lo, &heightRemainingLeft);
             }
             if (fx<0) fx=0;
@@ -1311,13 +1311,13 @@ void RenderBlock::positionNewFloats()
         else
         {
             if ( o->style()->clear() & CRIGHT )
-                y = QMAX( rightBottom(), y );
+                y = kMax( rightBottom(), y );
             int heightRemainingLeft = 1;
             int heightRemainingRight = 1;
             int fx = rightRelOffset(y,ro, &heightRemainingRight);
             while (fx - leftRelOffset(y,lo, &heightRemainingLeft) < fwidth)
             {
-                y += QMIN(heightRemainingLeft, heightRemainingRight);
+                y += kMin(heightRemainingLeft, heightRemainingRight);
                 fx = rightRelOffset(y,ro, &heightRemainingRight);
             }
             if (fx<f->width) fx=f->width;
@@ -1460,7 +1460,7 @@ RenderBlock::nearestFloatBottom(int height) const
     for ( ; (r = it.current()); ++it )
         if (r->endY>height && (r->endY<bottom || bottom==0))
             bottom=r->endY;
-    return QMAX(bottom, height);
+    return kMax(bottom, height);
 }
 
 int
@@ -1495,7 +1495,7 @@ RenderBlock::lowestPosition() const
         for ( ; (r = it.current()); ++it ) {
             if (!r->noPaint) {
                 int lp = r->startY + r->node->lowestPosition();
-                bottom = QMAX(bottom, lp);
+                bottom = kMax(bottom, lp);
             }
         }
     }
@@ -1505,7 +1505,7 @@ RenderBlock::lowestPosition() const
         QPtrListIterator<RenderObject> it(*m_positionedObjects);
         for ( ; (r = it.current()); ++it ) {
             int lp = r->yPos() + r->lowestPosition();
-            bottom = QMAX(bottom, lp);
+            bottom = kMax(bottom, lp);
         }
     }
 
@@ -1530,7 +1530,7 @@ int RenderBlock::rightmostPosition() const
         for ( ; (r = it.current()); ++it ) {
             if (!r->noPaint) {
                 int rp = r->left + r->node->rightmostPosition();
-           	right = QMAX(right, rp);
+           	right = kMax(right, rp);
             }
         }
     }
@@ -1540,7 +1540,7 @@ int RenderBlock::rightmostPosition() const
         QPtrListIterator<RenderObject> it(*m_positionedObjects);
         for ( ; (r = it.current()); ++it ) {
             int rp = r->xPos() + r->rightmostPosition();
-            right = QMAX(right, rp);
+            right = kMax(right, rp);
         }
     }
 

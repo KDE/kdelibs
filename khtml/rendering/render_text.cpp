@@ -396,7 +396,7 @@ int InlineTextBox::offsetForPoint(int _x, int &ax) const
 int InlineTextBox::width(int pos) const
 {
   // gasp! sometimes pos is i < 0 which crashes Font::width
-  pos = QMAX(pos, 0);
+  pos = kMax(pos, 0);
 
   const RenderText *t = renderText();
   Q_ASSERT(t->isText());
@@ -635,7 +635,7 @@ InlineTextBox * RenderText::findInlineTextBox( int offset, int &pos, bool checkF
 //kdDebug(6040) << "nearest_idx " << nearest_idx << " count " << count << endl;
     if (si >= count) s = m_lines[nearest_idx];
     // we are now in the correct text box
-    pos = QMIN(offset - s->m_start, s->m_len);
+    pos = kMin(offset - s->m_start, s->m_len);
     //kdDebug(6040) << "offset=" << offset << " s->m_start=" << s->m_start << endl;
     return s;
 }
@@ -952,8 +952,8 @@ void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 	        }
 		else {
                     int offset = s->m_start;
-                    int sPos = QMAX( startPos - offset, 0 );
-                    int ePos = QMIN( endPos - offset, s->m_len );
+                    int sPos = kMax( startPos - offset, 0 );
+                    int ePos = kMin( endPos - offset, s->m_len );
 // selected text is always separate in konqueror
 #ifdef APPLE_CHANGES
                     if (paintSelectedTextSeparately) {
@@ -994,8 +994,8 @@ void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 
             if (haveSelection) {
 		int offset = s->m_start;
-		int sPos = QMAX( startPos - offset, 0 );
-		int ePos = QMIN( endPos - offset, s->m_len );
+		int sPos = kMax( startPos - offset, 0 );
+		int ePos = kMin( endPos - offset, s->m_len );
                 //kdDebug(6040) << this << " paintSelection with startPos=" << sPos << " endPos=" << ePos << endl;
 		if ( sPos < ePos )
 		    s->paintSelection(font, this, p, _style, tx, ty, sPos, ePos, d);
@@ -1104,13 +1104,13 @@ void RenderText::calcMinMaxWidth()
 	    m_hasBreakableChar = true;
             if ( (*(str->s+i+wordlen)).latin1() == '\n' ) {
 		m_hasReturn = true;
-		if ( first ) m_startMin = QMIN( currMinWidth, 0x1ff );
+		if ( first ) m_startMin = kMin( currMinWidth, 0x1ff );
                 if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
                 currMinWidth = 0;
                 if(currMaxWidth > m_maxWidth) m_maxWidth = currMaxWidth;
                 currMaxWidth = 0;
             } else {
-		if ( first ) m_startMin = QMIN( currMinWidth , 0x1ff );
+		if ( first ) m_startMin = kMin( currMinWidth , 0x1ff );
                 if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
                 currMinWidth = 0;
                 currMaxWidth += f->width( str->s, str->l, i + wordlen );
@@ -1129,13 +1129,13 @@ void RenderText::calcMinMaxWidth()
     add = (parent()->isInline() && parent()->lastChild()==this) ? borderRight() + paddingRight() : 0;
     currMinWidth += add;
     currMaxWidth += add;
-    if ( first ) m_startMin = QMIN( currMinWidth, 0x1ff );
+    if ( first ) m_startMin = kMin( currMinWidth, 0x1ff );
     if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
     if(currMaxWidth > m_maxWidth) m_maxWidth = currMaxWidth;
-    m_endMin = QMIN( currMinWidth , 0x1ff );
+    m_endMin = kMin( currMinWidth , 0x1ff );
 
     if (style()->whiteSpace() == NOWRAP) {
-	m_startMin = QMIN( m_minWidth, 0x1ff );
+	m_startMin = kMin( m_minWidth, 0x1ff );
 	m_endMin = m_startMin;
         m_minWidth = m_maxWidth;
     }
@@ -1151,7 +1151,7 @@ int RenderText::minXPos() const
     int retval=6666666;
     for (unsigned i=0;i < m_lines.count(); i++)
     {
-	retval = QMIN ( retval, m_lines[i]->m_x);
+	retval = kMin ( retval, m_lines[i]->m_x);
     }
     return retval;
 }
@@ -1334,7 +1334,7 @@ short RenderText::width() const
             maxx = s->m_x + s->m_width;
     }
 
-    w = QMAX(0, maxx-minx);
+    w = kMax(0, maxx-minx);
 
     if(parent()->isInline())
     {
@@ -1426,7 +1426,7 @@ void RenderText::paintTextOutline(QPainter *p, int tx, int ty, const QRect &last
       drawBorder(p,
 		 l - ow,
 		 t - ow,
-		 QMIN(r+ow, (lastline.isValid()? tx+lastline.left() : 1000000)),
+		 kMin(r+ow, (lastline.isValid()? tx+lastline.left() : 1000000)),
 		 t ,
 		 BSTop, oc, style()->color(), os,
 		 ow,
@@ -1435,7 +1435,7 @@ void RenderText::paintTextOutline(QPainter *p, int tx, int ty, const QRect &last
 
   if (lastline.right() < thisline.right())
       drawBorder(p,
-		 QMAX(lastline.isValid()?tx + lastline.right() + 1:-1000000, l - ow),
+		 kMax(lastline.isValid()?tx + lastline.right() + 1:-1000000, l - ow),
 		 t - ow,
 		 r + ow,
 		 t ,
@@ -1449,7 +1449,7 @@ void RenderText::paintTextOutline(QPainter *p, int tx, int ty, const QRect &last
       drawBorder(p,
 		 l - ow,
 		 b,
-		 QMIN(r+ow, nextline.isValid()? tx+nextline.left()+1 : 1000000),
+		 kMin(r+ow, nextline.isValid()? tx+nextline.left()+1 : 1000000),
 		 b + ow,
 		 BSBottom, oc, style()->color(), os,
 		 ow,
@@ -1458,7 +1458,7 @@ void RenderText::paintTextOutline(QPainter *p, int tx, int ty, const QRect &last
 
   if (nextline.right() < thisline.right())
       drawBorder(p,
-		 QMAX(nextline.isValid()?tx+nextline.right()+1:-1000000 , l-ow),
+		 kMax(nextline.isValid()?tx+nextline.right()+1:-1000000 , l-ow),
 		 b,
 		 r + ow,
 		 b + ow,

@@ -439,7 +439,7 @@ void HTMLTokenizer::parseComment(DOMStringIt &src)
         scriptCode[ scriptCodeSize++ ] = *src;
 #if defined(TOKEN_DEBUG) && TOKEN_DEBUG > 1
         qDebug("comment is now: *%s*",
-               QConstString((QChar*)src.current(), QMIN(16, src.length())).string().latin1());
+               QConstString((QChar*)src.current(), kMin(16, src.length())).string().latin1());
 #endif
         if (src->unicode() == '>' &&
             ( ( brokenComments && !( script || style ) ) ||

@@ -69,8 +69,8 @@ void RenderBody::paintBoxDecorations(QPainter *p,int, int _y,
     int h = height() + borderTopExtra() + borderBottomExtra();
     _ty -= borderTopExtra();
 
-    int my = QMAX(_ty,_y);
-    int end = QMIN( _y + _h,  _ty + h );
+    int my = kMax(_ty,_y);
+    int end = kMin( _y + _h,  _ty + h );
     int mh = end - my;
 
     paintBackground(p, c, bg, my, mh, _tx, _ty, w, h);

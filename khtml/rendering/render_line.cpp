@@ -283,7 +283,7 @@ void InlineFlowBox::verticallyAlignBoxes(int& heightOfBlock)
 
     computeLogicalBoxHeights(maxPositionTop, maxPositionBottom, maxAscent, maxDescent, strictMode);
 
-    if (maxAscent + maxDescent < QMAX(maxPositionTop, maxPositionBottom))
+    if (maxAscent + maxDescent < kMax(maxPositionTop, maxPositionBottom))
         adjustMaxAscentAndDescent(maxAscent, maxDescent, maxPositionTop, maxPositionBottom);
 
     int maxHeight = maxAscent + maxDescent;
@@ -317,7 +317,7 @@ void InlineFlowBox::adjustMaxAscentAndDescent(int& maxAscent, int& maxDescent,
                     maxAscent = curr->height() - maxDescent;
             }
 
-            if ( maxAscent + maxDescent >= QMAX( maxPositionTop, maxPositionBottom ) )
+            if ( maxAscent + maxDescent >= kMax( maxPositionTop, maxPositionBottom ) )
                 break;
         }
 
@@ -477,12 +477,12 @@ void InlineFlowBox::paintBackgroundAndBorder(QPainter *p, int _x, int _y,
     int w = width();
     int h = height();
 
-    int my = QMAX(_ty,_y);
+    int my = kMax(_ty,_y);
     int mh;
     if (_ty<_y)
-        mh= QMAX(0,h-(_y-_ty));
+        mh= kMax(0,h-(_y-_ty));
     else
-        mh = QMIN(_h,h);
+        mh = kMin(_h,h);
 
     // You can use p::first-line to specify a background. If so, the root line boxes for
     // a line may actually have to paint a background.

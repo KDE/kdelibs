@@ -1551,9 +1551,9 @@ CSSPrimitiveValueImpl *CSSParser::parseColor()
         if ( !validUnit( v, FInteger|FPercent, true ) )
             return 0;
         int b = (int) ( v->fValue * (v->unit == CSSPrimitiveValue::CSS_PERCENTAGE ? 256./100. : 1.) );
-        r = QMAX( 0, QMIN( 255, r ) );
-        g = QMAX( 0, QMIN( 255, g ) );
-        b = QMAX( 0, QMIN( 255, b ) );
+        r = kMax( 0, kMin( 255, r ) );
+        g = kMax( 0, kMin( 255, g ) );
+        b = kMax( 0, kMin( 255, b ) );
         c = qRgb( r, g, b );
     }
 

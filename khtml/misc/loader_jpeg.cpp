@@ -132,7 +132,7 @@ extern "C" {
         khtml_jpeg_source_mgr* src = (khtml_jpeg_source_mgr*)cinfo->src;
         src->skip_input_bytes += num_bytes;
 
-        unsigned int skipbytes = QMIN(src->bytes_in_buffer, src->skip_input_bytes);
+        unsigned int skipbytes = kMin(src->bytes_in_buffer, src->skip_input_bytes);
 
 #ifdef BUFFER_DEBUG
         qDebug("skip_input_bytes is now %d", src->skip_input_bytes);
@@ -261,7 +261,7 @@ int KJPEGFormat::decode(QImage& image, QImageConsumer* consumer, const uchar* bu
         return -1;
     }
 
-    int consumed = QMIN(length, max_buf - jsrc.valid_buffer_len);
+    int consumed = kMin(length, max_buf - jsrc.valid_buffer_len);
 
 #ifdef BUFFER_DEBUG
     qDebug("consuming %d bytes", consumed);
@@ -278,7 +278,7 @@ int KJPEGFormat::decode(QImage& image, QImageConsumer* consumer, const uchar* bu
         qDebug("valid_buffer_len %d", jsrc.valid_buffer_len);
         qDebug("skip_input_bytes %d", jsrc.skip_input_bytes);
 #endif
-        int skipbytes = QMIN((unsigned) jsrc.valid_buffer_len, jsrc.skip_input_bytes);
+        int skipbytes = kMin((unsigned) jsrc.valid_buffer_len, jsrc.skip_input_bytes);
 
         if(skipbytes < jsrc.valid_buffer_len)
             memmove(jsrc.buffer, jsrc.buffer+skipbytes, jsrc.valid_buffer_len - skipbytes);

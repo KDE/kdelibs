@@ -802,7 +802,7 @@ public:
       InlineBox *b = *ebit;
 
       if (b == _it.currentInlineBox() || b->object() == _node->renderer()) {
-        _offset = QMIN(QMAX(_offset, b->minOffset()), b->maxOffset());
+        _offset = QMIN(kMax(_offset, b->minOffset()), b->maxOffset());
         break;
       }/*end if*/
     }/*next ebit*/

@@ -498,7 +498,7 @@ void RenderLineEdit::calcMinMaxWidth()
     int h = fm.lineSpacing();
     int w = fm.width( 'x' ) * (size > 0 ? size+1 : 17); // "some"
     s = QSize(w + 2 + 2*widget()->frameWidth(),
-              QMAX(h, 14) + 2 + 2*widget()->frameWidth())
+              kMax(h, 14) + 2 + 2*widget()->frameWidth())
         .expandedTo(QApplication::globalStrut());
 
     setIntrinsicWidth( s.width() );
@@ -624,8 +624,8 @@ void RenderFieldset::paintBoxDecorations(QPainter *p,int, int _y,
     }
     _ty -= borderTopExtra();
 
-    int my = QMAX(_ty,_y);
-    int end = QMIN( _y + _h,  _ty + h );
+    int my = kMax(_ty,_y);
+    int end = kMin( _y + _h,  _ty + h );
     int mh = end - my;
 
     paintBackground(p, style()->backgroundColor(), style()->backgroundImage(), my, mh, _tx, _ty, w, h);
@@ -1082,19 +1082,19 @@ void RenderSelect::layout( )
         int width = 0;
         int height = 0;
         while(p) {
-            width = QMAX(width, p->width(p->listBox()));
-            height = QMAX(height, p->height(p->listBox()));
+            width = kMax(width, p->width(p->listBox()));
+            height = kMax(height, p->height(p->listBox()));
             p = p->next();
         }
 
         int size = m_size;
         // check if multiple and size was not given or invalid
-        // Internet Exploder sets size to QMIN(number of elements, 4)
+        // Internet Exploder sets size to kMin(number of elements, 4)
         // Netscape seems to simply set it to "number of elements"
-        // the average of that is IMHO QMIN(number of elements, 10)
+        // the average of that is IMHO kMin(number of elements, 10)
         // so I did that ;-)
         if(size < 1)
-            size = QMIN(static_cast<KListBox*>(m_widget)->count(), 10);
+            size = kMin(static_cast<KListBox*>(m_widget)->count(), 10);
 
         width += 2*w->frameWidth() + w->verticalScrollBar()->sizeHint().width();
         height = size*height + 2*w->frameWidth();
@@ -1632,9 +1632,9 @@ void RenderTextArea::calcMinMaxWidth()
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
     const QFontMetrics &m = style()->fontMetrics();
     w->setTabStopWidth(8 * m.width(" "));
-    QSize size( QMAX(element()->cols(), 1)*m.width('x') + w->frameWidth() +
+    QSize size( kMax(element()->cols(), 1)*m.width('x') + w->frameWidth() +
                 w->verticalScrollBar()->sizeHint().width(),
-                QMAX(element()->rows(), 1)*m.lineSpacing() + w->frameWidth()*4 +
+                kMax(element()->rows(), 1)*m.lineSpacing() + w->frameWidth()*4 +
                 (w->wordWrap() == QTextEdit::NoWrap ?
                  w->horizontalScrollBar()->sizeHint().height() : 0)
         );

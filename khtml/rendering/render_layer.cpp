@@ -136,7 +136,7 @@ short RenderLayer::width() const
 {
     int w = m_object->width();
     if (!m_object->isCanvas() && !m_object->style()->hidesOverflow())
-        w = QMAX(m_object->overflowWidth(), w);
+        w = kMax(m_object->overflowWidth(), w);
     return w;
 }
 
@@ -144,7 +144,7 @@ int RenderLayer::height() const
 {
     int h = m_object->height();
     if (!m_object->isCanvas() && !m_object->style()->hidesOverflow())
-        h = QMAX(m_object->overflowHeight(), h);
+        h = kMax(m_object->overflowHeight(), h);
     return h;
 }
 

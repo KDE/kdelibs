@@ -983,7 +983,7 @@ void RenderFlow::computePositionsForLine(InlineFlowBox* lineBox, BidiContext* en
         }
         r = sruns->next();
     }
-    if ( maxAscent+maxDescent < QMAX( maxPositionTop, maxPositionBottom ) ) {
+    if ( maxAscent+maxDescent < kMax( maxPositionTop, maxPositionBottom ) ) {
         // now the computed lineheight needs to be extended for the
         // positioned elements
         // see khtmltests/rendering/html_align.html
@@ -1001,7 +1001,7 @@ void RenderFlow::computePositionsForLine(InlineFlowBox* lineBox, BidiContext* en
             else
                 continue;
 
-            if ( maxAscent + maxDescent >= QMAX( maxPositionTop, maxPositionBottom ) )
+            if ( maxAscent + maxDescent >= kMax( maxPositionTop, maxPositionBottom ) )
                 break;
 
         }

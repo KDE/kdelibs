@@ -368,7 +368,7 @@ void HTMLElementImpl::addHTMLColor( int id, const DOMString &c )
 		    colors[component] = (colors[component] << 4);
 		    if ( hex > 0 ) {
 			colors[component] += hex;
-			maxDigit = QMIN( maxDigit, numDigits );
+			maxDigit = kMin( maxDigit, numDigits );
 		    }
 		    numDigits++;
 		    pos++;

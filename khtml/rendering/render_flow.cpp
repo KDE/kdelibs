@@ -217,7 +217,7 @@ FindSelectionResult RenderFlow::checkSelectionPoint( int _x, int _y, int _tx, in
         if (child->isText() && !static_cast<RenderText *>(child)->inlineTextBoxCount())
             continue;
 
-        kdDebug(6040) << "iterating " << (child ? child->renderName() : "") << "@" << child << (child->isText() ? " contains: \"" + QConstString(static_cast<RenderText *>(child)->text(), QMIN(static_cast<RenderText *>(child)->length(), 10)).string() + "\"" : QString::null) << endl;
+        kdDebug(6040) << "iterating " << (child ? child->renderName() : "") << "@" << child << (child->isText() ? " contains: \"" + QConstString(static_cast<RenderText *>(child)->text(), kMin(static_cast<RenderText *>(child)->length(), 10)).string() + "\"" : QString::null) << endl;
         kdDebug(6040) << "---------- checkSelectionPoint recursive -----------" << endl;
         khtml::FindSelectionResult pos = child->checkSelectionPoint(_x, _y, _tx+xPos(), _ty+yPos(), nod, off, state);
         kdDebug(6040) << "-------- end checkSelectionPoint recursive ---------" << endl;
@@ -576,7 +576,7 @@ void RenderFlow::layoutBlockChildren( bool relayoutChildren )
                             : rightOffset( m_height );
             if ( child->minWidth() > available ) {
                 // ## this might be a little to far.
-                m_height = QMAX( m_height, style()->direction() == LTR ? leftBottom() : rightBottom() );
+                m_height = kMax( m_height, style()->direction() == LTR ? leftBottom() : rightBottom() );
                 prevMargin = 0;
             }
         }
@@ -672,7 +672,7 @@ void RenderFlow::layoutBlockChildren( bool relayoutChildren )
     if( !isTableCell() && toAdd != 0 )
         m_height += prevMargin;
     if ( isPositioned() || isRelPositioned() )
-        m_height = QMAX( m_height,  floatBottom() );
+        m_height = kMax( m_height,  floatBottom() );
 
     m_height += toAdd;
     m_overflowHeight = kMax(m_overflowHeight, m_height);
@@ -795,12 +795,12 @@ void RenderFlow::positionNewFloats()
             fwidth = ro - lo; // Never look for more than what will be available.
         if (o->style()->floating() == FLEFT) {
             if ( o->style()->clear() & CLEFT )
-                y = QMAX( leftBottom(), y );
+                y = kMax( leftBottom(), y );
             int heightRemainingLeft = 1;
             int heightRemainingRight = 1;
             int fx = leftRelOffset(y,lo, &heightRemainingLeft);
             while (rightRelOffset(y,ro, &heightRemainingRight)-fx < fwidth) {
-                y += QMIN( heightRemainingLeft, heightRemainingRight );
+                y += kMin( heightRemainingLeft, heightRemainingRight );
                 fx = leftRelOffset(y,lo, &heightRemainingLeft);
             }
             if (fx<0) fx=0;
@@ -809,12 +809,12 @@ void RenderFlow::positionNewFloats()
             o->setPos(fx + o->marginLeft(), y + o->marginTop());
         } else {
             if ( o->style()->clear() & CRIGHT )
-                y = QMAX( rightBottom(), y );
+                y = kMax( rightBottom(), y );
             int heightRemainingLeft = 1;
             int heightRemainingRight = 1;
             int fx = rightRelOffset(y,ro, &heightRemainingRight);
             while (fx - leftRelOffset(y,lo, &heightRemainingLeft) < fwidth) {
-                y += QMIN(heightRemainingLeft, heightRemainingRight);
+                y += kMin(heightRemainingLeft, heightRemainingRight);
                 fx = rightRelOffset(y,ro, &heightRemainingRight);
             }
             if (fx<f->width) fx=f->width;
@@ -1003,7 +1003,7 @@ RenderFlow::lowestPosition() const
     }
 
     if ( m_layer )
-        bottom = QMAX( bottom, m_layer->height() );
+        bottom = kMax( bottom, m_layer->height() );
 
     //kdDebug(0) << renderName() << "      bottom final = " << bottom << endl;
     return bottom;
@@ -1044,7 +1044,7 @@ int RenderFlow::rightmostPosition() const
     }
 
     if ( m_layer )
-        right = QMAX( right, m_layer->width() );
+        right = kMax( right, m_layer->width() );
     return right;
 }
 
@@ -1280,7 +1280,7 @@ void RenderFlow::calcMinMaxWidth()
                     }
                     noBreak = false;
                     if ( t->hasBreakableChar() ) {
-                        inlineMin = QMAX( inlineMin, currentMin );
+                        inlineMin = kMax( inlineMin, currentMin );
                         currentMin = t->endMin();
                     }
                     if ( t->text()[t->stringLength()-1]==nbsp ) { //inline ends with nbsp
@@ -1292,12 +1292,12 @@ void RenderFlow::calcMinMaxWidth()
                     currentMin += childMin;
                     noBreak = false;
                 }
-                inlineMin = QMAX( inlineMin, childMin );
+                inlineMin = kMax( inlineMin, childMin );
                 inlineMax += childMax;
             }
             else
             {
-                inlineMin = QMAX( currentMin, inlineMin );
+                inlineMin = kMax( currentMin, inlineMin );
                 if(m_minWidth < inlineMin) m_minWidth = inlineMin;
                 if(m_maxWidth < inlineMax) m_maxWidth = inlineMax;
                 inlineMin = currentMin = inlineMax = 0;
@@ -1305,7 +1305,7 @@ void RenderFlow::calcMinMaxWidth()
             prevchild = child;
             child = next(this, child);
         }
-        inlineMin = QMAX( currentMin, inlineMin );
+        inlineMin = kMax( currentMin, inlineMin );
         if(m_minWidth < inlineMin) m_minWidth = inlineMin;
         if(m_maxWidth < inlineMax) m_maxWidth = inlineMax;
 //          kdDebug( 6040 ) << "m_minWidth=" << m_minWidth

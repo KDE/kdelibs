@@ -195,8 +195,8 @@ void RenderBox::paintBoxDecorations(QPainter *p,int, int _y,
     if (layer())
 	layer()->scrollOffset(_tx, _ty);
 
-    int my = QMAX(_ty,_y);
-    int end = QMIN( _y + _h,  _ty + h );
+    int my = kMax(_ty,_y);
+    int end = kMin( _y + _h,  _ty + h );
     int mh = end - my;
 
     paintBackground(p, style()->backgroundColor(), style()->backgroundImage(), my, mh, _tx, _ty, w, h);
@@ -309,7 +309,7 @@ void RenderBox::paintBackground(QPainter *p, const QColor &c, CachedImage *bg, i
 	    sy %= pixh;
 	    ch -= diff;
 	}
-	ch = QMIN( ch, clipy + cliph - cy );
+	ch = kMin( ch, clipy + cliph - cy );
  	//kdDebug() << "clip="<<cx << " cy="<<cy<< " cw="<<cw << " ch="<<ch << " sx="<<sx << " sy="<<sy << endl;
 
         if (cw>0 && ch>0)
@@ -1009,7 +1009,7 @@ int RenderBox::lowestPosition() const
 {
     int bottom = m_height + marginBottom();
     if ( m_layer )
-	bottom = QMAX( bottom, m_layer->height() );
+	bottom = kMax( bottom, m_layer->height() );
     return bottom;
 }
 
@@ -1017,7 +1017,7 @@ int RenderBox::rightmostPosition() const
 {
     int right = m_width;
     if ( m_layer )
-	right = QMAX( right, m_layer->width() );
+	right = kMax( right, m_layer->width() );
     return m_width;
 }
 

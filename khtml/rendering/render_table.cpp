@@ -1067,10 +1067,10 @@ int RenderTableSection::layoutRows( int toAdd )
 	    int rh = rowPos[1]-rowPos[0];
 	    for ( int r = 0; r < totalRows; r++ ) {
 		if ( totalPercent > 0 && grid[r].height.isPercent() ) {
-		    int toAdd = QMIN( dh, (totalHeight * grid[r].height.value() / 100)-rh );
+		    int toAdd = kMin( dh, (totalHeight * grid[r].height.value() / 100)-rh );
 		    // If toAdd is negative, then we don't want to shrink the row (this bug
                     // affected Outlook Web Access).
-                    toAdd = QMAX(0, toAdd);
+                    toAdd = kMax(0, toAdd);
 		    add += toAdd;
 		    dh -= toAdd;
 		    totalPercent -= grid[r].height.value();
@@ -1756,8 +1756,8 @@ void RenderTableCell::paintBoxDecorations(QPainter *p,int, int _y,
 	}
     }
 
-    int my = QMAX(_ty,_y);
-    int end = QMIN( _y + _h,  _ty + h );
+    int my = kMax(_ty,_y);
+    int end = kMin( _y + _h,  _ty + h );
     int mh = end - my;
 
     if ( bg || c.isValid() )
