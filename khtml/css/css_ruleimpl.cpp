@@ -29,6 +29,8 @@
 #include "css/css_ruleimpl.h"
 
 #include "misc/loader.h"
+#include "misc/htmltags.h"
+#include "misc/htmlattrs.h"
 #include "xml/dom_docimpl.h"
 
 using namespace DOM;
@@ -344,7 +346,68 @@ CSSStyleDeclarationImpl *CSSStyleRuleImpl::style() const
 
 DOM::DOMString CSSStyleRuleImpl::selectorText() const
 {
-    // ###
+    if ( m_selector ) {
+        // ### m_selector will be a single selector hopefully. so ->first() will disappear
+        CSSSelector* cs = m_selector->first();
+        DOMString str;
+        if ( cs->tag == -1 && cs->attr == ATTR_ID && cs->match == CSSSelector::Exact )
+        {
+            str = "#";
+            str += cs->value;
+        }
+        else if ( cs->tag == -1 && cs->attr == ATTR_CLASS && cs->match == CSSSelector::List )
+        {
+            str = ".";
+            str += cs->value;
+        }
+        else if ( cs->tag == -1 && cs->match == CSSSelector::Pseudo )
+        {
+            str = ":";
+            str += cs->value;
+        }
+        else
+        {
+            if ( cs->tag == -1 )
+                str = "*";
+            else
+                str = getTagName( cs->tag );
+            // optional attribute
+            if ( cs->attr ) {
+                DOMString attrName = getAttrName( cs->attr );
+                str += "[";
+                str += attrName;
+                switch (cs->match) {
+                case CSSSelector::Exact:
+                    str += "=";
+                    break;
+                case CSSSelector::Set:
+                    str += " "; /// ## correct?
+                    break;
+                case CSSSelector::List:
+                    str += "~=";
+                    break;
+                case CSSSelector::Hyphen:
+                    str += "|=";
+                    break;
+                case CSSSelector::Begin:
+                    str += "^=";
+                    break;
+                case CSSSelector::End:
+                    str += "$=";
+                    break;
+                case CSSSelector::Contain:
+                    str += "*=";
+                    break;
+                default:
+                    kdWarning(6080) << "Unhandled case in CSSStyleRuleImpl::selectorText : match=" << cs->match << endl;
+                }
+                str += "\"";
+                str += cs->value;
+                str += "\"]";
+            }
+        }
+        return str;
+    }
     return DOMString();
 }
 
