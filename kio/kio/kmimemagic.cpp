@@ -714,7 +714,11 @@ signextend(struct magic *m, unsigned long v)
 /*
  * parse one line from magic file, put into magic[index++] if valid
  */
-int KMimeMagic::parse(char *l, int lineno)
+int KMimeMagic::parse(char *l, int
+#ifdef DEBUG_LINENUMBERS
+    lineno
+#endif
+        )
 {
 	int i = 0;
 	struct magic *m;
