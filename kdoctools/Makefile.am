@@ -10,14 +10,19 @@ libkbzipfilter_dummy_la_LIBADD = $(LIB_KIO) $(LIBBZ2)
 
 ####### Files
 
-kde_module_LTLIBRARIES = kio_help.la
+kde_module_LTLIBRARIES = kio_help.la kio_ghelp.la
 
 kio_help_la_SOURCES = kio_help.cpp main.cpp xslt.cpp
 kio_help_la_LIBADD = $(LIBXSLT_LIBS) $(LIBXML_LIBS)  libkbzipfilter_dummy.la
 kio_help_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)
-noinst_HEADERS = kio_help.h
 
-kdelnk_DATA = help.protocol
+kio_ghelp_la_SOURCES = kio_ghelp.cpp main_ghelp.cpp xslt.cpp
+kio_ghelp_la_LIBADD = $(LIBXSLT_LIBS) $(LIBXML_LIBS) libkbzipfilter_dummy.la
+kio_ghelp_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)
+
+noinst_HEADERS = kio_help.h kio_ghelp.h
+
+kdelnk_DATA = help.protocol ghelp.protocol
 kdelnkdir = $(kde_servicesdir)
 
 bin_PROGRAMS = meinproc xml2man
