@@ -64,7 +64,7 @@ public:
 
   public slots:
   /**
-   * Adjust the progress bar to <I>p</I> percent.
+   * Adjust the progress bar to @p p percent.
    **/
   void slotProgress (unsigned int p);
 
