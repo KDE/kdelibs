@@ -147,8 +147,6 @@ Node Range::getCommonAncestorContainer() /*const*/
     if( isDetached() )
         throw DOMException(DOMException::INVALID_STATE_ERR);
     
-    // this function must be somewhat slow.. if this is a problem,
-    // maybe we should come up with something better :)
     Node parentStart = startContainer;
     Node parentEnd = endContainer;
     
@@ -159,6 +157,7 @@ Node Range::getCommonAncestorContainer() /*const*/
 
         if(parentStart == parentEnd)  break;
         parentStart = parentStart.parentNode();
+        parentEnd = endContainer;
     }
 
     if(parentStart == parentEnd)
@@ -678,19 +677,137 @@ bool Range::boundaryPointsValid(  )
 
 void Range::deleteContents(  )
 {
-/*    if( isDetached() )
-      throw DOMException( DOMException::INVALID_STATE_ERR );
+    
+    Node cmnRoot = getCommonAncestorContainer();
+    /*
+    printf("CommonAC: %s \n", cmnRoot.nodeName().string().ascii());
+    printf("end: %d, start: %d \n", startOffset, endOffset);
+    printf("startContainer: %s \n", startContainer.nodeName().string().ascii() );
+    printf("endContainer: %s \n", endContainer.nodeName().string().ascii() );
+    */
 
-      try
-      {
-      }
-      catch( DOMException d )
-      {
-      if( d.code == DOMException::NO_MODIFICATION_ALLOWED_ERR )
-      fprintf( stderr, "Exception: Node is readonly\n" );
-      if( d.code == DOMException::NOT_FOUND_ERR )
-      fprintf( stderr, "Exception: Node not found\n" );
-      }*/
+//    printf("end common case\n");
+    Node _nextCurrent, _tempCurrent;
+    bool delStart=false, delEnd=false;
+
+    //  printf("left side node: %s \n", startContainer.nodeName().string().ascii() );
+    
+    // cleanup left side
+    Node _leftParent = startContainer;
+
+    if( startContainer == cmnRoot )
+    {
+        delStart = true;
+        unsigned int i;
+        _leftParent = startContainer.firstChild();
+        for(i=1; i < startOffset; i++)    // get the node given by the offset
+            _leftParent = _leftParent.nextSibling();
+    }
+    else
+    {
+        if( startContainer.nodeType() == Node::TEXT_NODE )
+        {
+            (void)startContainer.nodeValue().split(startOffset);
+        }
+        else
+        {
+            _tempCurrent = startContainer.firstChild();
+            unsigned int i;
+        
+            for(i=1; i < startOffset; i++)    // get the node given by the offset
+                _tempCurrent = _tempCurrent.nextSibling();
+        
+            _nextCurrent = _tempCurrent;                  // to keep track of which node to take next
+        
+            while( !_tempCurrent.isNull() )   
+            {
+                _nextCurrent = _tempCurrent.nextSibling();
+                _leftParent.removeChild(_tempCurrent);
+                _tempCurrent = _nextCurrent;
+            }
+        }
+
+        _tempCurrent = _leftParent;
+        _leftParent = _leftParent.parentNode();
+        while( _leftParent != cmnRoot && _tempCurrent != cmnRoot )
+        {
+            while( !_tempCurrent.isNull() )   
+            {
+                _nextCurrent = _tempCurrent.nextSibling();
+                _leftParent.removeChild(_tempCurrent);
+                _tempCurrent = _nextCurrent;
+            }
+            _tempCurrent = _leftParent;
+            _leftParent = _leftParent.parentNode();
+        }
+        _leftParent = _tempCurrent;
+    }
+    
+    // cleanup right side
+    Node _rightParent = endContainer;
+    if( endContainer == cmnRoot )
+    {
+        delEnd = true;
+        unsigned int i;
+        _rightParent = endContainer.firstChild();
+        for(i=1; i < endOffset; i++)  
+            _rightParent = _rightParent.nextSibling();
+    }
+    else
+    {
+        if( endContainer.nodeType() == Node::TEXT_NODE )
+        {
+            endContainer.nodeValue().remove(0, endOffset);
+        }
+        else
+        {
+     
+            _tempCurrent = endContainer.firstChild();
+            unsigned int i;
+        
+            for(i=1; i < endOffset; i++)    // get the node given by the offset
+                _tempCurrent = _tempCurrent.nextSibling();
+
+            while( !_tempCurrent.isNull() )
+            {
+                _nextCurrent = _tempCurrent.previousSibling();
+                _rightParent.removeChild(_tempCurrent);
+                _tempCurrent = _nextCurrent;
+            }
+        }
+
+        _tempCurrent = _rightParent;
+        _rightParent = _rightParent.parentNode();
+        while( _rightParent != cmnRoot && _tempCurrent != cmnRoot)
+        {
+            while( !_tempCurrent.isNull() )   
+            {
+                _nextCurrent = _tempCurrent.previousSibling();
+                _rightParent.removeChild(_tempCurrent);
+                _tempCurrent = _nextCurrent;
+            }
+            _tempCurrent = _rightParent;
+            _rightParent = _rightParent.parentNode();
+        }
+        _rightParent = _tempCurrent;
+    }
+    
+    // cleanup middle
+    _nextCurrent = _leftParent.nextSibling();
+    if( delStart )
+        cmnRoot.removeChild(_leftParent);
+
+    _leftParent = _nextCurrent;
+    while( _leftParent != _rightParent && !_leftParent.isNull() )
+    {
+        _nextCurrent = _leftParent.nextSibling();
+        cmnRoot.removeChild(_leftParent);
+        _leftParent = _nextCurrent;
+    }
+
+    if(delEnd)
+        cmnRoot.removeChild(_leftParent);
+
 }
 
 DocumentFragment Range::extractContents(  )
