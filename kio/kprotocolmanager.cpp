@@ -344,7 +344,15 @@ QString KProtocolManager::slaveProtocol( const QString & protocol )
   {
     KURL u = proxyFor(protocol);
     if ( u.isValid() )
-      return u.protocol();
+    {
+      // HACK: This will be removed once kio_http
+      // gets ported over to TCPSlaveBase!!
+      QString p = u.protocol();
+      if ( p == QString::fromLatin1("http") &&
+           protocol == QString::fromLatin1("https") )
+        p = protocol;
+      return p;
+    }
   }
   return protocol;
 }
@@ -416,6 +424,11 @@ QString KProtocolManager::slaveProtocol(const KURL &url, QString &proxy)
            if ( d->url.isValid() )
            {
               d->protocol = d->url.protocol();
+              // HACK: This will be removed once kio_http
+              // gets ported over to TCPSlaveBase!!
+              if ( url.protocol() == QString::fromLatin1("https") &&
+                   d->protocol == QString::fromLatin1("http") )
+                d->protocol = url.protocol();
               d->url = url;
               d->proxy = proxy;
               return d->protocol;
