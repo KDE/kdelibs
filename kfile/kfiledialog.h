@@ -100,13 +100,14 @@ public:
     /**
      * Retrieve the list a selected URLs
      */
-    QValueList<KURL> selectedURLs() const;
+    KURL::List selectedURLs() const;
 
     /**
      * Retrieve the current directory.
      */
     KURL baseURL() const;
 
+#if 0
     /**
      * @return Full path in local filesystem. (Local files only)
      */
@@ -125,7 +126,7 @@ public:
      * should be cleared.
      */
     void setURL(const QString& name, bool clearforward = true);
-
+#endif
     /**
      * Set the directory to view.
      *
@@ -175,6 +176,7 @@ public:
      */
     void setPreviewWidget(const QWidget *w);
 
+#if 0
     /**
      * This method creates a modal file dialog and returns the selected
      * filename or an empty string if none was chosen.
@@ -210,6 +212,7 @@ public:
 					QWidget *parent = 0,
 					const QString& caption= QString::null);
 
+#endif
     /**
      * This method creates a modal file dialog and returns the selected
      * URL or an empty string if none was chosen.
@@ -240,11 +243,12 @@ public:
      * @param parent The widget the dialog will be centered on initially.
      * @param name The name of the dialog widget.
      */
-    static QValueList<KURL> getOpenURLs(const QString& dir= QString::null,
-					const QString& filter= QString::null,
-					QWidget *parent = 0,
-					const QString& caption= QString::null);
+    static KURL::List getOpenURLs(const QString& dir= QString::null,
+				  const QString& filter= QString::null,
+				  QWidget *parent = 0,
+				  const QString& caption= QString::null);
 
+#if 0
     /**
      * Creates a modal file dialog and returns the selected
      * filename or an empty string if none was chosen.
@@ -262,6 +266,7 @@ public:
 				   QWidget *parent= 0,
 				   const QString& caption = QString::null);
 
+#endif
     /**
      * Creates a modal file dialog and returns the selected
      * filename or an empty string if none was chosen.
@@ -275,9 +280,9 @@ public:
      * @param caption The name of the dialog widget.
      */
     static KURL getSaveURL(const QString& dir= QString::null,
-			      const QString& filter= QString::null,
-			      QWidget *parent= 0,
-			      const QString& caption = QString::null);
+			   const QString& filter= QString::null,
+			   QWidget *parent= 0,
+			   const QString& caption = QString::null);
     /**
      * Creates a modal file dialog and returns the selected
      * directory or an empty string if none was chosen.
@@ -315,28 +320,6 @@ public:
      * the location is used for.
      */
     void setLocationLabel(const QString& text);
-
-    /**
-     * KFileDialog uses chdir() to change the current working directory to
-     * increase performance. If you don't like this, disable it.
-     *
-     * When using one of the static methods, e.g. @ref getOpenFileName,
-     * and chdir is enabled, the working directory will be restored when the
-     * dialog is closed.
-     * Default is enabled.
-     * @see #isChdirEnabled
-     */
-    static void setEnableChdir( bool enable ) {
-	KFileReader::setEnableChdir( enable );
-    }
-
-    /**
-     * @returns whether KFileDialog changes the current working directory
-     * (via chdir()).
-     * @see #setEnableChdir
-     */
-    static bool isChdirEnabled() { return KFileReader::isChdirEnabled(); }
-
 
 signals:
     /**

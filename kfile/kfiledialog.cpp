@@ -76,7 +76,6 @@ enum Buttons { HOTLIST_BUTTON,
 	       PATH_COMBO, CONFIGURE_BUTTON };
 
 const int idStart = 1;
-template class QValueList<KURL>;
 
 struct KFileDialogPrivate
 {
@@ -559,10 +558,12 @@ void KFileDialog::checkPath(const QString&_txt, bool takeFiles) // SLOT
     }
 }
 
+#if 0
 void KFileDialog::setURL(const QString& _pathstr, bool clearforward)
 {
     ops->setURL(_pathstr, clearforward);
 }
+#endif
 
 void KFileDialog::setURL(const KURL& url, bool clearforward)
 {
@@ -835,11 +836,10 @@ void KFileDialog::updateStatusLine(int dirs, int files)
     d->myStatusLine->setText(lStatusText);
 }
 
-
+#if 0
 QString KFileDialog::getOpenFileName(const QString& dir, const QString& filter,
 				     QWidget *parent, const QString& caption)
 {
-    QString cwd = QDir::currentDirPath();
     KFileDialog dlg(dir, filter, parent, "filedialog", true);
 
     dlg.setCaption(caption.isNull() ? i18n("Open") : caption);
@@ -850,16 +850,12 @@ QString KFileDialog::getOpenFileName(const QString& dir, const QString& filter,
     if (!filename.isEmpty())
         KRecentDocument::add(filename, false);
 
-    if ( isChdirEnabled() )
-	QDir::setCurrent( cwd );
-	
     return filename;
 }
 
 QStringList KFileDialog::getOpenFileNames(const QString& dir,const QString& filter,
 				     QWidget *parent, const QString& caption)
 {
-    QString cwd = QDir::currentDirPath();
     KFileDialog dlg(dir, filter, parent, "filedialog", true);
 
     dlg.setCaption(caption.isNull() ? i18n("Open") : caption);
@@ -871,16 +867,13 @@ QStringList KFileDialog::getOpenFileNames(const QString& dir,const QString& filt
     for( ; it != list.end(); ++it )
         KRecentDocument::add( *it, false );
 
-    if ( isChdirEnabled() )
-	QDir::setCurrent( cwd );
-	
     return list;
 }
+#endif
 
 KURL KFileDialog::getOpenURL(const QString& dir, const QString& filter,
 				QWidget *parent, const QString& caption)
 {
-    QString cwd = QDir::currentDirPath();
     KFileDialog dlg(dir, filter, parent, "filedialog", true);
 
     dlg.setCaption(caption.isNull() ? i18n("Open") : caption);
@@ -891,34 +884,27 @@ KURL KFileDialog::getOpenURL(const QString& dir, const QString& filter,
     if (!url.isMalformed())
         KRecentDocument::add(url.url(-1), false);
 
-    if ( isChdirEnabled() )
-	QDir::setCurrent( cwd );
-	
     return url;;
 }
 
-QValueList<KURL> KFileDialog::getOpenURLs(const QString& dir,
+KURL::List KFileDialog::getOpenURLs(const QString& dir,
 					  const QString& filter,
 					  QWidget *parent,
 					  const QString& caption)
 {
-    QString cwd = QDir::currentDirPath();
     KFileDialog dlg(dir, filter, parent, "filedialog", true);
 
     dlg.setCaption(caption.isNull() ? i18n("Open") : caption);
 
     dlg.exec();
 
-    QValueList<KURL> list = dlg.selectedURLs();
-    QValueListIterator<KURL> it = list.begin();
+    KURL::List list = dlg.selectedURLs();
+    KURL::List::ConstIterator it = list.begin();
     for( ; it != list.end(); ++it ) {
 	if ( !(*it).isMalformed() )
 	    KRecentDocument::add( (*it).url(-1), false );
     }
 
-    if ( isChdirEnabled() )
-	QDir::setCurrent( cwd );
-	
     return list;
 }
 
@@ -926,21 +912,13 @@ QString KFileDialog::getExistingDirectory(const QString& dir,
 					  QWidget *parent,
 					  const QString& caption)
 {
-    QString cwd = QDir::currentDirPath();
     KFileDialog dlg(dir, QString::null, parent, "filedialog", true);
     dlg.setMode(KFile::Directory);
 
     dlg.setCaption(caption.isNull() ? i18n("Select Directory") : caption);
     dlg.exec();
 
-    QString filename = dlg.selectedFile();
-    if (!filename.isEmpty())
-        KRecentDocument::add(filename, false);
-
-    if ( isChdirEnabled() )
-	QDir::setCurrent( cwd );
-
-    return filename;
+    return dlg.selectedURL().path();
 }
 
 KURL KFileDialog::selectedURL() const
@@ -951,9 +929,9 @@ KURL KFileDialog::selectedURL() const
 	return KURL();
 }
 
-QValueList<KURL> KFileDialog::selectedURLs() const
+KURL::List KFileDialog::selectedURLs() const
 {
-    QValueList<KURL> list;
+    KURL::List list;
     if ( result() == QDialog::Accepted ) {
 	QString name;
 	QString url = ops->url().url( +1 );
@@ -978,6 +956,7 @@ KURL KFileDialog::baseURL() const
     return ops->url();
 }
 
+#if 0
 QString KFileDialog::selectedFile() const
 {
     if ( result() == QDialog::Accepted )
@@ -988,7 +967,6 @@ QString KFileDialog::selectedFile() const
     }
     return QString::null;
 }
-
 
 QStringList KFileDialog::selectedFiles() const
 {
@@ -1012,12 +990,10 @@ QStringList KFileDialog::selectedFiles() const
     return list;
 }
 
-
 QString KFileDialog::getSaveFileName(const QString& dir, const QString& filter,
 				     QWidget *parent,
 				     const QString& caption)
 {
-    QString cwd = QDir::currentDirPath();
     KFileDialog dlg(dir, filter, parent, "filedialog", true);
 
     dlg.setCaption(caption.isNull() ? i18n("Save As") : caption);
@@ -1028,17 +1004,14 @@ QString KFileDialog::getSaveFileName(const QString& dir, const QString& filter,
     if (!filename.isEmpty())
         KRecentDocument::add(filename, false);
 
-    if ( isChdirEnabled() )
-	QDir::setCurrent( cwd );
-
     return filename;
 }
+#endif
 
 KURL KFileDialog::getSaveURL(const QString& dir, const QString& filter,
 				     QWidget *parent,
 				     const QString& caption)
 {
-    QString cwd = QDir::currentDirPath();
     KFileDialog dlg(dir, filter, parent, "filedialog", true);
 
     dlg.setCaption(caption.isNull() ? i18n("Save As") : caption);
@@ -1048,9 +1021,6 @@ KURL KFileDialog::getSaveURL(const QString& dir, const QString& filter,
     KURL url = dlg.selectedURL();
     if (!url.isMalformed())
         KRecentDocument::add(url.url(-1), false);
-
-    if ( isChdirEnabled() )
-	QDir::setCurrent( cwd );
 
     return url;
 }

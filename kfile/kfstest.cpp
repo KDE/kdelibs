@@ -38,7 +38,7 @@
 #include <kdiroperator.h>
 #include <kfilewidget.h>
 #include <kfile.h>
-
+#include <kdebug2.h>
 
 int main(int argc, char **argv)
 {
@@ -56,7 +56,7 @@ int main(int argc, char **argv)
 	a.setMainWidget(op);
 	a.exec();
     } else if (argv1 == QString::fromLatin1("preselect")) {
-        name1 = KFileDialog::getOpenFileName(QString::fromLatin1("/etc/passwd"));
+        name1 = KFileDialog::getOpenURL(QString::fromLatin1("/etc/passwd")).url();
     } else if (argv1 == QString::fromLatin1("widget")) {
 	KFileWidget *widget = new KFileWidget(KFileWidget::Simple);
 	// widget->setURL(QString::fromLatin1("ftp://localhost"));
@@ -73,7 +73,7 @@ int main(int argc, char **argv)
 	if ( dlg->exec() == KDialog::Accepted )
 	    name1 = dlg->selectedURL().url();
     }
-    
+
     else{
 	KFileDialog dlg(QString::null,
 			QString::fromLatin1("*|All files\n"
@@ -81,23 +81,13 @@ int main(int argc, char **argv)
 			0, 0, true);
 	dlg.setMode( KFile::Files );
 	if ( dlg.exec() == QDialog::Accepted ) {
-	    /*
-	    QStringList list = dlg.selectedFiles();
-	    QStringList::Iterator it = list.begin();
+	    KURL::List list = dlg.selectedURLs();
+	    KURL::List::ConstIterator it = list.begin();
 	    while ( it != list.end() ) {
-		debug("Selected: %s", (*it).latin1());
+		name1 = (*it).url();
+		kdDebug() << "Selected URL: " << name1 << endl;
 		++it;
 	    }
-	    */
-	    QValueList<KURL> list = dlg.selectedURLs();
-	    QValueListIterator<KURL> it = list.begin();
-	    while ( it != list.end() ) {
-		debug("Selected URL: %s", (*it).url().latin1());
-		++it;
-	    }
-				
-	
-	    name1 = dlg.selectedURL().url();
 	}
     }
 
