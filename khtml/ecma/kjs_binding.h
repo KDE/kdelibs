@@ -61,6 +61,7 @@ namespace KJS {
    */
   KJSO getString(DOM::DOMString s);
 
+  bool originCheck(const QString url1, const QString url2);
 
 }; // namespace
 

@@ -43,6 +43,7 @@
 #include <html_element.h>
 #include <html_documentimpl.h>
 #include "khtml_part.h"
+#include "xml/dom_docimpl.h"
 
 using namespace KJS;
 
@@ -199,8 +200,12 @@ KJSO Window::get(const UString &p) const
     return String(UString(part->jsDefaultStatusBarText()));
   else if (p == "status")
     return String(UString(part->jsStatusBarText()));
-  else if (p == "document")
-    return getDOMNode(part->document());
+  else if (p == "document") {
+    if (isSafeScript())
+      return getDOMNode(part->document());
+    else
+      return Undefined();
+  }
   else if (p == "Node")
     return getNodePrototype();
   else if (p == "frames")
@@ -213,8 +218,12 @@ KJSO Window::get(const UString &p) const
     return Number(part->view()->visibleWidth());
   else if (p == "length")
     return Number(part->frames().count());
-  else if (p == "location")
-    return KJSO(new Location(part));
+  else if (p == "location") {
+    if (isSafeScript())
+      return KJSO(new Location(part));
+    else
+      return Undefined();
+  }
   else if (p == "name")
     return String(part->name());
   else if (p == "navigator")
@@ -272,30 +281,51 @@ KJSO Window::get(const UString &p) const
     return Function(new WindowFunc(this, WindowFunc::Prompt));
   else if (p == "open")
     return Function(new WindowFunc(this, WindowFunc::Open));
-  else if (p == "setTimeout")
-    return Function(new WindowFunc(this, WindowFunc::SetTimeout));
-  else if (p == "clearTimeout")
-    return Function(new WindowFunc(this, WindowFunc::ClearTimeout));
+  else if (p == "setTimeout") {
+    if (isSafeScript())
+      return Function(new WindowFunc(this, WindowFunc::SetTimeout));
+    else
+      return Undefined();
+  }
+  else if (p == "clearTimeout") {
+    if (isSafeScript())
+      return Function(new WindowFunc(this, WindowFunc::ClearTimeout));
+    else
+      return Undefined();
+  }
   else if (p == "focus")
     return Function(new WindowFunc(this, WindowFunc::Focus));
   else if (p == "blur")
     return Function(new WindowFunc(this, WindowFunc::Blur));
   else if (p == "close")
     return Function(new WindowFunc(this, WindowFunc::Close));
-  else if (p == "setInterval")
-    return Function(new WindowFunc(this, WindowFunc::SetInterval));
-  else if (p == "clearInterval")
-    return Function(new WindowFunc(this, WindowFunc::ClearInterval));
+  else if (p == "setInterval") {
+    if (isSafeScript())
+      return Function(new WindowFunc(this, WindowFunc::SetInterval));
+    else
+      return Undefined();
+  }
+  else if (p == "clearInterval") {
+    if (isSafeScript())
+      return Function(new WindowFunc(this, WindowFunc::ClearInterval));
+    else
+      return Undefined();
+  }
 
-  if (Imp::hasProperty(p,true))
-    return Imp::get(p);
+  if (Imp::hasProperty(p,true)) {
+    if (isSafeScript())
+      return Imp::get(p);
+    else
+      return Undefined();
+  }
 
   KHTMLPart *kp = part->findFrame( p.qstring() );
   if (kp)
     return KJSO(newWindow(kp));
 
   // allow shortcuts like 'Image1' instead of document.images.Image1
-  if (part->document().isHTMLDocument()) { // might be XML
+  if (isSafeScript() &&
+      part->document().isHTMLDocument()) { // might be XML
     DOM::HTMLCollection coll = part->htmlDocument().all();
     DOM::HTMLElement element = coll.namedItem(p.string());
     if (!element.isNull()) {
@@ -318,12 +348,14 @@ void Window::put(const UString &p, const KJSO &v)
     QString str = v.toString().value().qstring().prepend( "target://_self/#" );
     part->scheduleRedirection(0, str);
   } else if (p == "onload") {
-    if (v.isA(ConstructorType)) {
+    if (isSafeScript() && v.isA(ConstructorType)) {
       DOM::DOMString s = ((FunctionImp*)v.imp())->name().string() + "()";
       static_cast<DOM::HTMLDocumentImpl *>(part->htmlDocument().handle())->setOnload(s.string());
     }
-  } else
-    Imp::put(p, v);
+  } else {
+    if (isSafeScript())
+      Imp::put(p, v);
+  }
 }
 
 Boolean Window::toBoolean() const
@@ -351,6 +383,11 @@ void Window::scheduleClose()
     winq = new WindowQObject(this);
   kdDebug(6070) << "WindowFunc::tryExecute window.close() " << part << endl;
   QTimer::singleShot( 0, winq, SLOT( timeoutClose() ) );
+}
+
+bool Window::isSafeScript() const
+{
+  return originCheck(part->url().url(),KJS::Global::current().get("[[ScriptURL]]").toString().value().qstring());
 }
 
 Completion WindowFunc::tryExecute(const List &args)

@@ -32,7 +32,7 @@ namespace DOM {
 // callback functions for KJSProxy
 typedef KJScript* (KJSCreateFunc)(KHTMLPart *);
 typedef QVariant (KJSEvalFunc)(KJScript *script, const QChar *, unsigned int,
-			   const DOM::Node &);
+			   const DOM::Node &, KHTMLPart *);
 typedef void (KJSClearFunc)(KJScript *script);
 typedef const char* (KJSSpecialFunc)(KJScript *script, const char *);
 typedef void (KJSDestroyFunc)(KJScript *script);
@@ -56,7 +56,7 @@ public:
   QVariant evaluate(const QChar *c, unsigned int l, const DOM::Node &n);
   const char *special(const char *c);
   void clear();
-  KHTMLPart *khtml;
+  KHTMLPart *khtmlpart;
 private:
   KJSCreateFunc *create;
   KJScript *script;
@@ -69,8 +69,8 @@ private:
 inline QVariant KJSProxy::evaluate(const QChar *c, unsigned int l,
 			       const DOM::Node &n) {
   if (!script)
-    script = (*create)(khtml);
-  return (*eval)(script, c, l, n);
+    script = (*create)(khtmlpart);
+  return (*eval)(script, c, l, n, khtmlpart);
 }
 
 inline const char *KJSProxy::special(const char *c) {

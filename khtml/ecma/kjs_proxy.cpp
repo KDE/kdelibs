@@ -38,7 +38,7 @@
 using namespace KJS;
 
 extern "C" {
-  KJSProxy *kjs_html_init(KHTMLPart *khtml);
+  KJSProxy *kjs_html_init(KHTMLPart *khtmlpart);
 }
 
 #ifdef KJS_DEBUGGER
@@ -46,14 +46,14 @@ static KJSDebugWin *kjs_html_debugger = 0;
 #endif
 
 // initialize HTML module
-KJSProxy *kjs_html_init(KHTMLPart *khtml)
+KJSProxy *kjs_html_init(KHTMLPart *khtmlpart)
 {
-  KJScript *script = kjs_create(khtml);
+  KJScript *script = kjs_create(khtmlpart);
 
   // proxy class operating via callback functions
   KJSProxy *proxy = new KJSProxy(script, &kjs_create, &kjs_eval, &kjs_clear,
 	  			 &kjs_special, &kjs_destroy);
-  proxy->khtml = khtml;
+  proxy->khtmlpart = khtmlpart;
 
 #ifdef KJS_DEBUGGER
   // ### share and destroy
@@ -65,7 +65,7 @@ KJSProxy *kjs_html_init(KHTMLPart *khtml)
 }
 
   // init the interpreter
-  KJScript* kjs_create(KHTMLPart *khtml)
+  KJScript* kjs_create(KHTMLPart *khtmlpart)
   {
     KJScript *script = new KJScript();
 #ifndef NDEBUG
@@ -73,7 +73,7 @@ KJSProxy *kjs_html_init(KHTMLPart *khtml)
 #endif
     KJS::Global global(Global::current());
 
-    KJSO window(newWindow(khtml));
+    KJSO window(newWindow(khtmlpart));
     global.put("window", window);
     // make "window" prefix implicit for shortcuts like alert()
     global.setFilter(window);
@@ -85,7 +85,7 @@ KJSProxy *kjs_html_init(KHTMLPart *khtml)
   // evaluate code. Returns the JS return value or an invalid QVariant
   // if there was none, an error occured or the type couldn't be converted.
   QVariant kjs_eval(KJScript *script, const QChar *c, unsigned int len,
-		    const DOM::Node &n)
+		    const DOM::Node &n, KHTMLPart *khtmlpart)
   {
     script->init(); // set a valid current interpreter
 
@@ -98,7 +98,9 @@ KJSProxy *kjs_html_init(KHTMLPart *khtml)
     KJS::KJSO thisNode = n.isNull() ?
 			 KJS::Global::current().prototype() : getDOMNode(n);
 
+    KJS::Global::current().put("[[ScriptURL]]",String(khtmlpart->url().url()),DontEnum | DontDelete);
     bool ret = script->evaluate(thisNode, c, len);
+    KJS::Global::current().put("[[ScriptURL]]",Undefined(),DontEnum | DontDelete);
 
 #ifdef KJS_DEBUGGER
     kjs_html_debugger->setCode(QString::null);

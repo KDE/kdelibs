@@ -50,6 +50,7 @@ namespace KJS {
     int installTimeout(const UString &handler, int t, bool singleShot);
     void clearTimeout(int timerId);
     void scheduleClose();
+    bool isSafeScript() const;
   private:
     QGuardedPtr<KHTMLPart> part;
     QGuardedPtr<KHTMLPart> opener;

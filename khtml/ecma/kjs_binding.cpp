@@ -152,3 +152,19 @@ KJSO KJS::getString(DOM::DOMString s)
   else
     return String(s);
 }
+
+bool KJS::originCheck(const QString url1, const QString url2)
+{
+  KURL kurl1 = url1;
+  KURL kurl2 = url2;
+  if (kurl1.protocol() == kurl2.protocol() &&
+      kurl1.host() == kurl2.host() &&
+      kurl1.port() == kurl2.port() &&
+      kurl1.user() == kurl2.user() &&
+      kurl1.pass() == kurl2.pass())
+    return true;
+  else
+    return false;
+}
+
+
