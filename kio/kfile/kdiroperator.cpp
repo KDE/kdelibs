@@ -996,9 +996,7 @@ void KDirOperator::insertNewFiles(const KFileItemList &newone)
 
 void KDirOperator::selectDir(const KFileItem *item)
 {
-    KURL tmp( currUrl );
-    tmp.cd(item->name());
-    setURL(tmp, true);
+    setURL(item->url(), true);
 }
 
 void KDirOperator::itemDeleted(KFileItem *item)
