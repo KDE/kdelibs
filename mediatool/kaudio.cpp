@@ -9,6 +9,12 @@
 
 KAudio::KAudio()
 {
+  ServerContacted = false;
+  cerr << "warning: audio output not supported in this KDE release" << endl;
+#if 0
+  /*
+   * aRts audio server integration is not yet ready for KRASH
+   */
   struct sockaddr_in socket_addr;
   int curState = 1;
   ServerContacted = false;
@@ -66,6 +72,7 @@ KAudio::KAudio()
   else {
       printf("Arts server NOT FOUND\n");
     }
+#endif
 }
 
 KAudio::~KAudio()
