@@ -125,17 +125,14 @@ public:
     void scrollToOffset(int x, int y, bool updateScrollbars = true);
     void scrollToXOffset(int x) { scrollToOffset(x, m_scrollY); }
     void scrollToYOffset(int y) { scrollToOffset(m_scrollX, y); }
-    void setHasHorizontalScrollbar(bool hasScrollbar);
-    void setHasVerticalScrollbar(bool hasScrollbar);
+    void showScrollbar(Qt::Orientation, bool);
     QScrollBar* horizontalScrollbar() { return m_hBar; }
     QScrollBar* verticalScrollbar() { return m_vBar; }
-    int verticalScrollbarWidth();
-    int horizontalScrollbarHeight();
+    int verticalScrollbarWidth() { return vBarRect.width(); }
+    int horizontalScrollbarHeight() { return hBarRect.height(); }
     void moveScrollbarsAside();
     void positionScrollbars(int tx, int ty);
-#ifdef APPLE_CHANGES
     void paintScrollbars(QPainter* p, int x, int y, int w, int h);
-#endif
     void checkScrollbarsAfterLayout();
     void slotValueChanged(int);
     void updateScrollPositionFromScrollbars();

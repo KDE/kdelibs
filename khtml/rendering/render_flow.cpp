@@ -411,8 +411,8 @@ void RenderFlow::layout()
     if (m_layer && style()->scrollsOverflow()) {
         // For overflow:scroll blocks, ensure we have both scrollbars in place always.
         if (style()->overflow() == OSCROLL) {
-            m_layer->setHasHorizontalScrollbar(true);
-            m_layer->setHasVerticalScrollbar(true);
+            m_layer->showScrollbar(Qt::Horizontal, true);
+            m_layer->showScrollbar(Qt::Vertical, true);
         }
 
         // Move the scrollbars aside during layout.  The layer will move them back when it

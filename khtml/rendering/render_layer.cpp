@@ -373,59 +373,29 @@ RenderLayer::updateScrollPositionFromScrollbars()
 }
 
 void
-RenderLayer::setHasHorizontalScrollbar(bool hasScrollbar)
+RenderLayer::showScrollbar(Qt::Orientation o, bool show)
 {
-    if (hasScrollbar && !m_hBar) {
+    QScrollBar *sb = (o == Qt::Horizontal) ? m_hBar : m_vBar;
+
+    if (show && !sb) {
         QScrollView* scrollView = m_object->element()->getDocument()->view();
-        m_hBar = new QScrollBar(Qt::Horizontal, scrollView);
-        scrollView->addChild(m_hBar, 0, -50000);
-	m_hBar->setBackgroundMode(QWidget::NoBackground);
-	m_hBar->show();
+        sb = new QScrollBar(o, scrollView);
+        scrollView->addChild(sb, 0, -50000);
+	sb->setBackgroundMode(QWidget::NoBackground);
+	sb->show();
         if (!m_scrollMediator)
             m_scrollMediator = new RenderScrollMediator(this);
-        m_scrollMediator->connect(m_hBar, SIGNAL(valueChanged(int)), SLOT(slotValueChanged()));
+        m_scrollMediator->connect(sb, SIGNAL(valueChanged(int)), SLOT(slotValueChanged()));
     }
-    else if (!hasScrollbar && m_hBar) {
-        delete m_hBar;
-        m_hBar = 0;
+    else if (!show && sb) {
+        delete sb;
+        sb = 0;
     }
-}
 
-void
-RenderLayer::setHasVerticalScrollbar(bool hasScrollbar)
-{
-    if (hasScrollbar && !m_vBar) {
-        QScrollView* scrollView = m_object->element()->getDocument()->view();
-        m_vBar = new QScrollBar(Qt::Vertical, scrollView);
-        scrollView->addChild(m_vBar, 0, -50000);
-	m_vBar->setBackgroundMode(QWidget::NoBackground);
-	m_vBar->show();
-        if (!m_scrollMediator)
-            m_scrollMediator = new RenderScrollMediator(this);
-        m_scrollMediator->connect(m_vBar, SIGNAL(valueChanged(int)), SLOT(slotValueChanged()));
-    }
-    else if (!hasScrollbar && m_vBar) {
-        delete m_vBar;
-        m_vBar = 0;
-    }
-}
-
-int
-RenderLayer::verticalScrollbarWidth()
-{
-    if (!m_vBar)
-        return 0;
-
-    return m_vBar->width();
-}
-
-int
-RenderLayer::horizontalScrollbarHeight()
-{
-    if (!m_hBar)
-        return 0;
-
-    return m_hBar->height();
+    if (o == Qt::Horizontal)
+	m_hBar = sb;
+    else
+	m_vBar = sb;
 }
 
 void
@@ -515,8 +485,8 @@ RenderLayer::checkScrollbarsAfterLayout()
     bool scrollbarsChanged = (m_object->style()->overflow() == OAUTO) &&
         (haveHorizontalBar != needHorizontalBar || haveVerticalBar != needVerticalBar);
     if (scrollbarsChanged) {
-        setHasHorizontalScrollbar(needHorizontalBar);
-        setHasVerticalScrollbar(needVerticalBar);
+        showScrollbar(Qt::Horizontal, needHorizontalBar);
+        showScrollbar(Qt::Vertical, needVerticalBar);
 
         m_object->setLayouted(false);
 #if 0
@@ -552,16 +522,23 @@ RenderLayer::checkScrollbarsAfterLayout()
 
 }
 
-#ifdef APPLE_CHANGES
 void
 RenderLayer::paintScrollbars(QPainter* p, int x, int y, int w, int h)
 {
+#ifdef APPLE_CHANGES
     if (m_hBar)
         m_hBar->paint(p, QRect(x, y, w, h));
     if (m_vBar)
         m_vBar->paint(p, QRect(x, y, w, h));
-}
+#else
+    if (m_hBar)
+	RenderWidget::paint(p, m_hBar, x, y, w, h,
+			    hBarRect.x(), hBarRect.y());
+    if (m_vBar)
+	RenderWidget::paint(p, m_vBar, x, y, w, h,
+			    vBarRect.x(), vBarRect.y());
 #endif
+}
 
 
 static void setClip(QPainter *p, const QRect &clip)
@@ -690,12 +667,8 @@ RenderLayer::paint(QPainter *p, int x, int y, int w, int h,
 			 tx + xOff - r->xPos(), ty + yOff - r->yPos(), PaintActionForeground);
 		if (lclip)
 		    restoreClip(p);
-		if (l->m_hBar)
-		    RenderWidget::paint(p, l->m_hBar, x, y, w, h,
-					l->hBarRect.x(), l->hBarRect.y());
-		if (l->m_vBar)
-		    RenderWidget::paint(p, l->m_vBar, x, y, w, h,
-					l->vBarRect.x(), l->vBarRect.y());
+
+		l->paintScrollbars(p, x, y, w, h);
 	    }
 	}
     }
@@ -704,12 +677,7 @@ RenderLayer::paint(QPainter *p, int x, int y, int w, int h,
     if (clip)
 	restoreClip(p);
 
-    if (m_hBar)
-	RenderWidget::paint(p, m_hBar, x, y, w, h,
-			    hBarRect.x(), hBarRect.y());
-    if (m_vBar)
-	RenderWidget::paint(p, m_vBar, x, y, w, h,
-			    vBarRect.x(), vBarRect.y());
+    paintScrollbars(p, x, y, w, h);
 }
 
 void
