@@ -59,7 +59,7 @@ while (<IN>) {
       @attrs = ();
       @params = ();
       $inside = 0;
-	} elsif (/^([-\w\[\=\]]+)\s*([\w\:-]+)\s*([\w\|]*)\s*(\w*)\s*$/ && $inside) {
+	} elsif (/^([-:\w\[\=\]]+)\s*([\w\:-]+)\s*([\w\|]*)\s*(\w*)\s*$/ && $inside) {
       my $key = $1;
       my $val = $2;
       my $att = $3;
