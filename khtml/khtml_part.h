@@ -746,9 +746,11 @@ public:
    * Return the text the user has marked.  This is guaranteed to be valid xml,
    * and to contain the <html> and <body> tags.
    *
+   * FIXME probably should make virtual for 4.0 ?
+   * 
    * @since 3.4
    */
-  virtual QString selectedTextAsHTML() const;
+  QString selectedTextAsHTML() const;
 
   /**
    * Returns the selected part of the HTML.
