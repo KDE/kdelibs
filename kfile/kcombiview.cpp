@@ -182,7 +182,7 @@ QString KCombiView::findCompletion( const char *base, bool )
 	if ( !foundDir.isNull() ) {
 	    unsigned int i;
             for ( i=1; (i<=found.length()) && (i<=foundDir.length()) ; i++) {
-                if ( strncmp( found.ascii(), foundDir.ascii(), i) != 0 )
+                if ( found.left(i) != foundDir.left(i) )
                     break;
             }
             if ( i==1 ) i++;

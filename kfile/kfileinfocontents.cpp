@@ -451,7 +451,7 @@ QString KFileInfoContents::findCompletion( const char *base,
             // this is needed because we want to highlight the first item in list
             // so we separately keep the "smallest" item separate, 
             // we need the biggest in case the list is reversed
-            if ( extra && ( reversed ? (strcmp( extra, backup.data() ) > 0) : (strcmp( extra, backup ) < 0) ) )
+            if ( extra && ( reversed ? (QString::compare(extra, backup) > 0) : (QString::compare( extra, backup ) < 0) ) )
               backup = extra;
         }
 	name = backup;
