@@ -392,6 +392,8 @@ void RenderRoot::clearSelection()
         selectionEnd->setSelectionState(SelectionNone);
         selectionEnd->repaint();
     }
+    selectionEnd = selectionStart = 0;
+    selectionEndPos = selectionStartPos = -1;
 
 }
 

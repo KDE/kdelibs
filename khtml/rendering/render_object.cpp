@@ -682,6 +682,9 @@ void RenderObject::removeFromSpecialObjects()
 
 void RenderObject::detach()
 {
+    // deleting a selected object means big trouble...
+    if (selectionState() != SelectionNone)
+	root()->clearSelection();
     remove();
     // by default no refcounting
     delete this;
