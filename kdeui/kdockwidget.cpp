@@ -443,6 +443,7 @@ void KDockWidget::show()
 void KDockWidget::setDockWindowType (NET::WindowType windowType)
 {
   d->windowType = windowType;
+  applyToWidget( parentWidget(), QPoint(0,0) );
 }
 
 #endif
@@ -451,6 +452,7 @@ void KDockWidget::setDockWindowTransient (QWidget *parent, bool transientEnabled
 {
   d->_parent = parent;
   d->transient = transientEnabled;
+  applyToWidget( parentWidget(), QPoint(0,0) );
 }
 
 bool KDockWidget::event( QEvent *event )
