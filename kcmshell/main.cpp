@@ -53,11 +53,11 @@ KService::List m_modules;
 static KCmdLineOptions options[] =
 {
     { "list", I18N_NOOP("List all possible modules"), 0},
-    { "+module", I18N_NOOP("Configuration module to open."), 0 },
-    { "lang <language>", I18N_NOOP("Specify a particular language."), 0 },
-    { "embed <id>", I18N_NOOP("Embeds the module with buttons in window with id <id>."), 0 },
-    { "embed-proxy <id>", I18N_NOOP("Embeds the module without buttons in window with id <id>."), 0 },
-    { "silent", I18N_NOOP("Do not display main window."), 0 },
+    { "+module", I18N_NOOP("Configuration module to open"), 0 },
+    { "lang <language>", I18N_NOOP("Specify a particular language"), 0 },
+    { "embed <id>", I18N_NOOP("Embeds the module with buttons in window with id <id>"), 0 },
+    { "embed-proxy <id>", I18N_NOOP("Embeds the module without buttons in window with id <id>"), 0 },
+    { "silent", I18N_NOOP("Do not display main window"), 0 },
     KCmdLineLastOption
 };
 
