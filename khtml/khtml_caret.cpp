@@ -143,9 +143,11 @@ static inline RenderObject *renderObjectAbove(RenderObject *obj, ObjectTraversal
  */
 static inline bool isIndicatedInlineBox(InlineBox *box)
 {
+  // text boxes are never indicated.
+  if (box->isInlineTextBox()) return false;
   RenderStyle *s = box->object()->style();
-  return s->borderLeftStyle() != BNONE || s->borderRightStyle() != BNONE
-  	|| s->borderTopStyle() != BNONE || s->borderBottomStyle() != BNONE
+  return s->borderLeftWidth() || s->borderRightWidth()
+  	|| s->borderTopWidth() || s->borderBottomWidth()
 	|| s->paddingLeft().value() || s->paddingRight().value()
 	|| s->paddingTop().value() || s->paddingBottom().value()
 	// ### Can inline elements have top/bottom margins? Couldn't find
@@ -1498,6 +1500,9 @@ void LineIterator::advance(bool toBegin)
 
 void EditableCaretBoxIterator::advance(bool toBegin)
 {
+#if DEBUG_CARETMODE > 3
+      kdDebug(6200) << "---------------" << k_funcinfo << "toBegin " << toBegin << endl;
+#endif
   const CaretBoxIterator preBegin = cbl->preBegin();
   const CaretBoxIterator end = cbl->end();
 
@@ -1506,6 +1511,10 @@ void EditableCaretBoxIterator::advance(bool toBegin)
   bool iscuruseable;
   // Assume adjacency of caret boxes. Will be falsified later if applicable.
   adjacent = true;
+
+#if DEBUG_CARETMODE > 4
+//       kdDebug(6200) << "ebit::advance: before: " << (**this)->object() << "@" << (**this)->object()->renderName() << ".node " << (**this)->object()->element() << "[" << ((**this)->object()->element() ? (**this)->object()->element()->nodeName().string() : QString::null) << "] inline " << (**this)->isInline() << " outside " << (**this)->isOutside() << " outsideEnd " << (**this)->isOutsideEnd() << endl;
+#endif
 
   if (toBegin) CaretBoxIterator::operator --(); else CaretBoxIterator::operator ++();
   bool curAtEnd = *this == preBegin || *this == end;
@@ -1543,20 +1552,29 @@ void EditableCaretBoxIterator::advance(bool toBegin)
 	// get next inline box
 	InlineBox *next = box->isOutsideEnd() ? ibox->nextOnLine() : ibox;
 
+	const bool isprevindicated = !prev || isIndicatedInlineBox(prev);
+	const bool isnextindicated = !next || isIndicatedInlineBox(next);
 	const bool last = haslast && !islastuseable;
 	const bool coming = hascoming && !iscominguseable;
-	const bool left = !prev || prev->isInlineFlowBox() && isIndicatedInlineBox(prev)
+	const bool left = !prev || prev->isInlineFlowBox() && isprevindicated
 		|| (toBegin && coming || !toBegin && last);
-	const bool right = !next || next->isInlineFlowBox() && isIndicatedInlineBox(next)
+	const bool right = !next || next->isInlineFlowBox() && isnextindicated
 		|| (!toBegin && coming || toBegin && last);
+        const bool text2indicated = toBegin && next && next->isInlineTextBox()
+                && isprevindicated
+            || !toBegin && prev && prev->isInlineTextBox() && isnextindicated;
+        const bool indicated2text = !toBegin && next && next->isInlineTextBox()
+                && prev && isprevindicated
+            // ### this code is so broken.
+            /*|| toBegin && prev && prev->isInlineTextBox() && isnextindicated*/;
 #if DEBUG_CARETMODE > 5
-      kdDebug(6200) << "prev " << prev << " haslast " << haslast << " islastuseable " << islastuseable << " left " << left << " next " << next << " hascoming " << hascoming << " iscominguseable " << iscominguseable << " right " << right << endl;
+      kdDebug(6200) << "prev " << prev << " haslast " << haslast << " islastuseable " << islastuseable << " left " << left << " next " << next << " hascoming " << hascoming << " iscominguseable " << iscominguseable << " right " << right << " text2indicated " << text2indicated << " indicated2text " << indicated2text << endl;
 #endif
 
-	if (left && right) {
+	if (left && right && !text2indicated || indicated2text) {
 	  adjacent = false;
 #if DEBUG_CARETMODE > 4
-      kdDebug(6200) << "left && right" << endl;
+      kdDebug(6200) << "left && right && !text2indicated || indicated2text" << endl;
 #endif
 	  break;
 	}
@@ -1564,7 +1582,27 @@ void EditableCaretBoxIterator::advance(bool toBegin)
       } else {
         // inside boxes are *always* valid
 #if DEBUG_CARETMODE > 4
-      kdDebug(6200) << "inside" << endl;
+if (box->isInline()) {
+        InlineBox *ibox = box->inlineBox();
+      kdDebug(6200) << "inside " << (!ibox->isInlineFlowBox() || static_cast<InlineFlowBox *>(ibox)->firstChild() ? "non-empty" : "empty") << (isIndicatedInlineBox(ibox) ? " indicated" : "") << " adjacent=" << adjacent << endl;
+    }
+#if 0
+  RenderStyle *s = ibox->object()->style();
+  kdDebug(6200)	<< "bordls " << s->borderLeftStyle()
+  		<< " bordl " << (s->borderLeftStyle() != BNONE)
+  		<< " bordr " << (s->borderRightStyle() != BNONE)
+  		<< " bordt " << (s->borderTopStyle() != BNONE)
+      		<< " bordb " << (s->borderBottomStyle() != BNONE)
+		<< " padl " << s->paddingLeft().value()
+                << " padr " << s->paddingRight().value()
+      		<< " padt " << s->paddingTop().value()
+                << " padb " << s->paddingBottom().value()
+	// ### Can inline elements have top/bottom margins? Couldn't find
+	// it in the CSS 2 spec, but Mozilla ignores them, so we do, too.
+		<< " marl " << s->marginLeft().value()
+                << " marr " << s->marginRight().value()
+      		<< endl;
+#endif
 #endif
         break;
       }/*end if*/
@@ -1591,6 +1629,9 @@ void EditableCaretBoxIterator::advance(bool toBegin)
   *static_cast<CaretBoxIterator *>(this) = curbox;
 #if DEBUG_CARETMODE > 4
 //  kdDebug(6200) << "still valid? " << (*this != preBegin && *this != end) << endl;
+#endif
+#if DEBUG_CARETMODE > 3
+      kdDebug(6200) << "---------------" << k_funcinfo << "end " << endl;
 #endif
 }
 
@@ -1708,6 +1749,17 @@ void EditableCharacterIterator::initFirstChar()
     _char = -1;
 }
 
+/** returns true when the given caret box is empty, i. e. should not
+ * take place in caret movement.
+ */
+static inline bool isCaretBoxEmpty(CaretBox *box) {
+  if (!box->isInline()) return false;
+  InlineBox *ibox = box->inlineBox();
+  return ibox->isInlineFlowBox()
+  		&& !static_cast<InlineFlowBox *>(ibox)->firstChild()
+      		&& !isIndicatedInlineBox(ibox);
+}
+
 EditableCharacterIterator &EditableCharacterIterator::operator ++()
 {
   _offset++;
@@ -1759,12 +1811,28 @@ kdDebug(6200) << "_offset " << _offset << endl;
     }/*end if*/
 
     bool adjacent = ebit.isAdjacent();
+#if 0
     // Jump over element if this one is not a text node.
     if (adjacent && !(*ebit)->isInlineTextBox()) {
       EditableCaretBoxIterator copy = ebit;
       ++ebit;
-      if (ebit != (*_it)->end() && (*ebit)->isInlineTextBox()) adjacent = false;
+      if (ebit != (*_it)->end() && (*ebit)->isInlineTextBox()
+          /*&& (!(*ebit)->isInlineFlowBox()
+              || static_cast<InlineFlowBox *>(*ebit)->)*/)
+        adjacent = false;
       else ebit = copy;
+    }/*end if*/
+#endif
+    // Jump over empty elements.
+    if (adjacent && !(*ebit)->isInlineTextBox()) {
+      bool noemptybox = true;
+      while (isCaretBoxEmpty(*ebit)) {
+        noemptybox = false;
+        EditableCaretBoxIterator copy = ebit;
+        ++ebit;
+        if (ebit == (*_it)->end()) { ebit = copy; break; }
+      }
+      if (noemptybox) adjacent = false;
     }/*end if*/
 //     _r = (*ebit)->object();
     /*if (!_it.outside) */_offset = (*ebit)->minOffset() + adjacent;
@@ -1821,9 +1889,13 @@ kdDebug(6200) << "_offset == minofs: " << _offset << " == " << minofs << endl;
     //peekPrev();
     bool do_prev = false;
     {
-      EditableCaretBoxIterator copy = ebit;
-      --ebit;
+      EditableCaretBoxIterator copy;
       _peekPrev = 0;
+      do {
+        copy = ebit;
+        --ebit;
+        if (ebit == (*_it)->preBegin()) { ebit = copy; break; }
+      } while (isCaretBoxEmpty(*ebit));
       // Jump to end of previous element if it's adjacent, and a text box
       if (ebit.isAdjacent() && ebit != (*_it)->preBegin() && (*ebit)->isInlineTextBox()) {
         _peekPrev = *ebit;
@@ -1866,10 +1938,11 @@ kdDebug(6200) << "box " << box << " b " << box->inlineBox() << " isText " << box
     }/*end if*/
 
     bool adjacent = ebit.isAdjacent();
-    // Ignore this box if it isn't a text box, but the previous box was
 #if DEBUG_CARETMODE > 0
     kdDebug(6200) << "adjacent " << adjacent << " _peekNext " << _peekNext << " _peekNext->isInlineTextBox: " << (_peekNext ? _peekNext->isInlineTextBox() : false) << " !((*ebit)->isInlineTextBox): " << (*ebit ? !(*ebit)->isInlineTextBox() : true) << endl;
 #endif
+#if 0
+    // Ignore this box if it isn't a text box, but the previous box was
     if (adjacent && _peekNext && _peekNext->isInlineTextBox()
     	&& !(*ebit)->isInlineTextBox()) {
       EditableCaretBoxIterator copy = ebit;
@@ -1877,6 +1950,22 @@ kdDebug(6200) << "box " << box << " b " << box->inlineBox() << " isText " << box
       if (ebit == (*_it)->preBegin()) /*adjacent = false;
       else */ebit = copy;
     }/*end if*/
+#endif
+#if 0
+    // Jump over empty elements.
+    if (adjacent //&& _peekNext && _peekNext->isInlineTextBox()
+        && !(*ebit)->isInlineTextBox()) {
+      bool noemptybox = true;
+      while (isCaretBoxEmpty(*ebit)) {
+        noemptybox = false;
+        EditableCaretBoxIterator copy = ebit;
+        --ebit;
+        if (ebit == (*_it)->preBegin()) { ebit = copy; break; }
+        else _peekNext = *copy;
+      }
+      if (noemptybox) adjacent = false;
+    }/*end if*/
+#endif
 #if DEBUG_CARETMODE > 0
     kdDebug(6200) << "(*ebit)->obj " << (*ebit)->object()->renderName() << "[" << (*ebit)->object() << "]" << " minOffset: " << (*ebit)->minOffset() << " maxOffset: " << (*ebit)->maxOffset() << endl;
 #endif
