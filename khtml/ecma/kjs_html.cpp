@@ -190,7 +190,7 @@ KJSO KJS::HTMLDocument::tryGet(const UString &p) const
   else if (p == "location") {
     KHTMLPart *part = static_cast<DOM::DocumentImpl*>(doc.handle())->
 		      view()->part();
-    return Window::retrieve(part)->location();
+    return Window::retrieveWindow(part)->location();
   } else if (p == "images")
     return new HTMLDocFunction(doc, HTMLDocFunction::Images);
   else if (p == "applets")

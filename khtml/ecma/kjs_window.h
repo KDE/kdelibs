@@ -53,12 +53,15 @@ namespace KJS {
   private:
     KHTMLView *view;
   };
-  
+
+  typedef QMap<KHTMLPart *, KJScript *> ScriptMap;
+
   class Window : public HostImp {
     friend QGuardedPtr<KHTMLPart> getInstance();
     friend class Location;
     friend class WindowFunc;
     friend class WindowQObject;
+  public:
     Window(KHTMLPart *p);
   public:
     ~Window();
@@ -67,7 +70,8 @@ namespace KJS {
      * for the specified part p this will be returned in order to have unique
      * bindings.
      */
-    static Window *retrieve(KHTMLPart *p);
+    static Imp *retrieve(KHTMLPart *p);
+    static Window *retrieveWindow(KHTMLPart *p);
 
     virtual void mark(Imp *imp = 0L);
     virtual bool hasProperty(const UString &p, bool recursive = true) const;
@@ -118,6 +122,7 @@ namespace KJS {
     void timerEvent(QTimerEvent *e);
   private:
     Window *parent;
+    KHTMLPart *part;   		// not guarded, may be dangling
     QMap<int, QString> map;
   };
 

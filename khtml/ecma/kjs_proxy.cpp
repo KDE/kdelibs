@@ -64,18 +64,30 @@ KJSProxy *kjs_html_init(KHTMLPart *khtmlpart)
   return proxy;
 }
 
-  // init the interpreter
+namespace KJS {
+    extern ScriptMap *script_map;
+};
+
+// init the interpreter
   KJScript* kjs_create(KHTMLPart *khtmlpart)
   {
+    if (!script_map)
+      script_map = new ScriptMap;
+ 
+    ScriptMap::Iterator it = script_map->find(khtmlpart);
+    if (it != script_map->end())
+      return it.data();
+    
     KJScript *script = new KJScript();
+    script_map->insert((KHTMLPart*)khtmlpart, script);
 #ifndef NDEBUG
     script->enableDebug();
 #endif
-    KJS::Global global(Global::current());
+    KJS::Imp *global = script->globalObject();
 
     // make "window" prefix implicit for shortcuts like alert()
-    global.setPrototype(Window::retrieve(khtmlpart));
-    global.put("window", global);
+    global->setPrototype(new Window(khtmlpart));    
+    global->put("window", global);
 
     return script;
   }
@@ -128,8 +140,7 @@ KJSProxy *kjs_html_init(KHTMLPart *khtmlpart)
   void kjs_clear(KJScript *script)
   {
     script->clear();
-    delete script;
-    script = 0L;
+    //    delete script;
   }
   // for later extensions.
   const char *kjs_special(KJScript *, const char *)
@@ -153,4 +164,3 @@ KJSProxy *kjs_html_init(KHTMLPart *khtmlpart)
     }
     return QVariant(); // ### return proper value
   }
-

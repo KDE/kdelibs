@@ -33,8 +33,10 @@
 #include <kwinmodule.h>
 #include <kconfig.h>
 
+#include <kjs/kjs.h>
 #include <kjs/operations.h>
 #include <kjs/lookup.h>
+#include "kjs_proxy.h"
 #include "kjs_window.h"
 #include "kjs_navigator.h"
 #include "kjs_html.h"
@@ -53,8 +55,7 @@ using namespace KJS;
 
 namespace KJS {
 
-typedef QMap<KHTMLPart *, Window *> WindowMap;
-static WindowMap *window_map = 0L;
+ScriptMap *script_map = 0L;  
 
 ////////////////////// History Object ////////////////////////
 
@@ -155,52 +156,38 @@ KJSO Screen::get(const UString &p) const
 
 Window::Window(KHTMLPart *p)
   : part(p), screen(0), history(0), frames(0), loc(0),
-    openedByJS(false), winq(0L)
+    openedByJS(false)
 {
+  winq = new WindowQObject(this);
   //kdDebug() << "Window::Window this=" << this << " part=" << part << endl;
 }
 
 Window::~Window()
 {
-  //kdDebug() << "Window::~Window this=" << this << " part=" << part << endl;
-  // part may be 0L here (due to QGuardedPtr), so look up the Window pointer instead.
-  WindowMap::Iterator it = window_map->begin();
-  bool found = false;
-  for ( ; it != window_map->end() ; ++it )
-    if ( it.data() == this )
-    {
-      //kdDebug() << "Window::~Window removing from map" << endl;
-      window_map->remove( it );
-      found = true;
-      break;
-    }
-  if ( !found )
-    kdWarning() << "Window " << this << " not found in window_map!" << endl;
-
-  if (window_map->isEmpty()) {
-    delete window_map;
-    window_map = 0L;
-  }
+  kdDebug() << "Window::~Window this=" << this << " part=" << part << endl;
   delete winq;
 }
 
-Window *Window::retrieve(KHTMLPart *p)
+Window *Window::retrieveWindow(KHTMLPart *p)
 {
-  if (!p)
-    kdWarning(6070) << "Window::retrieve(0)" << endl;
-  if (!window_map)
-    window_map = new WindowMap;
-  else
-  {
-    WindowMap::Iterator it = window_map->find( p );
-    if ( it != window_map->end() )
-      return it.data();
+  // prototype set in kjs_create()
+  return (Window*)retrieve(p)->prototype();
+}
+
+Imp *Window::retrieve(KHTMLPart *p)
+{
+  assert(p && script_map);
+  KJScript *script;
+  ScriptMap::Iterator it = script_map->find(p);
+  if (it == script_map->end()) {
+    KJScript *old = KJScript::current();
+    script = kjs_create(p);
+    old->init();
+  } else {
+    script = it.data();
   }
-
-  Window *w = new Window(p);
-  window_map->insert(p, w);
-
-  return w;
+  // the Global object is the "window"
+  return script->globalObject();
 }
 
 Location *Window::location() const
@@ -223,6 +210,7 @@ void Window::mark(Imp *)
   if (loc && !loc->refcount)
     loc->mark();
 
+#if 0  
   // Mark all Window objects from the map. Necessary to keep
   // existing window properties, such as 'opener'.
   if (window_map)
@@ -237,6 +225,7 @@ void Window::mark(Imp *)
        }
      }
   }
+#endif  
 }
 
 bool Window::hasProperty(const UString &p, bool recursive) const
@@ -517,22 +506,16 @@ Boolean Window::toBoolean() const
 
 int Window::installTimeout(const UString &handler, int t, bool singleShot)
 {
-  if (!winq)
-    winq = new WindowQObject(this);
-
   return winq->installTimeout(handler, t, singleShot);
 }
 
 void Window::clearTimeout(int timerId)
 {
-  if (winq)
-    winq->clearTimeout(timerId);
+  winq->clearTimeout(timerId);
 }
 
 void Window::scheduleClose()
 {
-  if (!winq)
-    winq = new WindowQObject(this);
   kdDebug(6070) << "WindowFunc::tryExecute window.close() " << part << endl;
   QTimer::singleShot( 0, winq, SLOT( timeoutClose() ) );
 }
@@ -666,7 +649,7 @@ Completion WindowFunc::tryExecute(const List &args)
         KParts::ReadOnlyPart *newPart = 0L;
         emit part->browserExtension()->createNewWindow("", uargs,winargs,newPart);
         if (newPart && newPart->inherits("KHTMLPart")) {
-	    Window *win = Window::retrieve(static_cast<KHTMLPart*>(newPart));
+	    Window *win = Window::retrieveWindow(static_cast<KHTMLPart*>(newPart));
 	    //qDebug("opener set to %p (this Window's part) in new Window %p  (this Window=%p)",part,win,window);
 	    win->opener = part;
 	    win->openedByJS = true;
@@ -808,6 +791,7 @@ void WindowFunc::initJScript(KHTMLPart *p)
 WindowQObject::WindowQObject(Window *w)
   : parent(w)
 {
+  part = parent->part;
     connect( parent->part, SIGNAL( destroyed() ),
              this, SLOT( parentDestroyed() ) );
 }
@@ -821,6 +805,11 @@ void WindowQObject::parentDestroyed()
 {
   killTimers();
   map.clear();
+  ScriptMap::Iterator it = script_map->find(part);
+  if (it == script_map->end())
+    return;
+  KJScript *scr = it.data();
+  script_map->remove(part);
 }
 
 int WindowQObject::installTimeout(const UString &handler, int t, bool singleShot)
