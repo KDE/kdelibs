@@ -760,7 +760,7 @@ void KEditToolbarWidget::slotInsertButton()
   static const QString &attrName     = KGlobal::staticQString( "name" );
 
   // we're modified, so let this change
-  enableOk(true);
+  emit enableOk(true);
 
   ToolbarItem *item = (ToolbarItem*)m_inactiveList->currentItem();
 
@@ -809,7 +809,7 @@ void KEditToolbarWidget::slotRemoveButton()
   static const QString &attrNoMerge = KGlobal::staticQString( "noMerge" );
 
   // we're modified, so let this change
-  enableOk(true);
+  emit enableOk(true);
 
   ToolbarItem *item = (ToolbarItem*)m_activeList->currentItem();
 
@@ -848,7 +848,7 @@ void KEditToolbarWidget::slotUpButton()
   static const QString &attrNoMerge = KGlobal::staticQString( "noMerge" );
 
   // we're modified, so let this change
-  enableOk(true);
+  emit enableOk(true);
 
   // now iterate through to find where we are
   QDomElement elem = d->m_currentToolbarElem.firstChild().toElement();
@@ -905,7 +905,7 @@ void KEditToolbarWidget::slotDownButton()
   static const QString &attrNoMerge = KGlobal::staticQString( "noMerge" );
 
   // we're modified, so let this change
-  enableOk(true);
+  emit enableOk(true);
 
   // now iterate through to find where we are
   QDomElement elem = d->m_currentToolbarElem.firstChild().toElement();
