@@ -1115,6 +1115,15 @@ void KApplication::kdisplaySetPalette()
                        background.dark(lowlightVal),
                        background.dark(120),
                        foreground, base);
+
+    int inlowlightVal = lowlightVal-25;
+    if(inlowlightVal < 120)
+        inlowlightVal = 120;
+    QColorGroup inactivegrp(foreground, button.light(110),
+                            background.light(highlightVal),
+                            background.dark(inlowlightVal), background,
+                            foreground, highlightedText, base,
+                            background);
     /*
     QColorGroup disabledgrp( textColor, backgroundColor,
                              backgroundColor.light(highlightVal),
@@ -1138,7 +1147,9 @@ void KApplication::kdisplaySetPalette()
     disabledgrp.setColor(QColorGroup::ButtonText, buttonText);
     disabledgrp.setColor(QColorGroup::Midlight, background.light(110));
 
-    QPalette newPal(colgrp, disabledgrp, colgrp);
+
+    //QPalette newPal(colgrp, disabledgrp, inactivegrp);
+    QPalette newPal(colgrp, disabledgrp, inactivegrp);
     setPalette(newPal, true );
 
     // GJ: The cursor blink rate doesn't belong here. It should get it's own
