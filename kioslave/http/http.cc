@@ -230,19 +230,30 @@ void HTTPProtocol::resetSessionSettings()
   kdDebug(7113) << "(" << m_pid << ") ssl_was_in_use = "
                 << metaData ("ssl_was_in_use") << endl;
 
+  m_request.referrer = QString::null;
   if ( config()->readBoolEntry("SendReferrer", true) &&
        (m_protocol == "https" || m_protocol == "webdavs" ||
         metaData ("ssl_was_in_use") != "TRUE" ) )
-     m_request.referrer = metaData("referrer");
-  else
-     m_request.referrer = QString::null;
-
-  if (!m_request.referrer.startsWith("http"))
   {
-     if (m_request.referrer.startsWith("webdav"))
-        m_request.referrer.replace(0, 6, "http");
-     else
-        m_request.referrer = QString::null;
+     KURL referrerURL = metaData("referrer");
+     if (referrerURL.isValid())
+     {
+        // Sanitize
+        QString protocol = referrerURL.protocol();
+        if (protocol.startsWith("webdav"))
+        {
+           protocol.replace(0, 6, "http");
+           referrerURL.setProtocol(protocol);
+        }
+        
+        if (protocol.startsWith("http"))
+        {
+           referrerURL.setRef(QString::null);
+           referrerURL.setUser(QString::null);
+           referrerURL.setPass(QString::null);
+           m_request.referrer = referrerURL.url();
+        }
+     }
   }
 
   if ( config()->readBoolEntry("SendLanguageSettings", true) )
