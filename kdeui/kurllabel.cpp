@@ -21,6 +21,7 @@
 #include <qtimer.h>
 #include <qtooltip.h>
 #include <qpixmap.h>
+#include <qapplication.h>
 
 #include <kcursor.h>
 #include <kglobalsettings.h>
@@ -315,6 +316,24 @@ void KURLLabel::leaveEvent (QEvent* e)
   emit leftURL ();
   emit leftURL (d->URL);
 }
+
+bool KURLLabel::event (QEvent *e)
+{
+  if (e && e->type() == QEvent::ParentPaletteChange)
+  {
+    // use parentWidget() unless you are a toplevel widget, then try qAapp
+    QPalette p = parentWidget() ? parentWidget()->palette() : qApp->palette();
+    p.setBrush(QColorGroup::Base, p.brush(QPalette::Normal, QColorGroup::Background));
+    p.setColor(QColorGroup::Foreground, palette().active().foreground());
+    setPalette(p);
+    d->LinkColor = KGlobalSettings::linkColor();
+    setLinkColor(d->LinkColor);
+    return true;
+  }
+  else
+    return QLabel::event(e);  
+}
+
 
 void KURLLabel::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }

@@ -336,6 +336,12 @@ protected:
    */
   virtual void leaveEvent (QEvent*);
 
+  /**
+   * Catch parent palette changes
+   */
+  virtual bool event (QEvent *e);
+
+
 private slots:
   /**
    * @internal
