@@ -23,6 +23,14 @@
 //#define DEBUG_LAYOUT
 //#define BIDI_DEBUG
 
+#if 0
+// #### for debugging Qt
+#define private public
+#include <qfontmetrics.h>
+#undef private
+#include <qtextcodec.h>
+#endif
+
 #include "render_text.h"
 #include "dom_stringimpl.h"
 
@@ -266,6 +274,9 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 #endif
 
     p->setFont( m_style->font() );
+#if 0
+    printf("charset used: %d mapper: %s\n", m_style->font().charSet(), fm->mapper()->name());
+#endif
     p->setPen( m_style->color() );
     while(s)
     {

@@ -34,8 +34,8 @@ using namespace khtml;
 
 Decoder::Decoder()
 {
-    codec = QTextCodec::codecForName("ISO 8859-1");
-printf("INIT HTML Codec name= %s\n", codec->name());
+    m_codec = QTextCodec::codecForName("ISO 8859-1");
+printf("INIT HTML Codec name= %s\n", m_codec->name());
     enc = 0;
     body = false;
     beginning = true;
@@ -48,15 +48,15 @@ Decoder::~Decoder()
 void Decoder::setEncoding(const char *_encoding)
 {
     enc = _encoding;
-    codec = QTextCodec::codecForName(enc);
-    if(codec->mibEnum() == 11) // iso8859-8 (visually ordered)
+    m_codec = QTextCodec::codecForName(enc);
+    if(m_codec->mibEnum() == 11) // iso8859-8 (visually ordered)
     {
-	codec = QTextCodec::codecForName("iso8859-8-i");
+	m_codec = QTextCodec::codecForName("iso8859-8-i");
 	visualRTL = true;
     }
-    else if(codec->mibEnum() == 9) // iso8859-6 (visually ordered)
+    else if(m_codec->mibEnum() == 9) // iso8859-6 (visually ordered)
     {
-	codec = QTextCodec::codecForName("iso8859-8-i");
+	m_codec = QTextCodec::codecForName("iso8859-8-i");
 	visualRTL = true;
     }
 }
@@ -79,7 +79,7 @@ QString Decoder::decode(const char *data, int len)
 	if( uchars[0] == 0xfe && uchars[1] == 0xff ||
 	    uchars[0] == 0xff && uchars[1] == 0xfe ) {
 	    enc = "utf16";
-	    codec = QTextCodec::codecForName(enc);
+	    m_codec = QTextCodec::codecForName(enc);
 	} else {
 
 	    // we still don't have an encoding, and are in the head
@@ -169,19 +169,19 @@ QString Decoder::decode(const char *data, int len)
  found:
     // if we still haven't found an encoding latin1 will be used...
     // this is according to HTML4.0 specs
-    if (!codec)
+    if (!m_codec)
     {
         if(enc.isEmpty()) enc = "iso8859-1";
-	codec = QTextCodec::codecForName(enc);
+	m_codec = QTextCodec::codecForName(enc);
     }
     QString out;
 
     if(!buffer.isEmpty() && enc != "utf16") {
-	out = codec->toUnicode(buffer);
+	out = m_codec->toUnicode(buffer);
 	buffer = "";
     }
     else
-	out = codec->toUnicode(data, len);
+	out = m_codec->toUnicode(data, len);
 
 #if 0
     // ### this is still broken

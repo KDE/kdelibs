@@ -179,22 +179,22 @@ static int special(BiDiParagraph *par, const BiDiIterator &it1, const BiDiIterat
 
     while(o != last)
     {
-	if(o->isSpecial() || o->isHidden()) 
+	if(o->isSpecial() || o->isHidden())
 	{
-	    if (!oldline)   
+	    if (!oldline)
 	    	oldline=par->lineWidth(y);
-	    par->specialHandler(o);	    
+	    par->specialHandler(o);	
 	}
 	o = it1.par->next(o);
 	if(!o) break;
     }
     if(o && (o->isSpecial() || o->isHidden())) 	
     {
-	if (!oldline)   
+	if (!oldline)
 	    oldline=par->lineWidth(y);
-	par->specialHandler(o);	    
+	par->specialHandler(o);	
     }
-    
+
     if (oldline)
     	change = par->lineWidth(y) - oldline;
 
@@ -438,7 +438,7 @@ static void addWord(BiDiParagraph *par, QList<BiDiWord> &line, const BiDiIterato
     int pos = it1.pos;
 
     if(!o) return;
-    while(o != it2.obj)
+    while(o && o != it2.obj)
     {
 	if(!o->isHidden())
 	{

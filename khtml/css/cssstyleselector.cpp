@@ -45,6 +45,7 @@ using namespace DOM;
 #include "khtml_part.h"
 
 #include <kstddirs.h>
+#include <kcharsets.h>
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qfontdatabase.h>
@@ -742,6 +743,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	{
 	    if(!e->parentNode()) return;
 	    f.setItalic(e->parentNode()->style()->font().italic());
+	    f.setCharSet(e->ownerDocument()->view()->part()->settings()->charset);
 	    style->setFont(f);
 	    return;
 	}
@@ -759,6 +761,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	default:
 	    return;
 	}
+	f.setCharSet(e->ownerDocument()->view()->part()->settings()->charset);
 	style->setFont(f);
 	break;
     }
@@ -775,6 +778,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	{
 	    if(!e->parentNode()) return;
 	    f.setWeight(e->parentNode()->style()->font().weight());
+	    f.setCharSet(e->ownerDocument()->view()->part()->settings()->charset);
 	    style->setFont(f);
 	    return;
 	}
@@ -801,6 +805,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	{
 	    // ### fix parsing of 100-900 values in parser, apply them here
 	}
+	f.setCharSet(e->ownerDocument()->view()->part()->settings()->charset);
 	style->setFont(f);
 	break;
     }
@@ -1354,6 +1359,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 		size = bestSize;
 	}	
 	f.setPointSize(size);
+	f.setCharSet(e->ownerDocument()->view()->part()->settings()->charset);
 	style->setFont(f);
 	return;
     }
@@ -1454,6 +1460,8 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	int len = list->length();
 	for(int i = 0; i < len; i++)
 	{
+	    // yuck, what an ugly construct...
+	    const QString *families = e->ownerDocument()->view()->part()->settings()->families();
 	    QFont f = style->font();
 	    CSSValueImpl *item = list->item(i);
 	    if(!item->isPrimitiveValue()) continue;
@@ -1463,20 +1471,21 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	    QString face(str->s, str->l);
 	    // ### use the fonts in settings!!!!
 	    if(face == "serif")
-		face = "times";
+		face = families[0];
 	    else if(face == "sans-serif")
-		face = "tahoma";
+		face = families[2];
 	    else if( face == "cursive")
-		face = "times";
+		face = families[3];
 	    else if( face == "fantasy")
-		face = "comic";
+		face = families[4];
 	    else if( face == "monospace")
-		face = "courier";
+		face = families[5];
 	    f.setFamily(face);
 	    QFontInfo fi(f);
 	    if(!strcasecmp(fi.family().ascii(), face.ascii()))
 	    {
 		//printf("=====> setting font family to %s\n", face.ascii());
+		f.setCharSet(e->ownerDocument()->view()->part()->settings()->charset);
 		style->setFont(f);
 		break;
 	    }

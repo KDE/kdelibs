@@ -57,6 +57,8 @@ public:
 
     QFont::CharSet charset;
 
+    const QString *families() const { return standardFamilies; }
+
 private:
     int     m_fontSizes[MAXFONTSIZES];
     QString *standardFamilies;

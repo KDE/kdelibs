@@ -54,6 +54,8 @@
 #include <ktrader.h>
 #include <kparts/partmanager.h>
 
+#include <qtextcodec.h>
+
 #include <unistd.h>
 
 namespace khtml
@@ -504,6 +506,8 @@ void KHTMLPart::write( const char *str, int len )
 
   QString decoded = d->m_decoder->decode( str, len );
   if(d->m_decoder->visuallyOrdered()) d->m_doc->setVisuallyOrdered();
+  const QTextCodec *c = d->m_decoder->codec();
+  setCharset(c->name());
   d->m_doc->write( decoded );
 }
 
@@ -627,13 +631,13 @@ bool KHTMLPart::setCharset( const QString &name, bool override )
     return false;
   }
 
-  QFont f;
+  QFont f(settings()->families()[0]);
   c->setQFont(f, name);
 
   QFontInfo fi(f);
   printf("font has charset %d, real %d\n", f.charSet(), fi.charSet());
 
-  d->m_settings->charset = f.charSet();
+  d->m_settings->charset = QFont::ISO_8859_8;//f.charSet();
   return true;
 }
 

@@ -41,9 +41,11 @@ public:
     QString decode(const char *data, int len);
 
     bool visuallyOrdered() { return visualRTL; }
+
+    const QTextCodec *codec() const { return m_codec; }
 protected:
     // codec used for decoding. default is Latin1.
-    QTextCodec *codec;
+    QTextCodec *m_codec;
     QCString enc;
 
     QCString buffer;
