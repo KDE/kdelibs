@@ -54,11 +54,17 @@ class KXMLGUIFactory
   static void createGUI( KXMLGUIServant *shell, KXMLGUIServant *part, KXMLGUIBuilder *builder );
 
  private:
-  // Note : a real class instead of only static methods could avoid passing the
-  // builder as an argument each time
-  static void buildRecursive( const QDomElement &shellElement, KXMLGUIServant *shellServant,
-                              const QDomElement &partElement, KXMLGUIServant *partServant,
-                              KXMLGUIBuilder *builder, QObject *parent = 0L );
+  KXMLGUIFactory( KXMLGUIServant *shellServant, KXMLGUIServant *partServant, KXMLGUIBuilder *builder );
+
+  void buildRecursive( const QDomElement &shellElement,
+                       const QDomElement &partElement,
+                       QObject *parent = 0L );
+
+  QDomElement findMatchingElement( const QDomElement &shellElement, const QDomElement &partElement );
+
+  KXMLGUIServant *m_shellServant;
+  KXMLGUIServant *m_partServant;
+  KXMLGUIBuilder *m_builder;
 
 };
 

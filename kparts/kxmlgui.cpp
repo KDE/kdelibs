@@ -34,58 +34,43 @@ void KXMLGUIFactory::createGUI( KXMLGUIServant *shell, KXMLGUIServant *part, KXM
 
   qDebug( "starting recursive build" );
 
-  buildRecursive( shellDoc, shell, partDoc, part, builder );
+  KXMLGUIFactory factory( shell, part, builder );
+
+  factory.buildRecursive( shellDoc, partDoc );
 }
 
+KXMLGUIFactory::KXMLGUIFactory( KXMLGUIServant *shellServant, KXMLGUIServant *partServant, KXMLGUIBuilder *builder )
+{
+  m_shellServant = shellServant;
+  m_partServant = partServant;
+  m_builder = builder;
+}
 
-void KXMLGUIFactory::buildRecursive( const QDomElement &shellElement, KXMLGUIServant *shellServant,
-                                     const QDomElement &partElement, KXMLGUIServant *partServant,
-                                     KXMLGUIBuilder *builder, QObject *parent )
+void KXMLGUIFactory::buildRecursive( const QDomElement &shellElement,
+                                     const QDomElement &partElement,
+                                     QObject *parent )
 {
 
   QDomElement servantElement = shellElement;
-  KXMLGUIServant *servant = shellServant;
+  KXMLGUIServant *servant = m_shellServant;
 
   if ( servantElement.isNull() )
   {
     qDebug( "switch to part servant" );
     servantElement = partElement;
-    servant = partServant;
+    servant = m_partServant;
   }
 
   QDomElement e = servantElement.firstChild().toElement();
   for (; !e.isNull(); e = e.nextSibling().toElement() )
   {
     qDebug( "parsing tag %s with possible name %s", e.tagName().ascii(), e.attribute( "name" ).ascii() );
-    if ( e.tagName() == "Part" && servant == shellServant )
+    if ( e.tagName() == "Part" && servant == m_shellServant )
     {
-      QDomElement p;
+      QDomElement p = findMatchingElement( e.parentNode().toElement(), 
+                                           partElement.parentNode().toElement().firstChild().toElement() );
 
-      QDomElement shellParent = e.parentNode().toElement();
-      QDomElement partParent = partElement.parentNode().toElement();
-
-      if ( !shellParent.attribute( "name" ).isEmpty() )
-      {
-        QDomElement i = partParent.firstChild().toElement();
-        for (; !i.isNull(); i = i.nextSibling().toElement() )
-          if ( i.attribute( "name" ) == shellParent.attribute( "name" ) )
-  	  {
-	    p = i;
-	    break;
-          }
-      }
-      else
-      {
-	QDomElement i = partParent.firstChild().toElement();
-	for (; !i.isNull(); i = i.nextSibling().toElement() )
-	  if ( i.tagName() == shellParent.tagName() )
-	  {
-	    p = i;
-	    break;
-	  }
-      }
-
-      buildRecursive( QDomElement(), shellServant, p, partServant, builder, parent );
+      buildRecursive( QDomElement(), p, parent );
     }
     else if ( e.tagName() == "Action" )
     {
@@ -100,45 +85,50 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &shellElement, KXMLGUISer
     }
     else
     {
-      QWidget *container = builder->createContainer( parent, e );
+      QWidget *container = m_builder->createContainer( parent, e );
 
       if ( !container )
         continue;
 
-      if ( servant == shellServant )
-      {
-        QDomElement p;
- 
-	if ( !e.attribute( "name" ).isEmpty() )
-	{
-          QDomElement i = partElement.firstChild().toElement();
-          for (; !i.isNull(); i = i.nextSibling().toElement() )
-            if ( i.attribute( "name" ) == e.attribute( "name" ) )
-  	    {
-	      p = i;
-	      break;
-            }
-        }
-	else
-        {
-	  QDomElement i = partElement.firstChild().toElement();
-	  for (; !i.isNull(); i = i.nextSibling().toElement() )
-	    if ( i.tagName() == e.tagName() )
-	    {
-	      p = i;
-	      break;
-	    }
-	}
-
-        buildRecursive( e, shellServant, p, partServant, builder, container );
-      }
+      if ( servant == m_shellServant )
+        buildRecursive( e,
+                        findMatchingElement( e, partElement.firstChild().toElement() ), 
+                        container );
       else
-      {
-	buildRecursive( QDomElement(), shellServant, e, partServant, builder, container );
-      }
+	buildRecursive( QDomElement(), e, container );
       
     }
   
   }  
 
+}
+
+QDomElement KXMLGUIFactory::findMatchingElement( const QDomElement &shellElement, const QDomElement &partElement )
+{
+  QDomElement p;
+  QDomElement i = partElement;
+
+  QString name = shellElement.attribute( "name" ); 
+
+  if ( !name.isEmpty() )
+  {
+    for (; !i.isNull(); i = i.nextSibling().toElement() )
+      if ( i.attribute( "name" ) == name )
+      {
+        p = i;
+        break;
+      }
+    return p;
+  }
+
+  name = shellElement.tagName();
+
+  for (; !i.isNull(); i = i.nextSibling().toElement() )
+    if ( i.tagName() == name )
+      {
+	p = i;
+	break;
+      }
+
+  return p;
 }
