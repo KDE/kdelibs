@@ -504,6 +504,7 @@ void RenderLineEdit::updateFromElement()
         widget()->setCursorPosition(pos);
         widget()->blockSignals(false);
     }
+    widget()->setReadOnly(element()->readOnly());
 
     RenderFormElement::updateFromElement();
 }
