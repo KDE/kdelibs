@@ -238,6 +238,13 @@ void RenderTable::layout()
     KHTMLAssert( minMaxKnown() );
     KHTMLAssert( !needSectionRecalc );
 
+    if (posChildNeedsLayout() && !normalChildNeedsLayout() && !selfNeedsLayout()) {
+        // All we have to is lay out our positioned objects.
+        layoutPositionedObjects(true);
+        setNeedsLayout(false);
+        return;
+    }
+
     m_height = 0;
     initMaxMarginValues();
 
