@@ -22,7 +22,7 @@
  */
 
 #ifndef _TCP_SLAVEBASE_H
-#define _TCP_SLAVEBASE_H "$Id"
+#define _TCP_SLAVEBASE_H "$Id$"
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
