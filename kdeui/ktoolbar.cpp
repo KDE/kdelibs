@@ -1239,6 +1239,8 @@ void KToolBar::rebuildLayout()
             continue;
         l->addWidget( w );
         w->show();
+        if ((orientation() == Horizontal) && w->inherits( "QLineEdit"))
+            l->addSpacing(2); // A little bit extra spacing behind it.
     }
     if ( rightAligned ) {
         l->addStretch();
@@ -1347,20 +1349,20 @@ QSize KToolBar::sizeHint() const
      case KToolBar::Bottom:
        for ( QWidget *w = ncThis->widgets.first(); w; w = ncThis->widgets.next() )
        {
-          if ( w->inherits( "KToolBarSeparator" ) &&
-             !( static_cast<KToolBarSeparator*>(w)->showLine() ) )
-          {
-             minSize += w->sizeHint();
-          }
-          else
-          {
-             QSize sh = w->sizeHint();
-             if (!sh.isValid())
-                sh = w->minimumSize();
-             minSize = minSize.expandedTo(QSize(0, sh.height()));
-             minSize += QSize(sh.width()+1, 0);
-          }
+          QSize sh = w->sizeHint();
+          if ( w->sizePolicy().horData() == QSizePolicy::Ignored )
+             sh.setWidth( 1 );
+          if ( w->sizePolicy().verData() == QSizePolicy::Ignored )
+             sh.setHeight( 1 );
+          sh = sh.boundedTo( w->maximumSize() )
+                 .expandedTo( w->minimumSize() ).expandedTo( QSize(1, 1) );
+                
+          minSize = minSize.expandedTo(QSize(0, sh.height()));
+          minSize += QSize(sh.width()+1, 0);
+          if (w->inherits( "QLineEdit"))
+             minSize += QSize(2, 0); // A little bit extra spacing behind it.
        }
+             
        minSize += QSize(QApplication::style().pixelMetric( QStyle::PM_DockWindowHandleExtent ), 0);
        minSize += QSize(margin*2, margin*2);
        break;
@@ -1369,19 +1371,16 @@ QSize KToolBar::sizeHint() const
      case KToolBar::Right:
        for ( QWidget *w = ncThis->widgets.first(); w; w = ncThis->widgets.next() )
        {
-          if ( w->inherits( "KToolBarSeparator" ) &&
-             !( static_cast<KToolBarSeparator*>(w)->showLine() ) )
-          {
-             minSize += w->sizeHint();
-          }
-          else
-          {
-             QSize sh = w->sizeHint();
-             if (!sh.isValid())
-                sh = w->minimumSize();
-             minSize = minSize.expandedTo(QSize(sh.width(), 0));
-             minSize += QSize(0, sh.height()+1);
-          }
+          QSize sh = w->sizeHint();
+          if ( w->sizePolicy().horData() == QSizePolicy::Ignored )
+             sh.setWidth( 1 );
+          if ( w->sizePolicy().verData() == QSizePolicy::Ignored )
+             sh.setHeight( 1 );
+          sh = sh.boundedTo( w->maximumSize() )
+                 .expandedTo( w->minimumSize() ).expandedTo( QSize(1, 1) );
+                
+          minSize = minSize.expandedTo(QSize(sh.width(), 0));
+          minSize += QSize(0, sh.height()+1);
        }
        minSize += QSize(0, QApplication::style().pixelMetric( QStyle::PM_DockWindowHandleExtent ));
        minSize += QSize(margin*2, margin*2);
