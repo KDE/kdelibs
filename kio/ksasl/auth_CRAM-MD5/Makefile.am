@@ -1,4 +1,5 @@
 # $Id$
+INCLUDES = $(all_includes)
 
 lib_LTLIBRARIES = ksasl_auth_cram.la
 
