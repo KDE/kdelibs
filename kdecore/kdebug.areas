@@ -58,6 +58,7 @@
 1214        kdesktop (icons)
 
 1400        khelpcenter (kdebase)
+1401        kcmhelpcenter
 
 1420        kikbd
 1421        ki18b_keys (kcmodule)
