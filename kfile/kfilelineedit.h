@@ -20,7 +20,7 @@ Q_OBJECT
 
 public:
     KPathLineEdit(const QString & initialPath, QWidget * parent);
-    KPathLineEdit(QWidget *parent){KPathLineEdit(QString::null,parent);}
+    KPathLineEdit(QWidget *parent);
     virtual ~KPathLineEdit();
     virtual QString path() const;
     virtual void setPath(const QString &);
