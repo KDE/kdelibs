@@ -251,8 +251,6 @@ void RenderListItem::calcListValue()
 
     if(predefVal != -1)
         m_marker->m_value = predefVal;
-    else if(!previousSibling())
-        m_marker->m_value = 1;
     else {
 	RenderObject *o = previousSibling();
 	while ( o && (!o->isListItem() || o->style()->listStyleType() == LNONE) )
@@ -261,6 +259,8 @@ void RenderListItem::calcListValue()
             RenderListItem *item = static_cast<RenderListItem *>(o);
             m_marker->m_value = item->m_marker->m_value + 1;
         }
+        else if (parent()->element() && parent()->element()->id() == ID_OL)
+            m_marker->m_value = static_cast<DOM::HTMLOListElementImpl*>(parent()->element())->start();
         else
             m_marker->m_value = 1;
     }

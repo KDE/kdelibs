@@ -1,5 +1,10 @@
 2003-10-21  Dirk Mueller  <mueller@kde.org>
 
+	* html/html_listimpl.cpp (attach): fix thinko. Revert Safari merge which
+	broke <ul><p><li>. Thanks to Maksim for noticing.
+	
+	* rendering/render_list.cpp (calcListValue): handle <ul><p><li> again.
+
 	* rendering/render_box.cpp (repaint): revert commit which introduced another
 	4 bytes overhead. No need to waste memory here. 
 

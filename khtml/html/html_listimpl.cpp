@@ -88,7 +88,8 @@ void HTMLOListElementImpl::parseAttribute(AttributeImpl *attr)
             addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, CSS_VAL_DECIMAL);
         break;
     case ATTR_START:
-            _start = attr->val() ? attr->val()->toInt() : 1;
+        _start = attr->val() ? attr->val()->toInt() : 1;
+        break;
     default:
         HTMLUListElementImpl::parseAttribute(attr);
     }
@@ -137,7 +138,7 @@ void HTMLLIElementImpl::attach()
     if ( m_render && m_render->style()->display() == LIST_ITEM ) {
         RenderListItem* render = static_cast<RenderListItem*>( renderer() );
         NodeImpl* listNode = 0;
-        for ( NodeImpl* n = parentNode(); n; n = n->parentNode() ) {
+        for ( NodeImpl* n = parentNode(); !listNode && n; n = n->parentNode() ) {
             switch( n->id() ) {
             case ID_UL:
             case ID_OL:
@@ -148,12 +149,6 @@ void HTMLLIElementImpl::attach()
 
         // if we are not in a list, then position us inside, even if CSS says otherwise
         render->setInsideList( listNode );
-
-        // If we are first, and the OL has a start attr, set the value.
-        if (listNode && listNode->id() == ID_OL && !m_render->previousSibling()) {
-            HTMLOListElementImpl *ol = static_cast<HTMLOListElementImpl *>(listNode);
-            render->setValue(ol->start());
-        }
 
         DOMString v = getAttribute(ATTR_VALUE);
         if ( !v.isEmpty() )
