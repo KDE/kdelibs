@@ -1,6 +1,9 @@
 // $Id$
 //
 /* $Log$
+ * Revision 1.3  1997/04/17 12:08:05  kalle
+ * Bugfix in KConfig
+ *
  * Revision 1.2  1997/04/15 20:01:53  kalle
  * Kalles changes for 0.8
  *
@@ -552,7 +555,9 @@ void KConfig::sync()
 	  
       QFile aConfigFile( aFileName );
       QFileInfo aInfo( aConfigFile );
-      if( aInfo.exists() && aInfo.isWritable() )
+      if( ( aInfo.exists() && aInfo.isWritable() ) ||
+		  ( !aInfo.exists() && 
+			QFileInfo( aInfo.dirPath( true ) ).isWritable() ) )
 		{
 		  aConfigFile.open( IO_ReadWrite );
 		  writeConfigFile( aConfigFile );
