@@ -42,12 +42,6 @@ PUBLIC "-//KDE//ENTITIES DocBook General Entity Declarations V1.0//EN"
 PUBLIC "-//KDE//ENTITIES Documentation V1.0//EN"
        "dtd/kde-prologue.entities"
 
--- Do not use this FPI anymore, it is obsolete, but kept for 
-   backwards compatibility.  It will be removed after the release
---
-PUBLIC "-//KDE//ENTITIES Application-Variable Entities V1.0//EN"
-       "dtd/kde-prologue.entities"
-
 		  -- DocBook Modular Style Sheets --
 
 PUBLIC "-//KDE//DOCUMENT Style Sheet V1.0//EN"
