@@ -325,6 +325,7 @@ bool HTTPProtocol::checkRequestURL( const KURL& u )
         m_request.port = m_iDefaultPort;
   }
 
+  resetSessionSettings();
   return true;
 }
 
@@ -345,8 +346,6 @@ void HTTPProtocol::retrieveContent()
 
 bool HTTPProtocol::retrieveHeader( bool close_connection )
 {
-  resetSessionSettings();
-
   while ( 1 )
   {
     if (!httpOpen())
