@@ -275,7 +275,6 @@ public:
   /**
    * Get the drag panel of this header.
    *
-   * @param nd A pointer to the new drag panel
    * @since 3.4
    */
    KDockWidgetHeaderDrag *dragPanel();
