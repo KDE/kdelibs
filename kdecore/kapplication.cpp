@@ -2227,16 +2227,15 @@ void KApplication::setTopWidget( QWidget *topWidget )
 #ifdef Q_WS_X11 // FIXME(E): Implement for Qt/Embedded
     Window leader = topWidget->winId();
 #endif
-    QCString string_buffer = instanceName().data(); // copies it
+    QCString string_buffer = instanceName();
 
     char * argv = string_buffer.data();
-
 #ifdef Q_WS_X11 // FIXME(E): Implement for Qt/Embedded
     XSetCommand(display, leader, &argv, 1);
 
     XClassHint hint;
     hint.res_name = string_buffer.data();
-    hint.res_class = const_cast<char *>("toplevel");
+    hint.res_class = string_buffer.data();
     XSetClassHint(display, leader, &hint);
 
     XWMHints *hints = XAllocWMHints();
