@@ -66,6 +66,7 @@ public:
     DOMString baseURL() const;
 
     HTMLElementImpl *body();
+    HTMLElementImpl *html();
     void setBody(const HTMLElement &_body);
 
     void open (  );
@@ -125,6 +126,7 @@ protected:
     HTMLTokenizer *tokenizer;
 
     HTMLElementImpl *bodyElement;
+    HTMLElementImpl *htmlElement;
     DOMString url;
 
     StyleSheetImpl *m_sheet;

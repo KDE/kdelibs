@@ -61,6 +61,7 @@ HTMLDocumentImpl::HTMLDocumentImpl() : DocumentImpl()
     tokenizer = 0;
 
     bodyElement = 0;
+    htmlElement = 0;
 
     m_loadingSheet = false;
 
@@ -76,6 +77,7 @@ HTMLDocumentImpl::HTMLDocumentImpl(KHTMLView *v)
     tokenizer = 0;
 
     bodyElement = 0;
+    htmlElement = 0;
 
     m_styleSelector = new CSSStyleSelector(this);
 
@@ -115,17 +117,32 @@ HTMLElementImpl *HTMLDocumentImpl::body()
 {
     if(bodyElement) return bodyElement;
     if(!_first) return 0;
-    NodeImpl *html = _first;
-    while (html && html->id() != ID_HTML)
-	html = html->nextSibling();
-    if(!html) return 0;
-    NodeImpl *test = html->firstChild();
+    if(!htmlElement) return 0;
+    NodeImpl *test = htmlElement->firstChild();
     while(test && (test->id() != ID_BODY && test->id() != ID_FRAMESET))
 	test = test->nextSibling();
     if(!test) return 0;
     bodyElement = static_cast<HTMLElementImpl *>(test);
     return bodyElement;
 }
+
+HTMLElementImpl *HTMLDocumentImpl::html()
+{
+    if (htmlElement)
+	return htmlElement;
+
+    	
+    NodeImpl *n = _first;
+    while (n && n->id() != ID_HTML)
+	n = n->nextSibling();
+    if (n) {
+	htmlElement = static_cast<HTMLElementImpl*>(n);
+	return htmlElement;
+    }
+    else
+	return 0;
+}
+
 
 void HTMLDocumentImpl::setBody(const HTMLElement &_body)
 {

@@ -345,29 +345,7 @@ void HTMLTokenizer::parseStyle(DOMStringIt &src)
 
 void HTMLTokenizer::parseComment(DOMStringIt &src)
 {
-//    parseListing(src); // ### disabled temporarily - skips body attrs. if placed before <HTML>
-    while ( src.length() )
-    {
-	// Look for '-->'
-	if ( src[0] == '-' )
-	{
-	    if (searchCount < 2)	// Watch out for '--->'
-	        searchCount++;
-	}
-	else if ((searchCount == 2) && (src[0] == '>'))
-	{
-	    // We got a '-->' sequence
-	    comment = false;
-	    ++src;
-	    discard=LFDiscard;
-	    return; // Finished parsing comment!
-	}
-	else
-	{
-	    searchCount = 0;
-	}
-        ++src;
-    }
+    parseListing(src); // ### disabled temporarily - skips body attrs. if placed before <HTML>
 }
 
 void HTMLTokenizer::parseProcessingInstruction(DOMStringIt &src)

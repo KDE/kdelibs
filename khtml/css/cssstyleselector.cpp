@@ -74,7 +74,7 @@ CSSStyleSelector::CSSStyleSelector(HTMLDocumentImpl *doc)
     authorStyle = new CSSStyleSelectorList();
     // ### go through DOM tree for style elements
 
-    NodeImpl *test = doc->firstChild(); // should be html element
+    NodeImpl *test = doc->html(); // should be html element
     if(!test) return;
     test = test->firstChild();
     if(!test) return;
