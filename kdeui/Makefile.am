@@ -133,7 +133,7 @@ libkdeui_la_NMCHECKWEAK = $(srcdir)/libkdeui_weak.nmcheck $(top_srcdir)/kdecore/
 rcdir = $(kde_confdir)/ui
 rc_DATA = ui_standards.rc
 
-EXTRA_DIST = CHANGES.kdatepicker USERS.kdatepicker kpixmapio-perf.png dcolorreset.xpm kpartgui.dtd dcolorarrow.xbm
+EXTRA_DIST = CHANGES.kdatepicker USERS.kdatepicker kpixmapio-perf.png dcolorreset.xpm kpartgui.dtd dcolorarrow.xbm colors
 
 kdepackages:
 	-rm $(srcdir)/kdepackages.h
