@@ -223,7 +223,7 @@ bool KHTMLPart::openURL( const KURL &url )
 {
   static QString http_protocol = QString::fromLatin1( "http" );
 
-  if ( d->m_frames.count() > 0 && urlcmp( url.url(), m_url.url(), true, true ) && d->m_extension->urlArgs().postData.size() == 0 )
+  if ( d->m_frames.count() == 0 && urlcmp( url.url(), m_url.url(), true, true ) && d->m_extension->urlArgs().postData.size() == 0 )
   {
     m_url = url;
     emit started( 0L );
@@ -1045,7 +1045,7 @@ void KHTMLPart::childRequest( khtml::RenderFrame *frame, const QString &url, con
   childRequest( &it.data(), completeURL( url ) );
 }
 
-void KHTMLPart::childRequest( khtml::ChildFrame *child, const KURL &url, const KParts::URLArgs &args )
+void KHTMLPart::childRequest( khtml::ChildFrame *child, const KURL &url, const KParts::URLArgs &_args )
 {
   if ( child->m_bPreloaded )
   {
@@ -1056,11 +1056,16 @@ void KHTMLPart::childRequest( khtml::ChildFrame *child, const KURL &url, const K
     return;
   }
 
-  child->m_args = args;
-
+  KParts::URLArgs args( _args );
+  
   if ( child->m_run )
     delete (KHTMLRun *)child->m_run;
 
+  if ( child->m_part && !args.reload && urlcmp( child->m_part->url().url(), url.url(), true, true ) )
+    args.serviceType = child->m_serviceType;
+  
+  child->m_args = args;
+  
   if ( args.serviceType.isEmpty() )
     child->m_run = new KHTMLRun( this, child, url );
   else
@@ -1459,7 +1464,8 @@ void KHTMLPart::restoreState( QDataStream &stream )
   }
   else
   {
-    clear();
+    if ( !urlcmp( u.url(), m_url.url(), true, true ) )
+      clear();
 
     QStringList::ConstIterator fNameIt = frameNames.begin();
     QStringList::ConstIterator fNameEnd = frameNames.end();

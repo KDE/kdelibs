@@ -293,8 +293,8 @@ void KHTMLView::layout(bool force)
 	    printf("TIME: layout() dt=%d\n",qt.elapsed());
 
 	    viewport()->repaint(false);
-	} 
-	else 
+	}
+	else
 	{
 	    document->renderer()->layout(false);
 	    viewport()->repaint(false);
@@ -386,6 +386,12 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
     if( _mouse->button() == RightButton )
     {
 	m_part->popupMenu( m_strSelectedURL );
+    }
+    else if ( _mouse->button() == MidButton )
+    {
+      KURL u( m_part->url(), m_strSelectedURL );
+      if ( !u.isMalformed() )
+        emit m_part->browserExtension()->createNewWindow( u );
     }
 }
 
