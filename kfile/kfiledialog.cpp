@@ -466,7 +466,7 @@ void KFileBaseDialog::setDir(const QString& _pathstr, bool clearforward)
     QString pathstr = _pathstr;
 
     if (pathstr.isEmpty() || pathstr.at(pathstr.length() - 1) != '/')
-	pathstr += "/";
+	pathstr += '/';
 
     if (pathstr.at(0) == '/')
 	pathstr.insert(0, "file:");
@@ -483,15 +483,16 @@ void KFileBaseDialog::setDir(const QString& _pathstr, bool clearforward)
 
     // make a little test to avoid creating of a KURL object
     // in most cases
-    if ( !acceptUrls && strchr(_pathstr.ascii(), ':') ) {
+    if ( !acceptUrls && _pathstr.find(':') != -1 ) {
 	KURL testURL(pathstr);
 	if ( !testURL.isLocalFile() ) {
-	    QMessageBox::message(i18n("Error: Not local file"),
+	    QMessageBox::critical(this,
+				 i18n("Error: Not local file"),
 				 i18n("The specified directory is not a "
 				      "local directory\n"
 				      "But the application accepts just "
 				      "local files."),
-				 i18n("OK"), this);
+				 i18n("OK"));
 	    return;
 	}
     }
@@ -501,11 +502,11 @@ void KFileBaseDialog::setDir(const QString& _pathstr, bool clearforward)
     dir->setPath(pathstr);
 
     if (!dir->isReadable()) {
-	QMessageBox::message(i18n("Error: Cannot Open Directory"),
+	QMessageBox::critical(this,
+			     i18n("Error: Cannot Open Directory"),
 			     i18n("The specified directory does not exist\n"
 				  "or was not readable."),
-			     i18n("Dismiss"),
-			     this, "kfiledlgmsg");
+			     i18n("Dismiss"));
 	dir->setPath(backup);
     } else {
 
@@ -613,11 +614,11 @@ void KFileBaseDialog::pathChanged()
 				QDir::Name | QDir::IgnoreCase);
 
     if (!dir->isReadable()) {
-	QMessageBox::message(i18n("Error: Cannot Open Directory"),
+	QMessageBox::critical(this,
+			     i18n("Error: Cannot Open Directory"),
 			     i18n("The specified directory does not exist "
 				  "or was not readable."),
-			     i18n("Dismiss"),
-			     this, "kfiledlgmsg");
+			     i18n("Dismiss"));
 	if (backStack.isEmpty())
 	    home();
 	else
