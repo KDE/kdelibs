@@ -1,6 +1,6 @@
 /*
     This file is part of the KDE libraries
-    Copyright (C) 1998 Sven Radej (sven@lisa.exp.univie.ac.at)
+    Copyright (C) 1998 Sven Radej (radej@kde.org)
               
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -33,6 +33,9 @@
 
  // $Id$
  // $Log$
+ // Revision 1.4  1998/07/29 12:48:31  ssk
+ // Removed more warnings, possible portability problems and ANSI violations.
+ //
  // Revision 1.3  1998/05/07 16:50:42  radej
  // Docs update: you don't get mouseRelease
  //
@@ -76,10 +79,10 @@
   * receive signals, and Qt-engine will operate normally. Halting does not
   * hog CPU (it's not an empty for(;;) loop).
   *
-  * You will NOT receive mouseRelease event when mouse is released.
+  * You will not receive mouseRelease event when mouse is released. (uh.)
   *
   * @short Class for own window management.
-  * @author Sven Radej <sven@lisa.exp.univie.ac.at>
+  * @author Sven Radej <radej@kde.org>
   *
   */
 class KToolBoxManager : public QObject
@@ -140,13 +143,27 @@ public:
    * and do nothing.  When dynamic is true, signal @ref #sizeChanged is
    * emitted only when resizers changes size. You can resize the resizer
    * with @ref #setGeometry or @ref #resize .
+   * Note that (for know) KTBM can only resize on the right/bottom side of
+   * the widget.
+   *
    * @see #x
    * @see #y
    * @see #width
    * @see #height
    */
   void doResize(bool dynamic = false, bool dontresize=false);
+  /**
+   * Starts vertical only resizing. Arguments and behaviour are the same as
+   * in @ref #doMove .
+   */
+  void doXResize(bool dynamic = false, bool dontresize=false);
 
+  /**
+   * Starts horizontal only resizing. Arguments and behaviour are the same as
+   * in @ref #doMove .
+   */
+  void doYResize(bool dynamic = false, bool dontresize=false);
+  
   /**
    * Adds region x, y, w, h to the lists of hot spots, and returns
    * index of that hot spot. When resizer enters that hot spot, signal
@@ -281,6 +298,9 @@ private:
   int rx, ry, sx, sy;
   int offX, offY;
 
+  bool xOnly; // flags for only horizontal or... 
+  bool yOnly; //...only vertical resize
+  
   /* X-stuff */
 
   Window root;

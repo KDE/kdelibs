@@ -1,6 +1,6 @@
 /*
     This file is part of the KDE libraries
-    Copyright (C) 1998 Sven Radej (sven@lisa.exp.univie.ac.at)
+    Copyright (C) 1998 Sven Radej <radej@kde.org>
               
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -32,6 +32,9 @@
 
  // $Id$
  // $Log$
+ // Revision 1.10  1998/07/29 12:48:30  ssk
+ // Removed more warnings, possible portability problems and ANSI violations.
+ //
  // Revision 1.9  1998/06/18 09:15:01  radej
  // sven: made transparent resizer's lines thicker  (3.pts)
  //
@@ -87,6 +90,10 @@ KToolBoxManager::KToolBoxManager (QWidget *_widget, bool _transparent) : QObject
   
   //driver for mover and resizer
   timer = new QTimer(this);
+
+  yOnly = false;
+  xOnly = false;
+
 }
 
 KToolBoxManager::~KToolBoxManager ()
@@ -243,10 +250,41 @@ void KToolBoxManager::doMoveInternal()
     emit posChanged(xp, yp);
 }
 
+void KToolBoxManager::doXResize (bool _dontresize, bool _dynamic)
+{
+  if (working)
+    return;
+
+  yOnly = false;
+  xOnly = true;
+
+  doResize(_dontresize, _dynamic);
+
+  yOnly = false;
+  xOnly = false;
+
+}
+
+void KToolBoxManager::doYResize (bool _dontresize, bool _dynamic)
+{
+  if (working)
+    return;
+
+  yOnly = true;
+  xOnly = false;
+
+  doResize(_dontresize, _dynamic);
+
+  yOnly = false;
+  xOnly = false;
+
+}
+
 void KToolBoxManager::doResize (bool dontresize, bool _dynamic)
 {
   if (working)
     return;
+
 
   Window wroot, wchild;
   int trash;
@@ -307,9 +345,14 @@ void KToolBoxManager::doResizeInternal ()
     stop();
     return;
   }
-  
-  if (rx == sx && ry == sy)
-    return;
+
+
+  if (xOnly)
+    ry=sy;
+  else if (yOnly)
+    rx=sx;
+
+  if (rx == sx && ry == sy) return;
   
   w += rx-sx;
   h += ry-sy;
