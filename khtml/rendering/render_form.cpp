@@ -508,7 +508,7 @@ void RenderFileButton::slotClicked()
     QString file_name = KFileDialog::getOpenFileName(QString::null, QString::null, 0, i18n("Browse..."));
     if (!file_name.isNull()) {
 	// ### truncate if > maxLength
-	m_element->setAttribute(ATTR_VALUE,DOMString(file_name));
+	static_cast<HTMLInputElementImpl*>(m_element)->setFilename(DOMString(file_name));
 	m_edit->setText(file_name);
     }
 }
@@ -533,7 +533,7 @@ void RenderFileButton::layout( bool )
     } else
         s = QSize( w + 4, h + 4 );
 
-    m_edit->setText(input->value().string());
+    m_edit->setText(static_cast<HTMLInputElementImpl*>(m_element)->filename().string());
     m_edit->setMaxLength(input->maxLength());
 
     m_edit->setReadOnly(m_readonly);
@@ -547,12 +547,12 @@ void RenderFileButton::layout( bool )
 QString RenderFileButton::state()
 {
     // Make sure the string is not empty!
-    return static_cast<HTMLInputElementImpl*>(m_element)->value().string()+'.';
+    return static_cast<HTMLInputElementImpl*>(m_element)->filename().string()+'.';
 }
 
 void RenderFileButton::restoreState(const QString &state)
 {
-    m_element->setAttribute(ATTR_VALUE,DOMString(state.left(state.length()-1)));
+    static_cast<HTMLInputElementImpl*>(m_element)->setFilename(DOMString(state.left(state.length()-1)));
 }
 
 void RenderFileButton::slotReturnPressed()
@@ -563,7 +563,7 @@ void RenderFileButton::slotReturnPressed()
 
 void RenderFileButton::slotTextChanged(const QString &string)
 {
-    m_element->setAttribute(ATTR_VALUE,DOMString(string));
+    static_cast<HTMLInputElementImpl*>(m_element)->setFilename(DOMString(string));
 }
 
 // -------------------------------------------------------------------------

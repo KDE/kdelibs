@@ -232,6 +232,9 @@ public:
     DOMString value() const { return _value; }
     void setValue(DOMString val);
 
+    DOMString filename() const { return m_filename; }
+    void setFilename(DOMString _filename) { m_filename = _filename; }
+
     QString state();
 
     void blur();
@@ -258,6 +261,7 @@ protected:
     bool _clicked;
     DOMString _defaultValue;
     bool _defaultChecked;
+    DOMString m_filename;
 };
 
 // -------------------------------------------------------------------------

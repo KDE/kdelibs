@@ -510,8 +510,8 @@ void HTMLButtonElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_ONBLUR:
 	// ignore for the moment
 	break;
-    case ATTR_NAME:
-	// handled by parent...
+//    case ATTR_NAME:
+	// handled by parent class...
     default:
 	HTMLGenericFormElementImpl::parseAttribute(attr);
     }
@@ -559,6 +559,7 @@ HTMLInputElementImpl::HTMLInputElementImpl(DocumentImpl *doc)
     _maxLen = -1;
     _size = 20;
     _clicked = false;
+    m_filename = "";
 
     view = 0;
 }
@@ -571,6 +572,7 @@ HTMLInputElementImpl::HTMLInputElementImpl(DocumentImpl *doc, HTMLFormElementImp
     _maxLen = -1;
     _size = 20;
     _clicked = false;
+    m_filename = "";
 
     view = 0;
 }
@@ -698,8 +700,8 @@ void HTMLInputElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_ALIGN:
 	addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value(), false);
 	break;
-    case ATTR_NAME:
-	// handled by parent...
+//    case ATTR_NAME:
+	// handled by parent class...
     case ATTR_WIDTH:
 	addCSSProperty(CSS_PROP_WIDTH, attr->value(), false);
 	break;
@@ -807,6 +809,7 @@ void HTMLInputElementImpl::attach(KHTMLView *_view)
 
 QCString HTMLInputElementImpl::encoding()
 {
+    cerr << "HTMLInputElementImpl::encoding()\n";
     QCString encoding = "";
     if (_name.isEmpty()) return encoding;
     switch (_type) {
@@ -862,11 +865,11 @@ QCString HTMLInputElementImpl::encoding()
 //	    m_value = m_edit->text();
 
 	    if ( _form->enctype() == "application/x-www-form-urlencoded" )
-		encoding = encodeString( _name.string() ) + '=' + encodeString( _value.string() );
+		encoding = encodeString( _name.string() ) + '=' + encodeString( m_filename.string() );
 	    else
 	    {
 		QString local;
-		if ( !KIO::NetAccess::download(KURL(_value.string()), local) );
+		if ( !KIO::NetAccess::download(KURL(m_filename.string()), local) );
 		{
 		    QFile file(local);
 		    if (file.open(IO_ReadOnly))
@@ -888,6 +891,7 @@ QCString HTMLInputElementImpl::encoding()
 	default:
 	break;
     }
+    cerr << "HTMLInputElementImpl::encoding(): returning \"" << encoding << "\"\n";
     return encoding;
 }
 
@@ -918,11 +922,13 @@ void HTMLInputElementImpl::setValue(DOMString val)
 {
     switch (_type) {
 	case TEXT:
-	case FILE:
 	case PASSWORD:
 	    _value = val;
 	    setChanged(true);
 	    break;
+	case FILE:
+	    // sorry, can't change this!
+	    _value = m_filename;
 	default:
 	    setAttribute(ATTR_VALUE,val);
     }
@@ -1114,8 +1120,8 @@ void HTMLSelectElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_ONCHANGE:
 	// ###
 	break;
-    case ATTR_NAME:
-	// handled by parent... ### - is this correct ?
+//    case ATTR_NAME:
+	// handled by parent class...
     default:
 	HTMLGenericFormElementImpl::parseAttribute(attr);
     }
@@ -1148,7 +1154,7 @@ void HTMLSelectElementImpl::attach(KHTMLView *_view)
 QCString HTMLSelectElementImpl::encoding()
 {
     // ### move encoding stuff for selects to here
-    if (!m_render) return "";
+    if (!m_render || _name.isEmpty()) return "";
     return static_cast<RenderSelect*>(m_render)->encoding();
 }
 
@@ -1374,8 +1380,8 @@ void HTMLTextAreaElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_ONCHANGE:
 	// no need to parse
 	break;
-    case ATTR_NAME:
-	// handled by parent...
+//    case ATTR_NAME:
+	// handled by parent class...
     default:
 	HTMLGenericFormElementImpl::parseAttribute(attr);
     }
