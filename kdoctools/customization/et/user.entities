@@ -6,3 +6,13 @@
      names (which if they occur will cost you a _lot_ of time)
  -->
 
+<!ENTITY Alt         "<keycap>Alt</keycap>">
+<!ENTITY Shift       "<keycap>Shift</keycap>">
+<!ENTITY Backspace   "<keycap>Backspace</keycap>">
+<!ENTITY Ctrl        "<keycap>Ctrl</keycap>">
+<!ENTITY Esc         "<keycap>Esc</keycap>">
+
+<!ENTITY LMB         "hiire <mousebutton>vasak</mousebutton> nupp">
+<!ENTITY MMB         "hiire <mousebutton>keskmine</mousebutton> nupp">
+<!ENTITY RMB         "hiire <mousebutton>parem</mousebutton> nupp">
+
