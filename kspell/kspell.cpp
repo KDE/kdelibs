@@ -668,13 +668,14 @@ int KSpell::parseOneResponse (const QString &buffer, QString &word, QStringList 
   return MISTAKE;
 }
 
-bool KSpell::checkList (QStringList *_wordlist, bool /*_usedialog not implemented yet*/)
+bool KSpell::checkList (QStringList *_wordlist, bool _usedialog)
   // prepare check of string list
 {
   wordlist=_wordlist;
   if ((totalpos=wordlist->count())==0)
     return FALSE;
   wlIt = wordlist->begin();
+  usedialog=_usedialog;
 
   // prepare the dialog
   setUpDialog();
@@ -846,6 +847,7 @@ bool KSpell::check( const QString &_buffer, bool _usedialog )
 {
   QString qs;
 
+  usedialog=_usedialog;
   setUpDialog ();
   //set the dialog signal handler
   dialog3slot = SLOT (check3 ());
@@ -890,7 +892,7 @@ bool KSpell::check( const QString &_buffer, bool _usedialog )
 
   lastline=i; //the character position, not a line number
 
-  if (_usedialog)
+  if (usedialog)
     {
       emitProgress();
       ksdlg->show();
@@ -949,9 +951,15 @@ void KSpell::check2 (KProcIO *)
 		{
 		  cwword=word;
 		  //kdDebug(750) << "(Before dialog) word=[" << word << "] cwword =[" << cwword << "]\n" << endl;
-
-		  // show the word in the dialog
-		  dialog (word, sugg, SLOT (check3()));
+                  if ( usedialog ) {
+                      // show the word in the dialog
+                      dialog (word, sugg, SLOT (check3()));
+                  } else {
+                      // No dialog, just emit misspelling and continue
+                      emit misspelling (word, sugg, lastpos);
+                      dlgresult = KS_IGNORE;
+                      check3();
+                  }
 		  return;
 		}
 	    }
