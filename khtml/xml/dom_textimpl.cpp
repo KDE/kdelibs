@@ -70,10 +70,11 @@ unsigned long CharacterDataImpl::length() const
     return str->l;
 }
 
-DOMString CharacterDataImpl::substringData( const unsigned long /*offset*/, const unsigned long /*count*/ )
+DOMString CharacterDataImpl::substringData( const unsigned long offset, const unsigned long count )
 {
-    // ###
-    return 0;
+    if (offset+count > str->l)
+	throw DOMException(DOMException::INDEX_SIZE_ERR);
+    return str->substring(offset,count);
 }
 
 void CharacterDataImpl::appendData( const DOMString &arg )

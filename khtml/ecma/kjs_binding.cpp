@@ -28,6 +28,7 @@
 #include <html_inline.h>
 #include <html_image.h>
 #include <dom_string.h>
+#include <dom_exception.h>
 
 #include "kjs_binding.h"
 #include "kjs_html.h"
@@ -77,6 +78,52 @@ extern "C" {
     delete script;
   }
 };
+
+KJSO DOMObject::get(const UString &p) const
+{
+  KJSO result;
+  try {
+    result = tryGet(p);
+  }
+  catch (DOM::DOMException e) {
+    result = Undefined();
+  }
+  return result;
+}
+
+void DOMObject::put(const UString &p, const KJSO& v)
+{
+  try {
+    tryPut(p,v);
+  }
+  catch (DOM::DOMException e) {
+  }
+}
+
+KJSO DOMFunction::get(const UString &p) const
+{
+  KJSO result;
+  try {
+    result = tryGet(p);
+  }
+  catch (DOM::DOMException e) {
+    result = Undefined();
+  }
+  return result;
+}
+
+Completion DOMFunction::execute(const List &args)
+{
+  Completion completion;
+  try {
+    completion = tryExecute(args);
+  }
+  catch (DOM::DOMException e) {
+    completion = Completion(Normal,Undefined());
+  }
+  return completion;
+}
+
 
 UString::UString(const DOM::DOMString &d)
 {

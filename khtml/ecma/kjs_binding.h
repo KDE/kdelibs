@@ -21,16 +21,39 @@
 #define _KJS_BINDING_H_
 
 #include <kjs/object.h>
+#include <kjs/function.h>
 #include <dom/dom_node.h>
 
 namespace KJS {
+
+  /** Base class for all objects in this binding - get() and put() run
+      tryGet() and tryPut() respectively, and catch exceptions if they
+      occur. */
+  class DOMObject : public HostImp {
+  public:
+    KJSO get(const UString &p) const;
+    virtual KJSO tryGet(const UString &p) const { return HostImp::get(p); }
+    void put(const UString &p, const KJSO& v);
+    virtual void tryPut(const UString &p, const KJSO& v) { HostImp::put(p,v); }
+  };
+
+  /** Base class for all functions in this binding - get() and execute() run
+      tryGet() and tryExecute() respectively, and catch exceptions if they
+      occur. */
+  class DOMFunction : public InternalFunctionImp {
+  public:
+    KJSO get(const UString &p) const;
+    virtual KJSO tryGet(const UString &p) const { return InternalFunctionImp::get(p); }
+    Completion execute(const List &);
+    virtual Completion tryExecute(const List &args) { return InternalFunctionImp::execute(args); }
+  };
 
   /**
    * Abstract base class for DOM objects that derive from Node.
    * Derived classes must implement the toNode() method to allow
    * dynamic type casting.
    */
-  class NodeObject : public HostImp {
+  class NodeObject : public DOMObject {
   public:
     virtual DOM::Node toNode() const = 0;
   };

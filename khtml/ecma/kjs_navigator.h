@@ -22,14 +22,16 @@
 
 #include <kjs/object.h>
 
+#include "kjs_binding.h"
+
 class KHTMLView;
 
 namespace KJS {
 
-  class Navigator : public HostImp {
+  class Navigator : public DOMObject {
   public:
     Navigator() { }
-    virtual KJSO get(const UString &p) const;
+    virtual KJSO tryGet(const UString &p) const;
   };
 }; // namespace
 

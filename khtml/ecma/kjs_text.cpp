@@ -21,6 +21,7 @@
 
 #include <kjs/operations.h>
 #include <dom_string.h>
+#include <dom_exception.h>
 
 #include "kjs_dom.h"
 #include "kjs_text.h"
@@ -30,7 +31,7 @@ using namespace KJS;
 const TypeInfo DOMCharacterData::info = { "CharacterImp", HostType,
 					  &DOMNode::info, 0, 0 };
 
-KJSO DOMCharacterData::get(const UString &p) const
+KJSO DOMCharacterData::tryGet(const UString &p) const
 {
   if (p == "data")
     return String(data.data());
@@ -52,7 +53,7 @@ KJSO DOMCharacterData::get(const UString &p) const
   }
 }
 
-void DOMCharacterData::put(const UString &p, const KJSO& v)
+void DOMCharacterData::tryPut(const UString &p, const KJSO& v)
 {
   if (p == "data")
     data.setData(v.toString().value().string());
@@ -67,7 +68,7 @@ DOMCharacterDataFunction::DOMCharacterDataFunction(DOM::CharacterData d, int i)
 {
 }
 
-Completion DOMCharacterDataFunction::execute(const List &args)
+Completion DOMCharacterDataFunction::tryExecute(const List &args)
 {
   KJSO result;
 
@@ -102,7 +103,7 @@ Completion DOMCharacterDataFunction::execute(const List &args)
 const TypeInfo DOMText::info = { "Text", HostType,
 				 &DOMCharacterData::info, 0, 0 };
 
-KJSO DOMText::get(const UString &p) const
+KJSO DOMText::tryGet(const UString &p) const
 {
   if (p == "")
     return Undefined(); // TODO
@@ -120,13 +121,13 @@ DOMTextFunction::DOMTextFunction(DOM::Text t, int i)
 {
 }
 
-Completion DOMTextFunction::execute(const List &args)
+Completion DOMTextFunction::tryExecute(const List &args)
 {
   KJSO result;
 
   switch(id) {
     case SplitText:
-      return new DOMText(text.splitText(args[0].toNumber().intValue()));
+      result = DOMNode::getDOMNode(text.splitText(args[0].toNumber().intValue()));
       break;
     default:
       result = Undefined();

@@ -81,7 +81,7 @@ class Attr : public Node
 
 public:
     Attr();
-    Attr(const Node &other)
+    Attr(const Node &other) : Node()
         {(*this)=other;}
     Attr(const Attr &other);
 

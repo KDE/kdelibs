@@ -35,8 +35,8 @@ namespace KJS {
   class DOMNode : public NodeObject {
   public:
     DOMNode(DOM::Node n) : node(n) { }
-    virtual KJSO get(const UString &p) const;
-    virtual void put(const UString &p, const KJSO& v);
+    virtual KJSO tryGet(const UString &p) const;
+    virtual void tryPut(const UString &p, const KJSO& v);
     virtual DOM::Node toNode() const { return node; }
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
@@ -45,11 +45,11 @@ namespace KJS {
     DOM::Node node;
   };
 
-  class DOMNodeFunc : public InternalFunctionImp {
+  class DOMNodeFunc : public DOMFunction {
     friend DOMNode;
   public:
     DOMNodeFunc(DOM::Node n, int i) : node(n), id(i) { }
-    Completion execute(const List &);
+    Completion tryExecute(const List &);
     enum { InsertBefore, ReplaceChild, RemoveChild, AppendChild,
 	   HasChildNodes, CloneNode };
   private:
@@ -57,10 +57,10 @@ namespace KJS {
     int id;
   };
 
-  class DOMNodeList : public HostImp {
+  class DOMNodeList : public DOMObject {
   public:
     DOMNodeList(DOM::NodeList l) : list(l) { }
-    virtual KJSO get(const UString &p) const;
+    virtual KJSO tryGet(const UString &p) const;
     // no put - all read-only
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
@@ -68,11 +68,11 @@ namespace KJS {
     DOM::NodeList list;
   };
 
-  class DOMNodeListFunc : public InternalFunctionImp {
+  class DOMNodeListFunc : public DOMFunction {
     friend DOMNodeList;
   public:
     DOMNodeListFunc(DOM::NodeList l, int i) : list(l), id(i) { }
-    Completion execute(const List &);
+    Completion tryExecute(const List &);
     enum { Item };
   private:
     DOM::NodeList list;
@@ -82,7 +82,7 @@ namespace KJS {
   class DOMDocument : public NodeObject {
   public:
     DOMDocument(DOM::Document d) : doc(d) { }
-    virtual KJSO get(const UString &p) const;
+    virtual KJSO tryGet(const UString &p) const;
     virtual DOM::Node toNode() const { return doc; }
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
@@ -90,10 +90,10 @@ namespace KJS {
     DOM::Document doc;
   };
 
-  class DOMDocFunction : public InternalFunctionImp {
+  class DOMDocFunction : public DOMFunction {
   public:
     DOMDocFunction(DOM::Document d, int i);
-    Completion execute(const List &);
+    Completion tryExecute(const List &);
     enum { CreateElement, CreateDocumentFragment, CreateTextNode,
 	   CreateComment, CreateCDATASection, CreateProcessingInstruction,
 	   CreateAttribute, CreateEntityReference, GetElementsByTagName,
@@ -106,8 +106,8 @@ namespace KJS {
   class DOMAttr : public NodeObject {
   public:
     DOMAttr(DOM::Attr a) : attr(a) { }
-    virtual KJSO get(const UString &p) const;
-    virtual void put(const UString &p, const KJSO& v);
+    virtual KJSO tryGet(const UString &p) const;
+    virtual void tryPut(const UString &p, const KJSO& v);
     virtual DOM::Node toNode() const { return attr; }
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
@@ -118,7 +118,7 @@ namespace KJS {
   class DOMElement : public NodeObject {
   public:
     DOMElement(DOM::Element e) : element(e) { }
-    virtual KJSO get(const UString &p) const;
+    virtual KJSO tryGet(const UString &p) const;
     // no put - all read-only
     virtual DOM::Node toNode() const { return element; }
     virtual const TypeInfo* typeInfo() const { return &info; }
@@ -127,10 +127,10 @@ namespace KJS {
     DOM::Element element;
   };
 
-  class DOMElementFunction : public InternalFunctionImp {
+  class DOMElementFunction : public DOMFunction {
   public:
     DOMElementFunction(DOM::Element e, int i);
-    Completion execute(const List &);
+    Completion tryExecute(const List &);
     enum { GetAttribute, SetAttribute, RemoveAttribute, GetAttributeNode,
            SetAttributeNode, RemoveAttributeNode, GetElementsByTagName,
            GetAttributeNS, SetAttributeNS, RemoveAttributeNS, GetAttributeNodeNS,
@@ -140,10 +140,10 @@ namespace KJS {
     int id;
   };
 
-  class DOMDOMImplementation : public HostImp {
+  class DOMDOMImplementation : public DOMObject {
   public:
     DOMDOMImplementation(DOM::DOMImplementation i) : implementation(i) { }
-    virtual KJSO get(const UString &p) const;
+    virtual KJSO tryGet(const UString &p) const;
     // no put - all functions
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
@@ -151,10 +151,10 @@ namespace KJS {
     DOM::DOMImplementation implementation;
   };
 
-  class DOMDOMImplementationFunction : public InternalFunctionImp {
+  class DOMDOMImplementationFunction : public DOMFunction {
   public:
     DOMDOMImplementationFunction(DOM::DOMImplementation impl, int i);
-    Completion execute(const List &);
+    Completion tryExecute(const List &);
     enum { HasFeature, CreateDocumentType, CreateDocument };
   private:
     DOM::DOMImplementation implementation;
@@ -164,7 +164,7 @@ namespace KJS {
   class DOMDocumentType : public NodeObject {
   public:
     DOMDocumentType(DOM::DocumentType dt) : type(dt) { }
-    virtual KJSO get(const UString &p) const;
+    virtual KJSO tryGet(const UString &p) const;
     // no put - all read-only
     virtual DOM::Node toNode() const { return type; }
     virtual const TypeInfo* typeInfo() const { return &info; }
@@ -173,10 +173,10 @@ namespace KJS {
     DOM::DocumentType type;
   };
 
-  class DOMNamedNodeMap : public HostImp {
+  class DOMNamedNodeMap : public DOMObject {
   public:
     DOMNamedNodeMap(DOM::NamedNodeMap m) : map(m) { }
-    virtual KJSO get(const UString &p) const;
+    virtual KJSO tryGet(const UString &p) const;
     // no put - all read-only
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
@@ -184,10 +184,10 @@ namespace KJS {
     DOM::NamedNodeMap map;
   };
 
-  class DOMNamedNodeMapFunction : public InternalFunctionImp {
+  class DOMNamedNodeMapFunction : public DOMFunction {
   public:
     DOMNamedNodeMapFunction(DOM::NamedNodeMap m, int i);
-    Completion execute(const List &);
+    Completion tryExecute(const List &);
     enum { GetNamedItem, SetNamedItem, RemoveNamedItem, Item,
            GetNamedItemNS, SetNamedItemNS, RemoveNamedItemNS };
   private:
@@ -198,8 +198,8 @@ namespace KJS {
   class DOMProcessingInstruction : public NodeObject {
   public:
     DOMProcessingInstruction(DOM::ProcessingInstruction pi) : instruction(pi) { }
-    virtual KJSO get(const UString &p) const;
-    virtual void put(const UString &p, const KJSO& v);
+    virtual KJSO tryGet(const UString &p) const;
+    virtual void tryPut(const UString &p, const KJSO& v);
     virtual DOM::Node toNode() const { return instruction; }
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
@@ -210,7 +210,7 @@ namespace KJS {
   class DOMNotation : public NodeObject {
   public:
     DOMNotation(DOM::Notation n) : notation(n) { }
-    virtual KJSO get(const UString &p) const;
+    virtual KJSO tryGet(const UString &p) const;
     // no put - all read-only
     virtual DOM::Node toNode() const { return notation; }
     virtual const TypeInfo* typeInfo() const { return &info; }
@@ -222,7 +222,7 @@ namespace KJS {
   class DOMEntity : public NodeObject {
   public:
     DOMEntity(DOM::Entity e) : entity(e) { }
-    virtual KJSO get(const UString &p) const;
+    virtual KJSO tryGet(const UString &p) const;
     // no put - all read-only
     virtual DOM::Node toNode() const { return entity; }
     virtual const TypeInfo* typeInfo() const { return &info; }

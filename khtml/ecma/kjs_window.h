@@ -23,23 +23,25 @@
 #include <kjs/object.h>
 #include <kjs/function.h>
 
+#include "kjs_binding.h"
+
 class KHTMLView;
 
 namespace KJS {
 
-  class Window : public HostImp {
+  class Window : public DOMObject {
   public:
     Window(KHTMLView *w) : widget(w) { }
-    virtual KJSO get(const UString &p) const;
-    virtual void put(const UString &p, const KJSO& v);
+    virtual KJSO tryGet(const UString &p) const;
+    virtual void tryPut(const UString &p, const KJSO& v);
   private:
     KHTMLView *widget;
   };
 
-  class WindowFunc : public InternalFunctionImp {
+  class WindowFunc : public DOMFunction {
   public:
     WindowFunc(KHTMLView *w, int i) : widget(w), id(i) { };
-    Completion execute(const List &);
+    Completion tryExecute(const List &);
     enum { Alert, Confirm, Open };
   private:
     KHTMLView *widget;

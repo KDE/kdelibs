@@ -41,7 +41,7 @@
 
 using namespace KJS;
 
-KJSO KJS::HTMLDocFunction::get(const UString &p) const
+KJSO KJS::HTMLDocFunction::tryGet(const UString &p) const
 {
   DOM::HTMLCollection coll;
 
@@ -70,7 +70,7 @@ KJSO KJS::HTMLDocFunction::get(const UString &p) const
   return tmp.get(p);
 }
 
-Completion KJS::HTMLDocFunction::execute(const List &args)
+Completion KJS::HTMLDocFunction::tryExecute(const List &args)
 {
   KJSO result;
   String s;
@@ -136,7 +136,7 @@ Completion KJS::HTMLDocFunction::execute(const List &args)
 const TypeInfo KJS::HTMLDocument::info = { "HTMLDocument", HostType,
 					   &DOMDocument::info, 0, 0 };
 
-KJSO KJS::HTMLDocument::get(const UString &p) const
+KJSO KJS::HTMLDocument::tryGet(const UString &p) const
 {
   KJSO result;
 
@@ -191,7 +191,7 @@ KJSO KJS::HTMLDocument::get(const UString &p) const
   return result;
 }
 
-void KJS::HTMLDocument::put(const UString &p, const KJSO& v)
+void KJS::HTMLDocument::tryPut(const UString &p, const KJSO& v)
 {
   if (p == "title")
     doc.setTitle(v.toString().value().string());
@@ -208,7 +208,7 @@ void KJS::HTMLDocument::put(const UString &p, const KJSO& v)
 const TypeInfo KJS::HTMLElement::info = { "HTMLElement", HostType,
 					  &DOMElement::info, 0, 0 };
 
-KJSO KJS::HTMLElement::get(const UString &p) const
+KJSO KJS::HTMLElement::tryGet(const UString &p) const
 {
   DOM::DOMString str;
 
@@ -760,7 +760,7 @@ KJSO KJS::HTMLElement::get(const UString &p) const
   return String(str);
 }
 
-Completion KJS::HTMLElementFunction::execute(const List &args)
+Completion KJS::HTMLElementFunction::tryExecute(const List &args)
 {
   KJSO result;
 
@@ -900,7 +900,7 @@ Completion KJS::HTMLElementFunction::execute(const List &args)
   return Completion(Normal, result);
 }
 
-void KJS::HTMLElement::put(const UString &p, const KJSO& v)
+void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
 {
   DOM::DOMString str = v.toString().value().string();
   DOM::Node n = DOMNode(KJS::toNode(v)).toNode();
@@ -1423,7 +1423,7 @@ void KJS::HTMLElement::put(const UString &p, const KJSO& v)
   }
 }
 
-KJSO KJS::HTMLCollection::get(const UString &p) const
+KJSO KJS::HTMLCollection::tryGet(const UString &p) const
 {
   KJSO result;
 
@@ -1452,7 +1452,7 @@ KJSO KJS::HTMLCollection::get(const UString &p) const
   return result;
 }
 
-Completion KJS::HTMLCollectionFunc::execute(const List &args)
+Completion KJS::HTMLCollectionFunc::tryExecute(const List &args)
 {
   KJSO result;
 
@@ -1481,7 +1481,7 @@ ImageObject::ImageObject(const Global& global)
   put("length", Number(2), DontEnum);
 }
 
-Completion ImageObject::execute(const List &)
+Completion ImageObject::tryExecute(const List &)
 {
   return Completion(Normal, Undefined());
 }
@@ -1502,7 +1502,7 @@ Object ImageConstructor::construct(const List &)
   return result;
 }
 
-KJSO Image::get(const UString &p) const
+KJSO Image::tryGet(const UString &p) const
 {
   KJSO result;
 
@@ -1514,7 +1514,7 @@ KJSO Image::get(const UString &p) const
   return result;
 }
 
-void Image::put(const UString &p, const KJSO& v)
+void Image::tryPut(const UString &p, const KJSO& v)
 {
   if (p == "src") {
     String str = v.toString();

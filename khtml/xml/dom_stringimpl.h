@@ -44,6 +44,7 @@ public:
     void remove(uint pos, int len=1);
     DOMStringImpl *split(uint pos);
     DOMStringImpl *copy() const;
+    DOMStringImpl *substring(uint pos, uint len);
 
     const QChar &operator [] (int pos)
 	{ return *(s+pos); }

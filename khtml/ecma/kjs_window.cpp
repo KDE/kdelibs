@@ -30,7 +30,7 @@
 
 using namespace KJS;
 
-KJSO Window::get(const UString &p) const
+KJSO Window::tryGet(const UString &p) const
 {
   if (p == "alert")
     return Function(new WindowFunc(widget, WindowFunc::Alert));
@@ -42,11 +42,11 @@ KJSO Window::get(const UString &p) const
   return Undefined();
 }
 
-void Window::put(const UString &, const KJSO&)
+void Window::tryPut(const UString &, const KJSO&)
 {
 }
 
-Completion WindowFunc::execute(const List &args)
+Completion WindowFunc::tryExecute(const List &args)
 {
   KJSO result;
   QString str;

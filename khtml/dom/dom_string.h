@@ -84,7 +84,7 @@ public:
      */
     const QChar &operator [](unsigned int i) const;
 
-    int find(const QChar c, int start = 0);
+    int find(const QChar c, int start = 0) const;
 
     uint length() const;
     void truncate( unsigned int len );
@@ -102,8 +102,8 @@ public:
 
     DOMString copy() const;
 
-    bool isNull() { return (impl == 0); }
-    bool isEmpty();
+    bool isNull()  const { return (impl == 0); }
+    bool isEmpty()  const;
 
     /**
      * @internal get a handle to the imlementation of the DOMString

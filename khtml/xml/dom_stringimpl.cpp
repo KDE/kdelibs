@@ -120,6 +120,18 @@ DOMStringImpl *DOMStringImpl::copy() const
     return new DOMStringImpl(c, l);
 }
 
+DOMStringImpl *DOMStringImpl::substring(uint pos, uint len)
+{
+  if( pos >=l ) return new DOMStringImpl();
+  if(pos+len > l)
+    len = l - pos;
+
+  QChar *c = QT_ALLOC_QCHAR_VEC(len);
+  memcpy(c, s+pos, len*sizeof(QChar));
+
+  return new DOMStringImpl(c, len);
+}
+
 static Length parseLength(QChar *s, unsigned int l)
 {
     const QChar* last = s+l-1;

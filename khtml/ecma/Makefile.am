@@ -21,6 +21,8 @@ INCLUDES = -I$(top_srcdir) \
  -I$(top_srcdir)/khtml/dom -I$(top_srcdir)/khtml/xml -I$(top_srcdir)/khtml/html \
  $(all_includes)
 
+KDE_CXXFLAGS = $(USE_EXCEPTIONS)
+
 lib_LTLIBRARIES = kjs_html.la
 
 noinst_HEADERS = kjs_html.h kjs_dom.h kjs_window.h kjs_navigator.h \

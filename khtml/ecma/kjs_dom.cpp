@@ -29,7 +29,7 @@ using namespace KJS;
 
 const TypeInfo DOMNode::info = { "Node", HostType, 0, 0, 0 };
 
-KJSO DOMNode::get(const UString &p) const
+KJSO DOMNode::tryGet(const UString &p) const
 {
   KJSO result;
 
@@ -84,7 +84,7 @@ KJSO DOMNode::get(const UString &p) const
   return result;
 }
 
-void DOMNode::put(const UString &p, const KJSO& v)
+void DOMNode::tryPut(const UString &p, const KJSO& v)
 {
   if (p == "nodeValue") {
     node.setNodeValue(v.toString().value().string());
@@ -115,7 +115,7 @@ KJSO DOMNode::getDOMNode(DOM::Node n)
 }
 
 
-Completion DOMNodeFunc::execute(const List &args)
+Completion DOMNodeFunc::tryExecute(const List &args)
 {
   KJSO result;
 
@@ -143,7 +143,7 @@ Completion DOMNodeFunc::execute(const List &args)
 
 const TypeInfo DOMNodeList::info = { "DOMNodeList", HostType, 0, 0, 0 };
 
-KJSO DOMNodeList::get(const UString &p) const
+KJSO DOMNodeList::tryGet(const UString &p) const
 {
   KJSO result;
 
@@ -158,7 +158,7 @@ KJSO DOMNodeList::get(const UString &p) const
   return result;
 }
 
-Completion DOMNodeListFunc::execute(const List &args)
+Completion DOMNodeListFunc::tryExecute(const List &args)
 {
   KJSO result;
 
@@ -169,7 +169,7 @@ Completion DOMNodeListFunc::execute(const List &args)
 
 const TypeInfo DOMAttr::info = { "Attr", HostType, &DOMNode::info, 0, 0 };
 
-KJSO DOMAttr::get(const UString &p) const
+KJSO DOMAttr::tryGet(const UString &p) const
 {
   KJSO result;
   if (p == "name") {
@@ -187,7 +187,7 @@ KJSO DOMAttr::get(const UString &p) const
   return result;
 }
 
-void DOMAttr::put(const UString &p, const KJSO& v)
+void DOMAttr::tryPut(const UString &p, const KJSO& v)
 {
   if (p == "value") {
     String s = v.toString();
@@ -201,7 +201,7 @@ void DOMAttr::put(const UString &p, const KJSO& v)
 const TypeInfo DOMDocument::info = { "Document", HostType,
 				     &DOMNode::info, 0, 0 };
 
-KJSO DOMDocument::get(const UString &p) const
+KJSO DOMDocument::tryGet(const UString &p) const
 {
   KJSO result;
 
@@ -254,7 +254,7 @@ DOMDocFunction::DOMDocFunction(DOM::Document d, int i)
 
 #include <html_document.h>
 
-Completion DOMDocFunction::execute(const List &args)
+Completion DOMDocFunction::tryExecute(const List &args)
 {
   KJSO result;
   String str = args[0].toString();
@@ -311,7 +311,7 @@ Completion DOMDocFunction::execute(const List &args)
 const TypeInfo DOMElement::info = { "Element", HostType,
 				    &DOMNode::info, 0, 0 };
 
-KJSO DOMElement::get(const UString &p) const
+KJSO DOMElement::tryGet(const UString &p) const
 {
   KJSO result;
 
@@ -361,7 +361,7 @@ DOMElementFunction::DOMElementFunction(DOM::Element e, int i)
 {
 }
 
-Completion DOMElementFunction::execute(const List &args)
+Completion DOMElementFunction::tryExecute(const List &args)
 {
   KJSO result;
 
@@ -406,7 +406,7 @@ Completion DOMElementFunction::execute(const List &args)
 
 const TypeInfo DOMDOMImplementation::info = { "DOMImplementation", HostType, 0, 0, 0 };
 
-KJSO DOMDOMImplementation::get(const UString &p) const
+KJSO DOMDOMImplementation::tryGet(const UString &p) const
 {
   if (p == "hasFeature")
     return new DOMDOMImplementationFunction(implementation, DOMDOMImplementationFunction::HasFeature);
@@ -423,7 +423,7 @@ DOMDOMImplementationFunction::DOMDOMImplementationFunction(DOM::DOMImplementatio
 {
 }
 
-Completion DOMDOMImplementationFunction::execute(const List &args)
+Completion DOMDOMImplementationFunction::tryExecute(const List &args)
 {
   KJSO result;
 
@@ -442,7 +442,7 @@ Completion DOMDOMImplementationFunction::execute(const List &args)
 
 const TypeInfo DOMDocumentType::info = { "DocumentType", HostType, &DOMNode::info, 0, 0 };
 
-KJSO DOMDocumentType::get(const UString &p) const
+KJSO DOMDocumentType::tryGet(const UString &p) const
 {
   KJSO result;
 
@@ -468,7 +468,7 @@ KJSO DOMDocumentType::get(const UString &p) const
 
 const TypeInfo DOMNamedNodeMap::info = { "NamedNodeMap", HostType, 0, 0, 0 };
 
-KJSO DOMNamedNodeMap::get(const UString &p) const
+KJSO DOMNamedNodeMap::tryGet(const UString &p) const
 {
   KJSO result;
 
@@ -500,7 +500,7 @@ DOMNamedNodeMapFunction::DOMNamedNodeMapFunction(DOM::NamedNodeMap m, int i)
 {
 }
 
-Completion DOMNamedNodeMapFunction::execute(const List &args)
+Completion DOMNamedNodeMapFunction::tryExecute(const List &args)
 {
   KJSO result;
 
@@ -530,7 +530,7 @@ Completion DOMNamedNodeMapFunction::execute(const List &args)
 
 const TypeInfo DOMProcessingInstruction::info = { "ProcessingInstruction", HostType, &DOMNode::info, 0, 0 };
 
-KJSO DOMProcessingInstruction::get(const UString &p) const
+KJSO DOMProcessingInstruction::tryGet(const UString &p) const
 {
   KJSO result;
   if (p == "target")
@@ -544,7 +544,7 @@ KJSO DOMProcessingInstruction::get(const UString &p) const
   return result;
 }
 
-void DOMProcessingInstruction::put(const UString &p, const KJSO& v)
+void DOMProcessingInstruction::tryPut(const UString &p, const KJSO& v)
 {
   if (p == "data")
     instruction.setData(v.toString().value().string());
@@ -556,7 +556,7 @@ void DOMProcessingInstruction::put(const UString &p, const KJSO& v)
 
 const TypeInfo DOMNotation::info = { "Notation", HostType, &DOMNode::info, 0, 0 };
 
-KJSO DOMNotation::get(const UString &p) const
+KJSO DOMNotation::tryGet(const UString &p) const
 {
   KJSO result;
 
@@ -574,7 +574,7 @@ KJSO DOMNotation::get(const UString &p) const
 
 const TypeInfo DOMEntity::info = { "Entity", HostType, &DOMNode::info, 0, 0 };
 
-KJSO DOMEntity::get(const UString &p) const
+KJSO DOMEntity::tryGet(const UString &p) const
 {
   KJSO result;
 

@@ -34,11 +34,11 @@ class HTMLCollection;
 
 namespace KJS {
 
-  class HTMLDocFunction : public InternalFunctionImp {
+  class HTMLDocFunction : public DOMFunction {
   public:
     HTMLDocFunction(DOM::HTMLDocument d, int i) : doc(d), id(i) { };
-    virtual KJSO get(const UString &p) const;
-    Completion execute(const List &);
+    virtual KJSO tryGet(const UString &p) const;
+    Completion tryExecute(const List &);
     enum { Images, Applets, Links, Forms, Anchors, Open, Close,
 	   Write, WriteLn, GetElementById, GetElementsByName };
   private:
@@ -49,8 +49,8 @@ namespace KJS {
   class HTMLDocument : public NodeObject {
   public:
     HTMLDocument(DOM::HTMLDocument d) : doc(d) { }
-    virtual KJSO get(const UString &p) const;
-    virtual void put(const UString &p, const KJSO& v);
+    virtual KJSO tryGet(const UString &p) const;
+    virtual void tryPut(const UString &p, const KJSO& v);
     virtual DOM::Node toNode() const { return doc; }
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
@@ -61,8 +61,8 @@ namespace KJS {
   class HTMLElement : public NodeObject {
   public:
     HTMLElement(DOM::HTMLElement e) : element(e) { }
-    virtual KJSO get(const UString &p) const;
-    virtual void put(const UString &p, const KJSO& v);
+    virtual KJSO tryGet(const UString &p) const;
+    virtual void tryPut(const UString &p, const KJSO& v);
     virtual DOM::Node toNode() const { return element; }
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
@@ -71,10 +71,10 @@ namespace KJS {
   };
 
 
-  class HTMLElementFunction : public InternalFunctionImp {
+  class HTMLElementFunction : public DOMFunction {
   public:
     HTMLElementFunction(DOM::HTMLElement e, int i) : element(e), id(i) { };
-    Completion execute(const List &);
+    Completion tryExecute(const List &);
     enum { Submit, Reset, Add, Remove, Blur, Focus, Select, Click,
            CreateTHead, DeleteTHead, CreateTFoot, DeleteTFoot,
            CreateCaption, DeleteCaption, InsertRow, DeleteRow,
@@ -84,18 +84,18 @@ namespace KJS {
     int id;
   };
 
-  class HTMLCollection : public HostImp {
+  class HTMLCollection : public DOMObject {
   public:
     HTMLCollection(DOM::HTMLCollection c) : collection(c) { }
-    virtual KJSO get(const UString &p) const;
+    virtual KJSO tryGet(const UString &p) const;
   private:
     DOM::HTMLCollection collection;
   };
 
-  class HTMLCollectionFunc : public InternalFunctionImp {
+  class HTMLCollectionFunc : public DOMFunction {
   public:
     HTMLCollectionFunc(DOM::HTMLCollection c, int i) : coll(c), id(i) { };
-    Completion execute(const List &);
+    Completion tryExecute(const List &);
     enum { Item, NamedItem };
   private:
     DOM::HTMLCollection coll;
@@ -104,10 +104,10 @@ namespace KJS {
 
   ////////////////////// Image Object ////////////////////////
 
-  class ImageObject : public InternalFunctionImp {
+  class ImageObject : public DOMFunction {
   public:
     ImageObject(const Global &global);
-    Completion execute(const List &);
+    Completion tryExecute(const List &);
   private:
     UString src;
   };
@@ -120,10 +120,10 @@ namespace KJS {
     Global global;
   };
 
-  class Image : public HostImp {
+  class Image : public DOMObject {
   public:
-    virtual KJSO get(const UString &p) const;
-    virtual void put(const UString &p, const KJSO& v);
+    virtual KJSO tryGet(const UString &p) const;
+    virtual void tryPut(const UString &p, const KJSO& v);
   private:
     UString src;
   };
