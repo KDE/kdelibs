@@ -266,7 +266,7 @@ void KSpell::KSpell2( KProcIO * )
   trystart = maxtrystart;  //We've officially started ispell and don't want
                            //to try again if it dies.
 
-  if ( proc->fgets( line, true ) == -1 )
+  if ( proc->readln( line, true ) == -1 )
   {
      QTimer::singleShot( 0, this, SLOT(emitDeath()) );
      return;
@@ -336,12 +336,12 @@ bool KSpell::addPersonal( const QString & word )
   qs.prepend( "*" );
   personaldict = true;
 
-  return proc->fputs( qs );
+  return proc->writeStdin( qs );
 }
 
 bool KSpell::writePersonalDictionary()
 {
-  return proc->fputs("#");
+  return proc->writeStdin("#");
 }
 
 bool KSpell::ignore( const QString & word )
@@ -354,7 +354,7 @@ bool KSpell::ignore( const QString & word )
 
   qs.prepend( "@" );
 
-  return proc->fputs( qs );
+  return proc->writeStdin( qs );
 }
 
 bool
@@ -381,7 +381,7 @@ KSpell::cleanFputsWord( const QString & s, bool appendCR )
   if (empty)
     return false;
 
-  return proc->fputs( "^"+qs, appendCR );
+  return proc->writeStdin( "^"+qs, appendCR );
 }
 
 bool
@@ -401,10 +401,10 @@ KSpell::cleanFputs( const QString & s, bool appendCR )
   {
     if ( qs.isEmpty() )
       qs="";
-    return proc->fputs( "^"+qs, appendCR );
+    return proc->writeStdin( "^"+qs, appendCR );
   }
   else
-    return proc->fputs( "^\n",appendCR );
+    return proc->writeStdin( QString::fromAscii( "^\n" ),appendCR );
 }
 
 bool KSpell::checkWord( const QString & buffer, bool _usedialog )
@@ -429,8 +429,8 @@ bool KSpell::checkWord( const QString & buffer, bool _usedialog )
   OUTPUT(checkWord2);
   //  connect (this, SIGNAL (dialog3()), this, SLOT (checkWord3()));
 
-  proc->fputs( "%" ); // turn off terse mode
-  proc->fputs( buffer ); // send the word to ispell
+  proc->writeStdin( "%" ); // turn off terse mode
+  proc->writeStdin( buffer ); // send the word to ispell
 
   return true;
 }
@@ -458,8 +458,8 @@ bool KSpell::checkWord( const QString & buffer, bool _usedialog, bool suggest )
   OUTPUT(checkWord2);
   //  connect (this, SIGNAL (dialog3()), this, SLOT (checkWord3()));
 
-  proc->fputs( "%" ); // turn off terse mode
-  proc->fputs( buffer ); // send the word to ispell
+  proc->writeStdin( "%" ); // turn off terse mode
+  proc->writeStdin( buffer ); // send the word to ispell
 
   return true;
 }
@@ -468,13 +468,13 @@ void KSpell::checkWord2( KProcIO* )
 {
   QString word;
   QString line;
-  proc->fgets( line, true ); //get ispell's response
+  proc->readln( line, true ); //get ispell's response
 
 /* ispell man page: "Each sentence of text input is terminated with an
    additional blank line,  indicating that ispell has completed processing
    the input line." */
   QString blank_line;
-  proc->fgets( blank_line, true ); // eat the blank line
+  proc->readln( blank_line, true ); // eat the blank line
 
   NOOUTPUT(checkWord2);
 
@@ -499,13 +499,13 @@ void KSpell::suggestWord( KProcIO * )
 {
   QString word;
   QString line;
-  proc->fgets( line, true ); //get ispell's response
+  proc->readln( line, true ); //get ispell's response
 
 /* ispell man page: "Each sentence of text input is terminated with an
    additional blank line,  indicating that ispell has completed processing
    the input line." */
   QString blank_line;
-  proc->fgets( blank_line, true ); // eat the blank line
+  proc->readln( blank_line, true ); // eat the blank line
 
   NOOUTPUT(checkWord2);
 
@@ -677,7 +677,7 @@ bool KSpell::checkList (QStringList *_wordlist, bool _usedialog)
   //set the dialog signal handler
   dialog3slot = SLOT (checkList4 ());
 
-  proc->fputs ("%"); // turn off terse mode & check one word at a time
+  proc->writeStdin ("%"); // turn off terse mode & check one word at a time
 
   //lastpos now counts which *word number* we are at in checkListReplaceCurrent()
   lastpos = -1;
@@ -739,7 +739,7 @@ void KSpell::checkList3a (KProcIO *)
 
   do
   {
-    tempe=proc->fgets( line, true ); //get ispell's response
+    tempe=proc->readln( line, true ); //get ispell's response
 
     //kdDebug(750) << "checkList3a: read bytes [" << tempe << "]" << endl;
 
@@ -891,7 +891,7 @@ bool KSpell::check( const QString &_buffer, bool _usedialog )
 
   // KProcIO calls check2 when read from ispell
   OUTPUT( check2 );
-  proc->fputs( "!" );
+  proc->writeStdin( "!" );
 
   //lastpos is a position in newbuffer (it has offset in it)
   offset = lastlastline = lastpos = lastline = 0;
@@ -933,7 +933,7 @@ void KSpell::check2( KProcIO * )
 
   do
   {
-    tempe = proc->fgets( line ); //get ispell's response
+    tempe = proc->readln( line ); //get ispell's response
     //kdDebug(750) << "KSpell::check2 (" << tempe << "b)" << endl;
 
     if ( tempe>0 )
