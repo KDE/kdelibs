@@ -19,9 +19,8 @@ case "$1" in
       fi
       if [ ! -e /usr/share/doc/kde/HTML/default ]; then
          ln -s /usr/share/doc/kde/HTML/en /usr/share/doc/kde/HTML/default > /dev/null 2>&1
-
-      /sbin/ldconfig
       fi
+      /sbin/ldconfig
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
