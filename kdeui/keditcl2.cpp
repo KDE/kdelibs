@@ -852,31 +852,19 @@ void KEdit::spellcheck_start()
 void KEdit::misspelling (QString word, QStringList *, unsigned pos)
 {
 
-  int l;
-  unsigned int cnt=0;
-
-  for (l=0;l<numLines() && cnt<=pos;l++)
-    cnt+= textLine(l).length() + 1;
-  l--;
-
-  cnt = pos - cnt + textLine(l).length() + 1;
-
-
+  unsigned int l = 0;
+  unsigned int cnt = 0;
+  posToRowCol (pos, l, cnt);
   setCursorPosition (l, cnt);
-
-  //According to the Qt docs this could be done more quickly with
-  //setCursorPosition (l, cnt+strlen(word), TRUE);
-  //but that doesn't seem to work.
-  for(l = 0 ; l < (int)word.length(); l++)
-    cursorRight(TRUE);
+  setCursorPosition (l, cnt+word.length(), TRUE);
 
   /*
   if (cursorPoint().y()>height()/2)
     kspell->moveDlg (10, height()/2-kspell->heightDlg()-15);
   else
     kspell->moveDlg (10, height()/2 + 15);
-    */
-  //  setCursorPosition (line, cnt+strlen(word),TRUE);
+  */
+
 }
 
 //need to use pos for insert, not cur, so forget cur altogether
@@ -885,30 +873,37 @@ void KEdit::corrected (QString originalword, QString newword, unsigned pos)
   //we'll reselect the original word in case the user has played with
   //the selection in eframe or the word was auto-replaced
 
-  int line, l;
-  unsigned int cnt=0;
+  unsigned int l = 0;
+  unsigned int cnt = 0;
 
   if( newword != originalword )
-    {
-
-      for (line=0;line<numLines() && cnt<=pos;line++)
-	cnt+=lineLength(line)+1;
-      line--;
-
-      cnt=pos-cnt+ lineLength(line)+1;
-
-      //remove old word
-      setCursorPosition (line, cnt);
-      for(l = 0 ; l < (int)originalword.length(); l++)
-	cursorRight(TRUE);
-      ///      setCursorPosition (line,
-      //	 cnt+strlen(originalword),TRUE);
-      cut();
-
-      insertAt (newword, line, cnt);
-    }
+  {
+    posToRowCol (pos, l, cnt);
+    setCursorPosition (l, cnt);
+    setCursorPosition (l, cnt+originalword.length(), TRUE);
+    cut();
+    insertAt (newword, l, cnt);
+  }
 
   deselect();
+}
+
+void KEdit::posToRowCol(unsigned int pos, unsigned int &line, unsigned int &col)
+{
+  for (line = 0; line < numLines() && col <= pos; line++)
+  {
+    col += lineLength(line);
+    if( isEndOfParagraph(line) )
+    {
+      col++;
+    }
+  }
+  line--;
+  col = pos - col + lineLength(line);
+  if( isEndOfParagraph(line) )
+  {
+     col++;
+  }
 }
 
 void KEdit::spellcheck_stop()

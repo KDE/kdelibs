@@ -328,7 +328,10 @@ protected:
     int 	doReplace(QString s_pattern, bool case_sensitive,
 			  bool regex, bool forward,int line, int col,bool replace);
 
-
+      /**
+       * Sets line and col to the position pos, considering word wrap.
+       **/
+    void	posToRowCol(unsigned int pos, unsigned int &line, unsigned int &col);
 
 
 protected:
