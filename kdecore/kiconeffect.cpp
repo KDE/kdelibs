@@ -27,6 +27,7 @@
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kconfig.h>
+#include <kglobalsettings.h>
 #include <kicontheme.h>
 #include "kiconeffect.h"
 
@@ -430,12 +431,10 @@ QImage KIconEffect::doublePixels(QImage src)
     void
 KIconEffect::visualActivate(QWidget * widget, QRect rect)
 {
-    KConfig * config = KGlobal::config();
-    KConfigGroupSaver cgs(config, QString::fromLatin1("KDE"));
-    if (!config->readBoolEntry("visualActivate", true))
+    if (!KGlobalSettings::visualActivate())
         return;
 
-    uint actSpeed = config->readUnsignedNumEntry("visualActivateSpeed", 50);
+    uint actSpeed = KGlobalSettings::visualActivateSpeed();
 
     uint actCount = QMIN(rect.width(), rect.height()) / 2;
 
