@@ -49,8 +49,9 @@ class KSplitListItem : public QObject, public QListBoxItem
 	Q_OBJECT
 	
 public:
-    KSplitListItem( const char *s );
+    KSplitListItem( const char *s , int _id = 0);
     ~KSplitListItem (){};
+    int getId(){return id;}
 
 protected:
     virtual void paint( QPainter * );
@@ -64,6 +65,7 @@ protected:
 	int halfWidth;
 	QString keyName;
 	QString actionName;
+	int id;
 };
 
 /**
@@ -78,10 +80,13 @@ class KSplitList: public QListBox
 public:
 	KSplitList( QWidget *parent = 0, const char *name = 0 );
 	~KSplitList() { }
+	int getId(int index){
+	    return ((KSplitListItem*) (item(index)))->getId();
+	}
 
 signals:
 	void newWidth( int newWidth );
-	
+
 protected:
 	void resizeEvent( QResizeEvent * );
 	void paletteChange ( const QPalette & oldPalette );

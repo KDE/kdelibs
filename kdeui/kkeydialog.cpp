@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
-	Copyright (C) 1998 Mark Donohoe <donohoe@kde.org>
+    Copyright (C) 1998 Mark Donohoe <donohoe@kde.org>
     Copyright (C) 1997 Nicolas Hadacek <hadacek@via.ecp.fr>
+    Copyright (C) 1998 Matthias Ettrich <ettrich@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -40,9 +41,10 @@
 /*                                                                           */
 /*****************************************************************************/
 
-KSplitListItem::KSplitListItem( const char *s )
+KSplitListItem::KSplitListItem( const char *s, int _id )
 	:  QListBoxItem()
 {
+	id = _id;  
 	setText( s );
 	
 	QString str( s );
@@ -329,18 +331,20 @@ KKeyChooser::KKeyChooser( QDict<KKeyEntry> *aKeyDict, QWidget *parent )
 	
 	aIt = aKeyIt;
 	aIt->toFirst();
+	int id = 0;
 	while ( aIt->current() ) {
 		aIt->current()->aConfigKeyCode = aIt->current()->aCurrentKeyCode;
 		
 		KSplitListItem *sli = new KSplitListItem(
-		 	item( aIt->current()->aConfigKeyCode, aIt->currentKey() )
-		);
+		 	item( aIt->current()->aConfigKeyCode, aIt->currentKey() ),
+			id);
 		
 		connect( wList, SIGNAL( newWidth( int ) ),
 				 sli, SLOT( setWidth( int ) ) );
-		wList->insertItem( sli );
+		wList->inSort( sli );
 		
 		++ ( *aIt );
+		++id;
 	}
 
 	if ( wList->count() == 0 ) wList->setEnabled( FALSE );
@@ -488,7 +492,8 @@ KKeyChooser::~KKeyChooser()
 void KKeyChooser::updateAction( int index )
 {
 	aIt->toFirst();
-	(*aIt) += index;
+	
+	(*aIt) += wList->getId(index);
 	sEntryKey = aIt->currentKey();
 	pEntry = aIt->current();
 	
@@ -554,7 +559,8 @@ void KKeyChooser::toChange( int index )
 	
 	/* get the entry */
 	aIt->toFirst();
-	(*aIt) += index;
+	(*aIt) += wList->getId(index);
+
 	sEntryKey = aIt->currentKey();
 	pEntry = aIt->current();
 	
@@ -676,7 +682,8 @@ void KKeyChooser::noKey()
 	/* update the list and the change area */
 	
 	KSplitListItem *sli = new KSplitListItem(
-		 item(pEntry->aConfigKeyCode, sEntryKey)
+		 item(pEntry->aConfigKeyCode, sEntryKey),
+		 wList->getId(wList->currentItem() )
 	);
 		
 	//connect( wList, SIGNAL( newWidth( int ) ),
@@ -698,7 +705,8 @@ void KKeyChooser::defaultKey()
 	/* update the list and the change area */
 	
 	KSplitListItem *sli = new KSplitListItem(
-		 item(pEntry->aConfigKeyCode, sEntryKey)
+		 item(pEntry->aConfigKeyCode, sEntryKey),
+		 wList->getId(wList->currentItem())
 	);
 		
 	//connect( wList, SIGNAL( newWidth( int ) ),
@@ -722,22 +730,24 @@ void KKeyChooser::allDefault()
 	wList->clear();
 	
 	aIt->toFirst();
+	int id = 0;
 	while ( aIt->current() ) {
 		if ( aIt->current()->bConfigurable )
 			aIt->current()->aConfigKeyCode = aIt->current()->aDefaultKeyCode;
 		
 		KSplitListItem *sli = new KSplitListItem(
-		 	item(aIt->current()->aConfigKeyCode, aIt->currentKey())
-		);
+		 	item(aIt->current()->aConfigKeyCode, aIt->currentKey()),
+			id);
 
 		connect( wList, SIGNAL( newWidth( int ) ),
 				 sli, SLOT( setWidth( int ) ) );
 				 
 		sli->setWidth( wList->width() );
 		
-		wList->insertItem( sli );
+		wList->inSort( sli );
 		
 		++(*aIt);
+		++id;
 	}
 	
 	connect( wList, SIGNAL( highlighted( int ) ), SLOT( updateAction( int ) ) );
@@ -754,20 +764,22 @@ void KKeyChooser::listSync()
 	wList->clear();
 	
 	aIt->toFirst();
+	int id = 0;
 	while ( aIt->current() ) {
 		
 		KSplitListItem *sli = new KSplitListItem(
-		 	item(aIt->current()->aCurrentKeyCode, aIt->currentKey())
-		);
+		 	item(aIt->current()->aCurrentKeyCode, aIt->currentKey()),
+			id);
 
 		connect( wList, SIGNAL( newWidth( int ) ),
 				 sli, SLOT( setWidth( int ) ) );
 				 
 		sli->setWidth( wList->width() );
 		
-		wList->insertItem( sli );
+		wList->inSort( sli );
 		
 		++(*aIt);
+		++id;
 	}
 	
 	connect( wList, SIGNAL( highlighted( int ) ), SLOT( updateAction( int ) ) );
@@ -801,7 +813,8 @@ void KKeyChooser::shiftClicked()
 			pEntry->aConfigKeyCode &= ~SHIFT;
 			
 		KSplitListItem *sli = new KSplitListItem(
-		 	item(pEntry->aConfigKeyCode, sEntryKey)
+		 	item(pEntry->aConfigKeyCode, sEntryKey),
+			wList->getId(wList->currentItem() )
 		);
 		
 		connect( wList, SIGNAL( newWidth( int ) ),
@@ -827,7 +840,8 @@ void KKeyChooser::ctrlClicked()
 			pEntry->aConfigKeyCode &= ~CTRL;
 			
 		KSplitListItem *sli = new KSplitListItem(
-		 	item(pEntry->aConfigKeyCode, sEntryKey)
+		 	item(pEntry->aConfigKeyCode, sEntryKey),
+			wList->getId(wList->currentItem() )
 		);
 		
 		connect( wList, SIGNAL( newWidth( int ) ),
@@ -853,7 +867,8 @@ void KKeyChooser::altClicked()
 			pEntry->aConfigKeyCode &= ~ALT;
 			
 		KSplitListItem *sli = new KSplitListItem(
-		 	item(pEntry->aConfigKeyCode, sEntryKey)
+		 	item(pEntry->aConfigKeyCode, sEntryKey),
+			wList->getId(wList->currentItem() )
 		);
 		
 		connect( wList, SIGNAL( newWidth( int ) ),
@@ -925,7 +940,8 @@ void KKeyChooser::setKey( uint kCode)
 	}
 	
 	KSplitListItem *sli = new KSplitListItem(
-	 	item(pEntry->aConfigKeyCode, sEntryKey)
+	 	item(pEntry->aConfigKeyCode, sEntryKey),
+		wList->getId(wList->currentItem() )
 	);
 		
 	connect( wList, SIGNAL( newWidth( int ) ),
