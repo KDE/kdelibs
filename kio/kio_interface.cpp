@@ -125,7 +125,7 @@ QString KIO::kioErrorString( int _errid, const char *_errortext )
       result = i18n( "Could not login into %1" ).arg ( _errortext );
       break;
     case  ERR_COULD_NOT_AUTHENTICATE:
-      result = i18n( "Athorization failed, %1 authentication not supported" ).arg( _errortext );
+      result = i18n( "Authorization failed, %1 authentication not supported" ).arg( _errortext );
       break;
     case  ERR_WARNING:
       result = i18n( "Warning: %1" ).arg( _errortext );
