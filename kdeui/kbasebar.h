@@ -35,6 +35,10 @@
 
 // $Id$
 // $Log$
+// Revision 1.1  1998/07/28 17:16:37  radej
+// sven: initial import; don't make it a part of build process yet. See notice
+//       in files
+//
 
 #ifndef _KBASEBAR_H
 #define _KBASEBAR_H
@@ -46,6 +50,7 @@
 #include <qbutton.h>
 #include <qfont.h>
 #include <qsize.h>
+#include <qiconset.h>
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -121,7 +126,6 @@ class KBaseBarButton : public QButton
    KBaseBarButton(QWidget *parent=0L, const char *name=0L);
    ~KBaseBarButton() {};
    void setEnabled(bool enable);
-   void makeDisabledPixmap();
    
    virtual void setPixmap( const QPixmap & );
    virtual void setText ( const char *text);
@@ -144,7 +148,8 @@ class KBaseBarButton : public QButton
    void drawButton(QPainter *p);
    bool eventFilter (QObject *o, QEvent *e);
    void showMenu();
-     
+   //void setIconSet (const QPixmap &);
+   
  private:
    bool toolBarButton;
    bool sep;
@@ -161,6 +166,8 @@ class KBaseBarButton : public QButton
    QPopupMenu *myPopup;
    bool delayPopup;
    QTimer *delayTimer;
+   QIconSet *iconSet;
+   QIconSet::Size iconSize;
    
  protected slots:
      void ButtonClicked();

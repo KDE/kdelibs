@@ -35,6 +35,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.2  1998/07/30 12:51:49  radej
+// sven: "Small cleanup" (tm) before new things
+//
 // Revision 1.1  1998/07/28 17:16:36  radej
 // sven: initial import; don't make it a part of build process yet. See notice
 //       in files
@@ -69,7 +72,10 @@ enum {
     CONTEXT_FLOAT = 4
 };
 
-// this should be adjustable (in faar future... )
+// this should be adjustable (in faar future... ). It's a minumal size
+// for autosized items. If toolbar is narrower than this, that item goes into
+// new row
+
 #define MIN_AUTOSIZE 150
 
 // delay im ms (microsoft seconds) before delayed popup pops up
@@ -95,6 +101,14 @@ KBaseBarItem::~KBaseBarItem ()
 
 /*** A very important button which can be menuBarButton or toolBarButton ***/
 
+KBaseBarButton::KBaseBarButton( QWidget *parentWidget, const char *name )
+  : QButton( parentWidget , name)
+{
+  resize(6,6);
+  hide();
+  youreSeparator();
+}
+
 KBaseBarButton::KBaseBarButton( const QPixmap& pixmap, int _id,
                                 QWidget *_parent, const char *name,
                                 int item_size, const char *txt,
@@ -104,37 +118,26 @@ KBaseBarButton::KBaseBarButton( const QPixmap& pixmap, int _id,
   delayPopup = false;
   parentWidget = (KBaseBar *) _parent;
   raised = false;
-
-  myPopup = 0;
+  iconSet = 0L;
+  myPopup = 0L;
+  
   toolBarButton = !_mb;
   
   setFocusPolicy( NoFocus );
   id = _id;
   if (txt)
-  btext=txt;
+    btext = txt;
+  iconSet = new QIconSet (pixmap, QIconSet::Small);
   if ( ! pixmap.isNull() )
-    enabledPixmap = pixmap;
+    setPixmap(pixmap);
   else
-    {
-      warning(klocale->translate("KBaseBarButton: pixmap is empty, perhaps some missing file"));
-      enabledPixmap.resize( item_size-4, item_size-4);
-    }
+    warning(klocale->translate("KBaseBarButton: pixmap is empty, perhaps some missing file"));
   modeChange ();
-  makeDisabledPixmap();
-  setPixmap( enabledPixmap );
+
   connect (parentWidget, SIGNAL( modechange() ), this, SLOT( modeChange() ));
-  
   connect( this, SIGNAL( clicked() ), this, SLOT( ButtonClicked() ) );
   connect(this, SIGNAL( pressed() ), this, SLOT( ButtonPressed() ) );
   connect(this, SIGNAL( released() ), this, SLOT( ButtonReleased() ) );
-}
-
-KBaseBarButton::KBaseBarButton( QWidget *parentWidget, const char *name )
-  : QButton( parentWidget , name)
-{
-  resize(6,6);
-  hide();
-  youreSeparator();
 }
 
 void KBaseBarButton::beToggle(bool flag)
@@ -163,23 +166,19 @@ void KBaseBarButton::toggle()
   setOn(!isOn());
   repaint();
 }
-
 void KBaseBarButton::setText( const char *text)
 {
- btext = text;
- modeChange();
- repaint (false);
+  btext = text;;
+  modeChange();
+  repaint (false);
 }
 
 void KBaseBarButton::setPixmap( const QPixmap &pixmap )
 {
   if ( ! pixmap.isNull() )
-    enabledPixmap = pixmap;
-  else {
+    QButton::setPixmap(iconSet->pixmap(iconSize, QIconSet::Normal ));
+  else
     warning(klocale->translate("KBaseBarButton: pixmap is empty, perhaps some missing file"));
-    enabledPixmap.resize(width()-4, height()-4);
-  }
-  QButton::setPixmap( enabledPixmap );
 }            
 
 void KBaseBarButton::setPopup (QPopupMenu *p)
@@ -198,7 +197,9 @@ void KBaseBarButton::setDelayedPopup (QPopupMenu *p)
 
 void KBaseBarButton::setEnabled( bool enabled )
 {
-  QButton::setPixmap( (enabled ? enabledPixmap : disabledPixmap) );
+  QButton::setPixmap((enabled ?
+                      iconSet->pixmap(iconSize, QIconSet::Normal)
+                      : iconSet->pixmap(iconSize, QIconSet::Disabled)));
   QButton::setEnabled( enabled );
 }
 
@@ -213,17 +214,24 @@ void KBaseBarButton::leaveEvent(QEvent *)
     }
   if (delayPopup)
     delayTimer->stop();
+
+  if (isEnabled())
+    setPixmap(iconSet->pixmap(iconSize, QIconSet::Normal));
 }
 
 void KBaseBarButton::enterEvent(QEvent *)
 {
   if (highlight == 1)
+  {
+    if (isEnabled())
+      setPixmap(iconSet->pixmap(iconSize, QIconSet::Active));
+    
     if (isToggleButton() == false)
-      if ( isEnabled() )
-      {
+      if (isEnabled())
         raised = true;
-        repaint(false);
-      }
+
+    repaint(false);
+  }
 }
 
 bool KBaseBarButton::eventFilter (QObject *o, QEvent *ev)
@@ -320,7 +328,7 @@ void KBaseBarButton::drawButton( QPainter *_painter )
       _painter->drawPixmap( dx, dy, *pixmap() );
     }
 
-    if (!btext.isEmpty())
+    if (!btext.isNull())
     {
       int tf = AlignVCenter|AlignLeft;
       if (!isEnabled())
@@ -329,26 +337,40 @@ void KBaseBarButton::drawButton( QPainter *_painter )
         dx= pixmap()->width();
       else
         dx= 1;
+      dy = 0;
+      if ( isDown() && style() == WindowsStyle )
+      {
+        ++dx;
+        ++dy;
+      }
+      
       if (toolBarButton)
         _painter->setFont(buttonFont);
       if(raised)
         _painter->setPen(blue);
-      _painter->drawText(dx, 0, width()-dx, height(), tf, btext);
+      _painter->drawText(dx, dy, width()-dx, height(), tf, btext);
     }
   }
   else if (icontext == 2) // only text, even if there is a icon
   {
-    if (!btext.isEmpty())
+    if (!btext.isNull())
     {
       int tf = AlignVCenter|AlignLeft;
       if (!isEnabled())
         _painter->setPen(palette().disabled().dark());
       dx= 1;
+      dy= 0;
+      if ( isDown() && style() == WindowsStyle )
+      {
+        ++dx;
+        ++dy;
+      }
+
       if (toolBarButton)
         _painter->setFont(buttonFont);
       if(raised)
         _painter->setPen(blue);
-      _painter->drawText(dx, 0, width()-dx, height(), tf, btext);
+      _painter->drawText(dx, dy, width()-dx, height(), tf, btext);
     }
   }
 
@@ -363,61 +385,20 @@ void KBaseBarButton::drawButton( QPainter *_painter )
   }
 }
 
-
-void KBaseBarButton::makeDisabledPixmap()
-{
-  if (ImASeparator())
-    return;             // No pixmaps for separators
-  
-  QPalette pal = palette();
-  QColorGroup g = pal.disabled();
-
-  // Prepare the disabledPixmap for drawing
-  
-  disabledPixmap.detach(); // prevent flicker
-  disabledPixmap.resize(enabledPixmap.width(), enabledPixmap.height());
-  disabledPixmap.fill( g.background() );
-  const QBitmap *mask = enabledPixmap.mask();
-  bool allocated = false;
-  if (!mask) {// This shouldn't occur anymore!
-    mask = new QBitmap(enabledPixmap.createHeuristicMask());
-    allocated = true;
-  } 
-  
-  QBitmap bitmap = *mask; // YES! make a DEEP copy before setting the mask!   
-  bitmap.setMask(*mask);
-  
-  QPainter p;
-  p.begin( &disabledPixmap );
-  p.setPen( g.light() );
-  p.drawPixmap(1, 1, bitmap);
-  p.setPen( g.mid() );
-  p.drawPixmap(0, 0, bitmap);
-  p.end();
-  
-  if (allocated) // This shouldn't occur anymore!
-    delete mask;
-}
-
 void KBaseBarButton::paletteChange(const QPalette &)
 {
-  if(ImASeparator())  {
-    makeDisabledPixmap();
-    if ( !isEnabled() ) 
-      QButton::setPixmap( disabledPixmap );
-    repaint(false); // no need to delete it first therefore only false
-  }
+  repaint(false); // no need to delete it first therefore only false
 }
 
 void KBaseBarButton::modeChange()
 {
   int myWidth;
 
-  myWidth = enabledPixmap.width();
+  myWidth = pixmap()->width();
 
   QFont fnt;
   
-  if (toolBarButton)
+  if (toolBarButton) // I might be a menuBarButton
   {
     buttonFont.setFamily("Helvetica");
     buttonFont.setPointSize(10);
@@ -441,8 +422,13 @@ void KBaseBarButton::modeChange()
   if (myWidth < _size)
     myWidth = _size;
 
+  if (_size > 38) // = 26*3/2 like QIconSet says
+    iconSize = QIconSet::Large;
+  else
+    iconSize = QIconSet::Small;
+
   highlight=parentWidget->highlight;
-  if (icontext == 1) //Calculate my size
+  if (icontext > 0) //Calculate my size
   {
     QToolTip::remove(this);
     resize (fm.width(btext)+myWidth, _size-2); // +2+_size-2
