@@ -421,22 +421,27 @@ static const unsigned symbol_tbl[]={
 static const unsigned null_tbl[]={0};
 
 KCharsetEntry KCharsetsData::charsets[]={
-    	{ "us-ascii",QFont::AnyCharSet,us_ascii_tbl,TRUE},
-   	{ "iso-8859-1",QFont::ISO_8859_1,iso_8859_1_tbl,TRUE},
-    	{ "iso-8859-2",QFont::ISO_8859_2,iso_8859_2_tbl,TRUE},
-    	{ "iso-8859-3",QFont::ISO_8859_3,iso_8859_3_tbl,TRUE},
-    	{ "iso-8859-4",QFont::ISO_8859_4,iso_8859_4_tbl,TRUE},
-    	{ "iso-8859-5",QFont::ISO_8859_5,iso_8859_5_tbl,TRUE},
-    	{ "iso-8859-6",QFont::ISO_8859_6,iso_8859_6_tbl,TRUE},
-    	{ "iso-8859-7",QFont::ISO_8859_7,iso_8859_7_tbl,TRUE},
-    	{ "iso-8859-8",QFont::ISO_8859_8,iso_8859_8_tbl,TRUE},
-    	{ "iso-8859-9",QFont::ISO_8859_9,iso_8859_9_tbl,TRUE},
-    	{ "adobe-symbol",QFont::AnyCharSet,symbol_tbl,FALSE},
-    	{ "koi8-r",QFont::AnyCharSet,koi8_r_tbl,TRUE},
+    	{ "us-ascii",QFont::AnyCharSet,us_ascii_tbl,TRUE,0,0},
+   	{ "iso-8859-1",QFont::ISO_8859_1,iso_8859_1_tbl,TRUE,0,0},
+    	{ "iso-8859-2",QFont::ISO_8859_2,iso_8859_2_tbl,TRUE,0,0},
+    	{ "iso-8859-3",QFont::ISO_8859_3,iso_8859_3_tbl,TRUE,0,0},
+    	{ "iso-8859-4",QFont::ISO_8859_4,iso_8859_4_tbl,TRUE,0,0},
+    	{ "iso-8859-5",QFont::ISO_8859_5,iso_8859_5_tbl,TRUE,0,0},
+    	{ "iso-8859-6",QFont::ISO_8859_6,iso_8859_6_tbl,TRUE,0,0},
+    	{ "iso-8859-7",QFont::ISO_8859_7,iso_8859_7_tbl,TRUE,0,0},
+    	{ "iso-8859-8",QFont::ISO_8859_8,iso_8859_8_tbl,TRUE,0,0},
+    	{ "iso-8859-9",QFont::ISO_8859_9,iso_8859_9_tbl,TRUE,0,0},
+    	{ "adobe-symbol",QFont::AnyCharSet,symbol_tbl,FALSE,0,0},
+    	{ "koi8-r",QFont::AnyCharSet,koi8_r_tbl,TRUE,0,0},
+#if QT_VERSION >= 140	
+    	{ "koi8-r",QFont::KOI8R,koi8_r_tbl,TRUE,0,0},
+#else	
+    	{ "koi8-r",QFont::AnyCharSet,koi8_r_tbl,TRUE,0,0},
+#endif	
 //     	{ "unicode-1-1-utf-7",QFont::AnyCharSet,null_tbl,TRUE}, // not supported yet 
-       	{ "unicode-1-1-utf-8",QFont::AnyCharSet,null_tbl,TRUE},
-       	{ "unicode-1-1",QFont::AnyCharSet,null_tbl,FALSE},      // not really supported, but maybe it works
-       	{0,QFont::AnyCharSet,null_tbl,FALSE}};
+       	{ "unicode-1-1-utf-8",QFont::AnyCharSet,null_tbl,TRUE,0,0},
+       	{ "unicode-1-1",QFont::AnyCharSet,null_tbl,FALSE,0,0},      // not really supported, but maybe it works
+       	{0,QFont::AnyCharSet,null_tbl,FALSE,0,0}};
 
 
 const KCharTags KCharsetsData::tags[]={

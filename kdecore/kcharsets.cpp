@@ -103,7 +103,7 @@ bool KCharset::isDisplayable(){
 
   if (!entry) return FALSE;  
   
-  return data->isDisplayable(entry);
+  return data->isDisplayable((KCharsetEntry *)entry); /* discard const */
 }
 
 bool KCharset::isDisplayable(const char *face){
@@ -186,22 +186,45 @@ QFont &KCharset::setQFont(QFont &fnt){
   }  
   if ( (stricmp(charsets->name(fnt),name()) == 0)
      || data->charsetOfFace(entry,fnt.family())) return fnt;
+     
   kchdebug("Setting font to: \"%s\"\n",name());
   QString faceStr=data->faceForCharset(entry);
-  kchdebug("Face for font: \"%s\"\n",(const char *)faceStr);
-  if (faceStr){
+
+  /* If Qt doesn't support this charset we must use the hack */
+  if (qtCharset()==QFont::AnyCharSet && faceStr){
+     kchdebug("Face for font: \"%s\"\n",(const char *)faceStr);
      faceStr.replace("\\*",fnt.family());
      kchdebug("New face for font: \"%s\"\n",(const char *)faceStr);
      fnt.setCharSet(QFont::AnyCharSet);
      fnt.setFamily(faceStr);
+     QFontInfo fi(fnt);
+     if (fi.family()!=faceStr) // hack doesn't work.
+        // Maybe we know a face wich will work
+        if (entry->good_family && !(entry->good_family->isEmpty())){
+            fnt.setCharSet(QFont::AnyCharSet);
+	    fnt.setFamily(*(entry->good_family));
+        }	  
   }
   else{
     kchdebug("qtCharset: %i\n",(int)qtCharset());
     fnt.setCharSet(qtCharset());
-    QString family=fnt.family();
-    if (family=="roman") fnt.setFamily("courier");	//  workaround for bug	
-    else fnt.setFamily("roman");			//  in Qt
-    fnt.setFamily(family);
+    QString family=fnt.family();                        //
+    if (family=="times") fnt.setFamily("courier");	//  workaround for bug	
+    else fnt.setFamily("times");			//  in Qt
+    fnt.setFamily(family);                              //
+    QFontInfo fi(fnt);
+    if (fi.charSet()!=qtCharset())
+      if (entry->good_family && !(entry->good_family->isEmpty())){
+          fnt.setCharSet(qtCharset());
+	  fnt.setFamily(*(entry->good_family));
+      }	  
+      else if (faceStr){ /* nothing else works - we must use the hack */
+         kchdebug("Face for font: \"%s\"\n",(const char *)faceStr);
+         faceStr.replace("\\*",fnt.family());
+         kchdebug("New face for font: \"%s\"\n",(const char *)faceStr);
+         fnt.setCharSet(QFont::AnyCharSet);
+         fnt.setFamily(faceStr);
+      }
   }  
   kchdebug("New charset: \"%s\"\n",charsets->name(fnt));
   return fnt;
@@ -508,11 +531,6 @@ KCharset KCharsets::charsetFromX(const QString &xName){
   QString name=data->fromX(xName);
   KCharset kch;
   if (!name.isEmpty()) kch=KCharset(name);
-  if ( !kch.ok() && strncmp(xName,"iso",3)==0 ){
-      name="iso-"+xName.mid(3,100);
-      kch=KCharset(name);
-      if (kch.ok()) return kch;
-  }
   return kch;
 }
 

@@ -44,6 +44,7 @@ struct KCharsetEntry{
   const unsigned *toUnicode;
   bool registered;
   QIntDict<unsigned> * toUnicodeDict;
+  QString *good_family;  /* it must be pointer so charset entries can be compiled-in */
 };
 
 class KCharsetsData;
@@ -169,7 +170,9 @@ public:
   const unsigned *getToUnicodeTable(const  KCharsetEntry *charset);
   QIntDict<unsigned> *getToUnicodeDict(const KCharsetEntry *charset);
   const KCharsetEntry * conversionHint(const KCharsetEntry *charset);
-  bool isDisplayable(const KCharsetEntry * charset);
+  bool getFontList(QStrList *lst,QString xcharsetlist);
+  bool KCharsetsData::isDisplayableHack(KCharsetEntry *charset);
+  bool isDisplayable(KCharsetEntry * charset);
   unsigned decodeAmp(const char *seq,int &len);
   void convert(unsigned code,KCharsetConversionResult & r);
   KCharsetConversionResult & convert(unsigned code){
@@ -181,8 +184,8 @@ public:
     convertTag(tag,*tempResult,l);
     return *tempResult;
   }
-  QString fromX(const QString &name);
-  QString toX(const QString &name);
+  QString fromX(QString name);
+  QString toX(QString name);
   const QIntDict<KDispCharEntry> * getDisplayableDict();
 
 private:
