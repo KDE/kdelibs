@@ -70,10 +70,10 @@ void RenderImage::setPixmap( const QPixmap &p, CachedObject *o, bool *manualUpda
 
     // Image dimensions have been changed, recalculate layout
 //    kdDebug( 6040 ) << "Image: setPixmap" << endl;
-    if(p.width() != pixmap.width() || p.height() != pixmap.height())
+    if(p.width() != pix.width() || p.height() != pix.height())
     {	
 //    	kdDebug( 6040 ) << "Image: newSize " << p.width() << "/" << p.height() << endl;
-	pixmap = p;
+	pix = p;
 	setLayouted(false);
 	setMinMaxKnown(false);
 //    	kdDebug( 6040 ) << "Image: size " << m_width << "/" << m_height << endl;
@@ -88,7 +88,7 @@ void RenderImage::setPixmap( const QPixmap &p, CachedObject *o, bool *manualUpda
     }
     else
     {
-    	pixmap = p;
+    	pix = p;
     	//repaintObject(this, 0, 0);
 	repaintRectangle(0, 0, m_width, m_height);
     }
@@ -112,7 +112,7 @@ void RenderImage::printReplaced(QPainter *p, int _tx, int _ty)
 
     QRect rect( 0, 0, cWidth, cHeight );
 
-    if ( pixmap.isNull() )
+    if ( pix.isNull() )
     {
 	QColorGroup colorGrp( Qt::black, Qt::lightGray, Qt::white, Qt::darkGray, Qt::gray,
 			      Qt::black, Qt::white );
@@ -134,23 +134,23 @@ void RenderImage::printReplaced(QPainter *p, int _tx, int _ty)
     }
     else
     {
-	if ( (cWidth != pixmap.width() ||
-	    cHeight != pixmap.height() ) &&
-	    pixmap.width() && pixmap.height() )
+	if ( (cWidth != pix.width() ||
+	    cHeight != pix.height() ) &&
+	    pix.width() && pix.height() )
 	{
-	  //kdDebug( 6040 ) << "have to scale: width:" << //   width - border*2 << "<-->" << pixmap.width() << " height " << //   getHeight() - border << "<-->" << pixmap.height() << endl;
+	  //kdDebug( 6040 ) << "have to scale: width:" << //   width - border*2 << "<-->" << pix.width() << " height " << //   getHeight() - border << "<-->" << pix.height() << endl;
 	    if (resizeCache.isNull())
 	    {
 		QWMatrix matrix;
-		matrix.scale( (float)(cWidth)/pixmap.width(),
-			(float)(cHeight)/pixmap.height() );
-		resizeCache = pixmap.xForm( matrix );
+		matrix.scale( (float)(cWidth)/pix.width(),
+			(float)(cHeight)/pix.height() );
+		resizeCache = pix.xForm( matrix );
 	    }
 	    p->drawPixmap( QPoint( _tx + leftBorder, _ty + topBorder ), resizeCache, rect );
 	
 	}
 	else
-	    p->drawPixmap( QPoint( _tx + leftBorder, _ty + topBorder ), pixmap, rect );
+	    p->drawPixmap( QPoint( _tx + leftBorder, _ty + topBorder ), pix, rect );
     }
     if (hasKeyboardFocus!=DOM::ActivationOff)
       {
@@ -172,14 +172,14 @@ void RenderImage::calcMinMaxWidth()
 //    setMinMaxKnown();
 
     // contentWidth
-    
+
     short oldwidth = m_width;
-    
+
     calcWidth();
 
     if (oldwidth != m_width)
     	resizeCache.resize(0,0);		
-    
+
     m_maxWidth = m_minWidth = m_width;
 
 }
@@ -193,7 +193,7 @@ void RenderImage::layout()
 
     calcMinMaxWidth();
     calcHeight();
-    
+
     setLayouted();
 }
 
@@ -238,10 +238,10 @@ int RenderImage::bidiHeight() const
 
 short RenderImage::intrinsicWidth() const
 {
-    return pixmap.width();
+    return pix.width();
 }
 
 int RenderImage::intrinsicHeight() const
 {
-     return pixmap.height();
+     return pix.height();
 }

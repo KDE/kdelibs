@@ -56,15 +56,17 @@ public:
 
     virtual void setPixmap( const QPixmap &, CachedObject *, bool *manualUpdate=0);
 
+    QPixmap pixmap() const { return pix; }
+    
     void setImageUrl(DOM::DOMString url, DOM::DOMString baseUrl, DocLoader *docLoader);
     void setAlt(DOM::DOMString text);
 
     virtual short baselineOffset() const;
 
     virtual int bidiHeight() const;
-    
+
     virtual short intrinsicWidth() const;
-    virtual int intrinsicHeight() const;    
+    virtual int intrinsicHeight() const;
 
 protected:
     /*
@@ -73,7 +75,7 @@ protected:
      * for some strange reason or that the image is waiting to be downloaded
      * from the internet for example.
      */
-    QPixmap pixmap;
+    QPixmap pix;
 
     /*
      * Cache for images that need resizing

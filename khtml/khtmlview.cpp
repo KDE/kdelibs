@@ -86,7 +86,7 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
 
     // initialize QScrollview
 
-    enableClipper(true);
+    //enableClipper(true);
 
     viewport()->setMouseTracking(true);
     //viewport()->setBackgroundMode(PaletteBase);

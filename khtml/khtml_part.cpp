@@ -35,6 +35,7 @@
 #include "html/html_inlineimpl.h"
 #include "rendering/render_text.h"
 #include "rendering/render_frames.h"
+#include "rendering/render_image.h"
 #include "misc/htmlhashes.h"
 #include "misc/loader.h"
 #include "xml/dom_textimpl.h"
@@ -2352,25 +2353,42 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
   DOM::DOMString url = event->url();
   DOM::Node innerNode = event->innerNode();
 
-  if(d->m_bMousePressed && !d->m_strSelectedURL.isEmpty() &&
-    ( d->m_dragStartPos - _mouse->pos() ).manhattanLength() > KGlobalSettings::dndEventDelay() &&
-       d->m_bDnd )
-  {
-    QStringList uris;
-    KURL u( completeURL( splitUrlTarget(d->m_strSelectedURL)) );
-    uris.append( u.url() );
-    QUriDrag *drag = new QUriDrag( d->m_view->viewport() );
-    drag->setUnicodeUris( uris );
-	
-    QPixmap p = KMimeType::pixmapForURL(u, 0, KIcon::SizeMedium);
+  if( d->m_bMousePressed && (!d->m_strSelectedURL.isEmpty() || innerNode.elementId() == ID_IMG ) &&
+      ( d->m_dragStartPos - _mouse->pos() ).manhattanLength() > KGlobalSettings::dndEventDelay() &&
+      d->m_bDnd ) {
+
+      QPixmap p;
+      QDragObject *drag = 0;
+      if( !d->m_strSelectedURL.isEmpty() ) {
+	  QStringList uris;
+	  KURL u( completeURL( splitUrlTarget(d->m_strSelectedURL)) );
+	  uris.append( u.url() );
+	  QUriDrag *udrag = new QUriDrag( d->m_view->viewport() );
+	  udrag->setUnicodeUris( uris );
+	  drag = udrag;
+	  p = KMimeType::pixmapForURL(u, 0, KIcon::SizeMedium);
+      } else {
+	  HTMLImageElementImpl *i = static_cast<HTMLImageElementImpl *>(innerNode.handle());
+	  if( i ) {
+	      khtml::RenderImage *r = static_cast<khtml::RenderImage *>(i->renderer());
+	      if(r) {
+		  drag = new QImageDrag( r->pixmap().convertToImage() , d->m_view->viewport() );
+		  kdDebug(0) << " creating image drag " << endl;
+		  p = KMimeType::mimeType("image/*")->pixmap(KIcon::Desktop);
+	      }
+	  }
+      }
 	
     if ( !p.isNull() )
       drag->setPixmap(p);
     else
       kdDebug( 6000 ) << "null pixmap" << endl;
- 	
+ 
+    kdDebug(0) << "drag = " << drag;
+    
     stopAutoScroll();
-    drag->drag();
+    if(drag)
+	drag->drag();
 
     // when we finish our drag, we need to undo our mouse press
     d->m_bMousePressed = false;
