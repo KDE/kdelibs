@@ -1286,7 +1286,7 @@ QCString KSHA1::hexDigest()
   QCString s(41);
 
   finalize();
-  sprintf(s.data(), "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
+  sprintf(s.data(), "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
 	  m_digest[0], m_digest[1], m_digest[2], m_digest[3], m_digest[4],
 	  m_digest[5], m_digest[6], m_digest[7], m_digest[8], m_digest[9],
 	  m_digest[10], m_digest[11], m_digest[12], m_digest[13],
@@ -1300,7 +1300,7 @@ void KSHA1::hexDigest(QCString& s)
 {
     finalize();
     s.resize(41);
-    sprintf(s.data(), "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
+    sprintf(s.data(), "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
             m_digest[0], m_digest[1], m_digest[2], m_digest[3], m_digest[4],
 	    m_digest[5], m_digest[6], m_digest[7], m_digest[8], m_digest[9],
 	    m_digest[10], m_digest[11], m_digest[12], m_digest[13],
