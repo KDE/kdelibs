@@ -293,15 +293,15 @@ bool KNewPanner::eventFilter(QObject *, QEvent *e)
 	if (orientation == Horizontal) {
 	    setAbsSeperatorPos(absSeperatorPos());
 	    resizeEvent(0);
-	    child0->repaint(true);
-	    child1->repaint(true);
+//	    child0->repaint(true);
+//	    child1->repaint(true);
 	    divider->repaint(true);
 	}
 	else {
 	    setAbsSeperatorPos(absSeperatorPos());
 	    resizeEvent(0);
-	    child0->repaint(true);
-	    child1->repaint(true);
+//	    child0->repaint(true);
+//	    child1->repaint(true);
 	    divider->repaint(true);
 	}
 	handled= true;
