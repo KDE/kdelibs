@@ -5,7 +5,6 @@ libkcm_crypto_la_SOURCES = crypto.cpp
 
 libkcm_crypto_la_LDFLAGS  = $(all_libraries) -module -avoid-version -no-undefined
 libkcm_crypto_la_LIBADD = -lkdeui -lkfile $(LIBSSL)
-INCLUDES= $(all_includes)
 
 libkcm_crypto_la_METASOURCES = AUTO
 
