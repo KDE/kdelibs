@@ -30,6 +30,7 @@
 
 #include <kapp.h>
 #include <kconfig.h>
+#include <kdebug.h>
 #include <kdialogbase.h>
 #include <klistbox.h>
 #include <klocale.h>
@@ -92,9 +93,9 @@ KMessageBox::questionYesNoList(QWidget *parent, const QString &text,
       KListBox *listbox=new KListBox( topcontents );
       listbox->insertStringList( strlist );
     }
-
     dialog.setMainWidget(topcontents);
     dialog.enableButtonSeparator(false);
+    dialog.incInitialSize( QSize( 50, 30 ) );
 
     int result = dialog.exec();
 
