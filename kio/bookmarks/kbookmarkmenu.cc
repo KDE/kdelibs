@@ -438,7 +438,11 @@ void KBookmarkMenu::fillBookmarkMenu()
 
     if ( m_bAddBookmark && !isAdvanced() )
       addNewFolder();
+  }
 
+  if ( m_bIsRoot 
+    && KBookmarkManager::userBookmarksManager()->path() == m_pManager->path() )
+  {
     bool haveSep = false;
 
     QValueList<QString> keys = KBookmarkMenu::dynamicBookmarksList();
