@@ -157,20 +157,16 @@ KSocketAddress* KSocketAddress::newAddress(const struct sockaddr* sa, ksocklen_t
 
 bool KSocketAddress::isEqual(const KSocketAddress& other) const
 {
-  int fam = family();
-  if (fam != other.family())
-     return false;
-
-  switch(fam)
+  switch(family())
   {
      case AF_INET:
-        return KInetSocketAddress::areEqualInet(*this, other);
+        return KInetSocketAddress::areEqualInet(*this, other, false);
 #ifdef AF_INET6
      case AF_INET6:
-        return KInetSocketAddress::areEqualInet6(*this, other);
+        return KInetSocketAddress::areEqualInet6(*this, other, false);
 #endif
      case AF_UNIX: // AF_LOCAL
-        return KUnixSocketAddress::areEqualUnix(*this, other);
+        return KUnixSocketAddress::areEqualUnix(*this, other, false);
   }
 
   return false;
@@ -178,7 +174,19 @@ bool KSocketAddress::isEqual(const KSocketAddress& other) const
 
 bool KSocketAddress::isCoreEqual(const KSocketAddress& other) const
 {
-  return isEqual(other);
+  switch(family())
+  {
+     case AF_INET:
+        return KInetSocketAddress::areEqualInet(*this, other, true);
+#ifdef AF_INET6
+     case AF_INET6:
+        return KInetSocketAddress::areEqualInet6(*this, other, true);
+#endif
+     case AF_UNIX: // AF_LOCAL
+        return KUnixSocketAddress::areEqualUnix(*this, other, true);
+  }
+
+  return false;
 }
 
 QString KSocketAddress::nodeName() const
@@ -615,56 +623,50 @@ ksocklen_t KInetSocketAddress::size() const
     return 0;
 }
 
-bool KInetSocketAddress::areEqualInet(const KSocketAddress &s1, const KSocketAddress &s2)
+bool KInetSocketAddress::areEqualInet(const KSocketAddress &s1, const KSocketAddress &s2, bool coreOnly)
 {
+   if (s1.family() != s2.family())
+      return false;
    if ((s1.size() < sizeof(sockaddr_in)) || (s2.size() < sizeof(sockaddr_in)))
       return false;
 
    struct sockaddr_in *sin1 = (sockaddr_in *) s1.address();
    struct sockaddr_in *sin2 = (sockaddr_in *) s2.address();
 
-   return (sin1->sin_port == sin2->sin_port) && 
-          (memcmp(&sin1->sin_addr, &sin2->sin_addr, sizeof(struct in_addr))  == 0);
+   if (coreOnly)
+      return (memcmp(&sin1->sin_addr, &sin2->sin_addr, sizeof(struct in_addr))  == 0);
+   else
+      return (sin1->sin_port == sin2->sin_port) && 
+             (memcmp(&sin1->sin_addr, &sin2->sin_addr, sizeof(struct in_addr))  == 0);
 }
 
-bool KInetSocketAddress::areEqualInet6(const KSocketAddress &s1, const KSocketAddress &s2)
+bool KInetSocketAddress::areEqualInet6(const KSocketAddress &s1, const KSocketAddress &s2, bool coreOnly)
 {
 #ifdef AF_INET6
+   if (s1.family() != s2.family())
+      return false;
+
    if ((s1.size() < sizeof(sockaddr_in6)) || (s2.size() < sizeof(sockaddr_in6)))
       return false;
 
    struct sockaddr_in6 *sin1 = (sockaddr_in6 *) s1.address();
    struct sockaddr_in6 *sin2 = (sockaddr_in6 *) s2.address();
 
-   return (sin1->sin6_port == sin2->sin6_port) && 
-          (sin1->sin6_flowinfo == sin2->sin6_flowinfo) && 
-          (sin1->sin6_scope_id == sin2->sin6_scope_id) && 
-          (memcmp(&sin1->sin6_addr, &sin2->sin6_addr, sizeof(struct in6_addr))  == 0);
+   if (coreOnly)
+     return (memcmp(&sin1->sin6_addr, &sin2->sin6_addr, sizeof(struct in6_addr))  == 0);
+   else
+     return (sin1->sin6_port == sin2->sin6_port) && 
+            (sin1->sin6_flowinfo == sin2->sin6_flowinfo) && 
+            (sin1->sin6_scope_id == sin2->sin6_scope_id) && 
+            (memcmp(&sin1->sin6_addr, &sin2->sin6_addr, sizeof(struct in6_addr))  == 0);
 #else
    return false;
 #endif
 }
 
+// KDE 3.0: Remove me!
 bool KInetSocketAddress::isCoreEqual(const KSocketAddress& other) const
 {
-  /* we are going to compare the IPs only here, so the socket given must
-   * be an Internet socket as well */
-  if (d->sockfamily != AF_UNSPEC && other.family() == d->sockfamily)
-    {
-      /* yea, same type */
-
-      KInetSocketAddress *k = (KInetSocketAddress*)&other;
-      if (d->sockfamily == AF_INET)
-	return memcmp(&d->sin, &k->d->sin, sizeof(d->sin)) == 0;
-
-#ifdef AF_INET6
-      else if (d->sockfamily == AF_INET6)
-	return memcmp(&d->sin6, &k->d->sin6, sizeof(d->sin6)) == 0;
-#endif
-
-      kdError() << "KInetSocketAddress has a non-Internet socket\n";
-    }
-
   return KSocketAddress::isCoreEqual(other);
 }
 
@@ -856,8 +858,11 @@ const sockaddr_un* KUnixSocketAddress::address() const
   return d->m_sun;
 }
 
-bool KUnixSocketAddress::areEqualUnix(const KSocketAddress &s1, const KSocketAddress &s2)
+bool KUnixSocketAddress::areEqualUnix(const KSocketAddress &s1, const KSocketAddress &s2, bool /* coreOnly */)
 {
+   if (s1.family() != s2.family())
+      return false;   
+
    if ((s1.size() < sizeof(sockaddr_un)) || (s2.size() < sizeof(sockaddr_un)))
       return false;
 
