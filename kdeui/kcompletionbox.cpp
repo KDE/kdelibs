@@ -85,7 +85,7 @@ QStringList KCompletionBox::items() const
     QStringList list;
     const uint itemCount = count();
 
-    for ( uint i = 0; itemCount; ++i ) {
+    for ( uint i = 0; i < itemCount; ++i ) {
         list.append( text( i ) );
     }
     return list;
