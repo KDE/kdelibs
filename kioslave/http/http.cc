@@ -834,6 +834,14 @@ bool HTTPProtocol::davHostOk()
   return false;
 }
 
+// This function is for closing retrieveHeader( false ); requests
+// Required because there may or may not be further info expected
+void HTTPProtocol::davFinished()
+{
+  httpClose();
+  finished();
+}
+
 void HTTPProtocol::mkdir( const KURL& url, int )
 {
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::mkdir " << url.url()
@@ -848,10 +856,10 @@ void HTTPProtocol::mkdir( const KURL& url, int )
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
 
-  retrieveContent( true );
+  retrieveHeader( false );
 
   if ( m_responseCode == 201 )
-    finished();
+    davFinished();
   else
     davError();
 }
@@ -927,11 +935,11 @@ void HTTPProtocol::copy( const KURL& src, const KURL& dest, int, bool overwrite 
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
 
-  retrieveContent( true );
+  retrieveHeader( false );
 
   // The server returns a HTTP/1.1 201 Created or 204 No Content on successful completion
   if ( m_responseCode == 201 || m_responseCode == 204 )
-    finished();
+    davFinished();
   else
     davError();
 }
@@ -956,10 +964,10 @@ void HTTPProtocol::rename( const KURL& src, const KURL& dest, bool overwrite )
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
 
-  retrieveContent( true );
+  retrieveHeader( false );
 
   if ( m_responseCode == 201 )
-    finished();
+    davFinished();
   else
     davError();
 }
@@ -978,12 +986,12 @@ void HTTPProtocol::del( const KURL& url, bool )
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
 
-  retrieveContent( true );
+  retrieveHeader( false );
 
   // The server returns a HTTP/1.1 200 Ok or HTTP/1.1 204 No Content
   // on successful completion
   if ( m_responseCode == 200 || m_responseCode == 204 )
-    finished();
+    davFinished();
   else
     davError();
 }
@@ -1167,6 +1175,12 @@ QString HTTPProtocol::davError( int code /* = -1 */, QString url )
       // 207 Multi-status
       {
         // our error info is in the returned XML document.
+        // retrieve the XML document
+        if ( !readBody( true ) && m_bError )
+          // there was an error retrieving the XML document.
+          // ironic, eh?
+          return QString::null;
+
         QStringList errors;
         QDomDocument multiResponse;
         multiResponse.setContent( m_intData, true );
@@ -1270,8 +1284,10 @@ QString HTTPProtocol::davError( int code /* = -1 */, QString url )
   // if ( kError != ERR_SLAVE_DEFINED )
   errorString += " (" + url + ")";
 
-  if ( callError )
+  if ( callError ) {
+    httpClose();
     error( kError, errorString );
+  }
 
   return errorString;
 }

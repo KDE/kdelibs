@@ -148,6 +148,9 @@ public:
                 const QString& type, const QString& owner );
   void davUnlock( const KURL& url );
 
+  // Calls httpClose() and finished()
+  void davFinished();
+
   // Handle error conditions
   QString davError( int code = -1, QString url = QString::null );
 //---------------------------- End WebDAV -----------------------
