@@ -475,7 +475,7 @@ void UIServer::jobFinished( int id )
 
 void UIServer::totalSize( int id, unsigned long size )
 {
-  kdDebug(7024) << "UIServer::totalSize " << id << " " << (unsigned int) size << endl;
+//  kdDebug(7024) << "UIServer::totalSize " << id << " " << (unsigned int) size << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
