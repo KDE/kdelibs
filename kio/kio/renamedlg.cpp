@@ -55,22 +55,21 @@ class RenameDlg::RenameDlgPrivate
 {
  public:
   RenameDlgPrivate(){
-    b0 = 0L;
-    b1 = b2 = b3 = b4 = b5 = b6 = b7 = b8 = 0L;
-    m_pLineEdit=0L;
-    m_pLayout=0L;
+    bCancel = 0;
+    bRename = bSkip = bAutoSkip = bOverwrite = bOverwriteAll = 0;
+    bResume = bResumeAll = bSuggestNewName = 0;
+    m_pLineEdit = 0;
   }
-  KPushButton *b0;
-  QPushButton *b1;
-  QPushButton *b2;
-  QPushButton *b3;
-  QPushButton *b4;
-  QPushButton *b5;
-  QPushButton *b6;
-  QPushButton *b7;
-  QPushButton *b8; //why isn't it an array
+  KPushButton *bCancel;
+  QPushButton *bRename;
+  QPushButton *bSkip;
+  QPushButton *bAutoSkip;
+  QPushButton *bOverwrite;
+  QPushButton *bOverwriteAll;
+  QPushButton *bResume;
+  QPushButton *bResumeAll;
+  QPushButton *bSuggestNewName;
   QLineEdit* m_pLineEdit;
-  QVBoxLayout* m_pLayout; // ### doesn't need to be here
   KURL src;
   KURL dest;
   QString mimeSrc;
@@ -93,12 +92,14 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
 {
     d = new RenameDlgPrivate( );
     d->modal = _modal;
+#if 0
     // Set "StaysOnTop", because this dialog is typically used in kio_uiserver,
     // i.e. in a separate process.
     // ####### This isn't the case anymore - remove?
 #ifndef Q_WS_QWS //FIXME(E): Implement for QT Embedded
     if (d->modal)
         KWin::setState( winId(), NET::StaysOnTop );
+#endif
 #endif
 
     d->src = _src;
@@ -108,56 +109,56 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
 
     setCaption( _caption );
 
-    d->b0 = new KPushButton( KStdGuiItem::cancel(), this );
-    connect(d->b0, SIGNAL(clicked()), this, SLOT(b0Pressed()));
+    d->bCancel = new KPushButton( KStdGuiItem::cancel(), this );
+    connect(d->bCancel, SIGNAL(clicked()), this, SLOT(b0Pressed()));
 
     if ( ! (_mode & M_NORENAME ) ) {
-        d->b1 = new QPushButton( i18n( "&Rename" ), this );
-        d->b1->setEnabled(false);
-        d->b8 = new QPushButton( i18n( "Suggest New &Name" ), this );
-        connect(d->b8, SIGNAL(clicked()), this, SLOT(b8Pressed()));
-        connect(d->b1, SIGNAL(clicked()), this, SLOT(b1Pressed()));
+        d->bRename = new QPushButton( i18n( "&Rename" ), this );
+        d->bRename->setEnabled(false);
+        d->bSuggestNewName = new QPushButton( i18n( "Suggest New &Name" ), this );
+        connect(d->bSuggestNewName, SIGNAL(clicked()), this, SLOT(b8Pressed()));
+        connect(d->bRename, SIGNAL(clicked()), this, SLOT(b1Pressed()));
     }
 
     if ( ( _mode & M_MULTI ) && ( _mode & M_SKIP ) ) {
-        d->b2 = new QPushButton( i18n( "&Skip" ), this );
-        connect(d->b2, SIGNAL(clicked()), this, SLOT(b2Pressed()));
+        d->bSkip = new QPushButton( i18n( "&Skip" ), this );
+        connect(d->bSkip, SIGNAL(clicked()), this, SLOT(b2Pressed()));
 
-        d->b3 = new QPushButton( i18n( "&Auto Skip" ), this );
-        connect(d->b3, SIGNAL(clicked()), this, SLOT(b3Pressed()));
+        d->bAutoSkip = new QPushButton( i18n( "&Auto Skip" ), this );
+        connect(d->bAutoSkip, SIGNAL(clicked()), this, SLOT(b3Pressed()));
     }
 
     if ( _mode & M_OVERWRITE ) {
-        d->b4 = new QPushButton( i18n( "&Overwrite" ), this );
-        connect(d->b4, SIGNAL(clicked()), this, SLOT(b4Pressed()));
+        d->bOverwrite = new QPushButton( i18n( "&Overwrite" ), this );
+        connect(d->bOverwrite, SIGNAL(clicked()), this, SLOT(b4Pressed()));
 
         if ( _mode & M_MULTI ) {
-            d->b5 = new QPushButton( i18n( "O&verwrite All" ), this );
-            connect(d->b5, SIGNAL(clicked()), this, SLOT(b5Pressed()));
+            d->bOverwriteAll = new QPushButton( i18n( "O&verwrite All" ), this );
+            connect(d->bOverwriteAll, SIGNAL(clicked()), this, SLOT(b5Pressed()));
         }
     }
 
     if ( _mode & M_RESUME ) {
-        d->b6 = new QPushButton( i18n( "&Resume" ), this );
-        connect(d->b6, SIGNAL(clicked()), this, SLOT(b6Pressed()));
+        d->bResume = new QPushButton( i18n( "&Resume" ), this );
+        connect(d->bResume, SIGNAL(clicked()), this, SLOT(b6Pressed()));
 
         if ( _mode & M_MULTI )
         {
-            d->b7 = new QPushButton( i18n( "R&esume All" ), this );
-            connect(d->b7, SIGNAL(clicked()), this, SLOT(b7Pressed()));
+            d->bResumeAll = new QPushButton( i18n( "R&esume All" ), this );
+            connect(d->bResumeAll, SIGNAL(clicked()), this, SLOT(b7Pressed()));
         }
     }
 
-    d->m_pLayout = new QVBoxLayout( this, KDialog::marginHint(),
+    QVBoxLayout* pLayout = new QVBoxLayout( this, KDialog::marginHint(),
                                     KDialog::spacingHint() );
-    d->m_pLayout->addStrut( 360 );	// makes dlg at least that wide
+    pLayout->addStrut( 360 );	// makes dlg at least that wide
 
     // User tries to overwrite a file with itself ?
     if ( _mode & M_OVERWRITE_ITSELF ) {
         QLabel *lb = new QLabel( i18n( "This action would overwrite '%1' with itself.\n"
                                        "Please enter a new file name:" ).arg( KStringHandler::csqueeze( d->src.prettyURL(),100 ) ), this );
-        d->b1->setText(i18n("C&ontinue"));
-        d->m_pLayout->addWidget( lb );
+        d->bRename->setText(i18n("C&ontinue"));
+        pLayout->addWidget( lb );
     }
     else if ( _mode & M_OVERWRITE ) {
 
@@ -205,7 +206,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
                                         ctimeSrc, ctimeDest,
                                         mtimeSrc, mtimeDest ) ) {
                     d->plugin = true;
-                    d->m_pLayout->addWidget(plugin );
+                    pLayout->addWidget(plugin );
                     kdDebug(7024) << "RenameDlgPlugin" << endl;
                     break;
                 } else {
@@ -219,7 +220,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
             // No plugin found, build default dialog
             QGridLayout * gridLayout = new QGridLayout( 0L, 9, 2, KDialog::marginHint(),
                                                         KDialog::spacingHint() );
-            d->m_pLayout->addLayout(gridLayout);
+            pLayout->addLayout(gridLayout);
             gridLayout->setColStretch(0,0);
             gridLayout->setColStretch(1,10);
 
@@ -311,70 +312,70 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
             sentence1 = i18n("A newer item named '%1' already exists.");
 
         QLabel *lb = new KSqueezedTextLabel ( sentence1.arg(d->dest.url()), this );
-        d->m_pLayout->addWidget(lb);
+        pLayout->addWidget(lb);
     }
     QHBoxLayout* layout2 = new QHBoxLayout();
-    d->m_pLayout->addLayout( layout2 );
+    pLayout->addLayout( layout2 );
 
     d->m_pLineEdit = new QLineEdit( this );
     layout2->addWidget( d->m_pLineEdit );
     QString fileName = d->dest.fileName();
     d->m_pLineEdit->setText( KIO::decodeFileName( fileName ) );
-    if (d->b1)
+    if ( d->bRename || d->bOverwrite )
         connect(d->m_pLineEdit, SIGNAL(textChanged(const QString &)),
                 SLOT(enableRenameButton(const QString &)));
-    if ( d->b8 )
+    if ( d->bSuggestNewName )
     {
-        layout2->addWidget( d->b8 );
-        setTabOrder( d->m_pLineEdit, d->b8 );
+        layout2->addWidget( d->bSuggestNewName );
+        setTabOrder( d->m_pLineEdit, d->bSuggestNewName );
     }
 
     KSeparator* separator = new KSeparator( this );
-    d->m_pLayout->addWidget( separator );
+    pLayout->addWidget( separator );
 
     QHBoxLayout* layout = new QHBoxLayout();
-    d->m_pLayout->addLayout( layout );
+    pLayout->addLayout( layout );
 
     layout->addStretch(1);
 
-    if ( d->b1 )
+    if ( d->bRename )
     {
-        layout->addWidget( d->b1 );
-        setTabOrder( d->b1, d->b0 );
+        layout->addWidget( d->bRename );
+        setTabOrder( d->bRename, d->bCancel );
     }
-    if ( d->b2 )
+    if ( d->bSkip )
     {
-        layout->addWidget( d->b2 );
-        setTabOrder( d->b2, d->b0 );
+        layout->addWidget( d->bSkip );
+        setTabOrder( d->bSkip, d->bCancel );
     }
-    if ( d->b3 )
+    if ( d->bAutoSkip )
     {
-        layout->addWidget( d->b3 );
-        setTabOrder( d->b3, d->b0 );
+        layout->addWidget( d->bAutoSkip );
+        setTabOrder( d->bAutoSkip, d->bCancel );
     }
-    if ( d->b4 )
+    if ( d->bOverwrite )
     {
-        layout->addWidget( d->b4 );
-        setTabOrder( d->b4, d->b0 );
+        layout->addWidget( d->bOverwrite );
+        setTabOrder( d->bOverwrite, d->bCancel );
     }
-    if ( d->b5 )
+    if ( d->bOverwriteAll )
     {
-        layout->addWidget( d->b5 );
-        setTabOrder( d->b5, d->b0 );
+        layout->addWidget( d->bOverwriteAll );
+        setTabOrder( d->bOverwriteAll, d->bCancel );
     }
-    if ( d->b6 )
+    if ( d->bResume )
     {
-        layout->addWidget( d->b6 );
-        setTabOrder( d->b6, d->b0 );
+        layout->addWidget( d->bResume );
+        setTabOrder( d->bResume, d->bCancel );
     }
-    if ( d->b7 )
+    if ( d->bResumeAll )
     {
-        layout->addWidget( d->b7 );
-        setTabOrder( d->b7, d->b0 );
+        layout->addWidget( d->bResumeAll );
+        setTabOrder( d->bResumeAll, d->bCancel );
     }
 
-    d->b0->setDefault( true );
-    layout->addWidget( d->b0 );
+    d->bCancel->setDefault( true );
+    layout->addWidget( d->bCancel );
 
     resize( sizeHint() );
 }
@@ -387,13 +388,19 @@ RenameDlg::~RenameDlg()
 
 void RenameDlg::enableRenameButton(const QString &newDest)
 {
-  if (newDest != d->dest.url())
+  if ( newDest != KIO::decodeFileName( d->dest.fileName() ) && !newDest.isEmpty() )
   {
-    d->b1->setEnabled(true);
-    d->b1->setDefault(true);
+    d->bRename->setEnabled( true );
+    d->bRename->setDefault( true );
+    if ( d->bOverwrite )
+        d->bOverwrite->setEnabled( false ); // prevent confusion (#83114)
   }
   else
-    d->b1->setEnabled(false);
+  {
+    d->bRename->setEnabled( false );
+    if ( d->bOverwrite )
+        d->bOverwrite->setEnabled( true );
+  }
 }
 
 KURL RenameDlg::newDestURL()

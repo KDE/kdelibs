@@ -87,6 +87,7 @@ public:
 
 
 public slots:
+  /// KDE4: rename to cancelPressed(), renamePressed() etc.
   void b0Pressed();
   void b1Pressed();
   void b2Pressed();
