@@ -856,7 +856,7 @@ void KFormulaEdit::toggleCursor()
   cacheState = ALL_DIRTY; undo.push( &((new QString(oldText))-> \
 				     insert(oldc, QChar(CURSOR))) ); \
   while(redo.remove()); }
-#define UPDATE_SIZE if ( sendSizeHint ) { emit sizeHint( form->size() );  emit formulaChanged( uglyForm() ); }
+#define UPDATE_SIZE if ( sendSizeHint ) { emit sizeHint( form->size() );  if(restricted) emit formulaChanged( uglyForm() ); }
 
 void KFormulaEdit::keyPressEvent(QKeyEvent *e)
 {

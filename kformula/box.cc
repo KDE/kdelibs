@@ -135,6 +135,8 @@ void box::calculate(QPainter &p, int setFontsize)
   lastFont = f;
   lastFont.setPointSize(fontsize);
   p.setFont(lastFont);
+  QFontInfo font_info_tmp(lastFont);
+  fontsize = font_info_tmp.pointSize();
 
   QFontMetrics fm = p.fontMetrics();
 
@@ -401,7 +403,7 @@ void box::calculate(QPainter &p, int setFontsize)
       rect = b2->getRect();
       rect.setRect(rect.x(), QMIN(rect.top(), -rect.bottom()),
 		   rect.width(), QMAX(-rect.top(), rect.bottom()) * 2);
-      b2x += fontsize / 4 + rect.height() / 10;
+      b2x += QMAX(fontsize / 4 + rect.height() / 10, SPACE);
       rect.setRect(rect.x() - SPACE / 2, rect.y() - b2x * 3 / 4,
 		   rect.width() + b2x * 2 + SPACE,
 		   rect.height() + b2x * 3 / 2);

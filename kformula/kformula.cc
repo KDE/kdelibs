@@ -188,8 +188,8 @@ QSize KFormula::size()
 {
   if(boxes.size() == 0) return QSize(0, 0);
 
-  return QSize(boxes[boxes.size() - 1]->getRect().width(),
-	       boxes[boxes.size() - 1]->getRect().height());
+  return QSize(boxes[boxes.size() - 1]->getRect().width() + 8, // 8 is just some extra room
+	       boxes[boxes.size() - 1]->getRect().height() + 8);
 }
 
 //--------------------------------REDRAW----------------------------
