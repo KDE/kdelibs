@@ -29,6 +29,7 @@
 #include <qtabwidget.h>
 
 /**
+ * Used internally by @ref KAboutContainerBase
  * @internal
  */
 class KImageTrackLabel : public QLabel
@@ -60,8 +61,10 @@ class KImageTrackLabel : public QLabel
 class KAboutContainer;
 
 class KAboutContainerBasePrivate;
+
 /**
- *  @internal
+ * Used internally by @ref KAboutDialog
+ * @internal
  */
 class KAboutContainerBase : public QWidget
 {
@@ -137,8 +140,10 @@ class KAboutContainerBase : public QWidget
 };
 
 class KAboutContributorPrivate;
+
 /**
- *  @internal
+ * Used internally by @ref KAboutWidget
+ * @internal
  */
 class KAboutContributor : public QFrame
 {
