@@ -78,12 +78,15 @@ static bool startCondition(const QString &condition)
   if (condition.isEmpty())
      return true;
 
-  QStringList list = QStringList::split(':', condition);
+  QStringList list = QStringList::split(':', condition, TRUE);
   if (list.count() < 4) 
+     return true;
+  if (list[0].isEmpty() || list[2].isEmpty()) 
      return true;
 
   KConfig config(list[0]);
-  config.setGroup(list[1]);
+  if (!list[1].isEmpty())
+     config.setGroup(list[1]);
 
   bool defaultValue = (list[3].lower() == "true");
 

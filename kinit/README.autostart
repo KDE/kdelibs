@@ -26,6 +26,7 @@ contain the following optional entries to control its autostart:
       specified config file has the value 'true'. If the specified entry is
       missing from the config file, the application will only be started if
       'default' is 'true'.
+      If the entry is not within a group, the group entry can be left empty.
 
    X-KDE-autostart-after = desktop_name
 
