@@ -2325,6 +2325,11 @@ bool KHTMLPart::isEditable() const
 void KHTMLPart::setCaretPosition(DOM::Node node, long offset, bool extendSelection)
 {
 #ifndef KHTML_NO_CARET
+#if 0
+  kdDebug(6200) << k_funcinfo << "node: " << node.handle() << " nodeName: "
+  	<< node.nodeName().string() << " offset: " << offset
+	<< " extendSelection " << extendSelection << endl;
+#endif
   if (view()->moveCaretTo(node.handle(), offset, !extendSelection))
     emitSelectionChanged();
   view()->ensureCaretVisible();
