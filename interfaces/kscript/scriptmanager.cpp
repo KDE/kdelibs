@@ -89,8 +89,8 @@ void KScriptManager::runScript( const QString &scriptName, QObject *context, con
 			// some minutes...
 			// currently i am thinking a QTimer that will throw a signal in 10 minutes
 			// to remove m_scriptCache[m_currentScript]
-//			m_scriptCache.insert(scriptName, KParts::ComponentFactory::createInstanceFromQuery<KScriptInterface>( "KScriptRunner/KScriptRunner", scriptType));
-			m_scriptCache.insert(scriptName, KParts::ComponentFactory::createInstanceFromQuery<KScriptInterface>( "KScriptRunner/KScriptRunner"));
+//			m_scriptCache.insert(scriptName, KParts::ComponentFactory::createInstanceFromQuery<KScriptInterface>( "KScriptRunner/KScriptRunner", scriptType, this));
+			m_scriptCache.insert(scriptName, KParts::ComponentFactory::createInstanceFromQuery<KScriptInterface>( "KScriptRunner/KScriptRunner", QString::null, this));
 		}
 		m_currentScript = scriptName;
 

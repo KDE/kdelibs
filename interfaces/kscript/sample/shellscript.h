@@ -28,7 +28,7 @@ class ShellScript :  public KScriptInterface
 {
 	Q_OBJECT
 public:
-	ShellScript(QObject *parent, const char *name, const QStringList &args);
+	ShellScript(KScriptClientInterface *parent, const char *name, const QStringList &args);
 	virtual ~ShellScript();
 	QString script() const;
 	void setScript( const QString &scriptFile );
@@ -41,6 +41,7 @@ private slots:
 	void stdOut(KProcess *proc, char *buffer, int buflen);
 private:
 	KProcess *m_script;
+	KScriptClientInterface *ScriptClientInterface;
 };
 
 #endif

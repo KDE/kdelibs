@@ -25,11 +25,12 @@
 #include <kgenericfactory.h>
 #include <scriptclientinterface.h>
 //using namespace KScriptInterface;
-typedef KGenericFactory<ShellScript> ShellScriptFactory;
+typedef KGenericFactory<ShellScript, KScriptClientInterface> ShellScriptFactory;
 K_EXPORT_COMPONENT_FACTORY( libshellscript, ShellScriptFactory( "ShellScript" ) );
 
-ShellScript::ShellScript(QObject *parent, const char *name, const QStringList &args )
+ShellScript::ShellScript(KScriptClientInterface *parent, const char *name, const QStringList &args )
 {
+	ScriptClientInterface = parent;
 	m_script =  new KProcess();
 	connect ( m_script, SIGNAL(processExited(KProcess *)), SLOT(Exit(KProcess *)));
 	connect ( m_script, SIGNAL(receivedStdout(KProcess *, char *, int)), SLOT(stdOut(KProcess *, char *, int )));
