@@ -84,11 +84,11 @@ Value MozillaSidebarExtensionFunc::tryCall(ExecState *exec, Object &thisObj, con
     } else {
       return Boolean(false);
     }
-    emit ext->addWebSideBar(url, name);
+    emit ext->addWebSideBar(KURL( url ), name);
     return Boolean(true);
   }
 
   return Undefined();
-} 
+}
 
 
