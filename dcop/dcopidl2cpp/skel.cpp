@@ -41,7 +41,7 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	qFatal("Could not write to %s", filename.latin1() );
 
     QTextStream str( &skel );
-    
+
     str << "/****************************************************************************" << endl;
     str << "**" << endl;
     str << "** DCOP Skeleton created by dcopidl2cpp from " << idl << endl;
@@ -50,11 +50,13 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
     str << "**" << endl;
     str << "*****************************************************************************/" << endl;
     str << endl;
-    
+
     QDomElement e = de.firstChild().toElement();
     if ( e.tagName() == "SOURCE" ) {
 	str << "#include \"" << e.firstChild().toText().data() << "\"" << endl << endl;
     }
+
+    str << "#include \"qasciidict.h\"" << endl;
 
     for( ; !e.isNull(); e = e.nextSibling().toElement() ) {
 	if ( e.tagName() == "CLASS" ) {
@@ -68,18 +70,74 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 		if ( s.tagName() == "SUPER" )
 		    DCOPParent = s.firstChild().toText().data();
 	    }
-	    
-	    // Write dispatcher
-	    str << "bool " << className;
-	    str << "::process(const QCString &fun, const QByteArray &data, QCString& replyType, QByteArray &replyData)" << endl;
-	    str << "{" << endl;
-	    s = n.nextSibling().toElement();
+	
+	    // get function table
 	    QStringList funcNames;
+	    s = n.nextSibling().toElement();
 	    for( ; !s.isNull(); s = s.nextSibling().toElement() ) {
 		if ( s.tagName() == "FUNC" ) {
 		    QDomElement r = s.firstChild().toElement();
 		    ASSERT( r.tagName() == "TYPE" );
 		    QString result = r.firstChild().toText().data();
+		    r = r.nextSibling().toElement();
+		    ASSERT ( r.tagName() == "NAME" );
+		    QString funcName = r.firstChild().toText().data();
+		    QStringList argtypes;
+		    r = r.nextSibling().toElement();
+		    for( ; !r.isNull(); r = r.nextSibling().toElement() ) {
+			ASSERT( r.tagName() == "ARG" );
+			QDomElement a = r.firstChild().toElement();
+			ASSERT( a.tagName() == "TYPE" );
+			argtypes.append( a.firstChild().toText().data() );
+			a = a.nextSibling().toElement();
+			ASSERT ( a.tagName() == "NAME" );
+		    }
+		    funcName += "(";
+		    bool first = TRUE;
+		    for( QStringList::Iterator it = argtypes.begin(); it != argtypes.end(); ++it ){
+			if ( !first )
+			    funcName += ",";
+			first = FALSE;
+			funcName += *it;
+		    }
+		    funcName += ")";
+		    funcNames.append( funcName );
+		}
+	    }
+
+	    // create static tables
+	    str << "static const int " << className << "_fcount = " << funcNames.count() << ";" << endl;
+	    str << "static const char* const " << className << "_ftable[ " << funcNames.count() + 1 << " ] = {" << endl;
+	    for( QStringList::Iterator it = funcNames.begin(); it != funcNames.end(); ++it ){
+		str << "    \"" << *it << "\"," << endl;
+	    }
+	    str << "    0" << endl;
+	    str << "};" << endl;
+	
+	
+	    // Write dispatcher
+	    str << "bool " << className;
+	    str << "::process(const QCString &fun, const QByteArray &data, QCString& replyType, QByteArray &replyData)" << endl;
+	    str << "{" << endl;
+	    str << "    static QAsciiDict<int>* fdict = 0;" << endl;
+	
+	    str << "    if ( !fdict ) {" << endl;
+	    str << "\tfdict = new QAsciiDict<int>( 2 * " << className << "_fcount, TRUE, FALSE );" << endl;
+	    str << "\tfor ( int i = 0; i < " << className << "_fcount; i++ )" << endl;
+	    str << "\t    fdict->insert( " << className << "_ftable[i],  new int( i ) );" << endl;
+	    str << "    }" << endl;
+	
+	    str << "    int* fp = fdict->find( fun );" << endl;
+	    str << "    switch ( fp?*fp:-1) {" << endl;
+	    s = n.nextSibling().toElement();
+	    int fcount = 0;
+	    for( ; !s.isNull(); s = s.nextSibling().toElement() ) {
+		if ( s.tagName() == "FUNC" ) {
+		    QDomElement r = s.firstChild().toElement();
+		    ASSERT( r.tagName() == "TYPE" );
+		    QString result = r.firstChild().toText().data();
+		    if ( result == "ASYNC" )
+			result = "void";
 		    r = r.nextSibling().toElement();
 		    ASSERT ( r.tagName() == "NAME" );
 		    QString funcName = r.firstChild().toText().data();
@@ -105,9 +163,8 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 			funcName += *it;
 		    }
 		    funcName += ")";
-		    funcNames.append( funcName );
 			
-		    str << "    if ( fun == \"" << funcName << "\" ) {" << endl;
+		    str << "    case " << fcount++ << ": { // " << funcName << endl;
 		    if ( !args.isEmpty() ) {
 			QStringList::Iterator ittypes = argtypes.begin();
 			for( QStringList::Iterator it = args.begin(); it != args.end(); ++it ){
@@ -136,32 +193,32 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 			str << *it;
 		    }
 		    str << " );" << endl;
-		    str << "\treturn TRUE;" << endl;
-		    str << "    }" << endl;
+		    str << "    } break;" << endl;
 		}
 	    }
-
+	    str << "    default: " << endl;
 	    if (!DCOPParent.isEmpty()) {
-		str << "    return " << DCOPParent << "::process( fun, data, replyType, replyData );" << endl;
+		str << "\treturn " << DCOPParent << "::process( fun, data, replyType, replyData );" << endl;
 	    } else {
-		str << "    return FALSE;" << endl;
+		str << "\treturn FALSE;" << endl;
 	    }
+	    str << "    }" << endl;
+	    str << "    return TRUE;" << endl;
 	    str << "}" << endl << endl;
-	    
+	
 	    str << "QCString " << className;
 	    str << "::functions()" << endl;
 	    str << "{" << endl;
 	    if (!DCOPParent.isEmpty()) {
-		str << "    return " << DCOPParent << "::functions() " << endl;
-		if (!funcNames.isEmpty())
-			str << " + " << endl;
+		str << "    QCString s = " << DCOPParent << "::functions();" << endl;
 	    } else {
-		str << "    return " << endl;
+		str << "    QCString s;" << endl;
 	    }
-	    for( QStringList::Iterator it = funcNames.begin(); it != funcNames.end(); ++it ){
-		str << "\t\"" << *it << ";\"" << endl;
-	    }
-	    str << "\t;" << endl;
+	    str << "    for ( int i = 0; i < " << className << "_fcount; i++ ) {" << endl;
+	    str << "\ts += " << className << "_ftable[i];" << endl;
+	    str << "\ts += ';';" << endl;
+	    str << "    };" << endl;
+	    str << "    return s;" << endl;
 	    str << "}" << endl << endl;
 	}
     }

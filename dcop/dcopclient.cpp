@@ -50,6 +50,7 @@ extern "C" {
 template class QList<DCOPObjectProxy>;
 template class QList<DCOPClientTransaction>;
 
+
 class DCOPClientPrivate
 {
 public:
@@ -73,6 +74,8 @@ public:
     QList<DCOPClientTransaction> *transactionList;
     bool transaction;
     Q_INT32 transactionId;
+    
+    CARD32 time;
 };
 
 class DCOPClientTransaction
@@ -84,7 +87,15 @@ public:
 
 struct ReplyStruct
 {
-    bool result;
+
+    enum ReplyStatus { Pending, Ok, Rejected, Failed };
+    ReplyStruct() { 
+	status = Pending;
+	replyType = 0;
+	replyData = 0;
+	replyId = 0;
+    }
+    ReplyStatus status;
     QCString* replyType;
     QByteArray* replyData;
     Q_INT32 replyId;
@@ -128,143 +139,149 @@ void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
     DCOPClientPrivate *d = (DCOPClientPrivate *) clientObject;
     DCOPClient *c = d->parent;
 
-    switch (opcode )
-	{
-	case DCOPReplyFailed:
-	    if ( replyWait ) {
-		IceReadMessageHeader(iceConn, sizeof(DCOPMsg), DCOPMsg, pMsg);
-		QByteArray tmp( length );
-		IceReadData(iceConn, length, tmp.data() );
+    IceReadMessageHeader(iceConn, sizeof(DCOPMsg), DCOPMsg, pMsg);
+    
+    if ( pMsg->time > d->time )
+	d->time = pMsg->time;
 
-		((ReplyStruct*) replyWait->reply)->result = false;
-
-		*replyWaitRet = True;
-		return;
-	    } else {
-		qWarning("Very strange! got a DCOPReplyFailed opcode, but we were not waiting for a reply!");
-		return;
-	    }
-	case DCOPReply:
-	    if ( replyWait ) {
-		IceReadMessageHeader(iceConn, sizeof(DCOPMsg), DCOPMsg, pMsg);
-		QByteArray tmp( length );
-		IceReadData(iceConn, length, tmp.data() );
-
-		QByteArray* b = ((ReplyStruct*) replyWait->reply)->replyData;
-		QCString* t =  ((ReplyStruct*) replyWait->reply)->replyType;
-		((ReplyStruct*) replyWait->reply)->result = true;
-
-		// TODO: avoid this data copying
-		QDataStream tmpStream( tmp, IO_ReadOnly );
-		tmpStream >> *t >> *b;
-
-		*replyWaitRet = True;
-		return;
-	    } else {
-		qWarning("Very strange! got a DCOPReply opcode, but we were not waiting for a reply!");
-		return;
-	    }
-	case DCOPReplyWait:
-	    if ( replyWait ) {
-		IceReadMessageHeader(iceConn, sizeof(DCOPMsg), DCOPMsg, pMsg);
-		QByteArray tmp( length );
-		IceReadData(iceConn, length, tmp.data() );
-
-		Q_INT32 id;
-		QDataStream tmpStream( tmp, IO_ReadOnly );
-		tmpStream >> id;
-		((ReplyStruct*) replyWait->reply)->replyId = id;
-		return;
-	    } else {
-		qWarning("Very strange! got a DCOPReplyWait opcode, but we were not waiting for a reply!");
-		return;
-	    }
-	case DCOPReplyDelayed:
-	    if ( replyWait ) {
-		IceReadMessageHeader(iceConn, sizeof(DCOPMsg), DCOPMsg, pMsg);
-		QByteArray tmp( length );
-		IceReadData(iceConn, length, tmp.data() );
-
-		QByteArray* b = ((ReplyStruct*) replyWait->reply)->replyData;
-		QCString* t =  ((ReplyStruct*) replyWait->reply)->replyType;
-		((ReplyStruct*) replyWait->reply)->result = true;
-
-		QDataStream ds( tmp, IO_ReadOnly );
-		QCString calledApp, app;
-		Q_INT32 id;
-
-		ds >> calledApp >> app >> id >> *t >> *b;
-		if (id != ((ReplyStruct*) replyWait->reply)->replyId) {
-		    ((ReplyStruct*) replyWait->reply)->result = false;
-		    qWarning("Very strange! DCOPReplyDelayed got wrong sequence id!");
-		}
-
-		*replyWaitRet = True;
-		return;
-	    } else {
-		qWarning("Very strange! got a DCOPReplyDelayed opcode, but we were not waiting for a reply!");
-		return;
-	    }
-	case DCOPCall:
-	case DCOPSend:
-	    IceReadMessageHeader(iceConn, sizeof(DCOPMsg), DCOPMsg, pMsg);
-	    QByteArray tmp( length );
-	    IceReadData(iceConn, length, tmp.data() );
-	    QDataStream ds( tmp, IO_ReadOnly );
-	    QCString app, objId, fun;
-	    QByteArray data;
-	    ds >> d->senderId >> app >> objId >> fun >> data;
-
-	    QCString replyType;
-	    QByteArray replyData;
-	    bool b = c->receive( app, objId, fun,
-				 data, replyType, replyData );
-
-	    if (opcode != DCOPCall)
-		return;
-
-	    QByteArray reply;
-	    QDataStream replyStream( reply, IO_WriteOnly );
-
-	    Q_INT32 id = c->transactionId();
-	    if (id)
-		{
-		    // Call delayed. Send back the transaction ID.
-		    replyStream << id;
-
-		    IceGetHeader( iceConn, d->majorOpcode, DCOPReplyWait,
-				  sizeof(DCOPMsg), DCOPMsg, pMsg );
-		    pMsg->length += reply.size();
-		    IceSendData( iceConn, reply.size(), (char *) reply.data());
-		    return;
-		}
-
-	    if ( !b )
-		{
-		    qWarning("DCOP failure in app %s:\n   object '%s' has no function '%s'", app.data(), objId.data(), fun.data() );
-		    // Call failed. No data send back.
-
-		    IceGetHeader( iceConn, d->majorOpcode, DCOPReplyFailed,
-				  sizeof(DCOPMsg), DCOPMsg, pMsg );
-		    pMsg->length += reply.size();
-		    IceSendData( iceConn, reply.size(), (char *) reply.data());
-		    return;
-		}
-
-	    // Call successfull. Send back replyType and replyData.
-	    replyStream << replyType << replyData.size();
-
-	    // we are calling, so we need to set up reply data
-	    IceGetHeader( iceConn, d->majorOpcode, DCOPReply,
-			  sizeof(DCOPMsg), DCOPMsg, pMsg );
-	    int datalen = reply.size() + replyData.size();
-	    pMsg->length += datalen;
-	    // use IceSendData not IceWriteData to avoid a copy.  Output buffer
-	    // shouldn't need to be flushed.
-	    IceSendData( iceConn, reply.size(), (char *) reply.data());
-	    IceSendData( iceConn, replyData.size(), (char *) replyData.data());
+    switch (opcode ) {
+    case DCOPCallRejected:
+	if ( replyWait ) {
+	    ((ReplyStruct*) replyWait->reply)->status = ReplyStruct::Rejected;
+	    *replyWaitRet = True;
+	    return;
+	} else {
+	    qWarning("Very strange! got a DCOPCallRejected opcode, but we were not waiting for a reply!");
 	    return;
 	}
+    case DCOPReplyFailed:
+	if ( replyWait ) {
+	    QByteArray tmp( length );
+	    IceReadData(iceConn, length, tmp.data() );
+	    ((ReplyStruct*) replyWait->reply)->status = ReplyStruct::Failed;
+	    *replyWaitRet = True;
+	    return;
+	} else {
+	    qWarning("Very strange! got a DCOPReplyFailed opcode, but we were not waiting for a reply!");
+	    return;
+	}
+    case DCOPReply:
+	if ( replyWait ) {
+	    QByteArray tmp( length );
+	    IceReadData(iceConn, length, tmp.data() );
+
+	    QByteArray* b = ((ReplyStruct*) replyWait->reply)->replyData;
+	    QCString* t =  ((ReplyStruct*) replyWait->reply)->replyType;
+	    ((ReplyStruct*) replyWait->reply)->status = ReplyStruct::Ok;
+
+	    // TODO: avoid this data copying
+	    QDataStream tmpStream( tmp, IO_ReadOnly );
+	    tmpStream >> *t >> *b;
+
+	    *replyWaitRet = True;
+	    return;
+	} else {
+	    qWarning("Very strange! got a DCOPReply opcode, but we were not waiting for a reply!");
+	    return;
+	}
+    case DCOPReplyWait:
+	if ( replyWait ) {
+	    QByteArray tmp( length );
+	    IceReadData(iceConn, length, tmp.data() );
+
+	    Q_INT32 id;
+	    QDataStream tmpStream( tmp, IO_ReadOnly );
+	    tmpStream >> id;
+	    ((ReplyStruct*) replyWait->reply)->replyId = id;
+	    return;
+	} else {
+	    qWarning("Very strange! got a DCOPReplyWait opcode, but we were not waiting for a reply!");
+	    return;
+	}
+    case DCOPReplyDelayed:
+	if ( replyWait ) {
+	    QByteArray tmp( length );
+	    IceReadData(iceConn, length, tmp.data() );
+
+	    QByteArray* b = ((ReplyStruct*) replyWait->reply)->replyData;
+	    ((ReplyStruct*) replyWait->reply)->status = ReplyStruct::Ok;
+	    QCString* t =  ((ReplyStruct*) replyWait->reply)->replyType;
+
+	    QDataStream ds( tmp, IO_ReadOnly );
+	    QCString calledApp, app;
+	    Q_INT32 id;
+
+	    ds >> calledApp >> app >> id >> *t >> *b;
+	    if (id != ((ReplyStruct*) replyWait->reply)->replyId) {
+		((ReplyStruct*) replyWait->reply)->status = ReplyStruct::Failed;
+		qWarning("Very strange! DCOPReplyDelayed got wrong sequence id!");
+	    }
+
+	    *replyWaitRet = True;
+	} else {
+	    qWarning("Very strange! got a DCOPReplyDelayed opcode, but we were not waiting for a reply!");
+	}
+	return;
+    case DCOPCall:
+    case DCOPSend:
+	QByteArray tmp( length );
+	IceReadData(iceConn, length, tmp.data() );
+	QDataStream ds( tmp, IO_ReadOnly );
+	QCString app, objId, fun;
+	QByteArray data;
+	ds >> d->senderId >> app >> objId >> fun >> data;
+	    
+	QCString replyType;
+	QByteArray replyData;
+	bool b = c->receive( app, objId, fun,
+			     data, replyType, replyData );
+
+	if (opcode != DCOPCall)
+	    return;
+
+	QByteArray reply;
+	QDataStream replyStream( reply, IO_WriteOnly );
+
+	Q_INT32 id = c->transactionId();
+	if (id) {
+	    // Call delayed. Send back the transaction ID.
+	    replyStream << id;
+
+	    IceGetHeader( iceConn, d->majorOpcode, DCOPReplyWait,
+			  sizeof(DCOPMsg), DCOPMsg, pMsg );
+	    pMsg->time = d->time;
+	    pMsg->length += reply.size();
+	    IceSendData( iceConn, reply.size(), (char *) reply.data());
+	    return;
+	}
+
+	if ( !b )	{
+	    qWarning("DCOP failure in app %s:\n   object '%s' has no function '%s'", app.data(), objId.data(), fun.data() );
+	    // Call failed. No data send back.
+
+	    IceGetHeader( iceConn, d->majorOpcode, DCOPReplyFailed,
+			  sizeof(DCOPMsg), DCOPMsg, pMsg );
+	    pMsg->time = d->time;
+	    pMsg->length += reply.size();
+	    IceSendData( iceConn, reply.size(), (char *) reply.data());
+	    return;
+	}
+
+	// Call successfull. Send back replyType and replyData.
+	replyStream << replyType << replyData.size();
+
+	// we are calling, so we need to set up reply data
+	IceGetHeader( iceConn, d->majorOpcode, DCOPReply,
+		      sizeof(DCOPMsg), DCOPMsg, pMsg );
+	int datalen = reply.size() + replyData.size();
+	pMsg->time = d->time;
+	pMsg->length += datalen;
+	// use IceSendData not IceWriteData to avoid a copy.  Output buffer
+	// shouldn't need to be flushed.
+	IceSendData( iceConn, reply.size(), (char *) reply.data());
+	IceSendData( iceConn, replyData.size(), (char *) replyData.data());
+	return;
+    }
 }
 
 static IcePoVersionRec DCOPVersions[] = {
@@ -277,6 +294,7 @@ DCOPClient::DCOPClient()
     d->parent = this;
     d->iceConn = 0L;
     d->majorOpcode = 0;
+    d->time = 0;
     d->appId = 0;
     d->notifier = 0L;
     d->registered = false;
@@ -543,12 +561,13 @@ bool DCOPClient::send(const QCString &remApp, const QCString &remObjId,
 		 sizeof(DCOPMsg), DCOPMsg, pMsg);
 
     int datalen = ba.size() + data.size();
+    pMsg->time = d->time;
     pMsg->length += datalen;
 
     IceSendData( d->iceConn, ba.size(), (char *) ba.data() );
     IceSendData( d->iceConn, data.size(), (char *) data.data() );
 
-    //  IceFlush(d->iceConn);
+    //IceFlush(d->iceConn);
 
     if (IceConnectionStatus(d->iceConn) != IceConnectAccepted)
 	return false;
@@ -607,7 +626,7 @@ void DCOPClient::setNotifications(bool enabled)
     QCString replyType;
     QByteArray reply;
     if (!call("DCOPServer", "", "setNotifications( bool )", data, replyType, reply))
-	qDebug("I couldn't enable notifications at the dcopserver!");
+	qWarning("I couldn't enable notifications at the dcopserver!");
 }
 
 bool DCOPClient::receive(const QCString &app, const QCString &objId,
@@ -664,6 +683,7 @@ bool DCOPClient::receive(const QCString &app, const QCString &objId,
     return true;
 }
 
+    
 bool DCOPClient::call(const QCString &remApp, const QCString &remObjId,
 		      const QCString &remFun, const QByteArray &data,
 		      QCString& replyType, QByteArray &replyData, bool)
@@ -671,52 +691,64 @@ bool DCOPClient::call(const QCString &remApp, const QCString &remObjId,
     if ( !isAttached() )
 	return false;
 
-    DCOPMsg *pMsg;
+    bool success = FALSE;
+    
+    while ( 1 ) {
+	DCOPMsg *pMsg;
 
-    QByteArray ba;
-    QDataStream ds(ba, IO_WriteOnly);
-    ds << d->appId << remApp << remObjId << normalizeFunctionSignature(remFun) << data.size();
+	QByteArray ba;
+	QDataStream ds(ba, IO_WriteOnly);
+	ds << d->appId << remApp << remObjId << normalizeFunctionSignature(remFun) << data.size();
 
-    IceGetHeader(d->iceConn, d->majorOpcode, DCOPCall,
-		 sizeof(DCOPMsg), DCOPMsg, pMsg);
+	IceGetHeader(d->iceConn, d->majorOpcode, DCOPCall,
+		     sizeof(DCOPMsg), DCOPMsg, pMsg);
 
-    int datalen = ba.size() + data.size();
-    pMsg->length += datalen;
+	pMsg->time = d->time;
+	int datalen = ba.size() + data.size();
+	pMsg->length += datalen;
 
-    IceSendData(d->iceConn, ba.size(), (char *) ba.data());
-    IceSendData(d->iceConn, data.size(), (char *) data.data());
+	IceSendData(d->iceConn, ba.size(), (char *) ba.data());
+	IceSendData(d->iceConn, data.size(), (char *) data.data());
 
 
-    if (IceConnectionStatus(d->iceConn) != IceConnectAccepted)
-	return false;
-
-    IceFlush (d->iceConn);
-
-    IceReplyWaitInfo waitInfo;
-    waitInfo.sequence_of_request = IceLastSentSequenceNumber(d->iceConn);
-    waitInfo.major_opcode_of_request = d->majorOpcode;
-    waitInfo.minor_opcode_of_request = DCOPCall;
-    ReplyStruct tmp;
-    tmp.replyType = &replyType;
-    tmp.replyData = &replyData;
-    tmp.replyId = 0;
-    waitInfo.reply = (IcePointer) &tmp;
-
-    Bool readyRet = False;
-    IceProcessMessagesStatus s;
-
-    do {
-	s = IceProcessMessages(d->iceConn, &waitInfo,
-			       &readyRet);
-	if (s == IceProcessMessagesIOError) {
-	    IceCloseConnection(d->iceConn);
-	    qWarning("received an error processing data from DCOP server!");
+	if (IceConnectionStatus(d->iceConn) != IceConnectAccepted)
 	    return false;
+
+	IceFlush (d->iceConn);
+
+	IceReplyWaitInfo waitInfo;
+	waitInfo.sequence_of_request = IceLastSentSequenceNumber(d->iceConn);
+	waitInfo.major_opcode_of_request = d->majorOpcode;
+	waitInfo.minor_opcode_of_request = DCOPCall;
+	ReplyStruct tmp;
+	tmp.replyType = &replyType;
+	tmp.replyData = &replyData;
+	waitInfo.reply = (IcePointer) &tmp;
+
+	Bool readyRet = False;
+	IceProcessMessagesStatus s;
+
+    
+	do {
+	    s = IceProcessMessages(d->iceConn, &waitInfo,
+				   &readyRet);
+	    if (s == IceProcessMessagesIOError) {
+		IceCloseConnection(d->iceConn);
+		qWarning("received an error processing data from DCOP server!");
+		return false;
+	    }
+	} while (!readyRet);
+	
+	// if we were rejected by the server, we try again, otherwise we return
+	if ( tmp.status == ReplyStruct::Rejected ) {
+	    continue;
 	}
-    } while (!readyRet);
+	
+	success = tmp.status == ReplyStruct::Ok;
+	break;
+    }
 
-
-    return tmp.result;
+    return success;
 }
 
 void DCOPClient::processSocketData(int)
@@ -804,6 +836,7 @@ DCOPClient::endTransaction( DCOPClientTransaction *trans, QCString& replyType,
     IceGetHeader(d->iceConn, d->majorOpcode, DCOPReplyDelayed,
 		 sizeof(DCOPMsg), DCOPMsg, pMsg);
 
+    pMsg->time = d->time;
     pMsg->length += ba.size();
 
     IceSendData( d->iceConn, ba.size(), (char *) ba.data() );

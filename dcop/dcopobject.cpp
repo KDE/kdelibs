@@ -57,7 +57,8 @@ DCOPObject::DCOPObject(QObject *obj)
 DCOPObject::DCOPObject(const QCString &objId)
   : ident(objId)
 {
-  ident = objId;
+ if ( ident.isEmpty() )
+     ident.sprintf("%p", this );
   objMap()->insert(ident, this);
 }
 

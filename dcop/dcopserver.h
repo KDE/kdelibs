@@ -70,6 +70,7 @@ private slots:
 
 private:
     int majorOpcode;
+    CARD32 time;
     QList<DCOPListener> listener;
     QDict<DCOPConnection> appIds;
     QPtrDict<DCOPConnection> clients;

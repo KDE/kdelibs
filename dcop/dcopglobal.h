@@ -34,6 +34,7 @@
 #define DCOPReplyFailed 4
 #define DCOPReplyWait 5
 #define DCOPReplyDelayed 6
+#define DCOPCallRejected 7
 
 /**
  * DCOP Protocol description
@@ -86,6 +87,7 @@ struct DCOPMsg {
   CARD8 minorOpcode;
   CARD8 data[2];
   CARD32 length B32;
+  CARD32 time;
 };
 
 #endif

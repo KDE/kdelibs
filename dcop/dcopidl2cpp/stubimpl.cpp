@@ -61,7 +61,7 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 	    QDomElement n = e.firstChild().toElement();
 	    ASSERT( n.tagName() == "NAME" );
 	    QString className = n.firstChild().toText().data() + "_stub";
-	    
+	
 	    // find dcop parent ( rightmost super class )
 	    QString DCOPParent;
 	    QDomElement s = n.nextSibling().toElement();
@@ -69,11 +69,11 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 		if ( s.tagName() == "SUPER" )
 		    DCOPParent = s.firstChild().toText().data();
 	    }
-	    
+	
 	    // Write constructor
 	    str << className << "::" << className << "( const QCString& app, const QCString& obj )" << endl;
 	    str << "  : ";
-	    
+	
 	    if ( DCOPParent.isEmpty() || DCOPParent == "DCOPObject" )
 		str << "DCOPStub( app, obj )" << endl;
 	    else
@@ -89,6 +89,9 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 		    QDomElement r = s.firstChild().toElement();
 		    ASSERT( r.tagName() == "TYPE" );
 		    QString result = r.firstChild().toText().data();
+		    bool async = result == "ASYNC";
+		    if ( async)
+			result = "void";
 		    if ( r.hasAttribute( "qleft" ) )
 			str << r.attribute("qleft") << " ";
 		    str << result;
@@ -135,22 +138,10 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 		    if ( s.hasAttribute("qual") )
 			str << " " << s.attribute("qual");
 		    str << endl;
-		    
+		
 		    str << "{" << endl ;
 
-		    if ( result != "void" )
-			str << "    " << result << " result;" << endl;
-
-		    str << "    QByteArray data, replyData;" << endl;
-		    str << "    QCString replyType;" << endl;
 		    
-		    if ( !args.isEmpty() ) {
-			str << "    QDataStream arg( data, IO_WriteOnly );" << endl;
-			for( QStringList::Iterator it = args.begin(); it != args.end(); ++it ){
-			    str << "    arg << " << *it << ";" << endl;
-			}
-		    }
-			
 		    funcName += "(";
 		    first = TRUE;
 		    for( QStringList::Iterator it = argtypes.begin(); it != argtypes.end(); ++it ){
@@ -161,25 +152,49 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 		    }
 		    funcName += ")";
 		    
-
-		    str << "    if ( kapp->dcopClient()->call( app(), obj(), \"" << funcName << "\",";
-		    str << " data, replyType, replyData ) ) {" << endl;
-		    if ( result != "void" ) {
-			str << "\tif ( replyType == \"" << result << "\" ) {" << endl;
-			str << "\t    QDataStream reply( replyData, IO_ReadOnly );"  << endl;
-			str << "\t    reply >> result;" << endl;
-			str << "\t    setStatus( CallSucceeded );" << endl;
-			str << "\t} else {" << endl;
-			str << "\t    callFailed();" << endl;
-			str << "\t}" << endl;
+		    if ( async ) {
+			str << "    QByteArray data;" << endl;
+			if ( !args.isEmpty() ) {
+			    str << "    QDataStream arg( data, IO_WriteOnly );" << endl;
+			    for( QStringList::Iterator it = args.begin(); it != args.end(); ++it ){
+				str << "    arg << " << *it << ";" << endl;
+			    }
+			}
+			str << "    kapp->dcopClient()->send( DCOPStub::app(), DCOPStub::obj(), \"" << funcName << "\", data );" << endl;
+			str << "    setStatus( CallSucceeded );" << endl;
 		    } else {
-			str << "\tsetStatus( CallSucceeded );" << endl;
+		    
+			if ( result != "void" )
+			    str << "    " << result << " result;" << endl;
+
+			str << "    QByteArray data, replyData;" << endl;
+			str << "    QCString replyType;" << endl;
+		
+			if ( !args.isEmpty() ) {
+			    str << "    QDataStream arg( data, IO_WriteOnly );" << endl;
+			    for( QStringList::Iterator it = args.begin(); it != args.end(); ++it ){
+				str << "    arg << " << *it << ";" << endl;
+			    }
+			}
+			str << "    if ( kapp->dcopClient()->call( DCOPStub::app(), DCOPStub::obj(), \"" << funcName << "\",";
+			str << " data, replyType, replyData ) ) {" << endl;
+			if ( result != "void" ) {
+			    str << "\tif ( replyType == \"" << result << "\" ) {" << endl;
+			    str << "\t    QDataStream reply( replyData, IO_ReadOnly );"  << endl;
+			    str << "\t    reply >> result;" << endl;
+			    str << "\t    setStatus( CallSucceeded );" << endl;
+			    str << "\t} else {" << endl;
+			    str << "\t    callFailed();" << endl;
+			    str << "\t}" << endl;
+			} else {
+			    str << "\tsetStatus( CallSucceeded );" << endl;
+			}
+			str << "    } else { " << endl;
+			str << "\tcallFailed();" << endl;
+			str << "    }" << endl;
+			if ( result != "void" )
+			    str << "    return result;" << endl;
 		    }
-		    str << "    } else { " << endl;
-		    str << "\tcallFailed();" << endl;
-		    str << "    }" << endl;
-		    if ( result != "void" )
-			str << "    return result;" << endl;
 		    str << "}" << endl << endl;
 		}
 	    }

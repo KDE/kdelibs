@@ -38,6 +38,7 @@ public:        \
 private:
 
 #define k_dcop public
+#define ASYNC void
 
 /**
  * Provides an interface for receiving DCOP messages.
@@ -53,16 +54,17 @@ class DCOPObject
 {
 public:
   /**
-   * Create a non valid @ref DCOPObject
+   * Creates a @ref DCOPObject and calculates the object id
+   * using its physical memory address.
    */
   DCOPObject();
-  /**
-   * Create a @ref DCOPObject and calculate the object id
+    /**
+   * Creates a @ref DCOPObject and calculates the object id
    * using @ref QObject::name().
    */
   DCOPObject(QObject *obj);
   /**
-   * Creates a valid @ref DCOPObject.
+   * Creates a @ref DCOPObject with object Id @p objId.
    */
   DCOPObject(const QCString &objId);
   /**
@@ -74,7 +76,7 @@ public:
   QCString objId() const;
 
   /**
-   * Dispatch a message.
+   * Dispatches a message.
    *
    * Usually you want to use an IDL
    * compiler to automatically generate an implementation for

@@ -146,6 +146,9 @@ class DCOPClient : public QObject
    * if the registration wasn't successful.
    */
   QCString registerAs( QCString appId, bool addPID = true );
+    
+    ///############FIXME, this should be
+    // QCString registerAs( const QCString& appId, bool addPID = true );
 
   /**
    * Query whether or not the client is registered at the server.
