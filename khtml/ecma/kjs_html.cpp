@@ -726,6 +726,7 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   scrollTop	KJS::HTMLElement::BodyScrollTop	 DontDelete
   scrollWidth   KJS::HTMLElement::BodyScrollWidth DontDelete|ReadOnly
   scrollHeight  KJS::HTMLElement::BodyScrollHeight DontDelete|ReadOnly
+  onload        KJS::HTMLElement::BodyOnLoad     DontDelete
 @end
 @begin HTMLFormElementTable 11
 # Also supported, by name/index
@@ -1277,6 +1278,15 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case BodyLink:            return String(body.link());
     case BodyText:            return String(body.text());
     case BodyVLink:           return String(body.vLink());
+    case BodyOnLoad: {
+        DOM::DocumentImpl *doc = static_cast<DOM::DocumentImpl *>(node.ownerDocument().handle());
+        if (!doc || !checkNodeSecurity(exec, node))
+          return Undefined();
+        DOMNode* kjsDocNode = new DOMNode(exec, doc);
+        // Need to create a Value wrapper to avoid leaking the KJS::DOMNode
+        Value nodeValue(kjsDocNode);
+        return kjsDocNode->getListener( DOM::EventImpl::LOAD_EVENT );
+    }
     default:
       // Update the document's layout before we compute these attributes.
       DOM::DocumentImpl* docimpl = node.handle()->getDocument();
@@ -2449,7 +2459,17 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
             sview->setContentsPos(sview->contentsX(), value.toInteger(exec));
           }
         return;
+      }
+      case BodyOnLoad:
+        DOM::DocumentImpl *doc = static_cast<DOM::DocumentImpl *>(node.ownerDocument().handle());
+        if (doc && checkNodeSecurity(exec, node))
+        {
+          DOMNode* kjsDocNode = new DOMNode(exec, doc);
+          // Need to create a Value wrapper to avoid leaking the KJS::DOMNode
+          Value nodeValue(kjsDocNode);
+          kjsDocNode->setListener(exec,DOM::EventImpl::LOAD_EVENT,value);
         }
+        return;
       }
     }
     break;

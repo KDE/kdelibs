@@ -1,3 +1,7 @@
+2005-01-07  David Faure  <faure@kde.org>
+
+        * ecma/kjs_html.cpp: Support for document.body.onload.
+
 2005-01-06  Allan Sandfeld Jensen <kde@carewolf.com>
         
         * khtml_part.cpp: Fix selection by selecting the text in the cleaned string rather
