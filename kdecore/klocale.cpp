@@ -625,29 +625,6 @@ double KLocale::readMoney(const QString &str, bool * ok) const
     return tot.toDouble(ok);
 }
 
-double KLocale::readNumber(const QString &str, bool * ok) const
-{
-    bool neg = str.find(negativeSign()) == 0;
-    QString buf = decimalSymbol();
-    int pos = str.find(buf);
-
-    QString major = str.left(pos);
-    QString minior;
-    if (pos != -1) minior = str.mid(pos + buf.length());
-
-    for (pos = major.length(); pos >= 0; pos--)
-        if (!major.at(pos).isNumber()) major.remove(pos, 1);
-
-    for (pos = minior.length(); pos >= 0; pos--)
-        if (!minior.at(pos).isNumber()) minior.remove(pos, 1);
-
-    QString tot;
-    if (neg) tot = '-';
-    tot += major + '.' + minior;
-    return tot.toDouble(ok);
-}
-
-
 QString KLocale::formatDate(const QDate &pDate, bool shortfmt) const
 {
     QString rst = shortfmt?_datefmtshort:_datefmt;
@@ -694,6 +671,32 @@ QString KLocale::formatDate(const QDate &pDate, bool shortfmt) const
         }
 
     return rst;
+}
+
+#endif
+
+////// Those methods don't depend on ENABLE_NLS /////
+
+double KLocale::readNumber(const QString &str, bool * ok) const
+{
+    bool neg = str.find(negativeSign()) == 0;
+    QString buf = decimalSymbol();
+    int pos = str.find(buf);
+
+    QString major = str.left(pos);
+    QString minior;
+    if (pos != -1) minior = str.mid(pos + buf.length());
+
+    for (pos = major.length(); pos >= 0; pos--)
+        if (!major.at(pos).isNumber()) major.remove(pos, 1);
+
+    for (pos = minior.length(); pos >= 0; pos--)
+        if (!minior.at(pos).isNumber()) minior.remove(pos, 1);
+
+    QString tot;
+    if (neg) tot = '-';
+    tot += major + '.' + minior;
+    return tot.toDouble(ok);
 }
 
 /**
@@ -798,6 +801,8 @@ error:
         // if there was an error date will be zero, if not it would be ok
 	return date;
 }
+
+#ifdef ENABLE_NLS
 
 QString KLocale::formatTime(const QTime &pTime, bool includeSecs) const
 {
