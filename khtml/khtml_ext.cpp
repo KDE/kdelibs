@@ -220,15 +220,25 @@ void KHTMLPartBrowserExtension::copy()
         QClipboard *cb = QApplication::clipboard();
         disconnect( cb, SIGNAL( selectionChanged() ), m_part, SLOT( slotClearSelection() ) );
 #ifndef QT_NO_MIMECLIPBOARD
-	QString htmltext = m_part->selectedTextAsHTML();
-	
-	htmltext.replace( QChar( 0xa0 ), ' ' );
-	QTextDrag *htmltextdrag = new QTextDrag(htmltext, 0L);
-	htmltextdrag->setSubtype("html");
+	QString htmltext;
+	/*
+	 * When selectionModeEnabled, that means the user has just selected
+	 * the text, not ctrl+c to copy it.  The selection clipboard
+	 * doesn't seem to support mime type, so to save time, don't calculate
+	 * the selected text as html.
+	 * optomisation disabled for now until everything else works.
+	*/
+	//if(!cb->selectionModeEnabled())
+	    htmltext = m_part->selectedTextAsHTML();
 	QTextDrag *textdrag = new QTextDrag(text, 0L);
 	KMultipleDrag *drag = new KMultipleDrag( m_editableFormWidget );
 	drag->addDragObject( textdrag );
-	drag->addDragObject( htmltextdrag );
+	if(!htmltext.isEmpty()) {
+	    htmltext.replace( QChar( 0xa0 ), ' ' );
+	    QTextDrag *htmltextdrag = new QTextDrag(htmltext, 0L);
+	    htmltextdrag->setSubtype("html");
+	    drag->addDragObject( htmltextdrag );
+	}
         cb->setData(drag);
 #else
 	cb->setText(text);
