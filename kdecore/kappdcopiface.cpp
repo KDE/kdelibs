@@ -20,6 +20,8 @@
 #include "kappdcopiface.h"
 #include <kapplication.h>
 #include <dcopclient.h>
+#include <kglobal.h>
+#include <kconfig.h>
 
 
 KAppDCOPInterface::KAppDCOPInterface(KApplication * theKApp)
@@ -54,5 +56,11 @@ void KAppDCOPInterface::quit()
 
 void KAppDCOPInterface::updateUserTimestamp( ulong time )
 {
-        m_KApplication->updateUserTimestamp( time );
+	m_KApplication->updateUserTimestamp( time );
 }
+
+void KAppDCOPInterface::reparseConfiguration()
+{
+	KGlobal::config()->reparseConfiguration();
+}
+

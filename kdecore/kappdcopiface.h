@@ -60,6 +60,8 @@ k_dcop:
 	
 	void quit();
 
+	void reparseConfiguration();
+
 	void updateUserTimestamp( ulong time );
 
 private:
