@@ -18,62 +18,73 @@ AC_ARG_WITH(ssl-dir,
        ac_ssl_libraries="$withval"/lib
     ])
 
+want_ssl=yes
+AC_ARG_WITH(ssl,
+    [  --without-ssl          disable SSL checks],
+    [want_ssl=$withval])
+
+if test $want_ssl = yes; then
+
 AC_CACHE_VAL(ac_cv_have_ssl,
 [#try to guess OpenSSL locations
 
-ssl_incdirs="/usr/include /usr/local/include /usr/ssl/include /usr/local/ssl/include"
-ssl_incdirs="$ac_ssl_includes $ssl_incdirs"
-AC_FIND_FILE(openssl/ssl.h, $ssl_incdirs, ssl_incdir)
-ac_ssl_includes="$ssl_incdir"
+  ssl_incdirs="/usr/include /usr/local/include /usr/ssl/include /usr/local/ssl/include"
+  ssl_incdirs="$ac_ssl_includes $ssl_incdirs"
+  AC_FIND_FILE(openssl/ssl.h, $ssl_incdirs, ssl_incdir)
+  ac_ssl_includes="$ssl_incdir"
 
-ssl_libdirs="/usr/lib /usr/local/lib /usr/ssl/lib /usr/local/ssl/lib"
-if test ! "$ac_ssl_libraries" = "NO"; then
-  ssl_libdirs="$ac_ssl_libraries $ssl_libdirs"
-fi
+  ssl_libdirs="/usr/lib /usr/local/lib /usr/ssl/lib /usr/local/ssl/lib"
+  if test ! "$ac_ssl_libraries" = "NO"; then
+    ssl_libdirs="$ac_ssl_libraries $ssl_libdirs"
+  fi
 
-test=NONE
-ssl_libdir=NONE
-for dir in $ssl_libdirs; do
-  try="ls -1 $dir/libssl*"
-  if test=`eval $try 2> /dev/null`; then ssl_libdir=$dir; break; else echo "tried $dir" >&AC_FD_CC ; fi
-done
+  test=NONE
+  ssl_libdir=NONE
+  for dir in $ssl_libdirs; do
+    try="ls -1 $dir/libssl*"
+    if test=`eval $try 2> /dev/null`; then ssl_libdir=$dir; break; else echo "tried $dir" >&AC_FD_CC ; fi
+  done
 
-ac_ssl_libraries="$ssl_libdir"
+  ac_ssl_libraries="$ssl_libdir"
 
-AC_LANG_SAVE
-AC_LANG_C
+  AC_LANG_SAVE
+  AC_LANG_C
 
-ac_cflags_safe="$CFLAGS"
-ac_ldflags_safe="$LDFLAGS"
-ac_libs_safe="$LIBS"
+  ac_cflags_safe="$CFLAGS"
+  ac_ldflags_safe="$LDFLAGS"
+  ac_libs_safe="$LIBS"
 
-CFLAGS="$CFLAGS -I$ssl_incdir $all_includes"
-LDFLAGS="-L$ssl_libdir $all_libraries"
-LIBS="$LIBS $LIBSSL -lRSAglue -lrsaref"
+  CFLAGS="$CFLAGS -I$ssl_incdir $all_includes"
+  LDFLAGS="-L$ssl_libdir $all_libraries"
+  LIBS="$LIBS $LIBSSL -lRSAglue -lrsaref"
 
-AC_TRY_LINK(,void RSAPrivateEncrypt(void);RSAPrivateEncrypt();,
-ac_ssl_rsaref="yes"
-,
-ac_ssl_rsaref="no"
-)
+  AC_TRY_LINK(,void RSAPrivateEncrypt(void);RSAPrivateEncrypt();,
+  ac_ssl_rsaref="yes"
+  ,
+  ac_ssl_rsaref="no"
+  )
 
-CFLAGS="$ac_cflags_safe"
-LDFLAGS="$ac_ldflags_safe"
-LIBS="$ac_libs_safe"
+  CFLAGS="$ac_cflags_safe"
+  LDFLAGS="$ac_ldflags_safe"
+  LIBS="$ac_libs_safe"
 
-AC_LANG_RESTORE
-if test "$ac_ssl_includes" = NO || test "$ac_ssl_libraries" = NO; then
-  have_ssl=no
-  LIBSSL="";
+  AC_LANG_RESTORE
+
+  if test "$ac_ssl_includes" = NO || test "$ac_ssl_libraries" = NO; then
+    have_ssl=no
   else
-  have_ssl=yes;
+    have_ssl=yes;
+  fi
+
+  ])
+
+  eval "$ac_cv_have_ssl"
+else
+  have_ssl=no
 fi
-
-])
-
-eval "$ac_cv_have_ssl"
 
 if test "$have_ssl" != yes; then
+  LIBSSL="";
   AC_MSG_RESULT([$have_ssl]);
 else
   AC_DEFINE(HAVE_SSL, 1, [If we are going to use OpenSSL])
@@ -110,3 +121,4 @@ AC_SUBST(LIBSSL)
 
 
 AC_PATH_SSL
+
