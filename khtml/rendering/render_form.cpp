@@ -256,13 +256,14 @@ void RenderSubmitButton::calcMinMaxWidth()
     if ( empty )
         raw = QString::fromLatin1("XXXX");
     QFontMetrics fm = pb->fontMetrics();
-    int margin = pb->style().pixelMetric( QStyle::PM_ButtonMargin, pb);
-    QSize s(pb->style().sizeFromContents(
-                QStyle::CT_PushButton, pb, fm.size( ShowPrefix, raw))
-            .expandedTo(QApplication::globalStrut()));
+    int margin = pb->style().pixelMetric( QStyle::PM_ButtonMargin, pb) +
+		 pb->style().pixelMetric( QStyle::PM_DefaultFrameWidth, pb ) * 2;
+    QSize s = fm.size( ShowPrefix, raw);
+    // give a few px extra width
+    s = QSize( s.width() + margin + 4, s.height() + margin ).expandedTo(QApplication::globalStrut());
 
-    setIntrinsicWidth( s.width() - margin / 2 );
-    setIntrinsicHeight( s.height() - margin / 2);
+    setIntrinsicWidth( s.width() );
+    setIntrinsicHeight( s.height() );
 
     RenderButton::calcMinMaxWidth();
 }
