@@ -114,8 +114,11 @@ public:
      *         CompletionEOL, manual completion at end of line (with Right/End keys)
      *         CompletionMan, like automatic completion except the user initiates
      *                        the completion using the completion key as in CompletionEOL
+     *         CompletionShell - attempts to mimic the completion feature found in
+     *                           typical *nix shell enviornments.
+
      **/
-    enum Completion { CompletionNone=1, CompletionAuto, CompletionEOL, CompletionMan };
+    enum Completion { CompletionNone=1, CompletionAuto, CompletionEOL, CompletionMan, CompletionShell };
     static Completion completionMode();
   
     static  KInstance           *_instance;
