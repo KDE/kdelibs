@@ -4113,6 +4113,8 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
 
     char buffer[ MAX_IPC_SIZE ];
 
+    m_iContentLeft = NO_SIZE;
+
     // Jippie! It's already in the cache :-)
     while (!feof(m_request.fcache) && !ferror(m_request.fcache))
     {
