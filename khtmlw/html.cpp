@@ -60,6 +60,12 @@
 
 #define TIMER_INTERVAL		30	// ms between parser parses
 
+
+enum ID { ID_ADDRESS, ID_BIG, ID_BLOCKQUOTE, ID_B, ID_CITE, ID_CODE, ID_EM,
+ID_FONT, ID_H1, ID_H2, ID_H3, ID_H4, ID_H5, ID_H6, ID_I, ID_KBD, ID_PRE,
+ID_SAMP, ID_SMALL, ID_STRIKE, ID_STRONG, ID_S, ID_TT, ID_U, ID_CAPTION, 
+ID_TH, ID_TD, ID_TABLE, ID_DIR, ID_MENU, ID_OL, ID_UL, ID_VAR };
+
 //----------------------------------------------------------------------------
 // convert number to roman numerals
 QString toRoman( int number, bool upper )
@@ -1184,6 +1190,8 @@ void KHTMLWidget::begin( const char *_url, int _x_offset, int _y_offset )
     framesetStack.clear();
     framesetList.clear();
     frameList.clear();
+    
+    freeBlock(); /* Clear the block stack */
 
     if ( bIsTextSelected )
     {
@@ -1362,6 +1370,109 @@ void KHTMLWidget::popColor()
 
     if ( colorStack.isEmpty() )
 	colorStack.push( new QColor( settings->fontBaseColor ) );
+}
+
+void KHTMLWidget::pushBlock(int _id, int _level,
+                            blockFunc _exitFunc, 
+                            int _miscData1, int _miscData2)
+{
+    HTMLStackElem *Elem = new HTMLStackElem(_id, _level, _exitFunc, 
+    					    _miscData1, _miscData2, 
+    					    blockStack);
+    blockStack = Elem;
+}    					     
+
+void KHTMLWidget::popBlock( int _id, HTMLClueV *_clue)
+{
+    HTMLStackElem *Elem = blockStack;
+    int maxLevel = 0;
+    
+    while( (Elem != 0) && (Elem->id != _id))
+    {
+    	if (maxLevel < Elem->level)
+    	{
+    	    maxLevel = Elem->level;
+    	}
+    	Elem = Elem->next;
+    }
+    if (Elem == 0)
+    {
+	return;
+    }
+    
+    if (maxLevel > Elem->level)
+    {
+    	return;
+    }    	   
+
+    Elem = blockStack;
+
+    while (Elem)
+    {
+    	HTMLStackElem *tmp = Elem;		
+
+    	if (Elem->exitFunc != 0)
+    		(this->*(Elem->exitFunc))( _clue, Elem );
+    	if (Elem->id == _id)
+    	{
+    	    blockStack = Elem->next;
+    	    Elem = 0;
+    	}
+    	else
+    	{
+    	    Elem = Elem->next;
+    	} 
+	delete tmp;
+    }    
+    
+}
+                    
+void KHTMLWidget::freeBlock()
+{
+    HTMLStackElem *Elem = blockStack; 
+    while (Elem != 0)
+    {
+    	HTMLStackElem *tmp = Elem;
+    	Elem = Elem->next;
+    	delete tmp;
+    }
+    blockStack = 0;
+}
+
+void KHTMLWidget::blockEndFont( HTMLClueV *_clue, HTMLStackElem *Elem)
+{
+    popFont();
+    if (Elem->miscData1)
+    {
+	vspace_inserted = insertVSpace( _clue, vspace_inserted );
+    }
+}
+
+void KHTMLWidget::blockEndColorFont( HTMLClueV *_clue, HTMLStackElem *Elem)
+{
+    popColor();
+    popFont();
+}
+
+void KHTMLWidget::blockEndIndent( HTMLClueV *_clue, HTMLStackElem *Elem)
+{
+    indent = Elem->miscData1;
+    flow = 0;
+}
+
+void KHTMLWidget::blockEndList( HTMLClueV *_clue, HTMLStackElem *Elem)
+{
+    if (Elem->miscData2)
+    {
+	vspace_inserted = insertVSpace( _clue, vspace_inserted );
+    }
+    if ( !listStack.remove() )
+    {
+    	fprintf(stderr, "%s : List stack corrupt!\n", __FILE__);
+    }
+    
+    indent = Elem->miscData1;
+    flow = 0;
 }
 
 void KHTMLWidget::parse()
@@ -1979,10 +2090,11 @@ void KHTMLWidget::parseA( HTMLClueV *_clue, const char *str )
 	italic = TRUE;
 	weight = QFont::Normal;
 	selectFont();
+	pushBlock(ID_ADDRESS, 2, &blockEndFont, true);
     }
     else if ( strncmp( str, "/address", 8) == 0 )
     {
-	popFont();
+	popBlock( ID_ADDRESS, _clue);
     }
     else if ( strncmp( str, "a ", 2 ) == 0 )
     {
@@ -2086,13 +2198,16 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
     else if ( strncmp(str, "big", 3 ) == 0 )
     {
 	selectFont( +2 );
+	pushBlock(ID_BIG, 1, &blockEndFont);
     }
     else if ( strncmp(str, "/big", 4 ) == 0 )
     {
-	popFont();
+	popBlock( ID_BIG, _clue);
     }
     else if ( strncmp(str, "blockquote", 10 ) == 0 )
     {
+	pushBlock(ID_BLOCKQUOTE, 2, &blockEndIndent, indent);
+	
 	indent += INDENT_SIZE;
 
 	flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
@@ -2101,10 +2216,7 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
     }
     else if ( strncmp(str, "/blockquote", 11 ) == 0 )
     {
-	indent -= INDENT_SIZE;
-	if (indent < 0)
-		indent = 0;
-	flow = 0;
+	popBlock( ID_BLOCKQUOTE, _clue);
     }
     else if ( strncmp( str, "body", 4 ) == 0 )
     {
@@ -2250,11 +2362,12 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
 	{
 	    weight = QFont::Bold;
 	    selectFont();
+	    pushBlock(ID_B, 1, &blockEndFont);
 	}
     }
     else if ( strncmp(str, "/b", 2 ) == 0 )
     {
-	popFont();
+	popBlock( ID_B, _clue);
     }
 }
 
@@ -2299,19 +2412,21 @@ void KHTMLWidget::parseC( HTMLClueV *_clue, const char *str )
 		italic = TRUE;
 		weight = QFont::Normal;
 		selectFont();
+		pushBlock(ID_CITE, 1, &blockEndFont);
 	}
 	else if (strncmp( str, "/cite", 5) == 0)
 	{
-		popFont();
+		popBlock( ID_CITE, _clue);
 	}
 	else if (strncmp(str, "code", 4 ) == 0 )
 	{
 		selectFont( settings->fixedFontFace, settings->fontBaseSize,
 		    QFont::Normal, FALSE );
+		pushBlock(ID_CODE, 1, &blockEndFont);
 	}
 	else if (strncmp(str, "/code", 5 ) == 0 )
 	{
-		popFont();
+		popBlock( ID_CODE, _clue);
 	}
 }
 
@@ -2324,18 +2439,13 @@ void KHTMLWidget::parseD( HTMLClueV *_clue, const char *str )
     if ( strncmp( str, "dir", 3 ) == 0 )
     {
 	closeAnchor();
+	pushBlock(ID_DIR, 2, &blockEndList, indent, false);
 	listStack.push( new HTMLList( Dir ) );
 	indent += INDENT_SIZE;
     }
     else if ( strncmp( str, "/dir", 4 ) == 0 )
     {
-	if ( listStack.remove() )
-	{
-	    indent -= INDENT_SIZE;
-		 if (indent < 0)
-		 	indent = 0;
-	    flow = 0;
-	}
+	popBlock( ID_DIR, _clue);
     }
     else if ( strncmp( str, "div", 3 ) == 0 )
     {
@@ -2359,10 +2469,7 @@ void KHTMLWidget::parseD( HTMLClueV *_clue, const char *str )
     else if ( strncmp( str, "/div", 4 ) == 0 )
     {
 	divAlign = HTMLClue::Left;
-	flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
-	flow->setIndent( indent );
-	flow->setHAlign( divAlign );
-	_clue->append( flow );
+	flow = 0;
     }
     else if ( strncmp( str, "dl", 2 ) == 0 )
     {
@@ -2434,16 +2541,17 @@ void KHTMLWidget::parseD( HTMLClueV *_clue, const char *str )
 }
 
 // <em>             </em>
-void KHTMLWidget::parseE( HTMLClueV *, const char *str )
+void KHTMLWidget::parseE( HTMLClueV * _clue, const char *str )
 {
 	if ( strncmp( str, "em", 2 ) == 0 )
 	{
 		italic = TRUE;
 		selectFont();
+		pushBlock(ID_EM, 1, &blockEndFont);
 	}
 	else if ( strncmp( str, "/em", 3 ) == 0 )
 	{
-		popFont();
+		popBlock( ID_EM, clue);
 	}
 }
 
@@ -2451,7 +2559,7 @@ void KHTMLWidget::parseE( HTMLClueV *, const char *str )
 // <form>           </form>         partial
 // <frame           <frame>
 // <frameset        </frameset>
-void KHTMLWidget::parseF( HTMLClueV *, const char *str )
+void KHTMLWidget::parseF( HTMLClueV * _clue, const char *str )
 {
 	if ( strncmp( str, "font", 4 ) == 0 )
 	{
@@ -2506,11 +2614,11 @@ void KHTMLWidget::parseF( HTMLClueV *, const char *str )
 		    currentFont()->weight(), currentFont()->italic() );
 	    else
 		selectFont( newSize );
+	    pushBlock(ID_FONT, 1, &blockEndColorFont);
 	}
 	else if ( strncmp( str, "/font", 5 ) == 0 )
 	{
-		popColor();
-		popFont();
+	    popBlock( ID_FONT, _clue);
 	}
 	else if ( strncmp( str, "frameset", 8 ) == 0 )
         {
@@ -2718,12 +2826,12 @@ void KHTMLWidget::parseH( HTMLClueV *_clue, const char *str )
 			}
 		}
 		// Start a new flow box
-		if ( !flow )
-		{
+//		if ( !flow )
+//		{
 		    flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
 		    flow->setIndent( indent );
 		    _clue->append( flow );
-		}
+//		}
 		flow->setHAlign( align );
 
 		switch ( str[1] )
@@ -2763,15 +2871,16 @@ void KHTMLWidget::parseH( HTMLClueV *_clue, const char *str )
 				selectFont( -1 );
 				break;
 		}
+		// Insert a vertical space and restore the old font at the 
+		// closing tag
+		pushBlock(ID_H1 + str[1] - '1', 2, &blockEndFont, true );
 	}
 	else if ( *str=='/' && *(str+1)=='h' &&
 	    ( *(str+2)=='1' || *(str+2)=='2' || *(str+2)=='3' ||
  	      *(str+2)=='4' || *(str+2)=='5' || *(str+2)=='6' ))
 	{
-		// Insert a vertical space if this did not happen already.
-		vspace_inserted = insertVSpace( _clue, vspace_inserted );
-		// Restore the old font
-		popFont();
+		// Close tag
+		popBlock( ID_H1 + str[2] - '1', clue);
 	}
 	else if ( strncmp(str, "hr", 2 ) == 0 )
 	{
@@ -3002,11 +3111,12 @@ void KHTMLWidget::parseI( HTMLClueV *_clue, const char *str )
 	{
 	    italic = TRUE;
 	    selectFont();
+	    pushBlock(ID_I, 1, &blockEndFont);
 	}
     }
     else if ( strncmp( str, "/i", 2 ) == 0 )
     {
-	popFont();
+	popBlock( ID_I, clue);
     }
 }
 
@@ -3015,16 +3125,17 @@ void KHTMLWidget::parseJ( HTMLClueV *, const char * )
 }
 
 // <kbd>            </kbd>
-void KHTMLWidget::parseK( HTMLClueV *, const char *str )
+void KHTMLWidget::parseK( HTMLClueV * _clue, const char *str )
 {
 	if ( strncmp(str, "kbd", 3 ) == 0 )
 	{
 		selectFont( settings->fixedFontFace, settings->fontBaseSize,
 		    QFont::Normal, FALSE );
+		pushBlock(ID_KBD, 1, &blockEndFont);
 	}
 	else if ( strncmp(str, "/kbd", 4 ) == 0 )
 	{
-		popFont();
+		popBlock( ID_KBD, clue);
 	}
 }
 
@@ -3126,19 +3237,13 @@ void KHTMLWidget::parseM( HTMLClueV *_clue, const char *str )
 	{
 		closeAnchor();
 		vspace_inserted = insertVSpace( _clue, vspace_inserted );
+		pushBlock( ID_MENU, 2, &blockEndList, indent, false);
 		listStack.push( new HTMLList( Menu ) );
 		indent += INDENT_SIZE;
-//		parseList( _clue, _clue->getMaxWidth(), Menu );
 	}
 	else if (strncmp( str, "/menu", 5 ) == 0)
 	{
-		if ( listStack.remove() )
-		{
-		    indent -= INDENT_SIZE;
-          if (indent < 0)
-          	indent = 0;
-		    flow = 0;
-		}
+		popBlock( ID_MENU, clue);
 	}
 	else if ( strncmp( str, "map", 3 ) == 0 )
 	{
@@ -3205,7 +3310,15 @@ void KHTMLWidget::parseO( HTMLClueV *_clue, const char *str )
     {
 	closeAnchor();
 	if ( listStack.isEmpty() )
+	{
 	    vspace_inserted = insertVSpace( _clue, vspace_inserted );
+	    pushBlock( ID_OL, 2, &blockEndList, indent, true);
+	}
+	else
+	{
+	    pushBlock( ID_OL, 2, &blockEndList, indent, false);
+	}
+
 	ListNumType listNumType = Numeric;
 
 	stringTok->tokenize( str + 3, " >" );
@@ -3240,14 +3353,7 @@ void KHTMLWidget::parseO( HTMLClueV *_clue, const char *str )
     }
     else if ( strncmp( str, "/ol", 3 ) == 0 )
     {
-	if ( listStack.remove() )
-	{
-	    indent -= INDENT_SIZE;
-	    if (indent < 0)
-	    	indent = 0;
-	    if ( listStack.isEmpty() )
-		vspace_inserted = insertVSpace( _clue, vspace_inserted );
-	}
+	popBlock( ID_OL, clue);
     }
     else if ( strncmp( str, "option", 6 ) == 0 )
     {
@@ -3300,11 +3406,11 @@ void KHTMLWidget::parseP( HTMLClueV *_clue, const char *str )
 		_clue->append( flow );
 		selectFont( settings->fixedFontFace, settings->fontBaseSize,
 		    QFont::Normal, FALSE );
+		pushBlock(ID_PRE, 2, &blockEndFont, true);
 	}	
 	else if ( strncmp( str, "/pre", 4 ) == 0 )
 	{
-		vspace_inserted = insertVSpace( _clue, false );
-		popFont();
+		popBlock( ID_PRE, clue);
 	}
 	else if ( *str == 'p' && ( *(str+1) == ' ' || *(str+1) == '>' ) )
 	{
@@ -3364,10 +3470,11 @@ void KHTMLWidget::parseS( HTMLClueV *_clue, const char *str )
 	{
 		selectFont( settings->fixedFontFace, settings->fontBaseSize,
 		    QFont::Normal, FALSE );
+		pushBlock(ID_SAMP, 1, &blockEndFont);
 	}
 	else if ( strncmp(str, "/samp", 5 ) == 0)
 	{
-		popFont();
+		popBlock( ID_SAMP, clue);
 	}
 	else if ( strncmp(str, "select", 6 ) == 0)
 	{
@@ -3421,24 +3528,27 @@ void KHTMLWidget::parseS( HTMLClueV *_clue, const char *str )
 	else if ( strncmp(str, "small", 5 ) == 0 )
 	{
 		selectFont( -1 );
+		pushBlock(ID_SMALL, 1, &blockEndFont);
 	}
 	else if ( strncmp(str, "/small", 6 ) == 0 )
 	{
-		popFont();
+		popBlock( ID_SMALL, clue);
 	}
 	else if ( strncmp(str, "strong", 6 ) == 0 )
 	{
 		weight = QFont::Bold;
 		selectFont();
+		pushBlock(ID_STRONG, 1, &blockEndFont);
 	}
 	else if ( strncmp(str, "/strong", 7 ) == 0 )
 	{
-		popFont();
+		popBlock( ID_STRONG, clue);
 	}
 	else if ( strncmp( str, "strike", 6 ) == 0 )
 	{
 	    strikeOut = TRUE;
 	    selectFont();
+	    pushBlock(ID_STRIKE, 1, &blockEndFont);
 	}
 	else if ( strncmp(str, "s", 1 ) == 0 )
 	{
@@ -3446,14 +3556,18 @@ void KHTMLWidget::parseS( HTMLClueV *_clue, const char *str )
 	    {
 		strikeOut = TRUE;
 		selectFont();
+		pushBlock(ID_S, 1, &blockEndFont);
 	    }
 	}
 	else if ( strncmp(str, "/s", 2 ) == 0 )
 	{
-	    if ( str[2] == '>' || str[2] == ' ' ||
-		strncmp( str+2, "trike", 5 ) == 0 )
+	    if ( str[2] == '>' || str[2] == ' ')
 	    {
-		popFont();
+	    	popBlock( ID_S, clue);
+	    }
+	    else if ( strncmp( str+2, "trike", 5 ) == 0 )
+	    {
+		popBlock( ID_STRIKE, clue);
 	    }
 	}
 }
@@ -3486,8 +3600,11 @@ void KHTMLWidget::parseT( HTMLClueV *_clue, const char *str )
 	}
 	else if ( strncmp( str, "/title", 6 ) == 0 )
 	{
-		emit setTitle( title.data() );
-		inTitle = false;
+		if (inTitle)
+		{
+		   emit setTitle( title.data() );
+		   inTitle = false;
+		}
 	}
 	else if ( strncmp( str, "textarea", 8 ) == 0 )
 	{
@@ -3547,10 +3664,11 @@ void KHTMLWidget::parseT( HTMLClueV *_clue, const char *str )
 	{
 		selectFont( settings->fixedFontFace, settings->fontBaseSize,
 		    QFont::Normal, FALSE );
+		pushBlock(ID_TT, 1, &blockEndFont);
 	}
 	else if ( strncmp( str, "/tt", 3 ) == 0 )
 	{
-		popFont();
+		popBlock( ID_TT, clue);
 	}
 }
  
@@ -3562,7 +3680,15 @@ void KHTMLWidget::parseU( HTMLClueV *_clue, const char *str )
     {
 	    closeAnchor();
 	    if ( listStack.isEmpty() )
+	    {
 		vspace_inserted = insertVSpace( _clue, vspace_inserted );
+		pushBlock( ID_UL, 2, &blockEndList, indent, true);
+	    }
+	    else
+	    {
+		pushBlock( ID_UL, 2, &blockEndList, indent, false);
+	    }
+
 	    ListType type = Unordered;
 
 	    stringTok->tokenize( str + 3, " >" );
@@ -3579,15 +3705,7 @@ void KHTMLWidget::parseU( HTMLClueV *_clue, const char *str )
     }
     else if ( strncmp( str, "/ul", 3 ) == 0 )
     {
-	if ( listStack.remove() )
-	{
-	    indent -= INDENT_SIZE;
-		 if (indent < 0)
-		 	indent = 0;
-	    if ( listStack.isEmpty() )
-		vspace_inserted = insertVSpace( _clue, vspace_inserted );
-	}
-	flow = 0;
+	popBlock( ID_UL, clue);
     }
     else if ( strncmp(str, "u", 1 ) == 0 )
     {
@@ -3595,25 +3713,27 @@ void KHTMLWidget::parseU( HTMLClueV *_clue, const char *str )
 	{
 	    underline = TRUE;
 	    selectFont();
+	    pushBlock(ID_U, 1, &blockEndFont);
 	}
     }
     else if ( strncmp( str, "/u", 2 ) == 0 )
     {
-	    popFont();
+	    popBlock( ID_U, clue);
     }
 }
 
 // <var>            </var>
-void KHTMLWidget::parseV( HTMLClueV *, const char *str )
+void KHTMLWidget::parseV( HTMLClueV * _clue, const char *str )
 {
 	if ( strncmp(str, "var", 3 ) == 0 )
 	{
 		italic = TRUE;
 		selectFont();
+	   	pushBlock(ID_VAR, 1, &blockEndFont);
 	}
 	else if ( strncmp( str, "/var", 4 ) == 0)
 	{
-		popFont();
+		popBlock( ID_VAR, clue);
 	}
 }
 
@@ -3679,7 +3799,9 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 {
     static const char *endth[] = { "</th", "<th", "<td", "<tr", "</table", 0 };
     static const char *endtd[] = { "</td", "<th", "<td", "<tr", "</table", 0 };
+#if 0
     static const char *endall[] = { "<td", "<tr", "<th", "</table", 0 };
+#endif
     static const char *endcap[] = { "</caption>", "</table>", "<tr", "<td", "<th", 0 };    
     const char* str = 0;
     bool firstRow = true;
@@ -3698,6 +3820,7 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
     HTMLClue::VAlign capAlign = HTMLClue::Bottom;
     HTMLClue::HAlign olddivalign = divAlign;
     HTMLClue *oldFlow = flow;
+    int oldindent = indent;
     QColor tableColor;
     QColor rowColor;
 
@@ -3753,6 +3876,8 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
     //       _clue->append( table ); 
     // CC: Moved at the end since we might decide to discard the table while parsing...
 
+    indent = 0;
+    
     bool done = false;
 
     while ( !done && ht->hasMoreTokens() )
@@ -3766,7 +3891,7 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 
 	    tableTag = true;
 
-	    do
+	    for(;;) 
 	    {
 		if ( strncmp( str, "<caption", 8 ) == 0 )
 		{
@@ -3783,9 +3908,37 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 		    caption = new HTMLClueV( 0, 0, _clue->getMaxWidth() );
 		    divAlign = HTMLClue::HCenter;
 		    flow = 0;
+		    pushBlock(ID_CAPTION, 3 );
 		    str = parseBody( caption, endcap );
+                    popBlock( ID_CAPTION, caption );
 		    table->setCaption( caption, capAlign );
 		    flow = 0;
+
+		    if ( str == 0 )
+		    { 
+			// CC: Close table description in case of a malformed table
+			// before returning!
+			if ( !firstRow )
+			    table->endRow();
+			table->endTable(); 
+			delete table;
+			divAlign = olddivalign;
+			flow = oldFlow;
+			delete tmpCell;
+			return 0;
+		    }
+
+		    if (strncmp( str, "</caption", 9) == 0 )
+		    {
+		        // HTML Ok!
+		        break; // Get next token from 'ht'
+		    }
+		    else
+		    {
+		    	// Bad HTML
+		    	// caption ended with </table> <td> <tr> or <th>
+		       continue; // parse the returned tag
+		    }
 		}
 
 		if ( strncmp( str, "<tr", 3 ) == 0 )
@@ -3832,10 +3985,10 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 				rowColor.setNamedColor( token+8 );
 			}
 		    }
-
-		    break;
+		    break; // Get next token from 'ht'
 		}
-		else if (*str=='<' && *(str+1)=='t' && (*(str+2)=='d' ||
+		
+		if (*str=='<' && *(str+1)=='t' && (*(str+2)=='d' ||
 			 *(str+2)=='h'))
 		//		else if ( strncmp( str, "<td", 3 ) == 0 ||
 		//			strncmp( str, "<th", 3 ) == 0 )
@@ -3848,6 +4001,7 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 		    // <tr> may not be specified for the first row
 		    if ( firstRow )
 		    {
+			// Bad HTML: No <tr> tag present
 			table->startRow();
 			firstRow = FALSE;
 		    }
@@ -3935,11 +4089,17 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 		    {
 			weight = QFont::Bold;
 			selectFont();
-			str = parseBody( cell, endth );
-			popFont();
+			pushBlock( ID_TH, 3, &blockEndFont);
+		        str = parseBody( cell, endth );
+                        popBlock( ID_TH, cell );
 		    }
 		    else
-			    str = parseBody( cell, endtd );
+		    {
+		    	pushBlock( ID_TD, 3 );
+			str = parseBody( cell, endtd );
+			popBlock( ID_TD, cell );
+		    }
+
 		    if ( str == 0 )
 		    { 
 			// CC: Close table description in case of a malformed table
@@ -3953,16 +4113,33 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 			delete tmpCell;
 			return 0;
 		    }
+
+		    if (strncmp( str, "</t", 3) == 0 )
+		    {
+		        // HTML Ok!
+		        break; // Get next token from 'ht'
+		    }
+		    else
+		    {
+		    	// Bad HTML
+		        // td/th tag ended with </table> <th> <td> or <tr> 
+		        continue; // parse the returned tag
+		    }
 		}
-		else if ( strncmp( str, "</table", 7 ) == 0 )
+		
+		if ( strncmp( str, "</table", 7 ) == 0 )
 		{
 		    closeAnchor();
 		    done = true;
 		    break;
 		}
+
+		// Unknown or unhandled table-tag: ignore
+		break;
+#if 0
 		else
 		{
-		    // catch-all for broken tables
+		  // catch-all for broken tables
       		  if ( *str != '<' || *(str+1) != '/' || *(str+2) != 't' ||
                       ( *(str+3)!='d' && *(str+3)!='h' && *(str+3)!='r' ) )
 /*
@@ -3986,8 +4163,8 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 		    else
 			tableTag = false;
 		}
+#endif
 	    }
-	    while ( str && tableTag );
 	}
     }
 
@@ -4037,6 +4214,7 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 	delete table;
     }
 
+    indent = oldindent;
     divAlign = olddivalign;
     flow = oldFlow;
 
@@ -4687,6 +4865,8 @@ KHTMLWidget::~KHTMLWidget()
 	delete stringTok;
 
     font_stack.clear();
+
+    freeBlock();
     
     char *str;
     for ( str = parsedURLs.first(); str; str = parsedURLs.next() )

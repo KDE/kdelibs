@@ -25,7 +25,7 @@
 #ifndef HTML_H
 #define HTML_H
 
-#define KHTMLW_VERSION  1301		// 00.13.00
+#define KHTMLW_VERSION  1302		// 00.13.02
 
 #include <qpainter.h>
 #include <qstrlist.h>
@@ -1151,6 +1151,74 @@ protected:
      * when we close the page.
      */
     int colorContext;
+
+	class HTMLStackElem;
+
+    typedef void (KHTMLWidget::*blockFunc)(HTMLClueV *_clue, HTMLStackElem *stackElem);
+
+	class HTMLStackElem
+	{
+	 public:
+		HTMLStackElem(		int _id, 
+		 					int _level, 
+		 				   	blockFunc _exitFunc, 
+		 				   	int _miscData1,
+		 				   	int _miscData2, 
+		 				   	HTMLStackElem * _next
+		 				  ) 
+		 				  :	id(_id), 
+		 				   	level(_level),
+		 				   	exitFunc(_exitFunc), 
+		 				   	miscData1(_miscData1), 
+		 				   	miscData2(_miscData2), 
+		 				   	next(_next) 
+	                 { }
+
+   	    int       id;
+	    int       level;
+   	 
+	    blockFunc exitFunc;
+    
+   	    int       miscData1;
+   	    int       miscData2;
+
+		HTMLStackElem *next;
+	 };
+
+	 HTMLStackElem *blockStack; 
+
+     void pushBlock( int _id, int _level, 
+    					  blockFunc _exitFunc = 0, 
+    					  int _miscData1 = 0,
+    					  int _miscData2 = 0);
+    					  
+     void popBlock( int _id, HTMLClueV *_clue);
+ 
+	 void freeBlock( void);
+    
+	 /*
+	  * Code for closing-tag to restore font
+	  * miscData1: bool - if true terminate current flow
+	  */
+    void blockEndFont(HTMLClueV *_clue, HTMLStackElem *stackElem);
+
+	 /*
+	  * Code for closing-tag to restore font and font-color
+	  */
+    void blockEndColorFont(HTMLClueV *_clue, HTMLStackElem *stackElem);
+    
+	 /*
+	  * Code for closing-tag to restore indentation
+	  * miscData1: int - previous indentation
+	  */
+    void blockEndIndent(HTMLClueV *_clue, HTMLStackElem *stackElem);
+
+	 /*
+	  * Code for remove item from listStack and restore indentation
+	  * miscData1: int - previous indentation
+	  * miscData2: bool - if true insert vspace
+	  */
+    void blockEndList(HTMLClueV *_clue, HTMLStackElem *stackElem);
 
     /*
      * Timer to parse html in background
