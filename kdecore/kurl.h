@@ -62,12 +62,17 @@ public:
   KURL();
   /**
    * Usual constructor, to construct from a string.
-   * @param url This is considered to be encoded. You can pass strings like
-   *             "/home/weis", and the protocol "file" is assumed.
-   *             This is dangerous since even this simple path is assumed to be
-   *             encoded. For example "/home/Torben%20Weis" will be decoded to
-   *             "/home/Torben Weis". This means: If you have a usual UNIX like
-   *             path, you have to use @ref encode() first before you pass it to @ref KURL.
+   * @param url A URL, not a filename. If the URL does not have a protocol
+   *             part, "file:" is assumed. 
+   *             It is dangerous to feed unix filenames into this function,
+   *             this will work most of the time but not always.
+   *             For example "/home/Torben%20Weis" will be considered a URL
+   *             pointing to the file "/home/Torben Weis" instead of to the
+   *             file "/home/Torben%20Weis".
+   *             This means that if you have a usual UNIX like path you 
+   *             should not use this constructor.
+   *             Instead create an empty url and set the path by using
+   *             @ref setPath().
    */
   KURL( const QString& url );
   /**
