@@ -1,6 +1,9 @@
 // $Id$
 //
 // $Log$
+// Some patches by Alex and me
+// Revision 1.1.1.3  1997/12/11 07:19:14  jacek
+// Imported sources from KDE CVS
 //
 // Revision 1.1.1.2  1997/12/10 07:08:33  jacek
 // Imported sources from KDE CVS
@@ -73,7 +76,7 @@ const QString KSimpleConfig::deleteEntry( const char* pKey, bool bLocalized )
 			  pCurrentGroupDict->remove( pKey );
 			  return aValue.copy();
 			}
-bool KSimpleConfig::deleteGroup( const char* pGroup, bool bDeep = true )
+		  else
 			return QString();
 		}
 	  else
