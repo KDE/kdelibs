@@ -16,8 +16,7 @@ libmcop_la_SOURCES = buffer.cc connection.cc core.cc dispatcher.cc \
 	 trader_impl.cc dynamicrequest.cc anyref.cc loopback.cc debug.cc \
 	 delayedreturn.cc thread.cc dynamicskeleton.cc
 
-libmcop_la_LIBADD = $(LIBSOCKET) $(LIBPTHREAD) $(USE_THREADS) \
-     $(top_builddir)/libltdl/libltdlc.la
+libmcop_la_LIBADD = $(LIBSOCKET) $(top_builddir)/libltdl/libltdlc.la
 libmcop_la_LDFLAGS = -no-undefined 
 
 artsincludedir = $(includedir)/arts
