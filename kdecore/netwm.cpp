@@ -1508,6 +1508,16 @@ unsigned long NETRootInfo::event(XEvent *event) {
 #endif
 
 	    closeWindow(event->xclient.window);
+	} else if (event->xclient.message_type == wm_protocols
+	    && (Atom)event->xclient.data.l[ 0 ] == net_wm_ping) {
+	    dirty = WMPing;
+
+#ifdef   NETWMDEBUG
+	    fprintf(stderr, "NETRootInfo2::event: gotPing(0x%lx,%lu)\n",
+		event->xclient.window, event->xclient.data.l[1]);
+#endif
+	    if( NETRootInfo2* this2 = dynamic_cast< NETRootInfo2* >( this ))
+		this2->gotPing( event->xclient.window, event->xclient.data.l[1]);
 	}
     }
 
@@ -1575,32 +1585,6 @@ unsigned long NETRootInfo::event(XEvent *event) {
     return dirty & p->client_properties;
 }
 
-
-unsigned long NETRootInfo2::event(XEvent *event) {
-    unsigned long dirty = 0;
-
-    // the window manager will be interested in client messages... no other
-    // client should get these messages
-    if (role == WindowManager && event->type == ClientMessage &&
-	event->xclient.format == 32) {
-#ifdef    NETWMDEBUG
-	fprintf(stderr, "NETRootInfo2::event: handling ClientMessage event\n");
-#endif
-
-	if (event->xclient.message_type == wm_protocols
-	    && (Atom)event->xclient.data.l[ 0 ] == net_wm_ping) {
-	    dirty = WMPing;
-
-#ifdef   NETWMDEBUG
-	    fprintf(stderr, "NETRootInfo2::event: gotPing(0x%lx,%lu)\n",
-		event->xclient.window, event->xclient.data.l[1]);
-#endif
-
-	    gotPing( event->xclient.window, event->xclient.data.l[1]);
-	}
-    }
-    return NETRootInfo::event( event ) | ( dirty & p->client_properties );
-}
 
 // private functions to update the data we keep
 

@@ -628,9 +628,8 @@ public:
 		unsigned long properties[], int properties_size,
                 int screen = -1, bool doActivate = true);
     void sendPing( Window window, Time timestamp );
-    // note it's NOT virtual
-    unsigned long event(XEvent *event);
 protected:
+    friend class NETRootInfo;
     virtual void gotPing( Window, Time ) {};
 // no private data, use NETRootInfoPrivate
 };
