@@ -126,6 +126,8 @@ class KWalletD : public KDEDModule {
 		virtual bool folderDoesNotExist(const QString& wallet, const QString& folder);
 		virtual bool keyDoesNotExist(const QString& wallet, const QString& folder, const QString& key);
 
+		virtual void closeAllWallets();
+
 	private slots:
 		void slotAppUnregistered(const QCString& app);
 		void emitWalletListDirty();

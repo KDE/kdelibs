@@ -890,6 +890,12 @@ void KWalletD::reconfigure() {
 	// in minutes!
 	_idleTime = cfg.readNumEntry("Idle Timeout", 10) * 60 * 1000;
 
+	if (cfg.readBoolEntry("Close on Screensaver", false)) {
+		connectDCOPSignal("kdesktop", "KScreensaverIface", "KDE_start_screensaver()", "closeAllWallets()", false);
+	} else {
+		disconnectDCOPSignal("kdesktop", "KScreensaverIface", "KDE_start_screensaver()", "closeAllWallets()");
+	}
+
 	// Handle idle changes
 	if (_closeIdle) {
 		if (_idleTime != timeSave) { // Timer length changed
@@ -994,5 +1000,15 @@ void KWalletD::timedOut(int id) {
 	}
 }
 
+
+void KWalletD::closeAllWallets() {
+	QIntDict<KWallet::Backend> tw = _wallets;
+
+	for (QIntDictIterator<KWallet::Backend> it(tw); it.current(); ++it) {
+		closeWallet(it.current(), it.currentKey(), true);
+	}
+
+	_wallets.clear();
+}
 
 #include "kwalletd.moc"
