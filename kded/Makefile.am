@@ -25,7 +25,8 @@ kded_la_LDFLAGS = $(all_libraries) -module -avoid-version
 kded_la_LIBADD = $(LIB_KIO)
 kded_la_SOURCES = kded.cpp kbuildservicetypefactory.cpp \
 			kbuildservicefactory.cpp \
-			kbuildservicegroupfactory.cpp kdedmodule.cpp
+			kbuildservicegroupfactory.cpp kdedmodule.cpp \
+			kdedmodule.stub kdedmodule.skel
 
 kbuildsycoca_la_LDFLAGS = $(all_libraries) -module -avoid-version
 kbuildsycoca_la_LIBADD = $(LIB_KIO)
@@ -53,7 +54,7 @@ kdontchangethehostname_SOURCES = khostname.cpp
 
 METASOURCES = AUTO
 
-include_HEADERS = kdedmodule.h
+include_HEADERS = kdedmodule.h kdedmodule_stub.h
 
 noinst_HEADERS = kbuildsycoca.h kbuildservicetypefactory.h \
 		kbuildservicefactory.h kbuildservicegroupfactory.h \
