@@ -46,7 +46,7 @@ QValidator::State KStringListValidator::validate( QString & input, int& ) const 
   return Invalid;
 }
 
-void KStringListValidator::fixup( QString & input ) const {
+void KStringListValidator::fixup( QString & /* input */ ) const {
   if ( !isFixupEnabled() ) return;
   // warn (but only once!) about non-implemented fixup():
   static bool warn = true;
