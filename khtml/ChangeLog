@@ -1,3 +1,9 @@
+2004-10-28  Stephan Kulow  <coolo@kde.org>
+
+        * html/html_documentimpl.cpp (determineParseMode): adding a fixed list of
+        doctypes to enable quirks mode on (derived from Webcore, but majorly revised)
+        * enable strict CSS parsing also for transitional doctypes
+
 2004-10-27  Germain Garand  <germain@ebooksfrance.com>
 
         make font-sizes CSS2.1 compliant.

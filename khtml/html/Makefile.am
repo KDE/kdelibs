@@ -45,10 +45,7 @@ INCLUDES = -I$(top_srcdir)/kimgio -I$(top_srcdir)/dcop \
  -I$(top_srcdir)/kwallet/client -I$(top_srcdir)/kutils \
  $(all_includes)
 
-SRCDOC_DEST=$(kde_htmldir)/en/kdelibs/khtml
+doctypes.cpp: $(srcdir)/doctypes.gperf $(srcdir)/Makefile.am
+	gperf -CEot -L "ANSI-C" -k "*" -N findDoctypeEntry -F ,PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards $(srcdir)/doctypes.gperf > $@
 
-## generate lib documentation 
-srcdoc:
-	$(mkinstalldirs) $(SRCDOC_DEST)
-	kdoc -H -d $(SRCDOC_DEST) kdecore -lqt
-
+html_documentimpl.lo: doctypes.cpp

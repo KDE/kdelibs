@@ -234,7 +234,7 @@ void HTMLLinkElementImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DO
         m_sheet->deref();
     m_sheet = new CSSStyleSheetImpl(this, url);
     m_sheet->ref();
-    m_sheet->parseString( sheetStr, getDocument()->parseMode() == DocumentImpl::Strict );
+    m_sheet->parseString( sheetStr, !getDocument()->inCompatMode() );
 
     MediaListImpl *media = new MediaListImpl( m_sheet, m_media );
     m_sheet->setMedia( media );
@@ -411,7 +411,7 @@ void HTMLStyleElementImpl::childrenChanged()
         m_loading = true;
         m_sheet = new CSSStyleSheetImpl(this);
         m_sheet->ref();
-        m_sheet->parseString( text, (getDocument()->parseMode() == DocumentImpl::Strict) );
+        m_sheet->parseString( text, !getDocument()->inCompatMode() );
         MediaListImpl* media = new MediaListImpl( m_sheet, DOMString( m_media ) );
         m_sheet->setMedia( media );
         m_loading = false;

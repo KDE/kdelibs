@@ -972,7 +972,7 @@ void DocumentImpl::recalcStyle( StyleChange change )
         //kdDebug() << "DocumentImpl::attach: setting to charset " << settings->charset() << endl;
         _style->setFontDef(fontDef);
 	_style->htmlFont().update( paintDeviceMetrics() );
-        if ( parseMode() != Strict )
+        if ( inCompatMode() )
             _style->setHtmlHacks(true); // enable html specific rendering tricks
 
         StyleChange ch = diff( _style, oldStyle );
@@ -1068,7 +1068,7 @@ void DocumentImpl::attach()
     // Create the rendering tree
     assert(!m_styleSelector);
     m_styleSelector = new CSSStyleSelector( this, m_usersheet, m_styleSheets, m_url,
-                                            pMode == Strict );
+                                            !inCompatMode() );
     m_render = new (m_renderArena) RenderCanvas(this, m_view);
     m_styleSelector->computeFontSizes(paintDeviceMetrics(), m_view ? m_view->part()->zoomFactor() : 100);
     recalcStyle( Force );
@@ -1960,7 +1960,7 @@ void DocumentImpl::recalcStyleSelector()
     if ( m_view && m_view->mediaType() == "print" )
 	usersheet += m_printSheet;
     m_styleSelector = new CSSStyleSelector( this, usersheet, m_styleSheets, m_url,
-                                            pMode == Strict );
+                                            !inCompatMode() );
 
     m_styleSelectorDirty = false;
 }
