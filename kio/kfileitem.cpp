@@ -35,7 +35,7 @@
 #include <krun.h>
 
 KFileItem::KFileItem( const KIO::UDSEntry& _entry, const KURL& _url,
-		      bool _determineMimeTypeOnDemand, bool _urlIsDirectory ) :
+                      bool _determineMimeTypeOnDemand, bool _urlIsDirectory ) :
   m_entry( _entry ),
   m_url( _url ),
   m_bIsLocalURL( _url.isLocalFile() ),
@@ -144,7 +144,7 @@ void KFileItem::init( bool _determineMimeTypeOnDemand )
         {
           m_bLink = true;
           stat( QFile::encodeName(m_url.path( -1 )), &buf ); // shouldn't we check if stat() succeeded or not? (before
-	                                  // taking buf.st_mode blindly ) (Simon)
+                                          // taking buf.st_mode blindly ) (Simon)
           mode = buf.st_mode;
         }
       }
@@ -266,7 +266,6 @@ QString KFileItem::iconName()
   return determineMimeType()->icon(m_url, false);
 }
 
-// new stuff from KonqFileItem
 QPixmap KFileItem::pixmap( int _size, int _state ) const
 {
   if ( !m_pMimeType )
@@ -277,6 +276,11 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
     return DesktopIcon( "unknown", _size, _state );
   }
 
+  if ( m_bLink )
+      _state |= KIcon::LinkOverlay;
+  // TODO fix this
+  if ( !(S_IRUSR & m_permissions) && !(S_IRGRP & m_permissions) && !(S_IROTH & m_permissions) )
+       _state |= KIcon::LockOverlay;
   QPixmap p = m_pMimeType->pixmap( m_url, KIcon::Desktop, _size, _state );
   if (p.isNull())
     kdWarning() << "Pixmap not found for mimetype " << m_pMimeType->name() << endl;
@@ -318,7 +322,7 @@ QString KFileItem::getStatusBarInfo()
   {
       QString tmp;
       if ( comment.isEmpty() )
-	tmp = i18n ( "Symbolic Link" );
+        tmp = i18n ( "Symbolic Link" );
       else
         tmp = i18n("%1 (Link)").arg(comment);
       text += "->";
@@ -341,7 +345,7 @@ QString KFileItem::getStatusBarInfo()
     {
       text += "  ";
       text += comment;
-    }	
+    }
     return text;
 }
 
