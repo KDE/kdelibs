@@ -149,14 +149,15 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                         break;
                 }
             }
-            // parent loses focus -> we hide
+            // parent loses focus or gets a click -> we hide
             else if ( type == QEvent::FocusOut || type == QEvent::Resize ||
                       type == QEvent::Close || type == QEvent::Hide ||
-                      type == QEvent::Move ) {
+                      type == QEvent::Move ||
+                      type == QEvent::MouseButtonPress) {
                 hide();
                 return false;
             }
-            else if ( type == QEvent::Move && d->m_parent )
+            else if ( type == QEvent::Move )
                 move( d->m_parent->mapToGlobal(QPoint(0, d->m_parent->height())));
             else if ( type == QEvent::Resize )
                 resize( sizeHint() );
