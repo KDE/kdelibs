@@ -48,7 +48,6 @@
 #include <qdir.h>
 #include <qobject.h>
 #include <qpushbutton.h>
-#include <qpushbutton.h>
 #include <qscrollview.h>
 #include <qstring.h>
 #include <qtextstream.h>

@@ -20,9 +20,7 @@
 #include <qcolor.h>
 #include <dom_string.h>
 #include <qstring.h>
-#include <qfile.h>
 #include <qobject.h>
-#include <qpushbutton.h>
 #include <qscrollview.h>
 #include <qwidget.h>
 #include <qvaluelist.h>
@@ -64,13 +62,13 @@ int main(int argc, char *argv[])
     QObject::connect( doc->browserExtension(), SIGNAL( openURLRequest( const KURL &, const KParts::URLArgs & ) ),
 		      dummy, SLOT( slotOpenURL( const KURL&, const KParts::URLArgs & ) ) );
 
-    doc->openURL( args->url(0) );
-    DOMTreeView * dtv = new DOMTreeView(0, doc, "DomTreeView");
-    dtv->show();
+     doc->openURL( args->url(0) );
+     DOMTreeView * dtv = new DOMTreeView(0, doc, "DomTreeView");
+     dtv->show();
 
     toplevel->setCentralWidget( doc->widget() );
     toplevel->resize( 640, 800);
-    
+
     dtv->resize(toplevel->width()/2, toplevel->height());
 
     QDomDocument d = doc->domDocument();

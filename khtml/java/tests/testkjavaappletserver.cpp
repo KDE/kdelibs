@@ -1,4 +1,4 @@
-#include <kapp.h>
+#include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kjavaappletserver.h>
 #include <kjavaapplet.h>
