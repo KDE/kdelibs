@@ -717,13 +717,14 @@ bool KUnixSocketAddress::setAddress(sockaddr_un* _sun, ksocklen_t _size)
 
 bool KUnixSocketAddress::setAddress(QCString path)
 {
-  if (owndata && d->m_sun != NULL && 
-      datasize - offsetof(sockaddr_un, sun_path) > path.length())
+  int newsize = offsetof(sockaddr_un, sun_path) + path.length();
+
+  if (owndata && d->m_sun != NULL && datasize >= newsize)
     {
       // we can reuse this
       strcpy(d->m_sun->sun_path, path);
 #ifdef HAVE_SOCKADDR_SA_LEN
-      data->sa_len = path.length();
+      data->sa_len = newsize;
 #endif
       return true;
     }
@@ -732,7 +733,7 @@ bool KUnixSocketAddress::setAddress(QCString path)
   if (owndata && d->m_sun != NULL)
     free(d->m_sun);
 
-  d->m_sun = (sockaddr_un*) malloc(offsetof(sockaddr_un, sun_path) + path.length());
+  d->m_sun = (sockaddr_un*) malloc(newsize);
   if (d->m_sun == NULL)
     {
       owndata = false;
@@ -743,7 +744,7 @@ bool KUnixSocketAddress::setAddress(QCString path)
   strcpy(d->m_sun->sun_path, path);
   data = (sockaddr*)d->m_sun;
 #ifdef HAVE_SOCKADDR_SA_LEN
-  data->sa_len = path.length();
+  data->sa_len = newsize;
 #endif
   return 1;
 }
