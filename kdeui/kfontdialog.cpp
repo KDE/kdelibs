@@ -402,7 +402,7 @@ void KFontChooser::setupDisplay()
 void KFontChooser::getFontList( QStringList &list, bool fixed )
 {
   QFontDatabase dbase;
-  QStringList lstSys(dbase.families());
+  QStringList lstSys(dbase.families( false ));
 
   // Since QFontDatabase doesn't have any easy way of returning just
   // the fixed width fonts, we'll do it in a very hacky way
@@ -564,6 +564,29 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.57  2000/12/11 23:50:47  granroth
+* Pretty major change in the way that fonts are found.  Previously, all
+* fonts using KFontDialog or KFontChooser were found using XListFonts.
+* Unfortunately, this breaks whenever such things like the RENDER
+* extension are used or KDE runs in (theoretically!) Qt/Embedded or even
+* Windows.
+*
+* The Right Way(tm) to do this is to just use Qt for all font
+* information.  Since there is the QFontDatabase class that is *similar*
+* in functionality to XListFonts, it's clearly the way to go.
+*
+* For 99.9% of the cases, this does work great -- it's fast and accurate
+* and works with Xft.  The case where it fails is with fixed width
+* fonts -- QFontDatabase doesn't contain that knowledge.  So I had to
+* work around this with a huge hack involving iterating through all
+* fonts and instantiating a QFontInfo on each.  If you would guess that
+* this is *very* slow, you would be right.  On the one plus side, I only
+* found one place in all of KDE that actually uses this feature
+* (khexedit).
+*
+* I left the XListFont stuff in for backwards compatability (for now).
+* Since nothing in KDE uses it, we'll have to get rid of it somehow.
+*
 * Revision 1.56  2000/09/25 13:45:17  faure
 * * Added extractors for the charset that is set in the combobox.
 * The font holds the charset, but this means 'default' was useless.
