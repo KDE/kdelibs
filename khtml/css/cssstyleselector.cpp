@@ -3274,7 +3274,8 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         else if (isInitial)
             style->resetOutline();
         break;
-    case CSS_PROP__KHTML_BOX_SIZING:
+    case CSS_PROP_BOX_SIZING:
+        HANDLE_INHERIT(boxSizing, BoxSizing)
         if (!primitiveValue) return;
         if (primitiveValue->getIdent() == CSS_VAL_CONTENT_BOX)
             style->setBoxSizing(CONTENT_BOX);
