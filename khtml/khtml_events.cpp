@@ -25,15 +25,6 @@ using namespace khtml;
 class khtml::MouseEvent::MouseEventPrivate
 {
 public:
-  MouseEventPrivate()
-  {
-      urlHandling = true;
-  }
-  ~MouseEventPrivate()
-  {
-  }
-
-    bool urlHandling; // ### make member KDE 3.0
     int nodeAbsX, nodeAbsY;
 };
 
@@ -66,14 +57,14 @@ void khtml::MouseEvent::setNodePos( int x, int y)
     d->nodeAbsY = y;
 }
 
+// ### remove
 bool khtml::MouseEvent::isURLHandlingEnabled() const
 {
-    return d->urlHandling;
 }
 
+// ### remove
 void khtml::MouseEvent::setURLHandlingEnabled( bool enable )
 {
-    d->urlHandling = enable;
 }
 
 long khtml::MouseEvent::offset() const

@@ -46,11 +46,10 @@ public:
   int nodeAbsY() const;
   void setNodePos( int x, int y);
 
-  // returns whether the receiving object should handle the provided url
-  // (like on mouse-release -> load url) or whether this should not be
-  // done (because for example some javascript onClick handler returned false)
-  bool isURLHandlingEnabled() const; // ### make inline KDE 3.0
-  void setURLHandlingEnabled( bool enable );
+  // obsolete. don't use it. don't ask. 
+  bool isURLHandlingEnabled() const; // ### remove KDE 3.0
+  // obsolete. don't use it. don't ask
+  void setURLHandlingEnabled( bool enable ); // ### remove KDE 3.0
 
   // return the offset of innerNode
   long offset() const;
