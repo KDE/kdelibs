@@ -24,7 +24,9 @@
 #include <qstring.h>
 #include <kurl.h>
 /**
- * Obtain and keep track of the local copy of a remote file, removes
+ * Obtain and keep track of the local copy of a remote file.
+ *
+ * Removes
  * the file when it is deleted.
  *
  * @author rich@kde.org
@@ -48,7 +50,9 @@ public:
   virtual ~KRemoteFile();
 
   /**
-   * Copy the temporary file to the remote location.  Do this when
+   * Copy the temporary file to the remote location. 
+   *
+   * Do this when
    *  the user chooses to save the file.
    **/
   bool save();

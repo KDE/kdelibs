@@ -48,18 +48,20 @@ class KFileComboBox;
 struct KFileDialogPrivate;
 
 /**
- * The KFileDialog widget provides a user (and developer) friendly way to
- * select files. The widget can be used as a drop in replacement for the
- * QFileDialog widget, but has greater functionality and a nicer GUI.
+ * Provide a user (and developer) friendly way to
+ * select files.
+ *
+ * The widget can be used as a drop in replacement for the
+ *@ref  QFileDialog widget, but has greater functionality and a nicer GUI.
  *
  * You will usually want to use one of the two static methods
- * @ref getOpenFileName or @ref getSaveFileName.
+ * @ref getOpenFileName() or @ref getSaveFileName().
  *
  * The dialog has been designed to allow applications to customise it
  * by subclassing. It uses geometry management to ensure that subclasses
  * can easily add children which will be incorporated into the layout.
  *
- * @short A file selection dialog
+ * @short A file selection dialog.
  *
  * @author Richard J. Moore rich@kde.org
  */
@@ -68,6 +70,13 @@ class KFileDialog : public KDialogBase
     Q_OBJECT
 
 public:
+    /**
+     * Modes of operation for the dialog.
+     * @li @p File - Get a single file name from the user.
+     * @li @p Directory - Get a directory name from the user.
+     * @li @p Files - Get multiple file names from the user.
+     * @li @p Preview - Show a preview of the file that has the user's attention.
+     **/
     enum Mode {
 	File = 1,
 	Directory = 2,
@@ -80,7 +89,7 @@ public:
       * @param dirName  The name of the directory to start in.
       * @param filter   A shell glob that specifies which files to display.
       * see setFilter for details on how to use this argument
-      * @param acceptURLs If set to false, kfiledialog will just accept
+      * @param acceptURLs If set to false, @ref KFileDialog will just accept
       * files on the local filesystem.
       */
     KFileDialog(const QString& dirName, const QString& filter,
@@ -88,49 +97,54 @@ public:
 		bool modal);
 
     /**
-     * Cleans up
+     * Clean up.
      */
     ~KFileDialog();
 
     /**
-      * Returns the fully qualified filename.
+      * Retrieve the fully qualified filename.
       */
     KURL selectedURL() const;
 
     /**
-     * Returns the current directory
+     * Retrieve the current directory.
      */
     KURL baseURL() const;
 
     /**
-      * @return full path in local filesystem. (Local files only)
+      * @return Full path in local filesystem. (Local files only)
       */
     QString selectedFile() const;
 
     /**
-     * Sets the directory to view
+     * Set the directory to view.
+     *
      * @param name URL to show
-     * @param clearforward indicate, if the forward queue
-     * should be cleared
+     * @param clearforward Indicate whether the forward queue
+     * should be cleared.
      */
     void setURL(const QString& name, bool clearforward = true);
 
     /**
-     * Sets the directory to view
+     * Set the directory to view.
+     *
      * @param name URL to show
-     * @param clearforward indicate, if the forward queue
-     * should be cleared
+     * @param clearforward Indicate whether the forward queue
+     * should be cleared.
      */
     void setURL(const KURL &url, bool clearforward = true);
 
     /**
-     * Sets the filename to preselect.
-     * It takes absolute and relative file names
+     * Set the filename to preselect.
+     *
+     * This takes absolute and relative file names.
      */
     void setSelection(const QString& name);
 
     /**
-     * Sets the filter to be used to filter. You can set more
+     * Set the filter to be used to filter.
+     *
+     * You can set more
      * filters for the user to select seperated by '\n'. Every
      * filter entry is defined through namefilter|text to diplay.
      * If no | is found in the expression, just the namefilter is
@@ -142,25 +156,29 @@ public:
      * kfile->setFilter("*.cpp|Sources (*.cpp)");
      * </pre>
      *
-     * Note: the text to display is not parsed in any way. So, if you
+     * Note: The text to display is not parsed in any way. So, if you
      * want to show the suffix to select by a specific filter, you must
      * repeat it.
      */
     void setFilter(const QString& filter);
 
     /**
-     * Adds a preview widget and enters the preview mode. In this mode
-     * the dialog is splitted and the right part contains your widget.
-     * This widget has to inherit QWidget and it has to implement
-     * a slot <pre>showPreview(const KURL &);</pre> which is called
+     * Add a preview widget and enter the preview mode.
+     *
+     * In this mode
+     * the dialog is split and the right part contains your widget.
+     * This widget has to inherit @ref QWidget and it has to implement
+     * a slot @p showPreview(const KURL &); which is called
      * every time the file changes. You may want to look at
      * koffice/lib/kofficecore/koFilterManager.cc for some hints :)
      */
     void setPreviewWidget(const QWidget *w);
 
     /**
-     * This method creates a modal file dialog and returns the selected
-     * filename or an empty string if none was chosen. Note that with
+     * Thi method creates a modal file dialog and returns the selected
+     * filename or an empty string if none was chosen.
+     *
+     * Note that with
      * this method the user must select an existing filename.
      *
      * @param dir This specifies the path the dialog will start in.
@@ -174,8 +192,10 @@ public:
 				   const QString& caption = QString::null);
 
     /**
-     * This method creates a modal file dialog and returns the selected
-     * filename or an empty string if none was chosen. Note that with this
+     * Creates a modal file dialog and returns the selected
+     * filename or an empty string if none was chosen.
+     *
+     * Note that with this
      * method the user need not select an existing filename.
      *
      * @param dir This specifies the path the dialog will start in.
@@ -189,11 +209,13 @@ public:
 				   const QString& caption = QString::null);
 
     /**
-     * This method creates a modal file dialog and returns the selected
-     * directory or an empty string if none was chosen. Note that with this
+     * Creates a modal file dialog and returns the selected
+     * directory or an empty string if none was chosen.
+     *
+     * Note that with this
      * method the user need not select an existing directory.
      *
-     * @param dir This specifies the directory the dialog will start in.
+     * @param dir The directory the dialog will start in.
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
@@ -201,6 +223,9 @@ public:
 					QWidget * parent = 0,
 					const QString& caption = QString::null);
 
+  /**
+   * Show the widget.
+   **/
     virtual void show();
 
     static void initIcons();
@@ -211,7 +236,7 @@ public:
     void setMode( Mode m );
 
     /**
-     * Retrieves the mode of the filedialog.
+     * Retrieve the mode of the filedialog.
      */
     Mode mode() const;
 
@@ -232,7 +257,7 @@ signals:
     void historyUpdate(bool, bool);
 
     /**
-     * Emitted when in preview mode and the user selects a file
+     * Emitted when in preview mode and the user selects a file.
      */
     void showPreview(const KURL &url);
 
