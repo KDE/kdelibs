@@ -144,7 +144,7 @@ KCModuleInfo::loadAll()
   setHandle(_service->property("X-KDE-FactoryName").toString());
 
   // KCD parent
-  setParentComponents(_service->property("X-KDE-ParentComponents").toString());
+  setParentComponents(_service->property("X-KDE-ParentComponents").toStringList());
 
   // does the module need super user privileges?
   setNeedsRootPrivileges(desktop.readBoolEntry("X-KDE-RootOnly", false));
