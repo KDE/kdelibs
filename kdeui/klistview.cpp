@@ -31,6 +31,14 @@
 
 #include <X11/Xlib.h>
 
+class KListView::KListViewPrivate
+{
+public:
+  QRect *invalidateRect;
+  QPoint *pressPos;
+  QPoint *startDragPos;
+};
+
 KListView::KListView( QWidget *parent, const char *name )
     : QListView( parent, name )
 {
@@ -62,6 +70,8 @@ KListView::KListView( QWidget *parent, const char *name )
 
 KListView::~KListView()
 {
+    delete d->startDragPos; 
+    delete d->pressPos; 
     delete d->invalidateRect;
 }
 
