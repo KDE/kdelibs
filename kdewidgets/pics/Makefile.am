@@ -12,4 +12,4 @@ kdewidgetsdata_DATA =  klineedit.png ktextbrowser.png kpasswordedit.png kdatewid
 
 kdewidgetsdatadir = $(kde_datadir)/kdewidgets/pics
 
-EXTRA_DIST = $(data_DATA)
+EXTRA_DIST = $(kdewidgetsdata_DATA)
