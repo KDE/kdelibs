@@ -204,6 +204,13 @@ AddressBook::AddressBook()
   d->mManager = new KRES::ResourceManager<Resource>( "contact" );
 }
 
+AddressBook::AddressBook( const QString &config )
+{
+  d = new AddressBookData;
+  d->mErrorHandler = 0;
+  d->mManager = new KRES::ResourceManager<Resource>( "contact", config );
+}
+
 AddressBook::~AddressBook()
 {
   delete d->mManager;

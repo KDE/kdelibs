@@ -108,6 +108,7 @@ class AddressBook : public QObject
       @param format File format class.
     */
     AddressBook();
+    AddressBook( const QString &config );
     virtual ~AddressBook();
 
     /**

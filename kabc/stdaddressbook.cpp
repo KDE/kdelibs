@@ -123,6 +123,7 @@ bool StdAddressBook::save()
 }
 
 StdAddressBook::StdAddressBook()
+  : AddressBook( "kabcrc" )
 {
   kdDebug(5700) << "StdAddressBook::StdAddressBook()" << endl;
 
@@ -130,6 +131,7 @@ StdAddressBook::StdAddressBook()
 }
 
 StdAddressBook::StdAddressBook( bool onlyFastResources )
+  : AddressBook( "kabcrc" )
 {
   kdDebug(5700) << "StdAddressBook::StdAddressBook( bool )" << endl;
 

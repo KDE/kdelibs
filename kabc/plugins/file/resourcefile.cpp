@@ -158,7 +158,7 @@ bool ResourceFile::lock( const QString &fileName )
   if (QFile::exists( lockName )) return false;
 
   QString lockUniqueName;
-  lockUniqueName = fn + kapp->randomString(8);
+  lockUniqueName = fn + kapp->randomString( 8 );
   mLockUniqueName = locateLocal( "data", "kabc/lock/" + lockUniqueName );
   kdDebug(5700) << "-- lock unique name: " << mLockUniqueName << endl;
 
