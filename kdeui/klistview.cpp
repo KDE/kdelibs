@@ -1761,6 +1761,8 @@ void KListViewItem::paintCell(QPainter *p, const QColorGroup &cg, int column, in
         _cg.setBrush(QColorGroup::Base, QBrush(backgroundColor(), *pm));
   else
         _cg.setColor(QColorGroup::Base, backgroundColor());
+  
+  p->setBrushOrigin( -listView()->contentsX(), -listView()->contentsY() );
   QListViewItem::paintCell(p, _cg, column, width, alignment);
 }
 
