@@ -2,6 +2,9 @@
 
  * $Log$
  *
+ * Revision 1.9  1997/10/12 14:35:30  kalle
+ * Compiles again, test for tempSaveName(), checkRecoverFile()
+ *
  * Revision 1.8  1997/10/04 19:42:49  kalle
  * new KConfig
  *
@@ -286,29 +289,15 @@ int main( int argc, char **argv )
 {
   KApplication  a( argc, argv );
 
-  KConfig* pConfig = kapp->getConfig();
-  KGroupIterator* pIt = pConfig->groupIterator();
-  while( pIt->current() )
-	{
-	  fprintf( stderr, "\n\n\nThis is the group%s\n", pIt->currentKey() );
-	  KEntryIterator* pItE = pConfig->entryIterator( pIt->currentKey() );
-	  if( pItE )
-		{
-		  while( pItE->current() )
-			{
-			  fprintf( stderr, "%s = %s\n", pItE->currentKey(), pItE->current()->aValue.data() );
-			  ++(*pItE);
-			};
-		  delete pItE;
-		}
-	  ++(*pIt);
-	};
-  delete pIt;
+  KConfigTestView   *w = new KConfigTestView;
+  a.setMainWidget( w );
+  w->show();
 
-  QString aOldGroup = pConfig->group();
-  pConfig->setGroup( "Test" );
-  pConfig->writeEntry( "TestKey", "TestValue", true, false, true );
-  pConfig->setGroup( aOldGroup );
+  fprintf( stderr, "Autosave name for %s is %s\n", "/home/kalle/text/mytext.txt", kapp->tempSaveName( "/home/kalle/text/mytext.txt" ) );
+
+  bool bRecoverFile = false;
+  const char* pRecoverFile = kapp->checkRecoverFile( "/home/kalle/text/mytext.txt", bRecoverFile );
+  if( bRecoverFile )
 	fprintf( stderr, "Recover file exists and is at %s\n", pRecoverFile );
   else
 	fprintf( stderr, "Recover file does not exist, use %s\n", pRecoverFile );

@@ -243,19 +243,19 @@ void testWindow::slotNew()
 void testWindow::slotOpen()
 {
     statusBar->changeItem("Reading properties...", 0);
-    if (readProperties () == TRUE) // specific then global
-        statusBar->changeItem("Reading properties... Done.", 0);
-    else
-        statusBar->changeItem("Error reading properties.", 0);
+//     if (readProperties () == TRUE) // specific then global
+//         statusBar->changeItem("Reading properties... Done.", 0);
+//     else
+//         statusBar->changeItem("Error reading properties.", 0);
 
 }
 void testWindow::slotSave()
 {
     statusBar->changeItem("Saving properties...", 0);
-    if (saveProperties (FALSE) == TRUE) // global
-        statusBar->changeItem("Saving properties... Done.", 0);
-    else
-        statusBar->changeItem("Error saving properties.", 0);
+//     if (saveProperties (FALSE) == TRUE) // global
+//         statusBar->changeItem("Saving properties... Done.", 0);
+//     else
+//         statusBar->changeItem("Error saving properties.", 0);
 
 }
 void testWindow::slotPrint()
