@@ -242,7 +242,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
 	    if (comment) currToken->id = ID_COMMENT; /// ###
 	    if (script)
 	    {
-		if (scriptSrc != "") {
+		if (!scriptSrc.isEmpty()) {
 		    // forget what we just got; load from src url instead
 		    cachedScript = parser->doc()->docLoader()->requestScript(scriptSrc, parser->doc()->baseURL());
 		    loadingExtScript = true;
@@ -252,7 +252,9 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
 		}
 		else {
 #ifdef TOKEN_DEBUG
-		    kdDebug( 6036 ) << "scriptcode is: " << QString(scriptCode, scriptCodeSize) << endl;
+		    kdDebug( 6036 ) << "---START SCRIPT---" << endl;
+		    kdDebug( 6036 ) << QString(scriptCode, scriptCodeSize) << endl;
+		    kdDebug( 6036 ) << "---END SCRIPT---" << endl;
 #endif
 		    // Parse scriptCode containing <script> info
 		    doScriptExec = true;
@@ -280,7 +282,6 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
 	    else
 		currToken->id = ID_LISTING + ID_CLOSE_TAG;
 	    processToken();
-            script = style = listing = comment = false;
 	    if (cachedScript)
 		cachedScript->ref(this);
             else if (doScriptExec) {
@@ -288,6 +289,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
 		view->part()->executeScript(QString(scriptCode, scriptCodeSize));
 		executingScript = false;
             }
+            script = style = listing = comment = false;
 	    delete [] scriptCode;
 	    scriptCode = 0;
 	
@@ -1392,22 +1394,27 @@ void HTMLTokenizer::notifyFinished(CachedObject *finishedObj)
 	kdDebug( 6036 ) << "Finished loading an external script" << endl;
 #endif
 	loadingExtScript = false;
-	DOMString script = cachedScript->script();
+	DOMString scriptSource = cachedScript->script();
 #ifdef TOKEN_DEBUG
-	kdDebug( 6036 ) << "External script is:" << endl << script.string() << endl;
+	kdDebug( 6036 ) << "External script is:" << endl << scriptSource.string() << endl;
 #endif
 	cachedScript->deref(this);
 	cachedScript = 0;
 	executingScript = true;
-	view->part()->executeScript(script.string());
+	view->part()->executeScript(scriptSource.string());
 	executingScript = false;
 	
-	QString rest = scriptOutput+pendingSrc;
-	scriptOutput = pendingSrc = "";
-	
-	write(rest);
-	if (noMoreData && !cachedScript)
-	    end(); // this actually causes us to be deleted
+        // 'script' is true when we are called synchronously from 
+        // parseScript(). In that case parseScript() will take care
+        // of 'scriptOutput'.
+        if (!script)
+        {
+           QString rest = scriptOutput+pendingSrc;
+	   scriptOutput = pendingSrc = "";
+	   write(rest);
+	   if (noMoreData && !cachedScript)
+	      end(); // this actually causes us to be deleted
+        }
     }
 }
 
