@@ -99,8 +99,10 @@ int main(int argc, char **argv) {
     // $KDEDIR has not already been set.  Otherwise, the shortURI filter
     // plugin will consume it, evenif the environment variable does not
     // exist. (DA)
-    filter( "$KDEDIR/include" );
-    filter( "$HOME/.kde/share" );
+    QCString kdedir = getenv("KDEDIR");
+    QCString home = getenv("HOME");
+    filter( "$KDEDIR/include", QCString("file:")+kdedir+"/include" );
+    filter( "$HOME/.kde/share", QCString("file:")+home+"/.kde/share" );
     filter( "$HOME/$KDEDIR/kdebase/kcontrol/ebrowsing" );
     filter( "$1/$2/$3" );  // can be used as bogus or valid test
     filter( "$$$$" ); // worst case scenarios.
