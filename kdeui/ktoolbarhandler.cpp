@@ -145,16 +145,20 @@ void ToolBarHandler::setupActions()
 
     m_actions = builder.create();
 
+    /*
     for (  QPtrListIterator<KToolBar> toolBarIt( m_toolBars );
            toolBarIt.current(); ++toolBarIt )
         toolBarIt.current()->disconnect( this );
+        */
 
     m_toolBars = builder.toolBars();
 
+    /*
     for (  QPtrListIterator<KToolBar> toolBarIt( m_toolBars );
            toolBarIt.current(); ++toolBarIt )
         connect( toolBarIt.current(), SIGNAL( destroyed() ),
                  this, SLOT( setupActions() ) );
+                 */
 
     plugActionList( actionListName, m_actions );
 
