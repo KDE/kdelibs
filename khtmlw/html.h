@@ -24,7 +24,7 @@
 #ifndef HTML_H
 #define HTML_H
 
-#define KHTMLW_VERSION  1202		// 00.12.02
+#define KHTMLW_VERSION  1203		// 00.12.03
 
 #include <qpainter.h>
 #include <qstrlist.h>
@@ -716,10 +716,11 @@ protected slots:
      */
     void slotFrameSelected( KHTMLView *_view );
   
-protected:
-    enum ListType { Unordered, UnorderedPlain, Ordered, Menu, Dir };
+public:
     enum ListNumType { Numeric = 0, LowAlpha, UpAlpha, LowRoman, UpRoman };
+    enum ListType { Unordered, UnorderedPlain, Ordered, Menu, Dir };
 
+protected:
     virtual void mousePressEvent( QMouseEvent * );
 
     /**
@@ -1091,8 +1092,7 @@ protected:
     class HTMLList
     {
 	public:
-	    // Stephan: The ListNumType value is Numeric!
-	    HTMLList( ListType t, ListNumType nt = 0 )
+	    HTMLList( ListType t, ListNumType nt = Numeric )
 		{ type = t; numType = nt; itemNumber = 1; }
 	    ListType type;
 	    ListNumType numType;

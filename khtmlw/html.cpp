@@ -1106,7 +1106,8 @@ void KHTMLWidget::write( const char *_str)
 void KHTMLWidget::end()
 {
     writing = false;
-    ht->end();
+    if ( ht )
+	ht->end();
 }
 
 // changes a current font
@@ -3063,10 +3064,13 @@ void KHTMLWidget::parseS( HTMLClueV *_clue, const char *str )
 		selectFont();
 	    }
 	}
-	else if ( strncmp(str, "/s", 2 ) == 0 ||
-		strncmp( str, "/strike", 7 ) == 0 )
+	else if ( strncmp(str, "/s", 2 ) == 0 )
 	{
+	    if ( str[2] == '>' || str[2] == ' ' ||
+		strncmp( str+2, "trike", 5 ) == 0 )
+	    {
 		popFont();
+	    }
 	}
 }
 
@@ -3562,6 +3566,7 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 		}
 		else if ( strncmp( str, "</table", 7 ) == 0 )
 		{
+		    closeAnchor();
 		    done = true;
 		    break;
 		}
@@ -3586,6 +3591,7 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 			}
     			parseOneToken( tmpCell, str );
 			str = parseBody( tmpCell, endall );
+			closeAnchor();
 		    }
 		    else
 			tableTag = false;
