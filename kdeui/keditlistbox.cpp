@@ -125,16 +125,20 @@ void KEditListBox::init( bool checkAtEntering, int buttons )
        grid->addWidget(servDownButton, row++, 1);
    }
 
-   connect(m_lineEdit,SIGNAL(textChanged(const QString&)),this,SLOT(enableAddButton(const QString&)));
+   connect(m_lineEdit,SIGNAL(textChanged(const QString&)),this,SLOT(typedSomething(const QString&)));
    m_lineEdit->setTrapReturnKey(true);
    connect(m_lineEdit,SIGNAL(returnPressed()),this,SLOT(addItem()));
    connect(m_listBox, SIGNAL(highlighted(int)), SLOT(enableMoveButtons(int)));
 }
 
-void KEditListBox::enableAddButton(const QString& text)
+void KEditListBox::typedSomething(const QString& text)
 {
+    if(currentItem() >= 0) {
+        if(currentText() != m_lineEdit->text()) m_listBox->changeItem(text, currentItem());
+    }
+
     if ( !servNewButton )
-	return;
+        return;
 
    if (!d->m_checkAtEntering)
       servNewButton->setEnabled(!text.isEmpty());
@@ -225,12 +229,22 @@ void KEditListBox::addItem()
 
    if ( servNewButton )
        servNewButton->setEnabled(false);
+
+   m_lineEdit->blockSignals(true);
+   m_lineEdit->clear();
+   m_lineEdit->blockSignals(false);
+   m_listBox->setSelected(currentItem(), false);
    if (!alreadyInList)
    {
       m_listBox->insertItem(currentTextLE);
-      m_lineEdit->clear();
       emit changed();
    }
+}
+
+int KEditListBox::currentItem() const {
+    int nr = m_listBox->currentItem();
+    if(nr >= 0 && !m_listBox->item(nr)->isSelected()) return -1;
+    return nr;
 }
 
 void KEditListBox::removeItem()
@@ -252,6 +266,10 @@ void KEditListBox::removeItem()
 
 void KEditListBox::enableMoveButtons(int index)
 {
+    // Update the lineEdit when we select a different line.
+    if(currentText() != m_lineEdit->text()) 
+        m_lineEdit->setText(currentText());
+
     bool moveEnabled = servUpButton && servDownButton;
 
    if (moveEnabled )

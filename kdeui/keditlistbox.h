@@ -130,7 +130,7 @@ class KEditListBox : public QGroupBox
       /**
        * See @ref QListBox::currentItem()
        */
-      int currentItem() const { return m_listBox->currentItem(); }
+      int currentItem() const;
       /**
        * See @ref QListBox::currentText()
        */
@@ -151,7 +151,7 @@ class KEditListBox : public QGroupBox
       void addItem();
       void removeItem();
       void enableMoveButtons(int index);
-      void enableAddButton(const QString& text);
+      void typedSomething(const QString& text);
 
    private:
       QListBox *m_listBox;
