@@ -85,7 +85,6 @@ KFullscreenVideoWidget::KFullscreenVideoWidget( KVideoWidget *parent, const char
     : KVideoWidget( parent, name, WType_TopLevel | WStyle_Customize | WStyle_NoBorder )
 {
     this->videoWidget = parent;
-    setEraseColor( black );
 }
 
 void KFullscreenVideoWidget::windowActivationChange( bool )
@@ -106,7 +105,8 @@ bool KFullscreenVideoWidget::x11Event( XEvent *event )
 	{
 	case VPO_DESTROY_NOTIFY:
 	case VPO_DISABLE_NOTIFY:
-	    setEraseColor( black );
+	    setBackgroundMode( PaletteBackground );
+	    repaint();
 	    break;
 	case VPO_ENABLE_NOTIFY:
 	    setBackgroundMode( NoBackground );
@@ -116,12 +116,27 @@ bool KFullscreenVideoWidget::x11Event( XEvent *event )
     return false;
 }
 
+KVideoWidget::KVideoWidget( KXMLGUIClient *clientParent, QWidget *parent, const char *name, WFlags f )
+    : QWidget( parent, name, f )
+    , KXMLGUIClient( clientParent )
+{
+	init();
+	// ???
+	// setXML("<!DOCTYPE kpartgui>\n<kpartgui name=\"kvideowidget\" version=\"1\"><MenuBar><Menu name=\"edit\"><Action name=\"fullscreen_mode\"><Separator/></Menu></MenuBar></kpartgui>");
+}
+
 KVideoWidget::KVideoWidget( QWidget *parent, const char *name, WFlags f )
     : QWidget( parent, name, f )
 {
-    setEraseColor( lightGray );
+	init();
+}
+
+void KVideoWidget::init(void)
+{
+    setMinimumSize(0, 0);
+    setSizePolicy( QSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum ) );
+    emit adaptSize(0, 0);
     setFocusPolicy( ClickFocus );
-    setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding ) );
 
     fullscreenWidget = 0;
     embedded	     = false;
@@ -171,13 +186,18 @@ void KVideoWidget::embed( Arts::VideoPlayObject vpo )
 		releaseWinId( fullscreenWidget->winId() );
 	    }
 
-	    setEraseColor( lightGray );
 	    embedded = false;
+
+	    setBackgroundMode( PaletteBackground );
+	    repaint();
 	}
 
 	// Resize GUI
 	videoWidth  = 0;
 	videoHeight = 0;
+	setMinimumSize(0, 0);
+	setSizePolicy( QSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum ) );
+	repaint();
 
 	if (isHalfSize() || isNormalSize() || isDoubleSize())
 	    emit adaptSize( 0, 0 );
@@ -185,8 +205,6 @@ void KVideoWidget::embed( Arts::VideoPlayObject vpo )
     else
     {
 	embedded = true;
-
-	setBackgroundMode( NoBackground );
 
 	// Don't reset fullscreen mode for video playlists
 	if (fullscreenWidget)
@@ -205,6 +223,9 @@ void KVideoWidget::embed( Arts::VideoPlayObject vpo )
 	{
 	    sendEvent( winId(), VPO_ENABLE_WINDOW );
 	}
+
+	setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding ) );
+	emit adaptSize(videoWidth, videoHeight);
     }
 }
 
@@ -308,7 +329,10 @@ QSize KVideoWidget::sizeHint() const
 
 int KVideoWidget::heightForWidth( int w ) const
 {
-    return int( double(w)*double(videoHeight)/double(videoWidth) );
+	if(videoWidth == 0)
+		return 0;
+	else
+		return int( double(w)*double(videoHeight)/double(videoWidth) );
 }
 
 void KVideoWidget::focusInEvent( QFocusEvent * )
@@ -366,16 +390,16 @@ bool KVideoWidget::x11Event( XEvent *event )
 		emit adaptSize( (2 * videoWidth), (2 * videoHeight) );
 	    break;
 	case VPO_DESTROY_NOTIFY:
+	    setEraseColor(palette().active().background());
 	    embedded = false;
-	    setEraseColor( black );
 	    break;
 	case VPO_ENABLE_NOTIFY:
+	    setEraseColor(black);
 	    enabled = true;
-	    setBackgroundMode( NoBackground );
 	    break;
 	case VPO_DISABLE_NOTIFY:
+	    setEraseColor(palette().active().background());
 	    enabled = false;
-	    setEraseColor( black );
 	    break;
 	}
     }

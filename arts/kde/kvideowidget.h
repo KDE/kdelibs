@@ -23,6 +23,7 @@ class KVideoWidget : public QWidget, virtual public KXMLGUIClient
 Q_OBJECT
 
 public:
+    KVideoWidget( KXMLGUIClient *clientParent, QWidget *parent = 0, const char *name = 0, WFlags f = 0 );
     KVideoWidget( QWidget *parent = 0, const char *name = 0, WFlags f = 0 );
     virtual ~KVideoWidget();
 
@@ -63,6 +64,7 @@ signals:
     void rightButtonPressed( const QPoint & );
 
 private:
+    void init(void);
     QWidget *fullscreenWidget;
     bool embedded;
     bool enabled;
