@@ -123,6 +123,22 @@ AC_SUBST(LIBCOMPAT)
 dnl CXXFLAGS="$CXXFLAGS -ansi -pedantic"
 KDE_CHECK_ANSI
 
+AC_ARG_ENABLE(new-stuff, [  --enable-new-stuff      compile also the experiments], [
+    if test "$enableval" = "no";
+      then ac_new_stuff="no"
+    else ac_new_stuff="yes"
+  fi
+  ], [ac_new_stuff="no"]
+  )
+  
+if test "$ac_new_stuff" = "yes"; then
+  EXTRA_SUBDIRS="kdeutils kio khtml"
+else
+  EXTRA_SUBDIRS=""
+fi
+
+AC_SUBST(EXTRA_SUBDIRS)
+
 AC_OUTPUT(Makefile \
 	kdecore/Makefile \
 	kdeui/Makefile \

@@ -19,7 +19,7 @@
 
 
 SUBDIRS = kdecore kdeui jscript kimgio khtmlw kfmlib kfile \
-	mediatool kspell kab po doc toolbar kdetest 
+	mediatool kspell kab $(EXTRA_SUBDIRS) po doc toolbar kdetest 
 
 acinclude.m4: admin/acinclude.m4.in admin/libtool.m4.in
 	cat admin/acinclude.m4.in admin/libtool.m4.in   > acinclude.m4
