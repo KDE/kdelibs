@@ -179,7 +179,7 @@ KLocale::KLocale( QString catalogue )
 
     if (kapp) {
 	QString setting;
-	KConfig* config = kapp->getConfig();
+	KConfig* config = KGlobal::config();
 	config->setGroup("Locale");
 	if (!g_lang) 
 	    languages = config->readEntry("Language", "default");

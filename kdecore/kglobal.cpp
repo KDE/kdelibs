@@ -5,18 +5,18 @@
 * Generated:	Sat May  1 02:08:43 EST 1999
 */
 
-#include<assert.h>
-#include"kglobal.h"
+#include <assert.h>
+#include "kglobal.h"
 
-#include<kapp.h>
+#include <kapp.h>
 
-#include<kconfig.h>
-#include<klocale.h>
-#include<kcharsets.h>
-#include<kiconloader.h>
-#include<kstddirs.h>
+#include <kconfig.h>
+#include <klocale.h>
+#include <kcharsets.h>
+#include <kiconloader.h>
+#include <kstddirs.h>
 
-#include<qfont.h>
+#include <qfont.h>
 
 KApplication *KGlobal::kApp()
 {
@@ -40,8 +40,11 @@ KStandardDirs *KGlobal::dirs()
 
 KConfig	*KGlobal::config()
 {
-	if( _config == 0 ) {
-		_config = kApp()->getConfig();
+        if( _config == 0 ) {
+	    if (kapp)
+		_config = new KConfig(QString(kapp->name()) + "rc");
+	    else
+		_config = new KConfig();
 	}
 
 	return _config;
@@ -126,8 +129,7 @@ void KGlobal::freeAll()
 	if(_generalFont) delete _generalFont, _generalFont = 0;
 	if(_fixedFont) delete _fixedFont, _fixedFont = 0;
 
-//	FIXME: KApp also deletes pConfig!
-//	delete _config;		
+	delete _config;		
 	_config = 0;
 	delete _instanceConfig;	_instanceConfig = 0;
 

@@ -137,18 +137,12 @@ void kdebug_null( ushort /*nLevel*/, ushort /*nArea*/,
 
 static int getNum (const char *key, int _default)
 {
-  if (kapp)
-    return kapp->getConfig()->readNumEntry(key, _default);
-  else
-    return _default;
+    return KGlobal::config()->readNumEntry(key, _default);
 }
 
 static QString getString (const char *key, const char * _default)
 {
-  if (kapp)
-    return kapp->getConfig()->readEntry(key, _default);
-  else
-    return _default;
+    return KGlobal::config()->readEntry(key, _default);
 }
 
 void kdebug( ushort nLevel, ushort nArea, 
@@ -157,8 +151,8 @@ void kdebug( ushort nLevel, ushort nArea,
   // Save old grou
   QString aOldGroup;
   if (kapp) {
-    aOldGroup = kapp->getConfig()->group();
-    kapp->getConfig()->setGroup( "KDebug" );
+    aOldGroup = KGlobal::config()->group();
+    KGlobal::config()->setGroup( "KDebug" );
   }
   /* The QBitArrays should rather be application-static, but since
          some stupid platforms do not support that... */
@@ -281,7 +275,7 @@ void kdebug( ushort nLevel, ushort nArea,
 
   // restore old group
   if (kapp)
-    kapp->getConfig()->setGroup( aOldGroup );
+    KGlobal::config()->setGroup( aOldGroup );
 }
 
 

@@ -20,6 +20,10 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.53  1999/06/18 18:44:56  dmuell
+   CVS_SILENT coolo is to fast for me ;)
+   Indentation fix.
+
    Revision 1.52  1999/06/18 18:14:59  kulow
    CVS_SILENT small fix
 
@@ -215,7 +219,7 @@ KIconLoader::KIconLoader() : config(0), varname("IconPath")
 {
   KApplication *app = KApplication::getKApplication();
   if (app) {
-    config = KApplication::getKApplication()->getConfig();
+    config = KGlobal::config();
     config->setGroup("KDE Setup");
     appname = KApplication::getKApplication()->name();
   }

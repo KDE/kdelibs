@@ -90,24 +90,12 @@ static int kde_xio_errhandler( Display * )
   return kapp->xioErrhandler();
 }
 
-KApplication::KApplication( int& argc, char** argv ) :
-  QApplication( argc, argv )
-{
-  init();
-
-  parseCommandLine( argc, argv );
-
-}
-
-
 KApplication::KApplication( int& argc, char** argv, const QString& rAppName ) :
-  QApplication( argc, argv )
+    QApplication( argc, argv )
 {
     QApplication::setName(rAppName.ascii());
-
-  init();
-
-  parseCommandLine( argc, argv );
+    init();
+    parseCommandLine( argc, argv );
 
 }
 
@@ -139,11 +127,6 @@ void KApplication::init()
 
   styleHandle = 0;
   pKStyle = 0;
-
-  // try to read a global application file
-  QString aAppConfigName = QString(name()) + "rc";
-
-  pConfig = new KConfig( aAppConfigName );
 
   // Drag 'n drop stuff taken from kfm
   display = desktop()->x11Display();
@@ -309,7 +292,7 @@ bool KApplication::eventFilter ( QObject*, QEvent* e )
 		{
 		  KDebugDialog* pDialog = new KDebugDialog();
 		  /* Fill dialog fields with values from config data */
-		  KConfig* pConfig = getConfig();
+		  KConfig* pConfig = KGlobal::config();
 		  QString aOldGroup = pConfig->group();
 		  pConfig->setGroup( "KDebug" );
 		  pDialog->setInfoOutput( pConfig->readNumEntry( "InfoOutput", 4 ) );
@@ -481,8 +464,6 @@ KApplication::~KApplication()
 {
   removeEventFilter( this );
 
-  delete pConfig;
-
   delete pKStyle;
 
   delete smw;
@@ -572,8 +553,8 @@ bool KApplication::x11EventFilter( XEvent *_event )
 		{
 		  QString str;
 		
-		  getConfig()->setGroup("KDE");
-		  str = getConfig()->readEntry("widgetStyle");
+		  KGlobal::config()->setGroup("KDE");
+		  str = KGlobal::config()->readEntry("widgetStyle");
 		  if(!str.isNull())
 		    if(str == "Motif")
 		      applyGUIStyle(MotifStyle);
@@ -722,6 +703,7 @@ void KApplication::applyGUIStyle(GUIStyle /* newstyle */) {
 
     static bool dlregistered = false;
 
+    KConfig *pConfig = KGlobal::config();
     QString oldGroup = pConfig->group();
     pConfig->setGroup("KDE");
     QString styleStr = pConfig->readEntry("widgetStyle", "Platinum");
@@ -817,7 +799,7 @@ QString KApplication::getCaption() const
 void KApplication::readSettings()
 {
   // use the global config files
-  KConfig* config = getConfig();
+  KConfig* config = KGlobal::config();
   config->reparseConfiguration();
 
   QString str;

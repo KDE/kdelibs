@@ -69,27 +69,13 @@ class KApplication : public QApplication
 {
   Q_OBJECT
 public:
+  
   /**
-   * @deprecated
-	* Constructor. Pass command-line arguments.
+	* Constructor. Parses command-line arguments.
 	*
-	* A KConfig object is
-	* created that contains an application-specific config file whose
-	* name is "~/." + argv[0] + "rc". This constructor should be considered
-	* obsolete. The state of the application-specific config file may be
-	* queried afterwards with getConfigState().
 	*/
-  KApplication( int& argc, char** argv );
-
-  /**
-	* Constructor. Pass command-line arguments.
-	*
-	* A KConfig object is created that contains an
-	* application-specific config file whose name is "~/." + rAppName
-	* + "rc". The state of the application-specific config file may
-	* be queried afterwards with getConfigState().
-	*/
-  KApplication( int& argc, char** argv, const QString& rAppName );
+  KApplication( int& argc, char** argv, 
+		const QString& rAppName = QString::null);
 
   /** Destructor */
   virtual ~KApplication();
@@ -116,7 +102,7 @@ public:
 	* @return a pointer to the application's global KConfig object.
 	* @see KConfig
 	*/
-  KConfig* getConfig() const { return pConfig; }
+  KConfig* getConfig() const { return KGlobal::config(); }
 
   /**
 	* Retrieve the application session config object.
@@ -443,7 +429,6 @@ protected slots:
 
 private:
   void* pAppData; // don't touch this without Kalles permission
-  KConfig* pConfig; // application config object
   KConfig* pSessionConfig; //instance specific application config object
   QString aSessionName; // logical name of the instance specific config file
   QWidget* pTopWidget;
@@ -586,6 +571,10 @@ private:
 #endif
 
 // $Log$
+// Revision 1.89  1999/06/18 19:25:21  kulow
+// getting rid of KApplication::findFile. I don't remember having seen this
+// function ever used :)
+//
 // Revision 1.88  1999/06/18 16:48:27  kulow
 // ok, many changes for KConfig.
 //   KConfig's constructor doesn't take two absolute pathnames, but one

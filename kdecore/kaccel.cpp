@@ -353,7 +353,7 @@ void KAccel::readSettings(KConfig* config)
 {
 	QString s;
 
-	KConfig *pConfig = config?config:kapp->getConfig();
+	KConfig *pConfig = config?config:KGlobal::config();
 	pConfig->setGroup( aGroup );
 	
 	QDictIterator<KKeyEntry> aKeyIt( aKeyDict );
@@ -581,7 +581,7 @@ bool KAccel::configGlobal()
 
 void KAccel::writeSettings(KConfig* config)
 {
-	KConfig *pConfig = config?config:kapp->getConfig();
+	KConfig *pConfig = config?config:KGlobal::config();
 	pConfig->setGroup( aGroup );
 
 	QDictIterator<KKeyEntry> aKeyIt( aKeyDict );
