@@ -2896,8 +2896,10 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
   }
 }
 
-void KHTMLPart::urlSelected( const QString &url, int button, int state, const QString &_target,
-                             KParts::URLArgs args )
+//
+// This executes in the active part on a click.
+//
+void KHTMLPart::urlSelected( const QString &url, int button, int state, const QString &_target, KParts::URLArgs args )
 {
   bool hasTarget = false;
 
@@ -2908,10 +2910,12 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
       hasTarget = true;
 
   // either ignore the target on javascript: as we do now and is
-  // inconsistent to other browsers, or make sure we don't create a XSS problem here!
-  if ( (!hasTarget || target == "_self") && url.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 )
+  // inconsistent to other browsers, or make sure we don't create a XSS
+  // problem here!
+  if ( (!hasTarget || _target.lower() == "_self") &&
+        url.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 )
   {
-    executeScript( KURL::decode_string( url.right( url.length() - 11 ) ) );
+    executeScript( KURL::decode_string( url.mid( 11 ) ) );
     return;
   }
 
