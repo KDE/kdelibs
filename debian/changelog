@@ -1,3 +1,13 @@
+kdelibs (4:3.1.4-3) unstable; urgency=low
+
+  * Added Replaces to kdelibs-data for arson, k3b. (Closes: #214534)
+  * Move meinproc to kdelibs-bin so that khelpcenter glossary works.
+    (Closes: #214815)
+  * Restore generation of system.kdeglobals. (Closes: #216463)
+  * Remove symlink /usr/share/config -> /etc/kde3.
+
+ -- Christopher L Cheney <ccheney@debian.org>  Tue,  4 Nov 2003 22:00:00 -0600
+
 kdelibs (4:3.1.4-2) unstable; urgency=low
 
   * Added patch to update autotools files.
@@ -62,6 +72,33 @@ kdelibs (4:3.1.0-1) unstable; urgency=low
 
  -- Christopher L Cheney <ccheney@debian.org>  Sat, 01 Feb 2003 01:00:00 -0600
 
+kdelibs (4:2.2.2-14) unstable; urgency=low
+
+  * And a quick update to send it to unstable; no changes from -13.woody.3.
+
+ -- Daniel Stone <dstone@trinity.unimelb.edu.au>  Wed, 11 Sep 2002 22:29:31 +1000
+
+kdelibs (4:2.2.2-13.woody.8) stable-security; urgency=high
+
+  * Non-maintainer upload by the Security Team
+  * Apply the following patches from upstream:
+    - post-2.2.2-kdelibs-http.patch (CAN-2003-0459)
+    - post-2.2.2-kdelibs-kio-2.diff (CAN-2003-0370)
+    - post-2.2.2-kdelibs-kssl-2.diff (CAN-2003-0370)
+  * These address the issues described in:
+    - http://www.kde.org/info/security/advisory-20030602-1.txt
+    - An upcoming KDE advisory regarding CAN-2003-0370
+
+ -- Matt Zimmerman <mdz@debian.org>  Thu, 24 Jul 2003 12:57:56 -0400
+
+kdelibs (4:2.2.2-13.woody.7) stable-security; urgency=high
+
+  * Non-maintainer upload by the Security Team
+  * Applied upstream patch so ghostscript won't execute arbitrary commands
+    hidden inside of postscript files.
+
+ -- Martin Schulze <joey@infodrom.org>  Thu, 10 Apr 2003 12:05:36 +0200
+
 kdelibs (4:2.2.2-13.woody.6) stable-security; urgency=high
 
   * Non-maintainer upload by the Security Team
@@ -92,16 +129,11 @@ kdelibs (4:2.2.2-13.woody.4) stable-security; urgency=high
 
  -- Martin Schulze <joey@infodrom.org>  Fri, 22 Nov 2002 11:42:59 +0100
 
-kdelibs (4:2.2.2-14) unstable; urgency=low
-
-  * And a quick update to send it to unstable; no changes from -13.woody.3.
-
- -- Daniel Stone <dstone@trinity.unimelb.edu.au>  Wed, 11 Sep 2002 22:29:31 +1000
-
 kdelibs (4:2.2.2-13.woody.3) stable-security; urgency=high
 
-  * Sigh. Another DSA.
+  * Non-maintainer upload authored by security team (Joey)
   * Fixes cross-site scripting vulnerability in KHTML.
+    (http://www.kde.org/info/security/advisory-20020908-2.txt)
 
  -- Daniel Stone <dstone@trinity.unimelb.edu.au>  Wed, 11 Sep 2002 22:24:35 +1000
 

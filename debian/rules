@@ -183,8 +183,7 @@ install-indep:
 	$(MAKE) install-apidox DESTDIR=$(CURDIR)/debian/tmp
 
 	# create system.kdeglobals
-	#perl -w admin/debianrules echoglobals > debian/system.kdeglobals
-	touch debian/system.kdeglobals
+	perl -w admin/debianrules echoglobals > debian/system.kdeglobals
 
 	dh_install -i --list-missing
 
