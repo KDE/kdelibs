@@ -25,7 +25,7 @@
 
 // Version macros. Never put this further down.
 #define KDE_VERSION 220
-#define KDE_VERSION_STRING "2.2alpha2"
+#define KDE_VERSION_STRING "2.2beta1"
 #define KDE_VERSION_MAJOR 2
 #define KDE_VERSION_MINOR 2
 #define KDE_VERSION_RELEASE 0
@@ -837,6 +837,9 @@ private:
 #endif
 
 // $Log$
+// Revision 1.222  2001/06/11 19:29:00  malte
+// alternate background colour belongs into KGlobalSettings, not KApplication
+//
 // Revision 1.221  2001/06/11 02:48:26  malte
 // Alternate background in listviews
 //
