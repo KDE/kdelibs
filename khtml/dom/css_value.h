@@ -580,9 +580,13 @@ class RGBColor
 {
 public:
     RGBColor();
-    RGBColor(const RGBColor &other);
+    /**
+     * @deprecated
+     */
+    RGBColor(const QColor& c) { m_color = c.rgb(); }
     RGBColor(QRgb color);
 
+    RGBColor(const RGBColor &other);
     RGBColor & operator = (const RGBColor &other);
 
     ~RGBColor();
