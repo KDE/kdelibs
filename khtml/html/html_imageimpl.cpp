@@ -198,6 +198,7 @@ void HTMLImageElementImpl::attach(KHTMLView *w)
 
 void HTMLImageElementImpl::applyChanges(bool top, bool force)
 {
+    kdDebug(0) << "Image::applyChanges(" << top << ", " << force <<")" << endl;
     if((force || changed()) && m_render) {
 	static_cast<RenderImage *>(m_render)
 	    ->setImageUrl(imageURL, static_cast<HTMLDocumentImpl *>(document)->baseURL(),

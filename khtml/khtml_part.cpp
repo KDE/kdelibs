@@ -525,7 +525,7 @@ bool KHTMLPart::executeScript( const QString &script )
     bool ret = proxy->evaluate( script.unicode(), script.length() );
     // ### update the whole page for now
     // in future we should look more closely at what has actually changed
-    d->m_doc->applyChanges();
+    //d->m_doc->applyChanges();
     return ret;
   }
   else

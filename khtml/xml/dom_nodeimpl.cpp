@@ -466,6 +466,7 @@ NodeImpl *NodeBaseImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild )
 
     // ### set style in case it's attached
     setChanged(true);
+    applyChanges(true, false);
 
     return newChild;
 }
@@ -525,6 +526,7 @@ NodeImpl *NodeBaseImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild )
 
     // ### set style in case it's attached
     setChanged(true);
+    applyChanges(true, false);
 
     return oldChild;
 }
@@ -550,6 +552,7 @@ NodeImpl *NodeBaseImpl::removeChild ( NodeImpl *oldChild )
 	m_render->removeChild(oldChild->renderer());
 
     setChanged(true);
+    applyChanges(true, false);
 
     return oldChild;
 }
@@ -599,6 +602,7 @@ NodeImpl *NodeBaseImpl::appendChild ( NodeImpl *newChild )
     }
 
     setChanged(true);
+    applyChanges(true, false);
     // ### set style in case it's attached
     return newChild;
 }
