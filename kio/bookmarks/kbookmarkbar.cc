@@ -26,11 +26,14 @@
 #include <kdebug.h>
 
 #include <ktoolbar.h>
+#include <ktoolbarbutton.h>
 
 #include <kconfig.h>
 #include <kpopupmenu.h>
 
+#include "kbookmarkdrag.h"
 #include "kbookmarkmenu_p.h"
+
 #include <qptrdict.h>
 
 template<class KBookmarkBar, class KBookmarkBarPrivate>
@@ -78,6 +81,11 @@ KBookmarkBar::KBookmarkBar( KBookmarkManager* mgr,
       m_actionCollection( coll ), m_pManager(mgr)
 {
     m_lstSubMenus.setAutoDelete( true );
+
+#if 0
+    m_toolBar->setAcceptDrops( true );
+    m_toolBar->installEventFilter( this ); // for drops
+#endif
 
     d()->m_actions.setAutoDelete( true );
 
@@ -186,6 +194,97 @@ void KBookmarkBar::slotBookmarkSelected()
 {
     if (!m_pOwner) return; // this view doesn't handle bookmarks...
     m_pOwner->openBookmarkURL( sender()->property("url").toString() );
+}
+
+// lovely code...
+static bool findDestAction(QDragMoveEvent *dme, QPtrList<KAction> actions, 
+                 KToolBarButton* &b, KToolBar* &tb, KAction* &a)
+{
+    // iterate actions list until we find a match
+    QPtrListIterator<KAction> it( actions );
+    kdDebug(7043) << "dme->pos() == " << dme->pos() << endl;
+    for (; (*it); ++it )
+    {
+        a = (*it);
+        QWidget *c = a->container(0);
+        // continue search unless we find a toolbarbutton at dme->pos()
+        b = dynamic_cast<KToolBarButton*>(c->childAt(dme->pos()));
+        if (!(b && a->isPlugged(c, b->id()))) 
+            continue;
+        kdDebug(7043) << "c->geometry() == " << c->geometry() << endl;
+        kdDebug(7043) << "b->geometry() == " << b->geometry() << endl;
+        // we are done if the container is a ktoolbar
+        if (tb = dynamic_cast<KToolBar*>(c), tb) 
+            return true;
+    }
+    return false;
+}
+
+bool KBookmarkBar::eventFilter( QObject *, QEvent *e ){
+    static int sepIndex;
+    static int sepId = -9999; // fixme
+    static KToolBar* tb = 0;
+    static KAction* a = 0;
+    if ( e->type() == QEvent::DragLeave ) 
+    {
+        // clear up any separators
+        if (tb) {
+            tb->removeItem(sepId);
+            tb = 0;
+        }
+        a = 0;
+    }
+    else if ( e->type() == QEvent::Drop )
+    {
+        QDropEvent *dev = (QDropEvent*)e;
+        if ( KBookmarkDrag::canDecode( dev ) ) 
+        {
+            // clear up any separators
+            if (tb) {
+                tb->removeItem(sepId);
+                tb = 0;
+            }
+            // ohhh. we got a valid drop, woopeedoo
+            QValueList<KBookmark> list = KBookmarkDrag::decode( dev );
+            if (list.count() > 1) {
+               kdWarning(7043) << "Sorry, currently you can only drop one address "
+                                  "onto the bookmark bar!" << endl;
+            }
+            QString insertAfter = a->property("address").toString();
+            KBookmark toInsert = list.first();
+            KBookmark bookmark = m_pManager->findByAddress( insertAfter );
+            Q_ASSERT(!bookmark.isNull());
+            KBookmarkGroup parentBookmark = bookmark.parentGroup();
+            Q_ASSERT(!parentBookmark.isNull());
+            kdDebug(7043) << "inserting bookmark after " << insertAfter << endl;
+            kdDebug(7043) << "inserted after " << bookmark.address() << endl;
+            KBookmark newBookmark = parentBookmark.addBookmark( m_pManager, toInsert.fullText(), 
+                                                                toInsert.url() );
+            parentBookmark.moveItem( newBookmark, bookmark );
+            m_pManager->emitChanged( parentBookmark );
+            return true;
+        }
+    }
+    else if ( e->type() == QEvent::DragMove ) 
+    {
+        QDragMoveEvent *dme = (QDragMoveEvent*)e;
+        KToolBar* otb = tb;
+        KToolBarButton* b;
+        if (findDestAction(dme, d()->m_actions, b, tb, a)
+         && KBookmarkDrag::canDecode( dme ) 
+        ) {
+            int index = tb->itemIndex(b->id());
+            // delete+insert the separator if moved
+            if (sepIndex != index+1 || !otb)
+            {
+                if (otb)
+                    otb->removeItem(sepId);
+                sepIndex = tb->insertLineSeparator(index + 1, sepId); 
+            }
+            dme->accept();
+        }
+    }
+    return false;
 }
 
 #include "kbookmarkbar.moc"

@@ -61,6 +61,7 @@ public slots:
 
 protected:
     void fillBookmarkBar( KBookmarkGroup & parent );
+    bool eventFilter( QObject *o, QEvent *e );
 
 private:
     KBookmarkOwner    *m_pOwner;
