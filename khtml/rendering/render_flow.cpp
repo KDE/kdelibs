@@ -1332,15 +1332,13 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
 			( (oldText->s+length)->isSpace() || (oldText->s+length)->isPunct() ) )
 		    length++;
 		length++;
-		//kdDebug( 6040 ) << "letter= '" << DOMString(oldText->substring(0,length)).string() << "'" << endl;
-		newTextChild->setText(oldText->substring(length,oldText->l-length));
-
 		RenderText* letter = new RenderText(0 /* anonymous object */, oldText->substring(0,length));
 		RenderStyle* newStyle = new RenderStyle();
 		newStyle->inheritFrom(pseudoStyle);
 		letter->setStyle(newStyle);
                 letter->setIsAnonymousBox(true);
 		firstLetter->addChild(letter);
+		newTextChild->setText(oldText->substring(length,oldText->l-length));
 	    }
 	    firstLetter->close();
 
