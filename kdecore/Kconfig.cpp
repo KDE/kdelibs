@@ -1,6 +1,10 @@
 // $Id$
 //
 /* $Log$
+ * Revision 1.24  1997/09/04 16:31:55  kdecvs
+ * Coolo: I have introduced some dependecies, that I can't resolve.
+ * 	Kalle knows about it.
+ *
  * Revision 1.23  1997/09/01 01:51:16  kdecvs
  * Kalle: Default-Entries work again
  *
@@ -227,7 +231,12 @@ KConfig::KConfig( QTextStream* pStream )
   pDefGroup->setAutoDelete( true );
   pData->aGroupDict.insert( "<default>", pDefGroup );
 
-  pData->aLocaleString = klocale->language();
+  KApplication *app = KApplication::getKApplication();
+  
+  if (app)
+    pData->aLocaleString = app->getLocale()->language();
+  else
+    pData->aLocaleString = "C";
 
   parseConfigFiles();
 }
@@ -245,7 +254,7 @@ void KConfig::parseConfigFiles()
   // Parse all desired files from the least to the most specific. This
   // gives the intended behaviour because the QDict returns the last
   // appropriate entry.
-
+  
   // Parse the general config files
   for( int i = 0; i < CONFIGFILECOUNT; i++ )
     {
