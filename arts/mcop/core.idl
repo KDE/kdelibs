@@ -273,6 +273,33 @@ interface FlowSystem {
 												FlowSystemSender sender);
 };
 
+interface GlobalComm {
+	/**
+	 * put puts a variable/value pair into the global communication
+	 * space - it will not change the value of the variable if it is
+	 * already present. Returns true if success, false if the variable
+	 * was already there.
+	 */
+	boolean put(string variable, string value);
+
+	/**
+	 * get gets the value of a variable out of the global communication
+	 * space - it returns an empty string when the variable isn't there
+	 */
+	string get(string variable);
+
+	/**
+	 * erase removes a variable from the global communication space
+	 */
+	void erase(string variable);
+};
+
+/**
+ * global communication based on the /tmp/mcop-<username> directory
+ */
+interface TmpGlobalComm : GlobalComm {
+};
+
 /* this is only (!) used for generation of the Object_stub stuff
 
 interface Object {

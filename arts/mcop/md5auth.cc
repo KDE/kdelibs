@@ -75,6 +75,7 @@ char *md5_auth_mangle(const char *cookie)
 {
 	char mangle[MD5_COOKIE_LEN*2+1];
 	char out[MD5_COOKIE_LEN];
+	assert(md5_init);
 	strcpy(mangle,md5_cookie);
 	strcat(mangle,cookie);
 
@@ -154,52 +155,40 @@ static int md5_load_cookie(const char *filename, char *cookie)
 	return 0;
 }
 
-void md5_auth_init(const char *authname, const char *seedname)
+void md5_auth_init_seed(const char *seedname)
 {
-	struct stat st;
-	int fd;
-	char *cookie;
-
 	// don't care if it works - no harm is being done if it doesn't
 	md5_load_cookie(seedname,md5_seed);
 
-	fd = open(authname,O_CREAT|O_EXCL|O_WRONLY,S_IRUSR|S_IWUSR);
-	if(fd != -1) {
-		cookie = md5_auth_mkcookie();
-		write(fd,cookie,strlen(cookie));
-		memset(cookie,0,strlen(cookie));
-		free(cookie);
-		close(fd);
-	}
-
-	if(!md5_load_cookie(authname,md5_cookie))
+	/*
+	 * maxage ensures that not everybody will try to update the seed
+	 * at the same time, while it will take at most 5 hours between
+	 * updates (if there are any initialization calls)
+	 */
+	struct stat st;
+	int maxage = 300 + (getpid() & 0xfff)*4;
+	int lstat_result = lstat(seedname,&st);
+	if(lstat_result != 0 || (time(0) - st.st_mtime) > maxage)
 	{
-		fprintf(stderr,
-			"mcop error: authority file is corrupt (remove %s to fix that)\n",
-			authname);
-
-		exit(1);
-	}
-
-	if(seedname)
-	{
-		/*
-		 * maxage ensures that not everybody will try to update the seed
-		 * at the same time, while it will take at most 5 hours between
-		 * updates (if there are any initialization calls)
-		 */
-		int maxage = 300 + (getpid() & 0xfff)*4;
-		int lstat_result = lstat(seedname,&st);
-		if(lstat_result != 0 || (time(0) - st.st_mtime) > maxage)
-		{
-			fd = open(seedname,O_TRUNC|O_CREAT|O_WRONLY,S_IRUSR|S_IWUSR);
-			if(fd != -1) {
-				cookie = md5_auth_mkcookie();
-				write(fd,cookie,strlen(cookie));
-				memset(cookie,0,strlen(cookie));
-				free(cookie);
-				close(fd);
-			}
+		int fd = open(seedname,O_TRUNC|O_CREAT|O_WRONLY,S_IRUSR|S_IWUSR);
+		if(fd != -1) {
+			char *cookie = md5_auth_mkcookie();
+			write(fd,cookie,strlen(cookie));
+			memset(cookie,0,strlen(cookie));
+			free(cookie);
+			close(fd);
 		}
 	}
+}
+
+void md5_auth_set_cookie(const char *cookie)
+{
+	if(strlen(cookie) != MD5_COOKIE_LEN)
+	{
+		fprintf(stderr,"bad md5 cookie\n");
+		exit(1);
+	}
+	strncpy(md5_cookie,cookie,MD5_COOKIE_LEN);
+	md5_cookie[MD5_COOKIE_LEN] = 0;
+	md5_init = 1;
 }

@@ -50,17 +50,6 @@ Dispatcher::Dispatcher(IOManager *ioManager, StartServer startServer)
 
 	generateServerID();
 
-	/*
-	 * Path for random seed: better to store it in home, because some
-	 * installations wipe /tmp on reboot.
-	 */
-	string seedpath = MCOPUtils::createFilePath("random-seed");
-	char *home = getenv("HOME");
-	if(home != 0) seedpath = string(home) + "/.MCOP-random-seed";
-
-	string cookiepath = MCOPUtils::createFilePath("secret-cookie");
-	md5_auth_init(cookiepath.c_str(),seedpath.c_str());
-
 	if(ioManager)
 	{
 		_ioManager = ioManager;
@@ -115,10 +104,56 @@ Dispatcher::Dispatcher(IOManager *ioManager, StartServer startServer)
 	}
 	
 	StartupManager::startup();
+
+	/*
+	 * this is required for publishing global references - might be a good
+	 * reason for startup priorities as since this is required for cookie&co,
+	 * no communication is possible without that
+	 */
+	string globalCommName
+			= MCOPUtils::readConfigEntry("GlobalComm","TmpGlobalComm");
+
+	Object_skel *gcSkel = objectManager->create(globalCommName);
+	assert(gcSkel);
+	_globalComm = (GlobalComm *)gcSkel->_cast("GlobalComm");
+	assert(_globalComm);
+
+	// --- initialize MD5auth ---
+	/*
+	 * Path for random seed: better to store it in home, because some
+	 * installations wipe /tmp on reboot.
+	 */
+	string seedpath = MCOPUtils::createFilePath("random-seed");
+	char *home = getenv("HOME");
+	if(home != 0) seedpath = string(home) + "/.MCOP-random-seed";
+	md5_auth_init_seed(seedpath.c_str());
+
+	/*
+	 * first generate a new random cookie and try to set secret-cookie to it
+	 * as put will not overwrite, this has no effect if there is already a
+	 * secret cookie
+	 */
+	char *cookie = md5_auth_mkcookie();
+	_globalComm->put("secret-cookie",cookie);
+	memset(cookie,0,strlen(cookie));	// try to keep memory clean
+	free(cookie);
+
+	/*
+	 * Then get the secret cookie from globalComm. As we've just set one,
+	 * and as it is never removed, this always works.
+	 */
+	string secretCookie = _globalComm->get("secret-cookie");
+	md5_auth_set_cookie(secretCookie.c_str());
+	string::iterator i;	// try to keep memory clean from secret cookie
+	for(i=secretCookie.begin();i != secretCookie.end();i++) *i = 'y';
 }
 
 Dispatcher::~Dispatcher()
 {
+	/* no interaction possible now anymore - remove our global references */
+	if(objectManager)
+		objectManager->removeGlobalReferences();
+
 	StartupManager::shutdown();
 
 	/*
@@ -132,6 +167,11 @@ Dispatcher::~Dispatcher()
 	{
 		_interfaceRepo->_release();
 		_interfaceRepo = 0;
+	}
+	if(_globalComm)
+	{
+		_globalComm->_release();
+		_globalComm = 0;
 	}
 	if(unixServer)
 	{
@@ -181,6 +221,12 @@ FlowSystem_impl *Dispatcher::flowSystem()
 {
 	assert(_flowSystem);
 	return _flowSystem;
+}
+
+GlobalComm *Dispatcher::globalComm()
+{
+	assert(_globalComm);
+	return _globalComm;
 }
 
 void Dispatcher::setFlowSystem(FlowSystem_impl *fs)

@@ -1,6 +1,6 @@
     /*
 
-    Copyright (C) 1999 Stefan Westerfeld
+    Copyright (C) 2000 Stefan Westerfeld
                        stefan@space.twc.de
 
     This program is free software; you can redistribute it and/or modify
@@ -23,34 +23,25 @@
 
     */
 
-#ifndef STARTUPMANAGER_H
-#define STARTUPMANAGER_H
+#include "mcopconfig.h"
+#include <fstream>
 
-#include <list>
+using namespace std;
 
-class StartupClass {
-public:
-	StartupClass();
-	virtual void startup() = 0;
-	virtual void shutdown();
-};
+MCOPConfig::MCOPConfig(const string& filename) :filename(filename)
+{
+}
 
-class StartupManager {
-	static std::list<StartupClass *> *startupClasses;
-	static class ExtensionLoader *activeExtensionLoader;
-public:
-	static void add(StartupClass *sc);
-	static void startup();
-	static void shutdown();
+string MCOPConfig::readEntry(const string& key, const string& defaultValue)
+{
+	ifstream in(filename.c_str());
+	string keyvalue;
 
-	/**
-	 * since extensions will register startup classes in the same global way
-	 * all other classes do (with StartupManager::add(<some startup class>)),
-	 * the StartupManager supports forwarding all add requests to the
-	 * active extension, which will allow synchronizing the lt_dlopen
-	 * lt_dlclose with the calls of startup()/shutdown() of all StartupClasses
-	 * present in the extension
-	 */
-	static void setExtensionLoader(class ExtensionLoader *extension);
-};
-#endif /* STARTUPMANAGER_H */
+	while(in >> keyvalue)
+	{
+    	int i = keyvalue.find("=",0);
+      	if(i != 0 && keyvalue.substr( 0, i ) == key)
+      		return keyvalue.substr( i+1, keyvalue.size()-(i+1) );
+	}
+	return defaultValue;
+}

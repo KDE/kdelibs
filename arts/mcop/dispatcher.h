@@ -42,6 +42,7 @@
 class ObjectReference;
 class InterfaceRepo;
 class FlowSystem_impl;
+class GlobalComm;
 class ObjectManager;
 class Object_skel;
 class ReferenceClean;
@@ -68,6 +69,7 @@ protected:
 	IOManager *_ioManager;
 	InterfaceRepo *_interfaceRepo;
 	FlowSystem_impl *_flowSystem;
+	GlobalComm *_globalComm;
 	ObjectManager *objectManager;
 	ReferenceClean *referenceClean;
 	NotificationManager *notificationManager;
@@ -89,6 +91,7 @@ public:
 	inline IOManager *ioManager() { return _ioManager; };
 	InterfaceRepo *interfaceRepo();
 	FlowSystem_impl *flowSystem();
+	GlobalComm *globalComm();
 	void setFlowSystem(FlowSystem_impl *fs);
 
 	void refillRequestIDs();

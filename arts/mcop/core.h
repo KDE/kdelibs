@@ -441,4 +441,80 @@ public:
 	void dispatch(Buffer *request, Buffer *result,long methodID);
 };
 
+class GlobalComm : virtual public Object {
+public:
+	static GlobalComm *_fromString(std::string objectref);
+	static GlobalComm *_fromReference(ObjectReference ref, bool needcopy);
+
+	inline GlobalComm *_copy() {
+		assert(_refCnt > 0);
+		_refCnt++;
+		return this;
+	}
+
+	virtual bool put(const std::string& variable, const std::string& value) = 0;
+	virtual std::string get(const std::string& variable) = 0;
+	virtual void erase(const std::string& variable) = 0;
+};
+
+typedef ReferenceHelper<GlobalComm> GlobalComm_var;
+
+class GlobalComm_stub : virtual public GlobalComm, virtual public Object_stub {
+protected:
+	GlobalComm_stub();
+
+public:
+	GlobalComm_stub(Connection *connection, long objectID);
+
+	bool put(const std::string& variable, const std::string& value);
+	std::string get(const std::string& variable);
+	void erase(const std::string& variable);
+};
+
+class GlobalComm_skel : virtual public GlobalComm, virtual public Object_skel {
+public:
+	GlobalComm_skel();
+
+	static std::string _interfaceNameSkel();
+	std::string _interfaceName();
+	void _buildMethodTable();
+	void *_cast(std::string interface);
+	void dispatch(Buffer *request, Buffer *result,long methodID);
+};
+
+class TmpGlobalComm : virtual public GlobalComm {
+public:
+	static TmpGlobalComm *_fromString(std::string objectref);
+	static TmpGlobalComm *_fromReference(ObjectReference ref, bool needcopy);
+
+	inline TmpGlobalComm *_copy() {
+		assert(_refCnt > 0);
+		_refCnt++;
+		return this;
+	}
+
+};
+
+typedef ReferenceHelper<TmpGlobalComm> TmpGlobalComm_var;
+
+class TmpGlobalComm_stub : virtual public TmpGlobalComm, virtual public GlobalComm_stub {
+protected:
+	TmpGlobalComm_stub();
+
+public:
+	TmpGlobalComm_stub(Connection *connection, long objectID);
+
+};
+
+class TmpGlobalComm_skel : virtual public TmpGlobalComm, virtual public GlobalComm_skel {
+public:
+	TmpGlobalComm_skel();
+
+	static std::string _interfaceNameSkel();
+	std::string _interfaceName();
+	void _buildMethodTable();
+	void *_cast(std::string interface);
+	void dispatch(Buffer *request, Buffer *result,long methodID);
+};
+
 #endif /* CORE_H */

@@ -47,6 +47,12 @@ public:
 	 * The result is "localhost" if nothing at all can be found out.
 	 */
 	static std::string getFullHostname();
+
+	/**
+	 * Returns configuration values from .mcoprc
+	 */
+	static std::string readConfigEntry(const std::string& key,
+										const std::string& defaultValue = "");
 };
 
 #endif /* MCOPUTILS_H */

@@ -24,6 +24,7 @@
     */
 
 #include "mcoputils.h"
+#include "mcopconfig.h"
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
@@ -90,4 +91,17 @@ string MCOPUtils::getFullHostname()
 	}
 
 	return result;
+}
+
+string MCOPUtils::readConfigEntry(const string& key, const string& defaultValue)
+{
+	const char *home = getenv("HOME");
+	if(home)
+	{
+		string rcname = home + string("/.mcoprc");
+
+		MCOPConfig config(rcname);
+		return config.readEntry(key,defaultValue);
+	}
+	return defaultValue;
 }

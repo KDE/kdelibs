@@ -34,7 +34,7 @@ class ObjectManager {
 protected:
 	static ObjectManager *_instance;
 	std::list<Factory *> factories;
-	std::list<std::string> referenceFiles;
+	std::list<std::string> referenceNames;
 
 public:
 	ObjectManager();
@@ -45,6 +45,7 @@ public:
 
 	bool addGlobalReference(Object *object, std::string name);
 	std::string getGlobalReference(std::string name);
+	void removeGlobalReferences();
 
 	void registerFactory(Factory *factory);
 	void removeFactory(Factory *factory);

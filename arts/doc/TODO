@@ -10,14 +10,11 @@ These are:
 
 - move required stuff
    => knotify should probably be in kdebase
-- network transparency: ensure that clients do get object references and
-  secret-cookie over the X11 server instead of files
 
 2. To get everything up again
 
 - namespaces (mapped to modules in the IDL) - currently MCOP puts every
   interface in the standard namespace
-- do dynamic loading of plugins
 - port visual objects
 - do streaming between servers again
 - more work on flow graph descriptions (Structure, etc.) -- external interfaces
@@ -25,7 +22,6 @@ These are:
 - port artsbuilder
 - port every object
 - asynchronous streams (as opposed to synchronous) w/ language binding
-- asynchronous invocations
 - notifications when attributes change
 - more work on streaming, for instance:
   - recursive scheduling again (with loops & cycles)
@@ -33,8 +29,7 @@ These are:
   different architectures and probably different code for some machines
 - more work on audio playing stuff (different sampling rates, different
   hardware, mono, tunable buffer sizes)
-- make buffer sizes configurable
-- write a kcontrol module
+- make buffer sizes / samplingrate / depths / ... configurable
 
 3. To have more fun
 

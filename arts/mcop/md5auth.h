@@ -36,16 +36,20 @@ extern "C"
  *
  * Initialization:
  *
- * Your service calls md5_auth_init with a filename, which drops a
- * "secret cookie" into a file. Lets call the "secret cookie" S. As soon
- * as a client wants to connect, he needs the secret cookie S.
+ * Your service calls md5_auth_set_cookie and passes a "secret cookie".
+ * Lets call the "secret cookie" S. As soon as a client wants to connect,
+ * he needs the same secret cookie S.
  * 
- * Of course the user can copy the "secret cookie" file using a secure
- * connection to any computer from which he wants to access the service.
+ * Of course the user can copy the "secret cookie" using a secure connection
+ * to any computer from which he wants to access the service.
+ *
+ * 0. SERVER: if no common secret cookie is available, generate a random
+ *            cookie and keep it secret - ensure (through secure connections)
+ *            that the client gets the secret cookie
  *
  * 1. SERVER: generate a new (random) cookie R
  * 2. SERVER: send it to the client
- * 3. CLIENT: read the "secret cookie" S from a file
+ * 3. CLIENT: (should get/have the "secret cookie" S from somewhere secure)
  * 4. CLIENT: mangle the cookies R and S to a mangled cookie M
  * 5. CLIENT: send M to the server
  * 6. SERVER: verify that mangling R and S gives just the same thing as the
@@ -71,21 +75,25 @@ char *md5_auth_mkcookie();
 char *md5_auth_mangle(const char *random);
 
 /*
+ * using md5_auth_init_seed, the security will be improved by loading a
+ * randomseed from that file, and (if it has no recent date) saving a new
+ * seed to it - this will ensure that the md5_auth_mkcookie() routine will
+ * return a really unpredictable result (as it depends on all processes that
+ * ever have touched the seed)
+ */
+void md5_auth_init_seed(const char *seedname);
+
+/*
+ * use this routine to set the "secret cookie" - you can pass a newly
+ * generated random cookie here, or the secret cookie you got from
+ * elsewhere (to communicate with others)
+ */
+void md5_auth_set_cookie(const char *cookie);
+
+/*
  * returns "secret cookie"
  */
 const char *md5_auth_cookie();
-
-/*
- * initializes md5_auth from file (will either read the "secret cookie" that
- * is already in the file, or create a new "secret cookie" and save it)
- *
- * if you pass some filename to seedname, the security will be improved
- * by loading a randomseed from that file, and (if it has no recent date)
- * saving a new seed to it - this will ensure that the md5_auth_mkcookie()
- * routine will return a really unpredictable result (as it depends on all
- * processes that ever have touched the seed)
- */
-void md5_auth_init(const char *authname, const char *seedname);
 
 #ifdef __cplusplus
 }

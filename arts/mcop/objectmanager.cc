@@ -24,8 +24,10 @@
     */
 
 #include "mcoputils.h"
+#include "mcopconfig.h"
 #include "objectmanager.h"
 #include "dispatcher.h"
+#include "extensionloader.h"
 #include <stdio.h>
 #include <unistd.h>
 #include <iostream>
@@ -36,10 +38,32 @@ Object_skel *ObjectManager::create(string name)
 {
 	list<Factory *>::iterator i;
 
+	/* first try: look through all factories we have */
+
 	for(i = factories.begin();i != factories.end(); i++)
 	{
 		Factory *f = *i;
 		if(f->interfaceName() == name) return f->createInstance();
+	}
+
+	/* second try: look if there is a suitable extension we could load */
+
+	MCOPConfig config(string(EXTENSION_DIR) + "/" + name + ".mcopclass");
+	string library = config.readEntry("Library");
+	if(library != "")
+	{
+		ExtensionLoader *e = new ExtensionLoader(library);
+
+		if(e->success())
+		{
+			// TODO: memory leak here, extension is never unloaded
+			for(i = factories.begin();i != factories.end(); i++)
+			{
+				Factory *f = *i;
+				if(f->interfaceName() == name) return f->createInstance();
+			}
+		}
+		else delete e;
 	}
 	cerr << "MCOP ObjectManager: warning: can't find implementation for " << name << endl;
 	return 0;
@@ -75,11 +99,6 @@ ObjectManager::ObjectManager()
 
 ObjectManager::~ObjectManager()
 {
-	list<string>::iterator i;
-
-	for(i=referenceFiles.begin(); i != referenceFiles.end();i++)
-		unlink((*i).c_str());
-
 	assert(_instance);
 	_instance = 0;
 }
@@ -96,44 +115,24 @@ ObjectManager *ObjectManager::the()
 
 bool ObjectManager::addGlobalReference(Object *object, string name)
 {
-	string filename = MCOPUtils::createFilePath(name);
-	FILE *infile = fopen(filename.c_str(),"r");
-	if(infile)
-	{
-		fclose(infile);
-		return false;
-	}
+	bool result;
 
-	FILE *outfile = fopen(filename.c_str(),"w");
-	if(outfile)
-	{
-		string reference = object->_toString();
-		fprintf(outfile,"%s\n",reference.c_str());
-		fclose(outfile);
+	result = Dispatcher::the()->globalComm()->put(name,object->_toString());
+	if(result)
+		referenceNames.push_back(name);
 
-		referenceFiles.push_back(filename);
-
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return result;
 }
 
 string ObjectManager::getGlobalReference(string name)
 {
-	string filename = MCOPUtils::createFilePath(name);
-	FILE *infile = fopen(filename.c_str(),"r");
-	if(infile)
-	{
-		char objref[4096];
-       if(fgets(objref,4096,infile))
-        {
-			objref[4095] = 0;
-            objref[strlen(objref)-1] = 0;
-			return string(objref);
-        }                                                                       
-	}
-	return "";
+	return Dispatcher::the()->globalComm()->get(name);
+}
+
+void ObjectManager::removeGlobalReferences()
+{
+	list<string>::iterator i;
+
+	for(i=referenceNames.begin(); i != referenceNames.end();i++)
+		Dispatcher::the()->globalComm()->erase(*i);
 }

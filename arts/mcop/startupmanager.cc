@@ -24,6 +24,8 @@
     */
 
 #include "startupmanager.h"
+#include "extensionloader.h"
+#include <iostream>
 
 using namespace std;
 
@@ -46,12 +48,37 @@ void StartupClass::shutdown()
  */
 
 list<StartupClass *> *StartupManager::startupClasses = 0;
+ExtensionLoader *StartupManager::activeExtensionLoader = 0;
 
 void StartupManager::add(StartupClass *sc)
 {
-	if(!startupClasses) startupClasses = new list<StartupClass *>;
+	if(activeExtensionLoader)
+	{
+		activeExtensionLoader->addStartupClass(sc);
+	}
+	else
+	{
+		if(!startupClasses) startupClasses = new list<StartupClass *>;
 
-	startupClasses->push_back(sc);
+		startupClasses->push_back(sc);
+	}
+}
+
+void StartupManager::setExtensionLoader(ExtensionLoader *extension)
+{
+	/*
+	 * this is not reentrant: you can't load two extensions at the same time,
+	 * and it is impossible that an extension loads an extension while being
+	 * loaded (nothing forbids you to load another extension from an extension
+	 * in a StartupClass or any time later - just don't do it while being
+	 * lt_dlopen()d
+	 */
+	if(activeExtensionLoader)
+		assert(extension == 0);
+	else
+		assert(extension != 0);
+
+	activeExtensionLoader = extension;
 }
 
 void StartupManager::startup()
