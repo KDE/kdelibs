@@ -43,7 +43,8 @@
 // Fixed white bg on disabled buttons in icontext mode and
 // positioning on signal appearanceChanged - sven 24.3.1998
 //-------------------------------------------------------------------------
-
+// $Id$
+// $Log$
 #include <qpainter.h>
 #include <qtooltip.h> 
 #include <qdrawutl.h>
@@ -518,7 +519,7 @@ int KToolBar::insertLineSeparator( int index )
   if (!QApplication::closingDown())
     delete context;
   
-  debug ("KToolBar destructor");
+  //debug ("KToolBar destructor");
 }
   if (position == Floating)
 void KToolBar::setMaxHeight (int h)
