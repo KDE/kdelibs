@@ -36,7 +36,7 @@ public:
     Decoder();
     ~Decoder();
 
-    void setEncoding(const char *encoding);
+    void setEncoding(const char *encoding, bool force = false);
     const char *encoding() const;
 
     QString decode(const char *data, int len);
@@ -54,6 +54,7 @@ protected:
     bool body;
     bool beginning;
     bool visualRTL;
+    bool haveEncoding;
 };
 
 };

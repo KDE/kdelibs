@@ -588,7 +588,7 @@ void KHTMLPart::clear()
 
   d->m_decoder = 0;
   d->m_haveEncoding = false;
-  
+
   if ( d->m_view )
     d->m_view->clear();
 
@@ -726,10 +726,10 @@ void KHTMLPart::write( const char *str, int len )
     if ( !d->m_decoder ) {
 	d->m_decoder = new khtml::Decoder();
 	if(d->m_encoding != QString::null)
-	    d->m_decoder->setEncoding(d->m_encoding.latin1());
-	else 
-	    d->m_decoder->setEncoding(settings()->encoding().latin1());
-  }
+	    d->m_decoder->setEncoding(d->m_encoding.latin1(), d->m_haveEncoding);
+	else
+	    d->m_decoder->setEncoding(settings()->encoding().latin1(), d->m_haveEncoding);
+    }
   if ( len == 0 )
     return;
 
@@ -965,10 +965,11 @@ bool KHTMLPart::setCharset( const QString &name, bool /*override*/ )
   return true;
 }
 
-bool KHTMLPart::setEncoding( const QString &name, bool /*override*/ )
+bool KHTMLPart::setEncoding( const QString &name, bool override )
 {
     d->m_encoding = name;
-
+    d->m_haveEncoding = override;
+    
     // ### hack!!!!
     if(!d->m_settings->charset() == QFont::Unicode)
 	d->m_settings->setCharset( KGlobal::charsets()->nameToID(name) );
@@ -1473,9 +1474,9 @@ void KHTMLPart::slotSetEncoding()
 {
     // first Item is always auto
     if(d->m_paSetEncoding->currentItem() == 0)
-	setEncoding(QString::null);
+	setEncoding(QString::null, false);
     else
-	setEncoding(d->m_paSetEncoding->currentText());
+	setEncoding(d->m_paSetEncoding->currentText(), true);
 }
 
 void KHTMLPart::updateActions()

@@ -44,28 +44,27 @@ kdDebug( 6005 ) << "INIT HTML Codec name= " << m_codec->name() << endl;
     body = false;
     beginning = true;
     visualRTL = false;
+    haveEncoding = false;
 }
 Decoder::~Decoder()
 {
 }
 
-void Decoder::setEncoding(const char *_encoding)
+void Decoder::setEncoding(const char *_encoding, bool force)
 {
+    //kdDebug(0) << "setEncoding " << force << endl;
     enc = _encoding;
+    haveEncoding = force;
+    
     if(enc.isNull() || enc.isEmpty())
 	enc = "iso8859-1";
     m_codec = KGlobal::charsets()->codecForName(enc);
 
-    if(m_codec->mibEnum() == 11) // iso8859-8 (visually ordered)
-    {
+    if(m_codec->mibEnum() == 11)  { 
+	// iso8859-8 (visually ordered) 
 	m_codec = QTextCodec::codecForName("iso8859-8-i");
 	visualRTL = true;
     }
-/*    else if(m_codec->mibEnum() == 9) // iso8859-6 (visually ordered)
-    {
-	m_codec = QTextCodec::codecForName("iso8859-6-i");
-	visualRTL = true;
-    }*/
 }
 
 const char *Decoder::encoding() const
@@ -78,8 +77,8 @@ QString Decoder::decode(const char *data, int len)
     // this is not completely efficient, since the function might go
     // through the html head several times...
 
-    if(enc.isEmpty() && !body) {
-
+    if(!haveEncoding && !body) {
+	//kdDebug(0) << "looking for charset definition" << endl;
 	// check for UTF-16
 	uchar * uchars = (uchar *) data;
 	if( uchars[0] == 0xfe && uchars[1] == 0xff ||
@@ -153,7 +152,7 @@ QString Decoder::decode(const char *data, int len)
 			
 			enc = str.mid(pos, endpos-pos);
 			kdDebug( 6005 ) << "Decoder: found charset: " << enc.data() << endl;
-			setEncoding(enc);
+			setEncoding(enc, true);
 			goto found;
 		    }
 		    case ID_SCRIPT:
