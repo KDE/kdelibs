@@ -124,223 +124,174 @@ int KCookieServer::newInstance()
    return 0;
 }
 
-bool KCookieServer::process(const QCString &fun, const QByteArray &data,
-                            QCString& replyType, QByteArray &replyData)
+// DCOP function
+QString
+KCookieServer::findCookies(QString url)
 {
-    if (fun == "findCookies(QString)")
-    {
-        QDataStream stream(data, IO_ReadOnly);
-        QString arg1;
-        stream >> arg1;
-        kdDebug(7104) << "got findCookies( " << arg1 << " )" << endl;
-        if (cookiesPending(arg1))
-        {
-           kdDebug(7104) << "Blocked on pending cookies." << endl;
-           CookieRequest *request = new CookieRequest;
-           request->transaction = dcopClient()->beginTransaction();
-           request->url = arg1;
-           request->DOM = false;
-           mRequestList->append( request );
-           return true; // Talk to you later :-)
-        }
-        QString res = mCookieJar->findCookies(arg1, false);
-        QDataStream stream2(replyData, IO_WriteOnly);
-        stream2 << res;
-        replyType = "QString";
-        kdDebug(7104) << "result = " << res << endl;
-        return true;
-    }
-    else if (fun == "findDomains()")
-    {
-        QStringList result;
-        const QStringList *domains = mCookieJar->getDomainList();
-        for (QStringList::ConstIterator domIt = domains->begin(); domIt != domains->end(); ++domIt)
-        {
-            // Ignore domains that have policy set for but contain
-            // no cookies whatsoever...
-            if ( mCookieJar->getCookieList(*domIt)->count() != 0 )
-                result << *domIt;
-        }
+   if (cookiesPending(url))
+   {
+      CookieRequest *request = new CookieRequest;
+      request->transaction = dcopClient()->beginTransaction();
+      request->url = url;
+      request->DOM = false;
+      mRequestList->append( request );
+      return QString::null; // Talk to you later :-)
+   }
+   return mCookieJar->findCookies(url, false);
+}
 
-        QDataStream reply(replyData, IO_WriteOnly);
-        reply << result;
-        replyType = "QStringList";
-        return true;
-    }
-    else if (fun == "findCookies(QValueList<int>,QString,QString,QString,QString)")
-    {
-        QString domain;             // domain name as returned by findDomain
-        QString cdomain;            // cookie domain to match     |
-        QString path;               // cookie path to match     <-| all empty OR full :)
-        QString name;               // cookie name to match       |
-        QValueList<int> fields;     // Requested fields in order
+// DCOP function
+QStringList 
+KCookieServer::findDomains()
+{
+   QStringList result;
+   const QStringList *domains = mCookieJar->getDomainList();
+   for (QStringList::ConstIterator domIt = domains->begin(); domIt != domains->end(); ++domIt)
+   {
+       // Ignore domains that have policy set for but contain
+       // no cookies whatsoever...
+       if ( mCookieJar->getCookieList(*domIt)->count() != 0 )
+           result << *domIt;
+   }
+   return result;
+}
 
-        QDataStream stream(data, IO_ReadOnly);
-        stream >> fields >> domain >> cdomain >> path >> name;
-        bool allDomCookies = name.isEmpty();
+// DCOP function
+QStringList
+KCookieServer::findCookies(QValueList<int> fields, 
+                           QString domain,
+                           QString cdomain,
+                           QString path,
+                           QString name)
+{
+   bool allDomCookies = name.isEmpty();
 
-        QStringList result;
-        KHttpCookieList *domcookies =  const_cast<KHttpCookieList*>(mCookieJar->getCookieList(domain));
-        if (domcookies)
-        {
-            for (KHttpCookiePtr cIt = domcookies->first(); cIt; cIt = domcookies->next() )
+   QStringList result;
+   KHttpCookieList *domcookies =  const_cast<KHttpCookieList*>(mCookieJar->getCookieList(domain));
+   if (domcookies)
+   {
+      for (KHttpCookiePtr cIt = domcookies->first(); cIt; cIt = domcookies->next() )
+      {
+         if (!allDomCookies)
+         {
+            if ( cookieMatches(cIt, cdomain, path, name) )
             {
-                if (!allDomCookies)
-                {
-                    if ( cookieMatches(cIt, cdomain, path, name) )
-                    {
-                        putCookie(&result, cIt, &fields);
-                        break;
-                    }
-                }
-                else
-                    putCookie(&result, cIt, &fields);
+               putCookie(&result, cIt, &fields);
+               break;
             }
-        }
-        QDataStream reply(replyData, IO_WriteOnly);
-        reply << result;
-        replyType = "QStringList";
-        return true;
-    }
-    else if (fun == "findDOMCookies(QString)")
-    {
-        QDataStream stream(data, IO_ReadOnly);
-        QString arg1;
-        stream >> arg1;
-        if (cookiesPending(arg1))
-        {
-           CookieRequest *request = new CookieRequest;
-           request->transaction = dcopClient()->beginTransaction();
-           request->url = arg1;
-           request->DOM = true;
-           mRequestList->append( request );
-           return true; // Talk to you later :-)
-        }
-        QString res = mCookieJar->findCookies(arg1, true);
-        QDataStream stream2(replyData, IO_WriteOnly);
-        stream2 << res;
-        replyType = "QString";
-        return true;
-    }
-    else if (fun == "addCookies(QString,QCString,long)")
-    {
-        QDataStream stream(data, IO_ReadOnly);
-        QString arg1;
-        QCString arg2;
-        long arg3;
-        stream >> arg1 >> arg2 >> arg3;
-        kdDebug(7104) << "got addCookies(" << arg1 << ", " << arg2.data() << ", " << arg3 << ")" << endl;
-        addCookies(arg1, arg2, arg3, false);
-        replyType = "void";
-        return true;
-    }
-    else if (fun == "deleteCookie(QString,QString,QString,QString)")
-    {
-        QString domain;     // name as returned by findDomains
-        QString cdomain;    // cookie domain to be matched
-        QString path;       // cookie path to be matched
-        QString name;       // cookie name to be matched
+         }
+         else
+            putCookie(&result, cIt, &fields);
+      }
+   }
+   return result;
+}
 
-        QDataStream stream(data, IO_ReadOnly);
-        stream >> domain >> cdomain >> path >> name;
-        KHttpCookieList *domcookies =  const_cast<KHttpCookieList*>(mCookieJar->getCookieList(domain));
-        if (domcookies)
-        {
-            for (KHttpCookiePtr cIt = domcookies->first(); cIt; cIt = domcookies->next() )
-            {
-                if (cookieMatches(cIt, cdomain, path, name))
-                {
-                    mCookieJar->eatCookie(cIt);
-                    if (!mTimer)
-                        saveCookieJar();
-                    break;
-                }
-            }
-        }
-        replyType = "void";
-        return true;
-    }
-    else if (fun == "deleteCookiesFromDomain(QString)")
-    {
-        QString domain;
-        //delete all cookies originating from domain
-        QDataStream stream(data, IO_ReadOnly);
-        stream >> domain;
-        mCookieJar->eatCookiesForDomain(domain);
-        if (!mTimer)
-            saveCookieJar();
-        replyType = "void";
-        return true;
-    }
-    else if (fun == "deleteAllCookies()")
-    {
-        mCookieJar->eatAllCookies();
-        if (!mTimer)
-            saveCookieJar();
-        replyType = "void";
-        return true;
-    }
-    else if (fun == "addDOMCookies(QString,QCString,long)")
-    {
-        QDataStream stream(data, IO_ReadOnly);
-        QString arg1;
-        QCString arg2;
-        long arg3;
-        stream >> arg1 >> arg2 >> arg3;
-        addCookies(arg1, arg2, arg3, true);
-        replyType = "void";
-        return true;
-    }
-    else if (fun == "setDomainAdvice(QString,QString)")
-    {
-        QString url, advice;
-        QDataStream stream(data, IO_ReadOnly);
-        stream >> url >> advice;
+// DCOP function
+QString
+KCookieServer::findDOMCookies(QString url)
+{
+   if (cookiesPending(url))
+   {
+      CookieRequest *request = new CookieRequest;
+      request->transaction = dcopClient()->beginTransaction();
+      request->url = url;
+      request->DOM = true;
+      mRequestList->append( request );
+      return QString::null; // Talk to you later :-)
+   }
+   return mCookieJar->findCookies(url, true);
+}
 
-        QString fqdn;
-        QString dummy;
-        if (KCookieJar::parseURL(url, fqdn, dummy))
-        {
-           QStringList domains;
-           KCookieJar::extractDomains(fqdn, domains);
-           mCookieJar->setDomainAdvice(domains[0], 
-                                       KCookieJar::strToAdvice(advice));
-        }
-        replyType = "void";
-        return true;
-    }
-    else if (fun == "getDomainAdvice(QString)")
-    {
-        QString url;
-        QDataStream stream(data, IO_ReadOnly);
-        stream >> url;
+// DCOP function
+void
+KCookieServer::addCookies(QString arg1, QCString arg2, long arg3)
+{
+   addCookies(arg1, arg2, arg3, false);
+}
 
-        KCookieAdvice advice = KCookieDunno;
-        QString fqdn;
-        QString dummy;
-        if (KCookieJar::parseURL(url, fqdn, dummy))
-        {
-           QStringList domains;
-           KCookieJar::extractDomains(fqdn, domains);
-           advice = mCookieJar->getDomainAdvice(domains[0]);
-        }
-        QDataStream stream2(replyData, IO_WriteOnly);
-        stream2 << KCookieJar::adviceToStr(advice); 
-        replyType = "QString";
-        return true;
-    }
-    else if (fun == "reloadPolicy" )
-    {
-        mCookieJar->loadConfig( kapp->config(), true );
-        replyType = "void";
-        return true;
-    }
-    else if (KUniqueApplication::process(fun, data, replyType, replyData))
-    {
-        return true;
-    }
-    kdDebug(7104) << "Ignoring unknown DCOP function \"" << fun.data() << "\"" << endl;
-    return false;
+// DCOP function
+void
+KCookieServer::deleteCookie(QString domain, QString cdomain, 
+                            QString path, QString name)
+{
+   KHttpCookieList *domcookies =  const_cast<KHttpCookieList*>(mCookieJar->getCookieList(domain));
+   if (domcookies)
+   {
+      for (KHttpCookiePtr cIt = domcookies->first(); cIt; cIt = domcookies->next() )
+      {
+         if (cookieMatches(cIt, cdomain, path, name))
+         {
+            mCookieJar->eatCookie(cIt);
+            if (!mTimer)
+               saveCookieJar();
+            break;
+         }
+      }
+   }
+}
+
+// DCOP function
+void
+KCookieServer::deleteCookiesFromDomain(QString domain)
+{
+   mCookieJar->eatCookiesForDomain(domain);
+   if (!mTimer)
+      saveCookieJar();
+}
+
+// DCOP function
+void
+KCookieServer::deleteAllCookies()
+{
+   mCookieJar->eatAllCookies();
+   if (!mTimer)
+      saveCookieJar();
+}
+
+// DCOP function
+void
+KCookieServer::addDOMCookies(QString arg1, QCString arg2, long arg3)
+{
+   addCookies(arg1, arg2, arg3, true);
+}
+
+// DCOP function
+void
+KCookieServer::setDomainAdvice(QString url, QString advice)
+{
+   QString fqdn;
+   QString dummy;
+   if (KCookieJar::parseURL(url, fqdn, dummy))
+   {
+      QStringList domains;
+      KCookieJar::extractDomains(fqdn, domains);
+      mCookieJar->setDomainAdvice(domains[0], 
+                                  KCookieJar::strToAdvice(advice));
+   }
+}
+
+// DCOP function
+QString 
+KCookieServer::getDomainAdvice(QString url)
+{
+   KCookieAdvice advice = KCookieDunno;
+   QString fqdn;
+   QString dummy;
+   if (KCookieJar::parseURL(url, fqdn, dummy))
+   {
+      QStringList domains;
+      KCookieJar::extractDomains(fqdn, domains);
+      advice = mCookieJar->getDomainAdvice(domains[0]);
+   }
+   return KCookieJar::adviceToStr(advice); 
+}
+
+// DCOP function
+void
+KCookieServer::reloadPolicy()
+{
+   mCookieJar->loadConfig( kapp->config(), true );
 }
 
 bool KCookieServer::cookiesPending( const QString &url )
@@ -413,7 +364,6 @@ void KCookieServer::checkCookies( KHttpCookie *cookie, bool queue )
                 }
                 else
                 {
-                    kdDebug(7104) << "Asking user for advice for cookie from " << cookie->host() << endl;
                     mPendingCookies->prepend(cookie);
                     KCookieWin *kw = new KCookieWin( 0L, cookie,
                                                      mCookieJar->defaultRadioButton,
@@ -430,13 +380,11 @@ void KCookieServer::checkCookies( KHttpCookie *cookie, bool queue )
         switch(advice)
         {
         case KCookieAccept:
-            kdDebug(7104) << "Accepting cookies from " << cookie->host() << endl;
             mCookieJar->addCookie(cookie);
             break;
 
         case KCookieReject:
         default:
-            kdDebug(7104) << "Rejecting cookie from " << cookie->host() << endl;
             delete cookie;
             break;
         }
@@ -492,7 +440,6 @@ void KCookieServer::slotSave()
 {
    delete mTimer;
    mTimer = 0;
-   kdDebug(7104) << "Saving cookies..." << endl;
    QString filename = locateLocal("appdata", "cookies");
    mCookieJar->saveCookies(filename);
 }

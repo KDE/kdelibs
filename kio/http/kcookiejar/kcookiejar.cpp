@@ -630,7 +630,6 @@ KHttpCookiePtr KCookieJar::makeCookies(const QString &_url,
                     dir = '/';  // Use root directory...
             }
             lastCookie->mPath = dir;
-            kdDebug(7104) << "No \"Path=\" entry found in Set-Cookie.  Setting path to: " << dir << endl;
         }
 
         if (*cookieStr == '\0')
@@ -729,10 +728,10 @@ void KCookieJar::addCookie(KHttpCookiePtr &cookiePtr)
 
     if (!cookieList)
     {
-        kdDebug(7104) << "Creating new list for domain: " << domain << endl;
-        kdDebug(7104) << "Cookie host: " << cookiePtr->host() << endl;
-        kdDebug(7104) << "Cookie Domain: " << cookiePtr->domain() << endl;
-        kdDebug(7104) << "Cookie Path: " << cookiePtr->path() << endl;
+//        kdDebug(7104) << "Creating new list for domain: " << domain << endl;
+//        kdDebug(7104) << "Cookie host: " << cookiePtr->host() << endl;
+//        kdDebug(7104) << "Cookie Domain: " << cookiePtr->domain() << endl;
+//        kdDebug(7104) << "Cookie Path: " << cookiePtr->path() << endl;
         // Make a new cookie list
         cookieList = new KHttpCookieList();
 
@@ -852,23 +851,16 @@ KCookieAdvice KCookieJar::cookieAdvice(KHttpCookiePtr cookiePtr)
     KCookieAdvice advice;
     if (cookieList)
     {
-        kdDebug(7104) << "Found domain..." << endl;
         advice = cookieList->getAdvice();
         if (advice == KCookieDunno)
         {
-           kdDebug(7104) << "No domain specific advice, defaulting to global policy." << endl;
            advice = globalAdvice;
         }
-        else
-           kdDebug(7104) << "Using domain specific advice." << endl;
     }
     else
     {
-        kdDebug(7104) << "No domain specific advice found. Using global policy instead..." << endl;
         advice = globalAdvice;
     }
-    kdDebug(7104) << "Domain name: " << domain << endl
-                  << "Cookie Advice: " << adviceToStr( advice ) << endl;
     return advice;
 }
 

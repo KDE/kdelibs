@@ -2760,7 +2760,7 @@ void HTTPProtocol::addCookies( const QString &url, const QCString &cookieHeader 
    QDataStream stream(params, IO_WriteOnly);
    stream << url << cookieHeader << windowId;
    if (!m_dcopClient->send("kcookiejar", "kcookiejar",
-        "addCookies(QString, QCString, long)", params))
+        "addCookies(QString,QCString,long int)", params))
    {
       kdWarning(7103) << "Can't communicate with cookiejar!" << endl;
    }

@@ -37,15 +37,28 @@ class RequestList;
 class KCookieServer : public KUniqueApplication
 {
   Q_OBJECT
+  K_DCOP
 public:
   KCookieServer();
   ~KCookieServer();
 
   virtual int newInstance();
 
-  virtual bool process(const QCString &fun, const QByteArray &data,
-                       QCString& replyType, QByteArray &replyData);
+k_dcop:
+  QString findCookies(QString);
+  QStringList findDomains();
+  QStringList findCookies(QValueList<int>,QString,QString,QString,QString);
+  QString findDOMCookies(QString);
+  void addCookies(QString, QCString, long);
+  void deleteCookie(QString, QString, QString, QString);
+  void deleteCookiesFromDomain(QString);
+  void deleteAllCookies();
+  void addDOMCookies(QString, QCString, long);
+  void setDomainAdvice(QString, QString);
+  QString getDomainAdvice(QString);
+  void reloadPolicy();
 
+public:
   bool cookiesPending(const QString &url);
   void addCookies(const QString &url, const QCString &cookieHeader, long windowId, bool useDOMFormat);
   void checkCookies(KHttpCookie *cookie, bool queue);
