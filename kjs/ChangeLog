@@ -1,3 +1,8 @@
+2004-09-30  Harri Porten  <porten@kde.org>
+
+	* math_object.cpp: fixed Math.round() for very large numbers (bug
+	discovered by Pascal) and negative numbers with a .5 decimal.
+
 2004-09-29  Harri Porten  <porten@kde.org>
 
 	* date_object.cpp: don't preset DST when changing parts of the
