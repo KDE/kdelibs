@@ -45,28 +45,32 @@ typedef QMap<QString,LdapAttrValue > LdapAttrMap;
   * We mean it!
   *
   */
-class LdapObject {
-public:
-  LdapObject() : dn( QString::null ) {};  
-  explicit LdapObject( QString _dn) : dn(_dn) {};
-  LdapObject( const LdapObject& that ) { assign( that ); }
+class LdapObject
+{
+  public:
+    LdapObject()
+      : dn( QString::null ) {};  
+    explicit LdapObject( QString _dn ) : dn( _dn ) {};
+    LdapObject( const LdapObject& that ) { assign( that ); }
   
-  LdapObject& operator=( const LdapObject& that ) {
-    assign( that );
-    return *this;
-  }
+    LdapObject& operator=( const LdapObject& that )
+    {
+      assign( that );
+      return *this;
+    }
 
-  QString toString() const;
+    QString toString() const;
 
-  void clear();
+    void clear();
 
-  QString dn;
-  LdapAttrMap attrs;
+    QString dn;
+    LdapAttrMap attrs;
 
-protected:
-  void assign( const LdapObject& that );
-private:
-  class LdapObjectPrivate* d;
+  protected:
+    void assign( const LdapObject& that );
+
+  private:
+    class LdapObjectPrivate* d;
 };
 
 /**
@@ -76,133 +80,138 @@ private:
   * We mean it!
   *
   */
-class LdapClient : public QObject {
-  Q_OBJECT
-public:
-  LdapClient( QObject* parent = 0, const char* name = 0 );
-  virtual ~LdapClient();
-
-  /*! returns true if there is a query running */
-  bool isActive() const { return _active; }
-signals:
-
-  /*! Emitted when the query is done */
-  void done();
-
-  /*! Emitted in case of error */
-  void error( const QString& );
-
-  /*! Emitted once for each object returned
-   * from the query
-   */
-  void result( const KABC::LdapObject& );
-public slots:
-
-  /*!
-   * Set the name or IP of the LDAP server
-   */
-  void setHost( const QString& host );
-  QString host() const { return _host; }
-
-  /*!
-   * Set the port of the LDAP server
-   * if using a nonstandard port
-   */
-  void setPort( const QString& port );
-  QString port() const { return _port; }
-
-  /*!
-   * Set the base DN 
-   */
-  void setBase( const QString& base );
-  QString base() const { return _base; }
-
-  /*! Set the attributes that should be
-   * returned, or an empty list if
-   * all attributes are wanted
-   */
-  void setAttrs( const QStringList& attrs );
-  QStringList attrs() const { return _attrs; }
-
-  void setScope( const QString scope ) {
-    _scope = scope;
-  }
-
-  /*!
-   * Start the query with filter filter
-   */
-  void startQuery( const QString& filter );
-
-  /*!
-   * Abort a running query
-   */
-  void cancelQuery();
-
-protected slots:
-  void slotData( KIO::Job*, const QByteArray &data );
-  void slotInfoMessage( KIO::Job*, const QString &info );
-  void slotDone();
-protected:
-  void startParseLDIF();
-  void parseLDIF( const QByteArray& data );
-  void endParseLDIF();
-
-  QString     _host;
-  QString     _port;
-  QString     _base;
-  QString     _scope;
-  QStringList _attrs;
-  
-  QGuardedPtr<KIO::SimpleJob> _job;
-  bool _active;
-  
-  LdapObject             _currentObject;
-  //QValueList<LdapObject> _objects;
-  QCString                _buf;
-  QCString                _lastAttrName;
-  QCString                _lastAttrValue;
-  bool                    _isBase64;
-private:
-  class LdapClientPrivate* d;
-};
-
-
-
-/**
-  * This class is internal. Binary compatibiliy might be broken any time 
-  * without notification. Do not use it.
-  *
-  * We mean it!
-  *
-  */
-class LdapSearch
-    : public QObject
+class LdapClient : public QObject
 {
   Q_OBJECT
-public:
-  LdapSearch();
-  void startSearch( const QString& txt );
-  void cancelSearch();
-  bool isAvailable() const;
-signals:
-  void searchData( const QStringList& );
-  void searchDone();
-private slots:
-  void slotLDAPResult( const KABC::LdapObject& );
-  void slotLDAPError( const QString& );
-  void slotLDAPDone();
-  void slotDataTimer();
-private:
-  void finish();
-  QStringList makeSearchData();
-  QValueList< LdapClient* > _clients;
-  QString _searchText;
-  QTimer _dataTimer;
-  int _activeClients;
-  bool _noLDAPLookup;
-  QValueList< LdapObject > _results;
-private:
-  class LdapSearchPrivate* d;
+
+  public:
+    LdapClient( QObject* parent = 0, const char* name = 0 );
+    virtual ~LdapClient();
+
+    /*! returns true if there is a query running */
+    bool isActive() const { return mActive; }
+
+  signals:
+    /*! Emitted when the query is done */
+    void done();
+
+    /*! Emitted in case of error */
+    void error( const QString& );
+
+    /*! Emitted once for each object returned
+     * from the query
+     */
+    void result( const KABC::LdapObject& );
+
+  public slots:
+    /*!
+     * Set the name or IP of the LDAP server
+     */
+    void setHost( const QString& host );
+    QString host() const { return mHost; }
+
+    /*!
+     * Set the port of the LDAP server
+     * if using a nonstandard port
+     */
+    void setPort( const QString& port );
+    QString port() const { return mPort; }
+
+    /*!
+     * Set the base DN 
+     */
+    void setBase( const QString& base );
+    QString base() const { return mBase; }
+
+    /*! Set the attributes that should be
+     * returned, or an empty list if
+     * all attributes are wanted
+     */
+    void setAttrs( const QStringList& attrs );
+    QStringList attrs() const { return mAttrs; }
+
+    void setScope( const QString scope ) { mScope = scope; }
+
+    /*!
+     * Start the query with filter filter
+     */
+    void startQuery( const QString& filter );
+
+    /*!
+     * Abort a running query
+     */
+    void cancelQuery();
+
+  protected slots:
+    void slotData( KIO::Job*, const QByteArray &data );
+    void slotInfoMessage( KIO::Job*, const QString &info );
+    void slotDone();
+
+  protected:
+    void startParseLDIF();
+    void parseLDIF( const QByteArray& data );
+    void endParseLDIF();
+
+    QString mHost;
+    QString mPort;
+    QString mBase;
+    QString mScope;
+    QStringList mAttrs;
+  
+    QGuardedPtr<KIO::SimpleJob> mJob;
+    bool mActive;
+  
+    LdapObject mCurrentObject;
+    QCString mBuf;
+    QCString mLastAttrName;
+    QCString mLastAttrValue;
+    bool mIsBase64;
+
+  private:
+    class LdapClientPrivate* d;
+};
+
+
+/**
+  * This class is internal. Binary compatibiliy might be broken any time 
+  * without notification. Do not use it.
+  *
+  * We mean it!
+  *
+  */
+class LdapSearch : public QObject
+{
+  Q_OBJECT
+
+  public:
+    LdapSearch();
+
+    void startSearch( const QString& txt );
+    void cancelSearch();
+    bool isAvailable() const;
+
+  signals:
+    void searchData( const QStringList& );
+    void searchDone();
+
+  private slots:
+    void slotLDAPResult( const KABC::LdapObject& );
+    void slotLDAPError( const QString& );
+    void slotLDAPDone();
+    void slotDataTimer();
+
+  private:
+    void finish();
+    QStringList makeSearchData();
+    QValueList< LdapClient* > mClients;
+    QString mSearchText;
+    QTimer mDataTimer;
+    int mActiveClients;
+    bool mNoLDAPLookup;
+    QValueList< LdapObject > mResults;
+
+  private:
+    class LdapSearchPrivate* d;
 };
 
 }    
