@@ -323,7 +323,7 @@ class DCOPClient : public QObject
    * If empty all slots will be disconnected.
    *
    * A special case is when both sender & signal are empty. In this
-   * case all connections related to @param receiverObj in the current client
+   * case all connections related to @p receiverObj in the current client
    * are disconnected. (Both connections from as well as to this object!)
    *
    * @return false if no connection(s) where removed.
