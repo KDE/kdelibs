@@ -21,10 +21,11 @@ LDADD = $(top_builddir)/kio/libkio.la
 LDFLAGS = $(all_libraries) $(KDE_RPATH)
 
 check_PROGRAMS = ksycocatest getalltest kruntest ktartest kopenwithtest \
-		kioslavetest kdirwatchtest
+		kioslavetest kdirwatchtest speed
 
 METASOURCES = AUTO
 
+speed_SOURCES = speed.cpp
 ksycocatest_SOURCES = ksycocatest.cpp
 getalltest_SOURCES = getalltest.cpp
 kruntest_SOURCES = kruntest.cpp

@@ -1,65 +1,83 @@
-#ifndef __protocol_h__
-#define __protocol_h__ "$Id$"
+// -*- c++ -*-
+
+#ifndef __connection_h__
+#define __connection_h__ "$Id$"
 
 #include <sys/types.h>
 
 #include <stdio.h>
 #include <kprocess.h>
 
-/**
-  * This class provides a simple means for IPC between two applications
-  * via a pipe.
-  */
-class KIOConnection
-{
-public:
-  KIOConnection();
-  KIOConnection( int _in_fd, int _out_fd, size_t _buf_len = defaultBufferSize());
-  virtual ~KIOConnection();
-  
-  int inFD() { return m_in; }
-  int outFD() { return m_out; }
+class KSocket;
+class QSocketNotifier;
 
-  int send( int _cmd, const void *_p, int _len );
-  void* read( int* _cmd, int* _len );
+namespace KIO {
 
-  bool eof() { return feof( m_fin ); }
+    struct Task {
+	int cmd;
+	QByteArray data;
+    };
 
-  /**
-    * Return a writable pointer to the buffer.
-    */
-  char* buffer() { return m_pBuffer; }
+    /**
+     * This class provides a simple means for IPC between two applications
+     * via a pipe.
+     * It handles a queue of commands to be sent, and has a internal signal
+     * called after a command has been sent, to send the next one (FIFO).
+     */
+    class Connection : public QObject
+    {
+	Q_OBJECT
+    public:
+	Connection();
+	virtual ~Connection();
+	
+	void init(KSocket *sock);
+	void connect(QObject *receiver = 0, const char *member = 0);
+	void close();
+	
+	int fd_from() const { return fd_in; }
+	
+	void init(int fd_in, int fd_out);
+	
+	bool inited() const { return (fd_in != 0) && (f_out != 0); }
+	
+	// send (queues the command to be sent)
+	void send(int cmd, const QByteArray &arr = QByteArray());
 
-  /**
-    * Return the current size of the buffer, in bytes.
-    */
-  size_t bufferSize() {return m_iBufferSize;}
+	/**
+	 * Receive data
+	 *
+	 * @return >=0 indicates the received data size upon success
+	 *         -1  indicates error
+	 */
+	int read( int* _cmd, QByteArray & );
 
-protected:
-  void init( int _in_fd, int _out_fd, size_t _buf_len );
+        /**
+         * Don't handle incoming data until resumed
+         */
+        void suspend();
 
-public:
-  /**
-    * Return the default size of the buffer.  This is useful when
-    * constructing a "Connection", but rarely useful otherwise.
-    */
-  static size_t defaultBufferSize();
+        /**
+         * Resume handling of incoming data
+         */
+        void resume();
+	
+    protected slots:
+        void dequeue();
+	
+    protected:
+	bool sendnow( int _cmd, const QByteArray &data = QByteArray() );
+	
+    private:
+	int fd_in;
+	FILE *f_out;
+	KSocket *socket;
+	QSocketNotifier *notifier;
+	QObject *receiver;
+	const char *member;
+	QList<Task> tasks;
+    };
 
-protected:
-  int m_in;
-  int m_out;
-  FILE *m_fin;
-  FILE *m_fout;
-
-  char* m_pBuffer;
-  size_t m_iBufferSize;
-};
-
-class KIOSlave : public KIOConnection, public KProcess
-{
-public:
-  KIOSlave( const char *_cmd );
-  ~KIOSlave();
 };
 
 #endif

@@ -1,529 +1,551 @@
+// -*- c++ -*-
+/* This file is part of the KDE libraries
+    Copyright (C) 2000 Stephan Kulow <coolo@kde.org>
+                       David Faure <faure@kde.org>
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
+*/
+
 #ifndef __kio_job_h__
 #define __kio_job_h__
-
-#include "kio_base.h"
 
 #include <kurl.h>
 
 #include <qobject.h>
-#include <qintdict.h>
+//#include <qintdict.h>
 #include <qlist.h>
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qdatetime.h>
-
-#include <time.h>
-
-class KIOProgressBase;
-
-class KIOListViewItem;
-class KIOListProgressDlg;
-
-class QSocketNotifier;
-class QDialog;
-
-/**
-* This is main class for doing IO operations.
-*
-* Use this class if you need to do any file transfer using various transfer protocols.
-* Simply create new instance of this class, connect your custom slots to KIOJob signals
-* and then call methods like copy, get, mount etc.
-*
-* KIOJob by default shows progress dialog for these operations ( this feature can be turned off ).
-*
-* KIOJob emits signals for almost all events that happen during transfer. Utilize these for
-* more sophisticated control over transfer. The most important are @ref #sigFinished and
-* @ref #sigError
-*
-* @short A main class for doing IO operations.
-*/
-class KIOJob : public QObject, public KIOJobBase {
-
-  Q_OBJECT
-
-public:
-
-  KIOJob(const char *name = 0);
-  virtual ~KIOJob();
-
-  int id() { return m_id; }
-  QTime getRemainingTime() { return m_RemainingTime; }
-
-  /**
-   * Call this, if you want to do a runtime manipulation with progress dialog.
-   * @ref #KIOProgressBase inherits @ref #QWidget, so you can call e.g. show(), hide() methods.
-   *
-   * @return  pointer to a SIMPLE or CUSTOM progress dialog, depends on settings.
-   */
-  KIOProgressBase* progressDlg() { return m_pProgressDlg; }
-
-  /**
-   * Call this, if you want to do a runtime manipulation with list progress dialog.
-   * KIOListProgressDlg inherits @ref #KTMainWindow, so you can call e.g. show(), hide() methods.
-   *
-   * @return  pointer to a list progress dialog.
-   */
-  KIOListProgressDlg* listProgressDlg() { return m_pListProgressDlg; }
-
-  enum GUImode { NONE, SIMPLE, LIST, CUSTOM };
-
-  /**
-   * AutoDelete mode is turned on by default. It is not recommended
-   * to turn it off. Later versions may not even be able to turn it
-   * off at all.
-   */
-  void setAutoDelete( bool _mode ) { m_bAutoDelete = _mode; }
-
-  /**
-   * Use this to set whether KIOJob should cache slaves into the pool.
-   * Caching means, that when slave is done it is cached for next use.
-   * This also means, that it is kept in the memory.
-   *
-   * @param  _mode  if true - cache slaves to the pool. This is a default value.
-   *                if false - don't cache them but destroy immediately after it's done.
-   */
-  void cacheToPool( bool _mode ) { m_bCacheToPool = _mode; }
-
-
-  /**
-   * Specify what type of GUI will this KIOJob use.
-   * Call this before you call any other operation method ( copy, move, del etc. )
-   * Valid values are NONE, SIMPLE and LIST
-   *
-   * @param  _mode  NONE   - don't show any dialogs.
-   *                SIMPLE - show a simple progress dialog. It shows progress for one operation.
-   *                LIST   - show a list progress dialog. It shows progress for all operations.
-   */
-  void setGUImode( GUImode _mode );
-
-  /**
-   * Set a custom progress dialog.
-   * Call this before you call any other operation method ( copy, move, del etc. )
-   * Custom progress dialog must inherit from KIOProgressBase.
-   *
-   * @param  dlg - custom progress dialog.
-   */
-  void setProgressDlg( KIOProgressBase *dlg );
-
-  virtual bool copy( QStringList& _source, const char *_dest, bool _move = false );
-  virtual bool copy( const char* _source, const char *_dest, bool _move = false );
-
-  virtual bool move( QStringList& _source, const char *_dest );
-  virtual bool move( const char* _source, const char *_dest );
-
-  virtual bool del( QStringList& _source );
-  virtual bool del( const char* _source );
-
-  virtual bool get( const char *_url );
-  virtual bool getSize( const char *_url );
-
-  virtual bool put( const char *_url, int _mode, bool _overwrite,
-		            bool _resume, int _len );
-
-  virtual bool mkdir( const char *_url, int _mode );
-
-  /**
-   * Directory listing. Will emit @ref #sigListEntry and/or error signals
-   * "." and ".." are listed as well.
-   */
-  virtual bool listDir( const char *_url );
-  /**
-   * Tests whether _url is a directory.
-   * Will emit @ref #sigIsDirectory or @ref #sigIsFile depending on which one it is.
-   */
-  virtual bool testDir( const char *_url );
-
-  virtual bool mount( bool _ro, const char *_fstype, const char* _dev, const char *_point );
-  virtual bool unmount( const char *_point );
-
-  /**
-   * Starts fetching '_url' and buffers _max_len characters or some more
-   * if available. These are sent using @ref #sigPreData. If we know
-   * about the mimetype ( example HTTP protocol ) then @ref #sigMimeType
-   * is called and no data is buffered.
-   * The connection is sleeping until someone calls @ref #cont.
-   */
-  virtual bool preget( const char *_url, int _max_len );
-
-  /**
-   * Call only after using preget and after you received either
-   * the signal @ref #sigMimeType or @ref #sigPreData.
-   * Afte calling this functions the KIOJob behaves like calling
-   * @ref #get. All buffered data is emitted using @ref #sigData now.
-   */
-  virtual void cont();
-
-  virtual void slotData( void *_p, int _len );
-  virtual void slotError( int _errid, const char *_txt );
-  virtual void slotReady();
-  virtual void slotFinished();
-  virtual void slotIsDirectory();
-  virtual void slotIsFile();
-  virtual void slotRenamed( const char *_new );
-  virtual void slotCanResume( bool _resume );
-
-  virtual void slotTotalSize( unsigned long _bytes );
-  virtual void slotTotalFiles( unsigned long _files );
-  virtual void slotTotalDirs( unsigned long _dirs );
-  virtual void slotProcessedSize( unsigned long _bytes );
-  virtual void slotProcessedFiles( unsigned long _files );
-  virtual void slotProcessedDirs( unsigned long _dirs );
-  virtual void slotScanningDir( const char *_dir );
-  virtual void slotSpeed( unsigned long _bytes_per_second );
-  virtual void slotCopyingFile( const char *_from, const char *_to );
-  virtual void slotMakingDir( const char *_dir );
-  virtual void slotGettingFile( const char *_url );
-  virtual void slotDeletingFile( const char *_url );
-  virtual void slotListEntry( const KUDSEntry& _entry );
-  virtual void slotMimeType( const char *_type );
-  virtual void slotRedirection( const char *_url );
-
-  /**
-   * Stops the current action ( that means kills any running servers associated with
-   * this job and deletes itself ignoring whether auto-delete mode is on or off.
-   *
-   * @param  quiet  if true - KIOJob will not emit sigCanceled when killed. This is a default value.
-   */
-  virtual void kill( bool quiet = false );
-
-  static KIOJob* find( int id );
-
-  static QString findDeviceMountPoint( const char *device );
-
-  /**
-   * Convert size from bytes to the string representation.
-   *
-   * @param  _size  size in bytes
-   * @return  converted size as a string - e.g. 123.4 kB , 12 MB
-   */
-  static QString convertSize( unsigned long size );
-
-  friend KIOProgressBase;
-  friend KIOListViewItem;
-
-signals:
-
-  /**
-   * KIOJob has stopped because of error.
-   *
-   * @param  id     id number of this KIOJob.
-   * @param  errid  id number of the error.
-   * @param  txt    additional text message for the error.
-   *
-   * @see kio_interface.h
-   */
-  void sigError( int id, int errid, const char *txt );
-
-  /**
-   * KIOJob has finished.
-   *
-   * @param  id  id number of this KIOJob.
-   */
-  void sigFinished( int id );
-
-  /**
-   * KIOJob has been canceled.
-   *
-   * @param  id  id number of this KIOJob.
-   */
-  void sigCanceled( int id );
-
-  /**
-   * A new entry has been found by @ref #listDir
-   * @param  id  id number of this KIOJob.
-   * @param entry information on this entry
-   */
-  void sigListEntry( int id, const KUDSEntry& entry );
-
-  void sigMimeType( int id, const char *mimetype );
-
-  /**
-   * The saved file has been renamed.
-   *
-   * @param  id    id number of this KIOJob.
-   * @param  name  new name of the destination file ( Usually from rename dialog ).
-   */
-  void sigRenamed( int id, const char *name );
-
-  /**
-   * Copying has been started.
-   *
-   * @param  id    id number of this KIOJob.
-   * @param  from  a source name.
-   * @param  to    a destination name.
-   */
-  void sigCopying(int id, const char *from, const char *to );
-
-  /**
-   * Directory is being scanned.
-   *
-   * @param  id    id number of this KIOJob.
-   * @param  dir   a name of scanned directory.
-   */
-  void sigScanningDir( int id, const char *dir );
-
-  /**
-   * Directory is being made.
-   *
-   * @param  id    id number of this KIOJob.
-   * @param  dir   a name of created directory.
-   */
-  void sigMakingDir( int id, const char *dir );
-
-  /**
-   * Fetching has been started.
-   *
-   * @param  id    id number of this KIOJob.
-   * @param  url   a name of fetched file.
-   */
-  void sigGettingFile( int id, const char *url );
-
-  /**
-   * Deleting has been started.
-   *
-   * @param  id    id number of this KIOJob.
-   * @param  url   a name of deleted file.
-   */
-  void sigDeletingFile( int id, const char *url );
-
-  /**
-   * KIOJob can / cannot be resumed.
-   *
-   * @param  id      id number of this KIOJob.
-   * @param  resume  if true - this KIOJob can be resumed.
-   *                 if false - this KIOJob cannot be resumed.
-   */
-  void sigCanResume( int id, bool resume );
-
-  /**
-   * @param  id    id number of this KIOJob.
-   * @param  data  may be 0L if the file has zero size.
-   */
-  void sigPreData( int id, const char *data, int len );
-  void sigData( int id, const char *data, int len );
-  void sigReady( int id );
-  void sigRedirection( int id, const char *url );
-  void sigIsDirectory( int id );
-  void sigIsFile( int id );
-
-  /**
-   * Current speed of the transfer in bytes per second.
-   *
-   * @param  id                id number of this KIOJob.
-   * @param  bytes_per_second  speed in bytes per second.
-   */
-  void sigSpeed( int id, unsigned long bytes_per_second );
-
-  /**
-   * Total size of transfer ( counted recursively in case of directories ).
-   *
-   * @param  id     id number of this KIOJob.
-   * @param  bytes  total size in bytes.
-   */
-  void sigTotalSize( int id, unsigned long bytes );
-
-  /**
-   * Total number of files in this transfer ( counted recursively ).
-   *
-   * @param  id     id number of this KIOJob.
-   * @param  files  total number of files.
-   */
-  void sigTotalFiles( int id, unsigned long files );
-
-  /**
-   * Total number of directories in this transfer ( counted recursively ).
-   *
-   * @param  id    id number of this KIOJob.
-   * @param  dirs  total number of directories.
-   */
-  void sigTotalDirs( int id, unsigned long dirs );
-
-  /**
-   * Already processed size in bytes.
-   *
-   * @param  id     id number of this KIOJob.
-   * @param  bytes  processed size in bytes.
-   */
-  void sigProcessedSize( int id, unsigned long bytes );
-
-  /**
-   * Already processed size in percent.
-   * This is different from sigProcessedSize(), because it is not emited
-   * everytime the processed size changes, but only when percent changes.
-   *
-   * @param  id       id number of this KIOJob.
-   * @param  percent  processed size in percent.
-   */
-  void sigPercent( int id, unsigned long percent );
-
-  /**
-   * Number of already transfered files.
-   *
-   * @param  id     id number of this KIOJob.
-   * @param  files  number of processed files.
-   */
-  void sigProcessedFiles( int id, unsigned long files );
-
-  /**
-   * Number of already transfered directories.
-   *
-   * @param  id    id number of this KIOJob.
-   * @param  dirs  number of processed directories.
-   */
-  void sigProcessedDirs( int id, unsigned long dirs );
-
-protected slots:
-
-  /**
-   * Connected to KProcess
-   *
-   * @ref #m_pNotifier
-   */
-  virtual void slotDispatch( int, int & );
-
-  /**
-   * Stops the current action ( that means kills any running servers associated with
-   * this KIOJob and deletes itself if auto-delete mode is on.
-   */
-  virtual void slotCancel();
-
-  /**
-   * Slave has died.
-   */
-  void slotSlaveDied( KProcess *);
-
-protected:
-
-  /**
-   * Cleanup function used in the destructor.
-   */
-  void clean();
-
-  void connectSlave( KIOSlave *_s );
-
-  void disconnectSlave( KIOSlave *_s );
-
-  /**
-   * Creates a new slave if the @ref KIOSlavePool has no matching one.
-   * @ref m_pSlave and @ref m_strSlaveProtocol are set accordingly on success.
-   *
-   * @param _error is the error code on failure and undefined else.
-   * @param _error_text is the error text on failure and undefined else.
-   *
-   * @return @ref m_pSlave on success or 0L on failure.
-   */
-  KIOSlave* createSlave( const char *_protocol, int& _error, QString & _error_text );
-
-  /**
-   * Creates a new slave if the @ref KIOSlavePool has no matching one.
-   * @ref m_pSlave and @ref m_strSlaveProtocol are set accordingly on success.
-   *
-   * @param _error is the error code on failure and undefined else.
-   * @param _error_text is the error text on failure and undefined else.
-   *
-   * @return @ref m_pSlave on success or 0L on failure.
-   */
-  KIOSlave* createSlave(  const char *_protocol, const char *_host, const char *_user,
-			  const char *_pass, int& _error, QString& _error_text );
-
-  QDialog* createDialog( const QString &_text );
-
-  void createGUI();
-
-  static void initStatic();
-
-  bool m_bAutoDelete;
-
-  bool m_bCacheToPool;
-
-  int m_iGUImode;
-
-  KIOProgressBase* m_pProgressDlg;
-
-  QDialog *m_pDialog;
-
-  KIOSlave* m_pSlave;
-  QString m_strSlaveProtocol;
-  QString m_strSlaveHost;
-  QString m_strSlaveUser;
-  QString m_strSlavePass;
-
-  unsigned long m_iTotalSize;
-  unsigned long m_iTotalFiles;
-  unsigned long m_iTotalDirs;
-  unsigned long m_iProcessedSize;
-  unsigned long m_iProcessedFiles;
-  unsigned long m_iProcessedDirs;
-  unsigned long m_iSpeed;
-  QTime m_RemainingTime;
-  bool m_bStalled;
-
-  unsigned long m_iPercent;
-
-  bool m_bCanResume;
-  QString m_strFrom;
-  QString m_strTo;
-  QString m_strDir;
-
-  /**
-   * Used in @ref #preget
-   */
-  bool m_bPreGet;
-  char* m_pPreGetBuffer;
-  int m_iPreGetBufferSize;
-  int m_iPreGetBufferMaxSize;
-  bool m_bPreGetFinished;
-  QString m_strPreGetMimeType;
-
-  int m_id;
-  static int s_id;
-
-  typedef QIntDict<KIOJob> jobDict;
-  static jobDict* s_allJobs;
-  static KIOListProgressDlg *m_pListProgressDlg;
-};
-
-
-/**
- * Implements a "last recently used" algorithm.
- */
-class KIOSlavePool : public QObject {
-  Q_OBJECT
-
-public:
-
-  KIOSlavePool() { }
-
-  KIOSlave* slave( const char *_protocol );
-  KIOSlave* slave( const char *_protocol, const char *_host,
-		   const char *_user, const char *_pass);
-
-  void addSlave( KIOSlave *_slave,
-		 const char *_protocol, const char *_host,
-		 const char *_user, const char *_pass );
-
-  static KIOSlavePool* self();
-
-protected slots:
-
-  void slotSlaveDied( KProcess *);
-
-protected:
-
-  struct Entry
-  {
-    time_t m_time;
-    KIOSlave* m_pSlave;
-    QString m_protocol;
-    QString m_host;
-    QString m_user;
-    QString m_pass;
-  };
-
-  typedef QList<Entry> entryList;
-  entryList m_allSlaves;
-
-  static KIOSlavePool* s_pSelf;
+//#include <qdatetime.h>
+//#include <time.h>
+
+#include <sys/types.h>
+#include <sys/stat.h>
+
+#include <kio/global.h>
+
+namespace KIO {
+
+    class Slave;
+    class SlaveInterface;
+
+
+    /**
+     * The base class for all jobs.
+     */
+    class Job : public QObject {
+	Q_OBJECT
+	
+    protected:
+	Job();
+
+    public:
+	virtual ~Job() {}
+
+	/**
+	 * @return the error code for this job, 0 if no error
+	 * Error codes are defined in @ref KIO::Error.
+	 * Only call this method from the slot connected to @ref result.
+	 */
+	int error() { return m_error; }
+	/**
+	 * @return a string to help understand the error
+	 * Only call if @ref error is not 0.
+	 * This is mostly internal, better use errorString or errorDialog.
+	 */
+        const QString & errorText() { return m_errorText; }
+
+  	/**
+   	 * Converts an error code and a non-i18n error message into an
+   	 * error message in the current language. The low level (non-i18n)
+   	 * error message is put into the translated error message using %1.
+   	 * Example for errid == ERR_CANNOT_OPEN_FOR_READING:
+   	 *   i18n( "Could not read\n%1" ).arg( errortext );
+   	 * Mostly internal, use @ref KIO::ErrorDialog.
+   	 */
+  	QString errorString();
+
+  	/**
+   	 * Display a dialog box to inform the user of the error given by
+         * this job.
+	 * Only call if @ref error is not 0, and only in the slot connected
+	 * to @ref result.
+   	 */
+  	void showErrorDialog();
+
+    signals:
+	/**
+	 * Emitted when the job is finished, in any case (completed, canceled,
+	 * failed...). Use @ref error to know the result.
+	 */
+	void result( KIO::Job *job );
+	
+    protected:
+        /**
+	 * Add a job that has to be finished before a result
+	 * is emitted. This has obviously to be called before
+	 * the finish signal is emitted by the slave.
+	 */
+        virtual void addSubjob( Job *job );
+
+	/**
+	 * Mark a sub job as beeing done. If it's the last to
+	 * wait on the job will emit a result - jobs with
+	 * two steps might want to override slotResult
+         * in order to avoid calling this method.
+	 */
+	virtual void removeSubjob( Job *job );
+
+    protected slots:
+	/**
+	 * Called whenever a subjob finishes.
+	 * Default implementation checks for errors and propagates
+	 * to parent job, then calls @ref removeSubjob.
+	 * Override if you don't want subjobs errors to be propagated.
+	 */
+        virtual void slotResult( KIO::Job *job );
+
+    protected:
+	QList<Job> subjobs;
+	int m_error;
+	QString m_errorText;
+    };
+
+    // A simple job (one url and one command)
+    class SimpleJob : public KIO::Job {
+	Q_OBJECT
+    public:
+	SimpleJob(const KURL& url, int command, const QByteArray &packedArgs);
+        ~SimpleJob();
+	const KURL& url() const { return m_url; }
+
+        /**
+         * Abort job
+         */
+        virtual void kill();
+
+        /**
+         * Called by the scheduler when a slave gets to
+	 * work on this job.
+	 **/
+	virtual void start( Slave *slave );
+	
+        /**
+         * Slave in use by this job
+         **/
+	Slave *slave() { return m_slave; }
+
+
+    protected slots:
+        /**
+	 * Called when the slave marks the job
+	 * as finished.
+	 **/
+        virtual void slotFinished( );
+
+        virtual void slotError( int , const QString & );
+    private:
+	KURL m_url;
+	int m_command;
+
+    protected:
+	Slave * m_slave;
+	QByteArray m_packedArgs;
+    };
+
+
+    /**
+     * Create a directory
+     * @param url url to the directory to create
+     * @param permissions the permissions to set after creating the directory
+     * @return the job handling the operation
+     */
+    SimpleJob * mkdir( const KURL& url, int permissions = -1 );
+
+    /**
+     * Remove a directory, assumed to be empty
+     * @param url url to the directory to remove
+     * @return the job handling the operation
+     */
+    SimpleJob * rmdir( const KURL& url );
+
+    /**
+     * Change permissions on a file or directory
+     * @param url file or directory
+     * @param permissions the permissions to set
+     * @return the job handling the operation
+     */
+    SimpleJob * chmod( const KURL& url, int permissions );
+
+    // The url isn't passed to the slave, but is used to know which
+    // slave to send it to :-)
+    SimpleJob * special( const KURL& url, const QByteArray & data );
+
+    /**
+     * Mount, special job for kio_file
+     *
+     * @param ro mount read-only if true
+     * @param fstype file system type (e.g. "ext2", can be 0L)
+     * @param dev device (e.g. /dev/sda0)
+     * @param point mount point, can be null
+     */
+    SimpleJob *mount( bool ro, const char *fstype, const QString& dev, const QString& point );
+
+    /**
+     * Unmount, special job for kio_file
+     *
+     * @param mount point to unmount
+     */
+    SimpleJob *unmount( const QString & point );
+
+    // Stat Job
+    class StatJob : public SimpleJob {
+	Q_OBJECT
+    public:
+	StatJob(const KURL& url, int command, const QByteArray &packedArgs);
+
+	/**
+	 * Call this in the slot connected to @ref result,
+	 * and only after making sure no error happened.
+	 */
+	const UDSEntry & statResult() const { return m_statResult; }
+
+        /**
+         * Called by the scheduler when a slave gets to
+	 * work on this job.
+	 **/
+	virtual void start( Slave *slave );
+	
+    protected slots:
+        void slotStatEntry( const KIO::UDSEntry & entry );
+
+    protected:
+	UDSEntry m_statResult;
+    };
+
+    /**
+     * Finds all details for one file or directory.
+     */
+    StatJob * stat( const KURL& url );
+
+
+    /**
+     * The tranfer job pumps data into and/or out of a Slave.
+     * Data is sent to the slave on request of the slave (@ref dataReq).
+     * If data coming from the slave can not be handled, the
+     * reading of data from the slave should be suspended.
+     */
+    class TransferJob : public SimpleJob {
+        Q_OBJECT
+    public:
+	TransferJob(const KURL& url, int command,
+	            const QByteArray &packedArgs,
+	            const QByteArray &_staticData = QByteArray());
+	virtual void start(Slave *slave);
+	
+	/**
+	 * Flow control. Suspend data processing from the slave.
+	 */
+	void suspend();
+	
+	/**
+	 * Flow control. Resume data processing from the slave.
+	 */
+	void resume();
+
+    signals:
+        /**
+         * Data from the slave has arrived.
+         * @param data data received from the slave
+         * End of data (EOD) has been reached if data.size() == 0
+         */
+        void data( KIO::Job *, const QByteArray &data);
+
+        /**
+         * Request for data.
+         *
+         * @param data buffer to fill with data to send to the
+         * slave. An empty buffer indicates end of data. (EOD)
+         */
+
+        void dataReq( KIO::Job *, QByteArray &data);
+
+    protected slots:
+        virtual void slotRedirection( const KURL &url);
+        virtual void slotData( const QByteArray &data);
+        virtual void slotDataReq();
+
+    protected:
+        bool m_suspended;
+        QByteArray staticData;
+    };
+
+    /**
+     * get, aka read.
+     * The slave emits the data through @ref data
+     */
+    TransferJob *get( const KURL& url, bool reload=false );
+
+    /**
+     * put, aka write.
+     * @param url where to write data
+     * @param permissions may be -1. In this case no special permission mode is set.
+     * @param overwrite if true, any existing file will be overwritten
+     * @param resume
+     */
+    TransferJob *put( const KURL& url, int permissions,
+		      bool overwrite, bool resume );
+
+    /**
+     * HTTP POST (for form data)
+     * @param url where to write data
+     * @param postData encoded data to post
+     */
+    TransferJob *http_post( const KURL& url, const QByteArray &postData );
+
+    // Mimetype Job
+    class MimetypeJob : public TransferJob {
+	Q_OBJECT
+    public:
+	MimetypeJob(const KURL& url, int command, const QByteArray &packedArgs);
+
+	/**
+	 * Call this in the slot connected to @ref result,
+	 * and only after making sure no error happened.
+	 */
+ 	QString mimetype() const { return m_mimetype; }
+
+        /**
+         * Called by the scheduler when a slave gets to
+	 * work on this job.
+	 **/
+	virtual void start( Slave *slave );
+	
+    protected slots:
+        virtual void slotData( KIO::Job *, const QByteArray &data);
+        void slotMimetype( const QString &mimetype );
+        virtual void slotFinished( );
+
+    protected:
+	QString m_mimetype;
+    };
+
+    /**
+     * Finds mimetype for one file or directory.
+     */
+    MimetypeJob * mimetype( const KURL& url );
+
+
+    /**
+     * The FileCopyJob copies data from one place to another.
+     */
+    class FileCopyJob : public Job {
+        Q_OBJECT
+
+    public:
+        FileCopyJob( const KURL& src, const KURL& dest, int permissions, bool move,
+                     bool overwrite, bool resume);
+
+        /**
+         * Abort job
+         */
+        virtual void kill();
+
+    protected:
+        void startCopyJob();
+        void startDataPump();
+
+    public slots:
+        void slotData( KIO::Job *, const QByteArray &data);
+        void slotDataReq( KIO::Job *, QByteArray &data);
+
+    protected slots:
+	/**
+	 * Called whenever a subjob finishes.
+	 */
+        virtual void slotResult( KIO::Job *job );
+
+    protected:
+        KURL m_src;
+        KURL m_dest;
+        int m_permissions;
+        bool m_move;
+        bool m_overwrite;
+        bool m_resume;
+        QByteArray m_buffer;
+        SimpleJob *m_moveJob;
+        SimpleJob *m_copyJob;
+        TransferJob *m_getJob;
+        TransferJob *m_putJob;
+        SimpleJob *m_delJob;
+    };
+
+    /**
+     * Copies a single file
+     * Uses either SlaveBase::copy() if the slave supports that
+     * or get() & put() otherwise.
+     * @param src where to get the file
+     * @param dest where to put the file
+     * @param permissions may be -1. In this case no special permission mode is set.
+     * @param overwrite if true, any existing file will be overwritten
+     * @param resume
+     */
+    FileCopyJob *file_copy( const KURL& src, const KURL& dest, int permissions=-1,
+                            bool overwrite=false, bool resume=false);
+
+    /**
+     * Moves a single file.
+     * Uses either SlaveBase::rename() if the slave supports that,
+     * copy() & del() otherwise, or eventually get() & put() & del()
+     * @param src where to get the file
+     * @param dest where to put the file
+     * @param permissions may be -1. In this case no special permission mode is set.
+     * @param overwrite if true, any existing file will be overwritten
+     * @param resume
+     */
+    FileCopyJob *file_move( const KURL& src, const KURL& dest, int permissions=-1,
+                            bool overwrite=false, bool resume=false);
+
+    /**
+     * Delete a single file.
+     * @param src file to delete
+     */
+    SimpleJob *file_delete( const KURL& src);
+
+
+    class ListJob : public SimpleJob {
+	Q_OBJECT
+	
+    public:
+	ListJob(const KURL& url, bool recursive = false, QString prefix = QString::null);
+        virtual void start( Slave *slave );
+
+    signals:
+	void entries( KIO::Job *, const KIO::UDSEntryList& );
+
+    protected slots:
+        virtual void slotResult( KIO::Job *job );
+	void slotListEntries( const KIO::UDSEntryList& list );
+	void gotEntries( KIO::Job *, const KIO::UDSEntryList& );
+
+    private:
+	bool recursive;
+	QString prefix;
+    };
+
+    /**
+     * Lists the contents of @p url, which is assumed to be a directory.
+     * "." and ".." are returned, filter them out if you don't want them.
+     */
+    ListJob *listDir( const KURL& url );
+
+    /**
+     * The same, recursive.
+     * "." and ".." are returned but only for the toplevel directory.
+     * Filter them out if you don't want them.
+     */
+    ListJob *listRecursive( const KURL& url );
+
+
+    struct CopyInfo
+    {
+        KURL uSource;
+        KURL uDest;
+        mode_t permissions;
+        mode_t type;
+        time_t mtime;
+        off_t size; // 0 for dirs
+    };
+
+    // Copy or Move
+    class CopyJob : public Job {
+	Q_OBJECT
+	
+    public:
+	CopyJob( const KURL::List& src, const KURL& dest, bool move = false );
+
+    protected:
+        void startNextJob();
+
+        // Those aren't slots but submethods for slotResult.
+        void slotResultStating( KIO::Job * job );
+        void slotResultCreatingDirs( KIO::Job * job );
+        void slotResultConflictCreatingDirs( KIO::Job * job );
+        void createNextDir();
+        void slotResultCopyingFiles( KIO::Job * job );
+        void slotResultConflictCopyingFiles( KIO::Job * job );
+        void copyNextFile();
+
+    protected slots:
+        void slotEntries( KIO::Job*, const KIO::UDSEntryList& list );
+        virtual void slotResult( KIO::Job *job );
+
+    private:
+	bool m_move;
+	enum { DEST_NOT_STATED, DEST_IS_DIR, DEST_IS_FILE, DEST_DOESNT_EXIST } destinationState;
+	enum { STATE_STATING, STATE_LISTING, STATE_CREATING_DIRS, STATE_CONFLICT_CREATING_DIRS,
+               STATE_COPYING_FILES, STATE_CONFLICT_COPYING_FILES } state;
+	long int m_totalSize;
+	QValueList<CopyInfo> files;
+	QValueList<CopyInfo> dirs;
+        KURL::List m_srcList;
+        bool m_bCurrentSrcIsDir;
+        KURL m_dest;
+        KURL m_currentDest;
+        //
+        QStringList m_skipList;
+        QStringList m_overwriteList;
+        bool m_bAutoSkip;
+        bool m_bOverwriteAll;
+        int m_conflictError;
+    };
+
+    CopyJob *copy( const KURL& src, const KURL& dest );
+    CopyJob *copy( const KURL::List& src, const KURL& dest );
+
+    CopyJob *move( const KURL& src, const KURL& dest );
+    CopyJob *move( const KURL::List& src, const KURL& dest );
+
+
+
+    class DeleteJob : public Job {
+        Q_OBJECT
+
+    public:
+	DeleteJob( const KURL::List& src );
+
+    protected:
+        void startNextJob();
+        void deleteNextFile();
+        void deleteNextDir();
+
+    protected slots:
+        void slotEntries( KIO::Job*, const KIO::UDSEntryList& list );
+        virtual void slotResult( KIO::Job *job );
+
+    private:
+        enum { STATE_STATING, STATE_LISTING,
+               STATE_DELETING_FILES, STATE_DELETING_DIRS } state;
+        KURL::List files;
+        KURL::List dirs;
+        KURL::List m_srcList;
+    };
+
+    DeleteJob *del( const KURL& src );
+    DeleteJob *del( const KURL::List& src );
 };
 
 #endif

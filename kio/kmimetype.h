@@ -52,7 +52,7 @@ public:
    * Constructor.  You may pass in arguments to create a mimetype with
    * specific properties
    */
-  KMimeType( const QString & _fullpath, const QString& _type, const QString& _icon, 
+  KMimeType( const QString & _fullpath, const QString& _type, const QString& _icon,
 	     const QString& _comment, const QStringList& _patterns );
 
   /**
@@ -66,13 +66,13 @@ public:
   KMimeType( KDesktopFile *config );
 
   /**
-   * @internal construct a service from a stream. 
+   * @internal construct a service from a stream.
    * The stream must already be positionned at the correct offset
    */
   KMimeType( QDataStream& _str, int offset );
 
   virtual ~KMimeType();
-  
+
   /**
    * Return the filename of the icon associated with the mimetype.
    * The arguments are unused, but provided so that KMimeType derived classes
@@ -108,7 +108,7 @@ public:
    * Convenience method to find the pixmap for a URL
    * Call this one when you don't know the mimetype.
    */
-  static QPixmap pixmapForURL( const KURL & _url, mode_t _mode = 0, 
+  static QPixmap pixmapForURL( const KURL & _url, mode_t _mode = 0,
                                KIconLoader::Size _size = KIconLoader::Small, QString * _path = 0L );
 
   /**
@@ -127,14 +127,14 @@ public:
    * Use @ref KServiceType::name instead.
    */
   virtual QString mimeType() const { return m_strName; }
-  
+
   /**
    * @return the list of patterns associated to the MIME Type
    */
   virtual const QStringList& patterns() const { return m_lstPatterns; }
-  
+
   /**
-   * Load the mimetype from a stream. 
+   * Load the mimetype from a stream.
    * @param _parentLoaded internal (set by the constructor)
    */
   virtual void load( QDataStream&, bool _parentLoaded = false );
@@ -145,7 +145,7 @@ public:
 
   virtual PropertyPtr property( const QString& _name ) const;
   virtual QStringList propertyNames() const;
-  
+
   /**
    * @return a pointer to the mime type '_name' or a pointer to the default
    *         mime type "application/octet-stream". 0L is NEVER returned.
@@ -154,7 +154,7 @@ public:
    * @see KServiceType::serviceType
    */
   static Ptr mimeType( const QString& _name );
-  /** 
+  /**
    * This function looks at mode_t first. If that does not help it
    * looks at the extension.  This is ok for FTP, FILE, TAR and
    * friends, but is not for HTTP ( cgi scripts! ). You should use
@@ -174,20 +174,20 @@ public:
    *
    * @param _fast_mode If set to true no disk access is allowed to
    *        find out the mimetype. The result may be suboptimal, but
-   *        it is * FAST. 
-   * @return a pointer to the matching mimetype. 0L is NEVER returned. 
+   *        it is * FAST.
+   * @return a pointer to the matching mimetype. 0L is NEVER returned.
    * VERY IMPORTANT : don't store the result in a KMimeType * !
    */
   static Ptr findByURL( const KURL& _url, mode_t _mode = 0,
 			       bool _is_local_file = false, bool _fast_mode = false );
 
-  /** 
+  /**
    * Get all the mimetypes. Useful for showing the list of
    * available mimetypes.
    * Very memory consuming, don't use unless really necessary.
    */
   static List allMimeTypes();
-  
+
 protected:
   /**
    * Signal a missing mime type
@@ -208,7 +208,7 @@ protected:
   static bool s_bChecked;
 
   QStringList m_lstPatterns;
-  
+
   static Ptr s_pDefaultType;
 };
 
@@ -243,7 +243,7 @@ class KDEDesktopMimeType : public KMimeType
 
 public:
   enum ServiceType { ST_MOUNT, ST_UNMOUNT, /* ST_PROPERTIES, */ ST_USER_DEFINED };
-		     
+		
   struct Service
   {
     Service() { m_display = true; }
@@ -253,10 +253,9 @@ public:
     ServiceType m_type;
     bool m_display;
   };
-  
-//  KDEDesktopMimeType( const QString & _fullpath, const QString& _type, const QString& _icon, 
-//                      const QString& _comment, const QStringList& _patterns );
-//  KDEDesktopMimeType( const QString & _fullpath ) : KMimeType( _fullpath ) { }
+  // KDEDesktopMimeType( const QString & _fullpath, const QString& _type, const QString& _icon,
+  //                     const QString& _comment, const QStringList& _patterns );
+  // KDEDesktopMimeType( const QString & _fullpath ) : KMimeType( _fullpath ) { }
   KDEDesktopMimeType( KDesktopFile *config) : KMimeType( config ) { }
   KDEDesktopMimeType( QDataStream& _str, int offset ) : KMimeType( _str, offset ) { }
 
@@ -277,13 +276,13 @@ public:
    */
   static QValueList<Service> userDefinedServices( const KURL& _url );
 
-  /** 
+  /**
    * @param _url is the URL of the desktop entry. The URL must be
-   *        local, otherwise nothing will happen.  
+   *        local, otherwise nothing will happen.
    */
   static void executeService( const QString& _url, KDEDesktopMimeType::Service& _service );
 
-  /** 
+  /**
    * Invokes the default action for the desktop entry. If the desktop
    * entry is not local, then only false is returned. Otherwise we
    * would create a security problem. Only types Link and Mimetype
@@ -293,13 +292,13 @@ public:
    *
    * @see KRun::runURL */
 
-  static bool run( const QString& _url, bool _is_local );
+  static bool run( const KURL& _url, bool _is_local );
 
 protected:
-  static bool runFSDevice( const QString& _url, KSimpleConfig &cfg );
-  static bool runApplication( const QString& _url, const QString & _serviceFile );
-  static bool runLink( const QString& _url, KSimpleConfig &cfg );
-  static bool runMimeType( const QString& _url, KSimpleConfig &cfg );
+  static bool runFSDevice( const KURL& _url, const KSimpleConfig &cfg );
+  static bool runApplication( const KURL& _url, const QString & _serviceFile );
+  static bool runLink( const KURL& _url, const KSimpleConfig &cfg );
+  static bool runMimeType( const KURL& _url, const KSimpleConfig &cfg );
 };
 
 /**
@@ -310,9 +309,9 @@ class KExecMimeType : public KMimeType
   K_SYCOCATYPE( KST_KExecMimeType, KMimeType )
 
 public:
-//  KExecMimeType( const QString & _fullpath, const QString& _type, const QString& _icon, 
-//                 const QString& _comment, const QStringList& _patterns );
-//  KExecMimeType( const QString & _fullpath ) : KMimeType( _fullpath ) { }
+  // KExecMimeType( const QString & _fullpath, const QString& _type, const QString& _icon,
+  //                 const QString& _comment, const QStringList& _patterns );
+  // KExecMimeType( const QString & _fullpath ) : KMimeType( _fullpath ) { }
   KExecMimeType( KDesktopFile *config) : KMimeType( config ) { }
   KExecMimeType( QDataStream& _str, int offset ) : KMimeType( _str, offset ) { }
 };

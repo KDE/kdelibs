@@ -12,8 +12,10 @@
 #include <kurl.h>
 #include <kprotocolmanager.h>
 
-KIORenameDlg::KIORenameDlg(QWidget *parent, const char *_src, const char *_dest,
-			   RenameDlg_Mode _mode, bool _srcNewer, bool _modal)
+using namespace KIO;
+
+RenameDlg::RenameDlg(QWidget *parent, const QString &_src, const QString &_dest,
+                     RenameDlg_Mode _mode, bool _srcNewer, bool _modal)
   : QDialog ( parent, "" , _modal )
 {
   modal = _modal;
@@ -128,11 +130,11 @@ KIORenameDlg::KIORenameDlg(QWidget *parent, const char *_src, const char *_dest,
   resize( sizeHint() );
 }
 
-KIORenameDlg::~KIORenameDlg()
+RenameDlg::~RenameDlg()
 {
 }
 
-void KIORenameDlg::enableRenameButton(const QString &newDest)
+void RenameDlg::enableRenameButton(const QString &newDest)
 {
   if (newDest != dest)
     b1->setEnabled(true);
@@ -140,7 +142,7 @@ void KIORenameDlg::enableRenameButton(const QString &newDest)
     b1->setEnabled(false);
 }
 
-void KIORenameDlg::b0Pressed()
+void RenameDlg::b0Pressed()
 {
   if ( modal )
     done( 0 );
@@ -149,7 +151,7 @@ void KIORenameDlg::b0Pressed()
 }
 
 // Rename
-void KIORenameDlg::b1Pressed()
+void RenameDlg::b1Pressed()
 {
     if ( m_pLineEdit->text()  == "" )
 	return;
@@ -178,74 +180,71 @@ void KIORenameDlg::b1Pressed()
   if ( modal )
     done( 1 );
   else
-    emit result( this, 1, src.ascii(), m_pLineEdit->text().ascii() );
+    emit result( this, 1, src, m_pLineEdit->text() );
 }
 
-void KIORenameDlg::b2Pressed()
+void RenameDlg::b2Pressed()
 {
   if ( modal )
     done( 2 );
   else
-    emit result( this, 2, src.ascii(), dest.ascii() );
+    emit result( this, 2, src, dest );
 }
 
-void KIORenameDlg::b3Pressed()
+void RenameDlg::b3Pressed()
 {
   if ( modal )
     done( 3 );
   else
-    emit result( this, 3, src.ascii(), dest.ascii() );
+    emit result( this, 3, src, dest );
 }
 
-void KIORenameDlg::b4Pressed()
+void RenameDlg::b4Pressed()
 {
   if ( modal )
     done( 4 );
   else
-    emit result( this, 4, src.ascii(), dest.ascii() );
+    emit result( this, 4, src, dest );
 }
 
-void KIORenameDlg::b5Pressed()
+void RenameDlg::b5Pressed()
 {
   if ( modal )
     done( 5 );
   else
-    emit result( this, 5, src.ascii(), dest.ascii() );
+    emit result( this, 5, src, dest );
 }
 
-void KIORenameDlg::b6Pressed()
+void RenameDlg::b6Pressed()
 {
   if ( modal )
     done( 6 );
   else
-    emit result( this, 6, src.ascii(), dest.ascii() );
+    emit result( this, 6, src, dest );
 }
 
-void KIORenameDlg::b7Pressed()
+void RenameDlg::b7Pressed()
 {
   if ( modal )
     done( 7 );
   else
-    emit result( this, 7, src.ascii(), dest.ascii() );
+    emit result( this, 7, src, dest );
 }
 
-RenameDlg_Result open_RenameDlg( const char* _src, const char *_dest,
+RenameDlg_Result KIO::open_RenameDlg( const QString & _src, const QString & _dest,
 				 RenameDlg_Mode _mode, bool _srcNewer,
 				 QString& _new )
 {
-  if ( kapp == 0L )
-  {
-    (void)new KApplication( );
-  }
+  ASSERT(kapp);
 
-  KIORenameDlg dlg( 0L, _src, _dest, _mode, _srcNewer, true );
+  RenameDlg dlg( 0L, _src, _dest, _mode, _srcNewer, true );
   int i = dlg.exec();
   _new = dlg.newName();
 
   return (RenameDlg_Result)i;
 }
 
-unsigned long getOffset( QString dest ) {
+unsigned long KIO::getOffset( QString dest ) {
 
   if ( KProtocolManager::self().markPartial() )
     dest += ".part";

@@ -17,60 +17,61 @@ void KIOProgressBase::Connect() {
 	   SLOT( slotSpeed( int, unsigned long ) ) );
   connect( m_pJob, SIGNAL( sigTotalSize( int, unsigned long ) ),
 	   SLOT( slotTotalSize( int, unsigned long ) ) );
-  connect( m_pJob, SIGNAL( sigTotalFiles( int, unsigned long ) ),
-	   SLOT( slotTotalFiles( int, unsigned long ) ) );
-  connect( m_pJob, SIGNAL( sigTotalDirs( int, unsigned long ) ),
-	   SLOT( slotTotalDirs( int, unsigned long ) ) );
+  connect( m_pJob, SIGNAL( sigTotalFiles( int, unsigned int ) ),
+	   SLOT( slotTotalFiles( int, unsigned int ) ) );
+  connect( m_pJob, SIGNAL( sigTotalDirs( int, unsigned int ) ),
+	   SLOT( slotTotalDirs( int, unsigned int ) ) );
   connect( m_pJob, SIGNAL( sigProcessedSize( int, unsigned long ) ),
 	   SLOT( slotProcessedSize( int, unsigned long ) ) );
   connect( m_pJob, SIGNAL( sigPercent( int, unsigned long ) ),
 	   SLOT( slotPercent( int, unsigned long ) ) );
-  connect( m_pJob, SIGNAL( sigProcessedFiles( int, unsigned long ) ),
-	   SLOT( slotProcessedFiles( int, unsigned long ) ) );
-  connect( m_pJob, SIGNAL( sigProcessedDirs( int, unsigned long ) ),
-	   SLOT( slotProcessedDirs( int, unsigned long ) ) );
-  connect( m_pJob, SIGNAL( sigCopying( int, const char*, const char* ) ),
-	   SLOT( slotCopyingFile( int, const char*, const char* ) ) );
-  connect( m_pJob, SIGNAL( sigScanningDir( int, const char* ) ),
-	   SLOT( slotScanningDir( int, const char* ) ) );
-  connect( m_pJob, SIGNAL( sigMakingDir( int, const char* ) ),
-	   SLOT( slotMakingDir( int, const char* ) ) );
-  connect( m_pJob, SIGNAL( sigGettingFile( int, const char* ) ),
-	   SLOT( slotGettingFile( int, const char* ) ) );
-  connect( m_pJob, SIGNAL( sigDeletingFile( int, const char* ) ),
-	   SLOT( slotDeletingFile( int, const char* ) ) );
+  connect( m_pJob, SIGNAL( sigProcessedFiles( int, unsigned int ) ),
+	   SLOT( slotProcessedFiles( int, unsigned int ) ) );
+  connect( m_pJob, SIGNAL( sigProcessedDirs( int, unsigned int ) ),
+	   SLOT( slotProcessedDirs( int, unsigned int ) ) );
+  connect( m_pJob, SIGNAL( sigCopying( int, const KURL& , const KURL& ) ),
+	   SLOT( slotCopyingFile( int, const KURL&, const KURL& ) ) );
+  connect( m_pJob, SIGNAL( sigScanningDir( int, const KURL& ) ),
+	   SLOT( slotScanningDir( int, const KURL& ) ) );
+  connect( m_pJob, SIGNAL( sigMakingDir( int, const KURL& ) ),
+	   SLOT( slotMakingDir( int, const KURL& ) ) );
+  connect( m_pJob, SIGNAL( sigGettingFile( int, const KURL& ) ),
+	   SLOT( slotGettingFile( int, const KURL& ) ) );
+  connect( m_pJob, SIGNAL( sigDeletingFile( int, const KURL& ) ),
+	   SLOT( slotDeletingFile( int, const KURL& ) ) );
   connect( m_pJob, SIGNAL( sigCanResume( int, bool ) ),
  	   SLOT( slotCanResume( int, bool ) ) );
 }
 
 
 void KIOProgressBase::refill() {
+    // TODO
+#if 0
   // refill the values with values from m_pJob
-  switch ( m_pJob->m_cmd ) {
-  case KIO::CMD_COPY:
-  case KIO::CMD_MCOPY:
-    slotCopyingFile( m_pJob->m_id, m_pJob->m_strFrom.ascii(), m_pJob->m_strTo.ascii() );
+  switch ( m_pJob->cmd() ) {
+  case KIOProtocol::KIO::Command::CMD_COPY:
+  case KIOProtocol::CMD_MCOPY:
+    slotCopyingFile( m_pJob->m_id, m_pJob->m_strFrom, m_pJob->m_strTo );
     slotCanResume( m_pJob->m_id, m_pJob->m_bCanResume );
     break;
-    
-  case KIO::CMD_DEL:
-  case KIO::CMD_MDEL:
-    slotDeletingFile( m_pJob->m_id, m_pJob->m_strFrom.ascii() );
+
+  case KIOProtocol::CMD_DEL:
+    slotDeletingFile( m_pJob->m_id, m_pJob->m_strFrom );
     break;
-    
-  case KIO::CMD_MKDIR:
-    slotMakingDir( m_pJob->m_id, m_pJob->m_strTo.ascii() );
+
+  case KIOProtocol::CMD_MKDIR:
+    slotMakingDir( m_pJob->m_id, m_pJob->m_strTo );
     break;
-    
-  case KIO::CMD_GET:
-    slotGettingFile( m_pJob->m_id, m_pJob->m_strFrom.ascii() );
+
+  case KIOProtocol::CMD_GET:
+    slotGettingFile( m_pJob->m_id, m_pJob->m_strFrom );
     break;
   }
-  
+
   slotTotalSize( m_pJob->m_id, m_pJob->m_iTotalSize );
   slotTotalFiles( m_pJob->m_id, m_pJob->m_iTotalFiles );
   slotTotalDirs( m_pJob->m_id, m_pJob->m_iTotalDirs );
-  
+
   slotPercent( m_pJob->m_id, m_pJob->m_iPercent );
 
   if ( m_pJob->m_iTotalDirs > 1 ) {
@@ -80,8 +81,9 @@ void KIOProgressBase::refill() {
   if ( m_pJob->m_iTotalFiles > 1 ) {
     slotProcessedFiles( m_pJob->m_id, m_pJob->m_iProcessedFiles );
   }
-  
+
   slotSpeed( m_pJob->m_id, m_pJob->m_iSpeed );
+#endif
 }
 
 
@@ -122,3 +124,6 @@ void KIOProgressBase::stop() {
     m_pJob->kill();
   }
 }
+
+#include "kio_progressbase.moc"
+

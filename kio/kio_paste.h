@@ -2,9 +2,13 @@
 #define __kio_paste_h__
 
 #include <qstring.h>
+#include <kurl.h>
+#include <qarray.h>
 
-void pasteClipboard( const char *_dest_url, bool move = false );
-void pasteData( const char *_dest_url, QByteArray _data );
-bool isClipboardEmpty();
+namespace KIO {
+  void pasteClipboard( const KURL& _dest_url, bool move = false );
+  void pasteData( const KURL& _dest_url, const QByteArray& _data );
+  bool isClipboardEmpty();
+};
 
 #endif

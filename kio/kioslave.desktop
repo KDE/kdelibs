@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=KIOSlave
+Comment=KDE IO Daemon
+Icon=
+DocPath=
+Type=Service
+Terminal=0
+Exec=kioslave
+SwallowExec=
+SwallowTitle=
+BinaryPattern=
+X-DCOP-ServiceType=Unique

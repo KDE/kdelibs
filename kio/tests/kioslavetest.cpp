@@ -11,30 +11,25 @@
 
 #include <qlayout.h>
 #include <qmessagebox.h>
+#include <qdir.h>
 
 #include <kapp.h>
+#include <kcmdlineargs.h>
+#include <kdebug.h>
 #include <klocale.h>
 #include <kurl.h>
+#include <kio_job.h>
 
 #include "kioslavetest.h"
 
+using namespace KIO;
 
 KioslaveTest *kmain;
 
-void usage() {
-  qDebug( "\nkioslavetest - test for checking kioslave features\n");
-  qDebug( "usage: kioslavetest [-s source] [-d destination]");
-  qDebug( "\t[-o operation]\tValid types are : list, get, copy, move, del");
-  qDebug("\t\t\tDefault operation is copy.\n");
-  qDebug( "\t[-p progress]\tValid types are : none, simple, list, little");
-  qDebug("\t\t\tDefault progress type is simple.\n");
-  exit(0);
-}
-
-
 KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
-  : KTMainWindow("") {
-  
+  : KTMainWindow("")
+{
+
   job = 0L;
 
   main_widget = new QWidget( this, "");
@@ -45,7 +40,7 @@ KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
 
   grid->setRowStretch(0,1);
   grid->setRowStretch(1,1);
-    
+
   grid->setColStretch(0,1);
   grid->setColStretch(1,100);
 
@@ -64,31 +59,47 @@ KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
   le_dest->setText( dest );
 
   // Operation groupbox & buttons
-  opButtons = new QButtonGroup( i18n("Operation"), main_widget );
+  opButtons = new QButtonGroup( "Operation", main_widget );
   topLayout->addWidget( opButtons, 10 );
   connect( opButtons, SIGNAL(clicked(int)), SLOT(changeOperation(int)) );
 
   QBoxLayout *hbLayout = new QHBoxLayout( opButtons, 15 );
 
-  rbList = new QRadioButton( i18n("List"), opButtons );
+  rbList = new QRadioButton( "List", opButtons );
   opButtons->insert( rbList, List );
   hbLayout->addWidget( rbList, 5 );
 
-  rbGet = new QRadioButton( i18n("Get"), opButtons );
+  rbListRecursive = new QRadioButton( "ListRecursive", opButtons );
+  opButtons->insert( rbListRecursive, ListRecursive );
+  hbLayout->addWidget( rbListRecursive, 5 );
+
+  rbStat = new QRadioButton( "Stat", opButtons );
+  opButtons->insert( rbStat, Stat );
+  hbLayout->addWidget( rbStat, 5 );
+
+  rbGet = new QRadioButton( "Get", opButtons );
   opButtons->insert( rbGet, Get );
   hbLayout->addWidget( rbGet, 5 );
 
-  rbCopy = new QRadioButton( i18n("Copy"), opButtons );
+  rbPut = new QRadioButton( "Put", opButtons );
+  opButtons->insert( rbPut, Put );
+  hbLayout->addWidget( rbPut, 5 );
+
+  rbCopy = new QRadioButton( "Copy", opButtons );
   opButtons->insert( rbCopy, Copy );
   hbLayout->addWidget( rbCopy, 5 );
 
-  rbMove = new QRadioButton( i18n("Move"), opButtons );
+  rbMove = new QRadioButton( "Move", opButtons );
   opButtons->insert( rbMove, Move );
   hbLayout->addWidget( rbMove, 5 );
 
-  rbDelete = new QRadioButton( i18n("Delete"), opButtons );
+  rbDelete = new QRadioButton( "Delete", opButtons );
   opButtons->insert( rbDelete, Delete );
   hbLayout->addWidget( rbDelete, 5 );
+
+  rbMkdir = new QRadioButton( "Mkdir", opButtons );
+  opButtons->insert( rbMkdir, Mkdir );
+  hbLayout->addWidget( rbMkdir, 5 );
 
   opButtons->setButton( op );
   changeOperation( op );
@@ -143,8 +154,8 @@ KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
   main_widget->setMinimumSize( main_widget->sizeHint() );
   setView( main_widget );
 
-  littleProgress = new KIOLittleProgressDlg( statusBar() );
-  statusBar()->insertWidget( littleProgress, littleProgress->width() , 0 );
+  //littleProgress = new KIOLittleProgressDlg( statusBar() );
+  //statusBar()->insertWidget( littleProgress, littleProgress->width() , 0 );
 
   kmain = this;
 
@@ -158,13 +169,11 @@ void KioslaveTest::closeEvent( QCloseEvent * ){
 
 
 void KioslaveTest::changeOperation( int id ) {
-  bool enab;
+  // only two urls for copy and move
+  bool enab = rbCopy->isChecked() ||
+    rbMove->isChecked();
 
-  enab = rbDelete->isChecked() ||
-    rbList->isChecked() ||
-    rbGet->isChecked();
-
-  le_dest->setEnabled( ! enab );
+  le_dest->setEnabled( enab );
 
   selectedOperation = id;
 }
@@ -182,15 +191,20 @@ void KioslaveTest::changeProgressMode( int id ) {
 
 
 void KioslaveTest::startJob() {
-  KURL url = le_source->text();
+  KURL current;
+  current.setPath(QDir::currentDirPath());
+  QString sSrc( le_source->text() );
+  KURL src( current, sSrc );
 
-  if ( url.isMalformed() ) {
+  if ( src.isMalformed() ) {
     QMessageBox::critical(this, i18n("Kioslave Error Message"), i18n("Source URL is malformed") );
     return;
   }
 
-  url = le_dest->text();
-  if ( url.isMalformed() &&
+  QString sDest( le_dest->text() );
+  KURL dest( current, sDest );
+
+  if ( dest.isMalformed() &&
        ( selectedOperation == Copy || selectedOperation == Move ) ) {
     QMessageBox::critical(this, i18n("Kioslave Error Message"),
 		       i18n("Destination URL is malformed") );
@@ -198,9 +212,13 @@ void KioslaveTest::startJob() {
   }
 
   pbStart->setEnabled( false );
+
+  /*
   job = new KIOJob;
   job->cacheToPool(true);
+  */
 
+  /*
   switch ( progressMode ) {
   case ProgressSimple:
     job->setGUImode( KIOJob::SIMPLE );
@@ -219,124 +237,234 @@ void KioslaveTest::startJob() {
     job->setGUImode( KIOJob::NONE );
     break;
   }
+  */
 
   switch ( selectedOperation ) {
   case List:
-    job->listDir( le_source->text() );
+    job = KIO::listDir( src );
+    connect(job, SIGNAL( entries( KIO::Job*, const KIO::UDSEntryList&)),
+            SLOT( slotEntries( KIO::Job*, const KIO::UDSEntryList&)));
+    break;
+
+  case ListRecursive:
+    job = KIO::listRecursive( src );
+    connect(job, SIGNAL( entries( KIO::Job*, const KIO::UDSEntryList&)),
+            SLOT( slotEntries( KIO::Job*, const KIO::UDSEntryList&)));
+    break;
+
+  case Stat:
+    job = KIO::stat( src );
     break;
 
   case Get:
-    job->get( le_source->text() );
+    job = KIO::get( src );
+    connect(job, SIGNAL( data( KIO::Job*, const QByteArray &)),
+            SLOT( slotData( KIO::Job*, const QByteArray &)));
+    break;
+
+  case Put:
+    putBuffer = 0;
+    job = KIO::put( src, -1, true, false);
+    connect(job, SIGNAL( dataReq( KIO::Job*, QByteArray &)),
+            SLOT( slotDataReq( KIO::Job*, QByteArray &)));
     break;
 
   case Copy:
-    job->copy( le_source->text(), le_dest->text() );
+    job = KIO::copy( src, dest );
     break;
 
   case Move:
-    job->move( le_source->text(), le_dest->text() );
+    job = KIO::move( src, dest );
     break;
 
   case Delete:
-    job->del( le_source->text() );
+    job = KIO::del( src );
     break;
 
+  case Mkdir:
+    job = KIO::mkdir( src );
+    break;
   }
 
-  connect( job, SIGNAL( sigFinished( int ) ),
-	   SLOT( slotFinished() ) );
-  connect( job, SIGNAL( sigCanceled( int ) ),
-	   SLOT( slotFinished() ) );
-  connect( job, SIGNAL( sigError( int, int, const char* ) ),
-	   SLOT( slotError( int, int, const char* ) ) );
+  connect( job, SIGNAL( result( KIO::Job * ) ),
+	   SLOT( slotResult( KIO::Job * ) ) );
 
   pbStop->setEnabled( true );
 }
 
 
-void KioslaveTest::slotError( int, int errid, const char* errortext ) {
-  QString msg = KIO::kioErrorString( errid, errortext );
-  QMessageBox::critical(this, i18n("Kioslave Error Message"), msg );
-
-  slotFinished();
-}
-
-
-void KioslaveTest::slotFinished() {
+void KioslaveTest::slotResult( KIO::Job * job )
+{
+  if ( job->error() )
+  {
+    job->showErrorDialog();
+  }
+  else if ( selectedOperation == Stat )
+  {
+      UDSEntry entry = ((KIO::StatJob*)job)->statResult();
+      printUDSEntry( entry );
+  }
   pbStart->setEnabled( true );
   pbStop->setEnabled( false );
 }
 
+void KioslaveTest::printUDSEntry( const KIO::UDSEntry & entry )
+{
+    KIO::UDSEntry::ConstIterator it = entry.begin();
+    for( ; it != entry.end(); it++ ) {
+        switch ((*it).m_uds) {
+            case KIO::UDS_FILE_TYPE:
+                kDebugInfo("File Type : %d", (mode_t)((*it).m_long) );
+                if ( S_ISDIR( (mode_t)((*it).m_long) ) )
+                {
+                    kDebugInfo("is a dir");
+                }
+                break;
+            case KIO::UDS_ACCESS:
+                kDebugInfo("Access permissions : %d", (mode_t)((*it).m_long) );
+                break;
+            case KIO::UDS_USER:
+                kDebugInfo("User : %s", ((*it).m_str.ascii() ) );
+                break;
+            case KIO::UDS_GROUP:
+                kDebugInfo("Group : %s", ((*it).m_str.ascii() ) );
+                break;
+            case KIO::UDS_NAME:
+                kDebugInfo("Name : %s", ((*it).m_str.ascii() ) );
+                //m_strText = decodeFileName( (*it).m_str );
+                break;
+            case KIO::UDS_URL:
+                kDebugInfo("URL : %s", ((*it).m_str.ascii() ) );
+                break;
+            case KIO::UDS_MIME_TYPE:
+                kDebugInfo("MimeType : %s", ((*it).m_str.ascii() ) );
+                break;
+            case KIO::UDS_LINK_DEST:
+                kDebugInfo("LinkDest : %s", ((*it).m_str.ascii() ) );
+                break;
+        }
+    }
+}
+
+void KioslaveTest::slotEntries(KIO::Job*, const KIO::UDSEntryList& list) {
+
+    UDSEntryListIterator it(list);
+    for (; it.current(); ++it) {
+        UDSEntry::ConstIterator it2 = it.current()->begin();
+        for( ; it2 != it.current()->end(); it2++ ) {
+            if ((*it2).m_uds == UDS_NAME)
+                kDebugInfo( "%s", ( *it2 ).m_str.latin1() );
+        }
+    }
+}
+
+void KioslaveTest::slotData(KIO::Job*, const QByteArray &data)
+{
+    if (data.size() == 0)
+    {
+       kDebugInfo( 0, "Data: <End>");
+    }
+    else
+    {
+       QCString c_string(data.data(), data.size()); // Make it 0-terminated!
+       kDebugInfo( 0, "Data: \"%s\"", c_string.data() );
+    }
+}
+
+void KioslaveTest::slotDataReq(KIO::Job*, QByteArray &data)
+{
+    const char *fileDataArray[] =
+       { 
+         "Hello world\n", 
+         "This is a test file\n", 
+         "You can safely delete it.\n",
+         0
+       };
+    const char *fileData = fileDataArray[putBuffer++];
+ 
+    if (!fileData) 
+    {
+       kDebugInfo( 0, "DataReq: <End>");
+       return;
+    }
+    data.duplicate(fileData, strlen(fileData));
+    kDebugInfo( 0, "DataReq: \"%s\"", fileData );
+}
 
 void KioslaveTest::stopJob() {
   pbStop->setEnabled( false );
 
-  job->kill();
+  // TODO  job->kill();
   job = 0L;
 
   pbStart->setEnabled( true );
 }
 
+static const char *version = "v0.0.0 0000";   // :-)
+static const char *description = "Test for kioslaves";
+static KCmdLineOptions options[] =
+{
+ { "s", 0, 0 },
+ { "src <src>", "Source URL", "" },
+ { "d", 0, 0 },
+ { "dest <dest>", "Destination URL", "" },
+ { "o", 0, 0 },
+ { "operation <operation>", "Operation (list,listrecursive,stat,get,copy,move,del,mkdir)", "copy" },
+ { "p", 0, 0 },
+ { "progress <progress>", "Progress Type (none,simple,list,little)", "simple" }
+};
 
 int main(int argc, char **argv) {
-  KApplication *app = new KApplication( argc, argv, "kioslavetest" );
+  KCmdLineArgs::init( argc, argv, "kioslavetest", description, version );
+  KCmdLineArgs::addCmdLineOptions( options );
+  KApplication app;
 
-  argc--;
-  argv++;
+  KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
-  QString src;
-  QString dest;
-  uint op = KioslaveTest::Copy;
-  uint pr = KioslaveTest::ProgressSimple;
+  QString src = args->getOption("src");
+  QString dest = args->getOption("dest");
+
+  uint op = 0;
+  uint pr = 0;
 
   QString tmps;
-  
-  for ( int i = 0; i < argc; i++ ) {
-    if (strcmp(argv[i],"--help")==0) {
-      usage();
-    } else if (strcmp(argv[i],"-s")==0){
-      if ( i < argc-1 )
-	src = argv[++i];
-    } else if (strcmp(argv[i],"-d")==0){
-      if ( i < argc-1 )
-	dest = argv[++i];
-    } else if (strcmp(argv[i],"-o")==0){
-      if ( i < argc-1 ) {
-	tmps = argv[++i];
-	if ( tmps == "list") {
-	  op = KioslaveTest::List;
-	} else if ( tmps == "get") {
-	  op = KioslaveTest::Get;
-	} else if ( tmps == "copy") {
-	  op = KioslaveTest::Copy;
-	} else if ( tmps == "move") {
-	  op = KioslaveTest::Move;
-	} else if ( tmps == "del") {
-	  op = KioslaveTest::Delete;
-	}
-      }
-    } else if (strcmp(argv[i],"-p")==0) {
-      if ( i < argc-1 ) {
-	tmps = argv[++i];
-	if ( tmps == "none") {
-	  op = KioslaveTest::ProgressNone;
-	} else if ( tmps == "simple") {
-	  op = KioslaveTest::ProgressSimple;
-	} else if ( tmps == "list") {
-	  op = KioslaveTest::ProgressList;
-	} else if ( tmps == "little") {
-	  op = KioslaveTest::ProgressLittle;
-	}
-      }
-    } else {
-      usage();
-    }
-  }
+
+  tmps = args->getOption("operation");
+  if ( tmps == "list") {
+    op = KioslaveTest::List;
+  } else if ( tmps == "listrecursive") {
+    op = KioslaveTest::ListRecursive;
+  } else if ( tmps == "stat") {
+    op = KioslaveTest::Stat;
+  } else if ( tmps == "get") {
+    op = KioslaveTest::Get;
+  } else if ( tmps == "copy") {
+    op = KioslaveTest::Copy;
+  } else if ( tmps == "move") {
+    op = KioslaveTest::Move;
+  } else if ( tmps == "del") {
+    op = KioslaveTest::Delete;
+  } else if ( tmps == "mkdir") {
+    op = KioslaveTest::Mkdir;
+  } else KCmdLineArgs::usage("unknown operation");
+
+  tmps = args->getOption("progress");
+  if ( tmps == "none") {
+    pr = KioslaveTest::ProgressNone;
+  } else if ( tmps == "simple") {
+    pr = KioslaveTest::ProgressSimple;
+  } else if ( tmps == "list") {
+    pr = KioslaveTest::ProgressList;
+  } else if ( tmps == "little") {
+    pr = KioslaveTest::ProgressLittle;
+  } else KCmdLineArgs::usage("unknown progress mode");
+
+  args->clear(); // Free up memory
 
   KioslaveTest test( src, dest, op, pr );
 
-  app->setMainWidget(kmain);
-  app->exec();
+  app.setMainWidget(kmain);
+  app.exec();
 }
 
 

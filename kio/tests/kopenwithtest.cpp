@@ -3,6 +3,7 @@
 #include <qstringlist.h>
 #include <qdir.h>
 #include <kio_openwith.h>
+#include <kurl.h>
 
 int main(int argc, char **argv)
 {
@@ -11,14 +12,14 @@ int main(int argc, char **argv)
 
     list += "file://home/testfile";
     list += "http://www.kde.org/index.html";
-    
-    KOpenWithDlg* dlg = new KOpenWithDlg(list, "OpenWith_Text", "OpenWith_Value", 0);
+
+    KOpenWithDlg* dlg = new KOpenWithDlg(KURL("file://home/testfile"), "OpenWith_Text", "OpenWith_Value", 0);
     if(dlg->exec()) {
         debug("Dialog ended successfully\ntext: %s", dlg->text().ascii());
     }
     else
         debug("Dialog was cancelled.");
-    
+
     return 0;
 }
-    
+

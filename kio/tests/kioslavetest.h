@@ -21,8 +21,9 @@
 
 #include <ktmainwindow.h>
 
-#include "kio_littleprogress_dlg.h"
+//#include "kio_littleprogress_dlg.h"
 #include "kio_job.h"
+#include "kio/global.h"
 
 class KioslaveTest : public KTMainWindow {
   Q_OBJECT
@@ -31,7 +32,7 @@ public:
   KioslaveTest( QString src, QString dest, uint op, uint pr );
   ~KioslaveTest() {}
 
-  enum Operations { List, Get, Copy, Move, Delete };
+  enum Operations { List, ListRecursive, Stat, Get, Put, Copy, Move, Delete, Mkdir };
 
   enum ProgressModes { ProgressNone, ProgressSimple,
 		       ProgressList, ProgressLittle };
@@ -39,6 +40,8 @@ public:
 protected:
 
   void closeEvent( QCloseEvent * );
+
+  void printUDSEntry( const KIO::UDSEntry & entry );
 
   // info stuff
   QLabel *lb_from;
@@ -51,10 +54,14 @@ protected:
   QButtonGroup *opButtons;
 
   QRadioButton *rbList;
+  QRadioButton *rbListRecursive;
+  QRadioButton *rbStat;
   QRadioButton *rbGet;
+  QRadioButton *rbPut;
   QRadioButton *rbCopy;
   QRadioButton *rbMove;
   QRadioButton *rbDelete;
+  QRadioButton *rbMkdir;
 
   // progress stuff
   QButtonGroup *progressButtons;
@@ -76,17 +83,20 @@ protected slots:
   void startJob();
   void stopJob();
 
-  void slotError( int, int errid, const char* errortext );
-  void slotFinished();
+  void slotResult( KIO::Job * );
+  void slotEntries( KIO::Job *, const KIO::UDSEntryList& );
+  void slotData( KIO::Job *, const QByteArray &data );
+  void slotDataReq( KIO::Job *, QByteArray &data );
 
 private:
-  KIOJob *job;
+  KIO::Job *job;
   QWidget *main_widget;
 
-  KIOLittleProgressDlg *littleProgress;
+  //  KIOLittleProgressDlg *littleProgress;
 
   int selectedOperation;
   int progressMode;
+  int putBuffer;
 };
 
 #endif // _KIOSLAVETEST_H

@@ -28,20 +28,22 @@
 #include <qstring.h>
 #include <qstringlist.h>
 
-class KIOJob;
+namespace KIO {
 
-/** This class isn't meant to be used as a class but only as a simple 
+  class Job;
+
+/** This class isn't meant to be used as a class but only as a simple
  *  namespace for static functions, though an instance of the class
  *  is built for internal purposes.
- *  KIONetAccess implements the Net Transparency, which was formerly
- *  provided by kfmlib, but now using KIOJobs.
+ *  KIO::NetAccess implements the Net Transparency, which was formerly
+ *  provided by kfmlib, but now using KIO::Jobs.
  *  Whereas a kiojob is asynchronous, meaning that the developer has
- *  to connect slots for it, KIONetAccess provides synchronous downloads
+ *  to connect slots for it, KIO::NetAccess provides synchronous downloads
  *  and uploads, as well as temporary file creation and removal.
  *
  *  Port to kio done by David Faure, faure@kde.org
  */
-class KIONetAccess : public QObject
+class NetAccess : public QObject
 {
   Q_OBJECT
 
@@ -66,11 +68,11 @@ public:
      *
      * <pre>
      * QString s;
-     * if( KIONetAccess::download( u, s ) )
+     * if( KIO::NetAccess::download( u, s ) )
      * {
      *   loadFile( s );
-     *   KIONetAccess::removeTempFile( s );
-     * }
+     *   KIO::NetAccess::removeTempFile( s );
+     *   }
      * </pre>
      *
      * Of course, your user interface will still process exposure/repaint
@@ -82,21 +84,21 @@ public:
      *               file.  If you insert an empty string, it will
      *               return a location in a temporary spot
      *
-     * @param job For experts only.  You may supply your own KIOJob
+     * @param job For experts only.  You may supply your own KIO::Job
      *            object if you want to do some special processing
      *            with it before or after the download
      */
-    static bool download(const QString src, QString & target,
-                         KIOJob *job = 0L);
+    static bool download(const KURL& src, QString & target,
+                         KIO::Job *job = 0L);
 
     /**
      * Remove the specified file if and only if it was created
-     * by KIONetAccess as temporary file for a former download.
+     * by KIO::NetAccess as temporary file for a former download.
      *
      * @param name Path to temporary file to remove.  May not be
      *             empty.
      */
-    static void removeTempFile(const QString name); 
+    static void removeTempFile(const QString& name); 
 
     /**
 	 * Upload file src to url target.  Both must be specified,
@@ -107,29 +109,30 @@ public:
      * @param target URL containing the final location of the
      *               file.
      *
-     * @param job For experts only.  You may supply your own KIOJob
+     * @param job For experts only.  You may supply your own KIO::Job
      *            object if you want to do some special processing
      *            with it before or after the download
      */
-    static bool upload(const QString src, const QString target,
-                       KIOJob *job = 0L);
+    static bool upload(const QString& src, const KURL& target,
+                       KIO::Job *job = 0L);
 
 protected:
     /** Private constructor */
-    KIONetAccess() {}
+    NetAccess() {}
     /** Private destructor */
-    ~KIONetAccess() {}
+    ~NetAccess() {}
     /** Internal method */
-    bool downloadInternal(const QString src, QString & target,
-                          KIOJob *job = 0L);
+    bool downloadInternal(const KURL& src, KURL& target,
+                          KIO::Job *job = 0L);
     /** List of temporary files */
     static QStringList* tmpfiles;
     /** Whether the download succeeded or not */
     bool bDownloadOk;
 
 protected slots:
-    virtual void slotFinished( int id );
-    virtual void slotError( int id, int errid, const char * _text );
+    virtual void slotResult( KIO::Job * job );
+};
+
 };
 
 #endif

@@ -7,17 +7,17 @@
 
 #include <ktmainwindow.h>
 
-#include "kio_job.h" 
+#include "kio_job.h"
 
 class QTimer;
 class KIOListView;
 
 
-/** 
+/**
 * One item in the @ref #KIOListView, connected to a @ref #KIOJob.
 * @internal
-*/ 
-class KIOListViewItem : public QObject, public QListViewItem, KIO {
+*/
+class KIOListViewItem : public QObject, public QListViewItem {
 
   Q_OBJECT
 
@@ -38,19 +38,17 @@ public slots:
   void slotCanResume( int, bool );
 
   void slotTotalSize( int, unsigned long _bytes );
-  void slotTotalFiles( int, unsigned long _files );
-  void slotTotalDirs( int, unsigned long _dirs );
-//   void slotProcessedSize( int, unsigned long _bytes );
+  void slotTotalFiles( int, unsigned int _files );
+  void slotTotalDirs( int, unsigned int _dirs );
   void slotPercent( int, unsigned long _bytes );
-  void slotProcessedFiles( int, unsigned long _files );
-//   void slotProcessedDirs( int, unsigned long _dirs );
-  void slotScanningDir( int, const char *_dir );
+  void slotProcessedFiles( int, unsigned int _files );
+  void slotScanningDir( int, const KURL& _dir );
   void slotSpeed( int, unsigned long _bytes_per_second );
-  void slotCopyingFile( int, const char *_from, const char *_to );
-  void slotMakingDir( int, const char *_dir );
-  void slotGettingFile( int, const char *_url );
-  void slotDeletingFile( int, const char *_url );
-  void slotRenamed( int, const char* _new_url);
+  void slotCopyingFile( int, const KURL& _from, const KURL& _to );
+  void slotMakingDir( int, const KURL& _dir );
+  void slotGettingFile( int, const KURL& _url );
+  void slotDeletingFile( int, const KURL& _url );
+  void slotRenamed( int, const KURL& _new_url);
 
   void slotFinished( int );
 
@@ -59,8 +57,8 @@ protected:
   KIOJob* m_pJob;
 
   unsigned long m_iTotalSize;
-  unsigned long m_iTotalFiles;
-  unsigned long m_iTotalDirs;
+  unsigned int m_iTotalFiles;
+  unsigned int m_iTotalDirs;
 
   KIOListView *listView;
 
@@ -69,10 +67,10 @@ signals:
 };
 
 
-/** 
+/**
 * List view in the @ref #KIOListProgressDlg.
 * @internal
-*/ 
+*/
 class KIOListView : public QListView {
 
   Q_OBJECT
@@ -80,7 +78,7 @@ class KIOListView : public QListView {
 public:
 
   KIOListView (QWidget *parent = 0, const char *name = 0 );
-  
+
   virtual ~KIOListView();
 
   /**
@@ -111,7 +109,7 @@ protected:
 };
 
 
-/** 
+/**
 * This class is not meant for a general usage.
 *
 * It's purpose is to show progress of IO operations.
@@ -128,7 +126,7 @@ protected:
 * @short All-in-one IO progress window.
 * @author Matej Koss <koss@miesto.sk>
 * @internal
-*/ 
+*/
 class KIOListProgressDlg : public KTMainWindow {
 
   Q_OBJECT

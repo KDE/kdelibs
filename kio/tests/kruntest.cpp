@@ -4,15 +4,16 @@
 #include <qpushbutton.h>
 #include <kapp.h>
 #include "kruntest.h"
- 
+#include <kdebug.h>
+
 const int MAXKRUNS = 100;
 
 testKRun * myArray[MAXKRUNS];
 
-void testKRun::foundMimeType( const char *_type )
+void testKRun::foundMimeType( const QString& _type )
 {
-  debug("testKRun::foundMimeType %s", _type);
-  debug("testKRun::foundMimeType URL=%s", m_strURL.ascii());
+  debug("testKRun::foundMimeType %s", debugString(_type));
+  debug("testKRun::foundMimeType URL=%s", debugString(m_strURL.url()));
   m_bFinished = true;
   m_timer.start( 0, true );
   return;
@@ -30,15 +31,15 @@ Receiver::Receiver()
         stop->setEnabled(false);
         start->move(0,50);
         stop->move(0,100);
-        QObject::connect( h, SIGNAL(clicked()), kapp, SLOT(quit()) );  
+        QObject::connect( h, SIGNAL(clicked()), kapp, SLOT(quit()) );
         QObject::connect( start, SIGNAL(clicked()), this, SLOT(slotStart()) );
         QObject::connect( stop, SIGNAL(clicked()), this, SLOT(slotStop()) );
 
-        show(); 
+        show();
 }
 
-void Receiver::slotStop() 
-{ 
+void Receiver::slotStop()
+{
   for (int i = 0 ; i < MAXKRUNS ; i++ )
   {
     debug(" deleting krun %i",i);
@@ -54,7 +55,7 @@ void Receiver::slotStart()
   for (int i = 0 ; i < MAXKRUNS ; i++ )
   {
     debug(QString("creating testKRun %1").arg(i));
-    myArray[i] = new testKRun( "file:/tmp", 0, true, false /* no autodelete */ );
+    myArray[i] = new testKRun( KURL("file:/tmp"), 0, true, false /* no autodelete */ );
   }
   start->setEnabled(false);
   stop->setEnabled(true);

@@ -1,29 +1,25 @@
 // $Id$
 
-#include "kio_job.h" 
+#include "kio_job.h"
 #include "kio_paste.h"
-#include "kio_error.h"
-#include "kio_interface.h"
+#include "kio/global.h"
+#include "kio_netaccess.h"
 
+#include <qapplication.h>
 #include <qclipboard.h>
 #include <qdragobject.h>
 #include <kurl.h>
-#include <kapp.h>
+#include <kdebug.h>
 #include <klocale.h>
 #include <klineeditdlg.h>
-
 #include <kmessagebox.h>
+#include <ktempfile.h>
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <sys/stat.h>
-#include <unistd.h>
-
-bool isClipboardEmpty()
+bool KIO::isClipboardEmpty()
 {
   QStringList urls;
   QMimeSource *data = QApplication::clipboard()->data();
-  
+
   if ( QUriDrag::canDecode( data ) && QUriDrag::decodeToUnicodeUris( data, urls ) ){
     if ( urls.count() == 0 )
       return true;
@@ -33,28 +29,30 @@ bool isClipboardEmpty()
   return true;
 }
 
-void pasteClipboard( const char *_dest_url, bool move )
+void KIO::pasteClipboard( const KURL& dest_url, bool move )
 {
-  if ( KURL::split( _dest_url ).isEmpty() ) {
-    kioErrorDialog( KIO::ERR_MALFORMED_URL, _dest_url );
+  if ( KURL::split(dest_url).isEmpty() ) {
+    KMessageBox::error( 0L, i18n( "Malformed URL\n%1" ).arg( dest_url.url() ) );
     return;
   }
-  
+
   QMimeSource *data = QApplication::clipboard()->data();
-  
-  QStringList urls;
-  if ( QUriDrag::canDecode( data ) && QUriDrag::decodeToUnicodeUris( data, urls ) ) {
-    if ( urls.count() == 0 ) {
+
+  QStringList uris;
+  if ( QUriDrag::canDecode( data ) && QUriDrag::decodeToUnicodeUris( data, uris ) ) {
+    if ( uris.count() == 0 ) {
       KMessageBox::error( 0L, i18n("The clipboard is empty"));
       return;
     }
 
-    KIOJob* job = new KIOJob;
+    KURL::List urls;
+    for (QStringList::ConstIterator it = uris.begin(); it != uris.end(); it++)
+      urls.append(KURL(*it));
 
     if ( move )
-      job->move( urls, _dest_url );
+      (void) KIO::move( urls, dest_url );
     else
-      job->copy( urls, _dest_url );
+      (void) KIO::copy( urls, dest_url );
 
     return;
   }
@@ -67,18 +65,11 @@ void pasteClipboard( const char *_dest_url, bool move )
     return;
   }
 
-  pasteData( _dest_url, ba );
+  pasteData( dest_url, ba );
 }
 
-void pasteData( const char *_dest_url, QByteArray _data )
+void KIO::pasteData( const KURL& u, const QByteArray& _data )
 {
-  KURL u( _dest_url );
-  if ( !u.isLocalFile() ) {
-    // TODO: Use KIO put command here for writing the data.
-    KMessageBox::sorry( 0L, i18n("Pasting clipboard data is only supported on the local hard disk currently"));
-    return;
-  }
-
   KLineEditDlg l( i18n("Filename for clipboard content:"), "", 0L, false );
   int x = l.exec();
   if ( x ) {
@@ -88,22 +79,19 @@ void pasteData( const char *_dest_url, QByteArray _data )
       return;
     }
 	
-    u.addPath( l.text() );
-    
-    struct stat buff;
-    if ( stat( u.path().ascii(), &buff ) == 0 ) {
-      QString tmp = i18n("The file %1 does already exist. Do you really want to overwrite it ?" ).arg( u.path() );
-      if ( KMessageBox::warningYesNo( 0L, tmp) == 1 )
-	return;
-    }
-    
-    FILE *f = fopen( u.path().ascii(), "wb" );
-    if ( f == 0L ) {
-      kioErrorDialog( KIO::ERR_WRITE_ACCESS_DENIED, u.path().ascii() );
-      return;
-    }
+    KURL myurl(u);
+    myurl.addPath( l.text() );
 
-    fwrite( _data.data(), 1, _data.size(), f );
-    fclose( f );
+    // We could use KIO::put here, but that would require a class
+    // for the slotData call, and would mean an error if the destination
+    // exists. With NetAcess, we get synchronous call and we get a nice
+    // rename dialog box if the destination exists.
+
+    KTempFile tempFile;
+    tempFile.setAutoDelete( true );
+    *tempFile.dataStream() << _data;
+    tempFile.close();
+
+    (void) KIO::NetAccess::upload( tempFile.name(), myurl );
   }
 }

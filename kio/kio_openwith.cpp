@@ -1,19 +1,19 @@
 /*  This file is part of the KDE libraries
-    
+
     Copyright (C) 1997 Torben Weis <weis@stud.uni-frankfurt.de>
     Copyright (C) 1999 Dirk A. Mueller <dmuell@gmx.net>
     Portions copyright (C) 1999 Preston Brown <pbrown@kde.org>
- 
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
     version 2 of the License, or (at your option) any later version.
- 
+
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Library General Public License for more details.
- 
+
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -120,9 +120,9 @@ KApplicationTree::KApplicationTree( QWidget *parent )
 {
     addColumn( i18n("Known Applications") );
     setRootIsDecorated( true );
-    
+
     parseDesktopDir( "" );
-    
+
     connect( this, SIGNAL( currentChanged(QListViewItem*) ), SLOT( slotItemHighlighted(QListViewItem*) ) );
     connect( this, SIGNAL( selectionChanged(QListViewItem*) ), SLOT( slotSelectionChanged(QListViewItem*) ) );
 }
@@ -132,17 +132,15 @@ KApplicationTree::KApplicationTree( QWidget *parent )
 
 bool KApplicationTree::isDesktopFile( const QString& filename )
 {
-    FILE *f;
-    f = fopen( filename, "rb" );
-    if ( f == 0L )
+    QFile file(filename);
+    if (!file.open(IO_Raw | IO_ReadOnly))
         return false;
-    
-    char buff[ 100 ];
-    buff[ 0 ] = 0;
-    fgets( buff, 100, f );
-    fclose( f );
-    
-    KMimeMagicResult *result = KMimeMagic::self()->findBufferType( buff, 100 );
+
+    QByteArray buffer(100);
+    file.readBlock(buffer.data(), 100);
+    file.close();
+
+    KMimeMagicResult *result = KMimeMagic::self()->findBufferType( buffer );
     if (!result)
         return false;
 
@@ -159,9 +157,9 @@ void KApplicationTree::parseDesktopFile( QFileInfo *fi, KAppTreeListItem *item, 
 {
     QPixmap pixmap;
     QString text_name, pixmap_name, mini_pixmap_name, big_pixmap_name, command_name, comment;
-    
+
     QString file = fi->absFilePath();
-    
+
     if( fi->isDir() ) {
         // don't create empty directory items
         QDir dir( file );
@@ -185,7 +183,7 @@ void KApplicationTree::parseDesktopFile( QFileInfo *fi, KAppTreeListItem *item, 
     }
 
     QFile config( file );
-    
+
     if( config.exists() ) {
         KSimpleConfig kconfig( file, true );
         kconfig.setDesktopGroup();
@@ -194,10 +192,10 @@ void KApplicationTree::parseDesktopFile( QFileInfo *fi, KAppTreeListItem *item, 
         big_pixmap_name   = kconfig.readEntry("Icon");
         comment           = kconfig.readEntry("Comment");
         text_name         = kconfig.readEntry("Name", text_name);
-        
+
         if( !mini_pixmap_name.isEmpty() )
-            pixmap = KGlobal::iconLoader()->loadIcon(mini_pixmap_name, 
-								KIconLoader::Small);
+	  pixmap = KGlobal::iconLoader()->loadIcon(mini_pixmap_name,
+						   KIconLoader::Small);
         if( pixmap.isNull() && !big_pixmap_name.isEmpty() )
             pixmap = KGlobal::iconLoader()->
 	      loadIcon(big_pixmap_name, KIconLoader::Small);
@@ -207,8 +205,8 @@ void KApplicationTree::parseDesktopFile( QFileInfo *fi, KAppTreeListItem *item, 
     }
     else {
         command_name = text_name;
-        pixmap = KGlobal::iconLoader()->loadIcon("default", 
-							    KIconLoader::Small);
+        pixmap = KGlobal::iconLoader()->loadIcon("default",
+						 KIconLoader::Small);
     }
 
     KAppTreeListItem * newItem;
@@ -232,17 +230,17 @@ void KApplicationTree::parseDesktopDir( QString relPath, KAppTreeListItem *item)
     // dirs (ex : a global one and a local one). Parse them both.
     QStringList list = KGlobal::dirs()->findDirs("apps", relPath);
     for (QStringList::ConstIterator dirsit = list.begin(); dirsit != list.end(); dirsit++) {
-        //debug(QString("(*dirsit): '%1'").arg((*dirsit))); 
+        //debug(QString("(*dirsit): '%1'").arg((*dirsit)));
         QDir d( (*dirsit) );
         if( d.exists() ) {
             debug("dirs exists");
             d.setSorting( SORT_SPEC );
             QList <QString> item_list;
-            
+
             const QFileInfoList *list = d.entryInfoList();
             QFileInfoListIterator it( *list );
             QFileInfo *fi;
-            
+
             while( ( fi = it.current() ) ) {
                 if( fi->fileName() == "." || fi->fileName() == ".." ) {
                     ++it;
@@ -260,7 +258,7 @@ void KApplicationTree::parseDesktopDir( QString relPath, KAppTreeListItem *item)
                     ++it;
                     continue;
                 }
-                
+
                 if( fi->isDir() ) {
                     parseDesktopFile( fi, item, relPath );
                 }
@@ -285,9 +283,9 @@ void KApplicationTree::slotItemHighlighted(QListViewItem* i)
     // i may be 0 (see documentation)
     if(!i)
         return;
-    
+
     KAppTreeListItem *item = (KAppTreeListItem *) i;
-    
+
     if( (!item->directory ) && (!item->exec.isEmpty()) )
         emit highlighted( item->text(0), item->exec );
 }
@@ -300,7 +298,7 @@ void KApplicationTree::slotSelectionChanged(QListViewItem* i)
     // i may be 0 (see documentation)
     if(!i)
         return;
-    
+
     KAppTreeListItem *item = (KAppTreeListItem *) i;
 
     if( ( !item->directory ) && (!item->exec.isEmpty() ) )
@@ -322,70 +320,69 @@ void KApplicationTree::resizeEvent( QResizeEvent * e)
  *
  ***************************************************************/
 
-KOpenWithDlg::KOpenWithDlg( const QStringList& _url, const QString&_text, 
+KOpenWithDlg::KOpenWithDlg( const KURL& _url, const QString&_text,
 			    const QString& _value, QWidget *parent)
     : QDialog( parent, 0L, true )
-{    
-  qServiceType = KMimeType::findByURL(KURL(_url.first()))->name();
+{
+  qServiceType = KMimeType::findByURL(_url)->name();
   if (qServiceType == "application/octet-stream")
     qServiceType = QString::null;
-  
+
   m_pTree = 0L;
   m_pService = 0L;
   haveApp = false;
-  
-  setCaption(_url.first());
-  
+
+  setCaption(_url.decodedURL());
+
   QBoxLayout* topLayout = new QVBoxLayout(this, KDialog::marginHint(),
 					  KDialog::spacingHint());
-  
   label = new QLabel( _text , this );
   topLayout->addWidget(label);
-  
+
   QBoxLayout* l = new QHBoxLayout(topLayout);
   edit = new KLineEdit( this );
   edit->setMinimumWidth(200);
   l->addWidget(edit);
-  
+
   completion = new KURLCompletion();
   connect ( edit, SIGNAL (completion()), completion, SLOT (make_completion()));
   connect ( edit, SIGNAL (rotation()), completion, SLOT (make_rotation()));
   // connect ( edit, SIGNAL (textChanged(const QString&)), completion, SLOT (edited(const QString&)));
   connect ( completion, SIGNAL (setText (const QString&)), edit, SLOT ( insert(const QString&)));
   connect ( edit, SIGNAL(returnPressed()), SLOT(accept()) );
-  
+
   terminal = new QCheckBox( i18n("Run in terminal"), this );
   l->addWidget(terminal);
-  
+
   m_pTree = new KApplicationTree( this );
   topLayout->addWidget(m_pTree);
-  
+
   connect( m_pTree, SIGNAL( selected( const QString&, const QString& ) ), this, SLOT( slotSelected( const QString&, const QString& ) ) );
   connect( m_pTree, SIGNAL( highlighted( const QString&, const QString& ) ), this, SLOT( slotHighlighted( const QString&, const QString& ) ) );
-  
+
   if (!qServiceType.isNull()) {
     remember = new QCheckBox(i18n("Remember application association for this file"), this);
-    //    remember->setChecked(true); 
+    //    remember->setChecked(true);
     topLayout->addWidget(remember);
-  } else 
+  } else
     remember = 0L;
-  
+
   // Use KButtonBox for the aligning pushbuttons nicely
   KButtonBox* b = new KButtonBox(this);
   clear = b->addButton( i18n("C&lear") );
   b->addStretch(1);
   connect( clear, SIGNAL(clicked()), SLOT(slotClear()) );
-  
+
   ok = b->addButton( i18n ("&OK") );
   ok->setDefault(true);
   connect( ok, SIGNAL(clicked()), SLOT(slotOK()) );
-  
+
   cancel = b->addButton( i18n("&Cancel") );
   connect( cancel, SIGNAL(clicked()), SLOT(reject()) );
-  
+
   b->layout();
   topLayout->addWidget(b);
-  
+
   edit->setText( _value );
   edit->setFocus();
 }
@@ -427,7 +424,7 @@ void KOpenWithDlg::slotHighlighted( const QString& _name, const QString& )
 
 void KOpenWithDlg::slotOK()
 {
-  if (haveApp) 
+  if (haveApp)
     m_pService = KService::service( qName );
   else {
     m_pService = 0L;
@@ -435,7 +432,7 @@ void KOpenWithDlg::slotOK()
     KService::List sList = KService::allServices();
     QValueListIterator<KService::Ptr> it(sList.begin());
     for (; it != sList.end(); ++it)
-      if ((*it)->exec() == edit->text() || 
+      if ((*it)->exec() == edit->text() ||
 	  (*it)->name().lower() == edit->text().lower())
 	m_pService = *it;
     if (m_pService) {
@@ -449,12 +446,12 @@ void KOpenWithDlg::slotOK()
     KSimpleConfig conf("konquerorrc", true);
     conf.setGroup("Misc Defaults");
     QString t = conf.readEntry("Terminal", "konsole");
-      
+
     t += " -e ";
     t += edit->text();
     edit->setText(t);
   }
-  
+
   if (haveApp && !remember) {
     haveApp = false;
     accept();
@@ -474,13 +471,12 @@ void KOpenWithDlg::slotOK()
   QString serviceName;
   if (!haveApp) {
     if (keepExec.contains('/'))
-      serviceName = keepExec.right(keepExec.length() - 
+      serviceName = keepExec.right(keepExec.length() -
 				   keepExec.findRev('/') + 1);
     else
       serviceName = keepExec;
   } else
     serviceName = m_pService->desktopEntryPath();
-  
   if (serviceName.right(8) != ".desktop")
     serviceName += ".desktop";
   QString path(locateLocal("apps", serviceName));
@@ -502,8 +498,8 @@ void KOpenWithDlg::slotOK()
       else
 	desktop.writeEntry("Terminal", 0);
     }
-      
-  
+
+
   // write it all out to the file
   desktop.sync();
 
@@ -511,7 +507,7 @@ void KOpenWithDlg::slotOK()
   DCOPClient *dcc = kapp->dcopClient();
   QByteArray replyData;
   QCString retType;
-  dcc->call("kded", "kbuildsycoca", "recreate()", QByteArray(), 
+  dcc->call("kded", "kbuildsycoca", "recreate()", QByteArray(),
 	    retType, replyData);
 
   // get the new service pointer

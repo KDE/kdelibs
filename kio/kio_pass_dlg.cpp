@@ -10,7 +10,9 @@
 #include <klocale.h>
 #include <kapp.h>
 
-KIOPassDlg::KIOPassDlg( QWidget* parent, const char* name, bool modal, WFlags wflags,
+using namespace KIO;
+
+PassDlg::PassDlg( QWidget* parent, const char* name, bool modal, WFlags wflags,
 			const QString& _head, const QString& _user, const QString& _pass )
    : QDialog(parent, name, modal, wflags)
 {
@@ -26,7 +28,7 @@ KIOPassDlg::KIOPassDlg( QWidget* parent, const char* name, bool modal, WFlags wf
       layout->addWidget( l );
       layout->addSpacing( 5 );
    }
-   
+
    QGridLayout *grid = new QGridLayout( 3, 5 );
    layout->addLayout( grid );
 
@@ -54,7 +56,7 @@ KIOPassDlg::KIOPassDlg( QWidget* parent, const char* name, bool modal, WFlags wf
      m_pUser->setText( _user );
    if ( !_pass.isNull() )
      m_pPass->setText( _pass );
-      
+
    layout->addSpacing( 10 );
 
    //
@@ -62,9 +64,9 @@ KIOPassDlg::KIOPassDlg( QWidget* parent, const char* name, bool modal, WFlags wf
    //
    QAccel *ac = new QAccel(this);
    ac->connectItem( ac->insertItem(Key_Escape), this, SLOT(reject()) );
-   
+
    connect( m_pPass, SIGNAL(returnPressed()), SLOT(accept()) );
-   
+
    //
    // Die Buttons "OK" & "Cancel" erzeugen
    //
@@ -78,34 +80,31 @@ KIOPassDlg::KIOPassDlg( QWidget* parent, const char* name, bool modal, WFlags wf
    b2 = new QPushButton( i18n("Cancel"), this);
    b2->setFixedSize( b2->sizeHint() );
    hlayout->addWidget( b2 );
-   
-   
+
+
    // Buttons mit Funktionaliataet belegen
    connect( b1, SIGNAL(clicked()), SLOT(accept()) );
    connect( b2, SIGNAL(clicked()), SLOT(reject()) );
-   
+
    // Fenstertitel
    setCaption( i18n("Password") );
-   
+
    // Focus
    if ( _user.isEmpty() )
      m_pUser->setFocus();
    else
      m_pPass->setFocus();
-   
+
    layout->addStretch( 10 );
    layout->activate();
    resize( sizeHint() );
 }
 
-bool open_PassDlg( const QString& _head, QString& _user, QString& _pass )
+bool KIO::open_PassDlg( const QString& _head, QString& _user, QString& _pass )
 {
-  if ( kapp == 0L )
-  {
-    (void)new KApplication( );
-  }
-  
-  KIOPassDlg dlg( 0L, 0L, true, 0, _head, _user, _pass );
+  ASSERT(kapp);
+
+  PassDlg dlg( 0L, 0L, true, 0, _head, _user, _pass );
   if ( dlg.exec() )
   {
     _user = dlg.user();

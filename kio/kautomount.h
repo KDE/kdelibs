@@ -4,16 +4,19 @@
 #include <qobject.h>
 #include <qstring.h>
 
+namespace KIO {
+class Job;
+}
+
 class KAutoMount : public QObject
 {
   Q_OBJECT
 public:
-  KAutoMount( bool _readonly, const char *_format, const char *_device, const char * _mountpoint,
+  KAutoMount( bool _readonly, const QString& _format, const QString& _device, const QString& _mountpoint,
               const QString & _desktopFile, bool _show_filemanager_window = true );
     
-public slots:
-  void slotFinished( int );
-  void slotError( int, int _id, const char *_text );
+protected slots:
+  void slotResult( KIO::Job * );
     
 protected:
   QString m_strDevice;
@@ -27,9 +30,8 @@ class KAutoUnmount : public QObject
 public:
   KAutoUnmount( const QString & _mountpoint, const QString & _desktopFile );
     
-public slots:
-  void slotFinished( int );
-  void slotError( int, int _id, const char *_text );
+protected slots:
+  void slotResult( KIO::Job * );
 private:
   QString m_desktopFile;
 };

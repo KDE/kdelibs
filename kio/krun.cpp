@@ -5,13 +5,13 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "kio_job.h"
 #include "krun.h"
 #include "kuserprofile.h"
 #include "kmimetype.h"
 #include "kmimemagic.h"
-#include "kio_error.h"
 #include "kio_openwith.h"
+#include "kio_job.h"
+#include "kio/global.h"
 
 #include <kmessageboxwrapper.h>
 #include <kurl.h>
@@ -24,48 +24,45 @@
 
 KFileManager * KFileManager::pFileManager = 0L;
 
-// TODO : use KURL for the url
-bool KRun::runURL( const char *_url, const char *_mimetype )
+bool KRun::runURL( const KURL& u, const QString& _mimetype )
 {
 
-  if ( strcmp( _mimetype, "text/html" ) == 0 )
+  if ( _mimetype == "text/html" )
   {
-    KFileManager::getFileManager()->openFileManagerWindow( _url );
+    KFileManager::getFileManager()->openFileManagerWindow( u );
     return true;
   }
-  else if ( strcmp( _mimetype, "inode/directory" ) == 0 )
+  else if ( _mimetype == "inode/directory" )
   {
-    KFileManager::getFileManager()->openFileManagerWindow( _url );
+    KFileManager::getFileManager()->openFileManagerWindow( u );
     return true;
   }
-  else if ( strcmp( _mimetype, "inode/directory-locked" ) == 0 )
+  else if ( _mimetype == "inode/directory-locked" )
   {
-    QString tmp = i18n("Can not enter\n%1\nAccess denied").arg(_url);
-    KMessageBoxWrapper::error( 0L, tmp);
+    KMessageBoxWrapper::error( 0L,
+            i18n("Can not enter\n%1\nAccess denied").arg(u.url()) );
     return false;
   }
-  else if ( strcmp( _mimetype, "application/x-desktop" ) == 0 )
+  else if ( _mimetype == "application/x-desktop" )
   {
-    KURL u( _url );
     if ( u.isLocalFile() )
-      return KDEDesktopMimeType::run( _url, true );
+      return KDEDesktopMimeType::run( u, true );
   }
-  else if ( strcmp( _mimetype, "application/x-executable" ) == 0 ||
-          ( strcmp( _mimetype, "application/x-shellscript" ) == 0 ) )
-  {
-    KURL u( _url );
+  else if ( _mimetype == "application/x-executable"  ||
+	    _mimetype == "application/x-shellscript")
+   {
     if ( u.isLocalFile() )
       return KRun::run( u.path() ); // just execute the url as a command
   }
 
-  QStringList lst;
-  lst.append( _url );
+  KURL::List lst;
+  lst.append( u );
 
   KService::Ptr offer = KServiceTypeProfile::preferredService( _mimetype );
 
   if ( !offer )
   {
-    KOpenWithDlg l( lst, i18n("Open With:"), "", (QWidget *)0L );
+    KOpenWithDlg l( u, i18n("Open With:"), "", (QWidget *)0L );
     if ( l.exec() )
     {
       KService::Ptr service = l.service();
@@ -95,7 +92,7 @@ void KRun::shellQuote( QString &_str )
   _str += "'";
 }
 
-bool KRun::run( const KService& _service, QStringList& _urls )
+bool KRun::run( const KService& _service, const KURL::List& _urls )
 {
   QString icon = _service.icon();
   QString miniicon = _service.icon();
@@ -104,14 +101,14 @@ bool KRun::run( const KService& _service, QStringList& _urls )
   return run( _service.exec(), _urls, name, icon, miniicon );
 }
 
-bool KRun::run( const QString& _exec, QStringList& _urls, const QString& _name,
+bool KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _name,
 		const QString& _icon, const QString& _mini_icon, const QString& _desktop_file )
 {
   bool b_local_files = true;
 
   QString U = "",F = "",D = "",N = "";
 
-  QStringList::Iterator it = _urls.begin();
+  KURL::List::ConstIterator it = _urls.begin();
   for( ; it != _urls.end(); ++it )
   {
     KURL url( *it );
@@ -119,7 +116,7 @@ bool KRun::run( const QString& _exec, QStringList& _urls, const QString& _name,
     {
       QString tmp = i18n( "Malformed URL" );
       tmp += "\n";
-      tmp += *it;
+      tmp += (*it).url();
       KMessageBoxWrapper::error( 0L, tmp);
       return false;
     }
@@ -127,7 +124,7 @@ bool KRun::run( const QString& _exec, QStringList& _urls, const QString& _name,
     if ( !url.isLocalFile() )
       b_local_files = false;
 
-    QString tmp = *it;
+    QString tmp = (*it).url();
     shellQuote( tmp );
     U += tmp;
     U += " ";
@@ -229,7 +226,7 @@ bool KRun::run( const QString& _exec, QStringList& _urls, const QString& _name,
     shellQuote( d );
     QString n ( url.filename() );
     shellQuote( n );
-    QString u ( *it );
+    QString u ( (*it).url() );
     shellQuote( u );
 
     while ( ( pos = e.find( "%f" )) != -1 )
@@ -258,7 +255,7 @@ bool KRun::run( const QString& _cmd )
   return true;
 }
 
-bool KRun::runOldApplication( const QString& app , QStringList& _urls, bool _allow_multiple )
+bool KRun::runOldApplication( const QString& app, const KURL::List& _urls, bool _allow_multiple )
 {
   char **argv = 0L;
 
@@ -269,13 +266,13 @@ bool KRun::runOldApplication( const QString& app , QStringList& _urls, bool _all
   {
     kDebugArea( 7010, "Allow Multiple" );
     argv = new char*[ _urls.count() + 3 ];
-    argv[ 0 ] = (char *)kfmexec.ascii();
+    argv[ 0 ] = qstrdup(kfmexec.latin1());
 
     int i = 1;
-    argv[ i++ ] = (char *)app.ascii();
-    QStringList::Iterator it = _urls.begin();
+    argv[ i++ ] = qstrdup(app.latin1());
+    KURL::List::ConstIterator it = _urls.begin();
     for( ; it != _urls.end(); ++it )
-      argv[ i++ ] = (char *)(*it).ascii();
+      argv[ i++ ] = qstrdup((*it).url().latin1());
     argv[ i ] = 0;
 	
     QApplication::flushX();
@@ -283,19 +280,20 @@ bool KRun::runOldApplication( const QString& app , QStringList& _urls, bool _all
     if ( ( pid = fork() ) == 0 )
     {
       execvp( argv[0], argv );
-      _exit(1);
+      _exit(0);
     }
+	
   }
   else
   {
     kDebugArea( 7010, "Not multiple" );
-    QStringList::Iterator it = _urls.begin();
+    KURL::List::ConstIterator it = _urls.begin();
     for( ; it != _urls.end(); ++it )
     {
-      argv = new char*[ 4 ];
-      argv[ 0 ] = (char *)kfmexec.data();
-      argv[ 1 ] = (char *)app.ascii();
-      argv[ 2 ] = (char *)(*it).ascii();
+      argv = new char*[ 3 ];
+      argv[ 0 ] = qstrdup(kfmexec.latin1());
+      argv[ 1 ] = qstrdup(app.latin1());
+      argv[ 2 ] = qstrdup((*it).url().latin1());
       argv[ 3 ] = 0;
 
       QApplication::flushX();
@@ -308,15 +306,20 @@ bool KRun::runOldApplication( const QString& app , QStringList& _urls, bool _all
     }
   }
 
+  for (size_t i = 0; i < sizeof(argv)/sizeof(char*); i++) {
+      delete [] argv[i];
+  }
+  delete [] argv;
+
   return true;
 }
 
-KRun::KRun( const QString& _url, mode_t _mode, bool _is_local_file, bool _auto_delete )
+KRun::KRun( const KURL& _url, mode_t _mode, bool _is_local_file, bool _auto_delete )
 {
   m_bFault = false;
   m_bAutoDelete = _auto_delete;
   m_bFinished = false;
-  m_jobId = 0;
+  m_job = 0L;
   m_strURL = _url;
   m_bScanFile = false;
   m_bIsDirectory = false;
@@ -329,17 +332,21 @@ KRun::KRun( const QString& _url, mode_t _mode, bool _is_local_file, bool _auto_d
   m_bInit = true;
   connect( &m_timer, SIGNAL( timeout() ), this, SLOT( slotTimeout() ) );
   m_timer.start( 0, true );
+fprintf(stderr, "KRun:Start timeout.\n");
 }
 
 void KRun::init()
 {
   kDebugInfo( 7010, "INIT called" );
 
-  if ( m_strURL.left( 7 ) == "mailto:" )
+  QString myurl = m_strURL.url();
+
+  if ( myurl.left( 7 ) == "mailto:" )
   {
     emit finished();
 
-    QString addr = m_strURL.mid( 7 );
+    QString addr = myurl.mid( 7 );
+
     KURL::decode( addr );
     QString subj;
 
@@ -358,9 +365,8 @@ void KRun::init()
     return;
   }
 
-  KURL url( m_strURL );
+  if ( !m_bIsLocalFile && m_strURL.isLocalFile() )
 
-  if ( !m_bIsLocalFile && url.isLocalFile() )
     m_bIsLocalFile = true;
 
   if ( m_bIsLocalFile )
@@ -368,10 +374,10 @@ void KRun::init()
     if ( m_mode == 0 )
     {
       struct stat buff;
-      if ( stat( url.path().ascii(), &buff ) == -1 )
+      if ( stat( m_strURL.path(), &buff ) == -1 )
       {
-	// HACK: Use general error message function ( yet to do )
-	kioErrorDialog( KIO::ERR_DOES_NOT_EXIST, m_strURL.ascii() );
+	// Hmm, duplicated from global.cpp (ERR_DOES_NOT_EXIST)
+	KMessageBoxWrapper::error( 0L, i18n( "The file or directory\n%1\ndoes not exist" ).arg( m_strURL.url() ) );
 	m_bFault = true;
 	m_bFinished = true;
 	m_timer.start( 0, true );
@@ -380,10 +386,10 @@ void KRun::init()
       m_mode = buff.st_mode;
     }
 
-    KMimeType::Ptr mime = KMimeType::findByURL( url, m_mode, m_bIsLocalFile );
+    KMimeType::Ptr mime = KMimeType::findByURL( m_strURL, m_mode, m_bIsLocalFile );
     assert( mime );
-    kDebugInfo( 7010, "MIME TYPE is %s", mime->mimeType().ascii() );
-    foundMimeType( mime->mimeType().ascii() );
+    kDebugInfo( 7010, "MIME TYPE is %s", debugString(mime->mimeType()) );
+    foundMimeType( mime->mimeType() );
     return;
   }
 
@@ -394,29 +400,22 @@ void KRun::init()
     return;
   }
 
-  if ( !KProtocolManager::self().supportsListing( url.protocol() ) )
+  // Let's see whether it is a directory
+  if ( !KProtocolManager::self().supportsListing( m_strURL.protocol() ) )
   {
-    kDebugInfo( 7010, "NO SUPPORT FOR LISTING" );
+    kDebugInfo( 7010, "##### NO SUPPORT FOR LISTING" );
     // No support for listing => we can scan the file
     scanFile();
     return;
   }
 
   // Let's see whether it is a directory
-  kDebugInfo( 7010, "TESTING DIRECTORY" );
+  kDebugInfo( 7010, "##### TESTING DIRECTORY (STATING)" );
 
-  // It may be a directory
-  KIOJob* job = new KIOJob();
-  connect( job, SIGNAL( sigIsDirectory( int ) ), this, SLOT( slotIsDirectory( int ) ) );
-  connect( job, SIGNAL( sigIsFile( int ) ), this, SLOT( slotIsFile( int ) ) );
-  connect( job, SIGNAL( sigFinished( int ) ), this, SLOT( slotFinished( int ) ) );
-  connect( job, SIGNAL( sigError( int, int, const char* ) ),
-	   this, SLOT( slotError( int, int, const char* ) ) );
-
-  job->setAutoDelete( false );
-  m_jobId = job->id();
-  job->setGUImode( KIOJob::NONE );
-  job->testDir( m_strURL.ascii() );
+  // It may be a directory or a file, let's stat
+  m_job = KIO::stat( m_strURL );
+  connect( m_job, SIGNAL( result( KIO::Job * ) ),
+	   this, SLOT( slotStatResult( KIO::Job * ) ) );
 }
 
 KRun::~KRun()
@@ -427,22 +426,16 @@ KRun::~KRun()
 
 void KRun::scanFile()
 {
-  kDebugInfo( 7010, "Scanning file %s", m_strURL.data() );
+  kDebugInfo( 7010, "###### Scanning file %s", debugString(m_strURL.url()) );
 
-  KIOJob* job = new KIOJob();
-  connect( job, SIGNAL( sigMimeType( int, const char* ) ), this, SLOT( slotMimeType( int, const char* ) ) );
-  connect( job, SIGNAL( sigPreData( int, const char*, int ) ),
-	   this, SLOT( slotPreData( int, const char*, int ) ) );
-  connect( job, SIGNAL( sigError( int, int, const char* ) ),
-	   this, SLOT( slotError( int, int, const char* ) ) );
-  job->setAutoDelete( false );
-  m_jobId = job->id();
-  job->setGUImode( KIOJob::NONE );
-  job->preget( m_strURL.ascii(), 2048 );
+  KIO::MimetypeJob *job = KIO::mimetype( m_strURL);
+  connect(job, SIGNAL( result( KIO::Job *)),
+          this, SLOT( slotScanFinished(KIO::Job *)));
 }
 
 void KRun::slotTimeout()
 {
+  kDebugInfo( 7010, "slotTimeout called" );
   if ( m_bInit )
   {
     m_bInit = false;
@@ -477,101 +470,83 @@ void KRun::slotTimeout()
   }
 }
 
-void KRun::slotIsDirectory( int /* _id */ )
+void KRun::slotStatResult( KIO::Job * job )
 {
-  m_bIsDirectory = true;
-}
-
-void KRun::slotIsFile( int /* _id */ )
-{
-  // Ok, when the job is finished we want to scan the file.
-  // But we wait until the job is finished => we can reuse the
-  // protocol server
-  m_bScanFile = true;
-}
-
-void KRun::slotFinished( int /* _id */ )
-{
-  kDebugInfo( 7010, "FINISHED" );
-
-  if ( m_bFault )
+  if (job->error())
   {
+    kDebugError( 7010,"ERROR %d %s", job->error(), job->errorText().ascii() );
+    job->showErrorDialog();
+
+    m_bFault = true;
     m_bFinished = true;
 
     if ( m_bAutoDelete )
-    {
       delete this;
-      return;
+    else
+      m_timer.start( 0, true );
+
+  } else {
+
+    kDebugInfo( 7010, "####### FINISHED" );
+
+    KIO::UDSEntry entry = ((KIO::StatJob*)job)->statResult();
+    KIO::UDSEntry::ConstIterator it = entry.begin();
+    for( ; it != entry.end(); it++ ) {
+        if ( (*it).m_uds == KIO::UDS_FILE_TYPE )
+        {
+            if ( S_ISDIR( (mode_t)((*it).m_long) ) )
+                m_bIsDirectory = true; // it's a dir
+            else
+                m_bScanFile = true; // it's a file
+            break;
+        }
     }
-    return;
-  }
+    // We should have found something
+    assert ( m_bScanFile || m_bIsDirectory );
 
-  // Start the timer. Once we get the timer event this
-  // protocol server is back in the pool and we can reuse it.
-  // This gives better performance then starting a new slave
-  if ( m_bScanFile || m_bIsDirectory )
+    // Start the timer. Once we get the timer event this
+    // protocol server is back in the pool and we can reuse it.
+    // This gives better performance than starting a new slave
     m_timer.start( 0, true );
+  }
 }
 
-void KRun::slotError( int, int _errid, const char *_errortext )
+void KRun::slotScanFinished( KIO::Job *job )
 {
-  if ( _errid == KIO::ERR_WARNING )
-    return; //let's ingore warnings for now
-
-  kDebugError( 7010,"ERROR %d %s", _errid, _errortext );
-  // HACK
-  // Display error message
-  kioErrorDialog( _errid, _errortext );
-
-  m_bFault = true;
-  m_timer.start( 0, true );
+  if (job->error())
+  {
+     slotStatResult( job ); // hacky - we just want to use the same code on error
+     return;
+  }
+  foundMimeType( ((KIO::MimetypeJob *)job)->mimetype() );
 }
 
-void KRun::slotMimeType( int, const char *_type )
+void KRun::foundMimeType( const QString& type )
 {
-  kDebugInfo( 7010, "MIMETYPE %s", _type );
-  foundMimeType( _type );
-}
+  kDebugInfo( 7010, "Resulting mime type is %s", debugString(type) );
 
-void KRun::slotPreData( int, const char *_data, int _len )
-{
-  kDebugInfo( 7010, "Got pre data" );
-  KMimeMagicResult* result = KMimeMagic::self()->findBufferType( _data, _len );
-
-  // If we still did not find it, we must assume the default mime type
-  if ( !result || result->mimeType().isEmpty())
-    foundMimeType( "application/octet-stream" );
-  else
-    foundMimeType( result->mimeType().ascii() );
-}
-
-void KRun::foundMimeType( const char *_type )
-{
-  kDebugInfo( 7010, "Resulting mime type is %s", _type );
-
-  // Automatically unzip/untar stuff
-  if ( strcmp( _type, "application/x-gzip" ) == 0 ||
-       strcmp( _type, "application/x-bzip" ) == 0 ||
-       strcmp( _type, "application/x-bzip2" ) == 0 ||
-       strcmp( _type, "application/x-tar" ) == 0 )
+  // Automatically unzip stuff
+  if ( type == "application/x-gzip"  ||
+       type == "application/x-bzip"  ||
+       type == "application/x-bzip2"  )
   {
     KURL::List lst = KURL::split( m_strURL );
     if ( lst.isEmpty() )
     {
       QString tmp = i18n( "Malformed URL" );
       tmp += "\n";
-      tmp += m_strURL;
+      tmp += m_strURL.url();
       KMessageBoxWrapper::error( 0L, tmp );
       return;
     }
 
-    if ( strcmp( _type, "application/x-gzip" ) == 0 )
+    if ( type == "application/x-gzip" )
       lst.prepend( KURL( "gzip:/decompress" ) );
-    else if ( strcmp( _type, "application/x-bzip" ) == 0 )
+    else if ( type == "application/x-bzip" )
       lst.prepend( KURL( "bzip:/decompress" ) );
-    else if ( strcmp( _type, "application/x-bzip2" ) == 0 )
+    else if ( type == "application/x-bzip2" )
       lst.prepend( KURL( "bzip2:/decompress" ) );
-    else if ( strcmp( _type, "application/x-tar" ) == 0 )
+    else if ( type == "application/x-tar" )
       lst.prepend( KURL( "tar:/" ) );
 
     // Move the HTML style reference to the leftmost URL
@@ -583,27 +558,21 @@ void KRun::foundMimeType( const char *_type )
     // Create the new URL
     m_strURL = KURL::join( lst );
 
-    kDebugInfo( 7010, "Now trying with %s", m_strURL.ascii() );
+    kDebugInfo( 7010, "Now trying with %s", debugString(m_strURL.url()) );
 
     killJob();
 
     // We don't know if this is a file or a directory. Let's test this first.
     // (For instance a tar.gz is a directory contained inside a file)
-    KIOJob* job = new KIOJob();
-    connect( job, SIGNAL( sigIsDirectory( int ) ), this, SLOT( slotIsDirectory( int ) ) );
-    connect( job, SIGNAL( sigIsFile( int ) ), this, SLOT( slotIsFile( int ) ) );
-    connect( job, SIGNAL( sigFinished( int ) ), this, SLOT( slotFinished( int ) ) );
-    connect( job, SIGNAL( sigError( int, int, const char* ) ),
-             this, SLOT( slotError( int, int, const char* ) ) );
+    // It may be a directory or a file, let's stat
+    m_job = KIO::stat( m_strURL );
+    connect( m_job, SIGNAL( result( KIO::Job * ) ),
+	     this, SLOT( slotStatResult( KIO::Job * ) ) );
 
-    job->setAutoDelete( false );
-    m_jobId = job->id();
-    job->setGUImode( KIOJob::NONE );
-    job->testDir( m_strURL.ascii() );
     return;
   }
 
-  if (KRun::runURL( m_strURL.ascii(), _type )){
+  if (KRun::runURL( m_strURL, type )){
     m_bFinished = true;
   }
   else{
@@ -616,23 +585,22 @@ void KRun::foundMimeType( const char *_type )
 
 void KRun::killJob()
 {
-  if ( m_jobId )
+  if ( m_job )
   {
-    KIOJob* job = KIOJob::find( m_jobId );
-    if ( job )
-      job->kill();
-    m_jobId = 0;
+    m_job->kill();
+    m_job = 0L;
   }
 }
 
 /****************/
-bool KFileManager::openFileManagerWindow( const QString & _url )
+bool KFileManager::openFileManagerWindow( const KURL& _url )
 {
   QString cmd = "kfmclient openURL ";
-  cmd += _url;
-  system( cmd.ascii() );
+  cmd += _url.url();
+  system( cmd );
   return true; // assume kfmclient succeeded
 }
+
 
 #include "krun.moc"
 

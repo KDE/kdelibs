@@ -144,7 +144,7 @@ public:
    *         result object. After another call to KMimeMagic
    *         the returned result object changes its value.
    */
-  KMimeMagicResult* findBufferType( const char *_sample, int _len );
+  KMimeMagicResult* findBufferType( const QByteArray &p );
 
   /**
    * Same functionality as @ref findBufferType but with
@@ -158,7 +158,7 @@ public:
    *         the returned result object changes its value
    *         since it is resued by KMimeMagic.
    */
-  KMimeMagicResult * findBufferFileType( const char *_sample, int _len, const char *_filename );
+  KMimeMagicResult * findBufferFileType( const QByteArray &, const char *_filename );
 
   /**
    * @return a pointer to the unique KMimeMagic instance in this process

@@ -7,10 +7,11 @@
 
 #include <qwidget.h>
 
+class KURL;
 class KIOJob;
 
 
-/** 
+/**
 * Base class for IO progress dialogs.
 *
 * This class does all initialization stuff for progress,
@@ -44,7 +45,7 @@ class KIOJob;
 * the dialog.
 * @short Base class for IO progress dialogs.
 * @author Matej Koss <koss@miesto.sk>
-*/ 
+*/
 class KIOProgressBase : public QWidget {
 
   Q_OBJECT
@@ -95,7 +96,7 @@ protected:
   KIOJob* m_pJob;
 
   /**
-   * This variable controls wether the dialog should be deleted or only cleaned when 
+   * This variable controls wether the dialog should be deleted or only cleaned when
    * the KIOJob is finished ( or canceled ).
    *
    * If your dialog is embedded widget and not a separate window, you should set this
@@ -110,20 +111,20 @@ protected:
 
 protected slots:
 
-  virtual void slotTotalSize( int, unsigned long ) {}
-  virtual void slotTotalFiles( int, unsigned long ) {}
-  virtual void slotTotalDirs( int, unsigned long ) {}
-  virtual void slotPercent( int, unsigned long ) {}
-  virtual void slotProcessedSize( int, unsigned long ) {}
-  virtual void slotProcessedFiles( int, unsigned long ) {}
-  virtual void slotProcessedDirs( int, unsigned long ) {}
-  virtual void slotScanningDir( int, const char* ) {}
-  virtual void slotSpeed( int, unsigned long ) {}
-  virtual void slotCopyingFile( int, const char*, const char* ) {}
-  virtual void slotMakingDir( int, const char* ) {}
-  virtual void slotGettingFile( int, const char* ) {}
-  virtual void slotDeletingFile( int, const char* ) {}
-  virtual void slotCanResume( int, bool ) {}
+    virtual void slotTotalSize( int, unsigned long ) {}
+    virtual void slotTotalFiles( int, unsigned int ) {}
+    virtual void slotTotalDirs( int, unsigned int ) {}
+    virtual void slotPercent( int, unsigned long ) {}
+    virtual void slotProcessedSize( int, unsigned long ) {}
+    virtual void slotProcessedFiles( int, unsigned int ) {}
+    virtual void slotProcessedDirs( int, unsigned int ) {}
+    virtual void slotScanningDir( int, const KURL& ) {}
+    virtual void slotSpeed( int, unsigned long ) {}
+    virtual void slotCopyingFile( int, const KURL&, const KURL& ) {}
+    virtual void slotMakingDir( int, const KURL& ) {}
+    virtual void slotGettingFile( int, const KURL& ) {}
+    virtual void slotDeletingFile( int, const KURL& ) {}
+    virtual void slotCanResume( int, bool ) {}
 
 };
 

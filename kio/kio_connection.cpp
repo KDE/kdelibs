@@ -4,6 +4,9 @@
 #include <config.h>
 #endif
 
+#include <ksock.h>
+#include <qtimer.h>
+
 #include <sys/types.h>
 #include <sys/signal.h>
 #include <sys/time.h>
@@ -20,153 +23,206 @@
 
 #include <kdebug.h>
 
-KIOConnection::KIOConnection( int _in_fd, int _out_fd, size_t _buf_len )
+using namespace KIO;
+
+template class QList<Task>;
+
+
+Connection::Connection()
 {
-  init( _in_fd, _out_fd, _buf_len );
+    f_out = 0;
+    fd_in = 0;
+    socket = 0;
+    notifier = 0;
+    receiver = 0;
+    member = 0;
 }
 
-KIOConnection::KIOConnection()
+Connection::~Connection()
 {
-  m_fin = m_fout = 0L;
-  m_pBuffer = 0L;
+    close();
 }
 
-size_t KIOConnection::defaultBufferSize()
+void Connection::suspend()
 {
-  return 0xFFFF;
+    if (notifier)
+       notifier->setEnabled(false);
 }
 
-void KIOConnection::init( int _in_fd, int _out_fd , size_t _buf_len)
+void Connection::resume()
 {
-  m_in = _in_fd;
-  m_out = _out_fd;
-  
-  m_fin = fdopen( _in_fd, "rb" );
-  m_fout = fdopen( _out_fd, "wb" );
-
-  m_pBuffer = (char *)malloc(_buf_len);
-  m_iBufferSize = _buf_len;
+    if (notifier)
+       notifier->setEnabled(true);
 }
 
-KIOConnection::~KIOConnection()
+void Connection::close()
 {
-  if (m_fin)
-    fclose(m_fin);
-  if (m_fout)
-    fclose(m_fout);
-  
-  if (m_pBuffer)
-    free(m_pBuffer);
+    delete notifier;
+    notifier = 0;
+    delete socket;
+    socket = 0;
+    if (f_out)
+       fclose(f_out);
+    f_out = 0;
+    fd_in = 0;
 }
 
-int KIOConnection::send( int _cmd, const void *_p, int _len )
+void Connection::send(int cmd, const QByteArray& data)
 {
-  static char buffer[ 64 ];
-  sprintf( buffer, "%4x_%2x_", _len, _cmd );
-
-  int n = fwrite( buffer, 1, 8, m_fout );
-
-  if ( n != 8 ) {
-    kDebugError( 7017, "Could not send header");
-    return 0;
-  }
-
-  n = fwrite( _p, 1, _len, m_fout );
-
-  if ( n != _len ) {
-    kDebugError( 7017, "Could not write data");
-    return 0;
-  }
-
-  fflush( m_fout );
-
-  return 1;
-}
-
-void* KIOConnection::read( int* _cmd, int* _len )
-{
-  static char buffer[ 8 ];
-
-again1:
-  int n = ::read( m_in, buffer, 8 );
-  if ( n == -1 && errno == EINTR )
-    goto again1;
-
-  if ( n == -1) {
-    kDebugError( 7017, "Header read failed, errno=%d", errno);
-  }
-  
-  if ( n != 8 )
-  {
-    //kDebugError( 7017, "Header has invalid size (%d)", n);
-    return 0L;
-  }
-  
-  buffer[ 4 ] = 0;
-  buffer[ 7 ] = 0;
-  
-  char *p = buffer;
-  while( *p == ' ' ) p++;
-  long int len = strtol( p, 0L, 16 );
-
-  p = buffer + 5;
-  while( *p == ' ' ) p++;
-  long int cmd = strtol( p, 0L, 16 );
-
-  if ( len > 0L )
-  {
-    int bytesToGo = len;
-    int bytesRead = 0;
-    do 
-    {
-       n = ::read(m_in, m_pBuffer+bytesRead, bytesToGo);
-       if (n == -1) 
-       { 
-          if (errno == EINTR)
-             continue;
-
-          kDebugError( 7017, "Data read failed, errno=%d", errno);
-          return 0;
-       }
-       if (n != bytesToGo)
-       {
-          kDebugInfo( 7017, "Not enough data read (%d instead of %d) cmd=%ld", n, bytesToGo, cmd);
-       }
-
-       bytesRead += n;
-       bytesToGo -= n;
+    if (!inited() || tasks.count() > 0) {
+	kDebugInfo( 7007, "pending queue %d", cmd);
+	Task *task = new Task();
+	task->cmd = cmd;
+	task->data = data;
+	tasks.append(task);
+    } else {
+	sendnow( cmd, data );
     }
-    while(bytesToGo);
-    m_pBuffer[ len ] = 0;
-  }
-  else
-    m_pBuffer[ 0 ] = 0;
-  
-  *_cmd = cmd;
-  *_len = len;
-  
-  return m_pBuffer;
+
+    if (tasks.count() > 0)
+	QTimer::singleShot(100, this, SLOT(dequeue()));
 }
 
-KIOSlave::KIOSlave( const char *_cmd ) 
-	: KIOConnection(), KProcess()
+void Connection::dequeue()
 {
-  *this << _cmd;
+    if (tasks.count() == 0)
+	return;
 
-  if ( !start(NotifyOnExit, (Communication) (Stdin | Stdout | NoRead)) )
-  {
-      kDebugError( 7016, "Couldn't execute %s.", _cmd);
-      return;
-  }
+    debug("dequeue");
 
-  init( out[0], in[1], KIOConnection::defaultBufferSize() );
+    tasks.first();
+    Task *task = tasks.take();
+    sendnow( task->cmd, task->data );
+    delete task;
+
+    if (tasks.count() > 0)
+	QTimer::singleShot(100, this, SLOT(dequeue()));
 }
 
-KIOSlave::~KIOSlave()
+
+void Connection::init(int _fd_in, int fd_out)
 {
-  if (isRunning())
-  {
-     kDebugError( 7016, "Killing running slave pid = %ld", getPid());
-  }
+    fd_in = _fd_in;
+    f_out = fdopen( fd_out, "wb" );
 }
 
+void Connection::init(KSocket *sock)
+{
+    delete notifier;
+    notifier = 0;
+    delete socket;
+    socket = sock;
+    fd_in = socket->socket();
+    f_out = fdopen( socket->socket(), "wb" );
+    if (receiver && fd_in) {
+	notifier = new QSocketNotifier(fd_in, QSocketNotifier::Read);
+	QObject::connect(notifier, SIGNAL(activated(int)), receiver, member);
+    }
+}
+
+void Connection::connect(QObject *_receiver, const char *_member)
+{
+    receiver = _receiver;
+    member = _member;
+    delete notifier;
+    notifier = 0;
+    if (receiver && fd_in) {
+	notifier = new QSocketNotifier(fd_in, QSocketNotifier::Read);
+	QObject::connect(notifier, SIGNAL(activated(int)), receiver, member);
+    }
+}
+
+bool Connection::sendnow( int _cmd, const QByteArray &data )
+{
+    if (f_out == 0) {
+	debug("write: not yet inited.");
+	return false;
+    }
+
+    static char buffer[ 64 ];
+    sprintf( buffer, "%6x_%2x_", data.size(), _cmd );
+
+    size_t n = fwrite( buffer, 1, 10, f_out );
+
+    if ( n != 10 ) {
+	kDebugError( 7017, "Could not send header");
+	return false;
+    }
+
+    n = fwrite( data.data(), 1, data.size(), f_out );
+
+    if ( n != data.size() ) {
+	kDebugError( 7017, "Could not write data");
+	return false;
+    }
+
+    fflush( f_out );
+
+    return true;
+}
+
+int Connection::read( int* _cmd, QByteArray &data )
+{
+    if (!fd_in) {
+	debug("read: not yet inited");
+	return -1;
+    }
+
+    static char buffer[ 10 ];
+
+ again1:
+    ssize_t n = ::read( fd_in, buffer, 10);
+    if ( n == -1 && errno == EINTR )
+	goto again1;
+
+    if ( n == -1) {
+	kDebugError( 7017, "Header read failed, errno=%d", errno);
+    }
+
+    if ( n != 10 ) {
+      if ( n ) // 0 indicates end of file
+        kDebugError( 7017, "Header has invalid size (%d)", n);
+      return -1;
+    }
+
+    buffer[ 6 ] = 0;
+    buffer[ 9 ] = 0;
+
+    char *p = buffer;
+    while( *p == ' ' ) p++;
+    long int len = strtol( p, 0L, 16 );
+
+    p = buffer + 7;
+    while( *p == ' ' ) p++;
+    long int cmd = strtol( p, 0L, 16 );
+
+    data.resize( len );
+
+    if ( len > 0L ) {
+	int bytesToGo = len;
+	int bytesRead = 0;
+	do {
+	    n = ::read(fd_in, data.data()+bytesRead, bytesToGo);
+	    if (n == -1) {
+		if (errno == EINTR)
+		    continue;
+		
+		kDebugError( 7017, "Data read failed, errno=%d", errno);
+		return -1;
+	    }
+	    if (n != bytesToGo) {
+		kDebugInfo( 7017, "Not enough data read (%d instead of %d) cmd=%ld", n, bytesToGo, cmd);
+	    }
+	
+	    bytesRead += n;
+	    bytesToGo -= n;
+	}
+	while(bytesToGo);
+    }
+
+    *_cmd = cmd;
+
+    return len;
+}
+
+#include "kio_connection.moc"

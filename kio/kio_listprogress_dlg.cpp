@@ -1,6 +1,7 @@
 // $Id$
 
 #include <qtimer.h>
+#include <qmessagebox.h>
 
 #include <kconfig.h>
 #include <kapp.h>
@@ -41,36 +42,36 @@ KIOListViewItem::KIOListViewItem( KIOListView* view, QListViewItem *after, KIOJo
 	   SLOT( slotSpeed( int, unsigned long ) ) );
   connect( m_pJob, SIGNAL( sigTotalSize( int, unsigned long ) ),
 	   SLOT( slotTotalSize( int, unsigned long ) ) );
-  connect( m_pJob, SIGNAL( sigTotalFiles( int, unsigned long ) ),
-	   SLOT( slotTotalFiles( int, unsigned long ) ) );
-  connect( m_pJob, SIGNAL( sigTotalDirs( int, unsigned long ) ),
-	   SLOT( slotTotalDirs( int, unsigned long ) ) );
+  connect( m_pJob, SIGNAL( sigTotalFiles( int, unsigned int ) ),
+	   SLOT( slotTotalFiles( int, unsigned int ) ) );
+  connect( m_pJob, SIGNAL( sigTotalDirs( int, unsigned int ) ),
+	   SLOT( slotTotalDirs( int, unsigned int ) ) );
   connect( m_pJob, SIGNAL( sigPercent( int, unsigned long ) ),
 	   SLOT( slotPercent( int, unsigned long ) ) );
-  connect( m_pJob, SIGNAL( sigProcessedFiles( int, unsigned long ) ),
-	   SLOT( slotProcessedFiles( int, unsigned long ) ) );
+  connect( m_pJob, SIGNAL( sigProcessedFiles( int, unsigned int) ),
+	   SLOT( slotProcessedFiles( int, unsigned int ) ) );
 //   connect( m_pJob, SIGNAL( sigProcessedDirs( int, unsigned long ) ),
 // 	   SLOT( slotProcessedDirs( int, unsigned long ) ) );
-  connect( m_pJob, SIGNAL( sigCopying( int, const char*, const char* ) ),
-	   SLOT( slotCopyingFile( int, const char*, const char* ) ) );
+  connect( m_pJob, SIGNAL( sigCopying( int, const KURL&, const KURL& ) ),
+	   SLOT( slotCopyingFile( int, const KURL&, const KURL& ) ) );
   connect( m_pJob, SIGNAL( sigCanResume( int, bool ) ),
  	   SLOT( slotCanResume( int, bool ) ) );
-  connect( m_pJob, SIGNAL( sigScanningDir( int, const char* ) ),
-	   SLOT( slotScanningDir( int, const char* ) ) );
-  connect( m_pJob, SIGNAL( sigMakingDir( int, const char* ) ),
-	   SLOT( slotMakingDir( int, const char* ) ) );
-  connect( m_pJob, SIGNAL( sigGettingFile( int, const char* ) ),
-	   SLOT( slotGettingFile( int, const char* ) ) );
-  connect( m_pJob, SIGNAL( sigDeletingFile( int, const char* ) ),
-	   SLOT( slotDeletingFile( int, const char* ) ) );
-  connect( m_pJob, SIGNAL( sigRenamed( int, const char* ) ),
-	   SLOT( slotRenamed( int, const char* ) ) );
+  connect( m_pJob, SIGNAL( sigScanningDir( int, const KURL& ) ),
+	   SLOT( slotScanningDir( int, const KURL& ) ) );
+  connect( m_pJob, SIGNAL( sigMakingDir( int, const KURL& ) ),
+	   SLOT( slotMakingDir( int, const KURL& ) ) );
+  connect( m_pJob, SIGNAL( sigGettingFile( int, const KURL& ) ),
+	   SLOT( slotGettingFile( int, const KURL& ) ) );
+  connect( m_pJob, SIGNAL( sigDeletingFile( int, const KURL& ) ),
+	   SLOT( slotDeletingFile( int, const KURL& ) ) );
+  connect( m_pJob, SIGNAL( sigRenamed( int, const KURL& ) ),
+	   SLOT( slotRenamed( int, const KURL& ) ) );
 
   connect( job, SIGNAL( sigFinished( int ) ),
 	   SLOT( slotFinished( int ) ) );
   connect( job, SIGNAL( sigCanceled( int ) ),
 	   SLOT( slotFinished( int ) ) );
-  connect( job, SIGNAL( sigError( int, int, const char* ) ),
+  connect( job, SIGNAL( sigError( int, int, const QString& ) ),
 	   SLOT( slotFinished( int ) ) );
 }
 
@@ -78,8 +79,10 @@ KIOListViewItem::KIOListViewItem( KIOListView* view, QListViewItem *after, KIOJo
 void KIOListViewItem::update() {
   QString tmps;
 
+  // TODO
+#if 0
   // set operation
-  switch ( m_pJob->m_cmd ) {
+  switch ( m_pJob->cmd() ) {
   case CMD_COPY:
   case CMD_MCOPY:
     tmps = i18n("Copying");
@@ -89,7 +92,6 @@ void KIOListViewItem::update() {
     tmps = i18n("Moving");
     break;
   case CMD_DEL:
-  case CMD_MDEL:
     tmps = i18n("Deleting");
     break;
   case CMD_GET:
@@ -106,6 +108,7 @@ void KIOListViewItem::update() {
     break;
   }
   setText( listView->lv_operation, tmps );
+#endif
 }
 
 
@@ -115,12 +118,12 @@ void KIOListViewItem::slotTotalSize( int, unsigned long _bytes ) {
 }
 
 
-void KIOListViewItem::slotTotalFiles( int, unsigned long _files ) {
+void KIOListViewItem::slotTotalFiles( int, unsigned int _files ) {
   m_iTotalFiles = _files;
 }
 
 
-void KIOListViewItem::slotTotalDirs( int, unsigned long _dirs ) {
+void KIOListViewItem::slotTotalDirs( int, unsigned int _dirs ) {
   m_iTotalDirs = _dirs;
 }
 
@@ -132,9 +135,9 @@ void KIOListViewItem::slotPercent( int, unsigned long _percent ) {
 }
 
 
-void KIOListViewItem::slotProcessedFiles( int, unsigned long _files ) {
+void KIOListViewItem::slotProcessedFiles( int, unsigned int _files ) {
   QString tmps;
-  tmps.sprintf( "%lu / %lu", _files, m_iTotalFiles );
+  tmps.sprintf( "%u / %u", _files, m_iTotalFiles );
   setText( listView->lv_count, tmps );
 }
 
@@ -154,48 +157,42 @@ void KIOListViewItem::slotSpeed( int, unsigned long _bytes_per_second ) {
 }
 
 
-void KIOListViewItem::slotScanningDir( int , const char *_dir) {
-  KURL url( _dir );
+void KIOListViewItem::slotScanningDir( int , const KURL& url) {
   setText( listView->lv_operation, i18n("Scanning") );
-  setText( listView->lv_url, _dir );
+  setText( listView->lv_url, url.url() );
   setText( listView->lv_filename, url.filename() );
 }
 
 
-void KIOListViewItem::slotCopyingFile( int, const char *_from, const char *_to ) {
-  KURL url( _to );
+void KIOListViewItem::slotCopyingFile( int, const KURL& from, const KURL& to ) {
   setText( listView->lv_operation, i18n("Copying") );
-  setText( listView->lv_url, _from );
+  setText( listView->lv_url, from.url() );
+  setText( listView->lv_filename, to.filename() );
+}
+
+
+void KIOListViewItem::slotRenamed( int, const KURL& url ) {
   setText( listView->lv_filename, url.filename() );
 }
 
 
-void KIOListViewItem::slotRenamed( int, const char *_new_url ) {
-  KURL url( _new_url );
-  setText( listView->lv_filename, url.filename() );
-}
-
-
-void KIOListViewItem::slotMakingDir( int, const char *_dir ) {
-  KURL url( _dir );
+void KIOListViewItem::slotMakingDir( int, const KURL& url ) {
   setText( listView->lv_operation, i18n("Creating") );
-  setText( listView->lv_url, _dir );
+  setText( listView->lv_url, url.url() );
   setText( listView->lv_filename, url.filename() );
 }
 
 
-void KIOListViewItem::slotGettingFile( int, const char *_url ) {
-  KURL url( _url );
+void KIOListViewItem::slotGettingFile( int, const KURL& url ) {
   setText( listView->lv_operation, i18n("Fetching") );
-  setText( listView->lv_url, _url );
+  setText( listView->lv_url, url.url() );
   setText( listView->lv_filename, url.filename() );
 }
 
 
-void KIOListViewItem::slotDeletingFile( int, const char *_url ) {
-  KURL url( _url );
+void KIOListViewItem::slotDeletingFile( int, const KURL& url ) {
   setText( listView->lv_operation, i18n("Deleting") );
-  setText( listView->lv_url, _url );
+  setText( listView->lv_url, url.url() );
   setText( listView->lv_filename, url.filename() );
 }
 
@@ -308,9 +305,9 @@ KIOListProgressDlg::KIOListProgressDlg() : KTMainWindow( "" ) {
 
   setView( myListView, true);
 
-  connect( myListView, SIGNAL( selectionChanged() ), 
+  connect( myListView, SIGNAL( selectionChanged() ),
 	   SLOT( slotSelection() ) );
-  connect( myListView, SIGNAL( doubleClicked( QListViewItem* ) ), 
+  connect( myListView, SIGNAL( doubleClicked( QListViewItem* ) ),
 	   SLOT( slotOpenSimple( QListViewItem* ) ) );
 
   // setup animation timer
@@ -406,7 +403,7 @@ void KIOListProgressDlg::slotSelection() {
       return;
     }
   }
-  toolBar()->setItemEnabled( TOOL_CANCEL, FALSE); 
+  toolBar()->setItemEnabled( TOOL_CANCEL, FALSE);
 }
 
 

@@ -16,12 +16,16 @@
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
 
-INCLUDES= $(all_includes)
+INCLUDES=  -I$(srcdir)/.. $(all_includes) -I$(top_srcdir)/libltdl
 
 SUBDIRS = . klauncher kded file tests
 
-lib_LTLIBRARIES = libkio.la
-libkio_la_LDFLAGS = -version-info 3:0 -no-undefined
+lib_LTLIBRARIES = libkio.la #libkioslave.la
+#libkioslave_la_LDFLAGS = -version-info 3:0
+#libkioslave_la_LIBADD = ../kdeui/libkdeui.la
+#libkioslave_la_SOURCES = slavebase.cpp kio_connection.cpp kio_pass_dlg.cpp
+
+libkio_la_LDFLAGS = -version-info 3:0
 libkio_la_LIBADD = ../kdeui/libkdeui.la
 
 libkio_la_SOURCES = \
@@ -30,46 +34,58 @@ libkio_la_SOURCES = \
         kservicetypefactory.cpp kservicetype.cpp \
 	kmimetype.cpp kmimemagic.cpp \
 	kservice.cpp kservicefactory.cpp \
-	kautomount.cpp kdirwatch.cpp kio_base.cpp kio_cache.cpp \
-	kio_connection.cpp kio_dlg.cpp kio_error.cpp kio_filter.cpp \
-	kio_interface.cpp kio_job.cpp kio_netaccess.cpp \
-	kio_progressbase.cpp \
-	kio_simpleprogress_dlg.cpp kio_littleprogress_dlg.cpp \
-	kio_listprogress_dlg.cpp \
-	kio_pass_dlg.cpp kio_paste.cpp kio_rename_dlg.cpp \
-	kio_skip_dlg.cpp krun.cpp ktar.cpp \
-	kuserpaths.cpp kuserprofile.cpp \
-	ktrader.cpp ktraderparse.cpp \
+	kautomount.cpp kdirwatch.cpp scheduler.cpp \
+	kio_connection.cpp kio_filter.cpp \
+	slaveinterface.cpp kio_job.cpp  \
+	global.cpp kio_rename_dlg.cpp \
+	kio_skip_dlg.cpp ktar.cpp krun.cpp \
+	kuserpaths.cpp kuserprofile.cpp slave.cpp \
+	kio_netaccess.cpp ktrader.cpp ktraderparse.cpp \
+	kio_paste.cpp \
+        slavebase.cpp kio_pass_dlg.cpp \
 	yacc.c lex.c
+# kio_progressbase.cpp kio_simpleprogress_dlg.cpp
+# kio_littleprogress_dlg.cpp kio_listprogress_dlg.cpp
 
-libkio_la_METASOURCES = AUTO
+METASOURCES = AUTO
 
-include_HEADERS = ksycoca.h ksycocaentry.h ksycocatype.h \
+kioincludedir = $(includedir)/kio
+kioinclude_HEADERS = ksycoca.h ksycocaentry.h ksycocatype.h \
 	kservicetype.h kmimetype.h kmimemagic.h kservice.h \
-        krun.h kdirwatch.h \
-	kio_connection.h kio_base.h kio_rename_dlg.h \
-        kio_filter.h kio_dlg.h kio_skip_dlg.h  kio_interface.h \
-        kio_pass_dlg.h kautomount.h \
-	kio_progressbase.h \
-        kio_simpleprogress_dlg.h kio_littleprogress_dlg.h \
-	kio_listprogress_dlg.h \
-        kio_cache.h kio_netaccess.h kuserprofile.h \
-        kio_error.h kio_job.h \
+        krun.h kdirwatch.h kio_connection.h kio_rename_dlg.h \
+        kio_filter.h kio_skip_dlg.h slaveinterface.h \
+        global.h kio_pass_dlg.h kautomount.h \
+        kio_netaccess.h kuserprofile.h \
+        kio_job.h \
         kio_paste.h kio_openwith.h kuserpaths.h \
+	slavebase.h \
         ktar.h ktrader.h
+# kio_progressbase.h kio_simpleprogress_dlg.h
+# kio_littleprogress_dlg.h kio_listprogress_dlg.h
+
 
 # Internal
 noinst_HEADERS = ksycocafactory.h kservicetypefactory.h kservicefactory.h \
 	ksycocadict.h kmessageboxwrapper.h \
-	ktraderparse.h ktraderparsetree.h yacc.h
+	ktraderparse.h ktraderparsetree.h yacc.h \
+	kioslave.h slavewrapper.h
 
-magic_DATA = magic
-magicdir = $(kde_mimedir)
+kde_mime_DATA = magic
 
 parserfiles = yacc.y lex.l
-EXTRA_DIST = $(magic_DATA) $(parserfiles)
+
+service_DATA = kioslave.desktop
+servicedir = $(kde_servicesdir)
+EXTRA_DIST = $(kde_mime_DATA) $(parserfiles) $(service_DATA)
 
 parser: $(parserfiles)
 	cd $(srcdir) ;\
 	flex lex.l && mv lex.yy.c lex.c ;\
 	bison -d yacc.y && mv yacc.tab.c yacc.c; mv yacc.tab.h yacc.h
+
+bin_PROGRAMS = kioslave
+
+kioslave_SOURCES = kioslave.cpp slavewrapper.cpp
+kioslave_LDADD = libkioslave.la
+kioslave_LDFLAGS = $(KDE_RPATH)
+

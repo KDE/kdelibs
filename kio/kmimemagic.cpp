@@ -2061,7 +2061,7 @@ KMimeMagic::setFollowLinks( bool _enable )
 }
 
 KMimeMagicResult *
-KMimeMagic::findBufferType(const char * buffer, int nbytes)
+KMimeMagic::findBufferType(const QByteArray &array)
 {
 	unsigned char buf[HOWMANY + 1];	/* one extra for terminating '\0' */
 
@@ -2076,9 +2076,11 @@ KMimeMagic::findBufferType(const char * buffer, int nbytes)
 	magicResult->setInvalid();
 	accuracy = 100;
 	
+	int nbytes = array.size();
+
         if (nbytes > HOWMANY)
                 nbytes = HOWMANY;
-        memcpy(buf, buffer, nbytes);
+        memcpy(buf, array.data(), nbytes);
         if (nbytes == 0) {
                 resultBuf += MIME_BINARY_ZEROSIZE;
         } else {
@@ -2110,10 +2112,10 @@ refineResult(KMimeMagicResult *r, const char * _filename)
 }
 
 KMimeMagicResult *
-KMimeMagic::findBufferFileType( const char * buffer, int nbytes,
+KMimeMagic::findBufferFileType( const QByteArray &data,
 				const char * fn)
 {
-	KMimeMagicResult * r = findBufferType( buffer, nbytes );
+        KMimeMagicResult * r = findBufferType( data );
 	refineResult(r, fn);
         return r;
 }

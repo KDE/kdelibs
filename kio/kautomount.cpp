@@ -1,10 +1,8 @@
-#include "kio_job.h"
 #include "kautomount.h"
-#include "kio_error.h"
 #include "krun.h"
 #include "kdirwatch.h"
+#include "kio_job.h"
 #include <kdebug.h>
-
 
 /***********************************************************************
  *
@@ -12,67 +10,58 @@
  *
  ***********************************************************************/
 
-KAutoMount::KAutoMount( bool _readonly, const char *_format, const char *_device, 
-                        const char * _mountpoint, const QString & _desktopFile, 
+KAutoMount::KAutoMount( bool _readonly, const QString& _format, const QString& _device,
+                        const QString&  _mountpoint, const QString & _desktopFile,
                         bool _show_filemanager_window )
   : m_strDevice( _device ),
     m_desktopFile( _desktopFile )
 {
   m_bShowFilemanagerWindow = _show_filemanager_window;
-  
-  KIOJob* job = new KIOJob();
-  connect( job, SIGNAL( sigFinished( int ) ), this, SLOT( slotFinished( int ) ) );
-  connect( job, SIGNAL( sigError( int, int, const char* ) ), this, SLOT( slotError( int, int, const char* ) ) );
-    
+
+  KIO::Job* job;
+
   if ( !_format )
-    job->mount( false, 0L, _device, 0L );
+      job = KIO::mount( false, 0L, _device, 0L );
   else
-    job->mount( _readonly, _format, _device, _mountpoint );
+      job = KIO::mount( _readonly, _format, _device, _mountpoint );
+  connect( job, SIGNAL( sigResult( KIO::Job * ) ), this, SLOT( slotResult( KIO::Job * ) ) );
 }
 
-void KAutoMount::slotFinished( int )
+void KAutoMount::slotResult( KIO::Job * job )
 {
-  QString mp = KIOJob::findDeviceMountPoint( m_strDevice.ascii() );
+  if ( job->error() )
+    job->showErrorDialog();
+  else
+  {
+    QString mp = KIO::findDeviceMountPoint( m_strDevice );
 
-  if ( m_bShowFilemanagerWindow )
-    KFileManager::getFileManager()->openFileManagerWindow( mp );
+    if ( m_bShowFilemanagerWindow )
+      KFileManager::getFileManager()->openFileManagerWindow( mp );
 
-  // Update of window which contains the desktop entry which is used for mount/unmount
-  kDebugInfo( 7015, " mount finished : updating %s", m_desktopFile.ascii());
-  KDirWatch::self()->setFileDirty( m_desktopFile );
-
-  delete this;
-}
-
-void KAutoMount::slotError( int, int _errid, const char* _errortext )
-{
-  kioErrorDialog( _errid, _errortext );
-
+    // Update of window which contains the desktop entry which is used for mount/unmount
+    kDebugInfo( 7015, " mount finished : updating %s", debugString(m_desktopFile));
+    KDirWatch::self()->setFileDirty( m_desktopFile );
+  }
   delete this;
 }
 
 KAutoUnmount::KAutoUnmount( const QString & _mountpoint, const QString & _desktopFile )
   : m_desktopFile( _desktopFile )
 {
-  KIOJob* job = new KIOJob();
-  connect( job, SIGNAL( sigFinished( int ) ), this, SLOT( slotFinished( int ) ) );
-  connect( job, SIGNAL( sigError( int, int, const char* ) ), this, SLOT( slotError( int, int, const char* ) ) );
-
-  job->unmount( _mountpoint.ascii() );
+  KIO::Job * job = KIO::unmount( _mountpoint );
+  connect( job, SIGNAL( sigResult( KIO::Job * ) ), this, SLOT( slotResult( KIO::Job * ) ) );
 }
 
-void KAutoUnmount::slotFinished( int )
+void KAutoUnmount::slotResult( KIO::Job * job )
 {
-  // Update of window which contains the desktop entry which is used for mount/unmount
-  kDebugInfo( 7015, "unmount finished : updating %s", m_desktopFile.ascii());
-  KDirWatch::self()->setFileDirty( m_desktopFile );
-
-  delete this;
-}
-
-void KAutoUnmount::slotError( int, int _errid, const char* _errortext )
-{
-  kioErrorDialog( _errid, _errortext );
+  if ( job->error() )
+    job->showErrorDialog();
+  else
+  {
+    // Update of window which contains the desktop entry which is used for mount/unmount
+    kDebugInfo( 7015, "unmount finished : updating %s", debugString(m_desktopFile));
+    KDirWatch::self()->setFileDirty( m_desktopFile );
+  }
 
   delete this;
 }

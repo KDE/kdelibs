@@ -19,6 +19,7 @@ class QCheckBox;
 class QPushButton;
 class QLabel;
 class QStringList;
+class KURL;
 
 /* ------------------------------------------------------------------------- */
 
@@ -33,20 +34,20 @@ public:
     /**
      * Create a dialog that asks for a application to open a given URL(s) with. _
      *
-     * @param _url   is the list of URLs that should be opened
-     * @param _text  appears as a label on top of the entry box.  
+     * @param _url   is the URL that should be opened
+     * @param _text  appears as a label on top of the entry box.
      * @param _value is the initial value of the line
      */
-    
-    KOpenWithDlg( const QStringList& _url, const QString&_text, const QString&_value, QWidget *parent );
+
+    KOpenWithDlg( const KURL& _url, const QString&_text, const QString&_value, QWidget *parent );
     ~KOpenWithDlg();
-    
+
     /**
      * @return the value the user entered
      */
     QString text() { return edit->text(); }
     KService::Ptr service() { return m_pService; }
-  
+
 public slots:
     /**
     * The slot for clearing the edit widget
@@ -55,7 +56,7 @@ public slots:
     void slotSelected( const QString&_name, const QString& _exec );
     void slotHighlighted( const QString& _name, const QString& _exec );
     void slotOK();
-    
+
 protected:
     KLineEdit *edit;
     KURLCompletion * completion;
@@ -69,7 +70,7 @@ protected:
     QPushButton *ok;
     QPushButton *clear;
     QPushButton *cancel;
-    
+
     KService::Ptr m_pService;
 };
 
@@ -87,7 +88,7 @@ protected:
     QString key(int column, bool ascending) const;
 
     void init(const QPixmap& pixmap, bool parse, bool dir, QString _path, QString exec);
-    
+
 public:
     KAppTreeListItem( QListView* parent, const char *name, const QPixmap& pixmap,
                       bool parse, bool dir, QString p, QString c );
@@ -119,16 +120,16 @@ public:
      * Parse a directory for .desktop/.kdelnk files
      */
     void parseDesktopDir( QString relPath, KAppTreeListItem *item = 0 );
-  
+
     KAppTreeListItem *it;
-    
+
 protected:
     void resizeEvent( QResizeEvent *_ev );
-  
+
 public slots:
     void slotItemHighlighted(QListViewItem* i);
     void slotSelectionChanged(QListViewItem* i);
-    
+
 signals:
     void selected( const QString& _name, const QString& _exec );
     void highlighted( const QString& _name, const  QString& _exec );
