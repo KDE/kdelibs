@@ -40,7 +40,7 @@ static const KCmdLineOptions options[] =
 {
  { "shutdown", I18N_NOOP("Shut down cookie jar."), 0 },
  { "remove-all", I18N_NOOP("Remove all cookies."), 0 },
-// { "reload-config", I18N_NOOP("Reload configuration file."),0 },
+ { "reload-config", I18N_NOOP("Reload configuration file."), 0 },
  { 0, 0, 0 }
 };
 
@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
    if (!KCookieServer::start())
    {
       KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
-      if (!args->isSet("shutdown") && !args->isSet("remove-all") /*&& !args->isSet("reload-config")*/ )
+      if (!args->isSet("shutdown") && !args->isSet("remove-all") && !args->isSet("reload-config"))
          printf("KCookieJar already running.\n");
       exit(0);
    }
