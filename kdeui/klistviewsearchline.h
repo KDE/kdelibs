@@ -133,6 +133,10 @@ protected:
      */
     virtual bool itemMatches(const QListViewItem *item, const QString &s) const;
 
+protected slots:
+    void queueSearch(const QString &search);
+    void activateSearch();
+
 private:
 
     /**
