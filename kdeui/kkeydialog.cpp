@@ -236,7 +236,7 @@ void KKeyChooser::commitChanges()
 	QListViewItemIterator it( d->pList );
 	for( ; it.current(); ++it ) {
 		KKeyChooserItem* pItem = dynamic_cast<KKeyChooserItem*>(it.current());
-		if( pItem ) 
+		if( pItem )
 			pItem->commitChanges();
 	}
 }
@@ -815,14 +815,20 @@ int KKeyDialog::configure( KAccel* keys, QWidget *parent, bool bSaveSettings )
 {
 	KKeyDialog dlg( parent );
 	dlg.m_pKeyChooser->insert( keys );
-	return dlg.configure( bSaveSettings );
+	bool b = dlg.configure( bSaveSettings );
+	if( b && bSaveSettings )
+		keys->updateConnections();
+	return b;
 }
 
 int KKeyDialog::configure( KGlobalAccel* keys, QWidget *parent, bool bSaveSettings )
 {
 	KKeyDialog dlg( parent );
 	dlg.m_pKeyChooser->insert( keys );
-	return dlg.configure( bSaveSettings );
+	bool b = dlg.configure( bSaveSettings );
+	if( b && bSaveSettings )
+		keys->updateConnections();
+	return b;
 }
 
 int KKeyDialog::configure( KActionCollection* coll, QWidget *parent, bool bSaveSettings )
