@@ -17,6 +17,8 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
+#define USE_QSOCKET
+
 #include "networkscanner.h"
 
 #include <qprogressbar.h>
@@ -46,8 +48,13 @@ public:
 
 	QProgressBar *bar;
 	KPushButton *scan, *settings;
+	QLabel *subnetlab;
 	QTimer *timer;
+#ifdef USE_QSOCKET
 	QSocket *socket;
+#else
+	KExtendedSocket *socket;
+#endif
 
 	NetworkScannerPrivate( int portvalue ) : port( portvalue )
 	{
@@ -58,6 +65,7 @@ public:
 		printers.setAutoDelete( true );
 	}
 	QString localPrefix();
+	QString scanString();
 };
 
 QString NetworkScanner::NetworkScannerPrivate::localPrefix()
@@ -76,6 +84,14 @@ QString NetworkScanner::NetworkScannerPrivate::localPrefix()
 	return QString::null;
 }
 
+QString NetworkScanner::NetworkScannerPrivate::scanString()
+{
+	QString s = prefixaddress + ".*";
+	if ( port != -1 )
+		s.append( ":" ).append( QString::number( port ) );
+	return s;
+}
+
 NetworkScanner::NetworkScanner( int port, QWidget *parent, const char *name )
 	: QWidget( parent, name )
 {
@@ -84,24 +100,38 @@ NetworkScanner::NetworkScanner( int port, QWidget *parent, const char *name )
 	d->settings = new KPushButton( KGuiItem( i18n( "&Settings..." ), "configure" ), this );
 	d->scan = new KPushButton( KGuiItem( i18n( "Sc&an" ), "viewmag" ), this );
 	d->timer = new QTimer( this );
+#ifdef USE_QSOCKET
 	d->socket = new QSocket( this );
+#else
+	d->socket = new KExtendedSocket();
+#endif
 	QLabel *label = new QLabel( i18n( "Network scan:" ), this );
+	d->subnetlab = new QLabel( i18n( "Subnet: %1" ).arg( d->scanString() ), this );
 
-	QGridLayout *l0 = new QGridLayout( this, 3, 2, 0, 10 );
+	QGridLayout *l0 = new QGridLayout( this, 4, 2, 0, 10 );
 	l0->addMultiCellWidget( label, 0, 0, 0, 1 );
 	l0->addMultiCellWidget( d->bar, 1, 1, 0, 1 );
-	l0->addWidget( d->settings, 2, 0 );
-	l0->addWidget( d->scan, 2, 1 );
+	l0->addMultiCellWidget( d->subnetlab, 2, 2, 0, 1 );
+	l0->addWidget( d->settings, 3, 0 );
+	l0->addWidget( d->scan, 3, 1 );
 
 	connect( d->timer, SIGNAL( timeout() ), SLOT( slotTimeout() ) );
 	connect( d->settings, SIGNAL( clicked() ), SLOT( slotSettingsClicked() ) );
 	connect( d->scan, SIGNAL( clicked() ), SLOT( slotScanClicked() ) );
+#ifdef USE_QSOCKET
 	connect( d->socket, SIGNAL( connected() ), SLOT( slotConnectionSuccess() ) );
 	connect( d->socket, SIGNAL( error( int ) ), SLOT( slotConnectionFailed( int ) ) );
+#else
+	connect( d->socket, SIGNAL( connectionSuccess() ), SLOT( slotConnectionSuccess() ) );
+	connect( d->socket, SIGNAL( connectionFailed( int ) ), SLOT( slotConnectionFailed( int ) ) );
+#endif
 }
 
 NetworkScanner::~NetworkScanner()
 {
+#ifndef USE_QSOCKET
+	delete d->socket;
+#endif
 	delete d;
 }
 
@@ -122,10 +152,22 @@ void NetworkScanner::start()
 void NetworkScanner::slotScanClicked()
 {
 	if ( !d->scanning )
-		start();
+	{
+		if ( d->localPrefix() != d->prefixaddress &&
+				KMessageBox::warningContinueCancel( this->parentWidget(),
+					i18n( "You are about to scan a subnet (%1.*) that does not "
+						  "correspond to the current subnet of this computer (%2.*). Do you want "
+						  "to scan the specified subnet anyway?" ).arg( d->prefixaddress ).arg( d->localPrefix() ),
+					QString::null, KGuiItem( i18n( "&Scan" ), "viewmag" ), "askForScan" ) == KMessageBox::Continue )
+			start();
+	}
 	else
 	{
+#ifdef USE_QSOCKET
 		d->socket->close();
+#else
+		d->socket->cancelAsyncConnect();
+#endif
 		finish();
 	}
 }
@@ -154,8 +196,14 @@ void NetworkScanner::slotNext()
 		return;
 
 	d->timer->stop();
+#ifdef USE_QSOCKET
 	d->socket->connectToHost( d->prefixaddress + "." + QString::number( d->currentaddress ), d->port );
-	//kdDebug() << "Address: " << d->socket->peerName() << ", Port: " << d->socket->peerPort() << endl;
+	kdDebug() << "Address: " << d->socket->peerName() << ", Port: " << d->socket->peerPort() << endl;
+#else
+	d->socket->setAddress( d->prefixaddress + "." + QString::number( d->currentaddress ), d->port );
+	d->socket->startAsyncLookup();
+	kdDebug() << "Address: " << d->socket->host() << ", Port: " << d->socket->port() << endl;
+#endif
 	d->timer->start( d->timeout, true );
 }
 
@@ -174,30 +222,51 @@ void NetworkScanner::next()
 
 void NetworkScanner::slotTimeout()
 {
-	//kdDebug() << "Timeout" << endl;
+	kdDebug() << "Timeout" << endl;
 	if ( !d->scanning )
 		return;
 
+#ifdef USE_QSOCKET
 	d->socket->close();
+#else
+	d->socket->cancelAsyncConnect();
+#endif
 	next();
 }
 
 void NetworkScanner::slotConnectionSuccess()
 {
-	//kdDebug() << "Success" << endl;
-	SocketInfo *info = new SocketInfo;
-	info->IP = d->socket->peerName();
-	info->Port = d->port;
-	QString portname;
-	KExtendedSocket::resolve( KExtendedSocket::peerAddress( d->socket->socket() ), info->Name, portname );
-	d->printers.append( info );
-	d->socket->close();
+	kdDebug() << "Success" << endl;
+#ifdef USE_QSOCKET
+	KSocketAddress *addr = KExtendedSocket::peerAddress( d->socket->socket() );
+#else
+	KSocketAddress *addr = const_cast<KSocketAddress*>( d->socket->peerAddress() );
+#endif
+	kdDebug() << "Connection success: " << ( addr ? addr->pretty() : QString( "ERROR" ) ) << endl;
+	kdDebug() << "Socket: " << d->socket->socket() << endl;
+	if ( addr )
+	{
+		SocketInfo *info = new SocketInfo;
+#ifdef USE_QSOCKET
+		info->IP = d->socket->peerName();
+#else
+		info->IP = d->socket->host();
+#endif
+		info->Port = d->port;
+		QString portname;
+		KExtendedSocket::resolve( addr, info->Name, portname );
+		d->printers.append( info );
+		d->socket->close();
+		delete addr;
+	}
+	else
+		kdDebug() << "Unconnected socket, skipping" << endl;
 	next();
 }
 
 void NetworkScanner::slotConnectionFailed( int )
 {
-	//kdDebug() << "Failure" << endl;
+	kdDebug() << "Failure" << endl;
 	next();
 }
 
@@ -224,6 +293,7 @@ QString NetworkScanner::subnet() const
 void NetworkScanner::setSubnet( const QString& sn )
 {
 	d->prefixaddress = sn;
+	d->subnetlab->setText( i18n( "Subnet: %1" ).arg( d->scanString() ) );
 }
 
 int NetworkScanner::port() const
@@ -234,6 +304,7 @@ int NetworkScanner::port() const
 void NetworkScanner::setPort( int p )
 {
 	d->port = p;
+	d->subnetlab->setText( i18n( "Subnet: %1" ).arg( d->scanString() ) );
 }
 
 bool NetworkScanner::checkPrinter( const QString& host, int port )
