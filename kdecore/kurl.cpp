@@ -1438,7 +1438,7 @@ QString KURL::url( int _trailing, int encoding_hint ) const
   if (!u.isEmpty())
     u += ":";
 
-  if ( hasHost() )
+  if ( hasHost() || (m_strProtocol == fileProt) )
   {
     u += "//";
     if ( hasUser() )
@@ -1498,7 +1498,7 @@ QString KURL::prettyURL( int _trailing ) const
   if (!u.isEmpty())
      u += ":";
 
-  if ( hasHost() )
+  if ( hasHost() || (m_strProtocol == fileProt) )
   {
     u += "//";
     if ( hasUser() )
@@ -1554,8 +1554,8 @@ QString KURL::prettyURL( int _trailing ) const
 QString KURL::prettyURL( int _trailing, AdjustementFlags _flags) const
 {
 	QString u = prettyURL(_trailing);
-	if (_flags & StripFileProtocol && u.startsWith("file:"))
-		u.remove(0, 5);
+	if (_flags & StripFileProtocol && u.startsWith("file://"))
+		u.remove(0, 7);
 	return u;
 }
 

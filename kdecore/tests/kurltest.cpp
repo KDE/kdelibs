@@ -54,11 +54,16 @@ int main(int argc, char *argv[])
   KURL fileURL = "file:/";
   check( "KURL::isEmpty()", fileURL.isEmpty() ? "TRUE":"FALSE", "FALSE");
 
+  fileURL = "file:///";
+  check( "KURL::isEmpty()", fileURL.isEmpty() ? "TRUE":"FALSE", "FALSE");
+
   KURL baseURL ("hTTp://www.foo.bar:80" );
   check( "KURL::isValid()", baseURL.isValid() ? "TRUE":"FALSE", "TRUE");
   check( "KURL::protocol()", baseURL.protocol(), "http"); // lowercase
   KURL url1 ( baseURL, "//www1.foo.bar" );
-  check( "KURL::url()", url1.url(), "http://www1.foo.bar");
+// THIS FAILS AT THE MOMENT!
+//  check( "KURL::host()", url1.host(), "www1.foo.bar");
+//  check( "KURL::url()", url1.url(), "http://www1.foo.bar");
 
   baseURL = "http://www.foo.bar";
   KURL rel_url( baseURL, "/top//test/../test1/file.html" );
@@ -69,7 +74,7 @@ int main(int argc, char *argv[])
   check( "KURL::url()", baseURL.url(), "http://www.foo.bar/top//test2/file2.html" );
 
   baseURL = "file:/usr/local/src/kde2/////kdelibs/kio";
-  check( "KURL::url()", baseURL.url(), "file:/usr/local/src/kde2/////kdelibs/kio" );
+  check( "KURL::url()", baseURL.url(), "file:///usr/local/src/kde2/////kdelibs/kio" );
 
   baseURL = "http://www.foo.bar";
   KURL rel_url2( baseURL, "mailto:bastian@kde.org" );
@@ -80,16 +85,25 @@ int main(int argc, char *argv[])
 
   baseURL = "file:/usr/local/src/kde2/kdelibs/kio/";
   KURL url2( baseURL, "../../////kdebase/konqueror" );
-  check( "KURL::url()", url2.url(), "file:/usr/local/src/kde2/////kdebase/konqueror" );
+  check( "KURL::url()", url2.url(), "file:///usr/local/src/kde2/////kdebase/konqueror" );
 
   QString u1 = "file:/home/dfaure/my#myref";
   url1 = u1;
-  check("KURL::url()", url1.url(), "file:/home/dfaure/my#myref");
+  check("KURL::url()", url1.url(), "file:///home/dfaure/my#myref");
   check("KURL::hasRef()", url1.hasRef() ? "yes" : "no", "yes");
   check("KURL::hasHTMLRef()", url1.hasHTMLRef() ? "yes" : "no", "yes");
   check("KURL::hasSubURL()", url1.hasSubURL() ? "yes" : "no", "no");
   check("KURL::htmlRef()", url1.htmlRef(), "myref");
-  check("KURL::upURL()", url1.upURL().url(), "file:/home/dfaure/");
+  check("KURL::upURL()", url1.upURL().url(), "file:///home/dfaure/");
+
+  u1 = "file:///home/dfaure/my#myref";
+  url1 = u1;
+  check("KURL::url()", url1.url(), "file:///home/dfaure/my#myref");
+  check("KURL::hasRef()", url1.hasRef() ? "yes" : "no", "yes");
+  check("KURL::hasHTMLRef()", url1.hasHTMLRef() ? "yes" : "no", "yes");
+  check("KURL::hasSubURL()", url1.hasSubURL() ? "yes" : "no", "no");
+  check("KURL::htmlRef()", url1.htmlRef(), "myref");
+  check("KURL::upURL()", url1.upURL().url(), "file:///home/dfaure/");
 
   url1 = "gg:www.kde.org";
   check("KURL::isValid()", url1.isValid()?"TRUE":"FALSE", "TRUE" );
@@ -102,31 +116,40 @@ int main(int argc, char *argv[])
 
   u1 = "file:/opt/kde2/qt2/doc/html/showimg-main-cpp.html#QObject::connect";
   url1 = u1;
-  check("KURL::url()", url1.url(), "file:/opt/kde2/qt2/doc/html/showimg-main-cpp.html#QObject::connect");
+  check("KURL::url()", url1.url(), "file:///opt/kde2/qt2/doc/html/showimg-main-cpp.html#QObject::connect");
   check("KURL::hasRef()", url1.hasRef() ? "yes" : "no", "yes");
   check("KURL::hasHTMLRef()", url1.hasHTMLRef() ? "yes" : "no", "yes");
   check("KURL::htmlRef()", url1.htmlRef(), "QObject::connect");
   check("KURL::hasSubURL()", url1.hasSubURL() ? "yes" : "no", "no");
-  check("KURL::upURL()", url1.upURL().url(), "file:/opt/kde2/qt2/doc/html/");
+  check("KURL::upURL()", url1.upURL().url(), "file:///opt/kde2/qt2/doc/html/");
+
+  u1 = "file:///opt/kde2/qt2/doc/html/showimg-main-cpp.html#QObject::connect";
+  url1 = u1;
+  check("KURL::url()", url1.url(), "file:///opt/kde2/qt2/doc/html/showimg-main-cpp.html#QObject::connect");
+  check("KURL::hasRef()", url1.hasRef() ? "yes" : "no", "yes");
+  check("KURL::hasHTMLRef()", url1.hasHTMLRef() ? "yes" : "no", "yes");
+  check("KURL::htmlRef()", url1.htmlRef(), "QObject::connect");
+  check("KURL::hasSubURL()", url1.hasSubURL() ? "yes" : "no", "no");
+  check("KURL::upURL()", url1.upURL().url(), "file:///opt/kde2/qt2/doc/html/");
 
   u1 = "file:/opt/kde2/qt2/doc/html/showimg-main-cpp.html#QObject:connect";
   url1 = u1;
-  check("KURL::url()", url1.url(), "file:/opt/kde2/qt2/doc/html/showimg-main-cpp.html#QObject:connect");
+  check("KURL::url()", url1.url(), "file:///opt/kde2/qt2/doc/html/showimg-main-cpp.html#QObject:connect");
   check("KURL::hasRef()", url1.hasRef() ? "yes" : "no", "yes");
   check("KURL::hasHTMLRef()", url1.hasHTMLRef() ? "yes" : "no", "yes");
   check("KURL::htmlRef()", url1.htmlRef(), "QObject:connect");
   check("KURL::hasSubURL()", url1.hasSubURL() ? "yes" : "no", "no");
-  check("KURL::upURL()", url1.upURL().url(), "file:/opt/kde2/qt2/doc/html/");
+  check("KURL::upURL()", url1.upURL().url(), "file:///opt/kde2/qt2/doc/html/");
 
   u1 = "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/#myref";
   url1 = u1;
-  check("KURL::url()", url1.url(), "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/#myref");
+  check("KURL::url()", url1.url(), "file:///home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/#myref");
   check("KURL::hasRef()", url1.hasRef() ? "yes" : "no", "yes");
   check("KURL::isLocalFile()", url1.isLocalFile() ? "yes" : "no", "no"); // Not strictly local!
   //check("KURL::hasHTMLRef()", url1.hasHTMLRef() ? "yes" : "no", "yes");
   check("KURL::hasSubURL()", url1.hasSubURL() ? "yes" : "no", "yes");
   //check("KURL::htmlRef()", url1.htmlRef(), "myref");
-  check("KURL::upURL()", url1.upURL().url(), "file:/home/dfaure/");
+  check("KURL::upURL()", url1.upURL().url(), "file:///home/dfaure/");
 
   u1 = "error:/?error=14&errText=Unknown%20host%20asdfu.adgi.sdfgoi#http://asdfu.adgi.sdfgoi";
   url1 = u1;
@@ -139,38 +162,47 @@ int main(int argc, char *argv[])
 
   u1 = "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/";
   url1 = u1;
-  check("KURL::url()", url1.url(), "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/");
+  check("KURL::url()", url1.url(), "file:///home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/");
   check("KURL::hasRef()", url1.hasRef() ? "yes" : "no", "yes");
   check("KURL::hasHTMLRef()", url1.hasHTMLRef() ? "yes" : "no", "no");
   check("KURL::htmlRef()", url1.htmlRef(), "");
   check("KURL::hasSubURL()", url1.hasSubURL() ? "yes" : "no", "yes");
-  check("KURL::upURL()", url1.upURL().url(), "file:/home/dfaure/");
+  check("KURL::upURL()", url1.upURL().url(), "file:///home/dfaure/");
+
+  u1 = "file:///home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/";
+  url1 = u1;
+  check("KURL::url()", url1.url(), "file:///home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/");
+  check("KURL::hasRef()", url1.hasRef() ? "yes" : "no", "yes");
+  check("KURL::hasHTMLRef()", url1.hasHTMLRef() ? "yes" : "no", "no");
+  check("KURL::htmlRef()", url1.htmlRef(), "");
+  check("KURL::hasSubURL()", url1.hasSubURL() ? "yes" : "no", "yes");
+  check("KURL::upURL()", url1.upURL().url(), "file:///home/dfaure/");
 
 #if 0
 // This URL is broken, '#' should be escaped.
   u1 = "file:/home/dfaure/cdrdao-1.1.5/dao/#CdrDriver.cc#";
   url1 = u1;
-  check("KURL::url()", url1.url(), "file:/home/dfaure/cdrdao-1.1.5/dao/#CdrDriver.cc#");
+  check("KURL::url()", url1.url(), "file:///home/dfaure/cdrdao-1.1.5/dao/#CdrDriver.cc#");
   check("KURL::hasRef()", url1.hasRef() ? "yes" : "no", "no");
   check("KURL::hasHTMLRef()", url1.hasHTMLRef() ? "yes" : "no", "no");
   check("KURL::htmlRef()", url1.htmlRef(), "");
   check("KURL::hasSubURL()", url1.hasSubURL() ? "yes" : "no", "yes");
-  check("KURL::prettyURL()", url1.upURL().url(), "file:/home/dfaure/cdrdao-1.1.5/dao/#CdrDriver.cc#");
+  check("KURL::prettyURL()", url1.upURL().url(), "file:///home/dfaure/cdrdao-1.1.5/dao/#CdrDriver.cc#");
 #endif
 
   u1 = "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/README";
   url1 = u1;
-  check("KURL::url()", url1.url(), "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/README");
+  check("KURL::url()", url1.url(), "file:///home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/README");
   check("KURL::hasRef()", url1.hasRef() ? "yes" : "no", "yes");
   check("KURL::hasHTMLRef()", url1.hasHTMLRef() ? "yes" : "no", "no");
   check("KURL::htmlRef()", url1.htmlRef(), "");
   check("KURL::hasSubURL()", url1.hasSubURL() ? "yes" : "no", "yes");
-  check("KURL::upURL()", url1.upURL().url(), "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/");
+  check("KURL::upURL()", url1.upURL().url(), "file:///home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/");
 
   KURL notPretty("http://ferret.lmh.ox.ac.uk/%7Ekdecvs/");
   check("KURL::prettyURL()", notPretty.prettyURL(), "http://ferret.lmh.ox.ac.uk/~kdecvs/");
   KURL notPretty2("file:/home/test/directory%20with%20spaces");
-  check("KURL::prettyURL()", notPretty2.prettyURL(), "file:/home/test/directory with spaces");
+  check("KURL::prettyURL()", notPretty2.prettyURL(), "file:///home/test/directory with spaces");
   KURL notPretty3("fish://foo/%23README%23");
   check("KURL::prettyURL()", notPretty3.prettyURL(), "fish://foo/%23README%23");
   KURL url15581("http://alain.knaff.linux.lu/bug-reports/kde/spaces in url.html");
@@ -201,7 +233,7 @@ int main(int argc, char *argv[])
   udir.setPath("/home/dfaure/file.txt");
   printf("\n* URL is %s\n",udir.url().ascii());
   check("KURL::path()", udir.path(), "/home/dfaure/file.txt");
-  check("KURL::url()", udir.url(), "file:/home/dfaure/file.txt");
+  check("KURL::url()", udir.url(), "file:///home/dfaure/file.txt");
   check("KURL::directory(false,false)", udir.directory(false,false), "/home/dfaure/");
   check("KURL::directory(true,false)", udir.directory(true,false), "/home/dfaure");
 
@@ -214,11 +246,11 @@ int main(int argc, char *argv[])
   check("KURL::directory(false,true)", u2.directory(false,true), "/home/");
   check("KURL::directory(true,true)", u2.directory(true,true), "/home");
   u2.cd("..");
-  check("KURL::cd(\"..\")", u2.url(), "file:/home");
+  check("KURL::cd(\"..\")", u2.url(), "file:///home");
   u2.cd("thomas");
-  check("KURL::cd(\"thomas\")", u2.url(), "file:/home/thomas");
+  check("KURL::cd(\"thomas\")", u2.url(), "file:///home/thomas");
   u2.cd("/opt/kde/bin/");
-  check("KURL::cd(\"/opt/kde/bin/\")", u2.url(), "file:/opt/kde/bin/");
+  check("KURL::cd(\"/opt/kde/bin/\")", u2.url(), "file:///opt/kde/bin/");
   u2 = "ftp://ftp.kde.org/";
   printf("\n* URL is %s\n",u2.url().ascii());
   u2.cd("pub");
@@ -229,9 +261,9 @@ int main(int argc, char *argv[])
   printf("\n* URL is %s\n",u2.url().ascii());
   // setFileName
   u2.setFileName( "myfile.txt" );
-  check("KURL::setFileName()", u2.url(), "file:/home/dfaure/myfile.txt");
+  check("KURL::setFileName()", u2.url(), "file:///home/dfaure/myfile.txt");
   u2.setFileName( "myotherfile.txt" );
-  check("KURL::setFileName()", u2.url(), "file:/home/dfaure/myotherfile.txt");
+  check("KURL::setFileName()", u2.url(), "file:///home/dfaure/myotherfile.txt");
   // more tricky, renaming a directory (kpropsdlg.cc, line ~ 238)
       QString tmpurl = "file:/home/dfaure/myolddir/";
       if ( tmpurl.at(tmpurl.length() - 1) == '/')
@@ -239,12 +271,12 @@ int main(int argc, char *argv[])
           tmpurl.truncate( tmpurl.length() - 1);
       KURL newUrl = tmpurl;
       newUrl.setFileName( "mynewdir" );
-  check("KURL::setFileName() special", newUrl.url(), "file:/home/dfaure/mynewdir");
+  check("KURL::setFileName() special", newUrl.url(), "file:///home/dfaure/mynewdir");
   // addPath tests
   newUrl.addPath( "subdir" );
-  check("KURL::addPath(\"subdir\")", newUrl.url(), "file:/home/dfaure/mynewdir/subdir");
+  check("KURL::addPath(\"subdir\")", newUrl.url(), "file:///home/dfaure/mynewdir/subdir");
   newUrl.addPath( "/foo/" );
-  check("KURL::addPath(\"/foo/\")", newUrl.url(), "file:/home/dfaure/mynewdir/subdir/foo/");
+  check("KURL::addPath(\"/foo/\")", newUrl.url(), "file:///home/dfaure/mynewdir/subdir/foo/");
   u2 = "http://www.kde.org"; // no path
   u2.addPath( "subdir" );
   check("KURL::addPath(\"subdir\")", u2.url(), "http://www.kde.org/subdir");
@@ -264,7 +296,7 @@ int main(int argc, char *argv[])
   check("KURL::path()", u2.path(), "/specials/Print");
   check("KURL::fileName()", u2.fileName(), "Print");
   u2.setFileName( "" );
-  check("KURL::setFileName()", u2.url(), "file:/specials/");
+  check("KURL::setFileName()", u2.url(), "file:///specials/");
 
   const char * u3 = "ftp://host/dir1/dir2/myfile.txt";
   printf("\n* URL is %s\n",u3);
@@ -305,7 +337,7 @@ int main(int argc, char *argv[])
   check("KURL::isParentOf()", ftpUrl.isParentOf( "ftp://ftp/host/subdi") ? "yes" : "no", "no");
   check("KURL::isParentOf()", ftpUrl.isParentOf( "ftp://ftp/host/subdir/blah/") ? "yes" : "no", "yes");
   check("KURL::isParentOf()", ftpUrl.isParentOf( "ftp://ftp/blah/subdir") ? "yes" : "no", "no");
-  check("KURL::isParentOf()", ftpUrl.isParentOf( "file://ftp/host/subdir/") ? "yes" : "no", "no");
+  check("KURL::isParentOf()", ftpUrl.isParentOf( "file:////ftp/host/subdir/") ? "yes" : "no", "no");
   check("KURL::isParentOf()", ftpUrl.isParentOf( "ftp://ftp/host/subdir/subsub") ? "yes" : "no", "yes");
 
   // WABA: The following tests are to test the handling of relative URLs as
@@ -604,11 +636,11 @@ int main(int argc, char *argv[])
   // UNC like names
   KURL unc1("FILE://localhost/home/root");
   check("UNC, with localhost", unc1.path(), "/home/root");
-  check("UNC, with localhost", unc1.url(), "file:/home/root");
+  check("UNC, with localhost", unc1.url(), "file:///home/root");
 #endif
   KURL unc2("file:///home/root");
   check("UNC, with empty host", unc2.path(), "/home/root");
-  check("UNC, with empty host", unc2.url(), "file:/home/root");
+  check("UNC, with empty host", unc2.url(), "file:///home/root");
 
   {
      KURL unc3("FILE://remotehost/home/root");
@@ -638,7 +670,7 @@ int main(int argc, char *argv[])
   check("man: URL, is relative", KURL::isRelativeURL("man:mmap") ? "true" : "false", "false");
   check("javascript: URL, is relative", KURL::isRelativeURL("javascript:doSomething()") ? "true" : "false", "false");
   // more isRelative
-  check("file: URL, is relative", KURL::isRelativeURL("file:/blah") ? "true" : "false", "false");
+  check("file: URL, is relative", KURL::isRelativeURL("file:///blah") ? "true" : "false", "false");
   check("/path, is relative", KURL::isRelativeURL("/path") ? "true" : "false", "true"); // arguable
   check("something, is relative", KURL::isRelativeURL("something") ? "true" : "false", "true");
   KURL about("about:konqueror");
@@ -655,11 +687,11 @@ int main(int argc, char *argv[])
 #endif
   // UTF8 tests
   KURL uloc("/home/dfaure/konqtests/Matériel");
-  check("locale8bit",uloc.url().latin1(),"file:/home/dfaure/konqtests/Mat%E9riel"); // escaping the letter would be correct too
-  check("pretty",uloc.prettyURL(),"file:/home/dfaure/konqtests/Matériel"); // escaping the letter would be correct too
+  check("locale8bit",uloc.url().latin1(),"file:///home/dfaure/konqtests/Mat%E9riel"); // escaping the letter would be correct too
+  check("pretty",uloc.prettyURL(),"file:///home/dfaure/konqtests/Matériel"); // escaping the letter would be correct too
   // 106 is MIB for UTF-8
-  check("UTF8",uloc.url(0, 106),"file:/home/dfaure/konqtests/Mat%C3%A9riel");
-  uloc = KURL("file:/home/dfaure/konqtests/Mat%C3%A9riel", 106);
+  check("UTF8",uloc.url(0, 106),"file:///home/dfaure/konqtests/Mat%C3%A9riel");
+  uloc = KURL("file:///home/dfaure/konqtests/Mat%C3%A9riel", 106);
   check("UTF8 path", uloc.path(), "/home/dfaure/konqtests/Matériel");
 
   // fromPathOrURL tests
@@ -681,7 +713,7 @@ int main(int argc, char *argv[])
 #endif
   baseURL = "file:/home/coolo";
   KURL russian = baseURL.directory(false, true) + QString::fromLocal8Bit( "ÆÇÎ7" );
-  check( "russian", russian.url(), "file:/home/%C6%C7%CE7" );
+  check( "russian", russian.url(), "file:///home/%C6%C7%CE7" );
 
   KURL tobi1("http://some.host.net/path/to/file#fragmentPrecedes?theQuery");
   check("wrong order of query and hypertext reference #1", tobi1.ref(), "fragmentPrecedes");
@@ -831,7 +863,7 @@ int main(int argc, char *argv[])
 
   KURL local_file_5;
   local_file_5.setPath("/foo?bar");
-  check("local_file_5.url()", local_file_5.url(), "file:/foo%3Fbar");
+  check("local_file_5.url()", local_file_5.url(), "file:///foo%3Fbar");
 
   QString basePath = "/home/bastian";
 
