@@ -302,6 +302,7 @@ KCmdLineArgs::loadAppArgs( QDataStream &ds)
        }
      }
    }
+   parsed = true;
 }
 
 KCmdLineArgs *KCmdLineArgs::parsedArgs(const char *id)
