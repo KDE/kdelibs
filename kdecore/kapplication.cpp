@@ -457,6 +457,11 @@ public:
   QString geometry_arg;
   QCString startup_id;
   KAppDCOPInterface *m_KAppDCOPInterface;
+
+#if QT_VERSION < 310
+    QString sessionKey;
+#endif
+    QString pSessionConfigFile;
 };
 
 
@@ -568,7 +573,11 @@ static QPtrList<KSessionManaged>* sessionClients()
  */
 QString KApplication::sessionConfigName() const
 {
-  return QString("session/%1_%2").arg(name()).arg(sessionId());
+#if QT_VERSION < 310
+    return QString("session/%1_%2_%3").arg(name()).arg(sessionId()).arg(d->sessionKey);
+#else
+    return QString("session/%1_%2").arg(name()).arg(sessionId());
+#endif
 }
 
 #ifndef Q_WS_QWS
@@ -912,7 +921,6 @@ KConfig* KApplication::sessionConfig()
 
     // create an instance specific config object
     pSessionConfig = new KConfig( sessionConfigName(), false, false);
-
     return pSessionConfig;
 }
 
@@ -1106,44 +1114,58 @@ void KApplication::saveState( QSessionManager& sm )
         return;
     }
 
+#if QT_VERSION < 310
+    {
+        // generate a new session key
+        timeval tv;
+        gettimeofday( &tv, 0 );
+        d->sessionKey  = QString::number( tv.tv_sec ) + "_" + QString::number(tv.tv_usec);
+    }
+#endif
+
     if ( firstTime ) {
         firstTime = false;
         return; // no need to save the state.
     }
 
-    QString aLocalFileName = locateLocal("config", sessionConfigName());
-
-    // remove former session config if still existing, we want a new and fresh one
+    // remove former session config if still existing, we want a new
+    // and fresh one. Note that we do not delete the config file here,
+    // this is done by the session manager when it executes the
+    // discard commands. In fact it would be harmful to remove the
+    // file here, as the session might be stored under a different
+    // name, meaning the user still might need it eventually.
     if ( pSessionConfig ) {
         delete pSessionConfig;
         pSessionConfig = 0;
-        QFile f ( aLocalFileName );
-        if ( f.exists() )
-            f.remove();
     }
 
     // tell the session manager about our new lifecycle
     QStringList restartCommand = sm.restartCommand();
+#if QT_VERSION < 310
+    restartCommand.clear();
+    restartCommand  << argv()[0] << "-session" << sm.sessionId() << "-smkey" << d->sessionKey;
+    sm.setRestartCommand( restartCommand );
+#endif
+
 
     QCString multiHead = getenv("KDE_MULTIHEAD");
-    if (multiHead.lower() == "true")
-    {
+    if (multiHead.lower() == "true") {
         // if multihead is enabled, we save our -display argument so that
-	// we are restored onto the correct head... one problem with this
-	// is that the display is hard coded, which means we cannot restore
-	// to a different display (ie. if we are in a university lab and try,
-	// try to restore a multihead session, our apps could be started on
-	// someone else's display instead of our own)
+        // we are restored onto the correct head... one problem with this
+        // is that the display is hard coded, which means we cannot restore
+        // to a different display (ie. if we are in a university lab and try,
+        // try to restore a multihead session, our apps could be started on
+        // someone else's display instead of our own)
         QCString displayname = getenv(DISPLAY);
         if (! displayname.isNull()) {
             // only store the command if we actually have a DISPLAY
             // environment variable
             restartCommand.append("-display");
             restartCommand.append(displayname);
-	}
+        }
+        sm.setRestartCommand( restartCommand );
     }
 
-    sm.setRestartCommand( restartCommand );
 
     // finally: do session management
     emit saveYourself(); // for compatiblity
@@ -1158,8 +1180,7 @@ void KApplication::saveState( QSessionManager& sm )
     if ( pSessionConfig ) {
         pSessionConfig->sync();
         QStringList discard;
-//      discard  << ( "rm "+aLocalFileName ); // only one argument  due to broken xsm
-        discard  << "rm" << aLocalFileName; // WABA: Screw xsm
+        discard  << "rm" << locateLocal("config", sessionConfigName());
         sm.setDiscardCommand( discard );
     }
 
@@ -1269,6 +1290,9 @@ static const KCmdLineOptions kde_options[] =
    { "waitforwm",          I18N_NOOP("Waits for a WM_NET compatible windowmanager."), 0},
    { "style <style>", I18N_NOOP("sets the application GUI style."), 0},
    { "geometry <geometry>", I18N_NOOP("sets the client geometry of the main widget."), 0},
+#if  QT_VERSION <  310
+   { "smkey <sessionKey>", I18N_NOOP("Define a 'sessionKey' for the session id. Only valid with -session"), 0},
+#endif
    { 0, 0, 0 }
 };
 
@@ -1366,6 +1390,14 @@ void KApplication::parseCommandLine( )
     {
         d->geometry_arg = args->getOption("geometry");
     }
+
+#if QT_VERSION < 310
+    if (args->isSet("smkey"))
+    {
+        d->sessionKey = args->getOption("smkey");
+    }
+#endif
+
 }
 
 QString KApplication::geometryArgument() const
