@@ -104,18 +104,18 @@ namespace khtml
 	virtual void data( QBuffer &buffer, bool eof) = 0;
 	virtual void error( int err, const char *text ) = 0;
 
-	const DOM::DOMString &url() { return m_url; }
-	Type type() { return m_type; }
+	const DOM::DOMString &url() const { return m_url; }
+	Type type() const { return m_type; }
 
 	virtual void ref(CachedObjectClient *consumer) = 0;
 	virtual void deref(CachedObjectClient *consumer) = 0;
 
-	int count() { return m_clients.count(); }
+	int count() const { return m_clients.count(); }
 
 	void setStatus(Status s) { m_status = s; }
-	Status status() { return m_status; }
+	Status status() const { return m_status; }
 
-	int size() { return m_size; }
+	int size() const { return m_size; }
 
 	/*
 	 * computes the status of an object after loading.
@@ -130,17 +130,17 @@ namespace khtml
          */
         void setFree( bool b ) { m_free = b; }
 
-        bool reload() { return m_reload; }
+        bool reload() const { return m_reload; }
 
         void setRequest(Request *_request);
 
-        bool canDelete();
+        bool canDelete() const { return (m_clients.count() == 0 && !m_request); }
 
         /*
          * List of acceptable mimetypes seperated by ",". A mimetype may contain a wildcard.
          */
         // e.g. "text/*"
-        QString accept() { return m_accept; }
+        QString accept() const { return m_accept; }
         void setAccept(const QString &_accept) { m_accept = _accept; }
 
     protected:
@@ -230,8 +230,8 @@ namespace khtml
 
 	void load();
 
-        bool isTransparent() { return isFullyTransparent; }
-        bool isErrorImage() { return errorOccured; }
+        bool isTransparent() const { return isFullyTransparent; }
+        bool isErrorImage() const { return errorOccured; }
 
     protected:
 	void clear();
@@ -314,13 +314,13 @@ namespace khtml
 
 	void load(CachedObject *object, const DOM::DOMString &baseURL, bool incremental = true);
 
-        int numRequests( const DOM::DOMString &baseURL );
-        int numRequests( const DOM::DOMString &baseURL, CachedObject::Type type );
+        int numRequests( const DOM::DOMString &baseURL ) const;
+        int numRequests( const DOM::DOMString &baseURL, CachedObject::Type type ) const;
 
         void cancelRequests( const DOM::DOMString &baseURL );
 
         // may return 0L
-        KIO::Job *jobForRequest( const DOM::DOMString &url );
+        KIO::Job *jobForRequest( const DOM::DOMString &url ) const;
 
     signals:
 	void requestDone( const DOM::DOMString &baseURL, khtml::CachedObject *obj );
@@ -406,9 +406,9 @@ namespace khtml
         static void removeCacheEntry( CachedObject *object );
 
         static void autoloadImages( bool enable );
-	static bool autoloadImages();
+	static bool autoloadImages() { return s_autoloadImages; }
 
-    protected:
+        protected:
 	/*
 	 * @internal
 	 */

@@ -53,12 +53,12 @@ public:
 	return this;
     }
 
-    const QChar &operator [](int i) {
+    const QChar &operator [] (int i) const {
 	return *(s+i);
     }
     uint length() const { return l; }
 
-    const QChar *current() { return s; }
+    const QChar *current() const { return s; }
 
 protected:
     const QChar *s;

@@ -74,11 +74,6 @@ void CachedObject::setRequest(Request *_request)
         delete this;
 }
 
-bool CachedObject::canDelete()
-{
-    return (m_clients.count() == 0 && !m_request);
-}
-
 // -------------------------------------------------------------------------------------------
 
 CachedCSSStyleSheet::CachedCSSStyleSheet(const DOMString &url, const DOMString &baseURL, bool reload)
@@ -870,7 +865,7 @@ void Loader::slotData( KIO::Job*job, const QByteArray &data )
         r->object->data( r->m_buffer, false );
 }
 
-int Loader::numRequests( const DOMString &baseURL )
+int Loader::numRequests( const DOMString &baseURL ) const
 {
     int res = 0;
 
@@ -887,7 +882,7 @@ int Loader::numRequests( const DOMString &baseURL )
     return res;
 }
 
-int Loader::numRequests( const DOMString &baseURL, CachedObject::Type type )
+int Loader::numRequests( const DOMString &baseURL, CachedObject::Type type ) const
 {
     int res = 0;
 
@@ -939,7 +934,7 @@ void Loader::cancelRequests( const DOMString &baseURL )
     }
 }
 
-KIO::Job *Loader::jobForRequest( const DOM::DOMString &url )
+KIO::Job *Loader::jobForRequest( const DOM::DOMString &url ) const
 {
     QPtrDictIterator<Request> it( m_requestsLoading );
 
@@ -1281,11 +1276,6 @@ void Cache::autoloadImages( bool enable )
 
       img->load();
     }
-}
-
-bool Cache::autoloadImages()
-{
-  return s_autoloadImages;
 }
 
 #include "loader.moc"
