@@ -20,6 +20,7 @@
  *
  */
 
+#include "ecma/kjs_proxy.h"
 #define QT_NO_XFTFREETYPE 1
 #include <private/qfontengine_p.h>
 #include <qfontdatabase.h>
@@ -308,3 +309,8 @@ bool KParts::HistoryProvider::contains( const QString&  ) const
     return false;
 }
 
+
+bool KJSCPUGuard::confirmTerminate() 
+{
+    return false;
+}
