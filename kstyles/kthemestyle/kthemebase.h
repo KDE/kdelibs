@@ -491,11 +491,11 @@ protected:
     /**
      * Attempts to load a pixmap from the default KThemeBase locations.
      */
-    KThemePixmap* loadPixmap( QString &name );
+    KThemePixmap* loadPixmap( const QString &name );
     /**
      * Attempts to load a image from the default KThemeBase locations.
      */
-    QImage* loadImage( QString &name );
+    QImage* loadImage( const QString &name );
 
 
     /**

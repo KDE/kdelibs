@@ -651,8 +651,7 @@ KThemeBase::~KThemeBase()
     delete d;
 }
 
-// KDE 4: Make it const QString &
-QImage* KThemeBase::loadImage( QString &name )
+QImage* KThemeBase::loadImage( const QString &name )
 {
     QImage * image = new QImage;
     QString path = KStyleDirs::dirs()->findResource( "themepixmap",name );
@@ -664,8 +663,7 @@ QImage* KThemeBase::loadImage( QString &name )
     return ( NULL );
 }
 
-// KDE 4: Make it const QString &
-KThemePixmap* KThemeBase::loadPixmap( QString &name )
+KThemePixmap* KThemeBase::loadPixmap( const QString &name )
 {
     KThemePixmap * pixmap = new KThemePixmap( false );
     QString path = KStyleDirs::dirs()->findResource( "themepixmap", name );
