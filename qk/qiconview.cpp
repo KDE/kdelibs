@@ -5,7 +5,7 @@
 **
 ** Created : 990707
 **
-** Copyright (C) 1992-1999 Troll Tech AS.  All rights reserved.
+** Copyright (C) 1992-2000 Troll Tech AS.  All rights reserved.
 **
 ** This file is part of the Qt GUI Toolkit.
 **
@@ -42,6 +42,7 @@
 #include "qmap.h"
 #include "qarray.h"
 #include "qlist.h"
+#include "qvbox.h"
 
 #include <stdlib.h>
 #include <math.h>
@@ -124,7 +125,7 @@ struct QIconViewPrivate
     QIconView::Arrangement arrangement;
     QIconView::ResizeMode resizeMode;
     QSize oldSize;
-    QValueList<QIconDragItem> iconDragData;
+    QValueList<QIconDrag::Item> iconDragData;
     bool isIconDrag;
     int numDragItems, cachedW, cachedH;
     int maxItemWidth, maxItemTextLength;
@@ -248,7 +249,7 @@ void QIconViewItemLineEdit::keyPressEvent( QKeyEvent *e )
 	w = totalWidth();
 	h = totalHeight();
 	QSize s( size() );
-	resize( w, h );
+	parentWidget()->resize( w + 6, h + 6 );
 	if ( s != QSize( w, h ) ) {
 	    item->calcRect( text() );
 	    item->repaint();
@@ -273,48 +274,27 @@ void QIconViewItemLineEdit::focusOutEvent( QFocusEvent * )
 
   \brief The QIconDragItem is the internal data structure of a QIconDrag
 
-  This class is used internally in the QIconDrag to store the data (in fact,
-  a list of QIconDragItems is used by QIconDrag). Such an item stores
-  the data about the geometry of an item of the iconview which is dragged
-  around, so that drag shapes can be drawn correctly.
-
-  If you extend the DnD functionality of a QIconView, you should use a class
-  derived from QIconDrag as dragobject. This class again should contain
-  a list of objects which are derived from this class.
+  This class is used internally in the QIconDrag to store the data of each item
+  (in fact, a list of QIconDragItems is used by QIconDrag).
 
   So, normally for each iconview item which is dragged, a QIconDragItem
   class (or a class derived from QIconDragItem) is created and stored
   in the QIconDrag object.
 
-  So, in a class derived from that you should reimplement
-  QIconDragItem::makeKey(), so that a key containing the data of this
-  object + the geometry of the dragged item is created and returned.
-
-  You also may add methods to add/get the data you store here.
+  See QIconView::dragObject() for more information.
 
   An example, how to implement this, is in the QtFileIconView example.
   (qt/examples/qfileiconview/qfileiconview.h and qt/examples/qfileiconview/qfileiconview.cpp)
 */
 
 /*!
-  Constructs and empty QIconDragItem.
+  Constructs a QIconDragItem with no data.
 */
 
 QIconDragItem::QIconDragItem()
-    : iconRect_(), textRect_()
+    : ba( strlen( "no data" ) )
 {
-    makeKey();
-}
-
-/*!
-  Constructs and QIconDragItem. \a ir is the icon rectangle and
-  \a tr the bounding rectangle of the icon text.
-*/
-
-QIconDragItem::QIconDragItem( const QRect &ir, const QRect &tr )
-    : iconRect_( ir ), textRect_( tr )
-{
-    makeKey();
+    memcpy( ba.data(), "no data", strlen( "no data" ) );
 }
 
 /*!
@@ -326,81 +306,21 @@ QIconDragItem::~QIconDragItem()
 }
 
 /*!
-  Returns TRUE if \a icon is smaller than this item, else
-  FALSE.
+  Returns the data of this QIconDragItem.
 */
 
-bool QIconDragItem::operator<( const QIconDragItem &icon ) const
+QByteArray QIconDragItem::data() const
 {
-    return key_ < icon.key_;
+    return ba;
 }
 
 /*!
-  Returns TRUE if \a icon is equal to this item.
+  Sets the data of this QIconDragItem.
 */
 
-bool QIconDragItem::operator==( const QIconDragItem &icon ) const
+void QIconDragItem::setData( const QByteArray &d )
 {
-    return key_ == icon.key_;
-}
-
-/*!
-  Generates a unique key which describes this item.
-*/
-
-void QIconDragItem::makeKey()
-{
-    QString k( "%1 %2 %3 %4 %5 %6 %7 %8" );
-    k = k.arg( pixmapRect().x() ).arg( pixmapRect().y() ).arg( pixmapRect().width() ).
-	arg( pixmapRect().height() ).arg( textRect().x() ).arg( textRect().y() ).
-	arg( textRect().width() ).arg( textRect().height() );
-}
-
-/*!
-  Returns the bounding rectangle of the text of the icon which
-  data is stored in this item.
-*/
-
-QRect QIconDragItem::textRect() const
-{
-    return textRect_;
-}
-
-/*!
-  Returns the bounding rectangle of the  icon which
-  data is stored in this item.
-*/
-
-QRect QIconDragItem::pixmapRect() const
-{
-    return iconRect_;
-}
-
-/*!
-  Returns the key of this item.
-*/
-
-QString QIconDragItem::key() const
-{
-    return key_;
-}
-
-/*!
-  Sets \a r as the rectangle of the icon.
-*/
-
-void QIconDragItem::setPixmapRect( const QRect &r )
-{
-    iconRect_ = r;
-}
-
-/*!
-  Sets \a r as the rectangle of the text.
-*/
-
-void QIconDragItem::setTextRect( const QRect &r )
-{
-    textRect_ = r;
+    ba = d;
 }
 
 /*****************************************************************************
@@ -417,29 +337,20 @@ void QIconDragItem::setTextRect( const QRect &r )
   The QIconDrag is the drag object which is used for moving items in the
   iconview. The QIconDrag stores exact informations about the positions of
   the items, which are dragged, so that each iconview is able to draw drag
-  shapes in correct positions.
+  shapes in correct positions. Also the data of each dragged item is stored here.
 
-  It's suggested that, if you write a drag object for own QIconViewItems,
-  you derive the drag object class from QIconDrag and just (re)implement the
-  methods which are needed for encoding/decoding your data and the mimetype
-  handling. Because if you do this, the position information will be stored
-  in the drag object too.
+  If you want to use extended DnD functionality of the QIconView, normally it's
+  enough to just create a QIconDrag object in QIconView::dragObject(). Then
+  create for each item which should be dragged a QIconDragItem and set the
+  data it represents with QIconDragItem::setData() and add this item to the
+  drag object using append().
+
+  If you want to offer the data in other mime-types too, derive a class from this
+  and implement the needed encoding and decoding here.
 
   An example, how to implement this, is in the QtFileIconView example
   (qt/examples/qfileiconview/qfileiconview.h and qt/examples/qfileiconview/qfileiconview.cpp)
 */
-
-/*!
-  Constructs a icon dragobject which contains a list of \a icons (list of QIconDragItems).
-  \a dragSource  is the widget which started the dragand \a name the name of the object.
-
-  \sa QIconDragItem
-*/
-
-QIconDrag::QIconDrag( const QIconList &icons_, QWidget * dragSource, const char* name )
-    : QDragObject( dragSource, name ), icons( icons_ )
-{
-}
 
 /*!
   \reimp
@@ -459,27 +370,15 @@ QIconDrag::~QIconDrag()
 }
 
 /*!
-  Sets the \a list of icon drag items which should be stored in this
-  dragobject.
-
-  \sa QIconDragItem
-*/
-
-void QIconDrag::setIcons( const QIconList &list_ )
-{
-    icons = list_;
-}
-
-/*!
   Appends an icon drag item which should be stored in this
-  dragobject.
+  dragobject and the geometry of it.
 
   \sa QIconDragItem
 */
 
-void QIconDrag::append( const QIconDragItem &icon_ )
+void QIconDrag::append( const QIconDragItem &i, const QRect &pr, const QRect &tr )
 {
-    icons.append( icon_ );
+    items.append( Item( i, IconDragItem( pr, tr ) ) );
 }
 
 /*!
@@ -502,20 +401,18 @@ QByteArray QIconDrag::encodedData( const char* mime ) const
 {
     QByteArray a;
     if ( QString( mime ) == "application/x-qiconlist" ) {
-	int c = 0;
-	QIconList::ConstIterator it = icons.begin();
-	for ( ; it != icons.end(); ++it ) {
-	    QString k( "%1 %2 %3 %4 %5 %6 %7 %8" );
-	    k = k.arg( (*it).pixmapRect().x() ).arg( (*it).pixmapRect().y() ).arg( (*it).pixmapRect().width() ).
-		arg( (*it).pixmapRect().height() ).arg( (*it).textRect().x() ).arg( (*it).textRect().y() ).
-		arg( (*it).textRect().width() ).arg( (*it).textRect().height() );
-	    int l = k.length();
-	    a.resize( c + l + 1 );
-	    memcpy( a.data() + c , k.latin1(), l );
-	    a[ c + l ] = 0;
-	    c += l + 1;
+	QValueList<Item>::ConstIterator it = items.begin();
+	QString s;
+	for ( ; it != items.end(); ++it ) {
+	    QString k( "%1$@@$%2$@@$%3$@@$%4$@@$%5$@@$%6$@@$%7$@@$%8$@@$" );
+	    k = k.arg( (*it).item.pixmapRect().x() ).arg( (*it).item.pixmapRect().y() ).arg( (*it).item.pixmapRect().width() ).
+		arg( (*it).item.pixmapRect().height() ).arg( (*it).item.textRect().x() ).arg( (*it).item.textRect().y() ).
+		arg( (*it).item.textRect().width() ).arg( (*it).item.textRect().height() );
+	    k += QString( (*it).data.data() ) + "$@@$";
+	    s += k;
 	}
-	a.resize( c - 1 );
+	a.resize( s.length() );
+	memcpy( a.data(), s.latin1(), s.length() );
     }
 
     return a;
@@ -538,70 +435,82 @@ bool QIconDrag::canDecode( QMimeSource* e )
   fills the \a list of icon drag items with the decoded data.
 */
 
-bool QIconDrag::decode( QMimeSource* e, QIconList &list_ )
+bool QIconDrag::decode( QMimeSource* e, QValueList<Item> &lst )
 {
     QByteArray ba = e->encodedData( "application/x-qiconlist" );
     if ( ba.size() ) {
-	list_.clear();
-	uint c = 0;
+	lst.clear();
+	QString s = ba.data();
+	Item item;
+	QRect ir, tr;
+	QByteArray d;
+	QStringList l = QStringList::split( "$@@$", s );
 	
-	char* d = ba.data();
-	
-	while ( c < ba.size() ) {
-	    uint f = c;
-	    while ( c < ba.size() && d[ c ] )
-		c++;
-	    QString s;
-	    if ( c < ba.size() ) {
-		s = d + f ;
-		c++;
-	    } else  {
-		QString tmp( QString(d + f).left( c - f + 1 ) );
-		s = tmp;
+	int i = 0;
+	QStringList::Iterator it = l.begin();
+	for ( ; it != l.end(); ++it ) {
+	    if ( i == 0 ) {
+		ir.setX( ( *it ).toInt() );
+	    } else if ( i == 1 ) {
+		ir.setY( ( *it ).toInt() );
+	    } else if ( i == 2 ) {
+		ir.setWidth( ( *it ).toInt() );
+	    } else if ( i == 3 ) {
+		ir.setHeight( ( *it ).toInt() );
+	    } else if ( i == 4 ) {
+		tr.setX( ( *it ).toInt() );
+	    } else if ( i == 5 ) {
+		tr.setY( ( *it ).toInt() );
+	    } else if ( i == 6 ) {
+		tr.setWidth( ( *it ).toInt() );
+	    } else if ( i == 7 ) {
+		tr.setHeight( ( *it ).toInt() );
+	    } else if ( i == 8 ) {
+		d.resize( ( *it ).length() );
+		memcpy( d.data(), ( *it ).latin1(), ( *it ).length() );
+		item.item.setPixmapRect( ir );
+		item.item.setTextRect( tr );
+		item.data.setData( d );
+		lst.append( item );
 	    }
-
-	    QIconDragItem icon;
-	    QRect ir, tr;
-	
-	    ir.setX( atoi( s.latin1() ) );
-	    int pos = s.find( ' ' );
-	    if ( pos == -1 )
-		return FALSE;
-	    ir.setY( atoi( s.latin1() + pos + 1 ) );
-	    pos = s.find( ' ', pos + 1 );
-	    if ( pos == -1 )
-		return FALSE;
-	    ir.setWidth( atoi( s.latin1() + pos + 1 ) );
-	    pos = s.find( ' ', pos + 1 );
-	    if ( pos == -1 )
-		return FALSE;
-	    ir.setHeight( atoi( s.latin1() + pos + 1 ) );
-
-	    pos = s.find( ' ', pos + 1 );
-	    if ( pos == -1 )
-		return FALSE;
-	    tr.setX( atoi( s.latin1() + pos + 1 ) );
-	    pos = s.find( ' ', pos + 1 );
-	    if ( pos == -1 )
-		return FALSE;
-	    tr.setY( atoi( s.latin1() + pos + 1 ) );
-	    pos = s.find( ' ', pos + 1 );
-	    if ( pos == -1 )
-		return FALSE;
-	    tr.setWidth( atoi( s.latin1() + pos + 1 ) );
-	    pos = s.find( ' ', pos + 1 );
-	    if ( pos == -1 )
-		return FALSE;
-	    tr.setHeight( atoi( s.latin1() + pos + 1 ) );
-	
-	    icon.setPixmapRect( ir );
-	    icon.setTextRect( tr );
-	    list_.append( icon );
+	    ++i;
+	    if ( i > 8 )
+		i = 0;
 	}
 	return TRUE;
     }
 
     return FALSE;
+}
+
+QIconDrag::IconDragItem::IconDragItem()
+    : iconRect_(), textRect_()
+{
+}
+
+QIconDrag::IconDragItem::IconDragItem( const QRect &ir, const QRect &tr )
+    : iconRect_( ir ), textRect_( tr )
+{
+}
+
+QRect QIconDrag::IconDragItem::textRect() const
+{
+    return textRect_;
+}
+
+QRect QIconDrag::IconDragItem::pixmapRect() const
+{
+    return iconRect_;
+}
+
+void QIconDrag::IconDragItem::setPixmapRect( const QRect &r )
+{
+    iconRect_ = r;
+}
+
+void QIconDrag::IconDragItem::setTextRect( const QRect &r )
+{
+    textRect_ = r;
 }
 
 /*****************************************************************************
@@ -671,7 +580,7 @@ bool QIconDrag::decode( QMimeSource* e, QIconList &list_ )
 
 QIconViewItem::QIconViewItem( QIconView *parent )
     : view( parent ), itemText(), itemIcon( unknown_icon ),
-      prev( 0 ), next( 0 ), allow_rename( TRUE ), allow_drag( TRUE ), allow_drop( TRUE ),
+      prev( 0 ), next( 0 ), allow_rename( FALSE ), allow_drag( TRUE ), allow_drop( TRUE ),
       selected( FALSE ), selectable( TRUE ), renameBox( 0 )
 {
     init();
@@ -684,7 +593,7 @@ QIconViewItem::QIconViewItem( QIconView *parent )
 
 QIconViewItem::QIconViewItem( QIconView *parent, QIconViewItem *after )
     : view( parent ), itemText(), itemIcon( unknown_icon ),
-      prev( 0 ), next( 0 ), allow_rename( TRUE ), allow_drag( TRUE ), allow_drop( TRUE ),
+      prev( 0 ), next( 0 ), allow_rename( FALSE ), allow_drag( TRUE ), allow_drop( TRUE ),
       selected( FALSE ), selectable( TRUE ), renameBox( 0 )
 {
     init( after );
@@ -697,7 +606,7 @@ QIconViewItem::QIconViewItem( QIconView *parent, QIconViewItem *after )
 
 QIconViewItem::QIconViewItem( QIconView *parent, const QString &text )
     : view( parent ), itemText( text ), itemIcon( unknown_icon ),
-      prev( 0 ), next( 0 ), allow_rename( TRUE ), allow_drag( TRUE ), allow_drop( TRUE ),
+      prev( 0 ), next( 0 ), allow_rename( FALSE ), allow_drag( TRUE ), allow_drop( TRUE ),
       selected( FALSE ), selectable( TRUE ), renameBox( 0 )
 {
     init( 0 );
@@ -711,7 +620,7 @@ QIconViewItem::QIconViewItem( QIconView *parent, const QString &text )
 QIconViewItem::QIconViewItem( QIconView *parent, QIconViewItem *after,
 			      const QString &text )
     : view( parent ), itemText( text ), itemIcon( unknown_icon ),
-      prev( 0 ), next( 0 ), allow_rename( TRUE ), allow_drag( TRUE ), allow_drop( TRUE ),
+      prev( 0 ), next( 0 ), allow_rename( FALSE ), allow_drag( TRUE ), allow_drop( TRUE ),
       selected( FALSE ), selectable( TRUE ), renameBox( 0 )
 {
     init( after );
@@ -725,7 +634,7 @@ QIconViewItem::QIconViewItem( QIconView *parent, QIconViewItem *after,
 QIconViewItem::QIconViewItem( QIconView *parent, const QString &text,
 			      const QPixmap &icon )
     : view( parent ), itemText( text ), itemIcon( new QPixmap( icon ) ),
-      prev( 0 ), next( 0 ), allow_rename( TRUE ), allow_drag( TRUE ), allow_drop( TRUE ),
+      prev( 0 ), next( 0 ), allow_rename( FALSE ), allow_drag( TRUE ), allow_drop( TRUE ),
       selected( FALSE ), selectable( TRUE ), renameBox( 0 )
 {
     init( 0 );
@@ -739,7 +648,7 @@ QIconViewItem::QIconViewItem( QIconView *parent, const QString &text,
 
 QIconViewItem::QIconViewItem( QIconView *parent, QIconViewItem *after, const QString &text, const QPixmap &icon )
     : view( parent ), itemText( text ), itemIcon( new QPixmap( icon ) ),
-      prev( 0 ), next( 0 ), allow_rename( TRUE ), allow_drag( TRUE ), allow_drop( TRUE ),
+      prev( 0 ), next( 0 ), allow_rename( FALSE ), allow_drag( TRUE ), allow_drop( TRUE ),
       selected( FALSE ), selectable( TRUE ), renameBox( 0 )
 {
     init( after );
@@ -1033,6 +942,17 @@ int QIconViewItem::index() const
 /*!
   Selects / Unselects the item depending on the QIconView::selectionMode() of the iconview.
 
+  The item redraws itself if the selection changed.
+*/
+
+void QIconViewItem::setSelected( bool s )
+{
+    setSelected( s, FALSE );
+}
+
+/*!
+  Selects / Unselects the item depending on the QIconView::selectionMode() of the iconview.
+
   If \a s is FALSE, the item gets unselected. If \a s is TRUE
   <li> and QIconView::selectionMode() is Single, the item gets selected and the
   item which was selected, gets unselected
@@ -1048,16 +968,21 @@ void QIconViewItem::setSelected( bool s, bool cb )
 {
     if ( view->selectionMode() != QIconView::NoSelection &&
 	 selectable && s != selected ) {
-	if ( !s )
+	if ( !s ) {
 	    selected = FALSE;
-	else {
-	    if ( view->d->selectionMode == QIconView::Single && view->d->currentItem )
-		view->d->currentItem->setSelected( FALSE );
+	} else {
+	    if ( view->d->selectionMode == QIconView::Single && view->d->currentItem ) {
+		view->d->currentItem->selected = FALSE;
+	    }
 	    if ( ( view->d->selectionMode == QIconView::Extended && !cb ) ||
-		 view->d->selectionMode == QIconView::Single )
+		 view->d->selectionMode == QIconView::Single ) {
+		bool b = view->signalsBlocked();
+		view->blockSignals( TRUE );
 		view->selectAll( FALSE );
+		view->blockSignals( b );
+	    }
+	    selected = s;
 	}
-	selected = s;
 
 	repaint();
 	if ( !view->signalsBlocked() )
@@ -1286,14 +1211,18 @@ bool QIconViewItem::acceptDrop( const QMimeSource * ) const
 void QIconViewItem::rename()
 {
     oldRect = rect();
-    renameBox = new QIconViewItemLineEdit( itemText, view->viewport(), this );
-    renameBox->resize( textRect().width() + view->d->fm->width( ' ' ), textRect().height() );
-    view->addChild( renameBox, textRect( FALSE ).x(), textRect( FALSE ).y() );
-    renameBox->setFrameStyle( QFrame::Plain | QFrame::Box );
-    renameBox->setLineWidth( 1 );
+    QVBox *box = new QVBox( view->viewport() );
+    renameBox = new QIconViewItemLineEdit( itemText, box, this );
+    box->setFrameStyle( QFrame::Plain | QFrame::Box );
+    box->setMargin( 2 );
+    box->setBackgroundMode( QWidget::PaletteBase );
+    box->resize( textRect().width() + view->d->fm->width( ' ' ) + 6, textRect().height() + 6 );
+    view->addChild( box, textRect( FALSE ).x() - 3, textRect( FALSE ).y() - 3 );
+    renameBox->setFrameStyle( QFrame::NoFrame );
+    renameBox->setLineWidth( 0 );
     renameBox->selectAll();
     renameBox->setFocus();
-    renameBox->show();
+    box->show();
     view->viewport()->setFocusProxy( renameBox );
     connect( renameBox, SIGNAL( returnPressed() ),
 	     this, SLOT( renameItem() ) );
@@ -1368,7 +1297,7 @@ void QIconViewItem::removeRenameBox()
     if ( !renameBox )
 	return;
 
-    delete renameBox;
+    delete renameBox->parentWidget();
     renameBox = 0;
     view->viewport()->setFocusProxy( view );
     view->setFocus();
@@ -1406,7 +1335,7 @@ void QIconViewItem::calcRect( const QString &text_ )
     if ( view->d->wordWrapIconText ) {
 	r = QRect( view->d->fm->boundingRect( 0, 0, iconView()->maxItemWidth() -
 					      ( iconView()->itemTextPos() == QIconView::Bottom ? 0 :
-						pixmapRect().width() ) - bearing,
+						pixmapRect().width() ) - bearing + 8,
 					      0xFFFFFFFF, Qt::AlignCenter | Qt::WordBreak, t ) );
     } else {
 	r = QRect( 0, 0, view->d->fm->width( t ), view->d->fm->height() );
@@ -1455,16 +1384,15 @@ void QIconViewItem::calcRect( const QString &text_ )
 }
 
 /*!
-  Paints the item using the painter \a p, the color group \a cg and the font \a font. If you want, that
+  Paints the item using the painter \a p, the color group \a cg. If you want, that
   your iconview item is drawn with a different font or color, reimplement this method and
-  change the values of the color group or the font and call then the paintItem() method of the
+  change the values of the color group or the painter's font and call then the paintItem() method of the
   super class with the changed values.
 */
 
-void QIconViewItem::paintItem( QPainter *p, const QColorGroup &cg, const QFont &font )
+void QIconViewItem::paintItem( QPainter *p, const QColorGroup &cg )
 {
     p->save();
-    p->setFont( font );
 
     if ( isSelected() ) {
 	p->setPen( cg.highlightedText() );
@@ -1535,16 +1463,21 @@ void QIconViewItem::paintFocus( QPainter *p, const QColorGroup &cg )
 }
 
 /*!
-  \fn void QIconViewItem::dropped( QDropEvent *e )
+  \fn void QIconViewItem::dropped( QDropEvent *e, const QValueList<QIconDragItem> & )
 
   This method is called, when something was dropped on the item. \a e
-  gives you all information about the drop.
+  gives you all information about the drop. If the drag object of the drop was
+  a QIconDrag, \a lst contains the list of the dropped items. You can get the data
+  using QIconDragItem::data() of each item then.
+
+  So, if \a lst is not empty, use this data for further operations, else the drag
+  was not a QIconDrag, so you have to decode \a e yourself and work with that.
 
   The default implementation does nothing, subclasses should reimplement this
   method.
 */
 
-void QIconViewItem::dropped( QDropEvent * )
+void QIconViewItem::dropped( QDropEvent *, const QValueList<QIconDragItem> & )
 {
 }
 
@@ -1720,42 +1653,28 @@ void QIconViewItem::calcTmpText()
   complex things:
 
   The first part is starting drags:
-  If you want to reimplement DnD in the QIconView, because you need some
-  extended functionality, you normally will not use QIconDrag as dragobject for your
-  items. But you should derive your drag object from QIconDrag. This derived class
-  (let's call it MyIconDrag), should contain for each iconview item, which should be
-  dragged, a QIconDragItem. But again, as this drag item contains the data of
-  an item, you may use a class derived from QIconDragItem (let's call it MyIconDragItem)
-  and not directly QIconDragItem.
-  So you implement MyIconDrag which contains a list of MyIconDragItems. See
-  the documentation of QIconDrag and QIconDragItem for more information.
+  If you want to use extended DnD in the QIconView, you should use QIconDrag
+  (or a derived class from that) as dragobject and in dragObject() create such
+  an object and return it. Before returning it, fill it there with QIconDragItems. 
+  Normally such a drag should offer data of each selected item. So in dragObject() 
+  you should iterate over all items, create for each selected item a QIconDragItem and 
+  append this with QIconDrag::append() to the QIconDrag object. With 
+  QIconDragItem::setData() you can set the data of each item which should be dragged. 
+  If you want to offer the data in additional mime-types, it's the best to use
+  a class derived from QIconDrag which implements additional encoding and 
+  decoding functions. 
 
-  Finally, you need to reimplement QIconView::dragObject(). This method is called
-  by QIconView to get the drag object when starting a drag. In this method
-  you have to create and return an instance of MyIconDrag which contains a list of
-  MyIconDragItems (normally one MyIconDragItem for each selected item
-  in the iconview).
-
-  Now, when a drag enters the iconview, you should know following:
-  If the entered drag is known (the drag object is a class derived from
-  QIconDrag) we also know the coordinates of the icons which are
-  dragged around. So, we can draw drag shapes of the dragged items.
-  For that some stuff has to be initialized. So, when a drag enters, the
-  iconview calls QIconView::initDragEnter(). Reimplement this method
-  to do your initialization. For more information about that, see the
-  documentation of QIconView::initDragEnter().
-
-  Finally you should connect to the QIconView::dropped() signal, which is
-  emitted when a drag is dropped onto the viewport of the iconview.
-  If it's allowed to drop onto iconview items, you should reimplement
-  QIconViewItem::dropped() in your iconview item subclass, as this method
-  is called when a drag is dropped onto an iconview item.
-
+  Now, when a drag enters the iconview, there is not much todo. Just connect to 
+  the dropped() signal and reimplement QIconViewItem::dropped() and
+  QIconViewItem::acceptDrop(). The only special thing in this case is the
+  second argument in the dropped() signal and in QIconViewItem::dropped().
+  Fur further details about that look at the documentation of these signal/method.
+  
   For an example implementation of the complex Drag'n'Drop stuff look at the
   qfileiconview example (qt/examples/qfileiconview)
 
   Finally, see also QIconViewItem::setDragEnabled(), QIconViewItem::setDropEnabled(),
-      QIconViewItem::acceptDrop() and QIconViewItem::dropped()
+  QIconViewItem::acceptDrop() and QIconViewItem::dropped()
 */
 
 /*! \enum QIconView::ResizeMode
@@ -1831,7 +1750,14 @@ void QIconViewItem::calcTmpText()
 
 /*! \fn void  QIconView::dropped (QDropEvent * e)
   This signal is emitted, when a drop event occured onto the viewport (not onto an icon),
-  which the iconview itself can't handle
+  which the iconview itself can't handle.
+
+  \a e gives you all information about the drop. If the drag object of the drop was
+  a QIconDrag, \a lst contains the list of the dropped items. You can get the data
+  using QIconDragItem::data() of each item then.
+
+  So, if \a lst is not empty, use this data for further operations, else the drag
+  was not a QIconDrag, so you have to decode \a e yourself and work with that.
 */
 
 /*! \fn void  QIconView::moved ()
@@ -2175,6 +2101,9 @@ void QIconView::slotUpdate()
     d->updateTimer->stop();
     d->fullRedrawTimer->stop();
 
+    if ( !d->firstItem || !d->lastItem )
+	return;
+
     // #### remove that ASA insertInGrid uses cached values and is efficient
     if ( d->resortItemsWhenInsert )
 	sort( d->sortDirection );
@@ -2400,7 +2329,7 @@ void QIconView::setSelected( QIconViewItem *item, bool s, bool cb )
   Returns the number of inserted items.
 */
 
-unsigned int QIconView::count() const
+uint QIconView::count() const
 {
     return d->count;
 }
@@ -2553,8 +2482,12 @@ void QIconView::drawContents( QPainter *p, int cx, int cy, int cw, int ch )
 	
 	    QIconViewItem *item = c->items.first();
 	    for ( ; item; item = c->items.next() ) {
-		if ( item->rect().intersects( r ) && !item->dirty )
-		    item->paintItem( p, colorGroup(), font() );
+		if ( item->rect().intersects( r ) && !item->dirty ) {
+		    p->save();
+		    p->setFont( font() );
+		    item->paintItem( p, colorGroup() );
+		    p->restore();
+		}
 	    }
 	    alreadyIntersected = TRUE;
 	} else {
@@ -3232,7 +3165,7 @@ int QIconView::maxItemTextLength() const
   if \a b is FALSE, the user is not allowed to do that.
 */
 
-void QIconView::setEnableMoveItems( bool b )
+void QIconView::setItemsMovable( bool b )
 {
     d->rearrangeEnabled = b;
 }
@@ -3241,10 +3174,10 @@ void QIconView::setEnableMoveItems( bool b )
   Returns TRUE, if the user is allowed to move items around
   in the iconview, else FALSE;
 
-  \sa QIconView::setEnableMoveItems()
+  \sa QIconView::setItemsMovable()
 */
 
-bool QIconView::enableMoveItems() const
+bool QIconView::itemsMovable() const
 {
     return d->rearrangeEnabled;
 }
@@ -3712,10 +3645,28 @@ void QIconView::contentsDropEvent( QDropEvent *e )
 	    repaintContents( 0, oldh, contentsWidth(), contentsHeight() - oldh, FALSE );
 	}
 	e->acceptAction();
-    } else if ( !i && e->source() != viewport() || d->cleared )
-	emit dropped( e );
-    else if ( i )
-	i->dropped( e );
+    } else if ( !i && e->source() != viewport() || d->cleared ) {
+	QValueList<QIconDragItem> lst;
+	if ( QIconDrag::canDecode( e ) ) {
+	    QValueList<QIconDrag::Item> l;
+	    QIconDrag::decode( e, l );
+	    QValueList<QIconDrag::Item>::Iterator it = l.begin();
+	    for ( ; it != l.end(); ++it )
+		lst << ( *it ).data;
+	}
+	emit dropped( e, lst );
+    } else if ( i ) {
+	QValueList<QIconDragItem> lst;
+	if ( QIconDrag::canDecode( e ) ) {
+	    QValueList<QIconDrag::Item> l;
+	    QIconDrag::decode( e, l );
+	    QValueList<QIconDrag::Item>::Iterator it = l.begin();
+	    for ( ; it != l.end(); ++it )
+		lst << ( *it ).data;
+	}
+	i->dropped( e, lst );
+    }
+    d->isIconDrag = FALSE;
 }
 
 /*!
@@ -3767,6 +3718,11 @@ void QIconView::keyPressEvent( QKeyEvent *e )
 	return;
     }
 
+    if ( d->currentItem && !d->currentItem->isSelected() &&
+	 d->selectionMode == Single ) {
+	d->currentItem->setSelected( TRUE );
+    }
+
     switch ( e->key() ) {
     case Key_Home: {
 	d->currInputString = QString::null;
@@ -3777,7 +3733,9 @@ void QIconView::keyPressEvent( QKeyEvent *e )
 	setCurrentItem( d->firstItem );
 
 	if ( d->selectionMode == Single ) {
+	    blockSignals( TRUE );
 	    item->setSelected( FALSE );
+	    blockSignals( FALSE );
 	    d->currentItem->setSelected( TRUE, TRUE );
 	} else {
 	    if ( e->state() & ShiftButton )
@@ -3793,7 +3751,9 @@ void QIconView::keyPressEvent( QKeyEvent *e )
 	setCurrentItem( d->lastItem );
 
 	if ( d->selectionMode == Single ) {
+	    blockSignals( TRUE );
 	    item->setSelected( FALSE );
+	    blockSignals( FALSE );
 	    d->currentItem->setSelected( TRUE, TRUE );
 	} else {
 	    if ( e->state() & ShiftButton )
@@ -3811,7 +3771,9 @@ void QIconView::keyPressEvent( QKeyEvent *e )
 	    setCurrentItem( d->currentItem->next );
 
 	    if ( d->selectionMode == Single ) {
+		blockSignals( TRUE );
 		item->setSelected( FALSE );
+		blockSignals( FALSE );
 		d->currentItem->setSelected( TRUE, TRUE );
 	    } else {
 		if ( e->state() & ShiftButton )
@@ -3854,8 +3816,10 @@ void QIconView::keyPressEvent( QKeyEvent *e )
 	    setCurrentItem( d->currentItem->prev );
 
 	    if ( d->selectionMode == Single ) {
-		item->setSelected( FALSE );
-		d->currentItem->setSelected( TRUE, TRUE );
+		blockSignals( TRUE );
+ 		item->setSelected( FALSE );
+		blockSignals( FALSE );
+ 		d->currentItem->setSelected( TRUE, TRUE );
 	    } else {
 		if ( e->state() & ShiftButton )
 		    d->currentItem->setSelected( !d->currentItem->isSelected(), TRUE );
@@ -3916,7 +3880,9 @@ void QIconView::keyPressEvent( QKeyEvent *e )
 		    setCurrentItem( item );
 		    item = i;
 		    if ( d->selectionMode == Single ) {
+			blockSignals( TRUE );
 			i->setSelected( FALSE );
+			blockSignals( FALSE );
 			d->currentItem->setSelected( TRUE, TRUE );
 		    } else {
 			if ( e->state() & ShiftButton )
@@ -3960,7 +3926,9 @@ void QIconView::keyPressEvent( QKeyEvent *e )
 		    setCurrentItem( item );
 		    item = i;
 		    if ( d->selectionMode == Single ) {
+			blockSignals( TRUE );
 			i->setSelected( FALSE );
+			blockSignals( FALSE );
 			d->currentItem->setSelected( TRUE, TRUE );
 		    } else {
 			if ( e->state() & ShiftButton )
@@ -4004,8 +3972,10 @@ void QIconView::keyPressEvent( QKeyEvent *e )
 	if ( ni ) {
 	    setCurrentItem( ni );
 	    if ( d->selectionMode == Single ) {
+		blockSignals( TRUE );
 		if ( item )
 		    item->setSelected( FALSE );
+		blockSignals( FALSE );
 		d->currentItem->setSelected( TRUE, TRUE );
 	    } else {
 		if ( e->state() & ShiftButton )
@@ -4032,8 +4002,10 @@ void QIconView::keyPressEvent( QKeyEvent *e )
 	if ( ni ) {
 	    setCurrentItem( ni );
 	    if ( d->selectionMode == Single ) {
+		blockSignals( TRUE );
 		if ( item )
 		    item->setSelected( FALSE );
+		blockSignals( FALSE );
 		d->currentItem->setSelected( TRUE, TRUE );
 	    } else {
 		if ( e->state() & ShiftButton )
@@ -4097,8 +4069,8 @@ void QIconView::drawRubber( QPainter *p )
 
     QPoint pnt( d->rubber->x(), d->rubber->y() );
     pnt = contentsToViewport( pnt );
-    style().drawFocusRect( p, QRect( pnt.x(), pnt.y(), d->rubber->width(), d->rubber->height() ), 
-			   colorGroup() ); 
+    style().drawFocusRect( p, QRect( pnt.x(), pnt.y(), d->rubber->width(), d->rubber->height() ),
+			   colorGroup() );
 }
 
 /*!
@@ -4121,14 +4093,17 @@ QDragObject *QIconView::dragObject()
     drag->setPixmap( *d->currentItem->pixmap(),
  		     QPoint( d->currentItem->pixmapRect().width() / 2,
 			     d->currentItem->pixmapRect().height() / 2 ) );
-    for ( QIconViewItem *item = d->firstItem; item; item = item->next )
-	if ( item->isSelected() )
-	    drag->append( QIconDragItem( QRect( item->pixmapRect( FALSE ).x() - orig.x(),
-						item->pixmapRect( FALSE ).y() - orig.y(),
-						item->pixmapRect().width(), item->pixmapRect().height() ),
-					 QRect( item->textRect( FALSE ).x() - orig.x(),
-						item->textRect( FALSE ).y() - orig.y(), 	
-						item->textRect().width(), item->textRect().height() ) ) );
+    for ( QIconViewItem *item = d->firstItem; item; item = item->next ) {
+	if ( item->isSelected() ) {
+	    drag->append( QIconDragItem(),
+			  QRect( item->pixmapRect( FALSE ).x() - orig.x(),
+				 item->pixmapRect( FALSE ).y() - orig.y(),
+				 item->pixmapRect().width(), item->pixmapRect().height() ),
+			  QRect( item->textRect( FALSE ).x() - orig.x(),
+				 item->textRect( FALSE ).y() - orig.y(), 	
+				 item->textRect().width(), item->textRect().height() ) );
+	}
+    }
 
     return drag;
 }
@@ -4270,10 +4245,10 @@ void QIconView::drawDragShapes( const QPoint &pos )
 	p.setRasterOp( NotROP );
 	p.setPen( QPen( color0 ) );
 	
-	QValueList<QIconDragItem>::Iterator it = d->iconDragData.begin();
+	QValueList<QIconDrag::Item>::Iterator it = d->iconDragData.begin();
 	for ( ; it != d->iconDragData.end(); ++it ) {
-	    QRect ir = (*it).pixmapRect();
-	    QRect tr = (*it).textRect();
+	    QRect ir = (*it).item.pixmapRect();
+	    QRect tr = (*it).item.textRect();
 	    tr.moveBy( pos.x(), pos.y() );
 	    ir.moveBy( pos.x(), pos.y() );
 	    style().drawFocusRect( &p, ir, colorGroup() );
@@ -4333,43 +4308,14 @@ void QIconView::initDragEnter( QDropEvent *e )
     if ( QIconDrag::canDecode( e ) ) {
 	QIconDrag::decode( e, d->iconDragData );
 	d->isIconDrag = TRUE;
-    } else
+    } else if ( QUriDrag::canDecode( e ) ) {
+	QStringList lst;
+	QUriDrag::decodeToUnicodeUris( e, lst );
+	d->numDragItems = lst.count();
+    } else {
 	d->numDragItems = 0;
+    }
 
-}
-
-/*!
-  Using this function it's possible to tell the iconview, that a
-  drag contains known data, which may be encoded to display
-  correct drag shapes.
-  This method is normally called from QIconView::initDragEnter(),
-  \a e is the argument which you got in this method.
-
-  \sa QIconView::initDragEnter()
-*/
-
-void QIconView::setDragObjectIsKnown( QDropEvent *e )
-{
-    d->isIconDrag = TRUE;
-    if ( QIconDrag::canDecode( e ) )
-	QIconDrag::decode( e, d->iconDragData );
-}
-
-/*!
-  If a drag is unknown (you have no information about how to draw the drag
-  shapes), but you know enough about it, to know the number of items which
-  are dragged around, it's possible to specify using this method the number of items
-  of the drag (e.g. the number of URLs), so that the iconview can draw
-  some (not totally correcty) drag shapes.
-  This method is normally called fro QIconView::initDragEnter()
-
-  \sa QIconView::initDragEnter()
-*/
-
-void QIconView::setNumDragItems( int num )
-{
-    d->isIconDrag = FALSE;
-    d->numDragItems = num;
 }
 
 /*!
@@ -4922,6 +4868,7 @@ void QIconView::rebuildContainers()
 		    continue;
 		}
 	    }
+
 	    c = c->n;
 	    if ( !c ) {
 		appendItemContainer();
