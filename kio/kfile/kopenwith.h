@@ -146,7 +146,9 @@ protected:
     QString qName, qServiceType;
     bool m_terminaldirty;
     QCheckBox   *terminal, *remember;
+    QPushButton *dummybcvar; // for BC with KDE3. Remove in KDE4
     QPushButton *clear;
+    QPushButton *dummybcvar2; // for BC with KDE3. Remove in KDE4
 
     KService::Ptr m_pService;
 
