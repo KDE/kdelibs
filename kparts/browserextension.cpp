@@ -66,6 +66,7 @@ struct URLArgsPrivate
 
 URLArgs::URLArgs()
 {
+  doPost = false;
   reload = false;
   xOffset = 0;
   yOffset = 0;
@@ -76,6 +77,7 @@ URLArgs::URLArgs()
 
 URLArgs::URLArgs( bool _reload, int _xOffset, int _yOffset, const QString &_serviceType )
 {
+  doPost = false;
   reload = _reload;
   xOffset = _xOffset;
   yOffset = _yOffset;
@@ -100,6 +102,7 @@ URLArgs &URLArgs::operator=(const URLArgs &args)
   yOffset = args.yOffset;
   serviceType = args.serviceType;
   postData = args.postData;
+  doPost = args.doPost;
   frameName = args.frameName;
   docState = args.docState;
   trustedSource = args.trustedSource;

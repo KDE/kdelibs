@@ -53,6 +53,7 @@ struct URLArgs
   QStringList docState;
 
   bool reload;
+  bool doPost;
   int xOffset;
   int yOffset;
   QString serviceType;
