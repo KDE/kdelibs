@@ -72,15 +72,21 @@ void UserPaths::initStatic()
     *s_autostartPath += "/";
 }
 
-void UserPaths::testLocalDir( const char *_name )
+bool UserPaths::testLocalDir( const char *_name )
 {
   DIR *dp;
   QString c = kapp->localkdedir().copy();
   c += _name;
   dp = opendir( c.data() );
   if ( dp == NULL )
+  {
     ::mkdir( c.data(), S_IRWXU );
+    return false;
+  }
   else
+  {
     closedir( dp );
+    return true;
+  }
 }
 

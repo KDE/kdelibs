@@ -41,8 +41,10 @@ public:
   /**
    * Test, and create if necessary, a directory in kapp->localkdedir()
    * @param _name the relative path from it (e.g. "/share/apps/myapp")
+   * @return true if the directory already existed, false if it has been created
+   *              (you can test this value to copy files in the directory)
    */
-  static void testLocalDir( const char *_name );
+  static bool testLocalDir( const char *_name );
 
 private:
   /**
