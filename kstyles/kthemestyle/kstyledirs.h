@@ -73,8 +73,8 @@ protected:
     Creates an instance of the class, and calculates the path information.
     */
     KStyleDirs();
-    KStyleDirs(const KStyleDirs&) {}
-    KStyleDirs& operator= (const KStyleDirs&) {}
+    KStyleDirs(const KStyleDirs&);
+    KStyleDirs& operator= (const KStyleDirs&);
 
     virtual ~KStyleDirs();
 };
