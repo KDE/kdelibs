@@ -154,11 +154,6 @@ void RenderFlow::print(QPainter *p, int _x, int _y, int _w, int _h,
 void RenderFlow::printObject(QPainter *p, int _x, int _y,
                                        int _w, int _h, int _tx, int _ty)
 {
-
-#ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << renderName() << "(RenderFlow) " << this << " ::printObject() w/h = (" << width() << "/" << height() << ")" << " _y/_h=" << _y << "/" << _h << endl;
-#endif
-    // add offset for relative positioning
     if(isRelPositioned())
         relativePositionOffset(_tx, _ty);
 

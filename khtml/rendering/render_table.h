@@ -154,7 +154,7 @@ public:
 
     RenderTableCol *colElement( int col );
 
-    void setNeedSectionRecalc();
+    void setNeedSectionRecalc() { needSectionRecalc = true; }
 
     virtual RenderObject* removeChildNode(RenderObject* child);
 
@@ -188,6 +188,9 @@ class RenderTableSection : public RenderBox
 public:
     RenderTableSection(DOM::NodeImpl* node);
     ~RenderTableSection();
+    virtual void detach();
+
+    virtual void setStyle(RenderStyle *style);
 
     virtual const char *renderName() const { return "RenderTableSection"; }
 
@@ -230,7 +233,11 @@ public:
     int numRows() const { return grid.size(); }
     int getBaseline(int row) {return grid[row].baseLine;}
 
-    void setNeedCellRecalc();
+    void setNeedCellRecalc() {
+        needCellRecalc = true;
+        table()->setNeedSectionRecalc();
+    }
+
     virtual RenderObject* removeChildNode(RenderObject* child);
 
     // this gets a cell grid data structure. changing the number of
@@ -254,8 +261,10 @@ class RenderTableRow : public RenderContainer
 {
 public:
     RenderTableRow(DOM::NodeImpl* node);
-    ~RenderTableRow();
 
+    virtual void detach();
+
+    virtual void setStyle( RenderStyle* );
     virtual const char *renderName() const { return "RenderTableRow"; }
 
     virtual bool isTableRow() const { return true; }
@@ -283,7 +292,8 @@ class RenderTableCell : public RenderFlow
 {
 public:
     RenderTableCell(DOM::NodeImpl* node);
-    ~RenderTableCell();
+
+    virtual void detach();
 
     virtual const char *renderName() const { return "RenderTableCell"; }
     virtual bool isTableCell() const { return true; }
@@ -366,7 +376,6 @@ class RenderTableCol : public RenderContainer
 {
 public:
     RenderTableCol(DOM::NodeImpl* node);
-    ~RenderTableCol();
 
     virtual const char *renderName() const { return "RenderTableCol"; }
 

@@ -76,6 +76,7 @@ RenderTable::~RenderTable()
 void RenderTable::setStyle(RenderStyle *_style)
 {
     ETableLayout oldTableLayout = style() ? style()->tableLayout() : TAUTO;
+    if ( _style->display() != INLINE_TABLE ) _style->setDisplay(TABLE);
     RenderFlow::setStyle(_style);
 
     // init RenderObject attributes
@@ -149,11 +150,10 @@ void RenderTable::addChild(RenderObject *child, RenderObject *beforeChild)
 	    } else {
 		if ( beforeChild && !beforeChild->isTableSection() )
 		    beforeChild = 0;
-//   		kdDebug( 6040 ) << this <<" creating anonymous table section beforeChild="<< beforeChild << endl;
+  		//kdDebug( 6040 ) << this <<" creating anonymous table section beforeChild="<< beforeChild << endl;
 		o = new RenderTableSection(0 /* anonymous */);
 		RenderStyle *newStyle = new RenderStyle();
 		newStyle->inheritFrom(style());
-		newStyle->setDisplay(TABLE_ROW_GROUP);
 		o->setStyle(newStyle);
 		o->setIsAnonymousBox(true);
 		addChild(o, beforeChild);
@@ -544,16 +544,8 @@ RenderTableCol *RenderTable::colElement( int col ) {
     return 0;
 }
 
-void RenderTable::setNeedSectionRecalc()
-{
-//     qDebug("setNeedSectionRecalc: %p",  this );
-    needSectionRecalc = true;
-}
-
-
 void RenderTable::recalcSections()
 {
-//     qDebug("recalcSections, %p",  this);
     tCaption = 0;
     head = foot = firstBody = 0;
     has_col_elems = false;
@@ -563,9 +555,10 @@ void RenderTable::recalcSections()
     while ( child ) {
 	switch(child->style()->display()) {
 	case TABLE_CAPTION:
-	    if ( !tCaption)
+	    if ( !tCaption) {
 		tCaption = static_cast<RenderFlow*>(child);
-            tCaption->setLayouted(false);
+                tCaption->setLayouted(false);
+            }
 	    break;
 	case TABLE_COLUMN:
 	case TABLE_COLUMN_GROUP:
@@ -643,12 +636,21 @@ RenderTableSection::RenderTableSection(DOM::NodeImpl* node)
 
 RenderTableSection::~RenderTableSection()
 {
+    clearGrid();
+}
+
+void RenderTableSection::detach()
+{
     // recalc cell info because RenderTable has unguarded pointers
     // stored that point to this RenderTableSection.
     if (table())
         table()->setNeedSectionRecalc();
+}
 
-    clearGrid();
+void RenderTableSection::setStyle(RenderStyle* style)
+{
+    style->setDisplay(TABLE_ROW_GROUP);
+    RenderBox::setStyle(style);
 }
 
 void RenderTableSection::addChild(RenderObject *child, RenderObject *beforeChild)
@@ -674,11 +676,10 @@ void RenderTableSection::addChild(RenderObject *child, RenderObject *beforeChild
 		lastBox->addChild( child, beforeChild );
 		return;
 	    } else {
-		kdDebug( 6040 ) << "creating anonymous table row" << endl;
+		//kdDebug( 6040 ) << "creating anonymous table row" << endl;
 		row = new RenderTableRow(0 /* anonymous table */);
 		RenderStyle *newStyle = new RenderStyle();
 		newStyle->inheritFrom(style());
-		newStyle->setDisplay(TABLE_ROW);
 		row->setStyle(newStyle);
 		row->setIsAnonymousBox(true);
 		addChild(row, beforeChild);
@@ -1151,17 +1152,9 @@ void RenderTableSection::print( QPainter *p, int x, int y, int w, int h,
 
 }
 
-
-void RenderTableSection::setNeedCellRecalc()
-{
-//     qDebug("setNeedCellRecalc: %p, table=%p",  this, table() );
-    needCellRecalc = true;
-    table()->setNeedSectionRecalc();
-}
-
 void RenderTableSection::recalcCells()
 {
-//     qDebug("recalcCells, %p",  this);
+     qDebug("recalcCells, %p",  this);
     cCol = cRow = 0;
     clearGrid();
     grid.resize( 0 );
@@ -1222,10 +1215,17 @@ RenderTableRow::RenderTableRow(DOM::NodeImpl* node)
     setInline(false);   // our object is not Inline
 }
 
-RenderTableRow::~RenderTableRow()
+void RenderTableRow::detach()
 {
-    if (section())
-        section()->setNeedCellRecalc();
+    section()->setNeedCellRecalc();
+
+    RenderContainer::detach();
+}
+
+void RenderTableRow::setStyle(RenderStyle* style)
+{
+    style->setDisplay(TABLE_ROW);
+    RenderContainer::setStyle(style);
 }
 
 void RenderTableRow::addChild(RenderObject *child, RenderObject *beforeChild)
@@ -1254,7 +1254,6 @@ void RenderTableRow::addChild(RenderObject *child, RenderObject *beforeChild)
 		cell = new RenderTableCell(0 /* anonymous object */);
 		RenderStyle *newStyle = new RenderStyle();
 		newStyle->inheritFrom(style());
-		newStyle->setDisplay(TABLE_CELL);
 		cell->setStyle(newStyle);
 		cell->setIsAnonymousBox(true);
 		addChild(cell, beforeChild);
@@ -1277,8 +1276,9 @@ void RenderTableRow::addChild(RenderObject *child, RenderObject *beforeChild)
 
 RenderObject* RenderTableRow::removeChildNode(RenderObject* child)
 {
-    if ( section() )
-	section()->setNeedCellRecalc();
+// RenderTableCell detach should do it
+//     if ( section() )
+// 	section()->setNeedCellRecalc();
     return RenderContainer::removeChildNode( child );
 }
 
@@ -1321,10 +1321,12 @@ RenderTableCell::RenderTableCell(DOM::NodeImpl* _node)
   _bottomExtra = 0;
 }
 
-RenderTableCell::~RenderTableCell()
+void RenderTableCell::detach()
 {
     if (parent() && section())
         section()->setNeedCellRecalc();
+
+    RenderFlow::detach();
 }
 
 void RenderTableCell::updateFromElement()
@@ -1409,6 +1411,7 @@ short RenderTableCell::baselinePosition( bool ) const
 
 void RenderTableCell::setStyle( RenderStyle *style )
 {
+    style->setDisplay(TABLE_CELL);
     RenderFlow::setStyle( style );
     setSpecialObjects(true);
 }
@@ -1532,22 +1535,14 @@ RenderTableCol::RenderTableCol(DOM::NodeImpl* node)
     updateFromElement();
 }
 
-RenderTableCol::~RenderTableCol()
-{
-}
-
 void RenderTableCol::updateFromElement()
 {
   DOM::NodeImpl *node = element();
   if ( node && (node->id() == ID_COL || node->id() == ID_COLGROUP) ) {
       DOM::HTMLTableColElementImpl *tc = static_cast<DOM::HTMLTableColElementImpl *>(node);
       _span = tc->span();
-  } else {
-      if ( style() && style()->display() == TABLE_COLUMN_GROUP )
-	  _span = 0;
-      else
-	  _span = 1;
-  }
+  } else
+      _span = ! ( style() && style()->display() == TABLE_COLUMN_GROUP );
 }
 
 void RenderTableCol::addChild(RenderObject *child, RenderObject *beforeChild)

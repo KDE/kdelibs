@@ -115,7 +115,6 @@ void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild
             table = new RenderTable(0 /* is anonymous */);
             RenderStyle *newStyle = new RenderStyle();
             newStyle->inheritFrom(style());
-            newStyle->setDisplay(TABLE);
             table->setStyle(newStyle);
             table->setIsAnonymousBox(true);
             addChild(table, beforeChild);
