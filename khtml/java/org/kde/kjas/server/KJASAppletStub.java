@@ -167,6 +167,8 @@ public final class KJASAppletStub
                         panel.showFailed();
                         return;
                     }
+                    if (Thread.interrupted())
+                        return;
                     stateChange(CLASS_LOADED);                
                     try {
                         synchronized (appletClass) {
@@ -186,6 +188,8 @@ public final class KJASAppletStub
                         return;
                     }
                 //} // synchronized
+                if (Thread.interrupted())
+                    return;
                 app.setStub( me );
                 stateChange(INSTANCIATED);
                 app.setVisible(false);
@@ -209,6 +213,8 @@ public final class KJASAppletStub
                     return;
                 }
 
+                if (Thread.interrupted())
+                     return;
                 stateChange(INITIALIZED);
                 loader.removeStatusListener(panel);
                 app.setVisible(true);
@@ -239,7 +245,7 @@ public final class KJASAppletStub
     */
     void startApplet()
     {
-        if( app != null ) {
+        if( app != null && state == INITIALIZED) {
             active = true;                    
             if (appletThread != null) {
                 appletThread = new Thread("KJAS-Applet-" + appletID + "-" + appletName) {
@@ -293,6 +299,18 @@ public final class KJASAppletStub
     */
     void destroyApplet()
     {
+        if( runThread != null && runThread.isAlive() ) {
+            Main.debug( "runThread is active when stub is dying" );
+            try {
+                runThread.interrupt();
+            } catch (SecurityException se) {}
+            if (runThread.isAlive()) {
+                try {
+                    runThread.join(5000);
+                } catch (InterruptedException ie) {}
+            }
+            panel.stopAnimation();
+        }
         if( app != null ) {
             synchronized (app) {
                 if (active) {
@@ -303,8 +321,6 @@ public final class KJASAppletStub
             stateChange(DESTROYED);
         }
 
-        if( runThread != null && runThread.isAlive() )
-            Main.debug( "runThread is active when stub is dying" );
         frame.dispose();
     }
 
