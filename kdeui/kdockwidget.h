@@ -57,11 +57,6 @@
 #ifndef NO_KDE2
 #include <kmainwindow.h>
 #include <netwm_def.h>
-#ifndef Q_WS_WIN
-#undef  EXPORT_DOCKCLASS
-#define EXPORT_DOCKCLASS
-#endif
-
 #else
 
 #include <qmainwindow.h>
@@ -240,7 +235,7 @@ private:
  *
  * @author Max Judin (documentation: Falk Brettschneider).
  */
-class EXPORT_DOCKCLASS KDockWidgetHeader : public KDockWidgetAbstractHeader
+class KDEUI_EXPORT KDockWidgetHeader : public KDockWidgetAbstractHeader
 {
   Q_OBJECT
 public:
@@ -365,7 +360,7 @@ private:
  *
  * @author Max Judin (documentation: Falk Brettschneider).
  */
-class EXPORT_DOCKCLASS KDockTabGroup : public QTabWidget
+class KDEUI_EXPORT KDockTabGroup : public QTabWidget
 {
   Q_OBJECT
 public:
@@ -425,7 +420,7 @@ private:
  *
  * @author Max Judin (documentation: Falk Brettschneider).
  */
-class EXPORT_DOCKCLASS KDockWidget: public QWidget
+class KDEUI_EXPORT KDockWidget: public QWidget
 {
   Q_OBJECT
 friend class KDockManager;
@@ -906,7 +901,7 @@ private:
  *
  * @author Max Judin (documentation: Falk Brettschneider).
  */
-class EXPORT_DOCKCLASS KDockManager: public QObject
+class KDEUI_EXPORT KDockManager: public QObject
 {
   Q_OBJECT
 friend class KDockWidget;
@@ -1302,7 +1297,7 @@ private:
  *
  * @author Max Judin (documentation: Falk Brettschneider).
  */
-class EXPORT_DOCKCLASS KDockMainWindow : public KMainWindow
+class KDEUI_EXPORT KDockMainWindow : public KMainWindow
 {
   Q_OBJECT
 
@@ -1468,22 +1463,7 @@ private:
   KDockMainWindowPrivate *d;
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-class EXPORT_DOCKCLASS KDockArea : public QWidget
+class KDEUI_EXPORT KDockArea : public QWidget
 {
   Q_OBJECT
 

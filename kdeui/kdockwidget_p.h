@@ -40,7 +40,7 @@ COMPATIBLE. THIS HEADER IS ONLY INSTALLED, BECAUSE IT IS NEEDED IN
 #include <qstringlist.h>
 // Add some describing comment !!
 
-class EXPORT_DOCKCLASS KDockContainer
+class KDockContainer
 {
 public:
   KDockContainer();

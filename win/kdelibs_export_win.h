@@ -106,6 +106,12 @@
 # define KRESOURCES_EXPORT KDE_IMPORT
 #endif
 
+#ifdef MAKE_KDESU_LIB
+# define KDESU_EXPORT KDE_EXPORT
+#else
+# define KDESU_EXPORT KDE_IMPORT
+#endif
+
 // all KStyle libs
 #ifdef MAKE_KSTYLE_LIB
 # define KSTYLE_EXPORT KDE_EXPORT
