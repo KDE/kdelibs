@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Service
+Name=Extended Permissions
+X-KDE-Library=libkacl_prop_page
+ServiceTypes=KPropsDlg/Plugin,inode/directory
+X-KDE-Protocol=file

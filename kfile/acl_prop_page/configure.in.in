@@ -1,0 +1,13 @@
+AC_CHECK_HEADERS(sys/acl.h, [ACL_H="1"], [ACL_H=""])
+AC_CHECK_FUNC(acl_get_fd, [ACL_FUNC=1], [
+		AC_CHECK_LIB(posix1e, acl_get_fd, [
+			ACL_FUNC="1"
+			LIBPOSIX1E="-lposix1e"
+		], [
+			ACL_FUNC=""
+			LIBPOSIX1E=""
+		])
+	])
+AC_SUBST(LIBPOSIX1E)
+AM_CONDITIONAL(USE_POSIX_ACL, [test -n "$ACL_H" -a "$ACL_FUNC"])
+
