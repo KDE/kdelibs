@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=MimeType
 MimeType=application/msword
-Icon=
+Icon=mimetypes/document
 Patterns=*.doc;*.DOC;
 Comment=Microsoft Word document
