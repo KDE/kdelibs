@@ -44,7 +44,7 @@ class KColorCombo : public QComboBox
 public:
     /**
      * Constructs a color combo box.
-     */ 
+     */
     KColorCombo( QWidget *parent, const char *name = 0L );
     ~KColorCombo();
 
@@ -52,11 +52,11 @@ public:
      * Selects the color @p col.
      */
     void setColor( const QColor &col );
-    /** 
-     * Returns the currently selected color. 
+    /**
+     * Returns the currently selected color.
      **/
     QColor color() const;
-    
+
 
     /**
      * Clear the colour list and don't show it, till the next setColor() call
@@ -74,9 +74,6 @@ signals:
     void highlighted( const QColor &col );
 
 protected:
-        /**
-         * @reimplemented
-         */
 	virtual void resizeEvent( QResizeEvent *re );
 
 private slots:

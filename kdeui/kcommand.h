@@ -169,6 +169,7 @@ public:
      * using the standard names ("edit_undo" and "edit_redo").
      * @param withMenus if true, the actions will display a menu when plugged
      * into a toolbar.
+     * @param actionCollection the parent collection
      */
     KCommandHistory(KActionCollection *actionCollection, bool withMenus = true);
 

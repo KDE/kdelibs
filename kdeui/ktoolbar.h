@@ -259,7 +259,7 @@ public:
    *
    * You can add more signals with addConnection().
    *
-   * @param icon     The name of the icon to use as the active pixmap
+   * @param pixmap   The name of the icon to use as the active pixmap
    * @param id       The id of this button
    * @param signal   The signal to connect to
    * @param receiver The slot's parent
@@ -519,7 +519,7 @@ public:
     void setButton (int id, bool flag);
 
   /**
-   * Returns @p true iff button is on and is a toggle button 
+   * Returns @p true iff button is on and is a toggle button
    * @return @p true iff button is on and is a toggle button
    * @see setToggle()
    */
@@ -708,7 +708,7 @@ public:
    * In full size mode the bar extends over the parent's full width or height.
    * If the mode is disabled the toolbar tries to take as much space as it
    * needs without wrapping, but it does not exceed the parent box. You can
-   * force a certain width or height with setMaxWidth() or 
+   * force a certain width or height with setMaxWidth() or
    * setMaxHeight().
    *
    * If you want to use right-aligned items or auto-sized items you must use
@@ -899,7 +899,7 @@ public:
    */
     void applySettings(KConfig *config, const QString &configGroup);
 
-  /**
+  /*
    * Tell the toolbar what XML-GUI resource file it should use to save
    * it's state.  The state of the toolbar (position, size, etc) is
    * saved in KConfig files if the application does not use XML-GUI
@@ -911,6 +911,7 @@ public:
    * @internal
    */
   //  void setXML(const QString& xmlfile, const QDomDocument& xml);
+
     void setXMLGUIClient( KXMLGUIClient *client );
 
   /**

@@ -37,7 +37,7 @@ class KURL;
 /**
  * A combined button, line-edit and a popup list widget.
  *
- * @sect Detail
+ * \b Detail \n
  *
  * This widget inherits from QComboBox and implements the following
  * additional functionalities:  a completion object that provides both automatic
@@ -75,7 +75,7 @@ class KURL;
  * mode, unlike in the read-write mode, works by matching any typed key with the
  * first letter of entries in the combobox.
  *
- * @sect Usage
+ * \b Usage \n
  *
  * To enable the basic completion feature:
  *
@@ -237,7 +237,6 @@ public:
     * argument set to false to disable the popup menu.
     *
     * @param showMenu If @p true, show the context menu.
-    * @param showMode If @p true, show the mode changer.
     */
     virtual void setContextMenuEnabled( bool showMenu );
 
@@ -297,8 +296,6 @@ public:
 
     /**
     * Re-implemented for internal reasons.  API not affected.
-    *
-    * @reimplemented
     */
     virtual bool eventFilter( QObject *, QEvent * );
 
@@ -360,7 +357,7 @@ signals:
     *
     * The argument indicates which key-binding was pressed. In this case this
     * can be either one of four values: @p PrevCompletionMatch,
-    * @p NextCompletionMatch, @p RotateUp or @p RotateDown. See 
+    * @p NextCompletionMatch, @p RotateUp or @p RotateDown. See
     * KCompletionBase::setKeyBinding() for details.
     *
     * Note that this signal is @em NOT emitted if the completion
@@ -381,9 +378,9 @@ signals:
      * Note that you MUST NOT store the pointer to the QPopupMenu since it is
      * created and deleted on demand.  Otherwise, you can crash your app.
      *
-     * @param the context menu about to be displayed
+     * @param p the context menu about to be displayed
      */
-    void aboutToShowContextMenu( QPopupMenu * );
+    void aboutToShowContextMenu( QPopupMenu * p );
 
 public slots:
 
@@ -404,7 +401,7 @@ public slots:
     *
     * @param type The key-binding invoked.
     */
-    void rotateText( KCompletionBase::KeyBindingType /* type */ );
+    void rotateText( KCompletionBase::KeyBindingType type );
 
     /**
      * Sets the completed text in the line-edit appropriately.
@@ -435,7 +432,7 @@ public slots:
 protected slots:
 
     /**
-    * @deprecated.
+    * @deprecated
     */
     virtual void itemSelected( QListBoxItem* ) {};
 

@@ -72,17 +72,18 @@ public:
    * It normally comes up with all font families present on the system; the
    * getFont method below does allow some more fine-tuning of the selection of fonts
    * that will be displayed in the dialog.
-   * <p>Consider the following code snippet;\code
-   *
+   * <p>Consider the following code snippet;
+   * \code
    *    QStringList list;
    *    KFontChooser::getFontList(list,SmoothScalableFonts);
    *    KFontChooser chooseFont = new KFontChooser(0, "FontList", false, list);
    * \endcode
-   * <p>The above creates a font chooser dialog with only SmoothScaleble fonts.
+   * <p>
+   * The above creates a font chooser dialog with only SmoothScaleble fonts.
    *
    * @param parent The parent widget.
    * @param name The widget name.
-   * @param onlyFixedFonts Only display fonts which have fixed-width
+   * @param onlyFixed Only display fonts which have fixed-width
    *        character sizes.
    * @param fontList A list of fonts to display, in XLFD format.  If
    *        no list is formatted, the internal KDE font list is used.
@@ -117,7 +118,7 @@ public:
    * function if your application does not need or supports all font
    * properties.
    *
-   * @param font Specifie the columns. An or'ed combination of
+   * @param column Specify the columns. An or'ed combination of
    *        @p FamilyList, @p StyleList and @p SizeList is possible.
    * @param state If @p false the columns are disabled.
    */
@@ -149,7 +150,7 @@ public:
   void setColor( const QColor & col );
 
   /**
-   * @return The color currently used in the preview (default: the text 
+   * @return The color currently used in the preview (default: the text
    *         color of the active color group)
    */
   QColor color() const;
@@ -160,7 +161,7 @@ public:
   void setBackgroundColor( const QColor & col );
 
   /**
-   * @return The background color currently used in the preview (default: 
+   * @return The background color currently used in the preview (default:
    *         the base color of the active colorgroup)
    */
   QColor backgroundColor() const;

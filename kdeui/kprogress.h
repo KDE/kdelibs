@@ -37,8 +37,8 @@
  * is that a signal is emitted on changes to the value and you do not need
  * to subclass KProgress just to change the format of the indicator text.
  *
- * @sect Details
- * 
+ * \b Details \n
+ *
  * \image html kprogress.png "KDE Progress Widget"
  *
  * @short A progress indicator widget.
@@ -133,7 +133,6 @@ public slots:
 
   /**
     * Set the current value of the progress bar to @p value.
-    * @reimplemented
     */
   virtual void setProgress(int progress);
 
@@ -159,9 +158,6 @@ signals:
   void percentageChanged(int);
 
 protected:
-  /**
-   * @reimplemented
-   */
   virtual bool setIndicator(QString & indicator, int progress, int totalSteps);
 
 private:
@@ -233,7 +229,7 @@ class KProgressDialog : public KDialogBase
          *
          * @param text the text to display
          */
-        void    setLabel(const QString&);
+        void    setLabel(const QString & text);
 
         /**
          * Returns the current dialog text

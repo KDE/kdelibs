@@ -127,7 +127,7 @@ public slots:
      * @see userCancelled( const QString& )
      * @param txt  the text to be emitted if the user cancels this box
      */
-    void setCancelledText( const QString& );
+    void setCancelledText( const QString& txt);
 
     /**
      * @returns the text set via setCancelledText() or QString::null.

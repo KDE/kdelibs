@@ -105,7 +105,7 @@ class KMainWindow;
  * argument bound to each action, then you might consider using
  * QSignalMapper . A tiny example:
  *
- * <PRE>
+ * \code
  * QSignalMapper *desktopNumberMapper = new QSignalMapper( this );
  * connect( desktopNumberMapper, SIGNAL( mapped( int ) ),
  *          this, SLOT( moveWindowToDesktop( int ) ) );
@@ -115,9 +115,9 @@ class KMainWindow;
  *     connect( desktopAction, SIGNAL( activated() ), desktopNumberMapper, SLOT( map() ) );
  *     desktopNumberMapper->setMapping( desktopAction, i );
  * }
- * </PRE>
+ * \endcode
  *
- * @sect General Usage:
+ * <b>General Usage:</b>\n
  *
  * The steps to using actions are roughly as follows
  *
@@ -127,50 +127,50 @@ class KMainWindow;
  * @li "Plug" the Action into whatever GUI element you want.  Typically,
  *      this will be a menu or toolbar.
  *
- * @sect Detailed Example:
+ * <b>Detailed Example:</b>\n
  *
  * Here is an example of enabling a "New [document]" action
- * <PRE>
+ * \code
  * KAction *newAct = new KAction(i18n("&New"), "filenew",
  *                               KStdAccel::shortcut(KStdAccel::New),
  *                               this, SLOT(fileNew()),
  *                               actionCollection(), "new");
- * </PRE>
+ * \endcode
  * This line creates our action.  It says that wherever this action is
  * displayed, it will use "&New" as the text, the standard icon, and
  * the standard shortcut.  It further says that whenever this action
  * is invoked, it will use the fileNew() slot to execute it.
  *
- * <PRE>
+ * \code
  * QPopupMenu *file = new QPopupMenu;
  * newAct->plug(file);
- * </PRE>
+ * \endcode
  * That just inserted the action into the File menu.  The point is, it's not
  * important in which menu it is: all manipulation of the item is
  * done through the newAct object.
  *
- * <PRE>
+ * \code
  * newAct->plug(toolBar());
- * </PRE>
+ * \endcode
  * And this inserted the Action into the main toolbar as a button.
  *
  * That's it!
  *
  * If you want to disable that action sometime later, you can do so
  * with
- * <PRE>
+ * \code
  * newAct->setEnabled(false)
- * </PRE>
+ * \endcode
  * and both the menuitem in File and the toolbar button will instantly
  * be disabled.
  *
  * Do not delete a KAction object without unplugging it from all its
  * containers. The simplest way to do that is to use the unplugAll()
  * as in the following example:
- * <PRE>
+ * \code
  * newAct->unplugAll();
  * delete newAct;
- * </PRE>
+ * \endcode
  * Normally you will not need to do this as KActionCollection manages
  * everything for you.
  *
@@ -179,7 +179,7 @@ class KMainWindow;
  * please use the methods in the KStdAction class rather than
  * defining your own.
  *
- * @sect Usage Within the XML Framework:
+ * <b>Usage Within the XML Framework:</b>\n
  *
  * If you are using KAction within the context of the XML menu and
  * toolbar building framework, then there are a few tiny changes.  The

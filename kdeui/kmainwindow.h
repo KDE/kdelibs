@@ -75,10 +75,10 @@ class DCOPObject;
  * from KApplication. It provides full session management, and
  * will save its position, geometry and positions of toolbars and
  * menubar on logout. If you want to save additional data, reimplement
- * saveProperties() and (to read them again on next login) 
+ * saveProperties() and (to read them again on next login)
  * readProperties(). To save special data about your data, reimplement
  * saveGlobalProperties(). To warn user that application or
- * windows have unsaved data on close or logout, reimplement 
+ * windows have unsaved data on close or logout, reimplement
  * queryClose() and/or queryExit().
  *
  * There are also kRestoreMainWindows convenience functions which
@@ -204,7 +204,7 @@ public:
     KPopupMenu* customHelpMenu( bool showWhatsThis = TRUE );
 
     /**
-     * @sect Session Management
+     * <b>Session Management</b>\n
      *
      * Try to restore the toplevel widget as defined by the number (1..X).
      *
@@ -575,7 +575,7 @@ public slots:
      *
      *  The application name is
      * used as a key to determine what to display and the system will attempt
-     * to open <appName>/index.html.
+     * to open \<appName\>/index.html.
      *
      * This method is intended for use by a help button in the toolbar or
      * components outside the regular help menu. Use helpMenu() when you
@@ -870,7 +870,7 @@ inline void kRestoreMainWindows() {
     number of template arguments) are a replacement for the RESTORE
     macro provided in earlier versions of KDE. The old RESTORE macro
     is still provided for backwards compatibility. See
- KMainWindow documentation for more.
+    KMainWindow documentation for more.
  **/
 template <typename T0, typename T1>
 inline void kRestoreMainWindows() {

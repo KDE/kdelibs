@@ -101,7 +101,7 @@ public:
        * Create an editable listbox.
        *
        * The same as the other constructor, additionally it takes
-       * @title, which will be the title of the frame around the listbox.
+       * @p title, which will be the title of the frame around the listbox.
        */
       KEditListBox(const QString& title, QWidget *parent = 0,
 		   const char *name = 0, bool checkAtEntering=false,
@@ -109,7 +109,7 @@ public:
 
       /**
        * Another constructor, which allows to use a custom editing widget
-       * instead of the standard KLineEdit widget. E.g. you can use a 
+       * instead of the standard KLineEdit widget. E.g. you can use a
        * KURLRequester or a KComboBox as input widget. The custom
        * editor must consist of a lineedit and optionally another widget that
        * is used as representation. A KComboBox or a KURLRequester have a

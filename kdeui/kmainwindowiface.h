@@ -53,7 +53,7 @@ public:
 	Cleans up the dcop action proxy object.
 	**/
 	~KMainWindowInterface();
-	
+
 	QCStringList functionsDynamic();
 	bool processDynamic(const QCString &fun, const QByteArray &data, QCString& replyType, QByteArray &replyData);
 
@@ -107,8 +107,8 @@ k_dcop:
 
 	/**
 	Returns a dcop reference to the selected KAction
-	@param action The name of the action to activate, The names of valid
-	actions can be found by calling @actions().
+	@param name The name of the action to activate, The names of valid
+	actions can be found by calling actions().
 	@return A DCOPRef for the kaction.
 	**/
 	DCOPRef action( const QCString &name );
@@ -119,7 +119,7 @@ k_dcop:
     	QMap<QCString,DCOPRef> actionMap();
 	/**
 	Returns the ID of the current main window.
-	This is useful for automated screen captures or other evil 
+	This is useful for automated screen captures or other evil
 	widget fun.
 	@return A integer value of the main window's ID.
 	**/

@@ -71,10 +71,8 @@ protected:
    * which is used for buffering.
    */
   virtual void drawPalette( QPixmap *pixmap );
-  /**
-   * @reimplemented
-   */
   virtual void resizeEvent( QResizeEvent * );
+
   /**
    * Reimplemented from KXYSelector. This drawing is
    * buffered in a pixmap here. As real drawing
@@ -132,10 +130,8 @@ protected:
    * which is used for buffering.
    */
   virtual void drawPalette( QPixmap *pixmap );
-  /**
-   * @reimplemented
-   */
   virtual void resizeEvent( QResizeEvent * );
+
   /**
    * Reimplemented from KSelector. The drawing is
    * buffered in a pixmap here. As real drawing
@@ -159,7 +155,7 @@ private:
 /**
  * A color class that preserves both RGB and HSV values; this is
  * unlike QColor which only preserves RGB values and recalculates HSV
- * values. The QColor behavior leads to an accumulation of rounding 
+ * values. The QColor behavior leads to an accumulation of rounding
  * errors when working in the HSV color space.
  * @author Waldo Bastian <bastian@kde.org>
  **/
@@ -275,38 +271,13 @@ public:
   void colorDoubleClicked( int col );
 
 protected:
-  /**
-   * @reimplemented
-   */
   virtual void paintCell( QPainter *painter, int row, int col );
-  /**
-   * @reimplemented
-   */
   virtual void resizeEvent( QResizeEvent * );
-  /**
-   * @reimplemented
-   */
   virtual void mouseReleaseEvent( QMouseEvent * );
-  /**
-   * @reimplemented
-   */
   virtual void mousePressEvent( QMouseEvent * );
-  /**
-   * @reimplemented
-   */
   virtual void mouseMoveEvent( QMouseEvent * );
-  /**
-   * @reimplemented
-   */
   virtual void dragEnterEvent( QDragEnterEvent *);
-  /**
-   * @reimplemented
-   */
   virtual void dropEvent( QDropEvent *);
-
-  /**
-   * @reimplemented
-   */
   virtual void mouseDoubleClickEvent( QMouseEvent * );
 
   int posToCell(const QPoint &pos, bool ignoreBorders=false);
@@ -345,21 +316,9 @@ signals:
   void colorChanged( const QColor&);
 
 protected:
-  /**
-   * @reimplemented
-   */
   virtual void drawContents( QPainter *painter );
-  /**
-   * @reimplemented
-   */
   virtual void mouseMoveEvent( QMouseEvent * );
-  /**
-   * @reimplemented
-   */
   virtual void dragEnterEvent( QDragEnterEvent *);
-  /**
-   * @reimplemented
-   */
   virtual void dropEvent( QDropEvent *);
 
 private:
@@ -377,7 +336,7 @@ private:
 /**
  * The KColorDialog provides a dialog for color selection.
  *
- * @sect Features:
+ * <b>Features:</b>\n
  *
  * @li Color selection from a wide range of palettes.
  * @li Color selection from a palette of H vs S and V selectors (similar to windoze).
@@ -517,17 +476,8 @@ class KColorDialog : public KDialogBase
     void showColor( const KColor &color, const QString &name );
 
   protected:
-   /**
-    * @reimplemented
-    */
     virtual void mouseReleaseEvent( QMouseEvent * );
-   /**
-    * @reimplemented
-    */
     virtual void keyPressEvent( QKeyEvent * );
-   /**
-    * @reimplemented
-    */
     virtual bool eventFilter( QObject *obj, QEvent *ev );
 
   protected:

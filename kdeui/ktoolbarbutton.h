@@ -67,7 +67,7 @@ public:
    * recommended that you use this as the internal icon loading code
    * will almost always get it "right".
    *
-   * @param icon   Name of icon to load (may be absolute or relative)
+   * @param pixmap Name of icon to load (may be absolute or relative)
    * @param id     Id of this button
    * @param parent This button's parent
    * @param name   This button's internal name
@@ -161,7 +161,7 @@ public:
    * @param generate If true, then the other icons are automagically
    *                 generated from this one
    */
-  void setIcon(const QString &icon, bool /*generate*/ ) { setIcon( icon ); }
+  void setIcon(const QString &icon, bool generate ) { Q_UNUSED(generate); setIcon( icon ); }
 
   /**
    * @deprecated
@@ -217,7 +217,7 @@ public:
   /**
    * Give this button a popup menu.  There will not be a delay when
    * you press the button.  Use setDelayedPopup if you want that
-   * behavior. 
+   * behavior.
    *
    * @param p The new popup menu
    */

@@ -26,7 +26,7 @@
 #include <qwidget.h>
 
 class QColor;
-/** 
+/**
  * Displays a round  or rectangular light emitting diode.
  *
  * It is configurable to five colors, the two on/off states and three
@@ -57,13 +57,13 @@ public:
    * @short LED on/off.
    */
   enum State { Off, On };
-  
-  /** 
+
+  /**
    * Shades of the lamp.
    * @short LED shape
-   */ 
+   */
   enum Shape { Rectangular, Circular };
-  
+
   /**
    * Displays a flat, round or sunken LED.
    *
@@ -74,9 +74,9 @@ public:
    * because of the 3 shading circles and is
    * most time consuming. Makes sense for LED > 15x15 pixels.
    *
-   * @sect Timings:
+   * \b Timings: \n
    * ( AMD K5/133, Diamond Stealth 64 PCI Graphics, widgetsize 29x29 )
-   *  @li flat Approximately 0.7 msec per paint 
+   *  @li flat Approximately 0.7 msec per paint
    *  @li round Approximately 2.9 msec per paint
    *  @li sunken Approximately 3.3 msec per paint
    *
@@ -96,7 +96,7 @@ public:
    *
    * The State will be defaulted On and the Look round.
    *
-   * @param ledcolor Initial color of the LED.
+   * @param col Initial color of the LED.
    * @param parent   Will be handed over to QWidget.
    * @param name     Will be handed over to QWidget.
    * @short Constructor
@@ -109,14 +109,14 @@ public:
    *
    * Differs from above only in the parameters, which configure all settings.
    *
-   * @param ledcolor Initial color of the LED.
+   * @param col Initial color of the LED.
    * @param state    Sets the State.
    * @param look     Sets the Look.
    * @param parent   Will be handed over to QWidget.
    * @param name     Will be handed over to QWidget.
    * @short Constructor
    */
-  KLed(const QColor& col, KLed::State st, KLed::Look look, KLed::Shape shape, 
+  KLed(const QColor& col, KLed::State st, KLed::Look look, KLed::Shape shape,
        QWidget *parent=0, const char *name=0);
 
 
@@ -135,7 +135,7 @@ public:
   State state() const;
 
   Shape shape() const;
-   
+
   /**
    * Returns the color of the widget
    *
@@ -170,7 +170,7 @@ public:
    * @short Set LED state.
    */
   void setState( State state );
-  
+
   /**
    * Set the shape of the LED to @p s.
    */
@@ -250,7 +250,7 @@ public:
   virtual QSize minimumSizeHint() const;
 
 public slots:
-    
+
   /**
    * Toggles the state of the led from Off to On or vice versa.
    *
@@ -263,7 +263,7 @@ public slots:
    *
    * The widget will be painted immediately.
    * @see off() toggle() toggleState() setState()
-   */  
+   */
   void on();
 
   /**
@@ -292,15 +292,13 @@ protected:
    */
   virtual void paintRect();
   /**
-   * Paints a rectangular LED, either raised or 
+   * Paints a rectangular LED, either raised or
    * sunken, depending on its argument.
    */
   virtual void paintRectFrame(bool raised);
-  /**
-   * @reimplemented
-   */
-  void paintEvent( QPaintEvent * );
-  
+
+    void paintEvent( QPaintEvent * );
+
 private:
   State led_state;
   QColor led_color;

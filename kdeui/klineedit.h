@@ -41,7 +41,7 @@ class KURL;
 /**
  * An enhanced QLineEdit widget for inputting text.
  *
- * @sect Detail
+ * \b Detail \n
  *
  * This widget inherits from QLineEdit and implements the following
  * additional functionalities: a completion object that provides both
@@ -86,7 +86,7 @@ class KURL;
  * list. Hence, if the @p EchoMode is not QLineEdit::Normal, the completion
  * mode is automatically disabled.
  *
- * @sect Usage
+ * \b Usage \n
  *
  * To enable the basic completion feature :
  *
@@ -112,7 +112,7 @@ class KURL;
  * when you don't need it anymore, or call
  * setAutoDeleteCompletionObject( true );
  *
- * @sect Miscellaneous function calls :
+ * <b>Miscellaneous function calls :</b>\n
  *
  * \code
  * // Tell the widget not to handle completion and
@@ -158,7 +158,6 @@ public:
     /**
      * Constructs a KLineEdit object with a parent and a name.
      *
-     * @param string Text to be shown in the edit widget.
      * @param parent The parent object of this widget.
      * @param name The name of this widget.
      */
@@ -254,7 +253,6 @@ public:
     /**
      * Re-implemented for internal reasons.  API not affected.
      *
-     * @reimplemented
      */
     virtual bool eventFilter( QObject *, QEvent * );
 
@@ -338,9 +336,9 @@ signals:
      * provided through since it is created and deleted
      * on demand.
      *
-     * @param the context menu about to be displayed
+     * @param p the context menu about to be displayed
      */
-    void aboutToShowContextMenu( QPopupMenu* );
+    void aboutToShowContextMenu( QPopupMenu * p );
 
 public slots:
 
@@ -359,7 +357,7 @@ public slots:
      *
      * @param type The key-binding invoked.
      */
-    void rotateText( KCompletionBase::KeyBindingType /* type */ );
+    void rotateText( KCompletionBase::KeyBindingType type );
 
     /**
      * See KCompletionBase::setCompletedText.

@@ -85,7 +85,7 @@ class KRuler : public QFrame
   Q_PROPERTY( int bigMarkDistance READ bigMarkDistance WRITE setBigMarkDistance )
   Q_PROPERTY( double pixelPerMark READ pixelPerMark WRITE setPixelPerMark )
   Q_PROPERTY( bool lengthFixed READ lengthFixed WRITE setLengthFixed )
-      
+
 public:
 
 /*
@@ -122,10 +122,9 @@ public:
    * @param parent     Will be handed over to QFrame.
    * @param name       Will be handed over to QFrame.
    * @param f          Will be handed over to QFrame.
-   * @param allowLines Will be handed over to QFrame.
    *
    **/
-  KRuler(Orientation orient, QWidget *parent=0, const char *name=0, 
+  KRuler(Orientation orient, QWidget *parent=0, const char *name=0,
 	 WFlags f=0);
 
   /**
@@ -141,10 +140,9 @@ public:
    * @param parent      Will be handed over to QFrame.
    * @param name        Will be handed over to QFrame.
    * @param f           Will be handed over to QFrame.
-   * @param allowLines  Will be handed over to QFrame.
    *
    */
-  KRuler(Orientation orient, int widgetWidth, QWidget *parent=0, 
+  KRuler(Orientation orient, int widgetWidth, QWidget *parent=0,
 	 const char *name=0, WFlags f=0);
 
   /**
@@ -173,7 +171,7 @@ public:
    * to the main event loop.
    */
   void setMaxValue(int);
-  
+
   /**
    * Returns the maximal value of the ruler pointer.
    */
@@ -201,7 +199,7 @@ public:
   /**
    * Sets the distance between tiny marks.
    *
-   * This is mostly used in the English system (inches) with distance of 1. 
+   * This is mostly used in the English system (inches) with distance of 1.
    */
   void setTinyMarkDistance(int);
   /**
@@ -209,14 +207,14 @@ public:
    **/
   inline int tinyMarkDistance() const;
 
-  /** 
+  /**
    * Sets the distance between little marks.
    *
    * The default value is 1 in the metric system and 2 in the English (inches) system.
    */
   void setLittleMarkDistance(int);
 
-  /** 
+  /**
    * Returns the distance between little marks.
    */
   inline int littleMarkDistance() const;
@@ -230,7 +228,7 @@ public:
   void setMediumMarkDistance(int);
   inline int mediumMarkDistance() const;
 
-  /** 
+  /**
    * Sets distance between big marks.
    *
    * For English (inches) or metric styles it is twice the medium mark distance.
@@ -350,7 +348,7 @@ public:
    *         shows visible jumps of markpositions (e.g. 2.345).
    *         Using whole numbers is highly recommended.
    * To use @p int values use setPixelPerMark((int)your_int_value);
-   * default: 1 mark per 10 pixels 
+   * default: 1 mark per 10 pixels
    */
   void setPixelPerMark(double rate);
 
@@ -383,7 +381,7 @@ public:
   /**
    * Sets the number of pixels by which the ruler may slide up or left.
    * The number of pixels moved is realive to the previous position.
-   * The Method makes sense for updating a ruler, which is working with 
+   * The Method makes sense for updating a ruler, which is working with
    * a scrollbar.
    *
    * This doesn't affect the position of the ruler pointer.
@@ -396,7 +394,7 @@ public:
   /**
    * Sets the number of pixels by which the ruler may slide down or right.
    * The number of pixels moved is realive to the previous position.
-   * The Method makes sense for updating a ruler, which is working with 
+   * The Method makes sense for updating a ruler, which is working with
    * a scrollbar.
    *
    * This doesn't affect the position of the ruler pointer.
@@ -444,9 +442,6 @@ public slots:
   void slotEndOffset(int);
 
 protected:
-  /**
-   * @reimplemented
-   */
   virtual void drawContents(QPainter *);
 
 private:
@@ -464,16 +459,16 @@ private:
   bool showmm;
   bool showbm;
   bool showem;
-  
+
   // #### KDE4 : All value* and show* below should be removed, unused
-  
+
   int valuelm; /* value per little, medium, big mark */
   int valuemm;
   int valuebm;
   bool showValuelm;
   bool showValuemm;
   bool showValuebm;
-  
+
   double ppm; /* pixel per mark */
 
   QString endlabel;
@@ -490,35 +485,35 @@ int
 KRuler::minValue() const
 { return range.minValue(); }
 
-int 
+int
 KRuler::maxValue() const
 { return range.maxValue(); }
 
-int 
+int
 KRuler::value() const
 { return range.value(); }
 
-int 
+int
 KRuler::tinyMarkDistance() const
 { return tmDist; }
 
-int 
+int
 KRuler::littleMarkDistance() const
 { return lmDist; }
 
-int 
+int
 KRuler::mediumMarkDistance() const
 { return mmDist; }
 
-int 
+int
 KRuler::bigMarkDistance() const
 { return bmDist; }
 
-double 
+double
 KRuler::pixelPerMark() const
 { return ppm; }
 
-int 
+int
 KRuler::offset() const
 { return offset_; }
 

@@ -111,9 +111,6 @@ void KColorButton::drawButtonLabel( QPainter *painter )
     painter->fillRect( x+1, y+1, w-2, h-2, fillCol );
 }
 
-/*!
-    \reimp
- */
 QSize KColorButton::sizeHint() const
 {
   return style().sizeFromContents(QStyle::CT_PushButton, this, QSize(40, 15)).

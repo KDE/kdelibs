@@ -32,7 +32,7 @@
  * mentioned. This way you don't need to care about the current
  * settings.  If you want to get informed when the user selects
  * something connect to the QListBox::selectionChanged() signal.
- * 
+ *
  * @short A variant of QListBox that honors KDE's system-wide settings.
  **/
 class KListBox : public QListBox
@@ -45,39 +45,39 @@ public:
 signals:
 
   /**
-   * Emitted whenever the user executes an listbox item. 
+   * Emitted whenever the user executes an listbox item.
    *
-   * That means depending on the KDE wide Single Click/Double Click 
+   * That means depending on the KDE wide Single Click/Double Click
    * setting the user clicked or double clicked on that item.
-   * @param item is the pointer to the executed listbox item. 
+   * @param item is the pointer to the executed listbox item.
    *
-   * Note that you may not delete any QListBoxItem objects in slots 
+   * Note that you may not delete any QListBoxItem objects in slots
    * connected to this signal.
    */
   void executed( QListBoxItem *item );
 
   /**
-   * Emitted whenever the user executes an listbox item. 
+   * Emitted whenever the user executes an listbox item.
    *
-   * That means depending on the KDE wide Single Click/Double Click 
+   * That means depending on the KDE wide Single Click/Double Click
    * setting the user clicked or double clicked on that item.
-   * @param item is the pointer to the executed listbox item. 
+   * @param item is the pointer to the executed listbox item.
    * @param pos is the position where the user has clicked
    *
-   * Note that you may not delete any QListBoxItem objects in slots 
+   * Note that you may not delete any QListBoxItem objects in slots
    * connected to this signal.
    */
   void executed( QListBoxItem *item, const QPoint &pos );
 
   /**
-   * This signal gets emitted whenever the user double clicks into the 
-   * listbox. 
+   * This signal gets emitted whenever the user double clicks into the
+   * listbox.
    *
-   * @param item The pointer to the clicked listbox item. 
+   * @param item The pointer to the clicked listbox item.
    * @param pos The position where the user has clicked.
    *
    * Note that you may not delete any QListBoxItem objects in slots
-   * connected to this signal.  
+   * connected to this signal.
    *
    * This signal is more or less here for the sake of completeness.
    * You should normally not need to use this. In most cases it's better
@@ -99,25 +99,10 @@ protected slots:
 protected:
   void emitExecute( QListBoxItem *item, const QPoint &pos );
 
-  /**
-   * @reimplemented
-   */
   virtual void keyPressEvent(QKeyEvent *e);
-  /**
-   * @reimplemented
-   */
   virtual void focusOutEvent( QFocusEvent *fe );
-  /**
-   * @reimplemented
-   */
   virtual void leaveEvent( QEvent *e );
-  /**
-   * @reimplemented
-   */
   virtual void contentsMousePressEvent( QMouseEvent *e );
-  /**
-   * @reimplemented
-   */
   virtual void contentsMouseDoubleClickEvent ( QMouseEvent *e );
 
   bool m_bUseSingle;

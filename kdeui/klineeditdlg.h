@@ -39,7 +39,7 @@ public:
   /**
    * Create a dialog that asks for a single line of text. _value is
    * the initial value of the line. _text appears as label on top of
-   * the entry box. If the internal line edit has an associated 
+   * the entry box. If the internal line edit has an associated
    * QValidator set, the OK button is disabled as long as the
    * validator doesn't return Acceptable. If there's no validator, the
    * OK button is enabled whenever the line edit isn't empty.
@@ -67,12 +67,13 @@ public:
   /**
    * Static convenience function to get a textual input from the user.
    *
-   * @param _text      Text of the label
-   * @param _value     Initial value of the inputline
+   * @param text      Text of the label
+   * @param value     Initial value of the inputline
    * @param ok         this bool will be set to true if user pressed "Ok"
-   * @param _validator Validator to be stuffed into the line edit.
+   * @param validator Validator to be stuffed into the line edit.
+   * @param parent    The parent widget
    */
-  static QString getText(const QString &_text, const QString& _value,
+  static QString getText(const QString &text, const QString& value,
 		 bool *ok, QWidget *parent, QValidator *validator=0 );
 
   /**
@@ -80,14 +81,14 @@ public:
    * This method includes a caption, and has (almost) the same API as QInputDialog::getText
    * (no echo mode, we have KPasswordDialog).
    *
-   * @param _caption   Caption of the dialog
-   * @param _text      Text of the label
-   * @param _value     Initial value of the inputline
+   * @param caption   Caption of the dialog
+   * @param text      Text of the label
+   * @param value     Initial value of the inputline
    * @param ok         this bool will be set to true if user pressed "Ok"
-   * @param _validator Validator to be stuffed into the line edit.
+   * @param validator Validator to be stuffed into the line edit.
    */
-  static QString getText(const QString &_caption, const QString &_text,
-                         const QString& _value=QString::null,
+  static QString getText(const QString &caption, const QString &text,
+                         const QString& value=QString::null,
                          bool *ok=0, QWidget *parent=0,
 			 QValidator *validator=0);
 
@@ -98,7 +99,7 @@ public slots:
   void slotClear();
 
 protected slots:
-  /** 
+  /**
    * Enables and disables the OK button depending on the state
    * returned by the lineedit's QValidator.
    */

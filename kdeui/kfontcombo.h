@@ -74,13 +74,13 @@ public:
      * Sets the currently selected font.
      *
      * @param family Font to select.
-     */ 
+     */
     void setCurrentFont(const QString &family);
     /**
      * @return the currently selected font.
      */
     QString currentFont() const;
-    
+
     /**
      * Sets the listed fonts to bold or normal.
      *
@@ -98,7 +98,7 @@ public:
      *
      * @param italic Set to true to display fonts italic
      */
-    void setItalic(bool bold);
+    void setItalic(bool italic);
     /**
      * Returns the current italic status
      *
@@ -110,7 +110,7 @@ public:
      *
      * @param underline Set to true to display fonts underlined
      */
-    void setUnderline(bool bold);
+    void setUnderline(bool underline);
     /**
      * Returns the current underline status
      *
@@ -122,7 +122,7 @@ public:
      *
      * @param strikeOut Set to true to display fonts striked out
      */
-    void setStrikeOut(bool bold);
+    void setStrikeOut(bool strikeOut);
     /**
      * Returns the current strike out status
      *

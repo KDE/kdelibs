@@ -47,12 +47,12 @@ class QPopupMenu;
  * Besides standard keys like "Name", "Comment" and "Icon" there are
  * two panel applet specific keys:
  *
- * @sect X-KDE-Library
+ * \b X-KDE-Library \n
  *
  * Used by the panel to locate the applet DSO (Dynamic Shared Object)
  * Example: X-KDE-Library=libexampleapplet
  *
- * @sect X-KDE-UniqueApplet
+ * \b X-KDE-UniqueApplet \n
  *
  * Similar to KApplication and KUniqueApplication there are
  * two types of panel applets. Use unique applets when it makes no
@@ -119,7 +119,7 @@ public:
      * Constructs a KPanelApplet just like any other widget.
      *
      * @param configFile The configFile handed over in the factory function.
-     * @param Type The applet type().
+     * @param t The applet type().
      * @param actions Standard RMB menu actions supported by the applet (see action() ).
      * @param parent The pointer to the parent widget handed over in the factory function.
      * @param name A Qt object name for your applet.
@@ -179,10 +179,10 @@ public:
      * Always use this KConfig object to save/load your applets configuration.
      *
      * For unique applets this config object will write to a config file called
-     * <appletname>rc in the users local KDE directory.
+     * \<appletname\>rc in the users local KDE directory.
      *
      * For normal applets this config object will write to a instance specific config file
-     * called <appletname><instanceid>rc in the users local KDE directory.
+     * called \<appletname\><instanceid>rc in the users local KDE directory.
      **/
     KConfig* config() const { return _config; }
 
@@ -275,7 +275,7 @@ protected:
      * See Action and KPanelApplet().
      **/
     virtual void preferences() {}
- 
+
     /**
      * Is called when the user selects "Report bug" from the applet's RMB menu.
      * Reimplement this function to launch a bug reporting dialog.
@@ -314,7 +314,7 @@ protected:
     virtual void alignmentChange( Alignment /*a*/ ) {};
 
     /**
-     * Use this method to set the custom menu for this applet so that it can be shown 
+     * Use this method to set the custom menu for this applet so that it can be shown
      * in the applet handle menu and other appropriate places that the applet many not itself
      * be aware of. The applet itself is still responsible for deleting and managing the
      * the menu.

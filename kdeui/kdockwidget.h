@@ -283,7 +283,7 @@ public:
    *
    * @param c the configuration safe
    */
-  virtual void loadConfig( KConfig* );
+  virtual void loadConfig( KConfig* c);
 #endif
 
    /*@since 3.2
@@ -628,11 +628,6 @@ public:
 
 #endif
 
-  /**
-   * Sets the type of the dock window
-   *
-   * @param windowType is type of dock window
-   */
   void setDockWindowTransient (QWidget *parent, bool transientEnabled);
 
   /**
@@ -656,7 +651,7 @@ public:
    * @since 3.2
    */
    void setPixmap(const QPixmap& pixmap=QPixmap());
-   
+
   /**
    * Returns the dockwidget's associated caption/dock tab pixmap
    *
@@ -954,11 +949,11 @@ public:
    * It's more or less a method that catches several events which are interesting for the dockmanager.
    * Mainly mouse events during the drag process of a dockwidgets are of interest here.
    *
-   * @param _ the object that sends the event
-   * @param _ the event
+   * @param object the object that sends the event
+   * @param event the event
    * @return the return value of the method call of the base class method
    */
-  virtual bool eventFilter( QObject *, QEvent * );
+  virtual bool eventFilter( QObject * object, QEvent * event );
 
   /**
    * This method finds out what a widgets' dockwidget is. That means the dockmanager has a look at all
@@ -1287,9 +1282,9 @@ public:
    * Sets a new main dockwidget.
    * Additionally, the toolbar is re-initialized.
    *
-   * @param _ dockwidget that become the new main dockwidget
+   * @param dockwidget dockwidget that become the new main dockwidget
    */
-  void setMainDockWidget( KDockWidget* );
+  void setMainDockWidget( KDockWidget* dockwidget);
 
   /**
    * Returns the main dockwidget.
@@ -1381,9 +1376,9 @@ public:
    * This method calls the base class method.
    * If the given widget inherits KDockWidget, applyToWidget(this) is called.
    *
-   * @param _ any widget that should become the main view
+   * @param widget any widget that should become the main view
    */
-  void setView( QWidget* );
+  void setView( QWidget * widget );
 
 signals:
   /**

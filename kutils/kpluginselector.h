@@ -121,13 +121,13 @@ class KPluginInfo
 		/**
 		 * @return The user visible name of the plugin.
 		 */
-		const QString & name() const 
+		const QString & name() const
 			{ return m_propertymap[ QString::fromLatin1("Name") ]; }
 
 		/**
 		 * @return A comment describing the plugin.
 		 */
-		const QString & comment() const 
+		const QString & comment() const
 			{ return m_propertymap[ QString::fromLatin1("Comment") ]; }
 
 		/**
@@ -138,45 +138,45 @@ class KPluginInfo
 		/**
 		 * @return The author of this plugin.
 		 */
-		const QString & author() const 
+		const QString & author() const
 			{ return m_propertymap[ QString::fromLatin1("Author") ]; }
 
 		/**
 		 * @return The email address of the author.
 		 */
-		const QString & email() const 
+		const QString & email() const
 			{ return m_propertymap[ QString::fromLatin1("Email") ]; }
-		
+
 		/**
 		 * @return The type of this plugin (e.g. playlist/skin).
 		 */
-		const QString & type() const 
+		const QString & type() const
 			{ return m_propertymap[ QString::fromLatin1("Type") ]; }
 
 		/**
 		 * @return The internal name of the plugin (for KParts Plugins this is
 		 * the same name as set in the .rc file).
 		 */
-		const QString & pluginname() const 
+		const QString & pluginname() const
 			{ return m_propertymap[ QString::fromLatin1("PluginName") ]; }
 
 		/**
 		 * @return The version of the plugin.
 		 */
-		const QString & version() const 
+		const QString & version() const
 			{ return m_propertymap[ QString::fromLatin1("Version") ]; }
 
 		/**
 		 * @return The website of the plugin/author.
 		 */
-		const QString & website() const 
+		const QString & website() const
 			{ return m_propertymap[ QString::fromLatin1("Website") ]; }
 
 
 		/**
 		 * @return The license of this plugin.
 		 */
-		const QString & license() const 
+		const QString & license() const
 			{ return m_propertymap[ QString::fromLatin1("License") ]; }
 
 		/**
@@ -203,7 +203,7 @@ class KPluginInfo
  * a playlist, skin or visualization.
  *
  * The location of these desktop files is the
- * share/apps/<instancename>/<plugindir> directory. But if you need you may use
+ * share/apps/\<instancename\>/\<plugindir\> directory. But if you need you may use
  * a different directory.
  *
  * @author Matthias Kretz <kretz@kde.org>
@@ -224,7 +224,7 @@ class KPluginSelector : public QWidget
 		 * Using this constructor the Type field will be ignored.
 		 *
 		 * The information about the plugins will be loaded from the
-		 * share/apps/<instancename>/kpartplugins directory.
+		 * share/apps/\<instancename\>/kpartplugins directory.
 		 *
 		 * @param instance     The KInstance object of the plugin's parent.
 		 * @param parent       The parent of the widget.
@@ -235,7 +235,7 @@ class KPluginSelector : public QWidget
 		 * Create a new Plugin Selector widget for KParts plugins.
 		 *
 		 * The information about the plugins will be loaded from the
-		 * share/apps/<instancename>/kpartplugins directory.
+		 * share/apps/\<instancename\>/kpartplugins directory.
 		 *
 		 * @param types        A list of strings identifying the possible types
 		 *                     of plugins that should be listed. These strings

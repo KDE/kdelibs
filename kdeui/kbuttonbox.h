@@ -25,8 +25,8 @@ class QPushButton;
 
 class KButtonBoxPrivate;
 /**
- * Container widget for buttons. 
- * 
+ * Container widget for buttons.
+ *
  * This class uses Qt layout control to place the buttons; can handle
  * both vertical and horizontal button placement.  The default border
  * is now @p 0 (making it easier to deal with layouts). The space
@@ -44,8 +44,8 @@ public:
   /**
     * Create an empty container for buttons.
     *
-    * If @p _orientation is @p Vertical, the buttons inserted with 
-    * addButton() are laid out from top to bottom, otherwise they 
+    * If @p _orientation is @p Vertical, the buttons inserted with
+    * addButton() are laid out from top to bottom, otherwise they
     * are laid out from left to right.
     */
   KButtonBox(QWidget *parent, Orientation _orientation = Horizontal,
@@ -63,18 +63,13 @@ public:
     * calculated by the width/height of all buttons plus border/autoborder.
     */
   virtual QSize sizeHint() const;
-  /**
-   * @reimplemented
-   */
   virtual QSizePolicy sizePolicy() const;
-  /**
-   * @reimplemented
-   */
   virtual void resizeEvent(QResizeEvent *);
 
   /**
-    * Add a new QPushButton.  
+    * Add a new QPushButton.
     *
+    * @param text the text of the button to add
     * @param noexpand If @p noexpand is @p false, the width
     * of the button is adjusted to fit the other buttons (the maximum
     * of all buttons is taken). If @p noexpand is @p true, the width of this
@@ -82,11 +77,12 @@ public:
     *
     * @return A pointer to the new button.
     */
-  QPushButton *addButton(const QString& text, bool noexpand = FALSE);
+  QPushButton *addButton(const QString& text, bool noexpand = false);
 
   /**
-    * Add a new QPushButton.  
+    * Add a new QPushButton.
     *
+    * @param text the text of the button to add.
     * @param receiver An object to connect to.
     * @param slot A Qt slot to connect the 'clicked()' signal to.
     * @param noexpand If @p noexpand is @p false, the width
@@ -99,7 +95,7 @@ public:
   QPushButton *addButton(const QString& text, QObject * receiver, const char * slot, bool noexpand = FALSE);
 
   /**
-    * Add a stretch to the buttonbox. 
+    * Add a stretch to the buttonbox.
     *
     * Can be used to separate buttons.  That is, if you add the
     * buttons OK and Cancel, add a stretch, and then add the button Help,
@@ -129,7 +125,7 @@ protected:
   QSize bestButtonSize() const;
   void  placeButtons();
   QSize buttonSizeHint(QPushButton *) const;
-  
+
 protected:
   virtual void virtual_hook( int id, void* data );
 private:

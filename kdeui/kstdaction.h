@@ -40,7 +40,7 @@ class KToggleToolBarAction;
  * also.  When in doubt on how things work, check the KAction
  * documention first.
  *
- * @sect Simple Example:
+ * <b>Simple Example:</b>\n
  *
  * In general, using standard actions should be a drop in replacement
  * for regular actions.  For example, if you previously had:
@@ -53,12 +53,12 @@ class KToggleToolBarAction;
  *
  * You could drop that and replace it with:
  *
- * <PRE>
+ * \code
  * KAction *newAct = KStdAction::openNew(this, SLOT(fileNew()),
  *                                       actionCollection());
- * </PRE>
+ * \endcode
  *
- * @sect Non-standard Usages
+ * <b>Non-standard Usages</b>\n
  *
  * It is possible to use the standard actions in various
  * non-recommended ways.  Say, for instance, you wanted to have a
@@ -79,9 +79,9 @@ class KToggleToolBarAction;
  * However, you can change the internal name.  In this example, just
  * do something like:
  *
- * <PRE>
+ * \code
  * (void)KStdAction::cut(this, SLOT(editCut()), actionCollection(), "my_cut");
- * </PRE>
+ * \endcode
  *
  * Now, in your local XML resource file (e.g., yourappui.rc), simply
  * put 'my_cut' where you want it to go.
@@ -146,12 +146,12 @@ namespace KStdAction
 		Preferences, ConfigureToolbars,
 
 		// Help Menu
-		Help, HelpContents, WhatsThis, ReportBug, AboutApp, AboutKDE, 
+		Help, HelpContents, WhatsThis, ReportBug, AboutApp, AboutKDE,
 		TipofDay, ///< @since 3.1
 
 		// Another settings menu item
 		ConfigureNotifications,
-		FullScreen, ///< @since 3.2 
+		FullScreen, ///< @since 3.2
 		Clear ///< @since 3.2
 	};
 
@@ -473,7 +473,7 @@ namespace KStdAction
 					KActionCollection* parent, const char *name = 0 );
 
 	/**
-	* @obsolete. toolbar actions are created automatically now in the 
+	* @obsolete. toolbar actions are created automatically now in the
 	* Settings menu. Don't use this anymore.
 	* See: KMainWindow::createStandardStatusBarAction()
 	* Show/Hide the primary toolbar.

@@ -39,7 +39,7 @@ class KPixmapIOPrivate;
  * It also has functionality for partially updating/saving pixmaps, see
  * putImage and getImage.
  *
- * @sect KPixmapIO vs. Qt speed comparison
+ * <b>KPixmapIO vs. Qt speed comparison</b>\n
  *
  * Speed measurements were taken. These show that usage of KPixmapIO for
  * images up to a certain threshold size, offers no speed advantage over

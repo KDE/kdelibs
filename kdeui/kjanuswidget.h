@@ -126,7 +126,7 @@ class KJanusWidget : public QWidget
      *
      * @param parent Parent of the widget.
      * @param name Widget name.
-     * @param int face The kind of dialog, Use TreeList, Tabbed, Plain or
+     * @param face The kind of dialog, Use TreeList, Tabbed, Plain or
      * Swallow.
      */
     KJanusWidget( QWidget *parent=0, const char *name=0, int face=Plain );
@@ -277,7 +277,7 @@ class KJanusWidget : public QWidget
      * Deleting the returned frame will cause the listitem or tab to be
      * removed (you can re-add a page with the same name later.
      *
-     * @param item String used in the list or Tab item.
+     * @param itemName String used in the list or Tab item.
      * @param header A longer string used in TreeList and IconList mode to
      *        describe the contents of a page. If empty, the item string
      *        will be used instead.
@@ -320,7 +320,7 @@ class KJanusWidget : public QWidget
      * @param n Specifies the number of columns if 'dir' is QGrid::Horizontal
      *          or the number of rows if 'dir' is QGrid::Vertical.
      * @param dir Can be QGrid::Horizontal or QGrid::Vertical.
-     * @param item String used in the list or Tab item.
+     * @param itemName String used in the list or Tab item.
      * @param header A longer string used in TreeList and IconList mode to
      *        describe the contents of a page. If empty, the item string
      *        will be used instead.

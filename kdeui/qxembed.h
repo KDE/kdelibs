@@ -37,7 +37,7 @@ class QXEmbedData;
  * A QXEmbed widget serves as an embedder that can manage one single
  * embedded X-window. These so-called client windows can be arbitrary
  * QWidgets.
- * 
+ *
  * There are two different ways of using QXEmbed, from the embedder's
  * or from the client's side.  When using it from the embedder's side,
  * you already know the window identifier of the window that should be
@@ -47,10 +47,10 @@ class QXEmbedData;
  * window identifier of the respective embedder widget. Use either
  * embedClientIntoWindow() or the high-level wrapper
  * processClientCmdline().
- * 
+ *
  * If a window has been embedded successfully, embeddedWinId() returns
  * its id.
- * 
+ *
  * Reimplement the change handler windowChanged() to catch embedding or
  * the destruction of embedded windows. In the latter case, the
  * embedder also emits a signal embeddedWindowDestroyed() for
@@ -79,9 +79,9 @@ public:
     ~QXEmbed();
 
     /**
-     * Embedded applications should call this function to make sure 
+     * Embedded applications should call this function to make sure
      * they support the XEMBED protocol. It is called automatically
-     * when you use embedClientIntoWindow() or 
+     * when you use embedClientIntoWindow() or
      * processClientCmdline(). Clients might have to call it
      * manually when you use embed().
      */
@@ -89,23 +89,23 @@ public:
 
     enum Protocol { XEMBED, XPLAIN };
 
-    /** 
+    /**
      * Sets the protocol used for embedding windows.
      * This function must be called before embedding a window.
      * Protocol XEMBED provides maximal functionality (focus, tabs, etc)
-     * but requires explicit cooperation from the embedded window.  
-     * Protocol XPLAIN provides maximal compatibility with 
+     * but requires explicit cooperation from the embedded window.
+     * Protocol XPLAIN provides maximal compatibility with
      * embedded applications that do not support the XEMBED protocol.
-     * The default is XEMBED.  
+     * The default is XEMBED.
      *
      * Future work:
-     * Create a protocol AUTO that selects the best option.  
+     * Create a protocol AUTO that selects the best option.
      * This will be possible with the XEMBED v2 specification.
      */
 
     void setProtocol( Protocol proto );
 
-    /** 
+    /**
      * Returns the protocol used for embedding the current window.
      *
      * @return the protocol used by QXEmbed.
@@ -115,7 +115,7 @@ public:
 
     /**
      * Embeds the window with the identifier w into this xembed widget.
-     * 
+     *
      * This function is useful if the server knows about the client window
      * that should be embedded.  Often it is vice versa: the client knows
      * about its target embedder. In that case, it is not necessary to call
@@ -123,8 +123,7 @@ public:
      * embedClientIntoWindow().
      *
      * @param w the identifier of the window to embed
-     * @param proto is the embedding protocol to use
-     * @see #embeddedWinId()
+     * @see embeddedWinId()
      */
     void embed( WId w );
 
@@ -137,11 +136,11 @@ public:
     WId embeddedWinId() const;
 
     /**
-     * A function for clients that embed themselves. The widget 
+     * A function for clients that embed themselves. The widget
      * client will be embedded in the window window. The application has
      * to ensure that window is the handle of the window identifier of
      * an QXEmbed widget.
-     * 
+     *
      * @short #processClientCmdline()
      */
     static void embedClientIntoWindow( QWidget* client, WId window );
@@ -150,7 +149,7 @@ public:
      * A utility function for clients that embed theirselves. The widget
      * client will be embedded in the window that is passed as
      * -embed command line argument.
-     * 
+     *
      * The function returns TRUE on success or FALSE if no such command line
      * parameter is specified.
      *
@@ -182,7 +181,7 @@ public:
 
     bool customWhatsThis() const;
     void enterWhatsThisMode(); // temporary, fix in Qt (Matthias, Mon Jul 17 15:20:55 CEST 2000  )
-    
+
     virtual void reparent( QWidget * parent, WFlags f, const QPoint & p, bool showIt = FALSE );
 
 signals:

@@ -47,12 +47,12 @@ class KPanelExtensionPrivate;
  * Besides standard keys like "Name", "Comment" and "Icon" there are
  * two panel extension specific keys:
  *
- * @sect X-KDE-Library
+ * \b X-KDE-Library \n
  *
  * Used by the panel to locate the extension DSO (Dynamic Shared Object)
  * Example: X-KDE-Library=libexampleextension
  *
- * @sect X-KDE-UniqueExtension
+ * \b X-KDE-UniqueExtension \n
  *
  * Similar to KApplication and KUniqueApplication there are
  * two types of panel extensions. Use unique extensions when it makes no
@@ -111,7 +111,7 @@ public:
      * Constructs a KPanelExtension just like any other widget.
      *
      * @param configFile The configFile handed over in the factory function.
-     * @param Type The extension type().
+     * @param t The extension type().
      * @param actions Standard RMB menu actions supported by the extension (see action() ).
      * @param parent The pointer to the parent widget handed over in the factory function.
      * @param name A Qt object name for your extension.
@@ -139,10 +139,10 @@ public:
      * Always use this KConfig object to save/load your extensions configuration.
      *
      * For unique extensions this config object will write to a config file called
-     * <extensionname>rc in the users local KDE directory.
+     * \<extensionname\>rc in the users local KDE directory.
      *
      * For normal extensions this config object will write to a instance specific config file
-     * called <extensionname><instanceid>rc in the users local KDE directory.
+     * called \<extensionname\>\<instanceid\>rc in the users local KDE directory.
      **/
     KConfig* config() const { return _config; }
 

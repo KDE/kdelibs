@@ -85,7 +85,7 @@ class KPreferencesModule;
  * the dialog automagically.
  *
  * Example usage:
- * </pre>
+ * \code
    MyApp::MyApp( QObject * parent, const char * name )
      : QObject( parent, name )
      , m_prefdlg( new KPreferencesDialog( this ) )
@@ -96,6 +96,7 @@ class KPreferencesModule;
    {
      m_prefdlg->show();
    }
+   \endcode
  *
  * @author Matthias Kretz <kretz@kde.org>
  * @version $Id$

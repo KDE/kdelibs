@@ -77,16 +77,18 @@ class KDialog : public QDialog
     /**
      * Resize every layout manager used in @p widget and its nested children.
      *
+     * @param widget The widget used.
      * @param margin The new layout margin.
-     * @param margin The new layout spacing.
+     * @param spacing The new layout spacing.
      */
     static void resizeLayout( QWidget *widget, int margin, int spacing );
 
     /**
-     * Reszie every layout associated with @p lay and its children.
+     * Resize every layout associated with @p lay and its children.
      *
+     * @param lay layout to be resized
      * @param margin The new layout margin
-     * @param margin The new layout spacing
+     * @param spacing The new layout spacing
      */
     static void resizeLayout( QLayoutItem *lay, int margin, int spacing );
 

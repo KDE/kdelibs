@@ -100,7 +100,7 @@ class KEditToolbarWidgetPrivate;
  *
  * @short A dialog used to customize or configure toolbars.
  * @author Kurt Granroth <granroth@kde.org>
- * @id $Id$
+ * @version $Id$
  */
 class KEditToolbar : public KDialogBase
 {
@@ -246,7 +246,7 @@ private:
  *
  * @short A widget used to customize or configure toolbars
  * @author Kurt Granroth <granroth@kde.org>
- * @id $Id$
+ * @version $Id$
  */
 class KEditToolbarWidget : public QWidget, virtual public KXMLGUIClient
 {
@@ -282,7 +282,7 @@ public:
    * @param parent This widget's parent
    */
   KEditToolbarWidget(KActionCollection *collection,
-                     const QString& file = QString::null,
+                     const QString& xmlfile = QString::null,
                      bool global = true, QWidget *parent = 0L);
 
    //KDE 4.0: merge the two constructors
@@ -351,7 +351,7 @@ public:
 
   /**
    * Save any changes the user made.  The file will be in the user's
-   * local directory (usually $HOME/.kde/share/apps/<appname>).  The
+   * local directory (usually $HOME/.kde/share/apps/\<appname\>).  The
    * filename will be the one specified in the constructor.. or the
    * made up one if the filename was NULL.
    *

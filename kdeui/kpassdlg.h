@@ -101,7 +101,7 @@ private:
  * probably interested in are the static methods, getPassword() and
  * getNewPassword().
  *
- * @sect Usage example
+ * <b>Usage example</b>\n
  *
  * \code
  * QCString password;

@@ -26,7 +26,7 @@
 
 #include "krestrictedline.h"
 
-KRestrictedLine::KRestrictedLine( QWidget *parent, 
+KRestrictedLine::KRestrictedLine( QWidget *parent,
 				  const char *name,
 				  const QString& valid )
   : KLineEdit( parent, name )
@@ -78,5 +78,10 @@ QString KRestrictedLine::validChars() const
 
 void KRestrictedLine::virtual_hook( int id, void* data )
 { KLineEdit::virtual_hook( id, data ); }
+
+void KRestrictedLine::invalidChar(int)
+{
+
+}
 
 #include "krestrictedline.moc"

@@ -64,7 +64,7 @@ class KListView : public QListView
   Q_PROPERTY( int tooltipColumn READ tooltipColumn WRITE  setTooltipColumn )
   Q_PROPERTY( int dropVisualizerWidth READ dropVisualizerWidth WRITE  setDropVisualizerWidth )
   Q_PROPERTY( QColor alternateBackground READ alternateBackground WRITE  setAlternateBackground )
-  
+
   Q_OVERRIDE( SelectionModeExt selectionMode READ selectionModeExt WRITE setSelectionModeExt )
 
 public:
@@ -157,7 +157,7 @@ public:
    *
    * @see QListViewItem::moveItem()
    *
-   * @deprecated 
+   * @deprecated
    */
   void moveItem(QListViewItem *item, QListViewItem *parent, QListViewItem *after);
 
@@ -185,7 +185,7 @@ public:
 
   /**
    * @returns if it is legal to move items in the list view.  True by default.
-   * 
+   *
    * @see #setDragEnabled()
    * @see #setItemsMovable()
    */
@@ -283,21 +283,21 @@ public:
    * @see #setFullWidth()
    */
   void setFullWidth();
-  
+
   /**
    * Let the last column fit exactly all the available width.
    *
    * @see #fullWidth()
    */
   void setFullWidth(bool fullWidth);
-  
+
   /**
    * Returns whether the last column is set to fit the available width.
    *
    * @see #setFullWidth()
    */
   bool fullWidth() const;
-  
+
   /**
    * Reimplemented for full width support
    *
@@ -352,7 +352,7 @@ public:
    * Reimplemented to remember the current sort column and order.
    * @param column is the column to be sorted, or -1 to sort in order of
    * insertion
-   * @param whether to sort ascending (or descending)
+   * @param ascending whether to sort ascending (or descending)
    */
   virtual void setSorting(int column, bool ascending = true);
 
@@ -919,7 +919,7 @@ protected slots:
    */
   void slotAutoSelect();
 
-  void slotDragExpand(); 
+  void slotDragExpand();
 
   /**
    * Reacts to header changes in full width mode

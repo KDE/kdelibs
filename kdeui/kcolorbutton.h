@@ -27,9 +27,9 @@ class KColorButtonPrivate;
 * This widget can be used to display or allow user selection of a colour.
 *
 * @see KColorDialog
-* 
+*
 * \image html kcolorbutton.png "KDE Color Button"
-* 
+*
 * @short A pushbutton to display or allow user selection of a colour.
 * @version $Id$
 */
@@ -79,25 +79,10 @@ protected slots:
     void chooseColor();
 
 protected:
-	/**
-         * @reimplemented
-         */
 	virtual void drawButtonLabel( QPainter *p );
-	/**
-	 * @reimplemented
-	 */
 	virtual void dragEnterEvent( QDragEnterEvent *);
-	/**
-	 * @reimplemented
-	 */
         virtual void dropEvent( QDropEvent *);
-	/**
-	 * @reimplemented
-	 */
         virtual void mousePressEvent( QMouseEvent *e );
-	/**
-	 * @reimplemented
-	 */
         virtual void mouseMoveEvent( QMouseEvent *e);
 private:
         QColor col;

@@ -173,9 +173,9 @@ private:
  * It uses KIntValidator validator class. KIntNumInput enforces the
  * value to be in the given range, and can display it in any base
  * between 2 and 36.
- * 
+ *
  * \image html kintnuminput.png "KDE Int Number Input Spinbox"
- * 
+ *
  * @short An input widget for integer numbers, consisting of a spinbox and a slider.
  * @version $Id$
  */
@@ -318,7 +318,7 @@ public slots:
      */
     void setValue(int);
 
-    /** 
+    /**
      * Sets the value in units of the referencePoint
      * @since 3.1
      */
@@ -372,7 +372,7 @@ signals:
 
 private slots:
     void spinValueChanged(int);
-    void slotEmitRelativeValueChanged(int); 
+    void slotEmitRelativeValueChanged(int);
 
 protected:
     virtual void doLayout();
@@ -578,17 +578,8 @@ public:
      */
     void setSpecialValueText(const QString& text);
 
-    /**
-     * @reimplemented
-     */
     virtual void setLabel(const QString & label, int a = AlignLeft | AlignTop);
-    /**
-     * @reimplemented
-     */
     virtual QSize minimumSizeHint() const;
-    /**
-     * @reimplemented
-     */
     virtual bool eventFilter(QObject*, QEvent*);
 
 public slots:
@@ -648,15 +639,9 @@ private slots:
     void slotEmitRelativeValueChanged(double);
 
 protected:
-
-    /**
-     * @reimplemented
-     */
     virtual void doLayout();
-    /**
-     * @reimplemented
-     */
     void resizeEvent ( QResizeEvent * );
+
     virtual void resetEditBox();
 
     // ### no longer used, remove when BIC allowed
@@ -780,7 +765,7 @@ private:
 /**
    This class provides a spin box for fractional numbers.
 
-   @sect Parameters
+   \b Parameters \n
 
    There are a number of interdependent parameters whose relation to
    each other you need to understand in order to make successful use
@@ -930,7 +915,7 @@ protected slots:
 protected:
  virtual void virtual_hook( int id, void* data );
 private:
-  typedef QSpinBox base; 
+  typedef QSpinBox base;
   void updateValidator();
   int maxPrecision() const;
 

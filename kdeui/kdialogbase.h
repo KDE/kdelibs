@@ -68,7 +68,7 @@ class KDialogBaseTile;
  * that contains
  * copy/paste examples as well a screenshots on how to use this class.
  *
- * @sect Standard buttons (action buttons):
+ * <b>Standard buttons (action buttons):</b>\n
  *
  * You select which buttons should be displayed, but you do not choose the
  * order in which they are displayed. This ensures a standard interface in
@@ -98,7 +98,7 @@ class KDialogBaseTile;
  * signals that are related to the standard action buttons will be used
  * when you don't use these buttons.
  *
- * @sect Dialog shapes:
+ * <b>sect Dialog shapes:</b>\n
  *
  * You can either use one of the prebuilt, easy to use, faces or
  * define your own main widget. The dialog provides ready to use
@@ -115,7 +115,7 @@ class KDialogBaseTile;
  * resize itself to fit this minimum size.  The dialog is resizeable, but
  * cannot be made smaller than its minimum size.
  *
- * @sect Layout:
+ * <b>Layout:</b>\n
  *
  * The dialog consists of a help area on top (becomes visible if you define
  * a help path and use enableLinkedHelp()), the main area which is
@@ -127,7 +127,7 @@ class KDialogBaseTile;
  * is at the right edge). Normally you specify that you want a separator
  * in the constructor, but you can use enableButtonSeparator() as well.
  *
- * @sect Standard compliance:
+ * <b>Standard compliance:</b>\n
  *
  * The class is derived from KDialog, so you get automatic access to
  * the KDialog::marginHint(), KDialog::spacingHint() and the
@@ -349,15 +349,15 @@ class KDialogBase : public KDialog
      * @param user2 User button2 text item.
      * @param user3 User button3 text item.
      */
-    
+
     KDialogBase( int dialogFace, const QString &caption,
 		 QWidget *parent=0, const char *name=0, bool modal=true, WFlags f=WStyle_DialogBorder,
 		 int buttonMask=Ok|Apply|Cancel, ButtonCode defaultButton=Ok,
-		 bool separator=false, 
+		 bool separator=false,
 		 const KGuiItem &user1=KGuiItem(),
 		 const KGuiItem &user2=KGuiItem(),
 		 const KGuiItem &user3=KGuiItem() );
-    
+
 
     /**
      * Constructor for a message box mode where the @p buttonMask can only
@@ -385,9 +385,6 @@ class KDialogBase : public KDialog
      *        while the dialog is open.
      * @param separator If @p true, a separator line is drawn between the
      *        action buttons and the main widget.
-     * @param user1 User button1 text.
-     * @param user2 User button2 text.
-     * @param user3 User button3 text.
      */
     KDialogBase( const QString &caption, int buttonMask=Yes|No|Cancel,
 		 ButtonCode defaultButton=Yes, ButtonCode escapeButton=Cancel,
@@ -847,7 +844,7 @@ class KDialogBase : public KDialog
     *                  of KGlobal::config is preserved.
     */
    QSize configDialogSize( const QString& groupName ) const;
-   
+
    /**
     * read the dialogs size from the configuration according to the screen size.
     * If no size is saved for one dimension of the screen, a default size
@@ -865,7 +862,7 @@ class KDialogBase : public KDialog
     * save the dialogs size dependant on the screen dimension either to the
     * global or application config file.
     *
-    * @param The group to which the dialogs size is saved. See configDialogSize
+    * @param groupName The group to which the dialogs size is saved. See configDialogSize
     * to read the size.
     * @param global Set to true if the entry should go to the global config rather
     *        than to the applications config. Default is false.
@@ -884,7 +881,7 @@ class KDialogBase : public KDialog
     */
    void saveDialogSize( KConfig& config, const QString& groupName,
 			     bool global=false ) const;
-                 
+
     /**
      * Sets the text of the OK button.
      *
@@ -1449,7 +1446,7 @@ class KDialogBase : public KDialog
     virtual void slotClose();
 
     /**
-     * @deprecated 
+     * @deprecated
      * Do not use this slot. Is is kept for compatibility reasons.
      * Activated when the Apply button has been clicked
      */

@@ -29,7 +29,7 @@ class QPushButton;
 
 /**
  * This class provides a widget with a lineedit and a button, which invokes
- * a font dialog (KFontDialog). 
+ * a font dialog (KFontDialog).
  *
  * The lineedit provides a preview of the selected font. The preview text can
  * be customized. You can also have the font dialog show only the fixed fonts.
@@ -54,7 +54,6 @@ class KFontRequester : public QWidget
      *
      * @param parent The parent widget.
      * @param name The widget name.
-     * @param font Initial selected font.
      * @param onlyFixed Only display fonts which have fixed-width character
      *        sizes.
      */
@@ -65,7 +64,7 @@ class KFontRequester : public QWidget
      * @return The currently selected font in the requester.
      */
     QFont font() const { return m_selFont; }
- 
+
     /**
      * @return Returns TRUE if only fixed fonts are displayed.
      */
@@ -111,7 +110,7 @@ class KFontRequester : public QWidget
      *
      * @param text The new sample text. The current will be removed.
      */
-    virtual void setSampleText( const QString & );
+    virtual void setSampleText( const QString &text );
 
     /**
      * Set the title for the widget that will be used in the tooltip and
@@ -119,7 +118,7 @@ class KFontRequester : public QWidget
      *
      * @param title The title to be set.
      */
-    virtual void setTitle( const QString & );
+    virtual void setTitle( const QString & title );
 
   signals:
 

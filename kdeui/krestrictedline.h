@@ -27,10 +27,10 @@
 
 #include <klineedit.h>
 
-/** 
+/**
  * The KRestrictedLine widget is a variant of QLineEdit which
- * accepts only a restricted set of characters as input. 
- * All other characters will be discarded and the signal invalidChar() 
+ * accepts only a restricted set of characters as input.
+ * All other characters will be discarded and the signal invalidChar()
  * will be emitted for each of them.
  *
  * Valid characters can be passed as a QString to the constructor
@@ -45,7 +45,7 @@ class KRestrictedLine : public KLineEdit
 {
   Q_OBJECT
   Q_PROPERTY( QString validChars READ validChars WRITE setValidChars )
-  
+
 public:
 
   /**
@@ -53,9 +53,9 @@ public:
    *  The first two parameters are simply passed on to QLineEdit.
    *  @param parent   pointer to the parent widget
    *  @param name     pointer to the name of this widget
-   *  @param valid    pointer to set of valid characters 
+   *  @param valid    pointer to set of valid characters
    */
-  KRestrictedLine( QWidget *parent=0, const char *name=0, 
+  KRestrictedLine( QWidget *parent=0, const char *name=0,
 		   const QString& valid = QString::null);
 
   /**
@@ -64,7 +64,7 @@ public:
   ~KRestrictedLine();
 
   /**
-   * All characters in the string valid are treated as 
+   * All characters in the string valid are treated as
    * acceptable characters.
    */
   void setValidChars(const QString& valid);
@@ -72,7 +72,7 @@ public:
    * @return the string of acceptable characters.
    */
   QString validChars() const;
-  
+
 signals:
 
   /**
@@ -81,9 +81,6 @@ signals:
   void	invalidChar(int);
 
 protected:
-  /**
-   * @reimplemented
-   */
   void	keyPressEvent( QKeyEvent *e );
 
 private:

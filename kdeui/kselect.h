@@ -242,25 +242,10 @@ protected:
    */
   virtual void drawArrow( QPainter *painter, bool show, const QPoint &pos );
 
-  /**
-   * @reimplemented
-   */
   virtual void valueChange();
-  /**
-   * @reimplemented
-   */
   virtual void paintEvent( QPaintEvent * );
-  /**
-   * @reimplemented
-   */
   virtual void mousePressEvent( QMouseEvent *e );
-  /**
-   * @reimplemented
-   */
   virtual void mouseMoveEvent( QMouseEvent *e );
-  /**
-   * @reimplemented
-   */
   virtual void wheelEvent( QWheelEvent * );
 
 private:
@@ -345,14 +330,8 @@ public:
   { return text2; }
 
 protected:
-  /**
-   * @reimplemented
-   */
-  virtual void drawContents( QPainter * );
 
-  /**
-   * @reimplemented
-   */
+  virtual void drawContents( QPainter * );
   virtual QSize minimumSize() const
   { return sizeHint(); }
 

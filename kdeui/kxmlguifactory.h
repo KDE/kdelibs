@@ -123,9 +123,11 @@ class KXMLGUIFactory : public QObject
    *
    * This function is particularly useful for getting hold of a popupmenu defined in an XMLUI file.
    * For instance:
-   * QPopupMenu *popup = static_cast<QPopupMenu*>(factory()->container("my_popup",this))
-   * where "my_popup" is the name of the menu in the XMLUI file, and
-   * "this" is XMLGUIClient which owns the popupmenu (e.g. the mainwindow, or the part, or the plugin...)
+   * \code
+   * QPopupMenu *popup = static_cast<QPopupMenu*>(factory()->container("my_popup",this));
+   * \endcode
+   * where @p "my_popup" is the name of the menu in the XMLUI file, and
+   * @p "this" is XMLGUIClient which owns the popupmenu (e.g. the mainwindow, or the part, or the plugin...)
    *
    * @param useTagName Specifies whether to compare the specified name with the name attribute or
    *        the tag name.
