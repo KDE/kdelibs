@@ -19,6 +19,9 @@
 /*
  * $Id$
  * $Log$
+ * Revision 1.24.4.4  1999/07/09 21:16:41  porten
+ * patch for bug #1336,1549 from Ingo <schneidi@informatik.tu-muenchen.de>
+ *
  * Revision 1.24.4.3  1999/04/18 19:49:23  kulow
  * fixing bug reported by litsch.iep@t-online.de (Stephan Litsch)
  *
@@ -291,10 +294,6 @@ bool KSocket::connect( const char *_path )
   if ( domain != PF_UNIX )
     fatal( "Connecting a PF_INET socket to a PF_UNIX domain socket\n");
   
-  sock = ::socket(PF_UNIX,SOCK_STREAM,0);
-  if (sock < 0)
-	return false;
-  
   unix_addr.sun_family = AF_UNIX;
   int l = strlen( _path );
   if ( l > UNIX_PATH_MAX - 1 )
@@ -304,6 +303,10 @@ bool KSocket::connect( const char *_path )
   }  
   strcpy( unix_addr.sun_path, _path );
 
+  sock = ::socket(PF_UNIX,SOCK_STREAM,0);
+  if (sock < 0)
+	return false;
+  
   if ( 0 > ::connect( sock, (struct sockaddr*)(&unix_addr), 
 					  sizeof( unix_addr ) ) )
   {
@@ -411,13 +414,13 @@ KSocket::~KSocket()
 
 
 KServerSocket::KServerSocket( const char *_path ) :
-  sock( -1 )
+  notifier( 0L), sock( -1 )
 {
   domain = PF_UNIX;
   
   if ( !init ( _path ) )
   {
-    fatal("Error constructing PF_UNIX domain server socket\n");
+    // fatal("Error constructing PF_UNIX domain server socket\n");
     return;
   }
     
@@ -426,13 +429,13 @@ KServerSocket::KServerSocket( const char *_path ) :
 }
 
 KServerSocket::KServerSocket( int _port ) :
-  sock( -1 )
+  notifier( 0L ), sock( -1 )
 {
   domain = PF_INET;
 
   if ( !init ( _port ) )
   {
-    fatal("Error constructing\n");
+    // fatal("Error constructing\n");
     return;
   }
     
@@ -445,7 +448,12 @@ bool KServerSocket::init( const char *_path )
   if ( domain != PF_UNIX )
     return false;
   
-  struct sockaddr_un name;
+  int l = strlen( _path );
+  if ( l > UNIX_PATH_MAX - 1 )
+  {      
+    warning( "Too long PF_UNIX domain name '%s'\n",_path);
+    return false;
+  }  
     
   sock = ::socket( PF_UNIX, SOCK_STREAM, 0 );
   if (sock < 0)
@@ -455,15 +463,10 @@ bool KServerSocket::init( const char *_path )
   }
 
   unlink(_path);   
-  name.sun_family = AF_UNIX;
-  int l = strlen( _path );
-  if ( l > UNIX_PATH_MAX - 1 )
-  {      
-    warning( "Too long PF_UNIX domain name '%s'\n",_path);
-    return false;
-  }  
-  strcpy( name.sun_path, _path );
 
+  struct sockaddr_un name;
+  name.sun_family = AF_UNIX;
+  strcpy( name.sun_path, _path );
     
   if ( bind( sock, (struct sockaddr*) &name,sizeof( name ) ) < 0 )
   {
@@ -497,14 +500,14 @@ bool KServerSocket::init( unsigned short int _port )
   if ( domain != PF_INET )
     return false;
   
-  struct sockaddr_in name;
-    
   sock = ::socket( PF_INET, SOCK_STREAM, 0 );
   if (sock < 0)
   {
     warning( "Could not create socket\n");
     return false;
   }
+
+  struct sockaddr_in name;
     
   name.sin_family = AF_INET;
   name.sin_port = htons( _port );
