@@ -103,7 +103,7 @@ protected:
 
     void processCloseTag(khtml::Token *);
 
-    bool insertNode(DOM::NodeImpl *n);
+    bool insertNode(DOM::NodeImpl *n, bool flat = false);
 
     /*
      * The currently active element (the one new elements will be added to)
@@ -156,7 +156,6 @@ protected:
     bool haveFrameSet;
     bool m_inline;
     bool end;
-    bool flat;
     bool haveKonqBlock;
     bool inSelect;
 

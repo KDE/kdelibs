@@ -176,7 +176,6 @@ void KHTMLParser::reset()
     head = 0;
     end = false;
     isindex = 0;
-    flat = false;
     haveKonqBlock = false;
 
     discard_until = 0;
@@ -208,8 +207,6 @@ void KHTMLParser::parseToken(Token *t)
     // be compatible with IE and NS
     if(t->id == ID_BR+ID_CLOSE_TAG && document->document()->parseMode() != DocumentImpl::Strict)
         t->id -= ID_CLOSE_TAG;
-
-    flat = t->flat;
 
     if(t->id > ID_CLOSE_TAG)
     {
@@ -250,7 +247,7 @@ void KHTMLParser::parseToken(Token *t)
         popOneBlock();
     }
 
-    if ( !insertNode(n) ) {
+    if ( !insertNode(n, t->flat) ) {
         // we couldn't insert the node...
 #ifdef PARSER_DEBUG
         kdDebug( 6035 ) << "insertNode failed current=" << current->id() << ", new=" << n->id() << "!" << endl;
@@ -273,7 +270,7 @@ void KHTMLParser::parseToken(Token *t)
     }
 }
 
-bool KHTMLParser::insertNode(NodeImpl *n)
+bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
 {
     int id = n->id();
 
@@ -325,7 +322,6 @@ bool KHTMLParser::insertNode(NodeImpl *n)
             if(n->renderer())
                 n->renderer()->close();
 #endif
-            flat = false;
         }
 
 #if SPEED_DEBUG < 1
@@ -705,8 +701,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
         default:
             if(current->isDocumentNode())
             {
-                if(current->firstChild() == 0)
-                {
+                if(current->firstChild() == 0) {
                     e = new HTMLHtmlElementImpl(document);
                     insertNode(e);
                     handled = true;
@@ -788,7 +783,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
                     ->addCSSProperty(CSS_PROP_DISPLAY, "none");
             inBody = false;
         }
-        if ( (haveContent || haveFrameSet) && current->id() == ID_HTML) 
+        if ( (haveContent || haveFrameSet) && current->id() == ID_HTML)
             break;
         n = new HTMLFrameSetElementImpl(document);
         haveFrameSet = true;
@@ -822,7 +817,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
             isindex = n;
             n = 0;
         } else
-            flat = true;
+            t->flat = true;
         break;
     case ID_KEYGEN:
         n = new HTMLKeygenElementImpl(document, form);
@@ -932,6 +927,9 @@ NodeImpl *KHTMLParser::getElement(Token* t)
 
 // anchor
     case ID_A:
+        if (blockStack && blockStack->id == ID_A)
+            popBlock(ID_A);
+
         n = new HTMLAnchorElementImpl(document);
         break;
 
@@ -1094,11 +1092,6 @@ void KHTMLParser::processCloseTag(Token *t)
     case ID_MAP+ID_CLOSE_TAG:
         map = 0;
         break;
-    case ID_HEAD+ID_CLOSE_TAG:
-        //inBody = true;
-        // don't close head neither. the creation of body will do it for us.
-        // fixes some sites, that define stylesheets after </head>
-        return;
     case ID_SELECT+ID_CLOSE_TAG:
         inSelect = false;
         break;
@@ -1271,8 +1264,7 @@ void KHTMLParser::startBody()
     inBody = true;
 
     if( isindex ) {
-        flat = true; // don't decend into this node
-        insertNode( isindex );
+        insertNode( isindex, true /* don't decend into this node */ );
         isindex = 0;
     }
 }
