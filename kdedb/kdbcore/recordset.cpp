@@ -112,7 +112,7 @@ Recordset::slotRecordUpdated(Record *rec, bool isNew)
 {
     if (!m_updatable) {
         pushError(new InvalidRequest(this, "Recordset is not updatable"));
-        return 0L;
+        return;
     }
 
     kdDebug(20000) << k_funcinfo << endl;
@@ -140,7 +140,7 @@ Recordset::slotRecordDeleted(Record *rec)
 {
     if (!m_updatable) {
         pushError(new InvalidRequest(this, "Recordset is not updatable"));
-        return 0L;
+        return;
     }
 
     Row row = fromRecord(rec);

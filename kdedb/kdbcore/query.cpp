@@ -164,7 +164,7 @@ Query::parameters() const
 void
 Query::setParameter(const QString &param, const char *value)
 {
-    d->paramList.insert(param, value);
+    d->paramList.replace(param, strdup(value));
     d->dirty = true;
 }
 
@@ -371,7 +371,7 @@ Query::save()
         
         while ( itp.current() ) {
             QDomElement par = doc.createElement( "Parameter" );
-            par.setAttribute("name",itp.current());
+            par.setAttribute("name",itp.currentKey());
             param.appendChild(par);
             ++itp;
         }
@@ -628,10 +628,40 @@ Query::buildSQL()
     }
 
     // now, replace the % fields with the parameters
-                
+
+    // substep 1: find all % fields and collect them
+    QStringList substFields;
+
+    int pos = 0;
+
+    while (true) {
+        pos = tmpSql.find("%",pos);
+        if (pos == -1)
+            break;
+        int white = tmpSql.find(" ", pos);
+        kdDebug(20000) << "adding keyword " << tmpSql.mid(pos, white - pos) << endl;
+        substFields << tmpSql.mid(pos, white - pos); 
+        pos = white;
+    }
+
+    // substep 2: use qregexp to make the change
+    for (QStringList::Iterator itp = substFields.begin(); itp != substFields.end(); itp++) {
+        QString rep = d->paramList[(*itp).right((*itp).length()-1)]; //remove %
+        kdDebug(20000) << "changing " << *itp << " with " << rep << endl; 
+        tmpSql.replace(QRegExp(*itp),rep);
+    }
+    
     kdDebug(20000) << "resulted SQL: " << tmpSql << endl;
     return tmpSql;
 }
 
 
 
+void
+Query::clear()
+{
+    d->paramList.clear();
+    d->cond.clear();
+    d->fields.clear();
+   
+}

@@ -246,6 +246,11 @@ class Query :public DataObject{
     void save();
 
     /**
+     * Clear the content of all list (parameters, fields, tables) and the SQL
+     */
+    void clear();
+
+    /**
      * Return true if the query has been modified somewhat
      */
     bool isDirty();
