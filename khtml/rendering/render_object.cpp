@@ -177,7 +177,11 @@ RenderObject *RenderObject::containingBlock() const
     if(!o) {
         if(!isRoot()) {
             //assert ( false );
-            kdDebug( 6040 ) << renderName() << "(RenderObject): No containingBlock!" << endl;
+            kdDebug( 6040 ) << this << ": " << renderName() << "(RenderObject): No containingBlock!" << endl;
+            RenderObject* p = this;
+            while (p->parent()) p = p->parent();
+            p->printTree();
+            assert(0);
         }
         return const_cast<RenderObject *>(this);
     } else
@@ -631,7 +635,7 @@ void RenderObject::setStyle(RenderStyle *style)
 	m_visible = false;
 
     m_hasFirstLine = (style->getPseudoStyle(RenderStyle::FIRST_LINE) != 0);
-    
+
     if ( d >= RenderStyle::Position ) {
 	setMinMaxKnown(false);
 	setLayouted(false);

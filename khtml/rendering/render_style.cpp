@@ -124,7 +124,7 @@ RenderStyle::setBitDefaults()
     _htmlHacks=false;
 
     _display = INLINE;
-    
+
     _overflow = OVISIBLE;
     _vertical_align = BASELINE;
     _clear = CNONE;
@@ -134,7 +134,6 @@ RenderStyle::setBitDefaults()
     _position = STATIC;
     _floating = FNONE;
 
-    _noLineBreak=false;
     _flowAroundFloats=false;
 
     _styleType = NOPSEUDO;
@@ -191,7 +190,7 @@ RenderStyle::RenderStyle(const RenderStyle& other)
 
     _display = other._display;
 
-    
+
     _overflow = other._overflow;
     _vertical_align = other._vertical_align;
     _clear = other._clear;
@@ -201,7 +200,6 @@ RenderStyle::RenderStyle(const RenderStyle& other)
     _position = other._position;
     _floating = other._floating;
 
-    _noLineBreak = other._noLineBreak;
     _flowAroundFloats = other._flowAroundFloats;
 
     _styleType=NOPSEUDO;
@@ -326,14 +324,14 @@ void RenderStyle::removePseudoStyle(PseudoId pid)
 
 bool RenderStyle::inheritedNotEqual( RenderStyle *other ) const
 {
-    return 
-	( 
+    return
+	(
 	    inherited_flags != other->inherited_flags ||
 
 	    _visuallyOrdered != other->_visuallyOrdered ||
 	    _htmlHacks != other->_htmlHacks ||
-	    
-	    *inherited.get() != *other->inherited.get() 
+
+	    *inherited.get() != *other->inherited.get()
 	    );
 }
 
@@ -346,9 +344,9 @@ bool RenderStyle::inheritedNotEqual( RenderStyle *other ) const
   Visible: The change is visible, but no relayout is needed
   NonVisible: The object does need neither repaint nor relayout after
        the change.
-       
+
   ### TODO:
-  A lot can be optimised here based on the display type, lots of 
+  A lot can be optimised here based on the display type, lots of
   optimisations are unimplemented, and currently result in the
   worst case result causing a relayout of the containing block.
 */
@@ -364,7 +362,7 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
 
 // ### this needs work to know more exactly if we need a relayout
 //     or just a repaint
-    
+
 // non-inherited attributes
 //     DataRef<StyleBoxData> box;
 //     DataRef<StyleVisualData> visual;
@@ -382,9 +380,9 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
 
     if ( d == CbLayout )
 	return d;
-    
+
     // changes causing Layout changes:
-	    
+
 // only for tables:
 // 	_border_collapse
 // 	EEmptyCell _empty_cells : 2 ;
@@ -405,8 +403,8 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
 
 	    d = CbLayout;
     }
-    
-// only for lists:    
+
+// only for lists:
 // 	EListStyleType _list_style_type : 5 ;
 // 	EListStylePosition _list_style_position :1;
     if ( _display == LIST_ITEM ) {
@@ -418,7 +416,7 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
     if ( d == Layout )
 	return d;
 
-// ### These could be better optimised    
+// ### These could be better optimised
 // 	ETextAlign _text_align : 3;
 // 	ETextTransform _text_transform : 4;
 // 	EDirection _direction : 1;
@@ -433,22 +431,20 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
 	 !(_clear == other->_clear)
 	)
 	d = Layout;
-    
+
 // only for inline:
 //     EVerticalAlign _vertical_align : 4;
 
-//     bool _noLineBreak : 1;
     if ( !(_display == INLINE) ) {
-	if ( !(_vertical_align == other->_vertical_align) ||
-	     !(_noLineBreak == other->_noLineBreak) )
+	if ( !(_vertical_align == other->_vertical_align))
 	    d = Layout;
     }
-    
+
     if ( d == Layout )
 	return d;
 
-    
-    // Visible: 
+
+    // Visible:
 // 	EVisiblity _visiblity : 2;
 //     EOverflow _overflow : 4 ;
 //     EBackgroundRepeat _bg_repeat : 2;
@@ -463,7 +459,7 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
 	 *background.get() != *other->background.get()
 	)
 	d = Visible;
-    
+
     // Position:
 
     return d;

@@ -26,6 +26,8 @@
 
 using namespace khtml;
 
+//#define BOX_DEBUG
+
 RenderRoot::RenderRoot(KHTMLView *view)
     : RenderFlow()
 {
@@ -60,7 +62,6 @@ RenderRoot::RenderRoot(KHTMLView *view)
 RenderRoot::~RenderRoot()
 {
 }
-
 
 void RenderRoot::calcWidth()
 {
@@ -219,12 +220,12 @@ void RenderRoot::printObject(QPainter *p, int _x, int _y,
 
 void RenderRoot::repaintRectangle(int x, int y, int w, int h, bool f)
 {
+    if (m_printingMode) return;
 //    kdDebug( 6040 ) << "updating views contents (" << x << "/" << y << ") (" << w << "/" << h << ")" << endl;
 
-    if ( f && m_view )
-    {
-	    x += m_view->contentsX();
-	    y += m_view->contentsY();
+    if ( f && m_view ) {
+        x += m_view->contentsX();
+        y += m_view->contentsY();
     }
 
     QRect vr = viewRect();
@@ -236,7 +237,7 @@ void RenderRoot::repaintRectangle(int x, int y, int w, int h, bool f)
 
 void RenderRoot::repaint()
 {
-    if (m_view) m_view->updateContents(0, 0, docWidth(), docHeight());
+    if (m_view && !m_printingMode) m_view->updateContents(0, 0, docWidth(), docHeight());
 }
 
 void RenderRoot::updateSize()

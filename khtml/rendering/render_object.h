@@ -30,8 +30,7 @@
 
 #include "misc/khtmllayout.h"
 #include "misc/loader_client.h"
-
-#include "render_style.h"
+#include "rendering/render_style.h"
 
 class QPainter;
 class QTextStream;

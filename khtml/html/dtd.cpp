@@ -775,6 +775,9 @@ void DOM::addForbidden(int tagId, ushort *forbiddenTags)
         // we allow nested anchors. The innermost one wil be taken...
         //forbiddenTags[ID_A]++;
         break;
+    case ID_NOBR:
+        forbiddenTags[ID_PRE]++;
+        // fall through
     case ID_PRE:
     case ID_PLAINTEXT:
     case ID_XMP:
@@ -849,6 +852,9 @@ void DOM::removeForbidden(int tagId, ushort *forbiddenTags)
     case ID_A:
         //forbiddenTags[ID_A]--;
         break;
+    case ID_NOBR:
+        forbiddenTags[ID_PRE]--;
+        // fall through
     case ID_PRE:
     case ID_XMP:
     case ID_PLAINTEXT:

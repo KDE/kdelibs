@@ -1033,9 +1033,9 @@ void RenderFlow::calcMinMaxWidth()
                         noBreak = true;
                         hasNbsp = true;
                     }
-		    if ( t->hasBreakableChar() )
-			noBreak = false;
-		    prevWasText = true;
+                    if ( t->hasBreakableChar() )
+                        noBreak = false;
+                    prevWasText = true;
                     if (hasNbsp)
                     {
                         if(inlineMin < currentMin) inlineMin = currentMin;
@@ -1133,11 +1133,11 @@ void RenderFlow::calcMinMaxWidth()
     }
     if(m_maxWidth < m_minWidth) m_maxWidth = m_minWidth;
 
-    if ( style()->noLineBreak() )
-        m_minWidth = m_maxWidth;
-
     if (style()->width().isFixed())
         m_maxWidth = KMAX(m_minWidth,short(style()->width().value));
+
+    if ( style()->whiteSpace() != NORMAL )
+        m_minWidth = m_maxWidth;
 
     int toAdd = 0;
     if(style()->hasBorder())

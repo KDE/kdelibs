@@ -367,12 +367,9 @@ FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int
         if ( s->m_reversed )
             return SelectionPointBefore; // abort if RTL (TODO)
         int result;
-	if ( khtml::printpainter || hasFirstLine() ) {
-	    QFontMetrics _fm = metrics( ( si == 0) );
-	    result = s->checkSelectionPoint(_x, _y, _tx, _ty, &_fm, offset, m_lineHeight);
-	} else {
-	    result = s->checkSelectionPoint(_x, _y, _tx, _ty, fm, offset, m_lineHeight);
-	}
+        QFontMetrics fm = metrics(si == 0);
+        result = s->checkSelectionPoint(_x, _y, _tx, _ty, &fm, offset, m_lineHeight);
+
         //kdDebug(6040) << "RenderText::checkSelectionPoint " << this << " line " << si << " result=" << result << " offset=" << offset << endl;
         if ( result == SelectionPointInside ) // x,y is inside the textslave
         {
@@ -469,6 +466,14 @@ void RenderText::posOfChar(int chr, int &x, int &y)
         x += s->m_x; // this is the x of the beginning of the line, but it's good enough for now
         y += s->m_y;
     }
+}
+
+int RenderText::rightmostPosition() const
+{
+    if (style()->whiteSpace() != NORMAL)
+        return maxWidth();
+
+    return 0;
 }
 
 void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
@@ -650,7 +655,7 @@ void RenderText::calcMinMaxWidth()
     m_hasBreakableChar = false;
 
     // ### not 100% correct for first-line
-    QFontMetrics _fm = khtml::printpainter ? metrics( false ) : *fm;
+    QFontMetrics _fm = metrics( false );
     int len = str->l;
     if ( len == 1 && str->s->latin1() == '\n' )
 	m_hasReturn = true;
@@ -696,7 +701,7 @@ void RenderText::calcMinMaxWidth()
     if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
     if(currMaxWidth > m_maxWidth) m_maxWidth = currMaxWidth;
 
-    if (parent()->style()->noLineBreak())
+    if (style()->whiteSpace() == NOWRAP)
         m_minWidth = m_maxWidth;
 
     setMinMaxKnown();
@@ -824,15 +829,9 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
 unsigned int RenderText::width(unsigned int from, unsigned int len, bool firstLine) const
 {
     if(!str->s || from > str->l ) return 0;
-
     if ( from + len > str->l ) len = str->l - from;
 
-    if ( khtml::printpainter || ( firstLine && hasFirstLine() ) ) {
-	QFontMetrics _fm = metrics( firstLine );
-	return width( from, len, &_fm );
-    }
-
-    return width( from, len, fm );
+    return width( from, len, &metrics( firstLine) );
 }
 
 unsigned int RenderText::width(unsigned int from, unsigned int len, QFontMetrics *_fm) const

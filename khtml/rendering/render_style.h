@@ -387,7 +387,7 @@ public:
     {
 	return !(operator==(o));
     }
-    
+
     QColor color;
     CachedImage *image;
 
@@ -561,7 +561,7 @@ protected:
 	bool operator!=( const InheritedFlags &other ) const {
 	    return *((uint *)this) != *((uint *)&other);
 	}
-	
+
 	bool _border_collapse : 1 ;
 	EEmptyCell _empty_cells : 2 ; // ### 1 should be enough
 	ECaptionSide _caption_side : 2;
@@ -596,7 +596,6 @@ protected:
     EPosition _position : 2;
     EFloat _floating : 2;
 
-    bool _noLineBreak : 1;
     bool _flowAroundFloats :1;
 
     PseudoId _styleType : 3;
@@ -854,9 +853,6 @@ public:
     void setListStyleType(EListStyleType v) { inherited_flags._list_style_type = v; }
     void setListStyleImage(CachedImage *v) {  SET_VAR(inherited,style_image,v)}
     void setListStylePosition(EListStylePosition v) { inherited_flags._list_style_position = v; }
-
-    bool noLineBreak() const { return _noLineBreak; }
-    void setNoLineBreak(bool b=true) { _noLineBreak = b; }
 
     void setMarginTop(Length v)     {  SET_VAR(surround,margin.top,v) }
     void setMarginBottom(Length v)  {  SET_VAR(surround,margin.bottom,v) }

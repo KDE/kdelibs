@@ -966,22 +966,23 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
 // 			  << endl;
 	    } else {
 #endif
-            if ( style()->noLineBreak() ) {
+            if (style()->whiteSpace() == NOWRAP ) {
                 tmpW += t->maxWidth();
                 pos = len;
                 len = 0;
             } else {
-
-	    QFontMetrics fm = t->metrics( firstLine );
-	    // proportional font, needs a bit more work.
-	    int lastSpace = pos;
-	    while(len) {
-		if( isBreakable( str, pos, strlen ) ) {
+                QFontMetrics fm = t->metrics( firstLine );
+                // proportional font, needs a bit more work.
+                int lastSpace = pos;
+                bool isPre = style()->whiteSpace() == PRE;
+                while(len) {
+                    if( (isPre && str[pos] == '\n') ||
+                        (!isPre && isBreakable( str, pos, strlen ) ) ) {
 		    tmpW += t->width(lastSpace, pos - lastSpace, &fm);
 #ifdef DEBUG_LINEBREAKS
 		    kdDebug(6041) << "found space at " << pos << " in string '" << QString( str, strlen ).latin1() << "' adding " << tmpW << " new width = " << w << endl;
 #endif
-		    if ( w + tmpW > width && w == 0 ) {
+		    if ( !isPre && w + tmpW > width && w == 0 ) {
 			int fb = floatBottom();
 			if(!w && m_height < fb && width < lineWidth(fb)) {
 			    m_height = fb;
@@ -991,7 +992,7 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
 #endif
 			}
 		    }
-		    if ( w + tmpW > width )
+		    if ( !isPre && w + tmpW > width )
 			goto end;
 
 		    lBreak.obj = o;
@@ -1016,7 +1017,7 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
         } else
             assert( false );
 
-        if( w + tmpW > width+1 && !style()->noLineBreak() ) {
+        if( w + tmpW > width+1 && style()->whiteSpace() != NOWRAP ) {
             //kdDebug() << " too wide w=" << w << " tmpW = " << tmpW << " width = " << width << endl;
 	    //kdDebug() << "start=" << start.obj << " current=" << o << endl;
             // if we have floats, try to get below them.
