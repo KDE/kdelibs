@@ -405,6 +405,14 @@ bool HTTPProtocol::retrieveHeader( bool close_connection )
       break;
     }
   }
+  
+  // Clear of the temporary POST buffer if it is not empty...
+  if (!m_bufPOST.isEmpty())
+  {
+    m_bufPOST.resize(0);
+    kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::retreiveHeader: "
+                  << "Cleared POST buffer..." << endl;
+  } 
 
   if ( close_connection )
   {
@@ -2889,11 +2897,6 @@ bool HTTPProtocol::readHeader()
   if ( m_bCanResume && m_request.offset )
     canResume();
 
-  // Reset the POST buffer if we do not get an authorization
-  // request and the previous action was POST.
-  if ( m_request.method==HTTP_POST && !m_bUnauthorized )
-    m_bufPOST.resize(0);
-
   // Do not cache pages originating from password
   // protected sites.
   if ( !hasCacheDirective && Authentication != AUTH_None )
@@ -3119,9 +3122,11 @@ bool HTTPProtocol::sendBody()
   else
   {
     kdDebug(7113) << "(" << m_pid << ") POST'ing live data..." << endl;
-    m_bufPOST.resize(0);
+    
+    int old_size;    
     QByteArray buffer;
-    int old_size;
+    
+    m_bufPOST.resize(0);    
     do
     {
       dataReq(); // Request for data
@@ -3191,7 +3196,7 @@ void HTTPProtocol::httpClose()
   // NOTE: we might even want to narrow this down to non-form
   // based submit requests which will require a meta-data from
   // khtml.
-  if (m_bKeepAlive && !m_bIsSSL && m_request.method == HTTP_GET)
+  if (m_bKeepAlive && m_request.method == HTTP_GET)
   {
     kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::httpClose: keep alive" << endl;
     return;
@@ -3861,6 +3866,14 @@ void HTTPProtocol::error( int _err, const QString &_text )
   
   if (!m_request.id.isEmpty())
     sendMetaData();
+  
+  // Clear of the temporary POST buffer if it is not empty...
+  if (!m_bufPOST.isEmpty())
+  {
+    m_bufPOST.resize(0);
+    kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::retreiveHeader: "
+                  << "Cleared POST buffer..." << endl;
+  }
 
   SlaveBase::error( _err, _text );
   m_bError = true;
