@@ -664,6 +664,14 @@ void KApplication::applyGUIStyle(GUIStyle /* newstyle */) {
             }
         }
     }
+    
+    // workaround to get a blue highlight color before I start fixing the color/font configuration stuff.
+    // Matthias (3.Aug.1999)
+    QPalette pal = palette();
+    pal.setColor( QPalette::Normal, QColorGroup::Highlight, darkBlue );
+    pal.setColor( QPalette::Disabled, QColorGroup::Highlight, darkBlue );
+    pal.setColor( QPalette::Active, QColorGroup::Highlight, darkBlue );
+    setPalette( pal, TRUE );
     pConfig->setGroup(oldGroup);
 }
 
