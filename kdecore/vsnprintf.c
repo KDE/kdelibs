@@ -164,7 +164,7 @@ snprintf(str, n, fmt, va_alist)
 
 #endif
 
-/* ANSI C forbids en empty source file... */
+/* ANSI C forbids an empty source file... */
 static void dummy_func() {
    dummy_func();
 }
