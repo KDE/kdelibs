@@ -6,92 +6,84 @@ Eric Bischoff, 16 September 1999
 Introduction
 ============
 
-The tools used at KDE to write and process documentation are based on the
-famous "Cygnus distribution", hosted by Cygnus Software. Mark Galassi and many
-other nice people gathered and packaged there the ressources written by major
-actors of the SGML and DocBook technology, like the OASIS consortium,
-James Clark and Norman Walsh. The KDE-specific tools only add minimal
-customization to this distribution. This ensures KDE look-and-feel of
-the generated documentation, as well as small problem fixes.
+The KDE distribution of the DocBook tools include a recent,
+standard-conformant distribution of the basic tools necessary to convert
+and manipulate DocBook files, together with a minimal customization
+for KDE of this tools, that ensures KDE look-and-feel of the generated
+documentation, as well as enhancements like additianal languages support.
 
-The following sections explain how to download, install and run the DocBook
-tools.
+The following sections explain how to download, install and run the
+DocBook tools.
 
 
 A - Downloading
 ===============
 
-1 - Where ?
------------
+1 - Where?
+----------
 
-You can download the Cygnus distribution of the DocBook tools from :
-
-	ftp://sourceware.cygnus.com/pub/docbook-tools/docware
-
-Since this server is very often overloaded, you'd better use one of its
-mirrors listed on :
-
-	http://sourceware.cygnus.com/mirrors.html
-
-One of these mirrors is at KDE itself on :
+You can download the KDE distribution of the basic DocBook tools from:
 
 	ftp://ftp.kde.org/pub/kde/devel/docbook
 
-but this site is very often overloaded as well.
-
-You can also find some more information about the "Cygnus distribution"
-on the home page of the DocBook tools :
-
-	http://sourceware.cygnus.com/docbook-tools
-
-The KDE-specific stuff is located in the directory ksgmltools of the kdelibs
-package. The kdelibs package can be found at :
-
-	ftp://ftp.kde.org/pub/kde/unstable/CVS/snapshots/current
-
-As said before, this server is quite busy. You will find a list of mirrors at :
+Because this server is quite busy, you might want to use the list of
+mirrors found at:
 
 	http://www.kde.org/mirrors.html
 
+The KDE-specific stuff is located in the directory ksgmltools of the kdelibs
+package. The kdelibs package can be found at:
 
-2 - Which file format ?
------------------------
+	ftp://ftp.kde.org/pub/kde/unstable/CVS/snapshots/current
 
-The Cygnus DocBook tools are available under different formats :
+or, again, if too busy, on one of its mirrors.
 
-- If you are using a RedHat-like system on an Intel processor, go to RPMS
-  directory. There, you will find RPM packages already compiled for your
-  processor (in directory "i386"), and other packages that do not depend on a
-  specific architecture (in directory "noarch").
+
+2 - Which file format?
+----------------------
+
+The basic DocBook tools are available under different formats:
+
+- If you are using a RedHat-like system on an Intel or PowerPC processor,
+  go to RPMS directory. There, you will find RPM packages already compiled
+  for your processor (in directory "i386" or "ppc"), and other packages
+  that do not depend on a specific architecture (in directory "noarch").
 
 - If you are using a RedHat-like system on some other processor, go to
-  directory SRPMS. There, you will find RPM packages of the source code of the
-  tools. You will need to compile them yourself.
+  directory SRPMS. There, you will find RPM packages of the source code
+  of the tools. You will need to compile them yourself. Please consider
+  building a RPM package and sending it to us, so we will be able to
+  put it online.
 
 - If you are not using a RedHat-like system, go to directory SOURCES. There,
   you will find tarballs of the same source code files. You will need to
-  compile them yourself as well.
+  compile them yourself as well. Please consider sending us packages for
+  non RedHat-like systems, like Debian files.
+
+Since the KDE customization are available under source code format,
+the RPM or DEB files might not be available online yet.
 
 
-3 - Which packages ?
---------------------
+3 - Which packages?
+-------------------
 
-You will need to download at least four packages :
+You will need to download at least four packages:
 
-- sgml-common : the tools shared by the other packages ;
+- sgml-common: the tools shared by the other packages;
 
-- jade : the SGML syntax parser ;
+- jade: the SGML parser and DSSSL engine;
 
-- docbook : the SGML document type definition for DocBook ;
+- docbook-dtd31: the SGML document type definition for DocBook version
+  3.1;
 
-- stylesheets : the style sheets for HTML or TeX rendering.
+- docbook-stylesheets: the style sheets for HTML or TeX rendering.
 
-You may also need one of the two other optional packages :
+You may also need one of the two other optional packages:
 
-- psgml : adds-on to the EMacs text editor, for easier doc writing ;
+- psgml: adds-on to the Emacs text editor, for easier doc writing;
 
-- jadetex : a set of macros that are needed by the TeX files generated by the
-  tools, needed for PostScript output.
+- jadetex: a set of macros that are needed by the TeX files generated by the
+  tools, needed for PostScript, RTF or PDF output.
 
 
 B - Installing
@@ -100,87 +92,87 @@ B - Installing
 1 - Clean up first !
 --------------------
 
-Some Linux distributions may come with RPM's for Jade and most of the packages
-that are needed for DocBook operation are not KDE-specific. Your
+Some Linux distributions may come with RPM's for Jade and most of the
+packages that are needed for DocBook operation are not KDE-specific. Your
 distribution's packages are most likely out of date and will not include
-version 3.1 of the DocBook DTD or the latest version of the style sheets.
-Furthermore, you may have to tinker quite a bit to successfully add the KDE
-customizations to another distribution. Therefore, we highly recommend you
-uninstall any previous installation before reinstalling according to the
-directions given in the next sections.
+the right version of the DocBook DTD or the latest version of the style
+sheets. Furthermore, you may have to tinker quite a bit to successfully
+add the KDE customizations to another distribution. Therefore, we highly
+recommend you uninstall any previous installation before reinstalling
+according to the directions given in the next sections.
 
 If you are on a RedHat-like system, you can guess what is already installed
-by using a graphical package manager or with the following command lines :
+by using a graphical package manager or with the following command lines:
 
 	rpm -qa | grep jade
 	rpm -qa | grep docbook
 	rpm -qa | grep stylesheet
 	rpm -qa | grep sgml-tools
 
-and you may then remove them using the instruction :
+and you may then remove them using the instruction:
 
 	rpm -e <packagename>
 
 You may encounter some conflicts with KDevelop, because this package
-depends on sgml-tools which must be removed. This will be fixed in
-next versions of KDevelop. Until then, ignore dependencies with
---nodeps option of rpm command.
+depends on sgml-tools which must be removed. This will be fixed in next
+versions of KDevelop. Until then, ignore dependencies with --nodeps
+option of rpm command.
 
 
-2 - The Cygnus distribution :
------------------------------
+2 - The basic tools:
+---------------------
 
 If you have downloaded the RPM files, install them using a package graphical
-installer like kpackage, or the following command-line instruction :
+installer like kpackage, or the following command-line instruction:
 
-	rpm -i <filename>.rpm
+	rpm -ih <filename>.rpm
 
-For example :
+For example:
 
-	rpm -i sgml-common-0.1-3.noarch.rpm
+	rpm -ih sgml-common-0.2-1.noarch.rpm
 
 If you have downloaded the tarball archives, use a graphical
-archive manager like ark, or the following command-line instructions :
+archive manager like ark, or the following command-line instructions:
 
 	gunzip <filename>.tar.gz
 	tar xvf <filename>.tar
 
 If you have installed the SRPMs source archives, you will use a mixture of both
-techniques :
+techniques:
 
 	rpm -i <filename>.src.rpm
 	tar xzvf <filename>.tgz
 
-In all cases, install the packages in the following order :
+In all cases, install the packages in the following order:
 
-	a) sgml-common b) jade c) docbook d) stylesheets
+	a) sgml-common b) jade c) docbook-dtd31 d) docbook-stylesheets
 
 If you have downloaded source packages or tarballs, you will then need to
 compile Jade. Fortunately, Cees De Groot has added autoconf support. Just go to
-Jade's newly created directory and type :
+Jade's newly created directory and type:
 
 	./configure
 	make
 	make install
 
-Beware : it won't work if you haven't libc.so.6 installed.
+Beware: it won't work if you haven't libc.so.6 installed.
 
-Now the Cygnus distribution is installed, you must add the KDE specific stuff.
+Now the basic tools are installed, you must add the KDE specific stuff.
 
 
-3 - KDE customization :
+3 - KDE customization:
 -----------------------
 
 You will find the necessary files in the kdelibs package.
 
 If you have installed RPM packages, go to the directory where you
 have downloaded the kdelibs package, enter the "kdelibs"
-subdirectory and type (as normal user) the commands :
+subdirectory and type (as normal user) the commands:
 
 	make -f Makefile.cvs
 	./configure
 
-then type (as root) the following command :
+then type (as root) the following command:
 
 	make install
 
@@ -188,7 +180,8 @@ and that's all !
 
 If you have installed SRPMs or tarballs, it's slightly more complicated. The
 idea is to control directly Jade. Here is a small script I use to convert
-from DocBook to HTML without the Cygnus magic scripts :
+from DocBook to HTML without the magic "centralized catalogs" used by the
+RPMs:
 
 	SGML_CATALOG_FILES=customization/kde.cat
 	SGML_CATALOG_FILES=$SGML_CATALOG_FILES:dtd/docbook-3.1/docbook.cat
@@ -204,64 +197,77 @@ You will probably need to adapt this script to your own needs.
 C - Running
 ===========
 
-1 - How do I process DocBook files ?
-------------------------------------
+1 - How do I process DocBook files?
+-----------------------------------
 
 At the present time, the only thing you can do with DocBook files is to
-convert them to some other format. That is not too bad : DocBook is a very
+convert them to some other format. That is not too bad: DocBook is a very
 good format for documentation, and it allows you to focus on the contents of
 your documents instead of their presentation.
 
 Maybe someday it will be possible to browse directly the DocBook files
-contents, for example with a new KDE help center, but we will have to change
-first the dialect we use : we will need to change from SGML-DocBook to
-XML-DocBook (it is no big change, though).
+contents, for example with a new KDE help center, but we will have to
+change first the dialect we use: we will need to change from SGML-DocBook
+to XML-DocBook (it is no big change, though).
 
-But let's stop speaking about the future, and let's see how to convert DocBook
-files to some other format.
+But let's stop speaking about the future, and let's see how to convert
+DocBook files to some other format.
 
-If you have installed RPMs, type :
+If you have installed RPMs, type:
 
-	db2html -c <catalog> -d <stylesheet>#html <filename>.docbook
+	jw -o HTML -c <catalog> -d <stylesheet>#html <filename>.docbook
 		to convert to HTML
-	db2ps -c <catalog> -d <stylesheet>#print <filename>.docbook
+	jw -b ps -c <catalog> -d <stylesheet>#print <filename>.docbook
 		to convert to PostScript
-	db2pdf -c <catalog> -d <stylesheet>#print <filename>.docbook
+	jw -b pdf -c <catalog> -d <stylesheet>#print <filename>.docbook
 		to convert to PDF
-	db2rtf -c <catalog> -d <stylesheet>#print <filename>.docbook
+	jw -b 2rtf -c <catalog> -d <stylesheet>#print <filename>.docbook
 		to convert to RTF
 
 For example, you can try to convert the KDE template file for docbook
-documents :
+documents:
 
-	db2html -c /usr/lib/sgml/kde/kde.cat \
+	jw	-o HTML \
+		-c /usr/lib/sgml/kde/kde.cat \
 		-d /usr/lib/sgml/kde/stylesheets/kde.dsl#html \
 		template.docbook
 
-This should produce a new directory that contains the resulting HTML files.
-Kfm will encounter some difficulties to follow the links that are in those
-pages. This will be fixed soon.
+This should produce a new directory named HTML/ that contains the
+resulting HTML files. KFm will encounter some difficulties to follow
+the links that are in those pages. This will be fixed soon.
+
+Another tool is used for translations: sgmldiff.pl. It verifies if the
+DocBook markup has not been altered by the translation process. For
+example, you can type:
+
+	sgmldiff kdebase/doc/konsole/index.docbook \
+		 kde-i18n/it/docs/kdebase/konsole/index.docbook
 
 
-2 - How do I learn DocBook syntax ?
------------------------------------
+2 - How do I learn DocBook syntax?
+----------------------------------
 
-Where will you go next ? Maybe you will try to learn how the DocBook syntax.
+Where will you go next? Maybe you will try to learn how the DocBook
+syntax.
 
-You might find two other documents (also in the kdelibs package) very useful for
-that purpose :
+You might find two other documents (also in the kdelibs package) very
+useful for that purpose:
 
-- the template file : if you have to write a new docbook file, just fill in
-the blanks
+- the template file: if you have to write a new docbook file, just fill in
+  the blanks
 
-- the crash-course : it will explain you the docbook syntax
+- the crash-course: it will explain you the docbook syntax
 
-The DocBook Reference Manual is NOT included in the Cygnus distribution.
+The DocBook Reference Manual is NOT included in the basic distribution.
 It can be found at:
 
-	http://www.oasis-open.org/docbook/
+	http://www.oasis-open.org/docbook/documentation
 
-(Or the locations listed in the crash course).
+(or the locations listed in the crash course).
+
+Don't forget to check on a regular basis the documentation homepage:
+
+	http://i18n.kde.org/doc/index.html
 
 
 Conclusion
@@ -270,7 +276,7 @@ Conclusion
 Now you should have everything necessary to write and translate KDE
 documentation.
 
-In case you should run into problems, write me at the address :
+In case you should run into problems, write me at the address:
 
 	mailto:ebisch@cybercable.tm.fr
 
