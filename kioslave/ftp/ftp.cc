@@ -110,7 +110,7 @@ Ftp::~Ftp()
 }
 
 /* memccpy appeared first in BSD4.4 */
-void *mymemccpy(void *dest, const void *src, int c, size_t n)
+static void *mymemccpy(void *dest, const void *src, int c, size_t n)
 {
     char *d = (char*)dest;
     const char *s = (const char*)src;

@@ -32,7 +32,7 @@
 #include <klocale.h>
 #include <kiconloader.h>
 
-QListViewItem* findChild(QListViewItem *c, const QString& txt)
+static QListViewItem* findChild(QListViewItem *c, const QString& txt)
 {
 	QListViewItem	*item(c);
 	while (item)

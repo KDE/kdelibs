@@ -30,7 +30,7 @@
 #include <kprocess.h>
 #include <stdlib.h>
 
-QString execute(const QString& cmd)
+static QString execute(const QString& cmd)
 {
 	KPipeProcess	proc;
 	QString		output;
@@ -202,7 +202,7 @@ int LpcHelper::parseStateChangeLPR(const QString& result, const QString& printer
 		return 1;
 }
 
-QString lprngAnswer(const QString& result, const QString& printer)
+static QString lprngAnswer(const QString& result, const QString& printer)
 {
 	int	p, q;
 
