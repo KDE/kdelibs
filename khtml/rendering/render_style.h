@@ -317,6 +317,10 @@ enum ETableLayout {
     TAUTO, TFIXED
 };
 
+enum EUnicodeBidi {
+    UBNormal, Embed, Override 
+};
+
 class StyleVisualData : public SharedData
 {
 public:
@@ -610,7 +614,7 @@ protected:
         bool _hasActive : 1;
 
 	bool _jsClipMode : 1;
-        int _unused : 2;
+        EUnicodeBidi _unicodeBidi : 2;
     } noninherited_flags;
 
 // non-inherited attributes
@@ -718,6 +722,8 @@ public:
     Length clipTop() const { return visual->clip.top; }
     Length clipBottom() const { return visual->clip.bottom; }
     bool jsClipMode() const { return noninherited_flags._jsClipMode; }
+    
+    EUnicodeBidi unicodeBidi() const { return noninherited_flags._unicodeBidi; }
 
     EClear clear() const { return  noninherited_flags._clear; }
     ETableLayout inheritedLayout() const { return  noninherited_flags._table_layout; }
@@ -823,6 +829,8 @@ public:
     void setClipTop(Length v) { SET_VAR(visual,clip.top,v) }
     void setClipBottom(Length v) { SET_VAR(visual,clip.bottom,v) }
     void setJsClipMode( bool b ) { noninherited_flags._jsClipMode = b; }
+
+    void setUnicodeBidi( EUnicodeBidi b ) { noninherited_flags._unicodeBidi = b; }
 
     void setClear(EClear v) {  noninherited_flags._clear = v; }
     void setTableLayout(ETableLayout v) {  noninherited_flags._table_layout = v; }

@@ -138,7 +138,7 @@ RenderStyle::setBitDefaults()
     noninherited_flags._hasHover = false;
     noninherited_flags._hasActive = false;
     noninherited_flags._jsClipMode = false;
-    noninherited_flags._unused = 0;
+    noninherited_flags._unicodeBidi = UBNormal;
 }
 
 

@@ -1431,8 +1431,27 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 //     case CSS_PROP_SPEAK_NUMERAL:
 //     case CSS_PROP_SPEAK_PUNCTUATION:
     case CSS_PROP_TABLE_LAYOUT:
-    case CSS_PROP_UNICODE_BIDI:
+	break;
+    case CSS_PROP_UNICODE_BIDI: {
+	EUnicodeBidi b = UBNormal;
+        if(value->cssValueType() == CSSValue::CSS_INHERIT) {
+            if(!e->parentNode()) return;
+            b = parentStyle->unicodeBidi();
+        } else {
+	    switch( primitiveValue->getIdent() ) {
+		case CSS_VAL_NORMAL:
+		    b = UBNormal; break;
+		case CSS_VAL_EMBED:
+		    b = Embed; break;
+		case CSS_VAL_BIDI_OVERRIDE:
+		    b = Override; break;
+		default:
+		    return;
+	    }
+	}
+	style->setUnicodeBidi( b );
         break;
+    }
     case CSS_PROP_TEXT_TRANSFORM:
         {
         if(value->cssValueType() == CSSValue::CSS_INHERIT) {
