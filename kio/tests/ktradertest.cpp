@@ -1,6 +1,7 @@
 
 #include <kcmdlineargs.h>
 #include <ktrader.h>
+#include <kmimetype.h>
 #include <kapplication.h>
 #include <stdio.h>
 
@@ -16,16 +17,16 @@ static KCmdLineOptions options[] =
 int main( int argc, char **argv )
 {
   KCmdLineArgs::init( argc, argv, "ktradertest", "A KTrader testing tool", "0.0" );
- 
+
   KCmdLineArgs::addCmdLineOptions( options );
-  
+
   KApplication app( false, false ); // no GUI
-  
+
   KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
   if ( args->count() < 1 )
       KCmdLineArgs::usage();
-  
+
   QString query = QString::fromLocal8Bit( args->arg( 0 ) );
 
   QString genericServiceType, constraint, preference;
@@ -43,11 +44,11 @@ int main( int argc, char **argv )
   printf( "genericServiceType is : %s\n", genericServiceType.local8Bit().data() );
   printf( "constraint is : %s\n", constraint.local8Bit().data() );
   printf( "preference is : %s\n", preference.local8Bit().data() );
-  
+
   KTrader::OfferList offers = KTrader::self()->query( query, genericServiceType, constraint, preference );
-  
+
   printf("got %d offers.\n", offers.count());
-  
+
   int i = 0;
   KTrader::OfferList::ConstIterator it = offers.begin();
   KTrader::OfferList::ConstIterator end = offers.end();
@@ -60,25 +61,24 @@ int main( int argc, char **argv )
     for (; propIt != propEnd; ++propIt )
     {
       QVariant prop = (*it)->property( *propIt );
-      
+
       if ( !prop.isValid() )
       {
         printf("Invalid property %s\n", (*propIt).local8Bit().data());
 	continue;
       }
-      
+
       QString outp = *propIt;
       outp += " : '";
-      
+
       switch ( prop.type() )
       {
-        case QVariant::String:
-  	  outp += prop.toString();
-	break;
         case QVariant::StringList:
-  	  outp += prop.toStringList().join(" - ");
-	break;
-        default: outp = QString::null; break;
+          outp += prop.toStringList().join(" - ");
+        break;
+        default:
+          outp += prop.toString();
+        break;
       }
 
       if ( !outp.isEmpty() )
