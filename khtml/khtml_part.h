@@ -230,7 +230,7 @@ private:
 
   KHTMLPart *parentPart();
 
-  khtml::ChildFrame *recursiveFrameRequest( const KURL &url, const KParts::URLArgs &args, bool callParent = true );
+  khtml::ChildFrame *recursiveFrameRequest( const KURL &url, const KParts::URLArgs &args, bool callParent = true, bool newWin = true );
 
   KHTMLPartPrivate *d;
 };

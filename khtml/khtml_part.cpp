@@ -799,7 +799,7 @@ void KHTMLPart::urlSelected( const QString &url, int button, const QString &_tar
 
   if ( !target.isEmpty() )
   {
-    khtml::ChildFrame *frame = recursiveFrameRequest( u, args, false );
+    khtml::ChildFrame *frame = recursiveFrameRequest( u, args, false, false );
     if ( frame )
     {
       childRequest( frame, u, args );
@@ -1146,7 +1146,7 @@ KHTMLPart *KHTMLPart::parentPart()
   return (KHTMLPart *)parent();
 }
 
-khtml::ChildFrame *KHTMLPart::recursiveFrameRequest( const KURL &url, const KParts::URLArgs &args, bool callParent )
+khtml::ChildFrame *KHTMLPart::recursiveFrameRequest( const KURL &url, const KParts::URLArgs &args, bool callParent, bool newWin )
 {
   QMap<QString,khtml::ChildFrame>::Iterator it = d->m_frames.find( args.frameName );
 
@@ -1178,9 +1178,12 @@ khtml::ChildFrame *KHTMLPart::recursiveFrameRequest( const KURL &url, const KPar
     return 0L;
   }
 
-  KParts::URLArgs newArgs( args );
-  newArgs.frameName = QString::null; //not really necessary, but safer ;-)
-  emit d->m_extension->createNewWindow( url, newArgs );
+  if ( newWin )
+  {
+    KParts::URLArgs newArgs( args );
+    newArgs.frameName = QString::null; //not really necessary, but safer ;-)
+    emit d->m_extension->createNewWindow( url, newArgs );
+  }
   return 0L;
 }
 
