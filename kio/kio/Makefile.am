@@ -113,3 +113,6 @@ parser: $(parserfiles)
 	cd $(srcdir) ;\
 	flex -olex.c -Pkiotrader lex.l ;\
 	bison -d -p kiotrader yacc.y && mv yacc.tab.c yacc.c; mv yacc.tab.h yacc.h
+
+.PHONY: parser
+

@@ -31,7 +31,7 @@ check_PROGRAMS = ksycocatest getalltest kruntest ktartest kziptest\
 # Unfortunately some tests depend on the network settings, it seems
 #check: kurifiltertest
 #	./kurifiltertest
-check: kziptest
+check-local: kziptest
 	./kziptest list $(srcdir)/wronglocalsizes.zip
 
 bin_PROGRAMS = ktradertest
