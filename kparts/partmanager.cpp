@@ -145,7 +145,7 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
       }
       else if ( part != d->m_activePart )
       {
-        kDebugInfo( 1000, QString("Part %1 made active because %2 got event").arg(part->name()).arg(w->className()) );
+        kdDebug(1000) << QString("Part %1 made active because %2 got event").arg(part->name()).arg(w->className()) << endl;
 
         setActivePart( part, w );
       }
@@ -163,13 +163,13 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
     if ( w && ( ( w->testWFlags( WStyle_Dialog ) && w->isModal() ) ||
                 w->testWFlags( WType_Popup ) || w->testWFlags( WStyle_Tool ) ) )
     {
-      //kDebugInfo( 1000, QString("No part made active although %1/%2 got event - loop aborted").arg(obj->name()).arg(obj->className()) );
+      //kdDebug(1000) << QString("No part made active although %1/%2 got event - loop aborted").arg(obj->name()).arg(obj->className()) << endl;
       return false;
     }
 
   }
 
-  //kDebugInfo( 1000, QString("No part made active although %1/%2 got event").arg(obj->name()).arg(obj->className()) );
+  //kdDebug(1000) << QString("No part made active although %1/%2 got event").arg(obj->name()).arg(obj->className()) << endl;
   return false;
 }
 
@@ -205,7 +205,7 @@ void PartManager::addPart( Part *part, bool setActive )
       ( part->widget()->focusPolicy() == QWidget::NoFocus ||
         part->widget()->focusPolicy() == QWidget::TabFocus ) )
   {
-    kDebugWarning( 1000, QString("Part %1 must have at least a ClickFocus policy. Prepare for trouble !").arg(part->name()) );
+    kdWarning(1000) << QString("Part %1 must have at least a ClickFocus policy. Prepare for trouble !").arg(part->name()) << endl;
   }
 
   if ( part->widget() )
@@ -217,12 +217,12 @@ void PartManager::removePart( Part *part )
 {
   if ( d->m_parts.findRef( part ) == -1 )
   {
-    kDebugFatal (1000, QString("Can't remove part %1, not in KPartManager's list.").arg(part->name()) );
+    kdFatal(1000) << QString("Can't remove part %1, not in KPartManager's list.").arg(part->name()) << endl;
     return;
   }
   disconnect( part, SIGNAL( destroyed() ), this, SLOT( slotObjectDestroyed() ) );
 
-  kDebugInfo( 1000, QString("Part %1 removed").arg(part->name()) );
+  kdDebug(1000) << QString("Part %1 removed").arg(part->name()) << endl;
   d->m_parts.removeRef( part );
 
   if ( part == d->m_activePart )
@@ -333,13 +333,13 @@ QWidget *PartManager::selectedWidget() const
 
 void PartManager::slotObjectDestroyed()
 {
-  kDebugInfo( 1000, "KPartManager::slotObjectDestroyed()" );
+  kdDebug(1000) << "KPartManager::slotObjectDestroyed()" << endl;
   removePart( (Part *)sender() );
 }
 
 void PartManager::slotWidgetDestroyed()
 {
-  kDebugInfo( 1000, "KPartsManager::slotWidgetDestroyed()" );
+  kdDebug(1000) << "KPartsManager::slotWidgetDestroyed()" << endl;
   if ( (QWidget *)sender() == d->m_activeWidget )
     setActivePart( 0L ); //do not remove the part because if the part's widget dies, then the
                          //part will delete itself anyway (which ends up in a slotObjectDestroyed() call

@@ -49,7 +49,7 @@ QDomDocument Plugin::document() const
 const QValueList<QDomDocument> Plugin::pluginDocuments( const KInstance * instance )
 {
   if ( !instance )
-    kDebugError( 1000, "No instance ???" );
+    kdError(1000) << "No instance ???" << endl;
 
   QValueList<QDomDocument> docs;
 
@@ -60,7 +60,7 @@ const QValueList<QDomDocument> Plugin::pluginDocuments( const KInstance * instan
   QStringList::ConstIterator pEnd = pluginDocs.end();
     for (; pIt != pEnd; ++pIt )
     {
-      kDebugInfo( 1000, "Plugin : %s", (*pIt).ascii() );
+      kdDebug(1000) << "Plugin : " << (*pIt) << endl;
       QString xml = KXMLGUIFactory::readConfigFile( *pIt );
       if ( !xml.isEmpty() )
       {
@@ -103,20 +103,20 @@ Plugin* Plugin::loadPlugin( QObject * parent, const char* libname )
     KLibLoader* loader = KLibLoader::self();
     if ( !loader )
     {
-        kDebugError( 1000, "No library loader installed" );
+        kdError(1000) << "No library loader installed" << endl;
         return 0;
     }
 
     KLibFactory* f = loader->factory( libname );
     if ( !f )
     {
-        kDebugError( 1000, "Could not initialize library" );
+        kdError(1000) << "Could not initialize library" << endl;
         return 0;
     }
     QObject* obj = f->create( parent, libname, "KParts::Plugin" );
     if ( !obj->inherits("KParts::Plugin" ) )
     {
-        kDebugError( 1000, "The library does not feature an object of class Plugin" );
+        kdError(1000) << "The library does not feature an object of class Plugin" << endl;
         delete obj;
         return 0;
     }
