@@ -441,7 +441,6 @@ QString KProtocolManager::proxyFor( const QString& protocol )
      !config.hasKey( key + "Proxy" ) )
   {
     {
-        KConfigGroupSaver saver( &config, QString::null );
         if( key == "http" && config.hasKey( "HttpProxy" ) )
             return config.readEntry( "HttpProxy" );
         else if( key == "ftp" && config.hasKey( "HttpProxy" ) )
