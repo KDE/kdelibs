@@ -749,7 +749,7 @@ bool KDirLister::matchesFilter(const QString& name) const
 {
     bool matched = false;
     for (QPtrListIterator<QRegExp> it(m_lstFilters); it.current(); ++it)
-        if ( it.current()->match( name ) != -1 ) {
+        if ( it.current()->search( name ) != -1 ) {
             matched = true;
             break;
         }

@@ -215,7 +215,7 @@ void Kded::build()
   KSycocaFactoryList *factoryList = kbs->factoryList();
 
   // For each factory
-  QListIterator<KSycocaFactory> factit ( *factoryList );
+  QPtrListIterator<KSycocaFactory> factit ( *factoryList );
   for (KSycocaFactory *factory = factoryList->first();
        factory;
        factory = factoryList->first() )

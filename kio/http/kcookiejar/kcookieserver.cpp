@@ -55,12 +55,12 @@ public:
    bool DOM;
 };
 
-template class  QList<CookieRequest>;
+template class  QPtrList<CookieRequest>;
 
-class RequestList : public QList<CookieRequest>
+class RequestList : public QPtrList<CookieRequest>
 {
 public:
-   RequestList() : QList<CookieRequest>() { }
+   RequestList() : QPtrList<CookieRequest>() { }
 };
 
 KCookieServer::KCookieServer()
@@ -387,7 +387,7 @@ KCookieServer::findCookies(QValueList<int> fields,
    const KHttpCookieList* list =  mCookieJar->getCookieList(domain, fqdn);
    if ( list && !list->isEmpty() )
    {
-      QListIterator<KHttpCookie>it( *list );
+      QPtrListIterator<KHttpCookie>it( *list );
       for ( ; it.current(); ++it )
       {
          if ( !allDomCookies )
@@ -436,7 +436,7 @@ KCookieServer::deleteCookie(QString domain, QString fqdn,
    const KHttpCookieList* list = mCookieJar->getCookieList( domain, fqdn );
    if ( list && !list->isEmpty() )
    {
-      QListIterator<KHttpCookie>it (*list);
+      QPtrListIterator<KHttpCookie>it (*list);
       for ( ; it.current(); ++it )
       {
          if( cookieMatches(it.current(), domain, fqdn, path, name) )

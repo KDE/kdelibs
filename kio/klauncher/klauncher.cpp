@@ -49,8 +49,8 @@
 
 using namespace KIO;
 
-template class QList<KLaunchRequest>;
-template class QList<IdleSlave>;
+template class QPtrList<KLaunchRequest>;
+template class QPtrList<IdleSlave>;
 
 IdleSlave::IdleSlave(KSocket *socket)
 {

@@ -66,13 +66,13 @@ struct FileInfo {
    int age;
 };
 
-template class QList<FileInfo>;
+template class QPtrList<FileInfo>;
 
-class FileInfoList : public QList<FileInfo>
+class FileInfoList : public QPtrList<FileInfo>
 {
 public:
-   FileInfoList() : QList<FileInfo>() { }
-   int compareItems(QCollection::Item item1, QCollection::Item item2)
+   FileInfoList() : QPtrList<FileInfo>() { }
+   int compareItems(QPtrCollection::Item item1, QPtrCollection::Item item2)
       { return ((FileInfo *)item1)->age - ((FileInfo *)item2)->age; }
 };
 

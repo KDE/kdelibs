@@ -90,10 +90,10 @@ public:
     KHttpCookiePtr next() { return nextCookie; }
 };
 
-class KHttpCookieList : public QList<KHttpCookie>
+class KHttpCookieList : public QPtrList<KHttpCookie>
 {
 public:
-    KHttpCookieList() : QList<KHttpCookie>(), advice( KCookieDunno )
+    KHttpCookieList() : QPtrList<KHttpCookie>(), advice( KCookieDunno )
     { setAutoDelete(true); }
     virtual ~KHttpCookieList() { }
 

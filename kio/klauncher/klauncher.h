@@ -151,15 +151,15 @@ public slots:
    void idleTimeout();
 
 protected:
-   QList<KLaunchRequest> requestList; // Requests being handled
-   QList<KLaunchRequest> requestQueue; // Requests waiting to being handled
+   QPtrList<KLaunchRequest> requestList; // Requests being handled
+   QPtrList<KLaunchRequest> requestQueue; // Requests waiting to being handled
    int kdeinitSocket;
    QSocketNotifier *kdeinitNotifier;
    serviceResult DCOPresult;
    KLaunchRequest *lastRequest;
    QString mPoolSocketName;
    KServerSocket *mPoolSocket;
-   QList<IdleSlave> mSlaveList;
+   QPtrList<IdleSlave> mSlaveList;
    QTimer mTimer;
    QTimer mAutoTimer;
    bool bProcessingQueue;

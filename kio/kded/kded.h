@@ -124,7 +124,7 @@ protected:
    QTimer* m_pTimer;
    
    QValueList<DCOPClientTransaction *> m_requests;
-   QList<KDEDModule> m_modules;
+   QPtrList<KDEDModule> m_modules;
 };
 
 class KUpdateD : public QObject

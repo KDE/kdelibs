@@ -64,7 +64,7 @@
 
 #define READ_BUFFER_SIZE 8192
 
-template class QList<KHttpCookie>;
+template class QPtrList<KHttpCookie>;
 template class QDict<KHttpCookieList>;
 
 QString KCookieJar::adviceToStr(KCookieAdvice _advice)

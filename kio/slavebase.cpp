@@ -52,7 +52,7 @@
 
 using namespace KIO;
 
-template class QList<QValueList<UDSAtom> >;
+template class QPtrList<QValueList<UDSAtom> >;
 typedef QValueList<QCString> AuthKeysList;
 typedef QMap<QString,QCString> AuthKeysMap;
 #define KIO_DATA QByteArray data; QDataStream stream( data, IO_WriteOnly ); stream
@@ -583,7 +583,7 @@ void SlaveBase::stat(KURL const &)
 { error(  ERR_UNSUPPORTED_ACTION, i18n("Sorry, accessing files is not supported with the protocol %1").arg(mProtocol) ); }
 void SlaveBase::put(KURL const &, int, bool, bool)
 { error(  ERR_UNSUPPORTED_ACTION, i18n("Sorry, writing to %1 is not supported").arg(mProtocol) ); }
-void SlaveBase::special(QArray<char> const &)
+void SlaveBase::special(QMemArray<char> const &)
 { error(  ERR_UNSUPPORTED_ACTION, i18n("There are no special actions available for protocol %1").arg(mProtocol) ); }
 void SlaveBase::listDir(KURL const &)
 { error(  ERR_UNSUPPORTED_ACTION, i18n("Sorry, listing directories is not supported for protocol %1").arg(mProtocol) ); }

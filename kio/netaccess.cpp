@@ -220,7 +220,7 @@ void qt_leave_modal( QWidget *widget );
 
 void NetAccess::enter_loop()
 {
-  QWidget dummy(0,0,WType_Modal);
+  QWidget dummy(0,0,WType_Dialog | WShowModal);
   qt_enter_modal(&dummy);
   qApp->enter_loop();
   qt_leave_modal(&dummy);

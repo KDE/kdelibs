@@ -119,7 +119,7 @@ bool KBuildSycoca::build(KSycocaEntryListList *allEntries,
                          QDict<Q_UINT32> *ctimeDict)
 {
   typedef QDict<KSycocaEntry> myEntryDict;
-  typedef QList<myEntryDict> myEntryDictList;
+  typedef QPtrList<myEntryDict> myEntryDictList;
   myEntryDictList *entryDictList = 0;
 
   entryDictList = new myEntryDictList();
@@ -208,7 +208,7 @@ bool KBuildSycoca::build(KSycocaEntryListList *allEntries,
                 ++it3 )
            {
                // Check if file matches filter
-               if (res.filter.match(*it3) == -1) continue;
+               if (res.filter.search(*it3) == -1) continue;
 
                Q_UINT32 timeStamp = ctimeInfo->ctime(*it3);
                if (!timeStamp)

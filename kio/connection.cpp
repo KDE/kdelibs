@@ -43,8 +43,6 @@
 
 using namespace KIO;
 
-template class QList<KIO::Task>;
-
 Connection::Connection()
 {
     f_out = 0;

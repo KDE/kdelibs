@@ -66,7 +66,7 @@ public:
 };
 
 /************************* KIO::SessionData::AuthDataList ****************************/
-class KIO::SessionData::AuthDataList : public QList<KIO::SessionData::AuthData>
+class KIO::SessionData::AuthDataList : public QPtrList<KIO::SessionData::AuthData>
 {
 public:
     AuthDataList() { setAutoDelete(true); }
@@ -84,7 +84,7 @@ private:
 
 void KIO::SessionData::AuthDataList::addData( KIO::SessionData::AuthData* d )
 {
-    QListIterator<KIO::SessionData::AuthData> it ( *this );
+    QPtrListIterator<KIO::SessionData::AuthData> it ( *this );
     for ( ; it.current(); ++it )
     {
         if ( it.current()->isKeyMatch( d->key ) )
@@ -96,7 +96,7 @@ void KIO::SessionData::AuthDataList::addData( KIO::SessionData::AuthData* d )
 
 void KIO::SessionData::AuthDataList::removeData( const QCString& gkey )
 {
-    QListIterator<KIO::SessionData::AuthData> it( *this );
+    QPtrListIterator<KIO::SessionData::AuthData> it( *this );
     for( ; it.current(); ++it )
     {
         if ( it.current()->isGroupMatch(gkey) &&  pingCacheDaemon() )
@@ -169,7 +169,7 @@ void KIO::SessionData::AuthDataList::purgeCachedData()
 {
     if ( !isEmpty() && pingCacheDaemon() )
     {
-        QListIterator<KIO::SessionData::AuthData> it( *this );
+        QPtrListIterator<KIO::SessionData::AuthData> it( *this );
         for ( ; it.current(); ++it )
             unregisterAuthData( it.current() );
     }

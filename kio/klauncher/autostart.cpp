@@ -35,7 +35,7 @@ public:
    QString startAfter;
 };
 
-class AutoStartList: public QList<AutoStartItem>
+class AutoStartList: public QPtrList<AutoStartItem>
 {
 public:
    AutoStartList() { }

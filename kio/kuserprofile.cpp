@@ -28,7 +28,7 @@
 
 #include <qtl.h>
 
-template class QList<KServiceTypeProfile>;
+template class QPtrList<KServiceTypeProfile>;
 
 #define HACK_ST_SEPARATOR "%!%"
 
@@ -38,7 +38,7 @@ template class QList<KServiceTypeProfile>;
  *
  *********************************************/
 
-QList<KServiceTypeProfile>* KServiceTypeProfile::s_lstProfiles = 0L;
+QPtrList<KServiceTypeProfile>* KServiceTypeProfile::s_lstProfiles = 0L;
 bool KServiceTypeProfile::s_configurationMode = false;
 
 void KServiceTypeProfile::initStatic()
@@ -49,7 +49,7 @@ void KServiceTypeProfile::initStatic()
   // Make sure that a KServiceTypeFactory gets created.
   (void) KServiceTypeFactory::self();
 
-  s_lstProfiles = new QList<KServiceTypeProfile>;
+  s_lstProfiles = new QPtrList<KServiceTypeProfile>;
 
   KSimpleConfig config( "profilerc");
 
@@ -109,7 +109,7 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers( const QString& _serv
     {
         initStatic();
         // We want all profiles for servicetype, if we have profiles.
-        QListIterator<KServiceTypeProfile> it( *s_lstProfiles );
+        QPtrListIterator<KServiceTypeProfile> it( *s_lstProfiles );
         for( ; it.current(); ++it )
             if ( it.current()->serviceType().startsWith( _servicetype + HACK_ST_SEPARATOR ) )
             {
@@ -213,7 +213,7 @@ KServiceTypeProfile* KServiceTypeProfile::serviceTypeProfile( const QString& _se
   static const QString& app_str = KGlobal::staticQString("Application");
   QString hackedType = _servicetype + HACK_ST_SEPARATOR + ((!_genericServiceType.isEmpty()) ? _genericServiceType : app_str);
 
-  QListIterator<KServiceTypeProfile> it( *s_lstProfiles );
+  QPtrListIterator<KServiceTypeProfile> it( *s_lstProfiles );
   for( ; it.current(); ++it )
     if ( it.current()->serviceType() == hackedType )
       return it.current();

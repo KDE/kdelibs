@@ -61,7 +61,7 @@ extern "C" {
 #include <kdirnotify_stub.h>
 
 using namespace KIO;
-template class QList<KIO::Job>;
+template class QPtrList<KIO::Job>;
 
 //this will update the report dialog with 5 Hz, I think this is fast enough, aleXXX
 #define REPORT_TIMEOUT 200
@@ -164,7 +164,7 @@ void Job::kill( bool quietly )
 {
   kdDebug(7007) << "Job::kill this=" << this << " m_progressId=" << m_progressId << " quietly=" << quietly << endl;
   // kill all subjobs, without triggering their result slot
-  QListIterator<Job> it( subjobs );
+  QPtrListIterator<Job> it( subjobs );
   for ( ; it.current() ; ++it )
      (*it)->kill( true );
   subjobs.clear();
