@@ -194,6 +194,15 @@ declaration
 		dcop_signal_area = 0;
 
 	  }
+	| T_CLASS T_IDENTIFIER Identifier class_header dcoptag body T_SEMICOLON
+	  {
+	 	if ($5)
+			  printf("<CLASS>\n    <NAME>%s</NAME>\n    <LINK_SCOPE>%s</LINK_SCOPE>\n%s%s</CLASS>\n", ( in_namespace + *$3 ).latin1(),$2->latin1(),  $4->latin1(), $6->latin1() );
+		// default C++ visibility specifier is 'private'
+		dcop_area = 0;
+		dcop_signal_area = 0;
+
+	  }
 	| T_CLASS Identifier T_SEMICOLON
 	  {
 	  }
