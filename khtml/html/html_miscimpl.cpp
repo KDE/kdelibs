@@ -251,7 +251,8 @@ NodeImpl *HTMLCollectionImpl::item( unsigned long index ) const
 NodeImpl *HTMLCollectionImpl::getNamedItem( NodeImpl *current, int attr_id,
 					    const DOMString &name ) const
 {
-
+    if(name.isEmpty())
+	return 0;
 
     while(current)
     {
