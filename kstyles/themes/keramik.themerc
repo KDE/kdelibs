@@ -1,5 +1,6 @@
 [Misc]
 Name=Keramik
+ConfigPage=kstyle_keramik_config
 Name[be]=Кераміка
 Name[cs]=Keramika
 Name[eo]=Ceramiko
