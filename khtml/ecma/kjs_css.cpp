@@ -378,6 +378,30 @@ Value DOMStyleSheetList::tryGet(ExecState *exec, const UString &p) const
   return DOMObject::tryGet(exec, p);
 }
 
+Value KJS::DOMStyleSheetList::call(ExecState *exec, Object &thisObj, const List &args)
+{
+  // This code duplication is necessary, DOMStyleSheetList isn't a DOMFunction
+  Value val;
+  try {
+    val = tryCall(exec, thisObj, args);
+  }
+  // pity there's no way to distinguish between these in JS code
+  catch (...) {
+    Object err = Error::create(exec, GeneralError, "Exception from DOMStyleSheetList");
+    exec->setException(err);
+  }
+  return val;
+}
+
+Value DOMStyleSheetList::tryCall(ExecState *exec, Object & /*thisObj*/, const List &args)
+{
+  if (args.size() == 1) {
+    // support for styleSheets(<index>) and styleSheets(<name>)
+    return tryGet( exec, args[0].toString(exec) );
+  }
+  return Undefined();
+}
+
 Value KJS::getDOMStyleSheetList(ExecState *exec, DOM::StyleSheetList ssl, DOM::Document doc)
 {
   // Can't use the cacheDOMObject macro because of the doc argument
