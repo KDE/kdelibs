@@ -27,6 +27,7 @@ int main(int argc,char **argv)
   Addressee a;
   a.setName( "Hans Speck" );
   a.insertEmail( "hw@abc.de" );
+  a.setBirthday( QDate( 1997, 4, 25 ) );
   ab.insertAddressee( a );
 
 //  ab.dump();

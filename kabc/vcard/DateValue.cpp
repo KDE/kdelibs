@@ -23,6 +23,8 @@
 
 #include <qregexp.h>
 
+#include <kdebug.h>
+
 #include <VCardDefines.h>
 #include <VCardDateValue.h>
 #include <VCardValue.h>
@@ -32,6 +34,7 @@ using namespace VCARD;
 DateValue::DateValue()
 	:	Value()
 {
+	vDebug("DateValue::DateValue()");
 }
 
 DateValue::DateValue(
@@ -56,23 +59,36 @@ DateValue::DateValue(
 		zoneMinute_		(zoneMinute),
 		secFrac_		(secFrac),
 		zonePositive_	(zonePositive),
-		hasTime_(false)
+		hasTime_(true)
 {
-	parsed_		= true;
+	parsed_ = true;
+	assembled_ = false;
 }
 
 DateValue::DateValue(const QDate & d)
 	:	Value		(),
 		year_		(d.year()),
 		month_		(d.month()),
-		day_		(d.day())
+		day_		(d.day()),
+		hasTime_(false)
 {
-	parsed_		= true;
+	parsed_ = true;
+	assembled_ = false;
 }
 
 DateValue::DateValue(const DateValue & x)
 	:	Value(x)
 {
+	year_ = x.year_;
+	month_ = x.month_;
+	day_ = x.day_;
+	hour_ = x.hour_;
+	minute_ = x.minute_;
+	second_ = x.second_;
+	zoneHour_ = x.zoneHour_;
+	zoneMinute_ = x.zoneMinute_;
+	secFrac_ = x.secFrac_;
+	hasTime_ = x.hasTime_;
 }
 
 DateValue::DateValue(const QCString & s)
@@ -107,10 +123,17 @@ DateValue::~DateValue()
 {
 }
 
+	DateValue *
+DateValue::clone()
+{
+	return new DateValue( *this );
+}
+
 	void
 DateValue::_parse()
 {
-	vDebug("parse");
+	vDebug("DateValue::_parse()");
+
 	// date = date-full-year ["-"] date-month ["-"] date-mday
 	// time = time-hour [":"] time-minute [":"] time-second [":"]
 	// [time-secfrac] [time-zone]
@@ -137,6 +160,8 @@ DateValue::_parse()
 	/////////////////////////////////////////////////////////////// DATE
 	
 	dateStr.replace(QRegExp("-"), "");
+
+	kdDebug() << "dateStr: " << dateStr << endl;
 
 	year_	= dateStr.left(4).toInt();
 	month_	= dateStr.mid(4, 2).toInt();
@@ -188,9 +213,20 @@ DateValue::_parse()
 	void
 DateValue::_assemble()
 {
-	strRep_ =	QCString().setNum(year_)	+ '-' +
-				QCString().setNum(month_)	+ '-' +
-				QCString().setNum(day_);
+	vDebug("DateValue::_assemble");
+
+	QCString year;
+	QCString month;
+	QCString day;
+	
+	year.setNum( year_ );
+	month.setNum( month_ );
+	day.setNum( day_ );
+
+	if ( month.length() < 2 ) month.prepend( "0" );
+	if ( day.length() < 2 ) day.prepend( "0" );
+
+	strRep_ = year + '-' + month + '-' + day;
 }
 
 	unsigned int
@@ -335,6 +371,7 @@ DateValue::setZoneMinute(unsigned int i)
 	QDate
 DateValue::qdate()
 {
+	parse();
 	QDate d(year_, month_, day_);
 	return d;
 }
@@ -342,6 +379,7 @@ DateValue::qdate()
 	QTime
 DateValue::qtime()
 {
+	parse();
 	QTime t(hour_, minute_, second_);
 //	t.setMs(1 / secFrac_);
 	return t;
@@ -350,6 +388,7 @@ DateValue::qtime()
 	QDateTime
 DateValue::qdt()
 {
+	parse();
 	QDateTime dt;
 	dt.setDate(qdate());
 	dt.setTime(qtime());

@@ -50,6 +50,8 @@ class DateValue : public Value
 
 	DateValue(const QDate &);
 	DateValue(const QDateTime &);
+
+	DateValue *clone();
 	
 	bool hasTime();
 	
@@ -82,8 +84,8 @@ class DateValue : public Value
 	private:
 		
 		unsigned int	year_, month_, day_,
-						hour_, minute_, second_,
-						zoneHour_, zoneMinute_;
+				hour_, minute_, second_,
+				zoneHour_, zoneMinute_;
 						
 		double secFrac_;
 

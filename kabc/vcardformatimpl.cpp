@@ -144,6 +144,10 @@ bool VCardFormatImpl::load( AddressBook *addressBook, const QString &fileName )
           a.setCategories( QStringList::split( ",", readTextValue( cl ) ) );
           break;
 
+        case EntityBirthday:
+          a.setBirthday( readDateValue( cl ) );
+          break;
+
         case EntityVersion:
           break;
           
@@ -231,6 +235,8 @@ bool VCardFormatImpl::save( AddressBook *addressBook, const QString &fileName )
 
     addTextValue( v, EntityCategories, (*it).categories().join(",") );
 
+    addDateValue( v, EntityBirthday, (*it).birthday().date() );
+
     vcardlist.append( v );
   }
 
@@ -268,6 +274,22 @@ void VCardFormatImpl::addTextValue( VCard *v, EntityType type, const QString &tx
   cl.setName( EntityTypeToParamName( type ) );
   cl.setValue( new TextValue( txt.utf8() ) );
   v->add(cl);
+}
+
+void VCardFormatImpl::addDateValue( VCard *vcard, EntityType type,
+                                    const QDate &date )
+{
+  kdDebug(5700) << "VCardFormatImpl::addDateValue(): " << date.toString()
+                << endl;
+
+  if ( !date.isValid() ) return;
+
+  ContentLine cl;
+  cl.setName( EntityTypeToParamName( type ) );
+
+  DateValue *v = new DateValue( date );
+  cl.setValue( v );
+  vcard->add(cl);
 }
 
 void VCardFormatImpl::addAddressValue( VCard *vcard, const Address &a )
@@ -445,4 +467,10 @@ QString VCardFormatImpl::readTextValue( ContentLine *cl )
     kdDebug(5700) << "No value: " << cl->asString() << endl;
     return QString::null;
   }
+}
+
+QDate VCardFormatImpl::readDateValue( ContentLine *cl )
+{
+  DateValue *dateValue = (DateValue *)cl->value();
+  return dateValue->qdate();
 }

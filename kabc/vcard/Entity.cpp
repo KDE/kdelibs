@@ -102,6 +102,8 @@ Entity::~Entity()
 	QCString
 Entity::asString()
 {
+//	vDebug("Entity::asString()");
+
 	assemble();
 	
 	return strRep_;
@@ -110,6 +112,8 @@ Entity::asString()
 	void
 Entity::parse()
 {
+//	vDebug( "Entity::parse()" );
+
 	if (!parsed_) _parse();
 	
 	parsed_		= true;
@@ -119,6 +123,8 @@ Entity::parse()
 	void
 Entity::assemble()
 {
+//	vDebug( "Entity::assemble()" );
+
 	if (assembled_) return;
 
 	parse();

@@ -103,6 +103,8 @@ AdrValue::clone()
 	void
 AdrValue::_parse()
 {
+	vDebug("AdrValue::_parse()");
+
 	QStrList l;
 	RTokenise(strRep_, ";", l);
 	
@@ -125,7 +127,7 @@ AdrValue::_parse()
 	void
 AdrValue::_assemble()
 {
-	vDebug("AdrValue::assemble_");
+	vDebug("AdrValue::_assemble");
 
 	strRep_ =		poBox_;
 	strRep_ += ";" +	extAddress_;

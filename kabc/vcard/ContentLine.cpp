@@ -25,6 +25,8 @@
 #include <qstrlist.h>
 #include <qregexp.h>
 
+#include <kdebug.h>
+
 #include <VCardAdrParam.h>
 #include <VCardAgentParam.h>
 #include <VCardDateParam.h>
@@ -209,6 +211,8 @@ ContentLine::_parse()
 
 	valueType_ = EntityTypeToValueType(entityType_);
 	
+	kdDebug(5710) << "valueType: " << valueType_ << endl;
+	
 	switch (valueType_) {
 		
 		case ValueSound:	value_ = new SoundValue;	break;
@@ -236,7 +240,7 @@ ContentLine::_parse()
 	void
 ContentLine::_assemble()
 {
-	vDebug("Assemble - my name is \"" + name_ + "\"");
+	vDebug("Assemble (argl) - my name is \"" + name_ + "\"");
 	strRep_.truncate(0);
 
 	QCString line;
@@ -255,6 +259,8 @@ ContentLine::_assemble()
 	vDebug("Adding value");
 	if (value_ != 0)
 		line += ":" + value_->asString();
+	else
+		vDebug("No value");
                 
 	// Quote newlines
 	line = line.replace( QRegExp( "\n" ), "\\n" );

@@ -48,6 +48,9 @@ class VCardFormatImpl {
     void addTextValue (VCARD::VCard *, VCARD::EntityType, const QString & );
     QString readTextValue( VCARD::ContentLine * );
     
+    void addDateValue( VCARD::VCard *, VCARD::EntityType, const QDate & );
+    QDate readDateValue( VCARD::ContentLine * );
+    
     void addAddressValue( VCARD::VCard *, const Address & );
     Address readAddressValue( VCARD::ContentLine * );
 

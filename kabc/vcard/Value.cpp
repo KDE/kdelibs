@@ -76,5 +76,6 @@ Value::_parse()
 	void
 Value::_assemble()
 {
+	vDebug("Value::_assemble()");
 }
 
