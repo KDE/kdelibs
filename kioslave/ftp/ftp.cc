@@ -1727,11 +1727,14 @@ bool Ftp::ftpOpenDir( const QString & path )
   // We changed into this directory anyway ("cwd"), so it's enough just to send "list".
   // We use '-a' because the application MAY be interested in dot files.
   // The only way to really know would be to have a metadata flag for this...
-  // ####### can't use -a, ftp://160.39.200.55 answers "Sorry, I don't see that file"
-  if( !ftpOpenCommand( "list", QString::null, 'A', ERR_CANNOT_ENTER_DIRECTORY ) )
+  // Since some windows ftp server seems not to support the -a argument, we use a fallback here.
+  if( !ftpOpenCommand( "list -a", QString::null, 'A', ERR_CANNOT_ENTER_DIRECTORY ) )
   {
-    kdWarning(7102) << "Can't open for listing" << endl;
-    return false;
+    if ( !ftpOpenCommand( "list", QString::null, 'A', ERR_CANNOT_ENTER_DIRECTORY ) )
+    {
+      kdWarning(7102) << "Can't open for listing" << endl;
+      return false;
+    }
   }
 
   dirfile = fdopen( sData, "r" );
