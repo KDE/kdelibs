@@ -1281,6 +1281,8 @@ void HTMLTokenizer::write( const QString &str )
     }
 
     _src = QString();
+    if (noMoreData && !cachedScript)
+	end(); // this actually causes us to be deleted
 }
 
 void HTMLTokenizer::end()
@@ -1302,7 +1304,7 @@ void HTMLTokenizer::finish()
     // this indicates we will not recieve any more data... but if we are waiting on
     // an external script to load, we can't finish parsing until that is done
     noMoreData = true;
-    if (!loadingExtScript)
+    if (!loadingExtScript && !executingScript)
 	end(); // this actually causes us to be deleted
 }
 
@@ -1415,8 +1417,6 @@ void HTMLTokenizer::notifyFinished(CachedObject *finishedObj)
            QString rest = scriptOutput+pendingSrc;
 	   scriptOutput = pendingSrc = "";
 	   write(rest);
-	   if (noMoreData && !cachedScript)
-	      end(); // this actually causes us to be deleted
         }
     }
 }
