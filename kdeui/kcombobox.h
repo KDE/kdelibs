@@ -22,13 +22,13 @@
 #ifndef _KCOMBOBOX_H
 #define _KCOMBOBOX_H
 
-#include <qcombobox.h>
 #include <qlineedit.h>
-#include <qpopupmenu.h>
-#include <qlistbox.h>
+#include <qcombobox.h>
 
 #include <kcompletion.h>
-#include <kicontheme.h>
+
+class QListBoxItem;
+class QLineEdit;
 
 /**
  * A combined button, line-edit and a popup list widget.

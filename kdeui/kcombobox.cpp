@@ -20,11 +20,14 @@
 */
 
 #include <qclipboard.h>
+#include <qlistbox.h>
 
 #include <kcursor.h>
 #include <klocale.h>
 #include <kpixmapprovider.h>
 #include <kstdaccel.h>
+#include <kpopupmenu.h>
+#include <kicontheme.h>
 #include <kdebug.h>
 
 #include "kcombobox.h"
@@ -291,7 +294,7 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
             if( !m_bEnableMenu )
                 return true;
 
-            QPopupMenu *popup = new QPopupMenu( this );
+            KPopupMenu *popup = new KPopupMenu( this );
             popup->insertItem( i18n( "Cut" ), Cut );
             popup->insertItem( i18n( "Copy" ), Copy );
             popup->insertItem( i18n( "Clear" ), Clear );

@@ -29,9 +29,7 @@
 #ifndef _KLINEEDIT_H
 #define _KLINEEDIT_H
 
-#include <qpopupmenu.h>
 #include <qlineedit.h>
-
 #include <kcompletion.h>
 
 /**

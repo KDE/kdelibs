@@ -26,6 +26,7 @@
 #include <kcursor.h>
 #include <klocale.h>
 #include <kstdaccel.h>
+#include <kpopupmenu.h>
 #include <kdebug.h>
 
 #include "klineedit.h"
@@ -216,7 +217,7 @@ void KLineEdit::mousePressEvent( QMouseEvent* e )
         if( !m_bEnableMenu )
             return;
 
-        QPopupMenu *popup = new QPopupMenu( this );            
+        KPopupMenu *popup = new KPopupMenu( this );
         popup->insertItem( i18n( "Cut" ), Cut );
         popup->insertItem( i18n( "Copy" ), Copy );
         popup->insertItem( i18n( "Clear" ), Clear );
