@@ -27,6 +27,3 @@ highcolor_la_LDFLAGS = $(all_libraries) $(KDE_PLUGIN) -module
 highcolor_la_LIBADD = $(LIB_KDEUI)
 highcolor_la_SOURCES = highcolor.cpp
 highcolor_la_METASOURCES = AUTO
-
-themercdir = $(kde_datadir)/kstyle/themes
-themerc_DATA = highcolor.themerc
