@@ -77,6 +77,8 @@
 #include <kopenssl.h>
 
 #include "crypto.h"
+#include "certexport.h"
+
 
 CipherItem::CipherItem( QListView *view, const QString& cipher, int bits,
 			int maxBits, KCryptoConfig *module )
@@ -920,7 +922,18 @@ void KCryptoConfig::slotCWall() {
 
 
 void KCryptoConfig::slotExportCert() {
-  KMessageBox::information(this, "Sorry, this isn't implemented yet.", i18n("SSL"));
+OtherCertItem *x = static_cast<OtherCertItem *>(otherSSLBox->selectedItem());
+   if (x) {
+     policies->setGroup(x->getSub());
+     KSSLCertificate *cert = KSSLCertificate::fromString(policies->readEntry("Certificate", "").local8Bit());
+     if (cert) {
+        KCertExport kce;
+        kce.setCertificate(cert);
+        kce.exec();
+        delete cert;
+     } else KMessageBox::sorry(this, i18n("Couldn't open the certificate."), 
+                                     i18n("SSL"));
+   }
 }
 
 
