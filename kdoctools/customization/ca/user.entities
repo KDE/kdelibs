@@ -7,29 +7,30 @@
  -->
 <!ENTITY Alt	"<keycap>Alt</keycap>">
 <!ENTITY Retro	"<keycap>Retrocés</keycap>"><!-- English: &Backspace; -->
-<!ENTITY cdrom	'<hardware>unitat lectora de CD-ROM</hardware>'>
+<!ENTITY cdrom	"<hardware>unitat lectora de CD-ROM</hardware>">
 <!ENTITY Ctrl	"<keycap>Ctrl</keycap>">
-<!ENTITY ppp	'<acronym>ppp</acronym>'><!-- English: &dpi; -->
-<!ENTITY pex    "<abbrev>p.ex.</abbrev>"><!-- English: &eg; -->
+<!ENTITY ppp	"<acronym>ppp</acronym>"><!-- English: &dpi; -->
+<!ENTITY pex	"<abbrev>p.ex.</abbrev>"><!-- English: &eg; -->
 <!ENTITY Intro	"<keycap>Intro</keycap>"><!-- English: &Enter; -->
 <!ENTITY Esc	"<keycap>Esc</keycap>">
-<!ENTITY etc    "<abbrev>etc.</abbrev>">
-<!ENTITY PMF	'<acronym>PMF</acronym>'>
-<!ENTITY ead    "<abbrev>és a dir</abbrev>"><!-- English: &ie; -->
+<!ENTITY etc	"<abbrev>etc.</abbrev>">
+<!ENTITY PMF	"<acronym>PMF</acronym>"><!-- English: &FAQ; -->
+<!ENTITY ead	"<abbrev>és a dir</abbrev>"><!-- English: &ie; -->
 <!ENTITY centreinfo	"<application>Centre d'informació</application>"><!-- English: &infocenter; -->
 <!ENTITY centrecontrol	"<application>Centre de control del &kde;</application>"><!-- English: &kcontrolcenter; -->
-<!ENTITY BER    "botó <mousebutton>esquerra</mousebutton> del ratolí"><!-- English: &LMB; -->
-<!ENTITY BMR    "botó <mousebutton>mig</mousebutton> del ratolí"><!-- English: &MMB; -->
-<!ENTITY BDR    "botó <mousebutton>dret</mousebutton> del ratolí"><!-- English: &RMB; -->
-<!ENTITY SO	"sistema operatiu"><!-- English: &OS; -->
-<!ENTITY Maj  	"<keycap>Majús.</keycap>"><!-- English: &Shift; -->
-<!ENTITY Tab	"<keycap>Tabulador</keycap>">
 <!ENTITY kicon	"<guiicon>
 <inlinemediaobject>
  <objectinfo><title>Les icones del &kde;</title></objectinfo>
  <imageobject><imagedata fileref='common/kmenu.png' format='PNG'/></imageobject>
  <textobject><phrase>K</phrase></textobject>
 </inlinemediaobject>
-</guiicon> icon"><!-- if image is localised, then entityref should be used 
+</guiicon> icon"><!-- if image is localised, then entityref should be used
                       instead of fileref -->
-<!ENTITY kmenu  "Menú <guimenu>K</guimenu>">
+<!ENTITY kmenu	"Menú <guimenu>K</guimenu>">
+<!ENTITY BER	"botó <mousebutton>esquerra</mousebutton> del ratolí"><!-- English: &LMB; -->
+<!ENTITY BMR	"botó <mousebutton>mig</mousebutton> del ratolí"><!-- English: &MMB; -->
+<!ENTITY SO	"sistema operatiu"><!-- English: &OS; -->
+<!ENTITY BDR	"botó <mousebutton>dret</mousebutton> del ratolí"><!-- English: &RMB; -->
+<!ENTITY Maj	"<keycap>Majús.</keycap>"><!-- English: &Shift; -->
+<!ENTITY safatasistema	"<application>safata del sistema</application>"><!-- English: &systemtray; -->
+<!ENTITY Tab	"<keycap>Tabulador</keycap>">
