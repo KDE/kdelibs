@@ -390,6 +390,8 @@ void KMJobViewer::updateJobs()
 			delete m_items.take(i);
 			i--;
 		}
+
+	slotSelectionChanged();
 }
 
 JobItem* KMJobViewer::findItem(const QString& uri)
