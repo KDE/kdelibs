@@ -16,8 +16,10 @@ int main( int argc, char **argv )
 	new QListViewItem( view, "Item 1");
 	new QListViewItem( view, "Item 2", "Some more", "Hi Mom :)" );	
 
-
 	view->restoreLayout( KGlobal::config(), "ListView" );
+
+	new QListViewItem( view, "Item 3" );
+
 	dialog.exec();
 	view->saveLayout( KGlobal::config(), "ListView" );
 

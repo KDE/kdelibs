@@ -65,7 +65,7 @@ Form1::Form1( QWidget* parent,  const char* name )
     edit->completionObject()->setIgnoreCase( true );
     edit->setFocus();
     QToolTip::add( edit, "right-click to change completion mode" );
-    
+
     Layout2 = new QHBoxLayout;
     Layout2->setSpacing( 6 );
     Layout2->setMargin( 0 );
@@ -78,7 +78,7 @@ Form1::Form1( QWidget* parent,  const char* name )
 	     combo, SLOT( addToHistory( const QString& )));
     QToolTip::add( combo, "KHistoryCombo" );
     Layout2->addWidget( combo );
-    
+
     LineEdit1 = new KLineEdit( GroupBox1, "LineEdit1" );
     Layout2->addWidget( LineEdit1 );
 
@@ -142,7 +142,13 @@ Form1::~Form1()
 
 void Form1::slotAdd()
 {
+    qDebug("** adding: %s", LineEdit1->text().latin1() );
     edit->completionObject()->addItem( LineEdit1->text() );
+    
+    QStringList matches = edit->completionObject()->allMatches("S");
+    QStringList::ConstIterator it = matches.begin();
+    for ( ; it != matches.end(); ++it )
+        qDebug("-- %s", (*it).latin1());
 }
 
 void Form1::slotRemove()
