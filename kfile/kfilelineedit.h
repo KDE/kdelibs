@@ -3,13 +3,10 @@
 
 // Qt includes
 #include <qstring.h>
-#include <qlabel.h>
 #include <qwidget.h>
-#include <qpushbutton.h>
-#include <klineedit.h>
 
-// KDE includes
-#include <kbuttonbox.h>
+class QPushButton;
+class KLineEdit;
 
 /**
  * @short Browsable file/dir selector
@@ -23,7 +20,7 @@ Q_OBJECT
 
 public:
     KPathLineEdit(const QString & initialPath, QWidget * parent);
-    KPathLineEdit(QWidget *parent){KPathLineEdit(0,parent);}
+    KPathLineEdit(QWidget *parent){KPathLineEdit(QString::null,parent);}
     virtual ~KPathLineEdit();
     virtual QString path() const;
     virtual void setPath(const QString &);
@@ -35,7 +32,7 @@ signals:
     virtual void changed(const QString &);
 
 protected:
-    QLineEdit *le_path_;
+    KLineEdit *le_path_;
     QPushButton *pb_select_;
 };
 

@@ -1,8 +1,11 @@
 #include <qlayout.h>
+#include <qstring.h>
+#include <qpushbutton.h>
 
-#include <kfiledialog.h>
-#include <kurl.h>
+#include <klineedit.h>
+#include <kiconloader.h>
 
+#include "kfiledialog.h"
 #include "kfilelineedit.h"
 
 KPathLineEdit::KPathLineEdit
@@ -12,7 +15,7 @@ KPathLineEdit::KPathLineEdit
     le_path_    = new KLineEdit(initialPath, this);
     pb_select_  = new QPushButton(this);
     
-    pb_select_->setPixmap(BarIcon("fileopen"));
+    //pb_select_->setPixmap(BarIcon("fileopen"));
     pb_select_->setFixedWidth(pb_select_->sizeHint().height());
 
     QObject::connect(pb_select_, SIGNAL(clicked()), this, SLOT(s_browse()));
