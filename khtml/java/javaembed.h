@@ -35,6 +35,7 @@ public:
     ~JavaEmbed();
 
     void embed( WId w );
+    bool embedded() { if( window != 0 ) return true; else return false; }
 
     QSize sizeHint() const;
     QSize minimumSizeHint() const;
