@@ -259,7 +259,8 @@ KWin::Info KWin::info( WId win )
 		    NET::WMDesktop |
 		    NET::WMPid |
 		    NET::WMKDEFrameStrut |
-		    NET::XAWMState
+		    NET::XAWMState |
+                    NET::WMGeometry
 		    );
 
     w.win = win;
