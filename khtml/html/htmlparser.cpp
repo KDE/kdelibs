@@ -647,6 +647,7 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
             e->addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, CSS_VAL_NONE);
             insertNode(e);
             handled = true;
+            break;
         case ID_DL:
             e = new HTMLGenericElementImpl( document, ID_DT );
             insertNode( e );
