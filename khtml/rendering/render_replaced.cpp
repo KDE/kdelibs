@@ -154,12 +154,19 @@ RenderWidget::~RenderWidget()
     delete m_widget;
 }
 
-static void resizeWidget( QWidget *widget, int w, int h )
+void  RenderWidget::resizeWidget( QWidget *widget, int w, int h )
 {
-    // ugly hack to limit the maximum size of the widget (as X11 has problems if it's bigger)
+    // ugly hack to limit the maximum size of the widget (as X11 has problems i
     h = QMIN( h, 3072 );
     w = QMIN( w, 2000 );
-    widget->resize( w, h );
+
+    if (widget->width() != w || widget->height() != h) {
+        ref();
+        element()->ref();
+        widget->resize( w, h );
+        element()->deref();
+        deref();
+    }
 }
 
 void RenderWidget::setQWidget(QWidget *widget)

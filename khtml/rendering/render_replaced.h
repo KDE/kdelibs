@@ -24,7 +24,6 @@
 #define render_replaced_h
 
 #include "render_box.h"
-
 #include <qobject.h>
 class KHTMLView;
 class QWidget;
@@ -89,6 +88,8 @@ public slots:
 protected:
     bool eventFilter(QObject* /*o*/, QEvent* e);
     void setQWidget(QWidget *widget);
+    void resizeWidget( QWidget *widget, int w, int h );
+
     QWidget *m_widget;
     KHTMLView* m_view;
 };
