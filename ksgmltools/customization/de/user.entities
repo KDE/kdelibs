@@ -9,5 +9,11 @@
 <!ENTITY kontrollleiste "<application>Kontrollleiste</application>" -- kicker -->
 <!ENTITY mondphase "<application>Mondphase</application>" -- kmoon -->
 <!ENTITY weltzeit "<application>Weltzeituhr</application>" -- kworldwatch -->
-<!ENTITY Strg "<keycap>Strg</keycap>" -- Steuerung -->
-<!ENTITY zb     "<abbrev>z.B.</abbrev>" -- zum Beispiel -->
+<!ENTITY Strg "<keycap>Strg</keycap>" -- ctrl -->
+<!ENTITY zb     "<abbrev>z.B.</abbrev>" -- eg -->
+<!ENTITY kde-hilfe "<application>KDE-Hilfe</application>" -- kde help -->
+<!ENTITY khilfezentrum "<application>KDE-Hilfezentrum</application>" -- khelpcenter -->
+<!ENTITY kcc "<application>KDE-Kontrollzentrum</application>">
+<!ENTITY k-de "K-Arbeitsumgebung" -- kde -->
+
+
