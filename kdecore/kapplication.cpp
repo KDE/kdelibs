@@ -80,7 +80,6 @@
 #include <qtextview.h>
 #include <qtabbar.h>
 
-#include <kdestyle.h>
 #include <kstartupinfo.h>
 
 #include <dcopclient.h>
