@@ -295,10 +295,10 @@ time_t KFileItem::time( unsigned int which ) const
       mappedWhich = KFileItemPrivate::Modification;
       break;
     case KIO::UDS_ACCESS_TIME:
-      mappedWhich = KFileItemPrivate::Modification;
+      mappedWhich = KFileItemPrivate::Access;
       break;
     case KIO::UDS_CREATION_TIME:
-      mappedWhich = KFileItemPrivate::Modification;
+      mappedWhich = KFileItemPrivate::Creation;
       break;
   }
 
