@@ -103,7 +103,13 @@ QValueList<QCString> KDCOPPropertyProxy::functions( QObject *object )
   QStrListIterator it( properties );
   for (; it.current(); ++it )
   {
+#if QT_VERSION < 300
     const QMetaProperty *metaProp = metaObj->property( it.current(), true );
+#else
+    // FIXME: after qt3 switch change this loop to iterate over the slot
+    // indices instead of using the slot findProperty()
+    const QMetaProperty *metaProp = metaObj->property( metaObj->findProperty( it.current(), true ), true );
+#endif
 
     assert( metaProp );
 
@@ -113,7 +119,11 @@ QValueList<QCString> KDCOPPropertyProxy::functions( QObject *object )
     name.append( "()" );
     res << name;
 
+#if QT_VERSION < 300
     if ( metaProp->writeable() )
+#else
+    if ( metaProp->writable() )
+#endif
     {
       QCString setName = it.current();
       setName[ 0 ] = toupper( setName[ 0 ] );

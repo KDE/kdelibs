@@ -21,6 +21,7 @@
 
 #include <dcopobject.h>
 #include <qobject.h>
+#include <qstringlist.h>
 #include "ksycocatype.h"
 
 class QDataStream;

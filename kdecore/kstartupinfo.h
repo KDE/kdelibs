@@ -31,6 +31,7 @@ DEALINGS IN THE SOFTWARE.
 #include <qobject.h>
 #include <qcstring.h>
 #include <qstring.h>
+#include <qvaluelist.h>
 
 class KStartupInfoId;
 class KStartupInfoData;

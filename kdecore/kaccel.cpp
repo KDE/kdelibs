@@ -832,7 +832,7 @@ uint KAccel::stringToKey( const QString& keyStr, unsigned char *pKeyCodeX, uint 
 
 		// Check if this is a modifier key (Shift, Ctrl, Alt, Meta).
 		for( i = 0; i < MOD_KEYS; i++ ) {
-			if( g_aModKeys[i].keyModMaskQt && stricmp( sKeySym.ascii(), g_aModKeys[i].keyName ) == 0 ) {
+			if( g_aModKeys[i].keyModMaskQt && qstricmp( sKeySym.ascii(), g_aModKeys[i].keyName ) == 0 ) {
 				// If there is no X mod flag defined for this modifier,
 				//  then all zeroes should be returned for the X-codes.
 				// Ex: If string="Meta+F1", but X hasn't assigned Meta, don't return 'F1'.
@@ -863,7 +863,7 @@ uint KAccel::stringToKey( const QString& keyStr, unsigned char *pKeyCodeX, uint 
 			else {
 				// Search for Qt keycode
 				for( i = 0; i < NB_KEYS; i++ ) {
-					if( stricmp( sKeySym.ascii(), KKEYS[i].name ) == 0 ) {
+					if( qstricmp( sKeySym.ascii(), KKEYS[i].name ) == 0 ) {
 						keyCombQt |= KKEYS[i].code;
 						keyQtToKeyX( KKEYS[i].code, 0, &keySymX, 0 );
 						if( KKEYS[i].code < 0x1000 && QChar(KKEYS[i].code).isLetter() )
@@ -1048,7 +1048,7 @@ uint KAccel::keySymXToKeyQt( uint keySymX, uint keyModX )
 		// Find name of key, and assign its code to keyCombQt.
 		const char *psKeySym = XKeysymToString( keySymX );
 		for( int i = 0; i < NB_KEYS; i++ ) {
-			if( stricmp( psKeySym, KKEYS[i].name ) == 0 ) {
+			if( qstricmp( psKeySym, KKEYS[i].name ) == 0 ) {
 				keyCombQt = KKEYS[i].code;
 				break;
 			}
