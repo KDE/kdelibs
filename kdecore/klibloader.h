@@ -92,18 +92,13 @@ public:
      * if asked for a "QWidget", it could create a wrapper widget,
      * that encapsulates the Koffice specific features.
      *
-     * Never reimplement this function. Instead, reimplement @ref
-     * createObject().
-     *
      * create() automatically emits a signal @ref objectCreated to tell
      * the library about its newly created object.  This is very
      * important for reference counting, and allows unloading the
      * library automatically once all its objects have been destroyed.
-     *
-     * This function is virtual for compatibility reasons only.
      */
 
-    virtual QObject* create( QObject* parent = 0, const char* name = 0, const char* classname = "QObject", const QStringList &args = QStringList() );
+     QObject* create( QObject* parent = 0, const char* name = 0, const char* classname = "QObject", const QStringList &args = QStringList() );
 
 signals:
     /**
@@ -126,7 +121,7 @@ protected:
      *
      * This function is called by @ref create()
      */
-    virtual QObject* createObject( QObject* parent = 0, const char* name = 0, const char* classname = "QObject", const QStringList &args = QStringList() );
+    virtual QObject* createObject( QObject* parent = 0, const char* name = 0, const char* classname = "QObject", const QStringList &args = QStringList() ) = 0;
 
 
 private:
