@@ -85,7 +85,7 @@ KZip::KZip( const QString& filename, const QString & _mimetype )
         	            mimetype = "application/x-zip";
 		}
 	    }
-	    //FIXME : close file, also in ktar.cpp...
+	    // no need to close file, the QFile destructor does it
             forced = false;
 	}
     }

@@ -1,6 +1,5 @@
 /* This file is part of the KDE libraries
-   Copyright (C) 2000 David Faure <faure@kde.org>
-   directly "ported" from the tar stuff to support zip file format.
+   Copyright (C) 2002 Holger Schroeder <holger-kde@holgis.net>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -29,13 +28,14 @@
 #include <qvaluelist.h>
 #include <karchive.h>
 
+class KZipFileEntry;
+
+// Directly "ported" from the tar stuff to support zip file format.
+
 /**
  * @short A class for reading/writing zip archives.
  * @author Holger Schroeder <holger-kde@holgis.net>
  */
-
-class KZipFileEntry;
-
 class KZipFilter : public QIODevice
 {
 /*
