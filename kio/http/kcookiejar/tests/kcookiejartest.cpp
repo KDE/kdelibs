@@ -29,9 +29,9 @@ static void addCookies( QString url, QCString cookieHeader)
    QDataStream stream(params, IO_WriteOnly);
    long int winId;
    stream << url << cookieHeader << winId;
-   if (!kapp->dcopClient()->send("kcookiejar", "kcookiejar", 
-	"addCookies(QString,QCString,long int)", params))
-	printf("There was some error using DCOP!\n");
+   if (!kapp->dcopClient()->send("kcookiejar", "kcookiejar",
+       "addCookies(QString,QCString,long int)", params))
+      printf("There was some error using DCOP!\n");
 }
 
 static QString findCookies( QString url)
@@ -40,65 +40,136 @@ static QString findCookies( QString url)
    QByteArray params, reply;
    QDataStream stream(params, IO_WriteOnly);
    stream << url;
-   if (!kapp->dcopClient()->call("kcookiejar", "kcookiejar", 
-	"findCookies(QString)", params, replyType, reply))
+   if (!kapp->dcopClient()->call("kcookiejar", "kcookiejar",
+       "findCookies(QString)", params, replyType, reply))
    {
-	printf("There was some error using DCOP!\n");
-        return QString::null;
+      printf("There was some error using DCOP!\n");
+      return QString::null;
    }
 
    QDataStream stream2(reply, IO_ReadOnly);
    if(replyType != "QString")
    {
       printf("DCOP function findCookies(...) return %s, expected %s\n",
-		replyType.data(), "QString");
+              replyType.data(), "QString");
       return QString::null;
    }
 
    QString result;
    stream2 >> result;
-
    return result;
 }
 
-static QString findDOMCookies( QString url)
+static QString findDOMCookies( QString url )
 {
    QCString replyType;
    QByteArray params, reply;
    QDataStream stream(params, IO_WriteOnly);
    stream << url;
-   if (!kapp->dcopClient()->call("kcookiejar", "kcookiejar", 
-	"findDOMCookies(QString)", params, replyType, reply))
+   if (!kapp->dcopClient()->call("kcookiejar", "kcookiejar",
+       "findDOMCookies(QString)", params, replyType, reply))
    {
-	printf("There was some error using DCOP!\n");
-        return QString::null;
+      printf("There was some error using DCOP!\n");
+      return QString::null;
    }
 
    QDataStream stream2(reply, IO_ReadOnly);
    if(replyType != "QString")
    {
       printf("DCOP function findDOMCookies(...) return %s, expected %s\n",
-		replyType.data(), "QString");
+              replyType.data(), "QString");
       return QString::null;
    }
 
    QString result;
    stream2 >> result;
-
    return result;
 }
 
 
 int main(int argc, char *argv[])
 {
-   KApplication k(argc, argv, "kcookiejartest");
- 
-   kapp->dcopClient()->attach();
-   kapp->dcopClient()->registerAs( kapp->name()) ;
-
    QString arg1;
    QCString arg2;
    QString result;
+
+   KApplication k(argc, argv, "kcookiejartest");
+   kapp->dcopClient()->attach();
+   kapp->dcopClient()->registerAs( kapp->name()) ;
+
+   if (!kapp->dcopClient()->isApplicationRegistered("kcookiejar"))
+   {
+      QString error;
+       if (KApplication::startServiceByDesktopName("kcookiejar", QStringList(), &error ))
+       {
+          // Error starting kcookiejar.
+          printf("Error starting KCookiejar: %s\n", error.latin1());
+       }
+   }
+
+   //********************************************************* Duplicate cookies test in terms of values
+   arg1 = "http://w.y.z/";
+   printf("Set-Cookie request for: %s\n", arg1.latin1());
+   arg2 = "Set-Cookie: some_value=value1; Path=\"/\"; expires=Fri, 04-May-2002 01:00:00 GMT";
+   addCookies(arg1, arg2);
+
+   arg1 = "http://x.y.z/";
+   printf("Set-Cookie request for: %s\n", arg1.latin1());
+   arg2 = "Set-Cookie: some_value=value2\"; Path=\"/\"; expires=Fri, May-04-2002 01:00:00 GMT";
+   addCookies(arg1, arg2);
+/*
+   arg1 = "http://x.y.z/";
+   printf("Set-Cookie request for: %s\n", arg1.latin1());
+   arg2 = "Set-Cookie: some_value=value3; Path=\"/\"; domain=\".y.z\"; expires=Fri, May-04-2002 01:00:00 GMT";
+   addCookies(arg1, arg2);
+*/
+   arg1 = "http://foo.com/";
+   printf("Requesting to set cookie for %s\n", arg1.latin1());
+   arg2 = "Set-Cookie: some_value=value1; expires=Fri, 04-May-2002 01:00:00 GMT";
+   addCookies(arg1, arg2);
+
+   arg1 = "http://www.foo.com/";
+   printf("Requesting to set cookie for %s\n", arg1.latin1());
+   arg2 = "Set-Cookie: some_value=value2; expires=Fri, 04-May-2002 01:00:00 GMT";
+   addCookies(arg1, arg2);
+
+   
+   arg1 = "http://x.y.z/";
+   printf("Looking up cookies for %s \n", arg1.latin1());
+   result = findCookies(arg1);
+   printf("RESULT: %s\n\n", result.latin1() );
+
+   arg1 = "http://x.y.z/";
+   printf("Looking up cookies for %s \n", arg1.latin1());
+   result = findCookies(arg1);
+   printf("RESULT: %s\n\n", result.latin1() );
+
+   arg1 = "http://x.y.z/";
+   printf("Looking up cookies for %s \n", arg1.latin1());
+   result = findCookies(arg1);
+   printf("RESULT: %s\n\n", result.latin1() );
+
+   arg1 = "http://x.y.z/";
+   printf("Looking up cookies for %s \n", arg1.latin1());
+   result = findCookies(arg1);
+   printf("RESULT: %s\n\n", result.latin1() );
+
+   arg1 = "http://x.y.z/";
+   printf("Looking up cookies for %s \n", arg1.latin1());
+   result = findCookies(arg1);
+   printf("RESULT: %s\n\n", result.latin1() );
+
+   /********************************************************* Space in the value test
+   arg1 = "http://x.y.z/";
+   printf("Requesting to set cookie for %s\n", arg1.latin1());
+   arg2 = "Set-Cookie: another_value=\"abcd efgh ijkl mnopq rstuv wxyz\"; Path=\"/\"; domain=\".y.z\"";
+   addCookies(arg1, arg2);
+
+   arg1 = "http://x.y.z/";
+   printf("Looking up cookies for %s \n", arg1.latin1());
+   result = findCookies(arg1);
+   printf("RESULT: %s\n\n", result.latin1() );
+
 
    // Simple Case tests...
    arg1 = "http://www.foo.com/";
@@ -164,7 +235,6 @@ int main(int argc, char *argv[])
    arg2 = "Set-Cookie: set_by_A=\"x.y.foo.com\"; Domain=\"foo.com\"";
    addCookies(arg1, arg2);
 
-
    // A miscevious test.  This should appear in ".foobar.com".  In
    // the old code it appeared in "foobar.com" and caused problems
    // if one then went to www.foobar.com basically the same site!!
@@ -187,8 +257,8 @@ int main(int argc, char *argv[])
    addCookies(arg1, arg2);
 
 
-   /* Anything below here should simply be flat-out rejected by the cookiejar!!
-      The user should not even see these at all! */
+   // Anything below here should simply be flat-out rejected by the cookiejar!!
+   // The user should not even see these at all!
    arg1 = "http://www.foobar.co.uk/";
    printf("Requesting to set cookie for %s\n", arg1.latin1());
    arg2 = "Set-Cookie: set_by_AA=\"www.foobar.co.uk\"; Path=\"/\"; Domain=\".foorbar.com\"";
@@ -204,7 +274,7 @@ int main(int argc, char *argv[])
    arg2 = "Set-Cookie: set_by_CC=\"www.foobar.com\"; Path=\"/\"; Domain=\".foobar.co.uk\"";
    addCookies(arg1, arg2);
 
-/* ****************************************************************************************************************** */
+
 
    // Should PASS.
    arg1 = "http://www.foo.com/";
@@ -317,5 +387,5 @@ int main(int argc, char *argv[])
    result = findDOMCookies(arg1);
    printf("EXPECTED: %s\n", "set_by_8=x.y.foobar.co.uk" );
    printf("RESULT: %s\n\n", result.latin1() ? result.latin1() : "<NULL>");
-
+*/
 }
