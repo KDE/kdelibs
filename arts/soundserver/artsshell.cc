@@ -101,7 +101,6 @@ execute <module.arts>
 */
 
 #include <unistd.h>
-#include <iostream>
 #include <iostream.h>
 #include "soundserver.h"
 #include "dispatcher.h"
@@ -110,6 +109,7 @@ execute <module.arts>
 
 bool quiet = false;
 
+using namespace std;
 
 // Display command usage and exit
 void usage()

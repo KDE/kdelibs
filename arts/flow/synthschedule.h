@@ -26,7 +26,6 @@
 #include "artsflow.h"
 #include "flowsystem.h"
 #include <string>
-#include <vector>
 #include <list>
 
 /*
