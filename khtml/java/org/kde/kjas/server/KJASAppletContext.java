@@ -73,7 +73,7 @@ public class KJASAppletContext implements AppletContext
             } else {
                 // there is already an archive attribute.
                 // just add the value of the param to the list
-                archives += "," + (String)params.get(key);
+                archives = (String)params.get(key) + "," + archives;
             }
         } else if (archives != null) {
             // add param if it is not present
