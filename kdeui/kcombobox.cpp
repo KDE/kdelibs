@@ -110,18 +110,25 @@ bool KComboBox::contains( const QString& _text ) const
 
 void KComboBox::setAutoCompletion( bool autocomplete )
 {
-    if ( d->klineEdit ) {
-        d->klineEdit->setCompletionMode( autocomplete ?
-                                         KGlobalSettings::CompletionAuto :
-                                         KGlobalSettings::completionMode() );
-        setCompletionMode( autocomplete ? KGlobalSettings::CompletionAuto:
-                           KGlobalSettings::completionMode() );
+    if ( d->klineEdit )
+    {
+        if ( autocomplete )
+        {
+            d->klineEdit->setCompletionMode( KGlobalSettings::CompletionAuto );
+            setCompletionMode( KGlobalSettings::CompletionAuto );
+        }
+        else
+        {
+            d->klineEdit->setCompletionMode( KGlobalSettings::completionMode() );
+            setCompletionMode( KGlobalSettings::completionMode() );
+        }
     }
 }
 
 void KComboBox::setContextMenuEnabled( bool showMenu )
 {
-    if( d->klineEdit ) {
+    if( d->klineEdit )
+    {
         d->klineEdit->setContextMenuEnabled( showMenu );
         m_bEnableMenu = showMenu;
     }

@@ -217,6 +217,19 @@ public:
     virtual void setAutoCompletion( bool autocomplete );
 
     /**
+    * Re-implemented from QComboBox.
+    *
+    * Returns @p true if the current completion mode is set
+    * to automatic.  See its more comprehensive replacement
+    * @ref completionMode().
+    *
+    * @return @p true when completion mode is automatic.
+    */
+    bool autoCompletion() const {
+        return completionMode() == KGlobalSettings::CompletionAuto;
+    }
+
+    /**
     * Enables or disable the popup (context) menu.
     *
     * This method only works if this widget is editable, i.e.
