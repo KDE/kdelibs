@@ -359,22 +359,23 @@ void KMdiChildArea::focusTopChild()
 	{
 		kdDebug( 760 ) << k_funcinfo << "No more child windows left" << endl;
 		emit lastChildFrmClosed();
-		return ;
+		return;
 	}
-	
-	kdDebug( 760 ) << k_funcinfo << "Giving focus to " << lastChild->caption() << endl;
-	//disable the labels of all the other children
-	QPtrListIterator<KMdiChildFrm> it ( *m_pZ );
-	for ( ; ( *it ); +it )
-	{
-		if ( ( *it ) != lastChild )
-			( *it )->m_pCaption->setActive( false );
-	}
-	
-	lastChild->raise();
-	
+
 	if ( !lastChild->m_pClient->hasFocus() )
+	{
+		//disable the labels of all the other children
+		QPtrListIterator<KMdiChildFrm> it ( *m_pZ );
+		for ( ; ( *it ); ++it )
+		{
+			if ( ( *it ) != lastChild )
+				( *it )->m_pCaption->setActive( false );
+		}
+
+		kdDebug( 760 ) << k_funcinfo << "Giving focus to " << lastChild->caption() << endl;
+		lastChild->raise();
 		lastChild->m_pClient->activate();
+	}
 
 }
 
