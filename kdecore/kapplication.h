@@ -233,7 +233,7 @@ public:
    * function is called.
    */
   static DCOPClient *dcopClient();
-  
+
   /**
    * Disable automatic dcop registration
    * Must be called before creating a KApplication instance to have an effect.
@@ -819,12 +819,20 @@ public:
        See @ref QApplication::saveState() for documentation.
 
        This function is just a convenience version to avoid subclassing KApplication.
+       
+       Return true to indicate a successful state save or false to
+       indicate a problem and to halt the shutdown process (will
+       implictely call sm.cancel() ).
      */
   virtual bool saveState( QSessionManager& sm );
     /**
        See @ref QApplication::commitData() for documentation.
 
        This function is just a convenience version to avoid subclassing KApplication.
+       
+       Return true to indicate a successful commit of data or false to
+       indicate a problem and to halt the shutdown process (will
+       implictely call sm.cancel() ).
      */
   virtual bool commitData( QSessionManager& sm );
 
