@@ -1959,6 +1959,12 @@ void KExtendedSocket::connectionEvent()
 {
   if (d->status != connecting)
     return;			// move along. There's nothing to see here
+  if (d->resolution == 0 || d->resolution->data == 0)
+    {
+      // We have a problem! Abort?
+      kdError(170) << "KExtendedSocket::connectionEvent() called but no data available!\n";
+      return;
+    }
 
   int errcode = 0;
 
