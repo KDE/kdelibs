@@ -107,7 +107,8 @@ namespace KJS {
 
     KJS::Global::current().setExtra(khtmlpart);
     bool ret = script->evaluate(thisNode, c, len);
-    KJS::Global::current().setExtra(0L);
+    if (script->recursion() == 0)
+      KJS::Global::current().setExtra(0L);
 
 #ifdef KJS_DEBUGGER
     kjs_html_debugger->setCode(QString::null);
