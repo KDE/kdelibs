@@ -168,6 +168,7 @@ DistributionListEditorWidget::DistributionListEditorWidget( AddressBook *address
   mAddresseeView = new QListView( this );
   mAddresseeView->addColumn( i18n("Name") );
   mAddresseeView->addColumn( i18n("Preferred Email") );
+  mAddresseeView->setAllColumnsShowFocus( true );
   gridLayout->addWidget( mAddresseeView, 1, 0 );
   connect( mAddresseeView, SIGNAL( selectionChanged() ),
            SLOT( slotSelectionAddresseeViewChanged() ) );
@@ -184,6 +185,7 @@ DistributionListEditorWidget::DistributionListEditorWidget( AddressBook *address
   mEntryView->addColumn( i18n("Email") );
   mEntryView->addColumn( i18n("Use Preferred") );
   mEntryView->setEnabled(false);
+  mEntryView->setAllColumnsShowFocus( true );
   gridLayout->addMultiCellWidget( mEntryView, 1, 1, 1, 2 );
   connect( mEntryView, SIGNAL( selectionChanged() ),
            SLOT( slotSelectionEntryViewChanged() ) );

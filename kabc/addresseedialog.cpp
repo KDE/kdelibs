@@ -107,6 +107,7 @@ AddresseeDialog::AddresseeDialog( QWidget *parent, bool multiple ) :
   }
 
   mAddressBook = StdAddressBook::self();
+  connect( mAddressBook, SIGNAL( addressBookChanged( AddressBook* ) ), SLOT( addressBookChanged() ) );
 
   loadAddressBook();
 }
@@ -240,4 +241,9 @@ Addressee::List AddresseeDialog::getAddressees( QWidget *parent )
 
   delete dlg;
   return addressees;
+}
+
+void AddresseeDialog::addressBookChanged()
+{
+  loadAddressBook();
 }

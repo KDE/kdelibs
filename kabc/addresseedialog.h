@@ -133,6 +133,9 @@ class AddresseeDialog : public KDialogBase
     void addSelected( QListViewItem *item );
     void removeSelected();
 
+  protected slots:
+    void addressBookChanged();
+
   private:
     void loadAddressBook();
     void addCompletionItem( const QString &str, QListViewItem *item );

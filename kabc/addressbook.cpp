@@ -18,16 +18,17 @@
     Boston, MA 02111-1307, USA.
 */
 
-#include <qtimer.h>
 #include <qfile.h>
 #include <qregexp.h>
+#include <qtimer.h>
 
 #include <kapplication.h>
-#include <kstandarddirs.h>
 #include <kdebug.h>
-#include <klocale.h>
+#include <kdirwatch.h>
 #include <kglobal.h>
 #include <kinstance.h>
+#include <klocale.h>
+#include <kstandarddirs.h>
 
 #include "errorhandler.h"
 #include "resource.h"
@@ -45,6 +46,7 @@ struct AddressBook::AddressBookData
   QPtrList<Resource> mResources;
   ErrorHandler *mErrorHandler;
   Resource *mStandardResource;
+  KDirWatch mDirWatch;
 };
 
 struct AddressBook::Iterator::IteratorData
@@ -204,10 +206,17 @@ AddressBook::AddressBook()
   d->mResources.setAutoDelete( true );
   d->mErrorHandler = 0;
   d->mStandardResource = 0;
+
+  d->mDirWatch.addFile( locateLocal( "data", "kabc/distlists" ) );
+  connect( &d->mDirWatch, SIGNAL( dirty( const QString& ) ), SLOT( distributionListChanged() ) );
+  connect( &d->mDirWatch, SIGNAL( created( const QString& ) ), SLOT( distributionListChanged() ) );
+  connect( &d->mDirWatch, SIGNAL( deleted( const QString& ) ), SLOT( distributionListChanged() ) );
+  d->mDirWatch.startScan();
 }
 
 AddressBook::~AddressBook()
 {
+  d->mDirWatch.stopScan();
   d->mResources.clear();
   d->mStandardResource = 0;
   delete d->mErrorHandler;
@@ -597,4 +606,9 @@ void AddressBook::cleanUp()
     if ( !resource->readOnly() )
       resource->cleanUp();
   }
+}
+
+void AddressBook::distributionListChanged()
+{
+  emitAddressBookChanged();
 }
