@@ -188,10 +188,13 @@ protected:
   static void errorMissingMimeType( const QString& _type );
 
   /**
-   * This function makes sure that vital mime types are installed.
-   * It must be called by all public static methods
+   * This function makes sure that the default mime type exists
    */
-  static void check();
+  static void buildDefaultType();
+  /**
+   * This function makes sure that vital mime types are installed.
+   */
+  static void checkEssentialMimeTypes();
   /**
    * True if check for vital mime types has been done
    */

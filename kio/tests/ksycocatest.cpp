@@ -23,6 +23,18 @@ main(int argc, char *argv[])
      debug("Not found !");
    }
      
+   debug("Trying to look for application/x-zerosize");
+   KMimeType::Ptr s0 = KMimeType::mimeType("application/x-zerosize");
+   if ( s0 )
+   {
+     debug("Found it !");
+     debug(QString("Comment is %1").arg(s0->comment("",false)));
+   }
+   else
+   {
+     debug("Not found !");
+   }
+     
    debug("Trying to look for Konqueror");
    KService::Ptr se = KService::service("Konqueror");
    if ( se )

@@ -48,13 +48,9 @@
 KMimeType::Ptr KMimeType::s_pDefaultType = 0L;
 bool KMimeType::s_bChecked = false;
 
-void KMimeType::check()
+void KMimeType::buildDefaultType()
 {
-  if ( s_bChecked )
-    return;
-
-  s_bChecked = true; // must be done before building mimetypes
-
+  assert ( !s_pDefaultType );
   // Try to find the default type
   KMimeType::Ptr defaultType = KMimeType::mimeType( "application/octet-stream" );
   if (defaultType == 0L)  
@@ -67,6 +63,17 @@ void KMimeType::check()
   }
   else
       s_pDefaultType = defaultType;
+}
+
+// Check for essential mimetypes
+void KMimeType::checkEssentialMimeTypes()
+{
+  if ( s_bChecked ) // already done
+    return;
+  if ( !s_pDefaultType ) // we need a default type first
+    buildDefaultType();
+
+  s_bChecked = true; // must be done before building mimetypes
 
   // No Mime-Types installed ?
   // Lets do some rescue here.
@@ -120,14 +127,14 @@ void KMimeType::errorMissingMimeType( const QString& _type )
 
 KMimeType::Ptr KMimeType::mimeType( const QString& _name )
 {
-  //check(); We don't need to do it since we know which mimetype we're looking for
   KServiceType * mime = KServiceTypeFactory::self()->findServiceTypeByName( _name );
     
   if ( !mime || !mime->isType( KST_KMimeType ) )
   {
     if ( _name == "application/octet-stream" )
       return 0L;
-    assert(s_pDefaultType);
+    if ( !s_pDefaultType )
+      buildDefaultType();
     return s_pDefaultType;
   }
 
@@ -137,14 +144,13 @@ KMimeType::Ptr KMimeType::mimeType( const QString& _name )
 
 KMimeType::List KMimeType::allMimeTypes()
 {
-  check();
   return KServiceTypeFactory::self()->allMimeTypes();
 }
 
 KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
 				 bool _is_local_file, bool _fast_mode )
 {
-  check();
+  checkEssentialMimeTypes();
 
   if ( !_fast_mode && !_is_local_file && _url.isLocalFile() )
     _is_local_file = true;
