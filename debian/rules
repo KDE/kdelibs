@@ -52,7 +52,8 @@ binary-arch:  build
 	dh_clean 
 	dh_installdirs
 	make -C $(BUILDDIR) DESTDIR=`pwd`/debian/tmp install
-
+	install -d debian/tmp/etc
+	cp debian/kderc debian/tmp/etc
 	perl -w admin/debianrules kdelibs3-cvs
 	eval `perl -w admin/debianrules echodirs`; \
 	dh_movefiles -pkdelibs3-cvs-dev usr/include/kde usr/lib/lib*.so usr/lib/lib*.la usr/lib/lib*.a

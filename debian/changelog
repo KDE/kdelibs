@@ -1,3 +1,10 @@
+kdelibs-cvs (4:2.0-19990626-1) experimental; urgency=low
+
+  * New upstream CVS version
+  * Fixing the /etc/kderc file (had it there, just didn't install it)
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sat, 26 Jun 1999 07:00:28 -0400
+
 kdelibs-cvs (4:2.0-19990624-1) experimental; urgency=low
 
   * New upstream CVS version
