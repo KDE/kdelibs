@@ -56,8 +56,11 @@ libkssl_la_SOURCES	= \
 			ksslpkcs7.cc		  \
 			ksslpemcallback.cc	  \
 			ksslx509map.cc		  \
+			ksslsession.cc		  \
 			keygenwizard.ui		  \
 			keygenwizard2.ui
+
+noinst_HEADERS = ksslsession.h
 
 SUBDIRS = kssl
 

@@ -28,6 +28,7 @@
 class KSSLPrivate;
 class KSSLCertificate;
 class KSSLPKCS12;
+class KSSLSession;
 
 /**
  * KDE SSL Wrapper Class
@@ -248,6 +249,17 @@ public:
 	 *  @see KSSLPeerInfo
 	 */
 	KSSLPeerInfo& peerInfo();
+
+	/**
+	 *  Obtain a pointer to the session information.
+	 *
+	 *  @return a pointer to the session information.
+	 *          This is valid after connected, while connected.
+	 *          It is deleted by the KSSL object which returns it.
+	 *          May return 0L if no valid session exists.
+	 *  @see KSSLSession
+	 */
+	const KSSLSession* session() const;
 
 private:
 	static bool m_bSSLWorks;

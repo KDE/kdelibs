@@ -764,6 +764,11 @@ public:
    /* Print the errors to this stream */
    void ERR_print_errors_fp(FILE *fp);
 
+   /* Get a pointer to the SSL session id (reference counted) */
+   SSL_SESSION *SSL_get1_session(SSL *ssl);
+
+   /* Frees a pointer to the SSL session id (reference decremented if needed) */
+   void SSL_SESSION_free(SSL_SESSION *session);
 
 #endif
 
