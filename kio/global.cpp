@@ -340,6 +340,9 @@ QString Job::errorString()
     case KIO::ERR_CANNOT_SYMLINK:
       result = i18n( "Could not create symlink %1.\nPlease check permissions." ).arg( m_errorText );
       break;
+    case  KIO::ERR_NO_CONTENT:
+      result = m_errorText;
+      break;
     default:
       result = i18n( "Unknown error code %1\n%2\n\nPlease send a full bugreport at http://bugs.kde.org" ).arg( m_error ).arg( m_errorText );
       break;
