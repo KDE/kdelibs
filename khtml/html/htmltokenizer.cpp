@@ -1138,6 +1138,9 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                 prePos = 0;
                 discard = AllDiscard;
                 break;
+            case ID_BR:
+                prePos = 0;
+                break;
             case ID_SCRIPT:
                 if (beginTag) {
                     searchStopper = scriptEnd;
