@@ -15,6 +15,10 @@ import java.util.zip.*;
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.8  2000/08/31 00:12:52  rogozin
+ * Patch for loading applets referenced by full package name applied.
+ * Author: Wim van Velthoven (W.vanVelthoven@fi.uu.nl)
+ *
  * Revision 1.7  2000/03/22 05:19:38  rogozin
  *
  * Window geometry is now handled correctly.
@@ -66,6 +70,8 @@ public class KJASAppletClassLoader
       StringTokenizer parser = new StringTokenizer(jars, ",", false);
       while(parser.hasMoreTokens()) {
 	 String jar = parser.nextToken().trim();
+	 if(Main.debug) 
+	    System.out.println("CL: Loading archive: " + jar);
          ZipInputStream zip = null;
          try {
             zip = new ZipInputStream((new URL( codeBase, jar )).openStream());
@@ -73,11 +79,14 @@ public class KJASAppletClassLoader
             // For every zip entry put it data to the hash table
 	    ZipEntry entry;
             while((entry = zip.getNextEntry()) != null) {
-              
+
                // Skip directories
 	       if(entry.isDirectory())
 		  continue; 
-	       
+
+	       if(Main.debug) 
+		  System.out.println("CL: Loading entry: " + entry.getName());
+
                // If we know the total length of the entry in advance 
                // allocate the exact array. Otherwise do it bu chunks
                // and reallocated if needed
@@ -95,6 +104,7 @@ public class KJASAppletClassLoader
 			break;
 		  }
 	       }
+
 	       // Store the raw data
 	       rawData.put(entry.getName(), data);
 	    }
@@ -178,9 +188,17 @@ public class KJASAppletClassLoader
    {
       if(rawData.isEmpty())
          return null;
-
+      
       // Convert name and see if we have such a beast
+      if ( name.endsWith( ".class" ) )
+	  name = name.substring( 0, name.indexOf( ".class" ) );
       String cname = name.replace('.', '/') + ".class";
+	       
+      if(Main.debug) {
+	  System.out.println("CL: findJarClass: name  = " + name);
+	  System.out.println("CL: findJarClass: cname = " + cname);
+      }
+
       byte data[] = (byte[]) rawData.get(cname);
       
       if(data != null) {
@@ -206,8 +224,8 @@ public class KJASAppletClassLoader
       String cname = name.replace('.','/') + ".class";
 
       if(Main.debug) {
-         System.out.println( "findURLClass: name =" + name );
-         System.out.println( "findURLClass: cname=" + cname );
+         System.out.println( "CL: findURLClass: name  = " + name );
+         System.out.println( "CL: findURLClass: cname = " + cname );
       }
 
       InputStream in = null;
