@@ -16,6 +16,6 @@ METASOURCES = AUTO
 messages: rc.cpp
 	$(XGETTEXT) *.cpp -o $(podir)/kabc_imap.pot
 
-linkdir		= $(kde_datadir)/kabc/plugins
+linkdir		= $(kde_datadir)/kresources/contact
 link_DATA	= imap.desktop
 EXTRA_DIST	= $(link_DATA)

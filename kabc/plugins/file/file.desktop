@@ -3,8 +3,8 @@ Type=Service
 
 [Misc]
 Encoding=UTF-8
-Name=LDAP
+Name=File
 
 [Plugin]
-Type=ldap
-X-KDE-Library=kabc_ldap
+Type=file
+X-KDE-Library=kabc_file

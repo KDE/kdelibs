@@ -22,7 +22,7 @@
 #define RESOURCELDAPCONFIG_H
 
 
-#include "resourceconfigwidget.h"
+#include <kresources/resourceconfigwidget.h>
 
 class KLineEdit;
 class QCheckBox;
@@ -30,7 +30,7 @@ class QSpinBox;
 
 namespace KABC {
 
-class ResourceLDAPConfig : public ResourceConfigWidget
+class ResourceLDAPConfig : public KRES::ResourceConfigWidget
 { 
   Q_OBJECT
 
@@ -38,8 +38,8 @@ public:
   ResourceLDAPConfig( QWidget* parent = 0, const char* name = 0 );
 
 public slots:
-  void loadSettings( KConfig *config );
-  void saveSettings( KConfig *config );
+  void loadSettings( KRES::Resource* );
+  void saveSettings( KRES::Resource* );
 
 private:
   KLineEdit* mUser;
@@ -52,4 +52,5 @@ private:
 };
 
 }
+
 #endif

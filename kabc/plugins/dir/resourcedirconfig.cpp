@@ -21,17 +21,20 @@
 #include <qlabel.h>
 #include <qlayout.h>
 
+#include <kdebug.h>
 #include <klocale.h>
 #include <kstandarddirs.h>
 
 #include "formatfactory.h"
-#include "resourcedirconfig.h"
+#include "resourcedir.h"
 #include "stdaddressbook.h"
+
+#include "resourcedirconfig.h"
 
 using namespace KABC;
 
 ResourceDirConfig::ResourceDirConfig( QWidget* parent,  const char* name )
-    : ResourceConfigWidget( parent, name )
+    : KRES::ResourceConfigWidget( parent, name )
 {
   resize( 245, 115 ); 
   QGridLayout *mainLayout = new QGridLayout( this, 2, 2 );
@@ -59,27 +62,45 @@ ResourceDirConfig::ResourceDirConfig( QWidget* parent,  const char* name )
       mFormatBox->insertItem( info->nameLabel );
     }
   }
+
+  mInEditMode = false;
 }
 
 void ResourceDirConfig::setEditMode( bool value )
 {
   mFormatBox->setEnabled( !value );
+  mInEditMode = value;
 }
 
-void ResourceDirConfig::loadSettings( KConfig *config )
+void ResourceDirConfig::loadSettings( KRES::Resource *res )
 {
-  QString format = config->readEntry( "FileFormat" );
-  mFormatBox->setCurrentItem( mFormatTypes.findIndex( format ) );
+  ResourceDir *resource = dynamic_cast<ResourceDir*>( res );
+  
+  if ( !resource ) {
+    kdDebug(5700) << "ResourceDirConfig::loadSettings(): cast failed" << endl;
+    return;
+  }
 
-  mFileNameEdit->setURL( config->readEntry( "FilePath" ) );    
+  mFormatBox->setCurrentItem( mFormatTypes.findIndex( resource->format() ) );
+
+  mFileNameEdit->setURL( resource->path() );
   if ( mFileNameEdit->url().isEmpty() )
     mFileNameEdit->setURL( KABC::StdAddressBook::directoryName() );
 }
 
-void ResourceDirConfig::saveSettings( KConfig *config )
+void ResourceDirConfig::saveSettings( KRES::Resource *res )
 {
-  config->writeEntry( "FileFormat", mFormatTypes[ mFormatBox->currentItem() ] );
-  config->writeEntry( "FilePath", mFileNameEdit->url() );
+  ResourceDir *resource = dynamic_cast<ResourceDir*>( res );
+  
+  if ( !resource ) {
+    kdDebug(5700) << "ResourceDirConfig::loadSettings(): cast failed" << endl;
+    return;
+  }
+
+  if ( mInEditMode )
+    resource->setFormat( mFormatTypes[ mFormatBox->currentItem() ] );
+
+  resource->setPath( mFileNameEdit->url() );
 }
 
 #include "resourcedirconfig.moc"

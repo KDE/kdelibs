@@ -25,7 +25,6 @@
 #include <kconfig.h>
 #include <stdlib.h>
 
-#include "resourceconfigwidget.h"
 #include "resourceldap.h"
 #include "resourceldapconfig.h"
 
@@ -33,48 +32,42 @@ using namespace KABC;
 
 extern "C"
 {
-  ResourceConfigWidget *config_widget( QWidget *parent ) {
-    KGlobal::locale()->insertCatalogue("kabc_ldap");
+  KRES::ResourceConfigWidget *config_widget( QWidget *parent ) {
+    KGlobal::locale()->insertCatalogue( "kabc_ldap" );
     return new ResourceLDAPConfig( parent, "ResourceLDAPConfig" );
   }
 
-  Resource *resource( AddressBook *ab, const KConfig *config ) {
-    KGlobal::locale()->insertCatalogue("kabc_ldap");
-    return new ResourceLDAP( ab, config );
+  Resource *resource( const KConfig *config ) {
+    KGlobal::locale()->insertCatalogue( "kabc_ldap" );
+    return new ResourceLDAP( config );
   }
 }
 
 void addModOp( LDAPMod ***pmods, const QString &attr, const QString &value );
 
-ResourceLDAP::ResourceLDAP( AddressBook *ab, const KConfig *config )
-  : Resource( ab )
+ResourceLDAP::ResourceLDAP( const KConfig *config )
+  : Resource( config )
 {
   mLdap = 0;
 
   mUser = config->readEntry( "LdapUser" );
-  mPassword = cryptStr( config->readEntry( "LdapPassword" ) );
+  mPassword = decryptStr( config->readEntry( "LdapPassword" ) );
   mDn = config->readEntry( "LdapDn" );
   mHost = config->readEntry( "LdapHost" );
-  mPort = config->readEntry( "LdapPort" );
+  mPort = config->readNumEntry( "LdapPort", 389 );
   mFilter = config->readEntry( "LdapFilter" );
   mAnonymous = config->readBoolEntry( "LdapAnonymous" );
 }
 
-ResourceLDAP::ResourceLDAP( AddressBook *ab, const QString &user,
-	const QString &password, const QString &dn,
-	const QString &host, const QString &port, const QString &filter,
-  const bool anonymous )
-    : Resource( ab )
+void ResourceLDAP::writeConfig( KConfig *config )
 {
-  mLdap = 0;
-
-  mUser = user;
-  mPassword = password;
-  mDn = dn;
-  mHost = host;
-  mPort = port;
-  mFilter = filter;
-  mAnonymous = anonymous;
+  config->writeEntry( "LdapUser", mUser );
+  config->writeEntry( "LdapPassword", encryptStr( mPassword ) );
+  config->writeEntry( "LdapDn", mDn );
+  config->writeEntry( "LdapHost", mHost );
+  config->writeEntry( "LdapPort", mPort );
+  config->writeEntry( "LdapFilter", mFilter );
+  config->writeEntry( "LdapAnonymous", mAnonymous );
 }
 
 Ticket *ResourceLDAP::requestSaveTicket()
@@ -87,15 +80,15 @@ Ticket *ResourceLDAP::requestSaveTicket()
   return createTicket( this );
 }
 
-bool ResourceLDAP::open()
+bool ResourceLDAP::doOpen()
 {
   if ( mLdap )
 	  return false;
 
-  if ( mPort.isEmpty() )
-	  mPort = "389";
+  if ( !mPort )
+	  mPort = 389;
 
-  mLdap = ldap_init( mHost.local8Bit(), mPort.toInt() );
+  mLdap = ldap_init( mHost.local8Bit(), mPort );
   if ( !mLdap ) {
 	  addressBook()->error( i18n( "Unable to connect to server '%1' on port '%2'" ).arg( mHost ).arg( mPort ) );
 	  return false;
@@ -124,7 +117,7 @@ bool ResourceLDAP::open()
   return true;
 }
 
-void ResourceLDAP::close()
+void ResourceLDAP::doClose()
 {
   if ( ldap_unbind_s( mLdap ) != LDAP_SUCCESS ) {
     kdDebug(5700) << "ResourceLDAP: can't unbind from server" << endl;
@@ -289,9 +282,74 @@ void ResourceLDAP::removeAddressee( const Addressee &addr )
   ldap_msgfree( res );
 }
 
-QString ResourceLDAP::identifier() const
+void ResourceLDAP::setUser( const QString &user )
 {
-  return mHost + "_" + mPort + "_" + mDn + "_" + mFilter;
+  mUser = user;
+}
+
+QString ResourceLDAP::user() const
+{
+  return mUser;
+}
+
+void ResourceLDAP::setPassword( const QString &password )
+{
+  mPassword = password;
+}
+
+QString ResourceLDAP::password() const
+{
+  return mPassword;
+}
+
+void ResourceLDAP::setDn( const QString &dn )
+{
+  mDn = dn;
+}
+
+QString ResourceLDAP::dn() const
+{
+  return mDn;
+}
+
+void ResourceLDAP::setHost( const QString &host )
+{
+  mHost = host;
+}
+
+QString ResourceLDAP::host() const
+{
+  return mHost;
+}
+
+void ResourceLDAP::setPort( int port )
+{
+  mPort = port;
+}
+
+int ResourceLDAP::port() const
+{
+  return mPort;
+}
+
+void ResourceLDAP::setFilter( const QString &filter )
+{
+  mFilter = filter;
+}
+
+QString ResourceLDAP::filter() const
+{
+  return mFilter;
+}
+
+void ResourceLDAP::setIsAnonymous( bool value )
+{
+  mAnonymous = value;
+}
+
+bool ResourceLDAP::isAnonymous() const
+{
+  return mAnonymous;
 }
 
 void addModOp( LDAPMod ***pmods, const QString &attr, const QString &value )
@@ -323,3 +381,4 @@ void addModOp( LDAPMod ***pmods, const QString &attr, const QString &value )
   mods[ i ]->mod_values[0] = strdup( value.utf8() );
   mods[ i ]->mod_values[1] = 0;
 }
+

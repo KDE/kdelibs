@@ -224,7 +224,7 @@ bool AddressBook::load()
   bool ok = true;
   for( r = d->mResources.first(); r; r = d->mResources.next() )
     if ( !r->load() ) {
-      error( i18n("Unable to load resource '%1'").arg( r->name() ) );
+      error( i18n("Unable to load resource '%1'").arg( r->resourceName() ) );
       ok = false;
     }
 
@@ -499,6 +499,8 @@ bool AddressBook::addResource( Resource *resource )
     return false;
   }
 
+  resource->setAddressBook( this );
+
   d->mResources.append( resource );
   return true;
 }
@@ -507,6 +509,8 @@ bool AddressBook::removeResource( Resource *resource )
 {
   if ( resource == standardResource() )
     setStandardResource( 0 );
+
+  resource->setAddressBook( 0 );
 
   return d->mResources.remove( resource );
 }

@@ -24,23 +24,35 @@
 
 using namespace KABC;
 
-Resource::Resource( AddressBook *ab ) 
-    : mAddressBook( ab )
+Resource::Resource( const KConfig *config )
+    : KRES::Resource( config ), mAddressBook( 0 )
 {
-  mReadOnly = false;
-  mFastResource = true;
 }
 
 Resource::~Resource()
 {
 }
 
-bool Resource::open()
+void Resource::writeConfig( KConfig* )
+{
+}
+
+void Resource::setAddressBook( AddressBook *ab )
+{
+  mAddressBook = ab;
+}
+
+AddressBook *Resource::addressBook()
+{
+  return mAddressBook;
+}
+
+bool Resource::doOpen()
 {
   return true;
 }
 
-void Resource::close()
+void Resource::doClose()
 {
 }
 
@@ -64,11 +76,6 @@ Ticket *Resource::createTicket( Resource *resource )
   return new Ticket( resource );
 }
 
-QString Resource::identifier() const
-{
-  return "NoIdentifier";
-}
-
 void Resource::removeAddressee( const Addressee& )
 {
   // do nothing
@@ -77,44 +84,4 @@ void Resource::removeAddressee( const Addressee& )
 void Resource::cleanUp()
 {
   // do nothing
-}
-
-void Resource::setReadOnly( bool value )
-{
-  mReadOnly = value;
-}
-
-bool Resource::readOnly() const
-{
-  return mReadOnly;
-}
-
-void Resource::setFastResource( bool value )
-{
-  mFastResource = value;
-}
-
-bool Resource::fastResource() const
-{
-  return mFastResource;
-}
-
-void Resource::setName( const QString &name )
-{
-  mName = name;
-}
-
-QString Resource::name() const
-{
-  return mName;
-}
-
-QString Resource::cryptStr( const QString &str )
-{
-  QString result;
-  for ( uint i = 0; i < str.length(); ++i )
-    result += ( str[ i ].unicode() < 0x20 ) ? str[ i ] :
-        QChar( 0x1001F - str[ i ].unicode() );
-                
-  return result;
 }

@@ -19,15 +19,14 @@
     Boston, MA 02111-1307, USA.
 */
 
-#ifndef KABC_RESOURCEIMAP_H
-#define KABC_RESOURCEIMAP_H
+#ifndef RESOURCEIMAP_H
+#define RESOURCEIMAP_H
 
 #include <kabc/resource.h>
 
-
 namespace KABC {
 
-  class FormatPlugin;
+    class FormatPlugin;
 
 /**
  * This class implements a KAddressBook resource that keeps its
@@ -36,59 +35,68 @@ namespace KABC {
  */
 class ResourceIMAP : public Resource
 {
-  public:
-    /**
-     * Constructor
-     */
-    ResourceIMAP( AddressBook *ab );
+public:
+  /**
+   * Constructor
+   */
+  ResourceIMAP( const KConfig* );
 
-    /**
-     * Destructor.
-     */
-    virtual ~ResourceIMAP();
+  /**
+   * Destructor.
+   */
+  virtual ~ResourceIMAP();
 
-    /**
-     * Open the resource and returns if it was successfully
-     */
-    virtual bool open();
+  /**
+   * Writes back all settings to config file.
+   */
+  virtual void writeConfig( KConfig* );
 
-    /**
-     * Close the resource and returns if it was successfully
-     */
-    virtual void close();
+  /**
+   * Open the resource and returns if it was successfully
+   */
+  virtual bool doOpen();
 
-    /**
-     * Request a ticket, you have to pass through @ref save() to
-     * allow locking.
-     */
-    virtual Ticket *requestSaveTicket();
+  /**
+   * Close the resource and returns if it was successfully
+   */
+  virtual void doClose();
 
-    /**
-     * Load all addressees to the addressbook
-     */
-    virtual bool load();
+  /**
+   * Request a ticket, you have to pass through @ref save() to
+   * allow locking.
+   */
+  virtual Ticket *requestSaveTicket();
 
-    /**
-     * Save all addressees to the addressbook.
-     *
-     * @param ticket The ticket you get by @ref requestSaveTicket()
-     */
-    virtual bool save( Ticket *ticket );
+  /**
+   * Load all addressees to the addressbook
+   */
+  virtual bool load();
 
-    /**
-     * Returns a unique identifier.
-     */
-    virtual QString identifier() const;
+  /**
+   * Save all addressees to the addressbook.
+   *
+   * @param ticket The ticket you get by @ref requestSaveTicket()
+   */
+  virtual bool save( Ticket *ticket );
 
-    /**
-     * This method is called by an error handler if the application
-     * crashed
-     */
-    virtual void cleanUp();
+  /**
+   * Removes a addressee from resource. This method is mainly
+   * used by record-based resources like LDAP or SQL.
+   */
+  virtual void removeAddressee( const Addressee& addr );
 
-  private:
+  /**
+   * This method is called by an error handler if the application
+   * crashed
+   */
+  virtual void cleanUp();
+
+
+private:
     FormatPlugin* mFormat;
+    QStringList mDeletedAdressees;
 };
 
 }
+
 #endif

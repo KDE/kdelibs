@@ -1,3 +1,6 @@
+[Desktop Entry]
+Type=Service
+
 [Misc]
 Encoding=UTF-8
 Name=Directory
@@ -43,6 +46,7 @@ Name[pt]=Directoria
 Name[pt_BR]=Diretório
 Name[ro]=Director
 Name[ru]=Каталог
+Name[se]=Ohcu
 Name[sk]=Priečinok
 Name[sl]=Imenik
 Name[sr]=Direktorijum

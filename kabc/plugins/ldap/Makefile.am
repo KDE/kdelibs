@@ -8,7 +8,8 @@ kde_module_LTLIBRARIES = kabc_ldap.la
 kabc_ldap_la_SOURCES = resourceldap.cpp resourceldapconfig.cpp
 
 kabc_ldap_la_LDFLAGS	= $(all_libraries) -module $(KDE_PLUGIN) $(LDAP_LIBS)
-kabc_ldap_la_LIBADD	= ../../libkabc.la ../../../kdeui/libkdeui.la
+kabc_ldap_la_LIBADD	= $(top_srcdir)/kresources/libkderesources.la ../../libkabc.la \
+  ../../../kdeui/libkdeui.la
 
 # let automoc handle all of the meta source files (moc)
 METASOURCES = AUTO
@@ -16,6 +17,6 @@ METASOURCES = AUTO
 messages: rc.cpp
 	$(XGETTEXT) *.cpp -o $(podir)/kabc_ldap.pot
 
-linkdir		= $(kde_datadir)/kabc/plugins
+linkdir		= $(kde_datadir)/kresources/contact
 link_DATA	= ldap.desktop
 EXTRA_DIST	= $(link_DATA)

@@ -22,17 +22,18 @@ class ResourceDir : public QObject, public Resource
   Q_OBJECT
 
 public:
-  ResourceDir( AddressBook *, const KConfig * );
-  ResourceDir( AddressBook *, const QString &filename, FormatPlugin *format=0 );
+  ResourceDir( const KConfig* );
   ~ResourceDir();
 
-  bool open();
-  void close();
-  
-  Ticket *requestSaveTicket();
+  virtual void writeConfig( KConfig* );
 
-  bool load();
-  bool save( Ticket * );
+  virtual bool doOpen();
+  virtual void doClose();
+  
+  virtual Ticket *requestSaveTicket();
+
+  virtual bool load();
+  virtual bool save( Ticket * );
 
   /**
    * Set path to be used for saving.
@@ -45,15 +46,20 @@ public:
   QString path() const;
 
   /**
-   * Returns a unique identifier.
+   * Set the format by name.
    */
-  virtual QString identifier() const;
+  void setFormat( const QString &format );
 
+  /**
+   * Returns the format name.
+   */
+  QString format() const;
+  
   /**
    * Remove a addressee from its source.
    * This method is mainly called by KABC::AddressBook.
    */
-  void removeAddressee( const Addressee& addr );
+  virtual void removeAddressee( const Addressee& addr );
 
   /**
    * This method is called by an error handler if the application
@@ -69,13 +75,12 @@ protected:
   void unlock( const QString &path );
 
 private:
-  void init( const QString &path, FormatPlugin *format );
-
   FormatPlugin *mFormat;
 
   KDirWatch mDirWatch;
 
   QString mPath;
+  QString mFormatName;
   QString mLockUniqueName;
 };
 

@@ -24,16 +24,18 @@
 #include <qspinbox.h>
 #include <qvbox.h>
 
+#include <kdebug.h>
 #include <klocale.h>
 #include <klineedit.h>
 
-#include "resource.h"
+#include "resourceldap.h"
+
 #include "resourceldapconfig.h"
 
 using namespace KABC;
 
 ResourceLDAPConfig::ResourceLDAPConfig( QWidget* parent,  const char* name )
-    : ResourceConfigWidget( parent, name )
+    : KRES::ResourceConfigWidget( parent, name )
 {
   resize( 250, 120 ); 
   QGridLayout *mainLayout = new QGridLayout( this, 6, 2 );
@@ -86,26 +88,41 @@ ResourceLDAPConfig::ResourceLDAPConfig( QWidget* parent,  const char* name )
   connect( mAnonymous, SIGNAL( toggled(bool) ), mPassword, SLOT( setDisabled(bool) ) );
 }
 
-void ResourceLDAPConfig::loadSettings( KConfig *config )
+void ResourceLDAPConfig::loadSettings( KRES::Resource *res )
 {
-  mUser->setText( config->readEntry( "LdapUser" ) );
-  mPassword->setText( KABC::Resource::cryptStr( config->readEntry( "LdapPassword" ) ) );
-  mHost->setText( config->readEntry( "LdapHost" ) );
-  mPort->setValue(  config->readNumEntry( "LdapPort", 389 ) );
-  mDn->setText( config->readEntry( "LdapDn" ) );
-  mFilter->setText( config->readEntry( "LdapFilter" ) );
-  mAnonymous->setChecked( config->readBoolEntry( "LdapAnonymous" ) );
+  ResourceLDAP *resource = dynamic_cast<ResourceLDAP*>( res );
+  
+  if ( !resource ) {
+    kdDebug(5700) << "ResourceLDAPConfig::loadSettings(): cast failed" << endl;
+    return;
+  }
+
+  mUser->setText( resource->user() );
+  mPassword->setText( resource->password() );
+  mHost->setText( resource->host() );
+  mPort->setValue(  resource->port() );
+  mDn->setText( resource->dn() );
+  mFilter->setText( resource->filter() );
+  mAnonymous->setChecked( resource->isAnonymous() );
 }
 
-void ResourceLDAPConfig::saveSettings( KConfig *config )
+void ResourceLDAPConfig::saveSettings( KRES::Resource *res )
 {
-  config->writeEntry( "LdapUser", mUser->text() );
-  config->writeEntry( "LdapPassword", KABC::Resource::cryptStr( mPassword->text() ) );
-  config->writeEntry( "LdapHost", mHost->text() );
-  config->writeEntry( "LdapPort", mPort->value() );
-  config->writeEntry( "LdapDn", mDn->text() );
-  config->writeEntry( "LdapFilter", mFilter->text() );
-  config->writeEntry( "LdapAnonymous", mAnonymous->isChecked() );
+  ResourceLDAP *resource = dynamic_cast<ResourceLDAP*>( res );
+  
+  if ( !resource ) {
+    kdDebug(5700) << "ResourceLDAPConfig::saveSettings(): cast failed" << endl;
+    return;
+  }
+
+  resource->setUser( mUser->text() );
+  resource->setPassword( mPassword->text() );
+  resource->setHost( mHost->text() );
+  resource->setPort( mPort->value() );
+  resource->setDn( mDn->text() );
+  resource->setFilter( mFilter->text() );
+  resource->setIsAnonymous( mAnonymous->isChecked() );
 }
 
 #include "resourceldapconfig.moc"
+

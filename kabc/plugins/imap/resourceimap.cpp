@@ -1,6 +1,6 @@
 /*
     This file is part of libkabc and/or kaddressbook.
-    Copyright (c) 2002 Klarälvdalens Datakonsult AB
+    Copyright (c) 2002 Klarälvdalens Datakonsult AB 
         <info@klaralvdalens-datakonsult.se>
 
     This library is free software; you can redistribute it and/or
@@ -19,28 +19,32 @@
     Boston, MA 02111-1307, USA.
 */
 
-#include "resourceimap.h"
+#include <dcopclient.h>
+
+#include <kabc/formatfactory.h>
+#include <kapp.h>
+#include <kdebug.h>
 #include <kglobal.h>
 #include <klocale.h>
-#include <kapplication.h>
-#include <dcopclient.h>
-#include <kabc/formatfactory.h>
 #include <ktempfile.h>
-#include <kdebug.h>
+
+#include <qstring.h>
+
+#include "resourceimap.h"
 
 using namespace KABC;
 
 extern "C"
 {
-  Resource *resource( AddressBook *ab, const KConfig* )
-  {
+  Resource *resource( const KConfig* config ) {
     KGlobal::locale()->insertCatalogue( "kabc_imap" );
-    return new ResourceIMAP( ab );
+    return new ResourceIMAP( config );
   }
 }
 
-ResourceIMAP::ResourceIMAP( AddressBook *ab )
-  : Resource( ab )
+
+ResourceIMAP::ResourceIMAP( const KConfig *config )
+  : Resource( config )
 {
   FormatFactory *factory = FormatFactory::self();
   mFormat = factory->format( "vcard" );
@@ -51,13 +55,20 @@ ResourceIMAP::~ResourceIMAP()
   delete mFormat;
 }
 
-bool ResourceIMAP::open()
+void ResourceIMAP::writeConfig( KConfig* )
 {
-  // Ensure that there is a kmail running
-  return ( kapp->startServiceByDesktopName( "kmail" ) == 0 );
+  // Will add later
 }
 
-void ResourceIMAP::close()
+bool ResourceIMAP::doOpen()
+{
+  // Ensure that there is a kmail running
+  return kapp->dcopClient()->isApplicationRegistered( "kmail" )
+         ? true
+         : ( kapp->startServiceByDesktopName( "kmail" ) == 0 );
+}
+
+void ResourceIMAP::doClose()
 {
   // Nothing to close
 }
@@ -67,17 +78,17 @@ Ticket * ResourceIMAP::requestSaveTicket()
   DCOPClient* dcopClient = kapp->dcopClient();
   QByteArray returnData;
   QCString returnType;
-  if ( !dcopClient->call( "kmail", "KMailIface", "lockContactsFolder()",
-                          QByteArray(), returnType, returnData, true ) ) {
+  if ( !dcopClient->call( "kmail", "KMailIface",
+                          "lockContactsFolder()", QByteArray(),
+                          returnType, returnData, true ) ) {
     return false;
   }
-
   Q_ASSERT( returnType == "bool" );
   QDataStream argIn( returnData, IO_ReadOnly );
   bool ok;
   argIn >> ok;
 
-  if ( !ok )
+  if( !ok )
     return 0;
   else
     return createTicket( this );
@@ -85,8 +96,7 @@ Ticket * ResourceIMAP::requestSaveTicket()
 
 bool ResourceIMAP::load()
 {
-  kdDebug(5700) << "ResourceIMAP::load()" << endl;
-
+  qDebug( "+++ResourceIMAP::load()" );
   KTempFile tempFile( QString::null, ".vcf" );
   // For loading, send a DCOP call off to KMail
   DCOPClient* dcopClient = kapp->dcopClient();
@@ -95,36 +105,34 @@ bool ResourceIMAP::load()
   outgoingStream << tempFile.name();
   QByteArray returnData;
   QCString returnType;
-
   // Important; we need the synchronous call, even though we don't
   // expect a return value.
   if ( !dcopClient->call( "kmail", "KMailIface",
                           "requestAddresses(QString)", outgoingData,
-                           returnType, returnData, true ) ) {
-    kdDebug(5700) << "DCOP call failed" << endl;
+                          returnType, returnData, true ) ) {
+    qDebug( "DCOP call failed" );
     return false;
   }
-
+    
   // Now parse the vCards in that file
   QFile file( tempFile.name() );
   if ( !file.open( IO_ReadOnly ) ) {
-    kdDebug(5700) << "Could not open temp file " << tempFile.name() << endl;
+    qDebug( "+++Could not open temp file %s", tempFile.name().latin1() );
     return false;
   }
-
-  kdDebug(5700) << "Opened temp file " << tempFile.name() << endl;
-
+  qDebug( "+++Opened temp file %s", tempFile.name().latin1() );
+    
   mFormat->loadAll( addressBook(), this, &file );
-
+    
   tempFile.unlink();
 
-  Resource::load();
-
+  // reset list of deleted addressees
+  mDeletedAdressees.clear();
+    
   return true;
 }
 
-
-bool ResourceIMAP::save( Ticket *ticket )
+bool ResourceIMAP::save( Ticket* )
 {
   // FormatPlugin only supports loading from a file, not from
   // memory, so we have to write to a temp file first. This is all
@@ -141,38 +149,34 @@ bool ResourceIMAP::save( Ticket *ticket )
   QByteArray paramData;
   QDataStream paramStream( paramData, IO_WriteOnly );
   paramStream << tempFile.name();
-  paramStream << removedUIDs();
+  paramStream << mDeletedAdressees;
   if ( !dcopClient->call( "kmail", "KMailIface",
                           "storeAddresses(QString,QStringList)", paramData,
                           returnType, returnData, true ) )
     return false; // No need to continue in this case.
-
   Q_ASSERT( returnType == "bool" );
   QDataStream argIn( returnData, IO_ReadOnly );
   bool ok;
   argIn >> ok;
+  mDeletedAdressees.clear();
   tempFile.unlink();
-
+    
   // Always try to unlock
   if ( !dcopClient->call( "kmail", "KMailIface",
                           "unlockContactsFolder()", QByteArray(),
                           returnType, returnData, true ) ) {
     return false;
   }
-
   Q_ASSERT( returnType == "bool" );
   QDataStream argIn2( returnData, IO_ReadOnly );
   bool ok2;
   argIn2 >> ok2;
-
-  Resource::save( ticket );
-
   return ( ok2 && ok );
 }
 
-QString ResourceIMAP::identifier() const
+void ResourceIMAP::removeAddressee( const Addressee& addr )
 {
-  return "KMAIL-IMAP";
+  mDeletedAdressees << addr.uid();
 }
 
 void ResourceIMAP::cleanUp()

@@ -13,55 +13,58 @@
 #include <kstandarddirs.h>
 #include <kurlrequester.h>
 
-#include "addressbook.h"
+#include "formatfactory.h"
+#include "resourcefileconfig.h"
 #include "stdaddressbook.h"
 
-#include "formatfactory.h"
-
-#include "resourceconfigwidget.h"
 #include "resourcefile.h"
-#include "resourcefileconfig.h"
 
 using namespace KABC;
 
-ResourceFile::ResourceFile( AddressBook *addressBook, const KConfig *config )
-    : Resource( addressBook )
+extern "C"
 {
-  QString fileName = config->readEntry( "FileName" );
-  QString type = config->readEntry( "FileFormat" );
+  KRES::ResourceConfigWidget *config_widget( QWidget *parent ) {
+    KGlobal::locale()->insertCatalogue( "kabc_file" );
+    return new ResourceFileConfig( parent, "ResourceFileConfig" );
+  }
+
+  Resource *resource( const KConfig *config ) {
+    KGlobal::locale()->insertCatalogue( "kabc_file" );
+    return new ResourceFile( config );
+  }
+}
+
+ResourceFile::ResourceFile( const KConfig *config )
+    : Resource( config )
+{
+  QString fileName = config->readEntry( "FileName", StdAddressBook::fileName() );
+  QString mFormatName = config->readEntry( "FileFormat", "vcard" );
 
   FormatFactory *factory = FormatFactory::self();
-  FormatPlugin *format = factory->format( type );
+  FormatPlugin *format = factory->format( mFormatName );
 
-  init( fileName, format );
-}
-
-ResourceFile::ResourceFile( AddressBook *addressBook, const QString &filename,
-                            FormatPlugin *format ) :
-  Resource( addressBook )
-{
-  init( filename, format );
-}
-
-ResourceFile::~ResourceFile()
-{
-  delete mFormat;
-}
-
-void ResourceFile::init( const QString &filename, FormatPlugin *format )
-{
   if ( !format ) {
-    FormatFactory *factory = FormatFactory::self();
-    mFormat = factory->format( "vcard" );
-  } else {
-    mFormat = format;
+    mFormatName = "vcard";
+    format = factory->format( mFormatName );
   }
 
   connect( &mDirWatch, SIGNAL( dirty(const QString&) ), SLOT( fileChanged() ) );
   connect( &mDirWatch, SIGNAL( created(const QString&) ), SLOT( fileChanged() ) );
   connect( &mDirWatch, SIGNAL( deleted(const QString&) ), SLOT( fileChanged() ) );
 
-  setFileName( filename );
+  setFileName( fileName );
+}
+
+ResourceFile::~ResourceFile()
+{
+  delete mFormat;
+  mFormat = 0;
+}
+
+void ResourceFile::writeConfig( KConfig *config )
+{
+  config->writeEntry( "FileName", mFileName );
+  config->writeEntry( "FileFormat", mFormatName );
 }
 
 Ticket *ResourceFile::requestSaveTicket()
@@ -79,7 +82,7 @@ Ticket *ResourceFile::requestSaveTicket()
 }
 
 
-bool ResourceFile::open()
+bool ResourceFile::doOpen()
 {
   QFile file( mFileName );
 
@@ -98,7 +101,7 @@ bool ResourceFile::open()
   return ok;
 }
 
-void ResourceFile::close()
+void ResourceFile::doClose()
 {
 }
 
@@ -196,15 +199,25 @@ QString ResourceFile::fileName() const
   return mFileName;
 }
 
+void ResourceFile::setFormat( const QString &format )
+{
+  mFormatName = format;
+  if ( mFormat )
+    delete mFormat;
+  
+  FormatFactory *factory = FormatFactory::self();
+  mFormat = factory->format( mFormatName );
+}
+
+QString ResourceFile::format() const
+{
+  return mFormatName;
+}
+
 void ResourceFile::fileChanged()
 {
   load();
   addressBook()->emitAddressBookChanged();
-}
-
-QString ResourceFile::identifier() const
-{
-  return fileName();
 }
 
 void ResourceFile::removeAddressee( const Addressee &addr )

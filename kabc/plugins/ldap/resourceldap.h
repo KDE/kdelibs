@@ -36,34 +36,53 @@ class ResourceLDAP : public Resource
 {
 public:
 
-  ResourceLDAP( AddressBook *ab, const KConfig * );
-  ResourceLDAP( AddressBook *ab, const QString &user, const QString &password,
-      const QString &dn, const QString &host,
-	    const QString &port, const QString &filter, const bool anonymous );
+  ResourceLDAP( const KConfig* );
 
-  bool open();
-  void close();
+  virtual void writeConfig( KConfig* );
 
-  Ticket *requestSaveTicket();
+  virtual bool doOpen();
+  virtual void doClose();
 
-  bool load();
-  bool save( Ticket * );
+  virtual Ticket *requestSaveTicket();
 
-  void removeAddressee( const Addressee& addr );
+  virtual bool load();
+  virtual bool save( Ticket * );
 
-  QString identifier() const;
+  virtual void removeAddressee( const Addressee& addr );
+
+  void setUser( const QString &user );
+  QString user() const;
+
+  void setPassword( const QString &password );
+  QString password() const;
+
+  void setDn( const QString &dn );
+  QString dn() const;
+
+  void setHost( const QString &host );
+  QString host() const;
+
+  void setPort( int port );
+  int port() const;
+
+  void setFilter( const QString &filter );
+  QString filter() const;
+
+  void setIsAnonymous( bool value );
+  bool isAnonymous() const;
 
 private:
   QString mUser;
   QString mPassword;
   QString mDn;
   QString mHost;
-  QString mPort;
   QString mFilter;
+  int mPort;
   bool mAnonymous;
 
   LDAP *mLdap;
 };
 
 }
+
 #endif

@@ -21,14 +21,17 @@
 #include <qlabel.h>
 #include <qlayout.h>
 
+#include <kdebug.h>
 #include <klocale.h>
 #include <kstandarddirs.h>
 
 #include <unistd.h>
 
 #include "formatfactory.h"
-#include "resourcefileconfig.h"
+#include "resourcefile.h"
 #include "stdaddressbook.h"
+
+#include "resourcefileconfig.h"
 
 using namespace KABC;
 
@@ -47,7 +50,8 @@ ResourceFileConfig::ResourceFileConfig( QWidget* parent,  const char* name )
   label = new QLabel( i18n( "Location:" ), this );
   mFileNameEdit = new KURLRequester( this );
 
-  connect( mFileNameEdit, SIGNAL( textChanged( const QString & ) ), SLOT( checkFilePermissions( const QString & ) ) );
+  connect( mFileNameEdit, SIGNAL( textChanged( const QString & ) ),
+           SLOT( checkFilePermissions( const QString & ) ) );
 
   mainLayout->addWidget( label, 1, 0 );
   mainLayout->addWidget( mFileNameEdit, 1, 1 );
@@ -62,27 +66,45 @@ ResourceFileConfig::ResourceFileConfig( QWidget* parent,  const char* name )
       mFormatBox->insertItem( info->nameLabel );
     }
   }
+
+  mInEditMode = false;
 }
 
 void ResourceFileConfig::setEditMode( bool value )
 {
   mFormatBox->setEnabled( !value );
+  mInEditMode = value;
 }
 
-void ResourceFileConfig::loadSettings( KConfig *config )
+void ResourceFileConfig::loadSettings( KRES::Resource *res  )
 {
-  QString format = config->readEntry( "FileFormat" );
-  mFormatBox->setCurrentItem( mFormatTypes.findIndex( format ) );
+  ResourceFile *resource = dynamic_cast<ResourceFile*>( res );
+  
+  if ( !resource ) {
+    kdDebug(5700) << "ResourceFileConfig::loadSettings(): cast failed" << endl;
+    return;
+  }
 
-  mFileNameEdit->setURL( config->readEntry( "FileName" ) );    
+  mFormatBox->setCurrentItem( mFormatTypes.findIndex( resource->format() ) );
+
+  mFileNameEdit->setURL( resource->fileName() );
   if ( mFileNameEdit->url().isEmpty() )
     mFileNameEdit->setURL( KABC::StdAddressBook::fileName() );
 }
 
-void ResourceFileConfig::saveSettings( KConfig *config )
+void ResourceFileConfig::saveSettings( KRES::Resource *res )
 {
-  config->writeEntry( "FileFormat", mFormatTypes[ mFormatBox->currentItem() ] );
-  config->writeEntry( "FileName", mFileNameEdit->url() );
+  ResourceFile *resource = dynamic_cast<ResourceFile*>( res );
+  
+  if ( !resource ) {
+    kdDebug(5700) << "ResourceFileConfig::saveSettings(): cast failed" << endl;
+    return;
+  }
+
+  if ( !mInEditMode )
+    resource->setFormat( mFormatTypes[ mFormatBox->currentItem() ] );
+
+  resource->setFileName( mFileNameEdit->url() );
 }
 
 void ResourceFileConfig::checkFilePermissions( const QString& fileName )

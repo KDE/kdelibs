@@ -24,11 +24,11 @@
 #include <kcombobox.h>
 #include <kurlrequester.h>
 
-#include "resourceconfigwidget.h"
+#include <kresources/resourceconfigwidget.h>
 
 namespace KABC {
 
-class ResourceFileConfig : public ResourceConfigWidget
+class ResourceFileConfig : public KRES::ResourceConfigWidget
 { 
   Q_OBJECT
 
@@ -38,8 +38,8 @@ public:
   void setEditMode( bool value );
 
 public slots:
-  void loadSettings( KConfig *config );
-  void saveSettings( KConfig *config );
+  void loadSettings( KRES::Resource *resource );
+  void saveSettings( KRES::Resource *resource );
 
 protected slots:
   void checkFilePermissions( const QString& fileName );
@@ -47,9 +47,11 @@ protected slots:
 private:
   KComboBox* mFormatBox;
   KURLRequester* mFileNameEdit;
+  bool mInEditMode;
 
   QStringList mFormatTypes;
 };
 
 }
+
 #endif

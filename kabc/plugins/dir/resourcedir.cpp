@@ -28,50 +28,30 @@ using namespace KABC;
 
 extern "C"
 {
-  ResourceConfigWidget *config_widget( QWidget *parent ) {
-    KGlobal::locale()->insertCatalogue("kabc_dir");
+  KRES::ResourceConfigWidget *config_widget( QWidget *parent ) {
+    KGlobal::locale()->insertCatalogue( "kabc_dir" );
     return new ResourceDirConfig( parent, "ResourceDirConfig" );
   }
 
-  Resource *resource( AddressBook *ab, const KConfig *config ) {
-    KGlobal::locale()->insertCatalogue("kabc_dir");
-    return new ResourceDir( ab, config );
+  Resource *resource( const KConfig *config ) {
+    KGlobal::locale()->insertCatalogue( "kabc_dir" );
+    return new ResourceDir( config );
   }
 }
 
 
-ResourceDir::ResourceDir( AddressBook *addressBook, const KConfig *config )
-    : Resource( addressBook )
+ResourceDir::ResourceDir( const KConfig *config )
+    : Resource( config )
 {
   QString path = config->readEntry( "FilePath" );
-  QString type = config->readEntry( "FileFormat" );
+  QString mFormatName = config->readEntry( "FileFormat" );
 
   FormatFactory *factory = FormatFactory::self();
-  FormatPlugin *format = factory->format( type );
+  FormatPlugin *mFormat = factory->format( mFormatName );
 
-  init( path, format );
-}
-
-ResourceDir::ResourceDir( AddressBook *addressBook, const QString &path,
-                          FormatPlugin *format ) :
-  Resource( addressBook )
-{
-  init( path, format );
-}
-
-ResourceDir::~ResourceDir()
-{
-  delete mFormat;
-}
-
-
-void ResourceDir::init( const QString &path, FormatPlugin *format )
-{
-  if ( !format ) {
-    FormatFactory *factory = FormatFactory::self();
-    mFormat = factory->format( "vcard" );
-  } else {
-    mFormat = format;
+  if ( !mFormat ) {
+    mFormatName = "vcard";
+    mFormat = factory->format( mFormatName );
   }
 
   connect( &mDirWatch, SIGNAL( dirty(const QString&) ), SLOT( pathChanged() ) );
@@ -79,6 +59,18 @@ void ResourceDir::init( const QString &path, FormatPlugin *format )
   connect( &mDirWatch, SIGNAL( deleted(const QString&) ), SLOT( pathChanged() ) );
 
   setPath( path );
+}
+
+ResourceDir::~ResourceDir()
+{
+  delete mFormat;
+  mFormat = 0;
+}
+
+void ResourceDir::writeConfig( KConfig *config )
+{
+  config->writeEntry( "FilePath", mPath );
+  config->writeEntry( "FileFormat", mFormatName );
 }
 
 Ticket *ResourceDir::requestSaveTicket()
@@ -96,7 +88,7 @@ Ticket *ResourceDir::requestSaveTicket()
 }
 
 
-bool ResourceDir::open()
+bool ResourceDir::doOpen()
 {
   QDir dir( mPath );
   if ( !dir.exists() ) // no directory available
@@ -119,7 +111,7 @@ bool ResourceDir::open()
   return ok;
 }
 
-void ResourceDir::close()
+void ResourceDir::doClose()
 {
 }
 
@@ -243,15 +235,26 @@ QString ResourceDir::path() const
   return mPath;
 }
 
+void ResourceDir::setFormat( const QString &format )
+{
+  mFormatName = format;
+
+  if ( mFormat )
+    delete mFormat;
+
+  FormatFactory *factory = FormatFactory::self();
+  mFormat = factory->format( mFormatName );
+}
+
+QString ResourceDir::format() const
+{
+  return mFormatName;
+}
+
 void ResourceDir::pathChanged()
 {
   load();
   addressBook()->emitAddressBookChanged();
-}
-
-QString ResourceDir::identifier() const
-{
-    return path();
 }
 
 void ResourceDir::removeAddressee( const Addressee& addr )

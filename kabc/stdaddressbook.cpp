@@ -18,53 +18,31 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include <signal.h>
+
 #include <kapplication.h>
 #include <kcrash.h>
 #include <kdebug.h>
 #include <klocale.h>
+#include <kresources/resourcemanager.h>
 #include <ksimpleconfig.h>
 #include <kstandarddirs.h>
 
-#include <signal.h>
+#include "resource.h"
 
 #include "stdaddressbook.h"
-
-#include "resourcefactory.h"
-#include "resourcefile.h"
-#include "vcardformatplugin.h"
 
 using namespace KABC;
 
 extern "C" {
 
-static void setSignalHandler( void (*handler)(int) );
-
-// Crash recovery signal handler
-static void signalHandler( int sigId )
-{
-  setSignalHandler( SIG_DFL );
-  fprintf( stderr, "*** libkabc got signal %d (Exiting)\n", sigId );
-  // try to cleanup all lock files
-  StdAddressBook::self()->cleanUp();
-  ::exit(-1);
-}
-
 // Crash recovery signal handler
 static void crashHandler( int sigId )
 {
-  setSignalHandler( SIG_DFL );
   fprintf( stderr, "*** libkabc got signal %d (Crashing)\n", sigId );
   // try to cleanup all lock files
   StdAddressBook::self()->cleanUp();
   // Return to DrKonqi.
-}
-
-static void setSignalHandler( void (*handler)(int) )
-{
-  signal( SIGKILL, handler );
-  signal( SIGTERM, handler );
-  signal( SIGHUP,  handler );
-  KCrash::setEmergencySaveFunction( crashHandler );
 }
 
 }
@@ -151,56 +129,29 @@ StdAddressBook::~StdAddressBook()
     save();
 }
 
-void StdAddressBook::init( bool onlyFastResources )
+void StdAddressBook::init( bool )
 {
-  KSimpleConfig config( "kabcrc", true );
-  ResourceFactory *factory = ResourceFactory::self();
-  config.setGroup( "General" );
+  KRES::ResourceManager<Resource> manager( "contact" );
 
-  QStringList keys = config.readListEntry( "ResourceKeys" );
-  QString stdKey = config.readEntry( "Standard" );
-  for ( QStringList::Iterator it = keys.begin(); it != keys.end(); ++it ) {
-    config.setGroup( "Resource_" + (*it) );
-    QString type = config.readEntry( "ResourceType" );
-
-
-    if ( onlyFastResources && !config.readBoolEntry( "ResourceIsFast" ) )
-        continue;
-
-    Resource *resource = factory->resource( type, this, &config );
-
-    if ( !resource ) continue;
-
-    resource->setReadOnly( config.readBoolEntry( "ResourceIsReadOnly" ) );
-    resource->setFastResource( config.readBoolEntry( "ResourceIsFast" ) );
-    resource->setName( config.readEntry( "ResourceName" ).latin1() );
-
-    if ( !addResource( resource ) ) {
-      delete resource;
+  QPtrList<Resource> resources = manager.resources( true );
+  for ( Resource *res = resources.first(); res; res = resources.next() ) {
+    if ( !addResource( res ) ) {
+      delete res;
       continue;
     }
-
-    if ( stdKey == (*it) )
-      setStandardResource( resource );
   }
 
-  QPtrList<Resource> list = resources();
-  if ( list.count() == 0 ) {  // default resource
-    kdDebug(5700) << "StdAddressBook(): using default resource" << endl;
-
-    Resource *resource = new ResourceFile( this, fileName(),
-                                           new VCardFormatPlugin );
-    resource->setReadOnly( false );
-    resource->setFastResource( true );
-
-    if ( !addResource( resource ) ) delete resource;
-
-    setStandardResource( resource );
+  Resource *res = manager.standardResource();
+  if ( !res ) {
+    res = manager.createResource( "file" );
+    addResource( res );
   }
+
+  setStandardResource( res );
 
   load();
 
-  setSignalHandler( signalHandler );
+  KCrash::setEmergencySaveFunction( crashHandler );
 }
 
 void StdAddressBook::close()

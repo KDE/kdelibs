@@ -18,54 +18,13 @@
     Boston, MA 02111-1307, USA.
 */
 
-#include <qstringlist.h>
-#include <qwidget.h>
-
 #include <kcmodule.h>
-
-class KAboutData;
-class KLineEdit;
-class KListView;
-
 
 #ifndef KCMKABC_H
 #define KCMKABC_H
 
-class ConfigPage : public QWidget
-{
-  Q_OBJECT
-
-public:
-  ConfigPage( QWidget *parent = 0, const char *name = 0 );
-
-  void load();
-  void save();
-  void defaults();
-
-
-public slots:
-  void slotAdd();
-  void slotRemove();
-  void slotEdit();
-  void slotConvert();
-  void slotStandard();
-  void slotSelectionChanged();
-
-signals:
-  void changed(bool);
-
-private:
-  KConfig *config;
-
-  KListView* mListView;
-  QPushButton* mAddButton;
-  QPushButton* mRemoveButton;
-  QPushButton* mEditButton;
-  QPushButton* mConvertButton;
-  QPushButton* mStandardButton;
-
-  QListViewItem* mLastItem;
-};
+class KAboutData;
+class KRES::ResourcesConfigPage;
 
 class KCMkabc : public KCModule
 {
@@ -79,35 +38,8 @@ public:
   void defaults();
   const KAboutData* aboutData() const;
 
-
 private:
-  ConfigPage *mConfigPage;
+  KRES::ResourcesConfigPage *mConfigPage;
 };
-
-class ConfigViewItem : public QObject, public QCheckListItem
-{
-  Q_OBJECT
-
-public:
-  ConfigViewItem( QListView *parent, QString name, QString type,
-      QString identifier = QString::null );
-
-  void setStandard( bool value );
-  bool standard();
-
-  QString key;
-  QString type;
-  bool readOnly;
-
-signals:
-  void changed( bool );
-
-protected:
-  void stateChange( bool value );
-
-private:
-  bool isStandard;
-};
-
 
 #endif

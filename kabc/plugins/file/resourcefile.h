@@ -50,17 +50,7 @@ public:
    * @param ab  The address book where the addressees should be stored.
    * @param cfg The config object where custom resource settings are stored.
    */
-  ResourceFile( AddressBook *ab, const KConfig *cfg );
-
-  /**
-   * Constructor.
-   *
-   * @param ab       The address book where the addressees should be stored.
-   * @param filename The name of the file, the addressees should be read from.
-   * @param format   The pointer to a format handler.
-   */
-  ResourceFile( AddressBook *ab, const QString &filename,
-                FormatPlugin *format = 0 );
+  ResourceFile( const KConfig *cfg );
 
   /**
    * Destructor.
@@ -68,26 +58,31 @@ public:
   ~ResourceFile();
 
   /**
+    Writes the config back.
+   */
+  virtual void writeConfig( KConfig *cfg );
+
+  /**
    * Tries to open the file and checks for the proper format.
    * This method should be called before @ref load().
    */
-  bool open();
+  virtual bool doOpen();
 
   /**
    * Closes the file again.
    */
-  void close();
+  virtual void doClose();
   
   /**
    * Requests a save ticket, that is used by @ref save()
    */
-  Ticket *requestSaveTicket();
+  virtual Ticket *requestSaveTicket();
 
   /**
    * Loads all addressees from file to the address book.
    * Returns true if all addressees could be loaded otherwise false.
    */
-  bool load();
+  virtual bool load();
 
   /**
    * Saves all addresses from address book to file.
@@ -95,7 +90,7 @@ public:
    *
    * @param ticket  The ticket returned by @ref requestSaveTicket()
    */
-  bool save( Ticket *ticket );
+  virtual bool save( Ticket *ticket );
 
   /**
    * Set name of file to be used for saving.
@@ -108,15 +103,20 @@ public:
   QString fileName() const;
 
   /**
-   * Returns the unique identifier.
+    Sets a new format by name.
    */
-  virtual QString identifier() const;
+  void setFormat( const QString &name );
+
+  /**
+    Returns the format name.
+   */
+  QString format() const;
 
   /**
    * Remove a addressee from its source.
    * This method is mainly called by KABC::AddressBook.
    */
-  void removeAddressee( const Addressee& addr );
+  virtual void removeAddressee( const Addressee& addr );
 
   /**
    * This method is called by an error handler if the application
@@ -132,9 +132,9 @@ protected:
   void unlock( const QString &fileName );
 
 private:
-  void init( const QString &filename, FormatPlugin *format );
-
   QString mFileName;
+  QString mFormatName;
+
   FormatPlugin *mFormat;
 
   QString mLockUniqueName;
@@ -143,4 +143,5 @@ private:
 };
 
 }
+
 #endif

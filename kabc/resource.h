@@ -21,6 +21,8 @@
 #ifndef KABC_RESOURCE_H
 #define KABC_RESOURCE_H
 
+#include <kresources/resource.h>
+
 #include "addressbook.h"
 #include "plugin.h"
 
@@ -47,13 +49,13 @@ class Ticket
 /**
  * @internal
  */
-class Resource : public Plugin
+class Resource : public KRES::Resource
 {
 public:
   /**
    * Constructor
    */
-  Resource( AddressBook *ab );
+  Resource( const KConfig *config );
 
   /**
    * Destructor.
@@ -61,14 +63,29 @@ public:
   virtual ~Resource();
 
   /**
+   * Sets the address book of the resource.
+   */
+  void setAddressBook( AddressBook* );
+
+  /**
+   * Returns a pointer to the addressbook.
+   */
+  AddressBook *addressBook();
+
+  /**
+   * Writes the resource specific config to file.
+   */
+  virtual void writeConfig( KConfig *config );
+
+  /**
    * Open the resource and returns if it was successfully
    */
-  virtual bool open();
+  virtual bool doOpen();
 
   /**
    * Close the resource and returns if it was successfully
    */
-  virtual void close();
+  virtual void doClose();
   
   /**
    * Request a ticket, you have to pass through @ref save() to
@@ -89,16 +106,6 @@ public:
   virtual bool save( Ticket *ticket );
 
   /**
-   * Returns a pointer to the addressbook.
-   */
-  AddressBook *addressBook() { return mAddressBook; }
-
-  /**
-   * Returns a unique identifier.
-   */
-  virtual QString identifier() const;
-
-  /**
    * Removes a addressee from resource. This method is mainly
    * used by record-based resources like LDAP or SQL.
    */
@@ -110,51 +117,11 @@ public:
    */
   virtual void cleanUp();
 
-  /**
-   * Mark the resource to read-only.
-   */
-  virtual void setReadOnly( bool value );
-
-  /**
-   * Returns, if the resource is read-only.
-   */
-  virtual bool readOnly() const;
-
-  /**
-   * Mark the resource as fast. Only fast resources will be
-   * loaded when creating a StdAddressBook::self( true ).
-   */
-  virtual void setFastResource( bool value );
-
-  /**
-   * Returns, if the resource is fast.
-   */
-  virtual bool fastResource() const;
-
-  /**
-   * Set the name of resource.
-   */
-  virtual void setName( const QString &name );
-
-  /**
-   * Returns the name of resource.
-   */
-  virtual QString name() const;
-
-  /**
-   * This method can be used by all resources to encrypt
-   * their passwords for storing in a config file.
-   */
-  static QString cryptStr( const QString & );
-
 protected:
   Ticket *createTicket( Resource * );
 
 private:
   AddressBook *mAddressBook;
-  bool mReadOnly;
-  bool mFastResource;
-  QString mName;
 };
 
 }
