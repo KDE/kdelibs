@@ -1575,7 +1575,7 @@ public:
   KAction* action( int index ) const;
   KAction* action( const char* name, const char* classname = 0 ) const;
 
-  void createKeyMap( KAccelActions& );
+  void createKeyMap( KAccelActions& ) const;
   void setKeyMap( const KAccelActions& map );
 
   KActionPtrList &operator=( const KActionPtrList &c );
@@ -1596,8 +1596,20 @@ class KActionCollection : public QObject
   Q_OBJECT
 public:
   KActionCollection( QWidget *parent, const char *name = 0, KInstance *instance = 0 );
+  /**
+   * Use this constructor if you want the collection's actions to restrict
+   * their accelerator keys to @p watch rather than the @p parent.  If
+   * you don't require shortcuts, you can pass a null to the @p watch parameter.
+   */
+  KActionCollection( QWidget *watch, QObject* parent, const char *name = 0, KInstance *instance = 0 );
   KActionCollection( const KActionCollection &copy );
   virtual ~KActionCollection();
+
+  /**
+   * This sets the widget to which the keyboard shortcuts should be attached.
+   * You only need to call this if a null pointer was passed in the constructor.
+   */
+  virtual void setWidget( QWidget *widget );
 
   /* Return the collection's KAccel object */
   virtual KAccel* accel();
@@ -1611,7 +1623,7 @@ public:
   virtual KActionPtrList actions( const QString& group ) const;
   virtual KActionPtrList actions() const;
 
-  virtual void createKeyMap( KAccelActions& );
+  virtual void createKeyMap( KAccelActions& ) const;
   virtual void setKeyMap( const KAccelActions& map );
 
   void setInstance( KInstance *instance );
@@ -1651,10 +1663,6 @@ protected:
   virtual void remove( KAction* );
   virtual KAction* take( KAction* );
 #endif
-
-protected:
-  /** @internal */
-  void setAccel( KAccel* );
 
 private slots:
    void slotMenuItemHighlighted( int id );

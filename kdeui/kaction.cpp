@@ -304,10 +304,8 @@ void KAction::setShortcut( const KShortcut& cut )
   d->m_cut = cut;
 
   if( !d->m_kaccel ) {
-    // Don't insert action into KAccel if it doesn't have a shortcut.
-    if( cut.isNull() )
-      return;
-    if( m_parentCollection && m_parentCollection->accel() )
+    // Only insert action into KAccel if it has a valid name,
+    if( qstrcmp( name(), "unnamed" ) != 0 && m_parentCollection && m_parentCollection->accel() )
       plugAccel( m_parentCollection->accel() );
   }
   else
@@ -572,8 +570,8 @@ void KAction::plugAccel(KAccel *kacc, bool configurable)
     unplugAccel();
 
   // If the parent collection's accel ptr isn't set yet
-  if ( m_parentCollection && !m_parentCollection->accel() )
-    m_parentCollection->setAccel( kacc );
+  //if ( m_parentCollection && !m_parentCollection->accel() )
+  //  m_parentCollection->setAccel( kacc );
 
   // We can only plug this action into the given KAccel object
   //  if it does not already contain an action with the same name.
@@ -656,7 +654,7 @@ void KAction::setText( const QString& text )
   {
     KAccelAction* pAction = d->m_kaccel->actions().actionPtr(name());
     if (pAction)
-      pAction->setDesc( text );
+      pAction->setLabel( text );
   }
 
   d->setText( text );
@@ -2720,9 +2718,9 @@ KAction* KActionPtrList::action( const char* name, const char* classname ) const
   return 0;
 }
 
-void KActionPtrList::createKeyMap( KAccelActions& map )
+void KActionPtrList::createKeyMap( KAccelActions& map ) const
 {
-  kdDebug(125) << "KActionCollection::createKeyMap( " << &map << ")" << endl; // -- ellis
+  kdDebug(125) << "KActionPtrList::createKeyMap( " << &map << ")" << endl; // -- ellis
   map.clear();
   for( ConstIterator it = begin(); it != end(); ++it ) {
     KAction* action = *it;
@@ -2798,8 +2796,16 @@ KActionCollection::KActionCollection( QWidget *parent, const char *name,
   d = new KActionCollectionPrivate;
   if( parent )
     d->m_kaccel = new KAccel( parent, "KActionCollection-KAccel" );
-  else
-    d->m_kaccel = 0;
+  setInstance( instance );
+}
+
+KActionCollection::KActionCollection( QWidget *watch, QObject* parent, const char *name,
+                                      KInstance *instance )
+  : QObject( parent, name )
+{
+  d = new KActionCollectionPrivate;
+  if( watch )
+    d->m_kaccel = new KAccel( watch, parent, "KActionCollection-KAccel" );
   setInstance( instance );
 }
 
@@ -2812,8 +2818,6 @@ KActionCollection::KActionCollection( QObject *parent, const char *name,
   QWidget* w = dynamic_cast<QWidget*>( parent );
   if( w )
     d->m_kaccel = new KAccel( w, "KActionCollection-KAccel" );
-  else
-    d->m_kaccel = 0;
   setInstance( instance );
 }
 #endif
@@ -2837,10 +2841,16 @@ KActionCollection::~KActionCollection()
   delete d; d = 0;
 }
 
-void KActionCollection::setAccel( KAccel* accel )
+// TODO: If there are already actions in the collection, insert their shortcuts
+//  into this accel.
+void KActionCollection::setWidget( QWidget* w )
 {
-  if ( !d->m_kaccel )
-    d->m_kaccel = accel;
+  if ( !d->m_kaccel ) {
+    if ( w )
+      d->m_kaccel = new KAccel( w, "KActionCollection-KAccel" );
+  }
+  else
+    kdWarning(125) << "KActionCollection::setWidget( " << w << " ): d->m_kaccel already set to " << d->m_kaccel << endl;
 }
 
 void KActionCollection::insert( KAction* action )
@@ -2909,34 +2919,14 @@ KAction* KActionCollection::action( int index ) const
 //  return d->m_actions.at( index );
 }
 
-void KActionCollection::createKeyMap( KAccelActions& map )
+void KActionCollection::createKeyMap( KAccelActions& map ) const
 {
-  kdDebug(125) << "KActionCollection::createKeyMap( " << &map << ")" << endl; // -- ellis
-  map.clear();
-  QAsciiDictIterator<KAction> it( d->m_actionDict );
-  for( ; it.current(); ++it ) {
-    KAction* action = it.current();
-    if( action->isConfigurable() ) {
-      map.insert( action->name(), action->plainText(), QString::null,
-        action->shortcutDefault(), action->shortcutDefault() );
-      if( action->shortcut() != action->shortcutDefault() ) {
-        KAccelAction* pAccelAction = map.actionPtr( action->name() );
-        if( pAccelAction )
-          pAccelAction->setShortcut( action->shortcut() );
-      }
-    }
-  }
+  actions().createKeyMap( map );
 }
 
 void KActionCollection::setKeyMap( const KAccelActions& map )
 {
-  kdDebug(125) << "KActionCollection::setKeyMap( " << &map << " )" << endl; // -- ellis
-  for( uint i = 0; i < map.count(); i++ )
-  {
-    const KAccelAction* aa = map.actionPtr( i );
-    KAction* act = action( aa->name().latin1() );
-    act->setShortcut( aa->shortcut() );
-  }
+  actions().setKeyMap( map );
 }
 
 uint KActionCollection::count() const
