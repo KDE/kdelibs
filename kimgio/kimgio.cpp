@@ -25,6 +25,7 @@ static int registered = 0;
 #include "kimgio.h"
 #include <klocale.h>
 #include <kglobal.h>
+#include <kmimetype.h>
 
 #ifdef LINKED_png
 extern "C" void kimgio_init_png();
@@ -216,8 +217,53 @@ QString KImageIO::type(const QString& filename)
   return "PNG";
 }
 
+QStringList KImageIO::mimeTypes( Mode _mode )
+{
+  QStringList mimeList;
 
+  mimeList.append( "image/gif" );
+  
+  if( _mode == Reading )
+  {
+    mimeList.append( "image/jpg" );
+  }
+  else
+  {
+    #ifdef HAVE_QIMGIO
+      mimeList.append( "image/jpg" );
+    #endif
+  }
 
+  mimeList.append( "image/bmp" );
+  
+  mimeList.append( "image/tiff" );
+  
+  mimeList.append( "image/xpm" );
 
+  mimeList.append( "image/xbm" );
 
+  return mimeList;
+}
 
+bool KImageIO::isSupported( const QString& _mimeType, Mode _mode )
+{
+  bool result;
+  QStringList mimeList;
+
+  result = false;
+  mimeList = KImageIO::mimeTypes( _mode );
+
+  QStringList::Iterator it;
+  for( it = mimeList.begin() ; it != mimeList.end() ; ++it )
+  {
+    if( *it == _mimeType )
+      result = true;
+  }
+
+  return result;
+}
+
+QString KImageIO::mimeType( const QString& _filename )
+{
+  return KMimeType::findByURL( _filename )->mimeType();
+}

@@ -63,7 +63,7 @@ staticmodules: $(JPEG_MODULE) $(TIFF_MODULE)
 CLEANFILES = staticmodules kimgio-config.h
 
 libkimgio_la_LDFLAGS = -version-info 3:0 --export-dynamic
-libkimgio_la_LIBADD = `cat staticmodules` $(LIBQIMGIO) $(LIB_KDECORE) 
+libkimgio_la_LIBADD = `cat staticmodules` $(LIBQIMGIO) $(LIB_KDECORE) $(LIB_KIO)
 libkimgio_la_DEPENDENCIES = staticmodules 
 libkimgio_la_SOURCES = kimgio.cpp
 $(srcdir)/kimgio.cpp: kimgio-config.h
@@ -71,7 +71,7 @@ include_HEADERS = kimgio.h
 
 noinst_HEADERS= jpeg.h xview.h eps.h tiffr.h krl.h
 
-INCLUDES = -I$(top_srcdir)/libltdl -I$(top_srcdir)/dcop $(all_includes)
+INCLUDES = -I$(top_srcdir)/libltdl -I$(top_srcdir)/dcop $(all_includes) -I$(top_srcdir)/kio
 
 EXTRA_DIST = netpbm.cpp netpbm.h
 

@@ -70,6 +70,10 @@ public:
    *  Returns the type of given filename.
    */
   static QString type(const QString& filename);
+
+  static QStringList mimeTypes( Mode _mode = Writing );
+  static bool isSupported( const QString& _mimeType, Mode _mode = Writing );
+  static QString mimeType( const QString& _filename );
 };
 
 /**
