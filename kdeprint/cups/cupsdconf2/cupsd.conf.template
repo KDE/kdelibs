@@ -934,8 +934,8 @@ $$
 # The MaxJobsPerUser directive controls the maximum number of <i>active</i>
 # jobs that are allowed for each user. Once a user reaches the limit, new
 # jobs will be rejected until one of the active jobs is completed, stopped,
-# aborted, or canceled.
-#
+# aborted, or canceled.</p>
+# <p>
 # Setting the maximum to 0 disables this functionality.
 # Default is 0 (no limit).
 # </p>
@@ -949,8 +949,8 @@ $$
 # The MaxJobsPerPrinter directive controls the maximum number of <i>active</i>
 # jobs that are allowed for each printer or class. Once a printer or class
 # reaches the limit, new jobs will be rejected until one of the active jobs
-# is completed, stopped, aborted, or canceled.
-#
+# is completed, stopped, aborted, or canceled.</p>
+# <p>
 # Setting the maximum to 0 disables this functionality.
 # Default is 0 (no limit).
 # </p>
