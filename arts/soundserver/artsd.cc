@@ -29,6 +29,7 @@
 #include <iostream>
 #include <stdio.h>
 #include "audiosubsys.h"
+#include "synthschedule.h"
 
 using namespace std;
 
@@ -55,17 +56,23 @@ static void exitUsage(const char *progname)
 
 static Dispatcher::StartServer	cfgServers		= Dispatcher::startUnixServer;
 static int  					cfgSamplingRate	= 0;
+static int  					cfgFragmentCount= 0;
+static int  					cfgFragmentSize	= 0;
 
 static void handleArgs(int argc, char **argv)
 {
 	int optch;
-	while((optch = getopt(argc,argv,"r:n")) > 0)
+	while((optch = getopt(argc,argv,"r:nF:S:")) > 0)
 	{
 		switch(optch)
 		{
 			case 'r': cfgSamplingRate = atoi(optarg);
 				break;
 			case 'n': cfgServers = static_cast<Dispatcher::StartServer>( cfgServers | Dispatcher::startTCPServer);
+				break;
+			case 'F': cfgFragmentCount = atoi(optarg);
+				break;
+			case 'S': cfgFragmentSize = atoi(optarg);
 				break;
 			default: 
 					exitUsage(argc?argv[0]:"artsd");
@@ -82,7 +89,9 @@ int main(int argc, char **argv)
 	initSignals();
 
 	/* apply configuration */
-	if(cfgSamplingRate) AudioSubSystem::the()->samplingRate(cfgSamplingRate);
+	if(cfgSamplingRate)  AudioSubSystem::the()->samplingRate(cfgSamplingRate);
+	if(cfgFragmentCount) AudioSubSystem::the()->fragmentCount(cfgFragmentCount);
+	if(cfgFragmentSize)  AudioSubSystem::the()->fragmentSize(cfgFragmentSize);
 
 	/* start sound server implementation */
 	SimpleSoundServer_var server = new SimpleSoundServer_impl;

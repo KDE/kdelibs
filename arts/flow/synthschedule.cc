@@ -27,6 +27,7 @@
 #include "synthschedule.h"
 #include "debug.h"
 #include "asyncschedule.h"
+#include "audiosubsys.h"
 #include <algorithm>
 #include <stdio.h>
 #include <iostream>
@@ -35,7 +36,14 @@ using namespace std;
 
 // well, this was tuneable once...
 
-const int rbSize = 128;
+static unsigned long requestSize()
+{
+	unsigned long reqSize = 0;
+	if(!reqSize)
+		reqSize = AudioSubSystem::the()->fragmentSize()/4;
+
+	return reqSize;
+}
 
 // ----------- SynthBuffer -------------
 
@@ -144,7 +152,7 @@ AudioPort::AudioPort(string name, void *ptr, long flags,StdScheduleNode *parent)
 	destcount = 0;
 	sourcemodule = 0;
 	source = 0;
-	lbuffer = buffer = new SynthBuffer(0.0, rbSize);
+	lbuffer = buffer = new SynthBuffer(0.0, requestSize());
 }
 
 AudioPort::~AudioPort()
@@ -440,7 +448,7 @@ void StdScheduleNode::stop()
 void StdScheduleNode::requireFlow()
 {
 	// cout << "rf" << module->_interfaceName() << endl;
-	request(128);
+	request(requestSize());
 }
 
 Port *StdScheduleNode::findPort(string name)

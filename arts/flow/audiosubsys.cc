@@ -267,7 +267,7 @@ int AudioSubSystem::open(bool wantfullduplex)
 	fragment_buffer = new char[_fragmentSize];
 
 	int size = _fragmentSize;
-	while(size > 0) { size /= 2; frag_arg++; }
+	while(size > 1) { size /= 2; frag_arg++; }
 	frag_arg += (_fragmentCount << 16);
 	if(ioctl(audio_fd, SNDCTL_DSP_SETFRAGMENT, &frag_arg) == -1)
 	{
