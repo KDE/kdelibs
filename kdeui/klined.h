@@ -38,31 +38,30 @@
  * added functionalities : a popup menu that provides basic features
  * such as copy/cut/paste to manipulate content through the mouse, a
  * built-in hook into @ref KCompletion which provides automatic & manual
- * completion as well as iteration through a given list, and the
- * ability to change which keyboard keys to use for these features.
- * Since this widget inherits form QLineEdit, it can be used as a
- * drop-in replacement where the above extra functionalities are
- * needed/useful.
+ * completion as well as iteration through a given list, and the ability
+ * to change which keyboard keys to use for these features.  Since this
+ * widget inherits form QLineEdit, it can be used as a drop-in replacement
+ * where the above extra functionalities are needed and/or useful.
  *
  * KLineEdit emits three more additional signals than @ref QLineEdit: 
- * @ref completion(), @ref rotateUp() and @ref rotateDown(). The completion
+ * @ref completion, @ref rotateUp and @ref rotateDown. The completion
  * signal can be connected to a slot that will assist the user in
- * filling out the remaining text.  The two rotation signals are used
- * to iterate through a list of predefined text entries in opposite
- * direction, i.e. @ref rotateUp() will cause an iteration in reverse of what
- * a @ref rotateDown() signal would.
+ * filling out the remaining text.  The two rotation signals are intended
+ * to be used to iterate through a list of predefined text entries.
+ * The rotateUp signal should be connected to a slot that rotates through
+ * a list in opposite direction of the rotateDown signal.
  *
  * The default key-bindings for completion and rotation are determined
  * from the global settings in @ref KStdAccel.  However, these values can
- * be set locally overriding the global settings.  Simply invoking
- * @see useGlobalSettings() allows you to immediately default the
- * bindings back to the global settings again.  Also if you are interested
- * in only defaulting the key-bindings individually for each action, simply
- * call the setXXXKey( int ) methods without any argumet.  For example, after
- * locally customizing the key-binding that invokes completion in manual
- * modes, simply invoking @ref setCompletionKey() will result in the completion
+ * be set locally overriding the global settings.  Simply invoking @see
+ * useGlobalSettings allows you to immediately default the bindings back to
+ * the global settings again.  Also if you are interested in only defaulting
+ * the key-bindings individually for each action, simply call the setXXXKey
+ * methods without any argumet.  For example, after locally customizing the
+ * key-binding that invokes manual completion, simply invoking @see
+ * setCompletionKey(), without any argument, will result in the completion
  * key being set to 0. This will then force the key-event filter to use the
- * global values.
+ * global value.
  *
  * @sect A small example:
  *
@@ -85,13 +84,29 @@ class KLineEdit : public QLineEdit
   Q_OBJECT
 
 public:
-
+    /*
+    * Constructs a KLineEdit object.
+    *
+    * @param @p string text to be shown in the edit widget
+    * @param @p parent the parent object of this widget
+    * @param @p name the name of this widget
+    * @param @p showMenu flag to show/hide the popup menu
+    * @param @p showChanger flag to show/hide the completion mode item in popup menu
+    */
     KLineEdit( const QString &string,
                QWidget *parent,
                const char *name = 0,
                bool showMenu = true,
                bool showChanger = true );
-
+    /*
+    *  Constructs a KLineEdit object.
+    *
+    * @param @p string text to be shown in the edit widget
+    * @param @p parent the parent object of this widget
+    * @param @p name the name of this widget
+    * @param @p showMenu flag to show/hide the popup menu
+    * @param @p showChanger flag to show/hide the completion mode item in popup menu
+    */
     KLineEdit ( QWidget *parent=0,
                 const char *name=0,
                 bool showMenu = true,
@@ -126,7 +141,7 @@ public:
     * when this widget's deconstructor is called.  In short, @bf do @bf not delete
     * it yourself unless you want to crash your application!
     *
-    * @param obj A @ref KCompletion or a @ref KCompletion derived object.
+    * @param @p obj A @ref KCompletion or a @ref KCompletion derived object.
     */
     void setCompletionObject( KCompletion* obj );
 
