@@ -511,7 +511,7 @@ KJSO Location::get(const UString &p) const
   else if (p == "port")
     str = url.port() ? QString::number(url.port()) : QString::fromLatin1("");
   else if (p == "protocol")
-    str = url.protocol();
+    str = url.protocol()+":";
   else if (p == "search")
     str = url.query();
   else if (p == "[[==]]")
