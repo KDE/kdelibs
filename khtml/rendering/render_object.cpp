@@ -542,13 +542,13 @@ QString RenderObject::information() const
     if (element()) ts << " <" <<  getTagName(element()->id()).string() << ">";
     ts << " (" << xPos() << "," << yPos() << "," << width() << "," << height() << ")"
 	<< (isTableCell() ?
-	    ( QString::fromLatin1(" [row=") +
+	    ( QString::fromLatin1(" [r=") +
 	      QString::number( static_cast<const RenderTableCell *>(this)->row() ) +
-	      QString::fromLatin1(" col=") +
+	      QString::fromLatin1(" c=") +
 	      QString::number( static_cast<const RenderTableCell *>(this)->col() ) +
-	      QString::fromLatin1(" rowspan=") +
+	      QString::fromLatin1(" rs=") +
 	      QString::number( static_cast<const RenderTableCell *>(this)->rowSpan() ) +
-	      QString::fromLatin1(" colspan=") +
+	      QString::fromLatin1(" cs=") +
 	      QString::number( static_cast<const RenderTableCell *>(this)->colSpan() ) +
 	      QString::fromLatin1("]") ) : QString::null );
 	return str;
@@ -801,8 +801,7 @@ bool RenderObject::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
     bool inner = !info.innerNode();
 
     // ### table should have its own, more performant method
-    if (isInline() || isTableRow() || isTableSection() ||
-        inside || mouseInside()) {
+     if (isInline() || isRoot() || isTableRow() || isTableSection() || inside || mouseInside()) {
         for (RenderObject* child = lastChild(); child; child = child->previousSibling())
             if (!child->isSpecial() && child->nodeAtPoint(info, _x, _y, _tx+xPos(), _ty+yPos()))
                 inside = true;
