@@ -358,7 +358,13 @@ int KWalletD::internalOpen(const QCString& appid, const QString& wallet, bool is
 		KPasswordDialog *kpd = 0L;
 		bool emptyPass = false;
 		if ((isPath || QFile::exists(wallet)) || KWallet::Backend::exists(wallet)) {
-			if (0 != b->open(QByteArray()) || !b->isOpen()) {
+			int pwless = b->open(QByteArray());
+			if (0 != pwless || !b->isOpen()) {
+				if (pwless == 0) {
+					// release, start anew
+					delete b;
+					b = new KWallet::Backend(wallet, isPath);
+				}
 				kpd = new KPasswordDialog(KPasswordDialog::Password, false, 0);
 				if (appid.isEmpty()) {
 					kpd->setPrompt(i18n("<qt>KDE has requested to open the wallet '<b>%1</b>'. Please enter the password for this wallet below.").arg(QStyleSheet::escape(wallet)));
@@ -414,20 +420,27 @@ int KWalletD::internalOpen(const QCString& appid, const QString& wallet, bool is
 			}
 		}
 
-		delete kpd;
 		if (!emptyPass && (!p || !b->isOpen())) {
 			delete b;
+			delete kpd;
 			return -1;
 		}
 
 		if (emptyPass && _openPrompt && !isAuthorizedApp(appid, wallet, w)) {
 			delete b;
+			delete kpd;
 			return -1;
 		}
 
 		_wallets.insert(rc = generateHandle(), b);
-		_passwords[wallet] = p;
+		if (emptyPass) {
+			_passwords[wallet] = "";
+		} else {
+			_passwords[wallet] = p;
+		}
 		_handles[appid].append(rc);
+
+		delete kpd; // don't refactor this!!  Argh I hate KPassDlg
 
 		if (brandNew) {
 			createFolder(rc, KWallet::Wallet::PasswordFolder());
@@ -625,6 +638,7 @@ int KWalletD::close(const QString& wallet, bool force) {
 int KWalletD::closeWallet(KWallet::Backend *w, int handle, bool force) {
 	if (w) {
 		const QString& wallet = w->walletName();
+		assert(_passwords.contains(wallet));
 		if (w->refCount() == 0 || force) {
 			invalidateHandle(handle);
 			if (_closeIdle && _timeouts) {
