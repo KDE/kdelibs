@@ -83,7 +83,7 @@ typedef QListIterator<qryCond> CondIterator;
  * Queries can be parameterized. While building the query, the user can use
  * the special construct %name, and provide a corresponding value using the
  * @ref setParameter call. Before the execution (through @ref openRecordset
- * @or @ref execute ), a parameter substitution is done. When there is no
+ * or @ref execute ), a parameter substitution is done. When there is no
  * corresponding parameter value, the %xxx keyword is removed. This can lead
  * to incorrect SQL. Parameter substitution is done on the complete SQL
  * statement, allowing creation of queries that access data with similar
@@ -146,7 +146,7 @@ class Query :public DataObject{
      * aggregate functions aren't yet supported. The sig is here but the SQL
      * ignores aggregates.
      * @param table The table to which this field belongs. Ignored for
-     * @command queries.
+     * command queries.
      * @param name The name of the field
      * @param aggregate The aggregate function to apply to this field
      * @param value The value this field should get (useful only for update
