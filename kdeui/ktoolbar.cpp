@@ -50,16 +50,19 @@ template class QList<KToolBarItem>;
 
 // Use enums instead of defines. We are C++ and NOT C !
 enum {
-    CONTEXT_LEFT = 0,
-    CONTEXT_RIGHT = 1,
-    CONTEXT_TOP = 2,
+    CONTEXT_TOP = 0,
+    CONTEXT_LEFT = 1,
+    CONTEXT_RIGHT = 2,
     CONTEXT_BOTTOM = 3,
     CONTEXT_FLOAT = 4,
     CONTEXT_FLAT = 5,
     CONTEXT_ICONS = 6,
     CONTEXT_TEXT = 7,
     CONTEXT_TEXTRIGHT = 8,
-    CONTEXT_TEXTUNDER = 9
+    CONTEXT_TEXTUNDER = 9,
+    CONTEXT_SMALL = 10,
+    CONTEXT_MEDIUM = 11,
+    CONTEXT_LARGE = 12
 };
 
 class KToolBarPrivate
@@ -85,6 +88,7 @@ public:
     m_maxVerHeight  = -1;
 
     m_approxItemSize = 26;
+    m_enableContext  = true;
   }
   ~KToolBarPrivate()
   {
@@ -108,6 +112,7 @@ public:
   int m_maxVerHeight;
 
   int m_approxItemSize;
+  bool m_enableContext;
 };
 
 // this should be adjustable (in faar future... )
@@ -138,10 +143,12 @@ void KToolBar::init()
 {
   // construct our context popup menu
   context = new QPopupMenu( 0, "context" );
-  context->insertItem( i18n("Left"), CONTEXT_LEFT );
   context->insertItem( i18n("Top"),  CONTEXT_TOP );
+  context->setItemChecked(CONTEXT_TOP, true);
+  context->insertItem( i18n("Left"), CONTEXT_LEFT );
   context->insertItem( i18n("Right"), CONTEXT_RIGHT );
   context->insertItem( i18n("Bottom"), CONTEXT_BOTTOM );
+  context->insertSeparator(-1);
   context->insertItem( i18n("Floating"), CONTEXT_FLOAT );
   context->insertItem( i18n("Flat"), CONTEXT_FLAT );
   context->insertSeparator(-1);
@@ -151,9 +158,18 @@ void KToolBar::init()
   mode->insertItem( i18n("Text only"), CONTEXT_TEXT );
   mode->insertItem( i18n("Text aside icons"), CONTEXT_TEXTRIGHT );
   mode->insertItem( i18n("Text under icons"), CONTEXT_TEXTUNDER );
+
+  QPopupMenu *size = new QPopupMenu( context, "size" );
+  size->insertItem( i18n("Small icons"), CONTEXT_SMALL );
+  size->insertItem( i18n("Medium icons"), CONTEXT_MEDIUM );
+  size->insertItem( i18n("Large icons"), CONTEXT_LARGE );
+
   context->setFont(KGlobal::menuFont());
 
-  context->insertItem( i18n("Mode"), mode );
+  context->insertItem( i18n("Text position"), mode );
+  context->setItemChecked(CONTEXT_ICONS, true);
+  context->insertItem( i18n("Icon size"), size );
+  context->setItemChecked(CONTEXT_MEDIUM, true);
 
   // set some more defaults
   fullSizeMode  = true;
@@ -263,14 +279,14 @@ void KToolBar::slotReadConfig()
   // check if the icon/text has changed
   if (icontext != d->m_iconText)
   {
-    d->m_iconText = icontext;
+    setIconText(icontext, false);
     doUpdate = true;
   }
 
   // ...and check if the icon size has changed
   if (iconsize != d->m_iconSize)
   {
-    d->m_iconSize = iconsize;
+    setIconSize(iconsize, false);
     doUpdate = true;
   }
 
@@ -347,11 +363,11 @@ void KToolBar::layoutHorizontal(int w)
       if ((*qli)->itemType() != KToolBarItem::Button)
         continue;
 
-      if ((*qli)->width() > d->m_maxItemWidth)
-        d->m_maxItemWidth = (*qli)->width();
-
       if ((*qli)->height() > d->m_maxItemHeight)
         d->m_maxItemHeight = (*qli)->height();
+
+      if ((*qli)->width() > d->m_maxItemWidth)
+        d->m_maxItemWidth = (*qli)->width();
     }
   }
 
@@ -420,8 +436,18 @@ void KToolBar::layoutHorizontal(int w)
         tallest = 0;
       }
 
-      /* position the button (or item.. whatever) */
-      (*qli)->move(xOffset, yOffset);
+      /* if this is not a button, then we center it vertically */
+      if ((*qli)->itemType() != KToolBarItem::Button )
+      {
+        int widget_offset = (d->m_maxItemHeight - (*qli)->height())/2;
+        if (widget_offset < 0) widget_offset = 0;
+        (*qli)->move(xOffset, yOffset + widget_offset);
+      }
+      else
+      {
+        /* position the button (or item.. whatever) */
+        (*qli)->move(xOffset, yOffset);
+      }
       xOffset += 3 + itemWidth;
 
       /* We need to save the tallest height and the widest width. */
@@ -1024,15 +1050,20 @@ void KToolBar::mouseReleaseEvent ( QMouseEvent *m)
 
 void KToolBar::mousePressEvent ( QMouseEvent *m )
 {
-    buttonDownOnHandle |=   ((d->m_isHorizontal && m->x()<9) || (!d->m_isHorizontal && m->y()<9));
+  buttonDownOnHandle |=   ((d->m_isHorizontal && m->x()<9) || (!d->m_isHorizontal && m->y()<9));
 
   if (moving)
-      if (m->button() == RightButton)
-  {
+    if (m->button() == RightButton)
+    {
+      if (contextMenuEnabled() == false)
+      {
+        buttonDownOnHandle = false;
+        return;
+      }
       context->popup( mapToGlobal( m->pos() ), 0 );
-      buttonDownOnHandle = FALSE;
+      buttonDownOnHandle = false;
       ContextCallback(0);
-        }
+    }
 }
 
 void KToolBar::slotHotSpot(int hs)
@@ -1496,13 +1527,13 @@ int KToolBar::insertFrame (int _id, int _size, int _index)
 int KToolBar::insertWidget(int _id, int _size, QWidget *_widget,
     int _index )
 {
-  KToolBarItem *item = new KToolBarItem(_widget, KToolBarItem::Frame, _id, false);
+  KToolBarItem *item = new KToolBarItem(_widget, KToolBarItem::AnyWidget, _id, false);
 
   if (_index == -1)
     d->m_items->append (item);
   else
     d->m_items->insert(_index, item);
-  item-> resize (_size, d->m_approxItemSize-2);
+  item->resize(_size, 26);
   if (d->m_position != Flat)
     item->show();
   updateRects(true);
@@ -1562,7 +1593,7 @@ int KToolBar::insertCombo (QStrList *list, int id, bool writable,
     QToolTip::add( combo, tooltiptext );
   connect ( combo, signal, receiver, slot );
   combo->setAutoResize(false);
-  item->resize(size, 24);
+  item->resize(size, 26);
   item->setEnabled(enabled);
   if (d->m_position != Flat)
     item->show();
@@ -1593,7 +1624,7 @@ int KToolBar::insertCombo (const QStringList &list, int id, bool writable,
     QToolTip::add( combo, tooltiptext );
   connect ( combo, signal, receiver, slot );
   combo->setAutoResize(false);
-  item->resize(size, 24);
+  item->resize(size, 26);
   item->setEnabled(enabled);
   if (d->m_position != Flat)
     item->show();
@@ -1624,7 +1655,7 @@ int KToolBar::insertCombo (const QString& text, int id, bool writable,
     QToolTip::add( combo, tooltiptext );
   connect (combo, signal, receiver, slot);
   combo->setAutoResize(false);
-  item->resize(size, 24);
+  item->resize(size, 26);
   item->setEnabled(enabled);
   if (d->m_position != Flat)
     item->show();
@@ -1958,6 +1989,10 @@ void KToolBar::setBarPos(BarPosition bpos)
 {
   if (d->m_position != bpos)
   {
+    for (int item = CONTEXT_TOP; item <= CONTEXT_FLAT; ++item)
+      context->setItemChecked(item, false);
+    context->setItemChecked(bpos, true);
+
     if (bpos == Floating)
     {
       lastPosition = d->m_position;
@@ -1983,7 +2018,9 @@ void KToolBar::setBarPos(BarPosition bpos)
         setCaption(s);
       }
       context->changeItem (i18n("UnFloat"), CONTEXT_FLOAT);
-      context->setItemEnabled (CONTEXT_FLAT, FALSE);
+      for (int i = CONTEXT_TOP; i <= CONTEXT_BOTTOM; ++i)
+        context->setItemEnabled(i, false);
+      context->setItemEnabled(CONTEXT_FLAT, false);
       setMouseTracking(true);
       mouseEntered=false;
       return;
@@ -1991,11 +2028,14 @@ void KToolBar::setBarPos(BarPosition bpos)
     else if (d->m_position == Floating) // was floating
     {
       d->m_position = bpos;
+
       hide();
       recreate(d->m_parent, oldWFlags, QPoint(oldX, oldY), true);
       emit moved (bpos); // another bar::updateRects (damn) No! It's ok.
       context->changeItem (i18n("Float"), CONTEXT_FLOAT);
-      context->setItemEnabled (CONTEXT_FLAT, TRUE);
+      for (int i = CONTEXT_TOP; i <= CONTEXT_BOTTOM; ++i)
+        context->setItemEnabled(i, true);
+      context->setItemEnabled(CONTEXT_FLAT, true);
       setMouseTracking(true);
       mouseEntered = false;
       updateRects ();
@@ -2008,6 +2048,7 @@ void KToolBar::setBarPos(BarPosition bpos)
         setFlat (true);
         return;
       }
+
       d->m_position = bpos;
       enableFloating (true);
       emit moved ( bpos );
@@ -2029,6 +2070,11 @@ void KToolBar::enableFloating (bool arrrrrrgh)
 
 void KToolBar::setIconText(IconText icontext)
 {
+  setIconText(icontext, true);
+}
+
+void KToolBar::setIconText(IconText icontext, bool update)
+{
   bool doUpdate=false;
 
   if (icontext != d->m_iconText)
@@ -2039,6 +2085,32 @@ void KToolBar::setIconText(IconText icontext)
     d->m_iconText = icontext;
     doUpdate=true;
   }
+
+  if (context)
+  {
+    for(int i = CONTEXT_ICONS; i <= CONTEXT_TEXTUNDER; ++i)
+      context->setItemChecked(i, false);
+
+    switch (icontext)
+    {
+    case IconOnly:
+    default:
+      context->setItemChecked(CONTEXT_ICONS, true);
+      break;
+    case IconTextRight:
+      context->setItemChecked(CONTEXT_TEXTRIGHT, true);
+      break;
+    case TextOnly:
+      context->setItemChecked(CONTEXT_TEXT, true);
+      break;
+    case IconTextBottom:
+      context->setItemChecked(CONTEXT_TEXTUNDER, true);
+      break;
+    }
+  }
+
+  if (update == false)
+    return;
 
   if (doUpdate)
     emit modechange(); // tell buttons what happened
@@ -2052,9 +2124,67 @@ KToolBar::IconText KToolBar::iconText() const
   return d->m_iconText;
 }
 
+void KToolBar::setIconSize(KIconLoader::Size size)
+{
+  setIconSize(size, true);
+}
+
+void KToolBar::setIconSize(KIconLoader::Size size, bool update)
+{
+  bool doUpdate=false;
+
+  if (size != d->m_iconSize)
+  {
+    d->m_maxItemWidth  = 0;
+    d->m_maxItemHeight = 0;
+
+    d->m_iconSize = size;
+    doUpdate=true;
+  }
+
+  if (context)
+  {
+    for(int i = CONTEXT_SMALL; i <= CONTEXT_LARGE; ++i)
+      context->setItemChecked(i, false);
+
+    switch (size)
+    {
+    case KIconLoader::Small:
+      context->setItemChecked(CONTEXT_SMALL, true);
+      break;
+    case KIconLoader::Medium:
+    default:
+      context->setItemChecked(CONTEXT_MEDIUM, true);
+      break;
+    case KIconLoader::Large:
+      context->setItemChecked(CONTEXT_LARGE, true);
+      break;
+    }
+  }
+
+  if (update == false)
+    return;
+
+  if (doUpdate)
+    emit modechange(); // tell buttons what happened
+
+  if (isVisible())
+    updateRects(true);
+}
+
 KIconLoader::Size KToolBar::iconSize() const
 {
   return d->m_iconSize;
+}
+
+void KToolBar::setEnableContextMenu(bool enable)
+{
+  d->m_enableContext = enable;
+}
+
+bool KToolBar::contextMenuEnabled() const
+{
+  return d->m_enableContext;
 }
 
 bool KToolBar::enable(BarStatus stat)
@@ -2102,8 +2232,10 @@ void KToolBar::setFlat (bool flag)
   if (flag) //flat
   {
     context->changeItem (i18n("UnFlat"), CONTEXT_FLAT);
+    for (int i = CONTEXT_TOP; i <= CONTEXT_FLOAT; ++i)
+      context->setItemEnabled(i, false);
+
     lastPosition = d->m_position; // test float. I did and it works by miracle!?
-    //debug ("Flat");
     d->m_position = Flat;
     d->m_isHorizontal = false;
     for (KToolBarItem *b = d->m_items->first(); b; b = d->m_items->next())
@@ -2113,7 +2245,9 @@ void KToolBar::setFlat (bool flag)
   else //unflat
   {
     context->changeItem (i18n("Flat"), CONTEXT_FLAT);
-    //debug ("Unflat");
+    for (int i = CONTEXT_TOP; i <= CONTEXT_FLOAT; ++i)
+      context->setItemEnabled(i, true);
+
     setBarPos(lastPosition);
     for (KToolBarItem *b = d->m_items->first(); b; b = d->m_items->next())
     {
@@ -2172,6 +2306,15 @@ void KToolBar::ContextCallback( int )
       break;
     case CONTEXT_TEXTUNDER:
       setIconText( IconTextBottom );
+      break;
+    case CONTEXT_SMALL:
+      setIconSize( KIconLoader::Small );
+      break;
+    case CONTEXT_MEDIUM:
+      setIconSize( KIconLoader::Medium );
+      break;
+    case CONTEXT_LARGE:
+      setIconSize( KIconLoader::Large );
       break;
     }
 

@@ -64,7 +64,9 @@ public:
     m_isRaised    = false;
 
     m_text        = QString::null;
+    m_iconName    = QString::null;
     m_iconText    = KToolBar::IconOnly;
+    m_iconSize    = KIconLoader::Medium;
     m_delayTimer  = 0L;
     m_popup       = 0L;
   }
@@ -93,9 +95,11 @@ public:
   bool    m_isRaised;
 
   QString m_text;
+  QString m_iconName;
 
   KToolBar *m_parent;
   KToolBar::IconText m_iconText;
+  KIconLoader::Size  m_iconSize;
 
   QTimer     *m_delayTimer;
   QPopupMenu *m_popup;
@@ -187,6 +191,13 @@ void KToolBarButton::modeChange()
   d->m_highlight = d->m_parent->highlight();
   d->m_iconText  = d->m_parent->iconText();
 
+  if (d->m_iconSize != d->m_parent->iconSize())
+  {
+    d->m_iconSize = d->m_parent->iconSize();
+    if (!d->m_iconName.isNull())
+      setIcon(d->m_iconName);
+  }
+
   // we'll go with the size of our pixmap (plus a bit of padding) as
   // the default size...
   int pix_width  = activePixmap.width() + 8;
@@ -255,7 +266,9 @@ void KToolBarButton::setText( const QString& text)
 
 void KToolBarButton::setIcon( const QString &icon )
 {
-    setPixmap( BarIcon(icon, d->m_parent->iconSize()) );
+  d->m_iconName = icon;
+  d->m_iconSize = d->m_parent->iconSize();
+  setPixmap( BarIcon(icon, d->m_parent->iconSize()) );
 }
 
 void KToolBarButton::setPixmap( const QPixmap &pixmap )
@@ -283,7 +296,7 @@ void KToolBarButton::setPixmap( const QPixmap &pixmap )
   makeDefaultPixmap();
   makeDisabledPixmap();
 
-  QButton::setPixmap( defaultPixmap );
+  QButton::setPixmap( isEnabled() ? defaultPixmap : disabledPixmap );
 }
 
 void KToolBarButton::setPopup(QPopupMenu *p)
@@ -431,10 +444,11 @@ void KToolBarButton::drawButton( QPainter *_painter )
         iconType = KStyle::IconTextBottom;
         break;
     }
+    QFont ref_font(KGlobal::toolBarFont());
     kapp->kstyle()->drawKToolBarButton(_painter, 0, 0, width(), height(),
       isEnabled()? colorGroup() : palette().disabled(), isDown() || isOn(),
       d->m_isRaised, isEnabled(), d->m_popup != 0L, iconType, d->m_text,
-      pixmap(), &KGlobal::toolBarFont());
+      pixmap(), &ref_font);
     return;
   }
 

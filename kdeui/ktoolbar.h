@@ -91,7 +91,7 @@ public:
   /**
    * Possible bar positions.
    **/
-  enum BarPosition{Top, Left, Bottom, Right, Floating, Flat};
+  enum BarPosition{Top = 0, Left, Right, Bottom, Floating, Flat};
 
   /**
    * Constructor.
@@ -295,7 +295,8 @@ public:
   int insertFrame(int id, int width, int index =-1);
 
   /**
-   * Insert a user-defined widget.
+   * Insert a user-defined widget.  The widget @bf must have this
+   * toolbar as its parent.
    *
    * Widget must have a QWidget for base class.  Widget can be
    * autosized to full width. If you forget about it, you can get a
@@ -692,18 +693,24 @@ public:
    * @li IconTextBottom (icons and text, text is under icons).
    * @see IconText
    **/
-
   void setIconText(IconText it);
+  void setIconText(IconText it, bool update);
 
   /**
    * @return The current text style for buttons.
    */
   IconText iconText() const;
 
+  void setIconSize(KIconLoader::Size size);
+  void setIconSize(KIconLoader::Size size, bool update);
+
   /**
    * @return The current icon size for buttons.
    */
   KIconLoader::Size iconSize() const;
+
+  void setEnableContextMenu(bool enable = true);
+  bool contextMenuEnabled() const;
 
   /**
    * This will inform a toolbar button to ignore certain style
