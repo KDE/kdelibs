@@ -15,6 +15,8 @@ StyleSheets:
 	* @ rules in sheets
 	* lots of properties
 	* html style attribute does only parse the first property
+	* delete the old cssproperties in a style attribute in case
+	  the style attribute changes.
 
 DOM:
 	* some functions in the Impl classes

@@ -626,7 +626,6 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
     {
     case CSS_PROP_AZIMUTH:
     case CSS_PROP_BACKGROUND_ATTACHMENT:
-    case CSS_PROP_BACKGROUND_COLOR:
     case CSS_PROP_BACKGROUND_POSITION:
     case CSS_PROP_BACKGROUND_REPEAT:
     case CSS_PROP_BORDER_TOP_STYLE:
@@ -665,7 +664,6 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
     case CSS_PROP_MARGIN_LEFT:
     case CSS_PROP_MAX_HEIGHT:
     case CSS_PROP_MAX_WIDTH:
-    case CSS_PROP_OUTLINE_COLOR:
     case CSS_PROP_OUTLINE_STYLE:
     case CSS_PROP_OUTLINE_WIDTH:
     case CSS_PROP_OVERFLOW:
@@ -784,7 +782,7 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
 	QString value(curP, endP - curP);
 	QColor c;
 	khtml::setNamedColor(c, value);
-	if(!c.isValid()) return false;
+	if(!c.isValid() && value != "transparent") return false;
 	//kdDebug( 6080 ) << "color is: " << c.red() << ", " << c.green() << ", " << c.blue() << endl;
 	parsedValue = new CSSPrimitiveValueImpl(c);
 	break;
@@ -987,7 +985,7 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
                     break;
                 }
 		if (*nextP == '(')
-		   ignoreSpace=true; 
+		   ignoreSpace=true;
 		if (*nextP == ')')
 		   ignoreSpace=false;
 		nextP++;

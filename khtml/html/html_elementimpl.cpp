@@ -201,6 +201,8 @@ void HTMLElementImpl::parseAttribute(Attribute *attr)
 	setHasClass();
 	break;
     case ATTR_STYLE:
+	// ### we need to remove old style info in case there was any!
+	// ### the inline sheet ay contain more than 1 property!
 	// stylesheet info
 	setHasStyle();
 	addCSSProperty(attr->value());

@@ -475,7 +475,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 {
     CSSValueImpl *value = prop->value();
 
-    //kdDebug( 6080 ) << "applying value " << prop->m_id << endl;
+    //kdDebug( 6080 ) << "applying property " << prop->m_id << endl;
 
     CSSPrimitiveValueImpl *primitiveValue = 0;
     if(value->isPrimitiveValue()) primitiveValue = static_cast<CSSPrimitiveValueImpl *>(value);
@@ -1033,6 +1033,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	    col = primitiveValue->getRGBColorValue()->color();
 	else
 	    return;
+	//kdDebug( 6080 ) << "applying color " << col.isValid() << endl;
 	switch(prop->m_id)
 	{
 	case CSS_PROP_BACKGROUND_COLOR:

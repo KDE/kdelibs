@@ -27,6 +27,7 @@
 #include <xml/dom_stringimpl.h>
 #include <qlist.h>
 #include <khtmllayout.h>
+#include <kdebug.h>
 using namespace DOM;
 using namespace khtml;
 
@@ -61,6 +62,13 @@ void khtml::setNamedColor(QColor &color, const QString &name)
     if( !htmlColors )
       htmlColors = new HTMLColors;
 
+    if(name == "transparent") {
+	//kdDebug( 6080 ) << "found transparent color" << endl; 
+	color = QColor(); // invalid color == transparent
+	//kdDebug( 6080 ) << "colorvalid" << color.isValid() << endl;
+	return;
+    }
+    
     // also recognize "color=ffffff"
     if (name[0] != QChar('#') && name.length() == 6)
     {
