@@ -523,7 +523,7 @@ bool KURL::cd( const char* _dir, bool zapRef)
 	return false;
     
     // Now we have a path for shure
-    bNoPath == ( _dir[0] == 0);
+    bNoPath = ( _dir[0] == 0);
 
     if( _dir[0] == '/' )
     {
