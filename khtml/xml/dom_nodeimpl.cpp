@@ -392,8 +392,7 @@ void NodeImpl::setChanged(bool b)
     if (b && !changed() && ownerDocument())
     {
         ownerDocument()->changedNodes.append(this);
-        if ( this != ownerDocument() )
-            ownerDocument()->setChanged(b);
+	ownerDocument()->setDocumentChanged(b);
     }
     else if (!b && changed() && ownerDocument())
         ownerDocument()->changedNodes.remove(this);

@@ -272,6 +272,9 @@ public:
 
     virtual DocumentImpl *getDocument()
         { return this; }
+    virtual bool isDocumentChanged() 
+	{ return m_docChanged; }
+    virtual void setDocumentChanged(bool);
     void attachNodeIterator(NodeIteratorImpl *ni);
     void detachNodeIterator(NodeIteratorImpl *ni);
     void notifyBeforeNodeRemoval(NodeImpl *n);
@@ -358,6 +361,7 @@ protected:
     bool m_loadingSheet;
     bool visuallyOrdered;
     bool m_bParsing;
+    bool m_docChanged;
 };
 
 class DocumentFragmentImpl : public NodeBaseImpl

@@ -252,6 +252,7 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, DocumentTypeI
     visuallyOrdered = false;
     m_loadingSheet = false;
     m_bParsing = false;
+    m_docChanged = false;
     m_sheet = 0;
     m_elemSheet = 0;
     m_tokenizer = 0;
@@ -279,7 +280,7 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, DocumentTypeI
 
 DocumentImpl::~DocumentImpl()
 {
-    if (changedDocuments)
+    if (changedDocuments && m_docChanged)
         changedDocuments->remove(this);
     document->doc = 0;
     delete m_sheet;
@@ -780,6 +781,18 @@ TreeWalkerImpl *DocumentImpl::createTreeWalker(Node /*root*/, unsigned long /*wh
     return new TreeWalkerImpl;
 }
 
+void DocumentImpl::setDocumentChanged(bool b) 
+{
+    if (!changedDocuments)
+        changedDocuments = s_changedDocumentsDeleter.setObject( new QList<DocumentImpl>() );
+
+    if (b && !m_docChanged)
+        changedDocuments->append(this);
+    else if (!b && m_docChanged)
+        changedDocuments->remove(this);
+    m_docChanged = b;
+}
+
 void DocumentImpl::applyChanges(bool,bool force)
 {
     if ( !m_render && attached() ) return;
@@ -810,13 +823,6 @@ void DocumentImpl::setChanged(bool b)
     else
         changedNodes.remove(this);
 
-    if (!changedDocuments)
-        changedDocuments = s_changedDocumentsDeleter.setObject( new QList<DocumentImpl>() );
-
-    if (b && !changed())
-        changedDocuments->append(this);
-    else if (!b && changed())
-        changedDocuments->remove(this);
     NodeBaseImpl::setChanged(b);
 }
 
@@ -892,6 +898,7 @@ void DocumentImpl::updateRendering()
     kdDebug() << "UPDATERENDERING orig="<<o<<" actual="<<a<<endl;
     changedNodes.clear();
     setChanged(false);
+    setDocumentChanged(false);
 }
 
 void DocumentImpl::updateDocumentsRendering()
@@ -899,7 +906,7 @@ void DocumentImpl::updateDocumentsRendering()
     if (!changedDocuments)
         return;
     for (QListIterator<DocumentImpl> it(*changedDocuments); it.current(); )
-        if (it.current()->changed())
+        if (it.current()->isDocumentChanged())
             it.current()->updateRendering();
 }
 
