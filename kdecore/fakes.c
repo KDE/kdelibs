@@ -19,6 +19,8 @@
    Boston, MA 02111-1307, USA.
 */
 
+#define HAVE_MKDTEMP 1
+
 #include <config.h>
 
 #ifndef HAVE_SETENV
