@@ -1148,10 +1148,10 @@ void RenderFlow::calcMinMaxWidth()
                 RenderStyle* cstyle = child->style();
                 int margins = 0;
 		LengthType type = cstyle->marginLeft().type();
-                if ( type != Variable )
+                if ( ! ( type == Variable ) )
                     margins += (type == Fixed ? cstyle->marginLeft().value() : child->marginLeft());
 		type = cstyle->marginRight().type();
-                if ( type != Variable )
+                if ( ! ( type == Variable ) )
                     margins += (type == Fixed ? cstyle->marginRight().value() : child->marginRight());
                 int childMin = child->minWidth() + margins;
                 int childMax = child->maxWidth() + margins;
