@@ -39,9 +39,6 @@
 #include <qtextstream.h>
 #include <soundserver.h>
 
-KApplication *app;
-SimpleSoundServer_base *server;
-
 int main(int argc, char **argv)
 {
 	KAboutData aboutdata("knotify", I18N_NOOP("KNotify"),
@@ -53,33 +50,30 @@ int main(int argc, char **argv)
 	
 	KCmdLineArgs::init( argc, argv, &aboutdata );
 //	KCmdLineArgs::addCmdLineOptions( options );
-	app = new KApplication;
+	KApplication app;
 	
 	// setup dcop communication
-	if (!app->dcopClient()->isAttached())
-		app->dcopClient()->registerAs("knotify",false);
-	if (!app->dcopClient()->isAttached())
+	if (!app.dcopClient()->isAttached())
+		app.dcopClient()->registerAs("knotify",false);
+	if (!app.dcopClient()->isAttached())
 		return 1;
 	
 	// setup mcop communication
 	QIOManager qiomanager;
 	Dispatcher dispatcher(&qiomanager);
 
-	// obtain an object reference to the soundserver
-	// comented
-	server = SimpleSoundServer_base::_fromString("global:Arts_SimpleSoundServer");
-	if(!server)
-		cerr << "artsd is not running, there will be no sound notifications.\n";
 
-	KNotify *notify = new KNotify;
-	(void)notify;
+	(void) new KNotify;
 
-	return app->exec();
+	return app.exec();
 }
 
 KNotify::KNotify() : QObject(), DCOPObject("Notify")
 {
-
+	// obtain an object reference to the soundserver
+	server = SimpleSoundServer_base::_fromString("global:Arts_SimpleSoundServer");
+	if(!server)
+		cerr << "artsd is not running, there will be no sound notifications.\n";
 }
 
 bool KNotify::process(const QCString &fun, const QByteArray &data,
@@ -131,8 +125,9 @@ void KNotify::processNotification(const QString &event, const QString &fromApp,
 		notifyBySound(sound);
 	if (present & KNotifyClient::Messagebox)
 		notifyByMessagebox(text);
-	if (present & KNotifyClient::Logfile && (QFile(file).isReadable()))
-		notifyByLogfile(text, file);
+#warning Logfile doesn t exist in knotifyclient.h
+	//if (present & KNotifyClient::Logfile && (QFile(file).isReadable()))
+		//notifyByLogfile(text, file);
 	if (present & KNotifyClient::Stderr)
 		notifyByStderr(text);
 	eventRunning=false;

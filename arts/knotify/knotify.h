@@ -25,6 +25,8 @@
 #include <knotifyclient.h>
 #include <dcopobject.h>
 
+class SimpleSoundServer_base;
+
 class KNotify : public QObject, DCOPObject
 {
 Q_OBJECT
@@ -44,6 +46,8 @@ protected:
 	bool notifyByMessagebox(const QString &text);
 	bool notifyByLogfile(const QString &text, const QString &file);
 	bool notifyByStderr(const QString &text);
+private:
+	SimpleSoundServer_base *server;
 };
 
 
