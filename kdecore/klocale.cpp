@@ -171,7 +171,7 @@ void KLocale::doBindInit()
 	d->plural_form = 1;
       else if ( pf == "French" )
 	d->plural_form = 2;
-      else if ( pf == "Gaeilge" )
+      else if ( pf == "OneTwoRest" || pf == "Gaeilge" ) // Gaelige is the old name
 	d->plural_form = 3;
       else if ( pf == "Russian" )
 	d->plural_form = 4;
