@@ -5561,7 +5561,7 @@ void KHTMLPart::extendSelectionTo(int x, int y, int absX, int absY, const DOM::N
           !d->m_selectionStart.handle()->renderer() ||
           !d->m_selectionEnd.handle()->renderer()) return;
 
-      if (d->m_extendMode != d->ExtendByChar && withinNode) {
+      if (d->m_extendMode != d->ExtendByChar) {
         // check whether we should extend at the front, or at the back
         bool caretBeforeInit = RangeImpl::compareBoundaryPoints(
       			d->caretNode().handle(), d->caretOffset(),
