@@ -141,6 +141,10 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
         ownerDocument()->setWindowEventListener(EventImpl::FOCUS_EVENT,
 	    ownerDocument()->createHTMLEventListener(attr->value().string()));
         break;
+    case ATTR_ONRESIZE:
+        ownerDocument()->setWindowEventListener(EventImpl::RESIZE_EVENT,
+	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+        break;
     case ATTR_NOSAVE:
 	break;
     default:
