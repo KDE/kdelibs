@@ -160,7 +160,7 @@ bool KJavaAppletContext::callMember(KJavaApplet * applet, const unsigned long ob
     return server->callMember(id, applet->appletId(), objid, name, args, type, retobjid, value);
 }
 
-void KJavaAppletContext::derefObject(KJavaApplet * applet, unsigned long jid) {
+void KJavaAppletContext::derefObject(KJavaApplet * applet, const unsigned long jid) {
     server->derefObject(id, applet->appletId(), jid);
 }
 
