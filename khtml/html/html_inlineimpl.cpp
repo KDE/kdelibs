@@ -71,9 +71,9 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
         if ( evt->id() == EventImpl::KHTML_CLICK_EVENT )
             e = static_cast<MouseEventImpl*>( evt );
 
-        KeyEventImpl *k = 0;
+        TextEventImpl *k = 0;
         if (keydown)
-            k = static_cast<KeyEventImpl *>( evt );
+            k = static_cast<TextEventImpl *>( evt );
 
         QString utarget;
         QString url;
@@ -84,7 +84,7 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
         }
 
         if ( k ) {
-            if (k->virtKeyVal() != KeyEventImpl::DOM_VK_ENTER) {
+            if (k->virtKeyVal() != TextEventImpl::DOM_VK_ENTER) {
                 if (k->qKeyEvent)
                     k->qKeyEvent->ignore();
                 HTMLElementImpl::defaultEventHandler(evt);

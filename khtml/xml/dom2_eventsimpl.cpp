@@ -500,12 +500,12 @@ void MouseEventImpl::initMouseEvent(const DOMString &typeArg,
 
 //---------------------------------------------------------------------------------------------
 
-KeyEventImpl::KeyEventImpl()
+TextEventImpl::TextEventImpl()
 {
   qKeyEvent = 0;
 }
 
-KeyEventImpl::KeyEventImpl(QKeyEvent *key, AbstractViewImpl *view)
+TextEventImpl::TextEventImpl(QKeyEvent *key, AbstractViewImpl *view)
   : UIEventImpl(KHTML_KEYDOWN_EVENT,true,true,view,0)
 {
   qKeyEvent = new QKeyEvent(key->type(), key->key(), key->ascii(), key->state(), key->text(), key->isAutoRepeat(), key->count() );
@@ -692,7 +692,7 @@ KeyEventImpl::KeyEventImpl(QKeyEvent *key, AbstractViewImpl *view)
   m_outputString = DOMString(key->text());
 }
 
-KeyEventImpl::KeyEventImpl(EventId _id,
+TextEventImpl::TextEventImpl(EventId _id,
 			   bool canBubbleArg,
 			   bool cancelableArg,
 			   AbstractViewImpl *viewArg,
@@ -713,17 +713,17 @@ KeyEventImpl::KeyEventImpl(EventId _id,
   m_modifier = 0;
 }
 
-KeyEventImpl::~KeyEventImpl()
+TextEventImpl::~TextEventImpl()
 {
     delete qKeyEvent;
 }
 
-bool KeyEventImpl::checkModifier(unsigned long modifierArg)
+bool TextEventImpl::checkModifier(unsigned long modifierArg)
 {
   return ((m_modifier && modifierArg) == modifierArg);
 }
 
-void KeyEventImpl::initKeyEvent(const DOMString &typeArg,
+void TextEventImpl::initTextEvent(const DOMString &typeArg,
 				bool canBubbleArg,
 				bool cancelableArg,
 				const AbstractView &viewArg,
@@ -743,7 +743,7 @@ void KeyEventImpl::initKeyEvent(const DOMString &typeArg,
   m_numPad = numPadArg;
 }
 
-void KeyEventImpl::initModifier(unsigned long modifierArg,
+void TextEventImpl::initModifier(unsigned long modifierArg,
 				bool valueArg)
 {
   if (valueArg)
@@ -752,17 +752,17 @@ void KeyEventImpl::initModifier(unsigned long modifierArg,
       m_modifier &= (modifierArg ^ 0xFFFFFFFF);
 }
 
-bool             KeyEventImpl::inputGenerated() const
+bool             TextEventImpl::inputGenerated() const
 {
   return m_inputGenerated;
 }
 
-unsigned long    KeyEventImpl::keyVal() const
+unsigned long    TextEventImpl::keyVal() const
 {
   return m_keyVal;
 }
 
-DOMString        KeyEventImpl::outputString() const
+DOMString        TextEventImpl::outputString() const
 {
   return m_outputString;
 }

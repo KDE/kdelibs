@@ -112,7 +112,7 @@ public:
 
     virtual bool isUIEvent() { return false; }
     virtual bool isMouseEvent() { return false; }
-    virtual bool isKeyEvent() { return false; }
+    virtual bool isTextEvent() { return false; }
     virtual bool isMutationEvent() { return false; }
     virtual DOMString eventModuleName() { return ""; }
 
@@ -231,10 +231,10 @@ protected:
 };
 
 
-class KeyEventImpl : public UIEventImpl {
+class TextEventImpl : public UIEventImpl {
 public:
-  KeyEventImpl();
-  KeyEventImpl(EventId _id,
+  TextEventImpl();
+  TextEventImpl(EventId _id,
 	       bool canBubbleArg,
 	       bool cancelableArg,
 	       AbstractViewImpl *viewArg,
@@ -245,9 +245,9 @@ public:
 	       bool inputGeneratedArg,
 	       bool numPadArg);
 
-  KeyEventImpl(QKeyEvent *key, AbstractViewImpl *view);
+  TextEventImpl(QKeyEvent *key, AbstractViewImpl *view);
 
-  virtual ~KeyEventImpl();
+  virtual ~TextEventImpl();
 
   // VirtualKeyCode
   enum KeyCodes  {
@@ -303,7 +303,7 @@ public:
          DOM_VK_F24                     = 0x31
   };
 
-  void initKeyEvent(const DOMString &typeArg,
+  void initTextEvent(const DOMString &typeArg,
                     bool canBubbleArg,
                     bool cancelableArg,
                     const AbstractView &viewArg,
@@ -324,8 +324,8 @@ public:
   bool             numPad() const { return m_numPad; }
   DOMString        outputString() const;
 
-  virtual DOMString eventModuleName() { return "KeyEvents"; }
-  virtual bool isKeyEvent() { return true; }
+  virtual DOMString eventModuleName() { return "TextEvents"; }
+  virtual bool isTextEvent() { return true; }
 
  QKeyEvent *qKeyEvent;
 

@@ -417,34 +417,34 @@ void MouseEvent::initMouseEvent(const DOMString &typeArg,
 
 // -----------------------------------------------------------------------------
 
-KeyEvent::KeyEvent() : UIEvent()
+TextEvent::TextEvent() : UIEvent()
 {
 }
 
-KeyEvent::KeyEvent(const KeyEvent &other) : UIEvent(other)
+TextEvent::TextEvent(const TextEvent &other) : UIEvent(other)
 {
 }
 
-KeyEvent::KeyEvent(const Event &other) : UIEvent()
+TextEvent::TextEvent(const Event &other) : UIEvent()
 {
     (*this)=other;
 }
 
-KeyEvent::KeyEvent(KeyEventImpl *impl) : UIEvent(impl)
+TextEvent::TextEvent(TextEventImpl *impl) : UIEvent(impl)
 {
 }
 
-KeyEvent &KeyEvent::operator = (const KeyEvent &other)
+TextEvent &TextEvent::operator = (const TextEvent &other)
 {
     UIEvent::operator = (other);
     return *this;
 }
 
-KeyEvent &KeyEvent::operator = (const Event &other)
+TextEvent &TextEvent::operator = (const Event &other)
 {
     Event e;
     e = other;
-    if (!e.isNull() && !e.handle()->isKeyEvent()) {
+    if (!e.isNull() && !e.handle()->isTextEvent()) {
 	if ( impl ) impl->deref();
 	impl = 0;
     } else
@@ -452,11 +452,11 @@ KeyEvent &KeyEvent::operator = (const Event &other)
     return *this;
 }
 
-KeyEvent::~KeyEvent()
+TextEvent::~TextEvent()
 {
 }
 
-void KeyEvent::initKeyEvent(const DOMString &typeArg,
+void TextEvent::initTextEvent(const DOMString &typeArg,
         bool canBubbleArg,
         bool cancelableArg,
         const AbstractView &viewArg,
@@ -470,63 +470,63 @@ void KeyEvent::initKeyEvent(const DOMString &typeArg,
     if (!impl)
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 
-    return static_cast<KeyEventImpl*>(impl)->initKeyEvent(typeArg, canBubbleArg, cancelableArg, viewArg, detailArg, outputStringArg, keyValArg, virtKeyValArg, inputGeneratedArg, numPadArg);
+    return static_cast<TextEventImpl*>(impl)->initTextEvent(typeArg, canBubbleArg, cancelableArg, viewArg, detailArg, outputStringArg, keyValArg, virtKeyValArg, inputGeneratedArg, numPadArg);
 }
 
-unsigned long KeyEvent::keyVal() const
+unsigned long TextEvent::keyVal() const
 {
     if (!impl)
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 
-    return static_cast<KeyEventImpl*>(impl)->keyVal();
+    return static_cast<TextEventImpl*>(impl)->keyVal();
 }
 
-DOMString KeyEvent::outputString() const
+DOMString TextEvent::outputString() const
 {
     if (!impl)
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 
-    return static_cast<KeyEventImpl*>(impl)->outputString();
+    return static_cast<TextEventImpl*>(impl)->outputString();
 }
 
-unsigned long KeyEvent::virtKeyVal() const
+unsigned long TextEvent::virtKeyVal() const
 {
     if (!impl)
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 
-    return static_cast<KeyEventImpl*>(impl)->virtKeyVal();
+    return static_cast<TextEventImpl*>(impl)->virtKeyVal();
 }
 
-void KeyEvent::initModifier(unsigned long modifierArg, bool valueArg)
+void TextEvent::initModifier(unsigned long modifierArg, bool valueArg)
 {
     if (!impl)
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 
-    return static_cast<KeyEventImpl*>(impl)->initModifier(modifierArg,valueArg);
+    return static_cast<TextEventImpl*>(impl)->initModifier(modifierArg,valueArg);
 }
 
-bool KeyEvent::checkModifier(unsigned long modiferArg)
+bool TextEvent::checkModifier(unsigned long modiferArg)
 {
     if (!impl)
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 
-    return static_cast<KeyEventImpl*>(impl)->checkModifier(modiferArg);
+    return static_cast<TextEventImpl*>(impl)->checkModifier(modiferArg);
 }
 
-bool KeyEvent::inputGenerated() const
+bool TextEvent::inputGenerated() const
 {
     if (!impl)
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 
-    return static_cast<KeyEventImpl*>(impl)->inputGenerated();
+    return static_cast<TextEventImpl*>(impl)->inputGenerated();
 }
 
-bool KeyEvent::numPad() const
+bool TextEvent::numPad() const
 {
     if (!impl)
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 
-    return static_cast<KeyEventImpl*>(impl)->numPad();
+    return static_cast<TextEventImpl*>(impl)->numPad();
 }
 // -----------------------------------------------------------------------------
 

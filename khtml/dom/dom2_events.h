@@ -33,7 +33,7 @@ class Event;
 class EventException;
 class UIEvent;
 class MouseEvent;
-class KeyEvent;
+class TextEvent;
 class MutationEvent;
 class AbstractView;
 
@@ -41,7 +41,7 @@ class EventListenerImpl;
 class EventImpl;
 class UIEventImpl;
 class MouseEventImpl;
-class KeyEventImpl;
+class TextEventImpl;
 class MutationEventImpl;
 
 
@@ -522,26 +522,26 @@ protected:
 
 // Introduced in DOM Level 3:
 /**
- * DOM::KeyEvent
+ * DOM::TextEvent
  * The detail attribute inherited from UIEvent is used to indicate
  * the number of keypresses which have occurred during key repetition.
  * If this information is not available this value should be 0.
  */
-class KeyEvent : public UIEvent {
+class TextEvent : public UIEvent {
 public:
-    KeyEvent();
-    KeyEvent(const KeyEvent &other);
-    KeyEvent(const Event &other);
-    KeyEvent & operator = (const KeyEvent &other);
-    KeyEvent & operator = (const Event &other);
-    virtual ~KeyEvent();
+    TextEvent();
+    TextEvent(const TextEvent &other);
+    TextEvent(const Event &other);
+    TextEvent & operator = (const TextEvent &other);
+    TextEvent & operator = (const Event &other);
+    virtual ~TextEvent();
 
     /**
-     * initKeyEvent
+     * initTextEvent
      *
-     * The initKeyEvent method is used to initialize the value of a
+     * The initTextEvent method is used to initialize the value of a
      * MouseEvent created through the DocumentEvent interface. This
-     * method may only be called before the KeyEvent has been dispatched
+     * method may only be called before the TextEvent has been dispatched
      * via the dispatchEvent method, though it may be called multiple
      * times during that phase if necessary. If called multiple times,
      * the final invocation takes precedence. This method has no effect
@@ -556,24 +556,24 @@ public:
      * cancelableArg of type boolean
      *   Specifies whether or not the event's default action can be prevent.
      * viewArg of type views::AbstractView
-     *   Specifies the KeyEvent's AbstractView.
+     *   Specifies the TextEvent's AbstractView.
      * detailArg of type unsigned short
      *   Specifies the number of repeated keypresses, if available.
      * outputStringArg of type DOMString
-     *   Specifies the KeyEvent's outputString attribute
+     *   Specifies the TextEvent's outputString attribute
      * keyValArg of type unsigned long
-     *   Specifies the KeyEvent's keyValattribute
+     *   Specifies the TextEvent's keyValattribute
      * virtKeyValArg of type unsigned long
-     *   Specifies the KeyEvent's virtKeyValattribute
+     *   Specifies the TextEvent's virtKeyValattribute
      * inputGeneratedArg of type boolean
-     *   Specifies the KeyEvent's inputGeneratedattribute
+     *   Specifies the TextEvent's inputGeneratedattribute
      * numPadArg of type boolean
-     *   Specifies the KeyEvent's numPadattribute
+     *   Specifies the TextEvent's numPadattribute
      *
      * No Return Value.
      * No Exceptions.
      */
-    void initKeyEvent(const DOMString &typeArg,
+    void initTextEvent(const DOMString &typeArg,
                       bool canBubbleArg,
                       bool cancelableArg,
                       const AbstractView &viewArg,
@@ -588,9 +588,9 @@ public:
      * initModifier
      *
      * The initModifier method is used to initialize the values of any
-     * modifiers associated with a KeyEvent created through the
+     * modifiers associated with a TextEvent created through the
      * DocumentEvent interface. This method may only be called before the
-     * KeyEvent has been dispatched via the dispatchEvent method, though
+     * TextEvent has been dispatched via the dispatchEvent method, though
      * it may be called multiple times during that phase if necessary. If
      * called multiple times with the same modifier property the final
      * invocation takes precedence. Unless explicitly give a value of
@@ -683,7 +683,7 @@ public:
      *       also, we use the Qt modifier enum instead of the DOM one.
      *
      * The CheckModifier method is used to check the status of a single
-     * modifier key associated with a KeyEvent. The identifier of the
+     * modifier key associated with a TextEvent. The identifier of the
      * modifier in question is passed into the CheckModifier function. If
      * the modifier is triggered it will return true. If not, it will
      * return false.  The list of keys below represents the allowable
@@ -709,7 +709,7 @@ public:
     bool checkModifier(unsigned long modiferArg);
 
 protected:
-    KeyEvent(KeyEventImpl *impl);
+    TextEvent(TextEventImpl *impl);
 };
 
 
