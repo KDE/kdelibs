@@ -313,7 +313,7 @@ void HTMLTokenizer::write( const char *str )
 	}
 	else if (charEntity)
 	{
-            int entityValue = 0;
+            unsigned long entityValue = 0;
 	    QString res = 0;
 
 	    searchBuffer[ searchCount+1] = *src;
@@ -323,11 +323,23 @@ void HTMLTokenizer::write( const char *str )
 	    if (searchBuffer[2] == '#')
 	    {
 		if ((searchCount > 1) && 
-		    (!isdigit(*src)))
+		    (!isdigit(*src)) &&
+		    (searchBuffer[3] != 'x')) 
 	        {	
+	            // &#123
 	    	    searchBuffer[ searchCount+1] = '\0';
-	    	    entityValue = (int) strtol( &(searchBuffer[3]), 
+	    	    entityValue = strtoul( &(searchBuffer[3]), 
 	    	    				NULL, 10 );
+	    	    charEntity = false;
+	        }
+		if ((searchCount > 1) && 
+		    (!isalnum(*src)) &&
+		    (searchBuffer[3] == 'x')) 
+	        {	
+	            // &#x12AB
+	    	    searchBuffer[ searchCount+1] = '\0';
+	    	    entityValue = strtoul( &(searchBuffer[4]), 
+	    	    				NULL, 16 );
 	    	    charEntity = false;
 	        }
 	    }
