@@ -81,11 +81,6 @@ public:
 	void streamInit() {
 		as = AudioSubSystem::the();
 
-		channels = as->channels();
-		format = as->format();
-		bits = as->bits();
-		arts_debug("audio format is %d Hz, %d bits, %d channels",
-					as->samplingRate(), bits, channels);
 		maxsamples = 0;
 		outblock = 0;
 		retryOpen = false;
@@ -114,6 +109,11 @@ public:
 				arts_info("ASError = %s",as->error());
 			}
 		}
+		channels = as->channels();
+		format = as->format();
+		bits = as->bits();
+		arts_debug("audio format is %d Hz, %d bits, %d channels",
+					as->samplingRate(), bits, channels);
 	}
 
 	void notifyTime() {
