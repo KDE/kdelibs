@@ -781,8 +781,26 @@ void RenderBox::calcHeight()
             if (h.isFixed())
                 fh = h.value() + borderTop() + paddingTop() + borderBottom() + paddingBottom();
             else if (h.isPercent()) {
+                // Handle a common case: nested 100% height <div>s.
+                // This is kind of a one-off hack rather than doing it right.
+                // Makes dbaron's z-index root bg testcases work. Bad dave. - dwh
+                RenderBlock* cb = containingBlock();
                 Length ch = containingBlock()->style()->height();
-                if (ch.isFixed())
+                while (cb && !cb->isTableCell() && ch.isPercent() && ch.value() == 100) {
+                    cb = cb->containingBlock();
+                    ch = cb->style()->height();
+                }
+
+                if (cb->isCanvas()) {
+                    // Don't allow this to affect the canvas' m_height member variable, since this
+                    // can get called while the canvas is still laying out its kids.
+                    // e.g., <html style="height:100%">etc. -dwh
+                    int oldHeight = cb->height();
+                    static_cast<RenderCanvas*>(cb)->calcHeight();
+                    fh = h.width(cb->height()) + borderTop() + paddingTop() + borderBottom() + paddingBottom();
+                    cb->setHeight(oldHeight);
+                }
+                else if (ch.isFixed())
                     fh = h.width(ch.value()) + borderTop() + paddingTop() + borderBottom() + paddingBottom();
             }
             if (fh!=-1)
@@ -1057,17 +1075,18 @@ void RenderBox::calcAbsoluteVertical()
     else
         ch = cb->height();
 
+
     if(!style()->top().isVariable())
         t = style()->top().width(ch) + cb->borderTop();
     if(!style()->bottom().isVariable())
         b = style()->bottom().width(ch) + cb->borderBottom();
-
     // for tables "auto" means shrink-to-fit
     if ( isTable() && style()->height().isVariable() )
         h = m_height - pab;
     else if(!style()->height().isVariable())
     {
         h = style()->height().width(ch);
+
         if (m_height-pab > h) {
             if ( isRenderBlock() )
               static_cast<RenderBlock*>( this )->setOverflowHeight( m_height + pab - ( paddingBottom() + borderBottom() ) );
@@ -1177,7 +1196,6 @@ void RenderBox::calcAbsoluteVertical()
             b = ch - ( h+t+mt+mb+pab);
     }
 
-
     if (m_height<h+pab) //content must still fit
         m_height = h+pab;
 
@@ -1188,8 +1206,7 @@ void RenderBox::calcAbsoluteVertical()
     m_marginBottom = mb;
     m_y = t + mt;
 
-    //qDebug("v: h=%d, t=%d, b=%d, mt=%d, mb=%d, m_y=%d",h,t,b,mt,mb,m_y);
-
+    //qDebug("v: m_height = %d, h=%d, t=%d, b=%d, mt=%d, mb=%d, m_y=%d",m_height,h,t,b,mt,mb,m_y);
 }
 
 

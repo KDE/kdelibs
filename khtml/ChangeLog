@@ -1,3 +1,8 @@
+2003-11-15  Zack Rusin  <zack@kde.org>
+
+	* rendering/render_box.cpp (calcHeight): correctly compute the
+	height for relatively positioned object with percentage based
+	dimensions - pretty much a merge from safari (#53902) 
 
 2003-11-14  Germain Garand  <germain@ebooksfrance.org>
         
