@@ -148,6 +148,7 @@ public:
 
  /**
   * Encodes the given data using the quoted-printable algorithm.
+  * Equivalent to quotedPrintableEncode(in, true).
   *
   * @param in  data to be encoded.
   * @return    quoted-printable encoded data.
@@ -156,15 +157,17 @@ public:
 
  /**
   * Encodes the given data using the quoted-printable algorithm.
-  * Use this if your data has UNIX line ends instead of \r\n.
   *
   * @param in   data to be encoded.
+  * @param useCRLF  if true the input data is expected to have
+  *                 CRLF line breaks and the output will have CRLF line breaks, too.
   * @return     quoted-printable encoded data.
   */
-  static QCString quotedPrintableEncodeUNIXLineEnds(const QByteArray &);
+  static QCString quotedPrintableEncode(const QByteArray & in, bool useCRLF);
 
  /**
   * Decodes a quoted-printable encoded string.
+  * Accepts data with CRLF or standard unix line breaks
   *
   * @param in  the data to be decoded.
   * @return    decoded data.
