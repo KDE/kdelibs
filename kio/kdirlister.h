@@ -194,11 +194,10 @@ public:
   KFileItem * rootItem() const { return m_rootFileItem; }
 
   /**
-   * Returns the job currently running, if any (this can return 0L).
-   * If many jobs are concurrently running, this returns one of the currently
-   * running jobs (!).
+   * Returns the job currently running, if there is one and only one job
+   * running. Otherwise 0 is returned.
    */
-  KIO::ListJob * job() const { return m_job; }
+  KIO::ListJob * job() const;
 
   /**
    * Call this with @p dirsOnly == true to list only directories
@@ -306,10 +305,8 @@ signals:
    * Emitted when the dir lister starts to list url.
    * The view knows that openURL should start it, so it might seem useless,
    * but the view also needs to know when an automatic update happens.
-   *
-   * ## KDE 3.0: change to const KURL&
    */
-  void started( const QString& url );
+  void started( const KURL& url );
 
   /**
    * Emitted when the listing is finished. There are no jobs running anymore.
@@ -358,7 +355,6 @@ signals:
 
   /**
    * Signal an item to remove.
-   * ## change to const KFileItem in 3.0
    */
   void deleteItem( KFileItem * _fileItem );
 
@@ -442,15 +438,8 @@ protected:
 
   /**
    * The url that we used to list the root (can be different in case of redirect)
-   * ## KDE 3.0: remove this, use m_rootFileItem->url()
    */
   KURL m_url;
-
-  /**
-   * This is a pointer to the most recently started job.
-   * ## KDE 3.0: remove! (KDirListerPrivate::lstJobs is to be used)
-   */
-  KIO::ListJob * m_job;
 
   /**
    * The internal storage of file items

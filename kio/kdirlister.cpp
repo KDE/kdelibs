@@ -57,7 +57,6 @@ KDirLister::KDirLister( bool _delayedMimeTypes )
 {
   d = new KDirListerPrivate;
   m_bComplete = true;
-  m_job = 0L;
   m_lstFileItems.setAutoDelete( true );
   m_lstFilters.setAutoDelete( true );
   m_rootFileItem = 0L;
@@ -75,6 +74,14 @@ KDirLister::~KDirLister()
   forgetDirs();
   delete m_rootFileItem;
   delete d;
+}
+
+KIO::ListJob *KDirLister::job() const
+{
+  if (d->jobs.count() != 1)
+     return 0;
+
+  return d->jobs.begin().key();
 }
 
 void KDirLister::slotFileDirty( const QString& _file )
@@ -166,17 +173,17 @@ void KDirLister::openURL( const KURL& _url, bool _showDotFiles, bool _keep )
   m_bComplete = false;
   d->urlChanged = false;
 
-  m_job = KIO::listDir( _url, false /* no default GUI */ );
-  d->jobs.insert( m_job, QValueList<KIO::UDSEntry>() );
+  KIO::ListJob *job = KIO::listDir( _url, false /* no default GUI */ );
+  d->jobs.insert( job, QValueList<KIO::UDSEntry>() );
 
-  connect( m_job, SIGNAL( entries( KIO::Job*, const KIO::UDSEntryList& ) ),
+  connect( job, SIGNAL( entries( KIO::Job*, const KIO::UDSEntryList& ) ),
            SLOT( slotEntries( KIO::Job*, const KIO::UDSEntryList& ) ) );
-  connect( m_job, SIGNAL( result( KIO::Job * ) ),
+  connect( job, SIGNAL( result( KIO::Job * ) ),
            SLOT( slotResult( KIO::Job * ) ) );
-  connect( m_job, SIGNAL( redirection( KIO::Job *, const KURL & ) ),
+  connect( job, SIGNAL( redirection( KIO::Job *, const KURL & ) ),
            this, SLOT( slotRedirection( KIO::Job *, const KURL & ) ) );
 
-  emit started( _url.url() );
+  emit started( _url );
 }
 
 const KURL& KDirLister::url() const
@@ -207,7 +214,6 @@ void KDirLister::stop()
     d->jobs.clear();
   }
 
-  m_job = 0L;
   m_bComplete = true;
 }
 
@@ -222,9 +228,6 @@ void KDirLister::stop( const KURL& _url )
     job = it.key();
     if ( job->url().cmp( _url, true ) )
     {
-      if ( m_job == job )
-        m_job = 0L;
-
       d->jobs.remove( it );
       job->disconnect( this );
       job->kill();
@@ -235,14 +238,12 @@ void KDirLister::stop( const KURL& _url )
       ++it;
   }
 
-  if ( d->jobs.isEmpty() )    // m_job already 0L
+  if ( d->jobs.isEmpty() )   
   {
     m_bComplete = true;
     if ( jobsRunning )  // we really killed a job
       emit canceled();
   }
-  else if ( !m_job )
-    m_job = d->jobs.begin().key();
 }
 
 void KDirLister::slotResult( KIO::Job* j )
@@ -253,11 +254,8 @@ void KDirLister::slotResult( KIO::Job* j )
 
   if ( d->jobs.isEmpty() )
   {
-    m_job = 0;
     m_bComplete = true;
   }
-  else if ( m_job == job )
-    m_job = d->jobs.begin().key();
 
   if ( job->error() )
   {
@@ -411,9 +409,6 @@ void KDirLister::updateDirectory( const KURL& _dir )
   KIO::ListJob* job = KIO::listDir( _dir, false /* no default GUI */ );
   d->jobs.insert( job, QValueList<KIO::UDSEntry>() );
 
-  if ( !m_job )
-    m_job = job;
-
   connect( job, SIGNAL( entries( KIO::Job*, const KIO::UDSEntryList& ) ),
            SLOT( slotUpdateEntries( KIO::Job*, const KIO::UDSEntryList& ) ) );
   connect( job, SIGNAL( result( KIO::Job * ) ),
@@ -421,7 +416,7 @@ void KDirLister::updateDirectory( const KURL& _dir )
 
   kdDebug(7003) << "update started in " << _dir.prettyURL() << endl;
 
-  emit started( _dir.url() );
+  emit started( _dir );
 }
 
 void KDirLister::slotUpdateEntries( KIO::Job* job, const KIO::UDSEntryList& list )
@@ -436,15 +431,7 @@ void KDirLister::slotUpdateResult( KIO::Job * j )
 
   if ( d->jobs.count() == 1 )
   {
-    m_job = 0;
     m_bComplete = true;
-  }
-  else if ( m_job == job )
-  {
-    if ( job == d->jobs.end().key() )
-      m_job = d->jobs.begin().key();
-    else
-      m_job = d->jobs.end().key();
   }
 
   if ( job->error() )
