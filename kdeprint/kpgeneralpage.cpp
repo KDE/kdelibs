@@ -33,6 +33,7 @@
 #include <kcursor.h>
 #include <klocale.h>
 #include <kiconloader.h>
+#include <kdialog.h>
 
 // Some ID's
 #define ORIENT_PORTRAIT_ID	0
@@ -155,13 +156,14 @@ KPGeneralPage::KPGeneralPage(KMPrinter *pr, DrMain *dr, QWidget *parent, const c
 	m_endbannerlabel->setBuddy(m_endbanner);
 
 	// layout creation
-	QVBoxLayout	*lay0 = new QVBoxLayout(this, 0, 10);
-	QGridLayout	*lay1 = new QGridLayout(0, 3, 2, 0, 10);
-	QGridLayout	*lay2 = new QGridLayout(0, 2, 2, 0, 10);
+	QVBoxLayout	*lay0 = new QVBoxLayout(this, 0, KDialog::spacingHint());
+	QGridLayout	*lay1 = new QGridLayout(0, 3, 2, 0, KDialog::spacingHint());
+	QGridLayout	*lay2 = new QGridLayout(0, 2, 2, 0, KDialog::spacingHint());
 	lay0->addStretch(1);
 	lay0->addLayout(lay1);
 	lay0->addStretch(1);
 	lay0->addLayout(lay2);
+	lay0->addStretch(2);
 	lay1->addWidget(m_pagesizelabel, 0, 0);
 	lay1->addWidget(m_papertypelabel, 1, 0);
 	lay1->addWidget(m_inputslotlabel, 2, 0);
@@ -174,24 +176,28 @@ KPGeneralPage::KPGeneralPage(KMPrinter *pr, DrMain *dr, QWidget *parent, const c
 	lay2->addWidget(m_nupbox, 1, 1);
 	lay2->setColStretch(0, 1);
 	lay2->setColStretch(1, 1);
-	QGridLayout	*lay3 = new QGridLayout(m_orientbox->layout(), 4, 2, 5);
+	QGridLayout	*lay3 = new QGridLayout(m_orientbox->layout(), 4, 2, 
+		KDialog::spacingHint());
 	lay3->addWidget(m_portrait, 0, 0);
 	lay3->addWidget(m_landscape, 1, 0);
 	lay3->addWidget(m_revland, 2, 0);
 	lay3->addWidget(m_revport, 3, 0);
 	lay3->addMultiCellWidget(m_orientpix, 0, 3, 1, 1);
-	QGridLayout	*lay4 = new QGridLayout(m_duplexbox->layout(), 3, 2, 5);
+	QGridLayout	*lay4 = new QGridLayout(m_duplexbox->layout(), 3, 2, 
+		KDialog::spacingHint());
 	lay4->addWidget(m_dupnone, 0, 0);
 	lay4->addWidget(m_duplong, 1, 0);
 	lay4->addWidget(m_dupshort, 2, 0);
 	lay4->addMultiCellWidget(m_duplexpix, 0, 2, 1, 1);
 	lay4->setRowStretch( 0, 1 );
-	QGridLayout	*lay5 = new QGridLayout(m_nupbox->layout(), 3, 2, 5);
+	QGridLayout	*lay5 = new QGridLayout(m_nupbox->layout(), 3, 2, 
+		KDialog::spacingHint());
 	lay5->addWidget(m_nup1, 0, 0);
 	lay5->addWidget(m_nup2, 1, 0);
 	lay5->addWidget(m_nup4, 2, 0);
 	lay5->addMultiCellWidget(m_nuppix, 0, 2, 1, 1);
-	QGridLayout	*lay6 = new QGridLayout(m_bannerbox->layout(), 2, 2, 5);
+	QGridLayout	*lay6 = new QGridLayout(m_bannerbox->layout(), 2, 2, 
+		KDialog::spacingHint());
 	lay6->addWidget(m_startbannerlabel, 0, 0);
 	lay6->addWidget(m_endbannerlabel, 1, 0);
 	lay6->addWidget(m_startbanner, 0, 1);
