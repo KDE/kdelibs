@@ -21,7 +21,6 @@ main(int argc, char *argv[])
 {
    KCmdLineArgs::init( argc, argv, "testapp", description, version);
 
-   KApplication::addCmdLineOptions(); // Add Qt and KDE specific options.
    KCmdLineArgs::addCmdLineOptions( options ); // Add my own options.
 
    // MyWidget::addCmdLineOptions();
@@ -47,7 +46,7 @@ main(int argc, char *argv[])
       printf("%d: %s\n", i, args->arg(i));
    }
 
-   delete args; // Free up memory.
+   args->clear(); // Free up memory.
   
    
 //   k.exec();
