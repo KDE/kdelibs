@@ -93,7 +93,7 @@ namespace KJS {
     bool isSafeScript(ExecState *exec) const;
     Location *location() const;
     JSEventListener *getJSEventListener(const Value &val, bool html = false);
-    void clear();
+    void clear( ExecState *exec );
     virtual UString toString(ExecState *exec) const;
 
     // Set the current "event" object

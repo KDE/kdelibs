@@ -32,6 +32,7 @@
 #include <assert.h>
 
 #include <kjs/lookup.h>
+#include <kjs/collector.h>
 #include "kjs_proxy.h"
 #include "kjs_window.h"
 #include "kjs_navigator.h"
@@ -356,7 +357,9 @@ Value Window::get(ExecState *exec, const UString &p) const
         // Cache the value. This also prevents the GC from deleting the document
         // while the window exists (important if the users sets properties on it).
         const_cast<Window*>(this)->ObjectImp::put( exec, UString("document"), val, Internal );
-        // ## This is a hack. The whole cache should persist.
+        // ## This is a hack. The whole cache should be in here, or in ScriptInterpreter,
+        // so that dynamic properties are remembered. But then, which cache to clear up
+        // in the object dtor will be a headache.
         return val;
       }
       else
@@ -832,10 +835,15 @@ JSEventListener *Window::getJSEventListener(const Value& val, bool html)
   return new JSEventListener(obj,Object(this),html);
 }
 
-void Window::clear()
+void Window::clear( ExecState *exec )
 {
+  kdDebug(6070) << "Window::clear " << this << endl;
   delete winq;
   winq = 0;
+  // Get rid of everything, those user vars could hold references to DOM nodes
+  deleteAllProperties( exec );
+  // Really delete those properties, so that the DOM nodes get deref'ed
+  KJS::Collector::collect();
 }
 
 void Window::setCurrentEvent( DOM::Event *evt )

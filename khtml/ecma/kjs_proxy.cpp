@@ -134,11 +134,7 @@ void KJSProxyImpl::clear() {
 #endif
     Window *win = Window::retrieveWindow(m_part);
     if (win)
-        win->clear();
-
-    //m_script->clear(); // may delete window
-    delete m_script;
-    m_script = 0L;
+        win->clear( m_script->globalExec() );
   }
 }
 
@@ -228,7 +224,7 @@ Value TestFunctionImp::call(ExecState *exec, Object &/*thisObj*/, const List &ar
 void KJSProxyImpl::initScript()
 {
 	KProtocolManager proto;
-	
+
   if (m_script)
     return;
 
