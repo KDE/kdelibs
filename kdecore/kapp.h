@@ -25,7 +25,7 @@
 
 // Version macros. Never put this further down.
 #define KDE_VERSION 210
-#define KDE_VERSION_STRING "2.1 post Beta 2 (>= 20010128)"
+#define KDE_VERSION_STRING "2.1"
 #define KDE_VERSION_MAJOR 2
 #define KDE_VERSION_MINOR 1
 #define KDE_VERSION_RELEASE 0
@@ -543,8 +543,8 @@ public slots:
   void ref();
 
   /**
-   * Tell KApplication that one operation such as those described in @ref just finished.
-   * The application exits if the counter is back to 0;
+   * Tell KApplication that one operation such as those described in @ref ref just finished.
+   * The application exits if the counter is back to 0.
    */
   void deref();
 
@@ -800,6 +800,9 @@ private:
 #endif
 
 // $Log$
+// Revision 1.209  2001/02/16 23:54:27  pfeiffer
+// KDoc fixes from Otto Bruggeman <bruggie@home.nl>
+//
 // Revision 1.208  2001/01/30 21:19:21  coolo
 // moved --geometry from qt options to kde options and support it in kmainwindow.
 // the qt option only works for setMainWidget calls and is called -geometry not
