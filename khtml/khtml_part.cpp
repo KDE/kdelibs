@@ -2018,7 +2018,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool shiftPr
   emit onURL( url );
 
   if ( url.isEmpty() ) {
-    setStatusBarText(completeURL(url).prettyURL(), BarHoverText);
+    setStatusBarText(completeURL(url).htmlURL(), BarHoverText);
     return;
   }
 
@@ -2041,7 +2041,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool shiftPr
     com = typ->comment( u, false );
 
   if ( u.isMalformed() ) {
-    setStatusBarText(u.prettyURL(), BarHoverText);
+    setStatusBarText(u.htmlURL(), BarHoverText);
     return;
   }
 
@@ -2057,7 +2057,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool shiftPr
     struct stat lbuff;
     if (ok) ok = !lstat( path.data(), &lbuff );
 
-    QString text = u.url();
+    QString text = u.htmlURL();
     QString text2 = text;
 
     if (ok && S_ISLNK( lbuff.st_mode ) )
@@ -2133,8 +2133,12 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool shiftPr
           mailtoMsg += i18n(" - CC: ") + KURL::decode_string((*it).mid(3));
         else if ((*it).startsWith(QString::fromLatin1("bcc=")))
           mailtoMsg += i18n(" - BCC: ") + KURL::decode_string((*it).mid(4));
-      setStatusBarText(mailtoMsg.replace(QRegExp("([\n\r\t]|[ ]{10})"), ""), BarHoverText);
-			return;
+      mailtoMsg.replace(QRegExp("&"), QString("&amp;"));
+      mailtoMsg.replace(QRegExp("<"), QString("&lt;"));
+      mailtoMsg.replace(QRegExp(">"), QString("&gt;"));
+      mailtoMsg.replace(QRegExp("([\n\r\t]|[ ]{10})"), "");
+      setStatusBarText(mailtoMsg, BarHoverText);
+      return;
     }
    // Is this check neccessary at all? (Frerich)
 #if 0
@@ -2159,7 +2163,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool shiftPr
         }
       }
 #endif
-    setStatusBarText(u.prettyURL() + extra, BarHoverText);
+    setStatusBarText(u.htmlURL() + extra, BarHoverText);
   }
 }
 
