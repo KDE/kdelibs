@@ -1004,10 +1004,10 @@ void RenderSelect::slotSelected(int index)
     QArray<HTMLGenericFormElementImpl*> listItems = static_cast<HTMLSelectElementImpl*>(m_element)->listItems();
     if(index >= 0 && index < int(listItems.size()))
     {
-        if ( listItems[index]->id() == ID_OPTGROUP ) {
+        bool found = ( listItems[index]->id() == ID_OPTION );
 
+        if ( !found ) {
             // this one is not selectable,  we need to find an option element
-            bool found = false;
             while ( ( unsigned ) index < listItems.size() ) {
                 if ( listItems[index]->id() == ID_OPTION ) {
                     found = true;
@@ -1025,12 +1025,17 @@ void RenderSelect::slotSelected(int index)
                     --index;
                 }
             }
-
-            if ( found )
-                static_cast<HTMLOptionElementImpl*>(listItems[index])->setSelected(true);
         }
-        else {
-            static_cast<HTMLOptionElementImpl*>(listItems[index])->setSelected(true);
+
+        if ( found ) {
+            if ( index != static_cast<ComboBoxWidget*>( m_widget )->currentItem() )
+                static_cast<ComboBoxWidget*>( m_widget )->setCurrentItem( index );
+
+            for ( unsigned int i = 0; i < listItems.size(); ++i )
+                if ( listItems[i]->id() == ID_OPTION && i != index )
+                    static_cast<HTMLOptionElementImpl*>( listItems[i] )->m_selected = false;
+
+            static_cast<HTMLOptionElementImpl*>(listItems[index])->m_selected = true;
         }
     }
 
@@ -1093,12 +1098,21 @@ void RenderSelect::updateSelection()
                                 static_cast<HTMLOptionElementImpl*>(listItems[i])->selected());
     }
     else {
+        bool found = false;
         for (i = 0; i < int(listItems.size()); i++)
             if (listItems[i]->id() == ID_OPTION && static_cast<HTMLOptionElementImpl*>(listItems[i])->selected()) {
                 static_cast<KComboBox*>(m_widget)->setCurrentItem(i);
-                return;
+                found = true;
+                break;
             }
-        static_cast<KComboBox*>(m_widget)->setCurrentItem(0); // ### wrong if item 0 is an optgroup
+        // ok, nothing was selected, select the first one..
+        for (i = 0; !found && i < int(listItems.size()); i++)
+            if ( listItems[i]->id() == ID_OPTION ) {
+                static_cast<HTMLOptionElementImpl*>( listItems[i] )->m_selected = true;
+                static_cast<KComboBox*>( m_widget )->setCurrentItem( i );
+                found = true;
+                break;
+            }
     }
 
     m_selectionChanged = false;
