@@ -485,6 +485,7 @@ bool KDirLister::matchesFilter(const QString& name) const
 void KDirLister::setNameFilter(const QString& nameFilter)
 {
     m_lstFilters.clear();
+    d->urlChanged = true;
 
     QStringList list = QStringList::split(' ', nameFilter);
 
@@ -620,6 +621,11 @@ void KDirLister::listDirectory()
     }
     else
 	openURL( m_url, showingDotFiles() );
+}
+
+void KDirLister::setURLDirty( bool dirty )
+{
+    d->urlChanged = dirty;
 }
 
 bool KDirLister::validURL( const KURL& url ) const

@@ -110,9 +110,19 @@ public:
 
   /**
    * Convenience method. Starts loading the current directory, e.g. set via
-   * @ref setURL().
+   * @ref setURL(), if the URL is "dirty" -- otherwise the cached entries are
+   * reused. The url is dirty when a new URL was set via setURL or the 
+   * nameFilter was changed.
+   *
+   * @see #setURLDirty
    */
   void listDirectory();
+
+  /**
+   * Sets the current URL "dirty", so it will be reloaded upon the next
+   * @ref listDirectory() call.
+   */
+  void setURLDirty( bool dirty );
 
   /**
    * Enable/disable automatic directory updating, when a directory changes
