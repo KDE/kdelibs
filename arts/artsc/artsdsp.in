@@ -66,7 +66,10 @@ prefix=@prefix@
 exec_prefix=@exec_prefix@
 libdir=@libdir@
 
-LD_PRELOAD=${libdir}/libartsdsp.so:${libdir}/libartsc.so:/lib/libdl.so.2
+LD_PRELOAD=${libdir}/libartsdsp.so:${libdir}/libartsc.so
+if test -f /lib/libdl.so.2; then
+  LD_PRELOAD=$LD_PRELOAD:/lib/libdl.so.2
+fi
 export LD_PRELOAD
 
 # invoke the program with the args given
