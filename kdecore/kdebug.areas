@@ -184,6 +184,15 @@
 7120        kio_sftp
 7121        kio_nfs
 
+# kdesdk
+8100        kompare
+8001        kompare (libs)
+8102        kompare (shell)
+8103        kompare (part)
+8104        kompare (list view)
+8105        kompare (nav view)
+8106        kompare (connect widget)
+
 # kdevelop
 9000        kdevelop (core)
 9001        kdevelop (grep view)
