@@ -512,7 +512,7 @@ NETRootInfo::NETRootInfo(Display *display, Window supportWindow, const char *wmN
 
     p->root = RootWindow(p->display, p->screen);
     p->supportwindow = supportWindow;
-    p->number_of_desktops = p->current_desktop = 1;
+    p->number_of_desktops = p->current_desktop = 0;
     p->active = None;
     p->clients = p->stacking = p->virtual_roots = (Window *) 0;
     p->clients_count = p->stacking_count = p->virtual_roots_count = 0;
@@ -559,7 +559,7 @@ NETRootInfo::NETRootInfo(Display *display, Window supportWindow, const char *wmN
 
     p->root = RootWindow(p->display, p->screen);
     p->supportwindow = supportWindow;
-    p->number_of_desktops = p->current_desktop = 1;
+    p->number_of_desktops = p->current_desktop = 0;
     p->active = None;
     p->clients = p->stacking = p->virtual_roots = (Window *) 0;
     p->clients_count = p->stacking_count = p->virtual_roots_count = 0;
@@ -606,7 +606,7 @@ NETRootInfo::NETRootInfo(Display *display, unsigned long properties, int screen,
     p->rootSize.height = HeightOfScreen(ScreenOfDisplay(p->display, p->screen));
 
     p->supportwindow = None;
-    p->number_of_desktops = p->current_desktop = 1;
+    p->number_of_desktops = p->current_desktop = 0;
     p->active = None;
     p->clients = p->stacking = p->virtual_roots = (Window *) 0;
     p->clients_count = p->stacking_count = p->virtual_roots_count = 0;
@@ -1768,7 +1768,7 @@ void NETRootInfo::update(unsigned long dirty) {
     }
 
     if (dirty & NumberOfDesktops) {
-	p->number_of_desktops = 1;
+	p->number_of_desktops = 0;
 
 	if (XGetWindowProperty(p->display, p->root, net_number_of_desktops,
 			       0l, 1l, False, XA_CARDINAL, &type_ret, &format_ret,
@@ -1845,7 +1845,7 @@ void NETRootInfo::update(unsigned long dirty) {
     }
 
     if (dirty & CurrentDesktop) {
-	p->current_desktop = 1;
+	p->current_desktop = 0;
 	if (XGetWindowProperty(p->display, p->root, net_current_desktop,
 			       0l, 1l, False, XA_CARDINAL, &type_ret, &format_ret,
 			       &nitems_ret, &unused, &data_ret)
@@ -2113,13 +2113,12 @@ int NETRootInfo::virtualRootsCount() const {
 
 
 int NETRootInfo::numberOfDesktops() const {
-  // XXX rikkus: correct fix ?
     return p->number_of_desktops == 0 ? 1 : p->number_of_desktops;
 }
 
 
 int NETRootInfo::currentDesktop() const {
-    return p->current_desktop;
+    return p->current_desktop == 0 ? 1 : p->current_desktop;
 }
 
 
