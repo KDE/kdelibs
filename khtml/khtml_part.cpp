@@ -2974,7 +2974,13 @@ void KHTMLPart::slotViewPageInfo()
     editStr = i18n("   <a href=\"%1\">[Properties]</a>").arg(d->m_pageServices);
 
   dlg->_url->setText(QString("<a href=\"%1\">%2</a>%3").arg(url().url()).arg(url().prettyURL()).arg(editStr));
-  dlg->_lastModified->setText(lastModified());
+  if (lastModified().isEmpty())
+  {
+    dlg->_lastModified->hide(); 
+    dlg->_lmLabel->hide(); 
+  }
+  else
+    dlg->_lastModified->setText(lastModified());
 
   /* populate the list view now */
   QStringList headers = QStringList::split("\n", d->m_httpHeaders);
