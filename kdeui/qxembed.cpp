@@ -185,7 +185,7 @@ QXEmbed::~QXEmbed()
 // 	e.xfocus.detail = NotifyDetailNone;
 // 	XSendEvent(qt_xdisplay(), topLevelWidget()->winId(), 0, FALSE, &e);
 //     }
-    
+
 
     if ( window != 0 ) {
 	XEvent ev;
@@ -352,6 +352,7 @@ void QXEmbed::embed(WId w)
 	XReparentWindow(qt_xdisplay(), w, winId(), 0, 0);
     QApplication::syncX();
     XResizeWindow(qt_xdisplay(), w, width(), height());
+    XMapRaised(qt_xdisplay(), window);
     extraData()->xDndProxy = w;
 
     if ( parent() ) {
