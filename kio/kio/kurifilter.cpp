@@ -26,6 +26,7 @@
 #include <klibloader.h>
 #include <kstaticdeleter.h>
 #include <kparts/componentfactory.h>
+#include <qtextcodec.h>
 
 #include "kurifilter.h"
 
@@ -89,7 +90,7 @@ void KURIFilterData::init( const KURL& url )
 void KURIFilterData::init( const QString& url )
 {
     m_iType = KURIFilterData::UNKNOWN;
-    m_pURI = url;
+    m_pURI = KURL( url, 106 /* utf-8 */ );
     m_strErrMsg = QString::null;
     m_strIconName = QString::null;
     m_bCheckForExecutables = true;
