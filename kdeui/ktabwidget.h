@@ -31,6 +31,9 @@ class KTabWidgetPrivate;
 class KTabWidget : public QTabWidget
 {
     Q_OBJECT
+    Q_PROPERTY( bool tabReorderingEnabled READ isTabReorderingEnabled WRITE setTabReorderingEnabled );
+    Q_PROPERTY( bool hoverCloseButton READ hoverCloseButton WRITE setHoverCloseButton );
+    Q_PROPERTY( bool hoverCloseButtonDelayed READ hoverCloseButtonDelayed WRITE setHoverCloseButtonDelayed );
 
 public:
     KTabWidget( QWidget *parent = 0, const char *name = 0, WFlags f = 0 );
@@ -45,6 +48,31 @@ public:
     QColor tabColor( QWidget * ) const;
 
     /*!
+      Returns true if tab ordering with the middle mouse button
+      has been enabled.
+    */
+    bool isTabReorderingEnabled() const;
+
+    /*!
+      Returns true if the close button is shown on tabs
+      when mouse is hovering over them.
+    */
+    bool hoverCloseButton() const;
+
+    /*!
+      Returns true if the close button is shown on tabs
+      after a delay.
+    */
+    bool hoverCloseButtonDelayed() const;
+
+public slots:
+    /*!
+      Move a widget's tab from first to second specified index and emit
+      signal movedTab( int, int ) afterwards.
+    */
+    virtual void moveTab( int, int );
+
+    /*!
       If \a enable is true, tab reordering with middle button will be enabled.
 
       Note that once enabled you shouldn't rely on previously queried
@@ -54,7 +82,6 @@ public:
       you from which index to which index a tab has been moved.
     */
     void setTabReorderingEnabled( bool enable );
-    bool isTabReorderingEnabled() const;
 
     /*!
       If \a enable is true, a close button will be shown on mouse hover
@@ -62,21 +89,14 @@ public:
       when pressed.
     */
     void setHoverCloseButton( bool enable );
-    bool hoverCloseButton() const;
 
     /*!
       If \a delayed is true, a close button will be shown on mouse hover
       over tab icons immediately else after double mouse double click delay.
     */
     void setHoverCloseButtonDelayed( bool delayed );
-    bool hoverCloseButtonDelayed() const;
 
-public slots:
-    /*!
-      Move a widget's tab from first to second specified index and emit
-      signal movedTab( int, int ) afterwards.
-    */
-    virtual void moveTab( int, int );
+
 
 signals:
     /*!
