@@ -125,10 +125,21 @@ public:
      * Blend an image into another one, using alpha in the expected way and
      * over coordinates @p x and @p y with respect to the lower image.
      * The output is a QImage which is the @p upper image already blended
-     * with the @p lower one, so its size will be the same than @p upper instead
-     * of the same size than @p lower like the method above.
+     * with the @p lower one, so its size will be (in general) the same than
+     * @p upper instead of the same size than @p lower like the method above.
+     * In fact, the size of @p output is like upper's one only when it can be
+     * painted on lower, if there has to be some clipping, output's size will
+     * be the clipped area and x and y will be set to the correct up-left corner
+     * where the clipped rectangle begins.
      */
-    static bool blend(int x, int y, const QImage & upper, const QImage & lower, QImage & output);
+    static bool blend(int &x, int &y, const QImage & upper, const QImage & lower, QImage & output);
+    /**
+     * Blend an image into another one, using alpha in the expected way and
+     * over coordinates @p x and @p y with respect to the lower image.
+     * The output is painted in the own @p lower image. This is an optimization
+     * of the @ref blend method above provided by convenience.
+     */
+    static bool blendOnLower(int x, int y, const QImage & upper, const QImage & lower);
 
     /**
      * Modifies the intensity of a pixmap's RGB channel component.
@@ -238,6 +249,16 @@ public:
      * @return Returns the @ref image(), provided for convenience.
      */
     static QImage& dither(QImage &img, const QColor *palette, int size);
+
+    /**
+     * Paints (copy) an image @p src over another one (@p tgt) 
+     * at the specified point, x,y relative to tgt.
+     * @p return Returns true if everything was ok, or false
+     * if it couldn't be copied (because they're not 32-bit images).
+     * Note that if you specify x,y outside a reasonable range
+     * (outside the tgt image), then the return value is true.
+     */
+    static bool paint(int x, int y, QImage &tgt, const QImage &src);
 
 private:
 

@@ -7,7 +7,7 @@
  * Public License, version 2. See the file "COPYING.LIB" for the
  * exact licensing terms.
  *
- * kalphaicon.h: A helper class to draw icons with an alpha channel.
+ * kalphapainter.h: A helper class to draw icons with an alpha channel.
  */ 
 
 class QPainter;
@@ -26,7 +26,7 @@ class QImage;
  * @short Methods to easily draw/blend images with an alpha channel.
  * @author Antonio Larrosa <larrosa@kde.org>
  */
-class KAlphaIcon
+class KAlphaPainter
 {
  public:
   /**
@@ -44,22 +44,32 @@ class KAlphaIcon
    * also be painted over the @p background image, so that next calls to this
    * method for overlapped icons result in a correct image.
    *
+   * If @p relativeBg is true, the background upperleft corner (background(0,0)
+   * point) is x,y, that is, it's not the whole background, but just a portion
+   * of it, starting where the icon will be painted. This can be used in applications
+   * that don't want to store the whole background if it can become too big.
+   *
    * @return true if ok, and false if something went wrong.
    */
   static bool draw(QPainter *p, const QImage &icon, QImage &background,
-			int x, int y, bool copyOnBg=false);
+			int x, int y, bool copyOnBg=false, int bgx=0, int bgy=0);
 
   /**
    * Method provided by convenience which takes the background as a QPixmap
    * object. Note that in this case, copyOnBg is still not implemented.
    */
   static bool draw(QPainter *p, const QImage &icon, const QPixmap &background,
-			int x, int y, bool copyOnBg=false);
+			int x, int y, bool copyOnBg=false, int bgx=0, int bgy=0);
 
   /**
    * Method provided by convenience which takes the background as a QPixmap
    * object.
    */
   static bool draw(QPainter *p, const QPixmap &icon, QImage &background,
-			int x, int y, bool copyOnBg=false);
+			int x, int y, bool copyOnBg=false, int bgx=0, int bgy=0);
+
+  static bool draw(QPainter *p, const QPixmap &icon, const QPixmap &background,
+			int x, int y, int bgx=0, int bgy=0);
+
+
 };

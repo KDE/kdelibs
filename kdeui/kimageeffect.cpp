@@ -13,6 +13,7 @@
 #include <qimage.h>
 #include <stdlib.h>
 #include <kdebug.h>
+//#include <unistd.h>
 
 #include "kimageeffect.h"
 
@@ -1640,7 +1641,10 @@ bool KImageEffect::blend(
       upper.depth() != 32             ||
       lower.depth() != 32
   )
+  {
+    kdDebug() << "KImageEffect::blend : Sizes not correct\n" ;
     return false;
+  }
 
   output = lower.copy();
 
@@ -1696,59 +1700,134 @@ bool KImageEffect::blend(
 #endif
 
 bool KImageEffect::blend(
-    int x, int y,
+    int &x, int &y,
     const QImage & upper, 
     const QImage & lower, 
     QImage & output
 )
 {
-  if (
-      upper.width() + x > lower.width()  ||
+  int cx=0, cy=0, cw=upper.width(), ch=upper.height();
+
+  if ( upper.width() + x > lower.width()  ||
       upper.height() + y > lower.height() ||
-      upper.depth() != 32             ||
-      lower.depth() != 32
-  )
-    return false;
-// XXX clipping !!!
+      x < 0 || y < 0 ||
+      upper.depth() != 32 || lower.depth() != 32 )
+  {
+    if ( x > lower.width() || y > lower.height() ) return false;
+    if ( upper.width()<=0 || upper.height() <= 0 ) return false;
+    if ( lower.width()<=0 || lower.height() <= 0 ) return false;
 
-  output = lower.copy(x,y,upper.width(),upper.height());
+    if (x<0) {cx=-x; cw+=x; x=0; };
+    if (cw + x > lower.width()) { cw=lower.width()-x; };
+    if (y<0) {cy=-y; ch+=y; y=0; };
+    if (ch + y > lower.height()) { ch=lower.height()-y; };
 
-  register uchar *i, *o;
+    if ( cx >= upper.width() || cy >= upper.height() ) return true;
+    if ( cw <= 0 || ch <= 0 ) return true;
+  }
+
+  output.create(cw,ch,32);
+//  output.setAlphaBuffer(true); // I should do some benchmarks to see if
+	// this is worth the effort
+
+  register uchar *i, *o, *b;
+
   register int a;
-  register int col, coli;
-  register int w = upper.width();
-  int row = upper.height() - 1;
+  register int j,k;
+  for (int j=0; j<ch; j++)
+  {
+    b=&lower.scanLine(y+j) [ (x+cw) << 2 ];
+    i=&upper.scanLine(cy+j)[ (cx+cw) << 2 ];
+    o=&output.scanLine(j)  [ cw << 2 ];
 
-  do {
-
-    i = upper.scanLine(row);
-    o = output.scanLine(row);
-
-    col = w << 2;
-    --col;
-
-    do {
-
-      while (!(a = i[col]) && (col != 3)) {
-        --col; --col; --col; --col;
-      }
-
-      --col; 
-      o[col] += ((i[col] - o[col]) * a) >> 8;
-
-      --col;
-      o[col] += ((i[col] - o[col]) * a) >> 8;
-
-      --col;
-      o[col] += ((i[col] - o[col]) * a) >> 8;
-
-    } while (col--);
-
-  } while (row--);
+    k=cw-1;
+    --b; --i; --o;
+    do
+    {
+      while ( !(a=*i) && k>0 ) 
+      {
+        i-=4;
+//	*o=0;
+	--o; --b;
+	*o=*b;
+	--o; --b;
+	*o=*b;
+	--o; --b;
+	*o=*b;
+	--o; --b;
+	k--;
+      };
+//      *o=0xFF;
+    
+      --i; --o; --b;
+      *o = *b + ( ((*i - *b) * a) >> 8 );
+      --i; --o; --b;
+      *o = *b + ( ((*i - *b) * a) >> 8 );
+      --i; --o; --b;
+      *o = *b + ( ((*i - *b) * a) >> 8 );
+      --i; --o; --b;
+    } while (k--);
+  } 
 
   return true;
 }
 
+bool KImageEffect::blendOnLower(
+    int x, int y,
+    const QImage & upper, 
+    const QImage & lower
+)
+{
+  int cx=0, cy=0, cw=upper.width(), ch=upper.height();
+
+  if ( upper.depth() != 32 || lower.depth() != 32 ) return false;
+  if ( x + cw > lower.width()  ||
+      y + ch > lower.height() ||
+      x < 0 || y < 0 )
+  {
+    if ( x > lower.width() || y > lower.height() ) return true;
+    if ( upper.width()<=0 || upper.height() <= 0 ) return true;
+    if ( lower.width()<=0 || lower.height() <= 0 ) return true;
+
+    if (x<0) {cx=-x; cw+=x; x=0; };
+    if (cw + x > lower.width()) { cw=lower.width()-x; };
+    if (y<0) {cy=-y; ch+=y; y=0; };
+    if (ch + y > lower.height()) { ch=lower.height()-y; };
+
+    if ( cx >= upper.width() || cy >= upper.height() ) return true;
+    if ( cw <= 0 || ch <= 0 ) return true;
+  }
+
+  register uchar *i, *b;
+  register int a;
+  register int k;
+
+  for (int j=0; j<ch; j++)
+  {
+    b=&lower.scanLine(y+j) [ (x+cw) << 2 ];
+    i=&upper.scanLine(cy+j)[ (cx+cw) << 2 ];
+
+    k=cw-1;
+    --b; --i;
+    do
+    {
+      while ( !(a=*i) && k>0 ) 
+      {
+        i-=4; b-=4; k--;
+      };
+    
+      --i; --b;
+      *b += ( ((*i - *b) * a) >> 8 );
+      --i; --b;
+      *b += ( ((*i - *b) * a) >> 8 );
+      --i; --b;
+      *b += ( ((*i - *b) * a) >> 8 );
+      --i; --b;
+    } while (k--);
+  } 
+  
+  return true;
+}
 /*bool KImageEffect::blend(const QPixmap & upper, const QPixmap & lower, QPixmap & output)
 {
    QImage outputImage;
@@ -1756,3 +1835,67 @@ bool KImageEffect::blend(
    output.convertFromImage(outputImage);
 }*/
 
+bool KImageEffect::paint(int x, int y, QImage &tgt, const QImage &src)
+{
+  int cx=0, cy=0, cw=src.width(), ch=src.height();
+
+  if (src.depth() != 32 || tgt.depth() != 32 ) return false;
+  if ( src.width() + x > tgt.width()  ||
+      src.height() + y > tgt.height() ||
+      x < 0 || y < 0 )
+  {
+    if ( x > tgt.width() || y > tgt.height() ) return true;
+    if ( src.width()<=0 || src.height() <= 0 ) return true;
+    if ( tgt.width()<=0 || tgt.height() <= 0 ) return true;
+
+    if (x<0) {cx=-x; cw+=x; x=0; };
+    if (cw + x > tgt.width()) { cw=tgt.width()-x; };
+    if (y<0) {cy=-y; ch+=y; y=0; };
+    if (ch + y > tgt.height()) { ch=tgt.height()-y; };
+
+    if ( cx >= src.width() || cy >= src.height() ) return true;
+    if ( cw <= 0 || ch <= 0 ) return true;
+  }
+
+  register uchar *i, *b;
+  register int j,k;
+
+  for (j=0; j<ch; j++)
+  {
+    b=&tgt.scanLine(y+j) [ (x+cw) << 2 ];
+    i=&src.scanLine(cy+j)[ (cx+cw) << 2 ];
+
+    k=cw-1;
+    --b; --i;
+    // Now there should be a loop which would include the following
+    // "while" loop and the copying of the pixel, but I've expanded
+    // it so that there's no need for an extra "if" sentence inside
+    // the loop with "if ( k==0 && !(*i)) break;"
+    while ( !(*i) && k>0 ) 
+    {
+      i-=4; b-=4;
+      --k;
+    }
+    if (k) do
+    {
+      --i; --b;
+      *b = *i; --i; --b;
+      *b = *i; --i; --b;
+      *b = *i; --i; --b;
+      k--;
+      while ( !(*i) && k>0 ) 
+      {
+	i-=4; b-=4;
+	--k;
+      }
+    } while (k);
+    if (*i)
+    {
+      --i; --b;
+      *b = *i; --i; --b;
+      *b = *i; --i; --b;
+      *b = *i; --i; --b;
+    }
+  } 
+  return true;
+}
