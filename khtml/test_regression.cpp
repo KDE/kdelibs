@@ -826,6 +826,8 @@ bool RegressionTest::checkOutput(const QString &againstFilename)
     // compare result to existing file
 
     QString outputFilename = QFileInfo(m_baseDir + "/output/" + againstFilename).absFilePath();
+    if ( m_known_failure )
+        outputFilename += "-KF";
 
     if ( m_genOutput )
         outputFilename = absFilename;
