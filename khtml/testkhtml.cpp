@@ -35,22 +35,8 @@ int main(int argc, char *argv[])
 {
     KApplication a(argc, argv, "testkhtml");
 
-    //    KHTMLView *doc = new KHTMLWidget(0, 0);
     KHTMLPart *doc = new KHTMLPart;
     doc->widget()->resize(800,500);
-//    doc->widget()->resize(500,300);
-#if 0
-    QValueList<int> fontSizes = doc->fontSizes();
-    fontSizes[0] = 14;
-    fontSizes[1] = 18;
-    fontSizes[2] = 20;
-    fontSizes[3] = 24;
-    fontSizes[4] = 28;
-    fontSizes[5] = 32;
-    fontSizes[6] = 38;
-    fontSizes[7] = 44;
-    doc->setFontSizes(fontSizes);
-#endif
 
     doc->enableJScript(true);
     doc->enableJava(true);
@@ -67,7 +53,6 @@ int main(int argc, char *argv[])
 		     doc->widget(), SLOT(setCaption(const QString &)));
     doc->widget()->show();
 
-
     ((QScrollView *)doc->widget())->viewport()->show();
 
     Dummy *dummy = new Dummy( doc );
@@ -81,22 +66,11 @@ int main(int argc, char *argv[])
 
     int ret = a.exec();
 
-/*    Range r( doc->htmlDocument().createRange() );
-      r.selectNode( r.getStartContainer().firstChild().lastChild().firstChild() );
-      kdDebug( 6000 ) << "\nstartContainer: " << r.getStartContainer().nodeName().string() << "\n" << endl;
-      Node newNode = doc->htmlDocument().firstChild().lastChild().firstChild().firstChild();
-      r.insertNode( newNode );*/
-
-    //DOMString htmlContent;
-    //doc->htmlDocument().toHTML(&htmlContent);
-    //kdDebug( 6000 ) << "\n" << htmlContent.string() << endl;
-
     delete p;
     delete doc;
 
     khtml::Cache::clear();
-    //if(KBrowser::lstViews) delete KBrowser::lstViews;
 
-	return ret;
+    return ret;
 }
 
