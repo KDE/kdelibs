@@ -53,6 +53,8 @@ TestApp::newInstance( QValueList<QCString> params )
    if (params[1] == "exit")
    {
        exit(0);
+       printf("Exiting\n");
+       return 1;
    }
    return 0;
 }
