@@ -342,6 +342,11 @@ protected slots:
     * is left to iterate through the list as usual.
     */
     virtual void makeCompletion( const QString& );
+    
+    /*
+    * See @ref KCompletionBase::setCompletionText.
+    */    
+    virtual void setCompletedText( const QString& );    
 
 protected:
 

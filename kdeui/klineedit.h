@@ -269,6 +269,11 @@ public slots:
     * @param type The key-binding invoked.
     */
     void rotateText( KCompletionBase::KeyBindingType /* type */ );
+    
+    /*
+    * See @ref KCompletionBase::setCompletionText.
+    */    
+    virtual void setCompletedText( const QString& );
 
 protected slots:
 

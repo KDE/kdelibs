@@ -93,6 +93,19 @@ void KLineEdit::rotateText( KCompletionBase::KeyBindingType type )
     }
 }
 
+void KLineEdit::setCompletedText( const QString& text )
+{
+    KGlobalSettings::Completion mode = completionMode();
+    int pos = cursorPosition();
+    setText( text );
+    if( mode == KGlobalSettings::CompletionAuto ||
+    	mode == KGlobalSettings::CompletionMan )
+    {
+    	setSelection( pos, text.length() );
+	    setCursorPosition( pos );
+    }
+}
+
 void KLineEdit::makeCompletion( const QString& text )
 {
 
@@ -102,8 +115,6 @@ void KLineEdit::makeCompletion( const QString& text )
        return;  // No completion object...
     }
 
-    int pos = cursorPosition();
-    KGlobalSettings::Completion mode = completionMode();
     QString match = comp->makeCompletion( text );
 
     // If no match or the same match, simply return
@@ -112,20 +123,13 @@ void KLineEdit::makeCompletion( const QString& text )
     {
     	// Put the cursor at the end when in semi-automatic
 	    // mode and completion is invoked with the same text.
-    	if( mode == KGlobalSettings::CompletionMan )
+    	if( completionMode() == KGlobalSettings::CompletionMan )
     	{
 	        end( false );
     	}
         return;
-    }
-
-    setText( match );
-    if( mode == KGlobalSettings::CompletionAuto ||
-    	mode == KGlobalSettings::CompletionMan )
-    {
-    	setSelection( pos, match.length() );
-	    setCursorPosition( pos );
-    }
+    }    
+    setCompletedText( match );
 }
 
 void KLineEdit::connectSignals( bool handle ) const

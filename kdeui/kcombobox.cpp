@@ -100,6 +100,21 @@ void KComboBox::setContextMenuEnabled( bool showMenu )
         m_bEnableMenu = showMenu;
 }
 
+void KComboBox::setCompletedText( const QString& text )
+{
+    KGlobalSettings::Completion mode = completionMode();
+    int pos = cursorPosition();
+    setEditText( text );
+	// Hightlight the text whenever appropriate.
+    if( (mode == KGlobalSettings::CompletionAuto ||
+	     mode == KGlobalSettings::CompletionMan ) &&
+	     m_pEdit )
+	{
+        m_pEdit->setSelection( pos, text.length() );
+        m_pEdit->setCursorPosition( pos );
+    }    
+}
+
 void KComboBox::makeCompletion( const QString& text )
 {
     if( m_pEdit )
@@ -114,8 +129,6 @@ void KComboBox::makeCompletion( const QString& text )
 	  return; // No Completion object or empty completion text allowed!
        }
 
-    	int pos = cursorPosition();
-    	KGlobalSettings::Completion mode = completionMode();
 	QString match = comp->makeCompletion( text );
 
         // If no match or the same text, simply return without completing.
@@ -123,22 +136,12 @@ void KComboBox::makeCompletion( const QString& text )
         {
        	    // Put the cursor at the end when in semi-automatic
 	    // mode and completion is invoked with the same text.
-    	    if( mode == KGlobalSettings::CompletionMan ) {
+    	    if( completionMode() == KGlobalSettings::CompletionMan ) {
 		m_pEdit->end( false );
 	    }
     	    return;
       	}
-
-      	// Set the current text to the one completed.
-        setEditText( match );
-
-	// Hightlight the text whenever appropriate.
-    	if( mode == KGlobalSettings::CompletionAuto ||
-	    mode == KGlobalSettings::CompletionMan )
-	{
-            m_pEdit->setSelection( pos, match.length() );
-            m_pEdit->setCursorPosition( pos );
-        }
+      	setCompletedText( match );
     }
 
     // Read - only combobox
