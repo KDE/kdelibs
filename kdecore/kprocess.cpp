@@ -180,6 +180,12 @@ bool KProcess::start(RunMode runmode, Communication comm)
   if (!setupCommunication(comm))
       kdDebug() << "Could not setup Communication!\n";
 
+  // We do this in the parent because if we do it in the child process
+  // gdb gets confused when the application runs from gdb.
+  uid_t uid = getuid();
+  gid_t gid = getgid();
+  struct passwd *pw = getpwuid(uid);
+
   int fd[2];
   if (0 > pipe(fd))
   {
@@ -199,13 +205,11 @@ bool KProcess::start(RunMode runmode, Communication comm)
            close(fd[0]);
         if (!runPrivileged())
         {
-           setgid(getgid());
+           setgid(gid);
 #if defined( HAVE_INITGROUPS)
-           struct passwd *pw = getpwuid(getuid());
            initgroups(pw->pw_name, pw->pw_gid);
 #endif
-           setuid(getuid());
-
+           setuid(uid);
         }
         // The child process
         if(!commSetupDoneC())
@@ -214,7 +218,6 @@ bool KProcess::start(RunMode runmode, Communication comm)
         // Matthias
         if (run_mode == DontCare)
           setpgid(0,0);
-
         // restore default SIGPIPE handler (Harri)
         struct sigaction act;
         sigemptyset(&(act.sa_mask));
@@ -232,7 +235,6 @@ bool KProcess::start(RunMode runmode, Communication comm)
         if (fd[1])
           write(fd[1], &resultByte, 1);
         _exit(-1);
-
   } else if (-1 == pid_) {
         // forking failed
 
@@ -742,6 +744,12 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
   if (!setupCommunication(comm))
     kdDebug() << "Could not setup Communication!" << endl;
 
+  // We do this in the parent because if we do it in the child process
+  // gdb gets confused when the application runs from gdb.
+  uid_t uid = getuid();
+  gid_t gid = getgid();
+  struct passwd *pw = getpwuid(uid);
+
   runs = true;
 
   QApplication::flushX();
@@ -753,12 +761,11 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
   if (0 == pid_) {
         if (!runPrivileged())
         {
-           setgid(getgid());
+           setgid(gid);
 #if defined( HAVE_INITGROUPS)
-           struct passwd *pw = getpwuid(getuid());
            initgroups(pw->pw_name, pw->pw_gid);
 #endif
-           setuid(getuid());
+           setuid(uid);
 
         }
         // The child process
