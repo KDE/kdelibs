@@ -636,6 +636,13 @@ public:
   KHTMLPart *findFrame( const QString &f );
 
   /**
+   * Return the current frame (the one that has focus)
+   * Not necessarily a direct child of ours, framesets can be nested.
+   * Returns "this" if this part isn't a frameset.
+   */
+  KParts::ReadOnlyPart *currentFrame() const;
+
+  /**
    * Returns whether a frame with the specified name is exists or not.
    * In contrary to the @ref findFrame method this one also returns true
    * if the frame is defined but no displaying component has been

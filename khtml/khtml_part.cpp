@@ -1931,9 +1931,16 @@ bool KHTMLPart::findTextNext( const QString &str, bool forward, bool caseSensiti
             d->m_findNode = d->m_doc;
     }
 
-    if ( !d->m_findNode ||
-         d->m_findNode->id() == ID_FRAMESET )
+    if ( !d->m_findNode )
+    {
+      kdDebug() << "KHTMLPart::findTextNext no findNode -> return false" << endl;
       return false;
+    }
+    if ( d->m_findNode->id() == ID_FRAMESET )
+    {
+      kdDebug() << "KHTMLPart::findTextNext FRAMESET -> return false" << endl;
+      return false;
+    }
 
     while(1)
     {
@@ -2359,7 +2366,7 @@ void KHTMLPart::slotViewDocumentSource()
 
 void KHTMLPart::slotViewFrameSource()
 {
-  KParts::ReadOnlyPart *frame = static_cast<KParts::ReadOnlyPart *>( partManager()->activePart() );
+  KParts::ReadOnlyPart *frame = currentFrame();
   if ( !frame )
     return;
 
@@ -2518,7 +2525,7 @@ void KHTMLPart::updateActions()
   KParts::Part *frame = 0;
 
   if ( frames )
-    frame = partManager()->activePart();
+    frame = currentFrame();
 
   bool enableFindAndSelectAll = true;
 
@@ -3173,6 +3180,17 @@ KHTMLPart *KHTMLPart::findFrame( const QString &f )
       return 0L;
     }
   }
+}
+
+KParts::ReadOnlyPart *KHTMLPart::currentFrame() const
+{
+  KParts::ReadOnlyPart* part = (KParts::ReadOnlyPart*)(this);
+  while ( part && part->inherits("KHTMLPart") &&
+          static_cast<KHTMLPart *>(part)->d->m_frames.count() > 0 ) {
+    KHTMLPart* frameset = static_cast<KHTMLPart *>(part);
+    part = static_cast<KParts::ReadOnlyPart *>(frameset->partManager()->activePart());
+  }
+  return part;
 }
 
 bool KHTMLPart::frameExists( const QString &frameName )
@@ -4077,13 +4095,9 @@ void KHTMLPart::guiActivateEvent( KParts::GUIActivateEvent *event )
 
 void KHTMLPart::slotFind()
 {
-  KHTMLPart *part = 0;
-
-  if ( d->m_frames.count() > 0 )
-    part = static_cast<KHTMLPart *>( partManager()->activePart() );
-
-  if(!part)
-      part = this;
+  KHTMLPart *part = static_cast<KHTMLPart *>( currentFrame() );
+  if (!part)
+    return;
 
   if (!part->inherits("KHTMLPart") )
   {
@@ -4130,10 +4144,10 @@ void KHTMLPart::slotFindDone()
 
 void KHTMLPart::slotFindDialogDestroyed()
 {
-    assert( sender() == d->m_findDialog );
+  assert( sender() == d->m_findDialog );
 
-    d->m_findDialog = 0;
-    d->m_paFind->setEnabled( true );
+  d->m_findDialog = 0;
+  d->m_paFind->setEnabled( true );
 }
 
 void KHTMLPart::slotPrintFrame()
@@ -4141,7 +4155,9 @@ void KHTMLPart::slotPrintFrame()
   if ( d->m_frames.count() == 0 )
     return;
 
-  KParts::Part *frame = partManager()->activePart();
+  KParts::ReadOnlyPart *frame = currentFrame();
+  if (!frame)
+    return;
 
   KParts::BrowserExtension *ext = KParts::BrowserExtension::childObject( frame );
 
@@ -4159,14 +4175,9 @@ void KHTMLPart::slotPrintFrame()
 
 void KHTMLPart::slotSelectAll()
 {
-  KHTMLPart *part = this;
-
-  if ( d->m_frames.count() > 0 && partManager()->activePart() )
-    part = static_cast<KHTMLPart *>( partManager()->activePart() );
-
-  assert( part );
-
-  part->selectAll();
+  KParts::ReadOnlyPart *part = currentFrame();
+  if (part && part->inherits("KHTMLPart"))
+    static_cast<KHTMLPart *>(part)->selectAll();
 }
 
 void KHTMLPart::startAutoScroll()
