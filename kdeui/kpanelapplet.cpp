@@ -21,6 +21,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ******************************************************************/
 
+#include <kapp.h>
 #include <kconfig.h>
 
 #include "kpanelapplet.h"
@@ -42,7 +43,7 @@ KPanelApplet::KPanelApplet(const QString& configFile, Type type,
     setPalette(pal);
   }
 
-  _config = new KConfig(configFile);
+  _config = new KConfig(configFile, kapp && kapp->config()->isImmutable());
 }
 
 KPanelApplet::~KPanelApplet()
