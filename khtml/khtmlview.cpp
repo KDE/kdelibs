@@ -221,7 +221,7 @@ void KHTMLView::viewportPaintEvent ( QPaintEvent* pe  )
     {
         paintBuffer->resize(width(),PAINT_BUFFER_HEIGHT);
 	QPainter p(paintBuffer);
-	p.fillRect(r.x(), r.y(), ew, eh, kapp->palette().normal().brush(QColorGroup::Background));
+	p.fillRect(r.x(), r.y(), ew, eh, palette().normal().brush(QColorGroup::Background));
     }
 
     QTime qt;
@@ -238,7 +238,7 @@ void KHTMLView::viewportPaintEvent ( QPaintEvent* pe  )
 
 	// ### fix this for frames...
 
-	tp->fillRect(ex, ey+py, ew, ph, kapp->palette().normal().brush(QColorGroup::Background));
+	tp->fillRect(ex, ey+py, ew, ph, palette().normal().brush(QColorGroup::Background));
 
 	m_part->docImpl()->renderer()->print(tp, ex, ey+py, ew, ph, 0, 0);
 
