@@ -2296,16 +2296,12 @@ void KHTMLPart::slotViewFrameSource()
 void KHTMLPart::slotSendURL()
 {
   KURL srcURL( m_url );
-  if ( srcURL.fileName(false).isEmpty() )
-    srcURL.setFileName( "index.html" );
   kapp->invokeMailer("mailto:?body=" + srcURL.url());
 }
 
 void KHTMLPart::slotSendPage()
 {
   KURL srcURL( m_url );
-  if ( srcURL.fileName(false).isEmpty() )
-    srcURL.setFileName( "index.html" );
   kapp->invokeMailer("mailto:?attach=" + srcURL.url());
 }
 
