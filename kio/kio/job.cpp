@@ -2209,12 +2209,15 @@ void CopyJob::slotResultStating( Job *job )
     UDSEntry entry = ((StatJob*)job)->statResult();
     bool bDir = false;
     bool bLink = false;
+    QString sName;
     UDSEntry::ConstIterator it2 = entry.begin();
     for( ; it2 != entry.end(); it2++ ) {
         if ( ((*it2).m_uds) == UDS_FILE_TYPE )
             bDir = S_ISDIR( (mode_t)(*it2).m_long );
         else if ( ((*it2).m_uds) == UDS_LINK_DEST )
             bLink = !((*it2).m_str.isEmpty());
+        else if ( ((*it2).m_uds) == UDS_NAME )
+            sName = (*it2).m_str;
     }
 
     if ( destinationState == DEST_NOT_STATED )
@@ -2272,8 +2275,15 @@ void CopyJob::slotResultStating( Job *job )
         if ( destinationState == DEST_IS_DIR ) // (case 1)
         {
             if ( !m_asMethod )
+            {	    
                 // Use <desturl>/<directory_copied> as destination, from now on
-                m_currentDest.addPath( srcurl.fileName() );
+                QString directory = srcurl.fileName();
+                if ( !sName.isEmpty() && KProtocolInfo::fileNameUsedForCopying( srcurl ) == KProtocolInfo::Name )
+                {
+                    directory = sName;
+                }
+                m_currentDest.addPath( directory );
+            }
         }
         else if ( destinationState == DEST_IS_FILE ) // (case 2)
         {
