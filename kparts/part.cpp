@@ -173,7 +173,6 @@ void Part::setWidget( QWidget *widget )
   m_widget = widget;
   connect( m_widget, SIGNAL( destroyed() ),
            this, SLOT( slotWidgetDestroyed() ) );
-  actionCollection()->setWidget( m_widget );
 }
 
 void Part::setSelectable( bool selectable )
