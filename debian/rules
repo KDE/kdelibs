@@ -103,7 +103,7 @@ install: build
 	-rm -rf debian/kdelibs3 debian/alsa-tmp
 	-install -d debian/kdelibs3
 	cd debian/install-tmp && find ./ | cpio -pmd $(tmp)/
-	mv $(tmp)/usr/share/applnk $(tmp)/etc/kde2/applnk
+	-mv $(tmp)/usr/share/applnk $(tmp)/etc/kde2/applnk
 	dh_installdirs -a
 	$(MAKE) -C libkmid/ DESTDIR=$(alsa-tmp)/ install
 	$(MAKE) -C arts/ DESTDIR=$(alsa-tmp)/ install
