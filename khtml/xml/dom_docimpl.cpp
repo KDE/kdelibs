@@ -784,11 +784,29 @@ void DocumentImpl::write( const DOMString &text )
 
 void DocumentImpl::write( const QString &text )
 {
-    if(m_tokenizer)
-        m_tokenizer->write(text, false);
+    if ( m_tokenizer ) {
+        if(m_tokenizer)
+            m_tokenizer->write(text, false);
 
-    if (m_view->part()->jScript())
-        m_view->part()->jScript()->appendSourceFile(m_url,text);
+        if (m_view->part()->jScript())
+            m_view->part()->jScript()->appendSourceFile(m_url,text);
+    }
+    else {
+        NodeImpl* n = firstChild();
+        // ### create it if nonexistant?
+        if ( n &&  n->id() == ID_HTML ) {
+            for ( n = n->firstChild(); n; n = n->nextSibling() ) {
+                if ( n->id() == ID_BODY ) {
+                    HTMLElementImpl* e = static_cast<HTMLElementImpl*>( n );
+                    e->setInnerHTML( text );
+                    // ###
+                    if (m_view->part()->jScript())
+                        m_view->part()->jScript()->appendSourceFile(m_url,text);
+                    break;
+                }
+            }
+        }
+    }
 }
 
 void DocumentImpl::writeln( const DOMString &text )
