@@ -1232,8 +1232,8 @@ bool SlaveBase::cacheAuthentication( const AuthInfo& info )
     // empty or the password is null!!  Empty password is acceptable
     // but not a NULL one. This is mainly intended as a partial defense
     // against incorrect use (read:abuse) of calling this function.
-    if ( auth_key.isEmpty() ||
-        info.username.isEmpty() || info.password.isNull() )
+    if ( auth_key.isEmpty() || info.username.isNull() ||
+         info.password.isNull() )
         return false;
 
     if ( !info.realmValue.isEmpty() )
