@@ -8,7 +8,7 @@ kde_module_LTLIBRARIES = kio_file.la
 
 kio_file_la_SOURCES = file.cc
 kio_file_la_LIBADD = ../libkio.la
-kio_file_la_LDFLAGS = -module -avoid-version -no-undefined
+kio_file_la_LDFLAGS = -module $(KDE_PLUGIN)
 noinst_HEADERS = file.h
 
 fileinclude_HEADERS = file.h

@@ -14,11 +14,11 @@ kde_module_LTLIBRARIES = kio_http.la kio_https.la
 
 kio_https_la_SOURCES = https.cc
 kio_https_la_LIBADD = ../libkio.la $(LIB_KSSL) $(LIBZ)
-kio_https_la_LDFLAGS = $(all_libraries) -module -avoid-version -no-undefined
+kio_https_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)
 
 kio_http_la_SOURCES = http.cc
 kio_http_la_LIBADD = ../libkio.la $(LIBZ)
-kio_http_la_LDFLAGS = $(all_libraries) -module -avoid-version -no-undefined
+kio_http_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)
 
 kio_http_cache_cleaner_SOURCES = dummy.cpp
 kio_http_cache_cleaner_LDADD   = kio_http_cache_cleaner.la
