@@ -45,6 +45,8 @@
 
 #define PAINT_BUFFER_HEIGHT 150
 
+//#define FIXED_POSITIONING
+
 template class QList<KHTMLView>;
 
 QList<KHTMLView> *KHTMLView::lstViews = 0L;
@@ -208,8 +210,10 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
     }
     //kdDebug( 6000 ) << "drawContents x=" << ex << ",y=" << ey << ",w=" << ew << ",h=" << eh << "wflag=" << testWFlags(WPaintClever) << endl;
 
+    int pbHeight = paintBuffer->height();
+    
     if(d->useSlowRepaints) {
-	//kdDebug(0) << "using slow repaints" << endl;
+	kdDebug(0) << "using slow repaints" << endl;
 	// used in case some element defines a fixed background or we have fixed positioning
 	// #### flickers terribly, but that will need some support in Qt to work.
 #ifndef FIXED_POSITIONING
@@ -220,10 +224,11 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
 	int tx, ty;
 	contentsToViewport(ex, ey, tx, ty);
 	p->setClipping(false);
-	p->setClipRect(tx, ty, ew, eh);
+	//p->setClipRect(tx, ty, ew, eh);
 #endif
 	if ( paintBuffer->width() < visibleWidth() || paintBuffer->height() < visibleHeight()) {
-	    paintBuffer->resize( visibleWidth(), visibleHeight() );
+	    pbHeight = visibleHeight();
+	    paintBuffer->resize( visibleWidth(), pbHeight );
 	}
     } else {
 	if ( paintBuffer->width() < visibleWidth() ) {
@@ -235,12 +240,14 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
         qt.start();
 
     int py=0;
+    
+    kdDebug(0) << "pbHeight = " << pbHeight << endl;
     while (py < eh) {
 	QPainter* tp = new QPainter;
 	tp->begin( paintBuffer );
 	tp->translate(-ex,-ey-py);
 	
-	int ph = eh-py<PAINT_BUFFER_HEIGHT ? eh-py : PAINT_BUFFER_HEIGHT;	
+	int ph = eh-py < pbHeight ? eh-py : pbHeight;
 
 	// ### fix this for frames...
 
@@ -250,10 +257,10 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
 
 	delete tp;
 
-	//kdDebug( 6000 ) << "bitBlt x=" << ex << ",y=" << ey+py << ",sw=" << ew << ",sh=" << ph << endl;
+	kdDebug( 6000 ) << "bitBlt x=" << ex << ",y=" << ey+py << ",sw=" << ew << ",sh=" << ph << endl;
 	p->drawPixmap(ex, ey+py, *paintBuffer, 0, 0, ew, ph);
 		
-	py += PAINT_BUFFER_HEIGHT;
+	py += pbHeight;
     }
 //    kdDebug(0) << "repaint time=" << qt.elapsed() << endl;
 }
