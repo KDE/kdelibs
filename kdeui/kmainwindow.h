@@ -97,7 +97,6 @@ class KToolBarMenuAction;
 class KMainWindow : public QMainWindow, public KXMLGUIBuilder, virtual public KXMLGUIClient
 {
     friend class KMWSessionManaged;
-    friend class KTMainWindow;
     Q_OBJECT
 
 public:
