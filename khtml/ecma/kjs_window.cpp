@@ -29,6 +29,7 @@
 #include <klocale.h>
 #include <kparts/browserextension.h>
 #include <kwinmodule.h>
+#include <kconfig.h>
 
 #include <kjs/operations.h>
 #include "kjs_window.h"
@@ -301,66 +302,73 @@ Completion WindowFunc::tryExecute(const List &args)
     break;
   case Open:
   {
-    KParts::WindowArgs winargs;
+    KConfig *config = new KConfig("konquerorrc");
+    config->setGroup("Java/JavaScript Settings");
 
-    // scan feature argument
-    v = args[2];
-    QString features;
-    if (!v.isA(UndefinedType)) {
-        features = v.toString().value().qstring();
-        QStringList flist = QStringList::split(',', features);
-        QStringList::ConstIterator it = flist.begin();
-        while (it != flist.end()) {
-            int pos = (*it).find('=');
-            if (pos >= 0) {
-                QString key = (*it).left(pos).stripWhiteSpace().lower();
-                QString val = (*it).mid(pos + 1).stripWhiteSpace().lower();
-                if (key == "left" || key == "screenx")
-                  winargs.x = val.toInt();
-                else if (key == "top" || key == "screeny")
-                  winargs.y = val.toInt();
-                else if (key == "height")
-                  winargs.height = val.toInt();
-                else if (key == "width")
-                  winargs.width = val.toInt();
-                else if (key == "menubar")
-                  winargs.menuBarVisible = (val == "1" || val == "yes");
-                else if (key == "toolbar")
-                  winargs.toolBarsVisible = (val == "1" || val == "yes");
-                else if (key == "status")
-                  winargs.statusBarVisible = (val == "1" || val == "yes");
-                else if (key == "resizable")
-                  winargs.resizable = (val == "1" || val == "yes");
-                else if (key == "fullscreen")
-                  winargs.fullscreen = (val == "1" || val == "yes");
+    if ( config->readBoolEntry("DisableWindowOpen") == false )
+    {
+
+        KParts::WindowArgs winargs;
+
+        // scan feature argument
+        v = args[2];
+        QString features;
+        if (!v.isA(UndefinedType)) {
+            features = v.toString().value().qstring();
+            QStringList flist = QStringList::split(',', features);
+            QStringList::ConstIterator it = flist.begin();
+            while (it != flist.end()) {
+                int pos = (*it).find('=');
+                if (pos >= 0) {
+                    QString key = (*it).left(pos).stripWhiteSpace().lower();
+                    QString val = (*it).mid(pos + 1).stripWhiteSpace().lower();
+                    if (key == "left" || key == "screenx")
+                      winargs.x = val.toInt();
+                    else if (key == "top" || key == "screeny")
+                      winargs.y = val.toInt();
+                    else if (key == "height")
+                      winargs.height = val.toInt();
+                    else if (key == "width")
+                      winargs.width = val.toInt();
+                    else if (key == "menubar")
+                      winargs.menuBarVisible = (val == "1" || val == "yes");
+                    else if (key == "toolbar")
+                      winargs.toolBarsVisible = (val == "1" || val == "yes");
+                    else if (key == "status")
+                      winargs.statusBarVisible = (val == "1" || val == "yes");
+                    else if (key == "resizable")
+                      winargs.resizable = (val == "1" || val == "yes");
+                    else if (key == "fullscreen")
+                      winargs.fullscreen = (val == "1" || val == "yes");
+                }
+                it++;
             }
-            it++;
         }
-    }
 
-    // prepare arguments
-    KURL url;
-    if (!str.isEmpty()) {
-	if (part->baseURL().isEmpty())
-	    url = KURL(part->url(), str);
-	else
-	    url = KURL(part->baseURL(), str);
-    }
-    KParts::URLArgs uargs;
-    uargs.frameName = args[1].toString().value().qstring();
-    uargs.serviceType = "text/html";
+        // prepare arguments
+        KURL url;
+        if (!str.isEmpty()) {
+	    if (part->baseURL().isEmpty())
+    	    url = KURL(part->url(), str);
+	    else
+	        url = KURL(part->baseURL(), str);
+        }
+        KParts::URLArgs uargs;
+        uargs.frameName = args[1].toString().value().qstring();
+        uargs.serviceType = "text/html";
 
-    // request new window
-    KParts::ReadOnlyPart *newPart = 0L;
-    emit part->browserExtension()->createNewWindow(url, uargs,
-						   winargs,newPart);
-    if (newPart && newPart->inherits("KHTMLPart")) {
-	Window *win = newWindow(static_cast<KHTMLPart*>(newPart));
-	win->opener = part;
-	result = win;
-    } else
-        result = Undefined();
-    break;
+        // request new window
+        KParts::ReadOnlyPart *newPart = 0L;
+        emit part->browserExtension()->createNewWindow(url, uargs,
+						    winargs,newPart);
+        if (newPart && newPart->inherits("KHTMLPart")) {
+	    Window *win = newWindow(static_cast<KHTMLPart*>(newPart));
+	    win->opener = part;
+	    result = win;
+        } else
+            result = Undefined();
+     }
+  break;
   }
   case ScrollBy:
     if(args.size() == 2 && part->view())
