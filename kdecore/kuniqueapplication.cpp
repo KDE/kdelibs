@@ -90,15 +90,15 @@ KUniqueApplication::start()
   delete args;
 
   QCString appName = KCmdLineArgs::about->appName();
-  if (s_multipleInstances)
-  {
-     QCString pid;
-     pid.setNum(getpid());
-     appName = appName + "-" + pid;
-  }
 
   if (s_nofork)
   {
+     if (s_multipleInstances)
+     {
+        QCString pid;
+        pid.setNum(getpid());
+        appName = appName + "-" + pid;
+     }
      ( void ) dcopClient();
      dcopClient()->registerAs(appName, false );
      // We'll call newInstance in the constructor. Do nothing here.
@@ -112,7 +112,8 @@ KUniqueApplication::start()
      kdError() << "KUniqueApplication: pipe() failed!" << endl;
      ::exit(255);
   }
-  switch(fork()) {
+  int fork_result = fork();
+  switch(fork_result) {
   case -1:
      kdError() << "KUniqueApplication: fork() failed!" << endl;
      ::exit(255);
@@ -120,6 +121,12 @@ KUniqueApplication::start()
   case 0:
      // Child
      ::close(fd[0]);
+     if (s_multipleInstances)
+     {
+        QCString pid;
+        pid.setNum(getpid());
+        appName = appName + "-" + pid;
+     }
      dc = dcopClient();
      {
         QCString regName = dc->registerAs(appName, false);
@@ -204,6 +211,12 @@ KUniqueApplication::start()
      // Parent
 //     DCOPClient::emergencyClose();
 //     dcopClient()->detach();
+     if (s_multipleInstances)
+     {
+        QCString pid;
+        pid.setNum(fork_result);
+        appName = appName + "-" + pid;
+     }
      ::close(fd[1]);
      for(;;)
      {
