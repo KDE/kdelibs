@@ -998,7 +998,7 @@ void HTMLInputElementImpl::setValue(DOMString val)
     switch (_type) {
     case TEXT:
     case PASSWORD:
-        m_value = (val.isNull() ? "" : val);
+        m_value = (val.isNull() ? DOMString("") : val);
         setChanged(true);
         break;
     case FILE:
