@@ -109,6 +109,14 @@ kuser.cpp \
 kaudioplayer.cpp \
 kvmallocator.cpp
 
+#network/kresolver.cpp \
+#network/kresolvermanager.cpp \
+#network/kreverseresolver.cpp \
+#network/ksocketaddress.cpp \
+#network/ksocketbase.cpp \
+#network/ksocketdevice.cpp \
+#network/ksockssocketdevice.cpp
+
 #kstartupinfo.cpp \
 #todo: kextsock.cpp \
 #todo: ksock.cpp \

@@ -27,6 +27,7 @@ SOURCES = \
   vcardformatimpl.cpp vcardformatplugin.cpp ldifconverter.cpp addresslineedit.cpp \
   ldapclient.cpp addresseelist.cpp vcardtool.cpp addresseehelper.cpp \
   lock.cpp locknull.cpp ldif.cpp ldapurl.cpp ldapconfigwidget.cpp \
+  sortmode.cpp \
 \
 vcardparser/vcard.cpp vcardparser/vcardline.cpp vcardparser/vcardparser.cpp
 

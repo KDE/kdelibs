@@ -10,15 +10,16 @@ LIBS += $$KDELIBDESTDIR\kdecore$$KDELIB_SUFFIX $$KDELIBDESTDIR\kdeui$$KDELIB_SUF
 	$$KDELIBDESTDIR\dcop$$KDELIB_SUFFIX $$KDELIBDESTDIR\kdewin32$$KDELIB_SUFFIX \
 	$$KDELIBDESTDIR\zlib.lib
 
-system( bash kmoc kio kfile misc )
+system( bash kmoc kio kfile misc bookmarks )
 
 TARGET = kio$$KDEBUG
 
-INCLUDEPATH += $(KDELIBS)/kio/kio $(KDELIBS)/kio/misc $(KDELIBS)/kio/bookmarks \
+INCLUDEPATH += $(KDELIBS)/kdecore/network $(KDELIBS)/kio/kio $(KDELIBS)/kio/misc $(KDELIBS)/kio/bookmarks \
   $(KDELIBS)/kio/kssl \
   $(KDELIBS)/win/3rdparty/zlib $(KDELIBS)/libltdl $(KDELIBS)/interfaces \
   $(KDELIBS)/kio/kio/moc $(KDELIBS)/kio/misc/moc $(KDELIBS)/kio/kfile/moc \
   $(KDELIBS)/kio/misc/moc \
+  $(KDELIBS)/kio/bookmarks/moc \
   $(KDELIBS)/kio/kssl/moc $(KDELIBS)/kwallet/client 
 
 system( cd kio && dcopidl2cpp observer.kidl )
