@@ -77,7 +77,7 @@ KCrash::defaultCrashHandler (int signal)
   // Handle possible recursions
   static int crashRecursionCounter = 0;
 
-  printf("KCrash: crashing.... crashRecusrionCounter = %d\n", crashRecursionCounter);
+  printf("KCrash: crashing.... crashRecursionCounter = %d\n", crashRecursionCounter);
   printf("Appname = %p apppath = %p\n", appName, appPath);
 
   crashRecursionCounter++;
