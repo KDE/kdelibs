@@ -507,6 +507,18 @@ RenderFlow::insertFloat(RenderObject *o)
 
 }
 
+void RenderFlow::removeSpecialObject(RenderObject *o)
+{
+    if (specialObjects) {
+	QListIterator<SpecialObject> it(*specialObjects);
+	while (it.current()) {
+	    if (it.current()->node == o)
+		specialObjects->removeRef(it.current());
+	    ++it;
+	}
+    }
+}
+
 void RenderFlow::positionNewFloats()
 {
     if(!specialObjects) return;
@@ -1435,6 +1447,19 @@ void RenderFlow::printTree(int indent) const
         }
     }
 }
+
+RenderObject* RenderFlow::removeChildNode(RenderObject* child)
+{
+    // ### this assumes that containingBlock() does not change during a RenderObjects's lifetime - is this correct?
+    if (child->isPositioned() || child->isFloating()) {
+	RenderObject *cb = child->containingBlock();
+	if (cb->isFlow())
+	    static_cast<RenderFlow*>(cb)->removeSpecialObject(child);
+    }
+
+    return RenderBox::removeChildNode(child);
+}
+
 
 #undef DEBUG
 #undef DEBUG_LAYOUT

@@ -92,6 +92,7 @@ public:
     int leftOffset(int y) const { return leftRelOffset(y, leftOffset()); }
 
     virtual void printTree(int indent=0) const;
+    virtual RenderObject* removeChildNode(RenderObject* child);
 
 protected:
 
@@ -112,6 +113,7 @@ public:
 
     void insertFloat(RenderObject *child);
     void insertPositioned(RenderObject *child);
+    void removeSpecialObject(RenderObject *o);
     // called from lineWidth, to position the floats added in the last line.
     void positionNewFloats();
     void clearFloats();
