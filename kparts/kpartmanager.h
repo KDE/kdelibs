@@ -5,10 +5,26 @@
 #include <qobject.h>
 #include <qwidget.h>
 
+#include "kevent.h"
+
 namespace KParts
 {
 
 class Part;
+
+class PartActivateEvent : public Event
+{
+public:
+  PartActivateEvent( bool activated ) : Event( s_strPartActivateEvent ), m_bActivated( activated ) {}
+
+  bool activated() const { return m_bActivated; }
+
+  static bool test( const QEvent *event ) { return Event::test( event, s_strPartActivateEvent ); }
+
+private:
+  static const char *s_strPartActivateEvent;
+  bool m_bActivated;
+};
 
 /**
  * The part manager is an object which knows about all parts

@@ -22,6 +22,8 @@
 
 using namespace KParts;
 
+const char *GUIActivateEvent::s_strGUIActivateEvent = "KParts/GUIActivate";
+
 namespace KParts
 {
 class MainWindowPrivate
@@ -53,7 +55,7 @@ MainWindow::MainWindow( const char *name, WFlags f )
 
 MainWindow::~MainWindow()
 {
-/* 
+/*
   if ( d->m_bShellGUIActivated )
     createGUI( 0L );
 
@@ -280,6 +282,9 @@ void MainWindow::createGUI( Part * part )
   {
     kDebugStringArea( 1000, QString("deactivating GUI for %1").arg(d->m_activePart->name()) );
 
+    GUIActivateEvent ev( false );
+    QApplication::sendEvent( d->m_activePart, &ev );
+    
     plugins = Plugin::pluginServants( d->m_activePart );
     pIt = plugins.fromLast();
     pBegin = plugins.begin();
@@ -295,6 +300,9 @@ void MainWindow::createGUI( Part * part )
 
   if ( !d->m_bShellGUIActivated )
   {
+    GUIActivateEvent ev( true );
+    QApplication::sendEvent( this, &ev );
+
     m_factory->addServant( this );
 
     plugins = Plugin::pluginServants( this );
@@ -308,6 +316,9 @@ void MainWindow::createGUI( Part * part )
 
   if ( part )
   {
+    GUIActivateEvent ev( true );
+    QApplication::sendEvent( part, &ev );
+  
     m_factory->addServant( part );
 
     plugins = Plugin::pluginServants( part );

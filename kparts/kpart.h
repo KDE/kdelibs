@@ -12,6 +12,7 @@ class KInstance;
 class QWidget;
 class QAction;
 class QActionCollection;
+class QEvent;
 
 namespace KParts
 {
@@ -19,6 +20,8 @@ namespace KParts
 class PartManager;
 class Plugin;
 class PartPrivate;
+class PartActivateEvent;
+class GUIActivateEvent;
 
 /**
  * Base class for parts.
@@ -130,6 +133,11 @@ protected:
      **/
     virtual void setXML( const QString &document );
 
+    virtual bool event( QEvent *event );
+
+    virtual void partActivateEvent( PartActivateEvent *event );
+    virtual void guiActivateEvent( GUIActivateEvent *event );
+
 private slots:
     void slotWidgetDestroyed();
 
@@ -151,9 +159,9 @@ class ReadOnlyPartPrivate;
 /**
  * Base class for any "viewer" part.
  *
- * This class takes care of network transparency for you, 
+ * This class takes care of network transparency for you,
  * in the simplest way (synchronously).
- * To use the built-in network transparency, you only need to implement 
+ * To use the built-in network transparency, you only need to implement
  * @ref openFile(), not @ref openURL().
  * To prevent network transparency, or to implement it another way
  * (e.g. asynchronously), override openURL().

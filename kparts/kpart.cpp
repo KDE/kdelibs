@@ -1,5 +1,7 @@
 #include "kpart.h"
 #include "kplugin.h"
+#include "kpartsmainwindow.h"
+#include "kpartmanager.h"
 
 #include <qfile.h>
 #include <qpoint.h>
@@ -141,6 +143,34 @@ QAction *Part::action( const QDomElement &element )
 
   return action( name.ascii() );
 }
+
+bool Part::event( QEvent *event )
+{
+  if ( QObject::event( event ) )
+    return true;
+  
+  if ( PartActivateEvent::test( event ) )
+  {
+    partActivateEvent( (PartActivateEvent *)event );
+    return true;
+  }
+  
+  if ( GUIActivateEvent::test( event ) )
+  {
+    guiActivateEvent( (GUIActivateEvent *)event );
+    return true;
+  }
+  
+  return false;
+}
+
+void Part::partActivateEvent( PartActivateEvent * )
+{
+}
+
+void Part::guiActivateEvent( GUIActivateEvent * )
+{
+} 
 
 void Part::slotWidgetDestroyed()
 {

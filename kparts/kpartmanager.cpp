@@ -9,6 +9,8 @@ using namespace KParts;
 
 template class QList<Part>;
 
+const char *PartActivateEvent::s_strPartActivateEvent = "KParts/PartActivateEvent";
+
 PartManager::PartManager( QWidget * parent, const char * name )
  : QObject( parent, name )
 {
@@ -129,7 +131,20 @@ void PartManager::removePart( Part *part )
 
 void PartManager::setActivePart( Part *part )
 {
+  if ( m_activePart )
+  {
+    PartActivateEvent ev( false );
+    QApplication::sendEvent( m_activePart, &ev );
+  }
+  
   m_activePart = part;
+  
+  if ( m_activePart )
+  {
+    PartActivateEvent ev( true );
+    QApplication::sendEvent( m_activePart, &ev );
+  }
+  
   emit activePartChanged( m_activePart );
 }
 
