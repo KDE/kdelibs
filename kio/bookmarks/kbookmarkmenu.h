@@ -123,9 +123,9 @@ public slots: // public for bookmark bar
 protected slots:
   void slotAboutToShow();
   void slotAboutToShowContextMenu( KPopupMenu *, int, QPopupMenu * );
-  void slotRMBActionRemoveBookmark();
-  void slotRMBActionOpenBookmark();
-  void slotRMBActionOpenFolder();
+  void slotRMBActionRemove();
+  void slotRMBActionOpen();
+  //void slotRMBActionEdit();
   void slotBookmarkSelected();
   void slotAddBookmark();
   void slotNewFolder();

@@ -184,25 +184,32 @@ void KBookmarkMenu::slotAboutToShowContextMenu( KPopupMenu*, int, QPopupMenu* co
   QString address = contextMenuItemAddress();
   kdDebug(7043) << "KBookmarkMenu::slotAboutToShowContextMenu" << address << endl;
   if (address.isNull())
-    return;
+    return; // TODO cancel about to show context menu
   KBookmark bookmark = m_pManager->findByAddress( address );
   Q_ASSERT(!bookmark.isNull());
   
   contextMenu->clear();
 
   if (bookmark.isGroup()) {
-    contextMenu->insertItem( i18n( "Delete Folder" ), this, SLOT(slotRMBActionRemoveBookmark()) );
-    contextMenu->insertItem( i18n( "Open Folder in Tabs" ), this, SLOT(slotRMBActionOpenFolder()) );
-  } else {
-    contextMenu->insertItem( i18n( "Delete bookmark" ), this, SLOT(slotRMBActionRemoveBookmark()) );
-    contextMenu->insertItem( i18n( "Open Bookmark" ), this, SLOT(slotRMBActionOpenBookmark()) );
+    contextMenu->insertItem( i18n( "Delete Folder" ), this, SLOT(slotRMBActionRemove()) );
+    contextMenu->insertItem( i18n( "Open Folder in Tabs" ), this, SLOT(slotRMBActionOpen()) );
+    // contextMenu->insertItem( i18n( "Edit Folder" ), this, SLOT(slotRMBActionEdit()) );
+  } 
+  else if (bookmark.isSeparator()) 
+  {
+    // cancel context menu ?
+  }
+  else
+  {
+    contextMenu->insertItem( i18n( "Delete bookmark" ), this, SLOT(slotRMBActionRemove()) );
+    contextMenu->insertItem( i18n( "Open Bookmark" ), this, SLOT(slotRMBActionOpen()) );
   }
 }
 
-void KBookmarkMenu::slotRMBActionRemoveBookmark()
+void KBookmarkMenu::slotRMBActionRemove()
 {
   QString address = contextMenuItemAddress();
-  kdDebug(7043) << "KBookmarkMenu::slotRMBActionRemoveBookmark" << address << endl;
+  kdDebug(7043) << "KBookmarkMenu::slotRMBActionRemove" << address << endl;
   if (address.isNull())
     return;
   KBookmark bookmark = m_pManager->findByAddress( address );
@@ -215,44 +222,38 @@ void KBookmarkMenu::slotRMBActionRemoveBookmark()
   m_parentMenu->hide();
 }
 
-void KBookmarkMenu::slotRMBActionOpenBookmark()
+void KBookmarkMenu::slotRMBActionOpen()
 {
   QString address = contextMenuItemAddress();
-  kdDebug(7043) << "KBookmarkMenu::slotRMBActionOpenBookmark" << address << endl;
+  kdDebug(7043) << "KBookmarkMenu::slotRMBActionOpen" << address << endl;
   if (address.isNull())
     return;
   KBookmark bookmark = m_pManager->findByAddress( address );
   Q_ASSERT(!bookmark.isNull());
 
-  m_pOwner->openBookmarkURL( bookmark.url().url() );
-}
-
-void KBookmarkMenu::slotRMBActionOpenFolder()
-{
-  QString address = contextMenuItemAddress();
-  kdDebug(7043) << "KBookmarkMenu::slotRMBActionOpenFolder" << address << endl;
-  if (address.isNull())
-    return;
-  KBookmark bookmark = m_pManager->findByAddress( address );
-  Q_ASSERT(!bookmark.isNull());
-
-  Q_ASSERT(bookmark.isGroup());
-  KBookmarkOwnerListCapable* owner = dynamic_cast<KBookmarkOwnerListCapable*>( m_pOwner ); 
-  if (!owner) {
-    kdWarning(7043) << "slotRMBActionOpenFolder() - not KBookmarkOwnerListCapable!" << endl;
-    return;
-  }
-
-  QStringList urlList;
-  KBookmarkGroup parentBookmark = bookmark.toGroup();
-  for ( KBookmark bm = parentBookmark.first(); !bm.isNull(); bm = parentBookmark.next(bm) )
+  if ( !bookmark.isGroup() )
   {
-    if ( bm.isSeparator() || bm.isGroup() ) 
-      continue;
-    urlList << bm.url().url().utf8();
+    m_pOwner->openBookmarkURL( bookmark.url().url() );
   }
-  
-  owner->openBookmarkURLList( urlList );
+  else 
+  {
+    KBookmarkOwnerListCapable* owner = dynamic_cast<KBookmarkOwnerListCapable*>( m_pOwner ); 
+    if (!owner) {
+      kdWarning(7043) << "KBookmarkMenu::slotRMBActionOpen - not KBookmarkOwnerListCapable!" << endl;
+      return;
+    }
+
+    QStringList urlList;
+    KBookmarkGroup parentBookmark = bookmark.toGroup();
+    for ( KBookmark bm = parentBookmark.first(); !bm.isNull(); bm = parentBookmark.next(bm) )
+    {
+      if ( bm.isSeparator() || bm.isGroup() ) 
+        continue;
+      urlList << bm.url().url().utf8();
+    }
+    
+    owner->openBookmarkURLList( urlList );
+  } 
 }
 
 void KBookmarkMenu::slotBookmarksChanged( const QString & groupAddress )
