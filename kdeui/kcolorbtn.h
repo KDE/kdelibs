@@ -1,5 +1,6 @@
 #ifdef KDE_NO_COMPAT
-#error <kcolorbtn.h> is the old name. Use <kcolorbutton.h> from now on
-#else
-#include <kcolorbutton.h>
+#ifdef __GNUC__
+#warning <kcolorbtn.h> is the old name. Use <kcolorbutton.h> from now on
 #endif
+#endif
+#include <kcolorbutton.h>
