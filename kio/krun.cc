@@ -488,7 +488,7 @@ void KRun::slotPreData( int, const char *_data, int _len )
   KMimeMagicResult* result = KMimeMagic::self()->findBufferType( _data, _len );
 
   // If we still did not find it, we must assume the default mime type
-  if ( !result || !result->mimeType() || result->mimeType()[0] == 0 )
+  if ( !result || result->mimeType().isEmpty())
     foundMimeType( "application/octet-stream" );
   else
     foundMimeType( result->mimeType() );

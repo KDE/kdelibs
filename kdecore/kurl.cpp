@@ -66,7 +66,7 @@ KURL::KURL( const KURL& _u, const QString& _rel_url )
   else if ( _rel_url[0] == '#' )
   {
     *this = _u;
-    QString tmp = _rel_url + 1;
+    QString tmp = _rel_url.right(tmp.length() - 1);
     decode( tmp );
     setHTMLRef( tmp );
   }
@@ -778,7 +778,7 @@ bool KURL::cd( const QString& _dir, bool zapRef )
   {
     m_strPath = QDir::homeDirPath().copy();
     m_strPath += "/";
-    m_strPath += _dir + 1;
+    m_strPath += _dir.right(m_strPath.length() - 1);
     if ( zapRef )
       setHTMLRef( QString::null );
     return TRUE;

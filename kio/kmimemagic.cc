@@ -7,6 +7,8 @@
  */
 
 #include "kmimemagic.h"
+#include <sys/stat.h>
+#include <ctype.h>
 #include <assert.h>
 #include <kapp.h>
 

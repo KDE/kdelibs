@@ -88,7 +88,7 @@ KIOPassDlg::KIOPassDlg( QWidget* parent, const char* name, bool modal, WFlags wf
    setCaption( i18n("Password") );
    
    // Focus
-   if ( _user == 0 || _user[0] == 0 )
+   if ( _user.isEmpty() )
      m_pUser->setFocus();
    else
      m_pPass->setFocus();

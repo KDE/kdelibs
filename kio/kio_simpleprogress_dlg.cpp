@@ -97,7 +97,7 @@ void KIOSimpleProgressDlg::processedSize()
   if ( m_iPercent == old )
     return;
 
-  QString tmp = i18n( "%1 % of %2 ").arg( m_iPercent ).arg( KIOJob::convertSize(m_pJob->m_iTotalSize));
+  QString tmp = i18n( "%1 %% of %2 ").arg( m_iPercent ).arg( KIOJob::convertSize(m_pJob->m_iTotalSize));
 
   m_pLine4->setText( tmp );
   m_pProgressBar->setValue( m_iPercent );

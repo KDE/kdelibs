@@ -1271,7 +1271,7 @@ void KFormulaEdit::insertChar(QChar c)
       cursorPos -= 5;
     }
 
-    if(c == DIVIDE || c == QChar(ABOVE) || c == QChar(BELOW)) {
+    if(c == QChar(DIVIDE) || c == QChar(ABOVE) || c == QChar(BELOW)) {
       int i, level;
 
       //if there is selected text, put curly braces around that so

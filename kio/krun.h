@@ -13,10 +13,11 @@ class KService;
 #include <list>
 
 #include <sys/stat.h>
+#include <sys/types.h>
 
 #include <qobject.h>
 #include <qtimer.h>
-#include <qstrlist.h>
+#include <qstring.h>
 
 /**
  * Implements a generic runner, i.e. the 'exec' functionality of KDE
