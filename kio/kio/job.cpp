@@ -2819,12 +2819,12 @@ void CopyJob::slotResult( Job *job )
             int err = job->error();
             subjobs.remove( job );
             assert ( subjobs.isEmpty() );
+            // Determine dest again
+            KURL dest = m_dest;
+            if ( destinationState == DEST_IS_DIR && !m_asMethod )
+                dest.addPath( m_currentSrcURL.fileName() );
             if ( err )
             {
-                // Determine dest again
-                KURL dest = m_dest;
-                if ( destinationState == DEST_IS_DIR && !m_asMethod )
-                    dest.addPath( m_currentSrcURL.fileName() );
                 // Direct renaming didn't work. Try renaming to a temp name,
                 // this can help e.g. when renaming 'a' to 'A' on a VFAT partition.
                 // In that case it's the _same_ dir, we don't want to copy+del (data loss!)
@@ -2874,7 +2874,7 @@ void CopyJob::slotResult( Job *job )
             else
             {
                 kdDebug(7007) << "Renaming succeeded, move on" << endl;
-                emit copyingDone( this, *m_currentStatSrc, m_currentDest, true, true );
+                emit copyingDone( this, *m_currentStatSrc, dest, true, true );
                 ++m_currentStatSrc;
                 statNextSrc();
             }
