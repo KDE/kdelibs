@@ -49,7 +49,7 @@ KAboutKDE::KAboutKDE( QWidget *parent, const char *name, bool modal )
     "use the \"Report Bug\" dialog from the \"Help\" menu to report bugs.<br><br>"
     "If you have a suggestion for improvement then you are welcome to use "
     "the bug tracking system to register your wish. Make sure you use the "
-    "Severity called \"Wishlist\"." );
+    "severity called \"Wishlist\"." );
 
   const QString text3 = i18n(""
     "You don't have to be a software developer to be a member of the "
@@ -69,7 +69,7 @@ KAboutKDE::KAboutKDE( QWidget *parent, const char *name, bool modal )
     "Thus, the KDE Team formed the KDE Association, a non-profit organization"
     " legally founded in Tuebingen, Germany. The KDE Association represents"
     " the KDE Project in legal and financial matters."
-    " See <a href=\"http://www.kde-ev.org/\">http://www.kde-ev.org/<a>"
+    " See <a href=\"http://www.kde-ev.org/\">http://www.kde-ev.org/</a>"
     " for information on the KDE Association.<br><br>"
     "The KDE Team does need financial support. Most of the money is used to "
     "reimburse members and others on expenses they experienced when "
