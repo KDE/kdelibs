@@ -247,6 +247,13 @@ void SlaveBase::dispatchLoop()
 void SlaveBase::connectSlave(const QString& path)
 {
     appconn->init(new KSocket(QFile::encodeName(path)));
+    if (!appconn->inited())
+    {
+        kdDebug(7019) << "SlaveBase: failed to connect to " << path << endl;
+        this->~SlaveBase();
+        ::exit(255);
+    }
+
     setConnection(appconn);
 }
 
