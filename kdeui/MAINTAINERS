@@ -10,7 +10,7 @@ kaboutdialog.cpp
 kaboutkde.cpp
 kaction.cpp		Holger Freyther <freyther@kde.org>, Martijn Klingens <klingens@kde.org>
 kanimwidget.cpp		Waldo Bastian <bastian@kde.org>
-karrowbutton.cpp
+karrowbutton.cpp	Frerich Raabe <raabe@kde.org>
 kauthicon.cpp
 kbugreport.cpp
 kbuttonbox.cpp
