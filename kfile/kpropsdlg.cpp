@@ -1,6 +1,7 @@
 /* This file is part of the KDE project
+
    Copyright (C) 1998, 1999 Torben Weis <weis@kde.org>
-   Copyright (c) 1999 Preston Brown <pbrown@kde.org>
+   Copyright (c) 1999,2000 Preston Brown <pbrown@kde.org>
    Copyright (c) 2000 Simon Hausmann <hausmann@kde.org>
 
    This library is free software; you can redistribute it and/or
@@ -30,7 +31,7 @@
  * the rest of the layout management, bug fixes, adaptation to libkio,
  * template feature by
  *  David Faure <faure@kde.org>
- * More layout and cleanups by
+ * More layout, cleanups, and fixes by
  *  Preston Brown <pbrown@kde.org>
  * Plugin capability, cleanups and port to KDialogBase by
  *  Simon Hausmann <hausmann@kde.org>
@@ -478,6 +479,13 @@ KFilePropsPage::KFilePropsPage( KPropertiesDialog *_props )
   } else {
     path = properties->currentDir().path(1) + properties->defaultName();
     directory = properties->currentDir().url();
+  }
+
+  if (!properties->kurl().isLocalFile()) {
+      directory += ' ';
+      directory += '(';
+      directory += properties->kurl().protocol();
+      directory += ')';
   }
 
   if (KExecPropsPage::supports(properties->items()) ||
