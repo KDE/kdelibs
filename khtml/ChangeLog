@@ -1,3 +1,10 @@
+2004-10-11  Harri Porten  <porten@kde.org>
+
+	* ecma/*.cpp: return an empty string (instead of null) when
+	querying unset string properties
+
+	* ecma/kjs_html.cpp: use full url for Image.src.
+
 2004-10-08  David Faure  <faure@kde.org>
 
         * ecma/kjs_html.cpp (KJS::HTMLCollection::tryGet): 
