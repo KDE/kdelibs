@@ -23,7 +23,7 @@
 #ifndef _KJSLOOKUP_H_
 #define _KJSLOOKUP_H_
 
-#include "ustring.h"
+#include "identifier.h"
 #include "value.h"
 #include "object.h"
 #include "interpreter.h"

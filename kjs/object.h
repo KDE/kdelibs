@@ -353,6 +353,8 @@ namespace KJS {
     void setInternalValue(const Value &v);
   };
 
+  inline Object Value::toObject(ExecState *exec) const { return rep->dispatchToObject(exec); }
+  
   class ObjectImp : public ValueImp {
   public:
     /**

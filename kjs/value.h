@@ -28,6 +28,7 @@
 #include <stdlib.h> // Needed for size_t
 
 #include "ustring.h"
+#include "simple_number.h"
 #include <kjs/global.h>
 
 // Primitive data types
@@ -65,10 +66,7 @@ namespace KJS {
     BooleanType     = 3,
     StringType      = 4,
     NumberType      = 5,
-    ObjectType      = 6,
-    ReferenceType   = 7,
-    ListType        = 8,
-    CompletionType  = 9
+    ObjectType      = 6
   };
 
   /**
@@ -81,13 +79,14 @@ namespace KJS {
    */
   class ValueImp {
     friend class Collector;
+    friend class Value;
+    friend class ContextImp;
   public:
     ValueImp();
     virtual ~ValueImp();
 
-    inline ValueImp* ref() { refcount++; return this; }
-    inline bool deref() { return (!--refcount); }
-    unsigned int refcount;
+    ValueImp* ref() { if (!SimpleNumber::is(this)) refcount++; return this; }
+    bool deref() { if (SimpleNumber::is(this)) return false; else return (!--refcount); }
 
     virtual void mark();
     bool marked() const;
@@ -99,33 +98,43 @@ namespace KJS {
      *
      * set by Object() so that the collector is allowed to delete us
      */
-    void setGcAllowed() { _flags |= VI_GCALLOWED; }
+    void setGcAllowed();
+    
+    // Will crash if called on a simple number.
+    void setGcAllowedFast() { _flags |= VI_GCALLOWED; }
 
-    virtual Type type() const = 0;
+    int toInteger(ExecState *exec) const;
+    int toInt32(ExecState *exec) const;
+    unsigned int toUInt32(ExecState *exec) const;
+    unsigned short toUInt16(ExecState *exec) const;
 
-    // The conversion operations
+    // Dispatch wrappers that handle the special small number case
 
-    virtual Value toPrimitive(ExecState *exec,
-                              Type preferredType = UnspecifiedType) const = 0;
-    virtual bool toBoolean(ExecState *exec) const = 0;
-    virtual double toNumber(ExecState *exec) const = 0;
-    // TODO: no need for the following 4 int conversions to be virtual
-    virtual int toInteger(ExecState *exec) const;
-    virtual int toInt32(ExecState *exec) const;
-    virtual unsigned int toUInt32(ExecState *exec) const;
-    virtual unsigned short toUInt16(ExecState *exec) const;
-    virtual UString toString(ExecState *exec) const = 0;
-    virtual Object toObject(ExecState *exec) const = 0;
-
-// fixme: replace with proper versions of dispatch wrappers
     Type dispatchType() const;
     Value dispatchToPrimitive(ExecState *exec, Type preferredType = UnspecifiedType) const;
     bool dispatchToBoolean(ExecState *exec) const;
     double dispatchToNumber(ExecState *exec) const;
     UString dispatchToString(ExecState *exec) const;
+    bool dispatchToUInt32(unsigned&) const;
     Object dispatchToObject(ExecState *exec) const;
 
+    unsigned short int refcount;
+
   private:
+    unsigned short int _flags;
+
+    virtual Type type() const = 0;
+
+    // The conversion operations
+
+    virtual Value toPrimitive(ExecState *exec, Type preferredType = UnspecifiedType) const = 0;
+    virtual bool toBoolean(ExecState *exec) const = 0;
+    virtual double toNumber(ExecState *exec) const = 0;
+    // TODO: no need for the following 4 int conversions to be virtual
+    virtual UString toString(ExecState *exec) const = 0;
+    virtual Object toObject(ExecState *exec) const = 0;
+    virtual bool toUInt32(unsigned&) const;
+
     enum {
       VI_MARKED = 1,
       VI_GCALLOWED = 2,
@@ -134,7 +143,10 @@ namespace KJS {
     }; // VI means VALUEIMPL
 
     ValueImpPrivate *_vd;
-    unsigned int _flags;
+
+    // Give a compile time error if we try to copy one of these.
+    ValueImp(const ValueImp&);
+    ValueImp& operator=(const ValueImp&);
   };
 
   /**
@@ -176,12 +188,11 @@ namespace KJS {
 
     /**
      * Returns the type of value. This is one of UndefinedType, NullType,
-     * BooleanType, StringType NumberType, ObjectType, ReferenceType,
-     * ListType or CompletionType.
+     * BooleanType, StringType, NumberType, or ObjectType.
      *
      * @return The type of value
      */
-    Type type() const;
+    Type type() const { return rep->dispatchType(); }
 
     /**
      * Checks whether or not the value is of a particular tpye
@@ -189,24 +200,25 @@ namespace KJS {
      * @param The type to compare with
      * @return true if the value is of the specified type, otherwise false
      */
-    bool isA(Type t) const;
+    bool isA(Type t) const { return rep->dispatchType() == t; }
 
     /**
      * Performs the ToPrimitive type conversion operation on this value
      * (ECMA 9.1)
      */
     Value toPrimitive(ExecState *exec,
-                      Type preferredType = UnspecifiedType) const;
+                      Type preferredType = UnspecifiedType) const
+      { return rep->dispatchToPrimitive(exec, preferredType); }
 
     /**
      * Performs the ToBoolean type conversion operation on this value (ECMA 9.2)
      */
-    bool toBoolean(ExecState *exec) const;
+    bool toBoolean(ExecState *exec) const { return rep->dispatchToBoolean(exec); }
 
     /**
      * Performs the ToNumber type conversion operation on this value (ECMA 9.3)
      */
-    double toNumber(ExecState *exec) const;
+    double toNumber(ExecState *exec) const { return rep->dispatchToNumber(exec); }
 
     /**
      * Performs the ToInteger type conversion operation on this value (ECMA 9.4)
@@ -231,19 +243,21 @@ namespace KJS {
     /**
      * Performs the ToString type conversion operation on this value (ECMA 9.8)
      */
-    UString toString(ExecState *exec) const;
+    UString toString(ExecState *exec) const { return rep->dispatchToString(exec); }
 
     /**
      * Performs the ToObject type conversion operation on this value (ECMA 9.9)
      */
     Object toObject(ExecState *exec) const;
 
+    /**
+     * Checks if we can do a lossless conversion to UInt32.
+     */
+    bool toUInt32(unsigned& i) const { return rep->dispatchToUInt32(i); }
+
   protected:
     ValueImp *rep;
   };
-
-  bool operator==(const Value &v1, const Value &v2);
-  bool operator!=(const Value &v1, const Value &v2);
 
   // Primitive types
 
@@ -255,9 +269,6 @@ namespace KJS {
   class Undefined : public Value {
   public:
     Undefined();
-    Undefined(const Undefined &v);
-
-    Undefined& operator=(const Undefined &v);
 
     /**
      * Converts a Value into an Undefined. If the value's type is not
@@ -283,9 +294,6 @@ namespace KJS {
   class Null : public Value {
   public:
     Null();
-    Null(const Null &v);
-
-    Null& operator=(const Null &v);
 
     /**
      * Converts a Value into an Null. If the value's type is not NullType,
@@ -308,9 +316,6 @@ namespace KJS {
   class Boolean : public Value {
   public:
     Boolean(bool b = false);
-    Boolean(const Boolean &v);
-
-    Boolean& operator=(const Boolean &v);
 
     /**
      * Converts a Value into an Boolean. If the value's type is not BooleanType,
@@ -335,9 +340,6 @@ namespace KJS {
   class String : public Value {
   public:
     String(const UString &s = "");
-    String(const String &v);
-
-    String& operator=(const String &v);
 
     /**
      * Converts a Value into an String. If the value's type is not StringType,
@@ -363,15 +365,13 @@ namespace KJS {
    * Represents an primitive Number value
    */
   class Number : public Value {
+    friend class ValueImp;
   public:
     Number(int i);
     Number(unsigned int u);
     Number(double d = 0.0);
     Number(long int l);
     Number(long unsigned int l);
-    Number(const Number &v);
-
-    Number& operator=(const Number &v);
 
     double value() const;
     int intValue() const;
@@ -383,7 +383,7 @@ namespace KJS {
      * Converts a Value into an Number. If the value's type is not NumberType,
      * a null object will be returned (i.e. one with it's internal pointer set
      * to 0). If you do not know for sure whether the value is of type
-     * NumberType, you should check the @ref isValid() methods afterwards before
+     * NumberType, you should check the @ref isNull() methods afterwards before
      * calling any methods on the returned value.
      *
      * @return The value converted to a Number

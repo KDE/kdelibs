@@ -39,6 +39,7 @@
 #include "operations.h"
 #include "identifier.h"
 #include <math.h>
+#include "dtoa.h"
 
 namespace KJS {
   extern const double NaN;
@@ -336,25 +337,68 @@ UString UString::from(long l)
 
 UString UString::from(double d)
 {
-  char buf[40];
-
-  if (d == -0)
-    strcpy(buf,"0");
-  else if (KJS::isNaN(d))
-    strcpy(buf,"NaN");
-  else if (KJS::isPosInf(d))
-    strcpy(buf,"Infinity");
-  else if (KJS::isNegInf(d))
-    strcpy(buf,"-Infinity");
-  else
-    sprintf(buf, "%.16g", d);	// does the right thing
-
-  // ECMA 3rd ed. 9.8.1 9 e: "with no leading zeros"
-  int buflen = strlen(buf);
-  if (buflen >= 4 && buf[buflen-4] == 'e' && buf[buflen-2] == '0') {
-    buf[buflen-2] = buf[buflen-1];
-    buf[buflen-1] = 0;
+  char buf[80];
+  int decimalPoint;
+  int sign;
+  
+  char *result = kjs_dtoa(d, 0, 0, &decimalPoint, &sign, NULL);
+  int length = strlen(result);
+  
+  int i = 0;
+  if (sign) {
+    buf[i++] = '-';
   }
+  
+  if (decimalPoint <= 0 && decimalPoint > -6) {
+    buf[i++] = '0';
+    buf[i++] = '.';
+    for (int j = decimalPoint; j < 0; j++) {
+      buf[i++] = '0';
+    }
+    strcpy(buf + i, result);
+  } else if (decimalPoint <= 21 && decimalPoint > 0) {
+    if (length <= decimalPoint) {
+      strcpy(buf + i, result);
+      i += length;
+      for (int j = 0; j < decimalPoint - length; j++) {
+	buf[i++] = '0';
+      }
+      buf[i] = '\0';
+    } else {
+      strncpy(buf + i, result, decimalPoint);
+      i += decimalPoint;
+      buf[i++] = '.';
+      strcpy(buf + i, result + decimalPoint);
+    }
+  } else if (result[0] < '0' || result[0] > '9') {
+    strcpy(buf + i, result);
+  } else {
+    buf[i++] = result[0];
+    if (length > 1) {
+      buf[i++] = '.';
+      strcpy(buf + i, result + 1);
+      i += length - 1;
+    }
+    
+    buf[i++] = 'e';
+    buf[i++] = (decimalPoint >= 0) ? '+' : '-';
+    // decimalPoint can't be more than 3 digits decimal given the
+    // nature of float representation
+    int exponential = decimalPoint - 1;
+    if (exponential < 0) {
+      exponential = exponential * -1;
+    }
+    if (exponential >= 100) {
+      buf[i++] = '0' + exponential / 100;
+    }
+    if (exponential >= 10) {
+      buf[i++] = '0' + (exponential % 100) / 10;
+    }
+    buf[i++] = '0' + exponential % 10;
+    buf[i++] = '\0';
+  }
+  
+  kjs_freedtoa(result);
 
   return UString(buf);
 }
@@ -510,7 +554,7 @@ double UString::toDouble( bool tolerant ) const
   } else {
     // regular number ?
     char *end;
-    d = strtod(c, &end);
+    d = kjs_strtod(c, &end);
     if ((d != 0.0 || end != c) && d != HUGE_VAL && d != -HUGE_VAL) {
       c = end;
     } else {

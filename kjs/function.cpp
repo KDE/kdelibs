@@ -176,18 +176,18 @@ void FunctionImp::processParameters(ExecState *exec, const List &args)
 
   if (param) {
     ListIterator it = args.begin();
-    Parameter **p = &param;
-    while (*p) {
+    Parameter *p = param;
+    while (p) {
       if (it != args.end()) {
 #ifdef KJS_VERBOSE
-	fprintf(stderr, "setting parameter %s ", (*p)->name.ascii());
+	fprintf(stderr, "setting parameter %s ", p->name.ascii());
 	printInfo(exec,"to", *it);
 #endif
-	variable.put(exec,(*p)->name, *it);
+	variable.put(exec, p->name, *it);
 	it++;
       } else
-	variable.put(exec,(*p)->name, Undefined());
-      p = &(*p)->next;
+	variable.put(exec, p->name, Undefined());
+      p = p->next;
     }
   }
 #ifdef KJS_VERBOSE
@@ -530,7 +530,12 @@ Value GlobalFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
     if ( base != 10 )
     {
       // We can't use strtod if a non-decimal base was specified...
+#ifdef HAVE_FUNC_STRTOLL
+      long long llValue = strtoll(startptr, &endptr, base);
+      double value = llValue;
+#else
       long value = strtol(startptr, &endptr, base);
+#endif
       if (errno || endptr == startptr)
         res = Number(NaN);
       else
@@ -580,7 +585,7 @@ Value GlobalFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
     UString r = "", s, str = args[0].toString(exec);
     const UChar *c = str.data();
     for (int k = 0; k < str.size(); k++, c++) {
-      int u = c->unicode();
+      int u = c->uc;
       if (u > 255) {
 	char tmp[7];
 	sprintf(tmp, "%%u%04X", u);
@@ -604,12 +609,12 @@ Value GlobalFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
       const UChar *c = str.data() + k;
       UChar u;
       if (*c == UChar('%') && k <= len - 6 && *(c+1) == UChar('u')) {
-	u = Lexer::convertUnicode((c+2)->unicode(), (c+3)->unicode(),
-				  (c+4)->unicode(), (c+5)->unicode());
+	u = Lexer::convertUnicode((c+2)->uc, (c+3)->uc,
+				  (c+4)->uc, (c+5)->uc);
 	c = &u;
 	k += 5;
       } else if (*c == UChar('%') && k <= len - 3) {
-	u = UChar(Lexer::convertHex((c+1)->unicode(), (c+2)->unicode()));
+	u = UChar(Lexer::convertHex((c+1)->uc, (c+2)->uc));
 	c = &u;
 	k += 2;
       }

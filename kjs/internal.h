@@ -122,15 +122,15 @@ namespace KJS {
   inline String::String(StringImp *imp) : Value(imp) { }
 
   class NumberImp : public ValueImp {
+    friend class Number;
+    friend class InterpreterImp;
   public:
-    NumberImp(double v);
-
-    static ValueImp *create(int v) { return new NumberImp(v); }
-    static ValueImp *create(double v)  { return new NumberImp(v); }
-    static ValueImp *zero() { return new NumberImp(0); }
-    static ValueImp *one() { return new NumberImp(1); }
-    static ValueImp *two() { return new NumberImp(2); }
-
+    static ValueImp *create(int);
+    static ValueImp *create(double);
+    static ValueImp *zero() { return SimpleNumber::make(0); }
+    static ValueImp *one() { return SimpleNumber::make(1); }
+    static ValueImp *two() { return SimpleNumber::make(2); }
+    
     double value() const { return val; }
 
     Type type() const { return NumberType; }
@@ -140,11 +140,18 @@ namespace KJS {
     double toNumber(ExecState *exec) const;
     UString toString(ExecState *exec) const;
     Object toObject(ExecState *exec) const;
+
     static NumberImp *staticNaN;
 
   private:
+    NumberImp(double v) : val(v) { }
+
+    virtual bool toUInt32(unsigned&) const;
+
     double val;
   };
+
+  inline Number::Number(NumberImp *imp) : Value(imp) { }
 
   /**
    * @short The "label set" in Ecma-262 spec

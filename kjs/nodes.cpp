@@ -590,6 +590,9 @@ Reference AccessorNode1::evaluateReference(ExecState *exec) const
   Value v2 = expr2->evaluate(exec);
   KJS_CHECKEXCEPTIONREFERENCE
   Object o = v1.toObject(exec);
+  unsigned i;
+  if (v2.toUInt32(i))
+    return Reference(o, i);
   UString s = v2.toString(exec);
   return Reference(o, Identifier(s));
 }

@@ -134,7 +134,7 @@ UString RegExp::match(const UString &s, int i, int *pos, int **ovector)
   if (!ovector)
     return UString::null; // don't rely on the return value if you pass ovector==0
 #else
-  const int maxMatch = 10;
+  const uint maxMatch = 10;
   regmatch_t rmatch[maxMatch];
 
   char *str = strdup(s.ascii()); // TODO: why ???
@@ -151,11 +151,11 @@ UString RegExp::match(const UString &s, int i, int *pos, int **ovector)
 
   // map rmatch array to ovector used in PCRE case
   nrSubPatterns = 0;
-  for(int j = 1; j < maxMatch && rmatch[j].rm_so >= 0 ; j++)
+  for(uint j = 1; j < maxMatch && rmatch[j].rm_so >= 0 ; j++)
       nrSubPatterns++;
   int ovecsize = (nrSubPatterns+1)*3; // see above
   *ovector = new int[ovecsize];
-  for (int j = 0; j < nrSubPatterns + 1; j++) {
+  for (uint j = 0; j < nrSubPatterns + 1; j++) {
     if (j>maxMatch)
       break;
     (*ovector)[2*j] = rmatch[j].rm_so + i;

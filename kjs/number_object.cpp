@@ -50,7 +50,7 @@ NumberPrototypeImp::NumberPrototypeImp(ExecState *exec,
   : NumberInstanceImp(objProto)
 {
   Value protect(this);
-  setInternalValue(Number(0));
+  setInternalValue(NumberImp::zero());
 
   // The constructor will be added later, after NumberObjectImp has been constructed
 

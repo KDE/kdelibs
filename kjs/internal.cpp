@@ -227,9 +227,24 @@ Object StringImp::toObject(ExecState *exec) const
 
 NumberImp *NumberImp::staticNaN;
 
-NumberImp::NumberImp(double v)
-  : val(v)
+ValueImp *NumberImp::create(int i)
 {
+    if (SimpleNumber::fits(i))
+        return SimpleNumber::make(i);
+    NumberImp *imp = new NumberImp(static_cast<double>(i));
+    imp->setGcAllowedFast();
+    return imp;
+}
+
+ValueImp *NumberImp::create(double d)
+{
+    if (SimpleNumber::fits(d))
+        return SimpleNumber::make((int)d);
+    if (isNaN(d))
+        return staticNaN;
+    NumberImp *imp = new NumberImp(d);
+    imp->setGcAllowedFast();
+    return imp;
 }
 
 Value NumberImp::toPrimitive(ExecState *, Type) const
@@ -249,6 +264,8 @@ double NumberImp::toNumber(ExecState *) const
 
 UString NumberImp::toString(ExecState *) const
 {
+  if (val == 0.0) // +0.0 or -0.0
+    return "0";
   return UString::from(val);
 }
 
@@ -258,6 +275,14 @@ Object NumberImp::toObject(ExecState *exec) const
   args.append(const_cast<NumberImp*>(this));
   return Object::dynamicCast(exec->interpreter()->builtinNumber().construct(exec,args));
 }
+
+bool NumberImp::toUInt32(unsigned& uint32) const
+{
+  uint32 = (unsigned)val;
+  return (double)uint32 == val;
+}
+
+double SimpleNumber::negZero = -0.0;
 
 // ------------------------------ LabelStack -----------------------------------
 
@@ -726,6 +751,8 @@ void InterpreterImp::mark()
     global.imp()->mark();
   if (m_interpreter)
     m_interpreter->mark();
+  if (_context)
+    _context->mark();
 }
 
 bool InterpreterImp::checkSyntax(const UString &code)

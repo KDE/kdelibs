@@ -60,7 +60,7 @@ Value Object::call(ExecState *exec, Object &thisObj, const List &args)
     fprintf(stderr, "Exceeded maximum function call depth\n");
 #endif
     Object err = Error::create(exec, RangeError,
-                               "Maximum call stack size exceeded.");
+                               "Exceeded maximum function call depth.");
     exec->setException(err);
     return err;
   }
@@ -426,6 +426,12 @@ Value ObjectImp::internalValue() const
 void ObjectImp::setInternalValue(const Value &v)
 {
   _internalValue = v.imp();
+}
+
+void ObjectImp::setInternalValue(ValueImp *v)
+{
+  v->setGcAllowed();
+  _internalValue = v;
 }
 
 Value ObjectImp::toPrimitive(ExecState *exec, Type preferredType) const
