@@ -153,6 +153,8 @@ public:
 #endif // KHTML_NO_CARET
         postponed_autorepeat = NULL;
         reset();
+        vmode = QScrollView::Auto;
+ 	hmode = QScrollView::Auto;
         tp=0;
         paintBuffer=0;
         vertPaintBuffer=0;
@@ -196,8 +198,10 @@ public:
 	lastTabbingDirection = true;
 	pseudoFocusNode = PFNone;
 #ifndef KHTML_NO_SCROLLBARS
-        vmode = QScrollView::Auto;
-        hmode = QScrollView::Auto;
+        //We don't turn off the toolbars here
+	//since if the user turns them
+	//off, then chances are they want them turned
+	//off always - even after a reset.
 #else
         vmode = QScrollView::AlwaysOff;
         hmode = QScrollView::AlwaysOff;
