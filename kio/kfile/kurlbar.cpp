@@ -809,7 +809,7 @@ void KURLBarListBox::contextMenuEvent( QContextMenuEvent *e )
     if (e)
     {
         emit contextMenuRequested( itemAt( e->globalPos() ), e->globalPos() );
-        e->consume(); // Consume the to avoid multiple contextMenuEvent calls...
+        e->consume(); // Consume the event to avoid multiple contextMenuEvent calls...
     }
 }
 
