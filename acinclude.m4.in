@@ -757,7 +757,7 @@ CC=$ac_save_cc
 CFLAGS=$ac_save_cflags
 ])
 
-AC_CHECK_RPATH(
+AC_DEFUN(AC_CHECK_RPATH,
 [
 AC_MSG_CHECKING(for rpath)
 AC_ARG_ENABLE(rpath,
