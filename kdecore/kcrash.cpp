@@ -41,6 +41,7 @@
 #include <kaboutdata.h>
 #include <kdebug.h>
 #include <kapp.h>
+#include <dcopclient.h>
 
 #include <X11/Xlib.h>
 
@@ -111,7 +112,7 @@ KCrash::defaultCrashHandler (int signal)
     if (appName) 
     {
       fprintf(stderr, "KCrash: crashing.... crashRecursionCounter = %d\n", crashRecursionCounter);
-      fprintf(stderr, "KCrash: Application Name = %s path = %s\n", appName ? appName : "<unknown>" , appPath ? appPath : "<unknown>");
+      fprintf(stderr, "KCrash: Application Name = %s path = %s pid = %d\n", appName ? appName : "<unknown>" , appPath ? appPath : "<unknown>", getpid());
       pid_t pid = fork();
 
       if (pid <= 0) {
@@ -190,6 +191,8 @@ KCrash::defaultCrashHandler (int signal)
       }
       else
       {
+        // Close dcop connections
+        DCOPClient::emergencyClose();
         // wait for child to exit
         waitpid(pid, NULL, 0);
         _exit(253);
