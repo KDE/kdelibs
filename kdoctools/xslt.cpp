@@ -16,6 +16,9 @@
 #include <qtextcodec.h>
 #include <stdlib.h>
 
+#include "bzip2/kbzip2filter.h"
+#include "gzip/kgzipfilter.h"
+
 #if !defined( SIMPLE_XSLT )
 extern HelpProtocol *slave;
 #define INFO( x ) if (slave) slave->infoMessage(x);
@@ -215,10 +218,23 @@ void fillInstance(KInstance &ins) {
     ins.dirs()->addResourceDir( "dtd", SRCDIR );
 }
 
+static KFilterBase *findFilterByFileName( const QString &filename )
+{
+    if ( filename.right( 4 ) == ".bz2" ) {
+#if defined( HAVE_BZIP2_SUPPORT )
+        return new KBzip2Filter;
+#endif
+        return 0;
+    }
+
+    // we return gzip in any case
+    return new KBzip2Filter;
+}
+
 bool saveToCache( const QString &contents, const QString &filename )
 {
     QFile raw(filename);
-    KFilterBase *f = KFilterBase::findFilterByFileName(filename);
+    KFilterBase *f = ::findFilterByFileName(filename);
     QIODevice *fd= KFilterDev::createFilterDevice(f, &raw);
 
     if (!fd->open(IO_WriteOnly))
@@ -244,7 +260,7 @@ static bool readCache( const QString &filename,
     // TODO check time stamps
 
     QFile raw(cache);
-    KFilterBase *f = KFilterBase::findFilterByFileName(cache);
+    KFilterBase *f = ::findFilterByFileName(cache);
     QIODevice *fd= KFilterDev::createFilterDevice(f, &raw);
 
     if (!fd->open(IO_ReadOnly))

@@ -72,3 +72,4 @@ AC_SUBST(M_LIBS)
 
 dnl AC_OUTPUT(kdoctools/libxslt/xsltconfig.h)
 
+
