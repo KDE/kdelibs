@@ -731,6 +731,11 @@ public:
   QString referrer() const;
 
   /**
+   * Referrer used to obtain this page.
+   */
+  QString pageReferrer() const;
+
+  /**
    * Last-modified date (in raw string format), if received in the [HTTP] headers.
    */
   QString lastModified() const;

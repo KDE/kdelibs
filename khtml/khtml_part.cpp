@@ -556,6 +556,8 @@ bool KHTMLPart::openURL( const KURL &url )
   args.metaData().insert("PropagateHttpHeader", "true");
   args.metaData().insert("ssl_was_in_use", d->m_ssl_in_use ? "TRUE" : "FALSE" );
   args.metaData().insert("ssl_activate_warnings", "TRUE" );
+  if (d->m_restored)
+     args.metaData().insert("referrer", d->m_pageReferrer);
 
   // If we don't already have a session ID, look up for one that matches
   if (d->m_ssl_session_id.isEmpty()) {
@@ -1221,6 +1223,7 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
     d->m_doc->docLoader()->setCacheCreationDate(cacheCreationDate);
 
     d->m_pageServices = d->m_job->queryMetaData("PageServices");
+    d->m_pageReferrer = d->m_job->queryMetaData("referrer");
 
     d->m_bSecurityInQuestion = false;
     d->m_ssl_in_use = (d->m_job->queryMetaData("ssl_in_use") == "TRUE");
@@ -1295,7 +1298,9 @@ void KHTMLPart::slotRestoreData(const QByteArray &data )
   if ( !d->m_workingURL.isEmpty() )
   {
      long saveCacheId = d->m_cacheId;
+     QString savePageReferrer = d->m_pageReferrer;
      begin( d->m_workingURL, d->m_extension->urlArgs().xOffset, d->m_extension->urlArgs().yOffset );
+     d->m_pageReferrer = savePageReferrer;
      d->m_cacheId = saveCacheId;
      d->m_workingURL = KURL();
   }
@@ -1490,13 +1495,9 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
   args.yOffset = yOffset;
   d->m_extension->setURLArgs( args );
 
-  if ( d->m_referrer != url.url() )
-      d->m_pageReferrer = d->m_referrer;
+  d->m_pageReferrer = QString::null;
 
   KURL ref(url);
-  ref.setRef(QString::null);
-  ref.setUser(QString::null);
-  ref.setPass(QString::null);
   d->m_referrer = ref.protocol().startsWith("http") ? ref.url() : "";
 
   m_url = url;
@@ -1915,7 +1916,7 @@ void KHTMLPart::slotRedirect()
   QString u = d->m_redirectURL;
   d->m_delayRedirect = 0;
   d->m_redirectURL = QString::null;
-  d->m_pageReferrer = d->m_referrer = "";
+  d->m_referrer = ""; // Waba: is this needed?
   // SYNC check with ecma/kjs_window.cpp::goURL !
   if ( u.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 )
   {
@@ -1945,9 +1946,11 @@ void KHTMLPart::slotRedirect()
     return;
   }
 
-  if ( !url.hasRef() && urlcmp( u, m_url.url(), true, true ) )
+  if ( urlcmp( u, m_url.url(), true, true ) )
   {
-    args.reload = true;
+    if (!url.hasRef())
+       args.reload = true;
+    args.metaData().insert("referrer", d->m_pageReferrer);
   }
 
   // Indicate that this request is due to a redirection.
@@ -2990,7 +2993,7 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   if ( !d->m_bComplete && !hasTarget )
     closeURL();
 
-  if (!d->m_referrer.isEmpty())
+  if (!d->m_referrer.isEmpty() && !args.metaData().contains("referrer"))
     args.metaData()["referrer"] = d->m_referrer;
 
   if ( button == 0 && (state & ShiftButton) && (state & ControlButton) )
@@ -4157,6 +4160,7 @@ void KHTMLPart::saveState( QDataStream &stream )
 
   stream << d->m_httpHeaders;
   stream << d->m_pageServices;
+  stream << d->m_pageReferrer;
 
   // Save ssl data
   stream << d->m_ssl_in_use
@@ -4239,6 +4243,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
 
   stream >> d->m_httpHeaders;
   stream >> d->m_pageServices;
+  stream >> d->m_pageReferrer;
 
   // Restore ssl data
   stream >> d->m_ssl_in_use
@@ -4562,8 +4567,29 @@ QString KHTMLPart::jsDefaultStatusBarText() const
 
 QString KHTMLPart::referrer() const
 {
-   return d->m_pageReferrer;
+   return d->m_referrer;
 }
+
+QString KHTMLPart::pageReferrer() const
+{
+   KURL referrerURL = d->m_pageReferrer;
+   if (referrerURL.isValid())
+   {
+      QString protocol = referrerURL.protocol();
+
+      if ((protocol == "http") ||
+         ((protocol == "https") && (m_url.protocol() == "https")))
+      {
+          referrerURL.setRef(QString::null);
+          referrerURL.setUser(QString::null);
+          referrerURL.setPass(QString::null);
+          return referrerURL.url();
+      }
+   }
+   
+   return QString::null;
+}
+
 
 QString KHTMLPart::lastModified() const
 {
@@ -5538,7 +5564,7 @@ khtml::Decoder *KHTMLPart::createDecoder()
 {
   khtml::Decoder *dec = new khtml::Decoder();
   if( !d->m_encoding.isNull() )
-    dec->setEncoding( d->m_encoding.latin1(), d->m_haveEncoding );
+    dec->setEncoding( d->m_encoding.latin1(), true );
   else
     dec->setEncoding( settings()->encoding().latin1(), d->m_haveEncoding );
 

@@ -1111,11 +1111,6 @@ void Loader::servePendingRequests()
       job->addMetaData("accept", req->object->accept());
   if ( req->m_docLoader )  {
       KURL r = req->m_docLoader->doc()->URL();
-      r.setRef(QString::null);
-      r.setUser(QString::null);
-      r.setPass(QString::null);
-      if ( r.protocol().startsWith( "http" ) && r.path().isEmpty() )
-          r.setPath( "/" );
       job->addMetaData("referrer", r.url());
       QString domain = r.host();
       if (req->m_docLoader->doc()->isHTMLDocument())
