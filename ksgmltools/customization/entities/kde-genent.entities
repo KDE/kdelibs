@@ -1,7 +1,7 @@
 <!--
     KDE general entities for DocBook as used in the KDE documentation
     
-    Copyright (C) 1999-2000 Frederik Fouvry
+    Copyright (C) 1999-2001 Frederik Fouvry
      
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -18,7 +18,7 @@
     Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
     
     Send suggestions, comments, etc. to Frederik Fouvry
-    <fouvry@sfs.nphil.uni-tuebingen.de>.
+    <fouvry@coli.uni-sb.de>.
 
 
     USAGE
@@ -102,6 +102,9 @@
 <!ENTITY GNU	"<acronym>GNU</acronym>">
 <!ENTITY GPL	"<acronym>GPL</acronym>">
 <!ENTITY GUI	"<acronym>GUI</acronym>">
+<!ENTITY HewlettPackard	'<trademark class="registered">Hewlett-Packard</trademark>' -- obsolete: use Hewlett-Packard instead; will be removed with version update -->
+<!ENTITY Hewlett-Packard	'<trademark class="registered">Hewlett-Packard</trademark>'>
+<!ENTITY HP	'<trademark class="registered">HP</trademark>'>
 <!ENTITY HP-UX	'<trademark class="registered">HP-UX</trademark>'>
 <!ENTITY HTTP	"<acronym>HTTP</acronym>">
 <!ENTITY IRIX	'<trademark class="registered">IRIX</trademark>'>
@@ -120,6 +123,7 @@
 <!ENTITY kblackbox	"<application>KBlackbox</application>">
 <!ENTITY kcalc  "<application>KCalc</application>">
 <!ENTITY kcharselect	"<application>kcharselect</application>">
+<!ENTITY kchart "<application>KChart</application>">
 <!ENTITY kcontrol	"<application>KControl</application>">
 <!ENTITY kcron	"<application>Kcron</application>">
 <!ENTITY kdat	"<application>Kdat</application>">
@@ -148,6 +152,7 @@
 <!ENTITY killustrator "<application>KIllustrator</application>">
 <!ENTITY kikbd	"<application>kikbd</application>">
 <!ENTITY kit	"<application>Kit</application>">
+<!ENTITY kivio	"<application>Kivio</application>">
 <!ENTITY kjots	"<application>KJots</application>">
 <!ENTITY kjumpingcube	"<application>KJumpingCube</application>">
 <!ENTITY klaptopdaemon	"<application>klaptopdaemon</application>">
@@ -165,11 +170,13 @@
 <!ENTITY knode	"<application>KNode</application>">
 <!ENTITY knotes	"<application>KNotes</application>">
 <!ENTITY kodo 	"<application>KOdometer</application>">
+<!ENTITY koffice "<application>KOffice</application>">
 <!ENTITY konqueror	"<application>Konqueror</application>">
 <!ENTITY konquest	"<application>Konquest</application>">
 <!ENTITY konsole	"<application>Konsole</application>">
 <!ENTITY korganizer	"<application>Korganizer</application>">
 <!ENTITY korn	"<application>KOrn</application>">
+<!ENTITY koshell "<application>KOShell</application>">
 <!ENTITY kpackage	"<application>KPackage</application>">
 <!ENTITY kpager "<application>KPager</application>">
 <!ENTITY kpaint "<application>KPaint</application>">
@@ -177,9 +184,11 @@
 <!ENTITY kpat	"<application>KPat</application>">
 <!ENTITY kpilot	"<application>KPilot</application>">
 <!ENTITY kpm	"<application>Kpm</application>">
+<!ENTITY kpresenter "<application>KPresenter</application>">
 <!ENTITY kpoker	"<application>KPoker</application>">
 <!ENTITY kppp	"<application>kppp</application>">
 <!ENTITY kpresenter "<application>KPresenter</application>">
+<!ENTITY krayon	"<application>Krayon</application>">
 <!ENTITY kreversi	"<application>KReversi</application>">
 <!ENTITY ksame	"<application>KSame</application>">
 <!ENTITY kscd	"<application>KSCD</application>">
@@ -194,6 +203,7 @@
 <!ENTITY ksnapshot	"<application>KSnapshot</application>">
 <!ENTITY ksokoban	"<application>KSokoban</application>">
 <!ENTITY kspaceduel	"<application>KSpaceDuel</application>">
+<!ENTITY kspell	"<application>KSpell</application>">
 <!ENTITY kspread "<application>KSpread</application>">
 <!ENTITY kstart	"<application>kstart</application>">
 <!ENTITY ksysctrl	"<application>KSysctrl</application>">
@@ -215,6 +225,7 @@
 <!ENTITY kwmpager	"<application>kwmpager</application>">
 <!ENTITY kwrite	"<application>KWrite</application>">
 <!ENTITY kwuftpd	"<application>kwuftpd</application>">
+<!ENTITY LaserJet	'<trademark class="registered">LaserJet</trademark>'>
 <!ENTITY Linux	'<trademark class="registered">Linux</trademark>'>
 <!ENTITY LinuxPPC	"<trademark>LinuxPPC</trademark>">
 <!ENTITY lskat	"<application>Lskat</application>">
@@ -242,4 +253,5 @@
 <!ENTITY URL	"<acronym>URL</acronym>">
 <!ENTITY windowmaker	"<application>Window Maker</application>">
 <!ENTITY Windows	'<trademark class="registered">Windows</trademark>'>
-<!ENTITY X	"<trademark>X Window System</trademark>">
+<!ENTITY X	"<trademark>X Window System</trademark>" -- obsolete: use X-Windows instead; it will be removed in the next version -->
+<!ENTITY X-Windows	"<trademark class="registered">X Windows</trademark>">
