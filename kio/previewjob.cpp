@@ -355,7 +355,7 @@ bool PreviewJob::statResultThumbnail()
     
     QString thumbPath = d->thumbPath + d->currentItem.item->url().fileName();
     struct stat st;
-    if ( stat( QFile::encodeName( thumbPath ), &st ) != 0 ||
+    if ( stat( QFile::encodeName( thumbPath ).data(), &st ) != 0 ||
          st.st_mtime < d->tOrig )
         return false;
 
