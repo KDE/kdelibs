@@ -300,7 +300,17 @@ void Dialog::createDialogFromServices()
 		d->dlg = new KCMultiDialog( KJanusWidget::IconList,
 			i18n( "Preferences" ), d->parentwidget );
 
-	d->dlg->showButton( KDialogBase::User1, true );
+	// TODO: Don't show the reset button until the issue with the
+	// KPluginSelector::load() method is solved.
+	// Problem:
+	// KCMultiDialog::show() call KCModule::load() to reset all KCMs
+	// (KPluginSelector::load() resets all plugin selections and all plugin
+	// KCMs).
+	// The reset button calls KCModule::load(), too but in this case we want the
+	// KPluginSelector to only reset the current visible plugin KCM and not
+	// touch the plugin selections.
+	// I have no idea how to check that in KPluginSelector::load()...
+	//d->dlg->showButton( KDialogBase::User1, true );
 	if( ! d->staticlistview )
 		d->dlg->addButtonBelowList( i18n( "Configure..." ), this,
 			SLOT( configureTree() ) );

@@ -1,4 +1,3 @@
-- add 'Reset' button to KConfigureDialog that calls load() in the KCMs
 - if the dlg is hidden and show() is called, call load() on the KCMs
 - KPluginSelct.. listview should only show the name and comment, the rest is
   shown in a tooltip (I don't know how to get the tooltip working in the

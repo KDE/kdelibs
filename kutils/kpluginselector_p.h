@@ -179,6 +179,13 @@ class KPluginSelectionWidget : public QWidget
          */
         void clientChanged( bool );
 
+        /**
+         * Called whenever the tabWidget changes. It checks whether this
+         * KPluginSelectionWidget is shown and sets the currentplugininfo
+         * accordingly.
+         */
+        void tabWidgetChanged( QWidget * );
+
     private:
         /**
          * Load a KCM from a KCModuleInfo. If successfull connect changed
