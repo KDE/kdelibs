@@ -3833,6 +3833,12 @@ void HTTPProtocol::slotData(const QByteArray &d)
    }
    else
    {
+      // bugfix from Eugene Onischenko - #51720 - Make sure that the buffer
+      // is null terminated when we append to a string since Qt doesn't look
+      // at m_bufReceive.size() in QString::operator+=(const QByteArray&)
+                // I'm not sure if this is always very efficient unfortunately.
+      m_bufReceive.resize(m_bufReceive.size()+1);
+      m_bufReceive.data()[m_bufReceive.size()-1] = 0;
       m_intData += m_bufReceive;
    }
 }
