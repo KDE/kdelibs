@@ -250,7 +250,7 @@ void HTMLTokenizer::write( const char *str )
 	else if (charEntity)
 	{
             int entityValue = 0;
-	    QString res = NULL;
+	    QString res = 0;
 
 	    searchBuffer[ searchCount] = *src;
 	    searchBuffer[ searchCount+1] = '\0';
@@ -278,7 +278,7 @@ void HTMLTokenizer::write( const char *str )
 		    res = charsets->convertTag(searchBuffer, len).copy();
 		    if (len <= 0)
 		    {
-		    	res = "";
+		    	res = 0;
 		    }
 	        }
 	    }
