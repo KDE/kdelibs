@@ -93,6 +93,7 @@ int KDialog::spacingHint()
 
 void KDialog::polish()
 {
+  QDialog::polish();
   if( focusWidget() && focusWidget()->inherits( "QLineEdit" ) )
     ((QLineEdit*)focusWidget())->selectAll();
 }
