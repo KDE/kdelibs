@@ -105,7 +105,7 @@ QString KIO::itemsSummaryString(uint items, uint files, uint dirs, unsigned long
         text += i18n("One File");
     else
         text += i18n("%1 Files").arg(files);
-    if ( files > 0 )
+    if ( showSize && files > 0 )
     {
         text += " ";
         text += i18n("(%1 Total)").arg(KIO::convertSize( size ) );
