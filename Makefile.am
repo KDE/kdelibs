@@ -35,6 +35,7 @@ AUTOMAKE_OPTIONS = foreign 1.4
 include_HEADERS = kde.pot
 
 messages:
+	: > kde.pot
 	$(XGETTEXT) -x qt-messages.pot common_texts.cpp */*.cpp */*.cc && cat messages.po qt-messages.pot > $(podir)/kdelibs.pot; rm messages.po
 	$(XGETTEXT) common_texts.cpp -o kde.pot
 
