@@ -311,7 +311,7 @@ void NodeImpl::setKeyboardFocus(ActivationState b)
   if (m_render)
     {
       m_render->setKeyboardFocus(b);
-      m_render->repaintContainingBlock();
+      m_render->containingBlock()->repaint();
     }
 }
 
