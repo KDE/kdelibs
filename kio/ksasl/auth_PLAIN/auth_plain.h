@@ -34,7 +34,7 @@
 #include <kinstance.h>
 #include <klibloader.h>
 
-#include <saslmodule.h>
+#include <kio/ksasl/saslmodule.h>
 
 class PlainAuthModule
 	: public KSASLAuthModule

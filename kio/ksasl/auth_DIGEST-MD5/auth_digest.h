@@ -36,7 +36,7 @@
 #include <kinstance.h>
 #include <klibloader.h>
 #include <kmdcodec.h>
-#include <saslmodule.h>
+#include <kio/ksasl/saslmodule.h>
 
 class DigestAuthModule
 	: public KSASLAuthModule
