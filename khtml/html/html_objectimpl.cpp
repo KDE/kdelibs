@@ -177,7 +177,8 @@ void HTMLAppletElementImpl::detach()
 
 // -------------------------------------------------------------------------
 
-HTMLEmbedElementImpl::HTMLEmbedElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc)
+HTMLEmbedElementImpl::HTMLEmbedElementImpl(DocumentImpl *doc)
+    : HTMLElementImpl(doc)
 {
 }
 
@@ -269,7 +270,6 @@ void HTMLEmbedElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLEmbedElementImpl::attach(KHTMLView *w)
 {
-    kdDebug() << "****************** HTMLEmbedElementImpl::attach **************" << endl;
    m_style = document->styleSelector()->styleForElement( this );
    khtml::RenderObject *r = _parent->renderer();
    if ( !r )
@@ -292,7 +292,7 @@ void HTMLEmbedElementImpl::attach(KHTMLView *w)
 
 void HTMLEmbedElementImpl::detach()
 {
-  NodeBaseImpl::detach();
+  HTMLElementImpl::detach();
 }
 
 // -------------------------------------------------------------------------
