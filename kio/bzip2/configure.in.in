@@ -1,0 +1,38 @@
+AC_DEFUN(AC_FIND_BZIP2,
+[
+AC_MSG_CHECKING([for bzip2])
+AC_CACHE_VAL(ac_cv_lib_bzip2,
+[
+AC_LANG_C
+kde_save_LIBS="$LIBS"
+LIBS="$all_libraries $USER_LDFLAGS -lbz2 $LIBSOCKET"
+kde_save_CFLAGS="$CFLAGS"
+CFLAGS="$CFLAGS $all_includes $USER_INCLUDES"
+AC_TRY_LINK(dnl
+[
+#define BZ_NO_STDIO
+#include<bzlib.h>
+],
+            [ bz_stream s; (void) bzDecompress(&s); ],
+            eval "ac_cv_lib_bzip2='-lbz2'",
+            eval "ac_cv_lib_bzip2=no")
+LIBS="$kde_save_LIBS"
+CFLAGS="$kde_save_CFLAGS"
+])dnl
+if test ! "$ac_cv_lib_bzip2" = no; then
+  BZIP2DIR=bzip2
+  AC_SUBST(BZIP2DIR)
+
+  LIBBZ2="$ac_cv_lib_bzip2"
+  AC_SUBST(LIBBZ2)
+  AC_MSG_RESULT($ac_cv_lib_bzip2)
+else
+  AM_CONDITIONAL(HAVE_LIBBZ2, 0)
+  AC_MSG_ERROR(not found. Check your installation and look into config.log)
+  LIBBZ2=""
+  AC_SUBST(LIBBZ2)
+fi
+])
+
+AC_FIND_BZIP2
+
