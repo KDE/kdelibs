@@ -17,6 +17,8 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <qptrdict.h>
+
 #include <kjs/kjs.h>
 #include <kjs/object.h>
 #include <kjs/function.h>
@@ -144,7 +146,3 @@ KJSO KJS::getString(DOM::DOMString s)
   else
     return String(s);
 }
-
-
-
-

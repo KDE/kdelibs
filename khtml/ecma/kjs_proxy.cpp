@@ -59,7 +59,7 @@ extern "C" {
 
     KJS::Global global(Global::current());
 
-    KJSO window(new KJS::Window(khtml));
+    KJSO window(newWindow(khtml));
     global.put("window", window);
     // make "window" prefix implicit for shortcuts like alert()
     global.setPrototype(window);
@@ -78,6 +78,7 @@ extern "C" {
   {
     script->clear();
     delete script;
+    script = 0L;
   }
   // process an event
   bool kjs_event(KJScript *, QEvent *, void *)

@@ -20,6 +20,7 @@
 #include <qtimer.h>
 #include <qinputdialog.h>
 #include <qstringlist.h>
+#include <qptrdict.h>
 #include <dom_string.h>
 #include <kurl.h>
 #include <kmessagebox.h>
@@ -39,6 +40,30 @@
 
 using namespace KJS;
 
+QPtrDict<Window> *window_dict = 0L;
+
+Window *KJS::newWindow(KHTMLPart *p)
+{
+  Window *w;
+  if (!window_dict)
+    window_dict = new QPtrDict<Window>;
+  else if ((w = window_dict->find(p)) != 0L)
+    return w;
+  
+  w = new Window(p);
+  window_dict->insert(p, w);
+  
+  return w;
+}
+
+class FrameArray : public HostImp {
+public:
+  FrameArray(KHTMLPart *p) : part(p) { }
+  KJSO get(const UString &p) const;
+private:
+  KHTMLPart *part;
+};
+
 Window::Window(KHTMLPart *p)
   : part(p), winq(0L)
 {
@@ -46,6 +71,11 @@ Window::Window(KHTMLPart *p)
 
 Window::~Window()
 {
+  window_dict->remove(part);
+  if (window_dict->isEmpty()) {
+    delete window_dict;
+    window_dict = 0L;
+  }
   delete winq;
 }
 
@@ -63,20 +93,18 @@ KJSO Window::get(const UString &p) const
   else if (p == "navigator")
     return KJSO(new Navigator(part));
   else if (p == "self")
-    return KJSO(new Window(part));
+    return KJSO(newWindow(part));
   else if (p == "parent")
-    return KJSO(new Frame(part->parentPart() ? part->parentPart() : part));
+    return KJSO(newWindow(part->parentPart() ? part->parentPart() : part));
   else if (p == "top") {
     KHTMLPart *p = part;
     while (p->parentPart())
       p = p->parentPart();
-    return KJSO(new Frame(p));
+    return KJSO(newWindow(p));
   } else if (p == "name")
     return String(part->name());
   else if (p == "Image")
     return KJSO(new ImageConstructor(Global::current()));
-  else if (p == "[[==]]")
-    return Number((unsigned long)part);
   else if (p == "alert")
     return Function(new WindowFunc(this, WindowFunc::Alert));
   else if (p == "confirm")
@@ -89,12 +117,28 @@ KJSO Window::get(const UString &p) const
     return Function(new WindowFunc(this, WindowFunc::SetTimeout));
   else if (p == "clearTimeout")
     return Function(new WindowFunc(this, WindowFunc::ClearTimeout));
+  else if (p == "frames")
+    return new FrameArray(part);
 
   // allow shortcuts like 'Image1' instead of document.images.Image1
   DOM::HTMLCollection coll = part->htmlDocument().all();
   DOM::HTMLElement element = coll.namedItem(p.string());
   if (!element.isNull())
       return getDOMNode(element);
+  
+  // we are looking for a frame by name here.
+  // essentially a hack relying on the assumption that the ordering of
+  // frameNames() is identical to frames()
+  // TODO: http://www.w3.org/TR/html4/appendix/notes.html#notes-frames
+  QStringList list = part->frameNames();
+  int i = list.findIndex(p.qstring());
+  if (i >= 0) {
+    QList<KParts::ReadOnlyPart> frames = part->frames();
+    const KParts::ReadOnlyPart *frame = frames.at(i);
+    assert(frame->inherits("KHTMLPart"));
+    const KHTMLPart *khtml = static_cast<const KHTMLPart*>(frame);
+    return KJSO(newWindow(const_cast<KHTMLPart*>(khtml)));
+  }
   
   return Imp::get(p);
 }
@@ -230,14 +274,6 @@ void WindowQObject::timeout()
   parent->part->executeScript(timeoutHandler.qstring());
 }
 
-class FrameArray : public HostImp {
-public:
-  FrameArray(KHTMLPart *p) : part(p) { }
-  KJSO get(const UString &p) const;
-private:
-  KHTMLPart *part;
-};
-
 KJSO FrameArray::get(const UString &p) const
 {
   QList<KParts::ReadOnlyPart> frames = part->frames();
@@ -257,34 +293,10 @@ KJSO FrameArray::get(const UString &p) const
 
   if (frame && frame->inherits("KHTMLPart")) {
     const KHTMLPart *khtml = static_cast<const KHTMLPart*>(frame);
-    return KJSO(new Window(const_cast<KHTMLPart*>(khtml)));
+    return KJSO(newWindow(const_cast<KHTMLPart*>(khtml)));
   }
   
   return Undefined();
-}
-
-KJSO Frame::tryGet(const UString &p) const
-{
-  if (p == "frames")
-    return new FrameArray(part);
-
-  // we are looking for a frame by name here.
-  // essentially a hack relying on the assumption that the ordering of
-  // frameNames() is identical to frames()
-  // TODO: http://www.w3.org/TR/html4/appendix/notes.html#notes-frames
-  QStringList list = part->frameNames();
-  int i = list.findIndex(p.qstring());
-  if (i >= 0) {
-    QList<KParts::ReadOnlyPart> frames = part->frames();
-    const KParts::ReadOnlyPart *frame = frames.at(i);
-    assert(frame->inherits("KHTMLPart"));
-    const KHTMLPart *khtml = static_cast<const KHTMLPart*>(frame);
-    return KJSO(new Window(const_cast<KHTMLPart*>(khtml)));
-  }
-  
-  // search window properties
-  KJSO window(new Window(part));
-  return window.get(p);
 }
 
 KJSO Location::get(const UString &p) const

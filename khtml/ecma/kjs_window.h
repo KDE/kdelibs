@@ -38,8 +38,9 @@ namespace KJS {
   class Window : public HostImp {
     friend class WindowFunc;
     friend class WindowQObject;
-  public:
+    friend Window *newWindow(KHTMLPart*);
     Window(KHTMLPart *p);
+  public:
     ~Window();
     virtual bool hasProperty(const UString &p, bool recursive = true) const;
     virtual KJSO get(const UString &p) const;
@@ -50,6 +51,13 @@ namespace KJS {
     KHTMLPart *part;
     WindowQObject *winq;
   };
+
+  /**
+   * Returns and registers a window object. In case there's already a Window
+   * for the specified part p this will be returned in order to have unique
+   * bindings.
+   */
+  Window *newWindow(KHTMLPart *p);
 
   class WindowFunc : public DOMFunction {
   public:
@@ -75,14 +83,6 @@ namespace KJS {
     Window *parent;
     QTimer *timer;
     UString timeoutHandler;
-  };
-
-  class Frame : public DOMObject {
-  public:
-    Frame(KHTMLPart *p) : part(p) { }
-    virtual KJSO tryGet(const UString &p) const;
-  private:
-    KHTMLPart *part;
   };
 
   class Location : public HostImp {
