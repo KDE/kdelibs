@@ -139,7 +139,7 @@ static Length parseLength(QChar *s, unsigned int l)
 {
     const QChar* last = s+l-1;
 
-    if ( *last == QChar('%')) {
+    if (l && *last == QChar('%')) {
         // CSS allows one decimal after the point, like
         //  42.2%, but not 42.22%
         // we ignore the non-integer part for speed/space reasons
@@ -147,12 +147,19 @@ static Length parseLength(QChar *s, unsigned int l)
         if ( i >= 0 && i < (int)l-1 )
             l = i + 1;
 
-        return Length(QConstString(s, l-1).string().toInt(), Percent);
+        bool ok;
+        i = QConstString(s, l-1).string().toInt(&ok);
+
+        if (ok)
+            return Length(i, Percent);
+
+        // in case of weird constructs like 5*%
+        last--;
+        l--;
     }
 
-    if ( *last == QChar('*'))
-    {
-        if(l == 1)
+    if ( *last == '*') {
+        if(last == s)
             return Length(1, Relative);
         else
             return Length(QConstString(s, l-1).string().toInt(), Relative);
@@ -163,9 +170,10 @@ static Length parseLength(QChar *s, unsigned int l)
     bool ok;
     // this ugly construct helps in case someone specifies a length as "100."
     int v = (int) QConstString(s, l).string().toFloat(&ok);
-    if(ok) {
+
+    if(ok)
         return Length(v, Fixed);
-    }
+
     return Length(0, Variable);
 }
 
