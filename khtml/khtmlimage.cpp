@@ -63,7 +63,7 @@ KHTMLImage::KHTMLImage( QWidget *parentWidget, const char *widgetName,
 
     QVBox *box = new QVBox( parentWidget, widgetName );
 
-    m_khtml = new KHTMLPart( box, widgetName, this, "htmlimagepart" );
+    m_khtml = new KHTMLPart( box, widgetName, this, "htmlimagepart", KHTMLPart::BrowserViewGUI );
     m_khtml->setAutoloadImages( true );
     m_khtml->widget()->installEventFilter(this);
 
@@ -94,6 +94,10 @@ KHTMLImage::KHTMLImage( QWidget *parentWidget, const char *widgetName,
         selectAllAction->unplugAll();
         delete selectAllAction;
     }
+
+    // forward important signals from the khtml part
+    connect(m_khtml->browserExtension(), SIGNAL(openURLRequestDelayed(const KURL &, const KParts::URLArgs &)),
+    		m_ext, SIGNAL(openURLRequestDelayed(const KURL &, const KParts::URLArgs &)));
 
     connect( m_khtml->browserExtension(), SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &,
              const KParts::URLArgs &, KParts::BrowserExtension::PopupFlags, mode_t) ), m_ext, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &,
@@ -227,9 +231,9 @@ bool KHTMLImage::eventFilter(QObject *, QEvent *e) {
         // simply forward all dnd events to the part widget,
 	// konqueror will handle them properly there
         return QApplication::sendEvent(widget(), e);
-      default:
-        return false;
+      default: ;
     }
+    return false;
 }
 
 KHTMLImageBrowserExtension::KHTMLImageBrowserExtension( KHTMLImage *parent, const char *name )
