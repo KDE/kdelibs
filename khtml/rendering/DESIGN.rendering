@@ -10,9 +10,10 @@ elements...) will also get their own rendering classes.
 All attribute values used for layouting and rendering are kept in
 the style objects. Style objects are implemented as copy-on-write
 objects. The values are shared with the styles parent style as long
-as no values are changed. The values are divided to groups (fe.
-base, box, border, table...) and when a value in a group is changed,
-that groups data object is copied.
+as no values are changed. The values are divided to groups 
+( box, text, border, table...) and only when a value within a group is 
+changed, that groups data object is copied.
+
 
 <lars>
 We have to do an additional division here. Some properties are inherited, 
@@ -23,7 +24,24 @@ For example the background color/image isn't inherited, so the style
 derived from the parent elements style shouldn't have it set. We should 
 only have inherited values in the "copy on write" classes, since we
 might run into trouble otherwise.
+</lars>
 
+<antti>
+
+A background color is not inherited, but it is cascaded. After
+P { background-color: red } all P elements have red background, whether
+or not they have align=left or right. It certainly makes sense to
+have only one copy of bg attributes for all P elements in the document.
+
+Style objects are not meant to be the same thing as style sheets. They
+are simply data objects for the rendering system and are constructed
+and filled by other objects. It might make sense, however, to have
+copy operation based on css inheritance rules in addition to simple
+copy constructor.
+
+</antti>
+
+<lars>
 One big problem we have is, that usually (in almost all cases), only
 computed values are inherited, not the defined ones.
 
@@ -37,11 +55,21 @@ be more complex, and might have to be done at layouting time. Then
 Length type values are more appropiate.
 </lars>
 
+<antti>
+
+The rendering subsystem operates only with pixel and 
+percentage values (otherwise big changes are required). Everything 
+else is converted to this form before the style object is constructed. 
+The conversion should probably be done by CSS2 classes that make
+the style objects.
+
+</antti>
+
+
 The base parent style is defined by the documents style sheet, or
 document types default style sheet. This style is then used as a
 base for element specific styles and these are futher modified by
-local style definitions, element attributes or by  scripts. Every
-dom element has a pointer to its style object.
+local style definitions, element attributes or by  scripts. 
 
 <lars>
 I will provide a method, which returns the style object to use given
@@ -55,6 +83,15 @@ attributes, to be able to decide if a certain rule applies to the element
 or not.
 </lars>
 
+<antti>
+Yep, this is ok. I was not trying to explain the implementation, only
+what should generally happen. I was thinking that this could be somehow
+analogous to the (old) rendering system; instead of painter, CSS2 tree 
+"renders" itself to a style object. The element type/classes act as
+coordinates. (might be reeeeally far of...:)
+
+</antti>
+
 Every rendered DOM object has a pointer to a rendering object.  When
 a HTML DOM  object is added to the document tree, it gets a style
 object that matches its class,  parses its attributes and modifies
@@ -62,9 +99,11 @@ the style object accordingly. Then it sends the style object to its
 parent elements rendering object. The rendering object reads the
 value of 'display' and constructs and adds a suitable child
 rendering object(s).  The pointer to created rendering object is
-returned to the HTML DOM element, and  it stores this pointer.
+returned to the HTML DOM element, and is stored.
 
-The laytouting and rendering in the rendering tree works pretty much
+All data needed to layout an element is kept in the style objects.
+
+The layouting and rendering in the rendering tree works pretty much
 as it used to with *Impl objects. In the beginning of layout()
 frequently accessed attribute values  may be fetched and temporaliry
 stored to the rendering object. In the end the possible calculated
@@ -75,6 +114,10 @@ Don't think we will need that. Attribute values are never modified by
 the layouting process. What gets calculated is the actual geometry
 of the element. I would store this information in the rendering object.
 </lars>
+
+<antti>
+You are probably right about this
+</antti>
 
 Scripting and event are done in the DOM (not rendering) tree. The
 DOM objects may for example ask element position from their
@@ -92,6 +135,13 @@ on rendering is. So the way to do this is to store them in the DOM,
 and everytime an attribute gets modified, it'll look if it has to modify
 style object, and if yes, force a relayouting.
 </lars>
+
+<antti>
+
+Yes, this is correct. The modification should be done to DOM object 
+and then reflected to style object if needed.
+
+</antti>
 
 /// Replaced elements? Text elements?
 
@@ -114,13 +164,13 @@ Example:
 The default style for the p element is defined by the html4 default
 stylesheet. The document stylesheet modifies this default style.
 
-    Style* pStyle = new Style( defaultStyleSheet->style("P") );
-    pStyle->setColor(QT::Red); docStyleSheet->setStyle("P",pStyle);
+    Style* pStyle = new Style( defaultStyles->style("P") );
+    pStyle->setColor(QT::Red); docStyles->setStyle("P",pStyle);
 
 When the DOM P element is constructed it gets the document
 style for P
 
-    _style = docStyleSheet->styleFor("P");
+    _style = docStyles->styleFor("P");
 
 The element attributes modify this style object further
 

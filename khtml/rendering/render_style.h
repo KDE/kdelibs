@@ -20,8 +20,8 @@
  *
  * $Id$
  */
-#ifndef STYLE_H
-#define STYLE_H
+#ifndef RENDERSTYLE_H
+#define RENDERSTYLE_H
 
 #include <qcolor.h>
 #include <qfont.h>
@@ -65,6 +65,8 @@ public:
     DATA* set()
     {    	
 //    	printf("set\n");
+    	if (data==0)
+	    createData();
     	if (!data->hasOneRef())
 	{
 //	    printf("copy\n");
@@ -313,7 +315,7 @@ enum EDisplay {
     TABLE_CAPTION, NONE
 };
 
-class Style
+class RenderStyle
 {
 protected:
 
@@ -325,12 +327,12 @@ protected:
     DataRef<StyleVisualData> visual;
     DataRef<StyleBackgroundData> background;
     DataRef<StyleListData> list;
-    DataRef<StyleTableData> table;
+    DataRef<StyleTableData> table;       
 
 public:
-    Style();
-    Style(const Style&);
-    ~Style();
+    RenderStyle();
+    RenderStyle(const RenderStyle&);
+    ~RenderStyle();
 
     EDisplay 	display() { return _display; }
 
@@ -476,7 +478,7 @@ public:
     void setBackgroundXPosition(Length v) {  background.set()->x_position = v; }
     void setBackgroundYPosition(Length v) {  background.set()->y_position = v; }
 
-
+    
 };
 
 } // namespace
