@@ -56,6 +56,7 @@ KDE_XChangePropertySignature KDE_XChangeProperty = NULL;
 
 static long KDE_initialDesktop = 0;
 static long KDE_mapNotifyEnabled = 1;
+static long KDE_appStartPid = -1;
 
 void KDE_InterceptXMapRequest(Display *, Window);
 void KDE_SetInitialDesktop(Display *, Window);
@@ -153,9 +154,13 @@ KDE_InterceptXMapRequest(Display * d, Window w)
   if (envStr)
     KDE_mapNotifyEnabled = !atoi(envStr);
   
+  envStr = getenv("KDE_APP_START_PID");
+    KDE_appStartPid = atoi(envStr);
+  
   unsetenv("LD_PRELOAD");
   unsetenv("KDE_INITIAL_DESKTOP");
   unsetenv("KDE_DISABLE_KMAPNOTIFY");
+  unsetenv("KDE_APP_START_PID");
 
   /* Find symbols *********************************************************/
 
@@ -228,7 +233,7 @@ KDE_SetInitialDesktop(Display *d, Window w) {
 KDE_SetNetWmPid(Display *d, Window w) {
 
   Atom a = KDE_XInternAtom(d, "_NET_WM_PID", False);
-  int pid = getpid();
+  int pid = (KDE_appStartPid == -1 ? getpid() : KDE_appStartPid);
 
   KDE_XChangeProperty(d, w, a, XA_CARDINAL, 32, PropModeReplace,
     (unsigned char *)&pid, 1);
