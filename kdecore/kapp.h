@@ -25,7 +25,7 @@
 
 // Version macros. Never put this further down.
 #define KDE_VERSION 200
-#define KDE_VERSION_STRING "2.0 Release Candidate 2"
+#define KDE_VERSION_STRING "2.0"
 #define KDE_VERSION_MAJOR 2
 #define KDE_VERSION_MINOR 0
 #define KDE_VERSION_RELEASE 0
@@ -785,6 +785,10 @@ private:
 #endif
 
 // $Log$
+// Revision 1.191  2000/10/10 11:00:09  elter
+// - #define KDE_VERSION_STRING "2.0 Release Candidate 1"
+// + #define KDE_VERSION_STRING "2.0 Release Candidate 2"
+//
 // Revision 1.190  2000/10/02 11:28:57  elter
 // #define KDE_VERSION 200
 // #define KDE_VERSION_STRING "2.0 Release Candidate 1"
