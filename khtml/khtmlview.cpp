@@ -1364,7 +1364,7 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 			_ke->accept();
 			return;
 		}
-		else if(_ke->text().isEmpty() == false)
+		else if(_ke->text().stripWhiteSpace().isEmpty() == false)
 		{
 			d->findString += _ke->text();
 
