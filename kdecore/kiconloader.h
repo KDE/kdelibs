@@ -152,7 +152,7 @@ public:
      * @return A QMovie object.
      */
     QMovie loadMovie(const QString& name, KIcon::Group group, int size=0) const;
-    
+
     /**
      * Returns the path to an animated icon.
      * @param name The name of the icon.
@@ -250,8 +250,7 @@ public:
 
     /**
      * @internal
-     * adds themes installed in the application's directory. Only locolor
-     * and hicolor are currently supported to be installed in kde_datadir
+     * adds themes installed in the application's directory.
      **/
     void addAppThemes(const QString& appname);
 

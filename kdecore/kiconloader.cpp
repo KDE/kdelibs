@@ -271,21 +271,23 @@ void KIconLoader::addAppDir(const QString& appname)
 
 void KIconLoader::addAppThemes(const QString& appname)
 {
-    KIconThemeNode *node = 0L;
-    KIconTheme *theme = 0L;
-
-    theme = new KIconTheme("hicolor", appname);
-    if (theme->isValid())
-	node = new KIconThemeNode(theme);
-    else
-	delete theme;
-
-    if (node)
+    if ( KIconTheme::current() != "hicolor" )
     {
-	node->links.append(d->mpThemeRoot);
-	d->mpThemeRoot = node;
+        KIconTheme *def = new KIconTheme(KIconTheme::current(), appname);
+        if (def->isValid())
+        {
+            KIconThemeNode* node = new KIconThemeNode(def);
+            d->mpThemeRoot->links.append(node);
+            addBaseThemes(node, appname);
+        }
+        else
+            delete def;
     }
 
+    KIconTheme *def = new KIconTheme(QString::fromLatin1("hicolor"), appname);
+    KIconThemeNode* node = new KIconThemeNode(def);
+    d->mpThemeRoot->links.append(node);
+    addBaseThemes(node, appname);
 }
 
 void KIconLoader::addBaseThemes(KIconThemeNode *node, const QString &appname)
@@ -322,7 +324,7 @@ KIcon KIconLoader::findMatchingIcon(const QString& name, int size) const
     if (icon.isValid())
       return icon;
 #endif
-    
+
     static const QString &png_ext = KGlobal::staticQString(".png");
     icon = d->mpThemeRoot->findIcon(name + png_ext, size, KIcon::MatchExact);
     if (icon.isValid())
@@ -338,7 +340,7 @@ KIcon KIconLoader::findMatchingIcon(const QString& name, int size) const
     icon = d->mpThemeRoot->findIcon(name + xpm_ext, size, KIcon::MatchBest);
     if (icon.isValid())
       return icon;
-   
+
     return icon;
 }
 
@@ -609,7 +611,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
 	{
 	    // Special stuff for SVG icons
 	    KSVGIconEngine *svgEngine = new KSVGIconEngine();
-	    
+
 	    if(svgEngine->load(size, size, icon.path))
 		img = svgEngine->painter()->image();
 	    else
@@ -618,7 +620,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
 	    delete svgEngine;
 	}
 #endif
-	
+
         iconType = icon.type;
         iconThreshold = icon.threshold;
 
@@ -755,7 +757,7 @@ QString KIconLoader::moviePath(const QString& name, KIcon::Group group, int size
     if (group == KIcon::User)
     {
 	file = d->mpDirs->findResource("appicon", file);
-    } 
+    }
     else
     {
 	if (size == 0)
