@@ -4,7 +4,8 @@
 
 K_EXPORT_COMPONENT_FACTORY( dummymeta, KGenericFactory<DummyMeta> );
 
-DummyMeta::DummyMeta( QObject *parent, const char *name, const QStringList &preferredItems )
+DummyMeta::DummyMeta( QObject *parent, const char *name, 
+                      const QStringList &preferredItems )
     : KFilePlugin( parent, name, preferredItems )
 {
     qDebug("---- DummyMeta::DummyMeta: got %i preferred items.", preferredItems.count());

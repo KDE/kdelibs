@@ -9,7 +9,7 @@ class DummyMeta : public KFilePlugin
 public:
     DummyMeta( QObject *parent, const char *name, const QStringList &args );
     ~DummyMeta() {}
-    
-    virtual KFileMetaInfo * createInfo( const KURL& url );
-    
+
+    virtual KFileMetaInfo * createInfo( const QString& path );
+
 };
