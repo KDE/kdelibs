@@ -222,7 +222,8 @@ bool LDIFConverter::LDIFToAddressee( const QString &str, AddresseeList &addrList
   QStringList::Iterator last = lines.end();
   for ( QStringList::Iterator it = lines.begin(); it != lines.end(); ++it ) {
     if ( (*it).startsWith("#") ) { // comment ?
-      lines.remove(it);
+      it = lines.remove(it);
+      it--;
       continue;
     }
     if ( last == lines.end() ) {
