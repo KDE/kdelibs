@@ -29,7 +29,7 @@
  * one file (Document)
  *
  * Line numbers passed via this interface must begin at line number zero (0).
- * 
+ *
  * TODO: See documentation at http://??????? for information on how to use kparts in
  * general. A simple (but sufficient) implementation is shown below.
  *
@@ -48,11 +48,11 @@
  * m_part->createView( fixme, 0 );
  * layout->addWidget(fixme);
  * m_part->setText( "" );
- **************************************************************************** 
+ ****************************************************************************
  *
  * You may also be able to use a dynamic_cast for the document part above
  * (depending on compliation of the library used)
- * 
+ *
  */
 
 namespace KTextEditor
@@ -67,7 +67,7 @@ class Document;
 class View : public QWidget, public KXMLGUIClient
 {
   Q_OBJECT
-		  
+		
 public:
   /**
    * Create a new view to the given document. The document must be non-null.
@@ -82,10 +82,6 @@ public:
 
   virtual void setCursorPosition( int line, int col, bool mark = false ) = 0;
   virtual void getCursorPosition( int *line, int *col ) = 0;
-
-  virtual void setSelection( int row_from, int col_from, int row_to, int col_t ) = 0;
-  virtual bool hasSelection() const = 0;
-  virtual QString selection() const = 0;
 
   /**
    *  Inserts text at the current cursor position into the document
@@ -140,12 +136,16 @@ public:
 
   /**
    * @return All the text from the requested line.
-   */ 
+   */
   virtual QString textLine( int line ) const = 0;
-  
+
+  virtual void setSelection( int row_from, int col_from, int row_to, int col_t ) = 0;
+  virtual bool hasSelection() const = 0;
+  virtual QString selection() const = 0;
+
   /**
    * @return The current number of lines in the document
-   */ 
+   */
   virtual int numLines() const = 0;
 
   /**
@@ -158,7 +158,7 @@ public:
    * Add the line(s) into the document at the given line and column.
    */
   virtual void insertAt( const QString &s, int line, int col, bool mark = FALSE ) = 0;
-  
+
   virtual void removeLine( int line ) = 0;
 
   /**
@@ -193,7 +193,7 @@ protected:
    * (like in @ref createView )
    */
   virtual void addView( View *view );
-  
+
   /**
    * Call this method in your document implementation whenever you delete a view.
    */
