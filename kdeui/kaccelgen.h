@@ -17,6 +17,9 @@
 */
 // -*- mode: c++; c-basic-offset: 2 -*-
 
+#ifndef KACCELGEN_H
+#define KACCELGEN_H
+
 #include <qmap.h>
 #include <qstring.h>
 #include <qstringlist.h>
@@ -272,3 +275,6 @@ generateFromKeys(const QMap<QString,Data>& source, QStringList& target)
 
 
 } // end namespace KAccelGen
+
+#endif
+
