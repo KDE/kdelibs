@@ -1,1 +1,2 @@
+kdelibs3-cups: shlib-missing-in-control-file libcupsdconf.so usr/lib/libcupsdconf.so
 kdelibs3-cups: menu-item-contains-unknown-tag kderemove /usr/lib/menu/kdelibs3-cups:7

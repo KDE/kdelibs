@@ -119,5 +119,10 @@ kdelibs3: shlib-missing-in-control-file kgzipfilter.so usr/lib/kde2/kgzipfilter.
 kdelibs3: shlib-missing-in-control-file kio_ftp.so usr/lib/kde2/kio_ftp.so
 kdelibs3: shlib-missing-in-control-file kio_uiserver.so usr/lib/kio_uiserver.so
 kdelibs3: shlib-missing-in-control-file kio_https.so usr/lib/kde2/kio_https-nossl.so
+kdelibs3: shlib-missing-in-control-file libkdeprint_management usr/lib/libkdeprint_management.so.0.0.0
+kdelibs3: shlib-missing-in-control-file libkdeprint_lpd.so usr/lib/kde2/libkdeprint_lpd.so
+kdelibs3: shlib-missing-in-control-file libkdeprint usr/lib/libkdeprint.so.0.0.0
+kdelibs3: shlib-missing-in-control-file libkdeprint_lpdunix.so usr/lib/kde2/libkdeprint_lpdunix.so
+kdelibs3: shlib-missing-in-control-file libkdeprint_rlpr.so usr/lib/kde2/libkdeprint_rlpr.so
 kdelibs3: unused-shlib-entry-in-control-file kio_https
 kdelibs3: unused-shlib-entry-in-control-file libkssl-nossl
