@@ -7,22 +7,27 @@
 <!-- Entities to fill in slots in docbook version of FDL notice.
      The default values of the parameter entities is IGNORE. -->
 <![%FDLIS;[
-<!ENTITY FDLISTitles "LISTE IHRE TITEL AUF"><!-- keep capitals -->
-<!ENTITY FDLInvariantSections "die invarianten Abschnitte sind &FDLISTitles;">
+<!ENTITY FDLISTitles "TITEL AUFLISTEN"><!-- keep capitals -->
+<!ENTITY FDLInvariantSections "die invarianten Abschnitte sind
+ &FDLISTitles;">
  ]]>
 <!ENTITY FDLInvariantSections "ohne die invarianten Abschnitte">
 <![%FDLFCT;[
-<!ENTITY FDLFCTTitles "LISTE AUF"><!-- keep capitals -->
-<!ENTITY FDLFrontCoverText "die Texte auf der vorderen Umschlagseite sind  &FDLFCTTitles;">
+<!ENTITY FDLFCTTitles "AUFLISTEN"><!-- keep capitals -->
+<!ENTITY FDLFrontCoverText "die Texte auf der vorderen Umschlagseite sind
+ &FDLFCTTitles;">
  ]]>
 <!ENTITY FDLFrontCoverText "ohne Texte auf der vorderen Umschlagseite">
 <![%FDLBCT;[
-<!ENTITY FDLBCTTitles "LISTE IHRE TITEL AUF"><!-- keep capitals -->
-<!ENTITY FDLBackCoverText "die Texte auf der hinteren Umschlagseite sind &FDLBCTTitles;">
+<!ENTITY FDLBCTTitles "TITEL AUFLISTEN"><!-- keep capitals -->
+<!ENTITY FDLBackCoverText "die Texte auf der hinteren Umschlagseite sind
+ &FDLBCTTitles;">
  ]]>
 <!ENTITY FDLBackCoverText "ohne Texte auf der hinteren Umschlagseite">
 
 <!ENTITY kde.modespec '
  <modespec id="kdems-help">help:</modespec>
  <modespec id="kdems-man">man:</modespec>'>
+
+<!ENTITY olinktype "kde-installation">
 

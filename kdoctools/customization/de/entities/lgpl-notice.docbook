@@ -1,17 +1,32 @@
-<para>This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public License
-as published by the Free Software Foundation; either version 2 of
-the License, or (at your option) any later version.</para>
+<!-- This file can be used to include the notice in documentation
+     <!DOCTYPE book ... >
+    ...
+     <bookinfo>
+       <legalnotice>
+         <para>Copyright (C) 20yy  [name of author]</para>
+         &LGPLnotice;
+       </legalnotice>
+     </bookinfo>
+    ...
 
-<para>This library is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty
-of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.</para>
+    Alternatively, you can include the text literally.
+ -->
+<para>Diese Bibliothek ist freie Software. Sie können sie unter den 
+Bedingungen der GNU Lesser General Public License, wie von der Free Software
+Foundation veröffentlicht, weitergeben und/oder modifizieren, entweder
+gemäß Version 2 der Lizenz oder (nach Ihrer Option) jeder späteren
+Version.</para>
 
-<para>You should have received a copy of the GNU Lesser General
-Public License along with this library; if not, write to the Free
-Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
-02111-1307 USA</para>
+<para>Die Veröffentlichung der Bibliothek erfolgt in der Hoffnung, dass
+sie Ihnen von Nutzen sein wird, aber OHNE IRGENDEINE GARANTIE, sogar
+ohne die implizite Garantie der MARKTREIFE oder der VERWENDBARKEIT FÜR
+EINEN BESTIMMTEN ZWECK. Details finden Sie in der GNU Lesser
+General Public License.</para>
+
+<para>Sie sollten eine Kopie der GNU Lesser General Public License
+zusammen mit dieser Bibliothek  erhalten haben. Falls nicht, schreiben
+Sie an die Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+Boston, MA 02111-1307 USA.</para>
 <!--
 Local variables:
 mode: sgml
