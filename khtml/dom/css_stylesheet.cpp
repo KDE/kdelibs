@@ -292,12 +292,6 @@ MediaList::~MediaList()
     if(impl) impl->deref();
 }
 
-DOM::DOMString MediaList::mediaText()
-{
-    if(!impl) return DOMString();
-    return static_cast<MediaListImpl *>(impl)->mediaText();
-}
-
 DOM::DOMString MediaList::mediaText() const
 {
     if(!impl) return DOMString();
@@ -310,13 +304,13 @@ void MediaList::setMediaText(const DOM::DOMString &value )
         static_cast<MediaListImpl *>(impl)->setMediaText( value );
 }
 
-unsigned long MediaList::length()
+unsigned long MediaList::length() const
 {
     if(!impl) return 0;
     return ((MediaListImpl *)impl)->length();
 }
 
-DOM::DOMString MediaList::item(unsigned long index)
+DOM::DOMString MediaList::item(unsigned long index) const
 {
     if(!impl) return DOMString();
     return ((MediaListImpl *)impl)->item( index );
