@@ -38,7 +38,7 @@ INCLUDES = -I$(top_srcdir)/kimgio -I$(top_srcdir)/kio -I$(top_srcdir)/dcop \
  -I$(top_srcdir)/khtml -I$(top_srcdir)/libltdl -I$(top_srcdir) $(all_includes)
 
 cssdir = $(kde_datadir)/khtml/css
-css_DATA = html4.css
+css_DATA = html4.css quirks.css
 
 SRCDOC_DEST=$(kde_htmldir)/en/kdelibs/khtml
 
