@@ -1564,7 +1564,10 @@ void KHTMLPart::checkCompleted()
   d->m_paUseStylesheet->setItems( sheets );
   d->m_paUseStylesheet->setEnabled( !sheets.isEmpty() );
   if (!sheets.isEmpty())
+  {
     d->m_paUseStylesheet->setCurrentItem(kMax(sheets.findIndex(d->m_sheetUsed), 0));
+    slotUseStylesheet();
+  }
 
   setJSDefaultStatusBarText(QString::null);
 
