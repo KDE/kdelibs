@@ -138,7 +138,7 @@ void HTMLLinkElementImpl::parseAttribute(AttributeImpl *attr)
             // Check #1: If the sheet becomes disabled while it was loading, and if it was either
             // a main sheet or a sheet that was previously enabled via script, then we need
             // to remove it from the list of pending sheets.
-            if (isLoading() && m_isDisabled && (!m_alternate || m_oldisDisabled))
+            if (isLoading() && m_isDisabled)
                 getDocument()->styleSheetLoaded();
 
             // Check #2: An alternate sheet becomes enabled while it is still loading.
