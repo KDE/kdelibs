@@ -1,0 +1,42 @@
+#!/bin/sh
+
+usage()
+{
+	echo "usage: $0 [OPTIONS]"
+cat << EOH
+
+options:
+	[--libs]
+	[--cflags]
+	[--version]
+EOH
+	exit 1;
+}
+
+flags=""
+
+while test $# -gt 0
+do
+  case $1 in
+    --libs)
+	  flags="$flags -L@kde_libraries@ -ldl -lartsc"
+	  ;;
+    --cflags)
+	  flags="$flags -I@kde_includes@ -I@kde_includes@/arts"
+	  ;;
+    --version)
+	  echo 0.9.5
+	  ;;
+	*)
+	  echo "$0: unknown option $1"
+	  echo 
+	  usage
+	  ;;
+  esac
+  shift
+done
+
+if test -n "$flags"
+then
+  echo $flags
+fi
