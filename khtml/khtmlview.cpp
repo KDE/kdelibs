@@ -1246,7 +1246,7 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
     bool ctrlKey = (_mouse->state() & ControlButton);
     bool altKey = (_mouse->state() & AltButton);
     bool shiftKey = (_mouse->state() & ShiftButton);
-    bool metaKey = false; // ### qt support?
+	bool metaKey = (_mouse->state() & MetaButton);
 
     // mouseout/mouseover
     if (setUnder && (d->prevMouseX != clientX || d->prevMouseY != clientY)) {
