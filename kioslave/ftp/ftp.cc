@@ -1001,6 +1001,11 @@ int Ftp::ftpOpenDataConnection()
   // First try passive (EPSV & PASV) modes
   if( !config()->readBoolEntry("DisablePassiveMode", false) )
   {
+    iErrCode = ftpOpenPASVDataConnection();
+    if(iErrCode != ERR_INTERNAL)
+      return iErrCode;
+    ftpCloseDataConnection();
+
     if( !config()->readBoolEntry("DisableEPSV", false) )
     {
       iErrCode = ftpOpenEPSVDataConnection();
@@ -1008,11 +1013,6 @@ int Ftp::ftpOpenDataConnection()
         return iErrCode;
       ftpCloseDataConnection();
     }
-    
-    iErrCode = ftpOpenPASVDataConnection();
-    if(iErrCode != ERR_INTERNAL)
-      return iErrCode;
-    ftpCloseDataConnection();
 
     // if we sent EPSV ALL already and it was accepted, then we can't
     // use active connections any more
