@@ -258,8 +258,10 @@ void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, i
         if( !scroll ) {
             QRect r = viewRect();
             //kdDebug(0) << "fixed background r.y=" << r.y() << endl;
-            cy += r.y();
-            cx += r.x();
+	    if( isHtml() ) {
+		cy += r.y();
+		cx += r.x();
+	    }
             sx = cx - r.x();
             sy = cy - r.y();
         }
