@@ -696,6 +696,39 @@ void RegressionTest::testStaticFile(const QString & filename)
     pm.waitForCompletion();
     m_part->closeURL();
 
+    if ( filename.startsWith( "domts/" ) ) {
+        QString functionname;
+
+        KJS::Completion comp = m_part->jScriptInterpreter()->evaluate("exposeTestFunctionNames();");
+        /*
+         *  Error handling
+         */
+        KJS::ExecState *exec = m_part->jScriptInterpreter()->globalExec();
+        if ( comp.complType() == ReturnValue || comp.complType() == Normal )
+        {
+            if (!comp.value().isNull() && comp.value().isA(ObjectType) &&
+                (Object::dynamicCast(comp.value()).inherits(&ArrayInstanceImp::info) ) )
+            {
+                Object argArrayObj = Object::dynamicCast(comp.value());
+                unsigned int length = argArrayObj.get(exec,lengthPropertyName).toUInt32(exec);
+                if ( length == 1 )
+                    functionname = argArrayObj.get(exec, 0).toString(exec).qstring();
+            }
+        }
+        if ( functionname.isNull() ) {
+            kdDebug() << "DOM " << filename << " doesn't expose 1 function name - ignoring" << endl;
+            return;
+        }
+
+        KJS::Completion comp2 = m_part->jScriptInterpreter()->evaluate("setUpPage(); " + functionname + "();" );
+        bool success = ( comp2.complType() == ReturnValue || comp2.complType() == Normal );
+        QString description = filename;
+        if ( comp2.complType() == Throw )
+            description = comp2.value().toString( exec ).qstring();
+        reportResult( success,  description );
+        return;
+    }
+
     if ( m_genOutput ) {
         reportResult( checkOutput(filename+"-dom") );
         reportResult( checkOutput(filename+"-render") );
