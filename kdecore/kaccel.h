@@ -37,7 +37,7 @@ class KAccelPrivate;
  *
  * Allow a user to configure shortcuts
  * through application configuration files or through the
- * KKeyChooser GUI. 
+ * KKeyChooser GUI.
  *
  * A KAccel contains a list of accelerator actions.
  *
@@ -97,7 +97,7 @@ class KAccel : public QAccel
  public:
 	/**
 	 * Creates a new KAccel that watches @p pParent, which is also
-	 * the QObject's parent. 
+	 * the QObject's parent.
 	 *
 	 * @param pParent the parent and widget to watch for key strokes
 	 * @param psName the name of the QObject
@@ -143,8 +143,8 @@ class KAccel : public QAccel
 	/**
 	 * Enable auto-update of connections. This means that the signals
 	 * are automatically disconnected when you disable an action, and
-	 * re-enabled when you enable it. By default auto update is turned 
-	 * on. If you disable auto-update, you need to call 
+	 * re-enabled when you enable it. By default auto update is turned
+	 * on. If you disable auto-update, you need to call
 	 * updateConnections() after changing actions.
 	 *
 	 * @param bAuto true to enable, false to disable
@@ -190,9 +190,9 @@ class KAccel : public QAccel
 	 * The advantage of this is when you want to use the same text for the name
 	 * of the action as for the user-visible label.
 	 *
-	 * Usage: 
+	 * Usage:
 	 * \code
-	 * insert( I18N_NOOP("Do Something"), ALT+Key_D, this, SLOT(slotDoSomething()) );
+	 * insert( i18n("Do Something"), ALT+Key_D, this, SLOT(slotDoSomething()) );
 	 * \endcode
 	 *
 	 * @param psAction The name AND label of the action.
@@ -224,7 +224,7 @@ class KAccel : public QAccel
 	bool remove( const QString& sAction );
 
 	/**
-	 * Updates the connections of the accelerations after changing them. 
+	 * Updates the connections of the accelerations after changing them.
 	 * This is only necessary if you have disabled auto updates which are
 	 * on by default.
 	 * @return true if successful, false otherwise
@@ -315,49 +315,49 @@ class KAccel : public QAccel
 #ifndef KDE_NO_COMPAT
  public:
 	// Source compatibility to KDE 2.x
-	/** 
+	/**
 	 * @deprecated use insert
 	 */
 	bool insertItem( const QString& sLabel, const QString& sAction,
 	                 const char* psKey,
 	                 int nIDMenu = 0, QPopupMenu* pMenu = 0, bool bConfigurable = true ) KDE_DEPRECATED;
-	/** 
+	/**
 	 * @deprecated use insert
 	 */
 	bool insertItem( const QString& sLabel, const QString& sAction,
 	                 int key,
 	                 int nIDMenu = 0, QPopupMenu* pMenu = 0, bool bConfigurable = true ) KDE_DEPRECATED;
-	/** 
+	/**
 	 * @deprecated use insert
 	 */
 	bool insertStdItem( KStdAccel::StdAccel id, const QString& descr = QString::null ) KDE_DEPRECATED;
-	/** 
+	/**
 	 * @deprecated use insert
 	 */
 	bool connectItem( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot, bool bActivate = true ) KDE_DEPRECATED;
-	/** 
+	/**
 	 * @deprecated use insert( accel, pObjSlot, psMethodSlot );
-	 * 
+	 *
 	 */
 	KDE_DEPRECATED bool connectItem( KStdAccel::StdAccel accel, const QObject* pObjSlot, const char* psMethodSlot )
 		{ return insert( accel, pObjSlot, psMethodSlot ); }
-	/** 
+	/**
 	 * @deprecated use remove
 	 */
 	bool removeItem( const QString& sAction ) KDE_DEPRECATED;
-	/** 
+	/**
 	 * @deprecated
 	 */
 	bool setItemEnabled( const QString& sAction, bool bEnable ) KDE_DEPRECATED;
-	/** 
+	/**
 	 * @deprecated
 	 */
 	void changeMenuAccel( QPopupMenu *menu, int id, const QString& action ) KDE_DEPRECATED;
-	/** 
+	/**
 	 * @deprecated
 	 */
 	void changeMenuAccel( QPopupMenu *menu, int id, KStdAccel::StdAccel accel ) KDE_DEPRECATED;
-	/** 
+	/**
 	 * @deprecated
 	 */
 	static int stringToKey( const QString& ) KDE_DEPRECATED;
