@@ -83,7 +83,7 @@ KService::init( KDesktopFile *config )
     return;
   }
 
-  // check if TryExec is valid
+  // In case Try Exec is set, check if the application is available
   if (!config->tryExec()) {
       m_bValid = false;
       return;
@@ -190,9 +190,9 @@ KService::init( KDesktopFile *config )
       // We should delete 's' when we are not in build mode.
       // When we are in build mode, 's' was allocated via
       // KBuilServiceTypeFactory::findServiceTypeByName() instead of
-      // KServiceTypeFactory::findServiceTypeByName(). 
+      // KServiceTypeFactory::findServiceTypeByName().
 
-      // KBuilServiceTypeFactory::findServiceTypeByName() does not allocate 
+      // KBuilServiceTypeFactory::findServiceTypeByName() does not allocate
       // 's' but returns the version stored in a dictionary.
       // We should not delete such entries.
 
@@ -237,7 +237,7 @@ void KService::load( QDataStream& s )
     >> m_strLibrary >> m_libraryMajor >> m_libraryMinor
     >> dst
     >> m_strDesktopEntryName
-    >> dummy1 >> dummyStr1 >> initpref >> dummyStr2 >> dummy2 
+    >> dummy1 >> dummyStr1 >> initpref >> dummyStr2 >> dummy2
     >> m_lstKeywords >> m_strInit >> (Q_UINT32 &)m_mapNotify;
 
   m_bAllowAsDefault = def;
