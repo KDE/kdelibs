@@ -33,7 +33,7 @@ kab2kabc_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 kab2kabc_LDADD = libkabc.la ../kab/libkab.la
 kab2kabc_SOURCES = kab2kabc.cpp
 
-check_PROGRAMS = testkabc testkabcdlg testdistlist bigread bigwrite testdb \
+EXTRA_PROGRAMS = testkabc testkabcdlg testdistlist bigread bigwrite testdb \
   testaddressee kabcargl
 
 testkabc_LDFLAGS = $(all_libraries) $(KDE_RPATH)
