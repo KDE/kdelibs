@@ -319,11 +319,12 @@ void XMLGUIFactory::buildRecursive( const QDomElement &element, XMLGUIContainerN
     	  continue;
         }
 
+        int *idx = & parentNode->index;
 	bool merged = false;
 
 	if ( parentNode->mergingIndex != -1 && !ignoreMergingIndex )
 	{
-	  parentNode->index = parentNode->mergingIndex;
+	  idx = & parentNode->mergingIndex;
 	  merged = true;
 	}
 
@@ -336,13 +337,13 @@ void XMLGUIFactory::buildRecursive( const QDomElement &element, XMLGUIContainerN
 	 * we use QObject as container type), like with separators for example.
 	 */
 	
-        QObject *container = m_builder->createContainer( (QWidget *)parentNode->container, parentNode->index, e, stateBuffer );
+        QObject *container = m_builder->createContainer( (QWidget *)parentNode->container, *idx, e, stateBuffer );
 	
 	// no container? (probably some <text> tag or so ;-)
 	if ( !container )
 	  continue;
 	
-        parentNode->index++;
+        (*idx)++;
 	
 	containerList.append( container );
 	
@@ -383,11 +384,12 @@ bool XMLGUIFactory::removeRecursive( XMLGUIContainerNode *node )
 	
 	//now we have to adjust/correct the index. We do it the fast'n'dirty way by just substracting
 	//the amount of actions we just unplugged ;-)
-	
+	int *idx = &node->index;
+
 	if ( clientIt.current()->m_mergedClient )
-	  node->index = node->mergingIndex;
+	  idx = & node->mergingIndex;
 	
-	node->index -= clientIt.current()->m_actions.count();
+	(*idx) -= clientIt.current()->m_actions.count();
 	
 	node->clients.removeRef( clientIt.current() );
       }
