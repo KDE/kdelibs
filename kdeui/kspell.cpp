@@ -1091,9 +1091,18 @@ void KSpell::dialog( const QString & word, QStringList & sugg, const char *_slot
   connect( ksdlg, SIGNAL(command(int)), this, SLOT(dialog2(int)) );
   QString tmpBuf = origbuffer;
   kdDebug(750)<<" position = "<<lastpos<<endl;
-  tmpBuf.replace( lastpos, word.length(), QString("<b>%1</b>").arg( word ) );
-  QString context = "<qt>" + tmpBuf.mid( lastpos>18 ? lastpos - 18: lastpos, 43) + "</qt>";
+
+  // extract a context string, replace all characters which might confuse 
+  // the RichText display and highlight the possibly wrong word
+  QString marker( "_MARKER_" );
+  tmpBuf.replace( lastpos, word.length(), marker );
+  QString context = tmpBuf.mid(QMAX(lastpos-18,0), 2*18+marker.length());
   context.remove( '\n' );
+  context.replace( '<', QString::fromLatin1("&lt;") );
+  context.replace( '>', QString::fromLatin1("&gt;") );
+  context.replace( marker, QString::fromLatin1("<b>%1</b>").arg( word ) );
+  context = "<qt>" + context + "</qt>";
+
   ksdlg->init( word, &sugg, context );
   d->m_bNoMisspellingsEncountered = false;
   emit misspelling( word, sugg, lastpos );
