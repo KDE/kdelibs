@@ -78,11 +78,7 @@ KProcessController::KProcessController()
   sigaction( SIGPIPE, &act, 0L);
 }
 
-#ifdef __sgi__
-void KProcessController::theSigCHLDHandler()
-#else
 void KProcessController::theSigCHLDHandler(int )
-#endif
 {
   int status;
   pid_t this_pid;
