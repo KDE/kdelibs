@@ -260,7 +260,6 @@ private:
    * List of items this props dialog is shown for
    */
   KFileItemList m_items;
-  bool m_bMustDestroyItems;
 
   /** For templates */
   QString m_defaultName;

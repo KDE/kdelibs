@@ -115,10 +115,10 @@ KPropertiesDialog::KPropertiesDialog (KFileItem* item,
                  KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
                  parent, name, modal),
 
-  m_singleUrl( item->url() ), m_bMustDestroyItems( false )
+  m_singleUrl( item->url() )
 {
   d = new KPropertiesDialogPrivate;
-  m_items.append( item );
+  m_items.append( new KFileItem(*item) ); // deep copy
 
   assert( item );
   assert(!m_singleUrl.isEmpty());
@@ -130,9 +130,7 @@ KPropertiesDialog::KPropertiesDialog (const QString& title,
                                       QWidget* parent, const char* name, bool modal)
   : KDialogBase (KDialogBase::Tabbed, i18n ("Properties for %1").arg(title),
                  KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
-                 parent, name, modal),
-
-  m_bMustDestroyItems (false)
+                 parent, name, modal)
 {
   d = new KPropertiesDialogPrivate;
 
@@ -146,14 +144,17 @@ KPropertiesDialog::KPropertiesDialog (KFileItemList _items,
                  KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
                  parent, name, modal),
 
-  m_singleUrl( _items.first()->url() ),
-  m_items( _items ),
-  m_bMustDestroyItems( false )
+  m_singleUrl( _items.first()->url() )
 {
   d = new KPropertiesDialogPrivate;
 
   assert( !_items.isEmpty() );
   assert(!m_singleUrl.isEmpty());
+
+  KFileItemListIterator it ( _items );
+  // Deep copy
+  for ( ; it.current(); ++it )
+      m_items.append( new KFileItem( **it ) );
 
   init (modal, autoShow);
 }
@@ -164,8 +165,7 @@ KPropertiesDialog::KPropertiesDialog (const KURL& _url, mode_t _mode,
   : KDialogBase (KDialogBase::Tabbed, i18n( "Properties for %1" ).arg(_url.fileName()),
                  KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
                  parent, name, modal),
-  m_singleUrl( _url ),
-  m_bMustDestroyItems( true )
+  m_singleUrl( _url )
 {
   d = new KPropertiesDialogPrivate;
 
@@ -185,7 +185,6 @@ KPropertiesDialog::KPropertiesDialog (const KURL& _tempUrl, const KURL& _current
                  parent, name, modal),
 
   m_singleUrl( _tempUrl ),
-  m_bMustDestroyItems( true ),
   m_defaultName( _defaultName ),
   m_currentDir( _currentDir )
 {
@@ -201,6 +200,7 @@ KPropertiesDialog::KPropertiesDialog (const KURL& _tempUrl, const KURL& _current
 void KPropertiesDialog::init (bool modal, bool autoShow)
 {
   m_pageList.setAutoDelete( true );
+  m_items.setAutoDelete( true );
 
   // Matthias: let the dialog look like a modal dialog
   if (!modal)
@@ -225,8 +225,6 @@ void KPropertiesDialog::init (bool modal, bool autoShow)
 KPropertiesDialog::~KPropertiesDialog()
 {
   m_pageList.clear();
-  // HACK
-  if ( m_bMustDestroyItems ) delete m_items.first();
   delete d;
 }
 
@@ -790,6 +788,8 @@ void KFilePropsPlugin::slotDirSizeFinished( KIO::Job * job )
 void KFilePropsPlugin::slotSizeDetermine()
 {
   m_sizeLabel->setText( i18n("Calculating...") );
+  kdDebug() << " KFilePropsPlugin::slotSizeDetermine() properties->item()=" <<  properties->item() << endl;
+  kdDebug() << " URL=" << properties->item()->url().url() << endl;
   d->dirSizeJob = KDirSize::dirSizeJob( properties->item()->url() );
   connect( d->dirSizeJob, SIGNAL( result( KIO::Job * ) ),
            SLOT( slotDirSizeFinished( KIO::Job * ) ) );
