@@ -84,6 +84,20 @@ DCOPObject::~DCOPObject()
     delete d;
 }
 
+bool DCOPObject::setObjId(const QCString &objId)
+{
+  if (objMap()->find(objId)!=objMap()->end()) return false;
+
+  DCOPClient *client = DCOPClient::mainClient();
+    if ( d->m_signalConnections > 0 && client )
+         client->disconnectDCOPSignal( 0, 0, 0, ident, 0 );
+
+    objMap()->remove(ident);
+    ident=objId;
+    objMap()->insert(ident,this);
+    return true;
+}
+
 QCString DCOPObject::objId() const
 {
   return ident;

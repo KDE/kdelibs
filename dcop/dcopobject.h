@@ -82,6 +82,14 @@ public:
   QCString objId() const;
 
   /**
+   * Renames a dcop object, if no other with the same name exists
+   * Use with care, all dcop signals are disconnected
+   * 
+   * The new name is @p objId
+   **/
+  bool setObjId(const QCString &objId);
+
+  /**
    * Dispatches a message.
    *
    * Usually you want to use an IDL
