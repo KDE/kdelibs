@@ -30,20 +30,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include "kcrash.h"
 
 #include <sys/types.h>
 #include <sys/wait.h>
 
-#include <qwindowdefs.h>
+#include <qwindowdefs.h> 
 #include <kglobal.h>
 #include <kinstance.h>
 #include <kaboutdata.h>
 #include <kdebug.h>
 
 #include <X11/Xlib.h>
-
-#include "kcrash.h"
-
 
 KCrash::HandlerType KCrash::_emergencySaveFunction = 0;
 KCrash::HandlerType KCrash::_crashHandler = 0;

@@ -22,9 +22,7 @@
 #ifndef __KCRASH_H
 #define __KCRASH_H
 
-#include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <qstring.h>
 
 /**
  * This class handles segmentation-faults.
@@ -34,8 +32,8 @@
  * If a function is specified with @ref setEmergencySaveFunction() it will
  * be called by the default crash handler, giving the application a chance
  * to save its data.
- */ 
-class KCrash 
+ */
+class KCrash
 {
  private: // ;o)
   static QString *appName;
@@ -47,14 +45,14 @@ class KCrash
 
   /**
    * Install a function to be called in case a SIGSEGV is caught.
-   * @param HandlerType handler can be one of 
-   * @li null in wich case signal-catching is disabled 
+   * @param HandlerType handler can be one of
+   * @li null in wich case signal-catching is disabled
    *  (by calling signal(SIGSEGV, SIG_DFL))
    * @li if handler is omitted the default crash handler is installed.
    * @li an user defined function in the form:
    * static (if in a class) void myCrashHandler(int);
    */
-   
+
   static void setCrashHandler (HandlerType handler = defaultCrashHandler);
 
   /**
@@ -65,7 +63,7 @@ class KCrash
   /**
    * Installs a function which should try to save the applications data.
    * It is the crash handler´s responsibility to call this function.
-   * Therefore, if no crash handler is set, the default crash handler 
+   * Therefore, if no crash handler is set, the default crash handler
    * is installed to ensure the save function is called.
    */
   static void setEmergencySaveFunction (HandlerType saveFunction = (HandlerType)0);
@@ -75,7 +73,7 @@ class KCrash
   static HandlerType emergencySaveFunction() { return _emergencySaveFunction; }
 
   /**
-   * Sets the application path @param path which should be passed to 
+   * Sets the application path @param path which should be passed to
    * Dr. Konqi, our nice crash display application.
    */
   static void setApplicationPath (QString path) { appPath = new QString(path); }
@@ -85,10 +83,10 @@ class KCrash
    * Dr. Konqi, our nice crash display application.
    */
   static void setApplicationName (QString name) { appName = new QString(name); }
-    
+
  protected:
   static HandlerType _crashHandler;
-  static HandlerType _emergencySaveFunction; 
+  static HandlerType _emergencySaveFunction;
 };
 
 #endif
