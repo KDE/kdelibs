@@ -33,6 +33,7 @@ Author: Ralph Mor, X Consortium
 #include "KDE-ICE/Xtrans.h"
 #include "KDE-ICE/globals.h"
 #include <stdio.h>
+#include <errno.h>
 
 
 /*
@@ -253,6 +254,8 @@ register char	 *ptr;
 #ifdef WIN32
 	    errno = WSAGetLastError();
 #endif
+            if( nread < 0 && errno == EINTR )
+                continue;
 	    if (iceConn->want_to_close)
 	    {
 		/*
@@ -372,11 +375,14 @@ register char	 *ptr;
 	else
 	    return;
 
+
 	if (nwritten <= 0)
 	{
 #ifdef WIN32
 	    errno = WSAGetLastError();
 #endif
+            if( nwritten < 0 && errno == EINTR )
+                continue;
 	    /*
 	     * Fatal IO error.  First notify each protocol's IceIOErrorProc
 	     * callback, then invoke the application IO error handler.
