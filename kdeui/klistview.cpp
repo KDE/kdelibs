@@ -1193,8 +1193,12 @@ void KListView::setDropVisualizer(bool b)
 QPtrList<QListViewItem> KListView::selectedItems() const
 {
   QPtrList<QListViewItem> list;
-  for (QListViewItem *i=firstChild(); i!=0; i=i->itemBelow())
-        if (i->isSelected()) list.append(i);
+
+  QListViewItemIterator it(const_cast<KListView *>(this), QListViewItemIterator::Selected);
+
+  for(; it.current(); ++it)
+      list.append(it.current());
+
   return list;
 }
 
