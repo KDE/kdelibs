@@ -166,6 +166,11 @@ QSize KIntNumInput::minimumSize() const
     return qs;
 }
 
+// -----------------------------------------------------------------------------
+QSize KIntNumInput::sizeHint() const
+{
+    return minimumSize();
+}
 
 // -----------------------------------------------------------------------------
 

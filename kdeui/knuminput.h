@@ -111,7 +111,14 @@ public:
      * 
      * @return the minimum size necessary to show the control
      */
-    QSize minimumSize() const;
+    virtual QSize minimumSize() const;
+
+    /**
+     * Returns a size which fits the contents of the control.
+     *
+     * @return the preferred size necessary to show the control
+     */
+    virtual QSize sizeHint() const;
     
     /**
      * Sets the value of the control.
