@@ -377,6 +377,10 @@ void KDirWatch::famEventReceived()
                 << ", " << &(fe.filename[0]) << ", Req " << reqNum << ")" << endl;
 
   if (fe.code == FAMDeleted) {
+    // WABA: We ignore changes to ".directory*" files because they
+    // tend to be generated as a result of 'dirty' events. Which
+    // leads to a never ending stream of cause & result.
+    if (strncmp(fe.filename, ".directory", 10) == 0) return;
     KDirWatchPrivate::EntryMap::Iterator it = d->m_mapDirs.begin();
     for( ; it != d->m_mapDirs.end(); ++it )
       if ( FAMREQUEST_GETREQNUM( &((*it).fr) ) == reqNum ) {
@@ -393,6 +397,10 @@ void KDirWatch::famEventReceived()
       }
   }
   else if ((fe.code == FAMChanged) || (fe.code == FAMCreated)) {
+    // WABA: We ignore changes to ".directory*" files because they
+    // tend to be generated as a result of 'dirty' events. Which
+    // leads to a never ending stream of cause & result.
+    if (strncmp(fe.filename, ".directory", 10) == 0) return;
     KDirWatchPrivate::EntryMap::Iterator it = d->m_mapDirs.begin();
     for( ; it != d->m_mapDirs.end(); ++it )
       if ( FAMREQUEST_GETREQNUM( &((*it).fr) ) == reqNum ) {
