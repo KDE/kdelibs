@@ -24,6 +24,7 @@
 #define _NETSUPP_H_
 
 #include <sys/socket.h>
+#include "ksockaddr.h"
 #include "config.h"
 
 /*

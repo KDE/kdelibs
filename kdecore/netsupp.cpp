@@ -88,7 +88,7 @@ make_unix(const char *name, const char *serv)
 {
   const char *buf;
   struct addrinfo *p;
-  struct sockaddr_un *sun;
+  struct sockaddr_un *_sun;
   int len;
 
   p = (addrinfo*)malloc(sizeof(*p));
@@ -106,28 +106,28 @@ make_unix(const char *name, const char *serv)
   if (*buf != '/')
     len += 5;			// strlen("/tmp/");
 
-  sun = (sockaddr_un*)malloc(len);
-  if (sun == NULL)
+  _sun = (sockaddr_un*)malloc(len);
+  if (_sun == NULL)
     {
       // Oops
       free(p);
       return NULL;
     }
 
-  sun->sun_family = AF_UNIX;
+  _sun->sun_family = AF_UNIX;
 # ifdef HAVE_SOCKADDR_SA_LEN
-  sun->sun_len = len;
+  _sun->sun_len = len;
 # endif
   if (*buf == '/')
-    *sun->sun_path = '\0';	// empty it
+    *_sun->sun_path = '\0';	// empty it
   else
-    strcpy(sun->sun_path, "/tmp/");
-  strcat(sun->sun_path, buf);
+    strcpy(_sun->sun_path, "/tmp/");
+  strcat(_sun->sun_path, buf);
 
   // Set the addrinfo
   p->ai_family = AF_UNIX;
   p->ai_addrlen = len;
-  p->ai_addr = (sockaddr*)sun;
+  p->ai_addr = (sockaddr*)_sun;
   p->ai_canonname = strdup(buf);
 
   return p;
@@ -705,7 +705,7 @@ int getnameinfo(const struct sockaddr *sa, ksocklen_t salen,
   union
     {
       const sockaddr *sa;
-      const sockaddr_un *sun;
+      const sockaddr_un *_sun;
       const sockaddr_in *sin;
       const sockaddr_in6 *sin6;
   } s;
@@ -716,13 +716,13 @@ int getnameinfo(const struct sockaddr *sa, ksocklen_t salen,
   s.sa = sa;
   if (s.sa->sa_family == AF_UNIX)
     {
-      if (salen < offsetof(struct sockaddr_un, sun_path) + strlen(s.sun->sun_path) + 1)
+      if (salen < offsetof(struct sockaddr_un, sun_path) + strlen(s._sun->sun_path) + 1)
 	return 1;		// invalid socket
 
       if (servlen && serv != NULL)
 	*serv = '\0';
-      if (host == NULL || hostlen < strlen(s.sun->sun_path))
-	strcpy(host, s.sun->sun_path);
+      if (host == NULL || hostlen < strlen(s.s_sun->sun_path))
+	strcpy(host, s._sun->sun_path);
 
       return 0;
     }
