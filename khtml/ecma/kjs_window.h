@@ -212,7 +212,7 @@ namespace KJS {
   class Konqueror : public ObjectImp {
     friend class KonquerorFunc;
   public:
-    Konqueror(KHTMLPart *p) : part(p) { }
+    Konqueror(ExecState *, KHTMLPart *p) : part(p) { }
     virtual Value get(ExecState *exec, const UString &propertyName) const;
     virtual bool hasProperty(ExecState *exec, const UString &p) const;
     virtual UString toString(ExecState *exec) const;

@@ -147,10 +147,14 @@ NodeImpl::Id HTMLAppletElementImpl::id() const
 
 KJavaApplet* HTMLAppletElementImpl::applet() const
 {
+#ifndef Q_WS_QWS // We don't have Java in Qt Embedded
     if (!m_render || !m_render->isApplet())
         return 0L;
 
     return static_cast<KJavaAppletWidget*>(static_cast<RenderApplet*>(m_render)->widget())->applet();
+#else
+    return 0;
+#endif
 }
 
 void HTMLAppletElementImpl::parseAttribute(AttributeImpl *attr)
