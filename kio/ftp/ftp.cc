@@ -920,11 +920,12 @@ void Ftp::createUDSEntry( const QString & filename, FtpEntry * e, UDSEntry & ent
 
 void Ftp::stat( const KURL &url)
 {
+  kdDebug(7102) << "Ftp::stat : path='" << url.path() << "'" << endl;
   QString path = QDir::cleanDirPath( url.path() );
   if (!m_bLoggedOn)
      openConnection();
 
-  kdDebug(7102) << "Ftp::stat : path='" << path << "'" << endl;
+  kdDebug(7102) << "Ftp::stat : cleaned path='" << path << "'" << endl;
 
   // We can't stat root, but we know it's a dir.
   if ( path.isEmpty() || path == "/" ) {
@@ -957,8 +958,8 @@ void Ftp::stat( const KURL &url)
   }
 
   // Argument to the list command (defaults to the directory containing the file)
-  // Let's use KURL's function (even if building it as a local one)
-  KURL tempurl( path );
+  KURL tempurl( url );
+  tempurl.setPath( path ); // take the clean one
   QString listarg = tempurl.directory(false /*keep trailing slash*/);
   QString filename = tempurl.fileName();
   QString search = filename;
@@ -1009,15 +1010,42 @@ void Ftp::stat( const KURL &url)
 
   FtpEntry *e;
   bool bFound = false;
+  KURL linkURL;
   while( ( e = ftpReadDir() ) )
   {
     // We look for search or filename, since some servers (e.g. ftp.tuwien.ac.at)
     // return only the filename when doing "dir /full/path/to/file"
-    if ( !bFound && ( search == e->name || filename == e->name ) ) {
-      bFound = true;
-      UDSEntry entry;
-      createUDSEntry( filename, e, entry, isDir );
-      statEntry( entry );
+    if ( !bFound )
+    {
+        if ( ( search == e->name || filename == e->name ) ) {
+            bFound = true;
+            UDSEntry entry;
+            createUDSEntry( filename, e, entry, isDir );
+            statEntry( entry );
+        } else if ( isDir && ( e->name == listarg || e->name+'/' == listarg ) ) {
+            // Damn, the dir we're trying to list is in fact a symlink
+            // Follow it and try again
+            if ( e->link.isEmpty() )
+                kdWarning(7102) << "Got " << listarg << " as answer, but empty link !" << endl;
+            else
+            {
+                linkURL = url;
+                kdDebug() << "e->link=" << e->link << endl;
+                if ( e->link[0] == '/' )
+                    linkURL.setPath( e->link ); // Absolute link
+                else
+                {
+                    // Relative link (stat will take care of cleaning ../.. etc.)
+                    linkURL.setPath( listarg ); // this is what we were listing (the link)
+                    linkURL.setPath( linkURL.directory() ); // go up one dir
+                    linkURL.addPath( e->link ); // replace link by its destination
+                    kdDebug() << "linkURL now " << linkURL.url() << endl;
+                }
+                // Re-add the filename we're looking for
+                linkURL.addPath( filename );
+            }
+            bFound = true;
+        }
     }
 
     kdDebug(7102) << e->name << endl;
@@ -1030,6 +1058,17 @@ void Ftp::stat( const KURL &url)
   {
     error( ERR_DOES_NOT_EXIST, path );
     return;
+  }
+
+  if ( !linkURL.isEmpty() )
+  {
+      if ( linkURL == url || linkURL == tempurl )
+      {
+          error( ERR_CYCLIC_LINK, linkURL.url() );
+          return;
+      }
+      stat( linkURL );
+      return;
   }
 
   kdDebug(7102) << "stat : finished successfully" << endl;
