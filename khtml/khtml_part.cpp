@@ -1557,10 +1557,25 @@ void KHTMLPart::slotFinished( KIO::Job * job )
   if (job->error())
   {
     KHTMLPageCache::self()->cancelEntry(d->m_cacheId);
-    emit canceled( job->errorString() );
-    // TODO: what else ?
-    checkCompleted();
-    showError( job );
+    
+    // The following catches errors that occur as a result of HTTP
+    // to FTP redirections where the FTP URL is a directory. Since 
+    // KIO cannot change a redirection request from GET to LISTDIR,
+    // we have to take care of it here once we know for sure it is
+    // a directory...
+    if (job->error() == KIO::ERR_IS_DIRECTORY)
+    {
+      KParts::URLArgs args;
+      emit d->m_extension->openURLRequest( d->m_workingURL, args );
+    }
+    else
+    {
+      emit canceled( job->errorString() );
+      // TODO: what else ?
+      checkCompleted();
+      showError( job );
+    }
+    
     return;
   }
   //kdDebug( 6050 ) << "slotFinished" << endl;
