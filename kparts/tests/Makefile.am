@@ -1,5 +1,5 @@
 
-INCLUDES= -I$(top_srcdir) -I$(top_srcdir)/libltdl $(all_includes)
+INCLUDES= -I$(top_srcdir) -I$(top_srcdir)/libltdl -I$(top_srcdir)/kfile -I$(top_srcdir)/kio $(all_includes)
 LDFLAGS	= $(all_libraries)
 LDADD = $(top_builddir)/kparts/libkparts.la $(LIB_KDECORE)
 
