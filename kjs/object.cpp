@@ -313,6 +313,14 @@ ErrorType KJSO::putValue(const KJSO& v)
     return ReferenceError;
 
   KJSO o = getBase();
+  // here we catch attempts to set a value belonging to one interpreter
+  // into another
+  /* TODO */
+  if (o.imp()->internal != v.imp()->internal) {
+    ((Collector*)o.imp()->internal)->share((void*)v.imp());
+    v.imp()->ref();
+  }
+
   if (o.isA(NullType))
     Global::current().put(getPropertyName(), v);
   else {
@@ -535,6 +543,8 @@ Imp::Imp()
 #ifdef KJS_DEBUG_MEM
   count++;
 #endif
+  /* TODO: use a chain struct */
+  internal = (ImpInternal*)Collector::current();
 }
 
 Imp::~Imp()

@@ -24,6 +24,7 @@
 
 namespace KJS {
 
+  class Imp;
   class CollectorBlock;
 
   /**
@@ -71,14 +72,17 @@ namespace KJS {
      * Register an object with the collector. The following assumptions are
      * made:
      * @li the operator new() of the object class is overloaded.
-     * @li the correct size of memory has been reserved with a malloc() call.
      * @li operator delete() has been overloaded as well and does not free
      * the memory on its own.
      *
-     * @param p Pointer to the memory allocated for the object.
-     * @return A pointer identical to parameter p.
+     * @param s Size of the memory to be registered.
+     * @return A pointer to the allocated memory.
      */
     static void* allocate(size_t s);
+    /**
+     * Share m with another collector.
+     */
+    void* share(void *m);
     /**
      * Run the garbage collection. This involves calling the delete operator
      * on each object and freeing the used memory.

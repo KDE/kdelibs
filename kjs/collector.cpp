@@ -94,13 +94,20 @@ void* Collector::allocate(size_t s)
 
   if (s == 0)
     return 0L;
+  
+  return curr->share(malloc(s));
+}
 
-  if (!curr->root) {
-    curr->root = new CollectorBlock(BlockSize);
-    curr->currentBlock = curr->root;
+void* Collector::share(void *m)
+{
+  assert(m);
+
+  if (!root) {
+    root = new CollectorBlock(BlockSize);
+    currentBlock = root;
   }
 
-  CollectorBlock *block = curr->currentBlock;
+  CollectorBlock *block = currentBlock;
 
   assert(block->filled <= block->size);
   if (block->filled >= block->size) {
@@ -109,12 +116,11 @@ void* Collector::allocate(size_t s)
 #endif
     CollectorBlock *tmp = new CollectorBlock(BlockSize);
     block->next = tmp;
-    block = curr->currentBlock = tmp;
+    block = currentBlock = tmp;
   }
-  void *m = malloc(s);
   void **r = block->mem + block->filled;
   *r = m;
-  curr->filled++;
+  filled++;
   block->filled++;
 
   return m;
@@ -143,6 +149,9 @@ void Collector::privateCollect()
     Imp **r = (Imp**)block->mem;
     for (int i = 0; i < block->filled; i++, r++)
       if (*r) {
+	assert((*r)->refcount > 0);
+	if (!(*r)->deref()) // leave it alone if recount still > 0
+	  continue;
 	// emulate 'operator delete()'
 	(*r)->~Imp();
 	free(*r);
