@@ -86,6 +86,7 @@ public:
     void setLastChild(RenderObject *last) { m_last = last; }
 
     virtual void addChild(RenderObject *newChild, RenderObject *beforeChild = 0);
+    virtual void removeChild(RenderObject *oldChild);
 
     // some helper functions...
     /**

@@ -512,6 +512,8 @@ NodeImpl *NodeBaseImpl::removeChild ( NodeImpl *oldChild )
     oldChild->setPreviousSibling(0);
     oldChild->setNextSibling(0);
     oldChild->setParent(0);
+    if (m_render)
+	m_render->removeChild(oldChild->renderer());
 
     applyChanges();
 

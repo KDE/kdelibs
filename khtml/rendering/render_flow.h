@@ -64,6 +64,7 @@ public:
 
     bool haveAnonymousBox() const { return m_haveAnonymous; }
     void setHaveAnonymousBox(bool b = true) { m_haveAnonymous = b; }
+    void makeChildrenNonInline();
 
     // overrides RenderObject
 

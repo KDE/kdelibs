@@ -289,7 +289,7 @@ void RenderText::cursorPos(int offset, int &_x, int &_y, int &height)
   int off = s->len;
   int y = s->y;
 
-  while(offset > off)
+  while(offset > off && s->next())
   {
       s=s->next();
       off += s->len;
@@ -300,7 +300,7 @@ void RenderText::cursorPos(int offset, int &_x, int &_y, int &height)
       }
   }   // we are now in the correct text slave
 
-  int pos = s->len - (off - offset );
+  int pos = (offset > off ? s->len - (off - offset ) : s->len);
   _y = s->y;
   height = s->m_height;
 

@@ -146,7 +146,7 @@ void RenderObject::addChild(RenderObject *newChild, RenderObject *beforeChild)
 {
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(RenderObject)::addChild( " << newChild->renderName() << ", "
-                       beforeChild ? beforeChild->renderName() : 0 << " )" << endl;
+                       (beforeChild ? beforeChild->renderName() : "0") << " )" << endl;
 #endif
 
     newChild->setParsing();
@@ -180,6 +180,28 @@ void RenderObject::addChild(RenderObject *newChild, RenderObject *beforeChild)
     newChild->calcWidth();
 }
 
+void RenderObject::removeChild(RenderObject *oldChild)
+{
+    if (oldChild->previousSibling())
+	oldChild->previousSibling()->setNextSibling(oldChild->nextSibling());
+    if (oldChild->nextSibling())
+	oldChild->nextSibling()->setPreviousSibling(oldChild->previousSibling());
+
+    if (m_first == oldChild)
+	m_first = oldChild->nextSibling();
+    if (m_last == oldChild)
+	m_last = oldChild->previousSibling();
+
+    oldChild->setPreviousSibling(0);
+    oldChild->setNextSibling(0);
+
+// Note that we only delete the child here if it is an anonymous box.... othwerwise,
+// it has a node attached to it, and will be deleted with that.
+    if (oldChild->isAnonymousBox())
+	delete oldChild;
+
+    setLayouted(false);
+}
 
 RenderObject *RenderObject::containingBlock() const
 {

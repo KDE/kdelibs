@@ -1271,16 +1271,81 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
 	if (style()->display() == INLINE)
 	{
     	    m_inline=false; // inline can't contain blocks
-	    // ### the parent element also needs to put all inline
-	    // children into anonymous block boxes!!!
 	    if (parent() && parent()->isFlow())
-	    	static_cast<RenderFlow*>(parent())->m_childrenInline = false;
+		static_cast<RenderFlow*>(parent())->makeChildrenNonInline();
 	}
     }
 
     setLayouted(false);
     RenderObject::addChild(newChild,beforeChild);
     // ### care about aligned stuff
+}
+
+void RenderFlow::makeChildrenNonInline()
+{
+// Put all inline children into anonymous block boxes
+// ### should we call this all the way up to the top of the tree?
+
+    m_childrenInline = false;
+
+    RenderObject *child = m_first;
+    RenderObject *next;
+    RenderObject *boxFirst = m_first;
+    RenderObject *boxLast = m_first;
+    while (child) {
+	next = child->nextSibling();
+
+	if (child->isInline() || child->isFloating()) {
+	    boxLast = child;
+	}
+
+	if ((!child->isInline() && !child->isFloating()) || !next) {
+	    if (boxFirst != child || (boxFirst && !next)) {
+		// make anon box of those before child
+		RenderStyle *newStyle = new RenderStyle(style());
+		newStyle->setDisplay(BLOCK);
+
+		RenderFlow *box = new RenderFlow();
+		box->setStyle(newStyle);
+		box->setIsAnonymousBox(true);
+		// ### the children have a wrong style!!!
+		// They get exactly the style of this element, not of the anonymous box
+		// might be important for bg colors!
+		box->setPreviousSibling(boxFirst->previousSibling());
+		if (boxFirst->previousSibling())
+		    boxFirst->previousSibling()->setNextSibling(box);
+		boxFirst->setPreviousSibling(0);
+
+		box->setNextSibling(boxLast->nextSibling());
+		if (boxLast->nextSibling())
+		    boxLast->nextSibling()->setPreviousSibling(box);
+		boxLast->setNextSibling(0);
+
+		if (m_first == boxFirst)
+		    m_first = box;
+		if (m_last == boxLast)
+		    m_last = box;
+
+		box->setFirstChild(boxFirst);
+		box->setLastChild(boxLast);
+
+		RenderObject *o = box->firstChild();
+		while(o) {
+		    o->setParent(box);
+		    o = o->nextSibling();
+		}
+		box->setParent(this);
+
+		box->close();
+		box->setYPos(-100000);
+		box->setLayouted(false);
+
+	    }
+	    boxFirst = boxLast = next;
+	}
+	child = next;
+    }
+    setLayouted(false);
 }
 
 BiDiObject *RenderFlow::first()
