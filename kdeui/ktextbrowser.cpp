@@ -33,8 +33,10 @@ KTextBrowser::KTextBrowser( QWidget *parent, const char *name,
 			    bool notifyClick )
   : QTextBrowser( parent, name ), mNotifyClick(notifyClick)
 {
-  connect( this, SIGNAL(highlighted(const QString &)),
-	   this, SLOT(refChanged(const QString &)));
+  //
+  //1999-10-04 Espen Sand: Not required anymore ?
+  //connect( this, SIGNAL(highlighted(const QString &)),
+  //   this, SLOT(refChanged(const QString &)));
 }
 
 KTextBrowser::~KTextBrowser( void )
