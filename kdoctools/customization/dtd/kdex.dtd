@@ -36,14 +36,13 @@ catalog errors I'd rather stay away from (they're easy to fix though).
     For instance:
 
       <!DOCTYPE book PUBLIC "-//KDE//DTD DocBook XML V4.1.2-Based Variant V1.0//EN"
-                     "kdex.dtd">
+                     "customization/dtd/kdex.dtd">
 
     and use catalog as the catalogue file.
-
-    The system identifiers should be relative to the directories the parser
-    searches (for nsgmls for instance, this is $SGML_SEARCH_PATH).  If you have
-    permanent internet access, you can use any URLs (and you don't have to
-    install docbook).
+    Note: the system identifier is interpreted relative to the place
+    where it is defined, unless otherwise defined by the application you use.
+    If you have permanent internet access, you can use any URLs (and
+    you don't have to install docbook).
 -->
 
 
@@ -59,7 +58,7 @@ catalog errors I'd rather stay away from (they're easy to fix though).
  -->
 <!ENTITY % rdbpool	    PUBLIC
   "-//KDE//ELEMENTS DocBook XML Pool Redeclarations V1.0//EN"	     
-  "rdbpool.elements"                                           >
+  "rdbpool.elements"                                                 >
 <!ENTITY % dbpool.redecl.module "INCLUDE"			     >
 
 <!-- Modifications in hierarchy
@@ -68,7 +67,7 @@ catalog errors I'd rather stay away from (they're easy to fix though).
  -->
 <!ENTITY % rdbhier2	    PUBLIC
   "-//KDE//ELEMENTS DocBook XML Hierarchy Redeclarations 2 V1.0//EN"     
-  "rdbhier2.elements"                                          >
+  "rdbhier2.elements"                                                >
 <!ENTITY % dbhier.redecl2.module "INCLUDE"			     >
 
 <!-- For Java-style refentries	   
@@ -89,7 +88,7 @@ catalog errors I'd rather stay away from (they're easy to fix though).
 
 <!ENTITY % DocBookDTD	    PUBLIC
   "-//OASIS//DTD DocBook XML V4.1.2//EN"
-  "../../docbook/xml-dtd-4.1.2/docbookx.dtd"         >
+  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd"         > 
 %DocBookDTD;
 
 
@@ -101,7 +100,7 @@ catalog errors I'd rather stay away from (they're easy to fix though).
 
 <!ENTITY % kde.modifications PUBLIC
   "-//KDE//ELEMENTS DocBook XML Modifications V1.0//EN"
-  "modifications.elements">
+  "modifications.elements"                                           >
 %kde.modifications;
 
 
@@ -117,5 +116,5 @@ catalog errors I'd rather stay away from (they're easy to fix though).
 
 <!ENTITY % kde.i18n.entities PUBLIC
   "-//KDE//ENTITIES DocBook XML Localisation Entity Declarations V1.0//EN"
-  "../entities/l10n.entities">
+  "../entities/l10n.entities"                                        >
 %kde.i18n.entities;

@@ -78,6 +78,7 @@
  -->
 <!ENTITY % addindex "IGNORE"><!-- In some respects this INCLUDE would be better -->
 <![%addindex;[
+<!-- without FPIs, this is nearly impossible to use -->
 <!ENTITY documentation.index SYSTEM "docindex.docbook">
 ]]>
 <!ENTITY documentation.index "">
