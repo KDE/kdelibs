@@ -185,6 +185,10 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
       // this is preserved for backwards compatibility
       if ( fileName.right(7) == ".kdelnk" )
 	return mimeType( "application/x-desktop" );
+      // .directory files are detected as x-desktop by mimemagic
+      // but don't have a Type= entry. Better cheat and say they are text files
+      if ( fileName == ".directory" )
+	return mimeType( "text/plain" );
     }
 
   if ( !_is_local_file || _fast_mode )
