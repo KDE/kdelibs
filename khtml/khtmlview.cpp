@@ -85,7 +85,7 @@ public:
 
 
 KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
-    : QScrollView( parent, name, WResizeNoErase | WRepaintNoErase | WPaintClever )
+    : QScrollView( parent, name, WResizeNoErase | WRepaintNoErase )
 {
     m_part = part;
 
@@ -96,7 +96,6 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
     viewport()->setMouseTracking(true);
     //viewport()->setBackgroundMode(PaletteBase);
     viewport()->setBackgroundMode(NoBackground);
-
 
     KImageIO::registerFormats();
 
