@@ -545,7 +545,7 @@ StyleBaseImpl::parseSelector1(const QChar *curP, const QChar *endP)
     CSSSelector::Relation relation = CSSSelector::Descendant;
 
     const QChar *startP = curP;
-    while (curP <= endP)
+    while (curP && curP <= endP)
     {
         if ((curP == endP) || curP->isSpace() || *curP == '+' || *curP == '>')
         {
