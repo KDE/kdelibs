@@ -47,6 +47,7 @@
 #include <kwin.h>
 #include <kdesktopfile.h>
 #include <kstartupinfo.h>
+#include <typeinfo>
 
 KOpenWithHandler * KOpenWithHandler::pOpenWithHandler = 0L;
 
@@ -604,6 +605,7 @@ void KRun::init()
   connect( job, SIGNAL( result( KIO::Job * ) ),
            this, SLOT( slotStatResult( KIO::Job * ) ) );
   m_job = job;
+  kdDebug() << " Job " << job << " is about stating " << m_strURL.url() << endl;
 }
 
 KRun::~KRun()
@@ -652,6 +654,7 @@ void KRun::scanFile()
   connect(job, SIGNAL( mimetype(KIO::Job *, const QString &)),
           this, SLOT( slotScanMimeType(KIO::Job *, const QString &)));
   m_job = job;
+  kdDebug() << " Job " << job << " is about getting from " << m_strURL.url() << endl;
 }
 
 void KRun::slotTimeout()
@@ -699,7 +702,7 @@ void KRun::slotStatResult( KIO::Job * job )
     d->m_showingError = true;
     kdError(7010) << this << " ERROR " << job->error() << " " << job->errorString() << endl;
     job->showErrorDialog();
-    kdDebug(7010) << this << " KRun returning from showErrorDialog, starting timer to delete us" << endl;
+    //kdDebug(7010) << this << " KRun returning from showErrorDialog, starting timer to delete us" << endl;
     d->m_showingError = false;
 
     m_bFault = true;
@@ -711,6 +714,8 @@ void KRun::slotStatResult( KIO::Job * job )
   } else {
 
     kdDebug(7010) << "Finished" << endl;
+    if(!dynamic_cast<KIO::StatJob*>(job))
+        kdFatal() << "job is a " << typeid(*job).name() << " should be a StatJob" << endl;
 
     KIO::UDSEntry entry = ((KIO::StatJob*)job)->statResult();
     KIO::UDSEntry::ConstIterator it = entry.begin();
@@ -745,8 +750,20 @@ void KRun::slotScanMimeType( KIO::Job *, const QString &mimetype )
 void KRun::slotScanFinished( KIO::Job *job )
 {
   m_job = 0;
-  slotStatResult( job ); // hacky - we just want to use the same code on error
-  return;
+  if (job->error())
+  {
+    d->m_showingError = true;
+    kdError(7010) << this << " ERROR (stat) : " << job->error() << " " << job->errorString() << endl;
+    job->showErrorDialog();
+    //kdDebug(7010) << this << " KRun returning from showErrorDialog, starting timer to delete us" << endl;
+    d->m_showingError = false;
+
+    m_bFault = true;
+    m_bFinished = true;
+
+    // will emit the error and autodelete this
+    m_timer.start( 0, true );
+  }
 }
 
 void KRun::foundMimeType( const QString& type )
@@ -836,6 +853,7 @@ void KRun::killJob()
 
 void KRun::abort()
 {
+  kdDebug() << "KRun::abort " << this << " m_showingError=" << d->m_showingError << endl;
   killJob();
   // If we're showing an error message box, the rest will be done
   // after closing the msgbox -> don't autodelete nor emit signals now.
