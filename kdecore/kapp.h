@@ -444,7 +444,7 @@ class KSessionManaged
 {
 public:
     KSessionManaged();
-    ~KSessionManaged();
+    virtual ~KSessionManaged();
     virtual bool saveState( QSessionManager& sm );
     virtual bool commitData( QSessionManager& sm );
 };
@@ -454,6 +454,15 @@ public:
 #endif
 
 // $Log$
+// Revision 1.102  1999/09/20 18:22:31  espensa
+// Here comes the KApplication::makeStdCaption() addition.
+//
+// Usage: setCaption(kapp->makeStdCaption(yourCaptionWithNOAppName));
+//
+// The current layout of the returned caption is:
+// "yourCaptionWithNOAppName - <appName>"
+// (without the "<" and ">" of course ;)
+//
 // Revision 1.101  1999/09/20 13:11:26  ettrich
 //    ported to new session management
 //    usable private data class (use pAppData)
