@@ -171,6 +171,8 @@ namespace KNotifyClient
 	 */
 	QString getDefaultFile(const QString &eventname, int present);
 
+    struct InstancePrivate;
+
     /**
      * Makes it possible to use @ref KNotifyClient with a @ref KInstance
      * that is not the application.
@@ -201,7 +203,7 @@ namespace KNotifyClient
         static KInstance *current();
 
     private:
-        KInstance *m_instance;
+        InstancePrivate *d;
         static QStack<Instance> s_instances;
     };
 

@@ -92,7 +92,7 @@ int KNotifyClient::getPresentation(const QString &eventname)
 	int present;
 	if (eventname.isEmpty()) return Default;
 	
-	KConfig eventsfile(locate("data", QString(KApplication::kApplication()->name())+"/eventsrc"));
+	KConfig eventsfile(locate("data", KNotifyClient::Instance::current()->instanceName() + "/eventsrc"));
 	eventsfile.setGroup(eventname);
 	
 	present=eventsfile.readNumEntry("presentation", -1);
@@ -102,20 +102,20 @@ int KNotifyClient::getPresentation(const QString &eventname)
 
 QString KNotifyClient::getFile(const QString &eventname, int present)
 {
-	if (eventname.isEmpty()) return 0;
+	if (eventname.isEmpty()) return QString::null;
 
-	KConfig eventsfile(locate("data", QString(KApplication::kApplication()->name())+"/eventsrc"));
+	KConfig eventsfile(locate("data", KNotifyClient::Instance::current()->instanceName() + "/eventsrc"));
 	eventsfile.setGroup(eventname);
 
 	switch (present)
 	{
 	case (Sound):
-		return eventsfile.readEntry("sound", 0);
+		return eventsfile.readEntry("soundfile");
 	case (Logfile):
-		return eventsfile.readEntry("logfile", 0);
+		return eventsfile.readEntry("logfile");
 	}
 		
-	return 0;
+	return QString::null;
 }
 
 int KNotifyClient::getDefaultPresentation(const QString &eventname)
@@ -123,7 +123,7 @@ int KNotifyClient::getDefaultPresentation(const QString &eventname)
 	int present;
 	if (eventname.isEmpty()) return Default;
 		
-	KConfig eventsfile(locate("data", QString(KApplication::kApplication()->name())+"/eventsrc"));
+	KConfig eventsfile(locate("data", KNotifyClient::Instance::current()->instanceName() + "/eventsrc"));
 	eventsfile.setGroup(eventname);
 	
 	present=eventsfile.readNumEntry("default_presentation", -1);
@@ -133,20 +133,20 @@ int KNotifyClient::getDefaultPresentation(const QString &eventname)
 
 QString KNotifyClient::getDefaultFile(const QString &eventname, int present)
 {
-	if (eventname.isEmpty()) return 0;
+	if (eventname.isEmpty()) return QString::null;
 
-	KConfig eventsfile(locate("data", QString(KApplication::kApplication()->name())+"/eventsrc"));
+	KConfig eventsfile(locate("data", KNotifyClient::Instance::current()->instanceName() + "/eventsrc"));
 	eventsfile.setGroup(eventname);
 
 	switch (present)
 	{
 	case (Sound):
-		return eventsfile.readEntry("default_sound", 0);
+		return eventsfile.readEntry("default_sound");
 	case (Logfile):
-		return eventsfile.readEntry("default_logfile", 0);
+		return eventsfile.readEntry("default_logfile");
 	}
 		
-	return 0;
+	return QString::null;
 }
 
 bool KNotifyClient::startDaemon()
@@ -172,9 +172,15 @@ void KNotifyClient::beep(const QString& reason)
 
 QStack<KNotifyClient::Instance> KNotifyClient::Instance::s_instances;
 
-KNotifyClient::Instance::Instance(KInstance *instance)
-    : m_instance(instance)
+struct KNotifyClient::InstancePrivate
 {
+    KInstance *instance;
+};
+
+KNotifyClient::Instance::Instance(KInstance *instance)
+{
+    d = new InstancePrivate;
+    d->instance = instance;
     s_instances.push(this);
 }
 
@@ -186,15 +192,18 @@ KNotifyClient::Instance::~Instance()
     {
         kdWarning(160) << "Tried to remove an Instance that is not the current," << endl;
         kdWarning(160) << "Resetting to the main KApplication." << endl;
+        kdWarning(160) << "Offending instance is: " << d->instance->instanceName() << ", fix it!" << endl;
         s_instances.clear();
     }
     else {
         kdWarning(160) << "Tried to remove an Instance, but the stack was empty." << endl;
+        kdWarning(160) << "Offending instance is: " << d->instance->instanceName() << ", fix it!" << endl;
     }
+    delete d;
 }
 
 KInstance *KNotifyClient::Instance::current()
 {
-    return s_instances.top() ? s_instances.top()->m_instance : kapp;
+    return s_instances.top() ? s_instances.top()->d->instance : kapp;
 }
 
