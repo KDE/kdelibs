@@ -10,10 +10,10 @@
 
 #include "ftp.h"
 
-class FtpProtocol : public IOProtocol
+class FtpProtocol : public KIOProtocol
 {
 public:
-  FtpProtocol( Connection *_conn );
+  FtpProtocol( KIOConnection *_conn );
   virtual ~FtpProtocol() { }
 
   virtual void slotGet( const char *_url );
@@ -38,7 +38,7 @@ public:
   virtual void slotData( void *_p, int _len );
   virtual void slotDataEnd();
 
-  Connection *connection() { return ConnectionSignals::m_pConnection; }
+  KIOConnection *connection() { return KIOConnectionSignals::m_pConnection; }
   
   void jobError( int _errid, const char *_txt );
 
@@ -72,10 +72,10 @@ protected:
   Ftp ftp;
 };
 
-class FtpIOJob : public IOJob
+class FtpIOJob : public KIOJobBase
 {
 public:
-  FtpIOJob( Connection *_conn, FtpProtocol *_Ftp );
+  FtpIOJob( KIOConnection *_conn, FtpProtocol *_Ftp );
   
   virtual void slotError( int _errid, const char *_txt );
 

@@ -53,10 +53,10 @@ typedef struct
 	unsigned long offset;
 } HTTPState;
 
-class HTTPProtocol : public IOProtocol
+class HTTPProtocol : public KIOProtocol
 {
 public:
-  HTTPProtocol( Connection *_conn );
+  HTTPProtocol( KIOConnection *_conn );
   virtual ~HTTPProtocol() { }
 
   enum HTTP_REV    {HTTP_Unknown, HTTP_10, HTTP_11};
@@ -78,7 +78,7 @@ public:
 
   void jobError( int _errid, const char *_txt );
   
-  Connection* connection() { return ConnectionSignals::m_pConnection; }
+  KIOConnection* connection() { return KIOConnectionSignals::m_pConnection; }
 
 protected:
 
@@ -132,7 +132,7 @@ protected:
   void clearError() { m_iSavedError = 0; }
   void releaseError() {
     if ( m_iSavedError )
-      IOProtocol::error( m_iSavedError, m_strSavedError );
+      KIOProtocol::error( m_iSavedError, m_strSavedError );
     m_iSavedError = 0;
   }
 
@@ -198,10 +198,10 @@ protected: // Members
 
 };
 
-class HTTPIOJob : public IOJob
+class HTTPIOJob : public KIOJobBase
 {
 public:
-  HTTPIOJob( Connection *_conn, HTTPProtocol *_gzip );
+  HTTPIOJob( KIOConnection *_conn, HTTPProtocol *_gzip );
   
   virtual void slotError( int _errid, const char *_txt );
 

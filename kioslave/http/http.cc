@@ -68,10 +68,10 @@ extern "C" {
 
 int main( int, char ** )
 {
-  signal(SIGCHLD, IOProtocol::sigchld_handler);
+  signal(SIGCHLD, KIOProtocol::sigchld_handler);
 //  signal(SIGSEGV, IOProtocol::sigsegv_handler);
 
-  Connection parent( 0, 1 );
+  KIOConnection parent( 0, 1 );
 
   HTTPProtocol http( &parent );
   http.dispatchLoop();
@@ -273,7 +273,7 @@ int verify_callback ()
 
 /*****************************************************************************/
 
-HTTPProtocol::HTTPProtocol( Connection *_conn ) : IOProtocol( _conn )
+HTTPProtocol::HTTPProtocol( KIOConnection *_conn ) : KIOProtocol( _conn )
 {
   m_cmd = CMD_NONE;
   m_fsocket = 0L;
@@ -1160,7 +1160,7 @@ size_t HTTPProtocol::sendData( HTTPIOJob *job )
   // the IPC stuff can't handle
   // chunks much larger than 2048.
 
-  IOProtocol *ioJob = job ? job:this;
+  KIOProtocol *ioJob = job ? job:this;
 
   size_t sent=0;
   size_t bufferSize = 2048;
@@ -1224,7 +1224,7 @@ void HTTPProtocol::slotCopy( QStringList& _source, const char *_dest )
       
   m_cmd = CMD_COPY;
 
-  Slave slave( exec );
+  KIOSlave slave( exec );
   if ( slave.pid() == -1 ) {
     error( ERR_CANNOT_LAUNCH_PROCESS, exec );
     m_cmd = CMD_NONE;
@@ -1523,7 +1523,7 @@ void HTTPProtocol::slotData(void *_p, int _len)
  */
 void HTTPProtocol::slotDataEnd( HTTPIOJob *job )
 {
-        IOProtocol *ioJob = job ? job:this;
+        KIOProtocol *ioJob = job ? job:this;
 
 	// Check if we need to decode the data.
 	// If we are in copy mode the use only transfer decoding.
@@ -1681,7 +1681,7 @@ bool HTTPProtocol::error( int _err, const char *_txt )
     m_strSavedError = _txt;
     return true;
   } else
-    return IOProtocol::error( _err, _txt );
+    return KIOProtocol::error( _err, _txt );
 }
 
 /*************************************
@@ -1691,7 +1691,7 @@ bool HTTPProtocol::error( int _err, const char *_txt )
  *************************************/
 
 
-HTTPIOJob::HTTPIOJob( Connection *_conn, HTTPProtocol *_HTTP ) : IOJob( _conn )
+HTTPIOJob::HTTPIOJob( KIOConnection *_conn, HTTPProtocol *_HTTP ) : KIOJobBase( _conn )
 {
   m_pHTTP = _HTTP;
 }
@@ -1699,7 +1699,7 @@ HTTPIOJob::HTTPIOJob( Connection *_conn, HTTPProtocol *_HTTP ) : IOJob( _conn )
   
 void HTTPIOJob::slotError( int _errid, const char *_txt )
 {
-  IOJob::slotError( _errid, _txt );
+  KIOJobBase::slotError( _errid, _txt );
   
   m_pHTTP->jobError( _errid, _txt );
 }

@@ -15,7 +15,7 @@
 
 #define string FBAUC
 
-int check( Connection *_con );
+int check( KIOConnection *_con );
 
 extern "C" {
 	void sigalrm_handler(int);
@@ -23,14 +23,14 @@ extern "C" {
 
 int main( int, char ** )
 {
-  signal(SIGCHLD, IOProtocol::sigchld_handler);
-  signal(SIGSEGV, IOProtocol::sigsegv_handler);
+  signal(SIGCHLD, KIOProtocol::sigchld_handler);
+  signal(SIGSEGV, KIOProtocol::sigsegv_handler);
 
   //  KProtocolManager manager;
 
   debug( "kio_ftp : Starting");
 
-  Connection parent( 0, 1 );
+  KIOConnection parent( 0, 1 );
   
   FtpProtocol ftp( &parent );
   ftp.dispatchLoop();
@@ -56,7 +56,7 @@ void setup_alarm(unsigned int timeout)
 }
 
 
-FtpProtocol::FtpProtocol( Connection *_conn ) : IOProtocol( _conn )
+FtpProtocol::FtpProtocol( KIOConnection *_conn ) : KIOProtocol( _conn )
 {
   m_cmd = CMD_NONE;
   m_bIgnoreJobErrors = false;
@@ -296,7 +296,7 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename,
   m_cmd = CMD_GET;
   
   // Start a server for the destination protocol
-  Slave slave( exec );
+  KIOSlave slave( exec );
   if ( slave.pid() == -1 ) {
     error( ERR_CANNOT_LAUNCH_PROCESS, exec );
     ftp.ftpDisconnect( true );
@@ -1421,8 +1421,8 @@ void FtpProtocol::slotListDir( const char *_url )
 
     debug( "kio_ftp : Listing %s", e->name.ascii() );
 
-    UDSEntry entry;
-    UDSAtom atom;
+    KUDSEntry entry;
+    KUDSAtom atom;
     atom.m_uds = UDS_NAME;
     atom.m_str = e->name;
     entry.append( atom );
@@ -1528,7 +1528,7 @@ void FtpProtocol::jobError( int _errid, const char *_txt )
  *
  *************************************/
 
-FtpIOJob::FtpIOJob( Connection *_conn, FtpProtocol *_Ftp ) : IOJob( _conn )
+FtpIOJob::FtpIOJob( KIOConnection *_conn, FtpProtocol *_Ftp ) : KIOJobBase( _conn )
 {
   m_pFtp = _Ftp;
 }
@@ -1536,7 +1536,7 @@ FtpIOJob::FtpIOJob( Connection *_conn, FtpProtocol *_Ftp ) : IOJob( _conn )
 
 void FtpIOJob::slotError( int _errid, const char *_txt )
 {
-  IOJob::slotError( _errid, _txt );
+  KIOJobBase::slotError( _errid, _txt );
   m_pFtp->jobError( _errid, _txt );
 }
 
@@ -1546,7 +1546,7 @@ void FtpIOJob::slotError( int _errid, const char *_txt )
  *
  *************************************/
 
-int check( Connection *_con )
+int check( KIOConnection *_con )
 {
   int err;
   struct timeval tv;
