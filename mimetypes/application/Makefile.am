@@ -6,7 +6,7 @@ data_DATA = x-dvi.desktop x-tex-gf.desktop gzip.desktop \
 	x-jar.desktop x-arj.desktop x-tarz.desktop \
 	postscript.desktop octet-stream.desktop \
 	x-shellscript.desktop x-desktop.desktop \
-	x-executable.desktop x-ar.desktop x-lha.desktop \
+	x-executable.desktop x-rar.desktop x-lha.desktop \
 	x-tbz.desktop x-tgz.desktop x-awk.desktop \
 	x-perl.desktop x-compress.desktop x-cpio.desktop \
 	x-rpm.desktop msword.desktop x-sharedlib.desktop \
