@@ -87,6 +87,7 @@ void KConfigureDialog::addKPartsPluginPage()
 
 void KConfigureDialog::show()
 {
+	KCDDispatcher::self()->syncConfiguration();
 	return d->dlg->show();
 }
 
@@ -150,6 +151,8 @@ void KConfigureDialog::createDialogFromServices( const QValueList<KService::Ptr>
 		d->dlg->setShowIconsInTreeList( true );
 		d->dlg->unfoldTreeList( true );
 	}
+	connect( d->dlg, SIGNAL( okClicked() ), KCDDispatcher::self(), SLOT( syncConfiguration() ) );
+	connect( d->dlg, SIGNAL( applyClicked() ), KCDDispatcher::self(), SLOT( syncConfiguration() ) );
 	connect( d->dlg, SIGNAL( configCommitted( const QCString & ) ), KCDDispatcher::self(), SLOT( reparseConfiguration( const QCString & ) ) );
 	for( KCModuleInfo * info = d->moduleinfos.first(); info; info = d->moduleinfos.next() )
 	{

@@ -73,7 +73,7 @@ class KPluginSelector : public QWidget
 		 * The information about the plugins will be loaded from the
 		 * share/apps/&lt;instancename&gt;/kpartplugins directory.
 		 *
-		 * @param instance     The KInstance object of the plugin's parent.
+		 * @param instanceName The name of the KInstance of the plugin's parent.
 		 * @param catname      The translated name of the category. This is the
 		 *                     name that is shown in the TabWidget if there is
 		 *                     more than one category.
@@ -86,9 +86,14 @@ class KPluginSelector : public QWidget
 		 *                     and all plugins are shown.
 		 * @param config       The KConfig object that holds the state of the
 		 *                     plugins being enabled or not. By default it will
-		 *                     use instance->config().
+		 *                     use instance->config(). It is recommended to
+		 *                     always pass a KConfig object if you use
+		 *                     KCDPluginPage since you never know from where the
+		 *                     page will be called (think global config app).
+		 *                     For example KViewCanvas passes KSimpleConfig(
+		 *                     "kviewcanvas" ).
 		 */
-		void addPlugins( KInstance * instance,
+		void addPlugins( const QString & instanceName,
 				const QString & catname = QString::null,
 				const QString & category = QString::null,
 				KConfig * config = 0 );
@@ -111,7 +116,12 @@ class KPluginSelector : public QWidget
 		 *                     and all plugins are shown.
 		 * @param config       The KConfig object that holds the state of the
 		 *                     plugins being enabled or not. By default it will
-		 *                     use KGlobal::config().
+		 *                     use KGlobal::config(). It is recommended to
+		 *                     always pass a KConfig object if you use
+		 *                     KCDPluginPage since you never know from where the
+		 *                     page will be called (think global config app).
+		 *                     For example KViewCanvas passes KSimpleConfig(
+		 *                     "kviewcanvas" ).
 		 */
 		void addPlugins( const QValueList<KPluginInfo> & plugininfos,
 				const QString & catname = QString::null,
@@ -122,7 +132,7 @@ class KPluginSelector : public QWidget
 		 * Load the state of the plugins (selected or not) from the KPluginInfo
 		 * objects. For KParts plugins everything should work automatically. For
 		 * your own type of plugins you might need to reimplement the
-		 * KPluginInfo::pluginLoaded() method. If that doesn't fit your needs
+		 * KPluginInfo::pluginEnabled() method. If that doesn't fit your needs
 		 * you can also reimplement this method.
 		 */
 		void load();

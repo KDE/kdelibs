@@ -55,29 +55,29 @@ class KCDDispatcher : public QObject
 
 		/**
 		 * Register a slot to be called when the configuration for the instance
-		 * associated with @p instanceName has changed. The instanceName is the
-		 * name that is passed to KGenericFactory (if it is used). You can query
-		 * it with KGenericFactory<YourClassName>::instance()->instanceName().
-		 * This is the same name that is put into the .desktop file of the KCMs
-		 * for the X-KDE-KCDParents.
+		 * has changed. @p instance is the KInstance object
+		 * that is passed to KGenericFactory (if it is used). You can query
+		 * it with KGenericFactory<YourClassName>::instance().
+		 * instance->instanceName() is also the same name that is put into the
+		 * .desktop file of the KCMs for the X-KDE-KCDParents.
 		 *
-		 * @param instanceName The internal name of the KInstance object and
-		 *                     also the value of X-KDE-KCDParents.
+		 * @param instance     The KInstance object
 		 * @param recv         The object that should receive the signal
 		 * @param slot         The slot to be called: SLOT( slotName() )
 		 */
-		void registerInstance( const QCString & instanceName, QObject * recv, const char * slot );
-
-		/**
-		 * Convenience function. See above for what it does.
-		 */
-		void registerInstance( const KInstance * instance, QObject * recv, const char * slot );
+		void registerInstance( KInstance * instance, QObject * recv, const char * slot );
 
 		/**
 		 * @return a list of all the instance names that are currently
 		 * registered
 		 */
 		QStrList instanceNames() const;
+
+//X 		/**
+//X 		 * @return The KInstance object belonging to the instance name you pass
+//X 		 * (only works for registered instances of course).
+//X 		 */
+//X 		KInstance * instanceForName( const QCString & instanceName );
 
 	public slots:
 		/**
@@ -88,6 +88,14 @@ class KCDDispatcher : public QObject
 		 */
 		void reparseConfiguration( const QCString & instanceName );
 
+		/**
+		 * When this slot is called the KConfig objects of all the registered
+		 * instances are sync()ed. This is usefull when some other KConfig
+		 * objects will read/write from/to the same config file, so that you
+		 * can first write out the current state of the KConfig objects.
+		 */
+		void syncConfiguration();
+
 	private slots:
 		void unregisterInstance( QObject * );
 
@@ -96,8 +104,12 @@ class KCDDispatcher : public QObject
 		~KCDDispatcher();
 		static KCDDispatcher * m_self;
 
-		QMap<QCString, QSignal *> m_signals;
-		QMap<QCString, int> m_instanceNameCount;
+		struct InstanceInfo {
+			KInstance * instance;
+			QSignal * signal;
+			int count;
+		};
+		QMap<QCString, InstanceInfo> m_instanceInfo;
 		QMap<QObject *, QCString> m_instanceName;
 
 		class KCDDispatcherPrivate;

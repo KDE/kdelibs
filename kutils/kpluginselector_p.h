@@ -51,7 +51,7 @@ class KPluginSelectionWidget : public QWidget
 		 * The information about the plugins will be loaded from the
 		 * share/apps/&lt;instancename&gt;/kpartplugins directory.
 		 *
-		 * @param instance     The KInstance object of the plugin's parent.
+		 * @param instanceName The name of the plugin's parent.
 		 * @param kps          A @ref KPluginSelector object.
 		 * @param parent       The parent widget.
 		 * @param catname      The translated name of the category.
@@ -61,7 +61,7 @@ class KPluginSelectionWidget : public QWidget
 		 *
 		 * @internal
 		 */
-		KPluginSelectionWidget( KInstance * instance, KPluginSelector * kps,
+		KPluginSelectionWidget( const QString & instanceName, KPluginSelector * kps,
 				QWidget * parent, const QString & catname,
 				const QString & category, KConfigGroup * config = 0,
 				const char * name = 0 );
@@ -101,22 +101,13 @@ class KPluginSelectionWidget : public QWidget
 		QString catName() const;
 
 		/**
-		 * Load the saved state (plugins selected or not) from a KConfig object.
+		 * Tell the KPluginInfo objects to load their state (enabled/disabled).
 		 */
 		virtual void load();
 
 		/**
-		 * Save the current state (which one's are enabled/disabled) to a
-		 * KConfig object.
-		 *
-		 * @param config  The KConfig object to save to. If you used the
-		 *                KParts constructor you may ignore this. The
-		 *                configuration will be saved in the "KParts Plugins"
-		 *                group.
-		 *
-		 *                If you used a different constructor you have to pass a
-		 *                KConfig object. The configuration will be saved in the
-		 *                "Plugins" group.
+		 * It tells the KPluginInfo objects to save their current state
+		 * (enabled/disabled).
 		 */
 		virtual void save();
 

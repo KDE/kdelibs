@@ -76,7 +76,6 @@
 #include <ksimpleconfig.h>
 #include <kdialog.h>
 #include <kglobal.h>
-#include <kinstance.h>
 #include <kstandarddirs.h>
 #include <ktabctl.h>
 #include <kcmoduleinfo.h>
@@ -94,10 +93,10 @@
 
 struct KPluginSelectionWidget::KPluginSelectionWidgetPrivate
 {
-	KPluginSelectionWidgetPrivate( KInstance * _instance,
+	KPluginSelectionWidgetPrivate( const QString & _instanceName,
 			KPluginSelector * _kps, const QString & _cat,
 			KConfigGroup * _config )
-		: instance( _instance )
+		: instanceName( _instanceName )
 		, widgetstack( 0 )
 		, kps( _kps )
 		, config( _config )
@@ -106,9 +105,14 @@ struct KPluginSelectionWidget::KPluginSelectionWidgetPrivate
 		, changed( 0 )
 	{}
 
+	~KPluginSelectionWidgetPrivate()
+	{
+		delete config;
+	}
+
 	QMap<QCheckListItem*, KPluginInfo> pluginInfoMap;
 
-	KInstance * instance; // == 0 for non-KParts plugins
+	QString instanceName; // isNull() for non-KParts plugins
 	QWidgetStack * widgetstack;
 	KPluginSelector * kps;
 	KConfigGroup * config;
@@ -122,11 +126,11 @@ struct KPluginSelectionWidget::KPluginSelectionWidgetPrivate
 	int changed;
 };
 
-KPluginSelectionWidget::KPluginSelectionWidget( KInstance * instance,
+KPluginSelectionWidget::KPluginSelectionWidget( const QString & instanceName,
 		KPluginSelector * kps, QWidget * parent, const QString & catname,
 		const QString & category, KConfigGroup * config, const char * name )
 	: QWidget( parent, name )
-	, d( new KPluginSelectionWidgetPrivate( instance, kps, catname, config ) )
+	, d( new KPluginSelectionWidgetPrivate( instanceName, kps, catname, config ) )
 {
 	init( kpartsPluginInfos(), category );
 }
@@ -148,23 +152,15 @@ inline QString KPluginSelectionWidget::catName() const
 
 QValueList<KPluginInfo> KPluginSelectionWidget::kpartsPluginInfos() const
 {
-	QValueList<KPluginInfo> infolist;
-	if( d->instance )
+	if( d->instanceName.isNull() )
 	{
-		QStringList desktopfilenames = d->instance->dirs()->findAllResources(
-				"data", d->instance->instanceName() +
-				"/kpartplugins/*.desktop", true, false );
-		KConfigGroup * cfgGroup = new KConfigGroup( d->instance->config(), "KParts Plugins" );
-		for( QStringList::ConstIterator it = desktopfilenames.begin();
-				it != desktopfilenames.end(); ++it )
-		{
-			KPluginInfo info( *it );
-			info.load( cfgGroup );
-			infolist += info;
-		}
-		delete cfgGroup;
+		QValueList<KPluginInfo> list;
+		return list; //nothing
 	}
-	return infolist;
+
+	QStringList desktopfilenames = KGlobal::dirs()->findAllResources( "data",
+			d->instanceName + "/kpartplugins/*.desktop", true, false );
+	return KPluginInfo::fromFiles( desktopfilenames );
 }
 
 void KPluginSelectionWidget::init( const QValueList<KPluginInfo> & plugininfos,
@@ -207,6 +203,7 @@ void KPluginSelectionWidget::init( const QValueList<KPluginInfo> & plugininfos,
 
 	// widgetstack
 	d->widgetstack = d->kps->widgetStack();
+	load();
 }
 
 KPluginSelectionWidget::~KPluginSelectionWidget()
@@ -376,6 +373,7 @@ void KPluginSelectionWidget::save()
 		info->save( d->config );
 	}
 	updateConfigPage( d->currentplugininfo, d->currentchecked );
+	kdDebug( 702 ) << "syncing config file" << endl;
 	d->config->sync();
 	d->changed = 0;
 	emit changed( false );
@@ -482,20 +480,23 @@ void KPluginSelector::checkNeedForTabWidget()
 	}
 }
 
-void KPluginSelector::addPlugins( KInstance * instance, const QString & catname,
-		const QString & category, KConfig * config )
+void KPluginSelector::addPlugins( const QString & instanceName,
+		const QString & catname, const QString & category, KConfig * config )
 {
 	checkNeedForTabWidget();
-	KConfigGroup * cfgGroup = new KConfigGroup( config ? config : instance->config(), "KParts Plugins" );
+	// FIXME: mem leak: the KSimpleConfig object needs to be deleted
+	KConfigGroup * cfgGroup = new KConfigGroup( config ? config :
+			new KSimpleConfig( instanceName ), "KParts Plugins" );
+	kdDebug( 702 ) << k_funcinfo << "cfgGroup = " << cfgGroup << endl;
 	KPluginSelectionWidget * w;
 	if( d->tabwidget )
 	{
-		w = new KPluginSelectionWidget( instance, this,
+		w = new KPluginSelectionWidget( instanceName, this,
 				d->tabwidget, catname, category, cfgGroup );
 		d->tabwidget->addTab( w, catname );
 	}
 	else
-		w = new KPluginSelectionWidget( instance, this, d->frame,
+		w = new KPluginSelectionWidget( instanceName, this, d->frame,
 				catname, category, cfgGroup );
 	connect( w, SIGNAL( changed( bool ) ), this, SIGNAL( changed( bool ) ) );
 	d->pswidgets += w;
@@ -506,6 +507,7 @@ void KPluginSelector::addPlugins( const QValueList<KPluginInfo> & plugininfos,
 {
 	checkNeedForTabWidget();
 	KConfigGroup * cfgGroup = new KConfigGroup( config ? config : KGlobal::config(), "Plugins" );
+	kdDebug( 702 ) << k_funcinfo << "cfgGroup = " << cfgGroup << endl;
 	KPluginSelectionWidget * w;
 	if( d->tabwidget )
 	{
