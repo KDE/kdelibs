@@ -71,6 +71,7 @@ void SlaveConfigPrivate::readGlobalConfig()
    global.clear();
    // Read stuff...
    KConfig config("kioslaverc");
+   readConfig(KGlobal::config(), "Socks", &global); // Socks settings.
    readConfig(&config, "<default>", &global);
 }
 

@@ -43,6 +43,7 @@
 #include <kdesu/client.h>
 #include <klocale.h>
 #include <kprotocolmanager.h>
+#include <ksocks.h>
 
 #include "slavebase.h"
 
@@ -65,20 +66,10 @@ public:
    SlaveBaseConfig(SlaveBase *_slave)
 	: slave(_slave) { }
 
-   bool hasGroup(const QString &) const { qWarning("hasGroup(const QString &)");
-return false; }
-   bool hasGroup(const QCString &) const { qWarning("hasGroup(const QCString &)");
-return false; }
-   bool hasGroup(const char *) const { qWarning("hasGroup(const char *)");
+   bool internalHasGroup(const QCString &) const { qWarning("hasGroup(const QCString &)");
 return false; }
 
    QStringList groupList() const { return QStringList(); }
-
-   bool hasKey(const QString &pKey) const
-   {
-      return slave->hasMetaData(pKey);
-   }
-   bool hasKey(const char *pKey) const { return hasKey(QString::fromLatin1(pKey)); }
 
    QMap<QString,QString> entryMap(const QString &) const
       { return QMap<QString,QString>(); }
@@ -783,6 +774,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         break;
     case CMD_CONFIG:
         stream >> d->configData;
+        KSocks::setConfig(d->config);
         break;
     case CMD_GET: 
     {
