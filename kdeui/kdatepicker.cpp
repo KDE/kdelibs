@@ -66,7 +66,6 @@ KDatePicker::KDatePicker(QWidget *parent, QDate dt, const char *name)
   QToolTip::add(monthBackward, i18n("Previous month"));
   QToolTip::add(selectMonth, i18n("Select a month"));
   QToolTip::add(selectYear, i18n("Select a year"));
-  QToolTip::add(d->closeButton, i18n("Close"));
 
   // -----
   setFontSize(10);
@@ -409,11 +408,12 @@ KDatePicker::setCloseButton( bool enable )
 {
     if ( enable == (d->closeButton != 0L) )
         return;
-    
+
     if ( enable ) {
         d->closeButton = new QToolButton( this );
+        QToolTip::add(d->closeButton, i18n("Close"));
         d->closeButton->setPixmap( SmallIcon("remove") );
-        connect( d->closeButton, SIGNAL( clicked() ), 
+        connect( d->closeButton, SIGNAL( clicked() ),
                  topLevelWidget(), SLOT( close() ) );
     }
     else {
