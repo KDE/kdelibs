@@ -110,7 +110,7 @@ public:
     bool parsing() const    { return m_parsing;     }
     bool minMaxKnown() const{ return m_minMaxKnown; }
     bool containsPositioned() const { return m_containsPositioned; }
-        
+
         // absolute relative or fixed positioning
 
     void setContainsPositioned(bool p);
@@ -316,10 +316,10 @@ public:
      * Special objects are objects that should be floated
      * but draw themselves (i.e. have content)
      */
-    bool isSpecial() const;
+    bool isSpecial() const { return (isFloating() || isPositioned()); };
     virtual bool containsSpecial() { return false; }
     virtual bool hasOverhangingFloats() { return false; }
-    
+
     virtual int bidiHeight() const { return 0; }
     virtual void position(int, int, int, int, int, bool) {}
 
@@ -373,6 +373,7 @@ protected:
     bool m_isText         : 1;
     bool m_inline         : 1;
     bool m_replaced       : 1;
+    bool m_useJumpTable   : 1;
 };
 
 

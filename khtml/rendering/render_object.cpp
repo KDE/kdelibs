@@ -397,23 +397,25 @@ void RenderObject::repaintObject(RenderObject *o, int x, int y)
     if(m_parent) m_parent->repaintObject(o, x, y);
 }
 
-// used for clear property & to layout replaced elements
-bool RenderObject::isSpecial() const
-{
-    return (isFloating() || isPositioned());
-}
-
 void RenderObject::printTree(int indent) const
 {
     QString ind;
     ind.fill(' ', indent);
-    kdDebug( 6045 ) << ind << renderName() << ": " << (void*)this
-                 << " il=" << isInline() << " ci=" << childrenInline()
-                 << " fl=" << isFloating() << " rp=" << isReplaced()
-                 << " an=" << isAnonymousBox()
-                 << " ps=" << isPositioned()
-                 << " cp=" << containsPositioned()
-                 << " laytd=" << layouted()
+    int childcount = 0;
+    for(RenderObject* c = firstChild(); c; c = c->nextSibling())
+        childcount++;
+
+    kdDebug()    << ind << renderName()
+                 << (childcount ?
+                     (QString::fromLatin1("[") + QString::number(childcount) + QString::fromLatin1("]"))
+                     : QString::null)
+                 << ": " << (void*)this
+                 << " il=" << (int)isInline() << " ci=" << (int) childrenInline()
+                 << " fl=" << (int)isFloating() << " rp=" << (int)isReplaced()
+                 << " an=" << (int)isAnonymousBox()
+                 << " ps=" << (int)isPositioned()
+                 << " cp=" << (int)containsPositioned()
+                 << " laytd=" << (int)layouted()
                  << " (" << xPos() << "," << yPos() << "," << width() << "," << height() << ")" << endl;
     RenderObject *child = firstChild();
     while( child != 0 )
