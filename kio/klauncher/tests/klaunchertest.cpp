@@ -49,14 +49,14 @@ int main(int argc, char *argv[])
 
    QString error;
    QCString dcopService;
-   int result = KService::startServiceByDesktopName(
+   int result = KApplication::startServiceByDesktopName(
 		"konsole", QString::null, dcopService, error);
 
    printf("Result = %d, error = \"%s\", dcopService = \"%s\"\n",
       result, error.ascii(), dcopService.data());
 
    return 0;
-   result = KService::startServiceByDesktopName(
+   result = KApplication::startServiceByDesktopName(
 		"konqueror", QString::null, dcopService, error);
 
    printf("Result = %d, error = \"%s\", dcopService = \"%s\"\n",
