@@ -57,7 +57,7 @@ static bool sendNotifyEvent(const QString &message, const QString &text,
   return client->send(daemonName, "Notify", "notify(QString,QString,QString,QString,QString,int,int,int)", data);
 }
 
-#ifndef KDE_NO_COMPAT
+//#ifndef KDE_NO_COMPAT
 bool KNotifyClient::event( StandardEvent type, const QString& text )
 {
     return event( 0, type, text );
@@ -74,7 +74,7 @@ bool KNotifyClient::userEvent(const QString &text, int present, int level,
     return userEvent( 0, text, present, level, sound, file );
 }
 
-#endif    
+//#endif    
 
 bool KNotifyClient::event( int winId, StandardEvent type, const QString& text )
 {
