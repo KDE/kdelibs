@@ -43,10 +43,14 @@ struct random_info {
 	int pid;
 	struct utsname un;
 	char dev_urandom[16];
+	char seed[MD5_COOKIE_LEN+1];
+	int number;
 };
 
+static char md5_seed[MD5_COOKIE_LEN+1];
 static char md5_cookie[MD5_COOKIE_LEN+1];
 static int md5_init = 0;
+static int md5_random_cookie_number = 0;
 
 static char *md5_to_ascii_overwrite(char *md5)
 {
@@ -102,6 +106,14 @@ char *md5_auth_mkcookie()
 		close(rndfd);
 	}
 
+	// ensure that two cookies that are  requested very shortly after each
+	// other (so that it looks like "at the same time") won't be the same
+	r.number = ++md5_random_cookie_number;
+
+	// this is some seed from a file which is updated sometimes with a
+	// new "md5_auth_mkcookie()" after initialization
+	strncmp(r.seed,md5_seed,MD5_COOKIE_LEN);
+
 	// build hash value of all information
 	MD5sum((unsigned char *)&r,sizeof(struct random_info),out);
 
@@ -116,13 +128,43 @@ const char *md5_auth_cookie()
 	return md5_cookie;
 }
 
-void md5_auth_init(const char *authname)
+static int md5_load_cookie(const char *filename, char *cookie)
 {
-	int fd,i;
+	int fd = open(filename,O_RDONLY);
+	int i;
+
+	if(fd != -1) {
+		struct stat st;
+		for(i=0;i<5;i++) {
+			fstat(fd,&st);
+			if(st.st_size == MD5_COOKIE_LEN) {
+				lseek(fd, 0, SEEK_SET); 
+				if(read(fd,cookie,MD5_COOKIE_LEN) == MD5_COOKIE_LEN)
+				{
+					cookie[MD5_COOKIE_LEN] = 0;
+					close(fd);
+					return 1;
+				}
+			}
+			fprintf(stderr,"mcop warning: "
+					"authority file has wrong size (just being written?)\n");
+			sleep(1);
+		}
+	}
+	return 0;
+}
+
+void md5_auth_init(const char *authname, const char *seedname)
+{
+	struct stat st;
+	int fd;
 	char *cookie;
 
+	// don't care if it works - no harm is being done if it doesn't
+	md5_load_cookie(seedname,md5_seed);
+
 	fd = open(authname,O_CREAT|O_EXCL|O_WRONLY,S_IRUSR|S_IWUSR);
-	if(fd) {
+	if(fd != -1) {
 		cookie = md5_auth_mkcookie();
 		write(fd,cookie,strlen(cookie));
 		bzero(cookie,strlen(cookie));
@@ -130,28 +172,34 @@ void md5_auth_init(const char *authname)
 		close(fd);
 	}
 
-	fd = open(authname,O_RDONLY);
-	if(fd) {
-		struct stat st;
-		for(i=0;i<5;i++) {
-			fstat(fd,&st);
-			if(st.st_size == MD5_COOKIE_LEN) {
-				lseek(fd, 0, SEEK_SET); 
-				if(read(fd,md5_cookie,MD5_COOKIE_LEN) == MD5_COOKIE_LEN)
-				{
-					md5_cookie[MD5_COOKIE_LEN] = 0;
-					close(fd);
-					return;
-				}
-			}
-			fprintf(stderr,"mcop warning: authority file has wrong size (just being written?)\n");
-			sleep(1);
-		}
+	if(!md5_load_cookie(authname,md5_cookie))
+	{
+		fprintf(stderr,
+			"mcop error: authority file is corrupt (remove %s to fix that)\n",
+			authname);
+
+		exit(1);
 	}
 
-	fprintf(stderr,
-		"mcop error: authority file is corrupt (remove %s to fix that)\n",
-		authname);
-
-	exit(1);
+	if(seedname)
+	{
+		/*
+		 * maxage ensures that not everybody will try to update the seed
+		 * at the same time, while it will take at most 5 hours between
+		 * updates (if there are any initialization calls)
+		 */
+		int maxage = 300 + (getpid() & 0xfff)*4;
+		int lstat_result = lstat(seedname,&st);
+		if(lstat_result != 0 || (st.st_mtime - time(0)) > maxage)
+		{
+			fd = open(seedname,O_TRUNC|O_CREAT|O_WRONLY,S_IRUSR|S_IWUSR);
+			if(fd != -1) {
+				cookie = md5_auth_mkcookie();
+				write(fd,cookie,strlen(cookie));
+				bzero(cookie,strlen(cookie));
+				free(cookie);
+				close(fd);
+			}
+		}
+	}
 }

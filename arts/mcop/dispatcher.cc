@@ -44,7 +44,17 @@ Dispatcher::Dispatcher(IOManager *ioManager)
 	_instance = this;
 
 	generateServerID();
-	md5_auth_init(MCOPUtils::createFilePath("secret-cookie").c_str());
+
+	/*
+	 * Path for random seed: better to store it in home, because some
+	 * installations wipe /tmp on reboot.
+	 */
+	string seedpath = MCOPUtils::createFilePath("random-seed");
+	char *home;
+	if(home = getenv("HOME")) seedpath = string(home) + "/.MCOP-random-seed";
+
+	string cookiepath = MCOPUtils::createFilePath("secret-cookie");
+	md5_auth_init(cookiepath.c_str(),seedpath.c_str());
 
 	if(ioManager)
 	{

@@ -78,8 +78,14 @@ const char *md5_auth_cookie();
 /*
  * initializes md5_auth from file (will either read the "secret cookie" that
  * is already in the file, or create a new "secret cookie" and save it)
+ *
+ * if you pass some filename to seedname, the security will be improved
+ * by loading a randomseed from that file, and (if it has no recent date)
+ * saving a new seed to it - this will ensure that the md5_auth_mkcookie()
+ * routine will return a really unpredictable result (as it depends on all
+ * processes that ever have touched the seed)
  */
-void md5_auth_init(const char *authname);
+void md5_auth_init(const char *authname, const char *seedname);
 
 #ifdef __cplusplus
 }
