@@ -31,5 +31,6 @@ SUBDIRS =
 
 bin_PROGRAMS = testkdepcsc
 testkdepcsc_SOURCES = teste.cc
-testkdepcsc_LIBADD = $(LIB_KDEUI) -lksmartcard
+testkdepcsc_LDADD = $(LIB_KDEUI) -lksmartcard
+testkdepcsc: libksmartcard.la
 
