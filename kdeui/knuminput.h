@@ -162,7 +162,7 @@ class KIntNumInput : public KNumInput
     Q_PROPERTY( QString suffix READ suffix WRITE setSuffix )
     Q_PROPERTY( QString prefix READ prefix WRITE setPrefix )
     Q_PROPERTY( QString specialValueText READ specialValueText WRITE setSpecialValueText )
-        
+
 public:
     /**
      * Constructs an input control for integer values
@@ -246,7 +246,7 @@ public slots:
     /**
      * sets the Suffix
      * @param suffix the suffix that should be used. QString::null to disable
-     * Formatting has to be provided (e.g. a space separator between the 
+     * Formatting has to be provided (e.g. a space separator between the
      * prepended @param value and the suffix's text has to be provided
      * as the first character in the suffix)
      */
@@ -318,7 +318,7 @@ class KDoubleLine;
 class KDoubleNumInput : public KNumInput
 {
     Q_OBJECT
-    Q_PROPERTY( int value READ value WRITE setValue )
+    Q_PROPERTY( double value READ value WRITE setValue )
     Q_PROPERTY( QString suffix READ suffix WRITE setSuffix )
     Q_PROPERTY( QString prefix READ prefix WRITE setPrefix )
     Q_PROPERTY( QString specialValueText READ specialValueText WRITE setSpecialValueText )
@@ -400,7 +400,7 @@ public slots:
     /**
      * sets the Suffix
      * @param suffix the suffix that should be used. QString::null to disable
-     * Formatting has to be provided (e.g. a space separator between the 
+     * Formatting has to be provided (e.g. a space separator between the
      * prepended @param value and the suffix's text has to be provided
      * as the first character in the suffix)
      */
@@ -478,7 +478,7 @@ public:
      *  and initial value 0.
      */
     KIntSpinBox( QWidget *parent=0, const char *name=0);
-     
+
     /**
      *  Constructor.
      *
