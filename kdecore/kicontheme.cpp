@@ -61,11 +61,13 @@ public:
     int size() const { return mSize; }
     int minSize() const { return mMinSize; }
     int maxSize() const { return mMaxSize; }
+    int threshold() const { return mThreshold; }
 
 private:
     bool mbValid;
     int mType, mSize, mContext;
     int mMinSize, mMaxSize;
+    int mThreshold;
 
     QString mDir;
 };
@@ -233,6 +235,7 @@ QStringList KIconTheme::queryIcons(int size, int context) const
         if ((dir->type() == KIcon::Scalable) &&
                 (size >= dir->minSize()) && (size <= dir->maxSize()))
             return dir->iconList();
+	if (dir->type() == KIcon::Threshold) return dir->iconList();
     }
 
     dirs.toFirst();
@@ -304,10 +307,14 @@ KIcon KIconTheme::iconPath(const QString& name, int size, int match) const
             if ((dir->type() == KIcon::Scalable) &&
                 ((size < dir->minSize()) || (size > dir->maxSize())))
               continue;
+            if ((dir->type() == KIcon::Threshold) &&
+		(abs(dir->size()-size) > dir->threshold()))
+                continue;
         } else
         {
             dw = dir->size() - size;
-            if ((dw > 7) || (abs(dw) >= abs(delta)))
+            if (dir->type() != KIcon::Threshold &&
+               ((dw > 7) || (abs(dw) >= abs(delta))))
                 continue;
         }
 
@@ -317,6 +324,7 @@ KIcon KIconTheme::iconPath(const QString& name, int size, int match) const
         icon.path = path;
         icon.size = dir->size();
         icon.type = dir->type();
+	icon.threshold = dir->threshold();
         icon.context = dir->context();
 
         // if we got in MatchExact that far, we find no better
@@ -431,6 +439,8 @@ KIconThemeDir::KIconThemeDir(const QString& dir, const KConfigBase *config)
         mType = KIcon::Fixed;
     else if (tmp == "Scalable")
         mType = KIcon::Scalable;
+    else if (tmp == "Threshold")
+        mType = KIcon::Threshold;
     else {
         kdDebug(264) << "Invalid Type= line for icon theme: " <<  mDir << "\n";
         return;
@@ -439,7 +449,8 @@ KIconThemeDir::KIconThemeDir(const QString& dir, const KConfigBase *config)
     {
         mMinSize = config->readNumEntry("MinSize", mSize);
         mMaxSize = config->readNumEntry("MaxSize", mSize);
-    }
+    } else if (mType == KIcon::Threshold)
+	mThreshold = config->readNumEntry("Threshold", 2);
     mbValid = true;
 }
 

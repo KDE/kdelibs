@@ -147,6 +147,7 @@ struct KIconLoaderPrivate
     QImage lastImage; // last loaded image without effect applied
     QString lastImageKey; // key for icon without effect
     bool lastIconType; // see KIcon::type
+    bool lastIconThreshold; // see KIcon::threshold
 };
 
 /*** KIconLoader: the icon loader ***/
@@ -519,6 +520,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, int group, int size,
 
     QImage *img = 0;
     int iconType;
+    int iconThreshold;
 
     if ( ( path_store != 0L ) ||
          noEffectKey != d->lastImageKey )
@@ -562,15 +564,18 @@ QPixmap KIconLoader::loadIcon(const QString& _name, int group, int size,
             return pix;
 
         iconType = icon.type;
+	iconThreshold = icon.threshold;
 
         d->lastImage = img->copy();
         d->lastImageKey = noEffectKey;
         d->lastIconType = iconType;
+        d->lastIconThreshold = iconThreshold;
     }
     else
     {
         img = new QImage( d->lastImage.copy() );
         iconType = d->lastIconType;
+        iconThreshold = d->lastIconThreshold;
     }
 
     // Blend in all overlays
@@ -600,6 +605,11 @@ QPixmap KIconLoader::loadIcon(const QString& _name, int group, int size,
     if ((iconType == KIcon::Scalable) && (size != img->width()))
     {
 	*img = img->smoothScale(size, size);
+    }
+    if ((iconType == KIcon::Threshold) && (size != img->width()))
+    {
+	if ( abs(size-img->width())>iconThreshold )
+	    *img = img->smoothScale(size, size);
     }
     if ((group >= 0) && d->mpGroups[group].dblPixels)
     {

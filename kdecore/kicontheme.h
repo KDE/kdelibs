@@ -39,7 +39,7 @@ public:
     bool isValid() const { return size != 0; }
 
     enum Context { Any, Action, Application, Device, FileSystem, MimeType };
-    enum Types { Fixed, Scalable };
+    enum Types { Fixed, Scalable, Threshold };
     enum MatchType { MatchExact, MatchBest };
     // if you add a group here, make sure to change the config reading in
     // KIconLoader too
@@ -56,8 +56,11 @@ public:
     /** The context of the icon. */
     int context;
 
-    /** The type of the icon: Fixed or Scalable. */
+    /** The type of the icon: Fixed, Scalable or Threshold. */
     int type;
+
+    /** The threshold in case type == Threshold */
+    int threshold;
 
     /** The full path of the icon. */
     QString path;
