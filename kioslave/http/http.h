@@ -57,13 +57,10 @@ public:
   /** Authorization method used **/
   enum HTTP_AUTH   {AUTH_None, AUTH_Basic, AUTH_Digest};
 
-  /** Current protocol mode used **/
-  enum HTTP_PROTO  {PROTO_HTTP, PROTO_HTTPS, PROTO_WEBDAV};
-
   /** HTTP / DAV method **/
   enum HTTP_METHOD {HTTP_GET, HTTP_PUT, HTTP_POST, HTTP_HEAD, HTTP_DELETE,
-                    DAV_PROPFIND, DAV_PROPPATCH, DAV_MKCOL, DAV_COPY,
-                    DAV_MOVE, DAV_LOCK, DAV_UNLOCK };
+                    HTTP_OPTIONS, DAV_PROPFIND, DAV_PROPPATCH, DAV_MKCOL,
+                    DAV_COPY, DAV_MOVE, DAV_LOCK, DAV_UNLOCK };
 
   /** State of the current Connection **/
   typedef struct
@@ -142,6 +139,9 @@ public:
   virtual void rename( const KURL& src, const KURL& dest, bool overwrite );
   virtual void copy( const KURL& src, const KURL& dest, int _permissions, bool overwrite );
   virtual void del( const KURL& url, bool _isfile );
+
+  // ask the host whether it supports WebDAV & cache this info
+  bool davHostOk();
 
   // Send requests to lock and unlock resources
   void davLock( const KURL& url, const QString& scope,
@@ -382,7 +382,6 @@ protected:
   bool m_bEOF;
 
   HTTP_REV m_HTTPrev;
-  HTTP_PROTO m_proto;
 
   int m_iSize; // Expected size of message
   long m_iBytesLeft; // # of bytes left to receive in this message.
@@ -397,6 +396,9 @@ protected:
 //--- WebDAV
   // Data structure to hold data which will be passed to an internal func.
   QString m_intData;
+  bool m_davHostOk;
+  bool m_davHostUnsupported;
+  QString m_davVersions;
 //----------
 
   // Holds the POST data so it won't get lost on if we

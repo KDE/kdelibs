@@ -12,11 +12,9 @@ faster while using as few resources as possible.  Work on this is currently
 being done to add this support for KDE 3.x version.
 
 - WebDAV support:
-This is one of the most sought after feature that is currently missing.  I plan to start
-the seeds to implement this feature for KDE 3.x version.  Note that the support that
-needs to be built is very basic and nominal.  The majority of the work such as parsing
-the XML information and GUI integration into konqueror will have to be done as a
-konqueror part.
+The majority of the work for this is done, see README.webdav. GUI integration
+into konqueror as a konqueror part would be nice, to add GUI support for
+features such as locking.
 
 - Rating(s) support.  http://www.w3.org/PICS:
 This might involve an external program to parse the labels, and something to
@@ -44,3 +42,4 @@ we will certainly need to have these files translated.
 Maintainers
 Waldo Bastian <bastian@kde.org>
 Dawit Alemayehu <adawit@kde.org>
+WebDAV support: Hamish Rodda <meddie@yoyo.cc.monash.edu.au>

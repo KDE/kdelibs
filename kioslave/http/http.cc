@@ -296,6 +296,10 @@ void HTTPProtocol::setHost( const QString& host, int port,
                             const QString& user, const QString& pass )
 {
   kdDebug(7113) << "(" << m_pid << ") Hostname is now: " << host << endl;
+  
+  if ( m_request.hostname != host )
+    // reset the webdav-capable flags for this host
+    m_davHostOk = m_davHostUnsupported = false;
 
   m_request.hostname = host;
   m_request.port = (port == 0) ? m_iDefaultPort : port;
@@ -326,7 +330,7 @@ bool HTTPProtocol::checkRequestURL( const KURL& u )
   return true;
 }
 
-void HTTPProtocol::retrieveContent( bool dataInternal )
+void HTTPProtocol::retrieveContent( bool dataInternal /* = false */ )
 {
   if ( !retrieveHeader( false ) )
   {
@@ -340,8 +344,10 @@ void HTTPProtocol::retrieveContent( bool dataInternal )
   httpClose();
   // if data is required internally, don't finish,
   // it is processed before we finish()
-  if ( !dataInternal )
+  if ( !dataInternal ) {
+    kdDebug(7113) << "Finished." << endl;
     finished();
+  }
 }
 
 bool HTTPProtocol::retrieveHeader( bool close_connection )
@@ -450,10 +456,11 @@ void HTTPProtocol::davStatList( const KURL& url, bool stat )
   UDSEntry entry;
   UDSAtom atom;
 
-  // WebDAV Stat or List...
-  kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::davStatList " << url.prettyURL()
-                << endl;
+  // check to make sure this host supports WebDAV
+  if ( !davHostOk() )
+    return;
 
+  // WebDAV Stat or List...
   m_request.method = DAV_PROPFIND;
   m_request.path = url.path();
   m_request.query = QString::null;
@@ -783,6 +790,51 @@ QString HTTPProtocol::davProcessLocks()
   return QString::null;
 }
 
+bool HTTPProtocol::davHostOk()
+{
+  // cached?
+  if ( m_davHostOk )
+    return true;
+  else if ( m_davHostUnsupported ) {
+    davError( -2 );
+    return false;
+  }
+
+  // call a HTTP OPTIONS to find out if we're good...
+  kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::davHostOk " << endl;
+
+  m_request.method = HTTP_OPTIONS;
+  // query the server's capabilities generally, not for a specific URL
+  m_request.path = "*";
+  m_request.query = QString::null;
+  m_request.cache = CC_Reload;
+  m_request.doProxy = m_bUseProxy;
+
+  // clear davVersions variable, which holds the response to the DAV: header
+  m_davVersions = QString::null;
+
+  retrieveContent( true );
+
+  if ( m_davVersions != QString::null ) {
+    QStringList vers = QStringList::split( ',', m_davVersions );
+    QString version;
+
+    for (QStringList::iterator it = vers.begin(); it != vers.end(); it++) {
+      uint verNo = (*it).toUInt();
+      if ( verNo > 0 && verNo < 3 )
+        m_davHostOk = true;
+      kdDebug(7113) << "Server supports DAV version " << verNo << "." << endl;
+    }
+
+    if ( m_davHostOk )
+      return true;
+  }
+
+  m_davHostUnsupported = true;
+  davError( -2 );
+  return false;
+}
+
 void HTTPProtocol::mkdir( const KURL& url, int )
 {
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::mkdir " << url.url()
@@ -1039,8 +1091,11 @@ void HTTPProtocol::davUnlock( const KURL& url )
 QString HTTPProtocol::davError( int code /* = -1 */, QString url )
 {
   bool callError = false;
-  if (code == -1) {
+  if ( code == -1 ) {
     code = m_responseCode;
+    callError = true;
+  }
+  if ( code == -2 ) {
     callError = true;
   }
 
@@ -1078,6 +1133,9 @@ QString HTTPProtocol::davError( int code /* = -1 */, QString url )
     case HTTP_DELETE:
       action = i18n( "delete the specified file or directory" );
       break;
+    case HTTP_OPTIONS:
+      action = i18n( "query the server's capabilities" );
+      break;
     case HTTP_GET:
     case HTTP_PUT:
     case HTTP_POST:
@@ -1093,6 +1151,11 @@ QString HTTPProtocol::davError( int code /* = -1 */, QString url )
                       .arg( code ).arg( action );
 
   switch ( code ) {
+    case -2:
+      // internal error: OPTIONS request did not specify DAV compliance
+      kError = ERR_UNSUPPORTED_PROTOCOL;
+      errorString = i18n("The server does not support the WebDAV protocol.");
+      break;
     case 207:
       // 207 Multi-status
       {
@@ -1616,6 +1679,10 @@ bool HTTPProtocol::httpOpen()
       break;
   case HTTP_DELETE:
       header = "DELETE ";
+      m_bCachedWrite = false; // Do not put any result in the cache
+      break;
+  case HTTP_OPTIONS:
+      header = "OPTIONS ";
       m_bCachedWrite = false; // Do not put any result in the cache
       break;
   case DAV_PROPFIND:
@@ -2357,7 +2424,7 @@ bool HTTPProtocol::readHeader()
         if ( strncasecmp( dispositionBuf, "filename", 8 ) == 0 )
         {
           dispositionBuf += 8;
-          while ( (dispositionBuf[0] == ' ') || 
+          while ( (dispositionBuf[0] == ' ') ||
                   (dispositionBuf[0] == '=') )
             dispositionBuf++;
 
@@ -2428,6 +2495,13 @@ bool HTTPProtocol::readHeader()
       else if (strncasecmp(buf, "Content-MD5:", 12) == 0) {
         m_sContentMD5 = strdup(trimLead(buf + 12));
       }
+
+      // *** Responses to the HTTP OPTIONS method follow
+      // WebDAV capabilities
+      else if (strncasecmp(buf, "DAV:", 4) == 0) {
+        m_davVersions = strdup(trimLead(buf + 4));
+      }
+      // *** Responses to the HTTP OPTIONS method finished
     }
     else if (buf[0] == '<')
     {
