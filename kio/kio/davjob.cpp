@@ -95,3 +95,4 @@ DavJob* KIO::davSearch( const KURL& url, const QString& nsURI, const QString& qN
   return new DavJob( url, KIO::DAV_SEARCH, doc.toString(), showProgressInfo );
 }
 
+#include "davjob.moc"
