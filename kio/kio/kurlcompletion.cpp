@@ -54,11 +54,6 @@
 
 #include "kurlcompletion.h"
 
-#if defined(HAVE_NSGETENVIRON) && defined(HAVE_CRT_EXTERNS_H)
-# include <crt_externs.h>
-# define environ (*_NSGetEnviron())
-#endif
-
 static bool expandTilde(QString &);
 static bool expandEnv(QString &);
 
