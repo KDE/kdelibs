@@ -1,4 +1,4 @@
-INCLUDES=$(all_includes) $(PCSC_INCLUDES) -I$(top_srcdir)/kio -I../kardimpl
+INCLUDES= $(PCSC_INCLUDES) -I$(top_srcdir)/kio -I../kardimpl $(all_includes)
 
 
 lib_LTLIBRARIES = libksmartcard.la

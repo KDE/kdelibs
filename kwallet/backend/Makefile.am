@@ -1,5 +1,5 @@
 
-INCLUDES= -I$(srcdir) $(all_includes) -I$(srcdir)/../client
+INCLUDES= -I$(srcdir) -I$(srcdir)/../client $(all_includes)
 
 lib_LTLIBRARIES = libkwalletbackend.la
 
