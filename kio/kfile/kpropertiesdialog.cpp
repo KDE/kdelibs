@@ -49,7 +49,6 @@ extern "C" {
 #include <assert.h>
 
 #include <qfile.h>
-#include <qapplication.h>
 #include <qdir.h>
 #include <qlabel.h>
 #include <qpushbutton.h>
@@ -62,6 +61,7 @@ extern "C" {
 #include <qcombobox.h>
 #include <qgroupbox.h>
 
+#include <kapplication.h>
 #include <kdialog.h>
 #include <kdirsize.h>
 #include <kdirwatch.h>
@@ -1812,7 +1812,7 @@ bool KExecPropsPlugin::supports( KFileItemList _items )
     return false;
   // open file and check type
   KDesktopFile config( item->url().path(), true /* readonly */ );
-  return config.hasApplicationType();
+  return config.hasApplicationType() && kapp->authorize("run_desktop_files") && kapp->authorize("shell_access");
 }
 
 void KExecPropsPlugin::applyChanges()
