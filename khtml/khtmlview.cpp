@@ -988,7 +988,7 @@ void KHTMLView::viewportPaintEvent ( QPaintEvent* pe  )
     //printf("TIME: print() dt=%d\n",qt.elapsed());
 }
 
-void KHTMLView::layout()
+void KHTMLView::layout(bool force)
 {
     //### take care of frmaes (hide scrollbars,...)
 
@@ -1011,7 +1011,7 @@ void KHTMLView::layout()
 	int w = width() - SCROLLBARWIDTH - 2*marginWidth();
 
 //	if(w < _width-5 || w > _width + 5)
-    	if (w!=_width)
+    	if (w != _width || force)
 	{
 	    //printf("layouting document\n");
 

@@ -102,7 +102,7 @@ CSSStyleSelector::CSSStyleSelector(HTMLDocumentImpl *doc)
 	HTMLBodyElementImpl *body = static_cast<HTMLBodyElementImpl *>(e);
 	if(body->sheet())
 	{
-	    printf("body has style sheet\n");
+	    printf("body has style sheet %p\n", body->sheet());
 	    authorStyle->append(body->sheet());
 	}
     }
@@ -185,7 +185,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
 //    printf("STYLE count=%d, DATA count=%d\n",RenderStyle::counter, SharedData::counter);
 
     // experimental -antti
-
+#if 0
     for ( int n=0; n<(int)lastStyles.count(); n++)
     {
     	style->mergeData(lastStyles.at(n));
@@ -195,7 +195,8 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
 
     if (lastStyles.count()>5)
     	lastStyles.removeFirst();
-	
+#endif
+
     delete propsToApply;
 
     return style;

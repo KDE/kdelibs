@@ -35,6 +35,7 @@
 #include <kglobal.h>
 
 #include "css/cssstyleselector.h"
+#include "css/css_stylesheetimpl.h"
 #include "rendering/render_style.h"
 #include "rendering/render_root.h"
 
@@ -53,6 +54,8 @@ HTMLDocumentImpl::HTMLDocumentImpl() : DocumentImpl()
     tokenizer = 0;
 
     bodyElement = 0;
+
+    m_loadingSheet = false;
 }
 
 HTMLDocumentImpl::HTMLDocumentImpl(KHTMLView *v)
@@ -65,6 +68,8 @@ HTMLDocumentImpl::HTMLDocumentImpl(KHTMLView *v)
     bodyElement = 0;
 
     m_styleSelector = new CSSStyleSelector(this);
+
+    m_loadingSheet = false;
 }
 
 HTMLDocumentImpl::~HTMLDocumentImpl()
@@ -304,6 +309,7 @@ void HTMLDocumentImpl::setVisuallyOrdered()
     if(!m_style) return;
     m_style->setVisuallyOrdered(true);
 }
+
 void HTMLDocumentImpl::createSelector()
 {
     //printf("document::createSelector\n");
@@ -317,7 +323,10 @@ void HTMLDocumentImpl::createSelector()
     //printf("document::createSelector3\n");
     parser->processQueue();
     // parsing is finished if the tokenizer is already deleted
-    if(!tokenizer) delete parser;
+    if(!tokenizer)
+    {
+	delete parser;
+    }
     parser = 0;
 }
 
@@ -325,7 +334,7 @@ bool HTMLDocumentImpl::headLoaded()
 {
     printf("checking for headLoaded()\n");
     if(parser && !parser->parsingBody()) return false;
-    if(!body()) return false;
+    if(m_loadingSheet) return false;
 
     NodeImpl *test = _first;
     if(!test) return true;
@@ -366,3 +375,15 @@ bool HTMLDocumentImpl::headLoaded()
     printf("head loaded\n");
     return true;
 }
+
+void HTMLDocumentImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet)
+{
+    printf("HTMLDocument::setStyleSheet()\n");
+    m_sheet = new CSSStyleSheetImpl(this, url);
+    m_sheet->ref();
+    m_sheet->parseString(sheet);
+    m_loadingSheet = false;
+
+    createSelector();
+}
+

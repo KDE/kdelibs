@@ -321,7 +321,9 @@ void KHTMLParser::processQueue()
 
 void KHTMLParser::processOneToken(Token *t)
 {
-    //printf("==> parser: processing token %d current = %d\n", t->id, current->id());
+#ifdef PARSER_DEBUG
+    printf("\n\n==> parser: processing token %d current = %d\n", t->id, current->id());
+#endif
 
     if(t->id > ID_CLOSE_TAG)
     {
@@ -996,7 +998,11 @@ void KHTMLParser::processCloseTag(Token *t)
     {
 	nested_html--;
 	if(nested_html <= 0)
+	{
 	    end = true;
+	    // ### HACK!!!
+	    document->view()->layout(true);
+	}
 	break;
     }
     case ID_FORM+ID_CLOSE_TAG:

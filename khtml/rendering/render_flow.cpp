@@ -108,14 +108,14 @@ void RenderFlow::print(QPainter *p, int _x, int _y, int _w, int _h,
 	_tx += m_x;
 	_ty += m_y;
     }
-    
+
     // check if we need to do anything at all...
     if(!isInline())
     {
 	int h = m_height;
 	if(specialObjects && floatBottom() > h) h = floatBottom();
 	if((_ty > _y + _h) || (_ty + h < _y)) return;
-    }    
+    }
 
     printObject(p, _x, _y, _w, _h, _tx, _ty);
 }
@@ -126,8 +126,8 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
 #ifdef DEBUG_LAYOUT
     printf("%s(RenderFlow)::printObject() w/h = (%d/%d)\n", renderName(), width(), height());
 #endif
-    
-    
+
+
     // 1. print background, borders etc
     if(m_printSpecial && !isInline())
 	printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
@@ -146,7 +146,7 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
 	    }
 	}
     }
-    
+
     // 3. print contents
     RenderObject *child = firstChild();
     while(child != 0)
@@ -288,7 +288,7 @@ void RenderFlow::layoutBlockChildren(bool deep)
 	m_height += margin;
 
     	// html blocks flow around floats	
-    	if (style()->htmlHacks() && child->style()->flowAroundFloats() ) 	    
+    	if (style()->htmlHacks() && child->style()->flowAroundFloats() ) 	
 	    child->setPos(leftMargin(m_height) + getIndent(child), m_height);
 	else
 	    child->setPos(xPos + getIndent(child), m_height);
@@ -403,15 +403,15 @@ RenderFlow::insertFloat(RenderObject *o)
     else
 	f->type = SpecialObject::FloatRight;
     f->node = o;
-    
+
     specialObjects->append(f);
 //    printf("inserting node %p number of specialobject = %d\n", o,
 //	   specialObjects->count());
 	
     positionNewFloats();
-    
+
     // html blocks flow around floats, to do this add floats to parent too
-    if(style()->htmlHacks() && childrenInline())     
+    if(style()->htmlHacks() && childrenInline())
     {
     	RenderObject* obj = parent();
      	while ( obj && obj->childrenInline() ) obj=obj->parent();
@@ -423,21 +423,21 @@ RenderFlow::insertFloat(RenderObject *o)
 		par->specialObjects = new QList<SpecialObject>;
 		par->specialObjects->setAutoDelete(true);	
 	    }
-	    
+	
 	    QListIterator<SpecialObject> it(*par->specialObjects);
 	    SpecialObject* tt;	
 	    while ( (tt = it.current()) ) {
 		if (tt->node == o) return;
 		++it;
-	    }	    
-	    
+	    }	
+	
 	    SpecialObject* so = new SpecialObject(*f);
 	    so->startY = so->startY + m_y;
 	    so->endY = so->endY + m_y;
 	    so->noPaint = true;
 	    par->specialObjects->append(so);
 	}
-    }    
+    }
 }
 
 void RenderFlow::positionNewFloats()
@@ -670,7 +670,7 @@ RenderFlow::clearFloats()
     if(!prev->isFlow()) return;
     RenderFlow * flow = static_cast<RenderFlow *>(prev);
     if(!flow->specialObjects) return;
-    if(style()->htmlHacks() && style()->flowAroundFloats()) 
+    if(style()->htmlHacks() && style()->flowAroundFloats())
     	return; //html tables and lists flow as blocks
     if(flow->floatBottom() > offset)
     {
@@ -879,7 +879,7 @@ void RenderFlow::close()
 	    m_height += paddingBottom();
 	calcMinMaxWidth();
     }
-    //if(containingBlockWidth() < m_minWidth && m_parent)
+    if(containingBlockWidth() < m_minWidth && m_parent)
     	containingBlock()->updateSize();
 
 #ifdef DEBUG_LAYOUT

@@ -74,7 +74,7 @@ public:
 
   DOM::HTMLDocument htmlDocument() const;
   KHTMLPartBrowserExtension *browserExtension() const;
-  KHTMLView *htmlView() const;
+  KHTMLView *view() const;
 
   void enableJScript( bool enable );
   bool jScriptEnabled() const;

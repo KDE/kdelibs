@@ -75,6 +75,7 @@ namespace khtml
     bool m_bPreloaded;
     KURL m_workingURL;
   };
+
 };
 
 typedef QMap<QString,khtml::ChildFrame>::ConstIterator ConstFrameIt;
@@ -95,6 +96,7 @@ public:
     m_settings = new khtml::Settings();
     m_bClearing = false;
     m_bCleared = false;
+    m_userSheet = QString::null;
   }
   ~KHTMLPartPrivate()
   {
@@ -139,7 +141,31 @@ public:
 
   bool m_bClearing;
   bool m_bCleared;
+
+    DOM::DOMString m_userSheet;
+    DOM::DOMString m_userSheetUrl;
 };
+
+namespace khtml {
+    class PartStyleSheetLoader : public CachedObjectClient
+    {
+    public:
+	PartStyleSheetLoader(KHTMLPartPrivate *part, DOM::DOMString url)
+	{
+	    m_part = part;
+	    Cache::requestStyleSheet(url, DOMString());
+	}
+
+	virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet)
+	{
+	    m_part->m_userSheet = sheet;
+	    m_part->m_userSheetUrl = url;
+	    delete this;
+	}
+	KHTMLPartPrivate *m_part;
+    };
+};
+
 
 KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *parent, const char *name )
 : KParts::ReadOnlyPart( parent ? parent : parentWidget, name ? name : widgetname )
@@ -267,7 +293,7 @@ KHTMLPartBrowserExtension *KHTMLPart::browserExtension() const
   return d->m_extension;
 }
 
-KHTMLView *KHTMLPart::htmlView() const
+KHTMLView *KHTMLPart::view() const
 {
   return d->m_view;
 }
@@ -631,12 +657,15 @@ bool KHTMLPart::setEncoding( const QString &name, bool override )
 
 void KHTMLPart::setUserStyleSheet(const KURL &url)
 {
-    // ###
+    d->m_userSheetUrl = DOMString();
+    d->m_userSheet = DOMString();
+    khtml::PartStyleSheetLoader *l = new khtml::PartStyleSheetLoader(d, url.url());
 }
 
 void KHTMLPart::setUserStyleSheet(const QString &styleSheet)
 {
-    // ###
+    d->m_userSheet = styleSheet;
+    d->m_userSheetUrl = DOMString();
 }
 
 
@@ -1461,12 +1490,12 @@ KHTMLPartBrowserExtension::KHTMLPartBrowserExtension( KHTMLPart *parent, const c
 
 int KHTMLPartBrowserExtension::xOffset()
 {
-  return m_part->htmlView()->contentsX();
+  return m_part->view()->contentsX();
 }
 
 int KHTMLPartBrowserExtension::yOffset()
 {
-  return m_part->htmlView()->contentsY();
+  return m_part->view()->contentsY();
 }
 
 void KHTMLPartBrowserExtension::saveState( QDataStream &stream )

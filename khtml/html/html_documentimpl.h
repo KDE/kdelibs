@@ -27,6 +27,7 @@
 
 #include "dtd.h"
 #include "dom_docimpl.h"
+#include "misc/loader.h"
 
 #include "html_baseimpl.h"
 
@@ -36,6 +37,7 @@ class KHTMLView;
 
 namespace DOM {
 
+    class StyleSheetImpl;
 class HTMLCollection;
 class NodeList;
 class Element;
@@ -45,7 +47,7 @@ class DOMString;
 
 class StyleSheetListImpl;
 
-class HTMLDocumentImpl : public DocumentImpl
+class HTMLDocumentImpl : public khtml::CachedObjectClient, public DocumentImpl
 {
 public:
     HTMLDocumentImpl();
@@ -92,6 +94,9 @@ public:
     // to get visually ordered hebrew and arabic pages right
     void setVisuallyOrdered();
 
+    // from cachedObjectClient
+    virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet);
+
 protected:
     void clear();
 
@@ -101,6 +106,8 @@ protected:
     HTMLElementImpl *bodyElement;
     DOMString url;
 
+    StyleSheetImpl *m_sheet;
+    bool m_loadingSheet;
 };
 
 }; //namespace

@@ -601,7 +601,7 @@ protected:
     virtual bool focusNextPrevChild( bool next );
 
 public:
-    void layout();
+    void layout(bool force = false);
 protected:
 
     /**
