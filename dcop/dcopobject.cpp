@@ -107,6 +107,17 @@ QCString DCOPObject::objectName( QObject* obj )
     return ident;
 }
 
+bool DCOPObject::process(const QCString &fun, const QByteArray &data,
+			 QCString& replyType, QByteArray &replyData)
+{
+    return processDynamic( fun, data, replyType, replyData );
+}
+
+bool DCOPObject::processDynamic( const QCString&, const QByteArray&, QCString&, QByteArray& )
+{
+    return FALSE;
+}
+
 DCOPObjectProxy::DCOPObjectProxy( DCOPClient* client )
 {
     parent = client;
@@ -123,10 +134,10 @@ DCOPObjectProxy:: ~DCOPObjectProxy()
 	parent->removeObjectProxy( this );
 }
 
-bool DCOPObjectProxy::process( const QCString& /*obj*/, 
-			       const QCString& /*fun*/, 
+bool DCOPObjectProxy::process( const QCString& /*obj*/,
+			       const QCString& /*fun*/,
 			       const QByteArray& /*data*/,
-			       QCString& /*replyType*/, 
+			       QCString& /*replyType*/,
 			       QByteArray &/*replyData*/ )
 {
     return FALSE;

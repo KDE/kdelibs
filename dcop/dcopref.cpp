@@ -16,14 +16,6 @@ DCOPRef::DCOPRef( const DCOPRef& ref )
     m_obj = ref.object();
 }
 
-DCOPRef::DCOPRef( DCOPObject* object )
-{
-  //    m_app = kapp->dcopClient()->appId();
-  // torben we can't do this, it makes libDCOP depend on kdecore!! (PGB)
-  m_app = 0;
-    m_obj = object->objId();
-}
-
 DCOPRef::DCOPRef( const QCString& app, const QCString& obj )
     : m_app( app ), m_obj( obj )
 {
@@ -56,6 +48,12 @@ void DCOPRef::setRef( const QCString& app, const QCString& obj )
 {
     m_app = app;
     m_obj = obj;
+}
+
+void DCOPRef::clear()
+{
+    m_app = "";
+    m_obj = "";
 }
 
 QDataStream& operator<<( QDataStream& str, const DCOPRef& ref )
