@@ -1759,6 +1759,8 @@ void doInterfacesHeader(FILE *header)
 		fprintf(header,"};\n\n");
 	}
 
+	nspace.leaveAll();
+
 	/*
 	 * Forwarding code. We have to do this here, as the classes may depend on
 	 * each other, e.g. an argument of one function are a SmartWrapper which is
