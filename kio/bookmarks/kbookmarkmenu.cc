@@ -165,6 +165,7 @@ QString KBookmarkMenu::s_highlightedAddress;
 void KBookmarkMenu::slotActionHighlighted( KAction* action )
 {
   s_highlightedAddress = action->property("address").toString();
+  // kdDebug(7043) << "KBookmarkMenu::slotActionHighlighted" << action << "," << s_highlightedAddress << endl;
 }
 
 void KBookmarkMenu::slotAboutToShowContextMenu( KPopupMenu* menu, int, QPopupMenu* contextMenu )
@@ -426,14 +427,19 @@ void KBookmarkMenu::fillBookmarkMenu()
     else
     {
       // kdDebug(7043) << "Creating bookmark submenu named " << bm.text() << endl;
-      KActionMenu * actionMenu = new KActionMenu( text, bm.icon(),
-                                                  m_actionCollection, 0L );
+      KActionMenu * actionMenu = new KBookmarkActionMenu( text, bm.icon(),
+                                                          m_actionCollection, 0L );
+      // m_actionCollection->connectHighlight( actionMenu->popupMenu(), (KAction*)actionMenu );
+      actionMenu->setProperty( "address", bm.address() );
+      // kdDebug(7043) << actionMenu << " := " << actionMenu->property( "address" ).toString() << endl;
+
       actionMenu->plug( m_parentMenu );
       m_actions.append( actionMenu );
       KBookmarkMenu *subMenu = new KBookmarkMenu( m_pManager, m_pOwner, actionMenu->popupMenu(),
                                                   m_actionCollection, false,
                                                   m_bAddBookmark,
                                                   bm.address() );
+      // kdDebug(7043) << "( " << subMenu << " )" << endl;
 
       m_lstSubMenus.append( subMenu );
     }

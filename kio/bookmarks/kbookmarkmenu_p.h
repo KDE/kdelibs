@@ -1,5 +1,5 @@
 /* This file is part of the KDE project
-   Copyright (C) 1998, 1999 Torben Weis <weis@kde.org>
+   Copyright (C) 2003 Alexander Kellett <lypanov@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -48,10 +48,39 @@ class KBookmarkOwner;
 class KBookmarkMenu;
 class KPopupMenu;
 
+class KBookmarkActionMenu : public KActionMenu {
+  Q_OBJECT
+  Q_PROPERTY( QString url READ getUrl WRITE setUrl )
+  Q_PROPERTY( QString address READ getAddress WRITE setAddress )
+public:
+  const QString getUrl() const { return m_url; }
+  void setUrl(const QString &url) { m_url = url; }
+  const QString getAddress() const { return m_address; }
+  void setAddress(const QString &address) { m_address = address; }
+private:
+  QString m_url;
+  QString m_address;
+public:
+  KBookmarkActionMenu( 
+    const QString &text, const QString& sIconName,
+    KActionCollection* parent, const char* name)
+  : KActionMenu(text, sIconName, parent, name) {
+     ;
+  }
+};
+
 class KBookmarkAction : public KAction {
   Q_OBJECT
   Q_PROPERTY( QString url READ getUrl WRITE setUrl )
   Q_PROPERTY( QString address READ getAddress WRITE setAddress )
+public:
+  const QString getUrl() const { return m_url; }
+  void setUrl(const QString &url) { m_url = url; }
+  const QString getAddress() const { return m_address; }
+  void setAddress(const QString &address) { m_address = address; }
+private:
+  QString m_url;
+  QString m_address;
 public:
   KBookmarkAction(
     const QString& text, const QString& sIconName, const KShortcut& cut,
@@ -60,13 +89,6 @@ public:
   : KAction(text, sIconName, cut, receiver, slot, parent, name) {
     ;
   }
-  const QString getUrl() const { return m_url; }
-  void setUrl(const QString &url) { m_url = url; }
-  const QString getAddress() const { return m_address; }
-  void setAddress(const QString &address) { m_address = address; }
-private:
-  QString m_url;
-  QString m_address;
 };
 
 class KBookmarkEditDialog : public KDialogBase
