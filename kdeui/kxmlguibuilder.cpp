@@ -60,14 +60,6 @@ public:
 
     QString attrIcon;
 
-    QString attrFullWidth;
-    QString attrPosition;
-    QString attrIndex;
-    QString attrOffset;
-    QString attrNewLine;
-    QString attrIconText;
-    QString attrIconSize;
-
     KInstance *m_instance;
     KXMLGUIClient *m_client;
 };
@@ -94,13 +86,6 @@ KXMLGUIBuilder::KXMLGUIBuilder( QWidget *widget )
   d->attrText2 = QString::fromLatin1( "Text" );
 
   d->attrIcon = QString::fromLatin1( "icon" );
-  d->attrFullWidth = QString::fromLatin1( "fullWidth" );
-  d->attrPosition = QString::fromLatin1( "position" );
-  d->attrIconText = QString::fromLatin1( "iconText" );
-  d->attrIconSize = QString::fromLatin1( "iconSize" );
-  d->attrIndex = QString::fromLatin1( "index" );
-  d->attrOffset = QString::fromLatin1( "offset" );
-  d->attrNewLine = QString::fromLatin1( "newline" );
 
   d->m_instance = 0;
   d->m_client = 0;
@@ -162,7 +147,7 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
         p = p->parentWidget();
 
     QCString name = element.attribute( d->attrName ).utf8();
-    
+
     if (!kapp->authorizeKAction(name))
        return 0;
 
