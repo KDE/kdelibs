@@ -1,4 +1,5 @@
-/*
+/* vi: set ts=2 sw=2 tw=78:
+ *
  * Override X11 functions and set X window properties, to provide app-starting
  * notification.
  *
@@ -233,4 +234,3 @@ KDE_SetInitialDesktop(Display *d, Window w) {
 }
 
 
-/* vim: set ts=2:sw=2:tw=78: */

@@ -1,4 +1,5 @@
-/*
+/* vi: set ts=2 sw=2 tw=78:
+ *
  * C interface to DCOP
  *
  * (C) 2000 Rik Hemsley <rik@kde.org>
@@ -512,4 +513,3 @@ dcop_call(
 
 
 
-/* vim: set ts=2:sw=2:tw=78: */
