@@ -180,7 +180,7 @@ bool KMenuBar::eventFilter(QObject *obj, QEvent *ev)
 {
 
     if ( d->topLevel && parentWidget() && obj == parentWidget()->topLevelWidget()  ) {
-	if ( ev->type() == QEvent::Show  && isHidden() )
+	if ( ev->type() == QEvent::Show  && testWState( WState_ForceHide ) )
 	    show();
 	else if ( ev->type() == QEvent::WindowActivate )
 	    raise();
