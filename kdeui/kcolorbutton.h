@@ -33,8 +33,6 @@ class KColorButtonPrivate;
 * @see KColorDialog
 *
 * \image html kcolorbutton.png "KDE Color Button"
-*
-* @version $Id$
 */
 class KDEUI_EXPORT KColorButton : public QPushButton
 {
