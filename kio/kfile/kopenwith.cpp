@@ -261,9 +261,9 @@ void KApplicationTree::resizeEvent( QResizeEvent * e)
  ***************************************************************/
 
 KOpenWithDlg::KOpenWithDlg( const KURL::List& _urls, QWidget* parent )
-             :KDialogBase( parent, 0L, true, i18n(  "Open With" ),
-              Ok|Cancel, Ok, true )
+             :QDialog( parent, 0L, true )
 {
+    setCaption( i18n( "Open With" ) );
     QString text;
     if( _urls.count() == 1 )
     {
@@ -280,8 +280,7 @@ KOpenWithDlg::KOpenWithDlg( const KURL::List& _urls, QWidget* parent )
 
 KOpenWithDlg::KOpenWithDlg( const KURL::List& _urls, const QString&_text,
                             const QString& _value, QWidget *parent)
-             :KDialogBase( parent, 0L, true, QString::null,
-              Ok|Cancel, Ok, true )
+             :QDialog( parent, 0L, true )
 {
   QString caption = KStringHandler::csqueeze( _urls.first().prettyURL() );
   if (_urls.count() > 1)
@@ -293,8 +292,7 @@ KOpenWithDlg::KOpenWithDlg( const KURL::List& _urls, const QString&_text,
 
 KOpenWithDlg::KOpenWithDlg( const QString &serviceType, const QString& value,
                             QWidget *parent)
-             :KDialogBase( parent, 0L, true, QString::null,
-              Ok|Cancel, Ok, true )
+             :QDialog( parent, 0L, true )
 {
   setCaption(i18n("Choose Application for %1").arg(serviceType));
   QString text = i18n("<qt>Select the program for the file type: <b>%1</b>. "
@@ -310,8 +308,7 @@ KOpenWithDlg::KOpenWithDlg( const QString &serviceType, const QString& value,
 }
 
 KOpenWithDlg::KOpenWithDlg( QWidget *parent)
-             :KDialogBase( parent, 0L, true, QString::null,
-              Ok|Cancel, Ok, true )
+             :QDialog( parent, 0L, true )
 {
   setCaption(i18n("Choose Application"));
   QString text = i18n("<qt>Select a program. "
@@ -340,17 +337,14 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
   m_pTree = 0L;
   m_pService = 0L;
 
-  QWidget *page = new QWidget( this );
-  setMainWidget( page );
-
-  QVBoxLayout* topLayout = new QVBoxLayout(page, 0, spacingHint());
-
-  label = new QLabel( _text , page );
+  QBoxLayout *topLayout = new QVBoxLayout( this, KDialog::marginHint(),
+          KDialog::spacingHint() );
+  label = new QLabel( _text, this );
   topLayout->addWidget(label);
 
   QHBoxLayout* hbox = new QHBoxLayout(topLayout);
 
-  QToolButton *clearButton = new QToolButton( page );
+  QToolButton *clearButton = new QToolButton( this );
   clearButton->setIconSet( BarIcon( "locationbar_erase" ) );
   clearButton->setFixedSize( clearButton->sizeHint() );
   connect( clearButton, SIGNAL( pressed() ), SLOT( slotClear() ) );
@@ -369,12 +363,12 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
     combo->setMaxCount( max );
     QStringList list = kc->readListEntry( QString::fromLatin1("History") );
     combo->setHistoryItems( list, true );
-    edit = new KURLRequester( combo, page );
+    edit = new KURLRequester( combo, this );
   }
   else
   { 
     clearButton->hide();
-    edit = new KURLRequester( page );
+    edit = new KURLRequester( this );
     edit->lineEdit()->setReadOnly(true);
     edit->button()->hide();
   }
@@ -391,7 +385,7 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
   connect ( edit, SIGNAL(returnPressed()), SLOT(slotOK()) );
   connect ( edit, SIGNAL(textChanged(const QString&)), SLOT(slotTextChanged()) );
 
-  m_pTree = new KApplicationTree( page );
+  m_pTree = new KApplicationTree( this );
   topLayout->addWidget(m_pTree);
 
   connect( m_pTree, SIGNAL( selected( const QString&, const QString& ) ),
@@ -401,7 +395,7 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
   connect( m_pTree, SIGNAL( doubleClicked(QListViewItem*) ),
            SLOT( slotDbClick() ) );
 
-  terminal = new QCheckBox( i18n("Run in &terminal"), page );
+  terminal = new QCheckBox( i18n("Run in &terminal"), this );
   if (bReadOnly)
      terminal->hide();
   connect(terminal, SIGNAL(toggled(bool)), SLOT(slotTerminalToggled(bool)));
@@ -410,12 +404,26 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
 
   if (!qServiceType.isNull())
   {
-    remember = new QCheckBox(i18n("&Remember application association for this type of file"), page);
+    remember = new QCheckBox(i18n("&Remember application association for this type of file"), this);
     //    remember->setChecked(true);
     topLayout->addWidget(remember);
   }
   else
     remember = 0L;
+
+  // Use KButtonBox for the aligning pushbuttons nicely
+  KButtonBox* b = new KButtonBox( this );
+  b->addStretch( 2 );
+
+  ok = b->addButton(  i18n ( "&OK" ) );
+  ok->setDefault( true );
+  connect(  ok, SIGNAL( clicked() ), SLOT( slotOK() ) );
+
+  cancel = b->addButton(  i18n( "&Cancel" ) );
+  connect(  cancel, SIGNAL( clicked() ), SLOT( reject() ) );
+
+  b->layout();
+  topLayout->addWidget( b );
 
   //edit->setText( _value );
   // This is what caused "can't click on items before clicking on Name header".
@@ -642,7 +650,7 @@ void KOpenWithDlg::accept()
         kc->sync();
     }
 
-    KDialogBase::accept();
+    QDialog::accept();
 }
 
 
