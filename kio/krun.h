@@ -191,9 +191,9 @@ protected:
 
 /*
  * This class handles the openFileManagerWindow call
- * It is not implemented in libkio, so any program that wants to use it
- * must derive from its class and override the method.
- * At least konqueror and libkfm will do.
+ * The default implementation is to launch kfclient,
+ * but this behaviour has to be overriden by kfmclient (obviously !)
+ * and by konqueror (which can open a window by itself)
  */ 
 class KFileManager
 {
@@ -201,11 +201,11 @@ public:
   KFileManager() { pFileManager = this; } ;
   virtual ~KFileManager() {} ;
 
-  virtual void openFileManagerWindow( const char *_url ) = 0L;
+  virtual void openFileManagerWindow( const char *_url );
   
   static KFileManager * getFileManager() { 
     if (!pFileManager)
-      debug("PROGRAM ERROR : program uses a 'run' method in kio, but doesn't implement KFileManager::openFileManagerWindow(const char*)\n");
+      pFileManager = new KFileManager;
     return pFileManager;
   }
 

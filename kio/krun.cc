@@ -569,4 +569,12 @@ void KRun::killJob()
   }
 }
 
+/****************/
+void KFileManager::openFileManagerWindow( const char *_url )
+{
+  QString cmd = "kfmclient openURL ";
+  cmd += _url;
+  system( cmd.ascii() );
+}
+
 #include "krun.moc"
