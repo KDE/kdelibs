@@ -108,6 +108,7 @@ namespace KIO {
          * error message in the current language. The low level (non-i18n)
          * error message (usually a url) is put into the translated error
          * message using %1.
+         *
          * Example for errid == ERR_CANNOT_OPEN_FOR_READING:
          *   i18n( "Could not read\n%1" ).arg( errortext );
          * Use this to display the error yourself, but for a dialog box
@@ -116,12 +117,17 @@ namespace KIO {
         QString errorString() const;
 
         /**
-         * Converts an error code and a non-i18n error message into an
-         * html error message in the current language. The low level (non-i18n)
-         * error message (usually a url) is put into the translated error
-         * message using %1.
+         * Converts an error code and a non-i18n error message into i18n
+         * strings suitable for presentation in a detailed error message box.
+         *
+         * @p reqUrl the request URL that generated this error message
+         * @p method the method that generated this error message
+         * (unimplemented)
+         *
+         * Returns strings: caption, error + description, causes+solutions
          */
-        QString htmlErrorString() const;
+        QStringList detailedErrorStrings(const KURL *reqUrl = 0L,
+                                         int method = -1) const;
 
         /**
          * Display a dialog box to inform the user of the error given by

@@ -238,8 +238,25 @@ void Job::showErrorDialog( QWidget * parent )
     Observer::self()->jobFinished( m_progressId );
   kapp->enableStyles();
   // Show a message box, except for "user canceled"
-  if ( m_error != ERR_USER_CANCELED )
+  if ( m_error != ERR_USER_CANCELED ) {
+    //old plain error message
+    kdDebug() << "Default language: " << KGlobal::locale()->defaultLanguage() << endl;
+    if ( KGlobal::locale()->defaultLanguage() == "en" ||
+         KGlobal::locale()->defaultLanguage().left(2) == "en_" ) {
       KMessageBox::queuedMessageBox( parent, KMessageBox::Error, errorString() );
+    } else {
+      QStringList errors = detailedErrorStrings();
+      QString caption, err, detail;
+      QStringList::iterator it = errors.begin();
+      if ( it != errors.end() )
+        caption = *(it++);
+      if ( it != errors.end() )
+        err = *(it++);
+      if ( it != errors.end() )
+        detail = *it;
+      KMessageBox::queuedDetailedError( parent, err, detail, caption );
+    }
+  }
 }
 
 void Job::setAutoErrorHandlingEnabled( bool enable, QWidget *parentWidget )

@@ -38,6 +38,7 @@
 #include <kapplication.h>
 #include <klocale.h>
 #include <kglobal.h>
+#include <kprotocolmanager.h>
 
 #ifdef HAVE_VOLMGT
 #include <volmgt.h>
@@ -173,11 +174,6 @@ QString KIO::decodeFileName( const QString & _str )
 QString KIO::Job::errorString() const
 {
   return KIO::buildErrorString(m_error, m_errorText);
-}
-
-QString KIO::Job::htmlErrorString() const
-{
-  return KIO::buildHTMLErrorString(m_error, m_errorText);
 }
 
 QString KIO::buildErrorString(int errorCode, const QString &errorText)
@@ -369,6 +365,9 @@ QString KIO::buildErrorString(int errorCode, const QString &errorText)
     case KIO::ERR_IDENTICAL_FILES:
       result = i18n( "The source and destination are the same file.\n%1" ).arg( errorText );
       break;
+    case KIO::ERR_SLAVE_DEFINED:
+      result = errorText;
+      break;
     default:
       result = i18n( "Unknown error code %1\n%2\nPlease send a full bug report at http://bugs.kde.org." ).arg( errorCode ).arg( errorText );
       break;
@@ -377,13 +376,13 @@ QString KIO::buildErrorString(int errorCode, const QString &errorText)
   return result;
 }
 
-QString KIO::buildHTMLErrorString(int errorCode, const QString &errorText,
-                                  const KURL *reqUrl /*= 0L*/, int method /*= -1*/ )
+QStringList KIO::Job::detailedErrorStrings( const KURL *reqUrl /*= 0L*/,
+                                            int method /*= -1*/ ) const
 {
-  QString errorName, techName, description;
-  QStringList causes, solutions;
+  QString errorName, techName, description, ret2;
+  QStringList causes, solutions, ret;
 
-  QByteArray raw = rawErrorDetail( errorCode, errorText, reqUrl, method );
+  QByteArray raw = rawErrorDetail( m_error, m_errorText, reqUrl, method );
   QDataStream stream(raw, IO_ReadOnly);
 
   stream >> errorName >> techName >> description >> causes >> solutions;
@@ -395,61 +394,43 @@ QString KIO::buildHTMLErrorString(int errorCode, const QString &errorText,
   } else {
     url = i18n( "(unknown)" );
   }
+
   datetime = KGlobal::locale()->formatDateTime( QDateTime::currentDateTime(),
                                                 false );
 
-  QString doc = "<html><head><title>";
-  doc += i18n( "Error: " );
-  doc += errorName;
-  doc += QString( " - %1</title></head><body><h1>" ).arg( url );
-  doc += i18n( "The requested operation could not be completed" );
-  doc += "</h1><h2>";
-  doc += errorName;
-  doc += "</h2>";
-  if ( techName != QString::null ) {
-    doc += "<h2>Technical Reason: ";
-    doc += techName;
-    doc += "</h2>";
-  }
-  doc += "<h3>";
-  doc += i18n( "Details of the Request:" );
-  doc += "</h3><ul><li>";
-  doc += i18n( "URL: %1" ).arg( url );
-  doc += "</li><li>";
+  ret << errorName;
+  ret << QString::fromLatin1( "<qt><p><b>" ) + errorName +
+         QString::fromLatin1( "</b></p><p>" ) + description +
+         QString::fromLatin1( "</p>" );
+  ret2 = QString::fromLatin1( "<qt><p>" );
+  if ( techName != QString::null )
+    ret2 += i18n( "<b>Technical Reason</b>: " ) + techName + QString::fromLatin1( "</p>" );
+  ret2 += i18n( "</p><p><b>Details of the Request<b>:" );
+  ret2 += i18n( "</p><ul><li>URL: %1</li>" ).arg( url );
   if ( protocol != QString::null ) {
-    doc += i18n( "Protocol: %1 - <a href=\"help://kioslave/%1\">click here</a>"
-                 " for documentation." ).arg( protocol ).arg( protocol );
-    doc += "</li><li>";
+    ret2 += i18n( "<li>Protocol: %1</li>" ).arg( protocol );
   }
-  doc += i18n( "Date and Time: %1" ).arg( datetime );
-  doc += "</li><li>";
-  doc += i18n( "Additional Information: %1" ).arg( errorText );
-  doc += "</li></ul><h3>";
-  doc += i18n( "Description:" );
-  doc += "</h3><p>";
-  doc += description;
-  doc += "</p>";
+  ret2 += i18n( "<li>Date and Time: %1</li>" ).arg( datetime );
+  ret2 += i18n( "<li>Additional Information: %1</li></ul>" ).arg( m_errorText );
   if ( causes.count() ) {
-    doc += i18n( "<h3>Possible Causes:</h3>" );
-    doc += "</h3><ul><li>";
-    doc += causes.join( "</li><li>" );
-    doc += "</li></ul>";
+    ret2 += i18n( "<p><b>Possible Causes</b>:</p><ul><li>" );
+    ret2 += causes.join( "</li><li>" );
+    ret2 += QString::fromLatin1( "</li></ul>" );
   }
   if ( solutions.count() ) {
-    doc += i18n( "<h3>Possible Solutions:</h3>" );
-    doc += "<ul><li>";
-    doc += solutions.join( "</li><li>" );
-    doc += "</li></ul>";
+    ret2 += i18n( "<p><b>Possible Solutions</b>:</p><ul><li>" );
+    ret2 += solutions.join( "</li><li>" );
+    ret2 += QString::fromLatin1( "</li></ul>" );
   }
-  doc += "</body></html>";
-
-  return doc;
+  ret << ret2;
+  return ret;
 }
 
 QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
                                const KURL *reqUrl /*= 0L*/, int /*method = -1*/ )
 {
   QString url, host, protocol, datetime, domain, path, dir, filename;
+  bool isSlaveNetwork = false;
   if ( reqUrl ) {
     url = reqUrl->prettyURL();
     host = reqUrl->host();
@@ -463,8 +444,37 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
     path = reqUrl->path(1);
     filename = reqUrl->filename();
     dir =  path + filename;
+    
+    // detect if protocol is a network protocol...
+    // add your hacks here...
+    if ( protocol == "http" ||
+         protocol == "https" ||
+         protocol == "ftp" ||
+         protocol == "sftp" ||
+         protocol == "webdav" ||
+         protocol == "webdavs" ||
+         protocol == "finger" ||
+         protocol == "fish" ||
+         protocol == "gopher" ||
+         protocol == "imap" ||
+         protocol == "imaps" ||
+         protocol == "lan" ||
+         protocol == "ldap" ||
+         protocol == "mailto" ||
+         protocol == "news" ||
+         protocol == "nntp" ||
+         protocol == "pop3" ||
+         protocol == "pop3s" ||
+         protocol == "smtp" ||
+         protocol == "smtps" ||
+         protocol == "telnet"
+        ) {
+      isSlaveNetwork = false;
+    }
   } else {
-    url = host = protocol = domain = path = filename = dir = i18n( "(unknown)" );
+    // assume that the errorText has the location we are interested in
+    url = host = domain = path = filename = dir = errorText;
+    protocol = i18n( "(unknown)" );
   }
 
   datetime = KGlobal::locale()->formatDateTime( QDateTime::currentDateTime(),
@@ -475,11 +485,13 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
 
   // c == cause, s == solution
   QString sSysadmin = i18n( "Contact your appropriate computer support system, "
-    "whether the system administrator, techincal support group, software "
-    "provider or Internet Service Provider (ISP), for further assistance." );
-  QString sServeradmin = i18n( "Contact the administrator of the server, "
-    "typically at <a href=\"mailto:webmaster@%1\">webmaster@%1</a>, for further "
-    "assistance." ).arg( host ).arg( host );
+    "whether the system administrator, or techincal support group for further "
+    "assistance." );
+  QString sServeradmin = i18n( "Contact the administrator of the server "
+    "for further assistance." );
+  if ( protocol == "http" )
+    sServeradmin += i18n( " This is typically done by emailing <a href=\"mailto"
+      ":webmaster@%1\">webmaster@%1</a>, ." ).arg( host ).arg( host );
   // FIXME active link to permissions dialog
   QString sAccess = i18n( "Check your access permissions on this resource." );
   QString cAccess = i18n( "Your access permissions may be inadequate to "
@@ -515,6 +527,12 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
   QString cProtocol = i18n( "A protocol error or incompatability may have occurred." );
   QString sExists = i18n( "Ensure that the resource exists, and try again." );
   QString cExists = i18n( "The specified resource may not exist." );
+  QString cTypo = i18n( "You may have incorrectly typed the location." );
+  QString sTypo = i18n( "Double-check that you have entered the correct location "
+    "and try again." );
+  QString sNetwork = i18n( "Check your network connection status." );
+  QString sRoot = i18n( "If you understand the security implications, you "
+    "could start konqueror as the system administrator (root user) if required." );
 
   switch( errorCode ) {
     case  KIO::ERR_CANNOT_OPEN_FOR_READING:
@@ -565,8 +583,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
         "formatted. The format of a URL is generally as follows:"
         "<blockquote><strong>protocol://user@password:www.example.org:port/directory/"
         "filename.extension?query=value</strong></blockquote>" );
-      solutions << i18n( "Double-check that you have entered a properly formatted "
-        "URL and try again." ) << sSysadmin;
+      solutions << sTypo;
       break;
 
     case  KIO::ERR_UNSUPPORTED_PROTOCOL:
@@ -581,9 +598,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
         "program (called a kioslave or ioslave) which supports this protocol. "
         "Places to search include <a href=\"http://apps.kde.com/\">"
         "http://apps.kde.com/</a> and <a href=\"http://freshmeat.net/\">"
-        "http://freshmeat.net/</a>. Click on the following to perform a search "
-        "for \"%1 ioslave\" at <a href=\"fm:%1 ioslave\">"
-        "freshmeat.net</a>." ).arg( protocol ).arg( protocol )
+        "http://freshmeat.net/</a>." )
         << sUpdate << sSysadmin;
       break;
 
@@ -597,8 +612,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
         "protocol; the protocol specified is only for use in such situations, "
         "however this is not one of these situations. This is a rare event, and "
         "is likely to indicate a programming error." );
-      solutions << i18n( "Double-check that you have entered the correct URL "
-        "and try again." ) << sSysadmin;
+      solutions << sTypo;
       break;
 
     case  KIO::ERR_UNSUPPORTED_ACTION:
@@ -609,32 +623,32 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
       causes << i18n( "This error is very much dependant on the KDE program. The "
         "additional information should give you more information than is available"
         "to the KDE input / output architecture." );
-      solutions << i18n( "Attempt to find another way to accomplish the same outcome." )
-        << sSysadmin;
+      solutions << i18n( "Attempt to find another way to accomplish the same "
+        "outcome." );
       break;
 
     case  KIO::ERR_IS_DIRECTORY:
       errorName = i18n( "File Expected" );
       description = i18n( "The request expected to return a file, however the "
-        "directory <strong>%1</strong> was returned instead." ).arg( errorText );
-      causes << i18n( "This may be an error on the server side." );
-      solutions << sSysadmin;
+        "directory <strong>%1</strong> was returned instead." ).arg( dir );
+      causes << i18n( "This may be an error on the server side." ) << cBug;
+      solutions << sUpdate << sSysadmin;
       break;
 
     case  KIO::ERR_IS_FILE:
       errorName = i18n( "Directory Expected" );
       description = i18n( "The request expected to return a directory, however "
-        "the file <strong>%1</strong> was returned instead." ).arg( errorText );
-      causes << i18n( "This may be an error on the server side." );
-      solutions << sSysadmin;
+        "the file <strong>%1</strong> was returned instead." ).arg( filename );
+      causes << cBug;
+      solutions << sUpdate << sSysadmin;
       break;
 
     case  KIO::ERR_DOES_NOT_EXIST:
       errorName = i18n( "File or Directory Does Not Exist" );
       description = i18n( "The specified file or directory <strong>%1</strong> "
-        "does not exist." ).arg( errorText );
-      causes << i18n( "You may have incorrectly typed the location." );
-      solutions << sSysadmin;
+        "does not exist." ).arg( dir );
+      causes << cBug;
+      solutions << sUpdate << sSysadmin;
       break;
 
     case  KIO::ERR_FILE_ALREADY_EXIST:
@@ -665,7 +679,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
       causes << i18n( "The name that you typed, %1, may not exist: it may be "
         "incorrectly typed." ).arg( host )
         << cNetwork << cNetconf;
-      solutions << sSysadmin << sServeradmin;
+      solutions << sNetwork << sSysadmin;
       break;
 
     case  KIO::ERR_ACCESS_DENIED:
@@ -675,11 +689,12 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
       causes << i18n( "You may have supplied incorrect authentication details or "
         "none at all." )
         << i18n( "Your account may not have permission to access to the "
-        "specified resource." )
-        << i18n( "On occasion this may be caused by an incorrectly configured "
-        "server, for example where a script does not have execution permissions." );
+        "specified resource." );
+        /*<< i18n( "On occasion this may be caused by an incorrectly configured "
+        "server, for example where a script does not have execution permissions." )*/
       solutions << i18n( "Retry the request and ensure your authentication details "
-        "are entered correctly." ) << sSysadmin << sServeradmin;
+        "are entered correctly." ) << sSysadmin;
+      if ( !isSlaveNetwork ) solutions << sServeradmin;
       break;
 
     case  KIO::ERR_WRITE_ACCESS_DENIED:
@@ -721,6 +736,13 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
 
     case  KIO::ERR_USER_CANCELED:
       // Do nothing in this case. The user doesn't need to be told what he just did.
+      // rodda: However, if we have been called, an application is about to display
+      // this information anyway. If we don't return sensible information, the
+      // user sees a blank dialog (I have seen this myself)
+      errorName = i18n( "Request Aborted By User" );
+      description = i18n( "The request was not completed because it was "
+        "aborted." );
+      solutions << i18n( "Retry the request." );
       break;
 
     case  KIO::ERR_CYCLIC_COPY:
@@ -745,9 +767,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
         "typically in UNIX environments where a user without system "
         "administration privileges tries to open a port in the privileged range, "
         "between port 1 and port 1024." );
-      solutions << i18n( "Check your network connection status." )
-        << i18n( "Start konqueror as the system administrator (root user) if "
-        "required." ) << sSysadmin;
+      solutions << sNetwork << sRoot << sSysadmin;
       break;
 
     case  KIO::ERR_COULD_NOT_CONNECT:
@@ -786,8 +806,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
         "protocol. This request specified a protocol be used as such, however "
         "this protocol is not capable of such an action. This is a rare event, "
         "and is likely to indicate a programming error." );
-      solutions << i18n( "Double-check that you have entered the correct URL "
-        "and try again." ) << sSysadmin;
+      solutions << sTypo << sSysadmin;
       break;
 
     case  KIO::ERR_COULD_NOT_MOUNT:
@@ -832,9 +851,12 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
       description = i18n( "This means that although the resource, "
         "<strong>%1</strong>, was able to be opened, an error occurred while "
         "reading the contents of the resource." ).arg( url );
-      causes << i18n( "You may not have permissions to read from the resource." )
-        << cNetwork << cHardware;
-      solutions << sAccess << sSysadmin;
+      causes << i18n( "You may not have permissions to read from the resource." );
+      if ( !isSlaveNetwork ) causes << cNetwork;
+      causes << cHardware;
+      solutions << sAccess;
+      if ( !isSlaveNetwork ) solutions << sNetwork;
+      solutions << sSysadmin;
       break;
 
     case  KIO::ERR_COULD_NOT_WRITE:
@@ -842,9 +864,12 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
       description = i18n( "This means that although the resource, <strong>%1</strong>"
         ", was able to be opened, an error occurred while writing to the resource." )
         .arg( url );
-      causes << i18n( "You may not have permissions to write to the resource." )
-        << cNetwork << cHardware;
-      solutions << sAccess << sSysadmin;
+      causes << i18n( "You may not have permissions to write to the resource." );
+      if ( !isSlaveNetwork ) causes << cNetwork;
+      causes << cHardware;
+      solutions << sAccess;
+      if ( !isSlaveNetwork ) solutions << sNetwork;
+      solutions << sSysadmin;
       break;
 
     case  KIO::ERR_COULD_NOT_BIND:
@@ -859,10 +884,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
         "typically in UNIX environments where a user without system "
         "administration privileges tries to open a port in the privileged range, "
         "between port 1 and port 1024." );
-      solutions << i18n( "Check your network connection status." )
-        << i18n( "If you understand the security implications, you could start "
-        "konqueror as the system administrator (root user) if required." )
-        << sSysadmin;
+      solutions << sNetwork << sRoot << sSysadmin;
       break;
 
     case  KIO::ERR_COULD_NOT_LISTEN:
@@ -877,10 +899,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
         "typically in UNIX environments where a user without system "
         "administration privileges tries to open a port in the privileged range, "
         "between port 1 and port 1024." );
-      solutions << i18n( "Check your network connection status." )
-        << i18n( "If you understand the security implications, you could start "
-        "konqueror as the system administrator (root user) if required." )
-        << sSysadmin;
+      solutions << sNetwork << sRoot << sSysadmin;
       break;
 
     case  KIO::ERR_COULD_NOT_ACCEPT:
@@ -890,11 +909,8 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
       causes << i18n( "The network connection may be incorrectly configured, or "
         "the network interface may not be enabled." )
         << i18n( "You may not have permissions to accept the connection." );
-      solutions << i18n( "Check your network connection status." )
-        << i18n( "If you understand the security implications, you could start "
-        "konqueror as the system administrator (root user) if required." )
-        << sSysadmin;
-        break;
+      solutions << sNetwork << sRoot << sSysadmin;
+      break;
 
     case  KIO::ERR_COULD_NOT_LOGIN:
       errorName = i18n( "Could Not Login: %1" ).arg( errorText );
@@ -930,8 +946,9 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
       errorName = i18n( "Could Not Create Directory" );
       description = i18n( "An attempt to create the requested directory failed." );
       causes << cAccess << i18n( "The location where the directory was to be created "
-        "may not exist." ) << cProtocol << cHardware;
-      solutions << i18n( "Retry the request." ) << sAccess << sSysadmin;
+        "may not exist." );
+      if ( !isSlaveNetwork ) causes << cProtocol;
+      solutions << i18n( "Retry the request." ) << sAccess;
       break;
 
     case  KIO::ERR_COULD_NOT_RMDIR:
@@ -940,9 +957,10 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
         "<strong>%1</strong>, failed." ).arg( dir );
       causes << i18n( "The specified directory may not exist." )
         << i18n( "The specified directory may not be empty." )
-        << cAccess << cProtocol << cHardware;
+        << cAccess;
+      if ( !isSlaveNetwork ) causes << cProtocol;
       solutions << i18n( "Ensure that the directory exists and is empty, and try "
-        "again." ) << sAccess << sSysadmin;
+        "again." ) << sAccess;
       break;
 
     case  KIO::ERR_CANNOT_RESUME:
@@ -953,31 +971,32 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
       causes << i18n( "The protocol, or the server, may not support file "
         "resuming." );
       solutions << i18n( "Retry the request without attempting to resume "
-        "transfer." ) << sSysadmin;
+        "transfer." );
       break;
 
     case  KIO::ERR_CANNOT_RENAME:
       errorName = i18n( "Could Not Rename Resource" );
       description = i18n( "An attempt to rename the specified resource "
         "<strong>%1</strong> failed." ).arg( url );
-      causes << cAccess << cExists << cProtocol << cHardware;
-      solutions << sAccess << sExists << sSysadmin;
+      causes << cAccess << cExists;
+      if ( !isSlaveNetwork ) causes << cProtocol;
+      solutions << sAccess << sExists;
       break;
 
     case  KIO::ERR_CANNOT_CHMOD:
       errorName = i18n( "Could Not Alter Permissions of Resource" );
       description = i18n( "An attempt to alter the permissions on the specified "
         "resource <strong>%1</strong> failed." ).arg( url );
-      causes << cAccess << cExists << cProtocol << cHardware;
-      solutions << sAccess << sExists << sSysadmin;
+      causes << cAccess << cExists;
+      solutions << sAccess << sExists;
       break;
 
     case  KIO::ERR_CANNOT_DELETE:
       errorName = i18n( "Could Not Delete Resource" );
       description = i18n( "An attempt to delete the specified resource "
         "<strong>%1</strong> failed." ).arg( url );
-      causes << cAccess << cProtocol << cHardware;
-      solutions << sExists << sAccess << sSysadmin;
+      causes << cAccess << cExists;
+      solutions << sAccess << sExists;
       break;
 
     case  KIO::ERR_SLAVE_DIED:
@@ -1008,7 +1027,8 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
         "configuration, specifically your proxy's hostname. If you have been "
         "accessing the internet with no problems recently, this is unlikely." )
         << cNetwork;
-      solutions << sSysadmin << sServeradmin;
+      solutions << i18n( "Double-check your proxy settings and try again." )
+        << sSysadmin;
       break;
 
     case  KIO::ERR_COULD_NOT_AUTHENTICATE:
@@ -1020,7 +1040,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
         "program implementing the protocol %1." ).arg( protocol );
       solutions << i18n( "Please file a bug at <a href=\"http://bugs.kde.org/\">"
         "http://bugs.kde.org/</a> to inform the KDE team of the unsupported "
-        "authentication method." ) << sServeradmin << sSysadmin;
+        "authentication method." ) << sSysadmin;
       break;
 
     case  KIO::ERR_ABORTED:
@@ -1038,10 +1058,9 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
       causes << i18n( "This is most likely to be caused by a bug in the "
         "server program. Please consider submitting a full bug report as "
         "detailed below." );
-      solutions << i18n( "Contact the administrator of the server, "
-        "typically at <a href=\"mailto:webmaster@%1\">webmaster@%1</a>, to "
-        "advise them of the problem." ).arg( host ).arg( host )
-        << i18n( "If you know who the authors of the server are, "
+      solutions << i18n( "Contact the administrator of the server "
+        "to advise them of the problem." )
+        << i18n( "If you know who the authors of the server software are, "
         "submit the bug report directly to them." );
       break;
 
@@ -1050,10 +1069,14 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
       description = i18n( "Although contact was made with the server, a "
         "response was not received within the amount of time allocated for "
         "the request as follows:<ul>"
-        "<li>Default timeout: 1 minute</li>"
-        "<li>Default timeout for establishing a connection: 20 seconds</li>"
-        "<li>Default timeout for receiving a response: 15 seconds</li>"
-        "<li>Default timeout for accessing proxy servers: 10 seconds</li></ul>" );
+        "<li>Timeout for establishing a connection: %1 seconds</li>"
+        "<li>Timeout for receiving a response: %1 seconds</li>"
+        "<li>Timeout for accessing proxy servers: %1 seconds</li></ul>"
+        "Please note that you can alter these timeout settings in the KDE "
+        "Control Center, by selecting Network -> Preferences." )
+        .arg( KProtocolManager::connectTimeout() )
+        .arg( KProtocolManager::responseTimeout() )
+        .arg( KProtocolManager::proxyConnectTimeout() );
       causes << cNetpath << i18n( "The server was too busy responding to other "
         "requests to respond." );
       solutions << sTryagain << sServeradmin;
@@ -1125,12 +1148,8 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
       break;
 
     case KIO::ERR_NO_CONTENT:
-      errorName = i18n( "Could Not Create Link" );
-      techName = i18n( "Could Not Create Symbolic Link" );
-      description = i18n( "The requested symbolic link %1 could not be created." )
-        .arg( errorText );
-      causes << cAccess;
-      solutions << sAccess;
+      errorName = i18n( "No Content" );
+      description = errorText;
       break;
 
     case KIO::ERR_DISK_FULL:
@@ -1147,13 +1166,12 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
       errorName = i18n( "Source and Destination Files Identical" );
       description = i18n( "The operation could not be completed because the "
         "source and destination files are the same file." );
-      solutions << i18n( "Choose a different filename for the destination file." )
-        << sSysadmin;
+      solutions << i18n( "Choose a different filename for the destination file." );
       break;
 
     default:
       // fall back to the plain error...
-      errorName = i18n( "Undocumented Error" );      
+      errorName = i18n( "Undocumented Error" );
       description = buildErrorString( errorCode, errorText );
   }
 

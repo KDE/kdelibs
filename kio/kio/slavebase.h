@@ -83,6 +83,19 @@ public:
     /**
      * Call to signal an error.
      * This also finishes the job, no need to call finished.
+     *
+     * If the Error code is KIO::ERR_SLAVE_DEFINED then the
+     * _text should contain the complete translated text of
+     * of the error message.  This message will be displayed
+     * in an KTextBrowser which allows rich text complete
+     * with hyper links.  Email links will call the default
+     * mailer, "exec:/command arg1 arg2" will be forked and
+     * all other links will call the default browser.
+     *
+     * @see KIO::Error
+     * @see KTextBrowser
+     * @param _errid the error code from KIO::Error
+     * @param _text the rich text error message
      */
     void error( int _errid, const QString &_text );
 
