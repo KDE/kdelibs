@@ -388,9 +388,7 @@ void KDictSpellingHighlighter::slotDictionaryChanged()
     d->errorCount = 0;
     d->autoDict.clear();
 
-    // SCOTT: Hmm, this looks suspecious.  Shouldn't this be d->spell = ...?
-
-    d->spell = new KSpell( 0, i18n( "Incremental Spellcheck - KMail" ), this,
+    d->spell = new KSpell( 0, i18n( "Incremental Spellcheck" ), this,
 		SLOT( slotSpellReady( KSpell * ) ));
 }
 
@@ -448,9 +446,11 @@ void KDictSpellingHighlighter::slotAutoDetection()
 
 bool KDictSpellingHighlighter::eventFilter( QObject *o, QEvent *e)
 {
+	// ### this is a joke, isn't it? Reparsing KGlobal::config() upon every focus-in-event???
     if (o == textEdit() && (e->type() == QEvent::FocusIn)) {
-	if ( d->spell && d->spellKey != spellKey() ) {
-	    d->spellKey = spellKey();
+	QString skey = spellKey();
+	if ( d->spell && d->spellKey != skey ) {
+	    d->spellKey = skey;
 	    KDictSpellingHighlighter::dictionaryChanged();
 	}
     }
