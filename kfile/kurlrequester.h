@@ -118,7 +118,7 @@ public:
      * You can use this to customize the dialog, e.g. to specify a filter.
      * Never returns 0L.
      */
-    KFileDialog * fileDialog() const; // FIXME, should be virtual
+    virtual KFileDialog * fileDialog() const;
 
     /**
      * @returns a pointer to the lineedit, either the default one, or the
