@@ -53,7 +53,7 @@ void addAtom(KIO::UDSEntry& entry, unsigned int ID, long l, const QString& s = Q
 
 int kdemain(int argc, char **argv)
 {
-	KLocale::setMainInstance("kdelibs");
+	KLocale::setMainCatalogue("kdelibs");
 	KInstance	instance("kio_print");
         ( void ) KGlobal::locale();
 
