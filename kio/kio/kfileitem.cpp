@@ -394,7 +394,7 @@ KMimeType::Ptr KFileItem::determineMimeType()
   if ( !m_pMimeType || !m_bMimeTypeKnown )
   {
     m_pMimeType = KMimeType::findByURL( m_url, m_fileMode, m_bIsLocalURL );
-    kdDebug(1203) << "finding mimetype for " << m_url.url() << ":" << m_pMimeType->name() << endl;
+    //kdDebug() << "finding mimetype for " << m_url.url() << " : " << m_pMimeType->name() << endl;
     m_bMimeTypeKnown = true;
   }
 
@@ -593,7 +593,7 @@ QString KFileItem::getToolTipText(int maxcount)
   // if we got no or empty info, show a default tip
   if ( !info.isValid() || (keys = info.preferredKeys()) .isEmpty() )
   {
-    kdDebug() << "Found no meta info" << endl;
+    //kdDebug() << "Found no meta info" << endl;
 
     tip += QStyleSheet::escape(m_url.fileName()) + 
            
@@ -683,8 +683,8 @@ QString KFileItem::getToolTipText(int maxcount)
     tip += "</table>";
   }
   
-  kdDebug() << "making this the tool tip rich text:\n";
-  kdDebug() << tip;
+  //kdDebug() << "making this the tool tip rich text:\n";
+  //kdDebug() << tip << endl;
   
   return tip;
 }
