@@ -38,9 +38,9 @@ class KStartParams
 {
 public:
   /**
-   *  Konstructor.
+   *  Constructor.
    *
-   *  The given arguments are only copied, nor deleted.
+   *  The given arguments are only copied, not deleted.
    */
   KStartParams( int& argc, char** argv );
   /**
