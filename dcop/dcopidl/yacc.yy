@@ -724,6 +724,7 @@ Identifier_list_rest
 	| /* empty */
 
 Identifier_list_entry : T_IDENTIFIER {}
+                      | T_IDENTIFIER T_EQUAL default_value {}
                       | asterisks T_IDENTIFIER {}
 
 Identifier_list : Identifier_list_entry Identifier_list_rest {}
