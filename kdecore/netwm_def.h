@@ -244,6 +244,8 @@ public:
        @li SkipTaskbar indicates that a window should not be included on a taskbar.
 
        @li StaysOnTop indicate that a window should be kept on top of other windows.
+
+       @li SkipPager indicates that a window should not be included on a pager.
     **/
 
     enum State {

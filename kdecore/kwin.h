@@ -141,7 +141,7 @@ public:
      *
      * Possible values are or'ed combinations of NET::Modal,
      * NET::Sticky, NET::MaxVert, NET::MaxHoriz, NET::Shaded,
-     * NET::SkipTaskbar, NET::StaysOnTop
+     * NET::SkipTaskbar, NET::StaysOnTop, NET::SkipPager
      */
     static void setState( WId win, unsigned long state );
 
@@ -150,7 +150,7 @@ public:
      *
      * Possible values are or'ed combinations of NET::Modal,
      * NET::Sticky, NET::MaxVert, NET::MaxHoriz, NET::Shaded,
-     * NET::SkipTaskbar, NET::StaysOnTop
+     * NET::SkipTaskbar, NET::StaysOnTop, NET::SkipPager
      */
     static void clearState( WId win, unsigned long  state );
 
