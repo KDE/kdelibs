@@ -177,9 +177,10 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
       m_strVersion = m_aboutData->version();
   else
       m_strVersion = i18n("no version set (programmer error!)");
-  d->kde_version = QString::fromLatin1(" (KDE " KDE_VERSION_STRING ") ("
-          KDE_DISTRIBUTION_TEXT ")");
-  m_strVersion += d->kde_version;
+  d->kde_version = QString::fromLatin1( KDE_VERSION_STRING );
+  d->kde_version += ", " + QString::fromLatin1( KDE_DISTRIBUTION_TEXT );
+  if ( !d->webFormLabel )
+      m_strVersion += " " + d->kde_version;
   m_version = new QLabel( m_strVersion, parent );
   //glay->addWidget( m_version, row, 1 );
   glay->addMultiCellWidget( m_version, row, row, 1, 2 );
@@ -191,7 +192,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
   struct utsname unameBuf;
   uname( &unameBuf );
   d->os = QString::fromLatin1( unameBuf.sysname ) +
-					" (" + QString::fromLatin1( unameBuf.machine ) + ") "
+          " (" + QString::fromLatin1( unameBuf.machine ) + ") "
           "release " + QString::fromLatin1( unameBuf.release );
 
   tmpLabel = new QLabel(d->os, parent);
@@ -256,7 +257,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
     lay->addSpacing(20);
 
     updateURL();
-    d->webFormLabel->setText( "http://bugs.kde.org/wizard/index.php" );
+    d->webFormLabel->setText( "http://bugs.kde.org/wizard.cgi" );
     lay->addWidget( d->webFormLabel );
     lay->addSpacing(20);
 
@@ -272,12 +273,14 @@ KBugReport::~KBugReport()
 
 void KBugReport::updateURL()
 {
-    QString url = QString::fromLatin1("http://bugs.kde.org/wizard/index.php");
+    QString url = QString::fromLatin1("http://bugs.kde.org/wizard.cgi");
     url += "?os=";
     url += KURL::encode_string( d->os );
     url += "&compiler=";
     url += KURL::encode_string( QString::fromLatin1(KDE_COMPILER_VERSION) );
-    url += "&version=";
+    url += "&kdeVersion=";
+    url +=  KURL::encode_string( d->kde_version );
+    url += "&appVersion=";
     url += KURL::encode_string( m_strVersion );
     url += "&package=";
     url += KURL::encode_string( d->appcombo->currentText() );
@@ -287,12 +290,20 @@ void KBugReport::updateURL()
 
 void KBugReport::appChanged(int i)
 {
-    if (d->appname == d->appcombo->text(i) && m_aboutData)
+    QString appName = d->appcombo->text(i);
+    int index = appName.find( '/' );
+    if ( index > 0 )
+        appName = appName.left( index );
+    kdDebug() << "appName " << appName << endl;
+
+    if (d->appname == appName && m_aboutData)
         m_strVersion = m_aboutData->version();
     else
         m_strVersion = i18n("unknown program name", "unknown");
 
-    m_strVersion += d->kde_version;
+    if ( !d->webFormLabel )
+        m_strVersion += d->kde_version;
+
     m_version->setText(m_strVersion);
     if ( d->webFormLabel )
         updateURL();
