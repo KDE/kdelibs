@@ -1,6 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright
-    (C) 2000 Reinald Stadlbauer (reggie@kde.org)
+    (C) 2000 Reginald Stadlbauer (reggie@kde.org)
     (C) 1997, 1998 Stephan Kulow (coolo@kde.org)
     (C) 1997, 1998 Mark Donohoe (donohoe@kde.org)
     (C) 1997, 1998 Sven Radej (radej@kde.org)
@@ -41,6 +41,8 @@
 #include "kseparator.h"
 #include <klocale.h>
 #include <kapp.h>
+#include <kaction.h>
+#include <kstdaction.h>
 #include <kglobal.h>
 #include <kconfig.h>
 #include <kiconloader.h>
@@ -83,6 +85,7 @@ public:
         m_enableContext  = true;
 
         m_xmlguiClient   = 0;
+        m_configurePlugged = false;
         hasRealPos = FALSE;
 
         oldPos = QMainWindow::Unmanaged;
@@ -107,6 +110,7 @@ public:
     QMainWindow::ToolBarDock oldPos;
 
     KXMLGUIClient *m_xmlguiClient;
+    bool m_configurePlugged;
 
     bool modified;
     bool positioned;
@@ -1127,7 +1131,6 @@ void KToolBar::setXMLGUIClient( KXMLGUIClient *client )
     d->m_xmlguiClient = client;
 }
 
-
 void KToolBar::setText( const QString & txt )
 {
     setLabel( txt );
@@ -1194,7 +1197,7 @@ void KToolBar::mousePressEvent ( QMouseEvent *m )
                 if ( i >= CONTEXT_ICONSIZES )
                     setIconSize( i - CONTEXT_ICONSIZES );
                 else
-                    kdWarning(220) << "No such menu item " << i << " in toolbar context menu" << endl;
+                    return; // assume this was an action handled elsewhere, no need for setSettingsDirty()
             }
             if ( mw->inherits("KMainWindow") )
                 static_cast<KMainWindow *>(mw)->setSettingsDirty();
@@ -1989,6 +1992,23 @@ KPopupMenu *KToolBar::contextMenu()
 
 void KToolBar::slotContextAboutToShow()
 {
+  if (!d->m_configurePlugged)
+  {
+    // try to find "configure toolbars" action
+    KXMLGUIClient *xmlGuiClient = d->m_xmlguiClient;
+    if ( !xmlGuiClient && parentWidget() && parentWidget()->inherits( "KMainWindow" ) )
+      xmlGuiClient = (KMainWindow *)parentWidget();
+    if ( xmlGuiClient )
+    {
+        KAction *configureAction = xmlGuiClient->actionCollection()->action(KStdAction::stdName(KStdAction::ConfigureToolbars));
+        if ( configureAction )
+        {
+          configureAction->plug(context);
+          d->m_configurePlugged = true;
+        }
+    }
+  }
+
   for(int i = CONTEXT_ICONS; i <= CONTEXT_TEXTUNDER; ++i)
     context->setItemChecked(i, false);
 
