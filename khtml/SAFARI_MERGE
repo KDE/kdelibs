@@ -1,0 +1,56 @@
+
+This is a short document with the progress of patches in the Safari codebase
+being merged into khtml. 
+
+its ordered by directory and by files. Add here the parts that cannot be
+immediately merged and need further negotation. 
+
+Its recommended to add a //FIXME_SAFARI comment to places which need merging
+in the khtml sourcecode. 
+
+===========================================================================
+# css
+===========================================================================
+
+
+===========================================================================
+# dom
+===========================================================================
+
+
+
+===========================================================================
+# ecma
+===========================================================================
+
+
+===========================================================================
+# html
+===========================================================================
+
+
+===========================================================================
+# misc
+===========================================================================
+
+- decoder.cpp/.h: changes in APPLE_CHANGES #ifdef that make decoder
+  being a null wrapper just using unicode directly instead of working
+  on charset specific 8bit data. 
+
+- htmlhashes.cpp: patches to fix compiler warning. which ?
+
+- htmltags.in: removal of <-konqblock>, to be  merged after 3.1
+
+- loader.cpp/loader.h: many improvements to memory cache handling. 
+  will be reviewed and merged. 
+  
+  some code removal in APPLE_CHANGES
+
+===========================================================================
+# rendering
+===========================================================================
+
+===========================================================================
+# xml
+===========================================================================
+
