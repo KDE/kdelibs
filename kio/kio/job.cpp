@@ -578,8 +578,11 @@ void SimpleJob::slotNeedProgressId()
 
 void SimpleJob::slotTotalSize( KIO::filesize_t size )
 {
-    m_totalSize = size;
-    emit totalSize( this, size );
+    if (size > m_totalSize)
+    {
+        m_totalSize = size;
+        emit totalSize( this, size );
+    }
 }
 
 void SimpleJob::slotProcessedSize( KIO::filesize_t size )
@@ -1620,8 +1623,11 @@ void FileCopyJob::slotProcessedSize( KIO::Job *, KIO::filesize_t size )
 
 void FileCopyJob::slotTotalSize( KIO::Job*, KIO::filesize_t size )
 {
-    m_totalSize = size;
-    emit totalSize( this, m_totalSize );
+    if (size > m_totalSize)
+    {
+        m_totalSize = size;
+        emit totalSize( this, m_totalSize );
+    }
 }
 
 void FileCopyJob::slotPercent( KIO::Job*, unsigned long pct )
@@ -3422,7 +3428,7 @@ void CopyJob::slotTotalSize( KIO::Job*, KIO::filesize_t size )
   // This is because some protocols don't implement stat properly
   // (e.g. HTTP), and don't give us a size in some cases (redirection)
   // so we'd rather rely on the size given for the transfer
-  if ( m_bSingleFileCopy )
+  if ( m_bSingleFileCopy && size > m_totalSize)
   {
     //kdDebug(7007) << "Single file -> updating totalsize to " << (long)size << endl;
     m_totalSize = size;
