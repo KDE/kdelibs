@@ -941,8 +941,9 @@ void RenderBox::calcAbsoluteVertical()
         ch = hl.value + containingBlock()->paddingTop()
              + containingBlock()->paddingBottom();
     else
-        ch = containingBlock()->height();
-
+        ch = containingBlock()->contentHeight()+ containingBlock()->paddingTop()
+             + containingBlock()->paddingBottom();
+    
     if(!style()->top().isVariable())
         t = style()->top().width(ch);
     if(!style()->bottom().isVariable())
