@@ -166,8 +166,10 @@ QString KBookmarkMenu::contextMenuItemAddress()
   for ( KBookmark bm = parentBookmark.first(); !bm.isNull(); bm = parentBookmark.next(bm) ) 
     length++;
 
-  // find relative position
+  // find relative id
   int idx = 0 - (KPopupMenu::contextMenuFocusItem() - m_parentMenu->idAt(0));
+  // kdDebug(7043) << m_parentMenu->text(KPopupMenu::contextMenuFocusItem()) << endl;
+  // kdDebug(7043) << (m_parentMenu->text(KPopupMenu::contextMenuFocusItem() - m_parentMenu->count())) << endl;
 
   // take into account the menu items and seperator in main bookmarks menu
   if ( (m_parentMenu->count() - length) == 3 )
@@ -180,12 +182,19 @@ QString KBookmarkMenu::contextMenuItemAddress()
     return QString::null;
 }
 
-void KBookmarkMenu::slotAboutToShowContextMenu( KPopupMenu*, int, QPopupMenu* contextMenu )
+void KBookmarkMenu::slotAboutToShowContextMenu( KPopupMenu* menu, int, QPopupMenu* contextMenu )
 {
   QString address = contextMenuItemAddress();
   kdDebug(7043) << "KBookmarkMenu::slotAboutToShowContextMenu" << address << endl;
-  if (address.isNull())
-    return; // TODO cancel about to show context menu
+  if (address.isNull()) {
+    KPopupMenu::contextMenuFocus()->cancelContextMenuShow();
+    return; 
+  }
+  showContextMenu( menu, contextMenu, address );
+}
+
+void KBookmarkMenu::showContextMenu( KPopupMenu* menu, QPopupMenu* contextMenu, const QString & address )
+{
   KBookmark bookmark = m_pManager->findByAddress( address );
   Q_ASSERT(!bookmark.isNull());
   
@@ -193,14 +202,10 @@ void KBookmarkMenu::slotAboutToShowContextMenu( KPopupMenu*, int, QPopupMenu* co
 
   if (bookmark.isGroup()) {
     contextMenu->insertItem( i18n( "Delete Folder" ), this, SLOT(slotRMBActionRemove()) );
-    contextMenu->insertItem( i18n( "Open Folder as Tabset" ), this, SLOT(slotRMBActionOpen()) );
-    // contextMenu->insertItem( i18n( "Properties" ), this, SLOT(slotRMBActionEdit()) );
+    contextMenu->insertItem( i18n( "Open Entire Folder" ), this, SLOT(slotRMBActionOpen()) );
+ // contextMenu->insertItem( i18n( "Properties" ), this, SLOT(slotRMBActionEdit()) );
     contextMenu->insertItem( i18n( "Open in Bookmark Editor" ), this, SLOT(slotRMBActionEditAt()) );
   } 
-  else if (bookmark.isSeparator()) 
-  {
-    // cancel context menu ?
-  }
   else
   {
     contextMenu->insertItem( i18n( "Delete bookmark" ), this, SLOT(slotRMBActionRemove()) );
@@ -212,8 +217,10 @@ void KBookmarkMenu::slotRMBActionEditAt()
 {
   QString address = contextMenuItemAddress();
   kdDebug(7043) << "KBookmarkMenu::slotRMBActionEditAt" << address << endl;
-  if (address.isNull())
-    return;
+  if (address.isNull()) {
+    KPopupMenu::contextMenuFocus()->cancelContextMenuShow();
+    return; 
+  }
   KBookmark bookmark = m_pManager->findByAddress( address );
   Q_ASSERT(!bookmark.isNull());
 
@@ -224,8 +231,10 @@ void KBookmarkMenu::slotRMBActionRemove()
 {
   QString address = contextMenuItemAddress();
   kdDebug(7043) << "KBookmarkMenu::slotRMBActionRemove" << address << endl;
-  if (address.isNull())
-    return;
+  if (address.isNull()) {
+    KPopupMenu::contextMenuFocus()->cancelContextMenuShow();
+    return; 
+  }
   KBookmark bookmark = m_pManager->findByAddress( address );
   Q_ASSERT(!bookmark.isNull());
 
@@ -240,8 +249,10 @@ void KBookmarkMenu::slotRMBActionOpen()
 {
   QString address = contextMenuItemAddress();
   kdDebug(7043) << "KBookmarkMenu::slotRMBActionOpen" << address << endl;
-  if (address.isNull())
-    return;
+  if (address.isNull()) {
+    KPopupMenu::contextMenuFocus()->cancelContextMenuShow();
+    return; 
+  }
   KBookmark bookmark = m_pManager->findByAddress( address );
   Q_ASSERT(!bookmark.isNull());
 

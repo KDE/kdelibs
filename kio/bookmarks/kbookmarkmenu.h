@@ -143,6 +143,7 @@ protected:
   void addEditBookmarks();
   void addNewFolder();
 
+  void showContextMenu( KPopupMenu *, QPopupMenu *, const QString & );
   QString contextMenuItemAddress();
 
   bool m_bIsRoot:1;
