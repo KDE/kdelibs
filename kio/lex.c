@@ -416,7 +416,7 @@ char *yytext;
 #define YY_NO_UNPUT
 
 char* putSymbol( char *_name );
-char *putBracketizedSymbol( char *_name );
+char *putSymbolInBrackets( char *_name );
 char* putString( char *_name );
 int yywrap();
 
@@ -760,7 +760,7 @@ YY_RULE_SETUP
 case 21:
 YY_RULE_SETUP
 #line 45 "lex.l"
-{ yylval.name = putBracketizedSymbol( yytext ); return ID; }
+{ yylval.name = putSymbolInBrackets( yytext ); return ID; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
@@ -1671,7 +1671,7 @@ int main()
 #line 53 "lex.l"
 
 
-char* putBracketizedSymbol( char *_name )
+char* putSymbolInBrackets( char *_name )
 {
   int l = strlen( _name )-1;
   char *p = (char *)malloc( l );
