@@ -425,19 +425,18 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 	    ds >> appFrom >> app;
 	    DCOPConnection* target = appIds.find( app );
 	    int datalen = ba.size();
-	    
+	
 	    DCOPConnection* conn = clients.find( iceConn );
 	    if ( (!conn->waitingForReply.isEmpty() && conn->time > pMsg->time)
 		 || ( target && !target->waitingForReply.isEmpty() && target->time > pMsg->time ) ) {
-		qDebug("reject call  %d < %d", pMsg->time, conn->time);
-		CARD32 oldtime = pMsg->time;
+		//qDebug("reject call  %ld < %ld", pMsg->time, conn->time);
 		IceGetHeader( iceConn, majorOpcode, DCOPCallRejected,
 			      sizeof(DCOPMsg), DCOPMsg, pMsg );
 		pMsg->time = ++time; // oldtime;
 		IceFlush( iceConn );
 		return;
 	    }
-	    
+	
 	    if ( target ) {
 		target->waitingForReply.append( iceConn );
 		IceGetHeader( target->iceConn, majorOpcode, DCOPCall,
@@ -593,7 +592,7 @@ DCOPServer::DCOPServer()
     : QObject(0,0), appIds(200), clients(200)
 {
     time = 0; // the beginning of time....
-    
+
     extern int _IceLastMajorOpcode; // from libICE
     if (_IceLastMajorOpcode < 1 )
 	registerXSM();
