@@ -560,7 +560,7 @@ void RegressionTest::getPartDOMOutput( QTextStream &outputStream )
 
 	for (uint i = 0; i < indent; i++)
 	    outputStream << "  ";
-	outputStream << node.nodeName().string().latin1();
+	outputStream << node.nodeName().string();
 
 	switch (node.nodeType()) {
 	    case Node::ELEMENT_NODE: {
@@ -576,7 +576,7 @@ void RegressionTest::getPartDOMOutput( QTextStream &outputStream )
 		for (it = attrNames.begin(); it != attrNames.end(); ++it) {
 		    QString name = *it;
 		    QString value = elem.getAttribute(*it).string();
-		    outputStream << " " << name.latin1() << "=\"" << value.latin1() << "\"";
+		    outputStream << " " << name << "=\"" << value << "\"";
 		}
 		break;
 	    }
@@ -585,10 +585,10 @@ void RegressionTest::getPartDOMOutput( QTextStream &outputStream )
 		assert(false);
 		break;
             case Node::TEXT_NODE:
-		outputStream << " \"" << Text(node).data().string().latin1() << "\"";
+		outputStream << " \"" << Text(node).data().string() << "\"";
 		break;
             case Node::CDATA_SECTION_NODE:
-		outputStream << " \"" << CDATASection(node).data().string().latin1() << "\"";
+		outputStream << " \"" << CDATASection(node).data().string() << "\"";
 		break;
             case Node::ENTITY_REFERENCE_NODE:
 		break;
@@ -597,7 +597,7 @@ void RegressionTest::getPartDOMOutput( QTextStream &outputStream )
             case Node::PROCESSING_INSTRUCTION_NODE:
 		break;
             case Node::COMMENT_NODE:
-		outputStream << " \"" << Comment(node).data().string().latin1() << "\"";
+		outputStream << " \"" << Comment(node).data().string() << "\"";
 		break;
             case Node::DOCUMENT_NODE:
 		break;
