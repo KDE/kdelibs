@@ -490,7 +490,7 @@ void box::draw(QPainter &p, int x, int y, QFont *f_, QColor *bc, QColor *fc)
   p.setFont(lastFont);
   if ( fc )
       p.setPen( *fc );
-
+  
   QFontMetrics fm( f );
 
   QRect tmp;
@@ -531,7 +531,11 @@ void box::draw(QPainter &p, int x, int y, QFont *f_, QColor *bc, QColor *fc)
     break;
 
   case SYMBOL:
-    drawSymbol(p, (SymbolType)(text[0].unicode()), fontsize, x, y);
+      if ( fc )
+	  p.setBrush( *fc );
+      else
+	  p.setBrush( Qt::black );
+      drawSymbol(p, (SymbolType)(text[0].unicode()), fontsize, x, y);
     break;
 
   case PLUS:
@@ -885,7 +889,6 @@ void box::drawSymbol(QPainter &p, SymbolType s, int size, int x, int y)
 
   a.translate(x, y);
 
-  p.setBrush(Qt::black);
   p.drawPolygon(a);
   p.setBrush(Qt::NoBrush);
 
