@@ -72,12 +72,14 @@ protected slots:
     
 private:
     QPoint mDragStart;
-    int reorderStartTab, previousTabIndex;
-    QMap<int, QColor> tabColors;
-    bool mTabReordering;
-    QTab *btab;
-    QToolButton *b;
-    bool mHoverCloseButton;
+    int mReorderStartTab;
+    int mReorderPreviousTab;
+    QMap<int, QColor> mTabColors;
+    QTab *mHoverCloseButtonTab;
+    QToolButton *mHoverCloseButton;
+
+    bool mHoverCloseButtonEnabled;
+    bool mTabReorderingEnabled;
 
     KTabBarPrivate * d;
 };
