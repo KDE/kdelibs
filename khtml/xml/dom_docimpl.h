@@ -48,6 +48,7 @@ namespace DOM {
     class CDATASectionImpl;
     class CommentImpl;
     class AttrImpl;
+    class EntityReferenceImpl;
     class NodeListImpl;
     class StyleSheetListImpl;
     class RangeImpl;
@@ -96,7 +97,7 @@ public:
 
     DocumentTypeImpl *doctype() const;
 
-    //DOMImplementation implementation() const;
+    DOMImplementationImpl *implementation() const;
 
     ElementImpl *documentElement() const;
 
@@ -115,7 +116,7 @@ public:
 
     AttrImpl *createAttribute ( const DOMString &name );
 
-    //EntityReference createEntityReference ( const DOMString &name );
+    EntityReferenceImpl *createEntityReference ( const DOMString &name );
 
     NodeListImpl *getElementsByTagName ( const DOMString &tagname );
 
@@ -217,6 +218,7 @@ protected:
     Tokenizer *tokenizer;
     DOMString url;
     DocumentTypeImpl *m_doctype;
+    DOMImplementationImpl *m_implementation;
 
     StyleSheetImpl *m_sheet;
     bool m_loadingSheet;

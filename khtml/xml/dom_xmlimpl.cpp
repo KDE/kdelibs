@@ -29,14 +29,14 @@
 
 using namespace DOM;
 
-EntityImpl::EntityImpl(DocumentImpl *doc) : NodeImpl(doc)
+EntityImpl::EntityImpl(DocumentImpl *doc) : NodeWParentImpl(doc)
 {
     m_publicId = 0;
     m_systemId = 0;
     m_notationName = 0;
 }
 
-EntityImpl::EntityImpl(DocumentImpl *doc, DOMString _publicId, DOMString _systemId, DOMString _notationName) : NodeImpl(doc)
+EntityImpl::EntityImpl(DocumentImpl *doc, DOMString _publicId, DOMString _systemId, DOMString _notationName) : NodeWParentImpl(doc)
 {
     m_publicId = _publicId.implementation();
     if (m_publicId)
@@ -88,18 +88,27 @@ DOMString EntityImpl::notationName() const
 
 // -------------------------------------------------------------------------
 
-EntityReferenceImpl::EntityReferenceImpl(DocumentImpl *doc) : NodeImpl(doc)
+EntityReferenceImpl::EntityReferenceImpl(DocumentImpl *doc) : NodeWParentImpl(doc)
 {
+    m_entityName = 0;
+}
+
+EntityReferenceImpl::EntityReferenceImpl(DocumentImpl *doc, DOMStringImpl *_entityName) : NodeWParentImpl(doc)
+{
+    m_entityName = _entityName;
+    if (m_entityName)
+	m_entityName->ref();
 }
 
 EntityReferenceImpl::~EntityReferenceImpl()
 {
+    if (m_entityName)
+	m_entityName->deref();
 }
 
 const DOMString EntityReferenceImpl::nodeName() const
 {
-    // ### return name of entity referenced
-    return 0;
+    return m_entityName;
 }
 
 unsigned short EntityReferenceImpl::nodeType() const
@@ -109,13 +118,13 @@ unsigned short EntityReferenceImpl::nodeType() const
 
 // -------------------------------------------------------------------------
 
-NotationImpl::NotationImpl(DocumentImpl *doc) : NodeImpl(doc)
+NotationImpl::NotationImpl(DocumentImpl *doc) : NodeWParentImpl(doc)
 {
     m_publicId = 0;
     m_systemId = 0;
 }
 
-NotationImpl::NotationImpl(DocumentImpl *doc, DOMString _publicId, DOMString _systemId) : NodeImpl(doc)
+NotationImpl::NotationImpl(DocumentImpl *doc, DOMString _publicId, DOMString _systemId) : NodeWParentImpl(doc)
 {
     m_publicId = _publicId.implementation();
     if (m_publicId)
@@ -156,13 +165,13 @@ DOMString NotationImpl::systemId() const
 
 // -------------------------------------------------------------------------
 
-ProcessingInstructionImpl::ProcessingInstructionImpl(DocumentImpl *doc) : NodeImpl(doc)
+ProcessingInstructionImpl::ProcessingInstructionImpl(DocumentImpl *doc) : NodeWParentImpl(doc)
 {
     m_target = 0;
     m_data = 0;
 }
 
-ProcessingInstructionImpl::ProcessingInstructionImpl(DocumentImpl *doc, DOMString _target, DOMString _data) : NodeImpl(doc)
+ProcessingInstructionImpl::ProcessingInstructionImpl(DocumentImpl *doc, DOMString _target, DOMString _data) : NodeWParentImpl(doc)
 {
     m_target = _target.implementation();
     if (m_target)
@@ -182,8 +191,7 @@ ProcessingInstructionImpl::~ProcessingInstructionImpl()
 
 const DOMString ProcessingInstructionImpl::nodeName() const
 {
-    // ###
-    return "target";
+    return m_target;
 }
 
 unsigned short ProcessingInstructionImpl::nodeType() const
@@ -193,8 +201,7 @@ unsigned short ProcessingInstructionImpl::nodeType() const
 
 DOMString ProcessingInstructionImpl::nodeValue() const
 {
-    // ### return entire content excluding the target
-    return 0;
+    return m_data;
 }
 
 DOMString ProcessingInstructionImpl::target() const
@@ -204,7 +211,6 @@ DOMString ProcessingInstructionImpl::target() const
 
 DOMString ProcessingInstructionImpl::data() const
 {
-    // ###
     return m_data;
 }
 
@@ -216,11 +222,3 @@ void ProcessingInstructionImpl::setData( const DOMString &_data )
     if (m_data)
 	m_data->ref();
 }
-
-
-
-
-
-
-
-

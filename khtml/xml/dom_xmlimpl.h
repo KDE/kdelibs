@@ -32,7 +32,7 @@ namespace DOM {
 
 class DOMString;
 
-class EntityImpl : public NodeImpl
+class EntityImpl : public NodeWParentImpl
 {
 public:
     EntityImpl(DocumentImpl *doc);
@@ -52,17 +52,20 @@ protected:
 };
 
 
-class EntityReferenceImpl : public NodeImpl
+class EntityReferenceImpl : public NodeWParentImpl
 {
 public:
     EntityReferenceImpl(DocumentImpl *doc);
+    EntityReferenceImpl(DocumentImpl *doc, DOMStringImpl *_entityName);
     virtual ~EntityReferenceImpl();
 
     virtual const DOMString nodeName() const;
     virtual unsigned short nodeType() const;
+protected:
+    DOMStringImpl *m_entityName;
 };
 
-class NotationImpl : public NodeImpl
+class NotationImpl : public NodeWParentImpl
 {
 public:
     NotationImpl(DocumentImpl *doc);
@@ -80,7 +83,7 @@ protected:
 };
 
 
-class ProcessingInstructionImpl : public NodeImpl
+class ProcessingInstructionImpl : public NodeWParentImpl
 {
 public:
     ProcessingInstructionImpl(DocumentImpl *doc);

@@ -101,6 +101,7 @@ DOMString HTMLDocument::title() const
     NodeImpl *t = e->firstChild();
     if(!t) return 0;
 
+    // ### join all text nodes within <TITLE>
     return static_cast<TextImpl *>(t)->data();
 }
 

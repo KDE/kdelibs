@@ -27,6 +27,7 @@
 #include "dom_node.h"
 #include "dom_elementimpl.h"
 #include "dom_textimpl.h"
+#include "dom_xmlimpl.h"
 #include "html/html_headimpl.h"
 #include "rendering/render_object.h"
 
@@ -153,10 +154,22 @@ bool XMLHandler::characters( const QString& ch )
 
 bool XMLHandler::comment(const QString & ch)
 {
+    if (m_currentNode->nodeType() == Node::TEXT_NODE)
+	exitText();
     // ### handle exceptions
     m_currentNode->addChild(m_doc->createComment(ch));
     return true;
 }
+
+bool XMLHandler::processingInstruction(const QString &target, const QString &data)
+{
+    if (m_currentNode->nodeType() == Node::TEXT_NODE)
+	exitText();
+    // ### handle exceptions
+    m_currentNode->addChild(m_doc->createProcessingInstruction(target,data));
+    return true;
+}
+
 
 QString XMLHandler::errorString()
 {

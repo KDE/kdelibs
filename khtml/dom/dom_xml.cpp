@@ -94,16 +94,19 @@ Entity::~Entity()
 
 DOMString Entity::publicId() const
 {
+    // ###
     return 0;
 }
 
 DOMString Entity::systemId() const
 {
+    // ###
     return 0;
 }
 
 DOMString Entity::notationName() const
 {
+    // ###
     return 0;
 }
 
@@ -179,11 +182,13 @@ Notation::~Notation()
 
 DOMString Notation::publicId() const
 {
+    // ###
     return 0;
 }
 
 DOMString Notation::systemId() const
 {
+    // ###
     return 0;
 }
 
@@ -226,16 +231,19 @@ ProcessingInstruction::~ProcessingInstruction()
 
 DOMString ProcessingInstruction::target() const
 {
+    if (impl) return ((ProcessingInstructionImpl*)impl)->target();
     return 0;
 }
 
 DOMString ProcessingInstruction::data() const
 {
+    if (impl) return ((ProcessingInstructionImpl*)impl)->data();
     return 0;
 }
 
-void ProcessingInstruction::setData( const DOMString & )
+void ProcessingInstruction::setData( const DOMString &_data )
 {
+    if (impl) ((ProcessingInstructionImpl*)impl)->setData(_data);
 }
 
 ProcessingInstruction::ProcessingInstruction(ProcessingInstructionImpl *i) : Node(i)

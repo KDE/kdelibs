@@ -189,6 +189,7 @@ protected:
  */
 class EntityReference : public Node
 {
+    friend class Document;
 public:
     EntityReference();
     EntityReference(const EntityReference &other);

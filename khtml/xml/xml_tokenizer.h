@@ -53,6 +53,8 @@ public:
     bool endCDATA();
     bool characters(const QString& ch);
     bool comment(const QString & ch);
+    bool processingInstruction(const QString &target, const QString &data);
+
 
 
     bool enterText();

@@ -94,6 +94,8 @@ DocumentImpl::DocumentImpl() : NodeBaseImpl(0)
     tokenizer = 0;
     m_doctype = new DocumentTypeImpl(this);
     m_doctype->ref();
+    m_implementation = new DOMImplementationImpl();
+    m_implementation->ref();
     m_paintDevice = 0;
     m_paintDeviceMetrics = 0;
     pMode = Strict;
@@ -113,6 +115,8 @@ DocumentImpl::DocumentImpl(KHTMLView *v) : NodeBaseImpl(0)
     tokenizer = 0;
     m_doctype = new DocumentTypeImpl(this);
     m_doctype->ref();
+    m_implementation = new DOMImplementationImpl();
+    m_implementation->ref();
     m_paintDeviceMetrics = 0;
     setPaintDevice( m_view );
     pMode = Strict;
@@ -130,6 +134,7 @@ DocumentImpl::~DocumentImpl()
     if (tokenizer)
 	delete tokenizer;
     m_doctype->deref();
+    m_implementation->deref();
     delete m_paintDeviceMetrics;
 }
 
@@ -255,6 +260,12 @@ DocumentTypeImpl *DocumentImpl::doctype() const
     return m_doctype;
 }
 
+DOMImplementationImpl *DocumentImpl::implementation() const
+{
+    return m_implementation;
+}
+
+
 void DocumentImpl::setChanged(bool b)
 {
     if (b)
@@ -327,6 +338,11 @@ ProcessingInstructionImpl *DocumentImpl::createProcessingInstruction ( const DOM
 AttrImpl *DocumentImpl::createAttribute( const DOMString &name )
 {
     return new AttrImpl(this, name);
+}
+
+EntityReferenceImpl *DocumentImpl::createEntityReference ( const DOMString &name )
+{
+    return new EntityReferenceImpl(this, name.implementation());
 }
 
 NodeListImpl *DocumentImpl::getElementsByTagName( const DOMString &tagname )
@@ -712,25 +728,25 @@ unsigned long NamedEntityMapImpl::length() const
     return 0;
 }
 
-NodeImpl *NamedEntityMapImpl::getNamedItem ( const DOMString &name ) const
+NodeImpl *NamedEntityMapImpl::getNamedItem ( const DOMString &/*name*/ ) const
 {
     // ###
     return 0;
 }
 
-NodeImpl *NamedEntityMapImpl::setNamedItem ( const Node &arg )
+NodeImpl *NamedEntityMapImpl::setNamedItem ( const Node &/*arg*/ )
 {
     // ###
     return 0;
 }
 
-NodeImpl *NamedEntityMapImpl::removeNamedItem ( const DOMString &name )
+NodeImpl *NamedEntityMapImpl::removeNamedItem ( const DOMString &/*name*/ )
 {
     // ###
     return 0;
 }
 
-NodeImpl *NamedEntityMapImpl::item ( unsigned long index ) const
+NodeImpl *NamedEntityMapImpl::item ( unsigned long /*index*/ ) const
 {
     // ###
     return 0;

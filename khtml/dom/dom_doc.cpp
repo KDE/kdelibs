@@ -33,6 +33,7 @@
 #include "dom2_range.h"
 #include "dom2_traversal.h"
 #include <kdebug.h>
+
 using namespace DOM;
 
 
@@ -84,7 +85,6 @@ bool DOMImplementation::isNull() const
 }
 
 // ----------------------------------------------------------------------------
-// ### put if (impl) in functions
 
 Document::Document() : Node()
 {
@@ -140,75 +140,87 @@ Document::~Document()
 
 DocumentType Document::doctype() const
 {
-    return DocumentType();
+    if (impl) return ((DocumentImpl *)impl)->doctype();
+    return 0;
 }
 
 DOMImplementation Document::implementation() const
 {
-   return DOMImplementation();
+    if (impl) return ((DocumentImpl *)impl)->implementation();
+    return 0;
 }
 
 Element Document::documentElement() const
 {
-    return ((DocumentImpl *)impl)->documentElement();
+    if (impl) return ((DocumentImpl *)impl)->documentElement();
+    return 0;
 }
 
 Element Document::createElement( const DOMString &tagName )
 {
-    return ((DocumentImpl *)impl)->createElement(tagName);
+    if (impl) return ((DocumentImpl *)impl)->createElement(tagName);
+    return 0;
 }
 
 DocumentFragment Document::createDocumentFragment(  )
 {
-    return ((DocumentImpl *)impl)->createDocumentFragment();
+    if (impl) return ((DocumentImpl *)impl)->createDocumentFragment();
+    return 0;
 }
 
 Text Document::createTextNode( const DOMString &data )
 {
-    return ((DocumentImpl *)impl)->createTextNode( data );
+    if (impl) return ((DocumentImpl *)impl)->createTextNode( data );
+    return 0;
 }
 
 Comment Document::createComment( const DOMString &data )
 {
-    return ((DocumentImpl *)impl)->createComment( data );
+    if (impl) return ((DocumentImpl *)impl)->createComment( data );
+    return 0;
 }
 
 CDATASection Document::createCDATASection( const DOMString &data )
 {
     // ### DOM1 spec says raise exception if html documents - what about XHTML documents?
-    return ((DocumentImpl *)impl)->createCDATASection( data );
+    if (impl) return ((DocumentImpl *)impl)->createCDATASection( data );
+    return 0;
 }
 
 ProcessingInstruction Document::createProcessingInstruction( const DOMString &target, const DOMString &data )
 {
-    return ((DocumentImpl *)impl)->createProcessingInstruction( target, data );
+    if (impl) return ((DocumentImpl *)impl)->createProcessingInstruction( target, data );
+    return 0;
 }
 
 Attr Document::createAttribute( const DOMString &name )
 {
-    return ((DocumentImpl *)impl)->createAttribute( name );
+    if (impl) return ((DocumentImpl *)impl)->createAttribute( name );
+    return 0;
 }
 
-EntityReference Document::createEntityReference( const DOMString & )
+EntityReference Document::createEntityReference( const DOMString &name )
 {
-    return EntityReference();
+    if (impl) return ((DocumentImpl *)impl)->createEntityReference( name );
+    return 0;
 }
 
 NodeList Document::getElementsByTagName( const DOMString &tagName )
 {
-    return ((DocumentImpl *)impl)->getElementsByTagName( tagName );
+    if (impl) return ((DocumentImpl *)impl)->getElementsByTagName( tagName );
+    return 0;
 }
 
 bool Document::isHTMLDocument() const
 {
-    if(!impl) return false;
-    return ((DocumentImpl *)impl)->isHTMLDocument();
+    if (impl) return ((DocumentImpl *)impl)->isHTMLDocument();
+    return 0;
 }
 
 Range Document::createRange()
 {
-    if (impl) return 0;
-    return ((DocumentImpl *)impl)->createRange();
+    if (impl) return ((DocumentImpl *)impl)->createRange();
+    return 0;
 }
 
 /*Range Document::createRange(const Node &sc, const long so, const Node &ec, const long eo)

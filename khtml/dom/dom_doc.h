@@ -70,6 +70,7 @@ class DocumentTypeImpl;
  */
 class DOMImplementation
 {
+   friend class Document;
 public:
     DOMImplementation();
     DOMImplementation(const DOMImplementation &other);
@@ -487,6 +488,7 @@ class DOMString;
  */
 class DocumentType : public Node
 {
+    friend class Document;
 public:
     DocumentType();
     DocumentType(const DocumentType &other);

@@ -961,7 +961,7 @@ DOMString HTMLTextAreaElement::defaultValue() const
 
 void HTMLTextAreaElement::setDefaultValue( const DOMString &value )
 {
-    ((HTMLTextAreaElementImpl *)impl)->setDefaultValue(value);
+    if (impl) ((HTMLTextAreaElementImpl *)impl)->setDefaultValue(value);
 }
 
 HTMLFormElement HTMLTextAreaElement::form() const
