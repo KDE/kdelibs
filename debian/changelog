@@ -1,11 +1,19 @@
+kdelibs (4:2.1.1-9) unstable; urgency=high
+ 
+  * kdesu fix for /tmp file security
+  * Also fix shlibdeps bit
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 23 Apr 2001 14:00:00 -0700
+
 kdelibs (4:2.1.1-8) unstable; urgency=low
  
   * Update config.sub/guess files for hppa/ia64 and whatever else...
   * Merge with upstream CVS
   * Update Build-Depends
   * Update Standards Version
+  * Removing old hacks in debian/rules
  
- -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 22 Apr 2001 01:27:00 -0700
+ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 23 Apr 2001 08:42:00 -0700
 
 kdelibs (4:2.1.1-7) unstable; urgency=low
  
