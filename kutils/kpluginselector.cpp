@@ -523,6 +523,7 @@ void KPluginSelector::addPlugins( const QString & instanceName,
     else
         w = new KPluginSelectionWidget( instanceName, this, d->frame,
                 catname, category, cfgGroup );
+    w->setMinimumSize( 200, 200 );
     connect( w, SIGNAL( changed( bool ) ), this, SIGNAL( changed( bool ) ) );
     connect( w, SIGNAL( configCommitted( const QCString & ) ), this,
             SIGNAL( configCommitted( const QCString & ) ) );
@@ -551,6 +552,7 @@ void KPluginSelector::addPlugins( const QValueList<KPluginInfo*> & plugininfos,
     else
         w = new KPluginSelectionWidget( plugininfos, this, d->frame,
                 catname, category, cfgGroup );
+    w->setMinimumSize( 200, 200 );
     connect( w, SIGNAL( changed( bool ) ), this, SIGNAL( changed( bool ) ) );
     connect( w, SIGNAL( configCommitted( const QCString & ) ), this,
             SIGNAL( configCommitted( const QCString & ) ) );
