@@ -107,6 +107,7 @@ QString HelpProtocol::lookupFile(const QString &fname,
             KURL red( "help:/" );
             red.setPath( path + "/index.html" );
             red.setQuery( query );
+            mimeType("text/html");
             redirection(red);
             kdDebug( 7119 ) << "redirect to " << red.url() << endl;
             redirect = true;
