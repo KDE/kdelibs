@@ -2,7 +2,7 @@
  * This file is part of the DOM implementation for KDE.
  *
  * Copyright (C) 2000 Peter Kelly (pmk@post.com)
- * Copyright (C) 2002 Apple Computer, Inc. 
+ * Copyright (C) 2003 Apple Computer, Inc. 
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -41,6 +41,7 @@ using namespace DOM;
 using namespace khtml;
 
 XMLHandler::XMLHandler(DocumentPtr *_doc, KHTMLView *_view)
+    : errorLine(0)
 {
     m_doc = _doc;
     if ( m_doc ) m_doc->ref();
@@ -149,21 +150,26 @@ bool XMLHandler::endCDATA()
 
 bool XMLHandler::characters( const QString& ch )
 {
+#if 1 // SAFARI_MERGE remove    
     if (ch.stripWhiteSpace().isEmpty())
         return true;
+#endif    
 
     if (m_currentNode->nodeType() == Node::TEXT_NODE ||
         m_currentNode->nodeType() == Node::CDATA_SECTION_NODE ||
         enterText()) {
 
+#if 1 // SAFARI_MERGE
         NodeImpl::Id parentId = m_currentNode->parentNode() ? m_currentNode->parentNode()->id() : 0;
         if (parentId == ID_SCRIPT || parentId == ID_STYLE || parentId == ID_XMP || parentId == ID_TEXTAREA) {
             // ### hack.. preserve whitespace for script, style, xmp and textarea... is this the correct
             // way of doing this?
+#endif            
             int exceptioncode = 0;
             static_cast<TextImpl*>(m_currentNode)->appendData(ch,exceptioncode);
             if (exceptioncode)
                 return false;
+#if 1 // SAFARI_MERGE
         }
         else {
             // for all others, simplify the whitespace
@@ -172,6 +178,7 @@ bool XMLHandler::characters( const QString& ch )
             if (exceptioncode)
                 return false;
         }
+#endif        
         return true;
     }
     else
@@ -346,16 +353,17 @@ void XMLTokenizer::finish()
             static_cast<NodeImpl*>(m_doc->document())->removeChild(m_doc->document()->firstChild(),exceptioncode);
 
         QTextIStream stream(&m_xmlCode);
-        unsigned long lineno;
-        for (lineno = 0; lineno < handler.errorLine-1; lineno++)
-          stream.readLine();
-        QString line = stream.readLine();
+        QString line, errorLocPtr;
+        if ( handler.errorLine ) {
+            unsigned long lineno;
+            for (lineno = 0; lineno < handler.errorLine-1; lineno++)
+              stream.readLine();
+            QString line = stream.readLine();
 
-        unsigned long colno;
-        QString errorLocPtr = "";
-        for (colno = 0; colno < handler.errorCol-1; colno++)
-            errorLocPtr += " ";
-        errorLocPtr += "^";
+            for (unsigned long colno = 0; colno < handler.errorCol-1; colno++)
+                errorLocPtr += " ";
+            errorLocPtr += "^";
+        }
 
         // Create elements for display
         DocumentImpl *doc = m_doc->document();
@@ -364,27 +372,36 @@ void XMLTokenizer::finish()
         NodeImpl     *h1 = doc->createElementNS(XHTML_NAMESPACE,"h1");
         NodeImpl       *headingText = doc->createTextNode(i18n("XML parsing error"));
         NodeImpl     *errorText = doc->createTextNode(handler.errorProtocol());
-        NodeImpl     *hr = doc->createElementNS(XHTML_NAMESPACE,"hr");
-        NodeImpl     *pre = doc->createElementNS(XHTML_NAMESPACE,"pre");
-        NodeImpl       *lineText = doc->createTextNode(line+"\n");
-        NodeImpl       *errorLocText = doc->createTextNode(errorLocPtr);
+        NodeImpl     *hr = 0;
+        NodeImpl     *pre = 0;
+        NodeImpl     *lineText = 0;
+        NodeImpl     *errorLocText = 0;
+        if ( !line.isNull() ) {
+            hr = doc->createElementNS(XHTML_NAMESPACE,"hr");
+            pre = doc->createElementNS(XHTML_NAMESPACE,"pre");
+            lineText = doc->createTextNode(line+"\n");
+            errorLocText = doc->createTextNode(errorLocPtr);
+        }
 
         // Construct DOM tree. We ignore exceptions as we assume they will not be thrown here (due to the
         // fact we are using a known tag set)
         doc->appendChild(html,exceptioncode);
         html->appendChild(body,exceptioncode);
-        body->appendChild(h1,exceptioncode);
+        if ( body )
+            body->appendChild(h1,exceptioncode);
         h1->appendChild(headingText,exceptioncode);
         body->appendChild(errorText,exceptioncode);
         body->appendChild(hr,exceptioncode);
         body->appendChild(pre,exceptioncode);
-        pre->appendChild(lineText,exceptioncode);
-        pre->appendChild(errorLocText,exceptioncode);
+        if ( pre ) {
+            pre->appendChild(lineText,exceptioncode);
+            pre->appendChild(errorLocText,exceptioncode);
+        }
 
         // Close the renderers so that they update their display correctly
         // ### this should not be necessary, but requires changes in the rendering code...
         h1->closeRenderer();
-        pre->closeRenderer();
+        if ( pre ) pre->closeRenderer();
         body->closeRenderer();
 
         m_doc->document()->recalcStyle( NodeImpl::Inherit );
