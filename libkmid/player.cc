@@ -340,11 +340,14 @@ void player::parseSpecialEvents(void)
                             pspev->id=spev_id++;
 #ifdef PLAYERDEBUG
                             printf("ev->length %d\n",ev->length);
+			
 #endif
                             strncpy(pspev->text,(char *)ev->data,
 				(ev->length>1024)? (1023) : (ev->length) );
                             pspev->text[(ev->length>1024)? (1023):(ev->length)]=0;
-			    printf("%s\n",pspev->text);
+#ifdef PLAYERDEBUG
+                            printf("(%s)\n",pspev->text);
+#endif
                             pspev->next=new SpecialEvent;
 #ifdef PLAYERDEBUG
 			    if (pspev->next==NULL) printf("pspev->next=NULL\n");
