@@ -105,6 +105,10 @@ void KWindowListMenu::init()
     int cd = kwin_module->currentDesktop();
     WId active_window = kwin_module->activeWindow();
 
+    // Make sure the popup is not too wide, otherwise clicking in the middle of kdesktop
+    // wouldn't leave any place for the popup, and release would activate some menu entry.    
+    int maxwidth = kapp->desktop()->screenGeometry( this ).width() / 2 - 100;
+
     clear();
     map.clear();
 
@@ -148,7 +152,7 @@ void KWindowListMenu::init()
 
         for (KWin::WindowInfo* info = list.first(); info; info = list.next(), ++i)
         {
-            QString itemText = KStringHandler::cEmSqueeze(info->visibleNameWithState(), fontMetrics(), 40);
+            QString itemText = KStringHandler::cPixelSqueeze(info->visibleNameWithState(), fontMetrics(), maxwidth);
             NET::WindowType windowType = info->windowType( NET::NormalMask | NET::DesktopMask
                 | NET::DockMask | NET::ToolbarMask | NET::MenuMask | NET::DialogMask
                 | NET::OverrideMask | NET::TopMenuMask | NET::UtilityMask | NET::SplashMask );
@@ -194,8 +198,6 @@ void KWindowListMenu::init()
 
         setItemEnabled(insertItem(i18n("No windows")), false);
     }
-
-    adjustSize();
 }
 
 void KWindowListMenu::slotExec(int id)
