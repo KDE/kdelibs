@@ -996,7 +996,7 @@ void KHTMLView::print()
         // (In Qt 3.0.x the default margins are hardcoded in Qt)
         m_part->xmlDocImpl()->setPrintStyleSheet( printer->option("kde-khtml-printfriendly") == "true" ?
                                                   "* { background-image: none !important;"
-                                                  "    background-color: transparent !important;"
+                                                  "    background-color: white !important;"
                                                   "    color: black !important; }"
                                                   "body { margin: 0px !important; }"
                                                   "html { margin: 0px !important; }" :
