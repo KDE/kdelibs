@@ -209,6 +209,56 @@ bool BarObject::process(const QCString &fun, const QByteArray &data,
   }
 }
 
+Receiving Calls and processing them:
+------------------------------------
+
+If your applications is able to process incoming function calls
+right away the above code is all you need. When your application
+needs to do more complex tasks you might want to do the processing
+out of 'process' function call and send the result back later when
+it becomes available.
+
+For this you can ask your DCOPClient for a transactionId. You can 
+then return from the 'process' function and when the result is 
+available finish the transaction. In the mean time your application
+can receive incoming DCOP function calls from other clients.
+
+Such code could like this:
+
+bool BarObject::process(const QCString &fun, const QByteArray &data,
+		        QCString &, QByteArray &)
+{
+  if (fun == "doIt(int)") {
+    QDataStream stream(data, IO_ReadOnly);
+    int arg;
+    QString res;
+    stream >> arg;
+    res = self->doIt(arg);
+    
+    DCOPClientTransaction *myTransaction;
+    myTransaction = kapp->dcopClient()->beginTransaction();
+
+    // start processing...
+    // Calls slotProcessingDone when finished.
+    startProcessing( myTransaction, arg);
+
+    return true;
+  } else {
+    qDebug("unknown function call to BarObject::process()");
+    return false;
+  }
+}
+
+slotProcessingDone(DCOPClientTransaction *myTransaction, const QString &res)
+{
+    QCString replyType = "QString";
+    QByteArray replyData;  
+    QDataStream stream(replyData, IO_WriteOnly);
+    stream << res;
+    kapp->dcopClient()->endTransaction( myTransaction, replyType, replyData );
+}
+
+
 Conclusion:
 -----------
 
