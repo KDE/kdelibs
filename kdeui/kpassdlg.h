@@ -17,7 +17,8 @@
 #include <kdialogbase.h>
 
 class QLabel;
-
+class QGridLayout;
+class QWidget;
 
 /**
  * @short A safe password input widget.
@@ -98,18 +99,21 @@ class KPasswordDialog
     Q_OBJECT
 
 public: 
-    KPasswordDialog(int type, QString prompt, QString command=QString::null, 
-	    bool enableKeep=false, int extraBttn=0);
+    KPasswordDialog(int type, QString prompt, bool enableKeep=false, 
+	    int extraBttn=0);
     virtual ~KPasswordDialog();
 
     /** Set the password prompt. */
     void setPrompt(QString prompt);
 
+    /** Add a line of information to the dialog. */
+    void addLine(QString key, QString value);
+
     /** 
      * Returns the password entered. The memory is freed in the destructor,
      * so you should make a copy.
      */
-    const char *password() const { return m_pEdit1->password(); }
+    const char *password() const { return m_pEdit->password(); }
 
     /** Returns true if the user wants to keep the password. */
     bool keep() const { return m_Keep; }
@@ -120,16 +124,13 @@ public:
      * @param password The password is returned in this reference parameter.
      * @param prompt A prompt for the password. This can be a few lines of
      * information. The text is word broken to fit nicely in the dialog.
-     * @param command Extra feedback to the user, telling him the command 
-     * the password is intended for.
      * @param keep Enable/disable a checkbox controlling password keeping.
      * If you pass a null pointer, or a pointer to the value 0, the checkbox 
      * is not shown. If you pass a pointer to a nonzero value, the checkbox 
      * is shown and the result is stored in *keep.
      * @return Result code: Accepted or Rejected.
      */
-    static int getPassword(QCString &password, QString prompt, 
-	    QString command=QString::null, int *keep=0L);
+    static int getPassword(QCString &password, QString prompt, int *keep=0L);
 
     /** 
      * Pops up the dialog, asks the user for a password and returns it. The
@@ -146,7 +147,7 @@ public:
     /** Static helper funtion that disables core dumps. */
     static void disableCoreDumps();
 
-    enum Types { Password, newPassword };
+    enum Types { Password, NewPassword };
 
 protected slots:
     void slotOk();
@@ -162,10 +163,11 @@ protected:
 private:
     void erase();
 
-    int m_Keep, m_Type;
-    QString m_Command;
+    int m_Keep, m_Type, m_Row;
     QLabel *m_pHelpLbl;
-    KPasswordEdit *m_pEdit1, *m_pEdit2;
+    QGridLayout *m_pGrid;
+    QWidget *m_pMain;
+    KPasswordEdit *m_pEdit, *m_pEdit2;
 };
 
 

@@ -9,7 +9,6 @@
  * kpassdlg.cpp: Password input dialog.
  */
 
-#include <config.h>
 #include <unistd.h>
 
 #include <qwidget.h>
@@ -123,103 +122,95 @@ void KPasswordEdit::showPass()
  * Password dialog.
  */
 
-KPasswordDialog::KPasswordDialog(int type, QString prompt, QString command, 
-	bool enableKeep, int extraBttn)
+KPasswordDialog::KPasswordDialog(int type, QString prompt, bool enableKeep, 
+	int extraBttn)
     : KDialogBase(0L, "Password Dialog", true, "", Ok|Cancel|extraBttn,
 	    Ok, true)
 {
-    m_Command = command;
     m_Keep = enableKeep ? 1 : 0;
     m_Type = type;
+    m_Row = 0;
 
     KConfig *cfg = KGlobal::config();
-    KConfigGroupSaver(cfg, "Passwords");
+    KConfigGroupSaver saver(cfg, "Passwords");
     if (m_Keep && cfg->readBoolEntry("Keep", false))
 	m_Keep++;
     
-    QWidget *main = new QWidget(this);
-    setMainWidget(main);
-    QGridLayout *grid = new QGridLayout(main, 4, 3, 10, 10);
+    m_pMain = new QWidget(this);
+    setMainWidget(m_pMain);
+    m_pGrid = new QGridLayout(m_pMain, 10, 3, 10, 0);
+    m_pGrid->addColSpacing(1, 10);
 
-    // pixmap + prompt
+    // Row 1: pixmap + prompt
     QLabel *lbl;
     QPixmap pix(locate("data", QString::fromLatin1("kdeui/pics/keys.png")));
     if (!pix.isNull()) {
-	lbl = new QLabel(main);
+	lbl = new QLabel(m_pMain);
 	lbl->setPixmap(pix);
-	lbl->setFixedSize(lbl->sizeHint());
-	grid->addWidget(lbl, 0, 0, AlignCenter);
-    }
-
-    m_pHelpLbl = new QLabel(prompt, main);
-    m_pHelpLbl->setAlignment(AlignLeft|AlignVCenter|WordBreak);
-    grid->addWidget(m_pHelpLbl, 0, 2, AlignLeft);
-    setPrompt(prompt);
-
-    QHBoxLayout *h_lay;
-    QSize size;
-
-    // Row 2: Command or password
-    if ((m_Type == Password) && !m_Command.isEmpty()) {
-	lbl = new QLabel(main);
-	lbl->setText(i18n("Command:"));
-	lbl->setFixedSize(lbl->sizeHint());
-	grid->addWidget(lbl, 1, 0, AlignLeft);
-
-	lbl = new QLabel(main);
-	lbl->setAlignment(AlignLeft|AlignVCenter|WordBreak);
-	lbl->setText(m_Command);
-	lbl->setFixedSize(275, lbl->heightForWidth(275));
-	grid->addWidget(lbl, 1, 2, AlignLeft);
-    } else if (m_Type == newPassword) {
-	lbl = new QLabel(main);
 	lbl->setAlignment(AlignLeft|AlignVCenter);
-	lbl->setText(i18n("&Password:"));
 	lbl->setFixedSize(lbl->sizeHint());
-	grid->addWidget(lbl, 1, 0, AlignLeft);
-
-	QHBoxLayout *h_lay = new QHBoxLayout();
-	grid->addLayout(h_lay, 1, 2);
-	m_pEdit2 = new KPasswordEdit(main);
-	lbl->setBuddy(m_pEdit2);
-	size = m_pEdit2->sizeHint();
-	m_pEdit2->setFixedHeight(size.height());
-	m_pEdit2->setMinimumWidth(size.width());
-	h_lay->addWidget(m_pEdit2, 12);
-	h_lay->addStretch(6);
+	m_pGrid->addWidget(lbl, 0, 0, AlignLeft);
     }
-    
-    // Row 3: Password or verify
-    lbl = new QLabel(main);
-    lbl->setAlignment(AlignLeft|AlignVCenter);
-    if (m_Type == Password)
-	lbl->setText(i18n("&Password:"));
-    else
-	lbl->setText(i18n("&Verify:"));
-    lbl->setFixedSize(lbl->sizeHint());
-    grid->addWidget(lbl, 2, 0, AlignLeft);
-    
-    h_lay = new QHBoxLayout();
-    grid->addLayout(h_lay, 2, 2);
-    m_pEdit1 = new KPasswordEdit(main);
-    lbl->setBuddy(m_pEdit1);
-    size = m_pEdit1->sizeHint();
-    m_pEdit1->setFixedHeight(size.height());
-    m_pEdit1->setMinimumWidth(size.width());
-    h_lay->addWidget(m_pEdit1, 12);
-    h_lay->addStretch(6);
 
-    // Row 4: Keep password checkbox
-    if (m_Keep) {
-	QCheckBox *cb = new QCheckBox(i18n("&Keep Password"), main);
+    m_pHelpLbl = new QLabel(m_pMain);
+    m_pHelpLbl->setAlignment(AlignLeft|AlignVCenter|WordBreak);
+    m_pGrid->addWidget(m_pHelpLbl, 0, 2, AlignLeft);
+    setPrompt(prompt);
+    m_pGrid->addRowSpacing(1, 10);
+    m_pGrid->setRowStretch(1, 12);
+
+    // Row 2+: space for 4 extra info lines
+    m_pGrid->addRowSpacing(6, 5);
+    m_pGrid->setRowStretch(6, 12);
+
+    // Row 3: Password editor #1
+    lbl = new QLabel(m_pMain);
+    lbl->setAlignment(AlignLeft|AlignVCenter);
+    lbl->setText(i18n("&Password:"));
+    lbl->setFixedSize(lbl->sizeHint());
+    m_pGrid->addWidget(lbl, 7, 0, AlignLeft);
+
+    QHBoxLayout *h_lay = new QHBoxLayout();
+    m_pGrid->addLayout(h_lay, 7, 2);
+    m_pEdit = new KPasswordEdit(m_pMain);
+    lbl->setBuddy(m_pEdit);
+    QSize size = m_pEdit->sizeHint();
+    m_pEdit->setFixedHeight(size.height());
+    m_pEdit->setMinimumWidth(size.width());
+    h_lay->addWidget(m_pEdit, 12);
+    h_lay->addStretch(4);
+    
+    // Row 4: Password editor #2 or keep password checkbox
+
+    if ((m_Type == Password) && m_Keep) {
+	m_pGrid->addRowSpacing(8, 10);
+	m_pGrid->setRowStretch(8, 12);
+	QCheckBox *cb = new QCheckBox(i18n("&Keep Password"), m_pMain);
 	cb->setFixedSize(cb->sizeHint());
 	if (m_Keep > 1)
 	    cb->setChecked(true);
 	else
 	    m_Keep = 0;
 	connect(cb, SIGNAL(toggled(bool)), SLOT(slotKeep(bool)));
-	grid->addMultiCellWidget(cb, 3, 3, 0, 2, AlignLeft|AlignVCenter);
-    } 
+	m_pGrid->addWidget(cb, 9, 2, AlignLeft|AlignVCenter);
+    } else if (m_Type == NewPassword) {
+	m_pGrid->addRowSpacing(8, 10);
+	lbl = new QLabel(m_pMain);
+	lbl->setAlignment(AlignLeft|AlignVCenter);
+	lbl->setText(i18n("&Verify:"));
+	lbl->setFixedSize(lbl->sizeHint());
+	m_pGrid->addWidget(lbl, 9, 0, AlignLeft);
+    
+	h_lay = new QHBoxLayout();
+	m_pGrid->addLayout(h_lay, 9, 2);
+	m_pEdit2 = new KPasswordEdit(m_pMain);
+	lbl->setBuddy(m_pEdit2);
+	size = m_pEdit2->sizeHint();
+	m_pEdit2->setFixedHeight(size.height());
+	m_pEdit2->setMinimumWidth(size.width());
+	h_lay->addWidget(m_pEdit2, 12);
+	h_lay->addStretch(4);
+    }
 
     erase();
 }
@@ -237,30 +228,46 @@ void KPasswordDialog::setPrompt(QString prompt)
 }
 
 
+void KPasswordDialog::addLine(QString key, QString value)
+{
+    if (m_Row > 3)
+	return;
+
+    QLabel *lbl = new QLabel(key, m_pMain);
+    lbl->setAlignment(AlignTop);
+    lbl->setIndent(5);
+    lbl->setFixedSize(lbl->sizeHint());
+    m_pGrid->addWidget(lbl, m_Row+2, 0, AlignLeft);
+
+    lbl = new QLabel(value, m_pMain);
+    lbl->setAlignment(AlignTop|WordBreak);
+    lbl->setIndent(5);
+    lbl->setFixedSize(275, lbl->heightForWidth(275));
+    m_pGrid->addWidget(lbl, m_Row+2, 2, AlignLeft);
+    m_Row++;
+}
+
+
 void KPasswordDialog::erase()
 {
-    if (m_Type == newPassword) {
-	m_pEdit1->erase();
+    m_pEdit->erase();
+    m_pEdit->setFocus();
+    if (m_Type == NewPassword)
 	m_pEdit2->erase();
-	m_pEdit2->setFocus();
-    } else {
-	m_pEdit1->erase();
-	m_pEdit1->setFocus();
-    }
 }
 
 
 void KPasswordDialog::slotOk()
 {
-    if (m_Type == newPassword) {
-	if (strcmp(m_pEdit1->password(), m_pEdit2->password())) {
+    if (m_Type == NewPassword) {
+	if (strcmp(m_pEdit->password(), m_pEdit2->password())) {
 	    KMessageBox::sorry(this, i18n("You entered two different "
 		    "passwords. Please try again."));
 	    erase(); 
 	    return;
 	}
     }
-    if (!checkPassword(m_pEdit1->password())) {
+    if (!checkPassword(m_pEdit->password())) {
 	erase(); 
 	return;
     }
@@ -282,11 +289,10 @@ void KPasswordDialog::slotKeep(bool keep)
 
 // static
 int KPasswordDialog::getPassword(QCString &password, QString prompt, 
-	QString command, int *keep)
+	int *keep)
 {
     bool enableKeep = keep && *keep;
-    KPasswordDialog *dlg = new KPasswordDialog(Password, prompt, 
-	    command, enableKeep);
+    KPasswordDialog *dlg = new KPasswordDialog(Password, prompt, enableKeep);
     int ret = dlg->exec();
     if (ret == Accepted) {
 	password = dlg->password();
@@ -301,7 +307,7 @@ int KPasswordDialog::getPassword(QCString &password, QString prompt,
 // static
 int KPasswordDialog::getNewPassword(QCString &password, QString prompt)
 {
-    KPasswordDialog *dlg = new KPasswordDialog(newPassword, prompt);
+    KPasswordDialog *dlg = new KPasswordDialog(NewPassword, prompt);
     int ret = dlg->exec();
     if (ret == Accepted)
 	password = dlg->password();
