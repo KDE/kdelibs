@@ -221,13 +221,6 @@ QFrame *KJanusWidget::addPage( const QStringList &items, const QString &header,
   QFrame *page = new QFrame( FindParent(), "page" );
   addPageWidget( page, items, header, pixmap );
 
-  if( mFace == Tabbed )
-  {
-    QVBoxLayout *vbox = new QVBoxLayout( page, KDialog::spacingHint() );
-    QFrame *frame = new QFrame( page, "pageYYY" );
-    vbox->addWidget( frame, 10 );
-    return frame;
-  }
   return page;
 }
 
@@ -401,11 +394,19 @@ void KJanusWidget::addPageWidget( QFrame *page, const QStringList &items,
 {
   if( mFace == Tabbed )
   {
+    //
+    // 2000-06-10 Espen Sand: The tab widget does not have a margin so we 
+    // need to add one. I make a new widget width layout manager and reparent 
+    // the page widget to be a child of the new widget.
+    //
     QString itemName = items.last();
-    page->hide();
+    QWidget *topWidget = new QWidget( mTabControl, "page" );
+    mTabControl->addTab( topWidget, itemName );
+    mPageList->append(topWidget);
 
-    mTabControl->addTab( page, itemName );
-    mPageList->append(page);
+    page->reparent( topWidget, QPoint(0,0) );
+    QVBoxLayout *vbox = new QVBoxLayout( topWidget, KDialog::spacingHint(), 0);
+    vbox->addWidget( page, 1 );
   }
   else if( mFace == TreeList || mFace == IconList )
   {
@@ -630,23 +631,15 @@ bool KJanusWidget::showPage( QWidget *w )
       // Don't ask me why (because I don't know). If I select a page
       // with the mouse the page is not updated until it receives an
       // event. It seems this event get lost if the mouse is not moved
-      // when released. The timer ensures te update
+      // when released. The timer ensures the update
       //
       QTimer::singleShot( 0, mActivePageWidget, SLOT(update()) );
     }
   }
   else if( mFace == Tabbed )
   {
-    w->raise();
-    if( mActivePageWidget != 0 )
-    {
-      mActivePageWidget->setEnabled( false );
-      mActivePageWidget->hide();
-    }
-
+    mTabControl->showPage(w);
     mActivePageWidget = w;
-    mActivePageWidget->setEnabled( true );
-    mActivePageWidget->show();
   }
   else
   {
