@@ -394,9 +394,11 @@ CachedImage::CachedImage(DocLoader* dl, const DOMString &url, bool reload, int _
     p = 0;
     pixPart = 0;
     bg = 0;
+    bgColor = qRgba( 0, 0, 0, 0xFF );
     typeChecked = false;
     isFullyTransparent = false;
     errorOccured = false;
+    monochrome = false;
     formatType = 0;
     m_status = Unknown;
     m_size = 0;
@@ -448,27 +450,38 @@ void CachedImage::deref( CachedObjectClient *c )
 
 const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
 {
+
+    if ( newc.rgb() != bgColor ) {
+        delete bg; bg = 0;
+    }
+
     if (bg)
         return *bg;
 
     const QPixmap &r = pixmap();
 
-    if (r.isNull()) return r;
+    if (r.isNull()) {
+        return r;
+    }
+
+    return r;
+
 
     // no error indication for background images
     if(errorOccured) return *Cache::nullPixmap;
 
-    if (newc != bgColor)
-    {
-        bool isvalid = newc.isValid();
-        QSize s(pixmap_size());
-        int w = r.width();
-        int h = r.height();
+    bool isvalid = newc.isValid();
+    QSize s(pixmap_size());
+    int w = r.width();
+    int h = r.height();
+    if ( w*h < 8192 ) {
         if ( r.width() < BGMINWIDTH )
             w = ((BGMINWIDTH  / s.width())+1) * s.width();
         if ( r.height() < BGMINHEIGHT )
             h = ((BGMINHEIGHT / s.height())+1) * s.height();
+    }
 
+    if ( w != r.width() || h != r.height() ) {
         bg = new QPixmap(w, h);
         QPixmap pix = pixmap();
         QPainter p(bg);
@@ -476,13 +489,16 @@ const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
         p.drawTiledPixmap(0, 0, w, h, pix);
         if(!isvalid && pix.mask())
         {
-            // unfortunately our avoid transparency trick doesn't work here
+            // unfortunately our anti-transparency trick doesn't work here
             // we need to create a mask.
             QBitmap newmask(w, h);
             QPainter pm(&newmask);
             pm.drawTiledPixmap(0, 0, w, h, *pix.mask());
             bg->setMask(newmask);
+            bgColor = qRgba( 0, 0, 0, 0xFF );
         }
+        else
+            bgColor= newc.rgb();
 
         return *bg;
     }
@@ -580,6 +596,7 @@ void CachedImage::movieStatus(int status)
         if(status == QMovie::EndOfFrame)
         {
             const QImage& im = m->frameImage();
+            monochrome = ( ( im.depth() <= 8 ) && ( im.numColors() - int( im.hasAlphaBuffer() ) <= 2 ) );
             if(im.width() < 5 && im.height() < 5 && im.hasAlphaBuffer()) // only evaluate for small images
             {
                 QImage am = im.createAlphaMask();
@@ -608,8 +625,22 @@ void CachedImage::movieStatus(int status)
         {
             // the movie has ended and it doesn't loop nor is it an animation,
             // so there is no need to keep the buffer in memory
-            if(imgSource && m->frameNumber() == 1)
+            if(imgSource && m->frameNumber() == 1) {
                 setShowAnimations( false );
+
+                // monochrome alphamasked images are usually about 10000 times
+                // faster to draw, so this is worth the hack
+                if ( p && monochrome && p->depth() > 1 ) {
+                    QPixmap* pix = new QPixmap;
+                    pix->convertFromImage( p->convertToImage().convertDepth( 1 ), MonoOnly|AvoidDither );
+                    if ( p->mask() )
+                        pix->setMask( *p->mask() );
+                    delete p;
+                    p = pix;
+                    monochrome = false;
+                }
+            }
+
 	    CachedObjectClient *c;
 	    for ( c = m_clients.first(); c != 0; c = m_clients.next() )
 		c->notifyFinished(this);
@@ -650,6 +681,7 @@ void CachedImage::clear()
     delete m;   m = 0;
     delete p;   p = 0;
     delete bg;  bg = 0;
+    bgColor = qRgba( 0, 0, 0, 0xff );
     delete pixPart; pixPart = 0;
 
     formatType = 0;
