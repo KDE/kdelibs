@@ -84,9 +84,7 @@
 
 #endif /* HAVE_LIBGSSAPI */
 
-#ifdef HAVE_LIBNTLM
-#include <ntlm.h>
-#endif
+#include <kio/kntlm.h>
 
 using namespace KIO;
 
@@ -2414,11 +2412,9 @@ bool HTTPProtocol::httpOpen()
           header += createNegotiateAuth();
           break;
 #endif
-#ifdef HAVE_LIBNTLM
       case AUTH_NTLM:
           header += createNTLMAuth();
           break;
-#endif
       case AUTH_None:
       default:
           break;
@@ -4851,7 +4847,6 @@ void HTTPProtocol::configAuth( char *p, bool b )
     };
   }
 #endif
-#ifdef HAVE_LIBNTLM
   else if ( strncasecmp( p, "NTLM", 4 ) == 0 && 
     (( b && m_bPersistentProxyConnection ) || !b ) )
   {
@@ -4860,7 +4855,6 @@ void HTTPProtocol::configAuth( char *p, bool b )
     p += 4;
     m_strRealm = "NTLM"; // set a dummy realm
   }
-#endif
   else
   {
     kdWarning(7113) << "(" << m_pid << ") Unsupported or invalid authorization "
@@ -5062,7 +5056,6 @@ bool HTTPProtocol::getAuthorization()
       }
     }
 
-#ifdef HAVE_LIBNTLM
     if ( Authentication == AUTH_NTLM || ProxyAuthentication == AUTH_NTLM )
     {
       QString auth = ( m_responseCode == 401 ) ? m_strAuthorization : m_strProxyAuthorization;
@@ -5089,7 +5082,6 @@ bool HTTPProtocol::getAuthorization()
         }
       }
     }
-#endif
 
     if ( prompt )
     {
@@ -5385,7 +5377,6 @@ QString HTTPProtocol::createNegotiateAuth()
 }
 #endif
 
-#ifdef HAVE_LIBNTLM
 QString HTTPProtocol::createNTLMAuth( bool isForProxy )
 {
   uint len;
@@ -5416,21 +5407,13 @@ QString HTTPProtocol::createNTLMAuth( bool isForProxy )
   if ( len > 4 )
   {
     // create a response
-    tSmbNtlmAuthChallenge challenge;
-    tSmbNtlmAuthResponse  response;
-
-    KCodecs::base64Decode( strauth.right( len - 5 ), buf );
-    memcpy((void *)&challenge, (const void *)buf.data(), sizeof(challenge));
-    buildSmbNtlmAuthResponse(&challenge, &response, user, passwd);
-    buf.duplicate((const char *)&response, SmbLength(&response));
+    QByteArray challenge;
+    KCodecs::base64Decode( strauth.right( len - 5 ), challenge );
+    KNTLM::getAuth( buf, challenge, user, passwd, QString::null, QString::null, false, false );
   }
   else
   {
-    // create a request
-    tSmbNtlmAuthRequest   request;
-
-    buildSmbNtlmAuthRequest(&request, user, NULL);
-    buf.duplicate((const char *)&request, SmbLength(&request));
+    KNTLM::getNegotiate( buf );
   }
 
   // remove the challenge to prevent reuse
@@ -5444,14 +5427,6 @@ QString HTTPProtocol::createNTLMAuth( bool isForProxy )
 
   return auth;
 }
-#else
-
-// Dummy
-QString HTTPProtocol::createNTLMAuth( bool /*isForProxy*/ )
-{
-  return QString::null;
-}
-#endif
 
 QString HTTPProtocol::createBasicAuth( bool isForProxy )
 {
@@ -5895,11 +5870,9 @@ QString HTTPProtocol::proxyAuthenticationHeader()
     case AUTH_Digest:
       header += createDigestAuth( true );
       break;
-#ifdef HAVE_LIBNTLM
     case AUTH_NTLM:
       if ( m_bFirstRequest ) header += createNTLMAuth( true );
       break;
-#endif
     case AUTH_None:
     default:
       break;
