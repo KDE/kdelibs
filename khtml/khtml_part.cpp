@@ -3888,7 +3888,7 @@ bool KHTMLPart::checkLinkSecurity(const KURL &linkURL)
 
   if ( !linkProto.isEmpty() && !proto.isEmpty() &&
        ( linkProto == "cgi" || linkProto == "file" ) &&
-       proto != "file" && proto != "cgi" )
+       proto != "file" && proto != "cgi" && proto != "man")
   {
     KMessageBox::error( 0,
                         i18n( "This page is untrusted\nbut it contains a link to your local file system."),
