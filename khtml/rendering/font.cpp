@@ -224,7 +224,9 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 	// close last word
 	Q_ASSERT(onSegment);
 	if (mode == WordWise) {
-	   segmentWidth += closeWordAndGetWidth(fm, str, pos, lastWordBegin, to);
+	    const int width = closeWordAndGetWidth(fm, str, pos, lastWordBegin, to);
+	    segmentWidth += width;
+	    widthList[lastWordBegin] = (short)width;
 	}
 
         if (d == QPainter::RTL) x -= preSegmentWidth;
