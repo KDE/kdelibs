@@ -118,7 +118,8 @@ protected:
   int readLimited(); // Read maximum m_iSize bytes.
   int readUnlimited(); // Read as much as possible.
 
-  void decodeGzip();
+  void decodeGzip(); //decodes data compressed with gzip algorithm
+  void decodeDeflate(); //decodes data compressed with deflate algorithm
 
   int openStream();
 

@@ -1397,8 +1397,8 @@ void HTTPProtocol::addEncoding(QString encoding, QStringList &encs)
     encs.append(QString::fromLatin1("gzip"));
   } else if ((encoding.lower() == "x-deflate") || (encoding.lower() == "deflate")) {
     encs.append(QString::fromLatin1("deflate"));
-    kdDebug(7103) << "Deflate not implemented.  Please write code. Pid = " << getpid() << " Encoding = \"" << encoding << "\"" << endl;
-    abort();
+    // kdDebug(7103) << "Deflate not implemented.  Please write code. Pid = " << getpid() << " Encoding = \"" << encoding << "\"" << endl;
+    // abort();
   } else {
     kdDebug(7103) << "Unknown encoding encountered.  Please write code. Pid = " << getpid() << " Encoding = \"" << encoding << "\"" << endl;
     abort();
@@ -1478,7 +1478,8 @@ bool HTTPProtocol::sendBody()
    }
 
    char c_buffer[64];
-   sprintf(c_buffer, "Content-length: %d\r\n\r\n", length);
+   sprintf(c_buffer, "Content-Length: %d\r\n\r\n", length);
+   kdDebug( 7103 ) << "POST: " << c_buffer << endl;
 
    bool sendOk;
    sendOk = (write(c_buffer, strlen(c_buffer)) == (ssize_t) strlen(c_buffer));
@@ -1832,8 +1833,86 @@ void HTTPProtocol::special( const QByteArray &data)
 
 }
 
+void HTTPProtocol::decodeDeflate()
+{
+#ifdef DO_GZIP
+  // Okay all the code below can probably be replaced with
+  // the a single call to decompress(...) instead of a write
+  // to file and read to decompress, but I was not sure of
+  // how to estimate the size of the decompressed data which
+  // needs to be passed as a parameter to decompress function
+  // call.  Anyone want to try it out...
+  //
+  // TODO: Neither decompression completely checks for errors.
+  z_stream z;
+  QByteArray tmp_buf;
+  const unsigned int max_len = 1024;
+  unsigned char in_buf[max_len];  // next_in
+  unsigned char out_buf[max_len]; // next_out
+  int status = Z_OK; //status of the deflation
+  char* filename=strdup("/tmp/kio_http.XXXXXX");
 
+  z.avail_in = 0;
+  z.avail_out = max_len;
+  z.next_out = out_buf;
 
+  // Create the file
+  int fd = mkstemp(filename);
+
+  // TODO: Gee no error checking when writing to HD ??
+  ::write(fd, big_buffer.data(), big_buffer.size()); // Write data into file
+  lseek(fd, 0, SEEK_SET);
+  FILE* fin = fdopen( fd, "rb" );
+
+  // Read back and decompress data.
+  for( ; ; )
+  {
+    if( z.avail_in == 0 )
+    {
+        z.next_in = in_buf;
+        z.avail_in = ::fread(in_buf, 1, max_len, fin );
+    }
+    if( z.avail_in == 0 )
+        break;
+    status = inflate( &z, Z_NO_FLUSH );
+    if( status !=  Z_OK )
+        break;
+    unsigned int count = max_len - z.avail_out;
+    if( count )
+    {
+        unsigned int old_len = tmp_buf.size();
+        memcpy( tmp_buf.data() + old_len, out_buf, count );
+        z.next_out = out_buf;
+        z.avail_out = max_len;
+    }
+  }
+
+  for( ; ; )
+  {
+    status = inflate( &z, Z_FINISH );
+    unsigned int count = max_len - z.avail_out;
+    if( count )
+    {
+        unsigned int old_len = tmp_buf.size();
+        // Copy the data into a temporary buffer
+        memcpy( tmp_buf.data() + old_len, out_buf, count );
+        z.next_out = out_buf;
+        z.avail_out = max_len;
+    }
+    if( status !=  Z_OK )
+        break;
+  }
+  if( fin )
+    ::fclose( fin );
+  ::unlink(filename); // Bye bye to beloved file :((
+
+  // Replace big_buffer with the
+  // "decoded" data.
+  big_buffer.resize(0);
+  big_buffer = tmp_buf;
+  big_buffer.detach();
+#endif
+}
 
 void HTTPProtocol::decodeGzip()
 {
@@ -2169,6 +2248,9 @@ bool HTTPProtocol::readBody( )
       if ( enc == "gzip" ) {
 	decodeGzip();
       }
+      else if( enc == "deflate" ) {
+	decodeDeflate();
+      }
     }
 
     // From HTTP 1.1 Draft 6:
@@ -2195,6 +2277,9 @@ bool HTTPProtocol::readBody( )
       m_qContentEncodings.remove(m_qContentEncodings.fromLast());
       if ( enc == "gzip" ) {
 	decodeGzip();
+      }
+      else if( enc == "deflate" ) {
+	decodeDeflate();
       }
     }
     sz = sendData();
