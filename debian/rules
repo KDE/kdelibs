@@ -5,7 +5,7 @@
 SHELL=/bin/sh
 
 BUILDDIR = $(shell pwd)
-QTDOCDIR  = usr/share/doc/qt2.2-doc/doc/html
+QTDOCDIR  = usr/share/doc/qt-doc/doc/html
 KDEDOCDIR = usr/share/doc/kdelibs3-doc/html
 export KDB2HTML_UNINSTALLED=$(BUILDDIR)/ksgmltools/customization/
 
