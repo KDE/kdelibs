@@ -38,9 +38,23 @@
 #include <netinet/in.h>
 class QSocketNotifier;
 
+#ifdef KSOCK_NO_BROKEN
 // This is here for compatibility with old applications still using the constants
 // Never use them in new programs
+
+// Here are a whole bunch of hackish macros that allow one to
+// get at the correct member of ksockaddr_in
+// But since ksockaddr_in is IPv4-only, and deprecated...
+
 typedef sockaddr_in ksockaddr_in;
+#define get_sin_addr(x) x.sin_addr
+#define get_sin_port(x) x.sin_port
+#define get_sin_family(x) x.sin_family
+#define get_sin_paddr(x) x->sin_addr
+#define get_sin_pport(x) x->sin_port
+#define get_sin_pfamily(x) x->sin_family
+#endif
+
 #define KSOCK_DEFAULT_DOMAIN PF_INET
 
 class KSocketPrivate;
@@ -119,7 +133,7 @@ public:
      */
     void enableWrite( bool );
     
-#ifndef KSOCK_NO_BROKEN
+#ifdef KSOCK_NO_BROKEN
     // BCI: remove in libkdecore.so.4
     /**
      * Return address.
@@ -264,7 +278,7 @@ public:
      */
     unsigned short int port();
 
-#ifndef KSOCK_NO_BROKEN
+#ifdef KSOCK_NO_BROKEN
     // BCI: remove in libkdecore.so.4
     /** 
      * The address.
@@ -309,16 +323,5 @@ private:
     KServerSocketPrivate *d;
 };
 
-
-// Here are a whole bunch of hackish macros that allow one to
-// get at the correct member of ksockaddr_in
-// But since ksockaddr_in is IPv4-only, and deprecated...
-
-#define get_sin_addr(x) x.sin_addr
-#define get_sin_port(x) x.sin_port
-#define get_sin_family(x) x.sin_family
-#define get_sin_paddr(x) x->sin_addr
-#define get_sin_pport(x) x->sin_port
-#define get_sin_pfamily(x) x->sin_family
 
 #endif

@@ -38,7 +38,7 @@ extern "C" {
 #include <arpa/inet.h>
 }
 
-//#define KSOCK_NO_BROKEN
+#define KSOCK_NO_BROKEN
 #include "kdebug.h"
 #include "ksock.h"
 #include "kextsock.h"
