@@ -1,0 +1,5 @@
+[Misc]
+Name=HighColor B2
+Comment=B2/KDE highcolor style
+[KDE]
+widgetStyle=hcstyle.la
