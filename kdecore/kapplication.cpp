@@ -175,14 +175,15 @@ class KApplicationPrivate
 {
 public:
   KApplicationPrivate()
+    :   actionRestrictions( false ),
+	refCount( 1 ),
+	oldIceIOErrorHandler( 0 ),
+	checkAccelerators( 0 ),
+	overrideStyle( QString::null ),
+	startup_id( "0" ),
+	m_KAppDCOPInterface( 0L ),
+	session_save( false )
   {
-    actionRestrictions = false;
-    refCount = 1;
-    oldIceIOErrorHandler = 0;
-    checkAccelerators = 0;
-    overrideStyle=QString::null;
-    startup_id = "0";
-    m_KAppDCOPInterface = 0L;
   }
 
   ~KApplicationPrivate()
@@ -203,6 +204,7 @@ public:
   QString geometry_arg;
   QCString startup_id;
   KAppDCOPInterface *m_KAppDCOPInterface;
+  bool session_save;
 
   class URLActionRule
   {
@@ -961,6 +963,7 @@ void KApplication::propagateSessionManager()
 
 void KApplication::commitData( QSessionManager& sm )
 {
+    d->session_save = true;
     bool cancelled = false;
     for (KSessionManaged* it = sessionClients()->first();
          it && !cancelled;
@@ -995,20 +998,21 @@ void KApplication::commitData( QSessionManager& sm )
     }
 
 
-    if ( !bSessionManagement ) {
+    if ( !bSessionManagement )
         sm.setRestartHint( QSessionManager::RestartNever );
-        return;
-    }
+    d->session_save = false;
 }
 
 void KApplication::saveState( QSessionManager& sm )
 {
+    d->session_save = true;
 #ifndef Q_WS_QWS
     static bool firstTime = true;
     mySmcConnection = (SmcConn) sm.handle();
 
     if ( !bSessionManagement ) {
         sm.setRestartHint( QSessionManager::RestartNever );
+	d->session_save = false;
         return;
     }
 
@@ -1023,6 +1027,7 @@ void KApplication::saveState( QSessionManager& sm )
 
     if ( firstTime ) {
         firstTime = false;
+	d->session_save = false;
         return; // no need to save the state.
     }
 
@@ -1087,6 +1092,12 @@ void KApplication::saveState( QSessionManager& sm )
 #else
     // FIXME(E): Implement for Qt Embedded
 #endif
+    d->session_save = false;
+}
+
+bool KApplication::sessionSaving() const
+{
+    return d->session_save;
 }
 
 void KApplication::startKdeinit()
