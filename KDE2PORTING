@@ -220,4 +220,11 @@ exists), you can use the KCharsets::setQFont methods. Input is a font and
 a charset. Kcharsets tries to find an output font, which matches the
 input font most closely, but can display the given charset.
 
+////////////////////////////////////////////////////////////////////////
+// * KWizard, KNoteBook
 
+KWizard is based on QWizard now. The API has changed. Consult Qt's
+documentation and kdelibs/kdetest/kwizardtest.cpp for an example use.
+KNoteBook (deeply entwined with the former KWizard) has been removed until
+someone is willing to port it to work with the new wizard. If you want to
+use it you'll find the necessary files in kdegraphics/kiconedit.
