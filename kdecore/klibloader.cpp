@@ -139,7 +139,7 @@ KLibFactory* KLibrary::factory()
 
     if( !m_factory )
     {
-        kdDebug(150) << "KLibrary: The library does not offer a KDE compatible factory" << endl;
+        kdWarning(150) << "KLibrary: The library " << name() << " does not offer a KDE compatible factory" << endl;
         return 0;
     }
 
@@ -154,7 +154,7 @@ void* KLibrary::symbol( const char* symname )
     void* sym = lt_dlsym( m_handle, symname );
     if ( !sym )
     {
-        kdDebug(150) << "KLibrary: " << lt_dlerror() << endl;
+        kdWarning(150) << "KLibrary: " << lt_dlerror() << endl;
         return 0;
     }
 
