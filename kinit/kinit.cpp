@@ -983,40 +983,50 @@ static void handle_requests(pid_t waitForPid)
 
 static void kdeinit_library_path()
 {
-   QCString ltdl_library_path = getenv("LTDL_LIBRARY_PATH");
-   QCString ld_library_path = getenv("LD_LIBRARY_PATH");
+   QStringList ltdl_library_path =
+     QStringList::split(':', QFile::decodeName(getenv("LTDL_LIBRARY_PATH")));
+   QStringList ld_library_path =
+     QStringList::split(':', QFile::decodeName(getenv("LD_LIBRARY_PATH")));
+                        
+   QCString extra_path;
    QStringList candidates = s_instance->dirs()->resourceDirs("lib");
    for (QStringList::ConstIterator it = candidates.begin();
         it != candidates.end();
         it++)
    {
-      QCString dir = QFile::encodeName(*it);
+      QString d = *it;      
+      if (ltdl_library_path.contains(d))
+          continue;
+      if (ld_library_path.contains(d))
+          continue;
+      if (d[d.length()-1] == '/') 
+      {
+         d.truncate(d.length()-1);
+         if (ltdl_library_path.contains(d))
+            continue;
+         if (ld_library_path.contains(d))
+            continue;
+      }
+      if ((d == "/lib") || (d == "/usr/lib"))
+         continue;
+
+      QCString dir = QFile::encodeName(d);
+
       if (access(dir, R_OK))
           continue;
-      if (dir[dir.length()-1] == '/') dir.truncate(dir.length()-1);
-      if (ltdl_library_path.find(dir) == -1)
-      {
-         if ( !ltdl_library_path.isEmpty())
-             ltdl_library_path += ":";
-         ltdl_library_path += dir;
-      }
-      if (ld_library_path.find(dir) == -1)
-      {
-         if ( !ld_library_path.isEmpty())
-             ld_library_path += ":";
-         ld_library_path += dir;
-      }
+
+      if ( !extra_path.isEmpty())
+         extra_path += ":";
+      extra_path += dir;
    }
-   setenv("LTDL_LIBRARY_PATH", ltdl_library_path.data(), 1);
-   setenv("LD_LIBRARY_PATH", ld_library_path.data(), 1);
-#ifndef NDEBUG
-   qDebug("LD_LIBRARY_PATH=%s", ld_library_path.data());
-#endif
+
    if (lt_dlinit())
    {
       const char * ltdlError = lt_dlerror();
       fprintf(stderr, "can't initialize dynamic loading: %s\n", ltdlError != 0 ? ltdlError : "(null)" );
    }
+   if (!extra_path.isEmpty())
+      lt_dlsetsearchpath(extra_path.data());
 
    QCString display = getenv("DISPLAY");
    if (display.isEmpty())
