@@ -17,6 +17,10 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include <qglobal.h>
+
+#if QT_VERSION < 300
+
 #include <config.h>
 
 #include "kdesktopwidget.h"
@@ -205,3 +209,8 @@ int KDesktopWidget::screenNumber( const QPoint &point ) const
     }
     return -1;
 }
+
+#include "kdesktopwidget.moc"
+
+#endif // QT_VERSION < 300
+

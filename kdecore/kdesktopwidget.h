@@ -20,6 +20,10 @@
 #ifndef KDESKTOPWIDGET_H
 #define KDESKTOPWIDGET_H
 
+#include <qglobal.h>
+
+#if QT_VERSION < 300
+
 /**
  * This class is to support multi head/xinerama.  It is mainly a copy of 
  * QDesktopWidget in QT 3.  Note that this class can go away when KDE is
@@ -105,5 +109,7 @@ public:
 private:
 	KDesktopWidgetPrivate *d;
 };
+
+#endif // QT_VERSION < 300
 
 #endif
