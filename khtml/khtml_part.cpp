@@ -151,7 +151,6 @@ public:
     m_settings = new KHTMLSettings(*KHTMLFactory::defaultHTMLSettings());
     m_bClearing = false;
     m_bCleared = false;
-    m_userSheet = QString::null;
     m_fontBase = 0;
     m_bDnd = true;
     m_startOffset = m_endOffset = 0;
@@ -305,9 +304,6 @@ public:
 
   KParts::PartManager *m_manager;
 
-  DOM::DOMString m_userSheet;
-  DOM::DOMString m_userSheetUrl;
-
   QString m_popupMenuXML;
 
   int m_fontBase;
@@ -381,11 +377,10 @@ namespace khtml {
     class PartStyleSheetLoader : public CachedObjectClient
     {
     public:
-        PartStyleSheetLoader(KHTMLPart *part, KHTMLPartPrivate *priv, DOM::DOMString url, DocLoader */*docLoader*/)
+        PartStyleSheetLoader(KHTMLPart *part, DOM::DOMString url, DocLoader* dl)
         {
             m_part = part;
-            m_priv = priv;
-            m_cachedSheet = Cache::requestStyleSheet(0, url );
+            m_cachedSheet = Cache::requestStyleSheet(dl, url );
             if (m_cachedSheet)
 		m_cachedSheet->ref( this );
         }
@@ -393,20 +388,14 @@ namespace khtml {
         {
             if ( m_cachedSheet ) m_cachedSheet->deref(this);
         }
-        virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet)
+        virtual void setStyleSheet(const DOM::DOMString&, const DOM::DOMString &sheet)
         {
-            if ( m_part )
-            {
-                m_priv->m_userSheet = sheet;
-                m_priv->m_userSheetUrl = url;
-            }
-            khtml::CSSStyleSelector::setUserStyle( sheet );
-            if ( m_part && m_priv->m_doc )
-                m_priv->m_doc->applyChanges();
+          if ( m_part )
+            m_part->setUserStyleSheet( sheet.string() );
+
             delete this;
         }
         QGuardedPtr<KHTMLPart> m_part;
-        KHTMLPartPrivate *m_priv;
         khtml::CachedCSSStyleSheet *m_cachedSheet;
     };
 };
@@ -510,10 +499,6 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_bJScriptEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaScriptEnabled();
   d->m_bJavaEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaEnabled();
   d->m_bPluginsEnabled = KHTMLFactory::defaultHTMLSettings()->isPluginsEnabled();
-
-  QString userStyleSheet = KHTMLFactory::defaultHTMLSettings()->userStyleSheet();
-  if ( !userStyleSheet.isEmpty() )
-      setUserStyleSheet( KURL( userStyleSheet ) );
 
   connect( this, SIGNAL( completed() ),
            this, SLOT( updateActions() ) );
@@ -1374,6 +1359,9 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
   d->m_doc->setBaseURL( baseurl.url() );
 
   setAutoloadImages( KHTMLFactory::defaultHTMLSettings()->autoLoadImages() );
+  QString userStyleSheet = KHTMLFactory::defaultHTMLSettings()->userStyleSheet();
+  if ( !userStyleSheet.isEmpty() )
+    setUserStyleSheet( KURL( userStyleSheet ) );
 
   d->m_doc->setRestoreState(args.docState);
   d->m_doc->open();
@@ -1790,18 +1778,15 @@ QString KHTMLPart::encoding() const
 
 void KHTMLPart::setUserStyleSheet(const KURL &url)
 {
-    d->m_userSheetUrl = DOMString();
-    d->m_userSheet = DOMString();
-    (void) new khtml::PartStyleSheetLoader(this, d, url.url(), d->m_doc ? d->m_doc->docLoader() : 0);
+  if ( d->m_doc && d->m_doc->docLoader )
+    (void) new khtml::PartStyleSheetLoader(this, url.url(), d->m_doc->docLoader);
 }
 
 void KHTMLPart::setUserStyleSheet(const QString &styleSheet)
 {
-    d->m_userSheet = styleSheet;
-    d->m_userSheetUrl = DOMString();
-    khtml::CSSStyleSelector::setUserStyle( styleSheet );
+  if ( d->m_doc )
+    d->m_doc->setUserStyleSheet( styleSheet );
 }
-
 
 bool KHTMLPart::gotoAnchor( const QString &name )
 {

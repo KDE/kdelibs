@@ -851,6 +851,14 @@ void DocumentImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString
     createSelector();
 }
 
+void DocumentImpl::setUserStyleSheet( const QString& sheet )
+{
+    if ( m_usersheet != sheet ) {
+        m_usersheet = sheet;
+        applyChanges();
+    }
+}
+
 CSSStyleSheetImpl* DocumentImpl::elementSheet()
 {
     if (!m_elemSheet) {

@@ -628,8 +628,11 @@ public:
    */
   QStringList frameNames() const;
 
+#if QT_VERSION < 300  
   QList<KParts::ReadOnlyPart> frames() const;
-
+#else
+  QPtrList<KParts::ReadOnlyPart> frames() const;
+#endif  
   /**
    * Find a frame by name. Returns 0L if frame can't be found.
    */
