@@ -21,5 +21,7 @@ DISTCLEANFILES = artsmedia.cc artsmedia.h
 ######## Build rules
 
 artsmedia.cc: artsmedia.h
+artsmedia.mcoptype: artsmedia.h
+artsmedia.mcopclass: artsmedia.h
 artsmedia.h: $(top_srcdir)/arts/media/artsmedia.idl $(MCOPIDL)
 	$(MCOPIDL) -I$(top_srcdir)/arts/flow $(top_srcdir)/arts/media/artsmedia.idl

@@ -35,6 +35,8 @@ DISTCLEANFILES = artsflow.cc artsflow.h
 ######## Build rules
 
 artsflow.cc: artsflow.h
+artsflow.mcoptype: artsflow.h
+artsflow.mcopclass: artsflow.h
 artsflow.h: $(top_srcdir)/arts/flow/artsflow.idl $(MCOPIDL)
 	$(MCOPIDL) -t $(top_srcdir)/arts/flow/artsflow.idl
 
