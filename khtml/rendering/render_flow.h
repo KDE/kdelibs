@@ -117,7 +117,7 @@ protected:
     virtual void calcMinMaxWidth();
 
     // implementation of the following functions is in bidi.cpp
-    void appendRun(QList<BidiRun> &runs, const BidiIterator &sor, const BidiIterator &eor,
+    void appendRun(QList<BidiRun> &runs, BidiIterator &sor, BidiIterator &eor,
 		   BidiContext *context, QChar::Direction dir);
     BidiContext *bidiReorderLine(BidiStatus &, const BidiIterator &start, const BidiIterator &end, BidiContext *startEmbed);
     BidiIterator findNextLineBreak(const BidiIterator &start);
