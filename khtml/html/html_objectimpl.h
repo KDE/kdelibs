@@ -140,8 +140,8 @@ public:
 
     virtual void parseAttribute(AttrImpl *token);
 
-    QString name() { return QConstString(m_name->s, m_name->l).string(); }
-    QString value() { return QConstString(m_value->s, m_value->l).string(); }
+    QString name() { if(!m_name) return QString::null; return QConstString(m_name->s, m_name->l).string(); }
+    QString value() { if(!m_value) return QString::null; return QConstString(m_value->s, m_value->l).string(); }
 
  protected:
     DOMStringImpl *m_name;
