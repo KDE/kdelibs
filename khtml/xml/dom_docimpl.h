@@ -159,7 +159,7 @@ public:
     virtual void recalcStyle();
     virtual void updateRendering();
     khtml::DocLoader *docLoader() { return m_docLoader; }
-    
+
     void attach(KHTMLView *w=0);
     virtual void detach();
 
@@ -178,7 +178,7 @@ public:
     void clear();
     // moved from HTMLDocument in DOM2
     ElementImpl *getElementById ( const DOMString &elementId );
-    
+
     QString URL() const { return m_url; }
     void setURL(QString url) { m_url = url; }
 
@@ -187,7 +187,7 @@ public:
 
     QString baseTarget() const { return m_baseTarget; }
     void setBaseTarget(const QString& baseTarget) { m_baseTarget = baseTarget; }
-    
+
     QString completeURL(const QString& url) { return KURL(baseURL(),url).url(); };
 
     // from cachedObjectClient
@@ -239,7 +239,7 @@ public:
     DOMStringImpl *elementName(unsigned short _id) const;
 
     StyleSheetListImpl* styleSheets();
-    
+
     ElementImpl *focusNode();
     void setFocusNode(ElementImpl *);
 
@@ -268,8 +268,8 @@ public:
     void addListenerType(ListenerType listenerType) { m_listenerTypes = m_listenerTypes | listenerType; }
 
     CSSStyleDeclarationImpl *getOverrideStyle(ElementImpl *elt, DOMStringImpl *pseudoElt);
-    
-    typedef QMap<QString, ProcessingInstructionImpl*> LocalStyleRefs;    
+
+    typedef QMap<QString, ProcessingInstructionImpl*> LocalStyleRefs;
     LocalStyleRefs* localStyleRefs() { return &m_localStyleRefs; }
 
     virtual void defaultEventHandler(EventImpl *evt);
@@ -303,7 +303,7 @@ protected:
     QString m_url;
     QString m_baseURL;
     QString m_baseTarget;
-    
+
     DocumentTypeImpl *m_doctype;
     DOMImplementationImpl *m_implementation;
 
@@ -354,6 +354,8 @@ public:
     DocumentTypeImpl(DocumentPtr *doc);
     ~DocumentTypeImpl();
 
+    void setName( const QString& name ) { m_name = name; }
+
     virtual const DOMString name() const;
     virtual NamedNodeMapImpl *entities() const;
     virtual NamedNodeMapImpl *notations() const;
@@ -364,7 +366,8 @@ public:
     GenericRONamedNodeMapImpl *m_notations;
     virtual bool childTypeAllowed( unsigned short type );
     virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
-
+private:
+    DOMString m_name;
 };
 
 }; //namespace

@@ -919,6 +919,7 @@ enum HTMLMode {
 
 void DocumentImpl::determineParseMode( const QString &str )
 {
+    //kdDebug() << "DocumentImpl::determineParseMode str=" << str<< endl;
     // determines the parse mode for HTML
     // quite some hints here are inspired by the mozilla code.
 
@@ -931,10 +932,19 @@ void DocumentImpl::determineParseMode( const QString &str )
 
     int pos = 0;
     int doctype = str.find("!doctype", 0, false);
-    if( doctype > 2 )
+    if( doctype > 2 ) {
         pos = doctype - 2;
+        // Store doctype name
+        int start = doctype + 9;
+        while ( start < (int)str.length() && str[start].isSpace() )
+            start++;
+        int espace = str.find(' ',start);
+        QString name = str.mid(start,espace-start);
+        //kdDebug() << "DocumentImpl::determineParseMode setName: " << name << endl;
+        m_doctype->setName( name );
+    }
 
-    // get the first tag (or the doctype tag
+    // get the first tag (or the doctype tag)
     int start = str.find('<', pos);
     int stop = str.find('>', pos);
     if( start > -1 && stop > start ) {
@@ -1554,7 +1564,8 @@ NodeImpl *DocumentFragmentImpl::cloneNode ( bool deep, int &exceptioncode )
 
 // ----------------------------------------------------------------------------
 
-DocumentTypeImpl::DocumentTypeImpl(DocumentPtr *doc) : NodeImpl(doc)
+DocumentTypeImpl::DocumentTypeImpl(DocumentPtr *doc)
+    : NodeImpl(doc)
 {
     m_entities = new GenericRONamedNodeMapImpl();
     m_entities->ref();
@@ -1570,8 +1581,7 @@ DocumentTypeImpl::~DocumentTypeImpl()
 
 const DOMString DocumentTypeImpl::name() const
 {
-    // ###
-    return DOMString();
+    return m_name;
 }
 
 NamedNodeMapImpl *DocumentTypeImpl::entities() const
