@@ -50,7 +50,7 @@
 
 # libkio
 7001	kio (KDirWatch)
-7002	kio (KIOCache)
+7002	kio (Slave)
 7005	kio (Filter)
 7006	kio (Scheduler)
 7007	kio (KIOJob)
