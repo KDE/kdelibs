@@ -456,7 +456,9 @@ public:
 
 private slots:
   void slotSaveLinkAs();
+  void slotSaveImageAs();
 private:
+  void saveURL( const QString &caption, const KURL &url );
   class KHTMLPopupGUIClientPrivate;
   KHTMLPopupGUIClientPrivate *d;
 };

@@ -26,6 +26,8 @@
 #include "khtml_run.h"
 
 #include "dom/html_document.h"
+#include "dom/dom_node.h"
+#include "dom/dom_element.h"
 #include "html/html_documentimpl.h"
 #include "misc/khtmldata.h"
 #include "html/html_miscimpl.h"
@@ -1596,7 +1598,9 @@ class KHTMLPopupGUIClient::KHTMLPopupGUIClientPrivate
 public:
   KHTMLPart *m_khtml;
   KURL m_url;
+  KURL m_imageURL;
   KAction *m_paSaveLinkAs;
+  KAction *m_paSaveImageAs;
 };
 
 KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, const KURL &url )
@@ -1609,7 +1613,28 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
 
   d->m_paSaveLinkAs = new KAction( i18n( "&Save Link As ..." ), 0, this, SLOT( slotSaveLinkAs() ),
 				   actionCollection(), "savelinkas" );
-
+  /*
+  DOM::NodeImpl node = khtml->htmlView()->nodeUnderMouse();
+  if ( !node.isNull() )
+  {
+    if ( node.nodeType() == ID_IMG )
+    {
+      d->m_imageURL = KURL( d->m_khtml->url(), static_cast<DOM::HTMLElement>( node ).src() );
+      d->m_paSaveImageAs = new KAction( i18n( "Save Image As ..." ), 0, this, SLOT( slotSaveImageAs() ),
+				        actionCollection(), "saveimageas" );
+    }
+  }
+  */
+  #if 0
+  DOM::Node n = khtml->nodeUnderMouse();
+  DOM::Element e = n;
+  if ( !e.isNull() && e.nodeType() == ID_IMG )
+  {
+      d->m_imageURL = KURL( d->m_khtml->url(), e.getAttribute( "src" ).string() );
+      d->m_paSaveImageAs = new KAction( i18n( "Save Image As ..." ), 0, this, SLOT( slotSaveImageAs() ),
+				        actionCollection(), "saveimageas" );
+  }
+  #endif
   setXML( doc );
 }
 
@@ -1622,19 +1647,30 @@ void KHTMLPopupGUIClient::slotSaveLinkAs()
 {
   if ( d->m_url.filename( false ).isEmpty() )
     d->m_url.setFileName( "index.html" );
+  
+  saveURL( i18n( "&Save Link As" ), d->m_url );
+}
 
+void KHTMLPopupGUIClient::slotSaveImageAs()
+{
+  saveURL( i18n( "Save Image As" ), d->m_imageURL );
+} 
+
+void KHTMLPopupGUIClient::saveURL( const QString &caption, const KURL &url )
+{
   KFileDialog *dlg = new KFileDialog( QString::null, QString::null, d->m_khtml->widget(), "filedia", true );
 
-  dlg->setCaption( i18n( "Save Link As" ) );
+  //  dlg->setCaption( i18n( "Save Link As" ) );
+  dlg->setCaption( caption );
 
-  dlg->setSelection( d->m_url.filename() );
+  dlg->setSelection( url.filename() );
 
   if ( dlg->exec() )
   {
     KURL destURL( dlg->selectedURL() );
     if ( !destURL.isMalformed() )
     {
-      /*KIO::Job *job = */ KIO::copy( d->m_url, destURL );
+      /*KIO::Job *job = */ KIO::copy( url, destURL );
       // TODO connect job result, to display errors
     }
   }

@@ -1,5 +1,6 @@
 <!DOCTYPE kpartgui><kpartgui name="khtmlpart_popupmenu">
 <Menu name="popupmenu" >
  <Action name="savelinkas" />
+ <Action name="saveimageas" />
 </Menu>
 </kpartgui>
