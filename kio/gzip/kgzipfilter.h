@@ -27,17 +27,23 @@ public:
     KGzipFilter();
     virtual ~KGzipFilter();
 
-    virtual void init();
+    virtual void init( int mode );
+    virtual int mode() const { return m_mode; }
     virtual void terminate();
     virtual void reset();
     virtual bool readHeader();
+    virtual bool writeHeader( const QCString & fileName );
+    void writeFooter();
     virtual void setOutBuffer( char * data, uint maxlen );
-    virtual void setInBuffer( char * data, uint size );
+    virtual void setInBuffer( const char * data, uint size );
     virtual int  inBufferAvailable() const;
     virtual int  outBufferAvailable() const;
     virtual Result uncompress();
+    virtual Result compress( bool finish );
 private:
     Result uncompress_noop();
+    int m_mode;
+    ulong m_crc;
     class KGzipFilterPrivate;
     KGzipFilterPrivate *d;
 };
