@@ -157,12 +157,12 @@ public:
     /*
      * @internal
      */
-    void removeCSSProperty( int propid );
+    void removeCSSProperty( const DOMString& property );
     
     /*
      * @internal
      */
-    void addCSSProperty( int propId, const DOMString &value );
+    void addCSSProperty( const DOMString &property, const DOMString &value );
 };
 
 }; //namespace

@@ -52,10 +52,12 @@ public:
 
     virtual DOM::CSSStyleDeclarationImpl *styleRules() { return m_styleDecls; }
 
+    void addCSSProperty( const DOMString &property, const DOMString &value, bool important = false , bool nonCSSHint = true);
     void addCSSLength(int id, const DOMString &value, bool important = false, bool nonCSSHint = true);
     void addCSSProperty(int id, const DOMString &value, bool important = false, bool nonCSSHint = true);
     void addCSSProperty(const DOMString &property);
     void removeCSSProperty(int id);
+    void removeCSSProperty(const DOMString &id);
 
     virtual short tabIndex() const;
     virtual void setTabIndex( short );

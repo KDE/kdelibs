@@ -24,7 +24,10 @@
 #include <rendering/render_style.h>
 #include <kjs/types.h>
 #include <css/cssproperties.h>
+#include <qregexp.h>
 using namespace KJS;
+
+#include <kdebug.h>
 
 KJSO Style::get(const UString &p) const
 {
@@ -52,14 +55,16 @@ void Style::put(const UString &p, const KJSO& v)
     if ( el.isNull() )
       return;
 
-    int id = 0;
-    if (p == "left") {
-	id = CSS_PROP_LEFT;
-
-    } else
-	return;
-    if ( id ) {
-	el.removeCSSProperty( id );
-	el.addCSSProperty( id, v.toString().value().string() );
+    QString prop = p.qstring();
+    int i = prop.length();
+    while( --i ) {
+	char c = prop[i].latin1();
+	if ( c < 'A' || c > 'Z' )
+	    continue;
+	prop.insert( i, '-' );
     }
+    prop = prop.lower();
+    
+    el.removeCSSProperty( prop );
+    el.addCSSProperty( prop, v.toString().value().string() );
 }

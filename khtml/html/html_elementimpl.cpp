@@ -258,6 +258,16 @@ void HTMLElementImpl::parseAttribute(AttrImpl *attr)
     }
 }
 
+
+void HTMLElementImpl::addCSSProperty( const DOMString &property, const DOMString &value, bool important, bool nonCSSHint)
+{
+    HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(document);
+    if(!m_styleDecls) m_styleDecls = new CSSStyleDeclarationImpl(0);
+    m_styleDecls->setParent(doc->elementSheet());
+    m_styleDecls->setProperty(property, value, important, nonCSSHint);
+    setChanged(true);
+}
+
 void HTMLElementImpl::addCSSProperty(int id, const DOMString &value, bool important, bool nonCSSHint)
 {
     HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(document);
@@ -273,6 +283,7 @@ void HTMLElementImpl::addCSSLength(int id, const DOMString &value, bool importan
     if(!m_styleDecls) m_styleDecls = new CSSStyleDeclarationImpl(0);
     m_styleDecls->setParent(doc->elementSheet());
     m_styleDecls->setLengthProperty(id, value, important, nonCSSHint);
+    setChanged(true);
 }
 
 void HTMLElementImpl::addCSSProperty(const DOMString &property)
@@ -281,6 +292,7 @@ void HTMLElementImpl::addCSSProperty(const DOMString &property)
     if(!m_styleDecls) m_styleDecls = new CSSStyleDeclarationImpl(0);
     m_styleDecls->setParent(doc->elementSheet());
     m_styleDecls->setProperty(property);
+    setChanged(true);
 }
 
 void HTMLElementImpl::removeCSSProperty(int id)
@@ -289,9 +301,20 @@ void HTMLElementImpl::removeCSSProperty(int id)
 	return;
     HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(document);
     m_styleDecls->setParent(doc->elementSheet());
-    m_styleDecls->removeProp(id);
+    m_styleDecls->removeProperty(id);
     setChanged(true);
 }
+
+void HTMLElementImpl::removeCSSProperty( const DOMString &id )
+{
+    if(!m_styleDecls)
+	return;
+    HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(document);
+    m_styleDecls->setParent(doc->elementSheet());
+    m_styleDecls->removeProperty(id);
+    setChanged(true);
+}
+
 
 short HTMLElementImpl::tabIndex() const
 {

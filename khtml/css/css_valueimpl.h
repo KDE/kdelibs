@@ -54,10 +54,10 @@ public:
     CSSValueImpl *getPropertyCSSValue ( const DOM::DOMString &propertyName );
     DOM::DOMString removeProperty ( const DOM::DOMString &propertyName );
     DOM::DOMString removeProperty ( int propertyId );
-    void removeProp ( int propId );
     DOM::DOMString getPropertyPriority ( const DOM::DOMString &propertyName );
     void setProperty ( const DOM::DOMString &propertyName, const DOM::DOMString &value,
 		       const DOM::DOMString &priority );
+    void setProperty( const DOMString &propName, const DOMString &value, bool important, bool nonCSSHint);
     void setProperty ( int propertyId, const DOM::DOMString &value, bool important = false, bool nonCSSHint = false);
     // this treats integers as pixels!
     // needed for conversion of html attributes
