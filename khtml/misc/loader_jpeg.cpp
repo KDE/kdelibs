@@ -78,7 +78,7 @@ struct khtml_jpeg_source_mgr : public jpeg_source_mgr {
     JOCTET buffer[max_buf];
 
     int valid_buffer_len;
-    unsigned int skip_input_bytes;
+    size_t skip_input_bytes;
     int ateof;
     QTime decoder_timestamp;
     bool final_pass;
