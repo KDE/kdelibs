@@ -20,6 +20,10 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+//
+// Revision 1.77  1997/12/13 15:08:56  jacek
+// KCharsets support added
+// WARNING: kderc file format has changed. Since now charset name
 // instead of id is stored.
 //
 //
@@ -849,7 +853,8 @@ QString KApplication::findFile( const char *file )
 
 const char* KApplication::getCaption() const
 {
-  KConfig* config = getConfig();
+  if( !aCaption.isNull() )
+	return aCaption;
   else
 	return aAppName;
 }

@@ -21,7 +21,7 @@
 MOC = @MOC@
 INCLUDES= @QT_INCLUDES@ @X_INCLUDES@ -I../kdecore
 EXTRA_DIST = error.xpm exclamation.xpm info.xpm stopsign.xpm
-CLEANFILES = $(BUILT_SOURCES)
+DISTCLEANFILES = $(BUILT_SOURCES)
 
 lib_LTLIBRARIES = libkdeui.la
 libkdeui_la_LDFLAGS = -version-info 0:10  -allow-undefined

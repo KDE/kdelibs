@@ -19,6 +19,10 @@
 // $Id$
 //
 // $Log$
+// Some patches by Alex and me
+// Revision 1.1.1.3  1997/12/11 07:19:11  jacek
+// Imported sources from KDE CVS
+//
 // Revision 1.1.1.2  1997/12/10 07:08:29  jacek
 // Imported sources from KDE CVS
 //
@@ -255,7 +259,7 @@ bool KConfig::writeConfigFile( QFile& rConfigFile, bool bGlobal )
   
   return bEntriesLeft;
 }
-	  if( !data()->aGlobalAppFile.isEmpty() )
+
 
 void KConfig::sync()
 {
