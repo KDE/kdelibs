@@ -281,10 +281,10 @@ QString KProtocolManager::proxyForURL( const KURL &url )
       case PACProxy:
       case WPADProxy:
           if (!url.host().isEmpty() && pac())
-              proxy = pac()->proxyForURL( url );
+              proxy = pac()->proxyForURL( url ).stripWhiteSpace();
           break;
       case EnvVarProxy:
-          proxy = QString::fromLocal8Bit(getenv(proxyFor(url.protocol()).local8Bit()));
+          proxy = QString::fromLocal8Bit(getenv(proxyFor(url.protocol()).local8Bit())).stripWhiteSpace();
           break;
       case ManualProxy:
           proxy = proxyFor( url.protocol() );
