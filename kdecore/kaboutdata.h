@@ -136,7 +136,7 @@ private:
 
 /**
  * This class is used to store information about a program. It can store
- * such values a version number, program name, home page, email address
+ * such values as version number, program name, home page, email address
  * for bug reporting, multiple authors and contributors
  * (using @ref KAboutPerson), license and copyright information.
  *
@@ -225,7 +225,7 @@ class KAboutData
      *             newlines. It should be marked for translation like this:
      *             I18N_NOOP("Task description...")
      *
-     * @param emailAddress An Email address when the person can be reached.
+     * @param emailAddress An Email address where the person can be reached.
      *
      * @param webAddress The person's homepage or a relevant link.
      *        Start the address with "http://". "http://some.domain" is
