@@ -336,18 +336,28 @@ void KIconEffect::semiTransparent(QImage &img)
     int x, y;
     if (img.depth() == 32)
     {
+	int width  = img.width();
+	int height = img.height();
+	
 	if (qt_use_xrender)
-	  for (y=0; y<img.height(); y++)
+	  for (y=0; y<height; y++)
 	  {
-	    QRgb *line = (QRgb *) img.scanLine(y);
-	    for (x=0; x<img.width(); x++)
-		line[x] &= 0x4fffffff;
+#ifdef WORDS_BIGENDIAN
+	    uchar *line = (uchar*) img.scanLine(y);
+#else
+	    uchar *line = (uchar*) img.scanLine(y) + 3;
+#endif
+	    for (x=0; x<width; x++)
+	    {
+		*line >>= 1;
+		line += 4;
+	    }
 	  }
 	else
-	  for (y=0; y<img.height(); y++)
+	  for (y=0; y<height; y++)
 	  {
 	    QRgb *line = (QRgb *) img.scanLine(y);
-	    for (x=(y%2); x<img.width(); x+=2)
+	    for (x=(y%2); x<width; x+=2)
 		line[x] &= 0x00ffffff;
 	  }
 
