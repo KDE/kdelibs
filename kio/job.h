@@ -68,6 +68,12 @@ namespace KIO {
 	virtual ~Job() {}
 
 	/**
+	 * Abort job
+	 * This kills all subjobs and deletes the job
+	 */
+	virtual void kill();
+
+	/**
 	 * @return the error code for this job, 0 if no error
 	 * Error codes are defined in @ref KIO::Error.
 	 * Only call this method from the slot connected to @ref result.
@@ -143,7 +149,6 @@ namespace KIO {
      * This is the base class for all jobs that are scheduled.
      * Other jobs are high-level jobs (CopyJob, DeleteJob, FIleCopyJob...)
      * that manage subjobs but aren't scheduled directly.
-     * This is why you can @ref kill a SimpleJob, but not high-level jobs.
      */
     class SimpleJob : public KIO::Job {
 	Q_OBJECT
@@ -154,6 +159,7 @@ namespace KIO {
 
         /**
          * Abort job
+	 * Reimplemented (to cancel the job in the scheduler as well)
          */
         virtual void kill();
 
@@ -387,11 +393,6 @@ namespace KIO {
     public:
         FileCopyJob( const KURL& src, const KURL& dest, int permissions, bool move,
                      bool overwrite, bool resume);
-
-        /**
-         * Abort job
-         */
-        virtual void kill();
 
     protected:
         void startCopyJob();

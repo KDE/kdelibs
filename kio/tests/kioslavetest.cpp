@@ -374,15 +374,15 @@ void KioslaveTest::slotData(KIO::Job*, const QByteArray &data)
 void KioslaveTest::slotDataReq(KIO::Job*, QByteArray &data)
 {
     const char *fileDataArray[] =
-       { 
-         "Hello world\n", 
-         "This is a test file\n", 
+       {
+         "Hello world\n",
+         "This is a test file\n",
          "You can safely delete it.\n",
          0
        };
     const char *fileData = fileDataArray[putBuffer++];
- 
-    if (!fileData) 
+
+    if (!fileData)
     {
        kDebugInfo( 0, "DataReq: <End>");
        return;
@@ -394,7 +394,7 @@ void KioslaveTest::slotDataReq(KIO::Job*, QByteArray &data)
 void KioslaveTest::stopJob() {
   pbStop->setEnabled( false );
 
-  // TODO  job->kill();
+  job->kill();
   job = 0L;
 
   pbStart->setEnabled( true );

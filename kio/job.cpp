@@ -95,6 +95,15 @@ void Job::removeSubjob( Job *job )
     }
 }
 
+void Job::kill()
+{
+  // kill all subjobs
+  QListIterator<Job> it( subjobs );
+  for ( ; it.current() ; ++it )
+     (*it)->kill();
+  delete this;
+}
+
 void Job::slotResult( Job *job )
 {
     // Did job have an error ?
@@ -124,7 +133,9 @@ SimpleJob::SimpleJob(const KURL& url, int command,
 
 void SimpleJob::kill()
 {
-    Scheduler::cancelJob( this );
+    Scheduler::cancelJob( this ); // deletes the slave if not 0
+    m_slave = 0; // -> set to 0
+    Job::kill();
 }
 
 SimpleJob::~SimpleJob()
@@ -132,8 +143,8 @@ SimpleJob::~SimpleJob()
     if (m_slave) // was running
     {
         m_slave->kill();
-        Scheduler::jobFinished( this, m_slave );
-        m_slave = 0;
+        Scheduler::jobFinished( this, m_slave ); // deletes the slave
+        m_slave = 0; // -> set to 0
     }
 }
 
@@ -434,36 +445,6 @@ FileCopyJob::FileCopyJob( const KURL& src, const KURL& dest, int permissions,
        m_copyJob = 0;
        startDataPump();
     }
-}
-
-void FileCopyJob::kill()
-{
-  //Waldo: please check (David)
-  if (m_moveJob)
-  {
-    m_moveJob->kill();
-    m_moveJob = 0L;
-  }
-  if (m_copyJob)
-  {
-    m_copyJob->kill();
-    m_copyJob = 0L;
-  }
-  if (m_getJob)
-  {
-    m_getJob->kill();
-    m_getJob = 0L;
-  }
-  if (m_putJob)
-  {
-    m_putJob->kill();
-    m_putJob = 0L;
-  }
-  if (m_delJob)
-  {
-    m_delJob->kill();
-    m_delJob = 0L;
-  }
 }
 
 void FileCopyJob::startCopyJob()
