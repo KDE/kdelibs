@@ -28,6 +28,7 @@
 
 #include <ksockaddr.h>
 #include <kextsock.h>
+#include <netdb.h>
 
 #include "ksslx509map.h"
 
@@ -65,9 +66,14 @@ bool KSSLPeerInfo::certMatchesAddress() {
   KSSLX509Map certinfo(m_cert.getSubject());
   int err;
   QString cn = certinfo.getValue("CN");
+  QString host, port;
+
+  if (KExtendedSocket::resolve(d->host, host, port, NI_NAMEREQD) != 0) 
+     host = d->host->nodeName();
+
   if (cn.startsWith("*")) {   // stupid wildcard cn
      QRegExp cnre(cn, false, true);
-     if (cnre.match(d->host->nodeName()) >= 0) return true;
+     if (cnre.match(host) >= 0) return true;
   } else {
      QList<KAddressInfo> cns = KExtendedSocket::lookup(cn.latin1(), 0, 0, &err);
      cns.setAutoDelete(true);
