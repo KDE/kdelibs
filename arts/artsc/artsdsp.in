@@ -72,7 +72,7 @@ prefix=@prefix@
 exec_prefix=@exec_prefix@
 libdir=@libdir@
 
-LD_PRELOAD=${libdir}/libartsdsp.so:${libdir}/libartsc.so
+LD_PRELOAD=${libdir}/libartsdsp.so.0:${libdir}/libartsc.so.0
 if test -f /lib/libdl.so.2; then
   LD_PRELOAD=$LD_PRELOAD:/lib/libdl.so.2
 fi
