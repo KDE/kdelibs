@@ -136,8 +136,10 @@ class KKeyNative
 		{ init( key ); return *this; }
 
 	int keyCodeQt() const;
+	// BCI: remove KKey spec() const --ellis, 12/31/01
 	KKey spec() const;
-	operator KKey() const     { return spec(); }
+	KKey key() const;
+	operator KKey() const     { return key(); }
 
 	int code() const;
 	int mod() const;
@@ -167,8 +169,6 @@ class KKeyNative
 	static bool keyToVariations( const KKey& spec, KKeyVariations& key );
 	static QString symToStringInternal( int sym );
 	static QString symToString( int sym );
-	//static QString symToStringSub( int sym, bool bi18n );
-	//static QString keyNativeToString( int keyNative );
 
 	static bool stringToSym( const QString& sKey, int& sym, int& mod );
 
@@ -200,7 +200,9 @@ class KKeyVariations
 	KKeyVariations& operator =( const KKeyVariations& key )
 		{ init( key ); return *this; }
 
+	// BCI: remove KKey spec() const --ellis, 12/31/01
 	const KKey& spec() const;
+	const KKey& key() const;
 	uint variationCount() const;
 	uint variationNativeCount() const;
 	const int variation( uint i ) const;
@@ -221,7 +223,7 @@ class KKeyVariations
 	static KKeyVariations& null();
 
  protected:
-	KKey m_spec;
+	KKey m_key;
 	uint m_nVariationsNative, m_nVariationsQt;
 	KKeyNative m_rgkeyNative[MAX_VARIATIONS];
 	int m_rgkeyQt[MAX_VARIATIONS];
@@ -262,6 +264,7 @@ class KKeySequence
 	const KKeyVariations& key( uint i ) const;
 	bool isTriggerOnRelease() const { return m_bTriggerOnRelease; }
 
+	bool setKey( uint i, const KKey& );
 	void setTriggerOnRelease( bool );
 
 	bool isNull() const;
@@ -282,7 +285,7 @@ class KKeySequence
 
  protected:
 	uint m_nKeys;
-	KKeyVariations m_rgkey[MAX_KEYS];
+	KKeyVariations m_rgvar[MAX_KEYS];
 	bool m_bTriggerOnRelease;
 
  private:
@@ -319,7 +322,6 @@ class KShortcut
 		{ init( cut ); return *this; }
 
 	uint count() const;
-	KKeySequence& seq( uint i );
 	const KKeySequence& seq( uint i ) const;
 	int keyCodeQt() const;
 	QKeySequence keyPrimaryQt() const;
@@ -336,7 +338,8 @@ class KShortcut
 
 	bool contains( const KKey& ) const;
 	bool contains( const KKeySequence& ) const;
-	bool insert( const KKeySequence& );
+	bool setSeq( uint i, const KKeySequence& );
+	bool append( const KKeySequence& );
 
 	operator QKeySequence () const;
 	QString toString() const;
@@ -356,6 +359,10 @@ class KShortcut
  public:
 	operator int () const    { return keyCodeQt(); }
 #endif
+// BCI: Remove --ellis, 12/31/01
+public:
+	KKeySequence& seq( uint i );
+	bool insert( const KKeySequence& );
 };
 
 #endif // __KSHORTCUT_H

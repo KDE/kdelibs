@@ -157,6 +157,8 @@ bool KKeyNative::symToKeyQt( int sym, int& keyQt )
 }
 
 KKey KKeyNative::spec() const
+	{ return key(); }
+KKey KKeyNative::key() const
 {
 	int modSpec;
 	modXToModSpec( m_mod, modSpec );
@@ -199,20 +201,20 @@ bool KKeyNative::keyboardHasMetaKey()
 }
 
 // TODO: allow for sym to have variations, such as Plus => { Plus, KP_Add }
-bool KKeyNative::keyToVariations( const KKey& spec, KKeyVariations& key )
+bool KKeyNative::keyToVariations( const KKey& key, KKeyVariations& var )
 {
-	if( spec.isNull() ) {
-		key.clear();
+	if( key.isNull() ) {
+		var.clear();
 		return true;
 	}
 
-	key.m_spec = spec;
+	var.m_key = key;
 
-	key.m_nVariationsNative = 1;
-	key.m_rgkeyNative[0].init( spec );
+	var.m_nVariationsNative = 1;
+	var.m_rgkeyNative[0].init( key );
 
-	key.m_nVariationsQt = 1;
-	key.m_rgkeyQt[0] = spec.keyCodeQt();
+	var.m_nVariationsQt = 1;
+	var.m_rgkeyQt[0] = key.keyCodeQt();
 
 	return true;
 }

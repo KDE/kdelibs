@@ -247,7 +247,7 @@ KKeyVariations::~KKeyVariations()
 
 void KKeyVariations::clear()
 {
-	m_spec.clear();
+	m_key.clear();
 	m_nVariationsNative = m_nVariationsQt = 0;
 	m_fSet = 0;
 }
@@ -264,7 +264,7 @@ bool KKeyVariations::init( const KKey& spec )
 
 bool KKeyVariations::init( const KKeyVariations& key )
 {
-	m_spec = key.m_spec;
+	m_key = key.m_key;
 	m_nVariationsNative = key.m_nVariationsNative;
 	m_nVariationsQt = key.m_nVariationsQt;
 	for( uint i = 0; i < m_nVariationsNative; i++ )
@@ -275,7 +275,9 @@ bool KKeyVariations::init( const KKeyVariations& key )
 }
 
 const KKey& KKeyVariations::spec() const
-	{ return m_spec; }
+	{ return m_key; }
+const KKey& KKeyVariations::key() const
+	{ return m_key; }
 uint KKeyVariations::variationCount() const
 	{ return m_nVariationsQt; }
 uint KKeyVariations::variationNativeCount() const
@@ -285,10 +287,10 @@ const int KKeyVariations::variation( uint i ) const
 const KKeyNative& KKeyVariations::variationNative( uint i ) const
 	{ return m_rgkeyNative[i]; }
 
-bool KKeyVariations::isNull() const                  { return m_spec.isNull(); }
-int KKeyVariations::compare( const KKeyVariations& key ) const { return m_spec.compare( key.m_spec ); }
-QString KKeyVariations::toString() const             { return m_spec.toString(); }
-QString KKeyVariations::toStringInternal() const     { return m_spec.toStringInternal(); }
+bool KKeyVariations::isNull() const                  { return m_key.isNull(); }
+int KKeyVariations::compare( const KKeyVariations& key ) const { return m_key.compare( key.m_key ); }
+QString KKeyVariations::toString() const             { return m_key.toString(); }
+QString KKeyVariations::toStringInternal() const     { return m_key.toStringInternal(); }
 
 KKeyVariations& KKeyVariations::null()
 {
@@ -324,7 +326,7 @@ bool KKeySequence::init( const QKeySequence& seq )
 {
 	if( seq ) {
 		m_nKeys = 1;
-		m_rgkey[0].init( seq );
+		m_rgvar[0].init( seq );
 		m_bTriggerOnRelease = false;
 	} else
 		clear();
@@ -335,7 +337,7 @@ bool KKeySequence::init( const KKey& key )
 {
 	if( !key.isNull() ) {
 		m_nKeys = 1;
-		m_rgkey[0].init( key );
+		m_rgvar[0].init( key );
 		m_bTriggerOnRelease = false;
 	} else
 		clear();
@@ -346,7 +348,7 @@ bool KKeySequence::init( const KKeyVariations& keyvar )
 {
 	if( !keyvar.isNull() ) {
 		m_nKeys = 1;
-		m_rgkey[0] = keyvar;
+		m_rgvar[0] = keyvar;
 		m_bTriggerOnRelease = false;
 	} else
 		clear();
@@ -357,7 +359,7 @@ bool KKeySequence::init( const KKeySequence& seq )
 {
 	m_nKeys = seq.m_nKeys;
 	for( uint i = 0; i < m_nKeys; i++ )
-		m_rgkey[i] = seq.m_rgkey[i];
+		m_rgvar[i] = seq.m_rgvar[i];
 	m_bTriggerOnRelease = false;
 	return true;
 }
@@ -373,8 +375,8 @@ bool KKeySequence::init( const QString& s )
 	} else if( rgs.size() <= MAX_KEYS ) {
 		m_nKeys = rgs.size();
 		for( uint i = 0; i < m_nKeys; i++ ) {
-			m_rgkey[i].init( KKey(rgs[i]) );
-			//kdDebug(125) << "\t'" << rgs[i] << "' => " << m_rgkey[i].toStringInternal() << endl;
+			m_rgvar[i].init( KKey(rgs[i]) );
+			//kdDebug(125) << "\t'" << rgs[i] << "' => " << m_rgvar[i].toStringInternal() << endl;
 		}
 		return true;
 	} else {
@@ -391,9 +393,20 @@ uint KKeySequence::count() const
 const KKeyVariations& KKeySequence::key( uint i ) const
 {
 	if( i < m_nKeys )
-		return m_rgkey[i];
+		return m_rgvar[i];
 	else
 		return KKeyVariations::null();
+}
+
+bool KKeySequence::setKey( uint iKey, const KKey& key )
+{
+	if( iKey <= m_nKeys && iKey < MAX_KEYS ) {
+		m_rgvar[iKey].init( key );
+		if( iKey == m_nKeys )
+			m_nKeys++;
+		return true;
+	} else
+		return false;
 }
 
 bool KKeySequence::isNull() const
@@ -407,7 +420,7 @@ bool KKeySequence::startsWith( const KKeySequence& seq ) const
 		return false;
 
 	for( uint i = 0; i < seq.m_nKeys; i++ ) {
-		if( m_rgkey[i] != seq.m_rgkey[i] )
+		if( m_rgvar[i] != seq.m_rgvar[i] )
 			return false;
 	}
 
@@ -417,7 +430,7 @@ bool KKeySequence::startsWith( const KKeySequence& seq ) const
 int KKeySequence::compare( const KKeySequence& seq ) const
 {
 	for( uint i = 0; i < m_nKeys && i < seq.m_nKeys; i++ ) {
-		int ret = m_rgkey[i].compare( seq.m_rgkey[i] );
+		int ret = m_rgvar[i].compare( seq.m_rgvar[i] );
 		if( ret != 0 )
 			return ret;
 	}
@@ -442,10 +455,10 @@ QString KKeySequence::toString() const
 	if( m_nKeys < 1 ) return QString::null;
 
 	QString s;
-	s = m_rgkey[0].toString();
+	s = m_rgvar[0].toString();
 	for( uint i = 1; i < m_nKeys; i++ ) {
 		s += ",";
-		s += m_rgkey[i].toString();
+		s += m_rgvar[i].toString();
 	}
 
 	return s;
@@ -456,10 +469,10 @@ QString KKeySequence::toStringInternal() const
 	if( m_nKeys < 1 ) return QString::null;
 
 	QString s;
-	s = m_rgkey[0].toStringInternal();
+	s = m_rgvar[0].toStringInternal();
 	for( uint i = 1; i < m_nKeys; i++ ) {
 		s += ",";
-		s += m_rgkey[i].toStringInternal();
+		s += m_rgvar[i].toStringInternal();
 	}
 
 	return s;
@@ -636,7 +649,21 @@ bool KShortcut::contains( const KKeySequence& seq ) const
 	return false;
 }
 
+bool KShortcut::setSeq( uint iSeq, const KKeySequence& seq )
+{
+	// TODO: check if seq is null, and act accordingly.
+	if( iSeq <= m_nSeqs && iSeq < MAX_SEQUENCES ) {
+		m_rgseq[iSeq] = seq;
+		if( iSeq == m_nSeqs )
+			m_nSeqs++;
+		return true;
+	} else
+		return false;
+}
+
 bool KShortcut::insert( const KKeySequence& seq )
+	{ return append( seq ); }
+bool KShortcut::append( const KKeySequence& seq )
 {
 	if( m_nSeqs < MAX_SEQUENCES ) {
 		if( !seq.isNull() ) {
