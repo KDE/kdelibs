@@ -419,6 +419,8 @@ bool RenderFrameSet::userResize( int _x, int _y, DOM::NodeImpl::MouseEventType t
   return res;
 }
 
+/**************************************************************************************/
+
 RenderPart::RenderPart( QScrollView *view )
 : RenderWidget( view )
 {
@@ -443,6 +445,8 @@ void RenderPart::layout( bool )
   if ( m_widget )
     m_widget->resize( m_width, m_height );
 }
+
+/***************************************************************************************/
 
 RenderFrame::RenderFrame( QScrollView *view, DOM::HTMLFrameElementImpl *frame )
 : RenderPart( view )
@@ -476,10 +480,12 @@ void RenderFrame::setWidget( QWidget *widget )
     RenderPart::setWidget(widget);
 }
 
+/****************************************************************************************/
+
 RenderPartObject::RenderPartObject( QScrollView *view, DOM::HTMLElementImpl *o )
 : RenderPart( view )
 {
-  m_obj = o;
+   m_obj = o;
 }
 
 RenderPartObject::~RenderPartObject()
@@ -494,36 +500,50 @@ void RenderPartObject::close()
   QStringList params;
 
   if(m_obj->id() == ID_OBJECT) {
-      HTMLObjectElementImpl *o = static_cast<HTMLObjectElementImpl *>(m_obj);
-      url = o->url;
-      serviceType = o->serviceType;
-      if(serviceType.isEmpty() || serviceType.isNull()) {
-	  if(o->classId.contains(QString::fromLatin1("D27CDB6E-AE6D-11cf-96B8-444553540000"))) {
+     // check for embed child object
+     HTMLObjectElementImpl *o = static_cast<HTMLObjectElementImpl *>(m_obj);
+     HTMLEmbedElementImpl *embed = 0;
+     NodeImpl *child = o->firstChild();
+     while ( child ) {
+	if ( child->id() == ID_EMBED )
+	   embed = static_cast<HTMLEmbedElementImpl *>( child );
+	     
+	child = child->nextSibling();
+     }
+      
+     if ( !embed )
+     {
+	url = o->url;
+	serviceType = o->serviceType;
+	if(serviceType.isEmpty() || serviceType.isNull()) {
+	   if(o->classId.contains(QString::fromLatin1("D27CDB6E-AE6D-11cf-96B8-444553540000"))) {
 	      // Flash. set the mimetype
 	      serviceType = "application/x-shockwave-flash";
-	  }
-	  // add more plugins here
-      }	
-      if((url.isEmpty() || url.isNull())) {
-	  // look for a SRC attribute in the params
-          NodeImpl *child = o->firstChild();	
-	  while ( child ) {
+	   }
+	   // add more plugins here
+	}	
+	if((url.isEmpty() || url.isNull())) {
+	   // look for a SRC attribute in the params
+	   NodeImpl *child = o->firstChild();	
+	   while ( child ) {
 	      if ( child->id() == ID_PARAM ) {
-		  HTMLParamElementImpl *p = static_cast<HTMLParamElementImpl *>( child );
+		 HTMLParamElementImpl *p = static_cast<HTMLParamElementImpl *>( child );
 
-		  if ( p->name().lower() == QString::fromLatin1("src") || p->name().lower() == QString::fromLatin1("movie") ) {
-		      url = p->value();
-		      break;
-		  }
+		 if ( p->name().lower()==QString::fromLatin1("src") || 
+		      p->name().lower()==QString::fromLatin1("movie") ) 
+		 {
+		    url = p->value();
+		    break;
+		 }
 	      }
 	      child = child->nextSibling();
-	  }
-      }
+	   }
+	}
 
-      // add all <param>'s to the QStringList argument of the part
-      NodeImpl *child = o->firstChild();
-      while ( child ) {
-	  if ( child->id() == ID_PARAM ) {
+	// add all <param>'s to the QStringList argument of the part
+	NodeImpl *child = o->firstChild();
+	while ( child ) {
+	   if ( child->id() == ID_PARAM ) {
 	      HTMLParamElementImpl *p = static_cast<HTMLParamElementImpl *>( child );
 
 	      QString aStr = p->name();
@@ -531,13 +551,38 @@ void RenderPartObject::close()
 	      aStr += p->value();
 	      aStr += QString::fromLatin1("\"");
 	      params.append(aStr);
-	  }
-	  child = child->nextSibling();
-      }
-      if ( url.isEmpty() && serviceType.isEmpty() )
-	  return; //ooops (-:
+	   } 
+	     
+	   child = child->nextSibling();
+	}
+      
+	if ( url.isEmpty() && serviceType.isEmpty() )
+	   return; //ooops (-:
 
-      static_cast<KHTMLView *>(m_view)->part()->requestObject( this, url, serviceType, params );
+	static_cast<KHTMLView *>(m_view)->part()->requestObject( this, url, serviceType, params );
+     } else
+     {
+	// render embed object
+	url = embed->url;
+	serviceType = embed->serviceType;
+
+	if ( url.isEmpty() && serviceType.isEmpty() )
+	   return; //ooops (-:
+
+	kdDebug() << "<embed> - part()->requestObject( " << url << " )" << endl;
+	static_cast<KHTMLView *>(m_view)->part()->requestObject( this, url, serviceType, 
+								 embed->param );
+     }
+  } else if ( m_obj->id() == ID_EMBED ) {
+     HTMLEmbedElementImpl *o = static_cast<HTMLEmbedElementImpl *>(m_obj);
+     url = o->url;
+     serviceType = o->serviceType;
+
+     if ( url.isEmpty() && serviceType.isEmpty() )
+	return; //ooops (-:
+
+     kdDebug() << "<embed> - part()->requestObject( " << url << " )" << endl;
+     static_cast<KHTMLView *>(m_view)->part()->requestObject( this, url, serviceType, params );
   } else {
       assert(m_obj->id() == ID_IFRAME);
       HTMLIFrameElementImpl *o = static_cast<HTMLIFrameElementImpl *>(m_obj);
