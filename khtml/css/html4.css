@@ -9,6 +9,7 @@
 
 html {
 	display: block;
+	color: black;        
 } 
 
 /*
@@ -49,7 +50,6 @@ script {
 
 body {
 	display: block;
-	color: black;
 	margin: 10px;
 } 
 
