@@ -42,7 +42,9 @@ class KLibraryPrivate;
  * @short Represents a dynamically loaded library.
  *
  * KLibrary allows you to look up symbols of the shared library.
+ * Use @ref KLibLoader to create a new instance of KLibrary.
  *
+ * @see KLibLoader
  * @author Torben Weis <weis@kde.org>
  */
 class KLibrary : public QObject
@@ -135,6 +137,7 @@ class KLibWrapPrivate;
  * KLibLoader follows the singleton pattern. You can not create multiple
  * instances. Use @ref #self() to get a pointer to the loader.
  *
+ * @see KLibrary
  * @author Torben Weis <weis@kde.org>
  */
 class KLibLoader : public QObject
