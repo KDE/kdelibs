@@ -38,8 +38,11 @@ KListBox::KListBox( QWidget *parent, const char *name, WFlags f )
     connect( this, SIGNAL( onItem( QListBoxItem * ) ),
 	     this, SLOT( slotOnItem( QListBoxItem * ) ) );
     slotSettingsChanged(KApplication::SETTINGS_MOUSE);
-    connect( kapp, SIGNAL( settingsChanged(int) ), SLOT( slotSettingsChanged(int) ) );
-    kapp->addKipcEventMask( KIPC::SettingsChanged );
+    if (kapp)
+    {
+        connect( kapp, SIGNAL( settingsChanged(int) ), SLOT( slotSettingsChanged(int) ) );
+        kapp->addKipcEventMask( KIPC::SettingsChanged );
+    }
 
     m_pCurrentItem = 0L;
 

@@ -277,8 +277,11 @@ KListView::KListView( QWidget *parent, const char *name )
                    this, SLOT(cleanItemHighlighter()));
 
   slotSettingsChanged(KApplication::SETTINGS_MOUSE);
-  connect( kapp, SIGNAL( settingsChanged(int) ), SLOT( slotSettingsChanged(int) ) );
-  kapp->addKipcEventMask( KIPC::SettingsChanged );
+  if (kapp)
+  {
+    connect( kapp, SIGNAL( settingsChanged(int) ), SLOT( slotSettingsChanged(int) ) );
+    kapp->addKipcEventMask( KIPC::SettingsChanged );
+  }
 
   connect(&d->autoSelect, SIGNAL( timeout() ),
                   this, SLOT( slotAutoSelect() ) );
