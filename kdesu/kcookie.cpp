@@ -23,6 +23,8 @@
 #include <qstringlist.h>
 #include <qglobal.h>
 
+#include <dcopclient.h>
+
 #include <kdebug.h>
 #include "kcookie.h"
 
@@ -124,34 +126,7 @@ void KCookie::getICECookie()
     QCString dcopsrv = getenv("DCOPSERVER");
     if (dcopsrv.isEmpty()) 
     {
-	QCString home = getenv("HOME");
-	if (home.isEmpty()) 
-	{
-	    kdWarning(900) << k_lineinfo << "Cannot find DCOP server.\n";
-	    return;
-	}
-#ifdef Q_WS_X11
-	QCString disp = getenv("DISPLAY");
-	if (disp.isEmpty())
-	{
-	    kdWarning(900) << k_lineinfo << "Cannot find DCOP server.\n";
-	    return;
-        }
-#else
-	QCString disp("QWS");
-#endif
-        int i;
-        if((i = disp.findRev('.')) > disp.findRev(':') && i >= 0)
-            disp.truncate(i);
-
-	QCString dcopFile = home + "/.DCOPserver_";
-	char hostName[256];
-	if (gethostname(hostName, 255))
-	    dcopFile += "localhost";
-	else
-	    dcopFile += hostName;
-        dcopFile += "_"+disp;
-
+	QCString dcopFile = DCOPClient::dcopServerFile();
 	if (!(f = fopen(dcopFile, "r"))) 
 	{
 	    kdWarning(900) << k_lineinfo 
