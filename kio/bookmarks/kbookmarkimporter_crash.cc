@@ -45,8 +45,7 @@ void KCrashBookmarkImporter::parseCrashLog( QString /*filename*/, bool /*del*/ )
     ;
 }
 
-/* antlarr: KDE 4: Make it const QString & */
-ViewMap KCrashBookmarkImporter::parseCrashLog_noemit( QString filename, bool del ) 
+ViewMap KCrashBookmarkImporter::parseCrashLog_noemit( const QString & filename, bool del ) 
 {
     QFile f( filename );
     ViewMap views;
@@ -54,7 +53,7 @@ ViewMap KCrashBookmarkImporter::parseCrashLog_noemit( QString filename, bool del
     if ( !f.open( IO_ReadOnly ) )
         return views;
 
-    QCString s( 4096 );
+    QCString s( LINELIMIT );
 
     QTextCodec * codec = QTextCodec::codecForName( "UTF-8" );
     Q_ASSERT( codec );
@@ -71,13 +70,12 @@ ViewMap KCrashBookmarkImporter::parseCrashLog_noemit( QString filename, bool del
         QString t = codec->toUnicode( s.stripWhiteSpace() );
         QRegExp rx( "(.*)\\((.*)\\):(.*)$" );
         rx.setMinimal( TRUE );
-        if ( rx.exactMatch( t ) ) 
-        {
-            if ( rx.cap(1) == "opened" )
-                views[rx.cap(2)] = rx.cap(3);
-            else if ( rx.cap(1) == "close" )
-                views.remove( rx.cap(2) );
-        }
+        if ( !rx.exactMatch( t ) ) 
+            continue;
+        if ( rx.cap(1) == "opened" )
+            views[rx.cap(2)] = rx.cap(3);
+        else if ( rx.cap(1) == "close" )
+            views.remove( rx.cap(2) );
     }
 
     f.close();
@@ -114,12 +112,11 @@ QStringList KCrashBookmarkImporter::getCrashLogs()
         }
 
         QDataStream reply( replyData, IO_ReadOnly );
-        if ( replyType == "QString" ) 
-        {
-            QString ret;
-            reply >> ret;
-            activeLogs[ret] = true;
-        }
+        if ( replyType != "QString" ) 
+            continue;
+        QString ret;
+        reply >> ret;
+        activeLogs[ret] = true;
     }
 
     QDir d( crashBookmarksDir() );
@@ -136,8 +133,8 @@ QStringList KCrashBookmarkImporter::getCrashLogs()
     int count = 0;
     for ( ; ( fi = it.current() ) != 0; ++it ) 
     {
-        bool dead = !activeLogs.contains( fi->absFilePath() );
-        if ( dead )
+        bool stillAlive = activeLogs.contains( fi->absFilePath() );
+        if ( !stillAlive )
             crashFiles << fi->absFilePath();
         if ( count++ > 20 )
             break;
