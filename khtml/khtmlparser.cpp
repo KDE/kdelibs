@@ -651,6 +651,7 @@ NodeImpl *KHTMLParser::getElement(Token *t)
 	n = new HTMLFrameElementImpl(document);
 	break;
     case ID_FRAMESET:
+	popBlock(ID_HEAD);
 	n = new HTMLFrameSetElementImpl(document);
 	break;
 	// a bit a special case, since the frame is inlined...

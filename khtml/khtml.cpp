@@ -800,7 +800,7 @@ void KHTMLWidget::slotFormSubmitted( const QString &_method, const QString &_url
 
   QString url = completeURL( _url, target );
 
-  KURL u( _url );
+  KURL u( url );
   if ( u.isMalformed() )
   {
     emit error( KIO::ERR_MALFORMED_URL, url );
@@ -854,25 +854,24 @@ void KHTMLWidget::setDefaultBGColor( const QColor& bgcolor )
 
 QString KHTMLWidget::completeURL( const QString &_url, const QString &target )
 {
-    if(_url[0] == '#' && !target.isEmpty())
+    KURL orig;
+    if(_url[0] == '#' && !target.isEmpty() && findFrame(target))
     {
-	KHTMLWidget *v = findFrame(target);
-	if(v)
-	{
-	    KURL orig(v->url());
-	    KURL u( orig, _url);
-	    return u.url();
-	}
+	orig = KURL(findFrame(target)->url());
     }
-    if(_baseURL.isEmpty())
+    else if(_baseURL.isEmpty())
     {
-	KURL orig( m_strURL );
+	orig = KURL( m_strURL );
+    }
+    else
+	orig = KURL( _baseURL );
+    if(_url[0] != '/')
+    {
 	KURL u( orig, _url );
 	return u.url();
-    }
-    KURL orig( _baseURL );
-    KURL u( orig, _url );
-    return u.url();
+    }	
+    orig.setPath(_url);
+    return orig.url();
 }
 
 KHTMLWidget* KHTMLWidget::findChildView( const QString &_target )

@@ -270,8 +270,9 @@ void HTMLFrameElementImpl::attach(KHTMLWidget *w)
     }
     if(url != 0 && open)
     {
-	KURL u(w->url(), url.string());
-	view->openURL(u.url());
+      //KURL u(w->url(), url.string());
+      QString str = url.string();
+	view->openURL(w->completeURL(str));
     }
 
     if(!parentWidget || !view) return;

@@ -740,7 +740,9 @@ protected:
      */
     virtual bool mousePressedHook( const QString &/* _url*/, const QString & /*_target*/, QMouseEvent *, bool /*_isselected*/) { return false; }
 
+public:
     virtual QString completeURL( const QString & _url, const QString &target = QString::null );
+protected:
 
     virtual KHTMLWidget* findChildView( const QString & _target );
 
