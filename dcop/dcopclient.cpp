@@ -71,7 +71,7 @@ char* DCOPClientPrivate::serverAddr = 0;
  * Callback for ICE.
  */
 void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
-			int opcode, unsigned long length, Bool swap,
+			int opcode, unsigned long length, Bool /*swap*/,
 			IceReplyWaitInfo *replyWait,
 			Bool *replyWaitRet)
 {
@@ -161,11 +161,11 @@ bool DCOPClient::attach()
   if ( isAttached() )
       detach();
 
-  if ((d->majorOpcode = IceRegisterForProtocolSetup("DCOP", DCOPVendorString,
-						    DCOPReleaseString, 1, DCOPVersions,
-						    DCOPAuthCount, DCOPAuthNames,
+  if ((d->majorOpcode = IceRegisterForProtocolSetup((char *) "DCOP", (char *) DCOPVendorString,
+						    (char *) DCOPReleaseString, 1, DCOPVersions,
+						    DCOPAuthCount, (char **) DCOPAuthNames,
 						    DCOPClientAuthProcs, 0L)) < 0) {
-    qDebug("Could not register DCOP protocol with ICE");
+    emit attachFailed("Communications could not be established.");
     return false;
   }
 
@@ -182,7 +182,7 @@ bool DCOPClient::attach()
 
   if ((d->iceConn = IceOpenConnection(d->serverAddr, 0, 0, d->majorOpcode,
                                       sizeof(errBuf), errBuf)) == 0L) {
-    qDebug("DCOP open connection: %s",errBuf);
+    emit attachFailed(errBuf);
     d->iceConn = 0;
     return false;
   }
@@ -199,11 +199,11 @@ bool DCOPClient::attach()
   if (setupstat == IceProtocolSetupFailure ||
       setupstat == IceProtocolSetupIOError) {
     IceCloseConnection(d->iceConn);
-    qDebug("DCOP protocol setup: %s", errBuf);
+    emit attachFailed(errBuf);
     return false;
   } else if (setupstat == IceProtocolAlreadyActive) {
     /* should not happen because 3rd arg to IceOpenConnection was 0. */
-    qDebug("DCOP: internal error in IceOpenConnection");
+    emit attachFailed("internal error in IceOpenConnection");
     return false;
   }
 
@@ -212,6 +212,7 @@ bool DCOPClient::attach()
   // we can create a QSocketNotifier and use it for receiving data.
   if (qApp) {
     if (IceConnectionStatus(d->iceConn) != IceConnectAccepted)
+      emit attachFailed("DCOP server did not accept the connection.");
       return false;
 
     if ( d->notifier )
@@ -322,7 +323,6 @@ QCString DCOPClient::normalizeFunctionSignature( const QCString& fun ) {
     *to = '\0';
     result.resize( (int)((long)to - (long)result.data()) + 1 );
     return result;
-    int i;
 }
 
 
@@ -334,7 +334,7 @@ QCString DCOPClient::senderId() const
 
 bool DCOPClient::send(const QCString &remApp, const QCString &remObjId,
 		      const QCString &remFun, const QByteArray &data,
-		      bool fast)
+		      bool)
 {
   if ( !isAttached() )
       return false;
@@ -365,7 +365,7 @@ bool DCOPClient::send(const QCString &remApp, const QCString &remObjId,
 
 bool DCOPClient::send(const QCString &remApp, const QCString &remObjId,
 		      const QCString &remFun, const QString &data,
-		      bool fast)
+		      bool)
 {
   QByteArray ba;
   QDataStream ds(ba, IO_WriteOnly);
@@ -373,8 +373,8 @@ bool DCOPClient::send(const QCString &remApp, const QCString &remObjId,
   return send(remApp, remObjId, remFun, ba);
 }
 
-bool DCOPClient::process(const QCString &fun, const QByteArray &data,
-			 QByteArray &replyData)
+bool DCOPClient::process(const QCString &, const QByteArray &,
+			 QByteArray &)
 {
   return false;
 }
@@ -445,7 +445,7 @@ bool DCOPClient::receive(const QCString &app, const QCString &objId,
 
 bool DCOPClient::call(const QCString &remApp, const QCString &remObjId,
 		      const QCString &remFun, const QByteArray &data,
-		      QByteArray &replyData, bool fast)
+		      QByteArray &replyData, bool)
 {
   if ( !isAttached() )
       return false;
@@ -495,7 +495,7 @@ bool DCOPClient::call(const QCString &remApp, const QCString &remObjId,
   return tmp.result;
 }
 
-void DCOPClient::processSocketData(int socknum)
+void DCOPClient::processSocketData(int)
 {
   IceProcessMessagesStatus s =  IceProcessMessages(d->iceConn, 0, 0);
 

@@ -243,6 +243,13 @@ signals:
    */
   void applicationRemoved( const QCString& appId );
 
+  /**
+   * Indicates that the process of establishing DCOP communications failed
+   * in some manner.  Usually attached to a dialog box or some other visual
+   * aid.
+   */
+  void attachFailed(const QString &msg);
+
  public slots:
 
  protected slots:

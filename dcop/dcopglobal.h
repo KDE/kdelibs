@@ -30,7 +30,7 @@
 #define DCOPReplyFailed 4
 
 int DCOPAuthCount = 1;
-char *DCOPAuthNames[] = {"MIT-MAGIC-COOKIE-1"};
+const char *DCOPAuthNames[] = {"MIT-MAGIC-COOKIE-1"};
 extern "C" {
 extern IcePoAuthStatus _IcePoMagicCookie1Proc (_IceConn *, void **, int, int, int, void *, int *, void **, char **);
 extern IcePaAuthStatus _IcePaMagicCookie1Proc (_IceConn *, void **, int, int, void *, int *, void **, char **);
