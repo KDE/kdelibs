@@ -135,7 +135,7 @@ class DistributionListManager
     /**
       Return distribution list with given name.
     */
-    DistributionList *list( const QString &name );    
+    DistributionList *list( const QString &name ); // KDE4: add bool caseSensitive = true
 
     /**
       Insert distribution list. If a list with this name already exists, nothing
