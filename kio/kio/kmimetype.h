@@ -356,7 +356,7 @@ public:
    * or that would be human readable after decompression.
    * @since 3.2
    */
-  typedef struct Format{ 
+  struct Format{ 
      bool text : 1;
      enum { NoCompression=0, GZipCompression } compression : 4;
      int dummy : 27;
