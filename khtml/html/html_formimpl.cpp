@@ -87,7 +87,13 @@ ushort HTMLFormElementImpl::id() const
 
 long HTMLFormElementImpl::length() const
 {
-    return formElements.count();
+    int len = 0;
+    QListIterator<HTMLGenericFormElementImpl> it(formElements);
+    for (; it.current(); ++it)
+	if (it.current()->isEnumeratable())
+	    ++len;
+
+    return len;
 }
 
 static QCString encodeCString(const QCString& e)
