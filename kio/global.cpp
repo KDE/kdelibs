@@ -495,7 +495,7 @@ QString KIO::findDeviceMountPoint( const QString& filename )
 	/*
 	 *  support for Solaris volume management
 	 */
-	char *volpath;
+	const char *volpath;
 	FILE *mnttab;
 	struct mnttab mnt;
 	int len;
