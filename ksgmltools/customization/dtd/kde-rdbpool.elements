@@ -38,6 +38,10 @@
 <!ENTITY % kde.rdbpool "INCLUDE">
 <![ %kde.rdbpool; [
 
+<!ENTITY % graphic.module "IGNORE">
+<!ENTITY % inlinegraphic.module "IGNORE">
+<!ENTITY % confgroup.content.module "IGNORE">
+
 <!-- KDE Languages
      To keep the language tags conform to RFC 1766 
      (http://www.rfc-editor.org/rfc/rfc1766.txt)

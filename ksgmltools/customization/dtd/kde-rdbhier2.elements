@@ -41,6 +41,8 @@
 <!ENTITY % beginpage.module "IGNORE">
 <!ENTITY % bridgehead.module "IGNORE">
 <!ENTITY % revhistory.content.module "IGNORE">
+<!ENTITY % toc.content.module "INCLUDE">
+<!ENTITY % lot.content.module "INCLUDE">
 
 <![ %kde.compulsory.id; [
 
