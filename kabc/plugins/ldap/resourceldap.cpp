@@ -181,7 +181,7 @@ bool ResourceLDAP::load()
       unsigned int len = it.data().utf8().length();
       LdapSearchAttr[ i ] = new char[ len+1 ];
       memcpy( LdapSearchAttr[ i ], it.data().utf8(), len );
-      LdapSearchAttr[ i ][ len ];
+      LdapSearchAttr[ i ][ len ] = 0;
       ++i;
     }
   }
