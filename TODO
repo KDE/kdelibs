@@ -169,3 +169,9 @@ that we would like to make for the next binary incompatible release.
 an alternative help->contents action)
 
 - Replace KPasswordEdit with KLineEdit and adjust KPasswordDialog accordingly.
+
+- Merge KPIM::ClickLineEdit with KLineEdit
+
+- Merge all K*Label classes into one that offers all the features such as ellipsis (this time for center, middle and right in order to allow for sqeezing the text), links and selectable text with a consistant API.
+
+- Make sure all GUI classes adopt well to palette changes.
