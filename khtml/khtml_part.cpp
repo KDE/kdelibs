@@ -7,6 +7,8 @@
  *                     2000 Simon Hausmann <hausmann@kde.org>
  *                     2000 Stefan Schimanski <1Stein@gmx.de>
  *                     2001 George Staikos <staikos@kde.org>
+ *                     2001-2003 Dirk Mueller <mueller@kde.org>
+ *                     2002 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -828,7 +830,7 @@ void KHTMLPart::slotShowDocument( const QString &url, const QString &target )
 
   // TODO: handle child target correctly! currently the script are always executed fur the parent
   if ( url.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 ) {
-      executeScript( url.right( url.length() - 11) );
+      executeScript( KURL::decode_string( url.right( url.length() - 11) ) );
       return;
   }
 
@@ -1368,7 +1370,7 @@ void KHTMLPart::write( const char *str, int len )
 {
     if ( !d->m_decoder ) {
         d->m_decoder = new khtml::Decoder();
-        if(d->m_encoding != QString::null)
+        if(!d->m_encoding.isNull())
             d->m_decoder->setEncoding(d->m_encoding.latin1(), d->m_haveEncoding);
         else
             d->m_decoder->setEncoding(settings()->encoding().latin1(), d->m_haveEncoding);
@@ -1710,7 +1712,8 @@ KURL KHTMLPart::completeURL( const QString &url )
 void KHTMLPart::scheduleRedirection( int delay, const QString &url, bool doLockHistory )
 {
   //kdDebug(6050) << "KHTMLPart::scheduleRedirection delay=" << delay << " url=" << url << endl;
-  if( d->m_redirectURL.isEmpty() || delay < d->m_delayRedirect ) {
+  if( delay < 24*60*60 &&
+      ( d->m_redirectURL.isEmpty() || delay < d->m_delayRedirect ) ) {
     d->m_delayRedirect = delay;
     d->m_redirectURL = url;
     d->m_redirectLockHistory = doLockHistory;
@@ -2440,7 +2443,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
   }
 
   if (url.find( QString::fromLatin1( "javascript:" ),0, false ) != -1 ) {
-    QString jscode = url.mid( url.find( "javascript:", 0, false ) );
+    QString jscode = KURL::decode_string( url.mid( url.find( "javascript:", 0, false ) ) );
     jscode = KStringHandler::rsqueeze( jscode, 80 ); // truncate if too long
     setStatusBarText( QStyleSheet::escape( jscode ), BarHoverText );
     return;
@@ -2596,7 +2599,7 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
 
   if ( url.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 )
   {
-    executeScript( url.right( url.length() - 11 ) );
+    executeScript( KURL::decode_string( url.right( url.length() - 11 ) ) );
     return;
   }
 
@@ -2962,7 +2965,7 @@ bool KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, cons
   // Support for <frame src="javascript:string">
   if ( url.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 )
   {
-      QVariant res = executeScript( DOM::Node(frame->element()), url.right( url.length() - 11) );
+      QVariant res = executeScript( DOM::Node(frame->element()), KURL::decode_string( url.right( url.length() - 11) ) );
       KURL myurl;
       myurl.setProtocol("javascript");
       if ( res.type() == QVariant::String )
@@ -4189,7 +4192,7 @@ void KHTMLPart::reparseConfiguration()
   d->m_settings = new KHTMLSettings(*KHTMLFactory::defaultHTMLSettings());
 
   QApplication::setOverrideCursor( waitCursor );
-  if(d->m_doc) d->m_doc->recalcStyle( NodeImpl::Force );
+  if(d->m_doc) d->m_doc->updateStyleSelector();
   QApplication::restoreOverrideCursor();
 }
 
