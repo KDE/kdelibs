@@ -183,42 +183,17 @@ typedef KKeyChooser KKeyChooser;
 
 /**
  * The KKeyDialog class is used for configuring dictionaries of key/action
- * associations for KAccel and KGlobalAccel. It uses the KKeyChooser widget
+ * associations for KActionCollection, KAccel, and KGlobalAccel. It uses the KKeyChooser widget
  * and offers buttons to set all keys to defaults and invoke on-line help.
  *
  * Three static methods are supplied which provide the most convienient interface
- * to the dialog. For example you could use KAccel and KKeyDialog like this
+ * to the dialog. The most common and most encouraged use is with KActionCollection.
  *
  * <pre>
- * KAccel keys;
- *
- * keys.insertItem( i18n( "Zoom in" ), "Zoom in", "+" );
- * keys.connectItem( "Zoom in", myWindow, SLOT( zoomIn() ) );
- *
- * keys.connectItem( KAccel::Print, myWindow, SLOT( print() ) );
- *
- * keys.readSettings();
- *
- * if( KKeyDialog::configureKeys( &keys ) ) {
- *	      ...
- * }
+ * KKeyDialog::configure( actionCollection() );
  * </pre>
  *
- * This will also implicitly commit and save the settings. If you don't want this,
- * you can call
- *
- * <pre>
- * if( KKeyDialog::configureKeys( &keys, false ) ) { // do not save settings
- *	      ...
- * }
- * </pre>
- *
- * For XML-UI applications, this is much simpler. All you need to do is
- * <pre>
- * KKeyDialog::configureKeys(actionCollection(), xmlFile());
- * </pre>
- *
- * @short Dialog for configuration of @ref KAccel and @ref KGlobalAccel.
+ * @short Dialog for configuration of @ref KActioncollection, @ref KAccel, and @ref KGlobalAccel.
  * @version $Id$
  * @author Nicolas Hadacek <hadacek@via.ecp.fr>
  */
