@@ -129,10 +129,10 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     return String(thisObj.internalValue().toString(exec));
   }
 
-  Number n, m;
+  int n, m;
   UString u, u2, u3;
   int pos, p0, i;
-  double d = 0.0, d2;
+  double d = 0.0;
 
   UString s = thisObj.toString(exec);
 
@@ -146,8 +146,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     // handled above
     break;
   case CharAt:
-    n = a0.toInteger(exec);
-    pos = (int) n.value();
+    pos = a0.toInteger(exec);
     if (pos < 0 || pos >= len)
       u = "";
     else
@@ -155,8 +154,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     result = String(u);
     break;
   case CharCodeAt:
-    n = a0.toInteger(exec);
-    pos = (int) n.value();
+    pos = a0.toInteger(exec);
     if (pos < 0 || pos >= len)
       d = NaN;
     else {
@@ -209,20 +207,17 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     }
     RegExpObjectImp* regExpObj = static_cast<RegExpObjectImp*>(exec->interpreter()->builtinRegExp().imp());
     int **ovector = regExpObj->registerRegexp( reg, u );
-    {
-      UString mstr = reg->match(u, -1, &pos, ovector);
-      if (a0.isA(StringType))
-        delete reg;
-      if (id == Search) {
-        result = Number(pos);
-        break;
-      }
-      if (mstr.isNull()) {
-        result = Null();
-        break;
-      }
-      result = regExpObj->arrayOfMatches(exec,mstr);
+    UString mstr = reg->match(u, -1, &pos, ovector);
+    if (a0.isA(StringType))
+      delete reg;
+    if (id == Search) {
+      result = Number(pos);
+      break;
     }
+    if (mstr.isNull())
+      result = Null();
+    else
+      result = regExpObj->arrayOfMatches(exec,mstr);
   }
     break;
   case Replace:
@@ -342,19 +337,21 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     res.put(exec,"length", Number(i));
     }
     break;
-  case Substr:
+  case Substr: {
     n = a0.toInteger(exec);
     m = a1.toInteger(exec);
-    if (n.value() >= 0)
-      d = n.value();
+    int d, d2;
+    if (n >= 0)
+      d = n;
     else
-      d = max(len + n.value(), 0);
+      d = maxInt(len + n, 0);
     if (a1.type() == UndefinedType)
       d2 = len - d;
     else
-      d2 = min(max(m.value(), 0), len - d);
-    result = String(s.substr((int)d, (int)d2));
+      d2 = minInt(maxInt(m, 0), len - d);
+    result = String(s.substr(d, d2));
     break;
+  }
   case Substring: {
     double start = a0.toNumber(exec);
     double end = a1.toNumber(exec);

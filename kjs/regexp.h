@@ -46,7 +46,9 @@ namespace KJS {
     RegExp(const UString &p, int f = None);
     ~RegExp();
     UString match(const UString &s, int i = -1, int *pos = 0L, int **ovector = 0L);
-    bool test(const UString &s, int i = -1);
+    // test is unused. The JS spec says that RegExp.test should use
+    // RegExp.exec, so it has to store $1 etc.
+    // bool test(const UString &s, int i = -1);
     uint subPatterns() const { return nrSubPatterns; }
   private:
     const UString &pattern;

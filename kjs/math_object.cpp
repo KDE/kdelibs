@@ -177,12 +177,36 @@ Value MathFuncImp::call(ExecState *exec, Object &/*thisObj*/, const List &args)
   case MathObjectImp::Log:
     result = ::log(arg);
     break;
-  case MathObjectImp::Max: // TODO: support variable args
-    result = ( arg > arg2 ) ? arg : arg2;
+  case MathObjectImp::Max: {
+    unsigned int argsCount = args.size();
+    result = -Inf;
+    for ( unsigned int k = 0 ; k < argsCount ; ++k ) {
+      double val = args[k].toNumber(exec);
+      if ( isNaN( val ) )
+      {
+        result = NaN;
+        break;
+      }
+      if ( val > result )
+        result = val;
+    }
     break;
-  case MathObjectImp::Min: // TODO: support variable args
-    result = ( arg < arg2 ) ? arg : arg2;
+  }
+  case MathObjectImp::Min: {
+    unsigned int argsCount = args.size();
+    result = +Inf;
+    for ( unsigned int k = 0 ; k < argsCount ; ++k ) {
+      double val = args[k].toNumber(exec);
+      if ( isNaN( val ) )
+      {
+        result = NaN;
+        break;
+      }
+      if ( val < result )
+        result = val;
+    }
     break;
+  }
   case MathObjectImp::Pow:
     // ECMA 15.8.2.1.13 (::pow takes care of most of the critera)
     if (KJS::isNaN(arg2))

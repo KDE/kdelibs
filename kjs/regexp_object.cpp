@@ -70,8 +70,6 @@ bool RegExpProtoFuncImp::implementsCall() const
 
 Value RegExpProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
 {
-  Value result;
-
   if (!thisObj.inherits(&RegExpImp::info)) {
     Object err = Error::create(exec,TypeError);
     exec->setException(err);
@@ -81,46 +79,54 @@ Value RegExpProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
   RegExpImp *reimp = static_cast<RegExpImp*>(thisObj.imp());
   RegExp *re = reimp->regExp();
   String s;
-  Value lastIndex, tmp;
   UString str;
-  int length, i;
   switch (id) {
-  case Exec:
-  case Test: // shouldn't Test use RegExp::test() ?
+  case Exec:      // 15.10.6.2
+  case Test:
+  {
     s = args[0].toString(exec);
-    length = s.value().size();
-    lastIndex = thisObj.get(exec,"lastIndex"); /// ### what is this for ? It's never set. Is it part of the spec ?
-    i = lastIndex.isNull() ? 0 : lastIndex.toInt32(exec);
-    tmp = thisObj.get(exec,"global");
-    if (tmp.toBoolean(exec) == false)
+    int length = s.value().size();
+    Value lastIndex = thisObj.get(exec,"lastIndex");
+    int i = lastIndex.isNull() ? 0 : lastIndex.toInt32(exec);
+    bool globalFlag = thisObj.get(exec,"global").toBoolean(exec);
+    if (!globalFlag)
       i = 0;
     if (i < 0 || i > length) {
-      thisObj.put(exec,"lastIndex", 0);
-      result = Null();
-      break;
+      thisObj.put(exec,"lastIndex", 0, DontDelete | DontEnum);
+      return Null();
     }
+    RegExpObjectImp* regExpObj = static_cast<RegExpObjectImp*>(exec->interpreter()->builtinRegExp().imp());
+    int **ovector = regExpObj->registerRegexp( re, s.value() );
+
+    str = re->match(s.value(), i, 0L, ovector);
+
+    if (id == Test)
+      return Boolean(!str.isNull());
+
+    if (str.isNull()) // no match
     {
-      RegExpObjectImp* regExpObj = static_cast<RegExpObjectImp*>(exec->interpreter()->builtinRegExp().imp());
-      int **ovector = regExpObj->registerRegexp( re, s.value() );
-      str = re->match(s.value(), i, 0L, ovector);
-      if (id == Test) {
-        result = Boolean(str.size() != 0);
-        break;
-      }
+      if (globalFlag)
+        thisObj.put(exec,"lastIndex",Number(0), DontDelete | DontEnum);
+      return Null();
     }
-    // TODO complete
-    result = String(str);
-    break;
+    else // success
+    {
+      if (globalFlag)
+        thisObj.put(exec,"lastIndex",Number( (*ovector)[1] ), DontDelete | DontEnum);
+      return regExpObj->arrayOfMatches(exec,str);
+    }
+  }
+  break;
   case ToString:
     s = thisObj.get(exec,"source").toString(exec);
     str = "/";
     str += s.value();
     str += "/";
-    result = String(str);
-    break;
+    // TODO append the flags
+    return String(str);
   }
 
-  return result;
+  return Undefined();
 }
 
 // ------------------------------ RegExpImp ------------------------------------
@@ -220,7 +226,7 @@ Object RegExpObjectImp::construct(ExecState *exec, const List &args)
   bool global = (flags.find("g") >= 0);
   bool ignoreCase = (flags.find("i") >= 0);
   bool multiline = (flags.find("m") >= 0);
-  // TODO: throw an error on invalid flags
+  // TODO: throw a syntax error on invalid flags
 
   dat->put(exec, "global", Boolean(global));
   dat->put(exec, "ignoreCase", Boolean(ignoreCase));

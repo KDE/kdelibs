@@ -108,7 +108,13 @@ bool KJS::equal(ExecState *exec, const Value& v1, const Value& v2)
     if (t1 == UndefinedType || t1 == NullType)
       return true;
     if (t1 == NumberType)
-      return (v1.toNumber(exec) == v2.toNumber(exec)); /* TODO: NaN, -0 ? */
+    {
+      double d1 = v1.toNumber(exec);
+      double d2 = v2.toNumber(exec);
+      if ( isNaN( d1 ) || isNaN( d2 ) )
+        return false;
+      return ( d1 == d2 ); /* TODO: +0, -0 ? */
+    }
     if (t1 == StringType)
       return (v1.toString(exec) == v2.toString(exec));
     if (t1 == BooleanType)
@@ -203,15 +209,13 @@ int KJS::relation(ExecState *exec, const Value& v1, const Value& v2)
   return (n1 < n2) ? 1 : 0;
 }
 
-double KJS::max(double d1, double d2)
+int KJS::maxInt(int d1, int d2)
 {
-  /* TODO: check for NaN */
   return (d1 > d2) ? d1 : d2;
 }
 
-double KJS::min(double d1, double d2)
+int KJS::minInt(int d1, int d2)
 {
-  /* TODO: check for NaN */
   return (d1 < d2) ? d1 : d2;
 }
 

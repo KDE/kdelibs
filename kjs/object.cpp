@@ -315,6 +315,7 @@ void ObjectImp::put(ExecState *exec, const UString &propertyName,
   assert(value.type() != ListType);
 
   /* TODO: check for write permissions directly w/o this call */
+  /* Doesn't look very easy with the PropertyMap API - David */
   // putValue() is used for JS assignemnts. It passes no attribute.
   // Assume that a C++ implementation knows what it is doing
   // and let it override the canPut() check.

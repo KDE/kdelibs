@@ -51,8 +51,8 @@ namespace KJS {
    * equal". -1 if the result is undefined.
    */
   int relation(ExecState *exec, const Value& v1, const Value& v2);
-  double max(double d1, double d2);
-  double min(double d1, double d2);
+  int maxInt(int d1, int d2);
+  int minInt(int d1, int d2);
   /**
    * Additive operator. Either performs an addition or substraction of v1
    * and v2.

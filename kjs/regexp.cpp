@@ -133,6 +133,7 @@ UString RegExp::match(const UString &s, int i, int *pos, int **ovector)
 #endif
 }
 
+#if 0 // unused
 bool RegExp::test(const UString &s, int)
 {
 #ifdef HAVE_PCREPOSIX
@@ -155,3 +156,4 @@ bool RegExp::test(const UString &s, int)
   return r == 0;
 #endif
 }
+#endif

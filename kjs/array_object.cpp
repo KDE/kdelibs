@@ -35,12 +35,6 @@
 
 using namespace KJS;
 
-template<class T>
-inline const T& kMin (const T& a, const T& b) { return a < b ? a : b; }
-
-template<class T>
-inline const T& kMax (const T& a, const T& b) { return b < a ? a : b; }
-
 // ------------------------------ ArrayInstanceImp -----------------------------
 
 const ClassInfo ArrayInstanceImp::info = {"Array", 0, 0, 0};
@@ -297,17 +291,17 @@ Value ArrayProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args
     result = resObj;
     int begin = args[0].toUInt32(exec);
     if ( begin < 0 )
-      begin = kMax<int>( begin + length, 0 );
+      begin = maxInt( begin + length, 0 );
     else
-      begin = kMin<int>( begin, length );
+      begin = minInt( begin, length );
     int end = length;
     if (args[1].type() != UndefinedType)
     {
       end = args[1].toUInt32(exec);
       if ( end < 0 )
-        end = kMax<int>( end + length, 0 );
+        end = maxInt( end + length, 0 );
       else
-        end = kMin<int>( end, length );
+        end = minInt( end, length );
     }
 
     //printf( "Slicing from %d to %d \n", begin, end );
@@ -392,10 +386,10 @@ Value ArrayProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args
     result = resObj;
     int begin = args[0].toUInt32(exec);
     if ( begin < 0 )
-      begin = kMax<int>( begin + length, 0 );
+      begin = maxInt( begin + length, 0 );
     else
-      begin = kMin<int>( begin, length );
-    unsigned int deleteCount = kMin<unsigned int>( kMax<int>( args[1].toUInt32(exec), 0 ), length - begin );
+      begin = minInt( begin, length );
+    unsigned int deleteCount = minInt( maxInt( args[1].toUInt32(exec), 0 ), length - begin );
 
     //printf( "Splicing from %d, deleteCount=%d \n", begin, deleteCount );
     for(unsigned int k = 0; k < deleteCount; k++) {
@@ -408,7 +402,7 @@ Value ArrayProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args
     }
     resObj.put(exec, "length", Number(deleteCount), DontEnum | DontDelete);
 
-    unsigned int additionalArgs = kMax( args.size() - 2, 0 );
+    unsigned int additionalArgs = maxInt( args.size() - 2, 0 );
     if ( additionalArgs != deleteCount )
     {
       if ( additionalArgs < deleteCount )
