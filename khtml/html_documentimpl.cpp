@@ -75,7 +75,7 @@ HTMLDocumentImpl::HTMLDocumentImpl(KHTMLWidget *v, KHTMLCache *c)
     tokenizer = 0;
     cache  = c;
 
-    width = view->width();
+    width = view->_width;
     printf("document: setting width to %d\n", width);
     height = view->height();
 
@@ -177,7 +177,7 @@ ElementImpl *HTMLDocumentImpl::getElementById( const DOMString &elementId )
 		if(e->getAttribute("id") == elementId)
 		    return e;
 	    }
-	    
+	
 	    NodeImpl *child = current->firstChild();
 	    if(child)
 	    {	
@@ -271,9 +271,9 @@ void HTMLDocumentImpl::layout( bool deep )
     }
 }
 
-void HTMLDocumentImpl::setAvailableWidth(int w) { 
-    if(w != -1) width = w; 
-    if(bodyElement) 
+void HTMLDocumentImpl::setAvailableWidth(int w) {
+    if(w != -1) width = w;
+    if(bodyElement)
     {
 //	bodyElement->calcMinMaxWidth();
     	int tw = width > bodyElement->getMinWidth() ? width :
@@ -302,7 +302,7 @@ void HTMLDocumentImpl::print(NodeImpl *e, bool recursive)
 void HTMLDocumentImpl::updateSize()
 {
     if(body())
-    {    
+    {
     	int oldw = width;
 	int oldh = height;
 	

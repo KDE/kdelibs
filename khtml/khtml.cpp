@@ -57,19 +57,18 @@ using namespace DOM;
 KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name)
     : QScrollView( parent, name)
 {
-    init();
-
     // initialize QScrollview
     enableClipper(true);
     viewport()->setMouseTracking(true);
 
     kimgioRegister();
+
+    init();
 }
 
 KHTMLWidget::KHTMLWidget( QWidget *parent, KHTMLWidget *_parent_browser, const char *name )
     : QScrollView( parent, name)
 {
-    init();
     _parent     = _parent_browser;
     m_strFrameName       = name;
 
@@ -78,6 +77,8 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, KHTMLWidget *_parent_browser, const c
     viewport()->setMouseTracking(true);
 
     kimgioRegister();
+
+    init();
 }
 
 KHTMLWidget::~KHTMLWidget()
@@ -830,6 +831,11 @@ void KHTMLWidget::end()
 
   document->close();
 
+  KURL u(m_strURL);
+  if ( !u.htmlRef().isEmpty() )
+      gotoAnchor( u.htmlRef() );
+ 
+  
   // Are all children complete now ?
   QListIterator<Child> it2( m_lstChildren );
   for( ; it2.current(); ++it2 )
@@ -871,21 +877,31 @@ void KHTMLWidget::layout()
 {
     //### take care of frmaes (hide scrollbars,...)
 
-    if(!document) return;
-    NodeImpl *body = document->body();
-    if(!body) return;
+    if(document)
+    {	
+	NodeImpl *body = document->body();
+	if(body && body->id() == ID_FRAMESET)
+	{
+	    setVScrollBarMode(AlwaysOff);
+	    setHScrollBarMode(AlwaysOff);
+	}
 
-    int w = width() - SCROLLBARWIDTH - 10;
-    if(w < _width-5 || w > _width + 10)
+	int w = width() - SCROLLBARWIDTH - 10;
+	if(w < _width-5 || w > _width + 10)
+	{
+	    printf("layouting document\n");
+
+	    _width = w;
+
+	    document->setAvailableWidth(_width);
+	    document->layout(true);
+	    resizeContents(document->getWidth(), document->getHeight());
+	    viewport()->repaint(true);
+	}
+    }
+    else
     {
-	printf("layouting document\n");
-
-	_width = w;
-
-	document->setAvailableWidth(_width);
-	document->layout(true);
-	resizeContents(document->getWidth(), document->getHeight());
-	viewport()->repaint(true);
+	_width = width() - SCROLLBARWIDTH - 10;
     }
 }
 
@@ -1317,14 +1333,14 @@ KHTMLWidget::gotoAnchor( const QString &_name )
 	if(n) printf("found element with matching id\n");
     }
 	
-    if(!n) return;
+    if(!n) return false;
     printf("found anchor %p!\n", n);
 
     int x = 0, y = 0;
     HTMLAnchorElementImpl *a = static_cast<HTMLAnchorElementImpl *>(n);
     a->getAnchorPosition(x, y);
     printf("going to %d/%d\n", x, y);
-    ensureVisible(x, y);
+    setContentsPos(x-50, y-50);
     return true;
 }
 
