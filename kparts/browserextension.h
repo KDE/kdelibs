@@ -24,7 +24,11 @@
 #include <sys/types.h>
 
 #include <qpoint.h>
+#if QT_VERSION < 300
 #include <qlist.h>
+#else
+#include <qptrlist.h>
+#endif
 #include <qdatastream.h>
 #include <qstringlist.h>
 
@@ -32,8 +36,11 @@
 #include <kparts/event.h>
 
 class KFileItem;
+#if QT_VERSION < 300
 typedef QList<KFileItem> KFileItemList;
-
+#else
+typedef QPtrList<KFileItem> KFileItemList;
+#endif
 class QString;
 
 namespace KParts {
@@ -575,8 +582,13 @@ public:
    *
    * Note that this method does not query the child objects recursively.
    */
-  virtual const QList<KParts::ReadOnlyPart> frames() const;
 
+#if QT_VERSION < 300
+  virtual const QList<KParts::ReadOnlyPart> frames() const;
+#else  
+  virtual const QPtrList<KParts::ReadOnlyPart> frames() const;
+#endif
+  
   /**
    * Opens the given url in a hosted child frame. The frame name is specified in the
    * frameName variable in the urlArgs argument structure (see @ref KParts::URLArgs ) .
