@@ -55,7 +55,7 @@ KFileIconView::KFileIconView(QWidget *parent, const char *name)
     setAutoArrange( TRUE );
     setItemsMovable( false );
 
-    connect( this, SIGNAL( doubleClicked(QIconViewItem *) ),
+    connect( this, SIGNAL( executed(QIconViewItem *) ),
 	     SLOT( selected( QIconViewItem *) ) );
     connect( this, SIGNAL( returnPressed(QIconViewItem *) ),
 	     SLOT( selected( QIconViewItem *) ) );
