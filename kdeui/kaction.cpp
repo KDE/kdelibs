@@ -1066,6 +1066,8 @@ void KAction::slotActivated()
       d->m_activationReason = KAction::PopupMenuActivation;
     else if ( senderObj->inherits( "KToolBarButton" ) ) 
       d->m_activationReason = KAction::ToolBarActivation;
+    else
+      d->m_activationReason = KAction::UnknownActivation;
   }
   emit activated();
 }
