@@ -513,7 +513,7 @@ public:
 
 typedef KTabListBoxColumn* KTabListBoxColumnPtr;
 
-
+/*
 inline KTabListBoxItem* KTabListBox :: getItem (int idx)
 {
     return ((idx>=0 && idx<maxItems) ? itemList[idx] : (KTabListBoxItem*)0L);
@@ -523,5 +523,6 @@ inline const KTabListBoxItem* KTabListBox :: getItem (int idx) const
 {
   return ((idx>=0 && idx<maxItems) ? itemList[idx] : (KTabListBoxItem*)0L);
 }
+*/
 
 #endif /*KTabListBox_h*/
