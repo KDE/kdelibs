@@ -48,24 +48,6 @@ public:
     void drawArrow(QPainter *p, Qt::ArrowType type, bool down,
                    int x, int y, int w, int h, const QColorGroup &g,
                    bool enabled=true, const QBrush *fill = 0);
-    virtual void drawKToolBar(QPainter *p, int x, int y, int w, int h,
-                              const QColorGroup &g, bool floating = false);
-    void drawKBarHandle(QPainter *p, int x, int y, int w, int h,
-                        const QColorGroup &g, bool horizontal=false,
-                        QBrush *fill=NULL);
-    void drawKMenuBar(QPainter *p, int x, int y, int w, int h,
-                      const QColorGroup &g, QBrush *fill=NULL);
-    void drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
-                            const QColorGroup &g, bool sunken=false,
-                            bool raised = true, bool enabled = true,
-                            bool popup = false,
-                            KToolButtonType icontext = Icon,
-                            const QString& btext=QString::null,
-                            const QPixmap *icon=NULL,
-                            QFont *font=NULL, QWidget *btn=NULL);
-    void drawKMenuItem(QPainter *p, int x, int y, int w, int h,
-                       const QColorGroup &g, bool active,
-                       QMenuItem *item, QBrush *fill=NULL);
 protected:
     void drawSBDeco(QPainter *p, const QRect &r, const QColorGroup &g,
                    bool horiz);
