@@ -89,8 +89,6 @@ public:
 		// Make internal libart rendering buffer transparent
 		m_buffer = art_new(art_u8, m_rowstride * m_height);
 		memset(m_buffer, 0, m_rowstride * m_height);
-
-		m_tempBuffer = 0;
 	}
 
 	~KSVGIconPainterHelper()
@@ -120,53 +118,12 @@ public:
 			vec.resize(index + 1);
 	}
 
-	void createBuffer()
-	{
-		m_tempBuffer = art_new(art_u8, m_rowstride * m_height);
-		memset(m_tempBuffer, 0, m_rowstride * m_height);
-	}
-
-	void mixBuffer()
-	{
-		art_u8 *srcPixel = m_tempBuffer;
-		art_u8 *dstPixel = m_buffer;
-
-		int opacity = 0xFF;
-
-		for(int y = 0; y < m_height; y++)
-		{
-			for(int x = 0; x < m_width; x++)
-			{
-				art_u8 r, g, b, a;
-				
-				a = srcPixel[4 * x + 3];
-				
-				if(a)
-				{
-					r = srcPixel[4 * x];
-					g = srcPixel[4 * x + 1];
-					b = srcPixel[4 * x + 2];
-					
-					int tmp = a * opacity + 0x80;
-					a = (tmp + (tmp >> 8)) >> 8;
-					art_rgba_run_alpha(dstPixel + 4 * x, r, g, b, a, 1);
-				}
-			}
-			
-			srcPixel += m_rowstride;
-			dstPixel += m_rowstride;
-		}
-		
-		art_free(m_tempBuffer);
-		m_tempBuffer = 0;
-	}
-
 	void drawSVP(ArtSVP *svp, art_u32 color)
 	{
 		if(!svp)
 			return;
 
-		ArtRender *render = art_render_new(0, 0, m_width, m_height, m_tempBuffer, m_rowstride, 3, 8, ART_ALPHA_SEPARATE, 0);
+		ArtRender *render = art_render_new(0, 0, m_width, m_height, m_buffer, m_rowstride, 3, 8, ART_ALPHA_SEPARATE, 0);
 		art_render_svp(render, svp);
 		
 		int opacity = (color & 0xFF);
@@ -291,31 +248,18 @@ public:
 			strokeSVP = svp;
 		}
 
-		// Create temporary buffer if necessary
-		bool tempDone = false;
-		if(m_useFill || m_useStroke || m_useFillGradient || m_useStrokeGradient)
-		{
-			tempDone = true;
-			createBuffer();
-		}
-		
 		// Apply Gradients on fill/stroke
 		if(m_useFillGradient)
 			applyGradient(fillSVP, true);
+		else if(m_useFill)
+			drawSVP(fillSVP, fillColor);
+		
 
 		if(m_useStrokeGradient)
 			applyGradient(strokeSVP, false);
-
-		if(m_useFill)
-			drawSVP(fillSVP, fillColor);
-		
-		if(m_useStroke)
+		else if(m_useStroke)
 			drawSVP(strokeSVP, strokeColor);
 
-		// Mix in temporary buffer, if possible
-		if(tempDone)
-			mixBuffer();
-		
 		if(m_clipSVP)
 		{
 			art_svp_free(m_clipSVP);
@@ -389,7 +333,7 @@ public:
 			linear->b = dy * scale;
 			linear->c = -(x1n * linear->a + y1n * linear->b);
 
-			ArtRender *render = art_render_new(0, 0, m_width, m_height, m_tempBuffer, m_rowstride, 3, 8, ART_ALPHA_SEPARATE, 0);
+			ArtRender *render = art_render_new(0, 0, m_width, m_height, m_buffer, m_rowstride, 3, 8, ART_ALPHA_SEPARATE, 0);
 			art_render_svp(render, svp);
 
 			art_render_gradient_linear(render, linear, ART_FILTER_HYPER);
@@ -446,7 +390,7 @@ public:
 				art_affine_multiply(aff1, aff1, radial->affine);
 				art_affine_invert(radial->affine, aff1);
 
-				ArtRender *render = art_render_new(0, 0, m_width, m_height, m_tempBuffer, m_rowstride, 3, 8, ART_ALPHA_SEPARATE, 0);
+				ArtRender *render = art_render_new(0, 0, m_width, m_height, m_buffer, m_rowstride, 3, 8, ART_ALPHA_SEPARATE, 0);
 				art_render_svp(render, svp);
 
 				art_render_gradient_radial(render, radial, ART_FILTER_HYPER);
@@ -893,7 +837,6 @@ private:
 	GC m_gc;
 	
 	art_u8 *m_buffer;
-	art_u8 *m_tempBuffer;
 	
 	int m_width;
 	int m_height;
