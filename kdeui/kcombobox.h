@@ -488,6 +488,12 @@ protected:
     */
     virtual void setCompletedText( const QString& /* */, bool /*marked*/ );
 
+    /**
+     * Reimplemented for internal reasons, the API is not affected.
+     */
+    virtual void create( WId = 0, bool initializeWindow = true, 
+                         bool destroyOldWindow = true );
+
 private:
     // Constants that represent the ID's of the popup menu.
     // TODO: See if we can replace this mess with KActionMenu
@@ -704,7 +710,7 @@ public slots:
      * Clears the history and the completion list.
      */
     void clearHistory();
-    
+
 signals:
     /**
      * Emitted when the history was cleared by the entry in the popup menu.
@@ -743,7 +749,7 @@ private slots:
      * calls clearHistory() and emits cleared()
      */
     void slotClear();
-    
+
 private:
     void init( bool useCompletion );
 

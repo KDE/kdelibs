@@ -274,26 +274,23 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
         }
         else if ( mode == KGlobalSettings::CompletionPopup )
         {
-            if ( m_pEdit->edited() )
-            {
-                QString txt = currentText();
-                if ( emitSignals() )
-                    emit completion( txt ); // emit when requested...
-                if ( handleSignals() )
-                    makeCompletion( txt );  // handle when requested...
-                m_pEdit->setEdited( false );
-                e->accept();
-                return;
-            }
+            QComboBox::keyPressEvent( e );
+            QString txt = currentText();
+            if ( emitSignals() )
+                emit completion( txt ); // emit when requested...
+            if ( handleSignals() )
+                makeCompletion( txt );  // handle when requested...
+
+            return;
         }
         else if ( mode == KGlobalSettings::CompletionShell )
         {
             int key = ( keys[TextCompletion] == 0 ) ? KStdAccel::key(KStdAccel::TextCompletion) : keys[TextCompletion];
             if ( KStdAccel::isEqual( e, key ) )
             {
-                // Emit completion if there is a completion object present, the
-                // current text is not the same as the previous and the cursor
-                // is at the end of the string.
+                // Emit completion if there is a completion object present, 
+                // the current text is not the same as the previous and the
+                // cursor is at the end of the string.
                 QString txt = currentText();
                 if ( m_pEdit->cursorPosition() == (int) txt.length() )
                 {
@@ -641,8 +638,17 @@ QPopupMenu* KComboBox::contextMenuInternal()
     return d->popupMenu;
 }
 
+// QWidget::create() turns off mouse-Tracking which would break auto-hiding
+void KComboBox::create( WId id, bool initializeWindow, bool destroyOldWindow )
+{
+    QComboBox::create( id, initializeWindow, destroyOldWindow );
+    KCursor::setAutoHideCursor( lineEdit(), true, true );
+}
+
+
 // *********************************************************************
 // *********************************************************************
+
 
 // we are always read-write
 KHistoryCombo::KHistoryCombo( QWidget *parent, const char *name )
@@ -669,7 +675,7 @@ void KHistoryCombo::init( bool useCompletion )
     myPixProvider = 0L;
 
     contextMenu()->insertSeparator();
-    contextMenu()->insertItem( i18n("Empty contents"), this, 
+    contextMenu()->insertItem( i18n("Empty contents"), this,
 			       SLOT( slotClear()));
 
     connect( this, SIGNAL( activated(int) ), SLOT( slotReset() ));

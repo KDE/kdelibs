@@ -370,7 +370,13 @@ protected:
        **/
     void	posToRowCol(unsigned int pos, unsigned int &line, unsigned int &col);
 
+    /**
+     * Reimplemented for internal reasons, the API is not affected.
+     */
+    virtual void create( WId = 0, bool initializeWindow = true,
+                         bool destroyOldWindow = true );
 
+    
 protected:
 
     bool 	eventFilter	 ( QObject *, QEvent * );

@@ -407,6 +407,12 @@ protected:
     */
     virtual void setCompletedText( const QString& /*text*/, bool /*marked*/ );
 
+    /**
+     * Reimplemented for internal reasons, the API is not affected.
+     */
+    virtual void create( WId = 0, bool initializeWindow = true,
+                         bool destroyOldWindow = true );
+
 private:
     // Constants that represent the ID's of the popup menu.
     // TODO: See if we can replace this mess with KActionMenu

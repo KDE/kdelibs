@@ -93,7 +93,7 @@ KEdit::insertText(QTextStream *stream)
    bool oldUndo = isUndoEnabled();
    setUndoEnabled( FALSE );
 
-   // MS: read everything at once if file <= 1MB, 
+   // MS: read everything at once if file <= 1MB,
    // else read in 5000-line chunks to keep memory usage acceptable.
    QIODevice *dev=stream->device();
    if (dev && dev->size()>(1024*1024)) {
@@ -141,7 +141,7 @@ void
 KEdit::cleanWhiteSpace()
 {
    setAutoUpdate(FALSE);
-   if (!hasMarkedText()) 
+   if (!hasMarkedText())
       selectAll();
    QString oldText = markedText();
    QString newText;
@@ -524,3 +524,9 @@ void KEdit::setOverwriteEnabled(bool b)
   d->overwriteEnabled = b;
 }
 
+// QWidget::create() turns off mouse-Tracking which would break auto-hiding
+void KEdit::create( WId id, bool initializeWindow, bool destroyOldWindow )
+{
+  QMultiLineEdit::create( id, initializeWindow, destroyOldWindow );
+  KCursor::setAutoHideCursor( this, true, true );
+}
