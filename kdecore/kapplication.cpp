@@ -733,7 +733,7 @@ void KApplication::init(bool GUIenabled)
     propagateSettings(SETTINGS_QT);
 
     // Set default mime-source factory
-    QMimeSourceFactory::setDefaultFactory (mimeSourceFactory());
+    QMimeSourceFactory::defaultFactory()->addFactory( mimeSourceFactory() );
 
     KConfigGroupSaver saver( config, "Development" );
     if( config->hasKey( "CheckAccelerators" ) || config->hasKey( "AutoCheckAccelerators" ))
