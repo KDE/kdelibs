@@ -291,10 +291,9 @@ int AudioSubSystem::open(bool wantfullduplex)
 
 	// FIXME: check here if frag_arg changed
 
+	int enable_bits = ~(PCM_ENABLE_OUTPUT|PCM_ENABLE_INPUT);
 	if(wantfullduplex)
 	{
-		int enable_bits = ~(PCM_ENABLE_OUTPUT|PCM_ENABLE_INPUT);
-
 		if(ioctl(audio_fd,SNDCTL_DSP_SETTRIGGER, &enable_bits) == -1)
 		{
 			_error = "can't request synchronous start of fullduplex operation";
@@ -302,12 +301,22 @@ int AudioSubSystem::open(bool wantfullduplex)
 			close();
 			return -1;
 		}
+	}
 
-		char *zbuffer = (char *)calloc(sizeof(char), size);
-		while(::write(audio_fd,zbuffer,size) > 0)
-			/* fills up the audio buffer */;
-		free(zbuffer);
+	/*
+	 * Workaround for broken kernel drivers: usually filling up the audio
+	 * buffer is _only_ required if wantfullduplex is true. However, there
+	 * are kernel drivers around (especially everything related to ES1370/1371)
+	 * which will not trigger select()ing the file descriptor unless we have
+	 * written something first.
+	 */
+	char *zbuffer = (char *)calloc(sizeof(char), size);
+	while(::write(audio_fd,zbuffer,size) > 0)
+		/* fills up the audio buffer */;
+	free(zbuffer);
 
+	if(wantfullduplex)
+	{
 		/*
 	 	 * Go now, and hope! that the application does the select trick
 	 	 * correctly, otherwise we'll get buffer over/underruns soon
