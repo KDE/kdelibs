@@ -116,10 +116,8 @@ int kdemain( int argc, char **argv )
   KConfig *kioConfig = new KConfig("kioslaverc", false, false);
   if (kioConfig->readBoolEntry( "Cookies", true ))
   {
-     QCString dcopService;
      QString error;
-     if (KApplication::startServiceByDesktopName("kcookiejar", QString::null,
-		dcopService, error ))
+     if (KApplication::startServiceByDesktopName("kcookiejar", QStringList(), &error ))
      {
         // Error starting kcookiejar.
         kdDebug(1202) << "Error starting KCookiejar: " << error << "\n" << endl;
@@ -2375,10 +2373,7 @@ HTTPProtocol::cleanCache()
    {
       // Touch file.
       utime(cleanFile.ascii(), 0);
-      QCString dcopService;
-      QString error;
-      KApplication::startServiceByDesktopPath("http_cache_cleaner.desktop",
-              QString::null, dcopService, error);
+      KApplication::startServiceByDesktopPath("http_cache_cleaner.desktop");
    }
 }
 
