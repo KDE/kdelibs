@@ -63,7 +63,7 @@ bool DOMNode::hasProperty(const UString &p, bool) const
 KJSO DOMNode::tryGet(const UString &p) const
 {
   KJSO result;
-  khtml::RenderObject *rend = node.handle()->renderer();
+  khtml::RenderObject *rend = node.handle() ? node.handle()->renderer() : 0L;
 
   if (p == "nodeName")
     result = getString(node.nodeName());
@@ -114,14 +114,13 @@ KJSO DOMNode::tryGet(const UString &p) const
 //    result = new DOMNodeFunc(node, DOMNodeFunc::Supports);
   // no DOM standard, found in IE only
   else if (p == "clientWidth")
-      result = Number(rend->contentWidth());
+      result = rend ? Number(rend->contentWidth()) : KJSO(Undefined());
   else if (p == "clientHeight")
-      result = Number(rend->contentHeight());
+      result = rend ? Number(rend->contentHeight()) : KJSO(Undefined());
   else if (p == "scrollLeft")
-      result = Number(rend->xPos() - node.ownerDocument().view()->contentsX());
+      result = rend ? Number(rend->xPos() - node.ownerDocument().view()->contentsX()) : KJSO(Undefined());
   else if (p == "scrollTop")
-      result = Number(rend->contentHeight());
-
+      result = rend ? Number(rend->contentHeight()) : KJSO(Undefined());
   else
     result = Imp::get(p);
 
