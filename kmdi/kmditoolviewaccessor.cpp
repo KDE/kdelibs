@@ -29,7 +29,9 @@
 #include <kdebug.h>
 
 
-KMdiToolViewAccessor::KMdiToolViewAccessor( KMdiMainFrm *parent , QWidget *widgetToWrap):QObject(parent) {
+KMdiToolViewAccessor::KMdiToolViewAccessor( KMdiMainFrm *parent, QWidget *widgetToWrap, const QString& tabToolTip, const QString& tabCaption)
+: QObject(parent) 
+{
 	mdiMainFrm=parent;
 	d=new KMdiToolViewAccessorPrivate();
 	if (widgetToWrap->inherits("KDockWidget")) {
@@ -41,8 +43,11 @@ KMdiToolViewAccessor::KMdiToolViewAccessor( KMdiMainFrm *parent , QWidget *widge
                                               (widgetToWrap->icon()?(*(widgetToWrap->icon())):QPixmap()),
                                               0L,  // parent
                                               widgetToWrap->caption(),
-                                              widgetToWrap->caption() );
+                                              tabCaption==0 ? widgetToWrap->caption() : tabCaption);
 		d->widgetContainer->setWidget(widgetToWrap);
+		if (tabToolTip!=0) {
+			d->widgetContainer->setToolTipString(tabToolTip);
+		}
 	}
 	d->widget->installEventFilter(this);
 }

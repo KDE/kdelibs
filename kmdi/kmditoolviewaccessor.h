@@ -52,7 +52,7 @@ private:
    bool m_bFocusInEventIsPending;
 
 private:
-	KMdiToolViewAccessor( class KMdiMainFrm *parent , QWidget *widgetToWrap);
+	KMdiToolViewAccessor( class KMdiMainFrm *parent , QWidget *widgetToWrap, const QString& tabToolTip = 0, const QString& tabCaption = 0);
 	KMdiToolViewAccessor( class KMdiMainFrm *parent);
 public:
 	~KMdiToolViewAccessor();

@@ -490,7 +490,7 @@ KMdiToolViewAccessor *KMdiMainFrm::createToolWindow()
 KMdiToolViewAccessor *KMdiMainFrm::addToolWindow( QWidget* pWnd, KDockWidget::DockPosition pos, QWidget* pTargetWnd, int percent, const QString& tabToolTip, const QString& tabCaption)
 {
    QRect r=pWnd->geometry();
-   KMdiToolViewAccessor *mtva=new KMdiToolViewAccessor(this,pWnd);
+   KMdiToolViewAccessor *mtva=new KMdiToolViewAccessor(this,pWnd,tabToolTip,(tabCaption==0)?pWnd->caption():tabCaption);
    m_pToolViews.insert(pWnd,mtva);
 
    if (pos == KDockWidget::DockNone) {
