@@ -1068,6 +1068,10 @@ NodeImpl *NodeBaseImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, i
 
         // If child is already present in the tree, first remove it
         NodeImpl *newParent = child->parentNode();
+	if ( child == next )
+	    next = child->nextSibling();
+	if ( child == prev )
+	    prev = child->previousSibling();
         if(newParent)
             newParent->removeChild( child, exceptioncode );
         if (exceptioncode)
@@ -1157,7 +1161,7 @@ NodeImpl *NodeBaseImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
 void NodeBaseImpl::removeChildren()
 {
     NodeImpl *n, *next;
-    for( n = _first; n; n = next )
+    for( n = _first, _first = 0; n; n = next )
     {
         next = n->nextSibling();
         if (n->attached())
@@ -1171,7 +1175,7 @@ void NodeBaseImpl::removeChildren()
             for ( NodeImpl* c = n; c; c = c->traverseNextNode( n ) )
                 c->removedFromDocument();
     }
-    _first = _last = 0;
+    _last = 0;
 }
 
 
