@@ -457,9 +457,9 @@ public:
 			m_engine->painter()->setJoinStyle(value);
 		else if(command == "stroke-dashoffset")
 			m_engine->painter()->setStrokeDashOffset(value);
-		else if(command == "stroke-dasharray")
+		else if(command == "stroke-dasharray" && value != "none")
 			m_engine->painter()->setStrokeDashArray(value);
-			else if(command == "stroke")
+		else if(command == "stroke")
 			m_engine->painter()->setStrokeColor(value);
 		else if(command == "fill")
 			m_engine->painter()->setFillColor(value);
