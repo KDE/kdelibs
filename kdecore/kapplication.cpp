@@ -134,6 +134,8 @@ const int XKeyRelease = KeyRelease;
 
 #include <kipc.h>
 
+#include "kappdcopiface.h"
+
 bool kde_have_kipc = true; // magic hook to disable kipc in kdm
 
 KApplication* KApplication::KApp = 0L;
@@ -431,6 +433,7 @@ public:
     checkAccelerators = 0;
     styleFile="kstylerc";
     startup_id = "0";
+    m_KAppDCOPInterface = 0L;
   }
 
   ~KApplicationPrivate()
@@ -448,6 +451,7 @@ public:
   QString styleFile;
   QString geometry_arg;
   QCString startup_id;
+  KAppDCOPInterface *m_KAppDCOPInterface;
 };
 
 
@@ -588,6 +592,7 @@ KApplication::KApplication( int& argc, char** argv, const QCString& rAppName,
     KCmdLineArgs::initIgnore(argc, argv, rAppName.data());
     parseCommandLine( );
     init(GUIenabled);
+    d->m_KAppDCOPInterface = new KAppDCOPInterface(this);
 }
 
 KApplication::KApplication( bool allowStyles, bool GUIenabled ) :
@@ -607,6 +612,7 @@ KApplication::KApplication( bool allowStyles, bool GUIenabled ) :
 
     parseCommandLine( );
     init(GUIenabled);
+    d->m_KAppDCOPInterface = new KAppDCOPInterface(this);
 }
 
 KApplication::KApplication( bool allowStyles, bool GUIenabled, KInstance* _instance ) :
@@ -646,6 +652,7 @@ KApplication::KApplication(Display *display, int& argc, char** argv, const QCStr
     KCmdLineArgs::initIgnore(argc, argv, rAppName.data());
     parseCommandLine( );
     init(GUIenabled);
+    d->m_KAppDCOPInterface = new KAppDCOPInterface(this);
 }
 #endif
 
@@ -1316,6 +1323,7 @@ QPixmap KApplication::miniIcon() const
 
 KApplication::~KApplication()
 {
+  delete d->m_KAppDCOPInterface;
   KLibLoader::cleanUp();
   KGlobal::deleteStaticDeleters();
 
