@@ -28,6 +28,8 @@
 
 #include <kio/kprotocolmanager.h>
 #include "kjs_navigator.h"
+#include "kjs/lookup.h"
+#include "kjs_navigator.lut.h"
 #include "kjs_binding.h"
 #include "khtml_part.h"
 
@@ -110,20 +112,6 @@ namespace KJS {
     };
     const ClassInfo MimeType::info = { "MimeType", 0, 0, 0 };
 
-    class PluginsFunc : public DOMFunction {
-    public:
-        PluginsFunc() : DOMFunction() { }
-        virtual Value tryCall(ExecState *exec, Object &thisObj, const List &args);
-    };
-
-
-    class NavigatorFunc : public DOMFunction /*InternalFunctionImp*/ {
-    public:
-        NavigatorFunc(KHTMLPart *p) : DOMFunction(), part(p) { }
-        virtual Value tryCall(ExecState *exec, Object &thisObj, const List &args);
-    private:
-        KHTMLPart *part;
-    };
 };
 
 
@@ -131,34 +119,39 @@ QList<PluginBase::PluginInfo> *KJS::PluginBase::plugins = 0;
 QList<PluginBase::MimeClassInfo> *KJS::PluginBase::mimes = 0;
 int KJS::PluginBase::m_refCount = 0;
 
-const ClassInfo Navigator::info = { "Navigator", 0, 0, 0 };
-
-bool Navigator::hasProperty(ExecState *exec, const UString &p, bool recursive) const
-{
-  if (p == "javaEnabled" ||
-      p == "appCodeName" ||
-      p == "appName" ||
-      p == "appVersion" ||
-      p == "language" ||
-      p == "userAgent" ||
-      p == "platform" ||
-      p == "plugins" ||
-      p == "mimeTypes" ||
-      ObjectImp::hasProperty(exec, p, recursive) )
-    return true;
-  return false;
-}
+const ClassInfo Navigator::info = { "Navigator", 0, &NavigatorTable, 0 };
+/*
+@begin NavigatorTable 11
+  appCodeName	Navigator::AppCodeName	DontDelete|ReadOnly
+  appName	Navigator::AppName	DontDelete|ReadOnly
+  appVersion	Navigator::AppVersion	DontDelete|ReadOnly
+  language	Navigator::Language	DontDelete|ReadOnly
+  userAgent	Navigator::UserAgent	DontDelete|ReadOnly
+  platform	Navigator::Platform	DontDelete|ReadOnly
+  plugins	Navigator::_Plugins	DontDelete|ReadOnly
+  mimeTypes	Navigator::_MimeTypes	DontDelete|ReadOnly
+  product	Navigator::Product	DontDelete|ReadOnly
+  vendor	Navigator::Vendor	DontDelete|ReadOnly
+  javaEnabled	Navigator::JavaEnabled	DontDelete|Function 0
+@end
+*/
+IMPLEMENT_PROTOFUNC(NavigatorFunc)
 
 Value Navigator::get(ExecState *exec, const UString &propertyName) const
 {
-  KURL url = part->url();
-  QString userAgent = KProtocolManager::userAgentForHost(url.host());
+  return lookupGetValue<Navigator,ObjectImp>(exec,propertyName,&NavigatorTable,this);
+}
 
-  if (propertyName == "javaEnabled")
-     return /*Function*/ (new NavigatorFunc(part));
-  else if (propertyName == "appCodeName")
+Value Navigator::getValue(ExecState *exec, int token) const
+{
+  KURL url = m_part->url();
+  QString userAgent = KProtocolManager::userAgentForHost(url.host());
+  switch (token) {
+  case JavaEnabled:
+    return lookupOrCreateFunction<NavigatorFunc>(exec,"javaEnabled",this,token,0,DontDelete|Function);
+  case AppCodeName:
     return String("Mozilla");
-  else if (propertyName == "appName") {
+  case AppName:
     // If we find "Mozilla" but not "(compatible, ...)" we are a real Netscape
     if (userAgent.find(QString::fromLatin1("Mozilla")) >= 0 &&
         userAgent.find(QString::fromLatin1("compatible")) == -1)
@@ -174,19 +167,19 @@ Value Navigator::get(ExecState *exec, const UString &propertyName) const
     }
     //kdDebug() << "appName -> Konqueror" << endl;
     return String("Konqueror");
-  } else if (propertyName == "appVersion"){
+  case AppVersion:
     // We assume the string is something like Mozilla/version (properties)
     return String(userAgent.mid(userAgent.find('/') + 1));
-  } else if (propertyName == "product") {
-      return String("Konqueror/khtml");
-  } else if (propertyName == "vendor") {
-      return String("KDE");
-  } else if (propertyName == "language") {
+  case Product:
+    return String("Konqueror/khtml");
+  case Vendor:
+    return String("KDE");
+  case Language:
     return String(KGlobal::locale()->language() == "C" ?
                   QString::fromLatin1("en") : KGlobal::locale()->language());
-  } else if (propertyName == "userAgent") {
+  case UserAgent:
     return String(userAgent);
-  } else if (propertyName == "platform") {
+  case Platform:
     // yet another evil hack, but necessary to spoof some sites...
     if ( (userAgent.find(QString::fromLatin1("Win"),0,false)>=0) )
       return String(QString::fromLatin1("Win32"));
@@ -195,14 +188,15 @@ Value Navigator::get(ExecState *exec, const UString &propertyName) const
       return String(QString::fromLatin1("MacPPC"));
     else
       return String(QString::fromLatin1("X11"));
-  } else if (propertyName == "plugins") {
-      return Value(new Plugins());
-  } else if (propertyName == "mimeTypes") {
-      return Value(new MimeTypes());
-  } else
-    return ObjectImp::get(exec, propertyName);
+  case _Plugins:
+    return Value(new Plugins());
+  case _MimeTypes:
+    return Value(new MimeTypes());
+  default:
+    kdWarning() << "Unhandled token in DOMEvent::getValue : " << token << endl;
+    return Value();
+  }
 }
-
 
 UString Navigator::toString(ExecState *) const
 {
@@ -280,14 +274,14 @@ PluginBase::~PluginBase()
 
 
 /*******************************************************************/
-
+IMPLEMENT_PROTOFUNC(PluginsFunc)
 
 Value Plugins::get(ExecState *exec, const UString &propertyName) const
 {
     if (propertyName == "refresh")
-        return /*Function*/(new PluginsFunc());
+      return lookupOrCreateFunction<PluginsFunc>(exec,propertyName,this,0,0,DontDelete|Function);
     else if ( propertyName =="length" )
-        return Number(plugins->count());
+      return Number(plugins->count());
     else {
 
         // plugins[#]
@@ -393,8 +387,9 @@ Value PluginsFunc::tryCall(ExecState *, Object &, const List &)
 }
 
 
-Value NavigatorFunc::tryCall(ExecState *, Object &, const List &)
+Value NavigatorFunc::tryCall(ExecState *, Object &thisObj, const List &)
 {
+  Navigator *nav = static_cast<Navigator *>(thisObj.imp());
   // javaEnabled()
-  return Boolean(part->javaEnabled());
+  return Boolean(nav->part()->javaEnabled());
 }

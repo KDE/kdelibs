@@ -86,6 +86,7 @@ namespace KJS {
   public:
     EventExceptionConstructor(ExecState *) { }
     virtual Value tryGet(ExecState *exec,const UString &p) const;
+    Value getValue(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -98,20 +99,12 @@ namespace KJS {
     DOMUIEvent(ExecState *exec, DOM::UIEvent ue) : DOMEvent(exec, ue) {}
     ~DOMUIEvent();
     virtual Value tryGet(ExecState *exec,const UString &p) const;
+    Value getValue(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
-  };
-
-  class DOMUIEventFunc : public DOMFunction {
-  public:
-    DOMUIEventFunc(DOM::UIEvent ue, int i)
-        : DOMFunction(), uiEvent(ue), id(i) { }
-    virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
-    enum { InitUIEvent };
-  private:
-    DOM::UIEvent uiEvent;
-    int id;
+    enum { View, Detail, InitUIEvent };
+    DOM::UIEvent toUIEvent() const { return static_cast<DOM::UIEvent>(event); }
   };
 
   class DOMMouseEvent : public DOMUIEvent {
@@ -119,20 +112,14 @@ namespace KJS {
     DOMMouseEvent(ExecState *exec, DOM::MouseEvent me) : DOMUIEvent(exec, me) {}
     ~DOMMouseEvent();
     virtual Value tryGet(ExecState *exec,const UString &p) const;
+    Value getValue(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
-  };
-
-  class DOMMouseEventFunc : public DOMFunction {
-  public:
-    DOMMouseEventFunc(DOM::MouseEvent me, int i)
-        : DOMFunction(), mouseEvent(me), id(i) { }
-    virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
-    enum { InitMouseEvent };
-  private:
-    DOM::MouseEvent mouseEvent;
-    int id;
+    enum { ScreenX, ScreenY, ClientX, X, ClientY, Y, CtrlKey, ShiftKey, AltKey,
+           MetaKey, Button, RelatedTarget, FromElement,
+           InitMouseEvent };
+    DOM::MouseEvent toMouseEvent() const { return static_cast<DOM::MouseEvent>(event); }
   };
 
   // Constructor object MutationEvent
@@ -140,6 +127,7 @@ namespace KJS {
   public:
     MutationEventConstructor(ExecState *) { }
     virtual Value tryGet(ExecState *exec,const UString &p) const;
+    Value getValue(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -152,20 +140,13 @@ namespace KJS {
     DOMMutationEvent(ExecState *exec, DOM::MutationEvent me) : DOMEvent(exec, me) {}
     ~DOMMutationEvent();
     virtual Value tryGet(ExecState *exec,const UString &p) const;
+    Value getValue(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
-  };
-
-  class DOMMutationEventFunc : public DOMFunction {
-  public:
-    DOMMutationEventFunc(DOM::MutationEvent me, int i)
-        : DOMFunction(), mutationEvent(me), id(i) { }
-    virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
-    enum { InitMutationEvent };
-  private:
-    DOM::MutationEvent mutationEvent;
-    int id;
+    enum { AttrChange, RelatedNode, AttrName, PrevValue, NewValue,
+           InitMutationEvent };
+    DOM::MutationEvent toMutationEvent() const { return static_cast<DOM::MutationEvent>(event); }
   };
 
 }; // namespace

@@ -1,3 +1,4 @@
+// -*- c-basic-offset: 2 -*-
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
@@ -27,46 +28,38 @@ namespace KJS {
 
   class DOMRange : public DOMObject {
   public:
-    DOMRange(DOM::Range r) : range(r) {}
+    DOMRange(ExecState *exec, DOM::Range r);
     ~DOMRange();
     virtual Value tryGet(ExecState *exec,const UString &p) const;
+    Value getValue(ExecState *exec, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
-    virtual DOM::Range toRange() const { return range; }
-//    virtual String toString() const;
-  protected:
-    DOM::Range range;
-  };
-
-  class DOMRangeFunc : public DOMFunction {
-    friend class DOMNode;
-  public:
-    DOMRangeFunc(DOM::Range r, int i)
-        : DOMFunction(), range(r), id(i) { }
-    virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
-    enum { SetStart, SetEnd, SetStartBefore, SetStartAfter, SetEndBefore,
+    enum { StartContainer, StartOffset, EndContainer, EndOffset, Collapsed,
+           CommonAncestorContainer,
+           SetStart, SetEnd, SetStartBefore, SetStartAfter, SetEndBefore,
            SetEndAfter, Collapse, SelectNode, SelectNodeContents,
            CompareBoundaryPoints, DeleteContents, ExtractContents,
            CloneContents, InsertNode, SurroundContents, CloneRange, ToString,
            Detach };
-  private:
+    DOM::Range toRange() const { return range; }
+  protected:
     DOM::Range range;
-    int id;
   };
 
-  // Prototype object Range
-  class RangePrototype : public DOMObject {
+  // Constructor object Range
+  class RangeConstructor : public DOMObject {
   public:
-    RangePrototype() { }
+    RangeConstructor(ExecState *) { }
     virtual Value tryGet(ExecState *exec,const UString &p) const;
+    Value getValue(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
   };
 
-  Value getDOMRange(DOM::Range r);
-  Value getRangePrototype(ExecState *exec);
+  Value getDOMRange(ExecState *exec, DOM::Range r);
+  Value getRangeConstructor(ExecState *exec);
 
   /**
    * Convert an object to a Range. Returns a null Node if not possible.

@@ -253,14 +253,21 @@ DOM::Event KJS::toEvent(const Value& val)
 // -------------------------------------------------------------------------
 
 
-const ClassInfo EventExceptionConstructor::info = { "EventExceptionConstructor", 0, 0, 0 };
-
+const ClassInfo EventExceptionConstructor::info = { "EventExceptionConstructor", 0, &EventExceptionConstructorTable, 0 };
+/*
+@begin EventExceptionConstructorTable 1
+  UNSPECIFIED_EVENT_TYPE_ERR    DOM::EventException::UNSPECIFIED_EVENT_TYPE_ERR DontDelete|ReadOnly
+@end
+*/
 Value EventExceptionConstructor::tryGet(ExecState *exec, const UString &p) const
 {
-  if (p == "UNSPECIFIED_EVENT_TYPE_ERR")
-    return Number((unsigned int)DOM::EventException::UNSPECIFIED_EVENT_TYPE_ERR);
+  return DOMObjectLookupGetValue<EventExceptionConstructor, DOMObject>(exec,p,&EventExceptionConstructorTable,this);
+}
 
-  return DOMObject::tryGet(exec, p);
+Value EventExceptionConstructor::getValue(ExecState *, int token) const
+{
+  // We use the token as the value to return directly
+  return Number(token);
 }
 
 Value KJS::getEventExceptionConstructor(ExecState *exec)
@@ -270,32 +277,47 @@ Value KJS::getEventExceptionConstructor(ExecState *exec)
 
 // -------------------------------------------------------------------------
 
-const ClassInfo DOMUIEvent::info = { "UIEvent", &DOMEvent::info, 0, 0 };
-
+const ClassInfo DOMUIEvent::info = { "UIEvent", &DOMEvent::info, &DOMUIEventTable, 0 };
+/*
+@begin DOMUIEventTable 2
+  view		DOMUIEvent::View	DontDelete|ReadOnly
+  detail	DOMUIEvent::Detail	DontDelete|ReadOnly
+@end
+@begin DOMUIEventProtoTable 1
+  initUIEvent	DOMUIEvent::InitUIEvent	DontDelete|Function 5
+@end
+*/
+DEFINE_PROTOTYPE("DOMUIEvent",DOMUIEventProto)
+IMPLEMENT_PROTOFUNC(DOMUIEventProtoFunc)
+IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMUIEventProto,DOMUIEventProtoFunc,DOMEventProto)
 
 DOMUIEvent::~DOMUIEvent()
 {
 }
 
-
 Value DOMUIEvent::tryGet(ExecState *exec, const UString &p) const
 {
-  if (p == "view")
-    return getDOMAbstractView(static_cast<DOM::UIEvent>(event).view());
-  else if (p == "detail")
-    return Number(static_cast<DOM::UIEvent>(event).detail());
-  else if (p == "initUIEvent")
-    return new DOMUIEventFunc(static_cast<DOM::UIEvent>(event),DOMUIEventFunc::InitUIEvent);
-  else
-    return DOMEvent::tryGet(exec, p);
+  return DOMObjectLookupGetValue<DOMUIEvent,DOMEvent>(exec,p,&DOMUIEventTable,this);
 }
 
-Value DOMUIEventFunc::tryCall(ExecState *exec, Object & /*thisObj*/, const List &args)
+Value DOMUIEvent::getValue(ExecState *, int token) const
 {
-  Value result;
+  switch (token) {
+  case View:
+    return getDOMAbstractView(static_cast<DOM::UIEvent>(event).view());
+  case Detail:
+    return Number(static_cast<DOM::UIEvent>(event).detail());
+  default:
+    kdWarning() << "Unhandled token in DOMUIEvent::getValue : " << token << endl;
+    return Value();
+  }
+}
 
+Value DOMUIEventProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
+{
+  DOM::UIEvent uiEvent = static_cast<DOMUIEvent *>(thisObj.imp())->toUIEvent();
   switch (id) {
-    case InitUIEvent: {
+    case DOMUIEvent::InitUIEvent: {
       DOM::AbstractView v = toAbstractView(args[3]);
       static_cast<DOM::UIEvent>(uiEvent).initUIEvent(args[0].toString(exec).string(),
                                                      args[1].toBoolean(exec),
@@ -303,45 +325,73 @@ Value DOMUIEventFunc::tryCall(ExecState *exec, Object & /*thisObj*/, const List 
                                                      v,
                                                      args[4].toInteger(exec));
       }
-      result = Undefined();
-      break;
-  };
-
-  return result;
+      return Undefined();
+  }
+  return Undefined();
 }
 
 // -------------------------------------------------------------------------
 
-const ClassInfo DOMMouseEvent::info = { "MouseEvent", &DOMUIEvent::info, 0, 0 };
+const ClassInfo DOMMouseEvent::info = { "MouseEvent", &DOMUIEvent::info, &DOMMouseEventTable, 0 };
 
+/*
+@begin DOMMouseEventTable 2
+  screenX	DOMMouseEvent::ScreenX	DontDelete|ReadOnly
+  screenY	DOMMouseEvent::ScreenY	DontDelete|ReadOnly
+  clientX	DOMMouseEvent::ClientX	DontDelete|ReadOnly
+  x		DOMMouseEvent::X	DontDelete|ReadOnly
+  clientY	DOMMouseEvent::ClientY	DontDelete|ReadOnly
+  y		DOMMouseEvent::Y	DontDelete|ReadOnly
+  ctrlKey	DOMMouseEvent::CtrlKey	DontDelete|ReadOnly
+  shiftKey	DOMMouseEvent::ShiftKey	DontDelete|ReadOnly
+  altKey	DOMMouseEvent::AltKey	DontDelete|ReadOnly
+  metaKey	DOMMouseEvent::MetaKey	DontDelete|ReadOnly
+  button	DOMMouseEvent::Button	DontDelete|ReadOnly
+  relatedTarget	DOMMouseEvent::RelatedTarget DontDelete|ReadOnly
+  fromElement	DOMMouseEvent::FromElement DontDelete|ReadOnly
+@end
+@begin DOMMouseEventProtoTable 1
+  initMouseEvent	DOMMouseEvent::InitMouseEvent	DontDelete|Function 15
+@end
+*/
+DEFINE_PROTOTYPE("DOMMouseEvent",DOMMouseEventProto)
+IMPLEMENT_PROTOFUNC(DOMMouseEventProtoFunc)
+IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMMouseEventProto,DOMMouseEventProtoFunc,DOMUIEventProto)
 
 DOMMouseEvent::~DOMMouseEvent()
 {
 }
 
-
 Value DOMMouseEvent::tryGet(ExecState *exec, const UString &p) const
 {
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "DOMMouseEvent::get " << p.qstring() << endl;
+  kdDebug(6070) << "DOMMouseEvent::tryGet " << p.qstring() << endl;
 #endif
-  if (p == "screenX")
+  return DOMObjectLookupGetValue<DOMMouseEvent,DOMUIEvent>(exec,p,&DOMMouseEventTable,this);
+}
+
+Value DOMMouseEvent::getValue(ExecState *exec, int token) const
+{
+  switch (token) {
+  case ScreenX:
     return Number(static_cast<DOM::MouseEvent>(event).screenX());
-  else if (p == "screenY")
+  case ScreenY:
     return Number(static_cast<DOM::MouseEvent>(event).screenY());
-  else if (p == "clientX" || p == "x")
+  case ClientX:
+  case X:
     return Number(static_cast<DOM::MouseEvent>(event).clientX());
-  else if (p == "clientY" || p == "y")
+  case ClientY:
+  case Y:
     return Number(static_cast<DOM::MouseEvent>(event).clientY());
-  else if (p == "ctrlKey")
+  case CtrlKey:
     return Boolean(static_cast<DOM::MouseEvent>(event).ctrlKey());
-  else if (p == "shiftKey")
+  case ShiftKey:
     return Boolean(static_cast<DOM::MouseEvent>(event).shiftKey());
-  else if (p == "altKey")
+  case AltKey:
     return Boolean(static_cast<DOM::MouseEvent>(event).altKey());
-  else if (p == "metaKey")
+  case MetaKey:
     return Boolean(static_cast<DOM::MouseEvent>(event).metaKey());
-  else if (p == "button")
+  case Button:
   {
     // Tricky. The DOM (and khtml) use 0 for LMB, 1 for MMB and 2 for RMB
     // but MSIE uses 1=LMB, 2=RMB, 4=MMB, as a bitfield
@@ -349,20 +399,20 @@ Value DOMMouseEvent::tryGet(ExecState *exec, const UString &p) const
     int button = domButton==0 ? 1 : domButton==1 ? 4 : domButton==2 ? 2 : 0;
     return Number( (unsigned int)button );
   }
-  else if (p == "relatedTarget" || p == "fromElement" /*MSIE extension*/)
+  case RelatedTarget:
+  case FromElement: /*MSIE extension*/
     return getDOMNode(exec,static_cast<DOM::MouseEvent>(event).relatedTarget());
-  else if (p == "initMouseEvent")
-    return new DOMMouseEventFunc(static_cast<DOM::MouseEvent>(event),DOMMouseEventFunc::InitMouseEvent);
-  else
-    return DOMUIEvent::tryGet(exec,p);
+  default:
+    kdWarning() << "Unhandled token in DOMMouseEvent::getValue : " << token << endl;
+    return Value();
+  }
 }
 
-Value DOMMouseEventFunc::tryCall(ExecState *exec, Object & /*thisObj*/, const List &args)
+Value DOMMouseEventProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
-  Value result;
-
+  DOM::MouseEvent mouseEvent = static_cast<DOMMouseEvent *>(thisObj.imp())->toMouseEvent();
   switch (id) {
-    case InitMouseEvent:
+    case DOMMouseEvent::InitMouseEvent:
       mouseEvent.initMouseEvent(args[0].toString(exec).string(), // typeArg
                                 args[1].toBoolean(exec), // canBubbleArg
                                 args[2].toBoolean(exec), // cancelableArg
@@ -378,27 +428,30 @@ Value DOMMouseEventFunc::tryCall(ExecState *exec, Object & /*thisObj*/, const Li
                                 args[12].toBoolean(exec), // metaKeyArg
                                 args[13].toInteger(exec), // buttonArg
                                 toNode(args[14])); // relatedTargetArg
-      result = Undefined();
-      break;
-  };
-
-  return result;
+      return Undefined();
+  }
+  return Undefined();
 }
 
 // -------------------------------------------------------------------------
 
-const ClassInfo MutationEventConstructor::info = { "MutationEventConstructor", 0, 0, 0 };
-
+const ClassInfo MutationEventConstructor::info = { "MutationEventConstructor", 0, &MutationEventConstructorTable, 0 };
+/*
+@begin MutationEventConstructorTable 3
+  MODIFICATION	DOM::MutationEvent::MODIFICATION	DontDelete|ReadOnly
+  ADDITION	DOM::MutationEvent::ADDITION		DontDelete|ReadOnly
+  REMOVAL	DOM::MutationEvent::REMOVAL		DontDelete|ReadOnly
+@end
+*/
 Value MutationEventConstructor::tryGet(ExecState *exec, const UString &p) const
 {
-  if (p == "MODIFICATION")
-    return Number((unsigned int)DOM::MutationEvent::MODIFICATION);
-  else if (p == "ADDITION")
-    return Number((unsigned int)DOM::MutationEvent::ADDITION);
-  else if (p == "REMOVAL")
-    return Number((unsigned int)DOM::MutationEvent::REMOVAL);
+  return DOMObjectLookupGetValue<MutationEventConstructor,DOMObject>(exec,p,&MutationEventConstructorTable,this);
+}
 
-  return DOMObject::tryGet(exec,p);
+Value MutationEventConstructor::getValue(ExecState *, int token) const
+{
+  // We use the token as the value to return directly
+  return Number(token);
 }
 
 Value KJS::getMutationEventConstructor(ExecState *exec)
@@ -408,38 +461,56 @@ Value KJS::getMutationEventConstructor(ExecState *exec)
 
 // -------------------------------------------------------------------------
 
-const ClassInfo DOMMutationEvent::info = { "MutationEvent", &DOMEvent::info, 0, 0 };
-
+const ClassInfo DOMMutationEvent::info = { "MutationEvent", &DOMEvent::info, &DOMMutationEventTable, 0 };
+/*
+@begin DOMMutationEventTable 5
+  relatedNode	DOMMutationEvent::RelatedNode	DontDelete|ReadOnly
+  prevValue	DOMMutationEvent::PrevValue	DontDelete|ReadOnly
+  newValue	DOMMutationEvent::NewValue	DontDelete|ReadOnly
+  attrName	DOMMutationEvent::AttrName	DontDelete|ReadOnly
+  attrChange	DOMMutationEvent::AttrChange	DontDelete|ReadOnly
+@end
+@begin DOMMutationEventProtoTable 1
+  initMutationEvent	DOMMutationEvent::InitMutationEvent	DontDelete|Function 8
+@end
+*/
+DEFINE_PROTOTYPE("DOMMutationEvent",DOMMutationEventProto)
+IMPLEMENT_PROTOFUNC(DOMMutationEventProtoFunc)
+IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMMutationEventProto,DOMMutationEventProtoFunc,DOMEventProto)
 
 DOMMutationEvent::~DOMMutationEvent()
 {
 }
 
-
 Value DOMMutationEvent::tryGet(ExecState *exec, const UString &p) const
 {
-  if (p == "relatedNode")
-    return getDOMNode(exec,static_cast<DOM::MutationEvent>(event).relatedNode());
-  else if (p == "prevValue")
-    return String(static_cast<DOM::MutationEvent>(event).prevValue());
-  else if (p == "newValue")
-    return String(static_cast<DOM::MutationEvent>(event).newValue());
-  else if (p == "attrName")
-    return String(static_cast<DOM::MutationEvent>(event).attrName());
-  else if (p == "attrChange")
-    return Number((unsigned int)static_cast<DOM::MutationEvent>(event).attrChange());
-  else if (p == "initMutationEvent")
-    return new DOMMutationEventFunc(static_cast<DOM::MutationEvent>(event),DOMMutationEventFunc::InitMutationEvent);
-  else
-    return DOMEvent::tryGet(exec,p);
+  return DOMObjectLookupGetValue<DOMMutationEvent,DOMEvent>(exec,p,&DOMMutationEventTable,this);
 }
 
-Value DOMMutationEventFunc::tryCall(ExecState *exec, Object & /*thisObj*/, const List &args)
+Value DOMMutationEvent::getValue(ExecState *exec, int token) const
 {
-  Value result;
+  switch (token) {
+  case RelatedNode:
+    return getDOMNode(exec,static_cast<DOM::MutationEvent>(event).relatedNode());
+  case PrevValue:
+    return String(static_cast<DOM::MutationEvent>(event).prevValue());
+  case NewValue:
+    return String(static_cast<DOM::MutationEvent>(event).newValue());
+  case AttrName:
+    return String(static_cast<DOM::MutationEvent>(event).attrName());
+  case AttrChange:
+    return Number((unsigned int)static_cast<DOM::MutationEvent>(event).attrChange());
+  default:
+    kdWarning() << "Unhandled token in DOMMutationEvent::getValue : " << token << endl;
+    return Value();
+  }
+}
 
+Value DOMMutationEventProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
+{
+  DOM::MutationEvent mutationEvent = static_cast<DOMMutationEvent *>(thisObj.imp())->toMutationEvent();
   switch (id) {
-    case InitMutationEvent:
+    case DOMMutationEvent::InitMutationEvent:
       mutationEvent.initMutationEvent(args[0].toString(exec).string(), // typeArg,
                                       args[1].toBoolean(exec), // canBubbleArg
                                       args[2].toBoolean(exec), // cancelableArg
@@ -448,9 +519,7 @@ Value DOMMutationEventFunc::tryCall(ExecState *exec, Object & /*thisObj*/, const
                                       args[5].toString(exec).string(), // newValueArg
                                       args[6].toString(exec).string(), // attrNameArg
                                       args[7].toInteger(exec)); // attrChangeArg
-      result = Undefined();
-      break;
-  };
-
-  return result;
+      return Undefined();
+  }
+  return Undefined();
 }

@@ -386,7 +386,7 @@ Value Window::get(ExecState *exec, const UString &p) const
   else if (p == "Node")
     return getNodeConstructor(exec);
   else if (p == "Range")
-    return getRangePrototype(exec);
+    return getRangeConstructor(exec);
   else if (p == "NodeFilter")
     return getNodeFilterPrototype(exec);
   else if (p == "DOMException")

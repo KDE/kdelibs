@@ -19,7 +19,9 @@
  */
 
 #include "kjs_range.h"
+#include "kjs_range.lut.h"
 #include <qptrdict.h>
+#include <kdebug.h>
 
 using namespace KJS;
 
@@ -27,8 +29,43 @@ QPtrDict<DOMRange> ranges;
 
 // -------------------------------------------------------------------------
 
-const ClassInfo DOMRange::info = { "Range", 0, 0, 0 };
+const ClassInfo DOMRange::info = { "Range", 0, &DOMRangeTable, 0 };
+/*
+@begin DOMRangeTable 7
+  startContainer	DOMRange::StartContainer	DontDelete|ReadOnly
+  startOffset		DOMRange::StartOffset		DontDelete|ReadOnly
+  endContainer		DOMRange::EndContainer		DontDelete|ReadOnly
+  endOffset		DOMRange::EndOffset		DontDelete|ReadOnly
+  collapsed		DOMRange::Collapsed		DontDelete|ReadOnly
+  commonAncestorContainer DOMRange::CommonAncestorContainer	DontDelete|ReadOnly
+@end
+@begin DOMRangeProtoTable 17
+  setStart		DOMRange::SetStart		DontDelete|Function 2
+  setEnd		DOMRange::SetEnd		DontDelete|Function 2
+  setStartBefore	DOMRange::SetStartBefore	DontDelete|Function 1
+  setStartAfter		DOMRange::SetStartAfter		DontDelete|Function 1
+  setEndBefore		DOMRange::SetEndBefore		DontDelete|Function 1
+  setEndAfter		DOMRange::SetEndAfter		DontDelete|Function 1
+  collapse		DOMRange::Collapse		DontDelete|Function 1
+  selectNode		DOMRange::SelectNode		DontDelete|Function 1
+  selectNodeContents	DOMRange::SelectNodeContents	DontDelete|Function 1
+  compareBoundaryPoints	DOMRange::CompareBoundaryPoints	DontDelete|Function 2
+  deleteContents	DOMRange::DeleteContents	DontDelete|Function 0
+  extractContents	DOMRange::ExtractContents	DontDelete|Function 0
+  cloneContents		DOMRange::CloneContents		DontDelete|Function 0
+  insertNode		DOMRange::InsertNode		DontDelete|Function 1
+  surroundContents	DOMRange::SurroundContents	DontDelete|Function 1
+  cloneRange		DOMRange::CloneRange		DontDelete|Function 0
+  toString		DOMRange::ToString		DontDelete|Function 0
+  detach		DOMRange::Detach		DontDelete|Function 0
+@end
+*/
+DEFINE_PROTOTYPE("DOMRange",DOMRangeProto)
+IMPLEMENT_PROTOFUNC(DOMRangeProtoFunc)
+IMPLEMENT_PROTOTYPE(DOMRangeProto,DOMRangeProtoFunc)
 
+DOMRange::DOMRange(ExecState *exec, DOM::Range r)
+ : DOMObject(DOMRangeProto::self(exec)), range(r) {}
 
 DOMRange::~DOMRange()
 {
@@ -37,133 +74,102 @@ DOMRange::~DOMRange()
 
 Value DOMRange::tryGet(ExecState *exec, const UString &p) const
 {
-  Value r;
+  return DOMObjectLookupGetValue<DOMRange,DOMObject>(exec,p,&DOMRangeTable,this);
+}
 
-  if (p == "startContainer")
+Value DOMRange::getValue(ExecState *exec, int token) const
+{
+  switch (token) {
+  case StartContainer:
     return getDOMNode(exec,range.startContainer());
-  else if (p == "startOffset")
+  case StartOffset:
     return Number(range.startOffset());
-  else if (p == "endContainer")
+  case EndContainer:
     return getDOMNode(exec,range.endContainer());
-  else if (p == "endOffset")
+  case EndOffset:
     return Number(range.endOffset());
-  else if (p == "collapsed")
+  case Collapsed:
     return Boolean(range.collapsed());
-  else if (p == "commonAncestorContainer") {
+  case CommonAncestorContainer: {
     DOM::Range range2 = range; // avoid const error
     return getDOMNode(exec,range2.commonAncestorContainer());
   }
-  else if (p == "setStart")
-    return new DOMRangeFunc(range,DOMRangeFunc::SetStart);
-  else if (p == "setEnd")
-    return new DOMRangeFunc(range,DOMRangeFunc::SetEnd);
-  else if (p == "setStartBefore")
-    return new DOMRangeFunc(range,DOMRangeFunc::SetStartBefore);
-  else if (p == "setStartAfter")
-    return new DOMRangeFunc(range,DOMRangeFunc::SetStartAfter);
-  else if (p == "setEndBefore")
-    return new DOMRangeFunc(range,DOMRangeFunc::SetEndBefore);
-  else if (p == "setEndAfter")
-    return new DOMRangeFunc(range,DOMRangeFunc::SetEndAfter);
-  else if (p == "collapse")
-    return new DOMRangeFunc(range,DOMRangeFunc::Collapse);
-  else if (p == "selectNode")
-    return new DOMRangeFunc(range,DOMRangeFunc::SelectNode);
-  else if (p == "selectNodeContents")
-    return new DOMRangeFunc(range,DOMRangeFunc::SelectNodeContents);
-  else if (p == "compareBoundaryPoints")
-    return new DOMRangeFunc(range,DOMRangeFunc::CompareBoundaryPoints);
-  else if (p == "deleteContents")
-    return new DOMRangeFunc(range,DOMRangeFunc::DeleteContents);
-  else if (p == "extractContents")
-    return new DOMRangeFunc(range,DOMRangeFunc::ExtractContents);
-  else if (p == "cloneContents")
-    return new DOMRangeFunc(range,DOMRangeFunc::CloneContents);
-  else if (p == "insertNode")
-    return new DOMRangeFunc(range,DOMRangeFunc::InsertNode);
-  else if (p == "surroundContents")
-    return new DOMRangeFunc(range,DOMRangeFunc::SurroundContents);
-  else if (p == "cloneRange")
-    return new DOMRangeFunc(range,DOMRangeFunc::CloneRange);
-  else if (p == "toString")
-    return new DOMRangeFunc(range,DOMRangeFunc::ToString);
-  else if (p == "detach")
-    return new DOMRangeFunc(range,DOMRangeFunc::Detach);
-  else
-    r = DOMObject::tryGet(exec, p);
-
-  return r;
+  default:
+    kdWarning() << "Unhandled token in DOMRange::getValue : " << token << endl;
+    return Value();
+  }
 }
 
-Value DOMRangeFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
+Value DOMRangeProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
+  DOM::Range range = static_cast<DOMRange *>(thisObj.imp())->toRange();
   Value result;
 
   switch (id) {
-    case SetStart:
+    case DOMRange::SetStart:
       range.setStart(toNode(args[0]),args[1].toInteger(exec));
       result = Undefined();
       break;
-    case SetEnd:
+    case DOMRange::SetEnd:
       range.setEnd(toNode(args[0]),args[1].toInteger(exec));
       result = Undefined();
       break;
-    case SetStartBefore:
+    case DOMRange::SetStartBefore:
       range.setStartBefore(toNode(args[0]));
       result = Undefined();
       break;
-    case SetStartAfter:
+    case DOMRange::SetStartAfter:
       range.setStartAfter(toNode(args[0]));
       result = Undefined();
       break;
-    case SetEndBefore:
+    case DOMRange::SetEndBefore:
       range.setEndBefore(toNode(args[0]));
       result = Undefined();
       break;
-    case SetEndAfter:
+    case DOMRange::SetEndAfter:
       range.setEndAfter(toNode(args[0]));
       result = Undefined();
       break;
-    case Collapse:
+    case DOMRange::Collapse:
       range.collapse(args[0].toBoolean(exec));
       result = Undefined();
       break;
-    case SelectNode:
+    case DOMRange::SelectNode:
       range.selectNode(toNode(args[0]));
       result = Undefined();
       break;
-    case SelectNodeContents:
+    case DOMRange::SelectNodeContents:
       range.selectNodeContents(toNode(args[0]));
       result = Undefined();
       break;
-    case CompareBoundaryPoints:
+    case DOMRange::CompareBoundaryPoints:
       result = Number(range.compareBoundaryPoints(static_cast<DOM::Range::CompareHow>(args[0].toInteger(exec)),toRange(args[1])));
       break;
-    case DeleteContents:
+    case DOMRange::DeleteContents:
       range.deleteContents();
       result = Undefined();
       break;
-    case ExtractContents:
+    case DOMRange::ExtractContents:
       result = getDOMNode(exec,range.extractContents());
       break;
-    case CloneContents:
+    case DOMRange::CloneContents:
       result = getDOMNode(exec,range.cloneContents());
       break;
-    case InsertNode:
+    case DOMRange::InsertNode:
       range.insertNode(toNode(args[0]));
       result = Undefined();
       break;
-    case SurroundContents:
+    case DOMRange::SurroundContents:
       range.surroundContents(toNode(args[0]));
       result = Undefined();
       break;
-    case CloneRange:
-      result = getDOMRange(range.cloneRange());
+    case DOMRange::CloneRange:
+      result = getDOMRange(exec,range.cloneRange());
       break;
-    case ToString:
+    case DOMRange::ToString:
       result = getString(range.toString());
       break;
-    case Detach:
+    case DOMRange::Detach:
       range.detach();
       result = Undefined();
       break;
@@ -172,7 +178,7 @@ Value DOMRangeFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
   return result;
 }
 
-Value KJS::getDOMRange(DOM::Range r)
+Value KJS::getDOMRange(ExecState *exec, DOM::Range r)
 {
   DOMRange *ret;
   if (r.isNull())
@@ -180,7 +186,7 @@ Value KJS::getDOMRange(DOM::Range r)
   else if ((ret = ranges[r.handle()]))
     return ret;
   else {
-    ret = new DOMRange(r);
+    ret = new DOMRange(exec,r);
     ranges.insert(r.handle(),ret);
     return ret;
   }
@@ -188,35 +194,30 @@ Value KJS::getDOMRange(DOM::Range r)
 
 // -------------------------------------------------------------------------
 
-const ClassInfo RangePrototype::info = { "RangePrototype", 0, 0, 0 };
-// ### make this protype of Range objects? (also for Node)
-
-Value RangePrototype::tryGet(ExecState *exec, const UString &p) const
+const ClassInfo RangeConstructor::info = { "RangeConstructor", 0, &RangeConstructorTable, 0 };
+/*
+@begin RangeConstructorTable 5
+  START_TO_START	DOM::Range::START_TO_START	DontDelete|ReadOnly
+  START_TO_END		DOM::Range::START_TO_END	DontDelete|ReadOnly
+  END_TO_END		DOM::Range::END_TO_END		DontDelete|ReadOnly
+  END_TO_START		DOM::Range::END_TO_START	DontDelete|ReadOnly
+@end
+*/
+Value RangeConstructor::tryGet(ExecState *exec, const UString &p) const
 {
-  if (p == "START_TO_START")
-    return Number((unsigned int)DOM::Range::START_TO_START);
-  else if (p == "START_TO_END")
-    return Number((unsigned int)DOM::Range::START_TO_END);
-  else if (p == "END_TO_END")
-    return Number((unsigned int)DOM::Range::END_TO_END);
-  else if (p == "END_TO_START")
-    return Number((unsigned int)DOM::Range::END_TO_START);
-
-  return DOMObject::tryGet(exec, p);
+  return DOMObjectLookupGetValue<RangeConstructor,DOMObject>(exec,p,&RangeConstructorTable,this);
 }
 
-Value KJS::getRangePrototype(ExecState *exec)
+Value RangeConstructor::getValue(ExecState *, int token) const
 {
-  Value proto = exec->interpreter()->globalObject().get(exec, "[[range.prototype]]");
-  if (proto.type() != UndefinedType)
-    return proto;
-  else
-  {
-    Object rangeProto( new RangePrototype );
-    exec->interpreter()->globalObject().put(exec, "[[range.prototype]]", rangeProto);
-    return rangeProto;
-  }
+  return Number(token);
 }
+
+Value KJS::getRangeConstructor(ExecState *exec)
+{
+  return cacheGlobalObject<RangeConstructor>(exec, "[[range.constructor]]");
+}
+
 
 DOM::Range KJS::toRange(const Value& val)
 {

@@ -717,7 +717,7 @@ Value DOMDocumentProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List
 /*  case DOMDocument::GetElementsByTagNameNS: // new for DOM2 - not yet in khtml
   case DOMDocument::GetElementById: // new for DOM2 - not yet in khtml*/
   case DOMDocument::CreateRange:
-    result = getDOMRange(doc.createRange());
+    result = getDOMRange(exec,doc.createRange());
     break;
   case DOMDocument::CreateNodeIterator:
     if (args[2].isA(NullType)) {

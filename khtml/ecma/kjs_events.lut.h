@@ -47,3 +47,105 @@ const struct HashEntry DOMEventProtoTableEntries[] = {
 const struct HashTable DOMEventProtoTable = { 2, 5, DOMEventProtoTableEntries, 3 };
 
 }; // namespace
+
+namespace KJS {
+
+const struct HashEntry EventExceptionConstructorTableEntries[] = {
+   { "UNSPECIFIED_EVENT_TYPE_ERR", DOM::EventException::UNSPECIFIED_EVENT_TYPE_ERR, DontDelete|ReadOnly, 0, 0 }
+};
+
+const struct HashTable EventExceptionConstructorTable = { 2, 1, EventExceptionConstructorTableEntries, 1 };
+
+}; // namespace
+
+namespace KJS {
+
+const struct HashEntry DOMUIEventTableEntries[] = {
+   { 0, 0, 0, 0, 0 },
+   { "view", DOMUIEvent::View, DontDelete|ReadOnly, 0, &DOMUIEventTableEntries[2] },
+   { "detail", DOMUIEvent::Detail, DontDelete|ReadOnly, 0, 0 }
+};
+
+const struct HashTable DOMUIEventTable = { 2, 3, DOMUIEventTableEntries, 2 };
+
+}; // namespace
+
+namespace KJS {
+
+const struct HashEntry DOMUIEventProtoTableEntries[] = {
+   { "initUIEvent", DOMUIEvent::InitUIEvent, DontDelete|Function, 5, 0 }
+};
+
+const struct HashTable DOMUIEventProtoTable = { 2, 1, DOMUIEventProtoTableEntries, 1 };
+
+}; // namespace
+
+namespace KJS {
+
+const struct HashEntry DOMMouseEventTableEntries[] = {
+   { "screenX", DOMMouseEvent::ScreenX, DontDelete|ReadOnly, 0, &DOMMouseEventTableEntries[3] },
+   { "screenY", DOMMouseEvent::ScreenY, DontDelete|ReadOnly, 0, &DOMMouseEventTableEntries[2] },
+   { "clientX", DOMMouseEvent::ClientX, DontDelete|ReadOnly, 0, &DOMMouseEventTableEntries[5] },
+   { "x", DOMMouseEvent::X, DontDelete|ReadOnly, 0, &DOMMouseEventTableEntries[4] },
+   { "clientY", DOMMouseEvent::ClientY, DontDelete|ReadOnly, 0, &DOMMouseEventTableEntries[6] },
+   { "y", DOMMouseEvent::Y, DontDelete|ReadOnly, 0, &DOMMouseEventTableEntries[7] },
+   { "ctrlKey", DOMMouseEvent::CtrlKey, DontDelete|ReadOnly, 0, &DOMMouseEventTableEntries[8] },
+   { "shiftKey", DOMMouseEvent::ShiftKey, DontDelete|ReadOnly, 0, 0 },
+   { "altKey", DOMMouseEvent::AltKey, DontDelete|ReadOnly, 0, &DOMMouseEventTableEntries[9] },
+   { "metaKey", DOMMouseEvent::MetaKey, DontDelete|ReadOnly, 0, &DOMMouseEventTableEntries[10] },
+   { "button", DOMMouseEvent::Button, DontDelete|ReadOnly, 0, &DOMMouseEventTableEntries[11] },
+   { "relatedTarget", DOMMouseEvent::RelatedTarget, DontDelete|ReadOnly, 0, &DOMMouseEventTableEntries[12] },
+   { "fromElement", DOMMouseEvent::FromElement, DontDelete|ReadOnly, 0, 0 }
+};
+
+const struct HashTable DOMMouseEventTable = { 2, 13, DOMMouseEventTableEntries, 2 };
+
+}; // namespace
+
+namespace KJS {
+
+const struct HashEntry DOMMouseEventProtoTableEntries[] = {
+   { "initMouseEvent", DOMMouseEvent::InitMouseEvent, DontDelete|Function, 15, 0 }
+};
+
+const struct HashTable DOMMouseEventProtoTable = { 2, 1, DOMMouseEventProtoTableEntries, 1 };
+
+}; // namespace
+
+namespace KJS {
+
+const struct HashEntry MutationEventConstructorTableEntries[] = {
+   { "ADDITION", DOM::MutationEvent::ADDITION, DontDelete|ReadOnly, 0, &MutationEventConstructorTableEntries[3] },
+   { "MODIFICATION", DOM::MutationEvent::MODIFICATION, DontDelete|ReadOnly, 0, 0 },
+   { 0, 0, 0, 0, 0 },
+   { "REMOVAL", DOM::MutationEvent::REMOVAL, DontDelete|ReadOnly, 0, 0 }
+};
+
+const struct HashTable MutationEventConstructorTable = { 2, 4, MutationEventConstructorTableEntries, 3 };
+
+}; // namespace
+
+namespace KJS {
+
+const struct HashEntry DOMMutationEventTableEntries[] = {
+   { "attrChange", DOMMutationEvent::AttrChange, DontDelete|ReadOnly, 0, 0 },
+   { 0, 0, 0, 0, 0 },
+   { "relatedNode", DOMMutationEvent::RelatedNode, DontDelete|ReadOnly, 0, 0 },
+   { "attrName", DOMMutationEvent::AttrName, DontDelete|ReadOnly, 0, 0 },
+   { "prevValue", DOMMutationEvent::PrevValue, DontDelete|ReadOnly, 0, &DOMMutationEventTableEntries[5] },
+   { "newValue", DOMMutationEvent::NewValue, DontDelete|ReadOnly, 0, 0 }
+};
+
+const struct HashTable DOMMutationEventTable = { 2, 6, DOMMutationEventTableEntries, 5 };
+
+}; // namespace
+
+namespace KJS {
+
+const struct HashEntry DOMMutationEventProtoTableEntries[] = {
+   { "initMutationEvent", DOMMutationEvent::InitMutationEvent, DontDelete|Function, 8, 0 }
+};
+
+const struct HashTable DOMMutationEventProtoTable = { 2, 1, DOMMutationEventProtoTableEntries, 1 };
+
+}; // namespace

@@ -29,14 +29,17 @@ namespace KJS {
 
   class Navigator : public ObjectImp {
   public:
-    Navigator(KHTMLPart *p) : ObjectImp(), part(p) { }
+    Navigator(KHTMLPart *p) : ObjectImp(), m_part(p) { }
     virtual Value get(ExecState *exec, const UString &propertyName) const;
-    virtual bool hasProperty(ExecState *exec, const UString &propertyName, bool recursive = true) const;
+    Value getValue(ExecState *exec, int token) const;
     virtual UString toString(ExecState *exec) const;
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
+    enum { AppCodeName, AppName, AppVersion, Language, UserAgent, Platform,
+           _Plugins, _MimeTypes, Product, Vendor, JavaEnabled };
+    KHTMLPart *part() const { return m_part; }
   private:
-    KHTMLPart *part;
+    KHTMLPart *m_part;
   };
 }; // namespace
 
