@@ -1204,7 +1204,7 @@ NodeImpl *NodeBaseImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
 void NodeBaseImpl::removeChildren()
 {
     NodeImpl *n, *next;
-    for( n = _first; n != 0; n = next )
+    for( n = _first; n; n = next )
     {
         next = n->nextSibling();
         if (n->attached())
@@ -1214,6 +1214,9 @@ void NodeBaseImpl::removeChildren()
         n->setParent(0);
         if( !n->refCount() )
             delete n;
+        else
+            for ( NodeImpl* c = n; c = c->traverseNextNode( n ) )
+                c->removedFromDocument();
     }
     _first = _last = 0;
 }
