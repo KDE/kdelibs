@@ -3085,8 +3085,10 @@ void KateViewInternal::doDragScroll()
 
   if (dy)
     scrollLines(startPos().line() + dy);
-  if (dx)
-    scrollColumns(m_startX + dx);
+
+  if (!m_view->dynWordWrap() && m_columnScrollDisplayed && dx)
+    scrollColumns(kMin (m_startX + dx, m_columnScroll->maxValue()));
+
   if (!dy && !dx)
     stopDragScroll();
 }
