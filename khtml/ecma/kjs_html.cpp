@@ -1591,7 +1591,7 @@ KJSO Image::tryGet(const UString &p) const
   if (p == "src")
     result = String(src);
   else
-    result = tryGet(p);
+    result = DOMObject::tryGet(p);
 
   return result;
 }
