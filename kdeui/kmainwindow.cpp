@@ -425,7 +425,7 @@ void KMainWindow::savePropertiesInternal( KConfig *config, int number )
     QListIterator<KToolBar> it( toolBarIterator() );
     while ( ( toolbar = it.current() ) ) {
         ++it;
-        if (toolbar->isVisible())
+        if ( !toolbar->testWState( Qt::WState_ForceHide ) )
             entryList.append("Enabled");
         else
             entryList.append("Disabled");
