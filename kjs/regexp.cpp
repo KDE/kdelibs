@@ -25,14 +25,23 @@
 using namespace KJS;
 
 RegExp::RegExp(const UString &p, int f)
- : pattern(p), flags(f)
+  : pattern(p) //, flags(f)
 {
-#ifdef REG_EXTENDED    
-  regcomp(&preg, p.ascii(), REG_EXTENDED);
-#else
-  regcomp(&preg, p.ascii(), 0);  
-#endif  
-  /* TODO use flags, check for errors */
+  int regflags = 0;
+#ifdef REG_EXTENDED
+  regflags |= REG_EXTENDED;
+#endif
+#ifdef REG_ICASE
+  if ( f & IgnoreCase )
+    regflags |= REG_ICASE;
+#endif
+  //TODO
+  //if ( f & Multiline )
+  //    ;
+  // Note: the Global flag is already handled by RegExpProtoFunc::execute
+
+  regcomp(&preg, p.ascii(), regflags);
+  /* TODO check for errors */
 }
 
 RegExp::~RegExp()

@@ -64,7 +64,14 @@ Object RegExpObject::construct(const List &args)
   dat->put("source", String(p.value()));
   dat->put("lastIndex", 0, DontDelete | DontEnum);
 
-  dat->setRegExp(new RegExp(p.value() /* TODO flags */));
+  int reflags = RegExp::None;
+  if (global)
+      reflags |= RegExp::Global;
+  if (ignoreCase)
+      reflags |= RegExp::IgnoreCase;
+  if (multiline)
+      reflags |= RegExp::Multiline;
+  dat->setRegExp(new RegExp(p.value(), reflags));
   obj.setClass(RegExpClass);
   obj.setPrototype(KJScriptImp::current()->globalObject().get("[[RegExp.prototype]]"));
 
@@ -110,7 +117,7 @@ Completion RegExpProtoFunc::execute(const List &args)
     s = args[0].toString();
     length = s.value().size();
     lastIndex = thisObj.get("lastIndex");
-    i = lastIndex.toInt32();
+    i = lastIndex.isNull() ? 0 : lastIndex.toInt32();
     tmp = thisObj.get("global");
     if (tmp.toBoolean().value() == false)
       i = 0;

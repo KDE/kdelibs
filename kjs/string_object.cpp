@@ -20,6 +20,7 @@
 #include "kjs.h"
 #include "operations.h"
 #include "types.h"
+#include "internal.h"
 #include "regexp.h"
 #include "string_object.h"
 #include <stdio.h>
@@ -213,12 +214,20 @@ Completion StringProtoFunc::execute(const List &args)
     result = Number(d);
     break;
   case Match:
-  case Search:
+  case Search: {
     u = s.value();
+    RegExp* reg = 0;
     if (a0.isA(ObjectType) && a0.toObject().getClass() == RegExpClass)
-      s2 = a0.get("source").toString();
+    {
+      //s2 = a0.get("source").toString();     // this loses the flags
+      RegExpImp* imp = static_cast<RegExpImp *>( a0.toObject().imp() );
+      reg = imp->regExp();
+    }
     else if (a0.isA(StringType))
-      s2 = a0.toString();
+    {
+      //s2 = a0.toString();
+      reg = new RegExp( a0.toString().value(), RegExp::None );
+    }
     else
     {
       printf("KJS: Match/Search. Argument is not a RegExp nor a String - returning Undefined\n");
@@ -226,8 +235,10 @@ Completion StringProtoFunc::execute(const List &args)
       break;
     }
     {
-      RegExp reg(s2.value());
-      UString mstr = reg.match(u, -1, &pos);
+      //RegExp reg(s2.value());
+      UString mstr = reg->match(u, -1, &pos);
+      if (a0.isA(StringType))
+          delete reg;
       if (id == Search) {
         result = Number(pos);
         break;
@@ -239,7 +250,7 @@ Completion StringProtoFunc::execute(const List &args)
       /* TODO return an array, with the matches, etc. */
       result = String(mstr);
     }
-    break;
+    } break;
   case Replace:
     /* TODO: this is just a hack to get the most common cases going */
     u = s.value();

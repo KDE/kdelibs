@@ -38,14 +38,14 @@ namespace KJS {
 
   class RegExp {
   public:
-    enum { None, Global, IgnoreCase, Multiline };
+    enum { None = 0, Global = 1, IgnoreCase = 2, Multiline = 4 };
     RegExp(const UString &p, int f = None);
     ~RegExp();
     UString match(const UString &s, int i = -1, int *pos = 0L);
     bool test(const UString &s, int i = -1);
   private:
     const UString &pattern;
-    int flags;
+    //int flags;
     regex_t preg;
 
     RegExp();
