@@ -416,12 +416,13 @@ void RenderBox::position(int x, int y, int, int, int, bool, bool, int)
 
 void RenderBox::repaint()
 {
-    if ( isInline() && !isReplaced() )
+    if ( isInline() && !isReplaced() ) {
 	parent()->repaint();
-
-    // kdDebug( 6040 ) << this << " repaint! inline=" << isInline() << endl;
-    int ow = style() ? style()->outlineWidth() : 0;
-    repaintRectangle(-ow, -ow, overflowWidth()+ow*2, overflowHeight()+ow*2);
+    } else {
+	// kdDebug( 6040 ) << this << " repaint! inline=" << isInline() << endl;
+	int ow = style() ? style()->outlineWidth() : 0;
+	repaintRectangle(-ow, -ow, overflowWidth()+ow*2, overflowHeight()+ow*2);
+    }
 }
 
 void RenderBox::repaintRectangle(int x, int y, int w, int h, bool f)
