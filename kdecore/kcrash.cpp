@@ -30,6 +30,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+
+#include <kglobal.h>
+#include <kinstance.h>
+#include <kaboutdata.h>
 #include <kdebug.h>
 
 #include "kcrash.h"
@@ -76,9 +80,8 @@ KCrash::defaultCrashHandler (int signal)
 {
   // Handle possible recursions
   static int crashRecursionCounter = 0;
-
-  printf("KCrash: crashing.... crashRecursionCounter = %d\n", crashRecursionCounter);
-  printf("Appname = %p apppath = %p\n", appName, appPath);
+  kdDebug(0) << "KCrash: crashing.... crashRecursionCounter = " << crashRecursionCounter << "\n";
+  kdDebug(0) << "KCrash: Appname = " << appName << " apppath = " << appPath << "\n";
 
   crashRecursionCounter++;
 
@@ -89,27 +92,63 @@ KCrash::defaultCrashHandler (int signal)
     crashRecursionCounter++; // 
   }
   
-  if (crashRecursionCounter < 3) {
+  if (crashRecursionCounter < 3 && appName) {
+      // this code is leaking, but this should not hurt cause we will do a
+      // exec() afterwards. exec() is supposed to clean up.
+      char * argv[14]; // don't forget to update this
+      int i = 0;
+
+      // argument 0 has to be drkonqi
+      argv[i++] = qstrdup("drkonqi");
+
+      // we have already tested this
+      argv[i++] = "--appname";
+      argv[i++] = qstrdup(appName->latin1());
+
+      // only add apppath if it's not NULL
+      if (appPath) {
+	argv[i++] = qstrdup("--apppath");
+	argv[i++] = qstrdup(appPath->latin1());
+      }
+
+      // signal number -- will never be NULL
       QCString tmp;
       tmp.setNum(signal);
-      if (appName && appPath)
-      {
-         execlp ("drkonqi", "drkonqi", 
-                 "--appname", appName->latin1(),
-                 "--apppath", appPath->latin1(),
-                 "--signal", tmp.data(),
-	         NULL);
-      }
-      else if (appName)
-      {
-         execlp ("drkonqi", "drkonqi", 
-                 "--appname", appName->latin1(),
-                 "--signal", tmp.data(),
-	         NULL);
-      }
-      kdDebug(0) << "Unknown appname\n";
-  }
+      argv[i++] = qstrdup("--signal");
+      argv[i++] = qstrdup(tmp.data());
 
+      const KInstance *instance = KGlobal::_instance;
+      const KAboutData *about = instance ? instance->aboutData() : 0;
+      if (about) {
+	if (!about->version().isNull()) {
+	  argv[i++] = qstrdup("--appversion");
+	  argv[i++] = qstrdup(about->version().utf8());
+	}
+
+	if (!about->programName().isNull()) {
+	  argv[i++] = qstrdup("--programname");
+	  argv[i++] = qstrdup(about->programName().utf8());
+	}
+
+	if (!about->bugAddress().isNull()) {
+	  argv[i++] = qstrdup("--bugaddress");
+	  argv[i++] = qstrdup(about->bugAddress().utf8());
+	}
+      }
+
+      // NULL terminated list
+      argv[i++] = NULL;
+
+      execvp("drkonqi", argv);
+
+      // we could clean up here
+      // i = 0;
+      // while (argv[i])
+      //   free(argv[i++]);
+  }
+  else
+    kdDebug(0) << "Unknown appname\n";
+   
   if (crashRecursionCounter < 4)
   {
      kdDebug(0) << "Unable to start dr. konqi\n";
