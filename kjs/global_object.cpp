@@ -73,9 +73,19 @@ Global Global::current()
   assert(KJScriptImp::current());
   KJSO glob(KJScriptImp::current()->globalObject());
   if (glob.derivedFrom(GlobalType))
+  {
+#ifdef KJS_DEBUG_GLOBAL
+    fprintf( stderr, "Global.current(): returning glob.imp()=%p\n",glob.imp() );
+#endif
     return Global(static_cast<GlobalImp*>(glob.imp()));
+  }
   else
+  {
+#ifdef KJS_DEBUG_GLOBAL
+    fprintf( stderr, "Global.current(): returning Global() (imp=0L)\n" );
+#endif
     return Global();
+  }
 }
 
 KJSO Global::objectPrototype() const
@@ -101,11 +111,18 @@ KJSO Global::filter() const
 
 void *Global::extra() const
 {
+#ifdef KJS_DEBUG_GLOBAL
+  fprintf( stderr, "Global::extra this=%p rep=%p\n", this, rep );
+#endif
+  assert( rep );
   return static_cast<GlobalImp*>(rep)->extraData;
 }
 
 void Global::setExtra(void *e)
 {
+#ifdef KJS_DEBUG_GLOBAL
+  fprintf( stderr, "Global::setExtra this=%p rep=%p extraData=%p\n", this, rep, e );
+#endif
   static_cast<GlobalImp*>(rep)->extraData = e;
 }
 
@@ -114,13 +131,20 @@ GlobalImp::GlobalImp()
     filter(0L),
     extraData(0L)
 {
+#ifdef KJS_DEBUG_GLOBAL
+      fprintf( stderr, "GlobalImp::GlobalImp %p\n", this );
+#endif
 }
 
 void GlobalImp::init()
 {
 }
 
-GlobalImp::~GlobalImp() { }
+GlobalImp::~GlobalImp() {
+#ifdef KJS_DEBUG_GLOBAL
+    fprintf( stderr, "GlobalImp::~GlobalImp %p\n", this );
+#endif
+}
 
 void GlobalImp::mark(Imp*)
 {
@@ -139,12 +163,12 @@ void GlobalImp::put(const UString &p, const KJSO& v)
     Imp::put(p, v);
   else
     prototype()->put(p, v);
-#if 0    
+#if 0
   if (filter)
     filter->put(p, v);   /* TODO: remove in next version */
   else
     Imp::put(p, v);
-#endif  
+#endif
 }
 
 GlobalFunc::GlobalFunc(int i, int len) : id(i)
