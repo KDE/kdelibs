@@ -573,7 +573,7 @@ void RenderBox::calcHeight()
 
         if (!h.isVariable())
         {
-            int fh=0;
+            int fh=-1;
             if (h.isFixed())
                 fh = h.value + borderTop() + paddingTop() + borderBottom() + paddingBottom();
             else if (h.isPercent()) {
@@ -581,7 +581,13 @@ void RenderBox::calcHeight()
                 if (ch.isFixed())
                     fh = h.width(ch.value) + borderTop() + paddingTop() + borderBottom() + paddingBottom();
             }
-	    m_height = QMAX( fh, m_height );
+            if (fh!=-1)
+            {
+                if (fh<m_height && !overhangingContents() && style()->overflow()==OVISIBLE)
+                    setOverhangingContents();
+
+                m_height = fh;
+            }
         }
     }
 }
