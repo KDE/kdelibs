@@ -1096,6 +1096,7 @@ void KDirOperator::setupActions()
                   SLOT( deleteSelected() ), myActionCollection, "delete" );
     mkdirAction->setIcon( QString::fromLatin1("folder_new") );
     reloadAction->setText( i18n("Reload") );
+    reloadAction->setAccel( Key_F5 );
 
 
     // the sort menu actions
