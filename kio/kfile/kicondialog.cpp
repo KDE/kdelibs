@@ -181,7 +181,7 @@ void KIconCanvas::slotCurrentChanged(QIconViewItem *item)
 class KIconDialog::KIconDialogPrivate
 {
   public:
-    KIconDialogPrivate() { 
+    KIconDialogPrivate() {
         m_bStrictIconSize = true;
     }
     ~KIconDialogPrivate() {}
@@ -284,13 +284,13 @@ void KIconDialog::showIcons()
     mpCanvas->clear();
     QStringList filelist;
     if (mType == 0)
-	if (d->m_bStrictIconSize) 
+	if (d->m_bStrictIconSize)
             filelist=mpLoader->queryIcons(mGroupOrSize, mContext);
         else
             filelist=mpLoader->queryIconsByContext(mGroupOrSize, mContext);
-    else if ( !d->customLocation.isNull() ) 
+    else if ( !d->customLocation.isNull() )
 	filelist=mpLoader->queryIconsByDir( d->customLocation );
-    else 
+    else
 	filelist=mFileList;
 
     QSortedList <IconPath>iconlist;
@@ -341,7 +341,7 @@ QString KIconDialog::selectIcon(KIcon::Group group, KIcon::Context context, bool
 }
 #endif
 
-void KIconDialog::setup(KIcon::Group group, KIcon::Context context, 
+void KIconDialog::setup(KIcon::Group group, KIcon::Context context,
                         bool strictIconSize, int iconSize, bool user )
 {
     d->m_bStrictIconSize = strictIconSize;
@@ -385,7 +385,7 @@ QString KIconDialog::getIcon(KIcon::Group group, KIcon::Context context,
     dlg.setup( group, context, strictIconSize, iconSize, user );
     if (!caption.isNull())
         dlg.setCaption(caption);
-    
+
     return dlg.openDialog();
 }
 
@@ -416,7 +416,7 @@ void KIconDialog::slotButtonClicked(int id)
         break;
     case 2:
 	file = KFileDialog::getOpenFileName(QString::null,
-		i18n("*.png *.xpm|Icon Files (*.png *.xpm)"), this);
+		i18n("*.png *.xpm *.svg *.svgz|Icon Files (*.png *.xpm *.svg *.svgz)"), this);
 	if (!file.isEmpty())
         {
             d->custom = file;
@@ -460,7 +460,7 @@ void KIconDialog::slotFinished()
 class KIconButton::KIconButtonPrivate
 {
   public:
-    KIconButtonPrivate() { 
+    KIconButtonPrivate() {
         m_bStrictIconSize = false;
         iconSize = 0; // let KIconLoader choose the default
     }
@@ -556,9 +556,9 @@ void KIconButton::slotChangeIcon()
     if (!mpDialog)
         mpDialog = new KIconDialog(mpLoader, this);
 
-    mpDialog->setup( mGroup, mContext, d->m_bStrictIconSize, d->iconSize, 
+    mpDialog->setup( mGroup, mContext, d->m_bStrictIconSize, d->iconSize,
                      mbUser );
-    
+
     QString name = mpDialog->openDialog();
     if (name.isEmpty())
 	return;
