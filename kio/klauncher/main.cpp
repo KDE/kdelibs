@@ -30,9 +30,10 @@
 
 extern "C" { int start_launcher(int); }
 
-static void sig_handler(int)
+static void sig_handler(int sig_num)
 {
    KLauncher::destruct(255);
+fprintf(stderr, "KLauncher: Exiting on signal %d\n", sig_num);
 }
 
 int
@@ -51,6 +52,7 @@ start_launcher(int socket)
    KLauncher launcher(socket);
 
    signal( SIGHUP, sig_handler);
+   signal( SIGPIPE, sig_handler);
    signal( SIGTERM, sig_handler);
    signal( SIGSEGV, sig_handler);
 
