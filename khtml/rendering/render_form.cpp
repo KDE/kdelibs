@@ -46,6 +46,7 @@
 #include "xml/dom_docimpl.h"
 
 #include <qpopupmenu.h>
+#include <qbitmap.h>
 
 using namespace khtml;
 
@@ -709,11 +710,57 @@ void RenderFieldset::paintBorderMinusLegend(QPainter *p, int _tx, int _ty, int w
 
 // -------------------------------------------------------------------------
 
+//A helper widget that generates a mask
+class TransHBox:public QHBox
+{
+public:
+    TransHBox(RenderFileButton* owner, QWidget* parent):QHBox(parent), m_owner(owner)
+    {
+        setAutoMask(true);
+    }
+
+    virtual void updateMask()
+    {
+        QBitmap  mask(size());
+        QPainter p(&mask);
+        
+        const QPushButton* push     = m_owner->pushButton();
+        const QLineEdit*   lineEdit = m_owner->lineEdit();
+        
+        //If we have the button & line edit, make a proper mask
+        if (push && lineEdit)
+        {
+           //Mask everything off
+           p.fillRect(0, 0, width(), height(), Qt::color0);
+           
+           //Draw button mask
+           QRect buttonRect = QRect(push->pos(), push->size());           
+           parentWidget()->style().drawControlMask(QStyle::CE_PushButton,
+                                             &p, push, buttonRect);
+                                             
+           //Draw line edit mask
+           QRect lineEditRect = QRect(lineEdit->pos(), lineEdit->size());
+           p.fillRect(lineEditRect, Qt::color1);
+        }
+        else //Fall back everything visible.
+            p.fillRect(0, 0, width(), height(), Qt::color1);
+                
+        p.end();
+        setMask(mask);
+    }
+        
+private:
+    RenderFileButton* m_owner;
+};
+
 RenderFileButton::RenderFileButton(HTMLInputElementImpl *element)
     : RenderFormElement(element)
 {
-    // this sucks, it creates a grey background
-    QHBox *w = new QHBox(view()->viewport());
+    m_edit   = 0; //For the benefit of the transhbox.
+    m_button = 0; 
+    
+    // this sucks, we need to use a custom widget to get a proper background
+    TransHBox *w = new TransHBox(this, view()->viewport());
 
     m_edit = new LineEditWidget(element, view(), w);
 
@@ -725,9 +772,11 @@ RenderFileButton::RenderFileButton(HTMLInputElementImpl *element)
     connect(m_button,SIGNAL(clicked()), this, SLOT(slotClicked()));
     connect(m_button, SIGNAL(pressed()), this, SLOT(slotPressed()));
     connect(m_button, SIGNAL(released()), this, SLOT(slotReleased()));
-
+    
     w->setStretchFactor(m_edit, 2);
     w->setFocusProxy(m_edit);
+    
+    w->updateMask();
 
     setQWidget(w);
     m_haveFocus = false;

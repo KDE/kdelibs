@@ -303,7 +303,8 @@ public:
     DOM::HTMLInputElementImpl *element() const
     { return static_cast<DOM::HTMLInputElementImpl*>(RenderObject::element()); }
 
-    KLineEdit* lineEdit() const { return m_edit; }
+    KLineEdit* lineEdit() const { return m_edit; }    
+    const QPushButton* pushButton() const { return m_button; }
 
 public slots:
     virtual void slotClicked();
