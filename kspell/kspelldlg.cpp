@@ -26,17 +26,17 @@ KSpellDlg::KSpellDlg (QWidget *_parent, const char *name,
 
   //Dlgedit
   
-  KLined* tmpKLined;
-  tmpKLined = new KLined( this, "LineEdit_1" );
-  tmpKLined->setGeometry( 110, 50, 190, 30 );
-  tmpKLined->setText( "" );
-  tmpKLined->setMaxLength( 32767 );
-  tmpKLined->setEchoMode( KLined::Normal );
-  tmpKLined->setFrame( TRUE );
+  KLineEdit* tmpKLineEdit;
+  tmpKLineEdit = new KLineEdit( this, "LineEdit_1" );
+  tmpKLineEdit->setGeometry( 110, 50, 190, 30 );
+  tmpKLineEdit->setText( "" );
+  tmpKLineEdit->setMaxLength( 32767 );
+  tmpKLineEdit->setEchoMode( KLineEdit::Normal );
+  tmpKLineEdit->setFrame( TRUE );
 
-  children->append (tmpKLined);
-  layout->addWidget (tmpKLined,1,1);
-  tmpKLined->setMinimumWidth (tmpKLined->sizeHint().width());
+  children->append (tmpKLineEdit);
+  layout->addWidget (tmpKLineEdit,1,1);
+  tmpKLineEdit->setMinimumWidth (tmpKLineEdit->sizeHint().width());
 	
 	
   QPushButton *tmpQPushButtonRA = 
@@ -178,7 +178,7 @@ KSpellDlg::KSpellDlg (QWidget *_parent, const char *name,
   
   qpbrep=tmpQPushButtonR;
   qpbrepa=tmpQPushButtonRA;
-  editbox=tmpKLined;
+  editbox=tmpKLineEdit;
   listbox=tmpQListBox;
   
   

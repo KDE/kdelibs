@@ -29,7 +29,7 @@ class KSpellDlg : public QWidget
 {
   Q_OBJECT
 
-  KLined *editbox;
+  KLineEdit *editbox;
   KProgress *progbar;
   QListBox *listbox;
   QStrList *sugg;

@@ -111,7 +111,7 @@ protected:
   KConfig *kc;			 
 			  
   QCheckBox *cb1, *cb2;
-  KLined *kle1; //, *kle2;
+  KLineEdit *kle1; //, *kle2;
   QGridLayout *layout;			  
   QButtonGroup *dictgroup;
   QRadioButton *dictlistbutton, *dicteditbutton;

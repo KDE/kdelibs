@@ -158,7 +158,7 @@ KSpellConfig::KSpellConfig (QWidget *parent, char *name,
 	
 	/* for alternate dict
 
-	kle1 = new KLined( this, "LineEdit_1" );
+	kle1 = new KLineEdit( this, "LineEdit_1" );
 	//	kle1->setGeometry( 150, 120, 290, 30 );
 	kle1->setText( "" );
 	kle1->setMaxLength( 32767 );
@@ -197,7 +197,7 @@ KSpellConfig::KSpellConfig (QWidget *parent, char *name,
 	*/
 
 	/*
-	kle2 = new KLined( this, "LineEdit_2" );
+	kle2 = new KLineEdit( this, "LineEdit_2" );
 	//	kle2->setGeometry( 150, 160, 290, 30 );
 	kle2->setText( "" );
 	kle2->setMaxLength( 32767 );
