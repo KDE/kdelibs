@@ -86,5 +86,4 @@ void KJSWorld::evaluate(const QString &code)
     QMessageBox::warning((QWidget *)htmlw, i18n("JavaScript"), i18n("Parsing error"));
 }
 
-#include "kjs.moc"
 
