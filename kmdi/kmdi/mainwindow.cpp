@@ -132,7 +132,6 @@ void MainWindow::setupMainDock ()
 
   // setup tab widget
   m_tabWidget = new KMDI::TabWidget (dw);
-  m_tabWidget->setTabWidgetVisibility( KMDI::NeverShowTabs);
   dw->setWidget(m_tabWidget);
 
   // set this dock to main view
