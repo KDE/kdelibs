@@ -28,6 +28,7 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qvaluelist.h>
+#include <kdemacros.h>
 
 #include <kdeprint/kpreloadobject.h>
 
@@ -324,7 +325,7 @@ public:
 	 *
 	 * @see pageList()
 	 */
-	int fromPage() const;
+	int fromPage() const KDE_DEPRECATED;
 	/**
 	 * Returns the last page to be printed.
          * @deprecated Applications
