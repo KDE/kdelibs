@@ -909,16 +909,17 @@ void HTMLTableElementImpl::calcColMinMax()
 	    hasFixed=true;
 	    break;
 	case Percent:
-	    {
 	    hasPercent=true;
 	    totalPercent += colValue[i];
 	    minPercent += colMinWidth[i] + spacing;	    
-	    int pw = colValue[i]>0 && colMaxWidth[i]*100/colValue[i];
-	    if (  pw > percentWidest)
+	    if (colValue[i]>0)
 	    {
-	    	percentWidest = pw;
-		percentWidestPercent = colValue[i];
-	    }
+    		int pw =  colMaxWidth[i]*100/colValue[i];
+		if (  pw > percentWidest)
+		{
+	    	    percentWidest = pw;
+		    percentWidestPercent = colValue[i];
+		}
 	    }
 	    break;
 	case Relative:
