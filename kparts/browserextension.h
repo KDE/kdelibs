@@ -86,6 +86,8 @@ struct WindowArgs
     bool statusBarVisible; //defaults to true
     bool resizable; //defaults to true
 
+    bool lowerWindow; //defaults to false
+
     WindowArgsPrivate *d; // yes, I am paranoid :-)
 };
 

@@ -126,6 +126,7 @@ WindowArgs::WindowArgs()
     toolBarsVisible = true;
     statusBarVisible = true;
     resizable = true;
+    lowerWindow = false;
     d = 0;
 }
 
@@ -150,6 +151,7 @@ WindowArgs &WindowArgs::operator=( const WindowArgs &args )
     toolBarsVisible = args.toolBarsVisible;
     statusBarVisible = args.statusBarVisible;
     resizable = args.resizable;
+    lowerWindow = args.lowerWindow;
 
     /*
     if ( args.d )
@@ -174,6 +176,7 @@ WindowArgs::WindowArgs( const QRect &_geometry, bool _fullscreen, bool _menuBarV
     toolBarsVisible = _toolBarsVisible;
     statusBarVisible = _statusBarVisible;
     resizable = _resizable;
+    lowerWindow = false;
 }
 
 WindowArgs::WindowArgs( int _x, int _y, int _width, int _height, bool _fullscreen,
@@ -190,6 +193,7 @@ WindowArgs::WindowArgs( int _x, int _y, int _width, int _height, bool _fullscree
     toolBarsVisible = _toolBarsVisible;
     statusBarVisible = _statusBarVisible;
     resizable = _resizable;
+    lowerWindow = false;
 }
 
 namespace KParts
