@@ -59,7 +59,7 @@ class CfgEntry
       QString label;
       QString whatsThis;
     };
-  
+
     CfgEntry( const QString &group, const QString &type, const QString &key,
               const QString &name, const QString &label,
               const QString &whatsThis, const QString &code,
@@ -412,6 +412,9 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
   if ( name.isEmpty() ) {
     name = key;
     name.replace( " ", "" );
+  } else if ( name.contains( ' ' ) ) {
+    kdWarning()<<"Entry '"<<name<<"' contains spaces! <name> elements can't contain speces!"<<endl;
+    name.remove( ' ' );
   }
 
   if (name.contains("$("))
@@ -505,7 +508,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
   }
   result->setMinValue(minValue);
   result->setMaxValue(maxValue);
-  
+
   return result;
 }
 
@@ -827,7 +830,7 @@ int main( int argc, char **argv )
     kdError() << "Singleton class can not have parameters" << endl;
     return 1;
   }
-  
+
   if ( singleton && cfgFileNameArg)
   {
     kdError() << "Singleton class can not use filename as argument." << endl;
@@ -1184,7 +1187,7 @@ int main( int argc, char **argv )
     if (e->param().isEmpty())
     {
       // Normal case
-      cpp << "  " << itemVar(e) << " = " 
+      cpp << "  " << itemVar(e) << " = "
           << newItem( e->type(), e->name(), key, e->defaultValue() ) << endl;
 
       if ( !e->minValue().isEmpty() )
@@ -1216,7 +1219,7 @@ int main( int argc, char **argv )
         else
           defaultStr = defaultValue( e->type() );
 
-        cpp << "  " << itemVar(e) << " = " 
+        cpp << "  " << itemVar(e) << " = "
             << newItem( e->type(), e->name(), paramString(key, e, i), defaultStr, QString("[%1]").arg(i) )
             << endl;
 
