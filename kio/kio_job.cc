@@ -1121,7 +1121,7 @@ QString KIOJob::findDeviceMountPoint( const char *_device, const char *_file )
     if( getfsstat(buf, fsno*sizeof( struct statfs ), flags) == -1 )
     {
       free(buf);
-      return QString(NULL);
+      return QString::null;
     }
     else
     {
