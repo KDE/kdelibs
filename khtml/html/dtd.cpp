@@ -378,9 +378,9 @@ bool DOM::checkChild(ushort tagID, ushort childID)
 /*  // it is not this simple -ak
     case ID_FONT:
         // special handling for FONT: (_0 | 3)
-        return check_array(childID, tag_list_3) || 
+        return check_array(childID, tag_list_3) ||
             check_array(childID, tag_list_0);
-*/        
+*/
     case ID_LI:
     case ID_DT:
     case ID_DIV:
@@ -399,6 +399,7 @@ bool DOM::checkChild(ushort tagID, ushort childID)
     case ID_A:
 	// A: _0 * - A
 	if( check_array(childID, tag_list_0) ) return true;
+        if ( childID == ID_TABLE ) return false; // no table in anchor
 	if( check_array(childID, tag_list_3) ) return true;
 	if( childID == ID_ADDRESS ) return true;
 	return false;
