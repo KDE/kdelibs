@@ -275,7 +275,7 @@ PlayObject SimpleSoundServer_impl::createPlayObject(const string& filename)
 		cout << "extension = " << extension << endl;
 	}
 
-	if(extension == ".WAV")			objectType = "WavPlayObject";
+	if(extension == ".WAV")			objectType = "Arts::WavPlayObject";
 	/* TODO: write a service which can find out which object decodes what
 	else if(extension == ".MP3") 	objectType = "MP3PlayObject";
 	else if(extension == ".MPG")	objectType = "MP3PlayObject";
