@@ -196,7 +196,7 @@ public:
      */
     void infoMessage( const QString &msg );
 
-    enum { QuestionYesNo = 1, WarningYesNo = 2, WarningContinueCancel = 3, WarningYesNoCancel = 4, Information = 5, SSLMessageBox = 6 };
+    enum MessageBoxType { QuestionYesNo = 1, WarningYesNo = 2, WarningContinueCancel = 3, WarningYesNoCancel = 4, Information = 5, SSLMessageBox = 6 };
 
     /**
      * Call this to show a message box from the slave (it will in fact be handled
@@ -213,7 +213,7 @@ public:
      *       and for Information, none is used.
      * @return a button code, as defined in KMessageBox, or 0 on communication error.
      */
-    int messageBox( int type, const QString &text,
+    int messageBox( MessageBoxType type, const QString &text,
                     const QString &caption = QString::null,
                     const QString &buttonYes = QString::null,
                     const QString &buttonNo = QString::null );

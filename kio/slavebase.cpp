@@ -658,11 +658,11 @@ bool SlaveBase::openPassDlg( AuthInfo& info )
     return false;
 }
 
-int SlaveBase::messageBox( int type, const QString &text, const QString &caption,
+int SlaveBase::messageBox( MessageBoxType type, const QString &text, const QString &caption,
                            const QString &buttonYes, const QString &buttonNo )
 {
     kdDebug(7019) << "messageBox " << type << " " << text << " - " << caption << buttonYes << buttonNo << endl;
-    KIO_DATA << type << text << caption << buttonYes << buttonNo;
+    KIO_DATA << (int)type << text << caption << buttonYes << buttonNo;
     m_pConnection->send( INF_MESSAGEBOX, data );
     if ( waitForAnswer( CMD_MESSAGEBOXANSWER, 0, data ) != -1 )
     {
