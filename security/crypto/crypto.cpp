@@ -65,7 +65,7 @@ QString whatstr;
   // Create the GUI here - there are currently a total of 4 tabs.
   // The first is SSL and cipher related
   // The second is user's SSL certificate related
-  // The second is other SSL certificate related
+  // The third is other SSL certificate related
   // The fourth is SSL certificate authority related
   ///////////////////////////////////////////////////////////////////////////
 
@@ -76,7 +76,8 @@ QString whatstr;
   // FIRST TAB
   ///////////////////////////////////////////////////////////////////////////
   tabSSL = new QFrame(this);
-  grid = new QGridLayout(tabSSL, 9, 2);
+  grid = new QGridLayout(tabSSL, 9, 2, KDialog::marginHint(),
+                                        KDialog::spacingHint() );
   mUseTLS = new QCheckBox(i18n("Use &TLS instead of SSLv2/v3"), tabSSL);
   connect(mUseTLS, SIGNAL(clicked()), SLOT(configChanged()));
   grid->addWidget(mUseTLS, 0, 0);
@@ -173,7 +174,7 @@ QString whatstr;
   tabYourSSLCert = new QFrame(this);
 
 #ifdef HAVE_SSL
-  grid = new QGridLayout(tabYourSSLCert, 10, 2);
+  grid = new QGridLayout(tabYourSSLCert, 10, 2, KDialog::marginHint(), KDialog::spacingHint() );
 
   yourSSLBox = new QListBox(tabYourSSLCert);
   whatstr = i18n("This list box shows which certificates of yours KDE"
@@ -226,7 +227,7 @@ QString whatstr;
   tabOtherSSLCert = new QFrame(this);
 
 #ifdef HAVE_SSL
-  grid = new QGridLayout(tabOtherSSLCert, 8, 2);
+  grid = new QGridLayout(tabOtherSSLCert, 8, 2, KDialog::marginHint(), KDialog::spacingHint());
 
   otherSSLBox = new QListBox(tabOtherSSLCert);
   whatstr = i18n("This list box shows which site and person certificates KDE"
@@ -266,7 +267,7 @@ QString whatstr;
   tabSSLCA = new QFrame(this);
 
 #ifdef HAVE_SSL
-  grid = new QGridLayout(tabSSLCA, 8, 2);
+  grid = new QGridLayout(tabSSLCA, 8, 2, KDialog::marginHint(), KDialog::spacingHint());
 
   caSSLBox = new QListBox(tabSSLCA);
   whatstr = i18n("This list box shows which certificate authorities KDE"
