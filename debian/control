@@ -8,7 +8,7 @@ Standards-Version: 3.5.2
 Package: kdelibs3
 Architecture: any
 Section: libs
-Replaces: kdelibs3-cvs, kdelibs3-nossl, kdelibs2g, kdebase-libs (<< 4:2.1-20010109-1)
+Replaces: kdelibs3-cvs, kdelibs3-nossl, kdelibs2g, kdebase-libs (<< 4:2.1-20010109-1), kdebase (<< 4:2.2-alpha1)
 Depends: ${shlibs:Depends}
 Recommends: libarts | libarts-alsa, libkmid | libkmid-alsa
 Suggests: kdelibs3-crypto, task-anti-aliasing, gdb

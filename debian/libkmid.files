@@ -1,4 +1,5 @@
 usr/bin/knotify
+usr/share/lintian/overrides/libkmid
 usr/share/man/man1/knotif*
 usr/lib/knotify.so
 usr/lib/knotify.la
