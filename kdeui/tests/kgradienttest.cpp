@@ -41,6 +41,7 @@ void KGradientWidget::paintEvent(QPaintEvent */*ev*/)
     p.drawPixmap(x*width()/cols, y*height()/rows, pix);
     p.drawText(5+(x++)*width()/cols, 15+y*height()/rows, say);
 
+#if 0    
     // elliptic
     it = time.elapsed();
     KPixmapEffect::gradient(pix, ca, cb, KPixmapEffect::EllipticGradient);
@@ -48,10 +49,12 @@ void KGradientWidget::paintEvent(QPaintEvent */*ev*/)
     say.setNum( ft - it); say += " ms, Elliptic";
     p.drawPixmap(x*width()/cols, y*height()/rows, pix);
     p.drawText(5+(x++)*width()/cols, 15+y*height()/rows, say);
+#endif    
 
     y++; // next row
     x = 0; // reset the columns
 
+#if 0    
     // diagonal
     it = time.elapsed();
     KPixmapEffect::gradient(pix,ca, cb, KPixmapEffect::DiagonalGradient);
@@ -67,11 +70,12 @@ void KGradientWidget::paintEvent(QPaintEvent */*ev*/)
     say.setNum( ft - it); say += " ms, CrossDiagonal";
     p.drawPixmap(width()/cols, y*height()/rows, pix);
     p.drawText(5+(x++)*width()/cols, 15+y*height()/rows, say);
-
+#endif
 
     y++; // next row
     x = 0; // reset the columns
 
+#if 0    
     // pyramidal
     it = time.elapsed();
     KPixmapEffect::gradient(pix, ca, cb, KPixmapEffect::PyramidGradient);
@@ -95,6 +99,7 @@ void KGradientWidget::paintEvent(QPaintEvent */*ev*/)
     say.setNum( ft - it); say += " ms, PipeCross";
     p.drawPixmap(x*width()/cols, y*height()/rows, pix);
     p.drawText(5+(x++)*width()/rows, 15+y*height()/rows, say);
+#endif    
 
 }
 

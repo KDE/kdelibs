@@ -30,7 +30,7 @@ check_PROGRAMS = kaboutdialogtest kblendtest kbuttonboxtest kcharselecttest \
 	kcolortest kcolordlgtest \
 	kcontainertest kdatepicktest kdialogbasetest \
 	kdualcolortest kfontdialogtest \
-	kgradienttest khashtest \
+	knewgradienttest kgradienttest khashtest \
 	kiconloadertest kledtest kmessageboxtest knuminputtest \
 	kpalettetest \
 	kpopuptest kprogresstest krulertest kseparatortest \
@@ -41,7 +41,7 @@ noinst_HEADERS = \
 		ktabctltest.h kiconloadertestmain.h	\
 		kwindowtest.h kstatusbartest.h \
 		kledtest.h kcontainertest.h \
-		krulertest.h kgradienttest.h \
+		krulertest.h knewgradienttest.h kgradienttest.h \
 		kcolortest.h kunbalancedgrdtest.h kblendtest.h \
 		kdualcolortest.h khashtest.h knuminputtest.h
 
@@ -62,6 +62,7 @@ kdialogbasetest_SOURCES = kdialogbasetest.cpp
 kdualcolortest_SOURCES = kdualcolortest.cpp
 kfontdialogtest_SOURCES = kfontdialogtest.cpp
 kgradienttest_SOURCES = kgradienttest.cpp
+knewgradienttest_SOURCES = knewgradienttest.cpp
 khashtest_SOURCES = khashtest.cpp
 kiconloadertest_SOURCES = kiconloadertest.cpp kiconloadertestmain.cpp
 kledtest_SOURCES = kledtest.cpp
