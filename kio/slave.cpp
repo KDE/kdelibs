@@ -83,7 +83,7 @@ void Slave::accept(KSocket *socket)
 
 void Slave::timeout()
 {
-   if (!serv) return; 
+   if (!serv) return;
    kdDebug(7002) << "slave failed to connect to application pid=" << m_pid << " protocol=" << m_protocol << endl;
    if (m_pid && (::kill(m_pid, 0) == 0))
    {
@@ -254,7 +254,7 @@ void Slave::setHost( const QString &host, int port,
 }
 
 void Slave::resetHost()
-{ 
+{
     m_host = "<reset>";
 }
 
@@ -276,7 +276,12 @@ Slave* Slave::createSlave( const QString &protocol, const KURL& url, int& error,
 
     QString prefix = locateLocal("socket", KGlobal::instance()->instanceName());
     KTempFile socketfile(prefix, QString::fromLatin1(".slave-socket"));
-
+    if ( socketfile.status() != 0 )
+    {
+	error_text = i18n("Unable to create io-slave: %1").arg(strerror(errno));
+	error = KIO::ERR_CANNOT_LAUNCH_PROCESS;
+	return 0;
+    }
     KServerSocket *kss = new KServerSocket(QFile::encodeName(socketfile.name()));
 
     Slave *slave = new Slave(kss, protocol, socketfile.name());
@@ -321,6 +326,8 @@ Slave* Slave::holdSlave( const QString &protocol, const KURL& url )
 
     QString prefix = locateLocal("socket", KGlobal::instance()->instanceName());
     KTempFile socketfile(prefix, QString::fromLatin1(".slave-socket"));
+    if ( socketfile.status() != 0 )
+	return 0;
 
     KServerSocket *kss = new KServerSocket(QFile::encodeName(socketfile.name()));
 
