@@ -68,6 +68,8 @@ class KProcessPrivate;
  *
  *Be aware: When the KProcess objects gets destructed, the child
  *process will be killed if it is still running!
+ *This means in particular, that you cannot use a KProcess on the stack
+ *with KProcess::NotifyOnExit.
  *
  *@li  KProcess::Block -- The child process starts and the parent process
  *is suspended until the child process exits. (@em Really not recommended
