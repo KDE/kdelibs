@@ -19,14 +19,10 @@
 
 #include "ksettings/dialog.h"
 
-#include <qptrlist.h>
 
 #include <kcmultidialog.h>
-#include <kglobal.h>
 #include <klocale.h>
-#include <kinstance.h>
 #include <kservicegroup.h>
-#include <kjanuswidget.h>
 #include <kdebug.h>
 #include <ktrader.h>
 #include <kplugininfo.h>

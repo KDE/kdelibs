@@ -19,13 +19,10 @@
 
 #include "ksettings/dispatcher.h"
 
-#include <qstrlist.h>
-#include <qcstring.h>
 #include <qsignal.h>
 
 #include <kstaticdeleter.h>
 #include <kdebug.h>
-#include <kinstance.h>
 #include <kconfig.h>
 #include <assert.h>
 

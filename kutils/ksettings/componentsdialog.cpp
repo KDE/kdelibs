@@ -21,9 +21,7 @@
 #include <klocale.h>
 #include <qlayout.h>
 #include <klistview.h>
-#include <qframe.h>
 #include <qlabel.h>
-#include <qstring.h>
 #include <qheader.h>
 #include <kplugininfo.h>
 #include <kiconloader.h>
