@@ -37,7 +37,7 @@
 #include <qpainter.h>
 #include <kdebug.h>
 #include <assert.h>
-
+#include <limits.h>
 using namespace khtml;
 using namespace DOM;
 
