@@ -19,7 +19,7 @@
 
 KDE_CXXFLAGS = $(WOVERLOADED_VIRTUAL)
 
-SUBDIRS = misc dom css xml html rendering pics $(DOJAVA) ecma .
+SUBDIRS = misc dom css xml html rendering pics $(DOJAVA) . ecma
 
 lib_LTLIBRARIES = libkhtml.la libkhtmlimage.la
 libkhtml_la_SOURCES = khtmlview.cpp khtml_part.cpp khtml_run.cpp khtml_factory.cpp khtml_settings.cc \
