@@ -234,10 +234,10 @@ KCModule * KCModuleProxy::realModule() const
 
 			QWhatsThis::add( d->rootInfo, i18n(
 				  "This section requires special permissions, probably "
-				  "for system-wide changes. Therefore it is "
+				  "for system-wide changes; therefore, it is "
 				  "required that you provide the root password to be "
-				  "able to change the modules properties. As long as "
-				  "you don't provide the password, the module will be "
+				  "able to change the module's properties. If "
+				  "you do not provide the password, the module will be "
 				  "disabled."));
 		}
 	}
