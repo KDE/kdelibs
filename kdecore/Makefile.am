@@ -30,80 +30,19 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kprocess.h kprocctrl.h klocale.h kiconloader.h kdebug.h	\
 	kstdaccel.h kwm.h krootprop.h kstring.h kpixmap.h dither.h
 
-noinst_HEADERS = kdebugdialog.h kcharsetsdata.h kthemes.h
+noinst_HEADERS = kdebugdialog.h kcharsetsdata.h 
 
 libkdecore_la_SOURCES = kconfig.cpp kconfigbase.cpp ksimpleconfig.cpp \
 	kcolorgroup.cpp kapp.cpp kurl.cpp ksock.cpp drag.cpp \
 	kkeyconf.cpp kprocess.cpp kprocctrl.cpp klocale.cpp \
 	libintl.cpp fakes.cpp kiconloader.cpp kdebug.cpp \
 	kstdaccel.cpp kwm.cpp krootprop.cpp kcharsets.cpp kcharsetsdata.cpp \
-	kchartables.cpp kstring.cpp kpixmap.cpp dither.cpp kthemes.cpp
+	kchartables.cpp kstring.cpp kpixmap.cpp dither.cpp 
 
 libkdecore_la_LDFLAGS = -version-info 0:91
 libkdecore_la_LIBADD = 
 
 BUILT_SOURCES = ksock.moc drag.moc kkeydata.moc kapp.moc kprocess.moc	\
 	kprocctrl.moc kiconloader.moc kdebugdialog.moc kconfig.moc \
-	kconfigbase.moc ksimpleconfig.moc kthemes.moc
+	kconfigbase.moc ksimpleconfig.moc 
 
-kthemes.cpp: kthemes.moc
-ksock.cpp: ksock.moc
-drag.cpp: drag.moc
-kkeyconf.cpp: kkeydata.moc
-kapp.cpp: kapp.moc
-kprocess.cpp: kprocess.moc
-kprocctrl.cpp: kprocctrl.moc
-kiconloader.cpp: kiconloader.moc
-kdebug.cpp: kdebugdialog.moc
-kconfigbase.cpp: kconfigbase.moc
-kconfig.cpp: kconfig.moc
-ksimpleconfig.cpp: ksimpleconfig.moc
-
-install-data-local: charsets.config
-	$(mkinstalldirs) $(kde_confdir)
-	$(INSTALL_DATA) charsets.config $(kde_confdir)/charsets
-
-uninstall-local:
-	-rm -f $(kde_confdir)/charsets
-
-ckey.h : convert_key.c
-	$(CC) $(CFLAGS) convert_key.c -o convert_key
-	./convert_key $(QKEYCODE_H)
-	cat ackey ckey > ckey.h
-	rm -f ackey ckey
-
-ksock.moc: ksock.h
-	$(MOC) ksock.h -o ksock.moc
-
-drag.moc: drag.h
-	$(MOC) drag.h -o drag.moc
-
-kkeydata.moc: kkeydata.h
-	$(MOC) kkeydata.h -o kkeydata.moc
-
-kapp.moc: kapp.h
-	$(MOC) kapp.h -o kapp.moc
-
-kprocess.moc: kprocess.h
-	$(MOC) kprocess.h -o kprocess.moc
-
-kprocctrl.moc: kprocctrl.h
-	$(MOC) kprocctrl.h -o kprocctrl.moc
-
-kiconloader.moc: kiconloader.h
-	$(MOC) kiconloader.h -o kiconloader.moc
-
-kdebugdialog.moc: kdebugdialog.h
-	$(MOC) kdebugdialog.h -o kdebugdialog.moc
-
-kconfig.moc: kconfig.h
-	$(MOC) kconfig.h -o kconfig.moc
-
-kconfigbase.moc: kconfigbase.h
-	$(MOC) kconfigbase.h -o kconfigbase.moc
-
-ksimpleconfig.moc: ksimpleconfig.h
-	$(MOC) ksimpleconfig.h -o ksimpleconfig.moc
-
-kthemes.moc: kthemes.h
-	$(MOC) kthemes.h -o kthemes.moc
