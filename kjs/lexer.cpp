@@ -512,8 +512,11 @@ int Lexer::lex()
 
     eatNextIdentifier = false;
     // Hack for "f = function somename() { ... }", too hard to get into the grammar
-    if (token == FUNCTION && lastToken == '=' )
-      eatNextIdentifier = true;
+    // Same for building an array with function pointers ( 'name', func1, 'name2', func2 )
+    // There are lots of other uses, we really have to get this into the grammar
+    if ( token == FUNCTION &&
+         ( lastToken == '=' || lastToken == ',' ) )
+            eatNextIdentifier = true;
 
     if (token == CONTINUE || token == BREAK ||
         token == RETURN || token == THROW)
