@@ -436,9 +436,7 @@ void HTMLTokenizer::parseComment(DOMStringIt &src)
     while ( src.length() )
     {
         if (src->latin1() == '>' && scriptCodeSize > 2 &&
-            scriptCode[scriptCodeSize-2] == '-' &&
-            (scriptCode[scriptCodeSize-1] == '-' ||
-             (scriptCode[scriptCodeSize-3] == '-' && scriptCode[scriptCodeSize-1] == '!')))
+            scriptCode[scriptCodeSize-2] == '-' && scriptCode[scriptCodeSize-1] == '-' )
         {
             ++src;
 #ifdef COMMENTS_IN_DOM
@@ -540,7 +538,6 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, QChar *&dest, bool start)
         char cc = src[0].latin1();
         switch(Entity) {
         case NoEntity:
-            qDebug("NoEntity");
             return;
 
             break;
