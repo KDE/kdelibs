@@ -227,8 +227,6 @@ const ClassInfo Window::info = { "Window", 0, &WindowTable, 0 };
   close		Window::Close		DontDelete|Function 0
   setInterval	Window::SetInterval	DontDelete|Function 2
   clearInterval	Window::ClearInterval	DontDelete|Function 1
-  captureEvents	Window::CaptureEvents	DontDelete|Function 0
-  releaseEvents	Window::ReleaseEvents	DontDelete|Function 0
   print		Window::Print		DontDelete|Function 0
   addEventListener	Window::AddEventListener	DontDelete|Function 3
   removeEventListener	Window::RemoveEventListener	DontDelete|Function 3
@@ -573,8 +571,6 @@ Value Window::get(ExecState *exec, const UString &p) const
     case MoveTo:
     case ResizeBy:
     case ResizeTo:
-    case CaptureEvents:
-    case ReleaseEvents:
     case AddEventListener:
     case RemoveEventListener:
       return lookupOrCreateFunction<WindowFunc>(exec,p,this,entry->value,entry->params,entry->attr);
@@ -1430,10 +1426,6 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       widget->print();
       // ### TODO emit onafterprint event
     }
-  case Window::CaptureEvents:
-  case Window::ReleaseEvents:
-    // Do nothing for now. These are NS-specific legacy calls.
-    break;
   case Window::AddEventListener: {
         JSEventListener *listener = Window::retrieveActive(exec)->getJSEventListener(args[1]);
         DOM::Document doc = part->document();
