@@ -1018,7 +1018,18 @@ void FileProtocol::listDir( const KURL& url)
 
     dp = opendir( _path.data() );
     if ( dp == 0 ) {
-	error( KIO::ERR_CANNOT_ENTER_DIRECTORY, url.path() );
+        switch (errno)
+        {
+#ifdef ENOMEDIUM
+	case ENOMEDIUM:
+            error( ERR_SLAVE_DEFINED,
+                   i18n( "No media in device for %1" ).arg( url.path() ) );
+            break;
+#endif
+        default:
+            error( KIO::ERR_CANNOT_ENTER_DIRECTORY, url.path() );
+            break;
+        }
 	return;
     }
 
