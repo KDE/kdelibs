@@ -521,7 +521,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
   QFont tmp_font(KGlobalSettings::toolBarFont());
   QFontMetrics fm(tmp_font);
   QRect textRect;
-  int textFlags;
+  int textFlags = 0;
 
   if (d->m_iconText == KToolBar::IconOnly) // icon only
   {
