@@ -26,7 +26,7 @@ kdelibs (4:2.2-cvs20010503-1) experimental; urgency=low
   * Reseting all lintian overrides
   * Add flex to build-depends as well as other deps
   * Add Debian menu items: cupsdconf
-  * New packages: kdelibs3-cups, libkdb-mysql libkdb-postgresql
+  * New packages: kdelibs3-cups
   * Moving kdoc and qt-doc into Build-Depends-Indep
   * Add Provides in for libarts-alsa/libkmid-alsa
 

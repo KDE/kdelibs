@@ -149,8 +149,6 @@ binary-arch:  build install
 	dh_movefiles -plibkmid-dev --sourcedir=debian/kdelibs3
 	dh_movefiles -pkdelibs-dev --sourcedir=debian/kdelibs3
 	dh_movefiles -pkdelibs3-cups --sourcedir=debian/kdelibs3
-	dh_movefiles -plibkdb-mysql --sourcedir=debian/kdelibs3
-	dh_movefiles -plibkdb-postgresql --sourcedir=debian/kdelibs3
 	dh_movefiles -plibarts-alsa --sourcedir=debian/alsa-tmp
 	dh_movefiles -plibkmid-alsa --sourcedir=debian/alsa-tmp
 	# ssl cleanup

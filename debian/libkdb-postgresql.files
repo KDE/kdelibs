@@ -1,4 +1,0 @@
-usr/lib/libkdb_postgres.so
-usr/lib/libkdb_postgres.la
-usr/share/services/kdb_postgres.desktop
-usr/share/lintian/overrides/libkdb-postgresql

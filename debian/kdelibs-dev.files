@@ -1,10 +1,7 @@
 usr/include/kde/*
-usr/include/kdb/*
 usr/share/doc/kdelibs-dev/dh-make/*
 usr/lib/libkdeprint.so
 usr/lib/libkdeprint_management.so
-usr/lib/libkdbcore.so 
-usr/lib/libkdbui.so
 usr/lib/libkdefakes.so
 usr/lib/libDCOP.so
 usr/lib/libkdecore.so

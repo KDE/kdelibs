@@ -1,4 +1,0 @@
-usr/lib/libkdb_mysql.so
-usr/lib/libkdb_mysql.la
-usr/share/services/kdb_mysql.desktop
-usr/share/lintian/overrides/libkdb-mysql
