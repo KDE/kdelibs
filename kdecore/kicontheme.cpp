@@ -9,7 +9,7 @@
  * Public License, version 2. See the file "COPYING.LIB" for the 
  * exact licensing terms.
  *
- * kicontheme.cpp: Icon theme handling.
+ * kicontheme.cpp: Lowlevel icon theme handling.
  */
 
 #include <stdlib.h>
@@ -17,6 +17,8 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qlist.h>
+#include <qvaluelist.h>
+#include <qmap.h>
 #include <qpixmap.h>
 #include <qpixmapcache.h>
 #include <qimage.h>
@@ -65,6 +67,7 @@ private:
 
 KIconTheme::KIconTheme(QString name, QString appName)
 {
+    d = new KIconThemePrivate;
     bool isApp = !appName.isEmpty();
     if (isApp && (name != "hicolor") && (name != "locolor"))
     {
@@ -91,6 +94,8 @@ KIconTheme::KIconTheme(QString name, QString appName)
     mDesc = cfg->readEntry("Description");
     mDepth = cfg->readNumEntry("DisplayDepth", 32);
     mInherits = cfg->readListEntry("Inherits");
+    d->example = cfg->readEntry("Example");
+    d->screenshot = cfg->readEntry("ScreenShot");
     
     if (isApp)
     {
@@ -109,18 +114,6 @@ KIconTheme::KIconTheme(QString name, QString appName)
 	mName += "-app";
     }
 
-    int i;
-    QStringList groups;
-    groups += "Desktop";
-    groups += "Toolbar";
-    groups += "MainToolbar";
-    groups += "Small";
-    for (it=groups.begin(), i=0; it!=groups.end(); it++, i++)
-    {
-	mDefSize[i] = cfg->readNumEntry(*it + "Default", 32);
-	mSizes[i] = cfg->readIntListEntry(*it + "Sizes");
-    }
-
     QStringList dirs = cfg->readListEntry("Directories");
     mDirs.setAutoDelete(true);
     for (it=dirs.begin(); it!=dirs.end(); it++)
@@ -128,11 +121,48 @@ KIconTheme::KIconTheme(QString name, QString appName)
 	cfg->setGroup(*it);
 	mDirs.append(new KIconThemeDir(mDir + *it, cfg));
     }
+
+    // Expand available sizes for scalable icons to their full range
+    int i;
+    QMap<int,QValueList<int> > scIcons;
+    for (KIconThemeDir *dir=mDirs.first(); dir!=0L; dir=mDirs.next())
+    {
+	if ((dir->type() == KIcon::Scalable) && !scIcons.contains(dir->size()))
+	{
+	    QValueList<int> lst;
+	    for (i=dir->minSize(); i<=dir->maxSize(); i++)
+		lst += i;
+	    scIcons[dir->size()] = lst;
+	}
+    }
+
+    QStringList groups;
+    groups += "Desktop";
+    groups += "Toolbar";
+    groups += "MainToolbar";
+    groups += "Small";
+    cfg->setGroup("KDE Icon Theme");
+    for (it=groups.begin(), i=0; it!=groups.end(); it++, i++)
+    {
+	mDefSize[i] = cfg->readNumEntry(*it + "Default", 32);
+	QValueList<int> lst = cfg->readIntListEntry(*it + "Sizes"), exp;
+	QValueList<int>::Iterator it2;
+	for (it2=lst.begin(); it2!=lst.end(); it2++)
+	{
+	    if (scIcons.contains(*it2))
+		exp += scIcons[*it2];
+	    else
+		exp += *it2;
+	}
+	mSizes[i] = exp;
+    }
+
     delete cfg;
 }
 
 KIconTheme::~KIconTheme()
 {
+    delete d;
 }
 
 bool KIconTheme::isValid()
@@ -233,6 +263,21 @@ KIcon KIconTheme::iconPath(QString name, int size, int match)
     return icon;
 }
 
+// static
+QString KIconTheme::current()
+{
+    KConfig *config = KGlobal::config();
+    KConfigGroupSaver saver(config, "Icons");
+    QString theme = config->readEntry("Theme");
+    if (theme.isEmpty())
+    {
+	if (QPixmap::defaultDepth() > 8)
+	    theme = QString::fromLatin1("hicolor");
+	else
+	    theme = QString::fromLatin1("locolor");
+    }
+    return theme;
+}
 
 // static
 QStringList KIconTheme::list()
@@ -301,8 +346,8 @@ KIconThemeDir::KIconThemeDir(QString dir, KConfigBase *config)
     }
     if (mType == KIcon::Scalable)
     {
-	mMinSize = config->readNumEntry("MinSize", 49);
-	mMaxSize = config->readNumEntry("MaxSize", 128);
+	mMinSize = config->readNumEntry("MinSize", mSize);
+	mMaxSize = config->readNumEntry("MaxSize", mSize);
     }
     mbValid = true;
 }

@@ -20,7 +20,13 @@
 
 class KConfig;
 class KIconThemeDir;
-class KIconThemePrivate;
+
+class KIconThemePrivate
+{
+public:
+    QString example;
+    QString screenshot;
+};
 
 /**
  * One icon as found by KIconTheme.
@@ -38,6 +44,7 @@ public:
     enum MatchType { MatchExact, MatchBest };
     enum Group { Desktop, Toolbar, MainToolbar, Small, LastGroup, User };
     enum StdSizes { SizeSmall=-16, SizeMedium=-32, SizeLarge=-48 };
+    enum States { DefaultState, ActiveState, DisabledState, LastState };
 
     /** The size in pixels of the icon. */
     int size;
@@ -69,6 +76,15 @@ public:
 
     /** A description for the icon theme. */
     QString description() { return mDesc; }
+
+    /** Return the name of the "example" icon. */
+    QString example() { return d->example; }
+
+    /** Return the name of the screenshot. */
+    QString screenshot() { return d->screenshot; }
+
+    /** Returns the toplevel theme directory. */
+    QString dir() { return mDir; }
 
     /** The themes this icon theme falls back on. */
     QStringList inherits() { return mInherits; }
@@ -105,6 +121,9 @@ public:
 
     /** List all icon themes installed on the system, global and local. */
     static QStringList list();
+
+    /** Returns the current icon theme. */
+    static QString current();
 
 private:
     int mDefSize[8];
