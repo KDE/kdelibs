@@ -63,7 +63,7 @@ public:
     void setURL(DOMString _url) { url = _url; }
 
     DOMString baseURL() const;
-    
+
     HTMLElementImpl *body();
 
     void open (  );
@@ -91,6 +91,7 @@ public:
     virtual void detach();
 
     virtual void createSelector();
+    virtual void applyChanges();
 
     bool headLoaded();
 

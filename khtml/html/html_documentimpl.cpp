@@ -350,9 +350,36 @@ void HTMLDocumentImpl::createSelector()
     if(!tokenizer)
     {
 	delete parser;
+	parser = 0;
     }
-    parser = 0;
 }
+
+// ### this function should not be needed in the long run. The one in
+// DocumentImpl should be enough.
+void HTMLDocumentImpl::applyChanges()
+{
+    if(m_styleSelector) delete m_styleSelector;
+    m_styleSelector = new CSSStyleSelector(this);
+    if(!m_render) return;
+    
+    m_render->setStyle(m_style);
+
+    // a style change can influence the children, so we just go 
+    // through them and trigger an appplyChanges there too
+    NodeImpl *n = _first;
+    while(n) {
+	n->applyChanges();
+	n = n->nextSibling();
+    }
+
+    // force a relayout of this part of the document
+    m_render->updateSize();
+    // force a repaint of this part.
+    // ### if updateSize() changes any size, it will already force a
+    // repaint, so we might do double work here...
+    m_render->repaint();
+}
+
 
 bool HTMLDocumentImpl::headLoaded()
 {

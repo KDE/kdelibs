@@ -1709,6 +1709,8 @@ void KHTMLPart::updateFontSize( int add )
 
   setFontSizes( sizes );
 
+  if(d->m_doc) d->m_doc->applyChanges();
+#if 0
   // HACK until khtml supports setting the font size dynamically
   KParts::URLArgs args( d->m_extension->urlArgs() );
   args.reload = true;
@@ -1716,6 +1718,7 @@ void KHTMLPart::updateFontSize( int add )
   closeURL();
   d->m_extension->setURLArgs( args );
   openURL( m_url );
+#endif
 }
 
 void KHTMLPart::slotLoadImages()

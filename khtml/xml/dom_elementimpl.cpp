@@ -367,7 +367,12 @@ void ElementImpl::applyChanges()
 	n->applyChanges();
 	n = n->nextSibling();
     }
+
+    // force a relayout of this part of the document
     m_render->updateSize();
+    // force a repaint of this part.
+    // ### if updateSize() changes any size, it will already force a
+    // repaint, so we might do double work here...
     m_render->repaint();
 }
 
