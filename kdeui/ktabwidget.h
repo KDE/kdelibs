@@ -37,6 +37,7 @@ class KDEUI_EXPORT KTabWidget : public QTabWidget
     Q_PROPERTY( bool hoverCloseButton READ hoverCloseButton WRITE setHoverCloseButton )
     Q_PROPERTY( bool hoverCloseButtonDelayed READ hoverCloseButtonDelayed WRITE setHoverCloseButtonDelayed )
     Q_PROPERTY( bool tabCloseActivatePrevious READ tabCloseActivatePrevious WRITE setTabCloseActivatePrevious )
+    Q_PROPERTY( QColor tabColor READ tabColor WRITE setTabColor )
 
 public:
     KTabWidget( QWidget *parent = 0, const char *name = 0, WFlags f = 0 );
