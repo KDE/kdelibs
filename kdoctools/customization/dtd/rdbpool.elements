@@ -69,10 +69,14 @@
      no-ny).
      Official site for ISO 639-2: http://lcweb.loc.gov/standards/iso639-2/
      For ISO 639-1, only the latest version (Feb 2000) counts!
+
+     Countries are currently only needed when the language is different.
+     Only rarely adding the country code is a necessity (Chinese is
+     only done for encoding reasons afaik).
  -->
 <!ENTITY % lang.attrib
-        "lang           (af|az|bg|br|bs|ca|cs|cy|da|de|el|en|en-GB|en-US|eo
-                        |es|et|eu|fa|fi|fo|fr|ga|gl|he|hr|hu|id|is|it|ja|ko
+        "lang           (af|az|bg|bo|br|bs|ca|cs|cy|da|de|el|en|en-GB|en-US|eo
+                        |es|et|eu|fa|fi|fo|fr|ga|gl|he|hi|hr|hu|id|is|it|ja|kn|ko
                         |lt|lv|mi|mk|mt|nl|no|nb|nn|nso|oc|pl|pt|pt-BR|pt-PT
                         |ro|ru|si|sk|sl|sr|st|sv|ta|te|tg|th|tr|uk|vi|x-wa
                         |xh|zh|zh-CN|zh-TW|zu)
@@ -83,6 +87,7 @@
 af      Afrikaans
 az	Azerbaijani
 bg      Bulgarian
+bo      Tibetan
 br      Breton
 bs	Bosnian
 ca      Catalan
@@ -103,12 +108,14 @@ fr      French
 ga      Irish
 gl	Gallegan
 he      Hebrew
+hi      Hindi
 hr      Croatian
 hu      Hungarian
 id      Indonesian
 is      Icelandic
 it      Italian
 ja      Japanese
+kn      Kannada
 ko      Korean
 lt      Lituanian
 lv	Latvian
