@@ -50,6 +50,7 @@ class KPopupMenu;
 class KSelectAction;
 class KURLLabel;
 class KJavaAppletContext;
+class KJSErrorDlg;
 
 namespace KIO
 {
@@ -138,6 +139,8 @@ public:
     m_find = 0;
     m_findDialog = 0;
     m_ssl_in_use = false;
+    m_jsedlg = 0;
+
 #ifndef Q_WS_QWS
     m_javaContext = 0;
 #endif
@@ -199,9 +202,11 @@ public:
     m_jobspeed = 0;
     m_dcop_counter = ++khtml_part_dcop_counter;
     m_statusBarWalletLabel = 0L;
+    m_statusBarJSErrorLabel = 0L;
   }
   ~KHTMLPartPrivate()
   {
+    delete m_jsedlg;
     delete m_dcopobject;
     delete m_statusBarExtension;
     delete m_extension;
@@ -224,6 +229,7 @@ public:
   KHTMLPartBrowserHostExtension *m_hostExtension;
   KURLLabel* m_statusBarIconLabel;
   KURLLabel* m_statusBarWalletLabel;
+  KURLLabel* m_statusBarJSErrorLabel;
   DOM::DocumentImpl *m_doc;
   khtml::Decoder *m_decoder;
   QString m_encoding;
@@ -427,6 +433,8 @@ public:
   };
 
   findState m_lastFindState;
+
+  KJSErrorDlg *m_jsedlg;
 
   DOM::NodeImpl *m_findNode; // current node
   DOM::NodeImpl *m_findNodeEnd; // end node

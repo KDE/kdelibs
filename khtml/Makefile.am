@@ -33,14 +33,16 @@ kde_module_LTLIBRARIES = libkhtmlpart.la khtmlimagepart.la
 
 libkhtml_la_SOURCES = khtmlview.cpp khtml_part.cpp khtml_run.cpp khtml_factory.cpp khtml_settings.cc \
 		      khtml_events.cpp khtml_ext.cpp khtml_pagecache.cpp khtml_iface.skel khtml_iface.cc \
-		      khtml_printsettings.cpp htmlpageinfo.ui khtmlimage.cpp
+		      khtml_printsettings.cpp htmlpageinfo.ui khtmlimage.cpp \
+			kjserrordlg.ui
 
 libkhtml_la_METASOURCES = AUTO
 
 include_HEADERS = khtmlview.h khtml_part.h khtml_events.h khtml_settings.h khtmldefaults.h
 
 noinst_HEADERS = design.h testkhtml.h testrender.h test_regression.h khtml_ext.h \
-		 khtml_pagecache.h khtmlimage.h khtmlpart_p.h khtml_printsettings.h
+		 khtml_pagecache.h khtmlimage.h khtmlpart_p.h khtml_printsettings.h \
+		kjserrordlg.ui.h
 
 if include_VERSION_SCRIPT
 VSCRIPT = -Wl,--version-script=$(srcdir)/libkhtml.map

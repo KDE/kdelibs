@@ -41,6 +41,7 @@ class KJSProxy;
 class KHTMLView;
 class KHTMLSettings;
 class KJavaAppletContext;
+class KJSErrorDlg;
 
 namespace DOM
 {
@@ -1209,9 +1210,31 @@ private slots:
    */
   void slotToggleCaretMode();
 
+  /**
+   * @internal
+   */
+  void launchJSErrorDialog();
+
+  /**
+   * @internal
+   */
+  void removeJSErrorExtension();
+
+  /**
+   * @internal
+   */
+  void disableJSErrorExtension();
+
+  /**
+   * @internal
+   */
+  void jsErrorDialogContextMenu();
+
 
 
 private:
+
+  KJSErrorDlg *jsErrorExtension();
 
   enum StatusBarPriority { BarDefaultText, BarHoverText, BarOverrideText };
   void setStatusBarText( const QString& text, StatusBarPriority p);

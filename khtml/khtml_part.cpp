@@ -51,6 +51,9 @@ using namespace DOM;
 #include <kparts/partmanager.h>
 #include "ecma/kjs_proxy.h"
 #include "khtml_settings.h"
+#include "kjserrordlg.h"
+
+#include <kjs/function.h>
 
 #include "htmlpageinfo.h"
 
@@ -888,6 +891,50 @@ QVariant KHTMLPart::crossFrameExecuteScript(const QString& target,  const QStrin
 //Enable this to see all JS scripts being executed
 #define KJS_VERBOSE
 
+KJSErrorDlg *KHTMLPart::jsErrorExtension() {
+  if (!d->m_statusBarJSErrorLabel) {
+    d->m_statusBarJSErrorLabel = new KURLLabel(d->m_statusBarExtension->statusBar());
+    d->m_statusBarJSErrorLabel->setFixedHeight(instance()->iconLoader()->currentSize(KIcon::Small));
+    d->m_statusBarJSErrorLabel->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
+    d->m_statusBarJSErrorLabel->setUseCursor(false);
+    d->m_statusBarExtension->addStatusBarItem(d->m_statusBarJSErrorLabel, 0, false);
+    QToolTip::add(d->m_statusBarJSErrorLabel, i18n("This web page contains coding errors."));
+    d->m_statusBarJSErrorLabel->setPixmap(SmallIcon("bug", instance()));
+    connect(d->m_statusBarJSErrorLabel, SIGNAL(leftClickedURL()), SLOT(launchJSErrorDialog()));
+    connect(d->m_statusBarJSErrorLabel, SIGNAL(rightClickedURL()), SLOT(jsErrorDialogContextMenu()));
+  }
+  if (!d->m_jsedlg) {
+    d->m_jsedlg = new KJSErrorDlg;
+    d->m_jsedlg->setURL(m_url.prettyURL());
+  }
+  return d->m_jsedlg;
+}
+
+void KHTMLPart::removeJSErrorExtension() {
+  delete d->m_statusBarJSErrorLabel;
+  d->m_statusBarJSErrorLabel = 0;
+  delete d->m_jsedlg;
+  d->m_jsedlg = 0;
+}
+
+void KHTMLPart::disableJSErrorExtension() {
+  removeJSErrorExtension();
+  // FIXME
+}
+
+void KHTMLPart::jsErrorDialogContextMenu() {
+  KPopupMenu *m = new KPopupMenu(0L);
+  m->insertItem(i18n("&Hide Errors"), this, SLOT(removeJSErrorExtension()));
+  int id = m->insertItem(i18n("&Disable Error Reporting"), this, SLOT(disableJSErrorExtension()));
+  m->setItemEnabled(id, false);
+  m->popup(QCursor::pos());
+}
+
+void KHTMLPart::launchJSErrorDialog() {
+  jsErrorExtension()->show();
+  jsErrorExtension()->raise();
+}
+
 QVariant KHTMLPart::executeScript(const QString& filename, int baseLine, const DOM::Node& n, const QString& script)
 {
 #ifdef KJS_VERBOSE
@@ -897,7 +944,19 @@ QVariant KHTMLPart::executeScript(const QString& filename, int baseLine, const D
 
   if (!proxy || proxy->paused())
     return QVariant();
-  QVariant ret = proxy->evaluate(filename,baseLine,script, n );
+
+  KJS::Completion comp;
+
+  QVariant ret = proxy->evaluate(filename, baseLine, script, n, &comp);
+
+  /*
+   *  Error handling
+   */
+  if (comp.complType() == KJS::Throw && !comp.value().isNull()) {
+    KJS::UString msg = comp.value().toString(proxy->interpreter()->globalExec());
+    jsErrorExtension()->addError(i18n("<b>Error</b>: %1: %2").arg(filename).arg(msg.qstring()));
+  }
+  
   return ret;
 }
 
@@ -916,8 +975,18 @@ QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
   if (!proxy || proxy->paused())
     return QVariant();
   d->m_runningScripts++;
-  QVariant ret = proxy->evaluate( QString::null, 1, script, n );
+  KJS::Completion comp;
+  QVariant ret = proxy->evaluate( QString::null, 1, script, n, &comp );
   d->m_runningScripts--;
+
+  /*
+   *  Error handling
+   */
+  if (comp.complType() == KJS::Throw && !comp.value().isNull()) {
+    KJS::UString msg = comp.value().toString(proxy->interpreter()->globalExec());
+    jsErrorExtension()->addError(i18n("<b>Error</b>: node %1: %2").arg(n.nodeName().string()).arg(msg.qstring()));
+  }
+  
   if (!d->m_runningScripts && d->m_doc && !d->m_doc->parsing() && d->m_submitForm )
       submitFormAgain();
 
@@ -1509,6 +1578,9 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
           KHTMLFactory::vLinks()->insert( urlString2 );
       }
   }
+
+  // No need to show this for a new page until an error is triggered
+  removeJSErrorExtension();
 
   // ###
   //stopParser();

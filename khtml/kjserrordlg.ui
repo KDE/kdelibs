@@ -1,0 +1,123 @@
+<!DOCTYPE UI><UI version="3.2" stdsetdef="1">
+<class>KJSErrorDlg</class>
+<author>George Staikos &lt;staikos@kde.org&gt;</author>
+<widget class="QDialog">
+    <property name="name">
+        <cstring>KJSErrorDlg</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>600</width>
+            <height>482</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>Javascript Errors</string>
+    </property>
+    <grid>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <widget class="QPushButton" row="4" column="2">
+            <property name="name">
+                <cstring>_close</cstring>
+            </property>
+            <property name="text">
+                <string>&amp;Close</string>
+            </property>
+            <property name="accel">
+                <string>Alt+C</string>
+            </property>
+        </widget>
+        <widget class="QPushButton" row="4" column="1">
+            <property name="name">
+                <cstring>_clear</cstring>
+            </property>
+            <property name="text">
+                <string>C&amp;lear</string>
+            </property>
+            <property name="accel">
+                <string>Alt+L</string>
+            </property>
+        </widget>
+        <widget class="Line" row="2" column="0" rowspan="1" colspan="3">
+            <property name="name">
+                <cstring>line1</cstring>
+            </property>
+            <property name="frameShape">
+                <enum>HLine</enum>
+            </property>
+            <property name="frameShadow">
+                <enum>Sunken</enum>
+            </property>
+            <property name="orientation">
+                <enum>Horizontal</enum>
+            </property>
+        </widget>
+        <spacer row="3" column="0" rowspan="2" colspan="1">
+            <property name="name">
+                <cstring>spacer1</cstring>
+            </property>
+            <property name="orientation">
+                <enum>Horizontal</enum>
+            </property>
+            <property name="sizeType">
+                <enum>Expanding</enum>
+            </property>
+            <property name="sizeHint">
+                <size>
+                    <width>311</width>
+                    <height>21</height>
+                </size>
+            </property>
+        </spacer>
+        <widget class="QTextBrowser" row="1" column="0" rowspan="1" colspan="3">
+            <property name="name">
+                <cstring>_errorText</cstring>
+            </property>
+            <property name="textFormat">
+                <enum>RichText</enum>
+            </property>
+        </widget>
+        <widget class="QLabel" row="0" column="0" rowspan="1" colspan="3">
+            <property name="name">
+                <cstring>_url</cstring>
+            </property>
+            <property name="text">
+                <string></string>
+            </property>
+        </widget>
+    </grid>
+</widget>
+<connections>
+    <connection>
+        <sender>_clear</sender>
+        <signal>clicked()</signal>
+        <receiver>_errorText</receiver>
+        <slot>clear()</slot>
+    </connection>
+    <connection>
+        <sender>_close</sender>
+        <signal>clicked()</signal>
+        <receiver>KJSErrorDlg</receiver>
+        <slot>hide()</slot>
+    </connection>
+</connections>
+<tabstops>
+    <tabstop>_errorText</tabstop>
+    <tabstop>_close</tabstop>
+    <tabstop>_clear</tabstop>
+</tabstops>
+<includes>
+    <include location="local" impldecl="in implementation">kjserrordlg.ui.h</include>
+</includes>
+<slots>
+    <slot>init()</slot>
+    <slot>addError( const QString &amp; error )</slot>
+    <slot>setURL( const QString &amp; url )</slot>
+    <slot>clear()</slot>
+</slots>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>
