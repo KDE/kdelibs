@@ -9,6 +9,11 @@
 class QMenuItem;
 class QPixmap;
 
+/**
+ * Extends the QStyle class with virtual methods to draw KDE widgets.
+ *
+ * @author Daniel M. Duley <mosfet@kde.org>
+ */
 class KStyle : public QPlatinumStyle
 {
     Q_OBJECT
