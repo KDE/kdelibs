@@ -29,6 +29,7 @@
 #include <qkeysequence.h>
 #include <qobject.h>
 #include <qvaluelist.h>
+#include <qguardedptr.h>
 #include <kguiitem.h>
 #include <kshortcut.h>
 #include <kstdaction.h>
@@ -1587,6 +1588,78 @@ protected:
 private:
     class KToolBarPopupActionPrivate;
     KToolBarPopupActionPrivate *d;
+};
+
+/**
+ * An action that takes care of everything associated with
+ * showing or hiding a toolbar by a menu action. It will
+ * show or hide the toolbar with the given name when
+ * activated, and check or uncheck itself if the toolbar
+ * is manually shown or hidden.
+ */
+class KToggleToolBarAction : public KToggleAction
+{
+    Q_OBJECT
+public:
+    /**
+     * Create a KToggleToolbarAction that manages the toolbar
+     * named toolBarName. This can be either the name of a
+     * toolbar in an xml ui file, or a toolbar programmatically
+     * created with that name.
+     */
+    KToggleToolBarAction( const char* toolBarName, const QString& text,
+                          QObject* parent = 0, const char* name = 0 );
+    virtual ~KToggleToolBarAction();
+
+    virtual int plug( QWidget*, int index = -1 );
+protected slots:
+    virtual void slotToggled(bool);
+private:
+    QCString               m_toolBarName;
+    QGuardedPtr<KToolBar>  m_toolBar;
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
+    class KToggleToolBarActionPrivate;
+    KToggleToolBarActionPrivate *d;
+};
+
+/**
+ * An action that automatically embeds a widget into a
+ * toolbar.
+ */
+class KWidgetAction : public KAction
+{
+    Q_OBJECT
+public:
+    /**
+     * Create an action that will embed widget into a toolbar
+     * when plugged. This action may only be plugged into
+     * a toolbar.
+     */
+    KWidgetAction( QWidget* widget, const QString& text, 
+                   const KShortcut& cut,
+                   const QObject* receiver, const char* slot,
+                   KActionCollection* parent, const char* name );
+    virtual ~KWidgetAction();
+
+    /**
+     * Returns the widget associated with this action.
+     */
+    QWidget* widget() { return m_widget; }
+
+    /**
+     * Plug the action. The widget passed to the constructor
+     * will be reparented to w, which must inherit KToolBar.
+     */
+    virtual int plug( QWidget* w, int index = -1 );
+private:
+    QGuardedPtr<QWidget> m_widget;
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
+    class KToggleToolbarActionPrivate;
+    KToggleToolbarActionPrivate *d;
 };
 
 class KActionSeparator : public KAction

@@ -2609,6 +2609,88 @@ KPopupMenu *KToolBarPopupAction::popupMenu() const
 
 ////////
 
+KToggleToolBarAction::KToggleToolBarAction( const char* toolBarName,
+         const QString& text, QObject* parent, const char* name )
+  : KToggleAction( text, KShortcut(), parent, name )
+  , m_toolBarName( toolBarName )
+  , m_toolBar( 0L )
+{
+}
+
+KToggleToolBarAction::~KToggleToolBarAction()
+{
+}
+
+int KToggleToolBarAction::plug( QWidget* w, int index )
+{
+  // Note: topLevelWidget() stops too early, we can't use it.
+  QWidget * tl = w;
+  QWidget * n;
+  while ( !tl->isDialog() && ( n = tl->parentWidget() ) ) // lookup parent and store
+    tl = n;
+
+  KMainWindow * mw = dynamic_cast<KMainWindow *>(tl); // try to see if it's a kmainwindow
+
+  if( mw && (m_toolBar = mw->toolBar( m_toolBarName )) ) {
+    setChecked( m_toolBar->isVisible() );
+    connect( m_toolBar, SIGNAL(visibilityChanged(bool)), this, SLOT(setChecked(bool)) );
+    connect( this, SIGNAL(toggled(bool)), this, SLOT(slotToggled(bool)) );
+  } else {
+    setEnabled( false );
+  }
+
+  return KToggleAction::plug( w, index );
+}
+
+void KToggleToolBarAction::slotToggled( bool checked )
+{
+  if( !m_toolBar || checked == m_toolBar->isVisible() )
+    return;
+  if( checked ) {
+    m_toolBar->show();
+  } else {
+    m_toolBar->hide();
+  }
+}
+
+////////
+
+KWidgetAction::KWidgetAction( QWidget* widget,
+    const QString& text, const KShortcut& cut,
+    const QObject* receiver, const char* slot,
+    KActionCollection* parent, const char* name )
+  : KAction( text, cut, receiver, slot, parent, name )
+  , m_widget( widget )
+{
+}
+
+KWidgetAction::~KWidgetAction()
+{
+}
+
+int KWidgetAction::plug( QWidget* w, int index )
+{
+  if ( !w->inherits( "KToolBar" ) ) {
+    kdError() << "KToggleToolBarAction must be plugged into KToolBar." << endl;
+    return -1;
+  }
+
+  KToolBar* toolBar = static_cast<KToolBar*>( w );
+
+  int id = KAction::getToolButtonID();
+
+  m_widget->reparent( toolBar, QPoint() );
+  toolBar->insertWidget( id, 0, m_widget, index );
+
+  addContainer( toolBar, id );
+  
+  connect( toolBar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
+
+  return containerCount() - 1;
+}
+
+////////
+
 KActionSeparator::KActionSeparator( QObject *parent, const char *name )
   : KAction( parent, name )
 {
@@ -3303,6 +3385,12 @@ void KActionMenu::virtual_hook( int id, void* data )
 { KAction::virtual_hook( id, data ); }
 
 void KToolBarPopupAction::virtual_hook( int id, void* data )
+{ KAction::virtual_hook( id, data ); }
+
+void KToggleToolBarAction::virtual_hook( int id, void* data )
+{ KToggleAction::virtual_hook( id, data ); }
+
+void KWidgetAction::virtual_hook( int id, void* data )
 { KAction::virtual_hook( id, data ); }
 
 void KActionSeparator::virtual_hook( int id, void* data )

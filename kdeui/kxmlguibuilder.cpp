@@ -215,7 +215,13 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
   {
     bool honor = (element.attribute( d->attrName ) == "mainToolBar");
 
-    KToolBar *bar = new KToolBar( d->m_widget, element.attribute( d->attrName ).utf8(), honor, false );
+    QCString name = element.attribute( d->attrName ).utf8();
+
+    KToolBar *bar = static_cast<KToolBar*>(d->m_widget->child( name, "KToolBar" ));
+    if( !bar )
+    {
+       bar = new KToolBar( d->m_widget, name, honor, false );
+    }
 
     if ( d->m_widget->inherits( "KMainWindow" ) )
     {
