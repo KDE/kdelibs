@@ -27,19 +27,19 @@ DISTCLEANFILES = $(BUILT_SOURCES)
 check_PROGRAMS = kconfigtest kledlamptest kprogresstest \
 		kcolordlgtest kdatepicktest kfontdialogtest	\
 		kmsgboxtest kpopuptest ktabctltest ktreelisttest	\
-		kkeyconfigtest kseparatortest kiconloadertest		\
+		kseparatortest kiconloadertest		\
 		kwindowtest klinetest kstatusbartest kspinboxtest	\
 		kprocesstest kpannertest kbuttonboxtest ksimpleconfigtest \
 		kcharsetstest kledtest kcontainertest klocaletest
 
 noinst_HEADERS = kdatepicktestdlg.h kmsgboxtest.h ktreelisttest.h \
-		kkeyconfigtest.h ktabctltest.h kiconloadertestmain.h	\
+		ktabctltest.h kiconloadertestmain.h	\
 		kwindowtest.h klinetest.h kstatusbartest.h kspinboxtest.h \
 		kprocesstest.h kcharsetstest.h kledtest.h kcontainertest.h \
 		klocaletest.h
 
 BUILT_SOURCES = ktabctltest.moc kmsgboxtest.moc kdatepicktestdlg.moc \
-		ktreelisttest.moc kkeyconfigtest.moc kiconloadertestmain.moc \
+		ktreelisttest.moc kiconloadertestmain.moc \
 		kconfigtest.moc kpannertest.moc kwindowtest.moc klinetest.moc \
 		kstatusbartest.moc kspinboxtest.moc kprocesstest.moc \
 		kcharsetstest.moc kledtest.moc kcontainertest.moc klocaletest.moc
@@ -49,7 +49,6 @@ kiconloadertestmain.cpp: kiconloadertestmain.moc
 kmsgboxtest.cpp: kmsgboxtest.moc
 kdatepicktestdlg.cpp: kdatepicktestdlg.moc
 ktreelisttest.cpp: ktreelisttest.moc
-kkeyconfigtest.cpp: kkeyconfigtest.moc
 kconfigtest.cpp: kconfigtest.moc
 kpannertest.cpp: kpannertest.moc
 kwindowtest.cpp: kwindowtest.moc
@@ -73,7 +72,6 @@ kmsgboxtest_SOURCES = kmsgboxtest.cpp
 kpopuptest_SOURCES = kpopuptest.cpp
 ktabctltest_SOURCES = ktabctltest.cpp
 ktreelisttest_SOURCES = ktreelisttest.cpp
-kkeyconfigtest_SOURCES = kkeyconfigtest.cpp
 kseparatortest_SOURCES = kseparatortest.cpp
 kiconloadertest_SOURCES = kiconloadertest.cpp kiconloadertestmain.cpp
 kwindowtest_SOURCES = kwindowtest.cpp
@@ -111,9 +109,6 @@ kwindowtest.moc: kwindowtest.h
 
 kpannertest.moc: kpannertest.h
 	$(MOC) kpannertest.h -o kpannertest.moc
-
-kkeyconfigtest.moc: kkeyconfigtest.h
-	$(MOC) kkeyconfigtest.h -o kkeyconfigtest.moc
 
 kiconloadertestmain.moc: kiconloadertestmain.h
 	$(MOC) kiconloadertestmain.h -o kiconloadertestmain.moc
