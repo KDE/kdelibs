@@ -745,6 +745,8 @@ KActionCollection *KEditToolbarWidget::actionCollection() const
 void KEditToolbarWidget::slotToolbarSelected(const QString& _text)
 {
   static QString attrName = QString::fromLatin1( "name" );
+  static QString tagText = QString::fromLatin1( "text" );
+  static QString tagText2 = QString::fromLatin1( "Text" );
 
   // iterate through everything
   XmlDataList::Iterator xit = d->m_xmlFiles.begin();
@@ -754,7 +756,12 @@ void KEditToolbarWidget::slotToolbarSelected(const QString& _text)
     ToolbarList::Iterator it = (*xit).m_barList.begin();
     for ( ; it != (*xit).m_barList.end(); ++it)
     {
-      QString name( (*it).attribute( attrName ) );;
+      QString name( i18n( (*it).namedItem( tagText ).toElement().text().utf8() ) );
+      if ( name.isEmpty() )
+          name = i18n( (*it).namedItem( tagText2 ).toElement().text().utf8() );
+      if ( name.isEmpty() )
+          name = (*it).attribute( attrName );
+
       // the name of the toolbar might depend on whether or not
       // it is in kparts
       if ( ( (*xit).m_type == XmlData::Shell ) ||
