@@ -25,6 +25,7 @@
 #include <kglobal.h>
 #include <klocale.h>
 #include <kcharsets.h>
+#include <kdebug.h>
 
 #define MAXFONTSIZES 15
 // xx-small, x-small, small, medium, large, x-large, xx-large, ...
@@ -428,8 +429,9 @@ QString KHTMLSettings::settingsToCSS() const
     str += "\n}\n";
 
     if(m_hoverLink)
-        str += "a:hover { text-decoration: underline; }\n";
+        str += "a:link:hover { text-decoration: underline; }\n";
 
+    kdDebug()<<"KHTMLSettings::settingsToCSS() returning:"<<str<<endl;
     return str;
 }
 
