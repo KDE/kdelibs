@@ -29,7 +29,7 @@ DISTCLEANFILES = bookmark.moc kdir.moc kdirlistbox.moc kfiledialog.moc \
 include_HEADERS = kfiledialog.h kfileinfo.h bookmark.h  \
 	kremotefile.h kdir.h kdirlistbox.h kfileinfocontents.h \
 	booktoken.h kfiledetaillist.h kcombiview.h kpreview.h kfilepreview.h \
-	xview.h kfilesimpleview.h
+	xview.h kfilesimpleview.h kfilefilter.h
 
 noinst_HEADERS = kfiledialogconf.h kfilefilter.h debug.h
 
