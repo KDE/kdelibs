@@ -1367,15 +1367,22 @@ signals:
   void removed( KAction* );
 
   void actionHighlighted( KAction *action );
+  void actionHighlighted( KAction *action, bool highlight );
+
+  void actionStatusText( const QString &text );
+  void clearStatusText();
 
 protected:
     void childEvent( QChildEvent* );
 
 private slots:
-   void slotHighlighted( int id );
+   void slotMenuItemHighlighted( int id );
+   void slotToolBarButtonHighlighted( int id, bool highlight );
+   void slotMenuAboutToHide();
    void slotDestroyed();
 
 private:
+   KAction *findAction( QWidget *container, int id );
    class KActionCollectionPrivate;
    KActionCollectionPrivate *d;
 };

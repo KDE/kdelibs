@@ -2342,6 +2342,7 @@ public:
     m_dctHighlightContainers.setAutoDelete( true );
     // m_keyDict.setAutoDelete( true );
     m_highlight = false;
+    m_currentHighlightAction = 0;
   }
   ~KActionCollectionPrivate()
   {
@@ -2351,6 +2352,7 @@ public:
   QPtrDict< QList<KAction> > m_dctHighlightContainers;
   bool m_highlight;
   KKeyEntryMap m_keyMap;
+  KAction *m_currentHighlightAction;
 };
 
 KActionCollection::KActionCollection( QObject *parent, const char *name,
@@ -2579,8 +2581,18 @@ void KActionCollection::connectHighlight( QWidget *container, KAction *action )
   {
     actionList = new QList<KAction>;
 
-    connect( container, SIGNAL( highlighted( int ) ),
-             this, SLOT( slotHighlighted( int ) ) );
+    if ( container->inherits( "QPopupMenu" ) )
+    {
+      connect( container, SIGNAL( highlighted( int ) ),
+               this, SLOT( slotMenuItemHighlighted( int ) ) );
+      connect( container, SIGNAL( aboutToHide() ),
+               this, SLOT( slotMenuAboutToHide() ) );
+    }
+    else if ( container->inherits( "KToolBar" ) )
+    {
+      connect( container, SIGNAL( highlighted( int, bool ) ),
+               this, SLOT( slotToolBarButtonHighlighted( int, bool ) ) );
+    }
 
     connect( container, SIGNAL( destroyed() ),
              this, SLOT( slotDestroyed() ) );
@@ -2607,33 +2619,83 @@ void KActionCollection::disconnectHighlight( QWidget *container, KAction *action
     d->m_dctHighlightContainers.remove( container );
 }
 
-void KActionCollection::slotHighlighted( int id )
+void KActionCollection::slotMenuItemHighlighted( int id )
+{
+  if ( !d->m_highlight )
+    return;
+
+  if ( d->m_currentHighlightAction )
+    emit actionHighlighted( d->m_currentHighlightAction, false );
+
+  QWidget *container = static_cast<QWidget *>( const_cast<QObject *>( sender() ) );
+
+  d->m_currentHighlightAction = findAction( container, id );
+
+  if ( !d->m_currentHighlightAction )
+  {
+      emit clearStatusText();
+      return;
+  }
+
+  emit actionHighlighted( d->m_currentHighlightAction );
+  emit actionHighlighted( d->m_currentHighlightAction, true );
+  emit actionStatusText( d->m_currentHighlightAction->statusText() );
+}
+
+void KActionCollection::slotMenuAboutToHide()
+{
+    if ( d->m_currentHighlightAction )
+        emit actionHighlighted( d->m_currentHighlightAction, false );
+    d->m_currentHighlightAction = 0;
+    emit clearStatusText();
+}
+
+void KActionCollection::slotToolBarButtonHighlighted( int id, bool highlight )
 {
   if ( !d->m_highlight )
     return;
 
   QWidget *container = static_cast<QWidget *>( const_cast<QObject *>( sender() ) );
 
-  QList<KAction> *actionList = d->m_dctHighlightContainers[ reinterpret_cast<void *>( container ) ];
+  KAction *action = findAction( container, id );
 
-  if ( !actionList )
-    return;
-
-  //  kdDebug() << "highlight -- id is " << id << endl;
-
-  QListIterator<KAction> it( *actionList );
-  for (; it.current(); ++it )
-    if ( it.current()->isPlugged( container, id ) )
-    {
-      // kdDebug() << "action highlighted: " << it.current()->name() << endl;
-      emit actionHighlighted( it.current() );
+  if ( !action )
+  {
+      d->m_currentHighlightAction = 0;
+      // use tooltip groups for toolbar status text stuff instead (Simon)
+//      emit clearStatusText();
       return;
-    }
+  }
+
+  emit actionHighlighted( action, highlight );
+
+  if ( highlight )
+    d->m_currentHighlightAction = action;
+  else
+  {
+    d->m_currentHighlightAction = 0;
+//    emit clearStatusText();
+  }
 }
 
 void KActionCollection::slotDestroyed()
 {
   d->m_dctHighlightContainers.remove( reinterpret_cast<void *>( const_cast<QObject *>(sender()) ) );
+}
+
+KAction *KActionCollection::findAction( QWidget *container, int id )
+{
+  QList<KAction> *actionList = d->m_dctHighlightContainers[ reinterpret_cast<void *>( container ) ];
+
+  if ( !actionList )
+    return 0;
+
+  QListIterator<KAction> it( *actionList );
+  for (; it.current(); ++it )
+    if ( it.current()->isPlugged( container, id ) )
+      return it.current();
+
+  return 0;
 }
 
 #include "kaction.moc"
