@@ -211,6 +211,8 @@ protected:
     int distributeWidth(int distrib, khtml::LengthType type, int typeCols );
     int distributeMinWidth(int distrib, khtml::LengthType distType,
             khtml::LengthType toType, int start, int span, bool minlimit );
+    int distributeMaxWidth(int distrib, LengthType distType,
+            LengthType toType, int start, int span);
     int distributeRest(int distrib, khtml::LengthType type, int divider );
 
     int maxColSpan;

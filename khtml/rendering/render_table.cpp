@@ -567,29 +567,39 @@ void RenderTable::spreadSpanMinMax(int col, int span, int distmin,
 
     if (hasUsableCols)
     {
-        // spread span maxWidth evenly
-        c=col;
-        while(tmax)
+        // first target unused columns
+        for(c=col; c<col+span; ++c)
         {
-//          kdDebug( 6040 ) << "tmax remaining " << tmax << endl;
-            if (colType[c]<=type)
-            {
-                colMaxWidth[c]+=distmax/span;
-                tmax-=distmax/span;
+            if (colInfos[0]->at(c)==0)
+            {                
+                colMaxWidth[c]+=tmax;
+                colMinWidth[c]+=tmin;
                 colType[c]=type;
-                if (tmax<span)
-                {
-                    colMaxWidth[c]+=tmax;
-                    tmax=0;
-                }
+                tmax=0;
+                tmin=0;
+                break;                
             }
-            if (++c==col+span)
-                c=col;
-        }
-
-        // spread span minWidth
+        }        
+        // spread span maxWidth
         LengthType tt = Undefined;
         bool out=false;
+        while (tt<=type && !out && tmax)
+        {
+            tmax = distributeMaxWidth(tmax,type,tt,col,span);
+            switch (tt)
+            {
+            case Undefined: tt=Variable; break;
+            case Variable: tt=Relative; break;
+            case Relative: tt=Percent; break;
+            case Percent: tt=Fixed; break;
+            case Fixed: out=true; break;
+            }
+        }
+ 
+
+        // spread span minWidth
+        tt = Undefined;
+        out=false;
         while (tt<=type && !out && tmin)
         {
             tmin = distributeMinWidth(tmin,type,tt,col,span,true);
@@ -624,6 +634,110 @@ void RenderTable::spreadSpanMinMax(int col, int span, int distmin,
 
     }
 }
+
+
+int RenderTable::distributeMinWidth(int distrib, LengthType distType,
+            LengthType toType, int start, int span, bool mlim )
+{
+//    kdDebug( 6040 ) << "MINDIST, " << distrib << " pixels of type " << distType << " to type " << toType << " cols sp=" << span << " " << endl;
+
+    int olddis=0;
+    int c=start;
+    int totper=0;
+
+    int tdis = distrib;
+    
+    // first target unused columns
+    for(; c<start+span; ++c)
+    {
+        if (colInfos[0]->at(c)==0)
+        {                
+            colMinWidth[c]+=tdis;
+            colType[c]=distType;
+            tdis=0;
+            break;                
+        }
+    } 
+
+    if (toType==Percent || toType==Relative)
+        for (int n=start;n<start+span;n++)
+            if (colType[n]==Percent || colType[n]==Relative) totper += colValue[n];
+
+    c=start;
+    while(tdis>0)
+    {
+//      kdDebug( 6040 ) << c << ": ct=" << colType[c] << " min=" << colMinWidth[c]
+//                << " max=" << colMaxWidth[c] << endl;
+        if (colType[c]==toType || (mlim && colMaxWidth[c]-colMinWidth[c]>0))
+        {
+            int delta = distrib/span;
+            if (totper)
+                delta=(distrib * colValue[c])/totper;
+            if (mlim)
+                delta = QMIN(delta,colMaxWidth[c]-colMinWidth[c]);
+
+            delta = QMIN(tdis,delta);
+
+            if (delta==0 && tdis && (!mlim || colMaxWidth[c]>colMinWidth[c]))
+                delta=1;
+
+//            kdDebug( 6040 ) << "delta=" << delta << endl;
+
+            colMinWidth[c]+=delta;
+            if (mlim)
+                colType[c]=distType;
+            tdis-=delta;
+        }
+        if (++c==start+span)
+        {
+            c=start;
+            if (olddis==tdis)
+                break;
+            olddis=tdis;
+        }
+    }
+
+    return tdis;
+}
+
+
+
+int RenderTable::distributeMaxWidth(int distrib, LengthType distType,
+            LengthType toType, int start, int span)
+{
+//    kdDebug( 6040 ) << "MAXDIST, " << distrib << " pixels of type " << distType << " to type " << toType << " cols sp=" << span << " " << endl;    
+    int olddis=0;
+    int c=start;
+
+    int tdis = distrib;
+    
+    // spread span maxWidth evenly
+    c=start;
+    while(tdis>0)
+    {
+//      kdDebug( 6040 ) << c << ": ct=" << colType[c] << " min=" << colMinWidth[c]
+//                << " max=" << colMaxWidth[c] << endl;
+        
+        if (colType[c]==toType)
+        {
+            colMaxWidth[c]+=distrib/span;
+            tdis-=distrib/span;
+            if (tdis<span)
+            {
+                colMaxWidth[c]+=tdis;
+                tdis=0;
+            }
+        }
+        if (++c==start+span)
+        {
+            c=start;
+            if (olddis==tdis)
+                break;
+            olddis=tdis;
+        }
+    }     
+    return tdis;
+}    
 
 
 
@@ -878,10 +992,10 @@ void RenderTable::calcColMinMax()
     }
     else if (hasPercent && hasFixed)
     {
-        totalPercent = QMIN(99,totalPercent);
+        int tot = QMIN(99,totalPercent);
 //      kdDebug( 6040 ) << "3 maxFixed=" << maxFixed << "  totalPercent=" << totalPercent << endl;
         m_width = (maxFixed + minVar + minRel) * 100 /
-            (100 - totalPercent);
+            (100 - tot);
         m_width = QMIN (m_width, availableWidth);
     }
     else
@@ -917,16 +1031,24 @@ void RenderTable::calcColMinMax()
 
 
     // PHASE 5, set table min and max to final values
-
+    
     if(m_style->width().type == Fixed)
-        m_minWidth = m_maxWidth = m_width;
-    else
     {
-        m_maxWidth = spacing;
-
-        for(int i = 0; i < (int)totalCols; i++)
-            m_maxWidth += colMaxWidth[i] + spacing;
+        m_minWidth = m_maxWidth = m_width;
     }
+    else if(m_style->width().type == Variable && hasPercent)
+    {           
+        int tot = QMIN(99,totalPercent);
+        int mx;
+        if (hasFixed)
+            mx = (maxFixed + minVar + minRel) * 100 /(100 - tot);
+        else
+            mx = (minVar + minRel)*100/(100-tot);
+        
+        if (mx>0) m_maxWidth=mx;
+    }
+
+    
 
     if (m_style->width().type == Percent)
     {
@@ -1051,7 +1173,7 @@ void RenderTable::calcColWidth(void)
     int toAdd = m_width - actWidth;      // what we can add
 
 #ifdef TABLE_DEBUG
-    kdDebug( 6040 ) << "toAdd = width - actwidth: " << tooAdd << " = " << m_width << " - " << actWidth << endl;
+    kdDebug( 6040 ) << "toAdd = width - actwidth: " << toAdd << " = " << m_width << " - " << actWidth << endl;
 #endif
 
     /*
@@ -1165,59 +1287,6 @@ int RenderTable::distributeRest(int distrib, LengthType type, int divider )
     }
     return tdis;
 }
-
-int RenderTable::distributeMinWidth(int distrib, LengthType distType,
-            LengthType toType, int start, int span, bool mlim )
-{
-//    kdDebug( 6040 ) << "MINDIST, " << distrib << " pixels of type " << distType << " to type " << toType << " cols sp=" << span << " " << endl;
-
-    int olddis=0;
-    int c=start;
-    int totper=0;
-
-    int tdis = distrib;
-
-    if (toType==Percent || toType==Relative)
-        for (int n=start;n<start+span;n++)
-            if (colType[n]==Percent || colType[n]==Relative) totper += colValue[n];
-
-    while(tdis>0)
-    {
-//      kdDebug( 6040 ) << c << ": ct=" << colType[c] << " min=" << colMinWidth[c]
-//                << " max=" << colMaxWidth[c] << endl;
-        if (colType[c]==toType || (mlim && colMaxWidth[c]-colMinWidth[c]>0))
-        {
-            int delta = distrib/span;
-            if (totper)
-                delta=(distrib * colValue[c])/totper;
-            if (mlim)
-                delta = QMIN(delta,colMaxWidth[c]-colMinWidth[c]);
-
-            delta = QMIN(tdis,delta);
-
-            if (delta==0 && tdis && (!mlim || colMaxWidth[c]>colMinWidth[c]))
-                delta=1;
-
-//            kdDebug( 6040 ) << "delta=" << delta << endl;
-
-            colMinWidth[c]+=delta;
-            if (mlim)
-                colType[c]=distType;
-            tdis-=delta;
-        }
-        if (++c==start+span)
-        {
-            c=start;
-            if (olddis==tdis)
-                break;
-            olddis=tdis;
-        }
-    }
-
-    return tdis;
-}
-
-
 
 
 void RenderTable::calcRowHeight(int r)
