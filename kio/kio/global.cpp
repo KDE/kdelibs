@@ -618,7 +618,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
     case  KIO::ERR_UNSUPPORTED_ACTION:
       errorName = i18n( "Unsupported Action: %1" ).arg( errorText );
       description = i18n( "The requested action is not supported by the KDE "
-        "program which is implementing the <strong>%1<strong> protocol." )
+        "program which is implementing the <strong>%1</strong> protocol." )
         .arg( protocol );
       causes << i18n( "This error is very much dependant on the KDE program. The "
         "additional information should give you more information than is available "
