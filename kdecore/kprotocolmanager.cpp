@@ -27,6 +27,7 @@
 #include <qdir.h>
 #include <qstrlist.h>
 #include <kconfig.h>
+#include <kstringhandler.h>
 
 #undef Unsorted // X11 headers
 
@@ -72,6 +73,7 @@ void KProtocolManager::scanConfig( const QString& _dir )
     p.listing = config.readListEntry( "listing" );
     p.supportsListing = ( p.listing.count() > 0 );
     p.mimetypesExcludedFromFastMode = config.readListEntry( "mimetypesExcludedFromFastMode" );
+    p.patternsExcludedFromFastMode = config.readListEntry( "patternsExcludedFromFastMode" );
     QString tmp = config.readEntry( "input" );
     if ( tmp == "filesystem" )
       p.inputType = T_FILESYSTEM;
@@ -256,6 +258,24 @@ bool KProtocolManager::mimetypeFastMode( const QString& _protocol, const QString
 
   // return true if the exclude-list doesn't contain this mimetype
   return !(it.data().mimetypesExcludedFromFastMode.contains(_mimetype));
+}
+
+bool KProtocolManager::patternFastMode( const QString& _protocol, const QString & _filename ) const
+{
+  ConstIterator it = m_protocols.find( _protocol );
+  if ( it == m_protocols.end() )
+  {
+    kdError(127) << "Protocol " << _protocol << " not found" << endl;
+    return false;
+  }
+
+  // return true if the exclude-list doesn't contain this mimetype
+  const QStringList & pat = it.data().patternsExcludedFromFastMode;
+  for ( QStringList::ConstIterator pit = pat.begin(); pit != pat.end(); ++pit )
+    if ( KStringHandler::matchFilename( _filename, *pit ) )
+      return false; // in the list -> EXCLUDED
+
+  return true; // not in the list -> ok
 }
 
 QStringList KProtocolManager::protocols() const

@@ -91,6 +91,14 @@ public:
   bool mimetypeFastMode( const QString& protocol, const QString& mimetype ) const;
 
   /**
+   * Same as @ref mimetypeFastMode but using patterns to match the filename.
+   * Used to avoid conflicts with existing mimetypes.
+   * Example: *.stm is both audio/x-mod and shtml, over HTTP.
+   * Using mimetypeFastMode is preferred in other cases, though.
+   */
+  bool patternFastMode( const QString& protocol, const QString& filename ) const;
+
+  /**
    * @return list of all known protocols
    */
   QStringList protocols() const;
@@ -234,6 +242,7 @@ private:
     bool supportsLinking;
     bool supportsMoving;
     QStringList mimetypesExcludedFromFastMode;
+    QStringList patternsExcludedFromFastMode;
   };
 
   typedef QMap<QString,Protocol> Map;
