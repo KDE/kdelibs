@@ -1061,7 +1061,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
             else if ( beginTag && tagID == ID_SCRIPT ) {
                 AttrImpl* a = 0;
                 scriptSrc = scriptSrcCharset = "";
-                if ( currToken.attrs ) {
+                if ( currToken.attrs && !view->part()->onlyLocalReferences() ) {
                     if ( ( a = currToken.attrs->getIdItem( ATTR_SRC ) ) )
                         scriptSrc = khtml::parseURL( a->value() ).string();
                     if ( ( a = currToken.attrs->getIdItem( ATTR_CHARSET ) ) )
@@ -1349,10 +1349,10 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
             }
             }; // end case
 
-            processToken();
-
             if ( pre && pending )
                 addPending();
+
+            processToken();
 
             cBufferPos = 0;
             tag = TagName;
