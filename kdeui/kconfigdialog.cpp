@@ -55,7 +55,14 @@ KConfigDialog::KConfigDialog( QWidget *parent, const char *name,
 		  parent, name, modal, i18n("Configure"), dialogButtons, defaultButton ),
     d(new KConfigDialogPrivate(dialogType)) 
 {		  
-  openDialogs.insert(name, this);
+  if ( name ) {
+    openDialogs.insert(name, this);
+  } else {
+    QCString genericName;
+    genericName.sprintf("SettingsDialog-%p", this);
+    openDialogs.insert(genericName, this);
+    setName(genericName);
+  }
 
   d->mgr = new KConfigDialogManager(this, config);
 
