@@ -1825,6 +1825,10 @@ void KApplication::installKDEPropertyMap()
     kdeMap->insert( "KSqueezedTextLabel", "text" );
     kdeMap->insert( "KTextBrowser", "source" );
     kdeMap->insert( "KURLRequester", "url" );
+    //#if QT_VERSION < 0x030300
+      // Temp till fixed in QT then enable ifdef with the version num
+      kdeMap->insert( "QRadioButton", "checked" );
+    //#endif
     QSqlPropertyMap::installDefaultMap( kdeMap );
 #endif
 }

@@ -7,7 +7,6 @@
 
 #include <qsqlpropertymap.h>
 #include <qvariant.h>
-#include <kglobal.h>
 
 // For KAutoConfigPrivate
 #include <qptrlist.h>
@@ -40,6 +39,7 @@ public:
     ignoreTheseWidgets.insert("QLabel", new int(1));		 
     ignoreTheseWidgets.insert("QFrame", new int(2));
     ignoreTheseWidgets.insert("QGroupBox", new int(3));
+    ignoreTheseWidgets.insert("QButtonGroup", new int(4));
     ignoreTheseWidgets.setAutoDelete(true);
   
     static bool defaultKDEPropertyMapInstalled = false;
@@ -128,6 +128,32 @@ bool KAutoConfig::saveSettings() {
     emit( settingsChanged() );
     d->changed = false;
     return true;
+  }
+  return false;
+}
+
+bool KAutoConfig::hasChanged() {
+  QSqlPropertyMap *propertyMap = QSqlPropertyMap::defaultMap();
+  // Go through all of the widgets
+  QPtrListIterator<QWidget> it( d->widgets );
+  QWidget *widget;
+  while ( (widget = it.current()) != 0 ) {
+    ++it;
+    config->setGroup(d->groups[widget]);
+    // Go through the known autowidgets of this widget and save
+    QPtrListIterator<QWidget> it( d->autoWidgets[widget] );
+    QWidget *groupWidget;
+    while ( (groupWidget = it.current()) != 0 ){
+      ++it;
+      QVariant defaultValue = d->defaultValues[groupWidget];
+      QVariant currentValue = propertyMap->property(groupWidget);
+      QVariant savedValue = config->readPropertyEntry(groupWidget->name(),
+		      defaultValue);
+      
+      if((currentValue == defaultValue && savedValue != currentValue) ||
+         (savedValue != currentValue))
+        return true;
+    }
   }
   return false;
 }
