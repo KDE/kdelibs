@@ -615,13 +615,6 @@ void KRun::slotStatResult( KIO::Job * job )
   m_job = 0L;
   if (job->error())
   {
-    if (job->error() == KIO::ERR_DOES_NOT_EXIST)
-    {
-        // Not found, try getting nonetheless. This happens with crappy MS FTP servers :(
-        m_bScanFile = true;
-        m_timer.start( 0, true );
-	return;
-    }
     kdError(7010) << this << " ERROR " << job->error() << " " << job->errorString() << endl;
     job->showErrorDialog();
     kdDebug(7010) << this << " KRun returning from showErrorDialog, starting timer to delete us" << endl;
