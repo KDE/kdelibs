@@ -1,4 +1,4 @@
-$Id:$
+$Id$
 This document contains the changes you have to apply to programs written for
 KDE1.1 when you want to port them to KDE2.0.
 
@@ -87,9 +87,9 @@ khtmlw has been replaced with khtml.
   this:
 
   QMap<QString, QString> tmpMap = config->entryMap(myGroup);
-  QMap<QString, QString>::Iterator aIt(tmpMap.begin);
+  QMap<QString, QString>::Iterator aIt(tmpMap.begin());
 
-  for (; aIt != tmpMap.end() ++aIt) {
+  for (; aIt != tmpMap.end(); ++aIt) {
    // body here.  Access iterator key as aIt.key(),
    // data as *aIt.
   }
