@@ -723,6 +723,7 @@ void KKeyChooser::noKey()
 
 	wList->changeItem( sli, wList->currentItem()  );
 	toChange(wList->currentItem());
+	emit keyChange();
 }
 
 void KKeyChooser::defaultKey()
@@ -748,6 +749,7 @@ void KKeyChooser::defaultKey()
 
 	wList->changeItem( sli, wList->currentItem()  );
 	toChange(wList->currentItem());
+	emit keyChange();
 }
 
 void KKeyChooser::allDefault()
@@ -786,6 +788,7 @@ void KKeyChooser::allDefault()
 	wList->setAutoUpdate( true );
 	wList->update();
 	wList->setCurrentItem( 0 );
+	emit keyChange();
 }
 
 void KKeyChooser::listSync()
@@ -858,6 +861,7 @@ void KKeyChooser::shiftClicked()
 		wList->changeItem( sli, wList->currentItem() );
 	}
 	toChange(wList->currentItem());
+	emit keyChange();
 }
 
 void KKeyChooser::ctrlClicked()
@@ -885,6 +889,7 @@ void KKeyChooser::ctrlClicked()
 		wList->changeItem( sli, wList->currentItem() );
 	}
 	toChange(wList->currentItem());
+	emit keyChange();
 }
 
 void KKeyChooser::altClicked()
@@ -912,6 +917,7 @@ void KKeyChooser::altClicked()
 		wList->changeItem( sli, wList->currentItem() );
 	}
 	toChange(wList->currentItem());
+	emit keyChange();
 }
 
 void KKeyChooser::changeKey()
@@ -963,7 +969,7 @@ void KKeyChooser::setKey( uint kCode)
 	if ( kCode!=Key_Control ) kCode |= (pEntry->aConfigKeyCode & CTRL);
 	if ( kCode!=Key_Alt ) kCode |= (pEntry->aConfigKeyCode & ALT);
 	
-	/* set the list and the chande button */
+	/* set the list and the change button */
 	pEntry->aConfigKeyCode = kCode;
 	
 	if ( isKeyPresent() ) {
@@ -984,6 +990,7 @@ void KKeyChooser::setKey( uint kCode)
 	
 	wList->changeItem( sli, wList->currentItem() );
 	toChange(wList->currentItem());
+	emit keyChange();
 }
 
 void KKeyChooser::editKey()
@@ -1087,7 +1094,7 @@ bool KKeyChooser::isKeyPresent()
 		++(*aIt);
 	}
 	
-	emit keyChange();
+	//	emit keyChange();
 	
 	return FALSE;
 }
