@@ -361,7 +361,7 @@ private:
 	}
 
 protected:
-	inline InterfaceRepo(InterfaceRepo_base* b) : Object(b), _cache(0) {}
+	inline InterfaceRepo(InterfaceRepo_base* b) : Arts::Object(b), _cache(0) {}
 
 
 public:
@@ -458,7 +458,7 @@ private:
 	}
 
 protected:
-	inline FlowSystemSender(FlowSystemSender_base* b) : Object(b), _cache(0) {}
+	inline FlowSystemSender(FlowSystemSender_base* b) : Arts::Object(b), _cache(0) {}
 
 
 public:
@@ -547,7 +547,7 @@ private:
 	}
 
 protected:
-	inline FlowSystemReceiver(FlowSystemReceiver_base* b) : Object(b), _cache(0) {}
+	inline FlowSystemReceiver(FlowSystemReceiver_base* b) : Arts::Object(b), _cache(0) {}
 
 
 public:
@@ -646,7 +646,7 @@ private:
 	}
 
 protected:
-	inline FlowSystem(FlowSystem_base* b) : Object(b), _cache(0) {}
+	inline FlowSystem(FlowSystem_base* b) : Arts::Object(b), _cache(0) {}
 
 
 public:
@@ -744,7 +744,7 @@ private:
 	}
 
 protected:
-	inline GlobalComm(GlobalComm_base* b) : Object(b), _cache(0) {}
+	inline GlobalComm(GlobalComm_base* b) : Arts::Object(b), _cache(0) {}
 
 
 public:
@@ -833,7 +833,7 @@ private:
 	}
 
 protected:
-	inline TmpGlobalComm(TmpGlobalComm_base* b) : Object(b), _cache(0) {}
+	inline TmpGlobalComm(TmpGlobalComm_base* b) : Arts::Object(b), _cache(0) {}
 
 
 public:
@@ -927,7 +927,7 @@ private:
 	}
 
 protected:
-	inline TraderOffer(TraderOffer_base* b) : Object(b), _cache(0) {}
+	inline TraderOffer(TraderOffer_base* b) : Arts::Object(b), _cache(0) {}
 
 
 public:
@@ -1019,7 +1019,7 @@ private:
 	}
 
 protected:
-	inline TraderQuery(TraderQuery_base* b) : Object(b), _cache(0) {}
+	inline TraderQuery(TraderQuery_base* b) : Arts::Object(b), _cache(0) {}
 
 
 public:

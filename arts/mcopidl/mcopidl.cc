@@ -538,7 +538,7 @@ string createTypeCode(string type, const string& name, long model,
 		if(model==MODEL_READ)
 			result = name+".readType(stream)";
 		if(model==MODEL_READ_SEQ)
-			result = "readTypeSeq(stream,"+name+")";
+			result = "Arts::readTypeSeq(stream,"+name+")";
 		if(model==MODEL_REQ_READ)
 			result = indent + type+" "+name+"(*request);\n";
 		//if(model==MODEL_REQ_READ_SEQ) TODO
@@ -548,9 +548,9 @@ string createTypeCode(string type, const string& name, long model,
 		if(model==MODEL_REQ_WRITE)
 			result = name+".writeType(*request)";
 		if(model==MODEL_WRITE_SEQ)
-			result = "writeTypeSeq(stream,"+name+")";
+			result = "Arts::writeTypeSeq(stream,"+name+")";
 		if(model==MODEL_REQ_WRITE_SEQ)
-			result = "writeTypeSeq(*request,"+name+")";
+			result = "Arts::writeTypeSeq(*request,"+name+")";
 
 		if(model==MODEL_INVOKE)
 			result = indent + type + " _returnCode = "+name+";\n"
@@ -559,7 +559,7 @@ string createTypeCode(string type, const string& name, long model,
 		if(model==MODEL_INVOKE_SEQ)
 		{
 			result = indent + "std::vector<"+type+"> *_returnCode = "+name+";\n"
-				   + indent + "writeTypeSeq(*result,*_returnCode);\n"
+				   + indent + "Arts::writeTypeSeq(*result,*_returnCode);\n"
 				   + indent + "delete _returnCode;\n";
 		}
 		if(model==MODEL_RES_READ)
@@ -575,7 +575,7 @@ string createTypeCode(string type, const string& name, long model,
 			result = indent + "std::vector<"+type+"> *_returnCode ="
 											" new std::vector<"+type+">;\n";
 			result += indent + "if(!result) return _returnCode; // error occured\n";
-			result += indent + "readTypeSeq(*result,*_returnCode);\n";
+			result += indent + "Arts::readTypeSeq(*result,*_returnCode);\n";
 			result += indent + "delete result;\n";
 			result += indent + "return _returnCode;\n";
 		}
@@ -624,14 +624,14 @@ string createTypeCode(string type, const string& name, long model,
 		if(model==MODEL_RESULT)		result = type;
 		if(model==MODEL_RESULT_SEQ)	result = "std::vector<"+type+"> *";
 		if(model==MODEL_READ)
-			result = "readObject(stream,"+name+")";
+			result = "Arts::readObject(stream,"+name+")";
 		if(model==MODEL_READ_SEQ)
-			result = "readObjectSeq(stream,"+name+")";
+			result = "Arts::readObjectSeq(stream,"+name+")";
 		if(model==MODEL_RES_READ)
 		{
  			result = indent + "if (!result) return "+type+"::null();\n"; // error occured\n";
 			result += indent + type+"_base* returnCode;\n";
-			result += indent + "readObject(*result,returnCode);\n";
+			result += indent + "Arts::readObject(*result,returnCode);\n";
 			result += indent + "delete result;\n";
 			result += indent + "return "+type+"::_from_base(returnCode);\n";
 		}
@@ -640,36 +640,36 @@ string createTypeCode(string type, const string& name, long model,
 			result = indent + "std::vector<"+type+"> *_returnCode ="
 												" new std::vector<"+type+">;\n";
 			result += indent + "if(!result) return _returnCode; // error occured\n";
-			result += indent + "readObjectSeq(*result,*_returnCode);\n";
+			result += indent + "Arts::readObjectSeq(*result,*_returnCode);\n";
 			result += indent + "delete result;\n";
 			result += indent + "return _returnCode;\n";
 		}
 		if(model==MODEL_REQ_READ)
 		{
 			result = indent + type +"_base* _temp_"+name+";\n";
-			result += indent + "readObject(*request,_temp_"+name+");\n";
+			result += indent + "Arts::readObject(*request,_temp_"+name+");\n";
 			result += indent + type+" "+name+" = "+type+"::_from_base(_temp_"+name+");\n";
 		}
 		if(model==MODEL_REQ_READ_SEQ)
 			result = indent + "std::vector<"+type+"> "+name+";\n"
-				   + indent + "readObjectSeq(*request,"+name+");\n";
+				   + indent + "Arts::readObjectSeq(*request,"+name+");\n";
 		if(model==MODEL_WRITE)
-			result = "writeObject(stream,"+name+"._base())";
+			result = "Arts::writeObject(stream,"+name+"._base())";
 		if(model==MODEL_WRITE_SEQ)
-			result = "writeObjectSeq(stream,"+name+")";
+			result = "Arts::writeObjectSeq(stream,"+name+")";
 		if(model==MODEL_REQ_WRITE)
-			result = "writeObject(*request,"+name+"._base())";
+			result = "Arts::writeObject(*request,"+name+"._base())";
 		if(model==MODEL_REQ_WRITE_SEQ)
-			result = "writeObjectSeq(*request,"+name+")";
+			result = "Arts::writeObjectSeq(*request,"+name+")";
 		if(model==MODEL_INVOKE)
 		{
 			result = indent + type+" returnCode = "+name+";\n"
-			       + indent + "writeObject(*result,returnCode._base());\n";
+			       + indent + "Arts::writeObject(*result,returnCode._base());\n";
 		}
 		if(model==MODEL_INVOKE_SEQ)
 		{
 			result = indent + "std::vector<"+type+"> *_returnCode = "+name+";\n"
-				   + indent + "writeObjectSeq(*result,*_returnCode);\n"
+				   + indent + "Arts::writeObjectSeq(*result,*_returnCode);\n"
 				   + indent + "delete _returnCode;\n";
 		}
 	}
@@ -1566,7 +1566,7 @@ void doInterfacesHeader(FILE *header)
 		// if necessary. It is protected, though there should be noinherited
 		// class
 		fprintf(header,"\nprotected:\n");
-		fprintf(header,"\tinline %s(%s_base* b) : Object(b), _cache(0) {}\n\n",
+		fprintf(header,"\tinline %s(%s_base* b) : Arts::Object(b), _cache(0) {}\n\n",
 			iname.c_str(),iname.c_str());
 		
 		fprintf(header,"\npublic:\n");
@@ -2015,7 +2015,7 @@ void doInterfacesSource(FILE *source)
 
 		fprintf(source,"%s_stub::%s_stub(Arts::Connection *connection, "
 						"long objectID)\n",d.name.c_str(),iname.c_str());
-		fprintf(source,"	: Object_stub(connection, objectID)\n");
+		fprintf(source,"	: Arts::Object_stub(connection, objectID)\n");
 		fprintf(source,"{\n");
 		fprintf(source,"\t// constructor to create a stub for an object\n");
 		fprintf(source,"}\n\n");

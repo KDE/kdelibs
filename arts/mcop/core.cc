@@ -395,7 +395,7 @@ void Arts::MethodDef::readType(Arts::Buffer& stream)
 	stream.readString(name);
 	stream.readString(type);
 	flags = (Arts::MethodType)stream.readLong();
-	readTypeSeq(stream,signature);
+	Arts::readTypeSeq(stream,signature);
 	stream.readStringSeq(hints);
 }
 
@@ -404,7 +404,7 @@ void Arts::MethodDef::writeType(Arts::Buffer& stream) const
 	stream.writeString(name);
 	stream.writeString(type);
 	stream.writeLong(flags);
-	writeTypeSeq(stream,signature);
+	Arts::writeTypeSeq(stream,signature);
 	stream.writeStringSeq(hints);
 }
 
@@ -494,8 +494,8 @@ void Arts::InterfaceDef::readType(Arts::Buffer& stream)
 {
 	stream.readString(name);
 	stream.readStringSeq(inheritedInterfaces);
-	readTypeSeq(stream,methods);
-	readTypeSeq(stream,attributes);
+	Arts::readTypeSeq(stream,methods);
+	Arts::readTypeSeq(stream,attributes);
 	stream.readStringSeq(defaultPorts);
 	stream.readStringSeq(hints);
 }
@@ -504,8 +504,8 @@ void Arts::InterfaceDef::writeType(Arts::Buffer& stream) const
 {
 	stream.writeString(name);
 	stream.writeStringSeq(inheritedInterfaces);
-	writeTypeSeq(stream,methods);
-	writeTypeSeq(stream,attributes);
+	Arts::writeTypeSeq(stream,methods);
+	Arts::writeTypeSeq(stream,attributes);
 	stream.writeStringSeq(defaultPorts);
 	stream.writeStringSeq(hints);
 }
@@ -589,14 +589,14 @@ Arts::TypeDef& Arts::TypeDef::operator=(const Arts::TypeDef& assignType)
 void Arts::TypeDef::readType(Arts::Buffer& stream)
 {
 	stream.readString(name);
-	readTypeSeq(stream,contents);
+	Arts::readTypeSeq(stream,contents);
 	stream.readStringSeq(hints);
 }
 
 void Arts::TypeDef::writeType(Arts::Buffer& stream) const
 {
 	stream.writeString(name);
-	writeTypeSeq(stream,contents);
+	Arts::writeTypeSeq(stream,contents);
 	stream.writeStringSeq(hints);
 }
 
@@ -679,14 +679,14 @@ Arts::EnumDef& Arts::EnumDef::operator=(const Arts::EnumDef& assignType)
 void Arts::EnumDef::readType(Arts::Buffer& stream)
 {
 	stream.readString(name);
-	readTypeSeq(stream,contents);
+	Arts::readTypeSeq(stream,contents);
 	stream.readStringSeq(hints);
 }
 
 void Arts::EnumDef::writeType(Arts::Buffer& stream) const
 {
 	stream.writeString(name);
-	writeTypeSeq(stream,contents);
+	Arts::writeTypeSeq(stream,contents);
 	stream.writeStringSeq(hints);
 }
 
@@ -726,18 +726,18 @@ Arts::ModuleDef& Arts::ModuleDef::operator=(const Arts::ModuleDef& assignType)
 void Arts::ModuleDef::readType(Arts::Buffer& stream)
 {
 	stream.readString(moduleName);
-	readTypeSeq(stream,enums);
-	readTypeSeq(stream,types);
-	readTypeSeq(stream,interfaces);
+	Arts::readTypeSeq(stream,enums);
+	Arts::readTypeSeq(stream,types);
+	Arts::readTypeSeq(stream,interfaces);
 	stream.readStringSeq(hints);
 }
 
 void Arts::ModuleDef::writeType(Arts::Buffer& stream) const
 {
 	stream.writeString(moduleName);
-	writeTypeSeq(stream,enums);
-	writeTypeSeq(stream,types);
-	writeTypeSeq(stream,interfaces);
+	Arts::writeTypeSeq(stream,enums);
+	Arts::writeTypeSeq(stream,types);
+	Arts::writeTypeSeq(stream,interfaces);
 	stream.writeStringSeq(hints);
 }
 
@@ -802,7 +802,7 @@ Arts::InterfaceRepo_stub::InterfaceRepo_stub()
 }
 
 Arts::InterfaceRepo_stub::InterfaceRepo_stub(Arts::Connection *connection, long objectID)
-	: Object_stub(connection, objectID)
+	: Arts::Object_stub(connection, objectID)
 {
 	// constructor to create a stub for an object
 }
@@ -1155,7 +1155,7 @@ Arts::FlowSystemSender_stub::FlowSystemSender_stub()
 }
 
 Arts::FlowSystemSender_stub::FlowSystemSender_stub(Arts::Connection *connection, long objectID)
-	: Object_stub(connection, objectID)
+	: Arts::Object_stub(connection, objectID)
 {
 	// constructor to create a stub for an object
 }
@@ -1274,7 +1274,7 @@ Arts::FlowSystemReceiver_stub::FlowSystemReceiver_stub()
 }
 
 Arts::FlowSystemReceiver_stub::FlowSystemReceiver_stub(Arts::Connection *connection, long objectID)
-	: Object_stub(connection, objectID)
+	: Arts::Object_stub(connection, objectID)
 {
 	// constructor to create a stub for an object
 }
@@ -1400,7 +1400,7 @@ Arts::FlowSystem_stub::FlowSystem_stub()
 }
 
 Arts::FlowSystem_stub::FlowSystem_stub(Arts::Connection *connection, long objectID)
-	: Object_stub(connection, objectID)
+	: Arts::Object_stub(connection, objectID)
 {
 	// constructor to create a stub for an object
 }
@@ -1411,7 +1411,7 @@ void Arts::FlowSystem_stub::startObject(Arts::Object node)
 	long requestID;
 	Arts::Buffer *request, *result;
 	request = Arts::Dispatcher::the()->createRequest(requestID,_objectID,methodID);
-	writeObject(*request,node._base());
+	Arts::writeObject(*request,node._base());
 	request->patchLength();
 	_connection->qSendBuffer(request);
 
@@ -1425,7 +1425,7 @@ void Arts::FlowSystem_stub::stopObject(Arts::Object node)
 	long requestID;
 	Arts::Buffer *request, *result;
 	request = Arts::Dispatcher::the()->createRequest(requestID,_objectID,methodID);
-	writeObject(*request,node._base());
+	Arts::writeObject(*request,node._base());
 	request->patchLength();
 	_connection->qSendBuffer(request);
 
@@ -1439,9 +1439,9 @@ void Arts::FlowSystem_stub::connectObject(Arts::Object sourceObject, const std::
 	long requestID;
 	Arts::Buffer *request, *result;
 	request = Arts::Dispatcher::the()->createRequest(requestID,_objectID,methodID);
-	writeObject(*request,sourceObject._base());
+	Arts::writeObject(*request,sourceObject._base());
 	request->writeString(sourcePort);
-	writeObject(*request,destObject._base());
+	Arts::writeObject(*request,destObject._base());
 	request->writeString(destPort);
 	request->patchLength();
 	_connection->qSendBuffer(request);
@@ -1456,9 +1456,9 @@ void Arts::FlowSystem_stub::disconnectObject(Arts::Object sourceObject, const st
 	long requestID;
 	Arts::Buffer *request, *result;
 	request = Arts::Dispatcher::the()->createRequest(requestID,_objectID,methodID);
-	writeObject(*request,sourceObject._base());
+	Arts::writeObject(*request,sourceObject._base());
 	request->writeString(sourcePort);
-	writeObject(*request,destObject._base());
+	Arts::writeObject(*request,destObject._base());
 	request->writeString(destPort);
 	request->patchLength();
 	_connection->qSendBuffer(request);
@@ -1473,7 +1473,7 @@ Arts::AttributeType Arts::FlowSystem_stub::queryFlags(Arts::Object node, const s
 	long requestID;
 	Arts::Buffer *request, *result;
 	request = Arts::Dispatcher::the()->createRequest(requestID,_objectID,methodID);
-	writeObject(*request,node._base());
+	Arts::writeObject(*request,node._base());
 	request->writeString(port);
 	request->patchLength();
 	_connection->qSendBuffer(request);
@@ -1491,16 +1491,16 @@ Arts::FlowSystemReceiver Arts::FlowSystem_stub::createReceiver(Arts::Object dest
 	long requestID;
 	Arts::Buffer *request, *result;
 	request = Arts::Dispatcher::the()->createRequest(requestID,_objectID,methodID);
-	writeObject(*request,destObject._base());
+	Arts::writeObject(*request,destObject._base());
 	request->writeString(destPort);
-	writeObject(*request,sender._base());
+	Arts::writeObject(*request,sender._base());
 	request->patchLength();
 	_connection->qSendBuffer(request);
 
 	result = Arts::Dispatcher::the()->waitForResult(requestID,_connection);
 	if (!result) return Arts::FlowSystemReceiver::null();
 	Arts::FlowSystemReceiver_base* returnCode;
-	readObject(*result,returnCode);
+	Arts::readObject(*result,returnCode);
 	delete result;
 	return Arts::FlowSystemReceiver::_from_base(returnCode);
 }
@@ -1526,7 +1526,7 @@ std::string Arts::FlowSystem_skel::_interfaceNameSkel()
 static void _dispatch_Arts_FlowSystem_00(void *object, Arts::Buffer *request, Arts::Buffer *)
 {
 	Arts::Object_base* _temp_node;
-	readObject(*request,_temp_node);
+	Arts::readObject(*request,_temp_node);
 	Arts::Object node = Arts::Object::_from_base(_temp_node);
 	((Arts::FlowSystem_skel *)object)->startObject(node);
 }
@@ -1535,7 +1535,7 @@ static void _dispatch_Arts_FlowSystem_00(void *object, Arts::Buffer *request, Ar
 static void _dispatch_Arts_FlowSystem_01(void *object, Arts::Buffer *request, Arts::Buffer *)
 {
 	Arts::Object_base* _temp_node;
-	readObject(*request,_temp_node);
+	Arts::readObject(*request,_temp_node);
 	Arts::Object node = Arts::Object::_from_base(_temp_node);
 	((Arts::FlowSystem_skel *)object)->stopObject(node);
 }
@@ -1544,12 +1544,12 @@ static void _dispatch_Arts_FlowSystem_01(void *object, Arts::Buffer *request, Ar
 static void _dispatch_Arts_FlowSystem_02(void *object, Arts::Buffer *request, Arts::Buffer *)
 {
 	Arts::Object_base* _temp_sourceObject;
-	readObject(*request,_temp_sourceObject);
+	Arts::readObject(*request,_temp_sourceObject);
 	Arts::Object sourceObject = Arts::Object::_from_base(_temp_sourceObject);
 	std::string sourcePort;
 	request->readString(sourcePort);
 	Arts::Object_base* _temp_destObject;
-	readObject(*request,_temp_destObject);
+	Arts::readObject(*request,_temp_destObject);
 	Arts::Object destObject = Arts::Object::_from_base(_temp_destObject);
 	std::string destPort;
 	request->readString(destPort);
@@ -1560,12 +1560,12 @@ static void _dispatch_Arts_FlowSystem_02(void *object, Arts::Buffer *request, Ar
 static void _dispatch_Arts_FlowSystem_03(void *object, Arts::Buffer *request, Arts::Buffer *)
 {
 	Arts::Object_base* _temp_sourceObject;
-	readObject(*request,_temp_sourceObject);
+	Arts::readObject(*request,_temp_sourceObject);
 	Arts::Object sourceObject = Arts::Object::_from_base(_temp_sourceObject);
 	std::string sourcePort;
 	request->readString(sourcePort);
 	Arts::Object_base* _temp_destObject;
-	readObject(*request,_temp_destObject);
+	Arts::readObject(*request,_temp_destObject);
 	Arts::Object destObject = Arts::Object::_from_base(_temp_destObject);
 	std::string destPort;
 	request->readString(destPort);
@@ -1576,7 +1576,7 @@ static void _dispatch_Arts_FlowSystem_03(void *object, Arts::Buffer *request, Ar
 static void _dispatch_Arts_FlowSystem_04(void *object, Arts::Buffer *request, Arts::Buffer *result)
 {
 	Arts::Object_base* _temp_node;
-	readObject(*request,_temp_node);
+	Arts::readObject(*request,_temp_node);
 	Arts::Object node = Arts::Object::_from_base(_temp_node);
 	std::string port;
 	request->readString(port);
@@ -1587,15 +1587,15 @@ static void _dispatch_Arts_FlowSystem_04(void *object, Arts::Buffer *request, Ar
 static void _dispatch_Arts_FlowSystem_05(void *object, Arts::Buffer *request, Arts::Buffer *result)
 {
 	Arts::Object_base* _temp_destObject;
-	readObject(*request,_temp_destObject);
+	Arts::readObject(*request,_temp_destObject);
 	Arts::Object destObject = Arts::Object::_from_base(_temp_destObject);
 	std::string destPort;
 	request->readString(destPort);
 	Arts::FlowSystemSender_base* _temp_sender;
-	readObject(*request,_temp_sender);
+	Arts::readObject(*request,_temp_sender);
 	Arts::FlowSystemSender sender = Arts::FlowSystemSender::_from_base(_temp_sender);
 	Arts::FlowSystemReceiver returnCode = ((Arts::FlowSystem_skel *)object)->createReceiver(destObject,destPort,sender);
-	writeObject(*result,returnCode._base());
+	Arts::writeObject(*result,returnCode._base());
 }
 
 void Arts::FlowSystem_skel::_buildMethodTable()
@@ -1705,7 +1705,7 @@ Arts::GlobalComm_stub::GlobalComm_stub()
 }
 
 Arts::GlobalComm_stub::GlobalComm_stub(Arts::Connection *connection, long objectID)
-	: Object_stub(connection, objectID)
+	: Arts::Object_stub(connection, objectID)
 {
 	// constructor to create a stub for an object
 }
@@ -1893,7 +1893,7 @@ Arts::TmpGlobalComm_stub::TmpGlobalComm_stub()
 }
 
 Arts::TmpGlobalComm_stub::TmpGlobalComm_stub(Arts::Connection *connection, long objectID)
-	: Object_stub(connection, objectID)
+	: Arts::Object_stub(connection, objectID)
 {
 	// constructor to create a stub for an object
 }
@@ -1997,7 +1997,7 @@ Arts::TraderOffer_stub::TraderOffer_stub()
 }
 
 Arts::TraderOffer_stub::TraderOffer_stub(Arts::Connection *connection, long objectID)
-	: Object_stub(connection, objectID)
+	: Arts::Object_stub(connection, objectID)
 {
 	// constructor to create a stub for an object
 }
@@ -2155,7 +2155,7 @@ Arts::TraderQuery_stub::TraderQuery_stub()
 }
 
 Arts::TraderQuery_stub::TraderQuery_stub(Arts::Connection *connection, long objectID)
-	: Object_stub(connection, objectID)
+	: Arts::Object_stub(connection, objectID)
 {
 	// constructor to create a stub for an object
 }
@@ -2187,7 +2187,7 @@ std::vector<Arts::TraderOffer> * Arts::TraderQuery_stub::query()
 	result = Arts::Dispatcher::the()->waitForResult(requestID,_connection);
 	std::vector<Arts::TraderOffer> *_returnCode = new std::vector<Arts::TraderOffer>;
 	if(!result) return _returnCode; // error occured
-	readObjectSeq(*result,*_returnCode);
+	Arts::readObjectSeq(*result,*_returnCode);
 	delete result;
 	return _returnCode;
 }
@@ -2223,7 +2223,7 @@ static void _dispatch_Arts_TraderQuery_00(void *object, Arts::Buffer *request, A
 static void _dispatch_Arts_TraderQuery_01(void *object, Arts::Buffer *, Arts::Buffer *result)
 {
 	std::vector<Arts::TraderOffer> *_returnCode = ((Arts::TraderQuery_skel *)object)->query();
-	writeObjectSeq(*result,*_returnCode);
+	Arts::writeObjectSeq(*result,*_returnCode);
 	delete _returnCode;
 }
 
