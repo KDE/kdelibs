@@ -699,7 +699,7 @@ bool NewExprNode::deref()
   return Node::deref();
 }
 
-Value NewExprNode::evaluate(ExecState *exec) const
+Value NewExprNode::value(ExecState *exec) const
 {
   Value v = expr->value(exec);
   KJS_CHECKEXCEPTIONVALUE
@@ -991,7 +991,7 @@ bool PrefixNode::deref()
 }
 
 // ECMA 11.4.4 and 11.4.5
-Value PrefixNode::evaluate(ExecState *exec) const
+Value PrefixNode::value(ExecState *exec) const
 {
   Value e = expr->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
@@ -1739,7 +1739,7 @@ bool VarDeclNode::deref()
 }
 
 // ECMA 12.2
-Value VarDeclNode::evaluate(ExecState *exec) const
+Value VarDeclNode::value(ExecState *exec) const
 {
   Object variable = Object::dynamicCast(exec->context().variableObject());
 
@@ -1795,13 +1795,13 @@ bool VarDeclListNode::deref()
 
 
 // ECMA 12.2
-Value VarDeclListNode::evaluate(ExecState *exec) const
+Value VarDeclListNode::value(ExecState *exec) const
 {
   if (list)
-    (void) list->evaluate(exec);
+    (void) list->value(exec);
   KJS_CHECKEXCEPTIONVALUE
 
-  (void) var->evaluate(exec);
+  (void) var->value(exec);
   KJS_CHECKEXCEPTIONVALUE
 
   return Undefined();
@@ -1840,7 +1840,7 @@ Completion VarStatementNode::execute(ExecState *exec)
 {
   KJS_BREAKPOINT;
 
-  (void) list->evaluate(exec); // returns 0L
+  (void) list->value(exec); // returns 0L
   KJS_CHECKEXCEPTION
 
   return Completion(Normal);
@@ -2234,7 +2234,7 @@ Completion ForInNode::execute(ExecState *exec)
   List propList;
 
   if ( varDecl ) {
-    varDecl->evaluate(exec);
+    varDecl->value(exec);
     KJS_CHECKEXCEPTION
   }
 
@@ -2413,7 +2413,7 @@ bool CaseClauseNode::deref()
 }
 
 // ECMA 12.11
-Value CaseClauseNode::evaluate(ExecState *exec) const
+Value CaseClauseNode::value(ExecState *exec) const
 {
   Value v = expr->value(exec);
   KJS_CHECKEXCEPTIONVALUE
@@ -2460,7 +2460,7 @@ bool ClauseListNode::deref()
   return Node::deref();
 }
 
-Value ClauseListNode::evaluate(ExecState */*exec*/) const
+Value ClauseListNode::value(ExecState */*exec*/) const
 {
   /* should never be called */
   assert(false);
@@ -2514,7 +2514,7 @@ bool CaseBlockNode::deref()
   return Node::deref();
 }
 
-Value CaseBlockNode::evaluate(ExecState */*exec*/) const
+Value CaseBlockNode::value(ExecState */*exec*/) const
 {
   /* should never be called */
   assert(false);
@@ -2532,7 +2532,7 @@ Completion CaseBlockNode::evalBlock(ExecState *exec, const Value& input) const
     while (a) {
       clause = a->clause();
       a = a->next();
-      v = clause->evaluate(exec);
+      v = clause->value(exec);
       KJS_CHECKEXCEPTION
       if (strictEqual(exec, input, v)) {
 	res = clause->evalStatements(exec);
@@ -2551,7 +2551,7 @@ Completion CaseBlockNode::evalBlock(ExecState *exec, const Value& input) const
   while (b) {
     clause = b->clause();
     b = b->next();
-    v = clause->evaluate(exec);
+    v = clause->value(exec);
     KJS_CHECKEXCEPTION
     if (strictEqual(exec, input, v)) {
       res = clause->evalStatements(exec);
@@ -2889,7 +2889,7 @@ ParameterNode* ParameterNode::append(const UString *i)
 }
 
 // ECMA 13
-Value ParameterNode::evaluate(ExecState */*exec*/) const
+Value ParameterNode::value(ExecState */*exec*/) const
 {
   return Undefined();
 }
@@ -3033,7 +3033,7 @@ bool FuncExprNode::deref()
 
 
 // ECMA 13
-Value FuncExprNode::evaluate(ExecState *exec) const
+Value FuncExprNode::value(ExecState *exec) const
 {
   const List sc = exec->context().scopeChain();
   FunctionImp *fimp = new DeclaredFunctionImp(exec, UString::null, body, sc);

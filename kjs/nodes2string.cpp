@@ -97,6 +97,11 @@ void ThisNode::streamTo(SourceStream &s) const { s << "this"; }
 
 void ResolveNode::streamTo(SourceStream &s) const { s << ident; }
 
+void GroupNode::streamTo(SourceStream &s) const
+{
+  s << "(" << group << ")";
+}
+
 void ElisionNode::streamTo(SourceStream &s) const
 {
   if (elision)
