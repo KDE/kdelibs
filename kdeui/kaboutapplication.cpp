@@ -30,12 +30,24 @@
 #include <kglobal.h>
 #include <klocale.h>
 
-KAboutApplication::KAboutApplication( QWidget *parent, const char *name, 
+KAboutApplication::KAboutApplication( QWidget *parent, const char *name,
 				      bool modal )
-  :KAboutDialog( AbtTabbed|AbtProduct, kapp->caption(), Close, Close, 
+  :KAboutDialog( AbtTabbed|AbtProduct, kapp->caption(), Close, Close,
 		 parent, name, modal )
 {
-  const KAboutData *aboutData = KGlobal::instance()->aboutData();
+  buildDialog(KGlobal::instance()->aboutData());
+}
+
+KAboutApplication::KAboutApplication( const KAboutData *aboutData, QWidget *parent,
+                                      const char *name, bool modal )
+  :KAboutDialog( AbtTabbed|AbtProduct, kapp->caption(), Close, Close,
+		 parent, name, modal )
+{
+  buildDialog(aboutData);
+}
+
+void KAboutApplication::buildDialog( const KAboutData *aboutData )
+{
   if( aboutData == 0 )
   {
     //
@@ -44,9 +56,9 @@ KAboutApplication::KAboutApplication( QWidget *parent, const char *name,
     setProduct( kapp->caption(), i18n("??"), QString::null, QString::null );
     KAboutContainer *appPage = addContainerPage( i18n("&About"));
 
-    QString appPageText = 
+    QString appPageText =
       i18n("Sorry, no information available.\n"
-	   "The global KAboutData object does not exist.");
+	   "The supplied KAboutData object does not exist.");
     QLabel *appPageLabel = new QLabel( "\n\n\n\n"+appPageText+"\n\n\n\n", 0 );
     appPage->addWidget( appPageLabel );
     return;
@@ -67,18 +79,18 @@ KAboutApplication::KAboutApplication( QWidget *parent, const char *name,
     appPageText += "\n" + aboutData->copyrightStatement()+"\n";
 
   KAboutContainer *appPage = addContainerPage( i18n("&About"));
- 
+
   QLabel *appPageLabel = new QLabel( appPageText, 0 );
   appPage->addWidget( appPageLabel );
 
   int authorCount = aboutData->authors().count();
   if (authorCount)
   {
-    QString authorPageTitle = authorCount == 1 ? 
+    QString authorPageTitle = authorCount == 1 ?
       i18n("A&uthor") : i18n("A&uthors");
     KAboutContainer *authorPage = addScrolledContainerPage( authorPageTitle );
     QValueList<KAboutPerson>::ConstIterator it;
-    for (it = aboutData->authors().begin(); 
+    for (it = aboutData->authors().begin();
 	 it != aboutData->authors().end(); ++it)
     {
       authorPage->addPerson( (*it).name(), (*it).emailAddress(),
