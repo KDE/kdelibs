@@ -158,6 +158,8 @@ private:
 /* ------------------------------------------------------------------------ */
 
 /**
+ * @short An input widget for integer numbers, consisting of a spinbox and a slider.
+ *
  * KIntNumInput combines a QSpinBox and optionally a QSlider
  * with a label to make an easy to use control for setting some integer
  * parameter. This is especially nice for configuration dialogs,
@@ -179,7 +181,6 @@ private:
  *
  * \image html kintnuminput.png "KDE Int Number Input Spinbox"
  *
- * @short An input widget for integer numbers, consisting of a spinbox and a slider.
  * @version $Id$
  */
 
@@ -402,6 +403,8 @@ private:
 class KDoubleLine;
 
 /**
+ * @short An input control for real numbers, consisting of a spinbox and a slider.
+ *
  * KDoubleNumInput combines a QSpinBox and optionally a QSlider
  * with a label to make an easy to use control for setting some float
  * parameter. This is especially nice for configuration dialogs,
@@ -424,7 +427,6 @@ class KDoubleLine;
  * there applies here, too.
  *
  * @see KIntNumInput, KDoubleSpinBox
- * @short An input control for real numbers, consisting of a spinbox and a slider.
  */
 
 class KDEUI_EXPORT KDoubleNumInput : public KNumInput
@@ -691,13 +693,13 @@ private:
 /* ------------------------------------------------------------------------ */
 
 /**
+ *  @short A QSpinBox with support for arbitrary base numbers.
+ *
  *  A QSpinBox with support for arbitrary base numbers
  *  (e.g. hexadecimal).
  *
  *  The class provides an easy interface to use other
  *  numeric systems than the decimal.
- *
- *  @short A QSpinBox with support for arbitrary base numbers.
  */
 class KDEUI_EXPORT KIntSpinBox : public QSpinBox
 {
