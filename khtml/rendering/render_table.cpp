@@ -344,7 +344,7 @@ void RenderTable::print( QPainter *p, int _x, int _y,
                                   int _w, int _h, int _tx, int _ty)
 {
 
-    //     if(!layouted()) return;
+    if(!layouted()) return;
 
     _tx += xPos();
     _ty += yPos();
@@ -1220,8 +1220,7 @@ void RenderTableCell::print(QPainter *p, int _x, int _y,
     kdDebug( 6040 ) << renderName() << "(RenderTableCell)::print() w/h = (" << width() << "/" << height() << ")" << endl;
 #endif
 
-//    if (!layouted())
-//      return;
+    if (!layouted()) return;
 
     _tx += m_x;
     _ty += m_y + _topExtra;
