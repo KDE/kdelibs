@@ -38,15 +38,22 @@ static struct sockaddr_un *parse_unix_url(const char *url)
 	char *work = strdup(url);
 
 	char *type = strtok(work,":");
-	if(type == 0 || strcmp(type,"unix") != 0) return 0;
+	if(type == 0 || strcmp(type,"unix") != 0) {
+	    free(work);
+	    return 0;
+	}
 
 	char *path = strtok(NULL,":\n");
-	if(path == 0) return 0;
+	if(path == 0) {
+	    free(work);
+	    return 0;
+	}
 
     memset((void *) &addr, '\0', sizeof(addr));
     addr.sun_family = AF_UNIX;
     strncpy(addr.sun_path,path,108);
 	addr.sun_path[107] = 0;
+	free(work);
 	return &addr;
 }
 
