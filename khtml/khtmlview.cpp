@@ -119,6 +119,14 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
 
 KHTMLView::~KHTMLView()
 {
+  if (m_part)
+  {
+     //WABA: Is this Ok? Do I need to deref it as well?
+     //Does this need to be done somewhere else?
+     DOM::HTMLDocumentImpl *doc = m_part->docImpl();
+     if (doc && doc->body())
+        doc->detach();
+  }
   lstViews->removeRef( this );
   if(lstViews->isEmpty())
   {
