@@ -89,7 +89,7 @@ return false; }
 
    KEntryMap internalEntryMap() const { return KEntryMap(); }
 
-   void putData(const KEntryKey &, const KEntry&) { }
+   void putData(const KEntryKey &, const KEntry&, bool) { }
 
    KEntry lookupData(const KEntryKey &key) const
    {
