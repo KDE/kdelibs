@@ -23,13 +23,13 @@ inline QDataStream & operator >> (QDataStream & str, unsigned long & l)
 
 inline QDataStream & operator << (QDataStream & str, bool b)
 {
-  str << Q_INT32(b);
+  str << Q_INT8(b);
   return str;
 }
 
 inline QDataStream & operator >> (QDataStream & str, bool & b)
 {
-  Q_INT32 l;
+  Q_INT8 l;
   str >> l;
   b = bool(l);
   return str;
