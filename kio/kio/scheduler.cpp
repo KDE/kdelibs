@@ -208,6 +208,10 @@ void Scheduler::_doJob(SimpleJob *job) {
     extraJobData->replace(job, jobData);
     newJobs.append(job);
     slaveTimer.start(0, true);
+#ifndef NDEBUG
+    if (newJobs.count() > 150)
+	kdDebug() << "WARNING - KIO::Scheduler got more than 150 jobs! This shows a misuse in your app (yes, a job is a QObject)." << endl;
+#endif
 }
 
 void Scheduler::_scheduleJob(SimpleJob *job) {
