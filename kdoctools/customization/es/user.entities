@@ -33,3 +33,5 @@
 <!ENTITY RMB    "<mousebutton>botón derecho</mousebutton>">
 <!ENTITY Shift "<keycap>Mayúsculas</keycap>">
 <!ENTITY X-Windows      '<trademark class="registered">Sistema de ventanas X</trademark>'>
+<!ENTITY X-Window      '<trademark class="registered">Sistema de ventanas X</trademark>'>
+
