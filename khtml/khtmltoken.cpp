@@ -555,18 +555,19 @@ void HTMLTokenizer::parseTag(HTMLString &src)
 		else 
 		{
 		    int len;
+                    bool beginTag;
 		    QChar *ptr = buffer+1;
 		    if (*ptr == QChar('/')) 
 		    { 
 			// End Tag
-			startTag = false;
+			beginTag = false;
 			ptr++;
 			len = dest - buffer - 2;
 		    } 
 		    else 
 		    {
 			// Start Tag
-			startTag = true;
+			beginTag = true;
 			// Ignore CR/LF's after a start tag
 			discard = LFDiscard;
 			len = dest - buffer - 1;
@@ -586,7 +587,7 @@ void HTMLTokenizer::parseTag(HTMLString &src)
 #ifdef TOKEN_DEBUG
 			printf("found tag id=%d\n", tagID);
 #endif
-			if (startTag)
+			if (beginTag)
 			    *dest = QChar(tagID);
 			else
 			    *dest = QChar(tagID + ID_CLOSE_TAG);
@@ -650,7 +651,8 @@ void HTMLTokenizer::parseTag(HTMLString &src)
 			printf("Unknown attribute: \"%s\"\n", 
 			       tmp.string().ascii());
 			dest = ptr + 1; // unknown attribute, ignore
-			tag = SearchAttribute; // go to next attribute
+                        *dest++ = 0xEFFF; /* ignore */
+			tag = SearchEqual; // go to next attribute
 		    } 
 		    else
 		    {
@@ -782,7 +784,8 @@ void HTMLTokenizer::parseTag(HTMLString &src)
 #ifdef TOKEN_DEBUG
 		printf("appending Tag: %d, len = %d\n", tagID, dest-buffer);
 #endif
-		if(startTag) 
+                bool beginTag = ((tagID & ID_CLOSE_TAG) == 0);
+		if(beginTag) 
                 {
 		   // Ignore CR/LF's after a start tag
 		   discard = LFDiscard;
@@ -801,19 +804,19 @@ void HTMLTokenizer::parseTag(HTMLString &src)
 		if ( tagID == ID_PRE )
 		{
 		    prePos = 0;
-		    pre = startTag;
+		    pre = beginTag;
 		}
 		else if ( tagID == ID_TEXTAREA )
 		{
-		    textarea = startTag;
+		    textarea = beginTag;
 		}
 		else if ( tagID == ID_TITLE )
 		{
-		    title = startTag;
+		    title = beginTag;
 		}
 		else if ( tagID == ID_SCRIPT )
 		{
-		    if (startTag)
+		    if (beginTag)
 		    {
 			script = true;
 			searchCount = 0;
@@ -826,7 +829,7 @@ void HTMLTokenizer::parseTag(HTMLString &src)
 		}
 		else if ( tagID == ID_STYLE )
 		{
-		    if (startTag)
+		    if (beginTag)
 		    {
 			style = true;
 			searchCount = 0;		
@@ -839,7 +842,7 @@ void HTMLTokenizer::parseTag(HTMLString &src)
 		}
 		else if ( tagID == ID_LISTING )
 		{
-		    if (startTag)
+		    if (beginTag)
 		    {
 			listing = true;
 			searchCount = 0;		
@@ -852,16 +855,16 @@ void HTMLTokenizer::parseTag(HTMLString &src)
 		}
 		else if ( tagID == ID_SELECT )
 		{
-		    select = startTag;
+		    select = beginTag;
 		}
 		else if (( tagID == ID_FRAMESET ) ||
 			 ( tagID == ID_TABLE ))
 		{
-		    if (startTag)
+		    if (beginTag)
 		    {
 			blocking.append( new BlockingToken(tagID, last) );
 #ifdef TOKEN_DEBUG
-			printf("appending blockingToken\n");
+			printf("appending blockingToken tag = %d\n", (int)tagID);
 #endif
 		    }
 		    else
@@ -870,7 +873,7 @@ void HTMLTokenizer::parseTag(HTMLString &src)
 			     (blocking.getLast()->tokenId() == (int)tagID) )
 			{
 #ifdef TOKEN_DEBUG
-			    printf("removing blockingToken\n");
+			    printf("removing blockingToken tag= %d\n", (int)tagID);
 #endif
 			    blocking.removeLast();
 			}
@@ -1003,8 +1006,6 @@ void HTMLTokenizer::write( const char *str)
     else if (tag)
     {
         parseTag(src);
-	startTag = false;
-	searchCount = 0;
     }
     else if (charEntity)
         parseEntity(src);
@@ -1067,8 +1068,6 @@ void HTMLTokenizer::write( const char *str)
 	    searchCount = 1; // Look for '<!--' sequence to start comment
 	    tag = TagName;
 	    parseTag(src);
-	    startTag = false;
-	    searchCount = 0;
 	}
 	else if ( src[0] == QChar('&') ) 
 	{

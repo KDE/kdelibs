@@ -242,7 +242,7 @@ HTMLObject::printDebug( bool, int indent, bool printObjects )
     // return if printing out the objects is not desired
     if(!printObjects) return;
 
-    const char *str = "    ";
+    const char *str = "   ";
     int i;
     for( i=0; i<indent; i++)
 	printf(str);
@@ -570,7 +570,7 @@ HTMLText::printDebug( bool, int indent, bool printObjects )
     // return if printing out the objects is not desired
     if(!printObjects) return;
 
-    QString str = "    ";
+    QString str = "   ";
     int i;
     for( i=0; i<indent; i++)
 	printf(str.ascii());
@@ -1607,7 +1607,7 @@ HTMLImage::printDebug( bool, int indent, bool printObjects )
     // return if printing out the objects is not desired
     if(!printObjects) return;
 
-    QString str = "    ";
+    QString str = "   ";
     int i;
     for( i=0; i<indent; i++)
 	printf(str.ascii());
@@ -2051,7 +2051,7 @@ HTMLBackground::printDebug( bool propagate, int indent, bool printObjects )
     // return if printing out the objects is not desired
     if(!printObjects) return;
 
-    QString str = "    ";
+    QString str = "   ";
     int i;
     for( i=0; i<indent; i++)
 	printf(str.ascii());

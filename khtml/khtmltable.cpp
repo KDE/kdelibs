@@ -1912,18 +1912,17 @@ void HTMLTable::print( QPainter *_painter, int _tx, int _ty )
 
 HTMLTable::~HTMLTable()
 {
-    unsigned int r, c;
-    HTMLTableCell *cell;
 
-    for ( r = 0; r < totalRows; r++ )
+    for ( unsigned int r = 0; r < totalRows; r++ )
     {
-	for ( c = 0; c < totalCols; c++ )
+	for ( unsigned int c = 0; c < totalCols; c++ )
 	{
-	    if ( ( cell = cells[r][c] ) == 0 )
+            HTMLTableCell *cell = cells[r][c];
+	    if (!cell)
 		continue;
-	    if ( c < totalCols - 1 && cell == cells[r][c+1] )
+	    if ( (c < totalCols - 1) && (cell == cells[r][c+1]) )
 		continue;
-	    if ( r < totalRows - 1 && cells[r+1][c] == cell )
+	    if ( (r < totalRows - 1) && (cells[r+1][c] == cell) )
 		continue;
 	    delete cell;
 	}
@@ -1936,3 +1935,40 @@ HTMLTable::~HTMLTable()
     delete caption;
 }
 
+void
+HTMLTable::printDebug( bool propagate, int indent, bool printObjects )
+{
+    QString str = "   ";
+    QString iStr = "";
+    int i;
+    for( i=0; i<indent; i++)
+        iStr += str;
+
+    printf((iStr + objectName()).ascii());
+    printf("\n");
+
+    if (!propagate) return;
+
+    printf((iStr + "\\---> pos = (%d/%d)  size = (%d/%d)\n").ascii(),
+	   x, y, width, ascent+descent);
+    printf((iStr + " ---> size = %d rows,  %d cols\n").ascii(), totalRows, totalCols);
+    printf((iStr + " ---> this = %p\n").ascii(), this);
+    
+    // ok... go through the children
+    indent++;
+    for ( unsigned int r = 0; r < totalRows; r++ )
+    {
+	for ( unsigned int c = 0; c < totalCols; c++ )
+	{
+            HTMLTableCell *cell = cells[r][c];
+	    if (!cell)
+		continue;
+	    if ( (c < totalCols - 1) && (cell == cells[r][c+1]) )
+		continue;
+	    if ( (r < totalRows - 1) && (cells[r+1][c] == cell) )
+		continue;
+printf((iStr + "CELL[%d, %d]\n").ascii(), r,c);
+            cell->printDebug( propagate, indent, printObjects);
+	}
+    }
+}

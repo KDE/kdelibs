@@ -2618,7 +2618,7 @@ void KHTMLParser::parseTagTable(void)
     				   0 };    
 
     HTMLString str;
-    bool firstRow = true;
+    bool hasRow = false;
     bool tableTag = true;
     bool noCell = true;
     int padding = 1;
@@ -2626,12 +2626,10 @@ void KHTMLParser::parseTagTable(void)
     int width = 0;
     int percent = UNDEFINED;
     int border = 0;
-    bool has_cell = 0;
     HTMLClue::VAlign rowvalign = HTMLClue::VNone;
     HTMLClue::HAlign rowhalign = HTMLClue::HNone;
     HTMLClue::HAlign align = HTMLClue::HNone;
     HTMLClueV *caption = 0;
-    HTMLTableCell *tmpCell = 0;
     HTMLClue::VAlign capAlign = HTMLClue::Bottom;
     HTMLClue::HAlign olddivalign = divAlign;
     HTMLClue *__clue = flow;
@@ -2727,18 +2725,10 @@ void KHTMLParser::parseTagTable(void)
 		    flow = 0;
 
 		    if ( tagID == 0 )
-		    { 
-			// CC: Close table description in case of a malformed table
-			// before returning!
-			if ( !firstRow )
-			    table->endRow();
-			table->endTable(); 
-			delete table;
-			divAlign = olddivalign;
-			flow = oldFlow;
-			_clue = oldClue;
-			delete tmpCell;
-			return;
+		    {  
+                        printf("Unexpected end of TABLE!\n");
+                        done = true;
+                        break;
 		    }
 
 		    if ( tagID == (ID_CAPTION + ID_CLOSE_TAG))
@@ -2756,10 +2746,10 @@ void KHTMLParser::parseTagTable(void)
 
 		if ( tagID == ID_TR )
 		{
-		    if ( !firstRow )
+		    if ( hasRow )
 			table->endRow();
 		    table->startRow();
-		    firstRow = FALSE;
+		    hasRow = true;
 		    rowvalign = HTMLClue::VNone;
 		    rowhalign = HTMLClue::HNone;
 		    rowColor = tableColor;
@@ -2798,6 +2788,13 @@ void KHTMLParser::parseTagTable(void)
 		    done = true;
 		    break;
 		}
+		if ( tagID == (ID_TR + ID_CLOSE_TAG))
+		{
+                    if (hasRow)
+                       table->endRow();
+                    hasRow = false;
+		    break;
+		}
 
 		// <td, <th, or we get something before the 
 		// first <td or <th. Lets put that into one row 
@@ -2812,11 +2809,14 @@ void KHTMLParser::parseTagTable(void)
 		    if (tagID == ID_TH)
 			    heading = true;
 		    // <tr> may not be specified for the first row
-		    if ( firstRow )
+		    if ( !hasRow )
 		    {
 			// Bad HTML: No <tr> tag present
 			table->startRow();
-			firstRow = FALSE;
+			hasRow = true;
+                        rowvalign = HTMLClue::VNone;
+		        rowhalign = HTMLClue::HNone;
+		        rowColor = tableColor;
 		    }
 
 		    int rowSpan = 1, colSpan = 1;
@@ -2892,7 +2892,6 @@ void KHTMLParser::parseTagTable(void)
 			cell->setBGColor( bgcolor );
 		    cell->setVAlign( valign );
 		    table->addCell( cell );
-		    has_cell = 1;
 		    flow = 0;
 		    _clue = cell;
 		    if ( heading )
@@ -2923,17 +2922,9 @@ void KHTMLParser::parseTagTable(void)
 
 		    if ( tagID == 0 )
 		    { 
-			// CC: Close table description in case of a malformed table
-			// before returning!
-			if ( !firstRow )
-			    table->endRow();
-			table->endTable(); 
-			delete table;
-			divAlign = olddivalign;
-			flow = oldFlow;
-			_clue = oldClue;
-			delete tmpCell;
-			return;
+                        printf("Unexpected end of TABLE!\n");
+                        done = true;
+                        break;
 		    }
 
 		    if ((tagID == (ID_TD + ID_CLOSE_TAG)) ||
@@ -2951,67 +2942,18 @@ void KHTMLParser::parseTagTable(void)
 		}
 		
 		// Unknown or unhandled table-tag: ignore
+                printf("Unexpected tag inside TABLE: %d\n", tagID); 
 		break;
-#if 0
-		else
-		{
-		  // catch-all for broken tables
-      		  if ( *str != '<' || *(str+1) != '/' || *(str+2) != 't' ||
-                      ( *(str+3)!='d' && *(str+3)!='h' && *(str+3)!='r' ) )
-/*
-		    if ( strncmp( str, "</td", 4 ) &&
-			    strncmp( str, "</th", 4 ) &&
-			    strncmp( str, "</tr", 4 ) )
-*/
-		    {
-			flow = 0;
-			if ( !tmpCell )
-			{
-			    // Variable width cell
-			    tmpCell = NEW HTMLTableCell( UNDEFINED, UNDEFINED, 1, 1, padding );
-			    if ( tableColor.isValid() )
-				tmpCell->setBGColor( tableColor );
-			}
-			_clue = tmpCell;
-    			parseOneToken( str );
-			str = parseBody( _clue, endall );
-			closeAnchor();
-		    }
-		    else
-			tableTag = false;
-		}
-#endif
 	    }
-	}
+        }
     }
 
-    // Did we catch any illegal HTML
-    if ( tmpCell )
+    if ( hasRow )
+        table->endRow();
+    table->endTable();
+   
+    if (table->rows() != 0)
     {
-	// if no cells have been added then this must be a table with
-	// one cell and no <tr, <td, etc.  I HATE people who abuse HTML
-	// like this.
-	if ( !has_cell )
-	{
-	    if ( firstRow )
-	    {
-		table->startRow();
-		firstRow = FALSE;
-	    }
-	    table->addCell( tmpCell );
-	    has_cell = 1;
-	}
-	else
-	    delete tmpCell;
-    }
-
-    if (has_cell)
-    {
-	// CC: the ending "</table>" might be missing, so 
-	// we close the table here... ;-) 
-	if ( !firstRow )
-	    table->endRow();
-	table->endTable();
 	if ( align != HTMLClue::Left && align != HTMLClue::Right )
 	{
 	    __clue->append ( table );
@@ -3026,7 +2968,7 @@ void KHTMLParser::parseTagTable(void)
     }
     else
     {
-	// CC: last ressort -- remove tables that do not contain any cells
+	// CC: last resort -- remove tables that do not contain any cells
 	delete table;
     }
 

@@ -220,13 +220,7 @@ protected:
     bool skipLF;
 
     // Flag to say that we have the '<' but not the character following it.
-    // Used to decide whether we will get a <TAG> or </TAG>
-    // In case of a </TAG> we ignore pending LFs.
-    // In case of a <TAG> we add any pending LF as a space.
-    // If the character following is not '/', 'a..z', 'A..Z' or '!' 
-    // the tag is inserted as text
     bool startTag;
-
 
     typedef enum {
 	NoTag = 0,

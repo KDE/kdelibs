@@ -578,7 +578,7 @@ void HTMLClue::print( QPainter *_painter, HTMLObject *_obj, int _x, int _y, int 
 void 
 HTMLClue::printDebug( bool propagate, int indent, bool printObjects )
 {
-    QString str = "    ";
+    QString str = "   ";
     QString iStr = "";
     int i;
     for( i=0; i<indent; i++)
@@ -1207,7 +1207,7 @@ int HTMLClueV::getRightClear( int _y )
 void 
 HTMLClueV::printDebug( bool propagate, int indent, bool printObjects )
 {
-    QString str = "    ";
+    QString str = "   ";
     QString iStr = "";
     int i;
     for( i=0; i<indent; i++)

@@ -171,6 +171,9 @@ public:
   
     virtual const char * objectName() const { return "HTMLTable"; };
 
+    virtual void printDebug( bool propagate = false, int indent = 0, 
+			     bool printObjects = false );
+    
 protected:
     enum ColType { Fixed, Percent, Variable };
 
