@@ -71,8 +71,6 @@
 #include <kdialogbase.h>
 #include <qptrdict.h>
 
-#include <iostream.h>	// FIXME: temporary klugde, remove after testing (LS)
-
 #define PAINT_BUFFER_HEIGHT 128
 
 using namespace DOM;
@@ -432,9 +430,12 @@ void KHTMLToolTip::maybeTip(const QPoint& p)
     while ( node ) {
         if ( node->isElementNode() ) {
             QString s = static_cast<DOM::ElementImpl*>( node )->getAttribute( ATTR_TITLE ).string();
+            qDebug("found title: %s",  s.latin1());
             region |= QRect( m_view->contentsToViewport( node->getRect().topLeft() ), node->getRect().size() );
             if ( !s.isEmpty() ) {
                 QRect r(m_view->rect());
+                qDebug("setting total rectangle: %d/%d - %d/%d",
+                       r.x(), r.y(), r.width(), r.height());
                 r.moveTopLeft(p + QPoint(2, 16));
                 r.setWidth(-1);
                 tip( region, s, r );
@@ -2624,7 +2625,7 @@ public:
   TableRowIterator(RenderTableSection *section, int index)
   	: sec(section), index(index)
   {}
-  
+
   /** empty constructor. This must be assigned another iterator before it is
    * useable.
    */
@@ -2886,7 +2887,7 @@ protected:
  * @param cb containing block which to create the inline flow box for.
  * @return the constructed inline flow box.
  */
-static InlineFlowBox *generateDummyFlowBox(RenderArena *arena, RenderFlow *cb)
+static InlineFlowBox* generateDummyFlowBox(RenderArena *arena, RenderFlow *cb)
 {
   InlineFlowBox *flowBox = new(arena) InlineFlowBox(cb);
   int width = cb->width();
@@ -2938,20 +2939,20 @@ static RenderFlow *generateDummyBlock(RenderArena *arena, RenderObject *cb)
   result->setParent(cb->parent());
   result->setPreviousSibling(cb->previousSibling());
   result->setNextSibling(cb->nextSibling());
-  
+
   result->setOverhangingContents(cb->overhangingContents());
   result->setPositioned(cb->isPositioned());
   result->setRelPositioned(cb->isRelPositioned());
   result->setFloating(cb->isFloating());
   result->setInline(cb->isInline());
   result->setMouseInside(cb->mouseInside());
-  
+
   result->setStyle(cb->style());	// ### will fail if positioned
 
   result->setPos(cb->xPos(), cb->yPos());
   result->setWidth(cb->width());
   result->setHeight(cb->height());
-  
+
   return result;
 }
 
@@ -3810,7 +3811,7 @@ inline void ErgonomicEditableLineIterator::calcAndStoreNewLine(
   // value for the iterator
   cb = newBlock;
   if (toBegin) prevBlock(); else nextBlock();
-  
+
   if (!cb) {
     flowBox = 0;
     return;

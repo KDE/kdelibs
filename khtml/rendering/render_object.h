@@ -588,6 +588,8 @@ private:
     friend class RenderListItem;
     friend class RenderContainer;
     friend class RenderRoot;
+
+    friend RenderFlow *generateDummyBlock( RenderArena *, RenderObject * );
 };
 
 
