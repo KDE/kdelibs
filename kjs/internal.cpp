@@ -681,7 +681,8 @@ ContextImp::ContextImp(Object &glob, ExecState *exec, Object &thisV, CodeType ty
       if (callingCon) {
 	scope = callingCon->scopeChain().copy();
 #ifndef KJS_PURE_ECMA
-	scope.prepend(thisV); // for deprecated Object.prototype.eval()
+	if (thisV.imp() != glob.imp())
+	  scope.prepend(thisV); // for deprecated Object.prototype.eval()
 #endif
 	variable = callingCon->variableObject();
 	thisVal = callingCon->thisValue();
