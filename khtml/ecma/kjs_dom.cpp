@@ -174,7 +174,7 @@ String DOMNode::toString() const
 
   if (node.nodeType() == DOM::Node::ELEMENT_NODE) {
     int id = static_cast<DOM::Element>(node).elementId();
-    ElementName *eln = elementNames;
+    const ElementName *eln = elementNames;
     while (eln->id != -1) {
       if (eln->id == id) {
 	s = eln->name;
@@ -232,14 +232,15 @@ KJSO DOMNodeList::tryGet(const UString &p) const
     result = Number(list.length());
   else if (p == "item")
     result = new DOMNodeListFunc(list, DOMNodeListFunc::Item);
-
-  // array index ?
-  bool ok;
-  long unsigned int idx = p.toULong(&ok);
-  if (ok)
-    result = getDOMNode(list.item(idx));
-  else
-    result = HostImp::get(p);
+  else {
+    // array index ?
+    bool ok;
+    long unsigned int idx = p.toULong(&ok);
+    if (ok)
+      result = getDOMNode(list.item(idx));
+    else
+      result = HostImp::get(p);
+  }
 
   return result;
 }

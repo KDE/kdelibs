@@ -63,6 +63,12 @@ void DOMObject::put(const UString &p, const KJSO& v)
   }
 }
 
+// should rather overload HostImp::toString() this way
+String DOMObject::toString() const
+{
+  return String("[object " + UString(typeInfo()->name) + "]");
+}
+
 KJSO DOMFunction::get(const UString &p) const
 {
   KJSO result;
