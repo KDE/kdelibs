@@ -8,7 +8,8 @@
        from kde-genent.entities and <lg>/user.entities. -->
 ]>
 <!-- kdoctemplate v0.8 October 1 1999 
-     Minor update to "Credits and Licenses" section on August 24, 2000   -->
+     Minor update to "Credits and Licenses" section on August 24, 2000
+     Removed "Revision history" section on 22 January 2001   -->
 
 <!--
 This template was designed by: David Rugge davidrugge@mindspring.com
@@ -93,6 +94,7 @@ Please at least include KDE, the KDE package it is in, the name
 <keyword>nothing else</keyword>
 </keywordset>
 
+&kde-modespec;
 </bookinfo>
 
 <!-- The contents of the documentation begin here.  Label
@@ -107,29 +109,15 @@ consistent documentation style across all KDE apps. -->
 <chapter id="introduction">
 <title>Introduction</title>
 
-<!-- The introduction chapter contains a brief introduction for the application
-that explains what it does, where to report problems, and a brief revision
-history of the app. Basically a long version of the abstract. -->
+<!-- The introduction chapter contains a brief introduction for the
+application that explains what it does and where to report
+problems. Basically a long version of the abstract.  Don't include a
+revision history. (see installation appendix comment) -->
 
 <para>
 &kapp; is a program that lets you do absolutely nothing. Please report
 any problems or feature requests to the KDE mailing lists.
 </para>
-
-<!-- Note that the revhistory tags apply to the documentation version and not to
-the app version. That is why we use an itemizedlist here. -->
-
-<sect1 id="kapp-revhistory">
-<title>Kapp Revision History</title>
-<para>
-<itemizedlist>
-<listitem>
-<para>1.1 - fixed the infamous vanishing window bug, added lots of new
-features.</para></listitem>
-<listitem><para>1.0 - first public release</para></listitem>
-</itemizedlist>
-</para>
-</sect1>
 </chapter>
 
 <chapter id="using-kapp">
@@ -510,6 +498,12 @@ All required libraries as well as &kapp; itself can be found
 on <ulink url="ftp://ftp.kapp.org">The &kapp; home page</ulink>.
 </para>
 
+<!-- For a list of updates, you may refer to the application web site
+or the ChangeLog file, or ... -->
+<para>
+You can find a list of changes at <ulink
+url="http://apps.kde.org/kapp">http://apps.kde.org/kapp</ulink>.
+</para>
 </sect1>
 
 <sect1 id="compilation">
