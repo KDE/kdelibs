@@ -28,9 +28,13 @@ bool KShortcutList::isGlobal( uint ) const
 	return false;
 }
 
-// FIXME: implement!
-int KShortcutList::index( const QString& /*sName*/ ) const
+int KShortcutList::index( const QString& sName ) const
 {
+        for( int i = 0;
+             i < count();
+             ++i )
+            if( name( i ) == sName )
+                return i;
 	return -1;
 }
 
