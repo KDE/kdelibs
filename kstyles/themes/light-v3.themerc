@@ -35,6 +35,7 @@ Name[sk]=Štýl Light, 3. revízia
 Name[sl]=Slog ,Light`, 3. revizija
 Name[sv]=Lätt stil, tredje revisionen
 Name[th]=รูปแบบเบาบาง รุ่นที่ 3
+Name[tr]=Hafif Stil
 Name[uk]=Стиль Light, випуск N3
 Name[ven]=Tshitaela tshisa kondi, ndovhololo ya vhuraru
 Name[vi]=Light Style, revision 3
@@ -86,5 +87,6 @@ Comment[vi]=Revision thứ ba của kiểu widget 'Light' đơn giản và thôn
 Comment[xh]=Ukhumbuzo kwakhona lwesithathu lokulula kunye nokubukekayo kohlobo lwe widget 'Ekhaphu-khaphu'.
 Comment[zh_CN]=简约端庄的“Light”风格，第三版本。
 Comment[zh_TW]=簡單高雅的“輕靈”界面工具風格的第三版。
+Comment[zu]=Ukubuyekezwa kwesithathu kwesitayela se-widget 'Esilula' kanye nokuphucuzekile.
 [KDE]
 WidgetStyle=Light, 3rd revision
