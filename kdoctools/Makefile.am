@@ -16,11 +16,11 @@ kio_help_la_SOURCES = kio_help.cpp main.cpp xslt.cpp
 kio_help_la_LIBADD = $(LIBXSLT_LIBS) $(LIBXML_LIBS)  libkbzipfilter_dummy.la
 kio_help_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)
 
-kio_ghelp_la_SOURCES = kio_ghelp.cpp main_ghelp.cpp xslt.cpp
+kio_ghelp_la_SOURCES = kio_help.cpp main_ghelp.cpp xslt.cpp
 kio_ghelp_la_LIBADD = $(LIBXSLT_LIBS) $(LIBXML_LIBS) libkbzipfilter_dummy.la
 kio_ghelp_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)
 
-noinst_HEADERS = kio_help.h kio_ghelp.h
+noinst_HEADERS = kio_help.h
 
 kdelnk_DATA = help.protocol ghelp.protocol
 kdelnkdir = $(kde_servicesdir)

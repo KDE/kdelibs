@@ -41,7 +41,7 @@ extern "C"
         xmlSubstituteEntitiesDefault(1);
         xmlLoadExtDtdDefaultValue = 1;
 
-        HelpProtocol slave(argv[2], argv[3]);
+        HelpProtocol slave(false, argv[2], argv[3]);
         slave.dispatchLoop();
 
         kdDebug(7101) << "Done" << endl;

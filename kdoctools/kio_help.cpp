@@ -142,8 +142,8 @@ void HelpProtocol::notFound()
 
 HelpProtocol *slave = 0;
 
-HelpProtocol::HelpProtocol( const QCString &pool, const QCString &app )
-  : SlaveBase( "help", pool, app )
+HelpProtocol::HelpProtocol( bool ghelp, const QCString &pool, const QCString &app )
+  : SlaveBase( ghelp ? "ghelp" : "help", pool, app ), mGhelp( ghelp )
 {
     slave = this;
 }
@@ -156,20 +156,25 @@ void HelpProtocol::get( const KURL& url )
     bool redirect;
     QString doc;
     doc = url.path();
-    if (doc.at(0) != '/')
-        doc = doc.prepend('/');
 
-    if (doc.at(doc.length() - 1) == '/')
-        doc += "index.html";
+    if ( !mGhelp ) {
+        if (doc.at(0) != '/')
+            doc = doc.prepend('/');
+
+        if (doc.at(doc.length() - 1) == '/')
+            doc += "index.html";
+    }
 
     infoMessage(i18n("Looking up correct file"));
 
-    doc = lookupFile(doc, url.query(), redirect);
+    if ( !mGhelp ) {
+      doc = lookupFile(doc, url.query(), redirect);
 
-    if (redirect)
-    {
-        finished();
-        return;
+      if (redirect)
+      {
+          finished();
+          return;
+      }
     }
 
     if (doc.isEmpty())
@@ -205,78 +210,95 @@ void HelpProtocol::get( const KURL& url )
 
     infoMessage(i18n("Preparing document"));
 
-    kdDebug( 7119 ) << "look for cache for " << file << endl;
+    if ( mGhelp ) {
+        QString xsl = "customization/kde-nochunk.xsl";
+        mParsed = transform(file, locate("dtd", xsl));
 
-    parsed = lookForCache( file );
+        kdDebug( 7119 ) << "parsed " << mParsed.length() << endl;
 
-    kdDebug( 7119 ) << "cached parsed " << parsed.length() << endl;
-
-    if ( parsed.isEmpty() ) {
-        parsed = transform(file, locate("dtd", "customization/kde-chunk.xsl"));
-        if ( !parsed.isEmpty() ) {
-            infoMessage( i18n( "Saving to cache" ) );
-            QString cache = file.left( file.length() - 7 );
-            saveToCache( parsed, locateLocal( "data",
-                                                    "kio_help/cache" + cache +
-                                                    "cache.bz2" ) );
+        if (mParsed.isEmpty()) {
+            data(fromUnicode( QString(
+                "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=%1\"></head>\n"
+                "%2<br>%3</html>" ).arg( QTextCodec::codecForLocale()->name() ).
+                                                            arg( i18n( "The requested help file could not be parsed:" ) ).arg( file ) ) );
+        } else {
+            data( fromUnicode( mParsed ) );
         }
-    } else infoMessage( i18n( "Using cached version" ) );
-
-    kdDebug( 7119 ) << "parsed " << parsed.length() << endl;
-
-    if (parsed.isEmpty()) {
-        data(fromUnicode( QString(
-            "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=%1\"></head>\n"
-            "%2<br>%3</html>" ).arg( QTextCodec::codecForLocale()->name() ).
-                                                        arg( i18n( "The requested help file could not be parsed:" ) ).arg( file ) ) );
     } else {
-        QString query = url.query(), anchor;
 
-        // if we have a query, look if it contains an anchor
-        if (!query.isEmpty())
-            if (query.left(8) == "?anchor=") {
-                anchor = query.mid(8).lower();
-			
-			KURL redirURL(url);
-			
-			redirURL.setQuery(QString::null);
-			redirURL.setHTMLRef(anchor);
-			redirection(redirURL);
-			finished();
-			return;
-		}
-        if (anchor.isEmpty() && url.hasHTMLRef())
-	    anchor = url.htmlRef();
+        kdDebug( 7119 ) << "look for cache for " << file << endl;
 
-        kdDebug( 7119 ) << "anchor: " << anchor << endl;
+        mParsed = lookForCache( file );
 
-        if ( !anchor.isEmpty() )
-        {
-            int index = 0;
-            while ( true ) {
-                index = parsed.find( QRegExp( "<a name=" ), index);
-                if ( index == -1 ) {
-                    kdDebug( 7119 ) << "no anchor\n";
-                    break; // use whatever is the target, most likely index.html
-                }
+        kdDebug( 7119 ) << "cached parsed " << mParsed.length() << endl;
 
-                if ( parsed.mid( index, 11 + anchor.length() ).lower() ==
-                     QString( "<a name=\"%1\">" ).arg( anchor ) )
-                {
-                    index = parsed.findRev( "<FILENAME filename=", index ) +
-                             strlen( "<FILENAME filename=\"" );
-                    QString filename=parsed.mid( index, 2000 );
-                    filename = filename.left( filename.find( '\"' ) );
-                    QString path = target.path();
-                    path = path.left( path.findRev( '/' ) + 1) + filename;
-                    kdDebug( 7119 ) << "anchor found in " << path <<endl;
-                    target.setPath( path );
-                    break;
-                }
-                index++;
+        if ( mParsed.isEmpty() ) {
+            mParsed = transform(file, locate("dtd", "customization/kde-chunk.xsl"));
+            if ( !mParsed.isEmpty() ) {
+                infoMessage( i18n( "Saving to cache" ) );
+                QString cache = file.left( file.length() - 7 );
+                saveToCache( mParsed, locateLocal( "data",
+                                                        "kio_help/cache" + cache +
+                                                        "cache.bz2" ) );
             }
+        } else infoMessage( i18n( "Using cached version" ) );
+
+        kdDebug( 7119 ) << "parsed " << mParsed.length() << endl;
+
+        if (mParsed.isEmpty()) {
+            data(fromUnicode( QString(
+                "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=%1\"></head>\n"
+                "%2<br>%3</html>" ).arg( QTextCodec::codecForLocale()->name() ).
+                                                            arg( i18n( "The requested help file could not be parsed:" ) ).arg( file ) ) );
+        } else {
+            QString query = url.query(), anchor;
+
+            // if we have a query, look if it contains an anchor
+            if (!query.isEmpty())
+                if (query.left(8) == "?anchor=") {
+                    anchor = query.mid(8).lower();
+
+			    KURL redirURL(url);
+
+			    redirURL.setQuery(QString::null);
+			    redirURL.setHTMLRef(anchor);
+			    redirection(redirURL);
+			    finished();
+			    return;
+		    }
+            if (anchor.isEmpty() && url.hasHTMLRef())
+	        anchor = url.htmlRef();
+
+            kdDebug( 7119 ) << "anchor: " << anchor << endl;
+
+            if ( !anchor.isEmpty() )
+            {
+                int index = 0;
+                while ( true ) {
+                    index = mParsed.find( QRegExp( "<a name=" ), index);
+                    if ( index == -1 ) {
+                        kdDebug( 7119 ) << "no anchor\n";
+                        break; // use whatever is the target, most likely index.html
+                    }
+
+                    if ( mParsed.mid( index, 11 + anchor.length() ).lower() ==
+                         QString( "<a name=\"%1\">" ).arg( anchor ) )
+                    {
+                        index = mParsed.findRev( "<FILENAME filename=", index ) +
+                                 strlen( "<FILENAME filename=\"" );
+                        QString filename=mParsed.mid( index, 2000 );
+                        filename = filename.left( filename.find( '\"' ) );
+                        QString path = target.path();
+                        path = path.left( path.findRev( '/' ) + 1) + filename;
+                        kdDebug( 7119 ) << "anchor found in " << path <<endl;
+                        target.setPath( path );
+                        break;
+                    }
+                    index++;
+                }
+            }
+            emitFile( target );
         }
-        emitFile( target );
     }
 
     finished();
@@ -288,10 +310,10 @@ void HelpProtocol::emitFile( const KURL& url )
 
     QString filename = url.path().mid(url.path().findRev('/') + 1);
 
-    int index = parsed.find(QString("<FILENAME filename=\"%1\"").arg(filename));
+    int index = mParsed.find(QString("<FILENAME filename=\"%1\"").arg(filename));
     if (index == -1) {
         if ( filename == "index.html" ) {
-            data( fromUnicode( parsed ) );
+            data( fromUnicode( mParsed ) );
             return;
         }
 
@@ -299,7 +321,7 @@ void HelpProtocol::emitFile( const KURL& url )
         return;
     }
 
-    QString filedata = splitOut(parsed, index);
+    QString filedata = splitOut(mParsed, index);
     replaceCharsetHeader( filedata );
 
     data( fromUnicode( filedata ) );

@@ -16,7 +16,7 @@
 #include <kinstance.h>
 #include <kdebug.h>
 #include <stdlib.h>
-#include "kio_ghelp.h"
+#include "kio_help.h"
 #include <xslt.h>
 
 extern int xmlLoadExtDtdDefaultValue;
@@ -41,7 +41,7 @@ extern "C"
         xmlSubstituteEntitiesDefault(1);
         xmlLoadExtDtdDefaultValue = 1;
 
-        GnomeHelpProtocol slave(argv[2], argv[3]);
+        HelpProtocol slave( true, argv[2], argv[3] );
         slave.dispatchLoop();
 
         kdDebug(7101) << "Done" << endl;

@@ -22,7 +22,7 @@ class HelpProtocol : public KIO::SlaveBase
 {
 public:
 
-    HelpProtocol( const QCString &pool, const QCString &app);
+    HelpProtocol( bool ghelp, const QCString &pool, const QCString &app);
     virtual ~HelpProtocol() { }
 
     virtual void get( const KURL& url );
@@ -38,7 +38,9 @@ private:
                        bool &redirect);
 
     void notFound();
-    QString parsed;
+
+    QString mParsed;    
+    bool mGhelp;
 };
 
 
