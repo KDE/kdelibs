@@ -113,6 +113,9 @@ void KCharSelectTable::paintCell( class QPainter* p, int row, int col )
     int x2 = w - 1;
     int y2 = h - 1;
 
+    QFont font = QFont( vFont );
+    //font.setPixelSize( h-6 );
+
     unsigned short c = vTableNum * 255;
     c += row * numCols();
     c += col;
@@ -124,7 +127,11 @@ void KCharSelectTable::paintCell( class QPainter* p, int row, int col )
 	p->setPen( colorGroup().highlightedText() );
 	vPos = QPoint( col, row );
     } else {
-	p->setBrush( QBrush( colorGroup().base() ) );
+	QFontMetrics fm = QFontMetrics( font );
+	if( fm.inFont( c ) )
+		p->setBrush( QBrush( colorGroup().base() ) );
+	else
+		p->setBrush( QBrush( colorGroup().mid() ) );
 	p->setPen( NoPen );
 	p->drawRect( 0, 0, w, h );
 	p->setPen( colorGroup().text() );
@@ -140,12 +147,11 @@ void KCharSelectTable::paintCell( class QPainter* p, int row, int col )
 	focusPos = QPoint( col, row );
     }
 
-    p->setFont( QFont( vFont ) );
+    p->setFont( font );
 
     p->drawText( 0, 0, x2, y2, AlignHCenter | AlignVCenter, QString( QChar( c ) ) );
 
     p->setPen( colorGroup().text() );
-
     p->drawLine( x2, 0, x2, y2 );
     p->drawLine( 0, y2, x2, y2 );
 
