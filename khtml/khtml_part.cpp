@@ -2077,18 +2077,21 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
 	    //viewport()->repaint(false);
 	}
 	
-	if (d->m_selectionEnd == d->m_selectionStart && d->m_endOffset < d->m_startOffset)
-	     d->m_doc
-	    	->setSelection(d->m_selectionStart.handle(),d->m_endOffset,
-			       d->m_selectionEnd.handle(),d->m_startOffset);
-	else if (d->m_startBeforeEnd)
-	    d->m_doc
-	    	->setSelection(d->m_selectionStart.handle(),d->m_startOffset,
-			       d->m_selectionEnd.handle(),d->m_endOffset);
-	else
-	    d->m_doc
-	    	->setSelection(d->m_selectionEnd.handle(),d->m_endOffset,
-			       d->m_selectionStart.handle(),d->m_startOffset);
+	if ( !d->m_selectionStart.isNull() && !d->m_selectionEnd.isNull() )
+	{
+  	  if (d->m_selectionEnd == d->m_selectionStart && d->m_endOffset < d->m_startOffset)
+	       d->m_doc
+	    	  ->setSelection(d->m_selectionStart.handle(),d->m_endOffset,
+			         d->m_selectionEnd.handle(),d->m_startOffset);
+	  else if (d->m_startBeforeEnd)
+	      d->m_doc
+	    	  ->setSelection(d->m_selectionStart.handle(),d->m_startOffset,
+			         d->m_selectionEnd.handle(),d->m_endOffset);
+	  else
+	      d->m_doc
+	    	  ->setSelection(d->m_selectionEnd.handle(),d->m_endOffset,
+			         d->m_selectionStart.handle(),d->m_startOffset);
+	}
 	
     }
 }
