@@ -151,6 +151,7 @@ public:
 private:
   class KDateInternalYearPrivate;
   KDateInternalYearPrivate *d;
+
 };
 
 /**

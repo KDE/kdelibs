@@ -593,7 +593,7 @@ KDateInternalWeekSelector::setMaxWeek(int max)
   val->setRange(1, max);
 }
 
-// ### CFM To avoid Binary InCompatibility
+// ### CFM To avoid Binary Incompatibility  
 //     const QDate & might be added to KDateInternalMonthPicker::painyCell
 class KDateInternalMonthPicker::KDateInternalMonthPrivate {
 public:
