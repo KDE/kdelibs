@@ -1203,11 +1203,25 @@ KFileMetaInfoItem KFileMetaInfoGroup::addItem( const QString& key )
 
 bool KFileMetaInfoGroup::removeItem( const QString& key )
 {
-    QMapIterator<QString, KFileMetaInfoItem> it = d->items.find(key);
+    if (!isValid())
+    {
+          kdDebug(7033) << "trying to remove an item from an invalid group\n";
+          return false;
+    }
     
-    if ( (it==d->items.end()) ||
-        !((*it).attributes() & KFileMimeTypeInfo::Removable))
-
+    QMapIterator<QString, KFileMetaInfoItem> it = d->items.find(key);
+    if ( it==d->items.end() )
+    {
+          kdDebug(7033) << "trying to remove the non existant item " << key << "\n";
+          return false;
+    }
+    
+    if (!((*it).attributes() & KFileMimeTypeInfo::Removable))
+    {
+        kdDebug(7033) << "trying to remove a non removable item\n";
+        return false;
+    }
+    
     d->items.remove(it);
     d->removedItems.append(key);
     return true;
