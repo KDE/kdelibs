@@ -533,7 +533,10 @@ void KRun::foundMimeType( const char *_type )
     return;
   }
 
-  KRun::runURL( m_strURL, _type );
+  if (KRun::runURL( m_strURL, _type ))
+    emit finished(); // tell owner that we finished (David)
+  else
+    emit error();
 
   if ( m_bAutoDelete )
   {

@@ -42,6 +42,8 @@ public:
 
   /**
    * Opens a list of URLs with a certain service.
+   * @param _service
+   * @param _urls the list of URLs, can be empty (app launched without argument)
    */
   static bool run( KService* _service, QStrList& _urls );
   /**
