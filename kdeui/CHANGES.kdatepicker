@@ -1,5 +1,5 @@
 This file records changes made to the KDatePicker and KDateTable class.
-It is maintained by Mirko Sucker (mirko.sucker@unibw-hamburg.de).
+It is maintained by Mirko Sucker (mirko@kde.org).
 
 February 25 1998:
 The buttons that switch the month no more display "<--" and "-->" but 
@@ -21,6 +21,9 @@ May 28 1998:
 I got a patch from Andreas "highstick" Hochsteger, he added yearwise up 
 and down buttons. I was very happy as I intended to do the same, and 
 now he did. It looks good.
+
+Aug 21 1998:
+Added the method for setting the font size.
 
 last change: May 28 1998			Mirko Sucker.
 
