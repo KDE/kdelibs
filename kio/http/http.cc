@@ -1545,10 +1545,13 @@ bool HTTPProtocol::readHeader()
 
         // Content-Dispostion is not allowed to dictate directory
         // path, thus we extract the filename only.
-        pos = disposition.findRev( '/' );
-        if( pos > -1 )
-          disposition = disposition.mid(pos+1);
-        kdDebug(7113) << "Content-Disposition: " << disposition << endl;
+        if ( !disposition.isEmpty() )
+        {
+          pos = disposition.findRev( '/' );
+          if( pos > -1 )
+            disposition = disposition.mid(pos+1);
+          kdDebug(7113) << "Content-Disposition: " << disposition << endl;
+        }
       }
     }
 
@@ -1701,8 +1704,9 @@ bool HTTPProtocol::readHeader()
         m_qContentEncodings.remove(m_qContentEncodings.fromLast());
         m_strMimeType = QString::fromLatin1("application/x-tgz");
      }
-     else if ((m_strMimeType.startsWith("text/")) &&
-              (m_request.url.path().right(3) != ".gz"))
+     else if ( m_strMimeType == "text/html" ||
+               (m_strMimeType.startsWith("text/") &&
+                m_request.url.path().right(3) != ".gz") )
      {
         // Unzip!
      }
