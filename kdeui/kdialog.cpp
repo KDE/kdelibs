@@ -153,6 +153,24 @@ void KDialog::resizeLayout( QLayoutItem *lay, int margin, int spacing )
   }
 }
 
+void KDialog::centerOnScreen( QWidget *w, int screen )
+{
+  if ( !w )
+    return;
+
+  QDesktopWidget *desktop = QApplication::desktop();
+  if ( screen < 0 || screen < desktop->numScreens() )
+  {
+    screen = desktop->screenNumber( w );
+    if ( screen == -1 )
+      screen = desktop->primaryScreen();
+  }
+
+  QRect r = desktop->screenGeometry( screen );
+  w->move( r.center().x() - w->width()/2,
+           r.center().y() - w->height()/2 );
+}
+
 class KDialogQueuePrivate
 {
 public:

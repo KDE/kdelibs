@@ -90,6 +90,13 @@ class KDialog : public QDialog
      */
     static void resizeLayout( QLayoutItem *lay, int margin, int spacing );
 
+    /**
+     * Centers @p widget on the desktop, taking multi-head setups into 
+     * account. If @p screen is -1, @p widget will be centered on its
+     * current screen (if it was shown already) or on the primary screen.
+     */
+    static void centerOnScreen( QWidget *widget, int screen = -1 );
+
   public slots:
     // If the dialog starts with focus in a QLineEdit child,
     //  then call selectAll() on the child.
