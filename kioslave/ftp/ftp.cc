@@ -1204,6 +1204,18 @@ void Ftp::mkdir( const KURL & url, int permissions )
 
   if( !ftpSendCmd( buf ) || (m_iRespType != 2) )
   {
+    QString currentPath( m_currentPath );
+    
+    // Check whether or not mkdir failed because 
+    // the directory already exists...
+    if( ftpFolder( path, false ) )
+    {
+      error( ERR_DIR_ALREADY_EXIST, path );
+      // Change the directory back to what it was...
+      (void) ftpFolder( currentPath, false );
+      return;
+    }
+    
     error( ERR_COULD_NOT_MKDIR, path );
     return;
   }
@@ -1411,11 +1423,11 @@ void Ftp::ftpStatAnswerNotFound( const QString & path, const QString & filename 
         // There's also the case of ftp://ftp2.3ddownloads.com/90380/linuxgames/loki/patches/ut/ut-patch-436.run
         // where listing permissions are denied, but downloading is still possible.
         ftpShortStatAnswer( filename, false /*file, not dir*/ );
+        
+        return;
     }
-    else
-    {
-        error( ERR_DOES_NOT_EXIST, path );
-    }
+    
+    error( ERR_DOES_NOT_EXIST, path );
 }
 
 void Ftp::stat( const KURL &url)
@@ -1930,26 +1942,21 @@ void Ftp::get( const KURL & url )
 
 Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KURL& url, KIO::fileoffset_t llOffset)
 {
-  if( !ftpOpenConnection(loginImplicit) )   // calls error() by itself!
+  // Calls error() by itself!
+  if( !ftpOpenConnection(loginImplicit) )
     return statusServerError;
   
-  // try to find the size of the file (and check that it exists at the same time)
-  // 550 is "File does not exist"/"not a plain file"
-  // If we got something else, maybe SIZE isn't supported.
-  if ( !ftpSize( url.path(), '?' ) && (m_iRespCode == 550) )
+  // Try to find the size of the file (and check that it exists at
+  // the same time). If we get back a 550, "File does not exist" 
+  // or "not a plain file", check if it is a directory. If it is a
+  // directory, return an error; otherwise simply try to retrieve
+  // the request...
+  if ( !ftpSize( url.path(), '?' ) && (m_iRespCode == 550) && 
+       ftpFolder(url.path(), false) )
   {
-    // Not a file, or doesn't exist. We need to find out.
-    if( ftpFolder(url.path(), false) )
-    {
-      // Ok it's a dir in fact
-      kdDebug(7102) << "ftpGet: it is a directory in fact" << endl;
-      iError = ERR_IS_DIRECTORY;
-    }
-    else
-    {
-      kdDebug(7102) << "ftpGet: file doesn't exist" << endl;
-      iError = ERR_DOES_NOT_EXIST;
-    }
+    // Ok it's a dir in fact
+    kdDebug(7102) << "ftpGet: it is a directory in fact" << endl;
+    iError = ERR_IS_DIRECTORY;
     return statusServerError;
   }
 
