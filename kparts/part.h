@@ -68,8 +68,6 @@ public:
    */
   virtual ~PartBase();
 
-  virtual QUnknownInterface *qcomInterface();
-
   /**
    *  Internal method. Called by @ref KParts::Part to specify the parent object for plugin objects.
    *
