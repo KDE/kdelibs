@@ -508,6 +508,11 @@ bool KStringHandler::matchFileName( const QString& filename, const QString& patt
 
    // Patterns like "Makefile*"
    if ( pattern[ pattern_len - 1 ] == '*' && len + 1 >= pattern_len ) {
+      if ( pattern[ 0 ] == '*' )
+      {
+         return filename.find(pattern.mid(1, pattern_len - 2)) != -1;
+      }
+
       const QChar *c1 = pattern.unicode();
       const QChar *c2 = filename.unicode();
       int cnt = 1;
