@@ -218,7 +218,7 @@ void KDirLister::stop( const KURL& _url )
   while ( it != d->jobs.end() )
   {
     job = it.key();
-    if ( job->url() == _url )
+    if ( job->url().cmp( _url, true ) )
     {
       if ( m_job == job )
         m_job = 0L;
@@ -350,7 +350,7 @@ void KDirLister::slotRedirection( KIO::Job *job, const KURL & url )
   if ( job )
   {
     oldUrl = static_cast<KIO::ListJob *>( job )->url();
-    if ( m_url == oldUrl )
+    if ( m_url.cmp( oldUrl, true ) )
       m_url = url;
   }
   else
@@ -906,14 +906,14 @@ void KDirLister::FilesChanged( const KURL::List & fileList )
     {
       if ( (*kit)->url().cmp( (*it), true /* ignore trailing slash */ ) )
       {
-          (*kit)->refresh();
-          KFileItemList lst;
-          lst.append( *kit );
-          emit refreshItems( lst );
-          KURL dir(*it);
-          dir.setPath( (*it).directory() );
-          if ( !dirs.contains( dir ) )
-              dirs.append(dir);
+        (*kit)->refresh();
+        KFileItemList lst;
+        lst.append( *kit );
+        emit refreshItems( lst );
+        KURL dir(*it);
+        dir.setPath( (*it).directory() );
+        if ( !dirs.contains( dir ) )
+          dirs.append(dir);
       }
     }
   }
@@ -932,14 +932,20 @@ void KDirLister::FilesChanged( const KURL::List & fileList )
   // the job was really running (David, Michael)
   if ( !m_bComplete )
   {
+    KURL::List dirsToBeUpdated;
+
     it = dirs.begin();
     for ( ; it != dirs.end() ; ++it )
     {
       QMap< KIO::ListJob *, QValueList<KIO::UDSEntry> >::Iterator job = d->jobs.begin();
-      while ( job != d->jobs.end() )
-        if ( job.key()->url() == (*it) )
-          updateDirectory( (*it ) );
+      for ( ; job != d->jobs.end(); ++job )
+        if ( job.key()->url().cmp( (*it), true ) )
+          dirsToBeUpdated.append( (*it) );
     }
+
+    it = dirsToBeUpdated.begin();
+    for ( ; it != dirsToBeUpdated.end() ; ++it )
+      updateDirectory( (*it ) );
   }
 }
 
@@ -967,6 +973,19 @@ void KDirLister::FileRenamed( const KURL &src, const KURL &dst )
               KFileItemList lst;
               lst.append( *kit );
               emit refreshItems( lst );
+
+              KURL dir( dst );
+              dir.setPath( dst.directory() );
+              if ( !m_bComplete )
+              {
+                QMap< KIO::ListJob *, QValueList<KIO::UDSEntry> >::Iterator job = d->jobs.begin();
+                for ( ; job != d->jobs.end(); ++job )
+                  if ( job.key()->url().cmp( dir, true ) )
+                  {
+                    updateDirectory( dir );
+                    break;
+                  }
+              }
               break;
           }
         }
@@ -1010,7 +1029,7 @@ bool KDirLister::setURL( const KURL& url )
    if ( !validURL( url ) )
         return false;
 
-    d->urlChanged |= !(url == m_url && m_bComplete);
+    d->urlChanged |= !(url.cmp( m_url, true ) && m_bComplete);
     stop();
     forgetDirs();
     m_url = url;
