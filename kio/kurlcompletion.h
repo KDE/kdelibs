@@ -47,16 +47,16 @@ class KURLCompletion : public KCompletion
 public:
 	/**
 	 * Determines how completion is done
-	 * ExeCompletion - executables in $PATH or with full path
-	 * FileCompletion - all files with full path or in dir(), URLs are listed
-	 *                  using KIO
+	 * @li ExeCompletion - executables in $PATH or with full path
+	 * @li FileCompletion - all files with full path or in dir(), URLs
+	 * are listed using KIO
 	 */
     enum Mode { ExeCompletion=1, FileCompletion };
 
 	KURLCompletion();
 	/**
 	 * This overloaded constructor allows you to set the Mode to ExeCompletion
-	 * or FileCompletion without using @ref setMode
+	 * or FileCompletion without using @ref setMode. Default is FileCompletion
 	 */
 	KURLCompletion(Mode);
 
@@ -106,17 +106,30 @@ public:
 	virtual void setMode( Mode mode ) { m_mode = mode; };
 
 	/**
-	 * Replace environment variables when doing completion (default true)
+	 * Returns whether environment variables are completed and
+	 * whether they are replaced internally while finding completions.
+	 * Default is enabled.
 	 */
 	virtual bool replaceEnv() { return m_replace_env; };
 	
+	/**
+	 * Enables/disables completion and replacement (internally) of
+	 * environment variables in URLs. Default is enabled.
+	 */
 	virtual void setReplaceEnv( bool replace ) { m_replace_env = replace; };
 
 	/**
-	 * Replace user home dirs (~user) when doing completion (default true)
+	 * Returns whether ~username is completed and whether ~username
+	 * is replaced internally with the user's home directory while
+	 * finding completions. Default is enabled.
 	 */
 	virtual bool replaceHome() { return m_replace_home; };
 	
+	/**
+	 * Enables/disables completion of ~username and replacement
+	 * (internally) of ~username with the user's home directory.
+	 * Default is enabled.
+	 */
 	virtual void setReplaceHome( bool replace ) { m_replace_home = replace; };
 
 protected:
