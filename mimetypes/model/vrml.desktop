@@ -1,0 +1,10 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=MimeType
+MimeType=model/vrml
+Comment=VRML Model
+Patterns=*.wrl;*.wrl.gz
+
+[Property::X-KDE-text]
+Type=bool
+Value=true

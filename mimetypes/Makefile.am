@@ -1,5 +1,5 @@
 
-SUBDIRS = application text audio video image inode message multipart
+SUBDIRS = application text audio video image inode message multipart model
 
 mimetypesdata_DATA = all.desktop allfiles.desktop
 mimetypesdatadir = $(kde_mimedir)/all
