@@ -36,6 +36,7 @@ namespace KXMLGUI
 struct MergingIndex;
 class ContainerNode;
 class ContainerClient;
+class BuildHelper;
 };
 
 /**
@@ -57,6 +58,7 @@ class ContainerClient;
  */
 class KXMLGUIFactory : public QObject
 {
+  friend class KXMLGUI::BuildHelper;
   Q_OBJECT
  public:
   /**
@@ -182,8 +184,10 @@ class KXMLGUIFactory : public QObject
   void configureAction( KAction *action, const QDomNamedNodeMap &attributes );
   void configureAction( KAction *action, const QDomAttr &attribute );
 
-  KXMLGUIClient *m_client;
-  KXMLGUIBuilder *m_builder;
+//  KXMLGUIClient *m_client;
+//  KXMLGUIBuilder *m_builder;
+  void *dummy1; // remove next Friday
+  void *dummy2; 
 
   KXMLGUIFactoryPrivate *d;
 };

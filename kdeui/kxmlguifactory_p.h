@@ -3,12 +3,14 @@
 
 #include <qstringlist.h>
 #include <qmap.h>
+#include <qdom.h>
 
 #include <kaction.h>
 
 class QWidget;
 class KXMLGUIClient;
 class KXMLGUIBuilder;
+class KXMLGUIFactory;
 
 namespace KXMLGUI
 {
@@ -140,6 +142,34 @@ struct ContainerNode
 typedef QPtrList<ContainerNode> ContainerNodeList;
 typedef QPtrListIterator<ContainerNode> ContainerNodeListIt;
 
+class BuildHelper
+{
+public:
+    BuildHelper( BuildState &state, 
+                 const QStringList &customTags,
+                 const QStringList &containerTags,
+                 ContainerNode *node, 
+                 KXMLGUIFactory *factory );
+
+    void processElement( const QDomElement &element );
+
+private:
+    QStringList customTags;
+    QStringList containerTags;
+
+    QPtrList<QWidget> containerList;
+
+    ContainerClient *containerClient;
+
+    bool ignoreDefaultMergingIndex;
+
+    BuildState &m_state;
+
+    KXMLGUIFactory *m_factory;
+
+    ContainerNode *parentNode;
+};
+
 struct BuildState
 {
     BuildState() : guiClient( 0 ) {}
@@ -150,6 +180,16 @@ struct BuildState
     ActionList actionList;
 
     KXMLGUIClient *guiClient;
+
+    MergingIndexList::Iterator currentDefaultMergingIt;
+    MergingIndexList::Iterator currentClientMergingIt;
+
+    KXMLGUIBuilder *builder;
+    QStringList builderCustomTags;
+    QStringList builderContainerTags;
+
+    QStringList clientBuilderCustomTags;
+    QStringList clientBuilderContainerTags;
 };
 
 };
