@@ -4,7 +4,7 @@
 #include <qobject.h>
 #include <qaction.h>
 #include <kxmlgui.h>
-#include <kxmlguibase.h>
+#include <kxmlguiclient.h>
 
 class KInstance;
 
