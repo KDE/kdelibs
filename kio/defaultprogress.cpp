@@ -19,6 +19,7 @@
 #include <qpushbutton.h>
 #include <qtimer.h>
 #include <qlayout.h>
+#include <qdatetime.h>
 
 #include <kapp.h>
 #include <kdialog.h>
@@ -88,28 +89,28 @@ DefaultProgress::DefaultProgress( bool showNow )
 }
 
 
-void DefaultProgress::slotTotalSize( KIO::Job*, unsigned long _bytes )
+void DefaultProgress::slotTotalSize( KIO::Job*, unsigned long bytes )
 {
-  m_iTotalSize = _bytes;
+  m_iTotalSize = bytes;
 }
 
 
-void DefaultProgress::slotTotalFiles( KIO::Job*, unsigned long _files )
+void DefaultProgress::slotTotalFiles( KIO::Job*, unsigned long files )
 {
-  m_iTotalFiles = _files;
+  m_iTotalFiles = files;
 }
 
 
-void DefaultProgress::slotTotalDirs( KIO::Job*, unsigned long _dirs )
+void DefaultProgress::slotTotalDirs( KIO::Job*, unsigned long dirs )
 {
-  m_iTotalDirs = _dirs;
+  m_iTotalDirs = dirs;
 }
 
 
-void DefaultProgress::slotPercent( KIO::Job*, unsigned long _percent )
+void DefaultProgress::slotPercent( KIO::Job*, unsigned long percent )
 {
-  QString tmp(i18n( "%1% of %2 ").arg( _percent ).arg( KIO::convertSize(m_iTotalSize)));
-  m_pProgressBar->setValue( _percent );
+  QString tmp(i18n( "%1% of %2 ").arg( percent ).arg( KIO::convertSize(m_iTotalSize)));
+  m_pProgressBar->setValue( percent );
   switch(mode) {
   case Copy:
     tmp.append(i18n(" (Copying)"));
@@ -130,8 +131,9 @@ void DefaultProgress::slotPercent( KIO::Job*, unsigned long _percent )
 
 
 void DefaultProgress::slotProcessedSize( KIO::Job*, unsigned long bytes ) {
-  QString tmp;
+  m_iProcessedSize = bytes;
 
+  QString tmp;
   tmp = i18n( "%1 of %2 ").arg( KIO::convertSize(bytes) ).arg( KIO::convertSize(m_iTotalSize));
   sizeLabel->setText( tmp );
 }
@@ -161,20 +163,18 @@ void DefaultProgress::slotProcessedFiles( KIO::Job*, unsigned long files )
 }
 
 
-void DefaultProgress::slotSpeed( KIO::Job*, unsigned long _bytes_per_second )
+void DefaultProgress::slotSpeed( KIO::Job*, unsigned long bytes_per_second )
 {
-  if ( _bytes_per_second == 0 ) {
+  if ( bytes_per_second == 0 ) {
     speedLabel->setText( i18n( "Stalled") );
   } else {
-    speedLabel->setText( i18n( "%1/s").arg( KIO::convertSize( _bytes_per_second )) );
+    QTime remaining = KIO::calculateRemaining( m_iTotalSize, m_iProcessedSize, bytes_per_second );
+    speedLabel->setText( i18n( "%1/s ( %2 )").arg( KIO::convertSize( bytes_per_second )).arg( remaining.toString()) );
   }
-
-  // TODO : put somewhere remaining time
 }
 
 
-void DefaultProgress::slotCopying( KIO::Job*, const KURL& from,
-					    const KURL& to )
+void DefaultProgress::slotCopying( KIO::Job*, const KURL& from, const KURL& to )
 {
   setCaption(i18n("Copy file(s) progress"));
   mode = Copy;
@@ -183,8 +183,7 @@ void DefaultProgress::slotCopying( KIO::Job*, const KURL& from,
 }
 
 
-void DefaultProgress::slotMoving( KIO::Job*, const KURL& from,
-					    const KURL& to )
+void DefaultProgress::slotMoving( KIO::Job*, const KURL& from, const KURL& to )
 {
   setCaption(i18n("Move file(s) progress"));
   mode = Move;

@@ -34,21 +34,21 @@ public:
   ~DefaultProgress() {}
 
 public slots:
-  virtual void slotTotalSize( KIO::Job*, unsigned long _bytes );
-  virtual void slotTotalFiles( KIO::Job*, unsigned long _files );
-  virtual void slotTotalDirs( KIO::Job*, unsigned long _dirs );
+  virtual void slotTotalSize( KIO::Job*, unsigned long bytes );
+  virtual void slotTotalFiles( KIO::Job*, unsigned long files );
+  virtual void slotTotalDirs( KIO::Job*, unsigned long dirs );
 
-  virtual void slotProcessedSize( KIO::Job*, unsigned long _bytes );
-  virtual void slotProcessedFiles( KIO::Job*, unsigned long _files );
-  virtual void slotProcessedDirs( KIO::Job*, unsigned long _dirs );
+  virtual void slotProcessedSize( KIO::Job*, unsigned long bytes );
+  virtual void slotProcessedFiles( KIO::Job*, unsigned long files );
+  virtual void slotProcessedDirs( KIO::Job*, unsigned long dirs );
 
-  virtual void slotSpeed( KIO::Job*, unsigned long _bytes_per_second );
-  virtual void slotPercent( KIO::Job*, unsigned long _percent );
+  virtual void slotSpeed( KIO::Job*, unsigned long bytes_per_second );
+  virtual void slotPercent( KIO::Job*, unsigned long percent );
 
-  virtual void slotCopying( KIO::Job*, const KURL& _src, const KURL& _dest );
-  virtual void slotMoving( KIO::Job*, const KURL& _src, const KURL& _dest );
-  virtual void slotDeleting( KIO::Job*, const KURL& _file );
-  virtual void slotCreatingDir( KIO::Job*, const KURL& _dir );
+  virtual void slotCopying( KIO::Job*, const KURL& src, const KURL& dest );
+  virtual void slotMoving( KIO::Job*, const KURL& src, const KURL& dest );
+  virtual void slotDeleting( KIO::Job*, const KURL& url );
+  virtual void slotCreatingDir( KIO::Job*, const KURL& dir );
 
   virtual void slotCanResume( KIO::Job*, bool );
 
@@ -67,6 +67,7 @@ protected:
   unsigned long m_iTotalFiles;
   unsigned long m_iTotalDirs;
 
+  unsigned long m_iProcessedSize;
   unsigned long m_iProcessedDirs;
   unsigned long m_iProcessedFiles;
 
