@@ -60,7 +60,7 @@ typedef char HASHHEX[33];
  *
  * <u>NOTE:</u> A unit test program is available under the tests
  * directory that exercises all the codecs provided here.  You
- * can compile the unit test program under @p kdelibs/kio/tests
+ * can compile the unit test program under @p kdelibs/kdecore/tests
  * by doing @p "make kmdcodectest".
  *
  * @short A collection of commonly used encoding/decoding algorithms.
