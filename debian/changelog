@@ -1,3 +1,10 @@
+kdelibs (4:2.2.0-0beta1-5) unstable; urgency=low
+ 
+  * synce with upstream
+  * Add -mieee for Alpha builds
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sat, 07 Jul 2001 00:57:00 -0700
+
 kdelibs (4:2.2.0-0beta1-4) unstable; urgency=low
  
   * synce with upstream
