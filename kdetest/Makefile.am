@@ -28,7 +28,7 @@ LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
 
 check_PROGRAMS = kconfigtest kledlamptest kprogresstest \
 		kcolordlgtest kdatepicktest kfontdialogtest	\
-		kmsgboxtest kpopuptest ktabctltest ktreelisttest	\
+		kmsgboxtest kpopuptest ktabctltest \
 		kseparatortest kiconloadertest		\
 		kwindowtest klinetest kstatusbartest 	\
 		kprocesstest kpannertest kbuttonboxtest ksimpleconfigtest \
@@ -37,7 +37,7 @@ check_PROGRAMS = kconfigtest kledlamptest kprogresstest \
 		kcharselecttest kstddirstest khtmltest \
 		kopenwithtest kaboutdialogtest
 
-noinst_HEADERS = kdatepicktestdlg.h kmsgboxtest.h ktreelisttest.h \
+noinst_HEADERS = kdatepicktestdlg.h kmsgboxtest.h \
 		ktabctltest.h kiconloadertestmain.h	\
 		kwindowtest.h klinetest.h kstatusbartest.h \
 		kprocesstest.h kledtest.h kcontainertest.h \
@@ -49,7 +49,7 @@ METASOURCES = kconfigtest.moc \
 	klinetest.moc klocaletest.moc kmsgboxtest.moc \
 	kpannertest.moc kprocesstest.moc krulertest.moc \
 	kstatusbartest.moc ktabctltest.moc \
-	ktreelisttest.moc kwindowtest.moc
+	kwindowtest.moc
 
 LDADD =  $(LIB_KDEUI)
 
@@ -83,7 +83,6 @@ kseparatortest_SOURCES = kseparatortest.cpp
 ksimpleconfigtest_SOURCES = ksimpleconfigtest.cpp
 kstatusbartest_SOURCES = kstatusbartest.cpp
 ktabctltest_SOURCES = ktabctltest.cpp
-ktreelisttest_SOURCES = ktreelisttest.cpp
 kurltest_SOURCES = kurltest.cpp
 kwindowtest_SOURCES = kwindowtest.cpp
 kwizardtest_SOURCES = kwizardtest.cpp
