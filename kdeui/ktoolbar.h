@@ -28,7 +28,7 @@
 #include <qmainwindow.h>
 #include <qcombobox.h>
 #include <qmap.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <kglobal.h>
 #include <qguardedptr.h>
 #include <qframe.h>
@@ -1074,7 +1074,7 @@ private:
     Id2WidgetMap id2widget;
     KToolBarPrivate *d;
     KPopupMenu *context;
-    QList<QWidget> widgets, inserted /*to be removed*/;
+    QPtrList<QWidget> widgets, inserted /*to be removed*/;
     QTimer *layoutTimer;
     QGuardedPtr<QWidget> stretchableWidget, rightAligned;
 

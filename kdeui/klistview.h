@@ -22,7 +22,7 @@
 
 #include <qlistview.h>
 
-#include <qlist.h>
+#include <qptrlist.h>
 
 class QDragObject;
 /**
@@ -133,7 +133,7 @@ public:
   /**
    * @return a list containing the currently selected items.
    */
-  QList<QListViewItem> selectedItems() const;
+  QPtrList<QListViewItem> selectedItems() const;
 
   /**
    * Arbitrarily move @p item to @p parent, positioned immediately after item @p after.
@@ -385,7 +385,7 @@ signals:
    * each and every item moved, in order.  The first element in @p items associates
    * with the first of afterFirst and afterNow.
    **/
-  void moved(QList<QListViewItem> &items, QList<QListViewItem> &afterFirst, QList<QListViewItem> &afterNow);
+  void moved(QPtrList<QListViewItem> &items, QPtrList<QListViewItem> &afterFirst, QPtrList<QListViewItem> &afterNow);
 
   /**
    * This signal gets emitted when an item is renamed via in-place renaming.

@@ -21,7 +21,7 @@
 #define _KJANUS_WIDGET_H_
 
 #include <qgrid.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qpixmap.h>
 #include <qsplitter.h>
 
@@ -473,7 +473,7 @@ class KJanusWidget : public QWidget
   private:
     bool mValid;
 
-    QList<QWidget> *mPageList;
+    QPtrList<QWidget> *mPageList;
     QStringList *mTitleList;
 
     int          mFace;

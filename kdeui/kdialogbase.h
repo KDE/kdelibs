@@ -25,7 +25,7 @@
 #include <qpushbutton.h>
 #include <kdialog.h>
 #include <kjanuswidget.h> 
-#include <qlist.h>
+#include <qptrlist.h>
 
 class KSeparator;
 class KURLLabel;
@@ -290,7 +290,7 @@ class KDialogBase : public KDialog
       QWidget *box;
       int mask;
       int style;
-      QList<KDialogBaseButton> list;
+      QPtrList<KDialogBaseButton> list;
       
     };
 

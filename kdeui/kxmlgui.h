@@ -21,10 +21,9 @@
 #define __kxmlgui_h__
 
 #include <qobject.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qdom.h>
 #include <qmap.h>
-#include <qlist.h>
 #include <qvaluelist.h>
 
 class KAction;
@@ -96,13 +95,13 @@ class KXMLGUIFactory : public QObject
    */
   void removeClient( KXMLGUIClient *client );
 
-  void plugActionList( KXMLGUIClient *client, const QString &name, const QList<KAction> &actionList );
+  void plugActionList( KXMLGUIClient *client, const QString &name, const QPtrList<KAction> &actionList );
   void unplugActionList( KXMLGUIClient *client, const QString &name );
 
   /**
    * Returns a list of all clients currently added to this factory
    */
-  QList<KXMLGUIClient> clients() const;
+  QPtrList<KXMLGUIClient> clients() const;
 
   /**
    * Use this method to get access to a container widget with the name specified with @p containerName
@@ -116,7 +115,7 @@ class KXMLGUIFactory : public QObject
    */
   QWidget *container( const QString &containerName, KXMLGUIClient *client, bool useTagName = false );
 
-  QList<QWidget> containers( const QString &tagName );
+  QPtrList<QWidget> containers( const QString &tagName );
 
   /**
    * Use this method to free all memory allocated by the KXMLGUIFactory. This deletes the internal node
@@ -157,7 +156,7 @@ class KXMLGUIFactory : public QObject
 
   QWidget *findRecursive( KXMLGUIContainerNode *node, bool tag );
 
-  QList<QWidget> findRecursive( KXMLGUIContainerNode *node, const QString &tagName );
+  QPtrList<QWidget> findRecursive( KXMLGUIContainerNode *node, const QString &tagName );
 
   QWidget *createContainer( QWidget *parent, int index, const QDomElement &element, int &id,
                             KXMLGUIBuilder **builder );

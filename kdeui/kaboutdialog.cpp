@@ -41,7 +41,7 @@
 #include <kdebug.h>
 
 template class QArray<QWidget*>;
-template class QList<KAboutContributor>;
+template class QPtrList<KAboutContributor>;
 
 #define WORKTEXT_IDENTATION 16
 #define Grid 3
@@ -1377,7 +1377,7 @@ KAboutWidget::adjust()
     {
       cx=QMAX(cx, cont->sizeHint().width());
       cy+=cont->sizeHint().height()+Grid;
-      QListIterator<KAboutContributor> _pos(contributors);
+      QPtrListIterator<KAboutContributor> _pos(contributors);
       for( ; _pos.current(); ++_pos)
 	{
 	  cy+=_pos.current()->sizeHint().height();
@@ -1489,7 +1489,7 @@ KAboutWidget::resizeEvent(QResizeEvent*)
       cont->hide();
     }
 
-  for(QListIterator<KAboutContributor> _pos(contributors); _pos.current(); ++_pos)
+  for(QPtrListIterator<KAboutContributor> _pos(contributors); _pos.current(); ++_pos)
     {
       tempy=_pos.current()->sizeHint().height();
       // y+=Grid;

@@ -20,7 +20,7 @@
 #define _KXMLGUICLIENT_H
 
 #include <qdom.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qmap.h>
 #include <qstringlist.h>
 
@@ -151,7 +151,7 @@ public:
   /**
    * Retrieve a list of all child clients.
    */
-  const QList<KXMLGUIClient> *childClients();
+  const QPtrList<KXMLGUIClient> *childClients();
 
   /**
    * A client can have an own @ref KXMLGUIBuilder.
@@ -178,7 +178,7 @@ public:
    */
   void reloadXML();
 
-  void plugActionList( const QString &name, const QList<KAction> &actionList );
+  void plugActionList( const QString &name, const QPtrList<KAction> &actionList );
   void unplugActionList( const QString &name );
 
   static QString findMostRecentXMLFile( const QStringList &files, QString &doc );

@@ -26,7 +26,6 @@
 #include <qgrid.h>
 #include <qhbox.h>
 #include <qlayout.h>
-#include <qlist.h>
 #include <qtooltip.h>
 #include <qvbox.h>
 #include <qwhatsthis.h>
@@ -49,7 +48,7 @@ int KDialogBaseButton::id()
     return( mKey );
 }
 
-template class QList<KDialogBaseButton>;
+template class QPtrList<KDialogBaseButton>;
 
 class KDialogBase::KDialogBasePrivate {
 public:

@@ -299,7 +299,7 @@ public:
     /**
      * List of members of KMainWindow class.
      */
-    static QList<KMainWindow>* memberList;
+    static QPtrList<KMainWindow>* memberList;
 
     /**
      * Retrieve a pointer to the toolbar with the specified name.
@@ -316,7 +316,7 @@ public:
     /**
      * @return An iterator over the list of all toolbars for this window.
      */
-    QListIterator<KToolBar> toolBarIterator();
+    QPtrListIterator<KToolBar> toolBarIterator();
 
     /**
      * @return A KAccel instance bound to this mainwindow. Used automatically
@@ -619,7 +619,7 @@ private:
 private:
     KHelpMenu *mHelpMenu, *helpMenu2;
     KXMLGUIFactory *factory_;
-    QList<KToolBar> toolbarList;
+    QPtrList<KToolBar> toolbarList;
     KMainWindowPrivate *d;
 
 };

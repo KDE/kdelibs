@@ -21,7 +21,7 @@
 #define __KCONTAINER_H__
 
 #include <qframe.h>
-#include <qlist.h>
+#include <qptrlist.h>
 
 /**
  * Alternative Layout manager widget.
@@ -262,11 +262,11 @@ protected:
     /**
      * The list of all widgets packed on the start
      */
-    QList<KContainerLayoutItem> _startWidgets;
+    QPtrList<KContainerLayoutItem> _startWidgets;
     /**
      * The list of all widgets packed at the end
      */
-    QList<KContainerLayoutItem> _endWidgets;
+    QPtrList<KContainerLayoutItem> _endWidgets;
     /**
      * width or height we have for each widget
      */

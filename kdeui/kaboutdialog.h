@@ -210,7 +210,7 @@ protected:
   /** Show the maintainer? */
   bool showMaintainer;
   /** A set of people who contributed to the application. */
-  QList<KAboutContributor> contributors;
+  QPtrList<KAboutContributor> contributors;
   // #########################################################################
   //
 private:

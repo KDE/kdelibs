@@ -37,14 +37,14 @@ void KMacroCommand::addCommand(KCommand *command)
 
 void KMacroCommand::execute()
 {
-    QListIterator<KCommand> it(m_commands);
+    QPtrListIterator<KCommand> it(m_commands);
     for ( ; it.current() ; ++it )
         it.current()->execute();
 }
 
 void KMacroCommand::unexecute()
 {
-    QListIterator<KCommand> it(m_commands);
+    QPtrListIterator<KCommand> it(m_commands);
     it.toLast();
     for ( ; it.current() ; --it )
         it.current()->unexecute();

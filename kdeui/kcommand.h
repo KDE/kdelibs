@@ -21,7 +21,7 @@
 #ifndef kcommand_h
 #define kcommand_h
 
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qstring.h>
 #include <qobject.h>
 
@@ -111,7 +111,7 @@ public:
     virtual void unexecute();
 
 protected:
-    QList<KCommand> m_commands;
+    QPtrList<KCommand> m_commands;
 };
 
 
@@ -222,7 +222,7 @@ signals:
 private:
     void clipCommands();  // ensures that the limits are kept
 
-    QList<KCommand> m_commands;
+    QPtrList<KCommand> m_commands;
     class KCommandHistoryPrivate;
     KCommandHistoryPrivate *d;
     KAction *m_undo, *m_redo;

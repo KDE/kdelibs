@@ -63,7 +63,7 @@ class KJanusWidget::IconListItem : public QListBoxItem
 
 
 
-template class QList<QListViewItem>;
+template class QPtrList<QListViewItem>;
 
 
 KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
@@ -76,7 +76,7 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
 
   if( mFace == TreeList || mFace == IconList )
   {
-    mPageList = new QList<QWidget>;
+    mPageList = new QPtrList<QWidget>;
     mTitleList = new QStringList();
 
     QFrame *page;
@@ -146,7 +146,7 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
   }
   else if( mFace == Tabbed )
   {
-    mPageList = new QList<QWidget>;
+    mPageList = new QPtrList<QWidget>;
 
     mTabControl = new QTabWidget( this );
     mTabControl->setMargin (KDialog::marginHint());

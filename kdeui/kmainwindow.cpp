@@ -58,7 +58,7 @@ public:
     KAccel * kaccel;
 };
 
-QList<KMainWindow>* KMainWindow::memberList = 0L;
+QPtrList<KMainWindow>* KMainWindow::memberList = 0L;
 static bool no_query_exit = false;
 static KMWSessionManaged* ksm = 0;
 static KStaticDeleter<KMWSessionManaged> ksmd;
@@ -81,7 +81,7 @@ public:
             KMainWindow::memberList->first()->saveGlobalProperties(config);
         }
 
-        QListIterator<KMainWindow> it(*KMainWindow::memberList);
+        QPtrListIterator<KMainWindow> it(*KMainWindow::memberList);
         int n = 0;
         config->setGroup(QString::fromLatin1("Number"));
         config->writeEntry(QString::fromLatin1("NumberOfWindows"), KMainWindow::memberList->count());
@@ -97,7 +97,7 @@ public:
         // not really a fast method but the only compatible one
         if ( sm.allowsInteraction() ) {
             bool cancelled = false;
-            QListIterator<KMainWindow> it(*KMainWindow::memberList);
+            QPtrListIterator<KMainWindow> it(*KMainWindow::memberList);
             ::no_query_exit = true;
             for (it.toFirst(); it.current() && !cancelled;){
                 KMainWindow *window = *it;
@@ -154,7 +154,7 @@ KMainWindow::KMainWindow( QWidget* parent, const char *name, WFlags f )
     kapp->setTopWidget( this );
     connect(kapp, SIGNAL(shutDown()), this, SLOT(shuttingDown()));
     if( !memberList )
-        memberList = new QList<KMainWindow>;
+        memberList = new QPtrList<KMainWindow>;
 
     if ( !ksm )
         ksm = ksmd.setObject(new KMWSessionManaged());
@@ -447,7 +447,7 @@ void KMainWindow::closeEvent ( QCloseEvent *e )
         }
 
         int not_withdrawn = 0;
-        QListIterator<KMainWindow> it(*KMainWindow::memberList);
+        QPtrListIterator<KMainWindow> it(*KMainWindow::memberList);
         for (it.toFirst(); it.current(); ++it){
             if ( !it.current()->isHidden() && it.current()->isTopLevel() && it.current() != this )
                 not_withdrawn++;
@@ -554,7 +554,7 @@ void KMainWindow::saveMainWindowSettings(KConfig *config, const QString &configG
     int n = 1; // Toolbar counter. toolbars are counted from 1,
     KToolBar *toolbar = 0;
     QString toolKey;
-    QListIterator<KToolBar> it( toolBarIterator() );
+    QPtrListIterator<KToolBar> it( toolBarIterator() );
     while ( ( toolbar = it.current() ) ) {
         ++it;
         QString group;
@@ -632,7 +632,7 @@ void KMainWindow::applyMainWindowSettings(KConfig *config, const QString &config
     int n = 1; // Toolbar counter. toolbars are counted from 1,
     KToolBar *toolbar;
     QString toolKey;
-    QListIterator<KToolBar> it( toolBarIterator() ); // must use own iterator
+    QPtrListIterator<KToolBar> it( toolBarIterator() ); // must use own iterator
 
     for ( ; it.current(); ++it) {
         toolbar= it.current();
@@ -662,7 +662,7 @@ void KMainWindow::finalizeGUI( bool force )
     // we call positionYourself again for each of them, but this time
     // the toolbariterator should give them in the proper order.
     // Both the XMLGUI and applySettings call this, hence "force" for the latter.
-    QListIterator<KToolBar> it( toolBarIterator() );
+    QPtrListIterator<KToolBar> it( toolBarIterator() );
     for ( ; it.current() ; ++ it )
         it.current()->positionYourself( force );
 
@@ -812,10 +812,10 @@ KToolBar *KMainWindow::toolBar( const char * name )
         return new KToolBar(this, Top, false, name, honor_mode ); // non-XMLGUI
 }
 
-QListIterator<KToolBar> KMainWindow::toolBarIterator()
+QPtrListIterator<KToolBar> KMainWindow::toolBarIterator()
 {
     toolbarList.clear();
-    QList<QToolBar> lst;
+    QPtrList<QToolBar> lst;
     for ( int i = (int)QMainWindow::Unmanaged; i <= (int)Minimized; ++i ) {
         lst = toolBars( (ToolBarDock)i );
         for ( QToolBar *tb = lst.first(); tb; tb = lst.next() ) {
@@ -824,7 +824,7 @@ QListIterator<KToolBar> KMainWindow::toolBarIterator()
             toolbarList.append( (KToolBar*)tb );
         }
     }
-    return QListIterator<KToolBar>( toolbarList );
+    return QPtrListIterator<KToolBar>( toolbarList );
 }
 
 KAccel * KMainWindow::accel()

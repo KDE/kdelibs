@@ -55,7 +55,7 @@ public:
   QDomDocument m_buildDocument;
   KXMLGUIFactory *m_factory;
   KXMLGUIClient *m_parent;
-  QList<KXMLGUIClient> m_children;
+  QPtrList<KXMLGUIClient> m_children;
   KXMLGUIBuilder *m_builder;
   QString m_xmlFile;
   QString m_localXMLFile;
@@ -77,7 +77,7 @@ KXMLGUIClient::~KXMLGUIClient()
   if ( d->m_parent )
     d->m_parent->removeChildClient( this );
 
-  QListIterator<KXMLGUIClient> childIt( d->m_children );
+  QPtrListIterator<KXMLGUIClient> childIt( d->m_children );
   for (; childIt.current(); ++childIt )
     childIt.current()->d->m_parent = 0L;
 
@@ -542,7 +542,7 @@ void KXMLGUIClient::removeChildClient( KXMLGUIClient *child )
   d->m_children.removeRef( child );
 }
 
-const QList<KXMLGUIClient> *KXMLGUIClient::childClients()
+const QPtrList<KXMLGUIClient> *KXMLGUIClient::childClients()
 {
   return &d->m_children;
 }
@@ -559,7 +559,7 @@ KXMLGUIBuilder *KXMLGUIClient::clientBuilder() const
   return d->m_builder;
 }
 
-void KXMLGUIClient::plugActionList( const QString &name, const QList<KAction> &actionList )
+void KXMLGUIClient::plugActionList( const QString &name, const QPtrList<KAction> &actionList )
 {
   if ( !d->m_factory )
     return;
