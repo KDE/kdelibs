@@ -26,13 +26,13 @@
 #include <qpushbutton.h>
 #include <kiconview.h>
 #include <kdialogbase.h>
+#include <kiconloader.h>
 
 class QComboBox;
 class QLabel;
 class QLineEdit;
 class KProgress;
 class QTimer;
-class KIconLoader;
 
 /**
 * Internal display class for @ref KIconLoaderDialog
@@ -48,9 +48,8 @@ public:
     KIconLoaderCanvas (QWidget *parent=0, const char* name=0);
     virtual ~KIconLoaderCanvas();
 
-    void loadDir(QString dirname, QString filter);
+    void loadFiles( QStringList files );
     QString getCurrent( void );
-    QString currentDir( void );
 
 signals:
     void nameChanged( const QString& );
@@ -67,12 +66,13 @@ protected:
     virtual void keyPressEvent(QKeyEvent *e);
 
 private slots:
-    void slotLoadDir();
+    void slotLoadFiles();
     void slotCurrentChanged( QIconViewItem *item );
 
 private:
-    QString dir_name, filter;
+    QStringList mFiles;
     QTimer *loadTimer;
+    KIconLoader *mpLoader;
 
     class KIconLoaderCanvasPrivate;
     KIconLoaderCanvasPrivate *d;
@@ -130,45 +130,29 @@ public:
      * display. For example "*" displays all icons and "mini*" displays only
      * those icons which names start with 'mini'.
      */
-    QPixmap selectIcon( QString &name, const QString &filter);
+    QPixmap selectIcon( QString &name, int group, int context=KIcon::Any );
 
-    /**
-     * sets the directories to choose from. By default these are
-     * all directories that keep toolbar icons
-     */
-    void changeDirs( const QStringList &l );
-    int exec(QString filter);
-
-    /**
-     * Set the icon type to load: apps, mimetypes, toolbars, devices,
-     * filesystems, listitems, or all (all types)
-     */
-    void setIconType(const QString& _resType);
+    int exec(int group, int context);
 
 protected:
     void init();
-    void loadTypes();
 
 protected slots:
-    void filterChanged();
-    void dirChanged(const QString&);
     void typeChanged(int);
-    void needReload();
+    //void needReload();
 
     void initProgressBar( int steps );
     void progress( int p );
     void hideProgressBar( void );
 
 protected:
+    int mGroup, mContext;
     KIconLoaderCanvas *canvas;
     QLabel	      *l_name;
-    QLineEdit	      *i_filter;
-    QLabel	      *l_filter;
     QLabel	      *text;
-    QComboBox	      *cb_dirs;
     QComboBox	      *cb_types;
     KIconLoader	      *icon_loader;
-    KProgress *progressBar;
+    KProgress	      *progressBar;
 
 private:
     class KIconLoaderDialogPrivate;
@@ -180,10 +164,6 @@ private:
  * It shows the currently selected icon. Pressing on
  * the icon will open the dialog. If the icon changes, a
  * signal is emitted and the buttons pixmap becomes updated.
- *
- * You can set the resource type for locating the icon pixmaps.
- * See @ref setIconType for changing the default setting,
- * which is "toolbar".
  */
 class KIconLoaderButton : public QPushButton
 {
@@ -203,14 +183,11 @@ public:
     ~KIconLoaderButton();
 
     /**
-     * Set the resource type for locating icon pixmaps and reload
-     * the icon, if a name has already been given. 
-     *
-     * The default resource type is "toolbar".
-     *
-     * @param _resType A resource type known to @ref KStandardDirs.
+     * Set the icon group and context. The group determines the visual
+     * appearance of the icons, the context limits the number of icons to
+     * choose from.
      */
-    void setIconType(const QString& _resType);
+    void setIconType(int group, int context);
 
     /**
      * Set the button's icon.
@@ -218,10 +195,12 @@ public:
      * @param _icon A parameter as usually passed to @ref KIconLoader.
      */
     void setIcon( const QString& _icon );
+
     /**
      * @return The name of the icon without path.
      */
     const QString icon() { return iconStr; }
+
     /**
      * @return A reference to the icon loader dialog used.
      */
@@ -237,6 +216,7 @@ signals:
     void iconChanged( const QString& icon );
 
 protected:
+    int mGroup, mContext;
     KIconLoaderDialog *loaderDialog;
     QString iconStr;
     QString resType;

@@ -5,6 +5,8 @@
 #include <kapp.h>
 #include <kiconloader.h>
 #include <kiconloaderdialog.h>
+#include <kdebug.h>
+#include <kglobal.h>
 
 #include <kstddirs.h>
 #include <kglobal.h>
@@ -14,7 +16,7 @@ MyMain::MyMain()
 {
   icon_sel = new KIconLoaderDialog;
   test = new QPushButton("test", this);
-  test->setPixmap(BarIcon("exit.xpm"));
+  test->setPixmap(BarIcon("exit"));
   test->setGeometry(0,0,50,50);
   connect(test, SIGNAL(clicked()), this, SLOT(changePix()));
   le_dir = new QLineEdit(this);
@@ -27,17 +29,16 @@ MyMain::MyMain()
 void MyMain::changePix()
 {
   QString name;
-  QPixmap pix = icon_sel->selectIcon( name, "*" );
+  QPixmap pix = icon_sel->selectIcon( name, KIcon::Desktop, KIcon::Application );
+  kdDebug() << "name = " << name << "\n";
   if( !pix.isNull() )
     {
-      debug("name = %s", name.ascii() );
       test->setPixmap(pix);
     }
 }
 
 void MyMain::insertPath()
 {
-    KGlobal::dirs()->addResourceDir("toolbar", le_dir->text() );
     delete icon_sel;
     icon_sel = new KIconLoaderDialog();
 }
