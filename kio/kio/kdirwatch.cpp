@@ -163,7 +163,7 @@ KDirWatchPrivate::KDirWatchPrivate()
     supports_dnotify = false; // *shrug*
   else if (sscanf(uts.release, "%d.%d.%d", &major, &minor, &patch) != 3)
     supports_dnotify = false; // *shrug*
-  else if( major * 1000000 + minor * 1000 + patch < 2004018 ) { // <2.4.18
+  else if( major * 1000000 + minor * 1000 + patch < 2004019 ) { // <2.4.19
     kdDebug(7001) << "Can't use DNotify, Linux kernel too old" << endl;
     supports_dnotify = false; 
   }
