@@ -52,7 +52,7 @@
 #include <kcmdlineargs.h>
 #include <kcrash.h>
 
-#define ANNOYING_POPUP
+//#define ANNOYING_POPUP
 
 #ifdef ANNOYING_POPUP
 #include <kmessagebox.h>
