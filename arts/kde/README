@@ -32,10 +32,10 @@ Line:
 5	Gets a KPlayObject from the factory, containing an Arts::PlayObject
 	created in our running artsd process
 	Parameters:
-					KURL url
-						(specifies the url to be played)
-					bool createBUS
-					 	(specifies wheter to create a Synth_BUS_UPLINK or not, "false" is only interesting if you want to use EffectsStacks etc..., see Noatun)
+		KURL url
+			(specifies the url to be played)
+		bool createBUS
+		 	(specifies wheter to create a Synth_BUS_UPLINK or not, "false" is only interesting if you want to use EffectsStacks etc..., see Noatun)
 6	Play the file
 
 That's it, with 7 LOC a "full" media player :)
