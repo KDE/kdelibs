@@ -58,12 +58,4 @@ private:
     QPushButton *m_pbConfig;
 };
 
-/** The actual page containing the widgets */
-/*class KFileSharePropsPage : public QWidget
-{
-    Q_OBJECT
-public:
-    KFileSharePropsPage( QWidget *parent, const char* name = 0 );
-};*/
-
 #endif

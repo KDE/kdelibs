@@ -41,7 +41,7 @@
 KFileSharePropsPlugin::KFileSharePropsPlugin( KPropertiesDialog *_props )
     : KPropsDlgPlugin( _props )
 {
-    QVBox *vBox = _props->addVBoxPage( QString(i18n("Share")) );
+    QVBox *vBox = _props->addVBoxPage( i18n("Local Net Sharing") );
     m_widget = 0L;
     init( vBox );
 }
@@ -125,13 +125,13 @@ void KFileSharePropsPlugin::init( QVBox *parentVBox )
 
             // Some help text
             QLabel *label = new QLabel( i18n("Sharing this directory makes it available under Linux/Unix (NFS) and Windows (Samba).") , m_widget );
-            label->setAlignment( Qt::AlignLeft /*AlignAuto in Qt3 */ | Qt::AlignVCenter | Qt::WordBreak );
+            label->setAlignment( Qt::AlignAuto | Qt::AlignVCenter | Qt::WordBreak );
             vbox->addWidget( label, 0 );
 
 	    KSeparator* sep=new KSeparator(m_widget);
 	    vbox->addWidget( sep, 0 );
 	    label = new QLabel( i18n("You can also reconfigure file sharing authorization.") , m_widget );
-            label->setAlignment( Qt::AlignLeft /*AlignAuto in Qt3 */ | Qt::AlignVCenter | Qt::WordBreak );
+            label->setAlignment( Qt::AlignAuto | Qt::AlignVCenter | Qt::WordBreak );
 	    vbox->addWidget( label, 0 );
 	    m_pbConfig = new QPushButton( i18n("Configure File Sharing"), m_widget );
 	    connect( m_pbConfig, SIGNAL( clicked() ), SLOT( slotConfigureFileSharing() ) );
@@ -164,8 +164,8 @@ void KFileSharePropsPlugin::init( QVBox *parentVBox )
 void KFileSharePropsPlugin::slotConfigureFileSharing()
 {
     KProcess proc;
-    proc<<KStandardDirs::findExe("kdesu")<<"kcmshell"<<"fileshare";
-    proc.start( KProcess::DontCare ); // should be ok, the perl script terminates fast
+    proc << KStandardDirs::findExe("kdesu") << "kcmshell" << "fileshare";
+    proc.start( KProcess::DontCare );
     m_pbConfig->setEnabled(false);
 }
 
