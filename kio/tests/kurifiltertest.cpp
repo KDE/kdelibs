@@ -103,6 +103,7 @@ int main(int argc, char **argv) {
     filter( "/", "/", KURIFilterData::LOCAL_DIR );
     filter( "/", "/", KURIFilterData::LOCAL_DIR, "kshorturifilter" );
     filter( "~/.kderc", QDir::homeDirPath().local8Bit()+"/.kderc", KURIFilterData::LOCAL_FILE, "kshorturifilter" );
+    filter( "~", QDir::homeDirPath().local8Bit(), KURIFilterData::LOCAL_DIR, "kshorturifilter" );
 
     // SMB share test with a specific filter chosen
     // #### Those fail - I see no specific code for them in kshorturifilter !?
