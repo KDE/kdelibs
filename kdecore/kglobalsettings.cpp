@@ -20,6 +20,9 @@
 
 #include <qdir.h>
 #include <kconfig.h>
+#include <kapp.h>
+#include <kipc.h>
+#include <kdebug.h>
 #include <kglobal.h>
 #include <kstddirs.h>
 #include <kcharsets.h>
@@ -132,6 +135,7 @@ bool KGlobalSettings::honorGnome()
 
 QColor KGlobalSettings::toolBarHighlightColor()
 {
+    initColors();
     KConfig *c = KGlobal::config();
     KConfigGroupSaver cgs( c, QString::fromLatin1("Toolbar style") );
     return c->readColorEntry("HighlightColor", kde2Blue);
@@ -139,6 +143,8 @@ QColor KGlobalSettings::toolBarHighlightColor()
 
 QColor KGlobalSettings::inactiveTitleColor()
 {
+    if (!kde2Gray)
+        kde2Gray = new QColor(220, 220, 220);
     KConfig *c = KGlobal::config();
     KConfigGroupSaver cgs( c, QString::fromLatin1("WM") );
     return c->readColorEntry( "inactiveBackground", kde2Gray );
@@ -153,6 +159,7 @@ QColor KGlobalSettings::inactiveTextColor()
 
 QColor KGlobalSettings::activeTitleColor()
 {
+    initColors();
     KConfig *c = KGlobal::config();
     KConfigGroupSaver cgs( c, QString::fromLatin1("WM") );
     return c->readColorEntry( "activeBackground", kde2Blue);
@@ -207,6 +214,7 @@ QColor KGlobalSettings::highlightedTextColor()
 //   KApplication::kdisplaySetPalette()
 QColor KGlobalSettings::highlightColor()
 {
+    initColors();
     KConfig *c = KGlobal::config();
     KConfigGroupSaver cgs( c, QString::fromLatin1("General") );
     return c->readColorEntry( "selectBackground", kde2Blue );
@@ -214,6 +222,7 @@ QColor KGlobalSettings::highlightColor()
 
 QColor KGlobalSettings::linkColor()
 {
+    initColors();
     KConfig *c = KGlobal::config();
     KConfigGroupSaver cgs( c, QString::fromLatin1("General") );
     return c->readColorEntry( "linkColor", kde2Blue );
@@ -291,10 +300,11 @@ QFont KGlobalSettings::menuFont()
     return *_menuFont;
 }
 
-void KGlobalSettings::initStatic()
+void KGlobalSettings::initStatic() // should be called initPaths(). Don't put anything else here.
 {
     if ( s_desktopPath != 0 )
         return;
+    kdDebug() << "KGlobalSettings::initStatic" << endl;
 
     s_desktopPath = new QString();
     s_autostartPath = new QString();
@@ -330,10 +340,16 @@ void KGlobalSettings::initStatic()
     if ( s_autostartPath->right(1) != "/")
         *s_autostartPath += "/";
 
-    kde2Gray = new QColor(220, 220, 220);
-    kde2Blue = new QColor(0, 128, 128);
-
     config->setDollarExpansion(dollarExpansion);
+
+    // Make sure this app gets the notifications about those paths
+    kapp->addKipcEventMask(KIPC::SettingsChanged);
+}
+
+void KGlobalSettings::initColors()
+{
+    if (!kde2Blue)
+        kde2Blue = new QColor(0, 128, 128);
 }
 
 void KGlobalSettings::rereadFontSettings()
@@ -350,6 +366,7 @@ void KGlobalSettings::rereadFontSettings()
 
 void KGlobalSettings::rereadPathSettings()
 {
+    kdDebug() << "KGlobalSettings::rereadPathSettings" << endl;
     delete s_autostartPath;
     s_autostartPath = 0L;
     delete s_trashPath;

@@ -209,6 +209,10 @@ private:
      */
     static void initStatic();
     /**
+     * initialise kde2Blue
+     */
+    static void initColors();
+    /**
      * drop cached values (called by KApplication)
      */
     static void rereadFontSettings();
