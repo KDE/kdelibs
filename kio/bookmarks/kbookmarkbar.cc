@@ -192,13 +192,10 @@ void KBookmarkBar::slotBookmarkSelected()
 static KToolBar* sepToolBar = 0;
 static const int sepId = -9999; // fixme with define for num?
 
-static void removeTempSep(bool delayed = true)
+static void removeTempSep()
 {
     if (sepToolBar) {
-        if (delayed)
-            sepToolBar->removeItemDelayed(sepId);
-        else
-            sepToolBar->removeItem(sepId);
+        sepToolBar->removeItem(sepId);
         sepToolBar = 0; // needed?
     }
 }
@@ -219,7 +216,7 @@ static KAction* doFunkySepThing(QPoint pos, QPtrList<KAction> actions, bool &atF
     Q_ASSERT(tb);
 
     sepToolBar = tb;
-    removeTempSep();
+    sepToolBar->removeItemDelayed(sepId);
 
     int index;
     KToolBarButton* b;
@@ -255,7 +252,6 @@ static KAction* doFunkySepThing(QPoint pos, QPtrList<KAction> actions, bool &atF
     sepIndex = index + (atFirst ? 0 : 1);
 
 failure_exit:
-    sepToolBar = tb;
     tb->insertLineSeparator(sepIndex, sepId);
     return a;
 }
@@ -265,7 +261,7 @@ bool KBookmarkBar::eventFilter( QObject *, QEvent *e ){
     static KAction* a = 0;
     if ( e->type() == QEvent::DragLeave )
     {
-        removeTempSep(false);
+        removeTempSep();
         a = 0;
     }
     else if ( e->type() == QEvent::Drop )
@@ -273,15 +269,12 @@ bool KBookmarkBar::eventFilter( QObject *, QEvent *e ){
         QDropEvent *dev = (QDropEvent*)e;
         if ( KBookmarkDrag::canDecode( dev ) )
         {
-            kdDebug(7043) << "removing" << endl;
-            removeTempSep(false);
-            kdDebug(7043) << "done" << endl;
+            removeTempSep();
             // ohhh. we got a valid drop, woopeedoo
             QValueList<KBookmark> list = KBookmarkDrag::decode( dev );
             if (list.count() > 1)
                kdWarning(7043) << "Sorry, currently you can only drop one address "
                                   "onto the bookmark bar!" << endl;
-            kdDebug(7043) << a << endl;
             QString address = a->property("address").toString();
             kdDebug(7043) << "inserting " 
                           << QString(atFirst ? "before" : "after")
