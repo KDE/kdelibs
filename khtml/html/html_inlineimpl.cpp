@@ -91,20 +91,22 @@ bool HTMLAnchorElementImpl::mouseEvent( int _x, int _y, int button, MouseEventTy
     }
     //kdDebug( 6030 ) << "Anchor::mouseEvent inside=" << inside << endl;
 
-    if(inside)
+    // check if child didn't set the url already
+    // i.e. <a href=".."><img usemap=".."..></a>
+    if(inside && _url==0)
     {
 	// set the url
-	if(_url == 0 && target && href) {
+	if(target && href) {
 	    DOMString s = DOMString("target://") + DOMString(target) + DOMString("/#") + DOMString(href);
 	    _url = s;
 	}
 	else
 	    _url = href;
     }
-	
+
     // dynamic HTML...
     if(inside || mouseInside()) mouseEventHandler(button, type, inside);
-	
+
     return inside;
 }
 
@@ -193,7 +195,7 @@ void HTMLBRElementImpl::attach(KHTMLView *w)
     {
 	m_render = new RenderBR();
 	m_render->setStyle(m_style);
-	r->addChild(m_render, _next ? _next->renderer() : 0);	
+	r->addChild(m_render, _next ? _next->renderer() : 0);
     }
     NodeBaseImpl::attach( w );
 }
@@ -283,10 +285,10 @@ void HTMLFontElementImpl::parseAttribute(AttrImpl *attr)
 void HTMLFontElementImpl::attach(KHTMLView *w)
 {
     HTMLElementImpl::attach(w);
-#if 0    
+#if 0
     // the font element needs special handling because it has to behave like
     // an inline or block level element depending on context.
-    
+
     m_style = document->styleSelector()->styleForElement(this);
     if(_parent && _parent->renderer())
     {
