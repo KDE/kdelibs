@@ -65,7 +65,7 @@ KFilterBase * KFilterBase::findFilterByMimeType( const QString & mimeType )
     }
 
     if ( mimeType == "application/x-bzip2" || mimeType == "application/x-gzip" ) // #88574
-        kdWarning(7005) << "KFilterBase::findFilterByExtension : no filter found for " << mimeType << endl;
+        kdWarning(7005) << "KFilterBase::findFilterByMimeType : no filter found for " << mimeType << endl;
 
     return 0L;
 }
