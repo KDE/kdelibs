@@ -447,47 +447,38 @@ fprintf(stderr, "NETWM: Warning readIcon() needs buffer adjustment!\n");
 
 template <class Z>
 NETRArray<Z>::NETRArray()
-  : sz( 0 ),
-    d( NULL )
+  : sz( 2 )
 {
+    // new/delete and malloc/free are not compatible
+    d = (Z*) malloc(sizeof(Z)*sz); // allocate 2 elts
+    memset( (void*) d, 0, sizeof(Z)*sz );
 }
 
 
 template <class Z>
 NETRArray<Z>::~NETRArray() {
-    delete [] d;
+    free(d);
 }
 
 
 template <class Z>
 void NETRArray<Z>::reset() {
-    sz = 0;
-    delete[] d;
-    d = NULL;
+    sz = 2;
+    d = (Z*) realloc(d, sizeof(Z)*sz);
+    memset( (void*) d, 0, sizeof(Z)*sz );
 }
 
 template <class Z>
 Z &NETRArray<Z>::operator[](int index) {
-    if (!d) {
-	d = new Z[index + 1];
-	memset( (void*) &d[0], 0, sizeof(Z) );
-	sz = index + 1;
-    } else if (index >= sz) {
+    if (index >= sz) {
 	// allocate space for the new data
-	Z *newdata = new Z[index + 1];
-
-	// move the old data into the new array
-	int i;
-	for (i = 0; i < sz; i++)
-	    newdata[i] = d[i];
-	for (; i <= index; i++ )
-	    memset( (void*) &newdata[i], 0, sizeof(Z) );
-
-	sz = index + 1;
-
-	// delete old data and reassign
-	delete [] d;
-	d = newdata;
+	// open table has amortized O(1) access time
+	// when N elements appended consecutively -- exa
+        int newsize = max(2*sz,  index+1);
+	// copy into new larger memory block using realloc
+        d = (Z*) realloc(d, sizeof(Z)*newsize);
+        memset( (void*) &d[sz], 0, sizeof(Z)*(newsize-sz) );
+	sz = newsize;
     }
 
     return d[index];
