@@ -1,8 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (C) 2001 Thiago Macieira <thiagom@mail.com>
- *
- *  $Id$
+ *  Copyright (C) 2001 Thiago Macieira <thiago.macieira@kdemail.net>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -33,8 +31,7 @@ class KAsyncIOPrivate;
  * This abstract class provides basic functionality for asynchronous I/O
  * support on top of QIODevice.
  *
- * @author Thiago Macieira <thiagom@mail.com>
- * @version $Id$
+ * @author Thiago Macieira <thiago.macieira@kdemail.net>
  * @short Asynchronous I/O support
  */
 class KAsyncIO: public QObject, public QIODevice

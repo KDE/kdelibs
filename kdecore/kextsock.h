@@ -76,8 +76,7 @@ class KExtendedSocketPrivate;
  * to make sure only IPv4 and IPv6 sockets are selected, even if future implementations
  * support newer IP protocols, ipv4Socket | ipv6Socket is your guy.
  *
- * @author Thiago Macieira <thiagom@mail.com>
- * @version $Id$
+ * @author Thiago Macieira <thiago.macieira@kdemail.net>
  * @short an extended socket
  */
 class KExtendedSocket: public KBufferedIO // public QObject, public QIODevice

@@ -1,8 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (C) 2000,2001 Thiago Macieira <thiagom@mail.com>
- *
- *  $Id$
+ *  Copyright (C) 2000-2003 Thiago Macieira <thiago.macieira@kdemail.net>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -41,8 +39,7 @@ class KSocketAddressPrivate;
  *
  * This class envelopes almost if not all socket addresses.
  *
- * @author Thiago Macieira <thiagom@mail.com>
- * @version $Id$
+ * @author Thiago Macieira <thiago.macieira@kdemail.net>
  * @short a socket address.
  */
 class KSocketAddress: public QObject
@@ -229,8 +226,7 @@ class KInetSocketAddressPrivate;
  * This class inherits most of the functionality from KSocketAddress, but
  * is targeted specifically to Internet addresses
  *
- * @author Thiago Macieira <thiagom@mail.com>
- * @version $Id$
+ * @author Thiago Macieira <thiago.macieira@kdemail.net>
  * @short an Internet socket address
  */
 class KInetSocketAddress: public KSocketAddress
@@ -581,8 +577,7 @@ class KUnixSocketAddressPrivate;
  * filenames should be encoded in whatever form locale/system deems necessary
  * before passing down to the function
  *
- * @author Thiago Macieira <thiagom@mail.com>
- * @version $Id$
+ * @author Thiago Macieira <thiago.macieira@kdemail.net>
  * @short a Unix socket address
  */
 class KUnixSocketAddress: public KSocketAddress
