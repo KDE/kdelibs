@@ -39,7 +39,9 @@ libDCOPC_la_LDFLAGS = -version-info 1:0 $(all_libraries) -no-undefined
 include_HEADERS = dcopclient.h dcopobject.h dcopstub.h dcopref.h
 noinst_HEADERS = version.h dcopglobal.h dcopserver.h dcop-doc.h testdcop.h dcopsignals.h
 
-METASOURCES = AUTO
+# we don't use AUTO here, because dcop-doc.h would be mocified (it contains
+# Q_OBJECT), and this would give an ugly warning
+METASOURCES = dcopclient.moc dcopserver.moc
 
 # dcopstub needs to go first for --enable-final to work
 libDCOP_la_SOURCES = dcopstub.cpp dcopclient.cpp dcopobject.cpp dcopref.cpp
