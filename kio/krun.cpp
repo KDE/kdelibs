@@ -51,7 +51,7 @@ pid_t KRun::runURL( const KURL& u, const QString& _mimetype )
   if ( _mimetype == "inode/directory-locked" )
   {
     KMessageBoxWrapper::error( 0L,
-            i18n("<qt>Unable to enter <b>%1</b>.\nYou do not have access rights to this location.</qt>").arg(u.url()) );
+            i18n("<qt>Unable to enter <b>%1</b>.\nYou do not have access rights to this location.</qt>").arg(u.prettyURL()) );
     return 0;
   }
   else if ( _mimetype == "application/x-desktop" )
@@ -461,7 +461,7 @@ void KRun::init()
       struct stat buff;
       if ( stat( QFile::encodeName(m_strURL.path()), &buff ) == -1 )
       {
-        KMessageBoxWrapper::error( 0L, i18n( "<qt>Unable to run the command specified. The file or directory <b>%1</b> does not exist.</qt>" ).arg( m_strURL.url() ) );
+        KMessageBoxWrapper::error( 0L, i18n( "<qt>Unable to run the command specified. The file or directory <b>%1</b> does not exist.</qt>" ).arg( m_strURL.prettyURL() ) );
         m_bFault = true;
         m_bFinished = true;
         m_timer.start( 0, true );
