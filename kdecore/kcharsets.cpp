@@ -139,8 +139,8 @@ static const QFont::CharSet charsetsIds[CHARSETS_COUNT] = {
     QFont::KOI8R,
     QFont::KOI8U,
 #if QT_VERSION >= 224
-    QFont::CP_1251,
-    QFont::PT_154,
+    QFont::CP1251,
+    QFont::PT154,
 #endif
     QFont::Set_Ja,
     QFont::Set_Ko,
@@ -599,9 +599,9 @@ QString KCharsets::xCharsetName(QFont::CharSet charSet) const
     case QFont::Set_Big5:
 	return "big5-0";
 #if QT_VERSION >= 224
-    case QFont::CP_1251:
+    case QFont::CP1251:
 	return "microsoft-cp1251";
-    case QFont::PT_154:
+    case QFont::PT154:
 	return "paratype-cp154";
 #endif
     case QFont::AnyCharSet:
