@@ -123,8 +123,6 @@ public:
     Iterator find( const QString &name );
 };
 
-int kjs_lib_count = 0;
-
 typedef FrameList::ConstIterator ConstFrameIt;
 typedef FrameList::Iterator FrameIt;
 
@@ -209,8 +207,8 @@ public:
     delete m_extension;
     delete m_settings;
     delete m_jscript;
-    if ( m_kjs_lib && !--kjs_lib_count )
-      delete m_kjs_lib;
+    if ( m_kjs_lib)
+       m_kjs_lib->unload();
 #ifndef Q_WS_QWS
     delete m_javaContext;
 #endif
@@ -832,7 +830,7 @@ KJSProxy *KHTMLPart::jScript()
     // look for plain C init function
     void *sym = lib->symbol("kjs_html_init");
     if ( !sym ) {
-      delete lib;
+      lib->unload();
       setJScriptEnabled( false );
       return 0;
     }
@@ -840,7 +838,6 @@ KJSProxy *KHTMLPart::jScript()
     initFunction initSym = (initFunction) sym;
     d->m_jscript = (*initSym)(this);
     d->m_kjs_lib = lib;
-    kjs_lib_count++;
     if (d->m_bJScriptDebugEnabled)
         d->m_jscript->setDebugEnabled(true);
   }
@@ -1423,6 +1420,7 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
   // We prefer m_baseURL over m_url because m_url changes when we are
   // about to load a new page.
   d->m_doc->setBaseURL( baseurl.url() );
+  d->m_doc->docLoader()->setShowAnimations( KHTMLFactory::defaultHTMLSettings()->showAnimations() );
 
   setAutoloadImages( KHTMLFactory::defaultHTMLSettings()->autoLoadImages() );
   QString userStyleSheet = KHTMLFactory::defaultHTMLSettings()->userStyleSheet();
@@ -1511,7 +1509,7 @@ void KHTMLPart::paint(QPainter *p, const QRect &rc, int yOff, bool *more)
 void KHTMLPart::stopAnimations()
 {
   if ( d->m_doc )
-    d->m_doc->docLoader()->setShowAnimations(false);
+    d->m_doc->docLoader()->setShowAnimations( KHTMLSettings::KAnimationDisabled );
 
   ConstFrameIt it = d->m_frames.begin();
   ConstFrameIt end = d->m_frames.end();
@@ -3581,6 +3579,8 @@ void KHTMLPart::reparseConfiguration()
   settings->init();
 
   setAutoloadImages( settings->autoLoadImages() );
+  if (d->m_doc)
+     d->m_doc->docLoader()->setShowAnimations( settings->showAnimations() );
 
   d->m_bJScriptEnabled = settings->isJavaScriptEnabled(m_url.host());
   d->m_bJScriptDebugEnabled = settings->isJavaScriptDebugEnabled();

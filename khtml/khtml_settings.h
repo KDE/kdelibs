@@ -45,6 +45,12 @@ public:
 	KJavaScriptReject
     };
 
+    enum KAnimationAdvice {
+        KAnimationDisabled=0,
+        KAnimationLoopOnce,
+        KAnimationEnabled
+    };
+
     /**
      * @internal Constructor
      */
@@ -67,6 +73,7 @@ public:
     bool changeCursor();
     bool underlineLink();
     bool hoverLink();
+    KAnimationAdvice showAnimations();
 
     // Font settings
     QString stdFontName() const;

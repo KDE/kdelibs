@@ -46,6 +46,8 @@
 
 #include <kurl.h>
 
+
+#include <khtml_settings.h>
 #include <dom/dom_string.h>
 
 class QMovie;
@@ -169,9 +171,10 @@ namespace khtml
 	Status m_status;
 	int m_size;
 	int m_expireDate;
-        bool m_free;
-        bool m_reload;
-        bool m_deleted;
+        bool m_free : 1;
+        bool m_reload : 1;
+        bool m_deleted : 1;
+        bool m_loading : 1;
     };
 
 
@@ -198,7 +201,6 @@ namespace khtml
 
     protected:
 	DOM::DOMString m_sheet;
-	bool loading;
         QTextCodec* m_codec;
     };
 
@@ -223,11 +225,10 @@ namespace khtml
 
 	void checkNotify();
 
-        bool isLoaded() const { return !loading; }
+        bool isLoaded() const { return !m_loading; }
 
     protected:
 	DOM::DOMString m_script;
-	bool loading;
         QTextCodec* m_codec;
     };
 
@@ -258,7 +259,7 @@ namespace khtml
         bool isTransparent() const { return isFullyTransparent; }
         bool isErrorImage() const { return errorOccured; }
 
-        void setShowAnimations( bool );
+        void setShowAnimations( KHTMLSettings::KAnimationAdvice );
 
         virtual bool schedule() const { return true; }
 
@@ -272,6 +273,7 @@ namespace khtml
 	void movieUpdated( const QRect &rect );
         void movieStatus(int);
         void movieResize(const QSize&);
+        void deleteMovie();
 
     private:
         void do_notify(const QPixmap& p, const QRect& r);
@@ -287,12 +289,13 @@ namespace khtml
 
 	int width;
 	int height;
-        bool monochrome;
 
 	// Is set if movie format type ( incremental/animation) was checked
-	bool typeChecked;
-        bool isFullyTransparent;
-        bool errorOccured;
+	bool typeChecked : 1;
+        bool isFullyTransparent : 1;
+        bool errorOccured : 1;
+        bool monochrome : 1;
+        KHTMLSettings::KAnimationAdvice m_showAnimations : 2;
 
         friend class Cache;
     };
@@ -314,6 +317,7 @@ namespace khtml
 
 	bool autoloadImages() const { return m_bautoloadImages; }
         bool reloading() const { return m_reloading; }
+        KHTMLSettings::KAnimationAdvice showAnimations() const { return m_showAnimations; }
         int expireDate() const { return m_expireDate; }
         KHTMLPart* part() const { return m_part; }
         DOM::DocumentImpl* doc() const { return m_doc; }
@@ -321,7 +325,7 @@ namespace khtml
         void setExpireDate( int );
         void setAutoloadImages( bool );
         void setReloading( bool );
-        void setShowAnimations( bool );
+        void setShowAnimations( KHTMLSettings::KAnimationAdvice );
         void removeCachedObject( CachedObject*) const;
 
     private:
@@ -331,9 +335,9 @@ namespace khtml
         QStringList m_reloadedURLs;
         mutable QPtrList<CachedObject> m_docObjects;
 	int m_expireDate;
-	bool m_reloading;
-        bool m_bautoloadImages;
-        bool m_showAnimations;
+	bool m_reloading : 1;
+        bool m_bautoloadImages : 1;
+        KHTMLSettings::KAnimationAdvice m_showAnimations : 2;
         KHTMLPart* m_part;
         DOM::DocumentImpl* m_doc;
     };

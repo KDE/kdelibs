@@ -35,35 +35,35 @@ typedef QMap<QString,KHTMLSettings::KJavaScriptAdvice> PolicyMap;
 class KHTMLSettingsPrivate
 {
 public:
-    bool m_bChangeCursor;
-    bool m_underlineLink;
-    bool m_hoverLink;
+    bool m_bChangeCursor : 1;
+    bool m_underlineLink : 1;
+    bool m_hoverLink : 1;
+    bool enforceCharset : 1;
+    bool m_bAutoLoadImages : 1;
+    bool m_bEnableJava : 1;
+    bool m_bEnableJavaScript : 1;
+    bool m_bEnableJavaScriptDebug : 1;
+    bool m_bEnablePlugins : 1;
+    bool m_formCompletionEnabled : 1;
 
     int m_fontSize;
-    QValueList<int>     m_fontSizes;
     int m_minFontSize;
+    int m_maxFormCompletionItems;
+    KHTMLSettings::KAnimationAdvice m_showAnimations;
 
-    bool enforceCharset;
     QString m_encoding;
     QString m_userSheet;
+    QString availFamilies;
 
     QColor m_textColor;
     QColor m_linkColor;
     QColor m_vLinkColor;
 
-    bool m_bAutoLoadImages;
-    bool m_bEnableJava;
-    bool m_bEnableJavaScript;
-    bool m_bEnableJavaScriptDebug;
-    bool m_bEnablePlugins;
     QMap<QString,KHTMLSettings::KJavaScriptAdvice> javaDomainPolicy;
     QMap<QString,KHTMLSettings::KJavaScriptAdvice> javaScriptDomainPolicy;
+    QValueList<int>     m_fontSizes;
     QStringList fonts;
     QStringList defaultFonts;
-    QString availFamilies;
-
-    bool m_formCompletionEnabled;
-    int m_maxFormCompletionItems;
 };
 
 
@@ -220,6 +220,17 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     // Other
     if ( reset || config->hasKey( "AutoLoadImages" ) )
       d->m_bAutoLoadImages = config->readBoolEntry( "AutoLoadImages", true );
+
+    if ( reset || config->hasKey( "ShowAnimations" ) )
+    {
+      QString value = config->readEntry( "ShowAnimations").lower();
+      if (value == "disabled")
+         d->m_showAnimations = KAnimationDisabled;
+      else if (value == "looponce")
+         d->m_showAnimations = KAnimationLoopOnce;
+      else
+         d->m_showAnimations = KAnimationEnabled;
+    }
 
     if ( config->readBoolEntry( "UserStyleSheetEnabled", false ) == true ) {
         if ( reset || config->hasKey( "UserStyleSheet" ) )
@@ -597,4 +608,9 @@ const QColor& KHTMLSettings::vLinkColor()
 bool KHTMLSettings::autoLoadImages()
 {
   return d->m_bAutoLoadImages;
+}
+
+KHTMLSettings::KAnimationAdvice KHTMLSettings::showAnimations()
+{
+  return d->m_showAnimations;
 }

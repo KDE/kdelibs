@@ -3,6 +3,7 @@
 
     Copyright (C) 1998 Lars Knoll (knoll@mpi-hd.mpg.de)
     Copyright (C) 2001 Dirk Mueller (mueller@kde.org)
+    Copyright (C) 2002 Waldo Bastian (bastian@kde.org)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -106,7 +107,7 @@ CachedCSSStyleSheet::CachedCSSStyleSheet(DocLoader* dl, const DOMString &url, bo
     setAccept( QString::fromLatin1("text/css") );
     // load the file
     Cache::loader()->load(dl, this, false);
-    loading = true;
+    m_loading = true;
     bool b;
     if(!charset.isEmpty())
 	m_codec = KGlobal::charsets()->codecForName(charset, b);
@@ -124,7 +125,7 @@ void CachedCSSStyleSheet::ref(CachedObjectClient *c)
     m_clients.remove(c);
     m_clients.append(c);
 
-    if(!loading) c->setStyleSheet( m_url, m_sheet );
+    if(!m_loading) c->setStyleSheet( m_url, m_sheet );
 }
 
 void CachedCSSStyleSheet::deref(CachedObjectClient *c)
@@ -141,14 +142,14 @@ void CachedCSSStyleSheet::data( QBuffer &buffer, bool eof )
     m_size = buffer.buffer().size();
     QString data = m_codec->toUnicode( buffer.buffer().data(), m_size );
     m_sheet = DOMString(data);
-    loading = false;
+    m_loading = false;
 
     checkNotify();
 }
 
 void CachedCSSStyleSheet::checkNotify()
 {
-    if(loading) return;
+    if(m_loading) return;
 
 #ifdef CACHE_DEBUG
     kdDebug( 6060 ) << "CachedCSSStyleSheet:: finishedLoading " << m_url.string() << endl;
@@ -162,7 +163,7 @@ void CachedCSSStyleSheet::checkNotify()
 
 void CachedCSSStyleSheet::error( int /*err*/, const char */*text*/ )
 {
-    loading = false;
+    m_loading = false;
     checkNotify();
 }
 
@@ -177,7 +178,7 @@ CachedScript::CachedScript(DocLoader* dl, const DOMString &url, bool reload, int
     setAccept( QString::fromLatin1("*/*") );
     // load the file
     Cache::loader()->load(dl, this, false);
-    loading = true;
+    m_loading = true;
     bool b;
     if(!charset.isEmpty())
         m_codec = KGlobal::charsets()->codecForName(charset, b);
@@ -195,7 +196,7 @@ void CachedScript::ref(CachedObjectClient *c)
     m_clients.remove(c);
     m_clients.append(c);
 
-    if(!loading) c->notifyFinished(this);
+    if(!m_loading) c->notifyFinished(this);
 }
 
 void CachedScript::deref(CachedObjectClient *c)
@@ -212,13 +213,13 @@ void CachedScript::data( QBuffer &buffer, bool eof )
     m_size = buffer.buffer().size();
     QString data = m_codec->toUnicode( buffer.buffer().data(), m_size );
     m_script = DOMString(data);
-    loading = false;
+    m_loading = false;
     checkNotify();
 }
 
 void CachedScript::checkNotify()
 {
-    if(loading) return;
+    if(m_loading) return;
 
     CachedObjectClient *c;
     for ( c = m_clients.first(); c != 0; c = m_clients.next() )
@@ -228,7 +229,7 @@ void CachedScript::checkNotify()
 
 void CachedScript::error( int /*err*/, const char */*text*/ )
 {
-    loading = false;
+    m_loading = false;
     checkNotify();
 }
 
@@ -387,7 +388,7 @@ static QString buildAcceptHeader()
 
 // -------------------------------------------------------------------------------------
 
-CachedImage::CachedImage(DocLoader* /*dl*/, const DOMString &url, bool reload, int _expireDate)
+CachedImage::CachedImage(DocLoader* dl, const DOMString &url, bool reload, int _expireDate)
     : QObject(), CachedObject(url, Image, reload, _expireDate)
 {
     static const QString &acceptHeader = KGlobal::staticQString( buildAcceptHeader() );
@@ -406,6 +407,7 @@ CachedImage::CachedImage(DocLoader* /*dl*/, const DOMString &url, bool reload, i
     m_size = 0;
     imgSource = 0;
     setAccept( acceptHeader );
+    m_showAnimations = dl->showAnimations();
 }
 
 CachedImage::~CachedImage()
@@ -610,67 +612,80 @@ void CachedImage::movieStatus(int status)
 #ifdef CACHE_DEBUG
     qDebug("movieStatus(%d)", status);
 #endif
+
+    // ### the html image objects are supposed to send the load event after every frame (according to
+    // netscape). We have a problem though where an image is present, and js code creates a new Image object,
+    // which uses the same CachedImage, the one in the document is not supposed to be notified
+
+    // just another Qt 2.2.0 bug. we cannot call
+    // QMovie::frameImage if we're after QMovie::EndOfMovie
+    if(status == QMovie::EndOfFrame)
+    {
+        const QImage& im = m->frameImage();
+        monochrome = ( ( im.depth() <= 8 ) && ( im.numColors() - int( im.hasAlphaBuffer() ) <= 2 ) );
+        if(im.width() < 5 && im.height() < 5 && im.hasAlphaBuffer()) // only evaluate for small images
+        {
+            QImage am = im.createAlphaMask();
+            if(am.depth() == 1)
+            {
+                bool solid = false;
+                for(int y = 0; y < am.height(); y++)
+                    for(int x = 0; x < am.width(); x++)
+                        if(am.pixelIndex(x, y)) {
+                            solid = true;
+                            break;
+                        }
+
+                isFullyTransparent = (!solid);
+            }
+        }
+
+        // we have to delete our tiled bg variant here
+        // because the frame has changed (in order to keep it in sync)
+        delete bg;
+        bg = 0;
+    }
+        
+
+    if((status == QMovie::EndOfMovie) || 
+       ((status == QMovie::EndOfLoop) && (m_showAnimations == KHTMLSettings::KAnimationLoopOnce)) ||
+       ((status == QMovie::EndOfFrame) && (m_showAnimations == KHTMLSettings::KAnimationDisabled))
+      )
+    {
+#if 0
+        // the movie has ended and it doesn't loop nor is it an animation,
+        // so there is no need to keep the buffer in memory
+        if(imgSource && (m->frameNumber() == 1))
+#else
+        // WABA: Throw away the movie when it gets to the end.
+        // We might want to do a pause instead in some cases if there is
+        // a chance that we want to play the movie again.
+        if(imgSource)
+#endif        
+        {
+            setShowAnimations( KHTMLSettings::KAnimationDisabled );
+
+            // monochrome alphamasked images are usually about 10000 times
+            // faster to draw, so this is worth the hack
+            if ( p && monochrome && p->depth() > 1 ) 
+            {
+                QPixmap* pix = new QPixmap;
+                pix->convertFromImage( p->convertToImage().convertDepth( 1 ), MonoOnly|AvoidDither );
+                if ( p->mask() )
+                    pix->setMask( *p->mask() );
+                delete p;
+                p = pix;
+                monochrome = false;
+            }
+        }
+
+	CachedObjectClient *c;
+        for ( c = m_clients.first(); c != 0; c = m_clients.next() )
+            c->notifyFinished(this);
+    }
+
     if((status == QMovie::EndOfFrame) || (status == QMovie::EndOfMovie))
     {
-        // ### the html image objects are supposed to send the load event after every frame (according to
-        // netscape). We have a problem though where an image is present, and js code creates a new Image object,
-        // which uses the same CachedImage, the one in the document is not supposed to be notified
-
-        // just another Qt 2.2.0 bug. we cannot call
-        // QMovie::frameImage if we're after QMovie::EndOfMovie
-        if(status == QMovie::EndOfFrame)
-        {
-            const QImage& im = m->frameImage();
-            monochrome = ( ( im.depth() <= 8 ) && ( im.numColors() - int( im.hasAlphaBuffer() ) <= 2 ) );
-            if(im.width() < 5 && im.height() < 5 && im.hasAlphaBuffer()) // only evaluate for small images
-            {
-                QImage am = im.createAlphaMask();
-                if(am.depth() == 1)
-                {
-                    bool solid = false;
-                    for(int y = 0; y < am.height(); y++)
-                        for(int x = 0; x < am.width(); x++)
-                            if(am.pixelIndex(x, y)) {
-                                solid = true;
-                                break;
-                            }
-
-                    isFullyTransparent = (!solid);
-                }
-
-            }
-
-            // we have to delete our tiled bg variant here
-            // because the frame has changed (in order to keep it in sync)
-            delete bg;
-            bg = 0;
-        }
-
-        if(status == QMovie::EndOfMovie)
-        {
-            // the movie has ended and it doesn't loop nor is it an animation,
-            // so there is no need to keep the buffer in memory
-            if(imgSource && m->frameNumber() == 1) {
-                setShowAnimations( false );
-
-                // monochrome alphamasked images are usually about 10000 times
-                // faster to draw, so this is worth the hack
-                if ( p && monochrome && p->depth() > 1 ) {
-                    QPixmap* pix = new QPixmap;
-                    pix->convertFromImage( p->convertToImage().convertDepth( 1 ), MonoOnly|AvoidDither );
-                    if ( p->mask() )
-                        pix->setMask( *p->mask() );
-                    delete p;
-                    p = pix;
-                    monochrome = false;
-                }
-            }
-
-	    CachedObjectClient *c;
-	    for ( c = m_clients.first(); c != 0; c = m_clients.next() )
-		c->notifyFinished(this);
-        }
-
 #ifdef CACHE_DEBUG
 //        QRect r(valid_rect());
 //        qDebug("movie Status frame update %d/%d/%d/%d, pixmap size %d/%d", r.x(), r.y(), r.right(), r.bottom(),
@@ -685,21 +700,25 @@ void CachedImage::movieResize(const QSize& /*s*/)
 //    do_notify(m->framePixmap(), QRect());
 }
 
-void CachedImage::setShowAnimations( bool enable )
+void CachedImage::setShowAnimations( KHTMLSettings::KAnimationAdvice showAnimations )
 {
-    if ( !enable && m ) {
+    m_showAnimations = showAnimations;
+    if ( (m_showAnimations == KHTMLSettings::KAnimationDisabled) && imgSource ) {
         imgSource->cleanBuffer();
         delete p;
         p = new QPixmap(m->framePixmap());
         m->disconnectUpdate( this, SLOT( movieUpdated( const QRect &) ));
-        m->disconnectStatus( this, SLOT( movieStatus(int)));
+        m->disconnectStatus( this, SLOT( movieStatus( int ) ));
         m->disconnectResize( this, SLOT( movieResize( const QSize& ) ) );
-        delete m;
-        m = 0;
+        QTimer::singleShot(0, this, SLOT( deleteMovie()));
         imgSource = 0;
     }
 }
 
+void CachedImage::deleteMovie()
+{
+    delete m; m = 0;
+}
 
 void CachedImage::clear()
 {
@@ -807,7 +826,7 @@ DocLoader::DocLoader(KHTMLPart* part, DocumentImpl* doc)
     m_reloading = false;
     m_expireDate = 0;
     m_bautoloadImages = true;
-    m_showAnimations = true;
+    m_showAnimations = KHTMLSettings::KAnimationEnabled;
     m_part = part;
     m_doc = doc;
 
@@ -913,9 +932,10 @@ void DocLoader::setReloading( bool enable )
     m_reloading = enable;
 }
 
-void DocLoader::setShowAnimations( bool enable )
+void DocLoader::setShowAnimations( KHTMLSettings::KAnimationAdvice showAnimations )
 {
-    if ( enable == m_showAnimations ) return;
+    if ( showAnimations == m_showAnimations ) return;
+    m_showAnimations = showAnimations;
 
     const CachedObject* co;
     for ( co=m_docObjects.first(); co; co=m_docObjects.next() )
@@ -923,7 +943,7 @@ void DocLoader::setShowAnimations( bool enable )
         {
             CachedImage *img = const_cast<CachedImage*>( static_cast<const CachedImage *>( co ) );
 
-            img->setShowAnimations( enable );
+            img->setShowAnimations( showAnimations );
         }
 }
 
