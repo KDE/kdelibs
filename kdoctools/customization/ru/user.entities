@@ -17,7 +17,11 @@
 <!ENTITY etc    "<abbrev>etc.</abbrev>">
 <!ENTITY FAQ    '<acronym>FAQ</acronym>'>
 
-<!-- Temporary hack - please translate to Russian: -->
+<!-- Temporary hack - please translate to Russian:
+
+     (you may adapt the entity's name to transliterated Russian as well)
+-->
+<!ENTITY kcontrolcenter	"<application>&kde; Control Center</application>">
 <!ENTITY kicon	"<guiicon>
 <inlinemediaobject>
  <objectinfo><title>&kde;'s K-icon</title></objectinfo>
@@ -30,3 +34,5 @@
 <!ENTITY Shift  "<keycap>Shift</keycap>">
 <!ENTITY Alt    "<keycap>Alt</keycap>">
 <!ENTITY Ctrl   "<keycap>Ctrl</keycap>">
+<!ENTITY eg     "<abbrev>e.g.</abbrev>">
+<!ENTITY ie     "<abbrev>i.e.</abbrev>">
