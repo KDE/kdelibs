@@ -112,6 +112,7 @@ protected:
    KSycocaFactoryList *m_lstFactories;
    QDataStream *m_str;
    static KSycoca *_self;
+   bool bNoDatabase;
 };
 
 #endif

@@ -56,9 +56,11 @@ bool KSycoca::openDatabase( bool abortOnError )
    if (database->open( IO_ReadOnly ))
    {
      m_str = new QDataStream(database);
+     bNoDatabase = false;
    }
    else
    {
+     bNoDatabase = true;
      if (!abortOnError)
        return false;
      // No database file
@@ -207,6 +209,7 @@ QDataStream * KSycoca::findFactory(KSycocaFactoryId id)
 
 QString KSycoca::kfsstnd_prefixes()
 {
+   if (bNoDatabase) return "";
    if (!checkVersion(false)) return "";
    Q_INT32 aId;
    Q_INT32 aOffset;
