@@ -26,15 +26,18 @@ private:
   QSplitter *m_splitter;
 };
 
-class Part1 : public KPart
+class Part1 : public KReadOnlyPart
 {
   Q_OBJECT
 public:
   Part1();
   virtual ~Part1();
+  virtual bool openURL(const QString & url);
+  virtual QString url() const { return m_url; }
 
 protected:
   virtual QString configFile() const;
+  QString m_url;
 };
 
 class Part2 : public KPart

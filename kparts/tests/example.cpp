@@ -44,12 +44,19 @@ void Shell::resizeEvent( QResizeEvent * )
 }
 
 Part1::Part1()
- : KPart( 0, "Part1" )
+ : KReadOnlyPart( 0, "Part1" )
 {
 }
 
 Part1::~Part1()
 {
+}
+
+bool Part1::openURL(const QString & url)
+{
+  debug("Part1::openURL(%s)",url.ascii());
+  m_url = url;
+  return true;
 }
 
 QString Part1::configFile() const
@@ -75,7 +82,7 @@ int main( int argc, char **argv )
 {
   KApplication app( argc, argv, "example" );
   
-  KPart *part1 = new Part1;
+  KReadOnlyPart *part1 = new Part1;
   KPart *part2 = new Part2;
   
   Shell *shell = new Shell( part1, part2 );
