@@ -56,6 +56,10 @@ public:
     bool processingInstruction(const QString &target, const QString &data);
 
 
+    // from  QXmlDeclHandler
+    bool attributeDecl(const QString &eName, const QString &aName, const QString &type, const QString &valueDefault, const QString &value);
+    bool externalEntityDecl(const QString &name, const QString &publicId, const QString &systemId);
+    bool internalEntityDecl(const QString &name, const QString &value);
 
     bool enterText();
     void exitText();

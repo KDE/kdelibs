@@ -287,13 +287,13 @@ KJSO DOMDocument::tryGet(const UString &p) const
     return new DOMDocFunction(doc, DOMDocFunction::CreateEntityReference);
   else if (p == "getElementsByTagName")
     return new DOMDocFunction(doc, DOMDocFunction::GetElementsByTagName);
-/*  else if (p == "importNode") // new for DOM2 - not yet in khtml
-    return new DOMDocFunction(doc, DOMDocFunction::ImportNode);
+//  else if (p == "importNode") // new for DOM2 - not yet in khtml
+//    return new DOMDocFunction(doc, DOMDocFunction::ImportNode);
   else if (p == "createElementNS") // new for DOM2 - not yet in khtml
     return new DOMDocFunction(doc, DOMDocFunction::CreateElementNS);
   else if (p == "createAttributeNS") // new for DOM2 - not yet in khtml
     return new DOMDocFunction(doc, DOMDocFunction::CreateAttributeNS);
-  else if (p == "getElementsByTagNameNS") // new for DOM2 - not yet in khtml
+/*  else if (p == "getElementsByTagNameNS") // new for DOM2 - not yet in khtml
     return new DOMDocFunction(doc, DOMDocFunction::GetElementsByTagNameNS);
   else if (p == "getElementById") // new for DOM2 - not yet in khtml
     return new DOMDocFunction(doc, DOMDocFunction::GetElementById);*/
@@ -345,10 +345,14 @@ Completion DOMDocFunction::tryExecute(const List &args)
     result = getDOMNodeList(doc.getElementsByTagName(s));
     break;
     /* TODO */
-/*  case ImportNode: // new for DOM2 - not yet in khtml
-  case CreateElementNS: // new for DOM2 - not yet in khtml
-  case CreateAttributeNS: // new for DOM2 - not yet in khtml
-  case GetElementsByTagNameNS: // new for DOM2 - not yet in khtml
+//  case ImportNode: // new for DOM2 - not yet in khtml
+  case CreateElementNS: // new for DOM2
+    result = getDOMNode(doc.createElementNS(args[0].toString().value().string(),args[1].toString().value().string()));
+    break;
+  case CreateAttributeNS: // new for DOM2
+    result = getDOMNode(doc.createAttributeNS(args[0].toString().value().string(),args[1].toString().value().string()));
+    break;
+/*  case GetElementsByTagNameNS: // new for DOM2 - not yet in khtml
   case GetElementById: // new for DOM2 - not yet in khtml*/
   default:
     result = Undefined();
@@ -511,10 +515,10 @@ KJSO DOMDocumentType::tryGet(const UString &p) const
 
   if (p == "name")
     return getString(type.name());
-// ###  else if (p == "entities")
-//    return getDOMNamedNodeMap(type.entities());
-// ###  else if (p == "notations")
-//    return getDOMNamedNodeMap(type.notations());
+  else if (p == "entities")
+    return getDOMNamedNodeMap(type.entities());
+  else if (p == "notations")
+    return getDOMNamedNodeMap(type.notations());
 //  else if (p == "publicId") // new for DOM2 - not yet in khtml
 //    return getString(type.publicId());
 //  else if (p == "systemId") // new for DOM2 - not yet in khtml

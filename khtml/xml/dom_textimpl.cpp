@@ -206,6 +206,11 @@ NodeImpl *CommentImpl::cloneNode(bool /*deep*/)
     return newImpl;
 }
 
+// DOM Section 1.1.1
+bool CommentImpl::childAllowed( NodeImpl *newChild )
+{
+    return false;
+}
 
 // ---------------------------------------------------------------------------
 
@@ -369,6 +374,12 @@ void TextImpl::recalcStyle()
     if(m_render) m_render->setStyle(m_style);
 }
 
+// DOM Section 1.1.1
+bool TextImpl::childAllowed( NodeImpl *newChild )
+{
+    return false;
+}
+
 // ---------------------------------------------------------------------------
 
 CDATASectionImpl::CDATASectionImpl(DocumentImpl *impl, const DOMString &_text) : TextImpl(impl,_text)
@@ -403,3 +414,14 @@ NodeImpl *CDATASectionImpl::cloneNode(bool /*deep*/)
 
     return newImpl;
 }
+
+// DOM Section 1.1.1
+bool CDATASectionImpl::childAllowed( NodeImpl *newChild )
+{
+    return false;
+}
+
+
+
+
+

@@ -117,6 +117,7 @@ public:
     ProcessingInstructionImpl *createProcessingInstruction ( const DOMString &target, const DOMString &data );
 
     AttrImpl *createAttribute ( const DOMString &name );
+    AttrImpl *createAttributeNS ( const DOMString &_namespaceURI, const DOMString &_qualifiedName );
 
     EntityReferenceImpl *createEntityReference ( const DOMString &name );
 
@@ -213,6 +214,8 @@ public:
 			     int _tx, int _ty,
                              MouseEvent *ev );
 
+    virtual bool childAllowed( NodeImpl *newChild );
+
 signals:
     virtual void finishedParsing();
 
@@ -274,20 +277,10 @@ public:
     NamedEntityMapImpl *m_entities;
 /*    QDict<EntityImpl> m_dict;
     QDict<NotationImpl> m_dict;*/
-};
-
-class NamedEntityMapImpl : public NamedNodeMapImpl
-{
-public:
-    NamedEntityMapImpl();
-    virtual ~NamedEntityMapImpl();
-    virtual unsigned long length() const;
-    virtual NodeImpl *getNamedItem ( const DOMString &name ) const;
-    virtual NodeImpl *setNamedItem ( const Node &arg );
-    virtual NodeImpl *removeNamedItem ( const DOMString &name );
-    virtual NodeImpl *item ( unsigned long index ) const;
+    virtual bool childAllowed( NodeImpl *newChild );
 
 };
+
 
 }; //namespace
 #endif

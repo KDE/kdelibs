@@ -250,6 +250,20 @@ bool AttrImpl::deleteMe()
     return false;
 }
 
+// DOM Section 1.1.1
+bool AttrImpl::childAllowed( NodeImpl *newChild )
+{
+    switch (newChild->nodeType()) {
+	case Node::TEXT_NODE:
+	case Node::ENTITY_REFERENCE_NODE:
+	    return true;
+	    break;
+	default:
+	    return false;
+    }
+}
+
+
 // -------------------------------------------------------------------------
 
 ElementImpl::ElementImpl(DocumentImpl *doc) : NodeBaseImpl(doc)
@@ -678,6 +692,27 @@ int ElementImpl::findSelectionNode( int _x, int _y, int _tx, int _ty, DOM::Node 
 bool ElementImpl::isSelectable()
 {
     return false;
+}
+
+// DOM Section 1.1.1
+bool ElementImpl::childAllowed( NodeImpl *newChild )
+{
+    switch (newChild->nodeType()) {
+	case Node::ELEMENT_NODE:
+	case Node::TEXT_NODE:
+	case Node::COMMENT_NODE:
+	case Node::PROCESSING_INSTRUCTION_NODE:
+	case Node::CDATA_SECTION_NODE:
+	case Node::ENTITY_REFERENCE_NODE:
+	    // ### check xml element allowedness according to DTD
+	    if (id() && newChild->id()) // if one if these is 0 then it is an xml element and we allow it anyway
+		return checkChild(id(), newChild->id());
+	    else	
+		return true;
+	    break;
+	default:
+	    return false;
+    }
 }
 
 

@@ -813,14 +813,7 @@ bool NodeBaseImpl::checkIsChild( NodeImpl *oldChild, int &exceptioncode )
 
 bool NodeBaseImpl::childAllowed( NodeImpl *newChild )
 {
-    // ### check xml element allowedness according to DTD
-    if (id() && newChild->id()) // if one if these is 0 then it is an xml element and we allow it anyway
-	return checkChild(id(), newChild->id());
-    // ### check types that are allowed as children as in DOM1 spec section 1.1.1
-    else if (newChild->nodeType() == Node::ATTRIBUTE_NODE)
-	return false;
-    else
-	return true;
+    return false;
 }
 
 NodeImpl *NodeBaseImpl::addChild(NodeImpl *newChild)

@@ -29,14 +29,25 @@
 
 using namespace DOM;
 
-EntityImpl::EntityImpl(DocumentImpl *doc) : NodeWParentImpl(doc)
+EntityImpl::EntityImpl(DocumentImpl *doc) : NodeBaseImpl(doc)
 {
     m_publicId = 0;
     m_systemId = 0;
     m_notationName = 0;
+    m_name = 0;
 }
 
-EntityImpl::EntityImpl(DocumentImpl *doc, DOMString _publicId, DOMString _systemId, DOMString _notationName) : NodeWParentImpl(doc)
+EntityImpl::EntityImpl(DocumentImpl *doc, DOMString _name) : NodeBaseImpl(doc)
+{
+    m_publicId = 0;
+    m_systemId = 0;
+    m_notationName = 0;
+    m_name = _name.implementation();
+    if (m_name)
+	m_name->ref();
+}
+
+EntityImpl::EntityImpl(DocumentImpl *doc, DOMString _publicId, DOMString _systemId, DOMString _notationName) : NodeBaseImpl(doc)
 {
     m_publicId = _publicId.implementation();
     if (m_publicId)
@@ -47,6 +58,7 @@ EntityImpl::EntityImpl(DocumentImpl *doc, DOMString _publicId, DOMString _system
     m_notationName = _notationName.implementation();
     if (m_notationName)
 	m_notationName->ref();
+    m_name = 0;
 }
 
 
@@ -58,12 +70,13 @@ EntityImpl::~EntityImpl()
 	m_systemId->deref();
     if (m_notationName)
 	m_notationName->deref();
+    if (m_name)
+ 	m_name->deref();
 }
 
 const DOMString EntityImpl::nodeName() const
 {
-    // ### return entity name
-    return 0;
+    return m_name;
 }
 
 unsigned short EntityImpl::nodeType() const
@@ -86,14 +99,31 @@ DOMString EntityImpl::notationName() const
     return m_notationName;
 }
 
+// DOM Section 1.1.1
+bool EntityImpl::childAllowed( NodeImpl *newChild )
+{
+    switch (newChild->nodeType()) {
+	case Node::ELEMENT_NODE:
+	case Node::PROCESSING_INSTRUCTION_NODE:
+	case Node::COMMENT_NODE:
+	case Node::TEXT_NODE:
+	case Node::CDATA_SECTION_NODE:
+	case Node::ENTITY_REFERENCE_NODE:
+	    return true;
+	    break;
+	default:
+	    return false;
+    }
+}
+
 // -------------------------------------------------------------------------
 
-EntityReferenceImpl::EntityReferenceImpl(DocumentImpl *doc) : NodeWParentImpl(doc)
+EntityReferenceImpl::EntityReferenceImpl(DocumentImpl *doc) : NodeBaseImpl(doc)
 {
     m_entityName = 0;
 }
 
-EntityReferenceImpl::EntityReferenceImpl(DocumentImpl *doc, DOMStringImpl *_entityName) : NodeWParentImpl(doc)
+EntityReferenceImpl::EntityReferenceImpl(DocumentImpl *doc, DOMStringImpl *_entityName) : NodeBaseImpl(doc)
 {
     m_entityName = _entityName;
     if (m_entityName)
@@ -116,15 +146,32 @@ unsigned short EntityReferenceImpl::nodeType() const
     return Node::ENTITY_REFERENCE_NODE;
 }
 
+// DOM Section 1.1.1
+bool EntityReferenceImpl::childAllowed( NodeImpl *newChild )
+{
+    switch (newChild->nodeType()) {
+	case Node::ELEMENT_NODE:
+	case Node::PROCESSING_INSTRUCTION_NODE:
+	case Node::COMMENT_NODE:
+	case Node::TEXT_NODE:
+	case Node::CDATA_SECTION_NODE:
+	case Node::ENTITY_REFERENCE_NODE:
+	    return true;
+	    break;
+	default:
+	    return false;
+    }
+}
+
 // -------------------------------------------------------------------------
 
-NotationImpl::NotationImpl(DocumentImpl *doc) : NodeWParentImpl(doc)
+NotationImpl::NotationImpl(DocumentImpl *doc) : NodeBaseImpl(doc)
 {
     m_publicId = 0;
     m_systemId = 0;
 }
 
-NotationImpl::NotationImpl(DocumentImpl *doc, DOMString _publicId, DOMString _systemId) : NodeWParentImpl(doc)
+NotationImpl::NotationImpl(DocumentImpl *doc, DOMString _publicId, DOMString _systemId) : NodeBaseImpl(doc)
 {
     m_publicId = _publicId.implementation();
     if (m_publicId)
@@ -163,15 +210,21 @@ DOMString NotationImpl::systemId() const
     return m_systemId;
 }
 
+// DOM Section 1.1.1
+bool NotationImpl::childAllowed( NodeImpl */*newChild*/ )
+{
+    return false;
+}
+
 // -------------------------------------------------------------------------
 
-ProcessingInstructionImpl::ProcessingInstructionImpl(DocumentImpl *doc) : NodeWParentImpl(doc)
+ProcessingInstructionImpl::ProcessingInstructionImpl(DocumentImpl *doc) : NodeBaseImpl(doc)
 {
     m_target = 0;
     m_data = 0;
 }
 
-ProcessingInstructionImpl::ProcessingInstructionImpl(DocumentImpl *doc, DOMString _target, DOMString _data) : NodeWParentImpl(doc)
+ProcessingInstructionImpl::ProcessingInstructionImpl(DocumentImpl *doc, DOMString _target, DOMString _data) : NodeBaseImpl(doc)
 {
     m_target = _target.implementation();
     if (m_target)
@@ -222,3 +275,76 @@ void ProcessingInstructionImpl::setData( const DOMString &_data )
     if (m_data)
 	m_data->ref();
 }
+
+// DOM Section 1.1.1
+bool ProcessingInstructionImpl::childAllowed( NodeImpl */*newChild*/ )
+{
+    return false;
+}
+
+
+
+// ----------------------------------------------------------------------------
+
+NamedEntityMapImpl::NamedEntityMapImpl() : NamedNodeMapImpl()
+{
+    // not sure why this doesn't work as a normal object
+    m_contents = new QList<EntityImpl>;
+}
+
+NamedEntityMapImpl::~NamedEntityMapImpl()
+{
+    while (m_contents->count() > 0)
+	m_contents->take(0)->deref();
+
+    delete m_contents;
+}
+
+unsigned long NamedEntityMapImpl::length() const
+{
+    return m_contents->count();
+}
+
+NodeImpl *NamedEntityMapImpl::getNamedItem ( const DOMString &name ) const
+{
+    QListIterator<EntityImpl> it(*m_contents);
+    for (; it.current(); ++it)
+	if (it.current()->nodeName() == name)
+	    return it.current();
+    return 0;
+}
+
+NodeImpl *NamedEntityMapImpl::setNamedItem ( const Node &/*arg*/ )
+{
+    // can't modify this list through standard DOM functions
+    // ### raise NO_MODIFICATION_ALLOWED_ERR
+    return 0;
+}
+
+NodeImpl *NamedEntityMapImpl::removeNamedItem ( const DOMString &/*name*/ )
+{
+    // can't modify this list through standard DOM functions
+    // ### raise NO_MODIFICATION_ALLOWED_ERR
+    return 0;
+}
+
+NodeImpl *NamedEntityMapImpl::item ( unsigned long index ) const
+{
+    // ### check this when calling from javascript using -1 = 2^sizeof(int)-1
+    // (also for other similar methods)
+    if (index >= m_contents->count())
+	return 0;
+
+    return m_contents->at(index);
+}
+
+void NamedEntityMapImpl::addEntity(EntityImpl *e)
+{
+    // The spec says that in the case of duplicates we only keep the first one
+    if (getNamedItem(e->nodeName()))
+	return;
+	
+    e->ref();
+    m_contents->append(e);
+}
+

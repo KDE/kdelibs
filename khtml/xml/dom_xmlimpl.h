@@ -26,16 +26,19 @@
 
 #include "dom_nodeimpl.h"
 
+#include <qlist.h>
+
 namespace DOM {
 
     class DocumentImpl;
 
 class DOMString;
 
-class EntityImpl : public NodeWParentImpl
+class EntityImpl : public NodeBaseImpl
 {
 public:
     EntityImpl(DocumentImpl *doc);
+    EntityImpl(DocumentImpl *doc, DOMString _name);
     EntityImpl(DocumentImpl *doc, DOMString _publicId, DOMString _systemId, DOMString _notationName);
     virtual ~EntityImpl();
 
@@ -45,14 +48,16 @@ public:
     virtual DOMString publicId() const;
     virtual DOMString systemId() const;
     virtual DOMString notationName() const;
+    virtual bool childAllowed( NodeImpl *newChild );
 protected:
     DOMStringImpl *m_publicId;
     DOMStringImpl *m_systemId;
     DOMStringImpl *m_notationName;
+    DOMStringImpl *m_name;
 };
 
 
-class EntityReferenceImpl : public NodeWParentImpl
+class EntityReferenceImpl : public NodeBaseImpl
 {
 public:
     EntityReferenceImpl(DocumentImpl *doc);
@@ -61,11 +66,12 @@ public:
 
     virtual const DOMString nodeName() const;
     virtual unsigned short nodeType() const;
+    virtual bool childAllowed( NodeImpl *newChild );
 protected:
     DOMStringImpl *m_entityName;
 };
 
-class NotationImpl : public NodeWParentImpl
+class NotationImpl : public NodeBaseImpl
 {
 public:
     NotationImpl(DocumentImpl *doc);
@@ -77,13 +83,14 @@ public:
 
     virtual DOMString publicId() const;
     virtual DOMString systemId() const;
+    virtual bool childAllowed( NodeImpl *newChild );
 protected:
     DOMStringImpl *m_publicId;
     DOMStringImpl *m_systemId;
 };
 
 
-class ProcessingInstructionImpl : public NodeWParentImpl
+class ProcessingInstructionImpl : public NodeBaseImpl
 {
 public:
     ProcessingInstructionImpl(DocumentImpl *doc);
@@ -97,11 +104,31 @@ public:
     virtual DOMString target() const;
     virtual DOMString data() const;
     virtual void setData( const DOMString &_data );
+    virtual bool childAllowed( NodeImpl *newChild );
 
 protected:
     DOMStringImpl *m_target;
     DOMStringImpl *m_data;
 };
+
+
+
+class NamedEntityMapImpl : public NamedNodeMapImpl
+{
+public:
+    NamedEntityMapImpl();
+    virtual ~NamedEntityMapImpl();
+    virtual unsigned long length() const;
+    virtual NodeImpl *getNamedItem ( const DOMString &name ) const;
+    virtual NodeImpl *setNamedItem ( const Node &arg );
+    virtual NodeImpl *removeNamedItem ( const DOMString &name );
+    virtual NodeImpl *item ( unsigned long index ) const;
+    void addEntity(EntityImpl *e);
+protected:
+    QList<EntityImpl> *m_contents;
+};
+
+
 
 }; //namespace
 

@@ -78,6 +78,7 @@ public:
     virtual unsigned short nodeType() const;
     virtual ushort id() const;
     virtual NodeImpl *cloneNode(bool deep);
+    virtual bool childAllowed( NodeImpl *newChild );
 };
 
 // ----------------------------------------------------------------------------
@@ -114,6 +115,7 @@ public:
 
     virtual NodeImpl *cloneNode(bool deep);
     virtual void recalcStyle();
+    virtual bool childAllowed( NodeImpl *newChild );
 
     khtml::RenderStyle *m_style;
 };
@@ -130,6 +132,7 @@ public:
     virtual const DOMString nodeName() const;
     virtual unsigned short nodeType() const;
     virtual NodeImpl *cloneNode(bool deep);
+    virtual bool childAllowed( NodeImpl *newChild );
 };
 
 

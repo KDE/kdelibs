@@ -162,6 +162,12 @@ Element Document::createElement( const DOMString &tagName )
     return 0;
 }
 
+Element Document::createElementNS( const DOMString &namespaceURI, const DOMString &qualifiedName )
+{
+    if (impl) return ((DocumentImpl *)impl)->createElementNS(namespaceURI,qualifiedName);
+    return 0;
+}
+
 DocumentFragment Document::createDocumentFragment(  )
 {
     if (impl) return ((DocumentImpl *)impl)->createDocumentFragment();
@@ -196,6 +202,12 @@ ProcessingInstruction Document::createProcessingInstruction( const DOMString &ta
 Attr Document::createAttribute( const DOMString &name )
 {
     if (impl) return ((DocumentImpl *)impl)->createAttribute( name );
+    return 0;
+}
+
+Attr Document::createAttributeNS( const DOMString &namespaceURI, const DOMString &qualifiedName )
+{
+    if (impl) return ((DocumentImpl *)impl)->createAttributeNS( namespaceURI, qualifiedName );
     return 0;
 }
 

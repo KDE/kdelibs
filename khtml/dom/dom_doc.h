@@ -191,6 +191,27 @@ public:
     Element createElement ( const DOMString &tagName );
 
     /**
+     * Introduced in DOM Level 2
+     * Creates an element of the given qualified name and namespace URI.
+     *
+     * @param namespaceURI The namespace URI of the element to create.
+     *
+     * @param qualifiedName The qualified name of the element type to instantiate.
+     *
+     * @return A new Element object with the following attributes:
+     *
+     * @exception INVALID_CHARACTER_ERR Raised if the specified qualified name
+     * contains an illegal character.
+     *
+     * @exception NAMESPACE_ERR Raised if the qualifiedName is malformed, if
+     * the qualifiedName has a prefix and the namespaceURI is null, or if the
+     * qualifiedName has a prefix that is "xml" and the namespaceURI is
+     * different from "http://www.w3.org/XML/1998/namespace"
+     */
+    Element createElementNS( const DOMString &namespaceURI,
+                             const DOMString &qualifiedName );
+
+    /**
      * Creates an empty <code> DocumentFragment </code> object.
      *
      * @return A new <code> DocumentFragment </code> .
@@ -269,6 +290,36 @@ public:
      *
      */
     Attr createAttribute ( const DOMString &name );
+
+    /**
+     * Introduced in DOM Level 2
+     * Creates an attribute of the given qualified name and namespace URI.
+     * HTML-only DOM implementations do not need to implement this method.
+     *
+     * @param namespaceURI The namespace URI of the attribute to create.
+     *
+     * @param qualifiedName The qualified name of the attribute to instantiate.
+     *
+     * @return A new Attr object with the following attributes:
+     * Node.nodeName - qualifiedName
+     * Node.namespaceURI - namespaceURI
+     * Node.prefix - prefix, extracted from qualifiedName, or null if there is no prefix
+     * Node.localName - local name, extracted from qualifiedName
+     * Attr.name - qualifiedName
+     * Node.nodeValue - the empty string
+     *
+     * @exception INVALID_CHARACTER_ERR Raised if the specified qualified name
+     * contains an illegal character.
+     *
+     * @exception NAMESPACE_ERR Raised if the qualifiedName is malformed, if
+     * the qualifiedName has a prefix and the namespaceURI is null, if the
+     * qualifiedName has a prefix that is "xml" and the namespaceURI is
+     * different from "http://www.w3.org/XML/1998/namespace", or if the
+     * qualifiedName is "xmlns" and the namespaceURI is different from
+     * "http://www.w3.org/2000/xmlns/".
+     */
+    Attr createAttributeNS( const DOMString &namespaceURI,
+                            const DOMString &qualifiedName );
 
     /**
      * Creates an EntityReference object.

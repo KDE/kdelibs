@@ -70,6 +70,7 @@ public:
 
     virtual bool deleteMe();
     DOMStringImpl *val() { return _value; }
+    virtual bool childAllowed( NodeImpl *newChild );
 
 protected:
 //    AttrImpl(const DOMString &name, const DOMString &value, DocumentImpl *doc, bool specified);
@@ -158,13 +159,11 @@ public:
     virtual bool mouseEvent( int x, int y,
 			     int _tx, int _ty,
 			     MouseEvent *ev);
-
     virtual void mouseEventHandler( MouseEvent */*ev*/, bool /*inside*/ ) {};
-
     virtual int findSelectionNode( int _x, int _y, int _tx, int _ty,
                                     DOM::Node & node, int & offset );
-
     virtual bool isSelectable();
+    virtual bool childAllowed( NodeImpl *newChild );
 
 protected: // member variables
 

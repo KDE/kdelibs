@@ -37,6 +37,7 @@
 
 #include <qstring.h>
 #include <qstack.h>
+#include <qlist.h>
 #include <qpaintdevicemetrics.h>
 #include "misc/htmlhashes.h"
 #include "misc/loader.h"
@@ -620,6 +621,13 @@ AttrImpl *DocumentImpl::createAttribute( const DOMString &name )
     return new AttrImpl(this, name);
 }
 
+AttrImpl *DocumentImpl::createAttributeNS( const DOMString &/*_namespaceURI*/, const DOMString &/*_qualifiedName*/ )
+{
+    // ###
+    return 0;
+}
+
+
 EntityReferenceImpl *DocumentImpl::createEntityReference ( const DOMString &name )
 {
     return new EntityReferenceImpl(this, name.implementation());
@@ -1097,6 +1105,23 @@ bool DocumentImpl::mouseEvent( int _x, int _y,
 	return false;
 }
 
+// DOM Section 1.1.1
+bool DocumentImpl::childAllowed( NodeImpl *newChild )
+{
+// ### maximum of one Element
+// ### maximum of one DocumentType
+    switch (newChild->nodeType()) {
+	case Node::ELEMENT_NODE:
+	case Node::PROCESSING_INSTRUCTION_NODE:
+	case Node::COMMENT_NODE:
+	case Node::DOCUMENT_TYPE_NODE:
+	    return true;
+	    break;
+	default:
+	    return false;
+    }
+}
+
 // ----------------------------------------------------------------------------
 
 DocumentFragmentImpl::DocumentFragmentImpl(DocumentImpl *doc) : NodeBaseImpl(doc)
@@ -1118,9 +1143,21 @@ unsigned short DocumentFragmentImpl::nodeType() const
     return Node::DOCUMENT_FRAGMENT_NODE;
 }
 
-bool DocumentFragmentImpl::childAllowed( NodeImpl */*newChild*/ )
+// DOM Section 1.1.1
+bool DocumentFragmentImpl::childAllowed( NodeImpl *newChild )
 {
-    return true;
+    switch (newChild->nodeType()) {
+	case Node::ELEMENT_NODE:
+	case Node::PROCESSING_INSTRUCTION_NODE:
+	case Node::COMMENT_NODE:
+	case Node::TEXT_NODE:
+	case Node::CDATA_SECTION_NODE:
+	case Node::ENTITY_REFERENCE_NODE:
+	    return true;
+	    break;
+	default:
+	    return false;
+    }
 }
 
 // ----------------------------------------------------------------------------
@@ -1146,7 +1183,6 @@ const DOMString DocumentTypeImpl::name() const
 
 NamedNodeMapImpl *DocumentTypeImpl::entities() const
 {
-    // ###
     return m_entities;
 }
 
@@ -1166,44 +1202,10 @@ unsigned short DocumentTypeImpl::nodeType() const
     return Node::DOCUMENT_TYPE_NODE;
 }
 
-// ----------------------------------------------------------------------------
-
-NamedEntityMapImpl::NamedEntityMapImpl() : NamedNodeMapImpl()
+// DOM Section 1.1.1
+bool DocumentTypeImpl::childAllowed( NodeImpl */*newChild*/ )
 {
-}
-
-NamedEntityMapImpl::~NamedEntityMapImpl()
-{
-}
-
-unsigned long NamedEntityMapImpl::length() const
-{
-    // ###
-    return 0;
-}
-
-NodeImpl *NamedEntityMapImpl::getNamedItem ( const DOMString &/*name*/ ) const
-{
-    // ###
-    return 0;
-}
-
-NodeImpl *NamedEntityMapImpl::setNamedItem ( const Node &/*arg*/ )
-{
-    // ###
-    return 0;
-}
-
-NodeImpl *NamedEntityMapImpl::removeNamedItem ( const DOMString &/*name*/ )
-{
-    // ###
-    return 0;
-}
-
-NodeImpl *NamedEntityMapImpl::item ( unsigned long /*index*/ ) const
-{
-    // ###
-    return 0;
+    return false;
 }
 
 

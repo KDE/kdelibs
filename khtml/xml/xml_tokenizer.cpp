@@ -213,6 +213,28 @@ void XMLHandler::exitText()
 	m_currentNode = m_currentNode->parentNode();
 }
 
+bool XMLHandler::attributeDecl(const QString &/*eName*/, const QString &/*aName*/, const QString &/*type*/,
+                               const QString &/*valueDefault*/, const QString &/*value*/)
+{
+    // ### insert into DOM?
+    return true;
+}
+
+bool XMLHandler::externalEntityDecl(const QString &/*name*/, const QString &/*publicId*/, const QString &/*systemId*/)
+{
+    // ### insert these too - is there anything special we have to do here?
+    return true;
+}
+
+bool XMLHandler::internalEntityDecl(const QString &name, const QString &value)
+{
+    EntityImpl *e = new EntityImpl(m_doc,name);
+    // ### further parse entities inside the value and add them as separate nodes (or entityreferences)?
+    e->addChild(m_doc->createTextNode(value));
+    static_cast<NamedEntityMapImpl*>(m_doc->doctype()->entities())->addEntity(e);
+    return true;
+}
+
 
 //------------------------------------------------------------------------------
 
@@ -260,6 +282,7 @@ void XMLTokenizer::finish()
     reader.setContentHandler( &handler );
     reader.setLexicalHandler( &handler );
     reader.setErrorHandler( &handler );
+    reader.setDeclHandler( &handler );
     bool ok = reader.parse( source );
     // ### handle exceptions inserting nodes
     if (!ok) {
