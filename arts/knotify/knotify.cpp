@@ -253,6 +253,8 @@ bool KNotify::notifyBySound( const QString &sound )
     QString soundFile(sound);
     if ( QFileInfo(sound).isRelative() )
 	soundFile = locate( "sound", sound );
+    if ( soundFile.isEmpty() )
+        return false;
 
     // Oh dear! we seem to have lost our connection to artsd!
     if( !external && (d->soundServer.isNull() || d->soundServer.error()) )
