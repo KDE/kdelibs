@@ -283,6 +283,8 @@
 <!ENTITY PalmPilot      "<productname><trademark>PalmPilot</trademark></productname>">
 <!ENTITY PostScript	'<trademark class="registered">PostScript</trademark>'>
 <!ENTITY PPP	"<acronym>PPP</acronym>">
+<!ENTITY quanta	"<application>Quanta</application>">
+<!ENTITY quantaplus	"<application>Quanta Plus</application>">
 <!ENTITY Qt	"<trademark>Qt</trademark>">
 <!ENTITY RedHat	'<trademark class="registered">Red Hat</trademark>'>
 <!ENTITY SGI	"<trademark>SGI</trademark>">
