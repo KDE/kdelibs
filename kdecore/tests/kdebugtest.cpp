@@ -19,7 +19,7 @@ public:
     kdDebug() << "Before instance creation" << endl;
     kdDebug(1202) << "Before instance creation" << endl;
     KInstance i("kdebugtest");
-    kdDebug(150) << "kDebugInfo with inexisting area number" << endl;
+    kdDebug(1) << "kDebugInfo with inexisting area number" << endl;
     kdDebug(1202) << "This number has a value of " << 5 << endl;
     // kdDebug() << "This number should come out as appname " << 5 << " " << "test" << endl;
     kdWarning() << "1+1 = " << 1+1+1 << endl;
