@@ -1106,6 +1106,14 @@ void DCOPServer::newClient( int /*socket*/ )
 {
     IceAcceptStatus status;
     IceConn iceConn = IceAcceptConnection( static_cast<const  DCOPListener*>(sender())->listenObj, &status);
+    if (!iceConn) {
+      if (status == IceAcceptBadMalloc)
+	 qWarning("Failed to alloc connection object!\n");
+      else // IceAcceptFailure
+         qWarning("Failed to accept ICE connection!\n");
+      return;
+    }
+
     IceSetShutdownNegotiation( iceConn, False );
 
     IceConnectStatus cstatus;
