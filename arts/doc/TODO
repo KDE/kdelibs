@@ -1,13 +1,21 @@
 Index:
 
-1. KDE2.1
+1. KDE2.2
 2. To have more fun
 3. Other suggestions
 
 ===============================================================================
 
-1. KDE2.1
+1. KDE2.2
 
+- support threading in libmcop
+- export configuration interface from the soundserver (so that you can see
+  and change the autosuspend timeout for instance)
+- add options
+  -N  (to add extra network buffers)
+  -S  (to change the autosuspend timeout)
+- make a generic gui factory, make noatun and artscontrol use it for effect
+  guis
 - ensure DynamicCast(<some null object>) == Object::null()
 - implement StdFlowSystem::disconnectObject(...) (in synthschedule.cc)
 - support multiple artsd instances on one computer (like multiple displays),
