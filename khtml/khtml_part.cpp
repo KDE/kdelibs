@@ -1182,7 +1182,8 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
 
   // Security
   KURL u( url );
-  if ( ::strcasecmp( u.protocol().latin1(), "cgi" ) == 0 &&
+  if ( !u.protocol().isEmpty() && !m_url.protocol().isEmpty() &&
+       ::strcasecmp( u.protocol().latin1(), "cgi" ) == 0 &&
        ::strcasecmp( m_url.protocol().latin1(), "file" ) != 0 &&
        ::strcasecmp( m_url.protocol().latin1(), "cgi" ) != 0 )
   {
