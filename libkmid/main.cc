@@ -31,9 +31,9 @@
 #include "../version.h"
 
 // If you want to use a midi map you have to change the next definition :
-#define MAP_PATH NULL
+//#define MAP_PATH NULL
 // For example to something like :
-//#define MAP_PATH "/home/Antonio/prg/kmid/kmid/maps/yamaha790.map"
+#define MAP_PATH "/home/Antonio/prg/kmid/kmid/maps/yamaha790.map"
 
 
 PlayerController pctl;
@@ -70,12 +70,12 @@ if (argc<2)
     exit(0);
     };
 
-DeviceManager * devman=new DeviceManager(1);
+DeviceManager * devman=new DeviceManager(0);
 //midiOut *midi=new midiOut();
-//MidiMapper *map=new MidiMapper(MAP_PATH);
+MidiMapper *map=new MidiMapper(MAP_PATH);
 devman->initManager();
 player *Player=new player(devman,&pctl);
-//midi->useMapper(map);
+devman->setMidiMap(map);
 pctl.message=0;
 pctl.gm=1;
 pctl.error=0;

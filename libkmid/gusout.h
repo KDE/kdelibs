@@ -1,7 +1,7 @@
 /**************************************************************************
 
-    fmout.h	- class fmOut which handles the /dev/sequencer device
-			for fm synths
+    gusout.h   - class gusOut which implements support for Gravis
+         Ultrasound cards through a /dev/sequencer device
     Copyright (C) 1998  Antonio Larrosa Jimenez
 
     This program is free software; you can redistribute it and/or modify
@@ -22,32 +22,37 @@
     or to Antonio Larrosa, Rio Arnoya, 10 5B, 29006 Malaga, Spain
 
 ***************************************************************************/
-#ifndef _FMOUT_H
-#define _FMOUT_H
+#ifndef _GUSOUT_H
+#define _GUSOUT_H
 
 #include "midiout.h"
 #include "voiceman.h"
 
-class fmOut : public midiOut
+class gusOut : public midiOut
 {
 private:
 friend class DeviceManager; 
 
 
     int patchloaded[256];
-    int opl; // 3 or 4
     int nvoices;
 
+    int use8bit; // Use 8 bit patches, instead of 16 bits to use less memory
     voiceManager *vm;
 
-    void modifyPatch(char *buf, int key);
-    void loadFMPatches  (void);
+    int totalmemory; // Total memory in soundcard
+    int freememory; // Free memory
 
+
+    void getPatchesLoadingOrder(int *patchesused,int *patchesordered);
+    int loadPatch  (int pgm);// Returns : 0 if OK, -1 if error
+
+    char *patchName(int pgm);
     int Patch(int p); //Returns p if the patch p has been loaded or another
 			// patch (already loaded) if p hasn't been loaded 
 public:
-    fmOut(int d=0,int total =12);
-    ~fmOut();
+    gusOut(int d=0,int total =12);
+    ~gusOut();
 
     virtual void openDev	(int sqfd);
     virtual void closeDev	(void);
@@ -63,11 +68,13 @@ public:
 
     virtual void sysex		( uchar *data,ulong size);
 
+    void setPatchesToUse(int *patchesused);
+
 private:
-static char *FM_patches_directory;
-static int delete_FM_patches_directory;
+static char *GUS_patches_directory;
+static int delete_GUS_patches_directory;
 public:
-static void setFMPatchesDirectory(const char *dir);
+static void setGUSPatchesDirectory(const char *dir);
 
 };
 

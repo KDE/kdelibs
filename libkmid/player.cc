@@ -194,6 +194,10 @@ printf("Playing...\n");
 midi->openDev();
 if (midi->OK()==0) {printf("Player :: Couldn't play !\n");ctl->error=1;return;};
 midi->initDev();
+
+parsePatchesUsed(tracks,info,ctl->gm);
+midi->setPatchesToUse(info->patchesUsed);
+
 int trk;
 int minTrk;
 double minTime=0;
@@ -377,7 +381,6 @@ int minTrk;
 ulong tempo=1000000;
 ulong tmp;
 double minTime,maxTime;
-//ulong mspass;
 double prevms=0;
 minTime=0;
 int likeplaying=1;
@@ -407,20 +410,22 @@ while (likeplaying)
     if (minTime==maxTime) 
 	{
 	likeplaying=0;
+#ifdef GENERAL_DEBUG_MESSAGES
 	printf("END of likeplaying\n");
+#endif
 	}
        else
 	{	
 	if (minTime>=gotomsec)
 		{
-//		mspass=gotomsec-(ulong)prevms;
 		prevms=gotomsec;
 		likeplaying=0;
+#ifdef GENERAL_DEBUG_MESSAGES
 		printf("Position reached !! \n");
+#endif
 		}
 		else
 		{
-//		mspass=(ulong)(minTime-prevms);
 		prevms=minTime;
 		};
         trk=0;
@@ -437,11 +442,11 @@ while (likeplaying)
 	switch (ev->command)
 	    {
 /*	    case (MIDI_NOTEON) : 
-		midi->noteOn(ev->chn, ev->note, ev->vel);break;
+		midistat->noteOn(ev->chn, ev->note, ev->vel);break;
 	    case (MIDI_NOTEOFF): 
-		midi->noteOff(ev->chn, ev->note, ev->vel);break;
+		midistat->noteOff(ev->chn, ev->note, ev->vel);break;
 	    case (MIDI_KEY_PRESSURE) :
-		midi->keyPressure(ev->chn, ev->note,ev->vel);break;
+		midistat->keyPressure(ev->chn, ev->note,ev->vel);break;
 */	    case (MIDI_PGM_CHANGE) :
 		midistat->chnPatchChange(ev->chn, ev->patch);break;
 	    case (MIDI_CHN_PRESSURE) :

@@ -39,10 +39,17 @@ ulong ticksTotal;
 double millisecsTotal;
 ulong ticksPlayed;
 
+int patchesUsed[256]; // 0 - it's not used
+                     // 1 - it's used only once
+                     // 2 - if it's used twice
+                     // 3 - if it's used three times
+                     // and so on
 };
 
 double tempoToMetronomeTempo(ulong x);
 
 track **readMidiFile(char *name,midifileinfo *info,int &ok);
+
+void parsePatchesUsed(track **Tracks,midifileinfo *info,int gm);
 
 #endif

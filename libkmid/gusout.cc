@@ -1,7 +1,7 @@
 /**************************************************************************
 
-    fmout.cc   - class fmOut which handles the /dev/sequencer device
-			for fm synths
+    gusout.cc  - class gusOut which implements support for Gravis
+         Ultrasound cards through a /dev/sequencer device
     Copyright (C) 1998  Antonio Larrosa Jimenez
 
     This program is free software; you can redistribute it and/or modify
@@ -22,7 +22,8 @@
     or to Antonio Larrosa, Rio Arnoya, 10 5B, 29006 Malaga, Spain
 
 ***************************************************************************/
-#include "fmout.h"
+#include "gusout.h"
+#include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -37,10 +38,10 @@
 
 SEQ_USE_EXTBUF();
 
-fmOut::fmOut(int d,int total)
+gusOut::gusOut(int d,int total)
 {
 seqfd = -1;
-devicetype=KMID_FM;
+devicetype=KMID_GUS;
 device= d;
 #ifdef HANDLETIMEINDEVICES
 count=0.0;
@@ -48,28 +49,25 @@ lastcount=0.0;
 rate=100;
 #endif
 ok=1;
-// Put opl=3 for opl/3 (better quality/ 6 voices)
-//  or opl=2 for fm output (less quality/ 18 voices, which is better imho) : 
-opl=2;
-// But be aware that opl=3 is not intended to be fully supported by now
 
+use8bit=0;
 nvoices=total;
 vm=new voiceManager(nvoices);
 };
 
-fmOut::~fmOut()
+gusOut::~gusOut()
 {
 delete Map;
 closeDev();
-if (delete_FM_patches_directory) 
+if (delete_GUS_patches_directory) 
     {
-    delete FM_patches_directory;
-    delete_FM_patches_directory = 0;
-    FM_patches_directory="/etc";
+    delete GUS_patches_directory;
+    delete_GUS_patches_directory = 0;
+    GUS_patches_directory="/etc";
     };
 };
 
-void fmOut::openDev (int sqfd)
+void gusOut::openDev (int sqfd)
 {
 ok=1;
 seqfd = sqfd;
@@ -96,9 +94,18 @@ lastcount=0.0;
 //ioctl(seqfd,SNDCTL_SEQ_RESET);
 //ioctl(seqfd,SNDCTL_SEQ_PANIC);
 
-loadFMPatches();
+if (ioctl(seqfd, SNDCTL_SEQ_RESETSAMPLES, &device)==-1) 
+   {
+   printf("Error reseting gus samples. Please report\n");
+   };
+use8bit=0;
+totalmemory = device;
+ioctl(seqfd, SNDCTL_SYNTH_MEMAVL, &totalmemory);
+freememory = device;
+ioctl(seqfd, SNDCTL_SYNTH_MEMAVL, &freememory);
 
-#ifdef FMOUTDEBUG
+#ifdef GUSOUTDEBUG
+printf("GUS Device %d opened (%d voices)\n",device,nvoices);
 printf("Number of synth devices : %d\n",ndevs);
 printf("Number of midi ports : %d\n",nmidiports);
 printf("Rate : %d\n",rate);
@@ -107,7 +114,7 @@ printf("Rate : %d\n",rate);
 
 };
 
-void fmOut::closeDev (void)
+void gusOut::closeDev (void)
 {
 if (!OK()) return;
 #ifdef HANDLETIMEINDEVICES
@@ -118,11 +125,9 @@ vm->cleanLists();
 //if (seqfd>=0)
 //    close(seqfd);
 seqfd=-1;
-#ifdef FMOUTDEBUG
-#endif
 };
 
-void fmOut::initDev (void)
+void gusOut::initDev (void)
 {
 int chn;
 if (!OK()) return;
@@ -145,98 +150,25 @@ for (chn=0;chn<16;chn++)
     };
 
 
-if (opl==3) ioctl(seqfd, SNDCTL_FM_4OP_ENABLE, &device);
 for (int i = 0; i < nvoices; i++)
      {
      SEQ_CONTROL(device, i, SEQ_VOLMODE, VOL_METHOD_LINEAR);
      SEQ_STOP_NOTE(device, i, vm->Note(i), 64);
      };
+
 };
 
-void fmOut::loadFMPatches(void)
-{
-char patchesfile[120];
-char drumsfile[120];
-int size;
-struct sbi_instrument instr;
-char tmp[60];
-int i,j;
-for (i=0;i<256;i++)
-    patchloaded[i] = 0;
 
-FILE *fh;
-int datasize;
-
-if (opl==3)
-   {
-   sprintf(patchesfile,"%s/std.o3",FM_patches_directory);
-   size=60;
-   }
-  else
-   {
-   sprintf(patchesfile,"%s/std.sb",FM_patches_directory);
-   size=52;
-   };
-fh=fopen(patchesfile,"rb");
-if (fh==NULL) return;
-
-for (i=0;i<128;i++)
-   {
-   fread(tmp,size,1,fh);
-   patchloaded[i]=1;
-   instr.key = ((strncmp(tmp, "4OP", 3) == 0))? OPL3_PATCH : FM_PATCH;
-   datasize = (strncmp(tmp, "4OP", 3) == 0)? 22 : 11;
-   instr.device=device;
-   instr.channel = i;
-   for (j=0; j<22; j++)
-       instr.operators[j] = tmp[j+36];
-   SEQ_WRPATCH(&instr,sizeof(instr));
-   };
-fclose(fh);
-
-if (opl==3)
-   {
-   sprintf(drumsfile,"%s/drums.o3",FM_patches_directory);
-   }
-  else
-   {
-   sprintf(drumsfile,"%s/drums.sb",FM_patches_directory);
-   };
-
-fh=fopen(drumsfile,"rb");
-if (fh==NULL) return;
-
-for (i=128;i<175;i++)
-   {
-   fread(tmp,size,1,fh);
-   patchloaded[i]=1;
-   instr.key = (strncmp(tmp, "4OP", 3) == 0)? OPL3_PATCH : FM_PATCH;
-   datasize = (strncmp(tmp, "4OP", 3) == 0)? 22 : 11;
-   instr.device=device;
-   instr.channel = i;
-   for (j=0; j<22; j++)
-       instr.operators[j] = tmp[j+36];
-   SEQ_WRPATCH(&instr,sizeof(instr));
-   };
-fclose(fh);
-
-#ifdef FMOUTDEBUG
-printf("Patches loaded\n");
-#endif
-};
-
-int fmOut::Patch(int p)
+int gusOut::Patch(int p)
 {
 if (patchloaded[p]==1) return p;
-#ifdef FMOUTDEBUG
 printf("Not loaded %d!\n",p);
-#endif
 p=0;
 while ((p<256)&&(patchloaded[p]==0)) p++;
 return p;
 };
 
-void fmOut::noteOn  (uchar chn, uchar note, uchar vel)
+void gusOut::noteOn  (uchar chn, uchar note, uchar vel)
 {
 if (vel==0)
     {
@@ -263,12 +195,12 @@ if (vel==0)
     SEQ_CHN_PRESSURE(device, v , chn_pressure[chn]);
     };
 
-#ifdef FMOUTDEBUG
+#ifdef GUSOUTDEBUG
 printf("Note ON >\t chn : %d\tnote : %d\tvel: %d\n",chn,note,vel);
 #endif
 };
 
-void fmOut::noteOff (uchar chn, uchar note, uchar vel)
+void gusOut::noteOff (uchar chn, uchar note, uchar vel)
 {
 int i;
 vm->initSearch();
@@ -278,12 +210,12 @@ while ((i=vm->Search(chn,note))!=-1)
    vm->deallocateVoice(i);
    };
 
-#ifdef FMOUTDEBUG
+#ifdef GUSOUTDEBUG
 printf("Note OFF >\t chn : %d\tnote : %d\tvel: %d\n",chn,note,vel);
 #endif
 };
 
-void fmOut::keyPressure (uchar chn, uchar note, uchar vel)
+void gusOut::keyPressure (uchar chn, uchar note, uchar vel)
 {
 int i;
 vm->initSearch();
@@ -291,7 +223,7 @@ while ((i=vm->Search(chn,note))!=-1)
    SEQ_KEY_PRESSURE(device, i, note,vel);
 };
 
-void fmOut::chnPatchChange (uchar chn, uchar patch)
+void gusOut::chnPatchChange (uchar chn, uchar patch)
 {
 if (chn==PERCUSSION_CHANNEL) return;
 int i;
@@ -302,7 +234,7 @@ chn_patch[chn]=patch;
    
 };
 
-void fmOut::chnPressure (uchar chn, uchar vel)
+void gusOut::chnPressure (uchar chn, uchar vel)
 {
 int i;
 vm->initSearch();
@@ -311,7 +243,7 @@ while ((i=vm->Search(chn))!=-1)
 chn_pressure[chn]=vel;
 };
 
-void fmOut::chnPitchBender(uchar chn,uchar lsb, uchar msb)
+void gusOut::chnPitchBender(uchar chn,uchar lsb, uchar msb)
 {
 //chn_bender[chn]=(msb << 8) | (lsb & 0xFF);
 //chn_bender[chn]=(msb << 7)+ (lsb);
@@ -333,7 +265,7 @@ while (i<nvoices)
 */
 };
 
-void fmOut::chnController (uchar chn, uchar ctl, uchar v) 
+void gusOut::chnController (uchar chn, uchar ctl, uchar v) 
 {
 int i;
 vm->initSearch();
@@ -352,19 +284,157 @@ while (i<nvoices)
 chn_controller[chn][ctl]=v;
 };
 
-void fmOut::sysex(uchar *, ulong )
+void gusOut::sysex(uchar *, ulong )
 {
 
 };
 
-void fmOut::setFMPatchesDirectory(const char *dir)
+void gusOut::setGUSPatchesDirectory(const char *dir)
 {
 if ((dir==NULL)||(dir[0]==0)) return;
-if (delete_FM_patches_directory) delete FM_patches_directory;
-FM_patches_directory=new char[strlen(dir)+1];
-strcpy(FM_patches_directory,dir);
-delete_FM_patches_directory=1;
+if (delete_GUS_patches_directory) delete GUS_patches_directory;
+GUS_patches_directory=new char[strlen(dir)+1];
+strcpy(GUS_patches_directory,dir);
+delete_GUS_patches_directory=1;
 };
 
-char *fmOut::FM_patches_directory="/etc";
-int fmOut::delete_FM_patches_directory = 0;
+char *gusOut::patchName(int pgm)
+{
+return "acpiano";
+};
+
+
+int gusOut::loadPatch(int pgm)
+{
+if (patchloaded[pgm]==1)
+    {
+    printf("Trying to reload a patch. This should never happen, please report.\n");
+    return 0;
+    };
+if (patchName(pgm)==NULL)
+    {
+    printf("Couldn't guess patch name for patch number %d\n",pgm);
+    return -1;
+    };
+char *s=new char[strlen(GUS_patches_directory)+strlen(patchName(pgm))+10];
+if (s==NULL) return -1;
+sprintf(s,"%s/%s.pat",GUS_patches_directory,patchName(pgm));
+patch_info *patch;
+struct stat info;
+if (stat(s, &info)==-1)
+   {
+   printf("File %s doesn't exist\n",s);
+   return -1;
+   };
+
+FILE *fh=fopen(s,"rb");
+if (fh==NULL)
+   {
+   printf("Couldn't open patch %s\n",s);
+   return -1;
+   };
+
+char tmp[256];
+fread(tmp,0xef,1,fh);
+if (strncmp(&tmp[0],"GF1PATCH110",12)!=0)
+    {
+    printf("File %s is corrupted or it isn't a patch file\n",s);
+    return -1;
+    };
+if (strncmp(&tmp[12],"ID#000002",10)!=0)
+    {
+    printf("File %s's version is not supported\n",s);
+    return -1;
+    };
+unsigned short nWaves= *(unsigned short *)&tmp[85];
+unsigned short mainVolume= *(unsigned short *)&tmp[87];
+unsigned short i;
+int wavedataposition=0xef;
+for (i=0;i<nWaves;i++)
+    {
+    };
+
+
+delete s;
+freememory = device;
+ioctl(seqfd, SNDCTL_SYNTH_MEMAVL, &freememory);
+return 0;
+};
+
+
+void gusOut::setPatchesToUse(int *patchesused)
+{
+int patchesordered[256]; //This holds the pgm used ordered by a method which
+               // put first the patches more oftenly used, and then the least
+               // In example, if a song only uses a piano and a splash cymbal,
+               // This is set to : 0,188,-1,-1,-1,-1 ...
+getPatchesLoadingOrder(patchesused,patchesordered);
+
+int i=0;
+while (patchesordered[i]!=-1)
+    {
+    loadPatch(patchesordered[i]);
+    i++;
+    };
+};
+
+void gusOut::getPatchesLoadingOrder(int *patchesused,int *patchesordered)
+{
+int tempmelody[128];
+int tempdrums[128];
+int i,j;
+for (i=0,j=128;i<128;i++,j++) 
+   {
+   tempmelody[i]=patchesused[i];
+   tempdrums[i]=patchesused[j];
+   };
+/* SORT */ // Decreasing order (first most used patch, then less used patch)
+/* Once they are sorted, the result is put on patchesordered in the following
+  way : If tempmelody is : M0 M1 M2 M3 ... M127 and tempdrums is :
+  D0 D1 D2 D3 ... D127, the result is :
+     M0 D0 M1 M2 D1 M3 M4 D2 M5 M6 D3  ...
+     P0 P1 P2 P3 P4 P5 P6 P7 P8 P9 P10 ...
+*/
+
+i=0;
+int totalmelody=0;
+while ((i<128)&&(tempmelody[i]!=0))
+   {
+   totalmelody++;
+   i++;
+   };
+i=0;
+int totaldrums=0;
+while ((i<128)&&(tempdrums[i]!=0))
+   {
+   totaldrums++;
+   i++;
+   };
+int c=0;
+int tgt=0;
+while (c<totalmelody)
+    {
+    patchesordered[tgt]=tempmelody[c];
+    if (c%2==0) tgt++;
+    tgt++;
+    c++;
+    };
+c=0;
+tgt=1;
+while (c<totaldrums)
+    {
+    patchesordered[tgt]=tempdrums[c];
+    tgt+=3;
+    c++;
+    };
+// Now we put as not used (-1) the rest of the array
+i=totalmelody+totaldrums;
+while (i<256)
+    {
+    patchesordered[i]=-1;
+    i++;
+    };
+};
+
+char *gusOut::GUS_patches_directory="/etc";
+int gusOut::delete_GUS_patches_directory = 0;

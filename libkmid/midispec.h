@@ -21,6 +21,9 @@
     or to Antonio Larrosa, Rio Arnoya, 10 5B, 29006 Malaga, Spain
 
 ***************************************************************************/ 
+#ifndef _MIDISPEC_H
+#define _MIDISPEC_H
+
 #define META_EVENT 0xFF
 
 #define ME_TRACK_SEQ_NUMBER	0x00
@@ -42,3 +45,14 @@
 */                            
  
 #define ME_END_OF_TRACK 0x2F
+
+
+#define PERCUSSION_CHANNEL 9
+
+#define KMID_EXTERNAL_MIDI 1
+#define KMID_SYNTH         2
+#define KMID_FM            3
+#define KMID_GUS           4
+#define KMID_AWE           5  //For future class aweOut
+
+#endif

@@ -33,20 +33,23 @@
 #include <string.h>
 #include <sys/param.h>
 #include "awe_sup.h"
+#include "midispec.h"
 #include "../version.h"
 
 #define NEWMACRO
 
-//SEQ_DEFINEBUF (1024); 
 SEQ_USE_EXTBUF();
 
 synthOut::synthOut(int d)
 {
 seqfd = -1;
+devicetype=KMID_SYNTH;
 device= d;
+#ifdef HANDLETIMEINDEVICES
 count=0.0;
 lastcount=0.0;
 rate=100;
+#endif
 ok=1;
 };
 
@@ -65,6 +68,7 @@ if (seqfd==-1)
     printf("ERROR: Could not open /dev/sequencer\n");
     return;
     };
+#ifdef HANDLETIMEINDEVICES
 ioctl(seqfd,SNDCTL_SEQ_NRSYNTHS,&ndevs);
 ioctl(seqfd,SNDCTL_SEQ_NRMIDIS,&nmidiports);
 rate=0;
@@ -83,11 +87,11 @@ printf("Rate : %d\n",rate);
 
 count=0.0;
 lastcount=0.0;
+#endif
 
 #ifdef HAVE_AWE32  
 
 struct synth_info info;
-
 
 // Should really collect the possible devices and let the user choose ?
 
@@ -110,20 +114,23 @@ struct synth_info info;
 void synthOut::closeDev (void)
 {
 if (!OK()) return;
+#ifdef HANDLETIMEINDEVICES
 SEQ_STOP_TIMER();
 SEQ_DUMPBUF();
+#endif
 //if (seqfd>=0)
 //    close(seqfd);
 seqfd=-1;
-printf("Device %d closed\n",device);
 };
 
 void synthOut::initDev (void)
 {
 int chn;
 if (!OK()) return;
+#ifdef HANDLETIMEINDEVICES
 count=0.0;
 lastcount=0.0;
+#endif
 uchar gm_reset[5]={0x7e, 0x7f, 0x09, 0x01, 0xf7};
 sysex(gm_reset, sizeof(gm_reset));
 for (chn=0;chn<16;chn++)
@@ -138,7 +145,6 @@ for (chn=0;chn<16;chn++)
     chnController(chn, 0x4a, 127);
 
     };
-printf("Device %d initialized\n",device);
 };
 /*
 void synthOut::useMapper(MidiMapper *map)

@@ -70,7 +70,7 @@ char *getActiveSongName(void)
 char *getName(int id); // Returns the name of the song with id id
 
 void previous(void);
-void next(void) { if (active!=NULL) active=active->next;};
+void next(void);
 
 void iteratorStart(void);
 void iteratorNext(void);

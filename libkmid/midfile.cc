@@ -27,7 +27,9 @@
 #include <unistd.h>
 #include "sndcard.h"
 #include "midispec.h"
+#include "mt32togm.h"
 #include "../version.h"
+
 
 /* This function gives the metronome tempo, from a tempo data as found in
  a midi file */
@@ -168,6 +170,11 @@ fclose(fh);
 info->ticksTotal=0;
 info->millisecsTotal=0.0;
 info->ticksPlayed=0;
+for (i=0;i<256;i++)
+   {
+   info->patchesUsed[i]=0;
+   };
+
 //ulong tempticks=0;
 int parsing=1;
 int trk,minTrk;
@@ -222,21 +229,22 @@ while (parsing)
         };
     trk=minTrk;
     Tracks[trk]->readEvent(ev);
-        if (ev->command==MIDI_SYSTEM_PREFIX)
-                {
-                if (((ev->command|ev->chn)==META_EVENT)&&(ev->d1==ME_SET_TEMPO))
-                    {
-		    if (tempoToMetronomeTempo(tmp=((ev->data[0]<<16)|(ev->data[1]<<8)|(ev->data[2])))>=8)
-			{
-                        tempo=tmp;
-	//		    printf("setTempo %ld\n",tempo);
-	                for (j=0;j<info->ntracks;j++)
-                    	    {
-                    	    Tracks[j]->changeTempo(tempo);
-                    	    };
-			};
-                    };
-                };
+
+    if (ev->command==MIDI_SYSTEM_PREFIX)
+        {
+        if (((ev->command|ev->chn)==META_EVENT)&&(ev->d1==ME_SET_TEMPO))
+            {
+            if (tempoToMetronomeTempo(tmp=((ev->data[0]<<16)|(ev->data[1]<<8)|(ev->data[2])))>=8)
+               {
+               tempo=tmp;
+//               printf("setTempo %ld\n",tempo);
+               for (j=0;j<info->ntracks;j++)
+                   {
+                   Tracks[j]->changeTempo(tempo);
+                   };
+               };
+            };
+        };
     };
 
 delete ev;
@@ -253,7 +261,112 @@ printf("info.ticksPlayed= %ld \n",info->ticksPlayed);
 printf("info.millisecsTotal  = %g \n",info->millisecsTotal);
 printf("info.TicksPerCN = %d \n",info->ticksPerCuarterNote);
 #endif
-printf("info.millisecsTotal  = %g \n",info->millisecsTotal);
 
 return Tracks;
 };
+
+
+void parsePatchesUsed(track **Tracks,midifileinfo *info,int gm)
+{
+int i;
+for (i=0;i<256;i++)
+   {
+   info->patchesUsed[i]=0;
+   };
+int parsing=1;
+int trk,minTrk;
+ulong tempo=1000000;
+
+#ifdef MIDFILEDEBUG
+printf("Parsing for patches ...\n");
+#endif
+
+int j;
+for (i=0;i<info->ntracks;i++)
+    {
+    Tracks[i]->init();
+    };
+double prevms=0;
+double minTime=0;
+double maxTime;
+ulong tmp;
+Midi_event *ev=new Midi_event;
+int pgm;
+int pgminchannel[16];
+for (i=0;i<16;i++)
+   {
+   pgminchannel[i]=0;
+   };
+
+while (parsing)
+    {
+    prevms=minTime;
+    trk=0;
+    minTrk=0;
+    maxTime=minTime + 2 * 60000L;
+    minTime=maxTime;
+    while (trk<info->ntracks)
+        {
+        if (Tracks[trk]->absMsOfNextEvent()<minTime)
+                {
+                minTrk=trk;
+                minTime=Tracks[minTrk]->absMsOfNextEvent();
+                };
+        trk++;
+        };
+    if ((minTime==maxTime))
+        {
+        parsing=0;
+#ifdef MIDFILEDEBUG
+        printf("END of parsing for patches\n");
+#endif
+        }
+        else
+        {
+        trk=0;
+        while (trk<info->ntracks)
+            {
+            Tracks[trk]->currentMs(minTime);
+            trk++;
+            };
+        };
+    trk=minTrk;
+    Tracks[trk]->readEvent(ev);
+    switch (ev->command)
+        {
+        case (MIDI_NOTEON) : 
+              if (ev->chn!=PERCUSSION_CHANNEL)
+                  info->patchesUsed[pgminchannel[ev->chn]]++;
+                 else
+                  info->patchesUsed[ev->note+128]++;
+              break;
+        case (MIDI_PGM_CHANGE) :
+              pgminchannel[ev->chn]=(gm==1)?(ev->patch):(MT32toGM[ev->patch]);
+              break;
+        case (MIDI_SYSTEM_PREFIX) :
+            if (((ev->command|ev->chn)==META_EVENT)&&(ev->d1==ME_SET_TEMPO))
+                {
+                if (tempoToMetronomeTempo(tmp=((ev->data[0]<<16)|(ev->data[1]<<8)|(ev->data[2])))>=8)
+                   {
+                   tempo=tmp;
+//                   printf("setTempo %ld\n",tempo);
+                   for (j=0;j<info->ntracks;j++)
+                       {
+                       Tracks[j]->changeTempo(tempo);
+                       };
+                   };
+                };
+            break;   
+        };
+    };
+
+delete ev;
+
+for (i=0;i<info->ntracks;i++)
+    {
+    Tracks[i]->init();
+    };
+
+};
+
+

@@ -25,6 +25,7 @@
 #define DEVICEMAN_H
 
 #include "dattypes.h"
+#include "../version.h"
 
 class midiOut;
 class MidiMapper;
@@ -40,6 +41,15 @@ int n_synths;  // Number of synths devices
 int n_midi;  // Number of midi ports
 int n_total; // n_midi+n_synths
 
+#ifndef HANDLETIMEINDEVICES
+
+    int			rate;
+    double		convertrate; // A "constant" used to convert from
+				// milliseconds to the computer rate
+#endif
+int timerstarted; // Newest kernels don't want me to stop a timer that
+		// hasn't been started :-)
+
 MidiMapper *mapper_tmp; // Keeps a pointer to the mapper so that if devices
 	// weren't initialized when first called setMidiMap
 	// then, when they get initialized, they use the proper mapper
@@ -49,6 +59,8 @@ int seqfd; // The real file handler that is opened and closed.
 int default_dev; // The device to which timer events will be sent
 
 int ok;
+    void seqbuf_dump (void);
+    void seqbuf_clean (void);
 
 public:
 
@@ -87,10 +99,15 @@ public:
   void tmrStop(void);
   void tmrContinue(void);
 
-  void sync(int i=0);
+  void sync(int i=0);  // if i==1 syncronizes by cleaning the buffer
+			// instead of sending it (in fact, this is what
+			// syncronizing really means :-)
+
 
   int getDefaultDevice(void);
   void setDefaultDevice(int i);
+
+  int setPatchesToUse(int *patchesused); // Returns 0 if ok, -1 if not enough memory
 
   char *getMidiMapFilename(void);
   void setMidiMap(MidiMapper *map);

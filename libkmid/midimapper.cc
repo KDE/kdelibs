@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "../version.h"
 
 MidiMapper::MidiMapper(const char *name)
 {
@@ -424,7 +425,9 @@ if (mapPitchBender)
    short pbs=((short)msb<<7) | (lsb & 0x7F);
    pbs=pbs-0x2000;
    short pbs2=(((long)pbs*PitchBenderRatio)/4096);
+#ifdef MIDIMAPPERDEBUG
    printf("Pitch Bender (%d): %d -> %d \n",chn,pbs,pbs2);
+#endif
    pbs2=pbs2+0x2000;
    lsb=pbs2 & 0x7F;
    msb=(pbs2 >> 7)&0x7F;  

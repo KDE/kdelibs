@@ -1,6 +1,6 @@
 /**************************************************************************
 
-    midiout.cc   - class midiOut which handles the /dev/sequencer device
+    midiout.cc   - class midiOut which handles external midi devices
     Copyright (C) 1997,98  Antonio Larrosa Jimenez
 
     This program is free software; you can redistribute it and/or modify
@@ -26,30 +26,28 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include "sndcard.h"
-#include <sys/ioctl.h>
 #include <errno.h>
 #include <string.h>
 #include <sys/param.h>
+#include "midispec.h"
 #include "../version.h"
-
-#ifndef HZ
-#define HZ 100
-#endif
-#ifndef MIDI_TYPE_MPU401
-#define MIDI_TYPE_MPU401 0x401
+#ifdef HANDLETIMEINDEVICES
+#include <sys/ioctl.h>
 #endif
 
-//SEQ_DEFINEBUF (1024); 
 SEQ_USE_EXTBUF();
 
 midiOut::midiOut(int d)
 {
 seqfd = -1;
+devicetype=KMID_EXTERNAL_MIDI;
 device= d;
+#ifdef HANDLETIMEINDEVICES
 count=0.0;
 lastcount=0.0;
 rate=100;
 convertrate=10;
+#endif
 Map=new MidiMapper(NULL);
 if (Map==NULL) {printf("ERROR : midiOut : Map is NULL\n");return;};
 ok=1;
@@ -71,6 +69,7 @@ if (seqfd==-1)
     ok=0;
     return;
     };
+#ifdef HANDLETIMEINDEVICES
 ioctl(seqfd,SNDCTL_SEQ_NRSYNTHS,&ndevs);
 ioctl(seqfd,SNDCTL_SEQ_NRMIDIS,&nmidiports);
 rate=0;
@@ -94,7 +93,7 @@ for (i=0;i<ndevs;i++)
     if (ioctl(seqfd,SNDCTL_SYNTH_INFO,&synthinfo)!=-1)
 	{
 	printf("----");
-        printf("Device : %d\n",i);
+	printf("Device : %d\n",i);
 	printf("Name : %s\n",synthinfo.name);
 	switch (synthinfo.synth_type)
 	    {
@@ -137,26 +136,30 @@ if (nmidiports<=0)
     ok=0;
     return;
     };
-printf("Midi device %d opened\n",device);
+#endif
+
 };
 
 void midiOut::closeDev (void)
 {
 if (!OK()) return;
+#ifdef HANDLETIMEINDEVICES
 SEQ_STOP_TIMER();
 SEQ_DUMPBUF();
+#endif
 //if (seqfd>=0)
 //    close(seqfd);
 seqfd=-1;
-printf("Midi Device %d closed\n",device);
 };
 
 void midiOut::initDev (void)
 {
 int chn;
 if (!OK()) return;
+#ifdef HANDLETIMEINDEVICES
 count=0.0;
 lastcount=0.0;
+#endif
 uchar gm_reset[5]={0x7e, 0x7f, 0x09, 0x01, 0xf7};
 sysex(gm_reset, sizeof(gm_reset));
 for (chn=0;chn<16;chn++)
@@ -171,7 +174,6 @@ for (chn=0;chn<16;chn++)
     chnController(chn, 0x4a, 127);
 
     };
-printf("Midi Device %d initialized\n",device);
 };
 
 void midiOut::useMapper(MidiMapper *map)
@@ -306,21 +308,22 @@ if (a==1)
 
 void midiOut::seqbuf_dump (void)
 {
-    if (_seqbufptr)
-        if (write (seqfd, _seqbuf, _seqbufptr) == -1)
-        {
-	    printf("Error writing to /dev/sequencer in midiOut::seqbuf_dump\n");
-            perror ("write /dev/sequencer in seqbuf_dump\n");
-            exit (-1);
-        }
-    _seqbufptr = 0;
+   if (_seqbufptr)
+      if (write (seqfd, _seqbuf, _seqbufptr) == -1)
+         {
+         printf("Error writing to /dev/sequencer in midiOut::seqbuf_dump\n");
+         perror ("write /dev/sequencer in seqbuf_dump\n");
+         exit (-1);
+         }
+   _seqbufptr = 0;
 };
 
 void midiOut::seqbuf_clean(void)
 {
-_seqbufptr=0;
+   _seqbufptr=0;
 };
 
+#ifdef HANDLETIMEINDEVICES
 void midiOut::wait(double ticks)
 {
 SEQ_WAIT_TIME(((int)(ticks/convertrate)));
@@ -377,8 +380,22 @@ void midiOut::tmrContinue(void)
 SEQ_CONTINUE_TIMER();
 SEQ_DUMPBUF();
 };
+#endif
 
 char *midiOut::getMidiMapFilename(void)
 {
 return (Map!=NULL) ? Map->getFilename() : (char *)"";
+};
+
+char * midiOut::devName(void)
+{
+switch (devType())
+    {
+    case (KMID_EXTERNAL_MIDI) : return "External Midi";
+    case (KMID_SYNTH) : return "Synth";
+    case (KMID_FM) : return "FM";
+    case (KMID_GUS) : return "GUS";
+    case (KMID_AWE) : return "AWE";
+    };
+return "Unknown";
 };

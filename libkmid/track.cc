@@ -313,8 +313,10 @@ switch (ev->command)
 			};
 			break;
 		    default: 
-			printf("Warning : Default handler for meta event 0x%x\n",
-							ev->d1);
+#ifdef GENERAL_DEBUG_MESSAGES
+			printf("Warning : Default handler for meta event " \
+				"0x%x\n", ev->d1);
+#endif
 			ev->length=readVariableLengthValue();
 #ifdef PEDANTIC_TRACK
 		if (endoftrack) 

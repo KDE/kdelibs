@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include "dattypes.h"
 #include "midimapper.h"
+#include "../version.h"
 
 #define N_CHANNELS 16
 #define N_CTL    256
@@ -36,17 +37,25 @@ class midiOut
 protected:
 friend class DeviceManager; 
     int                 seqfd; // Is the file handler, but MUST NOT be closed
+    int			device;
+#ifdef HANDLETIMEINDEVICES
     int			ndevs; // Total number of devices
     int			nmidiports; // Total number of midi ports
-    int			device;
+
     double		count;
     double		lastcount;
     double		lasttime;
     double		begintime;
-
+    
     int			rate;
     double		convertrate; // A "constant" used to convert from
 				// milliseconds to the computer rate
+#endif
+    int        devicetype; //As this class is inherited by many other
+                  // classes, to support other cards, this varialbe
+                  // holds the type of card, so that polymorphism is
+                  // better used.
+                  // The values it can get are defined as KMID_... in midispec.h
 
     MidiMapper          *Map;
 
@@ -65,16 +74,20 @@ public:
     midiOut(int d=0);
 virtual   ~midiOut();
 
+
 virtual    void openDev		(int sqfd);
 virtual    void closeDev	(void);
 virtual    void initDev		(void);
-
+	int 	devType		(void) {return devicetype;};
+	char *	devName		(void);
+#ifdef HANDLETIMEINDEVICES
     int Rate		(void) { return rate; };
+#endif
 
-    void useMapper      ( MidiMapper *map);
+    void useMapper		( MidiMapper *map);
 
 virtual    void noteOn		( uchar chn, uchar note, uchar vel );
-virtual    void noteOff	( uchar chn, uchar note, uchar vel );
+virtual    void noteOff		( uchar chn, uchar note, uchar vel );
 virtual    void keyPressure	( uchar chn, uchar note, uchar vel );
 virtual    void chnPatchChange	( uchar chn, uchar patch );
 virtual    void chnPressure	( uchar chn, uchar vel );
@@ -82,17 +95,17 @@ virtual    void chnPitchBender	( uchar chn, uchar lsb,  uchar msb );
 virtual    void chnController	( uchar chn, uchar ctl , uchar v ); 
 
 virtual    void sysex		( uchar *data,ulong size);
-    void channelSilence	( uchar chn );
-    void channelMute    ( uchar chn, int a );
-
-    void wait (double ticks);
+    void channelSilence		( uchar chn );
+    void channelMute    	( uchar chn, int a );
 
     int OK (void) 
-	{
-	    if (seqfd<0) return 0;
-	    return (ok>0);
-	};
+    {
+        if (seqfd<0) return 0;
+        return (ok>0);
+    };
 
+#ifdef HANDLETIMEINDEVICES
+    void wait (double ticks);
     void tmrSetTempo(int v);
     void tmrStart(void);
     void tmrStop(void);
@@ -100,7 +113,7 @@ virtual    void sysex		( uchar *data,ulong size);
     void sync(int i=0);  // if i==1 syncronizes by cleaning the buffer
 			// instead of sending it (in fact, this is what
 			// you syncronizing really means :-)
-
+#endif
 
     char *getMidiMapFilename(void);
 
