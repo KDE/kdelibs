@@ -20,6 +20,9 @@
 
     */
 
+#ifndef __KAUDIOPLAYER_H__
+#define __KAUDIOPLAYER_H__
+
 #include <qobject.h>
 
 /**
@@ -80,3 +83,5 @@ public slots:
 	 */
 	void play();
 };
+
+#endif // __KAUDIOPLAYER_H__
