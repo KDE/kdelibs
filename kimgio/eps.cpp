@@ -16,7 +16,6 @@
 #include "eps.h"
 
 #define BUFLEN 200
-char buf[BUFLEN+1];
 
 #define BBOX "%%BoundingBox:"
 #define BBOX_LEN strlen(BBOX)
@@ -24,8 +23,9 @@ char buf[BUFLEN+1];
 int bbox ( const char *fileName, int *x1, int *y1, int *x2, int *y2)
 {
 	FILE * file;
-	int a, b, c, d;
 	int ret = FALSE;
+        char buf[BUFLEN+1];
+        char dummy[BUFLEN+1];
 
 	file = fopen (fileName, "r");
 
@@ -34,19 +34,13 @@ int bbox ( const char *fileName, int *x1, int *y1, int *x2, int *y2)
 
 		if (strncmp (buf, BBOX, BBOX_LEN) == 0)
 		{
-			ret = sscanf (buf, "%s %d %d %d %d", buf,
-				&a, &b, &c, &d);    
-			if (ret == 5) {
+			if ( sscanf (buf, "%s %d %d %d %d", dummy,
+				x1, y1, x2, y2) == 5) {
 				ret = TRUE;
 				break;
 			} 
 		}  
 	} while ( true );
-
-	*x1 = a;
-	*y1 = b;
-	*x2 = c;
-	*y2 = d;
 
 	fclose (file);
 	return ret;
@@ -56,6 +50,7 @@ void kimgio_eps_read (QImageIO *image)
 {
 	FILE * ghostfd, * imagefd;
 	int x1, y1, x2, y2;
+        char buf[BUFLEN+1];
 
 	QString cmdBuf;
 	QString tmp;
@@ -98,7 +93,6 @@ void kimgio_eps_read (QImageIO *image)
 		"0 0 0 setrgbcolor - -c showpage quit";
 
 	// run ghostview
-
 	ghostfd = popen (QFile::encodeName(cmdBuf), "w");
 
 	if ( ghostfd == 0 ) {
