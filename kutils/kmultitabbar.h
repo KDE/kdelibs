@@ -137,7 +137,7 @@ public:
 private:
 	class KMultiTabBarInternal *m_internal;
 	QBoxLayout *m_l;
-	QFrame *m_btnTabSep;	
+	QFrame *m_btnTabSep;
 	QPtrList<KMultiTabBarButton> m_buttons;
 	KMultiTabBarPosition m_position;
 	KMultiTabBarPrivate *d;
@@ -173,7 +173,9 @@ public slots:
 	 * modify the text of the button
          */
 	void setText(const QString &);
-	
+
+	QSize sizeHint() const;
+
 protected:
 	KMultiTabBar::KMultiTabBarPosition m_position;
 	KMultiTabBar::KMultiTabBarStyle m_style;
