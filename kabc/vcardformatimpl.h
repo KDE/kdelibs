@@ -87,6 +87,9 @@ class VCardFormatImpl
 
     void addClassValue( VCARD::VCard *, VCARD::EntityType, const Secrecy & );
     Secrecy readClassValue( VCARD::ContentLine * );
+
+    void addKeyValue( VCARD::VCard *, const Key & );
+    Key readKeyValue( VCARD::ContentLine * );
 };
 
 }

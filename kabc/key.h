@@ -59,14 +59,6 @@ public:
   Key( const QString &text = QString::null, int type = PGP );
 
   /**
-   * Constructor.
-   *
-   * @param binary  The binary data.
-   * @param type    The key type, @see Types.
-   */
-  Key( const QCString &binary = 0, int type = PGP );
-
-  /**
    * Destructor.
    */
   ~Key();
@@ -87,12 +79,12 @@ public:
   /**
    * Sets binary data.
    */
-  void setBinaryData( const QCString &binary );
+  void setBinaryData( const QByteArray &binary );
 
   /**
    * Returns the binary data.
    */
-  QCString binaryData() const;
+  QByteArray binaryData() const;
 
   /**
    * Sets text data.
@@ -140,7 +132,7 @@ public:
   static QString typeLabel( int type );
 
 private:
-  QCString mBinaryData;
+  QByteArray mBinaryData;
   QString mId;
   QString mTextData;
   QString mCustomTypeString;

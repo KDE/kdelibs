@@ -72,7 +72,6 @@ TextBinParam::~TextBinParam()
 	void
 TextBinParam::_parse()
 {
-  kdDebug() << "TextBinParam=" << strRep_ << "|";
 }
 
 	void

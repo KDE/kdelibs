@@ -21,8 +21,9 @@
   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include <VCardTextBinValue.h>
+#include <kmdcodec.h>
 
+#include <VCardTextBinValue.h>
 #include <VCardValue.h>
 
 using namespace VCARD;
@@ -35,6 +36,9 @@ TextBinValue::TextBinValue()
 TextBinValue::TextBinValue(const TextBinValue & x)
 	:	Value(x)
 {
+  mIsBinary_ = x.mIsBinary_;
+  mData_ = x.mData_;
+  mUrl_ = x.mUrl_;
 }
 
 TextBinValue::TextBinValue(const QCString & s)
@@ -46,6 +50,10 @@ TextBinValue::TextBinValue(const QCString & s)
 TextBinValue::operator = (TextBinValue & x)
 {
 	if (*this == x) return *this;
+
+  mIsBinary_ = x.mIsBinary_;
+  mData_ = x.mData_;
+  mUrl_ = x.mUrl_;
 
 	Value::operator = (x);
 	return *this;
@@ -62,11 +70,22 @@ TextBinValue::operator = (const QCString & s)
 TextBinValue::operator == (TextBinValue & x)
 {
 	x.parse();
-	return false;
+
+  if ( mIsBinary_ != x.mIsBinary_ ) return false;
+  if ( mData_ != x.mData_ ) return false;
+  if ( mUrl_ != x.mUrl_ ) return false;
+
+	return true;
 }
 
 TextBinValue::~TextBinValue()
 {
+}
+
+  TextBinValue *
+TextBinValue::clone()
+{
+  return new TextBinValue( *this );
 }
 
 	void
@@ -77,6 +96,9 @@ TextBinValue::_parse()
 	void
 TextBinValue::_assemble()
 {
-  strRep_ = "urltest";
+  if ( mIsBinary_ ) {
+    strRep_ = KCodecs::base64Encode( mData_ );
+  } else
+    strRep_ = mUrl_.utf8();
 }
 

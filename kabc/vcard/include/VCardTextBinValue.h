@@ -35,8 +35,31 @@ class TextBinValue : public Value
 {
 	
 #include "TextBinValue-generated.h"
-	
+
+  TextBinValue *clone();
+
+  bool isBinary() { parse(); return mIsBinary_; }
+  QByteArray data() { parse(); return mData_; }
+  QString url() { parse(); return mUrl_; }
+
+  void setData( const QByteArray &data )
+  {
+    mData_ = data;
+    mIsBinary_ = true;
+    assembled_ = false;
+  }
+
+  void setUrl( const QString &url )
+  {
+    mUrl_ = url;
+    mIsBinary_ = false;
+    assembled_ = false;
+  }
+
 	private:
+    int mIsBinary_;
+    QByteArray mData_;
+    QString mUrl_;
 };
 
 }

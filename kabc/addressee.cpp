@@ -1105,7 +1105,7 @@ void Addressee::dump() const
   Key::List::ConstIterator it4;
   for( it4 = k.begin(); it4 != k.end(); ++it4 ) {
     kdDebug(5700) << "    Type: " << int((*it4).type()) <<
-                     " Key: " << (*it4).key() <<
+                     " Key: " << (*it4).textData() <<
                      " CustomString: " << (*it4).customTypeString() << endl;
   }
   kdDebug(5700) << "  }" << endl;

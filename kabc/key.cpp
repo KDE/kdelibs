@@ -31,12 +31,6 @@ Key::Key( const QString &text, int type )
   mId = KApplication::randomString(8);
 }
 
-Key::Key( const QCString &binary, int type )
-  : mBinaryData( binary ), mIsBinary( true ), mType( type )
-{
-  mId = KApplication::randomString(8);
-}
-
 Key::~Key()
 {
 }
@@ -69,13 +63,13 @@ QString Key::id() const
   return mId;
 }
 
-void Key::setBinaryData( const QCString &binary )
+void Key::setBinaryData( const QByteArray &binary )
 {
   mBinaryData = binary;
   mIsBinary = true;
 }
 
-QCString Key::binaryData() const
+QByteArray Key::binaryData() const
 {
   return mBinaryData;
 }

@@ -231,6 +231,11 @@ bool VCardFormatImpl::loadAddressee( Addressee& addressee, VCard &v )
 
       case EntityClass:
         addressee.setSecrecy( readClassValue( cl ) );
+        break;
+
+      case EntityKey:
+        addressee.insertKey( readKeyValue( cl ) );
+        break;
           
       default:
         kdDebug(5700) << "VCardFormat::load(): Unsupported entity: "
@@ -300,6 +305,12 @@ void VCardFormatImpl::saveAddressee( const Addressee &addressee, VCard *v )
   PhoneNumber::List::ConstIterator it2;
   for( it2 = phoneNumbers.begin(); it2 != phoneNumbers.end(); ++it2 ) {
     addTelephoneValue( v, *it2 );
+  }
+
+  Key::List keys = addressee.keys();
+  Key::List::ConstIterator it6;
+  for( it6 = keys.begin(); it6 != keys.end(); ++it6 ) {
+    addKeyValue( v, *it6 );
   }
 
   addTextValue( v, EntityCategories, addressee.categories().join(",") );
@@ -660,6 +671,67 @@ Secrecy VCardFormatImpl::readClassValue( ContentLine *cl )
     return secrecy;
   } else
     return Secrecy();
+}
+
+void VCardFormatImpl::addKeyValue( VCARD::VCard *vcard, const Key &key )
+{
+  ContentLine cl;
+  cl.setName( EntityTypeToParamName( EntityKey ) );
+
+  TextBinValue *v = new TextBinValue;
+  ParamList params;
+
+  if ( key.isBinary() ) {
+    v->setData( key.binaryData() );
+    params.append( new Param( "ENCODING", "b" ) );
+  } else {
+    v->setUrl( key.textData() );
+  }
+
+  switch ( key.type() ) {
+    case Key::X509:
+      params.append( new Param( "TYPE", "X509" ) );
+      break;
+    case Key::PGP:
+      params.append( new Param( "TYPE", "PGP" ) );
+      break;
+    case Key::Custom:
+      params.append( new Param( "TYPE", key.customTypeString().utf8() ) );
+      break;
+  }
+
+  cl.setValue( v );
+  cl.setParamList( params );
+  vcard->add( cl );
+}
+
+Key VCardFormatImpl::readKeyValue( VCARD::ContentLine *cl )
+{
+  Key key;
+  TextBinValue *v = (TextBinValue *)cl->value();
+
+  if ( v->isBinary() ) {
+    key.setBinaryData( v->data() );
+  } else {
+    key.setTextData( v->url() );
+  }
+
+  ParamList params = cl->paramList();
+  ParamListIterator it( params );
+  for( ; it.current(); ++it ) {
+    if ( (*it)->name() == "TYPE" ) {
+      if ( (*it)->value() == "X509" )
+        key.setType( Key::X509 );
+      else if ( (*it)->value() == "PGP" )
+        key.setType( Key::PGP );
+      else {
+        key.setType( Key::Custom );
+        key.setCustomTypeString( QString::fromUtf8( (*it)->value() ) );
+      }
+    }
+  }
+
+  return key;
 }
 
 bool VCardFormatImpl::readFromString( const QString &vcard, Addressee &addressee )
