@@ -5,7 +5,6 @@ should use it like a UI widget to provide spellchecking in your application.
 See kspell.h and http://www.chaos.umd.edu/~dsweet/KDE/KSpell for
 documentation.
 
-
 Settings
 --------
 A configuration dialog/widget is also provided.  This class (KSpellConfig) acts
@@ -16,12 +15,3 @@ and the spellchecker will run with the appropriate preference settings.  The
 preferences, when saved (see kspelldlg.h) are saved globally.  If needed,
 you can read them with KSpellDlg and set and use application-specific
 spellchecking settings.
-
-
-Contribute
-----------
-Please see http://www.chaos.umd.edu/~dsweet/KDE/KSpell for information and
-email bugs, suggestions, etc. to dsweet@chaos.umd.edu
-
-Thank you.
-David Sweet

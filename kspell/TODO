@@ -18,21 +18,6 @@ ensure that KSpell is reusable with the same replace/ignore lists
 allow saving of ignore/replace lists for multiple spellchecks of a
   given document across multiple sessions
 
-
-
-
-
-Done
-^^^^
-single word bug
-
-indemnities = indemnity-y+ies bug
-
-change all constant strings to klocale->translate(string);  (or i18n?)
-
-set the dialog box's icon to that of the parent
-
-
 add a "move()" function to move the dialog box (calling app should use this
 	in response to a mispelled() signal to move the d.b.  out of the way
 	of the misspelled word)
