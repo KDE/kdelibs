@@ -407,7 +407,10 @@ int Sym::qt() const
 QString Sym::toString( bool bUserSpace ) const
 {
 	// If it's a unicode character,
-	if( m_sym < 0x3000 ) {
+	if( m_sym == 0 )
+		return QString::null;
+		
+	else if( m_sym < 0x3000 ) {
 		QChar c = QChar(m_sym).upper();
 		// Print all non-space characters directly when output is user-visible.
 		// Otherwise only print alphanumeric latin1 characters directly (A,B,C,1,2,3).
