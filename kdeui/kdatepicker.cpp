@@ -26,6 +26,7 @@
 #include <qframe.h>
 #include <qpainter.h>
 #include <qdialog.h>
+#include <qstyle.h>
 #include <qtoolbutton.h>
 #include <qtooltip.h>
 #include <qfont.h>
@@ -143,17 +144,13 @@ KDatePicker::resizeEvent(QResizeEvent*)
         else
             sizes[count] = QSize(0,0); // closeButton
     }
+
     // ----- calculate size of the month button:
-    w=0;
     for(count=0; count<NoOfButtons; ++count) {
-	if(buttons[count]!=selectMonth)
-	{
-	    w+=sizes[count].width();
-	} else {
-	    x=count;
+	if(buttons[count]==selectMonth) {
+	    sizes[count].setWidth(maxMonthRect.width()+2*QApplication::style().pixelMetric(QStyle::PM_ButtonMargin));
 	}
     }
-    sizes[x].setWidth(width()-w); // stretch the month button
     // ----- place the buttons:
     x=0;
     for(count=0; count<NoOfButtons; ++count)
@@ -402,7 +399,7 @@ KDatePicker::sizeHint() const
 
       if(buttons[count]==selectMonth)
 	{
-	  cx+=maxMonthRect.width();
+	  cx+=maxMonthRect.width()+2*QApplication::style().pixelMetric(QStyle::PM_ButtonMargin);
 	} else {
 	  cx+=sizes[count].width();
 	}
@@ -448,7 +445,7 @@ KDatePicker::setFontSize(int s)
   table->setFontSize(s);
 }
 
-void 
+void
 KDatePicker::setCloseButton( bool enable )
 {
     if ( enable == (d->closeButton != 0L) )
