@@ -125,6 +125,27 @@ namespace KIO {
         void showErrorDialog( QWidget * parent = 0L );
 
         /**
+         * Enable or disable the automatic error handling. When automatic
+         * error handling is enabled and an error occurs, then showErrorDialog
+         * is called with the specified parentWidget (if supplied) , right before
+         * the emission of the result signal.
+	 *
+	 * The default is false.
+         *
+         * See also @ref isAutoErrorHandlingEnabled , @ref showErrorDialog
+         *
+         * @param enable enable or disable automatic error handling
+         * @param parentWidget the parent widget, passed to @ref showErrorDialog
+         */
+        void setAutoErrorHandlingEnabled( bool enable, QWidget *parentWidget = 0 );
+
+        /**
+         * Returns whether automatic error handling is enabled or disabled.
+         * See also @ref setAutoErrorHandlingEnabled .
+         */
+        bool isAutoErrorHandlingEnabled() const;
+
+        /**
          * Associate this job with a window given by @p window.
          */
         void setWindow(QWidget *window);
@@ -296,6 +317,9 @@ namespace KIO {
         QGuardedPtr<QWidget> m_window;
         MetaData m_outgoingMetaData;
         MetaData m_incomingMetaData;
+    private:
+        class JobPrivate;
+        JobPrivate *d;
     };
 
     /**

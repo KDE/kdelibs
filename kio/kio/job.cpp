@@ -68,8 +68,17 @@ template class QPtrList<KIO::Job>;
 
 #define KIO_ARGS QByteArray packedArgs; QDataStream stream( packedArgs, IO_WriteOnly ); stream
 
+class Job::JobPrivate
+{
+public:
+    JobPrivate() : m_autoErrorHandling( false ) {}
+
+    bool m_autoErrorHandling;
+    QGuardedPtr<QWidget> m_errorParentWidget;
+};
+
 Job::Job(bool showProgressInfo) : QObject(0, "job"), m_error(0), m_percent(0)
-   , m_progressId(0), m_speedTimer(0)
+   , m_progressId(0), m_speedTimer(0), d( new JobPrivate )
 {
     // All jobs delete themselves after emiting 'result'.
 
@@ -97,6 +106,7 @@ Job::Job(bool showProgressInfo) : QObject(0, "job"), m_error(0), m_percent(0)
 Job::~Job()
 {
     delete m_speedTimer;
+    delete d;
     kapp->deref();
 }
 
@@ -159,6 +169,8 @@ void Job::emitResult()
 {
   if ( m_progressId ) // Did we get an ID from the observer ?
     Observer::self()->jobFinished( m_progressId );
+  if ( m_error && d->m_autoErrorHandling )
+    showErrorDialog( d->m_errorParentWidget );
   emit result(this);
   delete this;
 }
@@ -228,6 +240,17 @@ void Job::showErrorDialog( QWidget * parent )
   // Show a message box, except for "user canceled"
   if ( m_error != ERR_USER_CANCELED )
       KMessageBox::queuedMessageBox( parent, KMessageBox::Error, errorString() );
+}
+
+void Job::setAutoErrorHandlingEnabled( bool enable, QWidget *parentWidget )
+{
+  d->m_autoErrorHandling = enable;
+  d->m_errorParentWidget = parentWidget;
+}
+
+bool Job::isAutoErrorHandlingEnabled() const
+{
+  return d->m_autoErrorHandling;
 }
 
 void Job::setWindow(QWidget *window)
