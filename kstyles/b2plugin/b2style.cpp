@@ -1215,10 +1215,13 @@ void B2Style::drawSplitter(QPainter *p, int x, int y, int w, int h,
     p->setPen(g.light());
     p->drawLine(x+1, y+1, x+1, y2-1);
     p->drawLine(x+1, y+1, x2-1, y+1);
+    p->setPen(g.midlight());
+    p->drawLine(x+2, y+2, x+2, y2-2);
+    p->drawLine(x+2, y+2, x2-2, y+2);
     p->setPen(g.mid());
     p->drawLine(x2-1, y+1, x2-1, y2-1);
     p->drawLine(x+1, y2-1, x2-1, y2-1);
-    p->fillRect(x+2, y+2, w-4, h-4, g.brush(QColorGroup::Background));
+    p->fillRect(x+3, y+3, w-5, h-5, g.brush(QColorGroup::Background));
 }
                 
 #include "b2style.moc"
