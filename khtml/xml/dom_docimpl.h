@@ -60,6 +60,9 @@ public:
 
     virtual bool isHTMLDocument() { return false; }
 
+    virtual void setStyle(khtml::RenderStyle *style) { m_style = style; }
+    virtual khtml::RenderStyle *style() { return m_style; }
+  
     //DocumentType doctype() const;
 
     //DOMImplementation implementation() const;
@@ -99,7 +102,7 @@ public:
 
     // Query all registered elements for their state
     QStringList state();
-    
+
     // Set the state the document should restore to
     void setRestoreState( const QStringList &s) { m_state = s; }
 
@@ -108,8 +111,10 @@ public:
 protected:
     khtml::CSSStyleSelector *m_styleSelector;
     KHTMLView *m_view;
-    QList<ElementImpl> m_registeredElements;    
+    QList<ElementImpl> m_registeredElements;
     QStringList m_state;
+
+    khtml::RenderStyle *m_style;
 };
 
 class DocumentFragmentImpl : public NodeImpl

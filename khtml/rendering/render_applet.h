@@ -36,36 +36,36 @@ namespace khtml {
 class RenderApplet : public RenderWidget
 {
 public:
-  RenderApplet(RenderStyle *style, QScrollView *view,
+  RenderApplet(QScrollView *view,
                QMap<QString, QString> args, HTMLElementImpl *node);
     virtual ~RenderApplet();
 
-    virtual const char *renderName() const { return "RenderApplet"; }   
-    
+    virtual const char *renderName() const { return "RenderApplet"; }
+
     virtual bool isInline() const { return true; }
 
     virtual bool isReplaced() const { return true; }
-    
+
     virtual void layout(bool);
-    
+
 private:
     void processArguments( QMap<QString, QString> args );
-    
+
     HTMLElementImpl *m_applet;
     bool m_layoutPerformed;
 };
 
 class RenderEmptyApplet : public RenderWidget
 {
-public: 
-  RenderEmptyApplet(RenderStyle *style, QScrollView *view, QSize sz);
+public:
+  RenderEmptyApplet(QScrollView *view, QSize sz);
 
-  virtual const char *renderName() const { return "RenderEmptyApplet"; }   
-    
+  virtual const char *renderName() const { return "RenderEmptyApplet"; }
+
   virtual bool isInline() const { return true; }
-  
+
   virtual bool isReplaced() const { return true; }
-  
+
   virtual void layout(bool) {};
 };
 

@@ -56,21 +56,20 @@ using namespace DOM;
 using namespace khtml;
 
 
-RenderBox::RenderBox(RenderStyle* style)
-    : RenderObject(style)
+RenderBox::RenderBox()
+    : RenderObject()
 {
     m_minWidth = -1;
     m_maxWidth = -1;
     m_width = m_height = 0;
     m_x = 0;
     m_y = 0;
+}
 
-    CachedImage *i = style->backgroundImage();
-    if(i)
-    {
-	i->ref(this);
-    }
-
+void RenderBox::setStyle(RenderStyle *style)
+{
+    RenderObject::setStyle(style);
+    
     switch(style->position())
     {
     case ABSOLUTE:
@@ -292,13 +291,13 @@ void RenderBox::updateSize()
     int oldMax = m_maxWidth;
     setMinMaxKnown(false);
     calcMinMaxWidth();
-    
+
     if (isInline() && parent() && parent()->isInline())
     {
     	parent()->updateSize();
 	return;
     }
-    
+
     if(m_minWidth > containingBlockWidth() || m_minWidth != oldMin ||
     	m_maxWidth != oldMax)
     {    	

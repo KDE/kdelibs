@@ -36,7 +36,7 @@ namespace khtml
     class RenderListMarker : public RenderBox
     {
     public:
-	RenderListMarker( RenderStyle *style );
+	RenderListMarker();
 	
 	virtual const char *renderName() const { return "RenderListMarker"; }
 	virtual bool isInline() const { return true; }
@@ -59,10 +59,12 @@ namespace khtml
 class RenderListItem : public RenderFlow
 {
 public:
-    RenderListItem(RenderStyle *style);
+    RenderListItem();
     virtual ~RenderListItem();
 
     virtual const char *renderName() const { return "RenderListItem"; }
+
+    virtual void setStyle(RenderStyle *style);
 
     virtual bool isListItem() const { return true; }
     virtual bool isInline() const { return false; }

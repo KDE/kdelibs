@@ -102,15 +102,19 @@ void CharacterDataImpl::replaceData( const unsigned long /*offset*/, const unsig
 TextImpl::TextImpl(DocumentImpl *doc, const DOMString &_text)
     : CharacterDataImpl(doc, _text)
 {
+    m_style = 0;
 }
 
 TextImpl::TextImpl(DocumentImpl *doc)
     : CharacterDataImpl(doc)
 {
+    m_style = 0;
 }
 
 TextImpl::~TextImpl()
 {
+    // we don't delete m_style, since it's just a pointer to the parents
+    // style object
 }
 
 TextImpl *TextImpl::splitText( const unsigned long /*offset*/ )
@@ -140,10 +144,18 @@ void TextImpl::attach(KHTMLView *)
     RenderObject *r = _parent->renderer();
     if(r)
     {
-	m_render = new RenderText(m_style, str);
+	m_render = new RenderText(str);
+	m_render->setStyle(m_style);
 	r->addChild(m_render);
 	m_render->ref();
     }
+}
+
+
+void TextImpl::applyChanges()
+{
+    m_style = parentNode()->style();
+    if(m_render) m_render->setStyle(m_style);
 }
 
 bool TextImpl::mouseEvent( int _x, int _y, int, MouseEventType,

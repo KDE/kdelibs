@@ -42,7 +42,7 @@ namespace khtml
 class RenderFrameSet : public RenderBox
 {
 public:
-  RenderFrameSet( RenderStyle *style, DOM::HTMLFrameSetElementImpl *frameSet, KHTMLView *view,
+  RenderFrameSet( DOM::HTMLFrameSetElementImpl *frameSet, KHTMLView *view,
 		  QList<khtml::Length> *rows, QList<khtml::Length> *cols );
 
   virtual ~RenderFrameSet();
@@ -84,7 +84,7 @@ private:
 class RenderPart : public RenderWidget
 {
 public:
-  RenderPart( RenderStyle *style, QScrollView *view );
+  RenderPart( QScrollView *view );
   virtual ~RenderPart();
 
   virtual const char *renderName() const { return "RenderPart"; }
@@ -99,7 +99,7 @@ public:
 class RenderFrame : public RenderPart
 {
 public:
-  RenderFrame( RenderStyle *style, QScrollView *view, DOM::HTMLFrameElementImpl *frame );
+  RenderFrame( QScrollView *view, DOM::HTMLFrameElementImpl *frame );
   virtual ~RenderFrame();
 
   virtual const char *renderName() const { return "RenderFrame"; }
@@ -114,7 +114,7 @@ private:
 class RenderPartObject : public RenderPart
 {
 public:
-  RenderPartObject( RenderStyle *style, QScrollView *view );
+  RenderPartObject( QScrollView *view );
   virtual ~RenderPartObject();
 
   virtual const char *renderName() const { return "RenderPartObject"; }

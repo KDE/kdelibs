@@ -45,13 +45,16 @@ using namespace khtml;
 RenderObject *RenderObject::createObject(DOM::NodeImpl *node)
 {
     RenderStyle *style = node->style();
+    RenderObject *o = 0;
     switch(style->display())
     {
     case INLINE:
     case BLOCK:
-	return new RenderFlow(style);
+	o = new RenderFlow();
+	break;
     case LIST_ITEM:
-	return new RenderListItem(style);
+	o = new RenderListItem();
+	break;
     case RUN_IN:
     case COMPACT:
     case MARKER:
@@ -59,31 +62,38 @@ RenderObject *RenderObject::createObject(DOM::NodeImpl *node)
     case TABLE:
     case INLINE_TABLE:
 	// ### set inline/block right
-	kdDebug(300) << "creating RenderTable" << endl;
-	return new RenderTable(style);
+	//kdDebug(300) << "creating RenderTable" << endl;
+	o = new RenderTable();
+	break;
     case TABLE_ROW_GROUP:
     case TABLE_HEADER_GROUP:
     case TABLE_FOOTER_GROUP:
-	return new RenderTableSection(style);
+	o = new RenderTableSection();
+	break;
     case TABLE_ROW:
-	return new RenderTableRow(style);
+	o = new RenderTableRow();
+	break;
     case TABLE_COLUMN_GROUP:
     case TABLE_COLUMN:
-	return new RenderTableCol(style);
+	o = new RenderTableCol();
+	break;
     case TABLE_CELL:
-	return new RenderTableCell(style);
+	o = new RenderTableCell();
+	break;
     case TABLE_CAPTION:
-	return new RenderTableCaption(style);
+	o = new RenderTableCaption();
+	break;
     case NONE:
 	return 0;
     }
-    return 0;
+    if(o) o->setStyle(style);
+    return o;
 }
 
 
-RenderObject::RenderObject(RenderStyle* style)
+RenderObject::RenderObject()
 {
-    m_style = style;
+    m_style = 0;
 
     m_layouted = false;
     m_parsing = false;
@@ -95,21 +105,14 @@ RenderObject::RenderObject(RenderStyle* style)
     m_first = 0;
     m_last = 0;
 
-    m_bgImage = m_style->backgroundImage();
-    if(m_bgImage) m_bgImage->ref(this);
-
     m_floating = false;
     m_positioned = false;
     m_relPositioned = false;
-    
-    m_containsPositioned = false;    
-
     m_printSpecial = false;
-    if( m_style->backgroundColor().isValid() || m_style->hasBorder() || m_bgImage )
-	m_printSpecial = true;
+    m_containsPositioned = false;
 
-    // ### this might be the wrong place to call it !!! We mght get the wrong containing block
     m_containingBlock = 0;
+    m_bgImage = 0;
 }
 
 RenderObject::~RenderObject()
@@ -324,16 +327,16 @@ void RenderObject::selectionStartEnd(int& spos, int& epos)
 }
 
 
-void RenderObject::styleChanged(RenderStyle *newStyle)
+void RenderObject::setStyle(RenderStyle *style)
 {
-    if(newStyle)
-    {
-        if(m_style) delete m_style;
-        m_style = newStyle;
-    }
-     containingBlock()->updateSize();
-     //     repaintObject(containingBlock(), 0, 0);
-     repaint();
+    // deletion of styles is handled by the DOM elements
+    m_style = style;
+
+    m_bgImage = m_style->backgroundImage();
+    if(m_bgImage) m_bgImage->ref(this);
+
+    if( m_style->backgroundColor().isValid() || m_style->hasBorder() || m_bgImage )
+	m_printSpecial = true;
 }
 
 void RenderObject::relativePositionOffset(int &tx, int &ty)
@@ -373,7 +376,7 @@ void RenderObject::setContainsPositioned(bool p)
 	{
 	    m_containsPositioned = false;
 	    if (containingBlock()!=this)
-    	    	containingBlock()->setContainsPositioned(false);	    
-	}        
+    	    	containingBlock()->setContainsPositioned(false);	
+	}
     }
 }

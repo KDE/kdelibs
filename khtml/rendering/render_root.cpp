@@ -26,8 +26,8 @@
 #include <kdebug.h>
 using namespace khtml;
 
-RenderRoot::RenderRoot(RenderStyle *style, KHTMLView *view)
-    : RenderFlow(style)
+RenderRoot::RenderRoot(KHTMLView *view)
+    : RenderFlow()
 {
     m_view = view;
     // try to contrain the width to the views width

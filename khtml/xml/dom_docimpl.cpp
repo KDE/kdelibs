@@ -54,17 +54,20 @@ DocumentImpl::DocumentImpl() : NodeBaseImpl(0)
 {
     m_styleSelector = 0;
     m_view = 0;
+    m_style = 0;
 }
 
 DocumentImpl::DocumentImpl(KHTMLView *v) : NodeBaseImpl(0)
 {
     m_styleSelector = 0;
     m_view = v;
+    m_style = 0;
 }
 
 DocumentImpl::~DocumentImpl()
 {
     delete m_styleSelector;
+    delete m_style;
 }
 
 const DOMString DocumentImpl::nodeName() const
@@ -379,7 +382,7 @@ void DocumentImpl::removeElement(ElementImpl *e)
 QStringList DocumentImpl::state()
 {
    QStringList s;
-   for( ElementImpl *e = m_registeredElements.first(); 
+   for( ElementImpl *e = m_registeredElements.first();
         e; e = m_registeredElements.next())
    {
        s.append(e->state());

@@ -38,7 +38,7 @@ namespace khtml {
 class RenderImage : public RenderReplaced
 {
 public:
-    RenderImage(RenderStyle *style);
+    RenderImage();
     virtual ~RenderImage();
 
     virtual const char *renderName() const { return "RenderImage"; }

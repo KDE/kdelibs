@@ -66,15 +66,20 @@ static inline int collapseMargins(int a, int b)
 }
 
 
-RenderFlow::RenderFlow(RenderStyle* style)
-    : RenderBox(style)
+RenderFlow::RenderFlow()
+    : RenderBox()
 {
     m_inline = true;
     m_childrenInline = true;
     m_haveAnonymous = false;
 
     specialObjects = 0;
+}
 
+void RenderFlow::setStyle(RenderStyle *style)
+{
+    RenderBox::setStyle(style);
+    
     if(m_positioned || m_floating || !style->display() == INLINE)
 	m_inline = false;
 
@@ -103,7 +108,6 @@ RenderFlow::RenderFlow(RenderStyle* style)
 	setBasicDirection(QChar::DirR);
 
     m_isAnonymous = false;
-
 }
 
 RenderFlow::~RenderFlow()
@@ -140,9 +144,9 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
     kdDebug(300) << renderName() << "(RenderFlow) " << this << " ::printObject() w/h = (" << width() << "/" << height() << ")" << endl;
 #endif
     // add offset for relative positioning
-    if(isRelPositioned()) 
+    if(isRelPositioned())
 	relativePositionOffset(_tx, _ty);
-    
+
 
     // 1. print background, borders etc
     if(m_printSpecial && !isInline())
@@ -184,9 +188,9 @@ void RenderFlow::calcWidth()
     m_width = containingBlockWidth() - marginLeft() - marginRight();
     //assert(containingBlock() != this);
     m_width = w.width(m_width);
-   
+
     if(m_width < m_minWidth) m_width = m_minWidth;
-    
+
 
 #ifdef DEBUG_LAYOUT
     kdDebug(300) << "RenderFlow::calcWidth(): m_width=" << m_width << " containingBlockWidth()=" << containingBlockWidth() << endl;
@@ -244,8 +248,8 @@ void RenderFlow::layout( bool deep )
 	layoutBlockChildren(deep);
 
     Length h = style()->height();
-    
-    if (h.isFixed()) 
+
+    if (h.isFixed())
     	m_height = MAX (h.value, m_height);
     else if (h.isPercent())
     {
@@ -267,7 +271,7 @@ void RenderFlow::layout( bool deep )
 	    m_next->layout();
 	}
     }
-    
+
     setLayouted();
 }
 
@@ -969,7 +973,8 @@ void RenderFlow::addChild(RenderObject *newChild)
 //	    kdDebug(300) << "no inline child, moving previous inline children!" << endl;
 	    RenderStyle *newStyle = new RenderStyle(m_style);
 	    newStyle->setDisplay(BLOCK);
-	    RenderFlow *newBox = new RenderFlow(newStyle);
+	    RenderFlow *newBox = new RenderFlow();
+	    newBox->setStyle(newStyle);
 	    newBox->setIsAnonymousBox(true);
 	    // ### the children have a wrong style!!!
 	    // They get exactly the style of this element, not of the anonymous box
@@ -1000,7 +1005,8 @@ void RenderFlow::addChild(RenderObject *newChild)
 //		kdDebug(300) << "creating anonymous box" << endl;
 		RenderStyle *newStyle = new RenderStyle(m_style);
 		newStyle->setDisplay(BLOCK);
-		RenderFlow *newBox = new RenderFlow(newStyle);
+		RenderFlow *newBox = new RenderFlow();
+		newBox->setStyle(newStyle);
 		newBox->setIsAnonymousBox(true);
 		RenderObject::addChild(newBox);
 		newBox->addChild(newChild);

@@ -26,8 +26,8 @@
 using namespace khtml;
 
 
-RenderBR::RenderBR(RenderStyle *style)
-    : RenderText(style, new DOM::DOMStringImpl(new QChar('\n'), 1 ) )
+RenderBR::RenderBR()
+    : RenderText(new DOM::DOMStringImpl(new QChar('\n'), 1 ) )
 {
 }
 

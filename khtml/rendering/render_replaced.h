@@ -33,8 +33,7 @@ namespace khtml {
 class RenderReplaced : public RenderBox
 {
 public:
-    RenderReplaced(RenderStyle *style)
-	: RenderBox(style) {}
+    RenderReplaced() : RenderBox() {}
     virtual ~RenderReplaced() {}
 
     virtual const char *renderName() const { return "RenderReplaced"; }
@@ -62,8 +61,10 @@ public:
 class RenderWidget : public RenderReplaced
 {
 public:
-    RenderWidget(RenderStyle *style, QScrollView *view);
+    RenderWidget(QScrollView *view);
     virtual ~RenderWidget();
+
+    virtual void setStyle(RenderStyle *style);
 
     virtual void printReplaced(QPainter *p, int _tx, int _ty);
 

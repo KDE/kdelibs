@@ -30,13 +30,13 @@
 
 #include <java/kjavaappletwidget.h>
 #include <misc/htmltags.h>
- 
+
 /**
  * We use single applet context to run all applets in all pages.
- * If all appelts are deleted we delete the context too. It has its 
- * drawback: deleting context stops Java process and next applet have to 
+ * If all appelts are deleted we delete the context too. It has its
+ * drawback: deleting context stops Java process and next applet have to
  * restart it again.
- * TODO: Implement contex manager which will create different context 
+ * TODO: Implement contex manager which will create different context
  * for different URLs.
  */
 static KJavaAppletContext *context = 0;
@@ -44,27 +44,27 @@ static int context_counter = 0;
 
 using namespace khtml;
 
-RenderApplet::RenderApplet(RenderStyle *style, QScrollView *view,
+RenderApplet::RenderApplet(QScrollView *view,
                            QMap<QString, QString> args, HTMLElementImpl *applet)
-    : RenderWidget(style, view)
+    : RenderWidget(view)
 {
     if( context == 0 ) {
         context = new KJavaAppletContext();
         context_counter = 0;
     }
-    
+
     m_applet = applet;
     m_widget = new KJavaAppletWidget(context, view->viewport());
     context_counter++;
-    
+
     processArguments(args);
-    
+
     ((KJavaAppletWidget*) m_widget)->create();
-    
+
     m_layoutPerformed = FALSE;
 }
 
-RenderApplet::~RenderApplet() 
+RenderApplet::~RenderApplet()
 {
   context_counter--;
   if( context_counter == 0 )
@@ -74,15 +74,15 @@ RenderApplet::~RenderApplet()
   }
 }
 
-void RenderApplet::layout(bool) 
+void RenderApplet::layout(bool)
 {
     if(m_layoutPerformed)
         return;
-    
+
     KJavaAppletWidget *tmp = ((KJavaAppletWidget*) m_widget);
-    
+
     NodeImpl *child = m_applet->firstChild();
-    
+
     while(child)
     {
         if(child->id() == ID_PARAM)
@@ -91,8 +91,8 @@ void RenderApplet::layout(bool)
             tmp->setParameter( p->name(), p->value());
         }
         child = child->nextSibling();
-    }  
-  
+    }
+
     tmp->show();
 
     m_layoutPerformed = TRUE;
@@ -101,37 +101,37 @@ void RenderApplet::layout(bool)
 void RenderApplet::processArguments(QMap<QString, QString> args)
 {
     KJavaAppletWidget *tmp = (KJavaAppletWidget*) m_widget;
-    
+
     tmp->setBaseURL( args["baseURL"] );
     tmp->setAppletClass( args["code"] );
-    
+
     m_width = args["width"].toInt();
     m_height = args["height"].toInt();
     tmp->resize( m_width, m_height );
-    
+
     if( args["codeBase"] != "")
         tmp->setCodeBase( args["codeBase"] );
-    if( !args["name"].isNull() )  
+    if( !args["name"].isNull() )
         tmp->setAppletName( args["name"] );
-    else 
+    else
         tmp->setAppletName( args["code"] );
-    
+
     if( args["archive"] )
         tmp->setJARFile( args["archive"] );
 }
 
 
-RenderEmptyApplet::RenderEmptyApplet(RenderStyle *style, QScrollView *view, QSize sz) 
-  : RenderWidget( style, view )
+RenderEmptyApplet::RenderEmptyApplet(QScrollView *view, QSize sz)
+  : RenderWidget( view )
 {
-  m_widget = 
+  m_widget =
     new QLabel(i18n("Java Applet is not loaded. (Java interpreter disabled)"),
                view->viewport());
-  
+
   ((QLabel*)m_widget)->setAlignment( Qt::AlignCenter );
 
   m_width = sz.width();
   m_height = sz.height();
   m_widget->resize( sz );
 }
-  
+

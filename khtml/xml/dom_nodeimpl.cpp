@@ -49,7 +49,6 @@ NodeImpl::NodeImpl(DocumentImpl *doc)
 {
     document = doc;
     flags = 0;
-    m_style = 0;
     m_render = 0;
 }
 
@@ -164,12 +163,6 @@ NodeImpl *NodeImpl::addChild(NodeImpl *)
 {
     throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
     return 0;
-}
-
-bool NodeImpl::isInline()
-{
-    if(!m_style) return false;
-    return (m_style->display() == INLINE);
 }
 
 DOMString NodeImpl::toHTML(DOMString _string)
@@ -320,7 +313,6 @@ int NodeImpl::increaseStringLength( QChar *htmlText, long &currentLength, long o
 
 void NodeImpl::applyChanges()
 {
-    if(m_render) m_render->styleChanged();
 }
 
 void NodeImpl::getCursor(int offset, int &_x, int &_y, int &height)

@@ -47,12 +47,14 @@ class RenderFlow : public RenderBox, public BiDiParagraph
 {
 
 public:
-    RenderFlow(RenderStyle* style);
+    RenderFlow();
 
     virtual ~RenderFlow();
 
     virtual const char *renderName() const { return "RenderFlow"; }
 
+    virtual void setStyle(RenderStyle *style);
+    
     virtual bool isInline() const { return m_inline; }
     virtual bool isFlow() const { return true; }
     virtual bool childrenInline() const { return m_childrenInline; }
@@ -86,8 +88,8 @@ public:
     virtual void specialHandler(BiDiObject */*special*/);
 
     virtual short baselineOffset() const;
-    
-    // from BiDiParagraph    
+
+    // from BiDiParagraph
     virtual unsigned short lineWidth(int y) const;
 
 protected:
@@ -105,7 +107,7 @@ protected:
     inline int rightBottom();
     bool checkClear(RenderObject *child);
 
-    // from BiDiParagraph    
+    // from BiDiParagraph
     virtual void closeParagraph() { positionNewFloats(); }
 
     void insertFloat(RenderObject *child);

@@ -56,7 +56,7 @@ class RenderObject : public DOM::DomShared, public BiDiObject, public CachedObje
 {
 public:
 
-    RenderObject(RenderStyle* style);
+    RenderObject();
     virtual ~RenderObject();
 
     static RenderObject *createObject(DOM::NodeImpl *node);
@@ -104,14 +104,14 @@ public:
     virtual void setIsAnonymousBox(bool) { }
 
     bool isFloating() const { return m_floating; }
-    bool isPositioned() const { return m_positioned; } // absolute or fixed positioning    
+    bool isPositioned() const { return m_positioned; } // absolute or fixed positioning
     bool isRelPositioned() const { return m_relPositioned; } // relative positioning
     bool layouted() const   { return m_layouted; }
     bool parsing() const    { return m_parsing;     }
     bool minMaxKnown() const{ return m_minMaxKnown; }
-    bool containsPositioned() const { return m_containsPositioned; } 
+    bool containsPositioned() const { return m_containsPositioned; }
     	// absolute relative or fixed positioning
-    
+
     void setContainsPositioned(bool p);
 
     void setLayouted(bool b=true) { m_layouted = b; }
@@ -191,6 +191,18 @@ public:
      */
     virtual void close() { setParsing(false); }
 
+    /**
+     * set the style of the object. This _has_ to be called after
+     * the objects constructor to set the correct style. Also used for
+     * dhtml to change the objects current style. 
+     *
+     * If changing the style dynamically, you might need to call 
+     * updateSize() after applying the style change to force a 
+     * relayout/repaint
+     */
+    virtual void setStyle(RenderStyle *style);
+
+    
     /**
      * returns the containing block level element for this element.
      * needed to compute margins and paddings
@@ -317,11 +329,10 @@ public:
     virtual SelectionState selectionState() const { return SelectionNone;}
     virtual void setSelectionState(SelectionState) {}
 
-    virtual void styleChanged(RenderStyle *newStyle=0);
     virtual void cursorPos(int /*offset*/, int &/*_x*/, int &/*_y*/, int &/*height*/){}
 
     void relativePositionOffset(int &tx, int &ty);
-    
+
 protected:
     virtual void selectionStartEnd(int& spos, int& epos);
 

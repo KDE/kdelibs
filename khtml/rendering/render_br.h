@@ -34,7 +34,7 @@ namespace khtml {
 class RenderBR : public RenderText
 {
 public:
-    RenderBR(RenderStyle *style);
+    RenderBR();
     virtual ~RenderBR();
 
     virtual const char *renderName() const { return "RenderBR"; }

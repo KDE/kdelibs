@@ -68,14 +68,25 @@ static QString toRoman( int number, bool upper )
 
 // -------------------------------------------------------------------------
 
-RenderListItem::RenderListItem(RenderStyle *style)
-    : RenderFlow(style)
+RenderListItem::RenderListItem()
+    : RenderFlow()
 {
     predefVal = -1;
+    m_marker = 0;
+}
 
-    RenderStyle *newStyle = new RenderStyle(style);
-    m_marker = new RenderListMarker(newStyle);
-    addChild(m_marker);
+void RenderListItem::setStyle(RenderStyle *style)
+{
+    RenderFlow::setStyle(style);
+    if(!m_marker) {
+	RenderStyle *newStyle = new RenderStyle(style);
+	m_marker = new RenderListMarker();
+	m_marker->setStyle(newStyle);
+	addChild(m_marker);    
+    } else {
+	RenderStyle *newStyle = new RenderStyle(style);
+	m_marker->setStyle(newStyle);
+    }
 }
 
 RenderListItem::~RenderListItem()
@@ -129,8 +140,8 @@ void RenderListItem::printObject(QPainter *p, int _x, int _y,
 
 // -----------------------------------------------------------
 
-RenderListMarker::RenderListMarker( RenderStyle *style )
-    : RenderBox(style)
+RenderListMarker::RenderListMarker()
+    : RenderBox()
 {
     val = -1;
 }
@@ -156,7 +167,7 @@ void RenderListMarker::printObject(QPainter *p, int _x, int _y,
 	else
 	    xoff = 13 + m_parent->width();
     }
-    
+
     QColor color( style()->color() );
     p->setPen( QPen( color ) );
 

@@ -37,7 +37,7 @@ namespace khtml {
 class RenderHR : public RenderReplaced
 {
 public:
-    RenderHR(RenderStyle *style);
+    RenderHR();
     virtual ~RenderHR();
 
     virtual const char *renderName() const { return "RenderHR"; }
@@ -51,7 +51,7 @@ public:
     virtual void printReplaced(QPainter *p, int _tx, int _ty);
 
     virtual void layout(bool deep = false);
-    
+
     void setShade(bool shd) { shade = shd; }
     void setSize(short sz) { size = sz; }
 

@@ -84,6 +84,8 @@ public:
     ElementImpl(DocumentImpl *doc);
     ~ElementImpl();
 
+    virtual bool isInline();
+    
     virtual unsigned short nodeType() const;
     virtual bool isElementNode() { return true; }
 
@@ -107,6 +109,11 @@ public:
 
     void normalize (  );
 
+    virtual void applyChanges();
+
+    virtual void setStyle(khtml::RenderStyle *style) { m_style = style; }
+    virtual khtml::RenderStyle *style() { return m_style; }
+
     /**
      * override this in subclasses if you need to parse
      * attributes. This is always called, whenever an attribute changed
@@ -126,7 +133,7 @@ public:
     virtual QString state() { return QString::null; }
 
     virtual void attach(KHTMLView *w);
-    
+
     virtual DOMString toHTML(DOMString _string);
 
 protected: // member variables
@@ -137,6 +144,8 @@ protected: // member variables
     // for setting this according to the corresponding element description
     // in the DTD
     virtual AttributeList *defaultMap() const;
+
+    khtml::RenderStyle *m_style;
 };
 
 }; //namespace

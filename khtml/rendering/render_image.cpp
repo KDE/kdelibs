@@ -38,8 +38,8 @@ using namespace khtml;
 
 // -------------------------------------------------------------------------
 
-RenderImage::RenderImage(RenderStyle *style)
-    : RenderReplaced(style)
+RenderImage::RenderImage()
+    : RenderReplaced()
 {
     bComplete = true;
     setLayouted(false);

@@ -30,6 +30,7 @@
 
 #include "css/cssstyleselector.h"
 #include "rendering/render_object.h"
+#include "rendering/render_style.h"
 #include "misc/htmlhashes.h"
 
 using namespace DOM;
@@ -140,10 +141,18 @@ void AttrImpl::setParent(NodeImpl *n)
 
 ElementImpl::ElementImpl(DocumentImpl *doc) : NodeBaseImpl(doc)
 {
+    m_style = 0;
 }
 
 ElementImpl::~ElementImpl()
 {
+    delete m_style;
+}
+
+bool ElementImpl::isInline()
+{
+    if(!m_style) return false;
+    return (m_style->display() == khtml::INLINE);
 }
 
 unsigned short ElementImpl::nodeType() const
@@ -215,7 +224,8 @@ void ElementImpl::setAttribute( AttributeList list )
 	parseAttribute(attributeMap[i]);
 	i++;
     }
-    applyChanges();
+    // used internally, during parsing. Don't call applyChages here!
+    //applyChanges();
 }
 
 void ElementImpl::removeAttribute( const DOMString &name )
@@ -259,7 +269,7 @@ AttrImpl *ElementImpl::setAttributeNode( AttrImpl *newAttr )
     attributeMap.add(a);
     parseAttribute(&a);
     applyChanges();
-    
+
     return newAttr;
 }
 
@@ -279,7 +289,7 @@ AttrImpl *ElementImpl::removeAttributeNode( AttrImpl *oldAttr )
     Attribute a(oldAttr->name(), "");
     parseAttribute(&a);
     applyChanges();
-    
+
     return oldAttr;
 }
 
@@ -340,6 +350,13 @@ void ElementImpl::attach(KHTMLView *w)
 	child->attach(w);
 	child = child->nextSibling();
     }
+}
+
+void ElementImpl::applyChanges()
+{
+    delete m_style;
+    m_style = document->styleSelector()->styleForElement(this);
+    if(m_render) m_render->setStyle(m_style);
 }
 
 DOMString ElementImpl::toHTML(DOMString _string)

@@ -38,9 +38,9 @@
 
 using namespace khtml;
 
-RenderFrameSet::RenderFrameSet( RenderStyle *style, HTMLFrameSetElementImpl *frameSet, KHTMLView *view,
+RenderFrameSet::RenderFrameSet( HTMLFrameSetElementImpl *frameSet, KHTMLView *view,
 			        QList<khtml::Length> *rows, QList<khtml::Length> *cols )
-: RenderBox( style )
+: RenderBox()
 {
   m_frameset = frameSet;
 
@@ -416,8 +416,8 @@ bool RenderFrameSet::userResize( int _x, int _y, DOM::NodeImpl::MouseEventType t
   return res;
 }
 
-RenderPart::RenderPart( RenderStyle *style, QScrollView *view )
-: RenderWidget( style, view )
+RenderPart::RenderPart( QScrollView *view )
+: RenderWidget( view )
 {
   m_view = view;
 }
@@ -441,8 +441,8 @@ void RenderPart::layout( bool )
     m_widget->resize( m_width, m_height );
 }
 
-RenderFrame::RenderFrame( RenderStyle *style, QScrollView *view, DOM::HTMLFrameElementImpl *frame )
-: RenderPart( style, view )
+RenderFrame::RenderFrame( QScrollView *view, DOM::HTMLFrameElementImpl *frame )
+: RenderPart( view )
 {
   m_frame = frame;
 }
@@ -451,8 +451,8 @@ RenderFrame::~RenderFrame()
 {
 }
 
-RenderPartObject::RenderPartObject( RenderStyle *style, QScrollView *view )
-: RenderPart( style, view )
+RenderPartObject::RenderPartObject( QScrollView *view )
+: RenderPart( view )
 {
 }
 
@@ -510,7 +510,7 @@ void RenderPartObject::setSize( int w, int h )
 
 void RenderPartObject::layout( bool )
 {
-  setSize( m_style->width().width( m_view->clipper()->width() ), 
+  setSize( m_style->width().width( m_view->clipper()->width() ),
 	   m_style->height().width( m_view->clipper()->height() ) );
   RenderPart::layout();
 }

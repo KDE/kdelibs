@@ -27,6 +27,10 @@
 #include "dom_nodeimpl.h"
 #include "dom_string.h"
 
+namespace khtml {
+    class RenderStyle;
+}
+
 namespace DOM {
 
     class DocumentImpl;
@@ -68,6 +72,9 @@ public:
     TextImpl(DocumentImpl *impl);
     virtual ~TextImpl();
 
+    virtual void setStyle(khtml::RenderStyle *) {}
+    virtual khtml::RenderStyle *style() { return _parent->style(); }
+
     virtual const DOMString nodeName() const;
     virtual DOMString nodeValue() const;
     virtual unsigned short nodeType() const;
@@ -78,11 +85,14 @@ public:
     virtual ushort id() const;
 
     virtual void attach(KHTMLView *);
-
+    virtual void applyChanges();
+    
     virtual bool mouseEvent( int _x, int _y, int, MouseEventType,
 			     int _tx, int _ty, DOMString &,
                              NodeImpl *& innerNode, long &offset);
     virtual DOMString toHTML(DOMString _string);
+
+    khtml::RenderStyle *m_style;
 };
 
 }; //namespace

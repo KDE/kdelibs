@@ -86,11 +86,13 @@ public:
 class RenderText : public RenderObject
 {
 public:
-    RenderText(RenderStyle *style, DOM::DOMStringImpl *_str);
+    RenderText(DOM::DOMStringImpl *_str);
     virtual ~RenderText();
 
     virtual const char *renderName() const { return "RenderText"; }
 
+    virtual void setStyle(RenderStyle *style);
+    
     virtual bool isText() const { return true; }
     virtual bool isInline() const { return true; }
     virtual bool isRendered() const { return true; }
@@ -143,7 +145,7 @@ public:
     virtual void setSelectionState(SelectionState s) {m_selectionState = s; }
     virtual void cursorPos(int offset, int &_x, int &_y, int &height);
 
-    
+
 protected:
     short m_minWidth;
     short m_maxWidth;

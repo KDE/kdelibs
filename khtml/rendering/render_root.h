@@ -35,7 +35,7 @@ namespace khtml {
 class RenderRoot : public RenderFlow
 {
 public:
-    RenderRoot(RenderStyle *style, KHTMLView *view);
+    RenderRoot(KHTMLView *view);
     virtual ~RenderRoot() {}
 
     virtual const char *renderName() const { return "RenderRoot"; }
@@ -56,23 +56,23 @@ public:
     virtual void repaint();
     virtual void repaintRectangle(int x, int y, int w, int h);
     virtual void repaintObject(RenderObject *o, int x, int y);
-    
+
     virtual void setSelection(RenderObject *s, int sp, RenderObject *e, int ep);
     virtual void clearSelection();
-        
+
 protected:
 
     virtual void selectionStartEnd(int& spos, int& epos);
 
     KHTMLView *m_view;
-    
+
     QTime updateTimer;
-    
+
     RenderObject* selectionStart;
     RenderObject* selectionEnd;
     int selectionStartPos;
     int selectionEndPos;
-    
+
 };
 
 };

@@ -50,9 +50,9 @@
 
 using namespace khtml;
 
-RenderFormElement::RenderFormElement(RenderStyle *style, QScrollView *view,
+RenderFormElement::RenderFormElement(QScrollView *view,
 				     HTMLFormElementImpl *form)
-    : RenderWidget(style, view)
+    : RenderWidget(view)
 {
     m_form = form;
     if(m_form) m_form->registerFormElement(this);
@@ -181,9 +181,9 @@ void RenderFormElement::calcMinMaxWidth()
 
 // -------------------------------------------------------------------------
 
-RenderButton::RenderButton(RenderStyle *style, QScrollView *view,
+RenderButton::RenderButton(QScrollView *view,
                            HTMLFormElementImpl *form)
-    : RenderFormElement(style, view, form)
+    : RenderFormElement(view, form)
 {
 }
 
@@ -203,9 +203,9 @@ void RenderButton::layout(bool)
 
 // ------------------------------------------------------------------------------
 
-RenderHiddenButton::RenderHiddenButton(RenderStyle *style, QScrollView *view,
+RenderHiddenButton::RenderHiddenButton(QScrollView *view,
                                        HTMLFormElementImpl *form)
-    : RenderButton(style, view, form)
+    : RenderButton(view, form)
 {
     // make it segfault cleanly :-)
     m_widget = 0;
@@ -226,8 +226,8 @@ QString RenderHiddenButton::encoding()
 
 // -------------------------------------------------------------------------------
 
-RenderCheckBox::RenderCheckBox(RenderStyle *style, QScrollView *view, HTMLFormElementImpl *form)
-    : RenderButton(style, view, form)
+RenderCheckBox::RenderCheckBox(QScrollView *view, HTMLFormElementImpl *form)
+    : RenderButton(view, form)
 {
     QCheckBox *b = new QCheckBox(view->viewport());
     m_widget = b;
@@ -253,7 +253,7 @@ void RenderCheckBox::setChecked(bool checked)
 QString RenderCheckBox::state()
 {
    return static_cast<QCheckBox *>(m_widget)->isChecked() ?
-             QString::fromLatin1("on") : 
+             QString::fromLatin1("on") :
              QString::fromLatin1("off");
 }
 
@@ -270,9 +270,9 @@ void RenderCheckBox::reset()
 // -------------------------------------------------------------------------------
 
 
-RenderRadioButton::RenderRadioButton(RenderStyle *style, QScrollView *view,
+RenderRadioButton::RenderRadioButton(QScrollView *view,
 				     HTMLFormElementImpl *form)
-    : RenderButton(style, view, form)
+    : RenderButton(view, form)
 {
     QRadioButton *b = new QRadioButton(view->viewport());
 
@@ -301,7 +301,7 @@ void RenderRadioButton::setChecked(bool checked)
 QString RenderRadioButton::state()
 {
    return static_cast<QRadioButton *>(m_widget)->isChecked() ?
-             QString::fromLatin1("on") : 
+             QString::fromLatin1("on") :
              QString::fromLatin1("off");
 }
 
@@ -323,13 +323,12 @@ void RenderRadioButton::slotClicked()
 // -------------------------------------------------------------------------------
 
 
-RenderSubmitButton::RenderSubmitButton(RenderStyle *style, QScrollView *view,
+RenderSubmitButton::RenderSubmitButton(QScrollView *view,
 				     HTMLFormElementImpl *form)
-    : RenderButton(style, view, form)
+    : RenderButton(view, form)
 {
     QPushButton *p = new QPushButton(view->viewport());
     m_widget = p;
-    m_widget->setFont(m_style->font());
 
     connect(p, SIGNAL(clicked()), this, SLOT(slotClicked()));
     m_clicked = false;
@@ -375,9 +374,9 @@ void RenderSubmitButton::reset()
 
 // -------------------------------------------------------------------------------
 
-RenderImageButton::RenderImageButton(RenderStyle *style, QScrollView *view,
+RenderImageButton::RenderImageButton(QScrollView *view,
 				     HTMLFormElementImpl *form)
-    : RenderSubmitButton(style, view, form)
+    : RenderSubmitButton(view, form)
 {
 }
 
@@ -406,9 +405,9 @@ void RenderImageButton::setPixmap( const QPixmap &p )
 
 // -------------------------------------------------------------------------------
 
-RenderResetButton::RenderResetButton(RenderStyle *style, QScrollView *view,
+RenderResetButton::RenderResetButton(QScrollView *view,
 				     HTMLFormElementImpl *form)
-    : RenderSubmitButton(style, view, form)
+    : RenderSubmitButton(view, form)
 {
 }
 
@@ -423,9 +422,9 @@ void RenderResetButton::slotClicked()
 
 // -------------------------------------------------------------------------------
 
-RenderPushButton::RenderPushButton(RenderStyle *style, QScrollView *view,
+RenderPushButton::RenderPushButton(QScrollView *view,
 				     HTMLFormElementImpl *form, HTMLInputElementImpl *input)
-    : RenderSubmitButton(style, view, form)
+    : RenderSubmitButton(view, form)
 {
     m_domParent = input;
 }
@@ -443,9 +442,9 @@ void RenderPushButton::slotClicked()
 // -------------------------------------------------------------------------------
 
 
-RenderLineEdit::RenderLineEdit(RenderStyle *style, QScrollView *view, HTMLFormElementImpl *form,
+RenderLineEdit::RenderLineEdit(QScrollView *view, HTMLFormElementImpl *form,
 			       int maxLen, int size, bool passwd)
-    : RenderFormElement(style, view, form)
+    : RenderFormElement(view, form)
 {
     QLineEdit *edit = new QLineEdit(view);
     connect(edit, SIGNAL(returnPressed()), this, SLOT(slotReturnPressed()));
@@ -455,9 +454,8 @@ RenderLineEdit::RenderLineEdit(RenderStyle *style, QScrollView *view, HTMLFormEl
 
     m_size = size;
     m_widget = edit;
-    m_widget->setFont(m_style->font());
 }
-
+ 
 void RenderLineEdit::slotReturnPressed()
 {
     m_form->maybeSubmit();
@@ -501,6 +499,9 @@ void RenderLineEdit::layout(bool)
     int w = fm.width( 'x' ) * (m_size > 0 ? m_size : 17); // "some"
     if ( static_cast<QLineEdit*>(m_widget)->frame() ) {
         h += 8;
+	// ### this is not really portable between all styles.
+	// I think one should try to find a generic solution which
+	// works with all possible styles. Lars.
         if ( m_widget->style() == QWidget::WindowsStyle && h < 26 )
             h = 22;
         s = QSize( w + 8, h );
@@ -526,9 +527,9 @@ void RenderLineEdit::reset()
 
 // ---------------------------------------------------------------------------
 
-RenderFieldset::RenderFieldset(RenderStyle *style, QScrollView *view,
+RenderFieldset::RenderFieldset(QScrollView *view,
                                HTMLFormElementImpl* form)
-    : RenderFormElement(style, view, form)
+    : RenderFormElement(view, form)
 {
 }
 
@@ -540,14 +541,13 @@ RenderFieldset::~RenderFieldset()
 // -------------------------------------------------------------------------
 
 
-RenderFileButton::RenderFileButton(RenderStyle *style, QScrollView *view,
+RenderFileButton::RenderFileButton(QScrollView *view,
                          HTMLFormElementImpl* form)
-    : RenderFormElement(style, view, form)
+    : RenderFormElement(view, form)
 {
     QLineEdit *edit = new QLineEdit(view);
 
     m_widget = edit;
-    m_widget->setFont(m_style->font());
 }
 
 RenderFileButton::~RenderFileButton()
@@ -578,9 +578,9 @@ QString RenderFileButton::encoding()
 
 // -------------------------------------------------------------------------
 
-RenderLabel::RenderLabel(RenderStyle *style, QScrollView *view,
+RenderLabel::RenderLabel(QScrollView *view,
                          HTMLFormElementImpl* form)
-    : RenderFormElement(style, view, form)
+    : RenderFormElement(view, form)
 {
 
 }
@@ -592,9 +592,9 @@ RenderLabel::~RenderLabel()
 
 // -------------------------------------------------------------------------
 
-RenderLegend::RenderLegend(RenderStyle *style, QScrollView *view,
+RenderLegend::RenderLegend(QScrollView *view,
                            HTMLFormElementImpl* form)
-    : RenderFormElement(style, view, form)
+    : RenderFormElement(view, form)
 {
 }
 
@@ -605,9 +605,9 @@ RenderLegend::~RenderLegend()
 
 // -------------------------------------------------------------------------
 
-RenderSelect::RenderSelect(int size, bool multiple, RenderStyle *style,
+RenderSelect::RenderSelect(int size, bool multiple,
                            QScrollView *view, HTMLFormElementImpl *form)
-    : RenderFormElement(style, view, form)
+    : RenderFormElement(view, form)
 {
     m_multiple = multiple;
     m_size = size;
@@ -622,7 +622,6 @@ RenderSelect::RenderSelect(int size, bool multiple, RenderStyle *style,
         m_size = 1;
         m_widget = w;
     }
-    m_widget->setFont(m_style->font());
 }
 
 void RenderSelect::layout( bool )
@@ -704,8 +703,8 @@ void RenderSelect::close()
     if ( !state.isEmpty())
     {
        kdDebug(300) << "Restoring SelectElem name=" << m_name.string() <<
-                            " state=" << state << endl; 
-       restoreState( state ); 
+                            " state=" << state << endl;
+       restoreState( state );
     }
 
     RenderFormElement::close();
@@ -819,7 +818,7 @@ QString RenderSelect::state()
         while(current) {
             if (current->id() == ID_OPTION)
             {
-               if( w->isSelected(i)) 
+               if( w->isSelected(i))
                   state += "X";
                else
                   state += "O";
@@ -838,7 +837,7 @@ QString RenderSelect::state()
         while(current) {
             if (current->id() == ID_OPTION )
             {
-               if( i == w->currentItem()) 
+               if( i == w->currentItem())
                   state += "X";
                else
                   state += "O";
@@ -919,14 +918,13 @@ public:
 
 // -------------------------------------------------------------------------
 
-RenderTextArea::RenderTextArea(int wrap, RenderStyle *style, QScrollView *view,
+RenderTextArea::RenderTextArea(int wrap, QScrollView *view,
                                HTMLFormElementImpl *form)
-    : RenderFormElement(style, view, form)
+    : RenderFormElement(view, form)
 {
     TextAreaWidget *edit = new TextAreaWidget(wrap, view);
 
     m_widget = edit;
-    m_widget->setFont(m_style->font());
 }
 
 void RenderTextArea::layout( bool )
@@ -995,8 +993,8 @@ void RenderTextArea::close( )
     if ( !state.isEmpty())
     {
        kdDebug(300) << "Restoring TextAreaElem name=" << m_name.string() <<
-                            " state=" << state << endl; 
-       restoreState( state ); 
+                            " state=" << state << endl;
+       restoreState( state );
     }
 
     RenderFormElement::close();

@@ -189,8 +189,9 @@ void HTMLFrameElementImpl::attach(KHTMLView *w)
     if ( !r )
       return;
 
-    khtml::RenderFrame *renderFrame = new khtml::RenderFrame( m_style, w, this );
+    khtml::RenderFrame *renderFrame = new khtml::RenderFrame( w, this );
     m_render = renderFrame;
+    m_render->setStyle(m_style);
     m_render->ref();
     r->addChild( m_render );
 
@@ -378,8 +379,9 @@ void HTMLFrameSetElementImpl::attach(KHTMLView *w)
     if ( !r )
       return;
 
-    khtml::RenderFrameSet *renderFrameSet = new khtml::RenderFrameSet( m_style, this, w, m_rows, m_cols );
+    khtml::RenderFrameSet *renderFrameSet = new khtml::RenderFrameSet( this, w, m_rows, m_cols );
     m_render = renderFrameSet;
+    m_render->setStyle(m_style);
     m_render->ref();
     r->addChild( m_render );
 

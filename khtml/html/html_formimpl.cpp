@@ -558,56 +558,56 @@ void HTMLInputElementImpl::attach(KHTMLView *_view)
 	{
 	case TEXT:
 	{
-	    f = new RenderLineEdit(m_style, view, _form, _maxLen, _size, false);
+	    f = new RenderLineEdit(view, _form, _maxLen, _size, false);
 	    break;
 	}
 	case PASSWORD:
 	{
-	    f = new RenderLineEdit(m_style, view, _form, _maxLen, _size, true);
+	    f = new RenderLineEdit(view, _form, _maxLen, _size, true);
 	    break;
 	}
 	case CHECKBOX:
 	{
-	    f = new RenderCheckBox(m_style, view, _form);
+	    f = new RenderCheckBox(view, _form);
 	    f->setChecked(m_checked);
 	    break;
 	}
 	case RADIO:
 	{
-	    f = new RenderRadioButton(m_style, view, _form);
+	    f = new RenderRadioButton(view, _form);
 	    f->setChecked(m_checked);
 	    break;
 	}
 	case SUBMIT:
 	{
-	    f = new RenderSubmitButton(m_style, view, _form);
+	    f = new RenderSubmitButton(view, _form);
 	    break;
 	}
 	case IMAGE:
 	{
-	    RenderImageButton *i = new RenderImageButton(m_style, view, _form);
+	    RenderImageButton *i = new RenderImageButton(view, _form);
 	    i->setImageUrl(_src, static_cast<HTMLDocumentImpl *>(document)->URL());
 	    f = i;
 	    break;
 	}
 	case RESET:
 	{
-	    f = new RenderResetButton(m_style, view, _form);
+	    f = new RenderResetButton(view, _form);
 	    break;
 	}
 	case FILE:
         {
-            f = new RenderFileButton(m_style, view, _form);
+            f = new RenderFileButton(view, _form);
             break;
         }
 	case HIDDEN:
         {
-            f = new RenderHiddenButton(m_style, view, _form);
+            f = new RenderHiddenButton(view, _form);
             break;
         }
 	case BUTTON:
 	{
-	    f = new RenderPushButton(m_style, view, _form, this);
+	    f = new RenderPushButton(view, _form, this);
 	    break;
 	}
 	}
@@ -620,14 +620,15 @@ void HTMLInputElementImpl::attach(KHTMLView *_view)
             f->setGenericFormElement(this);
 	
     	    m_render = f;
+	    m_render->setStyle(m_style);
 	    m_render->ref();
             kdDebug(300) << "adding " << m_render->renderName() << " as child of " << r->renderName() << endl;
             QString state = document->registerElement(this);
             if ( !state.isEmpty())
             {
                kdDebug(300) << "Restoring InputElem name=" << _name.string() <<
-                            " state=" << state << endl; 
-               f->restoreState( state ); 
+                            " state=" << state << endl;
+               f->restoreState( state );
             }
 
 	    r->addChild(m_render);
@@ -816,7 +817,7 @@ void HTMLSelectElementImpl::attach(KHTMLView *_view)
     if(r)
     {
         RenderSelect *f = new RenderSelect(m_size, m_multiple,
-                                           m_style, view, _form);
+                                           view, _form);
 	if (f)
 	{
 	    f->setName(_name);
@@ -825,6 +826,7 @@ void HTMLSelectElementImpl::attach(KHTMLView *_view)
             f->setGenericFormElement(this);
 
     	    m_render = f;
+	    m_render->setStyle(m_style);
 	    m_render->ref();
 	    r->addChild(m_render);
 	}
@@ -1019,7 +1021,7 @@ void HTMLTextAreaElementImpl::attach(KHTMLView *_view)
     khtml::RenderObject *r = _parent->renderer();
     if(r)
     {
-	RenderTextArea *f = new RenderTextArea(m_wrap, m_style, view, _form);
+	RenderTextArea *f = new RenderTextArea(m_wrap, view, _form);
 
 	if (f)
 	{
@@ -1029,6 +1031,7 @@ void HTMLTextAreaElementImpl::attach(KHTMLView *_view)
             f->setGenericFormElement(this);
 
     	    m_render = f;
+	    m_render->setStyle(m_style);
 	    m_render->ref();
 	    r->addChild(m_render);
 	}

@@ -48,12 +48,13 @@ class RenderBox : public RenderObject
 // should contain all border and padding handling
 
 public:
-    RenderBox(RenderStyle* style);
+    RenderBox();
+    virtual ~RenderBox();
 
     virtual const char *renderName() const { return "RenderBox"; }
 
-    virtual ~RenderBox();
-
+    virtual void setStyle(RenderStyle *style);
+    
     virtual void print(QPainter *p, int _x, int _y, int _w, int _h,
 		       int _tx, int _ty);
 
@@ -106,7 +107,7 @@ public:
     virtual void repaintObject(RenderObject *o, int x, int y);
 
     virtual void setPixmap(const QPixmap &);
-    
+
     virtual short containingBlockWidth() const;
 
 protected:

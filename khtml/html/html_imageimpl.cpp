@@ -181,7 +181,8 @@ void HTMLImageElementImpl::attach(KHTMLView *)
     khtml::RenderObject *r = _parent->renderer();
     if(r)
     {
-	RenderImage *renderImage = new RenderImage(m_style);
+	RenderImage *renderImage = new RenderImage();
+	renderImage->setStyle(m_style);
 	renderImage->setAlt(alt);
 	renderImage->setImageUrl(imageURL, static_cast<HTMLDocumentImpl *>(document)->baseURL());
 	m_render = renderImage;

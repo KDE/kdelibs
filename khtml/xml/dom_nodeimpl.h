@@ -137,8 +137,8 @@ public:
 			     DOMString &/*url*/,
                              NodeImpl *&/*innerNode*/, long &/*offset*/) { return false; }
 
-    virtual void setStyle(khtml::RenderStyle *style) { m_style = style; }
-    virtual khtml::RenderStyle *style() { return m_style; }
+    virtual void setStyle(khtml::RenderStyle *) {}
+    virtual khtml::RenderStyle *style() { return 0; }
 
     virtual void setRenderer(khtml::RenderObject *object) { m_render = object; }
     virtual khtml::RenderObject *renderer() { return m_render; }
@@ -202,8 +202,9 @@ public:
      */
     virtual void detach() {}
 
-    bool isInline();
-    
+    // ### check if this function is still needed at all...
+    virtual bool isInline() { return true; }
+
     virtual DOMString toHTML(DOMString _string);
     virtual DOMString innerHTML(DOMString _string);
 
@@ -213,11 +214,10 @@ public:
 
     virtual void applyChanges();
     virtual void getCursor(int offset, int &_x, int &_y, int &height);
-    
+
 protected:
     DocumentImpl *document;
     unsigned short flags;
-    khtml::RenderStyle *m_style;
     khtml::RenderObject *m_render;
 private:
     static const QChar LT;

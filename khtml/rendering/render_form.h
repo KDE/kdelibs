@@ -53,7 +53,7 @@ namespace khtml {
 class RenderFormElement : public RenderWidget
 {
 public:
-    RenderFormElement(RenderStyle *style, QScrollView *view,
+    RenderFormElement(QScrollView *view,
                       HTMLFormElementImpl *form);
     virtual ~RenderFormElement();
 
@@ -86,12 +86,12 @@ public:
      * for submitting
      */
     virtual QString encoding() = 0;
-    
+
     /*
      * state() and restoreState() are complimentary functions.
      */
     virtual QString state() { return QString::null; }
-    virtual void restoreState(const QString &) { }; 
+    virtual void restoreState(const QString &) { };
 
     virtual void reset() = 0;
     virtual void setChecked(bool) {}
@@ -127,7 +127,7 @@ protected:
 class RenderButton : public RenderFormElement
 {
 public:
-    RenderButton(RenderStyle *style, QScrollView *view,
+    RenderButton(QScrollView *view,
                  HTMLFormElementImpl *form);
 
     virtual const char *renderName() const { return "RenderButton"; }
@@ -141,7 +141,7 @@ public:
 class RenderHiddenButton : public RenderButton
 {
 public:
-    RenderHiddenButton(RenderStyle *style, QScrollView *view,
+    RenderHiddenButton(QScrollView *view,
                        HTMLFormElementImpl *form);
 
     virtual const char *renderName() const { return "RenderHiddenButton"; }
@@ -157,7 +157,7 @@ public:
 class RenderCheckBox : public RenderButton
 {
 public:
-    RenderCheckBox(RenderStyle *style, QScrollView *view,
+    RenderCheckBox(QScrollView *view,
                    HTMLFormElementImpl *form);
 
     virtual const char *renderName() const { return "RenderCheckBox"; }
@@ -178,7 +178,7 @@ class RenderRadioButton : public QObject, public RenderButton
 {
     Q_OBJECT
 public:
-    RenderRadioButton(RenderStyle *style, QScrollView *view, HTMLFormElementImpl *form);
+    RenderRadioButton(QScrollView *view, HTMLFormElementImpl *form);
 
     virtual const char *renderName() const { return "RenderRadioButton"; }
     virtual Type type() { return RadioButton; }
@@ -201,7 +201,7 @@ class RenderSubmitButton : public QObject, public RenderButton
 {
     Q_OBJECT
 public:
-    RenderSubmitButton(RenderStyle *style, QScrollView *view, HTMLFormElementImpl *form);
+    RenderSubmitButton(QScrollView *view, HTMLFormElementImpl *form);
     virtual ~RenderSubmitButton();
 
     virtual const char *renderName() const { return "RenderButton"; }
@@ -225,7 +225,7 @@ protected:
 class RenderImageButton : public RenderSubmitButton
 {
 public:
-    RenderImageButton(RenderStyle *style, QScrollView *view, HTMLFormElementImpl *form);
+    RenderImageButton(QScrollView *view, HTMLFormElementImpl *form);
     virtual ~RenderImageButton();
 
     virtual const char *renderName() const { return "RenderSubmitButton"; }
@@ -243,7 +243,7 @@ public:
 class RenderResetButton : public RenderSubmitButton
 {
 public:
-    RenderResetButton(RenderStyle *style, QScrollView *view, HTMLFormElementImpl *form);
+    RenderResetButton(QScrollView *view, HTMLFormElementImpl *form);
     virtual ~RenderResetButton();
 
     virtual void slotClicked();
@@ -258,7 +258,7 @@ public:
 class RenderPushButton : public RenderSubmitButton
 {
 public:
-    RenderPushButton(RenderStyle *style, QScrollView *view, HTMLFormElementImpl *form,
+    RenderPushButton(QScrollView *view, HTMLFormElementImpl *form,
 		      HTMLInputElementImpl *domParent);
     virtual ~RenderPushButton();
 
@@ -277,7 +277,7 @@ class RenderLineEdit : public QObject, public RenderFormElement
 {
     Q_OBJECT
 public:
-    RenderLineEdit(RenderStyle *style, QScrollView *view,
+    RenderLineEdit(QScrollView *view,
                    HTMLFormElementImpl *form, int maxLen, int size,
                    bool passwd = false);
 
@@ -308,7 +308,7 @@ public slots:
 class ccRenderButton : public RenderFormElement
 {
 public:
-    ccRenderButton(RenderStyle *style, QScrollView *view,
+    ccRenderButton(QScrollView *view,
                    HTMLFormElementImpl* form);
 
     virtual const char *renderName() const { return "RenderFormElement"; }
@@ -344,7 +344,7 @@ protected:
 class RenderFieldset : public RenderFormElement
 {
 public:
-    RenderFieldset(RenderStyle *style, QScrollView *view,
+    RenderFieldset(QScrollView *view,
                    HTMLFormElementImpl* form);
     virtual ~RenderFieldset();
 
@@ -358,7 +358,7 @@ class RenderFileButton : public RenderFormElement
 {
 
 public:
-    RenderFileButton(RenderStyle *style, QScrollView *view,
+    RenderFileButton(QScrollView *view,
                 HTMLFormElementImpl *form);
     virtual ~RenderFileButton();
 
@@ -379,7 +379,7 @@ public:
 class RenderLabel : public RenderFormElement
 {
 public:
-    RenderLabel(RenderStyle *style, QScrollView *view,
+    RenderLabel(QScrollView *view,
                 HTMLFormElementImpl *form);
     virtual ~RenderLabel();
 
@@ -392,7 +392,7 @@ public:
 class RenderLegend : public RenderFormElement
 {
 public:
-    RenderLegend(RenderStyle *style, QScrollView *view,
+    RenderLegend(QScrollView *view,
         HTMLFormElementImpl *form);
     virtual ~RenderLegend();
 
@@ -405,7 +405,7 @@ public:
 class RenderSelect : public RenderFormElement
 {
 public:
-    RenderSelect(int size, bool multiple, RenderStyle *style, QScrollView *view,
+    RenderSelect(int size, bool multiple, QScrollView *view,
                  HTMLFormElementImpl *form);
 
     virtual const char *renderName() const { return "RenderSelect"; }
@@ -432,7 +432,7 @@ protected:
 class RenderTextArea : public RenderFormElement
 {
 public:
-    RenderTextArea(int wrap, RenderStyle *style, QScrollView *view,
+    RenderTextArea(int wrap, QScrollView *view,
                    HTMLFormElementImpl *form);
 
     virtual const char *renderName() const { return "RenderTextArea"; }

@@ -72,11 +72,13 @@ public:
 	Box    = 0x0f
     };
 
-    RenderTable(RenderStyle *style);
+    RenderTable();
     ~RenderTable();
 
     virtual const char *renderName() const { return "RenderTable"; }
 
+    virtual void setStyle(RenderStyle *style);
+    
     virtual bool isInline() const;
     virtual bool isRendered() const { return true; }
     virtual bool isTable() const { return true; }
@@ -109,12 +111,12 @@ public:
 			int tx, int ty);
     virtual void printBorders( QPainter *, int x, int y, int w, int h,
 			int tx, int ty);
-    virtual void layout(bool deep = false);    
+    virtual void layout(bool deep = false);
     virtual void calcMinMaxWidth();
     virtual void close();
 
     virtual void updateSize();
-    
+
     virtual void setCellWidths( );
 
     int getBaseline(int row) {return rowBaselines[row];}
@@ -246,7 +248,7 @@ protected:
     bool collapseBorders;
 
     short _htmlBorder;
-    
+
     short _lastParentWidth;
 
     RenderTableCol *_oldColElem;
@@ -260,7 +262,7 @@ protected:
 class RenderTableSection : public RenderObject
 {
 public:
-    RenderTableSection(RenderStyle *style);
+    RenderTableSection();
     ~RenderTableSection();
 
     virtual const char *renderName() const { return "RenderTableSection"; }
@@ -290,7 +292,7 @@ protected:
 class RenderTableRow : public RenderObject
 {
 public:
-    RenderTableRow(RenderStyle *style);
+    RenderTableRow();
     ~RenderTableRow();
 
     virtual const char *renderName() const { return "RenderTableRow"; }
@@ -327,7 +329,7 @@ protected:
 class RenderTableCell : public RenderFlow
 {
 public:
-    RenderTableCell(RenderStyle *style);
+    RenderTableCell();
     ~RenderTableCell();
 
     virtual const char *renderName() const { return "RenderTableCell"; }
@@ -370,15 +372,15 @@ public:
 
     virtual void updateSize();
     virtual void close();
-    
+
     // lie position to outside observers
-    virtual int yPos() const { return m_y + _topExtra; } 
-    
+    virtual int yPos() const { return m_y + _topExtra; }
+
     virtual void repaintRectangle(int x, int y, int w, int h);
-    virtual void repaintObject(RenderObject *o, int x, int y);       
-    virtual void absolutePosition(int &xPos, int &yPos); 
+    virtual void repaintObject(RenderObject *o, int x, int y);
+    virtual void absolutePosition(int &xPos, int &yPos);
     	
-    
+
 protected:
     RenderTable *table;
 
@@ -404,7 +406,7 @@ protected:
 class RenderTableCol : public RenderObject
 {
 public:
-    RenderTableCol(RenderStyle *style);
+    RenderTableCol();
     ~RenderTableCol();
 
     virtual const char *renderName() const { return "RenderTableCol"; }
@@ -447,7 +449,7 @@ protected:
 class RenderTableCaption : public RenderFlow
 {
 public:
-    RenderTableCaption(RenderStyle *style);
+    RenderTableCaption();
     ~RenderTableCaption();
 
     virtual const char *renderName() const { return "RenderTableCaption"; }

@@ -38,8 +38,8 @@ using namespace khtml;
 
 // -------------------------------------------------------------------------
 
-RenderHR::RenderHR(RenderStyle *style)
-    : RenderReplaced(style)
+RenderHR::RenderHR()
+    : RenderReplaced()
 {
     m_printSpecial=false;
 }
@@ -52,7 +52,7 @@ RenderHR::~RenderHR()
 void RenderHR::printReplaced(QPainter *p, int _tx, int _ty)
 {
     // add offset for relative positioning
-    if(isRelPositioned()) 
+    if(isRelPositioned())
 	relativePositionOffset(_tx, _ty);
 
 

@@ -192,17 +192,18 @@ bool TextSlave::checkPoint(int _x, int _y, int _tx, int _ty)
 
 // -------------------------------------------------------------------------------------
 
-RenderText::RenderText(RenderStyle *style, DOMStringImpl *_str)
-    : RenderObject(style)
+RenderText::RenderText(DOMStringImpl *_str)
+    : RenderObject()
 {
     m_first = 0;
     m_last = 0;
     m_minWidth = -1;
     m_maxWidth = -1;
-    fm = new QFontMetrics(m_style->font());
     str = _str;
     if(str) str->ref();
 
+    fm = 0;
+    
     m_selectionState = SelectionNone;
 
 #ifdef DEBUG_LAYOUT
@@ -210,7 +211,13 @@ RenderText::RenderText(RenderStyle *style, DOMStringImpl *_str)
     kdDebug(300) << "RenderText::setText '" << (const char *)cstr.string().utf8() << "'" << endl;
 #endif
 
-    // ### add line-height property
+}
+
+void RenderText::setStyle(RenderStyle *style)
+{
+    RenderObject::setStyle(style);
+    if(fm) delete fm;
+    fm = new QFontMetrics(m_style->font());
     m_contentHeight = m_style->lineHeight().width(fm->height());
 }
 

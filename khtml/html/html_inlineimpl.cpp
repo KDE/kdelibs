@@ -241,7 +241,8 @@ void HTMLBRElementImpl::attach(KHTMLView *)
     khtml::RenderObject *r = _parent->renderer();
     if(r)
     {
-	m_render = new RenderBR(m_style);
+	m_render = new RenderBR();
+	m_render->setStyle(m_style);
 	m_render->ref();
 	r->addChild(m_render);	
     }
@@ -390,8 +391,9 @@ void HTMLIFrameElementImpl::attach(KHTMLView *w)
   if ( !r )
     return;
 
-  khtml::RenderPartObject *renderFrame = new khtml::RenderPartObject( m_style, w );
+  khtml::RenderPartObject *renderFrame = new khtml::RenderPartObject( w );
   m_render = renderFrame;
+  m_render->setStyle(m_style);
   m_render->ref();
   r->addChild( m_render );
 

@@ -66,8 +66,8 @@ template class QArray<LengthType>;
 #define END_FOR_EACH } }
 
 
-RenderTable::RenderTable(RenderStyle *style)
-    : RenderBox(style)
+RenderTable::RenderTable()
+    : RenderBox()
 {
 
     tCaption = 0;
@@ -81,8 +81,6 @@ RenderTable::RenderTable(RenderStyle *style)
     incremental = false;
     m_maxWidth = 0;
 
-    spacing = style->borderSpacing();
-    collapseBorders = style->borderCollapse();
 
     rules = None;
     frame = Void;
@@ -98,7 +96,7 @@ RenderTable::RenderTable(RenderStyle *style)
     setParsing();
 
     _currentCol=0;
-    
+
     _lastParentWidth = 0;
 
     columnPos.resize( 2 );
@@ -137,6 +135,12 @@ RenderTable::~RenderTable()
     delete [] cells;
 }
 
+void RenderTable::setStyle(RenderStyle *style)
+{
+    RenderBox::setStyle(style);
+    spacing = style->borderSpacing();
+    collapseBorders = style->borderCollapse();
+}
 
 bool RenderTable::isInline() const
 {
@@ -473,7 +477,7 @@ void RenderTable::spreadSpanMinMax(int col, int span, int distmin,
 		colType[c]=type;
 		if (tmax<span)
 		{
-		    colMaxWidth[c]+=tmax;		    
+		    colMaxWidth[c]+=tmax;		
 		    tmax=0;
 		}
 	    }
@@ -656,9 +660,9 @@ void RenderTable::calcColMinMax()
 #endif	
 
     	    col->update();
-	    	    	    
+	    	    	
 	    calcSingleColMinMax(c, col);
-	    
+	
 	    if ( col->span>1 && m_style->width().type != Percent
 	    	&& (col->type==Fixed || col->type==Variable ))
     	    {
@@ -1123,7 +1127,7 @@ void RenderTable::layout(bool deep)
 {
     if (layouted() && _lastParentWidth == containingBlockWidth())
    	return;
-    
+
     _lastParentWidth = containingBlockWidth();
 
     // ###
@@ -1246,7 +1250,7 @@ void RenderTable::layoutRow(int r)
 	}
 	else
 	    cell->setPos( columnPos[indx] , rowHeights[rindx] );
-	    
+	
 	cell->setRowHeight(rHeight);
 	// ###
 	// cell->setHeight(cellHeight);
@@ -1390,8 +1394,8 @@ void RenderTable::updateSize()
 
 // --------------------------------------------------------------------------
 
-RenderTableSection::RenderTableSection(RenderStyle *style)
-    : RenderObject(style)
+RenderTableSection::RenderTableSection()
+    : RenderObject()
 {
 }
 
@@ -1481,8 +1485,8 @@ void RenderTableSection::addChild(RenderObject *child)
 
 // -------------------------------------------------------------------------
 
-RenderTableRow::RenderTableRow( RenderStyle *style)
-  : RenderObject(style)
+RenderTableRow::RenderTableRow()
+  : RenderObject()
 {
   rIndex = -1;
 }
@@ -1507,21 +1511,21 @@ void RenderTableRow::addChild(RenderObject *child)
 {
 #ifdef DEBUG_LAYOUT
     kdDebug(300) << renderName() << "(TableRow)::addChild( " << child->renderName() << " )" << endl;
-#endif    
+#endif
 
     RenderTableCell *cell =
 	static_cast<RenderTableCell *>(child);
     cell->setTable(table);
     cell->setRowImpl(this);
     table->addCell(cell);
-    
+
     RenderObject::addChild(child);
 }
 
 // -------------------------------------------------------------------------
 
-RenderTableCell::RenderTableCell(RenderStyle *style)
-  : RenderFlow(style)
+RenderTableCell::RenderTableCell()
+  : RenderFlow()
 {
   _col = -1;
   _row = -1;
@@ -1651,8 +1655,8 @@ void RenderTableCell::print(QPainter *p, int _x, int _y,
 
 // -------------------------------------------------------------------------
 
-RenderTableCol::RenderTableCol( RenderStyle *style)
-  : RenderObject(style)
+RenderTableCol::RenderTableCol()
+  : RenderObject()
 {
     _span = 1;
 }
@@ -1692,8 +1696,8 @@ Length RenderTableCol::width()
 
 // -------------------------------------------------------------------------
 
-RenderTableCaption::RenderTableCaption( RenderStyle *style)
-  : RenderFlow(style)
+RenderTableCaption::RenderTableCaption()
+  : RenderFlow()
 {
 }
 

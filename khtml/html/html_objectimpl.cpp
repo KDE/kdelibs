@@ -156,14 +156,15 @@ void HTMLAppletElementImpl::attach(KHTMLView *_view)
       args.insert( "height", QString::number(height) );
       args.insert( "baseURL", view->part()->url().url() );
 
-      f = new RenderApplet(m_style, view, args, this);
+      f = new RenderApplet(view, args, this);
   }
   else
-      f = new RenderEmptyApplet(m_style, view, QSize(width, height));
+      f = new RenderEmptyApplet(view, QSize(width, height));
 
   if(f)
   {
       m_render = f;
+      m_render->setStyle(m_style);
       m_render->ref();
       r->addChild(m_render);
   }
@@ -243,8 +244,9 @@ void HTMLObjectElementImpl::attach(KHTMLView *w)
   if ( url.isEmpty() )
     return; //ooops (-:
 
-  RenderPartObject *p = new RenderPartObject( m_style, w );
+  RenderPartObject *p = new RenderPartObject( w );
   m_render = p;
+  m_render->setStyle(m_style);
   m_render->ref();
   r->addChild( m_render );
 

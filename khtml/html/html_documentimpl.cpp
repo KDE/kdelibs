@@ -314,7 +314,8 @@ void HTMLDocumentImpl::attach(KHTMLView *w)
 
     m_style->setHtmlHacks(true); // enable html specific rendering tricks
 
-    m_render = new RenderRoot(m_style, w);
+    m_render = new RenderRoot(w);
+    m_render->setStyle(m_style);
     m_render->ref();
 
     NodeBaseImpl::attach(w);

@@ -26,7 +26,6 @@
 
 using namespace khtml;
 
-
 void RenderReplaced::print( QPainter *p, int _x, int _y, int _w, int _h,
 			    int _tx, int _ty)
 {
@@ -40,8 +39,8 @@ void RenderReplaced::print( QPainter *p, int _x, int _y, int _w, int _h,
 }
 
 
-RenderWidget::RenderWidget(RenderStyle *style, QScrollView *view)
-	: RenderReplaced(style)
+RenderWidget::RenderWidget(QScrollView *view)
+	: RenderReplaced()
 {
     m_widget = 0;
     m_view = view;
@@ -53,12 +52,18 @@ RenderWidget::~RenderWidget()
     delete m_widget;
 }
 
+void RenderWidget::setStyle(RenderStyle *style)
+{
+    RenderReplaced::setStyle(style);
+    if(m_widget) m_widget->setFont(m_style->font());
+}
+
 void RenderWidget::printReplaced(QPainter *, int _tx, int _ty)
 {
     if(!(m_widget && m_view)) return;
 
     // add offset for relative positioning
-    if(isRelPositioned()) 
+    if(isRelPositioned())
 	relativePositionOffset(_tx, _ty);
 
     m_view->addChild(m_widget, _tx, _ty);
