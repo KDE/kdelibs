@@ -184,7 +184,7 @@ void box::calculate(QPainter &p, int setFontsize)
       break;
 
     case SYMBOL:
-      rect = symbolRect((SymbolType)(text[0].unicode()), fontsize);
+      rect = symbolRect(p, (SymbolType)(text[0].unicode()), fontsize);
       break;
       
       //all the operators which just get drawn along with the text:
@@ -741,8 +741,23 @@ QRect box::getCursorPos(charinfo i, int x, int y)
 
 //----------------------------static SYMBOL RECT--------------------
 //returns the bounding rectangle for a symbol
-QRect box::symbolRect(SymbolType s, int size)
+QRect box::symbolRect(QPainter &p, SymbolType s, int size)
 {
+  if(s - SYMBOL_ABOVE >= 32) { // character in symbol font
+    QFont f = p.font();
+    f.setFamily("symbol");
+    p.setFont(f);
+
+    QFontMetrics fm(p.fontMetrics());
+
+    QRect r = fm.boundingRect(QString(QChar(s - SYMBOL_ABOVE)));
+
+    r.moveBy(0, - fm.boundingRect('+').center().y());
+
+    return r;
+  }
+
+
   switch(s) {
   case INTEGRAL:
     size = size * 4 / 3;
@@ -772,6 +787,16 @@ QRect box::symbolRect(SymbolType s, int size)
 //----------------------------static DRAW SYMBOL---------------------
 void box::drawSymbol(QPainter &p, SymbolType s, int size, int x, int y)
 {
+  if(s - SYMBOL_ABOVE >= 32) { // char from symbol font
+    QFont f = p.font();
+    f.setFamily("symbol");
+    p.setFont(f);
+    QFontMetrics fm(p.fontMetrics());
+
+    p.drawText(x, y - fm.boundingRect('+').center().y() , QString(QChar(s - SYMBOL_ABOVE)));
+    return;
+  }
+
   QPointArray a;
 
   switch(s) {

@@ -79,6 +79,7 @@ enum SymbolType {
   SUM,
   PRODUCT,
   ARROW
+  // elements of the symbol font are their own codes + SYMBOL_ABOVE
 };
 
 //a box is a unit of a formula.
@@ -106,7 +107,7 @@ protected:
   void makeDirty();
   void offset(int xoffs, int yoffs);
 
-  static QRect symbolRect(SymbolType s, int size);
+  static QRect symbolRect(QPainter &p, SymbolType s, int size);
   static void drawSymbol(QPainter &p, SymbolType s, int size, int x, int y);
 
 public:

@@ -69,6 +69,7 @@ KFormulaEdit::KFormulaEdit(QWidget * parent, const char *name,
   cursorPos = 0;
   cacheState = ALL_DIRTY;
   textSelected = 0;
+  nextGreek = false;
   undo.setAutoDelete(TRUE); //delete strings as soon as we're done with 'em
   redo.setAutoDelete(TRUE);
 
@@ -1234,9 +1235,15 @@ void KFormulaEdit::keyPressEvent(QKeyEvent *e)
     return;    
   }
 
-  //CUT, COPY, PASTE, UNDO, REDO:
+  //CUT, COPY, PASTE, UNDO, REDO, GREEK:
 
   if(e->state() & ControlButton) {
+    //Greek:
+    if(e->key() == Key_G) {
+      if(!restricted) nextGreek = !nextGreek;
+
+      return;
+    }
 
     //Copy:
     if(e->key() == Key_C) {
@@ -1347,7 +1354,8 @@ void KFormulaEdit::keyPressEvent(QKeyEvent *e)
      !strchr("{})]#", e->ascii())) {
     // the {}])# are chars that can't be typed
 
-    insertChar(QChar(e->ascii()));
+    if(QChar(e->ascii()).isLetter() && nextGreek) insertChar(QChar(e->ascii() + SYMBOL_ABOVE));
+    else insertChar(QChar(e->ascii()));
 
     MODIFIED
     redraw();
@@ -1425,12 +1433,13 @@ void KFormulaEdit::keyPressEvent(QKeyEvent *e)
 }
 
 //---------------------------INSERT CHAR--------------------
-//slot.  Inserts c and whatever braces it needs (and removes the
+//Inserts c and whatever braces it needs (and removes the
 //selection perhaps) into the string.  Useful to connect to a
 //tool bar.
 
 void KFormulaEdit::insertChar(QChar c)
 {
+  nextGreek = false;
 
   if(restricted) { // we need to limit to only those things
                    // which can be evaluated.
@@ -1623,6 +1632,21 @@ void KFormulaEdit::insertChar(QChar c)
 
   return;
 }
+
+//just an overloaded slot
+void KFormulaEdit::insertChar(int c)
+{
+  QString oldText = formText; // for undo
+  int oldc = cursorPos; // also for undo mostly
+
+  insertChar(QChar(c));
+
+  MODIFIED
+  redraw();
+  UPDATE_SIZE
+  return;
+}
+
 
 #include "kformulaedit.moc"
 

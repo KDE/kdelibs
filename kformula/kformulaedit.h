@@ -105,10 +105,15 @@ protected:
 
   QRect getCursorPos(int pos);
 
+  bool nextGreek;
+
   bool sendSizeHint;
 
-public slots:
+protected:
   void insertChar(QChar c);
+
+public slots:
+  void insertChar(int c); // just to make connecting to toolbars easy.
 
 protected slots:
   void toggleCursor();
