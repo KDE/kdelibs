@@ -74,7 +74,7 @@
      personally, I speak a language, not a locale.
  -->
 <!ENTITY % lang.attrib
-        "Lang           (af|bg|br|ca|cs|cy|da|de|el|en|en-GB|en-US|eo
+        "lang           (af|bg|br|ca|cs|cy|da|de|el|en|en-GB|en-US|eo
                         |es|et|eu|fi|fr|ga|he|hr|hu|id|is|it|ja|ko|lt
                         |mi|mk|nl|no|nb|nn|pl|pt|pt-BR|pt-PT|ro|ru|si
                         |sk|sl|sr|sv|ta|th|tr|uk|x-wa|zh|zh-CN|zh-TW)
@@ -137,7 +137,7 @@ zh      Chinese
      me know.  It's easy to add them on again.  -->
 <!ENTITY % effectivity.attrib "">
 
-<!ENTITY % db41V10 "IGNORE" -- restriction -->
+<!ENTITY % db41V10 "IGNORE"><! -- restriction -->
 <![%db41V10;[
 <!ENTITY % remap.attrib "">
 ]]>
@@ -146,7 +146,7 @@ zh      Chinese
 <!ENTITY % revisionflag.attrib "">
 
 <!ENTITY % othercredit.role.attrib
-        "Role   (Translator|Developer|Reviewer|Graphist|Musician|Tester)
+        "role   (translator|developer|reviewer|graphist|musician|tester)
                 #REQUIRED">
 
 <!ENTITY % kde.compulsory.datereleaseinfo "INCLUDE">
@@ -154,21 +154,21 @@ zh      Chinese
 <!-- Unchanged -->
 <!ENTITY % local.person.ident.mix "">
 <!ENTITY % person.ident.mix
-                "Honorific|FirstName|Surname|Lineage|OtherName|Affiliation
-                |AuthorBlurb|Contrib %local.person.ident.mix;">
+                "honorific|firstname|surname|lineage|othername|affiliation
+                |authorblurb|contrib %local.person.ident.mix;">
 
 <!ENTITY % local.bibliocomponent.mix "">
 <!-- Copy of bibliocomponent.mix without ReleaseInfo, Date or Abstract -->
 <!ENTITY % kde.bibliocomponent.mix
-                "Abbrev|Address|ArtPageNums|Author
-                |AuthorGroup|AuthorInitials|BiblioMisc|BiblioSet
-                |Collab|ConfGroup|ContractNum|ContractSponsor
-                |Copyright|CorpAuthor|CorpName|Edition
-                |Editor|InvPartNumber|ISBN|ISSN|IssueNum|OrgName
-                |OtherCredit|PageNums|PrintHistory|ProductName
-                |ProductNumber|PubDate|Publisher|PublisherName
-                |PubsNumber|RevHistory|SeriesVolNums
-                |Subtitle|Title|TitleAbbrev|VolumeNum|CiteTitle
+                "abbrev|address|artpagenums|author
+                |authorgroup|authorinitials|bibliomisc|biblioset
+                |collab|confgroup|contractnum|contractsponsor
+                |copyright|corpauthor|corpname|edition
+                |editor|invpartnumber|isbn|issn|issuenum|orgname
+                |othercredit|pagenums|printhistory|productname
+                |productnumber|pubdate|publisher|publishername
+                |pubsnumber|revhistory|seriesvolnums
+                |subtitle|title|titleabbrev|volumenum|citetitle
                 |%person.ident.mix;
                 |%ndxterm.class;
                 %local.bibliocomponent.mix;">

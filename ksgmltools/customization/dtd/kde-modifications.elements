@@ -3,14 +3,14 @@
 
 <!-- One modification: BookInfo is compulsory, because
      it contains ReleaseInfo, which is compulsory -->
-<!ELEMENT Book - O ((%div.title.content;)?, BookInfo,
-		(Dedication | ToC | LoT
-		| Glossary | Bibliography | Preface
-		| %chapter.class; | Reference | Part
+<!ELEMENT book - O ((%div.title.content;)?, bookinfo,
+		(dedication | toc | lot
+		| glossary | bibliography | preface
+		| %chapter.class; | reference | part
 		| %article.class;
 		| %appendix.class;
 		| %index.class;
-		| Colophon)*)
+		| colophon)*)
 		%ubiq.inclusion;>
 
 <!-- Modification: ReleaseInfo, Date, Abstract and Keywordset are
@@ -21,68 +21,67 @@
      Abstract and Keywordset must follow Date and ReleaseInfo when they
      are used the first time.
 -->
-<!ELEMENT BookInfo - - ((Graphic | MediaObject | LegalNotice
-		        | ModeSpec | SubjectSet | ITermSet
-		        | %kde.bibliocomponent.mix; | BookBiblio)*,
-		        ((Date, ReleaseInfo) | (ReleaseInfo, Date)),
-                        (Graphic | MediaObject | LegalNotice
-			| ModeSpec | SubjectSet
-			| ITermSet | %kde.bibliocomponent.mix;
-			| BookBiblio)*,
-                        ((Abstract, Keywordset) | (Keywordset, Abstract)),
-		       (Graphic | MediaObject | LegalNotice | ModeSpec 
-		       | SubjectSet | ITermSet
-		       | %bibliocomponent.mix; | BookBiblio | Keywordset)*)
+<!ELEMENT bookinfo - - ((graphic | mediaobject | legalnotice
+		        | modespec | subjectset | itermset
+		        | %kde.bibliocomponent.mix; | bookbiblio)*,
+		        ((date, releaseinfo) | (releaseinfo, date)),
+                        (graphic | mediaobject | legalnotice
+			| modespec | subjectset
+			| itermset | %kde.bibliocomponent.mix;
+			| bookbiblio)*,
+                        ((abstract, keywordset) | (keywordset, abstract)),
+		       (graphic | mediaobject | legalnotice | modespec 
+		       | subjectset | itermset
+		       | %bibliocomponent.mix; | bookbiblio | keywordset)*)
 		       %beginpage.exclusion;>
 
-<!ATTLIST Section
+<!-- ID made compulsory -->
+<!ATTLIST section
 		%label.attrib;
 		%status.attrib;
-		%idreq.common.attrib; -- changed --
+		%idreq.common.attrib;
 		%section.role.attrib;
 		%local.section.attrib;
 >
 
-<!ATTLIST Chapter
+<!-- ID made compulsory -->
+<!ATTLIST chapter
 		%label.attrib;
 		%status.attrib;
-		%idreq.common.attrib; -- changed --
+		%idreq.common.attrib;
 		%chapter.role.attrib;
 		%local.chapter.attrib;
 >
 
-<!ATTLIST Sect1
-		Renderas	(Sect2
-				|Sect3
-				|Sect4
-				|Sect5)		#IMPLIED
+<!-- ID made compulsory -->
+<!ATTLIST sect1
+		renderas	(sect2
+				|sect3
+				|sect4
+				|sect5)		#IMPLIED
 		%label.attrib;
 		%status.attrib;
-		%idreq.common.attrib; -- changed --
+		%idreq.common.attrib;
 		%sect1.role.attrib;
 		%local.sect1.attrib;
 >
 
 <!-- value of Type changed from IMPLIED CDATA
      default value of LinkMode set from #IMPLIED to kdems-default -->
-<!ATTLIST OLink
-		TargetDocEnt	ENTITY 		#IMPLIED
-		LinkMode	IDREF		kdems-default
-		LocalInfo 	CDATA		#IMPLIED
-		Type		(Href|Other)	Href
+<!ATTLIST olink
+		targetdocent	ENTITY 		#IMPLIED
+		linkmode	IDREF		kdems-default
+		localinfo 	CDATA		#IMPLIED
+		type		(href|other)	href
 		%common.attrib;
 		%olink.role.attrib;
 		%local.olink.attrib;
 >
 
 <!-- ID made compulsory -->
-<!ATTLIST GlossEntry
-		--
-		SortAs: String by which the GlossEntry is to be sorted
-		(alphabetized) in lieu of its proper content
-		--
-		SortAs		CDATA		#IMPLIED
-		%idreq.common.attrib; -- changed --
+<!ATTLIST glossentry
+		sortas		CDATA		#IMPLIED
+		%idreq.common.attrib;
 		%glossentry.role.attrib;
 		%local.glossentry.attrib;
 >

@@ -46,7 +46,8 @@
      NEEDS TO BE CHECKED ON CHANGES
  -->
 <!ENTITY % rdbpool	    PUBLIC
-  "-//KDE//ELEMENTS DocBook Pool Redeclarations V2.0//EN"	     >
+  "-//KDE//ELEMENTS DocBook Pool Redeclarations V2.0//EN"	     
+  "kde-rdbpool.elements"                                             >
 <!ENTITY % dbpool.redecl.module "INCLUDE"			     >
 
 <!-- Modifications in hierarchy
@@ -54,7 +55,8 @@
      NEEDS TO BE CHECKED ON CHANGES
  -->
 <!ENTITY % rdbhier2	    PUBLIC
-  "-//KDE//ELEMENTS DocBook Hierarchy Redeclarations 2 V2.0//EN"     >
+  "-//KDE//ELEMENTS DocBook Hierarchy Redeclarations 2 V2.0//EN"     
+  "kde-rdbhier2.elements"                                            >
 <!ENTITY % dbhier.redecl2.module "INCLUDE"			     >
 
 <!-- For Java-style refentries	   
@@ -64,9 +66,9 @@
 %jrefentry; -->
 
 <!-- Temporary solution -->
-<!ENTITY copy  "(c)"--=copyright sign-->
-<!ENTITY trade "[tm]"--=trade mark sign-->
-<!ENTITY reg   "(R)"--/circledR =registered sign-->
+<!ENTITY copy  "(c)"> <!--=copyright sign-->
+<!ENTITY trade "[tm]"> <!--=trade mark sign-->
+<!ENTITY reg   "(R)"> <!--/circledR =registered sign-->
 
 
 <!-- ============================================================= -->
@@ -74,7 +76,8 @@
 <!-- ============================================================= -->
 
 <!ENTITY % DocBookDTD	    PUBLIC
-  "-//OASIS//DTD DocBook V4.1//EN"				     >
+  "-//OASIS//DTD DocBook V4.1//EN"				     
+  "http://www.oasis-open.org/docbook/sgml/4.1/docbook.dtd"           >
 %DocBookDTD;
 
 
@@ -94,5 +97,6 @@
 <!-- Is empty, except for what could go in dbgenent.mod            -->
 
 <!ENTITY % kde.general.entities	PUBLIC
-  "-//KDE//ENTITIES DocBook General Entity Declarations V2.0//EN"    >
+  "-//KDE//ENTITIES DocBook General Entity Declarations V2.0//EN"    
+  "../entities/kde-genent.entities"                                  >
 %kde.general.entities;
