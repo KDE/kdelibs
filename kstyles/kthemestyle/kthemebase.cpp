@@ -4,8 +4,8 @@
  This file is part of the KDE libraries
  Copyright (C) 1999 Daniel M. Duley <mosfet@kde.org>
 
- KDE3 port (C) 2001 Maksim Orlovich <mo002j@mail.rochester.edu>
- Port version 0.9.0
+ KDE3 port (C) 2001-2002 Maksim Orlovich <mo002j@mail.rochester.edu>
+ Port version 0.9.1
 
  Palette setup code is from KApplication,
 		Copyright (C) 1997 Matthias Kalle Dalheimer (kalle@kde.org)
@@ -402,8 +402,6 @@ void KThemeBase::copyWidgetConfig( int sourceID, int destID, QString *pixnames,
         iTabLine = aTabLine;
 }
 
-
-
 void KThemeBase::readConfig( Qt::GUIStyle /*style*/ )
 {
 #define PREBLEND_ITEMS 12
@@ -421,7 +419,11 @@ void KThemeBase::readConfig( Qt::GUIStyle /*style*/ )
     bool loaded[ WIDGETS ]; // used for preloading for CopyWidget
 
     QSettings config;
-    config.insertSearchPath( QSettings::Unix, configDirName );
+    if (configDirName.isEmpty() || configDirName == ".")
+    {
+    	d->dirs.addToSearch( config, "share/apps/kstyle/themes/" );
+    }
+    else config.insertSearchPath( QSettings::Unix, configDirName );
 
     applyConfigFile( config );
 

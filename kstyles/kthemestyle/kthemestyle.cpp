@@ -5,7 +5,7 @@
  Copyright (C) 1999 Daniel M. Duley <mosfet@kde.org>
 
  KDE3 port (C) 2001-2002 Maksim Orlovich <mo002j@mail.rochester.edu>
- Port version 0.9.0
+ Port version 0.9.1
 
  Includes code portions from the dotNET style, and the KDE HighColor style.
 
@@ -98,7 +98,7 @@ Vertical sliders flash a bit -- anything else?
 Blank areas in menu backgrounds..
 Masking of radio buttons?
 Possibly some bugs unpolishing menus..
- 
+
 TODO:
 Nicer disabled buttons.
 Sliders are not disabled properly
@@ -1410,17 +1410,20 @@ void KThemeStyle::drawControl( ControlElement element,
             }
         case CE_PopupMenuItem:
             {
+                bool separator=false;
                 int x, y, w, h;
                 r.rect( &x, &y, &w, &h );
 
                 const QPopupMenu *popupmenu = ( const QPopupMenu * ) widget;
                 QMenuItem *mi = opt.menuItem();
-                if ( !mi )
-                    break;
+                if ( mi )
+                {
+                    separator = mi->isSeparator();
+                }
 
                 int tab = opt.tabWidth();
                 int checkcol = opt.maxIconWidth();
-                bool enabled = mi->isEnabled();
+                bool enabled = (mi? mi->isEnabled():true);
                 bool checkable = popupmenu->isCheckable();
                 bool active = how & Style_Active;
                 bool etchtext = styleHint( SH_EtchDisabledText, 0 );
@@ -1434,7 +1437,7 @@ void KThemeStyle::drawControl( ControlElement element,
                     checkcol = QMAX( checkcol, 20 );
 
                 // Are we a menu item separator?
-                if ( mi->isSeparator() )
+                if ( separator )
                 {
                     p->setPen( cg_ours.dark() );
                     p->drawLine( x, y, x + w, y );
@@ -1468,6 +1471,9 @@ void KThemeStyle::drawControl( ControlElement element,
                                             x, y );
                     }
                 }
+
+                if (!mi)
+                    break;
 
                 // Do we have an icon?
                 if ( mi->iconSet() )
