@@ -24,15 +24,10 @@
 //    License, or (at your option) any later version.
 //
 //----------------------------------------------------------------------------
-#ifndef _KMDIDEFINES_H_
-#define _KMDIDEFINES_H_
+#ifndef _KMDI_DEFINES_H_
+#define _KMDI_DEFINES_H_
 
 #include <qglobal.h>
-
-#ifdef NO_KDE2
-#undef NO_KDE
-#define NO_KDE
-#endif
 
 #define KMDI_CHILDFRM_SEPARATOR 2
 #define KMDI_CHILDFRM_BORDER 3
@@ -96,13 +91,5 @@ namespace KMdi
    };
 
 } //namespace
-
-
-//----------------------------------------------------------------------------
-#ifndef _DLL_IMP_EXP_MSG_
-#   define _DLL_IMP_EXP_MSG_
-#endif
-
-#define DLL_IMP_EXP_KMDICLASS
 
 #endif //_KMDIDEFINES_H_

@@ -25,7 +25,7 @@
 
 
 #include <qwidget.h>
-#include <kmdidockwidget.h>
+#include <kdockwidget.h>
 
 class KMdiToolViewAccessorPrivate {
 public:

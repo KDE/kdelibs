@@ -31,11 +31,9 @@
 #ifndef _KMDIMAINFRM_H_
 #define _KMDIMAINFRM_H_
 
-#ifndef NO_KDE
-#include <kmainwindow.h>
+#include <kparts/dockmainwindow.h>
 #include <kmenubar.h>
 #include <kpopupmenu.h>
-#endif
 
 #include <qptrlist.h>
 #include <qrect.h>
@@ -46,7 +44,6 @@
 #include "kmditaskbar.h"
 #include "kmdichildarea.h"
 #include "kmdichildview.h"
-#include "kmdidockwidget.h"
 #include "kmdiiterator.h"
 #include "kmdilistiterator.h"
 #include "kmdinulliterator.h"
@@ -60,7 +57,7 @@ class QToolButton;
 class KMdiMainFrmPrivate;
 
 namespace KMDIPrivate {
-	class KMDIGUIClient;
+  class KMDIGUIClient;
 }
 
 /**
@@ -126,10 +123,6 @@ public:
   *
   * Additionally, here's a hint how to restore the mainframe's settings from config file:
   * \code
-  * #ifdef NO_KDE // KDE2 comes with its own style
-  *    int guiStyle = config->readIntEntry( "mainmodule session", "GUI style", 0);
-  *    mainframe->setGUIStyle( guiStyle);
-  * #endif
   *
   *    // restore MDI mode (toplevel, childframe, tabpage)
   *    int mdiMode = config->readIntEntry( "mainmodule session", "MDI mode", KMdi::ChildframeMode);
@@ -206,7 +199,7 @@ public:
   * deletes the view object. So if your application wants to control that by itself, call removeWindowFromMdi()
   * and call delete by yourself. See also KMdiChildView::closeEvent() for tat issue.
   */
-class DLL_IMP_EXP_KMDICLASS KMdiMainFrm : public KMdiDockMainWindow
+class KMdiMainFrm : public KParts::DockMainWindow
 {
    friend class KMdiChildView;
    friend class KMdiTaskBar;
@@ -226,11 +219,7 @@ protected:
    QPopupMenu              *m_pDockMenu;
    QPopupMenu              *m_pMdiModeMenu;
    QPopupMenu              *m_pPlacingMenu;
-#ifdef NO_KDE
-   QMenuBar                *m_pMainMenuBar;
-#else
    KMenuBar                *m_pMainMenuBar;
-#endif
 
    QPixmap                 *m_pUndockButtonPixmap;
    QPixmap                 *m_pMinButtonPixmap;
@@ -249,8 +238,8 @@ protected:
    int                     m_oldMainFrmMaxHeight;
    static KMdi::FrameDecor m_frameDecoration;
    bool                    m_bSDIApplication;
-   KMdiDockWidget*         m_pDockbaseAreaOfDocumentViews;
-   KMdiDockWidget*         m_pDockbaseOfTabPage;
+   KDockWidget*         m_pDockbaseAreaOfDocumentViews;
+   KDockWidget*         m_pDockbaseOfTabPage;
    QDomDocument*           m_pTempDockSession;
    bool                    m_bClearingOfWindowMenuBlocked;
 
@@ -258,15 +247,15 @@ protected:
 
    bool                    m_bSwitching;
 
-   KMdiDockWidget*         m_leftContainer;
-   KMdiDockWidget*         m_rightContainer;
-   KMdiDockWidget*         m_topContainer;
-   KMdiDockWidget*         m_bottomContainer;
+   KDockWidget*         m_leftContainer;
+   KDockWidget*         m_rightContainer;
+   KDockWidget*         m_topContainer;
+   KDockWidget*         m_bottomContainer;
 
 
 private:
    KMdiMainFrmPrivate*     d;
-   KMDIPrivate::KMDIGUIClient*	   m_mdiGUIClient;
+   KMDIPrivate::KMDIGUIClient*     m_mdiGUIClient;
    bool m_managedDockPositionMode;
 
 // methods
@@ -406,12 +395,9 @@ public:
    * If no such menu is given, KMdi simply overlays the buttons
    * at the upper right-hand side of the main widget.
    */
-#ifndef NO_KDE
    virtual void setMenuForSDIModeSysButtons( KMenuBar* = 0);
-#else
-   virtual void setMenuForSDIModeSysButtons( QMenuBar* = 0);
-#endif
-   /**
+
+  /**
    * @return the decoration of the window frame of docked (attached) MDI views
    */
    static int frameDecorOfAttachedViews() { return m_frameDecoration; };
@@ -433,7 +419,7 @@ public:
    /**
    *
    */
-   void findRootDockWidgets(QPtrList<KMdiDockWidget>* pRootDockWidgetList, QValueList<QRect>* pPositionList);
+   void findRootDockWidgets(QPtrList<KDockWidget>* pRootDockWidgetList, QValueList<QRect>* pPositionList);
 
    void setSwitching( const bool switching ) { m_bSwitching = switching; }
    bool switching(void) const { return m_bSwitching; }
@@ -465,7 +451,7 @@ public slots:
    * Usually called from addWindow() when adding a tool view window. It reparents the given widget
    * as toplevel and stay-on-top on the application's main widget.
    */
-   virtual KMdiToolViewAccessor *addToolWindow( QWidget* pWnd, KMdiDockWidget::DockPosition pos = KMdiDockWidget::DockNone, QWidget* pTargetWnd = 0L, int percent = 50, const QString& tabToolTip = 0, const QString& tabCaption = 0);
+   virtual KMdiToolViewAccessor *addToolWindow( QWidget* pWnd, KDockWidget::DockPosition pos = KDockWidget::DockNone, QWidget* pTargetWnd = 0L, int percent = 50, const QString& tabToolTip = 0, const QString& tabCaption = 0);
    /**
     * Using this method you have to use the setWidget method of the access object, and it is very recommendet, that you use
     * the widgetContainer() method for the parent of your newly created widget
@@ -627,10 +613,10 @@ protected:
    */
    void blockClearingOfWindowMenu( bool bBlocked) { m_bClearingOfWindowMenuBlocked = bBlocked; };
 
-   void findToolViewsDockedToMain(QPtrList<KMdiDockWidget>* list,KMdiDockWidget::DockPosition dprtmw);
-   void dockToolViewsIntoContainers(QPtrList<KMdiDockWidget>& widgetsToReparent,KMdiDockWidget *container);
-   QStringList prepareIdealToTabs(KMdiDockWidget* container);
-   void idealToolViewsToStandardTabs(QStringList widgetNames,KMdiDockWidget::DockPosition pos,int sizee);
+   void findToolViewsDockedToMain(QPtrList<KDockWidget>* list,KDockWidget::DockPosition dprtmw);
+   void dockToolViewsIntoContainers(QPtrList<KDockWidget>& widgetsToReparent,KDockWidget *container);
+   QStringList prepareIdealToTabs(KDockWidget* container);
+   void idealToolViewsToStandardTabs(QStringList widgetNames,KDockWidget::DockPosition pos,int sizee);
 
 
 protected slots: // Protected slots
@@ -695,3 +681,5 @@ signals:
 };
 
 #endif //_KMDIMAINFRM_H_
+
+// kate: space-indent on; indent-width 2; replace-tabs on;

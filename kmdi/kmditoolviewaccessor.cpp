@@ -25,7 +25,7 @@
 #include "kmditoolviewaccessor_p.h"
 #include "kmdiguiclient.h"
 #include "kmdimainfrm.h"
-#include <kmdidockwidget.h>
+
 #include <kdebug.h>
 
 
@@ -58,7 +58,7 @@ KMdiToolViewAccessor::~KMdiToolViewAccessor() {
 
 QWidget *KMdiToolViewAccessor::wrapperWidget() {
 	if (!d->widgetContainer) {
-		d->widgetContainer=mdiMainFrm->createDockWidget( "KMdiToolViewAccessor::null",QPixmap());	
+		d->widgetContainer=mdiMainFrm->createDockWidget( "KMdiToolViewAccessor::null",QPixmap());
 		connect(d->widgetContainer,SIGNAL(widgetSet(QWidget*)),this,SLOT(setWidgetToWrap(QWidget*)));
 	}
 	return d->widgetContainer;
@@ -141,7 +141,7 @@ void KMdiToolViewAccessor::show(KDockWidget::DockPosition pos, QWidget* pTargetW
                         pCover->manualDock(dw1,KDockWidget::DockCenter,percent);
                         else
                         pCover->manualDock ( pTargetDock, pos, 20 );
-	
+
 	      }
       else
       	pCover->manualDock( pTargetDock, pos, percent);

@@ -26,7 +26,9 @@
 #include <qrect.h>
 #include <qapplication.h>
 #include <qdatetime.h>
-#include <kmdidockwidget.h>
+
+#include <kdockwidget.h>
+
 
 class KMdiToolViewAccessor : public QObject
 {
@@ -45,7 +47,7 @@ private:
    */
    bool m_bMainframesActivateViewIsPending;
    /**
-   * 
+   *
    */
    bool m_bFocusInEventIsPending;
 

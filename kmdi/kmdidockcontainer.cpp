@@ -44,7 +44,7 @@ static const char* const not_close_xpm[]={
 "#...#",
 "#####"};
 
-KMdiDockContainer::KMdiDockContainer(QWidget *parent, QWidget *win, int position):QWidget(parent),KMdiDockContainerBase()
+KMdiDockContainer::KMdiDockContainer(QWidget *parent, QWidget *win, int position):QWidget(parent),KDockContainer()
 {
   m_block=false;
   m_inserted=-1;
@@ -111,14 +111,14 @@ void KMdiDockContainer::init()
   }
 }
 
-KMdiDockWidget *KMdiDockContainer::parentDockWidget()
+KDockWidget *KMdiDockContainer::parentDockWidget()
 {
-  return ((KMdiDockWidget*)parent());
+  return ((KDockWidget*)parent());
 }
 
 void KMdiDockContainer::insertWidget (KDockWidget *dwdg, QPixmap pixmap, const QString &text, int &)
 {
-  KMdiDockWidget* w = (KMdiDockWidget*) dwdg;
+  KDockWidget* w = (KDockWidget*) dwdg;
   int tab;
   bool alreadyThere=m_map.contains(w);
 
@@ -204,7 +204,7 @@ void KMdiDockContainer::changeOverlapMode()
     deactivateOverlapMode();
   }
 
-  for (QMap<KMdiDockWidget*,KDockButton_Private*>::iterator it=m_overlapButtons.begin();
+  for (QMap<KDockWidget*,KDockButton_Private*>::iterator it=m_overlapButtons.begin();
     it!=m_overlapButtons.end();++it)
     it.data()->setOn(!isOverlapMode());
 }
@@ -217,7 +217,7 @@ void KMdiDockContainer::hideIfNeeded() {
 
 void KMdiDockContainer::removeWidget(KDockWidget* dwdg)
 {
-    KMdiDockWidget* w = (KMdiDockWidget*) dwdg;
+    KDockWidget* w = (KDockWidget*) dwdg;
   if (!m_map.contains(w)) return;
   int id=m_map[w];
   m_tb->setTab(id,false);
@@ -237,7 +237,7 @@ void KMdiDockContainer::removeWidget(KDockWidget* dwdg)
 
 void KMdiDockContainer::undockWidget(KDockWidget *dwdg)
 {
-  KMdiDockWidget* w = (KMdiDockWidget*) dwdg;
+  KDockWidget* w = (KDockWidget*) dwdg;
 
   if (!m_map.contains(w))
     return;
@@ -380,7 +380,7 @@ void KMdiDockContainer::load(KConfig*)
   m_delayedRaise=-1;
   if (!raise.isEmpty())
   {
-    for (QMap<KMdiDockWidget*,int>::iterator it=m_map.begin();it!=m_map.end();++it)
+    for (QMap<KDockWidget*,int>::iterator it=m_map.begin();it!=m_map.end();++it)
     {
 
       if (it.key()->name()==raise)

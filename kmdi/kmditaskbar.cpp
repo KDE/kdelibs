@@ -27,6 +27,8 @@
 //----------------------------------------------------------------------------
 
 #include "kmditaskbar.h"
+#include "kmditaskbar.moc"
+
 #include "kmdimainfrm.h"
 #include "kmdichildview.h"
 #include "kmdidefines.h"
@@ -164,7 +166,7 @@ KMdiTaskBarButton * KMdiTaskBar::addWinButton(KMdiChildView *win_ptr)
    }
 
    KMdiTaskBarButton *b=new KMdiTaskBarButton( this, win_ptr);
-   QObject::connect( b, SIGNAL(clicked()), win_ptr, SLOT(setFocus()) ); 
+   QObject::connect( b, SIGNAL(clicked()), win_ptr, SLOT(setFocus()) );
    QObject::connect( b, SIGNAL(clicked(KMdiChildView*)), this, SLOT(setActiveButton(KMdiChildView*)) );
    QObject::connect( b, SIGNAL(leftMouseButtonClicked(KMdiChildView*)), m_pFrm, SLOT(activateView(KMdiChildView*)) );
    QObject::connect( b, SIGNAL(rightMouseButtonClicked(KMdiChildView*)), m_pFrm, SLOT(taskbarButtonRightClicked(KMdiChildView*)) );
@@ -172,9 +174,9 @@ KMdiTaskBarButton * KMdiTaskBar::addWinButton(KMdiChildView *win_ptr)
    m_pButtonList->append(b);
    b->setToggleButton( TRUE);
    b->setText(win_ptr->tabCaption());
-   
+
    layoutTaskBar();
-      
+
    m_pStretchSpace = new QLabel(this, "empty");
    m_pStretchSpace->setText("");
    setStretchableWidget( m_pStretchSpace);
@@ -261,7 +263,7 @@ void KMdiTaskBar::setActiveButton(KMdiChildView *win_ptr)
       if( b->m_pWindow == m_pCurrentFocusedWindow)
          oldPressedButton = b;
    }
-   
+
    if( newPressedButton != 0L && newPressedButton != oldPressedButton) {
          if( oldPressedButton != 0L)
             oldPressedButton->toggle();// switch off
@@ -285,7 +287,7 @@ void KMdiTaskBar::layoutTaskBar( int taskBarWidth)
    for(b=m_pButtonList->first();b;b=m_pButtonList->next()){
       allButtonsWidth += b->width();
    }
-   
+
    // calculate actual width of all taskbar buttons
    int allButtonsWidthHint = 0;
    for(b=m_pButtonList->first();b;b=m_pButtonList->next()){
@@ -296,7 +298,7 @@ void KMdiTaskBar::layoutTaskBar( int taskBarWidth)
       int h = sz.height()+sz.height()/8+10;
       w += h;
       allButtonsWidthHint += w;
-   } 
+   }
 
    // if there's enough space, use actual width
    int buttonCount = m_pButtonList->count();
@@ -342,7 +344,3 @@ void KMdiTaskBar::resizeEvent( QResizeEvent* rse)
    }
    KToolBar::resizeEvent( rse);
 }
-
-#ifndef NO_INCLUDE_MOCFILES
-#include "kmditaskbar.moc"
-#endif
