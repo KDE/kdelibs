@@ -55,9 +55,6 @@ void KJavaAppletWidget::init()
     d->tmplabel = new QLabel( i18n("Loading Applet"), this );
     d->tmplabel->setAlignment( Qt::AlignCenter | Qt::WordBreak );
     d->tmplabel->setFrameStyle( QFrame::StyledPanel | QFrame::Sunken );
-    d->tmplabel->setMinimumSize( width(), height() );
-
-    kdDebug(6100) << "minimum size for temp label = " << width() << ", " << height() << endl;
 
     uniqueTitle();
     shown = false;
@@ -173,22 +170,39 @@ void KJavaAppletWidget::setWindow( WId w )
         disconnect( kwm, SIGNAL( windowAdded( WId ) ),
                     this, SLOT( setWindow( WId ) ) );
 
-        embed( w );
-
         delete d->tmplabel;
         d->tmplabel = 0;
+
+        embed( w );
     }
+}
+
+QSize KJavaAppletWidget::sizeHint()
+{
+    kdDebug(6100) << "KJavaAppletWidget::sizeHint()" << endl;
+    QSize rval = JavaEmbed::sizeHint();
+
+    if( rval.width() == 0 || rval.height() == 0 )
+        if( width() != 0 && height() != 0 )
+            rval = QSize( width(), height() );
+
+    kdDebug(6100) << "returning: (" << rval.width() << ", " << rval.height() << ")" << endl;
+
+    return rval;
 }
 
 void KJavaAppletWidget::resize( int w, int h)
 {
+    kdDebug(6100) << "KJavaAppletWidget::resize " << w << ", " << h << endl;
+
     if( d->tmplabel )
     {
         d->tmplabel->resize( w, h );
     }
 
     JavaEmbed::resize( w, h );
-    applet->setSize( QSize(w, h) );
+    if( !embedded() )
+        applet->setSize( QSize(w, h) );
 }
 
 #include "kjavaappletwidget.moc"

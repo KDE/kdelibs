@@ -146,6 +146,8 @@ public:
      */
     void resize( int, int );
 
+    QSize sizeHint();
+
 protected slots:
      //
      // Stuff to do with swallowing the applet Frame
