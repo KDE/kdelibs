@@ -409,7 +409,7 @@ void RenderLineEdit::slotReturnPressed()
 {
     // don't submit the form when return was pressed in a completion-popup
     KCompletionBox *box = (static_cast<KLineEdit*>(m_widget))->completionBox(false);
-    if ( box && box->isVisible() )
+    if ( box && box->isVisible() && box->currentItem() != -1 )
 	return;
 
     if (m_element->form())
