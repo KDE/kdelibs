@@ -131,10 +131,11 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     if ( d->m_widget->inherits( "KMainWindow" ) )
       bar = static_cast<KMainWindow *>(d->m_widget)->menuBar();
     else
+    {
       bar = new KMenuBar( d->m_widget );
-
-    if ( !bar->isVisible() )
       bar->show();
+    }
+
     return bar;
   }
 
