@@ -122,6 +122,8 @@ public:
     QCString entityBody;
   } DigestAuthInfo;
 
+  //-------------------- Signal Handlers -----------------------
+  static void sigpipeHandler(int);
 
 //---------------------- Re-implemented methods ----------------
   virtual void setHost(const QString& host, int port, const QString& user,
@@ -217,16 +219,15 @@ protected:
 
   void configAuth( const char *, bool );
 
-
   bool httpOpen();             // Open transfer
-  void httpClose();            // Close transfer
-
-  void forwardHttpResponseHeader();
+  void httpClose(bool keepAlive);  // Close transfer
 
   bool httpOpenConnection();   // Open connection
   void httpCloseConnection();  // Close connection
   void httpCheckConnection();  // Check whether to keep connection.
 
+  void forwardHttpResponseHeader();
+  
   bool readHeader();
 
   bool sendBody();
@@ -463,8 +464,11 @@ protected:
   short unsigned int m_iProxyAuthCount;
   short unsigned int m_iWWWAuthCount;
 
-  // Persistant connections
+  // Persistent connections
   bool m_bKeepAlive;
+
+  // Persistent proxy connections
+  bool m_bPersistentProxyConnection;
 
   // Resumable connections
   bool m_bCanResume;
