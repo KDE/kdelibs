@@ -228,8 +228,8 @@ For example, you can try to convert the KDE template file for docbook
 documents:
 
 	jw	-o HTML \
-		-c /usr/lib/sgml/kde/kde.cat \
-		-d /usr/lib/sgml/kde/stylesheets/kde.dsl#html \
+		-c /usr/share/sgml/kde/kde.cat \
+		-d /usr/share/sgml/kde/stylesheets/kde.dsl#html \
 		template.docbook
 
 This should produce a new directory named HTML/ that contains the
