@@ -37,13 +37,13 @@ class X509;
 #endif
 
 #include <kopenssl.h>
+#include <ksslcertificate.h>
 
 #ifndef STACK_OF
 #define STACK_OF(x) void
 #endif
 
 class KSSL;
-class KSSLCertificate;
 class KSSLPKCS12Private;
 
 
@@ -97,6 +97,26 @@ public:
    *   Write the PKCS#12 to a file in raw mode
    */
   bool toFile(QString filename);
+
+
+  /*
+   *   Check the X.509 and private key to make sure they're valid.
+   */
+  KSSLCertificate::KSSLValidation validate();
+
+
+  /*
+   *   Check the X.509 and private key to make sure they're valid.
+   *   Ignore any cached validation result.
+   */
+  KSSLCertificate::KSSLValidation revalidate();
+
+
+  /*
+   *   Return true if the X.509 and private key are valid.
+   */
+  bool isValid();
+
 
 
 protected:

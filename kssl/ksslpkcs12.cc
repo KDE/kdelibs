@@ -198,3 +198,19 @@ return false;
 }
 
 
+// FIXME: check the private key and do the caching of the private key results
+KSSLCertificate::KSSLValidation KSSLPKCS12::validate() {
+   return _cert->validate();
+}
+
+
+KSSLCertificate::KSSLValidation KSSLPKCS12::revalidate() {
+   return _cert->revalidate();
+}
+
+
+bool KSSLPKCS12::isValid() {
+return (validate() == KSSLCertificate::Ok);
+}
+
+
