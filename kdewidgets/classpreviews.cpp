@@ -17,7 +17,7 @@
     Boston, MA 02111-1307, USA.
 */
 
-#include <classpreviews.h>
+#include "classpreviews.h"
 
 KDialogPreview::KDialogPreview(QWidget * parent , const char * /* name , bool, WFlagsf */)
 {

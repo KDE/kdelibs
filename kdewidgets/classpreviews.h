@@ -17,12 +17,12 @@
     Boston, MA 02111-1307, USA.
 */
 
-/* 
+/*
 
-	This class is indented as a place to widgets previews for designer. Simply inherit
-   your widget and modify its behaviour (i.e. enter example datas or do a reparent()).
+   This class is intended as a place to widgets previews for designer. Simply inherit
+   your widget and modify its behaviour (i.e. enter example data or do a reparent()).
 
-   This will only affect the preview, designer/uic will still use the original widget you
+   This will only affect the preview, designer/uic will still use the original widget
    in the final source output!
 
  */
@@ -31,7 +31,6 @@
 #define __classimpls__
 
 #include <kdialog.h>
-#include <kdialogbase.h>
 
 class KDialogPreview : public KDialog
 {
