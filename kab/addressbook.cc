@@ -2011,7 +2011,7 @@ AddressBook::ErrorCode AddressBook::categories(CategoriesMap& cat)
   Section *section;
   Section *categories;
   KeyValueMap* keys;
-  int index, key;
+  int key;
   bool rc;
   QStringList values;
   StringStringMap::iterator pos;
