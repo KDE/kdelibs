@@ -117,6 +117,9 @@ public:
    **/
   void ensureUpToDate();
 
+signals:
+  void aboutToShowContextMenu( const KBookmark &, QPopupMenu * );
+
 public slots: // public for bookmark bar
   void slotBookmarksChanged( const QString & );
 
@@ -124,14 +127,17 @@ protected slots:
   void slotAboutToShow();
   void slotAboutToShowContextMenu( KPopupMenu *, int, QPopupMenu * );
   void slotActionHighlighted( KAction * );
+
   void slotRMBActionRemove( int );
   void slotRMBActionOpen( int );
   void slotRMBActionCopyLocation( int );
   //void slotRMBActionEdit( int );
   void slotRMBActionEditAt( int );
+
   void slotBookmarkSelected();
   void slotAddBookmark();
   void slotNewFolder();
+
   /**
    * load Netscape's bookmarks
    */

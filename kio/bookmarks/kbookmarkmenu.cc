@@ -232,6 +232,8 @@ void KBookmarkMenu::fillContextMenu( QPopupMenu* contextMenu, const QString & ad
     id = contextMenu->insertItem( i18n( "Open Bookmark" ), this, SLOT(slotRMBActionOpen(int)) );
     contextMenu->setItemParameter( id, val );
   }
+
+  emit aboutToShowContextMenu( bookmark, contextMenu );
 }
 
 void KBookmarkMenu::slotRMBActionEditAt( int val )
