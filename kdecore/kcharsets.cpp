@@ -344,7 +344,9 @@ void KCharsets::setQFont(QFont &f, QFont::CharSet charset) const
     // ok... we don't have the charset in the specified family, let's
     // try to find a replacement.
 
+    // the prefered charset and any family
     mask.charset = charset;
+    mask.family = QString::null;
     getFontList(mask, list);
     if(!list.isEmpty()) {
         f.setFamily(list.first()->family);
@@ -352,8 +354,8 @@ void KCharsets::setQFont(QFont &f, QFont::CharSet charset) const
         return;
     }
 
+    // Unicode and any family
     mask.charset = QFont::Unicode;
-    mask.family = QString::null;
     getFontList(mask, list);
     if(!list.isEmpty()) {
         f.setFamily(list.first()->family);
@@ -361,15 +363,7 @@ void KCharsets::setQFont(QFont &f, QFont::CharSet charset) const
         return;
     }
 
-    KFontStruct m;
-    m.charset = charset;
-    getFontList(m, list);
-    if(!list.isEmpty()) {
-        f.setFamily(list.first()->family);
-        f.setCharSet(charset);
-        return;
-    }
-
+    // give up -- just use something
     f.setCharSet(QFont::AnyCharSet);
     return;
 }
