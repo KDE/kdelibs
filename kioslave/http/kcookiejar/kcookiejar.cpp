@@ -60,7 +60,6 @@
 #include <qptrlist.h>
 #include <qptrdict.h>
 #include <qfile.h>
-#include <qdir.h>
 #include <qregexp.h>
 
 #include <kurl.h>
@@ -487,7 +486,7 @@ bool KCookieJar::parseURL(const QString &_url,
     if (_path.isEmpty())
        _path = "/";
 
-    QRegExp exp("[\\/]..[\\/]");
+    QRegExp exp("[\\\\/]\\.\\.[\\\\/]");
     // Weird path, cookie stealing attempt?
     if (exp.search(_path) != -1)
        return false; // Deny everything!!
