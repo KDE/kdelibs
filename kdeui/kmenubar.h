@@ -20,6 +20,11 @@
 
 //$Id$
 //$Log$
+//Revision 1.31  1999/12/13 22:44:37  kulow
+//put some #ifdef __GNUC__ around the #warning
+//removed the -DQT2_WORKAROUND. Sven says KMenubar is rewritten to be based
+//on QMenuBar rsn anyway, so we can live with this til then
+//
 //Revision 1.30  1999/11/02 08:41:55  ssk
 //More class doc updates, nearly all classes have atleast short docs and/or
 //internal/deprecated flags.
@@ -87,7 +92,7 @@ class KToolBoxManager;
 /**
  * Internal Style-able menubar.
  *
- * This is required since @ref QMenuBar is currently not handled by 
+ * This is required since @ref QMenuBar is currently not handled by
  * @ref QStyle.
  * @internal
  * @author Daniel "Mosfet" Duley.
@@ -106,7 +111,7 @@ protected:
 
     bool mouseActive;
 };
-    
+
 
 /**
  * Floatable menu bar. It can be set to float, Top, or Bottom
@@ -136,7 +141,7 @@ class KMenuBar : public QFrame
    /**
     * Argument for enable().
     */
-   enum BarStatus{ Toggle, Show, Hide }; 
+   enum BarStatus{ Toggle, Show, Hide };
 
    /**
     * Constructor. For all details about inserting items see
@@ -203,7 +208,7 @@ class KMenuBar : public QFrame
    virtual int insertItem(const QString& text, QPopupMenu *popup,
                   int id=-1, int index=-1 );
 
-   virtual void insertSeparator(int index=-1 );
+   virtual int insertSeparator(int index=-1 );
    virtual void removeItem(int id);
    virtual void removeItemAt(int index);
    virtual void clear();

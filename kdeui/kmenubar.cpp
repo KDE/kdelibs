@@ -360,7 +360,7 @@ bool KMenuBar::eventFilter(QObject *ob, QEvent *ev){
       //  setFlat (position != Flat);
 
     }
-    
+
     if (ev->type() == QEvent::MouseMove && buttonDownOnHandle ){
 
 	if (position != Flat)
@@ -505,7 +505,7 @@ void KMenuBar::enableMoving(bool flag)
   moving = flag;
 }
 
-QSize 
+QSize
 KMenuBar::sizeHint() const
 {
 	if (position == Flat)
@@ -666,15 +666,16 @@ int KMenuBar::insertItem (const QPixmap &pixmap, const QObject *receiver,
   return->menu->insertItem (pixmap, receiver, member, accel);
 }
 */
-void KMenuBar::insertSeparator(int index)
+int KMenuBar::insertSeparator(int index)
 {
-  menu->insertSeparator(index);
+  int id = menu->insertSeparator(index);
   /*
    * This show() seems to be necessary, otherwise the only the first
    * submenu is visible. It should probably be fixed somewhere else but this
    * solves the problem for the time beeing. CS
    */
   show();
+  return id;
 }
 
 void KMenuBar::removeItem( int id )
@@ -774,7 +775,7 @@ static const int motifBarHMargin        = 2;    // menu bar hor margin to item
 static const int motifBarVMargin        = 1;    // menu bar ver margin to item
 static const int motifItemFrame         = 2;    // menu item frame width
 
-static const int motifItemHMargin       = 5;    // menu item hor text marginstatic const int motifItemVMargin       = 4;    // menu item ver text margin                      
+static const int motifItemHMargin       = 5;    // menu item hor text marginstatic const int motifItemVMargin       = 4;    // menu item ver text margin
 static const int motifItemVMargin       = 4;    // menu item ver text margin
 
 #define KTHEMESTYLE_CONSTANTS
