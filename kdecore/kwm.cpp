@@ -11,7 +11,17 @@
 #include <qbitmap.h>
 #include <X11/Xatom.h>
 #include <X11/Xutil.h>
-#include <kmisc.h>
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+/* this is needed for AIX and Solaris */
+#ifndef HAVE_GETDOMAINNAME
+extern "C" {
+int getdomainname (char *Name, int Namelen);
+}
+#endif
 
 bool kwm_error;
 

@@ -6,9 +6,3 @@
 int setenv(const char *name, const char *value, int overwrite) ;
 #endif      
 
-#ifndef HAVE_GETDOMAINNAME
-extern "C" {
-int getdomainname (char *Name, int Namelen);
-}
-#endif
-
