@@ -96,7 +96,6 @@ public:
         oldPos = QMainWindow::Unmanaged;
 
         positioned = FALSE;
-        iconSizesCount = 0;
     }
 
     int m_iconSize;
@@ -132,7 +131,7 @@ public:
     };
 
     ToolBarInfo toolBarInfo;
-    int iconSizesCount;
+    QValueList<int> iconSizes;
 };
 
 KToolBarSeparator::KToolBarSeparator(Orientation o , bool l, QToolBar *parent,
@@ -1437,8 +1436,8 @@ void KToolBar::slotReadConfig()
         else
             icontext = "IconOnly";
 
-	// Use the default icon size for toolbar icons.
-	iconsize = config->readNumEntry(attrSize, 0);
+        // Use the default icon size for toolbar icons.
+        iconsize = config->readNumEntry(attrSize, 0);
 
         position = config->readEntry(attrPosition, "Top");
         index = config->readEntry(attrIndex, index );
@@ -1456,9 +1455,9 @@ void KToolBar::slotReadConfig()
                 // now we always read in the IconText property
             icontext = config->readEntry(attrIconText, "icontext");
 
-	    // now get the size
-	    iconsize = config->readNumEntry(attrSize, iconsize);
- 
+            // now get the size
+            iconsize = config->readNumEntry(attrSize, iconsize);
+
             // finally, get the position
             position = config->readEntry(attrPosition, position);
             position = config->readEntry(attrPosition, "Top");
@@ -1484,7 +1483,7 @@ void KToolBar::slotReadConfig()
 
  // check if the icon/text has changed
     if (icon_text != d->m_iconText) {
-	setIconText(icon_text, false);
+        setIconText(icon_text, false);
         doUpdate = true;
     }
 
@@ -1754,9 +1753,8 @@ KPopupMenu *KToolBar::contextMenu()
   else
       avSizes = theme->querySizes( KIcon::Toolbar);
 
-  d->iconSizesCount = avSizes.count();
+  d->iconSizes = avSizes;
 
-  int n = 1;
   QValueList<int>::Iterator it;
   for (it=avSizes.begin(); it!=avSizes.end(); it++) {
       QString text;
@@ -1767,7 +1765,7 @@ KPopupMenu *KToolBar::contextMenu()
       else
           text = i18n("Large (%1x%2)").arg(*it).arg(*it);
       //we use the size as an id, with an offset
-      size->insertItem( text, CONTEXT_ICONSIZES + (n++) );
+      size->insertItem( text, CONTEXT_ICONSIZES + *it );
   }
 
   context->setFont(KGlobalSettings::menuFont());
@@ -1804,13 +1802,16 @@ void KToolBar::slotContextAboutToShow()
             break;
   }
 
-  int i = 0;
-  for (; i < d->iconSizesCount; i++ )
-      context->setItemChecked( CONTEXT_ICONSIZES + i, false );
+  QValueList<int>::ConstIterator iIt = d->iconSizes.begin();
+  QValueList<int>::ConstIterator iEnd = d->iconSizes.end();
+  for (; iIt != iEnd; ++iIt )
+      context->setItemChecked( CONTEXT_ICONSIZES + *iIt, false );
+
+  context->setItemChecked( CONTEXT_ICONSIZES, false );
 
   context->setItemChecked( CONTEXT_ICONSIZES + d->m_iconSize, true );
 
-  for ( i = CONTEXT_TOP; i <= CONTEXT_FLAT; ++i )
+  for ( int i = CONTEXT_TOP; i <= CONTEXT_FLAT; ++i )
       context->setItemChecked( i, false );
 
   switch ( barPos() )
