@@ -867,7 +867,7 @@ void Ftp::chmod( const KURL & url, int permissions )
     finished();
 }
 
-void Ftp::createUDSEntry( const QString & filename, FtpEntry * e, UDSEntry & entry )
+void Ftp::createUDSEntry( const QString & filename, FtpEntry * e, UDSEntry & entry, bool isDir )
 {
   assert(entry.count() == 0); // by contract :-)
   UDSAtom atom;
@@ -876,7 +876,7 @@ void Ftp::createUDSEntry( const QString & filename, FtpEntry * e, UDSEntry & ent
   entry.append( atom );
 
   atom.m_uds = UDS_FILE_TYPE;
-  atom.m_long = e->type;
+  atom.m_long = isDir ? S_IFDIR : e->type;
   entry.append( atom );
 
   atom.m_uds = UDS_SIZE;
@@ -962,6 +962,7 @@ void Ftp::stat( const KURL &url)
   QString listarg = tempurl.directory(false /*keep trailing slash*/);
   QString filename = tempurl.fileName();
   QString search = filename;
+  bool isDir = false;
 
   // Try cwd into it, if it works it's a dir (and then we'll use dir in the parent directory)
   // if it doesn't work, it's a file (and then we'll use dir filename)
@@ -979,6 +980,13 @@ void Ftp::stat( const KURL &url)
     // It is a file or it doesn't exist, use the name in the list command
     listarg = path;
     search = path;
+  }
+  else
+  {
+    // It's a dir, remember that
+    // Reason: it could be a symlink to a dir, in which case ftpReadDir
+    // in the parent dir will have no idea about that. But we know better.
+    isDir = true;
   }
 
   if( !ftpOpenCommand( "list", listarg, 'A', ERR_DOES_NOT_EXIST ) )
@@ -1006,7 +1014,7 @@ void Ftp::stat( const KURL &url)
     if ( !bFound && ( search == e->name || filename == e->name ) ) {
       bFound = true;
       UDSEntry entry;
-      createUDSEntry( filename, e, entry );
+      createUDSEntry( filename, e, entry, isDir );
       statEntry( entry );
     }
 
@@ -1078,7 +1086,7 @@ void Ftp::listDir( const KURL &url )
     //   kdDebug(7102) << "is a dir" << endl;
     //}
     entry.clear();
-    createUDSEntry( e->name, e, entry );
+    createUDSEntry( e->name, e, entry, false );
     listEntry( entry, false );
   }
   listEntry( entry, true ); // ready
