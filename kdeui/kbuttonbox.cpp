@@ -48,7 +48,7 @@
 #include "kbuttonbox.moc"
 #include <kglobalsettings.h>
 #include <kguiitem.h>
-#include <qpushbutton.h>
+#include <kpushbutton.h>
 #include <qptrlist.h>
 #include <assert.h>
 
@@ -56,7 +56,7 @@
 
 class KButtonBox::Item {
 public:
-  QPushButton *button;
+  KPushButton *button;
   bool noexpand;
   unsigned short stretch;
   unsigned short actual_size;
@@ -93,7 +93,7 @@ KButtonBox::~KButtonBox() {
 QPushButton *KButtonBox::addButton(const QString& text, bool noexpand) {
   Item *item = new Item;
 
-  item->button = new QPushButton(text, this);
+  item->button = new KPushButton(text, this);
   item->noexpand  = noexpand;
   data->buttons.append(item);
   item->button->adjustSize();
@@ -106,10 +106,7 @@ QPushButton *KButtonBox::addButton(const QString& text, bool noexpand) {
 QPushButton *KButtonBox::addButton(const KGuiItem& guiitem, bool noexpand) {
   Item *item = new Item;
 
-  if ( KGlobalSettings::showIconsOnPushButtons() )
-    item->button = new QPushButton( guiitem.iconSet(), guiitem.text(), this);
-  else
-    item->button = new QPushButton( guiitem.text(), this);
+  item->button = new KPushButton( guiitem, this);
   item->noexpand  = noexpand;
   data->buttons.append(item);
   item->button->adjustSize();
