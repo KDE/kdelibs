@@ -31,6 +31,6 @@ generate: testcases generate.pl
 	perl ./generate.pl < testcases
 
 doit: dcop_test driver
-	sh run_tests.sh
+	sh run-tests.sh
 
 .PHONY: generate
