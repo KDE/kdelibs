@@ -158,7 +158,7 @@ public:
 
 struct KPtyPrivate {
    KPtyPrivate() : 
-     xonXoff(false), needGrantPty(false),
+     xonXoff(false),
      masterFd(-1), slaveFd(-1)
    { 
      memset(&winSize, 0, sizeof(winSize));
@@ -167,7 +167,6 @@ struct KPtyPrivate {
    }
 
    bool xonXoff : 1;
-   bool needGrantPty : 1;
    int masterFd;
    int slaveFd;
    struct winsize winSize;
@@ -203,15 +202,8 @@ bool KPty::open()
   // be opened by several different methods.
 
   // We try, as we know them, one by one.
-#if defined(HAVE_OPENPTY)
-  if (openpty(&d->masterFd, &d->slaveFd, NULL, NULL, NULL) == 0)
-  {
-    d->ttyName = ttyname(d->slaveFd);
-    goto gotpty2;
-  }
-#endif
 
-#if defined(HAVE_PTSNAME)
+#if defined(HAVE_PTSNAME) && defined(HAVE_GRANTPT)
 #ifdef _AIX
   d->masterFd = ::open("/dev/ptc",O_RDWR);
 #else
@@ -221,8 +213,9 @@ bool KPty::open()
   {
     char *ptsn = ptsname(d->masterFd);
     if (ptsn) {
+        grantpt(d->masterFd);
         d->ttyName = ptsn;
-        goto gotpty1;
+        goto gotpty;
     } else {
        ::close(d->masterFd);
        d->masterFd = -1;
@@ -253,8 +246,20 @@ bool KPty::open()
           continue;
         }
 #endif /* sun */
-        if (geteuid() == 0 || access(d->ttyName.data(),R_OK|W_OK) == 0)
-          goto gotpty1; // Success !!
+        if (!access(d->ttyName.data(),R_OK|W_OK)) // checks availability based on permission bits
+        {
+          if (!geteuid())
+          {
+            struct group* p = getgrnam(TTY_GROUP);
+            if (!p)
+              p = getgrnam("wheel");
+            gid_t gid = p ? p->gr_gid : getgid ();
+
+            chown(d->ttyName.data(), getuid(), gid);
+            chmod(d->ttyName.data(), S_IRUSR|S_IWUSR|S_IWGRP);
+          }
+          goto gotpty;
+        }
         ::close(d->masterFd);
         d->masterFd = -1;
       }
@@ -264,49 +269,34 @@ bool KPty::open()
   kdWarning(175) << "Can't open a pseudo teletype" << endl;
   return false;
 
- gotpty1:
-#if defined(HAVE_GRANTPT)
-  grantpt(d->masterFd);
-#else
-  {
-    /* Get the group ID of the special `tty' group.  */
-    struct group* p = getgrnam(TTY_GROUP);    /* posix */
-    gid_t gid = p ? p->gr_gid : getgid ();    /* posix */
-
-    chown(d->ttyName.data(), getuid(), gid);
-    chmod(d->ttyName.data(), S_IRUSR|S_IWUSR|S_IWGRP);
-  }
-#endif
- gotpty2:
+ gotpty:
   struct stat st;
   if (stat(d->ttyName.data(), &st))
     return false; // this just cannot happen ... *cough*
-  d->needGrantPty = st.st_uid != getuid() || (st.st_mode & (S_IRGRP|S_IXGRP|S_IROTH|S_IWOTH|S_IXOTH));
-
-#ifdef BSD
-  revoke(d->ttyName.data());
-#endif
-
-  if (!chownpty(true))
+  if (((st.st_uid != getuid()) ||
+       (st.st_mode & (S_IRGRP|S_IXGRP|S_IROTH|S_IWOTH|S_IXOTH))) &&
+      !chownpty(true))
   {
     kdWarning(175)
       << "chownpty failed for device " << ptyName << "::" << d->ttyName
       << "\nThis means the communication can be eavesdropped." << endl;
   }
 
+#ifdef BSD
+  revoke(d->ttyName.data());
+#endif
+
 #ifdef HAVE_UNLOCKPT
   unlockpt(d->masterFd);
 #endif
 
-  if (d->slaveFd < 0) { // slave pty not yet opened?
-    d->slaveFd = ::open(d->ttyName, O_RDWR);
-    if (d->slaveFd < 0)
-    {
-      kdWarning(175) << "Can't open slave pseudo teletype" << endl;
-      ::close(d->masterFd);
-      d->masterFd = -1;
-      return false;
-    }
+  d->slaveFd = ::open(d->ttyName.data(), O_RDWR);
+  if (d->slaveFd < 0)
+  {
+    kdWarning(175) << "Can't open slave pseudo teletype" << endl;
+    ::close(d->masterFd);
+    d->masterFd = -1;
+    return false;
   }
 
 #if (defined(__svr4__) || defined(__sgi__))
@@ -347,9 +337,19 @@ void KPty::close()
 {
    if (d->masterFd < 0)
       return;
-   chown(d->ttyName.data(), 0, 0);
-   chmod(d->ttyName.data(), S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH);
-   chownpty(false);
+   // don't bother resetting unix98 pty, it will go away after closing master anyway.
+   if (memcmp(d->ttyName.data(), "/dev/pts/", 9)) {
+      if (!geteuid()) {
+         struct stat st;
+         if (!stat(d->ttyName.data(), &st)) {
+            chown(d->ttyName.data(), 0, st.st_gid == getgid() ? 0 : -1);
+            chmod(d->ttyName.data(), S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH);
+	 }
+      } else {
+         fcntl(d->masterFd, F_SETFD, 0);
+         chownpty(false);
+      }
+   }
    ::close(d->slaveFd);
    ::close(d->masterFd);
    d->masterFd = d->slaveFd = -1;
@@ -491,10 +491,6 @@ int KPty::slaveFd() const
 // private
 bool KPty::chownpty(bool grant)
 {
-  if (!d->needGrantPty)
-    return true;
-
-  fcntl(d->masterFd, F_SETFD, 0);
   KProcess proc;
   proc << locate("exe", BASE_CHOWN) << (grant?"--grant":"--revoke") << QString::number(d->masterFd);
   return proc.start(KProcess::Block) && proc.normalExit() && !proc.exitStatus();

@@ -24,8 +24,9 @@
  * GPL applies.
  */
 
+#include <config.h>
+
 #include <sys/types.h>
-#include <sys/param.h> /* for BSD */
 #include <errno.h>
 #include <grp.h>
 #include <stdio.h>
@@ -45,7 +46,6 @@
 
 int main (int argc, char *argv[])
 {
-  char*         pty;
   struct stat   st;
   struct group* p;
   gid_t         gid;
@@ -71,92 +71,94 @@ int main (int argc, char *argv[])
     return 1; /* FAIL */
   }
 
-  /* setup parameters for the operation ***********************************/
-
-  if (!strcmp(argv[1],"--grant"))
-  {
-    uid = getuid(); /* current user id */
-    mod = S_IRUSR | S_IWUSR | S_IWGRP;
-  }
-  else
-  {
-    uid = 0;        /* root */
-    mod = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH;
-  }
-  /* Get the group ID of the special `tty' group.  */
-  p = getgrnam(TTY_GROUP);            /* posix */
-  gid = p ? p->gr_gid : getgid ();    /* posix */
   fd = atoi(argv[2]);
 
-  /* get slave pty name from master pty file handle in PTY_FILENO *********/
-
-  /* Check that fd is a valid master pseudo terminal.  */
-  pty = ttyname(fd);          /* posix */
-
-#if defined(BSD_PTY_HACK)
-  if (pty == NULL)
+  /* get slave pty name from master pty file handle *********/
+#ifdef HAVE_PTSNAME
+  tty = ptsname(fd);
+  if (!tty)
+#endif
   {
-  /*
-    Hack to make kgrantpty work on some versions of FreeBSD (and possibly
-    other systems): ttyname(3) does not work with a file descriptor opened
-    on a /dev/pty?? device.
+    /* Check that fd is a valid master pseudo terminal.  */
+    char *pty = ttyname(fd);
 
-    Instead, this code looks through all the devices in /dev for a device
-    which has the same inode as our PTY_FILENO descriptor... if found, we
-    have the name for our pty.
-  */
+#ifdef BSD_PTY_HACK
+    if (pty == NULL)
+    {
+    /*
+      Hack to make kgrantpty work on some versions of FreeBSD (and possibly
+      other systems): ttyname(3) does not work with a file descriptor opened
+      on a /dev/pty?? device.
 
-    struct dirent *dirp;
-    DIR *dp;
-    struct stat dsb;
+      Instead, this code looks through all the devices in /dev for a device
+      which has the same inode as our PTY_FILENO descriptor... if found, we
+      have the name for our pty.
+    */
 
-    if (uid == 0) {
-      p = getgrnam("wheel");
-      gid = p ? p->gr_gid : getgid();
-    }
+      struct dirent *dirp;
+      DIR *dp;
+      struct stat dsb;
 
-    if (fstat(fd, &dsb) != -1) {
-      if ((dp = opendir(_PATH_DEV)) != NULL) {
-        while ((dirp = readdir(dp))) {
-          if (dirp->d_fileno != dsb.st_ino)
-            continue;
-	  pty = malloc(sizeof(_PATH_DEV) + strlen(dirp->d_name));
-	  if (pty) {
-	    strcpy(pty, _PATH_DEV);
-	    strcat(pty, dirp->d_name);
+      if (fstat(fd, &dsb) != -1) {
+        if ((dp = opendir(_PATH_DEV)) != NULL) {
+          while ((dirp = readdir(dp))) {
+            if (dirp->d_fileno != dsb.st_ino)
+              continue;
+            pty = malloc(sizeof(_PATH_DEV) + strlen(dirp->d_name));
+            if (pty) {
+              strcpy(pty, _PATH_DEV);
+              strcat(pty, dirp->d_name);
+            }
+            break;
           }
-	  break;
-        }
 
-        (void) closedir(dp);
+          (void) closedir(dp);
+        }
       }
     }
-  }
 #endif
 
-  if (pty == NULL)
-  {
-    fprintf(stderr,"%s: cannot determine pty name.\n",argv[0]);
-    return 1; /* FAIL */
-  }
-  close(fd);
+    if (pty == NULL)
+    {
+      fprintf(stderr,"%s: cannot determine pty name.\n",argv[0]);
+      return 1; /* FAIL */
+    }
 
-  /* matches /dev/pty?? */
-  if (strlen(pty) < 8 || strncmp(pty,"/dev/pty",8))
-  {
-    fprintf(stderr,"%s: determined a strange pty name `%s'.\n",argv[0],pty);
-    return 1; /* FAIL */
-  }
+    /* matches /dev/pty?? */
+    if (memcmp(pty,"/dev/pty",8))
+    {
+      fprintf(stderr,"%s: determined a strange pty name `%s'.\n",argv[0],pty);
+      return 1; /* FAIL */
+    }
 
-  tty = malloc(strlen(pty) + 1);
-  strcpy(tty,"/dev/tty");
-  strcat(tty,pty+8);
+    tty = malloc(strlen(pty) + 1);
+    strcpy(tty,"/dev/tty");
+    strcat(tty,pty+8);
+  }
 
   /* Check that the returned slave pseudo terminal is a character device.  */
   if (stat(tty, &st) < 0 || !S_ISCHR(st.st_mode))
   {
     fprintf(stderr,"%s: found `%s' not to be a character device.\n",argv[0],tty);
     return 1; /* FAIL */
+  }
+
+  /* setup parameters for the operation ***********************************/
+
+  if (!strcmp(argv[1],"--grant"))
+  {
+    uid = getuid();
+    p = getgrnam(TTY_GROUP);
+    if (!p)
+      p = getgrnam("wheel");
+    gid = p ? p->gr_gid : getgid ();
+    mod = S_IRUSR | S_IWUSR | S_IWGRP;
+  }
+  else
+  {
+    uid = 0;
+    gid = st.st_gid == getgid () ? 0 : -1;
+    mod = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH;
   }
 
   /* Perform the actual chown/chmod ************************************/
@@ -172,14 +174,6 @@ int main (int argc, char *argv[])
     fprintf(stderr,"%s: cannot chmod %s: %s\n",argv[0],tty,strerror(errno));
     return 1; /* FAIL */
   }
-
-#ifdef BSD
-  if (revoke(tty) < 0)
-  {
-    fprintf(stderr,"%s: cannot revoke %s: %s\n",argv[0],tty,strerror(errno));
-    return 1; /* FAIL */
-  }
-#endif
 
   return 0; /* OK */
 }
