@@ -19,5 +19,9 @@
 #define HAVE_AWE32
 #endif
 
+#ifndef AWE_SET_CHANNEL_MODE
+// AWE32 doesn't work if AWE_SET_CHANNEL_MODE isn't defined.
+#undef HAVE_AWE32
+#endif
 
 #endif
