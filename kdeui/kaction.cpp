@@ -2247,6 +2247,7 @@ KActionMenu::KActionMenu( QObject* parent, const char* name )
   : KAction( parent, name )
 {
   d = new KActionMenuPrivate;
+  setShortcutConfigurable( false );
 }
 
 KActionMenu::KActionMenu( const QString& text, QObject* parent,
@@ -2254,6 +2255,7 @@ KActionMenu::KActionMenu( const QString& text, QObject* parent,
   : KAction( text, 0, parent, name )
 {
   d = new KActionMenuPrivate;
+  setShortcutConfigurable( false );
 }
 
 KActionMenu::KActionMenu( const QString& text, const QIconSet& icon,
@@ -2261,6 +2263,7 @@ KActionMenu::KActionMenu( const QString& text, const QIconSet& icon,
   : KAction( text, icon, 0, parent, name )
 {
   d = new KActionMenuPrivate;
+  setShortcutConfigurable( false );
 }
 
 KActionMenu::KActionMenu( const QString& text, const QString& icon,
@@ -2268,6 +2271,7 @@ KActionMenu::KActionMenu( const QString& text, const QString& icon,
   : KAction( text, icon, 0, parent, name )
 {
   d = new KActionMenuPrivate;
+  setShortcutConfigurable( false );
 }
 
 KActionMenu::~KActionMenu()
