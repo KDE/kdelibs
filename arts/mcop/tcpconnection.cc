@@ -28,7 +28,9 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <stdio.h>
+#define queue cqueue
 #include <netdb.h>
+#undef queue
 #include <netinet/in.h>
 #include <sys/un.h>
 #include <errno.h>

@@ -28,7 +28,9 @@
 #include "unixserver.h"
 #include "socketconnection.h"
 #include "dispatcher.h"
+#define queue cqueue
 #include <arpa/inet.h>
+#undef queue
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/un.h>
