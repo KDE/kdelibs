@@ -1397,13 +1397,13 @@ CopyJob *KIO::move(const KURL& src, const KURL& dest )
 {
   KURL::List srcList;
   srcList.append( src );
-  CopyJob *job = new CopyJob( srcList, dest, false );
+  CopyJob *job = new CopyJob( srcList, dest, true );
   return job;
 }
 
 CopyJob *KIO::move( const KURL::List& src, const KURL& dest )
 {
-  CopyJob *job = new CopyJob( src, dest, false );
+  CopyJob *job = new CopyJob( src, dest, true );
   return job;
 }
 
