@@ -2,14 +2,14 @@
 themes=Marble^eRISC OS^eSystem++^eSystem-Series^e
 
 [marble]
-file=themes/marble.themerc
+file=marble.themerc
 
 [risc os]
-file=themes/riscos.themerc
+file=riscos.themerc
 
 [system++]
-file=themes/system.themerc
+file=system.themerc
 
 [system-series]
-file=themes/systemalt.themerc
+file=systemalt.themerc
 
