@@ -43,6 +43,8 @@ static CSSValueImpl *valueForLength(const Length &length, int max)
 static DOMString stringForBorderStyle(EBorderStyle style)
 {
     switch (style) {
+    case khtml::BNATIVE:
+        return "-khtml-native";
     case khtml::BNONE:
         return "none";
     case khtml::BHIDDEN:
