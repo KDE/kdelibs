@@ -18,8 +18,6 @@
     Boston, MA 02111-1307, USA.
         */
 
-// $Id$
-
 #include "config.h"
 
 #undef QT_NO_TRANSLATION
@@ -417,8 +415,8 @@ void KApplication::removeX11EventFilter( const QWidget* filter )
 
 // FIXME: remove this when we've get a better method of
 // customizing accelerator handling -- hopefully in Qt.
-// For now, this is set whenever KAccel catches an AccelOverride event 
-// so that the KeyPress event that follows isn't processed as well.
+// For now, this is set whenever an accelerator is overridden
+// in KAccelEventHandler so that the AccelOverride isn't sent twice. -- ellis, 19/10/02
 extern bool kde_g_bKillAccelOverride;
 
 bool KApplication::notify(QObject *receiver, QEvent *event)
@@ -428,13 +426,13 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
     {
        kde_g_bKillAccelOverride = false;
        // Indicate that the accelerator has been overridden.
-       if (t == QEvent::KeyPress)
+       if (t == QEvent::AccelOverride)
        {
           static_cast<QKeyEvent *>(event)->accept();
           return true;
        }
        else
-          kdWarning(125) << "kde_g_bKillAccelOverride set, but received an event other than KeyPress." << endl;
+          kdWarning(125) << "kde_g_bKillAccelOverride set, but received an event other than AccelOverride." << endl;
     }
 
     if ((t == QEvent::AccelOverride) || (t == QEvent::KeyPress))
