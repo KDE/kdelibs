@@ -117,3 +117,4 @@ parser: $(parserfiles)
 
 .PHONY: parser
 
+include ../../admin/Doxyfile.am
