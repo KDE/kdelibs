@@ -156,10 +156,15 @@ public:
     void gettingFile( const QString &_file ); // probably obsolete ?
 
     /**
-     * Call to signal a warning.
-     ##### TODO : this is doesn't do anything yet
+     * Call to signal a warning, to be displayed in a dialog box.
      */
     void warning( const QString &msg );
+
+    /**
+     * Call to signal a message, to be displayed if the application wants to,
+     * for instance in a status bar. Usual examples are "connecting to host xyz", etc.
+     */
+    void infoMessage( const QString &msg );
 
     /**
      * Call this when requesting for a login and password.

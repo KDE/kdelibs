@@ -254,6 +254,12 @@ void SlaveBase::warning( const QString &_msg)
     m_pConnection->send( INF_WARNING, data );
 }
 
+void SlaveBase::infoMessage( const QString &_msg)
+{
+    KIO_DATA << _msg;
+    m_pConnection->send( INF_INFOMESSAGE, data );
+}
+
 void SlaveBase::statEntry( const UDSEntry& entry )
 {
     KIO_DATA << entry;

@@ -165,6 +165,12 @@ void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 	openPassDlg(str1, user, pass, key);
 	break;
     }
+    case INF_INFOMESSAGE: {
+        QString msg;
+        stream >> msg;
+        infoMessage(msg);
+        break;
+    }
     default:
 	assert( 0 );
     }

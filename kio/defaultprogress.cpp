@@ -132,6 +132,12 @@ void DefaultProgress::slotPercent( KIO::Job*, unsigned long percent )
 }
 
 
+void DefaultProgress::slotInfoMessage( KIO::Job*, const QString & msg )
+{
+  speedLabel->setText( msg );
+}
+
+
 void DefaultProgress::slotProcessedSize( KIO::Job*, unsigned long bytes ) {
   m_iProcessedSize = bytes;
 

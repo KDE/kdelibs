@@ -44,6 +44,7 @@ public slots:
 
   virtual void slotSpeed( KIO::Job*, unsigned long bytes_per_second );
   virtual void slotPercent( KIO::Job*, unsigned long percent );
+  virtual void slotInfoMessage( KIO::Job*, const QString & msg );
 
   virtual void slotCopying( KIO::Job*, const KURL& src, const KURL& dest );
   virtual void slotMoving( KIO::Job*, const KURL& src, const KURL& dest );

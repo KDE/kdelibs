@@ -72,7 +72,8 @@ class Connection;
    INF_ERROR_PAGE,
    INF_WARNING,
    INF_GETTING_FILE, // ?
-   INF_NEED_PASSWD
+   INF_NEED_PASSWD,
+   INF_INFOMESSAGE
    // add new ones here once a release is done, to avoid breaking binary compatibility
  };
 
@@ -142,6 +143,7 @@ public:
     void mimeType( const QString & ) ;
     void warning( const QString & ) ;
     void gettingFile( const QString & ) ; // ?
+    void infoMessage( const QString & ) ;
     void connectFinished();
 
 protected:

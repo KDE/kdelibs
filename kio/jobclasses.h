@@ -133,6 +133,12 @@ namespace KIO {
          */
         void percent( KIO::Job *job, unsigned long percent );
 
+        /**
+         * Emitted to display information about this job, as sent by the slave.
+         * Examples of message are "Resolving host", "Connecting to host...", etc.
+         */
+        void infoMessage( KIO::Job *, const QString & msg );
+
     protected slots:
         /**
          * Called whenever a subjob finishes.
@@ -250,6 +256,11 @@ namespace KIO {
          * Called on a slave's warning
          */
         virtual void slotWarning( const QString & );
+
+        /**
+         * Called on a slave's info message
+         */
+        virtual void slotInfoMessage( const QString & );
 
     public slots:
         /**
@@ -432,6 +443,9 @@ namespace KIO {
          */
         void speed( KIO::Job *, unsigned long bytes_per_second );
 
+    protected slots:
+        void slotProcessedSize( KIO::Job*, unsigned long data_size );
+
     protected:
         void startCopyJob();
         void startDataPump();
@@ -519,6 +533,7 @@ namespace KIO {
         void processedDirs( KIO::Job *, unsigned long dirs );
 
         void speed( KIO::Job *, unsigned long bytes_per_second );
+        void infoMessage( KIO::Job *, const QString & msg );
 
         /**
          * The job is copying a file or directory
@@ -561,6 +576,7 @@ namespace KIO {
 
         void slotProcessedSize( KIO::Job*, unsigned long data_size );
         void slotSpeed( KIO::Job*, unsigned long bytes_per_second );
+        void slotInfoMessage( KIO::Job*, const QString & );
 
     private:
         bool m_move;
@@ -603,6 +619,7 @@ namespace KIO {
         void processedDirs( KIO::Job *, unsigned long dirs );
         // Never emitted, but connected in deleteNextDir...
         void speed( KIO::Job *, unsigned long bytes_per_second );
+        void infoMessage( KIO::Job *, const QString & msg );
 
         void deleting( KIO::Job *, const KURL& file );
 

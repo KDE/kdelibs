@@ -106,7 +106,7 @@ void Observer::slotTotalDirs( KIO::Job* job, unsigned long dirs )
 
 void Observer::slotProcessedSize( KIO::Job* job, unsigned long size )
 {
-//   kdDebug() << "** Observer::slotProcessedSize " << job << " " << size << endl;
+  kdDebug() << "** Observer::slotProcessedSize " << job << " " << job->progressId() << " " << size << endl;
   m_uiserver->processedSize( job->progressId(), size );
 }
 
@@ -132,6 +132,11 @@ void Observer::slotPercent( KIO::Job* job, unsigned long percent )
 {
 //   kdDebug() << "** Observer::slotPercent " << job << " " << percent << endl;
   m_uiserver->percent( job->progressId(), percent );
+}
+
+void Observer::slotInfoMessage( KIO::Job* job, const QString & msg )
+{
+  m_uiserver->infoMessage( job->progressId(), msg );
 }
 
 void Observer::slotCopying( KIO::Job* job, const KURL& from, const KURL& to )

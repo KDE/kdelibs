@@ -67,6 +67,7 @@ public:
 
   void setPercent( unsigned long percent );
   void setSpeed( unsigned long bytes_per_second );
+  void setInfoMessage( const QString & msg );
 
   void setCopying( const KURL& from, const KURL& to );
   void setMoving( const KURL& from, const KURL& to );
@@ -203,6 +204,7 @@ k_dcop:
 
   void percent( int id, unsigned long ipercent );
   void speed( int id, unsigned long bytes_per_second );
+  void infoMessage( int id, const QString & msg );
 
   void copying( int id, KURL from, KURL to );
   void moving( int id, KURL from, KURL to );

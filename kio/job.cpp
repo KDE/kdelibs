@@ -71,9 +71,11 @@ Job::Job(bool showProgressInfo) : QObject(0, "job"), m_error(0), m_percent(0), m
     {
         kdDebug(7007) << " -- with progress info -- " << endl;
         m_progressId = Observer::self()->newJob( this );
-        // Connect global progress info signal
+        // Connect global progress info signals
         connect( this, SIGNAL( percent( KIO::Job*, unsigned long ) ),
                  Observer::self(), SLOT( slotPercent( KIO::Job*, unsigned long ) ) );
+        connect( this, SIGNAL( infoMessage( KIO::Job*, const QString & ) ),
+                 Observer::self(), SLOT( slotInfoMessage( KIO::Job*, const QString & ) ) );
     }
 }
 
@@ -151,7 +153,17 @@ SimpleJob::SimpleJob(const KURL& url, int command, const QByteArray &packedArgs,
         m_errorText = m_url.url();
         QTimer::singleShot(0, this, SLOT(slotFinished()) );
     } else
+    {
+        if ( showProgressInfo ) {
+            connect( this, SIGNAL( totalSize( KIO::Job*, unsigned long ) ),
+                     Observer::self(), SLOT( slotTotalSize( KIO::Job*, unsigned long ) ) );
+            connect( this, SIGNAL( processedSize( KIO::Job*, unsigned long ) ),
+                     Observer::self(), SLOT( slotProcessedSize( KIO::Job*, unsigned long ) ) );
+            connect( this, SIGNAL( speed( KIO::Job*, unsigned long ) ),
+                     Observer::self(), SLOT( slotSpeed( KIO::Job*, unsigned long ) ) );
+        }
         Scheduler::doJob(this);
+    }
 }
 
 void SimpleJob::kill( bool quietly )
@@ -197,6 +209,9 @@ void SimpleJob::start(Slave *slave)
 
     connect( m_slave, SIGNAL( warning( const QString & ) ),
 	     SLOT( slotWarning( const QString & ) ) );
+
+    connect( m_slave, SIGNAL( infoMessage( const QString & ) ),
+	     SLOT( slotInfoMessage( const QString & ) ) );
 
     connect( m_slave, SIGNAL( finished() ),
 	     SLOT( slotFinished() ) );
@@ -244,6 +259,11 @@ void SimpleJob::slotError( int error, const QString & errorText )
 void SimpleJob::slotWarning( const QString & errorText )
 {
     KMessageBox::information( 0L, errorText );
+}
+
+void SimpleJob::slotInfoMessage( const QString & msg )
+{
+    emit infoMessage( this, msg );
 }
 
 void SimpleJob::slotTotalSize( unsigned long size )
@@ -603,6 +623,14 @@ FileCopyJob::FileCopyJob( const KURL& src, const KURL& dest, int permissions,
     : Job(showProgressInfo), m_src(src), m_dest(dest),
       m_permissions(permissions), m_move(move), m_overwrite(overwrite), m_resume(resume)
 {
+    if ( showProgressInfo ) {
+        connect( this, SIGNAL( totalSize( KIO::Job*, unsigned long ) ),
+                 Observer::self(), SLOT( slotTotalSize( KIO::Job*, unsigned long ) ) );
+        connect( this, SIGNAL( processedSize( KIO::Job*, unsigned long ) ),
+                 Observer::self(), SLOT( slotProcessedSize( KIO::Job*, unsigned long ) ) );
+        connect( this, SIGNAL( speed( KIO::Job*, unsigned long ) ),
+                 Observer::self(), SLOT( slotSpeed( KIO::Job*, unsigned long ) ) );
+    }
     kdDebug(7007) << "FileCopyJob::FileCopyJob()" << endl;
     m_moveJob = 0;
     m_copyJob = 0;
@@ -645,17 +673,28 @@ void FileCopyJob::startCopyJob()
 
 void FileCopyJob::connectSubjob( SimpleJob * job )
 {
+    // This is sort of wrong, since the job param should become 'this' when forwarded
+  // (TODO)
     connect( job, SIGNAL(totalSize( KIO::Job*, unsigned long )),
              this, SIGNAL( totalSize(KIO::Job*, unsigned long)) );
 
     connect( job, SIGNAL(processedSize( KIO::Job*, unsigned long )),
-             this, SIGNAL( processedSize(KIO::Job*, unsigned long)) );
+             this, SLOT( slotProcessedSize(KIO::Job*, unsigned long)) );
 
     connect( job, SIGNAL(percent( KIO::Job*, unsigned long )),
              this, SIGNAL( percent(KIO::Job*, unsigned long)) );
 
     connect( job, SIGNAL(speed( KIO::Job*, unsigned long )),
              this, SIGNAL( speed(KIO::Job*, unsigned long)) );
+
+    connect( job, SIGNAL(infoMessage( KIO::Job*, const QString & )),
+             this, SIGNAL( infoMessage(KIO::Job*, const QString &)) );
+}
+
+void FileCopyJob::slotProcessedSize( KIO::Job *, unsigned long size )
+{
+    emit processedSize( this, size );
+    // TODO compute percent. We really need to put that code in a common place.
 }
 
 void FileCopyJob::startDataPump()
@@ -1800,6 +1839,11 @@ void CopyJob::slotSpeed( KIO::Job*, unsigned long bytes_per_second )
 {
   kdDebug(7007) << "CopyJob::slotSpeed " << (unsigned int) bytes_per_second << endl;
   emit speed( this, bytes_per_second );
+}
+
+void CopyJob::slotInfoMessage( KIO::Job*, const QString & msg )
+{
+  emit infoMessage( this, msg );
 }
 
 void CopyJob::slotResultDeletingDirs( Job * job )

@@ -142,6 +142,11 @@ void ProgressItem::setPercent( unsigned long percent ) {
   defaultProgress->slotPercent( 0, percent );
 }
 
+void ProgressItem::setInfoMessage( const QString & msg ) {
+  setText( listProgress->lv_progress, msg );
+
+  defaultProgress->slotInfoMessage( 0, msg );
+}
 
 void ProgressItem::setSpeed( unsigned long bytes_per_second ) {
   m_iSpeed = bytes_per_second;
@@ -469,6 +474,16 @@ void UIServer::speed( int id, unsigned long bytes_per_second )
   ProgressItem *item = findItem( id );
   if ( item ) {
     item->setSpeed( bytes_per_second );
+  }
+}
+
+void UIServer::infoMessage( int id, const QString & msg )
+{
+  kdDebug(7024) << "UIServer::infoMessage " << id << " " << msg << endl;
+
+  ProgressItem *item = findItem( id );
+  if ( item ) {
+    item->setInfoMessage( msg );
   }
 }
 
