@@ -32,13 +32,6 @@
 
 using namespace khtml;
 
-RenderInline::RenderInline(DOM::NodeImpl* node)
-:RenderFlow(node), m_isContinuation( false )
-{}
-
-RenderInline::~RenderInline()
-{}
-
 void RenderInline::setStyle(RenderStyle* _style)
 {
     RenderFlow::setStyle(_style);

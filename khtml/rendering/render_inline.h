@@ -33,8 +33,7 @@ namespace khtml {
 class RenderInline : public RenderFlow
 {
 public:
-    RenderInline(DOM::NodeImpl* node);
-    virtual ~RenderInline();
+    RenderInline(DOM::NodeImpl* node) : RenderFlow( node ), m_isContinuation( false ) {}
 
     virtual const char *renderName() const;
 

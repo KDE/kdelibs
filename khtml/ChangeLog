@@ -1,5 +1,8 @@
 2004-02-25  Dirk Mueller  <mueller@kde.org>
 
+	* rendering/render_inline.h (class RenderInline):
+	constructor/destructor cleanup.
+
 	* misc/htmlattrs.h: don't export getAttrName symbol.
 
 	* rendering/render_object.h (class RenderObject): move background
