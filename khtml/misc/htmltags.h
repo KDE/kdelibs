@@ -70,8 +70,8 @@ DOM::DOMString getTagName(unsigned short id);
 #define ID_META 60
 #define ID_NOEMBED 61
 #define ID_NOFRAMES 62
-#define ID_NOSCRIPT 63
-#define ID_NOLAYER 64
+#define ID_NOLAYER 63
+#define ID_NOSCRIPT 64
 #define ID_OBJECT 65
 #define ID_OL 66
 #define ID_OPTGROUP 67
