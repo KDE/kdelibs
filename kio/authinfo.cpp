@@ -118,6 +118,7 @@ NetRC* NetRC::self()
 bool NetRC::lookup( const KURL& url, AutoLogin& login, bool userealnetrc,
                     QString type, int mode )
 {
+    // kdDebug() << "AutoLogin lookup for: " << url.host() << endl;
     if ( !url.isValid() )
         return false;
 
@@ -128,7 +129,7 @@ bool NetRC::lookup( const KURL& url, AutoLogin& login, bool userealnetrc,
     {
         int fd;
         loginMap.clear();
-        QString filename = locateLocal("config", ".kionetrc");
+        QString filename = locateLocal("config", "kionetrc");
         bool status=((fd=openf(filename)) != -1);
         if ( status )
             parse( fd );
@@ -200,14 +201,14 @@ bool NetRC::flush() const
     if ( loginMap.isEmpty() )
         return false;
 
-    KSaveFile saveFile ( locateLocal("config", ".kionetrc"), 0600 );
+    KSaveFile saveFile ( locateLocal("config", "kionetrc"), 0600 );
     if (saveFile.status() != 0)
         return false;
 
     FILE* f = saveFile.fstream();
-    fprintf(f, "#\n# .kionetrc - non-protocol specific password storage"
+    fprintf(f, "#\n# kionetrc - non-protocol specific password storage"
                "\n# file.  The format used is exactly the same as the"
-               "\n# \".netrc\" file with some minor distinctions.  .kionetrc"
+               "\n# \".netrc\" file with some minor distinctions.  kionetrc"
                "\n# does not support the \"macdef\" keyword and also adds"
                "\n# one extra keyword, type, which is used to determine the"
                "\n# protocol or type for whom the login information is stored!"
@@ -275,6 +276,7 @@ QString NetRC::extract( const char* buf, const char* key, int& pos )
 
 void NetRC::parse( int fd )
 {
+    // kdDebug() << "Parsing config files..." << endl;
     uint index = 0;
     QString macro, type;
     bool isMacro = false;
