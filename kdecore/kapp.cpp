@@ -1779,7 +1779,7 @@ void KApplication::invokeMailer(const KURL &mailtoURL)
        body = KURL::decode_string((*it).mid(5));
      else
      if ((*it).startsWith("attach="))
-       body = KURL::decode_string((*it).mid(7));
+       attach = KURL::decode_string((*it).mid(7));
 
 
    // WARNING: This will only work as long as the path of the
