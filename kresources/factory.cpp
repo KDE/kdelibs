@@ -84,7 +84,7 @@ ResourceFactory::~ResourceFactory()
   mResourceList.clear();
 }
 
-QStringList ResourceFactory::resourceTypeNames()
+QStringList ResourceFactory::resourceTypeNames() const
 {
   kdDebug(5700) << "ResourceFactory::resourceTypeNames()" << endl;
   QStringList retval;

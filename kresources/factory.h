@@ -91,7 +91,7 @@ public:
   /**
    * Returns a list of all available resource types.
    */
-  QStringList resourceTypeNames();
+  QStringList resourceTypeNames() const;
 
   /**
    * Returns the info structure for a special type.

@@ -72,14 +72,12 @@ public:
     manager->sync();
   }
 
-  void add( T* resource ) {
-    Resource* res = static_cast<Resource *>( resource );
-    if ( res ) manager->add( res );
+  void add( Resource* resource ) {
+    if ( resource ) manager->add( resource );
   }
 
-  void remove( const T* resource ) {
-    const Resource* res = static_cast<const Resource *>( resource );
-    if ( res ) manager->remove( res );
+  void remove( const Resource* resource ) {
+    if ( resource ) manager->remove( resource );
   }
 
   T* standardResource() { return dynamic_cast<T *>( manager->standardResource() ); }
@@ -89,11 +87,14 @@ public:
     if ( res ) manager->setStandardResource( res );
   }
 
-  void setActive( T* resource, bool active ) {
-    Resource* res = static_cast<Resource *>( resource );
-    if ( res ) manager->setActive( res, active );
+  void setActive( Resource* resource, bool active ) {
+    if ( resource ) manager->setActive( resource, active );
   }
 
+  // it's very dangerous to return a temporary QPtrList object, and it's very
+  // expensive, as copying a QPtrList is very slow. It's dangerous because people
+  // tend to write QPtrListIterator<T> it( foo->blahList() ); and while it compiles
+  // when returning a QPtrList by value it gives a rather unpleasant effect at run-time.
   QPtrList<T> resources() { 
     QPtrList<Resource> list = manager->resources();
     QPtrList<T> result;
@@ -146,7 +147,7 @@ public:
   /**
    * Returns a list of the names of all available resource types.
    */
-  QStringList resourceTypeNames() { return factory->resourceTypeNames(); }
+  QStringList resourceTypeNames() const { return factory->resourceTypeNames(); }
 
   void resourceChanged( const T* resource ) { 
     const Resource* res = static_cast<const Resource *>( resource );
