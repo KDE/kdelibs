@@ -756,7 +756,6 @@ NodeImpl *KHTMLParser::getElement(Token *t)
 	popBlock(ID_FORM);
 	form = new HTMLFormElementImpl(document);
 	n = form;
-	exitFunc = &KHTMLParser::blockEndForm;
 	break;
     case ID_BUTTON:
 	n = new HTMLButtonElementImpl(document, form);
@@ -803,13 +802,11 @@ NodeImpl *KHTMLParser::getElement(Token *t)
     case ID_UL:
     {
 	n = new HTMLUListElementImpl(document);
-	exitFunc = &KHTMLParser::blockEndList;
 	break;
     }
     case ID_OL:
     {
 	n = new HTMLOListElementImpl(document);
-	exitFunc = &KHTMLParser::blockEndList;
 	break;
     }
     case ID_DIR:
@@ -1129,14 +1126,6 @@ void KHTMLParser::freeBlock()
     while (blockStack)
 	popOneBlock();
     blockStack = 0;
-}
-
-void KHTMLParser::blockEndList( HTMLStackElem *Elem)
-{
-}
-
-void KHTMLParser::blockEndForm( HTMLStackElem * )
-{
 }
 
 

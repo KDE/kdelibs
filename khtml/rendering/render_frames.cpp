@@ -431,7 +431,7 @@ void RenderFrame::setWidget( QWidget *widget )
   repaint();
 }
 
-void RenderFrame::layout( bool deep  )
+void RenderFrame::layout( bool )
 {
   if ( m_widget )
     m_widget->resize( m_width, m_height );

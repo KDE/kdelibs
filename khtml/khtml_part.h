@@ -24,6 +24,7 @@
 #define __khtml_part_h__
 
 #include "dom/html_document.h"
+#include "dom/dom2_range.h"
 
 #include <kparts/part.h>
 #include <kparts/browserextension.h>
@@ -56,6 +57,54 @@ namespace KParts
   class PartManager;
 };
 
+/**
+ * This class is khtml's main class. It features an almost complete
+ * web browser, and html renderer.
+ *
+ * The easiest way to use this class (if you just want to display a HTML
+ * page at some URL) is the following:
+ *
+ * <pre>
+ * QString url = "http://www.kde.org";
+ * KHTMLPart *w = new KHTMLPart();
+ * w->openURL(url);
+ * w->view()->resize(500, 400);
+ * w->show();
+ * </pre>
+ *
+ * By default the Widget behaves as a full browser, so clicking on some link
+ * on the page you just opened will lead yu to that page. This is inconvenient,
+ * if you want to use the widget to display for example formatted emails, but
+ * don't want the widget to open the site in this window in case someone
+ * clicks on an embedded link. In this case just use
+ * @ref setFollowsLinks(false). You will then get a Signal @ref urlClicked()
+ * instead of KHTMLPart following the links directly.
+ *
+ * By default Java and JavaScript support is disabled. You can enable it by
+ * using the @ref enableJava() and @ref enableJScript() methods.
+ *
+ * Some apps want to write their HTML code directly into the widget instead of
+ * it opening an url. You can also do that in the following way:
+ *
+ * <pre>
+ * QString myHTMLCode = ...;
+ * KHTMLPart *w = new KHTMLPart();
+ * w->begin();
+ * w->write(myHTMLCode);
+ * ...
+ * w->end();
+ * </pre>
+ *
+ * You can do as many calls to write as you want. But there are two @ref write()
+ * methods, one accepting a @ref QString one accepting a char * argument. These
+ * should not get mixed, since the method usnig the char * argument does an
+ * additional decoding step to convert the written data to Unicode.
+ *
+ * @short HTML Browser Widget
+ * @author Lars Knoll (knoll@kde.org)
+ * @version $Id$
+ *
+ */
 class KHTMLPart : public KParts::ReadOnlyPart
 {
   Q_OBJECT
@@ -88,21 +137,88 @@ public:
    * should images be loaded automatically? Default is true.
    * (not implemented at the moment)
    */
-  //void autoloadImages( bool enable );
-  //bool autoloadImages() const;
+    void autoloadImages( bool enable );
+    bool autoloadImages() const;
 
 
 
+    /**
+     * Clears the widget and prepares it for new content.
+     * If you want @ref url() to return
+     * for example "file:/tmp/test.html", you can use the following code:
+     * <PRE>
+     * view->begin( QString("file:/tmp/test.html" ) );
+     * </PRE>
+     *
+     * @param _url is the url of the document to be displayed.  Even if you
+     * are generating the HTML on the fly, it may be useful to specify
+     * a directory so that any pixmaps are found.
+     * @param _dx is the initial horizontal scrollbar value. Usually you don't
+     * want to use this.
+     * @param _dy is the initial vertical scrollbar value. Usually you don't
+     * want to use this.
+     *
+     * All child frames and the old document are removed if you call this method.
+     */	
   virtual void begin( const KURL &url, int xOffset = 0, int yOffset = 0 );
-  virtual void write( const char *str, int len );
-  virtual void write( const QString &str );
+
+    /**
+     * Writes another part of the HTML code to the widget. You may call
+     * this function many times in sequence. But remember: The less calls
+     * the faster the widget is.
+     *
+     * The html code is send through a decoder, which decodes the stream to
+     * unicode.
+     *
+     * The len parameter is needed for streams encoded in utf-16, since these
+     * can have \0 chars in them. In case the encoding you're using isn't
+     * utf-16, you can safely leave out the length parameter.
+     *
+     * Attention: Don't mix calls to write( const char *) with calls
+     * to write( const QString & ). The result might not be what you want.
+     */
+    virtual void write( const char *str, int len = -1 );
+
+    /**
+     * Writes another part of the HTML code to the widget. You may call
+     * this function many times in sequence. But remember: The less calls
+     * the faster the widget is.
+     */
+    virtual void write( const QString &str );
+
+    /**
+     * Call this after your last call to @ref #write.
+     */
   virtual void end();
 
-  const khtml::Settings *settings() const;
+    /**
+     * Print current HTML page layouted for the printer.
+     * (not implemented at the moment)
+     */
+    //    void print(QPainter *, int pageHeight, int pageWidth);
 
+    const khtml::Settings *settings() const;
+
+    /**
+     * Mainly used internally. Sets the document's base URL
+     */
   void setBaseURL( const KURL &url );
+    /**
+     * @return the base URL of this document
+     *
+     * The base url is ususally set by an <base url=...> tag in the document head.
+     */
   KURL baseURL() const;
-  void setBaseTarget( const QString &target );
+
+    /**
+     * Mainly used internally. Sets the document's base target.
+     */
+    void setBaseTarget( const QString &target );
+    /**
+     * @return the base target of this document
+     * The base target is ususally set by an <base target=...>
+     * tag in the document head.
+     */
   QString baseTarget() const;
 
   KURL completeURL( const QString &url, const QString &target = QString::null );
@@ -180,6 +296,11 @@ public:
    */
   void setFixedFont( const QString &name );
 
+    /**
+     * Find the anchor named '_name'. If the anchor is found, the widget
+     * scrolls to the closest position. Returns TRUE if the anchor has
+     * been found.
+     */
   bool gotoAnchor( const QString &name );
 
   /**
@@ -205,27 +326,26 @@ public:
   bool findTextNext( const QRegExp &exp );
 
   /**
-   * Selects all text between ( _x1, _y1 ) and ( _x2, y2 ).  The selection
-   * area selects text line by line, NOT by bounding rectangle.
-   */
-  virtual void selectText( int _x1, int _y1, int _x2, int _y2 );
-
-  /**
    * Get the text the user has marked.
    */
-  virtual QString selectedText();
+  virtual QString selectedText() const;
+
+    /**
+     * @returns the selected part of the HTML
+     */
+    DOM::Range selection() const;
 
   /**
-   * Has the user selected any text?  Call @ref #selectedText to
+   * Has the user selected anything?  Call @ref #selectedText to
    * retrieve the selected text.
    *
    * @return true if there is text selected.
    */
-  bool isTextSelected() const { return false; }
+  bool hasSelection() const;
 
   void show();
   void hide();
-  
+
   KParts::PartManager *partManager();
 
   virtual void saveState( QDataStream &stream );

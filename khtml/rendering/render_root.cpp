@@ -79,7 +79,7 @@ void RenderRoot::repaintObject(RenderObject *o, int x, int y)
 void RenderRoot::updateSize()
 {
 //    printf("%s(RenderRoot)::updateSize()\n", renderName());
-    int oldMin = m_minWidth;
+    //int oldMin = m_minWidth;
     setLayouted(false);
     calcMinMaxWidth();
 

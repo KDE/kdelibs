@@ -368,6 +368,16 @@ bool KHTMLPart::javaEnabled() const
   return d->m_bJavaEnabled;
 }
 
+void KHTMLPart::autoloadImages( bool /*enable*/ )
+{
+    // ###
+}
+
+bool KHTMLPart::autoloadImages() const
+{
+    return true;
+}
+
 void KHTMLPart::clear()
 {
   if ( d->m_bCleared )
@@ -770,15 +780,21 @@ bool KHTMLPart::findTextNext( const QRegExp &exp )
 }
 
 
-QString KHTMLPart::selectedText()
+QString KHTMLPart::selectedText() const
 {
     // ###
     return QString::null;
 }
 
-void KHTMLPart::selectText( int _x1, int _y1, int _x2, int _y2 )
+bool KHTMLPart::hasSelection() const
+{
+    return false;
+}
+
+DOM::Range KHTMLPart::selection() const
 {
     // ###
+    return DOM::Range();
 }
 
 
@@ -1480,7 +1496,7 @@ void KHTMLPart::hide()
 {
   if ( d->m_view )
     d->m_view->hide();
-} 
+}
 
 KHTMLPartBrowserExtension::KHTMLPartBrowserExtension( KHTMLPart *parent, const char *name )
 : KParts::BrowserExtension( parent, name )

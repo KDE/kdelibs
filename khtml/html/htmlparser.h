@@ -117,10 +117,6 @@ protected:
 
     void freeBlock( void);
 
-    // block exit functions:
-    void blockEndList( HTMLStackElem *Elem);
-    void blockEndForm( HTMLStackElem *Elem);
-
     ushort *forbiddenTag;
 
     /*

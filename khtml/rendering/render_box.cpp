@@ -182,8 +182,8 @@ void RenderBox::setPixmap(const QPixmap &)
     repaint();	//repaint bg when it gets loaded
 }
 
-void RenderBox::printBoxDecorations(QPainter *p,int _x, int _y,
-				       int _w, int _h, int _tx, int _ty)
+void RenderBox::printBoxDecorations(QPainter *p,int, int _y,
+				       int, int _h, int _tx, int _ty)
 {
     //printf("renderBox::printDecorations()\n");
 
@@ -279,11 +279,11 @@ void RenderBox::updateSize()
 {
 //    printf("%s(RenderBox)::updateSize()\n", renderName());
 
-    int oldMin = m_minWidth;    
+    int oldMin = m_minWidth;
     int oldMax = m_maxWidth;
-    setMinMaxKnown(false);    
+    setMinMaxKnown(false);
     calcMinMaxWidth();
-    if(m_minWidth > containingBlockWidth() || m_minWidth != oldMin || 
+    if(m_minWidth > containingBlockWidth() || m_minWidth != oldMin ||
     	m_maxWidth != oldMax)
     {    	
 	setLayouted(false);
@@ -300,11 +300,11 @@ void RenderBox::updateSize()
 	} else {
 	    repaint();
 	}
-    } 
-    
+    }
+
 }
 
-void RenderBox::position(int x, int y, int, int, int width, bool)
+void RenderBox::position(int x, int y, int, int, int, bool)
 {
     m_x = x;
     m_y = y;
