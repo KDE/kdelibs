@@ -47,6 +47,18 @@ the command <pre>chmod 666 /dev/dsp</pre>
    already owned by a group called audio, so the only thing you need to do
    is adding users to the group.
 <p>
+<b>This does help for artsd, but what about kmix, kmid, kscd?</b>
+<p>
+There are various other devices which provide functionality accessed by
+multimedia apps. You can treat them in the same way, either by making them
+accessible for everybody, or using groups to control access. Here is a
+list, which may still be incomplete (also if there are various devices
+of a kind like midi0, midi1, ..., then only the 0-version is listed here):
+<p>
+/dev/audio, /dev/dsp, /dev/midi0, /dev/midi00, /dev/mixer, /dev/mpu401data,
+/dev/mpu401stat, /dev/rmidi0, /dev/sequencer, /dev/smpte0, /dev/sndstat,
+/dev/cdrom, /dev/rtc
+<p>
 <table width="100%"><tr bgcolor="#fafacb"><h2>non-aRts applications</h2></tr></table>
 <p>
 <b>As soon as KDE is running, no other application can access my sound device?</b>
