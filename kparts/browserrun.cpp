@@ -288,9 +288,9 @@ BrowserRun::AskSaveResult BrowserRun::askSave( const KURL & url, KService::Ptr o
     // of surl containing a '%'
     if ( suggestedFilename.isEmpty() )
     {
-        question = i18n("Open '%2'?\nType:%1").arg(comment).arg(surl);
+        question = i18n("Open '%2'?\nType: %1").arg(comment).arg(surl);
     } else {
-        question = i18n("Open '%3'?\nName:%2\nType:%1").arg(comment).arg(suggestedFilename).arg(surl);
+        question = i18n("Open '%3'?\nName: %2\nType: %1").arg(comment).arg(suggestedFilename).arg(surl);
     }
 
     // Text used for the open button
