@@ -40,9 +40,10 @@ build-stamp:
 
 alsa-stamp:
 	dh_testdir
-	$(MAKE) -C arts/ clean
-	$(MAKE) -C libkmid/ clean
-	./configure $(configkde) --with-alsa --without-ssl --enable-cups \
+	-$(MAKE) -C arts/ clean
+	-$(MAKE) -C libkmid/ clean
+	-$(MAKE) -C kdeprint/cups clean
+	./configure $(configkde) --without-alsa --without-ssl --enable-cups \
 		--includedir=/usr/include/kde
 	$(MAKE) -C libkmid/ 
 	$(MAKE) -C arts/ 
@@ -99,13 +100,18 @@ install: build
 	dh_testdir
 	dh_testroot
 	dh_clean -a
+	-rm -rf debian/kdelibs3 debian/alsa-tmp
 	-install -d debian/kdelibs3
 	cd debian/install-tmp && find ./ | cpio -pmd $(tmp)/
 	dh_installdirs -a
-	$(MAKE) -C libkmid/ DESTDIR=`pwd`/debian/alsa-tmp/ install
-	$(MAKE) -C arts/ DESTDIR=`pwd`/debian/alsa-tmp/ install
+	$(MAKE) -C libkmid/ DESTDIR=$(alsa-tmp)/ install
+	$(MAKE) -C arts/ DESTDIR=$(alsa-tmp)/ install
 	$(MAKE) -C kdeprint/cups DESTDIR=`pwd`/debian/kdelibs3/ install
-	cp debian/*alsa.override $(alsa-tmp)/usr/share/lintian/overrides/libkmid-alsa
+	-install -d $(alsa-tmp)/usr/share/lintian/overrides/
+	cp debian/*alsa.override $(alsa-tmp)/usr/share/lintian/overrides/
+	for i in `ls debian/alsa-tmp/usr/share/lintian/overrides/`; do \
+		mv debian/alsa-tmp/usr/share/lintian/overrides/$$i debian/alsa-tmp/usr/share/lintian/overrides/`echo $$i | sed -e 's#.override##'`; \
+	done
 
 binary-arch:  build install
 	dh_testdir
