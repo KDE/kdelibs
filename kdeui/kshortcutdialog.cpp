@@ -19,6 +19,8 @@
 
 #include "kshortcutdialog.h"
 
+#include <qvariant.h>
+
 #ifdef Q_WS_X11
 	#define XK_XKB_KEYS
 	#define XK_MISCELLANY
@@ -37,10 +39,16 @@
 	#endif
 #endif
 
+#include <kshortcutdialog_simple.h>
+#include <kshortcutdialog_advanced.h>
+
 #include <qbuttongroup.h>
 #include <qcheckbox.h>
 #include <qframe.h>
+#include <qlayout.h>
 #include <qradiobutton.h>
+#include <qtimer.h>
+#include <qvbox.h>
 
 #include <kapplication.h>
 #include <kconfig.h>
@@ -55,8 +63,21 @@
 bool KShortcutDialog::s_showMore = false;
 
 KShortcutDialog::KShortcutDialog( const KShortcut& shortcut, bool bQtShortcut, QWidget* parent, const char* name )
-: KIShortcutDialog( parent, name )
+: KDialogBase( parent, name, true, i18n("Configure Shortcut"),
+               KDialogBase::Details|KDialogBase::Ok|KDialogBase::Cancel, KDialogBase::Cancel, true )
 {
+        setButtonText(Details, i18n("Advanced"));
+        m_stack = new QVBox(this);
+        m_stack->setMinimumWidth(360);
+        m_stack->setSpacing(0);
+        m_stack->setMargin(0);
+        setMainWidget(m_stack);
+        
+        m_simple = new KShortcutDialogSimple(m_stack);
+
+        m_adv = new KShortcutDialogAdvanced(m_stack);
+        m_adv->hide();
+        
 	m_bQtShortcut = bQtShortcut;
 
 	m_bGrab = false;
@@ -66,23 +87,38 @@ KShortcutDialog::KShortcutDialog( const KShortcut& shortcut, bool bQtShortcut, Q
 	m_bRecording = false;
 	m_mod = 0;
 
-	m_btnClearPrimary->setPixmap( SmallIcon( "locationbar_erase" ) );
-	m_btnClearAlternate->setPixmap( SmallIcon( "locationbar_erase" ) );
+	m_simple->m_btnClearShortcut->setPixmap( SmallIcon( "locationbar_erase" ) );
+	m_adv->m_btnClearPrimary->setPixmap( SmallIcon( "locationbar_erase" ) );
+	m_adv->m_btnClearAlternate->setPixmap( SmallIcon( "locationbar_erase" ) );
+	connect(m_simple->m_btnClearShortcut, SIGNAL(clicked()),
+	        this, SLOT(slotClearShortcut()));
+	connect(m_adv->m_btnClearPrimary, SIGNAL(clicked()),
+	        this, SLOT(slotClearPrimary()));
+	connect(m_adv->m_btnClearAlternate, SIGNAL(clicked()),
+	        this, SLOT(slotClearAlternate()));
+
+	connect(m_adv->m_txtPrimary, SIGNAL(clicked()),
+		m_adv->m_btnPrimary, SLOT(animateClick()));
+	connect(m_adv->m_txtAlternate, SIGNAL(clicked()),
+		m_adv->m_btnAlternate, SLOT(animateClick()));
+	connect(m_adv->m_btnPrimary, SIGNAL(clicked()),
+		this, SLOT(slotSelectPrimary()));
+	connect(m_adv->m_btnAlternate, SIGNAL(clicked()),
+		this, SLOT(slotSelectAlternate()));
 
 	KGuiItem ok = KStdGuiItem::ok();
 	ok.setText( i18n( "OK" ) );
-	m_btnOK->setGuiItem( ok );
+	setButtonOK( ok );
 
 	KGuiItem cancel = KStdGuiItem::cancel();
 	cancel.setText( i18n( "Cancel" ) );
-	m_btnCancel->setGuiItem( cancel );
-	m_btnCancel_2->setGuiItem( cancel );
+	setButtonCancel( cancel );
 
-	m_frameMore->hide();
 	setShortcut( shortcut );
 	resize( 0, 0 );
 
 	s_showMore = KConfigGroup(KGlobal::config(), "General").readBoolEntry("ShowAlternativeShortcutConfig", s_showMore);
+	updateDetails();
 
 	#ifdef Q_WS_X11
 	kapp->installX11EventFilter( this );	// Allow button to capture X Key Events.
@@ -126,14 +162,14 @@ void KShortcutDialog::updateShortcutDisplay()
 			s[m_iSeq] += ",";
 	}
 	else {
-		m_txtPrimary->setDefault( false );
-		m_txtAlternate->setDefault( false );
+		m_adv->m_txtPrimary->setDefault( false );
+		m_adv->m_txtAlternate->setDefault( false );
 		this->setFocus();
 	}
 
-	m_txtShortcut->setText( s[0] );
-	m_txtPrimary->setText( s[0] );
-	m_txtAlternate->setText( s[1] );
+	m_simple->m_txtShortcut->setText( s[0] );
+	m_adv->m_txtPrimary->setText( s[0] );
+	m_adv->m_txtAlternate->setText( s[1] );
 
 	// Determine the enable state of the 'Less' button
 	bool bLessOk;
@@ -146,40 +182,41 @@ void KShortcutDialog::updateShortcutDisplay()
 	// Otherwise, we have an alternate shortcut or multi-key shortcut(s).
 	else
 		bLessOk = false;
-	m_btnLess->setEnabled( bLessOk );
+	enableButton(Details, bLessOk);
 }
 
-void KShortcutDialog::slotShowMore()
+void KShortcutDialog::slotDetails()
 {
-	s_showMore = true;
+	s_showMore = (m_adv->isHidden());
+	updateDetails();
+}
+
+void KShortcutDialog::updateDetails()
+{
+	bool showAdvanced = s_showMore || (m_shortcut.count() > 1);
+	setDetails(showAdvanced);
 	m_bRecording = false;
 	m_iSeq = 0;
 	m_iKey = 0;
 
-	m_frameMore->show();
-	m_frameLess->hide();
-	//m_btnPrimary->setFocus();
-	this->setFocus();
-	m_btnPrimary->setChecked( true );
-	slotSelectPrimary();
-}
-
-void KShortcutDialog::slotShowLess()
-{
-	s_showMore = false;
-	m_bRecording = false;
-	m_iSeq = 0;
-	m_iKey = 0;
-
-	m_ptxtCurrent = m_txtShortcut;
-	m_frameMore->hide();
-	m_frameLess->show();
-	m_txtShortcut->setDefault( true );
-	m_txtShortcut->setFocus();
-	m_btnMultiKey->setChecked( false );
-
-	// FIXME: why doesn't this work?  I want the dialog to try to set it's minimum size.
-	resize( 1, 1 );
+	if (showAdvanced)
+	{
+		m_simple->hide();
+		m_adv->show();
+		m_adv->m_btnPrimary->setChecked( true );
+		slotSelectPrimary();
+	}
+	else
+	{
+		m_ptxtCurrent = m_simple->m_txtShortcut;
+		m_adv->hide();
+		m_simple->show();
+		m_simple->m_txtShortcut->setDefault( true );
+		m_simple->m_txtShortcut->setFocus();
+		m_adv->m_btnMultiKey->setChecked( false );
+	}
+	kapp->processEvents();
+	adjustSize();
 }
 
 void KShortcutDialog::slotSelectPrimary()
@@ -187,8 +224,9 @@ void KShortcutDialog::slotSelectPrimary()
 	m_bRecording = false;
 	m_iSeq = 0;
 	m_iKey = 0;
-	m_ptxtCurrent = m_txtPrimary;
-	this->setFocus();
+	m_ptxtCurrent = m_adv->m_txtPrimary;
+	m_ptxtCurrent->setDefault(true);
+	m_ptxtCurrent->setFocus();
 	updateShortcutDisplay();
 }
         
@@ -197,15 +235,22 @@ void KShortcutDialog::slotSelectAlternate()
 	m_bRecording = false;
 	m_iSeq = 1;
 	m_iKey = 0;
-	m_ptxtCurrent = m_txtAlternate;
-	this->setFocus();
+	m_ptxtCurrent = m_adv->m_txtAlternate;
+	m_ptxtCurrent->setDefault(true);
+	m_ptxtCurrent->setFocus();
+	updateShortcutDisplay();
+}
+
+void KShortcutDialog::slotClearShortcut()
+{
+	m_shortcut.setSeq( 0, KKeySequence() );
 	updateShortcutDisplay();
 }
 
 void KShortcutDialog::slotClearPrimary()
 {
 	m_shortcut.setSeq( 0, KKeySequence() );
-	m_btnPrimary->setChecked( true );
+	m_adv->m_btnPrimary->setChecked( true );
 	slotSelectPrimary();
 }
 
@@ -213,7 +258,7 @@ void KShortcutDialog::slotClearAlternate()
 {
 	if( m_shortcut.count() == 2 )
 		m_shortcut.init( m_shortcut.seq(0) );
-	m_btnAlternate->setChecked( true );
+	m_adv->m_btnAlternate->setChecked( true );
 	slotSelectAlternate();
 }
 
@@ -225,31 +270,6 @@ void KShortcutDialog::slotMultiKeyMode( bool bOn )
 	m_iKey = 0;
 		updateShortcutDisplay();
 	}
-}
-
-void KShortcutDialog::showEvent( QShowEvent * pEvent )
-{
-	//kdDebug(125) << "KShortcutDialog::showEvent" << endl;
-	if( m_shortcut.count() == 1 && !s_showMore)
-		slotShowLess();
-	else
-		slotShowMore();
-
-	KIShortcutDialog::showEvent( pEvent );
-}
-
-// TODO: delete me
-void KShortcutDialog::hideEvent( QHideEvent * pEvent )
-{
-	//kdDebug(125) << "KShortcutDialog::hideEvent" << endl;
-	KIShortcutDialog::hideEvent( pEvent );
-}
-
-// TODO: delete me
-void KShortcutDialog::paintEvent( QPaintEvent * pEvent )
-{
-	//kdDebug(125) << "KShortcutDialog::paintEvent" << endl;
-	KIShortcutDialog::paintEvent( pEvent );
 }
 
 #ifdef Q_WS_X11
@@ -284,7 +304,7 @@ bool KShortcutDialog::x11Event( XEvent *pEvent )
 			//kdDebug(125) << "x11Event->type = " << pEvent->type << endl;
 			break;
 	}
-	return QWidget::x11Event( pEvent );
+	return KDialogBase::x11Event( pEvent );
 }
 
 static uint getModsFromModX( uint keyModX )
@@ -390,7 +410,7 @@ void KShortcutDialog::keyPressed( KKey key )
 	m_shortcut.setSeq( m_iSeq, seq );
 
 	m_mod = 0;
-	if( m_btnMultiKey->isChecked() && m_iKey < KKeySequence::MAX_KEYS - 1 )
+	if( m_adv->m_btnMultiKey->isChecked() && m_iKey < KKeySequence::MAX_KEYS - 1 )
 		m_iKey++;
 	else {
 		m_iKey = 0;
@@ -399,8 +419,8 @@ void KShortcutDialog::keyPressed( KKey key )
 
 	updateShortcutDisplay();
 
-	if( !m_btnMultiKey->isChecked() )
-		accept();
+	if( !m_adv->m_btnMultiKey->isChecked() )
+		QTimer::singleShot(500, this, SLOT(accept()));
 }
 
 #include "kshortcutdialog.moc"

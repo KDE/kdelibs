@@ -20,14 +20,17 @@
 #ifndef _KSHORTCUTDIALOG_H_
 #define _KSHORTCUTDIALOG_H_
 
-#include "kishortcutdialog.h"
+#include "kdialogbase.h"
+#include "kshortcut.h"
 
-class KShortcut;
+class QVBox;
+class KPushButton;
+class KShortcutDialogSimple;
+class KShortcutDialogAdvanced;
 
-class KShortcutDialog : public KIShortcutDialog
+class KShortcutDialog : public KDialogBase
 {
 	Q_OBJECT
-
 public:
 	KShortcutDialog( const KShortcut& shortcut, bool bQtShortcut, QWidget* parent = 0, const char* name = 0 );
 	~KShortcutDialog();
@@ -45,17 +48,16 @@ private:
 	uint m_iKey;
 	bool m_bRecording;
 	uint m_mod;
-
-	virtual void showEvent( QShowEvent * pEvent );
-	virtual void hideEvent( QHideEvent * pEvent );
-	virtual void paintEvent( QPaintEvent * pEvent );
-	//virtual bool event( QEvent * pEvent );
-
+	KShortcutDialogSimple *m_simple;
+	KShortcutDialogAdvanced *m_adv;
+	QVBox *m_stack;
+	
 	void setShortcut( const KShortcut & shortcut );
 	void updateShortcutDisplay();
 	//void displayMods();
 	void keyEvent( QKeyEvent * pEvent );
 	void keyPressed( KKey key );
+	void updateDetails();
 
 	#ifdef Q_WS_X11
 	virtual bool x11Event( XEvent *pEvent );
@@ -65,10 +67,10 @@ private:
 	#endif
 
 private slots:
-	void slotShowMore();
-	void slotShowLess();
+	void slotDetails();
 	void slotSelectPrimary();
 	void slotSelectAlternate();
+	void slotClearShortcut();
 	void slotClearPrimary();
 	void slotClearAlternate();
 	void slotMultiKeyMode( bool bOn );
