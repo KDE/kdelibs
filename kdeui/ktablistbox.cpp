@@ -34,7 +34,7 @@
 //      NoOrder = Old mode, do not order.
 //      SimpleOrder = An arrow appear near the title of column, are all
 //                    disabled except the current selected column.
-//      ComplexOrder= Use a new widget KNumCheckButton, the behaviour is very 
+//      ComplexOrder= Use a new widget KNumCheckButton, the behaviour is very
 //                    complex:
 //               Single Left Click : set to the next free number if the
 //                                   button is blank,or else do nothing.
@@ -46,7 +46,7 @@
 //
 //   Todo:
 //    - Save the current status of checkbutton/arrows to the config file.
-                      
+
 #include "ktablistbox.h"
 
 #include <qfontmetrics.h>
@@ -183,9 +183,9 @@ void KTabListBoxColumn::setOrder(KTabListBox::OrderType ort,
   }
 }
 
-  
+
 //-----------------------------------------------------------------------------
-void KTabListBoxColumn::paintCell(QPainter* paint, int row, 
+void KTabListBoxColumn::paintCell(QPainter* paint, int row,
 				  const QString& string, bool marked)
 {
   QFontMetrics fm = paint->fontMetrics();
@@ -195,14 +195,14 @@ void KTabListBoxColumn::paintCell(QPainter* paint, int row,
 
   if (marked)
   {
-    paint->fillRect(0, 0, iwidth, parent->cellHeight(row), 
+    paint->fillRect(0, 0, iwidth, parent->cellHeight(row),
 		     parent->highlightColor);
     pen.setColor(kapp->selectTextColor);
     oldPen = paint->pen();
     paint->setPen(pen);
   }
 
-  if (!string.isEmpty()) 
+  if (!string.isEmpty())
     switch(colType)
   {
   case KTabListBox::PixmapColumn:
@@ -215,8 +215,8 @@ void KTabListBoxColumn::paintCell(QPainter* paint, int row,
     /*else output as string*/
 
   case KTabListBox::TextColumn:
-    paint->drawText(1, fm.ascent() +(fm.leading()), 
-		    (const char*)string); 
+    paint->drawText(1, fm.ascent() +(fm.leading()),
+		    (const char*)string);
     break;
 
   case KTabListBox::MixedColumn:
@@ -236,7 +236,7 @@ void KTabListBoxColumn::paintCell(QPainter* paint, int row,
 	{
 	  debug("KTabListBox "+QString(name())+
 		":\nno pixmap for\n`"+pixName+"' registered.");
-	} 
+	}
 	if (!pix->isNull()) paint->drawPixmap(x, 0, *pix);
 	x += pix->width()+1;
 	beg = end+1;
@@ -245,7 +245,7 @@ void KTabListBoxColumn::paintCell(QPainter* paint, int row,
           break;
     }
 
-    paint->drawText(x+1, fm.ascent() +(fm.leading()), 
+    paint->drawText(x+1, fm.ascent() +(fm.leading()),
 		    (const char*)string.mid(beg, string.length()-beg));
     break;
   }
@@ -280,7 +280,7 @@ void KTabListBoxColumn::paint(QPainter* paint)
       else
          paint->drawPixmap(-3, -1, parent->disabledDownPix);
 
-    if(ordtype==KTabListBox::ComplexOrder) 
+    if(ordtype==KTabListBox::ComplexOrder)
     {
       a=paint->xForm(b);
       mbut->move(a.x()+15,a.y()+2);
@@ -317,7 +317,7 @@ void KTabListBoxColumn::resetButton(void)
       parent->lastSelectedColumn--;
       inumber=0;
       if(mbut) mbut->setText(" ");
-      if(parent->lastSelectedColumn) 
+      if(parent->lastSelectedColumn)
         parent->repaint();
       else
         // This is for simulating a NoSort (useful for special cases like
@@ -349,7 +349,7 @@ void KTabListBoxColumn::clearAll(bool leftbutton)
 //
 //=============================================================================
 KTabListBox::KTabListBox(QWidget *parent, const char *name, int columns,
-			 WFlags _f): 
+			 WFlags _f):
     KTabListBoxInherited(parent, name, _f), lbox(this)
 {
   QFontMetrics fm = fontMetrics();
@@ -361,7 +361,7 @@ KTabListBox::KTabListBox(QWidget *parent, const char *name, int columns,
   f = kapp->kde_datadir().copy();
   f += "/khtmlw/pics/khtmlw_dnd.xpm";
   dndDefaultPixmap.load(f.data());
-  
+
   f = kapp->kde_toolbardir().copy();
   f += "/up.xpm";
   upPix.load(f.data());
@@ -373,7 +373,7 @@ KTabListBox::KTabListBox(QWidget *parent, const char *name, int columns,
   QColorGroup g1 = pal.disabled();
   // Prepare the disabledPixmap for drawing
   // Maybe we can semplify it a bit, some suggestions??
-  
+
   disabledUpPix.resize(upPix.width(), upPix.height());
   disabledDownPix.resize(downPix.width(), downPix.height());
 
@@ -393,8 +393,8 @@ KTabListBox::KTabListBox(QWidget *parent, const char *name, int columns,
     mask1 = new QBitmap(downPix.createHeuristicMask());
     allocated1 = true;
   }
-  
-  QBitmap bitmap = *mask; // YES! make a DEEP copy before setting the mask!     
+
+  QBitmap bitmap = *mask; // YES! make a DEEP copy before setting the mask!
   QBitmap bitmap1 = *mask1;
   bitmap.setMask(*mask);
   bitmap1.setMask(*mask1);
@@ -414,7 +414,7 @@ KTabListBox::KTabListBox(QWidget *parent, const char *name, int columns,
   p1.drawPixmap(0, 0, bitmap1);
   p1.end();
 
-    
+
   if (allocated) // This shouldn't occur anymore!
     delete mask;
   if(allocated1)
@@ -517,12 +517,12 @@ void KTabListBox::setNumCols(int aCols)
   itemList = 0L;
   itemShowList=0L;
   maxItems = 0;
-  
+
   if (aCols < 0) aCols = 0;
   lbox.setNumCols(aCols);
   numColumns = aCols;
   if (aCols <= 0) return;
-  
+
   colList  = new KTabListBoxColumnPtr[aCols];
   colShowList = new int[aCols];
   for (i=0; i<aCols; i++)
@@ -567,7 +567,7 @@ void KTabListBox::readConfig(void)
     w = str.mid(beg,end-beg).toInt();
     if (colList[i]->orderType()==ComplexOrder)
        fixedmin+=ARROW_SPACE+labelHeight-BUTTON_SPACE;
-    else 
+    else
        if (colList[i]->orderType()==SimpleOrder)
           fixedmin+=ARROW_SPACE;
     if (w < fixedmin) w = fixedmin;
@@ -576,7 +576,7 @@ void KTabListBox::readConfig(void)
     i++;
     beg = end+1;
   }
-  else 
+  else
    for(i=0;i<cols;i++)
    {
      colList[i]->setWidth(60);
@@ -636,7 +636,7 @@ void KTabListBox::reorderRows()
   KTabListBoxColumn *pc[10];
   int (*columnSort)(const char *, const char *);
   OrderMode fmode;
-  
+
   needsSort=true;
   if(!lbox.autoUpdate()) return;
   needsSort=false;
@@ -661,10 +661,10 @@ void KTabListBox::reorderRows()
     repaint();
     return;
   }
-  
+
   columnSort=pc[1]->columnSort; c1=iColNum[0];
   fmode=pc[1]->orderMode();
-  
+
   change=false;
   for(n=0;n<totRows-1;n++)
   {
@@ -703,7 +703,7 @@ bool KTabListBox::recursiveSort(int level,int n,
                                 KTabListBoxColumn **pc,int *iCol)
 {
   int result;
-  
+
   result=pc[level]->columnSort(
            itemList[itemShowList[n]]->text(iCol[level-1]).data(),
            itemList[itemShowList[n+1]]->text(iCol[level-1]).data() );
@@ -711,7 +711,7 @@ bool KTabListBox::recursiveSort(int level,int n,
     if(pc[level+1] && recursiveSort(level+1,n,pc,iCol))
        return true;
     else return false;
-  else 
+  else
     if(  (result<0 && pc[level]->orderMode()==Ascending) ||
          (result>0 && pc[level]->orderMode()==Descending) )
       return true;
@@ -750,6 +750,18 @@ void KTabListBox::setCurrentItem(int idx, int colId)
 
   unmarkAll();
 
+  
+  if ( idx <= topItem() && idx < lbox.lastRowVisible() )
+      lbox.setTopCell( itemPosList(idx));
+  else if ( idx >= lbox.lastRowVisible() )
+      {
+	  int i = itemPosList(idx)+1;
+	  int y = 0;
+	  while (i) y += cellHeight(--i);
+	  y -= lbox.viewHeight();
+	  lbox.setYOffset( y );
+      }
+  
   if (idx != current)
   {
     i = current;
@@ -810,7 +822,7 @@ void KTabListBox::unmarkItem(int idx)
 
   mark = itemList[idx]->marked();
   itemList[idx]->setMarked(-2);
-  if (mark>=-1) 
+  if (mark>=-1)
   {
     nMarked--;
     updateItem(idx);
@@ -837,7 +849,7 @@ const QString& KTabListBox::text(int row, int col) const
   static QString str;
   int i, cols;
 
-  if (!item) 
+  if (!item)
   {
     str = 0L;
     return str;
@@ -862,7 +874,7 @@ void KTabListBox::insertItem(const char* aStr, int row)
   int i, newSize;
 
   if (row < 0) row = numRows();
-  if (numRows() >= maxItems) 
+  if (numRows() >= maxItems)
   {
     newSize = (maxItems << 1);
     if (newSize <= row) newSize = row+2;
@@ -879,15 +891,15 @@ void KTabListBox::insertItem(const char* aStr, int row)
   }
   itemList[row] = it;
   itemShowList[row]=row;
-  
+
   if (itemPosList(current) >itemPosList(row))
     current=itemShowList[itemPosList(current+1)];
-    
+
   setNumRows(numRows()+1);
   changeItem(aStr, row);
 
   reorderRows();
-  if (needsUpdate(row)) 
+  if (needsUpdate(row))
       lbox.repaint();
 }
 
@@ -972,7 +984,7 @@ void KTabListBox::removeItem(int row)
 
   if (row < 0 || row >= numRows()) return;
   upd = needsUpdate(row);
-  if (itemPosList(current) >itemPosList(row)) 
+  if (itemPosList(current) >itemPosList(row))
     current=itemShowList[itemPosList(current-1)];
 
   nr = numRows()-1;
@@ -1013,7 +1025,7 @@ void KTabListBox::changeMode(int col)
   // Add optimization HERE!!!!
   if(col >= lbox.numCols() || col < 0)
     return;
-  if(colList[col]->changeMode()) 
+  if(colList[col]->changeMode())
     reorderRows();
 }
 
@@ -1023,7 +1035,7 @@ void KTabListBox::adjustNumber(int num)
 {
   int t;
   for(t=0;t<numColumns;t++)
-    if(colList[t]->number()>num) 
+    if(colList[t]->number()>num)
       colList[t]->setNumber(colList[t]->number()-1);
   lastSelectedColumn--;
 }
@@ -1101,7 +1113,7 @@ void KTabListBox::resizeList(int newNumItems)
   newItemShowList = new int[newNumItems];
   ih = newNumItems < oldNum ? newNumItems : oldNum;
   for (i = ih-1; i>=0; i--)
-  {  
+  {
     newItemList[i] = itemList[i];
     newItemShowList[i] = itemShowList[i];
   }
@@ -1129,11 +1141,11 @@ void KTabListBox::resizeList(int newNumItems)
 
 //-----------------------------------------------------------------------------
 // This should really go into kdecore. Currently it's used by khtml and this.
-// It prevents the tablist to continue to scroll after the user has released 
+// It prevents the tablist to continue to scroll after the user has released
 // the key.
 void KTabListBox::flushKeys()
 {
-    XEvent ev_return;     
+    XEvent ev_return;
     Display *dpy = qt_xdisplay();
     while ( XCheckTypedEvent( dpy, KeyPress, &ev_return ) );
 }
@@ -1142,13 +1154,13 @@ void KTabListBox::flushKeys()
 //-----------------------------------------------------------------------------
 void KTabListBox::keyPressEvent( QKeyEvent *e )
 {
-    
+
     QScrollBar *sY=(QScrollBar*)lbox.verticalScrollBar();
     QScrollBar *sX=(QScrollBar*)lbox.horizontalScrollBar();
     bool thereIsX=sX->isVisible();
     //int pageJump = lbox.lastRowVisible()-lbox.topCell();
     int t;
-    
+
     switch ( e->key() ) {
     case Key_Left:
         if(thereIsX) sX->setValue( sX->value() - sX->lineStep() );
@@ -1159,7 +1171,7 @@ void KTabListBox::keyPressEvent( QKeyEvent *e )
         flushKeys();
         break;
     case Key_Up:
-        if(current==topCell()) 
+        if(current==topCell())
           sY->setValue( sY->value() - sY->lineStep() );
         setCItem(itemShowList[itemPosList(current)-1]);
         flushKeys();
@@ -1234,7 +1246,7 @@ void KTabListBox::resizeEvent(QResizeEvent* e)
     colList[colShowList[numCols()-1]]->setWidth(
     e->size().width()-w-t+colList[colShowList[numCols()-1]]->defaultWidth() );
 
-  lbox.setGeometry(0, labelHeight, e->size().width(), 
+  lbox.setGeometry(0, labelHeight, e->size().width(),
 		    e->size().height()-labelHeight);
   lbox.reconnectSBSignals();
   repaint();
@@ -1281,7 +1293,7 @@ void KTabListBox::paintEvent(QPaintEvent*)
     qDrawShadeRect (&paint, 0, 0, width(), height(),
                     KTabListBoxInherited::colorGroup(), true, 1);
 
-  paint.end();  
+  paint.end();
 }
 
 
@@ -1293,7 +1305,7 @@ void KTabListBox::mouseMoveEvent(QMouseEvent* e)
 
   ex = e->pos().x();
   ey = e->pos().y();
-  
+
   if ((e->state() & LeftButton))
   {
     if (!drag)
@@ -1303,8 +1315,8 @@ void KTabListBox::mouseMoveEvent(QMouseEvent* e)
       if (mResizeCol && abs(mMouseStart.x() - ex) > 4)
 	doMouseResizeCol(e);
 
-      else if (!mResizeCol && 
-	       (ex < mMouseColLeft || 
+      else if (!mResizeCol &&
+	       (ex < mMouseColLeft ||
 		ex > (mMouseColLeft+mMouseColWidth)))
       {
         mMouseDragColumn=true;
@@ -1364,7 +1376,7 @@ void KTabListBox::mousePressEvent(QMouseEvent* e)
     for(t=0;t<colPosList(mMouseCol);t++)
         mMouseColLeft+=colList[colShowList[t]]->width();
     mLastX=mMouseColLeft;
-    
+
   }
   KTabListBoxInherited::mousePressEvent(e);
 }
@@ -1378,7 +1390,7 @@ void KTabListBox::mouseReleaseEvent(QMouseEvent* e)
     if (!mMouseAction)
     {
       // user wants to select the column rather than drag or move it
-      if (mMouseCol >= 0) 
+      if (mMouseCol >= 0)
       {
         emit headerClicked(mMouseCol);
         // changeMode knows if to do a repaint or not.
@@ -1395,21 +1407,21 @@ void KTabListBox::mouseReleaseEvent(QMouseEvent* e)
       {
         int tmp, t;
         tmp=colShowList[mMouseCol];
-        
+
         if(actualColumn>mMouseCol)
           for(t=mMouseCol;t<actualColumn;t++)
               colShowList[t]=colShowList[t+1];
         else
           for(t=mMouseCol;t>=actualColumn;t--)
               colShowList[t]=colShowList[t-1];
-        
+
         colShowList[actualColumn]=tmp;
       }
-      repaint(); 
+      repaint();
     }
     else if(mResizeCol) // The user had resized the column, make a resize:
-      resize(width(),height());    
-    
+      resize(width(),height());
+
     mMouseCol = -1;
     mMouseAction = FALSE;
   }
@@ -1429,7 +1441,7 @@ void KTabListBox::doMouseResizeCol(QMouseEvent* e)
     w = mMouseColWidth + (x - mMouseColLeft);
     if (colList[mMouseCol]->orderType()==ComplexOrder)
        fixedmin+=ARROW_SPACE+labelHeight-BUTTON_SPACE;
-    else 
+    else
        if (colList[mMouseCol]->orderType()==SimpleOrder)
           fixedmin+=ARROW_SPACE;
     if (w < fixedmin) w = fixedmin;
@@ -1454,14 +1466,14 @@ void KTabListBox::doMouseMoveCol(QMouseEvent* e)
 {
   int x,old;
   QPainter paint;
-  
+
   if (!mMouseAction) mMouseAction = true;
   x = e->pos().x();
 
   if(x<0)
   {
     QScrollBar *sX=(QScrollBar*)lbox.horizontalScrollBar();
-    if(sX->isVisible())    
+    if(sX->isVisible())
     {
       old=sX->value();
       sX->setValue( sX->value() + x );
@@ -1594,7 +1606,7 @@ int KTabListBoxTable::findRealCol(int xPos)
  int xPos1;
  KTabListBox*owner =(KTabListBox*)parentWidget();
  int maxCol=owner->numColumns;
-       
+
  if ( xPos >= minViewX() && xPos <= maxViewX() )
  {
    column = 0;
@@ -1604,7 +1616,7 @@ int KTabListBoxTable::findRealCol(int xPos)
    {
      cumWidth += cellWidth( column );
      if ( xPos1 < cumWidth ) break;
-     column++;     
+     column++;
    }
  }
  if ( column >=maxCol  )  return -1;
@@ -1688,14 +1700,14 @@ void KTabListBoxTable::mousePressEvent(QMouseEvent* e)
   if (e->button() == RightButton)
   {
     // handle popup menu
-    if (row >= 0 && col >= 0) 
+    if (row >= 0 && col >= 0)
       emit owner->popupMenu(row, col);
     return;
   }
   else if (e->button() == MidButton)
   {
     // handle middle click
-    if (row >= 0 && col >= 0) 
+    if (row >= 0 && col >= 0)
       emit owner->midClick(row, col);
     return;
   }
@@ -1854,16 +1866,16 @@ void KNumCheckButton::paintEvent( QPaintEvent *event )
 
   painter.begin( this );
   painter.setClipRect( event->rect() );
-  
+
   if ( raised )
     {
       QBrush   brush( white );
       qDrawShadeRect( &painter, 0, 0, width(), height(), colorGroup(),
                       TRUE, 1,1, &brush );
     }
-  else 
+  else
       qDrawShadeRect( &painter, 0, 0, width(), height(), colorGroup(),
-                      TRUE, 1,1, 0L );     
+                      TRUE, 1,1, 0L );
   int tf = AlignCenter;
   oldfont=painter.font();
   font=oldfont;
@@ -1871,5 +1883,5 @@ void KNumCheckButton::paintEvent( QPaintEvent *event )
   painter.setFont(font);
   painter.drawText(0, 0, width(), height(), tf, btext);
   painter.setFont(oldfont);
-  painter.end();  
+  painter.end();
 }
