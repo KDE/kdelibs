@@ -28,22 +28,8 @@
 #include <kdebug.h>
 
 #define MAXFONTSIZES 15
-// xx-small, x-small, small, medium, large, x-large, xx-large, ...
-// const int defaultXSmallFontSizes[MAXFONTSIZES] =
-//   {  5, 6, 7,  8,  9, 10, 12, 14, 16, 18, 24, 28, 34, 40, 48 };
-// const int defaultSmallFontSizes[MAXFONTSIZES] =
-//   {  6, 7,  8,  9, 10, 12, 14, 16, 18, 24, 28, 34, 40, 48, 56 };
-// const int defaultMediumFontSizes[MAXFONTSIZES] =
-//   {  7,  8,  9, 10, 12, 14, 16, 18, 24, 28, 34, 40, 48, 56, 68 };
-// const int defaultLargeFontSizes[MAXFONTSIZES] =
-//   {  9, 10, 11, 12, 14, 16, 20, 24, 28, 34, 40, 48, 56, 68, 82 };
-// const int defaultXLargeFontSizes[MAXFONTSIZES] =
-//   { 10, 12, 14, 16, 24, 28, 34, 40, 48, 56, 68, 82, 100, 120, 150 };
-const int defaultFontSizes[24] =
-  { 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 24, 28, 34, 40, 48, 56, 68, 82, 100, 120, 150, 180, 240 };
 
 typedef QMap<QString,KHTMLSettings::KJavaScriptAdvice> PolicyMap;
-
 
 KHTMLSettings::KJavaScriptAdvice KHTMLSettings::strToAdvice(const QString& _str)
 {
@@ -125,7 +111,7 @@ void KHTMLSettings::init()
 
 void KHTMLSettings::init( KConfig * config, bool reset )
 {
-  // Fonts and colors
+    // Fonts and colors
     if( reset ) {
 	defaultFonts = QStringList();
 	defaultFonts.append( config->readEntry( "StandardFont", KGlobalSettings::generalFont().family() ) );
@@ -137,40 +123,37 @@ void KHTMLSettings::init( KConfig * config, bool reset )
 	defaultFonts.append( QString( "0" ) ); // font size adjustment
     }
 
-  if ( reset || config->hasKey( "FontSize" ) )
-  {
-    m_fontSize = config->readNumEntry( "FontSize", 1 );
-    resetFontSizes();
-  }
+    if ( reset || config->hasKey( "MediumFontSize" ) ) {
+        m_fontSize = config->readNumEntry( "MediumFontSize", 12 );
+        resetFontSizes();
+    }
 
-  if ( reset || config->hasKey( "MinimumFontSize" ) )
-  {
-    m_minFontSize = config->readNumEntry( "MinimumFontSize", HTML_DEFAULT_MIN_FONT_SIZE );
-  }
+    if ( reset || config->hasKey( "MinimumFontSize" ) )
+        m_minFontSize = config->readNumEntry( "MinimumFontSize", HTML_DEFAULT_MIN_FONT_SIZE );
 
     QStringList chSets = KGlobal::charsets()->availableCharsetNames();
     for ( QStringList::Iterator it = chSets.begin(); it != chSets.end(); ++it ) {
-	if ( reset || config->hasKey( *it ) ){
-	    QStringList fonts = config->readListEntry( *it );
-	    if( fonts.count() == 6 ) // backwards compatibility
-		fonts.append( QString( "0" ) );
-	    if ( fonts.count() != 7 )
-		fonts = defaultFonts;
-	    fontsForCharset[KGlobal::charsets()->xNameToID(*it)] = fonts;
-	}
+        if ( reset || config->hasKey( *it ) ){
+            QStringList fonts = config->readListEntry( *it );
+            if( fonts.count() == 6 ) // backwards compatibility
+                fonts.append( QString( "0" ) );
+            if ( fonts.count() != 7 )
+              fonts = defaultFonts;
+            fontsForCharset[KGlobal::charsets()->xNameToID(*it)] = fonts;
+        }
     }
 
-  if ( reset || config->hasKey( "DefaultEncoding" ) )
-  {
-      m_defaultCharset = KGlobal::charsets()->nameToID(config->readEntry( "DefaultEncoding", "iso-8859-1") );
-      internalSetCharset( m_defaultCharset );
-  };
+    if ( reset || config->hasKey( "DefaultEncoding" ) ) {
+        m_encoding = config->readEntry( "DefaultEncoding", "" );
+        if ( m_encoding.isEmpty() )
+            m_encoding = KGlobal::locale()->charset();
 
-  if ( reset || config->hasKey( "EnforceDefaultCharset" ) )
-      enforceCharset = config->readBoolEntry( "EnforceDefaultCharset", false );
+        m_defaultCharset = KGlobal::charsets()->nameToID( m_encoding );
+        internalSetCharset( m_defaultCharset );
+    }
 
-  if ( reset || config->hasKey( "DefaultEncoding" ) )
-      m_encoding = config->readEntry( "DefaultEncoding", "iso8859-1" );
+    if ( reset || config->hasKey( "EnforceDefaultCharset" ) )
+        enforceCharset = config->readBoolEntry( "EnforceDefaultCharset", false );
 
   // Behaviour
   if ( reset || config->hasKey( "ChangeCursor" ) )
@@ -396,8 +379,12 @@ void KHTMLSettings::resetFontSizes()
     if ( sizeAdjust > 9 )
 	sizeAdjust = 9;
     //kdDebug(6050) << "KHTMLSettings::resetFontSizes adjustment is " << sizeAdjust << endl;
-    for ( int i = 0; i < MAXFONTSIZES; i++ )
-	m_fontSizes << defaultFontSizes[ i  + sizeAdjust ];
+    int fs = int ( ( m_fontSize / 1.520 ) + .5 );
+    float ff = 1.0;
+    for ( int i = 0; i < MAXFONTSIZES; i++ ) {
+      	m_fontSizes << ( QMAX( int( fs*ff ), m_minFontSize ) );
+        ff *= 1.15;
+    }
 }
 
 void KHTMLSettings::setFontSizes(const QValueList<int> &_newFontSizes )
