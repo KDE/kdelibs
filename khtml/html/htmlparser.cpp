@@ -337,12 +337,12 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
             if (!current->isDocumentNode() && !current->id() == ID_HTML )
                 return false;
             break;
-            // We can deal with a base, meta and link element in the body, by just adding the element to head.
         case ID_META:
         case ID_LINK:
+        case ID_ISINDEX:
         case ID_BASE:
-            if( !head )
-                createHead();
+            // when there is no head yet, we will create it further below
+            // and arrive here again
             if( head ) {
                 if ( head->addChild(n) ) {
 #if SPEED_DEBUG < 2
@@ -352,8 +352,8 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
 		}
 
                 return true;
-            } else
-                return false;
+            }
+
             break;
         case ID_HTML:
             if (!current->isDocumentNode() ) {
