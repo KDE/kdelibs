@@ -365,23 +365,6 @@ bool KXMLGUIFactory::saveConfigFile( const QDomDocument& doc,
     kdError(1000) << "Could not write to " << filename << endl;
     return false;
   }
-#ifdef __GNUC__
-#warning REMOVE THIS AS SOON AS POSSIBLE!
-#endif
-  #if QT_VERSION == 220
-  // ### Workaround for evil bug in QXML!
-  // QXML doesn't correctly parse the DOCTTYPE (leaves out the value!) and therefore
-  // creates a wrong DOM tree (the node name is missing) . Saving this document
-  // creates invalid XML -> we are in trouble when we try to load the saved document
-  // again.
-  // The _really_ ugly workaround is: We need a way to change the node name. The only way
-  // I have found is QDomElement::setTagName. QDomDocumentType however does not inherit from
-  // QDomElement. However the base member variable we want to change is contained in the
-  // node implementation -> we uglecast to QDomElement and call setTagName which does
-  // impl->name = name which is right what we want. (Simon)
-  QDomDocumentType dt = doc.doctype();
-  reinterpret_cast<QDomElement *>( &dt )->setTagName( doc.documentElement().tagName() );
-  #endif
 
   // write out our document
   QTextStream ts(&file);
