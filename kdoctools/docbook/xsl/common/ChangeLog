@@ -1,3 +1,25 @@
+2001-07-08  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* gentext.xsl, titles.xsl: Support xref to bridgehead
+
+2001-07-04  <uid48421@users.sourceforge.net>
+
+	* .cvsignore, Makefile, l10n.xml: Added support for Turkish
+
+	* .cvsignore, Makefile, l10n.xml: Added Afrikaans
+
+	* common.xsl, titles.xsl: Bug #429011, fix xref to qandset elements
+
+	* labels.xsl: Bug #426188, fix question/answer labels
+
+2001-06-21  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* common.xsl, gentext.xsl, labels.xsl, titles.xsl: Use common code to calculate step numbers; support xref to procedures and steps; added formal.procedures parameter
+
+2001-06-20  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* l10n.xsl: Xalan debugging; harmless changes
+
 2001-06-14  Norman Walsh <nwalsh@users.sourceforge.net>
 
 	* subtitles.xsl: Support subtitle on article

@@ -344,10 +344,10 @@ Defaults to the context node.</para>
       <xsl:call-template name="gentext">
         <xsl:with-param name="key">
           <xsl:choose>
-            <xsl:when test="local-name(.) = 'question'">Question</xsl:when>
-            <xsl:when test="local-name(.) = 'question'">Answer</xsl:when>
-            <xsl:when test="local-name(.) = 'qandadiv'">QandADiv</xsl:when>
-            <xsl:otherwise>QandASet</xsl:otherwise>
+            <xsl:when test="local-name(.) = 'question'">question</xsl:when>
+            <xsl:when test="local-name(.) = 'answer'">answer</xsl:when>
+            <xsl:when test="local-name(.) = 'qandadiv'">qandadiv</xsl:when>
+            <xsl:otherwise>qandaset</xsl:otherwise>
           </xsl:choose>
         </xsl:with-param>
       </xsl:call-template>
@@ -992,6 +992,65 @@ pointed to by the link is one of the elements listed in
       </xsl:if>
     </xsl:if>
   </xsl:if>
+</xsl:template>
+
+<!-- ====================================================================== -->
+<!-- Procedure Step Numeration -->
+
+<xsl:param name="procedure.step.numeration.formats" select="'1aiAI'"/>
+
+<xsl:template name="procedure.step.numeration">
+  <xsl:param name="context" select="."/>
+  <xsl:variable name="format.length"
+                select="string-length($procedure.step.numeration.formats)"/>
+  <xsl:choose>
+    <xsl:when test="local-name($context) = 'substeps'">
+      <xsl:variable name="ssdepth"
+                    select="count($context/ancestor::substeps)"/>
+      <xsl:variable name="sstype" select="($ssdepth mod $format.length)+2"/>
+      <xsl:choose>
+        <xsl:when test="$sstype &gt; $format.length">
+          <xsl:value-of select="substring($procedure.step.numeration.formats,1,1)"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="substring($procedure.step.numeration.formats,$sstype,1)"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:when>
+    <xsl:when test="local-name($context) = 'step'">
+      <xsl:variable name="sdepth"
+                    select="count($context/ancestor::substeps)"/>
+      <xsl:variable name="stype" select="($sdepth mod $format.length)+1"/>
+      <xsl:value-of select="substring($procedure.step.numeration.formats,$stype,1)"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:message>
+        <xsl:text>Unexpected context in procedure.step.numeration: </xsl:text>
+        <xsl:value-of select="local-name($context)"/>
+      </xsl:message>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<xsl:template match="step" mode="number">
+  <xsl:param name="rest" select="''"/>
+  <xsl:param name="recursive" select="1"/>
+  <xsl:variable name="format">
+    <xsl:call-template name="procedure.step.numeration"/>
+  </xsl:variable>
+  <xsl:variable name="num">
+    <xsl:number count="step" format="{$format}"/>
+  </xsl:variable>
+  <xsl:choose>
+    <xsl:when test="$recursive != 0 and ancestor::step">
+      <xsl:apply-templates select="ancestor::step[1]" mode="number">
+        <xsl:with-param name="rest" select="concat('.', $num, $rest)"/>
+      </xsl:apply-templates>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:value-of select="concat($num, $rest)"/>
+    </xsl:otherwise>
+  </xsl:choose>
 </xsl:template>
 
 <!-- ====================================================================== -->

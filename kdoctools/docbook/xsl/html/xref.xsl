@@ -119,6 +119,10 @@
   <xsl:call-template name="person.name"/>
 </xsl:template>
 
+<xsl:template match="authorgroup" mode="xref-to">
+  <xsl:call-template name="person.name.list"/>
+</xsl:template>
+
 <xsl:template match="figure" mode="xref-to">
   <xsl:apply-templates select="." mode="object.xref.markup"/>
 </xsl:template>
@@ -132,6 +136,10 @@
 </xsl:template>
 
 <xsl:template match="equation" mode="xref-to">
+  <xsl:apply-templates select="." mode="object.xref.markup"/>
+</xsl:template>
+
+<xsl:template match="procedure" mode="xref-to">
   <xsl:apply-templates select="." mode="object.xref.markup"/>
 </xsl:template>
 
@@ -167,11 +175,41 @@
   <!-- handles both biblioentry and bibliomixed -->
   <xsl:text>[</xsl:text>
   <xsl:choose>
-    <xsl:when test="local-name(*[1]) = 'abbrev'">
-      <xsl:apply-templates select="*[1]"/>
+    <xsl:when test="string(.) = ''">
+      <xsl:variable name="bib" select="document($bibliography.collection)"/>
+      <xsl:variable name="id" select="@id"/>
+      <xsl:variable name="entry" select="$bib/bibliography/*[@id=$id][1]"/>
+      <xsl:choose>
+        <xsl:when test="$entry">
+          <xsl:choose>
+            <xsl:when test="local-name($entry/*[1]) = 'abbrev'">
+              <xsl:apply-templates select="$entry/*[1]"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="@id"/>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:message>
+            <xsl:text>No bibliography entry: </xsl:text>
+            <xsl:value-of select="$id"/>
+            <xsl:text> found in </xsl:text>
+            <xsl:value-of select="$bibliography.collection"/>
+          </xsl:message>
+          <xsl:value-of select="@id"/>
+        </xsl:otherwise>
+      </xsl:choose>
     </xsl:when>
     <xsl:otherwise>
-      <xsl:value-of select="@id"/>
+      <xsl:choose>
+        <xsl:when test="local-name(*[1]) = 'abbrev'">
+          <xsl:apply-templates select="*[1]"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="@id"/>
+        </xsl:otherwise>
+      </xsl:choose>
     </xsl:otherwise>
   </xsl:choose>
   <xsl:text>]</xsl:text>
@@ -192,6 +230,23 @@
   <!-- What about "in Chapter X"? -->
 </xsl:template>
 
+<xsl:template match="bridgehead" mode="xref-to">
+  <xsl:apply-templates select="." mode="object.xref.markup"/>
+  <!-- What about "in Chapter X"? -->
+</xsl:template>
+
+<xsl:template match="qandaset" mode="xref-to">
+  <xsl:apply-templates select="." mode="object.xref.markup"/>
+</xsl:template>
+
+<xsl:template match="qandadiv" mode="xref-to">
+  <xsl:apply-templates select="." mode="object.xref.markup"/>
+</xsl:template>
+
+<xsl:template match="qandaentry" mode="xref-to">
+  <xsl:apply-templates select="question[1]" mode="object.xref.markup"/>
+</xsl:template>
+
 <xsl:template match="question" mode="xref-to">
   <xsl:apply-templates select="." mode="object.xref.markup"/>
 </xsl:template>
@@ -206,6 +261,14 @@
 
 <xsl:template match="reference" mode="xref-to">
   <xsl:apply-templates select="." mode="object.xref.markup"/>
+</xsl:template>
+
+<xsl:template match="step" mode="xref-to">
+  <xsl:call-template name="gentext">
+    <xsl:with-param name="key" select="'Step'"/>
+  </xsl:call-template>
+  <xsl:text> </xsl:text>
+  <xsl:apply-templates select="." mode="number"/>
 </xsl:template>
 
 <xsl:template match="co" mode="xref-to">
@@ -229,6 +292,14 @@
 <xsl:template match="author" mode="xref-title">
   <xsl:variable name="title">
     <xsl:call-template name="person.name"/>
+  </xsl:variable>
+
+  <xsl:value-of select="$title"/>
+</xsl:template>
+
+<xsl:template match="authorgroup" mode="xref-title">
+  <xsl:variable name="title">
+    <xsl:call-template name="person.name.list"/>
   </xsl:variable>
 
   <xsl:value-of select="$title"/>
@@ -266,6 +337,14 @@
   </xsl:variable>
 
   <xsl:value-of select="$title"/>
+</xsl:template>
+
+<xsl:template match="step" mode="xref-title">
+  <xsl:call-template name="gentext">
+    <xsl:with-param name="key" select="'Step'"/>
+  </xsl:call-template>
+  <xsl:text> </xsl:text>
+  <xsl:apply-templates select="." mode="number"/>
 </xsl:template>
 
 <xsl:template match="co" mode="xref-title">

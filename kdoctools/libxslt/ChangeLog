@@ -1,3 +1,107 @@
+Sun Jul  8 22:12:02 CEST 2001 Daniel Veillard <Daniel.Veillard@imag.fr>
+
+	* libxslt/extra.c libxslt/functions.c libxslt/transform.[ch]
+	  libxslt/variables.h: Norm pointed out that element-available()
+	  didn't work, implemented it
+	* tests/extensions/Makefile.am tests/extensions/list.*: added
+	  a test for all registered xslt element, function and default
+	  extensions.
+
+Sun Jul  8 20:44:25 CEST 2001 Daniel Veillard <Daniel.Veillard@imag.fr>
+
+	* tests/documents/Makefile.am 'tests/documents/doc file.xml'
+	  tests/documents/docfile.xml tests/documents/test.result
+	  tests/documents/test.xml tests/documents/test.xsl:
+	  added a test for URI-escaping on document() input
+
+Sun Jul  8 16:34:07 CEST 2001 Daniel Veillard <Daniel.Veillard@imag.fr>
+
+	* tests/docs/Makefile.am tests/general/Makefile.am
+	  tests/general/bug-49-* tests/docs/bug-49-*
+	  tests/general/bug-50-* tests/docs/bug-50-*: added a
+	  couple of regression tests for bugs posted on the list
+
+Sun Jul  8 15:40:44 CEST 2001 Daniel Veillard <Daniel.Veillard@imag.fr>
+
+	* libxslt/xsltproc.c: avoid generating CDATA node in document
+	  tree when parsed, force generation of text nodes instead.
+
+Sun Jul  8 14:39:27 CEST 2001 Daniel Veillard <Daniel.Veillard@imag.fr>
+
+	* doc/extensions.html: fixed a number of typo found by Dan York
+	* libxslt/xsltutils.c: improved the profiling ouput, added the
+	  average value too.
+
+Sun Jul  8 00:01:21 CEST 2001 Daniel Veillard <Daniel.Veillard@imag.fr>
+
+	* libxslt/variables.c: tryingt to fix a problem raised by Norm
+
+Sat Jul  7 23:19:09 CEST 2001 Daniel Veillard <Daniel.Veillard@imag.fr>
+
+	* config.h.in configure.in: added gettimeofday() check
+	* libxslt/transform.c libxslt/xsltInternals.h libxslt/xsltutils.[ch]:
+	  profiling works option --profile (or --norman ;)
+
+Sat Jul  7 18:58:56 CEST 2001 Daniel Veillard <Daniel.Veillard@imag.fr>
+
+	* libxslt/templates.c libxslt/transform.c libxslt/transform.h
+	  libxslt/variables.c: big cleanup on the way templates or 
+	  template fragments are processed, cleanup of stack building
+	* tests/docs/Makefile.am tests/general/Makefile.am
+	  tests/general/bug-4[1-8]-* tests/docs/bug-4[1-8]-*: added a
+	  series of regression test for the variable/params lookups
+	* libxslt/transform.c libxslt/xsltutils.[ch] libxslt/xsltproc.c:
+	  started working on profiling code, there is just invocation counting
+	  yet but the framework is in place.
+
+Sat Jul  7 11:20:59 CEST 2001 Daniel Veillard <Daniel.Veillard@imag.fr>
+
+	* tests/docs/Makefile.am tests/general/Makefile.am
+	  tests/general/bug-40-* tests/docs/bug-40-*: added a specific
+	  regression test for the variable scope within templates problem
+
+Sat Jul  7 17:05:00 HKT 2001 Wiliam Brack <wbrack@mmm.com.hk>
+
+	* xsltInternals.h variables.c transform.c:
+	  fixed problem with variable scope within templates
+
+Fri Jul  6 17:42:06 CEST 2001 Daniel Veillard <Daniel.Veillard@imag.fr>
+
+	* doc/extensions.html doc/internals.html doc/xslt.html:
+	  added a documentation on writing libxslt extensions, and
+	  added links to the main page
+	* libxslt/functions.c libxslt/xsltInternals.h
+
+Fri Jul  6 14:30:00 HKT 2001 William Brack <wbrack@mmm.com.hk>
+
+	* cleaned up many comments and error messages
+
+Fri Jul  6 01:43:51 CEST 2001 Daniel Veillard <Daniel.Veillard@imag.fr>
+
+	* configure.in libxslt/xsltwin32config.h: released 0.14.0
+	* doc/xslt.html: added 0.14.0 release
+
+Fri Jul  6 01:00:55 CEST 2001 Daniel Veillard <Daniel.Veillard@imag.fr>
+
+	* doc/html/*: rebuilt docs before release
+	* libxslt/extensions.c: fixed a function doc header
+
+Fri Jul  6 00:40:55 CEST 2001 Daniel Veillard <Daniel.Veillard@imag.fr>
+
+	* FEATURES: updated
+	* libxslt/xslt.c libxslt/xsltInternals.h: added exclude-result-prefix
+	  support
+	* tests/REC/Makefile.am tests/REC/test-7.1.1-[23]*: added a couple
+	  of specific tests
+	* tests/xmlspec/REC-xml-20001006-review.html: seems this changed
+	  something there, not visually perceptible
+
+Thu Jul  5 22:49:57 CEST 2001 Daniel Veillard <Daniel.Veillard@imag.fr>
+
+	* tests/docbook/result/: the change in libxml affected the
+	  output of the Docbook tests (of course it was detected on
+	  a DocBook example)
+
 Thu Jul  5 15:11:58 CEST 2001 Daniel Veillard <Daniel.Veillard@imag.fr>
 
 	* FEATURES: updated

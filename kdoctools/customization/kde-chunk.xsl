@@ -60,44 +60,6 @@
    <meta name="GENERATOR" content="KDE XSL Stylesheet V{$KDE_VERSION} using libxslt"/>
 </xsl:template>
 
-<!-- libxslt has problems with customizing this one, so 
-    I changed the docbook xsl itself for now
-    (FF) body attrs are set to kde ones: attributes cannot be "unset"
-         set a new attributes-set must be defined
-
-<xsl:template name="chunk-element-content">
-  <xsl:param name="prev"></xsl:param>
-  <xsl:param name="next"></xsl:param>
- 
-  <html>
-    <xsl:call-template name="html.head">
-      <xsl:with-param name="prev" select="$prev"/>
-      <xsl:with-param name="next" select="$next"/>
-    </xsl:call-template>
- 
-    <body xsl:use-attribute-sets="kde.body.attrs">
-      <xsl:call-template name="header.navigation">
-        <xsl:with-param name="prev" select="$prev"/>
-        <xsl:with-param name="next" select="$next"/>
-      </xsl:call-template>
- 
-      <xsl:call-template name="user.header.content"/>
-
-      <div id="body_text"> 
-        <xsl:apply-imports/>
-      </div>
-
-      <xsl:call-template name="user.footer.content"/>
- 
-      <xsl:call-template name="footer.navigation">
-        <xsl:with-param name="prev" select="$prev"/>
-        <xsl:with-param name="next" select="$next"/>
-      </xsl:call-template>
-    </body>
-  </html>
-</xsl:template>
--->
-
 <!-- try with olinks: it nearly works --><!--
   <xsl:template match="olink">
     <a>

@@ -122,6 +122,8 @@
    <gentext key="Editedby" text="Szerkesztette"/>
    <gentext key="editedby" text="szerkesztette"/>
    <gentext key="and" text="&#233;s"/>
+   <gentext key="listcomma" text=","/>
+   <gentext key="lastlistcomma" text=","/>
    <gentext key="Notes" text="Megjegyz&#233;sek"/>
    <gentext key="notes" text="megjegyz&#233;sek"/>
    <gentext key="TableNotes" text="Megjegyz&#233;sek"/>
@@ -319,7 +321,7 @@
    </context>
 
    <context name="authorgroup">
-      <template name="sep" text=","/>
+      <template name="sep" text=", "/>
       <template name="sep2" text=" &#233;s "/>
       <template name="seplast" text=", &#233;s "/>
    </context>

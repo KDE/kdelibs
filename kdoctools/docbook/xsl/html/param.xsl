@@ -484,18 +484,6 @@ is produced, this HTML element will be used to make the list.
 </doc:param>
 
 <!-- ==================================================================== -->
-<xsl:param name="check.idref" doc:type='boolean'>1</xsl:param>
-
-<doc:param name="check.idref" xmlns="">
-<refpurpose>Test the target of IDREF attributes?</refpurpose>
-<refdescription>
-<para>If 1, the target of IDREF attributes are tested for presence
-(and uniqueness). This can be very expensive in large documents.
-</para>
-</refdescription>
-</doc:param>
-
-<!-- ==================================================================== -->
 <xsl:param name="use.id.function" doc:type='boolean' select="'1'"/>
 
 <doc:param name="use.id.function" xmlns="">
@@ -522,24 +510,6 @@ more pleasing visual appearance in many browsers.
 </para>
 </refdescription>
 </doc:param>
-
-<!-- ==================================================================== -->
-<xsl:attribute-set name="body.attrs">
-  <xsl:attribute name="bgcolor">white</xsl:attribute>
-  <xsl:attribute name="text">black</xsl:attribute>
-  <xsl:attribute name="link">#0000FF</xsl:attribute>
-  <xsl:attribute name="vlink">#840084</xsl:attribute>
-  <xsl:attribute name="alink">#0000FF</xsl:attribute>
-</xsl:attribute-set>
-
-<doc:attribute-set name="body.attrs" xmlns="">
-<refpurpose>Additional attributes for the HTML body tag</refpurpose>
-<refdescription>
-<para>The attributes defined by this attribute set are added to the
-HTML &lt;body&gt; tag.
-</para>
-</refdescription>
-</doc:attribute-set>
 
 <!-- ==================================================================== -->
 <xsl:param name="css.decoration" doc:type='boolean'>1</xsl:param>
@@ -962,12 +932,33 @@ in the CALS table.
 </doc:param>
 
 <!-- ==================================================================== -->
-<xsl:param name="generate.section.toc" select='0' doc:type='boolean'/>
+<xsl:param name="generate.section.toc" select='1' doc:type='boolean'/>
 
 <doc:param name="generate.section.toc" xmlns="">
-<refpurpose>FIXME:</refpurpose>
+<refpurpose>Generate TOCs inside Sections?</refpurpose>
 <refdescription>
-<para>FIXME:
+<para>If non-zero, a Table of Contents will be generated inside section
+elements. Note that
+<parameter>generate.section.toc.level</parameter>
+may suppress some section TOCs.
+</para>
+</refdescription>
+</doc:param>
+
+<!-- ==================================================================== -->
+<xsl:param name="generate.section.toc.level" select='10' doc:type='integer'/>
+
+<doc:param name="generate.section.toc.level" xmlns="">
+<refpurpose>Control depth of TOC generation in sections</refpurpose>
+<refdescription>
+<para>The <parameter>generate.section.toc.level</parameter> parameter
+controls the depth of section in which TOCs will be generated. Note
+that this is related to, but not the same as
+<parameter>toc.section.depth</parameter>, which controls the depth to
+which TOC entries will be generated in a given TOC.</para>
+<para>If, for example, <parameter>generate.section.toc.level</parameter>
+is <literal>3</literal>, TOCs will be generated in first, second, and third
+level sections, but not in fourth level sections.
 </para>
 </refdescription>
 </doc:param>
@@ -1034,7 +1025,7 @@ stylesheets.
            doc:type='integer'/>
 
 <doc:param name="callout.unicode.start.character" xmlns="">
-<refpurpose>Number of the largest callout graphic</refpurpose>
+<refpurpose>First Unicode character to use, decimal value.</refpurpose>
 <refdescription>
 <para>If <parameter>callout.graphics</parameter>
 is non-zero, graphics are used to represent
@@ -1063,6 +1054,17 @@ is
 the largest number for which a graphic exists. If the callout number
 exceeds this limit, the default presentation "(nnn)" will always
 be used.
+</para>
+</refdescription>
+</doc:param>
+
+<!-- ==================================================================== -->
+<xsl:param name="callout.dingbats" select="'0'"/>
+
+<doc:param name="callout.dingbats" xmlns="">
+<refpurpose>Use Zapf Dingbats for callouts?</refpurpose>
+<refdescription>
+<para>If non-zero, callouts are presented with Zapf Dingbats.
 </para>
 </refdescription>
 </doc:param>
@@ -1148,5 +1150,43 @@ in default.encoding, set this parameter to value <literal>native</literal>.
 </refdescription>
 </doc:param>
 
+<!-- ==================================================================== -->
+<xsl:param name="formal.procedures" select="1" doc:type='boolean'/>
+
+<doc:param name="formal.procedures" xmlns="">
+<refpurpose>Selects formal or informal procedures</refpurpose>
+<refdescription>
+<para>Formal procedures are numbered and always hav a title.
+</para>
+</refdescription>
+</doc:param>
+
+<!-- ==================================================================== -->
+<xsl:param name="bibliography.collection" doc:type='string'
+           select="'http://docbook.sourceforge.net/release/bibliography/bibliography.xml'"/>
+
+<doc:param name="bibliography.collection" xmlns="">
+<refpurpose>Name of the bibliography collection file</refpurpose>
+<refdescription>
+<para>Tired of copying bibliography entries from one document to another?
+Now you can maintain a central bibliography and let the stylesheets do
+the copying for you. This parameter identifies the file (by URI reference)
+that contains your complete bibliography collection.
+</para>
+</refdescription>
+</doc:param>
+
+<!-- ==================================================================== -->
+<xsl:param name="annotate.toc" select="1" doc:type='boolean'/>
+
+<doc:param name="annotate.toc" xmlns="">
+<refpurpose>Annotate the Table of Contents?</refpurpose>
+<refdescription>
+<para>If true, TOCs will be annotated. At present, this just means
+that the <sgmltag>RefPurpose</sgmltag> of <sgmltag>RefEntry</sgmltag>
+TOC entries will be displayed.
+</para>
+</refdescription>
+</doc:param>
 
 </xsl:stylesheet>

@@ -429,7 +429,6 @@ element label.</para>
 
   <xsl:choose>
     <xsl:when test="count($label)>0">
-      <xsl:value-of select="$prefix"/>
       <xsl:apply-templates select="$label"/>
     </xsl:when>
 
@@ -460,7 +459,8 @@ element label.</para>
   </xsl:if>
 </xsl:template>
 
-<xsl:template match="figure|table|example|equation" mode="label.markup">
+<xsl:template match="figure|table|example|equation|procedure"
+              mode="label.markup">
   <xsl:variable name="pchap"
                 select="ancestor::chapter|ancestor::appendix"/>
 

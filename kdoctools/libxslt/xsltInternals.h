@@ -54,6 +54,10 @@ struct _xsltTemplate {
     xmlChar *modeURI;	/* the URI part of the mode QName */
     xmlNodePtr content;	/* the template replacement value */
     xmlNodePtr elem;	/* the source element */
+
+    /* Profiling informations */
+    int nbCalls;        /* the number of time the template was called */
+    unsigned long time; /* the time spent in this template */
 };
 
 /**
@@ -120,7 +124,8 @@ typedef xsltStylePreComp *xsltStylePreCompPtr;
  * stylesheet language like xsl:if or xsl:apply-templates.
  */
 typedef void (*xsltTransformFunction) (xsltTransformContextPtr ctxt,
-	                               xmlNodePtr node, xmlNodePtr inst,
+	                               xmlNodePtr node,
+				       xmlNodePtr inst,
 			               xsltStylePreCompPtr comp);
 
 typedef enum {
@@ -308,6 +313,11 @@ struct _xsltStylesheet {
     xsltStylePreCompPtr preComps;	/* list of precomputed blocks */
     int warnings;		/* number of warnings found at compilation */
     int errors;			/* number of errors found at compilation */
+
+    xmlChar  *exclPrefix;	/* last excluded prefixes */
+    xmlChar **exclPrefixTab;	/* array of excluded prefixes */
+    int       exclPrefixNr;	/* number of excluded prefixes in scope */
+    int       exclPrefixMax;	/* size of the array */
 };
 
 /*
@@ -338,6 +348,7 @@ struct _xsltTransformContext {
     int               varsNr;		/* Nb of variable list in the stack */
     int               varsMax;		/* Size of the variable list stack */
     xsltStackElemPtr *varsTab;		/* the variable list stack */
+    int               varsBase;		/* the var base for current templ */
 
     /*
      * Extensions
@@ -372,6 +383,12 @@ struct _xsltTransformContext {
     int xinclude;			/* should XInclude be processed */
 
     const char *      outputFile;	/* the output URI if known */
+
+    int profile;                        /* is this run profiled */
+    long             prof;		/* the current profiled value */
+    int              profNr;		/* Nb of templates in the stack */
+    int              profMax;		/* Size of the templtaes stack */
+    long            *profTab;		/* the profile template stack */
 };
 
 /**

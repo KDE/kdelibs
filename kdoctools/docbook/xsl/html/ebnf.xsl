@@ -48,12 +48,6 @@ to be incomplete. Don't forget to read the source, too :-)</para>
 </partintro>
 </doc:reference>
 
-<!-- This module formats EBNF tables. The DTD that this supports is  -->
-<!-- under development by the DocBook community. This code is        -->
-<!-- experimental and is not (yet) part of the DocBook stylesheets.  -->
-
-<xsl:include href="docbook.xsl"/>
-
 <!-- ==================================================================== -->
 
 <xsl:param name="ebnf.table.bgcolor">#F5DCB3</xsl:param>
@@ -165,8 +159,8 @@ borders, otherwise they don't.</para>
     <td align="left" valign="top" width="30%">
       <xsl:choose>
 	<xsl:when test="rhs/lineannotation|constraint">
-	  <xsl:apply-templates select="rhs/lineannotation" mode="rhslo"/>
-	  <xsl:apply-templates select="constraint"/>
+          <xsl:apply-templates select="rhs/lineannotation" mode="rhslo"/>
+          <xsl:apply-templates select="constraint"/>
 	</xsl:when>
 	<xsl:otherwise>
 	  <xsl:text>&#160;</xsl:text>
@@ -180,23 +174,22 @@ borders, otherwise they don't.</para>
   <xsl:variable name="targets" select="id(@linkend)"/>
   <xsl:variable name="target" select="$targets[1]"/>
 
-  <xsl:if test="$check.idref = '1'">
-    <xsl:if test="count($targets)=0">
-      <xsl:message>
-        <xsl:text>Error: no ID for productionrecap linkend: </xsl:text>
-        <xsl:value-of select="@linkend"/>
-        <xsl:text>.</xsl:text>
-      </xsl:message>
-    </xsl:if>
-
-    <xsl:if test="count($targets)>1">
-      <xsl:message>
-        <xsl:text>Warning: multiple "IDs" for productionrecap linkend: </xsl:text>
-        <xsl:value-of select="@linkend"/>
-        <xsl:text>.</xsl:text>
-      </xsl:message>
-    </xsl:if>
+  <xsl:if test="count($targets)=0">
+    <xsl:message>
+      <xsl:text>Error: no ID for productionrecap linkend: </xsl:text>
+      <xsl:value-of select="@linkend"/>
+      <xsl:text>.</xsl:text>
+    </xsl:message>
   </xsl:if>
+
+  <xsl:if test="count($targets)>1">
+    <xsl:message>
+      <xsl:text>Warning: multiple "IDs" for productionrecap linkend: </xsl:text>
+      <xsl:value-of select="@linkend"/>
+      <xsl:text>.</xsl:text>
+    </xsl:message>
+  </xsl:if>
+
   <xsl:apply-templates select="$target">
     <xsl:with-param name="recap" select="true()"/>
   </xsl:apply-templates>
@@ -208,6 +201,10 @@ borders, otherwise they don't.</para>
 
 <xsl:template match="rhs">
   <xsl:apply-templates/>
+  <xsl:if test="following-sibling::rhs">
+    <xsl:text> |</xsl:text>
+    <br/>
+  </xsl:if>
 </xsl:template>
 
 <xsl:template match="nonterminal">
@@ -287,6 +284,7 @@ borders, otherwise they don't.</para>
   <xsl:text>/*&#160;</xsl:text>
   <xsl:apply-templates/>
   <xsl:text>&#160;*/</xsl:text>
+  <br/>
 </xsl:template>
 
 <xsl:template match="constraint">
@@ -307,10 +305,7 @@ borders, otherwise they don't.</para>
     </xsl:call-template>
   </xsl:variable>
 
-  <xsl:if test="preceding-sibling::constraint">
-    <br/>
-  </xsl:if>
-  <xsl:text>[ </xsl:text>
+  <xsl:text>[&#160;</xsl:text>
 
   <xsl:choose>
     <xsl:when test="@role">
@@ -332,11 +327,16 @@ borders, otherwise they don't.</para>
     <xsl:variable name="target" select="$targets[1]"/>
     <xsl:apply-templates select="$target" mode="title.markup"/>
   </a>
-  <xsl:text> ]</xsl:text>
+  <xsl:text>&#160;]</xsl:text>
+  <xsl:if test="following-sibling::constraint">
+    <br/>
+  </xsl:if>
 </xsl:template>
 
 <xsl:template match="constraintdef">
+  <xsl:variable name="id"><xsl:call-template name="object.id"/></xsl:variable>
   <div class="{name(.)}">
+    <a name="{$id}"/>
     <xsl:apply-templates/>
   </div>
 </xsl:template>

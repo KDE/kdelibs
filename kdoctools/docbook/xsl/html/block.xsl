@@ -47,6 +47,7 @@
 </xsl:template>
 
 <xsl:template match="simpara">
+  <!-- see also listitem/simpara in lists.xsl -->
   <p>
     <xsl:if test="@id">
       <a name="{@id}"/>
@@ -129,7 +130,7 @@
         <xsl:call-template name="object.id"/>
       </xsl:attribute>
     </a>
-  
+
     <xsl:apply-templates/>
   </div>
 </xsl:template>

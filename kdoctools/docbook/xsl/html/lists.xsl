@@ -191,6 +191,29 @@
   <xsl:number format="1"/>
 </xsl:template>
 
+<xsl:template match="listitem/simpara" priority="2">
+  <!-- If a listitem contains only a single simpara, don't output
+       the <p> wrapper; this has the effect of creating an li
+       with simple text content. -->
+  <xsl:choose>
+    <xsl:when test="not(preceding-sibling::*)
+                    and not (following-sibling::*)">
+      <xsl:if test="@id">
+        <a name="{@id}"/>
+      </xsl:if>
+      <xsl:apply-templates/>
+    </xsl:when>
+    <xsl:otherwise>
+      <p>
+        <xsl:if test="@id">
+          <a name="{@id}"/>
+        </xsl:if>
+        <xsl:apply-templates/>
+      </p>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
 <xsl:template match="varlistentry">
   <xsl:variable name="id">
     <xsl:call-template name="object.id"/>
@@ -404,16 +427,17 @@
 <!-- ==================================================================== -->
 
 <xsl:template match="procedure">
-  <xsl:variable name="id">
-    <xsl:call-template name="object.id"/>
-  </xsl:variable>
   <div class="{name(.)}">
-    <a name="{$id}"/>
-    <xsl:if test="title">
-      <xsl:apply-templates select="title" mode="procedure.title.mode"/>
+    <xsl:if test="title or $formal.procedures != 0">
+      <xsl:call-template name="formal.object.heading"/>
     </xsl:if>
-    <xsl:apply-templates select="*[local-name()!='step']"/>     
-    <ol><xsl:apply-templates select="step"/></ol>              
+    <xsl:apply-templates select="*[local-name()!='step']"/>
+    <ol>
+      <xsl:attribute name="type">
+        <xsl:value-of select="substring($procedure.step.numeration.formats,1,1)"/>
+      </xsl:attribute>
+      <xsl:apply-templates select="step"/>
+    </ol>
   </div>
 </xsl:template>
 
@@ -429,16 +453,8 @@
 </xsl:template>
 
 <xsl:template match="substeps">
-  <xsl:variable name="depth" select="count(ancestor::substeps)"/>
-  <xsl:variable name="type" select="$depth mod 5"/>
   <xsl:variable name="numeration">
-    <xsl:choose>
-      <xsl:when test="$type = 0">a</xsl:when>
-      <xsl:when test="$type = 1">i</xsl:when>
-      <xsl:when test="$type = 2">A</xsl:when>
-      <xsl:when test="$type = 3">I</xsl:when>
-      <xsl:when test="$type = 4">1</xsl:when>
-    </xsl:choose>
+    <xsl:call-template name="procedure.step.numeration"/>
   </xsl:variable>
 
   <ol type="{$numeration}">

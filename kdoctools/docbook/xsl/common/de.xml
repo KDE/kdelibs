@@ -122,6 +122,8 @@
    <gentext key="Editedby" text="Herausgegeben von"/>
    <gentext key="editedby" text="Herausgegeben von"/>
    <gentext key="and" text="und"/>
+   <gentext key="listcomma" text=","/>
+   <gentext key="lastlistcomma" text=""/>
    <gentext key="Notes" text="Fu&#223;noten"/>
    <gentext key="notes" text="Fu&#223;noten"/>
    <gentext key="TableNotes" text="Bemerkungen"/>
@@ -216,6 +218,7 @@
       <template name="toc" text="%t"/>
       <template name="variablelist" text="%t"/>
       <template name="warning" text="%t"/>
+      <template name="question" text="F: %n"/>
    </context>
 
    <context name="section-title">
@@ -296,7 +299,6 @@
       <template name="set" text="%t"/>
       <template name="setindex" text="%t"/>
       <template name="table" text="Tabelle %n. %t"/>
-      <template name="question" text="F: %n"/>
    </context>
 
    <context name="section-xref">
@@ -320,7 +322,7 @@
    </context>
 
    <context name="authorgroup">
-      <template name="sep" text=","/>
+      <template name="sep" text=", "/>
       <template name="sep2" text=" und "/>
       <template name="seplast" text=" und "/>
    </context>

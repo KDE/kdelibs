@@ -1,6 +1,6 @@
 /*
  * transform.c: Implemetation of the XSL Transformation 1.0 engine
- *            transform part, i.e. applying a Stylesheet to a document
+ *              transform part, i.e. applying a Stylesheet to a document
  *
  * References:
  *   http://www.w3.org/TR/1999/REC-xslt-19991116
@@ -53,7 +53,7 @@
 #define WITH_XSLT_DEBUG_PROCESS
 #endif
 
-int xsltMaxDepth = 250;
+int xsltMaxDepth = 500;
 
 /*
  * Useful macros
@@ -73,6 +73,16 @@ int xsltMaxDepth = 250;
 
 #define PUSH_AND_POP(scope, type, name)					\
 scope int name##Push(xsltTransformContextPtr ctxt, type value) {	\
+    if (ctxt->name##Max == 0) {						\
+	ctxt->name##Max = 4;						\
+        ctxt->name##Tab = (type *) xmlMalloc(ctxt->name##Max *		\
+	              sizeof(ctxt->name##Tab[0]));			\
+        if (ctxt->name##Tab == NULL) {					\
+	    xmlGenericError(xmlGenericErrorContext,			\
+		    "malloc failed !\n");				\
+	    return(0);							\
+	}								\
+    }									\
     if (ctxt->name##Nr >= ctxt->name##Max) {				\
 	ctxt->name##Max *= 2;						\
         ctxt->name##Tab = (type *) xmlRealloc(ctxt->name##Tab,		\
@@ -94,7 +104,7 @@ scope type name##Pop(xsltTransformContextPtr ctxt) {			\
     if (ctxt->name##Nr > 0)						\
 	ctxt->name = ctxt->name##Tab[ctxt->name##Nr - 1];		\
     else								\
-        ctxt->name = NULL;						\
+        ctxt->name = (type) 0;						\
     ret = ctxt->name##Tab[ctxt->name##Nr];				\
     ctxt->name##Tab[ctxt->name##Nr] = 0;				\
     return(ret);							\
@@ -105,6 +115,7 @@ scope type name##Pop(xsltTransformContextPtr ctxt) {			\
  */
 PUSH_AND_POP(static, xsltTemplatePtr, templ)
 PUSH_AND_POP(static, xsltStackElemPtr, vars)
+PUSH_AND_POP(static, long, prof)
 
 /************************************************************************
  *									*
@@ -139,7 +150,7 @@ xsltGetXIncludeDefault(void) {
 
 /************************************************************************
  *									*
- *			handling of transformation contexts		*
+ *			Handling of Transformation Contexts		*
  *									*
  ************************************************************************/
 
@@ -195,6 +206,14 @@ xsltNewTransformContext(xsltStylesheetPtr style, xmlDocPtr doc) {
     cur->varsNr = 0;
     cur->varsMax = 5;
     cur->vars = NULL;
+    cur->varsBase = 0;
+    /*
+     * the profiling stcka is not initialized by default
+     */
+    cur->profTab = NULL;
+    cur->profNr = 0;
+    cur->profMax = 0;
+    cur->prof = 0;
 
     cur->style = style;
     xmlXPathInit();
@@ -316,7 +335,7 @@ xsltCopyTextString(xsltTransformContextPtr ctxt, xmlNodePtr target,
  * xsltCopyText:
  * @ctxt:  a XSLT process context
  * @target:  the element where the text will be attached
- * @text:  the text or CDATA node
+ * @cur:  the text or CDATA node
  *
  * Do a copy of a text node
  *
@@ -415,10 +434,10 @@ xsltCopyProp(xsltTransformContextPtr ctxt, xmlNodePtr target,
 /**
  * xsltCopyPropList:
  * @ctxt:  a XSLT process context
- * @target:  the element where the attributes will be grafted
- * @cur:  the first attribute
+ * @target:  the element where the properties will be grafted
+ * @cur:  the first property
  *
- * Do a copy of an attribute list.
+ * Do a copy of a properties list.
  *
  * Returns: a new xmlAttrPtr, or NULL in case of error.
  */
@@ -494,11 +513,11 @@ xsltCopyNode(xsltTransformContextPtr ctxt, xmlNodePtr node,
 /**
  * xsltCopyTreeList:
  * @ctxt:  a XSLT process context
- * @list:  the list of element node in the source tree.
+ * @list:  the list of element nodes in the source tree.
  * @insert:  the parent in the result tree.
  *
  * Make a copy of the full list of tree @list
- * and insert them as last children of @insert
+ * and insert it as last children of @insert
  *
  * Returns a pointer to the new list, or NULL in case of error
  */
@@ -600,7 +619,8 @@ xsltCopyTree(xsltTransformContextPtr ctxt, xmlNodePtr node,
  *									*
  ************************************************************************/
 
-void xsltProcessOneNode(xsltTransformContextPtr ctxt, xmlNodePtr node);
+void xsltProcessOneNode(xsltTransformContextPtr ctxt, xmlNodePtr node,
+	                xsltStackElemPtr params);
 /**
  * xsltDefaultProcessOneNode:
  * @ctxt:  a XSLT process context
@@ -617,7 +637,7 @@ void xsltProcessOneNode(xsltTransformContextPtr ctxt, xmlNodePtr node);
  *   <xsl:value-of select="."/>
  * </xsl:template>
  *
- * Note also that namespaces declarations are copied directly:
+ * Note also that namespace declarations are copied directly:
  *
  * the built-in template rule is the only template rule that is applied
  * for namespace nodes.
@@ -755,14 +775,8 @@ xsltDefaultProcessOneNode(xsltTransformContextPtr ctxt, xmlNodePtr node) {
     while (attrs != NULL) {
 	template = xsltGetTemplate(ctxt, (xmlNodePtr) attrs, NULL);
 	if (template) {
-	    xmlNodePtr oldNode;
-
-	    oldNode = ctxt->node;
-	    ctxt->node = node;
-	    templPush(ctxt, template);
-	    xsltApplyOneTemplate(ctxt, node, template->content, 1);
-	    templPop(ctxt);
-	    ctxt->node = oldNode;
+	    xsltApplyOneTemplate(ctxt, node, template->content, template,
+		                 NULL);
 	}
 	attrs = attrs->next;
     }
@@ -777,26 +791,18 @@ xsltDefaultProcessOneNode(xsltTransformContextPtr ctxt, xmlNodePtr node) {
 	    case XML_ELEMENT_NODE:
 		ctxt->xpathCtxt->contextSize = nbchild;
 		ctxt->xpathCtxt->proximityPosition = childno;
-		varsPush( ctxt, NULL );
-		xsltProcessOneNode(ctxt, cur);
-		xsltFreeStackElemList( varsPop(ctxt) );
+		xsltProcessOneNode(ctxt, cur, NULL);
 		break;
 	    case XML_CDATA_SECTION_NODE:
 		template = xsltGetTemplate(ctxt, node, NULL);
 		if (template) {
-		    xmlNodePtr oldNode;
-
 #ifdef WITH_XSLT_DEBUG_PROCESS
 		    xsltGenericDebug(xsltGenericDebugContext,
 		 "xsltDefaultProcessOneNode: applying template for CDATA %s\n",
 				     node->content);
 #endif
-		    oldNode = ctxt->node;
-		    ctxt->node = node;
-		    templPush(ctxt, template);
-		    xsltApplyOneTemplate(ctxt, node, template->content, 1);
-		    templPop(ctxt);
-		    ctxt->node = oldNode;
+		    xsltApplyOneTemplate(ctxt, node, template->content,
+			                 template, NULL);
 		} else /* if (ctxt->mode == NULL) */ {
 #ifdef WITH_XSLT_DEBUG_PROCESS
 		    xsltGenericDebug(xsltGenericDebugContext,
@@ -815,21 +821,15 @@ xsltDefaultProcessOneNode(xsltTransformContextPtr ctxt, xmlNodePtr node) {
 	    case XML_TEXT_NODE:
 		template = xsltGetTemplate(ctxt, cur, NULL);
 		if (template) {
-		    xmlNodePtr oldNode;
-
 #ifdef WITH_XSLT_DEBUG_PROCESS
 		    xsltGenericDebug(xsltGenericDebugContext,
 	     "xsltDefaultProcessOneNode: applying template for text %s\n",
 				     node->content);
 #endif
-		    oldNode = ctxt->node;
-		    ctxt->node = cur;
 		    ctxt->xpathCtxt->contextSize = nbchild;
 		    ctxt->xpathCtxt->proximityPosition = childno;
-		    templPush(ctxt, template);
-		    xsltApplyOneTemplate(ctxt, cur, template->content, 1);
-		    templPop(ctxt);
-		    ctxt->node = oldNode;
+		    xsltApplyOneTemplate(ctxt, cur, template->content,
+			                 template, NULL);
 		} else /* if (ctxt->mode == NULL) */ {
 #ifdef WITH_XSLT_DEBUG_PROCESS
 		    if (cur->content == NULL)
@@ -853,8 +853,6 @@ xsltDefaultProcessOneNode(xsltTransformContextPtr ctxt, xmlNodePtr node) {
 	    case XML_COMMENT_NODE:
 		template = xsltGetTemplate(ctxt, cur, NULL);
 		if (template) {
-		    xmlNodePtr oldNode;
-
 #ifdef WITH_XSLT_DEBUG_PROCESS
 		    if (cur->type == XML_PI_NODE)
 			xsltGenericDebug(xsltGenericDebugContext,
@@ -864,14 +862,10 @@ xsltDefaultProcessOneNode(xsltTransformContextPtr ctxt, xmlNodePtr node) {
 			xsltGenericDebug(xsltGenericDebugContext,
 		     "xsltDefaultProcessOneNode: template found for comment\n");
 #endif
-		    oldNode = ctxt->node;
-		    ctxt->node = cur;
 		    ctxt->xpathCtxt->contextSize = nbchild;
 		    ctxt->xpathCtxt->proximityPosition = childno;
-		    templPush(ctxt, template);
-		    xsltApplyOneTemplate(ctxt, cur, template->content, 1);
-		    templPop(ctxt);
-		    ctxt->node = oldNode;
+		    xsltApplyOneTemplate(ctxt, cur, template->content,
+			                 template, NULL);
 		}
 		break;
 	    default:
@@ -891,7 +885,8 @@ xsltDefaultProcessOneNode(xsltTransformContextPtr ctxt, xmlNodePtr node) {
  * Process the source node.
  */
 void
-xsltProcessOneNode(xsltTransformContextPtr ctxt, xmlNodePtr node) {
+xsltProcessOneNode(xsltTransformContextPtr ctxt, xmlNodePtr node,
+	           xsltStackElemPtr params) {
     xsltTemplatePtr template;
     xmlNodePtr oldNode;
 
@@ -952,9 +947,7 @@ xsltProcessOneNode(xsltTransformContextPtr ctxt, xmlNodePtr node) {
 	     "xsltProcessOneNode: applying template '%s' for attribute %s\n",
 	                 template->match, node->name);
 #endif
-	templPush(ctxt, template);
-	xsltApplyOneTemplate(ctxt, node, template->content, 1);
-	templPop(ctxt);
+	xsltApplyOneTemplate(ctxt, node, template->content, template, params);
     } else {
 #ifdef WITH_XSLT_DEBUG_PROCESS
 	if (node->type == XML_DOCUMENT_NODE)
@@ -966,12 +959,7 @@ xsltProcessOneNode(xsltTransformContextPtr ctxt, xmlNodePtr node) {
 	     "xsltProcessOneNode: applying template '%s' for %s\n",
 	                     template->match, node->name);
 #endif
-	oldNode = ctxt->node;
-	ctxt->node = node;
-	templPush(ctxt, template);
-	xsltApplyOneTemplate(ctxt, node, template->content, 1);
-	templPop(ctxt);
-	ctxt->node = oldNode;
+	xsltApplyOneTemplate(ctxt, node, template->content, template, params);
     }
 }
 
@@ -980,21 +968,27 @@ xsltProcessOneNode(xsltTransformContextPtr ctxt, xmlNodePtr node) {
  * @ctxt:  a XSLT process context
  * @node:  the node in the source tree.
  * @list:  the template replacement nodelist
- * @real: is this a real template processing
+ * @templ: if is this a real template processing, the template processed
+ * @params:  a set of parameters for the template or NULL
  *
- * Process the apply-templates node on the source node
+ * Process the apply-templates node on the source node, if params are passed
+ * they are pushed on the variable stack but not popped, it's left to the
+ * caller to handle them back (they may be reused).
  */
 void
 xsltApplyOneTemplate(xsltTransformContextPtr ctxt, xmlNodePtr node,
-                     xmlNodePtr list, int real)
+                     xmlNodePtr list, xsltTemplatePtr templ,
+		     xsltStackElemPtr params)
 {
     xmlNodePtr cur = NULL, insert, copy = NULL;
     xmlNodePtr oldInsert;
     xmlNodePtr oldCurrent = NULL;
     xmlNodePtr oldInst = NULL;
     xmlAttrPtr attrs;
+    int oldBase;
+    long start = 0;
 
-    if (list == NULL)
+    if ((ctxt == NULL) || (list == NULL))
         return;
     CHECK_STOPPED;
 
@@ -1008,13 +1002,28 @@ xsltApplyOneTemplate(xsltTransformContextPtr ctxt, xmlNodePtr node,
     }
 
     /*
-     * stack and saves
+     * stack saves, beware ordering of operations counts
      */
     oldInsert = insert = ctxt->insert;
     oldInst = ctxt->inst;
-    if (real) {
-        oldCurrent = ctxt->node;
+    oldCurrent = ctxt->node;
+    varsPush(ctxt, params);
+    oldBase = ctxt->varsBase; /* only needed if templ != NULL */
+    if (templ != NULL) {
+	ctxt->varsBase = ctxt->varsNr - 1;
         ctxt->node = node;
+	if (ctxt->profile) {
+	    templ->nbCalls++;
+	    start = xsltTimestamp();
+	    profPush(ctxt, 0);
+	}
+	templPush(ctxt, templ);
+#ifdef WITH_XSLT_DEBUG_PROCESS
+	if (templ->name != NULL)
+	    xsltGenericDebug(xsltGenericDebugContext,
+			     "applying template '%s'\n",
+	                     templ->name);
+#endif
     }
 
     /*
@@ -1031,10 +1040,7 @@ xsltApplyOneTemplate(xsltTransformContextPtr ctxt, xmlNodePtr node,
             xsltGenericDebug(xsltGenericDebugContext,
                              "xsltApplyOneTemplate: insert == NULL !\n");
 #endif
-            if (real)
-                ctxt->node = oldCurrent;
-            ctxt->inst = oldInst;
-            return;
+	    goto error;
         }
 
         if (IS_XSLT_ELEM(cur)) {
@@ -1116,7 +1122,7 @@ xsltApplyOneTemplate(xsltTransformContextPtr ctxt, xmlNodePtr node,
                                  cur->name);
 #endif
                 /*
-                 * Search if there is fallbacks
+                 * Search if there are fallbacks
                  */
                 child = cur->children;
                 while (child != NULL) {
@@ -1124,7 +1130,7 @@ xsltApplyOneTemplate(xsltTransformContextPtr ctxt, xmlNodePtr node,
                         (IS_XSLT_NAME(child, "fallback"))) {
                         found = 1;
                         xsltApplyOneTemplate(ctxt, node, child->children,
-                                             1);
+				             NULL, NULL);
                     }
                     child = child->next;
                 }
@@ -1194,9 +1200,42 @@ xsltApplyOneTemplate(xsltTransformContextPtr ctxt, xmlNodePtr node,
             }
         } while (cur != NULL);
     }
-    if (real)
-        ctxt->node = oldCurrent;
+error:
+    ctxt->node = oldCurrent;
     ctxt->inst = oldInst;
+    ctxt->insert = oldInsert;
+    if (params == NULL)
+	xsltFreeStackElemList(varsPop(ctxt));
+    else {
+	xsltStackElemPtr p, tmp = varsPop(ctxt);
+	if (tmp != params) {
+	    p = tmp;
+	    while ((p != NULL) && (p->next != params))
+		p = p->next;
+	    if (p == NULL) {
+		xsltFreeStackElemList(tmp);
+	    } else {
+		p->next = NULL;
+		xsltFreeStackElemList(tmp);
+	    }
+	}
+    }
+    if (templ != NULL) {
+	ctxt->varsBase = oldBase;
+	templPop(ctxt);
+	if (ctxt->profile) {
+	    long spent, child, total, end;
+	    
+	    end = xsltTimestamp(); 
+	    child = profPop(ctxt);
+	    total = end - start;
+	    spent = total - child;
+
+	    templ->time += spent;
+	    if (ctxt->profNr > 0)
+		ctxt->profTab[ctxt->profNr - 1] += total;
+	}
+    }
 }
 
 
@@ -1211,7 +1250,7 @@ xsltApplyOneTemplate(xsltTransformContextPtr ctxt, xmlNodePtr node,
  * @ctxt:  an XSLT processing context
  * @node:  The current node
  * @inst:  the instruction in the stylesheet
- * @comp:  precomputed informations
+ * @comp:  precomputed information
  *
  * Process an XSLT-1.1 document element
  */
@@ -1494,7 +1533,7 @@ xsltDocumentElem(xsltTransformContextPtr ctxt, xmlNodePtr node,
 		goto error;
 	} else if (xmlStrEqual(method, (const xmlChar *) "xhtml")) {
 	    xsltGenericError(xsltGenericErrorContext,
-	     "xsltApplyStylesheet: unsupported method xhtml, using html\n",
+	     "xsltDocumentElem: unsupported method xhtml, using html\n",
 		             style->method);
 	    ctxt->type = XSLT_OUTPUT_HTML;
 	    res = htmlNewDoc(doctypeSystem, doctypePublic);
@@ -1507,7 +1546,7 @@ xsltDocumentElem(xsltTransformContextPtr ctxt, xmlNodePtr node,
 		goto error;
 	} else {
 	    xsltGenericError(xsltGenericErrorContext,
-			     "xsltApplyStylesheet: unsupported method %s\n",
+			     "xsltDocumentElem: unsupported method %s\n",
 		             style->method);
 	    goto error;
 	}
@@ -1522,12 +1561,10 @@ xsltDocumentElem(xsltTransformContextPtr ctxt, xmlNodePtr node,
 	res->encoding = xmlStrdup(style->encoding);
     ctxt->output = res;
     ctxt->insert = (xmlNodePtr) res;
-    varsPush(ctxt, NULL);
-    xsltApplyOneTemplate(ctxt, node, inst->children, 0);
-    xsltFreeStackElemList(varsPop(ctxt));
+    xsltApplyOneTemplate(ctxt, node, inst->children, NULL, NULL);
 
     /*
-     * Save the res
+     * Save the result
      */
     ret = xsltSaveResultToFilename((const char *) filename,
                                    res, style, 0);
@@ -1563,14 +1600,15 @@ xsltDocumentElem(xsltTransformContextPtr ctxt, xmlNodePtr node,
  *									*
  ************************************************************************/
 
-void xsltProcessOneNode(xsltTransformContextPtr ctxt, xmlNodePtr node);
+void xsltProcessOneNode(xsltTransformContextPtr ctxt, xmlNodePtr node,
+	                xsltStackElemPtr params);
 
 /**
  * xsltSort:
  * @ctxt:  a XSLT process context
  * @node:  the node in the source tree.
  * @inst:  the xslt sort node
- * @comp:  precomputed informations
+ * @comp:  precomputed information
  *
  * function attached to xsl:sort nodes, but this should not be
  * called directly
@@ -1593,7 +1631,7 @@ xsltSort(xsltTransformContextPtr ctxt ATTRIBUTE_UNUSED,
  * @ctxt:  a XSLT process context
  * @node:  the node in the source tree.
  * @inst:  the xslt copy node
- * @comp:  precomputed informations
+ * @comp:  precomputed information
  *
  * Process the xslt copy node on the source node
  */
@@ -1615,10 +1653,10 @@ xsltCopy(xsltTransformContextPtr ctxt, xmlNodePtr node,
 #ifdef WITH_XSLT_DEBUG_PROCESS
 		if (node->type == XML_CDATA_SECTION_NODE)
 		    xsltGenericDebug(xsltGenericDebugContext,
-			 "xsl:copy: CDATA text %s\n", node->content);
+			 "xsltCopy: CDATA text %s\n", node->content);
 		else
 		    xsltGenericDebug(xsltGenericDebugContext,
-			 "xsl:copy: text %s\n", node->content);
+			 "xsltCopy: text %s\n", node->content);
 #endif
 		xsltCopyText(ctxt, ctxt->insert, node);
 		break;
@@ -1628,7 +1666,7 @@ xsltCopy(xsltTransformContextPtr ctxt, xmlNodePtr node,
 	    case XML_ELEMENT_NODE:
 #ifdef WITH_XSLT_DEBUG_PROCESS
 		xsltGenericDebug(xsltGenericDebugContext,
-				 "xsl:copy: node %s\n", node->name);
+				 "xsltCopy: node %s\n", node->name);
 #endif
 		copy = xsltCopyNode(ctxt, node, ctxt->insert);
 		ctxt->insert = copy;
@@ -1639,7 +1677,7 @@ xsltCopy(xsltTransformContextPtr ctxt, xmlNodePtr node,
 	    case XML_ATTRIBUTE_NODE: {
 #ifdef WITH_XSLT_DEBUG_PROCESS
 		xsltGenericDebug(xsltGenericDebugContext,
-				 "xsl:copy: attribute %s\n", node->name);
+				 "xsltCopy: attribute %s\n", node->name);
 #endif
 		if (ctxt->insert->type == XML_ELEMENT_NODE) {
 		    xmlAttrPtr attr = (xmlAttrPtr) node, ret = NULL, cur;
@@ -1668,7 +1706,7 @@ xsltCopy(xsltTransformContextPtr ctxt, xmlNodePtr node,
 	    case XML_PI_NODE:
 #ifdef WITH_XSLT_DEBUG_PROCESS
 		xsltGenericDebug(xsltGenericDebugContext,
-				 "xsl:copy: PI %s\n", node->name);
+				 "xsltCopy: PI %s\n", node->name);
 #endif
 		copy = xmlNewPI(node->name, node->content);
 		xmlAddChild(ctxt->insert, copy);
@@ -1676,7 +1714,7 @@ xsltCopy(xsltTransformContextPtr ctxt, xmlNodePtr node,
 	    case XML_COMMENT_NODE:
 #ifdef WITH_XSLT_DEBUG_PROCESS
 		xsltGenericDebug(xsltGenericDebugContext,
-				 "xsl:copy: comment\n");
+				 "xsltCopy: comment\n");
 #endif
 		copy = xmlNewComment(node->content);
 		xmlAddChild(ctxt->insert, copy);
@@ -1691,9 +1729,8 @@ xsltCopy(xsltTransformContextPtr ctxt, xmlNodePtr node,
 	case XML_DOCUMENT_NODE:
 	case XML_HTML_DOCUMENT_NODE:
 	case XML_ELEMENT_NODE:
-	    varsPush(ctxt, NULL);
-	    xsltApplyOneTemplate(ctxt, ctxt->node, inst->children, 0);
-	    xsltFreeStackElemList(varsPop(ctxt));
+	    xsltApplyOneTemplate(ctxt, ctxt->node, inst->children,
+		                 NULL, NULL);
 	    break;
 	default:
 	    break;
@@ -1706,7 +1743,7 @@ xsltCopy(xsltTransformContextPtr ctxt, xmlNodePtr node,
  * @ctxt:  a XSLT process context
  * @node:  the node in the source tree.
  * @inst:  the xslt text node
- * @comp:  precomputed informations
+ * @comp:  precomputed information
  *
  * Process the xslt text node on the source node
  */
@@ -1744,7 +1781,7 @@ xsltText(xsltTransformContextPtr ctxt, xmlNodePtr node ATTRIBUTE_UNUSED,
  * @ctxt:  a XSLT process context
  * @node:  the node in the source tree.
  * @inst:  the xslt element node
- * @comp:  precomputed informations
+ * @comp:  precomputed information
  *
  * Process the xslt element node on the source node
  */
@@ -1807,7 +1844,7 @@ xsltElement(xsltTransformContextPtr ctxt, xmlNodePtr node,
 	if (!xmlStrncasecmp(prefix, (xmlChar *)"xml", 3)) {
 #ifdef WITH_XSLT_DEBUG_PARSING
 	    xsltGenericDebug(xsltGenericDebugContext,
-		 "xsl:element : xml prefix forbidden\n");
+		 "xsltElement: xml prefix forbidden\n");
 #endif
 	    goto error;
 	}
@@ -1846,9 +1883,7 @@ xsltElement(xsltTransformContextPtr ctxt, xmlNodePtr node,
 	}
     }
     
-    varsPush(ctxt, NULL);
-    xsltApplyOneTemplate(ctxt, ctxt->node, inst->children, 0);
-    xsltFreeStackElemList(varsPop(ctxt));
+    xsltApplyOneTemplate(ctxt, ctxt->node, inst->children, NULL, NULL);
 
     ctxt->insert = oldInsert;
 
@@ -1868,7 +1903,7 @@ error:
  * @ctxt:  a XSLT process context
  * @node:  the node in the source tree.
  * @inst:  the xslt attribute node
- * @comp:  precomputed informations
+ * @comp:  precomputed information
  *
  * Process the xslt attribute node on the source node
  */
@@ -1898,7 +1933,7 @@ xsltAttribute(xsltTransformContextPtr ctxt, xmlNodePtr node,
     }
     if (ctxt->insert->children != NULL) {
 	xsltGenericError(xsltGenericErrorContext,
-	     "xsl:attribute : node has already children\n");
+	     "xsl:attribute : node already has children\n");
 	return;
     }
     if (comp->name == NULL) {
@@ -1923,7 +1958,7 @@ xsltAttribute(xsltTransformContextPtr ctxt, xmlNodePtr node,
     if (!xmlStrncasecmp(prefix, (xmlChar *)"xml", 3)) {
 #ifdef WITH_XSLT_DEBUG_PARSING
 	xsltGenericDebug(xsltGenericDebugContext,
-	     "xsl:attribute : xml prefix forbidden\n");
+	     "xsltAttribute: xml prefix forbidden\n");
 #endif
 	goto error;
     }
@@ -1982,7 +2017,7 @@ error:
  * @ctxt:  a XSLT process context
  * @node:  the node in the source tree.
  * @inst:  the xslt comment node
- * @comp:  precomputed informations
+ * @comp:  precomputed information
  *
  * Process the xslt comment node on the source node
  */
@@ -1998,10 +2033,10 @@ xsltComment(xsltTransformContextPtr ctxt, xmlNodePtr node,
 #ifdef WITH_XSLT_DEBUG_PROCESS
     if (value == NULL)
 	xsltGenericDebug(xsltGenericDebugContext,
-	     "xsl:comment: empty\n");
+	     "xsltComment: empty\n");
     else
 	xsltGenericDebug(xsltGenericDebugContext,
-	     "xsl:comment: content %s\n", value);
+	     "xsltComment: content %s\n", value);
 #endif
 
     comment = xmlNewComment(value);
@@ -2016,7 +2051,7 @@ xsltComment(xsltTransformContextPtr ctxt, xmlNodePtr node,
  * @ctxt:  a XSLT process context
  * @node:  the node in the source tree.
  * @inst:  the xslt processing-instruction node
- * @comp:  precomputed informations
+ * @comp:  precomputed information
  *
  * Process the xslt processing-instruction node on the source node
  */
@@ -2052,10 +2087,10 @@ xsltProcessingInstruction(xsltTransformContextPtr ctxt, xmlNodePtr node,
 #ifdef WITH_XSLT_DEBUG_PROCESS
     if (value == NULL)
 	xsltGenericDebug(xsltGenericDebugContext,
-	     "xsl:processing-instruction: %s empty\n", ncname);
+	     "xsltProcessingInstruction: %s empty\n", ncname);
     else
 	xsltGenericDebug(xsltGenericDebugContext,
-	     "xsl:processing-instruction: %s content %s\n", ncname, value);
+	     "xsltProcessingInstruction: %s content %s\n", ncname, value);
 #endif
 
     pi = xmlNewPI(name, value);
@@ -2073,7 +2108,7 @@ error:
  * @ctxt:  a XSLT process context
  * @node:  the node in the source tree.
  * @inst:  the xslt copy-of node
- * @comp:  precomputed informations
+ * @comp:  precomputed information
  *
  * Process the xslt copy-of node on the source node
  */
@@ -2172,7 +2207,7 @@ xsltCopyOf(xsltTransformContextPtr ctxt, xmlNodePtr node,
  * @ctxt:  a XSLT process context
  * @node:  the node in the source tree.
  * @inst:  the xslt value-of node
- * @comp:  precomputed informations
+ * @comp:  precomputed information
  *
  * Process the xslt value-of node on the source node
  */
@@ -2241,7 +2276,7 @@ xsltValueOf(xsltTransformContextPtr ctxt, xmlNodePtr node,
  * @ctxt:  a XSLT process context
  * @node:  the node in the source tree.
  * @inst:  the xslt number node
- * @comp:  precomputed informations
+ * @comp:  precomputed information
  *
  * Process the xslt number node on the source node
  */
@@ -2269,13 +2304,14 @@ xsltNumber(xsltTransformContextPtr ctxt, xmlNodePtr node,
  * @ctxt:  a XSLT process context
  * @node:  the node in the source tree.
  * @inst:  the xslt apply-imports node
- * @comp:  precomputed informations
+ * @comp:  precomputed information
  *
  * Process the xslt apply-imports node on the source node
  */
 void
 xsltApplyImports(xsltTransformContextPtr ctxt, xmlNodePtr node,
-	         xmlNodePtr inst ATTRIBUTE_UNUSED, xsltStylePreCompPtr comp ATTRIBUTE_UNUSED) {
+	         xmlNodePtr inst ATTRIBUTE_UNUSED,
+		 xsltStylePreCompPtr comp ATTRIBUTE_UNUSED) {
     xsltTemplatePtr template;
 
     if ((ctxt->templ == NULL) || (ctxt->templ->style == NULL)) {
@@ -2285,11 +2321,7 @@ xsltApplyImports(xsltTransformContextPtr ctxt, xmlNodePtr node,
     }
     template = xsltGetTemplate(ctxt, node, ctxt->templ->style);
     if (template != NULL) {
-	templPush(ctxt, template);
-	varsPush(ctxt, NULL);
-	xsltApplyOneTemplate(ctxt, node, template->content, 1);
-	xsltFreeStackElemList(varsPop(ctxt));
-	templPop(ctxt);
+	xsltApplyOneTemplate(ctxt, node, template->content, template, NULL);
     }
 }
 
@@ -2298,7 +2330,7 @@ xsltApplyImports(xsltTransformContextPtr ctxt, xmlNodePtr node,
  * @ctxt:  a XSLT process context
  * @node:  the node in the source tree.
  * @inst:  the xslt call-template node
- * @comp:  precomputed informations
+ * @comp:  precomputed information
  *
  * Process the xslt call-template node on the source node
  */
@@ -2307,7 +2339,6 @@ xsltCallTemplate(xsltTransformContextPtr ctxt, xmlNodePtr node,
 	           xmlNodePtr inst, xsltStylePreCompPtr comp) {
     xmlNodePtr cur = NULL;
     xsltStackElemPtr params = NULL, param;
-
 
     if (ctxt->insert == NULL)
 	return;
@@ -2329,10 +2360,12 @@ xsltCallTemplate(xsltTransformContextPtr ctxt, xmlNodePtr node,
 	}
     }
 
-    /*
-     * Create a new frame but block access to variables
-     */
-    templPush(ctxt, comp->templ);
+#ifdef WITH_XSLT_DEBUG_PROCESS
+    if ((comp != NULL) && (comp->name != NULL))
+	xsltGenericDebug(xsltGenericDebugContext,
+			 "call-template: name %s\n", comp->name);
+#endif
+
     cur = inst->children;
     while (cur != NULL) {
 	if (ctxt->state == XSLT_STATE_STOPPED) break;
@@ -2353,10 +2386,18 @@ xsltCallTemplate(xsltTransformContextPtr ctxt, xmlNodePtr node,
 	}
 	cur = cur->next;
     }
-    varsPush(ctxt, params);
-    xsltApplyOneTemplate(ctxt, node, comp->templ->content, 1);
-    xsltFreeStackElemList(varsPop(ctxt));
-    templPop(ctxt);
+    /*
+     * Create a new frame using the params first
+     */
+    xsltApplyOneTemplate(ctxt, node, comp->templ->content, comp->templ, params);
+    if (params != NULL)
+	xsltFreeStackElemList(params);
+
+#ifdef WITH_XSLT_DEBUG_PROCESS
+    if ((comp != NULL) && (comp->name != NULL))
+	xsltGenericDebug(xsltGenericDebugContext,
+			 "call-template returned: name %s\n", comp->name);
+#endif
 }
 
 /**
@@ -2364,7 +2405,7 @@ xsltCallTemplate(xsltTransformContextPtr ctxt, xmlNodePtr node,
  * @ctxt:  a XSLT process context
  * @node:  the node in the source tree.
  * @inst:  the apply-templates node
- * @comp:  precomputed informations
+ * @comp:  precomputed information
  *
  * Process the apply-templates node on the source node
  */
@@ -2376,7 +2417,7 @@ xsltApplyTemplates(xsltTransformContextPtr ctxt, xmlNodePtr node,
     xmlNodeSetPtr list = NULL, oldList;
     int i, oldProximityPosition, oldContextSize;
     const xmlChar *oldMode, *oldModeURI;
-    xsltStackElemPtr params = NULL, param, tmp, p;
+    xsltStackElemPtr params = NULL, param;
     int nbsorts = 0;
     xmlNodePtr sorts[XSLT_MAX_SORT];
     xmlDocPtr oldXDocPtr;
@@ -2530,17 +2571,17 @@ xsltApplyTemplates(xsltTransformContextPtr ctxt, xmlNodePtr node,
 	    } else if (IS_XSLT_NAME(cur, "sort")) {
 		if (nbsorts >= XSLT_MAX_SORT) {
 		    xsltGenericError(xsltGenericDebugContext,
-			"xsl:call-template: %s too many sort\n", node->name);
+			"xsl:apply-template: %s too many sort\n", node->name);
 		} else {
 		    sorts[nbsorts++] = cur;
 		}
 	    } else {
 		xsltGenericError(xsltGenericDebugContext,
-		    "xsl:call-template: misplaced xsl:%s\n", cur->name);
+		    "xsl:apply-template: misplaced xsl:%s\n", cur->name);
 	    }
         } else {
             xsltGenericError(xsltGenericDebugContext,
-                 "xsl:call-template: misplaced %s element\n", cur->name);
+                 "xsl:apply-template: misplaced %s element\n", cur->name);
         }
         cur = cur->next;
     }
@@ -2571,28 +2612,10 @@ xsltApplyTemplates(xsltTransformContextPtr ctxt, xmlNodePtr node,
 	     ctxt->document->doc->URL, ctxt->xpathCtxt->doc->URL);
 #endif
 	}
-	varsPush(ctxt, params);
-	xsltProcessOneNode(ctxt, list->nodeTab[i]);
-	tmp = varsPop(ctxt);
-	/*
-	 * Free other parameter and variables which may have been
-	 * added to the set defined in the caller.
-	 */
-	if (params == NULL) {
-	    xsltFreeStackElemList(tmp);
-	} else if (tmp != params) {
-            p = tmp;
-	    while ((p != NULL) && (p->next != params))
-		p = p->next;
-	    if (p == NULL) {
-		xsltFreeStackElemList(tmp);
-	    } else {
-		p->next = NULL;
-		xsltFreeStackElemList(tmp);
-	    }
-	}
+	xsltProcessOneNode(ctxt, list->nodeTab[i], params);
     }
-    xsltFreeStackElemList(params);	/* free the parameter list */
+    if (params != NULL)
+	xsltFreeStackElemList(params);	/* free the parameter list */
 error:
 
     ctxt->nodeList = oldList;
@@ -2618,7 +2641,7 @@ error:
  * @ctxt:  a XSLT process context
  * @node:  the node in the source tree.
  * @inst:  the xslt choose node
- * @comp:  precomputed informations
+ * @comp:  precomputed information
  *
  * Process the xslt choose node on the source node
  */
@@ -2656,13 +2679,13 @@ xsltChoose(xsltTransformContextPtr ctxt, xmlNodePtr node,
 
 	if ((wcomp == NULL) || (wcomp->test == NULL) || (wcomp->comp == NULL)) {
 	    xsltGenericError(xsltGenericErrorContext,
-		 "xsl:when: compilation failed !\n");
+		 "xsl:choose: compilation failed !\n");
 	    goto error;
 	}
 	when = replacement;
 #ifdef WITH_XSLT_DEBUG_PROCESS
 	xsltGenericDebug(xsltGenericDebugContext,
-	     "xsl:when: test %s\n", wcomp->test);
+	     "xsltChoose: test %s\n", wcomp->test);
 #endif
 
 	oldProximityPosition = ctxt->xpathCtxt->proximityPosition;
@@ -2685,7 +2708,7 @@ xsltChoose(xsltTransformContextPtr ctxt, xmlNodePtr node,
 	    else {
 #ifdef WITH_XSLT_DEBUG_PROCESS
 		xsltGenericDebug(xsltGenericDebugContext,
-		    "xsl:when: test didn't evaluate to a boolean\n");
+		    "xsltChoose: test didn't evaluate to a boolean\n");
 #endif
 		goto error;
 	    }
@@ -2693,12 +2716,11 @@ xsltChoose(xsltTransformContextPtr ctxt, xmlNodePtr node,
 
 #ifdef WITH_XSLT_DEBUG_PROCESS
 	xsltGenericDebug(xsltGenericDebugContext,
-	    "xsl:when: test evaluate to %d\n", doit);
+	    "xsltChoose: test evaluate to %d\n", doit);
 #endif
 	if (doit) {
-	    varsPush(ctxt, NULL);
-	    xsltApplyOneTemplate(ctxt, ctxt->node, when->children, 0);
-	    xsltFreeStackElemList(varsPop(ctxt));
+	    xsltApplyOneTemplate(ctxt, ctxt->node, when->children,
+		                 NULL, NULL);
 	    goto done;
 	}
 	if (prop != NULL)
@@ -2710,9 +2732,12 @@ xsltChoose(xsltTransformContextPtr ctxt, xmlNodePtr node,
 	replacement = replacement->next;
     }
     if (IS_XSLT_ELEM(replacement) && (IS_XSLT_NAME(replacement, "otherwise"))) {
-	varsPush(ctxt, NULL);
-	xsltApplyOneTemplate(ctxt, ctxt->node, replacement->children, 0);
-	xsltFreeStackElemList(varsPop(ctxt));
+#ifdef WITH_XSLT_DEBUG_PROCESS
+	xsltGenericDebug(xsltGenericDebugContext,
+			 "evaluating xsl:otherwise\n");
+#endif
+	xsltApplyOneTemplate(ctxt, ctxt->node, replacement->children,
+		             NULL, NULL);
 	replacement = replacement->next;
     }
     if (replacement != NULL) {
@@ -2734,7 +2759,7 @@ error:
  * @ctxt:  a XSLT process context
  * @node:  the node in the source tree.
  * @inst:  the xslt if node
- * @comp:  precomputed informations
+ * @comp:  precomputed information
  *
  * Process the xslt if node on the source node
  */
@@ -2791,9 +2816,7 @@ xsltIf(xsltTransformContextPtr ctxt, xmlNodePtr node,
 	"xsltIf: test evaluate to %d\n", doit);
 #endif
     if (doit) {
-	varsPush(ctxt, NULL);
-	xsltApplyOneTemplate(ctxt, node, inst->children, 0);
-	xsltFreeStackElemList(varsPop(ctxt));
+	xsltApplyOneTemplate(ctxt, node, inst->children, NULL, NULL);
     }
 
 error:
@@ -2806,7 +2829,7 @@ error:
  * @ctxt:  a XSLT process context
  * @node:  the node in the source tree.
  * @inst:  the xslt for-each node
- * @comp:  precomputed informations
+ * @comp:  precomputed information
  *
  * Process the xslt for-each node on the source node
  */
@@ -2882,7 +2905,7 @@ xsltForEach(xsltTransformContextPtr ctxt, xmlNodePtr node,
     while (IS_XSLT_ELEM(replacement) && (IS_XSLT_NAME(replacement, "sort"))) {
 	if (nbsorts >= XSLT_MAX_SORT) {
 	    xsltGenericError(xsltGenericDebugContext,
-		"xsl:for-each: too many sort\n");
+		"xsl:for-each: too many sorts\n");
 	} else {
 	    sorts[nbsorts++] = replacement;
 	}
@@ -2906,20 +2929,17 @@ xsltForEach(xsltTransformContextPtr ctxt, xmlNodePtr node,
 	    if ((ctxt->document =
 		  xsltFindDocument(ctxt,list->nodeTab[i]->doc->doc))==NULL) { 
     		xsltGenericError(xsltGenericErrorContext,
-	 		"xsl:apply-templates : can't find doc\n");
+	 		"xsl:for-each : can't find doc\n");
     		goto error;
 	    }
 	    ctxt->xpathCtxt->node = list->nodeTab[i];
 #ifdef WITH_XSLT_DEBUG_PROCESS
 	xsltGenericDebug(xsltGenericDebugContext,
-	     "xsltApplyTemplates: Changing document - context doc %s, xpathdoc %s\n",
+	     "xsltForEach: Changing document - context doc %s, xpathdoc %s\n",
 	     ctxt->document->doc->URL, ctxt->xpathCtxt->doc->URL);
 #endif
 	}
-	/* ctxt->insert = oldInsert; */
-	varsPush(ctxt, NULL);
-	xsltApplyOneTemplate(ctxt, list->nodeTab[i], replacement, 0);
-	xsltFreeStackElemList(varsPop(ctxt));
+	xsltApplyOneTemplate(ctxt, list->nodeTab[i], replacement, NULL, NULL);
     }
     ctxt->document = oldCDocPtr;
     ctxt->nodeList = oldList;
@@ -3004,6 +3024,7 @@ xsltGetHTMLIDs(const xmlChar *version, const xmlChar **public,
  * @doc:  a parsed XML document
  * @params:  a NULL terminated arry of parameters names/values tuples
  * @output:  the targetted output
+ * @profile:  profile FILE * output or NULL
  *
  * Apply the stylesheet to the document
  * NOTE: This may lead to a non-wellformed output XML wise !
@@ -3012,7 +3033,9 @@ xsltGetHTMLIDs(const xmlChar *version, const xmlChar **public,
  */
 static xmlDocPtr
 xsltApplyStylesheetInternal(xsltStylesheetPtr style, xmlDocPtr doc,
-	            const char **params, const char *output) {
+                            const char **params, const char *output,
+                            FILE * profile)
+{
     xmlDocPtr res = NULL;
     xsltTransformContextPtr ctxt = NULL;
     xmlNodePtr root;
@@ -3024,65 +3047,69 @@ xsltApplyStylesheetInternal(xsltStylesheetPtr style, xmlDocPtr doc,
     xsltStackElemPtr vptr;
 
     if ((style == NULL) || (doc == NULL))
-	return(NULL);
+        return (NULL);
     ctxt = xsltNewTransformContext(style, doc);
     if (ctxt == NULL)
-	return(NULL);
+        return (NULL);
+
+    if (profile != NULL)
+        ctxt->profile = 1;
+
     xsltRegisterExtras(ctxt);
     if (output != NULL)
-	ctxt->outputFile = output;
+        ctxt->outputFile = output;
     else
-	ctxt->outputFile = NULL;
+        ctxt->outputFile = NULL;
 
     XSLT_GET_IMPORT_PTR(method, style, method)
-    XSLT_GET_IMPORT_PTR(doctypePublic, style, doctypePublic)
-    XSLT_GET_IMPORT_PTR(doctypeSystem, style, doctypeSystem)
-    XSLT_GET_IMPORT_PTR(version, style, version)
+        XSLT_GET_IMPORT_PTR(doctypePublic, style, doctypePublic)
+        XSLT_GET_IMPORT_PTR(doctypeSystem, style, doctypeSystem)
+        XSLT_GET_IMPORT_PTR(version, style, version)
 
-    if ((method != NULL) &&
-	(!xmlStrEqual(method, (const xmlChar *) "xml"))) {
-	if (xmlStrEqual(method, (const xmlChar *) "html")) {
-	    ctxt->type = XSLT_OUTPUT_HTML;
-	    if (((doctypePublic != NULL) || (doctypeSystem != NULL)))
-		res = htmlNewDoc(doctypeSystem, doctypePublic);
-	    else {
-		if (version == NULL)
-		    version = (const xmlChar *) "4.0";
+        if ((method != NULL) &&
+            (!xmlStrEqual(method, (const xmlChar *) "xml"))) {
+        if (xmlStrEqual(method, (const xmlChar *) "html")) {
+            ctxt->type = XSLT_OUTPUT_HTML;
+            if (((doctypePublic != NULL) || (doctypeSystem != NULL)))
+                res = htmlNewDoc(doctypeSystem, doctypePublic);
+            else {
+                if (version == NULL)
+                    version = (const xmlChar *) "4.0";
 #ifdef XSLT_GENERATE_HTML_DOCTYPE
-		xsltGetHTMLIDs(version, &doctypePublic, &doctypeSystem);
+                xsltGetHTMLIDs(version, &doctypePublic, &doctypeSystem);
 #endif
-		res = htmlNewDoc(doctypeSystem, doctypePublic);
-	    }
-	    if (res == NULL)
-		goto error;
-	} else if (xmlStrEqual(method, (const xmlChar *) "xhtml")) {
-	    xsltGenericError(xsltGenericErrorContext,
-	     "xsltApplyStylesheet: unsupported method xhtml, using html\n",
-		             style->method);
-	    ctxt->type = XSLT_OUTPUT_HTML;
-	    res = htmlNewDoc(doctypeSystem, doctypePublic);
-	    if (res == NULL)
-		goto error;
-	} else if (xmlStrEqual(style->method, (const xmlChar *) "text")) {
-	    ctxt->type = XSLT_OUTPUT_TEXT;
-	    res = xmlNewDoc(style->version);
-	    if (res == NULL)
-		goto error;
-	} else {
-	    xsltGenericError(xsltGenericErrorContext,
-			     "xsltApplyStylesheet: unsupported method %s\n",
-		             style->method);
-	    goto error;
-	}
+                res = htmlNewDoc(doctypeSystem, doctypePublic);
+            }
+            if (res == NULL)
+                goto error;
+        } else if (xmlStrEqual(method, (const xmlChar *) "xhtml")) {
+            xsltGenericError(xsltGenericErrorContext,
+     "xsltApplyStylesheetInternal: unsupported method xhtml, using html\n",
+			 style->method);
+            ctxt->type = XSLT_OUTPUT_HTML;
+            res = htmlNewDoc(doctypeSystem, doctypePublic);
+            if (res == NULL)
+                goto error;
+        } else if (xmlStrEqual(style->method, (const xmlChar *) "text")) {
+            ctxt->type = XSLT_OUTPUT_TEXT;
+            res = xmlNewDoc(style->version);
+            if (res == NULL)
+                goto error;
+        } else {
+            xsltGenericError(xsltGenericErrorContext,
+		     "xsltApplyStylesheetInternal: unsupported method %s\n",
+                             style->method);
+            goto error;
+        }
     } else {
-	ctxt->type = XSLT_OUTPUT_XML;
-	res = xmlNewDoc(style->version);
-	if (res == NULL)
-	    goto error;
+        ctxt->type = XSLT_OUTPUT_XML;
+        res = xmlNewDoc(style->version);
+        if (res == NULL)
+            goto error;
     }
     res->charset = XML_CHAR_ENCODING_UTF8;
     if (style->encoding != NULL)
-	res->encoding = xmlStrdup(style->encoding);
+        res->encoding = xmlStrdup(style->encoding);
     variables = style->variables;
 
     /*
@@ -3093,12 +3120,13 @@ xsltApplyStylesheetInternal(xsltStylesheetPtr style, xmlDocPtr doc,
     ctxt->insert = (xmlNodePtr) res;
     ctxt->globalVars = xmlHashCreate(20);
     if (params != NULL)
-	xsltEvalUserParams(ctxt, params);
+        xsltEvalUserParams(ctxt, params);
+    xsltInitCtxtExts(ctxt);
     xsltEvalGlobalVariables(ctxt);
     ctxt->node = (xmlNodePtr) doc;
-    xsltInitCtxtExts(ctxt);
     varsPush(ctxt, NULL);
-    xsltProcessOneNode(ctxt, ctxt->node);
+    ctxt->varsBase = ctxt->varsNr - 1;
+    xsltProcessOneNode(ctxt, ctxt->node, NULL);
     xsltFreeStackElemList(varsPop(ctxt));
     xsltShutdownCtxtExts(ctxt);
 
@@ -3111,23 +3139,23 @@ xsltApplyStylesheetInternal(xsltStylesheetPtr style, xmlDocPtr doc,
      *       and not evaluated directly anymore, keep this as a check
      */
     if (style->variables != variables) {
-	vptr = style->variables;
-	while (vptr->next!=variables)
-	    vptr = vptr->next;
-	vptr->next = NULL;
-	xsltFreeStackElemList(style->variables);
-	style->variables = variables;
+        vptr = style->variables;
+        while (vptr->next != variables)
+            vptr = vptr->next;
+        vptr->next = NULL;
+        xsltFreeStackElemList(style->variables);
+        style->variables = variables;
     }
     vptr = style->variables;
-    while(vptr!=NULL) {
-	if (vptr->computed) {
-	    if (vptr->value != NULL) {
-		xmlXPathFreeObject(vptr->value);
-		vptr->value = NULL;
-		vptr->computed = 0;
-	    }
-	}
-	vptr = vptr->next;
+    while (vptr != NULL) {
+        if (vptr->computed) {
+            if (vptr->value != NULL) {
+                xmlXPathFreeObject(vptr->value);
+                vptr->value = NULL;
+                vptr->computed = 0;
+            }
+        }
+        vptr = vptr->next;
     }
 
 
@@ -3136,57 +3164,67 @@ xsltApplyStylesheetInternal(xsltStylesheetPtr style, xmlDocPtr doc,
      */
     root = xmlDocGetRootElement(res);
     if (root != NULL) {
-	/*
-	 * Apply the default selection of the method
-	 */
-	if ((method == NULL) &&
-	    (root->ns == NULL) &&
-	    (!xmlStrcasecmp(root->name, (const xmlChar *) "html"))) {
-	    xmlNodePtr tmp;
-	    tmp = res->children;
-	    while ((tmp != NULL) && (tmp != root)) {
-		if (tmp->type == XML_ELEMENT_NODE)
-		    break;
-		if ((tmp->type == XML_TEXT_NODE) && (!xmlIsBlankNode(tmp)))
-		    break;
-	    }
-	    if (tmp == root) {
-		ctxt->type = XSLT_OUTPUT_HTML;
-		res->type = XML_HTML_DOCUMENT_NODE;
-		if (((doctypePublic != NULL) || (doctypeSystem != NULL)))
-		    res->intSubset = xmlCreateIntSubset(res, root->name,
-				 doctypePublic, doctypeSystem);
-#ifdef XSLT_GENERATE_HTML_DOCTYPE
-		else {
-		    if (version == NULL)
-			version = (const xmlChar *) "4.0";
-		    xsltGetHTMLIDs(version, &doctypePublic, &doctypeSystem);
-		    if (((doctypePublic != NULL) || (doctypeSystem != NULL)))
-			res->intSubset = xmlCreateIntSubset(res, root->name,
-				     doctypePublic, doctypeSystem);
-		}
-#endif
-	    }
+        /*
+         * Apply the default selection of the method
+         */
+        if ((method == NULL) &&
+            (root->ns == NULL) &&
+            (!xmlStrcasecmp(root->name, (const xmlChar *) "html"))) {
+            xmlNodePtr tmp;
 
-	}
-	if (ctxt->type == XSLT_OUTPUT_XML) {
-	    XSLT_GET_IMPORT_PTR(doctypePublic, style, doctypePublic)
-	    XSLT_GET_IMPORT_PTR(doctypeSystem, style, doctypeSystem)
-	    if (((doctypePublic != NULL) || (doctypeSystem != NULL)))
-		res->intSubset = xmlCreateIntSubset(res, root->name,
-			     doctypePublic, doctypeSystem);
-	}
+            tmp = res->children;
+            while ((tmp != NULL) && (tmp != root)) {
+                if (tmp->type == XML_ELEMENT_NODE)
+                    break;
+                if ((tmp->type == XML_TEXT_NODE) && (!xmlIsBlankNode(tmp)))
+                    break;
+            }
+            if (tmp == root) {
+                ctxt->type = XSLT_OUTPUT_HTML;
+                res->type = XML_HTML_DOCUMENT_NODE;
+                if (((doctypePublic != NULL) || (doctypeSystem != NULL)))
+                    res->intSubset = xmlCreateIntSubset(res, root->name,
+                                                        doctypePublic,
+                                                        doctypeSystem);
+#ifdef XSLT_GENERATE_HTML_DOCTYPE
+                else {
+                    if (version == NULL)
+                        version = (const xmlChar *) "4.0";
+                    xsltGetHTMLIDs(version, &doctypePublic,
+                                   &doctypeSystem);
+                    if (((doctypePublic != NULL)
+                         || (doctypeSystem != NULL)))
+                        res->intSubset =
+                            xmlCreateIntSubset(res, root->name,
+                                               doctypePublic,
+                                               doctypeSystem);
+                }
+#endif
+            }
+
+        }
+        if (ctxt->type == XSLT_OUTPUT_XML) {
+            XSLT_GET_IMPORT_PTR(doctypePublic, style, doctypePublic)
+                XSLT_GET_IMPORT_PTR(doctypeSystem, style, doctypeSystem)
+                if (((doctypePublic != NULL) || (doctypeSystem != NULL)))
+                res->intSubset = xmlCreateIntSubset(res, root->name,
+                                                    doctypePublic,
+                                                    doctypeSystem);
+        }
     }
     xmlXPathFreeNodeSet(ctxt->nodeList);
+    if (profile != NULL) {
+        xsltSaveProfiling(ctxt, profile);
+    }
     xsltFreeTransformContext(ctxt);
-    return(res);
+    return (res);
 
 error:
     if (res != NULL)
         xmlFreeDoc(res);
     if (ctxt != NULL)
         xsltFreeTransformContext(ctxt);
-    return(NULL);
+    return (NULL);
 }
 
 /**
@@ -3202,8 +3240,31 @@ error:
  */
 xmlDocPtr
 xsltApplyStylesheet(xsltStylesheetPtr style, xmlDocPtr doc,
-	            const char **params) {
-    return(xsltApplyStylesheetInternal(style, doc, params, NULL));
+                    const char **params)
+{
+    return (xsltApplyStylesheetInternal(style, doc, params, NULL, NULL));
+}
+
+/**
+ * xsltProfileStylesheet:
+ * @style:  a parsed XSLT stylesheet
+ * @doc:  a parsed XML document
+ * @params:  a NULL terminated arry of parameters names/values tuples
+ * @output:  a FILE * for the profiling output
+ *
+ * Apply the stylesheet to the document and dump the profiling to
+ * the given output.
+ *
+ * Returns the result document or NULL in case of error
+ */
+xmlDocPtr
+xsltProfileStylesheet(xsltStylesheetPtr style, xmlDocPtr doc,
+                      const char **params, FILE * output)
+{
+    xmlDocPtr res;
+
+    res = xsltApplyStylesheetInternal(style, doc, params, NULL, output);
+    return (res);
 }
 
 /**
@@ -3231,36 +3292,100 @@ xsltApplyStylesheet(xsltStylesheetPtr style, xmlDocPtr doc,
  *         error.
  */
 int
-xsltRunStylesheet(xsltStylesheetPtr style, xmlDocPtr doc, const char **params,
-                  const char *output, xmlSAXHandlerPtr SAX,
-		  xmlOutputBufferPtr IObuf)
+xsltRunStylesheet(xsltStylesheetPtr style, xmlDocPtr doc,
+                  const char **params, const char *output,
+                  xmlSAXHandlerPtr SAX, xmlOutputBufferPtr IObuf)
 {
     xmlDocPtr tmp;
     int ret;
 
     if ((output == NULL) && (SAX == NULL) && (IObuf == NULL))
-	return(-1);
+        return (-1);
     if ((SAX != NULL) && (IObuf != NULL))
-	return(-1);
+        return (-1);
 
     /* unsupported yet */
     if (SAX != NULL) {
-	TODO /* xsltRunStylesheet xmlSAXHandlerPtr SAX */
-	return(-1);
+        TODO                    /* xsltRunStylesheet xmlSAXHandlerPtr SAX */
+            return (-1);
     }
 
-    tmp = xsltApplyStylesheetInternal(style, doc, params, output);
+    tmp = xsltApplyStylesheetInternal(style, doc, params, output, NULL);
     if (tmp == NULL) {
-	xsltGenericError(xsltGenericErrorContext,
-	     "xsltRunStylesheet : run failed\n");
-	return(-1);
+        xsltGenericError(xsltGenericErrorContext,
+                         "xsltRunStylesheet : run failed\n");
+        return (-1);
     }
     if (IObuf != NULL) {
-	/* TODO: incomplete, IObuf output not progressive */
-	ret = xsltSaveResultTo(IObuf, tmp, style);
+        /* TODO: incomplete, IObuf output not progressive */
+        ret = xsltSaveResultTo(IObuf, tmp, style);
     } else {
-	ret = xsltSaveResultToFilename(output, tmp, style, 0);
+        ret = xsltSaveResultToFilename(output, tmp, style, 0);
     }
     xmlFreeDoc(tmp);
-    return(ret);
+    return (ret);
+}
+
+/**
+ * xsltRegisterAllElements:
+ * @ctxt:  the XPath context
+ *
+ * Registers all default XSLT elements in this context
+ */
+void
+xsltRegisterAllElement(xsltTransformContextPtr ctxt)
+{
+    xsltRegisterExtElement(ctxt, (const xmlChar *) "apply-templates",
+                           XSLT_NAMESPACE, xsltApplyTemplates);
+    xsltRegisterExtElement(ctxt, (const xmlChar *) "apply-imports",
+                           XSLT_NAMESPACE, xsltApplyImports);
+    xsltRegisterExtElement(ctxt, (const xmlChar *) "call-template",
+                           XSLT_NAMESPACE, xsltCallTemplate);
+    xsltRegisterExtElement(ctxt, (const xmlChar *) "element",
+                           XSLT_NAMESPACE, xsltElement);
+    xsltRegisterExtElement(ctxt, (const xmlChar *) "attribute",
+                           XSLT_NAMESPACE, xsltAttribute);
+    xsltRegisterExtElement(ctxt, (const xmlChar *) "text",
+                           XSLT_NAMESPACE, xsltText);
+    xsltRegisterExtElement(ctxt, (const xmlChar *) "processing-instruction",
+                           XSLT_NAMESPACE, xsltProcessingInstruction);
+    xsltRegisterExtElement(ctxt, (const xmlChar *) "comment",
+                           XSLT_NAMESPACE, xsltComment);
+    xsltRegisterExtElement(ctxt, (const xmlChar *) "copy",
+                           XSLT_NAMESPACE, xsltCopy);
+    xsltRegisterExtElement(ctxt, (const xmlChar *) "value-of",
+                           XSLT_NAMESPACE, xsltValueOf);
+    xsltRegisterExtElement(ctxt, (const xmlChar *) "number",
+                           XSLT_NAMESPACE, xsltNumber);
+    xsltRegisterExtElement(ctxt, (const xmlChar *) "for-each",
+                           XSLT_NAMESPACE, xsltForEach);
+    xsltRegisterExtElement(ctxt, (const xmlChar *) "if",
+                           XSLT_NAMESPACE, xsltIf);
+    xsltRegisterExtElement(ctxt, (const xmlChar *) "choose",
+                           XSLT_NAMESPACE, xsltChoose);
+    xsltRegisterExtElement(ctxt, (const xmlChar *) "sort",
+                           XSLT_NAMESPACE, xsltSort);
+    xsltRegisterExtElement(ctxt, (const xmlChar *) "copy-of",
+                           XSLT_NAMESPACE, xsltCopyOf);
+    xsltRegisterExtElement(ctxt, (const xmlChar *) "message",
+                           XSLT_NAMESPACE, xsltMessage);
+
+    /*
+     * Those don't have callable entry points but are registered anyway
+     */
+    xsltRegisterExtElement(ctxt, (const xmlChar *) "variable",
+                           XSLT_NAMESPACE, xsltDebug);
+    xsltRegisterExtElement(ctxt, (const xmlChar *) "param",
+                           XSLT_NAMESPACE, xsltDebug);
+    xsltRegisterExtElement(ctxt, (const xmlChar *) "with-param",
+                           XSLT_NAMESPACE, xsltDebug);
+    xsltRegisterExtElement(ctxt, (const xmlChar *) "decimal-format",
+                           XSLT_NAMESPACE, xsltDebug);
+    xsltRegisterExtElement(ctxt, (const xmlChar *) "when",
+                           XSLT_NAMESPACE, xsltDebug);
+    xsltRegisterExtElement(ctxt, (const xmlChar *) "otherwise",
+                           XSLT_NAMESPACE, xsltDebug);
+    xsltRegisterExtElement(ctxt, (const xmlChar *) "fallback",
+                           XSLT_NAMESPACE, xsltDebug);
+
 }

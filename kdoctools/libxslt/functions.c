@@ -502,7 +502,7 @@ xsltSystemPropertyFunction(xmlXPathParserContextPtr ctxt, int nargs){
 	    nsURI = xmlXPathNsLookup(ctxt->context, prefix);
 	    if (nsURI == NULL) {
 		xsltGenericError(xsltGenericErrorContext,
-		    "system-property(): prefix %s is not bound\n", prefix);
+		    "system-property() : prefix %s is not bound\n", prefix);
 	    }
 	}
 
@@ -568,6 +568,9 @@ xsltSystemPropertyFunction(xmlXPathParserContextPtr ctxt, int nargs){
 void
 xsltElementAvailableFunction(xmlXPathParserContextPtr ctxt, int nargs){
     xmlXPathObjectPtr obj;
+    xmlChar *prefix, *name;
+    const xmlChar *nsURI = NULL;
+    xsltTransformContextPtr tctxt;
 
     if (nargs != 1) {
         xsltGenericError(xsltGenericErrorContext,
@@ -577,13 +580,43 @@ xsltElementAvailableFunction(xmlXPathParserContextPtr ctxt, int nargs){
     }
     if ((ctxt->value == NULL) || (ctxt->value->type != XPATH_STRING)) {
 	xsltGenericError(xsltGenericErrorContext,
-	    "element-available invalid arg expecting a string\n");
+	    "element-available() : invalid arg expecting a string\n");
 	ctxt->error = XPATH_INVALID_TYPE;
 	return;
     }
     obj = valuePop(ctxt);
+    tctxt = xsltXPathGetTransformContext(ctxt);
+    if (tctxt == NULL) {
+	xsltGenericError(xsltGenericErrorContext,
+		"element-available() : internal error tctxt == NULL\n");
+	xmlXPathFreeObject(obj);
+	valuePush(ctxt, xmlXPathNewBoolean(0));
+	return;
+    }
+
+
+    name = xmlSplitQName2(obj->stringval, &prefix);
+    if (name == NULL) {
+	name = xmlStrdup(obj->stringval);
+    } else {
+	nsURI = xmlXPathNsLookup(ctxt->context, prefix);
+	if (nsURI == NULL) {
+	    xsltGenericError(xsltGenericErrorContext,
+		"element-available() : prefix %s is not bound\n", prefix);
+	}
+    }
+
+    if (xmlHashLookup2(tctxt->extElements, name, nsURI) != NULL) {
+	valuePush(ctxt, xmlXPathNewBoolean(1));
+    } else {
+	valuePush(ctxt, xmlXPathNewBoolean(0));
+    }
+
     xmlXPathFreeObject(obj);
-    valuePush(ctxt, xmlXPathNewBoolean(0));
+    if (name != NULL)
+	xmlFree(name);
+    if (prefix != NULL)
+	xmlFree(prefix);
 }
 
 /**
@@ -608,7 +641,7 @@ xsltFunctionAvailableFunction(xmlXPathParserContextPtr ctxt, int nargs){
     }
     if ((ctxt->value == NULL) || (ctxt->value->type != XPATH_STRING)) {
 	xsltGenericError(xsltGenericErrorContext,
-	    "function-available invalid arg expecting a string\n");
+	    "function-available() : invalid arg expecting a string\n");
 	ctxt->error = XPATH_INVALID_TYPE;
 	return;
     }
@@ -621,7 +654,7 @@ xsltFunctionAvailableFunction(xmlXPathParserContextPtr ctxt, int nargs){
 	nsURI = xmlXPathNsLookup(ctxt->context, prefix);
 	if (nsURI == NULL) {
 	    xsltGenericError(xsltGenericErrorContext,
-		"function-available(): prefix %s is not bound\n", prefix);
+		"function-available() : prefix %s is not bound\n", prefix);
 	}
     }
 
@@ -652,7 +685,7 @@ xsltCurrentFunction(xmlXPathParserContextPtr ctxt, int nargs){
 
     if (nargs != 0) {
         xsltGenericError(xsltGenericErrorContext,
-		"document() : function uses no argument\n");
+		"current() : function uses no argument\n");
 	ctxt->error = XPATH_INVALID_ARITY;
 	return;
     }
@@ -722,7 +755,7 @@ xsltExtFunctionTest(xmlXPathParserContextPtr ctxt, int nargs)
  * @inst:  the instruction in the stylesheet
  * @comp:  precomputed informations
  *
- * Process an debug node
+ * Process a libxslt:test node
  */
 static void
 xsltExtElementTest(xsltTransformContextPtr ctxt, xmlNodePtr node,

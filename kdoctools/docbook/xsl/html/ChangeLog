@@ -1,3 +1,89 @@
+2001-07-08  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* calc-chunks.xsl, chunk-experimental.xsl: Break chunk calculation and chunking into two tasks; *requires* every chunk to have an ID
+
+	* chunker.xsl: Use element-available function not vendor to find chunking elements
+
+	* exsltchunk.xsl, exsltchunker.xsl: These have been integrated into the regular chunker now that it's based on extension-available()
+
+	* keywords.xsl: Tweaked handling of keywords to avoid multiple templates
+
+	* oldchunker.xsl: New file.
+
+	* qandaset.xsl: Improve QandA formatting; make question bold if defaultlabel=none (FR #419315)
+
+	* xref.xsl: Support xref to bridgehead
+
+2001-07-07  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* param.xsl: Added callout.dingbats parameter (for extension support; not really used in HTML)
+
+2001-07-06  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* chunk-experimental.xsl, expchunk.xsl: New file.
+
+2001-07-05  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* block.xsl: Whitespace
+
+	* block.xsl, lists.xsl: FR #422097, make a listitem containing a single simpara output an li with only inline content
+
+	* chunk-common.xsl: Patch #418401, add accesskey attributes to HTML navigation
+
+	* chunk-common.xsl: Patch #428987, use the id of the root element if use.id.as.filename is non-zero; also chunk a /section properly
+
+	* param.xsl, sections.xsl: SR #431040, added generate.section.toc.level parameter to control depth of sections which get a TOC
+
+	* param.xsl, sections.xsl: Change semantics of generate.section.toc.level; 0 no longer means ignored it now means less than 1 :-)
+
+	* titlepage.xsl: Patch #415865, output contrib for authors and othercontribs
+
+2001-07-04  <uid48421@users.sourceforge.net>
+
+	* autotoc.xsl: Support annotated TOCs
+
+	* biblio.xsl, param.xsl, xref.xsl: Support an external bibliography collection
+
+	* chunk-common.xsl, docbook.xsl, param.xsl: Bug #418968: replaced body.attrs attribute-set with body.attributes template
+
+	* component.xsl, sections.xsl: Remove internal references to *.titlepage.recto.mode and *.titlepage.verso.mode
+
+	* ebnf.xsl: Minor presentation bug fixes
+
+	* xref.xsl: Bug #429011, fix xref to qandset elements
+
+2001-06-22  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* docbook.xsl, ebnf.xsl: Support EBNF
+
+	* param.xsl: Remove unused parameter: check.idref
+
+2001-06-21  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* lists.xsl, param.xsl, xref.xsl: Use common code to calculate step numbers; support xref to procedures and steps; added formal.procedures parameter
+
+2001-06-20  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* formal.xsl: Generate formal titles correctly
+
+	* graphics.xsl: Don't put span around inlinemediaobject in programlistings or screens (causes problems with line numbering and callouts)
+
+	* refentry.xsl: Bug 434102: fix refentry inside of chapter and fix refsynopsisdiv formatting in both FO and HTML
+
+	* xref.xsl: Support xref to authorgroup
+
+2001-06-18  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* chunk-common.xsl: Reordered erroneous test: only link to top-level sections, even if the first one is a chunk
+
+2001-06-17  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* exsltchunk.xsl, exsltchunker.xsl: New file.
+
+2001-06-15  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* component.xsl: Handle subtitle in articleinfo
+
 2001-06-13  Norman Walsh <nwalsh@users.sourceforge.net>
 
 	* chunk-common.xsl: Make sure the root element gets processed correctly so that it generates the right titlepage

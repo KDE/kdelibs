@@ -109,6 +109,15 @@ int		xsltSaveResultToFile		(FILE *file,
 int		xsltSaveResultToFd		(int fd,
 						 xmlDocPtr result,
 						 xsltStylesheetPtr style);
+
+/*
+ * profiling
+ */
+void		xsltSaveProfiling		(xsltTransformContextPtr ctxt,
+						 FILE *output);
+
+long		xsltTimestamp			(void);
+
 #ifdef __cplusplus
 }
 #endif

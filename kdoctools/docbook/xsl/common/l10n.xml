@@ -1,5 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE internationalization SYSTEM "l10n.dtd" [
+<!ENTITY af SYSTEM "af.xml">
 <!ENTITY ca SYSTEM "ca.xml">
 <!ENTITY cs SYSTEM "cs.xml">
 <!ENTITY da SYSTEM "da.xml">
@@ -26,10 +27,12 @@
 <!ENTITY sl SYSTEM "sl.xml">
 <!ENTITY sr SYSTEM "sr.xml">
 <!ENTITY sv SYSTEM "sv.xml">
+<!ENTITY tr SYSTEM "tr.xml">
 <!ENTITY zh_cn SYSTEM "zh_cn.xml">
 <!ENTITY zh_tw SYSTEM "zh_tw.xml">
 ]>
 <internationalization>
+&af;
 &ca;
 &cs;
 &da;
@@ -56,6 +59,7 @@
 &sl;
 &sr;
 &sv;
+&tr;
 &zh_cn;
 &zh_tw;
 </internationalization>

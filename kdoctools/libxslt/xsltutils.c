@@ -12,6 +12,15 @@
 #include "libxslt.h"
 
 #include <stdio.h>
+#ifdef HAVE_SYS_TIME_H
+#include <sys/time.h>
+#endif
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h>
+#endif
 #include <stdarg.h>
 
 #include <libxml/xmlmemory.h>
@@ -23,6 +32,16 @@
 #include "templates.h"
 #include "xsltInternals.h"
 #include "imports.h"
+
+/* gettimeofday on Windows ??? */
+#ifdef WIN32
+#ifdef _MSC_VER
+#include <winsock2.h>
+#pragma comment(lib, "ws2_32.lib")
+#define gettimeofday(p1,p2)
+#define HAVE_GETTIMEOFDAY
+#endif /* _MS_VER */
+#endif /* WIN32 */
 
 /************************************************************************
  * 									*
@@ -239,7 +258,7 @@ void *xsltGenericDebugContext = NULL;
  * Function to reset the handler and the error context for out of
  * context error messages.
  * This simply means that @handler will be called for subsequent
- * error messages while not parsing nor validating. And @ctx will
+ * error messages while not parsing or validating. And @ctx will
  * be passed as first argument to @handler
  * One can simply force messages to be emitted to another FILE * than
  * stderr by setting @ctx to this file handle and @handler to NULL.
@@ -264,7 +283,7 @@ xsltSetGenericDebugFunc(void *ctx, xmlGenericErrorFunc handler) {
  * @node:  the node holding the QName
  * @name:  pointer to the initial QName value
  *
- * This function analyze @name, if the name contains a prefix,
+ * This function analyzes @name, if the name contains a prefix,
  * the function seaches the associated namespace in scope for it.
  * It will also replace @name value with the NCName, the old value being
  * freed.
@@ -303,7 +322,7 @@ xsltGetQNameURI(xmlNodePtr node, xmlChar ** name)
 
     /*
      * we are not trying to validate but just to cut, and yes it will
-     * work even if this is as set of UTF-8 encoded chars
+     * work even if this is a set of UTF-8 encoded chars
      */
     while ((qname[len] != 0) && (qname[len] != ':')) 
 	len++;
@@ -378,10 +397,9 @@ xsltDocumentSortFunction(xmlNodeSetPtr list) {
  * xsltComputeSortResult:
  * @ctxt:  a XSLT process context
  * @sorts:  array of sort nodes
- * @nbsorts:  the number of sorts in the array
  *
  * reorder the current node list accordingly to the set of sorting
- * requirement provided by the arry of nodes.
+ * requirement provided by the array of nodes.
  */
 static xmlXPathObjectPtr *
 xsltComputeSortResult(xsltTransformContextPtr ctxt, xmlNodePtr sort) {
@@ -400,7 +418,7 @@ xsltComputeSortResult(xsltTransformContextPtr ctxt, xmlNodePtr sort) {
     comp = sort->_private;
     if (comp == NULL) {
 	xsltGenericError(xsltGenericErrorContext,
-	     "xslt:sort : compilation had failed\n");
+	     "xsl:sort : compilation failed\n");
 	return(NULL);
     }
 
@@ -420,7 +438,7 @@ xsltComputeSortResult(xsltTransformContextPtr ctxt, xmlNodePtr sort) {
     results = xmlMalloc(len * sizeof(xmlXPathObjectPtr));
     if (results == NULL) {
 	xsltGenericError(xsltGenericErrorContext,
-	     "xsltSort: memory allocation failure\n");
+	     "xsltComputeSortResult: memory allocation failure\n");
 	return(NULL);
     }
 
@@ -451,7 +469,7 @@ xsltComputeSortResult(xsltTransformContextPtr ctxt, xmlNodePtr sort) {
 		} else {
 #ifdef WITH_XSLT_DEBUG_PROCESS
 		    xsltGenericDebug(xsltGenericDebugContext,
-			"xsltSort: select didn't evaluate to a number\n");
+			"xsltComputeSortResult: select didn't evaluate to a number\n");
 #endif
 		    results[i] = NULL;
 		}
@@ -461,7 +479,7 @@ xsltComputeSortResult(xsltTransformContextPtr ctxt, xmlNodePtr sort) {
 		} else {
 #ifdef WITH_XSLT_DEBUG_PROCESS
 		    xsltGenericDebug(xsltGenericDebugContext,
-			"xsltSort: select didn't evaluate to a string\n");
+			"xsltComputeSortResult: select didn't evaluate to a string\n");
 #endif
 		    results[i] = NULL;
 		}
@@ -863,7 +881,7 @@ xsltSaveResultToFilename(const char *URL, xmlDocPtr result,
  * to an open FILE * I/O.
  * This does not close the FILE @file
  *
- * Returns the number of byte written or -1 in case of failure.
+ * Returns the number of bytes written or -1 in case of failure.
  */
 int
 xsltSaveResultToFile(FILE *file, xmlDocPtr result, xsltStylesheetPtr style) {
@@ -907,7 +925,7 @@ xsltSaveResultToFile(FILE *file, xmlDocPtr result, xsltStylesheetPtr style) {
  * to an open file descriptor
  * This does not close the descriptor.
  *
- * Returns the number of byte written or -1 in case of failure.
+ * Returns the number of bytes written or -1 in case of failure.
  */
 int
 xsltSaveResultToFd(int fd, xmlDocPtr result, xsltStylesheetPtr style) {
@@ -938,5 +956,162 @@ xsltSaveResultToFd(int fd, xmlDocPtr result, xsltStylesheetPtr style) {
     xsltSaveResultTo(buf, result, style);
     ret = xmlOutputBufferClose(buf);
     return(ret);
+}
+
+/************************************************************************
+ * 									*
+ * 		Generating profiling informations			*
+ * 									*
+ ************************************************************************/
+
+/**
+ * xsltCalibrateTimestamps:
+ *
+ * Used for to calibrate the xsltTimestamp() function
+ * Should work if launched at startup and we don't loose our quantum :-)
+ *
+ * Returns the number of milliseconds used by xsltTimestamp()
+ */
+static long
+xsltCalibrateTimestamps(void) {
+    register int i;
+
+    for (i = 0;i < 999;i++)
+	xsltTimestamp();
+    return(xsltTimestamp() / 1000);
+}
+
+/**
+ * xsltTimestamp:
+ *
+ * Used for gathering profiling data
+ *
+ * Returns the number of milliseconds since the beginning of the
+ * profiling
+ */
+long
+xsltTimestamp(void) {
+#ifdef HAVE_GETTIMEOFDAY
+    static long calibration = -1;
+    static struct timeval startup;
+    struct timeval cur;
+    long msec;
+
+    if (calibration == -1) {
+	gettimeofday(&startup, NULL);
+	calibration = 0;
+	calibration = xsltCalibrateTimestamps();
+	gettimeofday(&startup, NULL);
+	return(0);
+    }
+
+    gettimeofday(&cur, NULL);
+    msec = cur.tv_sec - startup.tv_sec;
+    msec *= 10000;
+    msec += (cur.tv_usec - startup.tv_usec) / 100;
+    
+    msec -= calibration;
+    return((unsigned long) msec);
+#else
+    return(0);
+#endif
+}
+
+#define MAX_TEMPLATES 10000
+
+/**
+ * xsltSaveProfiling:
+ * @ctxt:  an XSLT context
+ * @output:  a FILE * for saving the informations
+ *
+ * Save the profiling informations on @output
+ */
+void
+xsltSaveProfiling(xsltTransformContextPtr ctxt, FILE *output) {
+    int nb, i,j;
+    int max;
+    int total;
+    long totalt;
+    xsltTemplatePtr *templates;
+    xsltStylesheetPtr style;
+    xsltTemplatePtr template;
+
+    if ((output == NULL) || (ctxt == NULL))
+	return;
+    if (ctxt->profile == 0)
+	return;
+
+    nb = 0;
+    max = MAX_TEMPLATES;
+    templates = xmlMalloc(max * sizeof(xsltTemplatePtr));
+    if (templates == NULL)
+	return;
+
+    style = ctxt->style;
+    while (style != NULL) {
+	template = style->templates;
+	while (template != NULL) {
+	    if (nb >= max)
+		break;
+
+	    if (template->nbCalls > 0)
+		templates[nb++] = template;
+	    template = template->next;
+	}
+
+	style = xsltNextImport(style);
+    }
+
+    for (i = 0;i < nb -1;i++) {
+	for (j = i + 1; j < nb; j++) {
+	    if ((templates[i]->time <= templates[j]->time) ||
+		((templates[i]->time == templates[j]->time) &&
+	         (templates[i]->nbCalls <= templates[j]->nbCalls))) {
+		template = templates[j];
+		templates[j] = templates[i];
+		templates[i] = template;
+	    }
+	}
+    }
+
+    fprintf(output, "%6s%20s%20s%10s  Calls Tot 100us Avg\n\n",
+	    "number", "match", "name", "mode");
+    total = 0;
+    totalt = 0;
+    for (i = 0;i < nb;i++) {
+	fprintf(output, "%5d ", i);
+	if (templates[i]->match != NULL) {
+	    if (xmlStrlen(templates[i]->match) > 20)
+		fprintf(output, "%s\n%26s", templates[i]->match, "");
+	    else
+		fprintf(output, "%20s", templates[i]->match);
+	} else {
+	    fprintf(output, "%20s", "");
+	}
+	if (templates[i]->name != NULL) {
+	    if (xmlStrlen(templates[i]->name) > 20)
+		fprintf(output, "%s\n%46s", templates[i]->name, "");
+	    else
+		fprintf(output, "%20s", templates[i]->name);
+	} else {
+	    fprintf(output, "%20s", "");
+	}
+	if (templates[i]->mode != NULL) {
+	    if (xmlStrlen(templates[i]->mode) > 10)
+		fprintf(output, "%s\n%56s", templates[i]->mode, "");
+	    else
+		fprintf(output, "%10s", templates[i]->mode);
+	} else {
+	    fprintf(output, "%10s", "");
+	}
+	fprintf(output, " %6d", templates[i]->nbCalls);
+	fprintf(output, " %6ld %6ld\n", templates[i]->time,
+		templates[i]->time / templates[i]->nbCalls);
+	total += templates[i]->nbCalls;
+	totalt += templates[i]->time;
+    }
+    fprintf(output, "\n%30s%26s %6d %6ld\n", "Total", "", total, totalt);
+
+    xmlFree(templates);
 }
 

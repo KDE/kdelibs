@@ -122,6 +122,8 @@
    <gentext key="Editedby" text="disunting oleh"/>
    <gentext key="editedby" text="disunting oleh"/>
    <gentext key="and" text="dan"/>
+   <gentext key="listcomma" text=","/>
+   <gentext key="lastlistcomma" text=","/>
    <gentext key="Notes" text="Catatan"/>
    <gentext key="notes" text="Catatan"/>
    <gentext key="TableNotes" text="Catatan"/>
@@ -319,7 +321,7 @@
    </context>
 
    <context name="authorgroup">
-      <template name="sep" text=","/>
+      <template name="sep" text=", "/>
       <template name="sep2" text=" dan "/>
       <template name="seplast" text=", dan "/>
    </context>

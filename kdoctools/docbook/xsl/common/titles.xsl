@@ -196,6 +196,10 @@ title of the element. This does not include the label.
   </xsl:apply-templates>
 </xsl:template>
 
+<xsl:template match="bridgehead" mode="title.markup">
+  <xsl:apply-templates mode="title.markup"/>
+</xsl:template>
+
 <xsl:template match="bibliography" mode="title.markup">
   <xsl:param name="allow-anchors" select="'0'"/>
   <xsl:variable name="title" select="(bibliographyinfo/title|title)[1]"/>
@@ -254,6 +258,13 @@ title of the element. This does not include the label.
   </xsl:apply-templates>
 </xsl:template>
 
+<xsl:template match="procedure" mode="title.markup">
+  <xsl:param name="allow-anchors" select="'0'"/>
+  <xsl:apply-templates select="title" mode="title.markup">
+    <xsl:with-param name="allow-anchors" select="$allow-anchors"/>
+  </xsl:apply-templates>
+</xsl:template>
+
 <xsl:template match="abstract" mode="title.markup">
   <xsl:param name="allow-anchors" select="'0'"/>
   <xsl:choose>
@@ -293,6 +304,21 @@ title of the element. This does not include the label.
       </xsl:call-template>
     </xsl:otherwise>
   </xsl:choose>
+</xsl:template>
+
+<xsl:template match="question" mode="title.markup">
+  <!-- questions don't have titles -->
+  <xsl:text>Question</xsl:text>
+</xsl:template>
+
+<xsl:template match="answer" mode="title.markup">
+  <!-- answers don't have titles -->
+  <xsl:text>Answer</xsl:text>
+</xsl:template>
+
+<xsl:template match="qandaentry" mode="title.markup">
+  <!-- qandaentrys are represented by the first question in them -->
+  <xsl:text>Question</xsl:text>
 </xsl:template>
 
 <!-- ============================================================ -->
