@@ -736,6 +736,9 @@ void NodeBaseImpl::detach()
 	child = child->nextSibling();
     }
     NodeWParentImpl::detach();
+
+    delete m_render;
+    m_render = 0;
 }
 
 // ---------------------------------------------------------------------------

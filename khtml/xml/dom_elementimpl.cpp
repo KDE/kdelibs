@@ -465,10 +465,6 @@ void ElementImpl::attach(KHTMLView *w)
 void ElementImpl::detach()
 {    
     NodeBaseImpl::detach();    
-    
-    delete m_render;
-    
-    m_render = 0;
 }
 
 void ElementImpl::applyChanges(bool top, bool force)
