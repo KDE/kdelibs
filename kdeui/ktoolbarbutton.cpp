@@ -353,6 +353,16 @@ void KToolBarButton::setPopup(QPopupMenu *p, bool)
   QToolButton::setPopup(p);
   QToolButton::setPopupDelay(QApplication::startDragTime());
   d->m_isDelayedPopup = false;
+  // BEGIN HACK
+  // The following hack is needed because QToolButton::openPopup()
+  // does not stop the timer for the delayed popup.
+  // It can be removed when QToolButton::openPopup()
+  // contains d->popupTimer->stop();
+  if (p)
+  {
+     disconnect( this, SIGNAL( pressed() ), this, SLOT( popupPressed() ) );
+  }
+  // END HACK
 }
 
 
@@ -361,6 +371,17 @@ void KToolBarButton::setDelayedPopup (QPopupMenu *p, bool)
   QToolButton::setPopup(p);
   QToolButton::setPopupDelay(QApplication::startDragTime());
   d->m_isDelayedPopup = true;
+  // BEGIN HACK
+  // The following hack is needed because QToolButton::openPopup()
+  // does not stop the timer for the delayed popup.
+  // It can be removed when QToolButton::openPopup()
+  // contains d->popupTimer->stop();
+  if (p)
+  {
+     disconnect( this, SIGNAL( pressed() ), this, SLOT( popupPressed() ) );
+     connect( this, SIGNAL( pressed() ), this, SLOT( popupPressed() ) );
+  }
+  // END HACK
 }
 
 void KToolBarButton::leaveEvent(QEvent *)
