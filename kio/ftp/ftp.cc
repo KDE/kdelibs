@@ -242,7 +242,8 @@ void Ftp::closeConnection()
 }
 
 
-void Ftp::setHost( const QString& _host, int _port, const QString& _user, const QString& _pass )
+void Ftp::setHost( const QString& _host, int _port, const QString& _user,
+                   const QString& _pass )
 {
   kdDebug(7102) << "Ftp::setHost " << _host << endl;
   QString user = _user;
@@ -250,7 +251,7 @@ void Ftp::setHost( const QString& _host, int _port, const QString& _user, const 
   if ( !_user.isEmpty() )
   {
       user = _user;
-      pass = _pass.isEmpty() ? QString::null : _pass;
+      pass = _pass.isEmpty() ? QString::null:_pass;
   }
   else
   {
@@ -375,12 +376,25 @@ bool Ftp::connect( const QString &host, unsigned short int port )
  */
 bool Ftp::ftpLogin()
 {
-  kdDebug(7102) << "ftpLogin " << m_user << endl;
   infoMessage( i18n("Sending login information") );
 
   assert( !m_bLoggedOn );
 
-  if ( !m_user.isEmpty() )
+  QString user = m_user;
+  QString pass = m_pass;
+
+  if ( config()->readBoolEntry("EnableAutoLogin") )
+  {
+    QString au = config()->readEntry("autoLoginUser");
+    if ( !au.isEmpty() )
+    {
+        user = au;
+        pass = config()->readEntry("autoLoginPass");
+    }
+  }
+  kdDebug(7102) << "ftpLogin " << user << endl;
+
+  if ( !user.isEmpty() )
   {
     AuthInfo info;
     QCString tempbuf;
@@ -408,14 +422,14 @@ bool Ftp::ftpLogin()
       // Check the cache and/or prompt user for password if 1st
       // login attempt failed OR the user supplied a login name,
       // but no password.
-      if ( failedAuth > 1 || (!m_user.isEmpty() && m_pass.isEmpty()) )
+      if ( failedAuth > 1 || (!user.isEmpty() && pass.isEmpty()) )
       {
-        if ( m_user != FTP_LOGIN && m_pass != FTP_PASSWD )
+        if ( user != FTP_LOGIN && pass != FTP_PASSWD )
             info.username = m_user;
         if ( checkCachedAuthentication( info ) )
         {
-          m_user = info.username;
-          m_pass = info.password;
+          user = info.username;
+          pass = info.password;
         }
         else
         {
@@ -431,15 +445,15 @@ bool Ftp::ftpLogin()
           }
           else
           {
-            m_user = info.username;
-            m_pass = info.password;
+            user = info.username;
+            pass = info.password;
           }
         }
       }
 
       tempbuf = "user ";
-      tempbuf += m_user.latin1();
-      kdDebug(7102) << "Sending Login name: " << m_user << endl;
+      tempbuf += user.latin1();
+      kdDebug(7102) << "Sending Login name: " << user << endl;
       bool loggedIn = (ftpSendCmd( tempbuf, '2' ) && !strncmp( rspbuf, "230", 3));
       bool needPass = !strncmp( rspbuf, "331", 3);
       // Prompt user for login info if we do not
@@ -453,7 +467,7 @@ bool Ftp::ftpLogin()
       if( needPass )
       {
         tempbuf = "pass ";
-        tempbuf += m_pass.latin1();
+        tempbuf += pass.latin1();
         kdDebug(7102) << "Sending Login password: " << "[protected]" << endl;
         loggedIn = (ftpSendCmd( tempbuf, '2' ) && !strncmp(rspbuf, "230", 3));
       }
@@ -461,7 +475,7 @@ bool Ftp::ftpLogin()
       if ( loggedIn )
       {
         // Do not cache the default login!!
-        if( m_user != FTP_LOGIN && m_pass != FTP_PASSWD )
+        if( user != FTP_LOGIN && pass != FTP_PASSWD )
           cacheAuthentication( info );
         failedAuth = -1;
       }
@@ -489,9 +503,36 @@ bool Ftp::ftpLogin()
   else
     kdWarning(7102) << "syst failed" << endl;
 
-  kdDebug(7102) << "Searching for pwd" << endl;
+
+  QString macro = metaData( "autoLoginMacro" );
+  if ( !macro.isEmpty() )
+  {
+      QStringList list = QStringList::split('\n', macro);
+      if ( !list.isEmpty() )
+      {
+          QStringList::Iterator it = list.begin();
+          for( ; it != list.end() ; ++it )
+          {
+              if ( (*it).find("init") == 0 )
+              {
+                  list = QStringList::split( '\\', macro);
+                  it = list.begin();
+                  ++it;  // ignore the macro name
+                  for( ; it != list.end() ; ++it )
+                  {
+                      // TODO: Add support for arbitrary commands
+                      // besides simply changing directory!!
+                      if ( (*it).startsWith( "cwd" ) )
+                          ftpSendCmd( (*it).latin1(), '2' );
+                  }
+                  break;
+              }
+          }
+      }
+  }
 
   // Get the current working directory
+  kdDebug(7102) << "Searching for pwd" << endl;
   if ( !ftpSendCmd( "pwd", '2' ) )
   {
     kdDebug(7102) << "Couldn't issue pwd command" << endl;
