@@ -27,16 +27,23 @@
 #include <stdio.h>
 #include <sys/types.h>
 
-#define uchar unsigned char
-//#define ushort unsigned short
-//#define ulong unsigned long
+// Just in case...
+#undef uchar
+#undef ushort
+#undef ulong
 
-#ifdef __FreeBSD__
-#define ulong unsigned long
-#endif
+// Use typedefs instead of #defines, because Qt uses typedefs
+typedef unsigned char uchar;
+typedef unsigned short ushort;
+typedef unsigned long ulong;
+
+//#define uchar usigned char
+//#define ushort unsigned short
+//#ifdef __FreeBSD__
+//#define ulong unsigned long
+//#endif
 
 ushort readShort(FILE *fh);
 ulong  readLong (FILE *fh);
-
 
 #endif

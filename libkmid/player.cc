@@ -395,7 +395,7 @@ void player::parseSpecialEvents(void)
     
     delete ev;
     pspev->type=0;
-    pspev->absmilliseconds=prevms;
+    pspev->absmilliseconds=(ulong)prevms;
     pspev->next=NULL;
     if (firsttempo==0) firsttempo=tempo;
     ctl->tempo=firsttempo;
@@ -857,7 +857,7 @@ void player::writeSPEV(void)
     printf("**************************************\n");
     while ((pspev!=NULL)&&(pspev->type!=0))
     {
-        printf("t:%d ticks:%d diff:%ld abs:%ld s:%s tempo:%d\n",pspev->type,pspev->ticks,pspev->diffmilliseconds,pspev->absmilliseconds,pspev->text,pspev->tempo);
+        printf("t:%d ticks:%d diff:%ld abs:%ld s:%s tempo:%ld\n",pspev->type,pspev->ticks,pspev->diffmilliseconds,pspev->absmilliseconds,pspev->text,pspev->tempo);
         pspev=pspev->next;
     };
     
@@ -883,7 +883,7 @@ void player::changeTempoRatio(double ratio)
     }
     else
     {
-        ctl->tempo=(ctl->tempo*ctl->ratioTempo)/ratio;
+        ctl->tempo=(ulong)((ctl->tempo*ctl->ratioTempo)/ratio);
         ctl->ratioTempo=ratio;
     };
 
