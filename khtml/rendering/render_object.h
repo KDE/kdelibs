@@ -82,11 +82,17 @@ public:
     virtual void addChild(RenderObject *newChild);
 
     // some helper functions...
+    /**
+     * is a Element that should be floated in the textstream
+     */
     virtual bool isInline() const = 0;
     virtual bool childrenInline() const { return false; }
     virtual bool isRendered() const { return false; }
     virtual bool isText() const { return false; }
     virtual bool isFlow() const { return false; }
+    /**
+     * is a Element that contains a QWidget
+     */
     virtual bool isReplaced() const { return false; }
     virtual bool isListItem() const { return false; }
     virtual bool isRoot() const { return false; }
@@ -129,6 +135,14 @@ public:
     /**
      * This function calculates the minimum & maximum width that the object
      * can be set to.
+     *
+     * when the Element calls setMinMaxKnown(true), calcMinMaxWidth() will
+     * be no longer called.
+     *
+     * when a element has a fixed size, m_minWidth and m_maxWidth should be
+     * set to the same value. This has the special meaning that m_width,
+     * contains the actual value.
+     *
      * ### assumes calcMinMaxWidth has already been called for all children.
      */
     virtual void calcMinMaxWidth() { }
@@ -142,8 +156,17 @@ public:
     /**
      * This function should cause the Element to calculate its
      * width and height and the layout of it's content
+     *
+     * if deep is true, the Element should also layout all it's
+     * direct child items.
+     *
+     * when the Element calls setLayouted(true), layout() is no
+     * longer called during relayouts, as long as there is no
+     * style sheet change. When that occurs, isLayouted will be
+     * set to false and the Element receives layout() calls
+     * again.
      */
-    virtual void layout(bool /*deep*/ = false) = 0;
+    virtual void layout(bool deep = false) = 0;
 
     /**
      * this function get's called, if a child changed it's geometry
@@ -159,21 +182,35 @@ public:
 
     /**
      * This function gets called, when the parser leaves the element
+     *
      */
     virtual void close() { setParsing(false); }
 
-    // returns the containing block level element for this element.
-    // needed to compute margins and paddings
-    //
-    // objects with positioning set to absolute and fixed have to be added
-    // to this objects rendering list
+    /**
+     * returns the containing block level element for this element.
+     * needed to compute margins and paddings
+     *
+     * objects with positioning set to absolute and fixed have to be added
+     * to this objects rendering list
+     *
+     * function must not be called before the Element has been added
+     * to the Renderingtree.
+     */
     RenderObject *containingBlock() const;
 
-    // return the size of the containing block.
-    // Needed for layout
-    // calculations, see CSS2 specs, 10.1
+    /** return the size of the containing block.
+     * Needed for layout
+     * calculations, see CSS2 specs, 10.1
+     */
     virtual QSize containingBlockSize() const;
 
+    /**
+     * returns the width of the block the current Element is in. useful
+     * for relative width/height calculations.
+     *
+     * must not be called before the Element has been added to the
+     * Renderingtree.
+     */
     virtual short containingBlockWidth() const;
     virtual int containingBlockHeight() const;
 
@@ -258,6 +295,10 @@ public:
 
     // from BiDiObject
     virtual bool isHidden() const { return isFloating(); }
+    /*
+     * Special objects are objects that should be floated
+     * but draw themselves (i.e. have content)
+     */
     virtual bool isSpecial() const;
 
     enum SelectionState {
@@ -274,7 +315,6 @@ public:
     virtual void styleChanged(RenderStyle *newStyle=0);
 
 protected:
-
     virtual void selectionStartEnd(int& spos, int& epos);
 
     // assumes (_tx/_ty) point to the upper left corner of the box
@@ -298,7 +338,6 @@ protected:
     RenderObject *m_last;
 
     CachedImage *m_bgImage;
-
 };
 
 
