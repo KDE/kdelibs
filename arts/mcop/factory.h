@@ -35,7 +35,7 @@ public:
 	void startup();
 	void shutdown();
 	virtual Object_skel *createInstance() = 0;
-	virtual string interfaceName() = 0;
+	virtual std::string interfaceName() = 0;
 };
 
 #define REGISTER_IMPLEMENTATION(impl)                             \

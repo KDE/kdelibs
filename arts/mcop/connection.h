@@ -43,8 +43,8 @@ protected:
 	long remaining;
 	long messageType;
 	ConnectionState _connState;
-	string serverID;
-	string _cookie;
+	std::string serverID;
+	std::string _cookie;
 
 	/**
 	 * If you don't want to handle message fragmentation yourself:
@@ -60,12 +60,12 @@ public:
 	Connection();
 	virtual ~Connection();
 
-	inline void setServerID(string serverID) { this->serverID = serverID; }
-	inline bool isConnected(string s) { return (serverID == s); } 
+	inline void setServerID(std::string serverID) { this->serverID = serverID; }
+	inline bool isConnected(std::string s) { return (serverID == s); } 
 	inline void setConnState(ConnectionState cs) { _connState = cs; };
 
-	inline string cookie() { return _cookie; }
-	void setCookie(string c) { _cookie = c; }
+	inline std::string cookie() { return _cookie; }
+	void setCookie(std::string c) { _cookie = c; }
 
 	inline ConnectionState connState() { return _connState; };
 	virtual void drop() = 0;

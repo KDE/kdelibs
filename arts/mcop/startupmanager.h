@@ -36,7 +36,7 @@ public:
 };
 
 class StartupManager {
-	static list<StartupClass *> *startupClasses;
+	static std::list<StartupClass *> *startupClasses;
 public:
 	static void add(StartupClass *sc);
 	static void startup();

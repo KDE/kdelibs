@@ -37,7 +37,7 @@ public:
 
 	// internal interface against Object_skel
 	
-	virtual void initStream(string name, void *ptr, long flags) = 0;
+	virtual void initStream(std::string name, void *ptr, long flags) = 0;
 
 	// interface against node implementation
 	
@@ -47,13 +47,13 @@ public:
 	
 	virtual void start() = 0;
 	virtual void stop() = 0;
-	virtual void connect(string port, ScheduleNode *remoteNode,
-			                                  string remotePort) = 0;
-	virtual void disconnect(string port, ScheduleNode *remoteNode,
-			                                  string remotePort) = 0;
+	virtual void connect(std::string port, ScheduleNode *remoteNode,
+			                        std::string remotePort) = 0;
+	virtual void disconnect(std::string port, ScheduleNode *remoteNode,
+			                            std::string remotePort) = 0;
 
 	// constant values
-	virtual void setFloatValue(string port, float value) = 0;
+	virtual void setFloatValue(std::string port, float value) = 0;
 };
 
 class FlowSystem

@@ -33,18 +33,18 @@
 class ObjectManager {
 protected:
 	static ObjectManager *_instance;
-	list<Factory *> factories;
-	list<string> referenceFiles;
+	std::list<Factory *> factories;
+	std::list<std::string> referenceFiles;
 
 public:
 	ObjectManager();
 	~ObjectManager();
 
 	static ObjectManager *the();
-	Object_skel *create(string name);
+	Object_skel *create(std::string name);
 
-	bool addGlobalReference(Object *object, string name);
-	string getGlobalReference(string name);
+	bool addGlobalReference(Object *object, std::string name);
+	std::string getGlobalReference(std::string name);
 
 	void registerFactory(Factory *factory);
 	void removeFactory(Factory *factory);

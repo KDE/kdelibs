@@ -30,6 +30,7 @@
 #include "connection.h"
 #include "flowsystem.h"
 
+#include <cassert>
 #include <map>
 #include <list>
 
@@ -48,7 +49,7 @@ protected:
 	 * internal management for streams
 	 */
 	ScheduleNode *_scheduleNode;
-	map<string, void*> _streamMap;
+	std::map<std::string, void*> _streamMap;
 
 	virtual Object_skel *_skel();
 
@@ -64,15 +65,15 @@ public:
 	 * object even if you don't know it's interface
 	 */
 	virtual long _lookupMethod(const class MethodDef &) = 0;
-	virtual string _interfaceName() = 0;
-	virtual class InterfaceDef* _queryInterface(const string& name) = 0;
-	virtual class TypeDef* _queryType(const string& name) = 0;
-	virtual string _toString() = 0;
+	virtual std::string _interfaceName() = 0;
+	virtual class InterfaceDef* _queryInterface(const std::string& name) = 0;
+	virtual class TypeDef* _queryType(const std::string& name) = 0;
+	virtual std::string _toString() = 0;
 
 	/*
 	 * stuff for streaming (put in a seperate interface?)
 	 */
-	void *_lookupStream(string s);
+	void *_lookupStream(std::string s);
 	virtual void calculateBlock(unsigned long cycles);
 	ScheduleNode *_node();
 
@@ -93,7 +94,7 @@ public:
 	inline static long _objectCount() { return _staticObjectCount; }
 
 	// static converter (from reference)
-	static Object *_fromString(string objectref);
+	static Object *_fromString(std::string objectref);
 };
 
 template<class T> class ReferenceHelper;
@@ -115,17 +116,17 @@ private:
 
 	long _objectID;
 	bool _methodTableInit;
-	vector<struct MethodTableEntry> _methodTable;
+	std::vector<struct MethodTableEntry> _methodTable;
 
 	// reference counting - remote object watching
 	
 	long _remoteSendCount;		// don't kill objects just sent to other server
 	bool _remoteSendUpdated;	// timeout if they don't want the object
-	list<class Connection *> _remoteUsers;	// who is using it?
+	std::list<class Connection *> _remoteUsers;	// who is using it?
 
 protected:
 	void _addMethod(DispatchFunction disp, void *object, const MethodDef& md);
-	void _initStream(string name, void *ptr, long flags);
+	void _initStream(std::string name, void *ptr, long flags);
 
 	Object_skel *_skel();
 
@@ -143,9 +144,9 @@ public:
 	/*
 	 * standard interface for every object skeleton
 	 */
-	static string _interfaceNameSkel();
+	static std::string _interfaceNameSkel();
 	virtual void _buildMethodTable();
-	virtual void *_cast(string interface) = 0;
+	virtual void *_cast(std::string interface) = 0;
 
 	/*
 	 * reference counting
@@ -158,10 +159,10 @@ public:
 	/*
 	 * to inspect the (remote) object interface
 	 */
-	virtual string _interfaceName();
-	InterfaceDef* _queryInterface(const string& name);
-	TypeDef* _queryType(const string& name);
-	virtual string _toString();
+	virtual std::string _interfaceName();
+	InterfaceDef* _queryInterface(const std::string& name);
+	TypeDef* _queryType(const std::string& name);
+	virtual std::string _toString();
 };
 
 class Object_stub : virtual public Object {
@@ -185,10 +186,10 @@ public:
 	/*
 	 * to inspect the (remote) object interface
 	 */
-	string _interfaceName();
-	InterfaceDef* _queryInterface(const string& name);
-	TypeDef* _queryType(const string& name);
-	string _toString();
+	std::string _interfaceName();
+	InterfaceDef* _queryInterface(const std::string& name);
+	TypeDef* _queryType(const std::string& name);
+	std::string _toString();
 
 	/*
 	 * reference counting
