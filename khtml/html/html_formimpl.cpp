@@ -832,6 +832,11 @@ HTMLOptionElementImpl::HTMLOptionElementImpl(DocumentImpl *doc)
     m_selected = false;
 }
 
+const DOMString HTMLOptionElementImpl::nodeName() const
+{
+    return "TEXTAREA";  
+}
+
 ushort HTMLOptionElementImpl::id() const
 {
     return ID_OPTION;
