@@ -317,7 +317,7 @@ bool KDir::match(const QString& filter, const QString& name)
     
     bool matched = false;
     while (g) {
-	if (QDir::match(g, name)) {
+	if (QDir::match(QString(g), name)) {
 	    matched = true;
 	    break;
 	}
