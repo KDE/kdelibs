@@ -45,9 +45,9 @@ void KDateTimeWidget::init()
   d->timeWidget = new KTimeWidget(this);
 
   connect(d->dateWidget, SIGNAL(changed(QDate)),
-	  SLOT(slotValueChanged()));
+          SLOT(slotValueChanged()));
   connect(d->timeWidget, SIGNAL(valueChanged(const QTime &)),
-	  SLOT(slotValueChanged()));
+          SLOT(slotValueChanged()));
 }
 
 void KDateTimeWidget::setDateTime(const QDateTime & datetime)
@@ -64,7 +64,7 @@ QDateTime KDateTimeWidget::dateTime() const
 void KDateTimeWidget::slotValueChanged()
 {
   QDateTime datetime(d->dateWidget->date(),
-		     d->timeWidget->time());
+                     d->timeWidget->time());
 
   kdDebug() << "slotValueChanged(): " << datetime << "\n";
 

@@ -19,7 +19,7 @@ KTimeWidget::KTimeWidget(QWidget * parent, const char * name)
 }
 
 KTimeWidget::KTimeWidget(const QTime & time,
-			     QWidget * parent, const char * name)
+                         QWidget * parent, const char * name)
   : QWidget(parent, name)
 {
   init();
@@ -42,7 +42,7 @@ void KTimeWidget::init()
   d->timeWidget = new QTimeEdit(this);
 
   connect(d->timeWidget, SIGNAL(valueChanged(const QTime &)),
-	  SIGNAL(valueChanged(const QTime &)));
+          SIGNAL(valueChanged(const QTime &)));
 }
 
 void KTimeWidget::setTime(const QTime & time)
