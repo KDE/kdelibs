@@ -19,14 +19,16 @@
     Boston, MA 02111-1307, USA.
 */
 
-#include <klocale.h>
 #include <kbuttonbox.h>
 #include <klistbox.h>
+#include <klocale.h>
+#include <kmessagebox.h>
 
 #include <qgroupbox.h>
 #include <qlayout.h>
 
 #include "resource.h"
+
 #include "resourceselectdialog.h"
 
 using namespace KRES;
@@ -86,6 +88,11 @@ Resource *ResourceSelectDialog::resource()
 
 Resource *ResourceSelectDialog::getResource( QPtrList<Resource> list, QWidget *parent )
 {
+  if ( list.count() == 0 ) {
+    KMessageBox::error( parent, i18n( "There is no resource available!" ) );
+    return 0;
+  }
+
   if ( list.count() == 1 ) return list.first();
 
   // the following lines will return a writeable resource if only _one_ writeable
