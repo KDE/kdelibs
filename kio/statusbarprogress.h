@@ -8,7 +8,7 @@
 
 #include "progressbase.h"
 
-class KIO::Job;
+namespace KIO { class Job; }
 
 /**
 * This is a special IO progress widget.
