@@ -231,8 +231,8 @@ class KInputDialog : public KDialogBase
      */
     static QStringList getItemList( const QString &caption,
         const QString &label, const QStringList &list=QStringList(),
-        const QStringList &select=0, bool multiple=false, bool *ok=0,
-        QWidget *parent=0, const char *name=0 );
+        const QStringList &select=QStringList(), bool multiple=false,
+        bool *ok=0, QWidget *parent=0, const char *name=0 );
 
   private:
 
