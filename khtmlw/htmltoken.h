@@ -140,7 +140,7 @@ protected:
 	{ 
 		NoneDiscard = 0, 
 		SpaceDiscard, 
-		LFDiscard, 
+		LFDiscard
 	} HTMLDiscardType;
 
     // Discard line breaks immediately after start-tags
