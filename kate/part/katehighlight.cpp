@@ -1989,6 +1989,9 @@ bool KateHighlighting::canComment( int startAttrib, int endAttrib ) const
 
 QString KateHighlighting::getCommentString( int which, int attrib ) const
 {
+  if ( noHl )
+    return which == 3 ? stdDeliminator : "";
+
   int k = hlKeyForAttrib( attrib );
   const QStringList& lst = m_additionalData[k];
   return lst.isEmpty() ? QString::null : lst[which];
