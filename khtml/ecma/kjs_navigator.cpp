@@ -38,6 +38,8 @@ KJSO *Navigator::get(const CString &p) const
     str = "Konqueror";
   else if (p == "appVersion")
     str = "1.0 (X11; Konqueror; Unix)";
+  else if (p == "userAgent")
+    str = "Mozilla/1.0 (X11; Konqueror; Unix)";
   else
     return new KJSUndefined();
 
