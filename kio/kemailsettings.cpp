@@ -29,6 +29,9 @@
 #include "kemailsettings.h"
 
 #include <kconfig.h>
+#include <klocale.h>
+#include <kdebug.h>
+#include <iostream.h>
 
 class KEMailSettingsPrivate {
 public:
@@ -147,9 +150,12 @@ void KEMailSettings::setSetting(KEMailSettings::Setting s, const QString  &v)
 
 void KEMailSettings::setDefault(const QString &s)
 {
+	kdDebug() << "setDefault called with " << s << endl;
 	p->m_pConfig->setGroup("Defaults");
 	p->m_pConfig->writeEntry("Profile", s);
 	p->m_pConfig->sync();
+	p->m_sDefaultProfile=s;
+
 }
 
 void KEMailSettings::setProfile (const QString &s)
@@ -161,6 +167,7 @@ void KEMailSettings::setProfile (const QString &s)
 		p->m_pConfig->setGroup(groupname);
 		p->m_pConfig->writeEntry("ServerType", QString::null);
 		p->m_pConfig->sync();
+		p->profiles+=s;
 	}
 }
 
@@ -188,17 +195,20 @@ KEMailSettings::KEMailSettings()
 	}
 
 	p->m_pConfig->setGroup("Defaults");
-	p->m_sDefaultProfile=p->m_pConfig->readEntry("Profile");
+	p->m_sDefaultProfile=p->m_pConfig->readEntry("Profile", QString::null);
 	if (p->m_sDefaultProfile != QString::null) {
 		if (!p->m_pConfig->hasGroup(QString("PROFILE_")+p->m_sDefaultProfile))
-			p->m_sDefaultProfile=QString::null;
-	} else if (p->profiles.count()) {
-		p->m_pConfig->setGroup("Defaults");
-		p->m_pConfig->writeEntry("Profile", p->profiles[0]);
-		p->m_pConfig->sync();
-		p->m_sDefaultProfile=p->profiles[0];
+			setDefault("Default");
+		else
+			setDefault(p->m_sDefaultProfile);
+	} else {
+			if (p->profiles.count()) {
+				kdDebug() << "WE ALREADY HAVE PROFILES DAMNIT" << endl;
+				setDefault(p->profiles[0]);
+			} else
+				setDefault("Default");
 	}
-	setProfile(p->m_sDefaultProfile);
+	setProfile(defaultProfileName());
 }
 
 KEMailSettings::~KEMailSettings()
