@@ -106,6 +106,15 @@ public:
    * @return true if successful, false otherwise
    */
   static bool decode( const QMimeSource *e, KURL::List &urls, QMap<QString,QString>& metaData );
+  
+  /**
+   * All URLs for local files used for drag'n'drop must include the hostname,
+   * see http://www.newplanetsoftware.com/xdnd/dragging_files.html for details.
+   * This function checks the given URL and if it's a file:/ URLs and it does
+   * not have a hostname, the current hostname will be added to it (not 'localhost').
+   * @since 3.2
+   */
+  static QString checkFilenameURL( const QString& url );
 
 #ifdef Q_WS_QWS
   /**

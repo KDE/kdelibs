@@ -21,6 +21,7 @@
 #include <qstrlist.h>
 #include <qdragobject.h>
 #include <qfont.h>
+#include <unistd.h>
 
 KURLDrag::KURLDrag( const KURL::List &urls, QWidget* dragSource, const char * name )
     : QUriDrag(dragSource, name), m_metaData()
@@ -46,7 +47,11 @@ void KURLDrag::init(const KURL::List &urls)
     // Get each URL encoded in utf8 - and since we get it in escaped
     // form on top of that, .latin1() is fine.
     for ( ; uit != uEnd ; ++uit )
-        m_urls.append( (*uit).url(0, 106).latin1() ); // 106 is mib enum for utf8 codec
+    {
+        QString url = (*uit).url(0, 106); // 106 is mib enum for utf8 codec
+        url = KURLDrag::checkFilenameURL( url );
+        m_urls.append( url.latin1() ); 
+    }
     setUris(m_urls);
 }
 
@@ -119,7 +124,6 @@ const char * KURLDrag::format( int i ) const
         return "text/plain;charset=ISO-8859-1";
     else if ( i == 4 ) //Support this for apps that use the UTF_STRING clipboard
         return "text/plain;charset=UTF-8"; 
-
     else return 0;
 }
 
@@ -133,8 +137,10 @@ QByteArray KURLDrag::encodedData( const char* mime ) const
     {
 	QStringList uris;
         for (QStrListIterator it(m_urls); *it; ++it)
-         uris.append(KURL(*it, 106).prettyURL()); // 106 is mib enum for utf8 codec
+         uris.append(checkFilenameURL(KURL(*it, 106).prettyURL())); // 106 is mib enum for utf8 codec
         QCString s = uris.join( "\n" ).local8Bit();
+        if( uris.count() > 1 ) // terminate last line, unless it's the only line
+            s.append( "\n" );
         a.resize( s.length());
         memcpy( a.data(), s.data(), s.length()); // no trailing zero in clipboard text
     }
@@ -142,9 +148,11 @@ QByteArray KURLDrag::encodedData( const char* mime ) const
     {
         QStringList uris;
         for (QStrListIterator it(m_urls); *it; ++it)
-         uris.append(KURL(*it, 106).url(0, 4)); // 106 is mib enum for utf8 codec; 4 for latin1
+         uris.append(checkFilenameURL(KURL(*it, 106).url(0, 4))); // 106 is mib enum for utf8 codec; 4 for latin1
 
         QCString s = uris.join( "\n" ).latin1();
+        if( uris.count() > 1 )
+            s.append( "\n" );
         a.resize( s.length());
         memcpy( a.data(), s.data(), s.length());    
     }
@@ -152,8 +160,10 @@ QByteArray KURLDrag::encodedData( const char* mime ) const
     {
         QStringList uris;
         for (QStrListIterator it(m_urls); *it; ++it)
-         uris.append(KURL(*it, 106).prettyURL()); // 106 is mib enum for utf8 codec
+         uris.append(checkFilenameURL(KURL(*it, 106).prettyURL())); // 106 is mib enum for utf8 codec
         QCString s = uris.join( "\n" ).utf8();
+        if( uris.count() > 1 )
+            s.append( "\n" );
         a.resize( s.length());
         memcpy( a.data(), s.data(), s.length());    
     }    
@@ -177,3 +187,24 @@ QByteArray KURLDrag::encodedData( const char* mime ) const
     return a;
 }
 
+QString KURLDrag::checkFilenameURL( const QString& url )
+{
+#if KDE_IS_VERSION( 3, 2, 90 )
+#warning Consider enabling this for KDE3.3.
+#endif
+#if 0
+// According to the XDND spec, file:/ URLs for DND must have
+// the hostname part. But in really it just breaks many apps,
+// so it's disabled for now.
+    if( url.startsWith( "file:/" ) && !url.startsWith( "file://" ))
+    {
+        char hostname[257];
+        if ( gethostname( hostname, 255 ) == 0 )
+        {
+	    hostname[256] = '\0';
+            return QString( "file://" ) + hostname + url.mid( 5 );
+        }
+    }
+#endif
+    return url;
+}
