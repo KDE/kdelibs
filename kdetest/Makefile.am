@@ -33,7 +33,8 @@ check_PROGRAMS = kconfigtest kledlamptest kprogresstest \
 	    ksimpleconfigtest kledtest kcontainertest klocaletest krulertest \
 		kwizardtest kurltest kformulatest \
 		kcharselecttest kstddirstest khtmltest \
-		kopenwithtest kaboutdialogtest kgradienttest \
+		kopenwithtest kaboutdialogtest dialogbasetest \
+		kgradienttest \
 		kunbalancedgrdtest kcolortest knuminputtest kblendtest \
 		kdualcolortest kpalettetest kmessageboxtest khashtest
 
@@ -59,6 +60,7 @@ LDADD =  $(LIB_KDEUI)
 kbuttonboxtest_SOURCES = kbuttonboxtest.cpp
 kaboutdialogtest_SOURCES = kaboutdialogtest.cpp
 kaboutdialogtest_LDADD = $(LIB_KIMGIO) $(LIB_KDEUI)
+dialogbasetest_SOURCES = dialogbasetest.cpp
 kcolordlgtest_SOURCES = kcolordlgtest.cpp
 kconfigtest_SOURCES = kconfigtest.cpp
 kconfigtest_LDADD = $(LIB_KDECORE)
