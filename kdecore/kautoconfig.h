@@ -116,7 +116,7 @@ public:
   KAutoConfig(QObject *parent=0, const char *name=0);
 
   /**
-   * Destructor.
+   * Destructor.  Deletes private class.
    */
   ~KAutoConfig();
   
@@ -138,10 +138,11 @@ public:
   void ignoreSubWidget(QWidget *widget);
 
   /**
-   * Traverse the specified widgets to see if anything has changed.
+   * Traverse the specified widgets to see if anything is different then the
+   * current settings.
    * @ref retrieveSettings() must be called before this function to build
    * the list of known widgets and defaultValues.
-   * @return bool - true if any settings were changed.
+   * @return bool - True if any settings are different then the stored values.
    */
   bool hasChanged() const;
 
@@ -150,7 +151,7 @@ public:
    * default.
    * @ref retrieveSettings() must be called before this function to build
    * the list of known widgets and defaultValues.
-   * @return bool - true if any settings are different.
+   * @return bool - True if all of the settings are their default values.
    */
   bool isDefault() const;
 
