@@ -82,7 +82,7 @@ signals:
  *
  *  @author Mark Donohoe (donohoe@kde.org) Maintained by Sven Radej <radej@kde.org>
 
- *  @See KActionCollection
+ *  @see KActionCollection
  */
 class KDEUI_EXPORT KStatusBar : public QStatusBar
 {
