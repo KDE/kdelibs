@@ -5,6 +5,7 @@
 #include <kapp.h>
 #include <kcmdlineargs.h>
 #include <klocale.h>
+#include <kipc.h>
 
 static const char *description = 
 	I18N_NOOP("KDE tool to change themes.");
