@@ -25,19 +25,21 @@
 
 class KArrowButtonPrivate;
 /**
+ * @short Draws a button with an arrow.
+ *
  * Draws a button which shows an arrow pointing into a certain direction. The
  * arrow's alignment on the button depends on the direction it's pointing to,
  * e.g. a left arrow is aligned at the left border, a upwards arrow at the top
  * border. This class honors the currently configured KStyle when drawing
  * the arrow.
- * @short Draws a button with an arrow.
+ *
  * @author Frerich Raabe
  */
 class KDEUI_EXPORT KArrowButton : public QPushButton
 {
 	Q_OBJECT
 	Q_PROPERTY( int arrowType READ arrowTp WRITE setArrowTp )
-	
+
 	public:
 		/**
 		 * Constructs an arrow button.
