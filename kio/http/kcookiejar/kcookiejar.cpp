@@ -176,12 +176,20 @@ bool KHttpCookie::match(const QString &fqdn, const QStringList &domains,
             return false;
 
           int len = domains.count();
-          QString fqdnTLD = domains[len-2];
-          int matchpos = mHost.find(fqdnTLD, 0, false);
+          if (len < 2)
+          {
+              if (domains[0] != mHost)
+                 return false;
+          }
+          else
+          {
+              QString fqdnTLD = domains[len-2];
+              int matchpos = mHost.find(fqdnTLD, 0, false);
 
-          if ((matchpos == -1 && domains[len-1] != mHost) ||
-              (matchpos > -1 && (matchpos+fqdnTLD.length() != mHost.length())))
-              return false;
+              if ((matchpos == -1 && domains[len-1] != mHost) ||
+                  (matchpos > -1 && (matchpos+fqdnTLD.length() != mHost.length())))
+                  return false;
+          }
         }
     }
     else if (!domains.contains(mDomain))
