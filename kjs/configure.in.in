@@ -69,6 +69,7 @@ quite limited if libpcre isn't present.])
       AC_MSG_RESULT("none")
     else
       AC_MSG_RESULT($ac_cv_pcre_cflags)
+      PCRECFLAGS="$ac_cv_pcre_cflags"
     fi
   fi
 ])
