@@ -278,15 +278,11 @@ KService::Ptr KServiceTypeProfile::preferredService( const QString & _serviceTyp
   OfferList lst = offers( _serviceType, _genericServiceType );
 
   OfferList::Iterator itOff = lst.begin();
-  // Look for the first one that is allowed as default
-  for( ; itOff != lst.end(); ++itOff )
-  {
-      if ((*itOff).allowAsDefault())
-      {
-          return (*itOff).service();
-      }
-      else break; // The allowed-as-default are first anyway
-  }
+  // Look for the first one that is allowed as default.
+  // Since the allowed-as-default are first anyway, we only have
+  // to look at the first one to know.
+  if( itOff != lst.end() && (*itOff).allowAsDefault() )
+    return (*itOff).service();
 
   kdDebug(7014) << "No offers, or none allowed as default" << endl;
   return 0L;
