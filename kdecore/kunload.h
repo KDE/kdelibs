@@ -1,10 +1,11 @@
 #include <qglobal.h>
 #include <qobjectdict.h>
+#include <kapp.h>
 
 #define _UNLOAD(p) \
 static void unload_##p (const char **list) \
 { \
-    if (!objectDict) return; \
+    if (!objectDict || !kapp) return; \
     /*qDebug("removing meta classes for %s", #p);*/ \
     const char **n = list; \
     for (; *n; n++) { \
