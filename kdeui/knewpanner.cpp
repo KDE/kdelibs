@@ -105,6 +105,12 @@ void KNewPanner::activate(QWidget *c0, QWidget *c1)
     setSeperatorPos(pos);
 }
 
+void KNewPanner::deactivate()
+{
+  delete divider;
+  initialised= false;
+}
+
 void KNewPanner::setLabels(const char *text0, const char *text1)
 {
    if (label0 == 0) {
@@ -265,6 +271,7 @@ bool KNewPanner::eventFilter(QObject *, QEvent *e)
 	mev= (QMouseEvent *)e;
 	child0->setUpdatesEnabled(false);
 	child1->setUpdatesEnabled(false);
+	divider->raise();
 	if (orientation == Horizontal) {
 	    position= checkValue(position+mev->y());
 	    divider->setGeometry(0, position, width(), 4);

@@ -89,6 +89,12 @@ public:
     void activate(QWidget *c0, QWidget *c1);
 
   /**
+   * Stops the panner to allow you to reactivate the panner with different
+   * child widgets.
+   */
+  void deactivate();
+
+  /**
    * Set the label texts for the two windows, note that they are only shown
    * if you have called showLabels(true).
    */
