@@ -1187,7 +1187,7 @@ void KDirOperator::setupActions()
     connect( showHiddenAction, SIGNAL( toggled( bool ) ),
              SLOT( slotToggleHidden( bool ) ));
 
-    KAction *props = new KAction( i18n("Properties..."), 0, this,
+    KAction *props = new KAction( i18n("Properties..."), ALT+Key_Return, this,
                                   SLOT(slotProperties()), this, "properties" );
 
     // insert them into the actionCollection
