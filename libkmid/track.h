@@ -1,106 +1,233 @@
 /*  track.h  - class track, which has a midi file track and its events
+    This file is part of LibKMid 0.9.5
     Copyright (C) 1997,98,99,2000  Antonio Larrosa Jimenez
+    LibKMid's homepage : http://www.arrakis.es/~rlarrosa/libkmid.html
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+ 
+    This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+ 
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.                                                  
 
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-
-    Send comments and bug fixes to antlarr@arrakis.es
-    or to Antonio Larrosa, Rio Arnoya, 10 5B, 29006 Malaga, Spain
+    Send comments and bug fixes to Antonio Larrosa <larrosa@kde.org>
 
 ***************************************************************************/
 #ifndef _TRACK_H
 #define _TRACK_H
 
 #include <stdio.h>
-#include "dattypes.h"
+#include <libkmid/dattypes.h>
 
+/**
+ * An structure that represents a MIDI event.
+ *
+ * @short Represents a MIDI event
+ * @version 0.9.5 17/01/2000
+ * @author Antonio Larrosa Jimenez <larrosa@kde.org>
+ */ 
 struct MidiEvent
 {
-	uchar	command;
-        uchar   chn;
-	uchar   note;
-	uchar   vel;
-	uchar   patch;
-	uchar   ctl;
-	uchar   d1;
-	uchar   d2;
-	uchar   d3;
-	uchar   d4;
-	uchar   d5;
-	uchar   d6;
-	ulong	length;
-	uchar  *data;
+  /**
+   * MIDI Command
+   * 
+   * Caution, if a command doesn't use a variable, it may contain garbage.
+   */
+  uchar	command;
 
-// note that if a command doesn't use a variable it will contain garbage
+  /**
+   * Channel
+   */
+  uchar   chn;
+
+  /**
+   * Note
+   */
+  uchar   note;
+
+  /**
+   * Velocity
+   */
+  uchar   vel;
+
+  /**
+   * Patch (if @ref #command was a change patch command)
+   */
+  uchar   patch;
+
+  /**
+   * Patch (if @ref #command was a controller command)
+   */
+  uchar   ctl;
+
+  /**
+   * Data 1
+   */
+  uchar   d1;
+
+  /**
+   * Data 2
+   */
+  uchar   d2;
+
+  /**
+   * Data 3
+   */
+  uchar   d3;
+
+  /**
+   * Data 4
+   */
+  uchar   d4;
+
+  /**
+   * Data 5
+   */
+  uchar   d5;
+
+  /**
+   * Data 6
+   */
+  uchar   d6;
+
+  /**
+   * Length of the generic @ref #data variable
+   */
+  ulong	length;
+
+  /**
+   * The data for commands like text, sysex, etc.
+   */
+  uchar  *data;
 
 };
 
+/**
+ * Stores a MIDI track. This can be thought of as a list of MIDI events.
+ *
+ * The data types used to store the track is similar to how events are
+ * stored on a MIDI file, but used in a way that allows for faster parses.
+ * 
+ * This class is used on @ref MidiPlayer::loadSong() to load the song and
+ * later play it with @ref MidiPlayer::play().
+ *
+ * @short Stores a MIDI track with a simple API
+ * @version 0.9.5 17/01/2000
+ * @author Antonio Larrosa Jimenez <larrosa@kde.org>
+ */
 class MidiTrack
 {
-private:
-	int	id;
+  private:
+    int	id;
 
-	ulong	size;
-	uchar  *data;
-	uchar  *ptrdata;
-	
-        bool    note[16][128]; // Notes that are set on or off by this track
-        ulong	current_ticks; // Total number of ticks since beggining of song
-	ulong   delta_ticks;   // Delta ticks from previous event to next event
-	ulong   wait_ticks;    // Wait ticks from previous event in other track
-					// to next event in this track
+    ulong size;
+    uchar *data;
+    uchar *ptrdata;
 
-	ulong	currentpos; // Some songs don't have a endoftrack event, so
-			// we have to see when currentpos > size
-	int	endoftrack;
+    bool  note[16][128]; // Notes that are set on or off by this track
+    ulong current_ticks; // Total number of ticks since beggining of song
+    ulong delta_ticks;   // Delta ticks from previous event to next event
+    ulong wait_ticks;    // Wait ticks from previous event in other track
+    // to next event in this track
 
-	ulong	readVariableLengthValue(void);
+    ulong currentpos; // Some songs don't have a endoftrack event, so
+    // we have to see when currentpos > size
+    int	endoftrack;
 
-	uchar   lastcommand;  // This is to run light without overbyte :-)
+    ulong readVariableLengthValue(void);
 
-
-	double	current_time; // in ms.
-	double	time_at_previous_tempochange;  // in ms.
-	double	ticks_from_previous_tempochange; // in ticks	
-//	double	time_to_next_event;  // in ms.
-	double	time_at_next_event;  // in ms.
-	int	tPCN;
-	ulong	tempo;
-
-	int	power2to(int i);
-
-public:
-	MidiTrack(FILE *file,int tpcn,int Id);
-	~MidiTrack();
-
-	int	ticksPassed (ulong ticks); // returns 0 if OK, and 1 if 
-					// you didn't handle this track well
-					// and you forgot to take an event
-					// (never ?)
-	int	msPassed    (ulong ms);
-	int	currentMs   (double ms);
-
-	ulong	waitTicks   (void)
-			{return wait_ticks; };
-//	ulong   waitMs (void) {return time_to_next_event;};
-	double   absMsOfNextEvent (void) { return time_at_next_event; };
-	void 	changeTempo(ulong t);
+    uchar lastcommand;  // This is to run light without overbyte :-)
 
 
-        void	readEvent(MidiEvent *ev);
-	void	init(void);
-	void	clear(void);
+    double current_time; // in ms.
+    double time_at_previous_tempochange;  // in ms.
+    double ticks_from_previous_tempochange; // in ticks	
+    //	double	time_to_next_event;  // in ms.
+    double	time_at_next_event;  // in ms.
+    int	tPCN;
+    ulong	tempo;
+
+    int	power2to(int i);
+
+  public:
+    /**
+     * Constructor. 
+     * @param file the file to read the track from. It should be ready at the
+     * start of a track. MidiTrack reads just that track and the file is left at
+     * the end of this track).
+     * @param tpcn the ticks per cuarter note used in this file.
+     * @param Id the ID for this track.
+     */ 
+    MidiTrack(FILE *file,int tpcn,int Id);
+
+    /**
+     * Destructor
+     */
+    ~MidiTrack();
+
+    /**
+     * Makes the iterator advance the given number of ticks.
+     *
+     * @return 0 if OK, and 1 if you didn't handle this track well and you
+     * forgot to take an event (thing that will never happen if you use
+     * @ref MidiPlayer::play() ).
+     */ 
+    int	ticksPassed (ulong ticks); 
+
+    /**
+     * Makes the iterator advance the given number of milliseconds.
+     *
+     * @return 0 if OK, and 1 if you didn't handle this track well and you
+     * forgot to take an event (thing that will never happen if you use
+     * @ref MidiPlayer::play() ).
+     */
+    int	msPassed    (ulong ms);
+
+    /**
+     * Returns the current millisecond which the iterator is at.
+     */
+    int	currentMs   (double ms);
+
+    /**
+     * Returns the number of ticks left for the next event.
+     */
+    ulong	waitTicks   (void) { return wait_ticks; };
+
+    //	ulong   waitMs (void) {return time_to_next_event;};
+
+    /**
+     * Returns the absolute number of milliseconds of the next event.
+     */ 
+    double   absMsOfNextEvent (void) { return time_at_next_event; };
+
+    /**
+     * Change the tempo of the song.
+     */
+    void 	changeTempo(ulong t);
+
+    /**
+     * Reads the event at the iterator position, and puts it on the structure
+     * pointed to by @p ev.
+     */
+    void	readEvent(MidiEvent *ev);
+
+    /**
+     * Initializes the iterator.
+     */
+    void	init(void);
+
+    /**
+     * Clears the internal variables.
+     */
+    void	clear(void);
 
 };
 

@@ -1,7 +1,9 @@
 /**************************************************************************
  
     dattypes.cc  - Some always useful definitions and functions
-    Copyright (C) 1997,98  Antonio Larrosa Jimenez
+    This file is part of LibKMid 0.9.5
+    Copyright (C) 1997,98,99,2000  Antonio Larrosa Jimenez
+    LibKMid's homepage : http://www.arrakis.es/~rlarrosa/libkmid.html
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,8 +19,7 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  
-    Send comments and bug fixes to antlarr@arrakis.es
-    or to Antonio Larrosa, Rio Arnoya, 10 5B, 29006 Malaga, Spain
+    Send comments and bug fixes to Antonio Larrosa <larrosa@kde.org>
  
 ***************************************************************************/
 #include "dattypes.h"
@@ -68,12 +69,12 @@ void printfdebug(const char *format, int a, int b, int c)
     case (3) : fprintf(stderr,format,a,b,c); break;
     default : fprintf(stderr,format); break;
   }
-   
+
 }
 
 void printfdebug(const char *format, int a, long b)
 {
-    fprintf(stderr,format,a,b);
+  fprintf(stderr,format,a,b);
 }
 
 void printfdebug(const char *format, double a, double b, double c)
@@ -92,7 +93,7 @@ void printfdebug(const char *format, double a, double b, double c)
     case (3) : fprintf(stderr,format,a,b,c); break;
     default : fprintf(stderr,format); break;
   }
-   
+
 }
 #else
 

@@ -2,7 +2,9 @@
 
     fmout.cc   - class fmOut which handles the /dev/sequencer device
 			for fm synths
-    Copyright (C) 1998,99  Antonio Larrosa Jimenez
+    This file is part of LibKMid 0.9.5
+    Copyright (C) 1998,99,2000  Antonio Larrosa Jimenez
+    LibKMid's homepage : http://www.arrakis.es/~rlarrosa/libkmid.html
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,8 +20,7 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-    Send comments and bug fixes to antlarr@arrakis.es
-    or to Antonio Larrosa, Rio Arnoya, 10 5B, 29006 Malaga, Spain
+    Send comments and bug fixes to Antonio Larrosa <larrosa@kde.org>
 
 ***************************************************************************/
 #include "fmout.h"
@@ -32,8 +33,10 @@
 #include <string.h>
 #include <sys/param.h>
 #include <stdlib.h>
-#include "../version.h"
 #include "midispec.h"
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 SEQ_USE_EXTBUF();
 
@@ -54,7 +57,7 @@ FMOut::FMOut( int d, int total )
   // But be aware that opl=3 is not intended to be fully supported by now
 
   nvoices = total;
-  vm = new voiceManager (nvoices);
+  vm = new VoiceManager (nvoices);
 }
 
 FMOut::~FMOut()
@@ -73,7 +76,7 @@ void FMOut::openDev (int sqfd)
 {
   _ok=1;
   seqfd = sqfd;
-  //vm->cleanLists();
+  //vm->clearLists();
   if ( seqfd == -1 )
   {
     printfdebug("ERROR: Could not open /dev/sequencer\n");
@@ -107,7 +110,7 @@ void FMOut::closeDev (void)
   SEQ_STOP_TIMER();
   SEQ_DUMPBUF();
 #endif
-  vm->cleanLists();
+  vm->clearLists();
   //if (seqfd>=0) close(seqfd);
   seqfd = -1;
 }
@@ -140,7 +143,7 @@ void FMOut::initDev (void)
   for (int i = 0; i < nvoices; i++)
   {
     SEQ_CONTROL(device, i, SEQ_VOLMODE, VOL_METHOD_LINEAR);
-    SEQ_STOP_NOTE(device, i, vm->Note(i), 64);
+    SEQ_STOP_NOTE(device, i, vm->note(i), 64);
   }
 }
 
@@ -256,7 +259,7 @@ void FMOut::noteOn  (uchar chn, uchar note, uchar vel)
     SEQ_BENDER(device, v, chnbender[chn]);
 
     SEQ_START_NOTE(device, v, note, vel);
-//    SEQ_CONTROL(device, v, CTL_MAIN_VOLUME, chncontroller[chn][CTL_MAIN_VOLUME]);
+    //    SEQ_CONTROL(device, v, CTL_MAIN_VOLUME, chncontroller[chn][CTL_MAIN_VOLUME]);
 
     SEQ_CHN_PRESSURE(device, v , chnpressure[chn]);
   }
@@ -270,7 +273,7 @@ void FMOut::noteOff (uchar chn, uchar note, uchar vel)
 {
   int i;
   vm->initSearch();
-  while ((i=vm->Search(chn,note))!=-1)
+  while ((i=vm->search(chn,note))!=-1)
   {
     SEQ_STOP_NOTE(device, i, note, vel);
     vm->deallocateVoice(i);
@@ -285,7 +288,7 @@ void FMOut::keyPressure (uchar chn, uchar note, uchar vel)
 {
   int i;
   vm->initSearch();
-  while ((i=vm->Search(chn,note))!=-1)
+  while ((i=vm->search(chn,note))!=-1)
     SEQ_KEY_PRESSURE(device, i, note,vel);
 }
 
@@ -294,7 +297,7 @@ void FMOut::chnPatchChange (uchar chn, uchar patch)
   if (chn==PERCUSSION_CHANNEL) return;
   int i;
   vm->initSearch();
-  while ((i=vm->Search(chn))!=-1)
+  while ((i=vm->search(chn))!=-1)
     SEQ_SET_PATCH(device,i,map->patch(chn,patch)); 
 
   chnpatch[chn]=patch;
@@ -304,7 +307,7 @@ void FMOut::chnPressure (uchar chn, uchar vel)
 {
   int i;
   vm->initSearch();
-  while ((i=vm->Search(chn))!=-1)
+  while ((i=vm->search(chn))!=-1)
     SEQ_CHN_PRESSURE(device, i , vel);
 
   chnpressure[chn]=vel;
@@ -316,7 +319,7 @@ void FMOut::chnPitchBender(uchar chn,uchar lsb, uchar msb)
 
   int i;
   vm->initSearch();
-  while ((i=vm->Search(chn))!=-1)
+  while ((i=vm->search(chn))!=-1)
     SEQ_BENDER(device, i, chnbender[chn]);
 
 }
@@ -330,7 +333,7 @@ void FMOut::chnController (uchar chn, uchar ctl, uchar v)
   }
   int i;
   vm->initSearch();
-  while ((i=vm->Search(chn))!=-1)
+  while ((i=vm->search(chn))!=-1)
     SEQ_CONTROL(device, i, ctl, v);
 
   chncontroller[chn][ctl]=v;
@@ -359,7 +362,7 @@ void FMOut::setVolumePercentage    ( int i )
   if (a>255) a=255;
   a=(a<<8) | a;
   if (ioctl(fd,MIXER_WRITE(SOUND_MIXER_SYNTH),&a) == -1) 
-    		printfdebug("ERROR writing to mixer\n");
+    printfdebug("ERROR writing to mixer\n");
   close(fd);
   volumepercentage=i;
 }

@@ -2,8 +2,10 @@
 
     synthout.cc   - class synthOut which handles the /dev/sequencer device
 			for synths (as AWE32)
-    Copyright (C) 1997,98,99  Antonio Larrosa Jimenez
-			P.J.Leonard (P.J.Leonard@bath.ac.uk)
+    This file is part of LibKMid 0.9.5
+    Copyright (C) 1997,98  Antonio Larrosa Jimenez and P.J.Leonard
+                  1999,2000 Antonio Larrosa Jimenez
+    LibKMid's homepage : http://www.arrakis.es/~rlarrosa/libkmid.html 
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,8 +21,7 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-    Send comments and bug fixes to antlarr@arrakis.es
-    or to Antonio Larrosa, Rio Arnoya, 10 5B, 29006 Malaga, Spain
+    Send comments and bug fixes to Antonio Larrosa <larrosa@kde.org>
 
 ***************************************************************************/
 #include "synthout.h"
@@ -34,7 +35,10 @@
 #include <sys/param.h>
 #include "awe_sup.h"
 #include "midispec.h"
-#include "../version.h"
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 SEQ_USE_EXTBUF();
 

@@ -1,7 +1,9 @@
 /**************************************************************************
 
     midiout.cc   - class midiOut which handles external midi devices
-    Copyright (C) 1997,98  Antonio Larrosa Jimenez
+    This file is part of LibKMid 0.9.5
+    Copyright (C) 1997,98,99,2000  Antonio Larrosa Jimenez
+    LibKMid's homepage : http://www.arrakis.es/~rlarrosa/libkmid.html            
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,8 +19,7 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-    Send comments and bug fixes to antlarr@arrakis.es
-    or to Antonio Larrosa, Rio Arnoya, 10 5B, 29006 Malaga, Spain
+    Send comments and bug fixes to Antonio Larrosa <larrosa@kde.org>
 
 ***************************************************************************/
 #include "midiout.h"
@@ -31,7 +32,10 @@
 #include <stdlib.h>
 #include <sys/param.h>
 #include "midispec.h"
-#include "../version.h"
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #ifdef HANDLETIMEINDEVICES
 #include <sys/ioctl.h>
@@ -78,16 +82,16 @@ void MidiOut::openDev (int sqfd)
   rate=0;
   int r=ioctl(seqfd,SNDCTL_SEQ_CTRLRATE,&rate);
   if ((r==-1)||(rate<=0)) rate=HZ;
-    
+
   midi_info midiinfo;
   midiinfo.device=device;
   convertrate=1000/rate;
-    
+
 #ifdef MIDIOUTDEBUG
   printfdebug("Number of synth devices : %d\n",ndevs);
   printfdebug("Number of midi ports : %d\n",nmidiports);
   printfdebug("Rate : %d\n",rate);
-  
+
   int i;
   synth_info synthinfo;
   for (i=0;i<ndevs;i++)
@@ -100,18 +104,18 @@ void MidiOut::openDev (int sqfd)
       printfdebug("Name : %s\n",synthinfo.name);
       switch (synthinfo.synth_type)
       {
-        case (SYNTH_TYPE_FM) : printfdebug("FM\n");break;
-        case (SYNTH_TYPE_SAMPLE) : printfdebug("Sample\n");break;
-        case (SYNTH_TYPE_MIDI) : printfdebug("Midi\n");break;
-        default : printfdebug("default type\n");break;
+	case (SYNTH_TYPE_FM) : printfdebug("FM\n");break;
+	case (SYNTH_TYPE_SAMPLE) : printfdebug("Sample\n");break;
+	case (SYNTH_TYPE_MIDI) : printfdebug("Midi\n");break;
+	default : printfdebug("default type\n");break;
       }
       switch (synthinfo.synth_subtype)
       {
-        case (FM_TYPE_ADLIB) : printfdebug("Adlib\n");break;
-        case (FM_TYPE_OPL3) : printfdebug("Opl3\n");break;
-        case (MIDI_TYPE_MPU401) : printfdebug("Mpu-401\n");break;
-        case (SAMPLE_TYPE_GUS) : printfdebug("Gus\n");break;
-        default : printfdebug("default subtype\n");break;
+	case (FM_TYPE_ADLIB) : printfdebug("Adlib\n");break;
+	case (FM_TYPE_OPL3) : printfdebug("Opl3\n");break;
+	case (MIDI_TYPE_MPU401) : printfdebug("Mpu-401\n");break;
+	case (SAMPLE_TYPE_GUS) : printfdebug("Gus\n");break;
+	default : printfdebug("default subtype\n");break;
       }
     }
   }
@@ -127,10 +131,10 @@ void MidiOut::openDev (int sqfd)
       printfdebug("Device type : %d\n",midiinfo.dev_type);
     }
   }
-    
+
 #endif
-    
-    
+
+
   count=0.0;
   lastcount=0.0;
   if (nmidiports<=0)

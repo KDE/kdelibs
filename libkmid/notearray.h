@@ -1,68 +1,139 @@
 /*  notearray.h  - NoteArray class, which holds an array of notes
-    Copyright (C) 1998  Antonio Larrosa Jimenez
+    This file is part of LibKMid 0.9.5
+    Copyright (C) 1998,99,2000  Antonio Larrosa Jimenez
+    LibKMid's homepage : http://www.arrakis.es/~rlarrosa/libkmid.html
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+ 
+    This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+ 
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.                                                  
 
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-
-    Send comments and bug fixes to antlarr@arrakis.es
-    or to Antonio Larrosa, Rio Arnoya, 10 5B, 29006 Malaga, Spain
+    Send comments and bug fixes to Antonio Larrosa <larrosa@kde.org>
 
 ***************************************************************************/
-
 #ifndef NOTEARRAY_H
 #define NOTEARRAY_H
 
-// This class holds a resizeable array of noteon/off events, it can increase it size, but
-// it doesn't decreases it until destruction :-)
-#include "dattypes.h"
+#include <libkmid/dattypes.h>
 
-struct noteCmd {
-    ulong ms; // ms from beginning of song
-    int chn;
-    int cmd; // 0 note off, 1 note on, 2 change patch
-    int note; // if cmd==2 then the patch is stored in "note"
-};
-
+/**
+ * Holds a resizeable array of note on/off and patch change events. It can
+ * increase it size, but it doesn't decreases (until destruction :-) )
+ *
+ * @short Stores an array of note on/off events
+ * @version 0.9.5 17/01/2000
+ * @author Antonio Larrosa Jimenez <larrosa@kde.org>
+ */
 class NoteArray
 {
-    noteCmd *data;
-    ulong totalAllocated;
 
-    ulong last;
-    noteCmd *lastAdded;
+  struct noteCmd {
+    /**
+     * ms from beginning of song 
+     */
+    ulong ms; 
 
-    noteCmd *it; // the iterator
-    
-    noteCmd *pointerTo(ulong pos);
-    
-public:
-    NoteArray(void);
-    ~NoteArray();
+    /**
+     * The channel
+     */
+    int chn;
 
-    void at(ulong pos, ulong ms,int chn,int cmd,int note);
-    void at(ulong pos, noteCmd s);
-    noteCmd at(int pos);
+    /**
+     * 0 note off, 1 note on, 2 change patch
+     */
+    int cmd; 
 
-    void add(ulong ms,int chn,int cmd,int note);
+    /**
+     * The note.
+     *
+     * If cmd==2, then the patch is stored in "note"
+     */
+    int note; 
+  };
 
-    void iteratorBegin(void) { it=data; };
-    noteCmd *get(void)       { return it; };
-    void next(void);
-    void moveIteratorTo(ulong ms,int *pgm=NULL);
-    // call next() until the next event is over ms milliseconds
-    // and puts in pgm[16] the instruments used at this moment
+  noteCmd *data;
+  ulong totalAllocated;
 
+  ulong last;
+  noteCmd *lastAdded;
+
+  /**
+   * @internal
+   * The iterator
+   */
+  noteCmd *it;
+
+  noteCmd *pointerTo(ulong pos);
+
+  public:
+  /**
+   * Constructor. Initializes internal variables.
+   */
+  NoteArray(void);
+  /**
+   * Destructor.
+   */
+  ~NoteArray();
+
+  /**
+   * Adds (or modifies) an event in the given position . 
+   *
+   * Note that this has nothing to do with what is being played, this just
+   * modifies an internal array.
+   */
+  void at(ulong pos, ulong ms,int chn,int cmd,int note);
+
+  /**
+   * A convenience function, which differs from the above in the parameters
+   * it accepts.
+   */
+  void at(ulong pos, noteCmd s);
+
+  /**
+   * Returns the note event at a given position.
+   */ 
+  noteCmd at(int pos);
+
+  /**
+   * Adds a note/patch event at a given millisecond.
+   * 
+   * Note: This method always appends at the end of the list.
+   */ 
+  void add(ulong ms,int chn,int cmd,int note);
+
+  /**
+   * Initializes the iterator.
+   *
+   * @see #get()
+   * @see #next()
+   */ 
+  void iteratorBegin(void) { it=data; };
+
+  /**
+   * Get the command currently pointed to by the iterator.
+   */
+  noteCmd *get(void)       { return it; };
+
+  /**
+   * Advances the iterator to the next position.
+   */ 
+  void next(void);
+
+  /**
+   * Calls @ref #next() until the next event is over ms milliseconds
+   * and puts in @p pgm[16] the instruments used at this moment.
+   */
+  void moveIteratorTo(ulong ms,int *pgm=NULL);
 };
 
 #endif
