@@ -267,8 +267,11 @@ protected:
 
   /**
    * Extracts binary name from Exec command line
+   * @param execLine the command line 
+   * @param removePath if true, /usr/bin/konqueror will be returned as "konqueror"
+   *                   if false, it will be returned with the path.
    */
-  static QString binaryName( const QString & execLine );
+  static QString binaryName( const QString & execLine, bool removePath = true );
 };
 
 /**
