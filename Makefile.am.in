@@ -93,7 +93,7 @@ apidox-am-toplevel-yes: apidox-am-toplevel-kdelibs
 apidox-am-toplevel-kdelibs: $(top_builddir)/apidocs/qt/qt.tag
 
 $(top_builddir)/apidocs/qt/qt.tag:
-	echo "*** Creating a tag file for the Qt library:"; \
+	@echo "*** Creating a tag file for the Qt library:"; \
 	$(mkinstalldirs) $(top_builddir)/apidocs/qt; \
 	doxytag -t $(top_builddir)/apidocs/qt/qt.tag $(QTDOCDIR)
 
