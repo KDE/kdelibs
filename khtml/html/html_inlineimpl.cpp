@@ -164,6 +164,7 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
                 state |= Qt::ControlButton;
 	    }
 
+            ownerDocument()->view()->resetCursor();
             ownerDocument()->view()->part()->
                 urlSelected( url, button, state, utarget );
         }

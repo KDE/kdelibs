@@ -57,6 +57,12 @@ public:
     static QCursor handCursor();
 
     /**
+     * Returns the proper arrow+hourglass cursor according to
+     * the current GUI style (static function).
+     */
+    static QCursor workingCursor();
+
+    /**
      * Returns the proper arrow cursor according to
      * the current GUI style (static function).
      */

@@ -78,6 +78,43 @@ QCursor KCursor::handCursor()
         return *hand_cursor;
 }
 
+/* XPM */
+static const char * const working_cursor_xpm[]={
+"18 16 3 1",
+"# c None",
+"a c #000000",
+". c #ffffff",
+"..########.aaa.###",
+".a.#######.aaa.###",
+".aa.#####.a.a.a..#",
+".aaa.####a..a..aa#",
+".aaaa.###a..a..aa#",
+".aaaaa.##.aa..a..#",
+".aaaaaa.##.aaa.###",
+".aaaaaaa.#.aaa.###",
+".aaaaaaaa.########",
+".aaaaa....########",
+".aa.aa.###########",
+".a.#.aa.##########",
+"..##.aa.##########",
+"#####.aa.#########",
+"#####.aa.#########",
+"######..##########"};
+
+QCursor KCursor::workingCursor()
+{
+        static QCursor *working_cursor = 0;
+
+        if (working_cursor == 0)
+        {
+            QPixmap pm( const_cast< const char** >( working_cursor_xpm ));
+            working_cursor = new QCursor( pm, 1, 1 );    
+        }
+
+        Q_CHECK_PTR(working_cursor);
+        return *working_cursor;
+}
+
 /**
  * All of the follow functions will return the Qt default for now regardless
  * of the style.  This will change at some later date

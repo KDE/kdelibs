@@ -190,7 +190,6 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
 
     KImageIO::registerFormats();
 
-    viewport()->setCursor(arrowCursor);
 #ifndef QT_NO_TOOLTIP
     ( void ) new KHTMLToolTip( this, d );
 #endif
@@ -517,14 +516,23 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
     }
     QWidget *vp = viewport();
     if ( vp->cursor().handle() != c.handle() )
-        vp->setCursor( c );
-
+    {
+        if( c.handle() == KCursor::arrowCursor().handle())
+            vp->unsetCursor();
+        else
+            vp->setCursor( c );
+    }
     d->prevMouseX = xm;
     d->prevMouseY = ym;
 
     khtml::MouseMoveEvent event( _mouse, xm, ym, mev.url, mev.innerNode );
     event.setNodePos( mev.nodeAbsX, mev.nodeAbsY );
     QApplication::sendEvent( m_part, &event );
+}
+
+void KHTMLView::resetCursor()
+{
+    viewport()->unsetCursor();
 }
 
 void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )

@@ -163,6 +163,8 @@ public:
      */
     void setMediaType( const QString &medium );
     QString mediaType() const;
+    
+    void resetCursor();
 
 signals:
     void cleared();
