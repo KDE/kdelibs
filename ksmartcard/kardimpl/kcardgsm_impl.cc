@@ -174,7 +174,7 @@ int KCardGsmImplementation::readBinary   (QString & fileContent, unsigned short 
 
 int KCardGsmImplementation:: updateBinary (const QString & newContent, 
 					   unsigned short offset, 
-					   unsigned char length=0){
+					   unsigned char length){
 
   
   QString updateBinaryCommand="A0DC";
@@ -246,7 +246,7 @@ int KCardGsmImplementation::updateBinary (const QString & newContent){
 
 }
 
-int KCardGsmImplementation::readRecord ( QString & recordContent, unsigned char recordNumber, accessMode mode=absolute){
+int KCardGsmImplementation::readRecord ( QString & recordContent, unsigned char recordNumber, accessMode mode) {
 
 
 
@@ -296,7 +296,7 @@ int KCardGsmImplementation::readRecord ( QString & recordContent, unsigned char 
 }
 
 
-int KCardGsmImplementation::updateRecord (const QString & recordContent, unsigned char recordNumber, accessMode mode=absolute){
+int KCardGsmImplementation::updateRecord (const QString & recordContent, unsigned char recordNumber, accessMode mode){
 
   QString updateRecordCommand="A0DC";
   QString status=QString::null;

@@ -77,7 +77,7 @@ int KCardDB::addHandler(const QString ATR, const QString module) {
 }
 
 
-int KCardDB::launchSelector(const QString slot, const QString ATR=QString::null) {
+int KCardDB::launchSelector(const QString slot, const QString ATR) {
 	KProcess p;
 	p << "kcardchooser" << "--slot" << slot << "--atr" << ATR;
 	p.start(KProcess::DontCare);
