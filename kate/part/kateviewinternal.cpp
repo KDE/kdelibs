@@ -42,9 +42,36 @@
 #include <qtimer.h>
 #include <qpainter.h>
 #include <qclipboard.h>
-#include <qscrollbar.h>
 
 static bool paintDebug = false;
+
+KateScrollBar::KateScrollBar(Orientation orientation, QWidget* parent, const char* name)
+  : QScrollBar(orientation, parent, name)
+  , m_middleMouseDown(false)
+{
+  connect(this, SIGNAL(valueChanged(int)), SLOT(sliderMaybeMoved(int)));
+}
+
+void KateScrollBar::mousePressEvent(QMouseEvent* e)
+{
+  if (e->button() == MidButton)
+    m_middleMouseDown = true;
+
+  QScrollBar::mousePressEvent(e);
+}
+
+void KateScrollBar::mouseReleaseEvent(QMouseEvent* e)
+{
+  QScrollBar::mouseReleaseEvent(e);
+
+  m_middleMouseDown = false;
+}
+
+void KateScrollBar::sliderMaybeMoved(int value)
+{
+  if (m_middleMouseDown)
+    emit sliderMMBMoved(value);
+}
 
 KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc)
   : QWidget (view, "", Qt::WStaticContents | Qt::WRepaintNoErase | Qt::WResizeNoErase )    
@@ -65,17 +92,17 @@ KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc)
   , m_suppressColumnScrollBar(false)
 {
   setMinimumSize (0,0);
-  
+
   //
   // scrollbar for lines
   //
-  m_lineScroll = new QScrollBar(QScrollBar::Vertical, m_view);
+  m_lineScroll = new KateScrollBar(QScrollBar::Vertical, m_view);
   m_lineScroll->show();
   m_lineScroll->setTracking (true);
-  
+
   m_lineLayout = new QVBoxLayout();
   m_lineLayout->addWidget(m_lineScroll);
-    
+
   if (m_view->dynWordWrap()) {
     m_dummy = 0L;
   } else {
@@ -97,10 +124,11 @@ KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc)
   connect(m_lineScroll, SIGNAL(nextLine()), SLOT(scrollNextLine()));
   
   connect(m_lineScroll, SIGNAL(sliderMoved(int)), SLOT(scrollLines(int)));
+  connect(m_lineScroll, SIGNAL(sliderMMBMoved(int)), SLOT(scrollLines(int)));
 
   // catch wheel events, completing the hijack
   m_lineScroll->installEventFilter(this);
-    
+
   //
   // scrollbar for columns
   //
@@ -110,11 +138,11 @@ KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc)
   m_view->m_grid->addMultiCellWidget(m_columnScroll, 1, 1, 0, 1);
   m_startX = 0;
   m_oldStartX = 0;
-  
+
   connect( m_columnScroll, SIGNAL( valueChanged (int) ),
            this, SLOT( scrollColumns (int) ) );
-                  
-  //                         
+
+  //
   // iconborder ;)
   //
   leftBorder = new KateIconBorder( this, m_view );

@@ -2,10 +2,10 @@
    Copyright (C) 2002 John Firebaugh <jfirebaugh@kde.org>
    Copyright (C) 2002 Joseph Wenninger <jowenn@kde.org>
    Copyright (C) 2002 Christoph Cullmann <cullmann@kde.org>
-      
+
    Based on:
      KWriteView : Copyright (C) 1999 Jochen Wilhelmy <digisnap@cs.tu-berlin.de>
-   
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
@@ -29,8 +29,7 @@
 
 #include <qpoint.h>
 #include <qlayout.h>
-
-class QScrollBar;
+#include <qscrollbar.h>
 
 class KateView;
 class KateIconBorder;
@@ -40,6 +39,32 @@ class KateIconBorder;
     none  =  0,
     right =  1
   };
+
+/**
+ * This class is required because QScrollBar's sliderMoved() signal is
+ * really supposed to be a sliderDragged() signal... so this way we can capture
+ * MMB slider moves as well
+ */
+class KateScrollBar : public QScrollBar
+{
+  Q_OBJECT
+
+public:
+  KateScrollBar(Orientation orientation, QWidget* parent, const char* name = 0L);
+
+signals:
+  void sliderMMBMoved(int value);
+
+protected:
+  virtual void mousePressEvent(QMouseEvent* e);
+  virtual void mouseReleaseEvent(QMouseEvent* e);
+
+protected slots:
+  void sliderMaybeMoved(int value);
+
+private:
+  bool m_middleMouseDown;
+};
 
 class KateViewInternal : public QWidget
 {
