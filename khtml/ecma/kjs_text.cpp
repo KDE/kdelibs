@@ -51,6 +51,9 @@ IMPLEMENT_PROTOTYPE(DOMCharacterDataProto,DOMCharacterDataProtoFunc)
 DOMCharacterData::DOMCharacterData(ExecState *exec, DOM::CharacterData d)
  : DOMNode(DOMCharacterDataProto::self(exec), d) {}
 
+DOMCharacterData::DOMCharacterData(Object proto, DOM::CharacterData d)
+ : DOMNode(proto, d) {}
+
 Value DOMCharacterData::tryGet(ExecState *exec, const UString &p) const
 {
 #ifdef KJS_VERBOSE
