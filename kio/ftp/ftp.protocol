@@ -9,3 +9,4 @@ writing=true
 makedir=true
 deleting=true
 Icon=ftp
+maxInstances=2
