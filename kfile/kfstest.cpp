@@ -87,10 +87,10 @@ int main(int argc, char **argv)
 					   "*.o *.a *.lo *.la|Object-Files");
 	break;
     case Preselect:
-	name1 = KFileDialog::getOpenFileURL("/text.txt");
+	name1 = KFileDialog::getOpenFileURL("/etc/inetd/inetd.conf");
 	break;
     case Normal:
-	name1 = KFileDialog::getOpenFileURL("/home/coolo/", "*.txt");
+	name1 = KFileDialog::getOpenFileURL(QDir::homeDirPath(), "*.txt");
         break;
     case Preview:
         // this is how you activate the new preview module

@@ -64,14 +64,15 @@ KFileBaseDialog::KFileBaseDialog(const char *dirName, const char *filter,
 
     // Create the KDir
     if (dirName != 0) {
-	KFileInfo i(dirName);
+	KFileInfo i("", dirName );
 	if (i.isDir())
 	    dir = new KDir(dirName);
 	else {
-	    debugC("I got a filename");
+	 
 	    QString filename = dirName;
 	    int sep = filename.findRev('/');
-	    if (sep < 0) {
+	    debugC("I got a filename %s %d %s", dirName, sep, filename.left(sep).data());
+	    if (sep >= 0) {
 		dir = new KDir(filename.left(sep));
 		filename_ = filename;
 	    } else {
