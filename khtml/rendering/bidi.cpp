@@ -1265,7 +1265,11 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start)
     // remove leading spaces
     while(!start.atEnd() && ( start.obj->isInlineFlow() || ( start.obj->style()->whiteSpace() != PRE &&
 #ifndef QT_NO_UNICODETABLES
-	      ( start.direction() == QChar::DirWS || start.obj->isFloatingOrPositioned() )
+        ( (start.current().unicode() == (ushort)0x0020) || // ASCII space
+          (start.current().unicode() == (ushort)0x0009) || // ASCII tab
+          (start.current().unicode() == (ushort)0x000C) || // ASCII form feed
+          (start.current().unicode() == (ushort)0x200B) || // Zero-width space
+          start.obj->isFloatingOrPositioned() )
 #else
 	      ( start.current() == ' ' || start.obj->isFloatingOrPositioned() )
 #endif
