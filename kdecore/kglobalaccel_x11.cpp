@@ -95,7 +95,12 @@ KGlobalAccelPrivate::KGlobalAccelPrivate()
 	kapp->installX11EventFilter( this );
 }
 
-void KGlobalAccelPrivate::setEnabled( bool ) { };
+void KGlobalAccelPrivate::setEnabled( bool bEnable )
+{
+	KAccelBase::setEnabled( bEnable );
+	updateConnections();
+};
+
 bool KGlobalAccelPrivate::connectKey( KAccelAction& action, KKeySequence key )
 {
 	kdDebug(125) << "KGlobalAccel::connectKey( " << action.m_sName << ", " << key.toString() << " )" << endl;
@@ -191,6 +196,7 @@ void KGlobalAccelPrivate::x11MappingNotify()
 		// Do XUngrabKey()s.
 		setEnabled( false );
 		// Maybe the X modifier map has been changed.
+		KKeyX11::init();
 		calculateGrabMasks();
 		// Do new XGrabKey()s.
 		setEnabled( true );
