@@ -256,7 +256,7 @@ Attr Element::getAttributeNodeNS( const DOMString &namespaceURI,
     ElementImpl* e = static_cast<ElementImpl*>(impl);
     if (!e->attributes()) return 0; // exception ?
 
-    return e->attributes()->getNamedItem(id);
+    return static_cast<AttrImpl*>( e->attributes()->getNamedItem(id) );
 }
 
 Attr Element::setAttributeNodeNS( const Attr &newAttr )
