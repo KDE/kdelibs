@@ -809,11 +809,6 @@ extern "C" { KJSProxy *kjs_html_init(KHTMLPart *khtmlpart); }
 
 KJSProxy *KHTMLPart::jScript()
 {
-#if defined K_WS_QTONLY
-  return 0;
-#endif
-
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
   if (!jScriptEnabled()) return 0;
 
   if ( !d->m_jscript )
@@ -844,7 +839,6 @@ KJSProxy *KHTMLPart::jScript()
   }
 
   return d->m_jscript;
-#endif // Q_WS_X11
 }
 
 QVariant KHTMLPart::crossFrameExecuteScript(const QString& target,  const QString& script)
@@ -978,7 +972,7 @@ QVariant KHTMLPart::executeScript(const QString& filename, int baseLine, const D
       dlg->addError(i18n("<b>Error</b>: %1: %2").arg(filename).arg(msg.qstring()));
     }
   }
-  
+
   return ret;
 }
 
@@ -1011,7 +1005,7 @@ QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
       dlg->addError(i18n("<b>Error</b>: node %1: %2").arg(n.nodeName().string()).arg(msg.qstring()));
     }
   }
-  
+
   if (!d->m_runningScripts && d->m_doc && !d->m_doc->parsing() && d->m_submitForm )
       submitFormAgain();
 
@@ -4122,7 +4116,7 @@ void KHTMLPart::popupMenu( const QString &linkUrl )
   KURL linkKURL;
   QString referrer;
   KParts::BrowserExtension::PopupFlags itemflags=KParts::BrowserExtension::ShowBookmark | KParts::BrowserExtension::ShowReload;
-  
+
   if ( linkUrl.isEmpty() ) { // click on background
     KHTMLPart* khtmlPart = this;
     while ( khtmlPart->parentPart() )
@@ -4138,7 +4132,10 @@ void KHTMLPart::popupMenu( const QString &linkUrl )
     referrer = this->referrer();
   }
 
-  KXMLGUIClient *client = new KHTMLPopupGUIClient( this, d->m_popupMenuXML, linkKURL );
+  // Danger, Will Robinson. The Popup might stay around for a much
+  // longer time than KHTMLPart. Deal with it.
+  KHTMLPopupGUIClient* client = new KHTMLPopupGUIClient( this, d->m_popupMenuXML, linkKURL );
+  QGuardedPtr<QObject> guard( client );
 
   KParts::URLArgs args;
   args.serviceType = QString::fromLatin1( "text/html" );
@@ -4146,9 +4143,11 @@ void KHTMLPart::popupMenu( const QString &linkUrl )
 
   emit d->m_extension->popupMenu( client, QCursor::pos(), popupURL, args, itemflags, S_IFREG /*always a file*/);
 
-  delete client;
-
-  emit popupMenu(linkUrl, QCursor::pos());
+  if ( !guard.isNull() ) {
+     delete client;
+     emit popupMenu(linkUrl, QCursor::pos());
+     d->m_strSelectedURL = d->m_strSelectedURLTarget = QString::null;
+  }
 }
 
 void KHTMLPart::slotParentCompleted()
@@ -5082,7 +5081,7 @@ void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
   } else if ( _mouse->button() == RightButton )
   {
     popupMenu( d->m_strSelectedURL );
-    d->m_strSelectedURL = d->m_strSelectedURLTarget = QString::null;
+    // might be deleted, don't touch "this"
   }
 }
 

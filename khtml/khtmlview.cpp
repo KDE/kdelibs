@@ -680,10 +680,11 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
 	_mouse->ignore();
 
     if (!swallowEvent) {
-	khtml::MousePressEvent event( _mouse, xm, ym, mev.url, mev.target, mev.innerNode );
-	QApplication::sendEvent( m_part, &event );
-
 	emit m_part->nodeActivated(mev.innerNode);
+
+	khtml::MousePressEvent event( _mouse, xm, ym, mev.url, mev.target, mev.innerNode );
+        QApplication::sendEvent( m_part, &event );
+        // we might be deleted after this
     }
 }
 

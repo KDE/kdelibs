@@ -1,3 +1,16 @@
+2003-10-06  Dirk Mueller  <mueller@kde.org>
+
+	* khtml_part.cpp (jScript): remove broken #ifdef'ery.
+	(popupMenu): add a QGuardedPtr to detect the case when we're destructed
+	before the popup menu is closed. avoid accessing any "this" then.
+	#43389
+
+	* khtmlview.cpp (viewportMousePressEvent): reorder afaik unrelated code
+	to make the one call entering a local event loop the last, so that we can
+	cleanly exit when it the view is already deleted.
+
+	* khtml_ext.cpp (KHTMLPopupGUIClient): pass QObject parent
+
 2003-10-05  Dirk Mueller  <mueller@kde.org>
 
 	* ecma/kjs_css.cpp (tryPut): Fix CSSValue refcounting error causing major
