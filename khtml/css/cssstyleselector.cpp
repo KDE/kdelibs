@@ -553,8 +553,12 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 	    selectorDynamicState |= StyleSelector::Focus;
 	    return true;
 	} else if ( value == "active" ) {
-	    selectorDynamicState |= StyleSelector::Active;
-	    return true;
+	    if ( pseudoState == PseudoUnknown )
+		checkPseudoState( e );
+	    if ( pseudoState != PseudoNone ) {
+		selectorDynamicState |= StyleSelector::Active;
+		return true;
+	    }
 	}
 	return false;
     }
