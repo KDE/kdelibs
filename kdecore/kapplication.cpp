@@ -1255,8 +1255,8 @@ void KApplication::dcopFailure(const QString &msg)
   }
   if (failureCount == 2)
   {
-     QString msgStr(i18n("There was an error setting up inter-process\n"
-                      "communications for KDE. The message returned\n"
+     QString msgStr(i18n("There was an error setting up inter-process "
+                      "communications for KDE. The message returned "
                       "by the system was:\n\n"));
      msgStr += msg;
      msgStr += i18n("\n\nPlease check that the \"dcopserver\" program is running!");
