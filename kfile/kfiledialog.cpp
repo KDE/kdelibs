@@ -43,6 +43,7 @@
 #include <kio_job.h>
 #include <kconfig.h>
 #include <kglobal.h>
+#include <kdebug.h>
 
 enum Buttons { BACK_BUTTON= 1000, FORWARD_BUTTON, PARENT_BUTTON,
 	       HOME_BUTTON, RELOAD_BUTTON, HOTLIST_BUTTON,
