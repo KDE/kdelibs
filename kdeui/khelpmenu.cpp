@@ -137,7 +137,7 @@ KPopupMenu* KHelpMenu::menu()
       need_separator = true;
     }
 
-    if (kapp->authorizeKAction("help_report_bug"))
+    if (kapp->authorizeKAction("help_report_bug") && aboutData && !aboutData->bugAddress().isEmpty() )
     {
       if (need_separator)
         mMenu->insertSeparator();
