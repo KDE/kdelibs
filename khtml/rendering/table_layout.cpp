@@ -247,13 +247,12 @@ void FixedTableLayout::calcMinMaxWidth()
     // width is fixed. If table width is percent, we set maxWidth to
     // unlimited.
 
-
+    int bs = table->bordersAndSpacing();
     table->m_minWidth = 0;
     table->m_maxWidth = 0;
-    short tableWidth = table->style()->width().type == Fixed ? table->style()->width().value - table->borderLeft() - table->borderRight() - table->cellSpacing() : 0;
+    short tableWidth = table->style()->width().type == Fixed ? table->style()->width().value - bs : 0;
 
     table->m_minWidth = calcWidthArray( tableWidth );
-    int bs = table->bordersAndSpacing();
     table->m_minWidth += bs;
 
     table->m_minWidth = kMax( table->m_minWidth, tableWidth );
@@ -277,7 +276,7 @@ void FixedTableLayout::layout()
     qDebug("FixedTableLayout::layout:");
 #endif
 
-    int w = table->width() - table->borderLeft() - table->borderRight() - table->cellSpacing();
+    int w = table->width() - table->bordersAndSpacing();
     // we know the table width by now.
     int rest = w - calcWidthArray( w );
 
@@ -361,8 +360,6 @@ void AutoTableLayout::recalcColumn( int effCol )
     RenderTableCell *fixedContributor = 0;
     RenderTableCell *maxContributor = 0;
 
-    int spacing = table->cellSpacing();
-
     while ( child ) {
 	if ( child->isTableSection() ) {
 	    RenderTableSection *section = static_cast<RenderTableSection *>(child);
@@ -374,9 +371,9 @@ void AutoTableLayout::recalcColumn( int effCol )
 		    if ( !cell->minMaxKnown() )
 			cell->calcMinMaxWidth();
 		    if ( cell->minWidth() > l.minWidth )
-			l.minWidth = cell->minWidth() + spacing;
+			l.minWidth = cell->minWidth();
 		    if ( cell->maxWidth() > l.maxWidth ) {
-			l.maxWidth = cell->maxWidth() + spacing;
+			l.maxWidth = cell->maxWidth();
 			maxContributor = cell;
 		    }
 
@@ -508,7 +505,6 @@ void AutoTableLayout::calcMinMaxWidth()
     fullRecalc();
 
     int spanMaxWidth = calcEffectiveWidth();
-
     int minWidth = 0;
     int maxWidth = 0;
     int maxPercent = 0;
@@ -518,7 +514,7 @@ void AutoTableLayout::calcMinMaxWidth()
 	minWidth += layoutStruct[i].effMinWidth;
 	maxWidth += layoutStruct[i].effMaxWidth;
 	if ( layoutStruct[i].effWidth.type == Percent ) {
-	    int pw = (layoutStruct[i].effMaxWidth * 100 + 50) / layoutStruct[i].effWidth.value;
+	    int pw = ( layoutStruct[i].effMaxWidth * 100) / layoutStruct[i].effWidth.value;
 	    maxPercent = kMax( pw,  maxPercent );
 	} else {
 	    maxNonPercent += layoutStruct[i].effMaxWidth;
@@ -755,7 +751,6 @@ void AutoTableLayout::insertSpanCell( RenderTableCell *cell )
 void AutoTableLayout::layout()
 {
     // table layout based on the values collected in the layout structure.
-
     int tableWidth = table->width() - table->bordersAndSpacing();
     int available = tableWidth;
     int nEffCols = table->numEffCols();
@@ -901,6 +896,26 @@ void AutoTableLayout::layout()
     qDebug("variable satisfied: available is %d",  available );
 #endif
 
+    // spread over percent colums
+    if ( available > 0 && hasPercent && totalPercent < 100) {
+        // still have some width to spread, distribute weighted to percent columns
+        for ( int i = 0; i < nEffCols; i++ ) {
+            Length &width = layoutStruct[i].effWidth;
+            if ( width.isPercent() ) {
+                int w = available * width.value / totalPercent;
+                available -= w;
+                totalPercent -= width.value;
+                layoutStruct[i].calcWidth += w;
+                if (!available || !totalPercent) break;
+            }
+        }
+    }
+
+#ifdef DEBUG_LAYOUT
+    qDebug("after percent distribution: available=%d",  available );
+#endif
+
+
     // spread over fixed colums
     if ( available > 0 && numFixed) {
         // still have some width to spread, distribute to fixed columns
@@ -960,7 +975,7 @@ void AutoTableLayout::layout()
 	qDebug("col %d: %d (width %d)", i, pos, layoutStruct[i].calcWidth );
 #endif
 	table->columnPos[i] = pos;
-	pos += layoutStruct[i].calcWidth;
+	pos += layoutStruct[i].calcWidth + table->cellSpacing();
     }
     table->columnPos[table->columnPos.size()-1] = pos;
 

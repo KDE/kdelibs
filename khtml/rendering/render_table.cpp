@@ -1149,7 +1149,6 @@ void RenderTableSection::print( QPainter *p, int x, int y, int w, int h,
 
 void RenderTableSection::recalcCells()
 {
-     qDebug("recalcCells, %p",  this);
     cCol = cRow = 0;
     clearGrid();
     grid.resize( 0 );

@@ -149,7 +149,7 @@ public:
     }
 
     int bordersAndSpacing() const {
-	return borderLeft() + borderRight() + cellSpacing();
+	return borderLeft() + borderRight() + (numEffCols()+1) * cellSpacing();
     }
 
     RenderTableCol *colElement( int col );
