@@ -273,6 +273,8 @@ void KStandardDirs::addKDEDefaults() {
     addResourceType("data", "share/apps/");
     addResourceType("locale", "share/locale/");
     addResourceType("services", "share/services/");
+    addResourceType("servicetypes", "share/servicetypes/");
+    addResourceType("mime", "share/mimelnk/");
     addResourceType("cgi", "cgi-bin/");
     addResourceType("config", "share/config/");
     addResourceType("toolbar", "share/toolbar/");
