@@ -2951,8 +2951,9 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
                 mode = M_OVERWRITE;
         }
 
-        // The condition for using M_SINGLE instead would be complex (only one source url, and only one file in it)
-        // (but the files list gets pruned while copying the files...)
+        if ( m_bSingleFileCopy )
+            mode = (RenameDlg_Mode) ( mode | M_SINGLE );
+        else
             mode = (RenameDlg_Mode) ( mode | M_MULTI | M_SKIP );
 
         res = Observer::self()->open_RenameDlg( this, m_conflictError == ERR_FILE_ALREADY_EXIST ?
