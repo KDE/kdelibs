@@ -30,11 +30,14 @@
 
 #include <kplugininfo.h>
 #include <ktrader.h>
+#include <kconfig.h>
 
 #include <kdebug.h>
 
 #include <qptrdict.h>
 #include <qmap.h>
+
+#define DEFAULT_CONFIG_FILE   "kspellrc"
 
 namespace KSpell2
 {
@@ -55,6 +58,10 @@ QPtrDict<Broker> *Broker::s_brokers = 0;
 
 Broker *Broker::openBroker( KSharedConfig *config )
 {
+    if ( !config ) {
+        config = KSharedConfig::openConfig( DEFAULT_CONFIG_FILE );
+    }
+
     if ( s_brokers ) {
         Broker *broker = s_brokers->find( config );
         if ( broker )

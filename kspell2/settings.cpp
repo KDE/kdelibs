@@ -33,9 +33,6 @@
 
 namespace KSpell2
 {
-
-#define DEFAULT_CONFIG_FILE   "kspellrc"
-
 class Settings::Private
 {
 public:
@@ -58,10 +55,8 @@ Settings::Settings( Broker *broker, KSharedConfig *config )
     d = new Private;
     d->broker = broker;
 
-    if ( !config )
-        d->config = KSharedConfig::openConfig( DEFAULT_CONFIG_FILE );
-    else
-        d->config = config;
+    Q_ASSERT( config );
+    d->config = config;
 
     d->modified = false;
     loadConfig();
