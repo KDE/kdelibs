@@ -324,7 +324,7 @@ namespace KIO {
          * Use to update the URL shown to the user
          * The redirection itself is handled internally
          */
-        void redirection( const KURL &url );
+        void redirection( KIO::Job *, const KURL &url );
 
     protected slots:
         virtual void slotRedirection( const KURL &url);
@@ -441,9 +441,17 @@ namespace KIO {
          */
         void entries( KIO::Job *, const KIO::UDSEntryList& );
 
+        /**
+         * Signals a redirection
+         * Use to update the URL shown to the user
+         * The redirection itself is handled internally
+         */
+        void redirection( KIO::Job *, const KURL &url );
+
     protected slots:
         virtual void slotResult( KIO::Job *job );
         void slotListEntries( const KIO::UDSEntryList& list );
+        void slotRedirection( const KURL &url );
         void gotEntries( KIO::Job * subjob, const KIO::UDSEntryList& list );
 
     private:

@@ -50,7 +50,7 @@ bool SlaveInterface::dispatch()
 
 void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 {
-    kdDebug(7007) << "dispatch " << _cmd << endl;
+    //kdDebug(7007) << "dispatch " << _cmd << endl;
 
     QDataStream stream( rawdata, IO_ReadOnly );
 

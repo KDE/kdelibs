@@ -283,17 +283,6 @@ void Ftp::openConnection()
     return;
   }
 
-  // We could login and got a redirect ?
-  if ( !m_redirect.isEmpty() && m_redirect != "/") {
-    /*
-    if ( m_redirect.right(1) != "/" ) {
-      m_redirect += "/";
-    }
-    */
-    kdDebug(7102) << "REDIRECTION '" << m_redirect << "'" << endl;
-    // TODO emit redirection ?
-  }
-
   m_bLoggedOn = true;
 
   connected();
@@ -1002,10 +991,21 @@ void Ftp::listDir( const QString & _path, const QString& /*query*/ )
 
   QString path = _path;
   // Did we get a redirect and did not we specify a path ourselves ?
+  kdDebug(7102) << "m_redirect: " << m_redirect << endl;
+  kdDebug(7102) << "path: " << path << endl;
   if ( !m_redirect.isEmpty() && path.isEmpty() )
   {
-    redirection( m_redirect );
+    KURL realURL( QString::fromLatin1("ftp:/") );
+    if ( m_user != FTP_LOGIN )
+      realURL.setUser( m_user );
+    // Setting the pass is probably a bad idea...
+    realURL.setHost( m_host );
+    realURL.setPort( m_port );
+    realURL.setPath( m_redirect );
+    kdDebug(7102) << "REDIRECTION to " << realURL.url() << endl;
+    redirection( realURL.url() );
     path = m_redirect;
+    m_redirect = QString::null; // not again
   }
 
   kdDebug(7102) << "hunting for path '" << path << "'" << endl;

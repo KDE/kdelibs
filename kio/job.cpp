@@ -347,10 +347,9 @@ void TransferJob::slotData( const QByteArray &_data)
 void TransferJob::slotRedirection( const KURL &url)
 {
     kdDebug(7007) << "TransferJob::slotRedirection(" << url.url() << ")" << endl;
-    m_redirectionURL = url;
-    // We'll remember that when the job finishes
-    emit redirection(m_redirectionURL);
-    // tell the user that we haven't finished yet
+    m_redirectionURL = url; // We'll remember that when the job finishes
+    // Tell the user that we haven't finished yet
+    emit redirection(this, m_redirectionURL);
 }
 
 void TransferJob::slotFinished()
@@ -942,6 +941,11 @@ void ListJob::slotResult( KIO::Job * job )
     removeSubjob( job );
 }
 
+void ListJob::slotRedirection( const KURL & url )
+{
+    emit redirection( this, url );
+}
+
 ListJob *KIO::listDir( const KURL& url, bool showProgressInfo )
 {
     ListJob * job = new ListJob(url, showProgressInfo);
@@ -960,6 +964,8 @@ void ListJob::start(Slave *slave)
 	     SLOT( slotListEntries( const KIO::UDSEntryList& )));
     connect( slave, SIGNAL( totalSize( unsigned long ) ),
              SLOT( slotTotalSize( unsigned long ) ) );
+    connect( slave, SIGNAL( redirection(const KURL &) ),
+             SLOT( slotRedirection(const KURL &) ) );
     SimpleJob::start(slave);
 }
 
