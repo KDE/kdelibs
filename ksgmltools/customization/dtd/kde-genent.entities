@@ -74,28 +74,72 @@
  -->
 
 <!ENTITY AIX	'<trademark>AIX</trademark>'>
+<!ENTITY Alt	'<keycap>Alt</keycap>'>
+<!ENTITY ATAPI	'<acronym>ATAPI</acronym>'>
+<!ENTITY Backspace	'<keycap>Backspace</keycap>'>
+<!ENTITY CD	'<acronym>CD</acronym>'>
+<!ENTITY CD-ROM	'<acronym>CD-ROM</acronym>'>
+<!ENTITY Ctrl	'<keycap>Ctrl</keycap>'>
+<!ENTITY docbook "<productname>DocBook <acronym>SGML</acronym></productname>">
+<!ENTITY DVI	'<acronym>DVI</acronym>'>
+<!ENTITY ELF	'<acronym>ELF</acronym>'>
+<!ENTITY Emacs	'<application>Emacs</application>'>
+<!ENTITY Esc	'<keycap>Esc</keycap>'>
+<!ENTITY FTP	'<acronym>FTP</acronym>'>
+<!ENTITY gcc	'<application>gcc</application>'>
+<!ENTITY GIF	'<acronym>GIF</acronym>'>
+<!ENTITY GMT	'<acronym>GMT</acronym>'>
+<!ENTITY GNU	'<acronym>GNU</acronym>'>
+<!ENTITY GPL	'<acronym>GPL</acronym>'>
+<!ENTITY GUI	'<acronym>GUI</acronym>'>
 <!ENTITY HP-UX	'<trademark class="registered">HP-UX</trademark>'>
+<!ENTITY HTTP	'<acronym>HTTP</acronym>'>
 <!ENTITY IRIX	'<trademark class="registered">IRIX</trademark>'>
 <!ENTITY Java	'<trademark>Java</trademark>'>
+<!ENTITY kbiff	'<application>KBiff</application>'>
+<!ENTITY kde	'<acronym>KDE</acronym>'>
+<!ENTITY kdm	'<application>kdm</application>'>
+<!ENTITY kedit	'<application>KEdit</application>'>
+<!ENTITY kfm	'<application>KFM</application>'>
+<!ENTITY kicker	'<application>Kicker</application>'>
+<!ENTITY kikbd	'<application>kikbd</application>'>
+<!ENTITY kmail	'<application>Kmail</application>'>
+<!ENTITY kmenuedit	'<application>kmenuedit</application>'>
+<!ENTITY konqueror	'<application>Konqueror</application>'>
+<!ENTITY konsole	'<application>Konsole</application>'>
+<!ENTITY korn	'<application>KOrn</application>'>
+<!ENTITY kpanel	'<application>kpanel</application>'>
+<!ENTITY kppp	'<application>kppp</application>'>
+<!ENTITY ksgmltools	'<application>ksgmltools</application>'>
+<!ENTITY kstart	'<application>kstart</application>'>
+<!ENTITY ktop	'<application>KTop</application>'>
+<!ENTITY kvt	'<application>kvt</application>'>
+<!ENTITY kwin	'<application>KWin</application>'>
+<!ENTITY kwm	'<application>kwm</application>'>
+<!ENTITY kwmpager	'<application>kwmpager</application>'>
 <!ENTITY Linux	'<trademark class="registered">Linux</trademark>'>
 <!ENTITY LinuxPPC	'<trademark>LinuxPPC</trademark>'>
+<!ENTITY LZW	'<acronym>LZW</acronym>'>
 <!ENTITY Mac	'<trademark class="registered">Mac</trademark>'>
 <!ENTITY Microsoft	'<trademark class="registered">Microsoft</trademark>'>
+<!ENTITY MIME	'<acronym>MIME</acronym>'>
 <!ENTITY Motif	'<trademark class="registered">Motif</trademark>'>
-<!ENTITY NeXTSTEP	'<trademark>NeXTSTEP</trademark>'>
+<!ENTITY MRU	'<acronym>MRU</acronym>'>
+<!ENTITY MTU	'<acronym>MTU</acronym>'>
 <!ENTITY Netscape	'<trademark class="registered">Netscape</trademark>'>
+<!ENTITY NeXTSTEP	'<trademark>NeXTSTEP</trademark>'>
 <!ENTITY PostScript	'<trademark class="registered">PostScript</trademark>'>
+<!ENTITY PPP	'<acronym>PPP</acronym>'>
 <!ENTITY Qt	'<trademark>Qt</trademark>'>
+<!ENTITY RedHat	'<trademark class="registered">Red Hat</trademark>'>
 <!ENTITY SGI	'<trademark>SGI</trademark>'>
 <!ENTITY Solaris	'<trademark>Solaris</trademark>'>
+<!ENTITY TrueType	'<trademark class="registered">TrueType</trademark>'>
 <!ENTITY UNIX	'<trademark class="registered">UNIX</trademark>'>
+<!ENTITY URL	'<acronym>URL</acronym>'>
+<!ENTITY windowmaker	'<application>Window Maker</application>'>
 <!ENTITY Windows	'<trademark class="registered">Windows</trademark>'>
 <!ENTITY X	'<trademark>X Window System</trademark>'>
-<!ENTITY RedHat	'<trademark class="registered">Red Hat</trademark>'>
-<!ENTITY TrueType	'<trademark class="registered">TrueType</trademark>'>
-
-<!ENTITY ksgmltools "<application>ksgmltools</application>">
-<!ENTITY docbook "<productname>DocBook <acronym>SGML</acronym></productname>">
 
 
 <!-- KDE olink specification -->
