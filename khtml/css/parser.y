@@ -132,7 +132,7 @@ static int cssyylex( YYSTYPE *yylval ) {
 %no-lines
 %verbose
 
-%expect 16
+%expect 17
 
 %token S SGML_CD
 
@@ -383,6 +383,7 @@ rule:
   | font_face
   | invalid_rule
   | invalid_at
+  | import error { delete $1; $$ = 0; }
     ;
 
 string_or_uri:

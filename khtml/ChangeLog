@@ -1,3 +1,8 @@
+2004-07-20  Stephan Kulow  <coolo@kde.org>
+
+        * css/parser.y: catching imports that come between rules.
+        They have to be ignored (css1/test11.htm)
+
 2004-07-12 Germain Garand <germain@ebooksfrance.org>
 
 	* ecma/kjs_navigator.{h,cpp} (getValueProperty):
