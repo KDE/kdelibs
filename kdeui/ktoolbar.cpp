@@ -1846,7 +1846,7 @@ KPopupMenu *KToolBar::contextMenu()
   KPopupMenu *mode = new KPopupMenu( context, "mode" );
   mode->insertItem( i18n("Icons Only"), CONTEXT_ICONS );
   mode->insertItem( i18n("Text Only"), CONTEXT_TEXT );
-  mode->insertItem( i18n("Text Aside Icons"), CONTEXT_TEXTRIGHT );
+  mode->insertItem( i18n("Text Alongside Icons"), CONTEXT_TEXTRIGHT );
   mode->insertItem( i18n("Text Under Icons"), CONTEXT_TEXTUNDER );
 
   KPopupMenu *size = new KPopupMenu( context, "size" );
