@@ -236,6 +236,8 @@ void callFunction( const char* app, const char* obj, const char* func, int argc,
 	QString s = args[i++];
 	if ( type == "int" )
 	    arg << s.toInt();
+	if ( type == "uint" )
+	    arg << s.toUInt();
 	else if ( type == "long" )
 	    arg << s.toLong();
 	else if ( type == "float" )
@@ -282,6 +284,10 @@ void callFunction( const char* app, const char* obj, const char* func, int argc,
 	QDataStream reply(replyData, IO_ReadOnly);
 	if ( replyType == "int" ) {
 	    int i;
+	    reply >> i;
+	    printf( "%d\n", i );
+	} else if ( replyType == "uint" ) {
+	    uint i;	
 	    reply >> i;
 	    printf( "%d\n", i );
 	} else if ( replyType == "long" ) {
