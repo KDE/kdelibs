@@ -161,7 +161,7 @@ static void testReplaceBlankSearch( int options, int button = 0 )
     test.replace( "", "foo", options );
     QStringList textLines = test.textLines();
     assert( textLines.count() == 1 );
-    if ( textLines[ 0 ] != "" ) {
+    if ( textLines[ 0 ] != "foobfoobfoobfoobfoo" ) {
         kdError() << "ASSERT FAILED: replaced text is '" << textLines[ 0 ] << "' instead of 'foobfoobfoobfoobfoo'" << endl;
         exit(1);
     }
