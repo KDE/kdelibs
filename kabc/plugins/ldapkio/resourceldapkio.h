@@ -34,7 +34,7 @@ class ResourceLDAPKIO : public Resource
 
   public:
     ResourceLDAPKIO( const KConfig* );
-    virtual ~ResourceLDAPKIO() {};
+    virtual ~ResourceLDAPKIO() {}
 
     /**
       Call this after you used one of the set... methods 
