@@ -93,6 +93,20 @@ static QPixmap themedMessageBoxIcon(QMessageBox::Icon icon)
        return ret;
 }
 
+static QString qrichtextify( const QString& text )
+{
+  if ( text.isEmpty() || text[0] == '<' )
+    return text;
+    
+  QStringList lines = QStringList::split('\n', text);
+  for(QStringList::Iterator it = lines.begin(); it != lines.end(); ++it)
+  {
+    *it = QStyleSheet::convertFromPlainText( *it, QStyleSheetItem::WhiteSpaceNormal );
+  }
+  
+  return lines.join(QString::null);
+}
+
 static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon, const QString &text, const QStringList &strlist, const QString &ask, bool *checkboxReturn, int options, const QString &details=QString::null)
 {
     QVBox *topcontents = new QVBox (dialog);
@@ -111,19 +125,7 @@ static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon, const 
     lay->addWidget( label1, 0, Qt::AlignCenter );
     lay->addSpacing(KDialog::spacingHint());
     // Enforce <p>text</p> otherwise the word-wrap doesn't work well
-    QString qt_text;
-    if ( !text.isEmpty() && (text[0] != '<') )
-    {
-        QStringList lines = QStringList::split('\n', text);
-        for(QStringList::Iterator it = lines.begin(); it != lines.end(); ++it)
-        {
-           *it = QStyleSheet::convertFromPlainText( *it, QStyleSheetItem::WhiteSpaceNormal );
-        }
-        qt_text = lines.join(QString::null);
-    }
-    else
-        qt_text = text;
-
+    QString qt_text = qrichtextify( text );
 
     int pref_width = 0;
     int pref_height = 0;
@@ -190,8 +192,14 @@ static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon, const 
     {
        QVGroupBox *detailsGroup = new QVGroupBox( i18n("Details"), dialog);
        if ( details.length() < 512 ) {
-         QLabel *label3 = new QLabel(details, detailsGroup);
+         KActiveLabel *label3 = new KActiveLabel(qrichtextify(details), 
+                                                 detailsGroup);
          label3->setMinimumSize(label3->sizeHint());
+         if ((options & KMessageBox::AllowLink) == 0)
+         {
+           QObject::disconnect(label3, SIGNAL(linkClicked(const QString &)),
+                               label3, SLOT(openLink(const QString &)));
+         }
        } else {
          QTextEdit* te = new QTextEdit(details, QString::null, detailsGroup);
          te->setReadOnly( true );
