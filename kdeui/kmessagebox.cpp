@@ -128,10 +128,12 @@ static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon, const 
     label2->setFixedSize(QSize(pref_width+10, pref_height));
     lay->addWidget( label2 );
 
+    KListBox *listbox = 0;
     if (!strlist.isEmpty())
     {
-       KListBox *listbox=new KListBox( topcontents );
+       listbox=new KListBox( topcontents );
        listbox->insertStringList( strlist );
+       topcontents->setStretchFactor(listbox, 1);
     }
 
     QCheckBox *checkbox = 0;
@@ -150,7 +152,8 @@ static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon, const 
 
     dialog->setMainWidget(topcontents);
     dialog->enableButtonSeparator(false);
-    dialog->disableResize();
+    if (!listbox)
+       dialog->disableResize();
 
     if (KMessageBox_queue)
     {
