@@ -72,7 +72,7 @@ void HTMLImageElementImpl::parseAttribute(AttributeImpl *attr)
     {
     case ATTR_ALT:
     case ATTR_SRC:
-        qDebug("GOT new SRC: %s", attr->value().string().latin1());
+        //qDebug("GOT new SRC: %s", attr->value().string().latin1());
         setChanged();
         break;
     case ATTR_WIDTH:
