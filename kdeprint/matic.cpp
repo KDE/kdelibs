@@ -89,7 +89,7 @@ static void cleanHash()
 	}
 }
 
-static MaticBlock* loadMaticData(const char *s)
+MaticBlock* loadMaticData(const char *s)
 {
 	// just to be sure
 	cleanHash();
