@@ -209,7 +209,7 @@ namespace KIO {
      */
     DeleteJob *del( const KURL& src, bool shred = false, bool showProgressInfo = true );
     DeleteJob *del( const KURL::List& src, bool shred = false, bool showProgressInfo = true );
-};
+}
 
 #endif
 
