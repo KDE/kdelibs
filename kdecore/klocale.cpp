@@ -202,11 +202,11 @@ void KLocale::setEncodingLang(const QString &_lang)
       delete [] buf;
     }
   }
-  // default to ISO 8859-1
+  // default to 8 bit unicode
   if (!_codec)
   {
-    debug("charset file invalide or not found. Defaulting to latin 1");
-    _codec = QTextCodec::codecForName( "ISO 8859-1" );
+    debug("charset file invalide or not found. Defaulting to utf 8");
+    _codec = QTextCodec::codecForName( "utf8" );
   }
 }
 
