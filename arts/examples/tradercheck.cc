@@ -23,6 +23,7 @@
 #include "core.h"
 #include "debug.h"
 #include <stdio.h>
+#include <stdarg.h>
 
 using namespace Arts;
 using namespace std;

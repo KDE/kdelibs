@@ -26,6 +26,8 @@
 #include "dynamicrequest.h"
 #include "connect.h"
 #include "flowsystem.h"
+#include <ctype.h>
+#include <iostream>
 
 using namespace Arts;
 using namespace std;
