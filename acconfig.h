@@ -73,3 +73,7 @@
 
 /* Where KDE parts should be installed. */
 #undef KDE_PARTSDIR
+
+/* Where KDE config files should be installed */
+#undef KDE_CONFIGDIR
+
