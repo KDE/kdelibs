@@ -38,9 +38,8 @@ using namespace khtml;
 CharacterDataImpl::CharacterDataImpl(DocumentPtr *doc, DOMStringImpl* _text)
     : NodeImpl(doc)
 {
-    str = _text;
-    if(str)
-        str->ref();
+    str = _text ? _text : new DOMStringImpl( 0, 0 );
+    str->ref();
 }
 
 CharacterDataImpl::~CharacterDataImpl()
