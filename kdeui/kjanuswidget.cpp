@@ -515,6 +515,9 @@ bool KJanusWidget::slotShowPage()
     QListViewItem *node = mTreeList->selectedItem();
     if( node == 0 ) { return( false ); }
 
+    if( node->childCount() > 0 )
+      node->setOpen( true );
+
     QWidget *stackItem = mTreeListToPageStack[node];
     return showPage(stackItem);
   }
