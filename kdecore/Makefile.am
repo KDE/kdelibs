@@ -55,7 +55,7 @@ libkdecore_la_SOURCES = libintl.cpp kdebug.cpp kstddirs.cpp \
 	ksavefile.cpp krandomsequence.cpp kstringhandler.cpp kcompletion.cpp \
 	kcmdlineargs.cpp kaboutdata.cpp kcompletionbase.cpp knotifyclient.cpp \
 	kaudioplayer.cpp kdestyle.cpp kdcoppropertyproxy.cpp \
-	kpixmapprovider.cpp kurldrag.cpp kpixmapsplitter.cc
+	kpixmapprovider.cpp kurldrag.cpp kpixmapsplitter.cpp
 
 kcharset.cpp: kentities.c
 
