@@ -200,7 +200,7 @@ QSizePolicy KToolBarSeparator::sizePolicy() const
 
 KToolBar::KToolBar( QWidget *parent, const char *name, bool honorStyle, bool readConfig )
     : QToolBar( QString::fromLatin1( name ),
-      parent && parent->inherits( "QMainWindow" ) ? static_cast<QMainWindow*>(parent) : 0,
+      dynamic_cast<QMainWindow*>(parent),
       parent, false,
       name ? name : "mainToolBar")
 {
@@ -444,8 +444,9 @@ KAnimWidget *KToolBar::animatedWidget( int id )
     Id2WidgetMap::Iterator it = id2widget.find( id );
     if ( it == id2widget.end() )
         return 0;
-    if ( (*it) && (*it)->inherits( "KAnimWidget" ) )
-        return (KAnimWidget*)(*it);
+    KAnimWidget *aw = dynamic_cast<KAnimWidget *>(*it);
+    if ( aw )
+        return aw;
     QObjectList *l = queryList( "KAnimWidget" );
     if ( !l || !l->first() ) {
         delete l;
@@ -453,10 +454,11 @@ KAnimWidget *KToolBar::animatedWidget( int id )
     }
 
     for ( QObject *o = l->first(); o; o = l->next() ) {
-        if ( o->inherits( "KAnimWidget" ) )
+        KAnimWidget *aw = dynamic_cast<KAnimWidget *>(o);
+        if ( aw )
         {
             delete l;
-            return (KAnimWidget*)o;
+            return aw;
         }
     }
 
@@ -1011,8 +1013,9 @@ void KToolBar::setFlat (bool flag)
     else
         mainWindow()->moveDockWindow( this, DockTop );
     // And remember to save the new look later
-    if ( mainWindow()->inherits( "KMainWindow" ) )
-        static_cast<KMainWindow *>(mainWindow())->setSettingsDirty();
+    KMainWindow *kmw = dynamic_cast<KMainWindow *>(mainWindow());
+    if ( kmw )
+        kmw->setSettingsDirty();
 }
 
 
@@ -1243,8 +1246,9 @@ void KToolBar::mousePressEvent ( QMouseEvent *m )
                 else
                     return; // assume this was an action handled elsewhere, no need for setSettingsDirty()
             }
-            if ( mw->inherits("KMainWindow") )
-                static_cast<KMainWindow *>(mw)->setSettingsDirty();
+            KMainWindow *kmw = dynamic_cast<KMainWindow *>(mw);
+            if ( kmw )
+                kmw->setSettingsDirty();
         }
     }
 }
@@ -1268,17 +1272,17 @@ void KToolBar::rebuildLayout()
     for ( QWidget *w = widgets.first(); w; w = widgets.next() ) {
         if ( w == rightAligned )
             continue;
-        if ( w->inherits( "KToolBarSeparator" ) &&
-             !( (KToolBarSeparator*)w )->showLine() ) {
+        KToolBarSeparator *ktbs = dynamic_cast<KToolBarSeparator *>(w);
+        if ( ktbs && !ktbs->showLine() ) {
             l->addSpacing( orientation() == Vertical ? w->sizeHint().height() : w->sizeHint().width() );
             w->hide();
             continue;
         }
-        if ( w->inherits( "QPopupMenu" ) )
+        if ( dynamic_cast<QPopupMenu *>(w) ) // w is a QPopupMenu?
             continue;
         l->addWidget( w );
         w->show();
-        if ((orientation() == Horizontal) && w->inherits( "QLineEdit"))
+        if ((orientation() == Horizontal) && dynamic_cast<QLineEdit *>(w)) // w is QLineEdit ?
             l->addSpacing(2); // A little bit extra spacing behind it.
     }
     if ( rightAligned ) {
@@ -1288,10 +1292,6 @@ void KToolBar::rebuildLayout()
     }
 
     if ( fullSize() ) {
-        // This code sucks. It makes the last combo in a toolbar VERY big (e.g. zoom combo in kword).
-        //if ( !stretchableWidget && widgets.last() &&
-        //     !widgets.last()->inherits( "QButton" ) && !widgets.last()->inherits( "KAnimWidget" ) )
-        //    setStretchableWidget( widgets.last() );
         if ( !rightAligned )
             l->addStretch();
         if ( stretchableWidget )
@@ -1306,7 +1306,7 @@ void KToolBar::childEvent( QChildEvent *e )
     if ( e->child()->isWidgetType() ) {
         QWidget * w = (QWidget*)e->child();
         if ( e->type() == QEvent::ChildInserted ) {
-            if ( !e->child()->inherits( "QPopupMenu" ) &&
+            if ( !dynamic_cast<QPopupMenu *>(e->child()) && // e->child() is not a QPopupMenu
                  ::qstrcmp( "qt_dockwidget_internal", e->child()->name() ) != 0 ) {
 
                 // prevent items that have been explicitly inserted by insert*() from
@@ -1398,7 +1398,7 @@ QSize KToolBar::sizeHint() const
 
           minSize = minSize.expandedTo(QSize(0, sh.height()));
           minSize += QSize(sh.width()+1, 0);
-          if (w->inherits( "QLineEdit"))
+          if (dynamic_cast<QLineEdit *>(w)) // w is a QLineEdit ?
              minSize += QSize(2, 0); // A little bit extra spacing behind it.
        }
 
@@ -1491,9 +1491,11 @@ void KToolBar::slotAppearanceChanged()
 {
     // Read appearance settings from global file.
     applyAppearanceSettings(KGlobal::config(), QString::null, true /* lose local settings */ );
+
     // And remember to save the new look later
-    if ( mainWindow() && mainWindow()->inherits( "KMainWindow" ) )
-        static_cast<KMainWindow *>(mainWindow())->setSettingsDirty();
+    KMainWindow *kmw = dynamic_cast<KMainWindow *>(mainWindow());
+    if ( kmw )
+        kmw->setSettingsDirty();
 }
 
 //static
@@ -1757,8 +1759,9 @@ void KToolBar::toolBarPosChanged( QToolBar *tb )
     if ( d->oldPos == DockMinimized )
         rebuildLayout();
     d->oldPos = (QMainWindow::ToolBarDock)barPos();
-    if ( mainWindow() && mainWindow()->inherits( "KMainWindow" ) )
-        static_cast<KMainWindow *>(mainWindow())->setSettingsDirty();
+    KMainWindow *kmw = dynamic_cast<KMainWindow *>(mainWindow());
+    if ( kmw )
+        kmw->setSettingsDirty();
 }
 
 void KToolBar::loadState( const QDomElement &element )
@@ -2037,15 +2040,12 @@ KPopupMenu *KToolBar::contextMenu()
   context->setItemChecked(CONTEXT_ICONS, true);
   context->insertItem( i18n("Icon Size"), size );
 
-  QMainWindow* mw = mainWindow();
-  if (mw->inherits("KMainWindow"))
+  KMainWindow *kmw = dynamic_cast<KMainWindow *>(mainWindow());
+  if ( kmw )
   {
-      if ( (static_cast<KMainWindow*>(mw)->toolBarMenuAction()) &&
-		(static_cast<KMainWindow*>(mw)->hasMenuBar()) )
-
-      (static_cast<KMainWindow*>(mw))->toolBarMenuAction()->plug(context);
+      if ( kmw->toolBarMenuAction() && kmw->hasMenuBar() )
+          kmw->toolBarMenuAction()->plug(context);
   }
-
 
   connect( context, SIGNAL( aboutToShow() ), this, SLOT( slotContextAboutToShow() ) );
   return context;
@@ -2057,8 +2057,10 @@ void KToolBar::slotContextAboutToShow()
   {
     // try to find "configure toolbars" action
     KXMLGUIClient *xmlGuiClient = d->m_xmlguiClient;
-    if ( !xmlGuiClient && mainWindow() && mainWindow()->inherits( "KMainWindow" ) )
-      xmlGuiClient = (KMainWindow *)mainWindow();
+
+    KMainWindow *kmw = dynamic_cast<KMainWindow *>(mainWindow());
+    if ( !xmlGuiClient && kmw )
+      xmlGuiClient = kmw;
     if ( xmlGuiClient )
     {
         KAction *configureAction = xmlGuiClient->actionCollection()->action(KStdAction::stdName(KStdAction::ConfigureToolbars));
