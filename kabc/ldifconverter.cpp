@@ -583,7 +583,7 @@ addComment:
     if ( !name.isEmpty() && !email.isEmpty() )
       email = " <" + email + ">";
     a.insertEmail( name + email );
-    a.insertCategory( i18n( "List of E-Mails" ) );
+    a.insertCategory( i18n( "List of Emails" ) );
     return true;
   }
 
