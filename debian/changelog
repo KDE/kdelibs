@@ -4,15 +4,18 @@ kdelibs (4:2.2.2-4) unstable; urgency=low
   * Build cleanup.  export CFLAGS/CXXFLAGS instead of the old method
   * Build-Depends cleanup
   * Dep cleanup.  Let's not conflict so much for the final release and lets
-    not Recommend everything for the final release.
-  * Build with Xinerama support for i386 only
+    not Recommend everything for the final release. (Closes: #118952)
+  * Build with Xinerama support for i386 only (Closes: #116765)
   * Add in bits in debian/rules to make it easier to build optimized binaries
-  * Build with SSL support...yea! no more kdelibs3-crypto
   * Remove old replaces/conflicts for keystone
   * Cleanup documentation for freeze
   * Cleanup dh-make files
+  * Default to Reject for cookie acceptions. (Closes: #121750)
+  * kio_https.* no longer exists and due to diversions we could end up 
+    with the files existing but not tied to any package..so let's make
+    sure to remove them.
 
- -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 30 Nov 2001 02:42:00 -0700
+ -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 30 Nov 2001 12:39:00 -0700
 
 kdelibs (4:2.2.2-3) unstable; urgency=low
 

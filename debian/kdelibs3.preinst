@@ -11,6 +11,7 @@ case "$1" in
         rm -f /etc/kderc
         ln -sf /etc/kde2/system.kdeglobals /etc/kderc
       fi
+      rm -f /usr/lib/kde2/kio_https.*
     ;;
 
     abort-upgrade)
