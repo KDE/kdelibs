@@ -6,7 +6,7 @@
 int setenv(const char *name, const char *value, int overwrite) ;
 #endif      
 
-#ifndef HAVE_FUNC_USLEEP
+#ifndef HAVE_USLEEP
 void usleep(int usec);
 #endif
 
