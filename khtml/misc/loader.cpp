@@ -22,7 +22,7 @@
     pages from the web. It has a memory cache for these objects.
 */
 
-#define CACHE_DEBUG
+#undef CACHE_DEBUG
 
 #include "loader.h"
 
