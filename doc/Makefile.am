@@ -1,5 +1,5 @@
 
-SUBDIRS = common kspell ksgmltools
+SUBDIRS = common kspell
 
 install-data-local:
 	-rm -f $(DESTDIR)$(kde_htmldir)/default
