@@ -150,16 +150,16 @@ using namespace KJS;
 
 namespace KJS {
 
-const struct HashEntry DOMKeyEventTableEntries[] = {
-   { "keyVal", DOMKeyEvent::Key, DontDelete|ReadOnly, 0, &DOMKeyEventTableEntries[2] },
-   { "virtKeyVal", DOMKeyEvent::VirtKey, DontDelete|ReadOnly, 0, &DOMKeyEventTableEntries[4] },
-   { "keyCode", DOMKeyEvent::Key, DontDelete|ReadOnly, 0, &DOMKeyEventTableEntries[3] },
-   { "outputString", DOMKeyEvent::OutputString, DontDelete|ReadOnly, 0, 0 },
-   { "inputGenerated", DOMKeyEvent::InputGenerated, DontDelete|ReadOnly, 0, &DOMKeyEventTableEntries[5] },
-   { "numPad", DOMKeyEvent::NumPad, DontDelete|ReadOnly, 0, 0 }
+const struct HashEntry DOMTextEventTableEntries[] = {
+   { "keyVal", DOMTextEvent::Key, DontDelete|ReadOnly, 0, &DOMTextEventTableEntries[2] },
+   { "virtKeyVal", DOMTextEvent::VirtKey, DontDelete|ReadOnly, 0, &DOMTextEventTableEntries[4] },
+   { "keyCode", DOMTextEvent::Key, DontDelete|ReadOnly, 0, &DOMTextEventTableEntries[3] },
+   { "outputString", DOMTextEvent::OutputString, DontDelete|ReadOnly, 0, 0 },
+   { "inputGenerated", DOMTextEvent::InputGenerated, DontDelete|ReadOnly, 0, &DOMTextEventTableEntries[5] },
+   { "numPad", DOMTextEvent::NumPad, DontDelete|ReadOnly, 0, 0 }
 };
 
-const struct HashTable DOMKeyEventTable = { 2, 6, DOMKeyEventTableEntries, 2 };
+const struct HashTable DOMTextEventTable = { 2, 6, DOMTextEventTableEntries, 2 };
 
 }; // namespace
 
@@ -167,11 +167,11 @@ using namespace KJS;
 
 namespace KJS {
 
-const struct HashEntry DOMKeyEventProtoTableEntries[] = {
-   { "initKeyEvent", DOMKeyEvent::InitKeyEvent, DontDelete|Function, 10, 0 }
+const struct HashEntry DOMTextEventProtoTableEntries[] = {
+   { "initTextEvent", DOMTextEvent::InitTextEvent, DontDelete|Function, 10, 0 }
 };
 
-const struct HashTable DOMKeyEventProtoTable = { 2, 1, DOMKeyEventProtoTableEntries, 1 };
+const struct HashTable DOMTextEventProtoTable = { 2, 1, DOMTextEventProtoTableEntries, 1 };
 
 }; // namespace
 

@@ -126,17 +126,17 @@ namespace KJS {
     DOM::MouseEvent toMouseEvent() const { return static_cast<DOM::MouseEvent>(event); }
   };
 
-  class DOMKeyEvent : public DOMUIEvent {
+  class DOMTextEvent : public DOMUIEvent {
   public:
-    DOMKeyEvent(ExecState *exec, DOM::KeyEvent ke) : DOMUIEvent(exec, ke) {}
-    ~DOMKeyEvent();
+    DOMTextEvent(ExecState *exec, DOM::TextEvent ke) : DOMUIEvent(exec, ke) {}
+    ~DOMTextEvent();
     virtual Value tryGet(ExecState *exec,const UString &p) const;
     Value getValueProperty(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
-    enum { Key, VirtKey, OutputString, InitKeyEvent, InputGenerated, NumPad };
-    DOM::KeyEvent toKeyEvent() const { return static_cast<DOM::KeyEvent>(event); }
+    enum { Key, VirtKey, OutputString, InitTextEvent, InputGenerated, NumPad };
+    DOM::TextEvent toTextEvent() const { return static_cast<DOM::TextEvent>(event); }
   };
 
   // Constructor object MutationEvent
