@@ -1399,26 +1399,33 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start)
             tmpW += o->marginLeft()+o->borderLeft()+o->paddingLeft()+
                     o->marginRight()+o->borderRight()+o->paddingRight();
         } else if ( o->isReplaced() ) {
-            tmpW += o->width()+o->marginLeft()+o->marginRight();
 
-            if ( w + tmpW > width )
-                goto end;
+             if (o->style()->whiteSpace() == NORMAL || last->style()->whiteSpace() == NORMAL) {
+                 w += tmpW;
+                 tmpW = 0;
+                 lBreak = o;
+             }
 
-            if (o->style()->whiteSpace() != NOWRAP) {
-                w += tmpW;
-                tmpW = 0;
-                lBreak = o;
-                lBreak.pos = pos;
-            }
+             tmpW += o->width()+o->marginLeft()+o->marginRight()+inlineWidth(o);
+
         } else
             KHTMLAssert( false );
 
-        if( w + tmpW > width+1 && style()->whiteSpace() == NORMAL /*&& o->style()->whiteSpace() != NOWRAP*/ ) {
-            //kdDebug() << " too wide w=" << w << " tmpW = " << tmpW << " width = " << width << endl;
-	    //kdDebug() << "start=" << start.obj << " current=" << o << endl;
-            // if we have floats, try to get below them.
-            int fb = floatBottom();
+        if( w + tmpW > width+1 && style()->whiteSpace() == NORMAL ) {
+//             kdDebug() << " too wide w=" << w << " tmpW = " << tmpW << " width = " << width << endl;
+//  	    kdDebug() << "start=" << start.obj << " current=" << o << endl;
+
+            int fb = nearestFloatBottom(m_height);
 	    int newLineWidth = lineWidth(fb);
+
+            // See if |tmpW| will fit on the new line.  As long as it does not,
+            // keep adjusting our float bottom until we find some room.
+            int lastFloatBottom = m_height;
+            while (lastFloatBottom < fb && tmpW > newLineWidth) {
+                lastFloatBottom = fb;
+                fb = nearestFloatBottom(fb);
+                newLineWidth = lineWidth(fb);
+            }
             if( !w && m_height < fb && width < newLineWidth ) {
                 m_height = fb;
                 width = newLineWidth;
@@ -1426,27 +1433,32 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start)
                 kdDebug() << "RenderBlock::findNextLineBreak new position at " << m_height << " newWidth " << width << endl;
 #endif
             }
-	    if( !w && w + tmpW > width+1 && (o != start.obj || (unsigned) pos != start.pos) ) {
-		// getting below floats wasn't enough...
-		//kdDebug() << "still too wide w=" << w << " tmpW = " << tmpW << " width = " << width << endl;
-		lBreak = o;
-                if (o == last)
-                    lBreak.pos = pos;
-                if (unsigned ( pos ) >= o->length())
-                    lBreak = Bidinext(start.par, o);
-            }
-            goto end;
+
+            // |width| may have been adjusted because we got shoved down past a float (thus
+            // giving us more room), so we need to retest, and only jump to
+            // the end label if we still don't fit on the line. -dwh
+            if (w + tmpW > width+1)
+                goto end;
+
         }
 
         last = o;
         o = Bidinext( start.par, o );
+
+        if (!last->isFloatingOrPositioned() && last->isReplaced() && last->style()->whiteSpace() == NORMAL) {
+            // Go ahead and add in tmpW.
+            w += tmpW;
+            tmpW = 0;
+            lBreak = o;
+        }
+
         pos = 0;
     }
 
 #ifdef DEBUG_LINEBREAKS
     kdDebug( 6041 ) << "end of par, width = " << width << " linewidth = " << w + tmpW << endl;
 #endif
-    if( w + tmpW <= width )
+    if( w + tmpW <= width || (last && last->style()->whiteSpace() == NOWRAP))
         lBreak = 0;
 
  end:
@@ -1456,24 +1468,24 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start)
         if ( m_pre )
             lBreak = pos ? Bidinext(start.par, o) : o;
         else {
-	    if( last != o ) {
-		// better break between object boundaries than in the middle of a word
-		lBreak = o;
-	    } else {
-		int w = 0;
-		if( lBreak.obj->isText() )
-		    w += static_cast<RenderText *>(lBreak.obj)->width(lBreak.pos, 1);
-		else
-		    w += lBreak.obj->width();
-		while( lBreak.obj && w < width ) {
-		    ++lBreak;
-		    if( !lBreak.obj ) break;
-		    if( lBreak.obj->isText() )
-			w += static_cast<RenderText *>(lBreak.obj)->width(lBreak.pos, 1);
-		    else
-			w += lBreak.obj->width();
-		}
-	    }
+            if ( last != o ) {
+                // better break between object boundaries than in the middle of a word
+                lBreak = o;
+            } else {
+                int w = 0;
+                if( lBreak.obj->isText() )
+                    w += static_cast<RenderText *>(lBreak.obj)->width(lBreak.pos, 1);
+                else
+                    w += lBreak.obj->width();
+                while( lBreak.obj && w < width ) {
+                    ++lBreak;
+                    if( !lBreak.obj ) break;
+                    if( lBreak.obj->isText() )
+                        w += static_cast<RenderText *>(lBreak.obj)->width(lBreak.pos, 1);
+                    else
+                        w += lBreak.obj->width();
+                }
+            }
         }
     }
 

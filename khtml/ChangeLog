@@ -1,5 +1,8 @@
 2004-02-29  Dirk Mueller  <mueller@kde.org>
 
+	* rendering/bidi.cpp (findNextLineBreak): make sure we move
+	replaced elements, that don't fit on a line below the floats (#74609).
+
 	* rendering/render_replaced.cpp (calcMinMaxWidth): respect 
 	padding and borders (#65788).
 
