@@ -59,6 +59,9 @@ KJSO *KJS::toBoolean(KJSO *obj)
     case Object:
       b = true;
       break;
+    default:
+      b = false;
+      assert(!"unhandled object type in switch");
     }
 
   delete obj;
@@ -96,6 +99,7 @@ KJSO *KJS::toNumber(KJSO *obj)
     default:
       cerr << "type = " << obj->type() << endl;
       assert(!"toNumber: unhandled switch case");
+      exit(1);
     }
 
   delete obj;
@@ -146,7 +150,7 @@ KJSO *KJS::toString(KJSO *obj)
     case Number:
       /* TODO */
       c = new char[50];
-      sprintf((char*) c, "%lf", obj->dVal());
+      sprintf((char*) c, "%f", obj->dVal());
       break;
     case String:
       return obj;
@@ -158,6 +162,7 @@ KJSO *KJS::toString(KJSO *obj)
       return res;
     default:
       assert(!"toString: unhandled switch case");
+      exit(1);
     }
   return new KJSString(c);
 }
@@ -188,6 +193,7 @@ KJSO *KJS::toObject(KJSO *obj)
       return obj;
     default:
       assert(!"toObject: unhandled switch case");
+      exit(1);
     }
 
   delete obj;

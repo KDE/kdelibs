@@ -273,8 +273,10 @@ int KJSArgList::numArgs() const
 
   int num = 1;
   KJSArg *arg = first;
-  while (arg = arg->next)
+  while ((arg = arg->next))
     num++;
+
+  return num;
 }
 
 KJSMath::KJSMath()

@@ -29,7 +29,7 @@ namespace KJS {
 
   class KJSLexer {
   public:
-    KJSLexer(const QString &code);
+    KJSLexer(const QString &c);
     ~KJSLexer();
 
     int lex();

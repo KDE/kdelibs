@@ -126,13 +126,13 @@ private:
 
 class ArgumentListNode : public Node {
 public:
-  ArgumentListNode(Node *e) : expr(e), list(0L) {}
+  ArgumentListNode(Node *e) : list(0L), expr(e) {}
   ArgumentListNode(ArgumentListNode *l, Node *e) :  list(l), expr(e) {}
   ~ArgumentListNode() { delete expr; delete list; }
   KJSO *evaluate();
 private:
-  Node *expr;
   ArgumentListNode *list;
+  Node *expr;
 };
 
 class ArgumentsNode : public Node {
@@ -281,7 +281,7 @@ private:
 class RelationalNode : public Node {
 public:
   RelationalNode(Node *e1, Operator o, Node *e2) :
-    expr1(e1), oper(o), expr2(e2) {}
+    expr1(e1), expr2(e2), oper(o) {}
   ~RelationalNode() { delete expr1; delete expr2; }
   KJSO *evaluate();
 private:
@@ -291,7 +291,7 @@ private:
 
 class EqualNode : public Node {
 public:
-  EqualNode(Node *e1, Operator o, Node *e2) : expr1(e1), oper(o), expr2(e2) {}
+  EqualNode(Node *e1, Operator o, Node *e2) : expr1(e1), expr2(e2), oper(o) {}
   ~EqualNode() { delete expr1; delete expr2; }
   KJSO *evaluate();
 private:
@@ -302,7 +302,7 @@ private:
 class BitOperNode : public Node {
 public:
   BitOperNode(Node *e1, Operator o, Node *e2) :
-    expr1(e1), oper(o), expr2(e2) {}
+    expr1(e1), expr2(e2), oper(o) {}
   ~BitOperNode() { delete expr1; delete expr2; }
   KJSO *evaluate();
 private:
@@ -313,7 +313,7 @@ private:
 class BinaryLogicalNode : public Node {
 public:
   BinaryLogicalNode(Node *e1, Operator o, Node *e2) :
-    expr1(e1), oper(o), expr2(e2) {}
+    expr1(e1), expr2(e2), oper(o) {}
   ~BinaryLogicalNode() { delete expr1; delete expr2; }
   KJSO *evaluate();
 private:
@@ -354,7 +354,7 @@ private:
 class StatListNode : public Node {
 public:
   StatListNode(StatementNode *s) : statement(s), list(0L) { }
-  StatListNode(StatListNode *l, StatementNode *s) : list(l), statement(s) { }
+  StatListNode(StatListNode *l, StatementNode *s) : statement(s), list(l) { }
   ~StatListNode() { delete statement; delete list; }
   KJSO *evaluate();
 private:
@@ -384,7 +384,7 @@ private:
 
 class VarDeclListNode : public Node {
 public:
-  VarDeclListNode(VarDeclNode *v) : var(v), list(0L) {}
+  VarDeclListNode(VarDeclNode *v) : list(0L), var(v) {}
   VarDeclListNode(Node *l, VarDeclNode *v) : list(l), var(v) {}
   ~VarDeclListNode() { delete list; delete var; }
   KJSO *evaluate();
@@ -487,7 +487,7 @@ class WithNode : public StatementNode {
 public:
   WithNode(const Node *e, const StatementNode *s) : expr(e), stat(s) {}
   ~WithNode() { delete expr; delete stat; }
-  KJSO *evaluate() { /* TODO */ }
+  KJSO *evaluate();
 private:
   const Node *expr;
   const StatementNode *stat;
@@ -498,7 +498,7 @@ public:
   ParameterNode(const CString &i) : ident(i) { }
   ParameterNode *append(const CString &i) { /* TODO */ return this; };
   ~ParameterNode() { }
-  KJSO *evaluate() { /* TODO */ }
+  KJSO *evaluate();
 private:
   CString ident;
 };
@@ -508,7 +508,7 @@ public:
   FuncDeclNode(const CString &i, ParameterNode *p, StatementNode *b)
     : ident(i), param(p), block(b) { }
   ~FuncDeclNode() { delete param; delete block; }
-  KJSO *evaluate() { /* empty */ }
+  KJSO *evaluate() { /* empty */ return 0L; }
   void processFuncDecl();
 private:
   CString ident;

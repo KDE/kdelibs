@@ -43,9 +43,9 @@ class KJSArgList;
 class KJSO {
 public:
   KJSO() { init(); }
-  ~KJSO() { /* TODO: delete String object */ }
+  virtual ~KJSO() { /* TODO: delete String object */ }
   void init() { proto = 0L; prop = 0L; call = 0L; }
-  virtual Type type() const { assert(!"Undefined type()"); };
+  virtual Type type() const { assert(!"Undefined type()"); return Undefined; };
   bool isA(Type t) const { return (type() == t); }
   bool isObject() const { return (type() >= Object); }
 
@@ -59,7 +59,7 @@ public:
   void deleteProperty(const CString &p);
   KJSO defaultValue(Hint hint = NoneHint);
   void dump();
-  virtual KJSO *construct() {}
+  virtual KJSO *construct() { return 0L; }
 
   // Reference
   KJSO *getBase();
@@ -83,7 +83,7 @@ public:
 
   // constructor
   bool implementsConstruct() const { return true; /* TODO */ }
-  KJSO *construct(KJSO *) { /* TODO */ }
+  KJSO *construct(KJSO *) { /* TODO */ return 0L; }
 
 protected:
   KJSO *proto;

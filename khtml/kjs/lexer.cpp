@@ -44,9 +44,9 @@ int yylex()
 }
 
 KJSLexer::KJSLexer(const QString &c)
-  : pos(0), yylineno(0),
+  : yylineno(0),
     size8(128), size16(128),
-    pos8(0), pos16(0),
+    pos8(0), pos16(0), pos(0),
     code(c)
 {
   // allocate space for read buffers
@@ -81,9 +81,9 @@ void KJSLexer::setDone(State s)
 
 int KJSLexer::lex()
 {
-  int token;
+  int token = 0;
   state = Start;
-  UnicodeChar stringType; // either single or double quotes
+  UnicodeChar stringType = 0; // either single or double quotes
   pos8 = pos16 = 0;
   done = false;
 
@@ -272,6 +272,8 @@ int KJSLexer::lex()
       } else
 	setDone(Decimal);
       break;
+    default:
+      assert(!"Unhandled state in switch statement");
     }
 
     // move on to the next character
@@ -329,6 +331,8 @@ int KJSLexer::lex()
   case Decimal:
     printf("(Decimal)\n");
     yylval.dval = strtod(buffer8, 0L); return DOUBLE;
+  default:
+    assert(!"unhandled numeration value in switch");
   }
   fprintf(stderr, "yylex: ERROR.\n");
   return Bad;

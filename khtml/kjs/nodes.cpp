@@ -294,7 +294,7 @@ KJSO *VoidNode::evaluate()
 // ECMA 11.4.3
 KJSO *TypeOfNode::evaluate()
 {
-  const char *s;
+  const char *s = 0L;
   KJSO *e = expr->evaluate();
   if (e->isA(Reference) && e->getBase()->isA(Null))
     return new KJSUndefined();
@@ -378,7 +378,7 @@ KJSO *MultNode::evaluate()
 
   if (oper == '*')
     result = new KJSNumber(n1->dVal() * n2->dVal()); // TODO: NaN, Infinity ...
-  else if (oper == '/')
+  else // if (oper == '/')
     result = new KJSNumber(n1->dVal() / n2->dVal()); // TODO: NaN, Infinity ...
   //  else
   //    result = new KJSNumber(n1->dVal() % n2->dVal()); // TODO: Double, NaN ...
@@ -605,6 +605,12 @@ KJSO *ReturnNode::evaluate()
   return new KJSCompletion(ReturnValue, v);
 }
 
+// ECMA 12.10
+KJSO *WithNode::evaluate()
+{
+ /* TODO */
+}
+
 // ECMA 13
 void FuncDeclNode::processFuncDecl()
 {
@@ -612,6 +618,12 @@ void FuncDeclNode::processFuncDecl()
 
   /* TODO: decide between global and activation object */
   KJSWorld::global->put(ident, f);
+}
+
+// ECMA 13
+KJSO *ParameterNode::evaluate()
+{
+  /* TODO */
 }
 
 // ECMA 14
