@@ -223,7 +223,7 @@ bool KConfigBase::groupIsImmutable(const QString &group) const
 {
   if (getConfigState() != ReadWrite)
      return true;
-     
+
   KEntryKey groupKey(group.utf8(), 0);
   KEntry entry = lookupData(groupKey);
   return entry.bImmutable;
@@ -233,7 +233,7 @@ bool KConfigBase::entryIsImmutable(const QString &key) const
 {
   if (getConfigState() != ReadWrite)
      return true;
-     
+
   KEntryKey entryKey(mGroup, 0);
   KEntry aEntryData = lookupData(entryKey); // Group
   if (aEntryData.bImmutable)
@@ -427,6 +427,12 @@ QVariant KConfigBase::readPropertyEntry( const char *pKey,
       case QVariant::Bitmap:
       case QVariant::Cursor:
       case QVariant::SizePolicy:
+      case QVariant::Date:
+      case QVariant::Time:
+      case QVariant::DateTime:
+      case QVariant::ByteArray:
+      case QVariant::BitArray:
+      case QVariant::KeySequence:
           break;
   }
 
@@ -765,7 +771,7 @@ QFont KConfigBase::readFontEntry( const char *pKey, const QFont* pDefault ) cons
 
       // find sixth part (font bits)
       uint nFontBits = aValue.right( aValue.length()-nIndex-1 ).toUInt();
-      
+
       aRetFont.setItalic( nFontBits & 0x01 );
       aRetFont.setUnderline( nFontBits & 0x02 );
       aRetFont.setStrikeOut( nFontBits & 0x04 );
@@ -1169,6 +1175,12 @@ void KConfigBase::writeEntry ( const char *pKey, const QVariant &prop,
     case QVariant::Bitmap:
     case QVariant::Cursor:
     case QVariant::SizePolicy:
+    case QVariant::Date:
+    case QVariant::Time:
+    case QVariant::DateTime:
+    case QVariant::ByteArray:
+    case QVariant::BitArray:
+    case QVariant::KeySequence:
         break;
     }
 
