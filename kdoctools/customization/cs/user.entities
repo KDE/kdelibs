@@ -6,3 +6,5 @@
      names (which if they occur will cost you a _lot_ of time)
  -->
 
+<!-- Please adapt to Czech! This is a hack to make some docs compile -->
+<!ENTITY OS             	"operating system">                                <!-- English: &OS; -->
