@@ -147,10 +147,7 @@ static class hdate * hdate(int y, int m, int d)
 #define WEEK (7*DAY)
 #define M(h,p) ((h)*HOUR+p)
 #define MONTH (DAY+M(12,793))
-
-/* other macros */
-#define LEAP_YR_HEB(x) ((1L + (long)(x)* 7L) % 19L < 7L ? 1 : 0)
-
+  
 /**
  * @internal
  * no. of days in y years
@@ -319,14 +316,14 @@ QString KCalendarSystemHebrew::weekDayName(int day, bool shortName) const
 {
   if(shortName)
   {
-     if (day != 7)
+     if (day != 6)
         return QString("%1").arg(day);
      else
         return QString("Sab");
   }
   else
   {
-     if (day != 7)
+     if (day != 6)
         return QString("day  % 1").arg(day);
      else
         return QString("Sabbath");
@@ -374,7 +371,7 @@ int KCalendarSystemHebrew::hndays(int mon, int year) const
   if( mon == 8 /*IYYAR*/ || month == 10 /*TAMUZ*/ ||
     month == 12 /*ELUL*/ || month == 4 /*TEVET*/ || 
     month == 14 /*ADAR 2*/||
-    ( month == 13 /*ADAR 1*/ && !LEAP_YR_HEB (year)) ||
+    ( month == 13 /*ADAR 1*/ && monthsInYear(year) == 12) /*!leap*/||
     (month ==  2 /*CHESHVAN*/ && !long_cheshvan(year)) ||
     (month == 3 /*KISLEV*/ && short_kislev(year)))
     return 29;
