@@ -539,6 +539,7 @@ bool KHTMLView::gotoLink()
 {
     // let's ignore non anchors for the moment
     if(!d->currentNode || d->currentNode->id() != ID_A) return false;
+
     HTMLAnchorElementImpl *n=static_cast<HTMLAnchorElementImpl*>(d->currentNode);
     //kdDebug(6000)<<"current item:"<<n->areaHref().string().latin1()<<endl;
 
@@ -575,29 +576,72 @@ bool KHTMLView::gotoLink(DOM::NodeImpl *_n)
     else
         n->setKeyboardFocus(DOM::ActivationPassive);
 
-//calculate x- and ypos
+    //calculate x- and ypos
     int x = 0, y = 0;
     n->getAnchorPosition(x,y);
 
-    QSize size = n->renderer()->containingBlock()->size();
+    QSize size = n->renderer()->containingBlockSize();
+    if (size.height()==0)
+	size.setHeight(30);
+    if (size.width()==0)
+	size.setWidth(100);
+
     int xe = x + size.width();
     int ye = y + size.height();
 
-    int deltax = (x + xe) / 2 - contentsX();
-    int deltay = (y + ye) / 2 - contentsY();
+    int deltax;
+    int deltay;
 
-    int maxx = width();
-    int maxy = height();
+    int borderX, borderY;
+
+    borderX = borderY = 30;
+    
+    if (y - contentsY() - borderY < 0)
+    {
+	deltay = y - contentsY() - borderY;
+    }
+    else if (ye - contentsY() + borderY > height())
+    {
+	deltay = ye - contentsY() - height() + borderY;
+    }
+    else
+	deltay = 0;
+
+    if (x - borderX - contentsX() < 0)
+    {
+	deltax = x - contentsX() - borderX;
+    }
+    else if (xe - contentsX() + borderX > width())
+    {
+	deltax = xe - contentsX() - width() + borderX;
+    }
+    else
+	deltax = 0;
+
+    int maxx = width()-borderX;
+    int maxy = height()-borderY;
 
     kdDebug(6000) << "x: " << x << " y: "<< y << " deltax: " << deltax << " deltay: " << deltay << " maxx: " << maxx << " maxy: " << maxy << "\n";
-
-    int scrollX=deltax>0?(deltax<maxx?0:deltax-maxx):(deltax>-maxx?deltax:-maxx);
-    int scrollY=deltay>0?(deltay<maxy?0:deltay-maxy):(deltay>-maxy?deltay:-maxy);
-
-    scrollBy(scrollX, scrollY);
     
-    //    if ( (deltax==0) && (deltay==0) )
-	 d->currentNode = n;
+    int scrollX = deltax > 0 ? (deltax > maxx ? maxx : deltax) : (deltax>-maxx ? deltax : -maxx);
+    int scrollY = deltay > 0 ? (deltay > maxy ? maxy : deltay) : (deltay>-maxy ? deltay : -maxy);
+
+    if (deltax==0)
+	scrollX=0;
+    if (deltay==0)
+	scrollY=0;
+
+    kdDebug(6000) << "scrollX:"<<scrollX<<" scrollY:"<<scrollY<<"\n";
+    scrollBy(scrollX, scrollY);
+
+    // generate abs(scroll.)
+    if (scrollX<0)
+	scrollX=-scrollX;
+    if (scrollY<0)
+	scrollY=-scrollY;
+
+    if ( (scrollX!=maxx) && (scrollY!=maxy) )
+	d->currentNode = n;
 
     return true;
 }
