@@ -39,9 +39,10 @@ public:
     KWindowListMenu( QWidget *parent = 0, const char *name = 0 );
     virtual ~KWindowListMenu();
 
+    void init();
+
 protected slots:
     void slotExec(int id);
-    void slotAboutToShow();
     void slotUnclutterWindows();
     void slotCascadeWindows();
 

@@ -64,7 +64,6 @@ KWindowListMenu::KWindowListMenu(QWidget *parent, const char *name)
     kwin_module = new KWinModule(this);
 
     connect(this, SIGNAL(activated(int)), SLOT(slotExec(int)));
-    connect(this, SIGNAL(aboutToShow()), SLOT(slotAboutToShow()));
 }
 
 KWindowListMenu::~KWindowListMenu()
@@ -72,7 +71,7 @@ KWindowListMenu::~KWindowListMenu()
 
 }
 
-void KWindowListMenu::slotAboutToShow()
+void KWindowListMenu::init()
 {
     int i, d;
     i = 0;
