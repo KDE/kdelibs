@@ -36,7 +36,9 @@ check_PROGRAMS = kaboutdialogtest kblendtest kbuttonboxtest kcharselecttest \
 	kunbalancedgrdtest kwindowtest kwizardtest \
 	itemcontainertest kpanelmenutest kedittest \
 	kxmlguitest kaccelgentest ksystemtraytest klistviewtest \
-	ktextedittest kmainwindowtest kmainwindowrestoretest kactiontest kdatetimewidgettest ktimewidgettest
+	ktextedittest kmainwindowtest kmainwindowrestoretest \
+	kactiontest kdatetimewidgettest ktimewidgettest \
+	kspelltest
 
 METASOURCES = AUTO
 
@@ -89,3 +91,4 @@ ktextedittest_SOURCES = ktextedittest.cpp
 kmainwindowtest_SOURCES = kmainwindowtest.cpp
 kmainwindowrestoretest_SOURCES = kmainwindowrestoretest.cpp
 kactiontest_SOURCES = kactiontest.cpp
+kspelltest_SOURCES = kspelltest.cpp

@@ -22,10 +22,14 @@ SUBDIRS = . tests
 
 INCLUDES= -I$(top_srcdir)/kdefx -I$(top_srcdir)/interfaces $(all_includes)
 
-lib_LTLIBRARIES = libkdeui.la
+lib_LTLIBRARIES = libkdeui.la libkspell.la
 libkdeui_la_LDFLAGS = $(KDE_MT_LDFLAGS) -no-undefined -version-info 6:0:2
 # we should get this to work when libtool 1.3 is released
 libkdeui_la_LIBADD = ../kdecore/libkdecore.la
+
+libkspell_la_LDFLAGS = $(KDE_MT_LDFLAGS) -version-info 6:0:2 -no-undefined
+libkspell_la_LIBADD = libkdeui.la
+libkspell_la_SOURCES = dummy.cpp
 
 picsdir = $(kde_datadir)/kdeui/pics
 pics_DATA = aboutkde.png keys.png ktip-bulb.png ktip-background.png
@@ -63,7 +67,8 @@ include_HEADERS = kprogress.h kcolordlg.h \
 		kstringvalidator.h kaccelmanager.h kwindowinfo.h \
 		ktextedit.h kpassivepopup.h kdockwidget_p.h \
 		kdatetimewidget.h ktimewidget.h kpreferencesdialog.h \
-		kpreferencesmodule.h kpluginselector.h
+		kpreferencesmodule.h kpluginselector.h \
+		kspell.h ksconfig.h kspelldlg.h ksyntaxhighlighter.h
 
 # the order of the sources isn't randomly (at least not completly).
 # the order is predictated by the use of X11 header files
@@ -107,7 +112,8 @@ libkdeui_la_SOURCES = \
 		kwindowinfo.cpp ktextedit.cpp kwizard.cpp kpassivepopup.cpp \
 		ktoolbarhandler.cpp kdatetimewidget.cpp ktimewidget.cpp \
 		kpreferencesdialog.cpp kpreferencesmodule.cpp \
-		kpluginselector.cpp
+		kpluginselector.cpp ksconfig.cpp kspelldlg.cpp \
+		kspell.cpp ksyntaxhighlighter.cpp
 
 noinst_HEADERS = kdockwidget_private.h klistviewlineedit.h \
 		kdialogbase_priv.h kaboutdialog_private.h kcursor_private.h \
@@ -135,6 +141,9 @@ kdepackages:
 		grep -v "^todo-" $(top_srcdir)/../bugs/Maintainers | sed -e "s#^\([^ ]*\).*#\"\1\",#" | sort >> $(srcdir)/kdepackages.h ; \
 		echo "0 };" >>  $(srcdir)/kdepackages.h ; \
 	fi
+
+dummy.cpp:
+	echo > dummy.cpp
 
 DOXYGEN_REFERENCES = kdecore kdefx dcop kio
 include ../admin/Doxyfile.am
