@@ -25,6 +25,7 @@
 class QComboBox;
 class QTimeEdit;
 class QLineEdit;
+class KIntNumInput;
 
 class KPSchedulePage : public KPrintDialogPage
 {
@@ -44,6 +45,7 @@ private:
 	QComboBox	*m_time;
 	QTimeEdit	*m_tedit;
 	QLineEdit	*m_billing, *m_pagelabel;
+	KIntNumInput	*m_priority;
 	int	m_gmtdiff;
 };
 

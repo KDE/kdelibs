@@ -28,6 +28,7 @@
 #include <qlineedit.h>
 #include <klocale.h>
 #include <kseparator.h>
+#include <knuminput.h>
 
 #include <time.h>
 
@@ -60,31 +61,32 @@ KPSchedulePage::KPSchedulePage(QWidget *parent, const char *name)
 	m_tedit->setEnabled(false);
 	m_billing = new QLineEdit(this);
 	m_pagelabel = new QLineEdit(this);
+	m_priority = new KIntNumInput(50, this);
+	m_priority->setRange(1, 100, 10, true);
 
-	QLabel	*lab = new QLabel(i18n("&Send print job to printer:"), this);
+	QLabel	*lab = new QLabel(i18n("&Schedule printing:"), this);
 	lab->setBuddy(m_time);
 	QLabel	*lab1 = new QLabel(i18n("&Billing information:"), this);
 	lab1->setBuddy(m_billing);
 	QLabel	*lab2 = new QLabel(i18n("T&op/Bottom page label:"), this);
 	lab2->setBuddy(m_pagelabel);
+	m_priority->setLabel(i18n("&Job priority:"), Qt::AlignVCenter|Qt::AlignLeft);
 
 	KSeparator	*sep0 = new KSeparator(this);
-	sep0->setFixedHeight(20);
+	sep0->setFixedHeight(10);
 
-	QVBoxLayout	*l0 = new QVBoxLayout(this, 10, 5);
-	l0->addWidget(lab);
-	QHBoxLayout	*l1 = new QHBoxLayout(0, 0, 10);
-	l0->addLayout(l1);
+	QGridLayout	*l0 = new QGridLayout(this, 5, 2, 10, 7);
+	l0->addWidget(lab, 0, 0);
+	QHBoxLayout	*l1 = new QHBoxLayout(0, 0, 5);
+	l0->addLayout(l1, 0, 1);
 	l1->addWidget(m_time);
 	l1->addWidget(m_tedit);
-	l0->addWidget(sep0);
-	QGridLayout	*l2 = new QGridLayout(0, 2, 2, 0, 10);
-	l0->addLayout(l2);
-	l2->addWidget(lab1, 0, 0);
-	l2->addWidget(lab2, 1, 0);
-	l2->addWidget(m_billing, 0, 1);
-	l2->addWidget(m_pagelabel, 1, 1);
-	l0->addStretch(1);
+	l0->addWidget(lab1, 1, 0);
+	l0->addWidget(lab2, 2, 0);
+	l0->addWidget(m_billing, 1, 1);
+	l0->addWidget(m_pagelabel, 2, 1);
+	l0->addMultiCellWidget(sep0, 3, 3, 0, 1);
+	l0->addMultiCellWidget(m_priority, 4, 4, 0, 1);
 
 	connect(m_time, SIGNAL(activated(int)), SLOT(slotTimeChanged()));
 }
@@ -138,6 +140,9 @@ void KPSchedulePage::setOptions(const QMap<QString,QString>& opts)
 	t = opts["page-label"].stripWhiteSpace();
 	t.replace(re, "");
 	m_pagelabel->setText(t);
+	int	val = opts["job-priority"].toInt();
+	if (val != 0)
+		m_priority->setValue(val);
 }
 
 void KPSchedulePage::getOptions(QMap<QString,QString>& opts, bool incldef)
@@ -165,6 +170,8 @@ void KPSchedulePage::getOptions(QMap<QString,QString>& opts, bool incldef)
 		opts["job-billing"] = "\"" + m_billing->text() + "\"";
 	if (incldef || !m_pagelabel->text().isEmpty())
 		opts["page-label"] = "\"" + m_pagelabel->text() + "\"";
+	if (incldef || m_priority->value() != 50)
+		opts["job-priority"] = QString::number(m_priority->value());
 }
 
 void KPSchedulePage::slotTimeChanged()
