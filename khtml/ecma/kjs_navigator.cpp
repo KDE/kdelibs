@@ -235,7 +235,10 @@ PluginBase::PluginBase(ExecState *exec)
         // read configuration
         KConfig c(KGlobal::dirs()->saveLocation("data","nsplugins")+"/pluginsinfo");
         unsigned num = (unsigned int)c.readNumEntry("number");
-        for ( unsigned n=0; n<num; n++ ) {
+        // FIXME: add domain support here
+        KConfig kc("konquerorrc", true);
+        bool enabled = KConfigGroup(&kc, "Java/JavaScript Settings").readBoolEntry("EnablePlugins", true);
+        for ( unsigned n = 0; enabled && n < num; n++ ) {
 
             c.setGroup( QString::number(n) );
             PluginInfo *plugin = new PluginInfo;
