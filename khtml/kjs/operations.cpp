@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <math.h>
+#include <stdlib.h>
 
 #include "global.h"
 #include "operations.h"
