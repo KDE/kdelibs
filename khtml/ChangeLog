@@ -1,3 +1,7 @@
+2003-10-28  Stephan Kulow  <coolo@kde.org>
+
+       * khtml_part.cpp (reparseConfiguration): clear the style selector
+
 2003-10-28  Leo Savernik  <l.savernik@aon.at>
 
 	* rendering/render_replaced.cpp (checkSelectionPoint):

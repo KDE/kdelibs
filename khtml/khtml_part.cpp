@@ -4951,6 +4951,7 @@ void KHTMLPart::reparseConfiguration()
   d->m_settings = new KHTMLSettings(*KHTMLFactory::defaultHTMLSettings());
 
   QApplication::setOverrideCursor( waitCursor );
+  khtml::CSSStyleSelector::clear();
   if(d->m_doc) d->m_doc->updateStyleSelector();
   QApplication::restoreOverrideCursor();
 }
