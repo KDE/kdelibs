@@ -1235,10 +1235,8 @@ void HTMLInputElementImpl::reset()
 
 void HTMLInputElementImpl::setChecked(bool _checked)
 {
-    if (m_type == RADIO && _checked && !name().isEmpty()) {
-        m_checked = _checked;
-        if (m_form) m_form->radioClicked(this);
-    }
+    if (m_form && m_type == RADIO && _checked && !name().isEmpty())
+        m_form->radioClicked(this);
 
     if (m_checked == _checked) return;
     m_checked = _checked;

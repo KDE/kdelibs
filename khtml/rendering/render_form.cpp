@@ -253,7 +253,6 @@ RenderRadioButton::RenderRadioButton(KHTMLView *view,
 void RenderRadioButton::updateFromElement()
 {
     if (m_widget) {
-        qDebug("RenderRadioButton::updateFromElement!");
         static_cast<QRadioButton*>(m_widget)->
             setChecked(static_cast<HTMLInputElementImpl*>(m_element)->checked());
     }
@@ -261,8 +260,6 @@ void RenderRadioButton::updateFromElement()
 
 void RenderRadioButton::setChecked(bool checked)
 {
-    qDebug("RenderRadioButton::setChecked(%d) from %s", checked, kdBacktrace().latin1());
-
     static_cast<QRadioButton *>(m_widget)->setChecked(checked);
 }
 

@@ -162,18 +162,34 @@ void RenderWidget::setQWidget(QWidget *widget)
 {
     if (widget != m_widget)
     {
-	if (m_widget) {
-	    m_widget->removeEventFilter(this);
-	    disconnect( m_widget, SIGNAL( destroyed()),
-			this, SLOT( slotWidgetDestructed()));
-	    delete m_widget;
-	    m_widget = 0;
-	}
-	m_widget = widget;
-	connect( m_widget, SIGNAL( destroyed()),
-		 this, SLOT( slotWidgetDestructed()));
-	m_widget->installEventFilter(this);
+        if (m_widget) {
+            m_widget->removeEventFilter(this);
+            disconnect( m_widget, SIGNAL( destroyed()), this, SLOT( slotWidgetDestructed()));
+            delete m_widget;
+            m_widget = 0;
+        }
+        m_widget = widget;
+        if (m_widget) {
+            connect( m_widget, SIGNAL( destroyed()), this, SLOT( slotWidgetDestructed()));
+            m_widget->installEventFilter(this);
+            // if we're already layouted, apply the calculated space to the
+            // widget immediately
+            if (layouted()) {
+                setLayouted(false);
+                RenderWidget::layout();
+                setLayouted();
+            }
+        }
     }
+}
+
+void RenderWidget::layout( )
+{
+    assert( !layouted() );
+    if ( m_widget )
+        m_widget->resize( m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
+                          m_height-borderLeft()-borderRight()-paddingLeft()-paddingRight());
+    setLayouted();
 }
 
 void RenderWidget::slotWidgetDestructed()

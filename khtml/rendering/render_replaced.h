@@ -78,6 +78,7 @@ public:
     virtual bool isWidget() const { return true; };
 
     virtual void detach();
+    virtual void layout( );
 
     virtual bool eventFilter(QObject *o, QEvent *e);
 

@@ -612,14 +612,6 @@ void RenderPart::setWidget( QWidget *widget )
     slotViewCleared();
 }
 
-void RenderPart::layout( )
-{
-    assert( !layouted() );
-    if ( m_widget )
-        m_widget->resize( QMIN( m_width, 2000 ), QMIN( m_height, 3860 ) );
-    setLayouted();
-}
-
 bool RenderPart::partLoadingErrorNotify(khtml::ChildFrame *, const KURL& , const QString& )
 {
     return false;

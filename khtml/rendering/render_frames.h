@@ -89,8 +89,6 @@ public:
 
     virtual const char *renderName() const { return "RenderPart"; }
 
-    virtual void layout();
-
     virtual void setWidget( QWidget *widget );
 
     /**
