@@ -231,7 +231,7 @@ static bool findDestAction(QDragMoveEvent *dme, QPtrList<KAction> actions,
         if (b && a->isPlugged(c, b->id()))
         {
             tb = dynamic_cast<KToolBar*>(c);
-	    found = true;
+            found = true;
             break;
         }
     }
@@ -291,10 +291,10 @@ bool KBookmarkBar::eventFilter( QObject *, QEvent *e ){
         if (KBookmarkDrag::canDecode( dme )
          && findDestAction(dme, dptr()->m_actions, b, tb, a)
         ) {
-	    QRect r = b->geometry();
+            QRect r = b->geometry();
             int index = tb->itemIndex(b->id());
-	    if (dme->pos().x() <= ((r.left() + r.right())/2) && index != 0)
-		index--;
+            if (dme->pos().x() <= ((r.left() + r.right())/2) && index != 0)
+                index--;
             // delete+insert the separator if moved
             if (sepIndex != index+1 || !otb)
             {
