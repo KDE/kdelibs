@@ -14,7 +14,7 @@ sed -n '/enum Key/!b2
 		/}/!b1
 		p	
 		:2' $1 | sed -n '/=/p' | sed -n '
-		s/	/{ "/
+		s/	Key_/{ "/
 		s/,\(.*\)$/ },/
 		s/ = /", /p' > kckey_a
 
