@@ -22,10 +22,14 @@
 #include <kparts/event.h>
 #include <kparts/part.h>
 #include <kparts/plugin.h>
-
+#include <kinstance.h>
+#include <khelpmenu.h>
+#include <kstddirs.h>
 #include <qapplication.h>
 
 #include <kdebug.h>
+
+#include <assert.h>
 
 using namespace KParts;
 
@@ -38,6 +42,7 @@ public:
   {
     m_activePart = 0;
     m_bShellGUIActivated = false;
+    m_helpMenu = 0;
   }
   ~MainWindowPrivate()
   {
@@ -45,6 +50,7 @@ public:
 
   QGuardedPtr<Part> m_activePart;
   bool m_bShellGUIActivated;
+  KHelpMenu *m_helpMenu;
 };
 };
 
@@ -66,27 +72,27 @@ void MainWindow::createGUI( Part * part )
 
   KXMLGUIFactory *factory = guiFactory();
 
+  assert( factory );
+
   setUpdatesEnabled( false );
 
-  QValueList<KXMLGUIClient *> plugins;
-  QValueList<KXMLGUIClient *>::ConstIterator pIt, pBegin, pEnd;
+  QList<Plugin> plugins;
 
   if ( d->m_activePart )
   {
     kdDebug(1000) << QString("deactivating GUI for %1").arg(d->m_activePart->name()) << endl;
-    
+
     GUIActivateEvent ev( false );
     QApplication::sendEvent( d->m_activePart, &ev );
 
-    plugins = Plugin::pluginClients( d->m_activePart );
-    pIt = plugins.fromLast();
-    pBegin = plugins.begin();
+    plugins = Plugin::pluginObjects( d->m_activePart );
+    Plugin *plugin = plugins.last();
+    while ( plugin )
+    {
+      factory->removeClient( plugin );
 
-    for (; pIt != pBegin ; --pIt )
-      factory->removeClient( *pIt );
-
-    if ( pIt != plugins.end() )
-      factory->removeClient( *pIt );
+      plugin = plugins.prev();
+    }
 
     factory->removeClient( d->m_activePart );
 
@@ -98,17 +104,7 @@ void MainWindow::createGUI( Part * part )
 
   if ( !d->m_bShellGUIActivated )
   {
-    GUIActivateEvent ev( true );
-    QApplication::sendEvent( this, &ev );
-
-    factory->addClient( this );
-
-    plugins = Plugin::pluginClients( this );
-    pIt = plugins.begin();
-    pEnd = plugins.end();
-    for (; pIt != pEnd; ++pIt )
-      factory->addClient( *pIt );
-
+    createShellGUI();
     d->m_bShellGUIActivated = true;
   }
 
@@ -121,16 +117,14 @@ void MainWindow::createGUI( Part * part )
              this, SLOT( slotSetStatusBarText( const QString & ) ) );
 
     factory->addClient( part );
-    
+
     GUIActivateEvent ev( true );
     QApplication::sendEvent( part, &ev );
 
-    plugins = Plugin::pluginClients( part );
-    pIt = plugins.begin();
-    pEnd = plugins.end();
-
-    for (; pIt != pEnd; ++pIt )
-      factory->addClient( *pIt );
+    plugins = Plugin::pluginObjects( part );
+    QListIterator<Plugin> pIt( plugins );
+    for (; pIt.current(); ++pIt )
+      factory->addClient( pIt.current() );
   }
 
   setUpdatesEnabled( true );
@@ -142,6 +136,50 @@ void MainWindow::createGUI( Part * part )
 void MainWindow::slotSetStatusBarText( const QString & text )
 {
   statusBar()->message( text );
+}
+
+void MainWindow::createShellGUI( bool create )
+{
+    if ( create )
+    {
+        if ( isHelpMenuEnabled() )
+            d->m_helpMenu = new KHelpMenu( this, instance()->aboutData(), true, actionCollection() );
+
+        QString f = xmlFile();
+        setXMLFile( locate( "config", "ui/ui_standards.rc", instance() ) );
+        if ( !f.isEmpty() )
+            setXMLFile( f, true );
+        else
+        {
+            QString auto_file( instance()->instanceName() + "ui.rc" );
+            setXMLFile( auto_file, true );
+        }
+
+        GUIActivateEvent ev( true );
+        QApplication::sendEvent( this, &ev );
+
+        guiFactory()->addClient( this );
+
+        QList<Plugin> plugins = Plugin::pluginObjects( this );
+        QListIterator<Plugin> pIt( plugins );
+        for (; pIt.current(); ++pIt )
+            guiFactory()->addClient( pIt.current() );
+    }
+    else
+    {
+        GUIActivateEvent ev( false );
+        QApplication::sendEvent( this, &ev );
+
+        QList<Plugin> plugins = Plugin::pluginObjects( this );
+        Plugin *plugin = plugins.last();
+        while ( plugin )
+        {
+            guiFactory()->removeClient( plugin );
+            plugin = plugins.prev();
+        }
+
+        guiFactory()->removeClient( this );
+    }
 }
 
 #include "mainwindow.moc"

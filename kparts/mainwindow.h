@@ -77,6 +77,9 @@ protected slots:
    */
   virtual void slotSetStatusBarText( const QString & );
 
+protected:
+    virtual void createShellGUI( bool create = true );
+
 private:
   MainWindowPrivate *d;
 };

@@ -41,7 +41,6 @@ public:
     m_factory = 0L;
     m_parent = 0L;
     m_builder = 0L;
-    m_xmlFile = QString::null;
   }
   ~KXMLGUIClientPrivate()
   {
@@ -57,6 +56,7 @@ public:
   QList<KXMLGUIClient> m_children;
   KXMLGUIBuilder *m_builder;
   QString m_xmlFile;
+  QString m_localXMLFile;
 };
 
 KXMLGUIClient::KXMLGUIClient()
@@ -117,6 +117,18 @@ QString KXMLGUIClient::xmlFile() const
   return d->m_xmlFile;
 }
 
+QString KXMLGUIClient::localXMLFile() const
+{
+  if ( !d->m_localXMLFile.isEmpty() )
+    return d->m_localXMLFile;
+
+  if ( d->m_xmlFile[0] == '/' )
+      return QString::null; // can't save anything here
+
+  return locateLocal( "data", QString::fromLatin1( instance()->instanceName() + '/' ) + d->m_xmlFile );
+}
+
+
 void KXMLGUIClient::reloadXML()
 {
   if ( !d->m_xmlFile.isNull() )
@@ -175,6 +187,11 @@ void KXMLGUIClient::setXMLFile( const QString& _file, bool merge, bool setXMLDoc
 
   QString xml = KXMLGUIFactory::readConfigFile( file );
   setXML( xml, merge );
+}
+
+void KXMLGUIClient::setLocalXMLFile( const QString &file )
+{
+    d->m_localXMLFile = file;
 }
 
 void KXMLGUIClient::setXML( const QString &document, bool merge )

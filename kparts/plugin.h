@@ -44,17 +44,11 @@ namespace KParts
  * "data" (KDEDIR/share/apps usually)+"/instancename/kpartplugins/"
  * where instancename is the name of the part's instance.
  **/
-class Plugin : public QObject, public KXMLGUIClient
+class Plugin : public QObject, virtual public KXMLGUIClient
 {
     Q_OBJECT
 public:
-    struct PluginInfo
-    {
-        QString m_relXMLFileName; // relative filename, i.e. instanceName/kpartplugins/name
-        QString m_absXMLFileName; // full path of most recent filename matching the relative
-				  // filename
-        QDomDocument m_document;
-    };
+    struct PluginInfo;
 
     /**
      * Construct a new KParts plugin.
@@ -83,7 +77,7 @@ public:
      * QObject to retrieve the list of child objects inheritting @ref
      * KParts::Plugin .
      **/
-    static QValueList<KXMLGUIClient *> pluginClients( QObject *parent );
+    static QList<Plugin> pluginObjects( QObject *parent );
 
 protected:
     /**
@@ -100,6 +94,14 @@ protected:
     static Plugin* loadPlugin( QObject * parent, const char* libname );
 
 private:
+    struct PluginInfo
+    {
+        QString m_relXMLFileName; // relative filename, i.e. instanceName/kpartplugins/name
+        QString m_absXMLFileName; // full path of most recent filename matching the relative
+                                  // filename
+        QDomDocument m_document;
+    };
+
     class PluginPrivate;
     PluginPrivate *d;
 };

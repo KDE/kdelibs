@@ -104,6 +104,8 @@ public:
    */
   virtual QString xmlFile() const;
 
+  virtual QString localXMLFile() const;
+
   /**
    * @internal
    */
@@ -202,6 +204,8 @@ protected:
    *               and the DOM document at once.
    **/
   virtual void setXMLFile( const QString& file, bool merge = false, bool setXMLDoc = true );
+
+  virtual void setLocalXMLFile( const QString &file );
 
   /**
    * Set the XML for the part.

@@ -282,22 +282,23 @@ KEditToolbarWidget::KEditToolbarWidget( KXMLGUIFactory* factory,
   setFactory( factory );
 
   // add all of the client data
-  QValueList<KXMLGUIClient*> clients(factory->clients());
-  QValueList<KXMLGUIClient*>::ConstIterator it(clients.begin());
-  for( ; it != clients.end(); ++it)
+  QList<KXMLGUIClient> clients(factory->clients());
+  QListIterator<KXMLGUIClient> it( clients );
+  for( ; it.current(); ++it)
   {
-    KXMLGUIClient *client = (*it);
+    KXMLGUIClient *client = it.current();
 
     if (client->xmlFile().isNull())
       continue;
 
     XmlData data;
-    data.m_xmlFile = client->xmlFile();
-    if ( it == clients.begin() )
+    data.m_xmlFile = client->localXMLFile();
+    if ( it.atFirst() )
       data.m_type = XmlData::Shell;
     else
       data.m_type = XmlData::Part;
-    data.m_document.setContent(d->loadXMLFile(client->xmlFile()));
+//    data.m_document.setContent(d->loadXMLFile(client->xmlFile()));
+    data.m_document.setContent( KXMLGUIFactory::readConfigFile( client->xmlFile(), client->instance() ) );
     elem = data.m_document.documentElement().toElement();
     data.m_barList = d->findToolbars(elem);
     d->m_xmlFiles.append(data);
@@ -338,27 +339,28 @@ bool KEditToolbarWidget::save()
   if ( !factory() )
     return true;
 
-  QValueList<KXMLGUIClient*> clients(factory()->clients());
+  QList<KXMLGUIClient> clients(factory()->clients());
 
   // remove the elements starting from the last going to the first
-  QValueList<KXMLGUIClient*>::Iterator client(clients.fromLast());
-  for( ; client != clients.begin(); --client)
-    factory()->removeClient( *client );
+  KXMLGUIClient *client = clients.last();
+  while ( client )
+  {
+    factory()->removeClient( client );
+    client = clients.prev();
+  }
 
-  // also remove the first element (can't do it in the loop)
-  factory()->removeClient( *clients.begin() );
-
+  client = clients.first();
   // now, rebuild the gui from the first to the last
-  for ( client = clients.begin(); client != clients.end(); ++client )
+  for (; client; client = clients.next() )
   {
     // passing an empty stream forces the clients to reread the XML
-    (*client)->setXMLGUIBuildDocument( QDomDocument() );
+    client->setXMLGUIBuildDocument( QDomDocument() );
 
     // and this forces it to use the *new* XML file
-    (*client)->reloadXML();
+    client->reloadXML();
 
     // finally, do all the real work
-    factory()->addClient( *client );
+    factory()->addClient( client );
   }
 
   return true;

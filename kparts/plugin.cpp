@@ -50,7 +50,7 @@ Plugin::Plugin( QObject* parent, const char* name )
     : QObject( parent, name )
 {
   kdDebug() << className() << endl;
-  //  d = new PluginPrivate();
+//  d = new PluginPrivate();
 }
 
 Plugin::~Plugin()
@@ -92,7 +92,7 @@ QValueList<Plugin::PluginInfo> Plugin::pluginInfos( const KInstance * instance )
       info.m_absXMLFileName = KXMLGUIClient::findMostRecentXMLFile( mapIt.data(), doc );
       if ( !info.m_absXMLFileName.isEmpty() )
       {
-          kdDebug() << "found Plugin : " << info.m_absXMLFileName << " !" << endl;
+          kdDebug( 1000 ) << "found Plugin : " << info.m_absXMLFileName << " !" << endl;
           info.m_relXMLFileName = QString::fromLocal8Bit( instance->instanceName() ) + "/kpartplugins/" + mapIt.key();
 
           info.m_document.setContent( doc );
@@ -124,7 +124,8 @@ void Plugin::loadPlugins( QObject *parent, const QValueList<PluginInfo> &pluginI
 
      if ( plugin )
      {
-       plugin->setXMLFile( (*pIt).m_relXMLFileName, false, false );
+       plugin->setXMLFile( (*pIt).m_absXMLFileName, false, false );
+       plugin->setLocalXMLFile( locateLocal( "data", (*pIt).m_relXMLFileName ) );
        plugin->setDOMDocument( (*pIt).m_document );
      }
    }
@@ -157,23 +158,23 @@ Plugin* Plugin::loadPlugin( QObject * parent, const char* libname )
     return (Plugin*)obj;
 }
 
-QValueList<KXMLGUIClient *> Plugin::pluginClients( QObject *parent )
+QList<KParts::Plugin> Plugin::pluginObjects( QObject *parent )
 {
-  QValueList<KXMLGUIClient *> clients;
+  QList<KParts::Plugin> objects;
 
   if (!parent )
-    return clients;
+    return objects;
 
   QObjectList *plugins = parent->queryList( "KParts::Plugin", 0, false, false );
 
   QObjectListIt it( *plugins );
   while( it.current() )
   {
-    clients.append( (KXMLGUIClient *)((Plugin *)it.current()) );
+    objects.append( static_cast<Plugin *>( it.current() ) );
     ++it;
   }
 
-  return clients;
+  return objects;
 }
 
 #include "plugin.moc"
