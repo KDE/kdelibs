@@ -30,6 +30,7 @@ Name[sv]=Webbstil
 Name[ta]=Å¨Äô À¡ó¾õ
 Name[tr]=Web stili
 Name[vi]=Kiểu Web 
+Name[xxx]=xx
 Name[zh_CN.GB2312]=网站风格
 Comment=Web widget style
 Comment[af]=web gui-element styl
@@ -62,6 +63,7 @@ Comment[sv]=Webbskärmdels-stil
 Comment[ta]=Å¨Ä widget À¡ó¾õ
 Comment[tr]=Web aleti benzeri stil
 Comment[vi]=Kiểu Wed widget 
+Comment[xxx]=xx
 Comment[zh_CN.GB2312]=Web 部件风格
 [KDE]
 widgetStyle=webstyle.la

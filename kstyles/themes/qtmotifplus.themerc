@@ -11,6 +11,7 @@ Name[ko]=Qt 모티프 +
 Name[mk]=Qt Motif плус
 Name[no_NY]=Qt-Motif pluss
 Name[tr]=Qt Motif +
+Name[xxx]=xx
 Comment=Built-in enhanced Motif style
 Comment[af]=gebou-in verbeterde motif styl
 Comment[az]=Yerləşmiş, örtüsüz Motif tərzi
@@ -52,6 +53,7 @@ Comment[sv]=Inbyggd utökad Motif-stil
 Comment[ta]=¯ûÇ¨Áó¾ §ÁõÀÎò¾¢Â Motif À¡ó¾õ
 Comment[tr]=Yerleşik, temasız Motif stili
 Comment[vi]=Kiểu Motif cao cấp có sẵn 
+Comment[xxx]=xx
 Comment[zh_CN.GB2312]=内建的增强的 Motif 风格
 Comment[zh_TW.Big5]=內建的加強式 Motif 風格
 [KDE]

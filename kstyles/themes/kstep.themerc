@@ -9,6 +9,7 @@ Name[lv]=KDE Solis
 Name[mi]=Hikoi KDE
 Name[no]=KDE Steg
 Name[no_NY]=KDE-Step
+Name[xxx]=xx
 Comment=Unthemed Next-like style
 Comment[af]=ongetemade volgende-hou van styl
 Comment[bg]=Стил без тема, приличащ на Next
@@ -50,6 +51,7 @@ Comment[sv]=Otemad Next-liknande stil
 Comment[ta]=¯Õ¸ÕÅ¢øÄ¡ Next-§À¡ýÈ À¡ó¾õ
 Comment[tr]=Next benzeri temasız stil
 Comment[vi]=Kiểu Next chưa dùng theme 
+Comment[xxx]=xx
 Comment[zh_CN.GB2312]=没有主题的类似 Nextstep 的风格
 Comment[zh_TW.Big5]=非主題式的類 Next 風格
 [KDE]

@@ -3,6 +3,7 @@ Name=Qt CDE
 Name[af]=qt cde
 Name[de]=Qt-CDE
 Name[no_NY]=Qt-CDE
+Name[xxx]=xx
 Comment=Built-in unthemed CDE style
 Comment[af]=gebou-in ongetemade cde styl
 Comment[az]=Yerləşmiş, örtüsüz CDE tərzi
@@ -45,6 +46,7 @@ Comment[sv]=Inbyggd otemad CDE-stil
 Comment[ta]=¯ûÇ¨Áó¾ §ÁõÀÎò¾¢Â CDE À¡ó¾õ
 Comment[tr]=Yerleşik, temasız CDE stili
 Comment[vi]=Kiểu CDE chưa dùng theme có sẵn 
+Comment[xxx]=xx
 Comment[zh_CN.GB2312]=内建的无主题 CDE 风格
 Comment[zh_TW.Big5]=內建的非主題式 CDE 風格
 [KDE]

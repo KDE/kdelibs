@@ -41,6 +41,7 @@ Name[sv]=Färgrik förinställd
 Name[ta]=¯Â÷¿¢Èì ¦¸¡¼¡¿¢¨Ä
 Name[tr]=Yüksek Renk Öntanımlı
 Name[vi]=Mặc định Màu sáng 
+Name[xxx]=xx
 Name[zh_CN.GB2312]=默认的高色彩
 Comment=Highcolor version of the default style
 Comment[af]=hoë-kleur weergawe van die verstek styl
@@ -84,6 +85,7 @@ Comment[sv]=Färgrik version av den förinställda stilen
 Comment[ta]=¦¸¡¼¡¿¢¨Äô À¡ó¾ò¾¢ý ¯Â÷¿¢Èô À¾¢ôÒ
 Comment[tr]=Öntanımlı stilin yüksek renk versiyonu
 Comment[vi]=Kiểu mặc định cho phiên bản sáng màu 
+Comment[xxx]=xx
 Comment[zh_CN.GB2312]=默认风格的高色彩版本
 Comment[zh_TW.Big5]=預設風格的高彩版本
 [KDE]
