@@ -111,6 +111,8 @@ public:
     QPoint lastPos;
 };
 
+namespace
+{
 class QXEmbedAppFilter : public QObject
 {
 public:
@@ -118,7 +120,7 @@ public:
     ~QXEmbedAppFilter(){};
     bool eventFilter( QObject *, QEvent * );
 };
-
+} // namespace
 
 static QXEmbedAppFilter* filter = 0;
 static QPtrDict<QGuardedPtr<QWidget> > *focusMap = 0;

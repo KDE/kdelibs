@@ -120,12 +120,12 @@ static char* __xtransname = "_FontTrans";
 
 #ifdef ICE_t
 #if (defined(__STDC__) && !defined(UNIXCPP)) || defined(ANSICPP)
-#define TRANS(func) _KDE_IceTrans##func
+#define TRANS(func) _kde_IceTrans##func
 #else
-#define TRANS(func) _KDE_IceTrans/**/func
+#define TRANS(func) _kde_IceTrans/**/func
 #endif
 #ifdef XTRANSDEBUG
-static char* __xtransname = "_KDE_IceTrans";
+static char* __xtransname = "_kde_IceTrans";
 #endif
 #endif /* ICE_t */
 

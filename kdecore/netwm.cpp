@@ -446,7 +446,7 @@ fprintf(stderr, "NETWM: Warning readIcon() needs buffer adjustment!\n");
 
 
 template <class Z>
-RArray<Z>::RArray()
+NETRArray<Z>::NETRArray()
   : sz( 0 ),
     d( NULL )
 {
@@ -454,20 +454,20 @@ RArray<Z>::RArray()
 
 
 template <class Z>
-RArray<Z>::~RArray() {
+NETRArray<Z>::~NETRArray() {
     delete [] d;
 }
 
 
 template <class Z>
-void RArray<Z>::reset() {
+void NETRArray<Z>::reset() {
     sz = 0;
     delete[] d;
     d = NULL;
 }
 
 template <class Z>
-Z &RArray<Z>::operator[](int index) {
+Z &NETRArray<Z>::operator[](int index) {
     if (!d) {
 	d = new Z[index + 1];
 	memset( (void*) &d[0], 0, sizeof(Z) );

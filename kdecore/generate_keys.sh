@@ -43,7 +43,7 @@ echo -e $begin_line \
 		"\n#define MAX_KEY_MODIFIER_LENGTH   21  // \"SHIFT + CRTL + ALT + \" : " \
 		"\n#define MAX_FCTN_LENGTH           50  // arbitrary limit" \
 		"\n#define NB_KEYS                " `cat kckey_a | wc -l` \
-		"\nextern const KKeys KKEYS[NB_KEYS];" \
+		"\nextern const KKeys kde_KKEYS[NB_KEYS];" \
 		"\n\n#endif" \
 > kckey.h
 
@@ -52,7 +52,7 @@ echo -e $begin_line \
         "\n// Distributed under the GNU Library General Public License" \
 		"\n\n#include <qnamespace.h>" \
 		"\n#include \"kckey.h\"" \
-		"\n\nconst KKeys KKEYS[NB_KEYS] = {" \
+		"\n\nconst KKeys kde_KKEYS[NB_KEYS] = {" \
 > kckey.cpp
 
 cat kckey_a >> kckey.cpp

@@ -1404,7 +1404,7 @@ void KColorDialog::showColor( const KColor &color, const QString &name )
 
 static QWidget *kde_color_dlg_widget = 0;
 
-int kde_color_dlg_handler(XEvent *event)
+static int kde_color_dlg_handler(XEvent *event)
 {
     if (event->type == ButtonRelease)
     {

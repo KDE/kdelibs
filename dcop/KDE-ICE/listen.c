@@ -56,7 +56,7 @@ char		*errorStringRet;
     {
        char buf[128];
        sprintf(buf, "dcop%d-%d", getpid(), time(NULL)+count);
-       result = _KDE_IceTransMakeAllCOTSServerListeners (buf, &partial,
+       result = _kde_IceTransMakeAllCOTSServerListeners (buf, &partial,
                                               &transCount, &transConns);
        count++;
     }
@@ -76,7 +76,7 @@ char		*errorStringRet;
 	transCount * sizeof (struct _IceListenObj))) == NULL)
     {
 	for (i = 0; i < transCount; i++)
-	    _KDE_IceTransClose (transConns[i]);
+	    _kde_IceTransClose (transConns[i]);
 	free ((char *) transConns);
 	return (0);
     }
@@ -85,7 +85,7 @@ char		*errorStringRet;
 
     for (i = 0; i < transCount; i++)
     {
-	networkId = (char*)_KDE_IceTransGetMyNetworkId (transConns[i]);
+	networkId = (char*)_kde_IceTransGetMyNetworkId (transConns[i]);
 
 	if (networkId)
 	{
@@ -155,7 +155,7 @@ char		*errorStringRet;
     else
     {
 	for (i = 0; i < transCount; i++)
-	    _KDE_IceTransClose (transConns[i]);
+	    _kde_IceTransClose (transConns[i]);
     }
 
     free ((char *) listenObjs);
@@ -172,7 +172,7 @@ IceGetListenConnectionNumber (listenObj)
 IceListenObj listenObj;
 
 {
-    return (_KDE_IceTransGetConnectionNumber (listenObj->trans_conn));
+    return (_kde_IceTransGetConnectionNumber (listenObj->trans_conn));
 }
 
 
@@ -224,7 +224,7 @@ IceListenObj	*listenObjs;
 
 	for (i = 0; i < count; i++)
 	{
-	    if (_KDE_IceTransIsLocal (listenObjs[i]->trans_conn))
+	    if (_kde_IceTransIsLocal (listenObjs[i]->trans_conn))
 	    {
 		strcat (list, listenObjs[i]->network_id);
 		doneCount++;
@@ -237,7 +237,7 @@ IceListenObj	*listenObjs;
 	{
 	    for (i = 0; i < count; i++)
 	    {
-		if (!_KDE_IceTransIsLocal (listenObjs[i]->trans_conn))
+		if (!_kde_IceTransIsLocal (listenObjs[i]->trans_conn))
 		{
 		    strcat (list, listenObjs[i]->network_id);
 		    doneCount++;
@@ -265,7 +265,7 @@ IceListenObj *listenObjs;
     for (i = 0; i < count; i++)
     {
 	free (listenObjs[i]->network_id);
-	_KDE_IceTransClose (listenObjs[i]->trans_conn);
+	_kde_IceTransClose (listenObjs[i]->trans_conn);
 	free ((char *) listenObjs[i]);
     }
 

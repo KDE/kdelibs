@@ -2532,10 +2532,10 @@ IceConn          iceConn;
 {
 	BytesReadable_t bytes;
 
-	_KDE_IceTransSetOption(iceConn->trans_conn, TRANS_NONBLOCKING, 1);
-	if (_KDE_IceTransBytesReadable(iceConn->trans_conn, &bytes) < 0)
+	_kde_IceTransSetOption(iceConn->trans_conn, TRANS_NONBLOCKING, 1);
+	if (_kde_IceTransBytesReadable(iceConn->trans_conn, &bytes) < 0)
 		bytes= -1;
-	_KDE_IceTransSetOption(iceConn->trans_conn, TRANS_NONBLOCKING, 0);
+	_kde_IceTransSetOption(iceConn->trans_conn, TRANS_NONBLOCKING, 0);
 	return (bytes != 0);
 }
 #endif

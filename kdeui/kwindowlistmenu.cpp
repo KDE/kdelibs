@@ -39,6 +39,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "kwindowlistmenu.moc"
 
 // helper class
+namespace
+{
 class NameSortedInfoList : public QPtrList<KWin::Info>
 {
 public:
@@ -62,6 +64,7 @@ int NameSortedInfoList::compareItems( QPtrCollection::Item s1, QPtrCollection::I
     return title1.compare(title2);
 #endif
 }
+} // namespace
 
 KWindowListMenu::KWindowListMenu(QWidget *parent, const char *name)
   : KPopupMenu(parent, name)

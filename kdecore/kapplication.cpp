@@ -377,14 +377,14 @@ void KApplication::x11FilterDestroyed()
 // customizing accelerator handling -- hopefully in Qt.
 // For now, this is set whenever an accelerator is overriden
 // in KAccelEventHandler so that the AccelOverride isn't sent twice. -- ellis, 19/10/02
-extern bool g_bKillAccelOverride;
+extern bool kde_g_bKillAccelOverride;
 
 bool KApplication::notify(QObject *receiver, QEvent *event)
 {
     QEvent::Type t = event->type();
-    if (g_bKillAccelOverride)
+    if (kde_g_bKillAccelOverride)
     {
-       g_bKillAccelOverride = false;
+       kde_g_bKillAccelOverride = false;
        // Indicate that the accelerator has been overridden.
        if (t == QEvent::AccelOverride)
        {
@@ -392,7 +392,7 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
           return true;
        }
        else
-          kdWarning(125) << "g_bKillAccelOverride set, but received an event other than AccelOverride." << endl;
+          kdWarning(125) << "kde_g_bKillAccelOverride set, but received an event other than AccelOverride." << endl;
     }
 
     if ((t == QEvent::AccelOverride) || (t == QEvent::KeyPress))

@@ -106,6 +106,9 @@ libkdecore_la_SOURCES = libintl.cpp kapplication.cpp kautoconfig.cpp \
 
 libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(KDE_RPATH) $(KDE_MT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 6:0:2 -no-undefined
 libkdecore_la_LIBADD = malloc/libklmalloc.la $(SVGICON_LIB) ../dcop/libDCOP.la ../libltdl/libltdlc.la $(LIB_XEXT) $(LIBRESOLV) $(LIBUTIL) $(LIBART_LIBS) ../kdefx/libkdefx.la
+libkdecore_la_NMCHECK = $(srcdir)/libkdecore.nmcheck
+libkdecore_la_NMCHECKWEAK = $(srcdir)/libkdecore_weak.nmcheck $(srcdir)/libqt-mt_weak.nmcheck \
+	$(top_srcdir)/dcop/libDCOP_weak.nmcheck $(top_srcdir)/kdecore/standard_weak.nmcheck
 
 libkdecore_la_METASOURCES = AUTO
 
@@ -140,7 +143,7 @@ EXTRA_DIST = generate_keys.sh $(kdebug_DATA) Web.colors \
 kcharsets.lo: kentities.c
 
 parser: kentities.gperf
-	cd $(srcdir) && gperf -a -L "ANSI-C" -C -G -c -o -t -k '*' -NfindEntity -D -Hhash_Entity -Wwordlist_Entity -s 2 kentities.gperf > kentities.c
+	cd $(srcdir) && gperf -a -L "ANSI-C" -C -G -c -o -t -k '*' -Nkde_findEntity -D -Hhash_Entity -Wwordlist_Entity -s 2 kentities.gperf > kentities.c
 
 bin_PROGRAMS = kde-config kgrantpty
 

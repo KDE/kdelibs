@@ -118,6 +118,9 @@ scripts_SCRIPTS = preparetips
 scriptsdir = $(kde_bindir)
 
 libkdeui_la_METASOURCES = AUTO
+libkdeui_la_NMCHECK = $(srcdir)/libkdeui.nmcheck
+libkdeui_la_NMCHECKWEAK = $(srcdir)/libkdeui_weak.nmcheck $(top_srcdir)/kdecore/libkdecore_weak.nmcheck \
+	$(top_srcdir)/dcop/libDCOP_weak.nmcheck $(top_srcdir)/kdecore/libqt-mt_weak.nmcheck
 
 rcdir = $(kde_confdir)/ui
 rc_DATA = ui_standards.rc

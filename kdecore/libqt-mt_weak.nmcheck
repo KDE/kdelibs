@@ -1,0 +1,34 @@
+# KDE namespace check file
+
+# Qt classes
+Q*::*
+
+qstrcmp
+qstrcpy
+qstrlen
+qAlpha
+qRed
+qGreen
+qBlue
+qGray
+qRgba
+qRgb
+qSwap
+qCopy
+qHeapSort
+qHeapSortHelper
+qHeapSortPushDown
+qMakePair
+
+operator+
+operator-
+operator++
+operator--
+operator==
+operator!=
+operator<=
+operator>=
+operator>
+operator<
+operator>>
+operator<<

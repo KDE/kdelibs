@@ -25,19 +25,19 @@
 
 #include "kcatalogue.h"
 
-char *k_nl_find_msg(struct loaded_l10nfile *domain_file,
+char *k_nl_find_msg(struct kde_loaded_l10nfile *domain_file,
 	       const char *msgid);
 void k_nl_unload_domain (struct loaded_domain *domain);
 
 #ifndef KDE_USE_FINAL // with --enable-final, we're getting this from libintl.cpp
-struct loaded_l10nfile
+struct kde_loaded_l10nfile
 {
   const char *filename;
   int decided;
 
   const void *data;
 
-  loaded_l10nfile() : filename(0), decided(0), data(0) {}
+  kde_loaded_l10nfile() : filename(0), decided(0), data(0) {}
 };
 #endif
 
@@ -46,7 +46,7 @@ class KCataloguePrivate
 public:
   QString name;
 
-  loaded_l10nfile domain;
+  kde_loaded_l10nfile domain;
 };
 
 KCatalogue::KCatalogue(const QString & name)

@@ -111,24 +111,8 @@ namespace
 }
 
 
-struct KStylePrivate
+namespace
 {
-	bool  highcolor                : 1;
-	bool  useFilledFrameWorkaround : 1;
-	bool  etchDisabledText         : 1;
-	bool  scrollablePopupmenus     : 1;
-	bool  menuAltKeyNavigation     : 1;
-	bool  menuDropShadow           : 1;
-	int   popupMenuDelay;
-	float menuOpacity;
-
-	TransparencyEngine   transparencyEngine;
-	KStyle::KStyleScrollBarType  scrollbarType;
-	TransparencyHandler* menuHandler;
-	KStyle::KStyleFlags flags;
-};
-
-
 class TransparencyHandler : public QObject
 {
 	public:
@@ -154,7 +138,24 @@ class TransparencyHandler : public QObject
 		KStyle* kstyle;
 		TransparencyEngine te;
 };
+} // namespace
 
+struct KStylePrivate
+{
+	bool  highcolor                : 1;
+	bool  useFilledFrameWorkaround : 1;
+	bool  etchDisabledText         : 1;
+	bool  scrollablePopupmenus     : 1;
+	bool  menuAltKeyNavigation     : 1;
+	bool  menuDropShadow           : 1;
+	int   popupMenuDelay;
+	float menuOpacity;
+
+	TransparencyEngine   transparencyEngine;
+	KStyle::KStyleScrollBarType  scrollbarType;
+	TransparencyHandler* menuHandler;
+	KStyle::KStyleFlags flags;
+};
 
 // -----------------------------------------------------------------------------
 

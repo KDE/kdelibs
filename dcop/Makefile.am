@@ -32,6 +32,8 @@ check_PROGRAMS = testdcop testdcopc
 lib_LTLIBRARIES  = libDCOP.la dcopserver.la
 libDCOP_la_LIBADD = KDE-ICE/libkICE.la $(LIB_QT)
 libDCOP_la_LDFLAGS = $(KDE_RPATH) -version-info 6:0:2 -no-undefined $(all_libraries)
+libDCOP_la_NMCHECK = $(srcdir)/libDCOP.nmcheck
+libDCOP_la_NMCHECKWEAK = $(srcdir)/libDCOP_weak.nmcheck $(top_srcdir)/kdecore/libqt-mt_weak.nmcheck
 
 include_HEADERS = dcopclient.h dcopobject.h dcopstub.h dcopref.h dcoptypes.h kdatastream.h
 noinst_HEADERS = version.h dcopglobal.h dcopserver.h dcop-doc.h testdcop.h dcopsignals.h dcop-path.h

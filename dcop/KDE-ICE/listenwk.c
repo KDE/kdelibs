@@ -49,7 +49,7 @@ char		*errorStringRet;
     XtransConnInfo		*transConns = NULL;
 
 
-    if ((_KDE_IceTransMakeAllCOTSServerListeners (port, &partial,
+    if ((_kde_IceTransMakeAllCOTSServerListeners (port, &partial,
 	&transCount, &transConns) < 0) || (transCount < 1))
     {
 	*listenObjsRet = NULL;
@@ -65,7 +65,7 @@ char		*errorStringRet;
 	transCount * sizeof (struct _IceListenObj))) == NULL)
     {
 	for (i = 0; i < transCount; i++)
-	    _KDE_IceTransClose (transConns[i]);
+	    _kde_IceTransClose (transConns[i]);
 	free ((char *) transConns);
 	return (0);
     }
@@ -74,7 +74,7 @@ char		*errorStringRet;
 
     for (i = 0; i < transCount; i++)
     {
-	networkId = (char *)_KDE_IceTransGetMyNetworkId (transConns[i]);
+	networkId = (char *)_kde_IceTransGetMyNetworkId (transConns[i]);
 
 	if (networkId)
 	{
@@ -144,7 +144,7 @@ char		*errorStringRet;
     else
     {
 	for (i = 0; i < transCount; i++)
-	    _KDE_IceTransClose (transConns[i]);
+	    _kde_IceTransClose (transConns[i]);
     }
 
     free ((char *) listenObjs);

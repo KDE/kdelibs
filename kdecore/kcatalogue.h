@@ -22,7 +22,7 @@
 
 #include <qstring.h>
 
-struct loaded_l10nfile;
+struct kde_loaded_l10nfile;
 
 class KCataloguePrivate;
 

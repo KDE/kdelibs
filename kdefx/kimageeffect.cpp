@@ -44,7 +44,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using namespace std;
 
-inline unsigned int intensityValue(unsigned int color)
+static inline unsigned int intensityValue(unsigned int color)
 {
     return((unsigned int)((0.299*qRed(color) +
                            0.587*qGreen(color) +

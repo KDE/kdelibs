@@ -1,0 +1,6 @@
+# KDE namespace check file
+
+# various symbols coming from other non-Qt/KDE libraries
+
+# libstdc++
+std::*

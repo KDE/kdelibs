@@ -25,6 +25,8 @@
 #include <kdebug.h>
 #include <stdlib.h>
 
+namespace
+{
 struct string_entry {
   string_entry(QString _key, KSycocaEntry *_payload) 
   { keyStr = _key; key = keyStr.unicode(); length = keyStr.length(); payload = _payload; hash = 0; }
@@ -34,6 +36,7 @@ struct string_entry {
   QString keyStr;
   KSycocaEntry *payload;
 };
+}
 
 template class QPtrList<string_entry>;
 

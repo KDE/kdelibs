@@ -59,9 +59,9 @@ extern Atom qt_wm_state;
 #define	None	0L
 #endif
 
-Atom net_wm_context_help;
+static Atom net_wm_context_help;
 static Atom kde_wm_change_state;
-void kwin_net_create_atoms() {
+static void kwin_net_create_atoms() {
     if (!atoms_created){
 	const int max = 20;
 	Atom* atoms[max];
@@ -123,10 +123,16 @@ static void sendClientMessage(Window w, Atom a, long x){
   XSendEvent(qt_xdisplay(), w, False, mask, &ev);
 }
 
+namespace
+{
 class ContextWidget : public QWidget
 {
 public:
-    ContextWidget()
+    ContextWidget();
+    virtual bool x11Event( XEvent * ev);
+};
+
+ContextWidget::ContextWidget()
 	: QWidget(0,0)
     {
 	kwin_net_create_atoms();
@@ -144,7 +150,7 @@ public:
     }
 
 
-    bool x11Event( XEvent * ev)
+bool ContextWidget::x11Event( XEvent * ev)
     {
 	if ( ev->type == ButtonPress && ev->xbutton.button == Button1 ) {
 	    XUngrabPointer( qt_xdisplay(), ev->xbutton.time );
@@ -171,7 +177,7 @@ public:
 	}
 	return FALSE;
     }
-};
+} // namespace
 
 void KWin::invokeContextHelp()
 {

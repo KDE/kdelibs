@@ -187,6 +187,7 @@ class KAccelBase
  protected:
 	void slotRemoveAction( KAccelAction* );
 
+	struct X;
 	void createKeyList( QValueVector<struct X>& rgKeys );
 	bool insertConnection( KAccelAction* );
 	bool removeConnection( KAccelAction* );

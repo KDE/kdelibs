@@ -34,7 +34,6 @@
 
 #include <qcommonstyle.h>
 
-class TransparencyHandler;
 class KPixmap;
 
 class KStylePrivate;

@@ -240,7 +240,7 @@ connect new key sequences
 }
 */
 
-struct X
+struct KAccelBase::X
 {
 	uint iAction, iSeq, iVari;
 	KKeyServer::Key key;

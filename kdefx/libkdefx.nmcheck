@@ -1,0 +1,12 @@
+# KDE namespace check file
+
+# kdefx classes
+K*::*
+
+# these should preferably go in some namespace in KDE4
+kColorBitmaps
+kDrawBeButton
+kDrawRoundMask
+kDrawNextButton
+kDrawRoundButton
+kRoundMaskRegion

@@ -92,17 +92,17 @@ struct loaded_domain
   nls_uint32 *hash_tab;
 };
 
-struct loaded_l10nfile
+struct kde_loaded_l10nfile
 {
   const char *filename;
   int decided;
 
   const void *data;
 
-  loaded_l10nfile() : filename(0), decided(0), data(0) {}
+  kde_loaded_l10nfile() : filename(0), decided(0), data(0) {}
 };
 
-void k_nl_load_domain(struct loaded_l10nfile *__domain);
+void k_nl_load_domain(struct kde_loaded_l10nfile *__domain);
 
 static inline nls_uint32
 SWAP (nls_uint32  i)
@@ -155,11 +155,11 @@ struct string_desc
 };
 
 /* Prototypes for local functions.  */
-char *k_nl_find_msg  (struct loaded_l10nfile *domain_file,
+char *k_nl_find_msg  (struct kde_loaded_l10nfile *domain_file,
 			const char *msgid);
 
 char *
-k_nl_find_msg (struct loaded_l10nfile *domain_file, const char *msgid)
+k_nl_find_msg (struct kde_loaded_l10nfile *domain_file, const char *msgid)
 {
   size_t top, act, bottom;
   struct loaded_domain *domain;
@@ -272,7 +272,7 @@ hash_string (const char *str_param)
 /* Load the message catalogs specified by FILENAME.  If it is no valid
    message catalog do nothing.  */
 void
-k_nl_load_domain (struct loaded_l10nfile *domain_file)
+k_nl_load_domain (struct kde_loaded_l10nfile *domain_file)
 {
   int fd;
   struct stat st;

@@ -280,7 +280,7 @@ IceConn iceConn;
     }
 
     if (iceConn->trans_conn)
-	_KDE_IceTransClose (iceConn->trans_conn);
+	_kde_IceTransClose (iceConn->trans_conn);
 
     if (iceConn->connection_string)
 	free (iceConn->connection_string);

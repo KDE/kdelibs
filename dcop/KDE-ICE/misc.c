@@ -166,7 +166,7 @@ IceConnectionNumber (iceConn)
 IceConn iceConn;
 
 {
-    return (_KDE_IceTransGetConnectionNumber (iceConn->trans_conn));
+    return (_kde_IceTransGetConnectionNumber (iceConn->trans_conn));
 }
 
 
@@ -245,7 +245,7 @@ register char	 *ptr;
 	int nread;
 
 	if (iceConn->io_ok)
-	    nread = _KDE_IceTransRead (iceConn->trans_conn, ptr, (int) nleft);
+	    nread = _kde_IceTransRead (iceConn->trans_conn, ptr, (int) nleft);
 	else
 	    return (1);
 
@@ -371,7 +371,7 @@ register char	 *ptr;
 	int nwritten;
 
 	if (iceConn->io_ok)
-	    nwritten = _KDE_IceTransWrite (iceConn->trans_conn, ptr, (int) nleft);
+	    nwritten = _kde_IceTransWrite (iceConn->trans_conn, ptr, (int) nleft);
 	else
 	    return;
 
@@ -614,5 +614,5 @@ _IceGetPeerName (iceConn)
 IceConn iceConn;
 
 {
-    return ((char*)_KDE_IceTransGetPeerNetworkId (iceConn->trans_conn));
+    return ((char*)_kde_IceTransGetPeerNetworkId (iceConn->trans_conn));
 }

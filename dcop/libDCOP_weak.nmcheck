@@ -1,0 +1,10 @@
+# KDE namespace check file
+
+# DCOP classes
+DCOP*::*
+
+# these should preferably go in some namespace in KDE4
+dcopTypeName
+
+operator>>
+operator<<

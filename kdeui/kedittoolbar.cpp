@@ -52,6 +52,8 @@ static void dump_xml(const QDomDocument& doc)
 
 typedef QValueList<QDomElement> ToolbarList;
 
+namespace
+{
 class XmlData
 {
 public:
@@ -98,6 +100,7 @@ private:
   QString m_name;
   QString m_statusText;
 };
+} // namespace
 
 class KEditToolbarWidgetPrivate
 {

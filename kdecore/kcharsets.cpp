@@ -312,7 +312,7 @@ static struct ConversionHints
 // search an array of items index/data, index is const char*, data is T, find first matching index
 // and return data, or return 0
 template< typename T, typename Data >
-Data kcharsets_array_search( const T* start, const char* entry )
+static Data kcharsets_array_search( const T* start, const char* entry )
 {
     for( const T* pos = start;
          pos->index != 0;
@@ -377,7 +377,7 @@ QChar KCharsets::fromEntity(const QString &str)
         return res;
     }
 
-    const entity *e = findEntity(str.ascii(), str.length());
+    const entity *e = kde_findEntity(str.ascii(), str.length());
 
     if(!e)
     {

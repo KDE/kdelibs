@@ -10,34 +10,6 @@
 
 /**
  * @internal
- * Represents a key code and modifier combination.
- */
-class CodeMod
-{
- public:
-  /**
-   * The key code of the CodeMod.
-   */
-	uchar code;
-  /**
-   * The modifier flags of the CodeMod.
-   */
-	uint mod;
-
-	/**
-	 * Compares two CodeMods. 
-	 */
-	bool operator < ( const CodeMod& b ) const
-	{
-		if( code < b.code ) return true;
-		if( code == b.code && mod < b.mod ) return true;
-		return false;
-	}
-};
-typedef QMap<CodeMod, KAccelAction*> CodeModMap;
-
-/**
- * @internal
  */
 class KGlobalAccelPrivate : public QWidget, public KAccelBase
 {
@@ -61,6 +33,34 @@ class KGlobalAccelPrivate : public QWidget, public KAccelBase
 	void activated( const QString& sAction, const QString& sDesc, const KKeySequence& seq );
 
  protected:
+	/**
+	 * @internal
+	 * Represents a key code and modifier combination.
+	 */
+	class CodeMod
+	{
+	 public:
+	  /**
+	   * The key code of the CodeMod.
+	   */
+		uchar code;
+	  /**
+	   * The modifier flags of the CodeMod.
+	   */
+		uint mod;
+	
+		/**
+		 * Compares two CodeMods. 
+		 */
+		bool operator < ( const CodeMod& b ) const
+		{
+			if( code < b.code ) return true;
+			if( code == b.code && mod < b.mod ) return true;
+			return false;
+		}
+	};
+	typedef QMap<CodeMod, KAccelAction*> CodeModMap;
+
 	CodeModMap m_rgCodeModToAction;
 
 	/**

@@ -184,7 +184,7 @@ char 	   *errorStringRet;
      * Set close-on-exec so that programs that fork() don't get confused.
      */
 
-    _KDE_IceTransSetOption (iceConn->trans_conn, TRANS_CLOSEONEXEC, 1);
+    _kde_IceTransSetOption (iceConn->trans_conn, TRANS_CLOSEONEXEC, 1);
 
     iceConn->listen_obj = NULL;
 
@@ -435,7 +435,7 @@ char 	   *errorStringRet;
     if (iceConn && _IceWatchProcs)
     {
 #ifdef MINIX
-    _KDE_IceTransSetOption(iceConn->trans_conn, TRANS_NONBLOCKING, 1);
+    _kde_IceTransSetOption(iceConn->trans_conn, TRANS_NONBLOCKING, 1);
 #endif
 	/*
 	 * Notify the watch procedures that an iceConn was opened.
@@ -497,14 +497,14 @@ ConnectToPeer (char *networkIdsList, char **actualConnectionRet)
 
 	for (retry = ICE_CONNECTION_RETRIES; retry >= 0; retry--)
 	{
-	    if ((trans_conn = (XtransConnInfo)_KDE_IceTransOpenCOTSClient (address)) == NULL)
+	    if ((trans_conn = (XtransConnInfo)_kde_IceTransOpenCOTSClient (address)) == NULL)
 	    {
 		break;
 	    }
 
-	    if ((connect_stat = _KDE_IceTransConnect (trans_conn, address)) < 0)
+	    if ((connect_stat = _kde_IceTransConnect (trans_conn, address)) < 0)
 	    {
-		_KDE_IceTransClose (trans_conn);
+		_kde_IceTransClose (trans_conn);
 
 		if (connect_stat == TRANS_TRY_CONNECT_AGAIN)
 		{

@@ -967,13 +967,13 @@ KLocale::SignPosition KLocale::negativeMonetarySignPosition() const
   return m_negativeMonetarySignPosition;
 }
 
-inline void put_it_in( QChar *buffer, uint& index, const QString &s )
+static inline void put_it_in( QChar *buffer, uint& index, const QString &s )
 {
   for ( uint l = 0; l < s.length(); l++ )
     buffer[index++] = s.at( l );
 }
 
-inline void put_it_in( QChar *buffer, uint& index, int number )
+static inline void put_it_in( QChar *buffer, uint& index, int number )
 {
   buffer[index++] = number / 10 + '0';
   buffer[index++] = number % 10 + '0';

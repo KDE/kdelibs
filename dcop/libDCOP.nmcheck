@@ -1,0 +1,14 @@
+# KDE namespace check file
+
+# DCOP classes
+DCOP*::*
+kde_*
+
+# from (KDE) ICE
+
+KDE_Ice*
+_kde_Ice*
+
+# these should preferably go in some namespace in KDE4
+operator>>
+operator<<

@@ -37,7 +37,7 @@ Author: Ralph Mor, X Consortium
  * Function prototypes for internal ICElib functions
  */
 
-#define _IceRead _KDE_IceRead
+#define _IceRead _kde_IceRead
 
 extern Status _IceRead (
 #if NeedFunctionPrototypes
@@ -47,7 +47,7 @@ extern Status _IceRead (
 #endif
 );
 
-#define _IceReadSkip _KDE_IceReadSkip
+#define _IceReadSkip _kde_IceReadSkip
 
 extern void _IceReadSkip (
 #if NeedFunctionPrototypes
@@ -56,7 +56,7 @@ extern void _IceReadSkip (
 #endif
 );
 
-#define _IceWrite _KDE_IceWrite
+#define _IceWrite _kde_IceWrite
 
 extern void _IceWrite (
 #if NeedFunctionPrototypes
@@ -66,10 +66,10 @@ extern void _IceWrite (
 #endif
 );
 
-#define _IceWriteHandler _KDE_IceWriteHandler
+#define _IceWriteHandler _kde_IceWriteHandler
 extern IceWriteHandler _IceWriteHandler;
 
-#define _IceErrorBadMinor _KDE_IceErrorBadMinor
+#define _IceErrorBadMinor _kde_IceErrorBadMinor
 
 extern void _IceErrorBadMinor (
 #if NeedFunctionPrototypes
@@ -80,7 +80,7 @@ extern void _IceErrorBadMinor (
 #endif
 );
 
-#define _IceErrorBadState _KDE_IceErrorBadState
+#define _IceErrorBadState _kde_IceErrorBadState
 
 extern void _IceErrorBadState (
 #if NeedFunctionPrototypes
@@ -91,7 +91,7 @@ extern void _IceErrorBadState (
 #endif
 );
 
-#define _IceErrorBadLength _KDE_IceErrorBadLength
+#define _IceErrorBadLength _kde_IceErrorBadLength
 
 extern void _IceErrorBadLength (
 #if NeedFunctionPrototypes
@@ -102,7 +102,7 @@ extern void _IceErrorBadLength (
 #endif
 );
 
-#define _IceErrorBadValue _KDE_IceErrorBadValue
+#define _IceErrorBadValue _kde_IceErrorBadValue
 
 extern void _IceErrorBadValue (
 #if NeedFunctionPrototypes

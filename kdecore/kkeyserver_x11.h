@@ -17,8 +17,6 @@ namespace KKeyServer
 	 */
 	enum ExtraModFlag { MODE_SWITCH = 0x2000 };
 	
-	struct CodeMod	{ int code, mod; };
-
 	/**
 	 * Represents a key symbol.
 	 * @see KKey

@@ -1639,7 +1639,7 @@ void KSVGIconPainter::drawPolygon(QPointArray polyArray)
 
 // Path parsing tool
 // parses the coord into number and forwards to the next token
-const char *getCoord(const char *ptr, double &number)
+static const char *getCoord(const char *ptr, double &number)
 {
 	int integer, exponent;
 	double decimal, frac;

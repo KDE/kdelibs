@@ -34,9 +34,6 @@
 #include <dcopclient.h>
 #include "netwm.h"
 
-extern Atom net_wm_context_help;
-extern void kwin_net_create_atoms();
-
 static KWinModulePrivate* static_d = 0;
 
 class KWinModulePrivate : public QWidget, public NETRootInfo
@@ -56,7 +53,6 @@ public:
 				     -1, false
 				     )
     {
-	kwin_net_create_atoms();
 	kapp->installX11EventFilter( this );
 	(void ) kapp->desktop(); //trigger desktop widget creation to select root window events
 	updateStackingOrder();

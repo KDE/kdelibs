@@ -46,7 +46,7 @@
 // KAccelEventHandler
 //---------------------------------------------------------------------
 
-bool g_bKillAccelOverride = false;
+bool kde_g_bKillAccelOverride = false;
 
 class KAccelEventHandler : public QWidget
 {
@@ -111,7 +111,7 @@ bool KAccelEventHandler::x11Event( XEvent* pEvent )
 		// If the Override event was accepted from a non-KAccel widget,
 		//  then kill the next AccelOverride in KApplication::notify.
 		if( ke.isAccepted() && !g_bAccelActivated )
-			g_bKillAccelOverride = true;
+			kde_g_bKillAccelOverride = true;
 
 		// Stop event processing if a KDE accelerator was activated.
 		return g_bAccelActivated;

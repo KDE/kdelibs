@@ -57,6 +57,8 @@ template class QPtrList<KDialogBaseButton>;
 /**
  * @internal
  */
+namespace
+{
 struct SButton : public Qt
 {
   SButton()
@@ -77,6 +79,7 @@ struct SButton : public Qt
   int style;
   QPtrList<KDialogBaseButton> list;
 };
+}// namespace
 
 class KDialogBase::KDialogBasePrivate {
 public:

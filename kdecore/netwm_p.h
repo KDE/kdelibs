@@ -35,19 +35,19 @@
    @internal  
 **/
 
-template <class Z> class RArray {
+template <class Z> class NETRArray {
 public:
     /**
        Constructs an empty (size == 0) array.
     **/
 
-    RArray();
+    NETRArray();
 
     /**
        Resizable array destructor.
     **/
 
-    ~RArray();
+    ~NETRArray();
 
     /**
        The [] operator does the work.  If the index is larger than the current
@@ -89,12 +89,12 @@ struct NETRootInfoPrivate {
 
     // data that changes (either by the window manager or by a client)
     // and requires updates
-    RArray<NETPoint> viewport;
-    RArray<NETRect> workarea;
+    NETRArray<NETPoint> viewport;
+    NETRArray<NETRect> workarea;
     NETSize geometry;
     Window active;
     Window *clients, *stacking, *virtual_roots, *kde_system_tray_windows;
-    RArray<const char *> desktop_names;
+    NETRArray<const char *> desktop_names;
     int number_of_desktops;
     int current_desktop;
 
@@ -119,7 +119,7 @@ struct NETWinInfoPrivate {
     NET::MappingState mapping_state;
     Bool mapping_state_dirty;
 
-    RArray<NETIcon> icons;
+    NETRArray<NETIcon> icons;
     int icon_count;
 
     NETRect icon_geom, win_geom;

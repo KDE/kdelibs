@@ -25,6 +25,9 @@ INCLUDES= $(all_includes)
 lib_LTLIBRARIES = libkdefx.la
 libkdefx_la_LDFLAGS = $(KDE_RPATH) $(KDE_MT_LDFLAGS) $(all_libraries) -no-undefined -version-info 6:0:2
 libkdefx_la_LIBADD = $(LIB_QT) $(LIB_XRENDER)
+libkdefx_la_NMCHECK = $(srcdir)/libkdefx.nmcheck
+libkdefx_la_NMCHECKWEAK = $(srcdir)/libkdefx_weak.nmcheck $(top_srcdir)/kdecore/libqt-mt_weak.nmcheck \
+	$(top_srcdir)/kdecore/standard_weak.nmcheck
 
 include_HEADERS = kpixmap.h kpixmapsplitter.h \
 	kpixmapeffect.h kimageeffect.h kdrawutil.h kstyle.h
