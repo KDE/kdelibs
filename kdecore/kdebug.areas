@@ -163,12 +163,12 @@
 11000	libkdegames
 11001	libkdegames (KGame)
 
-#Kant/KWrite
-13000   Kant
-13010   Kant (XML)
-13020   Kant (Document)
-13030   Kant (View)
-13040   Kant (Plugins)
+#Kate/KWrite
+13000   Kate
+13010   Kate (XML)
+13020   Kate (Document)
+13030   Kate (View)
+13040   Kate (Plugins)
 
 
 # KDB
