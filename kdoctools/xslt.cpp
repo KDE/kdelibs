@@ -24,6 +24,7 @@
 #include <kcharsets.h>
 #include <gzip/kgzipfilter.h>
 #include <bzip2/kbzip2filter.h>
+#include <klibloader.h>
 
 #if !defined( SIMPLE_XSLT )
 extern HelpProtocol *slave;
@@ -282,9 +283,26 @@ void fillInstance(KInstance &ins) {
     xmlLoadCatalogs(catalogs.latin1());
 }
 
+extern "C" void *init_kbzip2filter();
+
+static QIODevice *getBZip2device(const QString &fileName )
+{
+    QFile * f = new QFile( fileName );
+    KLibFactory * factory = static_cast<KLibFactory*>(init_kbzip2filter());
+    KFilterBase * base = static_cast<KFilterBase*>( factory->create(0, "bzip2" ) );
+
+    if ( base )
+    {
+        base->setDevice(f, true);
+        return new KFilterDev(base, true);
+    }
+    return 0;
+}
+
 bool saveToCache( const QString &contents, const QString &filename )
 {
-    QIODevice *fd = KFilterDev::deviceForFile(filename);
+    kdDebug() << "saveToCache " << filename << endl;
+    QIODevice *fd = ::getBZip2device(filename);
 
     if (!fd->open(IO_WriteOnly))
     {
@@ -308,7 +326,7 @@ static bool readCache( const QString &filename,
         return false;
 
     kdDebug( 7119 ) << "create filter" << endl;
-    QIODevice *fd = KFilterDev::deviceForFile(cache);
+    QIODevice *fd = ::getBZip2device(cache);
 
     if (!fd->open(IO_ReadOnly))
     {
