@@ -25,7 +25,7 @@ data_DATA = x-dvi.desktop x-tex-gf.desktop x-gzip.desktop \
 	x-kformula.desktop x-kivio.desktop x-kontour.desktop \
 	x-kpresenter.desktop x-krita.desktop x-kspread-crypt.desktop \
 	x-kspread.desktop x-kugar.desktop x-kword-crypt.desktop x-kword.desktop \
-	x-quattropro.desktop x-amipro.desktop x-tgif.desktop x-xfig.desktop \
+	x-quattropro.desktop x-amipro.desktop x-tgif.desktop \
 	x-lyx.desktop x-zerosize.desktop x-kpovmodeler.desktop x-cda.desktop \
 	pkcs7-mime.desktop pkcs10.desktop sieve.desktop \
 	x-hancomword.desktop
