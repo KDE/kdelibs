@@ -888,14 +888,16 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                         ++src;
                     }
                     else {
-                        AttrImpl* a;
+                        AttrImpl* a = 0;
                         if(*buffer)
                             a = new AttrImpl(parser->docPtr(), (int)*buffer);
-                        else
+                        else if ( !attrName.isEmpty() && attrName != "/" )
                             a = new AttrImpl(parser->docPtr(), attrName);
 
-                        a->setValue("");
-                        currToken.insertAttr(a);
+                        if ( a ) {
+                            a->setValue("");
+                            currToken.insertAttr(a);
+                        }
 
                         dest = buffer;
                         tag = SearchAttribute;
