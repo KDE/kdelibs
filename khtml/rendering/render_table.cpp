@@ -705,62 +705,64 @@ int RenderTable::distributeMaxWidth(int distrib, LengthType/* distType*/,
 void RenderTable::calcSingleColMinMax(int c, ColInfo* col)
 {
 #ifdef TABLE_DEBUG
-    kdDebug( 6040 ) << "RenderTable::calcSingleColMinMax()" << endl;
+	kdDebug( 6040 ) << "RenderTable::calcSingleColMinMax()" << endl;
 #endif
-
-    int span=col->span;
-    int smin = col->min;
-    int smax = col->max;
-
-    if (span==1)
-    {
-      //kdDebug( 6040 ) << "col (s=1) c=" << c << ",m=" << smin << ",x=" << smax << endl;
-        colMinWidth[c] = smin;
-        colMaxWidth[c] = smax;
-        colValue[c] = col->value;
-        colType[c] = col->type;
-    }
-    else
-    {
-        int oldmin=0;
-        int oldmax=0;
-        for (int o=c; o<c+span; ++o)
-        {
-            oldmin+=colMinWidth[o];
-            oldmax+=colMaxWidth[o];
-        }
-        int spreadmin = smin-oldmin-(span-1)*spacing;
-//        kdDebug( 6040 ) << "colmin " << smin  << endl;
-//        kdDebug( 6040 ) << "oldmin " << oldmin  << endl;
-//        kdDebug( 6040 ) << "oldmax " << oldmax  << endl;
-//      kdDebug( 6040 ) << "spreading span " << spreadmin  << endl;
-        spreadSpanMinMax
-            (c, span, spreadmin, 0 , col->type);
-
-	if (col->type == Percent || col->type == Relative) {
-	    int tmax=0;
-	    int tdis=0;
-	    int cval=col->value;
-
-	    for (int o=c; o < c+span; ++o) {
-		if (colType[o] == col->type && colValue[o] > 0)
-		    cval = kMax(0, (cval - colValue[o]));
-		else
-		    tmax += kMax(1, colMaxWidth[o]);
-	    }
-
-	    for (int o=c; o < c+span; ++o) {
-		if (colType[o] != col->type || colValue[o] == 0) {
-		    int n=tdis;
-		    tdis += (cval * kMax(1, colMaxWidth[o]));
-		    if (colType[o] == col->type) {
-			colValue[o] = (tdis/tmax - n/tmax);
-		    }
-		}
-	    }
+	
+	int span=col->span;
+	int smin = col->min;
+	int smax = col->max;
+	
+	if (span==1)
+	{
+		//kdDebug( 6040 ) << "col (s=1) c=" << c << ",m=" << smin << ",x=" << smax << endl;
+		colMinWidth[c] = smin;
+		colMaxWidth[c] = smax;
+		colValue[c] = col->value;
+		colType[c] = col->type;
 	}
-    }
-
+	else
+	{
+		int oldmin=0;
+		int oldmax=0;
+		for (int o=c; o<c+span; ++o)
+		{
+			oldmin+=colMinWidth[o];
+			oldmax+=colMaxWidth[o];
+		}
+		
+		int spreadmin = smin-oldmin-(span-1)*spacing;
+		spreadSpanMinMax(c, span, spreadmin, 0 , col->type);
+		
+		if (col->type == Percent || col->type == Relative) 
+		{
+			int tmax=0;
+			int tdis=0;
+			int cval=col->value;
+			
+			for (int o=c; o < c+span; ++o) 
+			{
+				if (colType[o] == col->type && colValue[o] > 0)
+					cval = kMax(0, (cval - colValue[o]));
+				else
+					tmax += kMax(1, colMaxWidth[o]);
+			}
+			
+			for (int o=c; o < c+span; ++o) 
+			{
+				if (colType[o] == col->type )
+					continue;
+				if ( colValue[o] == 0 ) 
+				{
+					int n=tdis;
+					tdis += (cval * kMax(1, colMaxWidth[o]));
+					if (colType[o] == col->type) 
+					{
+						colValue[o] = (tdis/tmax - n/tmax);
+					}
+				}
+			}
+		}
+	}
 }
 
 void RenderTable::calcFinalColMax(int c, ColInfo* col)
