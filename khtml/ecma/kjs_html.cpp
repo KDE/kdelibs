@@ -55,29 +55,10 @@ Value KJS::HTMLDocFunction::tryCall(ExecState *exec, Object &thisObj, const List
   DOM::HTMLDocument doc = static_cast<KJS::HTMLDocument *>(thisObj.imp())->toDocument();
   String s;
   DOM::HTMLElement element;
-  DOM::HTMLCollection coll;
 
   Value v = args[0];
 
   switch (id) {
-  case HTMLDocument::Images:
-    coll = doc.images();
-    break;
-  case HTMLDocument::Applets:
-    coll = doc.applets();
-    break;
-  case HTMLDocument::Links:
-    coll = doc.links();
-    break;
-  case HTMLDocument::Forms:
-    coll = doc.forms();
-    break;
-  case HTMLDocument::Anchors:
-    coll = doc.anchors();
-    break;
-  case HTMLDocument::All:
-    coll = doc.all();
-    break;
   case HTMLDocument::Open:
     // this is just a dummy function,  has no purpose anymore
     //doc.open();
@@ -203,6 +184,9 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
     case Anchors:
       return getHTMLCollection(exec,doc.anchors());
     case All:
+      // Disable document.all when we try to be Netscape-compatible
+      if ( exec->interpreter()->compatMode() == Interpreter::NetscapeCompat )
+        return Undefined();
       return getHTMLCollection(exec,doc.all());
     case Open:
     case Close:

@@ -245,7 +245,12 @@ void KJSProxyImpl::initScript()
   QString userAgent = KProtocolManager::userAgentForHost(m_part->url().host());
   if (userAgent.find(QString::fromLatin1("Microsoft")) >= 0 ||
       userAgent.find(QString::fromLatin1("MSIE")) >= 0)
-    m_script->setIECompatMode(true);
+    m_script->setCompatMode(Interpreter::IECompat);
+  else
+    // If we find "Mozilla" but not "(compatible, ...)" we are a real Netscape
+    if (userAgent.find(QString::fromLatin1("Mozilla")) >= 0 &&
+        userAgent.find(QString::fromLatin1("compatible")) == -1)
+      m_script->setCompatMode(Interpreter::NetscapeCompat);
 }
 
 // Helper method, so that all classes which need jScript() don't need to be added
