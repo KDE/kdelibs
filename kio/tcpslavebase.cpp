@@ -4,6 +4,8 @@
 #include <config.h>
 #endif
 
+#undef HAVE_SSL
+
 #include <sys/types.h>
 #include <sys/uio.h>
 

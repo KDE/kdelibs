@@ -26,6 +26,7 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+#undef HAVE_SSL
 
 #include <sys/types.h>
 
