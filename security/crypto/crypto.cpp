@@ -44,6 +44,7 @@
 #include <qfileinfo.h>
 #include <qcheckbox.h>
 #include <qcombobox.h>
+#include <qregexp.h>
 
 #include <kfiledialog.h>
 #include <klineedit.h>
