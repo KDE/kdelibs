@@ -56,6 +56,8 @@ public:
    * Constructor.  You may pass in arguments to create a service with
    * specific properties
    */
+  /*
+    Commented out, to see if it's really used
   KService( const QString& _name, const QString& _exec, const QString &_corbaexec,
             const QString& _icon, const QStringList& _lstServiceTypes,
 	    const QString& _comment = QString::null, bool _allow_as_default = true,
@@ -64,10 +66,13 @@ public:
 	    const QStringList& _repoids = QStringList(),
 	    const QString& _lib = QString::null, int _minor = 0, int _major = 0, 
             const QStringList& _deps = QStringList());
+  */
   /**
-   * Construct a service and take all informations from a @ref KSimpleConfig object.
+   * Construct a service and take all informations from a config file
+   * @param _fullpath full path to the config file
    */
-  KService( KSimpleConfig& _cfg );
+  KService( const QString & _fullpath );
+
   /**
    * @internal construct a service from a stream. 
    * The stream must already be positionned at the correct offset
@@ -88,11 +93,6 @@ public:
    * @return the command that the service executes.
    */
   QString exec() const { return m_strExec; }
-  /**
-   * @return the command that the CORBA based service executes.
-   *         (usually something like "myapp --server" )
-   */
-  //  QString CORBAExec() const { return m_strCORBAExec; }
   /**
    * @return the name of the library that contains the services
    *         implementation.
@@ -131,24 +131,39 @@ public:
    * @return the path to the location where the service desktop entry
    * is stored.
    */
+  QString zzz() const;
+  /**
+   * @return the working directory to run the program in
+   */
   QString path() const { return m_strPath; }
   /**
    * @return the descriptive comment for the service, if there is one.
    */
   QString comment() const { return m_strComment; }
   /**
+   * @return the command that the CORBA based service executes.
+   *         (usually something like "myapp --server" )
+   */
+  //  QString CORBAExec() const { return m_strCORBAExec; }
+  /**
    * @return the CORBA activation mode for the service, if there is one.
    *         (to be used for the IMR)
    */
-  QString activationMode() const { return m_strActivationMode; }
+  //QString activationMode() const { return m_strActivationMode; }
   /**
    * @return the CORBA Repository IDs for the service, if there are any.
    */
-  QStringList repoIds() const { return m_lstRepoIds; }
+  //QStringList repoIds() const { return m_lstRepoIds; }
 
   /**
-   * @return the filename of the desktop entry file responsible for
+   * @return the relative path to the desktop entry file responsible for
    *         these services.
+   * For instance Internet/kppp.desktop
+   */
+  QString relativeFilePath() const { return m_strRelativeFilePath; }
+
+  /**
+   * @return the service types that this service supports
    */
   QStringList serviceTypes() const { return m_lstServiceTypes; }
   /**
@@ -230,6 +245,7 @@ private:
   QStringList m_lstLibraryDeps;
   QStringList m_lstServiceTypes;
   bool m_bAllowAsDefault;
+  QString m_strRelativeFilePath;
   QMap<QString,QVariant> m_mapProps;
   bool m_bValid;
 };

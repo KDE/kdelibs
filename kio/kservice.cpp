@@ -37,8 +37,13 @@
 
 #include <ksimpleconfig.h>
 #include <kapp.h>
+#include <kglobal.h>
+#include <kstddirs.h>
 #include <kdebug.h>
 #include <klocale.h>
+
+/*
+  Commented out, to see if it's really used...
 
 KService::KService( const QString& _name, const QString& _exec, const QString &_corbaexec,
                     const QString& _icon, const QStringList& _lstServiceTypes,
@@ -68,16 +73,13 @@ KService::KService( const QString& _name, const QString& _exec, const QString &_
   m_libraryMinor = _minor;
   m_lstLibraryDeps = deps;
 }
-
-/*
-KService::KService()
-{
-  m_bValid = false;
-}
 */
 
-KService::KService( KSimpleConfig& config )
+KService::KService( const QString & _fullpath )
 {
+  KSimpleConfig config( _fullpath, true );
+  config.setDesktopGroup();
+
   m_bValid = true;
 
   config.setDesktopGroup();
@@ -104,11 +106,11 @@ KService::KService( KSimpleConfig& config )
     return;
   }
 
-  m_strCORBAExec = config.readEntry( "CORBAExec" ); //should we use X-KDE-CORBAExec instead?? (Simon)
-  m_strIcon = config.readEntry( "Icon", "unknown.xpm" );
+  m_strIcon = config.readEntry( "Icon", "unknown.png" );
   m_strTerminalOptions = config.readEntry( "TerminalOptions" );
   m_strPath = config.readEntry( "Path" );
   m_strComment = config.readEntry( "Comment" );
+  m_strCORBAExec = config.readEntry( "X-KDE-CORBAExec" );
   m_strActivationMode = config.readEntry( "X-KDE-ActivationMode", "UNIX" );
   m_lstRepoIds = config.readListEntry( "X-KDE-RepoIds" );
   m_strLibrary = config.readEntry( "X-KDE-Library" );
@@ -118,6 +120,23 @@ KService::KService( KSimpleConfig& config )
   m_lstServiceTypes = config.readListEntry( "ServiceTypes" );
   // For compatibility with KDE 1.x
   m_lstServiceTypes += config.readListEntry( "MimeType", ';' );
+  
+  // Find the relative path out of the full path
+  QStringList dirs = KGlobal::dirs()->resourceDirs(
+    m_strType == "Application" ? "apps" : "services"
+  );
+  QStringList::ConstIterator dirsit = dirs.begin();
+  for ( ; dirsit != dirs.end() && m_strRelativeFilePath.isEmpty(); ++dirsit ) {
+    // might need canonicalPath() ...
+    if ( _fullpath.find( *dirsit ) == 0 ) // path is dirs + relativePath
+      m_strRelativeFilePath = _fullpath.mid( (*dirsit).length() ); // skip appsdirs
+  }
+  if ( m_strRelativeFilePath.isEmpty() )
+    kdebug( KDEBUG_FATAL, 1203, QString("Couldn't find %1 in any apps dir !!!").arg( _fullpath ) );
+  /*
+  else
+    kdebug( KDEBUG_INFO, 1203, m_strRelativeFilePath );
+  */
 
   if ( m_strType == "Application" )
     // Specify AllowDefault = false to explicitely forbid it.
@@ -160,7 +179,8 @@ void KService::load( QDataStream& s )
 {
   Q_INT8 b;
 
-  s >> m_strType >> m_strName >> m_strExec >> m_strCORBAExec >> m_strIcon >> m_strTerminalOptions
+  s >> m_strType >> m_strName >> m_strExec /*>> m_strCORBAExec */ >> m_strRelativeFilePath
+    >> m_strIcon >> m_strTerminalOptions
     >> m_strPath >> m_strComment >> m_lstServiceTypes >> b >> m_mapProps
     >> m_strActivationMode >> m_strLibrary >> m_libraryMajor >> m_libraryMinor >> m_lstRepoIds;
   m_bAllowAsDefault = b;
@@ -173,7 +193,10 @@ void KService::save( QDataStream& s )
   KSycocaEntry::save( s );
   Q_INT8 b = m_bAllowAsDefault;
 
-  s << m_strType << m_strName << m_strExec << m_strCORBAExec << m_strIcon << m_strTerminalOptions
+  // Warning adding/removing fields here involves a binary incompatible change - update version 
+  // number in ksycoca.h
+  s << m_strType << m_strName << m_strExec /* << m_strCORBAExec */ << m_strRelativeFilePath
+    << m_strIcon << m_strTerminalOptions
     << m_strPath << m_strComment << m_lstServiceTypes << b << m_mapProps
     << m_strActivationMode << m_strLibrary << m_libraryMajor << m_libraryMinor << m_lstRepoIds;
 }

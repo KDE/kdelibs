@@ -253,6 +253,8 @@ void KMimeType::load( QDataStream& _str, bool _parentLoaded )
 void KMimeType::save( QDataStream& _str )
 {
   KServiceType::save( _str );
+  // Warning adding/removing fields here involves a binary incompatible change - update version 
+  // number in ksycoca.h
   _str << m_lstPatterns;
 }
 
@@ -469,7 +471,7 @@ bool KDEDesktopMimeType::run( const QString& _url, bool _is_local )
   if ( type == "FSDevice" )
     return runFSDevice( _url, cfg );
   else if ( type == "Application" )
-    return runApplication( _url, cfg );
+    return runApplication( _url, u.path() );
   else if ( type == "Link" )
     return runLink( _url, cfg );
   else if ( type == "MimeType" )
@@ -518,9 +520,9 @@ bool KDEDesktopMimeType::runFSDevice( const QString& _url, KSimpleConfig &cfg )
   return true;
 }
 
-bool KDEDesktopMimeType::runApplication( const QString& , KSimpleConfig &cfg )
+bool KDEDesktopMimeType::runApplication( const QString& , const QString & _serviceFile )
 {
-  KService s( cfg );
+  KService s( _serviceFile );
   if ( !s.isValid() )
     // The error message was already displayed, so we can just quit here
     return false;

@@ -158,7 +158,8 @@ URL		if entry is Link type, the URL to access	string		NO	YES
 
 Notes:
 
-(1) possible values are Application, Link, FSDevice, MimeType, Directory 
+(1) possible values are Application, Link, FSDevice, MimeType, Directory,
+    Service, ServiceType
 
 (2) historically these have been represented by the numeric entries 0
     or 1.  With this version of the standard they are now to be
@@ -197,6 +198,8 @@ program if necessary.  Recognized fields are as follows:
      additional file arguments.
 
 %u - a list of URLs.
+
+%U - a single URL.
 
 %d - the working directory.
 

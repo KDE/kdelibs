@@ -95,6 +95,8 @@ void
 KServiceType::save( QDataStream& _str )
 {
   KSycocaEntry::save( _str );
+  // Warning adding/removing fields here involves a binary incompatible change - update version 
+  // number in ksycoca.h
   _str << m_strName << m_strIcon << m_strComment << m_mapProps << m_mapPropDefs << (Q_INT8)m_bValid;
 }
 

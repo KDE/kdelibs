@@ -51,9 +51,7 @@ KSycocaEntry * KServiceFactory::createEntry( const QString& file )
   if ( file.right(1) == "~" || file.right(4) == ".bak" || ( file[0] == '%' && file.right(1) == "%" ) )
       return 0;
 
-  KSimpleConfig cfg( file, true);
-  cfg.setDesktopGroup();
-  KService * serv = new KService( cfg );
+  KService * serv = new KService( file );
 
   if ( serv->isValid() )
      return serv;

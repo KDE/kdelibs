@@ -254,7 +254,7 @@ public:
 
 protected:
   static bool runFSDevice( const QString& _url, KSimpleConfig &cfg );
-  static bool runApplication( const QString& _url, KSimpleConfig &cfg );
+  static bool runApplication( const QString& _url, const QString & _serviceFile );
   static bool runLink( const QString& _url, KSimpleConfig &cfg );
   static bool runMimeType( const QString& _url, KSimpleConfig &cfg );
 };
