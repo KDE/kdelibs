@@ -1,6 +1,8 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 		version="1.0">
 
+<xsl:param name="callout.graphics.path" select="'common/'" doc:type='string'/>
+
 <xsl:template match="guilabel|guimenu|guisubmenu|guimenuitem|interface|guibutton">
   <span style="background-color: rgb(240,240,240); 
 	color: rgb(0,0,0);">  
