@@ -164,6 +164,7 @@ bool KCombo::eventFilter( QObject* o, QEvent* e )
 		} else if( e->type() == Event_MouseButtonPress ) {
 			if( !listBox->rect().contains( ((QMouseEvent*)e)->pos() ) ) {
 				listBox->hide();
+				return TRUE; //ignore this press! (Matthias)
 			}
 		}
 	}
