@@ -131,6 +131,7 @@ void RenderCanvas::layout()
 #endif
     if ( recalcMinMax() )
 	recalcMinMaxWidths();
+
 #ifdef SPEED_DEBUG
     kdDebug() << "RenderCanvas::calcMinMax time used=" << qt.elapsed() << endl;
     qt.start();
@@ -140,19 +141,14 @@ void RenderCanvas::layout()
     kdDebug() << "RenderCanvas::layout time used=" << qt.elapsed() << endl;
     qt.start();
 #endif
+    KHTMLView::ScrollBarMode vsmode = m_view->vScrollBarMode();
+    KHTMLView::ScrollBarMode hsmode = m_view->hScrollBarMode();
+
     if (!m_printingMode) {
         QSize s = m_view->viewportSize(m_view->contentsWidth(),
                                        m_view->contentsHeight());
         m_viewportWidth = m_width = s.width();
         m_viewportHeight = m_height = s.height();
-    }
-    else {
-        m_width = m_rootWidth;
-        m_height = m_rootHeight;
-    }
-    
-    KHTMLView::ScrollBarMode vsmode = m_view->vScrollBarMode();
-    KHTMLView::ScrollBarMode hsmode = m_view->hScrollBarMode();
     
     if (m_view->verticalScrollBar()->isVisible())
         m_view->setVScrollBarMode(KHTMLView::AlwaysOn);
@@ -163,7 +159,11 @@ void RenderCanvas::layout()
         m_view->setHScrollBarMode(KHTMLView::AlwaysOn);
     else
         m_view->setHScrollBarMode(KHTMLView::AlwaysOff);
-
+    }
+    else {
+        m_width = m_rootWidth;
+        m_height = m_rootHeight;
+    }
 
     RenderBlock::layout();
 
@@ -190,8 +190,10 @@ void RenderCanvas::layout()
 
     layer()->resize( kMax( docW,int( m_width ) ), kMax( docH,m_height ) );
 
-    m_view->setVScrollBarMode(vsmode);
+    if ( !m_printingMode ) {
     m_view->setHScrollBarMode(hsmode);
+        m_view->setVScrollBarMode(vsmode);
+    }
 
     setLayouted();
 }
