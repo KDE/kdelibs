@@ -248,13 +248,13 @@ void KTipDialog::showTip(QWidget *parent,const QString &tipFile, bool force)
 void KTipDialog::prevTip()
 {
     _database->prevTip();
-    _tipText->setText(QString::fromLatin1("<qt bgcolor=\"%1\">%2</qt>").arg(QColor(213, 222, 238).name()).arg(i18n(_database->tip().utf8())));
+    _tipText->setText(QString::fromLatin1("<qt text=\"%1\" bgcolor=\"%2\">%3</qt>").arg(QColor(0, 0, 0).name()).arg(QColor(213, 222, 238).name()).arg(i18n(_database->tip().utf8())));
 }
 
 void KTipDialog::nextTip()
 {
     _database->nextTip();
-    _tipText->setText(QString::fromLatin1("<qt bgcolor=\"%1\">%2</qt>").arg(QColor(213, 222, 238).name()).arg(i18n(_database->tip().utf8())));
+    _tipText->setText(QString::fromLatin1("<qt text=\"%1\" bgcolor=\"%2\">%3</qt>").arg(QColor(0, 0, 0).name()).arg(QColor(213, 222, 238).name()).arg(i18n(_database->tip().utf8())));
 }
 
 void KTipDialog::showOnStart(bool on)
