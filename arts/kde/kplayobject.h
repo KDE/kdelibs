@@ -22,7 +22,7 @@
 #ifndef KPLAYOBJECT_H
 #define KPLAYOBJECT_H
 
-#include <kmedia2.h>
+#include "kmedia2.h"
 #include <qobject.h>
 
 class KPlayObject : public QObject

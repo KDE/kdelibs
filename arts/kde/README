@@ -40,6 +40,13 @@ Line:
 
 That's it, with 7 LOC a "full" media player :)
 
+To make the example above compile you will also have to add these #includes:
+#include <arts/kartsserver.h>
+#include <arts/kartsdispatcher.h>
+#include <arts/kplayobject.h>
+#include <arts/kplayobjectfactory.h>
+    
+
 Enjoy...
 Nikolas Zimmermann 
 <wildfox@kde.org>

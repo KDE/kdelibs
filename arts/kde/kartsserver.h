@@ -21,7 +21,7 @@
 #ifndef KARTSSERVER_H
 #define KARTSSERVER_H
 
-#include <kmedia2.h>
+#include "kmedia2.h"
 #include <qobject.h>
 #include <soundserver.h>
 
