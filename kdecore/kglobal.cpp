@@ -122,18 +122,22 @@ QFont KGlobal::fixedFont()
 
 void KGlobal::freeAll()
 {	
-	delete _iconLoader;	_iconLoader = 0;
-
-	delete _locale;		_locale = 0;
-	if(_charsets) delete _charsets,	_charsets = 0;
-	if(_generalFont) delete _generalFont, _generalFont = 0;
-	if(_fixedFont) delete _fixedFont, _fixedFont = 0;
-
-	delete _config;		
+	delete _iconLoader;
+	_iconLoader = 0;
+	delete _locale;
+	_locale = 0;
+	delete _charsets;
+	_charsets = 0;
+	delete _generalFont;
+	_generalFont = 0;
+	delete _fixedFont;
+	_fixedFont = 0;
+	delete _config;
 	_config = 0;
-	delete _instanceConfig;	_instanceConfig = 0;
-
-	delete _dirs;		_dirs = 0;
+	delete _instanceConfig;
+	_instanceConfig = 0;
+	delete _dirs;
+	_dirs = 0;
 }
 	
 // The Variables
