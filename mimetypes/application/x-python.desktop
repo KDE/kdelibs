@@ -50,4 +50,7 @@ Comment[zu]=Uhlelo lwamafayela lwe-Python
 Type=MimeType
 MimeType=application/x-python
 Patterns=*.py;
-X-KDE-text=true
+
+[Property::X-KDE-text]
+Type=bool
+Value=true

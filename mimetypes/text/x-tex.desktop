@@ -53,4 +53,7 @@ Icon=tex
 Type=MimeType
 MimeType=text/x-tex
 Patterns=*.tex;*.ltx;*.sty;*.cls;*.TEX;*.LTX;*.STY;*.CLS;
-X-KDE-text=true
+
+[Property::X-KDE-text]
+Type=bool
+Value=true

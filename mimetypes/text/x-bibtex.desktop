@@ -49,4 +49,7 @@ Icon=tex
 MimeType=text/x-bibtex
 Patterns=*.bib
 Type=MimeType
-X-KDE-text=true
+
+[Property::X-KDE-text]
+Type=bool
+Value=true

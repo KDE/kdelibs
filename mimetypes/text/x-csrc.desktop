@@ -50,4 +50,7 @@ Icon=source_c
 Type=MimeType
 MimeType=text/x-csrc
 Patterns=*.c;
-X-KDE-text=true
+
+[Property::X-KDE-text]
+Type=bool
+Value=true

@@ -57,4 +57,7 @@ Icon=dvi
 MimeType=text/x-lyx
 Patterns=*.lyx
 Type=MimeType
-X-KDE-text=true
+
+[Property::X-KDE-text]
+Type=bool
+Value=true

@@ -3,11 +3,13 @@ Encoding=UTF-8
 Comment=HTML Document
 Comment[hu]=HTML dokumentum
 Comment[pt_BR]=Documento HTML
-Comment[ro]=Fişier HTML
 Comment[sv]=HTML-dokument
 Icon=html
 Type=MimeType
 MimeType=text/html
 Patterns=*.html;*.HTML;*.htm;*.HTM;*.shtml;
 X-KDE-AutoEmbed=true
-X-KDE-text=true
+
+[Property::X-KDE-text]
+Type=bool
+Value=true

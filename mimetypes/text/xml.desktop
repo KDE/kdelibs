@@ -49,4 +49,7 @@ Icon=html
 Type=MimeType
 MimeType=text/xml
 Patterns=*.xml;*.XML;
-X-KDE-text=true
+
+[Property::X-KDE-text]
+Type=bool
+Value=true

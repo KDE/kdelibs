@@ -14,4 +14,7 @@ Icon=gettext
 Type=MimeType
 MimeType=application/x-gettext
 Patterns=*.po;*.pot;
-X-KDE-text=true
+
+[Property::X-KDE-text]
+Type=bool
+Value=true

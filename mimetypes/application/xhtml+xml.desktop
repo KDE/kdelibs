@@ -29,4 +29,7 @@ Comment[uk]=Документ XHTML
 Comment[zh_CN]=XHTML 及类似文档
 Type=MimeType
 MimeType=application/xhtml+xml
-X-KDE-text=true
+
+[Property::X-KDE-text]
+Type=bool
+Value=true

@@ -49,4 +49,7 @@ Comment[xh]=Ifayile Yombhalo Enamaxabiso Ohlulwe Ngesiphumlisi
 Comment[zh_CN]=用逗号分隔值的文本文件
 Comment[zh_TW]=用逗號分隔值的文字文件
 Comment[zu]=Ifayela lombhalo ngamanani ahlukaniswe ngokhefane
-X-KDE-text=true
+
+[Property::X-KDE-text]
+Type=bool
+Value=true

@@ -61,4 +61,7 @@ Icon=vcard
 Type=MimeType
 MimeType=text/x-vcard
 Patterns=*.vct
-X-KDE-text=true
+
+[Property::X-KDE-text]
+Type=bool
+Value=true

@@ -46,4 +46,7 @@ Icon=xslfo
 MimeType=text/x-xslfo
 Patterns=*.fo;*.xslfo
 Type=MimeType
-X-KDE-text=true
+
+[Property::X-KDE-text]
+Type=bool
+Value=true

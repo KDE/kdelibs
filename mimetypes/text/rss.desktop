@@ -53,4 +53,7 @@ Comment[zu]=Ukubuyekezwa Sokubuyekezwa kwe-RDF
 Icon=news
 Type=MimeType
 Patterns=*.rss;*.RSS;
-X-KDE-text=true
+
+[Property::X-KDE-text]
+Type=bool
+Value=true

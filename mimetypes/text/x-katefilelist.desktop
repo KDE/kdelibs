@@ -48,4 +48,7 @@ Icon=unknown
 Type=MimeType
 MimeType=text/x-katefilelist
 Patterns=*.katefl;
-X-KDE-text=true
+
+[Property::X-KDE-text]
+Type=bool
+Value=true

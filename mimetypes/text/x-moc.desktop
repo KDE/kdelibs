@@ -59,4 +59,7 @@ Comment[zu]=Ifayela Lento ye-Meta lwe-Qt
 Type=MimeType
 Patterns=*.moc;
 Icon=source_moc
-X-KDE-text=true
+
+[Property::X-KDE-text]
+Type=bool
+Value=true

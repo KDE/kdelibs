@@ -23,4 +23,7 @@ Comment[zu]=Yenza ifayela
 Type=MimeType
 Patterns=Makefile;makefile;Makefile.*;makefile.*
 Icon=make
-X-KDE-text=true
+
+[Property::X-KDE-text]
+Type=bool
+Value=true

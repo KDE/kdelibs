@@ -52,4 +52,7 @@ Comment[xh]=Umyalezo we Email
 Comment[zh_CN]=电子邮件
 Comment[zh_TW]=電子郵件
 Comment[zu]=Umyalezo Weposi lekhomputha
-X-KDE-text=true
+
+[Property::X-KDE-text]
+Type=bool
+Value=true

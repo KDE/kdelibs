@@ -4,9 +4,11 @@ MimeType=text/plain
 Comment=Plain Text Document
 Comment[hu]=Egyszerű szöveg
 Comment[pt_BR]=Documento de Texto Puro
-Comment[ro]=Fişier text simplu
 Comment[sv]=Vanligt textdokument
 Icon=txt
 Type=MimeType
 Patterns=*.txt;
-X-KDE-text=true
+
+[Property::X-KDE-text]
+Type=bool
+Value=true

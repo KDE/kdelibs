@@ -3,10 +3,12 @@ Encoding=UTF-8
 Comment=DocBook Document
 Comment[hu]=DocBook dokumentum
 Comment[pt_BR]=Documento Docbook
-Comment[ro]=Fişier DocBook
 Comment[sv]=Docbook-dokument
 Icon=wordprocessing
 Type=MimeType
 MimeType=text/docbook
 Patterns=*.docbook;
-X-KDE-text=true
+
+[Property::X-KDE-text]
+Type=bool
+Value=true

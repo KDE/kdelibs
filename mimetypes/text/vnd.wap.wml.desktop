@@ -51,4 +51,7 @@ Comment[xh]=Uxwebhu lwe WML
 Comment[zh_CN]=WML 文档
 Comment[zh_TW]=WML 文件
 Comment[zu]=Uhlu lwamafayela lwe-WML
-X-KDE-text=true
+
+[Property::X-KDE-text]
+Type=bool
+Value=true
