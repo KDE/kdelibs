@@ -94,12 +94,14 @@ public:
 
         QPtrListIterator<KMainWindow> it(*KMainWindow::memberList);
         int n = 0;
-        config->setGroup(QString::fromLatin1("Number"));
-        config->writeEntry(QString::fromLatin1("NumberOfWindows"), KMainWindow::memberList->count());
         for (it.toFirst(); it.current(); ++it){
-            n++;
-            it.current()->savePropertiesInternal(config, n);
+            if( it.current()->isVisible()) {
+                n++;
+                it.current()->savePropertiesInternal(config, n);
+            }
         }
+        config->setGroup(QString::fromLatin1("Number"));
+        config->writeEntry(QString::fromLatin1("NumberOfWindows"), n );
         return TRUE;
     }
 
@@ -113,7 +115,7 @@ public:
             for (it.toFirst(); it.current() && !cancelled;){
                 KMainWindow *window = *it;
                 ++it; // Update now, the current window might get deleted
-                if ( !window->testWState( Qt::WState_ForceHide ) ) {
+                if ( window->isVisible()) {
                     QCloseEvent e;
                     QApplication::sendEvent( window, &e );
                     cancelled = !e.isAccepted();
@@ -140,7 +142,7 @@ public:
             KMainWindow* last = 0;
             for (it.toFirst(); it.current() && !cancelled; ++it){
                 KMainWindow *window = *it;
-                if ( !window->testWState( Qt::WState_ForceHide ) ) {
+                if ( window->isVisible()) {
                     last = window;
                 }
             }

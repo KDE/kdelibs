@@ -265,6 +265,7 @@ public:
      *  This is only useful if your application uses
      * different kinds of toplevel windows.
      */
+    // KDE4 return QCString - QObject::className() returns const char*, not QString
     static const QString classNameOfToplevel( int number );
 
     /**
@@ -800,10 +801,24 @@ private:
     void initKMainWindow(const char *name);
 };
 
+#ifndef NDEBUG
+#define RESTORE(type) { int n = 1;\
+    while (KMainWindow::canBeRestored(n)){\
+      if( QString::fromLatin1( type::staticMetaObject()->className())\
+          != KMainWindow::classNameOfToplevel( n ))\
+      {\
+        kdWarning() << "RESTORE() - unknown window class "\
+          << KMainWindow::classnameOfTopLevel( n ) << " in session saved data!";\
+      }\
+      else\
+        (new type)->restore(n);\
+      n++;}}
+#else
 #define RESTORE(type) { int n = 1;\
     while (KMainWindow::canBeRestored(n)){\
       (new type)->restore(n);\
       n++;}}
+#endif
 
 #define KDE_RESTORE_MAIN_WINDOWS_NUM_TEMPLATE_ARGS 3
 
@@ -821,6 +836,9 @@ inline void kRestoreMainWindows() {
     const QString className = KMainWindow::classNameOfToplevel( n );
     if ( className == QString::fromLatin1( T::staticMetaObject()->className() ) )
       (new T)->restore( n );
+    else
+      kdWarning() << "kRestoreMainWindows() - unknown window class "
+        << className << " in session saved data!";
   }
 }
 
@@ -843,6 +861,9 @@ inline void kRestoreMainWindows() {
       (new T0)->restore( n );
     else if ( className == QString::fromLatin1( classNames[1] ) )
       (new T1)->restore( n );
+    else
+      kdWarning() << "kRestoreMainWindows() - unknown window class "
+        << className << " in session saved data!";
   }
 }
 
@@ -868,6 +889,9 @@ inline void kRestoreMainWindows() {
       (new T1)->restore( n );
     else if ( className == QString::fromLatin1( classNames[2] ) )
       (new T2)->restore( n );
+    else
+      kdWarning() << "kRestoreMainWindows() - unknown window class "
+        << className << " in session saved data!";
   }
 }
 
