@@ -63,15 +63,14 @@ BooleanPrototype::BooleanPrototype(const Object& proto)
 {
   // The constructor will be added later in BooleanObject's constructor
 
-  put("toString", new BooleanProtoFunc(ToString), DontEnum);
-  put("valueOf",  new BooleanProtoFunc(ValueOf),  DontEnum);
-
-
+  put("toString", new BooleanProtoFunc(ToString,0), DontEnum);
+  put("valueOf",  new BooleanProtoFunc(ValueOf,0),  DontEnum);
 }
 
-BooleanProtoFunc::BooleanProtoFunc(int i)
+BooleanProtoFunc::BooleanProtoFunc(int i, int len)
   : id(i)
 {
+  put("length",Number(len),DontDelete|ReadOnly|DontEnum);
 }
 
 // ECMA 15.6.4.2 + 15.6.4.3

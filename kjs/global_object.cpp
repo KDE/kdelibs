@@ -65,7 +65,7 @@ using namespace KJS;
 
 class GlobalFunc : public InternalFunctionImp {
 public:
-  GlobalFunc(int i) : id(i) { }
+  GlobalFunc(int i, int len);
   Completion execute(const List &c);
   virtual CodeType codeType() const;
   enum { Eval, ParseInt, ParseFloat, IsNaN, IsFinite, Escape, UnEscape };
@@ -206,13 +206,13 @@ GlobalImp::GlobalImp()
 
 void GlobalImp::init()
 {
-  Imp::put("eval", Function(new GlobalFunc(GlobalFunc::Eval)));
-  Imp::put("parseInt", Function(new GlobalFunc(GlobalFunc::ParseInt)));
-  Imp::put("parseFloat", Function(new GlobalFunc(GlobalFunc::ParseFloat)));
-  Imp::put("isNaN", Function(new GlobalFunc(GlobalFunc::IsNaN)));
-  Imp::put("isFinite", Function(new GlobalFunc(GlobalFunc::IsFinite)));
-  Imp::put("escape", Function(new GlobalFunc(GlobalFunc::Escape)));
-  Imp::put("unescape", Function(new GlobalFunc(GlobalFunc::UnEscape)));
+  Imp::put("eval",       new GlobalFunc(GlobalFunc::Eval,       1), DontEnum);
+  Imp::put("parseInt",   new GlobalFunc(GlobalFunc::ParseInt,   2), DontEnum);
+  Imp::put("parseFloat", new GlobalFunc(GlobalFunc::ParseFloat, 1), DontEnum);
+  Imp::put("isNaN",      new GlobalFunc(GlobalFunc::IsNaN,      1), DontEnum);
+  Imp::put("isFinite",   new GlobalFunc(GlobalFunc::IsFinite,   1), DontEnum);
+  Imp::put("escape",     new GlobalFunc(GlobalFunc::Escape,     1), DontEnum);
+  Imp::put("unescape",   new GlobalFunc(GlobalFunc::UnEscape,   1), DontEnum);
 
   // other properties
   Object objProto = static_cast<Object>(get("[[Object.prototype]]").imp());
@@ -244,6 +244,11 @@ void GlobalImp::put(const UString &p, const KJSO& v)
   else
     Imp::put(p, v);
 #endif  
+}
+
+GlobalFunc::GlobalFunc(int i, int len) : id(i)
+{
+  put("length",Number(len),DontDelete|ReadOnly|DontEnum);
 }
 
 CodeType GlobalFunc::codeType() const

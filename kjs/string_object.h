@@ -34,6 +34,7 @@ namespace KJS {
 
   class StringObjectFunc : public InternalFunctionImp {
   public:
+    StringObjectFunc();
     Completion execute(const List &);
   };
 
@@ -44,7 +45,7 @@ namespace KJS {
 
   class StringProtoFunc : public InternalFunctionImp {
   public:
-    StringProtoFunc(int i);
+    StringProtoFunc(int i, int len);
     Completion execute(const List &);
 
     enum { ToString, ValueOf, CharAt, CharCodeAt, IndexOf, LastIndexOf,

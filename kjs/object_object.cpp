@@ -83,13 +83,14 @@ ObjectPrototype::ObjectPrototype()
   // the spec says that [[Property]] should be `null'.
   // Not sure if Null or C's NULL is needed.
 
-  put("toString", new ObjectProtoFunc(ToString), DontEnum);
-  put("valueOf",  new ObjectProtoFunc(ValueOf), DontEnum);
+  put("toString", new ObjectProtoFunc(ToString, 0), DontEnum);
+  put("valueOf",  new ObjectProtoFunc(ValueOf,  0), DontEnum);
 }
 
-ObjectProtoFunc::ObjectProtoFunc(int i)
+ObjectProtoFunc::ObjectProtoFunc(int i, int len)
   : id(i)
 {
+  put("length",Number(len),DontDelete|ReadOnly|DontEnum);
 }
 
 // ECMA 15.2.4.2 + 15.2.4.3
@@ -114,6 +115,12 @@ Completion ObjectProtoFunc::execute(const List &)
   // toString()
   UString str;
   switch(thisObj.getClass()) {
+  case UndefClass:
+    str = "[object Undefined]";
+    break;
+  case ArrayClass:
+    str = "[object Array]";
+    break;
   case StringClass:
     str = "[object String]";
     break;
@@ -123,6 +130,18 @@ Completion ObjectProtoFunc::execute(const List &)
   case NumberClass:
     str = "[object Number]";
     break;
+  case DateClass:
+    str = "[object Date]";
+    break;
+  case RegExpClass:
+    str = "[object RegExp]";
+    break;
+  case ErrorClass:
+    str = "[object Error]";
+    break;
+  case FunctionClass:
+    str = "[object Function]";
+    break;
   case ObjectClass:
   {
     str = "[object ";
@@ -130,8 +149,6 @@ Completion ObjectProtoFunc::execute(const List &)
     str += "]";
     break;
   }
-  default:
-    str = "[undefined object]";
   }
 
   return Completion(ReturnValue, String(str));

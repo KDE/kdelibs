@@ -77,9 +77,14 @@ RegExpPrototype::RegExpPrototype(const Object& proto)
 {
   // The constructor will be added later in RegExpObject's constructor
 
-  put("exec",     new RegExpProtoFunc(RegExpProtoFunc::Exec),     DontEnum);
-  put("test",     new RegExpProtoFunc(RegExpProtoFunc::Test),     DontEnum);
-  put("toString", new RegExpProtoFunc(RegExpProtoFunc::ToString), DontEnum);
+  put("exec",     new RegExpProtoFunc(RegExpProtoFunc::Exec,     0), DontEnum);
+  put("test",     new RegExpProtoFunc(RegExpProtoFunc::Test,     0), DontEnum);
+  put("toString", new RegExpProtoFunc(RegExpProtoFunc::ToString, 0), DontEnum);
+}
+
+RegExpProtoFunc::RegExpProtoFunc(int i, int len) : id(i)
+{
+  put("length",Number(len),DontDelete|ReadOnly|DontEnum);
 }
 
 Completion RegExpProtoFunc::execute(const List &args)

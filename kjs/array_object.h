@@ -39,7 +39,7 @@ namespace KJS {
 
   class ArrayProtoFunc : public InternalFunctionImp {
   public:
-    ArrayProtoFunc(int i) : id(i) { }
+    ArrayProtoFunc(int i, int len);
     Completion execute(const List &);
     enum { ToString, ToLocaleString, Concat, Join, Pop, Push,
 	   Reverse, Shift, Slice, Sort, Splice, UnShift };

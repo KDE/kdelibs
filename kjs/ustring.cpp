@@ -236,7 +236,14 @@ UString UString::from(unsigned int u)
 UString UString::from(double d)
 {
   char buf[40];
-  sprintf(buf, "%.16g", d);	// does the right thing
+  if (KJS::isNaN(d))
+    strcpy(buf,"NaN");
+  else if (KJS::isPosInf(d))
+    strcpy(buf,"Infinity");
+  else if (KJS::isNegInf(d))
+    strcpy(buf,"-Infinity");
+  else
+    sprintf(buf, "%.16g", d);	// does the right thing
   return UString(buf);
 }
 

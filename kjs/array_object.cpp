@@ -73,18 +73,23 @@ ArrayPrototype::ArrayPrototype(const Object& proto)
 
   put("length", 0u, DontEnum | DontDelete);
 
-  put("toString",       new ArrayProtoFunc(ArrayProtoFunc::ToString),       DontEnum);
-  put("toLocaleString", new ArrayProtoFunc(ArrayProtoFunc::ToLocaleString), DontEnum);
-  put("concat",         new ArrayProtoFunc(ArrayProtoFunc::Concat),         DontEnum);
-  put("join",           new ArrayProtoFunc(ArrayProtoFunc::Join),           DontEnum);
-  put("pop",            new ArrayProtoFunc(ArrayProtoFunc::Pop),            DontEnum);
-  put("push",           new ArrayProtoFunc(ArrayProtoFunc::Push),           DontEnum);
-  put("reverse",        new ArrayProtoFunc(ArrayProtoFunc::Reverse),        DontEnum);
-  put("shift",          new ArrayProtoFunc(ArrayProtoFunc::Shift),          DontEnum);
-  put("slice",          new ArrayProtoFunc(ArrayProtoFunc::Slice),          DontEnum);
-  put("sort",           new ArrayProtoFunc(ArrayProtoFunc::Sort),           DontEnum);
-  put("splice",         new ArrayProtoFunc(ArrayProtoFunc::Splice),         DontEnum);
-  put("unshift",        new ArrayProtoFunc(ArrayProtoFunc::UnShift),        DontEnum);
+  put("toString",       new ArrayProtoFunc(ArrayProtoFunc::ToString,      0), DontEnum);
+  put("toLocaleString", new ArrayProtoFunc(ArrayProtoFunc::ToLocaleString,0), DontEnum);
+  put("concat",         new ArrayProtoFunc(ArrayProtoFunc::Concat,        0), DontEnum);
+  put("join",           new ArrayProtoFunc(ArrayProtoFunc::Join,          1), DontEnum);
+  put("pop",            new ArrayProtoFunc(ArrayProtoFunc::Pop,           0), DontEnum);
+  put("push",           new ArrayProtoFunc(ArrayProtoFunc::Push,          1), DontEnum);
+  put("reverse",        new ArrayProtoFunc(ArrayProtoFunc::Reverse,       0), DontEnum);
+  put("shift",          new ArrayProtoFunc(ArrayProtoFunc::Shift,         0), DontEnum);
+  put("slice",          new ArrayProtoFunc(ArrayProtoFunc::Slice,         0), DontEnum);
+  put("sort",           new ArrayProtoFunc(ArrayProtoFunc::Sort,          1), DontEnum);
+  put("splice",         new ArrayProtoFunc(ArrayProtoFunc::Splice,        1), DontEnum);
+  put("unshift",        new ArrayProtoFunc(ArrayProtoFunc::UnShift,       1), DontEnum);
+}
+
+ArrayProtoFunc::ArrayProtoFunc(int i, int len) : id(i)
+{
+  put("length",Number(len),DontDelete|ReadOnly|DontEnum);
 }
 
 // ECMA 15.4.4

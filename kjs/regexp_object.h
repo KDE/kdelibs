@@ -39,7 +39,7 @@ namespace KJS {
 
   class RegExpProtoFunc : public InternalFunctionImp {
   public:
-    RegExpProtoFunc(int i) : id(i) { }
+    RegExpProtoFunc(int i, int len);
     Completion execute(const List &);
     enum { Exec, Test, ToString };
   private:

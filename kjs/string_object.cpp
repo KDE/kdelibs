@@ -64,6 +64,11 @@ Object StringObject::construct(const List &args)
 }
 
 // ECMA 15.5.3.2 fromCharCode()
+StringObjectFunc::StringObjectFunc()
+{
+  put("length",Number(1),DontDelete|ReadOnly|DontEnum);
+}
+
 Completion StringObjectFunc::execute(const List &args)
 {
   UString s;
@@ -89,41 +94,42 @@ StringPrototype::StringPrototype(const Object& proto)
 {
   // The constructor will be added later in StringObject's constructor
 
-  put("toString",    new StringProtoFunc(StringProtoFunc::ToString),    DontEnum);
-  put("valueOf",     new StringProtoFunc(StringProtoFunc::ValueOf),     DontEnum);
-  put("charAt",      new StringProtoFunc(StringProtoFunc::CharAt),      DontEnum);
-  put("charCodeAt",  new StringProtoFunc(StringProtoFunc::CharCodeAt),  DontEnum);
-  put("indexOf",     new StringProtoFunc(StringProtoFunc::IndexOf),     DontEnum);
-  put("lastIndexOf", new StringProtoFunc(StringProtoFunc::LastIndexOf), DontEnum);
-  put("match",       new StringProtoFunc(StringProtoFunc::Match),       DontEnum);
-  put("replace",     new StringProtoFunc(StringProtoFunc::Replace),     DontEnum);
-  put("search",      new StringProtoFunc(StringProtoFunc::Search),      DontEnum);
-  put("slice",       new StringProtoFunc(StringProtoFunc::Slice),       DontEnum);
-  put("split",       new StringProtoFunc(StringProtoFunc::Split),       DontEnum);
-  put("substr",      new StringProtoFunc(StringProtoFunc::Substr),      DontEnum);
-  put("substring",   new StringProtoFunc(StringProtoFunc::Substring),   DontEnum);
-  put("toLowerCase", new StringProtoFunc(StringProtoFunc::ToLowerCase), DontEnum);
-  put("toUpperCase", new StringProtoFunc(StringProtoFunc::ToUpperCase), DontEnum);
+  put("toString",    new StringProtoFunc(StringProtoFunc::ToString,    0), DontEnum);
+  put("valueOf",     new StringProtoFunc(StringProtoFunc::ValueOf,     0), DontEnum);
+  put("charAt",      new StringProtoFunc(StringProtoFunc::CharAt,      1), DontEnum);
+  put("charCodeAt",  new StringProtoFunc(StringProtoFunc::CharCodeAt,  1), DontEnum);
+  put("indexOf",     new StringProtoFunc(StringProtoFunc::IndexOf,     2), DontEnum);
+  put("lastIndexOf", new StringProtoFunc(StringProtoFunc::LastIndexOf, 2), DontEnum);
+  put("match",       new StringProtoFunc(StringProtoFunc::Match,       1), DontEnum);
+  put("replace",     new StringProtoFunc(StringProtoFunc::Replace,     2), DontEnum);
+  put("search",      new StringProtoFunc(StringProtoFunc::Search,      1), DontEnum);
+  put("slice",       new StringProtoFunc(StringProtoFunc::Slice,       0), DontEnum);
+  put("split",       new StringProtoFunc(StringProtoFunc::Split,       1), DontEnum);
+  put("substr",      new StringProtoFunc(StringProtoFunc::Substr,      2), DontEnum);
+  put("substring",   new StringProtoFunc(StringProtoFunc::Substring,   2), DontEnum);
+  put("toLowerCase", new StringProtoFunc(StringProtoFunc::ToLowerCase, 0), DontEnum);
+  put("toUpperCase", new StringProtoFunc(StringProtoFunc::ToUpperCase, 0), DontEnum);
 #ifndef KJS_PURE_ECMA
-  put("big",         new StringProtoFunc(StringProtoFunc::Big),         DontEnum);
-  put("small",       new StringProtoFunc(StringProtoFunc::Small),       DontEnum);
-  put("blink",       new StringProtoFunc(StringProtoFunc::Blink),       DontEnum);
-  put("bold",        new StringProtoFunc(StringProtoFunc::Bold),        DontEnum);
-  put("fixed",       new StringProtoFunc(StringProtoFunc::Fixed),       DontEnum);
-  put("italics",     new StringProtoFunc(StringProtoFunc::Italics),     DontEnum);
-  put("strike",      new StringProtoFunc(StringProtoFunc::Strike),      DontEnum);
-  put("sub",         new StringProtoFunc(StringProtoFunc::Sub),         DontEnum);
-  put("sup",         new StringProtoFunc(StringProtoFunc::Sup),         DontEnum);
-  put("fontcolor",   new StringProtoFunc(StringProtoFunc::Fontcolor),   DontEnum);
-  put("fontsize",    new StringProtoFunc(StringProtoFunc::Fontsize),    DontEnum);
-  put("anchor",      new StringProtoFunc(StringProtoFunc::Anchor),      DontEnum);
-  put("link",        new StringProtoFunc(StringProtoFunc::Link),        DontEnum);
+  put("big",         new StringProtoFunc(StringProtoFunc::Big,         0), DontEnum);
+  put("small",       new StringProtoFunc(StringProtoFunc::Small,       0), DontEnum);
+  put("blink",       new StringProtoFunc(StringProtoFunc::Blink,       0), DontEnum);
+  put("bold",        new StringProtoFunc(StringProtoFunc::Bold,        0), DontEnum);
+  put("fixed",       new StringProtoFunc(StringProtoFunc::Fixed,       0), DontEnum);
+  put("italics",     new StringProtoFunc(StringProtoFunc::Italics,     0), DontEnum);
+  put("strike",      new StringProtoFunc(StringProtoFunc::Strike,      0), DontEnum);
+  put("sub",         new StringProtoFunc(StringProtoFunc::Sub,         0), DontEnum);
+  put("sup",         new StringProtoFunc(StringProtoFunc::Sup,         0), DontEnum);
+  put("fontcolor",   new StringProtoFunc(StringProtoFunc::Fontcolor,   1), DontEnum);
+  put("fontsize",    new StringProtoFunc(StringProtoFunc::Fontsize,    1), DontEnum);
+  put("anchor",      new StringProtoFunc(StringProtoFunc::Anchor,      1), DontEnum);
+  put("link",        new StringProtoFunc(StringProtoFunc::Link,        1), DontEnum);
 #endif
 }
 
-StringProtoFunc::StringProtoFunc(int i)
+StringProtoFunc::StringProtoFunc(int i, int len)
   : id(i)
 {
+  put("length",Number(len),DontDelete|ReadOnly|DontEnum);
 }
 
 // ECMA 15.5.4.2 - 15.5.4.20

@@ -40,7 +40,7 @@ namespace KJS {
 
   class ObjectProtoFunc : public InternalFunctionImp {
   public:
-    ObjectProtoFunc(int i);
+    ObjectProtoFunc(int i, int len);
     Completion execute(const List &);
   private:
     int id;

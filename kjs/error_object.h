@@ -41,12 +41,11 @@ namespace KJS {
   class ErrorPrototype : public ObjectImp {
   public:
     ErrorPrototype(const Object& proto);
-    virtual KJSO get(const UString &p) const;
   };
 
   class ErrorProtoFunc : public InternalFunctionImp {
   public:
-    ErrorProtoFunc() { }
+    ErrorProtoFunc();
     Completion execute(const List &);
   };
 

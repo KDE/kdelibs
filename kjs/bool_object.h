@@ -40,7 +40,7 @@ namespace KJS {
 
   class BooleanProtoFunc : public InternalFunctionImp {
   public:
-    BooleanProtoFunc(int i);
+    BooleanProtoFunc(int i, int len);
     Completion execute(const List &);
   private:
     int id;

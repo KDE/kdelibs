@@ -96,23 +96,16 @@ ErrorPrototype::ErrorPrototype(const Object& proto)
   : ObjectImp(ErrorClass, Undefined(), proto)
 {
   // The constructor will be added later in ErrorObject's constructor
+
+  // ### are these values & attributes correct?
+  put("name",     String("Error"),          DontEnum);
+  put("message",  String("Error message."), DontEnum);
+  put("toString", new ErrorProtoFunc(),    DontEnum);
 }
 
-KJSO ErrorPrototype::get(const UString &p) const
+ErrorProtoFunc::ErrorProtoFunc()
 {
-  const char *s;
-
-  /* TODO: are these properties dynamic, i.e. should we put() them ? */
-  if (p == "name")
-    s = "Error";
-  else if (p == "message")
-    s = "Error message.";
-  else if (p == "toString")
-    return Function(new ErrorProtoFunc());
-  else
-    return Imp::get(p);
-
-  return String(s);
+  put("length",Number(0),DontDelete|ReadOnly|DontEnum);
 }
 
 Completion ErrorProtoFunc::execute(const List &)
