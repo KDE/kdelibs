@@ -45,7 +45,10 @@ class KOpenSSLProxyPrivate;
 #undef crypt
 #endif
 
+#include <kstaticdeleter.h>
+
 class KOpenSSLProxy {
+friend class KStaticDeleter<KOpenSSLProxy>;
 public:
 
    /**

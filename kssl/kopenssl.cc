@@ -20,6 +20,8 @@
 
 #include <kdebug.h>
 #include <kconfig.h>
+#include <kstaticdeleter.h>
+
 
 #include <stdio.h>
 #include "kopenssl.h"
@@ -439,13 +441,16 @@ KConfig *cfg;
 }
 
 
+KOpenSSLProxy* KOpenSSLProxy::_me = NULL;
+static KStaticDeleter<KOpenSSLProxy> med;
+
+
+
 KOpenSSLProxy::~KOpenSSLProxy() {
    delete _sslLib;
    delete _cryptoLib;
+   med.setObject(0);
 }
-
-
-KOpenSSLProxy* KOpenSSLProxy::_me = NULL;
 
 
 // FIXME: we should check "ok" and allow this to init the lib if !ok.
@@ -453,7 +458,7 @@ KOpenSSLProxy* KOpenSSLProxy::_me = NULL;
 KOpenSSLProxy *KOpenSSLProxy::self() {
 #ifdef HAVE_SSL
    if (!_me) {
-      _me = new KOpenSSLProxy;
+      _me = med.setObject(new KOpenSSLProxy);
    }
 #endif
    return _me;
