@@ -4,6 +4,7 @@
 #include <qstringlist.h>
 #include <kdebug.h>
 #include <qlabel.h>
+#include <qvalidator.h>
 
 #define I18N_NOOP
 
@@ -14,8 +15,10 @@
      { "removegroup ", "Remove a group from a file", 0},
      { "removeitem ", "Remove the item from --group from a file", 0},
      { "group ", "Specify a group to work on", 0},
+     { "validator", "Create a validator for an item and show its class", 0},
      { "item ", "Specify an item to work on", 0},
      { "add ", "Add the --item to the --group and set the value", 0},
+     { "autogroupadd", "Automatically add a group if none is found", 0},
      { "set ", "Set the value of --item in --group", 0},
      { "groups",  "list the groups of this file", 0 },
      { "mimetypeinfo ", "the mimetype info for a mimetype", 0 }
@@ -227,6 +230,12 @@ int main( int argc, char **argv )
     ov = args->getOption("add");
     if (ov && !group.isNull() && !item.isNull())
     {
+        KFileMetaInfoGroup g = info[group];
+        if (!g.isValid() && args->isSet("autogroupadd"))
+        {
+            kdDebug() << "group is not there, adding it\n";
+            info.addGroup(group);
+        }
         // add the item
         KFileMetaInfoItem i = info[group].addItem(item);
         if (i.isValid())
@@ -256,6 +265,19 @@ int main( int argc, char **argv )
             kdDebug() << "removeitem success\n";
         else
             kdDebug() << "removeitem failed\n";
+    }
+
+    if (args->isSet("validator") && !group.isNull() && !item.isNull())
+    {
+        KFileMimeTypeInfo* kfmti = KFileMetaInfoProvider::self()->mimeTypeInfo(info.mimeType());        QValidator* v = kfmti->createValidator(group, item);
+        if (!v)
+            kdDebug() << "got no validator\n";
+        else
+        {
+            kdDebug() << "validator is a " << v->className() << endl;
+            delete v;
+        }
+        
     }
     
     kdDebug() << "is it valid?\n";
