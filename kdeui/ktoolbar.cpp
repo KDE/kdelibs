@@ -70,7 +70,7 @@ class KToolBarPrivate
 public:
   KToolBarPrivate()
   {
-    m_iconSize     = KIconLoader::Small;
+    m_iconSize     = KIconLoader::Medium;
     m_iconText     = KToolBar::IconOnly;
     m_position     = KToolBar::Top;
     m_highlight    = true;
@@ -169,7 +169,7 @@ void KToolBar::init()
   context->insertItem( i18n("Text position"), mode );
   context->setItemChecked(CONTEXT_ICONS, true);
   context->insertItem( i18n("Icon size"), size );
-  context->setItemChecked(CONTEXT_SMALL, true);
+  context->setItemChecked(CONTEXT_MEDIUM, true);
 
   // set some more defaults
   fullSizeMode  = true;
@@ -234,9 +234,9 @@ void KToolBar::slotReadConfig()
   // now get the size conditionally
   if (d->m_honorStyle || name() == "mainToolBar")
     iconsize = (KIconLoader::Size)config->readNumEntry(attrSize,
-                                                       KIconLoader::Small);
+                                                       KIconLoader::Medium);
   else
-    iconsize = KIconLoader::Small;
+    iconsize = KIconLoader::Medium;
 
   // okay, that's done.  now we look for a toolbar specific entry
   grpToolbar = name() + QString::fromLatin1(" Toolbar style");
@@ -260,13 +260,13 @@ void KToolBar::slotReadConfig()
   switch (iconsize)
   {
   case KIconLoader::Medium:
+  default:
     d->m_approxItemSize = 28;
     break;
   case KIconLoader::Large:
     d->m_approxItemSize = 38;
     break;
   case KIconLoader::Small:
-  default:
     d->m_approxItemSize = 22;
     break;
   }
@@ -355,20 +355,17 @@ void KToolBar::layoutHorizontal(int w)
    * the toolbar items.  During the first iteration, we find out the
    * size of the largest (non-autosized and non-right-aligned) button */
   QListIterator<KToolBarItem> qli(*d->m_items);
-  if (d->m_honorStyle)
+  for (; *qli; ++qli)
   {
-    for (; *qli; ++qli)
-    {
-      /* make sure this is a button */
-      if ((*qli)->itemType() != KToolBarItem::Button)
-        continue;
+    /* make sure this is a button */
+    if ((*qli)->itemType() != KToolBarItem::Button)
+      continue;
 
-      if ((*qli)->height() > d->m_maxItemHeight)
-        d->m_maxItemHeight = (*qli)->height();
+    if ((*qli)->height() > d->m_maxItemHeight)
+      d->m_maxItemHeight = (*qli)->height();
 
-      if ((*qli)->width() > d->m_maxItemWidth)
-        d->m_maxItemWidth = (*qli)->width();
-    }
+    if ((*qli)->width() > d->m_maxItemWidth)
+      d->m_maxItemWidth = (*qli)->width();
   }
 
   /* During the second iteration we resize and position the left
@@ -412,9 +409,11 @@ void KToolBar::layoutHorizontal(int w)
       else
       {
         /* if this isn't autosized, then make sure that it is the same
-         * size as the maximum width IF it is a button */
+         * size as the maximum width IF it is a button and IF it is
+         * IconOnly or IconTextBottom */
         if ((itemWidth < d->m_maxItemWidth) &&
-            ((*qli)->itemType() == KToolBarItem::Button))
+            ((*qli)->itemType() == KToolBarItem::Button) &&
+            ((iconText() == IconOnly) || (iconText() == IconTextBottom)))
         {
           (*qli)->resize(d->m_maxItemWidth, d->m_maxItemHeight);
           itemWidth  = d->m_maxItemWidth;
@@ -425,7 +424,7 @@ void KToolBar::layoutHorizontal(int w)
       /* make sure that it is the standard height */
       if ((itemHeight < d->m_maxItemHeight) &&
           ((*qli)->itemType() == KToolBarItem::Button))
-        (*qli)->resize(d->m_maxItemWidth, d->m_maxItemHeight);
+        (*qli)->resize((*qli)->width(), d->m_maxItemHeight);
 
       if (xOffset + 3 + itemWidth > w)
       {
@@ -605,20 +604,17 @@ KToolBar::layoutVertical(int h)
   /* For vertical toolbars, we have to iterate twice.. once to get the
    * sizes and another time to resize and position things */
   QListIterator<KToolBarItem> qli(*d->m_items);
-  if (d->m_honorStyle)
+  for (; *qli; ++qli)
   {
-    for (; *qli; ++qli)
-    {
-      /* make sure this is a button */
-      if ((*qli)->itemType() != KToolBarItem::Button)
-        continue;
+    /* make sure this is a button */
+    if ((*qli)->itemType() != KToolBarItem::Button)
+      continue;
 
-      if ((*qli)->width() > d->m_maxItemWidth)
-        d->m_maxItemWidth = (*qli)->width();
+    if ((*qli)->width() > d->m_maxItemWidth)
+      d->m_maxItemWidth = (*qli)->width();
 
-      if ((*qli)->height() > d->m_maxItemHeight)
-        d->m_maxItemHeight = (*qli)->height();
-    }
+    if ((*qli)->height() > d->m_maxItemHeight)
+      d->m_maxItemHeight = (*qli)->height();
   }
 
   /* Second iteration */
@@ -641,11 +637,22 @@ KToolBar::layoutVertical(int h)
     {
       int itemWidth  = (*qli)->width();
       int itemHeight = (*qli)->height();
-      if ((itemWidth < d->m_maxItemWidth) || (itemHeight  < d->m_maxItemHeight))
+
+      // we always want the same height
+      if (itemHeight  < d->m_maxItemHeight)
       {
-        (*qli)->resize(d->m_maxItemWidth, d->m_maxItemHeight);
-        itemWidth  = d->m_maxItemWidth;
+        (*qli)->resize((*qli)->width(), d->m_maxItemHeight);
         itemHeight = d->m_maxItemHeight;
+      }
+
+      // the width only applies to certain buttons
+      if ((iconText() == IconTextRight) || (iconText() == TextOnly))
+        continue;
+
+      if (itemWidth < d->m_maxItemWidth)
+      {
+        (*qli)->resize(d->m_maxItemWidth, (*qli)->height());
+        itemWidth  = d->m_maxItemWidth;
       }
     }
 
@@ -2150,10 +2157,10 @@ void KToolBar::setIconSize(KIconLoader::Size size, bool update)
     switch (size)
     {
     case KIconLoader::Small:
-    default:
       context->setItemChecked(CONTEXT_SMALL, true);
       break;
     case KIconLoader::Medium:
+    default:
       context->setItemChecked(CONTEXT_MEDIUM, true);
       break;
     case KIconLoader::Large:
