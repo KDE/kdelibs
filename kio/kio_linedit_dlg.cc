@@ -11,7 +11,8 @@
 KLineEditDlg::KLineEditDlg( const char *_text, const char* _value, QWidget *parent, bool _file_mode )
         : QDialog( parent, 0L, true )
 {
-  setGeometry( x(), y(), 350, 100 );
+//   setGeometry( x(), y(), 350, 100 );
+  resize( 350, 100 );
 
   QLabel *label = new QLabel( _text , this );
   label->setGeometry( 10, 10, 330, 15 );
