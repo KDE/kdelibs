@@ -388,10 +388,10 @@ void KEditToolbarWidget::setupLayout()
           this,           SLOT(slotToolbarSelected(const QString&)));
 
   QPushButton *new_toolbar = new QPushButton(i18n("&New"), this);
-  new_toolbar->setPixmap(BarIcon("filenew", KIconLoader::Small));
+  new_toolbar->setPixmap(BarIcon("filenew", KIcon::SizeSmall));
   new_toolbar->setEnabled(false); // disabled until implemented
   QPushButton *del_toolbar = new QPushButton(i18n("&Delete"), this);
-  del_toolbar->setPixmap(BarIcon("editdelete", KIconLoader::Small));
+  del_toolbar->setPixmap(BarIcon("editdelete", KIcon::SizeSmall));
   del_toolbar->setEnabled(false); // disabled until implemented
 
   // our list of inactive actions
@@ -415,25 +415,25 @@ void KEditToolbarWidget::setupLayout()
           this,         SLOT(slotActiveSelected(QListViewItem *)));
 
   m_upAction     = new QPushButton(QString::null, this);
-  m_upAction->setPixmap(BarIcon("up", KIconLoader::Small));
+  m_upAction->setPixmap(BarIcon("up", KIcon::SizeSmall));
   m_upAction->setEnabled(false);
   connect(m_upAction, SIGNAL(clicked()),
           this,       SLOT(slotUpButton()));
 
   m_insertAction = new QPushButton(QString::null, this);
-  m_insertAction->setPixmap(BarIcon("forward", KIconLoader::Small));
+  m_insertAction->setPixmap(BarIcon("forward", KIcon::SizeSmall));
   m_insertAction->setEnabled(false);
   connect(m_insertAction, SIGNAL(clicked()),
           this,           SLOT(slotInsertButton()));
 
   m_removeAction = new QPushButton(QString::null, this);
-  m_removeAction->setPixmap(BarIcon("back", KIconLoader::Small));
+  m_removeAction->setPixmap(BarIcon("back", KIcon::SizeSmall));
   m_removeAction->setEnabled(false);
   connect(m_removeAction, SIGNAL(clicked()),
           this,           SLOT(slotRemoveButton()));
 
   m_downAction   = new QPushButton(QString::null, this);
-  m_downAction->setPixmap(BarIcon("down", KIconLoader::Small));
+  m_downAction->setPixmap(BarIcon("down", KIcon::SizeSmall));
   m_downAction->setEnabled(false);
   connect(m_downAction, SIGNAL(clicked()),
           this,         SLOT(slotDownButton()));
@@ -705,7 +705,7 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
         act->setText(1, action->plainText());
         KIconLoader *loader = KGlobal::iconLoader();
         if (!action->iconName().isNull())
-          act->setPixmap(0, loader->loadIcon(action->iconName(), -16, -1));
+          act->setPixmap(0, BarIcon(action->iconName(), 16));
 
         active_list.insert(action->name(), true);
         break;
@@ -731,7 +731,7 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
     ToolbarItem *act = new ToolbarItem(m_inactiveList, action->name());
     act->setText(1, action->plainText());
     KIconLoader *loader = KGlobal::iconLoader();
-    act->setPixmap(0, loader->loadIcon(action->iconName(), -16, -1));
+    act->setPixmap(0, BarIcon(action->iconName(), 16));
   }
 
   // finally, add a default separator to the inactive list

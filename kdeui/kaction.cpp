@@ -569,7 +569,7 @@ void KAction::setIcon( const QString &icon )
     loader = static_cast<KActionCollection*>(parent())->instance()->iconLoader();
   else
     loader = KGlobal::iconLoader();
-  setIconSet( loader->loadIcon( icon, KIcon::SizeSmall, -1 ) );
+  setIconSet( SmallIcon( icon, 16 ) );
 
   // now handle any toolbars
   int len = containerCount();

@@ -283,21 +283,21 @@ void KToolBarButton::setIcon( const QString &icon, bool generate )
 {
   d->m_iconName = icon;
   d->m_iconSize = d->m_parent->iconSize();
-  setPixmap( KGlobal::instance()->iconLoader()->loadIcon(icon, -d->m_iconSize), generate );
+  setPixmap( BarIcon(icon, d->m_iconSize), generate );
 }
 
 void KToolBarButton::setDisabledIcon( const QString &icon )
 {
   d->m_disabledIconName = icon;
   d->m_iconSize         = d->m_parent->iconSize();
-  setDisabledPixmap( KGlobal::instance()->iconLoader()->loadIcon(icon, -d->m_iconSize) );
+  setDisabledPixmap( BarIcon(icon, d->m_iconSize) );
 }
 
 void KToolBarButton::setDefaultIcon( const QString &icon )
 {
   d->m_defaultIconName = icon;
   d->m_iconSize        = d->m_parent->iconSize();
-  setDefaultPixmap( KGlobal::instance()->iconLoader()->loadIcon(icon, -d->m_iconSize) );
+  setDefaultPixmap( BarIcon(icon, d->m_iconSize) );
 }
 
 void KToolBarButton::setPixmap( const QPixmap &pixmap )
@@ -311,7 +311,7 @@ void KToolBarButton::setPixmap( const QPixmap &pixmap, bool generate )
   // if our pixmap is null, then try to load the "unknown" icon
   if (tmp_pixmap.isNull())
   {
-    tmp_pixmap = BarIcon("unknown", KIconLoader::Small);
+    tmp_pixmap = BarIcon("unknown", KIcon::SizeSmall);
 
     // if it's still null, then we wing it
     if (tmp_pixmap.isNull())

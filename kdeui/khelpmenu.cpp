@@ -128,7 +128,7 @@ QPopupMenu* KHelpMenu::menu()
     mMenu = new QPopupMenu();
     connect( mMenu, SIGNAL(destroyed()), this, SLOT(menuDestroyed()));
 
-    mMenu->insertItem( BarIcon( "contents", KIconLoader::Small),
+    mMenu->insertItem( BarIcon( "contents", KIcon::SizeSmall),
 		       i18n( "&Contents" ),menuHelpContents );
     mMenu->connectItem( menuHelpContents, this, SLOT(appHelpActivated()) );
     mMenu->setAccel( KStdAccel::key(KStdAccel::Help), menuHelpContents );

@@ -67,10 +67,7 @@ void KURLRequester::init()
 
     myEdit = new KLineEdit( this, "line edit" );
     myButton = new QToolButton( this, "kfile button" );
-    myButton->setPixmap(
-		KGlobal::iconLoader()->loadIcon(QString::fromLatin1("folder"),
-						 KIconLoader::Small,
-						 0L, false ) );
+    myButton->setPixmap(BarIcon(QString::fromLatin1("folder")));
 
     setSpacing( KDialog::spacingHint() );
     myButton->setFixedSize( myButton->sizeHint().width(),

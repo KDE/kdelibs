@@ -158,7 +158,7 @@ void KAnimWidget::updateIcons()
   for( ; it != d->icons.end(); ++it)
   {
     kdDebug() << "loading icon " << *it << " with size " << d->size << endl;
-    d->pixmaps.append( KGlobal::instance()->iconLoader()->loadIcon( *it, -d->size ) );
+    d->pixmaps.append( BarIcon( *it, d->size ) );
   }
 
   d->iter   = d->pixmaps.begin();

@@ -57,9 +57,7 @@ void KURLComboBox::init( Mode mode )
     defaultList.setAutoDelete( true );
     setInsertionPolicy( NoInsertion );
 
-    KIconLoader *loader = KGlobal::iconLoader();
-    opendirPix = loader->loadIcon( QString::fromLocal8Bit("folder_open"),
-				   KIconLoader::Small );
+    opendirPix = BarIcon(QString::fromLatin1("folder_open"));
 
     connect( this, SIGNAL( activated( int )), SLOT( slotActivated( int )));
 }
@@ -288,8 +286,7 @@ void KURLComboBox::setMaxItems( int max )
 
 QPixmap KURLComboBox::getPixmap( const KURL& url ) const
 {
-    static QPixmap dirpix = KGlobal::iconLoader()->
-	    loadIcon( QString::fromLatin1("folder"), KIconLoader::Small );
+    static QPixmap dirpix = BarIcon(QString::fromLatin1("folder"));
 
     if ( myMode == Directories )
 	return dirpix;

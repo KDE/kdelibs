@@ -8,7 +8,9 @@ fi
 
 CATALOG=$ksgmldir/kde.cat
 DB_STYLESHEET=$ksgmldir/stylesheets/kde.dsl
-SGML_CATALOG_FILES=@SGML_CATALOGS@
+#SGML_CATALOG_FILES=@SGML_CATALOGS@
+sgml=/usr/local/lib/sgml
+SGML_CATALOG_FILES="$sgml/dtd/docbook-3.1/docbook.cat:$sgml/dsssl/catalog:$sgml/stylesheets/nwalsh-modular/catalog"
 
 export SGML_CATALOG_FILES
 
