@@ -528,6 +528,18 @@ QString KStandardDirs::findExe( const QString& appname,
 				const QString& pstr, bool ignore)
 {
     QFileInfo info;
+
+    // absolute path ?
+    if (appname.startsWith(QString::fromLatin1("/")))
+    {
+        info.setFile( appname );
+        if( info.exists() && ( ignore || info.isExecutable() )
+            && info.isFile() ) {
+            return appname;
+        }
+        return QString::null;
+    }
+
     QStringList tokens;
     QString p = pstr;
 
