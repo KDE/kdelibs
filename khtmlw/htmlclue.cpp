@@ -1922,6 +1922,36 @@ HTMLCell::HTMLCell( int _x, int _y, int _max_width, int _percent, const char *_u
   bIsMarked = false;
 }
 
+void HTMLCell::select( QPainter *_painter, QRect & _rect, int _tx, int _ty )
+{
+    HTMLObject *obj;
+
+    QRect r( x + _tx, y - ascent + _ty, width, ascent + descent );
+
+    _tx += x;
+    _ty += y - ascent;
+
+    bool sel = false;
+
+    if ( _rect.contains( r ) )
+    {
+	sel = true;
+    }
+    else if ( !_rect.intersects( r ) )
+    {
+	sel = false;
+    }
+    else
+    {
+	QRect isect = _rect.intersect( r );
+	if ( isect.width() > r.width()/2 && isect.height() > r.height()/2 )
+	    sel = true;
+    }
+
+    for ( obj = head; obj != 0; obj = obj->next() )
+	obj->select( _painter, sel, _tx, _ty );
+}
+
 bool HTMLCell::print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty, bool toPrinter )
 {
   bool rv = HTMLClueV::print( _painter, _x, _y, _width, _height, _tx, _ty, toPrinter );

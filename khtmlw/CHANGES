@@ -1,6 +1,13 @@
 KHTMLW CHANGES
 ==============
 
+Version 0.12.12 - 1 Mar 1998 (Martin)
+---------------
+
+Change HTMLCell rectangle selection so that the cells are selected as
+  a whole, i.e. in kfm text and icon are always selected together.
+Use a less colour hungry way to show selected images.
+
 Version 0.12.11 - 28 Feb. 1998 ( Jacek )
 ---------------
 

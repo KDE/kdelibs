@@ -784,6 +784,18 @@ void HTMLImage::setMaxWidth( int _max_width )
     }
 }
 
+void HTMLImage::select( QPainter *_painter, bool _select, int _tx, int _ty )
+{
+    const char *u = getURL();
+    if ( u == 0 || *u == '\0' || _select == isSelected() )
+	return;
+	
+    setSelected( _select );
+
+//    _painter->eraseRect( x + _tx, y - ascent + _ty, width, ascent+descent );
+    print( _painter, _tx, _ty );
+}
+
 bool HTMLImage::print( QPainter *_painter, int, int _y, int, int _height, int _tx, int _ty, bool toPrinter )
 {
     if ( _y + _height < y - getAscent() || _y > y + getDescent() )
@@ -833,8 +845,10 @@ void HTMLImage::print( QPainter *_painter, int _tx, int _ty )
 	if ( isSelected() )
 	{
 	    QPainter p( &pm );
-	    p.setRasterOp( NotEraseROP );
-	    p.fillRect( 0, 0, pm.width(), pm.height(), blue );
+//	    p.setRasterOp( NotEraseROP );
+//	    p.fillRect( 0, 0, pm.width(), pm.height(), blue );
+	    QBrush b( blue, Dense4Pattern );
+	    p.fillRect( 0, 0, pm.width(), pm.height(), b );
 	}
 
 	if ( (width - border*2 != pixptr->width() ||

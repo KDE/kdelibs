@@ -267,6 +267,8 @@ public:
   virtual const char* getURL() const { return url; }
   virtual const char* getTarget() const { return target; }
 
+  virtual void select( QPainter *, QRect &_rect, int _tx, int _ty );
+
   virtual bool print( QPainter *_painter, int _x, int _y, int _width,
 		      int _height, int _tx, int _ty, bool toPrinter );
 

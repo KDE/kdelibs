@@ -414,6 +414,7 @@ public:
     virtual int  calcMinWidth();
     virtual int  calcPreferredWidth();
     virtual void setMaxWidth( int );
+    virtual void select( QPainter *, bool, int _tx, int _ty );
     virtual bool print( QPainter *_painter, int _x, int _y, int _width,
 	int _height, int _tx, int _ty, bool toPrinter );
     virtual void print( QPainter *, int _tx, int _ty );
