@@ -22,6 +22,8 @@
 #include <kfilepreview.h>
 #include <kfilepreview.moc>
 
+#include "config-kfile.h"
+
 KFilePreview::KFilePreview(KFileView *view, QWidget *parent, const char *name)
     : QSplitter(parent, name), KFileView()
 {
@@ -98,9 +100,31 @@ void KFilePreview::setPreviewWidget(const QWidget *w, const KURL &)
     }
 }
 
+void KFilePreview::insertSorted(KFileViewItem *tfirst, uint counter)
+{
+    for ( KFileViewItem *it = tfirst; it; it = it->next() ) {
+        left->updateNumbers( it );
+        updateNumbers( it );
+    }
+    
+    left->insertSorted( tfirst, counter );
+    setFirstItem( left->firstItem() );
+}
+
 void KFilePreview::insertItem(KFileViewItem *item)
 {
+    // ### (KDE3) only left for compat, not called internally anymore
     left->insertItem(item);
+}
+
+void KFilePreview::setSorting( QDir::SortSpec sort )
+{
+    left->setSorting( sort );
+}
+
+void KFilePreview::sortReversed()
+{
+    left->sortReversed();
 }
 
 void KFilePreview::clearView()
@@ -128,13 +152,10 @@ void KFilePreview::removeItem(const KFileViewItem *i)
     KFileView::removeItem( i );
 }
 
-// huh, I don't think we need this....
 void KFilePreview::clear()
 {
     KFileView::clear();
     left->KFileView::clear();
-    if(preview)
-        preview->erase();
 }
 
 void KFilePreview::clearSelection()

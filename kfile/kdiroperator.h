@@ -1,7 +1,7 @@
 // -*- c++ -*-
 /* This file is part of the KDE libraries
     Copyright (C) 1999 Stephan Kulow <coolo@kde.org>
-		  2000 Carsten Pfeiffer <pfeiffer@kde.org>
+		  2000,2001 Carsten Pfeiffer <pfeiffer@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -53,13 +53,18 @@ namespace KIO {
  *
  * It supports different views, e.g. a detailed view (see @KFileDetailView),
  * a simple icon view (see @KFileIconView), a combination of two views,
- * separating directories and files (@see KFileCombiView). 
+ * separating directories and files (@see KCombiView). 
  *
  * Additionally, a preview view is available (see @KFilePreview), which can 
  * show either a simple or detailed view and additionally a preview widget 
  * (see @ref setPreviewWidget()). @ref KImageFilePreview is one implementation
  * of a preview widget, that displays previews for all supported filetypes
  * utilizing KIO::PreviewJob.
+ *
+ * Currently, those classes don't support Drag&Drop out of the box -- there
+ * you have to use your own view-classes. You can use some DnD-aware views
+ * from Björn Sahlström <bjorn@kbear.org> until they will be integrated
+ * into this library. See http://master.kde.org/~pfeiffer/DnD-classes.tar.gz
  *
  * This widget is the one used in the KFileDialog.
  *

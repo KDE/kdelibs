@@ -286,7 +286,6 @@ KFileViewItem *KFileView::mergeLists(KFileViewItem *list1, KFileViewItem *list2)
 
 void KFileView::setSorting(QDir::SortSpec new_sort)
 {
-    kdDebug(kfile_area) << "KFileView::setSorting " << new_sort << " " << viewname << endl;
     if ( mySorting == new_sort )
 	return;
 
@@ -396,8 +395,8 @@ int KFileView::compareItems(const KFileViewItem *fi1, const KFileViewItem *fi2) 
 
 	    QDir::SortSpec sort = static_cast<QDir::SortSpec>(mySorting & QDir::SortByMask);
 
-	    if (fi1->isDir() || fi2->isDir())
-		sort = static_cast<QDir::SortSpec>(KFileView::defaultSortSpec & QDir::SortByMask);
+	    //if (fi1->isDir() || fi2->isDir())
+            // sort = static_cast<QDir::SortSpec>(KFileView::defaultSortSpec & QDir::SortByMask);
 
 	    switch (sort) {
 	    case QDir::Unsorted:
@@ -466,7 +465,7 @@ void KFileView::setCurrentItem(const QString &item,
 	return;
     }
 
-    kdDebug() << "setCurrentItem: no match found." << endl;
+    kdDebug(kfile_area) << "setCurrentItem: no match found." << endl;
 }
 
 const KFileViewItemList * KFileView::items() const

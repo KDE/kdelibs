@@ -73,12 +73,16 @@ public:
     virtual bool isSelected( const KFileViewItem * ) const;
     virtual void setSelected(const KFileViewItem *, bool);
 
+    virtual void insertSorted(KFileViewItem *tfirst, uint counter);
     virtual void insertItem(KFileViewItem *);
     virtual void clear();
 
-    void setPreviewWidget(const QWidget *w, const KURL &u);
+    virtual void setSorting( QDir::SortSpec sort );
+    virtual void sortReversed();
 
     void ensureItemVisible(const KFileViewItem *);
+
+    void setPreviewWidget(const QWidget *w, const KURL &u);
 
 signals:
     void showPreview(const KURL &);

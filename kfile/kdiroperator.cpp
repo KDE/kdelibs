@@ -1148,10 +1148,10 @@ void KDirOperator::setupActions()
 
     // the view menu actions
     viewActionMenu = new KActionMenu( i18n("View"), this, "view menu" );
-    shortAction = new KRadioAction( i18n("Short View"), 0,
-                                     this, "short view" );
-    detailedAction = new KRadioAction( i18n("Detailed View"), 0,
-                                        this, "detailed view" );
+    shortAction = new KRadioAction( i18n("Short View"), "view_multicolumn", 
+                                    0, this, "short view" );
+    detailedAction = new KRadioAction( i18n("Detailed View"), "view_detailed",
+                                       0, this, "detailed view" );
 
     showHiddenAction = new KToggleAction( i18n("Show Hidden Files"), 0,
                                           this, "show hidden" );

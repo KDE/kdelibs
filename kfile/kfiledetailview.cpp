@@ -271,8 +271,6 @@ void KFileDetailView::removeItem( const KFileViewItem *i )
 
 void KFileDetailView::slotSortingChanged( int col )
 {
-    kdDebug(kfile_area) << "slotSortingChanged " << count() << endl;
-
     KListView::setSorting( -1 );
     QDir::SortSpec sort = sorting();
     int sortSpec = -1;
