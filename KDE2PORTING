@@ -410,5 +410,5 @@ can combine TreeView's and normal Tablists without problems.
 // * KToolBarButton & KRadioGroup
 
 If you need to do anything with KToolBarButton you now need to include
-<ktoolbarbutton.h> KRadioGroup has been renamed to KTooBarRadioGroup and
+<ktoolbarbutton.h> KRadioGroup has been renamed to KToolBarRadioGroup and
 requires you to include <ktoolbarradiogroup.h>
