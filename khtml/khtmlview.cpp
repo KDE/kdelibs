@@ -214,7 +214,7 @@ public:
         };
         if (!scrollTimerId ||
             (scrollDirection != direction &&
-             scrollDirection != oppositedir)) {
+             (scrollDirection != oppositedir || scrollSuspended))) {
             scrollTiming = 6;
             scrollBy = timings[scrollTiming].pixels;
             scrollDirection = direction;
@@ -1067,10 +1067,10 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
             if ( d->vmode == QScrollView::AlwaysOff )
                 _ke->accept();
             else {
+                if (!d->scrollTimerId || d->scrollSuspended)
+                    scrollBy( 0, 10 );
                 if (d->scrollTimerId)
                     d->newScrollTimer(this, 0);
-                else
-                    scrollBy( 0, 10 );
             }
             break;
 
@@ -1090,10 +1090,10 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
             if ( d->vmode == QScrollView::AlwaysOff )
                 _ke->accept();
             else {
+                if (!d->scrollTimerId || d->scrollSuspended)
+                    scrollBy( 0, -10 );
                 if (d->scrollTimerId)
                     d->newScrollTimer(this, 0);
-                else
-                    scrollBy( 0, -10 );
             }
             break;
 
@@ -1111,10 +1111,10 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
             if ( d->hmode == QScrollView::AlwaysOff )
                 _ke->accept();
             else {
+                if (!d->scrollTimerId || d->scrollSuspended)
+                    scrollBy( 10, 0 );
                 if (d->scrollTimerId)
                     d->newScrollTimer(this, 0);
-                else
-                    scrollBy( 10, 0 );
             }
             break;
         case Key_Left:
@@ -1122,10 +1122,10 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
             if ( d->hmode == QScrollView::AlwaysOff )
                 _ke->accept();
             else {
+                if (!d->scrollTimerId || d->scrollSuspended)
+                    scrollBy( -10, 0 );
                 if (d->scrollTimerId)
                     d->newScrollTimer(this, 0);
-                else
-                    scrollBy( -10, 0 );
             }
             break;
         case Key_Enter:
