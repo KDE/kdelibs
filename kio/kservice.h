@@ -213,6 +213,11 @@ public:
    * The bigger the value, the most preferred the service is.
    */
   int initialPreference() const { return m_initialPreference; }
+
+  /**
+   * @internal. Allows KServiceType::offers to tweak the initial preference.
+   */
+  void setInitialPreference( int i ) { m_initialPreference = i; }
   
   /**
    * Whether the entry should be suppressed in menus.

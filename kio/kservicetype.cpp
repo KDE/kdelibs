@@ -243,7 +243,10 @@ KService::List KServiceType::offers( const QString& _servicetype )
             for( ; it2 != lst.end() && !found; ++it2 )
                 found = (*it)->desktopEntryPath() == (*it2)->desktopEntryPath();
             if ( !found )
+            {
+                (*it)->setInitialPreference( 0 ); // all/* associations are less prioritary
                 lst += *it;
+            }
         }
         //kdDebug(7009) << "all/all found, got " << newOffers.count() << " more offers" << endl;
     }
@@ -267,7 +270,10 @@ KService::List KServiceType::offers( const QString& _servicetype )
             for( ; it2 != lst.end() && !found; ++it2 )
                 found = (*it)->desktopEntryPath() == (*it2)->desktopEntryPath();
             if ( !found )
+            {
+                (*it)->setInitialPreference( 0 ); // all/* associations are less prioritary
                 lst += *it;
+            }
         }
         //kdDebug(7009) << "all/allfiles found, got " << newOffers.count() << " more offers" << endl;
       }
