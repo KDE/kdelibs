@@ -29,8 +29,8 @@
 #define _CSS_css_rule_h_
 
 #include <dom/dom_string.h>
-#include <css_stylesheet.h>
-#include <css_value.h>
+#include <dom/css_stylesheet.h>
+#include <dom/css_value.h>
 
 namespace DOM {
 
