@@ -2,9 +2,6 @@ This library is severely functionally challenged.
 
 This TODO happens to cover SSL in all of KDE though.
 
-- do the openssl randomization calls for non-linux/bsd systems as per bug
-  report #11888
-
 - KSSL needs to be integrated into the slave base in some
   way or another so that kio_pop3 and friends can use it.
 

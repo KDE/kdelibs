@@ -30,6 +30,7 @@
 #include <unistd.h>
 
 #include <qfile.h>
+#include <qsortedlist.h>
 
 #include "ksslsettings.h"
 #include <kglobal.h>
@@ -43,6 +44,19 @@
 #include <openssl/ssl.h>
 #undef crypt
 #endif
+
+      class CipherNode {
+      public:
+        CipherNode(const char *_name, int _keylen) : 
+                      name(_name), keylen(_keylen) {}
+        QString name;
+        int keylen;
+        inline int operator==(CipherNode &x) { return x.keylen == keylen; }
+        inline int operator< (CipherNode &x) { return keylen < x.keylen;  }
+        inline int operator<=(CipherNode &x) { return keylen <= x.keylen; }
+        inline int operator> (CipherNode &x) { return keylen > x.keylen;  }
+        inline int operator>=(CipherNode &x) { return keylen >= x.keylen; }
+      };
 
 
 //
@@ -93,6 +107,9 @@ QString clist = "";
     QString tcipher;
     bool firstcipher = true;
     SSL_METHOD *meth;
+    QSortedList<CipherNode> cipherSort;
+                            cipherSort.setAutoDelete(true);
+
 
     if (m_bUseTLSv1)
       meth = TLSv1_client_method();
@@ -116,19 +133,41 @@ QString clist = "";
         m_cfg->setGroup("SSLv3");
       }
  
+      // I always thought that OpenSSL negotiated the best possible
+      // cipher for the connection based on the list provided.  Boy
+      // was I ever wrong.  There have been many complaints over the
+      // fact that we do not care about the order of ciphers we submit
+      // to OpenSSL for use, and thus 40 bit is sometimes used.  Ok,
+      // that's fine, but choosing more bits does not mean it's more
+      // secure.  Infact, it could be quite the opposite sometimes!!
+      // DO NOT TRUST THIS TO MAKE IT MORE SECURE.  It is here only
+      // for peace of mind of the users.  Eventually it would be best
+      // to set an internal preference order based on accepted strength
+      // analyses of the various algorithms INCLUDING the key length.
+
       for(int i = 0;; i++) {
         SSL_CIPHER *sc = (meth->get_cipher)(i);
         if (!sc) break;;
         tcipher.sprintf("cipher_%s", sc->name);
  
         if (m_cfg->readBoolEntry(tcipher)) {
-          if (firstcipher)          // we don't start with a ':'
-            firstcipher = false;
-          else clist.append(":");
-          clist.append(sc->name);
+          cipherSort.inSort(new CipherNode(sc->name,
+                                           SSL_CIPHER_get_bits(sc, NULL) ));
         } // if
       } // for  i
+
     } // for    k
+
+    while (!cipherSort.isEmpty()) {
+      if (firstcipher)
+        firstcipher = false;
+      else clist.append(":");
+      clist.append(cipherSort.getLast()->name);
+      cipherSort.removeLast();
+    } // while
+    
+    //    kdDebug() << "Cipher list is: " << clist << endl;
+
   } // if
 #endif
 return clist;

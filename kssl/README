@@ -16,18 +16,3 @@ the author for development information.
 George Staikos <staikos@kde.org>
 
 
-The carootfiles directory:
-
-
-
-  These files are copied verbatim from OpenSSL but are included here because
-not everyone is using OpenSSL v0.9.6.  Previous versions did not include 
-these and thus we're better off putting them in ourself.
-
-
-What they are:
-
-  These are the root files from the certificate signing authorities.  They
-allow us to verify certificates (both personal and site) to insure that they
-are authentic. 
-

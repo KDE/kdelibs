@@ -75,7 +75,7 @@ KSSL::~KSSL() {
 
 bool KSSL::TLSInit() {
 #ifdef HAVE_SSL
-  kdDebug() << "KSSL TLS initialize" << endl;
+  // kdDebug() << "KSSL TLS initialize" << endl;
   if (m_bInit) return false;
 
   if (m_bAutoReconfig)
@@ -106,7 +106,7 @@ return false;
 
 bool KSSL::initialize() {
 #ifdef HAVE_SSL
-  kdDebug() << "KSSL initialize" << endl;
+  // kdDebug() << "KSSL initialize" << endl;
   if (m_bInit) return false;
 
   if (m_bAutoReconfig)
@@ -151,7 +151,7 @@ return false;
 
 void KSSL::close() {
 #ifdef HAVE_SSL
-  kdDebug() << "KSSL close" << endl;
+  // kdDebug() << "KSSL close" << endl;
   if (!m_bInit) return;
   SSL_shutdown(d->m_ssl);
   SSL_free(d->m_ssl);
@@ -183,7 +183,7 @@ bool KSSL::setVerificationLogic() {
 
 int KSSL::connect(int sock) {
 #ifdef HAVE_SSL
-  kdDebug() << "KSSL connect" << endl;
+  // kdDebug() << "KSSL connect" << endl;
   int rc;
   if (!m_bInit) return -1;
   d->m_ssl = SSL_new(d->m_ctx);
@@ -202,7 +202,7 @@ int KSSL::connect(int sock) {
   if (rc == 1) {
     setConnectionInfo();
     setPeerInfo();
-    kdDebug() << "KSSL connected OK" << endl;
+    // kdDebug() << "KSSL connected OK" << endl;
   } else {
     kdDebug() << "KSSL connect FAILED" << endl;
     return -1;
