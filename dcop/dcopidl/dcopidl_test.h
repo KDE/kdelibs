@@ -14,6 +14,7 @@ class Test2;
 // this has to work too
 #include <qstring.h>
 
+typedef QMap<KIO::Job *, KIODownload> KIODownloadMap;
 class Test3;
 
 class Test : public MyNamespace::MyParentClass, virtual public DCOPObject

@@ -134,7 +134,6 @@ void yyerror( const char *s )
 %type <_str> param
 %type <_str> type
 %type <_str> type_name
-%type <_str> type_name_list
 %type <_str> type_list
 %type <_str> params
 %type <_str> int_type
@@ -442,6 +441,7 @@ int_type
 asterisks
 	: T_ASTERISK asterisks
 	| T_ASTERISK
+        { }
 
 params
 	: /* empty */
@@ -460,13 +460,13 @@ type_name
 	| Identifier { $$ = $1; }
 	| T_STRUCT Identifier { $$ = $2; }
 	| T_CLASS Identifier { $$ = $2; }
-	| Identifier T_LESS type_name_list T_GREATER {
+	| Identifier T_LESS type_list T_GREATER {
 		QString *tmp = new QString("%1&lt;%2&gt;");
 		*tmp = tmp->arg(*($1));
 		*tmp = tmp->arg(*($3));
 		$$ = tmp;
 	 }
-	| Identifier T_LESS type_name_list T_GREATER T_SCOPE Identifier{
+	| Identifier T_LESS type_list T_GREATER T_SCOPE Identifier{
 		QString *tmp = new QString("%1&lt;%2&gt;::%3");
 		*tmp = tmp->arg(*($1));
 		*tmp = tmp->arg(*($3));
@@ -474,15 +474,6 @@ type_name
 		$$ = tmp;
 	 }
 
-type_name_list
-	: type_name T_COMMA type_name_list
-	  {
-	    $$ = new QString(*($1) + "," + *($3));
-	  }
-	| type_name
-  	  {
- 	    $$ = $1;
-	  }
 type
 	: T_CONST type_name asterisks
   	  {
@@ -506,16 +497,16 @@ type
 		yyerror("in dcop areas are only const references allowed!");
 	  }
 
-	| type_name {
-		QString* tmp = new QString("<TYPE>%1</TYPE>");
-		*tmp = tmp->arg( *($1) );
-		$$ = tmp;
-	}
 	| type_name asterisks
   	  {
 	    if (dcop_area)
 	      yyerror("in dcop areas are no pointers allowed");
 	  }
+	| type_name {
+		QString* tmp = new QString("<TYPE>%1</TYPE>");
+		*tmp = tmp->arg( *($1) );
+		$$ = tmp;
+	}
 
 
 type_list
