@@ -44,7 +44,7 @@
                 <cstring>TextLabel6</cstring>
             </property>
             <property name="text">
-                <string>&amp;Repeat Password:</string>
+                <string>&amp;Repeat password:</string>
             </property>
             <property name="buddy" stdset="0">
                 <cstring>_password2</cstring>
@@ -55,7 +55,7 @@
                 <cstring>TextLabel5</cstring>
             </property>
             <property name="text">
-                <string>&amp;Choose Password:</string>
+                <string>&amp;Choose password:</string>
             </property>
             <property name="buddy" stdset="0">
                 <cstring>_password1</cstring>
