@@ -257,6 +257,7 @@ void HTMLEmbedElementImpl::parseAttribute(AttributeImpl *attr)
         pos = serviceType.find( ";" );
         if ( pos!=-1 )
             serviceType = serviceType.left( pos );
+        serviceType.truncate( serviceType.find( "-plugin" ) );
         break;
      case ATTR_CODE:
      case ATTR_SRC:
@@ -364,6 +365,7 @@ void HTMLObjectElementImpl::parseAttribute(AttributeImpl *attr)
       pos = serviceType.find( ";" );
       if ( pos!=-1 )
           serviceType = serviceType.left( pos );
+      serviceType.truncate( serviceType.find( "-plugin" ) );
       needWidgetUpdate = true;
       break;
     case ATTR_DATA:
