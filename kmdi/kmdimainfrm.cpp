@@ -130,6 +130,7 @@ public:
 	KMdiFocusList *focusList;
 	int m_styleIDEAlMode;
 	int m_toolviewStyle;
+	KAction *closeWindowAction;
 };
 
 //============ constructor ============//
@@ -213,6 +214,14 @@ KMdiMainFrm::KMdiMainFrm( QWidget* parentWidget, const char* name, KMdi::MdiMode
 	m_pMdiModeMenu->setCheckable( true );
 
 	m_pPlacingMenu = new QPopupMenu( this, "placing_menu" );
+
+	d->closeWindowAction = new KAction(i18n("&Close"),
+#ifdef Q_WS_WIN
+		CTRL|Key_F4,
+#else
+		0,
+#endif
+		this, SLOT(closeActiveView()), actionCollection(), "window_close");
 
 	// the MDI view taskbar
 	createTaskBar();
@@ -432,6 +441,8 @@ void KMdiMainFrm::addWindow( KMdiChildView* pWnd, int flags, int index )
 
 		return ;
 	}
+
+	d->closeWindowAction->setEnabled(true);
 
 	// common connections used when under MDI control
 	QObject::connect( pWnd, SIGNAL( clickedInWindowMenu( int ) ), this, SLOT( windowMenuItemActivated( int ) ) );
@@ -905,8 +916,10 @@ void KMdiMainFrm::closeWindow( KMdiChildView *pWnd, bool layoutTaskBar )
 		}
 	}
 
-	if ( !m_pCurrentWindow )
+	if ( !m_pCurrentWindow ) {
+		d->closeWindowAction->setEnabled(false);
 		emit lastChildViewClosed();
+	}
 }
 
 //================== findWindow =================//
@@ -2383,7 +2396,7 @@ void KMdiMainFrm::setEnableMaximizedChildFrmMode( bool enableMaxChildFrameMode )
 		
 		KMdiChildFrm* pCurrentChild = m_pMdi->topChild();
 		
-		//If we have no child and there is no menubar, we do nothing
+		//If we have no child or there is no menubar, we do nothing
 		if ( !pCurrentChild || !m_pMainMenuBar )
 			return ;
 
@@ -2527,11 +2540,12 @@ void KMdiMainFrm::fillWindowMenu()
 	if ( !m_bClearingOfWindowMenuBlocked )
 		m_pWindowMenu->clear();
 
-	int closeId = m_pWindowMenu->insertItem( i18n( "&Close" ), this, SLOT( closeActiveView() ) );
+	d->closeWindowAction->plug(m_pWindowMenu);
+
 	int closeAllId = m_pWindowMenu->insertItem( i18n( "Close &All" ), this, SLOT( closeAllViews() ) );
 	if ( noViewOpened )
 	{
-		m_pWindowMenu->setItemEnabled( closeId, false );
+		d->closeWindowAction->setEnabled(false);
 		m_pWindowMenu->setItemEnabled( closeAllId, false );
 	}
 	
