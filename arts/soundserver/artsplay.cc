@@ -26,12 +26,27 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <vector>
 #include <string>
 #include <iostream>
 
 using namespace std;
 using namespace Arts;
+
+/* returns the absolute path to a filename */
+static string absolutePath(const string& path)
+{
+	if(path[0] == '/') return path;
+
+	char buffer[PATH_MAX];
+	getcwd(buffer,PATH_MAX);
+
+	if(buffer[strlen(buffer)-1] == '/')
+		return buffer + path;
+	else
+		return string(buffer) + '/' + path;
+}
 
 int main(int argc, char **argv)
 {
@@ -50,5 +65,5 @@ int main(int argc, char **argv)
 		cerr << "Can't connect to sound server" << endl;
 		return 1;
 	}
-	return server.play(argv[1]) != 0;
+	return server.play(absolutePath(argv[1])) != 0;
 }
