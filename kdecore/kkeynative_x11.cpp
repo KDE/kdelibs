@@ -96,7 +96,6 @@ bool KKeyNative::init( const KKey& key )
 	uint modExtra = KKeyServer::Sym(m_sym).getModsRequired();
 	// Get the X modifier equivalent.
 	if( !KKeyServer::modToModX( key.modFlags() | modExtra, m_mod ) ) {
-		kdWarning(125) << "Invalid modifier flags." << endl;
 		m_sym = m_mod = 0;
 		m_code = 0;
 		return false;
