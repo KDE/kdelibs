@@ -37,6 +37,7 @@ int comment_mode;
 int function_mode = 0;
 
 #include <qstring.h>
+#include <qregexp.h>
 
 static long ascii_to_longlong( long base, const char *s )
 {
@@ -166,9 +167,11 @@ Kidl_Identifier		[_a-zA-Z][a-zA-Z0-9_]*
 "#!"[^\n]*		{
                           exit( 1 );
                         }
-"#include <"[^>]*">"\s*\n {
+"#include"[ \t]*[<\"][^>]*[>\"]\s*\n {
 			  QString s( yytext );
-			  yylval._str = new QString( s.mid( 10, s.stripWhiteSpace().length() - 11 ) );
+                          int i = s.find(QRegExp("[\"<]"))+1;
+                          int j = s.find(QRegExp("[\">]"), i);
+			  yylval._str = new QString( s.mid( i, j - i ) );
                           idl_line_no++;
                           return T_INCLUDE;
                         }
