@@ -80,6 +80,16 @@ khtmlw has been replaced with khtml.
   Much more extensive documentation on the KConfig and friends API can
   be found in the kdoc generated documentation from the header files.
 
+  To use the new iterator, you will probably want to do something like
+  this:
+
+  QMap<QString, QString> tmpMap = config->entryMap(myGroup);
+  QMap<QString, QString>::Iterator aIt(tmpMap.begin);
+
+  for (; aIt != tmpMap.end() ++aIt) {
+   // body here.  Access iterator key as aIt.key(),
+   // data as *aIt.
+  }
 
 //////////////////////////////////////////////////////////////////////
 // * libkfm has disappeared
