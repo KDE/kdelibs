@@ -58,7 +58,7 @@ CupsAddSmb::CupsAddSmb(QWidget *parent, const char *name)
 	connect(m_doit, SIGNAL(clicked()), SLOT(slotActionClicked()));
 	m_bar = new QProgressBar(this);
 	m_text = new KActiveLabel(this);
-	QLabel	*m_title = new QLabel(i18n("Export printer driver to Windows clients"), this);
+	QLabel	*m_title = new QLabel(i18n("Export Printer Driver to Windows Clients"), this);
 	setCaption(m_title->text());
 	QFont	f(m_title->font());
 	f.setBold(true);

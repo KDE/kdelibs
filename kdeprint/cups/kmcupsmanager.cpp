@@ -871,7 +871,7 @@ void KMCupsManager::printerIppReport()
 		req.dump(2);
 		if (req.doRequest("/printers/"))
 		{
-			ippReport(req, IPP_TAG_PRINTER, i18n("IPP report for %1").arg(m_currentprinter->printerName()));
+			ippReport(req, IPP_TAG_PRINTER, i18n("IPP Report for %1").arg(m_currentprinter->printerName()));
 		}
 		else
 		{
