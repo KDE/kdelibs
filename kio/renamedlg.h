@@ -102,6 +102,8 @@ protected slots:
 private:
  class RenameDlgPrivate;
  RenameDlgPrivate *d;
+ void pluginHandling( );
+ QString mime( const QString &string );
 };
 
   /**
@@ -139,7 +141,17 @@ RenameDlg_Result open_RenameDlg( const QString & caption,
 /// ???
 //unsigned long getOffset( QString dest );
 
-};
-
+}
 #endif
+
+
+
+
+
+
+
+
+
+
+
 

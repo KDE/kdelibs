@@ -65,7 +65,7 @@ include_HEADERS = \
 	kimageio.h kdirnotify.h kdirnotify_stub.h \
 	kurlpixmapprovider.h kprotocolinfo.h kprotocolmanager.h \
 	kfilterbase.h kfilterdev.h kemailsettings.h kscan.h kdatatool.h \
-	karchive.h kfilefilter.h kfilemetainfo.h
+	karchive.h kfilefilter.h kfilemetainfo.h renamedlgplugin.h
 
 libkio_la_LDFLAGS = -version-info 4:0 -no-undefined $(all_libraries)
 libkio_la_LIBADD = ../kdeui/libkdeui.la ../kdesu/libkdesu.la ../kssl/libkssl.la $(LIBZ) $(LIBFAM) $(LIBVOLMGT)
@@ -90,11 +90,11 @@ libkio_la_SOURCES = \
 
 kio_uiserver_SOURCES = dummy.cpp
 kio_uiserver_LDADD = kio_uiserver.la
-kio_uiserver_LDFLAGS = $(KDE_RPATH) $(all_libraries)
+kio_uiserver_LDFLAGS = $(KDE_RPATH) $(all_libraries) 
 
 kio_uiserver_la_SOURCES = uiserver.cpp uiserver.skel observer.stub \
 	renamedlg.cpp skipdlg.cpp
-kio_uiserver_la_LIBADD = libksycoca.la ../kssl/libkssl.la ../kdesu/libkdesu.la
+kio_uiserver_la_LIBADD = libksycoca.la ../kssl/libkssl.la ../kdesu/libkdesu.la 
 kio_uiserver_la_LDFLAGS = $(all_libraries) -module -avoid-version
 
 METASOURCES = AUTO
@@ -145,6 +145,9 @@ protocoldir = $(kde_servicesdir)
 
 update_DATA = kioslave.upd useragent.pl proxytype.pl
 updatedir = $(kde_datadir)/kconf_update
+
+servicetype_DATA = renamedlgplugin.desktop
+servicetypedir = $(kde_servicetypesdir)
 
 parser: $(parserfiles)
 	cd $(srcdir) ;\

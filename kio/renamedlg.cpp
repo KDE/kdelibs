@@ -20,7 +20,7 @@
 */
 
 #include "kio/renamedlg.h"
-
+#include "kio/renamedlgplugin.h"
 #include <stdio.h>
 #include <assert.h>
 
@@ -29,6 +29,9 @@
 
 #include <kapplication.h>
 #include <kio/global.h>
+//#include <kio/netaccess.h> linking problem zecke
+#include <ktrader.h>
+#include <klibloader.h>
 #include <kdialog.h>
 #include <klocale.h>
 #include <kglobal.h>
@@ -61,8 +64,10 @@ class RenameDlg::RenameDlgPrivate
   QVBoxLayout* m_pLayout; // ### doesn't need to be here
   QString src;
   QString dest;
-
+  QString mimeSrc;
+  QString mimeDest;
   bool modal;
+  bool plugin;
 };
 
 RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
@@ -88,7 +93,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
 
   d->src = _src;
   d->dest = _dest;
-
+  d->plugin = false;
   
 
   setCaption( _caption );
@@ -136,13 +141,65 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
   d->m_pLayout = new QVBoxLayout( this, KDialog::marginHint(),
 			       KDialog::spacingHint() );
   d->m_pLayout->addStrut( 360 );	// makes dlg at least that wide
+  //  figure out the mimetype and load one plugin
+  pluginHandling();
+  KTrader::OfferList plugin_offers;
+  if( d->mimeSrc != KMimeType::defaultMimeType()   ){
+    plugin_offers = KTrader::self()->query(d->mimeSrc, "'RenameDlg/Plugin' in ServiceTypes");
 
+  }else if(d->mimeDest != KMimeType::defaultMimeType() ) {
+    plugin_offers = KTrader::self()->query(d->mimeDest, "'RenameDlg/Plugin' in ServiceTypes");
+  }
+  if(!plugin_offers.isEmpty() ){
+    KTrader::OfferList::ConstIterator it = plugin_offers.begin();
+    KTrader::OfferList::ConstIterator end = plugin_offers.end();
+    for( ; it != end; ++it ){
+      kdDebug(7024) << "Offers" << endl;
+      QString libName = (*it)->library();
+      if( libName.isEmpty() ){
+	kdDebug(7024) << "lib is empty" << endl;
+	continue;
+      }
+      KLibrary *lib = KLibLoader::self()->library(libName.local8Bit() );
+      if(!lib) {
+	continue;
+      }
+      KLibFactory *factory = lib->factory();
+      if(!factory){
+	delete lib;
+	continue;
+      }
+      QObject *obj = factory->create( this, (*it)->name().latin1() );
+      if(!obj) {
+	delete lib;
+	continue;
+      }
+      RenameDlgPlugin *plugin = static_cast<RenameDlgPlugin *>(obj);
+      if(!plugin ){
+	delete obj;
+	continue;
+      }
+      if( plugin->initialize( _mode, _src, _dest, d->mimeSrc, 
+			      d->mimeDest, sizeSrc, sizeDest,
+			      ctimeSrc, ctimeDest,
+			      mtimeSrc, mtimeDest ) ) {
+      d->plugin = true;
+      d->m_pLayout->addWidget(plugin );
+      kdDebug(7024) << "RenameDlgPlugin" << endl;
+      break;
+      }else {
+	delete obj;
+      }
+    }
+    
+  }
+  if( !d->plugin ){
   // User tries to overwrite a file with itself ?
-  if ( _mode & M_OVERWRITE_ITSELF ) {
+    if ( _mode & M_OVERWRITE_ITSELF ) {
       QLabel *lb = new QLabel( i18n("This action would overwrite '%1' with itself.\n"
                                     "Do you want to rename it instead?").arg(KStringHandler::csqueeze(d->src,100)), this );
       d->m_pLayout->addWidget(lb);
-  }  else if ( _mode & M_OVERWRITE ) {
+    }  else if ( _mode & M_OVERWRITE ) {
       QGridLayout * gridLayout = new QGridLayout( 0L, 9, 2, KDialog::marginHint(),
                                                   KDialog::spacingHint() );
       d->m_pLayout->addLayout(gridLayout);
@@ -226,7 +283,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
       QLabel *lb = new QLabel( sentence1 + i18n("Do you want to use another file name?"), this );
       d->m_pLayout->addWidget(lb);
   }
-
+  }
   d->m_pLineEdit = new QLineEdit( this );
   d->m_pLayout->addWidget( d->m_pLineEdit );
   d->m_pLineEdit->setText( KURL(d->dest).fileName() );
@@ -380,6 +437,29 @@ void RenameDlg::b7Pressed()
 {
   done( 7 );
 }
+/** This will figure out the mimetypes and query for a plugin
+ *  Loads it then and asks the plugin if it wants to do the job
+ *  We'll take the first available mimetype
+ *  The scanning for a mimetype will be done in 2 ways
+ *
+ */
+void RenameDlg::pluginHandling()
+{
+  d->mimeSrc = mime( d->src );
+  d->mimeDest = mime(d->dest );
+
+  kdDebug(7024) << "Source Mimetype: "<< d->mimeSrc << endl;
+  kdDebug(7024) << "Dest Mimetype: "<< d->mimeDest << endl;
+}
+QString RenameDlg::mime( const QString &src )
+{
+  KMimeType::Ptr type = KMimeType::findByURL(d->src );
+  //if( type->name() == KMimeType::defaultMimeType() ){ // ok no mimetype
+    //    QString ty = KIO::NetAccess::mimetype(d->src );
+    // return ty;
+    return type->name();
+}
+
 
 RenameDlg_Result KIO::open_RenameDlg( const QString & _caption,
                                       const QString & _src, const QString & _dest,
@@ -404,3 +484,8 @@ RenameDlg_Result KIO::open_RenameDlg( const QString & _caption,
 }
 
 #include "renamedlg.moc"
+
+
+
+
+

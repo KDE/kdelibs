@@ -1,0 +1,4 @@
+[Desktop Entry]
+Type=ServiceType
+X-KDE-ServiceType=RenameDlg/Plugin
+Comment=Plugin for the Rename Dialog
