@@ -113,6 +113,10 @@ int setenv(const char *name, const char *value, int overwrite);
 int unsetenv(const char *name);
 #endif
 
+#if !defined(HAVE_MKSTEMPS)
+int mkstemps (char* _template, int suffix_len);
+#endif
+
 /*
  * AIX defines FD_SET in terms of bzero, but fails to include <strings.h>
  * that defines bzero. 
