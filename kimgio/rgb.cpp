@@ -568,7 +568,7 @@ bool SGIImage::writeImage(QImage& img)
 	kdDebug(399) << "total savings: " << (verbatim_size - rle_size) << " bytes" << endl;
 	kdDebug(399) << "compression: " << (rle_size * 100.0 / verbatim_size) << '%' << endl;
 
-	if (verbatim_size <= rle_size)
+	if (verbatim_size <= rle_size || m_io->quality() == 0)
 		writeVerbatim(img);
 	else
 		writeRle();
