@@ -218,10 +218,24 @@ public:
 		art_render_invoke(render);
 	}
 
+	void drawBPath(ArtBpath *bpath)
+	{
+		double affine[6];
+		affine[0] = m_worldMatrix->m11();
+		affine[1] = m_worldMatrix->m12();
+		affine[2] = m_worldMatrix->m21();
+		affine[3] = m_worldMatrix->m22();
+		affine[4] = m_worldMatrix->dx();
+		affine[5] = m_worldMatrix->dy();
+
+		ArtBpath *temp = art_bpath_affine_transform(bpath, affine);
+		ArtVpath *vec = art_bez_path_to_vec(temp, 0.25);
+		art_free(temp);
+		drawPathInternal(vec, affine);
+	}
+
 	void drawVPath(ArtVpath *vec)
 	{
-		ArtSVP *svp;
-
 		double affine[6];
 		affine[0] = m_worldMatrix->m11();
 		affine[1] = m_worldMatrix->m12();
@@ -233,7 +247,12 @@ public:
 		ArtVpath *temp = art_vpath_affine_transform(vec, affine);
 		art_free(vec);
 		vec = temp;
+		drawPathInternal(vec, affine);
+	}
 
+	void drawPathInternal(ArtVpath *vec, double *affine)
+	{
+		ArtSVP *svp;
 		ArtSVP *fillSVP = 0, *strokeSVP = 0;
 
 		Q_UINT32 fillColor = 0, strokeColor = 0;
@@ -1491,21 +1510,16 @@ void KSVGIconPainter::drawRectangle(double x, double y, double w, double h, doub
 
 void KSVGIconPainter::drawEllipse(double cx, double cy, double rx, double ry)
 {
-	ArtVpath *vec, *vec2;
-	ArtBpath *temp, *abp;
+	ArtBpath *temp;
 
 	temp = d->helper->allocBPath(6);
 
 	double x0, y0, x1, y1, x2, y2, x3, y3, len, s, e;
-	double affine[6];
 	int i = 0;
 
-	// Use a blowup factor of 10 to make ellipses with small radii look good
-	art_affine_scale(affine, rx * 10.0, ry * 10.0);
-
 	temp[i].code = ART_MOVETO;
-	temp[i].x3 = 1.0;
-	temp[i].y3 = 0.0;
+	temp[i].x3 = cx + rx;
+	temp[i].y3 = cy;
 
 	i++;
 
@@ -1516,40 +1530,31 @@ void KSVGIconPainter::drawEllipse(double cx, double cy, double rx, double ry)
 			e = 2 * M_PI;
 
 		len = 0.552 * (e - s) / M_PI_2;
-		x0 = cos (s);
-		y0 = sin (s);
-		x1 = x0 + len * cos (s + M_PI_2);
-		y1 = y0 + len * sin (s + M_PI_2);
-		x3 = cos (e);
-		y3 = sin (e);
-		x2 = x3 + len * cos (e - M_PI_2);
-		y2 = y3 + len * sin (e - M_PI_2);
+		x0 = cos(s);
+		y0 = sin(s);
+		x1 = x0 + len * cos(s + M_PI_2);
+		y1 = y0 + len * sin(s + M_PI_2);
+		x3 = cos(e);
+		y3 = sin(e);
+		x2 = x3 + len * cos(e - M_PI_2);
+		y2 = y3 + len * sin(e - M_PI_2);
 
 		temp[i].code = ART_CURVETO;
-		temp[i].x1 = x1;
-		temp[i].y1 = y1;
-		temp[i].x2 = x2;
-		temp[i].y2 = y2;
-		temp[i].x3 = x3;
-		temp[i].y3 = y3;
+		temp[i].x1 = cx + x1 * rx;
+		temp[i].y1 = cy + y1 * ry;
+		temp[i].x2 = cx + x2 * rx;
+		temp[i].y2 = cy + y2 * ry;
+		temp[i].x3 = cx + x3 * rx;
+		temp[i].y3 = cy + y3 * ry;
 
 		i++;
 	}
 
 	temp[i].code = ART_END;
 
-	abp = art_bpath_affine_transform(temp, affine);
-	vec = d->helper->art_bez_path_to_vec(abp, 0.25);
-	art_free(abp);
-	// undo blowup
-	art_affine_scale(affine, 0.1, 0.1);
-	affine[4] = cx;
-	affine[5] = cy;
-	vec2 = art_vpath_affine_transform(vec, affine);
+	d->helper->drawBPath(temp);
 
-	art_free(vec);
-
-	d->helper->drawVPath(vec2);
+	art_free(temp);
 }
 
 void KSVGIconPainter::drawLine(double x1, double y1, double x2, double y2)
@@ -2267,7 +2272,7 @@ void KSVGIconPainter::drawPath(const QString &data, bool filled)
 	}
 
 	if(render)
-		d->helper->drawVPath(d->helper->art_bez_path_to_vec(vec.data(), 0.25));
+		d->helper->drawBPath(vec.data());
 }
 
 void KSVGIconPainter::drawImage(double x, double y, QImage &image)
