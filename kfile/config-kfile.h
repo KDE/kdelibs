@@ -17,7 +17,7 @@ inline void debugC(const char *,...) {};
 #define DefaultPannerPosition 40
 #define DefaultMixDirsAndFiles true
 #define DefaultShowStatusLine false
-#define DefaultShowHidden true
+#define DefaultShowHidden false
 #define DefaultKeepDirsFirst true
 #define DefaultFindCommand "kfind"
 #define DefaultShowDirsLeft true

@@ -844,6 +844,8 @@ void KFileBaseDialog::toolbarCallback(int i) // SLOT
 	KFileDialogConfigureDlg conf(this, "filedlgconf");
 	conf.exec();
 	fileList->widget()->hide();
+	showHidden = c->readBoolEntry("ShowHidden", DefaultShowHidden);
+	hiddenToggle->setChecked(showHidden);
 	delete boxLayout; // this removes all child layouts too
 	boxLayout = 0;
 
