@@ -47,4 +47,36 @@
 </xsl:choose>
 </xsl:template>
 
+<xsl:template name="chunk-element-content">
+  <xsl:param name="prev"></xsl:param>
+  <xsl:param name="next"></xsl:param>
+ 
+  <html>
+    <xsl:call-template name="html.head">
+      <xsl:with-param name="prev" select="$prev"/>
+      <xsl:with-param name="next" select="$next"/>
+    </xsl:call-template>
+ 
+    <body xsl:use-attribute-sets="body.attrs">
+      <xsl:call-template name="header.navigation">
+        <xsl:with-param name="prev" select="$prev"/>
+        <xsl:with-param name="next" select="$next"/>
+      </xsl:call-template>
+ 
+      <xsl:call-template name="user.header.content"/>
+ 
+      <div id="body_text">
+         <xsl:apply-imports/>
+      </div>
+
+      <xsl:call-template name="user.footer.content"/>
+ 
+      <xsl:call-template name="footer.navigation">
+        <xsl:with-param name="prev" select="$prev"/>
+        <xsl:with-param name="next" select="$next"/>
+      </xsl:call-template>
+    </body>
+  </html>
+</xsl:template>
+
 </xsl:stylesheet>
