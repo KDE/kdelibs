@@ -471,6 +471,11 @@ class KateDocument : public Kate::Document,
 
   private:
     void abortLoadKate();
+    
+    void activateDirWatch ();
+    void deactivateDirWatch ();
+    
+    QString m_dirWatchFile;
 
   //
   // Kate::Document stuff
@@ -821,12 +826,6 @@ class KateDocument : public Kate::Document,
 
     KIO::TransferJob *m_job;
     KTempFile *m_tempFile;
-    
-    /**
-     * url we had on last openFile, useful to remove filename from dirwatch
-     * if users uses saveAs to change it !
-     */
-    QString m_oldFile;
     
   //
   // IM input stuff
