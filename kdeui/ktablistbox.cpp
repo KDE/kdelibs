@@ -246,7 +246,7 @@ void KTabListBoxColumn::paintCell(QPainter* paint, int row,
     }
 
     paint->drawText(x+1, fm.ascent() +(fm.leading()),
-		    string.mid(beg, string.length()-beg));
+   		   string.mid(beg, string.length()-beg));
     break;
   }
 
@@ -449,6 +449,7 @@ KTabListBox::KTabListBox(QWidget *parent, const char *name, int columns,
   lbox.setGeometry(0, labelHeight, width(), height()-labelHeight);
 
   if (columns > 0) setNumCols(columns);
+
 }
 
 
@@ -944,7 +945,7 @@ void KTabListBox::changeItem(const QString& aStr, int row)
 
   if (row < 0 || row >= numRows()) return;
 
-  char *str = qstrdup(aStr.ascii()); // TODO: make it really QString using
+  char *str = qstrdup(aStr.local8Bit()); // TODO: make it really QString using
 
   sepStr[0] = sepChar;
   sepStr[1] = '\0';
@@ -953,7 +954,7 @@ void KTabListBox::changeItem(const QString& aStr, int row)
   char *pos = strtok(str, sepStr);
   for (int i=0; pos && *pos && i<numCols(); i++)
   {
-    item->setText(i, pos);
+    item->setText(i, QString::fromLocal8Bit(pos));
     pos = strtok(0L, sepStr);
   }
   item->setForeground(black);
