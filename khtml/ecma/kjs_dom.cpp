@@ -27,6 +27,7 @@
 #include "kjs_text.h"
 #include "kjs_dom.h"
 #include "kjs_html.h"
+#include "kjs_css.h"
 
 using namespace KJS;
 
@@ -88,6 +89,8 @@ KJSO DOMNode::tryGet(const UString &p) const
 //    result = getString(node.localName());
   else if (p == "ownerDocument")
     result = getDOMNode(node.ownerDocument());
+  else if (p == "style")
+    result = KJSO(new Style(node));
   // methods
   else if (p == "insertBefore")
     result = new DOMNodeFunc(node, DOMNodeFunc::InsertBefore);

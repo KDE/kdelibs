@@ -26,11 +26,12 @@ KDE_CXXFLAGS = $(USE_EXCEPTIONS)
 lib_LTLIBRARIES = kjs_html.la
 
 noinst_HEADERS = kjs_html.h kjs_dom.h kjs_window.h kjs_navigator.h \
-	kjs_text.h kjs_binding.h kjs_proxy.h
+	kjs_text.h kjs_binding.h kjs_proxy.h kjs_css.h
 
 # HTML module
 kjs_html_la_SOURCES = kjs_html.cpp kjs_dom.cpp kjs_window.cpp \
-	kjs_navigator.cpp kjs_text.cpp kjs_binding.cpp kjs_proxy.cpp
+	kjs_navigator.cpp kjs_text.cpp kjs_binding.cpp kjs_proxy.cpp \
+	kjs_css.cpp
 kjs_html_la_LDFLAGS = -module -avoid-version -no-undefined
 kjs_html_la_LIBADD = $(top_builddir)/kjs/libkjs.la ../libkhtml.la
 kjs_html_la_METASOURCES = AUTO
