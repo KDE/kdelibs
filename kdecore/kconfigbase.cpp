@@ -75,7 +75,11 @@ void KConfigBase::setDesktopGroup()
 QString KConfigBase::readEntry( const QString& aKey, 
 				const QString& aDefault ) const
 {
-  if (!bLocaleInitialized && KGlobal::locale()) {
+  // we need to access _locale instead of the method locale()
+  // because calling locale() will create a locale object if it
+  // doesn't exist, which requires KConfig, which will create a infinite
+  // loop, and nobody likes those.
+  if (!bLocaleInitialized && KGlobal::_locale) {
     // get around const'ness.
     KConfigBase *that = (KConfigBase *)this;
     that->setLocale();
