@@ -311,7 +311,6 @@ KHTMLWidget* KHTMLWidget::findFrame( const QString &_name )
     return 0;
 }
 
-#if 0
 KHTMLWidget* KHTMLWidget::createFrame( QWidget *_parent, QString _name )
 {
     KHTMLWidget *child = new KHTMLWidget( _parent, this, _name );
@@ -319,44 +318,15 @@ KHTMLWidget* KHTMLWidget::createFrame( QWidget *_parent, QString _name )
     m_lstChildren.append(c);
     return child;
 }
-#endif
 
-void KHTMLWidget::requestFrame(HTMLFrameRequester *frame)
+KHTMLWidget* KHTMLWidget::getFrame( QString _name )
 {
-  requestedFrames.append(frame);
-  emit newFrame(viewport(), frame->name(), frame->url(), frame->mimetype());
-}
-
-void KHTMLWidget::slotReceiveFrame( BrowserView *frame, QString name )
-{
-    // ### fix child list!!!
-
-    HTMLFrameRequester *f;
-    for(f = requestedFrames.first(); f != 0; f = requestedFrames.next())
-    {
-	if(f->name() == name) break;
-    }
-    
-    if(!f)
-    {
-	printf("============>>>>>>> received unrequested frame\n");
-	return;
-    }
-    f->setFrame(frame);
-    Child *c = new Child(frame, false);
-    m_lstChildren.append(c);
-}
-
-BrowserView* KHTMLWidget::getFrame( QString _name )
-{
-#if 0
     Child *c = m_lstChildren.first();
     while(c)
     {	
 	if( c->m_pBrowser->frameName() == _name) return c->m_pBrowser;
 	c = m_lstChildren.next();
     }
-#endif
     return 0;
 }
 
@@ -365,8 +335,6 @@ void KHTMLWidget::begin( const QString &_url, int _x_offset, int _y_offset )
 {
     debug("KHTMLWidget::begin(....)");
 
-    m_bComplete = true;
-    if(document) document->close();
     clear();
 
     m_iNextXOffset = _x_offset;
@@ -462,8 +430,7 @@ void KHTMLWidget::slotReloadFrames()
     for ( c = m_lstChildren.first(); c != 0L; c = m_lstChildren.next() )
     {
       c->m_bReady = false;
-// ###
-      //c->m_pBrowser->slotReloadFrames();
+      c->m_pBrowser->slotReloadFrames();
     }
   }
   else
@@ -870,12 +837,9 @@ void KHTMLWidget::setDefaultTextColors( const QColor& _textc, const QColor& _lin
     defaultSettings->linkColor = _linkc;
     defaultSettings->vLinkColor = _vlinkc;
 
-//###
-#if 0
     Child *c;
     for ( c = m_lstChildren.first(); c != 0L; c = m_lstChildren.next() )
 	c->m_pBrowser->setDefaultTextColors( _textc, _linkc, _vlinkc );
-#endif
 }
 
 void KHTMLWidget::setDefaultBGColor( const QColor& bgcolor )
@@ -883,12 +847,9 @@ void KHTMLWidget::setDefaultBGColor( const QColor& bgcolor )
   printf("setting default bgColor\n");
     defaultSettings->bgColor = bgcolor;
 
-// ###
-#if 0
     Child *c;
     for ( c = m_lstChildren.first(); c != 0L; c = m_lstChildren.next() )
 	c->m_pBrowser->setDefaultBGColor( bgcolor );
-#endif
 }
 
 QString KHTMLWidget::completeURL( const QString &_url, const QString &target )
@@ -916,8 +877,6 @@ QString KHTMLWidget::completeURL( const QString &_url, const QString &target )
 
 KHTMLWidget* KHTMLWidget::findChildView( const QString &_target )
 {
-// ###
-#if 0
   QListIterator<Child> it( m_lstChildren );
   for( ; it.current(); ++it )
   {
@@ -933,7 +892,7 @@ KHTMLWidget* KHTMLWidget::findChildView( const QString &_target )
     if ( b )
       return b;
   }
-#endif
+
   return 0L;
 }
 
@@ -944,15 +903,12 @@ void KHTMLWidget::childCompleted( KHTMLWidget *_browser )
   kdebug(0,1202,"--------------- ChildFinished %p ----------------------",this);
   /** End DEBUG **/
 
-// ###
-#if 0
   QListIterator<Child> it( m_lstChildren );
   for( ; it.current(); ++it )
   {
     if ( it.current()->m_pBrowser == _browser )
       it.current()->m_bReady = true;
   }
-#endif
 
   if ( !m_bParsing )
       emit completed();
@@ -1004,14 +960,11 @@ void KHTMLWidget::end()
       setContentsPos( m_iNextXOffset, m_iNextYOffset );
 
 
-// ###
-#if 0
   // Are all children complete now ?
   QListIterator<Child> it2( m_lstChildren );
   for( ; it2.current(); ++it2 )
     if ( !it2.current()->m_bReady )
       return;
-#endif
 
   emit completed();
   if ( _parent )
@@ -1637,7 +1590,6 @@ bool KHTMLWidget::findTextNext( const QRegExp &exp )
 
 void KHTMLWidget::saveState( QDataStream &stream )
 {
-#if 0
     if(m_strURL.isEmpty() && !m_strWorkingURL.isEmpty())
 	stream << m_strWorkingURL;
     else
@@ -1702,12 +1654,10 @@ void KHTMLWidget::saveState( QDataStream &stream )
     }
     else
 	printf("error in KHTMLWidget::saveState()\n");
-#endif
 }
 
 void KHTMLWidget::restoreState( QDataStream &stream )
 {
-#if 0
     int x, y, info;
     QString u;
     stream >> u;
@@ -1733,12 +1683,11 @@ void KHTMLWidget::restoreState( QDataStream &stream )
 	    QString name;
 	    stream >> name;
 
-// ###
-	    BrowserView *w = getFrame(name);
+	    KHTMLWidget *w = getFrame(name);
 	    if(!w)
 	    {
 		printf("have to vreate the frame!!!\n");
-		//w = createFrame(viewport(), name);
+		w = createFrame(viewport(), name);
 	    }
 	    w->resize(500,100);
 	    w->restoreState(stream);
@@ -1749,7 +1698,6 @@ void KHTMLWidget::restoreState( QDataStream &stream )
     }
 
     layout();
-#endif
 }
 
 bool KHTMLWidget::isFrameSet()
@@ -1795,23 +1743,18 @@ void KHTMLWidget::setFrameSelected(KHTMLWidget *w)
     else
 	_isSelected = false;
 
-// ###
-#if 0
     Child *c = m_lstChildren.first();
     while(c)
     {	
 	c->m_pBrowser->setFrameSelected(w);
 	c = m_lstChildren.next();
     }
-#endif
 }
 
 KHTMLWidget *KHTMLWidget::selectedFrame()
 {
     if(_isSelected) return this;
 
-// ###
-#if 0
     Child *c = m_lstChildren.first();
     while(c)
     {	
@@ -1819,7 +1762,6 @@ KHTMLWidget *KHTMLWidget::selectedFrame()
 	if(w) return w;
 	c = m_lstChildren.next();
     }
-#endif
     return 0;
 }
 
