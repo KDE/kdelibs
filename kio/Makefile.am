@@ -94,6 +94,7 @@ kioinclude_HEADERS = connection.h \
         jobclasses.h paste.h slavebase.h \
 	progressbase.h defaultprogress.h \
 	statusbarprogress.h uiserver.h tcpslavebase.h \
+	renamedlg.h skipdlg.h \
 	observer.h 
 
 # Internal
@@ -101,7 +102,6 @@ noinst_HEADERS = ksycocafactory.h kservicetypefactory.h kservicefactory.h \
 	ksycocadict.h kmessageboxwrapper.h \
 	ktraderparse.h ktraderparsetree.h yacc.h \
 	kimageiofactory.h \
-	renamedlg.h skipdlg.h \
 	filter.h kprotocolinfofactory.h # old stuff
 
 kde_mime_DATA = magic
