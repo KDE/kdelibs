@@ -174,6 +174,7 @@ public:
    * @returns true if the operation succeeded
    */
   virtual bool displayOpenWithDialog( const KURL::List& urls );
+    // TODO (BCI) : add optionnal mimetype parameter
 };
 
 
