@@ -446,6 +446,8 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
   connect( khtml::Cache::loader(), SIGNAL( requestDone( const DOM::DOMString &, khtml::CachedObject *) ),
            this, SLOT( slotLoaderRequestDone( const DOM::DOMString &, khtml::CachedObject *) ) );
+  connect( khtml::Cache::loader(), SIGNAL( requestFailed( const DOM::DOMString &, khtml::CachedObject *) ),
+           this, SLOT( slotLoaderRequestDone( const DOM::DOMString &, khtml::CachedObject *) ) );
 
   findTextBegin(); //reset find variables
 
@@ -476,6 +478,8 @@ KHTMLPart::~KHTMLPart()
   khtml::Cache::loader()->cancelRequests( m_url.url() );
 
   disconnect( khtml::Cache::loader(), SIGNAL( requestDone( const DOM::DOMString &, khtml::CachedObject * ) ),
+              this, SLOT( slotLoaderRequestDone( const DOM::DOMString &, khtml::CachedObject * ) ) );
+  disconnect( khtml::Cache::loader(), SIGNAL( requestFailed( const DOM::DOMString &, khtml::CachedObject * ) ),
               this, SLOT( slotLoaderRequestDone( const DOM::DOMString &, khtml::CachedObject * ) ) );
 
   clear();

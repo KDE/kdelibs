@@ -829,17 +829,21 @@ void Loader::slotFinished( KIO::Job* job )
     return;
 
   if (j->error() || j->isErrorPage())
-    r->object->error( job->error(), job->errorText().ascii() );
+  {
+      r->object->error( job->error(), job->errorText().ascii() );
+      emit requestFailed( r->m_baseURL, r->object );
+  }
   else
-    r->object->data(r->m_buffer, true);
+  {
+      r->object->data(r->m_buffer, true);
+      emit requestDone( r->m_baseURL, r->object );
+  }
 
 #ifdef CACHE_DEBUG
   kdDebug( 6060 ) << "Loader:: JOB FINISHED " << r->object->url().string() << endl;
 #endif
 
-  emit requestDone( r->m_baseURL, r->object );
   delete r;
-
   servePendingRequests();
 }
 

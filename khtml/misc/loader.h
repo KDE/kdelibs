@@ -320,6 +320,7 @@ namespace khtml
 
     signals:
 	void requestDone( const DOM::DOMString &baseURL, khtml::CachedObject *obj );
+	void requestFailed( const DOM::DOMString &baseURL, khtml::CachedObject *obj );
 
     protected slots:
 	void slotFinished( KIO::Job * );
