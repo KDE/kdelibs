@@ -1153,6 +1153,8 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 	  else {
 	      // only shape in CSS2 is rect( top right bottom left )
 	      QString str = QConstString( const_cast<QChar*>( curP ), endP - curP ).string();
+	      // the CSS specs are not really clear if there should be commas in here or not. We accept both spaces and commas.
+	      str.replace( QRegExp( "," ), " " );
 	      str = str.simplifyWhiteSpace();
 	      if ( str.find( "rect", 0, false ) != 0 )
 		  break;
@@ -1161,13 +1163,13 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 	      if ( end <= pos )
 		  break;
 	      str = str.mid( pos + 1, end - pos - 1 );
-
+	      str += " ";
 	      pos = 0;
 	      RectImpl *rect = new RectImpl();
 	      for ( i = 0; i < 4; i++ ) {
 		  int comma;
 		  if ( i < 3 )
-		      comma = str.find( ',', pos );
+		      comma = str.find( ' ', pos );
 		  else
 		      comma = str.length() - 1;
 		  const QChar *start = str.unicode() + pos;
@@ -1194,7 +1196,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 		  pos = comma + 1;
 	      }    
 	      parsedValue = new CSSPrimitiveValueImpl( rect );
-	      qDebug(" passed rectangle parsing");
+	      //qDebug(" passed rectangle parsing");
 	      break;
 	  
 	  cleanup:
