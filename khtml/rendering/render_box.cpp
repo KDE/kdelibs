@@ -213,6 +213,8 @@ void RenderBox::printBoxDecorations(QPainter *p,int, int _y,
 
 void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, int clipy, int cliph, int _tx, int _ty, int w, int h)
 {
+    if(c.isValid())
+        p->fillRect(_tx, clipy, w, cliph, c);
     // no progressive loading of the background image
     if(bg && bg->pixmap_size() == bg->valid_rect().size() && !bg->isTransparent()) {
         //kdDebug( 6040 ) << "printing bgimage at " << _tx << "/" << _ty << endl;
@@ -224,43 +226,45 @@ void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, i
 
         //hacky stuff
         EBackgroundRepeat bgr = m_style->backgroundRepeat();
-        if (isHtml() && firstChild())
+	bool scroll = m_style->backgroundAttachment();
+        if ( isHtml() && firstChild() && !m_bgImage ) {
             bgr = firstChild()->style()->backgroundRepeat();
+            scroll = firstChild()->style()->backgroundAttachment();
+	}
 
-        //maybe here too?
-        if( !m_style->backgroundAttachment() ) {
-            //kdDebug(0) << "fixed background" << endl;
-            QRect r = viewRect();
-            sx = _tx - r.x();
-            sy = _ty - r.y();
 
-        }
-        else
-        {
-            // make sure that the pixmap is tiled correctly
-            // because we clip the tiling to the visible area (for speed reasons)
-            if(bg->pixmap_size().height())
-                sy = (clipy - _ty) % bg->pixmap_size().height();
-        }
-
+	int cx = _tx;
+	int cy = clipy;
+	int cw = w;
+	int ch = cliph;
         switch(bgr) {
         case NO_REPEAT:
-            w = QMIN(bg->pixmap_size().width(), w);
-            h = QMIN(bg->pixmap_size().height(), h);
+            cw = QMIN(bg->pixmap_size().width(), w);
+	    cx = _tx + style()->backgroundXPosition().minWidth((w - cw)/2);
             /* nobreak */
         case REPEAT_X:
-            h = QMIN(bg->pixmap_size().height(), h);
+            ch = QMIN(bg->pixmap_size().height(), h);
+	    cy = _ty + style()->backgroundYPosition().minWidth((h -ch)/2);
             break;
         case REPEAT_Y:
-            w = QMIN(bg->pixmap_size().width(), w);
-            break;
+            cw = QMIN(bg->pixmap_size().width(), w);
+	    cx = _tx + style()->backgroundXPosition().minWidth((w - cw)/2);
         case REPEAT:
+            // make sure that the pixmap is tiled correctly
+            // because we clip the tiling to the visible area (for speed reasons)
+            if(bg->pixmap_size().height() && scroll)
+                sy = (clipy - _ty) % bg->pixmap_size().height();
             break;
         }
-        p->drawTiledPixmap(_tx, clipy, w, cliph, bg->tiled_pixmap(c), sx, sy);
+        if( !scroll ) {
+            QRect r = viewRect();
+            //kdDebug(0) << "fixed background r.y=" << r.y() << endl;
+            sx = cx - r.x();
+            sy = cy - r.y();
+
+        }
+	p->drawTiledPixmap(cx, cy, cw, ch, bg->tiled_pixmap(c), sx, sy);
     }
-    else if(c.isValid())
-        p->fillRect(_tx, clipy, w, cliph, c);
 }
 
 void RenderBox::printBorder(QPainter *p, int _tx, int _ty, int w, int h)

@@ -344,10 +344,6 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
   d->m_paLoadImages = 0;
 
-  // PENDING(lars) pass hostname to the following methods
-  d->m_bJScriptEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaScriptEnabled();
-  d->m_bJavaEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaEnabled();
-
   autoloadImages( KHTMLFactory::defaultHTMLSettings()->autoLoadImages() );
 
   d->m_paViewDocument = new KAction( i18n( "View Document Source" ), 0, this, SLOT( slotViewDocumentSource() ), actionCollection(), "viewDocumentSource" );
@@ -372,6 +368,10 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_paPrintFrame = new KAction( i18n( "Print Frame" ), "fileprint", 0, this, SLOT( slotPrintFrame() ), actionCollection(), "printFrame" );
 
   d->m_paSelectAll = KStdAction::selectAll( this, SLOT( slotSelectAll() ), actionCollection(), "selectAll" );
+
+  // set the default java(script) flags according to the current host.
+  d->m_bJScriptEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaScriptEnabled();
+  d->m_bJavaEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaEnabled();
 
   connect( this, SIGNAL( completed() ),
            this, SLOT( updateActions() ) );
@@ -442,6 +442,11 @@ bool KHTMLPart::restoreURL( const KURL &url )
 
   d->m_bComplete = false;
   d->m_workingURL = url;
+
+  // set the java(script) flags according to the current host.
+  d->m_bJScriptEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaScriptEnabled(url.host());
+  d->m_bJavaEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaEnabled(url.host());
+
 
   KHTMLPageCache::self()->fetchData( d->m_cacheId, this, SLOT(slotRestoreData(const QByteArray &)));
 
@@ -519,6 +524,10 @@ bool KHTMLPart::openURL( const KURL &url )
   kdDebug() << "ACTIVATING SSL WARNINGS" << endl;
 
   d->m_workingURL = url;
+
+  // set the javascript flags according to the current url
+  d->m_bJScriptEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaScriptEnabled(url.host());
+  d->m_bJavaEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaEnabled(url.host());
 
   // initializing m_url to the new url breaks relative links when opening such a link after this call and _before_ begin() is called (when the first
   // data arrives) (Simon)

@@ -566,6 +566,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         case CSS_VAL_REPEAT:
             r = REPEAT; break;
         case CSS_VAL_REPEAT_X:
+	  kdDebug() << "repeat-x!!!!!!!!!!!" << endl;
             r = REPEAT_X; break;
         case CSS_VAL_REPEAT_Y:
             r = REPEAT_Y; break;

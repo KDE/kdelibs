@@ -210,7 +210,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     if ( reset || config->hasKey( "AutoLoadImages" ) )
       m_bAutoLoadImages = config->readBoolEntry( "AutoLoadImages", true );
 
-    // The global setting for JavaScript
+    // The global setting for CSS
     if ( reset || config->hasKey( "EnableCSS" ) )
         m_bEnableCSS = config->readBoolEntry( "EnableCSS", true );
 
