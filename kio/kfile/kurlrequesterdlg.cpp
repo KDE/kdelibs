@@ -76,7 +76,7 @@ void KURLRequesterDlg::initDialog(const QString &text,const QString &urlName)
     /*
     KFile::Mode mode = static_cast<KFile::Mode>( KFile::File |
             KFile::ExistingOnly );
-	urlRequester_->fileDialog()->setMode( mode );
+	urlRequester_->setMode( mode );
     */
     connect( this, SIGNAL( user1Clicked() ), SLOT( slotClear() ) );
 }
