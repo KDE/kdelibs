@@ -28,7 +28,9 @@ int main( int argc, char *argv[] )
     int i, test;
     new KApplication( argc, argv, "MyApplication" );
 
-    for( test = 1; true; test++)
+    QStringList list; list.append("Hello"); list.append("World");
+
+    for( test = 6; true; test++)
     {
        for( int count = 0; count < 3; count++)
        {
@@ -62,17 +64,16 @@ case 5:
   break;
 
 case 6:
-  i = KMessageBox::warningYesNo(0, "Your printer has been added.\n"
-		"Do you want to update your configuration?",
-                "Printer Setup", "&Update", "&Don't update");
-  break;
-
-
-case 7:
-  i = KMessageBox::warningContinueCancel(0,
+  i = KMessageBox::warningContinueCancel(0, 
                 "You are about tp Print.\n"
 		"Are you sure?",
                 "Print", "&Print");
+  break;
+case 7:
+  i = KMessageBox::warningContinueCancel(0, 
+                "You are about tp Print.\n"
+		"Are you sure?",
+                "Print", "&Print", "dontask", false);
   break;
 
 case 8:
