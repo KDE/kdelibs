@@ -615,13 +615,13 @@ QString KLocale::translate( const char *singular, const char *plural,
     case 6: // Slovenian
         EXPECT_LENGTH( 4 );
         if ( n%100 == 1 )
-            return put_n_in( forms[0], n);
+            return put_n_in( forms[1], n); // ena datoteka
         else if ( n%100 == 2 )
-            return put_n_in( forms[1], n);
+            return put_n_in( forms[2], n); // dve datoteki
         else if ( n%100 == 3 || n%100 == 4 )
-            return put_n_in( forms[2], n);
+            return put_n_in( forms[3], n); // tri datoteke
         else
-            return put_n_in( forms[3], n);
+            return put_n_in( forms[0], n); // sto datotek
         break;
     case 7: // Lithuanian
         EXPECT_LENGTH( 3 );
