@@ -70,7 +70,7 @@ public:
     * the branch is allocating will become children of that object.
     * @param the KFileTreeViewItem to become the root item.
     */
-   void 	setRoot( KFileTreeViewItem *r ){ m_root = r; };
+   virtual void 	setRoot( KFileTreeViewItem *r ){ m_root = r; };
 
    /**
     * @returns the root item.
@@ -85,9 +85,9 @@ public:
    /**
     * sets the name of the branch.
     */
-   void         setName( const QString n ) { m_name = n; };
+   virtual void         setName( const QString n ) { m_name = n; };
 
-   QPixmap& pixmap(){ return(m_rootIcon); }
+   const QPixmap& pixmap(){ return(m_rootIcon); }
 
    /**
     * @returns whether the items in the branch show their file extensions in the
@@ -102,7 +102,7 @@ public slots:
     * @param url is the url of the root item where the branch starts.
     * @param currItem is the current parent.
     */
-   void populate( const KURL &url, KFileTreeViewItem* currItem );
+   virtual void populate( const KURL &url, KFileTreeViewItem* currItem );
 
    void populate( );
 
@@ -112,7 +112,7 @@ public slots:
     * tree.
     * @param visible flags if the extensions should be visible or not.
     */
-   void setShowExtensions( bool visible = true );
+   virtual void setShowExtensions( bool visible = true );
 
 protected:
    /**

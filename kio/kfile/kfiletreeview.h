@@ -84,19 +84,19 @@ public:
    /**
     *  same as the function above but with a pixmap to set for the branch.
     */
-   KFileTreeBranch* addBranch( const KURL &path, const QString& name ,const QPixmap& pix, bool showHidden = false  );
+   virtual KFileTreeBranch* addBranch( const KURL &path, const QString& name ,const QPixmap& pix, bool showHidden = false  );
 
    /**
     *  same as the function above but letting the user create the branch.
     */
-   KFileTreeBranch* addBranch( KFileTreeBranch * );
+   virtual KFileTreeBranch* addBranch( KFileTreeBranch * );
 
    /**
     *  removes the branch with the given number from the treeview.
     *  @param branch is a pointer to the branch
     *  @returns true on success.
     */
-   bool removeBranch( const KFileTreeBranch *branch );
+   virtual bool removeBranch( const KFileTreeBranch *branch );
 
    /**
     *  @returns a pointer to the @ref KFileTreeBranch in the KFileTreeView or zero on failiure.
@@ -114,7 +114,7 @@ public:
     *  set the directory mode for branches. If true is passed, only directories will be loaded.
     *  @param branch is a pointer to a @ref KFileTreeBranch
     */
-   void setDirOnlyMode( KFileTreeBranch *brnch, bool );
+   virtual void setDirOnlyMode( KFileTreeBranch *brnch, bool );
 
    /**
     * searches a branch for a @ref KFileTreeViewItem identified by the relative url given as
@@ -142,7 +142,7 @@ public slots:
     * having created a branch and set attributes like @ref setDirOnlyMode. This makes the
     * branch alive
     */
-   void populateBranch( KFileTreeBranch *brnch );
+   virtual void populateBranch( KFileTreeBranch *brnch );
 
    
    /**
@@ -152,7 +152,7 @@ public slots:
     * If switched off, the plain mime pixmap is displayed.
     * @param showIt = false displays mime type pixmap only
     */
-   void setShowFolderOpenPixmap( bool showIt = true )
+   virtual void setShowFolderOpenPixmap( bool showIt = true )
       { m_wantOpenFolderPixmaps = showIt; }
    
 protected:
