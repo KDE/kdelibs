@@ -987,6 +987,15 @@ static QString trailingSlash( int _trailing, const QString &path )
   }
 }
 
+void KURL::adjustPath( int _trailing )
+{
+  if (!m_strPath_encoded.isEmpty())
+  {
+     m_strPath_encoded = trailingSlash( _trailing, m_strPath_encoded );
+  }
+  m_strPath = trailingSlash( _trailing, m_strPath );
+}
+
 
 QString KURL::encodedPathAndQuery( int _trailing, bool _no_empty_path, int encoding_hint ) const
 {

@@ -232,6 +232,19 @@ public:
   void cleanPath(bool cleanDirSeparator = true);
 
   /**
+   * Add or remove a trailing slash to/from the path.
+   * @param _trailing May be ( -1, 0 +1 ). -1 strips a trailing '/', +1 adds
+   *                  a trailing '/' if there is none yet and 0 returns the
+   *                  path unchanged. If the URL has no path, then no '/' is added
+   *                  anyway. And on the other side: If the path is "/", then this
+   *                  character won't be stripped. Reason: "ftp://weis@host" means something
+   *                  completely different than "ftp://weis@host/". So adding or stripping
+   *                  the '/' would really alter the URL, while "ftp://host/path" and
+   *                  "ftp://host/path/" mean the same directory.
+   */
+  void adjustPath(int _trailing);
+
+  /**
    * This is useful for HTTP. It looks first for '?' and decodes then.
    * The encoded path is the concatenation of the current path and the query.
    * @param encoding_hint MIB of original encoding of @p _txt .
