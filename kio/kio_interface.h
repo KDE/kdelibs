@@ -112,28 +112,55 @@
  *
  * Universal Directory Service
  *
+ * Any file or URL can be represented by the UDSEntry type below
+ * An UDSEntry is a list of atoms
+ * Each atom contains a specific bit of information for the file
+ * 
+ * The following UDS_ constants are the different possible values for m_uds 
+ * in the UDS atom structure below
+ *
  ************/
 typedef unsigned int uds_t;
+
+// First let's define the item types
 #define UDS_STRING	((uds_t)1)
 #define UDS_LONG	((uds_t)2)
+
+// Time of the file
 #define UDS_TIME	((uds_t)( 4 | UDS_LONG ))
+// Size of the file
 #define UDS_SIZE	((uds_t)( 8 | UDS_LONG ))
+// User ID of the file owner
 #define UDS_USER	((uds_t)( 16 | UDS_STRING ))
+// Group ID of the file owner
 #define UDS_GROUP	((uds_t)( 32 | UDS_STRING ))
+// Filename
 #define UDS_NAME	((uds_t)( 64 | UDS_STRING ))
+// Access permissions (mode returned by stat)
 #define UDS_ACCESS	((uds_t)( 128 | UDS_LONG ))
+//
 #define UDS_MODIFICATION_TIME	((uds_t)( 256 | UDS_TIME ))
+//
 #define UDS_ACCESS_TIME		((uds_t)( 512 | UDS_TIME ))
+//
 #define UDS_CREATION_TIME	((uds_t)( 1024 | UDS_TIME ))
+// File type, i.e. mode, as returned by stat or lstat
+// (for a link, this returns the file type of the pointed item)
+// check UDS_LINK_DEST to know if this is a link
 #define UDS_FILE_TYPE	((uds_t)( 2048 | UDS_LONG ))
+// Name of the file where the link points to
+// Allows to check for a symlink (don't use S_ISLNK !)
 #define UDS_LINK_DEST	((uds_t)( 4096 | UDS_STRING ))
+// A URL
 #define UDS_URL		((uds_t)( 8192 | UDS_STRING ))
+// A Mimetype
 #define UDS_MIME_TYPE	((uds_t)( 16384 | UDS_STRING ))
 
+/// Each atom contains a specific bit of information for the file
 struct UDSAtom
 {
   /**
-   * Wether 'm_str' or 'm_long' is used depends on the value of 'm_uds'.
+   * Whether 'm_str' or 'm_long' is used depends on the value of 'm_uds'.
    */
   QString m_str;
   long m_long;
@@ -143,6 +170,9 @@ struct UDSAtom
   unsigned int m_uds;
 };
 
+/**
+ * An entry is the list of atoms containing all the informations for a file or URL
+ */
 typedef QValueList<UDSAtom> UDSEntry;
 
 /******************
