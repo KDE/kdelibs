@@ -1,6 +1,6 @@
 This document describes how to add support for extended webdav features (locking,
 properties etc.) to your webdav-aware application.
-Author: Hamish Rodda, meddie@yoyo.cc.monash.edu.au
+Author: Hamish Rodda, meddie@yoyo.its.monash.edu.au
 Version: 0.3
 
 Compatable with (tested on):
@@ -25,6 +25,12 @@ Source template locations (href, usually an absolute URL w/o host info)
 are passed as element davSource.
 
 Content languages are passed as element davContentLanguage.
+
+Extra webdav headers are passed as metadata element davHeader
+
+For doing a webdav SEARCH, use listDir() and set the metadata element
+davSearchQuery to the search query. The root element of this query should be like
+<d:basicsearch> or <d:sql>.
 
 === CREATING A LOCK ===
 To create a lock, call a special request, with the following data:

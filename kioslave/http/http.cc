@@ -471,8 +471,22 @@ void HTTPProtocol::davStatList( const KURL& url, bool stat )
   if ( !davHostOk() )
     return;
 
+  // Maybe it's a disguised SEARCH...
+  QString query = metaData("davSearchQuery");
+  if ( !query.isEmpty() )
+  {
+    QCString request = "<?xml version=\"1.0\"?>\r\n";
+    request.append( "<D:searchrequest xmlns:D=\"DAV:\">\r\n" );
+    request.append( query.utf8() );
+    request.append( "</D:searchrequest>\r\n" );
+
+    // insert the document into the POST buffer, kill trailing zero byte
+    m_bufPOST = request;
+    if (m_bufPOST.size()) m_bufPOST.truncate( m_bufPOST.size() - 1 );
+  }
+
   // WebDAV Stat or List...
-  m_request.method = DAV_PROPFIND;
+  m_request.method = query.isEmpty() ? DAV_PROPFIND : DAV_SEARCH;
   m_request.query = QString::null;
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
@@ -1212,6 +1226,9 @@ QString HTTPProtocol::davError( int code /* = -1 */, QString url )
     case DAV_MOVE:
       action = i18n( "move the specified file or directory" );
       break;
+    case DAV_SEARCH:
+      action = i18n( "search in the specified directory" );
+      break;
     case DAV_LOCK:
       action = i18n( "lock the specified file or directory" );
       break;
@@ -1880,6 +1897,11 @@ bool HTTPProtocol::httpOpen()
       davHeader = "Lock-token: " + metaData("davLockToken") + "\r\n";
       m_bCachedWrite = false; // Do not put any result in the cache
       break;
+  case DAV_SEARCH:
+      header = "SEARCH ";
+      davData = true;
+      m_bCachedWrite = false;
+      break;
   }
 
   if ( isSSLTunnelEnabled() )
@@ -2101,14 +2123,25 @@ bool HTTPProtocol::httpOpen()
       header += proxyAuthenticationHeader();
   }
 
-  // add extra header elements for WebDAV
-  if ( !davHeader.isNull() )
-    header += davHeader;
-
   if ( m_protocol == "webdav" || m_protocol == "webdavs" )
+  {
     header += davProcessLocks();
 
-  if ( !moreData )
+    // add extra webdav headers, if supplied
+    QString davExtraHeader = metaData("davHeader");
+    if ( !davExtraHeader.isEmpty() )
+      davHeader += davExtraHeader;
+
+    // Set content type of webdav data
+    if (davData)
+      davHeader += "Content-Type: text/xml;\r\ncharset=utf-8\r\n";
+  
+    // add extra header elements for WebDAV
+    if ( !davHeader.isNull() )
+      header += davHeader;
+  }
+
+  if ( !moreData && !davData)
     header += "\r\n";  /* end header */
 
   kdDebug(7103) << "(" << m_pid << ") ============ Sending Header:" << endl;
