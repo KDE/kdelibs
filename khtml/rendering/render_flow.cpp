@@ -1248,7 +1248,7 @@ void RenderFlow::calcMinMaxWidth()
     }
     if(m_maxWidth < m_minWidth) m_maxWidth = m_minWidth;
 
-    if (style()->width().isFixed())
+    if (style()->width().isFixed() && style()->width().value > 0)
         m_maxWidth = KMAX(m_minWidth,short(style()->width().value));
 
     if ( style()->whiteSpace() == NOWRAP )
