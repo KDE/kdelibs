@@ -40,6 +40,8 @@ i18n( "Cancel");
 i18n( "&Cancel");
 i18n( "Apply");
 i18n( "File");
+i18n( "&Discard");
+i18n( "Discard");
 i18n( "&File");
 i18n( "Help");
 i18n( "&Help");
