@@ -14,7 +14,7 @@
 #define BBOX "%%BoundingBox:"
 #define BBOX_LEN strlen(BBOX)
 
-bool bbox ( QImageIO *imageio, int *x1, int *y1, int *x2, int *y2)
+static bool bbox ( QImageIO *imageio, int *x1, int *y1, int *x2, int *y2)
 {
         int ret = false;
         char buf[BUFLEN+1];
