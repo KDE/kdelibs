@@ -33,7 +33,7 @@ public class KJASSwingConsole extends javax.swing.JFrame implements Console {
             System.out.println("Proxy: " + ph + ":" + pp);
         }
         SecurityManager sec = System.getSecurityManager();
-        Main.info("SecurityManager=" + sec);
+        Main.debug("SecurityManager=" + sec);
         if (sec == null) {
             System.out.println( "WARNING: Security Manager disabled!" );
             textField.setForeground(java.awt.Color.red);
