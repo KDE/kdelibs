@@ -62,7 +62,7 @@ public:
     {
         delete m_rootNode;
     }
-    
+
     void pushState()
     {
         m_stateStack.push( *this );
@@ -226,6 +226,8 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
     // add this client to our client list
     if ( d->m_clients.containsRef( client ) == 0 )
         d->m_clients.append( client );
+    else
+        kdDebug(129) << "XMLGUI client already added " << client << endl;
 
     // Tell the client that plugging in is process and
     //  let it know what builder widget its mainwindow shortcuts
@@ -355,15 +357,6 @@ void KXMLGUIFactory::removeClient( KXMLGUIClient *client )
     d->popState();
 
     emit clientRemoved( client );
-
-    // remove child clients
-    if ( client->childClients()->count() > 0 )
-    {
-        const QPtrList<KXMLGUIClient> *children = client->childClients();
-        QPtrListIterator<KXMLGUIClient> childIt( *children );
-        for (; childIt.current(); ++childIt )
-            removeClient( childIt.current() );
-    }
 }
 
 QPtrList<KXMLGUIClient> KXMLGUIFactory::clients() const
@@ -437,7 +430,7 @@ QWidget *KXMLGUIFactory::findRecursive( KXMLGUI::ContainerNode *node, bool tag )
     return 0L;
 }
 
-QPtrList<QWidget> KXMLGUIFactory::findRecursive( KXMLGUI::ContainerNode *node, 
+QPtrList<QWidget> KXMLGUIFactory::findRecursive( KXMLGUI::ContainerNode *node,
                                                  const QString &tagName )
 {
     QPtrList<QWidget> res;
