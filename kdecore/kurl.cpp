@@ -1557,8 +1557,12 @@ QString KURL::prettyURL( int _trailing ) const
 QString KURL::prettyURL( int _trailing, AdjustementFlags _flags) const
 {
 	QString u = prettyURL(_trailing);
-	if (_flags & StripFileProtocol && u.startsWith("file://"))
+	if (_flags & StripFileProtocol && u.startsWith("file://")) {
 		u.remove(0, 7);
+#ifdef Q_WS_WIN
+		return QDir::convertSeparators(u);
+#endif
+	}
 	return u;
 }
 
