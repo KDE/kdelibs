@@ -214,8 +214,7 @@ void KApplication::init()
   installEventFilter( this );
 
   pSessionConfig = 0L;
-  pDCOPClient = new DCOPClient(name());
-  pDCOPClient->attach(); // attach to DCOP server.
+  pDCOPClient = 0L; // don't instantiate until asked to do so.
   bSessionManagement = true;
 
   // register a communication window for desktop changes (Matthias)
@@ -232,6 +231,13 @@ void KApplication::init()
 
 DCOPClient *KApplication::dcopClient() const
 {
+  if (pDCOPClient)
+    return pDCOPClient;
+
+  // create an instance specific DCOP client object
+  pDCOPClient = new DCOPClient(name());
+  pDCOPClient->attach(); // attach to DCOP server.
+
   return pDCOPClient;
 }
 
