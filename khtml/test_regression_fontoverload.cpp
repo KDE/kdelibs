@@ -179,7 +179,6 @@ QFontDatabase::findFont( QFont::Script script, const QFontPrivate *fp,
     else
         xlfd = helv_pickxlfd( request.pixelSize, request.italic, request.weight > 50 );
 
-    qDebug( "findFont '%s' pixelsize=%d italic=%d weight=%d xlfd: '%s' ", family.latin1(), request.pixelSize, request.italic, request.weight, xlfd.latin1() );
     QFontEngine *fe = 0;
 
     XFontStruct *xfs;
@@ -197,7 +196,6 @@ QFontDatabase::findFont( QFont::Script script, const QFontPrivate *fp,
 
     char *n = XGetAtomName( QPaintDevice::x11AppDisplay(), value );
     xlfd = n;
-    qDebug( "found %s", xlfd.latin1() );
     if ( n )
         XFree( n );
 
