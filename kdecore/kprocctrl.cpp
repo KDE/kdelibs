@@ -79,7 +79,11 @@ KProcessController::KProcessController()
   sigaction( SIGPIPE, &act, 0L);
 }
 
+#ifdef __sgi__
+void KProcessController::theSigCHLDHandler()
+#else
 void KProcessController::theSigCHLDHandler(int )
+#endif
 {
   int status;
   pid_t this_pid;
@@ -89,12 +93,18 @@ void KProcessController::theSigCHLDHandler(int )
   // since waitpid and write change errno, we have to save it and restore it
   // (Richard Stevens, Advanced programming in the Unix Environment)
 
-  this_pid = waitpid(-1, &status, WNOHANG);
-  // J6t: theKProcessController might be already destroyed
-  if (-1 != this_pid && theKProcessController != 0) {
-    ::write(theKProcessController->fd[1], &this_pid, sizeof(this_pid));
-    ::write(theKProcessController->fd[1], &status, sizeof(status));
+  // Waba: Check for multiple childs exiting at the same time
+  do
+  {
+    this_pid = waitpid(-1, &status, WNOHANG);
+    // J6t: theKProcessController might be already destroyed
+    if ((this_pid > 0) && (theKProcessController != 0)) {
+      ::write(theKProcessController->fd[1], &this_pid, sizeof(this_pid));
+      ::write(theKProcessController->fd[1], &status, sizeof(status));
+    }
   }
+  while (this_pid > 0); 
+
   errno = saved_errno;
 }
 
@@ -118,7 +128,14 @@ void KProcessController::slotDoHousekeeping(int )
   while (0L != proc) {
 	if (proc->pid == pid) {
 	  // process has exited, so do emit the respective events
-	  proc->processHasExited(status);
+	  if (proc->run_mode == KProcess::Block) {
+	    // If the reads are done blocking then set the status in proc
+	    // but do nothing else because KProcess will perform the other
+	    // actions of processHasExited.
+	    proc->status = status;
+	  } else {
+	    proc->processHasExited(status);
+	  }
 	}
 	proc = processList->next();
   }

@@ -20,6 +20,15 @@
 
 //$Id$
 //$Log$
+//Revision 1.15.4.2  1999/04/18 18:36:27  radej
+//sven: Docs.
+//
+//Revision 1.15.4.1  1999/03/24 16:48:57  ettrich
+//workaround for qt-1.44 behaviour
+//
+//Revision 1.15  1998/12/16 01:27:14  ettrich
+//fixed slightly broken macstyle removal
+//
 //Revision 1.14  1998/11/25 13:24:53  radej
 //sven: Someone changed protected things to private (was it me?).
 //
@@ -43,13 +52,13 @@
 //Revision 1.8  1998/05/07 23:13:23  radej
 //Moving with KToolBoxManager
 //
-//
-//Revision 1.17  1999/03/06 18:03:34  ettrich
-//the nifty "flat" feature of kmenubar/ktoolbar is now more visible:
-//It has its own menu entry and reacts on simple LMP clicks.
 
 #ifndef _KMENUBAR_H
 #define _KMENUBAR_H
+
+#include <qmenubar.h>
+
+class KToolBoxManager;
 
 class _menuBar : public QMenuBar
  {
@@ -58,25 +67,23 @@ class _menuBar : public QMenuBar
  public:
    _menuBar(QWidget *parent=0, const char *name=0);
    ~_menuBar();
+protected:
+     void resizeEvent( QResizeEvent* );
  };
 
-#include <qmenubar.h>
- * This is floatable toolbar. It can be set to float, Top, or Bottom
-class KToolBoxManager;
-
 /**
- * Floatable menu bar. It can be set to float, Top, or Bottom
+ * This is floatable toolbar. It can be set to float, Top, or Bottom
  * of KTopLevelWidget. It can be used without KTopLevelWidget, but
  * then you should maintain items (toolbars, menubar, statusbar)
  * yourself.
  *
  * Interface is the same as QMenuBar, except that you can't
  * add pixmaps.
- * @short KDE floatable menubar
+ *
  * If you want to add other methods for 100% compatibility with QMenuBar
  * just add those methods, and pass all arguments ot menu bar.
  * see kmenubar.cpp for details. It is extremly simple.
- * @author Sven Radej <sven@kde.org>
+ * @short KDE floatable menubar
  */
 class KMenuBar : public QFrame
  {
@@ -119,51 +126,56 @@ class KMenuBar : public QFrame
 
    /**
     * Sets position. Can be used when floating or moving is disabled.
+    * This cannot be used to set toolbar flat. For that, use @ref setFlat .
     */
    void setMenuBarPos(menuPosition mpos);
-   void setTitle(const char *_title) {title = _title;};
+
    /**
     * Sets title for floating menu bar. Default is Main widget title.
     */
-   void setTitle(const QString&_title) {title = _title;};
+   void setTitle(const char *_title) {title = _title;};
 
    /**
-   virtual int insertItem(const char *text,
+    * The rest is standard QMenuBar interface. See Qt docs for
     * details.
     */
    virtual uint count();
-   virtual int insertItem(const char *text, int id=-1, int index=-1 );
-   virtual int insertItem(const char *text, QPopupMenu *popup,
+   virtual int insertItem(const char *text,
+                  const QObject *receiver, const char *member,
                   int accel=0 );
 
-   virtual int insertItem(const QString& text, int id=-1, int index=-1 );
-   virtual int insertItem(const QString& text, QPopupMenu *popup,
+   virtual int insertItem(const char *text, int id=-1, int index=-1 );
+   virtual int insertItem(const char *text, QPopupMenu *popup,
                   int id=-1, int index=-1 );
 
    virtual void insertSeparator(int index=-1 );
    virtual void removeItem(int id);
-   virtual const char *text(int id);
-   virtual void changeItem(const char *text, int id);
+   virtual void removeItemAt(int index);
+   virtual void clear();
    virtual int accel(int id);
    virtual void setAccel(int key, int id );
-   virtual QString text(int id);
-   virtual void changeItem(const QString& text, int id);
+   virtual const char *text(int id);
+   virtual void changeItem(const char *text, int id);
    virtual void setItemChecked(int id , bool flag);
    virtual void setItemEnabled(int id, bool flag);
    virtual int idAt( int index );
 
    int heightForWidth ( int max_width ) const;
 
+   /**
+   * This method switches flat/unflat mode. Carefull: might not work
+   * If menubar is floating.
+   */
    void setFlat (bool);
 
  protected slots:
    void ContextCallback(int index);
    void slotActivated (int id);
    void slotHighlighted (int id);
+   void slotReadConfig ();
    void slotHotSpot (int i);
 
  protected:
-
    void init();
    void mousePressEvent ( QMouseEvent *m );
    void resizeEvent( QResizeEvent *e );
@@ -174,11 +186,11 @@ class KMenuBar : public QFrame
 
 private:
    bool moving;
-   const char *title;
+   QWidget *Parent;
    int oldX;
    int oldY;
    int oldWFlags;
-   QString title;
+   const char *title;
    menuPosition position;
    menuPosition lastPosition;
    menuPosition movePosition;
@@ -208,10 +220,10 @@ private:
    QFrame *handle;
    QPoint pointerOffset;
    QPoint parentOffset;
+   int oldMenuFrameStyle;
    KToolBoxManager *mgr;
    bool highlight;
    bool transparent;
-   bool buttonDownOnHandle;
  };
 
 #endif

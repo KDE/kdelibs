@@ -31,6 +31,7 @@
 #include <qlineedit.h>
 #include <qmultilinedit.h>
 #include <qfontmetrics.h>
+#include <qapp.h>
 #include "htmlform.h"
 #include <strings.h>
 #include "htmlform.h"
@@ -107,11 +108,36 @@ void HTMLWidgetElement::position( int _x, int _y, int , int _height )
 	}
 }
 
+bool HTMLWidgetElement::positionChanged( int _x, int _y, int , int _height )
+{
+	if ( widget == 0L ) // CC: HTMLHidden does not have a widget...
+		return false;
+
+  int x = absX() - _x;
+  int y = absY() - _y;
+
+  if (x != widget->x() || y != widget->y())
+  {
+    return true;
+  }
+
+  return false;
+}
+
 void HTMLWidgetElement::calcAbsolutePos( int _x, int _y )
 {
 	_absX = _x + x;
 	_absY = _y + y - ascent;
 }
+
+void HTMLWidgetElement::hideElement()
+{
+    if ( widget )
+    {
+        widget->hide();
+    }
+}
+
 //----------------------------------------------------------------------------
 
 HTMLSelect::HTMLSelect( QWidget *parent, const char *n, int s, bool m,
@@ -187,7 +213,7 @@ void HTMLSelect::addOption( const char *v, bool sel )
 	if ( v )
 		_values.append( new QString( v ) );
 	else
-		_values.append( new QString( "" ) );
+		_values.append( new QString( (char *)0L) );
 }
 
 const QString &HTMLSelect::value( int item )
@@ -211,15 +237,21 @@ void HTMLSelect::setText( const char *text )
 		QListBox *lb = (QListBox *)widget;
 		lb->changeItem( t, lb->count() - 1 );
 		item = lb->count() - 1;
+		width = lb->maxItemWidth()+20;
+		widget->resize( width, widget->height() );
 	}
 	else
 	{
 		QComboBox *cb = (QComboBox *)widget;
 		cb->changeItem( t, cb->count() - 1 );
 		item = cb->count() - 1;
+		QSize size = widget->sizeHint();
+		widget->resize( size );
+		ascent = size.height() - descent;
+		width = size.width();
 	}
 
-	if ( strlen( value( item ) ) == 0 )
+	if ( value( item ).isNull() )
 		setValue( t, item );
 }
 
@@ -283,7 +315,11 @@ HTMLTextArea::HTMLTextArea( QWidget *parent, const char *n, int r, int c,
 
 	QFontMetrics fm( widget->font() );
 
-	QSize size( c * fm.width('a'), r * (fm.height()+1) );
+	// this is a bit better if using proportional fonts and
+	// small inputs fields
+	QSize size( c * fm.width('a') + 4, r * (fm.height()+1) );
+	if( c < 5 )
+	    size.setWidth( c * fm.width('M') + 4 );
 
 	widget->resize( size );
 
@@ -598,7 +634,13 @@ HTMLTextInput::HTMLTextInput( QWidget *parent, const char *n, const char *v,
 	if ( ml > 0 )
 	    ((QLineEdit *)widget)->setMaxLength( ml );
 
-	QSize size( s * 8, 25 );
+	QFontMetrics m = widget->fontMetrics();
+	// this is a bit better if using proportional fonts and
+	// small inputs fields
+	QSize size( s * m.width('a') + 4, m.height() + 6);
+	if(s<5)
+	    size.setWidth( s * m.width('M') + 4);
+	
 	widget->resize( size );
 
 	descent = 5;
@@ -713,6 +755,9 @@ HTMLForm::HTMLForm( const char *a, const char *m )
 
     elements.setAutoDelete( false );
     hidden.setAutoDelete( true );
+
+    timer = new QTimer( this );
+    connect( timer, SIGNAL(timeout()), SLOT(slotTimeout()) );
 }
 
 void HTMLForm::addElement( HTMLElement *e )
@@ -733,12 +778,29 @@ void HTMLForm::removeElement( HTMLElement *e )
 
 void HTMLForm::position( int _x, int _y, int _width, int _height )
 {
-    HTMLElement *e;
-
-    for ( e = elements.first(); e != 0; e = elements.next() )
+    if ( !timer->isActive() )
     {
-	e->position( _x, _y, _width, _height );
+        // Repositioning has started.  We first hide the elements, then
+        // start a timer to perform the actual positioning once moving has
+        // finished.  This makes scrolling a document with form controls
+        // smoother.
+        for ( HTMLElement *e = elements.first(); e != 0; e = elements.next() )
+        {
+          if (e->positionChanged(_x, _y, _width, _height))
+            e->hideElement();
+        }
     }
+    else
+    {
+        timer->stop();
+    }
+
+    dx = _x;
+    dy = _y;
+    width = _width;
+    height = _height;
+
+    timer->start( 200, true );
 }
 
 void HTMLForm::slotReset()
@@ -779,6 +841,14 @@ void HTMLForm::slotRadioSelected( const char *n, const char *v )
     emit radioSelected( n, v );
 }
 
+void HTMLForm::slotTimeout()
+{
+    for ( HTMLElement *e = elements.first(); e != 0; e = elements.next() )
+    {
+        e->position( dx, dy, width, height );
+    }
+}
+
 HTMLForm::~HTMLForm()
 {
     HTMLElement *e;
@@ -787,5 +857,7 @@ HTMLForm::~HTMLForm()
     {
 	e->setForm( 0 );
     }
+
+    delete timer;
 }
 #include "htmlform.moc"

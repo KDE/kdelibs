@@ -136,22 +136,22 @@ KURL::KURL()
 
 KURL::KURL( KURL & _base_url, const char * _rel_url )
 {
-    char * pos1 = strchr( _rel_url, ':');
-    char * pos2 = strchr( _rel_url, '/');
-    
-    // A full URL has a ':' and no '/' in front of the ':'
-
-    if ( (pos1 != 0) && 
-         ( (pos2 == 0) || (pos2 > pos1) ) 
-       )
-    {
-    	// Full URL
+    QString relURL ( _rel_url );
+    // Holds location of <scheme> & <scheme-specific> separator
+    int sep_loc = relURL.find (':');
+    // Check if relative URL has the same protocol as parent (base URL)	
+    bool same_protocol = ( sep_loc <= 0 ) ? false : ( relURL.mid(0, sep_loc) == _base_url.protocol_part );
+    // check if "_rel_url" is an absolute URL (RFC 2396).	
+    if (relURL.find(QRegExp("^[a-zA-Z][a-zA-Z0-9\\+\\.\\-]*://")) == 0 || relURL.find("man", 0, false) == 0 ||
+	(relURL.find(QRegExp("^[a-zA-Z][a-zA-Z0-9\\+\\.\\-]*:/?[a-zA-Z0-9%_!~'();:@&=$,\\?\\*\\+\\.\\-]")) == 0 &&
+	!same_protocol ))
         parse( _rel_url );
-    }
+    // Relative URL - starts with a "net_path" (RFC 2396).
+    else if ( relURL.find ( "//" ) == 0 )
+        parse( _base_url.protocol_part + ":" + _rel_url );
+    // Relative URL - all others (RFC 2396)	
     else
     {
-	// Relative URL
-
         malformed = _base_url.malformed;
         protocol_part = _base_url.protocol_part;
         host_part = _base_url.host_part;
@@ -164,8 +164,10 @@ KURL::KURL( KURL & _base_url, const char * _rel_url )
         passwd_part = _base_url.passwd_part;
         bNoPath = _base_url.bNoPath;
         detach();
-
-	cd( _rel_url );
+	if ( same_protocol )
+	  cd( _rel_url + (sep_loc + 1), false );
+	else
+	  cd( _rel_url, false );
     } 
 }
 
@@ -184,19 +186,28 @@ void KURL::parse( const char * _url )
     ref_part = "";
     bNoPath = false;
 
-    if ( _url[0] == '/' )
+    // Empty or Null string ?
+    if ( url.isEmpty() )
+    {
+      malformed = true;
+      return;
+    }
+    // Only allow valid URL's that begin with "/". (Dawit A.)
+    if ( url[0] == '/' && url.find (QRegExp ("^//[a-zA-Z0-9]+.*")) == -1 )
     {
 	// Create a light weight URL with protocol
 	path_part_decoded = _url;
 	path_part = path_part_decoded.data();
+       cleanPath();  // clean path before doing anything else!!
 	KURL::encodeURL( path_part );
 	protocol_part = "file";
 	return;
     }
     
     // We need a : somewhere to determine the protocol
+    // ":" Cannot be the first character either! (Dawit A.)
     int pos = url.find( ":" );
-    if ( pos == -1 )
+    if ( pos <= 0 )
     {
 	malformed = true;
 	return;
@@ -614,12 +625,7 @@ bool KURL::cd( const char* _dir, bool zapRef)
 
     // Now we have a path for shure
     bNoPath = ( _dir[0] == 0);
-
-    if( _dir[0] == '/' )
-    {
-	path_part = _dir;
-    }
-    else if (( _dir[0] == '~' ) && ( protocol_part == "file" ))
+    if (( _dir[0] == '~' ) && ( protocol_part == "file" ))
     {
 	path_part = getenv( "HOME" );
 	path_part += "/";
@@ -629,7 +635,31 @@ bool KURL::cd( const char* _dir, bool zapRef)
     {
 	if ( path_part.right(1)[0] != '/' && _dir[0] != '/' )
 	    path_part += "/";
+	if ( _dir[0] == '/' )
+           path_part = _dir;
+	else
 	path_part += _dir;
+	// Enable KURL to correctly resolve relative URLs that
+	// contain query and/or fragment (aka reference) parts -
+	// refer to RFC 2396 section 5. (Dawit A)
+	int srh_loc = path_part.find ("?");
+	int ref_loc = path_part.find ("#");
+	if ( srh_loc >= 0 )
+	{
+	   if ( ref_loc > srh_loc && !zapRef )
+	   {
+	      search_part = path_part.mid (srh_loc+1, ref_loc);
+	      ref_part =  path_part.mid (ref_loc+1, path_part.length());
+	   }
+	   else
+	      search_part = path_part.mid (srh_loc+1, path_part.length());
+	   path_part = path_part.mid (0, srh_loc);
+	}
+	else if ( ref_loc >= 0 && !zapRef )
+	{
+	   ref_part = path_part.mid (ref_loc+1, path_part.length());
+	   path_part = path_part.mid (0, ref_loc);
+	}
     }
 
     if ( zapRef )

@@ -26,8 +26,8 @@ public:
 
     StringListSelectAndReorderSetData
     (
-        QWidget* parent = NULL,
-        const char* name = NULL
+        QWidget* parent = 0L,
+        const char* name = 0L
     );
 
     virtual ~StringListSelectAndReorderSetData();

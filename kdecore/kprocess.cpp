@@ -21,6 +21,24 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.29.4.5  1999/07/22 21:14:17  porten
+   applied Waba's fix for the fix from HEAD
+
+   Revision 1.29.4.4  1999/07/12 10:26:42  porten
+   kprocess deadlock fix from Alex Hayward (bug #1002 and #1513)
+
+   Revision 1.29.4.3  1999/07/04 17:48:09  porten
+   check for Stdin flag in writeStdin
+
+   Revision 1.29.4.2  1999/05/10 19:33:18  gehrmab
+   Fixed memory leak in KProcess
+
+   Revision 1.29.4.1  1999/04/07 15:39:11  porten
+   restore SIGPIPE handler
+
+   Revision 1.29  1999/01/18 10:56:22  kulow
+   .moc files are back in kdelibs. Built fine here using automake 1.3
+
    Revision 1.28  1999/01/15 09:30:40  kulow
    it's official - kdelibs builds with srcdir != builddir. For this I
    automocifized it, the generated rules are easier to maintain than
@@ -103,8 +121,6 @@
 
 KProcess::KProcess()
 {
-  arguments.setAutoDelete(TRUE);
-
   if (0 == theKProcessController) {
 	theKProcessController= new KProcessController();
 	CHECK_PTR(theKProcessController);
@@ -130,7 +146,7 @@ KProcess::~KProcess()
   // destroying the KProcess instance sends a SIGKILL to the
   // child process (if it is running) after removing it from the
   // list of valid processes (if the process is not started as
-  // "dont_care")
+  // "DontCare")
 
   theKProcessController->processList->remove(this);
   // this must happen before we kill the child
@@ -138,22 +154,19 @@ KProcess::~KProcess()
 
   if (runs && (run_mode != DontCare))
     kill(SIGKILL);
+
+  // TODO: restore SIGCHLD and SIGPIPE handler if this is the last KProcess
 }
 
 
 
 bool KProcess::setExecutable(const char *proc)
 {
-  char *hlp;
-
-
   if (runs) return FALSE;
 
   arguments.removeFirst();
   if (0 != proc) {
-    hlp = kstrdup(proc);
-    CHECK_PTR(hlp);
-    arguments.insert(0,hlp);
+    arguments.insert(0,proc);
   }
 
   return TRUE;
@@ -166,10 +179,8 @@ bool KProcess::setExecutable(const char *proc)
 
 KProcess &KProcess::operator<<(const char *arg)
 {
-  char *new_arg= kstrdup(arg);
-
-  CHECK_PTR(new_arg);
-  arguments.append(new_arg);
+  CHECK_PTR(arg);
+  arguments.append(arg);
   return *this;
 }
 
@@ -212,13 +223,20 @@ bool KProcess::start(RunMode runmode, Communication comm)
 
   if (0 == pid) {
 	// The child process
-
 	if(!commSetupDoneC())
 	  debug("Could not finish comm setup in child!");
 
 	// Matthias
 	if (run_mode == DontCare)
           setpgid(0,0);
+
+        // restore default SIGPIPE handler (Harri)
+        struct sigaction act;
+        sigemptyset(&(act.sa_mask));
+        sigaddset(&(act.sa_mask), SIGPIPE);
+        act.sa_handler = SIG_DFL;
+        act.sa_flags = 0;
+        sigaction(SIGPIPE, &act, 0L);
 
 	execvp(arglist[0], arglist);
 	exit(-1);
@@ -232,7 +250,6 @@ bool KProcess::start(RunMode runmode, Communication comm)
 
   } else {
 	// the parent continues here
-
 	if (!commSetupDoneP())  // finish communication socket setup for the parent
 	  debug("Could not finish comm setup in parent!");
 
@@ -240,8 +257,14 @@ bool KProcess::start(RunMode runmode, Communication comm)
 	input_data = 0;
 
 	if (run_mode == Block) {
-	  waitpid(pid, &status, 0);
-	  processHasExited(status);
+	  commClose();
+
+	  // Its possible that the child's exit was caught by the SIGCHLD handler
+	  // which will have set status for us.
+	  if (waitpid(pid, &status, 0) != -1) this->status = status;
+
+	  runs = FALSE;
+	  emit processExited(this);
 	}
   }
   free(arglist);
@@ -302,7 +325,7 @@ bool KProcess::writeStdin(char *buffer, int buflen)
   if (0 != input_data)
     return FALSE;
 
-  if ( runs && communication) {
+  if (runs && (communication & Stdin)) {
     input_data = buffer;
     input_sent = 0;
     input_total = buflen;
@@ -321,6 +344,7 @@ bool KProcess::closeStdin()
   bool rv;
 
   if (communication & Stdin) {
+    communication = (Communication) (communication & ~Stdin);
     innot->setEnabled(FALSE);
     close(in[1]);
     rv = TRUE;
@@ -347,7 +371,6 @@ void KProcess::slotChildOutput(int fdno)
 
 void KProcess::slotChildError(int fdno)
 {
-
   if (!childError(fdno)) {
     errnot->setEnabled(FALSE);
   }
@@ -394,9 +417,6 @@ int KProcess::childOutput(int fdno)
 
   len = ::read(fdno, buffer, 1024);
 
-  if (-1 == len)
-	debug("ERROR: %s\n\n", strerror(errno));
-
   if ( 0 < len) {
 	emit receivedStdout(this, buffer, len);
   }
@@ -412,7 +432,7 @@ int KProcess::childError(int fdno)
 
   len = ::read(fdno, buffer, 1024);
 
-  if ( 0 != len)
+  if ( 0 < len)
 	emit receivedStderr(this, buffer, len);
   return len;
 }
@@ -451,6 +471,10 @@ int KProcess::commSetupDoneP()
 	  close(out[1]);
 	if (communication & Stderr)
 	  close(err[1]);
+
+	// Don't create socket notifiers and set the sockets non-blocking if
+	// blocking is requested.
+	if (run_mode == Block) return ok;
 
 	if (communication & Stdin) {
 	  ok &= (-1 != fcntl(in[1], F_SETFL, O_NONBLOCK));
@@ -514,21 +538,61 @@ int KProcess::commSetupDoneC()
 void KProcess::commClose()
 {
   if (NoCommunication != communication) {
-
-	if (communication & Stdin)
+        bool b_in = (communication & Stdin);
+        bool b_out = (communication & Stdout);
+        bool b_err = (communication & Stderr);
+	if (b_in)
 		delete innot;
 
-	if (communication & Stdout) {
-		delete outnot;
-	  while(childOutput(out[0])> 0 )
-		;
+	if (b_out || b_err) {
+	  // If both channels are being read we need to make sure that one socket buffer
+	  // doesn't fill up whilst we are waiting for data on the other (causing a deadlock).
+	  // Hence we need to use select.
+
+	  // Once one or other of the channels has reached EOF (or given an error) go back
+	  // to the usual mechanism.
+
+	  int fds_ready = 1;
+	  fd_set rfds;
+
+          int max_fd = 0;
+          if (b_out) {
+            if (out[0] > max_fd)
+              max_fd = out[0];
+            delete outnot;
+          }
+          if (b_err) {
+            if (err[0] > max_fd)
+              max_fd = err[0];
+            delete errnot;
+          }
+           
+
+	  while (b_out || b_err) {
+	    FD_ZERO(&rfds);
+            if (b_out) 
+	      FD_SET(out[0], &rfds);
+
+            if (b_err) 
+	      FD_SET(err[0], &rfds);
+
+	    fds_ready = select(max_fd+1, &rfds, 0, 0, 0);
+	    if (fds_ready <= 0) break;
+
+	    if (b_out && FD_ISSET(out[0], &rfds)) {
+	      int ret = childOutput(out[0]);
+	      if ((ret == -1 && errno != EAGAIN) || ret == 0) 
+		b_out = false;
+	    }
+                               
+	    if (b_err && FD_ISSET(err[0], &rfds)) {
+	      int ret = childError(err[0]);
+	      if ((ret == -1 && errno != EAGAIN) || ret == 0) 
+		b_err = false;
+	    }
+	  }
 	}
 
-	if (communication & Stderr) {
-		delete errnot;
-	  while(childError(err[0]) > 0)
-		;
-	}
 	if (communication & Stdin)
 	    close(in[1]);
 	if (communication & Stdout)
@@ -619,6 +683,14 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
 	if (run_mode == DontCare)
           setpgid(0,0);
 
+        // restore default SIGPIPE handler (Harri)
+        struct sigaction act;
+        sigemptyset(&(act.sa_mask));
+        sigaddset(&(act.sa_mask), SIGPIPE);
+        act.sa_handler = SIG_DFL;
+        act.sa_flags = 0;
+        sigaction(SIGPIPE, &act, 0L);
+
 	execvp(arglist[0], arglist);
 	exit(-1);
 
@@ -626,7 +698,6 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
 	// forking failed
 
 	runs = FALSE;
-	//	free(arglist);
 	return FALSE;
 
   } else {
@@ -639,11 +710,16 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
 	input_data = 0;
 
 	if (run_mode == Block) {
-	  waitpid(pid, &status, 0);
-	  processHasExited(status);
+	  commClose();
+
+	  // Its possible that the child's exit was caught by the SIGCHLD handler
+	  // which will have set status for us.
+	  if (waitpid(pid, &status, 0) != -1) this->status = status;
+
+	  runs = FALSE;
+	  emit processExited(this);
 	}
   }
-  //  free(arglist);
   return TRUE;
 }
 

@@ -23,10 +23,10 @@
 #define _KAPP_H
 
 // Version macros. Never put this further down.
-#define KDE_VERSION_STRING "1.1"
+#define KDE_VERSION_STRING "1.1.2"
 #define KDE_VERSION_MAJOR 1
 #define KDE_VERSION_MINOR 1
-#define KDE_VERSION_RELEASE 3
+#define KDE_VERSION_RELEASE 5
 
 #include <kconfig.h>
 
@@ -173,8 +173,8 @@ public:
 
   /**
 	* Return a standard help menu
-	*
-	* @param bAboutQtMenu If true, there is a menu entry for About Qt
+	* @param bAboutQtMenu not used anymore
+	* @param appAboutText a little text about the application
 	* @return a standard help menu
 	*/
   QPopupMenu* getHelpMenu( bool bAboutQtMenu, const char* appAboutText );
@@ -715,6 +715,17 @@ private:
 #endif
 
 // $Log$
+// Revision 1.61.2.2  1999/04/17 22:12:18  kulow
+// setting RELEASE to 4
+//
+// Revision 1.61.2.1  1999/04/10 15:13:41  dfaure
+// in getHelpMenu(), the first param, bAboutQtMenu, doesn't do anything
+// anymore -> fixed docu.
+//
+// Revision 1.61  1999/02/06 16:27:11  kulow
+// make KDE "1.1" and 1 - 1 - 3 (pre1 and 2 was 1 - 1 - 1). Then again
+// 1.1.1 has to be 1 - 1 - 4. Would be strange, not? I see no other way around.
+//
 // Revision 1.60  1998/12/06 08:56:10  garbanzo
 // Typo police.
 //

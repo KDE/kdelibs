@@ -41,6 +41,11 @@
 
 // $Id$
 // $Log$
+// Revision 1.63.2.2  1999/03/24 16:48:56  ettrich
+// workaround for qt-1.44 behaviour
+//
+// Revision 1.63.2.1  1999/03/06 21:45:58  radej
+// sven: Flat/Unflat with LMB too. Arrows and animation to come.
 //
 // Revision 1.63  1999/02/05 19:16:54  ettrich
 // fixed mac-style toggling for applications with multiple toplevel windows
@@ -171,10 +176,17 @@
 //
 // Revision 1.26  1998/05/19 14:10:23  radej
 // Bugfixes: Unhighlighting a handle and catching the fast click
-
+//
 // Revision 1.25  1998/05/07 23:13:09  radej
 // Moving with KToolBoxManager
 //
+
+// This file was corrupted in KDE_1_1_BRANCH
+
+static bool standalone_menubar = FALSE;
+static bool toggleFlatOnRelease = false;
+
+static QPixmap* miniGo = 0;
 
 _menuBar::_menuBar (QWidget *parent, const char *name)
   : QMenuBar (parent, name)
@@ -190,33 +202,46 @@ _menuBar::~_menuBar ()
  {
  }
 
-static bool standalone_menubar = FALSE;
 
-static QPixmap* miniGo = 0;
+// workaround for qt-1.44's slightly changed menu bar handling
+
+void _menuBar::resizeEvent( QResizeEvent* e)
+{
+    static bool inHere = FALSE;
+    
+    if (inHere)
+	return;
+    
+    inHere = TRUE;
+    QMenuBar::resizeEvent( e );
+    inHere = FALSE;
+    // ignore;
+}
+
 
 /*************************************************************/
 
-  title = 0;
 KMenuBar::KMenuBar(QWidget *parent, const char *name)
   : QFrame( parent, name )
 {
   Parent = parent;        // our father
+  title = 0;
   oldWFlags = getWFlags();
-  menu = new _menuBar (frame);
+
+  standalone_menubar = FALSE;
   frame = new QFrame (this);
   frame->setFrameStyle(NoFrame);
-  menu = new QMenuBar (frame);
-  menu->setLineWidth( 1 );
+  menu = new _menuBar (frame);
   oldMenuFrameStyle = menu->frameStyle();
 
   connect (menu, SIGNAL(activated(int)), this, SLOT(slotActivated(int)));
   connect (menu, SIGNAL(highlighted(int)), this, SLOT(slotHighlighted(int)));
   handle = new QFrame (this);
   handle->setMouseTracking( TRUE );
+  handle->setFrameStyle(NoFrame);
   handle->installEventFilter(this);
   handle->show();
   handle->raise();
-  buttonDownOnHandle = FALSE;
   init();
 }
 
@@ -241,6 +266,7 @@ void KMenuBar::resizeEvent (QResizeEvent *)
   frame->setGeometry(hwidth , 0, width()-hwidth,
                      menu->heightForWidth(width()-hwidth));
   menu->resize(frame->width(), frame->height());
+  
   handle->setGeometry(0,0,hwidth,height());
   if (height() != heightForWidth(width()))
   {
@@ -267,21 +293,21 @@ void KMenuBar::ContextCallback( int )
       }
       else {
         setMenuBarPos( Floating );
+	move(QCursor::pos());
+	show();
+      }
       break;
-    case CONTEXT_FLAT:
-        setFlat (position != Flat);
-	break;
    }
 
   handle->repaint (false);
 }
+
+void KMenuBar::init()
+{
+  context = new QPopupMenu( 0, "context" );
   context->insertItem( klocale->translate("Top"),  CONTEXT_TOP );
   context->insertItem( klocale->translate("Bottom"), CONTEXT_BOTTOM );
   context->insertItem( klocale->translate("Floating"), CONTEXT_FLOAT );
-  context->insertItem( i18n("Top"),  CONTEXT_TOP );
-  context->insertItem( i18n("Bottom"), CONTEXT_BOTTOM );
-  context->insertItem( i18n("Floating"), CONTEXT_FLOAT );
-  context->insertItem( i18n("Flat"), CONTEXT_FLAT );
 
   position = Top;
   moving = TRUE;
@@ -326,18 +352,18 @@ void KMenuBar::slotReadConfig ()
     highlight = _highlight;
 
   if (_transparent != transparent)
-    menu->setStyle(style()); //Uh!
+    transparent= _transparent;
 
   if (style() == MotifStyle)
   {
-    // menu->setStyle(style()); TODO: port to real Styles
+    menu->setStyle(style()); //Uh!
     menu->setMouseTracking(false);
     if (position != Floating || position == FloatingSystem)
-    menu->setStyle(style()); //Uh!
+      menu->setFrameStyle(Panel | Raised);
   }
   else
   {
-    // menu->setStyle(style()); TODO: port to real Styles
+    menu->setStyle(style()); //Uh!
     menu->setMouseTracking(true);
     if (position != Floating && position != FloatingSystem)
       menu->setFrameStyle(NoFrame);
@@ -426,11 +452,11 @@ void KMenuBar::paintEvent(QPaintEvent *)
 
 void KMenuBar::closeEvent (QCloseEvent *e)
 {
-     context->changeItem (klocale->translate("Float"), CONTEXT_FLOAT);
+  if (position == Floating)
    {
      position = lastPosition;
      recreate (Parent, oldWFlags, QPoint (oldX, oldY), TRUE);
-     context->changeItem (i18n("Float"), CONTEXT_FLOAT);
+     context->changeItem (klocale->translate("Float"), CONTEXT_FLOAT);
      emit moved (position);
      e->ignore();
      return;
@@ -442,11 +468,11 @@ void KMenuBar::leaveEvent (QEvent *e){
   QApplication::sendEvent(menu, e);
 }
 
-  if (ob == Parent && ev->type() == Event_Show && standalone_menubar)
+
 bool KMenuBar::eventFilter(QObject *ob, QEvent *ev){
 
 
-  if (ob == Parent && ev->type() == QEvent::Show && standalone_menubar)
+  if (ob == Parent && ev->type() == Event_Show && standalone_menubar)
   {
     //bool aha = isVisible(); // did app enable show?
       setMenuBarPos(FloatingSystem);
@@ -455,11 +481,11 @@ bool KMenuBar::eventFilter(QObject *ob, QEvent *ev){
   }
 
   if (mgr)
-    if (ev->type() == Event_MouseButtonPress)
+    return true;
 
 
   if (ob == handle){
-    if (ev->type() == QEvent::MouseButtonPress)
+    if (ev->type() == Event_MouseButtonPress)
     {
       if (standalone_menubar)
       {
@@ -476,17 +502,29 @@ bool KMenuBar::eventFilter(QObject *ob, QEvent *ev){
           y.prepend("0");
         //if (((QMouseEvent*)ev)->button() == LeftButton)
           KWM::sendKWMCommand(QString("kpanel:go")+x+y);
-
+        //else
         //  KWM::sendKWMCommand(QString("krootwm:go")+x+y);
         return false; //or true? Bah...
-      buttonDownOnHandle = TRUE;
+      }
+
       if ( moving && ((QMouseEvent*)ev)->button() == RightButton)
 	{
-	  buttonDownOnHandle = FALSE;
 	  context->popup( handle->mapToGlobal(((QMouseEvent*)ev)->pos()), 0 );
 	  ContextCallback(0);
-      else if (position != Flat)
+	}
+      else if (((QMouseEvent*)ev)->button() == MidButton &&
+               position != Floating)
+        setFlat (position != Flat);
+      else if (((QMouseEvent*)ev)->button() == LeftButton)
+        toggleFlatOnRelease=true;
+      return TRUE;
+    }
+
+    if (ev->type() == Event_MouseMove &&
+        ((QMouseEvent*) ev)->state() == LeftButton &&
+        toggleFlatOnRelease)
       {
+        toggleFlatOnRelease = false;
         //Move now
         QRect rr(Parent->geometry());
         int ox = rr.x();
@@ -509,7 +547,7 @@ bool KMenuBar::eventFilter(QObject *ob, QEvent *ev){
         {
           mgr->doMove(true, false, false);
         }
-	}
+
         if (transparent)
         {
           setMenuBarPos (movePosition);
@@ -523,22 +561,20 @@ bool KMenuBar::eventFilter(QObject *ob, QEvent *ev){
         mgr=0;
         handle->repaint(false);
         //debug ("KMenuBar: moving done");
-      }
-      return TRUE;
-		//debug ("KMenuBar: moving done");
-	    }
-    if (ev->type() == Event_MouseButtonRelease)
-	return TRUE;
-	if (mgr)
-	  mgr->stop();
-	return TRUE;
-	      mgr->stop();
-	  if ( position != Floating)
-    if ((ev->type() == Event_Paint)||(ev->type() == Event_Enter)||(ev->type() == Event_Leave) ){
-	  return TRUE;
+        return true; // Or false? Never knew what evFilter returns...
       }
 
-    if ((ev->type() == QEvent::Paint)||(ev->type() == QEvent::Enter)||(ev->type() == QEvent::Leave) ){
+    if (ev->type() == Event_MouseButtonRelease)
+      {
+	if (mgr)
+          mgr->stop();
+        if (toggleFlatOnRelease && position != Floating)
+          setFlat (position != Flat);
+        toggleFlatOnRelease = false;
+        return TRUE;
+      }
+
+    if ((ev->type() == Event_Paint)||(ev->type() == Event_Enter)||(ev->type() == Event_Leave) ){
 
       QColorGroup g = QWidget::colorGroup();
       QPainter paint(handle);
@@ -560,17 +596,17 @@ bool KMenuBar::eventFilter(QObject *ob, QEvent *ev){
           paint.drawPixmap( dx, dy, *miniGo);
         }
 
+        return true;
+      }
+
+      int stipple_height;
       if (ev->type() == Event_Enter && highlight) // highlight? - sven
         b = kapp->selectColor; // this is much more logical then
-
+                               // the hardwired value used before!!
       //else
       //  b = QWidget::backgroundColor();
-      if (ev->type() == QEvent::Enter && highlight) // highlight? - sven
-        b = colorGroup().highlight();  // this is much more logical then
-                                             colorGroup(), true);
-
-          return(true);
-      }
+      int h = handle->height();
+      int w = handle->width();
 
       if (style() == MotifStyle) //Motif style handle
       {
@@ -702,14 +738,14 @@ void KMenuBar::setMenuBarPos(menuPosition mpos)
 	  XSetTransientForHint( qt_xdisplay(), winId(), Parent->topLevelWidget()->winId());
 	  if (mpos == FloatingSystem)
 	      KWM::setDecoration(winId(), KWM::noDecoration | KWM::standaloneMenuBar | KWM::noFocus);
-	  if (title){
+	  else
 	      KWM::setDecoration(winId(), KWM::tinyDecoration | KWM::noFocus);
+	  KWM::moveToDesktop(winId(), KWM::desktop(Parent->winId()));
+	  setCaption(""); // this triggers a qt bug
+	  if (title){
+	      setCaption(title);
 	  }
 	  else {
-	  setCaption(""); // this triggers a qt bug
-	  if (!title.isNull()){
-	      setCaption(title);
-	  } else {
 	      QString s = Parent->caption();
 	      s.append(" [menu]");
 	      setCaption(s);
@@ -720,11 +756,11 @@ void KMenuBar::setMenuBarPos(menuPosition mpos)
 		  if (style() == MotifStyle)
 		      menu->setFrameStyle(Panel | Raised);
 		  else
-	  context->changeItem (klocale->translate("UnFloat"), CONTEXT_FLOAT);
+		      menu->setFrameStyle(WinPanel | Raised) ;
+	      }
 	  else
 	      menu->setFrameStyle( NoFrame) ;
-	  context->changeItem (i18n("UnFloat"), CONTEXT_FLOAT);
-	  context->setItemEnabled (CONTEXT_FLAT, FALSE);
+	  context->changeItem (klocale->translate("UnFloat"), CONTEXT_FLOAT);
 	
 	
 
@@ -768,11 +804,11 @@ void KMenuBar::setMenuBarPos(menuPosition mpos)
      else if (position == Floating || position == FloatingSystem) // was floating
       {
         position = mpos;
-        context->changeItem (klocale->translate("Float"), CONTEXT_FLOAT);
+        hide();
+	setFrameStyle(NoFrame);
 	menu->setFrameStyle(oldMenuFrameStyle);
         recreate(Parent, oldWFlags, QPoint(oldX, oldY), TRUE);
-        context->changeItem (i18n("Float"), CONTEXT_FLOAT);
-        context->setItemEnabled (CONTEXT_FLAT, TRUE);
+        context->changeItem (klocale->translate("Float"), CONTEXT_FLOAT);
         emit moved (mpos);
         if (style() == MotifStyle)
         {
@@ -810,22 +846,22 @@ void KMenuBar::enableFloating (bool arrrrrrgh)
 /*******************************************************/
 
 uint KMenuBar::count()
-int KMenuBar::insertItem(const char *text,
+{
   return menu->count();
 }
 
-int KMenuBar::insertItem(const QString& text,
+int KMenuBar::insertItem(const char *text,
                const QObject *receiver, const char *member,
                int accel)
-int KMenuBar::insertItem( const char *text, int id, int index)
+{
   return menu->insertItem(text, receiver, member, accel);
 }
 
-int KMenuBar::insertItem( const char *text, QPopupMenu *popup,
+int KMenuBar::insertItem( const char *text, int id, int index)
 {
   return menu->insertItem(text, id, index);
 }
-int KMenuBar::insertItem( const QString& text, QPopupMenu *popup,
+int KMenuBar::insertItem( const char *text, QPopupMenu *popup,
                           int id, int index)
 {
   return menu->insertItem(text, popup, id, index);
@@ -860,16 +896,16 @@ int KMenuBar::accel( int id )
   return menu->accel(id);
 }
 void KMenuBar::setAccel( int key, int id )
-const char *KMenuBar::text( int id )
+{
   menu->setAccel(key, id);
 }
 
-QString KMenuBar::text( int id )
-void KMenuBar::changeItem( const char *text, int id )
+const char *KMenuBar::text( int id )
+{
   return menu->text(id);
 }
 
-void KMenuBar::changeItem( const QString& text, int id )
+void KMenuBar::changeItem( const char *text, int id )
 {
   menu->changeItem(text, id);
 }
@@ -896,18 +932,18 @@ void KMenuBar::slotHighlighted (int id)
 }
 
 void KMenuBar::setFlat (bool flag)
+{
+
+#define also
+
   if (flag && ((position == Floating  || position == FloatingSystem) && position == Flat))
-
-  if (!flag && (position != Flat))
-
-  if (position == Floating  || position == FloatingSystem)
-
     return;
-  if ( flag == (position == Flat))
+  if (!flag && (position != Flat))
+    also return;
+
 
   if (flag) //flat
   {
-    context->changeItem (i18n("UnFlat"), CONTEXT_FLAT);
     lastPosition = position; // test float. I did and it works by miracle!?
     //debug ("Flat");
     position = Flat;
@@ -915,10 +951,10 @@ void KMenuBar::setFlat (bool flag)
     handle->resize(30, 10);
     frame->move(100, 100); // move menubar out of sight
     enableFloating(false);
+    emit moved(Flat); // KTM will block this->updateRects
   }
   else //unflat
   {
-    context->changeItem (i18n("Flat"), CONTEXT_FLAT);
     //debug ("Unflat");
     setMenuBarPos(lastPosition);
     enableFloating(true);

@@ -528,8 +528,3 @@ void track::changeTempo(ulong t)
     
 }
 
-double track::absMsOfNextEvent (void) 
-{
-    //printf("%d : %g\n",id,time_at_next_event);
-    return time_at_next_event;
-}

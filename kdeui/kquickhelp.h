@@ -161,7 +161,7 @@ private:
   QString currentText;
   QPoint currentPos;
 
-  static QList<KQuickTip> tips;
+  static QList<KQuickTip> *tips;
   static KQuickHelp *instance;
   static QPopupMenu *menu;
   static KQuickHelpWindow *window;  

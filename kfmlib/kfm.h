@@ -53,6 +53,12 @@ public:
     KFM();
     ~KFM();
 
+    /*  Call setSilent(true) before you create a KFM instance
+     *   if you don't want error messages on stderr 
+     *   (useful e.g. to simply test if KFM is running or not)
+     *  Default behaviour is NOT silent.
+     */
+    static void setSilent(bool _silent);
 
     /* This function is probably what you are looking for.  It can be
      * used to download a file from an arbitrary URL (source) to a
@@ -149,6 +155,7 @@ protected:
     QWidget* modal_hack_widget;
     bool download_state; /* to indicate wether the download was successful */
     static QStrList* tmpfiles;
+    static bool silent;
 };
 
 /// Asking for a location
@@ -180,5 +187,12 @@ protected:
     QPushButton *cancel;
 
 };
+
+
+/**
+ * Return the name of the current display, usable for KFM's locking.
+ */
+QString displayName();
+
 
 #endif

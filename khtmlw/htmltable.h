@@ -55,7 +55,7 @@ class HTMLTableCell : public HTMLClueV
 public:
     HTMLTableCell( int _x, int _y, int _max_width, int _percent,
 	    int rs, int cs, int pad );
-    virtual ~HTMLTableCell() { }
+    virtual ~HTMLTableCell() { } 
 
     int rowSpan() const
 	    {	return rspan; }
@@ -78,11 +78,15 @@ public:
 		int _width, int _height, int _tx, int _ty )
 	{ HTMLClueV::print(_painter,_obj,_x,_y,_width,_height,_tx,_ty); }
 
+    void link() { refcount++; }
+    void unlink() { if (--refcount == 0) delete this; }
+
 protected:
     int rspan;
     int cspan;
     int padding;
     QColor bg;
+    int refcount;
 };
 
 //-----------------------------------------------------------------------------
@@ -156,9 +160,9 @@ public:
     virtual HTMLIterator *getIterator()
        { return totalRows ? new HTMLTableIterator( this ) : 0; }
   
-protected:
     enum ColType { Fixed, Percent, Variable };
 
+protected:
     void setCells( unsigned int r, unsigned int c, HTMLTableCell *cell );
     void calcColumnWidths();
     void calcColInfo();

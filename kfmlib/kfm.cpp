@@ -32,14 +32,28 @@
 
 QString displayName()
 {
-    QString d( getenv( "DISPLAY" ) );
-    int i = d.find( ':' );
-    if ( i != -1 )
-	d[i] = '_';
-    if ( d.find( '.' ) == -1 )
-	d += ".0";
-    
-    return d;
+  // note: We can not rely on DISPLAY. If KDE is started by
+  // KDM, DISPLAY will be something like ":0", but this is
+  // not unique if we start KDE several times in a network
+
+  QString d = QString(getenv("DISPLAY"));
+
+  int i = d.find( ':' );
+  if ( i != -1 )
+    d[i] = '_';
+  if (i==0)
+    {
+      // we are running local, so add the hostname
+      char name[25];
+
+      if (gethostname(name, 25) == 0)
+	d = name + d;
+    }
+
+  if ( d.find( '.' ) == -1 )
+    d += ".0";
+
+  return d;
 }
 
 KFM::KFM()
@@ -131,7 +145,7 @@ void KFM::init()
 	    return;
 	}
 	
-	warning("ERROR: KFM is not running");
+	if (!silent) warning("ERROR: KFM is not running");
 	return;
     }
     
@@ -142,7 +156,7 @@ void KFM::init()
     int pid = atoi( buffer );
     if ( pid <= 0 )
     {
-	warning("ERROR: Invalid PID");
+	if (!silent) warning("ERROR: Invalid PID");
 	fclose( f );
 	return;
     }
@@ -162,7 +176,7 @@ void KFM::init()
 	    return;
 	}
 
-	warning("ERROR: KFM crashed");
+	if (!silent) warning("ERROR: KFM crashed");
 	fclose( f );
 	return;
     }
@@ -174,7 +188,7 @@ void KFM::init()
     char * slot = strdup( buffer );
     if ( slot == (void *) 0 )
     {
-	warning("ERROR: Invalid Slot");
+	if (!silent) warning("ERROR: Invalid Slot");
 	return;
     }
     
@@ -321,10 +335,10 @@ void KFM::moveClient( const char *_src, const char *_dest )
 
 void KFM::selectRootIcons( int _x, int _y, int _w, int _h, bool _add )
 {
-    warning( "KFM call: selectRootIcons");
+    //warning( "KFM call: selectRootIcons");
     if ( !test() )
 	return;
-    warning( "KFM doing call");
+    //warning( "KFM doing call");
     
     ipc->selectRootIcons( _x, _y, _w, _h, _add );
 }
@@ -392,6 +406,10 @@ void KFM::slotDirEntry(const char* _name, const char* _access, const char* _owne
   entry.size = _size;
   emit dirEntry( entry );
 }
+
+//static
+void KFM::setSilent(bool _silent) { silent = _silent; }
+bool KFM::silent = false;
 
 DlgLocation::DlgLocation( const char *_text, const char* _value, QWidget *parent )
         : QDialog( parent, 0L, TRUE )

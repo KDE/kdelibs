@@ -79,7 +79,7 @@ void kimgio_png_read( QImageIO *io )
 	png_set_packing( png_ptr );
 	png_set_strip_16( png_ptr );
 
-	if( png_ptr->color_type & PNG_COLOR_TYPE_GRAY ) {
+	if( !(png_ptr->color_type & PNG_COLOR_MASK_COLOR) ) {
 		png_set_gray_to_rgb( png_ptr );
 	}
 	else {

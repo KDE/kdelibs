@@ -1,3 +1,19 @@
+Tue Apr 20 18:10:58 1999  Carsten Pfeiffer  <pfeiffer@kde.org>
+
+	* kfilesimpleview.cpp (insertItem): QList::insert() seems to have
+	changed: valid range for index is only from 0 to count(). Passing -1
+	as index results in an error - and a segfault in kfile.
+	=> changed KFileSimpleView::insertItem() to set index to count() if
+	it is set to -1 (coming from KFileInfoContents::setSorting()).
+
+Sat Apr 17 15:50:41 1999  Carsten Pfeiffer  <pfeiffer@kde.org>
+
+	* kfiledetaillist.{cpp,h}, kdirview.{cpp,h}:
+	those views didn't have proper keyboard bindings (HOME, END, RETURN)
+
+	* kfiledialog.cpp: fixed some geometry management problems with
+	large toolbar (noticed because of icon+text in toolbar)
+
 1999-01-14  Stephan Kulow  <coolo@kde.org>
 
 	* kfiledialog.cpp: fixed some GUI problems and moved all default

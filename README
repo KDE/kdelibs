@@ -10,7 +10,7 @@ In this file:
 About kdelibs
 -------------
 
-This is the version 1.1 (almost) release of the KDE libraries.  Among this
+This is the version 1.1.2 release of the KDE libraries.  Among this
 collection are ten (10) libraries that are central to the development and 
 execution of a KDE program, internationalization files for these libraries, 
 misc HTML documentation, and regression tests.  The ten libraries are:
@@ -67,7 +67,10 @@ IMPORTANT: most applications need KDEDIR as the directory where KDE is
 installed.  Please set this in your login file.
 
 If configure claims Qt cannot be found, have a look at http://www.troll.no
-to get a copy of Qt, version 1.41 or newer.
+to get a copy of Qt, version 1.42.
+
+If you get TOC overflow errors on AIX, and are using gcc 2.7.2, you'll
+need to add -mminimal-toc to your CFLAGS and CXXFLAGS.
 
 Debugging
 ---------

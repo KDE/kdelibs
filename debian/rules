@@ -4,41 +4,50 @@
 
 SHELL=/bin/sh
 
-build:
-	dh_testdir
-	(       kde_htmldir=/usr/doc/kde/HTML \
-		kde_appsdir=/usr/share/applnk \
-		kde_icondir=/usr/share/icons \
-		kde_sounddir=/usr/share/sounds \
-		kde_datadir=/usr/share/apps \
-		kde_locale=/usr/share/locale \
-		kde_cgidir=/usr/lib/cgi-bin \
-		kde_confdir=/etc/kde \
-		kde_mimedir=/usr/share/mimelnk \
-		kde_toolbardir=/usr/share/toolbar \
-		kde_wallpaperdir=/usr/share/wallpaper \
-		kde_bindir=/usr/X11R6/bin \
-		kde_partsdir=/usr/lib/parts \
-		CFLAGS="-O2 -Wall -Wno-uninitialized -g" \
-		CXXFLAGS="-O2 -Wall -Wno-uninitialized -g" \
-		 ./configure --prefix=/usr --enable-debug \
-		  	     --disable-rpath \
-		             --includedir="\$$(prefix)/include/kde" \
-			     --libdir="\$$(prefix)/X11R6/lib" )
-	make 
+BUILDDIR = ./build
 
-	touch build
+build: $(BUILDDIR)/build-stamp
 
-clean:
+$(BUILDDIR)/build-stamp:
 	dh_testdir
-	-rm -f build
-	-make distclean
-	-rm -f `find . -name "*~"`
-	-rm -f */*.moc
-	-rm -rf debian/tmp `find debian/* -type d ! -name CVS ` \
-		debian/files* core 
-	-rm -f debian/*substvars debian/*shlibs*
-	-rm -f config.log libtool config.status config.cache
+	if test ! -f configure; then \
+	  $(MAKE) -f Makefile.cvs ;\
+	fi
+	test -d $(BUILDDIR) || mkdir $(BUILDDIR) ;\
+	cd $(BUILDDIR) ;\
+	kde_htmldir=/usr/doc/kde/HTML \
+	kde_appsdir=/usr/share/applnk \
+	kde_icondir=/usr/share/icons \
+	kde_sounddir=/usr/share/sounds \
+	kde_datadir=/usr/share/apps \
+	kde_locale=/usr/share/locale \
+	kde_cgidir=/usr/lib/cgi-bin \
+	kde_confdir=/etc/kde \
+	kde_mimedir=/usr/share/mimelnk \
+	kde_toolbardir=/usr/share/toolbar \
+	kde_wallpaperdir=/usr/share/wallpapers \
+	kde_bindir=/usr/bin \
+	kde_partsdir=/usr/lib/parts \
+	CFLAGS="-O2 -Wall -Wno-uninitialized -g" \
+	CXXFLAGS="-O2 -Wall -Wno-uninitialized -g" \
+	../configure --prefix=/usr \
+	--disable-rpath --with-qt-dir=/usr/lib/qt1g \
+	--includedir=/usr/include/kde \
+	--libdir=/usr/lib 
+
+	make -C $(BUILDDIR)
+
+	touch $(BUILDDIR)/build-stamp
+
+debian-clean:
+	dh_testdir
+	-rm -f $(BUILDDIR)/build-stamp
+	-rm -f debian/files
+	-rm -f debian/*substvars
+
+clean: debian-clean
+	-rm -rf $(BUILDDIR)
+	dh_clean 
 
 binary-indep:	build
 	dh_testdir
@@ -51,7 +60,7 @@ binary-arch:  build
 	dh_testroot
 	dh_clean -k
 	dh_installdirs
-	make prefix=`pwd`/debian/tmp/usr \
+	make -C $(BUILDDIR) prefix=`pwd`/debian/tmp/usr \
 	   kde_htmldir="`pwd`/debian/tmp/usr/doc/kde/HTML" \
 	   kde_appsdir="`pwd`/debian/tmp/usr/share/applnk" \
 	   kde_icondir="`pwd`/debian/tmp/usr/share/icons" \
@@ -62,28 +71,40 @@ binary-arch:  build
 	   kde_confdir="`pwd`/debian/tmp/etc/kde" \
 	   kde_mimedir="`pwd`/debian/tmp/usr/share/mimelnk" \
 	   kde_toolbardir="`pwd`/debian/tmp/usr/share/toolbar" \
-	   kde_wallpaperdir="`pwd`/debian/tmp/usr/share/wallpaper" \
-	   kde_bindir="`pwd`/debian/tmp/usr/X11R6/bin" \
+	   kde_wallpaperdir="`pwd`/debian/tmp/usr/share/wallpapers" \
+	   kde_bindir="`pwd`/debian/tmp/usr/bin" \
 	   kde_partsdir="`pwd`/debian/tmp/usr/lib/parts" \
-	   kde_confdir="`pwd`/debian/tmp/etc/kde" install 
+	   kde_confdir="`pwd`/debian/tmp/etc/kde" \
+	   includedir=`pwd`/debian/tmp/usr/include/kde \
+	   libdir=`pwd`/debian/tmp/usr/lib install 
 
-	chmod a+x debian/kderules
-	debian/kderules
-
-	dh_movefiles
-	dh_installdocs
-	dh_installchangelogs
-	dh_strip
-	dh_compress
-	dh_fixperms
-	dh_suidregister
-	dh_makeshlibs -V
+	perl -w admin/debianrules kdelibs2g
+	if test -f /usr/bin/qt2kdoc; then \
+	mkdir -p debian/tmp/usr/share/kdoc/index ; \
+	mkdir -p debian/tmp/usr/doc/kdelibs-doc/html ; \
+	qt2kdoc --url=/usr/doc/qt1g-doc/html \
+	--outdir=`pwd`/debian/tmp/usr/share/kdoc/index \
+	--compress \
+	/usr/doc/qt1g-doc/html ; \
+	makekdedoc --libdir=`pwd`/debian/tmp/usr/share/kdoc/index \
+	--outputdir=`pwd`/debian/tmp/usr/doc/kdelibs-doc/html ; \
+	dh_movefiles -pkdelibs-doc usr/share/kdoc usr/doc/kdelibs-doc ; \
+	fi
+	dh_movefiles 
+	dh_installdocs 
+	dh_installchangelogs 
+	dh_strip 
+	dh_compress 
+	dh_fixperms 
+	dh_suidregister 
+	dh_makeshlibs -V 
 	dh_installdeb
-	dh_shlibdeps
+	dh_shlibdeps 
 	dh_gencontrol
 	dh_md5sums
+	perl -w admin/debianrules update
 	dh_builddeb -v
-
+	
 # Below here is fairly generic really
 
 binary:		binary-indep binary-arch

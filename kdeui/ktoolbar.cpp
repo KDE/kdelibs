@@ -22,33 +22,39 @@
 
 // $Id$
 // $Log$
+// Revision 1.96.4.1  1999/03/06 21:46:00  radej
+// sven: Flat/Unflat with LMB too. Arrows and animation to come.
+//
+// Revision 1.96  1999/01/18 10:57:11  kulow
+// .moc files are back in kdelibs. Built fine here using automake 1.3
+//
 // Revision 1.95  1999/01/15 09:31:30  kulow
 // it's official - kdelibs builds with srcdir != builddir. For this I
 // automocifized it, the generated rules are easier to maintain than
 // selfwritten rules. I have to fight with some bugs of this tool, but
 // generally it's better than keeping them updated by hand.
-// it's official - kdelibs builds with srcdir != builddir. For this I
+//
 // Revision 1.94  1998/12/09 13:44:30  radej
 // sven: iconify() -> hide() even when floating. Commented out debug output.
-// generally it's better than keeping them updated by hand.
+//
 // Revision 1.93  1998/12/02 16:08:26  radej
 // sven: hide toolbar items better when session management wants toolbar flat
 //
 // Revision 1.92  1998/11/21 19:27:19  radej
-// Revision 1.94  1998/12/09 13:44:30  radej
-// sven: iconify() -> hide() even when floating. Commented out debug output.
+// sven: doubleClicked signal for buttons.
+//
 // Revision 1.91  1998/11/18 01:00:02  radej
 // sven: set*BarPos(Flat) works now (I hope)
 //
 // Revision 1.90  1998/11/11 14:32:08  radej
-// Revision 1.92  1998/11/21 19:27:19  radej
-// sven: doubleClicked signal for buttons.
+// sven: *Bars can be made flat by MMB (Like in Netscape, but this works)
+//
 // Revision 1.89  1998/11/10 14:12:46  radej
 // sven: windows-style handle smaller
 //
 // Revision 1.88  1998/11/09 17:58:34  radej
 // sven: Fix for IconText=3 (pixmap wider then text; kfm's wheel)
-// sven: windows-style handle smaller
+//
 // Revision 1.87  1998/11/09 00:29:16  radej
 // sven: IconText 3 (text under pixmap)
 //
@@ -59,8 +65,8 @@
 // sven: finished handles. Comments?
 //
 // Revision 1.84  1998/11/06 12:54:52  radej
-// Revision 1.86  1998/11/06 16:48:20  radej
-// sven: nicer docking, some bugfixes
+// sven: radioGroup is in. handle changed again (broken in vertical mode)
+//
 // Revision 1.83  1998/11/05 18:23:31  radej
 // sven: new look for *Bar handles (unfinished)
 //
@@ -68,21 +74,21 @@
 // sven: Fixed popup position (if too close to bottom of screen, pops above)
 //
 // Revision 1.81  1998/10/09 12:42:19  radej
-// Revision 1.83  1998/11/05 18:23:31  radej
-// sven: new look for *Bar handles (unfinished)
+// sven: New: (un) highlight sugnals, Autorepeat buttons, button down when
+//       pressed. kdetest/kwindowtest updated. This is Binary COMPATIBLE.
 //
 // Revision 1.80  1998/10/05 15:09:53  kulow
 // purify (and me) likes initialized members, so I choose one (like the compiler
 // would do :)
 //
 // Revision 1.79  1998/09/15 05:56:45  antlarr
-//       pressed. kdetest/kwindowtest updated. This is Binary COMPATIBLE.
+// I've added a setIconText function to change the state of a variable
+// in KToolBar
 //
-// Revision 1.80  1998/10/05 15:09:53  kulow
 // Revision 1.78  1998/09/01 20:22:23  kulow
-// would do :)
+// I renamed all old qt header files to the new versions. I think, this looks
+// nicer (and gives the change in configure a sense :)
 //
-// Revision 1.79  1998/09/15 05:56:45  antlarr
 // Revision 1.77  1998/08/30 21:04:33  radej
 // sven: Minor improvement for docking in KTM
 //
@@ -90,11 +96,11 @@
 // sven: fixed a bug - uninitialized toolbarHeight/Width - thanks to Harry Porten
 //
 // Revision 1.75  1998/08/09 14:01:17  radej
-// Revision 1.77  1998/08/30 21:04:33  radej
-// sven: Minor improvement for docking in KTM
+// sven: reintroduced makeDisabledPixmap code, and dumped QIconSet. Fixed a bug
+//       with paletteChange too.
 //
 // Revision 1.74  1998/08/06 15:39:01  radej
-// sven: fixed a bug - uninitialized toolbarHeight/Width - thanks to Harry Porten
+// sven: Popups & delayedPopups. Uses QIconSet. Needs Qt-1.4x
 //
 // Revision 1.73  1998/07/29 12:48:29  ssk
 // Removed more warnings, possible portability problems and ANSI violations.
@@ -111,10 +117,10 @@
 //
 // Revision 1.69  1998/06/17 12:58:30  radej
 // sven: Removed compiler warning.
-// Bugfixes: Unhighlighting a handle and catching the fast click
+//
 // Revision 1.68  1998/06/16 17:20:46  radej
 // sven: Fixed Warnings when switching palettes (separators hav no pixmaps)
-// Changelog order
+//
 // Revision 1.67  1998/05/19 14:10:05  radej
 // Bugfixes: Unhighlighting a handle and catching the fast click
 //
@@ -131,14 +137,14 @@
 // This damned opaque moving...
 //
 // Revision 1.62  1998/05/04 16:38:19  radej
-// Revision 1.64  1998/05/07 23:12:30  radej
-// Fix for optional highlighting of handle
+// Bugfixes for moving + opaque moving
+//
 // Revision 1.60  1998/05/02 18:31:01  radej
 // Improved docking
 //
 // Revision 1.59  1998/04/28 09:17:28  radej
-// Revision 1.62  1998/05/04 16:38:19  radej
-// Bugfixes for moving + opaque moving
+// New moving and docking BINARY INCOMPATIBLE
+//
 // Revision 1.58  1998/04/27 19:22:41  ettrich
 // Matthias: the nifty feature that you can globally change the size of the
 //   toolbars broke the nifty-as-well feature that a client can pass another
@@ -159,7 +165,7 @@
 // Revision 1.53  1998/04/16 18:47:19  radej
 // Removed some debug text before beta4
 //
-//
+
 //-------------------------------------------------------------------------
 // OLD CHANGES:
 // Solved one-button problem and added handle-highlighting - sven 5.1.1998
@@ -192,15 +198,15 @@
 #include <qpalette.h>
 #include <qbitmap.h>
 #include <qstring.h>
-
-#include <qpainter.h>
-#include <qrect.h>
-//#include <qimage.h>
-#include <qpalette.h>
-#include <qbitmap.h>
-#include <qstring.h>
 #include <qframe.h>
 #include <qbutton.h>
+#include <qrect.h>
+//#include <qimage.h>
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "ktoolbar.h"
 #include "klined.h"
 #include "kcombo.h"
@@ -209,8 +215,8 @@
 #include <kapp.h>
 #include <kwm.h>
 #include <ktoolboxmgr.h>
-  default:
-      qDrawArrow (_painter, DownArrow, WindowsStyle, false,
+
+
 // Use enums instead of defines. We are C++ and NOT C !
 enum {
     CONTEXT_LEFT = 0,
@@ -219,13 +225,14 @@ enum {
     CONTEXT_BOTTOM = 3,
     CONTEXT_FLOAT = 4
 };
-    if ( !isEnabled() )
+
 // this should be adjustable (in faar future... )
 #define MIN_AUTOSIZE 150
 
 // delay im ms (microsoft seconds) before delayed popup pops up
 #define POPUP_DELAY 500
 
+static bool toggleFlatOnRelease = false;
 
 KToolBarItem::KToolBarItem (Item *_item, itemType _type, int _id,
                             bool _myItem)
@@ -293,7 +300,7 @@ KToolBarButton::KToolBarButton( const QPixmap& pixmap, int _id,
 }
 
 void KToolBarButton::beToggle(bool flag)
-    else
+{
   setToggleButton(flag);
   if (flag == true)
     connect (this, SIGNAL(toggled(bool)), this, SLOT(ButtonToggled()));
@@ -453,12 +460,12 @@ bool KToolBarButton::eventFilter (QObject *o, QEvent *ev)
   }
   return false;
 }
-  init();
-        setFlat (position != Flat);
-  items.setAutoDelete(true);
+
+
+
 void KToolBarButton::drawButton( QPainter *_painter )
 {
-  setMouseTracking(true);
+
   if ( isDown() || isOn() )
   {
     if ( style() == WindowsStyle )
@@ -598,7 +605,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
                   width()-5, height()-5, 0, 0, colorGroup (), false);
   }
 }
-  icontext=config->readNumEntry("IconText", 0);
+
 void KToolBarButton::paletteChange(const QPalette &)
 {
   if(!ImASeparator())
@@ -611,15 +618,15 @@ void KToolBarButton::paletteChange(const QPalette &)
     repaint(false); // no need to delete it first therefore only false
   }
 }
-  bool doUpdate=false;
+
 void KToolBarButton::modeChange()
 {
   int myWidth;
-  }
+
   myWidth = enabledPixmap.width();
-  }
+
   QFont fnt;
-    if (isVisible ())
+
   //Jesus, I must have been drunk...
   if (toolBarButton) // I might be a menuBarButton
   {
@@ -683,7 +690,7 @@ void KToolBarButton::modeChange()
     resize ((fm.width(btext)+6>myWidth)?fm.width(btext)+6:myWidth, _size-2);
     break;
   }
-}
+
   /*
   if (icontext > 0) //Calculate my size
   {
@@ -704,10 +711,10 @@ void KToolBarButton::makeDisabledPixmap()
 {
   if (ImASeparator())
     return;             // No pixmaps for separators
-  //debug ("KToolBar destructor");
+
   QPalette pal = palette();
   QColorGroup g = pal.disabled();
-}
+
   // Prepare the disabledPixmap for drawing
   
   disabledPixmap.detach(); // prevent flicker
@@ -734,7 +741,7 @@ void KToolBarButton::makeDisabledPixmap()
   if (allocated) // This shouldn't occur anymore!
     delete mask;
 }
-  int rightOffset;
+
 void KToolBarButton::showMenu()
 {
   // calculate that position carefully!!
@@ -747,13 +754,13 @@ void KToolBarButton::showMenu()
     p.setY(p.y()+height());
   myPopup->popup(p);
 }
-    else
+
 void KToolBarButton::slotDelayTimeout()
 {
   delayTimer->stop();
   showMenu ();
 }
-  if (fullWidth == true)
+
 void KToolBarButton::ButtonClicked()
 {
   if (myPopup && !delayPopup)
@@ -761,7 +768,7 @@ void KToolBarButton::ButtonClicked()
   else
     emit clicked( id );
 }
-         }
+
 void KToolBarButton::ButtonPressed()
 {
   if (myPopup)
@@ -778,26 +785,26 @@ void KToolBarButton::ButtonPressed()
   else
     emit pressed( id );
 }
-  //debug ("Ho, ho, hooo... Up-Date!!! (vertical)");
+
 void KToolBarButton::ButtonReleased()
 {
   // if popup is visible we don't get this
   // (gram of praxis weights more than ton of theory)
   //if (myPopup && myPopup->isVisible())
   //  return;
-          widest =(b->width() +3);
+
   if (myPopup && delayPopup)
     delayTimer->stop();
   
   emit released( id );
 }
-   QApplication::sendEvent() which, as far as I understand, notifies
+
 void KToolBarButton::ButtonToggled()
 {
   emit toggled(id);
 }
 /****************************** Tolbar **************************************/
-	    context->popup( mapToGlobal( m->pos() ), 0 );
+
 KToolBar::KToolBar(QWidget *parent, const char *name, int _item_size)
   : QFrame( parent, name )
 {
@@ -812,7 +819,7 @@ KToolBar::KToolBar(QWidget *parent, const char *name, int _item_size)
   mouseEntered=false;
   localResize=false;
 }
-{
+
 void KToolBar::ContextCallback( int )
 {
   int i = context->exec();
@@ -845,7 +852,7 @@ void KToolBar::ContextCallback( int )
   mouseEntered=false;
   repaint(false);
 }
-{
+
 void KToolBar::init()
 {
   context = new QPopupMenu( 0, "context" );
@@ -875,7 +882,7 @@ void KToolBar::init()
   haveAutoSized=false;      // do we have autosized item - sven 220198
   connect (kapp, SIGNAL(appearanceChanged()), this, SLOT(slotReadConfig()));
   slotReadConfig();
-  // This code should be shared with the aequivalent in kmenubar!
+
   mgr =0;
 }
 
@@ -896,7 +903,7 @@ void KToolBar::slotReadConfig()
   config->setGroup(group);
 
   bool doUpdate=false;
- /********************\
+
   if (!fixed_size && tsize != item_size && tsize>20)
   {
     item_size = tsize;
@@ -916,7 +923,7 @@ void KToolBar::slotReadConfig()
     highlight = _highlight;
     doUpdate=true;
   }
-  if (position == Floating)
+
   if (_transparent != transparent)
   {
     transparent= _transparent;
@@ -928,17 +935,17 @@ void KToolBar::slotReadConfig()
     if (isVisible ())
       emit moved (position);
 }
-    emit (moved(position));
+
 void KToolBar::drawContents ( QPainter *)
 {
 }
 
 KToolBar::~KToolBar()
 {
-int KToolBar::insertLineSeparator( int index )
+
 // what is that?! we do not need to recreate before
 // destroying.... (Matthias)
-	
+
   // OK (sven)
   
 //   if (position == Floating)
@@ -961,12 +968,12 @@ int KToolBar::insertLineSeparator( int index )
   
   //debug ("KToolBar destructor");
 }
-  if (position == Floating)
+
 void KToolBar::setMaxHeight (int h)
 {
   max_height = h;
 }
-    emit (moved(position));
+
 void KToolBar::setMaxWidth (int w)
 {
   max_width = w;
@@ -983,7 +990,7 @@ void KToolBar::layoutHorizontal ()
   int widest=0;
   
   horizontal = true; // sven - 040198
-  if (position == Floating)
+
   //debug ("Ho, ho, hooo... Up-Date!!! (horizontal)");
   
   if (position == Floating)
@@ -1002,10 +1009,10 @@ void KToolBar::layoutHorizontal ()
     toolbarWidth = mywidth;
   else
     toolbarWidth = offset;
-  item->show();
+
   rightOffset=mywidth;
   toolbarHeight= item_size;
-    updateRects( true );
+
   for ( KToolBarItem *b = items.first(); b; b=items.next() )
   {
     if (b->isAuto())
@@ -1177,7 +1184,6 @@ void KToolBar::updateRects( bool res )
 
 void KToolBar::mousePressEvent ( QMouseEvent *m )
 {
-  int ox, oy, ow, oh;
   if ((horizontal && m->x()<9) || (!horizontal && m->y()<9))
   {
     pointerOffset = m->pos();
@@ -1190,90 +1196,7 @@ void KToolBar::mousePressEvent ( QMouseEvent *m )
       else if (m->button() == MidButton && position != Floating)
         setFlat (position != Flat);
       else if (position != Flat)
-      {
-        //QRect rr(KWM::geometry(Parent->winId(), false));
-        QRect rr(Parent->geometry());
-        ox = rr.x();
-        oy = rr.y();
-        ow = rr.width();
-        oh = rr.height();
-        if (Parent->inherits("KTMainWindow"))
-        {
-          ox += ((KTopLevelWidget *) Parent)->view_left;
-          oy += ((KTopLevelWidget *) Parent)->view_top;
-          ow = ((KTopLevelWidget *) Parent)->view_right -
-            ((KTopLevelWidget *) Parent)->view_left;
-          oh = ((KTopLevelWidget *) Parent)->view_bottom -
-            ((KTopLevelWidget *) Parent)->view_top;;
-        }
-            
-        int  fat = 25; //ness
-
-        mgr = new KToolBoxManager(this, transparent);
-
-        //Firt of all discover _your_ position
-
-        if (position == Top )
-          mgr->addHotSpot(geometry(), true);             // I'm on top
-        else
-          mgr->addHotSpot(rr.x(), oy, rr.width(), fat); // top
-  
-        if (position == Bottom)
-          mgr->addHotSpot(geometry(), true);           // I'm on bottom
-        else
-          mgr->addHotSpot(rr.x(), oy+oh-fat, rr.width(), fat); // bottom
-  
-        if (position == Left)
-          mgr->addHotSpot(geometry(), true);           // I'm on left
-        else
-          mgr->addHotSpot(ox, oy, fat, oh); // left
-
-        if (position == Right)
-          mgr->addHotSpot(geometry(), true);           // I'm on right
-        else
-          mgr->addHotSpot(ox+ow-fat, oy, fat, oh); //right
-        /*
-        mgr->addHotSpot(ox, oy, ow, fat);           // top
-        mgr->addHotSpot(ox, oy+oh-fat, ow, fat);    // bottom
-        mgr->addHotSpot(ox, oy+fat, fat, oh-2*fat); // left
-        mgr->addHotSpot(ox+ow-fat, oy+fat, fat, oh-2*fat); //right
-        */
-        movePos = position;
-        connect (mgr, SIGNAL(onHotSpot(int)), SLOT(slotHotSpot(int)));
-        if (transparent)
-          mgr->doMove(true, false, true);
-        else
-        {
-          /*
-          QList<KToolBarItem> ons;
-          for (KToolBarItem *b = items.first(); b; b=items.next())
-          {
-            if (b->isEnabled())
-              ons.append(b);
-            b->setEnabled(false);
-          }
-          */
-          mgr->doMove(true, false, false);
-          /*
-          for (KToolBarItem *b = ons.first(); b; b=ons.next())
-            b->setEnabled(true);
-          */
-        }
-        if (transparent)
-        {
-          setBarPos (movePos);
-
-          if (movePos == Floating)
-            move (mgr->x(), mgr->y());
-          if (!isVisible())
-            show();
-        }
-        mouseEntered = false;
-        delete mgr;
-        mgr=0;
-        repaint (false);
-        //debug ("KToolBar: moving done");
-      }
+        toggleFlatOnRelease=true;
   }
 }
 
@@ -1526,7 +1449,7 @@ void KToolBar::ButtonPressed( int id )
 {
   emit pressed( id );
 }
-      items.remove();
+
 void KToolBar::ButtonReleased( int id )
 {
   emit released( id );
@@ -1604,7 +1527,7 @@ int KToolBar::insertButton( const QPixmap& pixmap, int id, QPopupMenu *_popup,
   connect(button, SIGNAL(pressed(int)), this, SLOT(ButtonPressed(int)));
   connect(button, SIGNAL(highlighted(int, bool)), this,
           SLOT(ButtonHighlighted(int, bool)));
-      b->show();
+
   
   if (position == Floating)
     updateRects( true );
@@ -2295,12 +2218,107 @@ void KToolBar::mouseMoveEvent(QMouseEvent* mev)
         repaint();
       }
     }
+
+  // LMB flatUnFlat thing
+  if (mev->state() == LeftButton)
+  {
+    if (toggleFlatOnRelease)
+    {
+      toggleFlatOnRelease=false;
+      int ox, oy, ow, oh;
+      
+        //QRect rr(KWM::geometry(Parent->winId(), false));
+        QRect rr(Parent->geometry());
+        ox = rr.x();
+        oy = rr.y();
+        ow = rr.width();
+        oh = rr.height();
+        if (Parent->inherits("KTMainWindow"))
+        {
+          ox += ((KTopLevelWidget *) Parent)->view_left;
+          oy += ((KTopLevelWidget *) Parent)->view_top;
+          ow = ((KTopLevelWidget *) Parent)->view_right -
+            ((KTopLevelWidget *) Parent)->view_left;
+          oh = ((KTopLevelWidget *) Parent)->view_bottom -
+            ((KTopLevelWidget *) Parent)->view_top;;
+        }
+            
+        int  fat = 25; //ness
+
+        mgr = new KToolBoxManager(this, transparent);
+
+        //Firt of all discover _your_ position
+
+        if (position == Top )
+          mgr->addHotSpot(geometry(), true);             // I'm on top
+        else
+          mgr->addHotSpot(rr.x(), oy, rr.width(), fat); // top
+  
+        if (position == Bottom)
+          mgr->addHotSpot(geometry(), true);           // I'm on bottom
+        else
+          mgr->addHotSpot(rr.x(), oy+oh-fat, rr.width(), fat); // bottom
+  
+        if (position == Left)
+          mgr->addHotSpot(geometry(), true);           // I'm on left
+        else
+          mgr->addHotSpot(ox, oy, fat, oh); // left
+
+        if (position == Right)
+          mgr->addHotSpot(geometry(), true);           // I'm on right
+        else
+          mgr->addHotSpot(ox+ow-fat, oy, fat, oh); //right
+        /*
+        mgr->addHotSpot(ox, oy, ow, fat);           // top
+        mgr->addHotSpot(ox, oy+oh-fat, ow, fat);    // bottom
+        mgr->addHotSpot(ox, oy+fat, fat, oh-2*fat); // left
+        mgr->addHotSpot(ox+ow-fat, oy+fat, fat, oh-2*fat); //right
+        */
+        movePos = position;
+        connect (mgr, SIGNAL(onHotSpot(int)), SLOT(slotHotSpot(int)));
+        if (transparent)
+          mgr->doMove(true, false, true);
+        else
+        {
+          /*
+          QList<KToolBarItem> ons;
+          for (KToolBarItem *b = items.first(); b; b=items.next())
+          {
+            if (b->isEnabled())
+              ons.append(b);
+            b->setEnabled(false);
+          }
+          */
+          mgr->doMove(true, false, false);
+          /*
+          for (KToolBarItem *b = ons.first(); b; b=ons.next())
+            b->setEnabled(true);
+          */
+        }
+        if (transparent)
+        {
+          setBarPos (movePos);
+
+          if (movePos == Floating)
+            move (mgr->x(), mgr->y());
+          if (!isVisible())
+            show();
+        }
+        mouseEntered = false;
+        delete mgr;
+        mgr=0;
+        repaint (false);
+        //debug ("KToolBar: moving done");
+    }
+  }
 }
 
 void KToolBar::mouseReleaseEvent ( QMouseEvent * )
 {
   if (mgr)
-      mgr->stop();
+    mgr->stop();
+  if (toggleFlatOnRelease && position != Floating)
+    setFlat (position != Flat);
 }
 
 void KToolBar::setFlat (bool flag)
@@ -2334,13 +2352,13 @@ void KToolBar::setFlat (bool flag)
     emit moved (position); // KTM will call this->updateRects
   }
 }
-    context->changeItem (i18n("Flat"), CONTEXT_FLAT);
-    //debug ("Unflat");
-    setBarPos(lastPosition);
-    enableFloating(true);
-    emit moved (position); // KTM will call this->updateRects
-  }
-}
+
+
+/*************************************************************************
+ *                          KRadioGroup                                  *
+ *************************************************************************/
+
+
 KRadioGroup::KRadioGroup (QWidget *_parent, const char *_name)
 : QObject(_parent, _name)
 {
@@ -2348,7 +2366,7 @@ KRadioGroup::KRadioGroup (QWidget *_parent, const char *_name)
   tb = (KToolBar *)_parent;
   connect (tb, SIGNAL(toggled(int)), this, SLOT(slotToggled(int)));
 }
-KRadioGroup::KRadioGroup (QWidget *_parent, const char *_name)
+
 void KRadioGroup::addButton (int id)
 {
   for (KToolBarItem *b = tb->items.first(); b; b=tb->items.next())
@@ -2358,13 +2376,13 @@ void KRadioGroup::addButton (int id)
       ((KToolBarButton *) b->getItem())->setRadio(true);
     }
 }
-  for (KToolBarItem *b = tb->items.first(); b; b=tb->items.next())
+
 void KRadioGroup::removeButton (int id)
 {
   buttons[id]->setRadio(false);
   buttons.remove(id);
 }
-}
+
 void KRadioGroup::slotToggled(int id)
 {
   if (buttons[id] && buttons[id]->isOn())
@@ -2373,13 +2391,6 @@ void KRadioGroup::slotToggled(int id)
     while (it.current())
     {
       if (it.currentKey() != id)
-        it.current()->on(false);
-      ++it;
-    }
-  }
-}
-    {
-#include "ktoolbar.moc"
         it.current()->on(false);
       ++it;
     }

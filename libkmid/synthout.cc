@@ -196,8 +196,8 @@ void synthOut::chnPressure (uchar chn, uchar vel)
 
 void synthOut::chnPitchBender(uchar chn,uchar lsb, uchar msb)
 {
-    chn_bender[chn]=(msb << 8) | (lsb & 0xFF);
-    SEQ_PITCHBEND(device, Map->Channel(chn), chn_bender[chn]);
+    chn_bender[chn]=((int)msb<<7) | (lsb & 0x7F);
+    SEQ_BENDER(device, Map->Channel(chn), chn_bender[chn]);
 }
 
 void synthOut::chnController (uchar chn, uchar ctl, uchar v) 

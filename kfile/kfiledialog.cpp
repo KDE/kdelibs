@@ -282,7 +282,7 @@ void KFileBaseDialog::init()
     adjustSize();
     int w1 = minimumSize().width();
     int w2 = toolbar->sizeHint().width() + 10;
-    if (w1 < w2)
+    if (w1 < w2 && w2 < desk->width())
       setMinimumWidth(w2);
     resize(w, h);
 }
@@ -318,7 +318,8 @@ void KFileBaseDialog::initGUI()
 	delete boxLayout; // deletes all sub layouts
 
     boxLayout = new QVBoxLayout(wrapper, 4);
-    boxLayout->addSpacing(toolbar->height());
+    //    boxLayout->addSpacing(toolbar->height());
+    boxLayout->addWidget(toolbar, 0);
     boxLayout->addWidget(fileList->widget(), 4);
     boxLayout->addSpacing(3);
 
@@ -531,7 +532,7 @@ void KFileBaseDialog::setDir(const char *_pathstr, bool clearforward)
 	pathChanged();
     }
 
-    toolbar->setItemEnabled(PARENT_BUTTON, !dir->isRoot()); 
+    toolbar->setItemEnabled(PARENT_BUTTON, !dir->isRoot());
 }
 
 void KFileBaseDialog::rereadDir()
@@ -817,7 +818,7 @@ void KFileBaseDialog::toolbarCallback(int i) // SLOT
     case FIND_BUTTON: {
 	KShellProcess proc;
 	proc << c->readEntry("FindCommandPath", DefaultFindCommand);
- 
+
  	QString strURL( dirPath() );
  	KURL::decodeURL( strURL );
  	KURL url( strURL );
@@ -827,7 +828,7 @@ void KFileBaseDialog::toolbarCallback(int i) // SLOT
  	  proc << c->readEntry(QString("FindSearchPathParameter"), "");
  	  proc << url.directory();
  	}
-         
+
 	proc.start(KShellProcess::DontCare);
 	break;
     }
@@ -1064,7 +1065,7 @@ KFileInfoContents *KFileDialog::initFileList( QWidget *parent )
 {
 
     bool mixDirsAndFiles =
-	kapp->getConfig()->readBoolEntry("MixDirsAndFiles", 
+	kapp->getConfig()->readBoolEntry("MixDirsAndFiles",
 					 DefaultMixDirsAndFiles);
 
     bool showDetails =
@@ -1077,10 +1078,10 @@ KFileInfoContents *KFileDialog::initFileList( QWidget *parent )
     QDir::SortSpec sort = static_cast<QDir::SortSpec>(dir->sorting() &
                                                       QDir::SortByMask);
 
-    if (kapp->getConfig()->readBoolEntry("KeepDirsFirst", 
+    if (kapp->getConfig()->readBoolEntry("KeepDirsFirst",
 					 DefaultKeepDirsFirst))
         sort = static_cast<QDir::SortSpec>(sort | QDir::DirsFirst);
-    
+
     dir->setSorting(sort);
 
     if (!mixDirsAndFiles)
@@ -1191,6 +1192,7 @@ void KFileBaseDialog::completion() // SLOT
 void KFileBaseDialog::resizeEvent(QResizeEvent *)
 {
     toolbar->updateRects(true);
+    toolbar->setMinimumHeight(toolbar->height());
 }
 
 /**
@@ -1358,7 +1360,7 @@ KFileInfoContents *KFilePreviewDialog::initFileList( QWidget *parent )
     QDir::SortSpec sort = static_cast<QDir::SortSpec>(dir->sorting() &
                                                       QDir::SortByMask);
 
-    if (kapp->getConfig()->readBoolEntry("KeepDirsFirst", 
+    if (kapp->getConfig()->readBoolEntry("KeepDirsFirst",
 					 DefaultKeepDirsFirst))
         sort = static_cast<QDir::SortSpec>(sort | QDir::DirsFirst);
 
@@ -1444,7 +1446,7 @@ bool KFilePreviewDialog::getShowFilter()
     return kapp->getConfig()->readBoolEntry("ShowFilter", DefaultShowFilter);
 }
 
-void KFilePreviewDialog::registerPreviewModule( const char * format, 
+void KFilePreviewDialog::registerPreviewModule( const char * format,
 						PreviewHandler readPreview,
                                                 PreviewType inType)
 {

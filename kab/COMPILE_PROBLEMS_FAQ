@@ -44,6 +44,23 @@ compiled. Contact Mirko Sucker (mirko@kde.org) and mail him you
 system configuration and possible solutions you find. Do not 
 mind if you only report the problem...
 
+4.) On Solaris systems, the assembler (as) bails out with the
+following or a similar message:
+g++ -DHAVE_CONFIG_H -I. -I. -I.. -I../kdecore -I../kdeui  \
+    -I../kfile -I../kfmlib -I/home/dapd1/faured/perso/kde/include \
+    -I/home/dapd1/faured/perso/kde/qt-1.40/include \
+    -I/usr/openwin/include -O2 -Wall -c -fPIC -DPIC keyvaluemap.cc
+/usr/ccs/bin/as: "/var/tmp/cca005pU.s", line 7346: error: can't \
+    compute value of an expression involving an external symbol
+
+Solution: This bug is caused by the Sun assembler. KDE is usually
+compiled using the GNU compilers (gcc or egcs), but the backend is
+provided by Sun (the binary utilities). You need to configure your
+egcs or gcc to use its own assembler and linker, this is usually not a 
+problem if you are the sysadmin, but if not ... You might ask him for
+a solution. You need the use the GNU binutils, the newer the better,
+instead of the Sun ones.
+
 99.) The compiler complains about anything else.
 
 Solution: mail the error to

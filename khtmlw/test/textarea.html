@@ -7,7 +7,7 @@ This page is a regression test for the &lt;textarea&gt; tag.<BR>
 The word "Start" should be above the textarea.<BR>
 The word "End" should be underneath the textarea.<BR>
 The text inside the textarea should match with its description.
-<form action="cgi-bin/test.cgi" method=post> 
+<form action="cgi-bin/test.cgi" method=get> 
 <H2>Textarea 1: Emtpy</H2>
 <P>Start
 <P>
@@ -49,6 +49,30 @@ The correct way to write &lt;TAGS&gt; is by using &amp;entities.
 This is the third line.
 </textarea>
 <P>End
+
+
+	<SELECT NAME="site" Value="Internic">
+	<OPTION value=UK>United Kingdom [HTTP]
+	<OPTION>United Kingdom
+	<OPTION>Internic
+	<OPTION>NSF Net
+	<OPTION>JVNC Net
+	<OPTION>Venera
+	<OPTION>wuarchive
+	<OPTION>Concert Net
+	<OPTION>Sesqui Net
+	<OPTION>Germany (EUnet)
+	<OPTION value=NL>Netherlands
+	<OPTION>Finland
+	<OPTION>Norway
+	<OPTION>Denmark
+	<OPTION>Australia
+	<OPTION>NASA
+	<OPTION>UUNET
+	<OPTION>IESD [HTML]
+	<OPTION>Ohio State [HTML]
+	</SELECT>  
+
 <P>
 <input type=submit name=mode value="Submit">
 </form>
@@ -56,3 +80,4 @@ This is the third line.
 </body>
 
 </html>
+

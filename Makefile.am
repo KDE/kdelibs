@@ -19,10 +19,12 @@
 
 
 SUBDIRS = kdecore kdeui jscript kimgio khtmlw kfmlib kfile \
-	mediatool kspell kab $(EXTRA_SUBDIRS) po doc toolbar kdetest 
+	mediatool kspell kab po doc toolbar kdetest 
 
 $(top_srcdir)/acinclude.m4: $(top_srcdir)/admin/acinclude.m4.in $(top_srcdir)/admin/libtool.m4.in
 	@cd $(top_srcdir) && cat admin/acinclude.m4.in admin/libtool.m4.in > acinclude.m4
+
+AUTOMAKE_OPTIONS = foreign 1.4
 
 messages:
 	rm -rf po.backup
@@ -46,7 +48,7 @@ messages:
 	rm -rf po.backup
 	(cd po && $(MAKE) -f Makefile.am merge)
 
-EXTRA_DIST = admin bsd-port debian kdelibs.spec.in
+EXTRA_DIST = admin bsd-port debian kdelibs.spec.in kdoc.rules
 
 dist-hook:
 	cd $(top_distdir) && perl $(top_srcdir)/admin/automoc -padmin

@@ -272,7 +272,9 @@ void KWM::setWmCommand(Window w, const QString &command){
   if (!getdomainname(buf, 200))
     domain = buf;
   if (!machine.isEmpty())
-      all = machine + "." + domain;
+      all = machine;
+  if (!domain.isEmpty() && domain != "(none)")
+      all += "." + domain;
   setQStringProperty(w, a, all);
 }
 
@@ -706,8 +708,9 @@ QPixmap KWM::miniIcon(Window w, int width, int height){
 	(hints->flags & WindowGroupHint)
 	&& hints->window_group != None
 	&& hints->window_group != w){
-      XFree((char*)hints);
-      return miniIcon(hints->window_group, width, height);
+	Window wg = hints->window_group;
+	XFree((char*)hints);
+	return miniIcon(wg, width, height);
     }
     if (hints)
       XFree((char*)hints);

@@ -2,7 +2,7 @@
     Copyright (C) 1997, 1998 Richard Moore <rich@kde.org>
                   1998 Stephan Kulow <coolo@kde.org>
                   1998 Daniel Grana <grana@ie.iwi.unibe.ch>
-    
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
@@ -30,9 +30,9 @@ class KDirListBox : protected QListBox, public KFileInfoContents
     Q_OBJECT
 	
 public:
-    KDirListBox( bool acceptFiles, bool s, QDir::SortSpec sorting, 
+    KDirListBox( bool acceptFiles, bool s, QDir::SortSpec sorting,
 		 QWidget * parent=0, const char * name=0 );
-    KDirListBox( bool s, QDir::SortSpec sorting, 
+    KDirListBox( bool s, QDir::SortSpec sorting,
 		 QWidget * parent=0, const char * name=0 );
     ~KDirListBox() {};
     virtual QWidget *widget() { return this; }
@@ -43,6 +43,7 @@ public:
 
 protected:
     virtual void highlightItem(unsigned int item);
+    virtual void keyPressEvent( QKeyEvent * );
     virtual void mousePressEvent ( QMouseEvent * );
     virtual void mouseDoubleClickEvent ( QMouseEvent * );
     virtual void clearView();

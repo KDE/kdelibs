@@ -48,9 +48,9 @@ SearchDialogMainWidgetData::SearchDialogMainWidgetData
 	lePattern->setEchoMode( QLineEdit::Normal );
 	lePattern->setFrame( TRUE );
 
-	QBoxLayout* dlgedit_layout_1 = new QBoxLayout( this, QBoxLayout::TopToBottom, 0, 0, NULL );
+	QBoxLayout* dlgedit_layout_1 = new QBoxLayout( this, QBoxLayout::TopToBottom, 0, 0, 0L );
 	dlgedit_layout_1->addStrut( 0 );
-	QBoxLayout* dlgedit_layout_1_1 = new QBoxLayout( QBoxLayout::TopToBottom, 0, NULL );
+	QBoxLayout* dlgedit_layout_1_1 = new QBoxLayout( QBoxLayout::TopToBottom, 0, 0L );
 	dlgedit_layout_1->addLayout( dlgedit_layout_1_1, 1 );
 	dlgedit_layout_1_1->addStrut( 0 );
 	dlgedit_layout_1_1->addWidget( comboSelector, 5, 36 );

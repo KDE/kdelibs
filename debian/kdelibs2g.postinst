@@ -1,0 +1,34 @@
+#! /bin/sh
+# postinst script for kdelibs
+#
+# see: dh_installdeb(1)
+
+set -e
+case "$1" in
+    configure)
+      ldconfig
+      echo -n "Verifying HTML directory is configured properly:  "
+      if [ ! -L /usr/doc/kde/HTML/default ]; then
+        mv /usr/doc/kde/HTML/default/* /usr/doc/kde/HTML/en >/dev/null 2>&1
+        rm -rf /usr/doc/kde/HTML/default > /dev/null 2>&1
+        ln -s en /usr/doc/kde/HTML/default
+        echo "It wasn't, I fixed it"
+      else
+        echo "Looks ok" 
+      fi
+    ;;
+
+    abort-upgrade|abort-remove|abort-deconfigure)
+
+    ;;
+
+    *)
+        echo "postinst called with unknown argument \`$1'" >&2
+        exit 0
+    ;;
+esac
+
+#DEBHELPER#
+#KDEHELPER#
+
+exit 0

@@ -3,7 +3,7 @@
     Copyright (C) 1998 Richard Moore <rich@kde.org>
                   1998 Stephan Kulow <coolo@kde.org>
                   1998 Daniel Grana <grana@ie.iwi.unibe.ch>
-    
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
@@ -25,7 +25,7 @@
 #include "qkeycode.h"
 #include <kapp.h>
 
-KFileDetailList::KFileDetailList(bool s, QDir::SortSpec sorting, 
+KFileDetailList::KFileDetailList(bool s, QDir::SortSpec sorting,
 				 QWidget *parent, const char *name)
     : KTabListBox(parent, name, 7), KFileInfoContents(s,sorting)
 {
@@ -46,7 +46,7 @@ KFileDetailList::KFileDetailList(bool s, QDir::SortSpec sorting,
     setColumn(5, text, QMAX(fm.width(text + "_"), 70));
     text = i18n("Group");
     setColumn(6, text, QMAX(fm.width(text + "_"), 70));
-    
+
     dict().insert("file", file_pixmap);
     dict().insert("l_file", locked_file);
     dict().insert("folder", folder_pixmap);
@@ -54,7 +54,7 @@ KFileDetailList::KFileDetailList(bool s, QDir::SortSpec sorting,
 
     setSortMode(Switching);
     //setSorting(QDir::Name);
-    
+
     connect(this,SIGNAL(selected(int,int )), SLOT(selected(int)));
     connect(this, SIGNAL(highlighted(int,int)), SLOT(highlighted(int)));
 
@@ -71,7 +71,7 @@ void KFileDetailList::keyPressEvent( QKeyEvent *e)
     int oldRow = currentItem();
     int edge;
     int numVisible = lastRowVisible() - topCell();
-    
+
     switch( e->key() ) {
     case Key_Up:
 	if( oldRow > 0 ) {
@@ -88,7 +88,15 @@ void KFileDetailList::keyPressEvent( QKeyEvent *e)
 	    if ( currentItem() >= edge )
 		setTopItem( topCell() + 1 );
 	}
-	break;          
+	break;
+    case Key_Home:
+      highlightItem( 0 );
+      break;
+    case Key_End:
+      edge = KTabListBox::count() -1;
+      if ( edge >= 0 )
+	highlightItem( edge );
+      break;
     case Key_Enter:
     case Key_Return:
 	select( currentItem() );
@@ -108,7 +116,7 @@ void KFileDetailList::keyPressEvent( QKeyEvent *e)
               KTabListBox::setCurrentItem(0);
               setTopItem(0);
           }
-        } 
+        }
 	break;
     case Key_PageDown:
 	if ( oldRow < numRows()-1 ) {
@@ -124,18 +132,22 @@ void KFileDetailList::keyPressEvent( QKeyEvent *e)
               setTopItem( numRows() - numVisible );
           }
 
-        } 
+        }
 	break;
-    default:       
-	e->ignore(); 
-	return;     
-    }    
+    default:
+	e->ignore();
+	return;
+    }
 }
 
 void KFileDetailList::focusInEvent ( QFocusEvent *)
 {
-    if (currentItem() < 0)
+    if (currentItem() < 0) {
 	KTabListBox::setCurrentItem(topItem());
+    }
+    else {
+        markItem( currentItem() );
+    }
 }
 
 KFileDetailList::~KFileDetailList()
@@ -164,23 +176,23 @@ void KFileDetailList::clearView()
 void KFileDetailList::reorderFiles(int inColumn)
 {
     QDir::SortSpec new_sort;
-    
+
     // QDir::SortSpec oldFlags = sorting() & (~QDir::SortByMask);
 
     switch ( inColumn ) {
     case 1:
 	new_sort = QDir::Name;
 	break;
-    case 2:  
+    case 2:
 	new_sort = QDir::Size;
 	break;
-    case 4:  
+    case 4:
 	new_sort = QDir::Time;
 	break;
-    default: 
+    default:
 	return;
     }
-    
+
     setSorting(new_sort);
 }
 
@@ -197,7 +209,7 @@ bool KFileDetailList::insertItem(const KFileInfo *i, int index)
 	    type = "file";
 	else
 	    type = "l_file";
-    
+
     QString item;
     item.sprintf("%s\t%s\t%u\t%s\t%s\t%s\t%s",
                  type,

@@ -36,6 +36,7 @@
 
 #define MS2T(ms) (((ms)*(double)tempoToMetronomeTempo(tempo)*(double)info->ticksPerCuarterNote)/((double)60000L))
 
+#define REMOVEDUPSTRINGS
 
 player::player(DeviceManager *midi_,PlayerController *pctl)
 {
@@ -173,8 +174,9 @@ void player::generateBeats(void)
         };
         if (nextev->absmilliseconds>nextbeatms)
         {
-            //            printf("Adding %d,%d\n",num,tot);
-            //            printf("beat at %g , %d/%d\n",nextbeatms,i,num);
+            //printf("Adding %d,%d\n",num,tot);
+            //printf("beat at %g , %d/%d\n",nextbeatms,i,num);
+	    //printf("  %ld %d\n",nextev->absmilliseconds,nextev->type);
             if (i==1) measurems=nextbeatms;
             insertBeat(ev,nextbeatms,i++,num);
             if (i>num) i=1;
@@ -205,7 +207,7 @@ void player::generateBeats(void)
         }
         while (nextbeatms<info->millisecsTotal)
         {
-            //            printf("beat2 at %g , %d/%d\n",nextbeatms,i,num);
+            // printf("beat2 at %g , %d/%d\n",nextbeatms,i,num);
             if (i==1) measurems=nextbeatms;
             insertBeat(ev,nextbeatms,i++,num);
             if (i>num) i=1;
@@ -273,6 +275,12 @@ void player::parseSpecialEvents(void)
     int spev_id=1;
     int j;
     int parsing=1;
+#ifdef REMOVEDUPSTRINGS
+    char lasttext[1024];
+    ulong lasttexttime=0;
+    lasttext[0]=0;
+    int lasttexttype=0;
+#endif
     while (parsing)
     {
         prevms=minTime;
@@ -280,18 +288,21 @@ void player::parseSpecialEvents(void)
         minTrk=0;
         maxTime=minTime + 2 * 60000L;
         minTime=maxTime;
+        parsing=0;
         while (trk<info->ntracks)
         {
             if (tracks[trk]->absMsOfNextEvent()<minTime)
             {
                 minTrk=trk;
                 minTime=tracks[minTrk]->absMsOfNextEvent();
+		parsing=1;
             }
             trk++;
         }
-        if ((minTime==maxTime))
+//        if ((minTime==maxTime))
+        if (parsing==0)
         {
-            parsing=0;
+//            parsing=0;
 #ifdef PLAYERDEBUG
             printf("END of parsing\n");
 #endif
@@ -335,20 +346,30 @@ void player::parseSpecialEvents(void)
                                 pspev->type=ev->d1;
                                 pspev->id=spev_id++;
 #ifdef PLAYERDEBUG
-                                printf("ev->length %d\n",ev->length);
+                                printf("ev->length %ld\n",ev->length);
                                 
 #endif
                                 strncpy(pspev->text,(char *)ev->data,
                                         (ev->length>1024)? (1023) : (ev->length) );
                                 pspev->text[(ev->length>1024)? (1023):(ev->length)]=0;
 #ifdef PLAYERDEBUG
-                                printf("(%s)\n",pspev->text);
+                                printf("(%s)(%s)\n",pspev->text,lasttext);
 #endif
-                                pspev->next=new SpecialEvent;
+#ifdef REMOVEDUPSTRINGS
+				if ((strcmp(pspev->text,lasttext)!=0)||(pspev->absmilliseconds!=lasttexttime)||(pspev->type!=lasttexttype))
+				{
+				   lasttexttime=pspev->absmilliseconds;
+				   lasttexttype=pspev->type;
+				   strcpy(lasttext,pspev->text);
+#endif
+                                   pspev->next=new SpecialEvent;
 #ifdef PLAYERDEBUG
-                                if (pspev->next==NULL) printf("pspev->next=NULL\n");
+                                   if (pspev->next==NULL) printf("pspev->next=NULL\n");
 #endif
-                                pspev=pspev->next;
+                                   pspev=pspev->next;
+#ifdef REMOVEDUPSTRINGS
+				}
+#endif
                             }
                         }
                         break;
@@ -628,18 +649,24 @@ void player::play(int calloutput,void output(void))
         minTrk=0;
         maxTime=minTime + 120000L /* milliseconds */;
         minTime=maxTime;
+        playing=0;
         while (trk<info->ntracks)
         {
             if (tracks[trk]->absMsOfNextEvent()<minTime)
             {
                 minTrk=trk;
                 minTime=tracks[minTrk]->absMsOfNextEvent();
+		playing=1;
             }
             trk++;
         }
-        if ((minTime==maxTime)/* || (minTicks> 60000L)*/)
+#ifdef PLAYERDEBUG
+        printf("minTime %g\n",minTime);
+#endif
+//        if ((minTime==maxTime)/* || (minTicks> 60000L)*/)
+        if (playing==0)
         {
-            playing=0;
+//            playing=0;
 #ifdef PLAYERDEBUG
             printf("END of playing\n");
 #endif
@@ -723,6 +750,9 @@ void player::play(int calloutput,void output(void))
         midi->sync(1);
     else 
         midi->sync();
+#ifdef PLAYERDEBUG
+    printf("Closing device ...\n");
+#endif
     midi->closeDev();
     ctl->playing=0;
 #ifdef PLAYERDEBUG

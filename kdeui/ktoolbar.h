@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.46  1998/11/25 13:22:00  radej
+// sven: Someone made some private things protected (was it me?).
+//
 // Revision 1.45  1998/11/21 19:27:20  radej
 // sven: doubleClicked signal for buttons.
 //
@@ -622,7 +625,8 @@ public:
   void enableMoving(bool flag = true);
 
   /**
-   * Sets position of toolbar
+   * Sets position of toolbar. This cannot be used to set toolbar flat. For
+   * That, use @ref setFlat .
    * @see #BarPosition
    */
   void setBarPos (BarPosition bpos);
@@ -720,7 +724,10 @@ public:
      * has only one row.
      */
   QSize sizeHint();
-
+  /**
+   * This method switches flat/unflat mode. Carefull: might not work
+   * If toolbar is floating.
+   */
   void setFlat (bool flag);
     
 signals:

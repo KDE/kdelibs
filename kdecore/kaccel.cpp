@@ -567,7 +567,7 @@ const QString keyToString( uint keyCode, bool i18_n )
 	QString res;
 	
 	if ( keyCode == 0 ) {
-		res.sprintf( "" );
+		res = "";
 		return res;
 	}
 	if (!i18_n){

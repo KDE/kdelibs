@@ -1,3 +1,139 @@
+kdelibs (4:1.1.2-19990906-1.0) unstable; urgency=low
+
+  * New upstream version
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 06 Sep 1999 16:30:00 -0400
+
+kdelibs (4:1.1.1-19990822-1.0) unstable; urgency=low
+
+  * New upstream CVS version
+  * Adding in verification piece to make sure that /usr/doc/kde/HTML/default is
+    a link and not a directory
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 22 Aug 1999 10:45:00 -0400
+
+kdelibs (4:1.1.1-19990817-1) unstable; urgency=low
+
+  * New upstream CVS version
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 17 Aug 1999 11:45:00 -0400
+
+kdelibs (4:1.1.1-19990812-1) unstable; urgency=low
+
+  * New upstream CVS version
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 12 Aug 1999 14:45:00 -0400
+
+kdelibs (4:1.1.1-19990809-1) unstable; urgency=low
+
+  * New upstream CVS version
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 09 Aug 1999 01:39:00 -0400
+
+kdelibs (4:1.1.1-19990803-1) unstable; urgency=low
+
+  * New upstream CVS version
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 03 Aug 1999 16:45:56 -0400
+
+kdelibs (4:1.1.1-19990717-1) unstable; urgency=low
+
+  * New upstream CVS version
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sat, 17 Jul 1999 00:45:56 -0400
+
+kdelibs (4:1.1.1-19990701-1) unstable; urgency=low
+
+  * New upstream CVS version 
+  * This is pre-1.1.2 (frozen) 
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 01 Jul 1999 11:45:56 -0400
+
+kdelibs (4:1.1.1-19990624-1) unstable; urgency=low
+
+  * New upstream CVS version (pull)
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 24 Jun 1999 05:30:56 -0400
+
+kdelibs (4:1.1.1-19990612-2) unstable; urgency=low
+
+  * Seperated out docs into their own package for use with programs like
+    kdevelop
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 22 Jun 1999 15:30:56 -0400
+
+kdelibs (4:1.1.1-19990612-1) unstable; urgency=low
+
+  * New upstream CVS version
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sat, 12 Jun 1999 03:30:56 -0400
+
+kdelibs (4:1.1.1-19990529-1) unstable; urgency=low
+
+  * New upstream CVS version
+  * New kderules script which cleans up some errors
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sat, 29 May 1999 22:05:56 -0400
+
+kdelibs (4:1.1.1-19990523-1) unstable; urgency=low
+
+  * New upstream CVS version
+  * Minor build fixes
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 23 May 1999 07:05:56 -0400
+
+kdelibs (4:1.1.1-19990510-1) unstable; urgency=low
+
+  * Official 1.1.1 version
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Mon,  3 May 1999 07:05:56 -0400
+
+kdelibs (4:1.1.1-19990501-2) unstable; urgency=low
+
+  * Fixing some compiling issues
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sat,  1 May 1999 22:05:56 -0400
+
+kdelibs (4:1.1.1-19990501-1) unstable; urgency=low
+
+  * Moving everything out of X11R6
+  * Fixed problem with kderules perl script
+  * Adding a -doc package and moving all usr/doc files into it
+  * Adding a kdm package so kdm is not required for KDE
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sat,  1 May 1999 09:05:56 -0400
+
+(4:1.1.1-19990424-1) unstable; urgency=low
+
+  * new upstream version for KDE 1.1.1
+
+ -- Stephan Kulow <coolo@kde.org>  Sat, 24 Apr 1999 16:53:56 +0200
+
+kdelibs (4:1.1-19990306-1) unstable; urgency=low
+
+  * new upstream version out of CVS (many translation updates and some
+    security fixes
+
+ -- Stephan Kulow <coolo@kde.org>  Sat,  6 Mar 1999 18:03:04 +0100
+
+kdelibs (4:1.1-19990217-1) unstable; urgency=low
+
+  * new upstream version
+
+ -- Stephan Kulow <coolo@kde.org>  Wed, 17 Feb 1999 19:09:42 +0100
+
+kdelibs (4:1.1-19990207-2) unstable; urgency=low
+
+  * fixed a bug with the jpeglib version
+
+ -- Stephan Kulow <coolo@kde.org>  Tue,  9 Feb 1999 09:31:40 +0100
+
+kdelibs (4:1.1-19990207-1) unstable; urgency=low
+
+  * new upstream version 1.1 and new epoche
+
+ -- Stephan Kulow <coolo@kde.org>  Sun,  7 Feb 1999 12:12:58 +0100
+
 kdelibs (2:980710-1.0-1) unstable; urgency=low
 
   * new upstream version 1.0

@@ -19,6 +19,25 @@
 /*
  * $Id$
  * $Log$
+ * Revision 1.24.4.4  1999/07/09 21:16:41  porten
+ * patch for bug #1336,1549 from Ingo <schneidi@informatik.tu-muenchen.de>
+ *
+ * Revision 1.24.4.3  1999/04/18 19:49:23  kulow
+ * fixing bug reported by litsch.iep@t-online.de (Stephan Litsch)
+ *
+ * Revision 1.24.4.2  1999/04/01 20:43:44  pbrown
+ * socket patch from Dirk A. Mueller <dmuell@gmx.net>, forwarded to kde-devel
+ * by Torben, applied.
+ *
+ * Revision 1.24.4.1  1999/02/24 12:49:17  dfaure
+ * getdtablesize() -> getrlimit(). Fixes #447 and removes a #ifdef HPUX.
+ *
+ * Revision 1.25  1999/02/24 12:47:34  dfaure
+ * getdtablesize() -> getrlimit(). Fixes #447 and removes a #ifdef HPUX.
+ *
+ * Revision 1.24  1999/01/18 10:56:25  kulow
+ * .moc files are back in kdelibs. Built fine here using automake 1.3
+ *
  * Revision 1.23  1999/01/15 09:30:42  kulow
  * it's official - kdelibs builds with srcdir != builddir. For this I
  * automocifized it, the generated rules are easier to maintain than
@@ -156,6 +175,7 @@
 #define SOMAXCONN 5
 #endif
 
+#include <sys/resource.h>
 #include <sys/time.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -274,10 +294,6 @@ bool KSocket::connect( const char *_path )
   if ( domain != PF_UNIX )
     fatal( "Connecting a PF_INET socket to a PF_UNIX domain socket\n");
   
-  sock = ::socket(PF_UNIX,SOCK_STREAM,0);
-  if (sock < 0)
-	return false;
-  
   unix_addr.sun_family = AF_UNIX;
   int l = strlen( _path );
   if ( l > UNIX_PATH_MAX - 1 )
@@ -287,6 +303,10 @@ bool KSocket::connect( const char *_path )
   }  
   strcpy( unix_addr.sun_path, _path );
 
+  sock = ::socket(PF_UNIX,SOCK_STREAM,0);
+  if (sock < 0)
+	return false;
+  
   if ( 0 > ::connect( sock, (struct sockaddr*)(&unix_addr), 
 					  sizeof( unix_addr ) ) )
   {
@@ -343,15 +363,24 @@ bool KSocket::connect( const char *_host, unsigned short int _port )
       timeout.tv_usec = 0;
       timeout.tv_sec = 1;
 
-#ifdef HPUX
-      ret = select((size_t)FD_SETSIZE, (int *)&rd, (int *)&wr, (int *)0,
-                   (const struct timeval *)&timeout);
-#else
-      ret = select(getdtablesize(), (fd_set *)&rd, (fd_set *)&wr, (fd_set *)0,
+      struct rlimit rlp;
+      getrlimit(RLIMIT_NOFILE, &rlp); // getdtablesize() equivalent. David Faure.
+
+      ret = select(rlp.rlim_cur, (fd_set *)&rd, (fd_set *)&wr, (fd_set *)0,
                    (struct timeval *)&timeout);
-#endif
-      if(ret)
-          return(true);
+      // if(ret)
+      //    return(true);
+
+      switch (ret)
+      {
+	  case 0: break; // Timeout
+	  case 1: case 2: return(true); // Success
+	  default: // Error
+	      ::close(sock);
+	      sock = -1;
+	      return false;
+      }
+
       qApp->processEvents();
       qApp->flushX();
   }
@@ -385,13 +414,13 @@ KSocket::~KSocket()
 
 
 KServerSocket::KServerSocket( const char *_path ) :
-  sock( -1 )
+  notifier( 0L), sock( -1 )
 {
   domain = PF_UNIX;
   
   if ( !init ( _path ) )
   {
-    fatal("Error constructing PF_UNIX domain server socket\n");
+    // fatal("Error constructing PF_UNIX domain server socket\n");
     return;
   }
     
@@ -400,13 +429,13 @@ KServerSocket::KServerSocket( const char *_path ) :
 }
 
 KServerSocket::KServerSocket( int _port ) :
-  sock( -1 )
+  notifier( 0L ), sock( -1 )
 {
   domain = PF_INET;
 
   if ( !init ( _port ) )
   {
-    fatal("Error constructing\n");
+    // fatal("Error constructing\n");
     return;
   }
     
@@ -419,7 +448,12 @@ bool KServerSocket::init( const char *_path )
   if ( domain != PF_UNIX )
     return false;
   
-  struct sockaddr_un name;
+  int l = strlen( _path );
+  if ( l > UNIX_PATH_MAX - 1 )
+  {      
+    warning( "Too long PF_UNIX domain name '%s'\n",_path);
+    return false;
+  }  
     
   sock = ::socket( PF_UNIX, SOCK_STREAM, 0 );
   if (sock < 0)
@@ -429,15 +463,10 @@ bool KServerSocket::init( const char *_path )
   }
 
   unlink(_path);   
-  name.sun_family = AF_UNIX;
-  int l = strlen( _path );
-  if ( l > UNIX_PATH_MAX - 1 )
-  {      
-    warning( "Too long PF_UNIX domain name '%s'\n",_path);
-    return false;
-  }  
-  strcpy( name.sun_path, _path );
 
+  struct sockaddr_un name;
+  name.sun_family = AF_UNIX;
+  strcpy( name.sun_path, _path );
     
   if ( bind( sock, (struct sockaddr*) &name,sizeof( name ) ) < 0 )
   {
@@ -471,14 +500,14 @@ bool KServerSocket::init( unsigned short int _port )
   if ( domain != PF_INET )
     return false;
   
-  struct sockaddr_in name;
-    
   sock = ::socket( PF_INET, SOCK_STREAM, 0 );
   if (sock < 0)
   {
     warning( "Could not create socket\n");
     return false;
   }
+
+  struct sockaddr_in name;
     
   name.sin_family = AF_INET;
   name.sin_port = htons( _port );
@@ -561,8 +590,10 @@ KServerSocket::~KServerSocket()
 {
   if ( notifier )
 	delete notifier; 
-  
-  close( sock ); 
+  struct sockaddr_un name; ksize_t len = sizeof(name);
+  getsockname(sock, (struct sockaddr *) &name, &len);
+  close( sock );
+  unlink(name.sun_path);                                                       
 }
 
 #include "ksock.moc"

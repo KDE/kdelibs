@@ -1362,6 +1362,10 @@ protected:
 	  */
     void blockEndList(HTMLClueV *_clue, HTMLStackElem *stackElem);
 
+    /* code to restore old alignment after <div></div> */
+    void blockEndDiv( HTMLClueV *_clue, HTMLStackElem *Elem);
+
+
     /*
      * Timer to parse html in background
      */

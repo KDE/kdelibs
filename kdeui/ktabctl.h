@@ -20,6 +20,12 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.5  1998/07/23 08:34:10  garbanzo
+ * Repeat after me: private members are bad, private members are bad, private
+ * members are the bane of reusable code.
+ *
+ * Ronald Reagan -- America's favorite placebo.
+ *
  * Revision 1.4  1998/06/16 21:23:15  hoss
  * *** empty log message ***
  *
@@ -70,8 +76,8 @@
  * emits the signal tabSelected(int pagenumber) when the user selects one
    of the tabs. This gives you the chance to update the widget contents
  of a single page. The signal is emitted _before_ the page is shown.
-   Very important, if the contents of some widgets on page <a> depend on
-	 the contents of some other widgets on page <b>.
+   Very important, if the contents of some widgets on page (a) depend on
+	 the contents of some other widgets on page (b).
 */
 class KTabCtl : public QWidget
 {

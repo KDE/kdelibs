@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR Free Software Foundation, Inc.
-# Hasso C. Tepper <heathcliff@iname.com>, 1999.
+# Copyright (C) 1999 Free Software Foundation, Inc.
+# Hasso Tepper <hasso@ewsound.estnet.ee>, 1999.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-01-22 01:01+0100\n"
-"PO-Revision-Date: 1999-02-05 19:46+0200\n"
-"Last-Translator: Hasso C. Tepper <heathcliff@iname.com>\n"
-"Language-Team: Estonian <heathcliff@iname.com>\n"
+"POT-Creation-Date: 1999-04-24 01:02+0200\n"
+"PO-Revision-Date: 1999-06-25 19:46+0200\n"
+"Last-Translator: Hasso Tepper <hasso@ewsound.estnet.ee>\n"
+"Language-Team: Estonian <linux-ee@eenet.ee>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=iso-8859-1\n"
 "Content-Transfer-Encoding: ENCODING\n"
@@ -47,15 +47,15 @@ msgstr "Saada e-mail rakenduse autorile"
 #: kdeui/keditcl1.cpp:191 kdeui/keditcl1.cpp:204 kdeui/keditcl1.cpp:1561
 #: kdeui/keditcl1.cpp:1718 kdeui/kfontdialog.cpp:400
 #: kdeui/kiconloaderdialog.cpp:264 kdeui/kmsgbox.cpp:286
-#: kfile/kfiledialog.cpp:252 kfile/kfiledialog.cpp:509
-#: kfile/kfiledialog.cpp:901 kfile/kfiledialogconf.cpp:61 kfmlib/kfm.cpp:407
+#: kfile/kfiledialog.cpp:252 kfile/kfiledialog.cpp:510
+#: kfile/kfiledialog.cpp:902 kfile/kfiledialogconf.cpp:61 kfmlib/kfm.cpp:411
 #: po/texts.cpp:35
 msgid "OK"
 msgstr "OK"
 
 #: kab/AssertDialog.cpp:140
 msgid "The following condition failed:\n"
-msgstr "Järgnev tingimuse täitmine ebaõnnestus:\n"
+msgstr "Järgneva tingimuse täitmine ebaõnnestus:\n"
 
 #: kab/AssertDialog.cpp:141
 msgid "In file "
@@ -75,7 +75,7 @@ msgstr "Teadet ei ole võimalik saata."
 
 #: kab/AssertDialog.cpp:218
 msgid "The author did not publish an email address."
-msgstr "Autor ei ole teinud avalikuks oma e-maili aadressi."
+msgstr "Autor ei ole avalikustanud oma e-maili aadressi."
 
 #: kab/DialogBase.cpp:36
 msgid ""
@@ -255,115 +255,115 @@ msgstr "Võimalikud väärtused:"
 msgid "Selected values:"
 msgstr "Valitud väärtused:"
 
-#: kdecore/kaccel.cpp:231 kfile/kfiledialog.cpp:558 kfile/kfiledialog.cpp:1217
-#: kfile/kfiledialog.cpp:1377 kfile/kfiledialog.cpp:1411 po/texts.cpp:65
+#: kdecore/kaccel.cpp:223 kfile/kfiledialog.cpp:559 kfile/kfiledialog.cpp:1219
+#: kfile/kfiledialog.cpp:1379 kfile/kfiledialog.cpp:1413 po/texts.cpp:65
 msgid "Open"
 msgstr "Ava"
 
-#: kdecore/kaccel.cpp:235
+#: kdecore/kaccel.cpp:227
 msgid "New"
 msgstr "Uus"
 
-#: kab/searchresults.cc:30 kdecore/kaccel.cpp:239 po/texts.cpp:80
+#: kab/searchresults.cc:30 kdecore/kaccel.cpp:231 po/texts.cpp:80
 msgid "Close"
 msgstr "Sulge"
 
-#: kdecore/kaccel.cpp:243 kfile/kfiledialog.cpp:1272
-#: kfile/kfiledialog.cpp:1432 po/texts.cpp:75
+#: kdecore/kaccel.cpp:235 kfile/kfiledialog.cpp:1274
+#: kfile/kfiledialog.cpp:1434 po/texts.cpp:75
 msgid "Save"
 msgstr "Salvesta"
 
-#: kdecore/kaccel.cpp:247 po/texts.cpp:115
+#: kdecore/kaccel.cpp:239 po/texts.cpp:115
 msgid "Print"
 msgstr "Trüki"
 
-#: kdecore/kaccel.cpp:251 po/texts.cpp:52
+#: kdecore/kaccel.cpp:243 po/texts.cpp:52
 msgid "Quit"
 msgstr "Välju"
 
-#: kdecore/kaccel.cpp:255 po/texts.cpp:69
+#: kdecore/kaccel.cpp:247 po/texts.cpp:69
 msgid "Cut"
 msgstr "Lõika"
 
-#: kdecore/kaccel.cpp:259 po/texts.cpp:56
+#: kdecore/kaccel.cpp:251 po/texts.cpp:56
 msgid "Copy"
 msgstr "Kopeeri"
 
-#: kdecore/kaccel.cpp:263 po/texts.cpp:58
+#: kdecore/kaccel.cpp:255 po/texts.cpp:58
 msgid "Paste"
 msgstr "Aseta"
 
-#: kdecore/kaccel.cpp:267 po/texts.cpp:93
+#: kdecore/kaccel.cpp:259 po/texts.cpp:93
 msgid "Undo"
 msgstr "Tühista"
 
-#: kdecore/kaccel.cpp:271 kdeui/keditcl2.cpp:103 kdeui/keditcl2.cpp:120
+#: kdecore/kaccel.cpp:263 kdeui/keditcl2.cpp:103 kdeui/keditcl2.cpp:120
 #: kdeui/keditcl2.cpp:360 kdeui/keditcl2.cpp:377 kdeui/keditcl2.cpp:676
 #: kdeui/keditcl2.cpp:685 kdeui/keditcl2.cpp:786
 msgid "Find"
 msgstr "Leia"
 
-#: kdecore/kaccel.cpp:275 kdeui/keditcl2.cpp:423 kdeui/keditcl2.cpp:453
+#: kdecore/kaccel.cpp:267 kdeui/keditcl2.cpp:423 kdeui/keditcl2.cpp:453
 #: kdeui/keditcl2.cpp:470 kdeui/keditcl2.cpp:789 kspell/kspelldlg.cpp:110
 #: po/texts.cpp:133
 msgid "Replace"
 msgstr "Asenda"
 
-#: kdecore/kaccel.cpp:279 po/texts.cpp:134
+#: kdecore/kaccel.cpp:271 po/texts.cpp:134
 msgid "Insert"
 msgstr "Lisa"
 
-#: kdecore/kaccel.cpp:283 kfile/kfiledialog.cpp:131
+#: kdecore/kaccel.cpp:275 kfile/kfiledialog.cpp:131
 msgid "Home"
 msgstr "Kodu"
 
-#: kdecore/kaccel.cpp:287
+#: kdecore/kaccel.cpp:279
 msgid "End"
 msgstr "Lõpp"
 
-#: kdecore/kaccel.cpp:291
+#: kdecore/kaccel.cpp:283
 msgid "Prior"
 msgstr "Eelmine"
 
-#: kdecore/kaccel.cpp:295
+#: kdecore/kaccel.cpp:287
 msgid "Next"
 msgstr "Järgmine"
 
-#: kdecore/kaccel.cpp:299 kdetest/klocaletest.cpp:102 kdeui/kcolordlg.cpp:463
+#: kdecore/kaccel.cpp:291 kdetest/klocaletest.cpp:102 kdeui/kcolordlg.cpp:463
 #: kdeui/kcontrol.cpp:35 kfile/kfiledialog.cpp:246 kspell/ksconfig.cpp:212
 #: kspell/kspelldlg.cpp:131 po/texts.cpp:44
 msgid "Help"
 msgstr "Abi"
 
-#: kdecore/kaccel.cpp:597 kdecore/kaccel.cpp:661
+#: kdecore/kaccel.cpp:589 kdecore/kaccel.cpp:653
 msgid "SHIFT"
 msgstr "SHIFT"
 
-#: kdecore/kaccel.cpp:601 kdecore/kaccel.cpp:663
+#: kdecore/kaccel.cpp:593 kdecore/kaccel.cpp:655
 msgid "CTRL"
 msgstr "CTRL"
 
-#: kdecore/kaccel.cpp:605 kdecore/kaccel.cpp:665
+#: kdecore/kaccel.cpp:597 kdecore/kaccel.cpp:657
 msgid "ALT"
 msgstr "ALT"
 
-#: kdecore/kapp.cpp:608 po/texts.cpp:137
+#: kdecore/kapp.cpp:616 po/texts.cpp:137
 msgid "&Contents"
 msgstr "&Sisukord"
 
-#: kdecore/kapp.cpp:614
+#: kdecore/kapp.cpp:622
 msgid "&About"
 msgstr "&Info"
 
-#: kdecore/kapp.cpp:621
+#: kdecore/kapp.cpp:629
 msgid "About &KDE..."
 msgstr "&KDE Info..."
 
-#: kdecore/kapp.cpp:642
+#: kdecore/kapp.cpp:650
 msgid "About KDE"
 msgstr "KDE Info"
 
-#: kdecore/kapp.cpp:644
+#: kdecore/kapp.cpp:652
 msgid ""
 "\n"
 "The KDE Desktop Environment was written by the KDE Team,\n"
@@ -373,25 +373,26 @@ msgid ""
 "Visit http://www.kde.org for more information on the KDE\n"
 "Project. Please consider joining and supporting KDE.\n"
 "\n"
-"Please report bugs at http://buglist.kde.org.\n"
+"Please report bugs at http://bugs.kde.org.\n"
 msgstr ""
 "\n"
 "KDE töölaua keskkond on loodud KDE meeskonna, ülemaailmse\n"
-"programeerijate ühenduse, kes on sidunud ennast vaba tarkvara loomisega,\n"
-"poolt.\n"
+"programeerijate ühenduse, kes on sidunud ennast vaba tarkvara\n"
+"loomisega,poolt.\n"
 "\n"
 "Kui soovite saada rohkem informatsiooni KDE kohta, külastage\n"
-"http://www.kde.org. Palun kaaluge projekti toetamist või sellega ühinemist.\n"
+"http://www.kde.org. Palun kaaluge projekti toetamist või sellega\n"
+"ühinemist.\n"
 "\n"
 "Vigade avastamisel palun teatage nendest aadressil\n"
-"http://buglist.kde.org.\n"
+"http://bugs.kde.org.\n"
 
 #: kdetest/klocaletest.cpp:100 kdeui/keditcl1.cpp:412 kdeui/keditcl1.cpp:433
 #: kdeui/keditcl1.cpp:494 kdeui/keditcl1.cpp:514 kdeui/keditcl1.cpp:1661
 #: kdeui/keditcl2.cpp:106 kdeui/keditcl2.cpp:123 kdeui/keditcl2.cpp:363
 #: kdeui/keditcl2.cpp:380 kdeui/keditcl2.cpp:426 kdeui/keditcl2.cpp:456
 #: kdeui/keditcl2.cpp:473 kdeui/kmsgbox.cpp:303 kdeui/kmsgbox.cpp:319
-#: kio/kio_paste.cc:98 po/texts.cpp:27
+#: po/texts.cpp:27
 msgid "Yes"
 msgstr "Jah"
 
@@ -400,20 +401,18 @@ msgstr "Jah"
 #: kdeui/keditcl2.cpp:107 kdeui/keditcl2.cpp:124 kdeui/keditcl2.cpp:364
 #: kdeui/keditcl2.cpp:381 kdeui/keditcl2.cpp:427 kdeui/keditcl2.cpp:457
 #: kdeui/keditcl2.cpp:474 kdeui/kmsgbox.cpp:301 kdeui/kmsgbox.cpp:317
-#: kio/kio_paste.cc:98 po/texts.cpp:28
+#: po/texts.cpp:28
 msgid "No"
 msgstr "Ei"
 
-#: kab/datepickerdialog.cc:26 kab/kabapi.cc:37 kab/widget.cc:1384
-#: kab/widget.cc:1426 kdetest/klocaletest.cpp:103 kdeui/kcolordlg.cpp:470
+#: kab/datepickerdialog.cc:26 kab/kabapi.cc:37 kab/widget.cc:1390
+#: kab/widget.cc:1432 kdetest/klocaletest.cpp:103 kdeui/kcolordlg.cpp:470
 #: kdeui/kcontrol.cpp:48 kdeui/kcontrol.cpp:55 kdeui/keditcl1.cpp:414
 #: kdeui/keditcl1.cpp:496 kdeui/keditcl2.cpp:895 kdeui/kfontdialog.cpp:403
 #: kdeui/kiconloaderdialog.cpp:265 kdeui/kmsgbox.cpp:321
-#: kfile/kfiledialog.cpp:258 kfile/kfiledialog.cpp:906
-#: kfile/kfiledialogconf.cpp:59 kfmlib/kfm.cpp:411 kio/kio_job.cc:697
-#: kio/kio_linedit_dlg.cc:50 kio/kio_openwith.cc:272 kio/kio_pass_dlg.cc:78
-#: kio/kio_progress_dlg.cc:53 kio/kio_rename_dlg.cc:30 kio/kio_skip_dlg.cc:20
-#: kspell/kspelldlg.cpp:143 po/texts.cpp:39
+#: kfile/kfiledialog.cpp:258 kfile/kfiledialog.cpp:907
+#: kfile/kfiledialogconf.cpp:59 kfmlib/kfm.cpp:415 kspell/kspelldlg.cpp:143
+#: po/texts.cpp:39
 msgid "Cancel"
 msgstr "Katkesta"
 
@@ -525,7 +524,7 @@ msgstr "R"
 msgid "Sat"
 msgstr "L"
 
-#: kab/kabapi.cc:138 kab/widget.cc:832 kab/widget.cc:852 kab/widget.cc:1916
+#: kab/kabapi.cc:138 kab/widget.cc:832 kab/widget.cc:852 kab/widget.cc:1952
 #: kdeui/keditcl1.cpp:139 kdeui/keditcl1.cpp:168 kdeui/keditcl1.cpp:189
 #: kdeui/keditcl1.cpp:202 kdeui/keditcl1.cpp:1559 po/texts.cpp:83
 msgid "Sorry"
@@ -573,7 +572,7 @@ msgid ""
 "Could not save the document.\n"
 "Open a new document anyways?"
 msgstr ""
-"Dokumenti ei saa salvestada.\n"
+"Dokumenti pole võimalik salvestada.\n"
 "Kas avada vaatamata sellele uus dokument?"
 
 #: kdeui/keditcl1.cpp:462
@@ -585,16 +584,17 @@ msgid ""
 "Could not save the document.\n"
 "Create a new document anyways?"
 msgstr ""
-"Dokumenti ei saa salvestada.\n"
+"Dokumenti pole võimalik salvestada.\n"
 "Kas luua vaatamata sellele uus dokument?"
 
-#: kdeui/keditcl1.cpp:547 kdeui/kpopmenu.cpp:10 po/texts.cpp:34
+#: kdeui/keditcl1.cpp:547 kdeui/keditcl1.cpp:1700 kdeui/kpopmenu.cpp:10
+#: po/texts.cpp:34
 msgid "Untitled"
 msgstr "Nimetu"
 
 #: kdeui/keditcl1.cpp:1560
 msgid "Could not save the document\n"
-msgstr "Dokumenti ei saa salvestada\n"
+msgstr "Dokumenti pole võimalik salvestada\n"
 
 #: kdeui/keditcl1.cpp:1630
 msgid "Save Document As"
@@ -871,23 +871,23 @@ msgstr ""
 msgid "Key conflict"
 msgstr "Konflikt klahviga"
 
-#: kdeui/kmenubar.cpp:278 kdeui/ktoolbar.cpp:856
+#: kdeui/kmenubar.cpp:306 kdeui/ktoolbar.cpp:860
 msgid "Top"
 msgstr "Üleval"
 
-#: kdeui/kmenubar.cpp:279 kdeui/ktoolbar.cpp:858
+#: kdeui/kmenubar.cpp:307 kdeui/ktoolbar.cpp:862
 msgid "Bottom"
 msgstr "All"
 
-#: kdeui/kmenubar.cpp:280 kdeui/ktoolbar.cpp:859
+#: kdeui/kmenubar.cpp:308 kdeui/ktoolbar.cpp:863
 msgid "Floating"
 msgstr "Ujuv"
 
-#: kdeui/kmenubar.cpp:429 kdeui/kmenubar.cpp:771 kdeui/ktoolbar.cpp:2170
+#: kdeui/kmenubar.cpp:457 kdeui/kmenubar.cpp:809 kdeui/ktoolbar.cpp:2090
 msgid "Float"
 msgstr "Liikuv"
 
-#: kdeui/kmenubar.cpp:723 kdeui/ktoolbar.cpp:2151
+#: kdeui/kmenubar.cpp:761 kdeui/ktoolbar.cpp:2071
 msgid "UnFloat"
 msgstr "Liikumatu"
 
@@ -903,15 +903,15 @@ msgstr "&Vaikimisi"
 msgid "Quickhelp"
 msgstr "Kiirabi"
 
-#: kdeui/ktoolbar.cpp:284 kdeui/ktoolbar.cpp:336
+#: kdeui/ktoolbar.cpp:288 kdeui/ktoolbar.cpp:340
 msgid "KToolBarButton: pixmap is empty, perhaps some missing file"
 msgstr "KToolBarButton: pikselraster on tühi, ilmselt mõni puuduv fail"
 
-#: kdeui/ktoolbar.cpp:855
+#: kdeui/ktoolbar.cpp:859
 msgid "Left"
 msgstr "Vasak"
 
-#: kdeui/ktoolbar.cpp:857
+#: kdeui/ktoolbar.cpp:861
 msgid "Right"
 msgstr "Parem"
 
@@ -932,7 +932,7 @@ msgstr "Sisukord:"
 msgid "<!-- Do not edit this file -->"
 msgstr "<!-Seda faili ei tohi muuta-!>"
 
-#: kab/addressbook.cc:1055 kfile/kfiledetaillist.cpp:36
+#: kab/addressbook.cc:1112 kfile/kfiledetaillist.cpp:36
 msgid "Name"
 msgstr "Nimi"
 
@@ -1000,11 +1000,11 @@ msgstr "&Filter:"
 msgid "Show hidden"
 msgstr "Näita peidetuid"
 
-#: kfile/kfiledialog.cpp:504
+#: kfile/kfiledialog.cpp:505
 msgid "Error: Not local file"
 msgstr "Viga: See ei ole kohalik fail"
 
-#: kfile/kfiledialog.cpp:505
+#: kfile/kfiledialog.cpp:506
 msgid ""
 "The specified directory is not a local directory\n"
 "But the application accepts just local files."
@@ -1012,11 +1012,11 @@ msgstr ""
 "Soovitud kataloog ei ole kohalik, kuid see\n"
 "programm suudab käsitleda ainult kohalikke faile."
 
-#: kfile/kfiledialog.cpp:519 kfile/kfiledialog.cpp:624
+#: kfile/kfiledialog.cpp:520 kfile/kfiledialog.cpp:625
 msgid "Error: Cannot Open Directory"
-msgstr "Viga: Kataloogi ei saa avada"
+msgstr "Viga: Kataloogi pole võimalik avada"
 
-#: kfile/kfiledialog.cpp:520
+#: kfile/kfiledialog.cpp:521
 msgid ""
 "The specified directory does not exist\n"
 "or was not readable."
@@ -1024,64 +1024,64 @@ msgstr ""
 "Soovitud kataloogi kas ei eksisteeri või\n"
 "ei ole selle lugemine lubatud."
 
-#: kfile/kfiledialog.cpp:522 kfile/kfiledialog.cpp:627
+#: kfile/kfiledialog.cpp:523 kfile/kfiledialog.cpp:628
 msgid "Dismiss"
 msgstr "Heida kõrvale"
 
-#: kfile/kfiledialog.cpp:573 kfile/kfiledialog.cpp:1392 po/texts.cpp:77
+#: kfile/kfiledialog.cpp:574 kfile/kfiledialog.cpp:1394 po/texts.cpp:77
 msgid "Save As"
 msgstr "Salvesta kui"
 
-#: kfile/kfiledialog.cpp:596
+#: kfile/kfiledialog.cpp:597
 msgid "Root Directory"
 msgstr "Juur kataloog"
 
-#: kfile/kfiledialog.cpp:625
+#: kfile/kfiledialog.cpp:626
 msgid "The specified directory does not exist or was not readable."
 msgstr "Soovitud kataloogi kas ei eksisteeri või ei ole ta lugemine lubatud."
 
-#: kfile/kfiledialog.cpp:886
+#: kfile/kfiledialog.cpp:887
 msgid "Create new directory in: "
 msgstr "Loo uus kataloog: "
 
-#: kfile/kfiledialog.cpp:889
+#: kfile/kfiledialog.cpp:890
 msgid "New Directory"
 msgstr "Uus kataloog"
 
-#: kfile/kfiledialog.cpp:961
+#: kfile/kfiledialog.cpp:962
 msgid "Add to bookmarks"
-msgstr "Lisa viitadesse"
+msgstr "Lisa järjehoidjatesse"
 
-#: kfile/kfiledialog.cpp:1251
+#: kfile/kfiledialog.cpp:1253
 msgid "Choose Directory"
 msgstr "Vali kataloog"
 
-#: kfile/kfiledialog.cpp:1319
+#: kfile/kfiledialog.cpp:1321
 msgid "directory"
 msgstr "kataloog"
 
-#: kfile/kfiledialog.cpp:1321
+#: kfile/kfiledialog.cpp:1323
 msgid "directories"
 msgstr "kataloogi"
 
-#: kfile/kfiledialog.cpp:1323 kfile/kpreview.cpp:326
+#: kfile/kfiledialog.cpp:1325 kfile/kpreview.cpp:326
 msgid "file"
 msgstr "fail"
 
-#: kfile/kfiledialog.cpp:1325
+#: kfile/kfiledialog.cpp:1327
 msgid "files"
 msgstr "faili"
 
-#: kfile/kfiledialog.cpp:1327
+#: kfile/kfiledialog.cpp:1329
 #, c-format
 msgid "%d %s and %d %s"
 msgstr "%d %s ja %d %s"
 
-#: kfile/kfiledialog.cpp:1337
+#: kfile/kfiledialog.cpp:1339
 msgid "one directory"
 msgstr "üks kataloog"
 
-#: kfile/kfiledialog.cpp:1339
+#: kfile/kfiledialog.cpp:1341
 #, c-format
 msgid "%d directories"
 msgstr "%d kataloogi"
@@ -1254,11 +1254,9 @@ msgid ""
 "Could not do Authorization"
 msgstr ""
 "Sul ei ole faili nimega %s\n"
-"Ei suuda autoriseerida"
+"Autoriseerida pole võimalik"
 
-#: kfmlib/kfm.cpp:200 kfmlib/kfm.cpp:210 kio/kmimetypes.cc:62
-#: kio/kmimetypes.cc:89 kio/kmimetypes.cc:135 kio/kregfactories.cc:75
-#: kio/krun.cc:105 kio/kservices.cc:114
+#: kfmlib/kfm.cpp:200 kfmlib/kfm.cpp:210
 msgid "KFM Error"
 msgstr "KFM viga"
 
@@ -1269,18 +1267,18 @@ msgid ""
 "Could not do Authorization"
 msgstr ""
 "Fail nimega %s on kahjustatud\n"
-"Ei suuda autoriseerida."
+"Autoriseerimine pole võimalik."
 
 #: kspell/ksconfig.cpp:66
 msgid "Create Root/Affix combinations not in the dictionary"
-msgstr "Loo juure ja lisandi kombinatsioonid, mida ei leidu sõnaraamatus"
+msgstr "Loo juure/lisandi kombinatsioonid, mida ei leidu sõnaraamatus"
 
 #: kspell/ksconfig.cpp:75
 msgid "Consider run-together words as spelling errors"
 msgstr "Tõlgenda kokkujooksnud sõnu vigadena"
 
-#: kspell/ksconfig.cpp:92
 #
+#: kspell/ksconfig.cpp:92
 msgid "Dictionary"
 msgstr "Sõnaraamat"
 
@@ -1288,8 +1286,8 @@ msgstr "Sõnaraamat"
 msgid "Encoding:"
 msgstr "Kodeering:"
 
-#: kspell/ksconfig.cpp:147
 #
+#: kspell/ksconfig.cpp:147
 msgid "Latin1"
 msgstr "Latin1"
 
@@ -1305,8 +1303,8 @@ msgstr "Inglise"
 msgid "Spanish"
 msgstr "Hispaania"
 
-#: kspell/ksconfig.cpp:304
 #
+#: kspell/ksconfig.cpp:304
 msgid "German"
 msgstr "Saksa"
 
@@ -1314,12 +1312,12 @@ msgstr "Saksa"
 msgid "Brazilian Portuguese"
 msgstr "Brasiilia portugali"
 
-#: kio/kio_cache.cc:422 kspell/ksconfig.cpp:317
+#: kspell/ksconfig.cpp:317
 msgid "Unknown"
 msgstr "Tundmatu"
 
-#: kspell/ksconfig.cpp:348
 #
+#: kspell/ksconfig.cpp:348
 msgid "ISpell Default"
 msgstr "ISpell'i vaikeväärtused"
 
@@ -1327,8 +1325,8 @@ msgstr "ISpell'i vaikeväärtused"
 msgid "Misspelled Word:"
 msgstr "Valesti kirjutatud sõna:"
 
-#: kspell/kspelldlg.cpp:68
 #
+#: kspell/kspelldlg.cpp:68
 msgid "Replacement:"
 msgstr "Asendus:"
 
@@ -1336,13 +1334,13 @@ msgstr "Asendus:"
 msgid "Suggestions:"
 msgstr "Soovitused:"
 
-#: kspell/kspelldlg.cpp:88
 #
+#: kspell/kspelldlg.cpp:88
 msgid "Ignore"
 msgstr "Ignoreeri"
 
-#: kspell/kspelldlg.cpp:99
 #
+#: kspell/kspelldlg.cpp:99
 msgid "Ignore All"
 msgstr "Ignoreeri kõiki"
 
@@ -1355,21 +1353,16 @@ msgid "Stop"
 msgstr "Stop"
 
 #: kab/widget.cc:162 kab/widget.cc:1164 kab/widget.cc:1222 kab/widget.cc:1233
-#: kab/widget.cc:1936 kab/widget.cc:2028 kab/widget.cc:2112 kab/widget.cc:2157
-#: kab/widget.cc:2168 kio/kio_error.cc:118 kio/kio_paste.cc:48
-#: kio/kio_paste.cc:60 kio/kio_paste.cc:75 kio/kio_paste.cc:87
-#: kio/kio_rename_dlg.cc:217 kio/kio_rename_dlg.cc:224 kio/kmimetypes.cc:488
-#: kio/kmimetypes.cc:506 kio/kmimetypes.cc:520 kio/kmimetypes.cc:567
-#: kio/kmimetypes.cc:600 kio/kmimetypes.cc:660 kio/kmimetypes.cc:692
-#: kio/krun.cc:40 kio/krun.cc:512 po/texts.cpp:24
+#: kab/widget.cc:1972 kab/widget.cc:2064 kab/widget.cc:2148 kab/widget.cc:2194
+#: kab/widget.cc:2205 po/texts.cpp:24
 msgid "Error"
 msgstr "Viga"
 
-#: kio/krun.cc:102 kio/krun.cc:509 po/texts.cpp:25
+#: po/texts.cpp:25
 msgid "Malformed URL"
 msgstr "Vigane URL"
 
-#: kio/kio_paste.cc:98 po/texts.cpp:29
+#: po/texts.cpp:29
 msgid "Warning"
 msgstr "Hoiatus"
 
@@ -1403,11 +1396,11 @@ msgstr "&Fail"
 
 #: po/texts.cpp:46
 msgid "Edit"
-msgstr "Redigeeri"
+msgstr "Redigeerimine"
 
 #: po/texts.cpp:47
 msgid "&Edit"
-msgstr "&Redigeeri"
+msgstr "&Redigeerimine"
 
 #: po/texts.cpp:48
 msgid "&Options"
@@ -1529,7 +1522,7 @@ msgstr "Kustuta"
 msgid "&Delete"
 msgstr "&Kustuta"
 
-#: kio/kio_linedit_dlg.cc:46 kio/kio_openwith.cc:268 po/texts.cpp:90
+#: po/texts.cpp:90
 msgid "Clear"
 msgstr "Puhasta"
 
@@ -1557,7 +1550,7 @@ msgstr "&Korda"
 msgid "&Game"
 msgstr "&Mäng"
 
-#: kio/kio_rename_dlg.cc:28 kio/kio_skip_dlg.cc:18 po/texts.cpp:98
+#: po/texts.cpp:98
 msgid "Information"
 msgstr "Informatsioon"
 
@@ -1609,7 +1602,7 @@ msgstr "&Laadi uuesti"
 msgid "Files"
 msgstr "Failid"
 
-#: kab/widget.cc:1384 kab/widget.cc:1426 po/texts.cpp:112
+#: kab/widget.cc:1390 kab/widget.cc:1432 po/texts.cpp:112
 msgid "Continue"
 msgstr "Jätka"
 
@@ -1737,7 +1730,7 @@ msgstr "Varukoopiat ei ole võimalik luua"
 
 #: kab/addressbook.cc:263
 msgid "Unable to insert \""
-msgstr "Ei suuda lisada \""
+msgstr "Pole võimalik lisada \""
 
 #: kab/addressbook.cc:264
 msgid "\" into configuration section (ignored)."
@@ -1755,142 +1748,142 @@ msgstr "Eelnevalt loodud sektsiooni pole võimalik leida."
 msgid "Unable to create key-value-map for entry."
 msgstr "Kirje jaoks pole võimalik luua võtmeväärtuse kaarti."
 
-#: kab/addressbook.cc:932
+#: kab/addressbook.cc:989
 msgid "entry without name"
 msgstr "kirje ilma nimeta"
 
-#: kab/addressbook.cc:950
+#: kab/addressbook.cc:1007
 msgid ""
 "Unable to create new database file (probably permission denied), exiting."
 msgstr ""
 "Uut andmebaasi faili pole võimalik luua (ilmselt on juurdepääs keelatud), "
 "väljumine."
 
-#: kab/addressbook.cc:956
+#: kab/addressbook.cc:1013
 msgid "Cannot create configuration section, exiting."
 msgstr "Konfiguratsiooni sektsiooni pole võimalik luua, väljumine."
 
-#: kab/addressbook.cc:961
+#: kab/addressbook.cc:1018
 msgid "Cannot create entries section, exiting."
 msgstr "Kirjete sektsiooni pole võimalik luua, väljumine."
 
-#: kab/addressbook.cc:966
+#: kab/addressbook.cc:1023
 msgid "Unable to find previously created section, exiting."
 msgstr "Eelnevalt loodud sektsiooni pole võimalik leida, väljumine."
 
-#: kab/addressbook.cc:974
+#: kab/addressbook.cc:1031
 msgid "Cannot save newly created database."
 msgstr "Loodud andmebaasi pole võimalik salvestada."
 
-#: kab/addressbook.cc:980
+#: kab/addressbook.cc:1037
 msgid "Cannot erase database contents."
 msgstr "Andmebaasi sisu pole võimalik kustutada."
 
-#: kab/addressbook.cc:1059
+#: kab/addressbook.cc:1116
 msgid "First name"
 msgstr "Eesnimi"
 
-#: kab/addressbook.cc:1063
+#: kab/addressbook.cc:1120
 msgid "Additional name"
 msgstr "Perekonnanimi"
 
-#: kab/addressbook.cc:1067
+#: kab/addressbook.cc:1124
 msgid "Name prefix"
 msgstr "Nime eesliide"
 
-#: kab/addressbook.cc:1071
+#: kab/addressbook.cc:1128
 msgid "Formatted name"
 msgstr "Täielik nimi"
 
-#: kab/addressbook.cc:1075
+#: kab/addressbook.cc:1132
 msgid "Comment"
 msgstr "Kommentaar"
 
-#: kab/addressbook.cc:1079
+#: kab/addressbook.cc:1136
 msgid "Organization"
 msgstr "Organisatsioon"
 
-#: kab/addressbook.cc:1083
+#: kab/addressbook.cc:1140
 msgid "Unit"
 msgstr "Osakond"
 
-#: kab/addressbook.cc:1087
+#: kab/addressbook.cc:1144
 msgid "Subunit"
 msgstr "Filiaal"
 
-#: kab/addressbook.cc:1091
+#: kab/addressbook.cc:1148
 msgid "Title"
 msgstr "Tiitel"
 
-#: kab/addressbook.cc:1095
+#: kab/addressbook.cc:1152
 msgid "Role"
 msgstr "Amet"
 
-#: kab/addressbook.cc:1099
+#: kab/addressbook.cc:1156
 msgid "Birthday"
 msgstr "Sünnipäev"
 
-#: kab/addressbook.cc:1103
+#: kab/addressbook.cc:1160
 msgid "Talk addresses"
 msgstr "Kõneaadressid"
 
-#: kab/addressbook.cc:1107
+#: kab/addressbook.cc:1164
 msgid "Delivery label"
 msgstr "Kättetoimetussedel"
 
-#: kab/addressbook.cc:1111
+#: kab/addressbook.cc:1168
 msgid "Email address"
 msgstr "E-maili aadress"
 
-#: kab/addressbook.cc:1115
+#: kab/addressbook.cc:1172
 msgid "Second email address"
 msgstr "Teine e-maili aadress"
 
-#: kab/addressbook.cc:1119
+#: kab/addressbook.cc:1176
 msgid "Third email address"
 msgstr "Kolmas e-maili aadress"
 
-#: kab/addressbook.cc:1123
+#: kab/addressbook.cc:1180
 msgid "Email addresses"
 msgstr "E-maili aadressid"
 
-#: kab/addressbook.cc:1127
+#: kab/addressbook.cc:1184
 msgid "Address"
 msgstr "Aadress"
 
-#: kab/addressbook.cc:1131
+#: kab/addressbook.cc:1188
 msgid "City/Town"
 msgstr "Linn"
 
-#: kab/addressbook.cc:1135
+#: kab/addressbook.cc:1192
 msgid "Telephone"
 msgstr "Telefon"
 
-#: kab/addressbook.cc:1139
+#: kab/addressbook.cc:1196
 msgid "Fax number"
 msgstr "Faksi number"
 
-#: kab/addressbook.cc:1143
+#: kab/addressbook.cc:1200
 msgid "Modem number"
 msgstr "Modemi number"
 
-#: kab/addressbook.cc:1147
+#: kab/addressbook.cc:1204
 msgid "Homepage URL"
 msgstr "Kodulehekülje aadress"
 
-#: kab/addressbook.cc:1151
+#: kab/addressbook.cc:1208
 msgid "Zip/postal code"
 msgstr "Postiindeks"
 
-#: kab/addressbook.cc:1155
+#: kab/addressbook.cc:1212
 msgid "State/province"
 msgstr "Osariik/maakond"
 
-#: kab/addressbook.cc:1159
+#: kab/addressbook.cc:1216
 msgid "Country"
 msgstr "Riik"
 
-#: kab/addressbook.cc:1326
+#: kab/addressbook.cc:1383
 msgid "(unnamed entry)"
 msgstr "(nimetu kirje)"
 
@@ -1926,8 +1919,8 @@ msgstr "&Nimi"
 msgid "Address:"
 msgstr "Aadress:"
 
-#: kab/editentry.cc:104
 #
+#: kab/editentry.cc:104
 msgid "Town/City:"
 msgstr "Linn:"
 
@@ -1935,8 +1928,8 @@ msgstr "Linn:"
 msgid "State:"
 msgstr "Osariik:"
 
-#: kab/editentry.cc:106
 #
+#: kab/editentry.cc:106
 msgid "Zip/Postal Code:"
 msgstr "Postiindeks:"
 
@@ -1952,8 +1945,8 @@ msgstr "&Aadress"
 msgid "Organization:"
 msgstr "Organisatsioon:"
 
-#: kab/editentry.cc:146
 #
+#: kab/editentry.cc:146
 msgid "Department:"
 msgstr "Osakond:"
 
@@ -1961,8 +1954,8 @@ msgstr "Osakond:"
 msgid "Sub-Department:"
 msgstr "Alam-osakond:"
 
-#: kab/editentry.cc:148
 #
+#: kab/editentry.cc:148
 msgid "Job/Role:"
 msgstr "Amet:"
 
@@ -1998,8 +1991,8 @@ msgstr "Redigeeri kõneaadresseid"
 msgid "&Contact"
 msgstr "&Kontakt"
 
-#: kab/editentry.cc:239
 #
+#: kab/editentry.cc:239
 msgid "Additional Comment:"
 msgstr "Täiendav kommentaar:"
 
@@ -2066,13 +2059,13 @@ msgstr ""
 "Kõik konfiguratsiooni väärtused on lähtestatud vaikimisi\n"
 "säteteks."
 
-#: kab/widget.cc:248 kab/widget.cc:312 kab/widget.cc:320
+#: kab/widget.cc:248 kab/widget.cc:314 kab/widget.cc:322
 msgid "File handling error"
 msgstr "Viga failikäsitlusel."
 
 #: kab/widget.cc:249
 msgid "Unable to open database file r/w."
-msgstr "Ei suuda avada andmebaasi faili kirjutamiseks"
+msgstr "Andmebaasi faili pole võimalik kirjutamiseks avada."
 
 #: kab/widget.cc:257
 msgid "Email storage conversion"
@@ -2084,8 +2077,8 @@ msgid ""
 "the new style supporting unlimited numbers\n"
 "of email addresses per entry."
 msgstr ""
-"Kab liigutab kõik sinu e-maili aadressid uude\n"
-"formaati, mis toetab piiramatut arvu e-maili aadresse\n"
+"Kab teisendab kõik sinu e-maili aadressid uude\n"
+"stiili, mis toetab piiramatut arvu e-maili aadresse\n"
 "kirje kohta."
 
 #: kab/widget.cc:291
@@ -2111,13 +2104,13 @@ msgstr ""
 "Ilmselt vajad sa mõne oma kirje redigeerimist,\n"
 "et neist kasu oleks."
 
-#: kab/widget.cc:313
+#: kab/widget.cc:315
 msgid "Could not save database after update."
-msgstr "Ei suuda salvestada andmebaasi pärast uuendamist."
+msgstr "Andmebaasi pole võimalik pärast uuendamist salvestada."
 
-#: kab/widget.cc:321
+#: kab/widget.cc:323
 msgid "Unable to reopen database file r/o."
-msgstr "Ei ole võimalik avada andmebaasi uuesti ainult lugemiseks."
+msgstr "Andmebaasi uuesti avamine ainult lugemiseks pole võiamlik."
 
 #: kab/widget.cc:482
 msgid "first entry"
@@ -2191,8 +2184,8 @@ msgstr "Ava brauseri aken."
 msgid "No URL."
 msgstr "URL puudub."
 
-#: kab/widget.cc:828 kab/widget.cc:997 kab/widget.cc:1176 kab/widget.cc:1789
-#: kab/widget.cc:1967 kab/widget.cc:2051
+#: kab/widget.cc:828 kab/widget.cc:997 kab/widget.cc:1176 kab/widget.cc:1813
+#: kab/widget.cc:2003 kab/widget.cc:2087
 msgid "No entries."
 msgstr "Kirjeid pole."
 
@@ -2246,8 +2239,8 @@ msgstr "Tulemused"
 msgid "No entry matches this."
 msgstr "Sellele ei vasta ühtki kirjet."
 
-#: kab/widget.cc:1050 kab/widget.cc:1696 kab/widget.cc:1831 kab/widget.cc:1996
-#: kab/widget.cc:2019 kab/widget.cc:2076
+#: kab/widget.cc:1050 kab/widget.cc:1720 kab/widget.cc:1855 kab/widget.cc:2032
+#: kab/widget.cc:2055 kab/widget.cc:2112
 msgid "Rejected."
 msgstr "Tagasi lükatud."
 
@@ -2279,7 +2272,7 @@ msgstr "Kõne aadressid"
 msgid "Available talk addresses:"
 msgstr "Saadaolevad kõne aadressid:"
 
-#: kab/widget.cc:1199 kab/widget.cc:1927
+#: kab/widget.cc:1199 kab/widget.cc:1963
 msgid "Cancelled."
 msgstr "Katkestatud."
 
@@ -2303,11 +2296,11 @@ msgstr "Kõne programm käivitatud."
 msgid "Attention: printing is still experimental!"
 msgstr "Hoiatus: Trükkimine on veel eksperimentaalne!"
 
-#: kab/widget.cc:1381 kab/widget.cc:1423
+#: kab/widget.cc:1387 kab/widget.cc:1429
 msgid "Page size problem"
 msgstr "Probleem lehekülje suurusega"
 
-#: kab/widget.cc:1382 kab/widget.cc:1424
+#: kab/widget.cc:1388 kab/widget.cc:1430
 msgid ""
 "The fields you requested to print do\n"
 "not fit into the page width."
@@ -2315,115 +2308,115 @@ msgstr ""
 "Väljad, mida sa soovisid trükkida,\n"
 "ei mahu sellise laiusega lehele."
 
-#: kab/widget.cc:1601 kab/widget.cc:2030
+#: kab/widget.cc:1624 kab/widget.cc:2066
 msgid "Printing finished successfully."
 msgstr "Trükkimine edukalt lõpetatud."
 
-#: kab/widget.cc:1627
+#: kab/widget.cc:1651
 msgid "kab: Email addresses"
 msgstr "kab: E-maili aadressid"
 
-#: kab/widget.cc:1628
+#: kab/widget.cc:1652
 msgid "Available email addresses:"
 msgstr "Saadaolevad e-maili aadressid:"
 
-#: kab/widget.cc:1693
+#: kab/widget.cc:1717
 msgid "kab: Select fields to copy"
 msgstr "kab: Vali kopeeritavad väljad"
 
-#: kab/widget.cc:1703
+#: kab/widget.cc:1727
 msgid "Nothing selected."
 msgstr "Midagi pole valitud"
 
-#: kab/widget.cc:1761 kab/widget.cc:2013
+#: kab/widget.cc:1785 kab/widget.cc:2049
 msgid "KDE addressbook overview"
 msgstr "KDE aadressiraamatu ülevaade"
 
-#: kab/widget.cc:1805
+#: kab/widget.cc:1829
 msgid "Name-Email-Link (!!)"
 msgstr "Nimi-Email-Link (!!)"
 
-#: kab/widget.cc:1807
+#: kab/widget.cc:1831
 msgid "Select table columns"
 msgstr "Vali tabeli veerud"
 
-#: kab/widget.cc:1812
+#: kab/widget.cc:1836
 msgid "Nothing to export."
 msgstr "Pole midagi eksportida."
 
-#: kab/widget.cc:1841
+#: kab/widget.cc:1865
 msgid "Email link"
 msgstr "E-maili link"
 
-#: kab/widget.cc:1916
+#: kab/widget.cc:1952
 msgid "Could not find the users home directory."
-msgstr "Ei suuda leida kasutajate kodukataloogi."
+msgstr "Kasutajate kodukataloogi pole võimalik leida."
 
-#: kab/widget.cc:1917
+#: kab/widget.cc:1953
 msgid "Intern error!"
 msgstr "Sisemine viga!"
 
-#: kab/widget.cc:1937
-msgid "Could not open the file to create the HTML table."
-msgstr "Ei suuda avada HTML tabeli loomiseks vajalikku faili."
-
 #: kab/widget.cc:1973
+msgid "Could not open the file to create the HTML table."
+msgstr "HTML tabeli loomiseks vajalikku faili pole võimalik avada."
+
+#: kab/widget.cc:2009
 msgid "Printing cancelled."
 msgstr "Trükkimine katkestatud."
 
-#: kab/widget.cc:1989
+#: kab/widget.cc:2025
 msgid "kab: Select columns for printing"
 msgstr "kab: Vali veerud trükkimiseks"
 
-#: kab/widget.cc:2002
+#: kab/widget.cc:2038
 msgid "Nothing to print."
 msgstr "Pole midagi trükkida."
 
-#: kab/widget.cc:2014
+#: kab/widget.cc:2050
 msgid "Page <p>"
 msgstr "Lehekülg <p>"
 
-#: kab/widget.cc:2015
+#: kab/widget.cc:2051
 msgid "KDE - the professionals choice."
 msgstr "KDE - professionaalide valik."
 
-#: kab/widget.cc:2028
+#: kab/widget.cc:2064
 msgid "Printing failed!"
 msgstr "Trükkimine ebaõnnestus!"
 
-#: kab/widget.cc:2059
+#: kab/widget.cc:2095
 msgid "Empty email address."
 msgstr "Tühi e-maili aadress."
 
-#: kab/widget.cc:2078
+#: kab/widget.cc:2114
 msgid "No email address."
 msgstr "E-maili aadress puudub."
 
-#: kab/widget.cc:2088
+#: kab/widget.cc:2124
 msgid "Error calling mailer."
 msgstr "Viga meiliprogrammi kutsungil."
 
-#: kab/widget.cc:2090
+#: kab/widget.cc:2126
 msgid "Mailer called."
 msgstr "Kutse edastatud meilerile."
 
-#: kab/widget.cc:2113
+#: kab/widget.cc:2149
 msgid "The mail command must be configured before!"
 msgstr "Meili käsk peab olema eelnevalt konfigureeritud!"
 
-#: kab/widget.cc:2118
+#: kab/widget.cc:2155
 msgid "Mail configuration"
 msgstr "Meili konfiguratsioon"
 
-#: kab/widget.cc:2119
+#: kab/widget.cc:2156
 msgid "Please configure the parameters for the email command."
 msgstr "Palun konfigureeri e-maili käsu parameetrid."
 
-#: kab/widget.cc:2157
+#: kab/widget.cc:2194
 msgid "The email command parameters are wrong."
 msgstr "E-maili käsu parameetrid on valed."
 
-#: kab/widget.cc:2169
+#: kab/widget.cc:2206
 msgid ""
 "Email command failed.\n"
 "Make sure you did setup your email command and parameter!"
@@ -2431,642 +2424,7 @@ msgstr ""
 "E-maili käsu täitmine ebaõnnestus.\n"
 "Kontrolli oma e-maili käsu ja parameetrite seadistust!"
 
-#: kab/widget.cc:2173
+#: kab/widget.cc:2210
 msgid "Mail program started."
 msgstr "Meiliprogramm käivitus."
 
-#: kio/kio_cache.cc:345
-msgid "KIO Cache"
-msgstr "KIO Vahemälu"
-
-#: kio/kio_cache.cc:347
-msgid "Contents of the cache"
-msgstr "Vahemälu sisu"
-
-#: kio/kio_cache.cc:352
-msgid ""
-"Use the icons for drag and drop actions, since they refer to the cache files "
-"on your hard disk, while you should use the textual links for browsing"
-msgstr ""
-"Kasuta ikoone pukseerimistegevuseks, kuna nad tähistavad vahemälu faile "
-"sinu\n"
-"kõvakettal, kuigi sa peaks kasutama tekstilinke lehitsemiseks"
-
-#: kio/kio_cache.cc:355
-msgid "Creation Date"
-msgstr "Loomise kuupäev"
-
-#: kio/kio_cache.cc:357
-msgid "Expiration Date"
-msgstr "Aegumise kuupäev"
-
-#: kio/kio_cache.cc:428
-msgid "Never"
-msgstr "Iialgi"
-
-#: kio/kio_error.cc:16
-#, c-format
-msgid ""
-"Could not read\n"
-"%s"
-msgstr ""
-"Ei suutnud lugeda\n"
-"%s"
-
-#: kio/kio_error.cc:19
-#, c-format
-msgid ""
-"Could not write to\n"
-"%s"
-msgstr ""
-"Ei suutnud kirjutada\n"
-"%s"
-
-#: kio/kio_error.cc:22
-#, c-format
-msgid ""
-"Could not start process\n"
-"%s"
-msgstr ""
-"Ei suutnusd alustada protsessi\n"
-"%s"
-
-#: kio/kio_error.cc:25
-#, c-format
-msgid ""
-"Internal Error\n"
-"Please send a full bugreport to kde-bugs@kde.org\n"
-"\n"
-"%s"
-msgstr ""
-"Sisemine viga\n"
-"Palun saada täielik veaaruanne aadressil kde-bugs@kde.org\n"
-"\n"
-"%s"
-
-#: kio/kio_error.cc:28
-#, c-format
-msgid ""
-"Malformed URL\n"
-"%s"
-msgstr ""
-"Vigane URL\n"
-"%s"
-
-#: kio/kio_error.cc:31
-#, c-format
-msgid ""
-"The protocol %s\n"
-" is not supported"
-msgstr ""
-"%s protokoll\n"
-" ei ole toetatud"
-
-#: kio/kio_error.cc:34
-#, c-format
-msgid ""
-"The protocol %s\n"
-"is only a filter protocol.\n"
-msgstr ""
-"%s protokoll\n"
-"on ainult filterprotokoll.\n"
-
-#: kio/kio_error.cc:37
-#, c-format
-msgid ""
-"Unsupported action\n"
-"%s"
-msgstr ""
-"Toetuseta tegevus\n"
-"%s"
-
-#: kio/kio_error.cc:40
-#, c-format
-msgid ""
-"The file or directory\n"
-"%s\n"
-"does not exist"
-msgstr ""
-"Faili või kataloogi\n"
-"%s\n"
-"ei eksisteeri."
-
-#: kio/kio_error.cc:43
-#, c-format
-msgid ""
-"%s\n"
-" is a directory,\n"
-"but a file was expected"
-msgstr ""
-"%s\n"
-" on kataloog,\n"
-"kuid oodati faili"
-
-#: kio/kio_error.cc:46
-#, c-format
-msgid ""
-"Could not make directory\n"
-"%s"
-msgstr ""
-"Kataloogi pole võimalik luua\n"
-"%s"
-
-#: kio/kio_error.cc:49
-#, c-format
-msgid ""
-"The file or directory\n"
-"%s\n"
-"does already exist"
-msgstr ""
-"Fail või kataloog nimega\n"
-"%s\n"
-"eksisteerib juba"
-
-#: kio/kio_error.cc:52
-#, c-format
-msgid ""
-"%s\n"
-"Access denied"
-msgstr ""
-"%s\n"
-"Ligipääs keelatud"
-
-#: kio/kio_error.cc:55
-#, c-format
-msgid ""
-"Could not enter directory\n"
-"%s"
-msgstr ""
-"Kataloogi pole võimalik siseneda\n"
-"%s"
-
-#: kio/kio_error.cc:58
-#, c-format
-msgid ""
-"The protocol %s\n"
-"does not implement a directory service"
-msgstr ""
-"%s protokoll\n"
-"ei suuda teostada kataloogi teenust"
-
-#: kio/kio_error.cc:61
-#, c-format
-msgid ""
-"Found a cyclic link in\n"
-"%s"
-msgstr ""
-"Leitud perioodiline link\n"
-"%s"
-
-#: kio/kio_error.cc:64
-#, c-format
-msgid ""
-"Could not change permissions for\n"
-"%s"
-msgstr ""
-"Ei suuda muuta õigusi\n"
-"%s jaoks"
-
-#: kio/kio_error.cc:67
-#, c-format
-msgid ""
-"Access denied\n"
-"Could not write to\n"
-"%s"
-msgstr ""
-"Juurdepääs keelatud\n"
-"Ei suuda kirjutada\n"
-"%s"
-
-#: kio/kio_error.cc:70
-msgid ""
-"Action has been\n"
-"canceled by the user"
-msgstr ""
-"Tegevus on katkestatud\n"
-"kasutaja poolt"
-
-#: kio/kio_error.cc:73
-#, c-format
-msgid ""
-"Found a cyclic link while copying\n"
-"%s"
-msgstr ""
-"Kopeerides %s\n"
-"leitud perioodiline link"
-
-#: kio/kio_error.cc:76
-#, c-format
-msgid ""
-"Could not create socket for accessing\n"
-"%s"
-msgstr ""
-"Ei suuda luua pesa ligipääsuks\n"
-"%s -le"
-
-#: kio/kio_error.cc:79
-#, c-format
-msgid ""
-"Could not connect to host\n"
-"%s"
-msgstr ""
-"Ei suuda luua ühendust hosti\n"
-"%s"
-
-#: kio/kio_error.cc:82
-#, c-format
-msgid ""
-"Unknown host\n"
-"%s"
-msgstr ""
-"Tundmatu host\n"
-"%s"
-
-#: kio/kio_error.cc:85
-#, c-format
-msgid ""
-"Connection to host\n"
-"%s\n"
-"is broken"
-msgstr ""
-"Ühendus hostiga\n"
-"%s\n"
-"on katkenud"
-
-#: kio/kio_error.cc:88
-#, c-format
-msgid ""
-"The protocol %s\n"
-"is not a filter protocol"
-msgstr ""
-"Protokoll %s\n"
-"ei ole filterprotokoll"
-
-#: kio/kio_error.cc:91
-#, c-format
-msgid ""
-"%s\n"
-"is a file,\n"
-"but a directory was expected"
-msgstr ""
-"%s\n"
-"on fail, kuid oodati kataloogi"
-
-#: kio/kio_error.cc:94
-#, c-format
-msgid ""
-"Could not mount device.\n"
-"The reported error was:\n"
-"\n"
-"%s"
-msgstr ""
-"Ei suuda ühendada seadet.\n"
-"Tagastatud viga oli:\n"
-"\n"
-"%s"
-
-#: kio/kio_error.cc:97
-#, c-format
-msgid ""
-"Could not unmount device.\n"
-"The reported error was:\n"
-"\n"
-"%s"
-msgstr ""
-"Ei suuda seadet lahti ühendada.\n"
-"Tagastatud viga oli:\n"
-"\n"
-"%s"
-
-#: kio/kio_error.cc:100
-#, c-format
-msgid ""
-"The process for the\n"
-"%s protocol\n"
-"died unexpectedly"
-msgstr ""
-"Protokolli %s\n"
-"jaoks vajalik protsess\n"
-"suri ootamatult"
-
-#: kio/kio_error.cc:103
-#, c-format
-msgid ""
-"Could not access\n"
-"%s"
-msgstr ""
-"Ei suuda tagada ligipääsu\n"
-"%s"
-
-#: kio/kio_error.cc:106
-#, c-format
-msgid ""
-"Unknown error code %i\n"
-"%s\n"
-"\n"
-"Please send a full bugreport to kde-bugs@kde.org"
-msgstr ""
-"Tundmatu veakood %i\n"
-"%s\n"
-"\n"
-"Palun saada täielik veaaruanne aadressil kde-bugs@kde.org"
-
-#: kio/kio_error.cc:118 kio/kio_linedit_dlg.cc:42 kio/kio_openwith.cc:260
-#: kio/kio_pass_dlg.cc:75 kio/kio_paste.cc:48 kio/kio_paste.cc:60
-#: kio/kio_paste.cc:76 kio/kio_paste.cc:87 kio/kio_rename_dlg.cc:217
-#: kio/kio_rename_dlg.cc:224 kio/kmimetypes.cc:62 kio/kmimetypes.cc:89
-#: kio/kmimetypes.cc:135 kio/kmimetypes.cc:488 kio/kmimetypes.cc:506
-#: kio/kmimetypes.cc:520 kio/kmimetypes.cc:567 kio/kmimetypes.cc:600
-#: kio/kmimetypes.cc:660 kio/kmimetypes.cc:692 kio/kregfactories.cc:75
-#: kio/krun.cc:40 kio/krun.cc:105 kio/krun.cc:512 kio/kservices.cc:114
-msgid "Ok"
-msgstr "Ok"
-
-#: kio/kio_job.cc:138
-#, c-format
-msgid "Mounting %s ..."
-msgstr "%s ühendamine ..."
-
-#: kio/kio_job.cc:158
-#, c-format
-msgid "Unmounting %s ..."
-msgstr "%s lahti ühendamine ..."
-
-#: kio/kio_openwith.cc:133
-msgid "This group is empty!"
-msgstr "See grupp on tühi!"
-
-#: kio/kio_openwith.cc:264
-msgid "&Browser"
-msgstr "&Brauser"
-
-#: kio/kio_pass_dlg.cc:33
-msgid "User"
-msgstr "Kasutaja"
-
-#: kio/kio_pass_dlg.cc:44 kio/kio_pass_dlg.cc:88
-msgid "Password"
-msgstr "Parool"
-
-#: kio/kio_paste.cc:48 kio/kio_paste.cc:60
-msgid "The clipboard is empty"
-msgstr "Lõikepuver on tühi"
-
-#: kio/kio_paste.cc:75
-msgid ""
-"Pasting clipboard data is only supported on the local hard disk currently"
-msgstr ""
-"Lõikepuhvri andmete asetamine on praegu toetatud ainult lokaalsel kettal"
-
-#: kio/kio_paste.cc:80
-msgid "Filename for clipboard content:"
-msgstr "Faili nimi lõikepuhvri sisu jaoks:"
-
-#: kio/kio_paste.cc:87
-msgid "You did not enter a filename"
-msgstr "Sa ei sisestanud faili nime"
-
-#: kio/kio_paste.cc:97
-#, c-format
-msgid "The file %s does already exist. Do you really want to overwrite it ?"
-msgstr "Fail nimega %s eksisteerib juba. Soovid sa tõesti selle üle kirjutada?"
-
-#: kio/kio_progress_dlg.cc:92 kio/kio_progress_dlg.cc:108
-msgid " Bytes"
-msgstr " Baiti"
-
-#: kio/kio_progress_dlg.cc:97 kio/kio_progress_dlg.cc:113
-msgid " Kb"
-msgstr " Kb"
-
-#: kio/kio_progress_dlg.cc:102 kio/kio_progress_dlg.cc:118
-msgid " Mb"
-msgstr " Mb"
-
-#: kio/kio_progress_dlg.cc:151 kio/kio_progress_dlg.cc:177
-msgid "Stalled"
-msgstr "Peatunud"
-
-#: kio/kio_progress_dlg.cc:159
-msgid " Bytes/s"
-msgstr " Baiti/s"
-
-#: kio/kio_progress_dlg.cc:164
-msgid " Kb/s"
-msgstr " Kb/s"
-
-#: kio/kio_progress_dlg.cc:169
-msgid " Mb/s"
-msgstr " Mb/s"
-
-#: kio/kio_progress_dlg.cc:184
-#, c-format
-msgid "%i seconds"
-msgstr "%i sekundit"
-
-#: kio/kio_progress_dlg.cc:190
-#, c-format
-msgid "%i:%i"
-msgstr "%i:%i"
-
-#: kio/kio_progress_dlg.cc:197
-#, c-format
-msgid "%i:%i:%i"
-msgstr "%i:%i:%i"
-
-#: kio/kio_progress_dlg.cc:201
-#, c-format
-msgid "%i%s  Remaining time: %s"
-msgstr "%i%s  Järelejäänud aeg: %s"
-
-#: kio/kio_progress_dlg.cc:207
-msgid "Scanning "
-msgstr "Läbivaatus "
-
-#: kio/kio_progress_dlg.cc:222
-msgid "Creating dir "
-msgstr "Kataloogi loomine "
-
-#: kio/kio_progress_dlg.cc:229
-msgid "Fetching file"
-msgstr "Faili võtmine"
-
-#: kio/kio_rename_dlg.cc:33
-msgid "Rename"
-msgstr "Nimeta ümber"
-
-#: kio/kio_rename_dlg.cc:38 kio/kio_skip_dlg.cc:23
-msgid "Skip"
-msgstr "Jäta vahele"
-
-#: kio/kio_rename_dlg.cc:41 kio/kio_skip_dlg.cc:28
-msgid "Auto Skip"
-msgstr "Automaatne vahelejätt"
-
-#: kio/kio_rename_dlg.cc:47
-msgid "Overwrite"
-msgstr "Kirjuta üle"
-
-#: kio/kio_rename_dlg.cc:52
-msgid "Overwrite All"
-msgstr "Kirjuta kõik üle"
-
-#: kio/kio_rename_dlg.cc:59
-msgid "Resume"
-msgstr "Jätka"
-
-#: kio/kio_rename_dlg.cc:64
-msgid "Resume All"
-msgstr "Jätka kõike"
-
-#: kio/kio_rename_dlg.cc:75
-msgid "You try to overwrite"
-msgstr "Sa proovid üle kirjutada"
-
-#: kio/kio_rename_dlg.cc:96
-msgid "already exists. Overwrite with"
-msgstr "juba eksisteerib. Kirjuta üle"
-
-#: kio/kio_rename_dlg.cc:108
-msgid "Or rename to"
-msgstr "Või nimeta ümber"
-
-#: kio/kio_rename_dlg.cc:119
-msgid "already exists."
-msgstr "juba eksisteerib."
-
-#: kio/kio_rename_dlg.cc:124
-msgid "Do you want to rename it ?"
-msgstr "Soovid sa selle ümber nimetada?"
-
-#: kio/kio_rename_dlg.cc:215
-msgid "Malformed URL\n"
-msgstr "Vigane URL\n"
-
-#: kio/kio_rename_dlg.cc:224
-msgid "You must not change the protocol"
-msgstr "Sa ei tohi vahetada protokolli"
-
-#: kio/kio_skip_dlg.cc:35
-msgid "Can not write"
-msgstr "Ei suuda kirjutada"
-
-#: kio/kio_skip_dlg.cc:46
-msgid "Permission denied!"
-msgstr "Juurdepääs keelatud!"
-
-#: kio/kmimetypes.cc:62
-msgid "No mime types installed!"
-msgstr "Ühtegi mime tüüpi ei ole installeeritud!"
-
-#: kio/kmimetypes.cc:86
-msgid "Could not find mime type\n"
-msgstr "Ei suuda leida mime tüüpi\n"
-
-#: kio/kmimetypes.cc:132
-msgid "The mime type config file "
-msgstr "Mime tüübi seadistusfail"
-
-#: kio/kmimetypes.cc:134 kio/kregfactories.cc:74
-msgid "does not conatain a MimeType=... entry"
-msgstr "ei sisalda kirjet MimeType=..."
-
-#: kio/kmimetypes.cc:487
-#, c-format
-msgid ""
-"The kdelnk file\n"
-"%s\n"
-"has no Type=... entry"
-msgstr ""
-"Kdelnk fail\n"
-"%s\n"
-"ei sisalda kirjet Type=..."
-
-#: kio/kmimetypes.cc:505
-#, c-format
-msgid ""
-"The kdelnk type\n"
-"%s\n"
-"is unknown"
-msgstr ""
-"Kdelnk tüüp\n"
-"%s\n"
-"on tundamatu"
-
-#: kio/kmimetypes.cc:519 kio/kmimetypes.cc:599 kio/kmimetypes.cc:691
-#, c-format
-msgid ""
-"The kdelnk file\n"
-"%s\n"
-"is of type FSDevice but has no Dev=... entry"
-msgstr ""
-"Kdelnk fail\n"
-"%s\n"
-"on FSDevice tüüpi, kuid ei sialda kirjet Dev=..."
-
-#: kio/kmimetypes.cc:566
-#, c-format
-msgid ""
-"The kdelnk file\n"
-"%s\n"
-"is of type Link but has no URL=... entry"
-msgstr ""
-"Kdelnk fail\n"
-"%s\n"
-"on Link tüüpi, kuid ei sisalda kirjet URL=..."
-
-#: kio/kmimetypes.cc:609
-msgid "Mount"
-msgstr "Ühenda"
-
-#: kio/kmimetypes.cc:616
-msgid "Unmount"
-msgstr "Ühenda lahti"
-
-#: kio/kmimetypes.cc:659
-#, c-format
-msgid ""
-"The kdelnk file\n"
-"%s\n"
-" has an invalid menu entry\n"
-"%s"
-msgstr ""
-"kdelnk fail%s\n"
-"sisaldab vigast menüü kirjet\n"
-"%s"
-
-#: kio/kregfactories.cc:72
-msgid "The mime type _cfg file "
-msgstr "Mime tüübi _cfg fail"
-
-#: kio/krun.cc:39
-#, c-format
-msgid ""
-"Can not enter\n"
-"%s\n"
-"Access denied"
-msgstr ""
-"Ei suuda siseneda\n"
-"%s\n"
-"Juurdepääs keelatud"
-
-#: kio/kservices.cc:111
-msgid "The application config file\n"
-msgstr "Rakenduse konfiguratsioonifail\n"
-
-#: kio/kservices.cc:113
-msgid ""
-"\n"
-"does not conatain a Name=... entry"
-msgstr ""
-"\n"
-"ei sialda kirjet Name=..."
-
-#~ msgid "Org Unit:"
-#~ msgstr "Osakond:"
-
-#~ msgid "Org Subunit:"
-#~ msgstr "Filiaal:"
-
-#~ msgid "Comment:"
-#~ msgstr "Kommentaar:"ÿ

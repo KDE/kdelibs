@@ -69,7 +69,7 @@ enum ID { ID_ADDRESS, ID_BIG, ID_BLOCKQUOTE, ID_B, ID_CELL, ID_CITE,
     ID_CODE, ID_EM, ID_FONT, ID_HEADER, ID_I, ID_KBD, ID_PRE, ID_SAMP, 
     ID_SMALL, ID_STRIKE, ID_STRONG, ID_S, ID_TEXTAREA, ID_TT, ID_U, 
     ID_CAPTION, ID_TH, ID_TD, ID_TABLE, ID_DIR, ID_MENU, ID_OL, ID_UL, 
-    ID_VAR };
+    ID_VAR, ID_DIV };
 
 
 //----------------------------------------------------------------------------
@@ -278,12 +278,14 @@ void KHTMLWidget::requestFile( HTMLObject *_obj, const char *_url )
   // Initialize all the scroll blob stuff.
   // Even if you undef out the other stuff, the blob's hooks
   // are still inited.
+#ifdef USE_THE_BLOB_ALEX_MADE
+  // What the hell does this do in fileRequest()???????
   scrollBlob=0;
   scrollBlobType = SCROLL_NONE;
   scrollBlobPixmap=QPixmap();
   scrollBlobTimer = new QTimer (this, "scrollBlobTimer");
   QObject::connect (scrollBlobTimer, SIGNAL(timeout()), this, SLOT(scrollBlobTimeout()));
-
+#endif
 }
 
 void KHTMLWidget::cancelRequestFile( HTMLObject *_obj )
@@ -378,6 +380,46 @@ void KHTMLWidget::data( const char *_url, const char *_data, int _len, bool _eof
     emit documentDone();
 }
 
+static bool
+fixBackground(QPixmap &bgPixmap, const QBrush &brush)
+{
+#define BGMINWIDTH	50
+#define BGMINHEIGHT	25
+   if (bgPixmap.isNull())
+       return false;
+   int w = bgPixmap.width();
+   int h = bgPixmap.height();
+   if (w < BGMINWIDTH)
+   {
+       int factor = ((BGMINWIDTH+w-1) / w);
+//printf("Scaling pixmap %d times in X-direction\n", factor);
+       QPixmap newPixmap(w * factor, h);
+       QPainter p;
+       p.begin(&newPixmap);
+       p.fillRect(0,0, w*factor, h, brush );
+       for(int i=0; i < factor; i++)
+           p.drawPixmap(i*w, 0, bgPixmap);
+       p.end();
+       bgPixmap = newPixmap;
+       w = w * factor;
+   }
+   if (h < BGMINHEIGHT)
+   {
+       int factor = ((BGMINHEIGHT+h-1) / h);
+//printf("Scaling pixmap %d times in Y-direction\n", factor);
+       QPixmap newPixmap(w, h*factor);
+       QPainter p;
+       p.begin(&newPixmap);
+       p.fillRect(0,0, w, h*factor, brush);
+       for(int i=0; i < factor; i++)
+          p.drawPixmap(0, i*h, bgPixmap);
+       p.end();
+       bgPixmap = newPixmap;
+       h = h * factor;
+   }
+   return true;
+}
+
 void KHTMLWidget::slotFileLoaded( const char *_url, const char *_filename )
 {
   //printf("///////// FileLoaded %s %s ////////////\n",_url,_filename );
@@ -391,9 +433,10 @@ void KHTMLWidget::slotFileLoaded( const char *_url, const char *_filename )
 	// Did the background image arrive ?
 	if ( strcmp( bgPixmapURL, _url ) == 0 )
 	{
-	    bgPixmap.load( _filename );					
+	    bgPixmap.load( _filename );
 	    bgPixmapURL = 0;
-	    scheduleUpdate( true );
+            if (fixBackground(bgPixmap, settings->bgColor))
+                scheduleUpdate( true );
 	}
     }    
     return;
@@ -977,8 +1020,8 @@ void KHTMLWidget::paintEvent( QPaintEvent* _pe )
     clue->print( painter, _pe->rect().x() - x_offset,
 	    _pe->rect().y() + y_offset - topBorder,
 	    _pe->rect().width(), _pe->rect().height(), tx, ty, false );
-    
-    if ( bIsSelected )
+
+    if (bIsSelected && htmlView && htmlView->getFrameBorder() == 0)
     {
 	QPen pen = painter->pen();
 	painter->setPen( black );
@@ -1778,6 +1821,12 @@ void KHTMLWidget::blockEndList( HTMLClueV *_clue, HTMLStackElem *Elem)
     }
     
     indent = Elem->miscData1;
+    flow = 0;
+}
+
+void KHTMLWidget::blockEndDiv( HTMLClueV *_clue, HTMLStackElem *Elem)
+{
+    divAlign =  (HTMLClue::HAlign)Elem->miscData1;
     flow = 0;
 }
 
@@ -2606,18 +2655,18 @@ void KHTMLWidget::parseA( HTMLClueV *_clue, const char *str )
 	    if ( strncasecmp( p, "href=", 5 ) == 0 )
 	    {
 		p += 5;
+		KURL u;
 		if ( *p == '#' )
 		{// reference
-		    KURL u( actualURL );
+		    u = KURL( actualURL );
 		    u.setReference( p + 1 );
-	            tmpurl = u.url();
 		}
 		else
 		{
-                    KURL u( baseURL, p );
-		    tmpurl = u.url();
+                    u = KURL( baseURL, p );
 		}		
 
+		tmpurl = u.url();
 		visited = URLVisited( tmpurl );
 	    }
 	    else if ( strncasecmp( p, "name=", 5 ) == 0 )
@@ -2734,15 +2783,13 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
 		if ( strcmp( kurl.protocol(), "file" ) == 0 )
 		{
 		    bgPixmap.load( kurl.path() );
-		    scheduleUpdate( true );
 		}
 		else
 		{
 		    requestBackgroundImage( kurl.url() );
 		}
 		
-		if ( !bgPixmap.isNull() )
-		    bgPixmapSet = TRUE;
+		bgPixmapSet = !bgPixmap.isNull();
 	    }
 	    else if ( strncasecmp( token, "text=", 5 ) == 0 &&
                     !defaultSettings->forceDefault )
@@ -2802,6 +2849,8 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
 		setBackgroundColor( settings->bgColor );
 	    }
 	}
+        if (fixBackground(bgPixmap, settings->bgColor ))
+            scheduleUpdate( true );
     }
     else if ( strncmp( str, "br", 2 ) == 0 )
     {
@@ -2825,19 +2874,10 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
 	if (!flow)
 	    newFlow(_clue);
 
-	HTMLObject *last = flow->lastChild(); 
-	if (!last || last->isNewline())
-	{
-		// Start of line, add vertical space based on current font.
-		flow->append( new HTMLVSpace( 
-				currentFont()->pointSize(),
-				clear ));
-	}
-	else
-	{
-		// Terminate current line
-		flow->append( new HTMLVSpace(0, clear));
-	}
+	// Start of line, add vertical space based on current font.
+	flow->append( new HTMLVSpace( 
+			currentFont()->pointSize(),
+			clear ));
 
 	vspace_inserted = false;
     }
@@ -2925,6 +2965,8 @@ void KHTMLWidget::parseD( HTMLClueV *_clue, const char *str )
     }
     else if ( strncmp( str, "div", 3 ) == 0 )
     {
+	pushBlock(ID_DIV, 1, &KHTMLWidget::blockEndDiv, divAlign);
+
 	stringTok->tokenize( str + 4, " >" );
 	while ( stringTok->hasMoreTokens() )
 	{
@@ -2944,8 +2986,7 @@ void KHTMLWidget::parseD( HTMLClueV *_clue, const char *str )
     }
     else if ( strncmp( str, "/div", 4 ) == 0 )
     {
-	divAlign = HTMLClue::Left;
-	flow = 0;
+	popBlock( ID_DIV, _clue );
     }
     else if ( strncmp( str, "dl", 2 ) == 0 )
     {
@@ -3414,7 +3455,7 @@ void KHTMLWidget::parseH( HTMLClueV *_clue, const char *str )
 			{
 				if ( strchr( token+6, '%' ) )
 					percent = atoi( token+6 );
-				else
+                                else if ( isdigit( *(token + 6)))
 				{
 					length = atoi( token+6 );
 					percent = 0;
@@ -3470,7 +3511,7 @@ void KHTMLWidget::parseI( HTMLClueV *_clue, const char *str )
 	    {
 		if ( strchr( token + 6, '%' ) )
 		    percent = atoi( token + 6 );
-		else
+		else if ( isdigit( *(token + 6)))
 		    width = atoi( token + 6 );
 	    }
 	    else if (strncasecmp( token, "height=", 7 ) == 0)
@@ -3776,7 +3817,7 @@ void KHTMLWidget::parseM( HTMLClueV *_clue, const char *str )
 		}
 		debugM( "Meta: name=%s httpequiv=%s content=%s\n",
                           (const char *)name,(const char *)httpequiv,(const char *)content );
-		if ( !httpequiv.isEmpty() )
+		if ( !httpequiv.isEmpty() && !content.isNull() )
 		{
 		    if ( strcasecmp(httpequiv.data(),"content-type") == 0 )
 		    {
@@ -3894,7 +3935,7 @@ void KHTMLWidget::parseO( HTMLClueV *_clue, const char *str )
 	if ( !formSelect )
 		return;
 
-	QString value = "";
+	QString value = 0;
 	bool selected = false;
 
 	stringTok->tokenize( str + 7, " >" );
@@ -4296,9 +4337,9 @@ const char* KHTMLWidget::parseCell( HTMLClue *_clue, const char *str )
 	if ( strncasecmp( token, "width=", 6 ) == 0 )
 	{
 	    if ( strchr( token+6, '%' ) )
-            percent = atoi( token + 6 );
-        else
-            cell_width = atoi( token + 6 );
+               percent = atoi( token + 6 );
+            else if ( isdigit( *(token + 6)))
+               cell_width = atoi( token + 6 );
 	}
 	else if ( strncasecmp( token, "align=", 6 ) == 0 )
 	{
@@ -4394,8 +4435,8 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 	    if ( strchr( token+6, '%' ) )
 		percent = atoi( token + 6 );
 	    else if ( strchr( token+6, '*' ) )
-	    { /* ignore */ }
-	    else
+                { /* ignore */ }
+            else if ( isdigit( *(token + 6)))
 		width = atoi( token + 6 );
 	}
 	else if (strncasecmp( token, "align=", 6 ) == 0)
@@ -4610,8 +4651,8 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 			    if ( strchr( token + 6, '%' ) )
 				percent = atoi( token + 6 );
 			    else if ( strchr( token + 6, '*' ) )
-			    { /* ignore */ }
-			    else
+			        { /* ignore */ }
+			    else if (isdigit( *(token+6)))
 			    {
 				width = atoi( token + 6 );
 				percent = 0;
@@ -4978,7 +5019,7 @@ void KHTMLWidget::slotScrollVert( int _val )
 
     bDrawBackground = true;
 
-    if (bIsSelected)
+    if (bIsSelected && htmlView && htmlView->getFrameBorder() == 0)
     {
         ofs = 2;
     }
@@ -5037,7 +5078,7 @@ void KHTMLWidget::slotScrollHorz( int _val )
     
     bDrawBackground = true;
 
-    if (bIsSelected)
+    if (bIsSelected && htmlView && htmlView->getFrameBorder() == 0)
     {
         ofs = 2;
     }
@@ -5344,6 +5385,13 @@ void KHTMLWidget::setSelected( bool _active )
     return;
   
   bIsSelected = _active;
+
+  // If the frame is not supposed to have a border, do not draw the selection
+  // rectangle.
+  if (htmlView && htmlView->getFrameBorder() == 0)
+  {
+      return;
+  }
 
   if ( _active )
   {

@@ -28,6 +28,9 @@
 #include <qpixmap.h>
 #include <X11/Xlib.h>
 
+#ifdef raise
+#undef raise
+#endif
 
 /**
  * The class KWM allows usual X11 clients to get or modify window

@@ -24,10 +24,11 @@
 #include "deviceman.h"
 #include "midiout.h"
 #include <stdio.h>
-#include "sndcard.h"
 #include <fcntl.h>
-#include <sys/ioctl.h>
 #include <unistd.h>
+#include <sys/ioctl.h>
+#include <errno.h>
+#include "sndcard.h"
 #include "synthout.h"
 #include "fmout.h"
 #include "gusout.h"
@@ -35,7 +36,7 @@
 #include "midispec.h"
 #include "../version.h"
 
-SEQ_DEFINEBUF (2048);
+SEQ_DEFINEBUF (4096);
 
 #define CONTROLTIMER
 
@@ -120,7 +121,7 @@ int DeviceManager::checkInit(void)
 
 int DeviceManager::initManager(void)
 {
-    seqfd = open("/dev/sequencer", O_WRONLY, 0);
+    seqfd = open("/dev/sequencer", O_WRONLY | O_NONBLOCK, 0);
     if (seqfd==-1)
     {
         printf("ERROR: Couldn't open /dev/sequencer to get some information\n");
@@ -134,7 +135,9 @@ int DeviceManager::initManager(void)
     n_total=n_midi+n_synths;
     if (n_midi==0) 
     {
-        printf("ERROR: There's no midi port");
+        printf("ERROR: There's no midi port\n");
+/* This could be a problem if the user don't have a synth neither,
+but not having any of both things is not a normal thing */
         //    ok=0;
         //    return 1;
     }
@@ -150,7 +153,7 @@ int DeviceManager::initManager(void)
         if (ioctl(seqfd,SNDCTL_MIDI_INFO,&midiinfo[i])!=-1)
         {
 #ifdef GENERAL_DEBUG_MESSAGES
-            printf("----");
+            printf("----\n");
             printf("Device : %d\n",i);
             printf("Name : %s\n",midiinfo[i].name);
             printf("Device type : %d\n",midiinfo[i].dev_type);
@@ -165,7 +168,7 @@ int DeviceManager::initManager(void)
         if (ioctl(seqfd,SNDCTL_SYNTH_INFO,&synthinfo[i])!=-1)
         {
 #ifdef GENERAL_DEBUG_MESSAGES  
-            printf("----");
+            printf("----\n");
             printf("Device : %d\n",i);
             printf("Name : %s\n",synthinfo[i].name);
             switch (synthinfo[i].synth_type)
@@ -215,7 +218,7 @@ void DeviceManager::openDev(void)
         return;
     }
     ok=1;
-    seqfd = open("/dev/sequencer", O_WRONLY, 0);
+    seqfd = open("/dev/sequencer", O_WRONLY | O_NONBLOCK, 0);
     if (seqfd==-1)
     {
         printf("Couldn't open\n");
@@ -426,19 +429,53 @@ void DeviceManager::sync(int i)
         ioctl(seqfd,SNDCTL_SEQ_RESET);
         ioctl(seqfd,SNDCTL_SEQ_PANIC);
     }
+    else
+    {
+    seqbuf_dump();
     ioctl(seqfd, SNDCTL_SEQ_SYNC);
+    };
 #endif
 }
 
 void DeviceManager::seqbuf_dump (void)
 {
     if (_seqbufptr)
-        if (write (seqfd, _seqbuf, _seqbufptr) == -1)
+    {
+        int r=0;
+        unsigned char *sb=_seqbuf;
+        int w=_seqbufptr;
+        r=write (seqfd, _seqbuf, _seqbufptr);
+#ifdef DEVICEMANDEBUG
+        printf("%d == %d\n",r,w);
+        printf("%d\n",(errno==EAGAIN)? 1 : 0);
+#endif
+        while (((r == -1)&&(errno==EAGAIN))||(r != w))
         {
-            printf("Error writing to /dev/sequencer in deviceManager::seqbuf_dump\n");
-            perror ("write /dev/sequencer in seqbuf_dump\n");
-            exit (-1);
+            if ((r==-1)&&(errno==EAGAIN))
+            {
+                usleep(1);
+            }
+            else if ((r>0)&&(r!=w))
+            {
+                w-=r;
+                sb+=r;
+            }
+            r=write (seqfd, sb, w);
+#ifdef DEVICEMANDEBUG
+            printf("%d == %d\n",r,w);
+            printf("%d\n",(errno==EAGAIN)? 1 : 0);
+#endif
         }
+    }
+    /*
+     *   if (_seqbufptr)
+     *       if (write (seqfd, _seqbuf, _seqbufptr) == -1)
+     *       {
+     *           printf("Error writing to /dev/sequencer in deviceManager::seqbuf_dump\n");
+     *           perror ("write /dev/sequencer in seqbuf_dump\n");
+     *           exit (-1);
+     *       }
+     */
     _seqbufptr = 0;
 }
 

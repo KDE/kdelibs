@@ -94,12 +94,12 @@ void kimgio_jpeg_read(QImageIO * iio)
     JSAMPROW buffer[1];
     unsigned int *ui_row;
     unsigned char *uc_row, *uc_row_index;
-    unsigned depth;
-    unsigned col;
+    unsigned int depth, col;
+    unsigned char r,g,b;
 
     // We need to know if the display can handle 32-bit images
 
-  depth = QPixmap::defaultDepth();
+    depth = QPixmap::defaultDepth();
 
     // Init jpeg decompression structures
 
@@ -191,8 +191,12 @@ void kimgio_jpeg_read(QImageIO * iio)
 
 	    jpeg_read_scanlines(&cinfo, buffer, 1);
 
-	    for (col = 0; col < cinfo.output_width; col++)
-		*ui_row++ = qRgb(*uc_row++, *uc_row++, *uc_row++);
+	    for (col = 0; col < cinfo.output_width; col++) {
+		r = *uc_row++;
+		g = *uc_row++;
+		b = *uc_row++;
+		*ui_row++ = qRgb(r, g, b);
+            }
 	}
     }
 
