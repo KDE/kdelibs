@@ -5239,7 +5239,7 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
         info.method = "POLL";
         break;
     default:
-        error( ERR_UNSUPPORTED_ACTION, i18n("Unsupported method: authentication will fail, please report bug!"));
+        error( ERR_UNSUPPORTED_ACTION, i18n("Unsupported method: authentication will fail. Please submit a bug report."));
         break;
   }
 
