@@ -9,6 +9,9 @@ Shell::Shell( KPart *part1, KPart *part2 )
 {
   m_part1 = part1;
   m_part2 = part2;
+
+  insertChild( m_part1 );
+  insertChild( m_part2 );
   
   m_manager = new KEmbedManager( this );
 
@@ -24,6 +27,8 @@ Shell::Shell( KPart *part1, KPart *part2 )
   
   m_manager->addPart( m_part1 );
   m_manager->addPart( m_part2 );
+
+  setActivePart( m_part1 );
 }
 
 Shell::~Shell()
@@ -36,6 +41,13 @@ void Shell::slotActivePartChanged( KPart *newPart, KPart *oldPart )
 {
   if ( newPart && oldPart )
     qDebug( "%s -> %s", newPart->name(), oldPart->name() );
+  if ( newPart )
+    setActivePart( newPart );
+}
+
+QString Shell::config() const
+{
+  return QString::null;
 }
 
 void Shell::resizeEvent( QResizeEvent * )

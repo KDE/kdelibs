@@ -3,11 +3,12 @@
 #define __example_h__
 
 #include <kpart.h>
+#include <kshell.h>
 #include <kembedmanager.h>
 
 class QSplitter;
 
-class Shell : public QWidget
+class Shell : public KShell
 {
   Q_OBJECT
 public:
@@ -18,6 +19,7 @@ protected slots:
   void slotActivePartChanged( KPart *newPart, KPart *oldPart );
 
 protected:
+  virtual QString config() const;
   virtual void resizeEvent( QResizeEvent * );
   
 private:
