@@ -78,7 +78,7 @@ public:
   /*
    * Creates a new module.
    */
-  KCModule(QWidget *parent=0, const char *name=0, const QStringList &args=0 );
+  KCModule(QWidget *parent=0, const char *name=0, const QStringList &args=QStringList() );
 
   /*
    * Destroys the module.
