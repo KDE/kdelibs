@@ -40,7 +40,7 @@ enum KSpellClients {
  *  next time it is run).
  *
  *
- *  @author David Sweet dsweet@wheatcomputers.com
+ *  @author David Sweet dsweet@kde.org
  *  @short Configuration dialog for KSpell
  *  @version $Id$
  *  @see KSpell

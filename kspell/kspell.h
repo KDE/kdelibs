@@ -26,7 +26,7 @@
  * KSpell Dialog.
  *
  * @short A KDE programmer's interface to International ISpell 3.1  (GPL 1997)
- * @author David Sweet dsweet@wheatcomputers.com
+ * @author David Sweet dsweet@kde.org
  * @version $Id$
  * @see KSpellConfig
  */
