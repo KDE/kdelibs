@@ -22,10 +22,12 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qglobal.h>
+#include <qfile.h>
 
 #include <dcopclient.h>
 
 #include <kdebug.h>
+#include <kprocess.h>
 #include "kcookie.h"
 
 
@@ -98,9 +100,9 @@ void KCookie::getXCookie()
     if (disp.left(10) == "localhost:")
        disp = disp.mid(9);
 
-    QCString cmd = "xauth list "+disp;
+    QString cmd = "xauth list "+KProcess::quote(disp);
     blockSigChild(); // pclose uses waitpid()
-    if (!(f = popen(cmd, "r"))) 
+    if (!(f = popen(QFile::encodeName(cmd), "r"))) 
     {
 	kdError(900) << k_lineinfo << "popen(): " << perror << "\n";
 	unblockSigChild();
@@ -162,10 +164,9 @@ void KCookie::getICECookie()
         if (strncmp((*it).data(), m_dcopTransport.data(), m_dcopTransport.length()) != 0)
             continue;
         m_DCOPSrv = *it;
-	QCString cmd;
-	cmd.sprintf("iceauth list netid=%s", (*it).data());
+	QString cmd = "iceauth list "+KProcess::quote("netid="+m_DCOPSrv);
 	blockSigChild();
-	if (!(f = popen(cmd, "r"))) 
+	if (!(f = popen(QFile::encodeName(cmd), "r"))) 
 	{
 	    kdError(900) << k_lineinfo << "popen(): " << perror << "\n";
 	    unblockSigChild();
