@@ -284,6 +284,8 @@ public:
     QString selectWordUnderCursor();
 
     QPopupMenu *createPopupMenu( const QPoint& pos );
+    
+    void setAutoUpdate(bool b);
 
 signals:
     /** This signal is emitted if the user dropped a URL over the text editor
@@ -378,6 +380,12 @@ protected:
     virtual void create( WId = 0, bool initializeWindow = true,
                          bool destroyOldWindow = true );
 
+    /**
+     * Reimplemented for internal reasons, the API is not affected.
+     */
+    virtual void ensureCursorVisible();
+    virtual void setCursor( const QCursor & );
+    virtual void viewportPaintEvent( QPaintEvent* );
 
 protected:
 

@@ -42,6 +42,7 @@ class KEdit::KEditPrivate
 public:
     bool overwriteEnabled:1;
     bool posDirty:1;
+    bool autoUpdate:1;
 };
 
 
@@ -51,6 +52,7 @@ KEdit::KEdit(QWidget *_parent, const char *name)
     d = new KEditPrivate;
     d->overwriteEnabled = false;
     d->posDirty = true;
+    d->autoUpdate = true;
 
     parent = _parent;
 
@@ -73,6 +75,12 @@ KEdit::KEdit(QWidget *_parent, const char *name)
 KEdit::~KEdit()
 {
   delete d;
+}
+
+void
+KEdit::setAutoUpdate(bool b)
+{
+  d->autoUpdate = b;
 }
 
 void
@@ -139,7 +147,7 @@ KEdit::insertText(QTextStream *stream)
 void
 KEdit::cleanWhiteSpace()
 {
-   setAutoUpdate(false);
+   d->autoUpdate = false;
    if (!hasMarkedText())
       selectAll();
    QString oldText = markedText();
@@ -191,7 +199,7 @@ KEdit::cleanWhiteSpace()
    if (oldText == newText)
    {
       deselect();
-      setAutoUpdate(true);
+      d->autoUpdate = true;
       repaint();
       return;
    }
@@ -216,7 +224,7 @@ KEdit::cleanWhiteSpace()
    }
 
    insert(newText);
-   setAutoUpdate(true);
+   d->autoUpdate = true;
    repaint();
 
    setModified(true);
@@ -659,6 +667,30 @@ void KEdit::create( WId id, bool initializeWindow, bool destroyOldWindow )
 {
   QMultiLineEdit::create( id, initializeWindow, destroyOldWindow );
   KCursor::setAutoHideCursor( this, true );
+}
+
+void KEdit::ensureCursorVisible()
+{
+  if (!d->autoUpdate)
+    return;
+
+  QMultiLineEdit::ensureCursorVisible();
+}
+
+void KEdit::setCursor( const QCursor &c )
+{
+  if (!d->autoUpdate)
+    return;
+
+  QMultiLineEdit::setCursor(c);
+}
+
+void KEdit::viewportPaintEvent( QPaintEvent*pe )
+{
+  if (!d->autoUpdate)
+    return;
+
+  QMultiLineEdit::viewportPaintEvent(pe);
 }
 
 

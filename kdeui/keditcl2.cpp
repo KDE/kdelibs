@@ -546,14 +546,20 @@ int KEdit::doReplace(QString s_pattern, bool case_sensitive,
 
 	if(replace_all){ // automatic
 
-	  stringnew = string.copy();
-	  stringnew.replace(pos,length,replacement);
+          stringnew = string.copy();
+          do 
+          {  
+	    stringnew.replace(pos,length,replacement);
+
+	    replace_all_col = pos + replacement.length();
+	    replace_all_line = line_counter;
+
+            pos = stringnew.find(s_pattern, replace_all_col, case_sensitive);
+          }
+          while( pos != -1); 
 
 	  removeLine(line_counter);
 	  insertLine(stringnew,line_counter);
-
-	  replace_all_col = pos + replacement.length();
-	  replace_all_line = line_counter;
 
 	  setModified(true);
 	}
