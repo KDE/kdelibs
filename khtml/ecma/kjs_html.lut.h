@@ -4,7 +4,7 @@ namespace KJS {
 
 const struct HashEntry HTMLDocumentTableEntries[] = {
    { "open", HTMLDocument::Open, DontDelete|Function, 0, 0 },
-   { 0, 0, 0, 0, 0 },
+   { "scripts", HTMLDocument::Scripts, DontDelete|ReadOnly, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { "all", HTMLDocument::All, DontDelete|ReadOnly, 0, &HTMLDocumentTableEntries[32] },
    { 0, 0, 0, 0, 0 },

@@ -107,6 +107,7 @@ const ClassInfo KJS::HTMLDocument::info =
   links			HTMLDocument::Links		DontDelete|ReadOnly
   forms			HTMLDocument::Forms		DontDelete|ReadOnly
   anchors		HTMLDocument::Anchors		DontDelete|ReadOnly
+  scripts		HTMLDocument::Scripts		DontDelete|ReadOnly
   all			HTMLDocument::All		DontDelete|ReadOnly
   clear			HTMLDocument::Clear		DontDelete|Function 0
   open			HTMLDocument::Open		DontDelete|Function 0
@@ -195,6 +196,14 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
       return getHTMLCollection(exec,doc.forms());
     case Anchors:
       return getHTMLCollection(exec,doc.anchors());
+    case Scripts: // TODO (IE-specific)
+    {
+      // To be implemented. Meanwhile, return an object with a length property set to 0
+      kdWarning() << "KJS::HTMLDocument document.scripts called - not implemented" << endl;
+      Object obj( new ObjectImp() );
+      obj.put( exec, "length", Number(0) );
+      return obj;
+    }
     case All:
       // Disable document.all when we try to be Netscape-compatible
       if ( exec->interpreter()->compatMode() == Interpreter::NetscapeCompat )
