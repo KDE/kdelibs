@@ -72,6 +72,7 @@ KLocale::KLocale( const QString & catalogue, KConfig * config )
 
   initEncoding(cfg);
   initCatalogue(catalogue);
+  initFileNameEncoding(cfg);
 
   initLanguage(cfg, config == 0);
 }
@@ -1632,6 +1633,29 @@ void KLocale::initEncoding(KConfig *config)
     }
 
   Q_ASSERT( d->codecForEncoding );
+}
+
+void KLocale::initFileNameEncoding(KConfig *config)
+{
+  // If the following environment variable is set, assume all filenames
+  // are in UTF-8 regardless of the current C locale.
+  if (getenv("KDE_UTF8_FILENAMES") != 0)
+  {
+    QFile::setEncodingFunction(KLocale::encodeFileNameUTF8);
+    QFile::setDecodingFunction(KLocale::decodeFileNameUTF8);
+  }
+  // Otherwise, stay with QFile's default filename encoding functions
+  // which, on Unix platforms, use the locale's codec.
+}
+
+QCString KLocale::encodeFileNameUTF8( const QString & fileName )
+{
+  return fileName.utf8();
+}
+
+QString KLocale::decodeFileNameUTF8( const QCString & localFileName )
+{
+  return QString::fromUtf8(localFileName);
 }
 
 void KLocale::initCatalogue( KCatalogue & catalogue )

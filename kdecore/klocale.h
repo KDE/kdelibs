@@ -865,6 +865,22 @@ private:
   void initCatalogue(const QString & catalogue);
 
   /**
+   * @internal Figures out which encoding the user prefers for filenames
+   * and sets up the appropriate QFile encoding and decoding functions. 
+   */
+  void initFileNameEncoding(KConfig *config);
+  
+  /**
+   * @internal A QFile filename encoding function (QFile::encodeFn).
+   */
+  static QCString encodeFileNameUTF8( const QString & fileName );
+  
+  /**
+   * @internal QFile filename decoding function (QFile::decodeFn).
+   */
+  static QString decodeFileNameUTF8( const QCString & localFileName );
+
+  /**
    * @internal function used by readTime(const QString &) const.
    */
   QTime readTime(const QString &str, bool seconds, bool *ok) const;
