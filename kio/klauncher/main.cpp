@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <qcstring.h>
+#include <klocale.h>
 
 
 extern "C" { int start_launcher(int); }
@@ -49,6 +50,9 @@ start_launcher(int socket)
 
    // WABA: Make sure not to enable session management.
    putenv(strdup("SESSION_MANAGER="));
+
+   // Allow the locale to initialize properly
+   KLocale::setMainCatalogue("kdelibs");
 
    KLauncher *launcher = new KLauncher(socket);
    launcher->dcopClient()->setDefaultObject( name );
