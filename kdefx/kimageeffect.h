@@ -99,8 +99,8 @@ public:
      * value for blending one into another. Very fast direct pixel
      * manipulation is used.
      *
-     * This function uses MMX instructions to blend the image on
-     * processors that support it.
+     * This function uses MMX and SSE2 instructions to blend the
+     * image on processors that support it.
      *
      * @author Karol Szwed (gallium@kde.org)
      * @author Fredrik H&ouml;glund (fredrik@kde.org)
@@ -117,8 +117,8 @@ public:
      * value for blending one into another. Very fast direct pixel
      * manipulation is used.
      *
-     * This function uses MMX instructions to blend the images on
-     * processors that support it.
+     * This function uses MMX and SSE2 instructions to blend the
+     * images on processors that support it.
      *
      * @author Karol Szwed (gallium@kde.org)
      * @author Fredrik H&ouml;glund (fredrik@kde.org)
