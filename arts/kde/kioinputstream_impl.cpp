@@ -49,7 +49,9 @@ KIOInputStream_impl::KIOInputStream_impl() : m_packetSize(1024)
 	m_data = 0;
 	m_finished = false;
 	m_firstBuffer = false;
-	m_packetBuffer = 20;
+	m_packetBuffer = 16;
+	m_streamStarted = false;
+	m_streamSuspended = false;
 }
 
 KIOInputStream_impl::~KIOInputStream_impl()
@@ -60,32 +62,51 @@ KIOInputStream_impl::~KIOInputStream_impl()
 
 void KIOInputStream_impl::streamStart()
 {
+	// prevent kill/reconnect
+	if (m_streamStarted) {
+		kdDebug() << "not restarting stream!\n";
+		if (m_job->isSuspended())
+			m_job->resume();
+		return;
+	}
+
+	kdDebug() << "(re)starting stream\n";
+
 	if(m_job != 0)
 		m_job->kill();
 	m_job = KIO::get(m_url, false, false);
-	m_job->addMetaData("accept", "audio/x-mp3");
+	m_job->addMetaData("accept", "audio/x-mp3, video/mpeg");
 	m_job->addMetaData("UserAgent", QString::fromLatin1("aRts/") + QString::fromLatin1(ARTS_VERSION));
 
 	QObject::connect(m_job, SIGNAL(data(KIO::Job *, const QByteArray &)),
 			 this, SLOT(slotData(KIO::Job *, const QByteArray &)));		     
 	QObject::connect(m_job, SIGNAL(result(KIO::Job *)),
 			 this, SLOT(slotResult(KIO::Job *)));		     
+	QObject::connect(m_job, SIGNAL(mimetype(KIO::Job *, const QString &)),
+			 this, SLOT(slotScanMimeType(KIO::Job *, const QString &)));
+
+	m_streamStarted = true;
 }
 
 void KIOInputStream_impl::streamEnd()
 {
+	kdDebug() << "streamEnd()\n";
+
 	if(m_job != 0)
 	{
 		QObject::disconnect(m_job, SIGNAL(data(KIO::Job *, const QByteArray &)),
 	    				this, SLOT(slotData(KIO::Job *, const QByteArray &)));
 		QObject::disconnect(m_job, SIGNAL(result(KIO::Job *)),
 						this, SLOT(slotResult(KIO::Job *)));		     
+		QObject::disconnect(m_job, SIGNAL(mimetype(KIO::Job *, const QString &)),
+				 this, SLOT(slotScanMimeType(KIO::Job *, const QString &)));
 
 		m_job->kill();
 		m_job = 0;
 	}	
 
 	outdata.endPull();
+	m_streamStarted = false;
 }
 
 bool KIOInputStream_impl::openURL(const std::string& url)
@@ -110,10 +131,21 @@ void KIOInputStream_impl::slotResult(KIO::Job *job)
 {
 	// jobs delete themselves after emitting their result
 	m_finished = true;
+	m_streamStarted = false;
 	m_job = 0;
 
-	if(job->error())
-	    job->showErrorDialog();
+	if(job->error()) {
+		// break out of the event loop in case of
+		// connection error
+	    	emit mimeTypeFound("application/x-zerosize");
+		job->showErrorDialog();
+	}
+}
+
+void KIOInputStream_impl::slotScanMimeType(KIO::Job *, const QString &mimetype)
+{
+	kdDebug() << "got mimetype: " << mimetype << endl;
+	emit mimeTypeFound(mimetype);
 }
 
 bool KIOInputStream_impl::eof()
@@ -143,24 +175,23 @@ void KIOInputStream_impl::processQueue()
 		if(m_data.size() > (m_packetBuffer * m_packetSize * 2) && !m_job->isSuspended())
 		{
 			kdDebug() << "STREAMING: suspend job" << endl;
-	    	m_job->suspend();
+			m_job->suspend();
 		}
 		else if(m_data.size() < (m_packetBuffer * m_packetSize) && m_job->isSuspended())
 		{
 			kdDebug() << "STREAMING: resume job" << endl;
-	    	m_job->resume();
+			m_job->resume();
 		}
 	}
 
-	if(m_data.size() < (m_packetBuffer * m_packetSize) && !m_firstBuffer)
-	{
-		kdDebug() << "STREAMING: Buffering in progress... (Needed bytes before it starts to play: " << ((m_packetBuffer * m_packetSize) - m_data.size()) << ")" << endl;
-		return;
-	}
-	else if( !m_firstBuffer )
-	{
-		m_firstBuffer = true;
-		outdata.setPull(PACKET_COUNT, m_packetSize);
+	if (!m_firstBuffer) {
+		if(m_data.size() < (m_packetBuffer * m_packetSize * 2) ) {
+			kdDebug() << "STREAMING: Buffering in progress... (Needed bytes before it starts to play: " << ((m_packetBuffer * m_packetSize) - m_data.size()) << ")" << endl;
+			return;
+		} else {
+			m_firstBuffer = true;
+			outdata.setPull(PACKET_COUNT, m_packetSize);
+		} 
 	}
 }
 
@@ -170,12 +201,15 @@ void KIOInputStream_impl::request_outdata(DataPacket<mcopbyte> *packet)
 	packet->size = std::min(m_packetSize, m_data.size());
 	//kdDebug() << "STREAMING: Filling one DataPacket with " << packet->size << " bytes of the stream!" << endl;
 
-	if((unsigned)packet->size < m_packetSize || ! m_firstBuffer)
-	{
-		m_firstBuffer = false;
-		packet->size = 0;
+	if (!m_finished) {
+		if( (unsigned)packet->size < m_packetSize || ! m_firstBuffer) {
+			m_firstBuffer = false;
+			packet->size = 0;
+			outdata.endPull();
+		}
 	}
-	else
+	
+	if (packet->size > 0)
 	{
 		memcpy(packet->contents, m_data.data(), packet->size);
 		memmove(m_data.data(), m_data.data() + packet->size, m_data.size() - packet->size);

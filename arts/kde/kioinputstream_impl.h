@@ -54,10 +54,14 @@ public:
 	void bufferPackets(long i) { m_packetBuffer = i; }
 
 	long packetSize() { return m_packetSize; }
+
+signals:
+	void mimeTypeFound(const QString & mimetype);
 	
 private slots:
 	void slotData(KIO::Job *, const QByteArray &);
 	void slotResult(KIO::Job *);
+	void slotScanMimeType(KIO::Job *, const QString &mimetype);
 
 private:
 	KURL m_url;
@@ -65,6 +69,8 @@ private:
 	QByteArray m_data;
 	bool m_finished;
 	bool m_firstBuffer;
+	bool m_streamStarted;
+	bool m_streamSuspended;
 
 	unsigned int m_packetBuffer;
 	const unsigned int m_packetSize;
@@ -73,3 +79,5 @@ private:
 };
 
 };
+
+
