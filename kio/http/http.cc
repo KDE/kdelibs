@@ -1379,7 +1379,7 @@ void HTTPProtocol::slave_status()
 
 void HTTPProtocol::buildURL()
 {
-  m_request.url = mProtocol+":/";
+  m_request.url = QString::fromLatin1(mProtocol+":/");
   m_request.url.setUser( m_request.user );
   m_request.url.setPass( m_request.passwd );
   m_request.url.setHost( m_request.hostname );
