@@ -116,7 +116,7 @@ bool ResourceNet::load()
         ok = false;
       }
 
-//      KIO::NetAccess::removeTempFile( tmpFile );
+      KIO::NetAccess::removeTempFile( tmpFile );
     } else {
       addressBook()->error( i18n( "Unable to open url '%1' for reading" ).arg( mUrl.url() + "/" + (*it) ) );
       ok = false;
