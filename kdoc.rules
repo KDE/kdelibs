@@ -52,4 +52,4 @@ libkmid_FILES = *.h
 libkmid_LIBS = -lqt
 
 kwrite_FILES = kwrite.h kwrite_part.h kwrite_factory.h kwrite_view.h kwrite_doc.h highlight.h
-kwrite_LIBS = -lkparts -lkdeui lqt
+kwrite_LIBS = -lkparts -lkdeui -lqt
