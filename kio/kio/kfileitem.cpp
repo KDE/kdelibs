@@ -63,6 +63,7 @@ public:
   void refresh() {
     access = QString::null;
     size = (KIO::filesize_t) -1;
+//    metaInfo = KFileMetaInfo();
     for ( int i = 0; i < NumFlags; i++ )
       time[i] = (time_t) -1;
   }
@@ -824,10 +825,12 @@ void KFileItem::setMetaInfo( const KFileMetaInfo & info )
     d->metaInfo = info;
 }
 
-const KFileMetaInfo & KFileItem::metaInfo() const
+const KFileMetaInfo & KFileItem::metaInfo(bool autoget) const
 {
-    if ( !d->metaInfo.isValid() && m_url.isLocalFile() )
+    if ( autoget && !d->metaInfo.isValid() && m_url.isLocalFile() )
+    {
         d->metaInfo = KFileMetaInfo( m_url.path() );
-
+        Q_ASSERT(d->metaInfo.isValid());
+    }
     return d->metaInfo;
 }

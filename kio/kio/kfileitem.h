@@ -357,9 +357,17 @@ public:
    */
   virtual void removeExtraData( const void *key );
 
+  /**
+   * Sets the metainfo of this item to @p info.
+   */
   void setMetaInfo( const KFileMetaInfo & info );
-  const KFileMetaInfo & metaInfo() const;
 
+  /**
+   * Returns the metainfo of this item. If @p autoget is true, it will
+   * automatically be created
+   */
+  const KFileMetaInfo & metaInfo(bool autoget = true) const;
+      
   /**
    * Somewhat like an assignment operator, but more explicit.
    * Note: extra-data set with @ref setExtraData() is not copied, so be careful
