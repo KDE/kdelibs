@@ -489,6 +489,8 @@ void InlineFlowBox::paintBackgroundAndBorder(QPainter *p, int _x, int _y,
     int w = width();
     int h = height();
 
+    if (w <= 0) return;
+
     int my = kMax(_ty,_y);
     int mh;
     if (_ty<_y)

@@ -1,3 +1,20 @@
+2004-01-11  Germain Garand  <germain@ebooksfrance.org>
+
+        border/padding/margin issues on inlines (#68394)
+
+        * rendering/bidi.cpp (computeVerticalPositionsForLine):
+        add the correct width offset for text objects
+
+        * rendering/render_line.cpp (paintBackgroundAndBorder):
+        guard against invalid width values
+
+        * rendering/render_text.cpp (paintDecoration):
+        revert revision 1.224, avoid resurecting #50683
+        by matching the conditionals of RenderText::position
+        (RenderText::nodeAtPoint): revert part of r1.234, 
+        avoid #69345 by commenting incompatible merge.
+        (RenderText::width): add padding/border/margin
+
 2004-01-10  Dirk Mueller  <mueller@kde.org>
 
 	* css/html4.css: fix default font/fontsize of input,select and textarea

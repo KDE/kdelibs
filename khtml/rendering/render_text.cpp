@@ -233,7 +233,7 @@ void InlineTextBox::paintDecoration( QPainter *pt, int _tx, int _ty, int deco)
     }
 }
 #else
-void InlineTextBox::paintDecoration( QPainter *pt, const Font *f, int _tx, int _ty, int deco)
+void InlineTextBox::paintDecoration( QPainter *pt, const Font *f, int _tx, int _ty, int deco, bool begin, bool end)
 {
     _tx += m_x;
     _ty += m_y;
@@ -241,6 +241,12 @@ void InlineTextBox::paintDecoration( QPainter *pt, const Font *f, int _tx, int _
     int width = m_width - 1;
 
     RenderObject *p = object();
+    if (begin && p->parent()->isInline() && p->parent()->firstChild()==p)
+        width -= p->paddingLeft() + p->borderLeft();
+
+    if (end && p->parent()->isInline() && p->parent()->lastChild()==p)
+        width -= p->paddingRight() + p->borderRight();
+
     QColor underline, overline, linethrough;
     p->getTextDecorationColors(deco, underline, overline, linethrough, p->style()->htmlHacks());
 
@@ -276,7 +282,7 @@ void InlineTextBox::paintBoxDecorations(QPainter *pt, RenderStyle* style, Render
     // the height of the decorations is:  topBorder + topPadding + CSS font-size + bottomPadding + bottomBorder
     int height = style->font().pixelSize() + topExtra + bottomExtra;
 
-    if( begin )
+    if (begin && p->parent()->isInline() && p->parent()->firstChild() == p)
 	_tx -= p->paddingLeft() + p->borderLeft();
 
     QColor c = style->backgroundColor();
@@ -661,12 +667,18 @@ bool RenderText::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, H
 {
     assert(parent());
 
+    _tx -= paddingLeft() + borderLeft();
+    _ty -= borderTop() + paddingTop();
+    
+    int height = m_lineHeight + borderTop() + paddingTop() +
+              borderBottom() + paddingBottom();
+
     bool inside = false;
     if (style()->visibility() != HIDDEN) {
         InlineTextBox *s = m_lines.count() ? m_lines[0] : 0;
         int si = 0;
         while(s) {
-            if((_y >=_ty + s->m_y) && (_y < _ty + s->m_y + s->height()) &&
+            if((_y >=_ty + s->m_y) && (_y < _ty + s->m_y + height) &&
                (_x >= _tx + s->m_x) && (_x <_tx + s->m_x + s->m_width) ) {
                 inside = true;
                 break;
@@ -677,6 +689,7 @@ bool RenderText::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, H
     }
 
     // #### ported over from Safari. Can this happen at all? (lars)
+    #if 0
     if (inside && element()) {
         if (info.innerNode() && info.innerNode()->renderer() &&
             !info.innerNode()->renderer()->isInline()) {
@@ -694,6 +707,7 @@ bool RenderText::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, H
         if(!info.innerNonSharedNode())
             info.setInnerNonSharedNode(element());
     }
+    #endif
 
     return inside;
 }
@@ -998,7 +1012,7 @@ void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 
             if(d != TDNONE)
             {
-                s->paintDecoration(p, font, tx, ty, d);
+                s->paintDecoration(p, font, tx, ty, d, si == 0, si == ( int ) m_lines.count()-1);
             }
 
             if (haveSelection) {
@@ -1334,12 +1348,11 @@ unsigned int RenderText::width(unsigned int from, unsigned int len, const Font *
     int w;
     if ( f == &style()->htmlFont() && from == 0 && len == str->l ) {
  	 w = m_maxWidth;
-	 // m_maxWidth already contains borders and paddings.
 	 if(parent()->isInline()) {
 	     if( parent()->firstChild() == static_cast<const RenderObject*>(this) )
-		 w += marginLeft();
+		 w +=  borderLeft() + paddingLeft() + marginLeft();
 	     if( parent()->lastChild() == static_cast<const RenderObject*>(this) )
-		 w += marginRight();
+		 w += borderRight() + paddingRight() + marginRight();
 	 }
 	 return w;
     }

@@ -1130,10 +1130,13 @@ void RenderBlock::computeVerticalPositionsForLine(InlineFlowBox* lineBox, BidiCo
 //	r->box->setBaseline(baselinePosition( m_firstLine ));
 	r->box->setFirstLineStyleBit(m_firstLine);
 //	kdDebug(6040) << "start: " << r->start << " stop: " << r->stop << endl;
+        if (r->box->isInlineTextBox())
+            x += r->box->width() + spaceAdd;
         r->obj->position(r->box, r->start, r->stop - r->start, r->level%2, spaceAdd);
-        x += r->box->width() + spaceAdd;
 	if (r->box->isInlineTextBox())
 	    r->box->setWidth(r->box->width() + spaceAdd);
+        else
+            x += r->box->width() + spaceAdd;
         r = sruns->next();
     }
 
