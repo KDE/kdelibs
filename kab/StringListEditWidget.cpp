@@ -15,8 +15,6 @@
 #ifndef INCLUDED_BITMAPS
 #define INCLUDED_BITMAPS
 // the bitmaps
-#include "arrow_left.xbm"
-#include "arrow_right.xbm"
 #include "arrow_up.xbm"
 #include "arrow_down.xbm"
 #include "trash_open.xbm"
