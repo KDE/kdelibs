@@ -22,7 +22,12 @@ sub printText
 }
 
 open(FILE,"<","tips") or die "unable to open tips file";
-binmode(FILE,":utf8") if $^V ge v5.8.0;
+if ( $^V ge v5.8.0 ) {
+  binmode(FILE,":utf8");
+  binmode(STDOUT,":utf8");
+} else {
+  print "WARNING: NOT using utf8! Upgrade to perl >= 5.8.0.\n";
+}
 
 $inTip=0;
 
