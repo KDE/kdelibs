@@ -274,7 +274,7 @@ VCard::contentLine(const QCString & s)
 	QPtrListIterator<ContentLine> it(contentLineList_);
 
 	for (; it.current(); ++it)
-		if (it.current()->entityType() == s)
+		if (it.current()->entityType() == EntityNameToEntityType(s))
 			return it.current();
 
 	return 0;
