@@ -64,7 +64,7 @@ int KGlobalSettings::autoSelectDelay()
 {
   KConfig *c = KGlobal::config();
   KConfigGroupSaver cgs( c, "KDE" );
-  return c->readBoolEntry("AutoSelectDelay", DEFAULT_AUTOSELECTDELAY);
+  return c->readNumEntry("AutoSelectDelay", DEFAULT_AUTOSELECTDELAY);
 }
 
 KGlobalSettings::Completion KGlobalSettings::completionMode()
