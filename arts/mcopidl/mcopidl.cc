@@ -1305,14 +1305,12 @@ void doInterfacesHeader(FILE *header)
 		fprintf(header,"\tstatic Object_base* _Creator();\n");
 		fprintf(header,"\t%s_base *_cache;\n",d->name.c_str());
 		fprintf(header,"\tinline %s_base *_method_call() {\n",d->name.c_str());
-		fprintf(header,"\t\tif(!_cache) {\n");
-		fprintf(header,"\t\t\t_pool->checkcreate();\n");
-		fprintf(header,"\t\t\tif(_pool->base) {\n");
-		fprintf(header,"\t\t\t\t_cache="
+		fprintf(header,"\t\t_pool->checkcreate();\n");
+		fprintf(header,"\t\tif(_pool->base) {\n");
+		fprintf(header,"\t\t\t_cache="
 							"(%s_base *)_pool->base->_cast(%s_base::_IID);\n",
 							d->name.c_str(),d->name.c_str());
-		fprintf(header,"\t\t\t\tassert(_cache);\n");
-		fprintf(header,"\t\t\t}\n");
+		fprintf(header,"\t\t\tassert(_cache);\n");
 		fprintf(header,"\t\t}\n");
 		fprintf(header,"\t\treturn _cache;\n");
 		fprintf(header,"\t}\n");
@@ -1373,7 +1371,7 @@ void doInterfacesHeader(FILE *header)
 												si != parents.end(); si++)
 		{
 			string &s = *si;
-			fprintf(header,"\tinline operator %s() { return %s(_pool); }\n",
+			fprintf(header,"\tinline operator %s() const { return %s(_pool); }\n",
 									s.c_str(), s.c_str());
 		}
 		//if(parents.empty()) /* no parents -> need to free pool self */
@@ -1385,7 +1383,7 @@ void doInterfacesHeader(FILE *header)
 		// conversion to string
 //		fprintf(header,"\tinline std::string toString() const {return _method_call()->_toString();}\n");
 		// conversion to _base* object
-		fprintf(header,"\tinline operator %s_base*() {return _method_call();}\n",d->name.c_str());
+		fprintf(header,"\tinline operator %s_base*() {return _cache?_cache:_method_call();}\n",d->name.c_str());
 		fprintf(header,"\n");
 
 		InterfaceDef allMerged = mergeAllParents(*d);
@@ -1393,8 +1391,8 @@ void doInterfacesHeader(FILE *header)
 
 		// start, stop
 		if (haveStreams(d)) {
-			fprintf(header,"\tinline void start() {return _method_call()->_node()->start();}\n");
-			fprintf(header,"\tinline void stop() {return _method_call()->_node()->stop();}\n");
+			fprintf(header,"\tinline void start() {return _cache?_cache->_node()->start():_method_call()->_node()->start();}\n");
+			fprintf(header,"\tinline void stop() {return _cache?_cache->_node()->stop():_method_call()->_node()->stop();}\n");
 			fprintf(header,"\n");
 		}
 
@@ -1409,13 +1407,13 @@ void doInterfacesHeader(FILE *header)
 			{
 				if(ad->flags & streamOut)  /* readable from outside */
 				{
-					fprintf(header,"\tinline %s %s() {return _method_call()->%s();}\n",
-						rc.c_str(), ad->name.c_str(), ad->name.c_str());
+					fprintf(header,"\tinline %s %s() {return _cache?_cache->%s():_method_call()->%s();}\n",
+						rc.c_str(), ad->name.c_str(), ad->name.c_str(), ad->name.c_str());
 				}
 				if(ad->flags & streamIn)  /* writeable from outside */
 				{
-					fprintf(header,"\tinline void %s(%s) {_method_call()->%s(newValue);}\n",
-						ad->name.c_str(), pc.c_str(), ad->name.c_str());
+					fprintf(header,"\tinline void %s(%s) {_cache?_cache->%s(newValue):_method_call()->%s(newValue);}\n",
+						ad->name.c_str(), pc.c_str(), ad->name.c_str(), ad->name.c_str());
 				}
 			}
 		}
@@ -1440,9 +1438,9 @@ void doInterfacesHeader(FILE *header)
 			} else if(md->name == "start") {
 				cout << "start collision - omitted" << endl;
 			} else {
-				fprintf(header,"\tinline %s %s(%s) {return _method_call()->%s(%s);}\n",
+				fprintf(header,"\tinline %s %s(%s) {return _cache?_cache->%s(%s):_method_call()->%s(%s);}\n",
 					rc.c_str(),	md->name.c_str(), params.c_str(),
-					md->name.c_str(), callparams.c_str());
+					md->name.c_str(), callparams.c_str(), md->name.c_str(), callparams.c_str());
 			}
 		}
 		fprintf(header,"};\n\n");

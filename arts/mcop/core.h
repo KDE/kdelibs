@@ -335,12 +335,10 @@ private:
 	static Object_base* _Creator();
 	InterfaceRepo_base *_cache;
 	inline InterfaceRepo_base *_method_call() {
-		if(!_cache) {
-			_pool->checkcreate();
-			if(_pool->base) {
-				_cache=(InterfaceRepo_base *)_pool->base->_cast(InterfaceRepo_base::_IID);
-				assert(_cache);
-			}
+		_pool->checkcreate();
+		if(_pool->base) {
+			_cache=(InterfaceRepo_base *)_pool->base->_cast(InterfaceRepo_base::_IID);
+			assert(_cache);
 		}
 		return _cache;
 	}
@@ -362,12 +360,12 @@ public:
 		_pool->Inc();
 		return *this;
 	}
-	inline operator InterfaceRepo_base*() {return _method_call();}
+	inline operator InterfaceRepo_base*() {return _cache?_cache:_method_call();}
 
-	inline long insertModule(const ModuleDef& newModule) {return _method_call()->insertModule(newModule);}
-	inline void removeModule(long moduleID) {return _method_call()->removeModule(moduleID);}
-	inline InterfaceDef* queryInterface(const std::string& name) {return _method_call()->queryInterface(name);}
-	inline TypeDef* queryType(const std::string& name) {return _method_call()->queryType(name);}
+	inline long insertModule(const ModuleDef& newModule) {return _cache?_cache->insertModule(newModule):_method_call()->insertModule(newModule);}
+	inline void removeModule(long moduleID) {return _cache?_cache->removeModule(moduleID):_method_call()->removeModule(moduleID);}
+	inline InterfaceDef* queryInterface(const std::string& name) {return _cache?_cache->queryInterface(name):_method_call()->queryInterface(name);}
+	inline TypeDef* queryType(const std::string& name) {return _cache?_cache->queryType(name):_method_call()->queryType(name);}
 };
 
 class FlowSystemSender_base : virtual public Object {
@@ -421,12 +419,10 @@ private:
 	static Object_base* _Creator();
 	FlowSystemSender_base *_cache;
 	inline FlowSystemSender_base *_method_call() {
-		if(!_cache) {
-			_pool->checkcreate();
-			if(_pool->base) {
-				_cache=(FlowSystemSender_base *)_pool->base->_cast(FlowSystemSender_base::_IID);
-				assert(_cache);
-			}
+		_pool->checkcreate();
+		if(_pool->base) {
+			_cache=(FlowSystemSender_base *)_pool->base->_cast(FlowSystemSender_base::_IID);
+			assert(_cache);
 		}
 		return _cache;
 	}
@@ -448,9 +444,9 @@ public:
 		_pool->Inc();
 		return *this;
 	}
-	inline operator FlowSystemSender_base*() {return _method_call();}
+	inline operator FlowSystemSender_base*() {return _cache?_cache:_method_call();}
 
-	inline void processed() {return _method_call()->processed();}
+	inline void processed() {return _cache?_cache->processed():_method_call()->processed();}
 };
 
 class FlowSystemReceiver_base : virtual public Object {
@@ -504,12 +500,10 @@ private:
 	static Object_base* _Creator();
 	FlowSystemReceiver_base *_cache;
 	inline FlowSystemReceiver_base *_method_call() {
-		if(!_cache) {
-			_pool->checkcreate();
-			if(_pool->base) {
-				_cache=(FlowSystemReceiver_base *)_pool->base->_cast(FlowSystemReceiver_base::_IID);
-				assert(_cache);
-			}
+		_pool->checkcreate();
+		if(_pool->base) {
+			_cache=(FlowSystemReceiver_base *)_pool->base->_cast(FlowSystemReceiver_base::_IID);
+			assert(_cache);
 		}
 		return _cache;
 	}
@@ -531,9 +525,9 @@ public:
 		_pool->Inc();
 		return *this;
 	}
-	inline operator FlowSystemReceiver_base*() {return _method_call();}
+	inline operator FlowSystemReceiver_base*() {return _cache?_cache:_method_call();}
 
-	inline long receiveHandlerID() {return _method_call()->receiveHandlerID();}
+	inline long receiveHandlerID() {return _cache?_cache->receiveHandlerID():_method_call()->receiveHandlerID();}
 };
 
 class FlowSystem_base : virtual public Object {
@@ -597,12 +591,10 @@ private:
 	static Object_base* _Creator();
 	FlowSystem_base *_cache;
 	inline FlowSystem_base *_method_call() {
-		if(!_cache) {
-			_pool->checkcreate();
-			if(_pool->base) {
-				_cache=(FlowSystem_base *)_pool->base->_cast(FlowSystem_base::_IID);
-				assert(_cache);
-			}
+		_pool->checkcreate();
+		if(_pool->base) {
+			_cache=(FlowSystem_base *)_pool->base->_cast(FlowSystem_base::_IID);
+			assert(_cache);
 		}
 		return _cache;
 	}
@@ -624,14 +616,14 @@ public:
 		_pool->Inc();
 		return *this;
 	}
-	inline operator FlowSystem_base*() {return _method_call();}
+	inline operator FlowSystem_base*() {return _cache?_cache:_method_call();}
 
-	inline void startObject(Object_base * node) {return _method_call()->startObject(node);}
-	inline void stopObject(Object_base * node) {return _method_call()->stopObject(node);}
-	inline void connectObject(Object_base * sourceObject, const std::string& sourcePort, Object_base * destObject, const std::string& destPort) {return _method_call()->connectObject(sourceObject, sourcePort, destObject, destPort);}
-	inline void disconnectObject(Object_base * sourceObject, const std::string& sourcePort, Object_base * destObject, const std::string& destPort) {return _method_call()->disconnectObject(sourceObject, sourcePort, destObject, destPort);}
-	inline AttributeType queryFlags(Object_base * node, const std::string& port) {return _method_call()->queryFlags(node, port);}
-	inline FlowSystemReceiver createReceiver(Object_base * destObject, const std::string& destPort, FlowSystemSender sender) {return _method_call()->createReceiver(destObject, destPort, sender);}
+	inline void startObject(Object_base * node) {return _cache?_cache->startObject(node):_method_call()->startObject(node);}
+	inline void stopObject(Object_base * node) {return _cache?_cache->stopObject(node):_method_call()->stopObject(node);}
+	inline void connectObject(Object_base * sourceObject, const std::string& sourcePort, Object_base * destObject, const std::string& destPort) {return _cache?_cache->connectObject(sourceObject, sourcePort, destObject, destPort):_method_call()->connectObject(sourceObject, sourcePort, destObject, destPort);}
+	inline void disconnectObject(Object_base * sourceObject, const std::string& sourcePort, Object_base * destObject, const std::string& destPort) {return _cache?_cache->disconnectObject(sourceObject, sourcePort, destObject, destPort):_method_call()->disconnectObject(sourceObject, sourcePort, destObject, destPort);}
+	inline AttributeType queryFlags(Object_base * node, const std::string& port) {return _cache?_cache->queryFlags(node, port):_method_call()->queryFlags(node, port);}
+	inline FlowSystemReceiver createReceiver(Object_base * destObject, const std::string& destPort, FlowSystemSender sender) {return _cache?_cache->createReceiver(destObject, destPort, sender):_method_call()->createReceiver(destObject, destPort, sender);}
 };
 
 class GlobalComm_base : virtual public Object {
@@ -689,12 +681,10 @@ private:
 	static Object_base* _Creator();
 	GlobalComm_base *_cache;
 	inline GlobalComm_base *_method_call() {
-		if(!_cache) {
-			_pool->checkcreate();
-			if(_pool->base) {
-				_cache=(GlobalComm_base *)_pool->base->_cast(GlobalComm_base::_IID);
-				assert(_cache);
-			}
+		_pool->checkcreate();
+		if(_pool->base) {
+			_cache=(GlobalComm_base *)_pool->base->_cast(GlobalComm_base::_IID);
+			assert(_cache);
 		}
 		return _cache;
 	}
@@ -716,11 +706,11 @@ public:
 		_pool->Inc();
 		return *this;
 	}
-	inline operator GlobalComm_base*() {return _method_call();}
+	inline operator GlobalComm_base*() {return _cache?_cache:_method_call();}
 
-	inline bool put(const std::string& variable, const std::string& value) {return _method_call()->put(variable, value);}
-	inline std::string get(const std::string& variable) {return _method_call()->get(variable);}
-	inline void erase(const std::string& variable) {return _method_call()->erase(variable);}
+	inline bool put(const std::string& variable, const std::string& value) {return _cache?_cache->put(variable, value):_method_call()->put(variable, value);}
+	inline std::string get(const std::string& variable) {return _cache?_cache->get(variable):_method_call()->get(variable);}
+	inline void erase(const std::string& variable) {return _cache?_cache->erase(variable):_method_call()->erase(variable);}
 };
 
 class TmpGlobalComm_base : virtual public GlobalComm_base {
@@ -772,12 +762,10 @@ private:
 	static Object_base* _Creator();
 	TmpGlobalComm_base *_cache;
 	inline TmpGlobalComm_base *_method_call() {
-		if(!_cache) {
-			_pool->checkcreate();
-			if(_pool->base) {
-				_cache=(TmpGlobalComm_base *)_pool->base->_cast(TmpGlobalComm_base::_IID);
-				assert(_cache);
-			}
+		_pool->checkcreate();
+		if(_pool->base) {
+			_cache=(TmpGlobalComm_base *)_pool->base->_cast(TmpGlobalComm_base::_IID);
+			assert(_cache);
 		}
 		return _cache;
 	}
@@ -799,12 +787,12 @@ public:
 		_pool->Inc();
 		return *this;
 	}
-	inline operator GlobalComm() { return GlobalComm(_pool); }
-	inline operator TmpGlobalComm_base*() {return _method_call();}
+	inline operator GlobalComm() const { return GlobalComm(_pool); }
+	inline operator TmpGlobalComm_base*() {return _cache?_cache:_method_call();}
 
-	inline bool put(const std::string& variable, const std::string& value) {return _method_call()->put(variable, value);}
-	inline std::string get(const std::string& variable) {return _method_call()->get(variable);}
-	inline void erase(const std::string& variable) {return _method_call()->erase(variable);}
+	inline bool put(const std::string& variable, const std::string& value) {return _cache?_cache->put(variable, value):_method_call()->put(variable, value);}
+	inline std::string get(const std::string& variable) {return _cache?_cache->get(variable):_method_call()->get(variable);}
+	inline void erase(const std::string& variable) {return _cache?_cache->erase(variable):_method_call()->erase(variable);}
 };
 
 #endif /* CORE_H */

@@ -90,16 +90,25 @@ void test0()
 	assert(active_d_objects == 1);
 	
 	// Test isNull() and error()
-	bool notnull = d.isNull();
-	bool noterror1 = d.error();
+	bool nullOK = !d.isNull();
+	nullOK &= !d.error();
 	d = (D_base *)0;
-	bool null = d.isNull();
-	bool cnotnull = c.isNull();
-	bool noterror2 = d.error();
-	check("nullity and error conditions",!notnull && !noterror1 && null && !cnotnull && !noterror2);
-	
+	nullOK &= d.isNull();
+	nullOK &= !c.isNull();
+	nullOK &= !d.error();
 	c = (C_base *)0;
 	assert(active_d_objects == 0);
+	B b;
+	B b2=b;
+	b = (B_base *)0;
+	nullOK &= b.isNull();
+	nullOK &= !b2.isNull();
+	B b3;
+	B b4=b3;
+	b3.value(3);
+	nullOK &= (b4.value()==3);
+	check("nullity and error conditions",nullOK);
+	
 	
 }
 
@@ -135,7 +144,7 @@ void test1()
 	cout << "  -> new " << (long)(newspeed) << " calls/sec" << endl;
 }
 
-D afunc(D arg)
+D afunc(D& arg)
 {
 	arg.value(42);
 	return arg;
@@ -147,7 +156,7 @@ D_base *afunc_old(D_base *arg)
 	return arg->_copy();
 }
 
-void bfunc(D arg)
+void bfunc(D& arg)
 {
 	arg.value(42);
 }
