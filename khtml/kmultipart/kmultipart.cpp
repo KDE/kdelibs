@@ -300,6 +300,7 @@ void KMultiPart::endOfData()
     } else
     {
         Q_ASSERT( m_tempFile );
+	m_tempFile->close();
         kdDebug() << "KMultiPart::endOfData opening " << m_tempFile->name() << endl;
         KURL url;
         url.setPath( m_tempFile->name() );
