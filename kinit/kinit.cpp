@@ -33,6 +33,7 @@
 #include "klauncher_cmds.h"
 
 #include <sys/types.h>
+#include <sys/time.h>
 #include <sys/stat.h>
 #include <sys/socket.h>
 #include <sys/un.h>
@@ -334,7 +335,7 @@ void init_signals()
 void init_kinit_socket()
 {
   struct sockaddr_un sa;
-  socklen_t socklen;
+  ksize_t socklen;
   long options;
   char *sock_file = cmdLine;
   char *home_dir = getenv("HOME");
@@ -620,7 +621,7 @@ void handle_requests()
       if ((result > 0) && (FD_ISSET(d.wrapper, &rd_set)))
       {
          struct sockaddr_un client;
-         socklen_t sClient = sizeof(client);
+         ksize_t sClient = sizeof(client);
          int sock = accept(d.wrapper, (struct sockaddr *)&client, &sClient);
          if (sock >= 0)
          {
