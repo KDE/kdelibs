@@ -218,9 +218,6 @@ bool KDatagramSocket::doBind()
     if (bind(*it))
       {
 	// bound
-	setState(Bound);
-	emit stateChanged(Bound);
-	emit bound(*it);
 	return true;
       }
 

@@ -157,13 +157,10 @@ public:
   { m_data = data; }
 
   /**
-   * Sets the data to the given buffer and size. Also please note that
-   * data is shared by default, so be extremely careful with the validity
-   * of the buffer being passed here. If a private copy of the buffer must
-   * be performed, use @ref detach.
+   * Sets the data to the given buffer and size.
    */
   void setData(const char* data, uint length)
-  { m_data.assign(data, length); }
+  { m_data.duplicate(data, length); }
 };
 
 class KDatagramSocketPrivate;
