@@ -244,38 +244,57 @@ PluginBase::PluginBase(ExecState *exec)
         KTrader::OfferList offers = KTrader::self()->query("Browser/View");
         KTrader::OfferList::iterator it;
         for ( it = offers.begin(); it != offers.end(); ++it ) {
-            PluginInfo *plugin = new PluginInfo;
 
-            plugin->name = (**it).name();
-            plugin->file = (**it).library();
-            plugin->desc = (**it).comment();
+            QVariant pluginsinfo = (**it).property( "X-KDE-BrowserView-PluginsInfo" );
+            if ( !pluginsinfo.isValid() ) {
+                // <backwards compatible>
+                if ((**it).library() == QString("libnsplugin"))
+                    pluginsinfo = QVariant("nsplugins/pluginsinfo");
+                else
+                // </backwards compatible>
+                    continue;
+            }
+            // read configuration
+            KConfig kc( locate ("data", pluginsinfo.toString()) );
+            unsigned num = (unsigned int) kc.readNumEntry("number");
+            for ( unsigned n = 0; n < num; n++ ) {
+                kc.setGroup( QString::number(n) );
+                PluginInfo *plugin = new PluginInfo;
 
-            plugins->append( plugin );
+                plugin->name = kc.readEntry("name");
+                plugin->file = kc.readPathEntry("file");
+                plugin->desc = kc.readEntry("description");
 
-            // get mime types from string
-            QStringList types = (**it).serviceTypes();
-            QStringList::Iterator type;
-            for ( type=types.begin(); type!=types.end(); ++type ) {
+                plugins->append( plugin );
 
-                // get mime information
-                QStringList tokens = QStringList::split(':', *type, true);
-                QStringList::Iterator token;
-                for ( token=tokens.begin(); token!=tokens.end(); ++token ) {
-                    KMimeType::Ptr mimePtr = KMimeType::mimeType(*token);
-                    QString name = (*mimePtr).name();
-                    if ( name != KMimeType::defaultMimeType() )
-                    {
-                        MimeClassInfo *mime = new MimeClassInfo;
-                        mime->type = name;
-                        mime->suffixes = (*mimePtr).patterns().join(", ");
-                        mime->desc = (*mimePtr).comment();
+                // get mime types from string
+                QStringList types = QStringList::split( ';', kc.readEntry("mime") );
+                QStringList::Iterator type;
+                for ( type=types.begin(); type!=types.end(); ++type ) {
 
-                        mime->plugin = plugin;
+                    // get mime information
+                    QStringList tokens = QStringList::split(':', *type, true);
+                    if ( tokens.count() < 3 ) // we need 3 items
+                        continue;
 
-                        mimes->append( mime );
-                        plugin->mimes.append( mime );
-                    }
-               }
+                    MimeClassInfo *mime = new MimeClassInfo;
+                    QStringList::Iterator token = tokens.begin();
+                    mime->type = (*token).lower();
+                    //kdDebug(6070) << "mime->type=" << mime->type << endl;
+                    ++token;
+
+                    mime->suffixes = *token;
+                    ++token;
+
+                    mime->desc = *token;
+                    ++token;
+
+                    mime->plugin = plugin;
+
+                    mimes->append( mime );
+                    plugin->mimes.append( mime );
+
+                }
             }
         }
     }

@@ -132,3 +132,10 @@ Type=bool
 # (famous bug).
 [PropertyDef::X-KDE-BrowserView-Built-Into]
 Type=QString
+
+# If the part has a plugin for KHTML Javascript's window.navigator.plugins
+# array, it should create a plugin info file and set this propery to the
+# file path here. The path should be relative to KDE's data dir
+# ($KDEDIR/share/apps)
+[PropertyDef::X-KDE-BrowserView-PluginsInfo]
+Type=QString
