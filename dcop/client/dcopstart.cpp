@@ -79,7 +79,7 @@ void startApp(const char *_app, int argc, const char **args)
 int main( int argc, char** argv )
 {
     if (( argc < 2) || (argv[1][0] == '-' )) {
-	fprintf( stderr, "Usage: dcopstart <application> [arg1] [arg2] ...\n" );
+	fprintf( stderr, "Usage: dcopstart <application> [url1] [url2] ...\n" );
 	exit(0);
     }
 
