@@ -218,7 +218,10 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
             int len = txt.length();
             QString keycode = e->text();
 
-            if ( txt != old_txt && len && cursorPosition() == len )
+            
+            if ( txt != old_txt && len && cursorPosition() == len &&
+                 ( (!keycode.isNull() && keycode.unicode()->isPrint()) ||
+                   e->key() == Key_Backspace ) )
             {
                 if ( emitSignals() )
                     emit completion( txt ); // emit when requested...
