@@ -548,18 +548,18 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 				count = 1;
 			}
 
-			Keramik::ScrollBarPainter( name + "slider", count, horizontal ).draw( p, x, y, w, h );
 			if ( horizontal )
 			{
 				if ( w > ( loader.pixmap( "scrollbar-hbar-slider1" ).width() +
-				           loader.pixmap( "scrollbar-hbar-slider2" ).width() +
+				           loader.pixmap( "scrollbar-hbar-slider4" ).width() +
 				           loader.pixmap( "scrollbar-hbar-slider3" ).width() ) )
-					Keramik::CenteredPainter( "scrollbar-hbar-slider4" ).draw( p, x, y, w, h );
+					count = 5;
 			}
 			else if ( h > ( loader.pixmap( "scrollbar-vbar-slider1" ).height() +
-			                loader.pixmap( "scrollbar-vbar-slider2" ).height() +
+			                loader.pixmap( "scrollbar-vbar-slider4" ).height() +
 			                loader.pixmap( "scrollbar-vbar-slider3" ).height() ) )
-					Keramik::CenteredPainter( "scrollbar-vbar-slider4" ).draw( p, x, y, w, h );
+					count = 5;
+			Keramik::ScrollBarPainter( name + "slider", count, horizontal ).draw( p, x, y, w, h );
 			break;
 		}
 

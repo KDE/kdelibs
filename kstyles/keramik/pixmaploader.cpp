@@ -228,6 +228,17 @@ QString ScrollBarPainter::name( bool horizontal )
 	return QString( "scrollbar-" ) + ( horizontal ? "hbar" : "vbar" );
 }
 
+QString ScrollBarPainter::tileName( unsigned int column, unsigned int row ) const
+{
+	unsigned int num = ( column ? column : row ) + 1;
+	if ( m_count == 5 )
+		if ( num == 3 ) num = 4;
+		else if ( num == 4 ) num = 2;
+		else if ( num == 5 ) num = 3;
+
+	return m_type + QString::number( num );
+}
+
 TilePainter::TileMode SpinBoxPainter::columnMode( unsigned int column ) const
 {
 	return column == 1 ? Scaled : Fixed;

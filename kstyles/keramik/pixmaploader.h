@@ -186,10 +186,7 @@ namespace Keramik
 	protected:
 		virtual unsigned int columns() const { return m_horizontal ? m_count : 1; }
 		virtual unsigned int rows() const { return m_horizontal ? 1 : m_count; }
-		virtual QString tileName( unsigned int column, unsigned int row ) const
-		{
-			return m_type + QString::number( column ? column + 1 : row + 1 );
-		}
+		virtual QString tileName( unsigned int column, unsigned int row ) const;
 		virtual TileMode columnMode( unsigned int column ) const
 		{
 			return m_horizontal ? ( column % 2 ) ? Scaled : Fixed : Fixed;
