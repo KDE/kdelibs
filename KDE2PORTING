@@ -320,7 +320,7 @@ this:
 
     QSplitter *split = new QSplitter( parent );
     QListBox *lb = new QListBox( split );
-    QListView *lv = new QListView( split );
+    KListView *lv = new KListView( split );
     QMultiLineEdit *ed = new QMultiLineEdit( split );
 
 As you can see you are not limited to two children.  Additionally, you
@@ -330,17 +330,17 @@ possible if you call setOpaqueResize(true).
 ////////////////////////////////////////////////////////////////////////
 // * KTreeList, KTreeListItem
 
-Use QListView, QListViewItem instead. API is almost the same, you only
-need to add a Column (QListView::addColum) before QListView is useable.
+Use KListView, QListViewItem instead. API is almost the same, you only
+need to add a Column (KListView::addColum) before KListView is useable.
 
-QListView has no addChild(), insertItem() and removeItem() calls. Inserting
-a root item is done by constructing a QListViewItem with the QListView
+KListView has no addChild(), insertItem() and removeItem() calls. Inserting
+a root item is done by constructing a QListViewItem with the KListView
 passed as the parent widget. adding a child item is done by constructing
 a QListViewItem with the parent item as parameter. removeItem() should
 be replaced by delete <pointer to item>.
 
 The root items are not shown in a tree fashion by default. to get this,
-use QListView::setDecorativeRoot(true).
+use KListView::setDecorativeRoot(true).
 
 Expanding and collapsing can by done by using QListViewItem::setOpen(bool).
 
@@ -408,7 +408,7 @@ we can't link-compile kdecore to kdeui.
 ////////////////////////////////////////////////////////////////////////
 // * KTabListBox
 
-This widget has been replaced by the almighty QListView. Everything said
+This widget has been replaced by the almighty KListView. Everything said
 about KTreeList could be repeated here. The good thing is, that you now
 can combine TreeView's and normal Tablists without problems.
 
