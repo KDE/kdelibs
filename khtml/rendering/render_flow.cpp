@@ -548,7 +548,7 @@ void RenderFlow::positionNewFloats()
         int ro = rightOffset(); // Constant part of right offset.
         int lo = leftOffset(); // Constat part of left offset.
         int fwidth = f->width; // The width we look for.
-kdDebug( 6040 ) << " Object width: " << fwidth << " available width: " << ro - lo << endl;
+	//kdDebug( 6040 ) << " Object width: " << fwidth << " available width: " << ro - lo << endl;
         if (ro - lo < fwidth)
             fwidth = ro - lo; // Never look for more than what will be available.
         if (o->style()->floating() == FLEFT)
@@ -560,7 +560,7 @@ kdDebug( 6040 ) << " Object width: " << fwidth << " available width: " << ro - l
                 fx = lo+leftRelOffset(y);
             }
             f->left = fx;
-            kdDebug( 6040 ) << "positioning left aligned float at (" << fx + o->marginLeft()  << "/" << y + o->marginTop() << ")" << endl;
+            //kdDebug( 6040 ) << "positioning left aligned float at (" << fx + o->marginLeft()  << "/" << y + o->marginTop() << ")" << endl;
             o->setXPos(fx + o->marginLeft());
             o->setYPos(y + o->marginTop());
         }
@@ -573,7 +573,7 @@ kdDebug( 6040 ) << " Object width: " << fwidth << " available width: " << ro - l
                 fx = ro+rightOffset(y);
             }
             f->left = fx - f->width;
-            kdDebug( 6040 ) << "positioning right aligned float at (" << fx - o->marginRight() - o->width() << "/" << y + o->marginTop() << ")" << endl;
+            //kdDebug( 6040 ) << "positioning right aligned float at (" << fx - o->marginRight() - o->width() << "/" << y + o->marginTop() << ")" << endl;
             o->setXPos(fx - o->marginRight() - o->width());
             o->setYPos(y + o->marginTop());
         }
