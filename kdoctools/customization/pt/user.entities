@@ -10,13 +10,13 @@
 <!ENTITY Backspace	"<keycap>Backspace</keycap>">
 <!ENTITY cdrom	'<hardware>leitor de CD-ROMs</hardware>'>
 <!ENTITY Ctrl	"<keycap>Ctrl</keycap>">
-<!ENTITY dpi	'<acronym>dpi</acronym>'>
+<!ENTITY dpi	'<acronym>ppp</acronym>'>
 <!ENTITY pex 	"por exemplo"> <!-- English: &eg; -->
-<!ENTITY eg 	"por exemplo">
+<!ENTITY eg 	"isto é">
+<!ENTITY Enter	"<keycap>Enter</keycap>">
 <!ENTITY Esc	"<keycap>Esc</keycap>">
 <!ENTITY etc    "<abbrev>etc.</abbrev>">
 <!ENTITY FAQ	'<acronym>FAQ</acronym>'>
-<!ENTITY ed 	"isto é"> <!-- English: &ie; -->
 <!ENTITY ie 	"isto é"> 
 <!ENTITY kcontrolcenter	"<application>Centro de Controlo &kde;</application>">
 <!ENTITY BER 	"botão <mousebutton>esquerdo</mousebutton> do rato">  <!-- English: &LMB; -->
@@ -25,8 +25,9 @@
 <!ENTITY MMB 	"botão <mousebutton>do meio</mousebutton> do rato">
 <!ENTITY BDR 	"botão <mousebutton>direito</mousebutton> do rato">   <!-- English: &RMB; -->
 <!ENTITY RMB 	"botão <mousebutton>direito</mousebutton> do rato">
-<!ENTITY OS	"sistema operativo"><!-- <acronym>OS</acronym>-->
+<!ENTITY OS	"sistema operativo">
 <!ENTITY Shift	"<keycap>Shift</keycap>">
+<!ENTITY Tab	"<keycap>Tab</keycap>">
 <!ENTITY kicon  '<guiicon>
 <inlinemediaobject>
  <objectinfo><title>O ícone K do &kde;</title></objectinfo>
