@@ -3,17 +3,28 @@
 #include <kjavaappletserver.h>
 #include <kjavaapplet.h>
 #include <kjavaappletwidget.h>
+#include <kdebug.h>
 #include <qstring.h>
 #include <stdio.h>
 #include <unistd.h>
 
 
+static KCmdLineOptions options[] =
+{
+    { "+[kdelibs_path]", "path to kdelibs directory", 0 },
+    { 0, 0, 0 }
+};
+
 int main(int argc, char **argv)
 {
     KCmdLineArgs::init( argc, argv, "testKJASSever", "test program", "0.0" );
+    KCmdLineArgs::addCmdLineOptions( options );
+
     KApplication app;
 
-    QString path_to_kdelibs( argv[1] );
+    KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
+    kdDebug() << "num args = " << args->count() << endl;
+    QString path_to_kdelibs = args->arg(0);
     
     KJavaAppletContext* context = new KJavaAppletContext();
     KJavaAppletWidget *applet = new KJavaAppletWidget( context );
