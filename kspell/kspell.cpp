@@ -500,17 +500,20 @@ void KSpell::checkWord2 (KProcIO *)
 
   NOOUTPUT(checkWord2);
 
-  int e;
-  if ((e=parseOneResponse (line, word, &sugg))==MISTAKE &&
-      usedialog)
+  bool mistake = (parseOneResponse(line, word, &sugg) == MISTAKE);
+  if ( mistake && usedialog )
     {
       cwword=word;
       dialog (word, &sugg, SLOT (checkWord3()));
       return;
     }
-      //emits a "corrected" signal _even_ if no change was made
-      //so that the calling program knows when the check is complete
+  else if( mistake )
+    {
+      emit misspelling (word, &sugg, lastpos);
+    }
 
+  //emits a "corrected" signal _even_ if no change was made
+  //so that the calling program knows when the check is complete
   emit corrected (word, word, 0L);
 }
 
