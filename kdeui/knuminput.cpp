@@ -353,7 +353,7 @@ void KIntNumInput::setRange(int lower, int upper, int step, bool slider)
 
 // -----------------------------------------------------------------------------
 
-void KIntNumInput::setSuffix(QString suffix)
+void KIntNumInput::setSuffix(const QString &suffix)
 {
     m_spin->setSuffix(suffix);
 
@@ -369,7 +369,7 @@ QString KIntNumInput::suffix() const
 
 // -----------------------------------------------------------------------------
 
-void KIntNumInput::setPrefix(QString prefix)
+void KIntNumInput::setPrefix(const QString &prefix)
 {
     m_spin->setPrefix(prefix);
 
@@ -825,7 +825,7 @@ const char *KDoubleNumInput::format() const
 
 // -----------------------------------------------------------------------------
 
-void KDoubleNumInput::setSuffix(QString suffix)
+void KDoubleNumInput::setSuffix(const QString &suffix)
 {
     m_suffix = suffix;
 
@@ -835,7 +835,7 @@ void KDoubleNumInput::setSuffix(QString suffix)
 
 // -----------------------------------------------------------------------------
 
-void KDoubleNumInput::setPrefix(QString prefix)
+void KDoubleNumInput::setPrefix(const QString &prefix)
 {
     m_prefix = prefix;
 

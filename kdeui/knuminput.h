@@ -103,8 +103,6 @@ public:
     virtual QSize sizeHint() const;
 
 protected:
-    void init();
-
     /**
      * call this function whenever you change something in the geometry
      * of your KNumInput child
@@ -129,6 +127,9 @@ protected:
 
     int      m_alignment;
 
+private:
+    void init();
+
     class KNumInputPrivate;
     KNumInputPrivate *d;
 };
@@ -151,7 +152,7 @@ protected:
  * value to be in the given range, and can display it in any base
  * between 2 and 36.
  *
- * @short Easy integer parameter entry, with spin and slider.
+ * @short An input widget for integer numbers, consisting of a spinbox and a slider.
  * @version $Id$
  */
 
@@ -210,11 +211,24 @@ public:
     virtual ~KIntNumInput();
 
     /**
-     * @return the current value
+     * @return the current value.
      */
     int value() const;
+    /**
+     * @return the suffix displayed behind the value.
+     * @see #setSuffix()
+     */
     QString suffix() const;
+    /**
+     * @return the prefix displayed in front of the value.
+     * @see #setPrefix()
+     */
     QString prefix() const;
+    /**
+     * @return the string displayed for a special value.
+     * @see #setSpecialValueText()
+     */
+    QString specialValueText() const;
     /**
      * @param lower  lower bound on range
      * @param upper  upper bound on range
@@ -229,11 +243,9 @@ public:
      * that the choice has a special (default) meaning.
      */
     void setSpecialValueText(const QString& text);
-    QString specialValueText() const;
 
     /**
-     * reimplemented for internal reasons.
-     *
+     * @reimplemented
      */
     virtual void setLabel(QString label, int a = AlignLeft | AlignTop);
 
@@ -253,20 +265,24 @@ public slots:
     void setValue(int);
 
     /**
-     * sets the Suffix
-     * @param suffix the suffix that should be used. QString::null to disable
+     * Sets the suffix to @p suffix.
+     * Use QString::null to disable this feature.
      * Formatting has to be provided (e.g. a space separator between the
-     * prepended @param value and the suffix's text has to be provided
-     * as the first character in the suffix)
+     * prepended @p value and the suffix's text has to be provided
+     * as the first character in the suffix).
+     *
+     * @see QSpinBox::setSuffix(), #setPrefix()
      */
-    void setSuffix(QString suffix);
+    void setSuffix(const QString &suffix);
 
     /**
-     * sets the Prefix
-     * @param prefix the prefix that should be used. QString::null to disable
-     * Formatting has to be provided (see above)
+     * Sets the prefix to @p prefix.
+     * Use QString::null to disable this feature.
+     * Formatting has to be provided (see above).
+     *
+     * @see QSpinBox::setPrefix(), #setSuffix()
      */
-    void setPrefix(QString prefix);
+    void setPrefix(const QString &prefix);
 
     /**
      * sets focus to the edit widget and marks all text in if mark == true
@@ -275,21 +291,30 @@ public slots:
     void setEditFocus( bool mark = true );
 
 signals:
+    /**
+     * Emitted every time the value changes (by calling @ref setValue() or
+     * by user interaction).
+     */
     void valueChanged(int);
 
-protected slots:
+private slots:
     void spinValueChanged(int);
 
 protected:
-
-    void init(int value, int _base);
+    /**
+     * @reimplemented
+     */
     virtual void doLayout();
-
+    /**
+     * @reimplemented
+     */
     void resizeEvent ( QResizeEvent * );
-    void resetEditBox();
 
     KIntSpinBox* m_spin;
     QSize        m_sizeSpin;
+
+private:
+    void init(int value, int _base);
 
     class KIntNumInputPrivate;
     KIntNumInputPrivate *d;
@@ -314,6 +339,9 @@ class KDoubleLine;
  *
  * It uses KDoubleValidator validator class. KDoubleNumInput enforces the
  * value to be in the given range.
+ *
+ * @see KIntNumInput
+ * @short An input control for real numbers, consisting of a spinbox and a slider.
  */
 
 class KDoubleNumInput : public KNumInput
@@ -357,12 +385,29 @@ public:
     KDoubleNumInput(KNumInput* below, double value, QWidget* parent=0, const char* name=0);
 
     /**
-     * @return the current value
+     * @return the current value.
      */
     double value() const;
+    /**
+     * @return the suffix.
+     * @see #setSuffix()
+     */
     QString suffix() const;
+    /**
+     * @return the prefix.
+     * @see #setPrefix()
+     */
     QString prefix() const;
+    /**
+     * @return the format.
+     * @see #setFormat()
+     */
     const char *format() const;
+    /**
+     * @return the string displayed for a special value.
+     * @see #setSpecialValueText()
+     */
+    QString specialValueText() const { return m_specialvalue; }
 
      /**
      * @param lower  lower bound on range
@@ -372,26 +417,33 @@ public:
     void setRange(double lower, double upper, double step=1, bool slider=true);
 
     /**
-     * the Format string that should be used to display the double value.
-     *
-     * @param format uses the same format as QString::sprintf().
+     * Sets the format string that should be used to display the double value.
+     * The format string follows the same rules as the printf() function or
+     * @ref QString::sprintf(). You can use this if you want to set the number
+     * of digits to be displayed, etc.
      */
     void setFormat(const char* format);
 
     /**
-     * Sets the special value text. If set, the SpinBox will display
+     * Sets the special value text. If set, the spin box will display
      * this text instead of the numeric value whenever the current
-     * value is equal to minVal(). Typically this is used for indicating
+     * value is equal to @ref #minVal(). Typically this is used for indicating
      * that the choice has a special (default) meaning.
      */
     void setSpecialValueText(const QString& text);
-    QString specialValueText() const { return m_specialvalue; }
 
     /**
-     * reimplemented for internal reasons.
-     *
+     * @reimplemented
      */
     virtual void setLabel(QString label, int a = AlignLeft | AlignTop);
+    /**
+     * @reimplemented
+     */
+    virtual QSize minimumSizeHint() const;
+    /**
+     * @reimplemented
+     */
+    virtual bool eventFilter(QObject*, QEvent*);
 
 public slots:
     /**
@@ -400,55 +452,59 @@ public slots:
     void setValue(double);
 
     /**
-     * sets the Suffix
-     * @param suffix the suffix that should be used. QString::null to disable
-     * Formatting has to be provided (e.g. a space separator between the
-     * prepended @param value and the suffix's text has to be provided
-     * as the first character in the suffix)
+     * Sets the suffix to be displayed to @p suffix. Use QString::null to disable
+     * this feature. Note that the suffix is attached to the value without any
+     * spacing. So if you prefer to display a space separator, set suffix
+     * to something like " cm".
+     * @see #setSuffix()
      */
-    void setSuffix(QString suffix);
+    void setSuffix(const QString &suffix);
 
     /**
-     * sets the Prefix
-     * @param prefix the prefix that should be used. QString::null to disable
-     * Formatting has to be provided (see above)
+     * Sets the prefix to be displayed to @p prefix. Use QString::null to disable
+     * this feature. Note that the prefix is attached to the value without any
+     * spacing.
+     * @see #setPrefix()
      */
-    void setPrefix(QString prefix);
+    void setPrefix(const QString &prefix);
 
 signals:
+    /**
+     * Emitted every time the value changes (by calling @ref setValue() or
+     * by user interaction).
+     */
     void valueChanged(double);
 
-protected slots:
+private slots:
     void sliderMoved(int);
 
 protected:
+
     /**
-     * This method returns the minimum size necessary to display the
-     * control. The minimum size is enough to show all the labels
-     * in the current font (font change may invalidate the return value).
-     *
-     * @return the minimum size necessary to show the control
+     * @reimplemented
      */
-    virtual QSize minimumSizeHint() const;
-
-    void init(double value);
     virtual void doLayout();
-    virtual bool eventFilter(QObject*, QEvent*);
-
+    /**
+     * @reimplemented
+     */
     void resizeEvent ( QResizeEvent * );
-    void resetEditBox();
+    virtual void resetEditBox();
 
     KDoubleLine*   edit;
 
     bool     m_range;
-    double   m_value, m_lower, m_upper, m_step;
-    QString  m_units, m_specialvalue, m_prefix, m_suffix;
-    char     *m_format;
-    int      m_sliderstep; // currently unused
+    double   m_lower, m_upper, m_step;
 
     QSize    m_sizeEdit;
 
     friend class KDoubleLine;
+
+private:
+    void init(double value);
+    QString  m_units, m_specialvalue, m_prefix, m_suffix;
+    char     *m_format;
+    double   m_value;
+    int      m_sliderstep; // currently unused
 
     class KDoubleNumInputPrivate;
     KDoubleNumInputPrivate *d;
@@ -463,7 +519,7 @@ protected:
  *  The class provides an easy interface to use other
  *  numeric systems then the decimal.
  *
- *  @short An integer inputline with scrollbar and slider.
+ *  @short A spin box widget for non-decimal numbers.
  */
 class KIntSpinBox : public QSpinBox
 {
@@ -530,7 +586,7 @@ protected:
     virtual int mapTextToValue(bool*);
 
     /**
-     * reimplemented for internal reasons
+     * @reimplemented
      */
     virtual void focusInEvent(QFocusEvent*);
 
