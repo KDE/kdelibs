@@ -1,74 +1,37 @@
 This is an approximation what remains todo to get aRts running on MCOP
 as it was before on CORBA.
 
-1. API changes
+1. KDE2.0
 
- => SmartWrappers
+- fix memory leak when closing down incoming streams
+- check if we need any more private d pointers
+- tune Buffer again
 
-One of the last big changes before the API is more or less frozen. This is
-currently mostly done. Remaining issues are:
-
-- writeObject/readObject need review/rewrite
-
- => Other rough edges
-
-- provide a way to detect whether clients like artscontrol have died, and
-  remove their effects again
-
-- maybe provide a way for clients to identify themselves before using the
-  server, so that you can (at a later point of time) configure effects, volume
-  and similar dependant on what the client is: no effects for games, but
-  effects for the music
+=> optimization, not necessary but pretty
+- merge quick float -> integer conversion
+- get rid of additional Synth_MULTI_ADD pair in soundserver
 
 2. To get everything up again
 
 - ensure DynamicCast(<some null object>) == Object::null()
-- PlayObject interface: make posFinished => posIdle, and provide a way to go
-  idle again (unfortunately stop is already used by Arts::SynthModule)
 - support multiple artsd instances on one computer (like multiple displays),
   and think of a clever way to register them
-- StereoEffectStack should support reordering (and probably listing) effects,
-  too
+- StereoEffectStack should support reordering (and probably listing) effects
+- StereoEffectStack should remove effects that are not longer referenced
 - put streamwise blocking into MCOP, see artscat.cc to read really ugly
   source which lives without that feature
 - port visual objects
-- do streaming between servers again
 - more work on flow graph descriptions (Structure, etc.) -- external interfaces
-- synchronization: to synchronize audio/video output, you'll need to know how
-  much time aRts buffers internally and to the hardware - supply this somehow
 - port every object
-- asynchronous streams (as opposed to synchronous) w/ language binding
 - notifications when attributes change
-- more work on streaming, for instance:
-  - recursive scheduling again (with loops & cycles)
+- recursive scheduling again (with loops & cycles)
 - reading/writing IEEE Floats needs proper documentation, testing on
   different architectures and probably different code for some machines
-- more work on audio playing stuff (different sampling rates, different
-  hardware, mono, tunable buffer sizes)
-- make buffer sizes / samplingrate / depths / ... configurable
-- rewrite resampling to work nicely on small blocks (instead of requiring
-  the whole sample to be in memory). This in turn leads to
-   - allow different sampling rates for artscat (make it work the same also
-     regardless whether what samplingrate the server is running on)
-   - allow progressive loading for wave files
+- audio playing support for mono? 8bit? mmap? ... support other architectures
+- allow progressive loading for wave files
 - write blockwise caching (not requiring whole samples to be held in memory)
-- someday implement a clever way how apps that are not written for aRts can
-  use /dev/dsp nevertheless, maybe one of:
-   - starting artsd only on demand
-   - make artsd go to a sleep mode automatically if no clients are connected
-   - make artsd go to a sleep mode after a timeout
-   - make arts detect automatically when it is silent, and close /dev/dsp
-     then (this would for instance also close if clients are connected but
-     not playing anything)
-   - make an explicit call like "shutdown now" (esdctl off/esdctl on)
-- Dispatcher stores a FlowSystem_impl (not a FlowSystem) internally, since
-  it wants to have addObject() and removeObject() methods - this leads to
-  slightly unlogic accesses from outside
-- recording, full duplex
-- try to fix autoSuspend in conjunction with full duplex
-- take care of people who try to start artsd without /dev/dsp - either don't
-  start at all, or silently delete the output (which could make sense, since
-  you maybe just want to view a video)
+- maybe make an explicit call like "suspend now" (esdctl off/esdctl on)
+- recording, try to fix autoSuspend in conjunction with full duplex
 
 3. To have more fun
 
