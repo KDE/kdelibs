@@ -213,6 +213,7 @@ tagFunc KHTMLParser::tagJumpTable[ID_MAX+1] =
 &KHTMLParser::parseTagOption,	&KHTMLParser::parseTagOptionEnd,// ID_OPTION
 &KHTMLParser::parseTagP,	&KHTMLParser::parseTagPEnd,	// ID_P
 &KHTMLParser::parseTagParam,		0,			// ID_PARAM
+&KHTMLParser::parsePlain,               0,                      // ID_PLAIN
 &KHTMLParser::parseTagPre,	&KHTMLParser::parseTagEnd,	// ID_PRE
 &KHTMLParser::parseTagQ,	&KHTMLParser::parseTagEnd,	// ID_Q
 &KHTMLParser::parseTagStrike,	&KHTMLParser::parseTagEnd,	// ID_S
@@ -239,7 +240,6 @@ tagFunc KHTMLParser::tagJumpTable[ID_MAX+1] =
 &KHTMLParser::parseTagU,	&KHTMLParser::parseTagEnd,	// ID_U
 &KHTMLParser::parseTagUL,	&KHTMLParser::parseTagEnd,	// ID_UL
 &KHTMLParser::parseTagVar,	&KHTMLParser::parseTagEnd,	// ID_VAR
-&KHTMLParser::parsePlain,		0			// ID_PLAIN
 };
 
 

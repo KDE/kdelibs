@@ -19,7 +19,10 @@
 
 #AM_CXXFLAGS += -DTABLE_DEBUG
 
-#AM_CXXFLAGS += -pg
+# for profiling. 
+# command line for line by line profiling (into seperate files):
+# gprof -l -y
+AM_CXXFLAGS += -pg
 
 lib_LTLIBRARIES = libkhtml.la
 libkhtml_la_SOURCES = khtmlcache.cpp khtmlparser.cpp khtmljscript.cpp \
@@ -64,8 +67,7 @@ parser:
 	cd $(srcdir) && \
 	perl makeattrs && \
 	bash maketags && \
-	bash makeprop && \
-	perl makeentities
+	bash makeprop 
 
 #bin_PROGRAMS = debugkhtml
 #debugkhtml_LDADD = -lkhtml -lkdecore -lqt
