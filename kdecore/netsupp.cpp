@@ -226,6 +226,10 @@ int kde_getaddrinfo(const char *name, const char *service,
   struct kde_addrinfo* res;
   struct addrinfo* p;
   int err = EAI_SERVICE;
+#if KDE_IPV6_LOOKUP_MODE == 1
+  // mode 1: do a check on whether we have an IPv6 stack
+  static int ipv6_stack = 0;	// 0: unknown, 1: yes, 2: no
+#endif
 
   // allocate memory for results
   res = (kde_addrinfo*)malloc(sizeof(*res));
@@ -234,10 +238,27 @@ int kde_getaddrinfo(const char *name, const char *service,
   res->data = NULL;
   res->origin = KAI_SYSTEM;	// at first, it'll be only system data
 
+  struct addrinfo* last = NULL;
+  
+  // Skip the getaddrinfo call and the ipv6 check for a UNIX socket.
+  if (hint && (hint->ai_family == PF_UNIX))
+  {
+     if (service == NULL || *service == '\0')
+       goto out;		// can't be Unix if no service was requested
+
+     // Unix sockets must be localhost
+     // That is, either name is NULL or, if it's not, it must be empty,
+     // "*" or "localhost"
+     if (name != NULL && !(name[0] == '\0' || (name[0] == '*' && name[1] == '\0') ||
+		strcmp("localhost", name) == 0))
+       goto out;		// isn't localhost
+
+     goto unix;
+  }
+  
 #if KDE_IPV6_LOOKUP_MODE != 0
 # if KDE_IPV6_LOOKUP_MODE == 1
   // mode 1: do a check on whether we have an IPv6 stack
-  static int ipv6_stack = 0;	// 0: unknown, 1: yes, 2: no
   if (ipv6_stack == 0)
     ipv6_stack = check_ipv6_stack();
 
@@ -272,7 +293,6 @@ int kde_getaddrinfo(const char *name, const char *service,
 #endif
 
   // Now we have to check whether the user could want a Unix socket
-  struct addrinfo* last = NULL;
 
   if (service == NULL || *service == '\0')
     goto out;			// can't be Unix if no service was requested
@@ -302,6 +322,7 @@ int kde_getaddrinfo(const char *name, const char *service,
 	  goto out;
       }
 
+ unix:
   // So, give the user a PF_UNIX socket
   p = make_unix(NULL, service);
   if (p == NULL)
