@@ -76,11 +76,11 @@ MarginPreview::~MarginPreview()
 {
 }
 
-void MarginPreview::setPageSize(int w, int h)
+void MarginPreview::setPageSize(float w, float h)
 {
 	setNoPreview(w <= 0 && h <= 0);
 	// do not change relative margins when changing page size !!
-	int	old_b(height_-bottom_), old_r(width_-right_);
+	float	old_b(height_-bottom_), old_r(width_-right_);
 	width_ = w;
 	height_ = h;
 	resizeEvent(NULL);
@@ -88,7 +88,7 @@ void MarginPreview::setPageSize(int w, int h)
 	update();
 }
 
-void MarginPreview::setMargins(int t, int b, int l, int r)
+void MarginPreview::setMargins(float t, float b, float l, float r)
 {
 	top_ = t;
 	left_ = l;
@@ -104,7 +104,7 @@ void MarginPreview::setSymetric(bool on)
 
 void MarginPreview::resizeEvent(QResizeEvent *)
 {
-	if (float(width_)/height_ > float(width())/height())
+	if (width_/height_ > float(width())/height())
 	{
 		zoom_ = float(width()-3)/width_;
 		box_.setLeft(1);
@@ -283,7 +283,8 @@ void MarginPreview::mouseReleaseEvent(QMouseEvent *e)
 			drawTempLine(&p);
 			if (e)
 			{
-				int	val = 0, st(state_);
+				float	val = 0;
+				int st(state_);
 				if (symetric_ && (st == BMoving || st == RMoving))
 					st--;
 				switch (st)

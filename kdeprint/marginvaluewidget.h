@@ -29,28 +29,29 @@ public:
 	enum Mode { Pixels = 0, IN, CM, MM };
 	MarginValueWidget(KNumInput *below, double value = 18.0, QWidget *parent = 0, const char *name = 0);
 
-	int margin();
+	float margin();
 	int resolution() const;
 	void setResolution(int dpi);
 
 public slots:
 	void setMode(int);
-	void setMargin(int);
+	void setMargin(float);
 
 signals:
-	void marginChanged(int);
+	void marginChanged(float);
 
 protected slots:
 	void slotValueChanged(double);
 
 protected:
-	int toPixel(double value, int mode);
-	double toValue(int pix, int mode);
+	float toPixel(double value, int mode);
+	double toValue(float pix, int mode);
 
 private:
 	int		m_mode;
 	double	m_dpi;
 	bool	m_block;
+	float m_margin;
 };
 
 #endif

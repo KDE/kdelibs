@@ -66,7 +66,7 @@ static int trials = 5;
 
 //*****************************************************************************************************
 
-KMCupsManager::KMCupsManager(QObject *parent, const char *name)
+	KMCupsManager::KMCupsManager(QObject *parent, const char *name)
 : KMManager(parent,name)
 {
 	// be sure to create the CupsInfos object -> password
@@ -269,37 +269,37 @@ bool KMCupsManager::completePrinterShort(KMPrinter *p)
 	// change host and port for remote stuffs
 	if (!p->uri().isEmpty())
 	{
-		// THIS IS AN UGLY HACK!! FIXME
-		// This attempts a "pre-connection" to see if the host is
-		// actually reachable.  It times out after 2 seconds at most,
-		// preventing application freezes.
-		m_hostSuccess = false;
-		m_lookupDone = false;
-		// Give 2 seconds to connect to the printer, or abort
-		KExtendedSocket *kes = new KExtendedSocket(p->uri().host(),
-							p->uri().port());
-		connect(kes, SIGNAL(connectionSuccess()), this, SLOT(hostPingSlot()));
-		connect(kes, SIGNAL(connectionFailed(int)), this, SLOT(hostPingFailedSlot()));
-		if (kes->startAsyncConnect() != 0) {
-			delete kes;
-			m_hostSuccess = false;
-		} else {
-			QDateTime tm = QDateTime::currentDateTime().addSecs(2);
-			while (!m_lookupDone && (QDateTime::currentDateTime() < tm))
-				qApp->processEvents();
+	// THIS IS AN UGLY HACK!! FIXME
+	// This attempts a "pre-connection" to see if the host is
+	// actually reachable.  It times out after 2 seconds at most,
+	// preventing application freezes.
+	m_hostSuccess = false;
+	m_lookupDone = false;
+	// Give 2 seconds to connect to the printer, or abort
+	KExtendedSocket *kes = new KExtendedSocket(p->uri().host(),
+	p->uri().port());
+	connect(kes, SIGNAL(connectionSuccess()), this, SLOT(hostPingSlot()));
+	connect(kes, SIGNAL(connectionFailed(int)), this, SLOT(hostPingFailedSlot()));
+	if (kes->startAsyncConnect() != 0) {
+	delete kes;
+	m_hostSuccess = false;
+	} else {
+	QDateTime tm = QDateTime::currentDateTime().addSecs(2);
+	while (!m_lookupDone && (QDateTime::currentDateTime() < tm))
+	qApp->processEvents();
 
-			kes->cancelAsyncConnect();
+	kes->cancelAsyncConnect();
 
-			delete kes;
+	delete kes;
 
-			if (!m_lookupDone)
-				m_hostSuccess = false;
-		}
+	if (!m_lookupDone)
+	m_hostSuccess = false;
+	}
 
-		if (m_hostSuccess == true) {
-			req.setHost(p->uri().host());
-			req.setPort(p->uri().port());
-		}
+	if (m_hostSuccess == true) {
+	req.setHost(p->uri().host());
+	req.setPort(p->uri().port());
+	}
 	}
 	*/
 
@@ -339,17 +339,17 @@ bool KMCupsManager::completePrinterShort(KMPrinter *p)
 			p->setDevice( value );
 		}
 		QStringList	values;
-/*		if (req.uri("member-uris",values))
-		{
-			QStringList	members;
-			for (QStringList::ConstIterator it=values.begin(); it!=values.end(); ++it)
-			{
+		/*		if (req.uri("member-uris",values))
+				{
+				QStringList	members;
+				for (QStringList::ConstIterator it=values.begin(); it!=values.end(); ++it)
+				{
 				int	p = (*it).findRev('/');
 				if (p != -1)
-					members.append((*it).right((*it).length()-p-1));
-			}
-			p->setMembers(members);
-		}*/
+				members.append((*it).right((*it).length()-p-1));
+				}
+				p->setMembers(members);
+				}*/
 		if (req.name("member-names",values))
 			p->setMembers(values);
 		// banners
@@ -387,27 +387,27 @@ bool KMCupsManager::testPrinter(KMPrinter *p)
 {
 	return KMManager::testPrinter(p);
 	/*
-	QString	testpage = testPage();
-	if (testpage.isEmpty())
-	{
-		setErrorMsg(i18n("Unable to locate test page."));
-		return false;
-	}
+	   QString	testpage = testPage();
+	   if (testpage.isEmpty())
+	   {
+	   setErrorMsg(i18n("Unable to locate test page."));
+	   return false;
+	   }
 
-	IppRequest	req;
-	QString		uri;
+	   IppRequest	req;
+	   QString		uri;
 
-	req.setOperation(IPP_PRINT_JOB);
-	uri = printerURI(p);
-	req.addURI(IPP_TAG_OPERATION,"printer-uri",uri);
-	req.addMime(IPP_TAG_OPERATION,"document-format","application/postscript");
-	if (!CupsInfos::self()->login().isEmpty()) req.addName(IPP_TAG_OPERATION,"requesting-user-name",CupsInfos::self()->login());
-	req.addName(IPP_TAG_OPERATION,"job-name",QString::fromLatin1("KDE Print Test"));
-	if (req.doFileRequest("/printers/",testpage))
-		return true;
-	reportIppError(&req);
-	return false;
-	*/
+	   req.setOperation(IPP_PRINT_JOB);
+	   uri = printerURI(p);
+	   req.addURI(IPP_TAG_OPERATION,"printer-uri",uri);
+	   req.addMime(IPP_TAG_OPERATION,"document-format","application/postscript");
+	   if (!CupsInfos::self()->login().isEmpty()) req.addName(IPP_TAG_OPERATION,"requesting-user-name",CupsInfos::self()->login());
+	   req.addName(IPP_TAG_OPERATION,"job-name",QString::fromLatin1("KDE Print Test"));
+	   if (req.doFileRequest("/printers/",testpage))
+	   return true;
+	   reportIppError(&req);
+	   return false;
+	   */
 }
 
 void KMCupsManager::listPrinters()
@@ -558,7 +558,7 @@ DrMain* KMCupsManager::loadMaticDriver(const QString& drname)
 	if (exe.isEmpty())
 	{
 		setErrorMsg(i18n("Unable to find the executable foomatic-datafile "
-		                 "in your PATH. Check that Foomatic is correctly installed."));
+					"in your PATH. Check that Foomatic is correctly installed."));
 		return NULL;
 	}
 
@@ -590,8 +590,8 @@ DrMain* KMCupsManager::loadMaticDriver(const QString& drname)
 		}
 	}
 	setErrorMsg(i18n("Unable to create the Foomatic driver [%1,%2]. "
-	                 "Either that driver does not exist, or you don't have "
-	                 "the required permissions to perform that operation.").arg(comps[1]).arg(comps[2]));
+				"Either that driver does not exist, or you don't have "
+				"the required permissions to perform that operation.").arg(comps[1]).arg(comps[2]));
 	QFile::remove(tmpFile);
 	return NULL;
 }
@@ -634,14 +634,14 @@ DrMain* KMCupsManager::loadDriverFile(const QString& fname)
 					DrListOption	*op;
 					switch (opt->ui)
 					{
-					   case PPD_UI_BOOLEAN:
-						op = new DrBooleanOption();
-						break;
-					   case PPD_UI_PICKONE:
-						op = new DrListOption();
-						break;
-					   default:
-						continue;	// skip option
+						case PPD_UI_BOOLEAN:
+							op = new DrBooleanOption();
+							break;
+						case PPD_UI_PICKONE:
+							op = new DrListOption();
+							break;
+						default:
+							continue;	// skip option
 					}
 					op->setName(QString::fromLocal8Bit(opt->keyword));
 					op->set("text",ppdi18n(opt->text));
@@ -673,8 +673,8 @@ DrMain* KMCupsManager::loadDriverFile(const QString& fname)
 				ppd_size_t	*sz = ppd->sizes+i;
 				//kdDebug( 500 ) << "PageSize " << sz->name << ", " << sz->width << ", " << sz->length << ", " << sz->left << ", "
 				//	<< sz->bottom << ", " << sz->right << ", " << sz->top << endl;
-				driver->addPageSize(new DrPageSize(QString::fromLatin1(sz->name),(int)sz->width,(int)sz->length,(int)ceil( sz->left ),(int)ceil( sz->bottom ),
-							(int)ceil( sz->width - sz->right ),(int)ceil( sz->length - sz->top )));
+				driver->addPageSize(new DrPageSize(QString::fromLatin1(sz->name),sz->width,sz->length,sz->left,sz->bottom,
+							( sz->width - sz->right ),( sz->length - sz->top )));
 			}
 
 			ppdClose(ppd);

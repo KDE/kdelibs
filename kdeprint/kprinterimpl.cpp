@@ -89,9 +89,8 @@ void KPrinterImpl::preparePrinting(KPrinter *printer)
 			DrPageSize	*ps = driver->findPageSize(psname);
 			if (ps)
 			{
-				printer->setRealPageSize(ps->pageSize());
+				printer->setRealPageSize( ps );
 				printer->setMargins(ps->margins());
-				printer->setRealDrawableArea( ps->pageRect() );
 			}
 		}
 		delete driver;

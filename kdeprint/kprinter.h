@@ -34,6 +34,7 @@
 class KPrinterImpl;
 class KPrintDialogPage;
 class KPrinterPrivate;
+class DrPageSize;
 
 /**
  * This class is the main interface to access the KDE print framework. It allows KDE
@@ -456,16 +457,14 @@ public:
 	 * size.
 	 * @see setRealPageSize
 	 */
-	QSize realPageSize() const;
+	DrPageSize* realPageSize() const;
 	/**
 	 * Sets the real page size. For internal use only.
 	 * @param p the page size
 	 * @see realPageSize()
 	 */
-	void setRealPageSize(QSize p);
+	void setRealPageSize(DrPageSize* p);
 
-	void setRealDrawableArea( const QRect& r );
-	QRect realDrawableArea() const;
 	void margins( uint *top, uint *left, uint *bottom, uint *right ) const;
 
 	/**

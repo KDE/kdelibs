@@ -271,18 +271,29 @@ protected:
 class DrPageSize
 {
 public:
-	DrPageSize(const QString& s, int w, int h, int ml, int mb, int mr, int mt);
+	DrPageSize(const QString& s, float width, float height, float left, float bottom, float right, float top);
 	DrPageSize(const DrPageSize&);
 
-	QRect pageRect() const 	{ return m_pagerect; }
-	QSize pageSize() const 	{ return m_pagesize; }
-	QSize margins() const 	{ return QSize(m_pagerect.left(),m_pagerect.top()); }
-	QString name() const 	{ return m_name; }
+	/**
+	 * All dimensions are int dot: 1/72th of an inch ( PostScript ).
+	 * When rounded, the rounding is made safely: upward for a margin,
+	 * downward for a page size.
+	 */
+	float pageWidth() const    { return m_width; }
+	float pageHeight() const   { return m_height; }
+	float leftMargin() const   { return m_left; }
+	float rightMargin() const  { return m_right; }
+	float topMargin() const    { return m_top; }
+	float bottomMargin() const { return m_bottom; }
+	QString pageName() const   { return m_name; }
+
+	QSize pageSize() const;
+	QRect pageRect() const;
+	QSize margins() const;
 
 protected:
 	QString	m_name;
-	QSize	m_pagesize;
-	QRect	m_pagerect;
+	float m_width, m_height, m_left, m_bottom, m_right, m_top;
 };
 
 #endif

@@ -133,7 +133,7 @@ int DrMain::checkConstraints()
 
 void DrMain::addPageSize(DrPageSize *ps)
 {
-	m_pagesizes.insert(ps->name(),ps);
+	m_pagesizes.insert(ps->pageName(),ps);
 }
 
 void DrMain::removeOptionGlobally(const QString& name)
@@ -649,13 +649,39 @@ bool DrConstraint::check(DrMain *driver)
  * DrPageSize members *
  **********************/
 
-DrPageSize::DrPageSize(const QString& s,int w, int h, int ml, int mb, int mr, int mt)
-: m_name(s), m_pagesize(w,h), m_pagerect(ml,mt,w-ml-mr,h-mt-mb)
+DrPageSize::DrPageSize(const QString& s, float width, float height, float left, float bottom, float right, float top)
+: m_name(s),
+  m_width( width ),
+  m_height( height ),
+  m_left( left ),
+  m_bottom( bottom ),
+  m_right( right ),
+  m_top( top )
 {
-	//kdDebug( 500 ) << "left=" << ml << ", bottom=" << mb << ", right=" << mr << ", top=" << mt << endl;
 }
 
 DrPageSize::DrPageSize(const DrPageSize& d)
-: m_name(d.m_name), m_pagesize(d.m_pagesize), m_pagerect(d.m_pagerect)
+: m_name(d.m_name),
+  m_width( d.m_width ),
+  m_height( d.m_height ),
+  m_left( d.m_left ),
+  m_bottom( d.m_bottom ),
+  m_right( d.m_right ),
+  m_top( d.m_top )
 {
+}
+
+QSize DrPageSize::pageSize() const
+{
+	return QSize( ( int )m_width, ( int )m_height );
+}
+
+QRect DrPageSize::pageRect() const
+{
+	return QRect( ( int )( m_left+0.5 ), ( int )( m_top+0.5 ), ( int )( m_width-m_left-m_right ), ( int )( m_height-m_top-m_bottom ) );
+}
+
+QSize DrPageSize::margins() const
+{
+	return QSize( ( int )( m_left+0.5 ), ( int )( m_top+0.5 ) );
 }

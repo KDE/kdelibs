@@ -29,9 +29,9 @@ class MarginPreview : public QWidget
 public:
 	MarginPreview(QWidget *parent = 0, const char *name = 0);
 	~MarginPreview();
-	// note : unit -> points
-	void setPageSize(int w, int h);
-	void setMargins(int t, int b, int l, int r);
+	// note : unit -> points (1/72th in)
+	void setPageSize(float w, float h);
+	void setMargins(float t, float b, float l, float r);
 	void setNoPreview(bool on);
 	void setSymetric(bool on);
 	enum	StateType { Fixed = -1, None = 0, TMoving, BMoving, LMoving, RMoving };
@@ -40,7 +40,7 @@ public slots:
 	void enableRubberBand(bool on);
 
 signals:
-	void marginChanged(int type, int value);
+	void marginChanged(int type, float value);
 
 protected:
 	void paintEvent(QPaintEvent *);
@@ -52,8 +52,8 @@ protected:
 	void drawTempLine(QPainter*);
 
 private:
-	int	width_, height_;
-	int	top_, bottom_, left_, right_;
+	float	width_, height_;
+	float	top_, bottom_, left_, right_;
 	QRect	box_, margbox_;
 	float	zoom_;
 	bool	nopreview_;

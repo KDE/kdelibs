@@ -28,6 +28,7 @@
 #include "kmfactory.h"
 #include "kmuimanager.h"
 #include "kmmanager.h"
+#include "driver.h"
 
 #include <qpaintdevicemetrics.h>
 #include <qfile.h>
@@ -110,11 +111,10 @@ public:
 	QString			m_printername;
 	QString			m_searchname;
 	QSize			m_margins;
-	QSize			m_pagesize;
 	QString			m_errormsg;
 	bool			m_ready;
 	int		m_pagenumber;
-	QRect m_drawablearea;
+	DrPageSize *m_pagesize;
 };
 
 //**************************************************************************************
@@ -306,16 +306,29 @@ void KPrinter::translateQtOptions()
 	d->m_wrapper->setNumCopies(option("kde-qtcopies").isEmpty() ? 1 : option("kde-qtcopies").toInt());
 #ifdef KDEPRINT_USE_MARGINS
 	if (!option("kde-margin-top").isEmpty())
-		d->m_wrapper->setMargins(option("kde-margin-top").toInt(), option("kde-margin-left").toInt(), option("kde-margin-bottom").toInt(), option("kde-margin-right").toInt());
-	else if ( d->m_drawablearea.isValid() && d->m_pagesize.isValid() )
 	{
-		QRect r = d->m_drawablearea;
-		QSize ps = d->m_pagesize;
+		/**
+		 * Scale margings as the margin widget always stores values
+		 * in dot units ( 1/72th in ), to be resolution independent
+		 * when specified by the user ( who usually specifies margins
+		 * in metric units ).
+		 */
 		int res = resolution();
-		d->m_wrapper->setMargins( ( r.top() * res + 71 ) / 72,
-				( r.left() * res + 71 ) / 72, 
-				( ( ps.height() - r.bottom() - 1 ) * res + 71 ) / 72,
-				( ( ps.width() - r.right() - 1 ) * res + 71 ) / 72 );
+		d->m_wrapper->setMargins(
+				( int )( ( option("kde-margin-top").toFloat() * res + 71 ) / 72 ),
+				( int )( ( option("kde-margin-left").toFloat() * res + 71 ) / 72 ),
+				( int )( ( option("kde-margin-bottom").toFloat() * res + 71 ) / 72 ),
+				( int )( ( option("kde-margin-right").toFloat() * res + 71 ) / 72 ) );
+	}
+	else if ( d->m_pagesize != NULL )
+	{
+		int res = resolution();
+		DrPageSize *ps = d->m_pagesize;
+		d->m_wrapper->setMargins(
+				( int )( ( ps->topMargin() * res + 71 ) / 72 ),
+				( int )( ( ps->leftMargin() * res + 71 ) / 72 ), 
+				( int )( ( ps->bottomMargin() * res + 71 ) / 72 ),
+				( int )( ( ps->rightMargin() * res + 71 ) / 72 ) );
 	}
 	/*else
 	{
@@ -414,8 +427,7 @@ void KPrinter::preparePrinting()
 
 	// re-initialize margins and page size (by default, use Qt mechanism)
 	setMargins(QSize(-1,-1));
-	setRealPageSize(QSize(-1,-1));
-	setRealDrawableArea( QRect() );
+	setRealPageSize(NULL);
 
 	// print-system-specific setup, only if not printing to file
 	if (option("kde-isspecial") != "1")
@@ -544,7 +556,7 @@ void KPrinter::margins( uint *top, uint *left, uint *bottom, uint *right ) const
 
 int KPrinter::metric(int m) const
 {
-	if (!d->m_pagesize.isValid() || !option( "kde-printsize" ).isEmpty())
+	if (d->m_pagesize != NULL || !option( "kde-printsize" ).isEmpty())
 		return d->m_wrapper->qprinterMetric(m);
 
 	int	val(0);
@@ -554,14 +566,14 @@ int KPrinter::metric(int m) const
 	switch ( m )
 	{
 		case QPaintDeviceMetrics::PdmWidth:
-			val = (land ? d->m_pagesize.height() : d->m_pagesize.width());
+			val = (land ? ( int )d->m_pagesize->pageHeight() : ( int )d->m_pagesize->pageWidth());
 			if ( res != 72 )
 				val = (val * res + 36) / 72;
 			if ( !fullPage() )
 				val -= ( left + right );
 			break;
 		case QPaintDeviceMetrics::PdmHeight:
-			val = (land ? d->m_pagesize.width() : d->m_pagesize.height());
+			val = (land ? ( int )d->m_pagesize->pageWidth() : ( int )d->m_pagesize->pageHeight());
 			if ( res != 72 )
 				val = (val * res + 36) / 72;
 			if ( !fullPage() )
@@ -928,10 +940,10 @@ bool KPrinter::aborted() const
 void KPrinter::setMargins(QSize m)
 { d->m_margins = m; }
 
-QSize KPrinter::realPageSize() const
+DrPageSize* KPrinter::realPageSize() const
 { return d->m_pagesize; }
 
-void KPrinter::setRealPageSize(QSize p)
+void KPrinter::setRealPageSize(DrPageSize *p)
 { d->m_pagesize = p; }
 
 QString KPrinter::errorMessage() const
@@ -967,9 +979,3 @@ void KPrinter::setResolution(int dpi)
 
 int KPrinter::resolution() const
 { return d->m_wrapper->resolution(); }
-
-void KPrinter::setRealDrawableArea( const QRect& r )
-{ d->m_drawablearea = r; }
-
-QRect KPrinter::realDrawableArea() const
-{ return d->m_drawablearea; }

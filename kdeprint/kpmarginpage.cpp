@@ -46,8 +46,8 @@ KPMarginPage::KPMarginPage(KPrinter *prt, DrMain *driver, QWidget *parent, const
 	QGroupBox	*box = new QGroupBox(1, Qt::Vertical, i18n("Margins"), this);
 	m_margin = new MarginWidget(box, "MarginWidget", (m_printer != 0));
 	//m_margin->setSymetricMargins(true);
-	if (m_printer)
-		m_margin->setResolution(m_printer->resolution());
+	//if (m_printer)
+	//	m_margin->setResolution(m_printer->resolution());
 
 	QVBoxLayout	*l0 = new QVBoxLayout(this, 0, 10);
 	l0->addWidget(box);
@@ -60,8 +60,8 @@ KPMarginPage::~KPMarginPage()
 
 void KPMarginPage::initPageSize(const QString& ps, bool landscape)
 {
-	QSize	sz(-1, -1);
-	unsigned int mt( 36 ), mb( mt ), ml( 24 ), mr( ml );
+	float w( -1 ), h( -1 );
+	float mt( 36 ), mb( mt ), ml( 24 ), mr( ml );
 	QString	m_currentps(ps);
 	if (driver() && m_usedriver )
 	{
@@ -76,12 +76,12 @@ void KPMarginPage::initPageSize(const QString& ps, bool landscape)
 			DrPageSize	*ps = driver()->findPageSize(m_currentps);
 			if (ps)
 			{
-				sz = ps->pageSize();
-				QRect r = ps->pageRect();
-				mt = r.top();
-				ml = r.left();
-				mb = sz.height() - r.bottom() - 1;
-				mr = sz.width() - r.right() - 1;
+				w = ps->pageWidth();
+				h = ps->pageHeight();
+				mt = ps->topMargin();
+				ml = ps->leftMargin();
+				mb = ps->bottomMargin();
+				mr = ps->rightMargin();
 			}
 		}
 	}
@@ -92,16 +92,22 @@ void KPMarginPage::initPageSize(const QString& ps, bool landscape)
 		prt.setFullPage(true);
 		prt.setPageSize((QPrinter::PageSize)(m_currentps.isEmpty() ? KGlobal::locale()->pageSize() : ps.toInt()));
 		QPaintDeviceMetrics	metrics(&prt);
-		sz = QSize(metrics.width(), metrics.height());
+		w = metrics.width();
+		h = metrics.height();
 #ifdef KDEPRINT_USE_MARGINS
-		prt.margins( &mt, &ml, &mb, &mr );
+		unsigned int it, il, ib, ir;
+		prt.margins( &it, &il, &ib, &ir );
+		mt = it;
+		ml = il;
+		mb = ib;
+		mr = ir;
 #else
 		QSize mg = prt.margins();
 		mt = mb = mg.height();
 		ml = mr = mg.width();
 #endif
 	}
-	m_margin->setPageSize(sz.width(), sz.height());
+	m_margin->setPageSize(w, h);
 	m_margin->setOrientation(landscape ? KPrinter::Landscape : KPrinter::Portrait);
 	m_margin->setDefaultMargins( mt, mb, ml, mr );
 	m_margin->setCustomEnabled(false);
@@ -125,25 +131,25 @@ void KPMarginPage::setOptions(const QMap<QString,QString>& opts)
 
 	bool	marginset(false);
 	QString	value;
-	if (!(value=opts["kde-margin-top"]).isEmpty() && value.toInt() != m_margin->top())
+	if (!(value=opts["kde-margin-top"]).isEmpty() && value.toFloat() != m_margin->top())
 	{
 		marginset = true;
-		m_margin->setTop(value.toInt());
+		m_margin->setTop(value.toFloat());
 	}
-	if (!(value=opts["kde-margin-left"]).isEmpty() && value.toInt() != m_margin->left())
+	if (!(value=opts["kde-margin-left"]).isEmpty() && value.toFloat() != m_margin->left())
 	{
 		marginset = true;
-		m_margin->setLeft(value.toInt());
+		m_margin->setLeft(value.toFloat());
 	}
-	if (!(value=opts["kde-margin-bottom"]).isEmpty() && value.toInt() != m_margin->bottom())
+	if (!(value=opts["kde-margin-bottom"]).isEmpty() && value.toFloat() != m_margin->bottom())
 	{
 		marginset = true;
-		m_margin->setBottom(value.toInt());
+		m_margin->setBottom(value.toFloat());
 	}
-	if (!(value=opts["kde-margin-right"]).isEmpty() && value.toInt() != m_margin->right())
+	if (!(value=opts["kde-margin-right"]).isEmpty() && value.toFloat() != m_margin->right())
 	{
 		marginset = true;
-		m_margin->setRight(value.toInt());
+		m_margin->setRight(value.toFloat());
 	}
 	m_margin->setCustomEnabled(marginset);
 }

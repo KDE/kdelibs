@@ -28,35 +28,40 @@ MarginValueWidget::MarginValueWidget(KNumInput *below, double value, QWidget *pa
 	m_block = false;
 	setPrecision(0);
 	m_dpi = 72.0;
+	m_margin = ( float )value;
 	setMode(m_mode);
 	setRange(0, 999, 1, false);
 	connect(this, SIGNAL(valueChanged(double)), SLOT(slotValueChanged(double)));
 }
 
-int MarginValueWidget::margin()
+float MarginValueWidget::margin()
 {
-	return toPixel(value(), m_mode);
+	return m_margin;
 }
 
-void MarginValueWidget::setMargin(int m)
+void MarginValueWidget::setMargin(float m)
 {
+	m_margin = m;
 	double	v = toValue(m, m_mode);
+	m_block = true;
 	setValue(v);
+	m_block = false;
+	emit marginChanged( m_margin );
 }
 
-int MarginValueWidget::toPixel(double value, int mode)
+float MarginValueWidget::toPixel(double value, int mode)
 {
 	switch (mode)
 	{
 		default:
-		case Pixels: return (int)value;
-		case IN: return (int)(rint(value * m_dpi));
-		case CM: return (int)(rint(value * m_dpi / 2.54));
-		case MM: return (int)(rint(value * m_dpi / 25.4));
+		case Pixels: return (float)value;
+		case IN: return (float)(value * m_dpi);
+		case CM: return (float)(value * m_dpi / 2.54);
+		case MM: return (float)(value * m_dpi / 25.4);
 	}
 }
 
-double MarginValueWidget::toValue(int pix, int mode)
+double MarginValueWidget::toValue(float pix, int mode)
 {
 	switch (mode)
 	{
@@ -72,10 +77,13 @@ double MarginValueWidget::toValue(int pix, int mode)
 	}
 }
 
-void MarginValueWidget::slotValueChanged(double)
+void MarginValueWidget::slotValueChanged(double v)
 {
 	if (!m_block)
+	{
+		m_margin = toPixel( v, m_mode );
 		emit marginChanged(margin());
+	}
 }
 
 void MarginValueWidget::setMode(int m)
@@ -83,9 +91,8 @@ void MarginValueWidget::setMode(int m)
 	if (m != m_mode)
 	{
 		m_block = true;
-		int	p = margin();
 		m_mode = m;
-		double v = toValue(p, m);
+		double v = toValue(m_margin, m);
 		if (m == Pixels)
 		{
 			setPrecision(0);
@@ -103,10 +110,9 @@ void MarginValueWidget::setMode(int m)
 
 void MarginValueWidget::setResolution(int dpi)
 {
-	int	value = margin();
 	m_dpi = dpi;
 	m_block = true;
-	setMargin(value);
+	setMargin(m_margin);
 	m_block = false;
 }
 

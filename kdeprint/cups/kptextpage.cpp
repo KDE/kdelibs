@@ -114,25 +114,25 @@ void KPTextPage::setOptions(const QMap<QString,QString>& opts)
 	initPageSize(landscape);
 
 	bool	marginset(false);
-	if (!(value=opts["page-top"]).isEmpty() && value.toInt() != m_margin->top())
+	if (!(value=opts["page-top"]).isEmpty() && value.toFloat() != m_margin->top())
 	{
 		marginset = true;
-		m_margin->setTop(value.toInt());
+		m_margin->setTop(value.toFloat());
 	}
-	if (!(value=opts["page-bottom"]).isEmpty() && value.toInt() != m_margin->bottom())
+	if (!(value=opts["page-bottom"]).isEmpty() && value.toFloat() != m_margin->bottom())
 	{
 		marginset = true;
-		m_margin->setBottom(value.toInt());
+		m_margin->setBottom(value.toFloat());
 	}
-	if (!(value=opts["page-left"]).isEmpty() && value.toInt() != m_margin->left())
+	if (!(value=opts["page-left"]).isEmpty() && value.toFloat() != m_margin->left())
 	{
 		marginset = true;
-		m_margin->setLeft(value.toInt());
+		m_margin->setLeft(value.toFloat());
 	}
-	if (!(value=opts["page-right"]).isEmpty() && value.toInt() != m_margin->right())
+	if (!(value=opts["page-right"]).isEmpty() && value.toFloat() != m_margin->right())
 	{
 		marginset = true;
-		m_margin->setRight(value.toInt());
+		m_margin->setRight(value.toFloat());
 	}
 	m_margin->setCustomEnabled(marginset);
 }
@@ -149,10 +149,10 @@ void KPTextPage::getOptions(QMap<QString,QString>& opts, bool incldef)
 	//if (m_margin->isCustomEnabled() || incldef)
 	if (m_margin->isCustomEnabled())
 	{
-		opts["page-top"] = QString::number(m_margin->top());
-		opts["page-bottom"] = QString::number(m_margin->bottom());
-		opts["page-left"] = QString::number(m_margin->left());
-		opts["page-right"] = QString::number(m_margin->right());
+		opts["page-top"] = QString::number(( int )( m_margin->top()+0.5 ));
+		opts["page-bottom"] = QString::number(( int )( m_margin->bottom()+0.5 ));
+		opts["page-left"] = QString::number(( int )( m_margin->left()+0.5 ));
+		opts["page-right"] = QString::number(( int )( m_margin->right()+0.5 ));
 	}
 	else
 	{
@@ -176,15 +176,15 @@ void KPTextPage::slotPrettyChanged(int ID)
 	m_prettypix->setPixmap(UserIcon(iconstr));
 }
 
-void KPTextPage::slotColumnsChanged(int c)
+void KPTextPage::slotColumnsChanged(int)
 {
 	// TO BE IMPLEMENTED
 }
 
 void KPTextPage::initPageSize(bool landscape)
 {
-	QSize	sz(-1, -1), mg(18, 36);
-	QRect r;
+	float w( -1 ), h( -1 );
+	float mt( 36 ), mb( mt ), ml( 18 ), mr( ml );
 	if (driver())
 	{
 		if (m_currentps.isEmpty())
@@ -198,18 +198,18 @@ void KPTextPage::initPageSize(bool landscape)
 			DrPageSize	*ps = driver()->findPageSize(m_currentps);
 			if (ps)
 			{
-				mg = ps->margins();
-				sz = ps->pageSize();
-				r = ps->pageRect();
+				w = ps->pageWidth();
+				h = ps->pageHeight();
+				mt = ps->topMargin();
+				ml = ps->leftMargin();
+				mr = ps->rightMargin();
+				mb = ps->bottomMargin();
 			}
 		}
 	}
-	m_margin->setPageSize(sz.width(), sz.height());
+	m_margin->setPageSize(w, h);
 	m_margin->setOrientation(landscape ? KPrinter::Landscape : KPrinter::Portrait);
-	if ( r.isValid() && sz.isValid() )
-		m_margin->setDefaultMargins( r.top(), sz.height() - r.bottom() - 1, r.left(), sz.width() - r.right() - 1 );
-	else
-		m_margin->setDefaultMargins(mg.height(), mg.height(), mg.width(), mg.width());
+	m_margin->setDefaultMargins( mt, mb, ml, mr );
 	m_margin->setCustomEnabled(false);
 }
 

@@ -36,24 +36,24 @@ public:
 	~MarginWidget();
 
 	void setSymetricMargins(bool on);
-	void setPageSize(int w, int h);
+	void setPageSize(float w, float h);
 	void setOrientation(int orient);
-	int top() const;
-	void setTop(int val);
-	int bottom() const;
-	void setBottom(int val);
-	int left() const;
-	void setLeft(int val);
-	int right() const;
-	void setRight(int val);
+	float top() const;
+	void setTop(float val);
+	float bottom() const;
+	void setBottom(float val);
+	float left() const;
+	void setLeft(float val);
+	float right() const;
+	void setRight(float val);
 	void setResolution(int dpi);
-	void setDefaultMargins(int t, int b, int l, int r);
+	void setDefaultMargins(float t, float b, float l, float r);
 	void setCustomEnabled(bool on);
 	bool isCustomEnabled() const;
 
 protected slots:
 	void slotMarginValueChanged();
-	void slotMarginPreviewChanged(int, int);
+	void slotMarginPreviewChanged(int, float);
 	void slotCustomMarginsToggled(bool);
 
 protected:
@@ -65,8 +65,8 @@ private:
 	QComboBox		*m_units;
 	QCheckBox		*m_custom;
 	bool			m_symetric, m_block;
-	QValueVector<int>	m_default;
-	QSize			m_pagesize;
+	QValueVector<float>	m_default;
+	QValueVector<float>	m_pagesize;
 	bool			m_landscape;
 };
 

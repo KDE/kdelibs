@@ -30,10 +30,11 @@
 #include <kglobal.h>
 
 MarginWidget::MarginWidget(QWidget *parent, const char* name, bool allowMetricUnit)
-: QWidget(parent, name), m_default(4, 0)
+: QWidget(parent, name), m_default(4, 0), m_pagesize( 2 )
 {
 	m_symetric = m_block = false;
-	m_pagesize = QSize(595, 842);
+	m_pagesize[ 0 ] = 595;
+	m_pagesize[ 1 ] = 842;
 	m_landscape = false;
 
 	m_custom = new QCheckBox(i18n("&Use custom margins"), this);
@@ -46,7 +47,7 @@ MarginWidget::MarginWidget(QWidget *parent, const char* name, bool allowMetricUn
 	m_left->setLabel(i18n("Le&ft:"), Qt::AlignLeft|Qt::AlignVCenter);
 	m_right->setLabel(i18n("&Right:"), Qt::AlignLeft|Qt::AlignVCenter);
 	m_units = new QComboBox(this);
-	m_units->insertItem(i18n("Pixels"));
+	m_units->insertItem(i18n("Pixels (1/72th in)"));
 	if ( allowMetricUnit )
 	{
 		m_units->insertItem(i18n("Inches (in)"));
@@ -60,12 +61,12 @@ MarginWidget::MarginWidget(QWidget *parent, const char* name, bool allowMetricUn
 	connect(m_units, SIGNAL(activated(int)), m_right, SLOT(setMode(int)));
 	m_preview = new MarginPreview(this);
 	m_preview->setMinimumSize(60, 80);
-	m_preview->setPageSize(m_pagesize.width(), m_pagesize.height());
-	connect(m_preview, SIGNAL(marginChanged(int,int)), SLOT(slotMarginPreviewChanged(int,int)));
-	connect(m_top, SIGNAL(marginChanged(int)), SLOT(slotMarginValueChanged()));
-	connect(m_bottom, SIGNAL(marginChanged(int)), SLOT(slotMarginValueChanged()));
-	connect(m_left, SIGNAL(marginChanged(int)), SLOT(slotMarginValueChanged()));
-	connect(m_right, SIGNAL(marginChanged(int)), SLOT(slotMarginValueChanged()));
+	m_preview->setPageSize(m_pagesize[ 0 ], m_pagesize[ 1 ]);
+	connect(m_preview, SIGNAL(marginChanged(int,float)), SLOT(slotMarginPreviewChanged(int,float)));
+	connect(m_top, SIGNAL(marginChanged(float)), SLOT(slotMarginValueChanged()));
+	connect(m_bottom, SIGNAL(marginChanged(float)), SLOT(slotMarginValueChanged()));
+	connect(m_left, SIGNAL(marginChanged(float)), SLOT(slotMarginValueChanged()));
+	connect(m_right, SIGNAL(marginChanged(float)), SLOT(slotMarginValueChanged()));
 	slotMarginValueChanged();
 	connect(m_custom, SIGNAL(toggled(bool)), m_top, SLOT(setEnabled(bool)));
 	connect(m_custom, SIGNAL(toggled(bool)), m_left, SLOT(setEnabled(bool)));
@@ -121,8 +122,8 @@ void MarginWidget::setSymetricMargins(bool on)
 	m_right->setEnabled(on && m_custom->isChecked());
 	if (on)
 	{
-		connect(m_top, SIGNAL(marginChanged(int)), m_bottom, SLOT(setMargin(int)));
-		connect(m_left, SIGNAL(marginChanged(int)), m_right, SLOT(setMargin(int)));
+		connect(m_top, SIGNAL(marginChanged(float)), m_bottom, SLOT(setMargin(float)));
+		connect(m_left, SIGNAL(marginChanged(float)), m_right, SLOT(setMargin(float)));
 		m_bottom->setMargin(m_top->margin());
 		m_right->setMargin(m_left->margin());
 	}
@@ -141,7 +142,7 @@ void MarginWidget::slotMarginValueChanged()
 	m_preview->setMargins(m_top->margin(), m_bottom->margin(), m_left->margin(), m_right->margin());
 }
 
-void MarginWidget::slotMarginPreviewChanged(int type, int value)
+void MarginWidget::slotMarginPreviewChanged(int type, float value)
 {
 	m_block = true;
 	switch (type)
@@ -162,53 +163,54 @@ void MarginWidget::slotMarginPreviewChanged(int type, int value)
 	m_block = false;
 }
 
-void MarginWidget::setPageSize(int w, int h)
+void MarginWidget::setPageSize(float w, float h)
 {
 	// takes care of the orientation and the resolution
 	int	dpi = m_top->resolution();
-	m_pagesize = QSize(w, h);
+	m_pagesize[ 0 ] = w;
+	m_pagesize[ 1 ] = h;
 	if (m_landscape)
-		m_preview->setPageSize((m_pagesize.height()*dpi+36)/72, (m_pagesize.width()*dpi+36)/72);
+		m_preview->setPageSize((m_pagesize[ 1 ]*dpi)/72, (m_pagesize[ 0 ]*dpi)/72);
 	else
-		m_preview->setPageSize((m_pagesize.width()*dpi+36)/72, (m_pagesize.height()*dpi+36)/72);
+		m_preview->setPageSize((m_pagesize[ 0 ]*dpi)/72, (m_pagesize[ 1 ]*dpi)/72);
 }
 
-int MarginWidget::top() const
+float MarginWidget::top() const
 {
 	return m_top->margin();
 }
 
-int MarginWidget::bottom() const
+float MarginWidget::bottom() const
 {
 	return m_bottom->margin();
 }
 
-int MarginWidget::left() const
+float MarginWidget::left() const
 {
 	return m_left->margin();
 }
 
-int MarginWidget::right() const
+float MarginWidget::right() const
 {
 	return m_right->margin();
 }
 
-void MarginWidget::setTop(int value)
+void MarginWidget::setTop(float value)
 {
 	m_top->setMargin(value);
 }
 
-void MarginWidget::setBottom(int value)
+void MarginWidget::setBottom(float value)
 {
 	m_bottom->setMargin(value);
 }
 
-void MarginWidget::setLeft(int value)
+void MarginWidget::setLeft(float value)
 {
 	m_left->setMargin(value);
 }
 
-void MarginWidget::setRight(int value)
+void MarginWidget::setRight(float value)
 {
 	m_right->setMargin(value);
 }
@@ -221,13 +223,13 @@ void MarginWidget::setResolution(int dpi)
 	m_right->setResolution(dpi);
 }
 
-void MarginWidget::setDefaultMargins(int t, int b, int l, int r)
+void MarginWidget::setDefaultMargins(float t, float b, float l, float r)
 {
 	int	dpi = m_top->resolution();
-	m_default[0] = (t*dpi+71)/72;
-	m_default[1] = (b*dpi+71)/72;
-	m_default[2] = (l*dpi+71)/72;
-	m_default[3] = (r*dpi+71)/72;
+	m_default[0] = (t*dpi)/72;
+	m_default[1] = (b*dpi)/72;
+	m_default[2] = (l*dpi)/72;
+	m_default[3] = (r*dpi)/72;
 	if (!m_custom->isChecked())
 		resetDefault();
 }
@@ -253,7 +255,7 @@ bool MarginWidget::isCustomEnabled() const
 void MarginWidget::setOrientation(int orient)
 {
 	m_landscape = (orient == KPrinter::Landscape);
-	setPageSize(m_pagesize.width(), m_pagesize.height());
+	setPageSize(m_pagesize[ 0 ], m_pagesize[ 1 ]);
 }
 
 #include "marginwidget.moc"
