@@ -93,7 +93,8 @@ void KProcessController::theSigCHLDHandler(int )
   // (Richard Stevens, Advanced programming in the Unix Environment)
 
   this_pid = waitpid(-1, &status, WNOHANG);
-  if (-1 != this_pid) {
+  // J6t: theKProcessController might be already destroyed
+  if (-1 != this_pid && theKProcessController != 0) {
     ::write(theKProcessController->fd[1], &this_pid, sizeof(this_pid));
     ::write(theKProcessController->fd[1], &status, sizeof(status));
   }
