@@ -153,8 +153,8 @@ bool LDIFConverter::addresseeToLDIF( const Addressee &addr, QString &str )
   ldif_out( t, "telephonenumber: %1\n", addr.phoneNumber( PhoneNumber::Work ).number() );
   ldif_out( t, "facsimiletelephonenumber: %1\n", addr.phoneNumber( PhoneNumber::Fax ).number() );
   ldif_out( t, "homephone: %1\n", addr.phoneNumber( PhoneNumber::Home ).number() );
-  ldif_out( t, "mobile: %1\n", addr.phoneNumber( PhoneNumber::Cell ).number() );
-  ldif_out( t, "cellphone: %1\n", addr.phoneNumber( PhoneNumber::Cell ).number() );
+  ldif_out( t, "mobile: %1\n", addr.phoneNumber( PhoneNumber::Cell ).number() ); // Netscape 7
+  ldif_out( t, "cellphone: %1\n", addr.phoneNumber( PhoneNumber::Cell ).number() ); // Netscape 4.x
   ldif_out( t, "pager: %1\n", addr.phoneNumber( PhoneNumber::Pager ).number() );
   ldif_out( t, "pagerphone: %1\n", addr.phoneNumber( PhoneNumber::Pager ).number() );
 
@@ -164,15 +164,15 @@ bool LDIFConverter::addresseeToLDIF( const Addressee &addr, QString &str )
 
   QStringList streets = QStringList::split( '\n', homeAddr.street() );
   if ( streets.count() > 0 )
-    ldif_out( t, "homepostaladdress: %1\n", streets[ 0 ] );
+    ldif_out( t, "homepostaladdress: %1\n", streets[ 0 ] ); // Netscape 7
   if ( streets.count() > 1 )
-    ldif_out( t, "mozillahomepostaladdress2: %1\n", streets[ 1 ] );
-  ldif_out( t, "mozillahomelocalityname: %1\n", homeAddr.locality() );
+    ldif_out( t, "mozillahomepostaladdress2: %1\n", streets[ 1 ] ); // Netscape 7
+  ldif_out( t, "mozillahomelocalityname: %1\n", homeAddr.locality() ); // Netscape 7
   ldif_out( t, "mozillahomestate: %1\n", homeAddr.region() );
   ldif_out( t, "mozillahomepostalcode: %1\n", homeAddr.postalCode() );
   ldif_out( t, "mozillahomecountryname: %1\n", Address::ISOtoCountry(homeAddr.country()) );
   ldif_out( t, "locality: %1\n", workAddr.locality() );
-  ldif_out( t, "streetaddress: %1\n", workAddr.street() );
+  ldif_out( t, "streetaddress: %1\n", workAddr.street() ); // Netscape 4.x
 
   streets = QStringList::split( '\n', workAddr.street() );
   if ( streets.count() > 0 )
@@ -439,7 +439,7 @@ addComment:
     // TODO: change this with KDE 4
   }
 
-  if ( fieldname == QString::fromLatin1( "homephone" ) ) {
+  if ( fieldname == QString::fromLatin1( "homephone" ) ) { 
     a.insertPhoneNumber( PhoneNumber( value, PhoneNumber::Home ) );
     return true;
   }
@@ -449,7 +449,7 @@ addComment:
     return true;
   }
 
-  if ( fieldname == QString::fromLatin1( "mobile" ) ) { // mozilla
+  if ( fieldname == QString::fromLatin1( "mobile" ) ) { 	// mozilla/Netscape 7
     a.insertPhoneNumber( PhoneNumber( value, PhoneNumber::Cell ) );
     return true;
   }
@@ -501,7 +501,7 @@ addComment:
     return true;
   }
 
-  if ( fieldname == QString::fromLatin1( "homepostaladdress" ) ) {  // mozilla
+  if ( fieldname == QString::fromLatin1( "homepostaladdress" ) ) {  // Netscape 7
     homeAddr.setStreet( value );
     return true;
   }
@@ -538,7 +538,7 @@ addComment:
     return true;
   }
 
-  if ( fieldname == QString::fromLatin1( "streetaddress" ) ) {
+  if ( fieldname == QString::fromLatin1( "streetaddress" ) ) { // Netscape 4.x
     workAddr.setStreet( value );
     return true;
   }

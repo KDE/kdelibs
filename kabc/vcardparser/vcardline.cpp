@@ -118,7 +118,7 @@ void VCardLine::addParameter( const QString& param, const QString& value )
     mParamMap = new QMap<QString, QStringList>;
 
   QStringList &list = (*mParamMap)[ param ];
-  if ( list.find( value ) == list.end() ) // not included yet
+  if ( list.findIndex( value ) == -1 ) // not included yet
     list.append( value );
 }
 

@@ -342,7 +342,7 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
         // EMAIL
         if ( identifier == "email" ) {
           QStringList types = (*lineIt).parameters( "type" );
-          addr.insertEmail( (*lineIt).value().asString(), types.find( "PREF" ) != types.end() );
+          addr.insertEmail( (*lineIt).value().asString(), types.findIndex( "PREF" ) != -1 );
         }
 
         // FN
@@ -554,14 +554,14 @@ Picture VCardTool::parsePicture( const VCardLine &line )
   Picture pic;
 
   QStringList params = line.parameterList();
-  if ( params.find( "encoding" ) != params.end() )
+  if ( params.findIndex( "encoding" ) != -1 )
     pic.setData( line.value().asByteArray() );
-  else if ( params.find( "value" ) != params.end() ) {
+  else if ( params.findIndex( "value" ) != -1 ) {
     if ( line.parameter( "value" ).lower() == "uri" )
       pic.setUrl( line.value().asString() );
   }
 
-  if ( params.find( "type" ) != params.end() )
+  if ( params.findIndex( "type" ) != -1 )
     pic.setType( line.parameter( "type" ) );
 
   return pic;
@@ -594,9 +594,9 @@ Sound VCardTool::parseSound( const VCardLine &line )
   Sound snd;
 
   QStringList params = line.parameterList();
-  if ( params.find( "encoding" ) != params.end() )
+  if ( params.findIndex( "encoding" ) != -1 )
     snd.setData( line.value().asByteArray() );
-  else if ( params.find( "value" ) != params.end() ) {
+  else if ( params.findIndex( "value" ) != -1 ) {
     if ( line.parameter( "value" ).lower() == "uri" )
       snd.setUrl( line.value().asString() );
   }
@@ -632,12 +632,12 @@ Key VCardTool::parseKey( const VCardLine &line )
   Key key;
 
   QStringList params = line.parameterList();
-  if ( params.find( "encoding" ) != params.end() )
+  if ( params.findIndex( "encoding" ) != -1 )
     key.setBinaryData( line.value().asByteArray() );
   else
     key.setTextData( line.value().asString() );
 
-  if ( params.find( "type" ) != params.end() ) {
+  if ( params.findIndex( "type" ) != -1 ) {
     if ( line.parameter( "type" ).lower() == "x509" )
       key.setType( Key::X509 );
     else if ( line.parameter( "type" ).lower() == "pgp" )
@@ -708,7 +708,7 @@ Agent VCardTool::parseAgent( const VCardLine &line )
   Agent agent;
 
   QStringList params = line.parameterList();
-  if ( params.find( "value" ) != params.end() ) {
+  if ( params.findIndex( "value" ) != -1 ) {
     if ( line.parameter( "value" ).lower() == "uri" )
       agent.setUrl( line.value().asString() );
   } else {

@@ -85,7 +85,7 @@ VCard::List VCardParser::parseVCards( const QString& text )
         }
 
         params = vCardLine.parameterList();
-        if ( params.find( "encoding" ) != params.end() ) { // have to decode the data
+        if ( params.findIndex( "encoding" ) != -1 ) { // have to decode the data
           QByteArray input, output;
           input = value.local8Bit();
           if ( vCardLine.parameter( "encoding" ).lower() == "b" )
