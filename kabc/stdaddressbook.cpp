@@ -146,7 +146,6 @@ StdAddressBook::StdAddressBook( bool onlyFastResources )
 
 StdAddressBook::~StdAddressBook()
 {
-  save();
 }
 
 void StdAddressBook::init( bool onlyFastResources )
