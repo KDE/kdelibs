@@ -2077,7 +2077,7 @@ void KHTMLPart::slotRedirect()
   QString u = d->m_redirectURL;
   d->m_delayRedirect = 0;
   d->m_redirectURL = QString::null;
-  d->m_referrer = ""; // Waba: is this needed?
+    
   // SYNC check with ecma/kjs_window.cpp::goURL !
   if ( u.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 )
   {
@@ -3693,9 +3693,8 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const 
 
   if ( args.serviceType.isEmpty() ) {
     kdDebug(6050) << "Running new KHTMLRun for " << this << " and child=" << child << endl;
-    emit started( 0 ); // get the wheel to start spinning if necessary (#16616)
-    d->m_bComplete = false; // and ensure we'll stop it in checkCompleted
     child->m_run = new KHTMLRun( this, child, url, child->m_args, true );
+    d->m_bComplete = false; // ensures we stop it in checkCompleted...
     return false;
   } else {
     return processObjectRequest( child, url, args.serviceType );
