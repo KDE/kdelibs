@@ -4,8 +4,8 @@ This library allows applications that use the Qt library
 (i.e. QImageIO, QImage, QPixmap and friends) to read and
 write images in extra formats. Current formats include:
 
-JPEG	<read>
-JPEG2000 <read>
+JPEG	<read> <write>
+JPEG2000 <read> <write>
 XV	<read> <write>
 EPS	<read> <write>
 NETPBM	<incomplete>
