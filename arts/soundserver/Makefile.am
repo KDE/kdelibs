@@ -1,3 +1,4 @@
+# $Id$
 
 INCLUDES = -I$(top_srcdir)/arts/mcop -I$(top_srcdir)/arts/flow \
    -I$(top_builddir)/arts/flow $(all_includes)
@@ -52,15 +53,19 @@ DISTCLEANFILES = soundserver.cc soundserver.h kmedia2.h kmedia2.cc
 
 ####### Build rules
 
+soundserver.cc: soundserver.h
+soundserver.mcoptype: soundserver.h
+soundserver.mcopclass: soundserver.h
 soundserver.h: $(top_srcdir)/arts/soundserver/soundserver.idl kmedia2.h $(MCOPIDL)
 	$(MCOPIDL) -t $(MCOPINC) $(top_srcdir)/arts/soundserver/soundserver.idl
 
-soundserver.cc: soundserver.h
 
+kmedia2.cc: kmedia2.h
+kmedia2.mcoptype: kmedia2.h
+kmedia2.mcopclass: kmedia2.h
 kmedia2.h: $(top_srcdir)/arts/soundserver/kmedia2.idl $(MCOPIDL)
 	$(MCOPIDL) -t $(top_srcdir)/arts/soundserver/kmedia2.idl
 
-kmedia2.cc: kmedia2.h
 
 artsversion.h: artsversion-new.h
 	(cmp -s artsversion-new.h artsversion.h \
