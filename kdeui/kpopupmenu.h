@@ -82,6 +82,7 @@ public slots:
     void setIcon( const QPixmap &pix );
 
 protected:
+    void calcSize();
     void paintEvent(QPaintEvent *ev);
 
     // Remove in KDE4

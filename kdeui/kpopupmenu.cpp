@@ -48,7 +48,7 @@ KPopupTitle::KPopupTitle(KPixmapEffect::GradientType /* gradient */,
                          QWidget *parent, const char *name)
    : QWidget(parent, name)
 {
-    setMinimumSize(16, fontMetrics().height()+8);
+    calcSize();
 }
 
 KPopupTitle::KPopupTitle(const KPixmap & /* background */, const QColor &/* color */,
@@ -56,7 +56,7 @@ KPopupTitle::KPopupTitle(const KPixmap & /* background */, const QColor &/* colo
                          const char *name)
     : QWidget(parent, name)
 {
-    setMinimumSize(16, fontMetrics().height()+8);
+    calcSize();
 }
 
 void KPopupTitle::setTitle(const QString &text, const QPixmap *icon)
@@ -67,22 +67,23 @@ void KPopupTitle::setTitle(const QString &text, const QPixmap *icon)
     else
         miniicon.resize(0, 0);
 
-    int w = miniicon.width()+fontMetrics().width(titleStr);
-    int h = KMAX( fontMetrics().height(), miniicon.height() );
-    setMinimumSize( w+16, h+8 );
+    calcSize();
 }
 
 void KPopupTitle::setText( const QString &text )
 {
     titleStr = text;
-    int w = miniicon.width()+fontMetrics().width(titleStr);
-    int h = KMAX( fontMetrics().height(), miniicon.height() );
-    setMinimumSize( w+16, h+8 );
+    calcSize();
 }
 
 void KPopupTitle::setIcon( const QPixmap &pix )
 {
     miniicon = pix;
+    calcSize();
+}
+
+void KPopupTitle::calcSize()
+{
     int w = miniicon.width()+fontMetrics().width(titleStr);
     int h = QMAX( fontMetrics().height(), miniicon.height() );
     setMinimumSize( w+16, h+8 );
@@ -135,7 +136,7 @@ public:
         , lastHitIndex(-1)
         , m_ctxMenu(0)
     {}
-    
+
     ~KPopupMenuPrivate ()
     {
         delete m_ctxMenu;
