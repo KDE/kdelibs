@@ -636,6 +636,10 @@ void KAction::unplug( QWidget *w )
 
 void KAction::plugAccel(KAccel *kacc, bool configurable)
 {
+  // Check if action is permitted
+  if (kapp && !kapp->authorizeKAction(name()))
+    return;
+
   //kdDebug(129) << "KAction::plugAccel( kacc = " << kacc << " ): name \"" << name() << "\"" << endl;
   if ( d->m_kaccel )
     unplugAccel();
