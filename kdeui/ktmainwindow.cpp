@@ -41,7 +41,7 @@ KTMainWindow::KTMainWindow( const char *name )
     // set the specified icons
     KWM::setIcon(winId(), kapp->getIcon());
     KWM::setMiniIcon(winId(), kapp->getMiniIcon());
-    // set a short icon text 
+    // set a short icon text
     XSetIconName( qt_xdisplay(), winId(), kapp->getCaption() );
 
     kmainwidgetframe = new QFrame( this );
@@ -674,6 +674,7 @@ void KTMainWindow::savePropertiesInternal (KConfig* config, int number)
         {
             case KMenuBar::Flat:   //ignore
             case KMenuBar::Top:
+            case KMenuBar::FloatingSystem:
                 entryList.append("Top");
                 break;
             case KMenuBar::Bottom:
