@@ -295,7 +295,7 @@ bool ReadOnlyPart::openURL( const KURL &url )
     // We can't use mkstemp since we don't want to create the file here
     // KIO::Job has to create it
 
-    d->m_job = KIO::file_copy( m_url, m_file, -1, false, false, d->m_showProgressInfo );
+    d->m_job = KIO::file_copy( m_url, m_file, 0600, false, false, d->m_showProgressInfo );
     emit started( d->m_job );
     connect( d->m_job, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotJobFinished ( KIO::Job * ) ) );
     return true;
