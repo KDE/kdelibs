@@ -54,6 +54,7 @@
 #include <kurl.h>
 #include <kconfig.h>
 #include <ksavefile.h>
+#include <kdebug.h>
 
 #include "kcookiejar.h"
 
@@ -61,6 +62,32 @@
 
 template class QList<KCookie>;
 template class QDict<KCookieList>;
+
+static QString adviceToStr(KCookieAdvice _advice)
+{
+    switch( _advice )
+    {
+    case KCookieAccept: return "Accept";
+    case KCookieReject: return "Reject";
+    case KCookieAsk: return "Ask";
+    default: return "Dunno";
+    }
+}
+
+static KCookieAdvice strToAdvice(const QString &_str)
+{
+    if (_str.isEmpty())
+        return KCookieDunno;
+
+    if (_str == "accept")
+		return KCookieAccept;
+    else if (_str == "reject")
+		return KCookieReject;
+    else if (_str == "ask")
+		return KCookieAsk;
+
+    return KCookieDunno;	
+}
 
 // KCookie
 ///////////////////////////////////////////////////////////////////////////
@@ -397,7 +424,7 @@ static time_t parseExpire(const QString &_expireDate)
      //
      time_t result = 0;
      char *newPosStr;
-     const char *expireDate = _expireDate.ascii();
+     const char *expireDate = _expireDate.latin1();
      int day;
      char monthStr[4];
      int month;
@@ -733,13 +760,14 @@ KCookieAdvice KCookieJar::cookieAdvice(KCookiePtr cookiePtr)
 {
     QString domain;
     stripDomain( cookiePtr->host(), domain);
+
     // First check if the domain matches the host
     if (!cookiePtr->domain().isEmpty() &&
         (cookiePtr->domain() != domain) && 
         (cookiePtr->domain() != cookiePtr->host()))
     {
         warning("WARNING: Host %s tries to set cookie for domain %s",
-              cookiePtr->host().ascii(), cookiePtr->domain().ascii());
+              cookiePtr->host().latin1(), cookiePtr->domain().latin1());
         return KCookieReject;
     }
 
@@ -747,13 +775,13 @@ KCookieAdvice KCookieJar::cookieAdvice(KCookiePtr cookiePtr)
         (cookiePtr->value().find('\"') != -1))
     {
         warning("WARNING: Host %s tries to set a suspicious cookie for domain %s",
-              cookiePtr->host().ascii(), cookiePtr->domain().ascii());
+              cookiePtr->host().latin1(), cookiePtr->domain().latin1());
         return KCookieReject;
     }
 
     KCookieList *cookieList = cookieDomains[domain];
     KCookieAdvice advice;
-    
+
     if (cookieList)
     {
         advice = cookieList->getAdvice();
@@ -795,7 +823,8 @@ void KCookieJar::setDomainAdvice(const QString &_domain, KCookieAdvice _advice)
 {
     QString domain(_domain);
     KCookieList *cookieList = cookieDomains[domain];
-    
+
+    kdDebug(7104) << "Set cookie policy for => " << _domain.latin1() << ": " << adviceToStr( _advice ).latin1() << endl;
     if (cookieList)
     {
         configChanged = (cookieList->getAdvice() != _advice);
@@ -806,8 +835,8 @@ void KCookieJar::setDomainAdvice(const QString &_domain, KCookieAdvice _advice)
             (_advice == KCookieDunno))
         {
             // This deletes cookieList!
-            cookieDomains.remove(domain);    
-            
+            kdDebug(7104) << "Deleting cookie from the list ==> " << _domain.latin1() << ": " << adviceToStr( _advice ).latin1() << endl;
+            cookieDomains.remove(domain);			
             domainList.remove(domain);            
         }
     }
@@ -818,18 +847,16 @@ void KCookieJar::setDomainAdvice(const QString &_domain, KCookieAdvice _advice)
         {
             // We should create a domain entry
             configChanged = true;
-            
             // Make a new cookie list
             cookieList = new KCookieList();
             cookieList->setAdvice( _advice);
-            
             cookieDomains.insert( domain, cookieList);
-
             // Update the list of domains
             domainList.append( domain);
         }
     }
-        
+
+    kdDebug(7104) << "Number of items in the domain cookie policy list : " << cookieDomains.count() << endl;
 }
 
 //
@@ -961,7 +988,7 @@ bool KCookieJar::saveCookies(const QString &_filename)
                 if (!domainPrinted)
                 {
                     domainPrinted = true;
-                    fprintf(fStream, "[%s]\n", domain.ascii());
+                    fprintf(fStream, "[%s]\n", domain.latin1());
                 }
                 // Store persistent cookies
                 QString path("\"");
@@ -971,10 +998,10 @@ bool KCookieJar::saveCookies(const QString &_filename)
                 domain += cookie->domain();
                 domain += "\"";  
                 fprintf(fStream, "%-20s %-20s %-12s %9lu   %2d %-10s \"%s\"\n", 
-		    cookie->host().ascii(), domain.ascii(), path.ascii(), 
+		    cookie->host().latin1(), domain.latin1(), path.latin1(),
 		    (unsigned long) cookie->expireDate(), 
 		    cookie->protocolVersion(), 
-		    cookie->name().ascii(), cookie->value().ascii());
+		    cookie->name().latin1(), cookie->value().latin1());
 		cookie = cookieList->next();
 	    }
 	    else
@@ -1026,7 +1053,7 @@ static const char *parseField(charPtr &buffer)
 // On failure 'false' is returned.
 bool KCookieJar::loadCookies(const QString &_filename)
 {
-    FILE *fStream = fopen( _filename.ascii(), "r");
+    FILE *fStream = fopen( _filename.latin1(), "r");
     if (fStream == 0)
     {
         return false;
@@ -1090,34 +1117,6 @@ bool KCookieJar::loadCookies(const QString &_filename)
     return err;
 }
 
-static QString adviceToStr(KCookieAdvice _advice)
-{
-    switch( _advice )
-    {
-    case KCookieAccept: return "Accept";
-    case KCookieReject: return "Reject";
-    case KCookieAsk: return "Ask";
-    default: return "Dunno";
-    }
-}
-
-static KCookieAdvice strToAdvice(const QString &_str)
-{
-    if (_str.isEmpty())
-        return KCookieDunno;
-    QString str(_str.lower());
-        
-    if (_str == "accept")
-	return KCookieAccept;
-    else if (_str == "reject")
-	return KCookieReject;
-    else if (_str == "ask")
-	return KCookieAsk;
-
-    return KCookieDunno;	
-}
-
-
 //
 // Save the cookie configuration
 //
@@ -1128,7 +1127,7 @@ void KCookieJar::saveConfig(KConfig *_config)
         return;
 
     QStringList domainSettings;
-    _config->setGroup("Browser Settings/HTTP");
+    _config->setGroup("Cookie Policy");
     _config->writeEntry("CookieGlobalAdvice", adviceToStr( globalAdvice));
     
     for ( QStringList::Iterator it=domainList.begin(); 
@@ -1158,30 +1157,36 @@ void KCookieJar::loadConfig(KConfig *_config)
 {
     QString value;
     QStringList domainSettings;
+
     // Reset current domain settings first
-    
     for ( QStringList::Iterator it=domainList.begin(); 
     	  it != domainList.end(); 
     	  it++)
     {
          setDomainAdvice( *it, KCookieDunno);
     }
-
-    _config->setGroup("Browser Settings/HTTP");
+    // Read the old group name if we did not yet save to
+    // the new group name.
+    if( _config->hasGroup( "Browser Settings/HTTP" ) &&
+	!_config->hasGroup( "Cookie Policy" ) )
+	_config->setGroup( "Browser Settings/HTTP" );	
+    else
+	_config->setGroup("Cookie Policy");
     value = _config->readEntry("CookieGlobalAdvice", "Ask");
     globalAdvice = strToAdvice(value);
-
     domainSettings = _config->readListEntry("CookieDomainAdvice");
+
     for ( QStringList::Iterator it=domainSettings.begin(); 
     	  it != domainSettings.end(); 
     	  it++)
     {
         const QString &value = *it;
+        kdDebug(7104) << "The Cookie Domain advice being processed is " << value.latin1() << endl;
         int sepPos = value.find(':');
         if (sepPos <= 0)
              continue;
         QString domain(value.left(sepPos));
-        KCookieAdvice advice = strToAdvice(value.mid(sepPos + 1));
+        KCookieAdvice advice = strToAdvice( value.mid(sepPos + 1).lower() ); // send a case insensitve version (DA)
         setDomainAdvice( domain, advice);
     }
 }

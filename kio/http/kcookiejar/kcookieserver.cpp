@@ -103,6 +103,7 @@ KCookieServer::newInstance()
    {
 	quit();
    }
+
    return 0;
 }
 
@@ -140,6 +141,13 @@ KCookieServer::process(const QCString &fun, const QByteArray &data,
         stream >> arg1 >> arg2;
         kdDebug(7104) << "got addCookies(" << arg1 << ", " << arg2.data() << ")" << endl;
         addCookies(arg1, arg2);
+        replyType = "void";
+        return true;
+    }
+    else if (fun == "reloadPolicy" )
+    {
+	kdDebug(7104) << "got \"reload the cookie config policy file\"" << endl;
+	mCookieJar->loadConfig( kapp->config() );
         replyType = "void";
         return true;
     }
@@ -260,8 +268,7 @@ void KCookieServer::checkCookies(KCookie *cookie, bool queue)
     }
 
     // Check if we can handle any request
-    for( CookieRequest *request = mRequestList->first();
-         request;)
+    for( CookieRequest *request = mRequestList->first(); request;)
     {
         if (!cookiesPending( request->url ))
         {
@@ -293,14 +300,12 @@ void KCookieServer::checkCookies(KCookie *cookie, bool queue)
 
 void KCookieServer::slotSave()
 {
-   kdDebug(7104) << "Saving cookie stuff!" << endl;
-
+   kdDebug(7104) << "3 minutes expired. Saving cookies..." << endl;
    delete mTimer;
    mTimer = 0;
    QString filename = locateLocal("appdata", "cookies");
    mCookieJar->saveCookies(filename);
-
-   mCookieJar->saveConfig( kapp->config());
+   // mCookieJar->saveConfig( kapp->config() );
 }
 
 #include "kcookieserver.moc"
