@@ -167,7 +167,7 @@ static int openSocket()
      return -1;
   }
 
-  if (strlen(sock_file)+strlen(display)+2 > MAX_SOCK_FILE)
+  if (strlen(sock_file)+strlen(display)+strlen("/kdeinit-")+2 > MAX_SOCK_FILE)
   {
      fprintf(stderr, "Aborting. Socket name will be too long.\n");
      exit(255);
