@@ -54,10 +54,10 @@ public:
 
     virtual void layout();
 
-    virtual void setPixmap( const QPixmap &, CachedObject *, bool *manualUpdate=0);
+    virtual void setPixmap( const QPixmap &, const QRect&, CachedImage *, bool *manualUpdate=0);
 
     QPixmap pixmap() const { return pix; }
-    
+
     void setImageUrl(DOM::DOMString url, DOM::DOMString baseUrl, DocLoader *docLoader);
     void setAlt(DOM::DOMString text);
 
@@ -76,6 +76,7 @@ protected:
      * from the internet for example.
      */
     QPixmap pix;
+    QSize  pixSize;
 
     /*
      * Cache for images that need resizing
@@ -87,7 +88,7 @@ protected:
 
     bool bComplete;
 
-    CachedObject *image;
+    CachedImage *image;
 };
 
 

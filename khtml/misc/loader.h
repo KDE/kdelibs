@@ -127,7 +127,7 @@ namespace khtml
         void setRequest(Request *_request);
 
         bool canDelete();
-        
+
         /*
          * List of acceptable mimetypes seperated by ",". A mimetype may contain a wildcard.
          */
@@ -211,28 +211,25 @@ namespace khtml
 	const QPixmap &pixmap() const;
 	const QPixmap &tiled_pixmap() const;
 
-	virtual void ref(CachedObjectClient *consumer);
+        QSize pixmap_size() const;    // returns the size of the complete (i.e. when finished) loading
+        QRect valid_rect() const;     // returns the rectangle of pixmap that has been loaded already
+
+        void ref(CachedObjectClient *consumer);
 	virtual void deref(CachedObjectClient *consumer);
 
 	virtual void data( QBuffer &buffer, bool eof );
 	virtual void error( int err, const char *text );
 	
-	/**
-	 * tell the CachedObjectClient's, that the image is ready.
-	 * if o = 0  notify all clients
-	 */
-	void notify(CachedObjectClient *c = 0);
-
 	void load();
 
-    public slots:
+    private slots:
 	/**
 	 * gets called, whenever a QMovie changes frame
 	 */
 	void movieUpdated( const QRect &rect );
+        void movieStatus(int);
 	
     public:
-	QPixmap *p;
 	QMovie *m;
 
     protected:
@@ -246,10 +243,10 @@ namespace khtml
 
 	// Is set if movie format type ( incremental/animation) was checked
 	bool typeChecked;
-	bool gotFrame;
 	
         // Used to cache a tiled version of the image
 	mutable QPixmap *bg;
+        QPixmap* pixPart;
 
 	ImageSource* imgSource;
 
@@ -424,8 +421,6 @@ namespace khtml
 
         static unsigned long s_ulRefCnt;
     };
-
-
 
 };
 

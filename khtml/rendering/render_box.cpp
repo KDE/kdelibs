@@ -184,19 +184,12 @@ void RenderBox::print(QPainter *p, int _x, int _y, int _w, int _h,
     }
 }
 
-void RenderBox::setPixmap(const QPixmap &, CachedObject *, bool *)
+void RenderBox::setPixmap(const QPixmap &, const QRect&, CachedImage *image, bool *)
 {
-#if 0
-    if (style()->htmlHacks() && parent())
-    {
-    	if (parent()->isRoot())
-	    parent()->repaint();
-	if (parent()->parent()->isRoot())
-	    parent()->parent()->repaint();
-    }
-#endif
-    repaint();	//repaint bg when it gets loaded
+    if(image && image->pixmap_size() == image->valid_rect().size())
+        repaint();	//repaint bg when it finished loading
 }
+
 
 void RenderBox::printBoxDecorations(QPainter *p,int, int _y,
 				       int, int _h, int _tx, int _ty)
@@ -209,19 +202,21 @@ void RenderBox::printBoxDecorations(QPainter *p,int, int _y,
     int h = height() + borderTopExtra() + borderBottomExtra();	
     _ty -= borderTopExtra();
 
-    int my = MAX(_ty,_y);
+    int my = QMAX(_ty,_y);
     int mh;
     if (_ty<_y)
-    	mh=MAX(0,h-(_y-_ty));
+    	mh= QMAX(0,h-(_y-_ty));
     else
-    	mh = MIN(_h,h);
+    	mh = QMIN(_h,h);
 
     if(c.isValid()) {
 	//kdDebug( 6040 ) << "printing bgcolor" << endl;
 	p->fillRect(_tx, my, w, mh, c);
     }
-    if(m_bgImage) {
-	//kdDebug( 6040 ) << "printing bgimage at " << _tx << "/" << _ty << endl;
+
+    // no progressive loading of the background image
+    if(m_bgImage && m_bgImage->pixmap_size() == m_bgImage->valid_rect().size()) {
+//	kdDebug( 6040 ) << "printing bgimage at " << _tx << "/" << _ty << endl;
 	// ### might need to add some correct offsets
 	// ### use paddingX/Y
 	
@@ -238,20 +233,18 @@ void RenderBox::printBoxDecorations(QPainter *p,int, int _y,
 
 	switch(m_style->backgroundRepeat()) {
 	case NO_REPEAT:
-	    if(m_bgImage->pixmap().width() < w)
-		h = m_bgImage->pixmap().width();
+            h = QMIN(m_bgImage->pixmap_size().width(), w);
+            /* nobreak */
 	case REPEAT_X:
-	    if(m_bgImage->pixmap().height() < h)
-		h = m_bgImage->pixmap().height();
+            h = QMIN(m_bgImage->pixmap_size().height(), h);
 	    break;
 	case REPEAT_Y:
-	    if(m_bgImage->pixmap().width() < h)
-		h = m_bgImage->pixmap().width();
+            h = QMIN(m_bgImage->pixmap_size().width(), h);
 	    break;
 	case REPEAT:
 	    break;
 	}
-	p->drawTiledPixmap(_tx, _ty, w, h,m_bgImage->pixmap(), sx, sy);
+        p->drawTiledPixmap(_tx, _ty, w, h, m_bgImage->pixmap(), sx, sy);
     }
 
     if(m_style->hasBorder())
@@ -598,8 +591,8 @@ void RenderBox::calcHeight()
 
     //cell height is managed by table
     if (isTableCell())
-        return;               
-    
+        return;
+
     if (isPositioned())
     	calcAbsoluteVertical();
     else
@@ -626,15 +619,15 @@ void RenderBox::calcHeight()
 
         // for tables, calculate margins only
         if (isTable())
-            return;      
-                
+            return;
+
 	if (h.isFixed())
-    	    m_height = MAX (h.value + borderTop() + paddingTop()
+    	    m_height = QMAX (h.value + borderTop() + paddingTop()
 		+ borderBottom() + paddingBottom() , m_height);
 	else if (h.isPercent())
 	{    	
 	    if (ch.isFixed())
-    		m_height = MAX (h.width(ch.value) + borderTop() + paddingTop()
+    		m_height = QMAX (h.width(ch.value) + borderTop() + paddingTop()
 	    	    + borderBottom() + paddingBottom(), m_height);
 	}
     }
@@ -687,7 +680,7 @@ void RenderBox::calcAbsoluteHorizontal()
             (o->width()-o->borderLeft()-o->borderRight()-o->paddingLeft()-o->paddingRight());
 	while (o && o!=containingBlock()) { r-=o->xPos(); o=o->parent(); }
     }
-    
+
 //    printf("h12: w=%d, l=%d, r=%d, ml=%d, mr=%d\n",w,l,r,ml,mr);
 
     // 3
@@ -707,7 +700,7 @@ void RenderBox::calcAbsoluteHorizontal()
     }
 
 //    printf("h4: w=%d, l=%d, r=%d, ml=%d, mr=%d\n",w,l,r,ml,mr);
-    
+
     // 5
     if (ml==AUTO && mr==AUTO)
     {
@@ -731,17 +724,17 @@ void RenderBox::calcAbsoluteHorizontal()
         mr = cw - ( r + l + w + ml + pab);
 
 //    printf("h6: w=%d, l=%d, r=%d, ml=%d, mr=%d\n",w,l,r,ml,mr);
-    
-    // 7 
+
+    // 7
     if (cw != l + r + w + ml + mr + pab)
     {
         if (m_style->left().isVariable())
             l = cw - ( r + w + ml + mr + pab);
-        else if (m_style->right().isVariable())    
+        else if (m_style->right().isVariable())
             r = cw - ( l + w + ml + mr + pab);
         else if (style()->direction()==LTR)
             r = cw - ( l + w + ml + mr + pab);
-        else 
+        else
             l = cw - ( r + w + ml + mr + pab);
     }
 
@@ -783,7 +776,7 @@ void RenderBox::calcAbsoluteVertical()
     }
     else if (isReplaced())
         h = intrinsicHeight();
-    
+
     if(!m_style->marginTop().isVariable())
 	mt = m_style->marginTop().width(ch);		
     if(!m_style->marginBottom().isVariable())
@@ -834,13 +827,13 @@ void RenderBox::calcAbsoluteVertical()
 
     if (m_height<h+pab)
     	m_height = h+pab;
-    
+
     // add the top and bottom distance to the value of margin.
     // in principle this is incorrect, but no one (except
-    // the document height code, where it is useful) should 
+    // the document height code, where it is useful) should
     // care about it anyway
     m_marginTop = mt+t;
-    m_marginBottom = mb+b;    
+    m_marginBottom = mb+b;
     m_y = t + mt + containingBlock()->borderTop();
 	
 //    printf("v: h=%d, t=%d, b=%d, mt=%d, mb=%d, m_y=%d\n",h,t,b,mt,mb,m_y);

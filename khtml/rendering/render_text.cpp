@@ -134,8 +134,8 @@ void TextSlave::printBoxDecorations(QPainter *pt, RenderText *p, int _tx, int _t
 	// ### might need to add some correct offsets
 	// ### use paddingX/Y
 	pt->drawTiledPixmap(_tx + p->borderLeft(), _ty + p->borderTop(),
-			   m_width + p->paddingLeft() + p->paddingRight(),
-			   m_height + p->paddingTop() + p->paddingBottom(), i->tiled_pixmap());
+                            m_width + p->paddingLeft() + p->paddingRight(),
+                            m_height + p->paddingTop() + p->paddingBottom(), i->tiled_pixmap());
     }
 
     if(style->hasBorder())

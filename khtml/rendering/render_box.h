@@ -30,16 +30,6 @@
 namespace khtml {
     class CachedObject;
 
-inline int MAX(int a, int b)
-{
-    return a > b ? a : b;
-}
-
-inline int MIN(int a, int b)
-{
-    return a < b ? a : b;
-}
-
 class RenderBox : public RenderObject
 {
 
@@ -109,7 +99,7 @@ public:
     virtual void repaintRectangle(int x, int y, int w, int h);
     virtual void repaintObject(RenderObject *o, int x, int y);
 
-    virtual void setPixmap(const QPixmap &, CachedObject *, bool *manualUpdate=0);
+    virtual void setPixmap(const QPixmap &, const QRect&, CachedImage *, bool *manualUpdate=0);
 
     virtual short containingBlockWidth() const;
 

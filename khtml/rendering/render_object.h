@@ -35,7 +35,6 @@
 #include "render_style.h"
 
 class QPainter;
-class QPixmap;
 class CSSStyle;
 class KHTMLView;
 
@@ -303,9 +302,7 @@ public:
     void drawBorder(QPainter *p, int x1, int y1, int x2, int y2, int width, BorderSide s,
 		    const QColor &c, EBorderStyle style);
 
-    virtual void setPixmap(const QPixmap &, CachedObject *, bool * = 0) {}
-
-    virtual void setTable(RenderTable *) {}
+    virtual void setTable(RenderTable*) {};
 
     /*
      * force a full repaint of the rendering tree

@@ -48,19 +48,19 @@ void RenderBody::printBoxDecorations(QPainter *p,int, int _y,
     int h = height() + borderTopExtra() + borderBottomExtra();	
     _ty -= borderTopExtra();
 
-    int my = MAX(_ty,_y);
+    int my = QMAX(_ty,_y);
     int mh;
     if (_ty<_y)
-    	mh=MAX(0,h-(_y-_ty));
+    	mh=QMAX(0,h-(_y-_ty));
     else
-    	mh = MIN(_h,h);
+    	mh = QMIN(_h,h);
 
     if( c.isValid() && parent()->style()->backgroundColor().isValid() ) {
 	//kdDebug( 6040 ) << "printing bgcolor" << endl;
 	p->fillRect(_tx, my, w, mh, c);
     }
     if( m_bgImage && parent()->backgroundImage() ) {
-	//kdDebug( 6040 ) << "printing bgimage at " << _tx << "/" << _ty << endl;
+	//kdDebug( 6040 ) << "printing body image at " << _tx << "/" << _ty << endl;
 	// ### might need to add some correct offsets
 	// ### use paddingX/Y
 	

@@ -545,7 +545,7 @@ void RenderTable::spreadSpanMinMax(int col, int span, int distmin,
 	}
 
 	for (int c=col; c < col+span ; ++c)
-	    colMaxWidth[c]=MAX(colMinWidth[c],colMaxWidth[c]);	    	
+	    colMaxWidth[c]=QMAX(colMinWidth[c],colMaxWidth[c]);	    	
 		
     }
 }
@@ -571,7 +571,7 @@ void RenderTable::calcSingleColMinMax(int c, ColInfo* col)
     int	smax = col->max;
 
     if (col->type==Fixed)
-    	smax = MAX(smin,col->value);
+    	smax = QMAX(smin,col->value);
     	
     if (span==1)
     {
@@ -612,19 +612,19 @@ void RenderTable::calcFinalColMax(int c, ColInfo* col)
 
     if (col->type==Fixed)
     {
-    	smax = MAX(smin,col->value);
+    	smax = QMAX(smin,col->value);
     }
     else if (col->type == Percent)
     {
-    	smax = m_width * col->value / MAX(100,totalPercent);
+    	smax = m_width * col->value / QMAX(100,totalPercent);
     }
     else if (col->type == Relative && totalRelative)
     {
     	smax= m_width * col->value / totalRelative;
     }
 
-    smax = MAX(smax,oldmin);
-//    smax = MIN(smax,m_width);
+    smax = QMAX(smax,oldmin);
+//    smax = QMIN(smax,m_width);
 
 //    kdDebug( 6040 ) << "smin " << smin << " smax " << smax << " span " << span << endl;
     if (span==1)
@@ -667,7 +667,7 @@ void RenderTable::calcColMinMax()
     int availableWidth = containingBlockWidth();
 
     int margin=0;
-    
+
     int realMaxWidth=spacing;
 
     Length ml = style()->marginLeft();
@@ -701,7 +701,7 @@ void RenderTable::calcColMinMax()
 #ifdef TABLE_DEBUG
     	    kdDebug( 6040 ) << " s=" << s << " c=" << c << " min=" << col->min << " value=" << col->value << endl;
 #endif	
-            
+
             if (s==0)
                 realMaxWidth += col->max + spacing;
 
@@ -795,25 +795,25 @@ void RenderTable::calcColMinMax()
 //	kdDebug( 6040 ) << "2 percentWidest=" << //	    percentWidest << " percentWidestPercent=" << percentWidestPercent << " " << endl;
 	m_width = percentWidest;
 	m_width += (totalCols+1)*spacing+1;
-	int tot = MIN(99,totalPercent);
-	m_width = MAX(m_width, (minVar + minRel)*100/(100-tot) );
-	m_width = MIN(m_width, availableWidth);
-	totalPercent = MAX(totalPercent,100);
+	int tot = QMIN(99,totalPercent);
+	m_width = QMAX(m_width, (minVar + minRel)*100/(100-tot) );
+	m_width = QMIN(m_width, availableWidth);
+	totalPercent = QMAX(totalPercent,100);
     }
     else if (hasPercent && hasFixed)
     {    	
-    	totalPercent = MIN(99,totalPercent);
+    	totalPercent = QMIN(99,totalPercent);
 //	kdDebug( 6040 ) << "3 maxFixed=" << maxFixed << "  totalPercent=" << totalPercent << endl;
 	m_width = (maxFixed + minVar + minRel) * 100 /
     	    (100 - totalPercent);
-    	m_width = MIN (m_width, availableWidth);
+    	m_width = QMIN (m_width, availableWidth);
     }
     else
     {
-    	m_width = MIN(availableWidth,m_maxWidth);	
+    	m_width = QMIN(availableWidth,m_maxWidth);	
     }
 
-    m_width = MAX (m_width, m_minWidth);
+    m_width = QMAX (m_width, m_minWidth);
     	
 
     // PHASE 4, calculate maximums for percent and relative columns
@@ -851,12 +851,12 @@ void RenderTable::calcColMinMax()
     	for(int i = 0; i < (int)totalCols; i++)
 	    m_maxWidth += colMaxWidth[i] + spacing;
     }
-    
+
     if (m_style->width().type == Percent)
     {
         if (realMaxWidth > m_maxWidth)
-            m_maxWidth = realMaxWidth;    
-    } 
+            m_maxWidth = realMaxWidth;
+    }
 
     m_minWidth += borderLeft() + borderRight();
     m_maxWidth += borderLeft() + borderRight();
@@ -1040,8 +1040,8 @@ int RenderTable::distributeWidth(int distrib, LengthType type, int typeCols )
     {
 	if (colType[c]==type)
 	{
-	    int delta = MIN(distrib/typeCols,colMaxWidth[c]-actColWidth[c]);
-	    delta = MIN(tdis,delta);
+	    int delta = QMIN(distrib/typeCols,colMaxWidth[c]-actColWidth[c]);
+	    delta = QMIN(tdis,delta);
 	    if (delta==0 && tdis && colMaxWidth[c]>actColWidth[c])
 	    	delta=1;
 	    actColWidth[c]+=delta;		
@@ -1076,7 +1076,7 @@ int RenderTable::distributeRest(int distrib, LengthType type, int divider )
 	if (colType[c]==type)
 	{
 	    int delta = (colMaxWidth[c] * distrib) / divider;
-	    delta=MIN(delta,tdis);
+	    delta=QMIN(delta,tdis);
 	    if (delta==0 && tdis)
 	    	delta=1;
 	    actColWidth[c] += delta;
@@ -1110,8 +1110,8 @@ int RenderTable::distributeMinWidth(int distrib, LengthType distType,
 	{
 	    int delta = distrib/span;
 	    if (mlim)
-	    	delta = MIN(delta,colMaxWidth[c]-colMinWidth[c]);
-	    delta = MIN(tdis,delta);
+	    	delta = QMIN(delta,colMaxWidth[c]-colMinWidth[c]);
+	    delta = QMIN(tdis,delta);
 	    if (delta==0 && tdis && (!mlim || colMaxWidth[c]>colMinWidth[c]))
 	    	delta=1;
 	    colMinWidth[c]+=delta;
@@ -1215,7 +1215,7 @@ void RenderTable::calcRowHeight(int r)
 	    RenderObject *containing = containingBlock();
 	    if (ch.isFixed())
     		th = h.width(ch.value);
-	    else if (containing->parent() && containing->parent()->parent() 
+	    else if (containing->parent() && containing->parent()->parent()
 		     && containing->parent()->parent()->isRoot())
 	    {
 	    	th = h.width(viewRect().height());

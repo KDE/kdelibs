@@ -48,7 +48,7 @@ void RenderHtml::print(QPainter *p, int _x, int _y, int _w, int _h, int _tx, int
     _tx += m_x;
     _ty += m_y;
 
-    //kdDebug(0) << "html:print " << _tx << "/" << _ty << endl;
+    kdDebug(0) << "html:print " << _tx << "/" << _ty << endl;
     printObject(p, _x, _y, _w, _h, _tx, _ty);
 }
 
@@ -72,19 +72,15 @@ void RenderHtml::printBoxDecorations(QPainter *p,int, int _y,
 
     int bx = _tx - marginLeft();
     int by = _ty - marginTop();
-    int bw = w + marginLeft() + marginRight() + borderLeft() + borderRight();
-    int bh = h + marginTop() + marginBottom() + borderTop() + borderBottom();
-
-    if( bw < parent()->width() )
-	bw = parent()->width();
-    if( bh < parent()->height() )
-	bh = parent()->height();
+    int bw = QMAX(w + marginLeft() + marginRight() + borderLeft() + borderRight(), parent()->width());
+    int bh = QMAX(h + marginTop() + marginBottom() + borderTop() + borderBottom(), parent()->height());
 
     if(c.isValid()) {
 	p->fillRect(bx, by, bw, bh, c);
     }
+
     if(bg) {
-	//kdDebug( 6040 ) << "printing bgimage at " << bx << "/" << by << " " << bw << "/" << bh << endl;
+	// kdDebug( 6040 ) << "printing bgimage at " << bx << "/" << by << " " << bw << "/" << bh << endl;
 	// ### might need to add some correct offsets
 	// ### use paddingX/Y
 	
@@ -101,15 +97,13 @@ void RenderHtml::printBoxDecorations(QPainter *p,int, int _y,
 
 	switch(m_style->backgroundRepeat()) {
 	case NO_REPEAT:
-	    if(bg->pixmap().width() < bw)
-		bw = bg->pixmap().width();
+            bw = QMIN(bg->pixmap_size().width(), bw);
+            /* nobreak */
 	case REPEAT_X:
-	    if(bg->pixmap().height() < bh)
-		bh = bg->pixmap().height();
+            bh = QMIN(bg->pixmap_size().height(), bh);
 	    break;
 	case REPEAT_Y:
-	    if(bg->pixmap().width() < bw)
-		bw = bg->pixmap().width();
+            bw = QMIN(bg->pixmap_size().width(), bw);
 	    break;
 	case REPEAT:
 	    break;
@@ -162,7 +156,7 @@ void RenderHtml::repaint()
 void RenderHtml::layout()
 {
     RenderFlow::layout();
-    
+
     //kdDebug(0) << renderName() << " height = " << m_height << endl;
     int lp = lowestPosition();
     if( m_height < lp )

@@ -42,7 +42,6 @@ class QScrollView;
 class QLineEdit;
 class QListboxItem;
 
-#include <qpixmap.h>
 #include <qintdict.h>
 #include <qmultilineedit.h>
 #include <qlineedit.h>

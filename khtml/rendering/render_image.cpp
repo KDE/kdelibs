@@ -52,11 +52,11 @@ RenderImage::~RenderImage()
     if(image) image->deref(this);
 }
 
-void RenderImage::setPixmap( const QPixmap &p, CachedObject *o, bool *manualUpdate )
+void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, bool *manualUpdate )
 {
 
     if(o != image) {
-	RenderReplaced::setPixmap(p, o);
+	RenderReplaced::setPixmap(p, r, o);
 	return;
     }
 
@@ -70,13 +70,14 @@ void RenderImage::setPixmap( const QPixmap &p, CachedObject *o, bool *manualUpda
 
     // Image dimensions have been changed, recalculate layout
 //    kdDebug( 6040 ) << "Image: setPixmap" << endl;
-    if(p.width() != pix.width() || p.height() != pix.height())
+    if(o->pixmap_size() !=  pixSize)
     {	
-//    	kdDebug( 6040 ) << "Image: newSize " << p.width() << "/" << p.height() << endl;
+    	kdDebug( 6040 ) << "Image: newSize " << p.width() << "/" << p.height() << endl;
 	pix = p;
+        pixSize = o->pixmap_size();
 	setLayouted(false);
 	setMinMaxKnown(false);
-//    	kdDebug( 6040 ) << "Image: size " << m_width << "/" << m_height << endl;
+    	kdDebug( 6040 ) << "Image: size " << m_width << "/" << m_height << endl;
 	// the updateSize() call should trigger a repaint too
         if (manualUpdate) {
            *manualUpdate = true;
@@ -89,8 +90,7 @@ void RenderImage::setPixmap( const QPixmap &p, CachedObject *o, bool *manualUpda
     else
     {
     	pix = p;
-    	//repaintObject(this, 0, 0);
-	repaintRectangle(0, 0, m_width, m_height);
+	repaintRectangle(r.x(), r.y(), r.width(), r.height());
     }
 }
 
@@ -134,11 +134,15 @@ void RenderImage::printReplaced(QPainter *p, int _tx, int _ty)
     }
     else
     {
-	if ( (cWidth != pix.width() ||
-	    cHeight != pix.height() ) &&
+	if ( (cWidth != image->pixmap_size().width() ||
+              cHeight != image->pixmap_size().height() ) &&
 	    pix.width() && pix.height() )
 	{
-	  //kdDebug( 6040 ) << "have to scale: width:" << //   width - border*2 << "<-->" << pix.width() << " height " << //   getHeight() - border << "<-->" << pix.height() << endl;
+            kdDebug( 6040 ) << "have to scale: " << endl;
+            kdDebug( 6040 ) << "cWidth " << cWidth << " cHeight " << cHeight
+                            << " pw: " << image->pixmap_size().width()
+                            << " ph: " << image->pixmap_size().height() << endl;
+
 	    if (resizeCache.isNull())
 	    {
 		QWMatrix matrix;
@@ -150,7 +154,10 @@ void RenderImage::printReplaced(QPainter *p, int _tx, int _ty)
 	
 	}
 	else
-	    p->drawPixmap( QPoint( _tx + leftBorder, _ty + topBorder ), pix, rect );
+        {
+            //qDebug("normal paint rect %d/%d/%d/%d", rect.x(), rect.y(), rect.width(), rect.height());
+	    p->drawPixmap( QPoint( _tx + leftBorder, _ty + topBorder ), pix, image->valid_rect() );
+        }
     }
     if (hasKeyboardFocus!=DOM::ActivationOff)
       {
@@ -238,10 +245,10 @@ int RenderImage::bidiHeight() const
 
 short RenderImage::intrinsicWidth() const
 {
-    return pix.width();
+    return pixSize.width();
 }
 
 int RenderImage::intrinsicHeight() const
 {
-     return pix.height();
+    return pixSize.height();
 }

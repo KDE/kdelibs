@@ -23,6 +23,7 @@
 */
 
 #undef CACHE_DEBUG
+//#define CACHE_DEBUG
 
 #include "loader.h"
 
@@ -213,14 +214,14 @@ void CachedScript::error( int /*err*/, const char */*text*/ )
 
 namespace khtml
 {
-    /*
+
+  /*
      * Defines the DataSource for incremental loading of images.
      */
     class ImageSource : public QDataSource
     {
     public:
 	ImageSource(QByteArray buf);
-	~ImageSource();
 
 	/**
 	 * Overload QDataSource::readyToSend() and returns the number
@@ -232,21 +233,6 @@ namespace khtml
 	  Reads and sends a block of data.
 	*/
 	void sendTo(QDataSink*, int count);
-
-	/*!
-	  KHTMLImageSource's is rewindable.
-	*/
-	bool rewindable() const;
-
-	/*!
-	  Enables rewinding.  No special action is taken.
-	*/
-	void enableRewind(bool on);
-
-	/*
-	  Calls reset() on the QIODevice.
-	*/
-	void rewind();
 
 	/**
 	 * Sets the EOF state.
@@ -260,8 +246,8 @@ namespace khtml
 	int pos;
 	bool eof;
     };
+}
 
-};
 
 /*!
   This Class defines the DataSource for incremental loading of images.
@@ -273,12 +259,6 @@ ImageSource::ImageSource(QByteArray buf)
   pos = 0;
   eof = false;
 }
-
-/*!
-  Destroys the QIODeviceSource, deleting the QIODevice from which it was
-  constructed.
-*/
-ImageSource::~ImageSource() {}
 
 /**
  * Overload QDataSource::readyToSend() and returns the number
@@ -292,34 +272,6 @@ int ImageSource::readyToSend()
     return n;
 
   return n ? n : -1;
-}
-
-/*!
-  ImageSource's is rewindable.
-*/
-bool ImageSource::rewindable() const
-{
-    return TRUE;
-}
-
-/*!
-  Enables rewinding.  No special action is taken.
-*/
-void ImageSource::enableRewind(bool on)
-{
-    rew = on;
-}
-
-/*
-  Calls reset() on the QIODevice.
-*/
-void ImageSource::rewind()
-{
-  pos = 0;
-  if (!rew) {
-    QDataSource::rewind();
-  } else
-    ready();
 }
 
 /*!
@@ -355,27 +307,26 @@ CachedImage::CachedImage(const DOMString &url, const DOMString &baseURL, bool re
 {
     static const QString &acceptHeader = KGlobal::staticQString( buildAcceptHeader() );
 
-    p = 0;
     m = 0;
+    pixPart = new QPixmap;
     bg = 0;
     typeChecked = false;
     formatType = 0;
     m_status = Unknown;
     m_size = 0;
     imgSource = 0;
-    gotFrame = false;
     m_baseURL = baseURL;
     setAccept( acceptHeader );
 
     if ( Cache::autoloadImages() )
-      load();
+        load();
 }
 
 CachedImage::~CachedImage()
 {
-    if( m ) delete m;
-    if( p ) delete p;
-    if (bg ) delete bg;
+    delete m;
+    delete bg;
+    delete pixPart;
 
 #ifdef CACHE_DEBUG
     kdDebug( 6060 ) << "CachedImage::~CachedImage() " << url().string() << endl;
@@ -391,8 +342,8 @@ void CachedImage::ref( CachedObjectClient *c )
     m_clients.remove(c);
     m_clients.append(c);
 
-    if( m_status != Pending || m )
-	notify( c );
+//    if( m_status != Pending || m )
+//	notify( c );
 }
 
 void CachedImage::deref( CachedObjectClient *c )
@@ -405,18 +356,18 @@ void CachedImage::deref( CachedObjectClient *c )
 	m->pause();
 
     if ( canDelete() && m_free )
-      delete this;
+        delete this;
 }
 
 static bool
-fixBackground(QPixmap &bgPixmap)
+fixBackground(QPixmap &bgPixmap, const QSize& pixmap_size)
 {
 #define BGMINWIDTH	50
 #define BGMINHEIGHT	25
    if (bgPixmap.isNull())
        return false;
-   int w = bgPixmap.width();
-   int h = bgPixmap.height();
+   int w = pixmap_size.width();
+   int h = pixmap_size.height();
    if (w < BGMINWIDTH)
    {
        int factor = ((BGMINWIDTH+w-1) / w);
@@ -488,7 +439,7 @@ const QPixmap &CachedImage::tiled_pixmap() const
     {
        delete bg;
        bg = new QPixmap(r);
-       fixBackground(*bg);
+       fixBackground(*bg, pixmap_size());
        return *bg;
     }
     return r;
@@ -496,83 +447,54 @@ const QPixmap &CachedImage::tiled_pixmap() const
 
 const QPixmap &CachedImage::pixmap( ) const
 {
-    return m ? m->framePixmap() : ( p ? *p : *Cache::nullPixmap );
+    if(m)
+    {
+        if(m->framePixmap().size() != m->getValidRect().size())
+        {
+            // pixmap is not yet completely loaded, so we
+            // return a clipped version. asserting here
+            // that the valid rect is always from 0/0 to fullwidth/ someheight
+            (*pixPart) = m->framePixmap();
+            pixPart->resize(m->getValidRect().size());
+            return *pixPart;
+        }
+        else
+            return m->framePixmap();
+    }
+
+    return *Cache::nullPixmap;
 }
 
-void CachedImage::notify( CachedObjectClient *c )
+
+QSize CachedImage::pixmap_size() const
 {
-#ifdef CACHE_DEBUG
-    kdDebug( 6060 ) << "Cache::notify()" << endl;
-#endif
-
-    if ( m )
-    {
-	if(m->finished())
-	    m->restart();
-	if(m->paused())
-	    m->unpause();
-    }
-
-    if( c )
-    {
-	// sanity check...
-	if( m_clients.find( c ) == -1 )
-	    m_clients.append( c );
-
-	if ( m )
-	  c->setPixmap( m->framePixmap(), this );
-	else if ( p != 0 && !p->isNull() )
-	  c->setPixmap( *p, this );
-
-	return;
-    }
-
-    // notify all objects in our list...
-    QPixmap pixmap;
-
-    if ( m )
-      pixmap = m->framePixmap();
-    else if ( p != 0 && !p->isNull() )
-      pixmap = *p;
-
-    if ( !pixmap.isNull() )
-    {
-	QList<CachedObjectClient> updateList;
-	CachedObjectClient *c;
-        for ( c = m_clients.first(); c != 0; c = m_clients.next() ) {
-#ifdef CACHE_DEBUG	
-	    kdDebug( 6060 ) << "CachedImage: manually setting pixmap (" << c << ")" << endl;
-#endif
-            bool manualUpdate = false; // set the pixmap, dont update yet.
-	    c->setPixmap( pixmap, this, &manualUpdate );
-            if (manualUpdate)
-               updateList.append(c);
-	}
-        for ( c = updateList.first(); c != 0; c = updateList.next() ) {
-            bool manualUpdate = true; // Update!
-            // Actually we want to do c->updateSize()
-            // This is a terrible hack which does the same.
-            // updateSize() does not exist in CachecObjectClient only
-            // in RenderBox()
-	    c->setPixmap( pixmap, this, &manualUpdate );
-	}
-    }
+    return (m ? m->framePixmap().size() : QSize());
 }
 
-void CachedImage::movieUpdated( const QRect & )
+
+QRect CachedImage::valid_rect() const
+{
+    return (m ? m->getValidRect() : QRect());
+}
+
+
+void CachedImage::movieUpdated( const QRect& r )
 {
 #ifdef CACHE_DEBUG
-    kdDebug( 6060 ) << "Cache::movieUpdated()" << endl;
+    qDebug("movie updated %d/%d/%d/%d, pixmap size %d/%d", r.x(), r.y(), r.right(), r.bottom(),
+           m->framePixmap().size().width(), m->framePixmap().size().height());
 #endif
+
+
     QPixmap pixmap = m->framePixmap();
     QList<CachedObjectClient> updateList;
     CachedObjectClient *c;
     for ( c = m_clients.first(); c != 0; c = m_clients.next() ) {
-#ifdef CACHE_DEBUG	
-        kdDebug( 6060 ) << "CachedImage: manually setting pixmap (" << c << ")" << endl;
+#ifdef CACHE_DEBUG
+        qDebug("found a client to update...");
 #endif
         bool manualUpdate = false; // set the pixmap, dont update yet.
-        c->setPixmap( pixmap, this, &manualUpdate );
+        c->setPixmap( pixmap, r, this, &manualUpdate );
         if (manualUpdate)
            updateList.append(c);
     }
@@ -582,20 +504,27 @@ void CachedImage::movieUpdated( const QRect & )
         // This is a terrible hack which does the same.
         // updateSize() does not exist in CachecObjectClient only
         // in RenderBox()
-        c->setPixmap( pixmap, this, &manualUpdate );
+        c->setPixmap( pixmap, r, this, &manualUpdate );
    }
+}
+
+void CachedImage::movieStatus(int status)
+{
+    if(status == QMovie::EndOfFrame)
+        movieUpdated(valid_rect()); //wow, that's ugly!
+
+    if ( m )
+    {
+	if(m->finished())
+	    m->restart();
+	if(m->paused())
+	    m->unpause();
+    }
 }
 
 void CachedImage::clear()
 {
-    if( m ) {
-	delete m;
-	m = 0;
-    }
-    if( p ) {
-	delete p;
-	p = 0;
-    }
+    delete m;  m = 0;
 
     formatType = 0;
 
@@ -604,13 +533,12 @@ void CachedImage::clear()
 
     // No need to delete imageSource - QMovie does it for us
     imgSource = 0;
-    gotFrame = false;
 }
 
 void CachedImage::data ( QBuffer &_buffer, bool eof )
 {
 #ifdef CACHE_DEBUG
-    kdDebug( 6060 ) << "in CachedImage::data()" << endl;
+    kdDebug( 6060 ) << "in CachedImage::data(), buffersize " << _buffer.buffer().size() << endl;
 #endif
     if ( !typeChecked )
     {
@@ -620,46 +548,23 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
 	
 	if ( formatType )  // movie format exists
 	{
-	    imgSource = new ImageSource( _buffer.buffer() );
-	    m = new QMovie( imgSource );
+	    imgSource = new ImageSource( _buffer.buffer());
+	    m = new QMovie( imgSource, 2048 );
  	    m->connectUpdate( this, SLOT( movieUpdated( const QRect &) ));
-	    gotFrame = false;
-	    if(eof) computeStatus();
-	    return;
+            m->connectStatus( this, SLOT( movieStatus(int)));
 	}
     }
 
-    if ( !eof )
+    if ( imgSource )
     {
-	if ( imgSource )
-	    imgSource->maybeReady();
-
-	return;
+        imgSource->maybeReady();
+        imgSource->setEOF(eof);
     }
 
-    if( !formatType )
-    {
-	p = new QPixmap();
-	p->loadFromData( _buffer.buffer() );	
-	// set size of image.
-	if( p && !p->isNull() )
-	    m_size = p->width() * p->height() * p->depth() / 8;
+    m_size = _buffer.size();
 
-	notify(); // Notify only if we have a pixmap. Movies notifies itself via movieUpdated.
-    }
-    else
-    {
-	m_size = _buffer.size();
-	if ( imgSource )
-	{
-	    imgSource->maybeReady();
-	    imgSource->setEOF( true );
-	}
-	notify();
-    }
-
-    computeStatus();
-    return;
+    if(eof)
+        computeStatus();
 }
 
 void CachedImage::error( int /*err*/, const char */*text*/ )
@@ -667,16 +572,15 @@ void CachedImage::error( int /*err*/, const char */*text*/ )
 #ifdef CACHE_DEBUG
     kdDebug(6060) << "CahcedImage::error" << endl;
 #endif
-    p = 0;
 
-    notify();
+//    notify();
 }
+
 
 void CachedImage::load()
 {
-  Cache::loader()->load(this, m_baseURL, true);
+    Cache::loader()->load(this, m_baseURL, true);
 }
-
 
 // ------------------------------------------------------------------------------------------
 
@@ -997,7 +901,7 @@ CachedImage *Cache::requestImage( const DOMString & url, const DOMString &baseUr
 #ifdef CACHE_DEBUG
 	kdDebug( 6060 ) << "Cache: new: " << kurl.url() << endl;
 #endif
-	CachedImage *im = new CachedImage(kurl.url(), baseUrl, reload);
+	CachedImage *im = new CachedImage(kurl.url(), baseUrl, reload );
 	cache->insert( kurl.url(), im );
 	lru->append( kurl.url() );
 	return im;
