@@ -278,12 +278,14 @@ void KHTMLWidget::requestFile( HTMLObject *_obj, const char *_url )
   // Initialize all the scroll blob stuff.
   // Even if you undef out the other stuff, the blob's hooks
   // are still inited.
+#ifdef USE_THE_BLOB_ALEX_MADE
+  // What the hell does this do in fileRequest()???????
   scrollBlob=0;
   scrollBlobType = SCROLL_NONE;
   scrollBlobPixmap=QPixmap();
   scrollBlobTimer = new QTimer (this, "scrollBlobTimer");
   QObject::connect (scrollBlobTimer, SIGNAL(timeout()), this, SLOT(scrollBlobTimeout()));
-
+#endif
 }
 
 void KHTMLWidget::cancelRequestFile( HTMLObject *_obj )
