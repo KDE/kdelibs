@@ -530,9 +530,9 @@ void KDockWidget::setPixmap(const QPixmap& pixmap) {
 		dtg->changeTab(this,pixmap,dtg->tabLabel(this));
 	 QWidget *contWid=parentDockContainer();
          if (contWid) {
-         	KDockContainer *itslikerocketscience = dynamic_cast<KDockContainer*>(contWid);
-                if (itslikerocketscience) {
-                        itslikerocketscience->setPixmap(this,pixmap);
+         	KDockContainer *x = dynamic_cast<KDockContainer*>(contWid);
+                if (x) {
+                        x->setPixmap(this,pixmap);
                 }
          }
 }
@@ -551,9 +551,9 @@ KDockWidget::~KDockWidget()
   }
 
   if (latestKDockContainer()) {
-    KDockContainer *amazingthatwedontcrashnow = dynamic_cast<KDockContainer*>(latestKDockContainer());
-    if (amazingthatwedontcrashnow) {
-      amazingthatwedontcrashnow->removeWidget(this);
+    KDockContainer *x = dynamic_cast<KDockContainer*>(latestKDockContainer());
+    if (x) {
+      x->removeWidget(this);
     }
   }
   emit iMBeingClosed();
@@ -1513,9 +1513,9 @@ void KDockWidget::makeDockVisible()
   }
   if (parentDockContainer()) {
     QWidget *contWid=parentDockContainer();
-    KDockContainer *lookmanohands = dynamic_cast<KDockContainer*>(contWid);
-    if (lookmanohands) {
-      lookmanohands->showWidget(this);
+    KDockContainer *x = dynamic_cast<KDockContainer*>(contWid);
+    if (x) {
+      x->showWidget(this);
     }
   }
   if ( isVisible() ) return;
@@ -2376,9 +2376,9 @@ void KDockManager::writeConfig( KConfig* c, QString group )
       obj->header->saveConfig( c );
     }
     if (obj->d->isContainer) {
-       KDockContainer* wowthisissodifficult = dynamic_cast<KDockContainer*>(obj->widget);
-       if (wowthisissodifficult) {
-          wowthisissodifficult->save(c,group);
+       KDockContainer* x = dynamic_cast<KDockContainer*>(obj->widget);
+       if (x) {
+          x->save(c,group);
        }
     }
 /*************************************************************************************************/
