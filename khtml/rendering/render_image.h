@@ -61,9 +61,6 @@ public:
     void setImageUrl(DOM::DOMString url, DocLoader *docLoader);
     void setAlt(DOM::DOMString text);
 
-    virtual short intrinsicWidth() const;
-    virtual int intrinsicHeight() const;
-
     // hook to keep RendeObject::m_inline() up to date
     virtual void setStyle(RenderStyle *style);
 
@@ -78,7 +75,6 @@ private:
      */
 
     QPixmap pix;
-    QSize  pixSize;
 
     /*
      * Cache for images that need resizing

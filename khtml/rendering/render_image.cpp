@@ -44,8 +44,7 @@ using namespace khtml;
 // -------------------------------------------------------------------------
 
 RenderImage::RenderImage(HTMLElementImpl *_element)
-    : RenderReplaced(),
-      pixSize(0, 0)
+    : RenderReplaced()
 {
     setLayouted(false);
     setParsing(false);
@@ -53,6 +52,9 @@ RenderImage::RenderImage(HTMLElementImpl *_element)
     image = 0;
     berrorPic = false;
     element = _element;
+
+    setIntrinsicWidth( 0 );
+    setIntrinsicHeight( 0 );
 }
 
 RenderImage::~RenderImage()
@@ -82,21 +84,25 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, b
 
     if(o->isErrorImage())
     {
-        pixSize.setWidth(QMAX(p.width()+8, pixSize.width()));
-        pixSize.setHeight(QMAX(p.height()+8, pixSize.height()));
+        setIntrinsicWidth( QMAX(p.width()+8, intrinsicWidth()) );
+        setIntrinsicHeight( QMAX(p.height()+8, intrinsicHeight()) );
     }
     berrorPic = o->isErrorImage();
 
     bool needlayout = false;
 
     // Image dimensions have been changed, see what needs to be done
-    if(o->pixmap_size() !=  pixSize)
+    if(o->pixmap_size().width() != intrinsicWidth() ||
+       o->pixmap_size().height() != intrinsicHeight() )
     {
-//          qDebug("image dimensions have been changed, old: %d/%d  new: %d/%d", pixSize.width(), pixSize.height(),
+//          qDebug("image dimensions have been changed, old: %d/%d  new: %d/%d",
+//                 intrinsicWidth(), intrinsicHeight(),
 //               o->pixmap_size().width(), o->pixmap_size().height());
 
-        if(!o->isErrorImage())
-            pixSize = o->pixmap_size();
+        if(!o->isErrorImage()) {
+            setIntrinsicWidth( o->pixmap_size().width() );
+            setIntrinsicHeight( o->pixmap_size().height() );
+        }
 
         // lets see if we need to relayout at all..
         int oldwidth = m_width;
@@ -133,10 +139,10 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, b
     {
         bool completeRepaint = !resizeCache.isNull();
         int cHeight = contentHeight();
-        int scaledHeight = pixSize.height() ? ((o->valid_rect().height()*cHeight)/pixSize.height()) : 0;
+        int scaledHeight = intrinsicHeight() ? ((o->valid_rect().height()*cHeight)/intrinsicHeight()) : 0;
 
         // don't bog down X server doing xforms
-        if(completeRepaint && cHeight >= 5 &&  o->valid_rect().height() < pixSize.height() &&
+        if(completeRepaint && cHeight >= 5 &&  o->valid_rect().height() < intrinsicHeight() &&
            (scaledHeight / (cHeight/5) == resizeCache.height() / (cHeight/5)))
             return;
 
@@ -195,7 +201,7 @@ void RenderImage::printObject(QPainter *p, int /*_x*/, int /*_y*/, int /*_w*/, i
     }
     else if (image && !image->isTransparent())
     {
-        if ( (cWidth != pixSize.width() ||  cHeight != pixSize.height() ) &&
+        if ( (cWidth != intrinsicWidth() ||  cHeight != intrinsicHeight()) &&
              pix.width() > 0 && pix.height() > 0 && image->valid_rect().isValid())
         {
             if (resizeCache.isNull() && cWidth && cHeight)
@@ -204,13 +210,13 @@ void RenderImage::printObject(QPainter *p, int /*_x*/, int /*_y*/, int /*_w*/, i
 //                 kdDebug(6040) << "time elapsed: " << dt->elapsed() << endl;
 //                  kdDebug( 6040 ) << "have to scale: " << endl;
 //                  qDebug("cw=%d ch=%d  pw=%d ph=%d  rcw=%d, rch=%d",
-//                          cWidth, cHeight, pixSize.width(), pixSize.height(), resizeCache.width(), resizeCache.height());
+//                          cWidth, cHeight, intrinsicWidth(), intrinsicHeight(), resizeCache.width(), resizeCache.height());
                 QWMatrix matrix;
-                matrix.scale( (float)(cWidth)/pixSize.width(),
-                              (float)(cHeight)/pixSize.height() );
+                matrix.scale( (float)(cWidth)/intrinsicWidth(),
+                              (float)(cHeight)/intrinsicHeight() );
                 resizeCache = pix.xForm( matrix );
-                scaledrect.setWidth( ( cWidth*scaledrect.width() ) / pixSize.width() );
-                scaledrect.setHeight( ( cHeight*scaledrect.height() ) / pixSize.height() );
+                scaledrect.setWidth( ( cWidth*scaledrect.width() ) / intrinsicWidth() );
+                scaledrect.setHeight( ( cHeight*scaledrect.height() ) / intrinsicHeight() );
 //                   qDebug("resizeCache size: %d/%d", resizeCache.width(), resizeCache.height());
 //                   qDebug("valid: %d/%d, scaled: %d/%d",
 //                          image->valid_rect().width(), image->valid_rect().height(),
@@ -220,7 +226,7 @@ void RenderImage::printObject(QPainter *p, int /*_x*/, int /*_y*/, int /*_w*/, i
                 // of rounding errors. if the image is fully loaded, we
                 // make sure that we don't do unnecessary resizes during painting
                 QSize s(scaledrect.size());
-                if(image->valid_rect().size() == pixSize) // fully loaded
+                if(image->valid_rect().size() == QSize( intrinsicWidth(), intrinsicHeight() )) // fully loaded
                     s = QSize(cWidth, cHeight);
                 if(QABS(s.width() - cWidth) < 2) // rounding errors
                     s.setWidth(cWidth);
@@ -237,9 +243,10 @@ void RenderImage::printObject(QPainter *p, int /*_x*/, int /*_y*/, int /*_w*/, i
         {
             // we might be just about switching images
             // so pix contains the old one (we want to paint), but image->valid_rect is still invalid
-            // so use pixSize instead.
+            // so use intrinsic Size instead.
             // ### maybe no progressive loading for the second image ?
-            QRect rect(image->valid_rect().isValid() ? image->valid_rect() : QRect(0, 0, pixSize.width(), pixSize.height()));
+            QRect rect(image->valid_rect().isValid() ? image->valid_rect()
+                       : QRect(0, 0, intrinsicWidth(), intrinsicHeight()));
 
             QPoint offs( _tx + leftBorder + leftPad, _ty + topBorder + topPad);
 //             qDebug("normal paint rect %d/%d/%d/%d", rect.x(), rect.y(), rect.width(), rect.height());
@@ -295,16 +302,6 @@ void RenderImage::setImageUrl(DOMString url, DocLoader *docLoader)
 void RenderImage::setAlt(DOM::DOMString text)
 {
     alt = text;
-}
-
-short RenderImage::intrinsicWidth() const
-{
-    return pixSize.width();
-}
-
-int RenderImage::intrinsicHeight() const
-{
-    return pixSize.height();
 }
 
 void RenderImage::notifyFinished(CachedObject *finishedObj)
