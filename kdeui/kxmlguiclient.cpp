@@ -622,6 +622,7 @@ QString KXMLGUIClient::findMostRecentXMLFile( const QString &fileName, QString &
 
     reader.setContentHandler( &consumer );
     reader.setErrorHandler( &consumer );
+    reader.setLexicalHandler( &consumer );
     reader.setFeature( "http://xml.org/sax/features/namespaces", FALSE );
     reader.setFeature( "http://xml.org/sax/features/namespace-prefixes", TRUE );
 
