@@ -142,12 +142,14 @@ KSocketAddress* KSocketAddress::newAddress(struct sockaddr* sa, ksocklen_t size)
 	return new KInetSocketAddress((sockaddr_in*)sa);
       return NULL;
 	
+#ifdef AF_INET6
     case AF_INET6:
       if (size >= sizeof(sockaddr_in6))
 	return new KInetSocketAddress((sockaddr_in6*)sa);
       return NULL;
+#endif
 
-    case AF_UNIX:		// AF_UNIX
+    case AF_UNIX:		// AF_LOCAL
       return new KUnixSocketAddress((sockaddr_un*)sa, size);
     }
 
@@ -175,8 +177,10 @@ int KSocketAddress::ianaFamily(int af)
     {
     case AF_INET:
       return 1;
+#ifdef AF_INET6
     case AF_INET6:
       return 2;
+#endif
     default:
       return 0;
     }
@@ -188,8 +192,10 @@ int KSocketAddress::fromIanaFamily(int iana)
     {
     case 1:
       return AF_INET;
+#ifdef AF_INET6
     case 2:
       return AF_INET6;
+#endif
     default:
       return AF_UNSPEC;
     }

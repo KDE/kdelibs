@@ -114,8 +114,15 @@ static bool valid_family(addrinfo *p, int flags)
 {
   if (flags & KExtendedSocket::knownSocket)
     {
+      if (p->ai_family == PF_INET)
+	{
+	  if (flags & 0x0e && (flags & 0x4) == 0)
+	    return false;	// user hasn't asked for Internet sockets
+	  if (flags & 0xf00 && (flags & 0x100) == 0)
+	    return false;	// user hasn't asked for IPv4 sockets
+	}
 #ifdef PF_INET6
-      if (p->ai_family == PF_INET6)
+      else if (p->ai_family == PF_INET6)
 	{
 	  if (flags & 0x0e && (flags & 0x4) == 0)
 	    return false;	// user hasn't asked for Internet sockets
@@ -123,13 +130,6 @@ static bool valid_family(addrinfo *p, int flags)
 	    return false;	// user hasn't asked for IPv6 sockets
 	}
 #endif
-      else if (p->ai_family == PF_INET)
-	{
-	  if (flags & 0x0e && (flags & 0x4) == 0)
-	    return false;	// user hasn't asked for Internet sockets
-	  if (flags & 0xf00 && (flags & 0x100) == 0)
-	    return false;	// user hasn't asked for IPv4 sockets
-	}
       else if (p->ai_family == PF_UNIX)
 	{
 	  if (flags & 0x0e && (flags & 0x2) == 0)

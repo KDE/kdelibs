@@ -74,6 +74,8 @@ extern "C" {
 #include <qapplication.h>
 #include <qsocketnotifier.h>
 
+#include "netsupp.h"		// leave this last
+
 // I moved this into here so we could accurately detect the domain, for
 // posterity.  Really.
 KSocket::KSocket( int _sock)
@@ -208,8 +210,11 @@ unsigned long KSocket::ipv4_addr()
   if (sa == NULL)
     return 0;
 
-  if (sa->address() != NULL && (sa->address()->sa_family == PF_INET ||
-				sa->address()->sa_family == PF_INET6))
+  if (sa->address() != NULL && (sa->address()->sa_family == PF_INET 
+#ifdef PF_INET6
+				|| sa->address()->sa_family == PF_INET6)
+#endif
+      )
     {
       KInetSocketAddress *ksin = (KInetSocketAddress*)sa;
       const sockaddr_in *sin = ksin->addressV4();
@@ -372,11 +377,13 @@ unsigned short int KServerSocket::port()
   if (sin->sin_family == PF_INET)
     // correct family
     return sin->sin_port;
+#ifdef PF_INET6
   else if (sin->sin_family == PF_INET6)
     {
-      sockaddr_in6 *sin6 = (sockaddr_in6*)sin;
+      kde_sockaddr_in6 *sin6 = (sockaddr_in6*)sin;
       return sin6->sin6_port;
     }
+#endif
   return 0;			// not a port we know
 }
 
@@ -391,6 +398,7 @@ unsigned long KServerSocket::ipv4_addr()
   if (sin->sin_family == PF_INET)
     // correct family
     return ntohl(*(unsigned long*)&sin->sin_addr);
+#ifdef PF_INET6
   else if (sin->sin_family == PF_INET6)
     {
       KInetSocketAddress *ksin = (KInetSocketAddress*)sa;
@@ -398,6 +406,7 @@ unsigned long KServerSocket::ipv4_addr()
       if (sin != NULL)
 	return *(unsigned long*)&sin->sin_addr;
     }
+#endif
   return 0;			// this is dumb, isn't it?
 }
 
