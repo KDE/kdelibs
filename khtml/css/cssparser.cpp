@@ -6,6 +6,8 @@
  *               2001 Andreas Schlapbach (schlpbch@iam.unibe.ch)
  *               2001 Dirk Mueller (mueller@kde.org)
  *
+ * $Id$
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
  * License as published by the Free Software Foundation; either
@@ -1878,6 +1880,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
       case CSS_PROP_TEXT_DECORATION:
     	// none | [ underline || overline || line-through || blink ] | inherit
 	{
+	    bool is_valid = true;
 	    if (cssval && cssval->id == CSS_VAL_NONE) {
 	      parsedValue = new CSSPrimitiveValueImpl(cssval->id);
 	    } else {
@@ -1893,14 +1896,29 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 		  //kdDebug( 6080 ) << "found decoration '" << decoration << "'" << endl;
 		  const struct css_value *cssval = findValue(decoration.lower().ascii(),
 							     decoration.length());
+		  //cerr << "KEYWORD: " << decoration.lower().left(decoration.length()).latin1() << endl;
 		  if (cssval) {
-		    list->append(new CSSPrimitiveValueImpl(cssval->id));
+		    switch (cssval->id) {
+			case CSS_VAL_NONE:
+			case CSS_VAL_UNDERLINE:
+			case CSS_VAL_OVERLINE:
+			case CSS_VAL_LINE_THROUGH:
+			case CSS_VAL_BLINK:
+			case CSS_VAL_INHERIT:
+			  list->append(new CSSPrimitiveValueImpl(cssval->id));
+			  break;
+			default:
+			  list->append(new CSSPrimitiveValueImpl(cssval->id));
+			  is_valid = false;
+		    }
+		  } else {
+		    is_valid = false;
 		  }
 		  pos = pos2 + 1;
 		  if(pos2 == -1) break;
 		}
 	      //kdDebug( 6080 ) << "got " << list->length() << "d decorations" << endl;
-	      if(list->length()) {
+	      if(list->length() && is_valid) {
                 parsedValue = list;
 	      } else {
                 delete list;
