@@ -290,7 +290,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
 		    src = DOMStringIt();
 		}
             }
-            else if (doScriptExec) {
+            else if (doScriptExec && javascript) {
 		executingScript = true;
 		view->part()->executeScript(QString(scriptCode, scriptCodeSize));
 		executingScript = false;
@@ -916,6 +916,26 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 		if ( tagID == ID_SCRIPT  && beginTag ) {
 		    int attrIndex = currToken->attrs.find(ATTR_SRC);
 		    scriptSrc = (attrIndex == -1 ? (QString)"" : currToken->attrs[attrIndex]->value().string());
+		    attrIndex = currToken->attrs.find(ATTR_LANGUAGE);
+		    javascript = true;
+		    if( attrIndex != -1 ) {
+			QString lang = currToken->attrs[attrIndex]->value().string();
+			lang = lang.lower();
+			if( !lang.contains("javascript") && 
+			    !lang.contains("ecmascript") &&
+			    !lang.contains("jscript") )
+			   javascript = false;
+		    } else {
+			attrIndex = currToken->attrs.find(ATTR_TYPE);
+			if( attrIndex != -1 ) {
+			    QString lang = currToken->attrs[attrIndex]->value().string();
+			    lang = lang.lower();
+			    if( !lang.contains("javascript") && 
+				!lang.contains("ecmascript") &&
+				!lang.contains("jscript") )
+				javascript = false;
+			}
+		    }
 		}
 		
 		processToken();

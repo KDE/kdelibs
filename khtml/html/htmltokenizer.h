@@ -235,6 +235,7 @@ protected:
     bool noMoreData;
     // URL to get source code of script from
     QString scriptSrc;
+    bool javascript;
     // the HTML code we will parse after the external script we are waiting for has loaded
     QString pendingSrc;
     // true if we are executing a script while parsing a document. This causes the parsing of
