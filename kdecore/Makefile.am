@@ -40,7 +40,7 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kde_dmalloc.h kallocator.h kvmallocator.h kcrash.h krfcdate.h \
 	kinstance.h kpalette.h kipc.h klibloader.h ktempfile.h ksavefile.h \
 	krandomsequence.h kstringhandler.h knotifyclient.h kiconeffect.h \
-	kaudioplayer.h kdestyle.h kdcoppropertyproxy.h netwm.h \
+	kaudioplayer.h kdcoppropertyproxy.h netwm.h \
 	netwm_def.h netwm_p.h kpixmapprovider.h kunload.h kstaticdeleter.h \
 	kextsock.h ksockaddr.h kprocio.h kasyncio.h kbufferedio.h \
 	kurldrag.h kmimesourcefactory.h kmdcodec.h ksocks.h \
@@ -72,7 +72,7 @@ libkdecore_la_SOURCES = libintl.cpp kapplication.cpp kdebug.cpp netwm.cpp  \
 	kuniqueapplication.cpp \
 	ksavefile.cpp krandomsequence.cpp kstringhandler.cpp kcompletion.cpp \
 	kcmdlineargs.cpp kaboutdata.cpp kcompletionbase.cpp knotifyclient.cpp \
-	kaudioplayer.cpp kdestyle.cpp kdcoppropertyproxy.cpp \
+	kaudioplayer.cpp kdcoppropertyproxy.cpp \
 	kextsock.cpp ksockaddr.cpp netsupp.cpp kprocio.cpp kbufferedio.cpp \
 	kpixmapprovider.cpp kurldrag.cpp \
         kmdcodec.cpp ksocks.cpp fakes.c vsnprintf.c \
