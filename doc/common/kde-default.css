@@ -40,6 +40,7 @@ BODY { background-color: rgb(255,255,255);
         background-color: white; /* should be inherited */ }
 /* :visited { color: rgb(170,0,0); } what is KDE value?*/
 
+/* Lauri */
 TABLE { padding: 5px; }
 
 TABLE.programlisting
@@ -59,9 +60,19 @@ TABLE[class~=screen] { border-style: none;
                        }
 */
 
+/* Lauri */
+LI { padding-bottom: -2em; }
+
 P { text-align: justify; }
 
+/* More specific settings */
+
 DIV.navbar P { text-align: right; }
+
+/* Lauri */
+LI P { padding-top: -2em;
+       padding-bottom: 2em; }
+
 
 /* Temporary patch: browsers break on bad HTML */
 P H1 H2 H3 H4 H5 TD { font-family: Helvetica, Arial, sans-serif; 
