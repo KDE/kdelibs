@@ -56,7 +56,7 @@ void KHTMLFind::slotSearch()
 
   bool forward = !get_direction();
 
-  if ( m_part->findTextNext( getText(), forward, case_sensitive(), isRegExp() ) )
+  if ( m_part->findTextNext( getText(), forward, case_sensitive(), false ) )
     m_found = true;
   else if ( m_found )
   {
