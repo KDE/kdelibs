@@ -449,6 +449,8 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
 				Entry* sub_entry, bool isDir)
 {
   QString path = _path;
+  if (path.startsWith("/dev/") || (path == "/dev"))
+    return; // Don't even go there.
 
   if ( path.length() > 1 && path.right(1) == "/" )
     path.truncate( path.length() - 1 );
