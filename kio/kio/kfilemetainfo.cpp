@@ -296,13 +296,14 @@ QValidator * KFileMetaInfo::createValidator( const QString& key,
                                                    const char *name ) const
 {
     KFilePlugin* p = plugin();
-    if (p) p->createValidator( operator[](key), parent, name );
+    if (p) return p->createValidator( operator[](key), parent, name );
+    return 0;
 }
 
 KFilePlugin * const KFileMetaInfo::plugin() const
 {
     KFileMetaInfoProvider* prov = KFileMetaInfoProvider::self();
-    const KFilePlugin* plugin = prov->plugin( d->mimetype );
+    return prov->plugin( d->mimetype );
 }
 
 KFileMetaInfo::Data KFileMetaInfo::Data::null(QString::null);
