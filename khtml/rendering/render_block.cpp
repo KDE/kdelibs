@@ -177,8 +177,6 @@ void RenderBlock::addChildToFlow(RenderObject* newChild, RenderObject* beforeChi
     if ( !beforeChild && lastChild() && lastChild()->style()->styleType() == RenderStyle::AFTER )
         beforeChild = lastChild();
 
-    setNeedsLayout(true);
-
     bool madeBoxesNonInline = FALSE;
 
     // If the requested beforeChild is not one of our children, then this is most likely because

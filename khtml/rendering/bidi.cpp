@@ -1153,6 +1153,7 @@ void RenderBlock::layoutInlineChildren( bool relayoutChildren )
                     o->layoutIfNeeded();
             } else {
                o->deleteInlineBoxes();
+               o->setNeedsLayout(false);
             }
             o = Bidinext( this, o, false /*skipInlines*/ );
         }
