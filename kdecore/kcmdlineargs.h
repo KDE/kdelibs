@@ -19,6 +19,8 @@
 #ifndef _KCMDLINEARGS_H_
 #define _KCMDLINEARGS_H_
 
+#include <kurl.h>
+
 #include <qlist.h>
 #include <qstring.h>
 
@@ -86,7 +88,10 @@ class KAboutData;
  *     for(int i = 0; i < args->count(); i++) // Counting start at 0! 
  *     {
  *        // don't forget to convert to Unicode!        
- *        openFile( QFile::decodeFile( args->arg(i)));
+ *        openFile( QFile::decodeName( args->arg(i)));
+ *        // Or more convenient:
+ *        // openURL( args->url(i));
+ *
  *     }
  *
  *     args->clear(); // Free up some memory. 
@@ -332,6 +337,21 @@ public:
    *  @return a @p const @p char @p * pointer to the n'th argument.
    */
   const char *arg(int n);
+
+  /**
+   *  Read out an argument representing a URL.
+   *
+   *  The argument can be 
+   *  @li an absolute filename
+   *  @li a relative filename
+   *  @li a URL
+   *
+   *  @param n The argument to read. 0 is the first argument.
+   *           @ref count()-1 is the last argument.
+   *
+   *  @return a @p URL representing the n'th argument.
+   */
+  KURL url(int n);
 
   /**
    *  Clear all options and arguments.

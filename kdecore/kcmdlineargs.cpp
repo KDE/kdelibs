@@ -964,6 +964,32 @@ KCmdLineArgs::arg(int n)
    return parsedArgList->at(n);
 }
 
+KURL
+KCmdLineArgs::url(int n)
+{
+   const char *urlArg = arg(n);
+
+   if (*urlArg == '/')
+   {
+      KURL result;
+      result.setPath(QFile::decodeName( urlArg));
+      return result; // Absolute path.
+   }
+
+   const char *a = index(urlArg, ':');
+   if (a)
+   {
+      const char *b = index(urlArg, '/');
+      if (b && b>a)
+         return KURL(QString::fromLatin1(urlArg)); // Argument is a URL
+   }
+   
+   KURL result;
+   result.setPath( cwd()+"/"+QFile::decodeName( urlArg));
+   result.cleanPath();
+   return result;  // Relative path
+}
+
 void
 KCmdLineArgs::addArgument(const char *argument)
 {
