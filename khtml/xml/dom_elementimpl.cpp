@@ -604,6 +604,17 @@ bool ElementImpl::mouseEvent( int _x, int _y,
 	p = p->parent();
     }
 
+    bool positioned = m_render->style()
+                      && (m_render->style()->position() == ABSOLUTE || m_render->style()->position() == FIXED);
+    int oldZIndex = ev->currentZIndex;
+
+    // Positioned element -> store current zIndex, for children to use
+    if ( positioned )
+    {
+        ev->currentZIndex = m_render->style()->zIndex();
+        //kdDebug() << "ElementImpl::mouseEvent storing currentZIndex=" << ev->currentZIndex << endl;
+    }
+
     if(!m_render->isInline() || !m_render->firstChild() || m_render->isFloating() )
     {
         bool known = m_render->absolutePosition(_tx, _ty);
@@ -613,11 +624,17 @@ bool ElementImpl::mouseEvent( int _x, int _y,
         {
             if  ( ! (m_render->style() && m_render->style()->visiblity() == HIDDEN) )
             {
-                //kdDebug(6030) << nodeName().string() << " SETTING innerNode " << endl;
-                ev->innerNode = Node(this);
-                ev->nodeAbsX = _tx;
-                ev->nodeAbsY = _ty;
-                inside = true;
+                //if ( positioned )
+                //    kdDebug(6030) << " currentZIndex=" << ev->currentZIndex << " ev->zIndex=" << ev->zIndex << endl;
+                if ( ! positioned || ev->currentZIndex > ev->zIndex )
+                {
+                    //kdDebug(6030) << nodeName().string() << " SETTING innerNode " << endl;
+                    ev->innerNode = Node(this);
+                    ev->nodeAbsX = _tx;
+                    ev->nodeAbsY = _ty;
+                    ev->zIndex = ev->currentZIndex;
+                    inside = true;
+                }
             }
         }
     }
@@ -634,10 +651,11 @@ bool ElementImpl::mouseEvent( int _x, int _y,
 #endif
 
     if(inside || mouseInside())
-    {
-        // dynamic HTML...
-        mouseEventHandler(ev, inside);
-    }
+        if  ( ! (m_render->style() && m_render->style()->visiblity() == HIDDEN) )
+        {
+            // dynamic HTML...
+            mouseEventHandler(ev, inside);
+        }
 
     bool oldinside=mouseInside();
 
@@ -645,6 +663,10 @@ bool ElementImpl::mouseEvent( int _x, int _y,
 
     if (oldinside != inside && m_style->getPseudoStyle(RenderStyle::HOVER))
         applyChanges(true,false);
+
+    // reset previous z index
+    if ( positioned )
+        ev->currentZIndex = oldZIndex;
 
     return inside;
 }
