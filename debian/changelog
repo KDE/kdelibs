@@ -1,3 +1,11 @@
+kdelibs (4:2.2.2-5) unstable; urgency=low
+
+  * sync with upstream
+  * Build with nas support by popular demand
+  * Update Build-Depends:  +nas-dev
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 05 Dec 2001 06:04:00 -0700
+
 kdelibs (4:2.2.2-4) unstable; urgency=low
 
   * sync with upstream
