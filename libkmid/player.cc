@@ -526,7 +526,7 @@ void MidiPlayer::play(bool calloutput,void output(void))
 #endif
   
   midi->openDev();
-  if (midi->ok()==0) {printf("Player :: Couldn't play !\n");ctl->error=1;return;};
+  if (midi->ok()==0) {fprintf(stderr,"Player :: Couldn't play !\n");ctl->error=1;return;};
   midi->setVolumePercentage(ctl->volumepercentage);
   midi->initDev();
   //    parsePatchesUsed(tracks,info,ctl->gm);

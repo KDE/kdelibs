@@ -111,7 +111,7 @@ MidiTrack **readMidiFile( const char *name, MidiFileInfo *info, int &ok)
   stat(name,&buf);
   if (!S_ISREG(buf.st_mode))
   {
-    printf("ERROR: %s is not a regular file\n",name);
+    fprintf(stderr,"ERROR: %s is not a regular file\n",name);
     ok=-6;
     return NULL;
   }
@@ -119,7 +119,7 @@ MidiTrack **readMidiFile( const char *name, MidiFileInfo *info, int &ok)
   FILE *fh=fopen(name,"rb");
   if (fh==NULL) 
   {
-    printf("ERROR: Can't open file %s\n",name);
+    fprintf(stderr,"ERROR: Can't open file %s\n",name);
     ok=-1;
     return NULL;
   }
@@ -129,10 +129,10 @@ MidiTrack **readMidiFile( const char *name, MidiFileInfo *info, int &ok)
   {	
     fclose(fh);
     char tempname[200];
-    printf("Trying to open zipped midi file...\n");
+    fprintf(stderr,"Trying to open zipped midi file...\n");
     if (uncompressFile(name,tempname)!=0)
     {
-      printf("ERROR: %s is not a (zipped) midi file\n",name);
+      fprintf(stderr,"ERROR: %s is not a (zipped) midi file\n",name);
       ok=-2;
       return NULL;
     }
@@ -148,7 +148,7 @@ MidiTrack **readMidiFile( const char *name, MidiFileInfo *info, int &ok)
     if (fsearch(fh,"MThd",&pos)==0)
     {	
       fclose(fh);
-      printf("ERROR: %s is not a midi file.\n",name);
+      fprintf(stderr,"ERROR: %s is not a midi file.\n",name);
       ok=-2;
       return NULL;
     }
@@ -161,8 +161,8 @@ MidiTrack **readMidiFile( const char *name, MidiFileInfo *info, int &ok)
   info->ticksPerCuarterNote=readShort(fh);
   if (info->ticksPerCuarterNote<0)
   {
-    printf("ERROR: Ticks per cuarter note is negative !\n");
-    printf("Please report this error to : larrosa@kde.org\n");
+    fprintf(stderr,"ERROR: Ticks per cuarter note is negative !\n");
+    fprintf(stderr,"Please report this error to : larrosa@kde.org\n");
     fclose(fh);
     ok=-3;
     return NULL;
@@ -171,7 +171,7 @@ MidiTrack **readMidiFile( const char *name, MidiFileInfo *info, int &ok)
   tracks=new MidiTrack*[info->ntracks];
   if (tracks==NULL)
   {
-    printf("ERROR: Not enough memory\n");
+    fprintf(stderr,"ERROR: Not enough memory\n");
     fclose(fh);
     ok=-4;
     return NULL;
@@ -182,8 +182,8 @@ MidiTrack **readMidiFile( const char *name, MidiFileInfo *info, int &ok)
     fread(text,1,4,fh);
     if (strncmp(text,"MTrk",4)!=0)
     {
-      printf("ERROR: Not a well built midi file\n");
-      printf("%s",text);
+      fprintf(stderr,"ERROR: Not a well built midi file\n");
+      fprintf(stderr,"%s",text);
       fclose(fh);
       ok=-5;
       return NULL;
@@ -191,7 +191,7 @@ MidiTrack **readMidiFile( const char *name, MidiFileInfo *info, int &ok)
     tracks[i]=new MidiTrack(fh,info->ticksPerCuarterNote,i);
     if (tracks[i]==NULL)
     {
-      printf("ERROR: Not enough memory");
+      fprintf(stderr,"ERROR: Not enough memory");
       fclose(fh);
       ok=-4;
       return NULL;

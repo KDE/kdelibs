@@ -62,7 +62,6 @@ public:
       strcat(tgtname, "  ");
       strcat(tgtname, pname);
       ev=new snd_seq_event_t;
-      if (ev==NULL) { printf("aaaaaaaargh !\n"); };
     }
 #else
   AlsaOutPrivate(int, int, const char *,const char *)
@@ -115,6 +114,7 @@ AlsaOut::AlsaOut(int d,int _client, int _port, const char *cname,const char *pna
 
 AlsaOut::~AlsaOut()
 {
+//  printf("::~AlsaOut %d\n",device);
   delete map;
   closeDev();
   delete di;
@@ -152,9 +152,13 @@ void AlsaOut::closeDev (void)
   if (!ok()) return;
 
 #ifdef HAVE_LIBASOUND
-  snd_seq_delete_simple_port(di->handle,di->src->port);
+//  if (di->src) printf("di->src ok\n");
+//  printf("port: %d\n",di->src->port);
+//  snd_seq_delete_simple_port(di->handle,di->src->port);
+//  printf("snd_seq_delete_simple_port passed\n");
   snd_seq_free_queue(di->handle, di->queue);
   snd_seq_close(di->handle);
+
 #endif
 }
 
@@ -422,9 +426,6 @@ printf("tempo _ : _ : _ : %d\n",v);
 
 void AlsaOut::sync(int i)
 {
-//#ifdef MIDIOUTDEBUG
-  printf("Alsa Sync %d\n",i);
-//#endif
 #ifdef HAVE_LIBASOUND
   if (i==1)
   {
@@ -432,16 +433,12 @@ void AlsaOut::sync(int i)
     snd_seq_drain_output(di->handle);
   }
 
-  printf("Alsa 1\n");
-
   eventInit(di->ev);
   di->ev->dest = *di->src;
   eventSend(di->ev);
   snd_seq_flush_output(di->handle);
-  printf("Alsa 2\n");
   snd_seq_event_input(di->handle,&di->ev);
 
-  printf("Alsa 3\n");
 #endif
 }
 
@@ -473,7 +470,6 @@ void AlsaOut::tmrStop(void)
 
 void AlsaOut::tmrContinue(void)
 {
-  printf("Is this used ?\n");
 }
 
 const char * AlsaOut::deviceName(void) const

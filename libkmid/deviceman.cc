@@ -142,7 +142,7 @@ DeviceManager::~DeviceManager(void)
   {
     for (int i=0;i<n_midi;i++)
       delete device[i];
-    delete device;
+    delete[] device;
     device=0L;
   }
 }
@@ -195,7 +195,7 @@ int DeviceManager::initManager(void)
     seqfd = open("/dev/sequencer", O_WRONLY | O_NONBLOCK, 0);
     if (seqfd==-1)
     {
-      printf("ERROR: Couldn't open /dev/sequencer to get some information\n");
+      fprintf(stderr,"ERROR: Couldn't open /dev/sequencer to get some information\n");
       _ok=0;
       return -1;
     }
@@ -206,7 +206,7 @@ int DeviceManager::initManager(void)
 
     if (n_midi==0)
     {
-      printf("ERROR: There's no midi port\n");
+      fprintf(stderr,"ERROR: There's no midi port\n");
       /* This could be a problem if the user don't have a synth neither,
 	 but not having any of both things is unusual */
       //    _ok=0;
@@ -295,6 +295,7 @@ int DeviceManager::initManager(void)
     snd_seq_open(&handle, SND_SEQ_OPEN);
 
     snd_seq_system_info_t info;
+    info.clients=info.ports=0;
     snd_seq_system_info(handle, &info);
 
     n_total=0;
@@ -353,7 +354,7 @@ void DeviceManager::openDev(void)
     seqfd = open("/dev/sequencer", O_WRONLY | O_NONBLOCK, 0);
     if (seqfd==-1)
     {
-      printf("Couldn't open the /dev/sequencer device\n");
+      fprintf(stderr,"Couldn't open the /dev/sequencer device\n");
       _ok=0;
       return;
     }
@@ -387,7 +388,12 @@ void DeviceManager::closeDev(void)
 {
   if (alsa)
   {
-   if (device) for (int i=0;i<n_total;i++) device[i]->closeDev();
+   printf("DM::closeDev\n");
+   if (device) 
+     for (int i=0;i<n_total;i++) 
+       if (device[i]) device[i]->closeDev();
+
+   printf("DM::closeDev2\n");
    return;
   }
 
