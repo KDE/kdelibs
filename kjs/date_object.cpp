@@ -768,13 +768,20 @@ double KJS::KRFCDate_parseDate(const UString &_date)
 
        if ((*dateString == '+') || (*dateString == '-')) {
          offset = strtol(dateString, &newPosStr, 10);
+         dateString = newPosStr;
 
          if ((offset < -9959) || (offset > 9959))
            return result; // Invalid date
 
          int sgn = (offset < 0)? -1:1;
          offset = abs(offset);
-         offset = ((offset / 100)*60 + (offset % 100))*sgn;
+         if ( *dateString == ':' ) { // GMT+05:00
+           int offset2 = strtol(dateString, &newPosStr, 10);
+           dateString = newPosStr;
+           offset = (offset*60 + offset2)*sgn;
+         }
+         else
+           offset = ((offset / 100)*60 + (offset % 100))*sgn;
          have_tz = true;
        } else {
          for (int i=0; known_zones[i].tzName != 0; i++) {
