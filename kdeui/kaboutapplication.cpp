@@ -30,6 +30,7 @@
 #include <kglobal.h>
 #include <klocale.h>
 #include <kurllabel.h>
+#include "ktextedit.h"
 
 KAboutApplication::KAboutApplication( QWidget *parent, const char *name,
 				      bool modal )
@@ -126,21 +127,20 @@ void KAboutApplication::buildDialog( const KAboutData *aboutData )
 
   if(translatorList.count() > 0)
   {
-      KAboutContainer *translatorPage =
-          addScrolledContainerPage( i18n("T&ranslation") );
+      QString text = "<qt>";
 
       QValueList<KAboutTranslator>::ConstIterator it;
       for(it = translatorList.begin(); it != translatorList.end(); ++it)
       {
-          translatorPage->addPerson((*it).name(), (*it).emailAddress(),
-                  0,0);
+	 text += QString("<p>%1<br>&nbsp;&nbsp;&nbsp;"
+			 "<a href=\"mailto:%2\">%2</a></p>")
+	   .arg((*it).name())
+	   .arg((*it).emailAddress())
+	   .arg((*it).emailAddress());
       }
 
-      QLabel *label = new QLabel(KAboutData::aboutTranslationTeam()
-              ,translatorPage);
-	  label->adjustSize();
-	  label->setMinimumSize(label->sizeHint());
-      translatorPage->addWidget(label);
+      text += KAboutData::aboutTranslationTeam() + "</qt>";
+      addTextPage( i18n("T&ranslation"), text, true);
   }
 
   if (!aboutData->license().isEmpty() )
