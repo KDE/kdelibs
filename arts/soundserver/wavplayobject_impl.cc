@@ -45,18 +45,21 @@ public:
 	 * KMedia2 interface
 	 */
 	string description() {
+		return "no description (see wavplayobject_impl.cc)";
 	}
 
 	void description(const string &) {
 	}
 
 	poTime currentTime() {
+		return poTime();
 	}
 
 	void currentTime(const class poTime &) {
 	}
 
     poTime overallTime() {
+		return poTime();
 	}
 
 	poCapabilities capabilities() {
@@ -64,6 +67,7 @@ public:
 	}
 
 	string mediaName() {
+		return "";
 	}
 
 	poState state() {
