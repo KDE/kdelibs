@@ -34,7 +34,6 @@ class QRadioButton;
 class KAccel;
 class KAccelActions;
 class KActionCollection;
-class KActionPtrList;
 class KConfigBase;
 class KGlobalAccel;
 class KKeySequence;
