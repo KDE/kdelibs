@@ -86,7 +86,7 @@ public:
    KProcessPrivate() : 
      usePty(KProcess::NoCommunication),
      addUtmp(false), useShell(false),
-     pty(0)
+     pty(0), priority(0)
    {
    }
 
@@ -96,6 +96,8 @@ public:
 
    KPty *pty;
    const char *user;
+
+   int priority;
 
    QMap<QString,QString> env;
    QString wd;
@@ -196,6 +198,19 @@ KProcess::runPrivileged() const
    return keepPrivs;
 }
 
+bool
+KProcess::setPriority(int prio)
+{
+    if (runs) {
+        if (setpriority(PRIO_PROCESS, pid_, prio))
+            return false;
+    } else {
+        if (prio > 19 || prio < (geteuid() ? getpriority(PRIO_PROCESS, 0) : -20))
+            return false;
+    }
+    d->priority = prio;
+    return true;
+}
 
 KProcess::~KProcess()
 {
@@ -350,6 +365,9 @@ bool KProcess::start(RunMode runmode, Communication comm)
 
         if (!commSetupDoneC())
           kdDebug(175) << "Could not finish comm setup in child!" << endl;
+
+        if (d->priority)
+            setpriority(PRIO_PROCESS, 0, d->priority);
 
         if (!runPrivileged())
         {

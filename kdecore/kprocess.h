@@ -499,6 +499,20 @@ public:
    */
   KPty *pty() const;
 
+  /**
+   * More or less intuitive constants for use with setPriority().
+   */
+  enum { PrioLowest = 20, PrioLow = 10, PrioLower = 5, PrioNormal = 0,
+    PrioHigher = -5, PrioHigh = -10, PrioHighest = -19 };
+
+  /**
+   * Sets the scheduling priority of the process.
+   * @param prio the new priority in the range -20 (high) to 19 (low).
+   * @return false on error; see setpriority(2) for possible reasons.
+   * @since 3.2
+   */
+  bool setPriority(int prio);
+
 signals:
   /**
    * Emitted after the process has terminated when
