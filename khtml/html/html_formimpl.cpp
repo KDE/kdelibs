@@ -1255,13 +1255,6 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
         xPos = me->clientX()-offsetX;
         yPos = me->clientY()-offsetY;
 
-        // since we are not called from a RenderFormElement, the DOMActivate event will not get
-        // sent so we have to do it here
-        if (me->detail() % 2 == 0) // double click
-            dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT,2);
-        else
-            dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT,1);
-
 	me->setDefaultHandled();
     }
 
