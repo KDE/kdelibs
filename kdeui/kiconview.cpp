@@ -323,6 +323,13 @@ void KIconView::contentsMouseReleaseEvent( QMouseEvent *e )
     QIconView::contentsMouseReleaseEvent( e );
 }
 
+void KIconView::setFont( const QFont &font )
+{
+    delete d->fm;
+    d->fm = 0L;
+    QIconView::setFont( font );
+}
+
 QFontMetrics *KIconView::itemFontMetrics() const
 {
     if (!d->fm) {

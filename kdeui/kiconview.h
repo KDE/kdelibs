@@ -74,6 +74,11 @@ public:
    */
   Mode mode() const;
 
+  /**
+   * Reimplemented for internal purposes
+   */
+  virtual void setFont( const QFont & );
+
 signals:
 
   /**
