@@ -75,19 +75,19 @@ class KDockWidgetAbstractHeader : public QFrame
   Q_OBJECT
 public:
 
-  /** 
+  /**
    * Constructs this.
-   * 
+   *
    * @param parent the parent widget (usually a dockwidget)
    * @param name   the object instance name
    */
   KDockWidgetAbstractHeader( KDockWidget* parent, const char* name = 0L );
-  
+
   /**
    * Destructs this.
    */
   virtual ~KDockWidgetAbstractHeader(){};
-  
+
   /** Provides things concerning to switching to toplevel mode. Must be overridden by an inheriting class. */
   virtual void setTopLevel( bool ){};
 
@@ -96,6 +96,10 @@ public:
 
   /** Provides loading the current configuration.  Must be overridden by an inheriting class */
   virtual void loadConfig( KConfig* ){};
+
+private:
+  class KDockWidgetAbstractHeaderPrivate;
+  KDockWidgetAbstractHeaderPrivate *d;
 };
 
 /**
@@ -111,9 +115,9 @@ class KDockWidgetAbstractHeaderDrag : public QFrame
   Q_OBJECT
 public:
 
-  /** 
+  /**
    * Constructs this.
-   * 
+   *
    * @param parent the parent widget (usually a dockwidget header)
    * @param dock   the dockwidget where it belongs to
    * @param name   the object instance name
@@ -127,17 +131,19 @@ public:
   virtual ~KDockWidgetAbstractHeaderDrag(){};
 
   /** @return the dockwidget where this belongs to */
-  KDockWidget* dockWidget(){ return d; }
+  KDockWidget* dockWidget(){ return dw; }
 
 private:
   /** the dockwidget where this belongs to */
-  KDockWidget* d;
+  KDockWidget* dw;
+  class KDockWidgetAbstractHeaderDragPrivate;
+  KDockWidgetAbstractHeaderDragPrivate *d;
 };
 
 /**
  * This special widget is the panel one can grip with the mouses (and member of the dockwidget class set).
  * The widget for dragging, so to speak.
- * Usually it is located in the @ref KDockWidgetHeader. 
+ * Usually it is located in the @ref KDockWidgetHeader.
  * More or less a minor helper class for the dockwidget class set.
  *
  * @author Max Judin (documentation: Falk Brettschneider).
@@ -148,9 +154,9 @@ class KDockWidgetHeaderDrag : public KDockWidgetAbstractHeaderDrag
   Q_OBJECT
 public:
 
-  /** 
+  /**
    * Constructs this.
-   * 
+   *
    * @param parent the parent widget (usually a dockwidget header)
    * @param dock   the dockwidget where it belongs to
    * @param name   the object instance name
@@ -169,6 +175,10 @@ protected:
    * Draws the drag panel (a double line)
    */
   virtual void paintEvent( QPaintEvent* );
+
+private:
+  class KDockWidgetHeaderDragPrivate;
+  KDockWidgetHeaderDragPrivate *d;
 };
 
 /**
@@ -184,9 +194,9 @@ class KDockWidgetHeader : public KDockWidgetAbstractHeader
   Q_OBJECT
 public:
 
-  /** 
+  /**
    * Constructs this.
-   * 
+   *
    * @param parent the parent widget (usually a dockwidget)
    * @param name   the object instance name
    */
@@ -228,24 +238,28 @@ protected:
 
   /** A layout manager for placing the embedded buttons (close and stay) */
   QHBoxLayout* layout;
-  
+
   /** a little button for closing (undocking and hiding) the dockwidget */
   KDockButton_Private* closeButton;
-  
+
   /** a little button for enabling/disabling dragging the dockwidget with the mouse */
   KDockButton_Private* stayButton;
-  
+
   /** a little button for dock back the dockwidget to it's previous dockwidget */
   KDockButton_Private* dockbackButton;
 
   /** the drag panel (double line) */
   KDockWidgetHeaderDrag* drag;
+
+private:
+  class KDockWidgetHeaderPrivate;
+  KDockWidgetHeaderPrivate *d;
 };
 
 /**
- * It just hides the special implementation of a dockwidget tab groups (and is member of the dockwidget class set). 
+ * It just hides the special implementation of a dockwidget tab groups (and is member of the dockwidget class set).
  * An abstraction what it is currently.
- * In general it is like @ref QTabWidget but is more useful for the dockwidget class set.  
+ * In general it is like @ref QTabWidget but is more useful for the dockwidget class set.
  * More or less a minor helper class for the dockwidget class set.
  *
  * @author Max Judin (documentation: Falk Brettschneider).
@@ -265,6 +279,10 @@ public:
    * Destructs a KDockTabGroup.
    */
   virtual ~KDockTabGroup(){};
+
+private:
+  class KDockTabGroupPrivate;
+  KDockTabGroupPrivate *d;
 };
 
 /**
@@ -575,15 +593,15 @@ protected:
   QString toolTipStr;
   /** a string used as title of the tab page when in tab page mode */
   QString tabPageTitle;
-  
+
 private:
-  /** 
+  /**
    * Sets the caption (window title) of the given tab widget.
    *
    * @param g the group (tab) widget
    */
   void setDockTabName( KDockTabGroup* g);
-  
+
   /**
    * Reparent to s or set this to the KDockMainWindow's view if s is that dockmainwindow.
    * If s is O, simply move the widget.
@@ -595,16 +613,16 @@ private:
 
   /** A base class pointer to the header of this dockwidget */
   KDockWidgetAbstractHeader* header;
-  
+
   /** the embedded widget */
   QWidget* widget;
-  
+
   /** the layout manager that takes care about proper resizing and moving the embedded widget and the header */
   QVBoxLayout* layout;
-  
+
   /** the responsible dockmanager */
   KDockManager* manager;
-  
+
   /** an icon for the tab widget header */
   QPixmap* pix;
 
@@ -673,7 +691,7 @@ public:
   virtual ~KDockManager();
 
   /**
-   * Saves the current state of the dockmanager and of all controlled widgets. 
+   * Saves the current state of the dockmanager and of all controlled widgets.
    * State means here to save the geometry, visibility, parents, internal object names, orientation,
    * separator positions, dockwidget-group information, tab widget states (if it is a tab group) and
    * last but not least some necessary things for recovering the dockmainwindow state.
@@ -699,7 +717,7 @@ public:
 
   /**
    * It's more or less a method that catches several events which are interesting for the dockmanager.
-   * Mainly mouse events during the drag process of a dockwidgets are of interest here. 
+   * Mainly mouse events during the drag process of a dockwidgets are of interest here.
    *
    * @param _ the object that sends the event
    * @param _ the event
@@ -737,7 +755,7 @@ public:
 signals:
 
   /**
-   * Signals changes of the docking state of a dockwidget. Usually the dock-toolbar will be updated then. 
+   * Signals changes of the docking state of a dockwidget. Usually the dock-toolbar will be updated then.
    */
   void change();
 
@@ -761,7 +779,7 @@ private slots:
   /**
    * This method assumes a menuitem of the popupmenu for showing/hiding dockwidgets is selected and toggles that state.
    *
-   * @param id the popupmenu id of the selected menuitem 
+   * @param id the popupmenu id of the selected menuitem
    */
   void slotMenuActivated( int id);
 
@@ -784,7 +802,7 @@ private:
   };
 
   /**
-   * Finds the KDockWidget at the position given as parameter 
+   * Finds the KDockWidget at the position given as parameter
    *
    * @param pos global (desktop) position of the wanted dockwidget
    * @return the dockwidget at that position
@@ -845,7 +863,7 @@ private:
   KDockWidget* currentDragWidget;
 
   /**
-   * The target dockwidget where the currentDragWidget is dropped 
+   * The target dockwidget where the currentDragWidget is dropped
    */
   KDockWidget* currentMoveWidget; // widget where mouse moving
 
@@ -860,7 +878,7 @@ private:
   KDockWidget::DockPosition curPos;
 
   /**
-   * A QList of all objects that are important for docking. 
+   * A QList of all objects that are important for docking.
    * Some serve as group widgets of dockwidgets, others encapsulate normal widgets.
    */
   QObjectList* childDock;
@@ -905,6 +923,9 @@ private:
    * An internal list containing data for the menuitems for the visibility popup menu.
    */
   QList<MenuDockData> *menuData;
+
+  class KDockManagerPrivate;
+  KDockManagerPrivate *d;
 };
 
 /**
@@ -943,7 +964,7 @@ private:
  * Additionally, you get a toolbar for showing and hiding the 4 main dockwidgets which are docked to
  * the actual mainwidget (that is usually a dockwidget as well).
  *
- * And last but not least you can use the popupmenu for showing or hiding any controlled dockwidget 
+ * And last but not least you can use the popupmenu for showing or hiding any controlled dockwidget
  * of this class and insert it to your main menu bar or anywhere else.
  *
  * @author Max Judin (documentation: Falk Brettschneider).
@@ -1137,6 +1158,10 @@ protected:
    * (for showing or hiding the 4 docked dockwidgets that are docked to the main dockwidget).
    */
   KToolBar* toolbar;
+
+private:
+  class KDockMainWindowPrivate;
+  KDockMainWindowPrivate *d;
 };
 
 #endif

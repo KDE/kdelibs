@@ -30,20 +30,20 @@
 // private classes and struct declarations
 //-----------------------------------------------------------------------------
 
-struct KDockTabCtl_Private
+struct KDockTabCtl_PrivateStruct
 {
-  KDockTabCtl_Private( QWidget* _widget, int _id )
+  KDockTabCtl_PrivateStruct( QWidget* _widget, int _id )
   { widget = _widget; id = _id; enabled = true; }
-  ~KDockTabCtl_Private(){;}
+  ~KDockTabCtl_PrivateStruct(){;}
 
   QWidget* widget;
   int      id;
   bool     enabled;
 };
 
-struct KDockTabBar_Private
+struct KDockTabBar_PrivateStruct
 {
-  KDockTabBar_Private( int _id, const QString& _label )
+  KDockTabBar_PrivateStruct( int _id, const QString& _label )
   {
     id = _id;
     width = 0;
@@ -54,7 +54,7 @@ struct KDockTabBar_Private
     tooltipString = "";
   }
 
-  ~KDockTabBar_Private()
+  ~KDockTabBar_PrivateStruct()
   {
     if ( pix != 0L ) delete pix;
   }
@@ -222,7 +222,7 @@ void KDockTabBarPainter::drawBuffer()
   int broken = -1;
   bool iconShow = tabBar->iconShow;
 
-  QList<KDockTabBar_Private> *mainData = tabBar->mainData;
+  QList<KDockTabBar_PrivateStruct> *mainData = tabBar->mainData;
   for ( uint k = 0; k < mainData->count(); k++ ){
     int x1 = x;
     int y1 = 2;
@@ -403,7 +403,7 @@ int KDockTabBarPainter::findBarByPos( int x, int y )
 
   KDockTabBar* bar = (KDockTabBar*)parent();
 
-  QList<KDockTabBar_Private> *mainData = bar->mainData;
+  QList<KDockTabBar_PrivateStruct> *mainData = bar->mainData;
   if ( mainData->isEmpty() ) return -1;
 
   int end = 0;
@@ -461,7 +461,7 @@ QRect KDockTabBarPainter::findBarRectByPos( int x, int y)
 
   KDockTabBar* bar = (KDockTabBar*)parent();
 
-  QList<KDockTabBar_Private> *mainData = bar->mainData;
+  QList<KDockTabBar_PrivateStruct> *mainData = bar->mainData;
   if ( mainData->isEmpty() ) return QRect();
 
   int end = 0;
@@ -547,7 +547,7 @@ QString KDockTabBarPainter::tip( const QPoint & p )
 KDockTabCtl::KDockTabCtl(QWidget *parent, const char *name)
 : QWidget(parent, name )
 {
-  mainData = new QList<KDockTabCtl_Private>;
+  mainData = new QList<KDockTabCtl_PrivateStruct>;
   mainData->setAutoDelete( true );
 
   m_autoSetCaption = false;
@@ -580,7 +580,7 @@ int KDockTabCtl::insertPage( QWidget* widget , const QString &label, int id, int
       if ( mainData->at(k)->id > id ) id = mainData->at(k)->id;
     id++;
   }
-  KDockTabCtl_Private* data = new KDockTabCtl_Private( widget, id );
+  KDockTabCtl_PrivateStruct* data = new KDockTabCtl_PrivateStruct( widget, id );
   stack->addWidget( widget, id );
   if( index == -1)
     mainData->append( data );
@@ -600,7 +600,7 @@ int KDockTabCtl::insertPage( QWidget* widget , const QString &label, int id, int
 
 void KDockTabCtl::setPixmap( QWidget* widget, const QPixmap &pix )
 {
-  KDockTabCtl_Private* data = findData(widget);
+  KDockTabCtl_PrivateStruct* data = findData(widget);
   if ( data != 0L ){
     tabs->setPixmap( data->id, pix );
   }
@@ -608,7 +608,7 @@ void KDockTabCtl::setPixmap( QWidget* widget, const QPixmap &pix )
 
 void KDockTabCtl::setToolTip( QWidget* widget, const QString &toolTipStr )
 {
-  KDockTabCtl_Private* data = findData(widget);
+  KDockTabCtl_PrivateStruct* data = findData(widget);
   if ( data != 0L ){
     tabs->setToolTip( data->id, toolTipStr );
   }
@@ -650,9 +650,9 @@ QWidget* KDockTabCtl::getPrevPage( QWidget* widget )
   return found;
 }
 
-KDockTabCtl_Private* KDockTabCtl::findData( QWidget* widget )
+KDockTabCtl_PrivateStruct* KDockTabCtl::findData( QWidget* widget )
 {
-  KDockTabCtl_Private* data = 0L;
+  KDockTabCtl_PrivateStruct* data = 0L;
   for ( uint k = 0; k < mainData->count(); k++ )
     if ( mainData->at(k)->widget == widget ){
       data = mainData->at(k);
@@ -666,9 +666,9 @@ void KDockTabCtl::showTabIcon( bool show )
   tabs->showTabIcon( show );
 }
 
-KDockTabCtl_Private* KDockTabCtl::findData( int id )
+KDockTabCtl_PrivateStruct* KDockTabCtl::findData( int id )
 {
-  KDockTabCtl_Private* data = 0L;
+  KDockTabCtl_PrivateStruct* data = 0L;
   for ( uint k = 0; k < mainData->count(); k++ )
     if ( mainData->at(k)->id == id ){
       data = mainData->at(k);
@@ -679,7 +679,7 @@ KDockTabCtl_Private* KDockTabCtl::findData( int id )
 
 int KDockTabCtl::id( QWidget* widget )
 {
-  KDockTabCtl_Private* data = findData(widget);
+  KDockTabCtl_PrivateStruct* data = findData(widget);
   return data == 0L ? -1:data->id;
 }
 
@@ -696,7 +696,7 @@ int KDockTabCtl::index( QWidget* widget )
 
 QWidget* KDockTabCtl::page( int id )
 {
-  KDockTabCtl_Private* data = findData( id );
+  KDockTabCtl_PrivateStruct* data = findData( id );
   return data == 0L ? 0L:data->widget;
 }
 
@@ -704,7 +704,7 @@ void KDockTabCtl::removePage( QWidget* widget )
 {
   stack->removeWidget( widget );
   widget->hide();
-  KDockTabCtl_Private* data = findData(widget);
+  KDockTabCtl_PrivateStruct* data = findData(widget);
   if ( data != 0L ){
     if ( currentPage == widget ) currentPage = 0L;
     tabs->removeTab( data->id );
@@ -744,13 +744,13 @@ bool KDockTabCtl::eventFilter( QObject* obj, QEvent* e )
 
 QWidget* KDockTabCtl::visiblePage()
 {
-  KDockTabCtl_Private* data = findData( currentPage );
+  KDockTabCtl_PrivateStruct* data = findData( currentPage );
   return  data == 0L ? 0L:data->widget;
 }
 
 void KDockTabCtl::setVisiblePage( QWidget* widget, bool allowDisable )
 {
-  KDockTabCtl_Private* data = findData( widget );
+  KDockTabCtl_PrivateStruct* data = findData( widget );
   if ( data != 0L ){
     if ( currentPage != widget ){
       currentPage = widget;
@@ -765,7 +765,7 @@ void KDockTabCtl::showPage( QWidget* widget, bool allowDisable )
 
   stack->raiseWidget( widget );
 
-  KDockTabCtl_Private* data = findData( widget );
+  KDockTabCtl_PrivateStruct* data = findData( widget );
   if ( data != 0L ) tabs->setCurrentTab( data->id, allowDisable );
 
   emit pageSelected( widget );
@@ -773,13 +773,13 @@ void KDockTabCtl::showPage( QWidget* widget, bool allowDisable )
 
 bool KDockTabCtl::isPageEnabled( QWidget* widget )
 {
-  KDockTabCtl_Private* data = findData( widget );
+  KDockTabCtl_PrivateStruct* data = findData( widget );
   return data == 0L ? false:data->enabled;
 }
 
 void KDockTabCtl::setPageEnabled( QWidget* widget, bool enabled )
 {
-  KDockTabCtl_Private* data = findData( widget );
+  KDockTabCtl_PrivateStruct* data = findData( widget );
   if ( data != 0L )
     if ( data->enabled != enabled ){
       data->enabled = enabled;
@@ -838,7 +838,7 @@ void KDockTabCtl::rightButtonPress( int id , QPoint pos )
 
 void KDockTabCtl::setTabTextColor( QWidget* widget, const QColor &color )
 {
-  KDockTabCtl_Private* data = findData( widget );
+  KDockTabCtl_PrivateStruct* data = findData( widget );
   if ( data != 0L ){
     tabs->setTextColor( data->id, color );
   }
@@ -888,21 +888,21 @@ QFont KDockTabCtl::tabFont()
 
 void KDockTabCtl::setPageCaption( QWidget* widget, const QString &caption )
 {
-  KDockTabCtl_Private* data = findData( widget );
+  KDockTabCtl_PrivateStruct* data = findData( widget );
   if ( data != 0L )
     tabs->setTabCaption( data->id, caption );
 }
 
 QString KDockTabCtl::pageCaption( QWidget* widget )
 {
-  KDockTabCtl_Private* data = findData( widget );
+  KDockTabCtl_PrivateStruct* data = findData( widget );
   if ( data == 0L ) return "";
   return tabs->tabCaption( data->id );
 }
 
 const QColor& KDockTabCtl::tabTextColor( QWidget* widget )
 {
-  KDockTabCtl_Private* data = findData( widget );
+  KDockTabCtl_PrivateStruct* data = findData( widget );
   if ( data == 0L ) return Qt::black;
   return tabs->textColor( data->id );
 }
@@ -934,7 +934,7 @@ KDockTabBar::KDockTabBar( QWidget * parent, const char * name )
   barPainter = new KDockTabBarPainter( this );
   move( 0, 0 );
 
-  mainData = new QList<KDockTabBar_Private>;
+  mainData = new QList<KDockTabBar_PrivateStruct>;
   mainData->setAutoDelete( true );
   _currentTab = -1;
   leftTab = 0;
@@ -963,7 +963,7 @@ void KDockTabBar::paintEvent(QPaintEvent *)
   paint.begin( this );
 
   // find current ( selected ) tab data
-  KDockTabBar_Private* data = 0L;
+  KDockTabBar_PrivateStruct* data = 0L;
   int curx = 2 - barPainter->delta;
   int curWidth = 0;
   for ( uint k = 0; k < mainData->count(); k++ ){
@@ -1012,7 +1012,7 @@ int KDockTabBar::insertTab( const QString &label, int id, int index )
     for ( uint k = 0; k < mainData->count(); k++ )
       if ( mainData->at(k)->id > id ) id = mainData->at(k)->id;
   }
-  KDockTabBar_Private* data = new KDockTabBar_Private( id, label );
+  KDockTabBar_PrivateStruct* data = new KDockTabBar_PrivateStruct( id, label );
   data->textColor = colorGroup().text();
 
   data->width = 4 + fontMetrics().width( label ) + 14;
@@ -1034,9 +1034,9 @@ void KDockTabBar::showTabIcon( bool show )
   tabsRecreate();
 }
 
-KDockTabBar_Private* KDockTabBar::findData( int id )
+KDockTabBar_PrivateStruct* KDockTabBar::findData( int id )
 {
-  KDockTabBar_Private* data = 0L;
+  KDockTabBar_PrivateStruct* data = 0L;
   for ( uint k = 0; k < mainData->count(); k++ )
     if ( mainData->at(k)->id == id ){
       data = mainData->at(k);
@@ -1047,7 +1047,7 @@ KDockTabBar_Private* KDockTabBar::findData( int id )
 
 void KDockTabBar::setPixmap( int id, const QPixmap &pix )
 {
-  KDockTabBar_Private* data = findData( id );
+  KDockTabBar_PrivateStruct* data = findData( id );
   if ( data != 0L ){
     if ( data->pix != 0L ) delete data->pix;
     data->pix = new QPixmap( pix );
@@ -1058,7 +1058,7 @@ void KDockTabBar::setPixmap( int id, const QPixmap &pix )
 
 void KDockTabBar::setToolTip( int id, const QString &toolTipStr )
 {
-  KDockTabBar_Private* data = findData( id );
+  KDockTabBar_PrivateStruct* data = findData( id );
   if ( data != 0L ){
     data->tooltipString = toolTipStr;
   }
@@ -1066,7 +1066,7 @@ void KDockTabBar::setToolTip( int id, const QString &toolTipStr )
 
 void KDockTabBar::setTextColor( int id, const QColor &color )
 {
-  KDockTabBar_Private* data = findData( id );
+  KDockTabBar_PrivateStruct* data = findData( id );
   if ( data != 0L ){
     data->textColor = color;
     repaint( false );
@@ -1075,7 +1075,7 @@ void KDockTabBar::setTextColor( int id, const QColor &color )
 
 void KDockTabBar::removeTab( int id )
 {
-  KDockTabBar_Private* data = findData( id );
+  KDockTabBar_PrivateStruct* data = findData( id );
   if ( data != 0L ){
     if ( _currentTab == data->id )
     {
@@ -1106,7 +1106,7 @@ void KDockTabBar::removeTab( int id )
 
 void KDockTabBar::setCurrentTab( int id, bool allowDisable )
 {
-  KDockTabBar_Private* data = findData( id );
+  KDockTabBar_PrivateStruct* data = findData( id );
   if ( data != 0L )
     if ( (data->enabled || allowDisable ) && _currentTab != data->id )
     {
@@ -1115,7 +1115,7 @@ void KDockTabBar::setCurrentTab( int id, bool allowDisable )
 
       int curx = 2; // _currentTab start here
       for ( uint k = 0; k < mainData->count(); k++ ){
-        KDockTabBar_Private* data  = mainData->at(k);
+        KDockTabBar_PrivateStruct* data  = mainData->at(k);
         if ( data->id == _currentTab ){
           break;
         }
@@ -1156,7 +1156,7 @@ void KDockTabBar::setCurrentTab( int id, bool allowDisable )
 
 void KDockTabBar::setTabEnabled( int id , bool enabled )
 {
-  KDockTabBar_Private* data = findData( id );
+  KDockTabBar_PrivateStruct* data = findData( id );
   if ( data == 0L ) return;
 
   if ( data->enabled != enabled )
@@ -1180,7 +1180,7 @@ void KDockTabBar::setTabEnabled( int id , bool enabled )
 
 bool KDockTabBar::isTabEnabled( int id )
 {
-  KDockTabBar_Private* data = findData( id );
+  KDockTabBar_PrivateStruct* data = findData( id );
   return data == 0L ? false:data->enabled;
 }
 
@@ -1213,7 +1213,7 @@ void KDockTabBar::keyPressEvent( QKeyEvent* e )
     case Key_Left:
       --id;
       while (true){
-        KDockTabBar_Private* data = findData( id );
+        KDockTabBar_PrivateStruct* data = findData( id );
         if ( !data )
           break;
 
@@ -1231,7 +1231,7 @@ void KDockTabBar::keyPressEvent( QKeyEvent* e )
     case Key_Right:
       id++;
       while (true){
-        KDockTabBar_Private* data = findData( id );
+        KDockTabBar_PrivateStruct* data = findData( id );
         if ( !data )
           break;
 
@@ -1381,7 +1381,7 @@ void KDockTabBar::setFont( const QFont &f )
 
 void KDockTabBar::setTabCaption( int id, const QString &caption )
 {
-  KDockTabBar_Private* data = findData( id );
+  KDockTabBar_PrivateStruct* data = findData( id );
   if ( data != 0L ){
     data->label = caption;
     tabsRecreate();
@@ -1390,14 +1390,14 @@ void KDockTabBar::setTabCaption( int id, const QString &caption )
 
 QString KDockTabBar::tabCaption( int id )
 {
-  KDockTabBar_Private* data = findData( id );
+  KDockTabBar_PrivateStruct* data = findData( id );
   return data == 0L ? QString(""):data->label;
 }
 
 void KDockTabBar::tabsRecreate()
 {
   for ( uint k = 0; k < mainData->count(); k++ ){
-    KDockTabBar_Private* data = mainData->at(k);
+    KDockTabBar_PrivateStruct* data = mainData->at(k);
     data->width = 4 + fontMetrics().width( data->label ) + 14;
     if ( iconShow && data->pix != 0L ) data->width += 16 + 4;
   }
@@ -1407,7 +1407,7 @@ void KDockTabBar::tabsRecreate()
 
 const QColor& KDockTabBar::textColor( int id )
 {
-  KDockTabBar_Private* data = findData( id );
+  KDockTabBar_PrivateStruct* data = findData( id );
   if ( data != 0L ){
     return data->textColor;
   }

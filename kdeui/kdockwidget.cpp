@@ -511,7 +511,7 @@ void KDockMainWindow::readDockConfig( KConfig* c, QString group )
 KDockWidgetAbstractHeaderDrag::KDockWidgetAbstractHeaderDrag( KDockWidgetAbstractHeader* parent, KDockWidget* dock, const char* name )
 :QFrame( parent, name )
 {
-  d = dock;
+  dw = dock;
   installEventFilter( dock->dockManager() );
 }
 /*************************************************************************/

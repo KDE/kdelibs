@@ -43,8 +43,8 @@ class QWidgetStack;
 class QBoxLayout;
 class QPushButton;
 
-struct KDockTabCtl_Private;
-struct KDockTabBar_Private;
+struct KDockTabCtl_PrivateStruct;
+struct KDockTabBar_PrivateStruct;
 class KDockTabBarPainter;
 class KDockDynTabBarToolTip;
 
@@ -263,7 +263,7 @@ private:
   void updateHeight();
 
   /** For internal use */
-  KDockTabBar_Private* findData( int id );
+  KDockTabBar_PrivateStruct* findData( int id );
   /** For internal use */
   int tabsWidth();
   /** For internal use */
@@ -271,7 +271,7 @@ private:
 
   TabPos tabPos;
   KDockTabBarPainter* barPainter;
-  QList<KDockTabBar_Private> *mainData;
+  QList<KDockTabBar_PrivateStruct> *mainData;
   int _currentTab;
   int leftTab;
 
@@ -285,6 +285,9 @@ private:
   bool rightscroll;
   bool leftscroll;
   bool iconShow;
+
+  class KDockTabBarPrivate;
+	KDockTabBarPrivate *d;
 };
 
 /**
@@ -318,6 +321,9 @@ private:
   int mousePressTab;
   int delta;
   KDockDynTabBarToolTip* dynToolTip;
+
+  class KDockTabBarPainterPrivate;
+	KDockTabBarPainterPrivate *d;
 
 protected:
 
@@ -358,9 +364,9 @@ protected:
 class KDockTabCtl : public QWidget
 {
   Q_OBJECT
-  
+
 public:
-  
+
   /**
    * Constructs a dock-tab control object.
    */
@@ -657,12 +663,12 @@ protected:
   /**
    * Returns the appropriate data for the widget from the parameter list.
    */
-  KDockTabCtl_Private* findData( QWidget* );
+  KDockTabCtl_PrivateStruct* findData( QWidget* );
 
   /**
    * Returns the appropriate data for the widget from the parameter list described by its id.
    */
-  KDockTabCtl_Private* findData( int id );
+  KDockTabCtl_PrivateStruct* findData( int id );
 
   /**
    * Shows the tab page.
@@ -686,10 +692,10 @@ protected:
 
   /**
    * An internal list for managing the tab pages. It stores data items for every tab page in the tab bar.
-   * An data item is of type KDockTabCtl_Private (a struct) that contains the widget, its id and information
+   * An data item is of type KDockTabCtl_PrivateStruct (a struct) that contains the widget, its id and information
    * about whether it is enabled or disabled.
    */
-  QList<KDockTabCtl_Private> *mainData;
+  QList<KDockTabCtl_PrivateStruct> *mainData;
 
   /**
    * A pointer to the widget that is the current tab page in the covered tab bar.
@@ -709,6 +715,10 @@ protected:
   KDockTabBar::TabPos tabPos;
 
   bool m_autoSetCaption;
+
+private:
+  class KDockTabCtlPrivate;
+  KDockTabCtlPrivate *d;
 };
 
 #endif
