@@ -251,13 +251,13 @@ Completion StringProtoFunc::execute(const List &args)
     u = s.value();
     u2 = a0.toString().value();
     i = p0 = 0;
-    /* TODO: regexps with backtracking, special cases */
+    /* TODO: regexps with backtracking, special cases */    
     while ((pos = u.find(u2, p0)) >= 0) {
       result.put(UString::from(i), String(u.substr(p0, pos-p0)));
-      p0 = pos + 1;
+      p0 = pos + u2.size();
       i++;
     }
-    if (p0 < len - 1)
+    if (p0 < len)
       result.put(UString::from(i++), String(u.substr(p0)));
     result.put("length", i);
     break;
