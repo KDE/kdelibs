@@ -509,7 +509,7 @@ void DockContainer::load(KConfig* cfg,const QString& group_or_prefix)
   cfg->setGroup(group_or_prefix+QString("::%1").arg(parent()->name()));
 
   if (cfg->readBoolEntry("overlapMode"))
-    activateOverlapMode(m_tb->width());
+    activateOverlapMode( m_vertical?m_tb->width():m_tb->height() );
   else
     deactivateOverlapMode();
 
