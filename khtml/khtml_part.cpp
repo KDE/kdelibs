@@ -2927,6 +2927,7 @@ bool KHTMLPart::findTextNext()
     return false;
   }
 
+  view()->updateFindAheadTimeout();
   long options = 0;
   if ( d->m_findDialog ) // 0 when we close the dialog
   {

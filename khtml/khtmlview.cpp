@@ -1336,6 +1336,46 @@ bool KHTMLView::dispatchKeyEventHelper( QKeyEvent *_ke, bool keypress )
 
 void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 {
+#ifndef KHTML_NO_TYPE_AHEAD_FIND
+	if(d->typeAheadActivated)
+	{
+		// type-ahead find aka find-as-you-type
+		if(_ke->key() == Key_BackSpace)
+		{
+			d->findString = d->findString.left(d->findString.length() - 1);
+
+			if(!d->findString.isEmpty())
+			{
+				findAhead(false);
+			}
+			else
+			{
+				findTimeout();
+			}
+
+			d->timer.start(3000, true);
+			_ke->accept();
+			return;
+		}
+		else if(_ke->key() == Key_Escape)
+		{
+			findTimeout();
+
+			_ke->accept();
+			return;
+		}
+		else if(_ke->text().isEmpty() == false)
+		{
+			d->findString += _ke->text();
+
+			findAhead(true);
+
+			d->timer.start(3000, true);
+			_ke->accept();
+			return;
+		}
+	}
+#endif // KHTML_NO_TYPE_AHEAD_FIND
 
 #ifndef KHTML_NO_CARET
     if (m_part->isEditable() || m_part->isCaretMode()
@@ -1374,52 +1414,7 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
     }
 
 #ifndef KHTML_NO_TYPE_AHEAD_FIND
-	if(d->typeAheadActivated)
-	{
-		// type-ahead find aka find-as-you-type
-		if(_ke->key() == Key_BackSpace)
-		{
-			d->findString = d->findString.left(d->findString.length() - 1);
-
-			if(!d->findString.isEmpty())
-			{
-				findAhead(false);
-			}
-			else
-			{
-				findTimeout();
-			}
-
-			d->timer.start(3000, true);
-			_ke->accept();
-			return;
-		}
-		else if(_ke->key() == KStdAccel::findNext())
-		{ // part doesn't get this key event because of the keyboard grab
-			m_part->findTextNext();
-			d->timer.start(3000, true);
-			_ke->accept();
-			return;
-		}
-		else if(_ke->key() == Key_Escape)
-		{
-			findTimeout();
-
-			_ke->accept();
-			return;
-		}
-		else if(_ke->text().isEmpty() == false)
-		{
-			d->findString += _ke->text();
-
-			findAhead(true);
-
-			d->timer.start(3000, true);
-			_ke->accept();
-			return;
-		}
-	}
-	else if(_ke->key() == '\'' || _ke->key() == '/')
+	if((_ke->key() == '\'' || _ke->key() == '/') && !d->typeAheadActivated)
 	{
 		if(_ke->key() == '\'')
 		{
@@ -1437,7 +1432,6 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 		m_part->findTextBegin();
 		d->typeAheadActivated = true;
 		d->timer.start(3000, true);
-		grabKeyboard();
 		_ke->accept();
 		return;
 	}
@@ -1593,7 +1587,6 @@ void KHTMLView::findTimeout()
 #ifndef KHTML_NO_TYPE_AHEAD_FIND
 	d->typeAheadActivated = false;
 	d->findString = "";
-	releaseKeyboard();
 	m_part->setStatusBarText(i18n("Find stopped."), KHTMLPart::BarDefaultText);
 #endif // KHTML_NO_TYPE_AHEAD_FIND
 }
@@ -1633,6 +1626,12 @@ void KHTMLView::findAhead(bool increase)
 
 	m_part->setStatusBarText(status.arg(d->findString.lower()),
 	                         KHTMLPart::BarDefaultText);
+}
+
+void KHTMLView::updateFindAheadTimeout()
+{
+    if( d->typeAheadActivated )
+        d->timer.start( 3000, true );
 }
 
 #endif // KHTML_NO_TYPE_AHEAD_FIND
