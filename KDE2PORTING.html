@@ -57,6 +57,7 @@ As a start you should have a look at doc/porting.doc in the Qt package.<P>
 <A HREF="#KFileDialog">KFileDialog - General Stuff</A><BR>
 <A HREF="#KFileDialogPreview">KFileDialog - Preview Mode</A><BR>
 <A HREF="#ImageEffects">Image Effects</A><BR>
+<A HREF="#KAudio">KAudio (kaudio.h)</A><BR>
 
 
 
@@ -770,6 +771,39 @@ Now do:<BR>
 <TABLE><TR><TD WIDTH=10%></TD><TD>  KImageEffect::dither(image, palette, ncols);</TD></TR></TABLE><P>
 
 Kurt Granroth <<A HREF="mailto:granroth@kde.org">granroth@kde.org</A>>
+
+<H5><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H5>
+
+<A NAME="KAudio"></A><H3>KAudio (kaudio.h)</H3>
+The KAudio class no longer exists. Here are your options for porting.
+<p>
+<ul>
+<li>notifications like "you have got new mail"
+<p>
+The way to go for this one is to use the KNotify API, which will allow
+users to reconfigure how your application should sound. On the other hand,
+they will also be able to disable specific sounds, rather let the events
+log to a file, and so on. You can provide an rc file with the default
+configuration. (Include "knotifyclient.h" and use the KNotifyClient class).
+<p>
+<li>very simple cases
+<p>
+On the other hand, if you just want a really small solution, there is the
+KAudioPlayer class (declared kaudioplayer.h), which has a static member
+function for playing, like
+<p>
+<pre>
+   KAudioPlayer::play("/var/samples/foo.wav");
+</pre>
+<p>
+<li>multimedia apps
+<p>
+If you are writing "real multimedia apps", you may also have a look at the
+even more advanced sound/multimedia support, that using the aRts/MCOP
+libraries directly can offer you.
+<p>
+</ul>
+Stefan Westerfeld <A HREF="mailto:stefan@space.twc.de">stefan@space.twc.de</A>
 
 <H5><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H5>
 
