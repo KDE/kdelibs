@@ -35,6 +35,7 @@
 <!ENTITY Shift  "<keycap>Umschalt</keycap>">
 <!ENTITY Strg "<keycap>Strg</keycap>"><!-- ctrl -->
 <!ENTITY Umschalt "<keycap>Umschalt</keycap>"> <!-- Shift -->
+<!ENTITY Tab "<keycap>Tab</keycap>"> <!-- Tab -->
 <!ENTITY usw    "<abbrev>usw.</abbrev>">
 <!ENTITY weltzeit "<application>Weltzeituhr</application>" ><!-- kworldwatch
  -->
