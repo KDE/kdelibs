@@ -173,6 +173,27 @@ class kdbgstream {
         return *this;
     }
     /**
+     * Prints the given value.
+     * @param i the long long to print
+     * @return this stream
+     */
+    kdbgstream &operator<<(Q_LLONG i) {
+        if (!print) return *this;
+        QString tmp; tmp.setNum(i); output += tmp;
+        return *this;
+    }
+    /**
+     * Prints the given value.
+     * @param i the unsigned long long to print
+     * @return this stream
+     */
+    kdbgstream &operator<<(Q_ULLONG i) {
+        if (!print) return *this;
+        QString tmp; tmp.setNum(i); output += tmp;
+        return *this;
+    }
+
+    /**
      * Flushes the output.
      */
     void flush(); //AB: maybe this should be virtual! would save some trouble for some 3rd party projects
@@ -453,6 +474,16 @@ class kndbgstream {
      * @return this stream
      */
     kndbgstream& operator<<(unsigned long) { return *this; }
+    /**
+     * Does nothing.
+     * @return this stream
+     */
+    kndbgstream& operator<<(Q_LLONG) { return *this; }
+    /**
+     * Does nothing.
+     * @return this stream
+     */
+    kndbgstream& operator<<(Q_ULLONG) { return *this; }
     /**
      * Does nothing.
      * @return this stream
