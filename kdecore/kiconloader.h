@@ -117,6 +117,8 @@ public:
      * @param path_store If not null, the path of the icon is stored here.
      * @param canReturnNull Can return a null pixmap? If false, the
      * "unknown" pixmap is returned when no appropriate icon has been found.
+     * @return the QPixmap. Can be null when not found, depending on 
+     *         @p canReturnNull.
      */
     QPixmap loadIcon(const QString& name, KIcon::Group group, int size=0,
 		     int state=KIcon::DefaultState, QString *path_store=0L,
@@ -133,10 +135,23 @@ public:
      * @param canReturnNull Can return a null iconset? If false, iconset
      * containing the "unknown" pixmap is returned when no appropriate icon has
      * been found.
+     * @return the icon set. Can be null when not found, depending on 
+     *          @canReturnNull.
      */
     QIconSet loadIconSet(const QString& name, KIcon::Group group, int size,
                          bool canReturnNull);
+
     // KDE4 merge as (const QString&,KIcon::Group,int=0,bool=false);
+    /**
+     * Creates an icon set, that will do on-demand loading of the icon.
+     * Loading itself is done by calling @ref loadIcon .
+     *
+     * @param name The name of the icon, without extension.
+     * @param group The icon group. This will specify the size of and effects to
+     * be applied to the icon.
+     * @param size If nonzero, this overrides the size specified by @p group.
+     * @return the icon set. Can be null when not found
+     */
     QIconSet loadIconSet(const QString& name, KIcon::Group group, int size=0);
 
     /**
@@ -145,7 +160,10 @@ public:
      * @param group_or_size If positive, search icons whose size is
      * specified by the icon group @p group_or_size. If negative, search
      * icons whose size is - @p group_or_size.
-     * @param canReturnNull Can return a null pixamp?
+     * @param canReturnNull Can return a null string? If not, a path to the
+     *                      "unknown" icon will be returned.
+     * @return the path of an icon, can be null or the "unknown" icon when
+     *         not found, depending on @p canReturnNull.
      */
     QString iconPath(const QString& name, int group_or_size,
 		     bool canReturnNull=false) const;
@@ -155,7 +173,7 @@ public:
      * @param name The name of the icon.
      * @param group The icon group. See @ref loadIcon().
      * @param size Override the default size for @p group.
-     * @return A QMovie object.
+     * @return A QMovie object. Can be null if not found.
      */
     QMovie loadMovie(const QString& name, KIcon::Group group, int size=0) const;
 
@@ -185,6 +203,7 @@ public:
      * context.
      * @param group_or_size The icon group or size. See @ref #iconPath.
      * @param context The icon context.
+     * @return a list of all icons
      */
     QStringList queryIcons(int group_or_size, KIcon::Context context=KIcon::Any) const;
 
@@ -200,9 +219,17 @@ public:
     QStringList queryIconsByContext(int group_or_size,
 				    KIcon::Context context=KIcon::Any) const;
 
+    /**
+     * Returns a list of all icons (*.png or *.xpm extension) in the
+     * given directory.
+     * @param iconsDir the directory to search in
+     * @return A QStringList containing the icon paths
+     */
     QStringList queryIconsByDir( const QString& iconsDir ) const;
 
     /**
+     * Returns the current size of the group.
+     * @param group the group to check
      * @return the current size for an icon group.
      */
     int currentSize(KIcon::Group group) const;
@@ -210,28 +237,36 @@ public:
     /**
      * Returns a pointer to the current theme. Can be used to query
      * available and default sizes for groups.
+     * @return a pointer to the current theme. 0 if no theme set.
      */
     KIconTheme *theme() const;
 
     /**
      * Returns a pointer to the KIconEffect object used by the icon loader.
+     * @return the KIconEffect.
      */
     KIconEffect *iconEffect() const;
 
     /**
-     * Called by KInstance::newIconLoader to reconfigure the icon loader
+     * Called by KInstance::newIconLoader to reconfigure the icon loader.
+     * @param _appname the new application name
+     * @param _dirs the new standard directories. If 0, the directories
+     *              from @ref KGlobal will be taken.
      */
     void reconfigure( const QString& _appname, KStandardDirs *_dirs );
 
     /**
      * Returns the unknown icon. An icon that is used when no other icon
      * can be found.
+     * @return the unknown pixmap
      */
     static QPixmap unknown();
 
     /**
      * Returns if the user wants to use blend the icons with the background
      *  using the alpha channel information for a given group.
+     * @param group the group to check
+     * @return true if alpha blending is desired
      */
     bool alphaBlending( KIcon::Group group ) const;
 
