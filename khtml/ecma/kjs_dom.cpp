@@ -243,6 +243,9 @@ Value DOMNode::getValueProperty(ExecState *exec, int token) const
       docimpl->updateRendering();
       if ( v )
         docimpl->view()->layout();
+  
+      // refetch in case the renderer changed    
+      rend = node.handle() ? node.handle()->renderer() : 0L;
     }
 
     switch (token) {
