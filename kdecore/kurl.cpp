@@ -378,16 +378,7 @@ KURL::KURL( const char * url, int encoding_hint )
 
 KURL::KURL( const KURL& _u )
 {
-  m_strProtocol = _u.m_strProtocol;
-  m_strUser = _u.m_strUser;
-  m_strPass = _u.m_strPass;
-  m_strHost = _u.m_strHost;
-  m_strPath = _u.m_strPath;
-  m_strPath_encoded = _u.m_strPath_encoded;
-  m_strQuery_encoded = _u.m_strQuery_encoded;
-  m_strRef_encoded = _u.m_strRef_encoded;
-  m_bIsMalformed = _u.m_bIsMalformed;
-  m_iPort = _u.m_iPort;
+  *this = _u;
 }
 
 QDataStream & operator<< (QDataStream & s, const KURL & a)
@@ -422,16 +413,7 @@ QDataStream & operator>> (QDataStream & s, KURL & a)
 #ifndef QT_NO_NETWORKPROTOCOL
 KURL::KURL( const QUrl &u )
 {
-  m_strProtocol = u.protocol();
-  m_strUser = u.user();
-  m_strPass = u.password();
-  m_strHost = u.host();
-  m_strPath = u.path( FALSE );
-  m_strPath_encoded = QString::null;
-  m_strQuery_encoded = u.query();
-  m_strRef_encoded = u.ref();
-  m_bIsMalformed = !u.isValid();
-  m_iPort = u.port();
+  *this = u;
 }
 #endif
 
