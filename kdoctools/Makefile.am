@@ -53,7 +53,7 @@ uninstall-local:
 	-rm -rf $(DESTDIR)$(kde_datadir)/ksgmltools2/docbook
 
 kgzipfilter.cpp: 
-	$(LN_S) $(srcdir)/../kioslave/gzip/kgzipfilter.cpp .
+	-$(LN_S) $(srcdir)/../kioslave/gzip/kgzipfilter.cpp .
 
 kbzip2filter.cpp:
-	$(LN_S) $(srcdir)/../kioslave/bzip2/kbzip2filter.cpp .
+	-$(LN_S) $(srcdir)/../kioslave/bzip2/kbzip2filter.cpp .
