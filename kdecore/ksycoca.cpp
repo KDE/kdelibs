@@ -159,7 +159,7 @@ KSycoca::KSycoca( bool /* dummy */ )
 }
 
 static void delete_ksycoca_self() {
-  delete KSycoca::self();
+  delete KSycoca::_self;
 }
 
 KSycoca * KSycoca::self()
