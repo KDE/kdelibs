@@ -51,6 +51,8 @@ class KLineEdit;
  */
 class KListView : public QListView
 {
+  friend class KListViewItem;
+
   Q_OBJECT
   Q_ENUMS( SelectionModeExt )
   Q_PROPERTY( bool fullWidth READ fullWidth WRITE setFullWidth )
