@@ -1,7 +1,7 @@
 // klocaletest.cpp     -*- C++ -*-
 //
 // $Id$
-// 
+//
 // Author: Jacek Konieczny <jajcus@zeus.polsl.gliwice.pl>
 //
 
@@ -16,6 +16,7 @@
 #include <klocale.h>
 #include <kapp.h>
 #include <kcharsets.h>
+#include <kdebug.h>
 
 #include "klocaletest.h"
 
@@ -39,7 +40,7 @@ Test::~Test()
 void Test::createFields()
 {
   QString string;
-  
+
   string+="Selected languages: ";
   string+=KGlobal::locale()->languages()+"\n";
 
@@ -65,7 +66,7 @@ void Test::createFields()
   string+=QString::fromLatin1("No = ")+i18n("No")+"\n";
   string+=QString::fromLatin1("Help = ")+i18n("Help")+"\n";
   string+=QString::fromLatin1("Cancel = ")+i18n("Cancel")+"\n";
-  
+
   label=new QLabel(string,this,"Label");
   label->setGeometry(10,10,400,400);
   label->setFont(KGlobalSettings::generalFont());
@@ -74,7 +75,16 @@ void Test::createFields()
 
 int main( int argc, char ** argv )
 {
+  KLocale::setMainCatalogue("kdelibs");
   KApplication a( argc, argv, "klocaletest" );
+
+  kdDebug() << "setLanguage C\n";
+  KGlobal::locale()->setLanguage("C");
+  kdDebug() << "C: " << i18n("yes") << " " << i18n("QAccel", "Space") << endl;
+
+  kdDebug() << "setLanguage de\n";
+  KGlobal::locale()->setLanguage("de");
+  kdDebug() << "de: " << i18n("yes") << " " << i18n("QAccel", "Space") << endl;
   Test m;
 
   a.setMainWidget( &m );
