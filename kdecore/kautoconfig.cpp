@@ -286,7 +286,7 @@ void KAutoConfig::resetSettings(){
       QVariant defaultValue = d->defaultValues[groupWidget];
       if(defaultValue != propertyMap->property(groupWidget)){
         propertyMap->setProperty(groupWidget, defaultValue);
-        emit void widgetModified();
+        emit (widgetModified());
 	d->changed = true;
       }
     }
