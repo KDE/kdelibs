@@ -224,7 +224,7 @@ bool ResourceFile::asyncSave( Ticket* )
     emit savingError( this, i18n( "Unable to open file '%1'." ).arg( mTempFile ) );
     return false;
   }
-  
+
   mFormat->saveAll( addressBook(), this, &file );
   file.close();
 
@@ -360,7 +360,7 @@ void ResourceFile::removeAddressee( const Addressee &addr )
   QFile::remove( QFile::encodeName( locateLocal( "data", "kabc/logos/" ) + addr.uid() ) );
   QFile::remove( QFile::encodeName( locateLocal( "data", "kabc/sounds/" ) + addr.uid() ) );
 
-  mAddressees.remove( addr );
+  mAddrMap.erase( addr.uid() );
 }
 
 void ResourceFile::cleanUp()

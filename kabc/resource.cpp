@@ -44,12 +44,12 @@ Resource *Ticket::resource()
 
 struct Resource::Iterator::IteratorData
 {
-  Addressee::List::Iterator mIt;
+  Addressee::Map::Iterator mIt;
 };
 
 struct Resource::ConstIterator::ConstIteratorData
 {
-  Addressee::List::ConstIterator mIt;
+  Addressee::Map::ConstIterator mIt;
 };
 
 Resource::Iterator::Iterator()
@@ -81,12 +81,12 @@ Resource::Iterator::~Iterator()
 
 const Addressee &Resource::Iterator::operator*() const
 {
-  return *(d->mIt);
+  return d->mIt.data();
 }
 
 Addressee &Resource::Iterator::operator*()
 {
-  return *(d->mIt);
+  return d->mIt.data();
 }
 
 Resource::Iterator &Resource::Iterator::operator++()
@@ -208,7 +208,7 @@ Resource::~Resource()
 Resource::Iterator Resource::begin()
 {
   Iterator it;
-  it.d->mIt = mAddressees.begin();
+  it.d->mIt = mAddrMap.begin();
 
   return it;
 }
@@ -217,9 +217,9 @@ Resource::ConstIterator Resource::begin() const
 {
   ConstIterator it;
 #if QT_VERSION >= 0x030200
-  it.d->mIt = mAddressees.constBegin();
+  it.d->mIt = mAddrMap.constBegin();
 #else
-  it.d->mIt = mAddressees.begin();
+  it.d->mIt = mAddrMap.begin();
 #endif
 
   return it;
@@ -228,7 +228,7 @@ Resource::ConstIterator Resource::begin() const
 Resource::Iterator Resource::end()
 {
   Iterator it;
-  it.d->mIt = mAddressees.end();
+  it.d->mIt = mAddrMap.end();
 
   return it;
 }
@@ -237,9 +237,9 @@ Resource::ConstIterator Resource::end() const
 {
   ConstIterator it;
 #if QT_VERSION >= 0x030200
-  it.d->mIt = mAddressees.constEnd();
+  it.d->mIt = mAddrMap.constEnd();
 #else
-  it.d->mIt = mAddressees.end();
+  it.d->mIt = mAddrMap.end();
 #endif
 
   return it;
@@ -267,22 +267,20 @@ Ticket *Resource::createTicket( Resource *resource )
 
 void Resource::insertAddressee( const Addressee &addr )
 {
-  mAddressees.append( addr );
+  mAddrMap.insert( addr.uid(), addr );
 }
 
 void Resource::removeAddressee( const Addressee &addr )
 {
-  mAddressees.remove( addr );
+  mAddrMap.erase( addr.uid() );
 }
 
 Addressee Resource::findByUid( const QString &uid )
 {
-  Iterator it;
-  for ( it = begin(); it != end(); ++it ) {
-    if ( uid == (*it).uid() ) {
-      return *it;
-    }
-  }
+  Addressee::Map::iterator itr = mAddrMap.find( uid );
+
+  if ( itr != mAddrMap.end() )
+    return itr.data();
 
   return Addressee();
 }
@@ -307,7 +305,7 @@ Addressee::List Resource::findByEmail( const QString &email )
 
   Iterator it;
   for ( it = begin(); it != end(); ++it ) {
-    mailList = (*it).emails();    
+    mailList = (*it).emails();
     for ( QStringList::Iterator ite = mailList.begin(); ite != mailList.end(); ++ite ) {
       if ( email == (*ite) )
         results.append( *it );
@@ -338,7 +336,7 @@ void Resource::cleanUp()
 
 void Resource::clear()
 {
-  mAddressees.clear();
+  mAddrMap.clear();
 }
 
 #include "resource.moc"

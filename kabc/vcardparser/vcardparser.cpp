@@ -74,7 +74,8 @@ VCard::List VCardParser::parseVCards( const QString& text )
             if ( pair.size() == 1 ) {
                 pair.prepend( "type" );
             }
-            if ( pair[1].contains( ',' ) ) { // parameter in type=x,y,z format
+            //This is pretty much a faster pair[1].contains( ',' )...
+            if ( pair[1].find( ',' ) != -1 ) { // parameter in type=x,y,z format
               QStringList args = QStringList::split( ',', pair[ 1 ] );
               for ( uint j = 0; j < args.count(); ++j )
                 vCardLine.addParameter( pair[0].lower(), args[j] );
@@ -84,7 +85,7 @@ VCard::List VCardParser::parseVCards( const QString& text )
         }
 
         params = vCardLine.parameterList();
-        if ( params.contains( "encoding" ) ) { // have to decode the data
+        if ( params.find( "encoding" ) != params.end() ) { // have to decode the data
           QByteArray input, output;
           input = value.local8Bit();
           if ( vCardLine.parameter( "encoding" ).lower() == "b" )
@@ -139,7 +140,7 @@ QString VCardParser::createVCards( const VCard::List& list )
 
   bool hasEncoding;
 
-  
+
   // iterate over the cards
   for ( cardIt = list.begin(); cardIt != list.end(); ++cardIt ) {
     text.append( "BEGIN:VCARD\r\n" );

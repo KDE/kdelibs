@@ -198,11 +198,11 @@ bool ResourceDir::save( Ticket* )
 {
   kdDebug(5700) << "ResourceDir::save(): '" << mPath << "'" << endl;
 
-  Addressee::List::Iterator it;
+  Addressee::Map::Iterator it;
   bool ok = true;
 
-  for ( it = mAddressees.begin(); it != mAddressees.end(); ++it ) {
-    if ( !(*it).changed() )
+  for ( it = mAddrMap.begin(); it != mAddrMap.end(); ++it ) {
+    if ( !it.data().changed() )
       continue;
 
     QFile file( mPath + "/" + (*it).uid() );
@@ -352,7 +352,7 @@ void ResourceDir::pathChanged()
 void ResourceDir::removeAddressee( const Addressee& addr )
 {
   QFile::remove( mPath + "/" + addr.uid() );
-  mAddressees.remove( addr );
+  mAddrMap.erase( addr.uid() );
 }
 
 void ResourceDir::cleanUp()

@@ -76,6 +76,7 @@ class Addressee
 
   public:
     typedef QValueList<Addressee> List;
+    typedef QMap<QString, Addressee> Map;
 
     /**
       Construct an empty address book entry.

@@ -376,7 +376,7 @@ void ResourceLDAP::removeAddressee( const Addressee &addr )
   ldap_msgfree( res );
 
   if ( ok )
-    mAddressees.remove( addr );
+    mAddrMap.erase( addr.uid() );
 }
 
 void ResourceLDAP::setUser( const QString &user )

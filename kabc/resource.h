@@ -30,7 +30,7 @@ namespace KABC {
 
 /**
  * @short Helper class for handling coordinated save of address books.
- * 
+ *
  * This class is used as helper class for saving address book.
  * @see requestSaveTicket(), save().
  */
@@ -132,7 +132,7 @@ class Resource : public KRES::Resource
     virtual ConstIterator begin() const;
 
     /**
-      This is an overloaded member function, provided for convenience. It 
+      This is an overloaded member function, provided for convenience. It
       behaves essentially like the above function.
      */
     virtual Iterator begin();
@@ -144,7 +144,7 @@ class Resource : public KRES::Resource
     virtual ConstIterator end() const;
 
     /**
-      This is an overloaded member function, provided for convenience. It 
+      This is an overloaded member function, provided for convenience. It
       behaves essentially like the above function.
      */
     virtual Iterator end();
@@ -211,7 +211,7 @@ class Resource : public KRES::Resource
     /**
       Saves all addressees synchronously.
 
-      @param ticket You have to release the ticket later with 
+      @param ticket You have to release the ticket later with
                     releaseSaveTicket() explicitely.
       @return Whether the saving was successfully.
      */
@@ -222,7 +222,7 @@ class Resource : public KRES::Resource
       the savingFinished() or savingError() signal is emitted from within
       this function.
 
-      @param ticket You have to release the ticket later with 
+      @param ticket You have to release the ticket later with
                     releaseSaveTicket() explicitely.
       @return Whether the saving was successfully.
      */
@@ -281,7 +281,7 @@ class Resource : public KRES::Resource
 
   signals:
     /**
-      This signal is emitted when the resource has finished the loading of all 
+      This signal is emitted when the resource has finished the loading of all
       addressees from the backend to the internal cache.
 
       @param resource The pointer to the resource which emitted this signal.
@@ -289,7 +289,7 @@ class Resource : public KRES::Resource
     void loadingFinished( Resource *resource );
 
     /**
-      This signal is emitted when an error occured during loading the 
+      This signal is emitted when an error occured during loading the
       addressees from the backend to the internal cache.
 
       @param resource The pointer to the resource which emitted this signal.
@@ -298,7 +298,7 @@ class Resource : public KRES::Resource
     void loadingError( Resource *resource, const QString &msg );
 
     /**
-      This signal is emitted when the resource has finished the saving of all 
+      This signal is emitted when the resource has finished the saving of all
       addressees from the internal cache to the backend.
 
       @param resource The pointer to the resource which emitted this signal.
@@ -306,7 +306,7 @@ class Resource : public KRES::Resource
     void savingFinished( Resource *resource );
 
     /**
-      This signal is emitted when an error occured during saving the 
+      This signal is emitted when an error occured during saving the
       addressees from the internal cache to the backend.
 
       @param resource The pointer to the resource which emitted this signal.
@@ -316,7 +316,7 @@ class Resource : public KRES::Resource
 
   protected:
     Ticket *createTicket( Resource * );
-    Addressee::List mAddressees;
+    QMap<QString, Addressee> mAddrMap;
 
   private:
     AddressBook *mAddressBook;
