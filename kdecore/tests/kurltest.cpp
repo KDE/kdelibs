@@ -36,12 +36,12 @@ int main(int argc, char *argv[])
   check( "KURL::isMalformed()", emptyURL.isMalformed() ? "TRUE":"FALSE", "TRUE");
   check( "KURL::isValid()", emptyURL.isValid() ? "TRUE":"FALSE", "FALSE");
   check( "KURL::isEmpty()", emptyURL.isEmpty() ? "TRUE":"FALSE", "TRUE");
-  
+
   emptyURL = "";
   check( "KURL::isMalformed()", emptyURL.isMalformed() ? "TRUE":"FALSE", "TRUE");
   check( "KURL::isValid()", emptyURL.isValid() ? "TRUE":"FALSE", "FALSE");
   check( "KURL::isEmpty()", emptyURL.isEmpty() ? "TRUE":"FALSE", "TRUE");
-  
+
   KURL baseURL ("http://www.foo.bar:80" );
   check( "KURL::isMalformed()", baseURL.isMalformed() ? "TRUE":"FALSE", "FALSE");
   KURL url1 ( baseURL, "//www1.foo.bar" );
@@ -295,6 +295,8 @@ int main(int argc, char *argv[])
      check("http: Adding query item", waba2.url(), "http://www.website.com/directory/relative.html?name=harry&age=18");
      waba2.addQueryItem("age", "21");
      check("http: Adding query item", waba2.url(), "http://www.website.com/directory/relative.html?name=harry&age=18&age=21");
+     waba2.addQueryItem("fullname", "Harry Potter");
+     check("http: Adding query item", waba2.url(), "http://www.website.com/directory/relative.html?name=harry&age=18&age=21&fullname=Harry%20Potter");
   }
   {
      KURL waba2( waba1, "?query=test&name=harry");
@@ -356,7 +358,7 @@ int main(int argc, char *argv[])
   check("hasHTMLRef()", waba1.hasHTMLRef()?"true":"false","true");
   check("encodedHtmlRef()", waba1.encodedHtmlRef(),QString::null);
 
-  // URLs who forgot to encode spaces in the query. 
+  // URLs who forgot to encode spaces in the query.
   waba1 = "http://www.kde.org/cgi/test.cgi?hello=My Value";
   check("http: URL with incorrect encoded query", waba1.url(),
         "http://www.kde.org/cgi/test.cgi?hello=My%20Value");
@@ -366,7 +368,7 @@ int main(int argc, char *argv[])
   check("http: URL with ':' in query", waba1.url(),
         "http://www.kde.org/cgi/test.cgi?hello:My%20Value");
 
-  // URLs who forgot to encode spaces in the query. 
+  // URLs who forgot to encode spaces in the query.
   waba1 = "http://www.kde.org/cgi/test.cgi?hello=My Value+20";
   check("http: URL with incorrect encoded query", waba1.url(),
         "http://www.kde.org/cgi/test.cgi?hello=My%20Value+20");
@@ -521,6 +523,12 @@ int main(int argc, char *argv[])
 
   KURL umlaut2("http://www.clever-tanken.de/liste.asp?ort=N%FCrnberg&typ=Diesel", 106);
   check("umlaut2.url()", umlaut2.url(), "http://www.clever-tanken.de/liste.asp?ort=N%FCrnberg&typ=Diesel");
+
+  // Needed for #49616
+  check( "encode_string('C++')", KURL::encode_string( "C++" ), "C%2B%2B" );
+
+  check( "encode_string('%')", KURL::encode_string( "%" ), "%25" );
+  check( "encode_string(':')", KURL::encode_string( ":" ), "%3A" );
 
   KURL smb("smb://domain;username:password@server/share");
   check("smb.isValid()", smb.isValid() ? "true" : "false", "true");
