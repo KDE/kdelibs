@@ -2583,37 +2583,9 @@ void KApplication::setTopWidget( QWidget *topWidget )
   if( !topWidget )
       return;
 
-#ifdef Q_WS_X11 // FIXME(E): Implement for Qt/Embedded
-    Window leader = topWidget->winId();
-    char* argv = const_cast< char* >( KCmdLineArgs::appName());
-    XSetCommand(display, leader, &argv, 1);
-    // this hints thing may go after Qt always sets window_group
-    XWMHints *hints = XGetWMHints(display, topWidget->winId());
-    if (hints)
-    {
-        if (!(hints->flags & WindowGroupHint))
-        {
-            hints->window_group = leader;
-            hints->flags |= WindowGroupHint;
-        }
-        if (!(hints->flags & InputHint))
-        {
-            hints->input = True;
-            hints->flags |= InputHint;
-        }
-        XSetWMHints(display, topWidget->winId(), hints);
-        XFree(reinterpret_cast<char *>(hints));
-    }
-
-#endif
     // set the specified caption
     if ( !topWidget->inherits("KMainWindow") ) { // KMainWindow does this already for us
         topWidget->setCaption( caption() );
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-//#ifndef Q_WS_QWS // FIXME(E): Implement for Qt/Embedded
-        NETWinInfo info(qt_xdisplay(), topWidget->winId(), qt_xrootwin(), NET::WMName );
-        info.setName( caption().utf8().data() );
-#endif
     }
 
     // set the specified icons
