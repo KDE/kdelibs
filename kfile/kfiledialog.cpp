@@ -321,7 +321,12 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     readRecentFiles( KGlobal::config() );
 
     adjustSize();
+    
+    // we set the completionLock to avoid entering pathComboChanged() when
+    // inserting the list of URLs into the combo.
+    d->completionLock = true;
     readConfig( kc, ConfigGroup );
+    d->completionLock = false;
     delete kc;
 
     // FIXME:
@@ -766,6 +771,7 @@ void KFileDialog::urlEntered(const KURL& url)
 	locationEdit->setEditText( filename );
 
     locationEdit->blockSignals( false );
+    d->completionHack = d->pathCombo->currentText();
 }
 
 void KFileDialog::locationActivated( const QString& url )
