@@ -198,8 +198,26 @@ QString KImageIO::type(const QString& filename)
   if (suffix == "gif")
     return "GIF";
 
-  if (suffix == "jpeg")
+  if ( (suffix == "jpeg") || (suffix == "jpg") )
     return "JPEG";
+
+  if ( (suffix == "xpm") || (suffix == "XPM") )
+    return "XPM";
+
+  if ( (suffix == "xbm") || (suffix == "XBM") )
+    return "XBM";
+
+  if ( (suffix == "bmp") || (suffix == "BMP") )
+    return "BMP";
+
+  if ( (suffix == "tiff") || (suffix == "TIFF") )
+    return "TIFF";
 
   return "PNG";
 }
+
+
+
+
+
+

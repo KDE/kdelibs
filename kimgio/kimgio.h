@@ -32,16 +32,44 @@ class KImageIO
 
 public:
 
-	static void registerFormats() { kimgioRegister(); }
-	static bool canWrite(const QString& type);
-	static bool canRead(const QString& type);
+  /**
+   *  Registers all KIMGIO supported formats
+   */
+  static void registerFormats() { kimgioRegister(); }
 
-	enum Mode { Reading, Writing };
-	static QStringList types(Mode mode = Writing);
-	static QString pattern(Mode mode = Reading);
+  /**
+   *  Checks if a special type is supported for writing.
+   */
+  static bool canWrite(const QString& type);
 
-	static QString suffix(const QString& type);
-	static QString type(const QString& filename);
+  /**
+   *  Checks if a special type is supported for reading.
+   */
+  static bool canRead(const QString& type);
+
+  enum Mode { Reading, Writing };
+
+  /**
+   *  Dont know.
+   */
+  static QStringList types(Mode mode = Writing);
+
+  /**
+   *  Retrieves a list of patterns of all KIMGIO supported formats.
+   *
+   *  @param mode Possible values are Reading (default) and Writing.
+   */
+  static QString pattern(Mode mode = Reading);
+
+  /**
+   *  Retrieves the suffix of an image type.
+   */
+  static QString suffix(const QString& type);
+
+  /**
+   *  Returns the type of given filename.
+   */
+  static QString type(const QString& filename);
 };
 
 /**
