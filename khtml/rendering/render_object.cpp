@@ -459,8 +459,7 @@ RenderBlock *RenderObject::containingBlock() const
     // the case below should never happen...
     if(!o || !o->isRenderBlock()) {
         if(!isCanvas()) {
-//#ifndef NDEBUG
-#if 0
+#ifndef NDEBUG
             kdDebug( 6040 ) << this << ": " << renderName() << "(RenderObject): No containingBlock!" << endl;
             kdDebug( 6040 ) << kdBacktrace() << endl;
             const RenderObject* p = this;
@@ -469,7 +468,6 @@ RenderBlock *RenderObject::containingBlock() const
 #endif
         }
         return 0L;
-        return const_cast<RenderBlock *>( static_cast<const RenderBlock*>(this) );
     }
 
     return static_cast<RenderBlock*>( o );
@@ -909,7 +907,8 @@ void RenderObject::setStyle(RenderStyle *style)
 
     //qDebug("new style, diff=%d", d);
 
-    if ( d == RenderStyle::Visible && m_style && m_style->outlineWidth() > style->outlineWidth() )
+    if ( d == RenderStyle::Visible && m_parent && m_style &&
+         m_style->outlineWidth() > style->outlineWidth() )
         repaint();
 
     if ( m_style &&
@@ -925,7 +924,24 @@ void RenderObject::setStyle(RenderStyle *style)
     m_paintBackground = false;
     // no support for changing the display type dynamically... object must be
     // detached and re-attached as a different type
+
     //m_inline = true;
+
+    if ( style->position() == STATIC ) {
+        if ( isRoot() )
+            style->setZIndex( 0 );
+        else
+            style->setHasAutoZIndex();
+    }
+
+    if ( layer() && style && m_style ) {
+        if ( ( m_style->hasAutoZIndex() != style->hasAutoZIndex() ||
+               m_style->zIndex() != style->zIndex() ||
+               m_style->visibility() != style->visibility() ) ) {
+            layer()->stackingContext()->dirtyZOrderLists();
+            layer()->dirtyZOrderLists();
+        }
+    }
 
     RenderStyle *oldStyle = m_style;
     m_style = style;
@@ -953,15 +969,6 @@ void RenderObject::setStyle(RenderStyle *style)
     setShouldPaintBackgroundOrBorder(m_style->backgroundColor().isValid() ||
                                         m_style->hasBorder() || nb );
     m_hasFirstLine = (style->getPseudoStyle(RenderStyle::FIRST_LINE) != 0);
-
-    if ( layer() && style && m_style ) {
-        if ( ( m_style->hasAutoZIndex() != style->hasAutoZIndex() ||
-               m_style->zIndex() != style->zIndex() ||
-               m_style->visibility() != style->visibility() ) ) {
-            layer()->stackingContext()->dirtyZOrderLists();
-            layer()->dirtyZOrderLists();
-        }
-    }
 
     if ( d >= RenderStyle::Position && m_parent ) {
         //qDebug("triggering relayout");
@@ -1277,20 +1284,7 @@ bool RenderObject::mouseInside() const
     return m_mouseInside;
 }
 
-void RenderObject::setHoverAndActive(NodeInfo& info, bool oldinside, bool inside)
-{
-    DOM::NodeImpl* elt = element();
-    if (elt) {
-        bool oldactive = elt->active();
-        if (oldactive != (inside && info.active()))
-            elt->setActive(inside && info.active());
-        if ((oldinside != mouseInside() && style()->affectedByHoverRules()) ||
-            (oldactive != elt->active() && style()->affectedByActiveRules()))
-            elt->setChanged();
-    }
-}
-
-bool RenderObject::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, bool inBox)
+bool RenderObject::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, HitTestAction hitTestAction, bool inside)
 {
     int tx = _tx + xPos();
     int ty = _ty + yPos();
@@ -1298,16 +1292,38 @@ bool RenderObject::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty,
         static_cast<RenderBox*>(this)->relativePositionOffset(tx, ty);
 
     bool checkPoint = style()->visibility() != HIDDEN && (_y >= ty) && (_y < ty + height());
-    bool inside = (checkPoint && (_x >= tx) && (_x < tx + width())) || isBody() || isRoot();
+    inside |= (checkPoint && (_x >= tx) && (_x < tx + width())) || isBody() || isRoot();
+    bool inOverflowRect = inside;
+    if ( !inOverflowRect ) {
+        QRect overflowRect( tx, ty, overflowWidth(), overflowHeight() );
+        inOverflowRect = overflowRect.contains( _x, _y );
+    }
 
     // ### table should have its own, more performant method
-    if (overhangingContents() || isInline() || isCanvas() || isTableRow() || isTableSection() || isPositioned() || checkPoint || mouseInside() ) {
+    if (hitTestAction != HitTestSelfOnly &&
+        ( !isRenderBlock() || !static_cast<RenderBlock*>( this )->isPointInScrollbar( _x, _y, _tx, _ty ) ) &&
+        overhangingContents() || inOverflowRect || isInline() || isCanvas() ||
+        isTableRow() || isTableSection() || inside || mouseInside() ||
+        (childrenInline() && firstChild() && firstChild()->style()->display() == COMPACT )) {
+        if ( hitTestAction == HitTestChildrenOnly )
+            inside = false;
+        if ( style()->hidesOverflow() && layer() )
+            layer()->subtractScrollOffset(tx, ty);
         for (RenderObject* child = lastChild(); child; child = child->previousSibling())
-            if (!child->layer() && child->nodeAtPoint(info, _x, _y, tx, ty, false))
+            if (!child->layer() && child->nodeAtPoint(info, _x, _y, tx, ty, hitTestAction))
                 inside = true;
     }
 
     if (inside) {
+        if (!info.innerNode() && !isInline() && continuation()) {
+            // We are in the margins of block elements that are part of a continuation.  In
+            // this case we're actually still inside the enclosing inline element that was
+            // split.  Go ahead and set our inner node accordingly.
+            info.setInnerNode(continuation()->element());
+            if (!info.innerNonSharedNode())
+                info.setInnerNonSharedNode(continuation()->element());
+        }
+
         if (info.innerNode() && info.innerNode()->renderer() &&
             !info.innerNode()->renderer()->isInline() && element() && isInline()) {
             // Within the same layer, inlines are ALWAYS fully above blocks.  Change inner node.
@@ -1324,27 +1340,6 @@ bool RenderObject::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty,
         if(!info.innerNonSharedNode() && element())
             info.setInnerNonSharedNode(element());
 
-        if (!info.URLElement()) {
-            RenderObject* p = (!isInline() && continuation()) ? continuation() : this;
-            while (p) {
-                if (p->element() && p->element()->hasAnchor()) {
-                    info.setURLElement(p->element());
-                    break;
-                }
-                if (!isFloatingOrPositioned()) break;
-                p = p->parent();
-            }
-        }
-    }
-
-    if (!info.readonly()) {
-        // lets see if we need a new style
-        bool oldinside = mouseInside();
-        setMouseInside(inside);
-
-        setHoverAndActive(info, oldinside, inside);
-        if (!isInline() && continuation())
-            continuation()->setHoverAndActive(info, oldinside, inside);
     }
 
     return inside;

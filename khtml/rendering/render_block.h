@@ -151,7 +151,7 @@ public:
     int leftRelOffset(int y, int fixedOffset, int *heightRemaining = 0) const;
     int leftOffset(int y) const { return leftRelOffset(y, leftOffset()); }
 
-    virtual bool nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty, bool inside=false);
+    virtual bool nodeAtPoint(NodeInfo& info, int x, int y, int _tx, int _ty, HitTestAction hitTestAction = HitTestAll, bool inside=false);
 
     bool isPointInScrollbar(int x, int y, int tx, int ty);
 

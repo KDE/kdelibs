@@ -349,6 +349,8 @@ public:
 
     QStringList availableStyleSheets() const { return m_availableSheets; }
 
+    NodeImpl* hoverNode() const { return m_hoverNode; }
+    void setHoverNode(NodeImpl *newHoverNode);
     NodeImpl *focusNode() const { return m_focusNode; }
     void setFocusNode(NodeImpl *newFocusNode);
 
@@ -472,6 +474,7 @@ protected:
     HTMLMode hMode;
 
     QColor m_textColor;
+    NodeImpl *m_hoverNode;
     NodeImpl *m_focusNode;
 
     IdNameMapping *m_attrNames;

@@ -53,7 +53,7 @@ public:
     virtual void paintObject(QPainter *, int x, int y, int w, int h,
                              int tx, int ty, PaintAction paintAction);
 
-    virtual bool nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, bool inside);
+    virtual bool nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, HitTestAction hitTestAction, bool inside);
 
     virtual void calcMinMaxWidth();
 

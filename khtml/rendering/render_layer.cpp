@@ -45,7 +45,7 @@
 #include <kdebug.h>
 #include <assert.h>
 #include "khtmlview.h"
-#include "render_block.h"
+#include "render_canvas.h"
 #include "render_arena.h"
 #include "render_replaced.h"
 #include "xml/dom_docimpl.h"
@@ -162,8 +162,7 @@ RenderLayer *RenderLayer::stackingContext() const
     return curr;
 }
 
-RenderLayer*
-RenderLayer::enclosingPositionedAncestor() const
+RenderLayer* RenderLayer::enclosingPositionedAncestor() const
 {
     RenderLayer* curr = parent();
     for ( ; curr && !curr->m_object->isCanvas() && !curr->m_object->isRoot() &&
@@ -174,14 +173,12 @@ RenderLayer::enclosingPositionedAncestor() const
 }
 
 #ifdef APPLE_CHANGES
-bool
-RenderLayer::isTransparent()
+bool RenderLayer::isTransparent()
 {
     return m_object->style()->opacity() < 1.0f;
 }
 
-RenderLayer*
-RenderLayer::transparentAncestor()
+RenderLayer* RenderLayer::transparentAncestor()
 {
     RenderLayer* curr = parent();
     for ( ; curr && curr->m_object->style()->opacity() == 1.0f; curr = curr->parent());
@@ -304,8 +301,7 @@ void RenderLayer::insertOnlyThisLayer()
         curr->moveLayers(m_parent, this);
 }
 
-void
-RenderLayer::convertToLayerCoords(const RenderLayer* ancestorLayer, int& x, int& y) const
+void RenderLayer::convertToLayerCoords(const RenderLayer* ancestorLayer, int& x, int& y) const
 {
     if (ancestorLayer == this)
         return;
@@ -334,22 +330,19 @@ RenderLayer::convertToLayerCoords(const RenderLayer* ancestorLayer, int& x, int&
     y += yPos();
 }
 
-void
-RenderLayer::scrollOffset(int& x, int& y)
+void RenderLayer::scrollOffset(int& x, int& y)
 {
     x += scrollXOffset();
     y += scrollYOffset();
 }
 
-void
-RenderLayer::subtractScrollOffset(int& x, int& y)
+void RenderLayer::subtractScrollOffset(int& x, int& y)
 {
     x -= scrollXOffset();
     y -= scrollYOffset();
 }
 
-void
-RenderLayer::scrollToOffset(int x, int y, bool updateScrollbars)
+void RenderLayer::scrollToOffset(int x, int y, bool updateScrollbars)
 {
     if (x < 0) x = 0;
     if (y < 0) y = 0;
@@ -365,7 +358,6 @@ RenderLayer::scrollToOffset(int x, int y, bool updateScrollbars)
     // layer or contains fixed backgrounds, etc.).
     m_scrollX = x;
     m_scrollY = y;
-    qDebug("scrolling to %d/%d", m_scrollX, m_scrollY);
 
     // FIXME: Fire the onscroll DOM event.
 
@@ -380,8 +372,7 @@ RenderLayer::scrollToOffset(int x, int y, bool updateScrollbars)
     }
 }
 
-void
-RenderLayer::updateScrollPositionFromScrollbars()
+void RenderLayer::updateScrollPositionFromScrollbars()
 {
     bool needUpdate = false;
     int newX = m_scrollX;
@@ -429,8 +420,7 @@ RenderLayer::showScrollbar(Qt::Orientation o, bool show)
 	m_vBar = sb;
 }
 
-int
-RenderLayer::verticalScrollbarWidth()
+int RenderLayer::verticalScrollbarWidth()
 {
     if (!m_vBar)
         return 0;
@@ -438,8 +428,7 @@ RenderLayer::verticalScrollbarWidth()
     return m_vBar->width();
 }
 
-int
-RenderLayer::horizontalScrollbarHeight()
+int RenderLayer::horizontalScrollbarHeight()
 {
     if (!m_hBar)
         return 0;
@@ -447,8 +436,7 @@ RenderLayer::horizontalScrollbarHeight()
     return m_hBar->height();
 }
 
-void
-RenderLayer::moveScrollbarsAside()
+void RenderLayer::moveScrollbarsAside()
 {
     QScrollView* scrollView = m_object->element()->getDocument()->view();
   if (m_hBar)
@@ -457,8 +445,7 @@ RenderLayer::moveScrollbarsAside()
         scrollView->addChild(m_vBar, 0, -50000);
 }
 
-void
-RenderLayer::positionScrollbars(const QRect& absBounds)
+void RenderLayer::positionScrollbars(const QRect& absBounds)
 {
 #ifdef APPLE_CHANGES
     if (m_vBar) {
@@ -513,8 +500,7 @@ RenderLayer::positionScrollbars(const QRect& absBounds)
 #define LINE_STEP   10
 #define PAGE_KEEP   40
 
-void
-RenderLayer::checkScrollbarsAfterLayout()
+void RenderLayer::checkScrollbarsAfterLayout()
 {
     updateLayerPosition();
 
@@ -581,8 +567,7 @@ RenderLayer::checkScrollbarsAfterLayout()
     }
 }
 
-void
-RenderLayer::paintScrollbars(QPainter* p, const QRect& damageRect)
+void RenderLayer::paintScrollbars(QPainter* p, const QRect& damageRect)
 {
 #ifdef APPLE_CHANGES
     if (m_hBar)
@@ -618,8 +603,7 @@ void RenderLayer::layout()
        updateZOrderLists();
 }
 
-void
-RenderLayer::paint(QPainter *p, const QRect& damageRect, bool selectionOnly)
+void RenderLayer::paint(QPainter *p, const QRect& damageRect, bool selectionOnly)
 {
     paintLayer(this, p, damageRect, selectionOnly);
 }
@@ -651,8 +635,7 @@ static void restoreClip(QPainter* p, const QRect& paintDirtyRect, const QRect& c
     p->restore();
 }
 
-void
-RenderLayer::paintLayer(RenderLayer* rootLayer, QPainter *p,
+void RenderLayer::paintLayer(RenderLayer* rootLayer, QPainter *p,
                         const QRect& paintDirtyRect, bool selectionOnly)
 {
     // Calculate the clip rects we should use.
@@ -740,6 +723,10 @@ RenderLayer::paintLayer(RenderLayer* rootLayer, QPainter *p,
         }
     }
 
+    p->setPen(QPen(QColor("yellow"), 1, Qt::DotLine));
+    p->setBrush( Qt::NoBrush );
+    p->drawRect(m_x, m_y, width(), height());
+
 #ifdef APPLE_CHANGES
     // End our transparency layer
     if (isTransparent())
@@ -747,15 +734,23 @@ RenderLayer::paintLayer(RenderLayer* rootLayer, QPainter *p,
 #endif
 }
 
-bool
-RenderLayer::nodeAtPoint(RenderObject::NodeInfo& info, int x, int y)
+bool RenderLayer::nodeAtPoint(RenderObject::NodeInfo& info, int x, int y)
 {
 #ifdef APPLE_CHANGES
     // Clear our our scrollbar variable
     RenderLayer::gScrollBar = 0;
 #endif
 
-    QRect damageRect(m_x, m_y, width(), height());
+    int stx = m_x;
+    int sty = m_y;
+
+#warning HACK
+    if (renderer()->isCanvas()) {
+        stx += static_cast<RenderCanvas*>(renderer())->view()->contentsX();
+        sty += static_cast<RenderCanvas*>(renderer())->view()->contentsY();
+    }
+
+    QRect damageRect(stx,sty, width(), height());
     RenderLayer* insideLayer = nodeAtPointForLayer(this, info, x, y, damageRect);
 
     // Now determine if the result is inside an anchor.
@@ -767,15 +762,14 @@ RenderLayer::nodeAtPoint(RenderObject::NodeInfo& info, int x, int y)
     }
 
     // Next set up the correct :hover/:active state along the new chain.
-    //updateHoverActiveState(info);
+    updateHoverActiveState(info);
 
     // Now return whether we were inside this layer (this will always be true for the root
     // layer).
     return insideLayer;
 }
 
-RenderLayer*
-RenderLayer::nodeAtPointForLayer(RenderLayer* rootLayer, RenderObject::NodeInfo& info,
+RenderLayer* RenderLayer::nodeAtPointForLayer(RenderLayer* rootLayer, RenderObject::NodeInfo& info,
                                  int xMousePos, int yMousePos, const QRect& hitTestRect)
 {
     // Calculate the clip rects we should use.
@@ -802,13 +796,15 @@ RenderLayer::nodeAtPointForLayer(RenderLayer* rootLayer, RenderObject::NodeInfo&
     }
 
     // Next we want to see if the mouse pos is inside the child RenderObjects of the layer.
+
     if (containsPoint(xMousePos, yMousePos, fgRect) &&
         renderer()->nodeAtPoint(info, xMousePos, yMousePos,
                                 layerBounds.x() - renderer()->xPos(),
                                 layerBounds.y() - renderer()->yPos(),
-                                /*HitTestChildrenOnly*/ true))
+                                HitTestChildrenOnly)) {
 	if (info.innerNode() != m_object->element())
 	    return this;
+    }
 
     // Now check our negative z-index children.
     if (m_negZOrderList) {
@@ -826,7 +822,7 @@ RenderLayer::nodeAtPointForLayer(RenderLayer* rootLayer, RenderObject::NodeInfo&
         renderer()->nodeAtPoint(info, xMousePos, yMousePos,
                                 layerBounds.x() - renderer()->xPos(),
                                 layerBounds.y() - renderer()->yPos(),
-                                /*HitTestSelfOnly*/ true))
+                                HitTestSelfOnly))
         return this;
 
     // No luck.
@@ -928,7 +924,6 @@ bool RenderLayer::containsPoint(int x, int y, const QRect& damageRect) const
             damageRect.contains(x, y));
 }
 
-#if 0
 // This code has been written to anticipate the addition of CSS3-::outside and ::inside generated
 // content (and perhaps XBL).  That's why it uses the render tree and not the DOM tree.
 static RenderObject* hoverAncestor(RenderObject* obj)
@@ -948,9 +943,8 @@ static RenderObject* commonAncestor(RenderObject* obj1, RenderObject* obj2)
 
     return 0;
 }
-#endif
 
-#if 0
+
 void RenderLayer::updateHoverActiveState(RenderObject::NodeInfo& info)
 {
     // We don't update :hover/:active state when the info is marked as readonly.
@@ -1001,7 +995,6 @@ void RenderLayer::updateHoverActiveState(RenderObject::NodeInfo& info)
         }
     }
 }
-#endif
 
 // Sort the buffer from lowest z-index to highest.  The common scenario will have
 // most z-indices equal, so we optimize for that case (i.e., the list will be mostly

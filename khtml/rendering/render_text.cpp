@@ -657,7 +657,7 @@ InlineTextBox * RenderText::findInlineTextBox( int offset, int &pos, bool checkF
     return s;
 }
 
-bool RenderText::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, bool inBox)
+bool RenderText::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, HitTestAction /*hitTestAction*/, bool inBox)
 {
     assert(parent());
 
@@ -681,8 +681,6 @@ bool RenderText::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, b
             s = si < (int) m_lines.count()-1 ? m_lines[++si] : 0;
         }
     }
-
-    setMouseInside(inside);
 
     // #### ported over from Safari. Can this happen at all? (lars)
     if (inside && element()) {

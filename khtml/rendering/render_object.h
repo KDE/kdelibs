@@ -72,6 +72,12 @@ typedef enum {
     PaintActionSelection
 } PaintAction;
 
+typedef enum {
+    HitTestAll = 0,
+    HitTestSelfOnly = 1,
+    HitTestChildrenOnly = 2
+} HitTestAction;
+
 namespace DOM {
     class HTMLAreaElementImpl;
     class DOMString;
@@ -394,8 +400,7 @@ public:
     virtual FindSelectionResult checkSelectionPoint( int _x, int _y, int _tx, int _ty,
                                                      DOM::NodeImpl*&, int & offset,
 						     SelPointState & );
-    virtual bool nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty, bool inBox);
-    void setHoverAndActive(NodeInfo& info, bool oldinside, bool inside);
+    virtual bool nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty, HitTestAction = HitTestAll, bool inside = false);
 
     // set the style of the object.
     virtual void setStyle(RenderStyle *style);

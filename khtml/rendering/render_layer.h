@@ -186,7 +186,7 @@ public:
     bool intersectsDamageRect(const QRect& layerBounds, const QRect& damageRect) const;
     bool containsPoint(int x, int y, const QRect& damageRect) const;
 
-    //void updateHoverActiveState(RenderObject::NodeInfo& info);
+    void updateHoverActiveState(RenderObject::NodeInfo& info);
 
     void detach(RenderArena* renderArena);
 
