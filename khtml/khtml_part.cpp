@@ -2110,8 +2110,6 @@ void KHTMLPart::checkCompleted()
   {
     // DA: Do not start redirection for frames here! That action is
     // deferred until the parent emits a completed signal.
-    // DF: The test for == Object is due to the test in processObjectRequest before
-    // connecting to slotParentCompleted.
     if ( parentPart() == 0 )
       d->m_redirectionTimer.start( 1000 * d->m_delayRedirect, true );
 
