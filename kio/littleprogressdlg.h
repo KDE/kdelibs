@@ -21,22 +21,21 @@ class KIOJob;
 *
 * Usage of KIOLittleProgressDialog is little different.
 * This dialog will be a part of some application.
-*
+* <pre>
+* // create a dialog
 * KIOLittleProgressDlg *littleProgress;
 * littleProgress = new KIOLittleProgressDlg( statusBar() );
 * statusBar()->insertWidget( littleProgress, littleProgress->width() , 0 );
-*
+* ...
+* // create KIOJob and set the progress
 * KIOJob* job;
-* // set the KIOJob's GUI type to little progress widget
-* job->setGUImode( KIOJob::LITTLE );
-
-* // this connects job with a little progress dialog
-* job->connectProgress( littleProgress );
-*
-* Call @ref #clean() method when you are finished with IO ( e.g. in a slot that
-* is connected to KIOJob's signal @ref #sigFinished or @ref #sigError
+* job->setGUImode( KIOJob::CUSTOM );
+* job->setProgressDlg( littleProgress );
+* ...
+* </pre>
 *
 * @short IO progress widget for embedding in a statusbar.
+* @author Matej Koss <koss@miesto.sk>
 */ 
 class KIOLittleProgressDlg : public KIOProgressBase {
 
