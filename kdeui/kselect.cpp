@@ -60,6 +60,16 @@ void KXYSelector::setRange( int _minX, int _minY, int _maxX, int _maxY )
 	maxY = _maxY;
 }
 
+void KXYSelector::setXValue( int _xPos )
+{
+  setValues(_xPos, yPos);
+}
+
+void KXYSelector::setYValue( int _yPos )
+{
+  setValues(xPos, _yPos);
+}
+
 void KXYSelector::setValues( int _xPos, int _yPos )
 {
 	xPos = _xPos;

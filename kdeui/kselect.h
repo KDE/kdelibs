@@ -41,7 +41,9 @@
 class KXYSelector : public QWidget
 {
   Q_OBJECT
-
+  Q_PROPERTY( int xValue READ xValue WRITE setXValue )
+  Q_PROPERTY( int yValue READ yValue WRITE setYValue )
+  
 public:
   /**
    * Constructs a two-dimensional selector widget which
@@ -56,8 +58,23 @@ public:
   /**
    * Sets the current values in horizontal and
    * vertical direction.
+   * @param xPos the horizontal value
+   * @param yPos the veritcal value
    */
   void setValues( int xPos, int yPos );
+  
+  /**
+   * Sets the current horizontal value
+   * @param xPos the horizontal value
+   */
+  void setXValue( int xPos );
+  
+  /**
+   * Sets the current vertical value
+   * @param yPos the veritcal value
+   */
+  void setYValue( int yPos );
+  
   /**
    * Sets the range of possible values.
    */
