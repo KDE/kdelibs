@@ -58,6 +58,7 @@ static KStdAccelInfo g_infoStdAccel[] =
 	{ Cut,                 I18N_NOOP("Cut"), 0,      Qt::CTRL+Qt::Key_X, 0, Qt::SHIFT+Qt::Key_Delete, 0, KShortcut(), false },
 	{ Copy,                I18N_NOOP("Copy"), 0,     Qt::CTRL+Qt::Key_C, 0, Qt::CTRL+Qt::Key_Insert, 0, KShortcut(), false },
 	{ Paste,               I18N_NOOP("Paste"), 0,    Qt::CTRL+Qt::Key_V, 0, Qt::SHIFT+Qt::Key_Insert, 0, KShortcut(), false },
+	{ PasteSelection,      I18N_NOOP("Paste Selection"), 0, 0, 0, Qt::CTRL+Qt::SHIFT+Qt::Key_Insert, 0, KShortcut(), false },
 	{ SelectAll,           "SelectAll", I18N_NOOP("Select All"), Qt::CTRL+Qt::Key_A, 0, 0, 0, KShortcut(), false },
 	{ Deselect,            I18N_NOOP("Deselect"), 0, Qt::CTRL+Qt::SHIFT+Qt::Key_A, 0, 0, 0, KShortcut(), false },
 	{ DeleteWordBack,      "DeleteWordBack", I18N_NOOP("Delete Word Backwards"), Qt::CTRL+Qt::Key_Backspace, 0, 0, 0, KShortcut(), false },
@@ -267,6 +268,7 @@ const KShortcut& quit()                  { return shortcut( Quit ); }
 const KShortcut& cut()                   { return shortcut( Cut ); }
 const KShortcut& copy()                  { return shortcut( Copy ); }
 const KShortcut& paste()                 { return shortcut( Paste ); }
+const KShortcut& pasteSelection()        { return shortcut( PasteSelection ); }
 const KShortcut& deleteWordBack()        { return shortcut( DeleteWordBack ); }
 const KShortcut& deleteWordForward()     { return shortcut( DeleteWordForward ); }
 const KShortcut& undo()                  { return shortcut( Undo ); }

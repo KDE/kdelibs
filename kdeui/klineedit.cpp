@@ -437,21 +437,9 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
         paste();
         return;
     }
-
-    // support for pasting Selection with Shift-Ctrl-Insert
-    else if ( e->key() == Key_Insert &&
-              (e->state() == (ShiftButton | ControlButton)) )
+    else if ( KStdAccel::pasteSelection().contains( key ) )
     {
-#if QT_VERSION >= 0x030100
         QString text = QApplication::clipboard()->text( QClipboard::Selection);
-#else
-        QClipboard *clip = QApplication::clipboard();
-        bool oldMode = clip->selectionModeEnabled();
-        clip->setSelectionMode( true );
-        QString text = QApplication::clipboard()->text();
-        clip->setSelectionMode( oldMode );
-#endif
-
         insert( text );
         deselect();
         return;

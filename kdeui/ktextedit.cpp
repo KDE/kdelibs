@@ -160,9 +160,7 @@ void KTextEdit::keyPressEvent( QKeyEvent *e )
       e->accept();
       return;
     }
-
-    else if ( e->key() == Key_Insert &&
-              (e->state() == (ShiftButton | ControlButton)) )
+    else if ( KStdAccel::pasteSelection().contains( key ) )
     {
         QString text = QApplication::clipboard()->text( QClipboard::Selection);
         if ( !text.isEmpty() )

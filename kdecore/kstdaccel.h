@@ -70,7 +70,10 @@ namespace KStdAccel
     FullScreen,
 
     // Text Navigation since 3.3
-    BackwardWord, ForwardWord, BeginningOfLine, EndOfLine
+    BackwardWord, ForwardWord, BeginningOfLine, EndOfLine,
+
+    // since 3.4
+    PasteSelection
 
 #ifndef KDE_NO_COMPAT
     , WhatThis = WhatsThis
@@ -201,6 +204,13 @@ namespace KStdAccel
    * @return the shortcut of the standard accelerator
    */
   const KShortcut& paste();
+
+  /**
+   * Paste the selection at mouse/cursor position. Default: Ctrl-Shift-Insert
+   * @return the shortcut of the standard accelerator
+   * @since 3.4
+   */
+  const KShortcut& pasteSelection();
 
   /**
    * Reload. Default: Ctrl-A
