@@ -27,6 +27,8 @@
 #include <kaction.h>
 #include <kcompletion.h>
 
+#include <kdirlister.h>
+
 #include <kfileview.h>
 #include <kfileitem.h>
 #include <kfile.h>
