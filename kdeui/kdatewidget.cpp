@@ -119,6 +119,7 @@ void KDateWidget::init(const QDate& date)
 
 KDateWidget::~KDateWidget()
 {
+  delete d;
 }
 
 // ### HPB change QDate to const QDate & in KDE 4.0
