@@ -285,7 +285,7 @@ KSpellConfig::fillInDialog ()
   // get list of available dictionaries
   if (iclient == KS_CLIENT_ISPELL) 
     getAvailDictsIspell();
-  else 
+  else
     getAvailDictsAspell();
 
   // select the used dictionary in the list
@@ -328,7 +328,7 @@ void KSpellConfig::getAvailDictsIspell () {
     dir.setFile ("/usr/local/lib/ispell");
   if (!dir.exists() || !dir.isDir()) return;
 
-  kdDebug(750) << "KSpellConfig::getAvailDictsIspell " 
+  kdDebug(750) << "KSpellConfig::getAvailDictsIspell "
 	       << dir.filePath() << " " << dir.dirPath() << endl;
 
   QDir thedir (dir.filePath(),"*.aff");
@@ -345,23 +345,23 @@ void KSpellConfig::getAvailDictsIspell () {
       // remove .aff
       if (fname.right(4) == ".aff") fname.remove (fname.length()-4,4);
 
-      if (interpret (fname, lname, hname))
+      if (interpret (fname, lname, hname) && langfnames[0].isEmpty())
 	{ // This one is the KDE default language
 	  // so place it first in the lists (overwrite "Default")
 
-	  langfnames.remove ( langfnames.begin() );
+   	  langfnames.remove ( langfnames.begin() );
 	  langfnames.prepend ( fname );
 
 	  hname=i18n("default spelling dictionary"
 		     ,"Default - %1 [%2]").arg(hname).arg(fname);
-	      
+
 	  dictcombo->changeItem (hname,0);
 	}
       else
 	{
 	  langfnames.append (fname);
 	  hname=hname+" ["+fname+"]";
-	  
+
 	  dictcombo->insertItem (hname);
 	}
     }
@@ -382,13 +382,13 @@ void KSpellConfig::getAvailDictsAspell () {
     dir.setFile ("/usr/local/lib/aspell");
   if (!dir.exists() || !dir.isDir()) return;
 
-  kdDebug(750) << "KSpellConfig::getAvailDictsAspell " 
+  kdDebug(750) << "KSpellConfig::getAvailDictsAspell "
 	       << dir.filePath() << " " << dir.dirPath() << endl;
 
   QDir thedir (dir.filePath(),"*");
 
   kdDebug(750) << "KSpellConfig" << thedir.path() << "\n" << endl;
-  kdDebug(750) << "entryList().count()=" 
+  kdDebug(750) << "entryList().count()="
 	       << thedir.entryList().count() << endl;
 
   for (unsigned int i=0; i<thedir.entryList().count(); i++)
@@ -399,29 +399,29 @@ void KSpellConfig::getAvailDictsAspell () {
       // consider only simple dicts without '-' in the name
       // FIXME: may be this is wrong an the list should contain
       // all *.multi files too, to allow using special dictionaries
-      if (fname[0] != '.' &&  fname.find('-') < 0) 
+      if (fname[0] != '.' &&  fname.find('-') < 0)
 	{
 
 	  // remove .multi
 	  if (fname.right(6) == ".multi") fname.remove (fname.length()-6,6);
 
-	  if (interpret (fname, lname, hname))
+	  if (interpret (fname, lname, hname) && langfnames[0].isEmpty())
 	    { // This one is the KDE default language
 	      // so place it first in the lists (overwrite "Default")
-	      
+
 	      langfnames.remove ( langfnames.begin() );
 	      langfnames.prepend ( fname );
-	      
+
 	      hname=i18n("default spelling dictionary"
 			 ,"Default - %1 [%2]").arg(hname).arg(fname);
-	      
+
 	      dictcombo->changeItem (hname,0);
 	    }
 	  else
 	    {
 	      langfnames.append (fname);
 	      hname=hname+" ["+fname+"]";
-	      
+
 	      dictcombo->insertItem (hname);
 	    }
 	}
