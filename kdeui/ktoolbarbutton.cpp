@@ -24,6 +24,7 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+#include <string.h>
 
 #include "ktoolbarbutton.h"
 #include "ktoolbar.h"
@@ -283,21 +284,31 @@ void KToolBarButton::setIcon( const QString &icon, bool generate )
 {
   d->m_iconName = icon;
   d->m_iconSize = d->m_parent->iconSize();
-  setPixmap( BarIcon(icon, d->m_iconSize), generate );
+  // QObject::name() return "const char *" instead of QString.
+  if (!strcmp(d->m_parent->name(), "mainToolBar"))
+    setPixmap( MainBarIcon(icon, d->m_iconSize, KIcon::ActiveState), generate );
+  else
+    setPixmap( BarIcon(icon, d->m_iconSize, KIcon::ActiveState), generate );
 }
 
 void KToolBarButton::setDisabledIcon( const QString &icon )
 {
   d->m_disabledIconName = icon;
   d->m_iconSize         = d->m_parent->iconSize();
-  setDisabledPixmap( BarIcon(icon, d->m_iconSize) );
+  if (!strcmp(d->m_parent->name(), "mainToolBar"))
+    setDisabledPixmap( MainBarIcon(icon, d->m_iconSize, KIcon::DisabledState) );
+  else
+    setDisabledPixmap( BarIcon(icon, d->m_iconSize, KIcon::DisabledState) );
 }
 
 void KToolBarButton::setDefaultIcon( const QString &icon )
 {
   d->m_defaultIconName = icon;
   d->m_iconSize        = d->m_parent->iconSize();
-  setDefaultPixmap( BarIcon(icon, d->m_iconSize) );
+  if (!strcmp(d->m_parent->name(), "mainToolBar"))
+    setDefaultPixmap( MainBarIcon(icon, d->m_iconSize, KIcon::DefaultState) );
+  else
+    setDefaultPixmap( BarIcon(icon, d->m_iconSize, KIcon::DefaultState) );
 }
 
 void KToolBarButton::setPixmap( const QPixmap &pixmap )

@@ -21,6 +21,8 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include <string.h>
+
 #include <qpainter.h>
 #include <qtooltip.h>
 #include <qdrawutil.h>
@@ -161,9 +163,15 @@ void KToolBar::init()
   mode->insertItem( i18n("Text under icons"), CONTEXT_TEXTUNDER );
 
   QPopupMenu *size = new QPopupMenu( context, "size" );
+  size->insertItem( i18n("Default"), CONTEXT_ICONSIZES );
   // Query the current theme for available sizes
   KIconTheme *theme = KGlobal::instance()->iconLoader()->theme();
-  QValueList<int> avSizes = theme->querySizes( d->m_honorStyle ? KIcon::MainToolbar : KIcon::Toolbar );
+  QValueList<int> avSizes;
+  if (!strcmp(name(), "mainToolBar"))
+    avSizes = theme->querySizes( KIcon::MainToolbar);
+  else
+    avSizes = theme->querySizes( KIcon::Toolbar);
+
   QValueList<int>::Iterator it;
   for (it=avSizes.begin(); it!=avSizes.end(); it++)
   {
@@ -246,9 +254,9 @@ void KToolBar::slotReadConfig()
   else
     icontext = IconOnly;
 
-  // now get the size conditionally
-  iconsize = KGlobal::instance()->iconLoader()->currentSize(
-      d->m_honorStyle ? KIcon::MainToolbar : KIcon::Toolbar );
+  // Use the default icon size for toolbar icons. This is not specified in 
+  // the [Toolbar style] section but in the [Icons] section.
+  iconsize = 0;
 
   // okay, that's done.  now we look for a toolbar specific entry
   grpToolbar = name() + QString::fromLatin1(" Toolbar style");
@@ -263,8 +271,8 @@ void KToolBar::slotReadConfig()
     // now we always read in the IconText property
     icontext = (IconText)config->readNumEntry(attrIconText, icontext);
 
-    // now get the size
-    iconsize = config->readNumEntry(attrSize, iconsize);
+    // now get the size: FIXME: Sizes are not yet saved. 
+    // iconsize = config->readNumEntry(attrSize, iconsize);
   }
 
   // revert back to the old group
@@ -2495,7 +2503,7 @@ void KToolBar::ContextCallback( int )
       setIconText( IconTextBottom );
       break;
     default:
-      if ( i > CONTEXT_ICONSIZES )
+      if ( i >= CONTEXT_ICONSIZES )
       {
           setIconSize( i - CONTEXT_ICONSIZES );
       } else
