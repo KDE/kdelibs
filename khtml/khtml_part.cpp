@@ -584,8 +584,6 @@ bool KHTMLPart::restoreURL( const KURL &url )
 
 bool KHTMLPart::openURL( const KURL &url )
 {
-  KHTMLFactory::vLinks()->insert( url.url() );
-
   kdDebug( 6050 ) << "KHTMLPart::openURL " << url.url() << endl;
 
   d->m_redirectionTimer.stop();
@@ -1217,6 +1215,8 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
   d->m_bCleared = false;
   d->m_cacheId = 0;
   d->m_bComplete = false;
+
+  KHTMLFactory::vLinks()->insert( url.url() );
 
   // ###
   //stopParser();
