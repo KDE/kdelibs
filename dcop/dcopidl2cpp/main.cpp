@@ -45,6 +45,10 @@ int main( int argc, char** argv )
         fprintf( stderr, "dcopidl2cpp appears to be linked to Qt 1 instead of Qt >= 2 ! Aborting.\n" );
         exit(1);
     }
+    if ( argc < 2 ) {
+	usage();
+	return 1;
+    }
     int argpos = 1;
     bool generate_skel    = true;
     bool generate_stub    = true;
@@ -84,7 +88,6 @@ int main( int argc, char** argv )
 	} else {
 	    usage();
 	    exit(1);
-
 	}
     }
 
