@@ -42,7 +42,7 @@
 #include "kinstance.h"
 #include "kapp.h"
 #include "kconfig.h"
-
+#include "kdebug.h"
 #include "klocale.h"
 
 /**
@@ -76,7 +76,7 @@ char *k_bindtextdomain (const char* __domainname,
 
 #define SYSTEM_MESSAGES "kdelibs"
 
-static QString maincatalogue;
+static const char *maincatalogue = 0;
 
 void KLocale::splitLocale(const QString& aStr,
 			  QString& lang,
@@ -112,8 +112,8 @@ void KLocale::splitLocale(const QString& aStr,
 
 QString KLocale::language() const
 {
-  ASSERT(_inited);
-  return lang;
+    ASSERT(_inited);
+    return lang;
 }
 
 QString KLocale::MonthName(int i) const
@@ -178,18 +178,15 @@ KLocale::KLocale( const QString& _catalogue )
      * Use the first non-null string.
      *
      */
-    initLanguage(config,
-        !maincatalogue.isNull()
-            ? maincatalogue
-            : _catalogue.isNull()
-            ? _catalogue
-            : QString::fromLatin1(kapp->name())
-        );
+    QString catalogue = _catalogue;
+    if (maincatalogue)
+      catalogue = QString::fromLatin1(maincatalogue);
 
+    initLanguage(config, catalogue);
     initFormat(config);
 }
 
-void KLocale::setMainCatalogue(const QString &catalogue)
+void KLocale::setMainCatalogue(const char *catalogue)
 {
     maincatalogue = catalogue;
 }

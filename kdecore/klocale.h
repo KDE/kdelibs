@@ -38,7 +38,7 @@ class KConfig;
  *  i18n is the function that does everything you need to translate
  *  a string. You just wrap around every user visible string a i18n
  *  call to get a QString with the string in the user's prefered
- *  language. 
+ *  language.
  **/
 QString i18n(const char *text);
 
@@ -49,7 +49,7 @@ QString i18n(const char *text);
   *
   * KLocale supports translating, as well as specifying the format
   * for numbers, currency, time, and date.
-  * 
+  *
   * @author Stephan Kulow <coolo@kde.org>, Preston Brown <pbrown@kde.org>
   * @short class for supporting locale settings and national language
   */
@@ -62,12 +62,12 @@ public:
       * Create a KLocale with the given catalogue name.
       * If no catalogue is given, the application name is used.
       * The constructor looks for an entry Locale/Language in the
-      * configuration file. 
+      * configuration file.
       * If nothing is set there, it looks for the environment variable
       * $LANG. The format for LANG is de:fr:.., if de
       * (german) is your prefered language and fr (french) is your
       * second prefered language. You can add as many languages as
-      * you want. If none of them can be find, the default (C) will 
+      * you want. If none of them can be find, the default (C) will
       * be used.
       * @param catalogue The name of the language file
       */
@@ -79,7 +79,7 @@ public:
     ~KLocale();
 
     /**
-      * Translate the string into the corresponding string in 
+      * Translate the string into the corresponding string in
       * the national language, if available. If not, returns
       * the string itself.
       * There is a KDE wide message file that contains the most
@@ -91,7 +91,7 @@ public:
       * @param index The lookup text and default text, if not found.
       */
     QString translate( const char *index ) const;
-    
+
     /**
      * Allows programs such as kcmlocale to choose which translation to use.
      */
@@ -116,58 +116,58 @@ public:
      * according to the current locale or user settings.
      */
     QString decimalSymbol() const;
-    
+
     /**
-     * Retrieve what the thousands separator should look 
+     * Retrieve what the thousands separator should look
      * like ("," or "." etc.)
      * according to the current locale or user settings.
      */
     QString thousandsSeparator() const;
-    
+
     /**
      * Retrieve what the symbol denoting currency in the current locale
      * as as defined by user settings should look like.
      */
     QString currencySymbol() const;
-    
+
     /**
      * Retrieve what a decimal point should look like ("." or "," etc.)
      * for monetary values, according to the current locale or user
      * settings.
      */
     QString monetaryDecimalSymbol() const;
-    
+
     /**
      * Retrieve what a thousands separator for monetary values should
      * look like ("," or " " etc.) according to the current locale or
      * user settings.
      */
     QString monetaryThousandsSeparator() const;
-    
+
     /**
      * Retrieve what a positive sign should look like ("+", " ", etc.)
      * according to the current locale or user settings.
      */
     QString positiveSign() const;
-    
+
     /**
      * Retrieve what a negative sign should look like ("-", etc.)
      * according to the current locale or user settings.
      */
     QString negativeSign() const;
-    
+
     /**
      * The number of fractional digits to include in numeric/monetary
      * values (usually 2).
      */
     int fracDigits() const;
-    
+
     /**
      * If and only if the currency symbol precedes a positive value,
      * this will be true.
      */
     bool positivePrefixCurrencySymbol() const;
-    
+
     /**
      * If and only if the currency symbol precedes a negative value,
      * this will be true.
@@ -175,7 +175,7 @@ public:
     bool negativePrefixCurrencySymbol() const;
 
     /**
-     * Retrieve the position of a positive sign in relation to a 
+     * Retrieve the position of a positive sign in relation to a
      * monetary value.
      *
      * @see SignPosition
@@ -183,7 +183,7 @@ public:
     SignPosition positiveMonetarySignPosition() const;
 
     /**
-     * Denotes where to place a negative sign in relation to a 
+     * Denotes where to place a negative sign in relation to a
      * monetary value.
      *
      * @see SignPosition
@@ -193,8 +193,8 @@ public:
     /**
      * Given an double, convert that to a numeric string containing
      * the localized monetary equivalent.
-     * 
-     * e.g. given 123456, return "$123,456".  
+     *
+     * e.g. given 123456, return "$123,456".
      *
      * @return The number of money as a localized string
      */
@@ -211,8 +211,8 @@ public:
     /**
      * Given an double, convert that to a numeric string containing
      * the localized numeric equivalent.
-     * 
-     * e.g. given 123456.78, return "123,456.78" (for some European country).  
+     *
+     * e.g. given 123456.78, return "123,456.78" (for some European country).
      * If precision isn't specified, fracDigits is used.
      *
      * @return The number as a localized string
@@ -238,7 +238,7 @@ public:
     /**
      * Return a string formatted to the current locale's conventions
      * regarding times.
-     * 
+     *
      * @param includeSecs if true, seconds are included in the output,
      *        otherwise only hours and minutes are formatted.
      *
@@ -289,15 +289,15 @@ public:
     /**
       * Creates an alias for the string text. It will be translated
       * and stored under the integer constant index.
-      * This can help you to avoid repeated translation. 
+      * This can help you to avoid repeated translation.
       * Be aware, that this is only needed in cases, where you want
       * to translate it in loops or something like that.
       * In every other case, the @ref translate methods is fast
       * enough.
       */
     void aliasLocale( const char *text, long int index);
-    
-    /** 
+
+    /**
       * Returns an alias, that you have set before or 0, if not
       * set. This method uses @ref QIntDict.
       */
@@ -305,7 +305,7 @@ public:
 
     /**
       * Returns the language used by this object. The domain AND the
-      * library translation must be available in this language. 
+      * library translation must be available in this language.
       * 'C' is default, if no other available.
       */
     QString language() const;
@@ -323,7 +323,7 @@ public:
       * @return List of language codes
       */
     QStringList languageList() const;
-    
+
     /**
       * Returns the charset name by selected locale.
       * This will be the charset defined in the config file.
@@ -338,16 +338,16 @@ public:
      * adds anther catalogue to search for translation lookup.
      * This function is useful for extern libraries and/or code,
      * that provides it's own messages.
-     * 
+     *
      * If the catalogue does not exist for the chosen language,
      * it will be ignored and C will be used.
      **/
     void insertCatalogue(const QString& catalogue);
 
-    /** 
+    /**
      * returns the parts of the parameter str understood as language setting
      * the format is language_country.charset
-     */ 
+     */
     static void splitLocale(const QString& str,QString& language, QString& country,
                      QString &charset);
 
@@ -375,7 +375,7 @@ public:
      * Use this to as main catalogue for *all* KLocales, if not the appname
      * will be used.
      */
-    static void setMainCatalogue(const QString &catalogue);
+    static void setMainCatalogue(const char *catalogue);
 
 private:
     QStrList *catalogues;
@@ -388,7 +388,7 @@ private:
     QString chset;
     QTextCodec *_codec;
     QString langs;
-    
+
     // Numbers and money
     QString _decimalSymbol;
     QString _thousandsSeparator;
@@ -413,7 +413,7 @@ private:
     // Disallow assignment and copy-construction
     KLocale( const KLocale& );
     KLocale& operator= ( const KLocale& );
-  
+
     static void initInstance();
 };
 
