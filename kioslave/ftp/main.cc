@@ -840,7 +840,7 @@ void FtpProtocol::slotGet( const char *_url )
 
   dataEnd();
 
-  ftp.close();
+  ftp.ftpClose();
 
   processedSize( e->size );
   time_t t = time( 0L );
