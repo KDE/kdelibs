@@ -97,30 +97,7 @@ void KCupsPrinterImpl::preparePrinting(KPrinter *printer)
 		}
 	}
 
-	// page size -> try to find page size from driver file
-	KMManager	*mgr = KMFactory::self()->manager();
-	DrMain	*driver = mgr->loadPrinterDriver(mgr->findPrinter(printer->printerName()), false);
-	if (driver)
-	{
-		QString	psname = printer->option("PageSize");
-		if (psname.isEmpty())
-		{
-			DrListOption	*opt = (DrListOption*)driver->findOption("PageSize");
-			if (opt) psname = opt->get("default");
-		}
-		if (!psname.isEmpty())
-		{
-			printer->setOption("kde-pagesize",QString::number((int)pageNameToPageSize(psname)));
-			DrPageSize	*ps = driver->findPageSize(psname);
-			if (ps)
-			{
-				printer->setRealPageSize(ps->pageSize());
-				printer->setMargins(ps->margins());
-			}
-		}
-		delete driver;
-	}
-
+	// needed for page size and margins
 	KPrinterImpl::preparePrinting(printer);
 }
 
