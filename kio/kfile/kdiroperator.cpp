@@ -420,14 +420,14 @@ KIO::DeleteJob * KDirOperator::del( const KFileItemList& items,
             ret = KMessageBox::warningContinueCancel( viewWidget(),
                 i18n( "<qt>Do you really want to delete\n <b>'%1'</b>?</qt>" )
                 .arg( files.first() ),
-                                                      i18n("Delete file"),
+                                                      i18n("Delete File"),
                                                       i18n("Delete") );
         }
         else
             ret = KMessageBox::warningContinueCancelList( viewWidget(),
                 i18n("Do you really want to delete these %1 items?"),
                                                     files,
-                                                    i18n("Delete files"),
+                                                    i18n("Delete Files"),
                                                     i18n("Delete") );
         doIt = (ret == KMessageBox::Continue);
     }
