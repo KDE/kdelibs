@@ -273,19 +273,14 @@ KBugReport::~KBugReport()
 
 void KBugReport::updateURL()
 {
-    QString url = QString::fromLatin1("http://bugs.kde.org/wizard.cgi");
-    url += "?os=";
-    url += KURL::encode_string( d->os );
-    url += "&compiler=";
-    url += KURL::encode_string( QString::fromLatin1(KDE_COMPILER_VERSION) );
-    url += "&kdeVersion=";
-    url +=  KURL::encode_string( d->kde_version );
-    url += "&appVersion=";
-    url += KURL::encode_string( m_strVersion );
-    url += "&package=";
-    url += KURL::encode_string( d->appcombo->currentText() );
-    url += "&kbugreport=1";
-    d->webFormLabel->setURL( url );
+    KURL url = "http://bugs.kde.org/wizard.cgi";
+    url.addQueryItem( "os", d->os );
+    url.addQueryItem( "compiler", KDE_COMPILER_VERSION );
+    url.addQueryItem( "kdeVersion", d->kde_version );
+    url.addQueryItem( "appVersion", m_strVersion );
+    url.addQueryItem( "package", d->appcombo->currentText() );
+    url.addQueryItem( "kbugreport", "1" );
+    d->webFormLabel->setURL( url.url() );
 }
 
 void KBugReport::appChanged(int i)
