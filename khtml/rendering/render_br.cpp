@@ -22,6 +22,7 @@
  */
 #include "render_br.h"
 #include "dom_stringimpl.h"
+#include "qfontmetrics.h"
 
 using namespace khtml;
 
@@ -37,7 +38,7 @@ RenderBR::~RenderBR()
 
 short RenderBR::verticalPositionHint() const
 {
-    if (previousSibling() && !previousSibling()->isBR())
+    if (previousSibling() && !previousSibling()->isBR() && !previousSibling()->isFloating())
         return 0;
     else
         return RenderText::verticalPositionHint();
@@ -45,7 +46,7 @@ short RenderBR::verticalPositionHint() const
 
 void RenderBR::cursorPos(int /*offset*/, int &_x, int &_y, int &height)
 {
-    if (previousSibling() && !previousSibling()->isBR()) {
+    if (previousSibling() && !previousSibling()->isBR() && !previousSibling()->isFloating()) {
         int offset = 0;
         if (previousSibling()->isText())
             offset = static_cast<RenderText*>(previousSibling())->length();
