@@ -9,4 +9,5 @@
 <!ENTITY kontrollleiste "<application>Kontrollleiste</application>" -- kicker -->
 <!ENTITY mondphase "<application>Mondphase</application>" -- kmoon -->
 <!ENTITY weltzeit "<application>Weltzeituhr</application>" -- kworldwatch -->
-<!ENTITY Strg "<keycap>Strg</keycap>">
+<!ENTITY Strg "<keycap>Strg</keycap>" -- Steuerung -->
+<!ENTITY zb     "<abbrev>z.B.</abbrev>" -- zum Beispiel -->
