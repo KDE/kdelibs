@@ -82,7 +82,15 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     // all cookies in the list should have the same window at this time, so let's take the first
 # ifdef Q_WS_X11
     if( cookieList.first()->windowIds().count() > 0 )
+    {
         XSetTransientForHint( qt_xdisplay(), winId(), cookieList.first()->windowIds().first());
+    }
+    else
+    {
+        // No window associated... make sure the user notices our dialog.
+        KWin::setState( winId(), NET::KeepAbove );
+        kapp->updateUserTimestamp();
+    }
 # endif
 #endif
     // Main widget's layout manager...
