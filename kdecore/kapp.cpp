@@ -218,7 +218,7 @@ public:
 		s = s.left( s.find( '\t' ) );
 	    findAccel( prefix + s, s, accels );
 	}
-	
+
 	for ( QMap<QChar,AccelInfoList>::Iterator it = accels.begin(); it != accels.end(); ++it  ) {
 	    QChar c = it.key();
 	    AccelInfoList list = it.data();
@@ -233,7 +233,7 @@ public:
 		    olist.append( *ait );
 	    }
 	}
-	
+
 	for ( i = 0; i < (int) m->count(); i++ ) {
 	    mi = m->findItem( m->idAt( i ) );
 	    if ( mi->popup() ) {
@@ -270,7 +270,7 @@ public:
 		    findAccel( w->className(), w->property( "text" ).toString(), accels );
 		if ( title )
 		    findAccel( w->className(), w->property( "title" ).toString(), accels );
-		
+
 		if ( w->inherits( "QTabBar" ) ) {
 		    QTabBar* tbar = (QTabBar*) w;
 		    for ( int i = 0; i < tbar->count(); i++ )
@@ -279,7 +279,7 @@ public:
 	    }
 	}
 	delete l;
-	
+
 	QString s;
 
 	int num_clashes = 0;
@@ -287,7 +287,7 @@ public:
 	    AccelInfoList list = it.data();
   	    if ( list.count() <= 1 )
   		continue;
-	
+
 	    if ( ++num_clashes == 1 ) {
 		s += "<table border>";
 		s += "<tr><th>Accel</th><th>String</th><th>Widget</th></tr>";
@@ -299,7 +299,7 @@ public:
 	    s += "</td><td>";
 	    s += (*ait).item;
 	    s += "</td></tr>";
-	
+
 	    for ( ait++; ait != list.end(); ++ait ) {
 		s += "<tr><td>";
 		s += (*ait).string;
@@ -317,7 +317,7 @@ public:
 	} else {
 	    s += "<h3>No clashes detected</h3>";
 	}
-	
+
 	if ( mbar ) {
 	    QString m;
 	    num_clashes = 0;
@@ -344,7 +344,7 @@ public:
 		m += (*ait).item;
 		unique += (*ait).item;
 		m += "</td></tr>";
-	
+
 		for ( ait++; ait != list.end(); ++ait ) {
 		    if ( unique.contains( (*ait).item ) )
 			continue;
@@ -363,14 +363,14 @@ public:
 	    } else {
 		m += "<h3>No clashes detected</h3>";
 	    }
-	
+
 	    m.prepend( "<h2>Menubar</h2>" );
 	    m += "<h2>Other control elements</h2>";
 	    s.prepend( m );
 	}
-	
+
 	s.prepend( QString("<h2><em>") + actWin->caption() + "<em></h2>" );
-	
+
 	QDialog* dlg = new QDialog( actWin, "kapp_accel_check_dlg",  true, WDestructiveClose );
 	dlg->setCaption( "Dr. Klash' Accelerator Diagnosis" );
 	dlg->resize( 500, 460 );
@@ -973,6 +973,7 @@ static const KCmdLineOptions qt_options[] =
    { "name <name>", I18N_NOOP("sets the application name."), 0},
    { "title <title>", I18N_NOOP("sets the application title (caption)."), 0},
    { "visual TrueColor", I18N_NOOP("forces the application to use a TrueColor visual on an 8-bit display."), 0},
+   { "inputstyle", I18N_NOOP("sets XIM(X Input Method) input style. Possible values are onthespot, overthespot, offthespot and root"), 0 },
    { 0, 0, 0 }
 };
 
