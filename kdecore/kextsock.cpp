@@ -1152,6 +1152,8 @@ int KExtendedSocket::listen(int N)
 	  kdDebug(170) << "Failed to create: " << perror << endl;
 	  continue;
 	}
+	
+      fcntl(sockfd, F_SETFD, FD_CLOEXEC);
 
       if (d->addressReusable)
 	setAddressReusable(sockfd, true);
@@ -1247,6 +1249,8 @@ int KExtendedSocket::accept(KExtendedSocket *&sock)
       return -1;
     }
 
+  fcntl(newfd, F_SETFD, FD_CLOEXEC);
+
   //kdDebug(170).form("Socket %d accepted socket %d\n", sockfd, newfd);
 
   setBlockingMode(block);	// restore blocking mode
@@ -1333,6 +1337,7 @@ int KExtendedSocket::connect()
 	  setError(IO_ConnectError, errno);
 	  if (sockfd == -1)
 	    continue;		// cannot create this socket
+          fcntl(sockfd, F_SETFD, FD_CLOEXEC);
 	  if (d->addressReusable)
 	    setAddressReusable(sockfd, true);
 	  setIPv6Only(d->ipv6only);
@@ -1354,6 +1359,7 @@ int KExtendedSocket::connect()
 	      setError(IO_ConnectError, errno);
 	      continue;
 	    }
+          fcntl(sockfd, F_SETFD, FD_CLOEXEC);
 	  if (d->addressReusable)
 	    setAddressReusable(sockfd, true);
 	  setIPv6Only(d->ipv6only);
@@ -2169,6 +2175,7 @@ void KExtendedSocket::connectionEvent()
 	  errcode = errno;
 	  if (sockfd == -1)
 	    continue;		// cannot create this socket
+          fcntl(sockfd, F_SETFD, FD_CLOEXEC);
 	  if (d->addressReusable)
 	    setAddressReusable(sockfd, true);
 	  setIPv6Only(d->ipv6only);
@@ -2190,6 +2197,7 @@ void KExtendedSocket::connectionEvent()
 	      errcode = errno;
 	      continue;
 	    }
+          fcntl(sockfd, F_SETFD, FD_CLOEXEC);
 	  if (d->addressReusable)
 	    setAddressReusable(sockfd, true);
 	  setIPv6Only(d->ipv6only);
