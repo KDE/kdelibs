@@ -230,7 +230,7 @@ QPixmap KWin::icon( WId win, int width, int height, bool scale )
     QPixmap result;
     NETWinInfo info( qt_xdisplay(), win, qt_xrootwin(), NET::WMIcon );
     NETIcon ni = info.icon( width, height );
-    if ( ni.data ) {
+    if ( ni.data && ni.size.width > 0 && ni.size.height > 0 ) {
 	QImage img( (uchar*) ni.data, (int) ni.size.width, (int) ni.size.height, 32, 0, 0, QImage::IgnoreEndian );
 	img.setAlphaBuffer( TRUE );
 	if ( scale && width > 0 && height > 0 &&img.size() != QSize( width, height ) )
