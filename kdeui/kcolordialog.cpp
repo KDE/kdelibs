@@ -867,6 +867,7 @@ KPaletteTable::addToRecentColors( const QColor &color)
 class KColorDialog::KColorDialogPrivate {
 public:
     KPaletteTable *table;
+    QString originalPalette;
     bool bRecursion;
     bool bEditRgb;
     bool bEditHsv;
@@ -1196,21 +1197,22 @@ KColorDialog::readSettings()
   config->setGroup("Colors");
   QString palette = config->readEntry("CurrentPalette");
   d->table->setPalette(palette);
-
+  d->originalPalette = d->table->palette();
   config->setGroup( oldgroup );
 }
 
 void
 KColorDialog::slotWriteSettings()
 {
-  KConfig* config = KGlobal::config();
-
-  QString oldgroup = config->group();
-
-  config->setGroup("Colors");
-  config->writeEntry("CurrentPalette", d->table->palette() );
-
-  config->setGroup( oldgroup );
+  QString palette = d->table->palette();
+  // Don't save anything if there is nothing new or nothing changed.
+  if(palette != d->originalPalette){
+    KConfig* config = KGlobal::config();
+    QString oldgroup = config->group();
+    config->setGroup("Colors");
+    config->writeEntry("CurrentPalette", d->table->palette() );
+    config->setGroup( oldgroup );
+  }
 }
 
 QColor
