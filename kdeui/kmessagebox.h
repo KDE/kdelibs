@@ -610,6 +610,17 @@ public:
      */
     static void queuedMessageBox( QWidget *parent,
                     DialogType type, const QString &text,
+                    const QString &caption,
+                    int options );
+
+    /**
+     * @overload
+     *
+     * This is an overloaded member function, provided for convenience.
+     * It behaves essentially like the above function.
+     */
+    static void queuedMessageBox( QWidget *parent,
+                    DialogType type, const QString &text,
                     const QString &caption = QString::null );
 
 };

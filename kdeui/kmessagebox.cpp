@@ -788,6 +788,14 @@ int KMessageBox::messageBox( QWidget *parent, DialogType type, const QString &te
     return KMessageBox::Cancel;
 }
 
+void KMessageBox::queuedMessageBox( QWidget *parent, DialogType type, const QString &text, const QString &caption, int options )
+{
+   KMessageBox_queue = true;
+   (void) messageBox(parent, type, text, caption, KStdGuiItem::yes(),
+                     KStdGuiItem::no(), options);
+   KMessageBox_queue = false;
+}
+
 void KMessageBox::queuedMessageBox( QWidget *parent, DialogType type, const QString &text, const QString &caption )
 {
    KMessageBox_queue = true;
