@@ -50,7 +50,7 @@ void KRecentDocument::add(const KURL& url)
 
 void KRecentDocument::add(const QString &openStr, bool isUrl)
 {
-    kdDebug() << "KRecentDocument::add for " << openStr << endl;
+    kdDebug(250) << "KRecentDocument::add for " << openStr << endl;
     KConfig *config = KGlobal::config();
     QString oldGrp = config->group();
     config->setGroup(QString::fromLatin1("RecentDocuments"));

@@ -192,7 +192,7 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
         for(; (fi = it.current()); ++it){
             KDesktopFile dFile(fi->absFilePath());
             if(dFile.hasDeviceType()) {
-                kdDebug() << "got one: " << fi->absFilePath() << endl;
+                kdDebug(kfile_area) << "got one: " << fi->absFilePath() << endl;
                 tmp = dFile.readURL();
                 if ( !tmp.isEmpty() )
                     combo->addDefaultURL( tmp,
@@ -953,7 +953,7 @@ void KFileDialog::addToBookmarks() // SLOT
 
 void KFileDialog::bookmarksChanged() // SLOT
 {
-    //    kdDebug() << "bookmarksChanged" << endl;
+    //    kdDebug(kfile_area) << "bookmarksChanged" << endl;
 }
 
 void KFileDialog::fillBookmarkMenu( KFileBookmark *parent, QPopupMenu *menu, int &id )
@@ -1384,8 +1384,8 @@ QString KFileDialog::selectedFile() const
     {
        if (d->url.isLocalFile())
        {
-           kdDebug() << "KFileDialog::selectedFile d->url=" << d->url.url() << endl;
-           kdDebug() << "                          d->url.path()=" << d->url.path() << endl;
+           kdDebug(kfile_area) << "KFileDialog::selectedFile d->url=" << d->url.url() << endl;
+           kdDebug(kfile_area) << "                          d->url.path()=" << d->url.path() << endl;
            return d->url.path();
        }
     }
