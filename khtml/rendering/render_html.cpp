@@ -77,80 +77,17 @@ void RenderHtml::printBoxDecorations(QPainter *p,int, int _y,
     int bw = QMAX(w + marginLeft() + marginRight() + borderLeft() + borderRight(), parent()->width());
     int bh = QMAX(h + marginTop() + marginBottom() + borderTop() + borderBottom(), parent()->height());
 
-    if(c.isValid()) {
-	int my = QMAX(by,_y);
-	int mh;
-	if (by<_y)
-	    mh=QMAX(0,bh-(_y-by));
-	else
-	    mh = QMIN(_h,bh);
+    int my = QMAX(_ty,_y);
+    int mh;
+    if (_ty<_y)
+    	mh= QMAX(0,h-(_y-_ty));
+    else
+    	mh = QMIN(_h,h);
 
-	p->fillRect(bx, my, bw, mh, c);
-    }
-
-    if(bg) {
-	// kdDebug( 6040 ) << "printing bgimage at " << bx << "/" << by << " " << bw << "/" << bh << endl;
-	// ### might need to add some correct offsets
-	// ### use paddingX/Y
-	
-	int sx = 0;
-	int sy = 0;
-	
-	if( !m_style->backgroundAttachment() ) {
-	    //kdDebug(0) << "fixed background" << endl;
-	    QRect r = viewRect();
-	    sx = bx - r.x();
-	    sy = by - r.y();
-	
-	} 	
-
-	switch(m_style->backgroundRepeat()) {
-	case NO_REPEAT:
-            bw = QMIN(bg->pixmap_size().width(), bw);
-            /* nobreak */
-	case REPEAT_X:
-            bh = QMIN(bg->pixmap_size().height(), bh);
-	    break;
-	case REPEAT_Y:
-            bw = QMIN(bg->pixmap_size().width(), bw);
-	    break;
-	case REPEAT:
-	    break;
-	}
-	p->drawTiledPixmap(bx, by, bw, bh,bg->pixmap(), sx, sy);
-    }
+    printBackground(p, c, bg, my, mh, bx, by, bw, bh);
 
     if(m_style->hasBorder())
-    {
-	if(m_style->borderTopStyle() != BNONE)
-	{
-	    c = m_style->borderTopColor();
-	    if(!c.isValid()) c = m_style->color();
-	    drawBorder(p, _tx, _ty, _tx + w, _ty, m_style->borderTopWidth(),
-		       BSTop, c, m_style->borderTopStyle());
-	}
-	if(m_style->borderBottomStyle() != BNONE)
-	{
-	    c = m_style->borderBottomColor();
-	    if(!c.isValid()) c = m_style->color();
-	    drawBorder(p, _tx, _ty + h, _tx + w, _ty + h, m_style->borderBottomWidth(),
-		       BSBottom, c, m_style->borderBottomStyle());
-	}
-	if(m_style->borderLeftStyle() != BNONE)
-	{
-	    c = m_style->borderLeftColor();
-	    if(!c.isValid()) c = m_style->color();
-	    drawBorder(p, _tx, _ty, _tx, _ty + h, m_style->borderLeftWidth(),
-		       BSLeft, c, m_style->borderLeftStyle());
-	}
-	if(m_style->borderRightStyle() != BNONE)
-	{
-	    c = m_style->borderRightColor();
-	    if(!c.isValid()) c = m_style->color();
-	    drawBorder(p, _tx + w, _ty, _tx + w, _ty + h, m_style->borderRightWidth(),
-		       BSRight, c, m_style->borderRightStyle());
-	}
-    }
+	printBorder( p, _tx, _ty, w, h );
 }
 
 void RenderHtml::repaint()

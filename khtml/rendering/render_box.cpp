@@ -196,8 +196,6 @@ void RenderBox::printBoxDecorations(QPainter *p,int, int _y,
 {
     //kdDebug( 6040 ) << renderName() << "::printDecorations()" << endl;
 
-    QColor c = m_style->backgroundColor();
-
     int w = width();
     int h = height() + borderTopExtra() + borderBottomExtra();	
     _ty -= borderTopExtra();
@@ -209,7 +207,23 @@ void RenderBox::printBoxDecorations(QPainter *p,int, int _y,
     else
     	mh = QMIN(_h,h);
 
+    printBackground(p, m_style->backgroundColor(), m_bgImage, my, mh, _tx, _ty, w, h);
+
+    if(m_style->hasBorder())
+	printBorder(p, _tx, _ty, w, h);
+}
+
+void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, int clipy, int cliph, int _tx, int _ty, int w, int h)
+{
+
     if(c.isValid()) {
+	// workaround for Qt problem filling a rect of more than 32000 pixels height...
+	int my = QMAX( _ty, clipy );
+	int mh;
+	if ( _ty < clipy )
+	    mh= QMAX( 0, h - (clipy - _ty) );
+	else
+	    mh = QMIN( cliph, h );
 	//kdDebug( 6040 ) << "printing bgcolor" << endl;
 	p->fillRect(_tx, my, w, mh, c);
     }
@@ -233,13 +247,13 @@ void RenderBox::printBoxDecorations(QPainter *p,int, int _y,
 
 	switch(m_style->backgroundRepeat()) {
 	case NO_REPEAT:
-            h = QMIN(m_bgImage->pixmap_size().width(), w);
-            /* nobreak */
+	    w = QMIN(m_bgImage->pixmap_size().width(), w);
+	    /* nobreak */
 	case REPEAT_X:
-            h = QMIN(m_bgImage->pixmap_size().height(), h);
+	    h = QMIN(m_bgImage->pixmap_size().height(), h);
 	    break;
 	case REPEAT_Y:
-            h = QMIN(m_bgImage->pixmap_size().width(), h);
+	    h = QMIN(m_bgImage->pixmap_size().width(), h);
 	    break;
 	case REPEAT:
 	    break;
@@ -247,38 +261,37 @@ void RenderBox::printBoxDecorations(QPainter *p,int, int _y,
         p->drawTiledPixmap(_tx, _ty, w, h, m_bgImage->pixmap(), sx, sy);
     }
 
-    if(m_style->hasBorder())
-    {
-	if(m_style->borderTopStyle() != BNONE)
-	{
-	    c = m_style->borderTopColor();
-	    if(!c.isValid()) c = m_style->color();
-	    drawBorder(p, _tx, _ty, _tx + w, _ty, m_style->borderTopWidth(),
-		       BSTop, c, m_style->borderTopStyle());
-	}
-	if(m_style->borderBottomStyle() != BNONE)
-	{
-	    c = m_style->borderBottomColor();
-	    if(!c.isValid()) c = m_style->color();
-	    drawBorder(p, _tx, _ty + h, _tx + w, _ty + h, m_style->borderBottomWidth(),
-		       BSBottom, c, m_style->borderBottomStyle());
-	}
-	if(m_style->borderLeftStyle() != BNONE)
-	{
-	    c = m_style->borderLeftColor();
-	    if(!c.isValid()) c = m_style->color();
-	    drawBorder(p, _tx, _ty, _tx, _ty + h, m_style->borderLeftWidth(),
-		       BSLeft, c, m_style->borderLeftStyle());
-	}
-	if(m_style->borderRightStyle() != BNONE)
-	{
-	    c = m_style->borderRightColor();
-	    if(!c.isValid()) c = m_style->color();
-	    drawBorder(p, _tx + w, _ty, _tx + w, _ty + h, m_style->borderRightWidth(),
-		       BSRight, c, m_style->borderRightStyle());
-	}
+}
+
+void RenderBox::printBorder(QPainter *p, int _tx, int _ty, int w, int h)
+{
+    QColor c;
+    if(m_style->borderTopStyle() != BNONE) {
+	c = m_style->borderTopColor();
+	if(!c.isValid()) c = m_style->color();
+	drawBorder(p, _tx, _ty, _tx + w, _ty, m_style->borderTopWidth(),
+		   BSTop, c, m_style->borderTopStyle());
+    }
+    if(m_style->borderBottomStyle() != BNONE) {
+	c = m_style->borderBottomColor();
+	if(!c.isValid()) c = m_style->color();
+	drawBorder(p, _tx, _ty + h, _tx + w, _ty + h, m_style->borderBottomWidth(),
+		   BSBottom, c, m_style->borderBottomStyle());
+    }
+    if(m_style->borderLeftStyle() != BNONE) {
+	c = m_style->borderLeftColor();
+	if(!c.isValid()) c = m_style->color();
+	drawBorder(p, _tx, _ty, _tx, _ty + h, m_style->borderLeftWidth(),
+		   BSLeft, c, m_style->borderLeftStyle());
+    }
+    if(m_style->borderRightStyle() != BNONE) {
+	c = m_style->borderRightColor();
+	if(!c.isValid()) c = m_style->color();
+	drawBorder(p, _tx + w, _ty, _tx + w, _ty + h, m_style->borderRightWidth(),
+		   BSRight, c, m_style->borderRightStyle());
     }
 }
+
 
 void RenderBox::outlineBox(QPainter *p, int _tx, int _ty, const char *color)
 {
