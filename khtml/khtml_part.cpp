@@ -279,11 +279,13 @@ KHTMLPart::~KHTMLPart()
 
 bool KHTMLPart::openURL( const KURL &url )
 {
+  kdDebug( 6050 ) << "KHTMLPart::openURL" << url.url() << endl;
   static QString http_protocol = QString::fromLatin1( "http" );
 
   KParts::URLArgs args( d->m_extension->urlArgs() );
   if ( d->m_frames.count() == 0 && urlcmp( url.url(), m_url.url(), true, true ) && args.postData.size() == 0 && !args.reload )
   {
+    kdDebug( 6050 ) << "KHTMLPart::openURL now m_url = " << url.url() << endl;
     m_url = url;
     emit started( 0L );
 
@@ -295,10 +297,12 @@ bool KHTMLPart::openURL( const KURL &url )
     d->m_bComplete = true;
     d->m_bParsing = false;
 
+    kdDebug( 6050 ) << "completed..." << endl;
     emit completed();
     return true;
   }
 
+  kdDebug( 6050 ) << "closing old URL" << endl;
   if ( !closeURL() )
     return false;
 
@@ -320,6 +324,7 @@ bool KHTMLPart::openURL( const KURL &url )
   d->m_workingURL = url;
 
   m_url = url;
+  kdDebug( 6050 ) << "KHTMLPart::openURL now (before started) m_url = " << m_url.url() << endl;
 
   emit started( d->m_job );
 
@@ -334,8 +339,11 @@ bool KHTMLPart::closeURL()
     d->m_job = 0;
   }
 
+  d->m_bComplete = true; // to avoid emitting completed() in end() (David)
+
   if ( d->m_bParsing )
   {
+    kdDebug( 6050 ) << " was still parsing... calling end " << endl;
     end();
     d->m_bParsing = false;
   }
@@ -343,11 +351,6 @@ bool KHTMLPart::closeURL()
   d->m_workingURL = KURL();
 
   khtml::Cache::loader()->cancelRequests( m_url.url() );
-
-  if ( !d->m_bComplete )
-    emit canceled( QString::null );
-
-  d->m_bComplete = true;
 
   return true;
 }
@@ -535,7 +538,6 @@ void KHTMLPart::slotFinished( KIO::Job * job )
 
   if ( d->m_bParsing )
   {
-    kdDebug( 6050 ) << "end()" << endl;
     end(); //will emit completed()
   }
 }
@@ -634,6 +636,8 @@ void KHTMLPart::end()
 
 void KHTMLPart::checkCompleted()
 {
+  kdDebug( 6050 ) << "KHTMLPart::checkCompleted() parsing: " << d->m_bParsing
+            << "complete: " << d->m_bComplete << endl;
   int requests = 0;
 
   if ( d->m_bParsing || d->m_bComplete )
@@ -1548,6 +1552,8 @@ khtml::ChildFrame *KHTMLPart::recursiveFrameRequest( const KURL &url, const KPar
 
 void KHTMLPart::saveState( QDataStream &stream )
 {
+  kdDebug( 6050 ) << "KHTMLPart::saveState saving URL " << m_url.url() << endl;
+
   stream << m_url << (Q_INT32)d->m_view->contentsX() << (Q_INT32)d->m_view->contentsY();
 
   // Save the state of the document (Most notably the state of any forms)
@@ -1614,13 +1620,13 @@ void KHTMLPart::restoreState( QDataStream &stream )
 
   d->m_bComplete = false;
 
-  kdDebug() << "restoreState() docState.count() = " << docState.count() << endl;
-  kdDebug() << "m_url " << debugString( m_url.url() ) << " <-> " << debugString( u.url() ) << endl;
-  kdDebug() << "m_frames.count() " << d->m_frames.count() << " <-> " << frameCount << endl;
+  kdDebug( 6050 ) << "restoreState() docState.count() = " << docState.count() << endl;
+  kdDebug( 6050 ) << "m_url " << debugString( m_url.url() ) << " <-> " << debugString( u.url() ) << endl;
+  kdDebug( 6050 ) << "m_frames.count() " << d->m_frames.count() << " <-> " << frameCount << endl;
 
   if ( u == m_url && frameCount >= 1 && frameCount == d->m_frames.count() )
   {
-    kdDebug() << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!! partial restoring !!!!!!!!!!!!!!!!!!!!!" << endl;
+    kdDebug( 6050 ) << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!! partial restoring !!!!!!!!!!!!!!!!!!!!!" << endl;
     emit started( 0L );
 
     FrameIt fIt = d->m_frames.begin();
@@ -1636,7 +1642,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
     {
       khtml::ChildFrame *child = &(*fIt);
 
-      kdDebug() << debugString( *fNameIt ) << " ---- " << debugString( *fServiceTypeIt ) << endl;
+      kdDebug( 6050 ) << debugString( *fNameIt ) << " ---- " << debugString( *fServiceTypeIt ) << endl;
 
       if ( child->m_name != *fNameIt || child->m_serviceType != *fServiceTypeIt )
       {
@@ -1680,7 +1686,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
       newChild.m_name = *fNameIt;
       newChild.m_serviceName = *fServiceNameIt;
 
-      kdDebug() << debugString( *fNameIt ) << " ---- " << debugString( *fServiceTypeIt ) << endl;
+      kdDebug( 6050 ) << debugString( *fNameIt ) << " ---- " << debugString( *fServiceTypeIt ) << endl;
 
       FrameIt childFrame = d->m_frames.insert( *fNameIt, newChild );
 
@@ -1705,6 +1711,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
     args.yOffset = yOffset;
     args.setDocState(docState);
     d->m_extension->setURLArgs( args );
+    kdDebug( 6050 ) << "in restoreState : calling openURL for " << u.url() << endl;
     openURL( u );
   }
 
@@ -1784,38 +1791,38 @@ void KHTMLPart::reparseConfiguration()
 QStringList KHTMLPart::frameNames() const
 {
   QStringList res;
-  
+
   QMap<QString,khtml::ChildFrame>::ConstIterator it = d->m_frames.begin();
   QMap<QString,khtml::ChildFrame>::ConstIterator end = d->m_frames.end();
   for (; it != end; ++it )
     res += it.key();
-  
+
   return res;
 }
 
 const QList<KParts::ReadOnlyPart> KHTMLPart::frames() const
 {
-  QList<KParts::ReadOnlyPart> res; 
-  
+  QList<KParts::ReadOnlyPart> res;
+
   QMap<QString,khtml::ChildFrame>::ConstIterator it = d->m_frames.begin();
   QMap<QString,khtml::ChildFrame>::ConstIterator end = d->m_frames.end();
   for (; it != end; ++it )
      res.append( it.data().m_part );
-  
+
   return res;
 }
 
 bool KHTMLPart::openURLInFrame( const KURL &url, const KParts::URLArgs &urlArgs )
 {
   QMap<QString,khtml::ChildFrame>::Iterator it = d->m_frames.find( urlArgs.frameName );
-  
+
   if ( it == d->m_frames.end() )
     return false;
-   
+
   requestObject( &it.data(), url, urlArgs );
-  
+
   return true;
-} 
+}
 
 KHTMLPartBrowserExtension::KHTMLPartBrowserExtension( KHTMLPart *parent, const char *name )
 : KParts::BrowserExtension( parent, name )
@@ -1970,16 +1977,16 @@ void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption, cons
 KHTMLPartBrowserHostExtension::KHTMLPartBrowserHostExtension( KHTMLPart *part )
 : KParts::BrowserHostExtension( part )
 {
-  m_part = part; 
+  m_part = part;
 }
 
 KHTMLPartBrowserHostExtension::~KHTMLPartBrowserHostExtension()
 {
-} 
+}
 
 QStringList KHTMLPartBrowserHostExtension::frameNames() const
 {
-  return m_part->frameNames(); 
+  return m_part->frameNames();
 }
 
 const QList<KParts::ReadOnlyPart> KHTMLPartBrowserHostExtension::frames() const
@@ -1989,7 +1996,7 @@ const QList<KParts::ReadOnlyPart> KHTMLPartBrowserHostExtension::frames() const
 
 bool KHTMLPartBrowserHostExtension::openURLInFrame( const KURL &url, const KParts::URLArgs &urlArgs )
 {
-  return m_part->openURLInFrame( url, urlArgs ); 
-} 
+  return m_part->openURLInFrame( url, urlArgs );
+}
 
 #include "khtml_part.moc"
