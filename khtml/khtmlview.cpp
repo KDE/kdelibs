@@ -432,7 +432,7 @@ void KHTMLToolTip::maybeTip(const QPoint& p)
             QString s = static_cast<DOM::ElementImpl*>( node )->getAttribute( ATTR_TITLE ).string();
             region |= QRect( m_view->contentsToViewport( node->getRect().topLeft() ), node->getRect().size() );
             if ( !s.isEmpty() ) {
-                tip( region, s );
+                tip( region, QStyleSheet::convertFromPlainText( s, QStyleSheetItem::WhiteSpaceNormal ) );
                 break;
             }
         }
