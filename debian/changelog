@@ -1,6 +1,16 @@
+kdelibs (4:2.1.1-2) unstable; urgency=low
+ 
+  * 2 birds with 1 debuild.  
+    Rebuild against older libc6
+    Couple upstream fixes
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 19 Mar 2001 13:39:00 -0700
+
 kdelibs (4:2.1.1-1) unstable; urgency=low
  
   * New upstream release
+  * Dropping provides for kdelibs3-dev
+  * don't allow POST data to dump to the debug output...
  
  -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 19 Mar 2001 10:26:00 -0700
 
