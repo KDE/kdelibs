@@ -443,6 +443,36 @@ QStringList KStandardDirs::resourceDirs(const char *type) const
     QStringList *candidates = dircache.find(type);
 
     if (!candidates) { // filling cache
+        if (strcmp(type, "socket") == 0)
+        {
+          char hostname[256];
+          hostname[0] = 0;
+          gethostname(hostname, 255);
+          QString dir = QString("%1socket-%2").arg(localkdedir()).arg(hostname);
+          char link[1024];
+          link[1023] = 0;
+          int result = readlink(QFile::encodeName(dir).data(), link, 1023);
+          if ((result == -1) && (errno == ENOENT))
+          {
+             QString srv = findExe(QString::fromLatin1("lnusertemp"), KDEDIR+QString::fromLatin1("/bin"));
+             if (srv.isEmpty())
+                srv = findExe(QString::fromLatin1("lnusertemp"));
+             if (!srv.isEmpty())
+             {
+                system(QFile::encodeName(srv)+" socket");
+                result = readlink(QFile::encodeName(dir).data(), link, 1023);
+             }
+          }
+          if (result > 0)
+          {
+             link[result] = 0;
+             if (link[0] == '/')
+                dir = QFile::decodeName(link);
+             else
+                dir = QDir::cleanDirPath(dir+QFile::decodeName(link));
+          }
+          const_cast<KStandardDirs *>(this)->addResourceDir("socket", dir+'/');
+        }
         QDir testdir;
 
         candidates = new QStringList();
@@ -648,6 +678,11 @@ QString KStandardDirs::saveLocation(const char *type,
     QString fullPath;
 
     QStringList *dirs = relatives.find(type);
+    if (!dirs && (strcmp(type, "socket") == 0))
+    {
+        (void) resourceDirs(type); // Generate socket resource.
+        dirs = relatives.find(type); // Search again.
+    }
     if (dirs)
     {
        // Check for existance of typed directory + suffix
@@ -778,30 +813,6 @@ void KStandardDirs::addKDEDefaults()
     QString dir = QString("%1tmp-%2/").arg(localKdeDir).arg(hostname);
     addResourceDir("tmp", dir);
 
-    dir = QString("%1socket-%2").arg(localKdeDir).arg(hostname);
-    char link[1024];
-    link[1023] = 0;
-    int result = readlink(QFile::encodeName(dir).data(), link, 1023);
-    if ((result == -1) && (errno == ENOENT))
-    {
-       QString srv = findExe(QString::fromLatin1("lnusertemp"), KDEDIR+QString::fromLatin1("/bin"));
-       if (srv.isEmpty())
-          srv = findExe(QString::fromLatin1("lnusertemp"));
-       if (!srv.isEmpty())
-       {
-          system(QFile::encodeName(srv)+" socket");
-          result = readlink(QFile::encodeName(dir).data(), link, 1023);
-       }
-    }
-    if (result > 0)
-    {
-       link[result] = 0;
-       if (link[0] == '/')
-          dir = QFile::decodeName(link);
-       else
-          dir = QDir::cleanDirPath(dir+QFile::decodeName(link));
-    }
-    addResourceDir("socket", dir+'/');
 }
 
 bool KStandardDirs::addCustomized(KConfig *config)
