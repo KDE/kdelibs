@@ -348,7 +348,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
 	
 	selColor = darkCyan;
 	selColor.hsv( &h, &s, &v );
-	QString st = i18n("%1: Select Color").arg(kapp->name());
+	QString st = i18n("Select Color - %1").arg(kapp->name());
 	setCaption( st );
 	
 	// create a toplevel layout
@@ -567,14 +567,14 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
 	
 	// the standard buttons
 	KButtonBox *bbox = new KButtonBox(this);
-        button  = bbox->addButton(i18n("Help"));
+        button  = bbox->addButton(i18n("&Help"));
           connect( button, SIGNAL(clicked()),
 		                   SLOT(getHelp()));                              
         bbox->addStretch(1);
-        button = bbox->addButton(i18n("OK"));
+        button = bbox->addButton(i18n("&OK"));
 	connect( button, SIGNAL( clicked() ), 
 		 SLOT( slotOkPressed() ) );
-	button = bbox->addButton(i18n("Cancel"));
+	button = bbox->addButton(i18n("&Cancel"));
 
 	connect( button, SIGNAL( clicked() ), 
 		 SLOT( reject() ) );
