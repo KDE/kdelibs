@@ -436,8 +436,9 @@ void KMainWindow::saveMainWindowSettings(KConfig *config, const QString &configG
        // store objectName, className, Width and Height  for later restoring
        config->writeEntry(QString::fromLatin1("ObjectName"), name());
        config->writeEntry(QString::fromLatin1("ClassName"), className());
-       config->writeEntry(QString::fromLatin1("Width"), width() );
-       config->writeEntry(QString::fromLatin1("Height"), height() );
+       QWidget *desk = KApplication::desktop();
+       config->writeEntry(QString::fromLatin1("Width %1").arg(desk->width()), width() );
+       config->writeEntry(QString::fromLatin1("Height %1").arg(desk->height()), height() );
     }
 
     if (internalStatusBar()) {
@@ -511,8 +512,19 @@ void KMainWindow::applyMainWindowSettings(KConfig *config, const QString &config
         setName( config->readEntry(QString::fromLatin1("ObjectName")).latin1()); // latin1 is right here
 
     // restore the size
-    QSize size( config->readNumEntry( QString::fromLatin1("Width"), 0 ),
-                config->readNumEntry( QString::fromLatin1("Height"), 0 ) );
+    QWidget *desk = KApplication::desktop();
+    QSize size( config->readNumEntry( QString::fromLatin1("Width %1").arg(desk->width()), 0 ),
+                config->readNumEntry( QString::fromLatin1("Height %1").arg(desk->height()), 0 ) );
+    if (size.isEmpty()) {
+        // try the KDE 2.0 way
+        size = QSize( config->readNumEntry( QString::fromLatin1("Width"), 0 ),
+                      config->readNumEntry( QString::fromLatin1("Height"), 0 ) );
+        if (!size.isEmpty()) {
+            // make sure the other resolutions don't get old settings
+            config->writeEntry( QString::fromLatin1("Width"), 0 );
+            config->writeEntry( QString::fromLatin1("Height"), 0 );
+        }
+    }
     if ( !size.isEmpty() )
         resize( size );
 
@@ -674,7 +686,7 @@ KToolBar *KMainWindow::toolBar( const char * name )
     if ( tb )
         return tb;
     bool honor_mode = (name == "mainToolBar");
-    
+
     if ( builderClient() )
 	return new KToolBar(this, name, honor_mode); // XMLGUI constructor
     else
