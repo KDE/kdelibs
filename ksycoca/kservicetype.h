@@ -37,8 +37,9 @@
 
 /**
  * A service type is the generic notion for a mimetype.
+ * For instance, KOfficeFilter is a service type.
  * It is associated to services according to the user profile (kuserprofile.h)
- * and there are factories and registry entry classes for it (kregfactories.h)
+ * and there are factories and registry entry classes for it (kservicetypefactories.h)
  */
 class KServiceType : public KShared, public KSycocaEntry
 {

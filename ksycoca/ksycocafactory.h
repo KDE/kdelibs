@@ -24,6 +24,9 @@
 #include <qlist.h>
 class KSycoca;
 
+/**
+ * Base class for sycoca factories
+ */
 class KSycocaFactory
 {
 public:
@@ -50,6 +53,7 @@ private:
    int mOffset;
 };
 
+// (David) what about a typedef here ?
 class KSycocaFactoryList : public QList<KSycocaFactory>
 {
 public:

@@ -72,7 +72,8 @@ KServiceTypeFactory::createEntry(const QString &file)
 
 /* disable this check because on some system kded tries to read the .desktop file
    before it is really complete. Commenting this out might lead to a corrupt
-   kregistry though :-(((
+   kregistry though :-(((                             (Simon probably)
+   => what about a delay after the dir watch signal ? (David)
 
   if ( mime.isEmpty() && service.isEmpty() )
   {

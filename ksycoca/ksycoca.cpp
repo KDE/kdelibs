@@ -23,12 +23,16 @@
 #include <qdatastream.h>
 #include <qfile.h>
 
+#include <kglobal.h>
+#include <kstddirs.h>
+
 KSycoca::KSycoca(bool buildDatabase)
    : factories(0)
 {
+   QString path = KGlobal::dirs()->saveLocation("config") + "ksycoca";
    if (!buildDatabase)
    {
-      QFile *database = new QFile("/tmp/ksycoca.db"); // Name must be different!
+      QFile *database = new QFile(path);
       if (!database->open( IO_ReadOnly ))
       {
          fprintf(stderr, "Error can't open database!\n");
@@ -38,7 +42,7 @@ KSycoca::KSycoca(bool buildDatabase)
    }
    else
    {
-      QFile *database = new QFile("/tmp/ksycoca.db"); // Name must be different!
+      QFile *database = new QFile(path);
       if (!database->open( IO_ReadWrite ))
       {
          fprintf(stderr, "Error can't open database!\n");

@@ -28,6 +28,9 @@ class KSycocaFactoryList;
 class KSycoca
 {
 public:
+   /**
+    * @param buildDatabase create the database if true, otherwise open readonly
+    */
    KSycoca(bool buildDatabase=false);
 
    virtual ~KSycoca();
