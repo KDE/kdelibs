@@ -196,16 +196,21 @@ DOMString HTMLDocument::cookie() const
     QDataStream stream(params, IO_WriteOnly);
     stream << URL().string();
     if (!kapp->dcopClient()->call("kcookiejar", "kcookiejar",
-				  "findDOMCookies(QString)", params, replyType, reply)) {
-	 kdWarning(6010) << "Can't communicate with cookiejar!" << endl;
-	 return DOMString();
+                                  "findDOMCookies(QString)", params, replyType, reply)) {
+         // Maybe it wasn't running (e.g. we're opening local html files)
+         KApplication::startServiceByDesktopName( "kcookiejar");
+         if (!kapp->dcopClient()->call("kcookiejar", "kcookiejar",
+                                       "findDOMCookies(QString)", params, replyType, reply)) {
+           kdWarning(6010) << "Can't communicate with cookiejar!" << endl;
+           return DOMString();
+         }
     }
 
     QDataStream stream2(reply, IO_ReadOnly);
     if(replyType != "QString") {
-	 kdError(6010) << "DCOP function findDOMCookies(...) returns "
-		       << replyType << ", expected QString" << endl;
-	 return DOMString();
+         kdError(6010) << "DCOP function findDOMCookies(...) returns "
+                       << replyType << ", expected QString" << endl;
+         return DOMString();
     }
 
     QString result;
@@ -223,9 +228,13 @@ void HTMLDocument::setCookie( const DOMString & value )
     fake_header.append("\n");
     stream << URL().string() << fake_header.utf8() << windowId;
     if (!kapp->dcopClient()->send("kcookiejar", "kcookiejar",
-				  "addCookies(QString,QCString,long int)", params))
+                                  "addCookies(QString,QCString,long int)", params))
     {
-	 kdWarning(6010) << "Can't communicate with cookiejar!" << endl;
+         // Maybe it wasn't running (e.g. we're opening local html files)
+         KApplication::startServiceByDesktopName( "kcookiejar");
+         if (!kapp->dcopClient()->send("kcookiejar", "kcookiejar",
+                                       "addCookies(QString,QCString,long int)", params))
+             kdWarning(6010) << "Can't communicate with cookiejar!" << endl;
     }
 }
 
