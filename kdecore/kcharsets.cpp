@@ -155,6 +155,7 @@ class KCharsetsPrivate
 {
 public:
     KCharsetsPrivate(KCharsets* _kc)
+        : codecForNameDict(43, false) // case insensitive
     {
         db = 0;
         availableCharsets = 0;
@@ -167,6 +168,9 @@ public:
     }
     QFontDatabase *db;
     QMap<QFont::CharSet, QValueList<QCString> > *availableCharsets;
+    QMap<QCString, QFont::CharSet> charsetForEncodingMap;
+    QMap<QString, QFont::CharSet> nameToIDMap;
+    QAsciiDict<QTextCodec> codecForNameDict;
     KCharsets* kc;
 
     void getAvailableCharsets();
@@ -176,6 +180,7 @@ void KCharsetsPrivate::getAvailableCharsets()
 {
     if(availableCharsets)
         return;
+
     if(!db)
         db = new QFontDatabase;
 
@@ -461,9 +466,7 @@ bool KCharsets::isAvailable(QFont::CharSet charset)
 {
     d->getAvailableCharsets();
 
-    if(d->availableCharsets->contains(charset))
-        return true;
-    return false;
+    return d->availableCharsets->contains(charset);
 }
 
 QFont::CharSet KCharsets::charsetForLocale()
@@ -555,12 +558,17 @@ QString KCharsets::xCharsetName(QFont::CharSet charSet) const
 QFont::CharSet KCharsets::nameToID(QString name) const
 {
     name = name.lower();
+    if(d->nameToIDMap.contains(name))
+        return d->nameToIDMap[name]; // cache hit
 
     int i = 0;
     while(i < CHARSETS_COUNT)
     {
         if( name == charsetsStr[i] )
+        {
+            d->nameToIDMap.replace(name, charsetsIds[i]);
             return charsetsIds[i];
+        }
         i++;
     }
 
@@ -568,9 +576,13 @@ QFont::CharSet KCharsets::nameToID(QString name) const
     while(i < CHARSETS_COUNT)
     {
         if( name == xNames[i] )
+        {
+            d->nameToIDMap.replace(name, charsetsIds[i]);
             return charsetsIds[i];
+        }
         i++;
     }
+    d->nameToIDMap.replace(name, QFont::AnyCharSet);
     return QFont::AnyCharSet;
 }
 
@@ -621,18 +633,31 @@ QTextCodec *KCharsets::codecForName(const QString &n) const
 QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
 {
     ok = true;
-  if (n.isEmpty()) {
-    QString lc = KGlobal::locale()->charset();
-    if (lc.isEmpty())
-      return QTextCodec::codecForName("iso8859-1");
-    return codecForName(lc);
-  }
 
-  QString name = n.lower();
-  QTextCodec *codec = QTextCodec::codecForName(name.latin1());
+    QTextCodec* codec = 0;
+    // dict lookup is case insensitive anyway
+    if((codec = d->codecForNameDict[n.isEmpty() ? "->locale<-" : n.latin1()]))
+        return codec; // cache hit, return
 
-    if(codec)
+    QCString name = n.lower().latin1();
+
+    if (n.isEmpty()) {
+        QString lc = KGlobal::locale()->charset();
+        if (lc.isEmpty())
+            codec = QTextCodec::codecForName("iso8859-1");
+        else
+            codec = codecForName(lc);
+
+        d->codecForNameDict.replace("->locale<-", codec);
         return codec;
+    }
+
+    codec = QTextCodec::codecForName(name);
+
+    if(codec) {
+        d->codecForNameDict.replace(name, codec);
+        return codec;
+    }
 
     KConfig conf( "charsets", true );
 
@@ -640,11 +665,15 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
     // so QTextCodec did not recognise it.
     conf.setGroup("builtin");
 
-    QString cname = conf.readEntry(name);
+    QString cname = conf.readEntry(name.data());
     if(!cname.isEmpty() && !cname.isNull())
         codec = QTextCodec::codecForName(cname.latin1());
 
-    if(codec) return codec;
+    if(codec)
+    {
+        d->codecForNameDict.replace(name, codec);
+        return codec;
+    }
 
     conf.setGroup("general");
     QString dir = conf.readEntry("i18ndir", QString::fromLatin1("/usr/share/i18n/charmaps"));
@@ -654,15 +683,17 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
     // is available in the charmap directory.
     conf.setGroup("aliases");
 
-    cname = conf.readEntry(name);
+    cname = conf.readEntry(name.data());
     if(cname.isNull() || cname.isEmpty())
         cname = name;
     cname = cname.upper();
 
     codec = QTextCodec::loadCharmapFile(dir + cname);
 
-    if(codec)
+    if(codec) {
+        d->codecForNameDict.replace(name, codec);
         return codec;
+    }
 
     // this also failed, the last resort is now to take some compatibility charmap
 
@@ -673,8 +704,10 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
     if(!cname.isEmpty() && !cname.isNull())
         codec = QTextCodec::codecForName(cname.latin1());
 
-    if(codec)
+    if(codec) {
+        d->codecForNameDict.replace(name, codec);
         return codec;
+    }
 
     // could not assign a codec, let's return Latin1
     ok = false;
@@ -684,33 +717,40 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
 
 QFont::CharSet KCharsets::charsetForEncoding(const QString &e) const
 {
-    QString encoding = e.lower();
+    QCString encoding = e.lower().latin1();
+    if(d->charsetForEncodingMap.contains(encoding))
+        return d->charsetForEncodingMap[encoding]; // cache hit
+
     KConfig conf( "charsets", true );
     conf.setGroup("charsetsForEncoding");
 
     //kdDebug(0) << "list for " << encoding << " is: " << conf.readEntry(encoding) << endl;
 
-    QString enc = conf.readEntry(encoding);
+    QString enc = conf.readEntry(encoding.data());
     if(enc.isEmpty()) {
 	conf.setGroup("builtin");
-	encoding = conf.readEntry(encoding);
-	encoding = encoding.lower();
+	enc = conf.readEntry(encoding.data());
+	encoding = enc.lower().latin1();
 	conf.setGroup("charsetsForEncoding");
 	//kdDebug(0) << "list for " << encoding << " is: " << conf.readEntry(encoding) << endl <<endl;
     }
 
     QStringList charsets;
-    charsets = conf.readListEntry(encoding);
+    charsets = conf.readListEntry(encoding.data());
 
     // iterate thorugh the list and find the first charset that is available
     for ( QStringList::Iterator it = charsets.begin(); it != charsets.end(); ++it ) {
-        if( const_cast<KCharsets *>(this)->isAvailable(*it) ) {
+        QFont::CharSet cs = nameToID(*it);
+        if( const_cast<KCharsets *>(this)->isAvailable(cs) ) {
             //kdDebug(0) << *it << " available" << endl;
-            return nameToID(*it);
+            d->charsetForEncodingMap.replace(QCString(e.latin1()), cs);
+            return cs;
         }
         //kdDebug(0) << *it << " is not available" << endl;
     }
+
     // let's hope the system has a unicode font...
+    d->charsetForEncodingMap.replace(QCString(e.latin1()), QFont::Unicode);
     return QFont::Unicode;
 }
 
