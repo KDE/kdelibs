@@ -250,6 +250,13 @@ class KGlobalSettings
     static QFont windowTitleFont();
     static QFont taskbarFont();
 
+    /**
+     * Returns if the user specified multihead. In case the display
+     * has multiple screens, the return value of this function specifies
+     * if the user wants KDE to run on all of them or just on the primary
+     */
+    static bool isMultiHead();
+
 private:
     /**
      * reads in all paths from kdeglobals

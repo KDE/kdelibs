@@ -21,6 +21,7 @@
 #include <qdir.h>
 #include <qpixmap.h>
 #include <kconfig.h>
+#include <ksimpleconfig.h>
 #include <kapplication.h>
 #include <kipc.h>
 #include <kdebug.h>
@@ -31,6 +32,7 @@
 #include <kaccel.h>
 #include <klocale.h>
 #include <qfontinfo.h>
+#include <stdlib.h>
 
 #ifdef Q_WS_X11
 //#include <X11/X.h>
@@ -276,7 +278,7 @@ QFont KGlobalSettings::generalFont()
     _generalFont = new QFont("helvetica", 12);
     _generalFont->setPixelSize(12);
     _generalFont->setStyleHint(QFont::SansSerif);
-	
+
     KConfig *c = KGlobal::config();
     KConfigGroupSaver cgs( c, QString::fromLatin1("General") );
     *_generalFont = c->readFontEntry("font", _generalFont);
@@ -449,9 +451,9 @@ void KGlobalSettings::rereadFontSettings()
     delete _menuFont;
     _menuFont = 0L;
     delete _toolBarFont;
-    _toolBarFont = 0L;  
+    _toolBarFont = 0L;
     delete _windowTitleFont;
-    _windowTitleFont = 0L;  
+    _windowTitleFont = 0L;
     delete _taskbarFont;
     _taskbarFont = 0L;
 }
@@ -520,4 +522,32 @@ void KGlobalSettings::rereadMouseSettings()
 {
     delete s_mouseSettings;
     s_mouseSettings = 0L;
+}
+
+bool KGlobalSettings::isMultiHead()
+{
+    QCString multiHead = getenv("KDE_MULTIHEAD");
+    if (!multiHead.isEmpty()) {
+        return (multiHead.lower() == "true");
+    }
+    bool isActive = false;
+    if (ScreenCount(qt_xdisplay()) > 1) {
+        // this function is very often called before anything within
+        // the application is up and running. So we have to be careful
+        if (!KGlobal::_instance) {
+            // if there is no instance yet and no environment
+            // variable set, we can't know and use the default
+            // value
+            return true;
+        }
+        KConfig config("kcmdisplayrc", true, true);
+        config.setGroup("X11");
+        if ( config.readBoolEntry( "disableMultihead", false ) ) {
+            putenv(strdup("KDE_MULTIHEAD=false"));
+        } else {
+            putenv(strdup("KDE_MULTIHEAD=true"));
+            isActive = true;
+        }
+    }
+    return isActive;
 }
