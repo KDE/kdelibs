@@ -1010,23 +1010,29 @@ bool TCPSlaveBase::isSSLTunnelEnabled()
     return d->useSSLTunneling;
 }
 
-void TCPSlaveBase::setRealHost( const QString& realHost )
-{
-    d->realHost = realHost;
-}
-
 void TCPSlaveBase::setEnableSSLTunnel( bool enable )
 {
     d->useSSLTunneling = enable;
 }
 
+void TCPSlaveBase::setRealHost( const QString& realHost )
+{
+    // Check if we just transitioned from a SSL over
+    // proxy to regular SSL connection! If so tell that
+    // to the SSL module!
+    if ( !d->realHost.isEmpty() && realHost.isEmpty() )
+      d->kssl->setProxy(false, realHost);
+
+    d->realHost = realHost;
+}
+
 bool TCPSlaveBase::doSSLHandShake( bool sendError )
 {
-    kdDebug(7029) << "TCPSlaveBase::doSSLHandShake: " << d->realHost << endl;
-    
-    if ( d->needSSLHandShake && !d->realHost.isNull() )
+    kdDebug(7029) << "TCPSlaveBase::doSSLHandShake: " << endl;
+
+    if ( !d->realHost.isNull() )
     {
-      kdDebug(7029) << "Setting Real Host" << endl;
+      kdDebug(7029) << "Setting real hostname: " << d->realHost << endl;
       d->kssl->setProxy(true, d->realHost);
     }
 

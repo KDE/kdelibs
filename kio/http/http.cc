@@ -196,9 +196,6 @@ void HTTPProtocol::resetSessionSettings()
     m_proxyURL = proxy;
     m_bUseProxy = m_proxyURL.isValid();
 
-    // Tell parent class about the real hostname
-    setRealHost( m_request.hostname );
-
     kdDebug(7103) << "(" << getpid() << ") Proxy realm value: " << m_strRealm << endl;
     kdDebug(7103) << "(" << getpid() << ") Proxy URL is now: " << m_proxyURL.url() << endl;
   }
@@ -216,9 +213,17 @@ void HTTPProtocol::resetSessionSettings()
 
   // Deal with HTTP tunneling
   if ( m_bIsSSL && m_bUseProxy && m_proxyURL.protocol() != "https" )
+  {
+    // Tell parent class about the real hostname
+    setRealHost( m_request.hostname );
     setEnableSSLTunnel( true );
+  }
   else
+  {
+    // Should never be needed! Being overcautious!
+    setRealHost( QString::null );
     setEnableSSLTunnel( false );
+  }
 
   m_responseCode = 0;
   m_prevResponseCode = 0;
@@ -311,7 +316,7 @@ bool HTTPProtocol::retrieveHeader( bool close_connection )
         if ( isSSLTunnelEnabled() &&  m_bIsSSL && !m_bUnauthorized
              && !m_bError )
         {
-            // Only disable tunneling if the error    
+            // Only disable tunneling if the error
             if ( m_responseCode < 400 )
             {
                 kdDebug(7113) << "(" << getpid() << ") Unsetting tunneling flag!" << endl;
@@ -325,11 +330,11 @@ bool HTTPProtocol::retrieveHeader( bool close_connection )
                 {
                   kdDebug(7113) << "(" << getpid() << ") Sending an error message!" << endl;
                   error( ERR_UNKNOWN_PROXY_HOST, m_proxyURL.host() );
-                  return false;                
+                  return false;
                 }
                 kdDebug(7113) << "(" << getpid() << ") Sending an error page!"
                               << endl;
-             }
+            }
         }
         break;
     }
