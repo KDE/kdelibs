@@ -56,7 +56,7 @@ protected:
   /**
    * Creates with given data
    */
-  KSocketAddress(sockaddr* sa, ksocklen_t size);
+  KSocketAddress(const sockaddr* sa, ksocklen_t size);
 
 public:
   /**
@@ -123,6 +123,22 @@ public:
   bool isCoreEqual(const KSocketAddress* other) const
   { return isCoreEqual(*other); }
 
+  /**
+   * Returns the node name of this socket, as @ref KExtendedSocket::lookup expects
+   * as the first argument.
+   * In the case of Internet sockets, this is the hostname.
+   * The default implementation returns QString::null.
+   */
+  virtual QString nodeName() const;
+
+  /**
+   * Returns the service name for this socket, as @ref KExtendedSocket::lookup expects
+   * as the service argument.
+   * In the case of Internet sockets, this is the port number.
+   * The default implementation returns QString::null.
+   */
+  virtual QString serviceName() const;
+
 protected:
   sockaddr*	data;
   ksocklen_t	datasize;
@@ -130,8 +146,8 @@ protected:
 
 private:
   /* No copy constructor */
-  KSocketAddress(const KSocketAddress&);
-  KSocketAddress& operator=(const KSocketAddress&);
+  KSocketAddress(KSocketAddress&);
+  KSocketAddress& operator=(KSocketAddress&);
 
 public:
   /**
@@ -140,7 +156,7 @@ public:
    * @param sa		new socket address
    * @param size	new socket address's length
    */
-  static KSocketAddress* newAddress(struct sockaddr*, ksocklen_t size);
+  static KSocketAddress* newAddress(const struct sockaddr*, ksocklen_t size);
 
   /**
    * Returns the IANA family number of the given address family
@@ -189,6 +205,11 @@ public:
   KInetSocketAddress();
 
   /**
+   * Copy constructor
+   */
+  KInetSocketAddress(const KInetSocketAddress&);
+
+  /**
    * Creates an IPv4 socket from raw sockaddr_in
    * @param sin		a sockaddr_in structure to copy from
    */
@@ -225,6 +246,12 @@ public:
    * Destructor
    */
   virtual ~KInetSocketAddress();
+
+  /**
+   * Sets this socket to given socket
+   * @param ksa		the other socket
+   */
+  bool setAddress(const KInetSocketAddress& ksa);
 
   /**
    * Sets this socket to given raw socket
@@ -311,7 +338,13 @@ public:
   /**
    * Returns the text representation of the host address
    */
-  QString prettyHost() const;
+  virtual QString nodeName() const;
+  //  QString prettyHost() const;
+
+  /**
+   * Returns the text representation of the port number
+   */
+  virtual QString serviceName() const;
 
   /**
    * Returns the socket address
@@ -340,11 +373,6 @@ public:
    * Returns the port number
    */
   unsigned short port() const;
-
-  /**
-   * Returns the socket family
-   */
-  int family() const;
 
   /**
    * Returns flowinfo for IPv6 socket
@@ -383,12 +411,38 @@ public:
   operator const sockaddr_in6*() const
   { return addressV6(); }
 
+  /**
+   * Sets this object to be the same as the other
+   */
+  KInetSocketAddress& operator=(const KInetSocketAddress &other)
+  { setAddress(other); return *this; }
+
 private:
   class Private;
   Private *d;
 
   void fromV4();
   void fromV6();
+
+public:
+  /**
+   * Convert s the given raw address into text form.
+   * This function returns QString::null if the address cannot be converted.
+   * @param family	the family of the address
+   * @param addr	the address, in raw form
+   */
+  static QString addrToString(int family, const void *addr);
+
+  /**
+   * Converts the address given in text form into raw form.
+   * The size of the destination buffer @p dest is supposed to be
+   * large enough to hold the address of the given family.
+   * This function returns true if convertion was successful.
+   * @param family	the family of the address
+   * @param text	the text representation of the address
+   * @param dest	the destination buffer of the address
+   */
+  static bool stringToAddr(int family, const char *text, void *dest);
 
   friend class KExtendedSocket;
 };
@@ -427,7 +481,7 @@ public:
    * @param raw_data	raw data
    * @param size	data length
    */
-  KUnixSocketAddress(sockaddr_un* raw_data, ksocklen_t size);
+  KUnixSocketAddress(const sockaddr_un* raw_data, ksocklen_t size);
 
   /**
    * Constructor from pathname
@@ -445,7 +499,7 @@ public:
    * @param socket_address socket address
    * @param size	the socket length
    */
-  bool setAddress(sockaddr_un* socket_address, ksocklen_t size);
+  bool setAddress(const sockaddr_un* socket_address, ksocklen_t size);
 
   /**
    * Sets this to given pathname
@@ -462,6 +516,12 @@ public:
    * Returns pretty representation of this socket
    */
   virtual QString pretty() const;
+
+  /*
+   * Returns the path in the form of a QString
+   * This can be fed into KExtendedSocket
+   */
+  virtual QString serviceName() const;
 
   /**
    * Returns raw socket address

@@ -86,7 +86,7 @@ KSocketAddress::KSocketAddress()
   owndata = false;
 }
 
-KSocketAddress::KSocketAddress(sockaddr* sa, ksocklen_t size)
+KSocketAddress::KSocketAddress(const sockaddr* sa, ksocklen_t size)
 {
   if (sa != NULL)
     {
@@ -123,7 +123,7 @@ int KSocketAddress::family() const
 }
 
 // This creates a new KSocketAddress with given sockaddr
-KSocketAddress* KSocketAddress::newAddress(struct sockaddr* sa, ksocklen_t size)
+KSocketAddress* KSocketAddress::newAddress(const struct sockaddr* sa, ksocklen_t size)
 {
   if (size == 0)
     {
@@ -142,18 +142,18 @@ KSocketAddress* KSocketAddress::newAddress(struct sockaddr* sa, ksocklen_t size)
     {
     case AF_INET:
       if (size >= sizeof(sockaddr_in))
-	return new KInetSocketAddress((sockaddr_in*)sa, size);
+	return new KInetSocketAddress((const sockaddr_in*)sa, size);
       return NULL;
 	
 #ifdef AF_INET6
     case AF_INET6:
       if (size >= sizeof(sockaddr_in6))
-	return new KInetSocketAddress((sockaddr_in6*)sa, size);
+	return new KInetSocketAddress((const sockaddr_in6*)sa, size);
       return NULL;
 #endif
 
     case AF_UNIX:		// AF_LOCAL
-      return new KUnixSocketAddress((sockaddr_un*)sa, size);
+      return new KUnixSocketAddress((const sockaddr_un*)sa, size);
     }
 
   return new KSocketAddress(sa, size);
@@ -172,6 +172,16 @@ bool KSocketAddress::isEqual(const KSocketAddress& other) const
 bool KSocketAddress::isCoreEqual(const KSocketAddress& other) const
 {
   return isEqual(other);
+}
+
+QString KSocketAddress::nodeName() const
+{
+  return QString::null;
+}
+
+QString KSocketAddress::serviceName() const
+{
+  return QString::null;
 }
 
 int KSocketAddress::ianaFamily(int af)
@@ -244,6 +254,12 @@ KInetSocketAddress::KInetSocketAddress() :
 { 
 }
 
+KInetSocketAddress::KInetSocketAddress(const KInetSocketAddress &other) :
+  KSocketAddress(), d(new Private)
+{
+  setAddress(other);
+}
+
 KInetSocketAddress::KInetSocketAddress(const sockaddr_in* sin, ksocklen_t len) :
   d(new Private)
 { 
@@ -279,6 +295,17 @@ KInetSocketAddress::~KInetSocketAddress()
   delete d;
 
   //  KSocketAddress::~KSocketAddress();
+}
+
+bool KInetSocketAddress::setAddress(const KInetSocketAddress &other)
+{
+  if (other.family() == AF_INET)
+    return setAddress(other.addressV4(), other.size());
+#ifdef AF_INET6
+  else if (other.family() == AF_INET6)
+    return setAddress(other.addressV6(), other.size());
+#endif
+  return false;
 }
 
 bool KInetSocketAddress::setAddress(const sockaddr_in* sin, ksocklen_t len)
@@ -523,16 +550,10 @@ QString KInetSocketAddress::pretty() const
       return i18n("<empty>");
     }
 
-#ifdef AF_INET6
-  // sin could be empty; sin6 never is
-  return i18n("1: hostname, 2: port number", "%1 port %2").arg(prettyHost()).arg(ntohs(d->sin6.sin6_port));
-#else
-  // sin is now never empty
-  return i18n("1: hostname, 2: port number", "%1 port %2").arg(prettyHost()).arg(ntohs(d->sin.sin_port));
-#endif
+  return i18n("1: hostname, 2: port number", "%1 port %2").arg(nodeName()).arg(serviceName());
 }
 
-QString KInetSocketAddress::prettyHost() const
+QString KInetSocketAddress::nodeName() const
 {
   char buf[INET6_ADDRSTRLEN];	// INET6_ADDRSTRLEN > INET_ADDRSTRLEN
 
@@ -549,6 +570,11 @@ QString KInetSocketAddress::prettyHost() const
     }
 
   return QString::fromLocal8Bit(buf); // FIXME! What's the encoding?
+}
+
+QString KInetSocketAddress::serviceName() const
+{
+  return QString::number(port());
 }
 
 unsigned short KInetSocketAddress::port() const
@@ -641,6 +667,18 @@ void KInetSocketAddress::fromV6()
 #endif
 }
 
+QString KInetSocketAddress::addrToString(int family, const void* addr)
+{
+  char buf[INET6_ADDRSTRLEN+1];
+
+  return QString::fromUtf8(inet_ntop(family, addr, buf, INET6_ADDRSTRLEN));
+}
+
+bool KInetSocketAddress::stringToAddr(int family, const char *text, void *dest)
+{
+  return inet_pton(family, text, dest) != 0;
+}
+
 /**
  * class KUnixSocketAddress
  */
@@ -659,7 +697,7 @@ KUnixSocketAddress::KUnixSocketAddress() :
 {
 }
 
-KUnixSocketAddress::KUnixSocketAddress(sockaddr_un* _sun, ksocklen_t size) :
+KUnixSocketAddress::KUnixSocketAddress(const sockaddr_un* _sun, ksocklen_t size) :
   d(new Private)
 {
   setAddress(_sun, size);
@@ -676,7 +714,7 @@ KUnixSocketAddress::~KUnixSocketAddress()
   delete d;
 }
 
-bool KUnixSocketAddress::setAddress(sockaddr_un* _sun, ksocklen_t _size)
+bool KUnixSocketAddress::setAddress(const sockaddr_un* _sun, ksocklen_t _size)
 {
   if (_sun->sun_family != AF_UNIX)
     {
@@ -767,6 +805,11 @@ QString KUnixSocketAddress::pretty() const
   if (pname.isEmpty())
     return i18n("<empty Unix socket>");
   return QFile::decodeName(pathname());
+}
+
+QString KUnixSocketAddress::serviceName() const
+{
+  return QString::fromUtf8(pathname());
 }
 
 const sockaddr_un* KUnixSocketAddress::address() const
