@@ -185,12 +185,12 @@ int SuProcess::ConverseSU(const char *password)
 	    break;
 
 	case 1:
-	    if (line.stripWhiteSpace().isEmpty()) 
+	    QCString s = line.stripWhiteSpace();
+	    if (s.isEmpty()) 
 	    {
 		state++;
 		break;
 	    }
-	    QCString s=line.stripWhiteSpace();
 	    for (i=0; i<s.length(); i++)
             {
 		if (s[i] != '*')
