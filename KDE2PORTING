@@ -538,3 +538,16 @@ KPixmap::tile() has been renamed to KPixmapEffects::createTile().
 Dirk A. Mueller <mueller@kde.org>
 
 
+///////////////////////////////////////////////////////////////////////
+// * KDE Control Center
+
+The format for modules for the KDE Control Center has changed quite 
+a bit. If you want to port your module to the new schema, please
+consult
+
+kdebase/kcontrol/README
+
+which explains what needs to be done.
+
+Matthias Hoelzer-Kluepfel <hoelzer@kde.org>
+
