@@ -1412,7 +1412,6 @@ public:
     void setStickyMenu(bool sticky);
 
     virtual int plug( QWidget* widget, int index = -1 );
-    virtual void unplug( QWidget* widget );
 
 private:
 
@@ -1490,7 +1489,6 @@ public:
     virtual ~KToolBarPopupAction();
 
     virtual int plug( QWidget *widget, int index = -1 );
-    virtual void unplug( QWidget *widget );
 
     /**
      * The popup menu that is shown when clicking (some time) on the toolbar
@@ -1542,7 +1540,6 @@ public:
     virtual ~KActionSeparator();
 
     virtual int plug( QWidget*, int index = -1 );
-    virtual void unplug( QWidget* );
 
 private:
     class KActionSeparatorPrivate;

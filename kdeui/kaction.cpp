@@ -601,34 +601,30 @@ int KAction::plug( QWidget *w, int index )
 
 void KAction::unplug( QWidget *w )
 {
-  if ( w->inherits("QPopupMenu") )
+  int i = findContainer( w );
+  if ( i == -1 )
+    return;
+  int id = itemId( i );
+
+  if ( w->inherits( "QPopupMenu" ) )
   {
-    QPopupMenu* menu = static_cast<QPopupMenu*>( w );
-    int i = findContainer( menu );
-    if ( i != -1 )
-    {
-      menu->removeItem( itemId( i ) );
-      removeContainer( i );
-      if ( m_parentCollection )
-        m_parentCollection->disconnectHighlight( menu, this );
-    }
+    QPopupMenu *menu = static_cast<QPopupMenu *>( w );
+    menu->removeItem( id );
   }
   else if ( w->inherits( "KToolBar" ) )
   {
     KToolBar *bar = static_cast<KToolBar *>( w );
-
-    int idx = findContainer( bar );
-
-    if ( idx != -1 )
-    {
-      bar->removeItem( itemId( idx ) );
-      removeContainer( idx );
-      if ( m_parentCollection )
-        m_parentCollection->disconnectHighlight( bar, this );
-    }
-
-    return;
+    bar->removeItem( id );
   }
+  else if ( w->inherits( "QMenuBar" ) )
+  {
+    QMenuBar *bar = static_cast<QMenuBar *>( w );
+    bar->removeItem( id );
+  }
+
+  removeContainer( i );
+  if ( m_parentCollection )
+    m_parentCollection->disconnectHighlight( w, this );
 }
 
 void KAction::plugAccel(KAccel *kacc, bool configurable)
@@ -2444,38 +2440,6 @@ int KActionMenu::plug( QWidget* widget, int index )
   return -1;
 }
 
-void KActionMenu::unplug( QWidget* widget )
-{
-  if ( widget->inherits( "KToolBar" ) )
-  {
-    KToolBar *bar = static_cast<KToolBar *>( widget );
-
-    int idx = findContainer( bar );
-
-    if ( idx != -1 )
-    {
-      bar->removeItem( itemId( idx ) );
-      removeContainer( idx );
-    }
-
-    return;
-  }
-  else if ( widget->inherits( "QMenuBar" ) )
-  {
-    QMenuBar *bar = static_cast<QMenuBar *>( widget );
-    int i = findContainer( bar );
-    if ( i != -1 )
-    {
-      bar->removeItem( itemId( i ) );
-      removeContainer( i );
-    }
-
-    return;
-  }
-  else
-    KAction::unplug( widget );
-}
-
 ////////
 
 KToolBarPopupAction::KToolBarPopupAction( const QString& text,
@@ -2574,26 +2538,6 @@ int KToolBarPopupAction::plug( QWidget *widget, int index )
   return KAction::plug( widget, index );
 }
 
-void KToolBarPopupAction::unplug( QWidget *widget )
-{
-  if ( widget->inherits( "KToolBar" ) )
-  {
-    KToolBar *bar = (KToolBar *)widget;
-
-    int idx = findContainer( bar );
-
-    if ( idx != -1 )
-    {
-      bar->removeItem( menuId( idx ) );
-      removeContainer( idx );
-    }
-
-    return;
-  }
-
-  KAction::unplug( widget );
-}
-
 KPopupMenu *KToolBarPopupAction::popupMenu()
 {
   if ( !m_popup )
@@ -2651,48 +2595,6 @@ int KActionSeparator::plug( QWidget *widget, int index )
   }
 
   return -1;
-}
-
-void KActionSeparator::unplug( QWidget *widget )
-{
-  if ( widget->inherits("QPopupMenu") )
-  {
-    QPopupMenu* menu = static_cast<QPopupMenu*>( widget );
-    int i = findContainer( menu );
-    if ( i != -1 )
-    {
-      menu->removeItem( itemId( i ) );
-      removeContainer( i );
-    }
-  }
-  else if ( widget->inherits( "QMenuBar" ) )
-  {
-    QMenuBar *menuBar = static_cast<QMenuBar *>( widget );
-
-    int i = findContainer( menuBar );
-
-    if ( i != -1 )
-    {
-      menuBar->removeItem( itemId( i ) );
-      removeContainer( i );
-    }
-    return;
-  }
-  else if ( widget->inherits( "KToolBar" ) )
-  {
-    KToolBar *toolBar = static_cast<KToolBar *>( widget );
-
-    int i = findContainer( toolBar );
-
-    if ( i != -1 )
-    {
-      toolBar->removeItem( itemId( i ) );
-      removeContainer( i );
-    }
-    return;
-  }
-
-  return;
 }
 
 class KActionCollection::KActionCollectionPrivate
