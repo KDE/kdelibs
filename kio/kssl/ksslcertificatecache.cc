@@ -269,7 +269,7 @@ KSSLCertificateCache::KSSLCertificatePolicy KSSLCertificateCache::getPolicyByCN(
 
   for (node = d->certList.first(); node; node = d->certList.next()) {
     if (node->cert->getSubject() == cn) {
-      if (!node->permanent && node->expires > QDateTime::currentDateTime()) {
+      if (!node->permanent && node->expires < QDateTime::currentDateTime()) {
         d->certList.remove(node);
         delete node;
         continue;
@@ -288,7 +288,7 @@ KSSLCertificateCache::KSSLCertificatePolicy KSSLCertificateCache::getPolicyByCer
 
   for (node = d->certList.first(); node; node = d->certList.next()) {
     if (cert == *(node->cert)) {  
-      if (!node->permanent && node->expires > QDateTime::currentDateTime()) {
+      if (!node->permanent && node->expires < QDateTime::currentDateTime()) {
         d->certList.remove(node);
         delete node;
         continue;
