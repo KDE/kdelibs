@@ -1072,10 +1072,6 @@ void KCryptoConfig::save()
      QString thisCN = cert.getValue("CN");
      QDateTime expires = x->getExpires();
      _cc.modifyByCN(thisCN, (KSSLCertificateCache::KSSLCertificatePolicy)x->getPolicy(), x->isPermanent(), expires);
-     //policies->setGroup(x->configName());
-     //policies->writeEntry("Policy", x->getPolicy());
-     //policies->writeEntry("Expires", x->getExpires());
-     //policies->writeEntry("Permanent", x->isPermanent());
   }
 
   // SSL Personal certificates code
@@ -1837,14 +1833,20 @@ QString certFile = KFileDialog::getOpenFileName(QString::null, "application/x-x5
                                                                    m;
         	                 m = static_cast<CAItem *>(m->nextSibling())) {
 			         if (m->configName() == name) {
+				    KSSLCertificate *y = KSSLCertificate::fromString(m->getCert().local8Bit());
+				    if (!y) continue;
+				    if (*x == *y) {
 					QString emsg = name + ":\n" +
 						i18n("You already have this signer certificate installed.");
 				 	KMessageBox::error(this,
 							   emsg, 
 						   	   i18n("SSL"));
 					 delete x;
+					 delete y;
 					 x = NULL;
 					 break;
+			            }
+				    delete y;
 				 }
 			}
 
@@ -1921,11 +1923,17 @@ QString certFile = KFileDialog::getOpenFileName(QString::null, "application/x-x5
                                                                    i;
                          i = static_cast<CAItem *>(i->nextSibling())) {
 		         if (i->configName() == name) {
+			    KSSLCertificate *y = KSSLCertificate::fromString(i->getCert().local8Bit());
+			    if (!y) continue;
+			    if (*x == *y) {
 				 KMessageBox::error(this,
 				    i18n("You already have this signer certificate installed."), 
 				    i18n("SSL"));
 				 delete x;
+				 delete y;
 				 return;
+			    }
+			    delete y;
 			 }
 		}
 
