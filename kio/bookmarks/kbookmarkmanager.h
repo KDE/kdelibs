@@ -92,6 +92,8 @@ public:
      */
     bool saveAs( const QString & filename, bool toolbarCache = true ) const;
 
+    void updateAccessMetadata( const QString &, bool emitSignal = true );
+
     /**
      * This will return the path that this manager is using to read
      * the bookmarks.
