@@ -700,8 +700,11 @@ void KAction::setIconSet( int id, const QIconSet& iconset )
     static_cast<QPopupMenu*>(w)->changeItem( itemId( id ), iconset, d->m_text );
   else if ( w->inherits( "QMenuBar" ) )
     static_cast<QMenuBar*>(w)->changeItem( itemId( id ), iconset, d->m_text );
-  // Don't do anything on toolbar buttons, the iconset is the wrong size.
-  // Use setIcon to set the icon everywhere
+  else if ( w->inherits( "KToolBar" ) )
+  {
+    if ( icon().isEmpty() && d->m_bIconSet ) // only if there is no named icon ( scales better )
+      static_cast<KToolBar *>(w)->setButtonIconSet( itemId( id ), iconset );
+  }
 }
 
 QIconSet KAction::iconSet() const
