@@ -543,9 +543,13 @@ bool KCookieJar::parseURL(const QString &_url,
         return false;  // deny everything!!
     }
 
-    _path = QDir::cleanDirPath(kurl.path());
+    _path = kurl.path();
     if (_path.isEmpty())
        _path = "/";
+    else if (_path[_path.length()-1] == '/')
+       _path = QDir::cleanDirPath(_path) + '/'; // Preserve trailing slash
+    else
+       _path = QDir::cleanDirPath(_path);
     return true;
 }
 
