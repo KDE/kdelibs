@@ -94,7 +94,7 @@ static QCString encodeCString(const QCString& e)
     QCString encoded(( e.length()+e.contains( '\n' ) )*3+1);
     int enclen = 0;
 
-    QCString orig(e.data(), e.size());
+    //QCString orig(e.data(), e.size());
 
     for(unsigned pos = 0; pos < e.length(); pos++) {
         unsigned char c = e[pos];
