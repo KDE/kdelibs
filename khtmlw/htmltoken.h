@@ -217,7 +217,7 @@ inline void HTMLTokenizer::appendToken( const char *t, int len )
     if ( len < 1 )
         return;
 
-    if (len > tokenBufferSizeRemaining)
+    if (len >= tokenBufferSizeRemaining)
     {
        // We need a new buffer
        appendTokenBuffer( len);

@@ -42,7 +42,7 @@
 #include <jsexec.h>
 
 // Token buffers are allocated in units of TOKEN_BUFFER_SIZE bytes.
-#define TOKEN_BUFFER_SIZE (32*1024)
+#define TOKEN_BUFFER_SIZE (32*1024) - 1
 
 static const char *commentStart = "<!--";
 static const char *scriptEnd = "</script>";
@@ -214,7 +214,7 @@ void HTMLTokenizer::write( const char *str )
     while ( *src != 0 )
     {
 	// do we need to enlarge the buffer?
-	if ( dest - buffer > size )
+	if ( (dest - buffer) > size )
 	{
 	    char *newbuf = new char [ size + 1024 + 20 ];
 	    memcpy( newbuf, buffer, dest - buffer + 1 );
@@ -825,7 +825,7 @@ void HTMLTokenizer::end()
 
 void HTMLTokenizer::appendTokenBuffer( int min_size)
 {
-    int newBufSize = TOKEN_BUFFER_SIZE; 
+    int newBufSize = TOKEN_BUFFER_SIZE;
 
     // If we were using a buffer, mark it's end
     if (next)
@@ -839,7 +839,7 @@ void HTMLTokenizer::appendTokenBuffer( int min_size)
         // Wow! This surely is a big token...
         newBufSize += min_size; 
     }
-    HTMLTokenBuffer *newBuffer = (HTMLTokenBuffer *) new char [ newBufSize ];
+    HTMLTokenBuffer *newBuffer = (HTMLTokenBuffer *) new char [ newBufSize + 1];
     tokenBufferList.append( newBuffer);
     next = newBuffer->first();
     tokenBufferSizeRemaining = newBufSize;
