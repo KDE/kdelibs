@@ -40,6 +40,7 @@ class KImageTrackLabel : public QLabel
   Q_OBJECT
 
   public:
+  /**
     enum MouseMode
     {
       MousePress = 1,
@@ -300,7 +301,7 @@ protected:
  * Being a @ref KDialogBase it uses your application wide settings
  * for @ref KDialogBase
  * objects (base frame tiles, main frame tiles etc).
- * To use it, simply create a KAboutDialog object, set all (or some) of its
+ * To use it, simply create a @ref KAboutDialog object, set all (or some) of its
  * properties and show it. Do not derive it to create your own about dialog
  * until you need some cool features that are unsupported and you have
  * contacted me to add them.
@@ -330,6 +331,9 @@ class KAboutDialog : public KDialogBase
   Q_OBJECT
 
   public:
+  /**
+   * Layout formats.
+   **/
     enum LayoutType
     {
       AbtPlain         = 0x0001,

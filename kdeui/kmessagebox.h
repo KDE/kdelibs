@@ -20,6 +20,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2000/01/11 13:50:01  dsweet
+ * Spiffed documentation. Now (i) KDOC2 compatibile, (ii) has consistent language, (iii) added some missing docs for methods
+ *
  * Revision 1.9  1999/12/11 17:20:36  antlarr
  * Changed the QStringList questionYesNo method name to questionYesNoList
  * Also reimplemented the original questionYesNo to call questionYesNoList with
@@ -85,6 +88,9 @@ class QStringList;
 class KMessageBox
 {
 public:
+  /**
+   * Button types.
+   **/
  enum { Ok = 1, Cancel = 2, Yes = 3, No = 4, Continue = 5 };
  /**
   * Display a simple "question" dialog. 

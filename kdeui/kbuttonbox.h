@@ -38,6 +38,9 @@ class KButtonBox : public QWidget {
 
   Q_OBJECT
 public:
+  /**
+   * Orientations for the button box.
+   **/
   enum { VERTICAL = 1, HORIZONTAL = 2 };
 
   /**
@@ -53,12 +56,16 @@ public:
 
   /**
     * The destructor is needed, otherwise gcc 2.7.2.1 may report an 
-    * internal compiler error. It does nothing.
+    * internal compiler error.
+    *
+    * It does nothing.
     */
   ~KButtonBox();
 
   /**
-    * @return The minimum size needed to fit all buttons. This size is
+    * @return The minimum size needed to fit all buttons.
+    *
+    * This size is
     * calculated by the width/height of all buttons plus border/autoborder.
     */
   virtual QSize sizeHint() const;
@@ -90,7 +97,9 @@ public:
 
   /**
     * This function must be called @bf once after all buttons have been
-    * inserted. It will start layout control.
+    * inserted.
+    *
+    * It will start layout control.
     */
   void layout();
 

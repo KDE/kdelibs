@@ -37,7 +37,6 @@ class QLineEdit;
 class QTextStream;
 class KIntNumInput;
 
-///
 class KEdGotoLine : public KDialogBase
 {
     Q_OBJECT
@@ -135,17 +134,25 @@ public:
 
     ~KEdit();
 
-
+    /**
+     * Search directions.
+     * @internal
+     **/
     enum { NONE,
 	   FORWARD,
 	   BACKWARD };
-
+    /**
+     * @internal
+     **/
     enum { KEDIT_OK 		= 0,
 	   KEDIT_OS_ERROR 	= 1,
 	   KEDIT_USER_CANCEL 	= 2 ,
 	   KEDIT_RETRY 		= 3,
 	   KEDIT_NOPERMISSIONS 	= 4};
 
+    /**
+     * @internal
+     **/
     enum { OPEN_READWRITE 	= 1,
 	   OPEN_READONLY 	= 2,
 	   OPEN_INSERT 		= 4 };
@@ -206,13 +213,14 @@ public:
 
     /**
      * Set the modification status of the document. 
+     *
      *  @true = Modified, @false = UNMODIFIED. 
      *  This can be used to test whether the document needs to be saved.
      **/
     void 	setModified( bool = true);
 
     /**
-     * Install a context menu for KEdit.
+     * Install a context menu for @ref KEdit.
      *
      *  The Popup Menu will be activated on a right mouse button press event.
      */
@@ -249,7 +257,7 @@ public:
 
 signals:
     /** This signal is emitted if the user dropped a URL over the text editor
-      * QMultiLineEdit widget.
+      * @ref QMultiLineEdit widget.
       *
       *  Note that the user can drop also Text on it, but
       * this is already handled internally by QMultiLineEdit.
@@ -270,24 +278,51 @@ signals:
     void 	toggle_overwrite_signal();
 
 public slots:
-
+      /**
+       * @internal
+       **/
     void corrected (QString originalword, QString newword, unsigned pos);
+      /**
+       * @internal
+       **/
     void misspelling (QString word, QStringList *, unsigned pos);
 
+      /**
+       * @internal
+       * Called from search dialog.
+       **/
     void search_slot();
 
+      /**
+       * @internal
+       **/
     void searchdone_slot();
 
+      /**
+       * @internal
+       **/
     void replace_slot();
 
+      /**
+       * @internal
+       **/
     void replace_all_slot();
 
+      /**
+       * @internal
+       **/
     void replace_search_slot();
 
+      /**
+       * @internal
+       **/
     void replacedone_slot();
 
     void computePosition();
 
+      /**
+       * Repaint the widget.
+       **/
     void repaintAll();
 
 

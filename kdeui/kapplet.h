@@ -1,5 +1,9 @@
 /* This file is part of the KDE libraries
 
+
+
+
+
     Copyright (C) 1999 Matthias Ettrich (ettrich@kde.org)
 
     This library is free software; you can redistribute it and/or
@@ -38,6 +42,10 @@ class KApplet : public QWidget, DCOPObject
 {
     Q_OBJECT
 public:
+    /**
+     * Sizes to which your applet may be streched when
+     * laying out the toolbar.
+     **/
     enum Stretch{Fixed=0, Small, Medium, Large, Huge};
     
     /**
