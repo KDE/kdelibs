@@ -1,5 +1,4 @@
 #include "kio_cache.h"
-#include "kpixmapcache.h"
 #include "kmimetype.h"
 
 #include <time.h>
