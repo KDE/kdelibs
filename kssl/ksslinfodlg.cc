@@ -91,7 +91,7 @@ QGridLayout *grid = new QGridLayout(this, 18, 6);
 QLabel *label = new QLabel(i18n("Current connection is secured with SSL..."), this);
 label->setAutoResize(true);
 
-grid->addMultiCellWidget(label, 0, 0, 1, 5);
+grid->addMultiCellWidget(label, 0, 0, 0, 5);
 
 label = new QLabel(i18n("Peer Certificate"), this);
 label->setAutoResize(true);
@@ -123,7 +123,7 @@ grid->addWidget(label, 3, 4);
 
 label = new QLabel(i18n("Country:"), this);
 label->setAutoResize(true);
-grid->addWidget(label, 4, 4);
+grid->addWidget(label, 4, 2);
 
 label = new QLabel(i18n("IP Address:"), this);
 label->setAutoResize(true);
@@ -175,7 +175,7 @@ grid->addWidget(label, 14, 0);
 
 label = new QLabel(i18n("Details:"), this);
 label->setAutoResize(true);
-grid->addWidget(label, 14, 2);
+grid->addWidget(label, 14, 3);
 
 label = new QLabel(i18n("SSL Version:"), this);
 label->setAutoResize(true);
@@ -257,7 +257,7 @@ grid->addWidget(m_lcipher, 14, 1);
 
 m_lcipherdesc = new QLabel("", this);
 label->setAutoResize(true);
-grid->addMultiCellWidget(m_lcipherdesc, 14, 14, 3, 5);
+grid->addMultiCellWidget(m_lcipherdesc, 14, 14, 4, 5);
 
 m_lsslversion = new QLabel("", this);
 label->setAutoResize(true);
@@ -324,7 +324,7 @@ m_lcipherdesc->setText(m_cipherdesc);
 m_lcipher->setText(m_cipher);
 m_lsslversion->setText(m_sslversion);
 QString tmp;
-tmp.sprintf("%d bit, %d bits actually used.", m_bits, m_usedbits);
+tmp.sprintf("%d bits used of a %d bit cipher.", m_usedbits, m_bits);
 m_lbits->setText(tmp);
 
 }
