@@ -12,4 +12,5 @@ common_DATA = caution.png home.png important.png next.png note.png \
 	lgpl-licence.html lgpl-licence lgpl-notice \
 	mieterra-artistic-license \
 	kde-common.css kde-default.css \
-	xml.dcl
+	xml.dcl logotp3-small.png logotp3.png
+
