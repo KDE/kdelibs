@@ -94,7 +94,7 @@ bool KKeyNative::init( const KKey& key )
 	m_sym = key.sym();
 	uint modExtra = KKeyServer::Sym(m_sym).getModsRequired();
 	// Get the X modifier equivalent.
-	if( !KKeyServer::modToModX( key.modFlags() | modExtra, m_mod ) ) {
+	if( !m_sym || !KKeyServer::modToModX( key.modFlags() | modExtra, m_mod ) ) {
 		m_sym = m_mod = 0;
 		m_code = 0;
 		return false;
