@@ -173,14 +173,6 @@ UString::UString(char c)
   rep = Rep::create(new UChar(0, c), 1);
 }
 
-UString::UString(int i)
-{
-  char buffer[30];
-  sprintf(buffer, "%d", i);
-  attach(&Rep::null);
-  operator=(buffer);
-}
-
 UString::UString(const char *c)
 {
   attach(&Rep::null);
@@ -208,11 +200,6 @@ UString::UString(UChar *c, int length, bool copy)
 UString::UString(const UString &b)
 {
   attach(b.rep);
-}
-
-UString::UString(const UString *b)
-{
-  attach(b->rep);
 }
 
 UString::~UString()

@@ -197,48 +197,165 @@ namespace KJS {
     };
 
   public:
+    /**
+     * Constructs a null string.
+     */
     UString();
+    /**
+     * Constructs a string from the single character c.
+     */
     UString(char c);
-    UString(int i);
+    /**
+     * Constructs a string from a classical zero determined char string.
+     */
     UString(const char *c);
+    /**
+     * Constructs a string from an array of Unicode characters of the specified
+     * length.
+     */
     UString(const UChar *c, int length);
+    /**
+     * If copy is false a shallow copy of the string will be created. That
+     * means that the data will NOT be copied and you'll have to guarantee that
+     * it doesn't get deleted during the lifetime of the UString object.
+     * Behaviour defaults to a deep copy if copy is true.
+     */
     UString(UChar *c, int length, bool copy);
+    /**
+     * Copy constructor. Makes a shallow copy only.
+     */
     UString(const UString &);
-    UString(const UString *);
+    /**
+     * Convenience declaration only ! You'll be on your own to write the
+     * implementation for a construction from QString.
+     *
+     * Note: feel free to contact me if you want to see a dummy header for
+     * your favourite FooString class here !
+     */
     UString(const QString &);
+    /**
+     * Convenience declaration only ! See @ref UString(const QString&).
+     */
     UString(const DOM::DOMString &);
-
+    /**
+     * Destructor. If this handle was the only one holding a reference to the
+     * string the data will be freed.
+     */
     ~UString();
 
+    /**
+     * Constructs a string from an int.
+     */
     static UString from(int i);
+    /**
+     * Constructs a string from an unsigned int.
+     */
     static UString from(unsigned int u);
+    /**
+     * Constructs a string from a double.
+     */
     static UString from(double d);
 
+    /**
+     * Append another string.
+     */
     UString &append(const UString &);
 
-    // conversions to other string types
+    /**
+     * @return The string converted to the 8-bit string type @ref CString().
+     */
     CString cstring() const;
+    /**
+     * Convert the Unicode string to plain ASCII chars chopping of any higher
+     * bytes. This method should only be used for *debugging* purposes as it
+     * is neither Unicode safe nor free from side effects. In order not to
+     * waste any memory the char buffer is static and *shared* by all UString
+     * instances.
+     */
     char *ascii() const;
+    /**
+     * @see UString(const QString&).
+     */
     DOM::DOMString string() const;
+    /**
+     * @see UString(const QString&).
+     */
     QString qstring() const;
+    /**
+     * @see UString(const QString&).
+     */
     QConstString qconststring() const;
 
+    /**
+     * Assignment operator.
+     */
     UString &operator=(const char *c);
+    /**
+     * Assignment operator.
+     */
     UString &operator=(const UString &);
+    /**
+     * Appends the specified string.
+     */
     UString &operator+=(const UString &s);
 
+    /**
+     * @return A pointer to the internal Unicode data.
+     */
     const UChar* data() const { return rep->data(); }
+    /**
+     * @return True if null.
+     */
     bool isNull() const { return (rep == &Rep::null); }
+    /**
+     * @return True if null or zero length.
+     */
     bool isEmpty() const { return (!rep->len); }
+    /**
+     * Use this if you want to make sure that this string is a plain ASCII
+     * string. For example, if you don't want to lose any information when
+     * using @ref cstring() or @ref ascii().
+     *
+     * @return True if the string doesn't contain any non-ASCII characters.
+     */
     bool is8Bit() const;
+    /**
+     * @return The length of the string.
+     */
     int size() const { return rep->size(); }
+    /**
+     * Const character at specified position.
+     */
     UChar operator[](int pos) const;
+    /**
+     * Writable reference to character at specified position.
+     */
     UCharReference operator[](int pos);
 
+    /**
+     * Attempts an conversion to a number. Apart from floating point numbers,
+     * the algorithm will recognize hexadecimal representations (as
+     * indicated by a 0x or 0X prefix) and +/- Infinity.
+     */
     double toDouble() const;
+    /**
+     * @return Position of first occurence of f starting at position pos.
+     * -1 if the search was not successful.
+     */
     int find(const UString &f, int pos = 0) const;
+    /**
+     * @return Position of first occurence of f searching backwards from
+     * position pos.
+     * -1 if the search was not successful.
+     */
     int rfind(const UString &f, int pos) const;
+    /**
+     * @return The sub string starting at position pos and length len.
+     */
     UString substr(int pos = 0, int len = -1) const;
+    /**
+     * Static instance of a null string.
+     */
     static UString null;
   private:
     void attach(Rep *r);
