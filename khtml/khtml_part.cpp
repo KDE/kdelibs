@@ -68,6 +68,8 @@
 #include <qregexp.h>
 #include <qtimer.h>
 #include <qwidget.h>
+#include <qclipboard.h>
+#include <qapplication.h>
 
 namespace khtml
 {
@@ -195,6 +197,9 @@ KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *pa
   d->m_view = new KHTMLView( this, parentWidget, widgetname );
   setWidget( d->m_view );
 
+  connect( d->m_view, SIGNAL( selectionChanged() ),
+	   this, SLOT( slotSelectionChanged() ) );
+  
   d->m_extension = new KHTMLPartBrowserExtension( this );
 
   d->m_bJScriptEnabled = false;
@@ -817,13 +822,12 @@ bool KHTMLPart::findTextNext( const QRegExp &exp )
 
 QString KHTMLPart::selectedText() const
 {
-    // ###
-    return QString::null;
+    return d->m_view->selectedText();
 }
 
 bool KHTMLPart::hasSelection() const
 {
-    return false;
+    return d->m_view->hasSelection();
 }
 
 DOM::Range KHTMLPart::selection() const
@@ -1610,6 +1614,11 @@ DOM::Node KHTMLPart::nodeUnderMouse() const
     return d->m_view->nodeUnderMouse();
 }
 
+void KHTMLPart::slotSelectionChanged()
+{
+  emit d->m_extension->enableAction( "copy", hasSelection() ); 
+  emit d->m_extension->selectionInfo( selectedText() );
+} 
 
 KHTMLPartBrowserExtension::KHTMLPartBrowserExtension( KHTMLPart *parent, const char *name )
 : KParts::BrowserExtension( parent, name )
@@ -1639,6 +1648,14 @@ void KHTMLPartBrowserExtension::restoreState( QDataStream &stream )
   m_part->restoreState( stream );
 }
 
+void KHTMLPartBrowserExtension::copy()
+{
+  // get selected text and paste to the clipboard
+  QString text = m_part->selectedText();
+  QClipboard *cb = QApplication::clipboard();
+  cb->setText(text);
+} 
+
 class KHTMLPopupGUIClient::KHTMLPopupGUIClientPrivate
 {
 public:
@@ -1661,7 +1678,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
   if ( !url.isEmpty() )
     d->m_paSaveLinkAs = new KAction( i18n( "&Save Link As ..." ), 0, this, SLOT( slotSaveLinkAs() ),
  				     actionCollection(), "savelinkas" );
-  
+
   DOM::Element e;
   e = khtml->nodeUnderMouse();
 
@@ -1673,7 +1690,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
   }
 
   setXML( doc );
-  
+
   if ( actionCollection()->count() > 0 )
   {
     QDomElement e = document().documentElement().namedItem( "Menu" ).toElement();

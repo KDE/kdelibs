@@ -71,6 +71,10 @@ public:
 protected:
     void init();
     void clear();
+
+signals:
+    void selectionChanged();
+
 public:
 
     int frameWidth() const { return _width; }
@@ -151,6 +155,8 @@ public:
     //    int marginHeight() { return _marginHeight; }
 
     QString selectedText() const;
+
+    bool hasSelection() const;
 
 protected:
     void paintElement( khtml::RenderObject *o, int x, int y );

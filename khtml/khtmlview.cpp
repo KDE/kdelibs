@@ -385,6 +385,7 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
 		d->selectionEnd = 0;
 	    }
 	    // ### emit some signal
+	    emit selectionChanged();
 	}
     }
 
@@ -574,6 +575,7 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 	d->selectionEnd = 0;
 	d->startOffset = 0;
 	d->endOffset = 0;
+	emit selectionChanged();
     } else {
 	// we have to get to know if end is before start or not...
 	NodeImpl *n = d->selectionStart;
@@ -605,7 +607,7 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 	QClipboard *cb = QApplication::clipboard();
 	cb->setText(text);
 	//printf("selectedText = %s\n",text.latin1());
-	
+	emit selectionChanged();
     }
 }
 
@@ -640,6 +642,11 @@ QString KHTMLView::selectedText() const
     }
     return text;
 }
+
+bool KHTMLView::hasSelection() const
+{
+  return ( d->selectionStart != 0 && d->selectionEnd != 0 );
+} 
 
 void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 {

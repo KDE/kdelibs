@@ -581,6 +581,8 @@ private slots:
    */
   void slotChildURLRequest( const KURL &url, const KParts::URLArgs &args );
 
+  void slotSelectionChanged();
+
 private:
   void clear();
   void checkCompleted();
@@ -612,6 +614,10 @@ public:
 
   virtual void saveState( QDataStream &stream );
   virtual void restoreState( QDataStream &stream );
+
+public slots:
+  void copy();
+
 private:
   KHTMLPart *m_part;
 };
