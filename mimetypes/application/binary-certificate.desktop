@@ -1,7 +1,0 @@
-[Desktop Entry]
-Type=MimeType
-MimeType=application/binary-certificate
-Icon=lock
-Comment=DER encoded X.509 certificate
-X-KDE-AutoEmbed=true
-
