@@ -692,9 +692,7 @@ void RenderPartObject::updateWidget()
                   serviceType = "application/x-shockwave-flash";
               }
               else if(objbase->classId.contains(QString::fromLatin1("CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA")))
-                  //if we support -plugin suffixes
-                  //serviceType = "audio/x-pn-realaudio-plugin";
-                  serviceType = "audio/x-pn-realaudio";
+                  serviceType = "audio/x-pn-realaudio-plugin";
               else if(objbase->classId.contains(QString::fromLatin1("8AD9C840-044E-11D1-B3E9-00805F499D93")) ||
                       objbase->classId.contains(QString::fromLatin1("CAFEEFAC-0014-0000-0000-ABCDEFFEDCBA")))
                   serviceType = "application/x-java-applet";

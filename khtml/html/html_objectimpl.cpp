@@ -60,9 +60,6 @@ void HTMLObjectBaseElementImpl::setServiceType(const QString & val) {
     int pos = serviceType.find( ";" );
     if ( pos!=-1 )
         serviceType.truncate( pos );
-    pos = serviceType.find( "-plugin" );
-    if ( pos!=-1 )
-        serviceType.truncate( pos );
 }
 
 void HTMLObjectBaseElementImpl::parseAttribute(AttributeImpl *attr)

@@ -4199,8 +4199,15 @@ KParts::ReadOnlyPart *KHTMLPart::createPart( QWidget *parentWidget, const char *
 
   KTrader::OfferList offers = KTrader::self()->query( mimetype, "KParts/ReadOnlyPart", constr, QString::null );
 
-  if ( offers.isEmpty() )
-    return 0L;
+  if ( offers.isEmpty() ) {
+    int pos = mimetype.find( "-plugin" );
+    if (pos < 0)
+        return 0L;
+    QString stripped_mime = mimetype.left( pos );
+    offers = KTrader::self()->query( stripped_mime, "KParts/ReadOnlyPart", constr, QString::null );
+    if ( offers.isEmpty() )
+        return 0L;
+  }
 
   KTrader::OfferList::Iterator it = offers.begin();
   for (  ; it != offers.end() ; ++it )
