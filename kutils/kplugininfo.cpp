@@ -61,8 +61,7 @@ KPluginInfo::KPluginInfo( const QString & filename )
 	if( filename.endsWith( QString::fromAscii( ".desktop" ) ) )
 	{
 		file.setDesktopGroup();
-		if( file.readBoolEntry( "Hidden", false ) ||
-				file.readEntry( "Type" ) != "Plugin" )
+		if( file.readBoolEntry( "Hidden", false ) )
 		{
 			d->hidden = true;
 			return;
