@@ -1176,7 +1176,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 
 void HTMLTokenizer::addPending()
 {
-    if ( select)
+    if ( select && !(comment || script))
     {
         *dest++ = ' ';
     }
