@@ -1,7 +1,7 @@
 #include "kjavaprocess.h"
 
 #include <kdebug.h>
-#include <kprotocolmanager.h>
+#include <kio/kprotocolmanager.h>
 
 #include <qtextstream.h>
 #include <iostream.h>

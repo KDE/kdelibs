@@ -7,7 +7,7 @@
 #include <kstddirs.h>
 #include <kdebug.h>
 #include <klocale.h>
-#include <kprotocolmanager.h>
+#include <kio/kprotocolmanager.h>
 #include <kio/job.h>
 
 #include <qtimer.h>
