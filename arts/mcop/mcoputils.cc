@@ -29,6 +29,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <config.h>
+#include <ctype.h>
 #include <map>
 	
 using namespace std;

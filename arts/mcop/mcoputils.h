@@ -82,7 +82,8 @@ public:
 	 * Tokenization of a key = value1, "value 2", "value III" line into the key
 	 * and the values.
 	 */
-	static bool tokenize(const string& line, string& key,vector<string>& values);
+	static bool tokenize(const std::string& line, std::string& key,
+					     std::vector<std::string>& values);
 };
 
 };
