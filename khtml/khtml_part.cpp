@@ -353,6 +353,7 @@ KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *pa
                       GUIProfile prof )
 : KParts::ReadOnlyPart( parent ? parent : parentWidget, name ? name : widgetname )
 {
+    d = 0;
   KHTMLFactory::registerPart( this );
   setInstance( KHTMLFactory::instance() ); // doesn't work inside init() for derived classes
                                            // Why?? :-} (Simon)
@@ -911,7 +912,9 @@ bool KHTMLPart::openFile()
 
 DOM::HTMLDocumentImpl *KHTMLPart::docImpl() const
 {
-  return d->m_doc;
+    if ( d )
+	return d->m_doc;
+    return 0;
 }
 
 /*bool KHTMLPart::isSSLInUse() const
