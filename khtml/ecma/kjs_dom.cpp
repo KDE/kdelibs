@@ -660,7 +660,6 @@ void DOMAttr::putValueProperty(ExecState *exec, int token, const Value& value, i
   createRange        DOMDocument::CreateRange                  DontDelete|Function 0
   createNodeIterator DOMDocument::CreateNodeIterator           DontDelete|Function 3
   createTreeWalker   DOMDocument::CreateTreeWalker             DontDelete|Function 4
-  defaultView        DOMDocument::DefaultView                  DontDelete|Function 0
   createEvent        DOMDocument::CreateEvent                  DontDelete|Function 1
   getOverrideStyle   DOMDocument::GetOverrideStyle             DontDelete|Function 2
 @end
@@ -678,6 +677,7 @@ const ClassInfo DOMDocument::info = { "Document", &DOMNode::info, &DOMDocumentTa
   documentElement DOMDocument::DocumentElement                 DontDelete|ReadOnly
   styleSheets     DOMDocument::StyleSheets                     DontDelete|ReadOnly
   readyState      DOMDocument::ReadyState                      DontDelete|ReadOnly
+  defaultView     DOMDocument::DefaultView                     DontDelete|ReadOnly
 @end
 */
 
@@ -710,6 +710,8 @@ Value DOMDocument::getValueProperty(ExecState *exec, int token) const
   case StyleSheets:
     //kdDebug() << "DOMDocument::StyleSheets, returning " << doc.styleSheets().length() << " stylesheets" << endl;
     return getDOMStyleSheetList(exec, doc.styleSheets(), doc);
+  case DOMDocument::DefaultView: // DOM2
+    return getDOMAbstractView(exec, doc.defaultView());
   case ReadyState:
     {
     DOM::DocumentImpl* docimpl = node.handle()->getDocument();
@@ -805,8 +807,6 @@ Value DOMDocumentProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List
     else
       return getDOMCSSStyleDeclaration(exec,doc.getOverrideStyle(static_cast<DOM::Element>(arg0),args[1].toString(exec).string()));
   }
-  case DOMDocument::DefaultView: // DOM2
-    return getDOMAbstractView(exec,doc.defaultView());
   default:
     break;
   }
