@@ -593,6 +593,7 @@ HTMLInputElementImpl::HTMLInputElementImpl(DocumentImpl *doc)
 {
     _type = TEXT;
     m_checked = false;
+    m_value = "";
     _maxLen = -1;
     _size = 20;
     _clicked = false;
@@ -881,15 +882,11 @@ bool HTMLInputElementImpl::encoding(khtml::encodingList& encoding)
     // ### local8Bit() is probably wrong here
     switch (_type) {
         case HIDDEN:
+        case TEXT:
+        case PASSWORD:
             // always successful
             encoding += m_value.string().local8Bit();
             return true;
-
-        case TEXT:
-        case PASSWORD:
-            encoding += m_value.string().local8Bit();
-            return true;
-            break;
         case CHECKBOX:
 
             if( checked() )
