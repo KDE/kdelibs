@@ -80,7 +80,7 @@ debian/tmp/usr/lib/libcupsdconf.la
 debian/tmp/usr/lib/libcupsdconf.so
 debian/tmp/usr/lib/libkcertpart.la
 debian/tmp/usr/lib/libkcertpart.so
-/tmp/usr/lib/libDCOP.so.*
+debian/tmp/usr/lib/libDCOP.so.*
 debian/tmp/usr/lib/libartskde.so.*
 debian/tmp/usr/lib/libkabc.so.*
 debian/tmp/usr/lib/libkatepartinterfaces.so.*
