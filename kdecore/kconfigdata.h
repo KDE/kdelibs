@@ -31,11 +31,14 @@
 struct KEntry
 {
   KEntry()
-    : mValue(0), bDirty(false), bNLS(false), bGlobal(false) {}
+    : mValue(0), bDirty(false), bNLS(false), 
+      bGlobal(false), bImmutable(false), bDeleted(false) {}
   QCString mValue;
   bool    bDirty :1;  // must the entry be written back to disk?
   bool    bNLS   :1;  // entry should be written with locale tag
   bool    bGlobal:1;  // entry should be written to the global config file
+  bool    bImmutable:1; // Entry can not be modified
+  bool    bDeleted:1; // Entry has been deleted
 };
 
 /**
@@ -47,10 +50,13 @@ struct KEntryKey
 {
   KEntryKey(const QCString& _group = 0,
 	    const QCString& _key = 0)
-      : mGroup(_group), mKey(_key), bLocal(false), c_key(_key.data()) {}
+      : mGroup(_group), mKey(_key), bLocal(false), bDefault(false),
+        c_key(_key.data()) {}
   QCString mGroup; // the "group" to which this EntryKey belongs
   QCString mKey;   // the _actual_ key of the entry in question
-  bool bLocal;
+  bool    bLocal  :1; // Entry is localised
+  bool    bDefault:1; // Entry indicates default value
+  
   const char *c_key;
 };
 
@@ -73,7 +79,9 @@ inline bool operator <(const KEntryKey &k1, const KEntryKey &k2)
      result = strcmp(k1.c_key, k2.c_key);
   if (result != 0)
      return result < 0;
-  return (!k1.bLocal && k2.bLocal);
+  if (!k1.bLocal && k2.bLocal)
+    return true;
+  return (!k1.bDefault && k2.bDefault);
 }
 
 /**
