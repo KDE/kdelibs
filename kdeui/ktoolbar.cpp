@@ -23,6 +23,10 @@
 
 // $Id$
 // $Log$
+// Revision 1.135  1999/12/04 03:12:50  granroth
+// Quick ugly hack to allow line seperators to display correctly in
+// Vertical as well as Horizontal styles..
+//
 // Revision 1.134  1999/11/24 12:35:33  navindra
 // do not collapse the bars on MidButton press *and* release.  do it only
 // on Mid release, just like is done with the Left button.  i believe the
@@ -334,8 +338,11 @@ KToolBar::layoutHorizontal(int w)
         {
             QFrame *frame = (QFrame*)item;
             if (frame->frameShape() == QFrame::HLine)
+            {
                 frame->setFrameShape(QFrame::VLine);
-            frame->resize(5, item_size - 2);
+                frame->resize(5, item_size - 2);
+                continue;
+            }
         }
 
 		if (!(*qli)->isRight())
@@ -1465,7 +1472,7 @@ int KToolBar::insertCombo (QStrList *list, int id, bool writable,
     QToolTip::add( combo, tooltiptext );
   connect ( combo, signal, receiver, slot );
   combo->setAutoResize(false);
-  item->resize(size, item_size-2);
+  item->resize(size, 24);
   item->setEnabled(enabled);
   item->show();
   updateRects(true);
@@ -1495,7 +1502,7 @@ int KToolBar::insertCombo (const QStringList &list, int id, bool writable,
     QToolTip::add( combo, tooltiptext );
   connect ( combo, signal, receiver, slot );
   combo->setAutoResize(false);
-  item->resize(size, item_size-2);
+  item->resize(size, 24);
   item->setEnabled(enabled);
   item->show();
   updateRects(true);
@@ -1525,7 +1532,7 @@ int KToolBar::insertCombo (const QString& text, int id, bool writable,
     QToolTip::add( combo, tooltiptext );
   connect (combo, signal, receiver, slot);
   combo->setAutoResize(false);
-  item->resize(size, item_size-2);
+  item->resize(size, 24);
   item->setEnabled(enabled);
   item->show();
   updateRects(true);
