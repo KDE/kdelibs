@@ -2,6 +2,7 @@
 Name=Qt Platinum
 Name[ca]=Qt Platí
 Name[de]=Qt Platin
+Name[eo]=Qt Plateno
 Name[fi]=Qt Platinium
 Name[hu]=Qt Platina
 Name[it]=Qt Platino
@@ -15,6 +16,7 @@ Comment[ca]=Estil incorporat Platí sense temes
 Comment[cs]=Zabudovaný styl Platinum (netémovaný)
 Comment[da]=Indbygget Platinum stil uden tema
 Comment[de]=Eingebauter Platin-Stil (kein komplettes Design)
+Comment[eo]=Originala Platena stilo neetosa
 Comment[et]=Qt Platinum teema
 Comment[fi]=Sisäänrakennettu teemoittamaton Platinium tyyli
 Comment[fr]=Style Platinum d'origine sans thème
