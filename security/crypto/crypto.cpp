@@ -157,14 +157,18 @@ QString YourCertItem::configName() const
 
 
 
-CAItem::CAItem( QListView *view, QString name, KCryptoConfig *module )
+CAItem::CAItem( QListView *view, QString name, QString cert, bool site, bool email, bool code, KCryptoConfig *module )
     : QListViewItem( view, QString::null )
 
 {
     m_module = module;
-KSSLX509Map cert(name);
-    setText(0, cert.getValue("CN"));
+KSSLX509Map mcert(name);
+    setText(0, mcert.getValue("CN"));
     _name = name;
+    _cert = cert;
+    _site = site;
+    _email = email;
+    _code = code;
 }
 
 void CAItem::stateChange( bool )
@@ -269,6 +273,7 @@ QString whatstr;
   policies = new KSimpleConfig("ksslpolicies", false);
   pcerts = new KSimpleConfig("ksslcertificates", false);
   authcfg = new KSimpleConfig("ksslauthmap", false);
+  cacfg = new KSimpleConfig("ksslcalist", false);
 
 #ifdef HAVE_SSL
   SSLv3Box = new QListView(tabSSL, "v3ciphers");
@@ -667,6 +672,7 @@ QString whatstr;
                  " knows about.  You can easily manage them from here.");
   QWhatsThis::add(caList, whatstr);
   grid->addMultiCellWidget(caList, 0, 7, 0, 6);
+  caList->addColumn(i18n("Common Name"));
   connect(caList, SIGNAL(selectionChanged()), SLOT(slotCAItemChanged()));
 
   caSSLImport = new QPushButton(i18n("&Import..."), tabSSLCA);
@@ -781,6 +787,7 @@ KCryptoConfig::~KCryptoConfig()
     delete policies;
     delete pcerts;
     delete authcfg;
+    delete cacfg;
 }
 
 void KCryptoConfig::configChanged()
@@ -917,7 +924,24 @@ void KCryptoConfig::load()
     j->setOriginalName(*i);
   }
 
+  groups = cacfg->groupList();
+ 
+  caList->clear();
+  for (QStringList::Iterator i = groups.begin();
+                             i != groups.end();
+                             ++i) {
+    if ((*i).isEmpty() || *i == "<default>") continue;
+    cacfg->setGroup(*i);
+                new CAItem(caList,
+                     (*i),
+                     cacfg->readEntry("x509", ""), 
+                     cacfg->readBoolEntry("site", false),
+                     cacfg->readBoolEntry("email", false),
+                     cacfg->readBoolEntry("code", false),
+                     this );
+  }
   
+  slotCAItemChanged();
   slotOtherCertSelect();
   slotYourCertSelect();
 #endif
@@ -1073,6 +1097,8 @@ void KCryptoConfig::save()
   config->sync();
   policies->sync();
   pcerts->sync();
+  authcfg->sync();
+  cacfg->sync();
 
   // insure proper permissions -- contains sensitive data
   QString cfgName(KGlobal::dirs()->findResource("config", "cryptodefaults"));

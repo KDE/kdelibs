@@ -132,7 +132,7 @@ private:
 class CAItem : public QListViewItem
 {
 public:
-    CAItem(QListView *view, QString name, KCryptoConfig *module );
+    CAItem(QListView *view, QString name, QString cert, bool site, bool email, bool code, KCryptoConfig *module );
     ~CAItem() {}
 
     QString configName() const;
@@ -144,6 +144,8 @@ protected:
 
 private:
     QString _name;
+    QString _cert;
+    bool _site, _email, _code;
     KCryptoConfig *m_module; // just to call configChanged()
 };
 
@@ -331,7 +333,7 @@ private:
   QCheckBox *caSite, *caEmail, *caCode;
 
   KConfig *config;
-  KSimpleConfig *policies, *pcerts, *authcfg;
+  KSimpleConfig *policies, *pcerts, *authcfg, *cacfg;
 
   bool ___lehack;       // to hack around a lineedit problem
 };
