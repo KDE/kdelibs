@@ -726,7 +726,7 @@ QString KLocale::translate( const char *singular, const char *plural,
       return put_n_in(forms[3], n);
   case 12: // Balcan
      EXPECT_LENGTH( 3 );
-     if (n != 11 && n % 10 = 1)
+     if (n != 11 && n % 10 == 1)
 	return put_n_in(forms[0], n);
      else if (n / 10 != 1 && n % 10 >= 2 && n % 10 <= 4)
 	return put_n_in(forms[1], n);
