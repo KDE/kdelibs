@@ -1181,6 +1181,8 @@ QString KLocale::formatDate(const QDate &pDate, bool shortFormat) const
 
   QString buffer;
 
+  if ( ! pDate.isValid() ) return buffer;
+
   bool escape = false;
 
   int year = calendar()->year(pDate);
