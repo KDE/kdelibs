@@ -212,6 +212,8 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
     if ( d->m_clients.containsRef( client ) == 0 )
         d->m_clients.append( client );
 
+    client->actionCollection()->setWidget( d->builder->widget() ); // ellis
+
     // try to use the build document for building the client's GUI, as the build document
     // contains the correct container state information (like toolbar positions, sizes, etc.) .
     // if there is non available, then use the "real" document.
@@ -279,7 +281,7 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
 void KXMLGUIFactory::removeClient( KXMLGUIClient *client )
 {
     // don't try to remove the client's GUI if we didn't build it
-    if ( client->factory() && client->factory() != this )
+    if ( client->factory() != this )
         return;
 
     // remove this client from our client list
