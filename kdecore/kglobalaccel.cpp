@@ -36,6 +36,8 @@
 #include <X11/keysym.h>
 #include <string.h>
 
+template class QDict<KKeyEntry>;
+
 // NOTE ABOUT CONFIGURATION CHANGES
 // Test if keys enabled because these keys have made X server grabs
 

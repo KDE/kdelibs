@@ -22,6 +22,8 @@
 // for public enums
 #include <kfiledialog.h>
 
+template class QDict<KFileViewItem>;
+
 QString *KDirOperator::lastDirectory = 0; // to set the start path
 
 KDirOperator::KDirOperator(const QString& dirName,

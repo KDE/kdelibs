@@ -56,6 +56,8 @@
 #include <qpixmap.h>
 #include <kdebug.h>
 
+template class QList<QRegExp>;
+
 /*
 ** KFileReader - URL aware directory operator
 **

@@ -21,6 +21,7 @@
 #include <kapp.h>
 #include "kcompletion.h"
 
+template class QList<KCompFork>;
 
 KCompletion::KCompletion()
 {

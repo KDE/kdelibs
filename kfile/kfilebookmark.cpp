@@ -30,6 +30,8 @@
 #include <klocale.h>
 #include <kapp.h>
 
+template class QList<KFileBookmark>;
+
 //-----------------------------------------------------------------------------
 
 KFileBookmark::KFileBookmark()
