@@ -173,6 +173,7 @@ static QString decode( const QString& segment, bool *keepEncoded=0, int encoding
   bool isUnicode = false; // This detects utf-16, not utf-8
   bool isLocal = false;
   bool isAscii = true;
+  bool bKeepEncoded = true;
   int old_length = segment.length();
   if ( !old_length )
     return QString::null;
@@ -187,6 +188,8 @@ static QString decode( const QString& segment, bool *keepEncoded=0, int encoding
   while( i < old_length )
   {
     unsigned int character = segment[ i++ ].unicode();
+    if ((character == ' ') || (character > 255))
+       bKeepEncoded = false;
     if ( (character == '%' ) &&
          ( i+1 < old_length) ) // Must have at least two chars left!
     {
@@ -225,22 +228,18 @@ static QString decode( const QString& segment, bool *keepEncoded=0, int encoding
       }
       else
           result = QString::fromLocal8Bit(new_segment, new_length);
-
-      // No idea about keepEncoded... Hmm, it's unused anyway (!)
   }
   // Guess the encoding, if not specified
   else if ((!isAscii && !isUnicode) || isLocal)
   {
      result = QString::fromLocal8Bit(new_segment, new_length);
-     if (keepEncoded)
-       *keepEncoded = true;
   }
   else
   {
      result = QString( new_usegment, new_length);
-     if (keepEncoded)
-       *keepEncoded = false;
   }
+  if (keepEncoded)
+     *keepEncoded = bKeepEncoded;
   delete [] new_segment;
   delete [] new_usegment;
   return result;
@@ -950,10 +949,8 @@ void KURL::setEncodedPathAndQuery( const QString& _txt, int encoding_hint )
   }
   bool keepEncoded;
   m_strPath = decode( m_strPath_encoded, &keepEncoded, encoding_hint );
-// WABA: Always keep the original encoding. There are a lot of
-// braindead web-servers out there you know.
-//  if (!keepEncoded)
-//     m_strPath_encoded = QString::null;
+  if (!keepEncoded)
+     m_strPath_encoded = QString::null;
 }
 
 QString KURL::path( int _trailing ) const
