@@ -204,6 +204,10 @@ QString PasswordDialog::username() const
     return d->userEdit->text();
 }
 
+// ### to be removed on 3.0
+QString PasswordDialog::username() { return d->userEdit->text(); }
+QString PasswordDialog::password() { return d->passEdit->text(); }
+
 QString PasswordDialog::password() const
 {
     return d->passEdit->text();

@@ -26,6 +26,10 @@ class QGridLayout;
 
 namespace KIO {
 
+// ### remove for 3.0
+// compatibility has been completely broken, here's a workaround
+#define PasswordDialog PassDlg
+    
 /**
  * A dialog for requesting a login and a password from the end user.
  *
@@ -109,12 +113,16 @@ public:
      * Returns the password entered by the user.
      */
     QString password() const;
-
+    
     /**
      * Returns the username entered by the user.
      */
     QString username() const;
 
+    // ### remove for 3.0
+    QString username();
+    QString password();
+    
     /**
      * Determines whether supplied authorization should
      * persist even after the application has been closed.
@@ -132,7 +140,9 @@ public:
     /**
      * @deprecated. Use @ref setUserReadOnly(bool).
      */
-    void setEnableUserField( bool, bool ) {};
+    void setEnableUserField( bool enable, bool=false ) {
+	setUserReadOnly( !enable );
+    };
 
     /**
      * A convienence static method for obtaining authorization
@@ -167,8 +177,6 @@ private:
     struct PasswordDialogPrivate;
     PasswordDialogPrivate* d;
 };
-
-typedef PasswordDialog PassDlg;
 
 };
 
