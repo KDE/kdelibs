@@ -698,8 +698,8 @@ KSSLCertificate::KSSLValidationList KSSLCertificate::validateVerbose(KSSLCertifi
 		if (ksslv != NoCARoot && ksslv != InvalidCA) {
 			d->m_stateCached = true;
 			d->m_stateCache = ksslv;
-			break;
 		}
+		break;
 	}
 	
 	if (ksslv != KSSLCertificate::Ok)
