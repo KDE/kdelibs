@@ -321,7 +321,7 @@ namespace khtml
 
 	CachedImage *requestImage( const DOM::DOMString &url);
 	CachedCSSStyleSheet *requestStyleSheet( const DOM::DOMString &url, const QString& charset,
-						const char *accept = "text/css");
+						const char *accept = "text/css", bool userSheet = false );
         CachedScript *requestScript( const DOM::DOMString &url, const QString& charset);
 
 	bool autoloadImages() const { return m_bautoloadImages; }

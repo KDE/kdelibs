@@ -120,7 +120,8 @@ namespace khtml {
         PartStyleSheetLoader(KHTMLPart *part, DOM::DOMString url, DocLoader* dl)
         {
             m_part = part;
-            m_cachedSheet = dl->requestStyleSheet(url, QString::null );
+            m_cachedSheet = dl->requestStyleSheet(url, QString::null, "text/css",
+                                                  true /* "user sheet" */);
             if (m_cachedSheet)
 		m_cachedSheet->ref( this );
         }
