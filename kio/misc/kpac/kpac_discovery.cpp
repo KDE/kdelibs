@@ -89,7 +89,7 @@ bool KPACDiscovery::tryDiscovery()
             if (m_hostname.isEmpty())
                 return false;
             else if (m_data.isEmpty())
-                m_data = m_hostname.utf8();
+                m_data = m_hostname;
             int pos = m_data.find('.');
             if (pos == -1)
                 return false;
