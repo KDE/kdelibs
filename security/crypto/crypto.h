@@ -129,6 +129,27 @@ private:
 
 
 
+class CAItem : public QListViewItem
+{
+public:
+    CAItem(QListView *view, QString name, KCryptoConfig *module );
+    ~CAItem() {}
+
+    QString configName() const;
+    QString& getName() { return _name; }
+    void setName(QString name) { _name = name; }
+
+protected:
+    virtual void stateChange( bool );
+
+private:
+    QString _name;
+    KCryptoConfig *m_module; // just to call configChanged()
+};
+
+
+
+
 
 class HostAuthItem : public QListViewItem
 {
@@ -192,7 +213,6 @@ public:
 
   int buttons();
   QString quickHelp() const;
-  const KAboutData* aboutData() const; 
 
 #ifdef HAVE_SSL
   bool loadCiphers();
@@ -236,6 +256,11 @@ public slots:
   void slotAuthButtons();
   void slotAuthCombo();
 
+  void slotCAImport();
+  void slotCARemove();
+  void slotCAItemChanged();
+  void slotCAChecked();
+  
 private:
 
   void setAuthCertLists();
@@ -259,12 +284,11 @@ private:
   QPushButton *mCWall, *mCWus, *mCWexp, *mCWcompatible;
 
   QCheckBox *mWarnOnUnencrypted, *mWarnOnMixed;
-  QListView *yourSSLBox, *otherSSLBox, *caSSLBox;
+  QListView *yourSSLBox, *otherSSLBox, *caList;
   QCheckBox *mWarnSelfSigned, *mWarnExpired, *mWarnRevoked;
   QPushButton *macAdd, *macRemove, *macClear;
   QListBox *macBox;
   QPushButton *otherSSLExport, *otherSSLView, *otherSSLRemove, *otherSSLVerify;
-  QPushButton *caSSLImport, *caSSLView, *caSSLRemove, *caSSLVerify;
   QPushButton *yourSSLImport, *yourSSLPass, *yourSSLRemove, *yourSSLExport,
               *yourSSLUnlock, *yourSSLVerify;
   QRadioButton *yourSSLUseDefault, *yourSSLList, *yourSSLDont;
@@ -286,6 +310,7 @@ private:
   QPushButton *oTest;
   QList<OtherCertItem> otherCertDelList;
   QList<YourCertItem> yourCertDelList;
+  QList<CAItem> caDelList;
 
   /* Personal Cert Policies tab */
   QComboBox *defCertBox;
@@ -298,6 +323,11 @@ private:
   QPushButton *authAdd, *authRemove;
   QLineEdit *authHost;
   QList<HostAuthItem> authDelList;
+
+  /* CA stuff */
+  KSSLCertBox *caSubject, *caIssuer;
+  QPushButton *caSSLImport, *caSSLRemove;
+  QCheckBox *caSite, *caEmail, *caCode;
 
   KConfig *config;
   KSimpleConfig *policies, *pcerts, *authcfg;

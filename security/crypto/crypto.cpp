@@ -157,6 +157,28 @@ QString YourCertItem::configName() const
 
 
 
+CAItem::CAItem( QListView *view, QString name, KCryptoConfig *module )
+    : QListViewItem( view, QString::null )
+
+{
+    m_module = module;
+KSSLX509Map cert(name);
+    setText(0, cert.getValue("CN"));
+    _name = name;
+}
+
+void CAItem::stateChange( bool )
+{
+    m_module->configChanged();
+}
+
+QString CAItem::configName() const
+{
+    return _name;
+}
+
+
+
 
 //////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
@@ -180,14 +202,15 @@ QString whatstr;
   authDelList.setAutoDelete(true);
 
   ///////////////////////////////////////////////////////////////////////////
-  // Create the GUI here - there are currently a total of 4 tabs.
+  // Create the GUI here - there are currently a total of 6 tabs.
   // The first is SSL and cipher related
   // The second is OpenSSL settings
   // The third is user's SSL certificate related
   // The fourth is certificate authentication related
   // The fifth is other SSL certificate related
   // The sixth is CA related
-  // The seventh is misc. settings related
+  // The seventh is misc. settings related   (unimplemented)
+  // The eigth is peer [email] certificate related (unimplemented)
   ///////////////////////////////////////////////////////////////////////////
 
   tabs = new QTabWidget(this);
@@ -631,38 +654,45 @@ QString whatstr;
 #endif
 
 
-#if 0
   ///////////////////////////////////////////////////////////////////////////
   // SIXTH TAB
   ///////////////////////////////////////////////////////////////////////////
   tabSSLCA = new QFrame(this);
 
 #ifdef HAVE_SSL
-  grid = new QGridLayout(tabSSLCA, 8, 2, KDialog::marginHint(), KDialog::spacingHint());
+  grid = new QGridLayout(tabSSLCA, 18, 8, KDialog::marginHint(), KDialog::spacingHint());
 
-  caSSLBox = new QListBox(tabSSLCA);
+  caList = new QListView(tabSSLCA);
   whatstr = i18n("This list box shows which certificate authorities KDE"
-                " knows about.  You can easily manage them from here.");
-  QWhatsThis::add(caSSLBox, whatstr);
-  caSSLBox->setSelectionMode(QListBox::Single);
-  caSSLBox->setColumnMode(QListBox::FixedNumber);
-  grid->addMultiCellWidget(caSSLBox, 0, 7, 0, 0);
+                 " knows about.  You can easily manage them from here.");
+  QWhatsThis::add(caList, whatstr);
+  grid->addMultiCellWidget(caList, 0, 7, 0, 6);
+  connect(caList, SIGNAL(selectionChanged()), SLOT(slotCAItemChanged()));
 
   caSSLImport = new QPushButton(i18n("&Import..."), tabSSLCA);
-  //connect(caSSLImport, SIGNAL(), SLOT());
-  grid->addWidget(caSSLImport, 0, 1);
-
-  caSSLView = new QPushButton(i18n("&View/Edit..."), tabSSLCA);
-  //connect(caSSLView, SIGNAL(), SLOT());
-  grid->addWidget(caSSLView, 1, 1);
+  connect(caSSLImport, SIGNAL(clicked()), SLOT(slotCAImport()));
+  grid->addWidget(caSSLImport, 0, 7);
 
   caSSLRemove = new QPushButton(i18n("&Remove..."), tabSSLCA);
-  //connect(caSSLRemove, SIGNAL(), SLOT());
-  grid->addWidget(caSSLRemove, 2, 1);
+  connect(caSSLRemove, SIGNAL(clicked()), SLOT(slotCARemove()));
+  grid->addWidget(caSSLRemove, 1, 7);
+  caSSLRemove->setEnabled(false);
 
-  caSSLVerify = new QPushButton(i18n("Verif&y..."), tabSSLCA);
-  //connect(caSSLVerify, SIGNAL(), SLOT());
-  grid->addWidget(caSSLVerify, 3, 1);
+  caSubject = KSSLInfoDlg::certInfoWidget(tabSSLCA, QString(""));
+  caIssuer = KSSLInfoDlg::certInfoWidget(tabSSLCA, QString(""));
+  grid->addMultiCellWidget(caSubject, 8, 14, 0, 3);
+  grid->addMultiCellWidget(caIssuer, 8, 14, 4, 7);
+
+  // Accept for Web Site Signing, Email Signing, Code Signing
+  caSite = new QCheckBox(i18n("Accept for site signing"), tabSSLCA);
+  caEmail = new QCheckBox(i18n("Accept for e-mail signing"), tabSSLCA);
+  caCode = new QCheckBox(i18n("Accept for code signing"), tabSSLCA);
+  grid->addMultiCellWidget(caSite, 15, 15, 0, 4);
+  connect(caSite, SIGNAL(clicked()), SLOT(slotCAChecked()));
+  grid->addMultiCellWidget(caEmail, 16, 16, 0, 4);
+  connect(caEmail, SIGNAL(clicked()), SLOT(slotCAChecked()));
+  grid->addMultiCellWidget(caCode, 17, 17, 0, 4);
+  connect(caCode, SIGNAL(clicked()), SLOT(slotCAChecked()));
 
 #else
   nossllabel = new QLabel(i18n("SSL certificates cannot be managed"
@@ -671,6 +701,8 @@ QString whatstr;
   grid->addMultiCellWidget(nossllabel, 1, 1, 0, 1);
 #endif
 
+
+#if 0
   ///////////////////////////////////////////////////////////////////////////
   // SEVENTH TAB
   ///////////////////////////////////////////////////////////////////////////
@@ -730,9 +762,9 @@ QString whatstr;
   tabs->addTab(tabYourSSLCert, i18n("Your Certificates"));
   tabs->addTab(tabAuth, i18n("Authentication"));
   tabs->addTab(tabOtherSSLCert, i18n("Peer SSL Certificates"));
+  tabs->addTab(tabSSLCA, i18n("SSL Signers"));
 
 #if 0
-  tabs->addTab(tabSSLCA, i18n("SSL C.A.s"));
   tabs->addTab(tabSSLCOpts, i18n("Validation Options"));
 #endif
 
@@ -1097,18 +1129,6 @@ QString KCryptoConfig::quickHelp() const
      " use with most KDE applications, as well as manage your personal"
      " certificates and the known certificate authorities.");
 }
-
-const KAboutData* KCryptoConfig::aboutData() const
-{
-    KAboutData *about =
-    new KAboutData(I18N_NOOP("kcmcrypto"), I18N_NOOP("KDE Crypto Control Module"),
-                  0, 0, KAboutData::License_GPL,
-                  I18N_NOOP("(c) 1999 - 2001 George Staikos"));
- 
-    about->addAuthor("George Staikos", 0, "staikos@kde.org");
- 
-    return about;
-} 
 
 
 void KCryptoConfig::slotCWcompatible() {
@@ -1650,6 +1670,38 @@ QCString oldpass = "";
 }
 
 
+void KCryptoConfig::slotCAImport() {
+
+}
+
+
+void KCryptoConfig::slotCARemove() {
+CAItem *x = static_cast<CAItem *>(caList->selectedItem());
+ if (x) {
+   
+ }
+}
+
+
+void KCryptoConfig::slotCAItemChanged() {
+CAItem *x = static_cast<CAItem *>(caList->selectedItem());
+ if (x) {
+    caSSLRemove->setEnabled(true);   
+ } else {
+    caSSLRemove->setEnabled(false);
+ }
+}
+
+
+void KCryptoConfig::slotCAChecked() {
+CAItem *x = static_cast<CAItem *>(caList->selectedItem());
+ if (x) {
+   
+   configChanged();
+ }
+}
+
+
 
 void KCryptoConfig::slotNewHostAuth() {
     HostAuthItem *j = new HostAuthItem(hostAuthList,
@@ -1821,6 +1873,8 @@ void KCryptoConfig::slotUseEGD() {
 }
 
 
+//  Lets make this a separate module.  it's a whole lot of work and can really be
+// encompassed in a separate module quite nicely.
 void KCryptoConfig::slotGeneratePersonal() {
 #if 0
   QStringList qslCertTypes;
