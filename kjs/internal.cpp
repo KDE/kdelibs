@@ -772,9 +772,9 @@ InterpreterImp::InterpreterImp(Interpreter *interp, const Object &glob)
     globalInit();
   }
 
-  interpreter = interp;
+  m_interpreter = interp;
   global = glob;
-  globExec = new ExecState(interpreter,0);
+  globExec = new ExecState(m_interpreter,0);
   dbg = 0;
   m_compatMode = Interpreter::NativeMode;
 
@@ -909,7 +909,7 @@ InterpreterImp::InterpreterImp(Interpreter *interp, const Object &glob)
 InterpreterImp::~InterpreterImp()
 {
   if (dbg)
-    dbg->detach(interpreter);
+    dbg->detach(m_interpreter);
   delete globExec;
   globExec = 0L;
   clear();
@@ -949,6 +949,8 @@ void InterpreterImp::mark()
   //fprintf( stderr, "InterpreterImp::mark this=%p global.imp()=%p\n", this, global.imp() );
   if (global.imp())
     global.imp()->mark();
+  if (m_interpreter)
+    m_interpreter->mark();
 }
 
 bool InterpreterImp::checkSyntax(const UString &code)
@@ -1014,7 +1016,7 @@ Completion InterpreterImp::evaluate(const UString &code, const Value &thisV)
     // execute the code
     ExecState *exec1 = 0;
     ContextImp *ctx = new ContextImp(globalObj, exec1, thisObj);
-    ExecState *newExec = new ExecState(interpreter,ctx);
+    ExecState *newExec = new ExecState(m_interpreter,ctx);
 
     res = progNode->execute(newExec);
 
@@ -1032,7 +1034,7 @@ Completion InterpreterImp::evaluate(const UString &code, const Value &thisV)
 void InterpreterImp::setDebugger(Debugger *d)
 {
   if (d)
-    d->detach(interpreter);
+    d->detach(m_interpreter);
   dbg = d;
 }
 

@@ -140,7 +140,7 @@ namespace KJS {
      * initialized with the standard global properties.
      */
     Interpreter();
-    ~Interpreter();
+    virtual ~Interpreter();
 
     /**
      * Returns the object that is used as the global object during all script
@@ -281,6 +281,11 @@ namespace KJS {
     void setCompatMode(CompatMode mode);
     CompatMode compatMode() const;
 
+    /**
+     * Called by InterpreterImp during the mark phase of the garbage collector
+     * Default implementation does nothing, this exist for classes that reimplement Interpreter.
+     */
+    virtual void mark() {}
 #ifdef KJS_DEBUG_MEM
     /**
      * @internal

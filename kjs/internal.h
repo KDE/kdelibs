@@ -347,6 +347,7 @@ namespace KJS {
     ~InterpreterImp();
 
     Object globalObject() const { return global; }
+    Interpreter* interpreter() const { return m_interpreter; }
 
     void mark();
 
@@ -392,9 +393,15 @@ namespace KJS {
 
     void setCompatMode(Interpreter::CompatMode mode) { m_compatMode = mode; }
     Interpreter::CompatMode compatMode() const { return m_compatMode; }
+
+    // Chained list of interpreters (ring)
+    static InterpreterImp* firstInterpreter() { return s_hook; }
+    InterpreterImp *nextInterpreter() const { return next; }
+    InterpreterImp *prevInterpreter() const { return prev; }
+
   private:
     void clear();
-    Interpreter *interpreter;
+    Interpreter *m_interpreter;
     Object global;
     Debugger *dbg;
 
