@@ -69,7 +69,23 @@
  */
 class KRuler : public QFrame
 {
-Q_OBJECT
+  Q_OBJECT
+  Q_PROPERTY( int minValue READ minValue WRITE setMinValue )
+  Q_PROPERTY( int maxValue READ maxValue WRITE setMaxValue )
+  Q_PROPERTY( int value READ value WRITE setValue )
+  Q_PROPERTY( bool showTinyMarks READ showTinyMarks WRITE setShowTinyMarks )
+  Q_PROPERTY( bool showLittleMarks READ showLittleMarks WRITE setShowLittleMarks )
+  Q_PROPERTY( bool showMediumMarks READ showMediumMarks WRITE setShowMediumMarks )
+  Q_PROPERTY( bool showBigMarks READ showBigMarks WRITE setShowBigMarks )
+  Q_PROPERTY( bool showPointer READ showPointer WRITE setShowPointer )
+  Q_PROPERTY( bool showEndLabel READ showEndLabel WRITE setShowEndLabel )
+  Q_PROPERTY( int tinyMarkDistance READ tinyMarkDistance WRITE setTinyMarkDistance )
+  Q_PROPERTY( int littleMarkDistance READ littleMarkDistance WRITE setLittleMarkDistance )
+  Q_PROPERTY( int mediumMarkDistance READ mediumMarkDistance WRITE setBigMarkDistance )
+  Q_PROPERTY( int bigMarkDistance READ bigMarkDistance WRITE setBigMarkDistance )
+  Q_PROPERTY( double pixelPerMark READ pixelPerMark WRITE setPixelPerMark )
+  Q_PROPERTY( bool lengthFixed READ lengthFixed WRITE setLengthFixed )
+      
 public:
 
 /*
@@ -82,24 +98,19 @@ public:
 */
 
   /**
-   * Direction of the ruler.
-   * Has to be defined when constructing the widget.
-   * @see KRuler()
-   * @short ruler Direction in window.
-   */
-  enum direction{ horizontal, vertical };
-
-  /**
    * The types of units used.
    **/
-  enum metric_style{ custom=0, pixel, inch, millimetres, centimetres, metres };
+  enum MetricStyle { Custom=0, Pixel, Inch, Millimetres, Centimetres, Metres };
 
   /**
    * The style (or look) of the ruler.
    **/
-  enum paint_style{ flat, raised, sunken };
+    //  enum PaintStyle { Flat, Raised, Sunken };
 
-
+  /**
+   * Constructs a horizontal ruler.
+   */
+  KRuler(QWidget *parent=0, const char *name=0);
   /**
    * Constructor, requires the ruler direction.
    *
@@ -107,14 +118,14 @@ public:
    * The default look is a raised widget
    * but may be changed with the inherited @ref QFrame methods.
    *
-   * @param dir        Cirection of the ruler.
+   * @param orient     Orientation of the ruler.
    * @param parent     Will be handed over to @ref QFrame.
    * @param name       Will be handed over to @ref QFrame.
    * @param f          Will be handed over to @ref QFrame.
    * @param allowLines Will be handed over to @ref QFrame.
    *
    **/
-  KRuler(KRuler::direction dir, QWidget *parent=0, const char *name=0, 
+  KRuler(Orientation orient, QWidget *parent=0, const char *name=0, 
 	 WFlags f=0, bool allowLines=TRUE);
 
   /**
@@ -125,7 +136,7 @@ public:
    * Note: The size of the marks doesn't change.
    * @p parent, @p name, @p f and @p allowLines are passed to @ref QFrame.
    *
-   * @param dir         Direction of the ruler.
+   * @param orient      Orientatio of the ruler.
    * @param widgetWidth Fixed width of the widget.
    * @param parent      Will be handed over to @ref QFrame.
    * @param name        Will be handed over to @ref QFrame.
@@ -133,7 +144,7 @@ public:
    * @param allowLines  Will be handed over to @ref QFrame.
    *
    */
-  KRuler(KRuler::direction dir, int widgetWidth, QWidget *parent=0, 
+  KRuler(Orientation orient, int widgetWidth, QWidget *parent=0, 
 	 const char *name=0, WFlags f=0, bool allowLines=TRUE);
 
   /**
@@ -153,7 +164,7 @@ public:
   /**
    * Retrieve the minimal value of the ruler pointer.
    **/
-  inline int getMinValue() const;
+  inline int minValue() const;
 
   /**
    * Set the maximum value of the ruler pointer (default is 100).
@@ -165,7 +176,7 @@ public:
   
   /** returns the maximal value of the ruler pointer.
    */
-  inline int getMaxValue() const;
+  inline int maxValue() const;
 
   /**
    * Set minimum and maxmimum values of the ruler pointer.
@@ -184,7 +195,7 @@ public:
    * to the main event loop.
    */
   void setValue(int);
-  inline int getValue() const;
+  inline int value() const;
 
   /**
    * Set distance between tiny marks.
@@ -195,7 +206,7 @@ public:
   /**
    * Retrieve the distance between tiny marks.
    **/
-  inline int getTinyMarkDistance() const;
+  inline int tinyMarkDistance() const;
 
   /** 
    * Set the distance between little marks.
@@ -207,7 +218,7 @@ public:
   /** 
    * Retrieve the distance between little marks.
    */
-  inline int getLittleMarkDistance() const;
+  inline int littleMarkDistance() const;
 
   /**
    * Set the distance between medium marks.
@@ -216,7 +227,7 @@ public:
    * For metric styles it defaults to five times the little mark distance.
    **/
   void setMediumMarkDistance(int);
-  inline int getMediumMarkDistance() const;
+  inline int mediumMarkDistance() const;
 
   /** 
    * Set distance between big marks.
@@ -227,38 +238,38 @@ public:
   /**
    * Retrieve the distance between big marks.
    **/
-  inline int getBigMarkDistance() const;
+  inline int bigMarkDistance() const;
 
   /**
    * Show/hide tiny marks.
    **/
-  void showTinyMarks(bool);
-  bool getShowTinyMarks() const;
+  void setShowTinyMarks(bool);
+  bool showTinyMarks() const;
   /**
    * Show/hide little marks.
    **/
-  void showLittleMarks(bool);
-  bool getShowLittleMarks() const;
+  void setShowLittleMarks(bool);
+  bool showLittleMarks() const;
   /**
    * Show/hide medium marks.
    **/
-  void showMediumMarks(bool);
-  bool getShowMediumMarks() const;
+  void setShowMediumMarks(bool);
+  bool showMediumMarks() const;
   /**
    * Show/hide big marks.
    **/
-  void showBigMarks(bool);
-  bool getShowBigMarks() const;
+  void setShowBigMarks(bool);
+  bool showBigMarks() const;
   /**
    * Show/hide end marks.
    **/
-  void showEndMarks(bool);
-  bool getShowEndMarks() const;
+  void setShowEndMarks(bool);
+  bool showEndMarks() const;
   /**
    * Show/hide the pointer.
    */
-  void showPointer(bool);
-  bool getShowPointer() const;
+  void setShowPointer(bool);
+  bool showPointer() const;
 
   /**
    * Sets the value that is shown per little mark.
@@ -293,57 +304,43 @@ public:
    *
    * Default is @p false.
    **/
-  void showLittleMarkLabel(bool);
+    //  void setShowLittleMarkLabel(bool);
 
   /**
    * Show/hide number values of the medium marks.
    *
    * Default is @p false.
    **/
-  void showMediumMarkLabel(bool);
+    //  void setShowMediumMarkLabel(bool);
 
   /**
    * Show/hide number values of the big marks.
    *
    * Default is @p false.
    **/
-  void showBigMarkLabel(bool);
+    //  void showBigMarkLabel(bool);
 
   /**
    * Show/hide number values of the end marks.
    *
    * Default is @p false.
    **/
-  void showEndLabel(bool);
+   void setShowEndLabel(bool);
+   bool showEndLabel() const;
 
   /**
    * Set the label this is drawn at the beginning of the visible part
    * of the ruler.
    **/
   void setEndLabel(const QString&);
+  QString endLabel() const;
 
   /**
    * Set up the necessary tasks for the provided styles.
    *
    * A convenience method.
    **/
-  void setRulerStyle(KRuler::metric_style);
-#if implemented
-  inline KRuler::metric_style getMetricRulerStyle() const;
-
-  /** currently not implemented */
-  void setRulerStyle(KRuler::paint_style);
-  /** currently not implemented */
-  inline KRuler::paint_style getPaintRulerStyle() const;
-#endif
-
-  /** currently not implemented */
-  void setTickStyle(KRuler::paint_style);
-
-#if implemented
-  /** currently not implemented */
-  inline KRuler::paint_style getTickStyle() const;
-#endif
+  void setRulerMetricStyle(KRuler::MetricStyle);
 
   /**
    * Set the number of pixels between two base marks.
@@ -364,24 +361,23 @@ public:
    * default: 1 mark per 10 pixels 
    */
   void setPixelPerMark(double);
-  /*  void setPixelPerMark(int); */
 
   /**
    * Retrieve the number of pixels between two base marks.
    **/
-  inline double getPixelPerMark() const;
+  inline double pixelPerMark() const;
 
   /**
    * sets the length of the ruler, i.e. the difference between
    * the begin mark and the end mark of the ruler.
    *
-   * Same as (width() - getOffset())
+   * Same as (width() - offset())
    *
    * when the length is not locked, it gets adjusted with the
    * length of the widget.
    */
   void setLength(int);
-  int getLength() const;
+  int length() const;
 
   /**
    * locks the length of the ruler, i.e. the difference between
@@ -389,8 +385,8 @@ public:
    *
    * @param fix fixes the length, if true
    */
-  void setLengthFix(bool fix);
-  bool getLengthFix() const;
+  void setLengthFixed(bool fix);
+  bool lengthFixed() const;
 
   /**
    * Set the number of pixels by which the ruler may slide up or left.
@@ -403,7 +399,7 @@ public:
    *
    * @param count Number of pixel moving up or left relative to the previous position
    **/
-  void slideup(int count = 1);
+  void slideUp(int count = 1);
 
   /**
    * Set the number of pixels by which the ruler may slide down or right.
@@ -416,7 +412,7 @@ public:
    *
    * @param count Number of pixel moving up or left relative to the previous position
    **/
-  void slidedown(int count = 1);
+  void slideDown(int count = 1);
 
   /**
    * Set ruler slide offset.
@@ -431,19 +427,9 @@ public:
   /**
    * Get the current ruler offset.
    **/
-  inline int getOffset() const;
+  inline int offset() const;
 
-  int getEndOffset() const;
-
-#if implemented
-signals:
-  /* signals a resizing of the ruler length
-   * submitts the new length.
-   * due to library freeze this virtual funktion gets implemented later
-   * habenich, 15 apr 2000
-   */
-  /*void newLength(int);*/
-#endif
+  int endOffset() const;
 
 public slots:
 
@@ -469,13 +455,15 @@ protected:
   virtual void drawContents(QPainter *);
 
 private:
+  void init();
 
-  direction dir;
+  QRangeControl range;
+  Orientation dir;
   int tmDist;
   int lmDist;
   int mmDist;
   int bmDist;
-  int offset;
+  int offset_;
   bool showtm; /* show tiny, little, medium, big, endmarks */
   bool showlm;
   bool showmm;
@@ -490,7 +478,6 @@ private:
   double ppm; /* pixel per mark */
 
   QString endlabel;
-  QRangeControl range;
 
   class KRulerPrivate;
   KRulerPrivate *d;
@@ -498,46 +485,39 @@ private:
 
 
 int
-KRuler::getMinValue() const
+KRuler::minValue() const
 { return range.minValue(); }
 
 int 
-KRuler::getMaxValue() const
+KRuler::maxValue() const
 { return range.maxValue(); }
 
 int 
-KRuler::getValue() const
+KRuler::value() const
 { return range.value(); }
 
 int 
-KRuler::getTinyMarkDistance() const
+KRuler::tinyMarkDistance() const
 { return tmDist; }
 
 int 
-KRuler::getLittleMarkDistance() const
+KRuler::littleMarkDistance() const
 { return lmDist; }
 
 int 
-KRuler::getMediumMarkDistance() const
+KRuler::mediumMarkDistance() const
 { return mmDist; }
 
-#if implemented
-KRuler::metric_style 
-KRuler::getMetricRulerStyle() const;
-
-KRuler::paint_style 
-KRuler::getPaintRulerStyle() const;
-
-KRuler::paint_style 
-KRuler::getTickStyle() const;
-#endif
+int 
+KRuler::bigMarkDistance() const
+{ return bmDist; }
 
 double 
-KRuler::getPixelPerMark() const
+KRuler::pixelPerMark() const
 { return ppm; }
 
 int 
-KRuler::getOffset() const
-{ return offset; }
+KRuler::offset() const
+{ return offset_; }
 
 #endif

@@ -64,13 +64,13 @@ KRulerTest::KRulerTest( const char *name )
   //  QRect bwrect = bigwidget->frameRect();
   //  debug("big rect: top%i left%i bottom%i right%i",
   //	bwrect.top(), bwrect.left(), bwrect.bottom(), bwrect.right());
-  hruler = new KRuler(KRuler::horizontal, mainframe);
+  hruler = new KRuler(Horizontal, mainframe);
   //  hruler->setRange( bwrect.left(), bwrect.right() );
   hruler->setRange( 0, 1000 );
   //  hruler->setOffset( bwrect.left() - bigwidget->frameRect().left() );
   hruler->setOffset( 0 );
 
-  vruler = new KRuler(KRuler::vertical, mainframe);
+  vruler = new KRuler(Vertical, mainframe);
   vruler->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
   vruler->setOffset( 0 );
   vruler->setRange( 0, 1000 );
@@ -194,23 +194,23 @@ KRulerTest::KRulerTest( const char *name )
   pixelmetric = new QRadioButton("pixel", metricstyle);
   pixelmetric->adjustSize();
   pixelmetric->move(5,15);
-  metricstyle->insert(pixelmetric, (int)KRuler::pixel);
+  metricstyle->insert(pixelmetric, (int)KRuler::Pixel);
   inchmetric = new QRadioButton("inch", metricstyle);
   inchmetric->adjustSize();
   inchmetric->move(5,35);
-  metricstyle->insert(inchmetric, (int)KRuler::inch);
+  metricstyle->insert(inchmetric, (int)KRuler::Inch);
   mmmetric = new QRadioButton("millimeter", metricstyle);
   mmmetric->adjustSize();
   mmmetric->move(5,55);
-  metricstyle->insert(mmmetric, (int)KRuler::millimetres);
+  metricstyle->insert(mmmetric, (int)KRuler::Millimetres);
   cmmetric = new QRadioButton("centimeter", metricstyle);
   cmmetric->adjustSize();
   cmmetric->move(5,75);
-  metricstyle->insert(cmmetric, (int)KRuler::centimetres);
+  metricstyle->insert(cmmetric, (int)KRuler::Centimetres);
   mmetric = new QRadioButton("meter", metricstyle);
   mmetric->adjustSize();
   mmetric->move(5,95);
-  metricstyle->insert(mmetric, (int)KRuler::metres);
+  metricstyle->insert(mmetric, (int)KRuler::Metres);
   connect ( metricstyle, SIGNAL(clicked(int)), SLOT(slotSetMStyle(int)) );
 
   setView (mainframe);
@@ -243,43 +243,43 @@ KRulerTest::slotNewHeight(int height)
 void
 KRulerTest::slotSetTinyMarks(bool set)
 {
-  hruler->showTinyMarks(set);
-  vruler->showTinyMarks(set);
+  hruler->setShowTinyMarks(set);
+  vruler->setShowTinyMarks(set);
 }
 
 void
 KRulerTest::slotSetLittleMarks(bool set)
 {
-  hruler->showLittleMarks(set);
-  vruler->showLittleMarks(set);
+  hruler->setShowLittleMarks(set);
+  vruler->setShowLittleMarks(set);
 }
 
 void
 KRulerTest::slotSetMediumMarks(bool set)
 {
-  hruler->showMediumMarks(set);
-  vruler->showMediumMarks(set);
+  hruler->setShowMediumMarks(set);
+  vruler->setShowMediumMarks(set);
 }
 
 void
 KRulerTest::slotSetBigMarks(bool set)
 {
-  hruler->showBigMarks(set);
-  vruler->showBigMarks(set);
+  hruler->setShowBigMarks(set);
+  vruler->setShowBigMarks(set);
 }
 
 void
 KRulerTest::slotSetEndMarks(bool set)
 {
-  hruler->showEndMarks(set);
-  vruler->showEndMarks(set);
+  hruler->setShowEndMarks(set);
+  vruler->setShowEndMarks(set);
 }
 
 void 
 KRulerTest::slotSetRulerPointer(bool set)
 {
-  hruler->showPointer(set);
-  vruler->showPointer(set);
+  hruler->setShowPointer(set);
+  vruler->setShowPointer(set);
 }
 
 void 
@@ -292,15 +292,15 @@ KRulerTest::slotSetRulerLength(int len)
 void 
 KRulerTest::slotFixRulerLength(bool fix)
 {
-  hruler->setLengthFix(fix);
-  vruler->setLengthFix(fix);
+  hruler->setLengthFixed(fix);
+  vruler->setLengthFixed(fix);
 }
 
 void
 KRulerTest::slotSetMStyle(int style)
 {
-  hruler->setRulerStyle((KRuler::metric_style)style);
-  vruler->setRulerStyle((KRuler::metric_style)style);
+  hruler->setRulerMetricStyle((KRuler::MetricStyle)style);
+  vruler->setRulerMetricStyle((KRuler::MetricStyle)style);
   slotUpdateShowMarks();
 }
 
@@ -308,19 +308,19 @@ KRulerTest::slotSetMStyle(int style)
 void
 KRulerTest::slotUpdateShowMarks()
 {
-  showTM->setChecked(hruler->getShowTinyMarks());
-  showLM->setChecked(hruler->getShowLittleMarks());
-  showMM->setChecked(hruler->getShowMediumMarks());
-  showBM->setChecked(hruler->getShowBigMarks());
-  showEM->setChecked(hruler->getShowEndMarks());
+  showTM->setChecked(hruler->showTinyMarks());
+  showLM->setChecked(hruler->showLittleMarks());
+  showMM->setChecked(hruler->showMediumMarks());
+  showBM->setChecked(hruler->showBigMarks());
+  showEM->setChecked(hruler->showEndMarks());
 }
 
 void 
 KRulerTest::slotCheckLength(bool fixlen)
 {
-  beginMark->setValue(hruler->getOffset());
-  endMark->setValue(hruler->getEndOffset());
-  lengthInput->setValue(hruler->getLength());
+  beginMark->setValue(hruler->offset());
+  endMark->setValue(hruler->endOffset());
+  lengthInput->setValue(hruler->length());
 }
 
 void 
