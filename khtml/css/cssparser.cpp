@@ -1517,8 +1517,29 @@ CSSValueListImpl *CSSParser::parseFontFamily()
         if ( id >= CSS_VAL_SERIF && id <= CSS_VAL_MONOSPACE )
             list->append( new CSSPrimitiveValueImpl( id ) );
         else if ( value->unit == CSSPrimitiveValue::CSS_STRING ||
-                  value->unit == CSSPrimitiveValue::CSS_IDENT )
-            list->append( new FontFamilyValueImpl( qString( value->string ) ) );
+                  value->unit == CSSPrimitiveValue::CSS_IDENT ) {
+            QString face = qString( value->string );
+            // the grammar says we can only have comma separated strings,
+            // but the real life HTML contains stuff like "font-family: ms sans serif, adobe helvetica"
+            // so we look ahead in the list and if the next item is a string too, we concat the strings
+            // before we take it as item
+        caughtinvalid:
+            value = valueList->next();
+            if ( value ) {
+                if ( value->unit == CSSPrimitiveValue::CSS_STRING ||
+                     value->unit == CSSPrimitiveValue::CSS_IDENT ) {
+                    face += " " + qString( value->string );
+                    goto caughtinvalid;
+                } else if ( value->unit == Value::Operator && value->iValue == ',' ) {
+                    value = valueList->next();
+                }
+            }
+            list->append( new FontFamilyValueImpl( face ) );
+            if ( value )
+                continue;
+            else
+                break;
+        }
         else {
 //             kdDebug( 6080 ) << "invalid family part" << endl;
             break;

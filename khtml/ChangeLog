@@ -1,3 +1,8 @@
+2003-11-24  Stephan Kulow  <coolo@kde.org>
+
+	* css/cssparser.cpp (parseFontFamily): handle invalid font families like
+	font-family: ms sans serif, utopia
+
 2003-11-24  David Faure  <faure@kde.org>
 
 	* html/htmlparser.cpp (getElement, processCloseTag): Allow only one
