@@ -35,6 +35,10 @@
 using namespace KABC;
 
 static bool matchBinaryPattern( int value, int pattern );
+
+template <class L>
+static bool listEquals( const QValueList<L>&, const QValueList<L>& );
+
 KABC::Field *Addressee::mSortField = 0;
 
 struct Addressee::AddresseeData : public KShared
@@ -94,6 +98,7 @@ void Addressee::detach()
     mData->empty = true;
     mData->changed = false;
     mData->resource = 0;
+    mData->uid = KApplication::randomString( 10 );
     return;
   } else if ( mData.count() == 1 ) return;
 
@@ -103,16 +108,40 @@ void Addressee::detach()
 
 bool Addressee::operator==( const Addressee &a ) const
 {
-  if ( uid() != a.uid() ) return false;
+  if ( uid() != a.uid() ) {
+    kdDebug(5700) << "uid differs" << endl;
+    return false;
+  }
   --EQUALSTEST--
   if ( ( mData->url.isValid() || a.mData->url.isValid() ) &&
-       ( mData->url != a.mData->url ) ) return false;
-  if ( mData->phoneNumbers != a.mData->phoneNumbers ) return false;
-  if ( mData->addresses != a.mData->addresses ) return false;
-  if ( mData->keys != a.mData->keys ) return false;
-  if ( mData->emails != a.mData->emails ) return false;
-  if ( mData->categories != a.mData->categories ) return false;
-  if ( mData->custom != a.mData->custom ) return false;
+       ( mData->url != a.mData->url ) ) {
+    kdDebug(5700) << "url differs" << endl;
+    return false;
+  }
+  if ( !listEquals( mData->phoneNumbers, a.mData->phoneNumbers ) ) {
+    kdDebug(5700) << "phoneNumbers differs" << endl;
+    return false;
+  }
+  if ( !listEquals( mData->addresses, a.mData->addresses ) ) {
+    kdDebug(5700) << "addresses differs" << endl;
+    return false;
+  }
+  if ( !listEquals( mData->keys, a.mData->keys ) ) {
+    kdDebug(5700) << "keys differs" << endl;
+    return false;
+  }
+  if ( !listEquals( mData->emails, a.mData->emails ) ) {
+    kdDebug(5700) << "emails differs" << endl;
+    return false;
+  }
+  if ( !listEquals( mData->categories, a.mData->categories ) ) {
+    kdDebug(5700) << "categories differs" << endl;
+    return false;
+  }
+  if ( !listEquals( mData->custom, a.mData->custom ) ) {
+    kdDebug(5700) << "custom differs" << endl;
+    return false;
+  }
 
   return true;
 }
@@ -137,9 +166,6 @@ void Addressee::setUid( const QString &id )
 
 QString Addressee::uid() const
 {
-  if ( mData->uid.isEmpty() )
-    mData->uid = KApplication::randomString( 10 );
-
   return mData->uid;
 }
 
@@ -345,8 +371,9 @@ QString Addressee::fullEmail( const QString &email ) const
 
 void Addressee::insertEmail( const QString &email, bool preferred )
 {
-  if (email.simplifyWhiteSpace().isEmpty())
+  if ( email.simplifyWhiteSpace().isEmpty() )
     return;
+
   detach();
 
   QStringList::Iterator it = mData->emails.find( email );
@@ -385,8 +412,9 @@ QStringList Addressee::emails() const
   return mData->emails;
 }
 void Addressee::setEmails( const QStringList& emails ) {
-    detach();
-    mData->emails = emails;
+  detach();
+
+  mData->emails = emails;
 }
 void Addressee::insertPhoneNumber( const PhoneNumber &phoneNumber )
 {
@@ -605,6 +633,9 @@ void Addressee::dump() const
 
 void Addressee::insertAddress( const Address &address )
 {
+  if ( address.isEmpty() )
+    return;
+
   detach();
   mData->empty = false;
 
@@ -615,6 +646,7 @@ void Addressee::insertAddress( const Address &address )
       return;
     }
   }
+
   mData->addresses.append( address );
 }
 
@@ -718,7 +750,7 @@ QStringList Addressee::categories() const
 void Addressee::insertCustom( const QString &app, const QString &name,
                               const QString &value )
 {
-  if ( value.isNull() || name.isEmpty() || app.isEmpty() ) return;
+  if ( value.isEmpty() || name.isEmpty() || app.isEmpty() ) return;
 
   detach();
   mData->empty = false;
@@ -923,4 +955,17 @@ bool matchBinaryPattern( int value, int pattern )
     return ( value == 0 );
   else
     return ( pattern == ( pattern & value ) );
+}
+
+template <class L>
+bool listEquals( const QValueList<L> &list, const QValueList<L> &pattern )
+{
+  if ( list.count() != pattern.count() )
+    return false;
+
+  for ( uint i = 0; i < list.count(); ++i )
+    if ( pattern.find( list[ i ] ) == pattern.end() )
+      return false;
+
+  return true;
 }
