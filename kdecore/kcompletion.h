@@ -402,7 +402,7 @@ public slots:
     }
 
     /**
-     * Searches the previous matching item and emits it via @ref match()
+     * Searches the previous matching item and emits it via @ref match().
      * Same as @ref previousMatch() (just as a slot).
      * @see #previousMatch
      */
@@ -411,7 +411,7 @@ public slots:
     }
 
     /**
-     * Searches the next matching item and emits it via @ref match()
+     * Searches the next matching item and emits it via @ref match().
      * Same as @ref nextMatch() (just as a slot).
      * @see #nextMatch
      */
@@ -814,14 +814,14 @@ public:
     }
 
     /**
-     * Returns true if the object handles the signals
+     * Returns true if the object handles the signals.
      *
      * @return true if this signals are handled internally.
      */
     bool handleSignals() const { return m_delegate ? m_delegate->handleSignals() : m_bHandleSignals; }
 
     /**
-     * Returns true if the object emits the signals
+     * Returns true if the object emits the signals.
      *
      * @return true if signals are emitted
      */
@@ -960,7 +960,7 @@ public:
 
 protected:
     /**
-     * Returns a key-binding map
+     * Returns a key-binding map.
      *
      * This method is the same as @ref getKeyBinding() except it
      * returns the whole keymap containing the key-bindings.
