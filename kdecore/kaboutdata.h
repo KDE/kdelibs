@@ -32,18 +32,29 @@
  * @ref KAboutProgram class, but it can be used elsewhere as well.
  * Normally you should at least define the person's name.
 */
-struct KAboutPerson
+class KAboutPerson
 {
+public:
     /**
      * Convenience constructor
+     *
+     * @param _name The name of the person.
+     *
+     * @param _task The task of this person. This string should be
+     *              marked for translation, e.g.
+     *              I18N_NOOP("Task description....")
+     *
+     * @param _emailAddress The email address of the person.
+     *
+     * @param _webAddress Homepage of the person.
      */
-    KAboutPerson( const QString &_name, const QString &_task,
-                  const QString &_emailAddress, const QString &_webAddress )
+    KAboutPerson( const char *_name, const char *_task,
+                  const char *_emailAddress, const char *_webAddress )
     {
-      name = _name;
-      task = _task;
-      emailAddress = _emailAddress;
-      webAddress = _webAddress;
+      mName = _name;
+      mTask = _task;
+      mEmailAddress = _emailAddress;
+      mWebAddress = _webAddress;
     }
     /**
      * @internal - don't use. Required by QValueList
@@ -53,19 +64,28 @@ struct KAboutPerson
     /**
      * The person's name
      */
-    QString name;
+    QString name() const;
+
     /**
      * The person's task
      */
-    QString task;
+    QString task() const;
+
     /**
      * The person's email address
      */
-    QString emailAddress;
+    QString emailAddress() const;
+
     /**
      * The homepage or a relevant link
      */
-    QString webAddress;
+    QString webAddress() const;
+
+protected:
+    const char *mName;
+    const char *mTask;
+    const char *mEmailAddress;
+    const char *mWebAddress;
 };
 
 /**
@@ -98,11 +118,16 @@ class KAboutData
     /**
      * Constructor.
      *
-     * @param programName The program name string. Example : i18n("KEdit")
+     * @param appName The program name used internally. Example: "kedit"
+     *
+     * @param programName A displayable program name string. This string
+     *        should be marked for translation. Example: I18N_NOOP("KEdit")
      *
      * @param version The program version string.
      *
-     * @param shortDescription A short description of what the program does
+     * @param shortDescription A short description of what the program does.
+     *        This string should be marked for translation.
+     *        Example: I18N_NOOP("A simple text editor.")
      *
      * @param licenseType The license identifier. Use @ref setLicenseText if
      *        you use a license not predefined here.
@@ -117,19 +142,21 @@ class KAboutData
      *        is correct, "some.domain" is not.
      *
      * @param text Some free form text, that can contain any kind of
-     *        information. The text can contain newlines.
+     *        information. The text can contain newlines. This string
+     *        should be marked for translation.
      *
      * @param bugsEmailAddress The bug report email address string.
      *
      */
-    KAboutData( const QString &programName,
-		const QString &version,
-		const QString &shortDescription = QString::null,
+    KAboutData( const char *appName,
+                const char *programName,
+		const char *version,
+		const char *shortDescription = 0,
 		int licenseType = 0,
-		const QString &copyrightStatement = QString::null,
-		const QString &text = QString::null,
-		const QString &homePageAddress = QString::null,
-		const QString &bugsEmailAddress = "submit@bugs.kde.org"
+		const char *copyrightStatement = 0,
+		const char *text = 0,
+		const char *homePageAddress = 0,
+		const char *bugsEmailAddress = "submit@bugs.kde.org"
 		);
 
     /**
@@ -140,7 +167,8 @@ class KAboutData
      * @param name The developer's name.
      *
      * @param task What the person is resposible for. This text can contain
-     *             newlines.
+     *             newlines. It should be marked for translation like this:
+     *             I18N_NOOP("Task description...")
      *
      * @param emailAddress An Email address when the person can be reached.
      *
@@ -149,10 +177,10 @@ class KAboutData
      *        is correct, "some.domain" is not.
      *
      */
-    void addAuthor( const QString &name,
-		    const QString &task=QString::null,
-		    const QString &emailAddress=QString::null,
-		    const QString &webAddress=QString::null );
+    void addAuthor( const char *name,
+		    const char *task=0,
+		    const char *emailAddress=0,
+		    const char *webAddress=0 );
 
     /**
      * Defines a person that deserves credit. You can call this function
@@ -161,7 +189,8 @@ class KAboutData
      * @param name The person's name.
      *
      * @param task What the person has done to deserve the hounor. The
-     *        text can contain newlines.
+     *        text can contain newlines. It should be marked for 
+     *        translation like this: I18N_NOOP("Task description...")
      *
      * @param emailAddress An Email address when the person can be reached.
      *
@@ -170,10 +199,10 @@ class KAboutData
      *        is correct, "some.domain" is not.
      *
      */
-    void addCredit( const QString &name,
-                    const QString &task=QString::null,
-		    const QString &emailAddress=QString::null,
-		    const QString &webAddress=QString::null );
+    void addCredit( const char *name,
+                    const char *task=0,
+		    const char *emailAddress=0,
+		    const char *webAddress=0 );
 
     /**
      * Defines a licence text. Normally you should set a
@@ -182,32 +211,37 @@ class KAboutData
      *
      * @param license The license text.
      */
-    void setLicenseText( const QString &license );
+    void setLicenseText( const char *license );
 
     /**
-     * @return the program name (usually translated).
+     * @return the internal program name.
      */
-    QString programName() const { return mProgramName; }
+    const char *appName() const;
+
+    /**
+     * @return the program name (translated).
+     */
+    QString programName() const;
 
     /**
      * @return the version string.
      */
-    QString version() const { return mVersion; }
+    QString version() const;
 
     /**
-     * @return the short description.
+     * @return the short description (translated).
      */
-    QString shortDescription() const { return mShortDescription; }
+    QString shortDescription() const;
 
     /**
      * @return the application homepage URL.
      */
-    QString homepage() const { return mHomepageAddress; }
+    QString homepage() const;
 
     /**
      * @return the email address where to report bugs.
      */
-    QString bugAddress() const { return mBugEmailAddress; }
+    QString bugAddress() const;
 
     /**
      * @return author information (list of persons).
@@ -220,9 +254,9 @@ class KAboutData
     const QValueList<KAboutPerson> credits() const;
 
     /**
-     * @return the free form text.
+     * @return the free form text (translated). 
      */
-    QString otherText() const { return mOtherText; }
+    QString otherText() const;
 
     /**
      * Returns the license. If @ref setLicenseType has been
@@ -239,17 +273,18 @@ class KAboutData
     QString copyrightStatement() const { return( mCopyrightStatement ); }
 
   private:
-    QString mProgramName;
-    QString mVersion;
-    QString mShortDescription;
+    const char *mAppName;
+    const char *mProgramName;
+    const char *mVersion;
+    const char *mShortDescription;
     int mLicenseKey;
-    QString mCopyrightStatement;
-    QString mOtherText;
-    QString mHomepageAddress;
-    QString mBugEmailAddress;
+    const char *mCopyrightStatement;
+    const char *mOtherText;
+    const char *mHomepageAddress;
+    const char *mBugEmailAddress;
     QValueList<KAboutPerson> mAuthorList;
     QValueList<KAboutPerson> mCreditList;
-    QString mLicenseText;
+    const char *mLicenseText;
 };
 
 

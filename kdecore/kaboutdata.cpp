@@ -22,16 +22,44 @@
 
 #include <iostream.h>
 #include <kaboutdata.h>
+#include <klocale.h>
 
-KAboutData::KAboutData( const QString &programName,
-			const QString &version,
-                        const QString &shortDescription,
+QString
+KAboutPerson::name() const
+{
+   return QString::fromLatin1(mName);
+}
+
+QString
+KAboutPerson::task() const
+{
+   return i18n(mTask);
+}
+
+QString
+KAboutPerson::emailAddress() const
+{
+   return QString::fromLatin1(mEmailAddress);
+}
+
+
+QString
+KAboutPerson::webAddress() const
+{
+   return QString::fromLatin1(mWebAddress);
+}
+
+KAboutData::KAboutData( const char *appName,
+                        const char *programName,
+			const char *version,
+                        const char *shortDescription,
 			int licenseType,
-			const QString &copyrightStatement,
-			const QString &text,
-			const QString &homePageAddress,
-			const QString &bugsEmailAddress
+			const char *copyrightStatement,
+			const char *text,
+			const char *homePageAddress,
+			const char *bugsEmailAddress
 			) :
+  mAppName( appName ),
   mProgramName( programName ),
   mVersion( version ),
   mShortDescription( shortDescription ),
@@ -43,24 +71,83 @@ KAboutData::KAboutData( const QString &programName,
 {
 }
 
-void KAboutData::addAuthor( const QString &name, const QString &task,
-		    const QString &emailAddress, const QString &webAddress )
+void 
+KAboutData::addAuthor( const char *name, const char *task,
+		    const char *emailAddress, const char *webAddress )
 {
   mAuthorList.append(KAboutPerson(name,task,emailAddress,webAddress));
 }
 
-void KAboutData::addCredit( const QString &name, const QString &task,
-		    const QString &emailAddress, const QString &webAddress )
+void 
+KAboutData::addCredit( const char *name, const char *task,
+		    const char *emailAddress, const char *webAddress )
 {
   mCreditList.append(KAboutPerson(name,task,emailAddress,webAddress));
 }
 
-void KAboutData::setLicenseText( const QString &licenseText )
+void 
+KAboutData::setLicenseText( const char *licenseText )
 {
   mLicenseText = licenseText;
 }
 
-QString KAboutData::license() const
+const char * 
+KAboutData::appName() const 
+{ 
+   return mAppName; 
+}
+
+QString 
+KAboutData::programName() const 
+{ 
+   return i18n(mProgramName); 
+}
+
+QString 
+KAboutData::version() const 
+{ 
+   return QString::fromLatin1(mVersion); 
+}
+
+QString 
+KAboutData::shortDescription() const 
+{ 
+   return i18n(mShortDescription); 
+}
+
+QString 
+KAboutData::homepage() const 
+{ 
+   return QString::fromLatin1(mHomepageAddress); 
+}
+
+QString 
+KAboutData::bugAddress() const 
+{ 
+   return QString::fromLatin1(mBugEmailAddress); 
+}
+
+const QValueList<KAboutPerson> 
+KAboutData::authors() const
+{
+   return mAuthorList;
+}
+
+const QValueList<KAboutPerson> 
+KAboutData::credits() const
+{
+   return mCreditList;
+}
+
+QString 
+KAboutData::otherText() const 
+{
+   return i18n(mOtherText); 
+}
+
+
+QString 
+KAboutData::license() const
 {
   if( mLicenseKey != 0 )
   {
@@ -69,7 +156,7 @@ QString KAboutData::license() const
   }
   else
   {
-    return( mLicenseText );
+    return( QString::fromLatin1(mLicenseText) );
   }
 }
 
