@@ -1464,6 +1464,11 @@ bool HTTPProtocol::readHeader()
         m_bCachedWrite = false; // Don't put in cache
         mayCache = false;
       }
+      else if ( m_responseCode == 204 ) // No content
+      {
+        error(ERR_NO_CONTENT, i18n("Data has been successfully send."));
+        return false;
+      }
       else if ( m_responseCode == 206 )
       {
         if ( m_request.offset )
