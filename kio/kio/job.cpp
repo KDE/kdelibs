@@ -1707,6 +1707,7 @@ void FileCopyJob::slotData( KIO::Job * , const QByteArray &data)
    //kdDebug(7007) << "FileCopyJob::slotData" << endl;
    //kdDebug(7007) << " data size : " << data.size() << endl;
    assert(m_putJob);
+   if (!m_putJob) return; // Don't crash
    m_getJob->suspend();
    m_putJob->resume(); // Drink the beer
    m_buffer = data;
