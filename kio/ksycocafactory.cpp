@@ -85,7 +85,8 @@ KSycocaFactory::save(QDataStream &str)
        it.current(); 
        ++it)
    {
-      it.current()->save(str);
+      if ( !it.current()->isDeleted() )
+         it.current()->save(str);
    }
 
    // Write indices...
