@@ -36,14 +36,14 @@
     <![%kde-l10n-no[ (("no") %kde-gentext-no-home-url%) ]]>
     <![%kde-l10n-pl[ (("pl") %kde-gentext-pl-home-url%) ]]>
     <![%kde-l10n-pt[ (("pt") %kde-gentext-pt-home-url%) ]]>
-    <![%kde-l10n-pt-BR[ (("pt-br") %kde-gentext-pt-BR-home-url%) ]]>
+    <![%kde-l10n-ptbr[ (("pt_br") %kde-gentext-ptbr-home-url%) ]]>
     <![%kde-l10n-ro[ (("ro") %kde-gentext-ro-home-url%) ]]>
     <![%kde-l10n-ru[ (("ru") %kde-gentext-ru-home-url%) ]]>
     <![%kde-l10n-sk[ (("sk") %kde-gentext-sk-home-url%) ]]>
     <![%kde-l10n-sl[ (("sl") %kde-gentext-sl-home-url%) ]]>
     <![%kde-l10n-sr[ (("sr") %kde-gentext-sr-home-url%) ]]>
     <![%kde-l10n-sv[ (("sv") %kde-gentext-sv-home-url%) ]]>
-    <![%kde-l10n-zh-CN[ (("zh-cn") %kde-gentext-zh-CN-home-url%) ]]>
+    <![%kde-l10n-zhcn[ (("zh_cn") %kde-gentext-zhcn-home-url%) ]]>
     (else (error "L10N ERROR: kde-gentext-logo-alt: no localised version"))))
 
 ; split up the in files for different languages - take over system from DB
@@ -67,14 +67,14 @@
     <![%kde-l10n-no[ (("no") %kde-gentext-no-logo-alt%) ]]>
     <![%kde-l10n-pl[ (("pl") %kde-gentext-pl-logo-alt%) ]]>
     <![%kde-l10n-pt[ (("pt") %kde-gentext-pt-logo-alt%) ]]>
-    <![%kde-l10n-pt-BR[ (("pt-br") %kde-gentext-pt-BR-logo-alt%) ]]>
+    <![%kde-l10n-ptbr[ (("pt_br") %kde-gentext-ptbr-logo-alt%) ]]>
     <![%kde-l10n-ro[ (("ro") %kde-gentext-ro-logo-alt%) ]]>
     <![%kde-l10n-ru[ (("ru") %kde-gentext-ru-logo-alt%) ]]>
     <!-- <![%kde-l10n-sk[ (("sk") %kde-gentext-sk-logo-alt%) ]]> -->
     <![%kde-l10n-sl[ (("sl") %kde-gentext-sl-logo-alt%) ]]>
     <!-- <![%kde-l10n-sr[ (("sr") %kde-gentext-sr-logo-alt%) ]]> -->
     <![%kde-l10n-sv[ (("sv") %kde-gentext-sv-logo-alt%) ]]>
-    <![%kde-l10n-zh-CN[ (("zh-cn") %kde-gentext-zh-CN-logo-alt%) ]]>
+    <![%kde-l10n-zhcn[ (("zh_cn") %kde-gentext-zhcn-logo-alt%) ]]>
     (else (error "L10N ERROR: kde-gentext-logo-alt: no localised version"))))
 
 ;; In future, the charset in the content-type should become charset=utf-8
@@ -107,19 +107,19 @@
     <![%kde-l10n-no[ (("no") %kde-gentext-no-html-header-tags%) ]]>	    
     <![%kde-l10n-pl[ (("pl") %kde-gentext-pl-html-header-tags%) ]]>
     <![%kde-l10n-pt[ (("pt") %kde-gentext-pt-html-header-tags%) ]]>
-    <![%kde-l10n-pt-BR[ (("pt-br") %kde-gentext-pt-BR-html-header-tags%) ]]>
+    <![%kde-l10n-ptbr[ (("pt_br") %kde-gentext-ptbr-html-header-tags%) ]]>
     <![%kde-l10n-ro[ (("ro") %kde-gentext-ro-html-header-tags%) ]]>
     <![%kde-l10n-ru[ (("ru") %kde-gentext-ru-html-header-tags%) ]]>
     <![%kde-l10n-sk[ (("sk") %kde-gentext-sk-html-header-tags%) ]]>
     <![%kde-l10n-sl[ (("sl") %kde-gentext-sl-html-header-tags%) ]]>
     <![%kde-l10n-sr[ (("sr") %kde-gentext-sr-html-header-tags%) ]]>
     <![%kde-l10n-sv[ (("sv") %kde-gentext-sv-html-header-tags%) ]]>
-    <![%kde-l10n-zh-CN[ (("zh-cn") %kde-gentext-zh-CN-html-header-tags%) ]]>
+    <![%kde-l10n-zhcn[ (("zh_cn") %kde-gentext-zhcn-html-header-tags%) ]]>
     (else (error "L10N ERROR: kde-gentext-html-header-tags: no localised version")))
    (list
     (list "META"
 	  (list "HTTP-EQUIV" "Content-Language")
-	  (list "CONTENT" ($lang$)))
+	  (list "CONTENT" (lang-unfix ($lang$))))
     ; for localised style sheet
     (kde-external-ss (string-append %kde-doc-common-path% "kde-localised.css")
 		     (string-append "KDE-" (kde-gentext-language)))
@@ -147,14 +147,14 @@
     <![%kde-l10n-no[ (("no") %kde-gentext-no-encoding%) ]]>
     <![%kde-l10n-pl[ (("pl") %kde-gentext-pl-encoding%) ]]>
     <![%kde-l10n-pt[ (("pt") %kde-gentext-pt-encoding%) ]]>
-    <![%kde-l10n-pt-BR[ (("pt-br") %kde-gentext-pt-BR-encoding%) ]]>
+    <![%kde-l10n-ptbr[ (("pt_br") %kde-gentext-ptbr-encoding%) ]]>
     <![%kde-l10n-ro[ (("ro") %kde-gentext-ro-encoding%) ]]>
     <![%kde-l10n-ru[ (("ru") %kde-gentext-ru-encoding%) ]]>
     <![%kde-l10n-sk[ (("sk") %kde-gentext-sk-encoding%) ]]>
     <![%kde-l10n-sl[ (("sl") %kde-gentext-sl-encoding%) ]]>
     <![%kde-l10n-sr[ (("sr") %kde-gentext-sr-encoding%) ]]>
     <![%kde-l10n-sv[ (("sv") %kde-gentext-sv-encoding%) ]]>
-    <![%kde-l10n-zh-CN[ (("zh-cn") %kde-gentext-zh-CN-encoding%) ]]>
+    <![%kde-l10n-zhcn[ (("zh_cn") %kde-gentext-zhcn-encoding%) ]]>
     (else (error "L10N ERROR: kde-gentext-encoding: no localised version"))))
 
 (define (kde-gentext-default)
@@ -176,14 +176,14 @@
     <![%kde-l10n-no[ (("no") %kde-gentext-no-default%) ]]>
     <![%kde-l10n-pl[ (("pl") %kde-gentext-pl-default%) ]]>
     <![%kde-l10n-pt[ (("pt") %kde-gentext-pt-default%) ]]>
-    <![%kde-l10n-pt-BR[ (("pt-br") %kde-gentext-pt-BR-default%) ]]>
+    <![%kde-l10n-ptbr[ (("pt_br") %kde-gentext-ptbr-default%) ]]>
     <![%kde-l10n-ro[ (("ro") %kde-gentext-ro-default%) ]]>
     <![%kde-l10n-ru[ (("ru") %kde-gentext-ru-default%) ]]>
     <![%kde-l10n-sk[ (("sk") %kde-gentext-sk-default%) ]]>
     <![%kde-l10n-sl[ (("sl") %kde-gentext-sl-default%) ]]>
     <![%kde-l10n-sr[ (("sr") %kde-gentext-sr-default%) ]]>
     <![%kde-l10n-sv[ (("sv") %kde-gentext-sv-default%) ]]>
-    <![%kde-l10n-zh-CN[ (("zh-cn") %kde-gentext-zh-CN-default%) ]]>
+    <![%kde-l10n-zhcn[ (("zh_cn") %kde-gentext-zhcn-default%) ]]>
     (else (error "L10N ERROR: kde-gentext-default: no localised version"))))
 
 (define (kde-gentext-language)
@@ -205,14 +205,14 @@
     <![%kde-l10n-no[ (("no") %kde-gentext-no-language%) ]]>
     <![%kde-l10n-pl[ (("pl") %kde-gentext-pl-language%) ]]>
     <![%kde-l10n-pt[ (("pt") %kde-gentext-pt-language%) ]]>
-    <![%kde-l10n-pt-BR[ (("pt-br") %kde-gentext-pt-BR-language%) ]]>
+    <![%kde-l10n-ptbr[ (("pt_br") %kde-gentext-ptbr-language%) ]]>
     <![%kde-l10n-ro[ (("ro") %kde-gentext-ro-language%) ]]>
     <![%kde-l10n-ru[ (("ru") %kde-gentext-ru-language%) ]]>
     <![%kde-l10n-sk[ (("sk") %kde-gentext-sk-language%) ]]>
     <![%kde-l10n-sl[ (("sl") %kde-gentext-sl-language%) ]]>
     <![%kde-l10n-sr[ (("sr") %kde-gentext-sr-language%) ]]>
     <![%kde-l10n-sv[ (("sv") %kde-gentext-sv-language%) ]]>
-    <![%kde-l10n-zh-CN[ (("zh-cn") %kde-gentext-zh-CN-language%) ]]>
+    <![%kde-l10n-zhcn[ (("zh_cn") %kde-gentext-zhcn-language%) ]]>
     (else (error "L10N ERROR: kde-gentext-language: no localised version"))))
 
 (define (kde-gentext-author-phrase)
@@ -234,14 +234,14 @@
     <![%kde-l10n-no[ (("no") %kde-gentext-no-author-phrase%) ]]>
     <![%kde-l10n-pl[ (("pl") %kde-gentext-pl-author-phrase%) ]]>
     <![%kde-l10n-pt[ (("pt") %kde-gentext-pt-author-phrase%) ]]>
-    <![%kde-l10n-pt-BR[ (("pt-br") %kde-gentext-pt-BR-author-phrase%) ]]>
+    <![%kde-l10n-ptbr[ (("pt_br") %kde-gentext-ptbr-author-phrase%) ]]>
     <![%kde-l10n-ro[ (("ro") %kde-gentext-ro-author-phrase%) ]]>
     <![%kde-l10n-ru[ (("ru") %kde-gentext-ru-author-phrase%) ]]>
     <![%kde-l10n-sk[ (("sk") %kde-gentext-sk-author-phrase%) ]]>
     <![%kde-l10n-sl[ (("sl") %kde-gentext-sl-author-phrase%) ]]>
     <![%kde-l10n-sr[ (("sr") %kde-gentext-sr-author-phrase%) ]]>
     <![%kde-l10n-sv[ (("sv") %kde-gentext-sv-author-phrase%) ]]>
-    <![%kde-l10n-zh-CN[ (("zh-cn") %kde-gentext-zh-CN-author-phrase%) ]]>
+    <![%kde-l10n-zhcn[ (("zh_cn") %kde-gentext-zhcn-author-phrase%) ]]>
     (else (error "L10N ERROR: kde-gentext-author-phrase: no localised version"))))
 
 (define (kde-gentext-date-phrase)
@@ -263,14 +263,14 @@
     <![%kde-l10n-no[ (("no") %kde-gentext-no-date-phrase%) ]]>
     <![%kde-l10n-pl[ (("pl") %kde-gentext-pl-date-phrase%) ]]>
     <![%kde-l10n-pt[ (("pt") %kde-gentext-pt-date-phrase%) ]]>
-    <![%kde-l10n-pt-BR[ (("pt-br") %kde-gentext-pt-BR-date-phrase%) ]]>
+    <![%kde-l10n-ptbr[ (("pt_br") %kde-gentext-ptbr-date-phrase%) ]]>
     <![%kde-l10n-ro[ (("ro") %kde-gentext-ro-date-phrase%) ]]>
     <![%kde-l10n-ru[ (("ru") %kde-gentext-ru-date-phrase%) ]]>
     <![%kde-l10n-sk[ (("sk") %kde-gentext-sk-date-phrase%) ]]>
     <![%kde-l10n-sl[ (("sl") %kde-gentext-sl-date-phrase%) ]]>
     <![%kde-l10n-sr[ (("sr") %kde-gentext-sr-date-phrase%) ]]>
     <![%kde-l10n-sv[ (("sv") %kde-gentext-sv-date-phrase%) ]]>
-    <![%kde-l10n-zh-CN[ (("zh-cn") %kde-gentext-zh-CN-date-phrase%) ]]>
+    <![%kde-l10n-zhcn[ (("zh_cn") %kde-gentext-zhcn-date-phrase%) ]]>
     (else (error "L10N ERROR: kde-gentext-date-phrase: no localised version"))))
 
 (define (kde-gentext-releaseinfo-phrase)
@@ -292,12 +292,12 @@
     <![%kde-l10n-no[ (("no") %kde-gentext-no-releaseinfo-phrase%) ]]>
     <![%kde-l10n-pl[ (("pl") %kde-gentext-pl-releaseinfo-phrase%) ]]>
     <![%kde-l10n-pt[ (("pt") %kde-gentext-pt-releaseinfo-phrase%) ]]>
-    <![%kde-l10n-pt-BR[ (("pt-br") %kde-gentext-pt-BR-releaseinfo-phrase%) ]]>
+    <![%kde-l10n-ptbr[ (("pt_br") %kde-gentext-ptbr-releaseinfo-phrase%) ]]>
     <![%kde-l10n-ro[ (("ro") %kde-gentext-ro-releaseinfo-phrase%) ]]>
     <![%kde-l10n-ru[ (("ru") %kde-gentext-ru-releaseinfo-phrase%) ]]>
     <![%kde-l10n-sk[ (("sk") %kde-gentext-sk-releaseinfo-phrase%) ]]>
     <![%kde-l10n-sl[ (("sl") %kde-gentext-sl-releaseinfo-phrase%) ]]>
     <![%kde-l10n-sr[ (("sr") %kde-gentext-sr-releaseinfo-phrase%) ]]>
     <![%kde-l10n-sv[ (("sv") %kde-gentext-sv-releaseinfo-phrase%) ]]>
-    <![%kde-l10n-zh-CN[ (("zh-cn") %kde-gentext-zh-CN-releaseinfo-phrase%) ]]>
+    <![%kde-l10n-zhcn[ (("zh_cn") %kde-gentext-zhcn-releaseinfo-phrase%) ]]>
     (else (error "L10N ERROR: kde-gentext-releaseinfo-phrase: no localised version"))))
