@@ -1636,7 +1636,7 @@ void KThemeStyle::drawControl( ControlElement element,
                         QColorGroup g2( discol, cg_ours.highlight(), white, white,
                                         enabled ? white : discol, discol, white );
 
-                        drawPrimitive( arrow, p, vr, g2, Style_Enabled );
+                        drawPrimitive( arrow, p, vr, g2, Style_Enabled | Style_Down );
                     }
                     else
                         drawPrimitive( arrow, p, vr, cg_ours,
