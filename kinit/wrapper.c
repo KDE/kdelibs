@@ -42,6 +42,7 @@ static char *getDisplay()
    const char *display;
    char *result;
    char *screen;
+   char *colon;
    display = getenv("DISPLAY");
    if (!display || !*display)
    {
@@ -50,7 +51,8 @@ static char *getDisplay()
    result = malloc(strlen(display)+1);
    strcpy(result, display);
    screen = strrchr(result, '.');
-   if (screen)
+   colon = strrchr(result, ':');
+   if (screen && (screen > colon))
       *screen = '\0';
    return result;
 }
