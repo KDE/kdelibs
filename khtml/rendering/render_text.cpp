@@ -547,7 +547,7 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 	QPtrList <QRect> linerects;
 #endif
         linerects.setAutoDelete(true);
-	linerects.append(new QRect());
+        linerects.append(new QRect());
 
 	bool renderOutline = style()->outlineWidth()!=0;
 
@@ -595,7 +595,10 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
             if(renderOutline) {
                 if(outlinebox_y == s->m_y) {
                     if(minx > s->m_x)  minx = s->m_x;
-                    if(maxx < s->m_x+s->m_width) maxx = s->m_x+s->m_width;
+                    int newmaxx = s->m_x+s->m_width;
+                    //if (parent()->isInline() && si==0) newmaxx-=paddingLeft();
+                    if (parent()->isInline() && si==m_lines.count()-1) newmaxx-=paddingRight();
+                    if(maxx < newmaxx) maxx = newmaxx;
                 }
                 else {
                     QRect *curLine = new QRect(minx, outlinebox_y, maxx-minx, m_lineHeight);
@@ -604,6 +607,8 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
                     outlinebox_y = s->m_y;
                     minx = s->m_x;
                     maxx = s->m_x+s->m_width;
+                    //if (parent()->isInline() && si==0) maxx-=paddingLeft();
+                    if (parent()->isInline() && si==m_lines.count()-1) maxx-=paddingRight();
                 }
             }
 #ifdef BIDI_DEBUG
@@ -829,7 +834,7 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
     if(from + len == int(str->l) && parent()->isInline() && parent()->lastChild()==this)
         width -= marginRight();
 
-    // add half leading to vertiaclly center it.
+    // add half leading to vertically center it.
     y += ( m_lineHeight - metrics( firstLine ).height() )/2;
 
 #ifdef DEBUG_LAYOUT
