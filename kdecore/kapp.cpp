@@ -1410,13 +1410,13 @@ bool KApplication::getKDEFonts(QStrList *fontlist)
   if(fontlist == 0L)
     return false;
 
-  fontfilename = KApplication::localkdedir();
+  fontfilename = KApplication::localconfigdir();
 
   if(fontfilename.isEmpty()){
     return false;
   }
 
-  fontfilename = fontfilename + "/share/config/kdefonts";
+  fontfilename = fontfilename + "/kdefonts";
 
   QFile fontfile(fontfilename);
 
