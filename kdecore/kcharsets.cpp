@@ -118,7 +118,7 @@ KFontStruct::KFontStruct()
     scalable = false; 
 }
 
-KFontStruct &KFontStruct::operator = (QFont &f)
+KFontStruct &KFontStruct::operator = (const QFont &f)
 {
     family = f.family();
     charset = f.charSet();
@@ -130,7 +130,7 @@ KFontStruct &KFontStruct::operator = (QFont &f)
     return *this;
 }
 
-KFontStruct &KFontStruct::operator = (KFontStruct &fs)
+KFontStruct &KFontStruct::operator = (const KFontStruct &fs)
 {
     family = fs.family;
     charset = fs.charset;

@@ -159,8 +159,8 @@ protected:
 
 struct KFontStruct {
     KFontStruct();
-    KFontStruct & operator = (QFont &f);
-    KFontStruct & operator = (KFontStruct &fs);
+    KFontStruct & operator = (const QFont &f);
+    KFontStruct & operator = (const KFontStruct &fs);
     operator QFont();
 
     QString family;
