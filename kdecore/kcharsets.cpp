@@ -447,7 +447,11 @@ QStringList KCharsets::availableFamilies( QFont::CharSet ch )
 
 void KCharsets::setQFont(QFont &f, QString charset) const
 {
-    setQFont(f, nameToID(charset));
+    QFont::CharSet cs = nameToID(charset);
+    if ( cs == QFont::AnyCharSet ) {
+	cs = charsetForEncoding(charset);
+    }
+    setQFont( f, cs );
 }
 
 void KCharsets::setQFont(QFont &f, QFont::CharSet charset) const
