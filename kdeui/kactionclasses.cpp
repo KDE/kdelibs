@@ -1045,7 +1045,7 @@ void KRecentFilesAction::setMaxItems( uint maxItems )
 void KRecentFilesAction::addURL( const KURL& url )
 {
     QString     file = url.prettyURL();
-    if ( file.contains(locateLocal("tmp", QString::null)))
+    if ( url.isLocalFile() && !KGlobal::dirs()->relativeLocation("tmp", url.path()).startsWith("/"))
         return;
     QStringList lst = items();
 
