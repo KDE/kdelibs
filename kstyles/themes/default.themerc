@@ -1,5 +1,6 @@
 [Misc]
 Name=KDE default
+Name[af]=KDE VERSTEK
 Name[az]=KDE əsas
 Name[bg]=KDE
 Name[br]=KDE dre ziouer
@@ -45,6 +46,7 @@ Name[tr]=KDE öntanımlı
 Name[uk]=Типовий для KDE
 Name[zh_CN.GB2312]=KDE 默认
 Comment=Default KDE style
+Comment[af]=VERSTEK KDE STYL
 Comment[az]=Əsas KDE tərzi
 Comment[bg]=Стил на KDE по подразбиране
 Comment[br]=Giz KDE dre ziouer

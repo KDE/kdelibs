@@ -223,6 +223,7 @@ Pixmap=lightgray.png
 SButtonPosition=BottomRight
 ShadeStyle=Motif
 Name=System-Series
+Name[af]=STELSEL-REEKS
 Name[br]=Rummad Reizhiad
 Name[ca]=Sèries de sistema
 Name[cs]=Systémová série

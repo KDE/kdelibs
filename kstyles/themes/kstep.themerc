@@ -1,5 +1,6 @@
 [Misc]
 Name=KDE Step
+Name[af]=KDE STEP
 Name[de]=KDE-Step
 Name[eo]=KDE-Step
 Name[is]=KDE-step
@@ -10,7 +11,7 @@ Name[no]=KDE Steg
 Name[no_NY]=KDE-Step
 Name[ta]=KDE «Ê
 Comment=Unthemed Next-like style
-Comment[af]=Next-tipe temalose sty;e
+Comment[af]=ONGETEMADE NEXT-TIPE STYL
 Comment[bg]=Стил без тема, приличащ на Next
 Comment[br]=Giz doare NeXT anwisket
 Comment[bs]=Bez teme, u stilu Nexta

@@ -1,5 +1,6 @@
 [Misc]
 Name=Qt Motif Plus
+Name[af]=QT MOTIF PLUS
 Name[az]=Qt Motif +
 Name[br]=Qt Motif Mui
 Name[de]=Qt-Motif-Plus
@@ -12,6 +13,7 @@ Name[mk]=Qt Motif плус
 Name[no_NY]=Qt-Motif pluss
 Name[tr]=Qt Motif +
 Comment=Built-in enhanced Motif style
+Comment[af]=INGEBOUDE VERBETERDE MOTIF STYL
 Comment[az]=Yerləşmiş, örtüsüz Motif tərzi
 Comment[bg]=Вграден в Qt подобрен стил на Motif
 Comment[br]=Giz Motif enframmet gwellaet

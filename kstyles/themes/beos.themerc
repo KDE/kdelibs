@@ -1,7 +1,8 @@
 [Misc]
 Name=BeOS
+Name[af]=BEOS
 Comment=Unthemed Beos-like style
-Comment[af]=Beos-tipe temalose style
+Comment[af]=ONGETEMADE BEOS-TIPE STYL
 Comment[az]=Beos oxşarı örtüsüz tərz
 Comment[bg]=Стил без тема, приличащ на Beos, 
 Comment[br]=Giz BeOS anwisket
