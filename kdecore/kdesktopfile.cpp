@@ -315,6 +315,6 @@ void KDesktopFile::virtual_hook( int id, void* data )
 
 QString KDesktopFile::readDocPath() const
 {
-	return readEntry( "DocPath" );
+	return readPathEntry( "DocPath" );
 }
 

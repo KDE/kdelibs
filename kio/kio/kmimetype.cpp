@@ -844,7 +844,7 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices(
 
   if ( cfg.hasKey( "TryExec" ) )
   {
-      QString tryexec = cfg.readEntry( "TryExec" );
+      QString tryexec = cfg.readPathEntry( "TryExec" );
       QString exe =  KStandardDirs::findExe( tryexec );
       if (exe.isEmpty()) {
           return result;
@@ -875,7 +875,7 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices(
         bInvalidMenu = true;
       else
       {
-        QString exec = cfg.readEntry( "Exec" );
+        QString exec = cfg.readPathEntry( "Exec" );
         if ( bLocalFiles || exec.contains("%U") || exec.contains("%u") )
         {
           Service s;
