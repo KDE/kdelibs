@@ -59,7 +59,7 @@ static QCString printableToString(const char *str, int l)
   }
 
   QCString result(l + 1);
-  char *r = (char *) result.data();
+  char *r = result.data();
 
   for(int i = 0; i < l;i++, str++)
   {
@@ -104,8 +104,8 @@ static QCString printableToString(const char *str, int l)
 
 static QCString stringToPrintable(const QCString& str){
   QCString result(str.length()*2); // Maximum 2x as long as source string
-  register char *r = (char *) result.data();
-  register char *s = (char *) str.data();
+  register char *r = result.data();
+  register char *s = str.data();
 
   // Escape leading space
   if (*s == ' ')
@@ -227,7 +227,6 @@ KConfigBase::ConfigState KConfigINIBackEnd::getConfigState() const
     return KConfigBase::NoAccess;
 }
 
-//#include <iostream.h>
 void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
 					      KEntryMap *pWriteBackMap,
 					      bool bGlobal)
@@ -244,8 +243,8 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
    const char *s, *eof;
    QByteArray data;
 #ifdef HAVE_MMAP
-   const char *map = (const char *) 
-	mmap(0, rFile.size(), PROT_READ, MAP_PRIVATE, rFile.handle(), 0);
+   const char *map = static_cast<const char *> (const_cast<const void *>(
+	mmap(0, rFile.size(), PROT_READ, MAP_PRIVATE, rFile.handle(), 0)));
    if (map)
    {
       s = map;
@@ -355,8 +354,8 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
       while ((s < eof) && (*s != '\n')) s++; // Search till end of line / end of file
 
       if (locale) {
-	  uint ll = localeString.length();
-          if ((ll != (uint) (elocale - locale)) || 
+	  unsigned int ll = localeString.length();
+          if ((ll != static_cast<unsigned int>(elocale - locale)) || 
 	      memcmp(locale, localeString.data(), ll))
           {
             //cout<<"mismatched locale '"<<QCString(locale, elocale-locale +1)<<"'"<<endl;
@@ -395,7 +394,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
    }
 #ifdef HAVE_MMAP
    if (map)
-      munmap((char *)map, rFile.size());
+      munmap(static_cast<void *>(const_cast<char *>(map)), rFile.size());
 #endif
 }
 
