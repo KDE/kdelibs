@@ -384,27 +384,70 @@ public:
     virtual QObject* component();
     virtual void setComponent( QObject* );
 
+    /**
+     * Set the text associated with this action. The text is used for menu
+     * and toolbar labels etc.
+     */
     virtual void setText(const QString &text);
+
+    /**
+     * Get the text associated with this action.
+     */
     virtual QString text() const;
 
+    /**
+     * Set the keyboard accelerator associated with this action.
+     */
     virtual void setAccel(int a);
+
+    /**
+     * Get the keyboard accelerator associated with this action.
+     */
     virtual int accel() const;
 
+    /** Returns true iff this action is enabled. */
     virtual bool isEnabled() const;
 
     virtual void setGroup( const QString& );
     virtual QString group() const;
 
+    /**
+     * Set the What's this text for the action. This text will be displayed when
+     * a widget that has been created by plugging this action into a container
+     * is clicked on in What's this mode.
+     *
+     * The What's this text can of course include QML markup as well as raw text.
+     */
     virtual void setWhatsThis( const QString& text );
+
+    /**
+     * Get the What's this text for the action.
+     */
     virtual QString whatsThis() const;
 
+    /**
+     * Set the tooltip text for the action.
+     */
     virtual void setToolTip( const QString& );
+
+    /**
+     * Get the tooltip text for the action.
+     */
     virtual QString toolTip() const;
 
     virtual void setShortText( const QString& );
     virtual QString shortText() const;
 
+    /**
+     * Set the QIconSet from which the icons used to display this action will
+     * be chosen.
+     */
     virtual void setIconSet( const QIconSet &iconSet );
+
+    /**
+     * Get the QIconSet from which the icons used to display this action will
+     * be chosen.
+     */
     virtual QIconSet iconSet() const;
 
     virtual void setIcon( const QString& icon );
@@ -427,6 +470,11 @@ public slots:
      * The implementation simply emits activated().
      */
     void activate();
+
+    /**
+     * Enables or disables this action. All uses of this action (eg. in menus
+     * or toolbars) will be updated to reflect the state of the action.
+     */ 
     virtual void setEnabled(bool enable);
 
 protected slots:
@@ -592,6 +640,10 @@ private:
     KToggleActionPrivate *d;
 };
 
+/**
+ * An action that operates like a radio button. At any given time
+ * only a single action from the group will be active.
+ */
 class KRadioAction : public KToggleAction
 {
   Q_OBJECT
