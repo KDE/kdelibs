@@ -26,7 +26,7 @@ public:
 	/*
 	 * construction, destruction
 	 */
-	WavPlayObject_impl() :wav(0), flpos(0.0), _state(posPaused)
+	WavPlayObject_impl() :wav(0), flpos(0.0), _state(posIdle)
 	{
 		cout << "WavPlayObject_impl" << endl;
 	}
@@ -54,9 +54,6 @@ public:
 		return "no description (see wavplayobject_impl.cc)";
 	}
 
-	void description(const string &) {
-	}
-
 	poTime currentTime() {
 		if(!wav) return poTime(0,0,0,"samples");
 
@@ -64,9 +61,6 @@ public:
 		float timems = (timesec - floor(timesec)) * 1000.0;
 
 		return poTime(timesec, timems, (int)flpos, "samples");
-	}
-
-	void currentTime(const class poTime &) {
 	}
 
     poTime overallTime() {
@@ -91,6 +85,12 @@ public:
 	void play() {
 		cout << "play" << endl;
 		_state = posPlaying;
+	}
+
+	void halt() {
+		cout << "stop" << endl;
+		_state = posIdle;
+		flpos = 0.0;
 	}
 
 	void seek(const class poTime &newTime) {
@@ -153,9 +153,7 @@ public:
 				left[i] = right[i] = 0.0;
 
 			if(_state == posPlaying) {
-				_state = posFinished;
-				
-				// should we really reset to start here?
+				_state = posIdle;
 				flpos = 0.0;
 			}
 		}
