@@ -540,7 +540,9 @@ void KRun::foundMimeType( const char *_type )
   kdebug( KDEBUG_INFO, 7010, "Resulting mime type is %s", _type );
 
   // Automatically unzip stuff
-  if ( strcmp( _type, "application/x-gzip" ) == 0 )
+  if ( strcmp( _type, "application/x-gzip" ) == 0 ||
+       strcmp( _type, "application/x-bzip" ) == 0 ||
+       strcmp( _type, "application/x-bzip2" ) == 0 )
   {
     KURL::List lst = KURL::split( m_strURL );
     if ( lst.isEmpty() )
@@ -552,7 +554,13 @@ void KRun::foundMimeType( const char *_type )
       return;
     }
 
-    lst.prepend( KURL( "gzip:/decompress" ) );
+    if ( strcmp( _type, "application/x-gzip" ) == 0 )
+      lst.prepend( KURL( "gzip:/decompress" ) );
+    else if ( strcmp( _type, "application/x-bzip" ) == 0 )
+      lst.prepend( KURL( "bzip:/decompress" ) );
+    else if ( strcmp( _type, "application/x-bzip2" ) == 0 )
+      lst.prepend( KURL( "bzip2:/decompress" ) );
+
     // Move the HTML style reference to the leftmost URL
     KURL::List::Iterator it = lst.begin();
     ++it;
