@@ -77,6 +77,13 @@ public:
   KCModuleInfo( const KCModuleInfo &rhs );
 
   /**
+   * Same as above but creates an empty KCModuleInfo.
+   * You should not normally call this.
+   * @sinse 3.4
+   */
+  KCModuleInfo();
+
+  /**
    * Assignment operator
    */
   KCModuleInfo &operator=( const KCModuleInfo &rhs );

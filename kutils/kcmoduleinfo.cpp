@@ -45,6 +45,12 @@ class KCModuleInfo::KCModuleInfoPrivate
 
 };
 
+KCModuleInfo::KCModuleInfo()
+{
+  _allLoaded = false;
+  d = new KCModuleInfoPrivate;
+}
+
 KCModuleInfo::KCModuleInfo(const QString& desktopFile)
 {
   init( KService::serviceByStorageId(desktopFile) );
