@@ -744,7 +744,7 @@ NodeImpl *NodeBaseImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild, i
         return appendChild(newChild, exceptioncode);
 
     if (newChild == refChild) // ### HIERARCHY_REUEST_ERR ?
-	return;
+	return 0;
 
     if( checkSameDocument(newChild, exceptioncode) )
         return 0;
