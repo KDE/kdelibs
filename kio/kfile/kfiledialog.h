@@ -43,6 +43,7 @@ class QVBoxLayout;
 
 class KActionCollection;
 class KDirOperator;
+class KURLBar;
 class KURLComboBox;
 class KFileFilterCombo;
 class KFileView;
@@ -698,6 +699,22 @@ public:
      * it e.g. to set a custom text to it.
      */
     KPushButton *cancelButton() const;
+
+    /**
+     * @returns the KURLBar object used as the "speed bar". You can add custom
+     * entries to it like that:
+     * \code
+     * KURLBar *urlBar = fileDialog->speedBar();
+     * if ( urlBar )
+     *     urlBar->insertDynamicItem( someURL, i18n("The URL's description") );
+     * \endcode
+     *
+     * Note that this method may return a null-pointer if the user configured
+     * to not use the speed-bar.
+     * @see KURLBar
+     * @see KURLBar::insertDynamicItem
+     */
+    KURLBar *speedBar();
 
     /**
      * @returns a pointer to the action collection, holding all the used

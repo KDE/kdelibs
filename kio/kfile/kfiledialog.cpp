@@ -3,7 +3,7 @@
     Copyright (C) 1997, 1998 Richard Moore <rich@kde.org>
                   1998 Stephan Kulow <coolo@kde.org>
                   1998 Daniel Grana <grana@ie.iwi.unibe.ch>
-                  1999,2000,2001,2002 Carsten Pfeiffer <pfeiffer@kde.org>
+                  1999,2000,2001,2002,2003 Carsten Pfeiffer <pfeiffer@kde.org>
                   2003 Clarence Dang <dang@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -1804,6 +1804,11 @@ KPushButton * KFileDialog::okButton() const
 KPushButton * KFileDialog::cancelButton() const
 {
     return d->cancelButton;
+}
+
+KURLBar * KFileDialog::speedBar()
+{
+    return d->urlBar;
 }
 
 void KFileDialog::slotCancel()

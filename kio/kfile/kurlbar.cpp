@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 2001,2002 Carsten Pfeiffer <pfeiffer@kde.org>
+    Copyright (C) 2001,2002,2003 Carsten Pfeiffer <pfeiffer@kde.org>
 
     library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -30,6 +30,7 @@
 
 #include <kaboutdata.h>
 #include <kconfig.h>
+#include <kdebug.h>
 #include <kglobal.h>
 #include <kicondialog.h>
 #include <kiconloader.h>
@@ -70,6 +71,28 @@ private:
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
 
+class KURLBarItem::KURLBarItemPrivate
+{
+public:
+    KURLBarItemPrivate()
+    {
+        isPersistent = true;
+    }
+
+    bool isPersistent;
+};
+
+KURLBarItem::KURLBarItem( KURLBar *parent,
+                          const KURL& url, bool persistent, const QString& description,
+                          const QString& icon, KIcon::Group group )
+    : QListBoxPixmap( KIconLoader::unknown() /*, parent->listBox()*/ ),
+      m_url( url ),
+      m_pixmap( 0L ),
+      m_parent( parent ),
+      m_appLocal( true )
+{
+    init( icon, group, description, persistent );
+}
 
 KURLBarItem::KURLBarItem( KURLBar *parent,
                           const KURL& url, const QString& description,
@@ -80,13 +103,23 @@ KURLBarItem::KURLBarItem( KURLBar *parent,
       m_parent( parent ),
       m_appLocal( true )
 {
+    init( icon, group, description, true /*persistent*/ );
+}
+
+void KURLBarItem::init( const QString& icon, KIcon::Group group,
+                        const QString& description, bool persistent )
+{
+    d = new KURLBarItemPrivate;
+    d->isPersistent = persistent;
+
     setCustomHighlighting( true );
-    setDescription( description );
     setIcon( icon, group );
+    setDescription( description );
 }
 
 KURLBarItem::~KURLBarItem()
 {
+    delete d;
 }
 
 void KURLBarItem::setURL( const KURL& url )
@@ -112,6 +145,17 @@ void KURLBarItem::setDescription( const QString& desc )
 {
     m_description = desc;
     setText( desc.isEmpty() ? m_url.fileName() : desc );
+}
+
+void KURLBarItem::setApplicationLocal( bool local )
+{
+    if ( !local && !isPersistent() )
+    {
+        kdWarning() << "KURLBar: dynamic (non-persistent) items can not be global." << endl;
+        return;
+    }
+
+    m_appLocal = local;
 }
 
 void KURLBarItem::setToolTip( const QString& tip )
@@ -221,6 +265,11 @@ int KURLBarItem::height( const QListBox *lb ) const
         return QMAX( sizeHint().height(), lb->viewport()->height() );
 }
 
+bool KURLBarItem::isPersistent() const
+{
+    return d->isPersistent;
+}
+
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
 
@@ -270,6 +319,14 @@ KURLBarItem * KURLBar::insertItem(const KURL& url, const QString& description,
 {
     KURLBarItem *item = new KURLBarItem(this, url, description, icon, group);
     item->setApplicationLocal( applicationLocal );
+    m_listBox->insertItem( item );
+    return item;
+}
+
+KURLBarItem * KURLBar::insertDynamicItem(const KURL& url, const QString& description,
+                                         const QString& icon, KIcon::Group group )
+{
+    KURLBarItem *item = new KURLBarItem(this, url, false, description, icon, group);
     m_listBox->insertItem( item );
     return item;
 }
@@ -362,7 +419,7 @@ QSize KURLBar::sizeHint() const
 #if 0
     // this code causes vertical and or horizontal scrollbars appearing
     // depending on the text, font, moonphase and earth rotation. Just using
-    // m_listBox->sizeHint() fixes this (although the widget can then be 
+    // m_listBox->sizeHint() fixes this (although the widget can then be
     // resized to a smaller size so that scrollbars appear).
     int w = 0;
     int h = 0;
@@ -515,13 +572,18 @@ void KURLBar::writeConfig( KConfig *config, const QString& itemGroup )
     int numLocal = 0;
     KURLBarItem *item = static_cast<KURLBarItem*>( m_listBox->firstItem() );
 
-    while ( item ) {
-        if ( item->applicationLocal() ) {
-            writeItem( item, numLocal, config, false );
-            numLocal++;
-        }
+    while ( item ) 
+    {
+        if ( item->isPersistent() ) // we only save persistent items
+        {
+            if ( item->applicationLocal() ) 
+            {
+                writeItem( item, numLocal, config, false );
+                numLocal++;
+            }
 
-        i++;
+            i++;
+        }
         item = static_cast<KURLBarItem*>( item->next() );
     }
     config->writeEntry("Number of Entries", numLocal);
@@ -535,10 +597,15 @@ void KURLBar::writeConfig( KConfig *config, const QString& itemGroup )
         int numGlobals = 0;
         item = static_cast<KURLBarItem*>( m_listBox->firstItem() );
 
-        while ( item ) {
-            if ( !item->applicationLocal() ) {
-                writeItem( item, numGlobals, config, true );
-                numGlobals++;
+        while ( item ) 
+        {
+            if ( item->isPersistent() ) // we only save persistent items
+            {
+                if ( !item->applicationLocal() ) 
+                {
+                    writeItem( item, numGlobals, config, true );
+                    numGlobals++;
+                }
             }
 
             item = static_cast<KURLBarItem*>( item->next() );
@@ -552,6 +619,9 @@ void KURLBar::writeConfig( KConfig *config, const QString& itemGroup )
 void KURLBar::writeItem( KURLBarItem *item, int i, KConfig *config,
                          bool global )
 {
+    if ( !item->isPersistent() )
+        return;
+    
     QString Description = "Description_";
     QString URL = "URL_";
     QString Icon = "Icon_";
@@ -590,10 +660,15 @@ void KURLBar::slotDropped( QDropEvent *e )
     }
 }
 
-void KURLBar::slotContextMenuRequested( QListBoxItem *item, const QPoint& pos )
+void KURLBar::slotContextMenuRequested( QListBoxItem *_item, const QPoint& pos )
 {
-    if (m_isImmutable) return;
+    if (m_isImmutable) 
+        return;
 
+    KURLBarItem *item = dynamic_cast<KURLBarItem*>( _item );
+    if ( !item )
+        return;
+        
     static const int IconSize   = 10;
     static const int AddItem    = 20;
     static const int EditItem   = 30;
@@ -613,8 +688,9 @@ void KURLBar::slotContextMenuRequested( QListBoxItem *item, const QPoint& pos )
     popup->insertItem( SmallIconSet("editdelete"), i18n("&Remove Entry"),
                        RemoveItem );
 
-    popup->setItemEnabled( EditItem, item != 0L );
-    popup->setItemEnabled( RemoveItem, item != 0L );
+    bool editable = item != 0L && item->isPersistent();
+    popup->setItemEnabled( EditItem, editable );
+    popup->setItemEnabled( RemoveItem, editable );
 
     int result = popup->exec( pos );
     switch ( result ) {
@@ -656,6 +732,9 @@ bool KURLBar::addNewItem()
 
 bool KURLBar::editItem( KURLBarItem *item )
 {
+    if ( !item || !item->isPersistent() ) // should never happen tho
+        return false;
+    
     KURL url            = item->url();
     QString description = item->description();
     QString icon        = item->icon();

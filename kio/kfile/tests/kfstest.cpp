@@ -34,6 +34,7 @@
 #include <kconfig.h>
 #include <kapplication.h>
 #include <kurl.h>
+#include <kurlbar.h>
 #include <kdiroperator.h>
 #include <kfile.h>
 #include <kdebug.h>
@@ -99,6 +100,12 @@ int main(int argc, char **argv)
     QStringList filter;
     filter << "all/allfiles" << "text/plain";
     dlg->setMimeFilter( filter, "all/allfiles" );
+    KURLBar *urlBar = dlg->speedBar();
+    if ( urlBar )
+    {
+        urlBar->insertDynamicItem( KURL("ftp://ftp.kde.org"), 
+                                   QString::fromLatin1("KDE FTP Server") );
+    }
 
 	if ( dlg->exec() == KDialog::Accepted )
 	    name1 = dlg->selectedURL().url();
@@ -109,7 +116,7 @@ int main(int argc, char **argv)
         KFDTest *test = new KFDTest( startDir );
         return a.exec();
     }
-    
+
     else if (argv1 == QString::fromLatin1("save")) {
         KURL u = KFileDialog::getSaveURL();
 //        QString(QDir::homeDirPath() + QString::fromLatin1("/testfile")),

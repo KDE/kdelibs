@@ -50,12 +50,32 @@ public:
      * If description is empty, it will try to use the filename/directory
      * of @p url, which will be shown as text of the item.
      * @p url will be used as tooltip, unless you set a different tip with
-     * setToolTip()
+     * setToolTip().
+     * @p persistent specifies whether this item is a persistent item or a
+     * dynamic item, that is not saved with @ref KURLBar::writeConfig().
+     */
+    KURLBarItem( KURLBar *parent, const KURL& url, bool persistent,
+                 const QString& description = QString::null,
+                 const QString& icon = QString::null,
+                 KIcon::Group group = KIcon::Panel );
+
+    /**
+     * Creates a persistent KURLBarItem to be used in the @p parent KURLBar. You need
+     * to insert the item into the listbox manually, if you don't use
+     * KURLBar::insertItem().
+     *
+     * If description is empty, it will try to use the filename/directory
+     * of @p url, which will be shown as text of the item.
+     * @p url will be used as tooltip, unless you set a different tip with
+     * setToolTip().
+     * @p persistent specifies whether this item is a persistent item or a
+     * dynamic item, that is not saved with @ref KURLBar::writeConfig().
      */
     KURLBarItem( KURLBar *parent, const KURL& url,
                  const QString& description = QString::null,
                  const QString& icon = QString::null,
                  KIcon::Group group = KIcon::Panel );
+
     /**
      * Destroys the item
      */
@@ -130,10 +150,13 @@ public:
     virtual const QPixmap * pixmap() const      { return &m_pixmap; }
 
     /**
-     * Makes this item a local or global one.
+     * Makes this item a local or global one. This has only an effect
+     * on persistent items of course.
+     * @see isPersistent
      * @see applicationLocal
      */
-    void setApplicationLocal( bool local )      { m_appLocal = local; }
+    void setApplicationLocal( bool local );
+
     /**
      * returns whether this is a global item or a local one. KURLBar
      * can differentiate between global and local items (only for the current
@@ -142,12 +165,19 @@ public:
      */
     bool applicationLocal() const               { return m_appLocal; }
 
+    /**
+     * returns whether this item is persistent (via @ref KURLBar::writeConfig()
+     * and @ref KURLBar::readConfig()) or not.
+     */
+    bool isPersistent() const;
 
 protected:
     virtual void paint( QPainter *p );
 
 private:
     int iconSize() const;
+    void init( const QString& icon, KIcon::Group group,
+               const QString& description, bool persistent );
 
     KURL m_url;
     QString m_description;
@@ -226,6 +256,19 @@ public:
                                       bool applicationLocal = true,
                                       const QString& icon = QString::null,
                                       KIcon::Group group = KIcon::Panel );
+    /**
+     * Inserts a new dynamic item into the KURLBar and returns the created
+     * KURLBarItem.
+     *
+     * @p url the url of the item
+     * @p description the description of the item (shown in the view)
+     * @p icon an icon -- if empty, the default icon for the url will be used
+     * @p group the icon-group for using icon-effects
+     */
+    virtual KURLBarItem * insertDynamicItem( const KURL& url,
+                                             const QString& description,
+                                             const QString& icon = QString::null,
+                                             KIcon::Group group = KIcon::Panel );
     /**
      * The items can be arranged either vertically in one column or
      * horizontally in one row.
