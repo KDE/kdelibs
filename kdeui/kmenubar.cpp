@@ -41,6 +41,9 @@
 
 // $Id$
 // $Log$
+// sven: Mac: Force show, if on top y= -2, take icon in showEvent.
+// small improvement, hope Sven like it
+//       ToolBar does.
 //
 // Revision 1.50  1998/11/23 09:57:49  ettrich
 // small improvement, hope Sven likes it
@@ -249,6 +252,7 @@ void KMenuBar::ContextCallback( int )
           Parent->installEventFilter(this); // to show menubar
           handle->removeEventFilter(this);
           handle->hide();
+          /*
           int dim = fontMetrics().height();
           QPixmap px(KWM::miniIcon(Parent->winId(), dim, dim));
           if (px.isNull()){
@@ -257,8 +261,9 @@ void KMenuBar::ContextCallback( int )
 	      px = *miniGo;
 	  }
           if (!px.isNull()){
-	      menu->insertItem(px, 0, this, SLOT(slotSysMenu()), 0, -2, 0);
-	  }
+          menu->insertItem(px, 0, this, SLOT(slotSysMenu()), 0, -2, 0);
+          }
+          */
       }
   }
 
@@ -402,14 +407,27 @@ void KMenuBar::leaveEvent (QEvent *e){
 
   if (ob == Parent && ev->type() == Event_Show && standalone_menubar)
 bool KMenuBar::eventFilter(QObject *ob, QEvent *ev){
-    bool aha = isVisible(); // did app enable show?
+
     setMenuBarPos(Floating);
     QRect r =  KWM::getWindowRegion(KWM::currentDesktop());
-    setGeometry(r.x(),(r.y()-1)<0?0:r.y()-1, r.width(), // check panel top
+    setGeometry(r.x(),(r.y()-1)<=0?-2:r.y()-1, r.width(), // check panel top
                 heightForWidth(r.width()));
-    if (aha)
-      show();
-    Parent->removeEventFilter(this); //One time only
+    int dim = fontMetrics().height();
+    QPixmap px(KWM::miniIcon(Parent->winId(), dim, dim));
+    if (px.isNull()){
+      if (!miniGo)
+        miniGo = new QPixmap(kapp->kde_datadir() + "/kpanel/pics/mini/go.xpm");
+      px = *miniGo;
+    }
+    //repair_accel();
+    if (!px.isNull())
+      menu->insertItem(px, 0, this, SLOT(slotSysMenu()), 0, -2, 0);
+
+
+    //if (aha)
+      show();  //force show
+  if (ob == Parent && ev->type() == QEvent::Show && standalone_menubar)
+  {
     //bool aha = isVisible(); // did app enable show?
       setMenuBarPos(FloatingSystem);
       Parent->removeEventFilter(this); //One time only
