@@ -18,30 +18,41 @@
 */
 
 #include "shellscript.h"
+#include <kdebug.h>
+#include <kapplication.h>
+#include <dcopclient.h>
 
 #include <kgenericfactory.h>
-#include <kscript/scriptclientinterface.h>
+#include <scriptclientinterface.h>
+//using namespace KScriptInterface;
 typedef KGenericFactory<ShellScript> ShellScriptFactory;
 K_EXPORT_COMPONENT_FACTORY( libshellscript, ShellScriptFactory( "ShellScript" ) );
 
 ShellScript::ShellScript(QObject *parent, const char *name, const QStringList &args )
 {
 	m_script =  new KProcess();
+	connect ( m_script, SIGNAL(processExited(KProcess *)), SLOT(Exit(KProcess *)));
+	connect ( m_script, SIGNAL(receivedStdout(KProcess *, char *, int)), SLOT(stdOut(KProcess *, char *, int )));
+	connect ( m_script, SIGNAL(receivedStderr(KProcess *, char *, int)), SLOT(stdErr(KProcess *, char *, int )));
+	// Connect feedback signals and slots
+	kdDebug() << "Building new script engine" << endl;
 }
 
 ShellScript::~ShellScript()
 {
-
+	kdDebug() << "Destroying script engine" << endl;
 }
 
 QString ShellScript::script() const
 {
 //	return m_script;
+	kdDebug() << "return script path" << endl;
 }
 
 void ShellScript::setScript( const QString &scriptFile  )
 {
-	*m_script << scriptFile;
+	kdDebug() << "set script " << kapp->dcopClient()->appId() << " " << scriptFile << endl;
+	*m_script << "sh" << scriptFile << kapp->dcopClient()->appId();
 }
 
 void ShellScript::setScript( const QString &, const QString & )
@@ -51,7 +62,8 @@ void ShellScript::setScript( const QString &, const QString & )
 
 void ShellScript::run(QObject *context, const QVariant &arg)
 {
-	 m_script->start();
+	kdDebug() << "running the script" << endl;
+	 m_script->start(KProcess::NotifyOnExit,KProcess::All);
 }
 void ShellScript::kill()
 {
@@ -59,23 +71,27 @@ void ShellScript::kill()
 		m_script->kill(9);	// Kill it harder
 }
 
-void ShellScript::goodExit(KProcess *proc)
+void ShellScript::Exit(KProcess *proc)
 {
-//	emit done(proc->exitStatus());
+	kdDebug () << "Done processing..." << endl;
+//	ScriptClientInteface->done(proc->exitStatus());
 }
 
-
-void ShellScript::badExit(KProcess *proc)
+void ShellScript::stdErr(KProcess *proc, char *buffer, int buflen)
 {
-
+	kdDebug() << "Error" << endl;
+	char *data = (char *) malloc(buflen);
+	//kdDebug() << data << endl;
+	free(data);
 }
-void ShellScript::stdErr(KProcess *proc)
+void ShellScript::stdOut(KProcess *proc, char *buffer, int buflen)
 {
+	kdDebug() << "Feedback" << endl;
+	char *data = (char *) malloc(buflen);
+	//kdDebug() << data << endl;
+	ScriptClientInterface->output("data");
+	free(data);
 
-}
-void ShellScript::stdOut(KProcess *proc)
-{
-	ScriptClientInterface->output("message");
 }
 
 #include "shellscript.moc"

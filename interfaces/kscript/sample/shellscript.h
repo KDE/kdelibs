@@ -19,11 +19,11 @@
 #ifndef __shellscript_h__
 #define __shellscript_h__
 
-#include <kscript/scriptinterface.h>
+#include <scriptinterface.h>
 #include <qvariant.h>
 #include <qobject.h>
 #include <kprocess.h>
-
+//using namespace KScriptInterface;
 class ShellScript :  public KScriptInterface
 {
 	Q_OBJECT
@@ -36,10 +36,9 @@ public:
 	void run(QObject *context = 0, const QVariant &arg = 0);
 	void kill();
 private slots:
-	void goodExit(KProcess *proc);
-	void badExit(KProcess *proc);
-	void stdErr(KProcess *proc);
-	void stdOut(KProcess *proc);
+	void Exit(KProcess *proc);
+	void stdErr(KProcess *proc, char *buffer, int buflen);
+	void stdOut(KProcess *proc, char *buffer, int buflen);
 private:
 	KProcess *m_script;
 };

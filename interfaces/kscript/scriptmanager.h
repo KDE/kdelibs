@@ -28,6 +28,7 @@
 class ScriptInfo;
 //namespace KScriptInterface
 //{
+
 	/**
 	*	This class is the base for all script engines.
 	*	@author Ian Reinhart Geiser <geiseri@kde.org>

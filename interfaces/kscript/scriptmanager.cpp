@@ -45,7 +45,7 @@ bool KScriptManager::addScript( const QString &scriptDesktopFile)
 		KDesktopFile desktop(scriptDesktopFile, true);
 		m_scripts.insert(desktop.readName(), new ScriptInfo());
 		m_scripts[desktop.readName()]->scriptType = desktop.readType();
-		QString localpath = QString(kapp->name()) + "/scripts/" + desktop.readType();
+		QString localpath = QString(kapp->name()) + "/scripts/" + desktop.readEntry("X-ScriptName", "");
 		m_scripts[desktop.readName()]->scriptFile = locate("data", localpath);
 #warning FIX ME - we need to decide where we will set the method for the script.
 //		m_scripts[desktop.readName()]->scriptMethod = tmpScriptMethod;
@@ -79,7 +79,7 @@ void KScriptManager::clear()
 void KScriptManager::runScript( const QString &scriptName, QObject *context, const QVariant &arg)
 {
 	ScriptInfo *newScript = m_scripts[scriptName];
-	QString scriptType = "X-Script-Runner=" + newScript->scriptType;
+	QString scriptType = "[X-Script-Runner] == '" + newScript->scriptType + "'";
 	if (newScript)
 	{
 		// See if the script is allready cached...
@@ -89,11 +89,14 @@ void KScriptManager::runScript( const QString &scriptName, QObject *context, con
 			// some minutes...
 			// currently i am thinking a QTimer that will throw a signal in 10 minutes
 			// to remove m_scriptCache[m_currentScript]
-			m_scriptCache.insert(scriptName, KParts::ComponentFactory::createInstanceFromQuery<KScriptInterface>( "KScriptRunner/KScriptRunner", scriptType));
+//			m_scriptCache.insert(scriptName, KParts::ComponentFactory::createInstanceFromQuery<KScriptInterface>( "KScriptRunner/KScriptRunner", scriptType));
+			m_scriptCache.insert(scriptName, KParts::ComponentFactory::createInstanceFromQuery<KScriptInterface>( "KScriptRunner/KScriptRunner"));
 		}
 		m_currentScript = scriptName;
+
 		if ( m_scriptCache[m_currentScript] )
 		{
+			m_scriptCache[m_currentScript]->ScriptClientInterface = this;
 			if (newScript->scriptMethod != "")
 				m_scriptCache[m_currentScript]->setScript( newScript->scriptFile, newScript->scriptMethod );
 			else
