@@ -776,7 +776,7 @@ KURLBarItemDialog::KURLBarItemDialog( bool allowGlobal, const KURL& url,
     QWhatsThis::add( label, whatsThisText );
     QWhatsThis::add( m_urlEdit, whatsThisText );
     
-    whatsThisText = i18n("<qt>This is the icon that will apear in the Quick Access panel.<p>"
+    whatsThisText = i18n("<qt>This is the icon that will appear in the Quick Access panel.<p>"
                          "Click on the button to select a different icon.</qt>");
     label = new QLabel( i18n("Choose an &icon:"), grid );
     m_iconButton = new KIconButton( grid, "icon button" );

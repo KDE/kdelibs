@@ -303,7 +303,7 @@ void ConfigPage::slotRemove()
     return;
 
   if ( confItem->standard() ) {
-    KMessageBox::error( this, i18n( "You can't remove your standard resource!. Please select a new standard resource first." ) );
+    KMessageBox::error( this, i18n( "You cannot remove your standard resource! Please select a new standard resource first." ) );
     return;
   }
 
