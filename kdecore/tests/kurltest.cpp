@@ -25,14 +25,42 @@ int main(int argc, char *argv[])
   KApplication app(argc,argv,"kurltest",false,false);
   KURL::List lst;
 
+  KURL baseURL ("http://www.foo.bar:80" );
+  check( "KURL::isMalformed()", baseURL.isMalformed() ? "TRUE":"FALSE", "FALSE");
+  KURL url1 ( baseURL, "//www1.foo.bar" );
+  check( "KURL::url()", url1.url(), "http://www1.foo.bar");
+   
+  baseURL = "http://www.foo.bar";
+  KURL rel_url( baseURL, "/top//test/../test1/file.html" );
+  check( "KURL::url()", rel_url.url(), "http://www.foo.bar/top//test1/file.html" );
+   
+  baseURL = "http://www.foo.bar/top//test2/file2.html";
+  check( "KURL::url()", baseURL.url(), "http://www.foo.bar/top//test2/file2.html" );
+  
+  baseURL = "file:/usr/local/src/kde2/////kdelibs/kio";
+  check( "KURL::url()", baseURL.url(), "file:/usr/local/src/kde2/////kdelibs/kio" );
+  
+  baseURL = "file:/usr/local/src/kde2/kdelibs/kio/";
+  KURL url2( baseURL, "../../////kdebase/konqueror" );
+  check( "KURL::url()", url2.url(), "file:/usr/local/src/kde2/////kdebase/konqueror" );
+  
   QString u1 = "file:/home/dfaure/my#myref";
-  KURL url1(u1);
+  url1 = u1;
   check("KURL::url()", url1.url(), "file:/home/dfaure/my#myref");
   check("KURL::hasRef()", url1.hasRef() ? "yes" : "no", "yes");
   check("KURL::hasHTMLRef()", url1.hasHTMLRef() ? "yes" : "no", "yes");
   check("KURL::htmlRef()", url1.htmlRef(), "myref");
   check("KURL::hasSubURL()", url1.hasSubURL() ? "yes" : "no", "no");
-  check("KURL::upURL()", url1.upURL().url(), "file:/home/dfaure");
+  check("KURL::upURL()", url1.upURL().url(), "file:/home/dfaure/");
+
+  url1 = "gg:www.kde.org";
+  check("KURL::isMalformed()", url1.isMalformed()?"TRUE":"FALSE", "FALSE" );
+
+  url1= "KDE";
+  check("KURL::isMalformed()", url1.isMalformed()?"TRUE":"FALSE", "TRUE" );
+
+  url1= "$HOME/.kde/share/config";
+  check("KURL::isMalformed()", url1.isMalformed()?"TRUE":"FALSE", "TRUE" );
 
   u1 = "file:/opt/kde2/qt2/doc/html/showimg-main-cpp.html#QObject::connect";
   url1 = u1;
@@ -41,7 +69,7 @@ int main(int argc, char *argv[])
   check("KURL::hasHTMLRef()", url1.hasHTMLRef() ? "yes" : "no", "yes");
   check("KURL::htmlRef()", url1.htmlRef(), "QObject::connect");
   check("KURL::hasSubURL()", url1.hasSubURL() ? "yes" : "no", "no");
-  check("KURL::upURL()", url1.upURL().url(), "file:/opt/kde2/qt2/doc/html");
+  check("KURL::upURL()", url1.upURL().url(), "file:/opt/kde2/qt2/doc/html/");
 
   u1 = "file:/opt/kde2/qt2/doc/html/showimg-main-cpp.html#QObject:connect";
   url1 = u1;
@@ -50,7 +78,7 @@ int main(int argc, char *argv[])
   check("KURL::hasHTMLRef()", url1.hasHTMLRef() ? "yes" : "no", "yes");
   check("KURL::htmlRef()", url1.htmlRef(), "QObject:connect");
   check("KURL::hasSubURL()", url1.hasSubURL() ? "yes" : "no", "no");
-  check("KURL::upURL()", url1.upURL().url(), "file:/opt/kde2/qt2/doc/html");
+  check("KURL::upURL()", url1.upURL().url(), "file:/opt/kde2/qt2/doc/html/");
 
   u1 = "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/#myref";
   url1 = u1;
@@ -59,7 +87,7 @@ int main(int argc, char *argv[])
   check("KURL::hasHTMLRef()", url1.hasHTMLRef() ? "yes" : "no", "yes");
   check("KURL::htmlRef()", url1.htmlRef(), "myref");
   check("KURL::hasSubURL()", url1.hasSubURL() ? "yes" : "no", "yes");
-  check("KURL::upURL()", url1.upURL().url(), "file:/home/dfaure");
+  check("KURL::upURL()", url1.upURL().url(), "file:/home/dfaure/");
 
   u1 = "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/";
   url1 = u1;
@@ -68,7 +96,7 @@ int main(int argc, char *argv[])
   check("KURL::hasHTMLRef()", url1.hasHTMLRef() ? "yes" : "no", "no");
   check("KURL::htmlRef()", url1.htmlRef(), "");
   check("KURL::hasSubURL()", url1.hasSubURL() ? "yes" : "no", "yes");
-  check("KURL::upURL()", url1.upURL().url(), "file:/home/dfaure");
+  check("KURL::upURL()", url1.upURL().url(), "file:/home/dfaure/");
 
   u1 = "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/README";
   url1 = u1;
