@@ -95,12 +95,12 @@ class DCOPClient : public QObject
    *
    * Naturally, only attached application can use DCOP services.
    *
-   * If a @ref QApplication object exists then client registers itself as
-   * @ref QApplication::name() + "-" + <pid>.
-   * If no @ref QApplication object exists the client registers itself as
+   * If a QApplication object exists then client registers itself as
+   * QApplication::name() + "-" + \<pid\>.
+   * If no QApplication object exists the client registers itself as
    * "anonymous".
    *
-   * If you want to register differently, you should use @ref registerAs()
+   * If you want to register differently, you should use registerAs()
    * instead.
    *
    * @return true if attaching was successful.
