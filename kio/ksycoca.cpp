@@ -229,7 +229,7 @@ QString KSycoca::determineRelativePath( const QString & _fullpath, const QString
       sRelativeFilePath = _fullpath.mid( (*dirsit).length() ); // skip appsdirs
   }
   if ( sRelativeFilePath.isEmpty() )
-    kdebug( KDEBUG_FATAL, 7011, QString("Couldn't find %1 in any apps dir !!!").arg( _fullpath ) );
+    kdebug( KDEBUG_FATAL, 7011, QString("Couldn't find %1 in any %2 dir !!!").arg( _fullpath ).arg( _resource) );
   //else
     // debug code
     //kdebug( KDEBUG_INFO, 7011, sRelativeFilePath );
