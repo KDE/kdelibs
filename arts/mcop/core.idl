@@ -33,61 +33,115 @@ enum MessageType {
  mcopOnewayInvocation  = 6
 };
 
+/**
+ * This type is sent as header of each MCOP message.
+ */
 struct Header {
-    HeaderMagic magic;    // the value 0x504f434d, which is marshalled as MCOP
+	/**
+	 * the value 0x504f434d, which is marshalled as MCOP
+	 */
+    HeaderMagic magic;
     long messageLength;
     MessageType messageType;
 };
 
+/**
+ * This is sent as start of each normal (twoway) invocation
+ */
 struct Invocation {
+	/**
+	 * A unique number of the request (needed to send the return code back)
+	 */
     long requestID;
+	/**
+	 * The ID of the object receiving the request
+	 */
     long objectID;
+	/**
+	 * The ID of the method that is to be invoked
+	 */
     long methodID;
 };
 
+/**
+ * This is sent as start of each oneway invocation
+ */
 struct OnewayInvocation {
+	/**
+	 * The ID of the object receiving the request
+	 */
     long objectID;
+	/**
+	 * The ID of the method that is to be invoked
+	 */
     long methodID;
 };
 
+/**
+ * Body of the mcopServerHello MCOP message
+ */
 struct ServerHello {
 	string serverID;
 	sequence<string> authProtocols;
 	string authSeed;
 };
 
+/**
+ * Body of the mcopClientHello MCOP message
+ */
 struct ClientHello {
 	string serverID;
 	string authProtocol;
 	string authData;
 };
 
+/**
+ * An object reference
+ */
 struct ObjectReference {
-	string serverID; // should be unique, i.e. start time, hostname, and pid
-	long objectID;	 // number of the object under that server
-	sequence<string> urls; // where the server holding object can be reached
+	/**
+	 * A unique ID for the server the object is located on, (a server ID may
+	 * i.e. be composed of start time, hostname, and pid)
+	 */
+	string serverID;
+
+	/**
+	 * The number of the object under that server
+	 */
+	long objectID;
+
+	/**
+	 * where the server holding object can be reached
+	 */
+	sequence<string> urls;
 };
 
 // Interface definitions
 
+/**
+ * The definition of a parameter of a method
+ */
 struct ParamDef {
 	string type;
 	string name;
 };
 
-/* Twoway methods are such where the calling process does a call and is
-   suspended until some result (maybe even a void result) gets back.
-
-   Oneway methods are one shot and forget methods: you send the invocation,
-   and continue. Maybe it will be received, maybe executed later. You will
-   never hear the result.
-*/
-
+/**
+ * Twoway methods are such where the calling process does a call and is
+ * suspended until some result (maybe even a void result) gets back.
+ *
+ * Oneway methods are one shot and forget methods: you send the invocation,
+ * and continue. Maybe it will be received, maybe executed later. You will
+ * never hear the result.
+ */
 enum MethodType {
 	methodOneway = 1,
 	methodTwoway = 2
 };
 
+/**
+ * The definition of a method.
+ */
 struct MethodDef {
 	string     name;
 	string     type;
@@ -96,17 +150,17 @@ struct MethodDef {
 	sequence<ParamDef> signature;
 };
 
-/*
+/**
  * an attribute
  *
  * flags should contain things like
- * - attribute is readonly/writeonly/readwrite
- * - attribute is incoming/outgoing stream
- * - if it's a stream, it also should contain the information whether it is
- *   asynchronous or synchronous
- * - NB20000320: see InterfaceDef for the meaning of streamDefault
+ *
+ * @li attribute is readonly/writeonly/readwrite
+ * @li attribute is incoming/outgoing stream
+ * @li if it's a stream, it also should contain the information whether it is
+ *     asynchronous or synchronous
+ * @li NB20000320: see InterfaceDef for the meaning of streamDefault
  */
-
 enum AttributeType {
   streamIn    = 1,
   streamOut   = 2,
@@ -117,6 +171,9 @@ enum AttributeType {
   streamDefault = 64
 };
 
+/**
+ * The definition of an attribute and/or stream
+ */
 struct AttributeDef {
 	string  name;
 	string  type;
@@ -152,25 +209,40 @@ struct InterfaceDef {
 
 // Type definitions (struct's and such)
 
+/**
+ * One component of a struct
+ */
 struct TypeComponent {
 	string type;
 	string name;
 };
 
+/**
+ * The definition of a struct
+ */
 struct TypeDef {
 	string name;
 
 	sequence<TypeComponent> contents;
 };
 
+/**
+ * One item of an enum value
+ */
 struct EnumComponent {
 	string name;
 
 	long value;
 };
 
+/**
+ * The definition of an enum
+ */
 struct EnumDef {
-	string name;	// empty for anonymous enum
+	/**
+	 * name if the enum, empty for anonymous enum
+	 */
+	string name;	
 
 	sequence<EnumComponent> contents;
 };
@@ -178,7 +250,6 @@ struct EnumDef {
 /**
  * The contents of an idl file
  */
-
 struct ModuleDef {
 	string moduleName;
 
@@ -191,27 +262,26 @@ struct ModuleDef {
 /**
  * The interface repository
  */
-
 interface InterfaceRepo {
 	/**
-	 * insertModule inserts the contents of a module into the interface
-	 * repository and returns and ID
+	 * inserts the contents of a module into the interface repository
+	 *
+	 * @returns an ID which can be used to remove the entry again
 	 */
 	long insertModule(ModuleDef newModule);
 
 	/**
-	 * removeModule removes the contents of a module from the interface
-	 * repository
+	 * removes the contents of a module from the interface repository
 	 */
 	void removeModule(long moduleID);
 
 	/**
-	 * queryInterface queries the definition of an interface
+	 * queries the definition of an interface
 	 */
 	InterfaceDef queryInterface(string name);
 
 	/**
-	 * queryType queries the definition of a type
+	 * queries the definition of a type
 	 */
 	TypeDef queryType(string name);
 };
@@ -220,15 +290,40 @@ interface InterfaceRepo {
  * Flow System interface
  */
 
+/**
+ * Internal use: implement distributed asynchronous streams.
+ *
+ * The FlowSystemSender object transmits the packets that should be sent
+ * over the stream via _allocCustomMessage (Object_base).
+ */
 interface FlowSystemSender {
+	/**
+	 * This method is invoked whenever the receiver has finished processing
+	 * a packet of the stream
+	 */
 	oneway void processed();
 };
 
+/**
+ * Internal use: implement distributed asynchronous streams.
+ *
+ * The FlowSystemReceiver object receives and extracts the packets sent by
+ * the sender object and injects them in the notification system again.
+ */
 interface FlowSystemReceiver {
+	/**
+	 * The custom message ID which should be used to send the stream packets
+	 */
 	readonly attribute long receiveHandlerID;
-	//oneway void receive(string packet);
 };
 
+/**
+ * A flow system.
+ *
+ * Flow systems handle the streaming between MCOP objects. As this streaming
+ * is network transparent (at least for asynchronous streams) they have this
+ * remote interface.
+ */
 interface FlowSystem {
 	/**
 	 * This starts a scheduling node
@@ -262,10 +357,10 @@ interface FlowSystem {
 	 * This disconnects two objects, maybe even remote
 	 *
 	 * it is important that
-	 *  - sourceObject/sourcePort points to the node the signal flow is
-	 *    coming from
-	 *  - destObject/destPort points to the node/port the signal flow is
-	 *    going to
+	 * @li sourceObject/sourcePort points to the node the signal flow is
+	 *     coming from
+	 * @li destObject/destPort points to the node/port the signal flow is
+	 *     going to
 	 *
 	 * Don't use this manually. Use object->_node()->connect(...) instead.
 	 */
@@ -285,9 +380,15 @@ interface FlowSystem {
 												FlowSystemSender sender);
 };
 
+/**
+ * A global communication space used to obtain initial object references
+ *
+ * MCOP needs a way to connect to initial (global) object references. This
+ * is done by these global communication spaces.
+ */
 interface GlobalComm {
 	/**
-	 * put puts a variable/value pair into the global communication
+	 * puts a variable/value pair into the global communication
 	 * space - it will not change the value of the variable if it is
 	 * already present. Returns true if success, false if the variable
 	 * was already there.
@@ -295,13 +396,13 @@ interface GlobalComm {
 	boolean put(string variable, string value);
 
 	/**
-	 * get gets the value of a variable out of the global communication
+	 * gets the value of a variable out of the global communication
 	 * space - it returns an empty string when the variable isn't there
 	 */
 	string get(string variable);
 
 	/**
-	 * erase removes a variable from the global communication space
+	 * removes a variable from the global communication space
 	 */
 	void erase(string variable);
 };

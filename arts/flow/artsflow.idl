@@ -42,7 +42,9 @@
 	 */
 	enum PortDataType {audio_data, string_data};
 
-	/*
+	/**
+	 * ConnType (maybe obsolete)
+	 *
 	 * ConnType: (connection type) this is wether this value is used
 	 *
 	 * - once (such as a filename of a waveplugin)  -> property
@@ -55,10 +57,15 @@
 	 * - stream based (such as audio streams)       -> stream
 	 *   every calculation of the module consumes/creates a sample
      *   that means: no data = no calculation possible
+	 *
+	 * WARNING: This is part of the artsbuilder dynamic programming interface 
+	 * as the MCOP port isn't there yet, this stuff may change
 	 */ 
 	enum PortConnType { conn_stream, conn_event, conn_property};
 
-	/*
+	/**
+	 * PortType (maybe obsolete)
+	 *
 	 * isMultiPort specifies if the port can take multiple incoming
 	 * connections or not. This is only relevant/allowed for input ports,
 	 * the output of all output ports may be connected to any amount of
@@ -67,8 +74,10 @@
 	 * Ports which can take multiple connections are handled differently
 	 * internally. (Also, artsbuilder needs to know whether to allow multi-
 	 * connections or not).
+	 *
+	 * WARNING: This is part of the artsbuilder dynamic programming interface 
+	 * as the MCOP port isn't there yet, this stuff may change
 	 */
-
 	struct PortType {
 		PortDirection Direction;
 		PortDataType DataType;
@@ -76,8 +85,12 @@
 		boolean isMultiPort;
 	};
 
-	// Description of a synthesis port within a ModuleDesc
-
+	/**
+	 * Description of a synthesis port within a ModuleDesc (maybe obsolete)
+	 *
+	 * WARNING: This is part of the artsbuilder dynamic programming interface 
+	 * as the MCOP port isn't there yet, this stuff may change
+	 */
 	struct PortDesc {
 		// ID is guaranteed to be unique in the structure the port belongs to
 		long ID;
@@ -109,9 +122,14 @@
 		//readonly attribute long internalOldID;
 	};
 
-	// Description of a synthesis module within a structure
-	// (ports, screen position)
 
+	/**
+	 * Description of a synthesis module within a structure (maybe obsolete)
+	 * contains: ports, screen position
+	 *
+	 * WARNING: This is part of the artsbuilder dynamic programming interface 
+	 * as the MCOP port isn't there yet, this stuff may change
+	 */
 	struct ModuleDesc {
 		// ID is guaranteed to be unique in the structure the module belongs to
 		long ID;
@@ -122,10 +140,13 @@
 		boolean isInterface, isStructure;
 	};
 
-	// Description of a synthesis structure
-	//
-	// this is the kind of object ArtsBuilder edits visually
-
+	/**
+	 * Description of a synthesis structure (maybe obsolete)
+	 * this is the kind of object ArtsBuilder edits visually
+	 *
+	 * WARNING: This is part of the artsbuilder dynamic programming interface 
+	 * as the MCOP port isn't there yet, this stuff may change
+	 */
 	struct StructureDesc {
 		// the width & height of the structure
 		long Width, Height;
@@ -143,6 +164,12 @@
 		boolean containsStructures;
 	};
 
+	/**
+	 * Server which can create/execute modules (maybe obsolete)
+	 *
+	 * WARNING: This is part of the artsbuilder dynamic programming interface 
+	 * as the MCOP port isn't there yet, this stuff may change
+	 */
 	interface ArtsServer {
 		// ID is guaranteed to be unique between servers which publish on one
 		// broker
@@ -191,8 +218,10 @@
 	};
 
 	/**
-	 * this interface contains the components of the old "Synthesizer"
-	 * interface that are related to execution of structures
+	 * Interface which can execute structures (maybe obsolete)
+	 *
+	 * WARNING: This is part of the artsbuilder dynamic programming interface 
+	 * as the MCOP port isn't there yet, this stuff may change
 	 */
 	interface ExecutionManager {
 		// resets the synthesizer when halted (see Status)
@@ -228,6 +257,16 @@
 
 enum AutoSuspendState { asNoSuspend, asSuspend, asSuspendStop };
 
+/**
+ * The SynthModule interface is the base for all modules containing streams.
+ *
+ * There are two goals achieved by this interface. On one side, there is
+ * functionality which users of stream carrying modules want to use (which
+ * is: start streaming, stop streaming).
+ *
+ * On the other hand, there is functionality which the flow system will use
+ * to achieve these goals.
+ */
 interface SynthModule {
 	// interface for users of this module
 
@@ -257,10 +296,6 @@ interface SynthModule {
 	 * starts the I/O of the module
 	 */
 	void streamStart();
-	/*
-	long readfd();
-	long writefd();
-	*/
 
 	/**
 	 * stop the thing again, and free data possibly allocated in streamInit
@@ -268,36 +303,38 @@ interface SynthModule {
 	void streamEnd();
 
 	/**
-	 * autosuspend
-	 *
 	 * If you run a mixer desk (without anything connected), no calculations
 	 * need to be done - since the output is silent anyway. For this reason,
-	 * there exists this autosuspend attribute. It has three possible values:
+	 * there exists this autosuspend attribute. It allows the flow system
+	 * to detect the idle condition, and start suspending the calculations,
+	 * until something "important" happens again.
 	 *
-	 *   asNoSuspend - this one is appropriate when you have a module that
-	 *                 is active by itself
-	 *   asSuspend   - this one is appropriate for modules that "do nothing"
-	 *                 by themselves
-	 *   asSuspendStop - this one is for modules that should be stopped, when
-	 *                 the system gets suspended, and restarted when the
-	 *                 system will start again - an example for this is
-	 *                 soundcard output
+	 * There are three possible values:
+	 *
+	 * @li  asNoSuspend - this one is appropriate when you have a module that
+	 *                    is active by itself
+	 * @li  asSuspend   - this one is appropriate for modules that "do nothing"
+	 *                    by themselves
+	 * @li  asSuspendStop - this one is for modules that should be stopped, when
+	 *                    the system gets suspended, and restarted when the
+	 *                    system will start again - an example for this is
+	 *                    soundcard output
 	 *
 	 * A module should choose asSuspend (or asSuspendStop) only if the
 	 * following conditions are true:
 	 *
-	 *  - given constant inputs (like 3.0 on all ports), the module will
-	 *    give constant output after some time
-	 *  - given only 0.0 inputs, the module will give only 0.0 outputs
-	 *    after some time
-	 *  - the module does not synchronize itself through signal flow (i.e.
-	 *    a midi sequence which "knows" when a second has passed through
-	 *    the signal flow breaks when suspension happens)
-	 *  - the module can't be brought to do something with a method
-	 *    invocation (i.e. a module which starts generating noise for
-	 *    a second whenever the noise() method is called is not suspendable)
-	 *  - the module has no internal state that changes over time when only
-	 *    constant inputs are given
+	 * @li given constant inputs (like 3.0 on all ports), the module will
+	 *     give constant output after some time
+	 * @li given only 0.0 inputs, the module will give only 0.0 outputs
+	 *     after some time
+	 * @li the module does not synchronize itself through signal flow (i.e.
+	 *     a midi sequence which "knows" when a second has passed through
+	 *     the signal flow breaks when suspension happens)
+	 * @li the module can't be brought to do something with a method
+	 *     invocation (i.e. a module which starts generating noise for
+	 *     a second whenever the noise() method is called is not suspendable)
+	 * @li the module has no internal state that changes over time when only
+	 *     constant inputs are given
 	 *
 	 * Typical examples for suspendable modules are arithmetic operations,
 	 * filters, delay/hall/reverb, soundcard output.
@@ -309,46 +346,84 @@ interface SynthModule {
 	readonly attribute AutoSuspendState autoSuspend;
 };
 
+/**
+ * Plays a stream of audio data to the soundcard
+ */
 interface Synth_PLAY : SynthModule {
 	// attribute string channels;
 	default in audio stream invalue_left,invalue_right;
 };
 
+/**
+ * A frequency generator
+ *
+ * This kind of object is used to create frequencies. Oscillators are connected
+ * at the output of this object
+ */
 interface Synth_FREQUENCY : SynthModule {
 	in audio stream frequency;
 	out audio stream pos;
 };
 
+/**
+ * A sine wave
+ */
 interface Synth_WAVE_SIN : SynthModule {
 	in audio stream pos;
 	out audio stream outvalue;
 };
 
+/**
+ * A module which mixes an arbitary number of audio streams
+ */
 interface Synth_MULTI_ADD : SynthModule {
 	in multi audio stream invalue;
 	out audio stream outvalue;
 };
 
+/**
+ * A module which adds two audio streams
+ */
 interface Synth_ADD : SynthModule {
 	default in audio stream invalue1,invalue2;
 	out audio stream outvalue;
 };
 
+/**
+ * Multiplies two audio streams
+ */
 interface Synth_MUL : SynthModule {
 	in audio stream invalue1,invalue2;
 	out audio stream outvalue;
 	default invalue1, invalue2;
 };
 
+/**
+ * This plays a wave file
+ */
 interface Synth_PLAY_WAV : SynthModule {
+	/**
+	 * How fast should it be played? 1.0 = normal speed
+	 */
 	attribute float speed;
+	/**
+	 * Which file should be played
+	 */
 	attribute string filename;
+	/**
+	 * Is true as soon as the file is finished
+	 */
 	readonly attribute boolean finished;
 
 	out audio stream left, right;
 	default left, right;
 };
 
+/**
+ * Byte stream to audio conversion object
+ *
+ * Converts an asynchronous byte stream to a synchronous audio stream
+ */
 interface ByteStreamToAudio : SynthModule {
 	attribute long samplingRate;
 	attribute long channels;
@@ -367,12 +442,15 @@ interface ByteStreamToAudio : SynthModule {
 	default right;
 };
 
+/**
+ * Base interface for all stereo effects
+ */
 interface StereoEffect : SynthModule {
 	default in audio stream inleft, inright;
 	default out audio stream outleft, outright;
 };
 
-/*
+/**
  * this is a simple clipping stereo volume control
  */
 interface StereoVolumeControl : StereoEffect {
@@ -381,25 +459,46 @@ interface StereoVolumeControl : StereoEffect {
 	readonly attribute float currentVolumeRight;
 };
 
-/*
- * this is a funny fft scope
+/**
+ * A funny FFT scope
  */
 interface StereoFFTScope : StereoEffect {
 	readonly attribute sequence<float> scope;
 };
 
+/**
+ * A stack of stereo effects
+ */
 interface StereoEffectStack : SynthModule {
-	/*
-	   these should be streams - however dynamic expansion isn't there
-	   yet, so this is the quick & dirty solution
+	/**
+	 * these should be streams - however dynamic expansion isn't there
+	 * yet, so this is the quick & dirty solution
 	 */
 	void setInputs(object leftObj, string leftPort,
 					object rightObj, string rightPort);
+	/**
+	 * these should be streams - however dynamic expansion isn't there
+	 * yet, so this is the quick & dirty solution
+	 */
 	void setOutputs(object leftObj, string leftPort,
 					object rightObj, string rightPort);
 
+	/**
+	 * inserts an effect at the top side (= directly after the input)
+	 *
+	 * @returns an ID which can be used to remove the effect again
+	 */
 	long insertTop(StereoEffect effect, string name);
+
+	/**
+	 * inserts an effect at the bottom (= close to the output) side
+	 *
+	 * @returns an ID which can be used to remove the effect again
+	 */
 	long insertBottom(StereoEffect effect, string name);
 
+	/**
+	 * removes an effect again
+	 */
 	void remove(long ID);
 };

@@ -40,24 +40,51 @@ enum poCapabilities {
   capPause = 2
 };
 
+/**
+ * KMedia2 time information
+ *
+ * This is a time value which contains either milliseconds & seconds, or
+ * a custom unit or both. It is a flexible time base.
+ *
+ * If a value isn't there, it is set to -1.
+ */
 struct poTime {
-    long ms, seconds; // -1 if undefined
-    float custom;     // some custom time unit (changed to float, is that ok?)
-                      // -1 if undefined
-    string customUnit; // for instance for a tracker "pattern"
+	/**
+	 * time it takes in seconds; -1 if no clock time known
+	 */
+    long seconds;
+
+	/**
+	 * additional time in milliseconds (this doesn't contain all the time)
+	 * -1 if no clock time known
+	 */
+	long ms;
+
+	/**
+	 * some custom time information
+	 * -1 if no custom time known
+	 */
+    float custom;
+
+	/**
+	 * for instance for a tracker "pattern"
+	 */
+    string customUnit;
 };
 
-/*
- * you are not supposed to use this API (it is private)
+/**
+ * private part of the PlayObject API (don't use)
  */
 interface PlayObject_private {
+	/**
+	 * loads a file
+	 */
 	boolean loadMedia(string filename);
 };
 
-/*
- * this is the official API
+/**
+ * KMedia2 PlayObject - these can be used by Kaiman for instance
  */
-
 interface PlayObject : PlayObject_private {
     attribute string description;
     attribute poTime currentTime;
@@ -66,14 +93,30 @@ interface PlayObject : PlayObject_private {
     readonly attribute string mediaName;
     readonly attribute poState state;
 
+	/**
+	 * starts playing the media
+	 */
     void play();
+	/**
+	 * seeks to a specific time
+	 */
     void seek(poTime newTime); // could be handled by setting currentTime
+
+	/**
+	 * pauses playing the media
+	 */
     void pause();
 };
 
-/*
- * use this to create new objects
+/**
+ * use this to create new PlayObjects for media
  */
 interface PlayObjectFactory {
+	/**
+	 * creates a play object (or returns a null reference if this is not
+	 * possible)
+	 *
+	 * @param filename the name of the file to create a play object for
+	 */
 	PlayObject createPlayObject(string filename);
 };

@@ -1,6 +1,11 @@
 #include "artsflow.idl"
 #include "kmedia2.idl"
 
+/**
+ * Producer of byte sound
+ *
+ * This is used inside the sound server interface
+ */
 interface ByteSoundProducer : SynthModule
 {
 	readonly attribute long samplingRate;
@@ -10,16 +15,14 @@ interface ByteSoundProducer : SynthModule
 	async out byte stream outdata;
 };
 
-/*
+/**
  * This is a very simple sound server interface
+ *
+ * WARNING: This currently inherits a KMedia2 PlayObjectFactory for test
+ *          purposes, but don't rely on that
  */
 
-interface SimpleSoundServer
-/*
- * Warning: This currently inherits a KMedia2 PlayObjectFactory for test
- *    purposes, but don't rely on that
- */
-			: PlayObjectFactory
+interface SimpleSoundServer : PlayObjectFactory
 {
 	readonly attribute StereoEffectStack outstack;
 
@@ -73,10 +76,9 @@ interface SimpleSoundServer
 	object createObject(string name);
 };
 
-/*
- * Test KMedia2 interface
+/**
+ * A KMedia2 Wave PlayObject
  */
-
 interface WavPlayObject : PlayObject, SynthModule
 {
 	out audio stream left,right;
