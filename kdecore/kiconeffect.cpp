@@ -82,7 +82,7 @@ void KIconEffect::init()
 	// Default effects
 	mEffect[i][0] = NoEffect;
 	mEffect[i][1] =  ((i==0)||(i==4)) ? ToGamma : NoEffect;
-	mEffect[i][2] = NoEffect;
+	mEffect[i][2] = ToGray; 
 	
 	mTrans[i][0] = false;
 	mTrans[i][1] = false;
