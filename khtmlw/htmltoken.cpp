@@ -89,6 +89,7 @@ void HTMLTokenizer::reset()
 
     if ( buffer )
 	delete [] buffer;
+    buffer = 0;
 }
 
 void HTMLTokenizer::begin()
@@ -632,6 +633,9 @@ void HTMLTokenizer::write( const char *str )
 
 void HTMLTokenizer::end()
 {
+    if ( buffer == 0 )
+	return;
+
     if ( dest > buffer )
     {
 	*dest = 0;

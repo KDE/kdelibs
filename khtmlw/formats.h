@@ -40,11 +40,6 @@
 #include "kpng.h"
 #endif
 
-#ifdef HAVE_LIBGIF
-#include "gif.h"
-#endif
-
-
 // Include declaration headers for format handlers here (should 
 // only need 2 per format; I've got only one, since no writers yet).
 

@@ -480,6 +480,11 @@ void HTMLTable::calcColumnWidths()
 		columnPrefPos[c + 1] = columnPos[c + 1];
 	}
     }
+/*
+    debug( "Cell widths" );
+    for ( c = 0; c <= totalCols; c++ )
+	debug( "cell min: %d, cell pref: %d", columnPos[c], columnPrefPos[c] );
+*/
 }
 
 // Use the minimum and preferred cell widths to produce an optimum
@@ -832,24 +837,26 @@ bool HTMLTable::selectText( QPainter *_painter, int _x1, int _y1,
 
 	    if ( _y1 < y - ascent && _y2 > y )
 	    {
-		isSel |= cell->selectText( _painter, 0, _y1 - ( y - ascent ),
+		isSel = isSel || cell->selectText( _painter, 0,
+			_y1 - ( y - ascent ),
 			width + 1, _y2 - ( y - ascent ), _tx, _ty );
 	    }
 	    else if ( _y1 < y - ascent )
 	    {
-		isSel |= cell->selectText( _painter, 0, _y1 - ( y - ascent ),
+		isSel = isSel || cell->selectText( _painter, 0,
+			_y1 - ( y - ascent ),
 			_x2 - x, _y2 - ( y - ascent ), _tx, _ty );
 	    }
 	    else if ( _y2 > y )
 	    {
-		isSel |= cell->selectText( _painter, _x1 - x,
+		isSel = isSel || cell->selectText( _painter, _x1 - x,
 			_y1 - ( y - ascent ), width + 1, _y2 - ( y - ascent ),
 			_tx, _ty );
 	    }
 	    else if ( (_x1 - x < cell->getXPos() + cell->getWidth() &&
 			_x2 - x > cell->getXPos() ) )
 	    {
-		isSel |= cell->selectText( _painter, _x1 - x,
+		isSel = isSel || cell->selectText( _painter, _x1 - x,
 			_y1 - ( y - ascent ), _x2 - x, _y2 - ( y - ascent ),
 			_tx, _ty );
 	    }
@@ -1270,7 +1277,8 @@ bool HTMLClue::selectText( QPainter *_painter, int _x1, int _y1,
 
     for ( obj = head; obj != 0; obj = obj->next() )
     {
-	isSel |= obj->selectText( _painter, _x1 - x, _y1 - ( y - ascent ),
+	isSel = isSel || obj->selectText( _painter, _x1 - x,
+		_y1 - ( y - ascent ),
 		_x2 - x, _y2 - ( y - ascent ), _tx, _ty );
     }
 
@@ -1835,10 +1843,10 @@ bool HTMLClueH::selectText( QPainter *_painter, int _x1, int _y1,
     for ( obj = head; obj != 0; obj = obj->next() )
     {
 	if ( obj->getObjectType() == Clue )
-	    isSel |= obj->selectText( _painter, _x1 - x, _y1 - (y-ascent),
-		    _x2 - x, _y2 - ( y - ascent ), _tx, _ty );
+	    isSel = isSel || obj->selectText( _painter, _x1 - x,
+		    _y1 - (y-ascent), _x2 - x, _y2 - ( y - ascent ), _tx, _ty );
 	else
-	    isSel |= obj->selectText( _painter, _x1 - x, rely1,
+	    isSel = isSel || obj->selectText( _painter, _x1 - x, rely1,
 		    _x2 - x, rely2, _tx, _ty );
     }
 
@@ -1977,10 +1985,11 @@ bool HTMLClueFlow::selectText( QPainter *_painter, int _x1, int _y1,
 	while ( obj != lineEnd )
 	{
 	    if ( obj->getObjectType() == Clue )
-		isSel |= obj->selectText( _painter, _x1 - x, _y1 - (y-ascent),
+		isSel = isSel || obj->selectText( _painter, _x1 - x,
+			_y1 - (y-ascent),
 			_x2 - x, _y2 - ( y - ascent ), _tx, _ty );
 	    else
-		isSel |= obj->selectText( _painter, _x1 - x, rely1,
+		isSel = isSel || obj->selectText( _painter, _x1 - x, rely1,
 			_x2 - x, rely2, _tx, _ty );
 	    obj = obj->next();
 	}

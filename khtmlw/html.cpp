@@ -40,10 +40,6 @@
 
 #include <X11/Xlib.h>
 
-#ifdef HAVE_LIBGIF
-#include "gif.h"
-#endif
-
 #ifdef HAVE_LIBJPEG
 #include "jpeg.h"
 #endif
@@ -97,32 +93,32 @@ HTMLFontManager* pFontManager = 0;
 // </ul>     is processed by KHTMLWidget::parseU()
 //
 parseFunc KHTMLWidget::parseFuncArray[26] = {
-	KHTMLWidget::parseA,
-	KHTMLWidget::parseB,
-	KHTMLWidget::parseC,
-	KHTMLWidget::parseD,
-	KHTMLWidget::parseE,
-	KHTMLWidget::parseF,
-	KHTMLWidget::parseG,
-	KHTMLWidget::parseH,
-	KHTMLWidget::parseI,
-	KHTMLWidget::parseJ,
-	KHTMLWidget::parseK,
-	KHTMLWidget::parseL,
-	KHTMLWidget::parseM,
-	KHTMLWidget::parseN,
-	KHTMLWidget::parseO,
-	KHTMLWidget::parseP,
-	KHTMLWidget::parseQ,
-	KHTMLWidget::parseR,
-	KHTMLWidget::parseS,
-	KHTMLWidget::parseT,
-	KHTMLWidget::parseU,
-	KHTMLWidget::parseV,
-	KHTMLWidget::parseW,
-	KHTMLWidget::parseX,
-	KHTMLWidget::parseY,
-	KHTMLWidget::parseZ
+	&KHTMLWidget::parseA,
+	&KHTMLWidget::parseB,
+	&KHTMLWidget::parseC,
+	&KHTMLWidget::parseD,
+	&KHTMLWidget::parseE,
+	&KHTMLWidget::parseF,
+	&KHTMLWidget::parseG,
+	&KHTMLWidget::parseH,
+	&KHTMLWidget::parseI,
+	&KHTMLWidget::parseJ,
+	&KHTMLWidget::parseK,
+	&KHTMLWidget::parseL,
+	&KHTMLWidget::parseM,
+	&KHTMLWidget::parseN,
+	&KHTMLWidget::parseO,
+	&KHTMLWidget::parseP,
+	&KHTMLWidget::parseQ,
+	&KHTMLWidget::parseR,
+	&KHTMLWidget::parseS,
+	&KHTMLWidget::parseT,
+	&KHTMLWidget::parseU,
+	&KHTMLWidget::parseV,
+	&KHTMLWidget::parseW,
+	&KHTMLWidget::parseX,
+	&KHTMLWidget::parseY,
+	&KHTMLWidget::parseZ
 };
 
 
@@ -3342,7 +3338,7 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
     static const char *endth[] = { "</th", "<th", "<td", "<tr", "</table", 0 };
     static const char *endtd[] = { "</td", "<th", "<td", "<tr", "</table", 0 };
     static const char *endall[] = { "<td", "<tr", "<th", "</table", 0 };
-    static const char *endcap[] = { "</caption>", 0 };    
+    static const char *endcap[] = { "</caption>", "</table>", "<tr", "<td", "<th", 0 };    
     const char* str = 0;
     bool firstRow = true;
     bool tableTag = true;
@@ -3447,8 +3443,10 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 		    flow = 0;
 		    str = parseBody( caption, endcap );
 		    table->setCaption( caption, capAlign );
+		    flow = 0;
 		}
-		else if ( strncmp( str, "<tr", 3 ) == 0 )
+
+		if ( strncmp( str, "<tr", 3 ) == 0 )
 		{
 		    if ( !firstRow )
 			table->endRow();

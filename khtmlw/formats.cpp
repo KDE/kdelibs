@@ -39,12 +39,6 @@
 
 void KHTMLWidget::registerFormats()
 {
-
-#if 0
-        QImageIO::defineIOHandler("GIF", "^GIF[0-9][0-9][a-z]", 0, 
-                read_gif_file, 0L);
-#endif
-
 #ifdef HAVE_LIBJPEG
         QImageIO::defineIOHandler("JFIF","^\377\330\377\340..JFIF", 0,
                 read_jpeg_jfif, 0L);

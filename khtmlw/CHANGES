@@ -1,7 +1,11 @@
 KHTMLW CHANGES
 ==============
 
-Last Change: 04 December 1997 - Martin Jones.
+Version 0.12.07 - 29 December 1997
+---------------
+
+removed gif.*
+misc fixes.
 
 
 Version 0.12.06
