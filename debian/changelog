@@ -2,6 +2,7 @@ kdelibs4 (3.0-0.beta1-1) unstable; urgency=low
 
   * New upstream beta
   * Update Build-Depends to match all that is needed
+  * Applied all customizations for Debian
 
  -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 07 Dec 2001 19:02:00 -0700
 
