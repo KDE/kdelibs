@@ -927,6 +927,9 @@ void RenderFlow::calcMinMaxWidth()
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(RenderBox)::calcMinMaxWidth() known=" << minMaxKnown() << endl;
 #endif
+    
+    if (isInline())
+        return;
 
 //    if(minMaxKnown())
 //        return;
@@ -1004,7 +1007,7 @@ void RenderFlow::calcMinMaxWidth()
                 if(m_maxWidth < inlineMax) m_maxWidth = inlineMax;
                 inlineMin = inlineMax = 0;
             }
-            child = child->nextSibling();
+            child = next(child);
         }
         if(m_minWidth < inlineMin) m_minWidth = inlineMin;
         if(m_maxWidth < inlineMax) m_maxWidth = inlineMax;
