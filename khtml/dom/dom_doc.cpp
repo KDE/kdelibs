@@ -176,7 +176,7 @@ bool Document::isHTMLDocument()
 
 Range Document::createRange()
 {
-    return Range( this );
+    return Range( *this );
 }
 
 // ----------------------------------------------------------------------------
