@@ -34,25 +34,19 @@
  * A combined button, line-edit and a popup list widget.
  *
  * This widget inherits from QComboBox and enhances it with the following
- * added functionalities : a popup menu that provides basic features
- * such as copy/cut/paste to manipulate content through the mouse, a
- * built-in hook into @ref a KCompletion object which provides automatic
- * manual completion, and the ability to change which keyboard key is used
- * for this feature.  Furthermore, since it inherits form QComboBox it can
- * be used as a drop-in replacement for it where the above functionalities
- * are needed and/or useful.
+ * added functionalities : a built-in hook into @ref a KCompletion object
+ * which provides automatic & manual completion as well as the ability to
+ * change which keyboard key is used for this feature.  Furthermore, since
+ * it inherits form QComboBox it can be used as a drop-in replacement where
+ * the above functionalities are needed and/or useful.
  *
  * KComboBox emits a few more additional signals than @ref QComboBox, the
  * main ones being the @ref comepltion and the @ref rotation signal.  The
  * completion signal is intended to be connected to a slot that will assist
- * the user in filling out the remaining text. While the rotation signals,
+ * the user in filling out the remaining text while the rotation signals,
  * both @ref rotateUp and @ref rotateDown, are intended to be used to transverse
  * through some kind of list in opposing directions.  The @ref returnPressed
- * signals are emitted when the user presses the return key and the reamining
- * signals, @ref clicked and @ref pressed are emitted to allow the list box
- * to be closed on a single mouse click event. Otherwise, the listbox items
- * are only selectable through a double-click.  See @ref clicked, @ref pressed
- * and @ref setSelectedItem for detials.
+ * signals are emitted when the user presses the return key.
  *
  * The default key-binding for completion and rotation is determined from the
  * global settings in @ref KStdAccel.  However, these values can be set locally to
@@ -67,19 +61,10 @@
  *
  * <pre>
  * KComboBox *combo = new KComboBox( true, this, "mywidget" );
- *
- * combo->enableCompletion(); // enables completion and automatically deletes that object at the end.
- *
- * combo->autoHighLightItem(); // highlights items in the list box on mouse over
- *
- * KCompletion *comp = edit->completionObject();
- *
+ * combo->setHandleCompletion(); // enables completion and automatically deletes that object at the end.
+ * combo->setHandleRotation();
  * // Connect to the return pressed signal - optional
  * connect( combo, SIGNAL( returnPressed( const QString& ) ), combo->completionObject(), SLOT( addItem( const QString& ) );
- *
- * // Connect either clicked or pressed signal to the setSelectedItem slot to
- * // close combo-box on single-clicks.  Otherwise, it requires a double-click.
- * connect( combo, SIGNAL( clicked( int ) ), combo, SLOT( setSelectedItem( int ) ) );
  * </pre>
  *
  * To use a customized completion objects derived from KCompletion simply
@@ -87,10 +72,10 @@
  *
  * <pre>
  * KComboBox *combo = new KComboBox( this,"mywidget" );
- *
  * KURLCompletion *comp = new KURLCompletion();
- *
  * combo->setCompletionObject( comp );
+ * combo->setHandleCompletion();
+ * combo->setHandleRotation();
  * </pre>
  *
  * Of course @ref setCompletionObject can also be used to assign the base
@@ -124,8 +109,7 @@ public:
     *
     *
     */
-    KComboBox( bool rw, QWidget *parent=0, const char *name=0,
-               bool showContext=true, bool showModeChager=true );
+    KComboBox( bool rw, QWidget *parent=0, const char *name=0 );
     /**
     * Destructor
     */
@@ -173,10 +157,10 @@ public:
     * This is done to allow you to share a single completion object across
     * multiple widgets.
     *
-    * @param @p obj A @ref KCompletion or a derived child object.
+    * @param a @ref KCompletion or a derived child object.
     * @param @p autoDelete if true, delete the completion object on destruction.
     */
-    void setCompletionObject( KCompletion* obj, bool autoDelete = false );
+    void setCompletionObject( KCompletion*, bool autoDelete = false );
 
     /**
     * Returns a pointer to the current completion object.
@@ -193,25 +177,23 @@ public:
     *
     * @return true if the completion object
     */
-    bool delCompletionOnExit() const { return m_bAutoDelCompObj; }
+    bool deleteCompletion() const { return m_bAutoDelCompObj; }
 
     /**
-    * Disables the completion feature of this widget.
+    * Sets the completion object for deletion upon this widget's destruction.
     *
-    * If you use this method to disable the completion feature, it will delete
-    * the object as well.  This means you have to reset the completion object
-    * if you need to use it again.  For temporarily disabling completion without
-    * removing the reference to the completion object, use @ref setCompletionMode
-    * with KGlobal::CompletionNone as paramter.  See @ref setCompletionObject and
-    * @ref setCompletionMode for details.
+    * If the argument is set to true, the completion object is deleted when
+    * this widget's destructor is called.
+    *
+    * @param @p autoDelete if set to true the completion object is deleted on exit.
     */
-    void disableCompletion();
+    void setDeleteCompletion( bool autoDelete = false ) { m_bAutoDelCompObj = autoDelete; }
 
     /**
-    * Enables a basic completion feature for this widget.
+    * Enables or disables basic completion feature for this widget.
     *
-    * This is a convienence method that will automatically create a completion
-    * object for you.  The completion object is an instance of the base class
+    * This is a convienence method that can automatically create a completion
+    * object for you and activate.  The completion object is an instance of the base class
     * @ref KCompletion.
     *
     * If you need to make use of a more specialized completion object, use
@@ -221,7 +203,78 @@ public:
     *
     * @param @p autoDelete if true, delete the completion object on destruction.
     */
-    void enableCompletion( bool autoDelete = true );
+    void setEnableCompletion( bool autoDelete = true );
+
+    /**
+    * Enables/disables this widget's ability to emit completion signals.
+    *
+    * Note that if you invoke this function with the argument set to false,
+    * no completion signals will be emitted.  Thus, this widget will not be
+    * able to handle the completion signals even if setHandleCompletion has
+    * been or is called.  Also note that disabling the emition of the
+    * completion signals through this method does NOT delete the comlpetion
+    * object if one has already been created.  See also @ref setHandleCompletion
+    * and @ref setHandleCompletion.
+    *
+    * @param @p emit if true emits completion signal.
+    */
+    void setEnableCompletionSignal( bool enable ) { m_bEmitCompletion = enable; }
+
+    /**
+    * Enables/disables this widget's ability to emit rotation signals.
+    *
+    * Note that if you invoke this function with the argument se to false,
+    * no rotation signals will be emitted.   Thus, this widget will not be
+    * able to handle the rotation signals even if @ref setHandleRotation has
+    * been or is called.  See also @see setHandleRotation.
+    */
+    void setEnableRotationSignal( bool enable ) { m_bEmitRotation = enable; }
+
+    /**
+    * Sets this widget to handle the completion signals internally.
+    *
+    * When this function is invoked with the default argument or the
+    * argument set to "true", KComboBox will automatically handle completion
+    * signals.  By default, this method enables completion and also creates
+    * a base completion object if one is not already present.  To stop this
+    * widget from handling the completion signal internally simply call it
+    * with its argument set to "false".
+    *
+    * Note that calling this function does not hinder you from connecting and
+    * hence receiving the completion signals externally.
+    *
+    * @param @p complete when true enables this widget to handle completion.
+    */
+    void setHandleCompletion( bool complete = true );
+
+    /**
+    * Sets this widget to handle rotation signals internally.
+    *
+    * When this function is invoked with a default argument or the argument
+    * set to "true", KComboBox will automatically handle rotation signals.
+    * To stop KComboBox from handling the rotation signals internally simply
+    * invoke this function with the argument set to "false".
+    *
+    * Note that calling this function does not hinder you from connecting and
+    * hence receiving the rotation signals externally.
+    *
+    * @param @p autoHandle when true handle rotation signals internally.
+    */
+    void setHandleRotation( bool rotate = true );
+
+    /**
+    * Returns true if this widget handles completion signal internally.
+    *
+    * @return true when this widget handles completion signal.
+    */
+    bool handlesCompletion() { return m_bEmitCompletion; }
+
+    /**
+    * Returns true if this widget handles rotation signal internally.
+    *
+    * @return true when this widget handles rotation signal.
+    */
+    bool handlesRotation() { return m_bEmitRotation; }
 
     /**
     * Sets the type of completion to be used.
@@ -367,75 +420,30 @@ public:
     void useGlobalSettings() { m_iCompletionKey = 0; }
 
     /**
-    * Sets items in the list box to be highlighted on a "mouse over" event.
-    *
-    * This is a convienence method to turn on highlighting when the mouse
-    * cursor is over an item in the list box.  The same thing can be achived
-    * by connecting to the signals from the list box directly.  This method
-    * does all that work for you.  NOTE: if you opt for manaully connecting
-    * these signals yourself, DO NOT invoke this method.  Otherwise you will
-    * receive duplicate signals.
-    *
-    * @param @p highlight if true enables highlighting on mouse
-    */
-    void autoHighlightItems( bool highlight = true );
-
-    /**
-    * Enables or disables the automatic selection of an item from the list box
-    * if widget is NOT editable.
-    *
-    * This method allows you to turn on the ability to select an item by
-    * simply entering the first letter of an item when the combo-box is in
-    * "select-only" mode.  This feature has no impact if the widget is
-    * created as "read-write" or editable.
-    *
-    * @param @p select if true enables auto selection of items.
-    */
-    void autoSelectItems( bool select = true ) { m_bAutoSelect = select; }
-
-    /**
-    * Enables the default popup (context) menu for this widget.
+    * Enables/disables the popup (context) menu for this widget.
     *
     * This method only works if this widget is editable ( i.e. read-write ).
-    * If this widget is not editable for read-write, invoking this function
-    * will accomplish nothing.  Hence, the return value will be false.
+    * If this widget is not editable, invoking this function accomplishs nothing.
+    * Hence, the return value will always be false under those circumstances.
     *
-    * @return true if popup menu can be created, i.e. widget is not read-only.
+    * @param @p showChanger if set to true, the mode changer item is enabled.
     */
-    bool showContextMenu();
+    void setEnableContextMenu( bool showMenu = false );
 
-    /**
-    * Disables the default popup (context) menu for this widget.
-    *
-    * This method only works if this widget is editable ( i.e. read-write ).
-    * If this widget is not editable, invoking this function is meaningless.
-    *
-    */
-    void hideContextMenu();
 
     /**
     * Shows the completion mode changer in the context menu.
     *
-    * This function allows to show the mode changer item in the
-    * context menu again after you have disabled it with
-    * @ref hideModeChanger.  Note that there is no need to call
-    * this function unless you have disabled the mode changer when
-    * you created the object, through the option in the constructor
-    * or
+    * This function allows to enable/disable the apperance of the mode changer
+    * item from the context menu.  Note that there is no need to call this
+    * function unless you have disabled the mode changer.  It is automatically
+    * enabled by default.
     *
     * NOTE : this function is meaningless if this widget is "select-only".
-    */
-    void showModeChanger() { m_bShowModeChanger = true; }
-
-    /**
-    * Hides the completion mode changer in the context menu.
     *
-    * This function allows you to hide the completion mode changer as
-    * needed without completely disabling the popup menu.
-    *
-    * NOTE : this function is meaningless if this widget is "select-only".
+    * @param @p showChanger if set to true, the mode changer item is enabled.
     */
-    void hideModeChanger() { m_bShowModeChanger = false; }
+    void setEnableModeChanger( bool showMode = false );
 
 signals:
 
@@ -451,26 +459,6 @@ signals:
     * @ref returnPressed(), is only emitted if this widget is editable.
     */
     void returnPressed( const QString& );
-
-    /**
-    * This is a convienence signal emitted to make life easier.  It has
-    * the integer value of the item clicked in combo-box's list box as its
-    * argument.  Unlike its counter parts in @ref QListBox, however, this
-    * signal is only emitted if the click action was on an actual item.
-    *
-    * See also @see QComboBox::listBox
-    */
-    void clicked( int );
-
-    /**
-    * This is a convienence signal emitted to make life easier.  It has
-    * the integer value of the item pressed in combo-box's list box as its
-    * argument.  Unlike its counter parts in @ref QListBox, however, this
-    * signal is only emitted if the press action was on an actual item.
-    *
-    * See also @see QComboBox::listBox
-    */
-    void pressed( int );
 
     /**
     * This signal is emitted when the completion key is pressed.  The
@@ -506,34 +494,37 @@ public slots:
     virtual void multipleCompletions( const QStringList& );
 
     /**
-    * This slot and its counter-parts below are provided to
-    * readily connect the clicked or pressed signals from the
-    * user, when (s)he select an item from the list.  That way,
-    * you the app developer, can determine which signal should
-    * cause this widget to set the selected item and close the
-    * list box.
-    */
-    virtual void setSelectedItem( QListBoxItem* );
-
-    /**
-    * This is the same as the above slot except the argument
-    * it expects, a QString value.
-    */
-    virtual void setSelectedItem( const QString& );
-
-    /**
-    * This is the same as the above slot except the argument
-    * it expects, an interger value.
-    */
-    virtual void setSelectedItem( int );
-
-    /**
-    * This slot is a reimplemention of @see QComboBox::setEditText.
+    * This slot is a re-implemention of @see QComboBox::setEditText.
     * It is re-implemeted to provide a consitent look when items are
     * completed as well as selected from the list box.  The argument
     * is the text to set in the line edit box.
     */
     virtual void setEditText( const QString& );
+
+    /**
+    * Iterates in the up (previous match) direction through the
+    * completion list if it is available.
+    *
+    * This slot is intended to make it easy to connect the rotate
+    * up signal in order to make the widget itself handle rotation
+    * events internally.  Note that no action is taken if there is
+    * no completion object or the completion object does not contain
+    * a next match.
+    */
+    virtual void iterateUpInList();
+
+    /**
+    * Iterates in the down (next match) direction through the
+    * completion list if it is available.
+    *
+    * This slot is intended to make it easy to connect the rotate
+    * down signal in order to make the widget itself handle rotation
+    * events internally.  Note that no action is taken if there is
+    * no completion object or the completion object does not contain
+    * a next match.
+    */
+    virtual void iterateDownInList();
+
 
 protected slots:
 
@@ -553,31 +544,31 @@ protected slots:
     virtual void modeShell()  { setCompletionMode( KGlobal::CompletionShell );}
 
     // deals with text changing in the line edit in editable mode.
-    virtual void itemChanged( const QString& );
+    virtual void entryChanged( const QString& );
     // deals with highlighting the seleted item when return
     // is pressed in the list box (editable-mode only).
     virtual void itemSelected( QListBoxItem* );
     // deals with processing text completions.
     virtual void makeCompletion( const QString& );
-    // deals with highlighting an item in list box when
-    // autohighlight is enabled.
-    virtual void mouseOverItem( QListBoxItem* );
-    // emits a clicked signal with an integer parameter
-    virtual void clickItemEvent( QListBoxItem* );
-    // emits a pressed signal with an integer parameter
-    virtual void pressedItemEvent( QListBoxItem* );
     // emits a returnPressed signal with a QString parameter.
     virtual void returnKeyPressed();
     // populates the context menu before it is displayed
     virtual void aboutToShowMenu();
     // populates the sub menu before it is displayed
     virtual void aboutToShowSubMenu( int );
+    //
+    void completionDestroyed() { m_pCompObj = 0; }
+
 
 protected:
     // Initializes the variables upon construction.
     virtual void initialize();
     // Override the key-press event for "select-only" box.
     virtual void keyPressEvent ( QKeyEvent* );
+    /*
+    * Rotates the text on rotation events
+    */
+    void rotateText( const QString& );
 
 private :
     // Stores the completion key locally
@@ -604,8 +595,16 @@ private :
     // Flag that determined whether the completion object
     // should be deleted when this object is destroyed.
     bool m_bAutoDelCompObj;
-    //
-    bool m_bAutoSelect;
+    // Determines whether this widget handles rotation signals
+    // internally or not
+    bool m_bHandleRotationSignal;
+    // Determines whether this widget handles completion signals
+    // internally or not
+    bool m_bHandleCompletionSignal;
+    // Determines whether this widget fires rotation signals
+    bool m_bEmitRotation;
+    // Determines whether this widget fires completion signals
+    bool m_bEmitCompletion;
 
     // Stores the completion mode locally.
     KGlobal::Completion m_iCompletionMode;
