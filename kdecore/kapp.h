@@ -25,7 +25,7 @@
 
 // Version macros. Never put this further down.
 #define KDE_VERSION 210
-#define KDE_VERSION_STRING "2.1 post Beta 1"
+#define KDE_VERSION_STRING "2.1 Beta 2"
 #define KDE_VERSION_MAJOR 2
 #define KDE_VERSION_MINOR 1
 #define KDE_VERSION_RELEASE 0
@@ -795,6 +795,9 @@ private:
 #endif
 
 // $Log$
+// Revision 1.205  2001/01/08 10:22:38  hausmann
+// - made ref() and deref() public slots
+//
 // Revision 1.204  2001/01/01 01:17:46  waba
 // Added kdeinitExecWait
 //
