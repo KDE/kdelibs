@@ -56,11 +56,16 @@ QString HelpProtocol::langLookup(QString fname)
     langs.append( "en" );
     langs.remove( "C" );
 
-		// look up the different languages
-		int ldCount = localDoc.count();
+    // this is kind of compat hack as we install our docs in en/ but the
+    // default language is en_US
+    for (QStringList::Iterator it = langs.begin(); it != langs.end(); ++it)
+        if ( *it == "en_US" )
+            *it = "en";
+
+    // look up the different languages
+    int ldCount = localDoc.count();
     for (int id=0; id < ldCount; id++)
     {
-
         QStringList::ConstIterator lang;
         for (lang = langs.begin(); lang != langs.end(); ++lang)
             search.append(QString("%1%2/%3").arg(localDoc[id]).arg(*lang).arg(fname));
