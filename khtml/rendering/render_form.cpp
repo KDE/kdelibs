@@ -43,6 +43,8 @@
 #include "khtml_ext.h"
 #include "xml/dom_docimpl.h" // ### remove dependency
 
+#include <kdebug.h>
+
 using namespace khtml;
 
 RenderFormElement::RenderFormElement(HTMLGenericFormElementImpl *element)
@@ -472,19 +474,21 @@ void RenderLineEdit::calcMinMaxWidth()
 
 void RenderLineEdit::updateFromElement()
 {
-    widget()->blockSignals(true);
-    int pos = widget()->cursorPosition();
-    widget()->setText(element()->value().string());
+    if (element()->value().string() != widget()->text()) {
+        widget()->blockSignals(true);
+        int pos = widget()->cursorPosition();
+        widget()->setText(element()->value().string());
 
-    int ml = element()->maxLength();
-    if ( ml < 0 || ml > 1024 )
-        ml = 1024;
-    if ( widget()->maxLength() != ml )
-        widget()->setMaxLength( ml );
-    widget()->setEdited( false );
+        int ml = element()->maxLength();
+        if ( ml < 0 || ml > 1024 )
+            ml = 1024;
+        if ( widget()->maxLength() != ml )
+            widget()->setMaxLength( ml );
+        widget()->setEdited( false );
 
-    widget()->setCursorPosition(pos);
-    widget()->blockSignals(false);
+        widget()->setCursorPosition(pos);
+        widget()->blockSignals(false);
+    }
 
     RenderFormElement::updateFromElement();
 }
