@@ -46,7 +46,6 @@ KTMainWindow::KTMainWindow( const char *name, WFlags f )
 
 KTMainWindow::~KTMainWindow()
 {
-    memberList->remove( this );
 }
 
 void KTMainWindow::enableStatusBar( KStatusBar::BarStatus stat )
