@@ -628,11 +628,7 @@ public:
    */
   QStringList frameNames() const;
 
-#if QT_VERSION < 300
-  QList<KParts::ReadOnlyPart> frames() const;
-#else
   QPtrList<KParts::ReadOnlyPart> frames() const;
-#endif
 
   /**
    * Finds a frame by name. Returns 0L if frame can't be found.
@@ -713,14 +709,13 @@ signals:
 
 protected:
 
-#if QT_VERSION < 300
   /**
-   * Reimplementation of KParts::ReadOnlyPart::event .
+   * returns a KURL object for the given url. Use when
+   * you know what you're doing.
    */
-  virtual bool event( QEvent *event );
-#else
+  KURL completeURL( const QString &url );
+
   virtual void customEvent( QCustomEvent *event );
-#endif
 
   /**
    * Eventhandler of the khtml::MousePressEvent.
@@ -887,7 +882,7 @@ private slots:
   /**
    * @internal
    */
-  void slotChildCompleted( bool );  
+  void slotChildCompleted( bool );
   /**
    * @internal
    */
@@ -933,10 +928,6 @@ private slots:
 
 private:
 
-  /**
-   * @internal
-   */
-  KURL completeURL( const QString &url );
 
   /**
    * @internal
