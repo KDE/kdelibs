@@ -180,17 +180,15 @@ int KToggleAction::plug( QWidget* widget, int index )
   if ( _index == -1 )
     return _index;
 
-  if ( widget->inherits("QPopupMenu") )
-  {
-    if ( d->m_checked )
-      updateChecked( _index );
-
-  } else if ( widget->inherits( "KToolBar" ) ) {
+  if ( widget->inherits( "KToolBar" ) ) {
     KToolBar *bar = static_cast<KToolBar *>( widget );
 
     bar->setToggle( itemId( _index ), true );
     bar->setButton( itemId( _index ), isChecked() );
   }
+
+  if ( d->m_checked )
+    updateChecked( _index );
 
   return _index;
 }
@@ -251,8 +249,13 @@ void KToggleAction::updateChecked( int id )
   else if ( w->inherits( "KToolBar" ) )
   {
     QWidget* r = static_cast<KToolBar*>( w )->getButton( itemId( id ) );
-    if ( r && r->inherits( "KToolBarButton" ) )
+    if ( r && r->inherits( "KToolBarButton" ) ) {
       static_cast<KToolBar*>( w )->setButton( itemId( id ), d->m_checked );
+      if ( d->m_checkedGuiItem && d->m_checkedGuiItem->hasIcon() ) {
+        const KGuiItem* gui = d->m_checked ? d->m_checkedGuiItem : &guiItem();
+        static_cast<KToolBar*>( w )->setButtonIconSet( itemId( id ), gui->iconSet( KIcon::Toolbar ) );
+      }
+    }
   }
 }
 
