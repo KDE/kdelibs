@@ -72,7 +72,7 @@ configure-stamp:
 	cd $(objdir) && \
 	../configure $(configkde) \
 	--with-distribution="$$version (`cat /etc/debian_version`)" \
-	--enable-dnotify --enable-mitshm --with-alsa --with-ipv6-lookup=yes \
+	--enable-dnotify --enable-mitshm --with-alsa --with-ipv6-lookup=auto \
 	$(FAST_MALLOC) $(XINERAMA)
 
 	touch configure-stamp
