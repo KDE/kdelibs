@@ -158,10 +158,10 @@ const ClassInfo Window::info = { "Window", 0, &WindowTable, 0 };
   defaultstatus	Window::DefaultStatus	DontDelete
   status	Window::Status		DontDelete
   document	Window::Document	DontDelete|ReadOnly
-  Node		Window::Node		DontDelete|ReadOnly
-  Range		Window::Range		DontDelete|ReadOnly
-  NodeFilter	Window::NodeFilter	DontDelete|ReadOnly
-  DOMException	Window::DOMException	DontDelete|ReadOnly
+  Node		Window::Node		DontDelete
+  Range		Window::Range		DontDelete
+  NodeFilter	Window::NodeFilter	DontDelete
+  DOMException	Window::DOMException	DontDelete
   frames	Window::Frames		DontDelete|ReadOnly
   history	Window::_History	DontDelete|ReadOnly
   event		Window::Event		DontDelete|ReadOnly
