@@ -1,3 +1,7 @@
+2003-11-22  Stephan Kulow  <coolo@kde.org>
+
+	* rendering/render_line.cpp (paintDecorations): avoid underlining elements that
+	have no dimension in itself (#68728)
 
 2003-11-22  Germain Garand  <germain@ebooksfrance.org>
 

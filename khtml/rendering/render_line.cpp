@@ -571,6 +571,8 @@ void InlineFlowBox::paintDecorations(QPainter *p, int _x, int _y,
         // We must have child boxes and have decorations defined.
         _tx += borderLeft() + paddingLeft();
         int w = m_width - (borderLeft() + paddingLeft() + borderRight() + paddingRight());
+        if ( !w )
+            return;
         QColor underline, overline, linethrough;
         underline = overline = linethrough = styleToUse->color();
         if (!parent())
