@@ -243,7 +243,7 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     connect( bookmarks, SIGNAL( changed() ),
              this, SLOT( bookmarksChanged() ) );
 
-    QString bmFile = locate("data", QString::fromLatin1("kdeui/bookmarks.html"));
+    QString bmFile = locate("data", QString::fromLatin1("kfile/bookmarks.html"));
     if (!bmFile.isNull())
         bookmarks->read(bmFile);
 
@@ -329,12 +329,8 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     d->completionLock = false;
     delete kc;
 
-    // FIXME:
-    // set the view _after_ calling setSelection(), otherwise we would read
-    // the startdirectory twice. This must be fixed somehow else, tho.
     setSelection(d->url.url());
     ops->setView(KFile::Default);
-
 
     coll->action( "back" )->setEnabled( false );
 }
@@ -788,12 +784,15 @@ void KFileDialog::pathComboReturnPressed( const QString& url )
 void KFileDialog::addToBookmarks() // SLOT
 {
     bookmarks->add(ops->url().url(), ops->url().url());
-    bookmarks->write();
+    QString dir = KGlobal::dirs()->saveLocation("data",
+						QString::fromLatin1("kfile/"));
+    if ( !dir.isEmpty() )
+	bookmarks->write( dir + QString::fromLatin1("bookmarks.html") );
 }
 
 void KFileDialog::bookmarksChanged() // SLOT
 {
-    kdDebug() << "bookmarksChanged" << endl;
+    //    kdDebug() << "bookmarksChanged" << endl;
 }
 
 void KFileDialog::fillBookmarkMenu( KFileBookmark *parent, QPopupMenu *menu, int &id )
@@ -805,7 +804,8 @@ void KFileDialog::fillBookmarkMenu( KFileBookmark *parent, QPopupMenu *menu, int
     {
         if ( bm->getType() == KFileBookmark::URL )
         {
-            QPixmap pix = KMimeType::pixmapForURL( bm->getURL() );
+            QPixmap pix = KMimeType::pixmapForURL( bm->getURL(), 0, 0,
+						   KIcon::SizeSmall );
             if ( !pix.isNull() )
               menu->insertItem( pix, bm->getText(), id );
             else
