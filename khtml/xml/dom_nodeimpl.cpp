@@ -285,6 +285,8 @@ void NodeImpl::setChanged(bool b)
 {
     if (b && !changed() && ownerDocument())
         ownerDocument()->changedNodes.append(this);
+    else if (!b && changed() && ownerDocument())
+        ownerDocument()->changedNodes.remove(this);
     m_changed = b;
 }
 
@@ -1204,11 +1206,11 @@ NodeImpl *NodeBaseImpl::addChild(NodeImpl *newChild)
 
 void NodeBaseImpl::applyChanges(bool top, bool force)
 {
-    // ### find a better way to handle non-css attributes
+
     setChanged(false);
 
     if (!attached())
-	return;
+	    return;
 
     int ow = (m_style?m_style->outlineWidth():0);
 
