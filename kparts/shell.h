@@ -28,7 +28,7 @@ public:
 
     QActionCollection* actionCollection();
 
-    void setRootPart( Part* );
+    virtual void setRootPart( Part* );
     Part* rootPart();
     View* rootView();
 
@@ -62,7 +62,7 @@ public:
     bool doPartActivation() const {
 	return m_bDoPartActivation;
     }
-    
+
 protected:
     void createToolBars( const QDomElement& element );
     void createMenuBar( const QDomElement& shell, const QDomElement& part );
