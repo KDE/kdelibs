@@ -191,10 +191,10 @@ void KPlotWidget::drawObjects( QPainter *p ) {
 					break;
 				}
 
-				case KPlotObject::LABEL :
+				case KPlotObject::LABEL : //draw label centered at point in x, and slightly below point in y.
 				{
 					QPoint q = po->points()->first()->qpoint( PixRect, DataRect );
-					p->drawText( q, po->name() );
+					p->drawText( q.x()-20, q.y()+6, 40, 10, Qt::AlignCenter | Qt::DontClip, po->name() );
 					break;
 				}
 
