@@ -2065,7 +2065,7 @@ bool HTTPProtocol::sendBody()
       result = readData( buffer );
       if ( result > 0 )
       {
-        kdDebug(7113) << "POST data read: " << QString::fromLatin1(buffer.data(), buffer.size()) << endl;
+        // kdDebug(7113) << "POST data read: " << QString::fromLatin1(buffer.data(), buffer.size()) << endl;
         length += result;
         old_size = m_bufPOST.size();
         m_bufPOST.resize( old_size+result );
@@ -2086,7 +2086,7 @@ bool HTTPProtocol::sendBody()
   kdDebug( 7113 ) << c_buffer << endl;
 
   // Debugging code...
-  kdDebug( 7113 ) << "POST'ing Data: " << QString::fromLatin1(m_bufPOST.data(), m_bufPOST.size()) << endl;
+  // kdDebug( 7113 ) << "POST'ing Data: " << QString::fromLatin1(m_bufPOST.data(), m_bufPOST.size()) << endl;
 
   // Send the content length...
   bool sendOk = (write(c_buffer, strlen(c_buffer)) == (ssize_t) strlen(c_buffer));
