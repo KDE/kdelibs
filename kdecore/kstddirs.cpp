@@ -30,6 +30,12 @@ KStandardDirs::~KStandardDirs()
 
 void KStandardDirs::addPrefix( QString dir, bool)
 {
+    if (dir.isNull())
+      return;
+
+    if (dir.at(dir.length() - 1) != '/')
+	dir += '/';
+
     if (!prefixes.contains(dir)) {
 	prefixes.append(dir);
 	dircache.clear();
@@ -39,6 +45,9 @@ void KStandardDirs::addPrefix( QString dir, bool)
 bool KStandardDirs::addResourceType( const QString& type,
 		      const QString& relativename )
 {
+    if (relativename.isNull())
+       return false;
+
     QStringList *rels = relatives.find(type);
     if (!rels) {
 	rels = new QStringList();
@@ -82,22 +91,31 @@ QString KStandardDirs::findResourceDir( const QString& type,
 {
     QStringList *candidates = dircache.find(type);
     if (!candidates) { // filling cache
+        QDir testdir;
 	candidates = new QStringList();
 	QStringList *dirs = absolutes.find(type);
 	if (dirs) 
 	    for (QStringList::ConstIterator it = dirs->begin(); 
 		 it != dirs->end(); it++) {
+	      testdir.setPath(*it);
+	      if (testdir.exists() && !candidates->contains(*it)) {
 		debug("adding abs %s for type %s", it->ascii(), type.ascii());
 		candidates->append(*it);
+	      }
 	    }
 	dirs = relatives.find(type);
 	if (dirs) 
-	    for (QStringList::ConstIterator pit = prefixes.begin(); 
-		 pit != prefixes.end(); pit++)  
-		for (QStringList::ConstIterator it = dirs->begin(); 
-		     it != dirs->end(); it++) {
-		    debug("adding mix %s for type %s", (*pit + *it).ascii(), type.ascii());
-		    candidates->append(*pit + *it);
+	    for (QStringList::ConstIterator pit = prefixes.fromLast(); 
+		 pit != prefixes.end(); pit--)  
+	      for (QStringList::ConstIterator it = dirs->begin();
+		   it != dirs->end(); it++)
+		  {
+		    QString path = *pit + *it;
+		    testdir.setPath(path);
+		    if (testdir.exists() && !candidates->contains(path)) {
+		      debug("adding mix %s for type %s", path.ascii(), type.ascii());
+		      candidates->append(path);
+		    }
 		}
 	dircache.insert(type, candidates);
     }
@@ -199,3 +217,26 @@ static int tokenize( QStringList& tokens, const QString& str,
 	return tokens.count();
 }
 
+void KStandardDirs::addKDEDefaults() {
+
+    QString kdedir = getenv("KDEDIR");
+    if (kdedir.isEmpty())
+          kdedir = KDEDIR;
+    
+    addPrefix(kdedir);
+    addPrefix(QDir::homeDirPath() + "/.kde/");
+    
+    addResourceType("html", "share/doc/HTML/");
+    addResourceType("icon", "share/icons/");
+    addResourceType("mini", "share/icons/mini");
+    addResourceType("applnk", "share/applnk/");
+    addResourceType("sound", "share/sounds/");
+    addResourceType("data", "share/apps/");
+    addResourceType("locale", "share/locale/");
+    addResourceType("cgi", "cgi-bin/");
+    addResourceType("config", "share/config/");
+    addResourceType("toolbar", "share/toolbar/");
+    addResourceType("wallpaper", "share/wallpapers/");
+    addResourceType("exe", "bin/");
+    addResourceType("lib", "lib/");
+}

@@ -24,17 +24,9 @@ INCLUDES = -I$(top_srcdir)/kdecore -I$(top_srcdir)/kdeui \
           -I$(top_srcdir)/kformula -I$(top_srcdir)/kio\
 	  -I$(top_srcdir)/kfile $(all_includes)
 
-LDFLAGS = -L$(top_builddir)/kdecore/.libs -L$(top_builddir)/kdeui/.libs \
-          -L$(top_builddir)/kformula/.libs -L$(top_builddir)/kio/.libs\
-	  -L$(top_builddir)/kfile/.libs\
-          -rpath $(top_realbuilddir)/kdecore/.libs \
-	  -rpath $(top_realbuilddir)/kdeui/.libs \
-          -rpath $(top_realbuilddir)/kformula/.libs \
-	  -rpath $(top_realbuilddir)/kio/.libs \
-	  -rpath $(top_realbuilddir)/kfile/.libs \
-          $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
+LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
 
-LDADD = $(LIB_KFILE) $(LIB_KIO) $(LIB_KDEUI)
+LDADD = $(top_builddir)/kformula/libkformula.la $(LIB_KFILE) $(LIB_KIO) $(LIB_KDEUI)
 kformulatest_LDADD = $(LIB_KFORMULA)
 
 check_PROGRAMS = kconfigtest kledlamptest kprogresstest \
