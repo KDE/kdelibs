@@ -103,11 +103,15 @@ class Wallet : public QObject, public DCOPObject {
 
 	signals:
 		void walletClosed();
+		void folderUpdated(const QString& folder);
+		void folderListUpdated();
 		void folderRemoved(const QString& folder);
 
 	private:
 	k_dcop:
 		ASYNC slotWalletClosed(int handle);
+		ASYNC slotFolderUpdated(const QString& wallet, const QString& folder);
+		ASYNC slotFolderListUpdated(const QString& wallet);
 
 	private slots:
 		void slotAppUnregistered(const QCString&);

@@ -57,6 +57,8 @@ Wallet::Wallet(int handle, const QString& name)
 		SLOT(slotAppUnregistered(const QCString&)));
 
 	connectDCOPSignal(_dcopRef->app(), _dcopRef->obj(), "walletClosed(int)", "slotWalletClosed(int)", false);
+	connectDCOPSignal(_dcopRef->app(), _dcopRef->obj(), "folderListUpdated(const QString&)", "slotFolderListUpdated(const QString&)", false);
+	connectDCOPSignal(_dcopRef->app(), _dcopRef->obj(), "folderUpdated(const QString&, const QString&)", "slotFolderUpdated(const QString&, const QString&)", false);
 
 	// Verify that the wallet is still open
 	DCOPReply r = _dcopRef->call("isOpen", _handle);
@@ -464,6 +466,20 @@ return static_cast<EntryType>(rc);
 void Wallet::slotAppUnregistered(const QCString& app) {
 	if (_handle >= 0 && app == "kded") {
 		slotWalletClosed(_handle);
+	}
+}
+
+
+void Wallet::slotFolderUpdated(const QString& wallet, const QString& folder) {
+	if (_name == wallet) {
+		emit folderUpdated(folder);
+	}
+}
+
+
+void Wallet::slotFolderListUpdated(const QString& wallet) {
+	if (_name == wallet) {
+		emit folderListUpdated();
 	}
 }
 

@@ -304,7 +304,12 @@ bool KWalletD::removeFolder(int handle, const QString& f) {
 KWallet::Backend *b;
 
 	if ((b = getWallet(handle))) {
-		return b->removeFolder(f);
+		bool rc = b->removeFolder(f);
+		QByteArray data;
+		QDataStream ds(data, IO_WriteOnly);
+		ds << b->walletName();
+		emitDCOPSignal("folderListUpdated(const QString&)", data);
+		return rc;
 	}
 
 return false;
@@ -315,7 +320,12 @@ bool KWalletD::createFolder(int handle, const QString& f) {
 KWallet::Backend *b;
 
 	if ((b = getWallet(handle))) {
-		return b->createFolder(f);
+		bool rc = b->createFolder(f);
+		QByteArray data;
+		QDataStream ds(data, IO_WriteOnly);
+		ds << b->walletName();
+		emitDCOPSignal("folderListUpdated(const QString&)", data);
+		return rc;
 	}
 
 return false;
@@ -389,6 +399,7 @@ KWallet::Backend *b;
 		e.setValue(value);
 		e.setType(KWallet::Wallet::Map);
 		b->writeEntry(&e);
+		emitFolderUpdated(b->walletName(), folder);
 		return 0;
 	}
 
@@ -406,6 +417,7 @@ KWallet::Backend *b;
 		e.setValue(value);
 		e.setType(KWallet::Wallet::Stream);
 		b->writeEntry(&e);
+		emitFolderUpdated(b->walletName(), folder);
 		return 0;
 	}
 
@@ -423,6 +435,7 @@ KWallet::Backend *b;
 		e.setValue(value);
 		e.setType(KWallet::Wallet::Password);
 		b->writeEntry(&e);
+		emitFolderUpdated(b->walletName(), folder);
 		return 0;
 	}
 
@@ -470,7 +483,9 @@ KWallet::Backend *b;
 			return 0;
 		}
 		b->setFolder(folder);
-		return b->removeEntry(key) ? 0 : -3;
+		bool rc = b->removeEntry(key);
+		emitFolderUpdated(b->walletName(), folder);
+		return rc ? 0 : -3;
 	}
 
 return -1;
@@ -535,10 +550,21 @@ KWallet::Backend *b;
 
 	if ((b = getWallet(handle))) {
 		b->setFolder(folder);
-		return b->renameEntry(oldName, newName);
+		int rc = b->renameEntry(oldName, newName);
+		emitFolderUpdated(b->walletName(), folder);
+		return rc;
 	}
 
 return -1;
+}
+
+
+void KWalletD::emitFolderUpdated(const QString& wallet, const QString& folder) {
+	QByteArray data;
+	QDataStream ds(data, IO_WriteOnly);
+	ds << wallet;
+	ds << folder;
+	emitDCOPSignal("folderUpdated(const QString&, const QString&)", data);
 }
 
 #include "kwalletd.moc"

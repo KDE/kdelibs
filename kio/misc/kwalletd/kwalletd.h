@@ -109,6 +109,8 @@ class KWalletD : public KDEDModule {
 		void invalidateHandle(int handle);
 		// Emit signals about closing wallets
 		void doCloseSignals(int,const QString&);
+		void emitFolderUpdated(const QString&, const QString&);
+
 		QIntDict<KWallet::Backend> _wallets;
 		QMap<QCString,QValueList<int> > _handles;
 		QMap<QString,QCString> _passwords;
