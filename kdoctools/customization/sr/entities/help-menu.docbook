@@ -3,56 +3,55 @@
 <term>
 <menuchoice>
 <shortcut>
-<keycombo action="simul"><keycap>F1</keycap></keycombo>
+<keycombo action="simul">&F1-n;</keycombo>
 </shortcut>
-<guimenu>Help</guimenu>
-<guimenuitem>Contents...</guimenuitem>
+<guimenu>Помоћ</guimenu>
+<guimenuitem>Приручник &kappname-g;</guimenuitem>
 </menuchoice>
 </term>
-<listitem><para><action>Invokes the KDE Help system</action> starting at the
-&kcron; help pages. (this document).</para></listitem>
+<listitem><para><action>Позива &kde-aju; систем помоћи</action> почевши од страна помоћи &kappname-g; (овај документ).</para></listitem>
 </varlistentry>
 
 <varlistentry>
 <term><menuchoice>
 <shortcut>
-<keycombo action="simul">&Shift;<keycap>F1</keycap></keycombo>
+<keycombo action="simul">&Shift-n;&F1-n;</keycombo>
 </shortcut>
-<guimenu>Help</guimenu>
-<guimenuitem>What's This?</guimenuitem>
+<guimenu>Помоћ</guimenu>
+<guimenuitem>Шта је ово?</guimenuitem>
 </menuchoice>
 </term>
 <listitem><para><action>Changes the mouse cursor to a combination arrow and
 question mark.</action>  Clicking on items within &kappname; will open a help
 window (if one exists for the particular item) explaining the item's
 function.</para></listitem>
+<listitem><para><action>Мења показивач миша у комбинацију стрелице и знака питања.</action> Кликом на ставку унутар &kappname-g; отвориће се прозор помоћи (ако постоји за дату ставку) објашњавајући њену функцију.</para></listitem>
 </varlistentry>
 
 
 <varlistentry>
 <term><menuchoice>
-<guimenu>Help</guimenu>
-<guimenuitem>Report Bug...</guimenuitem>
+<guimenu>Помоћ</guimenu>
+<guimenuitem>Пријави грешку...</guimenuitem>
 </menuchoice></term>
 <listitem><para><action>Opens the Bug report dialog</action> where you can
 report a bug or request a <quote>wishlist</quote> feature.</para></listitem>
+<listitem><para><action>Отвара дијалог за пријаву грешка</action>, у коме можете да пријавите грешку или захтевате нову могућност (ставља се на <quote>листу жеља</quote>).</para></listitem>
 </varlistentry>
 
 <varlistentry>
 <term><menuchoice>
-<guimenu>Help</guimenu>
-<guimenuitem>About &kappname;</guimenuitem>
+<guimenu>Помоћ</guimenu>
+<guimenuitem>О &kappname-d;</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>This will display version and author
-information.</action></para></listitem>
+<listitem><para><action>Ово ће приказати информације о верзији и аутору.</action></para></listitem>
 </varlistentry>
 
 <varlistentry>
 <term><menuchoice>
-<guimenu>Help</guimenu>
-<guimenuitem>About KDE</guimenuitem>
+<guimenu>Помоћ</guimenu>
+<guimenuitem>О &kde-d;</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>This displays the KDE version and other basic
-information.</action></para></listitem>
+<listitem><para><action>Ово приказује верзију &kde-g; и остале основне информације.</action></para></listitem>
 </varlistentry>
 </variablelist>

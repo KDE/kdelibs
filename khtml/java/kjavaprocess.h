@@ -117,6 +117,11 @@ public:
      */
     void send( char cmd_code, const QStringList& args, const QByteArray& data );
 
+    /**
+     * Writes all pending data to JVM
+     **/
+    void flushBuffers();
+
 protected slots:
     /**
      * This slot is called whenever something is written to stdin of the process.

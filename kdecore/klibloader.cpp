@@ -523,7 +523,10 @@ void KLibLoader::close_pending(KLibWrapPrivate *wrap)
     }
   }
 
-  if (d->unload_mode == KLibLoaderPrivate::DONT_UNLOAD) return;
+  if (d->unload_mode == KLibLoaderPrivate::DONT_UNLOAD) {
+    d->pending_close.clear();
+    return;
+  }
 
   bool deleted_one = false;
   while ((wrap = d->loaded_stack.first())) {

@@ -128,8 +128,12 @@ DOMString AttrImpl::nodeValue() const
 DOMString AttrImpl::name() const
 {
     DOMString n = getDocument()->getName(AttributeId, m_attrId);
+
+    // compat mode always return attribute names in lowercase.
+    // that's not formally in the specification, but common
+    // practice - a w3c erratum to DOM L2 is pending.
     if (m_htmlCompat)
-        n = n.upper();
+        n = n.lower();
 
     if (m_prefix && m_prefix->l)
         return DOMString(m_prefix) + ":" + n;
@@ -455,7 +459,7 @@ void ElementImpl::recalcStyle( StyleChange change )
 {
     // ### should go away and be done in renderobject
     RenderStyle* _style = m_render ? m_render->style() : 0;
-    bool hasParentRenderer = parent() ? parent()->renderer() : false;
+    bool hasParentRenderer = parent() ? parent()->attached() : false;
 
 #if 0
     const char* debug;
@@ -776,8 +780,9 @@ Node NamedAttrMapImpl::setNamedItem ( NodeImpl* arg, bool nsAware, DOMStringImpl
     }
 
     if (attr->ownerElement() == m_element) {
-	// Already have this attribute. Since we're not "replacing" it, return null.
-	return 0;
+	// Already have this attribute.
+	// DOMTS core-1 test "hc_elementreplaceattributewithself" says we should return it.
+	return attr;
     }
     unsigned int mask = nsAware ? ~0L : NodeImpl_IdLocalMask;
     NodeImpl::Id id = (attr->id() & mask);
@@ -865,7 +870,6 @@ void NamedAttrMapImpl::setValue(NodeImpl::Id id, DOMStringImpl *value, DOMString
 {
     assert( !(qName && nsAware) );
     if (!id) return;
-
     // Passing in a null value here causes the attribute to be removed. This is a khtml extension
     // (the spec does not specify what to do in this situation).
     int exceptioncode = 0;
@@ -966,6 +970,7 @@ void NamedAttrMapImpl::copyAttributes(NamedAttrMapImpl *other)
 	    m_attrs[i].m_data.attr->ref();
 	    m_attrs[i].m_data.attr->setElement(m_element);
 	}
+	m_element->parseAttribute(&m_attrs[i]);
     }
 }
 

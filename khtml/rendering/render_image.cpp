@@ -80,7 +80,6 @@ void RenderImage::setStyle(RenderStyle* _style)
 {
     RenderReplaced::setStyle(_style);
     // init RenderObject attributes
-    setInline( style()->display()==INLINE );
     //setOverhangingContents(style()->height().isPercent());
     setShouldPaintBackgroundOrBorder(true);
 }
@@ -138,8 +137,8 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o)
     if( o->pixmap_size().width() != intrinsicWidth() ||
        o->pixmap_size().height() != intrinsicHeight() || iwchanged )
     {
-//          qDebug("image dimensions have been changed, old: %d/%d  new: %d/%d",
-//                 intrinsicWidth(), intrinsicHeight(),
+//           qDebug("image dimensions have been changed, old: %d/%d  new: %d/%d",
+//                  intrinsicWidth(), intrinsicHeight(),
 //               o->pixmap_size().width(), o->pixmap_size().height());
 
         if(!o->isErrorImage()) {
@@ -147,25 +146,33 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o)
             setIntrinsicHeight( o->pixmap_size().height() );
         }
 
-        // lets see if we need to relayout at all..
-        int oldwidth = m_width;
-        int oldheight = m_height;
-        calcWidth();
-        calcHeight();
+         // lets see if we need to relayout at all..
+         int oldwidth = m_width;
+         int oldheight = m_height;
+         int oldminwidth = m_minWidth;
+         m_minWidth = 0;
 
-        if(iwchanged || m_width != oldwidth || m_height != oldheight)
-            needlayout = true;
+         if ( parent() ) {
+             calcWidth();
+             calcHeight();
+         }
 
-        m_width = oldwidth;
-        m_height = oldheight;
+         if(iwchanged || m_width != oldwidth || m_height != oldheight)
+             needlayout = true;
+
+         m_minWidth = oldminwidth;
+         m_width = oldwidth;
+         m_height = oldheight;
     }
 
+    // we're not fully integrated in the tree yet.. we'll come back.
+    if ( !parent() )
+        return;
 
     if(needlayout)
     {
-        setLayouted(false);
         setMinMaxKnown(false);
-
+        setLayouted(false);
 //         kdDebug( 6040 ) << "m_width: : " << m_width << " height: " << m_height << endl;
 //         kdDebug( 6040 ) << "Image: size " << m_width << "/" << m_height << endl;
     }
@@ -192,11 +199,21 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o)
     }
 }
 
-void RenderImage::paintObject(QPainter *p, int /*_x*/, int _y, int /*_w*/,
-int /*_h*/, int _tx, int _ty, PaintAction paintAction)
+void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty) 
 {
-     if (paintAction != PaintActionForeground)
+     if (paintInfo.phase != PaintActionForeground)
          return;
+
+    // not visible or not even once layouted?
+    if (style()->visibility() != VISIBLE || m_y <=  -500000)  return;
+
+    _tx += m_x;
+    _ty += m_y;
+
+    if((_ty > paintInfo.r.bottom()) || (_ty + m_height <= paintInfo.r.top())) return;
+
+    if(shouldPaintBackgroundOrBorder())
+        paintBoxDecorations(paintInfo, _tx, _ty);
 
     int cWidth = contentWidth();
     int cHeight = contentHeight();
@@ -208,7 +225,8 @@ int /*_h*/, int _tx, int _ty, PaintAction paintAction)
     if (khtml::printpainter && !canvas()->printImages())
         return;
 
-    CachedImage* i = oimage ? oimage : image;
+    CachedImage* i = oimage && oimage->valid_rect().size() == oimage->pixmap_size()
+                     ? oimage : image;
 
     //kdDebug( 6040 ) << "    contents (" << contentWidth << "/" << contentHeight << ") border=" << borderLeft() << " padding=" << paddingLeft() << endl;
     if ( !i || berrorPic)
@@ -217,7 +235,7 @@ int /*_h*/, int _tx, int _ty, PaintAction paintAction)
         {
             if ( !berrorPic ) {
                 //qDebug("qDrawShadePanel %d/%d/%d/%d", _tx + leftBorder, _ty + topBorder, cWidth, cHeight);
-                qDrawShadePanel( p, _tx + leftBorder + leftPad, _ty + topBorder + topPad, cWidth, cHeight,
+                qDrawShadePanel( paintInfo.p, _tx + leftBorder + leftPad, _ty + topBorder + topPad, cWidth, cHeight,
                                  KApplication::palette().inactive(), true, 1 );
             }
             QPixmap const* pix = i ? &i->pixmap() : 0;
@@ -225,17 +243,17 @@ int /*_h*/, int _tx, int _ty, PaintAction paintAction)
             {
                 QRect r(pix->rect());
                 r = r.intersect(QRect(0, 0, cWidth-4, cHeight-4));
-                p->drawPixmap( QPoint( _tx + leftBorder + leftPad+2, _ty + topBorder + topPad+2), *pix, r );
+                paintInfo.p->drawPixmap( QPoint( _tx + leftBorder + leftPad+2, _ty + topBorder + topPad+2), *pix, r );
             }
             if(!alt.isEmpty()) {
                 QString text = alt.string();
-                p->setFont(style()->font());
-                p->setPen( style()->color() );
+                paintInfo.p->setFont(style()->font());
+                paintInfo.p->setPen( style()->color() );
                 int ax = _tx + leftBorder + leftPad + 2;
                 int ay = _ty + topBorder + topPad + 2;
                 const QFontMetrics &fm = style()->fontMetrics();
                 if (cWidth>5 && cHeight>=fm.height())
-                    p->drawText(ax, ay+1, cWidth - 4, cHeight - 4, Qt::WordBreak, text );
+                    paintInfo.p->drawText(ax, ay+1, cWidth - 4, cHeight - 4, Qt::WordBreak, text );
             }
         }
     }
@@ -274,11 +292,11 @@ int /*_h*/, int _tx, int _ty, PaintAction paintAction)
                 if(resizeCache.size() != s)
                     resizeCache.resize(s);
 
-                p->drawPixmap( QPoint( _tx + leftBorder + leftPad, _ty + topBorder + topPad),
+                paintInfo.p->drawPixmap( QPoint( _tx + leftBorder + leftPad, _ty + topBorder + topPad),
                                resizeCache, scaledrect );
             }
             else
-                p->drawPixmap( QPoint( _tx + leftBorder + leftPad, _ty + topBorder + topPad), resizeCache );
+                paintInfo.p->drawPixmap( QPoint( _tx + leftBorder + leftPad, _ty + topBorder + topPad), resizeCache );
         }
         else
         {
@@ -298,7 +316,7 @@ int /*_h*/, int _tx, int _ty, PaintAction paintAction)
 
 
 //             p->drawPixmap( offs.x(), y, pix, rect.x(), rect.y(), rect.width(), rect.height() );
-             p->drawPixmap(offs, pix, rect);
+             paintInfo.p->drawPixmap(offs, pix, rect);
 
         }
     }
@@ -319,14 +337,14 @@ int /*_h*/, int _tx, int _ty, PaintAction paintAction)
 	if (draw) {
     	    // setting the brush origin is important for compatibility,
 	    // don't touch it unless you know what you're doing
-    	    p->setBrushOrigin(_tx, _ty - _y);
-            p->fillRect(_tx, _ty, width(), height(),
+    	    paintInfo.p->setBrushOrigin(_tx, _ty - paintInfo.r.y());
+            paintInfo.p->fillRect(_tx, _ty, width(), height(),
 		    QBrush(style()->palette().active().highlight(),
 		    Qt::Dense4Pattern));
 	}
     }
     if(style()->outlineWidth())
-        paintOutline(p, _tx, _ty, width(), height(), style());
+        paintOutline(paintInfo.p, _tx, _ty, width(), height(), style());
 }
 
 void RenderImage::layout()
@@ -373,10 +391,13 @@ void RenderImage::notifyFinished(CachedObject *finishedObj)
             false,false);
     }
 
-    if ( image == finishedObj && oimage ) {
+    if ( ( image == finishedObj || oimage == finishedObj ) && oimage ) {
         oimage->deref( this );
         oimage = 0;
+        repaint();
     }
+
+    RenderReplaced::notifyFinished(finishedObj);
 }
 
 bool RenderImage::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, HitTestAction hitTestAction, bool inside)
@@ -408,9 +429,11 @@ void RenderImage::updateImage(CachedImage* new_image)
     oimage = image;
     image = new_image;
     assert( image != oimage );
+
     if ( image != tempimage && image != oimage )
         image->ref(this);
-    if ( tempimage && image != tempimage && oimage != tempimage )
+
+    if (tempimage && image != tempimage && oimage != tempimage )
         tempimage->deref(this);
 
     berrorPic = image->isErrorImage();
@@ -426,7 +449,8 @@ void RenderImage::updateFromElement()
     DOMString u = element()->id() == ID_OBJECT ?
                   element()->getAttribute(ATTR_DATA) : element()->getAttribute(ATTR_SRC);
 
-    if (!u.isEmpty()) {
+    if (!u.isEmpty() &&
+        ( !image || image->url() != u ) ) {
         CachedImage *new_image = element()->getDocument()->docLoader()->
                                  requestImage(khtml::parseURL(u));
 

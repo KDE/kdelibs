@@ -83,7 +83,8 @@ static QValueList<float> splitNumberString( const QString& s )
 		}
 		else
 		{
-			l.append( s.mid( p1 ).toFloat() );
+			// ignore the final quote
+			l.append( s.mid( p1, s.length() - p1 - 1 ).toFloat() );
 			break;
 		}
 	}

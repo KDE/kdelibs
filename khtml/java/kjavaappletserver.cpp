@@ -439,6 +439,8 @@ void KJavaAppletServer::quit()
     QStringList args;
 
     process->send( KJAS_SHUTDOWN_SERVER, args );
+    process->flushBuffers();
+    process->wait( 10 );
 }
 
 void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )

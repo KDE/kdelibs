@@ -471,6 +471,11 @@ class KateDocument : public Kate::Document,
 
   private:
     void abortLoadKate();
+    
+    void activateDirWatch ();
+    void deactivateDirWatch ();
+    
+    QString m_dirWatchFile;
 
   //
   // Kate::Document stuff

@@ -239,12 +239,12 @@ protected:
         SearchSemicolon
     } Entity;
 
-    // are we in a <script> ... </script block
+    // are we in a <script> ... </script> block
     bool script;
 
     QChar EntityChar;
 
-    // Are we in a \code ... \endcode block
+    // Are we in a <pre> ... </pre> block
     bool pre;
 
     // if 'pre == true' we track in which column we are

@@ -329,5 +329,12 @@ AC_ARG_WITH(distribution,
 AC_DEFINE_UNQUOTED(KDE_DISTRIBUTION_TEXT, "$kde_distribution_text", [Distribution Text to append to OS])
 AC_MSG_RESULT($kde_distribution_text)
 
+kde_have_utempter=yes
+AC_CHECK_LIB(utempter, addToUtmp, [LIBUTEMPTER=-lutempter], kde_have_utempter=no)
+AC_SUBST(LIBUTEMPTER)
+if test "$kde_have_utempter" = "yes"; then
+  AC_DEFINE_UNQUOTED(HAVE_UTEMPTER, 1, [Define if you have the utempter helper for utmp managment])
+fi
+
 KDE_INIT_DOXYGEN([The KDE API Reference], [Version $VERSION])
 KDE_CHECK_BINUTILS

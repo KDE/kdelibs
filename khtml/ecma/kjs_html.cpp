@@ -175,24 +175,6 @@ const ClassInfo KJS::HTMLDocument::info =
 @end
 */
 
-/* Helper function object for determining the number
- * of occurrences of xxxx as in document.xxxx.
- * The order of the TagLength array is the order of preference.
- */
-class NamedTagLengthDeterminer {
-public:
-  struct TagLength {
-    NodeImpl::Id id; unsigned long length; NodeImpl *last;
-  };
-  NamedTagLengthDeterminer(const DOMString& n, TagLength *t, int l)
-    : name(n), tags(t), nrTags(l) {}
-  void operator () (NodeImpl *start);
-private:
-  const DOMString& name;
-  TagLength *tags;
-  int nrTags;
-};
-
 void NamedTagLengthDeterminer::operator () (NodeImpl *start) {
   for(NodeImpl *n = start->firstChild(); n != 0; n = n->nextSibling())
     if ( n->nodeType() == Node::ELEMENT_NODE ) {
@@ -662,8 +644,6 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   innerHTML	KJS::HTMLElement::ElementInnerHTML DontDelete
   innerText	KJS::HTMLElement::ElementInnerText DontDelete
   document	KJS::HTMLElement::ElementDocument  DontDelete|ReadOnly
-  scrollHeight	KJS::HTMLElement::ElementScrollHeight	DontDelete|ReadOnly
-  scrollWidth	KJS::HTMLElement::ElementScrollWidth	DontDelete|ReadOnly
 # IE extension
   children	KJS::HTMLElement::ElementChildren  DontDelete|ReadOnly
   all           KJS::HTMLElement::ElementAll       DontDelete|ReadOnly
@@ -716,6 +696,11 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   link		KJS::HTMLElement::BodyLink	DontDelete
   text		KJS::HTMLElement::BodyText	DontDelete
   vLink		KJS::HTMLElement::BodyVLink	DontDelete
+# IE extension
+  scrollLeft	KJS::HTMLElement::BodyScrollLeft DontDelete
+  scrollTop	KJS::HTMLElement::BodyScrollTop	 DontDelete
+  scrollWidth   KJS::HTMLElement::BodyScrollWidth DontDelete|ReadOnly
+  scrollHeight  KJS::HTMLElement::BodyScrollHeight DontDelete|ReadOnly
 @end
 @begin HTMLFormElementTable 11
 # Also supported, by name/index
@@ -1288,10 +1273,10 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
   case ID_META: {
     DOM::HTMLMetaElement meta = element;
     switch (token) {
-    case MetaContent:         return getString(meta.content());
-    case MetaHttpEquiv:       return getString(meta.httpEquiv());
-    case MetaName:            return getString(meta.name());
-    case MetaScheme:          return getString(meta.scheme());
+    case MetaContent:         return String(meta.content());
+    case MetaHttpEquiv:       return String(meta.httpEquiv());
+    case MetaName:            return String(meta.name());
+    case MetaScheme:          return String(meta.scheme());
     }
   }
   break;
@@ -1330,18 +1315,19 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case BodyLink:            return getString(body.link());
     case BodyText:            return getString(body.text());
     case BodyVLink:           return getString(body.vLink());
-    // Those exist for all elements, but have a different implementation for body
-    // e.g. lowestPosition doesn't include margins.
-    case ElementScrollHeight:
-    case ElementScrollWidth:
-      {
-        khtml::RenderObject *rend = body.ownerDocument().handle() ? body.ownerDocument().handle()->renderer() : 0L;
-        if (rend) {
-          Q_ASSERT( rend->isCanvas() );
-          khtml::RenderCanvas* root = static_cast<khtml::RenderCanvas*>(rend);
-          return Number( token == ElementScrollWidth ? root->docWidth() : root->docHeight() );
-        }
-        return Number(0);
+    default:
+      // Update the document's layout before we compute these attributes.
+      DOM::DocumentImpl* docimpl = node.handle()->getDocument();
+      if (docimpl)
+        docimpl->updateLayout();
+
+      switch( token ) {
+      case BodyScrollLeft:
+        return Number(body.ownerDocument().view() ? body.ownerDocument().view()->contentsX() : 0);
+      case BodyScrollTop:
+        return Number(body.ownerDocument().view() ? body.ownerDocument().view()->contentsY() : 0);
+      case BodyScrollHeight:   return Number(body.ownerDocument().view() ? body.ownerDocument().view()->contentsHeight() : 0);
+      case BodyScrollWidth:    return Number(body.ownerDocument().view() ? body.ownerDocument().view()->contentsWidth() : 0);
       }
     }
   }
@@ -1954,15 +1940,6 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     if ( exec->interpreter()->compatMode() == Interpreter::NetscapeCompat )
       return Undefined();
     return getHTMLCollection(exec,element.all());
-  case ElementScrollHeight: {
-    khtml::RenderObject *rend = element.handle() ? element.handle()->renderer() : 0L;
-    // Note: lowestPosition only works on blocklevel, special or replaced elements
-    return Number(rend ? rend->lowestPosition() : 0);
-  }
-  case ElementScrollWidth: {
-    khtml::RenderObject *rend = element.handle() ? element.handle()->renderer() : 0L;
-    return Number(rend ? rend->rightmostPosition() : 0);
-  }
   // ### what about style? or is this used instead for DOM2 stylesheets?
   }
   kdError() << "HTMLElement::getValueProperty unhandled token " << token << endl;
@@ -2459,6 +2436,21 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
       case BodyLink:            { body.setLink(str); return; }
       case BodyText:            { body.setText(str); return; }
       case BodyVLink:           { body.setVLink(str); return; }
+      case BodyScrollLeft:
+      case BodyScrollTop: {
+        QScrollView* sview = body.ownerDocument().view();
+        if (sview) {
+          // Update the document's layout before we compute these attributes.
+          DOM::DocumentImpl* docimpl = body.handle()->getDocument();
+          if (docimpl)
+            docimpl->updateLayout();
+          if (token == BodyScrollLeft)
+            sview->setContentsPos(value.toInteger(exec), sview->contentsY());
+          else
+            sview->setContentsPos(sview->contentsX(), value.toInteger(exec));
+          }
+        return;
+        }
       }
     }
     break;

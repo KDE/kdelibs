@@ -20,6 +20,8 @@
  *
  */
 
+#include "ecma/kjs_proxy.h"
+#define QT_NO_XRANDR 1
 #define QT_NO_XFTFREETYPE 1
 #include <private/qfontengine_p.h>
 #include <qfontdatabase.h>
@@ -28,18 +30,17 @@
 #include <qwidget.h>
 #include <assert.h>
 
-#if 0
 class QFakeFontEngine : public QFontEngineXLFD
 {
 public:
     QFakeFontEngine( XFontStruct *fs, const char *name, int size );
     ~QFakeFontEngine();
-
-    Error stringToCMap( const QChar *str,  int len, glyph_t *glyphs, advance_t *advances, int *nglyphs, bool mirrored ) const;
-
+#if 0
     virtual glyph_metrics_t boundingBox( const glyph_t *glyphs,
-				    const advance_t *advances, const qoffset_t *offsets, int numGlyphs );
+                                         const advance_t *advances, const qoffset_t *offsets, int numGlyphs );
     glyph_metrics_t boundingBox( glyph_t glyph );
+
+    QFontEngine::Error stringToCMap( const QChar *, int len, glyph_t *glyphs, advance_t *advances, int *nglyphs, bool ) const;
 
     int ascent() const;
     int descent() const;
@@ -47,23 +48,13 @@ public:
     int maxCharWidth() const;
     int minLeftBearing() const { return 0; }
     int minRightBearing() const { return 0; }
-
-#ifdef Q_WS_X11
     int cmap() const;
 #endif
-    const char *name() const;
-
     bool canRender( const QChar *string,  int len );
-
-    Type type() const;
-    inline int size() const { return _size; }
-
-private:
-    int _size;
 };
 
 QFakeFontEngine::QFakeFontEngine( XFontStruct *fs, const char *name, int size )
-    : QFontEngineXLFD( fs,  name,  0), _size( size )
+    : QFontEngineXLFD( fs,  name,  0)
 {
 
 }
@@ -72,19 +63,19 @@ QFakeFontEngine::~QFakeFontEngine()
 {
 }
 
-QFontEngine::Error QFakeFontEngine::stringToCMap( const QChar *, int len, glyph_t *glyphs, advance_t *advances, int *nglyphs, bool ) const
+#if 0
+QFontEngine::Error QFakeFontEngine::stringToCMap( const QChar *str, int len, glyph_t *glyphs, advance_t *advances, int *nglyphs, bool mirrored) const
 {
-    if ( *nglyphs < len ) {
-	*nglyphs = len;
-	return OutOfMemory;
-    }
+    QFontEngine::Error ret = QFontEngineXLFD::stringToCMap( str, len, glyphs, advances, nglyphs, mirrored );
 
-    memset( glyphs, 0, len * sizeof( glyph_t ) );
+    if ( ret != NoError )
+        return ret;
+
     *nglyphs = len;
 
     if ( advances ) {
-	for ( int i = 0; i < len; i++ )
-	    *(advances++) = _size;
+        for ( int i = 0; i < len; i++ )
+            *(advances++) = _size;
     }
     return NoError;
 }
@@ -105,8 +96,6 @@ glyph_metrics_t QFakeFontEngine::boundingBox( glyph_t )
     return glyph_metrics_t( 0, _size, _size, _size, _size, 0 );
 }
 
-
-
 int QFakeFontEngine::ascent() const
 {
     return _size;
@@ -119,7 +108,10 @@ int QFakeFontEngine::descent() const
 
 int QFakeFontEngine::leading() const
 {
-    int l = qRound( _size * 0.15 );
+    // the original uses double and creates quite random results depending
+    // on the compiler flags
+    int l = ( _size * 15 + 50) / 100;
+    // only valid on i386 without -O2 assert(l == int(qRound(_size * 0.15)));
     return (l > 0) ? l : 1;
 }
 
@@ -133,66 +125,73 @@ int QFakeFontEngine::cmap() const
     return -1;
 }
 
-const char *QFakeFontEngine::name() const
-{
-    return "null";
-}
+#endif
 
 bool QFakeFontEngine::canRender( const QChar *, int )
 {
-    return TRUE;
+    return true;
 }
 
-QFontEngine::Type QFakeFontEngine::type() const
+static QString courier_pickxlfd( int pixelsize, bool italic, bool bold )
 {
-    return Box;
+    if ( pixelsize >= 24 )
+        pixelsize = 24;
+    else if ( pixelsize >= 18 )
+        pixelsize = 18;
+    else if ( pixelsize >= 12 )
+        pixelsize = 12;
+    else
+        pixelsize = 10;
+
+    return QString( "-adobe-courier-%1-%2-normal--%3-*-75-75-m-*-iso10646-1" ).arg( bold ? "bold" : "medium" ).arg( italic ? "o" : "r" ).arg( pixelsize );
 }
 
+static QString helv_pickxlfd( int pixelsize, bool italic, bool bold )
+{
+    if ( pixelsize >= 24 )
+        pixelsize = 24;
+    else if ( pixelsize >= 18 )
+        pixelsize = 18;
+    else if ( pixelsize >= 12 )
+        pixelsize = 12;
+    else
+        pixelsize = 10;
+
+    return QString( "-adobe-helvetica-%1-%2-normal--%3-*-75-75-p-*-iso10646-1" ).arg( bold ? "bold" : "medium" ).arg( italic ? "o" : "r" ).arg( pixelsize );
+
+}
 
 QFontEngine *
 QFontDatabase::findFont( QFont::Script script, const QFontPrivate *fp,
 			 const QFontDef &request, int )
 {
-    QCString xlfd = "-";
-    xlfd += "*";
-    xlfd += "-";
-    xlfd += "*"; // request.family.isEmpty() ? "*" : request.family.latin1();
+    QString xlfd;
+    QString family = request.family.lower();
+    if ( family == "adobe courier" || family == "courier" || family == "fixed" ) {
+        xlfd = courier_pickxlfd( request.pixelSize, request.italic, request.weight > 50 );
+    }
+    else if ( family == "Times New Roman" || family == "times" )
+        xlfd = "-adobe-times-medium-r-normal--8-80-75-75-p-44-iso10646-1";
+    else
+        xlfd = helv_pickxlfd( request.pixelSize, request.italic, request.weight > 50 );
 
-    xlfd += "-";
-    xlfd += "*";
-    xlfd += "-";
-    xlfd += ( request.italic ? "i" : "r" );
-
-    xlfd += "-";
-    xlfd += "*";
-    // ### handle add-style
-    xlfd += "-*-";
-
-    xlfd += QString::number( request.pixelSize ).latin1();
-    xlfd += "-";
-    xlfd += "*";
-    xlfd += "-";
-    xlfd += "*";
-    xlfd += "-";
-    xlfd += "*";
-    xlfd += "-";
-
-    // ### handle cell spaced fonts
-    xlfd += "*";
-    xlfd += "-";
-    xlfd += "*";
-    xlfd += "-";
-    xlfd += "*-*";
-
-    qDebug( "findFont '%s' '%s' %d xlfd: '%s' italic=", request.addStyle.latin1(), request.family.latin1(), request.pixelSize, xlfd.data() );
     QFontEngine *fe = 0;
 
     XFontStruct *xfs;
-    if (! (xfs = XLoadQueryFont(QPaintDevice::x11AppDisplay(), xlfd.data() ) ) ) {
-        qDebug( "no font found" );
-    }
+    xfs = XLoadQueryFont(QPaintDevice::x11AppDisplay(), xlfd.latin1() );
+    if (!xfs) // as long as you don't do screenshots, it's maybe fine
+	qFatal("we need some fonts. So make sure you have %s installed.", xlfd.latin1());
 
-    fe = new QFakeFontEngine( xfs, xlfd.data(),request.pixelSize );
+    unsigned long value;
+    if ( !XGetFontProperty( xfs, XA_FONT, &value ) )
+        return 0;
+
+    char *n = XGetAtomName( QPaintDevice::x11AppDisplay(), value );
+    xlfd = n;
+    if ( n )
+        XFree( n );
+
+    fe = new QFakeFontEngine( xfs, xlfd.latin1(),request.pixelSize );
 
     // fe->setScale( scale );
 
@@ -200,40 +199,6 @@ QFontDatabase::findFont( QFont::Script script, const QFontPrivate *fp,
     QFontCache::instance->insertEngine( key, fe );
     return fe;
 }
-
-#else
-
-QFontEngine *
-QFontDatabase::findFont( QFont::Script script, const QFontPrivate *fp,
-			 const QFontDef &request, int )
-{
-    qDebug( "findFont script=%d family='%s' pixelsize=%d italic=%d fixed=%d weight=%d stretch=%d styleHint=%d" ,
-            script,
-            request.family.latin1(),
-            request.pixelSize,
-            request.italic,
-            request.fixedPitch,
-            request.weight,
-            request.stretch,
-            request.styleHint
-            );
-
-    QFontEngine *fe = new QFontEngineBox( request.pixelSize );
-    QFontCache::Key key( request, script, fp->screen );
-    QFontCache::instance->insertEngine( key, fe );
-    return fe;
-}
-
-int QFontEngineBox::leading() const
-{
-    // the original uses double and creates quite random results depending
-    // on the compiler flags
-    int l = ( _size * 15 + 50) / 100;
-    // only valid on i386 without -O2 assert(l == int(qRound(_size * 0.15)));
-    return (l > 0) ? l : 1;
-}
-
-#endif
 
 bool QFontDatabase::isBitmapScalable( const QString &,
 				      const QString &) const
@@ -309,19 +274,40 @@ bool DCOPClient::isAttached() const
     return false;
 }
 
+void DCOPClient::processSocketData( int )
+{
+}
+
 #include <qapplication.h>
 #include <qpalette.h>
 
-void QApplication::setPalette( const QPalette &palette, bool informWidgets,
-                               const char* className )
+void QApplication::setPalette( const QPalette &, bool ,
+                               const char*  )
 {
-      qDebug("QApplication::setPalette");
+}
+
+#include <kapplication.h>
+void KApplication::dcopFailure( const QString & )
+{
+    qDebug( "KApplication::dcopFailure" );
 }
 
 #include <kparts/historyprovider.h>
 
-bool KParts::HistoryProvider::contains( const QString& item ) const
+bool KParts::HistoryProvider::contains( const QString& t ) const
+{
+    return ( t == "http://www.kde.org/" || t == "http://www.google.com/");
+}
+
+
+bool KJSCPUGuard::confirmTerminate()
 {
     return false;
 }
+
+#include <ksslsettings.h>
+
+bool KSSLSettings::warnOnEnter() const       { return false; }
+bool KSSLSettings::warnOnUnencrypted() const { return false; }
+bool KSSLSettings::warnOnLeave() const       { return false; }
 

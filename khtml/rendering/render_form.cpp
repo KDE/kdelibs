@@ -343,7 +343,7 @@ void LineEditWidget::slotSpellCheckReady( KSpell *s )
 void LineEditWidget::slotSpellCheckDone( const QString &s )
 {
     if( s != text() )
-	setText( s );
+        setText( s );
 }
 
 
@@ -474,8 +474,8 @@ void RenderLineEdit::slotReturnPressed()
     // don't submit the form when return was pressed in a completion-popup
     KCompletionBox *box = widget()->completionBox(false);
     if ( box && box->isVisible() && box->currentItem() != -1 ) {
-        box->hide();
-        return;
+      box->hide();
+      return;
     }
 
     // Emit onChange if necessary
@@ -617,8 +617,7 @@ bool RenderFieldset::findLegend( int &lx, int &ly, int &lw, int &lh)
         return !!maxw;
 }
 
-void RenderFieldset::paintBoxDecorations(QPainter *p,int, int _y,
-                                       int, int _h, int _tx, int _ty)
+void RenderFieldset::paintBoxDecorations(PaintInfo& pI, int _tx, int _ty)
 {
     //kdDebug( 6040 ) << renderName() << "::paintDecorations()" << endl;
 
@@ -634,17 +633,17 @@ void RenderFieldset::paintBoxDecorations(QPainter *p,int, int _y,
     }
     _ty -= borderTopExtra();
 
-    int my = kMax(_ty,_y);
-    int end = kMin( _y + _h,  _ty + h );
+    int my = kMax(_ty,pI.r.y());
+    int end = kMin( pI.r.y() + pI.r.height(),  _ty + h );
     int mh = end - my;
 
-    paintBackground(p, style()->backgroundColor(), style()->backgroundImage(), my, mh, _tx, _ty, w, h);
+    paintBackground(pI.p, style()->backgroundColor(), style()->backgroundImage(), my, mh, _tx, _ty, w, h);
 
     if ( style()->hasBorder() ) {
 	if ( legend )
-	    paintBorderMinusLegend(p, _tx, _ty, w, h, style(), lx, lw);
+	    paintBorderMinusLegend(pI.p, _tx, _ty, w, h, style(), lx, lw);
 	else
-	    paintBorder(p, _tx, _ty, w, h, style());
+	    paintBorder(pI.p, _tx, _ty, w, h, style());
     }
 }
 
@@ -785,9 +784,9 @@ void RenderFileButton::slotReturnPressed()
 	element()->form()->submitFromKeyboard();
 }
 
-void RenderFileButton::slotTextChanged(const QString &string)
+void RenderFileButton::slotTextChanged(const QString &/*string*/)
 {
-   element()->m_value = DOMString(string);
+   element()->m_value = KURL( widget()->url() ).prettyURL( 0, KURL::StripFileProtocol );
 }
 
 void RenderFileButton::select()

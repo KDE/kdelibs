@@ -18,6 +18,8 @@
  **/
 
 #include "kmextuimanager.h"
+#include "kpqtpage.h"
+#include "kprinterpropertydialog.h"
 
 #include <klocale.h>
 
@@ -34,4 +36,9 @@ KMExtUiManager::~KMExtUiManager()
 int KMExtUiManager::pluginPageCap()
 {
 	return KMUiManager::NoAutoCollate;
+}
+
+void KMExtUiManager::setupPrinterPropertyDialog( KPrinterPropertyDialog *dlg )
+{
+	dlg->addPage( new KPQtPage( dlg, "QtPage" ) );
 }

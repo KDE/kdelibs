@@ -82,8 +82,11 @@ void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild
         case INLINE_BLOCK:
         case TABLE:
         case INLINE_TABLE:
-        case TABLE_COLUMN:
             break;
+        case TABLE_COLUMN:
+            if ( isTableCol() )
+                break;
+            // nobreak
         case TABLE_COLUMN_GROUP:
         case TABLE_CAPTION:
         case TABLE_ROW_GROUP:
@@ -195,32 +198,42 @@ void RenderContainer::updatePseudoChild(RenderStyle::PseudoId type, RenderObject
     if (style()->styleType() == RenderStyle::BEFORE || style()->styleType() == RenderStyle::AFTER)
         return;
 
+
     RenderStyle* pseudo = style()->getPseudoStyle(type);
-    if (!pseudo || pseudo->display() == NONE) {
-        if (child && child->style()->styleType() == type)
+
+    // Whether or not we currently have generated content attached.
+    bool oldContentPresent = child && (child->style()->styleType() == type);
+
+    // Whether or not we now want generated content.
+    bool newContentWanted = pseudo && pseudo->display() != NONE;
+
+    // For <q><p/></q>, if this object is the inline continuation of the <q>, we only want to generate
+    // :after content and not :before content.
+    if (type == RenderStyle::BEFORE && isInlineContinuation())
+        newContentWanted = false;
+
+    // Similarly, if we're the beginning of a <q>, and there's an inline continuation for our object,
+    // then we don't generate the :after content.
+    if (type == RenderStyle::AFTER && isRenderInline() && continuation())
+        newContentWanted = false;
+
+    // If we don't want generated content any longer, or if we have generated content, but it's no longer
+    // identical to the new content data we want to build render objects for, then we nuke all
+    // of the old generated content.
+    if (!newContentWanted ||
+        (oldContentPresent && !child->style()->contentDataEquivalent(pseudo))) {
+        if (child && child->style()->styleType() == type) {
             // The child needs to be removed.
+            oldContentPresent = false;
             removeChild(child);
-        return; // If we have no pseudo-style or if the pseudo's display type is NONE, then we
-                // have no generated content.
+            child = (type == RenderStyle::BEFORE) ? firstChild() : lastChild();
+        }
     }
 
-    // FIXME: need to detect when :before/:after content has changed, in addition
-    // to detecting addition/removal.
-    if (child && child->style()->styleType() == type)
-        return; // Generated content is already added.  No need to add more.
-
-    RenderObject* insertBefore = (type == RenderStyle::BEFORE) ? child : 0;
-
-    // From the CSS2 specification:
-    // User agents must ignore the following properties with :before and :after
-    // pseudo-elements: 'position', 'float', list properties, and table properties.
-    // Basically we need to ensure that no RenderLayer gets made for generated
-    // content.
-    pseudo->setPosition(STATIC);
-    pseudo->setFloating(FNONE);
-    pseudo->setOverflow(OVISIBLE); // FIXME: Glazman's blog does this. Wacky.
-                                    // This property might need to be allowed if the
-                                    // generated content is a block.
+    // If we have no pseudo-style or if the pseudo's display type is NONE, then we
+    // have no generated content and can now return.
+    if (!newContentWanted)
+        return;
 
     if (isInlineFlow() && pseudo->display() != INLINE)
         // According to the CSS2 spec (the end of section 12.1), the only allowed
@@ -228,6 +241,39 @@ void RenderContainer::updatePseudoChild(RenderStyle::PseudoId type, RenderObject
         // determined that the pseudo is not display NONE, any display other than
         // inline should be mutated to INLINE.
         pseudo->setDisplay(INLINE);
+
+    if (oldContentPresent) {
+        if (child && child->style()->styleType() == type) {
+            // We have generated content present still.  We want to walk this content and update our
+            // style information with the new pseudo style.
+            child->setStyle(pseudo);
+
+            // Note that if we ever support additional types of generated content (which should be way off
+            // in the future), this code will need to be patched.
+            for (RenderObject* genChild = child->firstChild(); genChild; genChild = genChild->nextSibling()) {
+                if (genChild->style()->styleType() == RenderStyle::FIRST_LETTER) {
+                    // We can't properly update, so remove the child and bail
+                    oldContentPresent = false;
+                    removeChild(child);
+                    child = (type == RenderStyle::BEFORE) ? firstChild() : lastChild();
+                    break;
+                } else if (genChild->isText()) {
+                    // Generated text content is a child whose style also needs to be set to the pseudo
+                    // style.
+                    genChild->setStyle(pseudo);
+                } else {
+                    // Images get an empty style that inherits from the pseudo.
+                    RenderStyle* style = new RenderStyle();
+                    style->inheritFrom(pseudo);
+                    genChild->setStyle(style);
+                }
+            }
+        }
+        if (oldContentPresent)
+            return; // We've updated the generated content. That's all we needed to do.
+    }
+
+    RenderObject* insertBefore = (type == RenderStyle::BEFORE) ? child : 0;
 
     // Generated content consists of a single container that houses multiple children (specified
     // by the content property).  This pseudo container gets the pseudo style set on it.
@@ -237,36 +283,23 @@ void RenderContainer::updatePseudoChild(RenderStyle::PseudoId type, RenderObject
     // we encounter.
     for (ContentData* contentData = pseudo->contentData();
          contentData; contentData = contentData->_nextContent) {
-
         if (!pseudoContainer)
             pseudoContainer = RenderFlow::createFlow(document(), pseudo, renderArena()); /* anonymous box */
 
         if (contentData->_contentType == CONTENT_TEXT)
         {
-            RenderObject* po = RenderFlow::createFlow(document() /* anonymous*/, pseudo, renderArena());
-
-            RenderText* t = new (renderArena()) RenderText(document() /*anonymous object */, contentData->contentText());
+            RenderText* t = new (renderArena()) RenderText( document() /*anonymous object */, contentData->contentText());
             t->setStyle(pseudo);
-            po->addChild(t);
-
-            // Add this after we've installed our text, so that addChild will be able to find the text
-            // inside the inline for e.g., first-letter styling.
-            addChild(po, insertBefore);
-
-//            kdDebug() << DOM::DOMString(contentData->contentText()).string() << endl;
-
-            t->close();
-            po->close();
+            pseudoContainer->addChild(t);
         }
         else if (contentData->_contentType == CONTENT_OBJECT)
         {
-            RenderImage* po = new (renderArena()) RenderImage( document() /* anonymous */);
+            RenderImage* img = new (renderArena()) RenderImage(document()); /* Anonymous object */
             RenderStyle* style = new RenderStyle();
             style->inheritFrom(pseudo);
-            po->setStyle(style);
-            po->setContentObject(contentData->contentObject());
-            pseudoContainer->addChild(po);
-            po->close();
+            img->setStyle(style);
+            img->setContentObject(contentData->contentObject());
+            pseudoContainer->addChild(img);
         }
     }
 
@@ -276,9 +309,7 @@ void RenderContainer::updatePseudoChild(RenderStyle::PseudoId type, RenderObject
         addChild(pseudoContainer, insertBefore);
         pseudoContainer->close();
     }
-
 }
-
 
 void RenderContainer::appendChildNode(RenderObject* newChild)
 {

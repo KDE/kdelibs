@@ -41,7 +41,7 @@ public:
 };
 
 PortValidator::PortValidator(QWidget *parent, const char *name)
-: QIntValidator(1, 9999, parent, name)
+: QIntValidator(1, 65535, parent, name)
 {
 }
 

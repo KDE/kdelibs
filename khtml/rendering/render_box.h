@@ -46,8 +46,7 @@ public:
     virtual bool isBox() const { return true; }
 
     virtual void setStyle(RenderStyle *style);
-    virtual void paint(QPainter *p, int _x, int _y, int _w, int _h,
-                       int _tx, int _ty, PaintAction paintAction);
+    virtual void paint(PaintInfo& i, int _tx, int _ty);
 
     virtual void close();
 
@@ -76,7 +75,7 @@ public:
     virtual void setWidth( int width );
     virtual void setHeight( int height );
 
-    virtual void position(InlineBox* box, int from, int len, bool reverse, int);
+    virtual void position(InlineBox* box, int from, int len, bool reverse);
 
     virtual int lowestPosition() const;
     virtual short rightmostPosition() const;
@@ -84,8 +83,6 @@ public:
     virtual void repaint(bool immediate=false);
 
     virtual void repaintRectangle(int x, int y, int w, int h, bool immediate=false, bool f=false);
-
-    virtual void setPixmap(const QPixmap &, const QRect&, CachedImage *);
 
     virtual short containingBlockWidth() const;
     void relativePositionOffset(int &tx, int &ty) const;
@@ -114,15 +111,13 @@ private:
     int calcWidthUsing(WidthType widthType, int cw, LengthType& lengthType);
 
 protected:
-    virtual void paintBoxDecorations(QPainter *p,int _x, int _y,
-                                       int _w, int _h, int _tx, int _ty);
+    virtual void paintBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty);
     void paintBackground(QPainter *p, const QColor &c, CachedImage *bg, int clipy, int cliph, int _tx, int _ty, int w, int h);
     virtual void paintBackgroundExtended(QPainter* /*p*/, const QColor& /*c*/, CachedImage* /*bg*/,
                                          int /*clipy*/, int /*cliph*/, int /*_tx*/, int /*_ty*/,
                                          int /*w*/, int /*height*/, int /*bleft*/, int /*bright*/ );
 
-    void paintRootBoxDecorations( QPainter *p,int, int _y,
-                                                int, int _h, int _tx, int _ty );
+    void paintRootBoxDecorations( PaintInfo& paintInfo, int _tx, int _ty);
 
     void outlineBox(QPainter *p, int _tx, int _ty, const char *color = "red");
 

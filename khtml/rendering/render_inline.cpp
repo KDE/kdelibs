@@ -32,13 +32,6 @@
 
 using namespace khtml;
 
-RenderInline::RenderInline(DOM::NodeImpl* node)
-:RenderFlow(node)
-{}
-
-RenderInline::~RenderInline()
-{}
-
 void RenderInline::setStyle(RenderStyle* _style)
 {
     RenderFlow::setStyle(_style);
@@ -66,9 +59,18 @@ void RenderInline::setStyle(RenderStyle* _style)
     updatePseudoChild(RenderStyle::AFTER, lastChild());
 }
 
+bool RenderInline::isInlineContinuation() const
+{
+    return m_isContinuation;
+}
+
 void RenderInline::addChildToFlow(RenderObject* newChild, RenderObject* beforeChild)
 {
     setLayouted( false );
+
+    // Make sure we don't append things after :after-generated content if we have it.
+    if (!beforeChild && lastChild() && lastChild()->style()->styleType() == RenderStyle::AFTER)
+        beforeChild = lastChild();
 
     if (!newChild->isText() && newChild->style()->position() != STATIC)
         setOverhangingContents();
@@ -87,6 +89,16 @@ void RenderInline::addChildToFlow(RenderObject* newChild, RenderObject* beforeCh
         newBox->setStyle(newStyle);
         RenderFlow* oldContinuation = continuation();
         setContinuation(newBox);
+
+        // Someone may have put a <p> inside a <q>, causing a split.  When this happens, the :after content
+        // has to move into the inline continuation.  Call updatePseudoChild to ensure that our :after
+        // content gets properly destroyed.
+        bool isLastChild = (beforeChild == lastChild());
+        updatePseudoChild(RenderStyle::AFTER, lastChild());
+        if (isLastChild && beforeChild != lastChild())
+            beforeChild = 0; // We destroyed the last child, so now we need to update our insertion
+                             // point to be 0.  It's just a straight append now.
+
         splitFlow(beforeChild, newBox, newChild, oldContinuation);
         return;
     }
@@ -97,9 +109,10 @@ void RenderInline::addChildToFlow(RenderObject* newChild, RenderObject* beforeCh
     newChild->setMinMaxKnown( false );
 }
 
-static RenderInline* cloneInline(RenderFlow* src)
+RenderInline* RenderInline::cloneInline(RenderFlow* src)
 {
     RenderInline *o = new (src->renderArena()) RenderInline(src->element());
+    o->m_isContinuation = true;
     o->setStyle(src->style());
     return o;
 }
@@ -176,32 +189,21 @@ void RenderInline::splitInlines(RenderBlock* fromBlock, RenderBlock* toBlock,
 void RenderInline::splitFlow(RenderObject* beforeChild, RenderBlock* newBlockBox,
                              RenderObject* newChild, RenderFlow* oldCont)
 {
-    RenderBlock *pre = 0;
-    RenderStyle* newStyle = 0;
+    RenderBlock* pre = 0;
     RenderBlock* block = containingBlock();
     bool madeNewBeforeBlock = false;
-    if (block->isAnonymous()) {
+    if (block->isAnonymous() && block->style()->display() == BLOCK) {
         // We can reuse this block and make it the preBlock of the next continuation.
         pre = block;
         block = block->containingBlock();
     }
     else {
         // No anonymous block available for use.  Make one.
-        newStyle = new RenderStyle();
-        newStyle->inheritFrom(block->style());
-        newStyle->setDisplay(BLOCK);
-        pre = new (renderArena()) RenderBlock(document() /* anonymous */);
-        pre->setStyle(newStyle);
-        pre->setChildrenInline(true);
+        pre = block->createAnonymousBlock();
         madeNewBeforeBlock = true;
     }
 
-    newStyle = new RenderStyle();
-    newStyle->inheritFrom(block->style());
-    newStyle->setDisplay(BLOCK);
-    RenderBlock *post = new (renderArena()) RenderBlock(document() /* anonymous */);
-    post->setStyle(newStyle);
-    post->setChildrenInline(true);
+    RenderBlock* post = block->createAnonymousBlock();
 
     RenderObject* boxFirst = madeNewBeforeBlock ? block->firstChild() : pre->nextSibling();
     if (madeNewBeforeBlock)
@@ -250,37 +252,30 @@ void RenderInline::splitFlow(RenderObject* beforeChild, RenderBlock* newBlockBox
     block->setMinMaxKnown(false);
 }
 
-void RenderInline::paint(QPainter *p, int _x, int _y, int _w, int _h,
-                      int _tx, int _ty, PaintAction paintAction)
-{
-    paintObject(p, _x, _y, _w, _h, _tx, _ty, paintAction);
-}
-
-void RenderInline::paintObject(QPainter *p, int _x, int _y,
-                             int _w, int _h, int _tx, int _ty, PaintAction paintAction)
+void RenderInline::paint(PaintInfo& i,
+                      int _tx, int _ty)
 {
 #ifdef DEBUG_LAYOUT
     //    kdDebug( 6040 ) << renderName() << "(RenderInline) " << this << " ::paintObject() w/h = (" << width() << "/" << height() << ")" << endl;
 #endif
 
-    if ( paintAction == PaintActionElementBackground )
+    if ( i.phase == PaintActionElementBackground )
         return;
 
     // let the children their backgrounds
-    if ( paintAction == PaintActionChildBackgrounds )
-        paintAction = PaintActionChildBackground;
+    PaintAction oldphase = i.phase;
+    if ( i.phase == PaintActionChildBackgrounds )
+        i.phase = PaintActionChildBackground;
 
-    paintLineBoxBackgroundBorder(p, _x, _y, _w, _h, _tx, _ty, paintAction);
+    paintLineBoxBackgroundBorder(i, _tx, _ty);
 
-    RenderObject *child = firstChild();
-    while(child != 0)
-    {
+    for( RenderObject *child = firstChild(); child; child = child->nextSibling())
         if(!child->layer() && !child->isFloating())
-            child->paint(p, _x, _y, _w, _h, _tx, _ty, paintAction);
-        child = child->nextSibling();
-    }
+            child->paint(i, _tx, _ty);
 
-    paintLineBoxDecorations(p, _x, _y, _w, _h, _tx, _ty, paintAction);
+    paintLineBoxDecorations(i, _tx, _ty);
+
+    i.phase = oldphase;
 }
 
 void RenderInline::calcMinMaxWidth()

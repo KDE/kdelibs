@@ -31,6 +31,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
+#include <limits.h>
 
 #include "internal.h"
 #include "collector.h"
@@ -98,8 +99,11 @@ int ValueImp::toInteger(ExecState *exec) const
 {
   unsigned i;
   if (dispatchToUInt32(i))
-    return (int)i;
-  return int(roundValue(exec, Value(const_cast<ValueImp*>(this))));
+    return static_cast<int>(i);
+  double d = roundValue(exec, Value(const_cast<ValueImp*>(this)));
+  if (isInf(d))
+    return INT_MAX;
+  return static_cast<int>(d);
 }
 
 int ValueImp::toInt32(ExecState *exec) const
@@ -135,7 +139,13 @@ unsigned int ValueImp::toUInt32(ExecState *exec) const
     return 0;
   double d32 = fmod(d, D32);
 
-  return static_cast<unsigned int>(d32);
+  //6.3.1.4 Real floating and integer
+  // 50) The remaindering operation performed when a value of integer type is
+  //   converted to unsigned type need not be performed when a value of real
+  //   floating type is converted to unsigned type. Thus, the range of
+  //   portable real floating values is (-1, Utype_MAX+1). 
+  int t_int = static_cast<int>(d32);
+  return static_cast<unsigned int>(t_int);
 }
 
 unsigned short ValueImp::toUInt16(ExecState *exec) const
@@ -147,7 +157,9 @@ unsigned short ValueImp::toUInt16(ExecState *exec) const
   double d = roundValue(exec, Value(const_cast<ValueImp*>(this)));
   double d16 = fmod(d, D16);
 
-  return static_cast<unsigned short>(d16);
+  // look at toUInt32 to see why this is necesary
+  int t_int = static_cast<int>(d16);
+  return static_cast<unsigned short>(t_int);
 }
 
 // Dispatchers for virtual functions, to special-case simple numbers which

@@ -85,10 +85,15 @@ KAccelEventHandler::KAccelEventHandler()
 }
 
 #ifdef Q_WS_X11
+bool	qt_try_modal( QWidget *, XEvent * );
+
 bool KAccelEventHandler::x11Event( XEvent* pEvent )
 {
 	if( QWidget::keyboardGrabber() || !kapp->focusWidget() )
 		return false;
+
+	if ( !qt_try_modal(kapp->focusWidget(), pEvent) )
+	        return false;
 
 	if( pEvent->type == XKeyPress ) {
 		KKeyNative keyNative( pEvent );

@@ -222,11 +222,10 @@ HTMLElementImpl *HTMLTableElementImpl::insertRow( long index, int &exceptioncode
         setTBody( new HTMLTableSectionElementImpl(docPtr(), ID_TBODY, true /* implicit */) );
 
     kdDebug(6030) << k_funcinfo << index << endl;
-    // IE treats index=-1 as default value meaning 'append after last'
-    // This isn't in the DOM. So, not implemented yet.
     HTMLTableSectionElementImpl* section = 0L;
     HTMLTableSectionElementImpl* lastSection = 0L;
     NodeImpl *node = firstChild();
+    // The DOM requires that index=-1 means 'append after last'
     bool append = (index == -1);
     bool found = false;
     for ( ; node && (index>=0 || append) ; node = node->nextSibling() )
@@ -237,7 +236,7 @@ HTMLElementImpl *HTMLTableElementImpl::insertRow( long index, int &exceptioncode
         {
             section = static_cast<HTMLTableSectionElementImpl *>(node);
             lastSection = section;
-            //kdDebug(6030) << k_funcinfo << "section id=" << node->id() << " rows:" << section->numRows() << endl;
+            //kdDebug(6030) << k_funcinfo << "section=" << section->tagName() << " rows:" << section->numRows() << endl;
             if ( !append )
             {
                 int rows = section->numRows();
@@ -250,10 +249,11 @@ HTMLElementImpl *HTMLTableElementImpl::insertRow( long index, int &exceptioncode
             }
         }
     }
-    if ( !found && foot )
+    // insertRow(numRows) appends to TFOOT. insertRow(-1) appends to TBODY, hence the !append.
+    if ( !found && !append )
         section = static_cast<HTMLTableSectionElementImpl *>(foot);
 
-    // Index == 0 means "insert before first row in current section"
+    // If index has decreased to 0, it means "insert before first row in current section"
     // or "append after last row" (if there's no current section anymore)
     if ( !section && ( index == 0 || append ) )
     {
@@ -261,7 +261,7 @@ HTMLElementImpl *HTMLTableElementImpl::insertRow( long index, int &exceptioncode
         index = section ? section->numRows() : 0;
     }
     if ( section && (index >= 0 || append) ) {
-        kdDebug(6030) << "Inserting row into section " << section << " at index " << index << endl;
+        //kdDebug(6030) << "Inserting row into section " << section << "(" << section->tagName().string() << ") at index " << index << endl;
         return section->insertRow( index, exceptioncode );
     } else {
         // No more sections => index is too big
@@ -544,6 +544,14 @@ void HTMLTablePartElementImpl::parseAttribute(AttributeImpl *attr)
             addCSSProperty(CSS_PROP_BORDER_LEFT_STYLE, CSS_VAL_SOLID);
             addCSSProperty(CSS_PROP_BORDER_RIGHT_STYLE, CSS_VAL_SOLID);
         }
+        break;
+    }
+    case ATTR_ALIGN:
+    {
+        DOMString v = attr->value();
+        if ( strcasecmp( attr->value(), "center" ) == 0 )
+            v = "\\2d khtml-center";
+        addCSSProperty(CSS_PROP_TEXT_ALIGN, v);
         break;
     }
     case ATTR_VALIGN:

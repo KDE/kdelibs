@@ -31,8 +31,8 @@
 static lt_dlhandle KIDNA_lib; // = 0
 static bool KIDNA_lib_load_failed; // = false
 
-typedef int (*KIDNA_utf8_to_ace_t)(const char *, char **);
-typedef int (*KIDNA_utf8ace_to_utf8_t)(const char *, char **);
+typedef int (*KIDNA_utf8_to_ace_t)(const char *, char **, int);
+typedef int (*KIDNA_utf8ace_to_utf8_t)(const char *, char **, int);
 
 static KIDNA_utf8_to_ace_t KIDNA_utf8_to_ace; // = 0
 static KIDNA_utf8ace_to_utf8_t KIDNA_utf8ace_to_utf8; // = 0
@@ -49,14 +49,14 @@ static void KIDNA_load_lib()
    if (!KIDNA_lib) 
       return; // Error
 
-   KIDNA_utf8_to_ace = (KIDNA_utf8_to_ace_t) lt_dlsym(KIDNA_lib, "idna_utf8_to_ace");
+   KIDNA_utf8_to_ace = (KIDNA_utf8_to_ace_t) lt_dlsym(KIDNA_lib, "idna_to_ascii_8z");
    if (!KIDNA_utf8_to_ace)
    {
       kdWarning() << "Symbol idna_utf8_to_ace not found." << endl;   
       return; // Error
    }
          
-   KIDNA_utf8ace_to_utf8 = (KIDNA_utf8ace_to_utf8_t) lt_dlsym(KIDNA_lib, "idna_utf8ace_to_utf8");
+   KIDNA_utf8ace_to_utf8 = (KIDNA_utf8ace_to_utf8_t) lt_dlsym(KIDNA_lib, "idna_to_unicode_8z8z");
    if (!KIDNA_utf8ace_to_utf8)
    {
       kdWarning() << "Symbol idna_utf8ace_to_utf8 not found." << endl;   
@@ -96,7 +96,7 @@ QCString KIDNA::toAsciiCString(const QString &idna)
       // doesn't like those
       bool bStartsWithDot = (idna[0] == '.');
       char *pOutput;
-      if ((*KIDNA_utf8_to_ace)(idna.utf8().data()+(bStartsWithDot ? 1: 0), &pOutput) == IDNA_SUCCESS)
+      if ((*KIDNA_utf8_to_ace)(idna.utf8().data()+(bStartsWithDot ? 1: 0), &pOutput, 0) == IDNA_SUCCESS)
       {
          QCString result = pOutput;
          free(pOutput);
@@ -142,7 +142,7 @@ QString KIDNA::toAscii(const QString &idna)
       // doesn't like those
       bool bStartsWithDot = (idna[0] == '.');
       char *pOutput;
-      if ((*KIDNA_utf8_to_ace)(idna.utf8().data()+(bStartsWithDot ? 1: 0), &pOutput) == IDNA_SUCCESS)
+      if ((*KIDNA_utf8_to_ace)(idna.utf8().data()+(bStartsWithDot ? 1: 0), &pOutput, 0) == IDNA_SUCCESS)
       {
          QString result(pOutput);
          free(pOutput);
@@ -171,7 +171,7 @@ QString KIDNA::toUnicode(const QString &idna)
    else 
    {
       char *pOutput;
-      if ((*KIDNA_utf8ace_to_utf8)(idna.utf8(), &pOutput) == IDNA_SUCCESS)
+      if ((*KIDNA_utf8ace_to_utf8)(idna.utf8(), &pOutput, 0) == IDNA_SUCCESS)
       {
          QString result = QString::fromUtf8(pOutput);
          free(pOutput);

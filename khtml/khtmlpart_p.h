@@ -95,14 +95,13 @@ namespace khtml
 
 }
 
-class FrameList : public QValueList<khtml::ChildFrame>
+struct KHTMLFrameList : public QValueList<khtml::ChildFrame>
 {
-public:
-    Iterator find( const QString &name );
+    Iterator find( const QString &name ) KDE_NO_EXPORT;
 };
 
-typedef FrameList::ConstIterator ConstFrameIt;
-typedef FrameList::Iterator FrameIt;
+typedef KHTMLFrameList::ConstIterator ConstFrameIt;
+typedef KHTMLFrameList::Iterator FrameIt;
 
 static int khtml_part_dcop_counter = 0;
 
@@ -192,6 +191,8 @@ public:
             m_designMode = part->d->m_designMode;
             m_zoomFactor = part->d->m_zoomFactor;
             m_autoDetectLanguage = part->d->m_autoDetectLanguage;
+            m_encoding = part->d->m_encoding;
+            m_haveEncoding = part->d->m_haveEncoding;
         }
     }
 
@@ -205,6 +206,7 @@ public:
     m_dcop_counter = ++khtml_part_dcop_counter;
     m_statusBarWalletLabel = 0L;
     m_statusBarJSErrorLabel = 0L;
+    m_userStyleSheetLastModified = 0;
   }
   ~KHTMLPartPrivate()
   {
@@ -221,7 +223,7 @@ public:
 #endif
   }
 
-  FrameList m_frames;
+  KHTMLFrameList m_frames;
   QValueList<khtml::ChildFrame> m_objects;
 
   QGuardedPtr<KHTMLView> m_view;
@@ -464,6 +466,7 @@ public:
     return m_extendAtEnd ? m_endOffset : m_startOffset;
   }
 
+  time_t m_userStyleSheetLastModified;
 };
 
 #endif

@@ -653,7 +653,7 @@ QStringList KXmlCommandManager::commandListWithDescription()
 
 QString KXmlCommandManager::selectCommand(QWidget *parent)
 {
-	KLibrary *lib = KLibLoader::self()->library( "libkdeprint_management" );
+	KLibrary *lib = KLibLoader::self()->library( "libkdeprint_management_module" );
 	if ( !lib )
 	{
 		KMessageBox::error( parent, i18n( "Unable to load KDE print management library: %1" ).arg( KLibLoader::self()->lastErrorMessage() ) );
@@ -682,7 +682,7 @@ int KXmlCommandManager::insertCommand(QStringList& list, const QString& filterna
 	preload();
 
 	int	pos(0);
-	KXmlCommand	*f1 = command(filtername), *f2(0);
+	KXmlCommand	*f1 = command(filtername), *f2 = 0;
 	if (f1 && f1->inputMimeTypes().count() > 0)
 	{
 		QString	mimetype = f1->inputMimeTypes()[0];

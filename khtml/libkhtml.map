@@ -6,6 +6,8 @@
     getAttrName*;
     getValueName*;
     getPropertyName*;
+    cssyyparse*;
+    KJPEGFormat::*;
     DOM::tagPriority;
     DOM::getPropertyID*;
     DOM::*Impl::*;

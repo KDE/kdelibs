@@ -146,6 +146,11 @@ public:
     virtual int getBaselineOfFirstLineBox() { return -1; } // Tables and blocks implement this.
     virtual InlineFlowBox* getFirstLineBox() { return 0; } // Tables and blocks implement this.
 
+    // Whether or not a positioned element requires normal flow x/y to be computed
+    // to determine its position.
+    bool hasStaticX() const;
+    bool hasStaticY() const;
+
     // Linear tree traversal
     RenderObject *objectBelow() const;
     RenderObject *objectAbove() const;
@@ -170,7 +175,7 @@ public:
 
 public:
     virtual const char *renderName() const { return "RenderObject"; }
-#ifndef NDEBUG
+#ifdef ENABLE_DUMP
     QString information() const;
     virtual void printTree(int indent=0) const;
     virtual void dump(QTextStream &stream, const QString &ind = QString::null) const;
@@ -192,6 +197,8 @@ private:
 public:
     RenderArena* renderArena() const;
     virtual RenderFlow* continuation() const { return 0; }
+    virtual bool isInlineContinuation() const { return false; }
+
 
     bool isRoot() const;
     // some helper functions...
@@ -286,21 +293,23 @@ public:
      * Print the object and its children, clipped by (x|y|w|h).
      * (tx|ty) is the calculated position of the parent
      */
-    virtual void paint( QPainter *p, int x, int y, int w, int h, int tx, int ty,
-			PaintAction phase);
+    struct PaintInfo {
+       PaintInfo(QPainter* _p, const QRect& _r, PaintAction _phase)
+           : p(_p), r(_r), phase(_phase) {}
+       QPainter* p;
+       QRect     r;
+       PaintAction phase;
+    };
+    virtual void paint( PaintInfo& i, int tx, int ty);
 
-    virtual void paintObject( QPainter* /*p*/, int /*x*/, int /*y*/,
-			      int /*w*/, int /*h*/, int /*tx*/, int /*ty*/,
-			      PaintAction) {}
     void paintBorder(QPainter *p, int _tx, int _ty, int w, int h, const RenderStyle* style, bool begin=true, bool end=true);
     void paintOutline(QPainter *p, int _tx, int _ty, int w, int h, const RenderStyle* style);
 
-    virtual void paintBoxDecorations(QPainter* /*p*/, int /*_x*/, int /*_y*/,
-                                     int /*_w*/, int /*_h*/, int /*_tx*/, int /*_ty*/) {}
+    virtual void paintBoxDecorations(PaintInfo&, int /*_tx*/, int /*_ty*/) {}
 
     virtual void paintBackgroundExtended(QPainter* /*p*/, const QColor& /*c*/, CachedImage* /*bg*/,
                                          int /*clipy*/, int /*cliph*/, int /*_tx*/, int /*_ty*/,
-                                         int /*w*/, int /*height*/, int /*bleft*/, int /*bright*/ ) {};
+                                         int /*w*/, int /*height*/, int /*bleft*/, int /*bright*/ ) {}
 
 
     /*
@@ -343,7 +352,7 @@ public:
 
     // used for element state updates that can not be fixed with a
     // repaint and do not need a relayout
-    virtual void updateFromElement() {};
+    virtual void updateFromElement() {}
 
     // The corresponding closing element has been parsed. ### remove me
     virtual void close() { }
@@ -473,15 +482,15 @@ public:
     virtual short marginLeft() const { return 0; }
     virtual short marginRight() const { return 0; }
 
-    int paddingTop() const;
-    int paddingBottom() const;
-    int paddingLeft() const;
-    int paddingRight() const;
+    virtual int paddingTop() const;
+    virtual int paddingBottom() const;
+    virtual int paddingLeft() const;
+    virtual int paddingRight() const;
 
-    int borderTop() const { return style()->borderTopWidth(); }
-    int borderBottom() const { return style()->borderBottomWidth(); }
-    int borderLeft() const { return style()->borderLeftWidth(); }
-    int borderRight() const { return style()->borderRightWidth(); }
+    virtual int borderTop() const { return style()->borderTopWidth(); }
+    virtual int borderBottom() const { return style()->borderBottomWidth(); }
+    virtual int borderLeft() const { return style()->borderLeftWidth(); }
+    virtual int borderRight() const { return style()->borderRightWidth(); }
 
     virtual short minWidth() const { return 0; }
     virtual short maxWidth() const { return 0; }
@@ -523,7 +532,7 @@ public:
     virtual void markAllDescendantsWithFloatsForLayout(RenderObject* /*floatToRemove*/ = 0) {}
 
     // positioning of inline children (bidi)
-    virtual void position(InlineBox*, int, int, bool, int) {}
+    virtual void position(InlineBox*, int, int, bool) {}
 //    virtual void position(int, int, int, int, int, bool, bool, int) {}
 
     enum SelectionState {
@@ -586,6 +595,8 @@ public:
      * width.
      */
     virtual long maxOffset() const { return 0; }
+
+    virtual void setPixmap(const QPixmap &, const QRect&, CachedImage *);
 
 protected:
     virtual void selectionStartEnd(int& spos, int& epos);

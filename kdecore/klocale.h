@@ -44,7 +44,7 @@ class KCalendarSystem;
  * I18N_NOOP marks a string to be translated without translating it.
  * Do not use this unless you know you need it.
  */
-#define I18N_NOOP(x) (x)
+#define I18N_NOOP(x) x
 #endif
 
 /**

@@ -860,15 +860,12 @@ public:
      * The parameters used in the DOMParser interface are assumed to have their
      * default values when invoking this method.
      *
-     * The result of a call to this method is the same the result of a call to
-     * DOMParser.parseWithContext with an input stream containing the string
+     * The result of a call to this method is the same as the result of a call
+     * to DOMParser.parseWithContext with an input stream containing the string
      * passed to this call, the document as the context node, and the action
      * ACTION_REPLACE_CHILDREN.
      *
      * @param source A string containing an XML document.
-     *
-     * @return true if parsing the input string succeeded without errors,
-     * otherwise false.
      */
     void loadXML( const DOMString &source );
 

@@ -43,8 +43,10 @@ namespace KParts
 
         virtual void virtual_hook( int id, void *data )
         {
-            if ( id != VIRTUAL_QUERY_INSTANCE_PARAMS )
-                return KParts::Factory::virtual_hook( id, data );
+            if ( id != VIRTUAL_QUERY_INSTANCE_PARAMS ) {
+                KParts::Factory::virtual_hook( id, data );
+                return;
+            }
 
             QueryInstanceParams *params = reinterpret_cast<QueryInstanceParams *>( data );
             params->instance = instance();

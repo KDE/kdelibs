@@ -230,9 +230,9 @@ void KSystemTray::activateOrHide()
 	return;
 
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-    KWin::WindowInfo info = KWin::windowInfo( pw->winId() );
+    KWin::WindowInfo info1 = KWin::windowInfo( pw->winId(), NET::XAWMState | NET::WMState );
     // mapped = visible (but possibly obscured)
-    bool mapped = (info.mappingState() != NET::Withdrawn);
+    bool mapped = (info1.mappingState() == NET::Visible) && !info1.isMinimized();
 //    - not mapped -> show, raise, focus
 //    - mapped
 //        - obscured -> raise, focus
@@ -246,13 +246,22 @@ void KSystemTray::activateOrHide()
              it != module.stackingOrder().end() && (*it) != pw->winId();
              --it )
         {
-            KWin::WindowInfo info = KWin::windowInfo( *it, NET::WMGeometry | NET::XAWMState );
-            if( info.mappingState() == NET::Visible && info.geometry().intersects( pw->geometry()))
-            {
-                pw->raise();
-                KWin::activateWindow( pw->winId());
-                return;
-            }
+            KWin::WindowInfo info2 = KWin::windowInfo( *it,
+                NET::WMGeometry | NET::XAWMState | NET::WMState | NET::WMWindowType );
+            if( info2.mappingState() != NET::Visible )
+                continue; // not visible on current desktop -> ignore
+            if( !info2.geometry().intersects( pw->geometry()))
+                continue; // not obscuring the window -> ignore
+            if( !info1.hasState( NET::KeepAbove ) && info2.hasState( NET::KeepAbove ))
+                continue; // obscured by window kept above -> ignore
+            NET::WindowType type = info2.windowType( NET::NormalMask | NET::DesktopMask
+                | NET::DockMask | NET::ToolbarMask | NET::MenuMask | NET::DialogMask
+                | NET::OverrideMask | NET::TopMenuMask | NET::UtilityMask | NET::SplashMask );
+            if( type == NET::Dock || type == NET::TopMenu )
+                continue; // obscured by dock or topmenu -> ignore
+            pw->raise();
+            KWin::activateWindow( pw->winId());
+            return;
         }
         minimizeRestore( false ); // hide
     }

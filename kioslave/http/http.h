@@ -465,6 +465,7 @@ protected:
   bool m_bChunked; // Chunked tranfer encoding
   KIO::filesize_t m_iSize; // Expected size of message
   KIO::filesize_t m_iBytesLeft; // # of bytes left to receive in this message.
+  KIO::filesize_t m_iContentLeft; // # of content bytes left
   QByteArray m_bufReceive; // Receive buffer
   bool m_dataInternal; // Data is for internal consumption
   char m_lineBuf[1024];

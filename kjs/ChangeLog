@@ -1,3 +1,14 @@
+2004-02-23  Harri Porten  <porten@kde.org>
+
+	* keywords.table: for now, make "const" a synonym for "var". Not
+	standardized as of Edition 3 but already supported by other
+	browsers.
+
+2004-02-22  Harri Porten  <porten@kde.org>
+
+	* number_object.cpp: fixed crash if toString() is called on NaN
+	or Inf with a radix != 10.
+
 2003-12-29  Dirk Mueller  <mueller@kde.org>
 
 	* create_hash_table: implement string table to reduce amount

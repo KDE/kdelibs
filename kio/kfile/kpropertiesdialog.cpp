@@ -783,7 +783,6 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     KIconButton *iconButton = new KIconButton( d->m_frame );
     iconButton->setFixedSize(70, 70);
     iconButton->setStrictIconSize(false);
-    iconButton->setIconType(KIcon::Desktop, KIcon::Device);
     // This works for everything except Device icons on unmounted devices
     // So we have to really open .desktop files
     QString iconStr = KMimeType::findByURL( properties->kurl(),
@@ -791,10 +790,15 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
                                                           isLocal );
     if ( bDesktopFile && isLocal )
     {
-      KSimpleConfig config( properties->kurl().path() );
+      KDesktopFile config( properties->kurl().path(), true );
       config.setDesktopGroup();
       iconStr = config.readEntry( "Icon" );
-    }
+      if ( config.hasDeviceType() )
+	iconButton->setIconType( KIcon::Desktop, KIcon::Device );
+      else
+	iconButton->setIconType( KIcon::Desktop, KIcon::Application );
+    } else
+      iconButton->setIconType( KIcon::Desktop, KIcon::FileSystem );
     iconButton->setIcon(iconStr);
     iconArea = iconButton;
     connect( iconButton, SIGNAL( iconChanged(QString) ),
@@ -2868,7 +2872,7 @@ void KDesktopPropsPlugin::slotAddFiletype()
 
   {
      mw->listView->setRootIsDecorated(true);
-     mw->listView->setSelectionMode(QListView::Multi);
+     mw->listView->setSelectionMode(QListView::Extended);
      mw->listView->setAllColumnsShowFocus(true);
      mw->listView->setFullWidth(true);
      mw->listView->setMinimumSize(500,400);

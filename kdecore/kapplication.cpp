@@ -140,18 +140,19 @@ bool KApplication::s_dcopClientNeedsPostInit = false;
 
 static Atom atom_DesktopWindow;
 static Atom atom_NetSupported;
-#if KDE_IS_VERSION( 3, 2, 90 )
+#if KDE_IS_VERSION( 3, 2, 91 )
 #warning Obsolete, remove.
 // remove atom_KdeNetUserTime related stuff (l.lunak@kde.org)
 #endif
 static Atom atom_KdeNetUserTime;
 static Atom kde_net_wm_user_time     = 0;
-#if KDE_IS_VERSION( 3, 2, 90 )
+#if KDE_IS_VERSION( 3, 2, 91 )
 #warning This should be in Qt already, check.
 // remove things related to qt_x_user_time that should be in Qt by now (l.lunak@kde.org)
 #endif
 Time   qt_x_user_time = CurrentTime;
 extern Time qt_x_time;
+static Atom kde_xdnd_drop;
 
 template class QPtrList<KSessionManaged>;
 
@@ -491,7 +492,7 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
     if( event->type() == QEvent::Show && receiver->isWidgetType())
     {
 	QWidget* w = static_cast< QWidget* >( receiver );
-        if( w->isTopLevel() && !w->testWFlags( WX11BypassWM ) && !event->spontaneous())
+        if( w->isTopLevel() && !w->testWFlags( WX11BypassWM ) && !w->isPopup() && !event->spontaneous())
         {
             if( d->app_started_timer == NULL )
             {
@@ -719,6 +720,9 @@ void KApplication::init(bool GUIenabled)
 
       atoms[n] = &kde_net_wm_user_time;
       names[n++] = (char *) "_NET_WM_USER_TIME";
+      
+      atoms[n] = &kde_xdnd_drop;
+      names[n++] = (char *) "XdndDrop";
 
       XInternAtoms( qt_xdisplay(), names, n, false, atoms_return );
 
@@ -1557,6 +1561,39 @@ bool KApplication::x11EventFilter( XEvent *_event )
 	    }
 	}
 	break;
+        case ClientMessage:
+        {
+#if KDE_IS_VERSION( 3, 2, 91 )
+#warning This should be already in Qt, check.
+#endif
+        // Workaround for focus stealing prevention not working when dragging e.g. text from KWrite
+        // to KDesktop -> the dialog asking for filename doesn't get activated. This is because
+        // Qt-3.2.x doesn't have concept of qt_x_user_time at all, and Qt-3.3.0b1 passes the timestamp
+        // in the XdndDrop message in incorrect field (and doesn't update qt_x_user_time either).
+        // Patch already sent, future Qt version should have this fixed.
+            if( _event->xclient.message_type == kde_xdnd_drop )
+                { // if the message is XdndDrop
+                if( _event->xclient.data.l[ 1 ] == 1 << 24     // and it's broken the way it's in Qt-3.2.x
+                    && _event->xclient.data.l[ 2 ] == 0
+                    && _event->xclient.data.l[ 4 ] == 0
+                    && _event->xclient.data.l[ 3 ] != 0 )
+                    {
+                    if( qt_x_user_time == 0 
+                        || ( _event->xclient.data.l[ 3 ] - qt_x_user_time ) < 100000U )
+                        { // and the timestamp looks reasonable
+                        qt_x_user_time = _event->xclient.data.l[ 3 ]; // update our qt_x_user_time from it
+                        }
+                    }
+                else // normal DND, only needed until Qt updates qt_x_user_time from XdndDrop
+                    {
+                    if( qt_x_user_time == 0
+                        || ( _event->xclient.data.l[ 2 ] - qt_x_user_time ) < 100000U )
+                        { // the timestamp looks reasonable
+                        qt_x_user_time = _event->xclient.data.l[ 2 ]; // update our qt_x_user_time from it
+                        }
+                    }
+                }
+        }
 	default: break;
     }
 
@@ -2785,7 +2822,7 @@ uint KApplication::mouseState()
 void KApplication::installSigpipeHandler()
 {
     struct sigaction act;
-    act.sa_handler = sigpipeHandler;
+    act.sa_handler = SIG_IGN;
     sigemptyset( &act.sa_mask );
     act.sa_flags = 0;
     sigaction( SIGPIPE, &act, 0 );

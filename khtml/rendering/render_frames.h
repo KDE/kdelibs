@@ -69,7 +69,7 @@ public:
     DOM::HTMLFrameSetElementImpl *element() const
     { return static_cast<DOM::HTMLFrameSetElementImpl*>(RenderObject::element()); }
 
-#ifndef NDEBUG
+#ifdef ENABLE_DUMP
     virtual void dump(QTextStream &stream, const QString &ind) const;
 #endif
 

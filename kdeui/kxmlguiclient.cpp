@@ -108,7 +108,7 @@ KActionCollection *KXMLGUIClient::actionCollection() const
 {
   if ( !d->m_actionCollection )
     d->m_actionCollection = new KActionCollection( 0, 0,
-      "KXMLGUILClient-KActionCollection" );
+      "KXMLGUIClient-KActionCollection" );
   return d->m_actionCollection;
 }
 

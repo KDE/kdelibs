@@ -64,6 +64,7 @@ KSSLD::KSSLD(const QCString &name) : KDEDModule(name)
 // ----------------------- FOR THE CACHE ------------------------------------	
 	cfg = new KSimpleConfig("ksslpolicies", false);
 	KGlobal::dirs()->addResourceType("kssl", KStandardDirs::kde_default("data") + "kssl");
+	caVerifyUpdate();
 	cacheLoadDefaultPolicies();
 	certList.setAutoDelete(false);
 	kossl = KOSSL::self();
@@ -559,6 +560,21 @@ return false;
 
 ///////////////////////////////////////////////////////////////////////////
 
+void KSSLD::caVerifyUpdate() {
+	QString path = KGlobal::dirs()->saveLocation("kssl") + "/ca-bundle.crt";
+	if (!QFile::exists(path))
+		return;
+	
+	cfg->setGroup(QString::null);
+	Q_UINT32 newStamp = KGlobal::dirs()->calcResourceHash("config", "ksslcalist", true);
+	Q_UINT32 oldStamp = cfg->readUnsignedNumEntry("ksslcalistStamp");
+	if (oldStamp != newStamp)
+	{
+		caRegenerate();
+		cfg->writeEntry("ksslcalistStamp", newStamp);
+		cfg->sync();
+	}
+}
 
 bool KSSLD::caRegenerate() {
 QString path = KGlobal::dirs()->saveLocation("kssl") + "/ca-bundle.crt";

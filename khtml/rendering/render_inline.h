@@ -33,8 +33,7 @@ namespace khtml {
 class RenderInline : public RenderFlow
 {
 public:
-    RenderInline(DOM::NodeImpl* node);
-    virtual ~RenderInline();
+    RenderInline(DOM::NodeImpl* node) : RenderFlow( node ), m_isContinuation( false ) {}
 
     virtual const char *renderName() const;
 
@@ -42,16 +41,15 @@ public:
     virtual bool isInlineFlow() const { return true; }
     virtual bool childrenInline() const { return true; }
 
+    virtual bool isInlineContinuation() const;
+
     virtual void addChildToFlow(RenderObject* newChild, RenderObject* beforeChild);
 
     virtual void setStyle(RenderStyle* _style);
 
     virtual void layout() {} // Do nothing for layout()
 
-    virtual void paint(QPainter *, int x, int y, int w, int h,
-                       int tx, int ty, PaintAction paintAction);
-    virtual void paintObject(QPainter *, int x, int y, int w, int h,
-                             int tx, int ty, PaintAction paintAction);
+    virtual void paint(PaintInfo&, int tx, int ty);
 
     virtual bool nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, HitTestAction hitTestAction, bool inside);
 
@@ -68,11 +66,17 @@ public:
     virtual int offsetLeft() const;
     virtual int offsetTop() const;
 
+protected:
+    static RenderInline* cloneInline(RenderFlow* src);
+
 private:
     void splitInlines(RenderBlock* fromBlock, RenderBlock* toBlock, RenderBlock* middleBlock,
                       RenderObject* beforeChild, RenderFlow* oldCont);
     void splitFlow(RenderObject* beforeChild, RenderBlock* newBlockBox,
                    RenderObject* newChild, RenderFlow* oldCont);
+
+private:
+    bool m_isContinuation : 1; // Whether or not we're a continuation of an inline.
 
 };
 

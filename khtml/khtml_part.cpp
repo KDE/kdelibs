@@ -120,7 +120,8 @@ namespace khtml {
         PartStyleSheetLoader(KHTMLPart *part, DOM::DOMString url, DocLoader* dl)
         {
             m_part = part;
-            m_cachedSheet = dl->requestStyleSheet(url, QString::null );
+            m_cachedSheet = dl->requestStyleSheet(url, QString::null, "text/css",
+                                                  true /* "user sheet" */);
             if (m_cachedSheet)
 		m_cachedSheet->ref( this );
         }
@@ -144,7 +145,7 @@ namespace khtml {
 }
 
 
-FrameList::Iterator FrameList::find( const QString &name )
+KHTMLFrameList::Iterator KHTMLFrameList::find( const QString &name )
 {
     Iterator it = begin();
     Iterator e = end();
@@ -195,6 +196,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
   d->m_bSecurityInQuestion = false;
   d->m_paLoadImages = 0;
+  d->m_paDebugScript = 0;
   d->m_bMousePressed = false;
   d->m_bRightMousePressed = false;
   d->m_paViewDocument = new KAction( i18n( "View Do&cument Source" ), CTRL + Key_U, this, SLOT( slotViewDocumentSource() ), actionCollection(), "viewDocumentSource" );
@@ -212,15 +214,9 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 				       "certificate.<p> "
 				       "Hint: If the image shows a closed lock, the page has been transmitted over a "
 				       "secure connection.") );
-  d->m_paDebugScript = new KAction( i18n( "JavaScript &Debugger" ), 0, this, SLOT( slotDebugScript() ), actionCollection(), "debugScript" );
   d->m_paDebugRenderTree = new KAction( i18n( "Print Rendering Tree to STDOUT" ), 0, this, SLOT( slotDebugRenderTree() ), actionCollection(), "debugRenderTree" );
   d->m_paDebugDOMTree = new KAction( i18n( "Print DOM Tree to STDOUT" ), 0, this, SLOT( slotDebugDOMTree() ), actionCollection(), "debugDOMTree" );
   d->m_paStopAnimations = new KAction( i18n( "Stop Animated Images" ), 0, this, SLOT( slotStopAnimations() ), actionCollection(), "stopAnimations" );
-
-  QString foo1 = i18n("Show Images");
-  QString foo2 = i18n("Show Animated Images");
-  QString foo3 = i18n("Stop Animated Images");
-
 
   d->m_paSetEncoding = new KActionMenu( i18n( "Set &Encoding" ), "charset", actionCollection(), "setEncoding" );
   d->m_paSetEncoding->setDelayed( false );
@@ -308,13 +304,15 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_paUseStylesheet = new KSelectAction( i18n( "Use S&tylesheet"), 0, this, SLOT( slotUseStylesheet() ), actionCollection(), "useStylesheet" );
 
   if ( prof == BrowserViewGUI ) {
-      d->m_paIncZoomFactor = new KHTMLZoomFactorAction( this, true, i18n( "Increase Font Sizes" ), "viewmag+", this, SLOT( slotIncZoom() ), actionCollection(), "incFontSizes" );
-      d->m_paIncZoomFactor->setShortcut( CTRL + Key_Plus );
+      d->m_paIncZoomFactor = new KHTMLZoomFactorAction( this, true, i18n(
+                  "Increase Font Sizes" ), "viewmag+", "CTRL++;CTRL+=", this,
+              SLOT( slotIncZoom() ), actionCollection(), "incFontSizes" );
       d->m_paIncZoomFactor->setWhatsThis( i18n( "Increase Font Size<p>"
                                                 "Make the font in this window bigger. "
                             "Click and hold down the mouse button for a menu with all available font sizes." ) );
-      d->m_paDecZoomFactor = new KHTMLZoomFactorAction( this, false, i18n( "Decrease Font Sizes" ), "viewmag-", this, SLOT( slotDecZoom() ), actionCollection(), "decFontSizes" );
-      d->m_paDecZoomFactor->setShortcut( CTRL + Key_Minus );
+      d->m_paDecZoomFactor = new KHTMLZoomFactorAction( this, false, i18n(
+                  "Decrease Font Sizes" ), "viewmag-", CTRL + Key_Minus, this,
+              SLOT( slotDecZoom() ), actionCollection(), "decFontSizes" );
       d->m_paDecZoomFactor->setWhatsThis( i18n( "Decrease Font Size<p>"
                                                 "Make the font in this window smaller. "
                             "Click and hold down the mouse button for a menu with all available font sizes." ) );
@@ -353,7 +351,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   // set the default java(script) flags according to the current host.
   d->m_bBackRightClick = d->m_settings->isBackRightClickEnabled();
   d->m_bJScriptEnabled = d->m_settings->isJavaScriptEnabled();
-  d->m_bJScriptDebugEnabled = d->m_settings->isJavaScriptDebugEnabled();
+  setDebugScript( d->m_settings->isJavaScriptDebugEnabled() );
   d->m_bJavaEnabled = d->m_settings->isJavaEnabled();
   d->m_bPluginsEnabled = d->m_settings->isPluginsEnabled();
 
@@ -470,7 +468,7 @@ bool KHTMLPart::restoreURL( const KURL &url )
 
   // set the java(script) flags according to the current host.
   d->m_bJScriptEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaScriptEnabled(url.host());
-  d->m_bJScriptDebugEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaScriptDebugEnabled();
+  setDebugScript( KHTMLFactory::defaultHTMLSettings()->isJavaScriptDebugEnabled() );
   d->m_bJavaEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaEnabled(url.host());
   d->m_bPluginsEnabled = KHTMLFactory::defaultHTMLSettings()->isPluginsEnabled(url.host());
 
@@ -555,10 +553,7 @@ bool KHTMLPart::openURL( const KURL &url )
   }
 
   if (!d->m_restored)
-  {
-    kdDebug( 6050 ) << "closing old URL" << endl;
     closeURL();
-  }
 
   // initializing m_url to the new url breaks relative links when opening such a link after this call and _before_ begin() is called (when the first
   // data arrives) (Simon)
@@ -622,12 +617,10 @@ bool KHTMLPart::openURL( const KURL &url )
 
   // set the javascript flags according to the current url
   d->m_bJScriptEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaScriptEnabled(url.host());
-  d->m_bJScriptDebugEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaScriptDebugEnabled();
+  setDebugScript( KHTMLFactory::defaultHTMLSettings()->isJavaScriptDebugEnabled() );
   d->m_bJavaEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaEnabled(url.host());
   d->m_bPluginsEnabled = KHTMLFactory::defaultHTMLSettings()->isPluginsEnabled(url.host());
 
-
-  kdDebug( 6050 ) << "KHTMLPart::openURL now (before started) m_url = " << m_url.url() << endl;
 
   connect( d->m_job, SIGNAL( speed( KIO::Job*, unsigned long ) ),
            this, SLOT( slotJobSpeed( KIO::Job*, unsigned long ) ) );
@@ -639,6 +632,15 @@ bool KHTMLPart::openURL( const KURL &url )
            this, SLOT( slotJobDone( KIO::Job* ) ) );
 
   d->m_jobspeed = 0;
+
+  // If this was an explicit reload and the user style sheet should be used,
+  // do a stat to see whether the stylesheet was changed in the meanwhile.
+  if ( args.reload && !settings()->userStyleSheet().isEmpty() ) {
+    KURL url( settings()->userStyleSheet() );
+    KIO::StatJob *job = KIO::stat( url, false /* don't show progress */ );
+    connect( job, SIGNAL( result( KIO::Job * ) ),
+             this, SLOT( slotUserSheetStatDone( KIO::Job * ) ) );
+  }
   emit started( 0L );
 
   return true;
@@ -1598,7 +1600,7 @@ void KHTMLPart::slotFinished( KIO::Job * job )
 
   d->m_workingURL = KURL();
 
-  if (d->m_doc->parsing())
+  if ( d->m_doc && d->m_doc->parsing())
     end(); //will emit completed()
 }
 
@@ -1714,7 +1716,7 @@ void KHTMLPart::write( const char *str, int len )
       d->m_doc->recalcStyle( NodeImpl::Force );
   }
 
-  Tokenizer* t = d->m_doc->tokenizer();
+  khtml::Tokenizer* t = d->m_doc->tokenizer();
   if(t)
     t->write( decoded, true );
 }
@@ -1729,7 +1731,7 @@ void KHTMLPart::write( const QString &str )
       d->m_doc->setParseMode( DocumentImpl::Strict );
       d->m_bFirstData = false;
   }
-  Tokenizer* t = d->m_doc->tokenizer();
+  khtml::Tokenizer* t = d->m_doc->tokenizer();
   if(t)
     t->write( str, true );
 }
@@ -1878,6 +1880,37 @@ void KHTMLPart::slotJobDone( KIO::Job* /*job*/ )
     d->m_progressUpdateTimer.start( 0, true );
 }
 
+void KHTMLPart::slotUserSheetStatDone( KIO::Job *_job )
+{
+  using namespace KIO;
+
+  if ( _job->error() ) {
+    showError( _job );
+    return;
+  }
+
+  const UDSEntry entry = dynamic_cast<KIO::StatJob *>( _job )->statResult();
+  UDSEntry::ConstIterator it = entry.begin();
+  UDSEntry::ConstIterator end = entry.end();
+  for ( ; it != end; ++it ) {
+    if ( ( *it ).m_uds == UDS_MODIFICATION_TIME ) {
+     break;
+    }
+  }
+
+  // If the filesystem supports modification times, only reload the
+  // user-defined stylesheet if necessary - otherwise always reload.
+  if ( it != end ) {
+    const time_t lastModified = static_cast<time_t>( ( *it ).m_long );
+    if ( d->m_userStyleSheetLastModified >= lastModified ) {
+      return;
+    }
+    d->m_userStyleSheetLastModified = lastModified;
+  }
+
+  setUserStyleSheet( KURL( settings()->userStyleSheet() ) );
+}
+
 void KHTMLPart::checkCompleted()
 {
 //   kdDebug( 6050 ) << "KHTMLPart::checkCompleted() " << this << " " << name() << endl;
@@ -1889,8 +1922,7 @@ void KHTMLPart::checkCompleted()
   {
       if (d->m_focusNodeNumber >= 0)
           d->m_doc->setFocusNode(d->m_doc->nodeWithAbsIndex(d->m_focusNodeNumber));
-      else
-          d->m_doc->setFocusNode(0);
+
       d->m_focusNodeRestored = true;
   }
 
@@ -2079,7 +2111,6 @@ void KHTMLPart::slotRedirect()
   QString u = d->m_redirectURL;
   d->m_delayRedirect = 0;
   d->m_redirectURL = QString::null;
-  d->m_referrer = "";
 
   // SYNC check with ecma/kjs_window.cpp::goURL !
   if ( u.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 )
@@ -2331,6 +2362,11 @@ bool KHTMLPart::isEditable() const
 void KHTMLPart::setCaretPosition(DOM::Node node, long offset, bool extendSelection)
 {
 #ifndef KHTML_NO_CARET
+#if 0
+  kdDebug(6200) << k_funcinfo << "node: " << node.handle() << " nodeName: "
+  	<< node.nodeName().string() << " offset: " << offset
+	<< " extendSelection " << extendSelection << endl;
+#endif
   if (view()->moveCaretTo(node.handle(), offset, !extendSelection))
     emitSelectionChanged();
   view()->ensureCaretVisible();
@@ -2618,7 +2654,10 @@ void KHTMLPart::findTextNext()
   long options = 0;
   if ( d->m_findDialog ) // 0 when we close the dialog
   {
-    d->m_find->setPattern( d->m_findDialog->pattern() );
+    if ( d->m_find->pattern() != d->m_findDialog->pattern() ) {
+	    d->m_find->setPattern( d->m_findDialog->pattern() );
+	    d->m_find->resetCounts();
+    }
     long options = d->m_findDialog->options();
     if ( d->m_lastFindState.options != options )
     {
@@ -3355,7 +3394,8 @@ void KHTMLPart::slotViewPageInfo()
   if (!d->m_pageServices.isEmpty())
     editStr = i18n("   <a href=\"%1\">[Properties]</a>").arg(d->m_pageServices);
 
-  dlg->_url->setText("<a href=\"" + url().url() + "\">" + url().prettyURL() + "</a>" + editStr);
+  QString squeezedURL = KStringHandler::csqueeze( url().prettyURL(), 80 );
+  dlg->_url->setText("<a href=\"" + url().url() + "\">" + squeezedURL + "</a>" + editStr);
   if (lastModified().isEmpty())
   {
     dlg->_lastModified->hide();
@@ -3582,7 +3622,8 @@ void KHTMLPart::updateActions()
 
   d->m_paSaveBackground->setEnabled( !bgURL.isEmpty() );
 
-  d->m_paDebugScript->setEnabled( d->m_jscript && d->m_bJScriptDebugEnabled );
+  if ( d->m_paDebugScript )
+    d->m_paDebugScript->setEnabled( d->m_jscript );
 }
 
 KParts::LiveConnectExtension *KHTMLPart::liveConnectExtension( const khtml::RenderPart *frame) const {
@@ -4254,7 +4295,7 @@ void KHTMLPart::slotChildCompleted( bool pendingAction )
   khtml::ChildFrame *child = frame( sender() );
 
   if ( child ) {
-    kdDebug() << this << "slotChildCompleted child=" << child << " m_frame=" << child->m_frame << endl;
+    kdDebug(6050) << this << " slotChildCompleted child=" << child << " m_frame=" << child->m_frame << endl;
     child->m_bCompleted = true;
     child->m_bPendingRedirection = pendingAction;
     child->m_args = KParts::URLArgs();
@@ -4667,6 +4708,8 @@ void KHTMLPart::restoreState( QDataStream &stream )
 
     d->m_view->resizeContents( wContents,  hContents);
     d->m_view->setContentsPos( xOffset, yOffset );
+
+    m_url = u;
   }
   else
   {
@@ -4950,7 +4993,7 @@ void KHTMLPart::reparseConfiguration()
 
   d->m_bBackRightClick = settings->isBackRightClickEnabled();
   d->m_bJScriptEnabled = settings->isJavaScriptEnabled(m_url.host());
-  d->m_bJScriptDebugEnabled = settings->isJavaScriptDebugEnabled();
+  setDebugScript( settings->isJavaScriptDebugEnabled() );
   d->m_bJavaEnabled = settings->isJavaEnabled(m_url.host());
   d->m_bPluginsEnabled = settings->isPluginsEnabled(m_url.host());
   d->m_metaRefreshEnabled = settings->isAutoDelayedActionsEnabled ();
@@ -5272,7 +5315,10 @@ void KHTMLPart::extendSelectionTo(int x, int y, int absX, int absY, const DOM::N
         //d->m_view->viewport()->repaint(false);
       }
 #else
-      if (d->m_selectionStart.isNull()) return;
+      // shouldn't be null but it can happen with dynamic updating of nodes
+      if (d->m_selectionStart.isNull() || d->m_selectionEnd.isNull() ||
+          !d->m_selectionStart.handle()->renderer() ||
+          !d->m_selectionEnd.handle()->renderer()) return;
       d->m_startBeforeEnd = RangeImpl::compareBoundaryPoints(
       			d->m_selectionStart.handle(), d->m_startOffset,
 			d->m_selectionEnd.handle(), d->m_endOffset) <= 0;
@@ -5349,7 +5395,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
       pix = KMimeType::pixmapForURL(u, 0, KIcon::Desktop, KIcon::SizeMedium);
     }
 
-    KURLDrag* urlDrag = new KURLDrag( u, d->m_view->viewport() );
+    KURLDrag* urlDrag = new KURLDrag( u, 0 );
     if ( !d->m_referrer.isEmpty() )
       urlDrag->metaData()["referrer"] = d->m_referrer;
 
@@ -5519,8 +5565,10 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
         n = next;
       }
 #else
-      // shouldn't be null but who knows
-      if (d->m_selectionStart.isNull() || d->m_selectionEnd.isNull()) return;
+      // shouldn't be null but it can happen with dynamic updating of nodes
+      if (d->m_selectionStart.isNull() || d->m_selectionEnd.isNull() ||
+          !d->m_selectionStart.handle()->renderer() ||
+          !d->m_selectionEnd.handle()->renderer()) return;
       d->m_startBeforeEnd = RangeImpl::compareBoundaryPoints(
       			d->m_selectionStart.handle(), d->m_startOffset,
 			d->m_selectionEnd.handle(), d->m_endOffset) <= 0;
@@ -5707,7 +5755,7 @@ bool KHTMLPart::checkLinkSecurity(const KURL &linkURL,const QString &message, co
        ( linkProto == "cgi" || linkProto == "file" ) &&
        proto != "file" && proto != "cgi" && proto != "man" && proto != "about")
   {
-    Tokenizer *tokenizer = d->m_doc->tokenizer();
+      khtml::Tokenizer *tokenizer = d->m_doc->tokenizer();
     if (tokenizer)
       tokenizer->setOnHold(true);
 
@@ -6078,6 +6126,21 @@ KURL KHTMLPart::toplevelURL()
     return KURL();
 
   return part->url();
+}
+
+void KHTMLPart::setDebugScript( bool enable )
+{
+  unplugActionList( "debugScriptList" );
+  if ( enable ) {
+    if (!d->m_paDebugScript) {
+      d->m_paDebugScript = new KAction( i18n( "JavaScript &Debugger" ), 0, this, SLOT( slotDebugScript() ), actionCollection(), "debugScript" );
+    }
+    d->m_paDebugScript->setEnabled( d->m_jscript );
+    QPtrList<KAction> lst;
+    lst.append( d->m_paDebugScript );
+    plugActionList( "debugScriptList", lst );
+  }
+  d->m_bJScriptDebugEnabled = enable;
 }
 
 using namespace KParts;

@@ -27,6 +27,10 @@ foreach $cert (sort(keys(%CERT))) {
     $pem =~ s|-----END CERTIFICATE-----||;
     $subj = `openssl x509 -in $file -inform DER -noout -subject`;
     $_ = $subj;
+    # We don't trust this anymore, so we keep our own copy
+    if ( /TrustCenter/ ) {
+        continue;
+    }
     if ( /[Oo]bject/ || /[Cc]ode/ ) {
         $codeSubj = 1;
     } else {

@@ -115,6 +115,7 @@ public:
   QCString appId() { return m_sAppId; }
   int jobId() { return m_iJobId; }
 
+    bool keepOpen() const;
   void setVisible( bool visible );
   void setDefaultProgressVisible( bool visible );
   bool isVisible() const { return m_visible; }

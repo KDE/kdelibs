@@ -72,7 +72,8 @@ class KPrintDialog::KPrintDialogPrivate
 {
 public:
 	QLabel	*m_type, *m_state, *m_comment, *m_location, *m_cmdlabel, *m_filelabel;
-	QPushButton	*m_properties, *m_default, *m_options, *m_ok, *m_wizard, *m_extbtn, *m_filter;
+	KPushButton	*m_properties, *m_default, *m_options, *m_ok, *m_extbtn;
+	QPushButton	*m_wizard, *m_filter;
 	QCheckBox	*m_preview;
 	QLineEdit	*m_cmd;
 	TreeComboBox	*m_printers;
@@ -567,9 +568,9 @@ void KPrintDialog::initialize(KPrinter *printer)
 
 	// Initialize output filename
 	if (!d->m_printer->outputFileName().isEmpty())
-		d->m_file->lineEdit()->setText(d->m_printer->outputFileName());
+		d->m_file->setURL( d->m_printer->outputFileName() );
 	else if (!d->m_printer->docFileName().isEmpty())
-		d->m_file->lineEdit()->setText(d->m_printer->docDirectory()+"/"+d->m_printer->docFileName()+".ps");
+		d->m_file->setURL( d->m_printer->docDirectory()+"/"+d->m_printer->docFileName()+".ps" );
 
 	if ( d->m_printers->count() > 0 )
 		slotPrinterSelected( d->m_printers->currentItem() );
@@ -659,7 +660,8 @@ void KPrintDialog::done(int result)
 		{
 			if (!checkOutputFile()) return;
 			d->m_printer->setOutputToFile(true);
-			d->m_printer->setOutputFileName(d->m_file->lineEdit()->text());
+			/* be sure to decode the output filename */
+			d->m_printer->setOutputFileName( KURL::decode_string( d->m_file->url() ) );
 		}
 		else
 			d->m_printer->setOutputToFile(false);
@@ -690,7 +692,7 @@ void KPrintDialog::done(int result)
 bool KPrintDialog::checkOutputFile()
 {
 	bool	value(false);
-	if (d->m_file->lineEdit()->text().isEmpty())
+	if (d->m_file->url().isEmpty())
 		KMessageBox::error(this,i18n("The output filename is empty."));
 	else
 	{
@@ -698,6 +700,10 @@ bool KPrintDialog::checkOutputFile()
 		if ( !url.isLocalFile() )
 			return true;
 
+		bool	anotherCheck;
+		do
+		{
+		anotherCheck = false;
 		QFileInfo	f(url.path());
 		if (f.exists())
 		{
@@ -705,7 +711,7 @@ bool KPrintDialog::checkOutputFile()
 			{
 				//value = (KMessageBox::warningYesNo(this,i18n("File \"%1\" already exists. Overwrite?").arg(f.absFilePath())) == KMessageBox::Yes);
 				time_t mtimeDest = f.lastModified().toTime_t();
-				KIO::RenameDlg dlg( this, i18n( "Print" ), QString::null, d->m_file->lineEdit()->text(),
+				KIO::RenameDlg dlg( this, i18n( "Print" ), QString::null, d->m_file->url(),
 						KIO::M_OVERWRITE, ( time_t ) -1, f.size(), ( time_t ) -1, f.created().toTime_t() , mtimeDest+1, mtimeDest, true );
 				int result = dlg.exec();
 				switch ( result )
@@ -718,8 +724,10 @@ bool KPrintDialog::checkOutputFile()
 						value = false;
 						break;
 					case KIO::R_RENAME:
-						d->m_file->lineEdit()->setText( dlg.newDestURL().path() );
+						url = dlg.newDestURL();
+						d->m_file->setURL( url.path() );
 						value = true;
+						anotherCheck = true;
 						break;
 				}
 			}
@@ -736,6 +744,7 @@ bool KPrintDialog::checkOutputFile()
 			else
 				value = true;
 		}
+		} while( anotherCheck );
 	}
 	return value;
 }
@@ -777,7 +786,7 @@ void KPrintDialog::setOutputFileExtension(const QString& ext)
 		if ( p > 0 && p != int (f.length () - 1) )
 		{
 			url.setFileName( f.left( p ) + "." + ext );
-			d->m_file->setURL( url.url() );
+			d->m_file->setURL( KURL::decode_string( url.url() ) );
 		}
 	}
 }
@@ -883,7 +892,7 @@ void KPrintDialog::slotHelp()
 
 void KPrintDialog::slotOutputFileSelected(const QString& txt)
 {
-	d->m_file->lineEdit()->setText(txt);
+	d->m_file->setURL( txt );
 }
 
 void KPrintDialog::init()

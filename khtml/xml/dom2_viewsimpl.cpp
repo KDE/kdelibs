@@ -21,7 +21,13 @@
  */
 
 #include "dom2_viewsimpl.h"
+#include "dom_elementimpl.h"
+#include "dom_docimpl.h"
+#include "css/css_renderstyledeclarationimpl.h"
+#include "css/cssproperties.h"
+#include "css/css_stylesheetimpl.h"
 
+using namespace khtml;
 using namespace DOM;
 
 AbstractViewImpl::AbstractViewImpl(DocumentImpl *_document)
@@ -33,8 +39,14 @@ AbstractViewImpl::~AbstractViewImpl()
 {
 }
 
-CSSStyleDeclarationImpl *AbstractViewImpl::getComputedStyle(ElementImpl* /*elt*/, DOMStringImpl* /*pseudoElt*/)
+CSSStyleDeclarationImpl *AbstractViewImpl::getComputedStyle(ElementImpl* elt, DOMStringImpl* /*pseudoElt*/)
 {
-    return 0; // ###
+    if (!elt || !elt->renderer())
+        return 0;
+
+    CSSStyleDeclarationImpl* style = new RenderStyleDeclarationImpl( elt );
+    style->setParent( elt->getDocument()->elementSheet() );
+
+    return style;
 }
 

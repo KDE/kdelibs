@@ -381,6 +381,8 @@ bool Scheduler::startJobScheduled(ProtocolInfo *protInfo)
        {
           newSlave = true;
           slave = createSlave(protInfo, job, job->url());
+          if (!slave)
+             slaveTimer.start(0, true);
        }
     }
 

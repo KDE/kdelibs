@@ -240,6 +240,9 @@ KateDocument::KateDocument ( bool bSingleViewMode, bool bBrowserView,
 //
 KateDocument::~KateDocument()
 {
+  // remove file from dirwatch
+  deactivateDirWatch ();
+
   if (!singleViewMode())
   {
     // clean up remaining views
@@ -2336,21 +2339,8 @@ bool KateDocument::openFile()
 
 bool KateDocument::openFile(KIO::Job * job)
 {
-  //
-  // add the file to dirwatch
-  //
-  if (m_url.isLocalFile() && !m_file.isEmpty())
-    KateFactory::self()->dirWatch ()->addFile (m_file);
-
-  //
-  // to houston, we are not modified
-  //
-  if (m_modOnHd)
-  {
-    m_modOnHd = false;
-    m_modOnHdReason = 0;
-    emit modifiedOnDisc (this, m_modOnHd, 0);
-  }
+  // add new m_file to dirwatch
+  activateDirWatch ();
 
   //
   // use metadata
@@ -2379,6 +2369,11 @@ bool KateDocument::openFile(KIO::Job * job)
   //
   if (success)
   {
+    if (m_highlight && !m_url.isLocalFile()) {
+      // The buffer's highlighting gets nuked by KateBuffer::clear()
+      buffer->setHighlight(m_highlight);
+    }
+    
     // update our hl type if needed
     if (!hlSetByUser)
     {
@@ -2387,11 +2382,8 @@ bool KateDocument::openFile(KIO::Job * job)
       if (hl >= 0)
         internalSetHlMode(hl);
     
-    } else {
-      // The buffer's highlighting gets nuked by KateBuffer::clear()
-      buffer->setHighlight(m_highlight);
     }
-    
+        
     // update file type
     updateFileType (KateFactory::self()->fileTypeManager()->fileType (this));
 
@@ -2414,6 +2406,16 @@ bool KateDocument::openFile(KIO::Job * job)
   //
   setDocName  (QString::null);
 
+  //
+  // to houston, we are not modified
+  //
+  if (m_modOnHd)
+  {
+    m_modOnHd = false;
+    m_modOnHdReason = 0;
+    emit modifiedOnDisc (this, m_modOnHd, 0);
+  }
+  
   //
   // display errors
   //
@@ -2489,24 +2491,24 @@ bool KateDocument::saveFile()
 
   if (reallySaveIt)
     canEncode = buffer->canEncode ();
-
-  //
-  // remove the m_file before saving from dirwatch
-  //
-  if (m_url.isLocalFile() && !m_file.isEmpty())
-    KateFactory::self()->dirWatch ()->removeFile (m_file);
-
+  
   //
   // start with worst case, we had no success
   //
   bool success = false;
 
+  // remove file
+  deactivateDirWatch ();
+  
   //
   // try to load it if needed
   //
   if (reallySaveIt && canEncode)
     success = buffer->saveFile (m_file);
 
+  // add file
+  activateDirWatch ();
+    
   //
   // hurray, we had success, do stuff we need
   //
@@ -2539,12 +2541,6 @@ bool KateDocument::saveFile()
   setDocName  (QString::null);
 
   //
-  // add file again
-  //
-  if (m_url.isLocalFile() && !m_file.isEmpty())
-    KateFactory::self()->dirWatch ()->addFile (m_file);
-
-  //
   // we are not modified
   //
   if (success && m_modOnHd)
@@ -2566,6 +2562,31 @@ bool KateDocument::saveFile()
   // return success
   //
   return success;
+}
+
+void KateDocument::activateDirWatch ()
+{
+  // same file as we are monitoring, return
+  if (m_file == m_dirWatchFile)
+    return;
+
+  // remove the old watched file
+  deactivateDirWatch ();
+  
+  // add new file if needed
+  if (m_url.isLocalFile() && !m_file.isEmpty())
+  {  
+    KateFactory::self()->dirWatch ()->addFile (m_file);
+    m_dirWatchFile = m_file;
+  }
+}
+
+void KateDocument::deactivateDirWatch ()
+{
+  if (!m_dirWatchFile.isEmpty())
+    KateFactory::self()->dirWatch ()->removeFile (m_dirWatchFile);
+
+  m_dirWatchFile = QString::null;
 }
 
 bool KateDocument::closeURL()
@@ -2599,12 +2620,9 @@ bool KateDocument::closeURL()
   //
   if (!KParts::ReadWritePart::closeURL ())
     return false;
-
-  //
-  // remove file from dirwatch
-  //
-  if (m_url.isLocalFile() && !m_file.isEmpty())
-    KateFactory::self()->dirWatch ()->removeFile (m_file);
+  
+  // remove file
+  deactivateDirWatch ();
 
   //
   // empty url + filename
@@ -2639,7 +2657,9 @@ bool KateDocument::closeURL()
   // update all our views
   for (KateView * view = m_views.first(); view != 0L; view = m_views.next() )
   {
-    view->setCursorPositionReal (0,0);
+    // Explicitly call the internal version because we don't want this to look like
+    // an external request (and thus have the view not QWidget::scroll()ed.
+    view->setCursorPositionInternal(0, 0, 1, false);
     view->updateView(true);
   }
 
@@ -4036,11 +4056,20 @@ void KateDocument::reloadFile()
       else if (m_modOnHdReason == 3)
         str = i18n("The file %1 was changed (deleted) on disc by another program!\n\n").arg(url().fileName());
 
-      if (!(KMessageBox::warningYesNo(0,
-               str + i18n("Do you really want to reload the modified file? Data loss may occur.")) == KMessageBox::Yes))
+      int i = KMessageBox::warningYesNoCancel
+                (0, str + i18n("Do you really want to reload the modified file? Data loss may occur."));
+      if ( i != KMessageBox::Yes)
+      {
+        if (i == KMessageBox::No)     
+        {
+          m_modOnHd = false;
+          m_modOnHdReason = 0;
+          emit modifiedOnDisc (this, m_modOnHd, 0);
+        }
+        
         return;
+      }
     }
-
     QValueList<KateDocumentTmpMark> tmp;
 
     for( QIntDictIterator<KTextEditor::Mark> it( m_marks ); it.current(); ++it )

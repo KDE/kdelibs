@@ -119,8 +119,7 @@ UString RegExp::match(const UString &s, int i, int *pos, int **ovector)
     {
       // We set m_notEmpty ourselves, to look for a non-empty match
       // (see man pcretest or pcretest.c for details).
-      // So this is not the end. We want to try again at i+1.
-      // We won't be at the end of the string - that was checked before setting m_notEmpty.
+      // So we don't stop here, we want to try again at i+1.
       fprintf(stderr, "No match after m_notEmpty. +1 and keep going.\n");
       m_notEmpty = 0;
       if (pcre_exec(pcregex, NULL, buffer.c_str(), bufferSize, i+1, 0,
@@ -130,6 +129,8 @@ UString RegExp::match(const UString &s, int i, int *pos, int **ovector)
     else // done
       return UString::null;
   }
+
+  // Got a match, proceed with it.
 
   if (!ovector)
     return UString::null; // don't rely on the return value if you pass ovector==0
@@ -165,10 +166,9 @@ UString RegExp::match(const UString &s, int i, int *pos, int **ovector)
 
   *pos = (*ovector)[0];
 #ifdef HAVE_PCREPOSIX  // TODO check this stuff in non-pcre mode
-  if ( *pos == (*ovector)[1] && (flgs & Global) && *pos != bufferSize )
+  if ( *pos == (*ovector)[1] && (flgs & Global) )
   {
-    // empty match, not at end of string.
-    // Next try will be with m_notEmpty=true
+    // empty match, next try will be with m_notEmpty=true
     m_notEmpty=true;
   }
 #endif

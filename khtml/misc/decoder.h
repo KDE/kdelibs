@@ -28,6 +28,9 @@ class QTextCodec;
 class QTextDecoder;
 
 namespace khtml {
+
+class JapaneseCode;
+    
 /**
  * @internal
  */
@@ -79,10 +82,9 @@ private:
     QCString automaticDetectionForCyrillic( const unsigned char* str, int size, AutoDetectLanguage _language );
     QCString automaticDetectionForGreek( const unsigned char* str, int size );
     QCString automaticDetectionForHebrew( const unsigned char* str, int size );
+    QCString automaticDetectionForJapanese( const unsigned char* str, int size );
     QCString automaticDetectionForTurkish( const unsigned char* str, int size );
     QCString automaticDetectionForWesternEuropean( const unsigned char* str, int size );
-
-
 
     // codec used for decoding. default is Latin1.
     QTextCodec *m_codec;
@@ -97,6 +99,8 @@ private:
     bool haveEncoding;
 
     AutoDetectLanguage m_autoDetectLanguage;
+
+    JapaneseCode *kc;
 };
 
 }

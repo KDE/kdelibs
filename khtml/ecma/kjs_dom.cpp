@@ -165,8 +165,6 @@ Value DOMNode::tryGet(ExecState *exec, const Identifier &propertyName) const
 
 Value DOMNode::getValueProperty(ExecState *exec, int token) const
 {
-  khtml::RenderObject *rend = node.handle() ? node.handle()->renderer() : 0L;
-
   switch (token) {
   case NodeName:
     return getString(node.nodeName());
@@ -215,11 +213,11 @@ Value DOMNode::getValueProperty(ExecState *exec, int token) const
   case OnFocus:
     return getListener(DOM::EventImpl::FOCUS_EVENT);
   case OnKeyDown:
-    return getListener(DOM::EventImpl::KHTML_KEYDOWN_EVENT);
+    return getListener(DOM::EventImpl::KEYDOWN_EVENT);
   case OnKeyPress:
     return getListener(DOM::EventImpl::KHTML_KEYPRESS_EVENT);
   case OnKeyUp:
-    return getListener(DOM::EventImpl::KHTML_KEYUP_EVENT);
+    return getListener(DOM::EventImpl::KEYUP_EVENT);
   case OnLoad:
     return getListener(DOM::EventImpl::LOAD_EVENT);
   case OnMouseDown:
@@ -244,36 +242,31 @@ Value DOMNode::getValueProperty(ExecState *exec, int token) const
     return getListener(DOM::EventImpl::SUBMIT_EVENT);
   case OnUnload:
     return getListener(DOM::EventImpl::UNLOAD_EVENT);
-  case OffsetLeft:
-  case OffsetTop:
-  case OffsetWidth:
-  case OffsetHeight:
-  case OffsetParent:
-  case ClientWidth:
-  case ClientHeight:
-  case ScrollWidth:
-  case ScrollHeight:
-  case ScrollLeft:
-  case ScrollTop:
-  {
+  case SourceIndex: {
+    // Retrieves the ordinal position of the object, in source order, as the object
+    // appears in the document's all collection
+    // i.e. document.all[n.sourceIndex] == n
+    DOM::Document doc = node.ownerDocument();
+    if (doc.isHTMLDocument()) {
+      DOM::HTMLCollection all = static_cast<DOM::HTMLDocument>(doc).all();
+      unsigned long i = 0;
+      DOM::Node n = all.firstItem();
+      for ( ; !n.isNull() && n != node; n = all.nextItem() )
+        ++i;
+      Q_ASSERT( !n.isNull() ); // node not in document.all !?
+      return Number(i);
+    }
+  }
+  default:
     // no DOM standard, found in IE only
 
-    // make sure our rendering is up to date before
-    // we allow a query on these attributes.
+    // Make sure our layout is up to date before we allow a query on these attributes.
     DOM::DocumentImpl* docimpl = node.handle()->getDocument();
-    KHTMLView* v = 0;
-    if ( docimpl ) {
-      v = docimpl->view();
-      // Only do a layout if changes have occurred that make it necessary.
-      if ( v && docimpl->renderer() && !docimpl->renderer()->layouted() )
-      {
-        docimpl->updateRendering();
-        docimpl->view()->layout();
-      }
-
-      // refetch in case the renderer changed
-      rend = node.handle() ? node.handle()->renderer() : 0L;
+    if (docimpl) {
+      docimpl->updateLayout();
     }
+
+    khtml::RenderObject *rend = node.handle()->renderer();
 
     switch (token) {
     case OffsetLeft:
@@ -301,28 +294,11 @@ Value DOMNode::getValueProperty(ExecState *exec, int token) const
       return Number( rend && rend->layer() ? rend->layer()->scrollXOffset() : 0 );
     case ScrollTop:
       return Number( rend && rend->layer() ? rend->layer()->scrollYOffset() : 0 );
+    default:
+      kdDebug(6070) << "WARNING: Unhandled token in DOMNode::getValueProperty : " << token << endl;
+      break;
     }
   }
-  case SourceIndex: {
-    // Retrieves the ordinal position of the object, in source order, as the object
-    // appears in the document's all collection
-    // i.e. document.all[n.sourceIndex] == n
-    DOM::Document doc = node.ownerDocument();
-    if (doc.isHTMLDocument()) {
-      DOM::HTMLCollection all = static_cast<DOM::HTMLDocument>(doc).all();
-      unsigned long i = 0;
-      DOM::Node n = all.firstItem();
-      for ( ; !n.isNull() && n != node; n = all.nextItem() )
-	++i;
-      Q_ASSERT( !n.isNull() ); // node not in document.all !?
-      return Number(i);
-    }
-  }
-  default:
-    kdDebug(6070) << "WARNING: Unhandled token in DOMNode::getValueProperty : " << token << endl;
-    break;
-  }
-
   return Undefined();
 }
 
@@ -370,13 +346,13 @@ void DOMNode::putValueProperty(ExecState *exec, int token, const Value& value, i
     setListener(exec,DOM::EventImpl::FOCUS_EVENT,value);
     break;
   case OnKeyDown:
-    setListener(exec,DOM::EventImpl::KHTML_KEYDOWN_EVENT,value);
+    setListener(exec,DOM::EventImpl::KEYDOWN_EVENT,value);
     break;
   case OnKeyPress:
     setListener(exec,DOM::EventImpl::KHTML_KEYPRESS_EVENT,value);
     break;
   case OnKeyUp:
-    setListener(exec,DOM::EventImpl::KHTML_KEYUP_EVENT,value);
+    setListener(exec,DOM::EventImpl::KEYUP_EVENT,value);
     break;
   case OnLoad:
     setListener(exec,DOM::EventImpl::LOAD_EVENT,value);
@@ -676,7 +652,7 @@ const ClassInfo DOMAttr::info = { "Attr", &DOMNode::info, &DOMAttrTable, 0 };
 Value DOMAttr::tryGet(ExecState *exec, const Identifier &propertyName) const
 {
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "DOMAttr::tryPut " << propertyName.qstring() << endl;
+  kdDebug(6070) << "DOMAttr::tryGet " << propertyName.qstring() << endl;
 #endif
   return DOMObjectLookupGetValue<DOMAttr,DOMNode>(exec, propertyName,
                                                   &DOMAttrTable, this );
@@ -1152,6 +1128,9 @@ DOMDocumentType::DOMDocumentType(ExecState *exec, const DOM::DocumentType& dt)
 
 Value DOMDocumentType::tryGet(ExecState *exec, const Identifier &propertyName) const
 {
+#ifdef KJS_VERBOSE
+  kdDebug(6070) << "DOMDocumentType::tryGet " << propertyName.qstring() << endl;
+#endif
   return DOMObjectLookupGetValue<DOMDocumentType, DOMNode>(exec, propertyName, &DOMDocumentTypeTable, this);
 }
 
@@ -1747,4 +1726,3 @@ Value DOMTextProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &ar
       return Undefined();
   }
 }
-

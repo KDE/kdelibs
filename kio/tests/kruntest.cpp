@@ -147,13 +147,16 @@ int main(int argc, char **argv)
       for (int te = 0; te < 2; te++)
         for (int ex = 0; ex < 2; ex++) {
           int fd = creat("kruntest.desktop", 0666);
+	  FILE *f;
           if (fd < 0) abort();
-          dprintf(fd, "[Desktop Entry]\n"
+	  f = fdopen(fd, "w");
+          fprintf(f, "[Desktop Entry]\n"
 		"Type=Application\n"
 		"Name=just_a_test\n"
 		"Icon=~/icon.png\n"
 		"%s\n%s\n%s\n",execs[ex],terms[te],sus[su]);
           close(fd);
+	  fclose(f);
           KService s(QDir::currentDirPath() + "/kruntest.desktop");
           unlink("kruntest.desktop");
           checkPDE( s, l0, hs, false, rslts[ex+te*2+su*4+hs*8]);

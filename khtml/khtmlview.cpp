@@ -3,7 +3,7 @@
  * Copyright (C) 1998, 1999 Torben Weis <weis@kde.org>
  *                     1999 Lars Knoll <knoll@kde.org>
  *                     1999 Antti Koivisto <koivisto@kde.org>
- *                     2000 Dirk Mueller <mueller@kde.org>
+ *                     2000-2004 Dirk Mueller <mueller@kde.org>
  *                     2003 Leo Savernik <l.savernik@aon.at>
  *
  * This library is free software; you can redistribute it and/or
@@ -79,6 +79,10 @@
 #include <qptrdict.h>
 
 //#define DEBUG_NO_PAINT_BUFFER
+
+//#define DEBUG_FLICKER
+
+//#define DEBUG_PIXEL
 
 #define PAINT_BUFFER_HEIGHT 128
 
@@ -158,6 +162,11 @@ public:
         vmode = QScrollView::AlwaysOff;
         hmode = QScrollView::AlwaysOff;
 #endif
+#ifdef DEBUG_PIXEL
+        timer.start();
+        pixelbooth = 0;
+        repaintbooth = 0;
+#endif
         scrollBarMoved = false;
         ignoreWheelEvents = false;
 	borderX = 30;
@@ -174,11 +183,12 @@ public:
 	layoutTimerId = 0;
         repaintTimerId = 0;
         scrollTimerId = 0;
+        scrollSuspended = false;
         complete = false;
         firstRelayout = true;
         dirtyLayout = false;
         layoutSchedulingEnabled = true;
-        updateRect = QRect();
+        updateRegion = QRegion();
         m_dialogsAllowed = true;
 #ifndef KHTML_NO_CARET
         if (m_caretViewContext) {
@@ -192,6 +202,7 @@ public:
         //kdDebug(6000) << "newScrollTimer timer " << tid << endl;
         view->killTimer(scrollTimerId);
         scrollTimerId = tid;
+        scrollSuspended = false;
     }
     enum ScrollDirection { ScrollLeft, ScrollRight, ScrollUp, ScrollDown };
 
@@ -203,13 +214,13 @@ public:
         };
         if (!scrollTimerId ||
             (scrollDirection != direction &&
-             scrollDirection != oppositedir)) {
+             (scrollDirection != oppositedir || scrollSuspended))) {
             scrollTiming = 6;
             scrollBy = timings[scrollTiming].pixels;
             scrollDirection = direction;
             newScrollTimer(view, view->startTimer(timings[scrollTiming].msec));
         } else if (scrollDirection == direction &&
-                   timings[scrollTiming+1].msec) {
+                   timings[scrollTiming+1].msec && !scrollSuspended) {
             scrollBy = timings[++scrollTiming].pixels;
             newScrollTimer(view, view->startTimer(timings[scrollTiming].msec));
         } else if (scrollDirection == oppositedir) {
@@ -218,6 +229,7 @@ public:
                 newScrollTimer(view, view->startTimer(timings[scrollTiming].msec));
             }
         }
+        scrollSuspended = false;
     }
 
 #ifndef KHTML_NO_CARET
@@ -236,6 +248,12 @@ public:
       return m_editorContext;
     }
 #endif // KHTML_NO_CARET
+
+#ifdef DEBUG_PIXEL
+    QTime timer;
+    unsigned int pixelbooth;
+    unsigned int repaintbooth;
+#endif
 
     QPainter *tp;
     QPixmap  *paintBuffer;
@@ -269,6 +287,7 @@ public:
 
     int repaintTimerId;
     int scrollTimerId;
+    bool scrollSuspended;
     int scrollTiming;
     int scrollBy;
     ScrollDirection scrollDirection;
@@ -278,7 +297,7 @@ public:
     bool possibleTripleClick;
     bool dirtyLayout;
     bool m_dialogsAllowed;
-    QRect updateRect;
+    QRegion updateRegion;
     KHTMLToolTip *tooltip;
     QPtrDict<QWidget> visibleWidgets;
 #ifndef KHTML_NO_CARET
@@ -436,12 +455,24 @@ void KHTMLView::drawContents( QPainter*)
 
 void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
 {
-//     kdDebug( 6000 ) << "drawContents this="<< this <<" x=" << ex << ",y=" << ey << ",w=" << ew << ",h=" << eh << endl;
+#ifdef DEBUG_PIXEL
+
+    if ( d->timer.elapsed() > 5000 ) {
+        qDebug( "drawed %d pixels in %d repaints the last %d milliseconds",
+                d->pixelbooth, d->repaintbooth,  d->timer.elapsed() );
+        d->timer.restart();
+        d->pixelbooth = 0;
+        d->repaintbooth = 0;
+    }
+    d->pixelbooth += ew*eh;
+    d->repaintbooth++;
+#endif
+
+    //kdDebug( 6000 ) << "drawContents this="<< this <<" x=" << ex << ",y=" << ey << ",w=" << ew << ",h=" << eh << endl;
     if(!m_part || !m_part->xmlDocImpl() || !m_part->xmlDocImpl()->renderer()) {
         p->fillRect(ex, ey, ew, eh, palette().active().brush(QColorGroup::Base));
         return;
     }
-//    QRect dbg_paint_rect(ex,ey,ew,eh);
 
     QPoint pt = contentsToViewport(QPoint(ex, ey));
     QRegion cr = QRect(pt.x(), pt.y(), ew, eh);
@@ -458,8 +489,13 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
 	    cr -= QRect(x, y, rw->width(), rw->height());
 	}
     }
+
+#if 0
+    // this is commonly the case with framesets. we still do
+    // want to paint them, otherwise the widgets don't get placed.
     if (cr.isEmpty())
 	return;
+#endif
 
 #ifndef DEBUG_NO_PAINT_BUFFER
     p->setClipRegion(cr);
@@ -485,13 +521,6 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
             d->tp->translate(-ex, -ey-py);
             d->tp->fillRect(ex, ey+py, ew, ph, palette().active().brush(QColorGroup::Base));
             m_part->xmlDocImpl()->renderer()->layer()->paint(d->tp, QRect(ex, ey+py, ew, ph));
-#ifdef BOX_DEBUG
-            if (m_part->xmlDocImpl()->focusNode())
-            {
-                d->tp->setBrush(Qt::NoBrush);
-                d->tp->drawRect(m_part->xmlDocImpl()->focusNode()->getRect());
-            }
-#endif
             d->tp->end();
 
 	    p->drawPixmap(ex, ey+py, *d->paintBuffer, 0, 0, ew, ph);
@@ -502,11 +531,12 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
 static int cnt=0;
 	ex = contentsX(); ey = contentsY();
 	ew = visibleWidth(); eh = visibleHeight();
-	kdDebug() << "[" << ++cnt << "]" << " clip region: " << QRect(ex,ey,ew,eh) << endl;
+	QRect pr(ex,ey,ew,eh);
+	kdDebug() << "[" << ++cnt << "]" << " clip region: " << pr << endl;
 //	p->setClipRegion(QRect(0,0,ew,eh));
 //        p->translate(-ex, -ey);
         p->fillRect(ex, ey, ew, eh, palette().active().brush(QColorGroup::Base));
-        m_part->xmlDocImpl()->renderer()->layer()->paint(p, ex, ey, ew, eh, 0, 0);
+        m_part->xmlDocImpl()->renderer()->layer()->paint(p, pr);
 #endif // DEBUG_NO_PAINT_BUFFER
 
 #ifndef KHTML_NO_CARET
@@ -547,15 +577,15 @@ void KHTMLView::setMarginHeight(int h)
 
 void KHTMLView::layout()
 {
-    d->layoutSchedulingEnabled=false;
-
     if( m_part && m_part->xmlDocImpl() ) {
         DOM::DocumentImpl *document = m_part->xmlDocImpl();
 
         khtml::RenderCanvas* root = static_cast<khtml::RenderCanvas *>(document->renderer());
         if ( !root ) return;
 
-         if (document->isHTMLDocument()) {
+        d->layoutSchedulingEnabled=false;
+
+        if (document->isHTMLDocument()) {
              NodeImpl *body = static_cast<HTMLDocumentImpl*>(document)->body();
              if(body && body->renderer() && body->id() == ID_FRAMESET) {
                  QScrollView::setVScrollBarMode(AlwaysOff);
@@ -568,7 +598,7 @@ void KHTMLView::layout()
              }
              else if (!d->tooltip)
                  d->tooltip = new KHTMLToolTip( this, d );
-         }
+        }
 
         _height = visibleHeight();
         _width = visibleWidth();
@@ -670,8 +700,6 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
 
     bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEDOWN_EVENT,mev.innerNode.handle(),true,
                                            d->clickCount,_mouse,true,DOM::NodeImpl::MousePress);
-    if (mev.innerNode.handle())
-	mev.innerNode.handle()->setPressed();
 
     khtml::RenderObject* r = mev.innerNode.handle() ? mev.innerNode.handle()->renderer() : 0;
     if (r && r->isWidget())
@@ -713,9 +741,6 @@ void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
     bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEDOWN_EVENT,mev.innerNode.handle(),true,
                                            d->clickCount,_mouse,true,DOM::NodeImpl::MouseDblClick);
 
-    if (mev.innerNode.handle())
-	mev.innerNode.handle()->setPressed();
-
     khtml::RenderObject* r = mev.innerNode.handle() ? mev.innerNode.handle()->renderer() : 0;
     if (r && r->isWidget())
 	_mouse->ignore();
@@ -756,7 +781,8 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
     viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
 
     DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MouseMove );
-    m_part->xmlDocImpl()->prepareMouseEvent( false, xm, ym, &mev );
+    // Do not modify :hover/:active state while mouse is pressed.
+    m_part->xmlDocImpl()->prepareMouseEvent( _mouse->state() & Qt::MouseButtonMask /*readonly ?*/, xm, ym, &mev );
 
 //     kdDebug(6000) << "mouse move: " << _mouse->pos()
 // 		  << " button " << _mouse->button()
@@ -784,6 +810,9 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
     QCursor c;
     switch ( style ? style->cursor() : CURSOR_AUTO) {
     case CURSOR_AUTO:
+        if ( r && r->isText() )
+            c = KCursor::ibeamCursor();
+
         if ( mev.url.length() && m_part->settings()->changeCursor() )
             c = m_part->urlCursor();
 
@@ -875,9 +904,6 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 	dispatchMouseEvent(EventImpl::CLICK_EVENT, mev.innerNode.handle(),true,
                            d->clickCount, &me, true, DOM::NodeImpl::MouseRelease);
     }
-
-    if (mev.innerNode.handle())
-	mev.innerNode.handle()->setPressed(false);
 
     DOM::NodeImpl* fn = m_part->xmlDocImpl()->focusNode();
     if (fn && fn != mev.innerNode.handle() &&
@@ -1006,8 +1032,11 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
         case Key_Space:
             if ( d->vmode == QScrollView::AlwaysOff )
                 _ke->accept();
-            else
+            else {
                 scrollBy( 0, -clipper()->height() - offs );
+                if(d->scrollSuspended)
+                    d->newScrollTimer(this, 0);
+            }
             break;
 
         case Key_Down:
@@ -1038,10 +1067,10 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
             if ( d->vmode == QScrollView::AlwaysOff )
                 _ke->accept();
             else {
+                if (!d->scrollTimerId || d->scrollSuspended)
+                    scrollBy( 0, 10 );
                 if (d->scrollTimerId)
                     d->newScrollTimer(this, 0);
-                else
-                    scrollBy( 0, 10 );
             }
             break;
 
@@ -1049,8 +1078,11 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
         case Key_Next:
             if ( d->vmode == QScrollView::AlwaysOff )
                 _ke->accept();
-            else
+            else {
                 scrollBy( 0, clipper()->height() - offs );
+                if(d->scrollSuspended)
+                    d->newScrollTimer(this, 0);
+            }
             break;
 
         case Key_Up:
@@ -1058,28 +1090,31 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
             if ( d->vmode == QScrollView::AlwaysOff )
                 _ke->accept();
             else {
+                if (!d->scrollTimerId || d->scrollSuspended)
+                    scrollBy( 0, -10 );
                 if (d->scrollTimerId)
                     d->newScrollTimer(this, 0);
-                else
-                    scrollBy( 0, -10 );
             }
             break;
 
         case Key_Prior:
             if ( d->vmode == QScrollView::AlwaysOff )
                 _ke->accept();
-            else
+            else {
                 scrollBy( 0, -clipper()->height() + offs );
+                if(d->scrollSuspended)
+                    d->newScrollTimer(this, 0);
+            }
             break;
         case Key_Right:
         case Key_L:
             if ( d->hmode == QScrollView::AlwaysOff )
                 _ke->accept();
             else {
+                if (!d->scrollTimerId || d->scrollSuspended)
+                    scrollBy( 10, 0 );
                 if (d->scrollTimerId)
                     d->newScrollTimer(this, 0);
-                else
-                    scrollBy( 10, 0 );
             }
             break;
         case Key_Left:
@@ -1087,16 +1122,15 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
             if ( d->hmode == QScrollView::AlwaysOff )
                 _ke->accept();
             else {
+                if (!d->scrollTimerId || d->scrollSuspended)
+                    scrollBy( -10, 0 );
                 if (d->scrollTimerId)
                     d->newScrollTimer(this, 0);
-                else
-                    scrollBy( -10, 0 );
             }
             break;
         case Key_Enter:
         case Key_Return:
 	    // ### FIXME:
-	    // move this code to HTMLAnchorElementImpl::setPressed(false),
 	    // or even better to HTMLAnchorElementImpl::event()
             if (m_part->xmlDocImpl()) {
 		NodeImpl *n = m_part->xmlDocImpl()->focusNode();
@@ -1108,19 +1142,29 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
         case Key_Home:
             if ( d->vmode == QScrollView::AlwaysOff )
                 _ke->accept();
-            else
+            else {
                 setContentsPos( 0, 0 );
+                if(d->scrollSuspended)
+                    d->newScrollTimer(this, 0);
+            }
             break;
         case Key_End:
             if ( d->vmode == QScrollView::AlwaysOff )
                 _ke->accept();
-            else
+            else {
                 setContentsPos( 0, contentsHeight() - visibleHeight() );
+                if(d->scrollSuspended)
+                    d->newScrollTimer(this, 0);
+            }
             break;
         case Key_Shift:
             // what are you doing here?
 	    _ke->ignore();
             return;
+        case Key_Control:
+            if (d->scrollTimerId)
+                d->scrollSuspended = !d->scrollSuspended;
+            break;
         default:
             if (d->scrollTimerId)
                 d->newScrollTimer(this, 0);
@@ -1319,8 +1363,8 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 		    }
 		    viewportToContents( x, y, x, y );
 		    QPaintEvent *pe = static_cast<QPaintEvent *>(e);
-		    scheduleRepaint(x + pe->rect().x(), y + pe->rect().y(),
-				    pe->rect().width(), pe->rect().height());
+ 		    scheduleRepaint(x + pe->rect().x(), y + pe->rect().y(),
+ 				    pe->rect().width(), pe->rect().height());
 		}
 		break;
 	    case QEvent::MouseMove:
@@ -1617,8 +1661,8 @@ void KHTMLView::print(bool quick)
         m_part->xmlDocImpl()->styleSelector()->computeFontSizes(&metrics, 100);
         m_part->xmlDocImpl()->updateStyleSelector();
         root->setPrintImages( printer->option("app-khtml-printimages") == "true");
-        root->setLayouted( false );
         root->setMinMaxKnown( false );
+        root->setLayouted( false );
         root->layout();
 
         bool printHeader = (printer->option("app-khtml-printheader") == "true");
@@ -1776,7 +1820,6 @@ void KHTMLView::paint(QPainter *p, const QRect &rc, int yOff, bool *more)
 
 void KHTMLView::useSlowRepaints()
 {
-    kdDebug(0) << "slow repaints requested" << endl;
     d->useSlowRepaints = true;
     setStaticBackground(true);
 }
@@ -1895,13 +1938,11 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
 	d->underMouse->ref();
 
     int exceptioncode = 0;
-    int mx, my;
-    viewportToContents(_mouse->x(), _mouse->y(), mx, my);
-    // clientX and clientY are in viewport coordinates
-    // At least the JS code wants event.[xy]/event.client[XY] to be in viewport coords.
-    // [that's not the same as _mouse->[xy](), since we use the clipper]
-    int clientX = mx - contentsX();
-    int clientY = my - contentsY();
+    int pageX = 0;
+    int pageY = 0;
+    viewportToContents(_mouse->x(), _mouse->y(), pageX, pageY);
+    int clientX = pageX - contentsX();
+    int clientY = pageY - contentsY();
     int screenX = _mouse->globalX();
     int screenY = _mouse->globalY();
     int button = -1;
@@ -1924,7 +1965,7 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
     bool metaKey = (_mouse->state() & MetaButton);
 
     // mouseout/mouseover
-    if (setUnder && (d->prevMouseX != mx || d->prevMouseY != my)) {
+    if (setUnder && (d->prevMouseX != pageX || d->prevMouseY != pageY)) {
 
         // ### this code sucks. we should save the oldUnder instead of calculating
         // it again. calculating is expensive! (Dirk)
@@ -1941,7 +1982,7 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
 		oldUnder->ref();
 		MouseEventImpl *me = new MouseEventImpl(EventImpl::MOUSEOUT_EVENT,
 							true,true,m_part->xmlDocImpl()->defaultView(),
-							0,screenX,screenY,clientX,clientY,
+							0,screenX,screenY,clientX,clientY,pageX, pageY,
 							ctrlKey,altKey,shiftKey,metaKey,
 							button,targetNode);
 		me->ref();
@@ -1953,7 +1994,7 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
 	    if (targetNode) {
 		MouseEventImpl *me = new MouseEventImpl(EventImpl::MOUSEOVER_EVENT,
 							true,true,m_part->xmlDocImpl()->defaultView(),
-							0,screenX,screenY,clientX,clientY,
+							0,screenX,screenY,clientX,clientY,pageX, pageY,
 							ctrlKey,altKey,shiftKey,metaKey,
 							button,oldUnder);
 
@@ -1975,7 +2016,7 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
                           _mouse->type() == QEvent::MouseButtonDblClick );
         MouseEventImpl *me = new MouseEventImpl(static_cast<EventImpl::EventId>(eventId),
 						true,cancelable,m_part->xmlDocImpl()->defaultView(),
-						detail,screenX,screenY,clientX,clientY,
+						detail,screenX,screenY,clientX,clientY,pageX, pageY,
 						ctrlKey,altKey,shiftKey,metaKey,
 						button,0, _mouse, dblclick );
         me->ref();
@@ -2126,6 +2167,8 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
 {
 //    kdDebug() << "timer event " << e->timerId() << endl;
     if ( e->timerId() == d->scrollTimerId ) {
+        if( d->scrollSuspended )
+            return;
         switch (d->scrollDirection) {
             case KHTMLViewPrivate::ScrollDown:
                 if (contentsY() + visibleHeight () >= contentsHeight())
@@ -2192,8 +2235,28 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
     killTimer(d->repaintTimerId);
     d->repaintTimerId = 0;
 
-    updateContents( d->updateRect );
-    d->updateRect = QRect();
+    QRegion updateRegion;
+    QMemArray<QRect> rects = d->updateRegion.rects();
+
+    d->updateRegion = QRegion();
+
+    if ( rects.size() )
+        updateRegion = rects[0];
+
+    for ( unsigned i = 1; i < rects.size(); ++i ) {
+        QRect obR = updateRegion.boundingRect();
+        QRegion newRegion = updateRegion.unite(rects[i]);
+        if (2*newRegion.boundingRect().height() > 3*obR.height() )
+        {
+            repaintContents( obR );
+            updateRegion = rects[i];
+        }
+        else
+            updateRegion = newRegion;
+    }
+
+    if ( !updateRegion.isNull() )
+        repaintContents( updateRegion.boundingRect() );
 
     if (d->dirtyLayout && !d->visibleWidgets.isEmpty()) {
         QWidget* w;
@@ -2249,31 +2312,22 @@ void KHTMLView::scheduleRepaint(int x, int y, int w, int h)
 //     kdDebug() << "parsing " << parsing << endl;
 //     kdDebug() << "complete " << d->complete << endl;
 
-    int time;
+    int time = parsing ? 300 : ( !d->complete ? 100 : 20 );
 
-    // if complete...
-    if (d->complete)
-        // ...repaint immediately
-        time = 20;
-    else
-    {
-        if (parsing)
-            // not complete and still parsing
-            time = 300;
-        else
-            // not complete, not parsing, extend the timer if it exists
-            // otherwise, repaint immediately
-            time = d->repaintTimerId ? 400 : 20;
-    }
+#ifdef DEBUG_FLICKER
+    QPainter p;
+    p.begin( viewport() );
 
-    if (d->repaintTimerId) {
-        killTimer(d->repaintTimerId);
-        d->updateRect = d->updateRect.unite(QRect(x,y,w,h));
-    } else
-        d->updateRect = QRect(x,y,w,h);
+    int vx, vy;
+    contentsToViewport( x, y, vx, vy );
+    p.fillRect( vx, vy, w, h, Qt::red );
+    p.end();
+#endif
 
-//	kdDebug(6000) << "scheduled repaint for " << d->updateRect << endl;
-    d->repaintTimerId = startTimer( time );
+    d->updateRegion = d->updateRegion.unite(QRect(x,y,w,h));
+
+    if ( !d->repaintTimerId )
+        d->repaintTimerId = startTimer( time );
 
 //     kdDebug() << "starting timer " << time << endl;
 }
@@ -2367,8 +2421,18 @@ void KHTMLView::ensureNodeHasFocus(NodeImpl *node)
 
   if (!node) firstAncestor = 0;
 
+  DocumentImpl *doc = m_part->xmlDocImpl();
+  // ensure that embedded widgets don't lose their focus
+  if (!firstAncestor && doc->focusNode() && doc->focusNode()->renderer()
+  	&& doc->focusNode()->renderer()->isWidget())
+    return;
+
   // Set focus node on the document
-  m_part->xmlDocImpl()->setFocusNode(firstAncestor);
+#if DEBUG_CARETMODE > 1
+  kdDebug(6200) << k_funcinfo << "firstAncestor " << firstAncestor << ": "
+  	<< (firstAncestor ? firstAncestor->nodeName().string() : QString::null) << endl;
+#endif
+  doc->setFocusNode(firstAncestor);
   emit m_part->nodeActivated(Node(firstAncestor));
 }
 
