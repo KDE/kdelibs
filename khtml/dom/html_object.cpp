@@ -369,14 +369,15 @@ void HTMLObjectElement::setStandby( const DOMString &value )
 long HTMLObjectElement::tabIndex() const
 {
     if(!impl) return 0;
-    return ((HTMLObjectElementImpl *)impl)->tabIndex();
+    return ((ElementImpl *)impl)->getAttribute(ATTR_TABINDEX).toInt();
 }
 
 void HTMLObjectElement::setTabIndex( long _tabIndex )
 {
-
-    if(impl)
-        ((HTMLObjectElementImpl *)impl)->setTabIndex( _tabIndex );
+    if(impl) {
+	DOMString value(QString::number(_tabIndex));
+        ((ElementImpl *)impl)->setAttribute(ATTR_TABINDEX,value);
+    }
 }
 
 DOMString HTMLObjectElement::type() const

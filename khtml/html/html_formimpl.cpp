@@ -36,6 +36,7 @@
 
 #include <kdebug.h>
 #include <kmimetype.h>
+#include <iostream.h>
 
 using namespace DOM;
 using namespace khtml;
@@ -249,6 +250,7 @@ void HTMLFormElementImpl::detach()
 
 void HTMLFormElementImpl::radioClicked( RenderFormElement *caller )
 {
+    // ### make this work for form elements that don't have renders
     if(!view) return;
 
     RenderFormElement *current = formElements.first();
@@ -484,7 +486,7 @@ HTMLInputElementImpl::HTMLInputElementImpl(DocumentImpl *doc)
 {
     _type = TEXT;
     m_checked = false;
-    _maxLen = 0;
+    _maxLen = -1;
     _size = 20;
     _clicked = false;
 
@@ -496,7 +498,7 @@ HTMLInputElementImpl::HTMLInputElementImpl(DocumentImpl *doc, HTMLFormElementImp
 {
     _type = TEXT;
     m_checked = false;
-    _maxLen = 0;
+    _maxLen = -1;
     _size = 20;
     _clicked = false;
 
@@ -518,24 +520,28 @@ ushort HTMLInputElementImpl::id() const
     return ID_INPUT;
 }
 
-void HTMLInputElementImpl::setMaxLength( long  )
-{
-}
-
 long HTMLInputElementImpl::tabIndex() const
 {
     // ###
     return 0;
 }
 
-void HTMLInputElementImpl::setTabIndex( long  )
-{
-}
-
 DOMString HTMLInputElementImpl::type() const
 {
-    // ###
-    return DOMString();
+    // HTML DTD suggests this is supposed to be uppercase
+    switch (_type) {
+	case TEXT: return "TEXT";
+	case PASSWORD: return "PASSWORD";
+	case CHECKBOX: return "CHECKBOX";
+	case RADIO: return "RADIO";
+	case SUBMIT: return "SUBMIT";
+	case RESET: return "RESET";
+	case FILE: return "FILE";
+	case HIDDEN: return "HIDDEN";
+	case IMAGE: return "IMAGE";
+	case BUTTON: return "BUTTON";
+	default: return "";
+    }
 }
 
 QString HTMLInputElementImpl::state( )
@@ -570,6 +576,10 @@ void HTMLInputElementImpl::click(  )
 
 void HTMLInputElementImpl::parseAttribute(AttrImpl *attr)
 {
+    // ### IMPORTANT: check that the type can't be changed after the first time
+    // otherwise a javascript programmer may be able to set a text field's value
+    // to something like /etc/passwd and then change it to a file field
+    // ### also check that input defaults to something - text perhaps?
     switch(attr->attrId)
     {
     case ATTR_TYPE:
@@ -599,13 +609,15 @@ void HTMLInputElementImpl::parseAttribute(AttrImpl *attr)
 	currValue = _value.string();
 	break;
     case ATTR_CHECKED:
-	m_checked = true;
+	m_checked = (attr->val() != 0);
+	if (_type == RADIO && _form && m_render && m_checked)
+	    _form->radioClicked(static_cast<RenderFormElement*>(m_render));
 	break;
     case ATTR_MAXLENGTH:
-	_maxLen = attr->val()->toInt();
+	_maxLen = attr->val() ? attr->val()->toInt() : -1;
 	break;
     case ATTR_SIZE:
-	_size = attr->val()->toInt();
+	_size = attr->val() ? attr->val()->toInt() : 20;
 	break;
     case ATTR_SRC:
 	_src = attr->value();
@@ -614,7 +626,7 @@ void HTMLInputElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_USEMAP:
     case ATTR_TABINDEX:
     case ATTR_ACCESSKEY:
-	// ignore for the moment
+	// ### ignore for the moment
 	break;
     case ATTR_ALIGN:
 	addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value(), false);
@@ -640,34 +652,34 @@ void HTMLInputElementImpl::attach(KHTMLView *_view)
 	{
 	case TEXT:
 	{
-	    f = new RenderLineEdit(view, _form, _maxLen, _size, false);
+	    f = new RenderLineEdit(view, this);
 	    break;
 	}
 	case PASSWORD:
 	{
-	    f = new RenderLineEdit(view, _form, _maxLen, _size, true);
+	    f = new RenderLineEdit(view, this);
 	    break;
 	}
 	case CHECKBOX:
 	{
-	    f = new RenderCheckBox(view, _form);
+	    f = new RenderCheckBox(view, this);
 	    f->setChecked(m_checked);
 	    break;
 	}
 	case RADIO:
 	{
-	    f = new RenderRadioButton(view, _form);
+	    f = new RenderRadioButton(view, this);
 	    f->setChecked(m_checked);
 	    break;
 	}
 	case SUBMIT:
 	{
-	    f = new RenderSubmitButton(view, _form, this);
+	    f = new RenderSubmitButton(view, this);
 	    break;
 	}
 	case IMAGE:
 	{
-	    RenderImageButton *i = new RenderImageButton(view, _form, this);
+	    RenderImageButton *i = new RenderImageButton(view, this);
 	    i->setImageUrl(_src, static_cast<HTMLDocumentImpl *>(document)->URL(),
 	                   static_cast<HTMLDocumentImpl *>(document)->docLoader());
 	    f = i;
@@ -675,32 +687,31 @@ void HTMLInputElementImpl::attach(KHTMLView *_view)
 	}
 	case RESET:
 	{
-	    f = new RenderResetButton(view, _form, this);
+	    f = new RenderResetButton(view, this);
 	    break;
 	}
 	case FILE:
         {
-            f = new RenderFileButton(view, _form, _maxLen, _size);
+            f = new RenderFileButton(view, this);
             break;
         }
 	case HIDDEN:
         {
-            f = new RenderHiddenButton(view, _form);
+            f = new RenderHiddenButton(view, this);
             break;
         }
 	case BUTTON:
 	{
-	    f = new RenderPushButton(view, _form, this);
+	    f = new RenderPushButton(view, this);
 	    break;
 	}
 	}
 	if (f)
 	{
-	    f->setName(_name);
-	    f->setValue(_value);
-	    f->setEnabled(!m_disabled);
-            f->setReadonly(m_readonly);
-            f->setGenericFormElement(this);
+	    f->setName(_name); // ### remove render's knowledge of this
+	    f->setValue(_value); // ### remove
+	    f->setEnabled(!m_disabled); // ### remove render's knowledge of this
+            f->setReadonly(m_readonly); // ### remove render's knowledge of this
 	
     	    m_render = f;
 	    m_render->setStyle(m_style);
@@ -806,16 +817,13 @@ DOMString HTMLSelectElementImpl::type() const
 
 long HTMLSelectElementImpl::selectedIndex() const
 {
-    kdDebug(6040) << "HTMLSelectElementImpl::selectedIndex(): m_selectedIndex = " << m_selectedIndex << endl;
     return m_selectedIndex;
 }
 
-void HTMLSelectElementImpl::setSelectedIndex( long  index, bool updateRender)
+void HTMLSelectElementImpl::setSelectedIndex( long  index )
 {
-    if (m_render && updateRender)
-	static_cast<RenderSelect*>(m_render)->setSelectedIndex(index);
-    else
-	m_selectedIndex = index;
+    m_selectedIndex = index;
+    setChanged(true);
 }
 
 long HTMLSelectElementImpl::length() const
@@ -825,22 +833,6 @@ long HTMLSelectElementImpl::length() const
     for (child = firstChild(); child; child = child->nextSibling())
 	len++;
     return len;
-}
-
-void HTMLSelectElementImpl::setSize( long  )
-{
-    // ###
-}
-
-long HTMLSelectElementImpl::tabIndex() const
-{
-    // ###
-    return 0;
-}
-
-void HTMLSelectElementImpl::setTabIndex( long  )
-{
-    // ###
 }
 
 void HTMLSelectElementImpl::add( const HTMLElement &/*element*/, const HTMLElement &/*before*/ )
@@ -875,7 +867,7 @@ NodeImpl *HTMLSelectElementImpl::insertBefore ( NodeImpl *newChild, NodeImpl *re
 {
     NodeImpl *result = HTMLGenericFormElementImpl::insertBefore(newChild,refChild);
     if (m_render)
-	static_cast<RenderSelect*>(m_render)->recalcOptions();
+	static_cast<RenderSelect*>(m_render)->setOptionsChanged(true);
     return result;
 }
 
@@ -883,7 +875,7 @@ NodeImpl *HTMLSelectElementImpl::replaceChild ( NodeImpl *newChild, NodeImpl *ol
 {
     NodeImpl *result = HTMLGenericFormElementImpl::replaceChild(newChild,oldChild);
     if (m_render)
-	static_cast<RenderSelect*>(m_render)->recalcOptions();
+	static_cast<RenderSelect*>(m_render)->setOptionsChanged(true);
     return result;
 }
 
@@ -891,7 +883,7 @@ NodeImpl *HTMLSelectElementImpl::removeChild ( NodeImpl *oldChild )
 {
     NodeImpl *result = HTMLGenericFormElementImpl::removeChild(oldChild);
     if (m_render)
-	static_cast<RenderSelect*>(m_render)->recalcOptions();
+	static_cast<RenderSelect*>(m_render)->setOptionsChanged(true);
     return result;
 }
 
@@ -899,7 +891,8 @@ NodeImpl *HTMLSelectElementImpl::appendChild ( NodeImpl *newChild )
 {
     NodeImpl *result = HTMLGenericFormElementImpl::appendChild(newChild);
     if (m_render)
-	static_cast<RenderSelect*>(m_render)->recalcOptions();
+	static_cast<RenderSelect*>(m_render)->setOptionsChanged(true);
+    setChanged(true);
     return result;
 }
 
@@ -909,15 +902,13 @@ void HTMLSelectElementImpl::parseAttribute(AttrImpl *attr)
     {
     case ATTR_SIZE:
 	m_size = attr->val()->toInt();
-	// ### update renderer
 	break;
     case ATTR_MULTIPLE:
-	m_multiple = true;
-	// ### update render	
+	m_multiple = (attr->val() != 0);
 	break;
     case ATTR_TABINDEX:
     case ATTR_ACCESSKEY:
-	// ignore for the moment
+	// ### ignore for the moment
 	break;
     case ATTR_ONFOCUS:
     case ATTR_ONBLUR:
@@ -926,7 +917,7 @@ void HTMLSelectElementImpl::parseAttribute(AttrImpl *attr)
 	// ###
 	break;
     case ATTR_NAME:
-	// handled by parent...
+	// handled by parent... ### - is this correct ?
     default:
 	HTMLGenericFormElementImpl::parseAttribute(attr);
     }
@@ -940,14 +931,12 @@ void HTMLSelectElementImpl::attach(KHTMLView *_view)
     khtml::RenderObject *r = _parent->renderer();
     if(r)
     {
-        RenderSelect *f = new RenderSelect(m_size, m_multiple,
-                                           view, _form, this);
+        RenderSelect *f = new RenderSelect(view, this);
 	if (f)
 	{
 	    f->setName(_name);
             f->setReadonly(m_readonly);
             f->setEnabled(!m_disabled);
-            f->setGenericFormElement(this);
 
     	    m_render = f;
 	    m_render->setStyle(m_style);
@@ -1007,14 +996,22 @@ NodeImpl *HTMLOptGroupElementImpl::appendChild ( NodeImpl *newChild )
     return result;
 }
 
+void HTMLOptGroupElementImpl::parseAttribute(AttrImpl *attr)
+{
+    HTMLGenericFormElementImpl::parseAttribute(attr);
+    recalcSelectOptions();
+}
+
 void HTMLOptGroupElementImpl::recalcSelectOptions()
 {
     NodeImpl *select = parentNode();
     while (select && select->id() != ID_SELECT)
 	select = select->parentNode();
     if (select) {
+	// ### also do this for other changes to optgroup and options
+	select->setChanged(true);
 	if (select->renderer())
-	    static_cast<RenderSelect*>(select->renderer())->recalcOptions();
+	    static_cast<RenderSelect*>(select->renderer())->setOptionsChanged(true);
     }
 }
 
@@ -1044,9 +1041,11 @@ ushort HTMLOptionElementImpl::id() const
 
 DOMString HTMLOptionElementImpl::text() const
 {
-//    if(firstChild() && firstChild()->id() == ID
-    // ###
-    return DOMString();
+    if(firstChild() && firstChild()->nodeType() == Node::TEXT_NODE) {
+	return firstChild()->nodeValue();
+    }
+    else
+	return DOMString();
 }
 
 long HTMLOptionElementImpl::index() const
@@ -1057,6 +1056,7 @@ long HTMLOptionElementImpl::index() const
 
 void HTMLOptionElementImpl::setIndex( long  )
 {
+    // ###
 }
 
 void HTMLOptionElementImpl::parseAttribute(AttrImpl *attr)
@@ -1105,18 +1105,6 @@ ushort HTMLTextAreaElementImpl::id() const
     return ID_TEXTAREA;
 }
 
-long HTMLTextAreaElementImpl::tabIndex() const
-{
-    // ###
-    return 0;
-}
-
-
-void HTMLTextAreaElementImpl::setTabIndex( long  )
-{
-    // ###
-}
-
 DOMString HTMLTextAreaElementImpl::type() const
 {
     // ###
@@ -1151,10 +1139,10 @@ void HTMLTextAreaElementImpl::parseAttribute(AttrImpl *attr)
     switch(attr->attrId)
     {
     case ATTR_ROWS:
-        m_rows = attr->val()->toInt();
+        m_rows = attr->val() ? attr->val()->toInt() : 3;
         break;
     case ATTR_COLS:
-        m_cols = attr->val()->toInt();
+        m_cols = attr->val() ? attr->val()->toInt() : 60;
         break;
     case ATTR_WRAP:
         if ( strcasecmp( attr->value(), "virtual" ) == 0 )
@@ -1189,14 +1177,13 @@ void HTMLTextAreaElementImpl::attach(KHTMLView *_view)
     khtml::RenderObject *r = _parent->renderer();
     if(r)
     {
-	RenderTextArea *f = new RenderTextArea(m_wrap, view, _form);
+	RenderTextArea *f = new RenderTextArea(view, this);
 
 	if (f)
 	{
 	    f->setName(_name);
             f->setReadonly(m_readonly);
 	    f->setEnabled(!m_disabled);
-            f->setGenericFormElement(this);
 
     	    m_render = f;
 	    m_render->setStyle(m_style);

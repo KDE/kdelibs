@@ -19,7 +19,6 @@
 "khtml::RenderResetButton",
 "khtml::RenderPushButton",
 "khtml::RenderLineEdit",
-"khtml::ccRenderButton",
 "khtml::RenderFieldset",
 "khtml::RenderFileButton",
 "khtml::RenderLabel",

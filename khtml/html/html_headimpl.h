@@ -95,9 +95,6 @@ public:
 
     StyleSheetImpl *sheet() { return m_sheet; }
 
-    bool disabled() const;
-    void setDisabled( bool );
-
     // overload from HTMLElementImpl
     virtual void attach(KHTMLView *w);
     virtual void parseAttribute(AttrImpl *attr);
@@ -155,9 +152,6 @@ public:
 
     virtual tagStatus startTag() { return SCRIPTStartTag; }
     virtual tagStatus endTag() { return SCRIPTEndTag; }
-    bool defer() const;
-
-    void setDefer( bool );
 };
 
 // -------------------------------------------------------------------------
@@ -174,9 +168,6 @@ public:
 
     virtual tagStatus startTag() { return STYLEStartTag; }
     virtual tagStatus endTag() { return STYLEEndTag; }
-
-    bool disabled() const;
-    void setDisabled( bool );
 
     StyleSheetImpl *sheet() { return m_sheet; }
 

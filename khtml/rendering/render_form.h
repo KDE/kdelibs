@@ -60,15 +60,12 @@ class RenderFormElement : public khtml::RenderWidget
 {
     Q_OBJECT
 public:
-    RenderFormElement(QScrollView *view,
-                      HTMLFormElementImpl *form);
+    RenderFormElement(QScrollView *view, HTMLGenericFormElementImpl *element);
     virtual ~RenderFormElement();
 
     virtual const char *renderName() const { return "RenderForm"; }
 
     HTMLFormElementImpl *form() { return m_form; }
-    void setGenericFormElement(HTMLGenericFormElementImpl *gform)
-    { m_gform = gform; }
 
     virtual bool isRendered() { return true; }
 
@@ -123,7 +120,7 @@ protected:
     DOMString m_name;
     DOMString m_value;
     HTMLFormElementImpl *m_form;
-    HTMLGenericFormElementImpl *m_gform;
+    HTMLGenericFormElementImpl *m_element;
     bool m_readonly;
 };
 
@@ -135,8 +132,7 @@ class RenderButton : public RenderFormElement
 {
     Q_OBJECT
 public:
-    RenderButton(QScrollView *view,
-                 HTMLFormElementImpl *form);
+    RenderButton(QScrollView *view, HTMLGenericFormElementImpl *element);
 
     virtual const char *renderName() const { return "RenderButton"; }
 
@@ -149,8 +145,7 @@ public:
 class RenderHiddenButton : public RenderButton
 {
 public:
-    RenderHiddenButton(QScrollView *view,
-                       HTMLFormElementImpl *form);
+    RenderHiddenButton(QScrollView *view, HTMLInputElementImpl *element);
 
     virtual const char *renderName() const { return "RenderHiddenButton"; }
     virtual Type type() { return HiddenButton; }
@@ -164,19 +159,21 @@ public:
 
 class RenderCheckBox : public RenderButton
 {
+    Q_OBJECT
 public:
-    RenderCheckBox(QScrollView *view,
-                   HTMLFormElementImpl *form);
+    RenderCheckBox(QScrollView *view, HTMLInputElementImpl *element);
 
     virtual const char *renderName() const { return "RenderCheckBox"; }
     virtual Type type() { return CheckBox; }
 
     virtual QCString encoding();
     virtual void reset();
-    virtual void setChecked(bool);
 
     virtual QString state();
     virtual void restoreState(const QString &);
+    virtual void layout(bool deep = false);
+public slots:
+    virtual void slotStateChanged(int state);
 };
 
 
@@ -186,7 +183,7 @@ class RenderRadioButton : public RenderButton
 {
     Q_OBJECT
 public:
-    RenderRadioButton(QScrollView *view, HTMLFormElementImpl *form);
+    RenderRadioButton(QScrollView *view, HTMLInputElementImpl *element);
 
     virtual const char *renderName() const { return "RenderRadioButton"; }
     virtual Type type() { return RadioButton; }
@@ -197,6 +194,7 @@ public:
 
     virtual QString state();
     virtual void restoreState(const QString &);
+    virtual void layout(bool deep = false);
 
  public slots:	
     void slotClicked();
@@ -209,25 +207,24 @@ class RenderSubmitButton : public RenderButton
 {
     Q_OBJECT
 public:
-    RenderSubmitButton(QScrollView *view, HTMLFormElementImpl *form,
-		      HTMLInputElementImpl *domParent);
+    RenderSubmitButton(QScrollView *view, HTMLInputElementImpl *element);
     virtual ~RenderSubmitButton();
 
     virtual const char *renderName() const { return "RenderButton"; }
 
     virtual Type type() { return SubmitButton; }
+    virtual QString defaultLabel();
 
     virtual QCString encoding();
-    virtual void setValue(const DOMString &value);
 
     virtual void reset();
+    virtual void layout(bool deep = false);
 
 public slots:	
     virtual void slotClicked();
 
 protected:
     bool m_clicked;
-    HTMLInputElementImpl *m_domParent; // so we can trigger events
 };
 
 // -------------------------------------------------------------------------
@@ -235,8 +232,7 @@ protected:
 class RenderImageButton : public RenderSubmitButton
 {
 public:
-    RenderImageButton(QScrollView *view, HTMLFormElementImpl *form,
-		      HTMLInputElementImpl *domParent);
+    RenderImageButton(QScrollView *view, HTMLInputElementImpl *element);
     virtual ~RenderImageButton();
 
     virtual const char *renderName() const { return "RenderSubmitButton"; }
@@ -256,11 +252,10 @@ public:
 class RenderResetButton : public RenderSubmitButton
 {
 public:
-    RenderResetButton(QScrollView *view, HTMLFormElementImpl *form,
-		      HTMLInputElementImpl *domParent);
+    RenderResetButton(QScrollView *view, HTMLInputElementImpl *element);
     virtual ~RenderResetButton();
 
-    virtual void setValue(const DOMString &value);
+    virtual QString defaultLabel();
     virtual void slotClicked();
 };
 
@@ -271,13 +266,12 @@ public:
 class RenderPushButton : public RenderSubmitButton
 {
 public:
-    RenderPushButton(QScrollView *view, HTMLFormElementImpl *form,
-		      HTMLInputElementImpl *domParent);
+    RenderPushButton(QScrollView *view, HTMLInputElementImpl *element);
     virtual ~RenderPushButton();
 
     virtual Type type() { return PushButton; }
+    virtual QString defaultLabel();
 
-    virtual void setValue(const DOMString &value);
     virtual void slotClicked();
 };
 
@@ -288,9 +282,7 @@ class RenderLineEdit : public RenderFormElement
 {
     Q_OBJECT
 public:
-    RenderLineEdit(QScrollView *view,
-                   HTMLFormElementImpl *form, int maxLen, int size,
-                   bool passwd = false);
+    RenderLineEdit(QScrollView *view, HTMLInputElementImpl *element);
 
     virtual Type type() { return LineEdit; }
     virtual QCString encoding();
@@ -299,64 +291,22 @@ public:
 
     virtual void reset();
 
-    virtual void setValue(const DOMString &value);
     virtual QString state();
     virtual void restoreState(const QString &);
 
     virtual const char *renderName() const { return "RenderLineEdit"; }
 
-protected:
-
-    int m_size;
-
 public slots:	
     void slotReturnPressed();
+    void slotTextChanged(const QString &string);
 };
-
-
-// -------------------------------------------------------------------------
-
-class ccRenderButton : public RenderFormElement
-{
-public:
-    ccRenderButton(QScrollView *view,
-                   HTMLFormElementImpl* form);
-
-    virtual const char *renderName() const { return "RenderFormElement"; }
-
-    virtual ~ccRenderButton();
-
-    enum typeEnum {
-	SUBMIT,
-	RESET,
-	BUTTON
-    };
-
-    virtual QCString encoding();
-
-    virtual void reset();
-    virtual void print(QPainter *, int, int, int, int, int, int);
-
-    //public slots:
-    void slotSubmit();
-
-protected:
-    DOMString _value;
-    bool _clicked;
-    typeEnum _type;
-    QString currValue;
-    QPixmap pixmap;
-    bool dirty;
-};
-
 
 // -------------------------------------------------------------------------
 
 class RenderFieldset : public RenderFormElement
 {
 public:
-    RenderFieldset(QScrollView *view,
-                   HTMLFormElementImpl* form);
+    RenderFieldset(QScrollView *view, HTMLGenericFormElementImpl *element);
     virtual ~RenderFieldset();
 
     virtual const char *renderName() const { return "RenderFieldSet"; }
@@ -369,8 +319,7 @@ class RenderFileButton : public RenderFormElement
 {
     Q_OBJECT
 public:
-    RenderFileButton(QScrollView *view, HTMLFormElementImpl *form, 
-                     int maxLen, int size);
+    RenderFileButton(QScrollView *view, HTMLInputElementImpl *element);
     virtual ~RenderFileButton();
 
     virtual const char *renderName() const { return "RenderFileButton"; }
@@ -383,19 +332,18 @@ public:
 
     virtual void reset();
 
-    virtual void setValue(const DOMString &value);
     virtual QString state();
     virtual void restoreState(const QString &);
 
 public slots:	
     virtual void slotClicked();
     virtual void slotReturnPressed();
+    virtual void slotTextChanged(const QString &string);
 
 protected:
     bool m_clicked;
     QLineEdit   *m_edit;
     QPushButton *m_button;
-    int m_size;
 };
 
 
@@ -404,8 +352,7 @@ protected:
 class RenderLabel : public RenderFormElement
 {
 public:
-    RenderLabel(QScrollView *view,
-                HTMLFormElementImpl *form);
+    RenderLabel(QScrollView *view, HTMLGenericFormElementImpl *element);
     virtual ~RenderLabel();
 
     virtual const char *renderName() const { return "RenderLabel"; }
@@ -417,8 +364,7 @@ public:
 class RenderLegend : public RenderFormElement
 {
 public:
-    RenderLegend(QScrollView *view,
-        HTMLFormElementImpl *form);
+    RenderLegend(QScrollView *view, HTMLGenericFormElementImpl *element);
     virtual ~RenderLegend();
 
     virtual const char *renderName() const { return "RenderLegend"; }
@@ -431,8 +377,7 @@ class RenderSelect : public RenderFormElement
 {
     Q_OBJECT
 public:
-    RenderSelect(int size, bool multiple, QScrollView *view,
-                 HTMLFormElementImpl *form, HTMLSelectElementImpl *domParent);
+    RenderSelect(QScrollView *view, HTMLSelectElementImpl *element);
 
     virtual const char *renderName() const { return "RenderSelect"; }
 
@@ -447,14 +392,20 @@ public:
     virtual QString state();
     virtual void restoreState(const QString &);
 
-    void recalcOptions();
-    void setSelectedIndex(long index);
+    void setOptionsChanged(bool _optionsChanged);
+
+    // get the actual listbox index of the optionIndexth option
+    int optionToListIndex(int optionIndex);
+    // reverse of optionToListIndex - get optionIndex from listboxIndex
+    int listToOptionIndex(int listIndex);
 
 protected:
     unsigned  m_size;
     bool m_multiple;
-    HTMLSelectElementImpl *m_domParent;
     QIntDict<HTMLOptionElementImpl> listOptions;
+    bool m_listBox;
+    bool m_optionsChanged;
+    int m_selectedIndex; // cached value from element
 
 protected slots:
     void slotActivated(int index);
@@ -466,8 +417,7 @@ protected slots:
 class RenderTextArea : public RenderFormElement
 {
 public:
-    RenderTextArea(int wrap, QScrollView *view,
-                   HTMLFormElementImpl *form);
+    RenderTextArea(QScrollView *view, HTMLTextAreaElementImpl *element);
 
     virtual const char *renderName() const { return "RenderTextArea"; }
 

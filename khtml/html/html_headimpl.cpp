@@ -146,16 +146,6 @@ ushort HTMLLinkElementImpl::id() const
     return ID_LINK;
 }
 
-bool HTMLLinkElementImpl::disabled() const
-{
-  // ###
-  return false;
-}
-
-void HTMLLinkElementImpl::setDisabled( bool )
-{
-}
-
 // other stuff...
 void HTMLLinkElementImpl::attach(KHTMLView *v)
 {
@@ -195,6 +185,8 @@ void HTMLLinkElementImpl::parseAttribute(AttrImpl *attr)
 	m_type = attr->value(); break;
     case ATTR_MEDIA:
 	m_media = attr->value(); break;
+    case ATTR_DISABLED:
+ 	// ###
     default:
 	HTMLElementImpl::parseAttribute(attr);
     }
@@ -305,16 +297,6 @@ ushort HTMLScriptElementImpl::id() const
     return ID_SCRIPT;
 }
 
-bool HTMLScriptElementImpl::defer() const
-{
-  // ###
-  return false;
-}
-
-void HTMLScriptElementImpl::setDefer( bool )
-{
-}
-
 // -------------------------------------------------------------------------
 
 HTMLStyleElementImpl::HTMLStyleElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc)
@@ -335,16 +317,6 @@ const DOMString HTMLStyleElementImpl::nodeName() const
 ushort HTMLStyleElementImpl::id() const
 {
     return ID_STYLE;
-}
-
-bool HTMLStyleElementImpl::disabled() const
-{
-    // ###
-    return false;
-}
-
-void HTMLStyleElementImpl::setDisabled( bool )
-{
 }
 
 // other stuff...

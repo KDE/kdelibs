@@ -210,16 +210,12 @@ public:
     virtual tagStatus startTag() { return INPUTStartTag; }
     virtual tagStatus endTag() { return INPUTEndTag; }
 
-    bool checked() const { return m_checked; }
-    void setChecked(bool b) { m_checked = b; }
-
+    bool checked() { return m_checked; }
     long maxLength() const { return _maxLen; }
-    void setMaxLength( long );
-
+    int size() const { return _size; }
     long tabIndex() const;
-    void setTabIndex( long );
-
     DOMString type() const;
+    DOMString value() const { return _value; }
 
     QString state();
 
@@ -237,6 +233,7 @@ protected:
     DOMString _value;
     QString currValue;
     bool m_checked;
+    // ### move _size and _maxLen to render objects?
     int _maxLen;
     int _size;
     DOMString _src;
@@ -293,15 +290,13 @@ public:
     DOMString type() const;
 
     long selectedIndex() const;
-    void setSelectedIndex( long index, bool updateRender = true);
+    void setSelectedIndex( long index );
 
     long length() const;
 
     long size() const { return m_size; }
-    void setSize( long );
 
-    long tabIndex() const;
-    void setTabIndex( long );
+    bool multiple() { return m_multiple; }
 
     void add ( const HTMLElement &element, const HTMLElement &before );
     void remove ( long index );
@@ -347,6 +342,7 @@ public:
     virtual NodeImpl *replaceChild ( NodeImpl *newChild, NodeImpl *oldChild );
     virtual NodeImpl *removeChild ( NodeImpl *oldChild );
     virtual NodeImpl *appendChild ( NodeImpl *newChild );
+    virtual void parseAttribute(AttrImpl *attr);
     void recalcSelectOptions();
 };
 
@@ -370,6 +366,7 @@ public:
     long index() const;
     void setIndex( long );
     virtual void parseAttribute(AttrImpl *attr);
+    DOMString value() { return m_value; }
 
     bool selected() const;
 
@@ -377,7 +374,7 @@ protected:
     bool m_selected;
     DOMString m_value;
 
-    friend khtml::RenderSelect;
+//    friend khtml::RenderSelect;
 };
 
 
@@ -402,13 +399,10 @@ public:
     virtual tagStatus endTag() { return TEXTAREAEndTag; }
 
     long cols() const { return m_cols; }
-    void setCols( long cols) { m_cols = cols; }
 
     long rows() const { return m_rows; }
-    void setRows( long rows ) { m_rows = rows; }
 
-    long tabIndex() const;
-    void setTabIndex( long );
+    WrapMethod wrap() { return m_wrap; }
 
     DOMString type() const;
 

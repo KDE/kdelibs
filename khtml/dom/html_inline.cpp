@@ -165,14 +165,15 @@ void HTMLAnchorElement::setShape( const DOMString &value )
 long HTMLAnchorElement::tabIndex() const
 {
     if(!impl) return 0;
-    return ((HTMLAnchorElementImpl *)impl)->tabIndex();
+    return ((ElementImpl *)impl)->getAttribute(ATTR_TABINDEX).toInt();
 }
 
 void HTMLAnchorElement::setTabIndex( long _tabIndex )
 {
-
-    if(impl)
-        ((HTMLAnchorElementImpl *)impl)->setTabIndex( _tabIndex );
+    if(impl) {
+	DOMString value(QString::number(_tabIndex));
+        ((ElementImpl *)impl)->setAttribute(ATTR_TABINDEX,value);
+    }
 }
 
 DOMString HTMLAnchorElement::target() const

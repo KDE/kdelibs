@@ -520,16 +520,16 @@ bool KHTMLPart::executeScript( const QString &script )
     // ### perhaps move this into HTMLDocumentImpl?
     QListIterator<NodeImpl> it(d->m_doc->changedNodes);
     for (; it.current(); ++it) {
-	if (it.current()->changed()) {
-	    it.current()->recalcStyle();
-	    if (it.current()->renderer())
-		it.current()->renderer()->setLayouted(false);
-	}
+	it.current()->recalcStyle();
+	if (it.current()->renderer())
+	    it.current()->renderer()->setLayouted(false);
     }
     it.toFirst();
-    for (; it.current(); ++it)
-	if (it.current()->changed() && it.current()->renderer())
-	    it.current()->renderer()->updateSize();
+    for (; it.current(); ++it) {
+	if (it.current()->renderer())
+		it.current()->renderer()->updateSize();
+	it.current()->setChanged(false);
+    }
     d->m_doc->changedNodes.clear();
 
     return ret;

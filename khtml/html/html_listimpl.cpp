@@ -106,17 +106,6 @@ ushort HTMLOListElementImpl::id() const
     return ID_OL;
 }
 
-long HTMLOListElementImpl::start() const
-{
-    // ###
-    return 0;
-}
-
-void HTMLOListElementImpl::setStart( long )
-{
-    // ###
-}
-
 void HTMLOListElementImpl::parseAttribute(AttrImpl *attr)
 {
     switch(attr->attrId)
@@ -133,6 +122,8 @@ void HTMLOListElementImpl::parseAttribute(AttrImpl *attr)
         else if ( strcmp( attr->value(), "1" ) == 0 )
 	    addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "decimal", false);
         break;
+    case ATTR_START:
+	// ###
     default:
         HTMLUListElementImpl::parseAttribute(attr);
     }
@@ -156,22 +147,21 @@ ushort HTMLLIElementImpl::id() const
     return ID_LI;
 }
 
-long HTMLLIElementImpl::value() const
-{
-    if(m_render && m_render->isListItem())
-    {
-	RenderListItem *list = static_cast<RenderListItem *>(m_render);
-	return list->value();
-    }
-    return 0;
-}
 
-void HTMLLIElementImpl::setValue( long v )
-{
-    if(m_render && m_render->isListItem())
+void HTMLLIElementImpl::parseAttribute(AttrImpl *attr) {
+
+    switch(attr->attrId)
     {
-	RenderListItem *list = static_cast<RenderListItem *>(m_render);
-	list->setValue(v);
+    case ATTR_VALUE:
+	if(m_render && m_render->isListItem())
+	{
+	    RenderListItem *list = static_cast<RenderListItem *>(m_render);
+	    // ### work out what to do when attribute removed - use default of some sort?
+	    long v = attr->val() ? attr->val()->toInt() : 0;
+	    list->setValue(v);
+	}
+    default:
+        HTMLElementImpl::parseAttribute(attr);
     }
 }
 

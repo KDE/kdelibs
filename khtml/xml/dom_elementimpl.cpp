@@ -726,7 +726,8 @@ NodeImpl *NamedAttrMapImpl::removeNamedItem ( const DOMString &name )
     delete attrs;
     attrs = newAttrs;
 	
-    AttrImpl a(name,"",element->ownerDocument());
+    DOMString nullStr;
+    AttrImpl a(name,nullStr,element->ownerDocument());
     element->parseAttribute(&a);
     element->setChanged(true);
 
@@ -772,7 +773,8 @@ AttrImpl *NamedAttrMapImpl::removeIdItem ( int id )
     delete attrs;
     attrs = newAttrs;
 	
-    AttrImpl a(id,"",element->ownerDocument());
+    DOMString nullStr;
+    AttrImpl a(id,nullStr,element->ownerDocument());
     element->parseAttribute(&a);
     element->setChanged(true);
 

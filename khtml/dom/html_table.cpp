@@ -195,14 +195,15 @@ void HTMLTableCellElement::setChOff( const DOMString &value )
 long HTMLTableCellElement::colSpan() const
 {
     if(!impl) return 0;
-    return ((HTMLTableCellElementImpl *)impl)->colSpan();
+    return ((ElementImpl *)impl)->getAttribute(ATTR_COLSPAN).toInt();
 }
 
 void HTMLTableCellElement::setColSpan( long _colSpan )
 {
-
-    if(impl)
-        ((HTMLTableCellElementImpl *)impl)->setColSpan( _colSpan );
+    if(impl) {
+	DOMString value(QString::number(_colSpan));
+        ((ElementImpl *)impl)->setAttribute(ATTR_COLSPAN,value);
+    }
 }
 
 DOMString HTMLTableCellElement::headers() const
@@ -235,26 +236,22 @@ bool HTMLTableCellElement::noWrap() const
 
 void HTMLTableCellElement::setNoWrap( bool _noWrap )
 {
-   if(impl)
-    {
-	DOMString str;
-	if( _noWrap )
-	    str = "";
-	((ElementImpl *)impl)->setAttribute(ATTR_NOWRAP, str);
-    }
+    if(impl)
+	((ElementImpl *)impl)->setAttribute(ATTR_NOWRAP, _noWrap ? "" : 0);
 }
 
 long HTMLTableCellElement::rowSpan() const
 {
     if(!impl) return 0;
-    return ((HTMLTableCellElementImpl *)impl)->rowSpan();
+    return ((ElementImpl *)impl)->getAttribute(ATTR_ROWSPAN).toInt();
 }
 
 void HTMLTableCellElement::setRowSpan( long _rowSpan )
 {
-
-    if(impl)
-        ((HTMLTableCellElementImpl *)impl)->setRowSpan( _rowSpan );
+    if(impl) {
+	DOMString value(QString::number(_rowSpan));
+        ((ElementImpl *)impl)->setAttribute(ATTR_ROWSPAN,value);
+    }
 }
 
 DOMString HTMLTableCellElement::scope() const
@@ -362,14 +359,15 @@ void HTMLTableColElement::setChOff( const DOMString &value )
 long HTMLTableColElement::span() const
 {
     if(!impl) return 0;
-    return ((HTMLTableColElementImpl *)impl)->span();
+    return ((ElementImpl *)impl)->getAttribute(ATTR_SPAN).toInt();
 }
 
 void HTMLTableColElement::setSpan( long _span )
 {
-
-    if(impl)
-        ((HTMLTableColElementImpl *)impl)->setSpan( _span );
+    if(impl) {
+	DOMString value(QString::number(_span));
+        ((ElementImpl *)impl)->setAttribute(ATTR_SPAN,value);
+    }
 }
 
 DOMString HTMLTableColElement::vAlign() const

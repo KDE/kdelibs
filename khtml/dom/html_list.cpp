@@ -179,14 +179,15 @@ void HTMLLIElement::setType( const DOMString &value )
 long HTMLLIElement::value() const
 {
     if(!impl) return 0;
-    return ((HTMLLIElementImpl *)impl)->value();
+    return ((ElementImpl *)impl)->getAttribute(ATTR_VALUE).toInt();
 }
 
 void HTMLLIElement::setValue( long _value )
 {
-
-    if(impl)
-        ((HTMLLIElementImpl *)impl)->setValue( _value );
+    if(impl) {
+	DOMString value(QString::number(_value));
+        ((ElementImpl *)impl)->setAttribute(ATTR_VALUE,value);
+    }
 }
 
 // --------------------------------------------------------------------------
@@ -296,14 +297,16 @@ void HTMLOListElement::setCompact( bool _compact )
 long HTMLOListElement::start() const
 {
     if(!impl) return 0;
-    return ((HTMLOListElementImpl *)impl)->start();
+    return ((ElementImpl *)impl)->getAttribute(ATTR_START).toInt();
 }
 
 void HTMLOListElement::setStart( long _start )
 {
 
-    if(impl)
-        ((HTMLOListElementImpl *)impl)->setStart( _start );
+    if(impl) {
+	DOMString value(QString::number(_start));
+        ((ElementImpl *)impl)->setAttribute(ATTR_START,value);
+    }
 }
 
 DOMString HTMLOListElement::type() const

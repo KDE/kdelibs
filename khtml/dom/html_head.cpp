@@ -175,14 +175,13 @@ HTMLLinkElement::~HTMLLinkElement()
 bool HTMLLinkElement::disabled() const
 {
     if(!impl) return 0;
-    return ((HTMLLinkElementImpl *)impl)->disabled();
+    return !((ElementImpl *)impl)->getAttribute(ATTR_DISABLED).isNull();
 }
 
 void HTMLLinkElement::setDisabled( bool _disabled )
 {
-
     if(impl)
-        ((HTMLLinkElementImpl *)impl)->setDisabled( _disabled );
+        ((ElementImpl *)impl)->setAttribute(ATTR_DISABLED, _disabled ? "" : 0);
 }
 
 DOMString HTMLLinkElement::charset() const
@@ -434,14 +433,14 @@ void HTMLScriptElement::setCharset( const DOMString &value )
 bool HTMLScriptElement::defer() const
 {
     if(!impl) return 0;
-    return ((HTMLScriptElementImpl *)impl)->defer();
+    return !((ElementImpl *)impl)->getAttribute(ATTR_DEFER).isNull();
 }
 
 void HTMLScriptElement::setDefer( bool _defer )
 {
 
     if(impl)
-        ((HTMLScriptElementImpl *)impl)->setDefer( _defer );
+        ((ElementImpl *)impl)->setAttribute(ATTR_DEFER,_defer ? "" : 0);
 }
 
 DOMString HTMLScriptElement::src() const
@@ -504,14 +503,14 @@ HTMLStyleElement::~HTMLStyleElement()
 bool HTMLStyleElement::disabled() const
 {
     if(!impl) return 0;
-    return ((HTMLStyleElementImpl *)impl)->disabled();
+    return !((HTMLStyleElementImpl *)impl)->getAttribute(ATTR_DISABLED).isNull();
 }
 
 void HTMLStyleElement::setDisabled( bool _disabled )
 {
 
     if(impl)
-        ((HTMLStyleElementImpl *)impl)->setDisabled( _disabled );
+        ((ElementImpl *)impl)->setAttribute(ATTR_DISABLED,_disabled ? "" : 0);
 }
 
 DOMString HTMLStyleElement::media() const

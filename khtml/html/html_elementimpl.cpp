@@ -155,13 +155,13 @@ void HTMLElementImpl::mouseEventHandler( int /*button*/, MouseEventType type, bo
 	break;
     }
 
-    if(id && !click) {
-    DOMString script = getAttribute(id);
-    if(script.length())
-    {
-	kdDebug( 6030 ) << "emit executeScript( " << script.string() << " )" << endl;
-	view->part()->executeScript( script.string() );
-    }
+    if(id != ATTR_ONCLICK) {
+	DOMString script = getAttribute(id);
+	if(script.length())
+	{
+	    kdDebug( 6030 ) << "emit executeScript( " << script.string() << " )" << endl;
+	    view->part()->executeScript( script.string() );
+	}
     }
 
     if(click)

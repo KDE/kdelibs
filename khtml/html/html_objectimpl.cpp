@@ -314,15 +314,6 @@ HTMLFormElementImpl *HTMLObjectElementImpl::form() const
   return 0;
 }
 
-long HTMLObjectElementImpl::tabIndex() const
-{
-  return 0;
-}
-
-void HTMLObjectElementImpl::setTabIndex( long  )
-{
-}
-
 void HTMLObjectElementImpl::parseAttribute(AttrImpl *attr)
 {
   DOM::DOMStringImpl *stringImpl = attr->val();
@@ -343,6 +334,8 @@ void HTMLObjectElementImpl::parseAttribute(AttrImpl *attr)
       break;
     case ATTR_CLASSID:
       classId = val;
+//    case ATTR_TABINDEX:
+	// ###
     default:
       HTMLElementImpl::parseAttribute( attr );
   }

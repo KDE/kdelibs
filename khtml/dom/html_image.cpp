@@ -139,14 +139,15 @@ void HTMLAreaElement::setShape( const DOMString &value )
 long HTMLAreaElement::tabIndex() const
 {
     if(!impl) return 0;
-    return ((HTMLAreaElementImpl *)impl)->tabIndex();
+    return ((ElementImpl *)impl)->getAttribute(ATTR_TABINDEX).toInt();
 }
 
 void HTMLAreaElement::setTabIndex( long _tabIndex )
 {
-
-    if(impl)
-        ((HTMLAreaElementImpl *)impl)->setTabIndex( _tabIndex );
+    if(impl) {
+	DOMString value(QString::number(_tabIndex));
+        ((ElementImpl *)impl)->setAttribute(ATTR_TABINDEX,value);
+    }
 }
 
 DOMString HTMLAreaElement::target() const

@@ -100,9 +100,6 @@ public:
     virtual tagStatus startTag() { return OLStartTag; }
     virtual tagStatus endTag() { return OLEndTag; }
 
-    long start() const;
-    void setStart( long );
-
     virtual void parseAttribute(AttrImpl *);
 
     virtual void attach(KHTMLView *);
@@ -122,8 +119,7 @@ public:
     virtual tagStatus startTag() { return LIStartTag; }
     virtual tagStatus endTag() { return LIEndTag; }
 
-    long value() const;
-    void setValue( long v );
+    virtual void parseAttribute(AttrImpl *attr);
 };
 
 // -------------------------------------------------------------------------

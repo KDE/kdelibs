@@ -318,11 +318,9 @@ void NodeImpl::setKeyboardFocus(ActivationState b)
 
 void NodeImpl::setChanged(bool b)
 {
-    b ? flags|=Changed : flags&=~Changed;
-//    if (b)
-//	applyChanges(true,true);
-    if (b && document)
+    if (b && !changed() && document)
 	document->changedNodes.append(this);
+    b ? flags|=Changed : flags&=~Changed;
 }
 
 //--------------------------------------------------------------------
@@ -443,6 +441,9 @@ NodeImpl *NodeBaseImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild )
     checkNoOwner(newChild);
     checkIsChild(refChild);
 
+    if(newChild->parentNode() == this)
+	removeChild(newChild);
+
     bool isFragment = newChild->nodeType() == Node::DOCUMENT_FRAGMENT_NODE;
     NodeImpl *nextChild;
     NodeImpl *child = isFragment ? newChild->firstChild() : newChild;
@@ -454,7 +455,7 @@ NodeImpl *NodeBaseImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild )
 	checkNoOwner(child);
 	if(!childAllowed(child))
 	    throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
-		
+	    		
 	// if already in the tree, remove it first!
 	NodeImpl *newParent = child->parentNode();
 	if(newParent)
@@ -575,6 +576,9 @@ NodeImpl *NodeBaseImpl::appendChild ( NodeImpl *newChild )
     checkSameDocument(newChild);
     checkNoOwner(newChild);
 
+    if(newChild->parentNode() == this)
+	removeChild(newChild);
+
     bool isFragment = newChild->nodeType() == Node::DOCUMENT_FRAGMENT_NODE;
     NodeImpl *nextChild;
     NodeImpl *child = isFragment ? newChild->firstChild() : newChild;
@@ -670,9 +674,6 @@ void NodeBaseImpl::checkNoOwner( NodeImpl *newChild )
   for( n = this; n != (NodeImpl *)document && n!= 0; n = n->parentNode() )
     if(n == newChild)
       throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
-
-  if(newChild->parentNode() == this)
-    removeChild(newChild);
 }
 
 // check for being child:

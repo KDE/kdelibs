@@ -27,7 +27,6 @@
 #include "kjs_text.h"
 #include "kjs_dom.h"
 #include "kjs_html.h"
-#include <iostream.h>
 
 using namespace KJS;
 

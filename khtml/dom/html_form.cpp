@@ -88,13 +88,7 @@ bool HTMLButtonElement::disabled() const
 
 void HTMLButtonElement::setDisabled( bool _disabled )
 {
-    if(impl)
-    {
-	DOMString str;
-	if( _disabled )
-	    str = "";
-	((ElementImpl *)impl)->setAttribute(ATTR_DISABLED, str);
-    }
+    if (impl) ((ElementImpl *)impl)->setAttribute(ATTR_DISABLED, _disabled ? "" : 0);
 }
 
 DOMString HTMLButtonElement::name() const
@@ -111,18 +105,15 @@ void HTMLButtonElement::setName( const DOMString &value )
 long HTMLButtonElement::tabIndex() const
 {
     if(!impl) return 0;
-    DOMString s = ((ElementImpl *)impl)->getAttribute(ATTR_TABINDEX);
-    return s.toInt();
+    return ((ElementImpl *)impl)->getAttribute(ATTR_TABINDEX).toInt();
 }
 
 void HTMLButtonElement::setTabIndex( long _tabIndex )
 {
-    if(!impl) return;
-
-    QString aStr;
-    aStr.sprintf("%ld", _tabIndex);
-    DOMString value(aStr);
-    ((ElementImpl *)impl)->setAttribute(ATTR_TABINDEX, value);
+    if (!impl) {
+	DOMString value(QString::number(_tabIndex));
+	((ElementImpl *)impl)->setAttribute(ATTR_TABINDEX, value);
+    }
 }
 
 DOMString HTMLButtonElement::type() const
@@ -364,10 +355,7 @@ void HTMLInputElement::setDefaultChecked( bool _defaultChecked )
 {
     if(impl)
     {
-	DOMString str;
-	if( _defaultChecked )
-	    str = "";
-	((ElementImpl *)impl)->setAttribute(ATTR_CHECKED, str);
+	((ElementImpl *)impl)->setAttribute(ATTR_CHECKED, _defaultChecked ? "" : 0);
     }
 }
 
@@ -424,13 +412,13 @@ void HTMLInputElement::setAlt( const DOMString &value )
 bool HTMLInputElement::checked() const
 {
     if(!impl) return 0;
-    return ((HTMLInputElementImpl *)impl)->checked();
+    return !((HTMLInputElementImpl *)impl)->getAttribute(ATTR_CHECKED).isNull();
 }
 
 void HTMLInputElement::setChecked( bool _checked )
 {
     if(impl)
-        ((HTMLInputElementImpl *)impl)->setChecked( _checked );
+        ((ElementImpl *)impl)->setAttribute(ATTR_CHECKED, _checked ? "" : 0);
 }
 
 bool HTMLInputElement::disabled() const
@@ -443,24 +431,22 @@ void HTMLInputElement::setDisabled( bool _disabled )
 {
     if(impl)
     {
-	DOMString str;
-	if( _disabled )
-	    str = "";
-	((ElementImpl *)impl)->setAttribute(ATTR_DISABLED, str);
+	((ElementImpl *)impl)->setAttribute(ATTR_DISABLED, _disabled ? "" : 0);
     }
 }
 
 long HTMLInputElement::maxLength() const
 {
     if(!impl) return 0;
-    return ((HTMLInputElementImpl *)impl)->maxLength();
+    return ((HTMLInputElementImpl *)impl)->getAttribute(ATTR_MAXLENGTH).toInt();
 }
 
 void HTMLInputElement::setMaxLength( long _maxLength )
 {
-
-    if(impl)
-        ((HTMLInputElementImpl *)impl)->setMaxLength( _maxLength );
+    if(impl) {
+        DOMString value(QString::number(_maxLength));
+        ((ElementImpl *)impl)->setAttribute(ATTR_MAXLENGTH,value);
+    }
 }
 
 DOMString HTMLInputElement::name() const
@@ -483,12 +469,7 @@ bool HTMLInputElement::readOnly() const
 void HTMLInputElement::setReadOnly( bool _readOnly )
 {
     if(impl)
-    {
-	DOMString str;
-	if( _readOnly )
-	    str = "";
-	((ElementImpl *)impl)->setAttribute(ATTR_READONLY, str);
-    }
+	((ElementImpl *)impl)->setAttribute(ATTR_READONLY, _readOnly ? "" : 0);
 }
 
 DOMString HTMLInputElement::size() const
@@ -516,14 +497,16 @@ void HTMLInputElement::setSrc( const DOMString &value )
 long HTMLInputElement::tabIndex() const
 {
     if(!impl) return 0;
-    return ((HTMLInputElementImpl *)impl)->tabIndex();
+    return ((HTMLInputElementImpl *)impl)->getAttribute(ATTR_TABINDEX).toInt();
 }
 
 void HTMLInputElement::setTabIndex( long _tabIndex )
 {
 
-    if(impl)
-        ((HTMLInputElementImpl *)impl)->setTabIndex( _tabIndex );
+    if(impl) {
+	DOMString value(QString::number(_tabIndex));
+        ((ElementImpl *)impl)->setAttribute(ATTR_TABINDEX,value);
+    }
 }
 
 DOMString HTMLInputElement::type() const
@@ -748,12 +731,7 @@ bool HTMLOptGroupElement::disabled() const
 void HTMLOptGroupElement::setDisabled( bool _disabled )
 {
     if(impl)
-    {
-	DOMString str;
-	if( _disabled )
-	    str = "";
-	((ElementImpl *)impl)->setAttribute(ATTR_DISABLED, str);
-    }
+	((ElementImpl *)impl)->setAttribute(ATTR_DISABLED, _disabled ? "" : 0);
 }
 
 DOMString HTMLOptGroupElement::label() const
@@ -816,9 +794,8 @@ long HTMLSelectElement::selectedIndex() const
 
 void HTMLSelectElement::setSelectedIndex( long _selectedIndex )
 {
-
     if(impl)
-        ((HTMLSelectElementImpl *)impl)->setSelectedIndex( _selectedIndex );
+        ((HTMLSelectElementImpl *)impl)->setSelectedIndex(_selectedIndex);
 }
 
 DOMString HTMLSelectElement::value() const
@@ -858,13 +835,7 @@ bool HTMLSelectElement::disabled() const
 
 void HTMLSelectElement::setDisabled( bool _disabled )
 {
-    if(impl)
-    {
-	DOMString str;
-	if( _disabled )
-	    str = "";
-	((ElementImpl *)impl)->setAttribute(ATTR_DISABLED, str);
-    }
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_DISABLED, _disabled ? "" : 0);
 }
 
 
@@ -876,13 +847,7 @@ bool HTMLSelectElement::multiple() const
 
 void HTMLSelectElement::setMultiple( bool _multiple )
 {
-    if(impl)
-    {
-	DOMString str;
-	if( _multiple )
-	    str = "";
-	((ElementImpl *)impl)->setAttribute(ATTR_MULTIPLE, str);
-    }
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_MULTIPLE, _multiple ? "" : 0);
 }
 
 DOMString HTMLSelectElement::name() const
@@ -899,27 +864,31 @@ void HTMLSelectElement::setName( const DOMString &value )
 long HTMLSelectElement::size() const
 {
     if(!impl) return 0;
-    return ((HTMLSelectElementImpl *)impl)->size();
+    return ((HTMLSelectElementImpl *)impl)->getAttribute(ATTR_SIZE).toInt();
 }
 
 void HTMLSelectElement::setSize( long _size )
 {
 
-    if(impl)
-        ((HTMLSelectElementImpl *)impl)->setSize( _size );
+    if(impl) {
+	DOMString value(QString::number(_size));
+        ((ElementImpl *)impl)->setAttribute(ATTR_SIZE,value);
+    }
 }
 
 long HTMLSelectElement::tabIndex() const
 {
     if(!impl) return 0;
-    return ((HTMLSelectElementImpl *)impl)->tabIndex();
+    return ((HTMLSelectElementImpl *)impl)->getAttribute(ATTR_TABINDEX).toInt();
 }
 
 void HTMLSelectElement::setTabIndex( long _tabIndex )
 {
 
-    if(impl)
-        ((HTMLSelectElementImpl *)impl)->setTabIndex( _tabIndex );
+    if(impl) {
+	DOMString value(QString::number(_tabIndex));
+        ((ElementImpl *)impl)->setAttribute(ATTR_TABINDEX,value);
+    }
 }
 
 void HTMLSelectElement::add( const HTMLElement &element, const HTMLElement &before )
@@ -1012,14 +981,16 @@ void HTMLTextAreaElement::setAccessKey( const DOMString &value )
 long HTMLTextAreaElement::cols() const
 {
     if(!impl) return 0;
-    return ((HTMLTextAreaElementImpl *)impl)->cols();
+    return ((HTMLTextAreaElementImpl *)impl)->getAttribute(ATTR_COLS).toInt();
 }
 
 void HTMLTextAreaElement::setCols( long _cols )
 {
 
-    if(impl)
-        ((HTMLTextAreaElementImpl *)impl)->setCols( _cols );
+    if(impl) {
+	DOMString value(QString::number(_cols));
+        ((ElementImpl *)impl)->setAttribute(ATTR_COLS,value);
+    }
 }
 
 bool HTMLTextAreaElement::disabled() const
@@ -1030,13 +1001,7 @@ bool HTMLTextAreaElement::disabled() const
 
 void HTMLTextAreaElement::setDisabled( bool _disabled )
 {
-    if(impl)
-    {
-	DOMString str;
-	if( _disabled )
-	    str = "";
-	((ElementImpl *)impl)->setAttribute(ATTR_DISABLED, str);
-    }
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_DISABLED, _disabled ? "" : 0);
 }
 
 DOMString HTMLTextAreaElement::name() const
@@ -1058,39 +1023,37 @@ bool HTMLTextAreaElement::readOnly() const
 
 void HTMLTextAreaElement::setReadOnly( bool _readOnly )
 {
-    if(impl)
-    {
-	DOMString str;
-	if( _readOnly )
-	    str = "";
-	((ElementImpl *)impl)->setAttribute(ATTR_READONLY, str);
-    }
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_READONLY, _readOnly ? "" : 0);
 }
 
 long HTMLTextAreaElement::rows() const
 {
     if(!impl) return 0;
-    return ((HTMLTextAreaElementImpl *)impl)->rows();
+    return ((HTMLTextAreaElementImpl *)impl)->getAttribute(ATTR_ROWS).toInt();
 }
 
 void HTMLTextAreaElement::setRows( long _rows )
 {
 
-    if(impl)
-        ((HTMLTextAreaElementImpl *)impl)->setRows( _rows );
+    if(impl) {
+	DOMString value(QString::number(_rows));
+        ((ElementImpl *)impl)->setAttribute(ATTR_ROWS,value);
+    }
 }
 
 long HTMLTextAreaElement::tabIndex() const
 {
     if(!impl) return 0;
-    return ((HTMLTextAreaElementImpl *)impl)->tabIndex();
+    return ((HTMLTextAreaElementImpl *)impl)->getAttribute(ATTR_TABINDEX).toInt();
 }
 
 void HTMLTextAreaElement::setTabIndex( long _tabIndex )
 {
 
-    if(impl)
-        ((HTMLTextAreaElementImpl *)impl)->setTabIndex( _tabIndex );
+    if(impl) {
+	DOMString value(QString::number(_tabIndex));
+        ((ElementImpl *)impl)->setAttribute(ATTR_TABINDEX,value);
+    }
 }
 
 DOMString HTMLTextAreaElement::type() const
@@ -1177,13 +1140,7 @@ bool HTMLOptionElement::defaultSelected() const
 
 void HTMLOptionElement::setDefaultSelected( bool _defaultSelected )
 {
-    if(impl)
-    {
-	DOMString str;
-	if( _defaultSelected )
-	    str = "";
-	((ElementImpl *)impl)->setAttribute(ATTR_SELECTED, str);
-    }
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_SELECTED, _defaultSelected ? "" : 0);
 }
 
 DOMString HTMLOptionElement::text() const
@@ -1200,7 +1157,6 @@ long HTMLOptionElement::index() const
 
 void HTMLOptionElement::setIndex( long _index )
 {
-
     if(impl)
         ((HTMLOptionElementImpl *)impl)->setIndex( _index );
 }
@@ -1213,13 +1169,7 @@ bool HTMLOptionElement::disabled() const
 
 void HTMLOptionElement::setDisabled( bool _disabled )
 {
-    if(impl)
-    {
-	DOMString str;
-	if( _disabled )
-	    str = "";
-	((ElementImpl *)impl)->setAttribute(ATTR_DISABLED, str);
-    }
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_DISABLED, _disabled ? "" : 0);
 }
 
 DOMString HTMLOptionElement::label() const

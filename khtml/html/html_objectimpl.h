@@ -113,9 +113,6 @@ public:
 
     HTMLFormElementImpl *form() const;
 
-    long tabIndex() const;
-    void setTabIndex( long );
-
     virtual void parseAttribute(AttrImpl *token);
 
     virtual void attach(KHTMLView *w);

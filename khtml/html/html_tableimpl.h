@@ -209,12 +209,6 @@ public:
     long cellIndex() const { return 0; }
     void setCellIndex( long ) { }
 
-    long colSpan() const { return cSpan; }
-    void setColSpan( long c ) { cSpan = c; }
-
-    long rowSpan() const { return rSpan; }
-    void setRowSpan( long r ) { rSpan = r; }
-
     int col() { return _col; }
     void setCol(int col) { _col = col; }
     int row() { return _row; }
@@ -253,9 +247,6 @@ public:
     void setStartCol( int c ) {_startCol = _currentCol = c; }
     int col() { return _startCol; }
     int lastCol() { return _currentCol; }
-
-    long span() const { return _span; }
-    void setSpan( long s ) { _span = s; }
 
     virtual NodeImpl *addChild(NodeImpl *child);
 
