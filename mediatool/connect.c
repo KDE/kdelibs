@@ -24,7 +24,6 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/types.h>
-#include <sys/ipc.h>
 #include "mediatool.h"
 #include "chunk.h"
 
