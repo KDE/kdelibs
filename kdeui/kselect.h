@@ -244,6 +244,11 @@ class KGradientSelector : public KSelector
 {
   Q_OBJECT
 
+  Q_PROPERTY( QColor firstColor READ firstColor WRITE setFirstColor DESIGNABLE true )
+  Q_PROPERTY( QColor secondColor READ secondColor WRITE setSecondColor DESIGNABLE true )
+  Q_PROPERTY( QString firstText READ firstText WRITE setFirstText DESIGNABLE true )
+  Q_PROPERTY( QString secondText READ secondText WRITE setSecondText DESIGNABLE true )
+
 public:
   /**
    * Constructs a horizontal color selector which
@@ -264,8 +269,34 @@ public:
    */
   void setColors( const QColor &col1, const QColor &col2 )
   {	color1 = col1; color2 = col2; }
-  void setText( const QString& t1, const QString& t2 )
+  void setText( const QString &t1, const QString &t2 )
   {	text1 = t1; text2 = t2; }
+
+  /**
+   * Set each color on its own.
+   */
+  void setFirstColor( const QColor &col )
+  { color1 = col; } 
+  void setSecondColor( const QColor &col )
+  { color2 = col; }
+
+  /**
+   * Set each description on its own
+   */
+  void setFirstText( const QString &t )
+  { text1 = t; }
+  void setSecondText( const QString &t )
+  { text2 = t; }
+
+  const QColor firstColor() const
+  { return color1; }
+  const QColor secondColor() const
+  { return color2; }
+
+  const QString firstText() const
+  { return text1; }
+  const QString secondText() const
+  { return text2; }
 
 protected:
   /**
