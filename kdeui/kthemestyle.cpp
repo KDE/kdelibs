@@ -27,21 +27,28 @@
 
 void KThemeStyle::polish(QApplication *app)
 {
-    oldPalette = *app->palette();
+    oldPalette = app->palette();
+
     if(isPixmap(Background)){
-        QBrush bgBrush(app->palette()->color(QPalette::Normal,
+        QPalette      newPalette;
+
+        newPalette = app->palette();
+
+        QBrush bgBrush(newPalette.color(QPalette::Normal,
                                              QColorGroup::Background),
                        *uncached(Background));
-        app->palette()->setBrush(QPalette::Normal, QColorGroup::Background,
+        newPalette.setBrush(QPalette::Normal, QColorGroup::Background,
                                  bgBrush);
-        bgBrush.setColor(app->palette()->color(QPalette::Disabled,
+        bgBrush.setColor(newPalette.color(QPalette::Disabled,
                                                QColorGroup::Background));
-        app->palette()->setBrush(QPalette::Disabled, QColorGroup::Background,
+        newPalette.setBrush(QPalette::Disabled, QColorGroup::Background,
                                bgBrush);
-        bgBrush.setColor(app->palette()->color(QPalette::Active,
+        bgBrush.setColor(newPalette.color(QPalette::Active,
                                                QColorGroup::Background));
-        app->palette()->setBrush(QPalette::Active, QColorGroup::Background,
+        newPalette.setBrush(QPalette::Active, QColorGroup::Background,
                                 bgBrush);
+
+        app->setPalette(newPalette, TRUE);
     }
 }
 
