@@ -92,7 +92,7 @@ public:
 
     virtual unsigned short valueType() const = 0;
 
-    DOM::DOMString cssText() const;
+    virtual DOM::DOMString cssText() const;
     void setCssText(DOM::DOMString str);
 
     virtual bool isValue() { return true; }
@@ -105,6 +105,7 @@ public:
     virtual ~CSSInheritedValueImpl() {}
 
     virtual unsigned short valueType() const { return CSSValue::CSS_INHERIT; }
+    virtual DOM::DOMString cssText() const;
 };
 
 
@@ -123,6 +124,7 @@ public:
     virtual unsigned short valueType() const;
 
     void append(CSSValueImpl *val);
+    virtual DOM::DOMString cssText() const;
 
 protected:
     QList<CSSValueImpl> m_values;
@@ -164,6 +166,7 @@ public:
     int getIdent();
 
     virtual bool parseString( const DOMString &string );
+    virtual DOM::DOMString cssText() const;
 
 protected:
     int m_type;

@@ -54,10 +54,12 @@ CSSStyleDeclarationImpl::~CSSStyleDeclarationImpl()
     if(m_lstValues) delete m_lstValues;
 }
 
-DOMString CSSStyleDeclarationImpl::getPropertyValue( const DOMString &/*propertyName*/ )
+DOMString CSSStyleDeclarationImpl::getPropertyValue( const DOMString &propertyName )
 {
-    // ###
-    return 0;
+    CSSValueImpl *val = getPropertyCSSValue( propertyName );
+    if ( !val )
+	return 0;
+    return val->cssText();
 }
 
 CSSValueImpl *CSSStyleDeclarationImpl::getPropertyCSSValue( const DOMString &propertyName )
@@ -244,7 +246,7 @@ CSSRuleImpl *CSSStyleDeclarationImpl::parentRule() const
 
 DOM::DOMString CSSStyleDeclarationImpl::cssText() const
 {
-  return DOM::DOMString();
+    return DOM::DOMString();
     // ###
 }
 
@@ -273,8 +275,7 @@ CSSValueImpl::~CSSValueImpl()
 
 DOM::DOMString CSSValueImpl::cssText() const
 {
-  return DOM::DOMString();
-    // ###
+    return DOM::DOMString();
 }
 
 void CSSValueImpl::setCssText(DOM::DOMString /*str*/)
@@ -282,6 +283,10 @@ void CSSValueImpl::setCssText(DOM::DOMString /*str*/)
     // ###
 }
 
+DOM::DOMString CSSInheritedValueImpl::cssText() const 
+{ 
+    return DOMString("inherited"); 
+}
 // ----------------------------------------------------------------------------------------
 
 CSSValueListImpl::CSSValueListImpl()
@@ -307,6 +312,12 @@ void CSSValueListImpl::append(CSSValueImpl *val)
 {
     m_values.append(val);
     val->ref();
+}
+
+DOM::DOMString CSSValueListImpl::cssText() const
+{
+    // ###
+    return DOM::DOMString();
 }
 
 // -------------------------------------------------------------------------------------
@@ -458,6 +469,82 @@ int CSSPrimitiveValueImpl::getIdent()
     return m_value.ident;
 }
 
+DOM::DOMString CSSPrimitiveValueImpl::cssText() const
+{
+    DOMString text;
+    switch ( m_type ) {
+	case CSSPrimitiveValue::CSS_UNKNOWN:
+	    break;
+	case CSSPrimitiveValue::CSS_NUMBER:
+	    text = DOMString(QString::number( (int)m_value.num ));
+	    break;
+	case CSSPrimitiveValue::CSS_PERCENTAGE:
+	    text = DOMString(QString::number( m_value.num ) + "%");
+	    break;
+	case CSSPrimitiveValue::CSS_EMS:
+	    text = DOMString(QString::number( m_value.num ) + "em");
+	    break;
+	case CSSPrimitiveValue::CSS_EXS:
+	    text = DOMString(QString::number( m_value.num ) + "ex");
+	    break;
+	case CSSPrimitiveValue::CSS_PX:
+	    text = DOMString(QString::number( m_value.num ) + "px");
+	    break;
+	case CSSPrimitiveValue::CSS_CM:
+	    text = DOMString(QString::number( m_value.num ) + "cm");
+	    break;
+	case CSSPrimitiveValue::CSS_MM:
+	    text = DOMString(QString::number( m_value.num ) + "mm");
+	    break;
+	case CSSPrimitiveValue::CSS_IN:
+	    text = DOMString(QString::number( m_value.num ) + "in");
+	    break;
+	case CSSPrimitiveValue::CSS_PT:
+	    text = DOMString(QString::number( m_value.num ) + "pt");
+	    break;
+	case CSSPrimitiveValue::CSS_PC:
+	    text = DOMString(QString::number( m_value.num ) + "pc");
+	    break;
+	case CSSPrimitiveValue::CSS_DEG:
+	    text = DOMString(QString::number( m_value.num ) + "deg");
+	    break;
+	case CSSPrimitiveValue::CSS_RAD:
+	    text = DOMString(QString::number( m_value.num ) + "rad");
+	    break;
+	case CSSPrimitiveValue::CSS_GRAD:
+	    text = DOMString(QString::number( m_value.num ) + "grad");
+	    break;
+	case CSSPrimitiveValue::CSS_MS:
+	    text = DOMString(QString::number( m_value.num ) + "ms");
+	    break;
+	case CSSPrimitiveValue::CSS_S:
+	    text = DOMString(QString::number( m_value.num ) + "s");
+	    break;
+	case CSSPrimitiveValue::CSS_HZ:
+	    text = DOMString(QString::number( m_value.num ) + "hz");
+	    break;
+	case CSSPrimitiveValue::CSS_KHZ:
+	    text = DOMString(QString::number( m_value.num ) + "khz");
+	    break;
+	case CSSPrimitiveValue::CSS_DIMENSION:
+	    break;
+	case CSSPrimitiveValue::CSS_STRING:
+	case CSSPrimitiveValue::CSS_URI:
+	    text = DOMString( m_value.string );
+	    break;
+	case CSSPrimitiveValue::CSS_IDENT:
+	case CSSPrimitiveValue::CSS_ATTR:
+	case CSSPrimitiveValue::CSS_COUNTER:
+	case CSSPrimitiveValue::CSS_RECT:
+	    break;
+	case CSSPrimitiveValue::CSS_RGBCOLOR:
+	    QColor c = m_value.rgbcolor->color();
+	    text = "#" + QString::number( c.red(), 16 ) + QString::number( c.red(), 16 ) + QString::number( c.red(), 16 );
+	    break;
+    }
+    return text;
+}
+
 // -----------------------------------------------------------------
 
 CSSImageValueImpl::CSSImageValueImpl(const DOMString &url, const DOMString &baseurl, StyleBaseImpl *style)
@@ -488,3 +575,4 @@ CSSImageValueImpl::~CSSImageValueImpl()
 {
     if(m_image) m_image->deref(this);
 }
+

@@ -130,3 +130,7 @@ void HTMLElement::addCSSProperty( const DOMString &property, const DOMString &va
     if(impl) ((HTMLElementImpl *)impl)->addCSSProperty( property, value, false, true );
 }    
     
+DOMString HTMLElement::getCSSProperty( const DOM::DOMString &prop )
+{
+    if(impl) return ((HTMLElementImpl *)impl)->getCSSProperty( prop );
+}    

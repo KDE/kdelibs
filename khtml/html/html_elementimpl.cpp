@@ -315,6 +315,12 @@ void HTMLElementImpl::removeCSSProperty( const DOMString &id )
     setChanged(true);
 }
 
+DOMString HTMLElementImpl::getCSSProperty( const DOM::DOMString &prop )
+{
+    if(!m_styleDecls)
+	return 0;
+    return m_styleDecls->getPropertyValue( prop );
+}
 
 short HTMLElementImpl::tabIndex() const
 {

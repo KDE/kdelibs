@@ -163,6 +163,11 @@ public:
      * @internal
      */
     void addCSSProperty( const DOMString &property, const DOMString &value );
+
+    /*
+     * @internal
+     */
+    DOMString getCSSProperty( const DOM::DOMString &prop );
 };
 
 }; //namespace

@@ -25,36 +25,14 @@
 #include <kjs/types.h>
 #include <css/cssproperties.h>
 #include <qregexp.h>
-using namespace KJS;
+#include <dom/dom_string.h>
+#include <kjs_binding.h>
 
+using namespace KJS;
 #include <kdebug.h>
 
-KJSO Style::get(const UString &p) const
+static QString jsNameToProp( const UString &p )
 {
-  KJSO result;
-
-  khtml::RenderStyle *style = node.handle()->style();
-
-  // ### code below is just for testing. it's neither complete nor correct.
-  
-  if (p == "backgroundColor")
-    result = String(style->backgroundColor().name());
-  else if (p == "left")
-    result = Number(style->left().value);
-  else if (p == "top")
-    result = Number(style->top().value);
-  else
-    result = Undefined();
-
-  return result;
-}
-
-void Style::put(const UString &p, const KJSO& v)
-{
-    DOM::HTMLElement el = node;
-    if ( el.isNull() )
-      return;
-
     QString prop = p.qstring();
     int i = prop.length();
     while( --i ) {
@@ -63,8 +41,29 @@ void Style::put(const UString &p, const KJSO& v)
 	    continue;
 	prop.insert( i, '-' );
     }
-    prop = prop.lower();
-    
+    return prop.lower();
+}
+
+KJSO Style::get(const UString &p) const
+{
+    DOM::HTMLElement el = node;
+    KJSO result;
+    if ( el.isNull() )
+      result = Undefined();
+    else {
+	DOM::DOMString val = el.getCSSProperty( jsNameToProp( p ) );
+	result = String( val );
+    }
+    return result;
+}
+
+void Style::put(const UString &p, const KJSO& v)
+{
+    DOM::HTMLElement el = node;
+    if ( el.isNull() )
+      return;
+
+    QString prop = jsNameToProp( p );
     el.removeCSSProperty( prop );
     el.addCSSProperty( prop, v.toString().value().string() );
 }

@@ -56,6 +56,7 @@ public:
     void addCSSLength(int id, const DOMString &value, bool important = false, bool nonCSSHint = true);
     void addCSSProperty(int id, const DOMString &value, bool important = false, bool nonCSSHint = true);
     void addCSSProperty(const DOMString &property);
+    DOMString getCSSProperty( const DOM::DOMString &prop );
     void removeCSSProperty(int id);
     void removeCSSProperty(const DOMString &id);
 
