@@ -134,9 +134,9 @@ KMDIGUIClient::KMDIGUIClient(KMdiMainFrm* mdiMainFrm,const char* name): QObject(
     m_gotoToolDockMenu->insert(new KAction(i18n("Switch Bottom Dock"),ALT+CTRL+SHIFT+Key_B,this,SIGNAL(toggleBottom()),
 		actionCollection(),"kmdi_activate_bottom"));
     m_gotoToolDockMenu->insert(new KActionSeparator(actionCollection(),"kmdi_goto_menu_separator"));
-    m_gotoToolDockMenu->insert(new KAction(i18n("Previous tool view"),ALT+CTRL+Key_Left,m_mdiMainFrm,SLOT(prevToolViewInDock()),
+    m_gotoToolDockMenu->insert(new KAction(i18n("Previous Tool View"),ALT+CTRL+Key_Left,m_mdiMainFrm,SLOT(prevToolViewInDock()),
 		actionCollection(),"kmdi_next_toolview"));
-    m_gotoToolDockMenu->insert(new KAction(i18n("Next tool view"),ALT+CTRL+Key_Right,m_mdiMainFrm,SLOT(nextToolViewInDock()),
+    m_gotoToolDockMenu->insert(new KAction(i18n("Next Tool View"),ALT+CTRL+Key_Right,m_mdiMainFrm,SLOT(nextToolViewInDock()),
 		actionCollection(),"kmdi_next_toolview"));
     
 

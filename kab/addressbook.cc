@@ -439,7 +439,7 @@ AddressBook::AddressBook(QWidget* parent, const char* name, bool loadit)
 		  "could not be created. kab will probably not "
 		  "work correctly without it.\n"
 		  "Make sure you have not removed write permission "
-		  "from your local KDE directory (Usually ~/.kde).").arg(filename));
+		  "from your local KDE directory (usually ~/.kde).").arg(filename));
 	  state=PermDenied;
 	}
   }
@@ -463,7 +463,7 @@ AddressBook::AddressBook(QWidget* parent, const char* name, bool loadit)
 		  "could not be created. kab will probably not "
 		  "work correctly without it.\n"
 		  "Make sure you have not removed write permission "
-		  "from your local KDE directory (Usually ~/.kde).").arg(filename));
+		  "from your local KDE directory (usually ~/.kde).").arg(filename));
 	  state=PermDenied;
 	} else {
 	  KMessageBox::information

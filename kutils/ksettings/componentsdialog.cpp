@@ -47,7 +47,7 @@ class ComponentsDialog::ComponentsDialogPrivate
 };
 
 ComponentsDialog::ComponentsDialog( QWidget * parent, const char * name )
-    : KDialogBase( parent, name, false, i18n( "Select components" ) )
+    : KDialogBase( parent, name, false, i18n( "Select Components" ) )
 , d( new ComponentsDialogPrivate )
 {
     QWidget * page = new QWidget( this );
