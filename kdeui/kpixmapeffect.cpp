@@ -4,7 +4,7 @@
  * Daniel M. Duley <mosfet@kde.org>
  * Dirk A. Mueller <dmuell@gmx.net>
  *
- * $Id: $
+ * $Id$
  */
 
 #include <math.h>
@@ -1060,8 +1060,8 @@ QImage KPixmapEffect::pattern(const QSize &size, const QColor &ca,
     
     if (img2.height() > img.height())
 	for (y=8; y < img2.height(); y++) {
-	    memcpy(img2.scanLine(y), img.scanLine(y % img.height()), 
-		    img.bytesPerLine());
+	    memcpy(img2.scanLine(y), img2.scanLine(y % img.height()), 
+		    img2.bytesPerLine());
 	}
 
     return img2;
