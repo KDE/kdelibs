@@ -1,5 +1,5 @@
 #! /bin/sh
-# prerm script for kdelibs
+# prerm script for kdelibs4
 #
 # see: dh_installdeb(1)
 
