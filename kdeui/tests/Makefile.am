@@ -24,10 +24,10 @@ LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
 
 # Please keep sorted
 check_PROGRAMS = kaboutdialogtest kblendtest kbuttonboxtest kcharselecttest \
-	kcolortest kcolordlgtest kcomboboxtest \
+	kcolortest kcolordlgtest kcomboboxtest kcompletiontest \
 	kcontainertest kdatepicktest kdialogbasetest \
 	kdockwidgetdemo kdocktabctltest kdockwidgettest \
-	kdualcolortest kfontdialogtest \
+	kdualcolortest keditlistboxtest kfontdialogtest \
 	kgradienttest khashtest kdesattest\
 	kledtest klineedittest klineeditdlgtest \
 	kmessageboxtest knuminputtest \
@@ -44,7 +44,8 @@ noinst_HEADERS = \
 		kcolortest.h kunbalancedgrdtest.h kblendtest.h \
 		kdualcolortest.h khashtest.h knuminputtest.h \
 		kdockwidgetdemo.h kdocktabctltest.h kdockwidgettest.h \
-		itemcontainertest.h kpanelmenutest.h kalphaicontest.h
+		itemcontainertest.h kpanelmenutest.h kalphaicontest.h \
+		kcompletiontest.h
 
 METASOURCES = AUTO
 
@@ -59,11 +60,13 @@ kcharselecttest_SOURCES = kcharselecttest.cpp
 kcolordlgtest_SOURCES = kcolordlgtest.cpp
 kcolortest_SOURCES = kcolortest.cpp
 kcomboboxtest_SOURCES = kcomboboxtest.cpp
+kcompletiontest_SOURCES = kcompletiontest.cpp
 kcontainertest_SOURCES = kcontainertest.cpp
 kdatepicktest_SOURCES = kdatepicktest.cpp
 kdialogbasetest_SOURCES = kdialogbasetest.cpp
 kdualcolortest_SOURCES = kdualcolortest.cpp
 kedittest_SOURCES = kedittest.cpp
+keditlistboxtest_SOURCES = keditlistboxtest.cpp
 kfontdialogtest_SOURCES = kfontdialogtest.cpp
 kgradienttest_SOURCES = kgradienttest.cpp
 khashtest_SOURCES = khashtest.cpp
