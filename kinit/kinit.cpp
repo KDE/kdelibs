@@ -1464,9 +1464,7 @@ int main(int argc, char **argv, char **envp)
    {
       QString konq = locate("lib", "libkonq.la", s_instance);
       if (!konq.isEmpty())
-      {
-	  lt_dlhandle result = lt_dlopen(QFile::encodeName(konq).data());
-      }
+	  (void) lt_dlopen(QFile::encodeName(konq).data());
    }
 
    if (launch_klauncher)
