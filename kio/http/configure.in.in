@@ -13,7 +13,7 @@ ac_ssl_includes=NO ac_ssl_libraries=NO
 ssl_libraries=""
 ssl_includes=""
 AC_ARG_WITH(ssl-dir,
-    [  --with-ssl-dir=DIR       where the root of OpenSSL is installed ],
+    [  --with-ssl-dir=DIR      where the root of OpenSSL is installed],
     [  ac_ssl_includes="$withval"/include
        ac_ssl_libraries="$withval"/lib
     ])
