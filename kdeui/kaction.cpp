@@ -893,7 +893,7 @@ void KToggleAction::setChecked( bool c )
   d->m_checked = c;
 
   d->m_locked = false;
-  emit activated();
+  //  emit activated();
   d->m_locked = false;
   emit toggled( isChecked() );
 }
@@ -922,6 +922,7 @@ void KToggleAction::slotActivated()
   d->m_locked = true;
   setChecked( !isChecked() );
   d->m_locked = false;
+  emit activated();
 }
 
 bool KToggleAction::isChecked() const
@@ -1086,9 +1087,9 @@ void KSelectAction::setCurrentItem( int id )
     for( int i = 0; i < len; ++i )
         setCurrentItem( i, id );
 
-    emit KAction::activated();
-    emit activated( currentItem() );
-    emit activated( currentText() );
+    //    emit KAction::activated();
+    //    emit activated( currentItem() );
+    //    emit activated( currentText() );
 }
 
 QPopupMenu* KSelectAction::popupMenu()
@@ -1286,6 +1287,9 @@ void KSelectAction::slotActivated( int id )
   setCurrentItem( id );
 
   d->m_lock = FALSE;
+  emit KAction::activated();
+  emit activated( currentItem() );
+  emit activated( currentText() );
 }
 
 void KSelectAction::slotActivated( const QString &text )
@@ -1303,6 +1307,9 @@ void KSelectAction::slotActivated( const QString &text )
 
   setCurrentItem( items().findIndex( text ) );
   d->m_lock = false;
+  emit KAction::activated();
+  emit activated( currentItem() );
+  emit activated( currentText() );
 }
 
 void KSelectAction::setEditable( bool edit )
@@ -1390,9 +1397,9 @@ void KListAction::setCurrentItem( int index )
 {
   d->m_current = index;
 
-  emit KAction::activated();
-  emit activated( currentItem() );
-  emit activated( currentText() );
+  //  emit KAction::activated();
+  //  emit activated( currentItem() );
+  // emit activated( currentText() );
 }
 
 QString KListAction::currentText() const
