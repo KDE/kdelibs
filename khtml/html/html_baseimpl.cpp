@@ -145,12 +145,16 @@ void HTMLBodyElementImpl::attach()
 {
     KHTMLView* w = ownerDocument()->view();
     if(w->marginWidth() != -1) {
-        addCSSLength(CSS_PROP_MARGIN_LEFT, w->marginWidth());
-        addCSSLength(CSS_PROP_MARGIN_RIGHT, w->marginWidth());
+        QString s;
+        s.sprintf( "%d", w->marginWidth() );
+        addCSSLength(CSS_PROP_MARGIN_LEFT, s);
+        addCSSLength(CSS_PROP_MARGIN_RIGHT, s);
     }
     if(w->marginHeight() != -1) {
-        addCSSLength(CSS_PROP_MARGIN_TOP, w->marginHeight());
-        addCSSProperty(CSS_PROP_MARGIN_BOTTOM, w->marginHeight());
+        QString s;
+        s.sprintf( "%d", w->marginHeight() );
+        addCSSLength(CSS_PROP_MARGIN_TOP, s);
+        addCSSLength(CSS_PROP_MARGIN_BOTTOM, s);
     }
 
     ownerDocument()->createSelector();
@@ -223,7 +227,7 @@ void HTMLFrameElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_FRAMEBORDER:
     {
         frameBorder = attr->value().toInt();
-        frameBorderSet = ( frameBorder != 0 );
+        frameBorderSet = ( attr->val() != 0 );
     }
     break;
     case ATTR_MARGINWIDTH:
