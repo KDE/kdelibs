@@ -1590,7 +1590,6 @@ int LightStyleV2::styleHint( StyleHint stylehint,
     case SH_Slider_SnapToValue:
     case SH_PrintDialog_RightAlignButtons:
     case SH_FontDialog_SelectAssociatedText:
-    case SH_PopupMenu_AllowActiveAndDisabled:
     case SH_MenuBar_AltKeyNavigation:
     case SH_MenuBar_MouseTracking:
     case SH_PopupMenu_MouseTracking:
