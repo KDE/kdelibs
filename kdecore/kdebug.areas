@@ -294,6 +294,37 @@
 13035   Kate (Code Completion)
 13040   Kate (Plugins)
 
+# Kopete
+14000       kopete
+14010       libkopete
+14100       kopete (gadu)
+14101       kopete (gadu - raw protocol)
+14110       kopete (icq)
+14111       kopete (icq - raw protocol)
+14120       kopete (irc)
+14121       kopete (irc - raw protocol)
+14130       kopete (jabber)
+14131       kopete (jabber - raw protocol)
+14140       kopete (msn)
+14141       kopete (msn - raw protocol)
+14150       kopete (oscar)
+14151       kopete (oscar - raw protocol)
+14160       kopete (sms)
+14161       kopete (sms - raw protocol)
+14170       kopete (winpopup)
+14171       kopete (winpopup - raw protocol)
+14180       kopete (yahoo)
+14181       kopete (yahoo - raw protocol)
+14300       kopete (autoaway)
+14301       kopete (connectionstatus)
+14302       kopete (contactnotes)
+14303       kopete (cryptography)
+14304       kopete (importer)
+14305       kopete (motionautoaway)
+14306       kopete (msginfo)
+14307       kopete (nowlistening)
+14308       kopete (translator)
+14309       kopete (webpresence)
 
 # KDB
 20000        KDB (core)
