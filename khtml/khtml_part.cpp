@@ -40,8 +40,8 @@
 #include "html/html_imageimpl.h"
 #include "html/htmltokenizer.h"
 #include "rendering/render_text.h"
-#include "rendering/render_frames.h"
 #include "rendering/render_image.h"
+#include "rendering/render_frames.h"
 #include "misc/htmlhashes.h"
 #include "misc/loader.h"
 #include "xml/dom_textimpl.h"
@@ -211,9 +211,7 @@ public:
   }
   ~KHTMLPartPrivate()
   {
-    //no need to delete m_view here! kparts does it for us (: (Simon)
-    if ( m_extension )
-      delete m_extension;
+    delete m_extension;
     delete m_settings;
     delete m_jscript;
     if ( m_kjs_lib && !--kjs_lib_count )
@@ -382,10 +380,7 @@ namespace khtml {
 	    m_part = part;
             m_priv = priv;
             // the "foo" is needed, so that the docloader for the empty document doesn't cancel this request.
-            if (!docLoader)
-                m_cachedSheet = Cache::requestStyleSheet(url, DOMString("foo"),false);
-            else
-                m_cachedSheet = docLoader->requestStyleSheet(url, DOMString("foo"));
+            m_cachedSheet = docLoader->requestStyleSheet(url, DOMString("foo"));
             m_cachedSheet->ref( this );
         }
 	virtual ~PartStyleSheetLoader()
@@ -483,9 +478,6 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
   d->m_paLoadImages = 0;
   d->m_bMousePressed = false;
-
-  autoloadImages( KHTMLFactory::defaultHTMLSettings()->autoLoadImages() );
-
   d->m_paViewDocument = new KAction( i18n( "View Document Source" ), 0, this, SLOT( slotViewDocumentSource() ), actionCollection(), "viewDocumentSource" );
   d->m_paViewFrame = new KAction( i18n( "View Frame Source" ), 0, this, SLOT( slotViewFrameSource() ), actionCollection(), "viewFrameSource" );
   d->m_paSaveBackground = new KAction( i18n( "Save &Background Image As..." ), 0, this, SLOT( slotSaveBackground() ), actionCollection(), "saveBackground" );
@@ -1012,31 +1004,34 @@ void KHTMLPart::autoloadImages( bool enable )
 
 void KHTMLPart::setAutoloadImages( bool enable )
 {
-  khtml::Cache::autoloadImages( enable );
+  if ( d->m_doc && d->m_doc->docLoader()->autoloadImages() == enable )
+    return;
+
+  if ( d->m_doc )
+    d->m_doc->docLoader()->setAutoloadImages( enable );
 
   unplugActionList( "loadImages" );
 
-  if ( enable )
-  {
-    if ( d->m_paLoadImages )
-      delete d->m_paLoadImages;
+  if ( enable ) {
+    delete d->m_paLoadImages;
     d->m_paLoadImages = 0;
   }
   else if ( !d->m_paLoadImages )
     d->m_paLoadImages = new KAction( i18n( "Display Images on Page" ), "images_display", 0, this, SLOT( slotLoadImages() ), actionCollection(), "loadImages" );
 
-  if ( d->m_paLoadImages )
-  {
-      QList<KAction> lst;
-      lst.append( d->m_paLoadImages );
-      plugActionList( "loadImages", lst );
+  if ( d->m_paLoadImages ) {
+    QList<KAction> lst;
+    lst.append( d->m_paLoadImages );
+    plugActionList( "loadImages", lst );
   }
-
 }
 
 bool KHTMLPart::autoloadImages() const
 {
-  return khtml::Cache::autoloadImages();
+  if ( d->m_doc )
+    return d->m_doc->docLoader()->autoloadImages();
+
+  return true;
 }
 
 void KHTMLPart::clear()
@@ -1169,9 +1164,7 @@ void KHTMLPart::slotData( KIO::Job*, const QByteArray &data )
 
     begin( d->m_workingURL, d->m_extension->urlArgs().xOffset, d->m_extension->urlArgs().yOffset );
 
-    if (d->m_bReloading)
-        d->m_doc->setReloading();
-
+    d->m_doc->docLoader()->setReloading(d->m_bReloading);
     d->m_workingURL = KURL();
 
     d->m_cacheId = KHTMLPageCache::self()->createCacheEntry();
@@ -1284,19 +1277,14 @@ void KHTMLPart::slotFinished( KIO::Job * job )
 
   KHTMLPageCache::self()->endData(d->m_cacheId);
 
-  if (d->m_doc && d->m_doc->docLoader() && d->m_doc->docLoader()->m_expireDate)
-  {
-      KIO::http_update_cache(m_url, false, d->m_doc->docLoader()->m_expireDate);
-  }
+  if ( d->m_doc && d->m_doc->docLoader()->expireDate())
+      KIO::http_update_cache(m_url, false, d->m_doc->docLoader()->expireDate());
 
   d->m_workingURL = KURL();
-
   d->m_job = 0L;
 
   if ( d->m_bParsing )
-  {
     end(); //will emit completed()
-  }
 }
 
 void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
@@ -1350,9 +1338,12 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
     d->m_doc = new HTMLDocumentImpl( d->m_view );
 
 
+
   d->m_doc->ref();
   d->m_doc->attach( d->m_view );
   d->m_doc->setURL( m_url.url() );
+
+  setAutoloadImages( false );
 
   d->m_doc->setRestoreState(args.docState);
   d->m_doc->open();
@@ -1434,29 +1425,16 @@ void KHTMLPart::end()
 
 void KHTMLPart::paint(QPainter *p, const QRect &rc, int yOff, bool *more)
 {
-    if (!d->m_view)
-        return;
+    if (!d->m_view) return;
     d->m_view->paint(p, rc, yOff, more);
 }
 
 void KHTMLPart::stopAnimations()
 {
-  // TODO:
-  // -stop animations in all frames, not only in the current one
-  // -show "Stop Animations" option only if there actually are animations
-  // -stop background animations, too
-  HTMLCollectionImpl imgColl( d->m_doc, HTMLCollectionImpl::DOC_IMAGES );
-  unsigned long i = 0;
-  unsigned long len = imgColl.length();
-  for (; i < len; i++ )
-  {
-    DOM::NodeImpl *node = imgColl.item( i );
-    if ( node && node->id() == ID_IMG ) {
-      khtml::RenderImage *r = static_cast<khtml::RenderImage *>(node->renderer());
-      if(r)
-        r->stopAnimations();
-    }
-  }
+  if ( d->m_doc )
+    d->m_doc->docLoader()->setShowAnimations(false);
+
+  // ### propagate to child frames
 }
 
 void KHTMLPart::slotFinishedParsing()
@@ -3130,7 +3108,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
   d->m_charset = (QFont::CharSet) charset;
 
   stream >> fSizes >> d->m_fontBase;
-  // ### odd: this doesn't appear to have any influence on the used font 
+  // ### odd: this doesn't appear to have any influence on the used font
   // sizes :(
   setFontSizes( fSizes );
 
@@ -3367,9 +3345,14 @@ void KHTMLPart::updateFontSize( int add )
 
 void KHTMLPart::slotLoadImages()
 {
-  bool autoload = khtml::Cache::autoloadImages();
-  khtml::Cache::autoloadImages( !autoload );
-  khtml::Cache::autoloadImages( autoload );
+  if (d->m_doc )
+    d->m_doc->docLoader()->setAutoloadImages( !d->m_doc->docLoader()->autoloadImages() );
+
+  for ( KHTMLPart* p = KHTMLFactory::partList()->first(); p;
+        p = KHTMLFactory::partList()->next() ) {
+    if ( p->parentPart() == this )
+      p->slotLoadImages();
+  }
 }
 
 void KHTMLPart::reparseConfiguration()
@@ -3381,8 +3364,7 @@ void KHTMLPart::reparseConfiguration()
   settings->setCharset(d->m_settings->charset());
   settings->setScript(d->m_settings->script());
 
-  if ( settings->autoLoadImages() != khtml::Cache::autoloadImages() )
-    autoloadImages( settings->autoLoadImages() );
+  autoloadImages( settings->autoLoadImages() );
 
   // PENDING(lars) Pass hostname to the following two methods.
   d->m_bJScriptEnabled = settings->isJavaScriptEnabled();
@@ -3569,19 +3551,13 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
       } else {
           HTMLImageElementImpl *i = static_cast<HTMLImageElementImpl *>(innerNode.handle());
           if( i ) {
-              khtml::RenderImage *r = static_cast<khtml::RenderImage *>(i->renderer());
-              if(r) {
-                  drag = new QImageDrag( r->pixmap().convertToImage() , d->m_view->viewport() );
-                  p = KMimeType::mimeType("image/*")->pixmap(KIcon::Desktop);
-              }
+            drag = new QImageDrag( i->currentImage() , d->m_view->viewport() );
+            p = KMimeType::mimeType("image/*")->pixmap(KIcon::Desktop);
           }
       }
 
     if ( !p.isNull() )
       drag->setPixmap(p);
-//     else
-//       kdDebug( 6000 ) << "null pixmap" << endl;
-
 
     stopAutoScroll();
     if(drag)
