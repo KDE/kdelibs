@@ -42,14 +42,16 @@ KCompletionBase::KCompletionBase()
     // enabled through member functions...
     m_bEmitSignals = false;
 
-    // By default do not handle rotation & completion
-    // signals.  Should be enabled when completion objects
-    // are created or through member funtions...
-    m_bHandleSignals = false;
+    // Initialize the auto delete flag to false.  This
+    // will be changed accordingly when the completion
+    // object is created through either completionObject
+    // or setCompletionObject member functions.
+    m_bAutoDelCompObj = false;
 
-    // Set automatic deletion of completion object
-    // to true.
-    m_bAutoDelCompObj = true;
+    // By default do not handle rotation & completion
+    // signals.  Will be enabled as needed when completion
+    // objects are created or through member funtions.
+    m_bHandleSignals = false;
 
     // Initialize all key-bindings to 0 by default so that
     // the event filter will use the global settings.
@@ -62,15 +64,22 @@ KCompletionBase::KCompletionBase()
 KCompletionBase::~KCompletionBase()
 {
     if( m_bAutoDelCompObj )
+    {
         delete m_pCompObj;
-
+        m_pCompObj = 0; // Prevent SEGFAULT on double deletions :)
+    }
     delete m_pCompletionMenu;
 }
 
 KCompletion* KCompletionBase::completionObject( bool hsig )
 {
     if ( m_pCompObj == 0 )
+    {
         setCompletionObject( new KCompletion(), hsig );
+        // Set automatic deletion of completion object to true
+        // since it was internally created...
+        m_bAutoDelCompObj = true;
+    }
     return m_pCompObj;
 }
 
