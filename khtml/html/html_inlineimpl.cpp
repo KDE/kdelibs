@@ -180,7 +180,8 @@ void HTMLBRElementImpl::parseAttribute(AttributeImpl *attr)
     case ATTR_CLEAR:
     {
         DOMString str = attr->value();
-        if( strcasecmp (str,"all")==0 || str.isEmpty() ) str = "both";
+        if( str.isEmpty() ) str = "none";
+        else if( strcasecmp (str,"all")==0 ) str = "both";
         addCSSProperty(CSS_PROP_CLEAR, str);
         break;
     }
