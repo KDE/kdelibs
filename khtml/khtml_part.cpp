@@ -4304,7 +4304,10 @@ void KHTMLPart::popupMenu( const QString &linkUrl )
     }
     popupURL = khtmlPart->url();
     referrer = khtmlPart->pageReferrer();
-    itemflags |= KParts::BrowserExtension::ShowNavigationItems;
+    if (hasSelection())
+      itemflags = KParts::BrowserExtension::ShowTextSelectionItems;
+    else
+      itemflags |= KParts::BrowserExtension::ShowNavigationItems;
   } else {               // click on link
     popupURL = completeURL( linkUrl );
     linkKURL = popupURL;

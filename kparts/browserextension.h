@@ -92,7 +92,7 @@ struct URLArgs
    * KHTML-specific field, contents of the HTTP POST data.
    */
   QByteArray postData;
-  
+
   /**
    * KHTML-specific field, header defining the type of the POST data.
    */
@@ -106,7 +106,7 @@ struct URLArgs
    * for the next openURL.
    */
   void setDoPost( bool enable );
-  
+
   /**
    * KHTML-specific field, whether to do a POST instead of a GET,
    * for the next openURL.
@@ -313,7 +313,7 @@ public:
    */
   enum { DefaultPopupItems=0x0000, ShowNavigationItems=0x0001,
          ShowUp=0x0002, ShowReload=0x0004, ShowBookmark=0x0008,
-         ShowCreateDirectory=0x0010 };
+         ShowCreateDirectory=0x0010, ShowTextSelectionItems=0x0020};
 
 
   /**
@@ -438,7 +438,7 @@ public:
    * Asks the hosting browser to perform a paste.
    * @since 3.2
    */
-  void pasteRequest(); 
+  void pasteRequest();
 // KDE invents support for public signals...
 #undef signals
 #define signals public

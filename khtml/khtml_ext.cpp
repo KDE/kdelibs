@@ -326,6 +326,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
   d->m_khtml = khtml;
   d->m_url = url;
   bool isImage = false;
+  bool hasSelection = khtml->hasSelection();
   setInstance( khtml->instance() );
 
   DOM::Element e;
@@ -339,14 +340,20 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
 
   if ( url.isEmpty() && !isImage )
   {
-    KAction* copyAction = KStdAction::copy( d->m_khtml->browserExtension(), SLOT( copy() ), actionCollection(), "copy" );
-    copyAction->setText(i18n("&Copy Text"));
-    copyAction->setEnabled(d->m_khtml->browserExtension()->isActionEnabled( "copy" ));
-    actionCollection()->insert( khtml->actionCollection()->action( "selectAll" ) );
-    actionCollection()->insert( khtml->actionCollection()->action( "security" ) );
-    actionCollection()->insert( khtml->actionCollection()->action( "setEncoding" ) );
-    new KAction( i18n( "Stop Animations" ), 0, this, SLOT( slotStopAnimations() ),
-                 actionCollection(), "stopanimations" );
+    if (hasSelection)
+    {
+      KAction* copyAction = KStdAction::copy( d->m_khtml->browserExtension(), SLOT( copy() ), actionCollection(), "copy" );
+      copyAction->setText(i18n("&Copy Text"));
+      copyAction->setEnabled(d->m_khtml->browserExtension()->isActionEnabled( "copy" ));
+      actionCollection()->insert( khtml->actionCollection()->action( "selectAll" ) );
+    }
+    else
+    {
+      actionCollection()->insert( khtml->actionCollection()->action( "security" ) );
+      actionCollection()->insert( khtml->actionCollection()->action( "setEncoding" ) );
+      new KAction( i18n( "Stop Animations" ), 0, this, SLOT( slotStopAnimations() ),
+                   actionCollection(), "stopanimations" );
+    }
   }
 
   if ( !url.isEmpty() )
@@ -358,25 +365,31 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
   }
 
   // frameset? -> add "Reload Frame" etc.
-  if ( khtml->parentPart() )
+  if (!hasSelection)
   {
-    new KAction( i18n( "Open in New &Window" ), "window_new", 0, this, SLOT( slotFrameInWindow() ),
-                                        actionCollection(), "frameinwindow" );
-    new KAction( i18n( "Open in &New Tab" ), "tab_new", 0, this, SLOT( slotFrameInTab() ),
-                                     actionCollection(), "frameintab" );
-    new KAction( i18n( "Reload Frame" ), 0, this, SLOT( slotReloadFrame() ),
-                                      actionCollection(), "reloadframe" );
-    new KAction( i18n( "View Frame Source" ), 0, d->m_khtml, SLOT( slotViewDocumentSource() ),
+    if ( khtml->parentPart() )
+    {
+      new KAction( i18n( "Open in New &Window" ), "window_new", 0, this, SLOT( slotFrameInWindow() ),
+                                          actionCollection(), "frameinwindow" );
+      new KAction( i18n( "Open in &New Tab" ), "tab_new", 0, this, SLOT( slotFrameInTab() ),
+                                       actionCollection(), "frameintab" );
+      new KAction( i18n( "Reload Frame" ), 0, this, SLOT( slotReloadFrame() ),
+                                        actionCollection(), "reloadframe" );
+      new KAction( i18n( "View Frame Source" ), 0, d->m_khtml, SLOT( slotViewDocumentSource() ),
                                           actionCollection(), "viewFrameSource" );
-    new KAction( i18n( "View Frame Information" ), 0, d->m_khtml, SLOT( slotViewPageInfo() ), actionCollection(), "viewFrameInfo" );
-    // This one isn't in khtml_popupmenu.rc anymore, because Print isn't either,
-    // and because print frame is already in the toolbar and the menu.
-    // But leave this here, so that it's easy to readd it.
-    new KAction( i18n( "Print Frame..." ), "fileprint", 0, d->m_khtml->browserExtension(), SLOT( print() ), actionCollection(), "printFrame" );
+      new KAction( i18n( "View Frame Information" ), 0, d->m_khtml, SLOT( slotViewPageInfo() ), actionCollection(), "viewFrameInfo" );
+      // This one isn't in khtml_popupmenu.rc anymore, because Print isn't either,
+      // and because print frame is already in the toolbar and the menu.
+      // But leave this here, so that it's easy to readd it.
+      new KAction( i18n( "Print Frame..." ), "fileprint", 0, d->m_khtml->browserExtension(), SLOT( print() ), actionCollection(), "printFrame" );
 
-    actionCollection()->insert( khtml->parentPart()->actionCollection()->action( "viewDocumentSource" ) );
-    actionCollection()->insert( khtml->parentPart()->actionCollection()->action( "viewPageInfo" ) );
-  } else {
+      actionCollection()->insert( khtml->parentPart()->actionCollection()->action( "viewDocumentSource" ) );
+      actionCollection()->insert( khtml->parentPart()->actionCollection()->action( "viewPageInfo" ) );
+    } else {
+      actionCollection()->insert( khtml->actionCollection()->action( "viewDocumentSource" ) );
+      actionCollection()->insert( khtml->actionCollection()->action( "viewPageInfo" ) );
+    }
+  } else if (isImage || !url.isEmpty()) {
     actionCollection()->insert( khtml->actionCollection()->action( "viewDocumentSource" ) );
     actionCollection()->insert( khtml->actionCollection()->action( "viewPageInfo" ) );
   }
@@ -607,7 +620,7 @@ void KHTMLPopupGUIClient::saveURL( const KURL &url, const KURL &destURL,
                 }
             }
           }
-          
+
           if ( downloadViaKIO )
           {
               KIO::Job *job = KIO::copy( url, destURL );
