@@ -142,8 +142,14 @@ public:
      * overload this function to make shure that all frames are of the same
      * derived class.
      */
-    virtual KHTMLWidget* createFrame( QWidget *_parent, const char *_name );
+    virtual KHTMLWidget* createFrame( QWidget *_parent, QString _name );
 
+    /**
+     * This function is mainly used internally. It gets the frame with name _name, if it
+     * exists and is a child of this widget, otherwise return 0.
+     */
+    KHTMLWidget *getFrame( QString _name);
+    
     /**
      * Clears the widget and prepares it for new content. If you display
      * for example "file:/tmp/test.html", you can use the following code
@@ -565,15 +571,6 @@ protected:
      */
     KHTMLWidget* topView();
 
-    /**
-     * Searches for a KHTMLWidget with a specific name as mentioned in the
-     * constructor.
-     *
-     * @see #setName
-     * @see #name
-     */
-    KHTMLWidget* findView( const QString & _name );
-
     virtual void viewportMousePressEvent( QMouseEvent * );
 
     /**
@@ -756,6 +753,7 @@ private:
     int _marginWidth;
     int _marginHeight;
 
+    // helpers for find functionality
     int findPos;
     DOM::NodeImpl *findNode;
 };

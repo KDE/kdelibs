@@ -148,7 +148,7 @@ ushort HTMLFrameElementImpl::id() const
 void HTMLFrameElementImpl::parseAttribute(Attribute *attr)
 {
     printf("parsing attribute %d=%s\n", attr->id, attr->value().string().ascii());
-    
+
     switch(attr->id)
     {
     case ATTR_SRC:
@@ -203,16 +203,31 @@ void HTMLFrameElementImpl::attach(KHTMLWidget *w)
 {
     printf("Frame::attach\n");
 
+    // needed for restoring frames
+    bool open = true;
+    
     parentWidget = w;
     if(w)
     {	
-	view = w->createFrame(w->viewport(), name.string());
+	// we need a unique name for every frame in the frameset. Hope that's unique enough.
+	if(name.isEmpty())
+	{
+	    QString tmp;
+	    tmp.sprintf("0x%p", this);
+	    name = DOMString(tmp) + url;
+	    printf("creating frame name: %s\n",name.string().ascii());
+	}
+	view = w->getFrame(name.string());
+	if(view)
+	    open = false;
+	else
+	    view = w->createFrame(w->viewport(), name.string());
 	view->setIsFrame(true);
     }
-    if(url != 0)
+    if(url != 0 && open)
     {
 	KURL u(w->url(), url.string());
-	static_cast<KHTMLWidget *>(view)->openURL(u.url());
+	view->openURL(u.url());
     }
 
     if(!parentWidget || !view) return;

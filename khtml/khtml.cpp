@@ -237,7 +237,7 @@ KHTMLWidget* KHTMLWidget::topView()
   return v;
 }
 
-KHTMLWidget* KHTMLWidget::findView( const QString &_name )
+KHTMLWidget* KHTMLWidget::findFrame( const QString &_name )
 {
     KHTMLWidget *v;
 
@@ -264,6 +264,8 @@ KHTMLWidget* KHTMLWidget::findView( const QString &_name )
 	return 0;
     }
 
+    // ### FIXME: get preferencies right in case of two identical names.
+    //            see html docs for rules.
     for ( v = lstViews->first(); v != 0; v = lstViews->next() )
     {
 	if ( v->frameName() )
@@ -277,10 +279,20 @@ KHTMLWidget* KHTMLWidget::findView( const QString &_name )
     return 0;
 }
 
-KHTMLWidget* KHTMLWidget::createFrame( QWidget *_parent, const char *_name )
+KHTMLWidget* KHTMLWidget::createFrame( QWidget *_parent, QString _name )
 {
-    return new KHTMLWidget( _parent, this, _name );
+    KHTMLWidget *child = new KHTMLWidget( _parent, this, _name );
+    return child;
 }
+
+KHTMLWidget* KHTMLWidget::getFrame( QString _name )
+{
+    KHTMLWidget *child = findFrame(_name);
+    if(child && child->parentFrame() == this) return child;
+
+    return 0;
+}
+
 
 void KHTMLWidget::begin( const QString &_url, int _x_offset, int _y_offset )
 {
@@ -353,11 +365,13 @@ void KHTMLWidget::slotStop()
   m_lstURLRequestJobs.clear();
   m_lstPendingURLRequests.clear();
 
-  emit canceled();
-  if ( _parent )
-    _parent->childCompleted( this );
+  if(!m_bComplete)
+  {
+      emit canceled();
+      if ( _parent )
+	  _parent->childCompleted( this );
+  }
 }
-
 void KHTMLWidget::slotReload()
 {
   // Reloads everything including the framesets
@@ -459,17 +473,17 @@ void KHTMLWidget::slotFinished( int /*_id*/ )
 {
   kdebug(0,1202,"SLOT_FINISHED 1");
 
-  kdebug(0,1202,"SLOT_FINISHED 2");
   m_strWorkingURL = "";
 
   if ( m_bParsing )
   {
-    kdebug(0,1202,"SLOT_FINISHED 3");
+    kdebug(0,1202,"SLOT_FINISHED 2");
     end();
   }
 
   m_jobId = 0;
   m_bParsing = false;
+  m_bComplete = true;
 }
 
 void KHTMLWidget::slotRedirection( int /*_id*/, const QString &_url )
@@ -620,8 +634,8 @@ void KHTMLWidget::urlRequestFinished( HTMLURLRequestJob* _request )
 
 void KHTMLWidget::urlSelected( const QString &_url, int _button, const QString &_target )
 {
-//   if ( !m_bComplete )
-//     slotStop();
+    if ( !m_bComplete )
+	slotStop();
 
   // Security
   KURL u1( _url );
@@ -687,7 +701,7 @@ void KHTMLWidget::urlSelected( const QString &_url, int _button, const QString &
       printf("searching...\n");
       KHTMLWidget *v = topView()->findChildView( target );
       if ( !v )
-	  v = findView( target );
+	  v = findFrame( target );
       if ( v )
       {
 	  v->openURL( url );
@@ -783,7 +797,7 @@ QString KHTMLWidget::completeURL( const QString &_url, const QString &target )
 {
     if(_url[0] == '#' && !target.isEmpty())
     {
-	KHTMLWidget *v = findView(target);
+	KHTMLWidget *v = findFrame(target);
 	if(v)
 	{
 	    KURL orig(v->url());
@@ -837,9 +851,8 @@ void KHTMLWidget::childCompleted( KHTMLWidget *_browser )
       it.current()->m_bReady = true;
   }
 
-  // ###
-  //if ( m_bComplete )
-  // slotDocumentFinished( this );
+  if ( !m_bParsing )
+      emit completed();
 
   kdebug(0,1202,"<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
 }
@@ -1443,82 +1456,69 @@ bool KHTMLWidget::findTextNext( const QRegExp &exp )
     return false;
 }
 
+#define INFO_NONE (int)0
+#define INFO_FRAMESET (int)1
+#define INFO_FRAME (int)2
+#define INFO_FORM (int)3
+
 void KHTMLWidget::saveState( QDataStream &stream )
 {
-    if(!document || !document->body()) return;
-    int id = document->body()->id();
-
     stream << url(); // need this to reconstruct the correct URL to show in the locationbar
-    stream << id; // id of the body/frameset element
+    stream << (int)contentsX() << (int)contentsY();
+
+    if(!m_bComplete || !document || !document->body()) 
+    {
+	printf("-------- saving page ---------\n");
+	stream << INFO_NONE;
+	return;
+    }
+
+    int id = document->body()->id();
 
     if(id  == ID_FRAMESET)
     {	
+	// did I already tell you I hate frames...
 	printf("------------------ saving frame --------------------------\n");
+	stream << INFO_FRAMESET;
 	
-	// handling for framesets...
-	HTMLFrameSetElementImpl *f = static_cast<HTMLFrameSetElementImpl *>(document->body());
-	stream << *f; // save attributes
-		
 	NodeImpl *current = document->body()->firstChild();
+
+	// go through the doc. Save every frame.
 	QStack<NodeImpl> nodeStack;
 
 	while(1)
 	{
 	    if(!current)
 	    {
-		printf("pop\n");
 		if(nodeStack.isEmpty()) break;
 		current = nodeStack.pop();
 		current = current->nextSibling();
-		stream << -1; // pop...
 	    }
 	    else
 	    {
-		switch(current->id())
+		if(current->id() == ID_FRAME)
 		{
-		case ID_FRAME:
-		{
-		    printf("frame\n");
+		    stream << INFO_FRAME;
 		    HTMLFrameElementImpl *f = static_cast<HTMLFrameElementImpl *>(current);
-		    f->setAttribute(ATTR_SRC, DOMString());
-		    stream << (int)current->id();
-		    stream << *f;
+		    stream << f->view->frameName();
 		    f->view->saveState(stream);
-		    break;
-		}
-		case ID_FRAMESET:
-		{
-		    printf("frameset\n");
-		    HTMLFrameSetElementImpl *f = static_cast<HTMLFrameSetElementImpl *>(current);
-		    stream << (int)current->id();
-		    stream << *f; // save attributes
-		    break;
-		}
-		default:
-		    // don't save anything else (NOFRAMES)
-		    break;
 		}
 
 		NodeImpl *child = current->firstChild();
 		if(child)
 		{	
-		    printf("push\n");
 		    nodeStack.push(current);
 		    current = child;
-		    stream << -2; // push
 		}
 		else
-		{
 		    current = current->nextSibling();
-		}
 	    }
 	}
-	stream << -111; // end of frameset
+	stream << INFO_NONE; // end of frameset
     }
     else if(id == ID_BODY)
     {
-	stream << (Q_INT32)contentsX() << (Q_INT32)contentsY();
-	// ### Fixme: handle forms....
+	stream << INFO_NONE;
     }
     else
 	printf("error in KHTMLWidget::saveState()\n");
@@ -1526,88 +1526,38 @@ void KHTMLWidget::saveState( QDataStream &stream )
 
 void KHTMLWidget::restoreState( QDataStream &stream )
 {
-    int id;
+    int x, y, info;
     QString u;
     stream >> u;
-    stream >> id;
+    stream >> x >> y;
+    stream >> info; // do we have additional info?
 
-    if(id == ID_BODY)
+    if(info == INFO_NONE)
     {
-	printf("restoring non framed page\n");
-	Q_INT32 xOfs, yOfs;
-	stream >> xOfs >> yOfs;
-	openURL( u, false, xOfs, yOfs );
-	// ### forms...
+	openURL( u, false, x, y );
+	return;
     }
-    else if (id == ID_FRAMESET)
+    if (info == INFO_FRAMESET)
     {
-	printf("restoring framed page\n");
-	m_strURL = u;
-	// ### FIXME
-	setTitle(m_strURL);
-	
-	// ### Simple one... we should use a more intelligent approach, reducing flicker, etc...
-	NodeImpl *current;
-	
-	if(document)
-	{
-	    document->detach();
-	    document->deref();
-	}
-	document = new HTMLDocumentImpl(this, cache);
-	document->ref();
-	current = new HTMLHtmlElementImpl(document);
-	document->addChild(current);
-	current->attach(this);
-	
-	ElementImpl *e = new HTMLFrameSetElementImpl(document);
-	stream >> *e; // restore attributes
-	current->addChild(e);
-	current = e;
-	current->attach(this);
-	
+	printf("------------------ restoring framed page ----------------------------\n");
 	while(1)
 	{
-	    stream >> id;
-	    if(id == -111) break;
+	    stream >> info;
+	    if(info != INFO_FRAME) break;
 
-	    printf("current=%d id=%d\n", current->id(), id);
-	    switch(id)
-	    {	
-	    case -1: // pop
-		current->close();
-		current = current->parentNode();
-		break;
-	    case -2: // push
-		current = current->lastChild();
-		break;
-	    case ID_FRAME:
-	    {
-		HTMLFrameElementImpl *f = new HTMLFrameElementImpl(document);
-		stream >> *f;
-		current->addChild(f);
-		f->attach(this);
-		f->view->restoreState(stream);
-		break;
-	    }
-	    case ID_FRAMESET:
-	    {
-		HTMLFrameSetElementImpl *f = new HTMLFrameSetElementImpl(document);
-		stream >> *f;
-		current->addChild(f);
-		f->attach(this);
-		break;
-	    }
-	    default:
-		printf("error while restoring frameset!!!!\n");
-		return;
-	    }
+	    QString name;
+	    stream >> name;
+
+	    KHTMLWidget *w = getFrame(name);
+	    if(!w) w = createFrame(viewport(), name);
+	    w->resize(500,100);
+	    w->restoreState(stream);
 	}
-	current->close();
 
+	// same url? If no, we need to restore the frameset
+	if( urlcmp(u, m_strURL) ) 
+	    openURL(u, false, 0, 0);
     }
-    else
-	printf("error in KHTMLWidget::restoreState()\n");
 
     layout();
 }
