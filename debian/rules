@@ -16,7 +16,7 @@ export KDB2HTML_UNINSTALLED=$(BUILDDIR)/ksgmltools/customization/
 tmp = $(shell pwd)/debian/kdelibs3
 alsa-tmp = $(shell pwd)/debian/alsa-tmp
 
-build: build-stamp
+build: build-stamp alsa-stamp
 
 -include debian/debiandirs
 
