@@ -133,7 +133,7 @@ public:
     bool isSelectionStart() const { return m_isSelectionStart; }
     bool isSelectionEnd() const { return m_isSelectionEnd; }
     RenderRoot* root() const;
-    
+
     /**
      * returns the object containing this one. can be different from parent for
      * positioned elements
@@ -163,7 +163,7 @@ public:
     virtual short verticalPositionHint( bool firstLine ) const;
     // the offset of baseline from the top of the object.
     virtual short baselinePosition( bool firstLine ) const;
-    
+
     /*
      * Print the object and it's children, clipped by (x|y|w|h).
      * (tx|ty) is the calculated position of the parent
@@ -212,8 +212,8 @@ public:
     // propagates size changes upwards in the tree
     virtual void updateSize();
     virtual void updateHeight() {}
-    
-    // The corresponding closing element has been parsed. 
+
+    // The corresponding closing element has been parsed.
     virtual void close() { setParsing(false); }
 
     // set the style of the object.
@@ -279,14 +279,14 @@ public:
 
     virtual void setTable(RenderTable*) {};
 
-    // force a complete repaint 
+    // force a complete repaint
     virtual void repaint() { if(m_parent) m_parent->repaint(); }
     virtual void repaintRectangle(int x, int y, int w, int h, bool f=false);
 
     virtual unsigned int length() const { return 1; }
 
     virtual bool isHidden() const { return isFloating() || isPositioned(); }
-    
+
     // Special objects are objects that are neither really inline nor blocklevel
     bool isSpecial() const { return (isFloating() || isPositioned()); };
     virtual bool containsSpecial() { return false; }
@@ -307,14 +307,14 @@ public:
     virtual void setSelectionState(SelectionState) {}
 
     virtual void cursorPos(int /*offset*/, int &/*_x*/, int &/*_y*/, int &/*height*/);
-    
+
     virtual int lowestPosition() const {return 0;}
-    
+
     virtual int rightmostPosition() const {return 0;}
-    
+
     // recursively invalidate current layout
-    void invalidateLayout();
-    
+    // unused: void invalidateLayout();
+
     virtual void calcVerticalMargins() {}
     void removeFromSpecialObjects();
 
@@ -347,7 +347,7 @@ private:
     RenderObject *m_parent;
     RenderObject *m_previous;
     RenderObject *m_next;
-    
+
     short m_verticalPosition;
 
     bool m_layouted                  : 1;

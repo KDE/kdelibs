@@ -752,12 +752,15 @@ RenderObject *RenderObject::container() const
     return o;
 }
 
+#if 0  /// this method is unused
 void RenderObject::invalidateLayout()
 {
+    kdDebug() << "RenderObject::invalidateLayout " << renderName() << endl;
     setLayouted(false);
     if (m_parent && m_parent->layouted())
         m_parent->invalidateLayout();
 }
+#endif
 
 void RenderObject::removeFromSpecialObjects()
 {
