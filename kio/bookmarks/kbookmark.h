@@ -233,6 +233,7 @@ public:
 
     /**
      * @return the list of urls of bookmarks at top level of the group
+     * @since 3.2
      */
     QValueList<KURL> groupUrlList() const;
 
