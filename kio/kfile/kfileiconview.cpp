@@ -415,8 +415,15 @@ void KFileIconView::updateView( bool b )
     KFileIconViewItem *item = static_cast<KFileIconViewItem*>(QIconView::firstItem());
     if ( item ) {
         do {
-            if ( d->previews->isChecked() && canPreview( item->fileInfo() ) )
-                item->setPixmapSize( QSize( d->previewIconSize, d->previewIconSize ) );
+            if ( d->previews->isChecked() ) {
+                if ( canPreview( item->fileInfo() ) )
+                    item->setPixmapSize( QSize( d->previewIconSize, d->previewIconSize ) );
+            }
+            else {
+                // unset pixmap size (used for previews)
+                if ( !item->pixmapSize().isNull() )
+                    item->setPixmapSize( QSize( 0, 0 ) );
+            }
             item->setPixmap( (item->fileInfo())->pixmap( myIconSize ) );
             item = static_cast<KFileIconViewItem *>(item->nextItem());
         } while ( item != 0L );
