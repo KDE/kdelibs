@@ -44,7 +44,7 @@ class HexColumnInterface
       /** bit by bit coding */
       BinaryCoding=3,
       /** don't use; this should enable extension without breaking binary compatibility */
-      MaxCodingId=0xFF
+      MaxCodingId=0xFFFF
     };
 
     /** collection of ids for the fitting of the layout into the available widget's width */

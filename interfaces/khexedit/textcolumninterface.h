@@ -40,10 +40,10 @@ class TextColumnInterface
       LocalEncoding=0,
       /** extended ASCII encoding, also known as Latin1 */
       ISO8859_1Encoding=1,
-      /** don't use; not implemented: the most common EBCDIC codepage */
-      CECP1047Encoding=2,
+//      /** don't use; not implemented: the most common EBCDIC codepage */
+//      CECP1047Encoding=2,
       /** don't use; this should enable extension without breaking binary compatibility */
-      MaxEncodingId=0xFF
+      MaxEncodingId=0xFFFF
     };
 
   public: // set methods
