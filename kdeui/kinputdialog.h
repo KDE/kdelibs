@@ -36,8 +36,8 @@ class KInputDialogPrivate;
  * a float) or an item from a list. This class is designed to be source
  * compatible with QInputDialog.
  *
- * Four static convenience functions are provided: getText(), getInteger().
- * getFloat() and getItem().
+ * Five static convenience functions are provided: getText(), getInteger().
+ * getDouble(), getItem() and getItemList().
  *
  * @since 3.2
  * @author Nadeem Hasan <nhasan@kde.org>
@@ -54,7 +54,7 @@ class KInputDialog : public KDialogBase
      */
     KInputDialog( const QString &caption, const QString &label,
       const QString &value, QWidget *parent, const char *name,
-      QValidator *validator );
+      QValidator *validator, const QString &mask );
     KInputDialog( const QString &caption, const QString &label, int value,
       int minValue, int maxValue, int step, int base, QWidget *parent,
       const char *name );
@@ -105,13 +105,16 @@ class KInputDialog : public KDialogBase
      * @param ok        This bool would be set to true if user pressed Ok
      * @param parent    Parent of the dialog widget
      * @param name      Name of the dialog widget
-     * @param validator Validator to be associated with the line edit
+     * @param validator A @ref QValidator to be associated with the line edit
+     * @paran mask      Mask associated with the line edit. See the
+     *                  documentation for @ref QLineEdit about masks.
      *
      * @return String user entered if Ok was pressed, else a null string
      */
     static QString getText( const QString &caption, const QString &label,
         const QString &value=QString::null, bool *ok=0, QWidget *parent=0,
-        const char *name=0, QValidator *validator=0 );
+        const char *name=0, QValidator *validator=0,
+        const QString &mask=QString::null );
 
     /**
      * Static convenience function to get an integer from the user.

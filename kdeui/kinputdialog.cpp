@@ -49,7 +49,7 @@ KInputDialogPrivate::KInputDialogPrivate()
 
 KInputDialog::KInputDialog( const QString &caption, const QString &label,
     const QString &value, QWidget *parent, const char *name,
-    QValidator *validator )
+    QValidator *validator, const QString &mask )
     : KDialogBase( parent, name, true, caption, Ok|Cancel|User1, Ok, true,
     KStdGuiItem::clear() ),
     d( 0L )
@@ -72,6 +72,9 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
 
   if ( validator )
     d->m_lineEdit->setValidator( validator );
+
+  if ( !mask.isEmpty() )
+    d->m_lineEdit->setInputMask( mask );
 
   connect( d->m_lineEdit, SIGNAL( textChanged( const QString & ) ),
       SLOT( slotEditTextChanged( const QString & ) ) );
@@ -228,10 +231,10 @@ KInputDialog::~KInputDialog()
 
 QString KInputDialog::getText( const QString &caption, const QString &label,
     const QString &value, bool *ok, QWidget *parent, const char *name,
-    QValidator *validator )
+    QValidator *validator, const QString &mask )
 {
   KInputDialog *dlg = new KInputDialog( caption, label, value, parent, name,
-    validator );
+    validator, mask );
 
   bool _ok = ( dlg->exec() == Accepted );
 
@@ -242,7 +245,7 @@ QString KInputDialog::getText( const QString &caption, const QString &label,
   if ( _ok )
     result = dlg->lineEdit()->text();
 
-  // A validator may explicitly allow leading and trailing spaces
+  // A validator may explicitly allow leading and trailing whitespace
   if ( !validator )
     result = result.stripWhiteSpace();
 
