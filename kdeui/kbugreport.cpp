@@ -436,7 +436,7 @@ QString KBugReport::text() const
   for(int i = 0; i < m_lineedit->numLines(); i++)
   {
      QString line = m_lineedit->textLine(i);
-     if (line.right(1) != "\n")
+     if (!line.endsWith("\n"))
         line += '\n';
      bodyText += line;
   }

@@ -876,7 +876,7 @@ bool KSpell::check( const QString &_buffer, bool _usedialog )
 
   // Torben: I corrected the \n\n problem directly in the
   //         origbuffer since I got errors otherwise
-  if ( origbuffer.right(2) != "\n\n" )
+  if ( !origbuffer.endsWith("\n\n" ) )
   {
     if (origbuffer.at(origbuffer.length()-1)!='\n')
     {

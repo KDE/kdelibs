@@ -248,11 +248,11 @@ KSpellConfig::interpret( QString &fname, QString &lname,
 
   QString dname( fname );
 
-  if( dname.right(1) == "+" )
+  if( dname.endsWith( "+" ) )
     dname.remove( dname.length()-1, 1 );
 
-  if( dname.right(3) == "sml" || dname.right(3) == "med" || dname.right(3) == "lrg" ||
-      dname.right(3) == "xlg")
+  if( dname.endsWith("sml") || dname.endsWith("med") || dname.endsWith("lrg") ||
+      dname.endsWith("xlg"))
      dname.remove(dname.length()-3,3);
 
   QString extension;
@@ -457,7 +457,7 @@ void KSpellConfig::getAvailDictsIspell () {
     fname = thedir [i];
 
     // remove .hash
-    if (fname.right(5) == ".hash") fname.remove (fname.length()-5,5);
+    if (fname.endsWith(".hash")) fname.remove (fname.length()-5,5);
 
     if (interpret (fname, lname, hname) && langfnames[0].isEmpty())
     { // This one is the KDE default language
@@ -521,7 +521,7 @@ void KSpellConfig::getAvailDictsAspell () {
     {
 
       // remove .multi
-      if (fname.right(6) == ".multi") fname.remove (fname.length()-6,6);
+      if (fname.endsWith(".multi")) fname.remove (fname.length()-6,6);
 
       if (interpret (fname, lname, hname) && langfnames[0].isEmpty())
       { // This one is the KDE default language
@@ -584,7 +584,7 @@ KSpellConfig::fillDicts( QComboBox* box )
         fname = thedir [i];
 
         // remove .hash
-        if (fname.right(5) == ".hash") fname.remove (fname.length()-5,5);
+        if (fname.endsWith(".hash")) fname.remove (fname.length()-5,5);
 
         if (interpret (fname, lname, hname) && langfnames[0].isEmpty())
         { // This one is the KDE default language
@@ -648,7 +648,7 @@ KSpellConfig::fillDicts( QComboBox* box )
         {
 
           // remove .multi
-          if (fname.right(6) == ".multi") fname.remove (fname.length()-6,6);
+          if (fname.endsWith(".multi")) fname.remove (fname.length()-6,6);
 
           if (interpret (fname, lname, hname) && langfnames[0].isEmpty())
           { // This one is the KDE default language
