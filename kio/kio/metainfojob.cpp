@@ -49,9 +49,9 @@ MetaInfoJob::MetaInfoJob(const KFileItemList &items, bool deleteItems)
     d->succeeded    = false;
     d->items        = items;
     d->currentItem  = new KFileItemListIterator(d->items);
-    
+
     d->items.setAutoDelete(deleteItems);
-    
+
     if (d->currentItem->isEmpty())
     {
         kdDebug(7007) << "nothing to do for the MetaInfoJob\n";
@@ -100,7 +100,7 @@ void MetaInfoJob::determineNextFile()
 
     ++(*d->currentItem);
     d->succeeded = false;
-    
+
     // does the file item already have the needed info? Then shortcut
     if (d->currentItem->current()->metaInfo(false).isValid())
     {
@@ -109,7 +109,7 @@ void MetaInfoJob::determineNextFile()
         determineNextFile();
         return;
     }
-   
+
     getMetaInfo();
 }
 
@@ -131,8 +131,8 @@ void MetaInfoJob::getMetaInfo()
 
     KIO::TransferJob* job = KIO::get(URL, false, false);
     addSubjob(job);
-    
-    connect(job,  SIGNAL(data(KIO::Job *, const QByteArray &)), 
+
+    connect(job,  SIGNAL(data(KIO::Job *, const QByteArray &)),
             this, SLOT(slotMetaInfo(KIO::Job *, const QByteArray &)));
 
     job->addMetaData("mimeType", d->currentItem->current()->mimetype());
@@ -145,10 +145,10 @@ void MetaInfoJob::slotMetaInfo(KIO::Job* , const QByteArray &data)
     QDataStream s(data, IO_ReadOnly);
 
     s >> info;
-    
+
     // every file should get a valid (but maybe empty) item
     if (!info.isValid()) kdDebug(7007) << info.path() << " is not valid\n";
-          
+
     d->currentItem->current()->setMetaInfo(info);
     emit gotMetaInfo(d->currentItem->current());
     d->succeeded = true;
@@ -181,7 +181,7 @@ MetaInfoJob *KIO::fileMetaInfo( const KURL::List &items)
 {
     KFileItemList fileItems;
     for (KURL::List::ConstIterator it = items.begin(); it != items.end(); ++it)
-        fileItems.append(new KFileItem(-1, -1, *it, true));
+        fileItems.append(new KFileItem(KFileItem::Unknown, KFileItem::Unknown, *it, true));
     return new MetaInfoJob(fileItems, true);
 }
 
