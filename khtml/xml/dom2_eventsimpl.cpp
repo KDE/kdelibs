@@ -156,7 +156,7 @@ void EventImpl::initEvent(const DOMString &eventTypeArg, bool canBubbleArg, bool
 	m_type->ref();
 
     m_id = typeToId(eventTypeArg);
-	
+
     m_canBubble = canBubbleArg;
     m_cancelable = cancelableArg;
 }
@@ -286,7 +286,7 @@ DOMString EventImpl::idToType(EventImpl::EventId id)
 	// ignore: KHTML_DBLCLICK_EVENT
 	// ignore: KHTML_CLICK_EVENT
 	default:
-	    return 0;
+	    return DOMString();
 	    break;
     }
 }

@@ -49,7 +49,6 @@ CharacterDataImpl::CharacterDataImpl(DocumentPtr *doc) : NodeWParentImpl(doc)
 CharacterDataImpl::CharacterDataImpl(DocumentPtr *doc, const DOMString &_text)
     : NodeWParentImpl(doc)
 {
-//    str = new DOMStringImpl(_text.impl->s,_text.impl->l);
     str = _text.impl;
     str->ref();
 }
@@ -185,7 +184,7 @@ void CharacterDataImpl::dispatchModifiedEvent(DOMStringImpl *prevValue)
     newValue->ref();
     int exceptioncode;
     dispatchEvent(new MutationEventImpl(EventImpl::DOMCHARACTERDATAMODIFIED_EVENT,
-		  true,false,0,prevValue,newValue,0,0),exceptioncode);
+		  true,false,0,prevValue,newValue,DOMString(),0),exceptioncode);
     newValue->deref();
     dispatchSubtreeModifiedEvent();
 }
