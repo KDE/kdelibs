@@ -38,7 +38,7 @@
 
 #include <kparts/part.h>
 
-#include <kwrite.h>
+#include <kwrite/kwrite.h>
 
 class KWriteDoc;
 class KTextPrint;
