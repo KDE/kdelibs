@@ -640,3 +640,4 @@ void KAccelActions::emitKeycodeChanged()
 
 uint KAccelActions::count() const
 	{ return m_nSize; }
+
