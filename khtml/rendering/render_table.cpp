@@ -148,7 +148,7 @@ void RenderTable::setStyle(RenderStyle *_style)
     RenderFlow::setStyle(_style);
 
     // init RenderObject attributes
-    setInline(style()->display()==INLINE_TABLE);
+    setInline(style()->display()==INLINE_TABLE && !isPositioned());
     setReplaced(style()->display()==INLINE_TABLE);
 
     spacing = style()->borderSpacing();
