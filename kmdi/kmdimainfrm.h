@@ -242,7 +242,7 @@ protected:
    QToolButton             *m_pRestore;
    QToolButton             *m_pClose;
    QPoint                  m_undockPositioningOffset;
-   static KMdi::MdiMode    m_mdiMode;
+   KMdi::MdiMode    m_mdiMode;
    bool                    m_bMaximizedChildFrmMode;
    int                     m_oldMainFrmHeight;
    int                     m_oldMainFrmMinHeight;
@@ -274,7 +274,7 @@ public:
    /**
    * Constructor.
    */
-   KMdiMainFrm( QWidget* parentWidget, const char* name = "", WFlags flags = WType_TopLevel | WDestructiveClose);
+   KMdiMainFrm( QWidget* parentWidget, const char* name = "", KMdi::MdiMode mdiMode=KMdi::ChildframeMode,WFlags flags = WType_TopLevel | WDestructiveClose);
    /**
    * Destructor.
    */
@@ -291,7 +291,7 @@ public:
    /**
    * Returns the MDI mode. This can be one of the enumerations KMdi::MdiMode.
    */
-   static KMdi::MdiMode mdiMode() { return m_mdiMode; };
+   KMdi::MdiMode mdiMode() { return m_mdiMode; };
    /**
    * Returns the focused attached MDI view.
    */
