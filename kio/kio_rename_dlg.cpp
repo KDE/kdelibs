@@ -7,6 +7,7 @@
 #include <qfileinfo.h>
 
 #include <kapp.h>
+#include <kdialog.h>
 #include <klocale.h>
 #include <kurl.h>
 #include <kprotocolmanager.h>
@@ -22,7 +23,7 @@ KIORenameDlg::KIORenameDlg(QWidget *parent, const char *_src, const char *_dest,
 
   b0 = b1 = b2 = b3 = b4 = b5 = b6 = b7 = 0L;
     
-  setCaption( i18n( "Information" ) );
+  setCaption( i18n( "Rename File" ) );
 
   b0 = new QPushButton( i18n( "Cancel" ), this );
   connect(b0, SIGNAL(clicked()), this, SLOT(b0Pressed()));
@@ -63,128 +64,51 @@ KIORenameDlg::KIORenameDlg(QWidget *parent, const char *_src, const char *_dest,
     }
   }
 
-  m_pLayout = new QVBoxLayout( this, 10, 0 );
+  m_pLayout = new QVBoxLayout( this, KDialog::marginHint(), 
+			       KDialog::spacingHint() );
   m_pLayout->addStrut( 360 );	// makes dlg at least that wide
  
   // User tries to overwrite a file with itself ?
-  if ( _mode & M_OVERWRITE_ITSELF )
-  {
-    QLabel *lb = new QLabel( i18n("You try to overwrite"), this );
-    lb->setFixedHeight( lb->sizeHint().height() );
-    m_pLayout->addWidget( lb );
-    m_pLayout->addSpacing( 5 );
-
-    lb = new QLabel( src, this );
-    lb->setFixedHeight( lb->sizeHint().height() );
-    m_pLayout->addWidget( lb );
-    m_pLayout->addSpacing( 5 );
-
-    lb = new QLabel( "with itself. Do you want to rename it to", this );
-    lb->setFixedHeight( lb->sizeHint().height() );
-    m_pLayout->addWidget( lb );
-  }
-  else if ( _mode & M_OVERWRITE )
-  {	    
-    QLabel *lb = new QLabel( dest, this );
-    lb->setFixedHeight( lb->sizeHint().height() );
-    m_pLayout->addWidget( lb );
-    m_pLayout->addSpacing( 5 );
-
-    lb = new QLabel( i18n("already exists. Overwrite with"), this );
-    lb->setFixedHeight( lb->sizeHint().height() );
-    m_pLayout->addWidget( lb );
-    m_pLayout->addSpacing( 5 );
-
-    QString str = src;
-    str += " ?";
-    lb = new QLabel( str, this );
-    lb->setFixedHeight( lb->sizeHint().height() );
-    m_pLayout->addWidget( lb );
-    m_pLayout->addSpacing( 5 );
-
-    lb = new QLabel( i18n("Or rename to"), this );
-    lb->setFixedHeight( lb->sizeHint().height() );
-    m_pLayout->addWidget( lb );
-  }
-  else if ( !(_mode & M_OVERWRITE ) )
-  {
-    QLabel *lb = new QLabel( src, this );
-    lb->setFixedHeight( lb->sizeHint().height() );
-    m_pLayout->addWidget( lb );
-    m_pLayout->addSpacing( 5 );
-
-    lb = new QLabel( i18n("already exists."), this );
-    lb->setFixedHeight( lb->sizeHint().height() );
-    m_pLayout->addWidget( lb );
-    m_pLayout->addSpacing( 5 );
-
-    lb = new QLabel( i18n("Do you want to rename it ?"), this );
-    lb->setFixedHeight( lb->sizeHint().height() );
-    m_pLayout->addWidget( lb );
-  }
-  else
+  QLabel *lb;
+  if ( _mode & M_OVERWRITE_ITSELF ) {
+    lb = new QLabel( i18n("This action would overwrite\n%1\nwith itself. Do you want to rename it?").arg(src), this );
+  }  else if ( _mode & M_OVERWRITE ) {
+    lb = new QLabel( i18n("%1 already exists.\nDo you want to overwrite it with %2,\nor rename it?").arg(dest).arg(src), this );
+  }  else if ( !(_mode & M_OVERWRITE ) ) {
+    lb = new QLabel( i18n("%1 already exists.\nDo you want to rename it?").arg(src), this );
+  } else
     assert( 0 );
   
+  m_pLayout->addWidget(lb);
   m_pLineEdit = new QLineEdit( this );
-  m_pLineEdit->setText( dest );
-  m_pLineEdit->setFixedHeight( m_pLineEdit->sizeHint().height() );
-  m_pLayout->addSpacing( 10 );
   m_pLayout->addWidget( m_pLineEdit );
+  m_pLineEdit->setText( dest );
+
   m_pLayout->addSpacing( 10 );
     
   QHBoxLayout* layout = new QHBoxLayout();
   m_pLayout->addLayout( layout );
-  if ( b0 )
-  {    
-    b0->setDefault( true );
-    b0->setFixedSize( b0->sizeHint() );
-    layout->addWidget( b0 );
-    layout->addSpacing( 5 );
-  }
+
+  layout->addStretch(1);
+
   if ( b1 )
-  {    
-    b1->setFixedSize( b1->sizeHint() );
     layout->addWidget( b1 );
-    layout->addSpacing( 5 );
-  }
   if ( b2 )
-  {    
-    b2->setFixedSize( b2->sizeHint() );
     layout->addWidget( b2 );
-    layout->addSpacing( 5 );
-  }
   if ( b3 )
-  {    
-    b3->setFixedSize( b3->sizeHint() );
     layout->addWidget( b3 );
-    layout->addSpacing( 5 );
-  }
   if ( b4 )
-  {    
-    b4->setFixedSize( b4->sizeHint() );
     layout->addWidget( b4 );
-    layout->addSpacing( 5 );
-  }
   if ( b5 )
-  {
-    b5->setFixedSize( b5->sizeHint() );
     layout->addWidget( b5 );
-    layout->addSpacing( 5 );
-  }
   if ( b6 )
-  {
-    b6->setFixedSize( b6->sizeHint() );
     layout->addWidget( b6 );
-    layout->addSpacing( 5 );
-  }
   if ( b7 )
-  {
-    b7->setFixedSize( b7->sizeHint() );
     layout->addWidget( b7 );
-  }
+
+  b0->setDefault( true );
+  layout->addWidget( b0 );
   
-  m_pLayout->addStretch( 10 );
-  m_pLayout->activate();
   resize( sizeHint() );
 }
 

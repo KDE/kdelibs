@@ -8,6 +8,7 @@
 #include <qsocketnotifier.h>
 #include <qdialog.h>
 #include <qpushbutton.h>
+#include <qlayout.h>
 
 #include <kapp.h>
 #include <klocale.h>

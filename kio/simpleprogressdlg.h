@@ -3,7 +3,6 @@
 
 #include <qwidget.h>
 #include <qlabel.h>
-#include <qlayout.h>
 
 #include <kprogress.h>
 
@@ -40,13 +39,11 @@ protected slots:
 protected:
   void closeEvent( QCloseEvent * );
 
-  QVBoxLayout *m_pLayout;
-  QLabel* m_pLine1;
-  QLabel* m_pLine2;
-  QLabel* m_pLine3;
-  QLabel* m_pLine4;
-  QLabel* m_pLine5;
-  QLabel* m_pLine6;
+  QLabel* sourceLabel;
+  QLabel* destLabel;
+  QLabel* speedLabel;
+  QLabel* statusLabel;
+
   KProgress* m_pProgressBar;
 
   unsigned long m_iTotalSize;
