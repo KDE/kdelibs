@@ -5597,7 +5597,9 @@ void KHTMLPart::slotPartRemoved( KParts::Part *part )
             if (factory()) {
                 factory()->removeClient( part );
             }
-            removeChildClient( part );
+            if (childClients()->containsRef(part)) {
+                removeChildClient( part );
+            }
         }
     }
 }
