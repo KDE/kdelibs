@@ -4,7 +4,7 @@
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2000 Simon Hausmann (hausmann@kde.org)
- *           (C) 2001 Dirk Mueller (mueller@kde.org)
+ *           (C) 2001-2003 Dirk Mueller (mueller@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -239,8 +239,7 @@ void HTMLFrameElementImpl::parseAttribute(AttributeImpl *attr)
     {
     case ATTR_SRC:
         url = khtml::parseURL(attr->val());
-        // FIXME_APPLE: load new url in the iframe
-        setChanged();
+        setLocation(url);
         break;
     case ATTR_ID:
     case ATTR_NAME:
@@ -342,11 +341,26 @@ void HTMLFrameElementImpl::attach()
 
 void HTMLFrameElementImpl::setLocation( const DOMString& str )
 {
-    url = str;
-    KHTMLView* w = getDocument()->view();
-    if ( m_render && w && w->part() )
-        // don't call this for an iframe
-        w->part()->requestFrame( static_cast<khtml::RenderFrame *>(m_render), url.string(), name.string() );
+    if( !attached() )
+        return;
+
+    if( !m_render ) {
+        detach();
+        attach();
+        return;
+    }
+
+    if( !getDocument()->isURLAllowed(url.string()) )
+        return;
+
+    // load the frame contents
+    KHTMLView *w = getDocument()->view();
+    KHTMLPart *part = w->part()->findFrame(  name.string() );
+    if ( part ) {
+        part->openURL( getDocument()->completeURL( url.string() ) );
+    } else {
+        w->part()->requestFrame( static_cast<RenderFrame*>( m_render ), url.string(), name.string() );
+    }
 }
 
 bool HTMLFrameElementImpl::isSelectable() const
