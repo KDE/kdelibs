@@ -33,13 +33,24 @@ static const char *description =
 
 static const char *version = "1.0";
 
+static const KCmdLineOptions options[] =
+{
+ { "shutdown", I18N_NOOP("Shut down cookie jar."), 0 },
+ { "remove-all", I18N_NOOP("Remove all cookies."), 0 },
+ { 0, 0, 0 }
+};
 
 int main(int argc, char *argv[])
 {
    KCmdLineArgs::init(argc, argv, "kcookiejar", description, version);
+
+   KCmdLineArgs::addCmdLineOptions( options );
+
    if (!KCookieServer::start())
    {
-      printf("KCookieJar already running.\n");
+      KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+      if (!args->isSet("shutdown") && !args->isSet("remove-all"))
+         printf("KCookieJar already running.\n");
       exit(0);
    }
    KCookieServer server;

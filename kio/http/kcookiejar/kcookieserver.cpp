@@ -30,6 +30,7 @@
 
 #include <kdebug.h>
 #include <kapp.h>
+#include <kcmdlineargs.h>
 #include <kstddirs.h>
 #include <qtimer.h>
 #include <unistd.h>
@@ -81,11 +82,29 @@ KCookieServer::KCookieServer()
 
 KCookieServer::~KCookieServer()
 {
+   if (mCookieJar->changed())
+      slotSave();
    delete mCookieJar;
    delete mTimer;
    delete mPendingCookies;
 }
 
+int
+KCookieServer::newInstance()
+{
+   KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+   if (args->isSet("remove-all"))
+   {
+        mCookieJar->eatAllCookies();
+        slotSave();
+   }
+
+   if (args->isSet("shutdown"))
+   {
+	quit();
+   }
+   return 0;
+}
 
 bool
 KCookieServer::process(const QCString &fun, const QByteArray &data,

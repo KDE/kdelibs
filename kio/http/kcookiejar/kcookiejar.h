@@ -249,6 +249,11 @@ public:
     void eatCookie(KCookiePtr cookiePtr);
 
     /**
+     * Remove & delete all cookies
+     */
+    void eatAllCookies();
+
+    /**
      * Parses _url and returns the FQDN (_fqdn) 
      * as well as the domain name without the hostname (_domain).
      */

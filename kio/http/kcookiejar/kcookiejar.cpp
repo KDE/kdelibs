@@ -878,7 +878,8 @@ void KCookieJar::eatCookie(KCookiePtr cookiePtr)
     if (cookieList)
     {
         // This deletes cookiePtr!
-        cookieList->removeRef( cookiePtr );
+        if (cookieList->removeRef( cookiePtr ))
+           cookiesChanged = true;
 
         if ((cookieList->isEmpty()) && 
             (cookieList->getAdvice() == KCookieDunno))
@@ -890,6 +891,28 @@ void KCookieJar::eatCookie(KCookiePtr cookiePtr)
         }
     }
 }    
+
+void KCookieJar::eatAllCookies()
+{
+    for ( QStringList::Iterator it=domainList.begin(); 
+    	  it != domainList.end(); 
+    	  it++)
+    {
+        const QString &domain = *it;
+
+	KCookieList *cookieList = cookieDomains[domain];
+        KCookiePtr cookie=cookieList->first();
+
+	for (; cookie != 0;)
+        {
+           // Delete expired cookies
+           KCookiePtr old_cookie = cookie;
+           cookie = cookieList->next(); 
+           cookieList->removeRef( old_cookie );
+	}
+    }    
+    cookiesChanged = true;
+}
 
 //
 // Saves all cookies to the file '_filename'.
@@ -1058,6 +1081,7 @@ bool KCookieJar::loadCookies(const QString &_filename)
     	}
     }
     delete [] buffer;
+    cookiesChanged = false;
 
     fclose( fStream);
     return err;

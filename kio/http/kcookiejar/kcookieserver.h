@@ -41,6 +41,8 @@ public:
   KCookieServer();
   ~KCookieServer();
 
+  virtual int newInstance();
+
   virtual bool process(const QCString &fun, const QByteArray &data,
 		       QCString& replyType, QByteArray &replyData);
 
