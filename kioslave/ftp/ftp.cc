@@ -387,6 +387,12 @@ bool Ftp::ftpLogin( const char *_user, const char *_pass, string *_redirect )
   
   cerr << "Login ok" << endl;
   
+  // Okay, we're logged in. If this is IIS 4, switch dir listing style to Unix:
+  // Thanks to jk@soegaard.net (Jens Kristian Søgaard) for this hint
+  if( ftpSendCmd( "syst", '2' ) )
+    if( !strncmp( rspbuf, "215 Windows_NT version", 22 ) ) // should do for any version
+      ftpSendCmd( "site dirstyle", '2' );                                                 
+
   // Not interested in the current working directory ? => return with success
   if ( _redirect == 0L )
     return true;
