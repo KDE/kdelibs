@@ -139,6 +139,8 @@ int KWalletD::open(const QString& wallet) {
 			QByteArray p;
 			p.duplicate(wiz->_pass1->text().utf8(), wiz->_pass1->text().length());
 			b->open(p);
+			b->createFolder(KWallet::Wallet::PasswordFolder);
+			b->createFolder(KWallet::Wallet::FormDataFolder);
 			b->close(p);
 			p.fill(0);
 			delete b;
