@@ -304,9 +304,6 @@ protected:
     const char* searchStopper;
     // the stopper len
     int searchStopperLen;
-    // true if we are waiting for an external script (<SCRIPT SRC=...) to load, i.e.
-    // we don't do any parsing while this is true
-    bool loadingExtScript;
     // if no more data is coming, just parse what we have (including ext scripts that
     // may be still downloading) and finish
     bool noMoreData;

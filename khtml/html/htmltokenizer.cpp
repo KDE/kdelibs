@@ -28,7 +28,7 @@
 // KDE HTML Widget - Tokenizers
 // $Id$
 
-//#define TOKEN_DEBUG 1
+#define TOKEN_DEBUG 1
 //#define TOKEN_DEBUG 2
 
 #ifdef HAVE_CONFIG_H
@@ -156,7 +156,6 @@ HTMLTokenizer::HTMLTokenizer(DOM::DocumentPtr *_doc, KHTMLView *_view)
     charsets = KGlobal::charsets();
     parser = new KHTMLParser(_view, _doc);
     m_executingScript = 0;
-    loadingExtScript = false;
     onHold = false;
 
     reset();
@@ -171,7 +170,6 @@ HTMLTokenizer::HTMLTokenizer(DOM::DocumentPtr *_doc, DOM::DocumentFragmentImpl *
     charsets = KGlobal::charsets();
     parser = new KHTMLParser( i, _doc );
     m_executingScript = 0;
-    loadingExtScript = false;
     onHold = false;
 
     reset();
@@ -201,7 +199,6 @@ void HTMLTokenizer::reset()
 void HTMLTokenizer::begin()
 {
     m_executingScript = 0;
-    loadingExtScript = false;
     onHold = false;
     reset();
     size = 254;
@@ -228,7 +225,6 @@ void HTMLTokenizer::begin()
     tquote = NoQuote;
     searchCount = 0;
     Entity = NoEntity;
-    loadingExtScript = false;
     scriptSrc = "";
     pendingSrc = "";
     noMoreData = false;
@@ -387,26 +383,9 @@ void HTMLTokenizer::parseSpecial(DOMStringIt &src)
 
 void HTMLTokenizer::scriptHandler()
 {
-    // We are inside a <script>
-    bool doScriptExec = false;
-    CachedScript* cs = 0;
-    if (!scriptSrc.isEmpty()) {
-        // forget what we just got; load from src url instead
-        if ( !parser->skipMode() ) {
-            if ( (cs = parser->doc()->docLoader()->requestScript(scriptSrc, scriptSrcCharset) ))
-                cachedScript.enqueue(cs);
-        }
-        scriptSrc=QString::null;
-    }
-    else {
-#ifdef TOKEN_DEBUG
-        kdDebug( 6036 ) << "---START SCRIPT---" << endl;
-        kdDebug( 6036 ) << QString(scriptCode, scriptCodeSize) << endl;
-        kdDebug( 6036 ) << "---END SCRIPT---" << endl;
-#endif
-        // Parse scriptCode containing <script> info
-        doScriptExec = true;
-    }
+    QString currentScriptSrc = scriptSrc;
+    scriptSrc = QString::null;
+
     processListing(DOMStringIt(scriptCode, scriptCodeSize));
     QString exScript( buffer, dest-buffer );
 
@@ -417,19 +396,21 @@ void HTMLTokenizer::scriptHandler()
     QString prependingSrc;
 
     if ( !parser->skipMode() ) {
+        CachedScript* cs = 0;
+
+        // forget what we just got, load from src url instead
+        if ( !currentScriptSrc.isEmpty() &&
+             (cs = parser->doc()->docLoader()->requestScript(currentScriptSrc, scriptSrcCharset) ))
+            cachedScript.enqueue(cs);
+
         if (cs) {
-             //kdDebug( 6036 ) << "cachedscript extern!" << endl;
-             //kdDebug( 6036 ) << "src: *" << QString( src.current(), src.length() ).latin1() << "*" << endl;
-             //kdDebug( 6036 ) << "pending: *" << pendingSrc.latin1() << "*" << endl;
             pendingSrc.prepend( QString(src.current(), src.length() ) );
             setSrc(QString::null);
             scriptCodeSize = scriptCodeResync = 0;
             cs->ref(this);
-            // will be 0 if script was already loaded and ref() executed it
-            if (cachedScript.count())
-                loadingExtScript = true;
+
         }
-        else if (view && doScriptExec && javascript ) {
+        else if (currentScriptSrc.isEmpty() && view && javascript ) {
             if ( !m_executingScript )
                 pendingSrc.prepend( QString( src.current(), src.length() ) ); // deep copy - again
             else
@@ -437,17 +418,14 @@ void HTMLTokenizer::scriptHandler()
 
             setSrc(QString::null);
             scriptCodeSize = scriptCodeResync = 0;
-            //QTime dt;
-            //dt.start();
             scriptExecution( exScript, QString(), scriptStartLineno );
-	    //kdDebug( 6036 ) << "script execution time:" << dt.elapsed() << endl;
         }
     }
 
     script = false;
     scriptCodeSize = scriptCodeResync = 0;
 
-    if ( !m_executingScript && !loadingExtScript ) {
+    if ( !m_executingScript && cachedScript.isEmpty() ) {
         // kdDebug( 6036 ) << "adding pending Output to parsed string" << endl;
         QString newStr = QString(src.current(), src.length());
         newStr += pendingSrc;
@@ -1141,6 +1119,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                     searchStopper = textareaEnd;
                     searchStopperLen = 10;
                     textarea = true;
+                    discard = AllDiscard;
                     parseSpecial(src);
                 }
                 break;
@@ -1238,7 +1217,7 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
         return;
 
     if ( ( m_executingScript && appendData ) ||
-         ( !m_executingScript && loadingExtScript ) ) {
+         ( !m_executingScript && cachedScript.count() ) ) {
         // don't parse; we will do this later
         pendingSrc += str;
         return;
@@ -1460,7 +1439,7 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
     }
     _src = QString();
 
-    if (noMoreData && !loadingExtScript && !m_executingScript )
+    if (noMoreData && cachedScript.isEmpty() && !m_executingScript )
         end(); // this actually causes us to be deleted
 }
 
@@ -1523,7 +1502,7 @@ void HTMLTokenizer::finish()
     // this indicates we will not recieve any more data... but if we are waiting on
     // an external script to load, we can't finish parsing until that is done
     noMoreData = true;
-    if (!loadingExtScript && !m_executingScript && !onHold)
+    if (cachedScript.isEmpty() && !m_executingScript && !onHold)
         end(); // this actually causes us to be deleted
 }
 
@@ -1612,14 +1591,13 @@ void HTMLTokenizer::enlargeScriptBuffer(int len)
 void HTMLTokenizer::notifyFinished(CachedObject */*finishedObj*/)
 {
     assert(!cachedScript.isEmpty());
-    bool finished = false;
-    while (!finished && cachedScript.head()->isLoaded()) {
+    bool done = false;
+    while (!done && cachedScript.head()->isLoaded()) {
 #ifdef TOKEN_DEBUG
         kdDebug( 6036 ) << "Finished loading an external script" << endl;
 #endif
         CachedScript* cs = cachedScript.dequeue();
-        finished = cachedScript.isEmpty();
-        if (finished) loadingExtScript = false;
+        done = cachedScript.isEmpty();
         DOMString scriptSource = cs->script();
 #ifdef TOKEN_DEBUG
         kdDebug( 6036 ) << "External script is:" << endl << scriptSource.string() << endl;
