@@ -121,7 +121,7 @@ KIO::Scheduler::ProtocolInfoDict::get(const QString &protocol)
 
 
 Scheduler::Scheduler()
-          :QObject(0, "scheduler"),
+          :QObject(kapp, "scheduler"),
            DCOPObject( "KIO::Scheduler" ),
            slaveTimer(this, "Scheduler::slaveTimer"),
            coSlaveTimer(this, "Scheduler::coSlaveTimer"),
@@ -144,7 +144,7 @@ Scheduler::Scheduler()
 
 Scheduler::~Scheduler()
 {
-    //fprintf(stdout, "Destructing KIO::Scheduler...\n");
+    qWarning("Destructing KIO::Scheduler...");
 
     protInfoDict->setAutoDelete(true);
     delete protInfoDict; protInfoDict = 0;
@@ -846,11 +846,9 @@ Scheduler::_checkSlaveOnHold(bool b)
 }
 
 
-static KStaticDeleter<Scheduler> ksds;
-
 Scheduler* Scheduler::self() {
     if ( !instance ) {
-        instance = ksds.setObject(new Scheduler);
+        instance = new Scheduler;
     }
     return instance;
 }
