@@ -329,7 +329,7 @@ KHTMLPart::~KHTMLPart()
 
 bool KHTMLPart::openURL( const KURL &url )
 {
-  kdDebug( 6050 ) << "KHTMLPart::openURL" << url.url() << endl;
+  kdDebug( 6050 ) << "KHTMLPart::openURL " << url.url() << endl;
   static QString http_protocol = QString::fromLatin1( "http" );
 
   KParts::URLArgs args( d->m_extension->urlArgs() );
