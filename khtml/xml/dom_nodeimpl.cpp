@@ -428,19 +428,19 @@ void NodeImpl::dispatchGenericEvent( EventImpl *evt, int &/*exceptioncode */)
 
     // dispatch to the actual target node
     it.toLast();
+    NodeImpl* propagationSentinel = 0;
     if (!evt->propagationStopped()) {
         evt->setEventPhase(Event::AT_TARGET);
         evt->setCurrentTarget(it.current());
         it.current()->handleLocalEvents(evt, true);
         if (!evt->propagationStopped())
             it.current()->handleLocalEvents(evt,false);
+        else
+            propagationSentinel = it.current();
     }
     --it;
 
-    if (evt->bubbles() && !evt->propagationStopped()) {
-        evt->stopPropagation(false);
-        NodeImpl* propagationSentinel = 0;
-
+    if (evt->bubbles()) {
         evt->setEventPhase(Event::BUBBLING_PHASE);
         for (; it.current() && !evt->propagationStopped(); --it) {
             if (evt->propagationStopped()) propagationSentinel = it.current();
