@@ -48,15 +48,13 @@ extern "C" {
 
 int main( int argc, char **argv )
 {
-  signal(SIGCHLD,sigchld_handler);
-  signal(SIGSEGV,sigsegv_handler);
-
-  //ProtocolManager manager;
+  signal(SIGCHLD, sigchld_handler);
+  signal(SIGSEGV, sigsegv_handler);
 
   debug( "kio_http : Starting");
 
   Connection parent( 0, 1 );
-  
+
   HTTPProtocol http( &parent );
   http.dispatchLoop();
 
@@ -72,7 +70,7 @@ void sigsegv_handler(int signo)
 void sigchld_handler(int signo)
 {
   int pid, status;
-    
+
   while(true) {
     pid = waitpid(-1, &status, WNOHANG);
     if ( pid <= 0 ) {
@@ -93,7 +91,7 @@ char sigbreak = 0;
 void sigalrm_handler(int signo)
 {
   sigbreak = 1;
-}            
+}
 
 void setup_alarm(unsigned int timeout)
 {
@@ -228,24 +226,21 @@ int revmatch(const char *host, const char *nplist)
     const char *shptr = hptr;
     
     while( nptr >= nplist ) {
-        if ( *hptr != *nptr ) 
-        {
-            hptr = shptr; 
+        if ( *hptr != *nptr ) {
+            hptr = shptr;
             // Try to find another domain or host in the list
-            while ( --nptr>=nplist && *nptr!=',' && *nptr!=' ') 
-                ;            
+            while ( --nptr>=nplist && *nptr!=',' && *nptr!=' ')
+                ;
             while ( --nptr>=nplist && (*nptr==',' || *nptr==' '))
                 ;
         } else {
-            if ( nptr==nplist || nptr[-1]==',' || nptr[-1]==' ') 
-            { 
+            if ( nptr==nplist || nptr[-1]==',' || nptr[-1]==' ') {
                 return 1;
             }
-            hptr--;
-            nptr--;
+            hptr-=2;
         }
     }
-    
+
     return 0;
 }
 
@@ -300,7 +295,10 @@ bool HTTPProtocol::initSockaddr( struct sockaddr_in *server_name, const char *ho
 
 bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data_size, bool _reload, unsigned long _offset )
 {
-  int do_proxy, port = _url.port();
+  int do_proxy, port = _url.port(), len=1;
+  char c_buffer[64], f_buffer[1024], *ret=0;
+  bool unauthorized = false;
+
   if ( port == -1 )
     port = 80;
 
@@ -347,9 +345,8 @@ bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data
   }
 
   string command;
-	
-  if ( _post_data )
-  {
+
+  if ( _post_data ) {
     _reload = true;     /* no caching allowed */
     command = "POST ";
   }
@@ -357,18 +354,17 @@ bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data
     command = "GET ";
 
   if( do_proxy ) {
-    debug( "http_open 2");
-    char buffer[ 64 ];
-    sprintf( buffer, ":%i", port );
+    bzero(c_buffer, 64);
+    sprintf(c_buffer, ":%i", port);
     command += "http://";
     command += _url.host();
-    command += buffer;
+    command += c_buffer;
   }
 
   // Let the path be "/" if it is empty ( => true )
   QString tmp = _url.encodedPathAndQuery( 0, true );
   command += tmp;
-  
+
   command += " HTTP/1.1\r\n"; /* start header */
   command += "Connection: Close\r\n"; // Duh, we don't want keep-alive stuff quite yet.
   command += "User-Agent: "; /* User agent */
@@ -376,10 +372,10 @@ bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data
   command += "\r\n";
 
   if ( _offset > 0 ) {
-    char buffer[ 64 ];
-    sprintf( buffer, "Range: bytes=%li-\r\n", _offset );
-    command += buffer;
-    debug( "kio_http : Range = %s", buffer );
+    bzero(c_buffer, 64);
+    sprintf(c_buffer, "Range: bytes=%li-\r\n", _offset);
+    command += c_buffer;
+    debug( "kio_http : Range = %s", c_buffer);
   }
 
   if ( _reload ) /* No caching for reload */ {
@@ -403,17 +399,17 @@ bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data
   command += "Host: "; /* support for virtual hosts and required by HTTP 1.1 */
   command += _url.host();
   if (_url.port() != 0) {
-    char buffer[ 64 ];
-    sprintf( buffer, ":%i", port );
-    command += buffer;
+    bzero(c_buffer, 64);
+    sprintf(c_buffer, ":%i", port);
+    command += c_buffer;
   }
   command += "\r\n";
-  
+
   if (_post_data ) {
     command += "Content-Type: application/x-www-form-urlencoded\r\nContent-Length: ";
-    char buffer[ 64 ];
-    sprintf( buffer, "%i\r\n", _post_data_size );
-    command += buffer;
+    bzero(c_buffer, 64);
+    sprintf(c_buffer, "%i\r\n", _post_data_size);
+    command += c_buffer;
   }
 
   if (_url.pass() ||_url.user()) {
@@ -462,35 +458,29 @@ repeat2:
   // however at least extensions should be checked
   m_strMimeType = "text/html";
 
-  bool unauthorized = false;
+  while( len && ( ret = fgets( f_buffer, 1024, m_fsocket ) ) ) { 
+    len = strlen( f_buffer );
+    while( len && (f_buffer[ len-1 ] == '\n' || f_buffer[ len-1 ] == '\r') )
+      f_buffer[ --len ] = 0;
 
-  char buffer[1024];
-  int len = 1;
-  char* ret = 0L;
-  while( len && ( ret = fgets( buffer, 1024, m_fsocket ) ) ) { 
-    len = strlen( buffer );
-    while( len && (buffer[ len-1 ] == '\n' || buffer[ len-1 ] == '\r') )
-      buffer[ --len ] = 0;
-
-    debug( "kio_http : Header: %s", buffer );
-    if ( strncmp( buffer, "Accept-Ranges: none", 19 ) == 0 )
+    debug( "kio_http : Header: %s", f_buffer );
+    if ( strncmp( f_buffer, "Accept-Ranges: none", 19 ) == 0 )
       m_bCanResume = false;
     
     
-    else if ( strncmp( buffer, "Content-length: ", 16 ) == 0 || strncmp( buffer, "Content-Length: ", 16 ) == 0 )
-      m_iSize = atol( buffer + 16 );
-    else if ( strncmp( buffer, "Content-Type: ", 14 ) == 0 || strncmp( buffer, "Content-type: ", 14 ) == 0 ) {
+    else if ( strncmp( f_buffer, "Content-length: ", 16 ) == 0 || strncmp( f_buffer, "Content-Length: ", 16 ) == 0 )
+      m_iSize = atol( f_buffer + 16 );
+    else if ( strncmp( f_buffer, "Content-Type: ", 14 ) == 0 || strncmp( f_buffer, "Content-type: ", 14 ) == 0 ) {
       // Jacek: We can't send mimeType signal now,
       // because there may be another Content-Type to come
-      m_strMimeType = buffer + 14;
+      m_strMimeType = f_buffer + 14;
     }
-    else if ( strncasecmp( buffer, "HTTP/1.0 ", 9 ) == 0 )
-    {
+    else if ( strncasecmp( f_buffer, "HTTP/1.0 ", 9 ) == 0 ) {
       HTTP = HTTP_10;
       // Unauthorized access
-      if ( strncmp( buffer + 9, "401", 3 ) == 0 ) {
+      if ( strncmp( f_buffer + 9, "401", 3 ) == 0 ) {
 	unauthorized = true;
-      } else if ( buffer[9] == '4' ||  buffer[9] == '5' ) {
+      } else if ( f_buffer[9] == '4' ||  f_buffer[9] == '5' ) {
 	// Let's first send an error message
 	// this will be moved to slotErrorPage(), when it will be written
 	http_close();
@@ -500,41 +490,42 @@ repeat2:
 	// Tell that we will only get an error page here.
 	errorPage();
       }
-    } else if ( strncasecmp( buffer, "HTTP/1.1 ", 9 ) == 0 ) {
+    } else if ( strncasecmp(f_buffer, "HTTP/1.1 ", 9) == 0 ) {
       HTTP = HTTP_11;
       Authentication = AUTH_None;
       // Unauthorized access
-      if ( (strncmp(buffer+9, "401", 3)==0) || (strncmp(buffer+9, "407", 3)==0) ) {
+      if ( (strncmp(f_buffer+9, "401", 3)==0) || (strncmp(f_buffer+9, "407", 3)==0) ) {
 	unauthorized = true;
-      } else if ( buffer[9] == '4' ||  buffer[9] == '5' ) {
+      } else if ( f_buffer[9] == '4' ||  f_buffer[9] == '5' ) {
 	// Tell that we will only get an error page here.
 	errorPage();
       }
     }
     // In fact we should do redirection only if we got redirection code
-    else if ( strncmp( buffer, "Location:", 9 ) == 0 ) {
+    else if ( strncmp(f_buffer, "Location:", 9) == 0 ) {
       http_close();
-      KURL u( _url, buffer + 10 );
+      KURL u( _url, f_buffer + 10 );
       redirection( u.url() );
       return http_open( u, _post_data, _post_data_size, _reload, _offset );
-    } else if (strncasecmp(buffer, "WWW-Authenticate:", 17)==0) {
-      configAuth(buffer+17, false);
-    } else if (strncasecmp(buffer, "Proxy-Authenticate:", 19)==0) {
-      configAuth(buffer+19, true);
+    } else if ( strncasecmp(f_buffer, "WWW-Authenticate:", 17) == 0 ) {
+      configAuth(f_buffer+17, false);
+    } else if ( strncasecmp(f_buffer, "Proxy-Authenticate:", 19) ==0 ) {
+      configAuth(f_buffer+19, true);
     } else if (HTTP == HTTP_11) {
-      if (strncasecmp(buffer, "Connection: ", 12) == 0) {
-	if (strncasecmp(buffer+12, "Close", 5)==0)
+      if (strncasecmp(f_buffer, "Connection: ", 12) == 0) {
+	if (strncasecmp(f_buffer+12, "Close", 5)==0)
 	  /*m_bPersistant=false*/;
-      } else if (strncasecmp( buffer, "Transfer-Encoding: ", 19) == 0) {
+      } else if (strncasecmp(f_buffer, "Transfer-Encoding: ", 19) == 0) {
 	// If multiple encodings have been applied to an entity, the transfer-
 	// codings MUST be listed in the order in which they were applied.
-	addEncoding(buffer+19, &m_qTransferEncodings);
-      } else if (strncasecmp(buffer, "Content-Encoding: ", 18) == 0) {
-	addEncoding(buffer+18, &m_qContentEncodings);
-      } else if (strncasecmp(buffer, "Content-MD5: ", 13)==0) {
-	m_sContentMD5 = strdup(buffer+13);
+	addEncoding(f_buffer+19, &m_qTransferEncodings);
+      } else if (strncasecmp(f_buffer, "Content-Encoding: ", 18) == 0) {
+	addEncoding(f_buffer+18, &m_qContentEncodings);
+      } else if (strncasecmp(f_buffer, "Content-MD5: ", 13)==0) {
+	m_sContentMD5 = strdup(f_buffer+13);
       }
     }
+    bzero(f_buffer, 1024);
   }
   if (unauthorized) {
     http_close();
@@ -581,6 +572,8 @@ void HTTPProtocol::configAuth(const char *p, bool b)
 {
   HTTP_AUTH f;
   string strAuth;
+  int i;
+
   while( *p == ' ' ) p++;
   if ( strncmp( p, "Basic", 5 ) == 0 ) {
     f = AUTH_Basic;
@@ -595,7 +588,7 @@ void HTTPProtocol::configAuth(const char *p, bool b)
     fflush(stderr);
     abort();
   }
-  int i;
+
   while (*p) {
     while( (*p == ' ') || (*p == ',') || (*p == '\t'))
       p++;
@@ -934,17 +927,18 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
 {
   string source = _source;
   string dest = _dest;
+  KURL usrc;
   
-  KURL usrc( _source );
+  usrc=KURL(_dest);
   if ( usrc.isMalformed() ) {
-    error( ERR_MALFORMED_URL, source.c_str() );
+    error( ERR_MALFORMED_URL, dest.c_str() );
     m_cmd = CMD_NONE;
     return;
   }
 
-  KURL udest( _dest );
-  if ( udest.isMalformed() ) {
-    error( ERR_MALFORMED_URL, dest.c_str() );
+  usrc=KURL( _source );
+  if ( usrc.isMalformed() ) {
+    error( ERR_MALFORMED_URL, source.c_str() );
     m_cmd = CMD_NONE;
     return;
   }
