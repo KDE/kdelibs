@@ -1601,17 +1601,18 @@ void KDialogBase::showTile( bool state )
 QSize KDialogBase::configDialogSize( const QString& groupName ) const
 {
    int w, h;
-   QWidget *desk = QApplication::desktop();
-   w = QMIN( 530, (int) (desk->width() * 0.5)); // maximum default width = 530
-   h = (int) (desk->height() * 0.4);
+   int scnum = QApplication::desktop()->screenNumber(parentWidget());
+   QRect desk = QApplication::desktop()->screenGeometry(scnum);
+   w = QMIN( 530, (int) (desk.width() * 0.5)); // maximum default width = 530
+   h = (int) (desk.height() * 0.4);
 
    KConfig *kc = KGlobal::config();
 
    if( kc )
    {
       KConfigGroupSaver cs(kc, groupName);
-      w = kc->readNumEntry( QString::fromLatin1("Width %1").arg( desk->width()), w );
-      h = kc->readNumEntry( QString::fromLatin1("Height %1").arg( desk->height()), h );
+      w = kc->readNumEntry( QString::fromLatin1("Width %1").arg( desk.width()), w );
+      h = kc->readNumEntry( QString::fromLatin1("Height %1").arg( desk.height()), h );
    }
    return( QSize( w, h ) );
 }
@@ -1619,7 +1620,8 @@ QSize KDialogBase::configDialogSize( const QString& groupName ) const
 
 void KDialogBase::saveDialogSize( const QString& groupName, bool global )
 {
-   QWidget *desk = QApplication::desktop();
+   int scnum = QApplication::desktop()->screenNumber(parentWidget());
+   QRect desk = QApplication::desktop()->screenGeometry(scnum);
    KConfig *kc = KGlobal::config();
    
    if( kc )
@@ -1627,9 +1629,9 @@ void KDialogBase::saveDialogSize( const QString& groupName, bool global )
       KConfigGroupSaver cs(kc, groupName);
       QSize sizeToSave = size();
       
-      kc->writeEntry( QString::fromLatin1("Width %1").arg( desk->width()),
+      kc->writeEntry( QString::fromLatin1("Width %1").arg( desk.width()),
 		      QString::number( sizeToSave.width()), true, global);
-      kc->writeEntry( QString::fromLatin1("Height %1").arg( desk->height()),
+      kc->writeEntry( QString::fromLatin1("Height %1").arg( desk.height()),
 		      QString::number( sizeToSave.height()), true, global);
    }
 }

@@ -680,9 +680,10 @@ void KMainWindow::finalizeGUI( bool force )
 
 void KMainWindow::saveWindowSize( KConfig * config ) const
 {
-    QWidget *desk = KApplication::desktop();
-    config->writeEntry(QString::fromLatin1("Width %1").arg(desk->width()), width() );
-    config->writeEntry(QString::fromLatin1("Height %1").arg(desk->height()), height() );
+    int scnum = QApplication::desktop()->screenNumber(parentWidget());
+    QRect desk = QApplication::desktop()->screenGeometry(scnum);
+    config->writeEntry(QString::fromLatin1("Width %1").arg(desk.width()), width() );
+    config->writeEntry(QString::fromLatin1("Height %1").arg(desk.height()), height() );
 }
 
 void KMainWindow::restoreWindowSize( KConfig * config )
@@ -691,9 +692,10 @@ void KMainWindow::restoreWindowSize( KConfig * config )
         parseGeometry(true);
     } else {
         // restore the size
-        QWidget *desk = KApplication::desktop();
-        QSize size( config->readNumEntry( QString::fromLatin1("Width %1").arg(desk->width()), 0 ),
-                    config->readNumEntry( QString::fromLatin1("Height %1").arg(desk->height()), 0 ) );
+        int scnum = QApplication::desktop()->screenNumber(parentWidget());
+        QRect desk = QApplication::desktop()->screenGeometry(scnum);
+        QSize size( config->readNumEntry( QString::fromLatin1("Width %1").arg(desk.width()), 0 ),
+                    config->readNumEntry( QString::fromLatin1("Height %1").arg(desk.height()), 0 ) );
         if (size.isEmpty()) {
             // try the KDE 2.0 way
             size = QSize( config->readNumEntry( QString::fromLatin1("Width"), 0 ),
