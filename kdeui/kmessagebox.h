@@ -220,7 +220,7 @@ public:
  static int warningContinueCancel(QWidget *parent,
                          const QString &text,
                          const QString &caption = QString::null,
-                         const KGuiItem &buttonContinue = QString::null,
+                         const KGuiItem &buttonContinue = KStdGuiItem::cont(),
                          const QString &dontAskAgainName = QString::null,
                          bool notify=true );
 

@@ -37,7 +37,8 @@ public:
     enum StdItem
     {
         Ok=1, Cancel, Yes, No, Discard, Save, DontSave, SaveAs,
-        Apply, Clear, Help, Defaults, Close, Back, Forward, Print
+        Apply, Clear, Help, Defaults, Close, Back, Forward, Print,
+        Continue
     };
     static KGuiItem guiItem ( StdItem ui_enum );
     static QString  stdItem ( StdItem ui_enum );
@@ -55,6 +56,10 @@ public:
     static KGuiItem defaults();
     static KGuiItem close();
     static KGuiItem print();
+    /**
+     * It should be "continue", but that's a C/C++ keyword :-o
+     */
+    static KGuiItem cont();
 
     /**
      * Return a GUI item for a 'back' action, like Konqueror's back button.
