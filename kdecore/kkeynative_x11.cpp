@@ -118,7 +118,8 @@ bool KKeyNative::init( const KKey& key )
 		kdDebug(125) << "Couldn't get code for sym" << endl;
 	// Now get the true sym formed by the modifiers
 	//  E.g., Shift+Equal => Plus on the en layout.
-	if( key.modFlags() )
+	if( key.modFlags() && ( ( m_sym < XK_Home || m_sym > XK_Begin ) && 
+				  m_sym != XK_Insert && m_sym != XK_Delete ))
 		KKeyServer::codeXToSym( m_code, m_mod, m_sym );
 #endif
 	return true;
