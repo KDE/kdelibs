@@ -353,8 +353,13 @@ void RenderWidget::handleDOMEvent(EventImpl *evt)
     else if (evt->id() == EventImpl::DOMFOCUSIN_EVENT) {
 	QFocusEvent focusEvent(QEvent::FocusIn);
 
-	m_widget->setFocusProxy(m_view);
-	m_view->setFocus();
+	// This broke restoring lineedit cursor when alt+tabbing into khtml. (David)
+	// Reason: KHTMLView doesn't handle focusin events. It wouldn't know which
+	// widget should receive the focusin event anyway.
+	//m_widget->setFocusProxy(m_view);
+	//m_view->setFocus();
+
+        m_widget->setFocus();
 
 	sendWidgetEvent(&focusEvent);
 	doRepaint = true;
@@ -362,7 +367,7 @@ void RenderWidget::handleDOMEvent(EventImpl *evt)
     else if (evt->id() == EventImpl::DOMFOCUSOUT_EVENT) {
 	QFocusEvent focusEvent(QEvent::FocusOut);
 
-	m_widget->setFocusProxy(0);
+	//m_widget->setFocusProxy(0);
 
 	sendWidgetEvent(&focusEvent);
 	doRepaint = true;
@@ -418,6 +423,7 @@ bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
     ref();
     element()->ref();
 
+    //kdDebug() << "RenderWidget::eventFilter type=" << e->type() << endl;
     switch(e->type()) {
     case QEvent::FocusOut:
        //static const char* const r[] = {"Mouse", "Tab", "Backtab", "ActiveWindow", "Popup", "Shortcut", "Other" };
@@ -426,7 +432,7 @@ bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
         // (example: opening the options of a select combobox shouldn't emit onblur)
         if ( QFocusEvent::reason() != QFocusEvent::Popup )
        {
-//           qDebug("captured focusout");
+           //kdDebug(6000) << "RenderWidget::eventFilter captures FocusOut" << endl;
             element()->dispatchHTMLEvent(EventImpl::BLUR_EVENT,false,false);
 //             if (  element()->isEditable() ) {
 //                 KHTMLPartBrowserExtension *ext = static_cast<KHTMLPartBrowserExtension *>( element()->view->part()->browserExtension() );
@@ -436,8 +442,8 @@ bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
         }
         break;
     case QEvent::FocusIn:
+        //kdDebug(6000) << "RenderWidget::eventFilter captures FocusIn" << endl;
         element()->getDocument()->setFocusNode(element());
-
 //         if ( isEditable() ) {
 //             KHTMLPartBrowserExtension *ext = static_cast<KHTMLPartBrowserExtension *>( element()->view->part()->browserExtension() );
 //             if ( ext )  ext->editableWidgetFocused( m_widget );
@@ -496,6 +502,8 @@ bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
     };
 
     element()->deref();
+
+    // stop processing if the widget gets deleted, but continue in all other cases
     bool deleted = hasOneRef();
     deref();
 
