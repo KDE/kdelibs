@@ -111,9 +111,10 @@ QStringList KCrashBookmarkImporter::getCrashLogs()
             continue;
         }
 
-        QDataStream reply( replyData, IO_ReadOnly );
         if ( replyType != "QString" ) 
             continue;
+
+        QDataStream reply( replyData, IO_ReadOnly );
         QString ret;
         reply >> ret;
         activeLogs[ret] = true;
