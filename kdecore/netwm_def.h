@@ -372,6 +372,7 @@ public:
            virtual desktop. See also NET::Hidden.
     **/
 
+    // KDE4 aaarghl, this doesn't map correctly to Xlib #defines
     enum MappingState {
 	Visible, // ie. NormalState
 	Withdrawn,
