@@ -1561,7 +1561,7 @@ static void check_mount_point(const char *mounttype,
                               MountState &isslow, MountState &isautofs)
 {
     bool nfs = !strcmp(mounttype, "nfs");
-    bool autofs = !strcmp(mounttype, "autofs");
+    bool autofs = !strcmp(mounttype, "autofs") || !strcmp(mounttype,"subfs");
     bool pid = (strstr(fsname, ":(pid") != 0);
 
     if (nfs && !pid)
