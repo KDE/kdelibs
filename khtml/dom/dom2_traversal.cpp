@@ -29,6 +29,8 @@ using namespace DOM;
 
 NodeIterator::NodeIterator()
 {
+  filter = 0;
+  whatToShow = 0x0000FFFF;
 }
 
 NodeIterator::NodeIterator(const NodeIterator &other)
@@ -90,6 +92,7 @@ Node NodeIterator::nextNode(  )
   while( !_tempCurrent.isNull() )
     {
       _result = isAccepted(_tempCurrent);
+      
       if(_result == NodeFilter::FILTER_ACCEPT)
         {
           referenceNode = _tempCurrent;
@@ -121,20 +124,23 @@ Node NodeIterator::getNextNode(Node n)
   if( n.hasChildNodes() )
     return n.firstChild();
 
+  if( !n.nextSibling().isNull() )
+    return n.nextSibling();
+  
   if( rootNode == n)
-    return Node();
+     return Node();
   
   Node parent = n.parentNode();
-  while( parent.isNull() )
+  while( !parent.isNull() )
     {
       n = parent.nextSibling();
       if( !n.isNull() )
         return n;
 
-      if( rootNode != referenceNode )
-        parent = parent.parentNode();
+      if( rootNode == parent )
+        return Node();
 
-      return Node();
+      parent = parent.parentNode();
     }
   return Node();      
 }
@@ -174,7 +180,7 @@ Node NodeIterator::getPreviousNode(Node n)
       return referenceNode;
     }
 
-  _tempCurrent = n.nextSibling();
+  _tempCurrent = n.previousSibling();
   if( !_tempCurrent.isNull() )
     {
       if( _tempCurrent.hasChildNodes() )
@@ -183,9 +189,10 @@ Node NodeIterator::getPreviousNode(Node n)
             _tempCurrent = _tempCurrent.lastChild();
           return _tempCurrent;
         }
+      else
+        return _tempCurrent;
     }
-  else
-    return _tempCurrent;
+    
 
   if(n == rootNode)
     return Node();
@@ -223,14 +230,15 @@ void NodeIterator::deleteNode(Node n)
 short NodeIterator::isAccepted(Node n)
 {
   // if XML is implemented we have to check expandEntityRerefences in this function
-    if( (n.nodeType() & whatToShow) != 0 )       // whatToShow approved (FIX THIS)
+  if( ( ( 1 << n.nodeType()-1) & whatToShow) != 0 )       // whatToShow approved (FIX THIS)
     {
         if(filter)
             return filter->acceptNode(n);
         else
             return NodeFilter::FILTER_ACCEPT;
     }
-    return NodeFilter::FILTER_SKIP;}
+    return NodeFilter::FILTER_SKIP;
+}
 
 // -----------------------------------------------------------
 
@@ -424,14 +432,14 @@ Node TreeWalker::nextNode(  )
         currentNode = n;
         return currentNode;
     }
-    Node parent = parentNode();
+    Node parent = getParentNode(currentNode);
     while( !parent.isNull() ) // parents sibling
     {
         n = getNextSibling(parent);
         if( !n.isNull() )
         {
-            currentNode = n;
-            return currentNode;
+          currentNode = n;
+          return currentNode;
         }
         else
             parent = getParentNode(parent);
@@ -442,21 +450,21 @@ Node TreeWalker::nextNode(  )
 short TreeWalker::isAccepted(Node n)
 {
     // if XML is implemented we have to check expandEntityRerefences in this function
-    if( (n.nodeType() & whatToShow) != 0 )       // whatToShow approved (FIX THIS!)
+  if( ( ( 1 << n.nodeType()-1 ) & whatToShow) != 0 )       // whatToShow approved (FIX THIS!)
     {
-        if(filter)
-            return filter->acceptNode(n);
-        else
-            return NodeFilter::FILTER_ACCEPT;
+      if(filter)
+        return filter->acceptNode(n);
+      else
+        return NodeFilter::FILTER_ACCEPT;
     }
-    return NodeFilter::FILTER_SKIP;
+  return NodeFilter::FILTER_SKIP;
 }
 
 Node TreeWalker::getParentNode(Node n)
 {
-    short _result = NodeFilter::FILTER_ACCEPT;
+     short _result = NodeFilter::FILTER_ACCEPT;
 
-    if( n == rootNode || n.isNull() )
+    if( n == rootNode /*|| n.isNull()*/ )
       return Node();
     
     Node _tempCurrent = n.parentNode();
@@ -468,9 +476,7 @@ Node TreeWalker::getParentNode(Node n)
     if(_result == NodeFilter::FILTER_ACCEPT)
       return _tempCurrent;       // match found
     
-    _tempCurrent = getParentNode(_tempCurrent);
-    
-    
+    return getParentNode(_tempCurrent);
 }
 
 Node TreeWalker::getFirstChild(Node n)

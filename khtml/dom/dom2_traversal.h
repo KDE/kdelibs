@@ -202,7 +202,7 @@ public:
 
     NodeFilter & operator = (const NodeFilter &other);
 
-    ~NodeFilter();
+    virtual ~NodeFilter();
     /**
      * The following constants are returned by the acceptNode()
      * method:
@@ -228,7 +228,7 @@ public:
      * href="#Traversal-NodeFilter-acceptNode-constants"> above </a> .
      *
      */
-    short acceptNode ( const Node &n );
+    virtual short acceptNode ( const Node &n );
 };
 
 
