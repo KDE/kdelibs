@@ -1373,8 +1373,8 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 		    }
 		    viewportToContents( x, y, x, y );
 		    QPaintEvent *pe = static_cast<QPaintEvent *>(e);
-		    scheduleRepaint(x + pe->rect().x(), y + pe->rect().y(),
-				    pe->rect().width(), pe->rect().height());
+ 		    scheduleRepaint(x + pe->rect().x(), y + pe->rect().y(),
+ 				    pe->rect().width(), pe->rect().height());
 		}
 		break;
 	    case QEvent::MouseMove:
@@ -2248,8 +2248,11 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
     killTimer(d->repaintTimerId);
     d->repaintTimerId = 0;
 
-    QMemArray<QRect> rects = d->updateRegion.rects();
     QRegion updateRegion;
+    QMemArray<QRect> rects = d->updateRegion.rects();
+
+    d->updateRegion = QRegion();
+
     if ( rects.size() )
         updateRegion = rects[0];
 
@@ -2259,7 +2262,7 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
         if (2*newRegion.boundingRect().height() > 3*obR.height() )
         //if ( !obR.intersects( rects[i] ) )
         {
-            repaintContents( obR, false );
+            repaintContents( obR );
             updateRegion = rects[i];
         }
         else
@@ -2267,9 +2270,7 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
     }
 
     if ( !updateRegion.isNull() )
-        repaintContents( updateRegion.boundingRect(), false );
-
-    d->updateRegion = QRegion();
+        repaintContents( updateRegion.boundingRect() );
 
     if (d->dirtyLayout && !d->visibleWidgets.isEmpty()) {
         QWidget* w;
