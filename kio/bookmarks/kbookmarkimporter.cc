@@ -207,7 +207,7 @@ void KNSBookmarkImporter::parseNSBookmarks( bool utf8 )
             else if(t.left(4).upper() == "<HR>")
                 emit newSeparator();
             else if(t.left(8).upper() == "</DL><P>")
-                emit endMenu();
+                emit endFolder();
         }
 
         f.close();

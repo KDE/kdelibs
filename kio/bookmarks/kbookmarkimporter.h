@@ -89,7 +89,7 @@ signals:
      * Tell the outside world that we're going down
      * one menu
      */
-    void endMenu();
+    void endFolder();
 
 protected:
     QString m_fileName;

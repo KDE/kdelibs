@@ -373,7 +373,7 @@ void KBookmarkMenuNSImporter::openNSBookmarks()
   connect( &importer, SIGNAL( newFolder( const QString &, bool, const QString & ) ),
            SLOT( newFolder( const QString &, bool, const QString & ) ) );
   connect( &importer, SIGNAL( newSeparator() ), SLOT( newSeparator() ) );
-  connect( &importer, SIGNAL( endMenu() ), SLOT( endMenu() ) );
+  connect( &importer, SIGNAL( endFolder() ), SLOT( endFolder() ) );
   importer.parseNSBookmarks();
 }
 
@@ -409,7 +409,7 @@ void KBookmarkMenuNSImporter::newSeparator()
   mstack.top()->m_parentMenu->insertSeparator();
 }
 
-void KBookmarkMenuNSImporter::endMenu()
+void KBookmarkMenuNSImporter::endFolder()
 {
   mstack.pop();
 }
