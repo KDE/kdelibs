@@ -1886,7 +1886,7 @@ bool HTTPProtocol::httpOpen()
     if (m_state.doProxy && !m_bIsTunneled)
     {
       KURL u;
-      u.setUser( m_state.user );
+      // u.setUser( m_state.user );
       u.setProtocol( m_protocol );
       u.setHost( m_state.hostname );
       if (m_state.port != m_iDefaultPort)
