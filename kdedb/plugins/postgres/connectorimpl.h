@@ -36,15 +36,14 @@
 #include <qstringlist.h>
 #include <qintcache.h>
 
-struct connRep : public KShared {
+struct connRep
+	: public KShared {
+public:
+	PGconn *conn;
 
-    PGconn *conn;
-
-    ~connRep() {
-        //qDebug("~connRep");
-        PQfinish(conn);
-    }
-
+	~connRep() {
+		PQfinish(conn);
+	}
 };
 
 
@@ -60,9 +59,9 @@ public:
 
     KDB::Connector *clone();
 
-    QStringList databases() ;
-    QStringList tables() ;
-    KDB::RowList fields(const QString & tableName) ;
+    QStringList databases();
+    QStringList tables();
+    KDB::RowList fields(const QString &tableName);
 
     KDB_ULONG execute(const QString &sql);
 
@@ -72,10 +71,10 @@ public:
     static KDB::DataType _nativeToKDB(const QString &type);
     static QString _KDBToNative(KDB::DataType type);
 
-    bool createDatabase(const QString & name) ;
-    bool dropDatabase(const QString & name) ;
-    bool createTable(const KDB::Table &tab) ;
-    bool dropTable(const QString & name) ;
+    bool createDatabase(const QString &name);
+    bool dropDatabase(const QString &name);
+    bool createTable(const KDB::Table &tab);
+    bool dropTable(const QString &name);
 
     bool appendField(const QString &table, KDB::Field *f);
     bool removeField(const QString &table, const QString &field);
@@ -83,16 +82,17 @@ public:
 
     bool setCurrentDatabase(const QString &name);
 
-    KDB::Handler *query(const QString &SQL) ;
+    KDB::Handler *query(const QString &SQL);
 
-    void beginTransaction() ;
-    void commit() ;
-    void rollback() ;
+    void beginTransaction();
+    void commit();
+    void rollback();
 
     QString oidToTypeName(Oid oid);
+
 protected:
 
-    PGconn * connection() {return conn->conn; };
+    PGconn * connection() { return conn->conn; };
 
     QString m_database;
     
