@@ -469,7 +469,7 @@ void KCookieJar::extractDomains(const QString &_fqdn,
        bool allNumeric = true;
        for(int i = _fqdn.length(); i--;)
        {
-          if (!index("0123456789:.", _fqdn[i].latin1()))
+          if (!strchr("0123456789:.", _fqdn[i].latin1()))
           {
              allNumeric = false;
              break;
