@@ -140,6 +140,8 @@ public final class KJASAppletStub
                     }
                 }
             }
+            if (request_state == DESTROYED && current_state == STARTED)
+                return current_state + 1; // make sure we don't skip stop()
             return request_state;
         }
         /**
