@@ -54,19 +54,30 @@ dnl --------
 dnl KNetwork extra configuration
 dnl --------
 
+netincludes="#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>"
+
 kde_safe_LIBS="$LIBS"
 LIBS="$LIBS $all_libraries $X_EXTRA_LIBS"
 AC_CHECK_FUNCS([inet_ntop inet_pton getpeername getsockname getsockopt gethostbyname2_r gethostbyname_r gethostbyname2 if_nametoindex getprotobyname_r getservbyname_r getservbyport_r])
 LIBS="$kde_safe_LIBS"
-AC_CHECK_HEADERS([netinet/in.h net/if.h],,,
-[#include <sys/types.h>
-#include <sys/socket.h>])
+
+dnl
+dnl Some systems, like OpenBSD 3.6, have getservbyname_r but don't declare it
+dnl
+if test "x$ac_cv_func_getservbyname_r" = "xyes"; then
+
+  AC_CHECK_DECLS([getservbyname_r],,,[$netincludes])
+
+fi
+
+KDE_CHECK_HEADERS([netinet/in.h net/if.h],,,[$netincludes])
+KDE_CHECK_HEADERS([sys/filio.h])
 AC_CHECK_FUNCS([usleep poll])
 
 dnl Check for struct addrinfo
-AC_CHECK_TYPES([struct addrinfo],,,[#include <sys/types.h>
-#include <sys/socket.h>
-#include <netdb.h>])
+AC_CHECK_TYPES([struct addrinfo],,,[$netincludes])
 
 kde_safe_LIBS="$LIBS"
 LIBS="$LIBS $LIBSOCKET"

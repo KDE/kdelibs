@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003,2004 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003-2005 Thiago Macieira <thiago.macieira@kdemail.net>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -45,6 +45,29 @@
 #if !defined(HAVE_GETPROTOBYNAME_R) || !defined(HAVE_GETSERVBYNAME_R) || !defined(HAVE_GETHOSTBYNAME_R) || !defined(HAVE_GETSERVBYPORT_R)
 # define NEED_MUTEX
 extern QMutex getXXbyYYmutex;
+#endif
+
+/* some systems have the functions, but don't declare them */
+#if defined(HAVE_GETSERVBYNAME_R) && !HAVE_DECL_GETSERVBYNAME_R
+extern "C" {
+  struct servent;
+  extern int getservbyname_r(const char* serv, const char* proto,
+			     struct servent* servbuf, 
+			     char* buf, size_t buflen,
+			     struct servent** result);
+  extern int getservbyport_r(int port, const char* proto,
+			     struct servent* servbuf,
+			     char* buf, size_t buflen,
+			     struct servent** result);
+
+  struct protoent;
+  extern int getprotobyname_r(const char* proto, struct protoent* protobuf,
+			      char *buf, size_t buflen, 
+			      struct protoent** result);
+  extern int getprotobynumber_r(int proto, struct protoent* protobuf,
+				char *buf, size_t buflen,
+				struct protoent** result);
+}
 #endif
 
 /* decide whether res_init's context is shared by all threads, 
