@@ -1080,10 +1080,9 @@ Value Window::openWindow(ExecState *exec, const List& args)
     KParts::WindowArgs winargs;
 
     // scan feature argument
-    v = args[2];
     QString features;
-    if (!v.isNull()) {
-      features = v.toString(exec).qstring();
+    if (args.size()>2) {
+      features = args[2].toString(exec).qstring();
       // specifying window params means false defaults
       winargs.menuBarVisible = false;
       winargs.toolBarsVisible = false;
@@ -1157,7 +1156,7 @@ Value Window::openWindow(ExecState *exec, const List& args)
 
     KParts::URLArgs uargs;
     KHTMLPart *p = m_part;
-    uargs.frameName = !args[1].isNull() ?
+    uargs.frameName = args.size() > 1 ?
                       args[1].toString(exec).qstring()
                       : QString("_blank");
     if ( uargs.frameName == "_top" )
