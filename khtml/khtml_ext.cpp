@@ -18,6 +18,7 @@
 #include <ktoolbar.h>
 #include <ktempfile.h>
 #include <ksavefile.h>
+#include <kurldrag.h>
 #include <kstringhandler.h>
 
 #include <dom/dom_element.h>
@@ -345,7 +346,9 @@ void KHTMLPopupGUIClient::slotSaveImageAs()
 
 void KHTMLPopupGUIClient::slotCopyLinkLocation()
 {
-  QApplication::clipboard()->setText( d->m_url.url() );
+  KURL::List lst;
+  lst.append( d->m_url );
+  QApplication::clipboard()->setData( KURLDrag::newDrag( lst ) );
 }
 
 void KHTMLPopupGUIClient::slotStopAnimations()
@@ -355,7 +358,9 @@ void KHTMLPopupGUIClient::slotStopAnimations()
 
 void KHTMLPopupGUIClient::slotCopyImageLocation()
 {
-  QApplication::clipboard()->setText( d->m_imageURL.url() );
+  KURL::List lst;
+  lst.append( d->m_imageURL );
+  QApplication::clipboard()->setData( KURLDrag::newDrag( lst ) );
 }
 
 void KHTMLPopupGUIClient::slotViewImage()
