@@ -206,7 +206,7 @@ int KDEsuClient::delCommand(QCString key)
 
 int KDEsuClient::setVar(QCString key, QCString value)
 {
-    setVar(key, value, 0);
+    return setVar(key, value, 0);
 }
 
 int KDEsuClient::setVar(QCString key, QCString value, int timeout)

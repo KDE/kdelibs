@@ -40,7 +40,7 @@ class KIconButtonData;
  */
 class KIconCanvas: public KIconView
 {
-    Q_OBJECT;
+    Q_OBJECT
 
 public:
     KIconCanvas(QWidget *parent=0L, const char *name=0L);
@@ -78,7 +78,7 @@ private:
  */
 class KIconDialog: public KDialogBase
 {
-    Q_OBJECT;
+    Q_OBJECT
 
 public:
     /** Construct the iconloader dialog. Uses the global iconloader. */
@@ -135,7 +135,7 @@ private:
  */
 class KIconButton: public QPushButton
 {
-    Q_OBJECT;
+    Q_OBJECT
 
 public:
     /** Creates a new KIconButton. Uses the global iconloader. */
@@ -168,7 +168,7 @@ private:
 
     QString mIcon;
     KIconDialog *mpDialog;
-    KIconLoader *mpLoader;;
+    KIconLoader *mpLoader;
     KIconButtonData *d;
 };
 

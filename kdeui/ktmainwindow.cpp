@@ -35,7 +35,7 @@
 
 // a static pointer (too bad we cannot have static objects in libraries)
 QList<KTMainWindow>* KTMainWindow::memberList = 0L;
-static bool no_query_exit = FALSE;
+static bool no_query_exit = false;
 
 template class QList<KTMainWindow>;
 template class QList<KToolBar>;
@@ -76,7 +76,7 @@ public:
 	    bool cancelled = false;
 	    QListIterator<KTMainWindow> it(*KTMainWindow::memberList);
 	    KTMainWindow* last = 0;
-	    no_query_exit = TRUE;
+	    ::no_query_exit = true;
 	    for (it.toFirst(); it.current() && !cancelled; ++it){
 		if ( !it.current()->testWState( Qt::WState_ForceHide ) ) {
 		    last = it.current();

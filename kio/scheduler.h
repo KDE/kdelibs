@@ -55,8 +55,9 @@ namespace KIO {
     protected:
 	Scheduler();
 
+    public: // InfoDict needs Info, so we can't declare it private
+	class ProtocolInfo; 
     private:
-        class ProtocolInfo;
         class ProtocolInfoDict;
 
 	Scheduler(const Scheduler&);

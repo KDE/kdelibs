@@ -1227,7 +1227,9 @@ void KFileDialog::readRecentFiles( KConfig *kc )
     QString oldGroup = kc->group();
     kc->setGroup( ConfigGroup );
 
+#ifdef __GNUC__
 #warning Still the KConfig-bug (reparseConfiguration() needed)
+#endif
     kc->reparseConfiguration();
     locationEdit->setMaxItems( kc->readNumEntry( RecentFilesNumber,
 						 DefaultRecentURLsNumber ) );

@@ -273,7 +273,7 @@ void
 KImageIOFactory::load()
 {
    KSycocaEntry::List list = allEntries();
-   for( KSycocaEntry::List::ConstIterator it = list.begin();
+   for( KSycocaEntry::List::Iterator it = list.begin();
         it != list.end();
         ++it)
    {
