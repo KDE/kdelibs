@@ -27,6 +27,7 @@
 #include <ksycocaentry.h>
 #include <ksycoca.h>
 #include <kdebug.h>
+#include <kstaticdeleter.h>
 
 #include <qimage.h>
 
@@ -149,6 +150,8 @@ KImageIOFormat::callLibFunc( bool read, QImageIO *iio)
 KImageIOFactory *KImageIOFactory::_self = 0;
 KImageIOFormatList *KImageIOFactory::formatList = 0;
 
+static KStaticDeleter<KImageIOFormatList> kiioflsd;
+
 KImageIOFactory::KImageIOFactory() : KSycocaFactory( KST_KImageIO )
 {
   _self = this;
@@ -158,7 +161,7 @@ KImageIOFactory::KImageIOFactory() : KSycocaFactory( KST_KImageIO )
      (*m_str) >> mReadPattern >> mWritePattern >> rPath;
      if (!formatList)
      {
-        formatList = new KImageIOFormatList();
+        kiioflsd.setObject( formatList, new KImageIOFormatList());
         lt_dlinit(); // Do this only once!
         // Add rPaths.
         for(QStringList::Iterator it = rPath.begin();
