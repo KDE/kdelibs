@@ -241,7 +241,8 @@ KService::List KServiceFactory::offers( int serviceTypeOffset )
             int savedPos = str->device()->at();
             // Create Service
             KService * serv = createEntry( aServiceOffset );
-            list.append( KService::Ptr( serv ) );
+            if (serv)
+                list.append( KService::Ptr( serv ) );
             // Restore position
             str->device()->at( savedPos );
          } else if ( aServiceTypeOffset > (Q_INT32)serviceTypeOffset )
