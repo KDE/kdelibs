@@ -156,6 +156,7 @@ void HTMLTokenizer::reset()
 {
     assert(m_executingScript == 0);
     Q_ASSERT(onHold == false);
+    m_abort = false;
 
     while (!cachedScript.isEmpty())
         cachedScript.dequeue()->deref(this);
@@ -1259,13 +1260,14 @@ void HTMLTokenizer::write( const TokenizerString &str, bool appendData )
     }
 
     setSrc(str);
+    m_abort = false;
 
 //     if (Entity)
 //         parseEntity(src, dest);
 
     while ( !src.isEmpty() )
     {
-        if ( parser->doc() && !parser->doc()->parsing() ) // aborted
+        if ( m_abort )
             return;
         // do we need to enlarge the buffer?
         checkBuffer();

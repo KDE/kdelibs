@@ -122,6 +122,7 @@ public:
     virtual void finish() = 0;
     virtual void setOnHold(bool /*_onHold*/) {}
     virtual bool isWaitingForScripts() const = 0;
+    virtual void abort() {}
 
 signals:
     void finishedParsing();

@@ -1145,7 +1145,9 @@ QVariant KHTMLPart::executeScript(const QString& filename, int baseLine, const D
   {
     kdDebug(6070) << "executeScript done, handling immediate redirection NOW" << endl;
     // Must abort tokenizer, no further script must execute.
-    closeURL();
+    khtml::Tokenizer* t = d->m_doc->tokenizer();
+    if(t)
+      t->abort();
     d->m_redirectionTimer.start( 0, true );
   }
 

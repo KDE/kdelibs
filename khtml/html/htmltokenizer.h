@@ -131,6 +131,7 @@ public:
     void end();
     void finish();
     virtual void setOnHold(bool _onHold);
+    void abort() { m_abort = true; }
 
 protected:
     void reset();
@@ -323,6 +324,8 @@ protected:
     QPtrQueue<khtml::CachedScript> cachedScript;
     // you can pause the tokenizer if you need to display a dialog or something
     bool onHold;
+    // you can ask the tokenizer to abort the current write() call, e.g. to redirect somewhere else
+    bool m_abort;
 
     // if we found one broken comment, there are most likely others as well
     // store a flag to get rid of the O(n^2) behavior in such a case.
