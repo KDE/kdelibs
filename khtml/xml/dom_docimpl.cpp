@@ -219,8 +219,8 @@ DOMImplementationImpl *DOMImplementationImpl::instance()
 
 // ------------------------------------------------------------------------
 
-KStaticDeleter< QPtrList<DocumentImpl> > s_changedDocumentsDeleter;
-QPtrList<DocumentImpl> * DocumentImpl::changedDocuments = 0;
+static KStaticDeleter< QPtrList<DocumentImpl> > s_changedDocumentsDeleter;
+static QPtrList<DocumentImpl> * DocumentImpl::changedDocuments;
 
 // KHTMLView might be 0
 DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)

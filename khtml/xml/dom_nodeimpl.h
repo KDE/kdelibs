@@ -69,6 +69,9 @@ private:
 };
 
 // this class implements nodes, which can have a parent but no children:
+#define NodeImpl_IdNSMask    0xffff0000
+#define NodeImpl_IdLocalMask 0x0000ffff
+
 class NodeImpl : public khtml::TreeShared<NodeImpl>
 {
     friend class DocumentImpl;
@@ -120,8 +123,6 @@ public:
     virtual NodeImpl *addChild(NodeImpl *newChild);
 
     typedef Q_UINT32 Id;
-    static const Q_UINT32 IdNSMask;
-    static const Q_UINT32 IdLocalMask;
     // id() is used to easily and exactly identify a node. It
     // is optimized for quick comparison and low memory consumption.
     // its value depends on the owner document of the node and is
@@ -527,7 +528,7 @@ class NamedTagNodeListImpl : public TagNodeListImpl
 {
 public:
     NamedTagNodeListImpl( NodeImpl *n, NodeImpl::Id tagId, const DOMString& name,
-                          NodeImpl::Id tagIdMask = NodeImpl::IdNSMask | NodeImpl::IdLocalMask );
+                          NodeImpl::Id tagIdMask = NodeImpl_IdNSMask | NodeImpl_IdLocalMask );
 protected:
     virtual bool nodeMatches( NodeImpl *testNode ) const;
     DOMString nodeName;
@@ -554,7 +555,6 @@ public:
     virtual NodeImpl::Id mapId(const DOMString& namespaceURI,  const DOMString& localName,  bool readonly) = 0;
     virtual bool isReadOnly() { return false; }
 };
-
 
 // ### fixme
 #if 0
