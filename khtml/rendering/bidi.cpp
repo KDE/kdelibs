@@ -915,7 +915,7 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
                 width = lineWidth(m_height);
             }
         } else if ( o->isReplaced() ) {
-            tmpW += o->width();
+            tmpW += o->width()+o->marginLeft()+o->marginRight();
         } else if ( o->isText() ) {
 	    RenderText *t = static_cast<RenderText *>(o);
 	    int strlen = t->length();
