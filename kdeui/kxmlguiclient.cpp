@@ -41,15 +41,17 @@ public:
     m_factory = 0L;
     m_parent = 0L;
     m_builder = 0L;
+    m_actionCollection = 0;
   }
   ~KXMLGUIClientPrivate()
   {
+    delete m_actionCollection;
   }
 
   KInstance *m_instance;
 
   QDomDocument m_doc;
-  KActionCollection m_actionCollection;
+  KActionCollection *m_actionCollection;
   QDomDocument m_buildDocument;
   KXMLGUIFactory *m_factory;
   KXMLGUIClient *m_parent;
@@ -93,13 +95,15 @@ KAction *KXMLGUIClient::action( const char *name ) const
 
 KActionCollection *KXMLGUIClient::actionCollection() const
 {
-  return &d->m_actionCollection;
+  if ( !d->m_actionCollection )
+    d->m_actionCollection = new KActionCollection;
+  return d->m_actionCollection;
 }
 
 KAction *KXMLGUIClient::action( const QDomElement &element ) const
 {
   static const QString &attrName = KGlobal::staticQString( "name" );
-  return d->m_actionCollection.action( element.attribute( attrName ).latin1() );
+  return actionCollection()->action( element.attribute( attrName ).latin1() );
 }
 
 KInstance *KXMLGUIClient::instance() const
@@ -138,7 +142,7 @@ void KXMLGUIClient::reloadXML()
 void KXMLGUIClient::setInstance( KInstance *instance )
 {
   d->m_instance = instance;
-  d->m_actionCollection.setInstance( instance );
+  actionCollection()->setInstance( instance );
   if ( d->m_builder )
     d->m_builder->setBuilderClient( this );
 }
