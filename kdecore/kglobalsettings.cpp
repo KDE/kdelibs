@@ -64,9 +64,15 @@ QFont *KGlobalSettings::_menuFont = 0;
 QFont *KGlobalSettings::_windowTitleFont = 0;
 QFont *KGlobalSettings::_taskbarFont = 0;
 QFont *KGlobalSettings::_largeFont = 0;
-QColor *KGlobalSettings::kde2Blue = 0;
-QColor *KGlobalSettings::kde2Gray = 0;
-QColor *KGlobalSettings::kde2AlternateColor = 0;
+QColor *KGlobalSettings::_kde34Blue = 0;
+QColor *KGlobalSettings::_inactiveBackground = 0;
+QColor *KGlobalSettings::_inactiveForeground = 0;
+QColor *KGlobalSettings::_activeBackground = 0;
+QColor *KGlobalSettings::_buttonBackground = 0;
+QColor *KGlobalSettings::_selectBackground = 0;
+QColor *KGlobalSettings::_linkColor = 0;
+QColor *KGlobalSettings::_visitedLinkColor = 0;
+QColor *KGlobalSettings::alternateColor = 0;
 
 KGlobalSettings::KMouseSettings *KGlobalSettings::s_mouseSettings = 0;
 
@@ -152,7 +158,7 @@ QColor KGlobalSettings::toolBarHighlightColor()
 {
     initColors();
     KConfigGroup g( KGlobal::config(), "Toolbar style" );
-    return g.readColorEntry("HighlightColor", kde2Blue);
+    return g.readColorEntry("HighlightColor", _kde34Blue);
 }
 
 QColor KGlobalSettings::inactiveTitleColor()
@@ -160,10 +166,10 @@ QColor KGlobalSettings::inactiveTitleColor()
 #ifdef Q_WS_WIN
     return qt_colorref2qrgb(GetSysColor(COLOR_INACTIVECAPTION));
 #else
-    if (!kde2Gray)
-        kde2Gray = new QColor(220, 220, 220);
+    if (!_inactiveBackground)
+        _inactiveBackground = new QColor(157, 170, 186);
     KConfigGroup g( KGlobal::config(), "WM" );
-    return g.readColorEntry( "inactiveBackground", kde2Gray );
+    return g.readColorEntry( "inactiveBackground", _inactiveBackground );
 #endif
 }
 
@@ -172,8 +178,10 @@ QColor KGlobalSettings::inactiveTextColor()
 #ifdef Q_WS_WIN
     return qt_colorref2qrgb(GetSysColor(COLOR_INACTIVECAPTIONTEXT));
 #else
+    if (!_inactiveForeground)
+       _inactiveForeground = new QColor(221,221,221);
     KConfigGroup g( KGlobal::config(), "WM" );
-    return g.readColorEntry( "inactiveForeground", &Qt::darkGray );
+    return g.readColorEntry( "inactiveForeground", _inactiveForeground );
 #endif
 }
 
@@ -183,8 +191,10 @@ QColor KGlobalSettings::activeTitleColor()
     return qt_colorref2qrgb(GetSysColor(COLOR_ACTIVECAPTION));
 #else
     initColors();
+    if (!_activeBackground)
+      _activeBackground = new QColor(65,142,220);
     KConfigGroup g( KGlobal::config(), "WM" );
-    return g.readColorEntry( "activeBackground", kde2Blue);
+    return g.readColorEntry( "activeBackground", _activeBackground);
 #endif
 }
 
@@ -206,8 +216,10 @@ int KGlobalSettings::contrast()
 
 QColor KGlobalSettings::buttonBackground()
 {
+    if (!_buttonBackground)
+      _buttonBackground = new QColor(221,223,228);
     KConfigGroup g( KGlobal::config(), "General" );
-    return g.readColorEntry( "buttonBackground", &Qt::gray );
+    return g.readColorEntry( "buttonBackground", _buttonBackground );
 }
 
 QColor KGlobalSettings::buttonTextColor()
@@ -249,16 +261,18 @@ QColor KGlobalSettings::highlightedTextColor()
 QColor KGlobalSettings::highlightColor()
 {
     initColors();
+    if (!_selectBackground)
+        _selectBackground = new QColor(103,141,178);
     KConfigGroup g( KGlobal::config(), "General" );
-    return g.readColorEntry( "selectBackground", kde2Blue );
+    return g.readColorEntry( "selectBackground", _selectBackground );
 }
 
 QColor KGlobalSettings::alternateBackgroundColor()
 {
     initColors();
     KConfigGroup g( KGlobal::config(), "General" );
-    *kde2AlternateColor = calculateAlternateBackgroundColor( baseColor() );
-    return g.readColorEntry( "alternateBackground", kde2AlternateColor );
+    *alternateColor = calculateAlternateBackgroundColor( baseColor() );
+    return g.readColorEntry( "alternateBackground", alternateColor );
 }
 
 QColor KGlobalSettings::calculateAlternateBackgroundColor(const QColor& base)
@@ -287,14 +301,18 @@ bool KGlobalSettings::shadeSortColumn()
 QColor KGlobalSettings::linkColor()
 {
     initColors();
+    if (!_linkColor)
+        _linkColor = new QColor(0,0,238);
     KConfigGroup g( KGlobal::config(), "General" );
-    return g.readColorEntry( "linkColor", kde2Blue );
+    return g.readColorEntry( "linkColor", _linkColor );
 }
 
 QColor KGlobalSettings::visitedLinkColor()
 {
+    if (!_visitedLinkColor)
+        _visitedLinkColor = new QColor(82,24,139);
     KConfigGroup g( KGlobal::config(), "General" );
-    return g.readColorEntry( "visitedLinkColor", &Qt::magenta );
+    return g.readColorEntry( "visitedLinkColor", _visitedLinkColor );
 }
 
 QFont KGlobalSettings::generalFont()
@@ -504,14 +522,14 @@ void KGlobalSettings::initStatic() // should be called initPaths(). Don't put an
 
 void KGlobalSettings::initColors()
 {
-    if (!kde2Blue) {
+    if (!_kde34Blue) {
       if (QPixmap::defaultDepth() > 8)
-        kde2Blue = new QColor(84, 112, 152);
+        _kde34Blue = new QColor(103,141,178);
       else
-        kde2Blue = new QColor(0, 0, 192);
+        _kde34Blue = new QColor(0, 0, 192);
     }
-    if (!kde2AlternateColor)
-      kde2AlternateColor = new QColor(240, 240, 240);
+    if (!alternateColor)
+      alternateColor = new QColor(237, 244, 249);
 }
 
 void KGlobalSettings::rereadFontSettings()

@@ -522,7 +522,7 @@ private:
      */
     static void initStatic();
     /**
-     * initialize kde2Blue
+     * initialize colors
      */
     static void initColors();
     /**
@@ -550,9 +550,15 @@ private:
     static QFont *_windowTitleFont;
     static QFont *_taskbarFont;
     static QFont *_largeFont;
-    static QColor * kde2Gray;
-    static QColor * kde2Blue;
-    static QColor * kde2AlternateColor;
+    static QColor * _kde34Blue;
+    static QColor * _inactiveBackground;
+    static QColor * _inactiveForeground;
+    static QColor * _activeBackground;
+    static QColor * _buttonBackground;
+    static QColor * _selectBackground;
+    static QColor * _linkColor;
+    static QColor * _visitedLinkColor;
+    static QColor * alternateColor;
     static KMouseSettings *s_mouseSettings;
 
     friend class KApplication;
