@@ -26,16 +26,17 @@
 #include <qwhatsthis.h>
 #include <qregexp.h>
 
-#include <kapplication.h>
 #include <kaboutdata.h>
+#include <kapplication.h>
 #include <kconfig.h>
-#include <kstandarddirs.h>
+#include <kdebug.h>
 #include <klineedit.h>
 #include <klocale.h>
-#include <kurl.h>
 #include <kmessagebox.h>
-#include <kdebug.h>
 #include <kprocess.h>
+#include <kstandarddirs.h>
+#include <kstdguiitem.h>
+#include <kurl.h>
 #include <kurllabel.h>
 
 #include "kbugreport.h"
@@ -90,7 +91,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
   {
     // This is a core KDE application -> redirect to the web form
     d->webFormLabel = new KURLLabel( parent );
-    setButtonCancelText(i18n("&Close"));
+    setButtonCancel( KStdGuiItem::close() );
   }
 
   QLabel * tmpLabel;
@@ -130,9 +131,8 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
     glay->addWidget( tmpLabel, row, 1 );
     QWhatsThis::add( tmpLabel, qwtstr );
 
-    setButtonOKText(i18n("&Send"),
-                    i18n("Send bug report."),
-                    i18n("Send this bug report to %1.").arg(m_aboutData->bugAddress()));
+    setButtonOK( KGuiItem( i18n("&Send"), i18n( "Send bug report." ),
+                    i18n( "Send this bug report to %1." ).arg( m_aboutData->bugAddress() ) ) );
 
   }
   else
