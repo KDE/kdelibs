@@ -24,6 +24,7 @@
 #include <qcursor.h>
 #include <kdebug.h>
 #include <qtimer.h>
+#include <math.h>
 
 KDockSplitter::KDockSplitter(QWidget *parent, const char *name, Orientation orient, int pos, bool highResolution)
 : QWidget(parent, name)
@@ -223,7 +224,7 @@ void KDockSplitter::resizeEvent(QResizeEvent *ev)
 //  kdDebug()<<"ResizeEvent :"<< ((initialised) ? "initialised":"not initialised")<<", "<< ((ev) ? "real event":"")<<
 //	", "<<(isVisible() ?"visible":"")<<endl;
   if (initialised){
-    int factor = (mHighResolution)? 10000:100;
+    double factor = (mHighResolution)? 10000.0:100.0;
     // real resize event, recalculate xpos
     if (ev && mKeepSize && isVisible()) {
 //	kdDebug()<<"mKeepSize : "<< ((m_orientation == Horizontal) ? "Horizontal":"Vertical") <<endl;
@@ -246,10 +247,10 @@ void KDockSplitter::resizeEvent(QResizeEvent *ev)
 		/*	if (ev->oldSize().height() != ev->size().height())*/
 			{
 			  if (fixedHeight0!=-1)
-				xpos=fixedHeight0*factor/height();
+				xpos=floor(fixedHeight0*factor/height());
 			  else
 			  if (fixedHeight1!=-1)
-				xpos=(height()-fixedHeight1)*factor/height();
+				xpos=ceil((height()-fixedHeight1)*factor/height());
 			}
 		}
 		else
@@ -257,10 +258,10 @@ void KDockSplitter::resizeEvent(QResizeEvent *ev)
 /*	        	if (ev->oldSize().width() != ev->size().width()) */
 			{
 			  if (fixedWidth0!=-1)
-				xpos=fixedWidth0*factor/width();
+				xpos=floor(fixedWidth0*factor/width());
 			  else
 			  if (fixedWidth1!=-1)
-				xpos=(width()-fixedWidth1)*factor/width();
+				xpos=ceil((width()-fixedWidth1)*factor/width());
 			}
 		}
 	}
