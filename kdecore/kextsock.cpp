@@ -1526,7 +1526,11 @@ void KExtendedSocket::flush()
 }
 
 
+#if QT_VERSION < 300
 int KExtendedSocket::readBlock(char *data, uint maxlen)
+#else
+Q_LONG KExtendedSocket::readBlock(char *data, Q_ULONG maxlen)
+#endif
 {
   cleanError();
   if (m_status < connected || m_flags & passiveSocket)
@@ -1569,7 +1573,11 @@ int KExtendedSocket::readBlock(char *data, uint maxlen)
   return retval;
 }
 
+#if QT_VERSION < 300
 int KExtendedSocket::writeBlock(const char *data, uint len)
+#else
+Q_LONG KExtendedSocket::writeBlock(const char *data, Q_ULONG len)
+#endif
 {
   cleanError();
   if (m_status < connected || m_status >= closing || m_flags & passiveSocket)

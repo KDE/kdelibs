@@ -518,13 +518,21 @@ public:
   /**
    * Returns length of this socket. This call is not supported on sockets
    */
+#if QT_VERSION < 300
   virtual inline uint size() const
+#else
+  virtual inline Q_ULONG size() const
+#endif
   { return 0; }
 
   /**
    * Returns relative position from start. This call is not supported on sockets
    */
+#if QT_VERSION < 300
   virtual inline int at() const
+#else
+  virtual inline Q_ULONG at() const
+#endif
   { return 0; }
 
   /**
@@ -569,7 +577,11 @@ public:
    * @param data	where we will write the read data to
    * @param maxlen	maximum length of data to be read
    */
+#if QT_VERSION < 300
   virtual int readBlock(char *data, uint maxlen);
+#else
+  virtual Q_LONG readBlock(char *data, Q_ULONG maxlen);
+#endif
 
   /**
    * writes a block of data to the socket
@@ -594,7 +606,11 @@ public:
    * @param data	the data to write
    * @param len		the length of data to write
    */
+#if QT_VERSION < 300
   virtual int writeBlock(const char *data, uint len);
+#else
+  virtual Q_LONG writeBlock(const char *data, Q_ULONG len);
+#endif
 
   /**
    * peeks at a block of data from the socket
