@@ -23,6 +23,8 @@
  *
  * Rewritten for KDE by Fritz Elfert
  * fritz@kde.org
+ * Adaptations by Torben Weis <weis@kde.org>
+ * Fixes and documentation by David Faure <faure@kde.org>
  */
 
 #ifndef KMIMEMAGIC_H
@@ -30,17 +32,33 @@
 
 #include <qstring.h>
 
-class KMimeMagic;
+class KMimeMagic; // see below (read this one first)
 
+/**
+ * An instance of this class is returned by @ref KMimeMagic find...Type methods
+ * It contains the mimetype and the encoding of the file or buffer read.
+ */
 class KMimeMagicResult
 {
 public:
   KMimeMagicResult() { m_iAccuracy = 100; }
   ~KMimeMagicResult() { }
 
+  /**
+   * @return the mimetype (e.g. "text/html") of the file or buffer parsed
+   */
   const QString mimeType() { return m_strMimeType; }
+  /**
+   * @return the encoding (e.g. "8bit", see 'magic' file) of the file or buffer parsed
+   */
   const QString encoding() { return m_strEncoding; }
+  /**
+   * @return the accuracy of the matching
+   */
   int accuracy() { return m_iAccuracy; }
+  /**
+   * @return whether the result is valid (i.e. mimetype not empty)
+   */
   bool isValid() { return !m_strMimeType.isEmpty(); }
   
   /////////////////
@@ -58,14 +76,16 @@ protected:
 };
 
 /**
- * For every mime type
- * you can create a KMimeType. This way the program knows which
- * icon to use and which programs can handle the data.
- * Have a look at KMimeBind. Multiple extensions can be organized
- * in KMimeType ( for example *.tgz, *.tar.gz ) since they
- * mean the same document class.
+ * The goal of KMimeMagic is to determine auto-magically the type of file,
+ * not only using its extension, but also reading its contents.
+ * Unless specified otherwise, KMimeMagic uses $KDEDIR/share/mimelnk/magic
+ * for this purpose.
  *
- * @see KMimeBind
+ * The basic usage of KMimeMagic is :
+ * - get a pointer to it, using KMimeMagic::self()
+ * - use it for any file or buffer you want, using one of the three find...Type methods.
+ * 
+ * The result is contained in the class @ref KMimeMagicResult
  */
 class KMimeMagic
 {
@@ -75,6 +95,9 @@ public:
    */
   KMimeMagic( const char * );
   
+  /**
+   * Destroys the parser
+   */
   ~KMimeMagic();
 
   /**
@@ -107,7 +130,7 @@ public:
    * @return a pointer to the result object. Do NOT delete the
    *         result object. After another call to KMimeMagic
    *         the returned result object changes its value
-   *         since it is resued by KMimeMagic.
+   *         since it is reused by KMimeMagic.
    */
   KMimeMagicResult* findFileType( const char *_filename );
 
@@ -137,6 +160,9 @@ public:
    */
   KMimeMagicResult * findBufferFileType( const char *_sample, int _len, const char *_filename );
 
+  /**
+   * @return a pointer to the unique KMimeMagic instance in this process
+   */ 
   static KMimeMagic* self();
   
 protected:
