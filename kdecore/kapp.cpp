@@ -1077,27 +1077,19 @@ QString KApplication::makeStdCaption( const QString &userCaption,
   // This string should be collected from a global object.
   QString mod = i18n("modified");
 
-  // If the translated version of 'modified' is not available, use '*'.
-  if (!mod)
-    mod = "*";
-
-  QString s;
-
-  // If the user supplied a caption, put that first.
-  if (!!userCaption)
-    s = userCaption;
+  QString s(userCaption);
 
   // If the document is modified, add '[modified]'.
   if (modified)
-    s += " [" + mod + "]";
+    s += QString::fromUtf8(" [") + mod + QString::fromUtf8("]");
 
   // Add the application name if:
   // User asked for it and the app name (caption()) is not empty
   // OR
   // The user-supplied caption is empty.
 
-  if ((withAppName && !!caption()) || !userCaption)
-    s += " - " + caption();
+  if ((withAppName && !(caption().isNull())) || userCaption.isEmpty())
+    s += QString::fromUtf8(" - ") + caption();
 
   return s;
 }
