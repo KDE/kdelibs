@@ -27,6 +27,11 @@
 #include <khtml_part.h>
 #include <kprotocolmanager.h>
 #include <kdebug.h>
+#include <kmessagebox.h>
+#include <klocale.h>
+#include <unistd.h>
+#include <signal.h>
+#include <sys/time.h>
 #include <kjs/collector.h>
 #include <assert.h>
 
@@ -55,6 +60,11 @@ public:
   void applyUserAgent();
 
 private:
+  static void alarmHandler(int) {
+      kdDebug(6070) << "alarmhandler" << endl;
+      if (KMessageBox::warningYesNo(0L, i18n("A script on this page is causing KHTML to freeze. If it continues to run, other applications may become less responsive.\nDo you want to abort the script?"), "JavaScript", i18n("OK"), i18n("Cancel")) == KMessageBox::Yes)
+          ExecState::requestTerminate();
+  }
   KJS::ScriptInterpreter* m_script;
   bool m_debugEnabled;
 #ifndef NDEBUG
@@ -135,7 +145,16 @@ QVariant KJSProxyImpl::evaluate(QString filename, int baseLine,
   KJS::Value thisNode = n.isNull() ? Window::retrieve( m_part ) : getDOMNode(m_script->globalExec(),n);
 
   UString code( str );
+
+  void (*oldAlarmHandler)(int) = signal(SIGVTALRM, KJSProxyImpl::alarmHandler);
+  itimerval oldtv, tv = { { 10, 0 }, { 5, 0 } };
+  setitimer(ITIMER_VIRTUAL, &tv, &oldtv);
+
   Completion comp = m_script->evaluate(code, thisNode);
+
+  setitimer(ITIMER_VIRTUAL, &oldtv, 0L);
+  signal(SIGVTALRM, oldAlarmHandler);
+
   bool success = ( comp.complType() == Normal ) || ( comp.complType() == ReturnValue );
 
 #ifdef KJS_DEBUGGER
