@@ -49,13 +49,7 @@ void ReferenceClean::notifyTime()
 	time(&now);
 	if(now-last_notify > 4)
 	{
-		list<Object_skel *> items = objectPool.enumerate();
-		list<Object_skel *>::iterator i;
-
-		// see comment in forceClean about _copy / _release
-		for(i=items.begin();i != items.end();i++) (*i)->_copy();
-		for(i=items.begin();i != items.end();i++) (*i)->_referenceClean();
-		for(i=items.begin();i != items.end();i++) (*i)->_release();
+		clean();
 		last_notify = now;
 	}
 }
@@ -63,20 +57,28 @@ void ReferenceClean::notifyTime()
 void ReferenceClean::forceClean()
 {
 	/*
-	 * and as we're giving a second chance on reference clean, we need to
+	 * as we're giving a second chance on reference clean, we need to
 	 * clean twice to really really clean up 
-	 *
-	 * we explicitely reference the objects here, to get around the problem
-	 * that if an object disappears, ten other objects might cease to exist
-	 * as well (as they are dependant), which would break our enumerated list
-	 * and would probably lead to a crash
 	 */
-	list<Object_skel *> items = objectPool.enumerate();
-	list<Object_skel *>::iterator i;
-	for(i=items.begin();i != items.end();i++) (*i)->_copy();
-	for(i=items.begin();i != items.end();i++) (*i)->_referenceClean();
-	for(i=items.begin();i != items.end();i++) (*i)->_referenceClean();
-	for(i=items.begin();i != items.end();i++) (*i)->_release();
+	clean();
+	clean();
+}
+
+void ReferenceClean::clean()
+{
+ 	/*
+	 * we manually iterate through the pool here, to get around the problem
+	 * that if an object disappears, ten other objects might cease to exist
+	 * as well (as they are dependant), which would break a list which we
+	 * could obtain via enumerate() and would probably lead to a crash
+	 */
+	unsigned long l, max;
+
+	for(l=0, max = objectPool.max(); l<max; l++)
+	{
+		Object_skel *skel = objectPool[l]; 
+		if(skel) skel->_referenceClean();
+	}
 }
 
 ReferenceClean::~ReferenceClean()

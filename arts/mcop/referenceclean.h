@@ -37,6 +37,9 @@ namespace Arts {
 
 class ReferenceClean : public TimeNotify {
 	Pool<Object_skel>& objectPool;
+protected:
+	void clean();
+
 public:
 	ReferenceClean(Pool<Object_skel>& objectPool);
 

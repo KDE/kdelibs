@@ -82,6 +82,7 @@ public:
 
 		return items;
 	}
+	unsigned long max() { return storage.size(); }
 };
 
 };
