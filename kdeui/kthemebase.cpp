@@ -399,7 +399,7 @@ QImage* KThemeBase::loadImage(QString &name)
     image->load(path);
     if(!image->isNull())
         return(image);
-    kdWarning() << "KThemeStyle: Unable to load image " << name << endl;
+    kdWarning() << "KThemeBase: Unable to load image " << name << endl;
     delete image;
     return(NULL);
 }
@@ -411,7 +411,7 @@ KThemePixmap* KThemeBase::loadPixmap(QString &name)
     pixmap->load(path);
     if (!pixmap->isNull())
        return pixmap;
-    kdWarning() << "KThemeStyle: Unable to load pixmap " << name << endl;
+    kdWarning() << "KThemeBase: Unable to load pixmap " << name << endl;
     delete pixmap;
     return(NULL);
 }
@@ -823,7 +823,7 @@ void KThemeBase::applyMiscResourceGroup(KConfig *config)
         prop.writeEntry("SButtonPosition", (int)SBBottomRight);
     else{
         if(tmpStr != "Opposite" && !tmpStr.isEmpty())
-            kdWarning() << "KThemeStyle: Unrecognized sb button option " << tmpStr << ", using Opposite." << endl;
+            kdWarning() << "KThemeBase: Unrecognized sb button option " << tmpStr << ", using Opposite." << endl;
         prop.writeEntry("SButtonPosition", (int)SBOpposite);
     }
     tmpStr = config->readEntry("ArrowType");
@@ -833,7 +833,7 @@ void KThemeBase::applyMiscResourceGroup(KConfig *config)
         prop.writeEntry("ArrowType", (int)MotifArrow);
     else{
         if(tmpStr != "Normal" && !tmpStr.isEmpty())
-            kdWarning() << "KThemeStyle: Unrecognized arrow option " << tmpStr << ", using Normal." << endl;
+            kdWarning() << "KThemeBase: Unrecognized arrow option " << tmpStr << ", using Normal." << endl;
         prop.writeEntry("ArrowType", (int)LargeArrow);
     }
     tmpStr = config->readEntry("ShadeStyle");
