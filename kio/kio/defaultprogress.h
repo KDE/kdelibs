@@ -31,7 +31,7 @@ class KLineEdit;
 namespace KIO {
 
 /*
- * A default implementation of the progress dialog ProgressBase. 
+ * A default implementation of the progress dialog ProgressBase.
  * ProgressBase
  */
 class DefaultProgress : public ProgressBase {
@@ -41,7 +41,7 @@ class DefaultProgress : public ProgressBase {
 public:
   /**
    * Creates a new default progress dialog.
-   * @param showNow true to show immediately, false to show when 
+   * @param showNow true to show immediately, false to show when
    *                needed
    */
   DefaultProgress( bool showNow = true );
@@ -53,6 +53,7 @@ public:
    */
   DefaultProgress( QWidget* parent, const char* name = 0 );
   ~DefaultProgress();
+    bool keepOpen() const;
 
 public slots:
   virtual void slotTotalSize( KIO::Job*, KIO::filesize_t bytes );

@@ -202,6 +202,10 @@ ProgressItem::ProgressItem( ListProgress* view, QListViewItem *after, QCString a
   }
 }
 
+bool ProgressItem::keepOpen() const
+{
+    return defaultProgress->keepOpen();
+}
 
 ProgressItem::~ProgressItem() {
     delete defaultProgress;
@@ -804,7 +808,7 @@ void UIServer::jobFinished( int id )
   ProgressItem *item = findItem( id );
 
   // remove item from the list and delete the corresponding defaultprogress
-  if ( item ) {
+  if ( item && !item->keepOpen()) {
     delete item;
   }
 }
