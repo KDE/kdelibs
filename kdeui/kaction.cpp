@@ -1115,12 +1115,12 @@ void KSelectAction::setItems( const QStringList &lst )
     setItems( i, lst );
 }
 
-QStringList KSelectAction::items()
+QStringList KSelectAction::items() const
 {
   return d->m_list;
 }
 
-QString KSelectAction::currentText()
+QString KSelectAction::currentText() const
 {
   if ( currentItem() < 0 )
     return QString::null;
@@ -1128,7 +1128,7 @@ QString KSelectAction::currentText()
   return d->m_list[ currentItem() ];
 }
 
-int KSelectAction::currentItem()
+int KSelectAction::currentItem() const
 {
   return d->m_current;
 }
@@ -1357,7 +1357,7 @@ void KListAction::setCurrentItem( int index )
   emit activated( currentText() );
 }
 
-QString KListAction::currentText()
+QString KListAction::currentText() const
 {
   if ( currentItem() < 0 )
       return QString::null;
@@ -1365,7 +1365,7 @@ QString KListAction::currentText()
   return items()[ currentItem() ];
 }
 
-int KListAction::currentItem()
+int KListAction::currentItem() const
 {
   return d->m_current;
 }
@@ -1377,7 +1377,7 @@ public:
   {
     m_maxItems = 0;
   }
-  unsigned int m_maxItems;
+  uint m_maxItems;
 };
 
 KRecentFilesAction::KRecentFilesAction( const QString& text, int accel,
@@ -1396,7 +1396,7 @@ KRecentFilesAction::KRecentFilesAction( const QString& text, int accel,
                                         const QObject* receiver,
                                         const char* slot,
                                         QObject* parent, const char* name,
-                                        unsigned int maxItems )
+                                        uint maxItems )
   : KListAction( text, accel, parent, name)
 {
   d = new KRecentFilesActionPrivate;
@@ -1412,7 +1412,7 @@ KRecentFilesAction::KRecentFilesAction( const QString& text, int accel,
 KRecentFilesAction::KRecentFilesAction( const QString& text,
                                         const QIconSet& pix, int accel,
                                         QObject* parent, const char* name,
-                                        unsigned int maxItems )
+                                        uint maxItems )
   : KListAction( text, pix, accel, parent, name)
 {
   d = new KRecentFilesActionPrivate;
@@ -1425,7 +1425,7 @@ KRecentFilesAction::KRecentFilesAction( const QString& text,
 KRecentFilesAction::KRecentFilesAction( const QString& text,
                                         const QString& pix, int accel,
                                         QObject* parent, const char* name,
-                                        unsigned int maxItems )
+                                        uint maxItems )
   : KListAction( text, pix, accel, parent, name)
 {
   d = new KRecentFilesActionPrivate;
@@ -1440,7 +1440,7 @@ KRecentFilesAction::KRecentFilesAction( const QString& text,
                                         const QObject* receiver,
                                         const char* slot,
                                         QObject* parent, const char* name,
-                                        unsigned int maxItems )
+                                        uint maxItems )
   : KListAction( text, pix, accel, parent, name)
 {
   d = new KRecentFilesActionPrivate;
@@ -1458,7 +1458,7 @@ KRecentFilesAction::KRecentFilesAction( const QString& text,
                                         const QObject* receiver,
                                         const char* slot,
                                         QObject* parent, const char* name,
-                                        unsigned int maxItems )
+                                        uint maxItems )
   : KListAction( text, pix, accel, parent, name)
 {
   d = new KRecentFilesActionPrivate;
@@ -1472,7 +1472,7 @@ KRecentFilesAction::KRecentFilesAction( const QString& text,
 }
 
 KRecentFilesAction::KRecentFilesAction( QObject* parent, const char* name,
-                                        unsigned int maxItems )
+                                        uint maxItems )
   : KListAction( parent, name )
 {
   d = new KRecentFilesActionPrivate;
@@ -1487,15 +1487,15 @@ KRecentFilesAction::~KRecentFilesAction()
   delete d; d = 0;
 }
 
-unsigned int KRecentFilesAction::maxItems()
+uint KRecentFilesAction::maxItems() const
 {
     return d->m_maxItems;
 }
 
-void KRecentFilesAction::setMaxItems( unsigned int maxItems )
+void KRecentFilesAction::setMaxItems( uint maxItems )
 {
-    QStringList lst       = items();
-    unsigned int oldCount = lst.count();
+    QStringList lst = items();
+    uint oldCount   = lst.count();
 
     // set new maxItems
     d->m_maxItems = maxItems;
@@ -1566,7 +1566,7 @@ void KRecentFilesAction::loadEntries( KConfig* config )
     {
         key = QString( "File%1" ).arg( i );
         value = config->readEntry( key, QString::null );
-        
+
 	if (!value.isNull())
             lst.append( value );
     }
@@ -1806,7 +1806,7 @@ void KFontSizeAction::setFontSize( int size )
   emit fontSizeChanged( size );
 }
 
-int KFontSizeAction::fontSize()
+int KFontSizeAction::fontSize() const
 {
   return currentText().toInt();
 }
@@ -2157,7 +2157,7 @@ KActionCollection::KActionCollection( QObject *parent, const char *name,
 
 KActionCollection::KActionCollection( const KActionCollection &copy )
 {
-  d = new KActionCollectionPrivate; 
+  d = new KActionCollectionPrivate;
   d->m_actions = copy.d->m_actions;
   setInstance( copy.instance() );
 }
@@ -2165,7 +2165,7 @@ KActionCollection::KActionCollection( const KActionCollection &copy )
 KActionCollection::~KActionCollection()
 {
   delete d; d = 0;
-} 
+}
 
 void KActionCollection::childEvent( QChildEvent* ev )
 {
@@ -2303,7 +2303,7 @@ KActionCollection &KActionCollection::operator=( const KActionCollection &c )
   d->m_actions = c.d->m_actions;
   setInstance( c.instance() );
   return *this;
-} 
+}
 
 KActionCollection &KActionCollection::operator+=( const KActionCollection &c )
 {
@@ -2312,7 +2312,7 @@ KActionCollection &KActionCollection::operator+=( const KActionCollection &c )
     insert( it.current() );
 
   return *this;
-} 
+}
 
 void KActionCollection::setInstance( KInstance *instance )
 {
@@ -2324,7 +2324,7 @@ void KActionCollection::setInstance( KInstance *instance )
 
 KInstance *KActionCollection::instance() const
 {
-  return d->m_instance; 
+  return d->m_instance;
 }
 
 #include "kaction.moc"

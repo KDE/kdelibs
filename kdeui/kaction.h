@@ -164,6 +164,18 @@ class KToolBar;
 class KAction : public QObject
 {
   Q_OBJECT
+  Q_PROPERTY( int containerCount READ containerCount )
+  Q_PROPERTY( QPixmap pixmap READ pixmap )
+  Q_PROPERTY( QString plainText READ plainText )
+  Q_PROPERTY( QString text READ text WRITE setText )
+  Q_PROPERTY( int accel READ accel WRITE setAccel )
+  Q_PROPERTY( bool enabled READ isEnabled WRITE setEnabled )
+  Q_PROPERTY( QString group READ group WRITE setGroup )
+  Q_PROPERTY( QString whatsThis READ whatsThis WRITE setWhatsThis )
+  Q_PROPERTY( QString toolTip READ toolTip WRITE setToolTip )
+  Q_PROPERTY( QString shortText READ shortText WRITE setShortText )
+  Q_PROPERTY( QIconSet iconSet READ iconSet WRITE setIconSet )
+  Q_PROPERTY( QString icon READ iconName WRITE setIcon )
 public:
     /**
      * Construct an action with text and potential keyboard
@@ -417,7 +429,8 @@ private:
 class KToggleAction : public KAction
 {
     Q_OBJECT
-
+    Q_PROPERTY( bool checked READ isChecked WRITE setChecked )
+    Q_PROPERTY( QString exclusiveGroup READ exclusiveGroup WRITE setExclusiveGroup )
 public:
 
     /**
@@ -634,7 +647,10 @@ private:
 class KSelectAction : public KAction
 {
     Q_OBJECT
-
+    Q_PROPERTY( int currentItem READ currentItem WRITE setCurrentItem );
+    Q_PROPERTY( QStringList items READ items WRITE setItems );
+    Q_PROPERTY( bool editable READ isEditable WRITE setEditable );
+    Q_PROPERTY( QString currentText READ currentText );
 public:
 
     /**
@@ -727,7 +743,7 @@ public:
      *  @param widget The GUI element to display this action.
      *  @param index  The index of the item.
      */
-    int plug( QWidget* widget, int index = -1 );
+    virtual int plug( QWidget* widget, int index = -1 );
 
     /**
      *  Sets the currently checked item.
@@ -740,13 +756,13 @@ public:
 
     virtual void clear();
 
-    void setEditable( bool );
-    bool isEditable() const;
+    virtual void setEditable( bool );
+    virtual bool isEditable() const;
 
-    QStringList items();
+    virtual QStringList items() const;
     virtual void changeItem( int index, const QString& text );
-    QString currentText();
-    int currentItem();
+    virtual QString currentText() const;
+    virtual int currentItem() const;
 
     QPopupMenu* popupMenu();
 
@@ -866,8 +882,8 @@ public:
      */
     virtual void setCurrentItem( int index );
 
-    QString currentText();
-    int currentItem();
+    virtual QString currentText() const;
+    virtual int currentItem() const;
 
 private:
     class KListActionPrivate;
@@ -883,7 +899,7 @@ private:
 class KRecentFilesAction : public KListAction
 {
   Q_OBJECT
-
+  Q_PROPERTY( uint maxItems READ maxItems WRITE setMaxItems );
 public:
   /**
    *  @param text The text that will be displayed.
@@ -894,7 +910,7 @@ public:
    */
   KRecentFilesAction( const QString& text, int accel,
                       QObject* parent, const char* name = 0,
-                      unsigned int maxItems = 10 );
+                      uint maxItems = 10 );
 
   /**
    *  @param text The text that will be displayed.
@@ -908,7 +924,7 @@ public:
   KRecentFilesAction( const QString& text, int accel,
                       const QObject* receiver, const char* slot,
                       QObject* parent, const char* name = 0,
-                      unsigned int maxItems = 10 );
+                      uint maxItems = 10 );
 
   /**
    *  @param text The text that will be displayed.
@@ -920,7 +936,7 @@ public:
    */
   KRecentFilesAction( const QString& text, const QIconSet& pix, int accel,
                       QObject* parent, const char* name = 0,
-                      unsigned int maxItems = 10 );
+                      uint maxItems = 10 );
 
   /**
    *  @param text The text that will be displayed.
@@ -932,7 +948,7 @@ public:
    */
   KRecentFilesAction( const QString& text, const QString& pix, int accel,
                       QObject* parent, const char* name = 0,
-                      unsigned int maxItems = 10 );
+                      uint maxItems = 10 );
 
   /**
    *  @param text The text that will be displayed.
@@ -947,7 +963,7 @@ public:
   KRecentFilesAction( const QString& text, const QIconSet& pix, int accel,
                       const QObject* receiver, const char* slot,
                       QObject* parent, const char* name = 0,
-                      unsigned int maxItems = 10 );
+                      uint maxItems = 10 );
 
   /**
    *  @param text The text that will be displayed.
@@ -962,7 +978,7 @@ public:
   KRecentFilesAction( const QString& text, const QString& pix, int accel,
                       const QObject* receiver, const char* slot,
                       QObject* parent, const char* name = 0,
-                      unsigned int maxItems = 10 );
+                      uint maxItems = 10 );
 
   /**
    *  @param parent This action's parent.
@@ -970,7 +986,7 @@ public:
    *  @param maxItems The maximum number of files to display
    */
   KRecentFilesAction( QObject* parent = 0, const char* name = 0,
-                      unsigned int maxItems = 10 );
+                      uint maxItems = 10 );
 
   /**
    *  Destructor.
@@ -980,8 +996,8 @@ public:
   /**
    *  Retrieves the maximum of items in the recent files list.
    */
-  unsigned int maxItems();
-  
+  uint maxItems() const;
+
   /**
    *  Sets the maximum of items in the recent files list.
    *  The default for this value is 10 set in the constructor.
@@ -990,15 +1006,15 @@ public:
    *  in the recent files list the last items are deleted until
    *  the number of items are equal to the new maximum.
    */
-  void setMaxItems( unsigned int maxItems );
+  void setMaxItems( uint maxItems );
 
   /**
    *  Add URL to recent files list.
    *
-   *  @param url The URL of the file 
+   *  @param url The URL of the file
    */
   void addURL( const KURL& url );
-  
+
   /**
    *  Remove an URL from the recent files list.
    *
@@ -1051,7 +1067,7 @@ private:
 class KFontAction : public KSelectAction
 {
     Q_OBJECT
-
+    Q_PROPERTY( QString font READ font WRITE setFont )
 public:
     KFontAction( const QString& text, int accel = 0, QObject* parent = 0,
                  const char* name = 0 );
@@ -1072,7 +1088,7 @@ public:
     KFontAction( QObject* parent = 0, const char* name = 0 );
 
     void setFont( const QString &family );
-    QString font() {
+    QString font() const {
 	return currentText();
     }
 
@@ -1086,7 +1102,7 @@ private:
 class KFontSizeAction : public KSelectAction
 {
     Q_OBJECT
-
+    Q_PROPERTY( int fontSize READ fontSize WRITE setFontSize )
 public:
     KFontSizeAction( const QString& text, int accel = 0, QObject* parent = 0,
                      const char* name = 0 );
@@ -1107,7 +1123,7 @@ public:
     virtual ~KFontSizeAction();
 
     virtual void setFontSize( int size );
-    virtual int fontSize();
+    virtual int fontSize() const;
 
 protected slots:
     virtual void slotActivated( int );

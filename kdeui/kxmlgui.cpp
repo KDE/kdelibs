@@ -174,7 +174,8 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
   static QString actionPropElementName = QString::fromLatin1( "ActionProperties" );
   static QString tagAction = QString::fromLatin1( "action" );
   static QString attrName = QString::fromLatin1( "name" );
- 
+  static QString attrAccel = QString::fromLatin1( "accel" );
+  
   m_client = client;
 
   if ( client->factory() && client->factory() != this )
@@ -189,7 +190,7 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
   QDomElement actionPropElement = docElement.namedItem( actionPropElementName ).toElement();
   if ( actionPropElement.isNull() )
     actionPropElement = docElement.namedItem( actionPropElementName.lower() ).toElement();
-  
+
   if ( !actionPropElement.isNull() )
   {
     QDomElement e = actionPropElement.firstChild().toElement();
@@ -197,11 +198,11 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
     {
       if ( e.tagName().lower() != tagAction )
         continue;
-      
+
       KAction *action = m_client->action( e );
       if ( !action )
         continue;
-      
+
       QDomNamedNodeMap attributes = e.attributes();
       for ( uint i = 0; i < attributes.length(); i++ )
       {
@@ -209,30 +210,21 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
 	if ( attr.isNull() )
 	  continue;
 	
-	//hack
+	//don't let someone change the name of the action! (Simon)
 	if ( attr.name() == attrName )
 	  continue;
-	
-	// NOW THIS IS A REALLY UGLY HACK! I WISH IT WOULD NOT BE NECESSARY..... if we just could add properties to KAction and
-	// would know what's up with libqk :-(
-	// (Simon)
-	if ( attr.name().lower() == "icon" )
-	  static_cast<KAction *>(action)->setIcon( attr.value() );
-	else if ( attr.name().lower() == "accel" )
-  	  action->setAccel( KAccel::stringToKey( attr.value() ) );
-	else if ( attr.name().lower() == "text" )
-	  action->setText( attr.value() );
-	else if ( attr.name().lower() == "whatsthis" )
-	  action->setWhatsThis( attr.value() );
-	else if ( attr.name().lower() == "tooltip" )
-	  action->setToolTip( attr.value() );
-	else if ( attr.name().lower() == "group" )
-	  action->setGroup( attr.value() );
 
+	QVariant propertyValue( attr.value() );
+	
+	// readable accels please ;-)
+	if ( attr.name().lower() == attrAccel )
+  	  propertyValue = QVariant( KAccel::stringToKey( attr.value() ) );
+	     
+        action->setProperty( attr.name().latin1() /* ???????? */, propertyValue );
       }
     }
   }
-  
+
   buildRecursive( docElement, d->m_rootNode );
 
   client->setFactory( this );
