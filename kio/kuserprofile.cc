@@ -27,6 +27,9 @@ void KServiceTypeProfile::initStatic()
   QStringList tmpList = config.groupList();
   for (QStringList::Iterator aIt = tmpList.begin(); 
        aIt != tmpList.end(); ++aIt) {
+    if ( *aIt == "<default>" )
+      continue;
+      
     config.setGroup( *aIt );
     
     QString type = config.readEntry( "ServiceType" );
