@@ -335,6 +335,14 @@ public:
     int keyCode() const;
 
     /**
+     *
+     * Netscape extension. only returns something useful when the mouse
+     * was involved. Otherwise its 0
+     */
+    int pageX() const;
+    int pageY() const;
+
+    /**
      * Netscape extension. only returns something useful when the mouse
      * was involved. Otherwise its 0
      */
@@ -505,9 +513,9 @@ public:
      *
      * @param screenYArg Specifies the Event's screen y coordinate
      *
-     * @param clientXArg Specifies the Event's client x coordinate
+     * @param pageXArg Specifies the Event's page x coordinate
      *
-     * @param clientYArg Specifies the Event's client y coordinate
+     * @param pageYArg Specifies the Event's page y coordinate
      *
      * @param ctrlKeyArg Specifies whether or not control key was depressed during the Event.
      *

@@ -301,6 +301,8 @@ MouseEventImpl::MouseEventImpl()
     m_screenY = 0;
     m_clientX = 0;
     m_clientY = 0;
+    m_pageX = 0;
+    m_pageY = 0;
     m_ctrlKey = false;
     m_altKey = false;
     m_shiftKey = false;
@@ -320,6 +322,8 @@ MouseEventImpl::MouseEventImpl(EventId _id,
 			       long screenYArg,
 			       long clientXArg,
 			       long clientYArg,
+                               long pageXArg,
+                               long pageYArg,
 			       bool ctrlKeyArg,
 			       bool altKeyArg,
 			       bool shiftKeyArg,
@@ -334,6 +338,8 @@ MouseEventImpl::MouseEventImpl(EventId _id,
     m_screenY = screenYArg;
     m_clientX = clientXArg;
     m_clientY = clientYArg;
+    m_pageX = pageXArg;
+    m_pageY = pageYArg;
     m_ctrlKey = ctrlKeyArg;
     m_altKey = altKeyArg;
     m_shiftKey = shiftKeyArg;
@@ -355,16 +361,13 @@ MouseEventImpl::~MouseEventImpl()
 
 void MouseEventImpl::computeLayerPos()
 {
-    m_layerX = m_clientX;
-    m_layerY = m_clientY;
+    m_layerX = m_pageX;
+    m_layerY = m_pageY;
 
     DocumentImpl* doc = view()->document();
     if (doc) {
         khtml::RenderObject::NodeInfo renderInfo(true, false);
-
-        int x = doc->view()->contentsX();
-        int y = doc->view()->contentsY();
-        doc->renderer()->layer()->nodeAtPoint(renderInfo, m_clientX + x, m_clientY + y);
+        doc->renderer()->layer()->nodeAtPoint(renderInfo, m_pageX, m_pageY);
 
         NodeImpl *node = renderInfo.innerNonSharedNode();
         while (node && !node->renderer())
@@ -406,6 +409,13 @@ void MouseEventImpl::initMouseEvent(const DOMString &typeArg,
     m_screenY = screenYArg;
     m_clientX = clientXArg;
     m_clientY = clientYArg;
+    m_pageX   = clientXArg;
+    m_pageY   = clientYArg;
+    KHTMLView* v;
+    if ( view()->document() && ( v = view()->document()->view() ) ) {
+        m_pageX += v->contentsX();
+        m_pageY += v->contentsY();
+    }
     m_ctrlKey = ctrlKeyArg;
     m_altKey = altKeyArg;
     m_shiftKey = shiftKeyArg;
@@ -414,6 +424,7 @@ void MouseEventImpl::initMouseEvent(const DOMString &typeArg,
     m_relatedTarget = relatedTargetArg.handle();
     if (m_relatedTarget)
 	m_relatedTarget->ref();
+
 
     // ### make this on-demand. its soo sloooow
     computeLayerPos();

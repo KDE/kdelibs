@@ -266,6 +266,28 @@ int UIEvent::keyCode() const
     return 0;
 }
 
+int UIEvent::pageX() const
+{
+    if (!impl)
+        throw DOMException(DOMException::INVALID_STATE_ERR);
+
+    if (impl->isMouseEvent() )
+        return static_cast<MouseEventImpl*>( impl )->pageX();
+    else
+        return 0;
+}
+
+int UIEvent::pageY() const
+{
+    if (!impl)
+        throw DOMException(DOMException::INVALID_STATE_ERR);
+
+    if ( impl->isMouseEvent() )
+        return  static_cast<MouseEventImpl*>( impl )->pageY();
+    else
+        return 0;
+}
+
 int UIEvent::layerX() const
 {
     if( !impl )
@@ -278,7 +300,7 @@ int UIEvent::layerX() const
 
 int UIEvent::layerY() const
 {
-    if( !impl ) 
+    if( !impl )
         throw DOMException( DOMException::INVALID_STATE_ERR );
 
     if( impl->isMouseEvent() )
@@ -453,7 +475,7 @@ void MouseEvent::initMouseEvent(const DOMString &typeArg,
 
     static_cast<MouseEventImpl*>(impl)->initMouseEvent(typeArg,canBubbleArg,
 	cancelableArg,viewArg,detailArg,screenXArg,screenYArg,clientXArg,
-	clientYArg,ctrlKeyArg,altKeyArg,shiftKeyArg,metaKeyArg,buttonArg,
+        clientYArg,ctrlKeyArg,altKeyArg,shiftKeyArg,metaKeyArg,buttonArg,
 	relatedTargetArg);
 }
 

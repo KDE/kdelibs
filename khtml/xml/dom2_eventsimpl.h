@@ -184,6 +184,8 @@ public:
 		   long screenYArg,
 		   long clientXArg,
 		   long clientYArg,
+                   long pageXArg,
+                   long pageYArg,
 		   bool ctrlKeyArg,
 		   bool altKeyArg,
 		   bool shiftKeyArg,
@@ -198,7 +200,9 @@ public:
     long clientX() const { return m_clientX; }
     long clientY() const { return m_clientY; }
     long layerX() const { return m_layerX; } // non-DOM extension
-    long layerY() const { return m_layerX; } // non-DOM extension
+    long layerY() const { return m_layerY; } // non-DOM extension
+    long pageX() const { return m_pageX; } // non-DOM extension
+    long pageY() const { return m_pageY; } // non-DOM extension
     bool isDoubleClick() const { return m_isDoubleClick; } // non-DOM extension
     bool ctrlKey() const { return m_ctrlKey; }
     bool shiftKey() const { return m_shiftKey; }
@@ -235,6 +239,8 @@ protected:
     long m_clientY;
     long m_layerX;
     long m_layerY;
+    long m_pageX;
+    long m_pageY;
     bool m_ctrlKey : 1;
     bool m_altKey  : 1;
     bool m_shiftKey : 1;
