@@ -346,7 +346,8 @@ void KMenuBar::setGeometry( int x, int y, int w, int h )
 	return;
     }
     checkResizingToParent( w, h );
-    QMenuBar::setGeometry( x, y, w, h );
+    if( geometry() != QRect( x, y, w, h ))
+        QMenuBar::setGeometry( x, y, w, h );
 }
 
 void KMenuBar::resize( int w, int h )
@@ -354,7 +355,8 @@ void KMenuBar::resize( int w, int h )
     if( block_resize )
 	return;
     checkResizingToParent( w, h );
-    QMenuBar::resize( w, h );
+    if( size() != QSize( w, h ))
+        QMenuBar::resize( w, h );
 //    kdDebug() << "RS:" << w << ":" << h << ":" << width() << ":" << height() << ":" << minimumWidth() << ":" << minimumHeight() << endl;
 }
 
