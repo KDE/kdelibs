@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.1  1999/09/21 11:03:54  waba
+// WABA: Clean up interface
+//
 
 #ifndef _KTOOLBARITEM_H
 #define _KTOOLBARITEM_H
@@ -81,6 +84,10 @@ private:
   bool myItem;
 };
 
+/** 
+* List of @ref KToolBarItem.
+* @internal
+*/
 class KToolBarItemList : public QList<KToolBarItem>
 {
 public:

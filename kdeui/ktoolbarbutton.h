@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.1  1999/09/21 11:03:53  waba
+// WABA: Clean up interface
+//
 
 #ifndef _KTOOLBARBUTTON_H
 #define _KTOOLBARBUTTON_H
@@ -114,6 +117,11 @@ class KToolBarButton : public QButton
      void highlighted (int, bool);
  };
 
+/**
+* List of @ref KToolBarButton objects.
+* @internal
+* @version $Id$
+*/
 class KToolBarButtonList : public QIntDict<KToolBarButton>
 {
 public:
