@@ -54,9 +54,9 @@ bool NetAccess::download(const KURL& u, QString & target)
   }
 
   NetAccess kioNet;
-  QString dest( target );
-  KURL::encode(dest);
-  return kioNet.copyInternal( u, KURL( dest ) );
+  KURL dest;
+  dest.setPath( target );
+  return kioNet.copyInternal( u, dest );
 }
 
 bool NetAccess::upload(const QString& src, const KURL& target)
@@ -67,9 +67,9 @@ bool NetAccess::upload(const QString& src, const KURL& target)
   // TODO : What do we do if target.isLocalFile() ? Copy ? Nothing ?
 
   NetAccess kioNet;
-  QString s(src);
-  KURL::encode(s);
-  return kioNet.copyInternal( KURL(s), target );
+  KURL s;
+  s.setPath(src);
+  return kioNet.copyInternal( s, target );
 }
 
 bool NetAccess::copy( const KURL & src, const KURL & target )
