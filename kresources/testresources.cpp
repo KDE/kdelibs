@@ -34,7 +34,7 @@ int main( int argc, char **argv )
 
   KApplication app;
 
-  ResourceManager<TestResource> manager( "test" );
+  Manager<TestResource> manager( "test" );
   
   TestResource *resource1 = new TestResource;  
   resource1->setResourceName( "One" );

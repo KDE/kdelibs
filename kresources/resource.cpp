@@ -1,7 +1,9 @@
 /*
     This file is part of libkresources.
+
     Copyright (c) 2001 Cornelius Schumacher <schumacher@kde.org>
     Copyright (c) 2002 Jan-Pascal van Best <janpascal@vanbest.org>
+    Copyright (c) 2003 Cornelius Schumacher <schumacher@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -24,10 +26,11 @@
 #include <kconfig.h>
 
 #include "resource.h"
-#include "resource.moc"
+
 using namespace KRES;
 
-class Resource::ResourcePrivate {
+class Resource::ResourcePrivate
+{
   public:
 #ifdef QT_THREAD_SUPPORT
     QMutex mMutex;
@@ -194,3 +197,5 @@ void Resource::dump() const
   kdDebug(5650) << "  Active: " << ( d->mActive ? "yes" : "no" ) << endl;
   kdDebug(5650) << "  IsOpen: " << ( d->mIsOpen ? "yes" : "no" ) << endl;
 }
+
+#include "resource.moc"

@@ -1,5 +1,6 @@
 /*
     This file is part of libkresources.
+
     Copyright (c) 2002 Tobias Koenig <tokoe@kde.org>
     Copyright (c) 2002 Jan-Pascal van Best <janpascal@vanbest.org>
     Copyright (c) 2003 Cornelius Schumacher <schumacher@kde.org>
@@ -20,8 +21,8 @@
     Boston, MA 02111-1307, USA.
 */
 
-#ifndef KRESOURCES_RESOURCEMANAGER_IMPL_H
-#define KRESOURCES_RESOURCEMANAGER_IMPL_H
+#ifndef KRESOURCES_MANAGERIMPL_H
+#define KRESOURCES_MANAGERIMPL_H
 
 #include <qstring.h>
 #include <qptrlist.h>
@@ -34,7 +35,7 @@ class KConfig;
 namespace KRES {
 
 class Resource;
-class ResourceFactory;
+class Factory;
 
 class ManagerImplListener
 {
@@ -50,12 +51,12 @@ class ManagerImplListener
 
   Do not use this class directly. Use ResourceManager instead
 */
-class ResourceManagerImpl : public QObject, virtual public ResourceManagerIface
+class ManagerImpl : public QObject, virtual public ManagerIface
 {
     Q_OBJECT
   public:
-    ResourceManagerImpl( const QString &family );
-    ~ResourceManagerImpl();
+    ManagerImpl( const QString &family );
+    ~ManagerImpl();
 
     void readConfig( KConfig * );
     void writeConfig( KConfig * );
@@ -102,7 +103,7 @@ class ResourceManagerImpl : public QObject, virtual public ResourceManagerIface
     KConfig *mConfig;
     KConfig *mStdConfig;
     Resource *mStandard;
-    ResourceFactory *mFactory;
+    Factory *mFactory;
     Resource::List mResources;
     ManagerImplListener *mListener;
 };

@@ -1,9 +1,11 @@
-#ifndef RESOURCE_MANAGER_IFACE_H
-#define RESOURCE_MANAGER_IFACE_H
+#ifndef KRES_MANAGERIFACE_H
+#define KRES_MANAGERIFACE_H
 
 #include <dcopobject.h>
 
-class ResourceManagerIface : virtual public DCOPObject
+namespace KRES {
+
+class ManagerIface : virtual public DCOPObject
 {
   K_DCOP
 
@@ -18,5 +20,7 @@ class ResourceManagerIface : virtual public DCOPObject
     virtual ASYNC dcopResourceDeleted( QString identifier ) = 0;
 //    virtual QRect mySynchronousMethod() = 0;
 };
+
+}
 
 #endif

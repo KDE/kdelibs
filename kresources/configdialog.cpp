@@ -1,7 +1,9 @@
 /*
     This file is part of libkresources.
+
     Copyright (c) 2002 Tobias Koenig <tokoe@kde.org>
     Copyright (c) 2002 Jan-Pascal van Best <janpascal@vanbest.org>
+    Copyright (c) 2003 Cornelius Schumacher <schumacher@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -38,11 +40,11 @@
 
 using namespace KRES;
 
-ResourceConfigDlg::ResourceConfigDlg( QWidget *parent, const QString& resourceFamily,
+ConfigDialog::ConfigDialog( QWidget *parent, const QString& resourceFamily,
     /*const QString& type,*/ Resource* resource, /*KConfig *config, */const char *name )
   : KDialog( parent, name, true )/*, mConfig( config )*/, mResource( resource )
 {
-  ResourceFactory *factory = ResourceFactory::self( resourceFamily );
+  Factory *factory = Factory::self( resourceFamily );
 
   setCaption( i18n( "Resource Configuration" ) );
   resize( 250, 240 );
@@ -93,28 +95,28 @@ ResourceConfigDlg::ResourceConfigDlg( QWidget *parent, const QString& resourceFa
 
 }
 
-void ResourceConfigDlg::setInEditMode( bool value )
+void ConfigDialog::setInEditMode( bool value )
 {
   if ( mConfigWidget )
     mConfigWidget->setInEditMode( value );
 }
 
-void ResourceConfigDlg::slotNameChanged( const QString &text)
+void ConfigDialog::slotNameChanged( const QString &text)
 {
   mbuttonOk->setEnabled( !text.isEmpty() );
 }
 
-int ResourceConfigDlg::exec()
+int ConfigDialog::exec()
 {
   return QDialog::exec();
 }
 
-void ResourceConfigDlg::setReadOnly( bool value )
+void ConfigDialog::setReadOnly( bool value )
 {
   mReadOnly->setChecked( value );
 }
 
-void ResourceConfigDlg::accept()
+void ConfigDialog::accept()
 {
   if ( mName->text().isEmpty() ) {
     KMessageBox::sorry( this, i18n( "Please enter a resource name" ) );

@@ -1,7 +1,9 @@
 /*
     This file is part of libkresources.
+
     Copyright (c) 2002 Tobias Koenig <tokoe@kde.org>
     Copyright (c) 2002 Jan-Pascal van Best <janpascal@vanbest.org>
+    Copyright (c) 2003 Cornelius Schumacher <schumacher@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -73,38 +75,37 @@ class ConfigViewItem : public QCheckListItem
     bool mIsStandard;
 };
 
-ResourcesConfigPage::ResourcesConfigPage( const QString &family,
-                                          const QString &configFile,
-                                          QWidget *parent, const char *name )
+ConfigPage::ConfigPage( const QString &family, const QString &configFile,
+                        QWidget *parent, const char *name )
   : QWidget( parent, name ), mFamily( family )
 {
-  kdDebug(5650) << "ResourcesConfigPage::ResourcesConfigPage()" << endl;
+  kdDebug(5650) << "ConfigPage::ConfigPage()" << endl;
 
   init( configFile );
 }
 
-ResourcesConfigPage::ResourcesConfigPage( const QString &family, QWidget *parent,
-                                          const char *name )
+ConfigPage::ConfigPage( const QString &family, QWidget *parent,
+                        const char *name )
   : QWidget( parent, name ), mFamily( family )
 {
-  kdDebug(5650) << "ResourcesConfigPage::ResourcesConfigPage()" << endl;
+  kdDebug(5650) << "ConfigPage::ConfigPage()" << endl;
 
   init( QString::null );
 }
 
-ResourcesConfigPage::~ResourcesConfigPage()
+ConfigPage::~ConfigPage()
 {
   mManager->removeListener( this );
 
   delete mConfig;
 }
 
-void ResourcesConfigPage::load()
+void ConfigPage::load()
 {
-  kdDebug(5650) << "ResourcesConfigPage::load()" << endl;
+  kdDebug(5650) << "ConfigPage::load()" << endl;
 
   delete mManager;
-  mManager = new ResourceManager<Resource>( mFamily );
+  mManager = new Manager<Resource>( mFamily );
   mManager->readConfig( mConfig );
 
   if ( !mManager )
@@ -116,7 +117,7 @@ void ResourcesConfigPage::load()
 
   Resource *standardResource = mManager->standardResource();
 
-  ResourceManager<Resource>::Iterator it;
+  Manager<Resource>::Iterator it;
   for ( it = mManager->begin(); it != mManager->end(); ++it ) {
     ConfigViewItem *item = new ConfigViewItem( mListView, *it );
     if ( *it == standardResource )
@@ -137,7 +138,7 @@ void ResourcesConfigPage::load()
   }
 }
 
-void ResourcesConfigPage::save()
+void ConfigPage::save()
 {
   QListViewItem *item = mListView->firstChild();
   while ( item ) {
@@ -161,11 +162,11 @@ void ResourcesConfigPage::save()
   emit changed( false );
 }
 
-void ResourcesConfigPage::defaults()
+void ConfigPage::defaults()
 {
 }
 
-void ResourcesConfigPage::slotAdd()
+void ConfigPage::slotAdd()
 {
   QStringList types = mManager->resourceTypeNames();
   bool ok = false;
@@ -184,7 +185,7 @@ void ResourcesConfigPage::slotAdd()
 
   resource->setResourceName( type + "-resource" );
 
-  ResourceConfigDlg dlg( this, mFamily, resource, "ResourceConfigDlg" );
+  ConfigDialog dlg( this, mFamily, resource, "KRES::ConfigDialog" );
 
   if ( dlg.exec() ) {
     mManager->add( resource );
@@ -217,7 +218,7 @@ void ResourcesConfigPage::slotAdd()
   }
 }
 
-void ResourcesConfigPage::slotRemove()
+void ConfigPage::slotRemove()
 {
   QListViewItem *item = mListView->currentItem();
   ConfigViewItem *confItem = static_cast<ConfigViewItem*>( item );
@@ -241,7 +242,7 @@ void ResourcesConfigPage::slotRemove()
   emit changed( true );
 }
 
-void ResourcesConfigPage::slotEdit()
+void ConfigPage::slotEdit()
 {
   QListViewItem *item = mListView->currentItem();
   ConfigViewItem *configItem = static_cast<ConfigViewItem*>( item );
@@ -250,7 +251,7 @@ void ResourcesConfigPage::slotEdit()
 
   Resource *resource = configItem->resource();
 
-  ResourceConfigDlg dlg( this, mFamily, resource, "ResourceConfigDlg" );
+  ConfigDialog dlg( this, mFamily, resource, "KRES::ConfigDialog" );
 
   if ( dlg.exec() ) {
     configItem->setText( 0, resource->resourceName() );
@@ -266,7 +267,7 @@ void ResourcesConfigPage::slotEdit()
   }
 }
 
-void ResourcesConfigPage::slotStandard()
+void ConfigPage::slotStandard()
 {
   ConfigViewItem *item = static_cast<ConfigViewItem*>( mListView->currentItem() );
   if ( !item )
@@ -294,7 +295,7 @@ void ResourcesConfigPage::slotStandard()
   mManager->setStandardResource( item->resource() );
 }
 
-void ResourcesConfigPage::slotSelectionChanged()
+void ConfigPage::slotSelectionChanged()
 {
   bool state = ( mListView->currentItem() != 0 );
 
@@ -303,9 +304,9 @@ void ResourcesConfigPage::slotSelectionChanged()
   mStandardButton->setEnabled( state );
 }
 
-void ResourcesConfigPage::resourceAdded( Resource* resource )
+void ConfigPage::resourceAdded( Resource* resource )
 {
-  kdDebug(5650) << "ResourcesConfigPage::resourceAdded( " << resource->resourceName() << " )" << endl;
+  kdDebug(5650) << "ConfigPage::resourceAdded( " << resource->resourceName() << " )" << endl;
   ConfigViewItem *item = new ConfigViewItem( mListView, resource );
 
   // FIXME: this sucks. This should be in the config file,
@@ -317,17 +318,17 @@ void ResourcesConfigPage::resourceAdded( Resource* resource )
   emit changed( true );
 }
 
-void ResourcesConfigPage::resourceModified( Resource* resource )
+void ConfigPage::resourceModified( Resource* resource )
 {
-  kdDebug(5650) << "ResourcesConfigPage::resourceModified( " << resource->resourceName() << " )" << endl;
+  kdDebug(5650) << "ConfigPage::resourceModified( " << resource->resourceName() << " )" << endl;
 }
 
-void ResourcesConfigPage::resourceDeleted( Resource* resource )
+void ConfigPage::resourceDeleted( Resource* resource )
 {
-  kdDebug(5650) << "ResourcesConfigPage::resourceDeleted( " << resource->resourceName() << " )" << endl;
+  kdDebug(5650) << "ConfigPage::resourceDeleted( " << resource->resourceName() << " )" << endl;
 }
 
-void ResourcesConfigPage::slotItemClicked( QListViewItem *item )
+void ConfigPage::slotItemClicked( QListViewItem *item )
 {
   ConfigViewItem *configItem = static_cast<ConfigViewItem *>( item );
   if ( !configItem ) return;
@@ -343,7 +344,7 @@ void ResourcesConfigPage::slotItemClicked( QListViewItem *item )
   }
 }
 
-void ResourcesConfigPage::init( const QString &configFile )
+void ConfigPage::init( const QString &configFile )
 {
   if ( configFile.isEmpty() ) mConfig = 0;
   else mConfig = new KConfig( configFile );

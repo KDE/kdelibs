@@ -19,8 +19,8 @@
     Boston, MA 02111-1307, USA.
 */
 
-#ifndef KRESOURCES_RESOURCECONFIGDLG_H
-#define KRESOURCES_RESOURCECONFIGDLG_H
+#ifndef KRESOURCES_CONFIGDIALOG_H
+#define KRESOURCES_CONFIGDIALOG_H
 
 #include <kdialog.h>
 
@@ -30,35 +30,34 @@ class KButtonBox;
 
 namespace KRES {
   class Resource;
-  class ResourceConfigWidget;
+  class ConfigWidget;
 
-class ResourceConfigDlg : KDialog
+class ConfigDialog : KDialog
 {
-  Q_OBJECT
+    Q_OBJECT
+  public:
+    // Resource=0: create new resource
+    ConfigDialog( QWidget *parent, const QString& resourceFamily,
+	          Resource* resource, const char *name = 0);
 
-public:
-  // Resource=0: create new resource
-  ResourceConfigDlg( QWidget *parent, const QString& resourceFamily,
-	  Resource* resource, const char *name = 0);
+    void setInEditMode( bool value );
 
-  void setInEditMode( bool value );
+  public slots:
+    int exec();
 
-public slots:
-  int exec();
+  protected slots:
+    void accept();
+    void setReadOnly( bool value );
+    void slotNameChanged( const QString &text);
 
-protected slots:
-  void accept();
-  void setReadOnly( bool value );
-  void slotNameChanged( const QString &text);
+  private:
+    ConfigWidget *mConfigWidget;
+    Resource* mResource;
 
-private:
-  ResourceConfigWidget *mConfigWidget;
-  Resource* mResource;
-
-  KButtonBox *mButtonBox;
-  KLineEdit *mName;
-  QCheckBox *mReadOnly;
-  QPushButton *mbuttonOk;
+    KButtonBox *mButtonBox;
+    KLineEdit *mName;
+    QCheckBox *mReadOnly;
+    QPushButton *mbuttonOk;
 };
 
 }

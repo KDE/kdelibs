@@ -1,7 +1,9 @@
 /*
     This file is part of libkresources.
+
     Copyright (c) 2002 Tobias Koenig <tokoe@kde.org>
     Copyright (c) 2002 Jan-Pascal van Best <janpascal@vanbest.org>
+    Copyright (c) 2003 Cornelius Schumacher <schumacher@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -32,34 +34,34 @@
 
 using namespace KRES;
 
-QDict<ResourceFactory> *ResourceFactory::mSelves = 0;
-static KStaticDeleter< QDict<ResourceFactory> > staticDeleter;
+QDict<Factory> *Factory::mSelves = 0;
+static KStaticDeleter< QDict<Factory> > staticDeleter;
 
-ResourceFactory *ResourceFactory::self( const QString& resourceFamily )
+Factory *Factory::self( const QString& resourceFamily )
 {
-  kdDebug(5650) << "ResourceFactory::self()" << endl;
+  kdDebug(5650) << "Factory::self()" << endl;
 
-  ResourceFactory *factory = 0;
+  Factory *factory = 0;
   if ( !mSelves )
-    staticDeleter.setObject( mSelves, new QDict<ResourceFactory> );
+    staticDeleter.setObject( mSelves, new QDict<Factory> );
 
   factory = mSelves->find( resourceFamily );
 
   if ( !factory ) {
-    factory = new ResourceFactory( resourceFamily );
+    factory = new Factory( resourceFamily );
     mSelves->insert( resourceFamily, factory );
   } 
   return factory;
 }
 
-ResourceFactory::ResourceFactory( const QString& resourceFamily ) :
+Factory::Factory( const QString& resourceFamily ) :
   mResourceFamily( resourceFamily )
 {
   mResourceList.setAutoDelete( true );
 
   QStringList list = KGlobal::dirs()->findAllResources( "data", 
       "kresources/" + mResourceFamily + "/*.desktop", true, true );
-  kdDebug(5650) << "ResourceFactory(): Resource list" << endl;
+  kdDebug(5650) << "Factory(): Resource list" << endl;
   for ( QStringList::iterator it = list.begin(); it != list.end(); ++it ) {
     kdDebug() << "-- " << *it << endl;
 
@@ -83,14 +85,14 @@ ResourceFactory::ResourceFactory( const QString& resourceFamily ) :
   }
 }
 
-ResourceFactory::~ResourceFactory()
+Factory::~Factory()
 {
   mResourceList.clear();
 }
 
-QStringList ResourceFactory::resourceTypeNames() const
+QStringList Factory::resourceTypeNames() const
 {
-  kdDebug(5650) << "ResourceFactory::resourceTypeNames()" << endl;
+  kdDebug(5650) << "Factory::resourceTypeNames()" << endl;
   QStringList retval;
 	
   QDictIterator<ResourceInfo> it( mResourceList );
@@ -100,9 +102,9 @@ QStringList ResourceFactory::resourceTypeNames() const
   return retval;
 }
 
-ResourceConfigWidget *ResourceFactory::configWidget( const QString& type, QWidget *parent )
+ConfigWidget *Factory::configWidget( const QString& type, QWidget *parent )
 {
-  ResourceConfigWidget *widget = 0;
+  ConfigWidget *widget = 0;
 
   if ( type.isEmpty() )
     return 0;
@@ -117,7 +119,7 @@ ResourceConfigWidget *ResourceFactory::configWidget( const QString& type, QWidge
 
   if ( widget_func ) {
     kdDebug(5650) << "Creating config widget for type " << type << endl;
-    widget = ((ResourceConfigWidget* (*)(QWidget *wdg))widget_func)( parent );
+    widget = ((ConfigWidget* (*)(QWidget *wdg))widget_func)( parent );
   } else {
     kdDebug(5650) << "'" << libName << "' is not a " + mResourceFamily + " plugin." << endl;
     return 0;
@@ -126,7 +128,7 @@ ResourceConfigWidget *ResourceFactory::configWidget( const QString& type, QWidge
   return widget;
 }
 
-ResourceInfo *ResourceFactory::info( const QString &type )
+ResourceInfo *Factory::info( const QString &type )
 {
   if ( type.isEmpty() )
     return 0;
@@ -134,9 +136,9 @@ ResourceInfo *ResourceFactory::info( const QString &type )
     return mResourceList[ type ];
 }
 
-Resource *ResourceFactory::resource( const QString& type, const KConfig *config )
+Resource *Factory::resource( const QString& type, const KConfig *config )
 {
-  kdDebug(5650) << "ResourceFactory::resource( " << type << ", config)" << endl;
+  kdDebug(5650) << "Factory::resource( " << type << ", config)" << endl;
   Resource *resource = 0;
 
   if ( type.isEmpty() )
@@ -144,7 +146,7 @@ Resource *ResourceFactory::resource( const QString& type, const KConfig *config 
 
   ResourceInfo *info = mResourceList.find( type );
   if ( !info ) {
-    kdDebug(5650) << "ResourceFactory::resource(): No info for type '" << type
+    kdDebug(5650) << "Factory::resource(): No info for type '" << type
               << "'" << endl;
     return 0;
   }
@@ -170,7 +172,7 @@ Resource *ResourceFactory::resource( const QString& type, const KConfig *config 
   return resource;
 }
 
-KLibrary *ResourceFactory::openLibrary( const QString& libName )
+KLibrary *Factory::openLibrary( const QString& libName )
 {
   KLibrary *library = 0;
 

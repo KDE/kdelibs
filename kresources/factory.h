@@ -1,7 +1,9 @@
 /*
     This file is part of libkresources.
+
     Copyright (c) 2002 Tobias Koenig <tokoe@kde.org>
     Copyright (c) 2002 Jan-Pascal van Best <janpascal@vanbest.org>
+    Copyright (c) 2003 Cornelius Schumacher <schumacher@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -19,8 +21,8 @@
     Boston, MA 02111-1307, USA.
 */
 
-#ifndef KRESOURCES_RESOURCEFACTORY_H
-#define KRESOURCES_RESOURCEFACTORY_H
+#ifndef KRESOURCES_FACTORY_H
+#define KRESOURCES_FACTORY_H
 
 #include <qdict.h>
 #include <qstring.h>
@@ -33,7 +35,8 @@
 
 namespace KRES {
 
-struct ResourceInfo {
+struct ResourceInfo
+{
   QString library;
   QString nameLabel;
   QString descriptionLabel;
@@ -46,7 +49,7 @@ struct ResourceInfo {
  * Example:
  *
  * <pre>
- * KABC::ResourceFactory<Calendar> *factory = KABC::ResourceFactory<Calendar>::self();
+ * KABC::Factory<Calendar> *factory = KABC::Factory<Calendar>::self();
  *
  * QStringList list = factory->resources();
  * QStringList::Iterator it;
@@ -57,57 +60,57 @@ struct ResourceInfo {
  * }
  * </pre>
  */
-class ResourceFactory
+class Factory
 {
-public:
-    
-  /**
-   * Returns the global resource factory.
-   */
-  static ResourceFactory *self( const QString& resourceFamily );
+  public:
 
-  ~ResourceFactory();
+    /**
+     * Returns the global resource factory.
+     */
+    static Factory *self( const QString& resourceFamily );
 
-  /**
-   * Returns the config widget for the given resource type,
-   * or a null pointer if resource type doesn't exist.
-   *
-   * @param type   The type of the resource, returned by @ref resources()
-   * @param resource The resource to be editted. 
-   * @param parent The parent widget
-   */
-  ResourceConfigWidget *configWidget( const QString& type, QWidget *parent = 0 );
+    ~Factory();
 
-  /**
-   * Returns a pointer to a resource object or a null pointer
-   * if resource type doesn't exist.
-   *
-   * @param type   The type of the resource, returned by @ref resources()
-   * @param ab     The address book, the resource should belong to
-   * @param config The config object where the resource get it settings from, or 0 if a new resource should be created.
-   */
-  Resource *resource( const QString& type, const KConfig *config );
+    /**
+     * Returns the config widget for the given resource type,
+     * or a null pointer if resource type doesn't exist.
+     *
+     * @param type   The type of the resource, returned by @ref resources()
+     * @param resource The resource to be editted. 
+     * @param parent The parent widget
+     */
+    ConfigWidget *configWidget( const QString& type, QWidget *parent = 0 );
 
-  /**
-   * Returns a list of all available resource types.
-   */
-  QStringList resourceTypeNames() const;
+    /**
+     * Returns a pointer to a resource object or a null pointer
+     * if resource type doesn't exist.
+     *
+     * @param type   The type of the resource, returned by @ref resources()
+     * @param ab     The address book, the resource should belong to
+     * @param config The config object where the resource get it settings from, or 0 if a new resource should be created.
+     */
+    Resource *resource( const QString& type, const KConfig *config );
 
-  /**
-   * Returns the info structure for a special type.
-   */
-  ResourceInfo *info( const QString &type );
+    /**
+     * Returns a list of all available resource types.
+     */
+    QStringList resourceTypeNames() const;
 
-protected:
-  ResourceFactory( const QString& resourceFamily );
+    /**
+     * Returns the info structure for a special type.
+     */
+    ResourceInfo *info( const QString &type );
 
-private:
-  KLibrary *openLibrary( const QString& libName );
+  protected:
+    Factory( const QString& resourceFamily );
 
-  static QDict<ResourceFactory> *mSelves;
+  private:
+    KLibrary *openLibrary( const QString& libName );
 
-  QString mResourceFamily;
-  QDict<ResourceInfo> mResourceList;
+    static QDict<Factory> *mSelves;
+
+    QString mResourceFamily;
+    QDict<ResourceInfo> mResourceList;
 };
 
 }

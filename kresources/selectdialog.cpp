@@ -1,7 +1,9 @@
 /*
     This file is part of libkresources.
+
     Copyright (c) 2002 Tobias Koenig <tokoe@kde.org>
     Copyright (c) 2002 Jan-Pascal van Best <janpascal@vanbest.org>
+    Copyright (c) 2003 Cornelius Schumacher <schumacher@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -33,8 +35,9 @@
 
 using namespace KRES;
 
-ResourceSelectDialog::ResourceSelectDialog( QPtrList<Resource> list, QWidget *parent, const char *name )
-    : KDialog( parent, name, true )
+SelectDialog::SelectDialog( QPtrList<Resource> list, QWidget *parent,
+                            const char *name )
+  : KDialog( parent, name, true )
 {
   setCaption( i18n( "Resource Selection" ) );
   resize( 300, 200 );
@@ -75,12 +78,8 @@ ResourceSelectDialog::ResourceSelectDialog( QPtrList<Resource> list, QWidget *pa
   connect( mResourceId, SIGNAL(returnPressed(QListBoxItem*)), 
            SLOT(accept()) );
 }
-/*
-ResourceSelectDialog::~ResourceSelectDialog()
-{
-}
-*/
-Resource *ResourceSelectDialog::resource()
+
+Resource *SelectDialog::resource()
 {
   if ( mResourceId->currentItem() != -1 )
     return mResourceMap[ mResourceId->currentItem() ];
@@ -88,7 +87,7 @@ Resource *ResourceSelectDialog::resource()
     return 0;
 }
 
-Resource *ResourceSelectDialog::getResource( QPtrList<Resource> list, QWidget *parent )
+Resource *SelectDialog::getResource( QPtrList<Resource> list, QWidget *parent )
 {
   if ( list.count() == 0 ) {
     KMessageBox::error( parent, i18n( "There is no resource available!" ) );
@@ -115,10 +114,9 @@ Resource *ResourceSelectDialog::getResource( QPtrList<Resource> list, QWidget *p
   if ( found )
     return found;
 
-  ResourceSelectDialog dlg( list, parent );
+  SelectDialog dlg( list, parent );
   if ( dlg.exec() == KDialog::Accepted ) return dlg.resource();
   else return 0;
 }
 
 #include "selectdialog.moc"
-

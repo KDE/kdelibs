@@ -1,9 +1,11 @@
 /*
     This file is part of libkresources.
+
     Copyright (c) 2002 Tobias Koenig <tokoe@kde.org>
     Copyright (c) 2002 Jan-Pascal van Best <janpascal@vanbest.org>
+    Copyright (c) 2003 Cornelius Schumacher <schumacher@kde.org>
 
-	This library is free software; you can redistribute it and/or
+    This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
     version 2 of the License, or (at your option) any later version.
@@ -23,20 +25,20 @@
 
 using namespace KRES;
 
-ResourceConfigWidget::ResourceConfigWidget( QWidget *parent, const char *name )
-    : QWidget( parent, name )
+ConfigWidget::ConfigWidget( QWidget *parent, const char *name )
+  : QWidget( parent, name )
 {
 }
 
-void ResourceConfigWidget::setInEditMode( bool )
+void ConfigWidget::setInEditMode( bool )
 {
 }
 
-void ResourceConfigWidget::loadSettings( Resource* )
+void ConfigWidget::loadSettings( Resource * )
 {
 }
 
-void ResourceConfigWidget::saveSettings( Resource* )
+void ConfigWidget::saveSettings( Resource * )
 {
 }
 

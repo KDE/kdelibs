@@ -19,8 +19,8 @@
     Boston, MA 02111-1307, USA.
 */
 
-#ifndef KRESOURCES_RESOURCECONFIGWIDGET_H
-#define KRESOURCES_RESOURCECONFIGWIDGET_H
+#ifndef KRESOURCES_CONFIGWIDGET_H
+#define KRESOURCES_CONFIGWIDGET_H
 
 #include <qwidget.h>
 
@@ -30,12 +30,12 @@
 
 namespace KRES {
 
-class ResourceConfigWidget : public QWidget
+class ConfigWidget : public QWidget
 {
   Q_OBJECT
 
 public:
-  ResourceConfigWidget( QWidget *parent = 0, const char *name = 0 );
+  ConfigWidget( QWidget *parent = 0, const char *name = 0 );
 
   /**
     Sets the widget to 'edit' mode. Reimplement this method if you are

@@ -1,5 +1,6 @@
 /*
     This file is part of libkresources
+
     Copyright (c) 2001 Cornelius Schumacher <schumacher@kde.org>
     Copyright (c) 2002 Jan-Pascal van Best <janpascal@vanbest.org>
 
@@ -328,8 +329,8 @@ class Resource
      */
     static QString decryptStr( const QString & );
 
-    friend class ResourceFactory;
-    friend class ResourceManagerImpl;
+    friend class Factory;
+    friend class ManagerImpl;
 
     /**
       Print resource information as debug output.

@@ -20,8 +20,8 @@
 */
 
 
-#ifndef KRESOURCES_RESOURCES_CONFIG_PAGE_H
-#define KRESOURCES_RESOURCES_CONFIG_PAGE_H
+#ifndef KRESOURCES_CONFIGPAGE_H
+#define KRESOURCES_CONFIGPAGE_H
 
 #include <qstringlist.h>
 #include <qwidget.h>
@@ -38,16 +38,16 @@ namespace KRES {
 
 class Resource;
 
-class ResourcesConfigPage : public QWidget, public ManagerListener<Resource>
+class ConfigPage : public QWidget, public ManagerListener<Resource>
 {
   Q_OBJECT
 
   public:
-    ResourcesConfigPage( const QString &family, const QString &config = QString::null,
-                         QWidget *parent = 0, const char *name = 0 );
-    ResourcesConfigPage( const QString &family, QWidget *parent = 0,
-                         const char *name = 0 );
-    virtual ~ResourcesConfigPage();
+    ConfigPage( const QString &family, const QString &config = QString::null,
+                QWidget *parent = 0, const char *name = 0 );
+    ConfigPage( const QString &family, QWidget *parent = 0,
+                const char *name = 0 );
+    virtual ~ConfigPage();
 
     void load();
     void save();
@@ -75,7 +75,7 @@ class ResourcesConfigPage : public QWidget, public ManagerListener<Resource>
   private:
     void init( const QString &configFile );
 
-    ResourceManager<Resource>* mManager;
+    Manager<Resource>* mManager;
     QString mFamily;
     KConfig *mConfig;
 

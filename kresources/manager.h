@@ -21,8 +21,8 @@
     Boston, MA 02111-1307, USA.
 */
 
-#ifndef KRESOURCES_RESOURCEMANAGER_H
-#define KRESOURCES_RESOURCEMANAGER_H
+#ifndef KRESOURCES_MANAGER_H
+#define KRESOURCES_MANAGER_H
 
 #include <qdict.h>
 #include <qstringlist.h>
@@ -53,12 +53,12 @@ class ManagerListener
 // is only closed if none of them is using it any more
 
 template<class T>
-class ResourceManager : private ManagerImplListener
+class Manager : private ManagerImplListener
 {
   public:
     class Iterator
     {
-        friend class ResourceManager;
+        friend class Manager;
       public:
         Iterator() {};
         Iterator( const Iterator &it ) { mIt = it.mIt; }
@@ -91,7 +91,7 @@ class ResourceManager : private ManagerImplListener
 
     class ActiveIterator
     {
-        friend class ResourceManager;
+        friend class Manager;
       public:
         ActiveIterator() : mList( 0 ) {};
         ActiveIterator( const ActiveIterator &it )
@@ -159,17 +159,17 @@ class ResourceManager : private ManagerImplListener
 
     bool isEmpty() const { return mImpl->resourceList()->isEmpty(); }
   
-    ResourceManager( const QString &family )
+    Manager( const QString &family )
     {
-      mFactory = ResourceFactory::self( family );
+      mFactory = Factory::self( family );
       // The managerimpl will use the same Factory object as the manager
-      // because of the ResourceFactory::self() pattern
-      mImpl = new ResourceManagerImpl( family );
+      // because of the Factory::self() pattern
+      mImpl = new ManagerImpl( family );
       mImpl->setListener( this );
       mListeners = new QPtrList<ManagerListener<T> >;
     }
 
-    virtual ~ResourceManager()
+    virtual ~Manager()
     { 
       mImpl->setListener( 0 );
       delete mListeners;
@@ -225,15 +225,14 @@ class ResourceManager : private ManagerImplListener
 
     /**
       Returns a list of the names of the reources managed by the
-      ResourceManager for this family.
+      Manager for this family.
     */
     QStringList resourceNames() const
     {
       return mImpl->resourceNames();
     }
 
-    ResourceConfigWidget *configWidget( const QString& type,
-                                        QWidget *parent = 0 )
+    ConfigWidget *configWidget( const QString& type, QWidget *parent = 0 )
     {
       return mFactory->resourceConfigWidget( type, parent );
     }
@@ -278,7 +277,7 @@ class ResourceManager : private ManagerImplListener
 
     virtual void resourceAdded( Resource *res )
     {
-      kdDebug(5650) << "ResourceManager::resourceAdded " << res->resourceName() << endl;
+      kdDebug(5650) << "Manager::resourceAdded " << res->resourceName() << endl;
       T* resource = dynamic_cast<T *>( res );
       ManagerListener<T> *listener;
       for ( listener = mListeners->first(); listener; listener = mListeners->next() )
@@ -287,7 +286,7 @@ class ResourceManager : private ManagerImplListener
 
     virtual void resourceModified( Resource *res )
     {
-      kdDebug(5650) << "ResourceManager::resourceModified " << res->resourceName() << endl;
+      kdDebug(5650) << "Manager::resourceModified " << res->resourceName() << endl;
       T* resource = dynamic_cast<T *>( res );
       ManagerListener<T> *listener;
       for ( listener = mListeners->first(); listener; listener = mListeners->next() )
@@ -296,18 +295,18 @@ class ResourceManager : private ManagerImplListener
     
     virtual void resourceDeleted( Resource *res )
     {
-      kdDebug(5650) << "ResourceManager::resourceDeleted " << res->resourceName() << endl;
+      kdDebug(5650) << "Manager::resourceDeleted " << res->resourceName() << endl;
       T* resource = dynamic_cast<T *>( res );
       ManagerListener<T> *listener;
       for ( listener = mListeners->first(); listener; listener = mListeners->next() ) {
-        kdDebug(5650) << "Notifying a listener to ResourceManager..." << endl;
+        kdDebug(5650) << "Notifying a listener to Manager..." << endl;
         listener->resourceDeleted( resource );
       }
     }
 
   private:
-    ResourceManagerImpl *mImpl;
-    ResourceFactory *mFactory;
+    ManagerImpl *mImpl;
+    Factory *mFactory;
     QPtrList<ManagerListener<T> > *mListeners;
 };
 
