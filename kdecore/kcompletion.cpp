@@ -139,6 +139,8 @@ QString KCompletion::makeCompletion( const QString& string )
 	postProcessMatch( &completion );
         emit match( completion );
     }
+	else
+        postProcessMatch( &completion );
 
     if ( completion.isNull() )
         doBeep();
