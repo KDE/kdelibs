@@ -48,12 +48,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qsocketnotifier.h>
 #include <qregexp.h>
 
-#if QT_VERSION >= 300
 #ifdef HAVE_PRIVATE_QUCOMEXTRA_P_H
 #include <private/qucomextra_p.h>
 #else
 #include <qucom.h>
-#endif
 #endif
 
 #include <dcopglobal.h>
@@ -1147,11 +1145,7 @@ static bool receiveQtObject( const QCString &objId, const QCString &fun, const Q
 	    QStrList lst = o->metaObject()->slotNames( true );
 	    int i = 0;
 	    for ( QPtrListIterator<char> it( lst ); it.current(); ++it ) {
-#if QT_VERSION < 300
-		if ( o->metaObject()->slot_access( i++, true ) != QMetaData::Public )
-#else
 		if ( o->metaObject()->slot( i++, true )->access != QMetaData::Public )
-#endif
 		    continue;
 		QCString slot = it.current();
 		if ( slot.contains( "()" ) ) {
@@ -1178,22 +1172,14 @@ static bool receiveQtObject( const QCString &objId, const QCString &fun, const Q
 	    QCStringList l;
 	    QStrList lst = o->metaObject()->propertyNames( true );
 	    for ( QPtrListIterator<char> it( lst ); it.current(); ++it ) {
-#if QT_VERSION < 300
-		const QMetaProperty* p = o->metaObject()->property( it.current(), true );
-#else
 		QMetaObject *mo = o->metaObject();
 		const QMetaProperty* p = mo->property( mo->findProperty( it.current(), true ), true );
-#endif
 		if ( !p )
 		    continue;
 		QCString prop = p->type();
 		prop += ' ';
 		prop += p->name();
-#if QT_VERSION < 300
-		if ( !p->writeable() )
-#else
 		if ( !p->writable() )
-#endif
 		    prop += " readonly";
 		l << prop;
 	    }
