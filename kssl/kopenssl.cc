@@ -18,6 +18,8 @@
 
 #include <config.h>
 
+#include <kdebug.h>
+
 #ifdef HAVE_SSL
 #define crypt _openssl_crypt
 #include <openssl/ssl.h>
@@ -83,9 +85,67 @@ static X509* (*K_X509_dup)         (X509 *) = NULL;
 KOpenSSLProxy::KOpenSSLProxy() {
 KLibLoader *ll = KLibLoader::self();
 _ok = false;
+QStringList libpaths, libnamesc, libnamess;
 
-   _sslLib = ll->library("/usr/lib/libssl.so");
-   _cryptoLib = ll->library("/usr/lib/libcrypto.so");
+   libpaths << "/usr/lib/"
+            << "/usr/local/lib/"
+            << "/usr/local/openssl/lib/"
+            << "/opt/openssl/lib/"
+            << "";
+
+   libnamess << "libssl.so"
+             << "libssl.sl";
+
+   libnamesc << "libcrypto.so"
+             << "libcrypto.sl";
+
+   for (QStringList::Iterator it = libpaths.begin();
+                              it != libpaths.end();
+                              ++it) {
+      for (QStringList::Iterator shit = libnamesc.begin();
+                                 shit != libnamesc.end();
+                                 ++shit) {
+         QString alib = *it+*shit;
+         _cryptoLib = ll->globalLibrary(alib.latin1());
+         if (_cryptoLib) break;
+      }
+      if (_cryptoLib) break;
+   }
+
+   if (_cryptoLib) {
+      K_X509_free = (void (*) (X509 *)) _cryptoLib->symbol("X509_free");
+      K_RAND_egd = (int (*)(const char *)) _cryptoLib->symbol("RAND_egd");
+      K_CRYPTO_free = (void (*) (void *)) _cryptoLib->symbol("CRYPTO_free");
+      K_d2i_X509 = (X509 * (*)(X509 **,unsigned char **,long)) _cryptoLib->symbol("d2i_X509");
+      K_i2d_X509 = (int (*)(X509 *,unsigned char **)) _cryptoLib->symbol("i2d_X509");
+      K_X509_cmp = (int (*)(X509 *, X509 *)) _cryptoLib->symbol("X509_cmp");
+      K_X509_STORE_CTX_new = (X509_STORE_CTX * (*) (void)) _cryptoLib->symbol("X509_STORE_CTX_new");
+      K_X509_STORE_CTX_free = (void (*) (X509_STORE_CTX *)) _cryptoLib->symbol("X509_STORE_CTX_free");
+      K_X509_verify_cert = (int (*) (X509_STORE_CTX *)) _cryptoLib->symbol("X509_verify_cert");
+      K_X509_STORE_new = (X509_STORE * (*) (void)) _cryptoLib->symbol("X509_STORE_new");
+      K_X509_STORE_free = (void (*) (X509_STORE *)) _cryptoLib->symbol("X509_STORE_free");
+      K_X509_NAME_oneline = (char * (*) (X509_NAME *,char *,int)) _cryptoLib->symbol("X509_NAME_oneline");
+      K_X509_get_subject_name = (X509_NAME * (*) (X509 *)) _cryptoLib->symbol("X509_get_subject_name");
+      K_X509_get_issuer_name = (X509_NAME * (*) (X509 *)) _cryptoLib->symbol("X509_get_issuer_name");
+      K_X509_STORE_add_lookup = (X509_LOOKUP *(*) (X509_STORE *, X509_LOOKUP_METHOD *)) _cryptoLib->symbol("X509_STORE_add_lookup");
+      K_X509_LOOKUP_file = (X509_LOOKUP_METHOD *(*)(void)) _cryptoLib->symbol("X509_LOOKUP_file");
+      K_X509_LOOKUP_ctrl = (int (*)(X509_LOOKUP *, int, const char *, long, char **)) _cryptoLib->symbol("X509_LOOKUP_ctrl");
+      K_X509_STORE_CTX_init = (void (*)(X509_STORE_CTX *, X509_STORE *, X509 *, STACK_OF(X509) *)) _cryptoLib->symbol("X509_STORE_CTX_init");
+      K_X509_dup = (X509* (*)(X509*)) _cryptoLib->symbol("X509_dup");
+   }
+
+   for (QStringList::Iterator it = libpaths.begin();
+                              it != libpaths.end();
+                              ++it) {
+      for (QStringList::Iterator shit = libnamess.begin();
+                                 shit != libnamess.end();
+                                 ++shit) {
+         QString alib = *it+*shit;
+         _sslLib = ll->globalLibrary(alib.latin1());
+         if (_sslLib) break;
+      }
+      if (_sslLib) break;
+   }
 
    if (_sslLib) {
       // stand back from your monitor and look at this.  it's fun! :)
@@ -118,23 +178,6 @@ _ok = false;
       K_SSL_CIPHER_get_version = (char * (*)(SSL_CIPHER *)) _sslLib->symbol("SSL_CIPHER_get_version");
       K_SSL_CIPHER_get_name = (const char * (*)(SSL_CIPHER *)) _sslLib->symbol("SSL_CIPHER_get_name");
       K_SSL_CIPHER_description = (char * (*)(SSL_CIPHER *, char *, int)) _sslLib->symbol("SSL_CIPHER_description");
-      K_d2i_X509 = (X509 * (*)(X509 **,unsigned char **,long)) _sslLib->symbol("d2i_X509");
-      K_i2d_X509 = (int (*)(X509 *,unsigned char **)) _sslLib->symbol("i2d_X509");
-      K_X509_cmp = (int (*)(X509 *, X509 *)) _sslLib->symbol("X509_cmp");
-      K_X509_STORE_CTX_new = (X509_STORE_CTX * (*) (void)) _sslLib->symbol("X509_STORE_CTX_new");
-      K_X509_STORE_CTX_free = (void (*) (X509_STORE_CTX *)) _sslLib->symbol("X509_STORE_CTX_free");
-      K_X509_verify_cert = (int (*) (X509_STORE_CTX *)) _sslLib->symbol("X509_verify_cert");
-      K_X509_STORE_new = (X509_STORE * (*) (void)) _sslLib->symbol("X509_STORE_new");
-      K_X509_STORE_free = (void (*) (X509_STORE *)) _sslLib->symbol("X509_STORE_free");
-      K_X509_free = (void (*) (X509 *)) _sslLib->symbol("X509_free");
-      K_X509_NAME_oneline = (char * (*) (X509_NAME *,char *,int)) _sslLib->symbol("X509_NAME_oneline");
-      K_X509_get_subject_name = (X509_NAME * (*) (X509 *)) _sslLib->symbol("X509_get_subject_name");
-      K_X509_get_issuer_name = (X509_NAME * (*) (X509 *)) _sslLib->symbol("X509_get_issuer_name");
-      K_X509_STORE_add_lookup = (X509_LOOKUP *(*) (X509_STORE *, X509_LOOKUP_METHOD *)) _sslLib->symbol("X509_STORE_add_lookup");
-      K_X509_LOOKUP_file = (X509_LOOKUP_METHOD *(*)(void)) _sslLib->symbol("X509_LOOKUP_file");
-      K_X509_LOOKUP_ctrl = (int (*)(X509_LOOKUP *, int, const char *, long, char **)) _sslLib->symbol("X509_LOOKUP_ctrl");
-      K_X509_STORE_CTX_init = (void (*)(X509_STORE_CTX *, X509_STORE *, X509 *, STACK_OF(X509) *)) _sslLib->symbol("X509_STORE_CTX_init");
-      K_X509_dup = (X509* (*)(X509*)) _sslLib->symbol("X509_dup");
 
 
       // Initialize the library (once only!)
@@ -149,11 +192,6 @@ _ok = false;
       if (x) ((void (*)())x)();
    }
 
-
-   if (_cryptoLib) {
-      K_RAND_egd = (int (*)(const char *)) _cryptoLib->symbol("RAND_egd");
-      K_CRYPTO_free = (void (*) (void *)) _cryptoLib->symbol("CRYPTO_free");
-   }
 }
 
 
@@ -164,6 +202,8 @@ KOpenSSLProxy::~KOpenSSLProxy() {
 
 KOpenSSLProxy* KOpenSSLProxy::_me = NULL;
 
+
+// FIXME: we should check "ok" and allow this to init the lib if !ok.
 
 KOpenSSLProxy *KOpenSSLProxy::self() {
 #ifdef HAVE_SSL

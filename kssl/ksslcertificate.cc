@@ -47,11 +47,14 @@
 #undef crypt
 #endif
 
+#include <kopenssl.h>
+
 #include <kdebug.h>
 
 class KSSLCertificatePrivate {
 public:
   KSSLCertificatePrivate() {
+     kossl = KOSSL::self();
   }
 
   ~KSSLCertificatePrivate() {
@@ -62,6 +65,7 @@ public:
   #ifdef HAVE_SSL
     X509 *m_cert;
   #endif
+  KOSSL *kossl;
 };
 
 KSSLCertificate::KSSLCertificate() {
@@ -76,7 +80,7 @@ KSSLCertificate::KSSLCertificate() {
 KSSLCertificate::~KSSLCertificate() {
 #ifdef HAVE_SSL
   if (d->m_cert)
-    X509_free(d->m_cert);
+    d->kossl->X509_free(d->m_cert);
 #endif
   delete d;
 }
@@ -86,10 +90,10 @@ QString KSSLCertificate::getSubject() const {
 QString rc = "";
 
 #ifdef HAVE_SSL
-  char *t = X509_NAME_oneline(X509_get_subject_name(d->m_cert), 0, 0);
+  char *t = d->kossl->X509_NAME_oneline(d->kossl->X509_get_subject_name(d->m_cert), 0, 0);
   if (!t) return rc;
   rc = t;
-  OPENSSL_free(t);
+  d->kossl->OPENSSL_free(t);
 #endif
 return rc;
 }
@@ -99,10 +103,10 @@ QString KSSLCertificate::getIssuer() const {
 QString rc = "";
 
 #ifdef HAVE_SSL
-  char *t = X509_NAME_oneline(X509_get_issuer_name(d->m_cert), 0, 0);
+  char *t = d->kossl->X509_NAME_oneline(d->kossl->X509_get_issuer_name(d->m_cert), 0, 0);
   if (!t) return rc;
   rc = t;
-  OPENSSL_free(t);
+  d->kossl->OPENSSL_free(t);
 #endif
 
 return rc;
@@ -171,51 +175,51 @@ KSSLCertificate::KSSLValidation KSSLCertificate::validate() {
     if (-1 == stat(_j.ascii(), &sb)) continue;
     // kdDebug() << "KSSL Certificate Root directory found: " << _j << endl;
 
-    certStore = X509_STORE_new();
+    certStore = d->kossl->X509_STORE_new();
     if (!certStore)
       return Unknown;
 
     X509_STORE_set_verify_cb_func(certStore, X509Callback);
 
-    certLookup = X509_STORE_add_lookup(certStore, X509_LOOKUP_file());
+    certLookup = d->kossl->X509_STORE_add_lookup(certStore, d->kossl->X509_LOOKUP_file());
     if (!certLookup) {
       // kdDebug() << "KSSL error adding lookup file" << endl;
       ksslv = KSSLCertificate::Unknown;
-      X509_STORE_free(certStore);
+      d->kossl->X509_STORE_free(certStore);
       continue;
     }
 
-    if (!X509_LOOKUP_load_file(certLookup, _j.ascii(), X509_FILETYPE_PEM)) {
+    if (!d->kossl->X509_LOOKUP_load_file(certLookup, _j.ascii(), X509_FILETYPE_PEM)) {
       // error accessing directory and loading pems
       // kdDebug() << "KSSL couldn't read CA root: " << _j << endl;
       ksslv = KSSLCertificate::ErrorReadingRoot;
-      X509_STORE_free(certStore);
+      d->kossl->X509_STORE_free(certStore);
       continue;
     }
 
     //
     // This is the checking code
-    certStoreCTX = X509_STORE_CTX_new();
+    certStoreCTX = d->kossl->X509_STORE_CTX_new();
 
     // this is a bad error - could mean no free memory.  This may be the
     // wrong thing to do here
     if (!certStoreCTX) {
       kdDebug() << "KSSL couldn't create an X509 store context." << endl;
-      X509_STORE_free(certStore);
+      d->kossl->X509_STORE_free(certStore);
       continue;
     }
 
     // kdDebug() << "KSSL Initializing the certificate store context" << endl;
-    X509_STORE_CTX_init(certStoreCTX, certStore, d->m_cert, NULL);
+    d->kossl->X509_STORE_CTX_init(certStoreCTX, certStore, d->m_cert, NULL);
 
     // FIXME: do all the X509_STORE_CTX_set_flags(); here
     //   +----->  Note that this is for 0.9.6 or better ONLY!
 
     certStoreCTX->error = X509_V_OK;
-    rc = X509_verify_cert(certStoreCTX);
+    rc = d->kossl->X509_verify_cert(certStoreCTX);
     int errcode = certStoreCTX->error;
-    X509_STORE_CTX_free(certStoreCTX);
-    X509_STORE_free(certStore);
+    d->kossl->X509_STORE_CTX_free(certStoreCTX);
+    d->kossl->X509_STORE_free(certStore);
     // end of checking code
     //
 
@@ -352,7 +356,7 @@ int operator==(KSSLCertificate &x, KSSLCertificate &y) {
 #ifndef HAVE_SSL
   return 0;
 #else
-  if (!X509_cmp(x.getCert(), y.getCert())) return 0;
+  if (!KOSSL::self()->X509_cmp(x.getCert(), y.getCert())) return 0;
   return 1;
 #endif
 }
@@ -363,7 +367,7 @@ KSSLCertificate *KSSLCertificate::replicate() {
   // better this way.  We can't anticipate every reason for doing this.
   KSSLCertificate *newOne = new KSSLCertificate();
   #ifdef HAVE_SSL
-  newOne->setCert(X509_dup(getCert()));
+  newOne->setCert(d->kossl->X509_dup(getCert()));
   #endif
   return newOne;
 }

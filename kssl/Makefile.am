@@ -16,6 +16,7 @@ include_HEADERS = \
 		ksslpeerinfo.h           \
 		ksslinfodlg.h            \
 		ksslutils.h              \
+		kopenssl.h               \
 		ksslx509map.h
  
 
@@ -30,12 +31,15 @@ libkssl_la_SOURCES	= \
 			ksslpeerinfo.cc           \
 			ksslinfodlg.cc            \
 			ksslutils.cc              \
+			kopenssl.cc		  \
 			ksslx509map.cc
 
-libkssl_la_LDFLAGS = $(SSL_LDFLAGS) $(all_libraries) -version-info 2:0 -no-undefined
-libkssl_la_LIBADD = $(LIBSSL) $(LIB_KDEUI) 
+# libkssl_la_LDFLAGS = $(SSL_LDFLAGS) $(all_libraries) -version-info 2:0 -no-undefined
+libkssl_la_LDFLAGS = $(all_libraries) -version-info 2:0 -no-undefined
+libkssl_la_LIBADD = $(LIB_KDEUI) 
 libkssl_la_DEPENDENCIES = $(LIB_KDEUI)
 
 libkssl_la_METASOURCES = AUTO
 
 SUBDIRS = kssl
+

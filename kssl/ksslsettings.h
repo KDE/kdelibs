@@ -25,6 +25,8 @@
 #include <qvaluelist.h>
 #include <kconfig.h>
 
+class KSSLSettingsPrivate;
+
 class KSSLSettings {
 public:
   KSSLSettings(bool readConfig = true);
@@ -71,7 +73,6 @@ private:
                       v3ciphers, v3selectedciphers;
   QValueList<int>     v2bits, v3bits;
 
-  class KSSLSettingsPrivate;
   KSSLSettingsPrivate *d;
 };
 

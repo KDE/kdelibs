@@ -95,6 +95,8 @@
 #undef crypt
 #endif
 
+#include <kopenssl.h>
+
 class KSSLCNode {
 public:
   KSSLCertificate *cert;
@@ -111,8 +113,10 @@ class KSSLCertificateCache::KSSLCertificateCachePrivate {
   public:
   QList<KSSLCNode> certList;
   KConfig *cfg;
+  KOSSL *kossl;
 
-  KSSLCertificateCachePrivate()  { certList.setAutoDelete(false); }
+  KSSLCertificateCachePrivate()  { certList.setAutoDelete(false); 
+                                   kossl = KOSSL::self(); }
   ~KSSLCertificateCachePrivate() { }
 
 };
@@ -144,7 +148,7 @@ void KSSLCertificateCache::saveToDisk() {
   for (node = d->certList.first(); node; node = d->certList.next()) {
     if (node->permanent || node->expires > QDateTime::currentDateTime()) {
       // First convert to a binary format and then write the kconfig entry
-      unsigned int certlen = i2d_X509(node->cert->getCert(), NULL);
+      unsigned int certlen = d->kossl->i2d_X509(node->cert->getCert(), NULL);
       // These should technically be unsigned char * but it doesn't matter
       // for our purposes
       char *cert = new char[certlen];
@@ -152,7 +156,8 @@ void KSSLCertificateCache::saveToDisk() {
         {
         QByteArray qba;
  
-        i2d_X509(node->cert->getCert(), (unsigned char **)&p);
+        // FIXME: return code!
+        d->kossl->i2d_X509(node->cert->getCert(), (unsigned char **)&p);
 
         // encode it into a QString
         qba.setRawData(cert, certlen);
@@ -211,7 +216,7 @@ void KSSLCertificateCache::loadDefaultPolicies() {
     QByteArray qba, qbb = encodedCert.copy();
     KCodecs::base64Decode(qbb, qba);
     unsigned char *qbap = reinterpret_cast<unsigned char *>(qba.data());
-    X509 *x5c = d2i_X509(NULL, &qbap, qba.size());
+    X509 *x5c = d->kossl->d2i_X509(NULL, &qbap, qba.size());
     if (!x5c) {
       delete n;
       continue;

@@ -45,6 +45,8 @@
 #undef crypt
 #endif
 
+#include <kopenssl.h>
+
       class CipherNode {
       public:
         CipherNode(const char *_name, int _keylen) : 
@@ -59,6 +61,18 @@
       };
 
 
+class KSSLSettingsPrivate {
+public:
+  KSSLSettingsPrivate() {
+    kossl = KOSSL::self();
+  }
+  ~KSSLSettingsPrivate() {
+
+  }
+
+  KOSSL *kossl;
+};
+
 //
 // FIXME
 // Implementation note: for now, we only read cipher settings from disk,
@@ -66,6 +80,7 @@
 //
 
 KSSLSettings::KSSLSettings(bool readConfig) {
+  d = new KSSLSettingsPrivate;
   m_cfg = new KConfig("cryptodefaults", false, false);
 
   if (!KGlobal::dirs()->addResourceType("kssl", "share/apps/kssl")) {
@@ -79,6 +94,7 @@ KSSLSettings::KSSLSettings(bool readConfig) {
 // we don't save settings incase it was a temporary object
 KSSLSettings::~KSSLSettings() {
   delete m_cfg;
+  delete d;
 }
  
 
@@ -112,13 +128,13 @@ QString clist = "";
 
 
     if (m_bUseTLSv1)
-      meth = TLSv1_client_method();
+      meth = d->kossl->TLSv1_client_method();
     else if (m_bUseSSLv2 && m_bUseSSLv3)
-      meth = SSLv23_client_method();
+      meth = d->kossl->SSLv23_client_method();
     else if (m_bUseSSLv3)
-      meth = SSLv3_client_method();
+      meth = d->kossl->SSLv3_client_method();
     else
-      meth = SSLv2_client_method();
+      meth = d->kossl->SSLv2_client_method();
  
     // The user might have v2 and v3 enabled so we start with an
     // empty buffer and add v2 if needed, then v3 if needed.
@@ -149,7 +165,7 @@ QString clist = "";
         SSL_CIPHER *sc = (meth->get_cipher)(i);
         if (!sc) break;;
         tcipher.sprintf("cipher_%s", sc->name);
-        int bits = SSL_CIPHER_get_bits(sc, NULL);
+        int bits = d->kossl->SSL_CIPHER_get_bits(sc, NULL);
  
         if (m_cfg->readBoolEntry(tcipher, bits >= 56)) {
           cipherSort.inSort(new CipherNode(sc->name,bits));

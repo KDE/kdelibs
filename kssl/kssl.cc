@@ -43,10 +43,13 @@
 #include <ksock.h>
 //#include <ksockaddr.h>
 
+#include <kopenssl.h>
+
 class KSSLPrivate {
 public:
   KSSLPrivate() {
     lastInitTLS = false;
+    kossl = KOpenSSLProxy::self();
   }
 
   ~KSSLPrivate() {
@@ -60,6 +63,7 @@ public:
     SSL_CTX *m_ctx;
     SSL_METHOD *m_meth;
   #endif
+  KOSSL *kossl;
 };
 
 
@@ -67,10 +71,6 @@ KSSL::KSSL(bool init) {
   d = new KSSLPrivate;
   m_bInit = false;
   m_bAutoReconfig = true;
-#ifdef HAVE_SSL
-  OpenSSL_add_ssl_algorithms();
-  OpenSSL_add_all_algorithms();
-#endif
   m_cfg = new KSSLSettings();
 
  if (init) initialize();
@@ -88,7 +88,7 @@ int KSSL::seedWithEGD() {
 int rc = 0;
   #ifdef HAVE_SSL
   if (m_cfg->useEGD() && !m_cfg->getEGDPath().isEmpty()) {
-    rc = RAND_egd(m_cfg->getEGDPath().latin1());
+    rc = d->kossl->RAND_egd(m_cfg->getEGDPath().latin1());
     if (rc < 0) 
       kdDebug() << "KSSL: Error seeding PRNG with the EGD." << endl;
     else 
@@ -109,12 +109,10 @@ bool KSSL::TLSInit() {
     m_cfg->load();
 
   seedWithEGD();
-  d->m_meth = TLSv1_client_method();
+  d->m_meth = d->kossl->TLSv1_client_method();
   d->lastInitTLS = true;
 
-  OpenSSL_add_ssl_algorithms();
-  OpenSSL_add_all_algorithms();
-  d->m_ctx=SSL_CTX_new(d->m_meth);
+  d->m_ctx = d->kossl->SSL_CTX_new(d->m_meth);
   if (d->m_ctx == NULL) {
     return false;
   }
@@ -122,7 +120,7 @@ bool KSSL::TLSInit() {
   // set cipher list
   QString clist = m_cfg->getCipherList();
   if (!clist.isEmpty())
-    SSL_CTX_set_cipher_list(d->m_ctx, const_cast<char *>(clist.ascii()));
+    d->kossl->SSL_CTX_set_cipher_list(d->m_ctx, const_cast<char *>(clist.ascii()));
 
   m_bInit = true;
 return true;
@@ -149,13 +147,13 @@ bool KSSL::initialize() {
   d->lastInitTLS = m_cfg->tlsv1();
 
   if (m_cfg->tlsv1())
-    d->m_meth = TLSv1_client_method();
+    d->m_meth = d->kossl->TLSv1_client_method();
   else if (m_cfg->sslv2() && m_cfg->sslv3())
-    d->m_meth = SSLv23_client_method();
+    d->m_meth = d->kossl->SSLv23_client_method();
   else if (m_cfg->sslv3())
-    d->m_meth = SSLv3_client_method();
+    d->m_meth = d->kossl->SSLv3_client_method();
   else
-    d->m_meth = SSLv2_client_method();
+    d->m_meth = d->kossl->SSLv2_client_method();
 
   /*
   if (m_cfg->sslv2() && m_cfg->sslv3()) kdDebug() << "Double method" << endl;
@@ -163,7 +161,7 @@ bool KSSL::initialize() {
   else if (m_cfg->sslv3()) kdDebug() << "SSL3 method" << endl;
   */
 
-  d->m_ctx=SSL_CTX_new(d->m_meth);
+  d->m_ctx = d->kossl->SSL_CTX_new(d->m_meth);
   if (d->m_ctx == NULL) {
     return false;
   }
@@ -171,7 +169,7 @@ bool KSSL::initialize() {
   // set cipher list
   QString clist = m_cfg->getCipherList();
   if (!clist.isEmpty())
-    SSL_CTX_set_cipher_list(d->m_ctx, const_cast<char *>(clist.ascii()));
+    d->kossl->SSL_CTX_set_cipher_list(d->m_ctx, const_cast<char *>(clist.ascii()));
 
   m_bInit = true;
 return true;
@@ -187,9 +185,9 @@ void KSSL::close() {
 #ifdef HAVE_SSL
   // kdDebug() << "KSSL close" << endl;
   if (!m_bInit) return;
-  SSL_shutdown(d->m_ssl);
-  SSL_free(d->m_ssl);
-  SSL_CTX_free(d->m_ctx);
+  d->kossl->SSL_shutdown(d->m_ssl);
+  d->kossl->SSL_free(d->m_ssl);
+  d->kossl->SSL_CTX_free(d->m_ctx);
   m_bInit = false;
 #endif
 }
@@ -220,19 +218,19 @@ int KSSL::connect(int sock) {
   // kdDebug() << "KSSL connect" << endl;
   int rc;
   if (!m_bInit) return -1;
-  d->m_ssl = SSL_new(d->m_ctx);
+  d->m_ssl = d->kossl->SSL_new(d->m_ctx);
   if (!d->m_ssl) return -1;
 
   if (!setVerificationLogic())
     return -1;
 
   if (!d->lastInitTLS)
-    SSL_set_options(d->m_ssl, SSL_OP_NO_TLSv1);
+    d->kossl->SSL_set_options(d->m_ssl, SSL_OP_NO_TLSv1);
 
-  rc = SSL_set_fd(d->m_ssl, sock);
+  rc = d->kossl->SSL_set_fd(d->m_ssl, sock);
   if (rc == 0) return rc;
 
-  rc = SSL_connect(d->m_ssl);
+  rc = d->kossl->SSL_connect(d->m_ssl);
   if (rc == 1) {
     setConnectionInfo();
     setPeerInfo(sock);
@@ -243,7 +241,7 @@ int KSSL::connect(int sock) {
       m_cfg->setSSLv3(false);
       m_bAutoReconfig = false;
       m_bInit = false;
-      SSL_CTX_free(d->m_ctx);
+      d->kossl->SSL_CTX_free(d->m_ctx);
       kdDebug() << "KSSL connecting again" << endl;
       initialize();
       rc = KSSL::connect(sock);
@@ -268,7 +266,7 @@ int KSSL::connect(int sock) {
 int KSSL::read(void *buf, int len) {
 #ifdef HAVE_SSL
   if (!m_bInit) return -1;
-  return SSL_read(d->m_ssl, (char *)buf, len);
+  return d->kossl->SSL_read(d->m_ssl, (char *)buf, len);
 #else
   return -1;
 #endif
@@ -278,7 +276,7 @@ int KSSL::read(void *buf, int len) {
 int KSSL::write(const void *buf, int len) {
 #ifdef HAVE_SSL
   if (!m_bInit) return -1;
-  return SSL_write(d->m_ssl, (const char *)buf, len);
+  return d->kossl->SSL_write(d->m_ssl, (const char *)buf, len);
 #else
   return -1;
 #endif
@@ -319,19 +317,19 @@ void KSSL::setConnectionInfo() {
   char buf[1024];
 
   buf[0] = 0;  // for safety.
-  sc = SSL_get_current_cipher(d->m_ssl);
+  sc = d->kossl->SSL_get_current_cipher(d->m_ssl);
   if (!sc) {
    kdDebug() << "KSSL get current cipher failed - we're probably gonna crash!" << endl;
   return;
   }
   // set the number of bits, bits used
-  m_ci.m_iCipherUsedBits = SSL_CIPHER_get_bits(sc, &(m_ci.m_iCipherBits));
+  m_ci.m_iCipherUsedBits = d->kossl->SSL_CIPHER_get_bits(sc, &(m_ci.m_iCipherBits));
   // set the cipher version
-  m_ci.m_cipherVersion = SSL_CIPHER_get_version(sc);
+  m_ci.m_cipherVersion = d->kossl->SSL_CIPHER_get_version(sc);
   // set the cipher name
-  m_ci.m_cipherName = SSL_CIPHER_get_name(sc);
+  m_ci.m_cipherName = d->kossl->SSL_CIPHER_get_name(sc);
   // set the cipher description
-  m_ci.m_cipherDescription = SSL_CIPHER_description(sc, buf, 1023);
+  m_ci.m_cipherDescription = d->kossl->SSL_CIPHER_description(sc, buf, 1023);
 
 #endif
 }
@@ -343,7 +341,7 @@ void KSSL::setPeerInfo(int sock) {
 //                          d->m_cert_vfy_res);
   ksockaddr_in sa;
   socklen_t nl = sizeof(ksockaddr_in);
-  int rc = getpeername (sock, (sockaddr *)&sa, &nl);
+  int rc = getpeername(sock, (sockaddr *)&sa, &nl);
 
   if (rc != -1) {
     QString haddr;
@@ -355,7 +353,7 @@ void KSSL::setPeerInfo(int sock) {
     m_pi.setPeerAddress(haddr);
     m_pi.setPeerIP(iaddr);
   }
-  m_pi.m_cert.setCert(SSL_get_peer_certificate(d->m_ssl));
+  m_pi.m_cert.setCert(d->kossl->SSL_get_peer_certificate(d->m_ssl));
 #endif
 }
 
@@ -374,7 +372,7 @@ bool KSSL::setClientCertificate(KSSLCertificate *cert) {
 #ifdef HAVE_SSL
   int rc;
 
-  rc = SSL_CTX_use_certificate(d->m_ctx, cert->getCert());
+  rc = d->kossl->SSL_CTX_use_certificate(d->m_ctx, cert->getCert());
 
   if (rc != 0) {
     return false;

@@ -22,6 +22,8 @@
 #include <ksslcertificate.h>
 #include <stdlib.h>
 
+//#include <kopenssl.h>
+
 KSSLCertificate*
 KSSLCertificateFactory::generateSelfSigned(KSSLKeyType keytype) {
 #if 0
