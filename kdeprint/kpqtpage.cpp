@@ -224,6 +224,11 @@ void KPQtPage::setOptions(const QMap<QString,QString>& opts)
 	}
 	m_nupbox->setButton(ID);
 	slotNupChanged(ID);
+	
+	if ( m_orientbox->isEnabled() )
+		m_orientbox->setDisabled( opts[ "kde-orientation-fixed" ] == "1" );
+	if ( m_pagesize->isEnabled() )
+		m_pagesize->setDisabled( opts[ "kde-pagesize-fixed" ] == "1" );
 }
 
 void KPQtPage::getOptions(QMap<QString,QString>& opts, bool incldef)

@@ -577,6 +577,7 @@ void KPrinter::setOrientation(Orientation o)
 	KMFactory::self()->settings()->orientation = o;
 	setOption("kde-orientation",(o == Landscape ? "Landscape" : "Portrait"));
 	d->m_impl->broadcastOption("kde-orientation",(o == Landscape ? "Landscape" : "Portrait"));
+	d->m_impl->broadcastOption( "kde-orientation-fixed", "1" );
 }
 
 void KPrinter::setPageSize(PageSize s)
@@ -584,6 +585,7 @@ void KPrinter::setPageSize(PageSize s)
 	KMFactory::self()->settings()->pageSize = s;
 	setOption("kde-pagesize",QString::number((int)s));
 	d->m_impl->broadcastOption("kde-pagesize",option("kde-pagesize"));
+	d->m_impl->broadcastOption( "kde-pagesize-fixed", "1" );
 }
 
 void KPrinter::setOptions(const QMap<QString,QString>& opts)

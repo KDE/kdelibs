@@ -297,7 +297,6 @@ void KPGeneralPage::initialize()
 	else
 		m_bannerbox->setEnabled(false);
 
-
 	slotOrientationChanged(ORIENT_PORTRAIT_ID);
 	slotNupChanged(NUP_1_ID);
 }
@@ -396,6 +395,11 @@ void KPGeneralPage::setOptions(const QMap<QString,QString>& opts)
 			slotNupChanged(ID);
 		}
 	}
+
+	if ( m_orientbox->isEnabled() )
+		m_orientbox->setDisabled( opts[ "kde-orientation-fixed" ] == "1" );
+	if ( m_pagesize->isEnabled() )
+		m_pagesize->setDisabled( opts[ "kde-pagesize-fixed" ] == "1" );
 }
 
 void KPGeneralPage::getOptions(QMap<QString,QString>& opts, bool incldef)
