@@ -206,10 +206,21 @@ void KFindDialog::init(bool forReplace, const QStringList &findStrings, bool has
     d->findStrings = findStrings;
     m_find->setFocus();
     enableButtonOK( !pattern().isEmpty() );
-    setButtonOKText(i18n("&Find"), 
+    if (forReplace)
+    {
+       setButtonOKText(i18n("&Replace"), 
+                    i18n("Start replace"),
+                    i18n("<qt>If you press the <b>Replace</b> button, the document is "
+                         "searched for the text to find and any occurrence is replaced "
+                         "with the replacement text.</qt>"));
+    }
+    else
+    {
+       setButtonOKText(i18n("&Find"), 
                     i18n("Start searching"),
                     i18n("<qt>If you press the <b>Find</b> button, the document is "
                          "searched for the text that you entered above.</qt>"));
+    }
 }
 
 void KFindDialog::textSearchChanged( const QString & text)
