@@ -994,6 +994,42 @@ void Window::goHistory( int steps )
   //emit ext->goHistory(steps);
 }
 
+void KJS::Window::resizeTo(QWidget* tl, int width, int height)
+{
+  // Security check: within desktop limits and bigger than 100x100 (per spec)
+  if ( width < 100 || height < 100 ) {
+    kdDebug(6070) << "Window::resizeTo refused, window would be too small ("<<width<<","<<height<<")" << endl;
+    return;
+  }
+  QRect sg = QApplication::desktop()->screenGeometry(QApplication::desktop()->screenNumber(tl));
+  if ( width > sg.width() || height > sg.height() ) {
+    kdDebug(6070) << "Window::resizeTo refused, window would be too big ("<<width<<","<<height<<")" << endl;
+    return;
+  }
+
+  // Take into account the window frame - so that (width,height) is the external window size
+  // ### (is that correct? for window.open it's the size of the HTML area...)
+  int deltaWidth = tl->frameGeometry().width() - tl->width();
+  int deltaHeight = tl->frameGeometry().height() - tl->height();
+
+  kdDebug() << "resizing to " << width - deltaWidth << "x" << height - deltaHeight << endl;
+
+  tl->resize( width - deltaWidth, height - deltaHeight );
+
+  // If the window is out of the desktop, move it up/left
+  // (maybe we should use workarea instead of sg, otherwise the window ends up below kicker)
+  int right = tl->x() + tl->frameGeometry().width();
+  int bottom = tl->y() + tl->frameGeometry().height();
+  int moveByX = 0;
+  int moveByY = 0;
+  if ( right > sg.right() )
+    moveByX = - right + sg.right(); // always <0
+  if ( bottom > sg.bottom() )
+    moveByY = - bottom + sg.bottom(); // always <0
+  if ( moveByX || moveByY )
+    tl->move( tl->x() + moveByX , tl->y() + moveByY );
+}
+
 Value Window::openWindow(ExecState *exec, const List& args)
 {
   KHTMLView *widget = m_part->view();
@@ -1228,36 +1264,15 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     if(args.size() == 2 && widget)
     {
       QWidget * tl = widget->topLevelWidget();
-      QSize dest = tl->size() + QSize( args[0].toInt32(exec), args[1].toInt32(exec) );
-	  QRect sg = QApplication::desktop()->screenGeometry(QApplication::desktop()->screenNumber(tl));
-      // Security check: within desktop limits and bigger than 100x100 (per spec)
-      if ( tl->x()+dest.width() <= sg.x()+sg.width() &&
-           tl->y()+dest.height() <= sg.y()+sg.height() &&
-           dest.width() >= 100 && dest.height() >= 100 )
-      {
-        // Take into account the window frame
-        int deltaWidth = tl->frameGeometry().width() - tl->width();
-        int deltaHeight = tl->frameGeometry().height() - tl->height();
-        tl->resize( dest.width() - deltaWidth, dest.height() - deltaHeight );
-      }
+      window->resizeTo( tl, tl->width() + args[0].toInt32(exec), tl->height() + args[1].toInt32(exec) );
     }
     return Undefined();
   case Window::ResizeTo:
+    kdDebug() << k_funcinfo << "widget=" << widget << endl;
     if(args.size() == 2 && widget)
     {
       QWidget * tl = widget->topLevelWidget();
-      QSize dest = QSize( args[0].toInt32(exec), args[1].toInt32(exec) );
-	  QRect sg = QApplication::desktop()->screenGeometry(QApplication::desktop()->screenNumber(tl));
-      // Security check: within desktop limits and bigger than 100x100 (per spec)
-      if ( tl->x()+dest.width() <= sg.x()+sg.width() &&
-           tl->y()+dest.height() <= sg.y()+sg.height() &&
-           dest.width() >= 100 && dest.height() >= 100 )
-      {
-        // Take into account the window frame
-        int deltaWidth = tl->frameGeometry().width() - tl->width();
-        int deltaHeight = tl->frameGeometry().height() - tl->height();
-        tl->resize( dest.width() - deltaWidth, dest.height() - deltaHeight );
-      }
+      window->resizeTo( tl, args[0].toInt32(exec), args[1].toInt32(exec) );
     }
     return Undefined();
   case Window::SetTimeout:

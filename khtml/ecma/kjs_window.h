@@ -94,6 +94,7 @@ namespace KJS {
     void delayedGoHistory(int steps);
     void goHistory(int steps);
     Value openWindow(ExecState *exec, const List &args);
+    void resizeTo(QWidget* tl, int width, int height);
     void afterScriptExecution();
     bool isSafeScript(ExecState *exec) const;
     Location *location() const;
