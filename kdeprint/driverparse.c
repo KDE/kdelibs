@@ -2,6 +2,7 @@
 
 #include <string.h>
 #include <dirent.h>
+#include <ctype.h>
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <dlfcn.h>
