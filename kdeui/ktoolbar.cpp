@@ -1450,7 +1450,7 @@ void KToolBar::show()
     // Reggie: Ugly hack, I hate it
     if ( d->hasRealPos && d->realPos != QMainWindow::Unmanaged && parentWidget() && parentWidget()->inherits( "QMainWindow" ) ) {
 	d->hasRealPos = FALSE;
-	( (QMainWindow*)parentWidget() )->moveToolBar( this, d->realPos, d->realIndex, d->realNl, d->realOffset );
+	( (QMainWindow*)parentWidget() )->moveToolBar( this, d->realPos, d->realNl, d->realIndex, d->realOffset );
     }
     d->hasRealPos = FALSE;
     QObject *o = 0;
@@ -1620,7 +1620,7 @@ void KToolBar::slotReadConfig()
 	pos = Flat;
 
     if ( mw )
-	mw->moveToolBar( this, (QMainWindow::ToolBarDock)pos, idx, newLine, offs );
+	mw->moveToolBar( this, (QMainWindow::ToolBarDock)pos, newLine, idx, offs );
     setBarPos( pos );
 
     if (doUpdate)

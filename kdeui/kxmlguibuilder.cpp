@@ -64,6 +64,19 @@ public:
 
     KInstance *m_instance;
     KXMLGUIClient *m_client;
+
+    struct ToolBarInfo
+    {
+	ToolBarInfo() {}
+	ToolBarInfo( QMainWindow::ToolBarDock d,
+		     int i, bool n, int o ) : index( i ), offset( o ), newline( n ), dock( d ) {
+	}
+	int index, offset;
+	bool newline;
+	QMainWindow::ToolBarDock dock;
+    };
+
+    QMap<KToolBar*, ToolBarInfo > toolBarInfos;
 };
 
 KXMLGUIBuilder::KXMLGUIBuilder( QWidget *widget )
@@ -247,8 +260,8 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     if ( !attrNewLine.isEmpty() && containerStateBuffer.size() == 0 )
 	nl = attrNewLine == "true" ? TRUE : FALSE;
 
-    if ( d->m_widget->inherits( "QMainWindow") )
-	( (QMainWindow*)d->m_widget )->moveToolBar( bar, dock, index, nl, offset );
+    d->toolBarInfos.insert( bar, KXMLGUIBuilderPrivate::ToolBarInfo( dock, index, nl, offset ) );
+
     bar->setBarPos( (KToolBar::BarPosition)dock );
 
     if ( !attrIconText.isEmpty() && containerStateBuffer.size() == 0 )
@@ -400,7 +413,7 @@ void KXMLGUIBuilder::setBuilderClient( KXMLGUIClient *client )
 {
   d->m_client = client;
   if ( client )
-    setBuilderInstance( client->instance() );
+      setBuilderInstance( client->instance() );
 }
 
 KInstance *KXMLGUIBuilder::builderInstance() const
@@ -413,6 +426,19 @@ void KXMLGUIBuilder::setBuilderInstance( KInstance *instance )
   d->m_instance = instance;
 }
 
-void KXMLGUIBuilder::finalizeGUI( KXMLGUIClient *client )
+void KXMLGUIBuilder::finalizeGUI( KXMLGUIClient * )
 {
+    if ( !d->m_widget->inherits( "KTMainWindow" ) )
+	return;
+    KTMainWindow *mw = (KTMainWindow*)d->m_widget;
+    KToolBar *toolbar;
+    QListIterator<KToolBar> it( mw->toolBarIterator() );
+
+    for ( ; it.current(); ++it) {
+	toolbar= it.current();
+	QMap<KToolBar*, KXMLGUIBuilderPrivate::ToolBarInfo>::Iterator it = d->toolBarInfos.find( toolbar );
+	if ( it == d->toolBarInfos.end() )
+	    continue;
+	mw->moveToolBar( toolbar, (*it).dock, (*it).newline, (*it).index, (*it).offset );
+    }
 }

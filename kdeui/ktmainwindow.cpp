@@ -529,7 +529,7 @@ bool KTMainWindow::readPropertiesInternal( KConfig *config, int number )
 	    index = entry.toInt();
 	    nl = ( QString( entry ).lower() == QString::fromLatin1( "true" ) ) ? TRUE : FALSE;
 	    offset = entry.toInt();
-	    moveToolBar( toolbar, dock, index, nl, offset );
+	    moveToolBar( toolbar, dock, nl, index, offset );
 	}
 	toolbar->setBarPos( (KToolBar::BarPosition)dock );
 	n++; // next toolbar
