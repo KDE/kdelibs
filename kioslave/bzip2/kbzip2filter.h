@@ -19,6 +19,10 @@
 #ifndef __kbzip2filter__h
 #define __kbzip2filter__h
 
+#include <config.h>
+
+#if defined( HAVE_BZIP2_SUPPORT )
+
 #include "kfilterbase.h"
 
 class KBzip2Filter : public KFilterBase
@@ -44,5 +48,7 @@ private:
     KBzip2FilterPrivate *d;
     int m_mode;
 };
+
+#endif
 
 #endif
