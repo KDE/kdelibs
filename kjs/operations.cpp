@@ -33,6 +33,11 @@
 #include <math.h>
 #include <stdlib.h>
 
+// For declaration of isinf on Sun C++
+#ifdef __SUNPRO_CC
+#include <sunmath.h>
+#endif
+
 #ifndef HAVE_FUNC_ISINF
 #ifdef HAVE_IEEEFP_H
 #include <ieeefp.h>
