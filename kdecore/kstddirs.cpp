@@ -794,11 +794,16 @@ bool KStandardDirs::makeDir(const QString& dir, int mode)
         struct stat st;
         int pos = target.find('/', i);
         base += target.mid(i - 1, pos - i + 1);
+        QCString baseEncoded = QFile::encodeName(base);
         // bail out if we encountered a problem
-        if (stat(QFile::encodeName(base), &st) != 0)
+        if (stat(baseEncoded, &st) != 0)
         {
-           // Directory does not exist....
-	  if ( mkdir(QFile::encodeName(base), (mode_t) mode) != 0) {
+          // Directory does not exist....
+          // Or maybe a dangling symlink ?
+          if (lstat(baseEncoded, &st) == 0)
+              (void)unlink(baseEncoded); // try removing
+
+	  if ( mkdir(baseEncoded, (mode_t) mode) != 0) {
 	    perror("trying to create local folder");
 	    return false; // Couldn't create it :-(
 	  }
