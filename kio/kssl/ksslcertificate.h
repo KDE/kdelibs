@@ -209,9 +209,16 @@ public:
 
 	/**
 	 *  Get the MD5 digest of the certificate.
+	 *  Result is padded with : to separate bytes - it's a text version!
 	 *  @return the MD5 digest in a hexidecimal string
 	 */
 	QString getMD5DigestText() const;
+
+	/**
+	 *  Get the MD5 digest of the certificate.
+	 *  @return the MD5 digest in a hexidecimal string
+	 */
+	QString getMD5Digest() const;
 
 	/**
 	 *  Get the signature.

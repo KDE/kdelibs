@@ -279,6 +279,29 @@ return rc;
 
 
 
+QString KSSLCertificate::getMD5Digest() const {
+QString rc = "";
+
+#ifdef KSSL_HAVE_SSL
+	unsigned int n;
+	unsigned char md[EVP_MAX_MD_SIZE];
+
+	if (!d->kossl->X509_digest(d->m_cert, d->kossl->EVP_md5(), md, &n)) {
+		return rc;
+	}
+
+	for (unsigned int j = 0; j < n; j++) {
+		rc.append(hv[(md[j]&0xf0)>>4]);
+		rc.append(hv[md[j]&0x0f]);
+	}
+
+#endif
+
+return rc;
+}
+
+
+
 QString KSSLCertificate::getKeyType() const {
 QString rc = "";
 

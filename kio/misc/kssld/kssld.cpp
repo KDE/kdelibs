@@ -1,7 +1,7 @@
 /*
    This file is part of the KDE libraries
 
-   Copyright (c) 2001-2003 George Staikos <staikos@kde.org>
+   Copyright (c) 2001-2005 George Staikos <staikos@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -61,10 +61,62 @@ extern "C" {
 }
 
 
+static void updatePoliciesConfig(KConfig *cfg) {
+	QStringList groups = cfg->groupList();
+
+	for (QStringList::Iterator i = groups.begin(); i != groups.end(); ++i) {
+		if ((*i).isEmpty() || *i == "General") {
+			continue;
+		}
+
+		cfg->setGroup(*i);
+
+		// remove it if it has expired
+		if (!cfg->readBoolEntry("Permanent") && cfg->readDateTimeEntry("Expires") < QDateTime::currentDateTime()) {
+			cfg->deleteGroup(*i);
+			continue;
+		}
+
+		QString encodedCertStr = cfg->readEntry("Certificate");
+		QCString encodedCert = encodedCertStr.local8Bit();
+	       	KSSLCertificate *newCert = KSSLCertificate::fromString(encodedCert);
+		if (!newCert) {
+			cfg->deleteGroup(*i);
+			continue;
+		}
+
+		KSSLCertificateCache::KSSLCertificatePolicy policy = (KSSLCertificateCache::KSSLCertificatePolicy) cfg->readNumEntry("Policy");
+		bool permanent = cfg->readBoolEntry("Permanent");
+		QDateTime expires = cfg->readDateTimeEntry("Expires");
+		QStringList hosts = cfg->readListEntry("Hosts");
+		QStringList chain = cfg->readListEntry("Chain");
+		cfg->deleteGroup(*i);
+
+		cfg->setGroup(newCert->getMD5Digest());
+		cfg->writeEntry("Certificate", encodedCertStr);
+		cfg->writeEntry("Policy", policy);
+		cfg->writeEntry("Permanent", permanent);
+		cfg->writeEntry("Expires", expires);
+		cfg->writeEntry("Hosts", hosts);
+		cfg->writeEntry("Chain", chain);
+		delete newCert;
+	}
+
+	cfg->setGroup("General");
+	cfg->writeEntry("policies version", 2);
+
+	cfg->sync();
+}
+
+
 KSSLD::KSSLD(const QCString &name) : KDEDModule(name)
 {
 // ----------------------- FOR THE CACHE ------------------------------------	
 	cfg = new KSimpleConfig("ksslpolicies", false);
+	cfg->setGroup("General");
+	if (2 != cfg->readNumEntry("policies version", 0)) {
+		::updatePoliciesConfig(cfg);
+	}
 	KGlobal::dirs()->addResourceType("kssl", KStandardDirs::kde_default("data") + "kssl");
 	caVerifyUpdate();
 	cacheLoadDefaultPolicies();
@@ -107,13 +159,16 @@ class KSSLCNode {
 void KSSLD::cacheSaveToDisk() {
 KSSLCNode *node;
 
+	cfg->setGroup("General");
+	cfg->writeEntry("policies version", 2);
+
 	for (node = certList.first(); node; node = certList.next()) {
 		if (node->permanent ||
 			node->expires > QDateTime::currentDateTime()) {
 			// First convert to a binary format and then write the
 			// kconfig entry write the (CN, policy, cert) to
 			// KSimpleConfig
-			cfg->setGroup(node->cert->getSubject());
+			cfg->setGroup(node->cert->getMD5Digest());
 			cfg->writeEntry("Certificate", node->cert->toString());
 			cfg->writeEntry("Policy", node->policy);
 			cfg->writeEntry("Expires", node->expires);
@@ -175,7 +230,7 @@ QStringList groups = cfg->groupList();
 	for (QStringList::Iterator i = groups.begin();
 				i != groups.end();
 				++i) {
-		if ((*i).length() == 0) {
+		if ((*i).isEmpty() || *i == "General") {
 			continue;
 		}
 
@@ -238,7 +293,7 @@ KSSLCNode *node;
 	n->policy = policy;
 	n->permanent = permanent;
 	// remove the old one
-	cacheRemoveBySubject(n->cert->getSubject());
+	cacheRemoveByCertificate(*(n->cert));
 	certList.prepend(n); 
 
 	if (!permanent) {
@@ -259,7 +314,7 @@ KSSLCNode *node;
 			if (!node->permanent &&
 				node->expires < QDateTime::currentDateTime()) {
 				certList.remove(node);
-				cfg->deleteGroup(node->cert->getSubject());
+				cfg->deleteGroup(node->cert->getMD5Digest());
 				delete node;
 				continue;
 			}
@@ -285,7 +340,7 @@ KSSLCNode *node;
 			if (!node->permanent &&
 				node->expires < QDateTime::currentDateTime()) {
 				certList.remove(node);
-				cfg->deleteGroup(node->cert->getSubject());
+				cfg->deleteGroup(node->cert->getMD5Digest());
 				delete node;
 				cacheSaveToDisk();
 				return KSSLCertificateCache::Unknown;
@@ -309,7 +364,7 @@ KSSLCNode *node;
 			if (!node->permanent &&
 				node->expires < QDateTime::currentDateTime()) {
 				certList.remove(node);
-				cfg->deleteGroup(node->cert->getSubject());
+				cfg->deleteGroup(node->cert->getMD5Digest());
 				delete node;
 				cacheSaveToDisk();
 				continue;
@@ -333,7 +388,7 @@ KSSLCNode *node;
 			if (!node->permanent &&
 				node->expires < QDateTime::currentDateTime()) {
 				certList.remove(node);
-				cfg->deleteGroup(node->cert->getSubject());
+				cfg->deleteGroup(node->cert->getMD5Digest());
 				delete node;
 				cacheSaveToDisk();
 				return false;
@@ -357,7 +412,7 @@ KSSLCNode *node;
 			if (!node->permanent && node->expires <
 					QDateTime::currentDateTime()) {
 				certList.remove(node);
-				cfg->deleteGroup(node->cert->getSubject());
+				cfg->deleteGroup(node->cert->getMD5Digest());
 				delete node;
 				cacheSaveToDisk();
 				return false;
@@ -380,7 +435,7 @@ bool gotOne = false;
 	for (node = certList.first(); node; node = certList.next()) {
 		if (node->cert->getSubject() == subject) {
 			certList.remove(node);
-			cfg->deleteGroup(node->cert->getSubject());
+			cfg->deleteGroup(node->cert->getMD5Digest());
 			searchRemoveCert(node->cert);
 			delete node;
 			gotOne = true;
@@ -400,7 +455,7 @@ bool gotOne = false;
 	for (node = certList.first(); node; node = certList.next()) {
 		if (KSSLX509Map(node->cert->getSubject()).getValue("CN") == cn) {
 			certList.remove(node);
-			cfg->deleteGroup(node->cert->getSubject());
+			cfg->deleteGroup(node->cert->getMD5Digest());
 			searchRemoveCert(node->cert);
 			delete node;
 			gotOne = true;
@@ -419,7 +474,7 @@ KSSLCNode *node;
 	for (node = certList.first(); node; node = certList.next()) {
 		if (cert == *(node->cert)) {
 			certList.remove(node);
-			cfg->deleteGroup(node->cert->getSubject());
+			cfg->deleteGroup(node->cert->getMD5Digest());
 			searchRemoveCert(node->cert);
 			delete node;
 			cacheSaveToDisk();
@@ -482,7 +537,7 @@ KSSLCNode *node;
 			if (!node->permanent && node->expires <
 				       QDateTime::currentDateTime()) {
 				certList.remove(node);
-				cfg->deleteGroup(node->cert->getSubject());
+				cfg->deleteGroup(node->cert->getMD5Digest());
 				searchRemoveCert(node->cert);
 				delete node;
 				cacheSaveToDisk();
@@ -510,7 +565,7 @@ KSSLCNode *node;
 			if (!node->permanent && node->expires <
 				       	QDateTime::currentDateTime()) {
 				certList.remove(node);
-				cfg->deleteGroup(node->cert->getSubject());
+				cfg->deleteGroup(node->cert->getMD5Digest());
 				searchRemoveCert(node->cert);
 				delete node;
 				cacheSaveToDisk();
@@ -540,7 +595,7 @@ KSSLCNode *node;
 			if (!node->permanent && node->expires <
 				       	QDateTime::currentDateTime()) {
 				certList.remove(node);
-				cfg->deleteGroup(node->cert->getSubject());
+				cfg->deleteGroup(node->cert->getMD5Digest());
 				searchRemoveCert(node->cert);
 				delete node;
 				cacheSaveToDisk();
@@ -796,7 +851,7 @@ return true;
 ///////////////////////////////////////////////////////////////////////////
 
 void KSSLD::searchAddCert(KSSLCertificate *cert) {
-	skMD5Digest.insert(cert->getMD5DigestText(), cert, true);
+	skMD5Digest.insert(cert->getMD5Digest(), cert, true);
 
 	QStringList mails;
 	cert->getEmails(mails);
@@ -827,7 +882,7 @@ void KSSLD::searchAddCert(KSSLCertificate *cert) {
 
 
 void KSSLD::searchRemoveCert(KSSLCertificate *cert) {
-	skMD5Digest.remove(cert->getMD5DigestText());
+	skMD5Digest.remove(cert->getMD5Digest());
 
 	QStringList mails;
 	cert->getEmails(mails);
