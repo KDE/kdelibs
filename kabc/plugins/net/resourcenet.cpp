@@ -111,14 +111,14 @@ void ResourceNet::doClose()
 
 bool ResourceNet::load()
 {
-  if ( !KIO::NetAccess::exists( mUrl ) ) {
+  if ( !KIO::NetAccess::exists( mUrl, true, 0 ) ) {
     mLocalTempFile = new KTempFile();
     mLocalTempFile->setAutoDelete( true );
     mUseLocalTempFile = true;
     mTempFile = mLocalTempFile->name();
   }
 
-  if ( !KIO::NetAccess::download( mUrl, mTempFile ) ) {
+  if ( !KIO::NetAccess::download( mUrl, mTempFile, 0 ) ) {
     addressBook()->error( i18n( "Unable to download file '%1'." ).arg( mUrl.url() ) );
     return false;
   }
@@ -167,7 +167,7 @@ bool ResourceNet::save( Ticket* )
   mFormat->saveAll( addressBook(), this, &file );
   file.close();
 
-  return KIO::NetAccess::upload( mTempFile, mUrl );
+  return KIO::NetAccess::upload( mTempFile, mUrl, 0 );
 }
 
 bool ResourceNet::asyncSave( Ticket* )
