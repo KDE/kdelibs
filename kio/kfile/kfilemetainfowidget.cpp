@@ -1,5 +1,6 @@
 #include "kfilemetainfowidget.h"
 
+#include <keditcl.h>
 #include <klocale.h>
 #include <knuminput.h>
 #include <kcombobox.h>
@@ -18,15 +19,15 @@
 
 /*
   Widgets used for different types:
-  
+
   bool      : QCheckBox
   int       : QSpinBox
-  QString   : KComboBox if the validator is a KStringListValidator, else lineedit 
+  QString   : KComboBox if the validator is a KStringListValidator, else lineedit
   QDateTime : QDateTimeEdit
 
 */
 
-KFileMetaInfoWidget::KFileMetaInfoWidget(KFileMetaInfoItem item, 
+KFileMetaInfoWidget::KFileMetaInfoWidget(KFileMetaInfoItem item,
                                          QValidator* val,
                                          QWidget* parent, const char* name)
     : QWidget(parent, name),
@@ -36,7 +37,7 @@ KFileMetaInfoWidget::KFileMetaInfoWidget(KFileMetaInfoItem item,
 {
     kdDebug(7033) << "*** item "  << m_item.key()
                   << " is a " << value().typeName() << endl;
-    
+
     if (m_item.isEditable())
         m_widget = makeWidget();
     else
@@ -53,10 +54,10 @@ KFileMetaInfoWidget::KFileMetaInfoWidget(KFileMetaInfoItem item,
             default:
                 m_widget = new QLabel(item.string(true), this, "info label");
         }
-    
+
     (new QHBoxLayout(this))->addWidget(m_widget);
-}      
-    
+}
+
 KFileMetaInfoWidget::~KFileMetaInfoWidget()
 {
 }
@@ -65,7 +66,7 @@ QWidget* KFileMetaInfoWidget::makeWidget()
 {
     QString valClass;
     QWidget* w;
-    
+
     switch (m_value.type())
     {
         case QVariant::Invalid:     // no type
@@ -73,11 +74,11 @@ QWidget* KFileMetaInfoWidget::makeWidget()
             w = new QLabel(i18n("<Error>"), this, "label");
             break;
 
-        case QVariant::Int:         // an int 
-        case QVariant::UInt:        // an unsigned int 
+        case QVariant::Int:         // an int
+        case QVariant::UInt:        // an unsigned int
             w = makeIntWidget();
             break;
-          
+
         case QVariant::Bool:        // a bool
             w = makeBoolWidget();
             break;
@@ -94,38 +95,38 @@ QWidget* KFileMetaInfoWidget::makeWidget()
         case QVariant::Time:        // a QTime
             w = makeTimeWidget();
             break;
-            
+
         case QVariant::DateTime:    // a QDateTime
             w = makeDateTimeWidget();
             break;
 
-#if 0            
-        case QVariant::Size:        // a QSize 
-        case QVariant::String:      // a QString 
-        case QVariant::List:        // a QValueList 
-        case QVariant::Map:         // a QMap 
-        case QVariant::StringList:  //  a QStringList 
-        case QVariant::Font:        // a QFont 
-        case QVariant::Pixmap:      // a QPixmap 
-        case QVariant::Brush:       // a QBrush 
-        case QVariant::Rect:        // a QRect 
-        case QVariant::Color:       // a QColor 
-        case QVariant::Palette:     // a QPalette 
-        case QVariant::ColorGroup:  // a QColorGroup 
-        case QVariant::IconSet:     // a QIconSet 
-        case QVariant::Point:       // a QPoint 
-        case QVariant::Image:       // a QImage 
-        case QVariant::CString:     // a QCString 
-        case QVariant::PointArray:  // a QPointArray 
-        case QVariant::Region:      // a QRegion 
-        case QVariant::Bitmap:      // a QBitmap 
-        case QVariant::Cursor:      // a QCursor 
-        case QVariant::ByteArray:   // a QByteArray 
-        case QVariant::BitArray:    // a QBitArray 
-        case QVariant::SizePolicy:  // a QSizePolicy 
-        case QVariant::KeySequence: // a QKeySequence           
+#if 0
+        case QVariant::Size:        // a QSize
+        case QVariant::String:      // a QString
+        case QVariant::List:        // a QValueList
+        case QVariant::Map:         // a QMap
+        case QVariant::StringList:  //  a QStringList
+        case QVariant::Font:        // a QFont
+        case QVariant::Pixmap:      // a QPixmap
+        case QVariant::Brush:       // a QBrush
+        case QVariant::Rect:        // a QRect
+        case QVariant::Color:       // a QColor
+        case QVariant::Palette:     // a QPalette
+        case QVariant::ColorGroup:  // a QColorGroup
+        case QVariant::IconSet:     // a QIconSet
+        case QVariant::Point:       // a QPoint
+        case QVariant::Image:       // a QImage
+        case QVariant::CString:     // a QCString
+        case QVariant::PointArray:  // a QPointArray
+        case QVariant::Region:      // a QRegion
+        case QVariant::Bitmap:      // a QBitmap
+        case QVariant::Cursor:      // a QCursor
+        case QVariant::ByteArray:   // a QByteArray
+        case QVariant::BitArray:    // a QBitArray
+        case QVariant::SizePolicy:  // a QSizePolicy
+        case QVariant::KeySequence: // a QKeySequence
 #endif
-        default: 
+        default:
             w = makeStringWidget();
     }
 
@@ -135,7 +136,7 @@ QWidget* KFileMetaInfoWidget::makeWidget()
         kdDebug(7033) << " and validator is a " << m_validator->className() << endl;
 
     kdDebug(7033) << "*** created a " << w->className() << " for it\n";
-          
+
     return w;
 }
 
@@ -166,7 +167,7 @@ QWidget* KFileMetaInfoWidget::makeIntWidget()
         reparentValidator(sb, m_validator);
         sb->setValidator(m_validator);
     }
-    
+
     // make sure that an uint cannot be set to a value < 0
     if (m_item.type() == QVariant::UInt)
         sb->setMinValue(QMAX(sb->minValue(), 0));
@@ -180,7 +181,7 @@ QWidget* KFileMetaInfoWidget::makeDoubleWidget()
     KDoubleNumInput* dni = new KDoubleNumInput(m_item.value().toDouble(),
                                                this, "metainfo double widget");
 
-    
+
     if (m_validator)
     {
         if (m_validator->inherits("QDoubleValidator"))
@@ -190,7 +191,7 @@ QWidget* KFileMetaInfoWidget::makeDoubleWidget()
         }
         reparentValidator(dni, m_validator);
     }
-    
+
     connect(dni, SIGNAL(valueChanged(double)), this, SLOT(slotChanged(double)));
     return dni;
 }
@@ -210,6 +211,16 @@ QWidget* KFileMetaInfoWidget::makeStringWidget()
         return b;
     }
 
+    if ( m_item.attributes() & KFileMimeTypeInfo::MultiLine ) {
+        qDebug("******** MULTI!");
+        KEdit *edit = new KEdit( this );
+        edit->setText( m_item.value().toString() );
+        connect( edit, SIGNAL( textChanged() ),
+                 this, SLOT( slotMultiLineEditChanged() ));
+        // can't use a validator with a QTextEdit...
+        return edit;
+    }
+    
     KLineEdit* e = new KLineEdit(m_item.value().toString(), this);
     if (m_validator)
     {
@@ -219,8 +230,8 @@ QWidget* KFileMetaInfoWidget::makeStringWidget()
     connect(e,    SIGNAL(textChanged(const QString&)),
             this, SLOT(slotLineEditChanged(const QString&)));
     return e;
-}        
-  
+}
+
 QWidget* KFileMetaInfoWidget::makeDateWidget()
 {
   return new QDateEdit(m_item.value().toDate(), this);
@@ -236,7 +247,7 @@ QWidget* KFileMetaInfoWidget::makeDateTimeWidget()
   return new QDateTimeEdit(m_item.value().toDateTime(), this);
 }
 
-void KFileMetaInfoWidget::reparentValidator( QWidget *widget, 
+void KFileMetaInfoWidget::reparentValidator( QWidget *widget,
                                              QValidator *validator )
 {
     if ( !validator->parent() )
@@ -283,6 +294,15 @@ void KFileMetaInfoWidget::slotLineEditChanged(const QString& value)
 {
     Q_ASSERT(m_widget->inherits("KLineEdit"));
     m_value = QVariant(value);
+    emit valueChanged(m_value);
+    m_dirty = true;
+}
+
+// that may be a little expensive for long texts, but what can we do?
+void KFileMetaInfoWidget::slotMultiLineEditChanged()
+{
+    Q_ASSERT(m_widget->inherits("QTextEdit"));
+    m_value = QVariant( static_cast<const QTextEdit*>( sender() )->text() );
     emit valueChanged(m_value);
     m_dirty = true;
 }
