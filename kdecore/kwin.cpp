@@ -260,8 +260,7 @@ KWin::Info KWin::info( WId win )
 		    NET::WMDesktop |
 		    NET::WMPid |
 		    NET::WMKDEFrameStrut |
-		    NET::XAWMState |
-                    NET::WMGeometry
+		    NET::XAWMState
 		    );
 
     w.win = win;
@@ -548,7 +547,8 @@ KWin::WindowInfo::WindowInfo( WId win, unsigned long properties )
 		     NET::WMDesktop |
 		     NET::WMPid |
 		     NET::WMKDEFrameStrut |
-		     NET::XAWMState;
+		     NET::XAWMState |
+                     NET::WMGeometry;
     if( properties & NET::WMVisibleName )
 	properties |= NET::WMName; // force, in case it will be used as a fallback
     d->info = new NETWinInfo( qt_xdisplay(), win, qt_xrootwin(), properties );
