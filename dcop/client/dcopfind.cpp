@@ -21,8 +21,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ******************************************************************/
 
+#include <qbuffer.h>
 #include <qvariant.h>
 #include <qcolor.h>
+#include <qimage.h>
 #include "../kdatastream.h"
 #include "../dcopclient.h"
 #include "../dcopref.h"

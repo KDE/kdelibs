@@ -160,6 +160,15 @@ QCString demarshal( QDataStream &stream, const QString &type )
         QSize s;
         stream >> s;
         result.sprintf( "%dx%d", s.width(), s.height() );
+    } else if ( type == "QPixmap" || type == "QImage" ) 
+    {
+        QImage i;
+        stream >> i;
+        QByteArray ba;
+        QBuffer buf( ba );
+        buf.open( IO_WriteOnly );
+        i.save( &buf, "XPM" );
+        result = ba;
     } else if ( type == "QPoint" )
     {
         QPoint p;
