@@ -1,6 +1,8 @@
 [KDE Print Filter Entry]
 Comment=Poster Printing
-Description=Utility to print large posters on multiple small paper sheets. To use this command, the <b>poster</b> executable must be accessible in your <tt>PATH</tt>. Source code for this utility can be on the <a href="http://printing.kde.org/downloads">KDEPrint web site</a>. <p><b><u>WARNING:</u></b> The package found on KDEPrint web site is a modified version or the original one that can be found on any CTAN archive mirror, but the original package will <b>not</b> work with KDE; you <b>must</b> use the package found on the <a href="http://printing.kde.org/downloads">KDEPrint web site</a>.
+Comment[es]=Impresión de poster
+Comment[sv]=Skriv ut affisch
+Description=Utility to print large posters on multiple small paper sheets. To use this command, the <b>poster</b> executable must be accessible in your <tt>PATH</tt>. Source code for this utility can be on the <a href="http://printing.kde.org/downloads">KDEPrint web site</a>. <p><b><u>WARNING:</u></b> The package found on the KDEPrint web site is a modified version of the original one that can be found on any CTAN archive mirror, but the original package will <b>not</b> work with KDE. You <b>must</b> use the package found on the <a href="http://printing.kde.org/downloads">KDEPrint web site</a>.
 MimeTypeIn=application/postscript
 MimeTypeOut=application/postscript
 Require=exec:/poster
