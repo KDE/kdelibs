@@ -101,7 +101,7 @@ Ftp::Ftp( const QCString &pool, const QCString &app )
   ksControl = NULL;
   m_bLoggedOn = false;
   m_bFtpStarted = false;
-  setMultipleAuthCaching( true );
+  m_port = 0;
   kdDebug(7102) << "Ftp::Ftp()" << endl;
 }
 
@@ -196,6 +196,7 @@ int Ftp::ftpReadline(char *buf,int max,netbuf *ctl)
 char Ftp::readresp()
 {
   char match[5];
+
   if ( ftpReadline( rspbuf, 256, nControl ) == -1 )
   {
     // This can happen after the server closed the connection (after a timeout)
@@ -203,7 +204,9 @@ char Ftp::readresp()
     //error( ERR_COULD_NOT_READ, QString::null );
     return '\0';
   }
+
   kdDebug(7102) << "resp> " << rspbuf << endl;
+
   if ( rspbuf[3] == '-' )  {
     strncpy( match, rspbuf, 3 );
     match[3] = ' ';
@@ -224,15 +227,17 @@ char Ftp::readresp()
 
 void Ftp::closeConnection()
 {
-  kdDebug(7102) << "Ftp::closeConnection() m_bLoggedOn=" << m_bLoggedOn << " m_bFtpStarted=" << m_bFtpStarted << endl;
+  kdDebug(7102) << "Ftp::closeConnection() m_bLoggedOn=" << m_bLoggedOn
+                << " m_bFtpStarted=" << m_bFtpStarted << endl;
+
   if ( m_bLoggedOn || m_bFtpStarted )
   {
-    Q_ASSERT( m_bFtpStarted ); // can't see how it could be false is loggedon is true
+    Q_ASSERT( m_bFtpStarted ); // can't see how it could be false if loggedon is true
+
     if( sControl != 0 )
     {
-      kdDebug(7102) << "Ftp::closeConnection() sending quit" << endl;
-      if ( !ftpSendCmd( "quit", 0 ) || rspbuf[0] != '2' )
-        kdWarning(7102) << "Ftp::closeConnection() 'quit' failed with err="
+      if ( m_bLoggedOn && (!ftpSendCmd( "quit", 0 ) || rspbuf[0] != '2' ) )
+        kdWarning(7102) << "Ftp::closeConnection() sending 'quit' failed with err="
             << QString(QChar(rspbuf[0]))+QChar(rspbuf[1])+QChar(rspbuf[2]) << endl;
       free( nControl );
       if (ksControl != NULL)
@@ -252,40 +257,33 @@ void Ftp::closeConnection()
 void Ftp::setHost( const QString& _host, int _port, const QString& _user,
                    const QString& _pass )
 {
-  kdDebug(7102) << "Ftp::setHost " << _host << " user=" << _user << endl;
-  QString user = _user;
-  QString pass = _pass;
-  if ( !_user.isEmpty() )
-  {
-    user = _user;
-    pass = _pass.isEmpty() ? QString::null:_pass;
-  }
-  else
-  {
-    user = FTP_LOGIN;
-    pass = FTP_PASSWD;
-  }
+  kdDebug(7102) << "Ftp::setHost (" << getpid() << "): " << _host << endl;
 
   m_proxyURL = metaData("UseProxy");
-  kdDebug(7102) << "Proxy URL: " << m_proxyURL.url() << endl;
-  m_bUseProxy = ( m_proxyURL.isValid() &&
-                  m_proxyURL.protocol() == QString::fromLatin1("ftp") );
+  m_bUseProxy = (m_proxyURL.isValid() &&
+                 m_proxyURL.protocol() == QString::fromLatin1("ftp"));
 
   if ( m_host != _host || m_port != _port ||
-       m_user != user || m_pass != pass )
-    closeConnection( );
+       m_user != _user || m_pass != _pass )
+    closeConnection();
 
   m_host = _host;
   m_port = _port;
-  m_user = user;
-  m_pass = pass;
+  m_user = _user;
+  m_pass = _pass;
 }
 
 void Ftp::openConnection()
 {
-  kdDebug(7102) << "openConnection " << m_host << ":" << m_port << " " << m_user << " [password hidden]" << endl;
+  ftpOpenConnection();
+}
 
-  infoMessage( i18n("Opening connection to host <b>%1</b>").arg(m_host) );
+void Ftp::ftpOpenConnection (bool login)
+{
+  kdDebug(7102) << "Ftp::ftpOpenConnection " << m_host << ":" << m_port << " "
+                << m_user << " [password hidden]" << endl;
+
+  infoMessage( i18n("Opening connection to host %1").arg(m_host) );
 
   if ( m_host.isEmpty() )
   {
@@ -300,17 +298,21 @@ void Ftp::openConnection()
   QString host = m_bUseProxy ? m_proxyURL.host() : m_host;
   unsigned short int port = m_bUseProxy ? m_proxyURL.port() : m_port;
 
+  infoMessage( i18n("Connected to host %1").arg(m_host) );
+
   if (!connect( host, port ))
     return; // error emitted by connect
 
   m_bFtpStarted = true;
 
-  infoMessage( i18n("Connected to host <b>%1</b>").arg(m_host) );
-  kdDebug(7102) << "Connected ...." << endl;
+  kdDebug(7102) << "Connected..." << endl;
 
-  m_bLoggedOn = ftpLogin();
-  if ( !m_bLoggedOn )
-    return; // error emitted by ftpLogin
+  if (login)
+  {
+    m_bLoggedOn = ftpLogin();
+    if ( !m_bLoggedOn )
+      return; // error emitted by ftpLogin
+  }
 
   connected();
 }
@@ -381,7 +383,14 @@ bool Ftp::connect( const QString &host, unsigned short int port )
     delete ksControl;
     ksControl = NULL;
     free( nControl );
-    error( ERR_COULD_NOT_CONNECT, host );
+
+    QString errMsg;
+    if (rspbuf)
+      errMsg = i18n("%1.\n\nReason: %2").arg(host).arg(QString::fromLatin1(rspbuf+3).stripWhiteSpace());
+    else
+      errMsg = host;
+
+    error( ERR_COULD_NOT_CONNECT, errMsg );
     return false;
   }
 
@@ -414,160 +423,137 @@ bool Ftp::ftpLogin()
     }
   }
 
-  //kdDebug(7102) << "ftpLogin " << user << ":" << pass << endl; // shows the pass!
-
-  if ( !user.isEmpty() )
+  // Try anonymous login if both username/password
+  // information is blank.
+  if (user.isEmpty() && pass.isEmpty())
   {
-    AuthInfo info;
-    QCString tempbuf;
-    int failedAuth = 0;
-
-    // Construct the URL to be used as key for caching.
-    info.url.setProtocol( QString::fromLatin1("ftp") );
-    info.url.setHost( m_host );
-    info.url.setPort( m_port );
-    info.url.setUser( user );
-
-    do
-    {
-      // Check the cache and/or prompt user for password if 1st
-      // login attempt failed OR the user supplied a login name,
-      // but no password.
-      if ( failedAuth > 0 || (!user.isEmpty() && pass.isEmpty()) )
-      {
-        QString errorMsg;
-        kdDebug(7102) << "Show login dialog box..." << endl;
-
-        // Ask user if we should retry after when login fails!
-        if( failedAuth > 0 )
-        {
-          errorMsg = i18n("Message sent:\nLogin using username=%1 and "
-                          "password=[hidden]\n\nServer replied:\n%2\n\n"
-                          ).arg(user).arg(rspbuf);
-        }
-
-        if ( user != FTP_LOGIN )
-          info.username = user;
-
-        kdDebug(7102) << "Is FTP URL valid? " << info.url.isValid() << endl;
-        kdDebug(7102) << "Username: " << info.username << endl;
-
-        info.prompt = i18n("You need to supply a username and a password "
-                           "to access this site.");
-        info.commentLabel = i18n( "Site:" );
-        info.comment = i18n("<b>%1</b>").arg( m_host );
-        info.keepPassword = true; // Prompt the user for persistence as well.
-        info.readOnly = (!m_user.isEmpty() && m_user != FTP_LOGIN);
-
-        bool disablePassDlg = config()->readBoolEntry( "DisablePassDlg", false );
-        if ( disablePassDlg || !openPassDlg( info, errorMsg ) )
-        {
-          error( ERR_USER_CANCELED, m_host );
-          return false;
-        }
-        else
-        {
-          user = info.username;
-          pass = info.password;
-        }
-      }
-
-      tempbuf = "user ";
-      tempbuf += user.latin1();
-      if ( m_bUseProxy )
-      {
-        tempbuf += '@';
-        tempbuf += m_host.latin1();
-        if ( m_port > 0 && m_port != DEFAULT_FTP_PORT )
-        {
-          tempbuf += ':';
-          tempbuf += QString::number(m_port).latin1();
-        }
-      }
-
-      kdDebug(7102) << "Sending Login name: " << tempbuf << endl;
-
-      bool loggedIn = (ftpSendCmd( tempbuf, 0 ) && !strncmp( rspbuf, "230", 3));
-      bool needPass = !strncmp( rspbuf, "331", 3);
-      // Prompt user for login info if we do not
-      // get back a "230" or "331".
-      if ( !loggedIn && !needPass )
-      {
-        kdDebug(7102) << "1> " << rspbuf << endl;
-        ++failedAuth;
-        continue;  // Well we failed, prompt the user please!!
-      }
-
-      if( needPass )
-      {
-        tempbuf = "pass ";
-        tempbuf += pass.latin1();
-        kdDebug(7102) << "Sending Login password: " << "[protected]" << endl;
-        loggedIn = (ftpSendCmd( tempbuf, 0 ) && !strncmp(rspbuf, "230", 3));
-      }
-
-      if ( loggedIn )
-      {
-        // Do not cache the default login!!
-        if( user != FTP_LOGIN && pass != FTP_PASSWD )
-          cacheAuthentication( info );
-        failedAuth = -1;
-      }
-    } while( ++failedAuth );
+    user = FTP_LOGIN;
+    pass = FTP_PASSWD;
   }
+
+  AuthInfo info;
+  info.url.setProtocol( QString::fromLatin1("ftp") );
+  info.url.setHost( m_host );
+  info.url.setPort( m_port );
+  info.url.setUser( user );
+
+  QCString tempbuf;
+  int failedAuth = 0;
+
+  do
+  {
+    // Check the cache and/or prompt user for password if 1st
+    // login attempt failed OR the user supplied a login name,
+    // but no password.
+    if ( failedAuth > 0 || (!user.isEmpty() && pass.isEmpty()) )
+    {
+      QString errorMsg;
+      kdDebug(7102) << "Prompting user for login info..." << endl;
+
+      // Ask user if we should retry after when login fails!
+      if( failedAuth > 0 )
+      {
+        errorMsg = i18n("Message sent:\nLogin using username=%1 and "
+                        "password=[hidden]\n\nServer replied:\n%2\n\n"
+                        ).arg(user).arg(rspbuf);
+      }
+
+      if ( user != FTP_LOGIN )
+        info.username = user;
+
+      info.prompt = i18n("You need to supply a username and a password "
+                          "to access this site.");
+      info.commentLabel = i18n( "Site:" );
+      info.comment = i18n("<b>%1</b>").arg( m_host );
+      info.keepPassword = true; // Prompt the user for persistence as well.
+      info.readOnly = (!m_user.isEmpty() && m_user != FTP_LOGIN);
+
+      bool disablePassDlg = config()->readBoolEntry( "DisablePassDlg", false );
+      if ( disablePassDlg || !openPassDlg( info, errorMsg ) )
+      {
+        error( ERR_USER_CANCELED, m_host );
+        return false;
+      }
+      else
+      {
+        user = info.username;
+        pass = info.password;
+      }
+    }
+
+    tempbuf = "user ";
+    tempbuf += user.latin1();
+    if ( m_bUseProxy )
+    {
+      tempbuf += '@';
+      tempbuf += m_host.latin1();
+      if ( m_port > 0 && m_port != DEFAULT_FTP_PORT )
+      {
+        tempbuf += ':';
+        tempbuf += QString::number(m_port).latin1();
+      }
+    }
+
+    kdDebug(7102) << "Sending Login name: " << tempbuf << endl;
+
+    bool loggedIn = (ftpSendCmd( tempbuf ) && !strncmp( rspbuf, "230", 3));
+    bool needPass = !strncmp( rspbuf, "331", 3);
+
+    // Prompt user for login info if we do not
+    // get back a "230" or "331".
+    if ( !loggedIn && !needPass )
+    {
+      kdDebug(7102) << "Login failed: " << rspbuf << endl;
+      ++failedAuth;
+      continue;  // Well we failed, prompt the user please!!
+    }
+
+    if( needPass )
+    {
+      tempbuf = "pass ";
+      tempbuf += pass.latin1();
+      kdDebug(7102) << "Sending Login password: " << "[protected]" << endl;
+      loggedIn = (ftpSendCmd( tempbuf ) && !strncmp(rspbuf, "230", 3));
+    }
+
+    if ( loggedIn )
+    {
+      // Do not cache the default login!!
+      if( user != FTP_LOGIN && pass != FTP_PASSWD )
+        cacheAuthentication( info );
+      failedAuth = -1;
+    }
+
+  } while( ++failedAuth );
+
 
   kdDebug(7102) << "Login OK" << endl;
   infoMessage( i18n("Login OK") );
 
   // Okay, we're logged in. If this is IIS 4, switch dir listing style to Unix:
   // Thanks to jk@soegaard.net (Jens Kristian Søgaard) for this hint
-  if( ftpSendCmd( "syst", 0 ) && rspbuf[0] == '2' )
+  if( ftpSendCmd( "syst" ) && rspbuf[0] == '2' )
   {
     if( !strncmp( rspbuf, "215 Windows_NT version", 22 ) ) // should do for any version
     {
-      (void)ftpSendCmd( "site dirstyle", 0 );
+      (void)ftpSendCmd( "site dirstyle" );
       // Check if it was already in Unix style
       // Patch from Keith Refson <Keith.Refson@earth.ox.ac.uk>
       if( !strncmp( rspbuf, "200 MSDOS-like directory output is on", 37 ))
          //It was in Unix style already!
-         (void)ftpSendCmd( "site dirstyle", 0 );
+         (void)ftpSendCmd( "site dirstyle" );
 
     }
   }
   else
     kdWarning(7102) << "syst failed" << endl;
 
-
-  QString macro = metaData( "autoLoginMacro" );
-  if ( !macro.isEmpty() && config()->readBoolEntry("EnableAutoLoginMacro") )
-  {
-      QStringList list = QStringList::split('\n', macro);
-      if ( !list.isEmpty() )
-      {
-          QStringList::Iterator it = list.begin();
-          for( ; it != list.end() ; ++it )
-          {
-              if ( (*it).find("init") == 0 )
-              {
-                  list = QStringList::split( '\\', macro);
-                  it = list.begin();
-                  ++it;  // ignore the macro name
-                  for( ; it != list.end() ; ++it )
-                  {
-                      // TODO: Add support for arbitrary commands
-                      // besides simply changing directory!!
-                      if ( (*it).startsWith( "cwd" ) )
-                          ftpSendCmd( (*it).latin1(), 0 );
-                  }
-                  break;
-              }
-          }
-      }
-  }
+  if ( config()->readBoolEntry ("EnableAutoLoginMacro") )
+    ftpAutoLoginMacro ();
 
   // Get the current working directory
   kdDebug(7102) << "Searching for pwd" << endl;
-  if ( !ftpSendCmd( "pwd", 0 ) || rspbuf[0] != '2' )
+  if ( !ftpSendCmd( "pwd" ) || rspbuf[0] != '2' )
   {
     kdDebug(7102) << "Couldn't issue pwd command" << endl;
     error( ERR_COULD_NOT_LOGIN, i18n("Could not login to %1.").arg(m_host) ); // or anything better ?
@@ -592,6 +578,39 @@ bool Ftp::ftpLogin()
   return true;
 }
 
+void Ftp::ftpAutoLoginMacro ()
+{
+  QString macro = metaData( "autoLoginMacro" );
+
+  if ( !macro.isEmpty() )
+  {
+    QStringList list = QStringList::split('\n', macro);
+
+    if ( !list.isEmpty() )
+    {
+      for(QStringList::Iterator it = list.begin() ; it != list.end() ; ++it )
+      {
+        if ( (*it).find("init") == 0 )
+        {
+          list = QStringList::split( '\\', macro);
+          it = list.begin();
+          ++it;  // ignore the macro name
+
+          for( ; it != list.end() ; ++it )
+          {
+            // TODO: Add support for arbitrary commands
+            // besides simply changing directory!!
+            if ( (*it).startsWith( "cwd" ) )
+              ftpSendCmd( (*it).latin1() );
+          }
+
+          break;
+        }
+      }
+    }
+  }
+}
+
 
 /**
  * ftpSendCmd - send a command (@p cmd) and read response
@@ -609,67 +628,87 @@ bool Ftp::ftpSendCmd( const QCString& cmd, int maxretries )
   QCString buf = cmd;
   buf += "\r\n";
 
-  if ( cmd.left(4).lower() != "pass" ) // don't print out the password
-    kdDebug(7102) << "ftpSendCmd: " << cmd.data() << endl;
+  bool isPassCmd = (cmd.left(4).lower() == "pass");
 
+  // Don't print out the password...
+  if ( !isPassCmd )
+    kdDebug(7102) << "ftpSendCmd: " << cmd.data() << endl;
+  else
+    kdDebug(7102) << "ftpSendCmd: pass [protected]" << endl;
+
+  // First letter of the response character. By default it
+  // is set to null so if we fail to send the command the
+  // appropriate action will be taken.
+  char respCh = '\0';
+
+  // Send the message...
   int num = KSocks::self()->write(sControl, buf.data(), buf.length());
 
-  if (num < 1)  {
-    if (m_bLoggedOn)
-    {
-      error( ERR_CONNECTION_BROKEN, m_host );
-      return false;
-    }
+  // If we were able to successfully send the command, then we will
+  // attempt to read the response. Otherwise, take action to re-attempt
+  // the login based on the maximum number of retires specified...
+  if (num > 0)
+    respCh = readresp();
 
-    if( sControl != 0 )
-    {
-      free( nControl );
-      if (ksControl != NULL)
-        delete ksControl;
-      sControl = 0;
-    }
-
-    // If we have not yet logged in, re-establish connection and
-    // attempt to send the command again...
-    if (!connect(m_host, m_port) ||
-        KSocks::self()->write(sControl, buf.data(), buf.length()) < 1)
-      return false;
-  }
-
-  char rsp = readresp();
-  if (!rsp || ( rsp == '4' && rspbuf[1] == '2' && rspbuf[2] == '1' ))
+  // If respCh is NULL or the response is 421 (Timed-out), we try to re-send
+  // the command based on the value of maxretries.
+  if (respCh == '\0' || (respCh == '4' && rspbuf[1] == '2' && rspbuf[2] == '1'))
   {
-    // 421 is "421 No Transfer Timeout (300 seconds): closing control connection"
-    // But when logging it, it can be "421 Too many users - please try again later."!
-    // (This is why we only set maxretries for some operations)
-    if ( maxretries > 0 )
+    // Do not show the previous response!! Set rspbuf to NULL.
+    if (!respCh)
+      rspbuf[0] = respCh;
+
+    // We have not yet logged on...
+    if (!m_bLoggedOn)
     {
-      kdDebug(7102) << "got timeout. maxretries=" << maxretries << endl;
-      // It might mean a timeout occured, let's try logging in again
-      m_bLoggedOn = false;
-      kdDebug(7102) << "Couldn't read answer - perhaps timeout - trying logging in again" << endl;
-      openConnection();
-      if (!m_bLoggedOn)
+      // The command was sent from the ftpLogin function, i.e. we are actually
+      // attempting to login in. NOTE: If we already sent the username, we
+      // return false and let the user decide whether (s)he wants to start from
+      // the beggining...
+      if (maxretries > 0 && !isPassCmd)
       {
-        kdDebug(7102) << "Login failure, aborting" << endl;
-        error (ERR_COULD_NOT_LOGIN, m_host);
-        return false;
+        closeConnection ();
+        ftpOpenConnection ( false );
+        if (m_bFtpStarted)
+          ftpSendCmd ( cmd, maxretries - 1 );
       }
-      kdDebug(7102) << "Logged back in, reissuing command" << endl;
-      // On success, try the command again
-      return ftpSendCmd( cmd, maxretries - 1 );
-    }
-    else if (cmd != "quit")
-    {
-      // Do not send error message if we have not already logged on. This
-      // stops the error page from appearing when the login is incorrect
-      // and a retry dialog is displayed...
-      if (m_bLoggedOn)
-        error( ERR_SERVER_TIMEOUT, m_host );
 
       return false;
     }
+    else
+    {
+      if ( maxretries < 1 )
+        return false;
+      else
+      {
+        kdDebug(7102) << "Was not able to communicate with " << m_host << endl
+                      << "Attempting to re-establish connection." << endl;
+
+        closeConnection(); // Close the old connection...
+        ftpOpenConnection();  // Attempt to re-establish a new connection...
+
+        if (!m_bLoggedOn)
+        {
+          if (m_bFtpStarted)
+          {
+            kdDebug(7102) << "Login failure, aborting" << endl;
+            error (ERR_COULD_NOT_LOGIN, m_host);
+            closeConnection ();
+          }
+          return false;
+        }
+
+        kdDebug(7102) << "Logged back in, re-issuing command" << endl;
+
+        // If we were able to login, resend the command...
+        if (maxretries)
+          maxretries--;
+
+        return ftpSendCmd( cmd, maxretries );
+      }
+    }
   }
+
   return true;
 }
 
@@ -1013,7 +1052,7 @@ bool Ftp::ftpOpenCommand( const char *_command, const QString & _path, char _mod
   QCString buf = "type ";
   buf += _mode;
 
-  if ( !ftpSendCmd( buf, 0 ) || rspbuf[0] != '2' )
+  if ( !ftpSendCmd( buf ) || rspbuf[0] != '2' )
   {
     error( ERR_COULD_NOT_CONNECT, QString::null );
     return false;
@@ -1028,7 +1067,7 @@ bool Ftp::ftpOpenCommand( const char *_command, const QString & _path, char _mod
     // send rest command if offset > 0, this applies to retr and stor commands
     char buf[100];
     sprintf(buf, "rest %ld", _offset);
-    if ( !ftpSendCmd( buf, 0 ) )
+    if ( !ftpSendCmd( buf ) )
        return false;
     if ( rspbuf[0] != '3' ) {
       error( ERR_CANNOT_RESUME, _path ); // should never happen
@@ -1043,7 +1082,7 @@ bool Ftp::ftpOpenCommand( const char *_command, const QString & _path, char _mod
     tmp += _path.ascii();
   }
 
-  if ( !ftpSendCmd( tmp, 0 ) || rspbuf[0] != '1' ) {
+  if ( !ftpSendCmd( tmp ) || rspbuf[0] != '1' ) {
     if ( _offset > 0 && strcmp(_command, "retr") == 0 && rspbuf[0] == '4')
     {
       // Failed to resume
@@ -1155,14 +1194,28 @@ bool Ftp::ftpRename( const QString & src, const QString & dst, bool /* overwrite
   // TODO honor overwrite
   assert( m_bLoggedOn );
 
-  QCString cmd;
-  cmd = "RNFR ";
-  cmd += src.ascii();
-  if ( !ftpSendCmd( cmd ) || rspbuf[0] != '3')
-    return false;
-  cmd = "RNTO ";
-  cmd += dst.ascii();
-  return ftpSendCmd( cmd, 0 ) && rspbuf[0] == '2';
+  QCString filepath = src.ascii();
+  int pos = filepath.findRev("/");
+
+  QCString cwd_cmd = "CWD ";
+  cwd_cmd += filepath.left(pos+1);
+
+  QCString from_cmd = "RNFR ";
+  from_cmd += filepath.mid(pos+1);
+
+  QCString to_cmd = "RNTO ";
+  to_cmd += dst.ascii();
+
+  if ( !ftpSendCmd( cwd_cmd ) || rspbuf[0] != '2')
+      return false;
+
+  if ( !ftpSendCmd( from_cmd ) || rspbuf[0] != '3')
+      return false;
+
+  if ( !ftpSendCmd( to_cmd ) || rspbuf[0] != '2')
+      return false;
+
+  return true;
 }
 
 void Ftp::del( const KURL& url, bool isfile )
@@ -1194,7 +1247,7 @@ void Ftp::del( const KURL& url, bool isfile )
   QCString cmd = isfile ? "DELE " : "RMD ";
   cmd += path.ascii();
 
-  if ( !ftpSendCmd( cmd, isfile ? 1 : 0 ) || rspbuf[0] != '2' )
+  if ( !ftpSendCmd( cmd ) || rspbuf[0] != '2' )
     error( ERR_CANNOT_DELETE, path );
   else
     finished();
@@ -1478,7 +1531,7 @@ void Ftp::stat( const KURL &url)
   // Now cwd the parent dir, to prepare for listing
   tmp = "cwd ";
   tmp += parentDir.latin1();
-  if ( !ftpSendCmd( tmp, 0 ) )
+  if ( !ftpSendCmd( tmp ) )
     // error already emitted
     return;
 
@@ -2220,7 +2273,7 @@ void Ftp::put( const KURL& dest_url, int permissions, bool overwrite, bool resum
       {
         QCString cmd = "DELE ";
         cmd += dest.ascii();
-        (void) ftpSendCmd( cmd, 0 );
+        (void) ftpSendCmd( cmd );
       }
     }
     return;
@@ -2273,7 +2326,7 @@ bool Ftp::ftpSize( const QString & path, char mode )
 
   buf="SIZE ";
   buf+=path.ascii();
-  if ( !ftpSendCmd( buf, 0 ) || rspbuf[0] !='2' ) {
+  if ( !ftpSendCmd( buf ) || rspbuf[0] !='2' ) {
     m_size = UnknownSize;
     return false;
   }

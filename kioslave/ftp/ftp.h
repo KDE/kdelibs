@@ -103,6 +103,21 @@ private:
   // emit error on error (they are highlevel methods).
 
   /**
+   * Connect and login to the FTP server.
+   *
+   * If login is set to false, this function will not attempt
+   * to login to the server.
+   *
+   * @param login if true send login info to the FTP server.
+   */
+  void ftpOpenConnection ( bool login = true );
+
+  /**
+   * Executes any auto login macro's as specified in a .netrc file.
+   */
+  void ftpAutoLoginMacro ();
+
+  /**
    * Called by @ref openConnection. It opens the control connection to the ftp server.
    *
    * @return true on success.
@@ -241,7 +256,7 @@ private: // data members
   int sDatal;
 
   QString m_host;
-  int m_port;
+  unsigned short int m_port;
   QString m_user;
   QString m_pass;
   /**
