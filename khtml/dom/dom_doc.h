@@ -32,6 +32,8 @@
 
 #include <dom/dom_node.h>
 
+class KHTMLView;
+
 namespace DOM {
 
 class DOMString;
@@ -377,7 +379,10 @@ public:
     TreeWalker createTreeWalker(Node root, unsigned long whatToShow, NodeFilter filter,
                                 bool entityReferenceExpansion);
 
-
+    /**
+     * @return The KHTML view widget of this document.
+     */
+    KHTMLView *view() const;
 
     /**
      * @internal

@@ -263,6 +263,10 @@ TreeWalker Document::createTreeWalker(Node /*root*/, unsigned long /*whatToShow*
     return 0;
 }
 
+KHTMLView *Document::view() const
+{
+    return ((DocumentImpl*)impl)->view();
+}
 
 // ----------------------------------------------------------------------------
 
