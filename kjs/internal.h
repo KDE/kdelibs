@@ -57,7 +57,7 @@ namespace KJS {
 
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
-      
+
     static UndefinedImp *staticUndefined;
   };
 
@@ -271,7 +271,7 @@ namespace KJS {
     ExecutionStack();
     ExecutionStack *push();
     ExecutionStack *pop();
-    
+
     ProgramNode *progNode;
     Node *firstNode;
   private:
@@ -395,7 +395,6 @@ namespace KJS {
      a member function. Called by RelationNode for 'instanceof' operator. */
   KJSO hasInstance(const KJSO &F, const KJSO &V);
 
-// #define KJS_VERBOSE
 #ifndef NDEBUG
   void printInfo( const char *s, const KJSO &o, int lineno = -1 );
 #endif

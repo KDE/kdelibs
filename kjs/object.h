@@ -21,6 +21,9 @@
 #ifndef _KJS_OBJECT_H_
 #define _KJS_OBJECT_H_
 
+// Uncomment this to enable very verbose output from KJS
+#define KJS_VERBOSE
+
 #include <stdlib.h>
 
 #include "ustring.h"
