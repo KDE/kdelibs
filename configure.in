@@ -111,6 +111,10 @@ AC_CHECK_RANDOM
 AC_CHECK_S_ISSOCK
 AC_CHECK_KSIZE_T
 
+KDE_CHECK_MICO(2.2.3)
+KDE_CHECK_MINI_STL
+KDE_CHECK_PYTHON(1.5)
+
 if test -n "$qt_includes"; then
   QKEYCODE_H="$qt_includes/qkeycode.h"
 fi
@@ -126,6 +130,18 @@ AC_SUBST(x_libraries)
 AC_SUBST(topdir)
 AC_SUBST(LIBSOCKET)
 AC_SUBST(LIBCOMPAT)
+
+KOM_INCLUDES='-I$(top_srcdir)/corba/kom -I$(top_builddir)/corba/kom'
+AC_SUBST(KOM_INCLUDES)
+
+PARTSUI_INCLUDES='-I$(top_srcdir)/corba/partsui -I$(top_builddir)/corba/partsui'
+AC_SUBST(PARTSUI_INCLUDES)
+
+LIB_KOM='$(top_builddir)/corba/kom/libkom.la'
+AC_SUBST(LIB_KOM)
+
+idldir="\$(includedir)/idl"
+AC_SUBST(idldir)
 
 dnl CXXFLAGS="$CXXFLAGS -ansi -pedantic"
 KDE_CHECK_ANSI
@@ -158,6 +174,21 @@ AC_OUTPUT(Makefile \
 	kdeutils/Makefile \
 	kio/Makefile \
 	jscript/Makefile \
+	corba/Makefile \
+	corba/kom/Makefile \
+	corba/partsui/Makefile \
+	corba/parts/Makefile \
+	corba/python/Makefile \
+	corba/python/idl/Makefile \
+	corba/pykde/Makefile \
+	corba/kpython/Makefile \
+	corba/idl/Makefile \
+	corba/tutorials/Makefile \
+	corba/tutorials/composing/Makefile \
+	corba/tutorials/signals/Makefile \
+	corba/tutorials/events/Makefile \
+	corba/tutorials/embedding1/Makefile \
+	corba/tutorials/embedding2/Makefile \
 	kfmlib/Makefile \
 	mediatool/Makefile \
 	kspell/Makefile \

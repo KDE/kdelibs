@@ -101,7 +101,6 @@
 /* Define if you have an HP like STL implementation */
 #undef HAVE_HP_STL
 
-
 #ifndef HAVE_BOOL
 #define HAVE_BOOL
 typedef int bool;

@@ -19,7 +19,7 @@
 
 
 SUBDIRS = kdecore kdeui jscript kimgio kfmlib kfile \
-	mediatool kspell kab kdeutils kio khtml doc toolbar kdetest 
+	mediatool kspell kab kdeutils kio khtml corba doc toolbar kdetest 
 
 $(top_srcdir)/acinclude.m4: $(top_srcdir)/admin/acinclude.m4.in $(top_srcdir)/admin/libtool.m4.in
 	@cd $(top_srcdir) && cat admin/acinclude.m4.in admin/libtool.m4.in > acinclude.m4
