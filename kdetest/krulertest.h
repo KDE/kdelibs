@@ -4,7 +4,7 @@
 #define krulertest_h
 
 #include <kapp.h>
-#include <ktopwidget.h>
+#include <ktmainwindow.h>
 #include <qwidget.h>
 #include <qcheckbox.h>
 #include <qradiobutton.h>

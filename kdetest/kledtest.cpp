@@ -1,6 +1,6 @@
 
 #include <kapp.h>
-#include <ktopwidget.h>
+#include <ktmainwindow.h>
 #include <qwidget.h>
 #include <qtimer.h>
 #include <stdlib.h>

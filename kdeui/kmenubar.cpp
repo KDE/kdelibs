@@ -23,7 +23,7 @@
 #endif
 
 #include "qobjectlist.h"
-#include "ktopwidget.h"
+#include "ktmainwindow.h"
 #include "kmenubar.h"
 #include <qpainter.h>
 #include <qdrawutil.h>
@@ -48,6 +48,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.83  1999/07/25 18:29:56  kulow
+// unbreak --enable-final
+//
 // Revision 1.82  1999/07/25 11:53:47  kulow
 // taking out some headers from ktmainwindow.h, they just don't belong there
 //

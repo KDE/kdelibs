@@ -4,7 +4,7 @@
 #include <kmenubar.h>
 #include <qpopupmenu.h>
 #include <kstatusbar.h>
-#include <ktopwidget.h>
+#include <ktmainwindow.h>
 
 class QMultiLineEdit;
 

@@ -21,6 +21,9 @@
 
  // $Id$
  // $Log$
+ // Revision 1.47  1999/09/20 13:13:26  ettrich
+ // clean ups
+ //
  // Revision 1.46  1999/01/18 10:57:13  kulow
  // .moc files are back in kdelibs. Built fine here using automake 1.3
  //
@@ -85,8 +88,8 @@
 
 
 
-#include <ktopwidget.h>
-#include <ktopwidget.h>
+#include <ktmainwindow.h>
+#include <ktmainwindow.h>
 
 // a static pointer (too bad we cannot have static objects in libraries)
 //QList<KTopLevelWidget>* KTopLevelWidget::memberList = 0L;
