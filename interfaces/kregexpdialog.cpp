@@ -3,6 +3,7 @@
 #include <kregexpeditor.h>
 #include <klocale.h>
 #include <qlayout.h>
+#include <qpushbutton.h>
 
 KRegExpDialog::KRegExpDialog( QWidget* parent, const char* name, bool modal, const QString& caption )
   : KDialogBase( KDialogBase::Plain, caption == QString::null ? i18n("Regular Expression Editor") : caption,
@@ -60,4 +61,4 @@ void KRegExpDialog::slotHelp()
 }
 
 
-#include "kregexpdialog.moc.cpp"
+#include "kregexpdialog.moc"
