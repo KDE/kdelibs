@@ -19,6 +19,7 @@
 */
 
 #include <kapplication.h>
+#include <klocale.h>
 
 #include "phonenumber.h"
 
@@ -75,3 +76,55 @@ int PhoneNumber::type() const
 {
   return mType;
 }
+
+QString PhoneNumber::name() const
+{
+  switch (type())
+  {
+      case Home:
+         return i18n("Home");
+	     break;
+
+      case Work:
+         return i18n("Work");
+		 break;
+	   case	Msg:
+		 return i18n("Messanger");
+		 break;  
+	   case	Pref:
+		 return i18n("Preferred Number");
+		 break;
+	   case	Voice:
+		 return i18n("Voice");
+		 break;  
+	   case	Fax:
+		   return i18n("Fax");
+		 break;  
+	   case	Cell:
+		 return i18n("Cell Phone");
+		 break;  
+	   case	Video:
+		 return i18n("Video");
+		 break;
+	   case	Bbs:
+		 return i18n("Mailbox");
+		 break;
+	   case	Modem:
+		 return i18n("Modem");
+		 break;
+	   case	Car:
+		 return i18n("Car Phone");
+		 break;
+	   case	Isdn:
+		 return i18n("ISDN");
+		 break;
+	   case	Pcs:
+		 return i18n("PCS");
+		 break;
+	   case	Pager:
+		 return i18n("Pager");
+		 break;
+   }
+  // This really shouldn't happen
+  return i18n("Other");	   
+};

@@ -30,7 +30,7 @@ namespace KABC {
   
   This class provides phone number information. A phone number is classified by
   a type. The following types are available:
-
+  <pre>
   Home  Home number
   Work  Office number
   Msg   Messaging
@@ -45,6 +45,7 @@ namespace KABC {
   Isdn  ISDN connection
   Pcs   Personal Communication Service
   Pager Pager
+  </pre>
 */
 class PhoneNumber
 {
@@ -94,7 +95,12 @@ class PhoneNumber
       Return type.
     */
     int type() const;
-    
+
+    /**
+      Return string reprentation for @type
+    */
+    QString name() const;
+
   private:
     void init();
   
