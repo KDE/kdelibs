@@ -214,23 +214,23 @@ QString whatstr;
   grid->addWidget(yourSSLImport, 0, 1);
 
   yourSSLView = new QPushButton(i18n("&View/Edit..."), tabYourSSLCert);
-  //connect(yourSSLAdd, SIGNAL(), SLOT());
+  //connect(yourSSLView, SIGNAL(), SLOT());
   grid->addWidget(yourSSLView, 1, 1);
 
   yourSSLRemove = new QPushButton(i18n("&Remove..."), tabYourSSLCert);
-  //connect(yourSSLAdd, SIGNAL(), SLOT());
+  //connect(yourSSLRemove, SIGNAL(), SLOT());
   grid->addWidget(yourSSLRemove, 2, 1);
 
   yourSSLExport = new QPushButton(i18n("&Export..."), tabYourSSLCert);
-  //connect(yourSSLAdd, SIGNAL(), SLOT());
+  //connect(yourSSLExport, SIGNAL(), SLOT());
   grid->addWidget(yourSSLExport, 3, 1);
 
   yourSSLDefault = new QPushButton(i18n("&Set Default..."), tabYourSSLCert);
-  //connect(yourSSLAdd, SIGNAL(), SLOT());
+  //connect(yourSSLDefault, SIGNAL(), SLOT());
   grid->addWidget(yourSSLDefault, 4, 1);
 
   yourSSLVerify = new QPushButton(i18n("Verif&y..."), tabYourSSLCert);
-  //connect(yourSSLAdd, SIGNAL(), SLOT());
+  //connect(yourSSLVerify, SIGNAL(), SLOT());
   grid->addWidget(yourSSLVerify, 5, 1);
 
   QHButtonGroup *ocbg = new QHButtonGroup(i18n("On SSL Connection..."), tabYourSSLCert);
@@ -399,6 +399,7 @@ void KCryptoConfig::configChanged()
 
 void KCryptoConfig::load()
 {
+#ifdef HAVE_SSL
   config->setGroup("TLSv1");
   mUseTLS->setChecked(config->readBoolEntry("Enabled", false));
 
@@ -419,7 +420,6 @@ void KCryptoConfig::load()
   mWarnExpired->setChecked(config->readBoolEntry("WarnExpired", true));
   mWarnRevoked->setChecked(config->readBoolEntry("WarnRevoked", true));
 
-#ifdef HAVE_SSL
   config->setGroup("SSLv2");
   CipherItem *item = static_cast<CipherItem *>(SSLv2Box->firstChild());
   while ( item ) {
@@ -445,6 +445,7 @@ void KCryptoConfig::load()
 
 void KCryptoConfig::save()
 {
+#ifdef HAVE_SSL
   if (!mUseTLS->isChecked() &&
       !mUseSSLv2->isChecked() &&
       !mUseSSLv3->isChecked())
@@ -474,7 +475,6 @@ void KCryptoConfig::save()
   config->writeEntry("WarnExpired", mWarnExpired->isChecked());
   config->writeEntry("WarnRevoked", mWarnRevoked->isChecked());
 
-#ifdef HAVE_SSL
   int ciphercount = 0;
   config->setGroup("SSLv2");
   CipherItem *item = static_cast<CipherItem *>(SSLv2Box->firstChild());
