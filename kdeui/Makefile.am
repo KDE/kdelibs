@@ -42,7 +42,7 @@ include_HEADERS = kledlamp.h kprogress.h kcolordlg.h kselect.h \
 		klineeditdlg.h kurlcompletion.h kwidgetid.h kthemebase.h \
 		kthemestyle.h kcharselect.h kcolordrag.h \
 		qxembed.h knumvalidator.h kdialog.h dialogbase.h kaboutdialog.h \
-        kpixmapeffect.h kauthicon.h kmessagebox.h
+        kpixmapeffect.h kauthicon.h kmessagebox.h kdualcolorbtn.h
 
 # the order of the sources isn't randomly (at least not completly).
 # the order is predictated by the use of X11 header files
@@ -61,7 +61,7 @@ libkdeui_la_SOURCES = kthemestyle.cpp kurllabel.cpp knuminput.cpp  \
 		kurlcompletion.cpp kthemebase.cpp kcharselect.cpp \
 		kcolordrag.cpp qxembed.cpp knumvalidator.cpp kdialog.cpp \
 		dialogbase.cpp kaboutdialog.cpp kpixmapeffect.cpp \
-		kauthicon.cpp kmessagebox.cpp
+		kauthicon.cpp kmessagebox.cpp kdualcolorbtn.cpp
 
 libkdeui_la_METASOURCES = kbutton.moc kbuttonbox.moc kcolorbtn.moc \
 	kcolordlg.moc kcontainer.moc kcontrol.moc kdatepik.moc kdatetbl.moc \
@@ -72,7 +72,8 @@ libkdeui_la_METASOURCES = kbutton.moc kbuttonbox.moc kcolorbtn.moc \
 	ktopwidget.moc kurllabel.moc kwizard.moc kwmmapp.moc \
 	kaccelmenu.moc klineeditdlg.moc kurlcompletion.moc kthemebase.moc \
 	kthemestyle.moc kcharselect.moc kcolordrag.moc knuminput.moc \
-	qxembed.moc kdialog.moc dialogbase.moc kaboutdialog.moc kauthicon.moc
+	qxembed.moc kdialog.moc dialogbase.moc kaboutdialog.moc kauthicon.moc \
+	kdualcolorbtn.moc
 
 data_DATA = arrow_up.xbm arrow_down.xbm arrow_left.xbm arrow_right.xbm	
 datadir = $(kde_datadir)/kde/pics
