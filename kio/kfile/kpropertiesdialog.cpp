@@ -188,7 +188,7 @@ KPropertiesDialog::KPropertiesDialog (const KURL& _url, mode_t /* _mode is now u
   d = new KPropertiesDialogPrivate;
 
   KIO::UDSEntry entry;
-  
+
   KIO::NetAccess::stat(_url, entry, parent);
 
   m_items.append( new KFileItem( entry, _url ) );
@@ -208,7 +208,7 @@ KPropertiesDialog::KPropertiesDialog (const KURL& _url,
   d = new KPropertiesDialogPrivate;
 
   KIO::UDSEntry entry;
-  
+
   KIO::NetAccess::stat(_url, entry, parent);
 
   m_items.append( new KFileItem( entry, _url ) );
@@ -614,6 +614,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   QString filename = QString::null;
   bool isTrash = false;
   bool isIntoTrash = false;
+  bool isDevice = false;
   m_bFromTemplate = false;
 
   // And those only to 'multiple' mode
@@ -658,6 +659,8 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
           if ( tmp.startsWith(KGlobalSettings::trashPath()))
               isIntoTrash = true;
       }
+      if ( properties->kurl().protocol().find("device", 0, false)==0)
+            isDevice = true;
       // Extract the full name, but without file: for local files
       if ( isLocal )
         path = properties->kurl().path();
@@ -731,7 +734,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     directory += ')';
   }
 
-  if ( !isIntoTrash && (bDesktopFile || S_ISDIR(mode)) && !d->bMultiple /*not implemented for multiple*/ )
+  if ( !isDevice && !isIntoTrash && (bDesktopFile || S_ISDIR(mode)) && !d->bMultiple /*not implemented for multiple*/ )
   {
     KIconButton *iconButton = new KIconButton( d->m_frame );
     iconButton->setFixedSize(70, 70);
@@ -760,7 +763,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   }
   grid->addWidget(iconArea, curRow, 0, AlignLeft);
 
-  if (d->bMultiple || isTrash || isIntoTrash || filename == QString::fromLatin1("/"))
+  if (d->bMultiple || isTrash || isIntoTrash || isDevice || filename == QString::fromLatin1("/"))
   {
     QLabel *lab = new QLabel(d->m_frame );
     if ( d->bMultiple )
@@ -2395,7 +2398,7 @@ void KBindingPropsPlugin::applyChanges()
 
   config.writeEntry( QString::fromLatin1("Patterns"),  patternEdit->text() );
   config.writeEntry( QString::fromLatin1("Comment"), commentEdit->text() );
-  config.writeEntry( QString::fromLatin1("Comment"), 
+  config.writeEntry( QString::fromLatin1("Comment"),
 		     commentEdit->text(), true, false, true ); // for compat
   config.writeEntry( QString::fromLatin1("MimeType"), mimeEdit->text() );
   if ( cbAutoEmbed->state() == QButton::NoChange )
@@ -2684,7 +2687,7 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
        m_serviceTypes.append(*it);
     }
   }
-  
+
 }
 
 KDesktopPropsPlugin::~KDesktopPropsPlugin()
@@ -2711,9 +2714,9 @@ void KDesktopPropsPlugin::slotAddFiletype()
 
   dlg.setButtonOKText(i18n("&Add"), i18n("Add the selected file types to\nthe list of supported file types."),
                       i18n("Add the selected file types to\nthe list of supported file types."));
-                  
+
   KPropertiesMimetypeBase *mw = new KPropertiesMimetypeBase(&dlg);
-  
+
   dlg.setMainWidget(mw);
 
   {
@@ -2722,7 +2725,7 @@ void KDesktopPropsPlugin::slotAddFiletype()
      mw->listView->setAllColumnsShowFocus(true);
      mw->listView->setFullWidth(true);
      mw->listView->setMinimumSize(500,400);
-     
+
      connect(mw->listView, SIGNAL(selectionChanged()),
              this, SLOT(slotSelectMimetype()));
 
@@ -2768,7 +2771,7 @@ void KDesktopPropsPlugin::slotAddFiletype()
      while(majorItem)
      {
         QString major = majorItem->text(0);
-        
+
         QListViewItem *minorItem = majorItem->firstChild();
         while(minorItem)
         {
@@ -2790,7 +2793,7 @@ void KDesktopPropsPlugin::slotAddFiletype()
                     }
                     item = item->nextSibling();
                  }
-                 if (!found)     
+                 if (!found)
                     new QListViewItem(w->filetypeList, p->name(), p->comment());
               }
            }
@@ -2799,7 +2802,7 @@ void KDesktopPropsPlugin::slotAddFiletype()
 
         majorItem = majorItem->nextSibling();
      }
-     
+
   }
 }
 
@@ -2810,7 +2813,7 @@ void KDesktopPropsPlugin::slotDelFiletype()
 
 void KDesktopPropsPlugin::checkCommandChanged()
 {
-  if (KRun::binaryName(w->commandEdit->text(), true) != 
+  if (KRun::binaryName(w->commandEdit->text(), true) !=
       KRun::binaryName(m_origCommandStr, true))
   {
     QString m_origCommandStr = w->commandEdit->text();
@@ -2904,7 +2907,7 @@ void KDesktopPropsPlugin::slotAdvanced()
                   i18n("Advanced Options for %1").arg(properties->kurl().fileName()),
                   KDialogBase::Close, KDialogBase::Close);
   KPropertiesDesktopAdvBase *w = new KPropertiesDesktopAdvBase(&dlg);
-  
+
   dlg.setMainWidget(w);
 
   // If the command is changed we reset certain settings that are strongly
@@ -2914,7 +2917,7 @@ void KDesktopPropsPlugin::slotAdvanced()
   // check to see if we use konsole if not do not add the nocloseonexit
   // because we don't know how to do this on other terminal applications
   KConfigGroup confGroup( KGlobal::config(), QString::fromLatin1("General") );
-  QString preferredTerminal = confGroup.readEntry(QString::fromLatin1("TerminalApplication"), 
+  QString preferredTerminal = confGroup.readEntry(QString::fromLatin1("TerminalApplication"),
 						  QString::fromLatin1("konsole"));
 
   bool terminalCloseBool = false;
@@ -2982,7 +2985,7 @@ void KDesktopPropsPlugin::slotAdvanced()
            this, SIGNAL( changed() ) );
   connect( w->suidEdit, SIGNAL( textChanged( const QString & ) ),
            this, SIGNAL( changed() ) );
-  
+
   dlg.exec();
 
   m_terminalOptionStr = w->terminalEdit->text().stripWhiteSpace();
@@ -2990,12 +2993,12 @@ void KDesktopPropsPlugin::slotAdvanced()
   m_suidBool = w->suidCheck->isChecked();
   m_suidUserStr = w->suidEdit->text().stripWhiteSpace();
   m_startupBool = w->startupInfoCheck->isChecked();
-  
+
   if (w->terminalCloseCheck->isChecked())
   {
      m_terminalOptionStr.append(" --noclose");
   }
-  
+
   switch(w->dcopCombo->currentItem())
   {
     case 1:  m_dcopServiceType = "multi"; break;
@@ -3131,7 +3134,7 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
   // check to see if we use konsole if not do not add the nocloseonexit
   // because we don't know how to do this on other terminal applications
   KConfigGroup confGroup( KGlobal::config(), QString::fromLatin1("General") );
-  QString preferredTerminal = confGroup.readEntry(QString::fromLatin1("TerminalApplication"), 
+  QString preferredTerminal = confGroup.readEntry(QString::fromLatin1("TerminalApplication"),
 						  QString::fromLatin1("konsole"));
 
   int posOptions = 1;
