@@ -1,5 +1,4 @@
 debian/tmp/usr/bin/artsmessage
-debian/tmp/usr/bin/checkXML
 debian/tmp/usr/bin/cupsdconf
 debian/tmp/usr/bin/cupsdoprint
 debian/tmp/usr/bin/dcop
