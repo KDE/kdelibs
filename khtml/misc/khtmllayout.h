@@ -45,7 +45,8 @@ namespace khtml
     enum LengthType { Undefined = 0, Variable = 1, Relative, Percent, Fixed };
     struct Length
     {
-	Length() { value = 0; type = Variable; };
+	Length() { value = 0; type = Variable; }
+	Length(LengthType t) { value = 0; type = t; }
 	Length(int v, LengthType t)
 	    {
 		value = v;
@@ -59,7 +60,7 @@ namespace khtml
 	/*
 	 * works only for Fixed and Percent, returns -1 otherwise
 	 */
-	int width(int maxWidth)
+	int width(int maxWidth) const
 	    {
 		switch(type)
 		{
@@ -77,7 +78,7 @@ namespace khtml
 	/*
 	 * returns the minimum width value which could work...
 	 */
-	int minWidth(int maxWidth)
+	int minWidth(int maxWidth) const
 	    {
 		switch(type)
 		{
@@ -91,18 +92,13 @@ namespace khtml
 		    return 0;
 		}
 	    }
-	bool isUndefined() { return (type == Undefined); }
-	bool isRelative() { return (type == Relative); }
-	bool isPercent() { return (type == Percent); }
-	bool isFixed() { return (type == Fixed); }
+	bool isUndefined() const { return (type == Undefined); }
+	bool isRelative() const { return (type == Relative); }
+	bool isPercent() const { return (type == Percent); }
+	bool isFixed() const { return (type == Fixed); }
 	int value;
 	LengthType type;
     };
-
-    // Lists
-    enum ListType { Disc, Circle, Square,
-		    Num, LowRoman, UpRoman, LowAlpha, UpAlpha };
-
 
 };
 

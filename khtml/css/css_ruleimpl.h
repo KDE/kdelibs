@@ -27,6 +27,7 @@
 //#include <css_stylesheetimpl.h>
 #include <css_rule.h>
 #include "cssparser.h"
+#include "misc/loader.h"
 
 namespace DOM {
 
@@ -86,10 +87,10 @@ protected:
 };
 
 
-class CSSImportRuleImpl : public CSSRuleImpl
+class CSSImportRuleImpl : public khtml::CachedObjectClient, public CSSRuleImpl
 {
 public:
-    CSSImportRuleImpl(StyleBaseImpl *parent);
+    CSSImportRuleImpl(StyleBaseImpl *parent, const DOM::DOMString &href, MediaListImpl *media = 0);
 
     virtual ~CSSImportRuleImpl();
 
@@ -99,10 +100,16 @@ public:
 
     virtual bool isImportRule() { return true; }
 
+    // from CachedObjectClient
+    virtual void setStyleSheet(DOM::CSSStyleSheetImpl *);
+
+    bool isLoading() { return m_loading; }
 protected:
     DOMString m_strHref;
     MediaListImpl *m_lstMedia;
     CSSStyleSheetImpl *m_styleSheet;
+    khtml::CachedCSSStyleSheet *m_cachedSheet;
+    bool m_loading;
 };
 
 
@@ -160,6 +167,9 @@ public:
 
     void setSelector( QList<CSSSelector> *selector);
     void setDeclaration( CSSStyleDeclarationImpl *style);
+
+    QList<CSSSelector> *selector() { return m_selector; }
+    CSSStyleDeclarationImpl *declaration() { return m_style; }
 
 protected:
     CSSStyleDeclarationImpl *m_style;

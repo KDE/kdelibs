@@ -1,0 +1,450 @@
+/*
+ * This file is part of the DOM implementation for KDE.
+ *
+ * Copyright (C) 1997 Martin Jones (mjones@kde.org)
+ *           (C) 1997 Torben Weis (weis@kde.org)
+ *           (C) 1998 Waldo Bastian (bastian@kde.org)
+ *           (C) 1999 Lars Knoll (knoll@kde.org)
+ *           (C) 1999 Antti Koivisto (koivisto@kde.org)
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public License
+ * along with this library; see the file COPYING.LIB.  If not, write to
+ * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ *
+ * $Id$
+ */
+#ifndef RENDER_TABLE_H
+#define RENDER_TABLE_H
+
+#include <qcolor.h>
+#include <qvector.h>
+#include <qdatetime.h>
+
+#include "render_box.h"
+#include "render_flow.h"
+#include "render_style.h"
+#include "misc/khtmllayout.h"
+
+namespace DOM {
+    class DOMString;
+};
+
+namespace khtml {
+
+class RenderTable;
+class RenderTableSection;
+class RenderTableRow;
+class RenderTableCell;
+class RenderTableCol;
+class RenderTableCaption;
+
+class RenderTable : public RenderBox
+{
+public:
+    enum Rules {
+	None    = 0x00,
+	RGroups = 0x01,
+	CGroups = 0x02,
+	Groups  = 0x03,
+	Rows    = 0x05,
+	Cols    = 0x0a,
+	All     = 0x0f
+    };
+    enum Frame {
+	Void   = 0x00,
+	Above  = 0x01,
+	Below  = 0x02,
+	Lhs    = 0x04,
+	Rhs    = 0x08,
+	Hsides = 0x03,
+	Vsides = 0x0c,
+	Box    = 0x0f
+    };
+
+    RenderTable(RenderStyle *style);
+    ~RenderTable();
+
+    virtual const char *renderName() const { return "RenderTable"; }
+
+    virtual bool isInline() const { return false; }
+    virtual bool isRendered() const { return true; }
+
+    int getColumnPos(int col)
+	{ return columnPos[col]; }
+    int getColumnWidth(int col)
+	{ if(!actColWidth.size() < col) return 0; return actColWidth[col]; }
+	
+    int cellSpacing() { return spacing; }
+
+    Rules getRules() { return rules; }
+
+    QColor bgColor() { return style()->backgroundColor(); }
+
+
+    void startRow();
+    void addCell( RenderTableCell *cell );
+    void endTable();
+    void  addColInfo(RenderTableCell *cell);
+    void  addColInfo(RenderTableCol *colel);
+
+    void addColInfo(int _startCol, int _colSpan,
+		    int _minSize, int _maxSize, khtml::Length _width,
+		    RenderTableCell* _cell);
+
+    // overrides
+    virtual void addChild(RenderObject *child);
+    virtual void print( QPainter *, int x, int y, int w, int h,
+			int tx, int ty);
+    virtual void printBorders( QPainter *, int x, int y, int w, int h,
+			int tx, int ty);
+    virtual void layout(bool deep = false);
+    virtual void setAvailableWidth( int w = -1 );
+    virtual void calcMinMaxWidth();
+    virtual void close();
+
+    virtual void updateSize();
+    virtual void repaintRectangle(int x, int y, int w, int h);
+
+    int getBaseline(int row) {return rowBaselines[row];}
+
+    void setHtmlBorder(short w) {
+    	style()->setBorderWidth(w);
+    	_htmlBorder=w;
+    }
+    short htmlBorder() { return _htmlBorder; }
+
+
+public:
+    /*
+     * For each table element with a different width a ColInfo struct is
+     * maintained. Consider for example the following table:
+     * +---+---+---+
+     * | A | B | C |
+     * +---+---+---+
+     * |   D   | E |
+     * +-------+---+
+     *
+     * This table would result in 4 ColInfo structs being allocated.
+     * 1 for A, 1 for B, 1 for C & E, and 1 for D.
+     *
+     * Note that C and E share the same ColInfo.
+     *
+     * Note that D has a seperate ColInfo entry.
+     *
+     * There is always 1 default ColInfo entry which stretches across the
+     * entire table.
+     */
+    struct ColInfo
+    {
+    	ColInfo()
+	{
+	    min=0;
+	    max=0;
+    	    type=khtml::Undefined;
+	    value=0;
+	    minCell=0;
+	    maxCell=0;
+	}
+	void update();
+	
+    	int     span;
+	int     start;	
+	int     min;
+	int     max;
+	RenderTableCell* minCell;
+	RenderTableCell* maxCell;
+	khtml::LengthType 	type;
+	int 	value;
+	int 	percentage;
+    };
+
+protected:
+    // This function calculates the actual widths of the columns
+    void calcColWidth();
+
+    // calculates the height of each row
+    void calcRowHeights();
+
+    void setCells( unsigned int r, unsigned int c, RenderTableCell *cell );
+    void addRows( int num );
+    void addColumns( int num );
+    // ### need to provide some delete* methods too...
+
+    RenderTableCell ***cells;
+
+    class ColInfoLine : public QVector<ColInfo>
+    {
+    public:
+	ColInfoLine() : QVector<ColInfo>()
+	{ setAutoDelete(true); }
+	ColInfoLine(int i) : QVector<ColInfo>(i)
+	{ setAutoDelete(true); }
+	ColInfoLine(const QVector<ColInfo> &v) : QVector<ColInfo>(v)
+	{ setAutoDelete(true); }
+    };
+
+    QVector<ColInfoLine> colInfos;
+
+    void calcColMinMax();
+    void calcSingleColMinMax(int c, ColInfo* col);
+    void calcFinalColMax(int c, ColInfo* col);
+    void spreadSpanMinMax(int col, int span, int min, int max, khtml::LengthType type);
+    int distributeWidth(int distrib, khtml::LengthType type, int typeCols );
+    int distributeMinWidth(int distrib, khtml::LengthType distType,
+    	    khtml::LengthType toType, int start, int span, bool minlimit );
+    int distributeRest(int distrib, khtml::LengthType type, int divider );
+
+    int maxColSpan;
+
+    QArray<int> percentTotals;
+
+    QArray<int> columnPos;
+    QArray<int> colMaxWidth;
+    QArray<int> colMinWidth;
+    QArray<khtml::LengthType> colType;
+    QArray<int> colValue;
+    QArray<int> rowHeights;
+    QArray<int> rowBaselines;
+    QArray<int> actColWidth;
+
+    unsigned int totalColInfos;
+    unsigned int col;
+    unsigned int totalCols;
+    unsigned int row;
+    unsigned int totalRows;
+    unsigned int allocRows;
+
+    unsigned int totalPercent ;
+    unsigned int totalRelative ;
+
+    RenderTableCaption *tCaption;
+    RenderTableSection *head;
+    RenderTableSection *foot;
+    RenderTableSection *firstBody;
+
+    int spacing;
+
+    Frame frame;
+    Rules rules;
+
+    bool incremental;
+    bool collapseBorders;
+
+    short _htmlBorder;
+
+    RenderTableCol *_oldColElem;
+    int _currentCol; // keeps track of current col for col/colgroup stuff
+
+    QTime updateTimer;
+};
+
+// -------------------------------------------------------------------------
+
+class RenderTableSection : public RenderObject
+{
+public:
+    RenderTableSection(RenderStyle *style);
+    ~RenderTableSection();
+
+    virtual const char *renderName() const { return "RenderTableSection"; }
+
+    int numRows() { return nrows; }
+
+    // overrides
+    virtual void addChild(RenderObject *child);
+
+    // from BiDiObject, just define to be empty
+    virtual unsigned int width(int, int) const { return 0;}
+    virtual short baselineOffset() const { return 0; }
+    virtual int bidiHeight() const { return 0; }
+    virtual void position(int, int, int, int, int, bool) {}
+    virtual bool isInline() const { return false; }
+    virtual void layout(bool) {}
+
+    virtual void setTable(RenderTable *t) { table = t; }
+
+protected:
+    RenderTable *table;
+    int nrows;
+};
+
+// -------------------------------------------------------------------------
+
+class RenderTableRow : public RenderObject
+{
+public:
+    RenderTableRow(RenderStyle *style);
+    ~RenderTableRow();
+
+    virtual const char *renderName() const { return "RenderTableRow"; }
+
+    long rowIndex() const;
+    void setRowIndex( long );
+
+    long sectionRowIndex() const { return rIndex; }
+    void setSectionRowIndex( long i ) { rIndex = i; }
+
+    // overrides
+    virtual void addChild(RenderObject *child);
+
+    // from BiDiObject, just define to be empty
+    virtual unsigned int width(int, int) const { return 0;}
+    virtual short baselineOffset() const { return 0; }
+    virtual int bidiHeight() const { return 0; }
+    virtual void position(int, int, int, int, int, bool) {}
+    virtual bool isInline() const { return false; }
+    virtual void layout(bool) {}
+
+    virtual void setTable(RenderTable *t) { table = t; }
+
+protected:
+    RenderTable *table;
+
+    // relative to the current section!
+    int rIndex;
+    int ncols;
+};
+
+// -------------------------------------------------------------------------
+
+class RenderTableCell : public RenderFlow
+{
+public:
+    RenderTableCell(RenderStyle *style);
+    ~RenderTableCell();
+
+    virtual const char *renderName() const { return "RenderTableCell"; }
+
+    // ### FIX these two...
+    long cellIndex() const { return 0; }
+    void setCellIndex( long ) { }
+
+    long colSpan() const { return cSpan; }
+    void setColSpan( long c ) { cSpan = c; }
+
+    long rowSpan() const { return rSpan; }
+    void setRowSpan( long r ) { rSpan = r; }
+
+    int col() { return _col; }
+    void setCol(int col) { _col = col; }
+    int row() { return _row; }
+    void setRow(int r) { _row = r; }
+
+    khtml::LengthType colType();
+
+    // overrides
+    virtual void calcMinMaxWidth();
+    virtual void calcWidth();
+
+    void setRowHeight(int h) { rowHeight = h; }
+
+    void setRowImpl(RenderTableRow *r) { rowimpl = r; }
+    
+    void setCellTopExtra(int p) { _topExtra = p; }
+    void setCellBottomExtra(int p) { _bottomExtra = p; }    
+
+    // ### FIXME
+    //void setAscent(int asc) { m_ascent = asc; }
+    void setAvailableWidth(int w) { m_availableWidth = w; }
+    int availableWidth() { return m_availableWidth; }
+
+    virtual void setTable(RenderTable *t) { table = t; }
+
+    virtual void setContainingBlock();
+
+    virtual void printObject( QPainter */*p*/, int /*x*/, int /*y*/,
+			int /*w*/, int /*h*/, int /*tx*/, int /*ty*/);
+
+protected:
+    RenderTable *table;
+
+    int _row;
+    int _col;
+    int rSpan;
+    int cSpan;
+    bool nWrap;
+    int _id;
+    int rowHeight;
+    int m_availableWidth;
+    int _topExtra;
+    int _bottomExtra;
+    
+    virtual int cellTopExtra() { return _topExtra; }
+    virtual int cellBottomExtra() { return _bottomExtra; }
+    
+
+    RenderTableRow *rowimpl;
+};
+
+// -------------------------------------------------------------------------
+
+class RenderTableCol : public RenderObject
+{
+public:
+    RenderTableCol(RenderStyle *style);
+    ~RenderTableCol();
+
+    virtual const char *renderName() const { return "RenderTableCol"; }
+
+    void setStartCol( int c ) {_startCol = _currentCol = c; }
+    int col() { return _startCol; }
+    int lastCol() { return _currentCol; }
+
+    long span() const { return _span; }
+    void setSpan( long s ) { _span = s; }
+    khtml::Length width();
+
+    virtual void addChild(RenderObject *child);
+
+    // from BiDiObject, just define to be empty
+    virtual unsigned int width(int, int) const { return 0;}
+    virtual short baselineOffset() const { return 0; }
+    virtual int bidiHeight() const { return 0; }
+    virtual void position(int, int, int, int, int, bool) {}
+    virtual bool isInline() const { return false; }
+    virtual void layout(bool) {}
+
+    virtual void setTable(RenderTable *t) { table = t; }
+
+protected:
+    RenderTable *table;
+
+    // could be ID_COL or ID_COLGROUP ... The DOM is not quite clear on
+    // this, but since both elements work quite similar, we use one
+    // DOMElement for them...
+    ushort _id;
+    int _span;
+
+    int _currentCol;
+    int _startCol;
+};
+
+// -------------------------------------------------------------------------
+
+class RenderTableCaption : public RenderFlow
+{
+public:
+    RenderTableCaption(RenderStyle *style);
+    ~RenderTableCaption();
+
+    virtual const char *renderName() const { return "RenderTableCaption"; }
+
+    virtual void setTable(RenderTable *t) { table = t; }
+protected:
+    RenderTable *table;
+};
+
+};
+#endif
+

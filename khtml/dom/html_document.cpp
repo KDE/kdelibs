@@ -23,8 +23,6 @@
 // --------------------------------------------------------------------------
 #include "html_document.h"
 
-#include "khtmlio.h"
-
 #include "dom_node.h"
 #include "dom_element.h"
 #include "dom_doc.h"
@@ -45,10 +43,10 @@ HTMLDocument::HTMLDocument() : Document(false) // create the impl here
 
 }
 
-HTMLDocument::HTMLDocument(KHTMLWidget *parent, KHTMLCache *cache)
+HTMLDocument::HTMLDocument(KHTMLWidget *parent)
     : Document(false) // create the impl here
 {
-    impl = new HTMLDocumentImpl( parent, cache );
+    impl = new HTMLDocumentImpl( parent);
     impl->ref();
 
 }
@@ -67,7 +65,7 @@ HTMLDocument &HTMLDocument::operator = (const Node &other)
     {
 	impl = 0;
 	return *this;
-    }    
+    }
     Document d;
     d = other;
     if(!d.isHTMLDocument())

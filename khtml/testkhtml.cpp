@@ -10,33 +10,45 @@
 // just for memory debugging
 #define protected public
 #include "khtml.h"
+#include "khtml_part.h"
 #undef protected
 #include "qpushbutton.h"
 #include "khtmldata.h"
 #include "khtmlfont.h"
-#include "khtmlio.h"
+#include "testkhtml.h"
+#include "testkhtml.moc"
+#include "misc/loader.h"
 #include <qcursor.h>
 #include <qcolor.h>
+
 
 int main(int argc, char *argv[])
 {
     KApplication a(argc, argv, "testkhtml");
 
-    KHTMLWidget *doc = new KHTMLWidget(0, 0);
-    doc->resize(800,500);
+    //    KHTMLWidget *doc = new KHTMLWidget(0, 0);
+    KHTMLPart *doc = new KHTMLPart;
+    doc->widget()->resize(800,500);
     doc->enableJScript(true);
     doc->enableJava(true);
+    doc->setCharset("unicode");
+
     //doc->setFollowsLinks(false);
 
     //a.setTopWidget(doc);
-    doc->setURLCursor(QCursor(PointingHandCursor));
+    doc->htmlWidget()->setURLCursor(QCursor(PointingHandCursor));
     //doc->setDefaultTextColors(QColor(Qt::black), QColor(Qt::red),
     //			      QColor(Qt::green));
-    doc->openURL(argv[1]);
-    a.setTopWidget(doc);
-    QWidget::connect(doc, SIGNAL(setTitle(const QString &)),
-		     doc, SLOT(setCaption(const QString &)));
-    doc->show();
+    doc->openURL( KURL( argv[1] ) );
+    a.setTopWidget(doc->widget());
+    QWidget::connect(doc, SIGNAL(setWindowCaption(const QString &)),
+		     doc->widget(), SLOT(setCaption(const QString &)));
+    doc->widget()->show();
+    ((QScrollView *)doc->widget())->viewport()->show();
+
+    Dummy *dummy = new Dummy( doc );
+    QObject::connect( doc->browserExtension(), SIGNAL( openURLRequest( const KURL &, const KParts::URLArgs & ) ),
+             dummy, SLOT( slotOpenURL( const KURL&, const KParts::URLArgs & ) ) );
 
     QPushButton *p = new QPushButton(0, 0);
     QWidget::connect(p, SIGNAL(pressed()), &a, SLOT(quit()));
@@ -46,9 +58,9 @@ int main(int argc, char *argv[])
     delete p;
     delete doc;
 
-    delete pSettings;
-    delete pFontManager;
-    KHTMLCache::clear();
+    delete khtml::pSettings;
+    delete khtml::pFontManager;
+    khtml::Cache::clear();
     //if(KBrowser::lstViews) delete KBrowser::lstViews;
 }
 

@@ -79,16 +79,16 @@ protected:
     void addPending();
     void processToken();
 
-    void addListing(HTMLStringIt list);
+    void addListing(khtml::DOMStringIt list);
 
-    void parseComment(HTMLStringIt &str);
-    void parseText(HTMLStringIt &str);
-    void parseStyle(HTMLStringIt &str);
-    void parseScript(HTMLStringIt &str);
-    void parseListing(HTMLStringIt &str);
-    void parseTag(HTMLStringIt &str);
-    void parseEntity(HTMLStringIt &str, bool start = false);
-    void parseProcessingInstruction(HTMLStringIt &str);
+    void parseComment(khtml::DOMStringIt &str);
+    void parseText(khtml::DOMStringIt &str);
+    void parseStyle(khtml::DOMStringIt &str);
+    void parseScript(khtml::DOMStringIt &str);
+    void parseListing(khtml::DOMStringIt &str);
+    void parseTag(khtml::DOMStringIt &str);
+    void parseEntity(khtml::DOMStringIt &str, bool start = false);
+    void parseProcessingInstruction(khtml::DOMStringIt &str);
     
     // check if we have enough space in the buffer.
     // if not enlarge it
@@ -218,7 +218,7 @@ protected:
     uint entityPos;
 
     QString _src;
-    HTMLStringIt src;
+    khtml::DOMStringIt src;
 
     KCharsets *charsets;
     KHTMLParser *parser;

@@ -2,7 +2,7 @@
  * This file is part of the DOM implementation for KDE.
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
- *           (C) 1999 Antti Koivisto (koivisto@kde.org) 
+ *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -30,6 +30,10 @@
 #include "dom_exception.h"
 #include "dom_node.h"
 #include "dom_textimpl.h"
+#include "dom_docimpl.h"
+
+#include "css/cssstyleselector.h"
+#include "rendering/render_object.h"
 
 #include <stdio.h>
 
@@ -316,29 +320,24 @@ AttributeList *ElementImpl::defaultMap() const
     return 0;
 }
 
-#if 0
-QDataStream &DOM::operator<<( QDataStream &stream, const ElementImpl &e )
+void ElementImpl::attach(KHTMLWidget *w)
 {
-    int l = e.attributeMap.length();
-    stream << l;
-    for(int i = 0; i< l; i++)
+    m_style = document->styleSelector()->styleForElement(this);
+    khtml::RenderObject *r = _parent->renderer();
+    if(r)
     {
-	stream << e.attributeMap.id(i);
-	stream << e.attributeMap.value(i).string();
+	m_render = khtml::RenderObject::createObject(this);
+	if(m_render)
+	{
+	    r->addChild(m_render);
+	    m_render->ref();
+	}
     }
-}
 
-QDataStream &DOM::operator>>( QDataStream &stream, ElementImpl &e )
-{
-    int l;
-    stream >> l;
-    for(int i = 0; i< l; i++)
+    NodeImpl *child = _first;
+    while(child != 0)
     {
-	ushort id;
-	QString v;
-	stream >> id >> v;
-	printf("restoring attribute: %d=%s\n", id, v.ascii());
-	e.setAttribute(id, DOMString(v));
+	child->attach(w);
+	child = child->nextSibling();
     }
 }
-#endif

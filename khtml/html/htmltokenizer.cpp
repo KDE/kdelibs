@@ -37,12 +37,17 @@
 #include "htmltokenizer.h"
 #include "htmltoken.h"
 #include "khtml.h"
+#include "khtml_part.h"
 #include "dtd.h"
 #include "htmlhashes.h"
+#include <kcharsets.h>
+#include <kglobal.h>
 
 #include <stdio.h>
 
 #include "kjs.h"
+
+using namespace khtml;
 
 static const QChar commentStart [] = { '<','!','-','-' };
 static const QChar scriptEnd [] = { '<','/','s','c','r','i','p','t','>' };
@@ -106,13 +111,13 @@ void HTMLTokenizer::begin()
     charEntity = false;
 }
 
-void HTMLTokenizer::addListing(HTMLStringIt list)
+void HTMLTokenizer::addListing(DOMStringIt list)
 {
     bool old_pre = pre;
     // This function adds the listing 'list' as
     // preformatted text-tokens to the token-collection
     // thereby converting TABs.
-    pre = true;
+    if(!style) pre = true;
     prePos = 0;
 
     while ( list.length() )
@@ -183,14 +188,10 @@ void HTMLTokenizer::addListing(HTMLStringIt list)
     processToken();
     prePos = 0;
 
-    // Add </listing> tag
-    currToken->id = ID_LISTING + ID_CLOSE_TAG;
-    processToken();
-
     pre = old_pre;
 }
 
-void HTMLTokenizer::parseListing( HTMLStringIt &src)
+void HTMLTokenizer::parseListing( DOMStringIt &src)
 {
     // We are inside of the <script> or <style> tag. Look for the end tag
     // which is either </script> or </style>,
@@ -223,22 +224,22 @@ void HTMLTokenizer::parseListing( HTMLStringIt &src)
 	    {
 	        /* Parse scriptCode containing <script> info */
 		// ### use KHTMLWidget::executeScript...
-	      KJSProxy *jscript = view->jScript();
+	    	KJSProxy *jscript = view->part()->jScript();
 		//printf("scriptcode is: %s\n", QString(scriptCode, scriptCodeSize).ascii());
-	      if(jscript) jscript->evaluate(scriptCode, scriptCodeSize);
+	  	if(jscript) jscript->evaluate(scriptCode, scriptCodeSize);
 	    }
 	    else if (style)
 	    {
-	        /* Parse scriptCode containing <style> info */
-	        /* Not implemented */
+		// just add it. The style element will get a DOM::TextImpl passed, which it will
+		// convert into a StyleSheet.
+	        addListing(DOMStringIt(scriptCode, scriptCodeSize));
 	    }
 	    else
 	    {
 	        //
 	        // Add scriptcode to the buffer
-	        addListing(HTMLStringIt(scriptCode, scriptCodeSize));
+	        addListing(DOMStringIt(scriptCode, scriptCodeSize));
 	    }
-            script = style = listing = false;
 	    delete [] scriptCode;
 	    scriptCode = 0;
 	    processToken();
@@ -249,6 +250,7 @@ void HTMLTokenizer::parseListing( HTMLStringIt &src)
 	    else
 		currToken->id = ID_LISTING + ID_CLOSE_TAG;
 	    processToken();
+            script = style = listing = false;
 	    return; // Finished parsing script/style/listing	
         }
         // Find out wether we see a </script> tag without looking at
@@ -289,22 +291,19 @@ void HTMLTokenizer::parseListing( HTMLStringIt &src)
     }
 }
 
-void HTMLTokenizer::parseScript(HTMLStringIt &src)
+void HTMLTokenizer::parseScript(DOMStringIt &src)
 {
     parseListing(src);
 }
-void HTMLTokenizer::parseStyle(HTMLStringIt &src)
+void HTMLTokenizer::parseStyle(DOMStringIt &src)
 {
     parseListing(src);
 }
 
-void HTMLTokenizer::parseComment(HTMLStringIt &src)
+void HTMLTokenizer::parseComment(DOMStringIt &src)
 {
     while ( src.length() )
     {
-	// do we need to enlarge the buffer?
-	checkBuffer();
-
 	// Look for '-->'
 	if ( src[0] == '-' )
 	{
@@ -327,13 +326,10 @@ void HTMLTokenizer::parseComment(HTMLStringIt &src)
     }
 }
 
-void HTMLTokenizer::parseProcessingInstruction(HTMLStringIt &src)
+void HTMLTokenizer::parseProcessingInstruction(DOMStringIt &src)
 {
     while ( src.length() )
     {
-	// do we need to enlarge the buffer?
-	checkBuffer();
-
 	// Look for '?>'
 	if ( src[0] == '?' )
 	{
@@ -356,7 +352,7 @@ void HTMLTokenizer::parseProcessingInstruction(HTMLStringIt &src)
     }
 }
 
-void HTMLTokenizer::parseText(HTMLStringIt &src)
+void HTMLTokenizer::parseText(DOMStringIt &src)
 {
     while ( src.length() )
     {
@@ -392,7 +388,7 @@ void HTMLTokenizer::parseText(HTMLStringIt &src)
     }
 }
 
-void HTMLTokenizer::parseEntity(HTMLStringIt &src, bool start)
+void HTMLTokenizer::parseEntity(DOMStringIt &src, bool start)
 {
     if( start )
     {
@@ -477,7 +473,7 @@ void HTMLTokenizer::parseEntity(HTMLStringIt &src, bool start)
     }
 }
 
-void HTMLTokenizer::parseTag(HTMLStringIt &src)
+void HTMLTokenizer::parseTag(DOMStringIt &src)
 {
     if (charEntity)
         parseEntity(src);
@@ -1031,12 +1027,12 @@ void HTMLTokenizer::write( const QString &str )
 	newStr += QString(src.current(), src.length());
 
 	_src = newStr;
-	src = HTMLStringIt(_src);
+	src = DOMStringIt(_src);
 	return;
     }	
 
     _src = str;
-    src = HTMLStringIt(_src);
+    src = DOMStringIt(_src);
     if(!currToken) currToken = new Token;
 
     if (plaintext)
@@ -1281,10 +1277,8 @@ void HTMLTokenizer::processToken()
     printf("\n");
 #endif
 #endif
-    // pass the token over to the parser
+    // pass the token over to the parser, the parser deletes the token
     parser->parseToken(currToken);
-
-    delete currToken;
 
     currToken = new Token;
 }

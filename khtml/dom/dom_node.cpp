@@ -136,6 +136,22 @@ Node &Node::operator = (const Node &other)
     return *this;
 }
 
+bool Node::operator == (const Node &other)
+{
+    if(impl == other.impl)
+        return true;
+    else
+        return false;
+}
+
+bool Node::operator != (const Node &other)
+{
+    if(impl != other.impl)
+        return true;
+    else
+        return false;
+}
+
 Node::~Node()
 {
     if(impl) impl->deref();
@@ -253,6 +269,15 @@ unsigned short Node::elementId() const
 {
     if(!impl) return 0;
     return impl->id();
+}
+
+unsigned long Node::index() const
+{
+    Node _tempNode = previousSibling();
+    unsigned long count=0;
+    for( count=0; !_tempNode.isNull(); count++ )
+        _tempNode = _tempNode.previousSibling();
+    return count;
 }
 
 //-----------------------------------------------------------------------------

@@ -28,11 +28,11 @@
 #include "khtmllayout.h"
 
 class QPainter;
-class CSSStyle;
 class KHTMLWidget;
 
 namespace khtml {
-  class Font;
+    class RenderStyle;
+    class RenderObject;
 };
 
 namespace DOM {
@@ -41,6 +41,7 @@ class DOMString;
 class NamedNodeMapImpl;
 class NodeListImpl;
 class DocumentImpl;
+class CSSStyleDeclarationImpl;
 
 // Skeleton of a node. No children and no parents are allowed.
 // We use this class as a basic Node Implementatin, and derive all other
@@ -111,101 +112,7 @@ public:
     // appendChild(), and returns the node into which will be parsed next.
     virtual NodeImpl *addChild(NodeImpl *newChild);
 
-    // some helper functions...
-    virtual bool isInline() { return true; }
-    virtual bool isFloating() { return false; }
-    virtual bool isRendered() { return false; }
-    virtual bool childrenRendered() { return true; }
     virtual unsigned short id() const { return 0; };
-
-    /*
-     * Here come all layouting etc... functions
-     */
-
-    /**
-     * Print the object and it's children, but only if it fits in the
-     * rectangle given by x,y,w,h. (tx|ty) is parents position.
-     */
-    virtual void print( QPainter *p, int x, int y,
-			int w, int h, int tx, int ty)
-	{ printObject(p, x, y, w, h, tx, ty); }
-
-    /**
-     * Print the object, but only if it fits in the
-     * rectangle given by x,y,w,h. tx/ty specifies the objects's position
-     */
-    virtual void printObject( QPainter */*p*/, int /*x*/, int /*y*/,
-			      int /*w*/, int /*h*/, int /*tx*/, int /*ty*/)
-	{ }
-
-    /**
-     * This function calculates the minimum & maximum width that the object
-     * can be set to.
-     * ### assumes calcMinMaxWidth has already been called for all children.
-     */
-    virtual void calcMinMaxWidth() { }
-
-    /**
-     * This function should cause the Element to calculate its
-     * width and height and the layout of it's content
-     */
-    virtual void layout(bool /*deep*/ = false) {};
-
-    /**
-     * this function get's called, if a child changed it's geometry
-     * (because an image got loaded or some changes in the DOM...)
-     */
-    virtual void updateSize() {}
-
-    /**
-     * this function get's called, if a child changed it's height
-     * (because an image got loaded or some changes in the DOM...)
-     */
-    virtual void updateHeight() {}
-
-    /**
-     * This function gets called, when the parser leaves the element
-     */
-    virtual void close() { setParsing(false); }
-
-    virtual void setMaxAscent( int ) { }
-    virtual void setMaxDescent( int ) { }
-    virtual void setAvailableWidth( int = -1 ) { }
-
-    virtual void setPos( int /*xPos*/, int /*yPos*/ ) { }
-    virtual void setXPos( int /*xPos*/ ) { }
-    virtual void setYPos( int /*yPos*/ ) { }
-    virtual void setWidth(int) { }
-    virtual void setAscent(int) { }
-    virtual void setDescent(int) { }
-
-    /**
-     * Get X-Position of this object relative to its parent
-     */
-    virtual int getXPos() const { return 0; }
-
-    /**
-     * Get Y-Position of this object relative to its parent
-     */
-    virtual int getYPos() const { return 0; }
-
-    virtual void getAbsolutePosition(int &/*xPos*/, int &/*yPos*/) {};
-
-    virtual int getWidth() const { return 0; }
-    virtual int getHeight() const { return 0; }
-    virtual int getAscent() const { return 0; }
-    virtual int getDescent() const { return 0; }
-
-    virtual short getMinWidth() const { return 0; }
-    virtual short getMaxWidth() const { return 0; }
-
-    virtual khtml::VAlign vAlign() { return khtml::VNone; }
-    virtual khtml::HAlign hAlign() { return khtml::HNone; }
-
-    virtual int vSpace() { return 0; }
-    virtual int hSpace() { return 0; }
-
-    virtual const khtml::Font *getFont() { return 0; }
 
     enum MouseEventType {
 	MousePress,
@@ -226,11 +133,16 @@ public:
      */
     virtual bool mouseEvent( int /*x*/, int /*y*/, int /*button*/,
 			     MouseEventType /*type*/, int /*_tx*/, int /*_ty*/,
-			     DOMString &/*url*/) { return false; }
+			     DOMString &/*url*/,
+                             NodeImpl *&/*innerNode*/, long &/*offset*/) { return false; }
 
-    // ### remove me!!!
-    virtual void setStyle(CSSStyle *) { }
-    virtual CSSStyle *style() { return 0; }
+    virtual void setStyle(khtml::RenderStyle *style) { m_style = style; }
+    virtual khtml::RenderStyle *style() { return m_style; }
+
+    virtual void setRenderer(khtml::RenderObject *object) { m_render = object; }
+    virtual khtml::RenderObject *renderer() { return m_render; }
+
+    virtual DOM::CSSStyleDeclarationImpl *styleRules() { return 0; }
 
     enum SpecialFlags {
 	Layouted    = 0x0001,
@@ -289,9 +201,13 @@ public:
      */
     virtual void detach() {}
 
+    bool isInline();
+
 protected:
     DocumentImpl *document;
     unsigned short flags;
+    khtml::RenderStyle *m_style;
+    khtml::RenderObject *m_render;
 };
 
 // this class implements nodes, which can have a parent but no children:

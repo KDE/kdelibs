@@ -25,6 +25,7 @@
 #define HTML_OBJECTIMPL_H
 
 #include "html_elementimpl.h"
+#include "misc/khtmllayout.h"
 
 class KHTMLWidget;
 class KJavaAppletWidget;
@@ -36,7 +37,7 @@ namespace DOM {
 
 class HTMLFormElementImpl;
 
-class HTMLAppletElementImpl : public HTMLPositionedElementImpl
+class HTMLAppletElementImpl : public HTMLElementImpl
 {
 public:
     HTMLAppletElementImpl(DocumentImpl *doc);
@@ -50,25 +51,20 @@ public:
     virtual tagStatus endTag() { return APPLETEndTag; }
 
     virtual void parseAttribute(Attribute *token);
-    virtual void layout(bool);
 
     virtual void attach(KHTMLWidget *w);
     virtual void detach();
 
-    virtual void setXPos( int xPos );
-    virtual void setYPos( int yPos );
+    virtual khtml::VAlign vAlign() { return valign; }
 
-    virtual bool isRendered() { return true; }
-    virtual bool childrenRendered();
-
- protected:
-    DOMStringImpl *codeBase;
+protected:
+    DOMStringImpl *base;
     DOMStringImpl *name;
     DOMStringImpl *code;
-    DOMStringImpl *archive;
 
     KJavaAppletWidget *applet;
     KHTMLWidget *view;
+    khtml::VAlign valign;
 };
 
 // -------------------------------------------------------------------------

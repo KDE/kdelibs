@@ -38,12 +38,11 @@ namespace DOM
 
 class DOMString;
 
-class HTMLUListElementImpl : public HTMLBlockElementImpl
+class HTMLUListElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLUListElementImpl(DocumentImpl *doc);
-
-    ~HTMLUListElementImpl();
+    HTMLUListElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc) {}
+    virtual ~HTMLUListElementImpl() {}
 
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
@@ -52,32 +51,15 @@ public:
     virtual tagStatus endTag() { return ULEndTag; }
 
     virtual void parseAttribute(Attribute *);
-    virtual void layout(bool deep = false);
-    virtual void print(QPainter *p, int x, int y, int w, int h, 
-		       int xoff, int yoff);
-    virtual void printObject(QPainter *p, int x, int y, int w, int h, 
-		       int xoff, int yoff);
-
-    virtual NodeImpl *addChild(NodeImpl *newChild);
-    virtual void setAvailableWidth(int w = -1);
-
-    ListType type() { return _type; }
-    void setType(ListType t) { _type = t; }
-    
-    virtual void calcMinMaxWidth();
-    
-protected:
-    ListType _type;
 };
 
 // -------------------------------------------------------------------------
 
-class HTMLDirectoryElementImpl : public HTMLUListElementImpl
+class HTMLDirectoryElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLDirectoryElementImpl(DocumentImpl *doc);
-
-    ~HTMLDirectoryElementImpl();
+    HTMLDirectoryElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc) {}
+    virtual ~HTMLDirectoryElementImpl() {}
 
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
@@ -88,12 +70,11 @@ public:
 
 // -------------------------------------------------------------------------
 
-class HTMLMenuElementImpl : public HTMLUListElementImpl
+class HTMLMenuElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLMenuElementImpl(DocumentImpl *doc);
-
-    ~HTMLMenuElementImpl();
+    HTMLMenuElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc) {}
+    virtual ~HTMLMenuElementImpl() {}
 
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
@@ -107,9 +88,8 @@ public:
 class HTMLOListElementImpl : public HTMLUListElementImpl
 {
 public:
-    HTMLOListElementImpl(DocumentImpl *doc);
-
-    ~HTMLOListElementImpl();
+    HTMLOListElementImpl(DocumentImpl *doc) : HTMLUListElementImpl(doc) {}
+    virtual ~HTMLOListElementImpl() {}
 
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
@@ -121,18 +101,15 @@ public:
     void setStart( long );
 
     virtual void parseAttribute(Attribute *);
-    virtual void layout(bool deep = false);
-    virtual void calcMinMaxWidth();    
 };
 
 // -------------------------------------------------------------------------
 
-class HTMLLIElementImpl : public HTMLBlockElementImpl
+class HTMLLIElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLLIElementImpl(DocumentImpl *doc);
-
-    ~HTMLLIElementImpl();
+    HTMLLIElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc) {}
+    virtual ~HTMLLIElementImpl() {}
 
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
@@ -140,40 +117,23 @@ public:
     virtual tagStatus startTag() { return LIStartTag; }
     virtual tagStatus endTag() { return LIEndTag; }
 
-    long value() const { return val; }
-    void setValue( long v ) { predefVal = v; }
-    int calcListValue( long v );
-    void setType(ListType _t) { t = _t; }
-
-    virtual void print(QPainter *p, int x, int y, int w, int h, 
-		       int xoff, int yoff);
-    virtual void printObject(QPainter *p, int x, int y, int w, int h, 
-		       int xoff, int yoff);
-    void printIcon(QPainter *p, int _tx, int _ty);
-
-protected:
-    long int predefVal;
-    long int val;
-    ListType t;
+    long value() const;
+    void setValue( long v );
 };
 
 // -------------------------------------------------------------------------
 
-class HTMLDListElementImpl : public HTMLBlockElementImpl
+class HTMLDListElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLDListElementImpl(DocumentImpl *doc);
-
-    ~HTMLDListElementImpl();
+    HTMLDListElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc) {}
+    virtual ~HTMLDListElementImpl() {}
 
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
     virtual tagStatus startTag() { return DLStartTag; }
     virtual tagStatus endTag() { return DLEndTag; }
-
-    virtual void layout(bool deep = false);
-    virtual void calcMinMaxWidth();    
 };
 
 }; //namespace

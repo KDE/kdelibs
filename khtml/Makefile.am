@@ -32,25 +32,31 @@ KDE_CXXFLAGS = $(USE_EXCEPTIONS)
 # gprof -l -y
 # AM_CXXFLAGS += -pg
 
-SUBDIRS = misc dom css xml html java kjs . ecma
+SUBDIRS = misc dom css xml html rendering java kjs
 
 lib_LTLIBRARIES = libkhtml.la
-libkhtml_la_SOURCES = khtml.cpp       khtmlstyle.cpp  khtmltext.cpp 
+libkhtml_la_SOURCES = khtml.cpp khtml_part.cpp khtml_run.cpp khtml_factory.cpp
 
 libkhtml_la_METASOURCES = AUTO
 
-include_HEADERS = khtml.h 
+include_HEADERS = khtml.h khtml_part.h
 
-noinst_HEADERS = \
-	design.h       khtmlstyle.h   khtmltext.h
+noinst_HEADERS = design.h testkhtml.h
 
-libkhtml_la_LDFLAGS = -version-info 3:0
-libkhtml_la_LIBADD = ./misc/libkhtmlmisc.la ./dom/libkhtmldom.la ./css/libkhtmlcss.la ./xml/libkhtmlxml.la ./html/libkhtmlhtml.la ./java/libkjava.la ../kimgio/libkimgio.la ../kio/libkio.la
+libkhtml_la_LDFLAGS = -version-info 3:0 -module
+libkhtml_la_LIBADD = ./misc/libkhtmlmisc.la ./dom/libkhtmldom.la ./css/libkhtmlcss.la ./xml/libkhtmlxml.la ./html/libkhtmlhtml.la ./rendering/libkhtmlrender.la ./java/libkjava.la ../kimgio/libkimgio.la ../kio/libkio.la $(top_builddir)/kparts/libkparts.la $(top_builddir)/kfile/libkfile.la
 
 INCLUDES = -I$(srcdir)/kjs -I$(top_srcdir)/kimgio -I$(top_srcdir)/kio \
-	-I$(srcdir)/java -I$(top_srcdir)/dcop  -I$(srcdir)/misc \
+	-I$(srcdir)/java -I$(top_srcdir)/dcop -I$(srcdir)/misc \
 	-I$(srcdir)/dom -I$(srcdir)/xml -I$(srcdir)/html -I$(srcdir)/css \
-        -I$(top_srcdir)/libltdl  -I$(top_srcdir) $(all_includes)
+	-I$(top_srcdir)/kfile -I$(top_srcdir)/libltdl \
+	-I$(top_srcdir) $(all_includes)
+
+servicedir = $(kde_servicesdir)
+service_DATA = khtml.desktop
+
+rcdir = $(kde_datadir)/khtml
+rc_DATA = khtml.rc
 
 SRCDOC_DEST=$(kde_htmldir)/en/kdelibs/khtml
 
@@ -77,8 +83,7 @@ check_PROGRAMS 	= testkhtml testcss
 #testkhtml_SOURCES = testkhtml.cpp $(libkhtml_la_SOURCES)
 #testkhtml_LDADD = -ldmalloc $(LIB_KDEUI) $(libkhtml_la_LIBADD)
 testkhtml_SOURCES = testkhtml.cpp
-testkhtml_LDADD = $(LIB_KHTML) $(LIB_QT)
 testkhtml_LDADD = $(LIB_KHTML)
 testcss_SOURCES = testcss.cpp
-testcss_LDADD = $(LIB_KDEUI) $(LIB_KHTML) $(libkhtml_la_LIBADD)
+testcss_LDADD = $(LIB_KHTML)
 

@@ -1,4 +1,4 @@
-/**
+/*
  * This file is part of the DOM implementation for KDE.
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
@@ -27,15 +27,20 @@
 // -------------------------------------------------------------------------
 #include "dtd.h"
 #include "html_elementimpl.h"
-#include "khtmlio.h"
 #include "khtml.h"
 
 class KHTMLWidget;
 class QWidget;
 class QMultiLineEdit;
-#include <qobject.h>
 #include <qpixmap.h>
 #include <qlist.h>
+
+namespace khtml
+{
+    class RenderFormElement;
+    class RenderTextArea;
+    class RenderSelect;
+}
 
 namespace DOM {
 
@@ -43,16 +48,14 @@ class HTMLFormElement;
 class DOMString;
 class HTMLGenericFormElementImpl;
 
-class HTMLFormElementImpl : public QObject, public HTMLBlockElementImpl
+class HTMLFormElementImpl : public HTMLElementImpl
 {
-    Q_OBJECT
-
 public:
     HTMLFormElementImpl(DocumentImpl *doc);
     virtual ~HTMLFormElementImpl();
 
-    virtual const DOMString nodeName() const;
-    virtual ushort id() const;
+    virtual const DOMString nodeName() const { return "FORM"; }
+    virtual ushort id() const { return ID_FORM; }
 
     virtual tagStatus startTag() { return FORMStartTag; }
     virtual tagStatus endTag() { return FORMEndTag; }
@@ -60,36 +63,29 @@ public:
     long length() const;
     void submit (  );
     void reset (  );
-    
-    virtual HAlign hAlign() { return _parent->hAlign(); }
 
     virtual void parseAttribute(Attribute *attr);
 
     virtual void attach(KHTMLWidget *w);
     virtual void detach();
 
-    void radioClicked( NodeImpl *caller, DOMString ident );
+    void radioClicked( khtml::RenderFormElement *caller );
+    void maybeSubmit();
 
-    void registerFormElement(HTMLGenericFormElementImpl *);
-    void removeFormElement(HTMLGenericFormElementImpl *);
-
-public slots:
-    void slotSubmit();
-    void slotReset();
+    void registerFormElement(khtml::RenderFormElement *);
+    void removeFormElement(khtml::RenderFormElement *);
 
 protected:
     DOMString url;
     DOMString target;
     bool post;
     KHTMLWidget *view;
-    QList<HTMLGenericFormElementImpl> formElements;
+    QList<khtml::RenderFormElement> formElements;
 };
 
 // -------------------------------------------------------------------------
 
-// we need to inherit from HTMLBlockElement, since fieldset is a block element,
-// and button can have block level contents   
-class HTMLGenericFormElementImpl : public HTMLBlockElementImpl
+class HTMLGenericFormElementImpl : public HTMLElementImpl
 {
     friend class HTMLFormElementImpl;
 
@@ -100,57 +96,29 @@ public:
 
     HTMLFormElementImpl *form() { return _form; }
 
-    virtual bool isRendered() { return true; }
-
-    // overriding all functions defined in HTMLBlockElement to the Psoitioned Element ones.
-    virtual bool isInline() { return true; }
-    //virtual void printObject( QPainter *, int x, int y, int w, int h,
-    //			int tx, int ty);
-    virtual void layout( bool deep = false ) { HTMLPositionedElementImpl::layout(deep); }
-    virtual NodeImpl *addChild(NodeImpl *newChild) { return HTMLPositionedElementImpl::addChild(newChild); }
-
-    /*
-     * override in derived classes to get the encoded name=value pair
-     * for submitting
-     */
-    virtual QString encoding()
-	{ return QString(); }
+    virtual NodeImpl *addChild(NodeImpl *newChild) { return HTMLElementImpl::addChild(newChild); }
 
     virtual void parseAttribute(Attribute *attr);
-
-    virtual void setPos( int xPos, int yPos );
-    virtual void setXPos( int xPos );
-    virtual void setYPos( int yPos );
-
-    virtual void print(QPainter *, int, int, int, int, int, int);
 
     virtual void attach(KHTMLWidget *w);
     virtual void detach();
 
-    virtual short getMinWidth() const;
-    virtual short getMaxWidth() const;
-
     virtual void reset() {}
-    bool disabled() const { return _disabled; }
+    bool disabled() const { return m_disabled; }
 
 protected:
     HTMLFormElementImpl *getForm() const;
-    QString encodeString( QString e );
-    QString decodeString( QString e );
 
     DOMString _name;
     HTMLFormElementImpl *_form;
     KHTMLWidget *view;
-    QWidget *w;
-    bool badPos;
-    bool _disabled;
+    bool m_disabled, m_readonly;
 };
 
 // -------------------------------------------------------------------------
 
-class HTMLButtonElementImpl : public QObject, public HTMLGenericFormElementImpl
+class HTMLButtonElementImpl : public HTMLGenericFormElementImpl
 {
-    Q_OBJECT
 public:
     HTMLButtonElementImpl(DocumentImpl *doc);
     HTMLButtonElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f);
@@ -162,8 +130,6 @@ public:
 	RESET,
 	BUTTON
     };
-    virtual bool isInline() { return true; }
-    virtual bool childrenRendered() { return false; }
 
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
@@ -179,17 +145,8 @@ public:
     void parseAttribute(Attribute *attr);
 
     virtual void attach(KHTMLWidget *w);
-    virtual void layout( bool deep = false );
 
-    virtual QString encoding();
-    virtual void calcMinMaxWidth();
-
-    virtual void reset();
-    virtual void print(QPainter *, int, int, int, int, int, int);
-    virtual NodeImpl *addChild(NodeImpl *newChild) { return HTMLBlockElementImpl::addChild(newChild); }
-
-public slots:
-    void slotSubmit();
+    virtual NodeImpl *addChild(NodeImpl *newChild) { return HTMLElementImpl::addChild(newChild); }
 
 protected:
     DOMString _value;
@@ -219,13 +176,8 @@ public:
 
 // -------------------------------------------------------------------------
 
-class HTMLInputElementImpl : public QObject,
-			     public HTMLGenericFormElementImpl,
-			     public HTMLImageRequester
+class HTMLInputElementImpl : public HTMLGenericFormElementImpl
 {
-    Q_OBJECT
-
-    friend class HTMLFormElementImpl;
 public:
     enum typeEnum {
 	TEXT,
@@ -250,8 +202,8 @@ public:
     virtual tagStatus startTag() { return INPUTStartTag; }
     virtual tagStatus endTag() { return INPUTEndTag; }
 
-    bool checked() const { return _checked; }
-    void setChecked(bool b);
+    bool checked() const { return m_checked; }
+    void setChecked(bool b) { m_checked = b; }
 
     long maxLength() const { return _maxLen; }
     void setMaxLength( long );
@@ -271,32 +223,14 @@ public:
     virtual void attach(KHTMLWidget *w);
     virtual void detach();
 
-    virtual void layout( bool deep = false );
-
-    virtual void setPixmap( QPixmap *p );
-    virtual void pixmapChanged( QPixmap *p );
-
-    virtual QString encoding();
-    virtual void calcMinMaxWidth();
-
-    virtual void reset();
-
-public slots:
-    void slotTextChanged( const QString & );
-    void slotReturnPressed();
-    void slotSubmit();
-    void slotClicked();
-    // ### add all clicked/pressed/etc... signals for HTML events...
-
 protected:
     typeEnum _type;
     DOMString _value;
     QString currValue;
-    bool _checked;
+    bool m_checked;
     int _maxLen;
     int _size;
     DOMString _src;
-    QPixmap *_pixmap;
     bool _clicked;
 };
 
@@ -332,6 +266,7 @@ public:
     virtual tagStatus endTag() { return LEGENDEndTag; }
 };
 
+
 // -------------------------------------------------------------------------
 
 class HTMLSelectElementImpl : public HTMLGenericFormElementImpl
@@ -339,10 +274,9 @@ class HTMLSelectElementImpl : public HTMLGenericFormElementImpl
 public:
     HTMLSelectElementImpl(DocumentImpl *doc);
     HTMLSelectElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f);
-    virtual ~HTMLSelectElementImpl();
 
-    virtual const DOMString nodeName() const;
-    virtual ushort id() const;
+    virtual const DOMString nodeName() const { return "SELECT"; }
+    virtual ushort id() const { return ID_SELECT; }
 
     virtual tagStatus startTag() { return SELECTStartTag; }
     virtual tagStatus endTag() { return SELECTEndTag; }
@@ -354,7 +288,7 @@ public:
 
     long length() const;
 
-    long size() const { return _size; }
+    long size() const { return m_size; }
     void setSize( long );
 
     long tabIndex() const;
@@ -369,21 +303,11 @@ public:
 
     virtual void attach(KHTMLWidget *w);
 
-    virtual void layout( bool deep = false );
-
-    virtual void calcMinMaxWidth();
-
-    virtual void close();
-
-    virtual bool childrenRendered() { return false; }
-
-    virtual void reset();
-    virtual QString encoding();
-
 protected:
-    int _size;
-    bool _multiple;
+    int m_size;
+    bool m_multiple;
 };
+
 
 // -------------------------------------------------------------------------
 
@@ -394,13 +318,14 @@ public:
     HTMLOptGroupElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f);
     virtual ~HTMLOptGroupElementImpl();
 
-    virtual const DOMString nodeName() const;
-    virtual ushort id() const;
+    virtual const DOMString nodeName() const { return "OPTGROUP"; }
+    virtual ushort id() const { return ID_OPTGROUP; }
 
     virtual tagStatus startTag() { return OPTGROUPStartTag; }
     virtual tagStatus endTag() { return OPTGROUPEndTag; }
 
 };
+
 
 // ---------------------------------------------------------------------------
 
@@ -409,10 +334,9 @@ class HTMLOptionElementImpl : public HTMLGenericFormElementImpl
 public:
     HTMLOptionElementImpl(DocumentImpl *doc);
     HTMLOptionElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f);
-    virtual ~HTMLOptionElementImpl();
 
-    virtual const DOMString nodeName() const;
-    virtual ushort id() const;
+    virtual const DOMString nodeName() const { return "OPTION"; }
+    virtual ushort id() const { return ID_OPTION; }
 
     virtual tagStatus startTag() { return OPTIONStartTag; }
     virtual tagStatus endTag() { return OPTIONEndTag; }
@@ -421,30 +345,43 @@ public:
 
     long index() const;
     void setIndex( long );
+    virtual void parseAttribute(Attribute *attr);
 
-    bool selected() const;
+    bool selected() const { return m_selected; }
+
+protected:
+    bool m_selected;
+    DOMString m_value;
+
+    friend khtml::RenderSelect;
 };
+
 
 // -------------------------------------------------------------------------
 
 class HTMLTextAreaElementImpl : public HTMLGenericFormElementImpl
 {
 public:
+    enum WrapMethod {
+        ta_NoWrap,
+        ta_Virtual,
+        ta_Physical
+    };
+
     HTMLTextAreaElementImpl(DocumentImpl *doc);
     HTMLTextAreaElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f);
-    virtual ~HTMLTextAreaElementImpl();
 
-    virtual const DOMString nodeName() const;
-    virtual ushort id() const;
+    virtual const DOMString nodeName() const { return "TEXTAREA"; }
+    virtual ushort id() const { return ID_TEXTAREA; }
 
     virtual tagStatus startTag() { return TEXTAREAStartTag; }
     virtual tagStatus endTag() { return TEXTAREAEndTag; }
 
-    long cols() const;
-    void setCols( long );
+    long cols() const { return m_cols; }
+    void setCols( long cols) { m_cols = cols; }
 
-    long rows() const;
-    void setRows( long );
+    long rows() const { return m_rows; }
+    void setRows( long rows ) { m_rows = rows; }
 
     long tabIndex() const;
     void setTabIndex( long );
@@ -456,19 +393,14 @@ public:
     void select (  );
 
     virtual void parseAttribute(Attribute *attr);
-
     virtual void attach(KHTMLWidget *w);
 
-    virtual void layout( bool deep = false );
-
-    virtual void calcMinMaxWidth();
-
-    virtual void reset();
-    virtual QString encoding();
-
 protected:
-    int _rows;
-    int _cols;
+    int m_rows;
+    int m_cols;
+    WrapMethod m_wrap;
+
+    friend khtml::RenderTextArea;
 };
 
 }; //namespace

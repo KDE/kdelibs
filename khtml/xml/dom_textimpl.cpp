@@ -21,18 +21,21 @@
  *
  * $Id$
  */
-
-#include "khtmltext.h"
-#include "khtmlstyle.h"
-
 #include "dom_exception.h"
 #include "dom_string.h"
 #include "dom_stringimpl.h"
 
 #include "dom_textimpl.h"
 #include "dom_node.h"
+#include "dom_docimpl.h"
 
 #include <stdio.h>
+
+#include "rendering/render_style.h"
+#include "rendering/render_text.h"
+
+#include <qcolor.h>
+#include <qfont.h>
 
 using namespace DOM;
 using namespace khtml;
@@ -104,10 +107,6 @@ void CharacterDataImpl::replaceData( const unsigned long /*offset*/, const unsig
 TextImpl::TextImpl(DocumentImpl *doc, const DOMString &_text)
     : CharacterDataImpl(doc, _text)
 {
-    first = 0;
-    minWidth = -1;
-    maxWidth = -1;
-    font = 0;
 }
 
 TextImpl::TextImpl(DocumentImpl *doc)
@@ -117,7 +116,6 @@ TextImpl::TextImpl(DocumentImpl *doc)
 
 TextImpl::~TextImpl()
 {
-    deleteSlaves();
 }
 
 TextImpl *TextImpl::splitText( const unsigned long /*offset*/ )
@@ -136,143 +134,32 @@ unsigned short TextImpl::nodeType() const
     return Node::TEXT_NODE;
 }
 
-void TextImpl::deleteSlaves()
+void TextImpl::attach(KHTMLWidget *)
 {
-    // delete all slaves
-    TextSlave *s = first;
-    while(s)
+    m_style = parentNode()->style();
+    RenderObject *r = _parent->renderer();
+    if(r)
     {
-	TextSlave *next = s->next();
-	delete s;
-	s = next;
+	m_render = new RenderText(m_style, str);
+	r->addChild(m_render);
+	m_render->ref();
     }
-}
-
-void TextImpl::printObject( QPainter *p, int x, int y, int w, int h,
-		      int tx, int ty)
-{
-#ifdef DEBUG_LAYOUT
-    printf("Text::printObject(long)\n");
-#endif
-
-    TextSlave *s = first;
-    p->setFont(*font);
-    p->setPen( font->textColor() );
-
-    while(s)
-    {
-	s->print(p, x, y, w, h, tx, ty);
-	s=s->next();
-    }
-}
-
-void TextImpl::print( QPainter *p, int x, int y, int w, int h,
-		      int tx, int ty)
-{
-    printObject(p, x, y, w, h, tx, ty);
-}
-
-void TextImpl::calcMinMaxWidth()
-{
-#ifdef DEBUG_LAYOUT
-    printf("Text::calcMinMaxWidth(): known=%d\n", minMaxKnown());
-#endif
-
-    if(minMaxKnown()) return;
-
-    // ### this is not really the right place for this call...
-    if(!font) font = parentNode()->getFont();
-    QFontMetrics fm(*font);
-
-    // ### calc Min and Max width...
-    minWidth = 0;
-    maxWidth = 0;
-
-    int currMinWidth = 0;
-    int currMaxWidth = 0;
-
-    int len = str->l;
-    for(int i = 0; i < len; i++)
-    {
-	const QChar c = *(str->s+i);
-	if( c == QChar(' '))
-	{
-	    if(currMinWidth > minWidth) minWidth = currMinWidth;
-	    currMinWidth = 0;
-	    currMaxWidth += fm.width(c);
-	}
-	else if( c == QChar('-'))
-	{
-	    currMinWidth += fm.width(c);
-	    if(currMinWidth > minWidth) minWidth = currMinWidth;
-	    currMinWidth = 0;
-    	    currMaxWidth += fm.width(c);	
-	}
-	else if( c == QChar('\n'))
-	{
-	    if(currMinWidth > minWidth) minWidth = currMinWidth;
-	    currMinWidth = 0;
-	    if(currMaxWidth > maxWidth) maxWidth = currMaxWidth;
-	    currMaxWidth = 0;
-	}
-	else
-	{
-	    int w = fm.width(c);
-	    currMinWidth += w;
-	    currMaxWidth += w;
-	}
-    }
-    if(currMinWidth > minWidth) minWidth = currMinWidth;
-    currMinWidth = 0;
-    if(currMaxWidth > maxWidth) maxWidth = currMaxWidth;
-    currMaxWidth = 0;
-
-    setMinMaxKnown();
 }
 
 bool TextImpl::mouseEvent( int _x, int _y, int, MouseEventType,
-			   int _tx, int _ty, DOMString &)
+			   int _tx, int _ty, DOMString &,
+                           NodeImpl *&innerNode, long &offset)
 {
-//    printf("Text::mouseEvent\n");
-    bool inside = false;
+    //printf("Text::mouseEvent\n");
 
-    TextSlave *s = first;
-    QFontMetrics fm(*font);
-    while(s)
+    if(!m_render) return false;
+
+    int off = 0;
+    if( static_cast<RenderText *>(m_render)->checkPoint(_x, _y, _tx, _ty, off) )
     {
-	if(s->checkPoint(_x, _y, _tx, _ty, fm))
-	{
-	    inside = true;
-	    break;
-	}
-	s=s->next();
+	offset = off;
+	innerNode = this;
+	return true;
     }
-    //   if(inside) printf(" Text  --> inside\n");
-
-    return inside;
-}
-
-int TextImpl::getXPos() const
-{
-    if (first)
-	return first->x;
-    else
-	return 0;
-}
-
-int TextImpl::getYPos() const
-{
-    if (first)
-	return first->y;
-    else
-	return 0;
-}
-
-int TextImpl::getAscent() const
-{
-    //printf("AS%d\n",first->ascent);
-    if (first)
-	return first->ascent;
-    else
-	return 0;
+    return false;
 }

@@ -31,14 +31,13 @@
 #include "dtd.h"
 #include "dom_elementimpl.h"
 #include "htmlhashes.h"
-#include "khtmlstyle.h"
+#include "rendering/render_style.h"
 
-
-class CSSStyle;
 
 namespace DOM {
 
 class DOMString;
+class CSSStyleDeclarationImpl;
 
 class HTMLElementImpl : public ElementImpl
 {
@@ -52,10 +51,6 @@ public:
     // make it pure virtual...
     virtual ushort id() const = 0;
 
-    virtual void setStyle(CSSStyle *style);
-    virtual CSSStyle *style() { return _style; };
-    virtual const khtml::Font *getFont() { return khtml::getFont(_style); }
-
     DOMString getAttribute(int attr_id)
 	{
 	    int i = attributeMap.find(attr_id);
@@ -64,205 +59,36 @@ public:
 	    return 0;
 	}
 
-    virtual HAlign hAlign() { return halign; }
-    virtual void print(QPainter *p, int _x, int _y, int _w, int _h,
-		       int _tx, int _ty);
-
-    virtual void calcMinMaxWidth();
-    virtual void setAvailableWidth(int w = -1);
-    virtual void updateSize();
-    virtual void close();
-
-    virtual short getMinWidth() const { return minWidth; }
-    virtual short getMaxWidth() const { return maxWidth; }
-
     virtual bool mouseEvent( int x, int y, int button, MouseEventType,
-			     int _tx, int _ty, DOMString &url);
+			     int _tx, int _ty, DOMString &url,
+                             NodeImpl *&innerNode, long &offset);
     virtual void mouseEventHandler( int button, MouseEventType type, bool inside );
 
-    virtual void getAbsolutePosition(int &xPos, int &yPos);
-    virtual NodeImpl *addChild(NodeImpl *newChild);
+    virtual void parseAttribute(Attribute *token);
 
-    void parseAttribute(Attribute *token);
+    virtual DOM::CSSStyleDeclarationImpl *styleRules() { return m_styleDecls; }
+
+    void addCSSLength(int id, const DOMString &value, bool important);
+    void addCSSProperty(int id, const DOMString &value, bool important);
+    void addCSSProperty(const DOMString &property);
 
 protected:
-    /*
-     * the style of the current object. Is also used to render inline children
-     * ### not sure, if this is the right way in the long term...
-     */
-    CSSStyle *_style;
-
-    HAlign halign;
-    /*
-     * the minimum width the element needs, to be able to render
-     * it's content without clipping
-     */
-    short minWidth;
-    /* The maximum width the element can fill horizontally
-     * ( = the width of the element with line breaking disabled)
-     */
-    short maxWidth;
-
-    /* The width available to the element
-     * If the element need more width (minWidth > avWidth) it tells it's
-     * parent
-     */
-    short availableWidth;
-
+    DOM::CSSStyleDeclarationImpl *m_styleDecls;
 };
 
-class HTMLInlineElementImpl : public HTMLElementImpl
+class HTMLGenericElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLInlineElementImpl(DocumentImpl *doc, ushort i);
+    HTMLGenericElementImpl(DocumentImpl *doc, ushort i);
 
-    virtual ~HTMLInlineElementImpl();
+    virtual ~HTMLGenericElementImpl();
 
     virtual const DOMString nodeName() const;
     virtual ushort id() const { return _id; };
 
-    // overrides NodeImpl
-
-    virtual void setStyle(CSSStyle *style);
-    virtual void print(QPainter *p, int _x, int _y, int _w, int _h,
-		       int _tx, int _ty);
-
 protected:
     ushort _id;
 };
-
-
-class HTMLPositionedElementImpl : public HTMLElementImpl
-{
-public:
-    HTMLPositionedElementImpl(DocumentImpl *doc)
-	: HTMLElementImpl(doc)
-	{ x = y = width = ascent = descent = 0; }
-
-    virtual ~HTMLPositionedElementImpl() {}
-
-    virtual void setPos( int xPos, int yPos ) { x = xPos, y = yPos; }
-    virtual void setXPos( int xPos ) { x = xPos; }
-    virtual void setYPos( int yPos ) { y = yPos; }
-    virtual void setWidth(int w) { width = w; }
-    virtual void setAscent(int a) { ascent = a; }
-    virtual void setDescent(int d) { descent = d; }
-
-    virtual int getXPos() const { return x; }
-    virtual int getYPos() const { return y; }
-    virtual int getWidth() const { return width; }
-    virtual int getHeight() const { return ascent+descent; }
-    virtual int getAscent() const { return ascent; }
-    virtual int getDescent() const { return descent; }
-
-    virtual void updateSize();
-
-    virtual bool mouseEvent( int x, int y, int button, MouseEventType,
-			     int _tx, int _ty, DOMString &url);
-
-    virtual void getAbsolutePosition(int &xPos, int &yPos);
-    virtual NodeImpl *addChild(NodeImpl *newChild);
-
-protected:
-    int x;
-    int y;
-    short width;
-    int ascent;
-    int descent;
-};
-
-
-class HTMLParagraphElementImpl;
-
-/**
- * all geometry managing stuff is only in the block elements.
- *
- * Inline elements don't paint themselves, but the whole paragraph
- * gets painted by the surrounding block element. This is, because
- * one needs to know the whole paragraph to calculate bidirectional
- * behaviour of text, so putting the drawing routines in the inline
- * elments is impossible.
- *
- * not that BiDi is implemented at the moment, but we want to keep the
- * possibility.
- */
-class HTMLBlockElementImpl : public HTMLPositionedElementImpl
-{
-public:
-    HTMLBlockElementImpl(DocumentImpl *doc);
-
-    virtual ~HTMLBlockElementImpl();
-
-    virtual bool isInline() { return false; }
-
-    // overrides NodeImpl
-
-    virtual void print( QPainter *, int x, int y, int w, int h,
-			int tx, int ty);
-    virtual void printObject( QPainter *, int x, int y, int w, int h,
-			int tx, int ty);
-
-    virtual void layout( bool deep = false );
-
-    virtual NodeImpl *addChild(NodeImpl *newChild);
-
-protected:
-    NodeImpl *calcParagraph(NodeImpl *child, bool pre = false);
-    void      calcFloating(NodeImpl *child, int elemY);
-
-    NodeImpl *aligned;
-    NodeImpl *startPar;
-
-    inline int getRightMargin(int y) const;
-    inline int getLeftMargin(int y) const;
-    inline int getLeftBottom();
-    inline int getRightBottom();
-    inline int getWidth(int y) const;
-
-    void insertMarginElement(HAlign align, int y, NodeImpl* node);
-    void clearMargins();
-
-
-private:
-
-    // rendering helpers;
-    class HTMLParagraphClose : public HTMLElementImpl {
-    public:
-    	HTMLParagraphClose() : HTMLElementImpl(0L) {}
-    	    virtual ushort id() const {
-    	    return ID_P + ID_CLOSE_TAG;
-    	}
-    };
-
-    static HTMLParagraphClose pElemClose;
-
-    struct MarginRange {
-    	int startY;
-	int endY;
-	int width;	
-	NodeImpl* node;
-    };
-
-    QList<MarginRange>* leftMargin;
-    QList<MarginRange>* rightMargin;
-
-};
-
-class HTMLGenericBlockElementImpl : public HTMLBlockElementImpl
-{
-public:
-    HTMLGenericBlockElementImpl(DocumentImpl *doc, ushort tagId)
-	: HTMLBlockElementImpl(doc)
-	{ _id = tagId; }
-
-    virtual const DOMString nodeName() const;
-    virtual ushort id() const { return _id; };
-    virtual void setStyle(CSSStyle *style);
-
-protected:
-    ushort _id;
-};
-
 
 }; //namespace
 

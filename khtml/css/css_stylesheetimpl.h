@@ -28,6 +28,7 @@
 #include <dom_string.h>
 
 #include "cssparser.h"
+#include "misc/loader.h"
 
 namespace DOM {
 
@@ -39,24 +40,28 @@ class CSSRuleList;
 class CSSStyleRuleImpl;
 class CSSValueImpl;
 class NodeImpl;
-    
+
 class StyleSheetImpl : public StyleListImpl
 {
 public:
-    StyleSheetImpl(DOM::NodeImpl *ownerNode);
-    StyleSheetImpl(StyleSheetImpl *parentSheet);
+    StyleSheetImpl(DOM::NodeImpl *ownerNode, DOM::DOMString href = 0);
+    StyleSheetImpl(StyleSheetImpl *parentSheet, DOM::DOMString href = 0);
+    StyleSheetImpl(StyleBaseImpl *owner, DOM::DOMString href  = 0);
+    StyleSheetImpl(khtml::CachedCSSStyleSheet *cached, DOM::DOMString href  = 0);
 
     virtual ~StyleSheetImpl();
 
     virtual bool isStyleSheet() { return true; }
+
     virtual bool deleteMe();
 
-    DOM::DOMString type() const;
+    virtual DOM::DOMString type() const { return 0; }
 
     bool disabled() const;
     void setDisabled( bool );
 
     DOM::NodeImpl *ownerNode() const;
+    khtml::CachedCSSStyleSheet *cachedParent() const { return m_cache; }
     StyleSheetImpl *parentStyleSheet() const;
     DOM::DOMString href() const;
     DOM::DOMString title() const;
@@ -64,8 +69,8 @@ public:
 
 protected:
     DOM::NodeImpl *m_parentNode;
+    khtml::CachedCSSStyleSheet *m_cache;
     bool m_disabled;
-    DOM::DOMString m_strType;
     DOM::DOMString m_strHref;
     DOM::DOMString m_strTitle;
     MediaListImpl *m_media;
@@ -74,12 +79,19 @@ protected:
 class CSSStyleSheetImpl : public StyleSheetImpl
 {
 public:
-    CSSStyleSheetImpl(DOM::NodeImpl *parentNode);
-    CSSStyleSheetImpl(CSSStyleSheetImpl *parentSheet);
+    CSSStyleSheetImpl(DOM::NodeImpl *parentNode, DOM::DOMString href = 0);
+    CSSStyleSheetImpl(CSSStyleSheetImpl *parentSheet, DOM::DOMString href = 0);
+    CSSStyleSheetImpl(CSSRuleImpl *ownerRule, DOM::DOMString href  = 0);
+    CSSStyleSheetImpl(khtml::CachedCSSStyleSheet *cached, DOM::DOMString href  = 0);
+    // clone from a cached version of the sheet
+    CSSStyleSheetImpl(DOM::NodeImpl *parentNode, CSSStyleSheetImpl *orig);
+    CSSStyleSheetImpl(CSSRuleImpl *ownerRule, CSSStyleSheetImpl *orig);
 
     virtual ~CSSStyleSheetImpl();
 
     virtual bool isCSSStyleSheet() { return true; }
+
+    virtual DOM::DOMString type() const { return "text/css"; }
 
     CSSRuleImpl *ownerRule() const;
     CSSRuleList cssRules();
@@ -87,6 +99,8 @@ public:
     void deleteRule ( unsigned long index );
 
     virtual bool parseString( const DOMString &string );
+
+    bool isLoading();
 };
 
 // ----------------------------------------------------------------------------

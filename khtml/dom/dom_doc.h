@@ -40,6 +40,7 @@ class Attr;
 class EntityReference;
 class ProcessingInstruction;
 class DocumentImpl;
+class Range; 
 
 
 /**
@@ -276,6 +277,12 @@ public:
      * not part of the DOM
      */
     bool isHTMLDocument();
+
+    /**
+     * @internal
+     * not part of the DOM
+     */
+    Range createRange();
     
 protected:
     Document( DocumentImpl *i);

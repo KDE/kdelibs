@@ -21,17 +21,17 @@ KDE_CXXFLAGS = $(USE_EXCEPTIONS)
 
 noinst_LTLIBRARIES = libkhtmlmisc.la
 libkhtmlmisc_la_SOURCES = \
-	decoder.cpp    khtmldata.cpp  khtmlfont.cpp  khtmlio.cpp \
-	htmlhashes.cpp
+	decoder.cpp    khtmldata.cpp  khtmlfont.cpp  loader.cpp \
+	htmlhashes.cpp helper.cpp
 
 libkhtmlmisc_la_METASOURCES = AUTO
 
-include_HEADERS = \
-	khtmlio.h
+#include_HEADERS = \
+#	khtmlio.h
 
 noinst_HEADERS = \
 	decoder.h      khtmlfont.h    khtmllayout.h \
-	khtmldata.h    stringit.h     htmlhashes.h
+	khtmldata.h    stringit.h     htmlhashes.h    helper.h
 
 INCLUDES = -I$(top_srcdir)/kimgio -I$(top_srcdir) -I$(top_srcdir)/dcop \
  -I$(top_srcdir)/khtml -I$(top_srcdir)/khtml/misc -I$(top_srcdir)/khtml/css \

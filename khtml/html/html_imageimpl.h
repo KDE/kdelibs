@@ -26,7 +26,7 @@
 
 #include "dtd.h"
 #include "html_elementimpl.h"
-#include "khtmlio.h"
+#include "misc/loader.h"
 #include "html_documentimpl.h"
 
 #include <qmap.h>
@@ -37,7 +37,7 @@ namespace DOM {
 class DOMString;
 
 class HTMLImageElementImpl
-    : public HTMLPositionedElementImpl, public HTMLImageRequester
+    : public HTMLElementImpl
 {
 public:
     HTMLImageElementImpl(DocumentImpl *doc);
@@ -50,64 +50,16 @@ public:
     virtual tagStatus startTag() { return IMGStartTag; }
     virtual tagStatus endTag() { return IMGEndTag; }
 
-    virtual bool isFloating() { return hAlign()==Left || hAlign()==Right; }
-
-    virtual bool isRendered() { return true; }
     virtual void parseAttribute(Attribute *);
 
-    virtual VAlign vAlign() { return valign; }
-    virtual int hSpace() {
-	    return hspace.minWidth(width);
-    }
-    virtual int vSpace() {
-	    return vspace.minWidth(getHeight());
-    }
-
-    virtual int getHeight() const { return ascent+descent; }
-
-    virtual void calcMinMaxWidth();
-
     virtual bool mouseEvent( int _x, int _y, int button, MouseEventType type,
-				  int _tx, int _ty, DOMString &url);
+                             int _tx, int _ty, DOMString &url,
+                             NodeImpl *&innerNode, long &offset );
 
-    virtual void setPixmap( QPixmap * );
-    virtual void pixmapChanged( QPixmap * );
-    virtual void print(QPainter *p, int _x, int _y, int _w, int _h,
-		       int _tx, int _ty);
-    virtual void printObject(QPainter *p, int _x, int _y, int _w, int _h,
-			     int _tx, int _ty);
-
-    virtual void layout(bool deep = false);
     virtual void attach(KHTMLWidget *w);
-    virtual void detach();
-
+    
 protected:
-    /*
-     * The desired dimensions of the image. If -1, the actual image will
-     * determine this value when it is loaded.
-     */
-    Length predefinedWidth;
-    Length predefinedHeight;
-    int border;
-    Length hspace;
-    Length vspace;
-
     bool ismap;
-
-    int imgHeight;
-
-    /*
-     * Pointer to the image
-     * If this pointer is 0L, that means that the picture could not be loaded
-     * for some strange reason or that the image is waiting to be downloaded
-     * from the internet for example.
-     */
-    QPixmap *pixmap;
-
-    /*
-     * Cache for images that need resizing
-     */
-    QPixmap resizeCache;
 
     /**
      * The URL of this image.
@@ -115,10 +67,7 @@ protected:
     DOMString imageURL;
 
     // text to display as long as the image isn't available
-    DOMString alt; 
-    
-    bool bComplete;
-    VAlign valign;
+    DOMString alt;
 
     DOMString usemap;
 };
@@ -163,7 +112,7 @@ protected:
     QRegion getRegion(int width_, int height);
 
     Shape shape;
-    QList<Length>* coords;
+    QList<khtml::Length>* coords;
     DOMStringImpl *href;
     DOMStringImpl *target;
 

@@ -37,7 +37,7 @@ public:
     void setEncoding(const char *encoding);
     const char *encoding() const;
 
-    QString decode(const char *data);
+    QString decode(const char *data, int len);
 
 protected:
     // codec used for decoding. default is Latin1.

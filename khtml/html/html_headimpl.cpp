@@ -31,7 +31,17 @@
 using namespace DOM;
 
 #include "khtml.h"
+#include "khtml_part.h"
 #include "htmlhashes.h"
+
+#include "css/cssstyleselector.h"
+#include "css/css_stylesheetimpl.h"
+using namespace khtml;
+
+#include <qfile.h>
+#include <qtextstream.h>
+
+#include <kurl.h>
 
 #include <stdio.h>
 
@@ -72,13 +82,14 @@ void HTMLBaseElementImpl::parseAttribute(Attribute *attr)
 
 void HTMLBaseElementImpl::attach(KHTMLWidget *v)
 {
+    m_style = document->styleSelector()->styleForElement(this);
     if(_href.length())
     {
-	v->setBaseUrl(_href.string());
+      v->part()->setBaseURL( KURL( _href.string() ) );
     }	
     if(_target.length())
     {
-	v->setBaseTarget(_target.string());
+      v->part()->setBaseTarget(_target.string());
     }
 }
 
@@ -112,10 +123,15 @@ HTMLFormElementImpl *HTMLIsIndexElementImpl::form() const
 
 HTMLLinkElementImpl::HTMLLinkElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc)
 {
+    m_sheet = 0;
+    m_loading = false;
+    m_cachedSheet = 0;
 }
 
 HTMLLinkElementImpl::~HTMLLinkElementImpl()
 {
+    if(m_sheet) m_sheet->deref();
+    if(m_cachedSheet) m_cachedSheet->deref(this);
 }
 
 const DOMString HTMLLinkElementImpl::nodeName() const
@@ -131,11 +147,59 @@ ushort HTMLLinkElementImpl::id() const
 bool HTMLLinkElementImpl::disabled() const
 {
   // ###
-  return true;
+  return false;
 }
 
 void HTMLLinkElementImpl::setDisabled( bool )
 {
+}
+
+// other stuff...
+void HTMLLinkElementImpl::attach(KHTMLWidget *)
+{
+    m_style = document->styleSelector()->styleForElement(this);
+
+    QString type = m_type.string().lower();
+    QString rel = m_rel.string().lower();
+
+    if(m_type == "text/css" && !rel.contains("alternate"))
+    {
+	QString str = m_media.string().lower();
+	// no need to load style sheets which aren't for the screen output
+	if(m_media.isNull() || str.contains("screen") || str.contains("all"))
+	{
+	    HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(document);
+	    m_cachedSheet = Cache::requestStyleSheet(m_url, doc->URL());
+	    m_cachedSheet->ref(this);
+	    m_loading = true;
+	}
+    }
+}
+
+void HTMLLinkElementImpl::parseAttribute(Attribute *attr)
+{
+    switch (attr->id)
+    {
+    case ATTR_REL:
+	m_rel = attr->value(); break;
+    case ATTR_HREF:
+	m_url = attr->value(); break;
+    case ATTR_TYPE:
+	m_type = attr->value(); break;
+    case ATTR_MEDIA:
+	m_media = attr->value(); break;
+    default:
+	HTMLElementImpl::parseAttribute(attr);
+    }
+}
+
+void HTMLLinkElementImpl::setStyleSheet(CSSStyleSheetImpl *sheet)
+{
+    printf("HTMLLinkElement::setStyleSheet()\n");
+    m_sheet = new CSSStyleSheetImpl(this, sheet);
+    m_sheet->ref();
+    m_loading = false;
+    document->createSelector();
 }
 
 // -------------------------------------------------------------------------
@@ -176,6 +240,7 @@ void HTMLMetaElementImpl::parseAttribute(Attribute *attr)
 
 void HTMLMetaElementImpl::attach(KHTMLWidget *v)
 {
+    m_style = document->styleSelector()->styleForElement(this);
     printf("meta::attach() equiv=%s, content=%s\n", _equiv.string().ascii(), _content.string().ascii());
     if(strcasecmp(_equiv, "refresh") == 0 && !_content.isNull())
     {
@@ -191,7 +256,7 @@ void HTMLMetaElementImpl::attach(KHTMLWidget *v)
 	{
 	    str = str.mid(4);
 	    printf("====> got redirect to %s\n", str.ascii());
-	    v->scheduleRedirection(delay, str);
+	    v->part()->scheduleRedirection(delay, str);
 	}
     }
 }
@@ -230,10 +295,12 @@ void HTMLScriptElementImpl::setDefer( bool )
 
 HTMLStyleElementImpl::HTMLStyleElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc)
 {
+    m_sheet = 0;
 }
 
 HTMLStyleElementImpl::~HTMLStyleElementImpl()
 {
+    if(m_sheet) m_sheet->deref();
 }
 
 const DOMString HTMLStyleElementImpl::nodeName() const
@@ -248,12 +315,41 @@ ushort HTMLStyleElementImpl::id() const
 
 bool HTMLStyleElementImpl::disabled() const
 {
-  // ###
-  return true;
+    // ###
+    return false;
 }
 
 void HTMLStyleElementImpl::setDisabled( bool )
 {
+}
+
+// other stuff...
+void HTMLStyleElementImpl::parseAttribute(Attribute *attr)
+{
+    switch (attr->id)
+    {
+    case ATTR_TYPE:
+	m_type = attr->value(); break;
+    case ATTR_MEDIA:
+	m_media = attr->value(); break;
+    default:
+	HTMLElementImpl::parseAttribute(attr);
+    }
+}
+
+NodeImpl *HTMLStyleElementImpl::addChild(NodeImpl *child)
+{
+    if(!child->isTextNode()) return this;
+
+    DOMString text = static_cast<TextImpl *>(child)->string();
+
+    printf("style: parsing sheet '%s'\n", text.string().ascii());
+
+    if(m_sheet) m_sheet->deref();
+    m_sheet = new CSSStyleSheetImpl(this);
+    m_sheet->parseString(text);
+
+    return NodeBaseImpl::addChild(child);
 }
 
 // -------------------------------------------------------------------------
@@ -285,5 +381,5 @@ void HTMLTitleElementImpl::close()
     QString s = t->data().string();
 
     HTMLDocumentImpl *d = static_cast<HTMLDocumentImpl *>(document);
-    d->HTMLWidget()->setTitle(s);
+    emit d->HTMLWidget()->part()->setWindowCaption( s );
 }

@@ -148,7 +148,7 @@ class NodeList;
 class Document;
 class DOMString;
 class StyleSheet;
-    
+
 class NodeImpl;
 
 /**
@@ -178,12 +178,16 @@ class Node
     friend class NodeList;
     friend class HTMLCollection;
     friend class StyleSheet;
-    
+
 public:
     Node();
     Node(const Node &other);
 
     Node & operator = (const Node &other);
+
+    bool operator == (const Node &other);
+
+    bool operator != (const Node &other);
 
     virtual ~Node();
     /**
@@ -554,8 +558,19 @@ public:
      * Element e = n;
      * if( e.isNull() )
      *   printf("node isn't an element node\n");
+     * </pre>
      */
     bool isNull() { return (impl == 0); }
+
+    /**
+     * @internal handle to the implementation object
+     */
+    NodeImpl *handle() const { return impl; }
+
+    /**
+     * @internal returns the index of a node
+     */
+    unsigned long index() const;
 
 protected:
     NodeImpl *impl;

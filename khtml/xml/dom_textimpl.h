@@ -27,6 +27,7 @@
 #include "dom_nodeimpl.h"
 #include "dom_string.h"
 #include "htmlhashes.h"
+#include "qfontmetrics.h"
 
 namespace khtml
 {
@@ -69,7 +70,7 @@ protected:
 
 // ----------------------------------------------------------------------------
 class HTMLElementImpl;
-    
+
 class TextImpl : public CharacterDataImpl
 {
     friend class HTMLPreElementImpl;
@@ -84,36 +85,14 @@ public:
 
     TextImpl *splitText ( const unsigned long offset );
 
-    // overrides NodeImpl
-
-    virtual bool isRendered() { return true; }
     virtual ushort id() const { return ID_TEXT; }
 
-    virtual void print( QPainter *, int x, int y, int w, int h,
-			int tx, int ty);
-    virtual void printObject( QPainter *, int x, int y, int w, int h,
-			int tx, int ty);
+    virtual void attach(KHTMLWidget *);
 
-    void deleteSlaves();
+    virtual bool mouseEvent( int _x, int _y, int, MouseEventType,
+			     int _tx, int _ty, DOMString &,
+                             NodeImpl *& innerNode, long &offset);
 
-    khtml::TextSlave *first;
-
-    // overrides
-    virtual void calcMinMaxWidth();
-    virtual short getMinWidth() const { return minWidth; }
-    virtual short getMaxWidth() const { return maxWidth; }
-    virtual const khtml::Font *getFont() { return font; }
-    virtual bool mouseEvent( int x, int y, int button,
-			     DOM::NodeImpl::MouseEventType,
-			     int _tx, int _ty, DOMString &url);
-    virtual int getXPos() const;
-    virtual int getYPos() const;
-    virtual int getAscent() const;
-
-protected:
-    short minWidth;
-    short maxWidth;
-    const khtml::Font *font;
 };
 
 }; //namespace

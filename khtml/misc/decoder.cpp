@@ -51,7 +51,7 @@ const char *KHTMLDecoder::encoding() const
     return enc;
 }
 
-QString KHTMLDecoder::decode(const char *data)
+QString KHTMLDecoder::decode(const char *data, int len)
 {
     // this is not completely efficient, since the function might go
     // through the html head several times...
@@ -161,12 +161,12 @@ QString KHTMLDecoder::decode(const char *data)
     }
     QString out;
 
-    if(!buffer.isEmpty()) {
+    if(!buffer.isEmpty() && enc != "utf16") {
 	out = codec->toUnicode(buffer);
 	buffer = "";
     }
     else 
-	out = codec->toUnicode(data);
+	out = codec->toUnicode(data, len);
 
     // the hell knows, why the output does sometimes have a QChar::null at
     // the end...

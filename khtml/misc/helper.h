@@ -1,7 +1,7 @@
-/**
- * This file is part of the DOM implementation for KDE.
+/*
+ * This file is part of the CSS implementation for KDE.
  *
- * (C) 1999 Lars Knoll (knoll@kde.org)
+ * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,27 +20,14 @@
  *
  * $Id$
  */
-#include "khtmltext.h"
-#include "dom_stringimpl.h"
+#ifndef html_helper_h
+#define html_helper_h
 
-using namespace khtml;
+#include <qcolor.h>
 
-void TextSlave::print( QPainter *p, int /*_x*/, int _y, int /*_w*/, int _h, 
-		       int _tx, int _ty)
+namespace khtml
 {
-    if((_ty + y - ascent > _y + _h) || (_ty + y + descent < _y)) return;
+    void setNamedColor(QColor &color, const QString name);
+};
 
-    QConstString s(str->s+from , len);
-    p->drawText(x + _tx, y + _ty, s.string());
-}
-
-bool TextSlave::checkPoint(int _x, int _y, int _tx, int _ty, 
-			   const QFontMetrics &fm)
-{
-    if((_ty + y - ascent > _y) || (_ty + y + descent < _y)) return false;
-    QConstString s(str->s+from , len);
-    int width = fm.width(s.string());
-    if((_tx + x > _x) || (_tx + x + width < _x)) return false;
-    return true;
-}
-
+#endif

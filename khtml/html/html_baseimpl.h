@@ -25,10 +25,12 @@
 #ifndef HTML_BASEIMPL_H
 #define HTML_BASEIMPL_H 1
 
+#include <qpixmap.h>
+
 #include "dtd.h"
 #include "html_elementimpl.h"
-#include "khtmlio.h"
 #include "qscrollview.h"
+#include "misc/loader.h"
 
 class KHTMLWidget;
 
@@ -36,12 +38,11 @@ namespace DOM {
 
 class DOMString;
 
-class HTMLBodyElementImpl : public HTMLBlockElementImpl,
-    public HTMLImageRequester
+class HTMLBodyElementImpl : public HTMLElementImpl,
+    public khtml::CachedObjectClient
 {
 public:
-    HTMLBodyElementImpl(DocumentImpl *doc, KHTMLWidget *view = 0);
-
+    HTMLBodyElementImpl(DocumentImpl *doc);
     ~HTMLBodyElementImpl();
 
     virtual const DOMString nodeName() const;
@@ -51,29 +52,12 @@ public:
     virtual tagStatus endTag() { return BODYEndTag; }
 
     virtual void parseAttribute(Attribute *);
-    virtual void setStyle(CSSStyle *currentStyle);
 
-    virtual void close();
-
-    virtual void attach(KHTMLWidget *);
-    virtual void detach();
-    virtual void setPixmap( QPixmap * );
-    virtual void pixmapChanged( QPixmap * );
-
-    virtual void print( QPainter *, int x, int y, int w, int h,
-			int tx, int ty);
-
-protected:
-    KHTMLWidget *view;
-    DOMString bgURL;
-    QPixmap* bgPixmap;
-    int marginWidth;
-    int marginHeight;
 };
 
 // -------------------------------------------------------------------------
 
-class HTMLFrameElementImpl : public HTMLPositionedElementImpl
+class HTMLFrameElementImpl : public HTMLElementImpl
 {
     friend class KHTMLWidget;
 public:
@@ -88,9 +72,6 @@ public:
     virtual tagStatus endTag() { return FRAMEEndTag; }
 
     virtual void parseAttribute(Attribute *);
-    virtual void layout(bool);
-
-    virtual bool isInline() { return false; }
     virtual void attach(KHTMLWidget *w);
     virtual void detach();
 
@@ -111,7 +92,7 @@ protected:
 
 // -------------------------------------------------------------------------
 
-class HTMLFrameSetElementImpl : public HTMLPositionedElementImpl
+class HTMLFrameSetElementImpl : public HTMLElementImpl
 {
     friend class KHTMLWidget;
 public:
@@ -126,44 +107,35 @@ public:
     virtual tagStatus endTag() { return FRAMESETEndTag; }
 
     virtual void parseAttribute(Attribute *);
-    virtual void layout(bool);
-
-    virtual bool isInline() { return false; }
     virtual NodeImpl *addChild(NodeImpl *child);
-    void close();
     virtual void attach(KHTMLWidget *w);
 
     virtual bool mouseEvent( int _x, int _y, int button, MouseEventType type,
-		     int _tx, int _ty, DOMString &url);
+		     int _tx, int _ty, DOMString &url,
+                             NodeImpl *&innerNode, long &offset);
 
     bool frameBorder() { return frameborder; }
     bool noResize() { return noresize; }
 
+    int totalRows() const { return m_totalRows; }
+    int totalCols() const { return m_totalCols; }
+    int border() const { return m_border; }
+
 protected:
-    void positionFrames(bool);
+    int m_totalRows;
+    int m_totalCols;
 
+    QList<khtml::Length> *m_rows;
+    QList<khtml::Length> *m_cols;
 
-    QList<Length> *rows;
-    QList<Length> *cols;
-    int *rowHeight;
-    int *colWidth;
-    int totalRows;
-    int totalCols;
-
-    // mozilla and other's use this in the frameset, although it's not standard html4
+    // mozilla and others use this in the frameset, although it's not standard html4
     bool frameborder;
-    int border;
+    int m_border;
     bool noresize;
 
-    KHTMLWidget *view;
+    bool m_resizing;  // is the user resizing currently
 
-    bool resizing;  // is the user resizing currently
-    int hSplit;     // the split currently resized
-    int vSplit;
-    int hSplitPos;
-    int vSplitPos;
-    bool *hSplitVar; // is this split variable?
-    bool *vSplitVar;
+    KHTMLWidget *view;
 };
 
 // -------------------------------------------------------------------------
@@ -178,19 +150,13 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual bool isInline() { return false; }
-
     virtual tagStatus startTag() { return HEADStartTag; }
     virtual tagStatus endTag() { return HEADEndTag; }
-
-    virtual void print(QPainter *, int, int, int, int, int, int) {}
-    virtual void layout(bool) {}
-
 };
 
 // -------------------------------------------------------------------------
 
-class HTMLHtmlElementImpl : public HTMLPositionedElementImpl
+class HTMLHtmlElementImpl : public HTMLElementImpl
 {
 public:
     HTMLHtmlElementImpl(DocumentImpl *doc);
@@ -203,19 +169,6 @@ public:
     virtual tagStatus startTag() { return HTMLStartTag; }
     virtual tagStatus endTag() { return HTMLEndTag; }
 
-    virtual int getWidth() const { return width; }
-    virtual NodeImpl *addChild(NodeImpl *child);
-
-    virtual void getAbsolutePosition(int &xPos, int &yPos);
-    virtual bool isInline() { return false; }
-
-    virtual void layout(bool);
-
-    virtual void attach(KHTMLWidget *);
-    void setAvailableWidth(int w);
-
-protected:
-    KHTMLWidget *view;
 };
 
 }; //namespace

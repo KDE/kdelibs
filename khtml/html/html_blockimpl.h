@@ -28,12 +28,13 @@
 
 #include "dtd.h"
 #include "html_elementimpl.h"
+#include "khtmllayout.h"
 
 namespace DOM {
 
 class DOMString;
 
-class HTMLBlockquoteElementImpl : public HTMLBlockElementImpl
+class HTMLBlockquoteElementImpl : public HTMLElementImpl
 {
 public:
     HTMLBlockquoteElementImpl(DocumentImpl *doc);
@@ -45,21 +46,13 @@ public:
 
     virtual tagStatus startTag() { return BLOCKQUOTEStartTag; }
     virtual tagStatus endTag() { return BLOCKQUOTEEndTag; }
-
-    virtual void setAvailableWidth(int w = -1);
-    virtual void setXPos( int xPos );
-    virtual void setPos( int xPos, int yPos );
-    virtual int getXPos() const;
-    virtual void calcMinMaxWidth();
-
-    //virtual void layout(bool deep = false);
 };
 
 // -------------------------------------------------------------------------
 
 class DOMString;
 
-class HTMLDivElementImpl : public HTMLBlockElementImpl
+class HTMLDivElementImpl : public HTMLElementImpl
 {
 public:
     HTMLDivElementImpl(DocumentImpl *doc);
@@ -77,7 +70,7 @@ public:
 
 // -------------------------------------------------------------------------
 
-class HTMLHRElementImpl : public HTMLBlockElementImpl
+class HTMLHRElementImpl : public HTMLElementImpl
 {
 public:
     HTMLHRElementImpl(DocumentImpl *doc);
@@ -91,22 +84,16 @@ public:
 
     virtual tagStatus startTag() { return HRStartTag; }
     virtual tagStatus endTag() { return HREndTag; }
-
-    virtual void layout(bool deep = false);
-    virtual void print(QPainter *p, int x, int y, int w, int h,
-		       int xoff, int yoff);
-    virtual void printObject(QPainter *p, int x, int y, int w, int h,
-		       int xoff, int yoff);
-
 protected:
-    Length length;
+    khtml::Length length;
     bool shade;
     int size;
+    khtml::ETextAlign halign;
 };
 
 // -------------------------------------------------------------------------
 
-class HTMLHeadingElementImpl : public HTMLBlockElementImpl
+class HTMLHeadingElementImpl : public HTMLElementImpl
 {
 public:
     HTMLHeadingElementImpl(DocumentImpl *doc, ushort _tagid);
@@ -116,9 +103,6 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual void layout(bool deep);
-
-    virtual void setStyle(CSSStyle *currentStyle);
     void parseAttribute(Attribute *token);
 
     virtual tagStatus startTag() { return H1StartTag; }
@@ -131,7 +115,7 @@ protected:
 // -------------------------------------------------------------------------
 
 /*
- * were not using HTMLBlockElementImpl as parent class, since a
+ * were not using HTMLElementImpl as parent class, since a
  * paragraph should be able to flow around aligned objects. Thus
  * a <p> element has to be inline, and is rendered by
  * HTMLBlockImpl::calcParagraph
@@ -149,14 +133,12 @@ public:
     virtual tagStatus startTag() { return PStartTag; }
     virtual tagStatus endTag() { return PEndTag; }
 
-    virtual bool isRendered() { return true; }
-
     virtual void parseAttribute(Attribute *);
 };
 
 // -------------------------------------------------------------------------
 
-class HTMLPreElementImpl : public HTMLBlockElementImpl
+class HTMLPreElementImpl : public HTMLElementImpl
 {
 public:
     HTMLPreElementImpl(DocumentImpl *doc);
@@ -169,12 +151,9 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual void calcMinMaxWidth();
-
     virtual tagStatus startTag() { return PREStartTag; }
     virtual tagStatus endTag() { return PREEndTag; }
 
-    virtual void setStyle(CSSStyle *s);
 };
 
 }; //namespace

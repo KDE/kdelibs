@@ -29,11 +29,14 @@ condensed
 continuous
 crop
 cross
+dashed
 decimal
 decimal-leading-zero
 default
 digits
 disc
+dotted
+double
 e-resize
 embed
 expanded
@@ -45,6 +48,7 @@ fast
 faster
 fixed
 georgian
+groove
 hebrew
 help
 hidden
@@ -56,6 +60,7 @@ hiragana-iroha
 icon
 inline
 inline-table
+inset
 inside
 invert
 italic
@@ -63,6 +68,8 @@ justify
 katakana
 katakana-iroha
 landscape
+large
+larger
 left
 left-side
 leftwards
@@ -99,6 +106,7 @@ nw-resize
 oblique
 once
 open-quote
+outset
 outside
 overline
 pointer
@@ -108,6 +116,7 @@ relative
 repeat
 repeat-x
 repeat-y
+ridge
 right
 right-side
 rightwards
@@ -123,9 +132,12 @@ show
 silent
 slow
 slower
+small
+smaller
 small-caps
 small-caption
 soft
+solid
 spell-out
 square
 static
@@ -145,6 +157,8 @@ table-row-group
 text
 text-bottom
 text-top
+thin
+thick
 top
 transparent
 ultra-condensed
@@ -160,7 +174,11 @@ wait
 wider
 x-fast
 x-high
+x-large
 x-loud
 x-low
 x-slow
+x-small
 x-soft
+xx-large
+xx-small

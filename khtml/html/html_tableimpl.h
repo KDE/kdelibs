@@ -5,7 +5,7 @@
  *           (C) 1997 Torben Weis (weis@kde.org)
  *           (C) 1998 Waldo Bastian (bastian@kde.org)
  *           (C) 1999 Lars Knoll (knoll@kde.org)
- *           (C) 1999 Antti Koivisto (koivisto@kde.org) 
+ *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -30,12 +30,15 @@
 #include <qcolor.h>
 #include <qvector.h>
 #include <qdatetime.h>
+#include <qpixmap.h>
 
 #include "dtd.h"
 #include "html_elementimpl.h"
-#include "khtmlio.h"
+#include "misc/loader.h"
 
 #include <stdio.h>
+
+#include "rendering/render_style.h"
 
 namespace DOM {
 
@@ -54,8 +57,7 @@ class HTMLTableCaptionElement;
 class HTMLElement;
 class HTMLCollection;
 
-class HTMLTableElementImpl : public HTMLBlockElementImpl,
-  public HTMLImageRequester
+class HTMLTableElementImpl : public HTMLElementImpl
 {
 public:
     enum Rules {
@@ -84,13 +86,6 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual int hSpace() {
-    	return hspace.minWidth(width);
-    }
-    virtual int vSpace() {
-	return vspace.minWidth(getHeight());
-    }
-
     virtual tagStatus startTag() { return TABLEStartTag; }
     virtual tagStatus endTag() { return TABLEEndTag; }
 
@@ -112,247 +107,39 @@ public:
     HTMLElementImpl *insertRow ( long index );
     void deleteRow ( long index );
 
-    int getColumnPos(int col)
-	{ return columnPos[col]; }
-    int getColumnWidth(int col)
-	{ if(!actColWidth.size() < col) return 0; return actColWidth[col]; }
-    int cellSpacing() { return spacing; }
-    int cellPadding() { return padding; }
-    Rules getRules() { return rules; }
-
-    QColor bgColor() { return bg; }
-    QPixmap *bgPixmap() { return background; }
-
-    virtual bool isFloating() {return halign==Left || halign==Right; }
-    virtual bool isInline() {return false; }
-
-    void startRow();
-    void addCell( HTMLTableCellElementImpl *cell );
-    void endTable();
-    void  addColInfo(HTMLTableCellElementImpl *cell);
-    void  addColInfo(HTMLTableColElementImpl *colel);
-
-    void addColInfo(int _startCol, int _colSpan,
-		    int _minSize, int _maxSize, Length _width,
-		    HTMLTableCellElementImpl* _cell);
-
     // overrides
     virtual NodeImpl *addChild(NodeImpl *child);
     virtual void parseAttribute(Attribute *attr);
-    virtual void print( QPainter *, int x, int y, int w, int h,
-			int tx, int ty);
-    virtual void printObject( QPainter *, int x, int y, int w, int h,
-			int tx, int ty);
-    virtual void layout(bool deep = false);
-    virtual void setAvailableWidth( int w = -1 );
-    virtual void calcMinMaxWidth();
-    virtual void close();
 
-    virtual void updateSize();
-
-    virtual VAlign vAlign() { return valign; }
-    
-    int getBaseline(int row) {return rowBaselines[row];}
-
-    void attach(KHTMLWidget *);
-    void detach();
-    virtual void setPixmap( QPixmap * );
-    virtual void pixmapChanged( QPixmap * );
-       
-
-public:
-    /*
-     * For each table element with a different width a ColInfo struct is
-     * maintained. Consider for example the following table:
-     * +---+---+---+
-     * | A | B | C |
-     * +---+---+---+
-     * |   D   | E |
-     * +-------+---+
-     *
-     * This table would result in 4 ColInfo structs being allocated.
-     * 1 for A, 1 for B, 1 for C & E, and 1 for D.
-     *
-     * Note that C and E share the same ColInfo.
-     *
-     * Note that D has a seperate ColInfo entry.
-     *
-     * There is always 1 default ColInfo entry which stretches across the
-     * entire table.
-     */
-    struct ColInfo
-    {
-    	ColInfo()
-	{
-	    min=0;
-	    max=0;
-    	    type=Undefined;
-	    value=0;
-	    minCell=0;
-	    maxCell=0;
-	}
-	void update();
-	
-    	int     span;
-	int     start;	
-	int     min;
-	int     max;
-	HTMLTableCellElementImpl* minCell;
-	HTMLTableCellElementImpl* maxCell;
-	LengthType 	type;
-	int 	value;
-	int 	percentage;
-    };
+    virtual void attach(KHTMLWidget *);
+    virtual void detach();
 
 protected:
-    // This function calculates the actual widths of the columns
-    void calcColWidth();
-
-    // calculates the height of each row
-    void calcRowHeights();
-
-    void setCells( unsigned int r, unsigned int c, HTMLTableCellElementImpl *cell );
-    void addRows( int num );
-    void addColumns( int num );
-    // ### need to provide some delete* methods too...
-
-    HTMLTableCellElementImpl ***cells;
-
-    class ColInfoLine : public QVector<ColInfo>
-    {
-    public:
-	ColInfoLine() : QVector<ColInfo>()
-	{ setAutoDelete(true); }
-	ColInfoLine(int i) : QVector<ColInfo>(i)
-	{ setAutoDelete(true); }
-	ColInfoLine(const QVector<ColInfo> &v) : QVector<ColInfo>(v)
-	{ setAutoDelete(true); }
-    };
-
-    QVector<ColInfoLine> colInfos;
-
-    void calcColMinMax();
-    void calcSingleColMinMax(int c, ColInfo* col);
-    void calcFinalColMax(int c, ColInfo* col);
-    void spreadSpanMinMax(int col, int span, int min, int max, LengthType type);
-    int distributeWidth(int distrib, LengthType type, int typeCols );
-    int distributeMinWidth(int distrib, LengthType distType,
-    	    LengthType toType, int start, int span, bool minlimit );
-    int distributeRest(int distrib, LengthType type, int divider );
-
-    int maxColSpan;
-
-    QArray<int> percentTotals;
-
-    QArray<int> columnPos;
-    QArray<int> colMaxWidth;
-    QArray<int> colMinWidth;
-    QArray<LengthType> colType;
-    QArray<int> colValue;
-    QArray<int> rowHeights;
-    QArray<int> rowBaselines;
-    QArray<int> actColWidth;
-
-    unsigned int totalColInfos;
-    unsigned int col;
-    unsigned int totalCols;
-    unsigned int row;
-    unsigned int totalRows;
-    unsigned int allocRows;
-
-    unsigned int totalPercent ;
-    unsigned int totalRelative ;
-
-    HTMLTableCaptionElementImpl *tCaption;
     HTMLTableSectionElementImpl *head;
     HTMLTableSectionElementImpl *foot;
     HTMLTableSectionElementImpl *firstBody;
-
-    Length predefinedWidth;
-    int border;
-    int spacing;
-    int padding;
-
-    Length vspace;
-    Length hspace;
-    VAlign valign;
-
-    QColor bg;
-    QPixmap *background;
-    DOMString bgURL;
+    HTMLTableCaptionElementImpl *tCaption;
 
     Frame frame;
     Rules rules;
 
     bool incremental;
-
-    HTMLTableColElementImpl *_oldColElem;
-    int _currentCol; // keeps track of current col for col/colgroup stuff
-    
-    QTime updateTimer;
 };
 
 // -------------------------------------------------------------------------
 
-class HTMLTablePartElementImpl : public HTMLBlockElementImpl,
-				 public HTMLImageRequester
+class HTMLTablePartElementImpl : public HTMLElementImpl
+
 {
 public:
     HTMLTablePartElementImpl(DocumentImpl *doc)
-	: HTMLBlockElementImpl(doc)
-	{ table = 0; valign=VNone; background = 0; }
-    HTMLTablePartElementImpl(DocumentImpl *doc, HTMLTableElementImpl *t)
-	: HTMLBlockElementImpl(doc)
-	{ table = t; }
-
-    void setTable(HTMLTableElementImpl *t) { table = t; }
-    void setRowImpl(HTMLTableRowElementImpl *r) { rowimpl = r; }
+	: HTMLElementImpl(doc)
+	{ }
 
     virtual void parseAttribute(Attribute *attr);
 
-    virtual NodeImpl *addChild(NodeImpl *child)
-	{
-	    NodeImpl *ret = HTMLBlockElementImpl::addChild(child);
-	    static_cast<HTMLTablePartElementImpl *>(child)
-		->setTable(this->table);
-	    return ret;
-	}
-    virtual bool mouseEvent( int _x, int _y, int button, MouseEventType t,
-			     int _tx, int _ty, DOMString &url)
-	{
-	    return HTMLElementImpl::mouseEvent(_x, _y, button, t,
-					       _tx, _ty, url);
-	}
-    virtual void updateSize()
-    {
-    	/*calcMinMaxWidth();
-	setLayouted(false);
-	if(_parent) _parent->updateSize(); */
-	calcMinMaxWidth();
-	setLayouted(false);
-	if (table)
-	{
-	    table->updateSize();
-	}
-    }
-
-    virtual VAlign vAlign() { return valign; }
-
     void attach(KHTMLWidget *);
     void detach();
-    virtual void setPixmap( QPixmap * );
-    virtual void pixmapChanged( QPixmap * );
-
-    QColor bgColor() { return bg; }
-    QPixmap *bgPixmap() { return background; }
-
-protected:
-    VAlign valign;
-    HTMLTableElementImpl *table;
-    HTMLTableRowElementImpl *rowimpl;
-    DOMString bgURL;
-    QPixmap *background;
-    QColor bg;
 };
 
 // -------------------------------------------------------------------------
@@ -374,10 +161,6 @@ public:
     void deleteRow ( long index );
 
     int numRows() { return nrows; }
-
-    // overrides
-    virtual void layout(bool deep = false);
-    virtual NodeImpl *addChild(NodeImpl *child);
 
 protected:
     ushort _id;
@@ -450,37 +233,9 @@ public:
     int row() { return _row; }
     void setRow(int r) { _row = r; }
 
-    LengthType colType() { return predefinedWidth.type; }
-    Length predefWidth() { return predefinedWidth; }
-
     // overrides
     virtual void parseAttribute(Attribute *attr);
-    virtual NodeImpl *addChild(NodeImpl *child)
-	{
-	    return HTMLBlockElementImpl::addChild(child);
-	}
-    virtual void calcMinMaxWidth();
-    virtual void print( QPainter *, int x, int y, int w, int h,
-			int tx, int ty);
-    virtual void printObject( QPainter *, int x, int y, int w, int h,
-			int tx, int ty);
-    void setRowHeight(int h) { rowHeight = h; }
-    virtual bool mouseEvent( int _x, int _y, int button, MouseEventType t,
-			     int _tx, int _ty, DOMString &url)
-    {
-	return HTMLBlockElementImpl::mouseEvent(_x, _y, button, t,
-					   _tx, _ty, url);
-    }
-
-
-    virtual void layout(bool deep = false);
-
-    virtual VAlign vAlign();
-    virtual HAlign hAlign();
-
-    virtual int getHeight();
-    
-    void setAscent(int asc) { ascent = asc; }
+    virtual void attach(KHTMLWidget *);
 
 protected:
     int _row;
@@ -488,8 +243,6 @@ protected:
     int rSpan;
     int cSpan;
     bool nWrap;
-    Length predefinedWidth;
-    Length predefinedHeight;
     int _id;
     int rowHeight;
 };
@@ -516,23 +269,18 @@ public:
 
     long span() const { return _span; }
     void setSpan( long s ) { _span = s; }
-    Length width();
 
     virtual NodeImpl *addChild(NodeImpl *child);
 
     // overrides
     virtual void parseAttribute(Attribute *attr);
 
-    virtual VAlign vAlign() { return valign; }
-
 protected:
-    VAlign valign;
     // could be ID_COL or ID_COLGROUP ... The DOM is not quite clear on
     // this, but since both elements work quite similar, we use one
     // DOMElement for them...
     ushort _id;
     int _span;
-    Length predefinedWidth;
     HTMLTableElementImpl *table;
 
     int _currentCol;
@@ -555,16 +303,6 @@ public:
     virtual tagStatus endTag() { return CAPTIONEndTag; }
 
 };
-
-
-inline void
-HTMLTableElementImpl::ColInfo::update()
-{
-    if (minCell)
-    	min = minCell->getMinWidth();
-    if (maxCell)
-    	max = maxCell->getMaxWidth();
-}
 
 }; //namespace
 

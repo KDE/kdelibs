@@ -29,8 +29,6 @@
 #include "dom_string.h"
 using namespace DOM;
 
-typedef DOMString HTMLString;
-
 #include <qstring.h>
 
 namespace khtml
@@ -67,9 +65,7 @@ protected:
     int l;
 };
 
-typedef DOMStringIt HTMLStringIt;
 
 };
-using namespace khtml;
 
 #endif

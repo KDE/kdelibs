@@ -32,6 +32,7 @@
 using namespace DOM;
 
 #include "khtml.h"
+#include "khtml_part.h"
 #include "htmlhashes.h"
 #include <stdio.h>
 #include <kurl.h>
@@ -41,18 +42,25 @@ using namespace DOM;
 
 #include <kapp.h>
 
-HTMLBodyElementImpl::HTMLBodyElementImpl(DocumentImpl *doc, KHTMLWidget *v)
-    : HTMLBlockElementImpl(doc), HTMLImageRequester()
+#include "rendering/render_object.h"
+#include "rendering/render_frames.h"
+#include "css/cssstyleselector.h"
+#include "css/cssproperties.h"
+#include <qframe.h>
+#include <qstring.h>
+#include <qscrollview.h>
+
+#include <assert.h>
+
+
+HTMLBodyElementImpl::HTMLBodyElementImpl(DocumentImpl *doc)
+    : HTMLElementImpl(doc)
 {
-    ascent = descent = 0;
-    view = v;
-    bgPixmap = 0;
-    marginWidth = -1; // undefined
-    marginHeight = -1;
 }
 
 HTMLBodyElementImpl::~HTMLBodyElementImpl()
 {
+    if(m_style && m_style->backgroundImage()) m_style->backgroundImage()->deref(this);
 }
 
 const DOMString HTMLBodyElementImpl::nodeName() const
@@ -71,126 +79,36 @@ void HTMLBodyElementImpl::parseAttribute(Attribute *attr)
     {
 
     case ATTR_BACKGROUND:
-        bgURL = attr->value();
+        addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, attr->value(), false);
 	break;
     case ATTR_MARGINWIDTH:
-	marginWidth = attr->val()->toInt();
+        addCSSProperty(CSS_PROP_MARGIN_LEFT, attr->value(), false);
+        addCSSProperty(CSS_PROP_MARGIN_RIGHT, attr->value(), false);
 	break;
     case ATTR_MARGINHEIGHT:
-	marginHeight = attr->val()->toInt();
+        addCSSProperty(CSS_PROP_MARGIN_TOP, attr->value(), false);
+        addCSSProperty(CSS_PROP_MARGIN_BOTTOM, attr->value(), false);
 	break;
-    case ATTR_BGCOLOR: 	
+    case ATTR_BGCOLOR:
+	addCSSProperty(CSS_PROP_BACKGROUND_COLOR, attr->value(), false);
+	break;
     case ATTR_TEXT:
+	addCSSProperty(CSS_PROP_COLOR, attr->value(), false);
+	break;
     case ATTR_LINK:
     case ATTR_VLINK:
-      // handled in setStyle()
+	// ### has to be added as stylesheet
     case ATTR_ALINK:
       break;
     default:
-	HTMLBlockElementImpl::parseAttribute(attr);
+	HTMLElementImpl::parseAttribute(attr);
     }
 }
-
-void HTMLBodyElementImpl::setStyle(CSSStyle *currentStyle)
-{
-  DOMString s = attributeMap.valueForId(ATTR_TEXT);
-    if(!s.isEmpty())
-    {
-	khtml::setNamedColor( currentStyle->font.color, s.string() );
-    }
-    s = attributeMap.valueForId(ATTR_LINK);
-    if(!s.isEmpty())
-    {
-	khtml::setNamedColor( pSettings->linkColor, s.string() );
-    }
-    s = attributeMap.valueForId(ATTR_VLINK);
-    if(!s.isEmpty())
-    {
-	khtml::setNamedColor( pSettings->vLinkColor, s.string() );
-    }
-    s = attributeMap.valueForId(ATTR_BGCOLOR);
-    if(!s.isEmpty())
-    {
-	khtml::setNamedColor( currentStyle->bgcolor, s.string() );
-    }
-
-
-    HTMLElementImpl::setStyle(currentStyle);
-
-}
-
-
-void HTMLBodyElementImpl::attach(KHTMLWidget *w)
-{
-    if(bgURL.length())
-    {
-	printf("Body: Requesting URL=%s\n", bgURL.string().ascii() );
-	bgURL = document->requestImage(this, bgURL);
-    }	
-    if(marginWidth != -1) w->setMarginWidth(marginWidth);
-    if(marginHeight != -1) w->setMarginHeight(marginHeight);
-}
-
-void HTMLBodyElementImpl::detach()
-{
-    KHTMLCache::free(bgURL, this);
-    NodeBaseImpl::detach();
-}
-
-void  HTMLBodyElementImpl::setPixmap( QPixmap *p )
-{
-    bgPixmap = p;
-    if(layouted())
-	static_cast<HTMLDocumentImpl *>(document)->print(this, true);
-}
-
-void  HTMLBodyElementImpl::pixmapChanged( QPixmap *p )
-{
-    setPixmap(p);
-}
-
-void HTMLBodyElementImpl::close()
-{
-    printf("BODY:close\n");
-    calcMinMaxWidth();
-    setLayouted(false);
-    _parent->updateSize();
-}
-
-void HTMLBodyElementImpl::print( QPainter *p, int x, int y, int w, int h,
-			int tx, int ty)
-{
-    if (bgPixmap)
-    {
-    	if (bgPixmap->mask() != 0)
-	    p->fillRect(x,y,w,h,style()->bgcolor);
-    	int pmX = x % bgPixmap->width();
-	int pmY = y % bgPixmap->height();
-	p->drawTiledPixmap(x,y,w,h,*bgPixmap,pmX,pmY);
-    }
-    else if(style()->bgcolor.isValid())
-	p->fillRect(x,y,w,h,style()->bgcolor);
-    else
-    {
-	QBrush b = kapp->palette().normal().brush(QColorGroup::Background);
-	if(b.pixmap())
-	{
-	    QPixmap *pix = b.pixmap();
-	    int pmX = x % pix->width();
-	    int pmY = y % pix->height();
-	    p->drawTiledPixmap(x, y, w, h, *pix, pmX, pmY);
-	}
-	else
-	    p->fillRect(x, y, w, h, b); 	
-    }
-    HTMLBlockElementImpl::print(p,x,y,w,h,tx,ty);
-}
-
 
 // -------------------------------------------------------------------------
 
 HTMLFrameElementImpl::HTMLFrameElementImpl(DocumentImpl *doc)
-    : HTMLPositionedElementImpl(doc)
+    : HTMLElementImpl(doc)
 {
     view = 0;
     parentWidget = 0;
@@ -254,26 +172,36 @@ void HTMLFrameElementImpl::parseAttribute(Attribute *attr)
     }
 }
 
-void HTMLFrameElementImpl::layout(bool)
-{
-#ifdef DEBUG_LAYOUT
-    printf("%s(Frame)::layout(?) width=%d, layouted=%d\n", nodeName().string().ascii(), width, layouted());
-#endif
-    width = availableWidth;
-
-    if(!parentWidget || !view) return;
-
-    int x,y;
-    getAbsolutePosition(x, y);
-    parentWidget->addChild(view, x, y);
-    view->resize(width, descent);
-
-    setLayouted();
-}
-
 void HTMLFrameElementImpl::attach(KHTMLWidget *w)
 {
+    m_style = document->styleSelector()->styleForElement( this );
+
+    khtml::RenderObject *r = _parent->renderer();
+
+    if ( !r )
+      return;
+
+    khtml::RenderFrame *renderFrame = new khtml::RenderFrame( m_style, w, this );
+    m_render = renderFrame;
+    m_render->ref();
+    r->addChild( m_render );
+
+    // we need a unique name for every frame in the frameset. Hope that's unique enough.
+    if(name.isEmpty())
+    {
+      QString tmp;
+      tmp.sprintf("0x%p", this);
+      name = DOMString(tmp) + url;
+      printf("creating frame name: %s\n",name.string().ascii());
+    }
+
+    w->part()->childRequest( renderFrame, url.string(), name.string() );
+
+    NodeBaseImpl::attach( w );
+    return;
+#if 0
     printf("Frame::attach\n");
+    m_style = document->styleSelector()->styleForElement(this);
 
     // needed for restoring frames
     bool open = true;
@@ -323,7 +251,7 @@ void HTMLFrameElementImpl::attach(KHTMLWidget *w)
 
     view->show();
     printf("adding frame\n");
-
+#endif
 }
 
 void HTMLFrameElementImpl::detach()
@@ -336,26 +264,19 @@ void HTMLFrameElementImpl::detach()
 // -------------------------------------------------------------------------
 
 HTMLFrameSetElementImpl::HTMLFrameSetElementImpl(DocumentImpl *doc)
-    : HTMLPositionedElementImpl(doc)
+    : HTMLElementImpl(doc)
 {
-    rowHeight = 0;
-    colWidth = 0;
-
     // default value for rows and cols...
-    rows = 0;
-    cols = 0;
-    totalRows = 1;
-    totalCols = 1;
+    m_totalRows = 1;
+    m_totalCols = 1;
+
+    m_rows = m_cols = 0;
 
     frameborder = true;
-    border = 4;
+    m_border = 4;
     noresize = false;
 
-    resizing = false;
-    hSplit = -1;
-    vSplit = -1;
-    hSplitVar = 0;
-    vSplitVar = 0;
+    m_resizing = false;
 
     view = 0;
 
@@ -364,11 +285,8 @@ HTMLFrameSetElementImpl::HTMLFrameSetElementImpl(DocumentImpl *doc)
 
 HTMLFrameSetElementImpl::~HTMLFrameSetElementImpl()
 {
-    if(rowHeight) delete [] rowHeight;
-    if(colWidth) delete [] colWidth;
-
-    if(vSplitVar) delete [] vSplitVar;
-    if(hSplitVar) delete [] hSplitVar;
+  if ( m_rows ) delete m_rows;
+  if ( m_cols ) delete m_cols;
 }
 
 const DOMString HTMLFrameSetElementImpl::nodeName() const
@@ -386,12 +304,12 @@ void HTMLFrameSetElementImpl::parseAttribute(Attribute *attr)
     switch(attr->id)
     {
     case ATTR_ROWS:
-	rows = attr->val()->toLengthList();
-	totalRows = rows->count();
+	m_rows = attr->val()->toLengthList();
+	m_totalRows = m_rows->count();
 	break;
     case ATTR_COLS:
-	cols = attr->val()->toLengthList();
-	totalCols = cols->count();
+	m_cols = attr->val()->toLengthList();
+	m_totalCols = m_cols->count();
 	break;
     case ATTR_FRAMEBORDER:
 	if(attr->value() == "0" || strcasecmp( attr->value(), "no" ) == 0 )
@@ -401,209 +319,13 @@ void HTMLFrameSetElementImpl::parseAttribute(Attribute *attr)
 	noresize = true;
 	break;
     case ATTR_BORDER:
-	border = attr->val()->toInt();
+	m_border = attr->val()->toInt();
 	break;
     default:
 	HTMLElementImpl::parseAttribute(attr);
     }
 }
-
-void HTMLFrameSetElementImpl::layout(bool deep)
-{
-
-#ifdef DEBUG_LAYOUT
-    printf("%s(FrameSet)::layout(%d) width=%d, layouted=%d\n", nodeName().string().ascii(), deep, width, layouted());
-#endif
-
-    width = availableWidth;
-
-    if(_parent->id() == ID_HTML && view)
-	descent = view->clipper()->height();
-
-    ascent = 0;
-
-    int remainingWidth = width - (totalCols-1)*border;
-    if(remainingWidth<0) remainingWidth=0;
-    int remainingHeight = descent - (totalRows-1)*border;
-    if(remainingHeight<0) remainingHeight=0;
-    int widthAvailable = remainingWidth;
-    int heightAvailable = remainingHeight;
-
-    if(rowHeight) delete [] rowHeight;
-    if(colWidth) delete [] colWidth;
-    rowHeight = new int[totalRows];
-    colWidth = new int[totalCols];
-
-    int i;
-    int totalRelative = 0;
-    int colsRelative = 0;
-    int rowsRelative = 0;
-    int remainingRelativeWidth = 0;
-    // fixed rows first, then percent and then relative
-
-    if(rows)
-    {
-	for(i = 0; i< totalRows; i++)
-	{
-	    printf("setting row %d\n", i);
-	    if(rows->at(i)->type == Fixed || rows->at(i)->type == Percent)
-	    {
-		rowHeight[i] = rows->at(i)->width(heightAvailable);
-		printf("setting row height to %d\n", rowHeight[i]);
-		remainingHeight -= rowHeight[i];
-	    }
-	    else if(rows->at(i)->type == Relative)
-	    {
-		totalRelative += rows->at(i)->value;
-		rowsRelative++;
-	    }
-	}
-	// ###
-	if(remainingHeight < 0) remainingHeight = 0;
-
-	if ( !totalRelative && rowsRelative )
-	  remainingRelativeWidth = remainingHeight/rowsRelative;
-	
-	for(i = 0; i< totalRows; i++)
-	 {
-	    if(rows->at(i)->type == Relative)
-	    {
-		if ( totalRelative )
-		  rowHeight[i] = rows->at(i)->value*remainingHeight/totalRelative;
-		else
-		  rowHeight[i] = remainingRelativeWidth;
-	  	remainingHeight -= rowHeight[i];
-		totalRelative--;
-	    }
-	}
-	
-	// support for totally broken frame declarations
-	if(remainingHeight)
-	{
-	    // just distribute it over all columns...
-	    int rows = totalRows;
-	    for(i = 0; i< totalRows; i++)
-	    {
-		int toAdd = remainingHeight/rows;
-		rows--;
-		rowHeight[i] += toAdd;
-		remainingHeight -= toAdd;
-	    }
-	}	
-    }
-    else
-	rowHeight[0] = descent;
-
-    if(cols)
-    {
-	totalRelative = 0;
-	remainingRelativeWidth = 0;
-
-	for(i = 0; i< totalCols; i++)
-	{
-	    if(cols->at(i)->type == Fixed || cols->at(i)->type == Percent)
-	    {
-		colWidth[i] = cols->at(i)->width(widthAvailable);
-		remainingWidth -= colWidth[i];
-	    }
-	    else if(cols->at(i)->type == Relative)
-	    {
-		totalRelative += cols->at(i)->value;
-		colsRelative++;
-	    }
-	}
-	// ###
-	if(remainingWidth < 0) remainingWidth = 0;
-	
-	if ( !totalRelative && colsRelative )
-	  remainingRelativeWidth = remainingWidth/colsRelative;
-
-	for(i = 0; i < totalCols; i++)
-	{
-	    if(cols->at(i)->type == Relative)
-	    {
-		if ( totalRelative )
-		  colWidth[i] = cols->at(i)->value*remainingWidth/totalRelative;
-		else
-		  colWidth[i] = remainingRelativeWidth;
-		remainingWidth -= colWidth[i];
-		totalRelative--;
-	    }
-	}
-
-	// support for totally broken frame declarations
-	if(remainingWidth)
-	{
-	    // just distribute it over all columns...
-	    int cols = totalCols;
-	    for(i = 0; i< totalCols; i++)
-	    {
-		int toAdd = remainingHeight/cols;
-		cols--;
-		rowHeight[i] += toAdd;
-		remainingHeight -= toAdd;
-	    }
-	}
-
-    }
-    else
-	colWidth[0] = width;
-
-
-    positionFrames(deep);
-
-    NodeImpl *child = _first;
-    if(!child) return;
-
-    if(!hSplitVar && !vSplitVar)
-    {
-	printf("calculationg fixed Splitters\n");
-	if(!vSplitVar && totalCols > 1)
-	{
-	    vSplitVar = new bool[totalCols];
-	    for(int i = 0; i < totalCols; i++) vSplitVar[i] = true;
-	}
-	if(!hSplitVar && totalRows > 1)
-	{
-	    hSplitVar = new bool[totalRows];
-	    for(int i = 0; i < totalRows; i++) hSplitVar[i] = true;
-	}
-	
-	for(int r = 0; r < totalRows; r++)
-	{
-	    for(int c = 0; c < totalCols; c++)
-	    {
-		bool fixed = false;
-		if(child->id() == ID_FRAMESET)
-		    fixed = (static_cast<HTMLFrameSetElementImpl *>(child))->noResize();
-		else if(child->id() == ID_FRAME)
-		    fixed = (static_cast<HTMLFrameElementImpl *>(child))->noResize();
-
-		if(fixed)
-		{
-		    printf("found fixed cell %d/%d!\n", r, c);
-		    if(totalCols > 1)
-		    {
-			if(c>0) vSplitVar[c-1] = false;
-			vSplitVar[c] = false;
-		    }
-		    if(totalRows > 1)
-		    {
-			if(r>0) hSplitVar[r-1] = false;
-			hSplitVar[r] = false;
-		    }
-		    child = child->nextSibling();
-		    if(!child) goto end2;
-		}		
-		else
-		    printf("not fixed: %d/%d!\n", r, c);
-	    }
-	}
-    }
- end2:
-    setLayouted();
-}
-
+/*
 void HTMLFrameSetElementImpl::positionFrames(bool deep)
 {
     int r;
@@ -619,8 +341,12 @@ void HTMLFrameSetElementImpl::positionFrames(bool deep)
 	for(c = 0; c < totalCols; c++)
 	{
 	    HTMLElementImpl *e = static_cast<HTMLElementImpl *>(child);
-	    e->setXPos(xPos);
-	    e->setYPos(yPos);
+	
+	    if ( !e->renderer() )
+	      continue;
+	
+	    e->renderer()->setXPos(xPos);
+	    e->renderer()->setYPos(yPos);
 	    e->setWidth(colWidth[c]);
 	    e->setAvailableWidth(colWidth[c]);
 	    e->setDescent(rowHeight[r]);
@@ -633,13 +359,33 @@ void HTMLFrameSetElementImpl::positionFrames(bool deep)
 	yPos += rowHeight[r] + border;
     }
 }
-
+*/
 void HTMLFrameSetElementImpl::attach(KHTMLWidget *w)
 {
+    m_style = document->styleSelector()->styleForElement( this );
+    view = w;
+
+    // view->layout()
+
+    khtml::RenderObject *r = _parent->renderer();
+
+    if ( !r )
+      return;
+
+    khtml::RenderFrameSet *renderFrameSet = new khtml::RenderFrameSet( m_style, this, w, m_rows, m_cols );
+    m_render = renderFrameSet;
+    m_render->ref();
+    r->addChild( m_render );
+
+    NodeBaseImpl::attach( w );
+#if 0
+    m_style = document->styleSelector()->styleForElement(this);
+
     // ensure the htmlwidget knows we have a frameset, and adjusts the width accordingly
     w->layout();
     view = w;
     NodeBaseImpl::attach(w);
+#endif
 }
 
 NodeImpl *HTMLFrameSetElementImpl::addChild(NodeImpl *child)
@@ -648,73 +394,68 @@ NodeImpl *HTMLFrameSetElementImpl::addChild(NodeImpl *child)
     printf("%s(FrameSet)::addChild( %s )\n", nodeName().string().ascii(), child->nodeName().string().ascii());
 #endif
 
-    // ### set child's size here!!!
-
-    child->setAvailableWidth(0);
     return NodeBaseImpl::addChild(child);
 }
 
-void HTMLFrameSetElementImpl::close()
-{
-    setParsing(false);
-    calcMinMaxWidth();
-    if(!availableWidth) return;
-    if(availableWidth < minWidth)
-	_parent->updateSize();
-    setAvailableWidth(); // update child width
-    layout(true);
-    if(layouted())
-	static_cast<HTMLDocumentImpl *>(document)->print(this, true);
-}
-
 bool HTMLFrameSetElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType type,
-				  int _tx, int _ty, DOMString &url)
+				  int _tx, int _ty, DOMString &url,
+                                          NodeImpl *&innerNode, long &offset)
 {
     _x-=_tx;
     _y-=_ty;
-    //printf("mouseEvent\n");
+    printf("mouseEvent\n");
 
     NodeImpl *child = _first;
     while(child)
     {
 	if(child->id() == ID_FRAMESET)
-	    if(child->mouseEvent( _x, _y, button, type, _tx, _ty, url)) return true;
+	    if(child->mouseEvent( _x, _y, button, type, _tx, _ty, url, innerNode, offset)) return true;
 	child = child->nextSibling();
     }
-    
+
+    qDebug( "children done.." );
+
     if(noresize) return true;
 
-    if(!resizing && type == MouseMove || type == MousePress)
+    if ( !m_render || !m_render->layouted() )
     {
-      //printf("mouseEvent:check\n");
+      qDebug( "ugh, not layouted or not attached?!" );
+      return true;
+    }
+
+    return static_cast<khtml::RenderFrameSet *>(m_render)->userResize( _x, _y, type );
+
+    /*
+    {
+      printf("mouseEvent:check\n");
 	
 	hSplit = -1;
 	vSplit = -1;
 	//bool resizePossible = true;
 
 	// check if we're over a horizontal or vertical boundary
-	int pos = colWidth[0];
-	for(int c = 1; c < totalCols; c++)
+	int pos = m_colWidth[0];
+	for(int c = 1; c < m_totalCols; c++)
 	{
-	    if(_x >= pos && _x <= pos+border)
+	    if(_x >= pos && _x <= pos+m_border)
 	    {
 		if(vSplitVar && vSplitVar[c-1] == true) vSplit = c-1;
 		printf("vsplit!\n");
 		break;
 	    }
-	    pos += colWidth[c] + border;
+	    pos += m_colWidth[c] + m_border;
 	}
-	pos = rowHeight[0];
-	for(int r = 1; r < totalRows; r++)
+	pos = m_rowHeight[0];
+	for(int r = 1; r < m_totalRows; r++)
 	{
-	    if( _y >= pos && _y <= pos+border)
+	    if( _y >= pos && _y <= pos+m_border)
 	    {
 		if(hSplitVar && hSplitVar[r-1] == true) hSplit = r-1;
 		printf("hsplitvar = %p\n", hSplitVar);
 		printf("hsplit!\n");
 		break;
 	    }
-	    pos += rowHeight[r] + border;
+	    pos += m_rowHeight[r] + m_border;
 	}
 	printf("%d/%d\n", hSplit, vSplit);
 
@@ -754,19 +495,20 @@ bool HTMLFrameSetElementImpl::mouseEvent( int _x, int _y, int button, MouseEvent
 	{
 	    printf("split xpos=%d\n", _x);
 	    int delta = vSplitPos - _x;
-	    colWidth[vSplit] -= delta;
-	    colWidth[vSplit+1] += delta;
+	    m_colWidth[vSplit] -= delta;
+	    m_colWidth[vSplit+1] += delta;
 	}	
 	if(vSplit)
 	{
 	    printf("split ypos=%d\n", _y);
 	    int delta = hSplitPos - _y;
-	    rowHeight[hSplit] -= delta;
-	    rowHeight[hSplit+1] += delta;
+	    m_rowHeight[hSplit] -= delta;
+	    m_rowHeight[hSplit+1] += delta;
 	}
-	positionFrames(true);
+	qDebug( "starting relayout!" );
+	m_render->layout( true );
     }
-    return true;
+    */
 }
 // -------------------------------------------------------------------------
 
@@ -793,9 +535,8 @@ ushort HTMLHeadElementImpl::id() const
 // -------------------------------------------------------------------------
 
 HTMLHtmlElementImpl::HTMLHtmlElementImpl(DocumentImpl *doc)
-    : HTMLPositionedElementImpl(doc)
+    : HTMLElementImpl(doc)
 {
-    view = 0;
 }
 
 HTMLHtmlElementImpl::~HTMLHtmlElementImpl()
@@ -810,102 +551,5 @@ const DOMString HTMLHtmlElementImpl::nodeName() const
 ushort HTMLHtmlElementImpl::id() const
 {
     return ID_HTML;
-}
-
-NodeImpl *HTMLHtmlElementImpl::addChild(NodeImpl *child)
-{
-#ifdef DEBUG_LAYOUT
-    printf("%s(HTML)::addChild( %s )\n", nodeName().string().ascii(), child->nodeName().string().ascii());
-#endif
-
-    child->setAvailableWidth(availableWidth);
-    if(child->id() == ID_FRAMESET)
-    {
-	KHTMLWidget *w = (KHTMLWidget *)static_cast<HTMLDocumentImpl *>(document)->HTMLWidget();
-	if(w) child->setDescent(w->height());
-    }
-
-    return NodeBaseImpl::addChild(child);
-}
-
-void HTMLHtmlElementImpl::getAbsolutePosition(int &xPos, int &yPos)
-{
-	xPos = 0, yPos = 0;
-}
-
-#include "qdatetime.h"
-
-void HTMLHtmlElementImpl::layout(bool deep)
-{
-    width = availableWidth;
-#ifdef DEBUG_LAYOUT
-    printf("%s(BodyElement)::layout(%d) width=%d, layouted=%d\n", nodeName().string().ascii(), deep, width, layouted());
-#endif
-
-    if(!width) return;
-
-    NodeImpl *child = _first;
-    while(child && child->id() != ID_BODY && child->id() != ID_FRAMESET)
-	child = child->nextSibling();
-    if(child && child->id() == ID_BODY)
-    {
-	child->setXPos(view->marginWidth());
-	child->setYPos(view->marginHeight());
-    }
-
-    if(!child) return;
-
-    QTime qt;
-    qt.start();
-    child->layout(deep);
-    //printf("TIME: layout() dt=%d\n",qt.elapsed());
-
-    ascent = 0;
-    descent = child->getHeight() + 2*view->marginHeight();
-
-    setLayouted();
-}
-
-void HTMLHtmlElementImpl::attach(KHTMLWidget *w)
-{
-    view = w;
-}
-
-void HTMLHtmlElementImpl::setAvailableWidth(int w)
-{
-#ifdef DEBUG_LAYOUT
-    printf("%s(Element)::setAvailableWidth(%d)\n", nodeName().string().ascii(), w);
-#endif
-
-    if (w != -1 && w != availableWidth)
-    	setLayouted(false);
-
-    if(w != -1) availableWidth = w;
-
-    NodeImpl *child = firstChild();
-    minWidth = 0;
-    while(child != 0)
-    {
-    	if (child->getMinWidth() > minWidth)
-	    minWidth = child->getMinWidth();
-	child = child->nextSibling();
-    }
-    if(minWidth > availableWidth)
-	availableWidth = minWidth;
-	
-	
-    child = firstChild();
-    while(child != 0)
-    {
-    	if (child->getMinWidth() > availableWidth)
-	{
-	    printf("ERROR: %d too narrow availableWidth=%d minWidth=%d\n",
-		   id(), availableWidth, child->getMinWidth());
-	    calcMinMaxWidth();
-	    setLayouted(false);
-	}
-	child->setAvailableWidth(availableWidth);
-	child = child->nextSibling();
-    }
 }
 

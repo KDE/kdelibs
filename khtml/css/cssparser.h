@@ -1,5 +1,5 @@
 /**
- * This file is part of the DOM implementation for KDE.
+ * This file is part of the CSS implementation for KDE.
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *               1999 Waldo Bastian (bastian@kde.org)
@@ -53,6 +53,11 @@ namespace DOM {
 
 	virtual bool deleteMe();
 
+	// returns the url of the style sheet this object belongs to
+	DOMString baseUrl();
+	
+	StyleBaseImpl *parent() { return m_parent; }
+
 	virtual bool isStyleSheet() { return false; }
 	virtual bool isCSSStyleSheet() { return false; }
 	virtual bool isStyleSheetList() { return false; }
@@ -82,11 +87,14 @@ namespace DOM {
 	CSSSelector *parseSelector1(const QChar *curP, const QChar *endP);
 	QList<CSSSelector> *parseSelector(const QChar *curP, const QChar *endP);
 
-	CSSProperty *parseProperty(const QChar *curP, const QChar *endP);
+	void parseProperty(const QChar *curP, const QChar *endP, QList<CSSProperty> *propList);
 	QList<CSSProperty> *parseProperties(const QChar *curP, const QChar *endP);
 
-	/* parses generic CSSValues */
-	CSSValueImpl *parseValue(const QChar *curP, const QChar *endP, int propId);
+	/* parses generic CSSValues, return true, if it found a valid value */
+	bool parseValue(const QChar *curP, const QChar *endP, int propId, bool important,
+			QList<CSSProperty> *propList);
+	bool parse4Values(const QChar *curP, const QChar *endP, const int *properties,
+			  bool important, QList<CSSProperty> *propList);
 
 	// defines units allowed for a certain property, used in parseUnit
 	enum Units
@@ -122,6 +130,11 @@ namespace DOM {
 
 	virtual ~StyleListImpl();
 
+	unsigned long length() { return m_lstChildren->count(); }
+	StyleBaseImpl *item(unsigned long num) { return m_lstChildren->at(num); }
+
+	void append(StyleBaseImpl *item) { m_lstChildren->append(item); }
+	
     protected:
 	QList<StyleBaseImpl> *m_lstChildren;
     };
@@ -137,18 +150,20 @@ public:
     // tag == -1 means apply to all elements (Selector = *)
     int          tag;
 
+    /* how the attribute value has to match.... Default is Exact */
     enum Match
     {
-	Exact = 0,
+	None = 0,
+	Exact,
 	Set,
 	List,
-	Hyphen
+	Hyphen,
+	Pseudo
     };
 
     Match 	 match;
     int          attr;
-    // ### change to DOMString
-    QString      value;
+    DOM::DOMString value;
 
     enum Relation
     {

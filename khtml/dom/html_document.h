@@ -28,7 +28,7 @@
 #include <dom/dom_string.h>
 
 class KHTMLWidget;
-class KHTMLCache;
+class KHTMLPart;
 
 namespace DOM {
 
@@ -65,6 +65,7 @@ class HTMLElement;
 class HTMLDocument : public Document
 {
     friend class KHTMLWidget;
+    friend class KHTMLPart;
 public:
     HTMLDocument();
     /**
@@ -72,7 +73,7 @@ public:
      * Rendering information (like sizes, etc...) is only created if
      * parent != 0
      */
-    HTMLDocument(KHTMLWidget *parent, KHTMLCache *cache);
+    HTMLDocument(KHTMLWidget *parent);
     HTMLDocument(const HTMLDocument &other);
 protected:
     HTMLDocument(HTMLDocumentImpl *impl);

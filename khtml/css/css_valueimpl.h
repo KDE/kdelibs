@@ -25,8 +25,9 @@
 
 #include <css_value.h>
 //#include <css_stylesheetimpl.h>
-#include <dom_string.h>
+#include "dom_string.h"
 #include "cssparser.h"
+#include "misc/loader.h"
 
 #include <qintdict.h>
 
@@ -49,9 +50,17 @@ public:
     DOM::DOMString getPropertyValue ( const DOM::DOMString &propertyName );
     CSSValueImpl *getPropertyCSSValue ( const DOM::DOMString &propertyName );
     DOM::DOMString removeProperty ( const DOM::DOMString &propertyName );
+    DOM::DOMString removeProperty ( int propertyId );
     DOM::DOMString getPropertyPriority ( const DOM::DOMString &propertyName );
-    void setProperty ( const DOM::DOMString &propertyName, const DOM::DOMString &value, 
+    void setProperty ( const DOM::DOMString &propertyName, const DOM::DOMString &value,
 		       const DOM::DOMString &priority );
+    void setProperty ( int propertyId, const DOM::DOMString &value, bool important = false);
+    // this treats integers as pixels!
+    // needed for conversion of html attributes
+    void setLengthProperty(int id, const DOM::DOMString &value, bool important);
+
+    // add a whole, unparsed property
+    void setProperty ( const DOMString &propertyString);
     DOM::DOMString item ( unsigned long index );
 
     DOM::DOMString cssText() const;
@@ -63,6 +72,8 @@ public:
 
     CSSValueImpl *getPropertyCSSValue( int propertyID );
     bool getPropertyPriority( int propertyID );
+
+    QList<CSSProperty> *values() { return m_lstValues; }
 
 protected:
     QList<CSSProperty> *m_lstValues;
@@ -100,12 +111,17 @@ public:
 
     virtual ~CSSValueListImpl();
 
-    unsigned long length() const;
-    CSSValueImpl *item ( unsigned long index );
+    unsigned long length() const { return m_values.count(); }
+    CSSValueImpl *item ( unsigned long index ) { return m_values.at(index); }
 
     virtual bool isValueList() { return true; }
 
     virtual unsigned short valueType() const;
+
+    void append(CSSValueImpl *val) { m_values.append(val); }
+
+protected:
+    QList<CSSValueImpl> m_values;
 };
 
 
@@ -128,6 +144,8 @@ public:
     virtual ~CSSPrimitiveValueImpl();
 
     unsigned short primitiveType() const;
+    // use with care!!!
+    void setPrimitiveType(unsigned short type) { m_type = type; }
     void setFloatValue ( unsigned short unitType, float floatValue );
     float getFloatValue ( unsigned short unitType );
     void setStringValue ( unsigned short stringType, const DOM::DOMString &stringValue );
@@ -153,6 +171,18 @@ protected:
 	Rect *rect;
 	RGBColor *rgbcolor;
     } m_value;
+};
+
+class CSSImageValueImpl : public CSSPrimitiveValueImpl, public khtml::CachedObjectClient
+{
+public:
+    CSSImageValueImpl(const DOMString &url, const DOMString &baseurl);
+    CSSImageValueImpl();
+    virtual ~CSSImageValueImpl();
+
+    khtml::CachedImage *image() { return m_image; }
+protected:
+    khtml::CachedImage *m_image;
 };
 // ------------------------------------------------------------------------------
 

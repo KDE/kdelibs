@@ -34,6 +34,9 @@
 
 #include <stdio.h>
 
+#include "rendering/render_style.h"
+#include "rendering/render_object.h"
+
 using namespace DOM;
 using namespace khtml;
 
@@ -42,10 +45,13 @@ NodeImpl::NodeImpl(DocumentImpl *doc)
 {
     document = doc;
     flags = 0;
+    m_style = 0;
+    m_render = 0;
 }
 
 NodeImpl::~NodeImpl()
 {
+    if(m_render) m_render->deref();
 }
 
 DOMString NodeImpl::nodeValue() const
@@ -154,6 +160,12 @@ NodeImpl *NodeImpl::addChild(NodeImpl *)
 {
     throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
     return 0;
+}
+
+bool NodeImpl::isInline()
+{
+    if(!m_style) return false;
+    return (m_style->display() == INLINE);
 }
 
 // ------------------------------------------------------------------------
@@ -290,6 +302,8 @@ NodeImpl *NodeBaseImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild )
     newChild->setPreviousSibling(prev);
     newChild->setNextSibling(refChild);
 
+    // ### set style in case it's attached
+
     return newChild;
 }
 
@@ -317,6 +331,8 @@ NodeImpl *NodeBaseImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild )
     newChild->setParent(this);
     newChild->setPreviousSibling(prev);
     newChild->setNextSibling(next);
+
+    // ### set style in case it's attached
 
     return oldChild;
 }
@@ -360,6 +376,8 @@ NodeImpl *NodeBaseImpl::appendChild ( NodeImpl *newChild )
     {
 	_first = _last = newChild;
     }
+
+    // ### set style in case it's attached
     return newChild;
 }
 

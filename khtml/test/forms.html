@@ -1,7 +1,7 @@
 <html> <head> <title>Form Test</title> </head>
 
 
-<body bgcolor=blue>
+<body bgcolor="#FFFFEE">
 <H1>Form Test</H1>
 This page is a regression test for forms.<BR>
 The word "Start" should be above the textarea.<BR>
@@ -12,7 +12,20 @@ The text inside the textarea should match with its description.
 <P>Start
 <P>
 <textarea wrap=virtual name=inputt rows=5 cols=50>
-This is text inside a &lt;textarea&gt; tag.</textarea>
+This is text inside a &lt;textarea&gt; tag.
+1
+2
+3
+4
+5</textarea>
+<textarea name=inputt rows=5 cols=50>
+01234567890123456789012345678901234567890123456789
+1
+2
+3
+4
+5
+</textarea>
 <P>End
 <H2>Input, name</H2>
 <P>
@@ -61,11 +74,20 @@ Start
 Test<BR>
 <BR><BR>
 <INPUT type=radio name=aid value=1>Button 1<BR>
-<INPUT type=radio name=aid value=2>Button 2<BR>
+<INPUT type=radio name=aid value=2 checked>Button 2<BR>
 <INPUT type="radio" name=aid value=3>Button 3<BR>
 <INPUT type="radio" name=aid value=4>Button 4<BR>
 <INPUT type=radio name=aid value=5>Button 5
 <P>End
+
+<p>
+<p>input type=checkbox</p>
+<p>Geben Sie bei der Pizzabestellung die gew&uuml;nschten Zutaten an:</p>
+  <input type=checkbox name="zutat" value="salami"> Salami<br>
+  <input type=checkbox name="zutat" value="pilze" checked> Pilze<br>
+  <input type=checkbox name="zutat" value="sardellen" checked> Sardellen
+<p>End
+
 <h3>HTML4 form elements:</h3>
 <p>
 SELECT:<br>
@@ -75,11 +97,74 @@ SELECT:<br>
 <option selected>option2</option>
 </select>
 <p>
-SELECT Size=2:<br>
+SELECT Size=2, default 2:<br>
 <select name=select2 size=2>
-<option>option1</option>
+<option value="option1_correct">option1</option>
 <option selected>option2</option>
 </select>
+
+<p>
+SELECT Size=2 longtest, default 2:<br>
+<select name=select2 size=2>
+<option value="option1_correct">this_is_a_very_long_option_to_test_the_sizeHint_option1</option>
+<option selected>option2</option>
+</select>
+
+
+
+<p>
+multiple SELECT Size=4, default 2+3:<br>
+<select multiple name=select3 size=3>
+<option>looooooooong_option1</option>
+<option selected>option2</option>
+<option selected>option3</option>
+<option>option4</option>
+<option>option5</option>
+</select>
+
+<p>
+multiple SELECT size not given, default 2+3:<br>
+<select multiple name=select4>
+<option>option1</option>
+<option selected>option2</option>
+<option selected>option3</option>
+<option>option4</option>
+<option>looong_option5</option><option>option6</option><option>option7</option><option>option8</option><option>option9</option>
+</select>
+
+<p>
+SELECT size=5, default 2+3:<br>
+<select name=select5 size=5>
+<option>option1</option>
+<option selected>option2</option>
+<option selected>option3</option>
+<option>option4</option>
+<option>looong_option5</option><option>option6</option><option>option7</option><option>option8</option><option>option9</option>
+</select>
+
+ <P>
+hierarchical SELECT:<br>
+         <SELECT name="ComOS">
+             <OPTION selected label="none" value="none">None</OPTION>
+             <OPTGROUP label="PortMaster 3">
+               <OPTION label="3.7.1" value="pm3_3.7.1">PortMaster 3 with ComOS 3.7.1</OPTION>
+               <OPTION label="3.7" value="pm3_3.7">PortMaster 3 with ComOS 3.7</OPTION>
+               <OPTION label="3.5" value="pm3_3.5">PortMaster 3 with ComOS 3.5</OPTION>
+             </OPTGROUP>
+             <OPTGROUP label="PortMaster 2">
+               <OPTION label="3.7" value="pm2_3.7">PortMaster 2 with ComOS 3.7</OPTION>
+               <OPTION label="3.5" value="pm2_3.5">PortMaster 2 with ComOS 3.5</OPTION>
+             </OPTGROUP>
+             <OPTGROUP label="IRX">
+               <OPTION label="3.7R" value="IRX_3.7R">IRX with ComOS 3.7R</OPTION>
+               <OPTION label="3.5R" value="IRX_3.5R">IRX with ComOS 3.5R</OPTION>
+             </OPTGROUP>
+         </SELECT>
+<p>
+<p>input type=file</p>
+<input type=file size=50 maxlength=100000 name="File" accept="*/*"><br>
+<br>END<br>
+
 
 <p>
 BUTTON:<br>

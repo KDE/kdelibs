@@ -21,12 +21,12 @@ KDE_CXXFLAGS = $(USE_EXCEPTIONS)
 
 noinst_LTLIBRARIES = libkhtmlhtml.la
 libkhtmlhtml_la_SOURCES = \
-	dtd.cpp                html_headimpl.cpp      html_tableimpl.cpp \
-	html_baseimpl.cpp      html_imageimpl.cpp     htmlparser.cpp \
-	html_blockimpl.cpp     html_inlineimpl.cpp    htmltoken.cpp \
-	html_documentimpl.cpp  html_listimpl.cpp      htmltokenizer.cpp \
-	html_elementimpl.cpp   html_miscimpl.cpp \
-	html_formimpl.cpp      html_objectimpl.cpp
+	htmlparser.cpp         htmltoken.cpp          htmltokenizer.cpp \
+	dtd.cpp                html_headimpl.cpp      html_blockimpl.cpp  \
+	html_elementimpl.cpp   html_inlineimpl.cpp    html_documentimpl.cpp \
+	html_baseimpl.cpp      html_imageimpl.cpp     html_listimpl.cpp \
+	html_miscimpl.cpp      html_formimpl.cpp      html_objectimpl.cpp \
+	html_tableimpl.cpp
 
 libkhtmlhtml_la_METASOURCES = AUTO
 
@@ -43,6 +43,7 @@ INCLUDES = -I$(top_srcdir)/kimgio -I$(top_srcdir)/kio -I$(top_srcdir)/dcop \
  -I$(top_srcdir)/khtml/kjs -I$(top_srcdir)/khtml/java \
  -I$(top_srcdir)/khtml -I$(top_srcdir)/khtml/misc -I$(top_srcdir)/khtml/css \
  -I$(top_srcdir)/khtml/dom -I$(top_srcdir)/khtml/xml -I$(top_srcdir)/khtml/html \
+ -I$(top_srcdir) \
  $(all_includes)
 
 SRCDOC_DEST=$(kde_htmldir)/en/kdelibs/khtml

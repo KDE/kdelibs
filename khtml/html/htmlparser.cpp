@@ -25,9 +25,7 @@
 // KDE HTML Widget -- HTML Parser
 // $Id$
 
-// #define PARSER_DEBUG
-
-//#define CSS_TEST
+//#define PARSER_DEBUG
 
 #ifdef GrayScale
 #undef GrayScale
@@ -58,12 +56,14 @@
 #include "htmlhashes.h"
 #include "htmltoken.h"
 #include "khtmlfont.h"
-#include "htmlhashes.h"
-#include "khtmlstyle.h"
-#include "khtmldata.h"
 #include "khtml.h"
 
+#include "rendering/render_object.h"
+
 #include <stdio.h>
+
+using namespace DOM;
+using namespace khtml;
 
 //----------------------------------------------------------------------------
 
@@ -182,6 +182,38 @@ const unsigned short tagPriority[] = {
     0, // ID_TEXT
 };
 
+
+/**
+ * @internal
+ */
+class HTMLStackElem
+{
+public:
+    HTMLStackElem( int _id,
+		   int _level,
+		   DOM::NodeImpl *_node,
+		   blockFunc _exitFunc,
+		   int _miscData1,
+		   HTMLStackElem * _next
+	)
+	:	
+	id(_id),
+	level(_level),
+	node(_node),
+	exitFunc(_exitFunc),
+	miscData1(_miscData1),
+	next(_next)
+	{ }
+
+    int       id;
+    int       level;
+    NodeImpl *node;
+    blockFunc exitFunc;
+    int       miscData1;
+    HTMLStackElem *next;
+};
+
+
 /**
  * @internal
  *
@@ -215,15 +247,6 @@ KHTMLParser::KHTMLParser( KHTMLWidget *_parent,
 
     blockStack = 0;
 
-    // Style stuff
-    styleSheet = new ::CSSStyleSheet(HTMLWidget->settings());
-
-#ifdef CSS_TEST
-    styleSheet->test();
-#endif
-
-    currentStyle = styleSheet->newStyle(0);
-
     // ID_CLOSE_TAG == Num of tags
     forbiddenTag = new ushort[ID_CLOSE_TAG+1];
 
@@ -232,18 +255,14 @@ KHTMLParser::KHTMLParser( KHTMLWidget *_parent,
 
 KHTMLParser::~KHTMLParser()
 {
-    delete styleSheet;
     freeBlock();
 
     delete [] forbiddenTag;
-
-    if(currentStyle) delete currentStyle;
 }
 
 void KHTMLParser::reset()
 {
     current = document;
-    listLevel = -1; // no List...
 
     freeBlock();
 
@@ -260,6 +279,7 @@ void KHTMLParser::reset()
 
     discard_until = 0;
     nested_html = 0;
+    headLoaded = false;
 }
 
 void KHTMLParser::parseToken(Token *t)
@@ -278,13 +298,36 @@ void KHTMLParser::parseToken(Token *t)
 	    discard_until = 0;
 	return;
     }	
-	
+
+    if(inBody && !headLoaded && !document->headLoaded())
+    {
+	tokenQueue.enqueue(t);
+	return;
+    }
+    else if(inBody)
+    {
+	headLoaded = true;
+	processQueue();
+    }
+    processOneToken(t);
+}
+
+void KHTMLParser::processQueue()
+{
+    while(!tokenQueue.isEmpty())
+	processOneToken(tokenQueue.dequeue());
+    headLoaded = true;
+}
+
+void KHTMLParser::processOneToken(Token *t)
+{
+    //printf("==> parser: processing token %d current = %d\n", t->id, current->id());
+
     if(t->id > ID_CLOSE_TAG)
     {
 	processCloseTag(t);
 	return;
     }
-
 
     // ignore spaces, if we're not inside a paragraph or other inline code
     if(t->id == ID_TEXT && !_inline)
@@ -298,7 +341,6 @@ void KHTMLParser::parseToken(Token *t)
 
 
     NodeImpl *n = getElement(t);
-
     // just to be sure, and to catch currently unimplemented stuff
     if(!n) return;
 
@@ -327,6 +369,8 @@ void KHTMLParser::parseToken(Token *t)
 	printf("insertNode failed current=%d, new=%d!\n", current->id(), n->id());
 	delete n;
     }
+
+    delete t;
 }
 
 void KHTMLParser::insertNode(NodeImpl *n)
@@ -354,16 +398,14 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	    current = newNode;
 	    if(!block && current->blocking())
 		block = current;
+	    n->attach(HTMLWidget);
 	    if(current->isInline()) _inline = true;
 	}
-	
-	if(n->isElementNode())
-	    static_cast<HTMLElementImpl *>(n)->setStyle(currentStyle);
+	else
+	    n->attach(HTMLWidget);
 
-    	n->attach(HTMLWidget);
-
-	if(tagPriority[id] == 0)
-	    n->calcMinMaxWidth();
+	if(tagPriority[id] == 0 && n->renderer())
+	    n->renderer()->calcMinMaxWidth();
 
     }
     catch(DOMException exception)
@@ -373,7 +415,6 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	       current->nodeName().string().ascii(),
 	       n->nodeName().string().ascii());
 #endif
-
 	// error handling...
 	HTMLElementImpl *e;
 	bool ignore = false;
@@ -436,8 +477,6 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	
 	    if(node->id() == ID_TABLE)
 	    {
-		CSSStyle *newStyle = styleSheet->newStyle(currentStyle);
-		
 		NodeImpl *parent = node->parentNode();
 		printf("trying to add form to %d\n", parent->id());
 		try
@@ -448,9 +487,8 @@ void KHTMLParser::insertNode(NodeImpl *n)
 			pushBlock(id, tagPriority[id], exitFunc, exitFuncData);
 		    }
 		    n->attach(HTMLWidget);
-		    static_cast<HTMLElementImpl *>(n)->setStyle(newStyle);
-		    if(tagPriority[id] == 0)
-			n->close();
+		    if(tagPriority[id] == 0 && n->renderer())
+			n->renderer()->close();
 
 		}
 		catch(DOMException e)
@@ -496,8 +534,9 @@ void KHTMLParser::insertNode(NodeImpl *n)
 		insertNode(e);
 		break;
 	    default:
-		e = new HTMLBodyElementImpl(document, HTMLWidget);
+		e = new HTMLBodyElementImpl(document);
 		inBody = true;
+		document->createSelector();
 		insertNode(e);
 		break;
 	    }
@@ -506,8 +545,9 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	    // we can get here only if the element is not allowed in head.
 	    // This means the body starts here...
 	    popBlock(ID_HEAD);
-	    e = new HTMLBodyElementImpl(document, HTMLWidget);
+	    e = new HTMLBodyElementImpl(document);
 	    inBody = true;
+	    document->createSelector();
 	    insertNode(e);
 	    break;
 	case ID_BODY:
@@ -521,6 +561,19 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	    case ID_P:
 		ignore = true;
 		break;
+	    case ID_TEXT:
+	    {
+		TextImpl *t = static_cast<TextImpl *>(n);
+		DOMStringImpl *i = t->string();
+		unsigned int pos = 0;
+		while(pos < i->l && ( *(i->s+pos) == QChar(' ') ||
+				      *(i->s+pos) == QChar(0xa0))) pos++;
+		if(pos == i->l)
+		{
+		    ignore = true;
+		    break;
+		}
+	    }
 	    default:
 		e = new HTMLTableSectionElementImpl(document, ID_TBODY);
 		insertNode(e);
@@ -551,6 +604,19 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	    case ID_P:
 		ignore = true;
 		break;
+	    case ID_TEXT:
+	    {
+		TextImpl *t = static_cast<TextImpl *>(n);
+		DOMStringImpl *i = t->string();
+		unsigned int pos = 0;
+		while(pos < i->l && ( *(i->s+pos) == QChar(' ') ||
+				      *(i->s+pos) == QChar(0xa0))) pos++;
+		if(pos == i->l)
+		{
+		    ignore = true;
+		    break;
+		}
+	    }
 	    default:
 		e = new HTMLTableCellElementImpl(document, ID_TD);
 		insertNode(e);
@@ -587,6 +653,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	    else
 		ignore = true;
 	}	
+
 	// if we couldn't handle the error, just rethrow the exception...
 	if(ignore)
 	{
@@ -620,7 +687,7 @@ NodeImpl *KHTMLParser::getElement(Token *t)
 	// ugly hack for _really_ broken html
 	nested_html++;
 	popBlock(ID_HEAD);
-	n = new HTMLBodyElementImpl(document, HTMLWidget);
+	n = new HTMLBodyElementImpl(document);
 	inBody = true;
 	break;
 
@@ -698,42 +765,25 @@ NodeImpl *KHTMLParser::getElement(Token *t)
 	n = new HTMLDListElementImpl(document);
 	break;
     case ID_DD:
-	n = new HTMLGenericBlockElementImpl(document, t->id);
+	n = new HTMLGenericElementImpl(document, t->id);
 	popBlock(ID_DT);
 	popBlock(ID_DD);
 	break;
     case ID_DT:
-	n = new HTMLGenericBlockElementImpl(document, t->id);
+	n = new HTMLGenericElementImpl(document, t->id);
 	popBlock(ID_DD);
 	popBlock(ID_DT);
 	break;
     case ID_UL:
     {
-	HTMLUListElementImpl *l = new HTMLUListElementImpl(document);
-	n = l;
+	n = new HTMLUListElementImpl(document);
 	exitFunc = &KHTMLParser::blockEndList;
-	exitFuncData = listLevel;
-	// list levels > 255 indicate an OL as outer list
-	if(listLevel > 255)
-	    listLevel = 0;
-	else
-	    listLevel++;
-	if(listLevel > 2) listLevel -= 3;
-	l->setType((ListType)listLevel);
 	break;
     }
     case ID_OL:
     {
-	HTMLOListElementImpl *l = new HTMLOListElementImpl(document);
-	n = l;
+	n = new HTMLOListElementImpl(document);
 	exitFunc = &KHTMLParser::blockEndList;
-	exitFuncData = listLevel;
-	// list levels > 256 indicate an OL as outer list
-	if(listLevel < 256)
-	    listLevel = 256;
-	else
-	    listLevel++;
-	if(listLevel > 260) listLevel -= 5;
 	break;
     }
     case ID_DIR:
@@ -839,7 +889,7 @@ NodeImpl *KHTMLParser::getElement(Token *t)
     case ID_TFOOT:
 	n = new HTMLTableSectionElementImpl(document, t->id);
 	break;
-
+	
 // inline elements
     case ID_BR:
 	n = new HTMLBRElementImpl(document);
@@ -853,7 +903,7 @@ NodeImpl *KHTMLParser::getElement(Token *t)
 // block:
     case ID_ADDRESS:
     case ID_CENTER:
-	n = new HTMLGenericBlockElementImpl(document, t->id);
+	n = new HTMLGenericElementImpl(document, t->id);
 	break;
 // inline
 	// %fontstyle
@@ -882,7 +932,7 @@ NodeImpl *KHTMLParser::getElement(Token *t)
     case ID_SUB:
     case ID_SUP:
     case ID_SPAN:
-	n = new HTMLInlineElementImpl(document, t->id);
+	n = new HTMLGenericElementImpl(document, t->id);
 	break;
 
     case ID_BDO:
@@ -921,10 +971,16 @@ void KHTMLParser::processCloseTag(Token *t)
 	nested_html--;
 	if(nested_html <= 0)
 	    end = true;
-	return;
+	break;
     }
     case ID_FORM+ID_CLOSE_TAG:
 	form = 0;
+	// this one is to get the right style on the body element
+	break;
+    case ID_HEAD+ID_CLOSE_TAG:
+	inBody = true;
+	document->createSelector();
+	break;
     default:
 	break;
     }
@@ -949,11 +1005,9 @@ void KHTMLParser::pushBlock(int _id, int _level,
                             blockFunc _exitFunc,
                             int _miscData1)
 {
-    HTMLStackElem *Elem = new HTMLStackElem(_id, _level, currentStyle,
-					    current, _exitFunc, _miscData1,
+    HTMLStackElem *Elem = new HTMLStackElem(_id, _level, current, _exitFunc, _miscData1,
     					    blockStack);
 
-    currentStyle = styleSheet->newStyle(currentStyle);
     blockStack = Elem;
     addForbidden(_id, forbiddenTag);
 }    					
@@ -1004,14 +1058,14 @@ void KHTMLParser::popOneBlock()
 
     if(Elem->node != current)
     {
-	current->close();
+	if(current->renderer()) current->renderer()->close();
 
-	if(!block)
+	if(!block && current->renderer())
 	{
 	    // ### find a more efficient way...
 	    int absX, absY;
-	    current->getAbsolutePosition(absX, absY);
-	    int height = absY + current->getDescent() + 2*5; // 5==BORDER
+	    current->renderer()->absolutePosition(absX, absY);
+	    int height = absY + current->renderer()->height() + 2*5; // 5==BORDER
 	    int docHeight = HTMLWidget->contentsHeight();
 	    if(height > docHeight)
 		HTMLWidget->resizeContents(HTMLWidget->contentsWidth(), height);
@@ -1026,14 +1080,10 @@ void KHTMLParser::popOneBlock()
 
     removeForbidden(Elem->id, forbiddenTag);
 
-    if (Elem && Elem->style)
-    {
-	delete currentStyle;
-	currentStyle = Elem->style;
-    }
     blockStack = Elem->next;
     current = Elem->node;
-    if(!current->isInline()) _inline = false;
+    if(!current->isInline())
+    	_inline = false;
 
     delete Elem;
 }
@@ -1053,12 +1103,10 @@ void KHTMLParser::freeBlock()
 
 void KHTMLParser::blockEndList( HTMLStackElem *Elem)
 {
-    listLevel = Elem->miscData1;
 }
 
 void KHTMLParser::blockEndForm( HTMLStackElem * )
 {
-    form = 0;
 }
 
 

@@ -1,7 +1,7 @@
-/*
+/**
  * This file is part of the DOM implementation for KDE.
  *
- * (C) 1999 Lars Knoll (knoll@kde.org)
+ * Copyright (C) 2000 Lars Knoll (knoll@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,51 +20,17 @@
  *
  * $Id$
  */
-#ifndef KHTMLTEXT_H
-#define KHTMLTEXT_H
-
-#include <qpainter.h>
-#include <qfontmetrics.h>
+#include "render_br.h"
 #include "dom_stringimpl.h"
 
-namespace khtml
+using namespace khtml;
+
+
+RenderBR::RenderBR(RenderStyle *style)
+    : RenderText(style, new DOM::DOMStringImpl(new QChar('\n'), 1 ) )
 {
+}
 
-class TextSlave
+RenderBR::~RenderBR()
 {
-public:
-    TextSlave(int _x, int _y, int _from, int _len, DOM::DOMStringImpl *_str,
-	      int _ascent, int _descent)
-	{
-	    x = _x;
-	    y = _y;
-	    from = _from;
-	    len = _len;
-	    str = _str;
-	    str->ref();
-	    n = 0;
-	    ascent = _ascent;
-	    descent = _descent;
-	}
-    ~TextSlave() { str->deref(); }
-
-    void print( QPainter *p, int _x, int _y, int _w, int _h, 
-		int _tx, int _ty);
-    bool checkPoint(int _x, int _y, int _tx, int _ty, const QFontMetrics &fm);
-
-
-    void setNext(TextSlave *_n) { n = _n; }
-    TextSlave *next() { return n; }
-
-    int x;
-    int y;
-    int from;
-    int len;
-    DOM::DOMStringImpl *str;
-    TextSlave *n;
-    int ascent;
-    int descent;
-};
-
-};
-#endif
+}

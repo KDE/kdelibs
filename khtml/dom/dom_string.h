@@ -80,7 +80,7 @@ public:
      * The character at position i of the DOMString. If i > length(), the
      * character returned will be 0.
      */
-    const QChar &operator [](unsigned int i);
+    const QChar &operator [](unsigned int i) const;
 
     int find(const QChar c, int start = 0);
 

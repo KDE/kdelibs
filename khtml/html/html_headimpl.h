@@ -29,10 +29,13 @@
 
 class KHTMLWidget;
 
+#include "misc/loader.h"
+
 namespace DOM {
 
 class DOMString;
 class HTMLFormElementImpl;
+class StyleSheetImpl;
 
 class HTMLBaseElementImpl : public HTMLElementImpl
 {
@@ -74,7 +77,7 @@ public:
 
 // -------------------------------------------------------------------------
 
-class HTMLLinkElementImpl : public HTMLElementImpl
+class HTMLLinkElementImpl : public khtml::CachedObjectClient, public HTMLElementImpl
 {
 public:
     HTMLLinkElementImpl(DocumentImpl *doc);
@@ -86,9 +89,29 @@ public:
 
     virtual tagStatus startTag() { return LINKStartTag; }
     virtual tagStatus endTag() { return LINKEndTag; }
-    bool disabled() const;
 
+    StyleSheetImpl *sheet() { return m_sheet; }
+
+    bool disabled() const;
     void setDisabled( bool );
+
+    // overload from HTMLElementImpl
+    virtual void attach(KHTMLWidget *w);
+    virtual void parseAttribute(Attribute *attr);
+
+    // from CachedObjectClient
+    virtual void setStyleSheet(CSSStyleSheetImpl *sheet);
+    bool isLoading() { return m_loading; }
+
+protected:
+    khtml::CachedCSSStyleSheet *m_cachedSheet;
+    StyleSheetImpl *m_sheet;
+    DOMString m_url;
+    DOMString m_type;
+    DOMString m_media;
+    DOMString m_rel;
+    bool m_loading;
+    QString m_data; // needed for temporarily storing the loaded style sheet data
 };
 
 // -------------------------------------------------------------------------
@@ -147,9 +170,20 @@ public:
 
     virtual tagStatus startTag() { return STYLEStartTag; }
     virtual tagStatus endTag() { return STYLEEndTag; }
-    bool disabled() const;
 
+    bool disabled() const;
     void setDisabled( bool );
+
+    StyleSheetImpl *sheet() { return m_sheet; }
+
+    // overload from HTMLElementImpl
+    virtual void parseAttribute(Attribute *attr);
+    virtual NodeImpl *addChild(NodeImpl *child);
+
+protected:
+    StyleSheetImpl *m_sheet;
+    DOMString m_type;
+    DOMString m_media;
 };
 
 // -------------------------------------------------------------------------

@@ -28,8 +28,8 @@
 #include "htmltokenizer.h"
 #include "khtmlfont.h"
 #include "khtmldata.h"
-#include "khtmlio.h"
 #include "khtml.h"
+#include "khtml_part.h"
 #include "htmlhashes.h"
 
 #include "html_misc.h"
@@ -41,6 +41,7 @@
 #include "html_baseimpl.h"
 #include "dom_string.h"
 #include "html_imageimpl.h"
+#include "html_headimpl.h"
 
 #include "dom_nodeimpl.h"
 #include "html_documentimpl.h"
@@ -48,48 +49,45 @@
 #include <stdio.h>
 #include <kurl.h>
 
+#include "css/cssstyleselector.h"
+#include "rendering/render_style.h"
+#include "rendering/render_root.h"
+#include <qstring.h>
+
 using namespace DOM;
+using namespace khtml;
 
 template class QStack<DOM::NodeImpl>;
 
 HTMLDocumentImpl::HTMLDocumentImpl() : DocumentImpl()
 {
     printf("HTMLDocumentImpl constructor this = %p\n",this);
-    view = 0;
     parser = 0;
     tokenizer = 0;
 
     bodyElement = 0;
 
-    width = 0;
-    height = 0;
-
     if (!pFontManager)
 	pFontManager = new khtml::FontManager();
     if (!pSettings)
 	pSettings = new khtml::Settings();
-
 }
 
-HTMLDocumentImpl::HTMLDocumentImpl(KHTMLWidget *v, KHTMLCache *c)
-    : DocumentImpl()
+HTMLDocumentImpl::HTMLDocumentImpl(KHTMLWidget *v)
+    : DocumentImpl(v)
 {
     printf("HTMLDocumentImpl constructor2 this = %p\n",this);
-    view = v;
     parser = 0;
     tokenizer = 0;
-    cache  = c;
-
-    width = view->_width;
-    printf("document: setting width to %d\n", width);
-    height = view->height();
 
     bodyElement = 0;
 
     if (!pFontManager)
 	pFontManager = new khtml::FontManager();
     if (!pSettings)
-	pSettings = new khtml::Settings(*(view->settings()));
+	pSettings = new khtml::Settings(*(view->part()->settings()));
+
+    m_styleSelector = new CSSStyleSelector(this);
 }
 
 HTMLDocumentImpl::~HTMLDocumentImpl()
@@ -124,7 +122,7 @@ HTMLElementImpl *HTMLDocumentImpl::body()
 
 void HTMLDocumentImpl::open(  )
 {
-    printf("HTMLDocumentImpl::open()\n");
+    //printf("HTMLDocumentImpl::open()\n");
     clear();
     parser = new KHTMLParser(view, this);
     tokenizer = new HTMLTokenizer(parser, view);
@@ -133,8 +131,11 @@ void HTMLDocumentImpl::open(  )
 
 void HTMLDocumentImpl::close(  )
 {
-    if(parser) delete parser;
-    parser = 0;
+    if(parser && !parser->hasQueued())
+    {
+	delete parser;
+	parser = 0;
+    }
     if(tokenizer) delete tokenizer;
     tokenizer = 0;
 }
@@ -153,8 +154,8 @@ void HTMLDocumentImpl::write( const QString &text )
 
 void HTMLDocumentImpl::writeln( const DOMString &text )
 {
-    // ??? is this correct
     write(text);
+    write(DOMString("\n"));
 }
 
 ElementImpl *HTMLDocumentImpl::getElementById( const DOMString &elementId )
@@ -237,6 +238,13 @@ NodeImpl *HTMLDocumentImpl::findElement( int id )
 }
 
 
+StyleSheetListImpl *HTMLDocumentImpl::styleSheets()
+{
+    // ### implement for html
+    return 0;
+}
+
+
 // --------------------------------------------------------------------------
 // not part of the DOM
 // --------------------------------------------------------------------------
@@ -251,15 +259,6 @@ void HTMLDocumentImpl::clear()
     // #### clear tree
 }
 
-
-DOMString HTMLDocumentImpl::requestImage(HTMLImageRequester *n, DOMString url)
-{
-    KURL u(view->url(), url.string());
-
-    cache->requestImage(n, u.url());
-
-    return u.url();
-}
 
 NodeImpl *HTMLDocumentImpl::addChild(NodeImpl *newChild)
 {
@@ -282,90 +281,30 @@ NodeImpl *HTMLDocumentImpl::addChild(NodeImpl *newChild)
 
     // just add it...
     newChild->setParent(this);
-    newChild->setAvailableWidth(width);
     _first = _last = newChild;
     return newChild;
 }
 
-void HTMLDocumentImpl::layout( bool deep )
-{
-#ifdef DEBUG_LAYOUT
-    printf("%s(Document)::layout(%d) width=%d, layouted=%d\n", nodeName().string().ascii(), deep, width, layouted());
-#endif
-
-    height = 0;
-
-    if(_first)
-    {
-	_first->setPos(0, 0);
-	_first->setDescent(view->height());
-	setAvailableWidth(width);
-	if(deep)
-	    _first->layout(deep);
-	height = _first->getHeight();
-	width =  _first->getWidth();
-    }
-}
-
-void HTMLDocumentImpl::setAvailableWidth(int w) {
-    if(w != -1) width = w;
-
-    if(_first)
-	_first->setAvailableWidth(w);
-#if 0
-    if(bodyElement)
-    {
-	bodyElement->calcMinMaxWidth();
-    	int tw = width > bodyElement->getMinWidth() ? width :
-	    bodyElement->getMinWidth();
-    	bodyElement->setAvailableWidth(tw);
-//    	printf("Doc:setAvailableWidth %d %d\n",width, tw);
-    }
-#endif
-}
-
-
 bool HTMLDocumentImpl::mouseEvent( int _x, int _y, int button, MouseEventType type,
-				  int, int, DOMString &url)
+				  int, int, DOMString &url,
+                                   NodeImpl *&innerNode, long &offset)
 {
     if(body())
     {
-	return bodyElement->mouseEvent(_x, _y, button, type, 0, 0, url);
+	return bodyElement->mouseEvent(_x, _y, button, type, 0, 0, url, innerNode, offset);
     }
     return false;
-}
-
-void HTMLDocumentImpl::print(NodeImpl *e, bool recursive)
-{
-    view->paintElement(e, recursive);
-}
-
-void HTMLDocumentImpl::updateSize()
-{
-    if(body())
-    {
-    	int oldw = width;
-	int oldh = height;
-	
-    	layout(true);		
-	
-	if(width != oldw || height != oldh)
-	{
-	    if(view)
-	    {
-		view->resizeContents(width, height);
-		// ### schedule layout!
-	    }
-	}
-	if (view)	
-	   view->viewport()->repaint(false);
-    }
 }
 
 void HTMLDocumentImpl::attach(KHTMLWidget *w)
 {
     view = w;
-    cache = view->cache;
+    if(!m_styleSelector) createSelector();
+    m_style = new RenderStyle();
+    m_style->setDisplay(BLOCK);
+    m_render = new RenderRoot(m_style, w);
+    m_render->ref();
+    m_render->layout(true);
 
     NodeBaseImpl::attach(w);
 }
@@ -373,7 +312,56 @@ void HTMLDocumentImpl::attach(KHTMLWidget *w)
 void HTMLDocumentImpl::detach()
 {
     view = 0;
-    cache = 0;
 
     NodeBaseImpl::detach();
+}
+
+void HTMLDocumentImpl::createSelector()
+{
+    //printf("document::createSelector\n");
+    if(!headLoaded()) return;
+    //printf("document::createSelector2\n");
+
+    if(m_styleSelector) delete m_styleSelector;
+    m_styleSelector = new CSSStyleSelector(this);
+
+    if(!parser) return;
+    //printf("document::createSelector3\n");
+    parser->processQueue();
+    // parsing is finished if the tokenizer is already deleted
+    if(!tokenizer) delete parser;
+    parser = 0;
+}
+
+bool HTMLDocumentImpl::headLoaded()
+{
+    //printf("checking for headLoaded()\n");
+
+    NodeImpl *test = _first;
+    if(!test) return true;
+    test = test->firstChild();
+    while(test && (test->id() != ID_HEAD))
+	test = test->nextSibling();
+    if(!test) return true; // no head element, so nothing than can be loaded in there
+    HTMLHeadElementImpl *head = static_cast<HTMLHeadElementImpl *>(test);
+
+    // all LINK and STYLE elements have to be direct children of the HEAD element
+    test = head->firstChild();
+    while(test)
+    {
+	//printf("searching link\n");
+
+	if(test->id() == ID_LINK)
+	{
+	    //printf("found\n");
+	    HTMLLinkElementImpl *link = static_cast<HTMLLinkElementImpl *>(test);
+	    if(link->isLoading())
+	    {
+		//printf("--> not loaded\n");
+		return false;
+	    }
+	}
+	test = test->nextSibling();
+    }
+    return true;
 }

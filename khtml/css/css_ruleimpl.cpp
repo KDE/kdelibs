@@ -31,6 +31,8 @@
 #include "dom_string.h"
 using namespace DOM;
 
+#include <stdio.h>
+
 CSSRuleImpl::CSSRuleImpl(StyleBaseImpl *parent)
     : StyleListImpl(parent)
 {
@@ -104,18 +106,25 @@ CSSStyleDeclarationImpl *CSSFontFaceRuleImpl::style() const
 
 // --------------------------------------------------------------------------
 
-CSSImportRuleImpl::CSSImportRuleImpl(StyleBaseImpl *parent)
+CSSImportRuleImpl::CSSImportRuleImpl(StyleBaseImpl *parent, const DOM::DOMString &href,
+				     MediaListImpl *media)
     : CSSRuleImpl(parent)
 {
     m_type = CSSRule::IMPORT_RULE;
-    m_lstMedia = 0;
+    m_lstMedia = media;
+    m_strHref = href;
     m_styleSheet = 0;
+    printf("CSSImportRule: requesting sheet %s %s\n", href.string().ascii(), baseUrl().string().ascii());
+    m_cachedSheet = khtml::Cache::requestStyleSheet(href, baseUrl());
+    m_cachedSheet->ref(this);
+    m_loading = true;
 }
 
 CSSImportRuleImpl::~CSSImportRuleImpl()
 {
     if(m_lstMedia) m_lstMedia->deref();
     if(m_styleSheet) m_styleSheet->deref();
+    m_cachedSheet->deref(this);
 }
 
 DOMString CSSImportRuleImpl::href() const
@@ -131,6 +140,15 @@ MediaListImpl *CSSImportRuleImpl::media() const
 CSSStyleSheetImpl *CSSImportRuleImpl::styleSheet() const
 {
     return m_styleSheet;
+}
+
+void CSSImportRuleImpl::setStyleSheet(CSSStyleSheetImpl *sheet)
+{
+    printf("CSSImportRule::setStleSheet()\n");
+
+    m_styleSheet = new CSSStyleSheetImpl(this, sheet);
+    m_styleSheet->ref();
+    m_loading = false;
 }
 
 // --------------------------------------------------------------------------

@@ -29,27 +29,32 @@
 #ifndef HTMLPARSER_H
 #define HTMLPARSER_H
 
-#include "dom_string.h"
-#include "khtmlstyle.h"
+#include <qqueue.h>
+
+#include "dom/dom_string.h"
 
 class KHTMLWidget;
 class Token;
 class HTMLStackElem;
-class CSSStyle;
-class khtml::Settings;
 
 namespace DOM {
     class HTMLDocumentImpl;
+    class HTMLElementImpl;
     class NodeImpl;
     class HTMLFormElementImpl;
 }
-using namespace DOM;
 
+class KHTMLParser;
+typedef void (KHTMLParser::*blockFunc)(HTMLStackElem *stackElem);
 
+/**
+ * The parser for html. It receives a stream of tokens from the HTMLTokenizer, and
+ * builds up the Document structure form it.
+ */
 class KHTMLParser
 {
 public:
-    KHTMLParser( KHTMLWidget *w, HTMLDocumentImpl *i );
+    KHTMLParser( KHTMLWidget *w, DOM::HTMLDocumentImpl *i );
     virtual ~KHTMLParser();
 
     /**
@@ -63,28 +68,36 @@ public:
      */
     void reset();
 
+    void processQueue();
+
+    bool hasQueued() { return !tokenQueue.isEmpty(); }
+
 protected:
+    void processOneToken(Token *t);
+
     KHTMLWidget *HTMLWidget;
-    HTMLDocumentImpl *document;
+    DOM::HTMLDocumentImpl *document;
 
     /*
      * generate an element from the token
      */
-    NodeImpl *getElement(Token *);
+    DOM::NodeImpl *getElement(Token *);
 
     void processCloseTag(Token *);
 
-    void insertNode(NodeImpl *n);
+    void insertNode(DOM::NodeImpl *n);
+
+    DOM::HTMLElementImpl *openBody();
 
     /*
      * The currently active element (the one new elements will be added to)
      */
-    NodeImpl *current;
+    DOM::NodeImpl *current;
 
     /*
      * A node blocking the incremental rendering
      */
-    NodeImpl *block;
+    DOM::NodeImpl *block;
 
     HTMLStackElem *blockStack;
 
@@ -106,32 +119,12 @@ protected:
     void blockEndList( HTMLStackElem *Elem);
     void blockEndForm( HTMLStackElem *Elem);
 
-    /*
-     * Current style sheet
-     */
-    ::CSSStyleSheet *styleSheet;
-
-    /*
-     * Current style
-     */
-    CSSStyle *currentStyle;
-
-    /*
-     * default font sizes etc...
-     */
-    khtml::Settings *settings;
-
     ushort *forbiddenTag;
 
     /*
      * currently active form
      */
-    HTMLFormElementImpl *form;
-
-    /*
-     * degree of list nesting.
-     */
-    int listLevel;
+    DOM::HTMLFormElementImpl *form;
 
     bool inBody;
     bool _inline;
@@ -145,6 +138,10 @@ protected:
      * nested, we raise the count, so we don't close the document on the first </body> or </html>
      */
     int nested_html;
+
+    bool headLoaded;
+
+    QQueue<Token> tokenQueue;
 };
 
 #endif // HTMLPARSER_H

@@ -155,7 +155,7 @@ void DOMString::insert(DOMString str, uint pos)
 }
 
 
-const QChar &DOMString::operator [](unsigned int i)
+const QChar &DOMString::operator [](unsigned int i) const
 {
     static const QChar nullChar = 0;
 

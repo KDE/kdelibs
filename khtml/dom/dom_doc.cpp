@@ -30,6 +30,7 @@
 #include "dom_element.h"
 #include "dom_text.h"
 #include "dom_xml.h"
+#include "dom2_range.h"
 using namespace DOM;
 
 
@@ -171,6 +172,11 @@ bool Document::isHTMLDocument()
 {
     if(!impl) return false;
     return ((DocumentImpl *)impl)->isHTMLDocument();
+}
+
+Range Document::createRange()
+{
+    return Range( this );
 }
 
 // ----------------------------------------------------------------------------

@@ -27,6 +27,11 @@
 #include "dom_node.h"
 #include "dom_string.h"
 class HTMLImageRequester;
+class KHTMLWidget;
+
+namespace khtml {
+    class CSSStyleSelector;
+}
 
 namespace DOM {
 
@@ -36,6 +41,7 @@ class DocumentFragmentImpl;
 class TextImpl;
 class AttrImpl;
 class NodeListImpl;
+class StyleSheetListImpl;
 
 /**
  * @internal
@@ -44,6 +50,7 @@ class DocumentImpl : public NodeBaseImpl
 {
 public:
     DocumentImpl();
+    DocumentImpl(KHTMLWidget *v);
     ~DocumentImpl();
 
     virtual const DOMString nodeName() const;
@@ -51,7 +58,7 @@ public:
     virtual bool isDocumentNode() { return true; }
 
     virtual bool isHTMLDocument() { return false; }
-    
+
     //DocumentType doctype() const;
 
     //DOMImplementation implementation() const;
@@ -76,8 +83,19 @@ public:
 
     NodeListImpl *getElementsByTagName ( const DOMString &tagname );
 
+    virtual StyleSheetListImpl *styleSheets();
+
     // for KHTML
     virtual DOMString requestImage(HTMLImageRequester *, DOMString ) { return DOMString(); }
+
+    khtml::CSSStyleSelector *styleSelector() { return m_styleSelector; }
+    virtual void createSelector();
+
+    KHTMLWidget *HTMLWidget() { return view; }
+
+protected:
+    khtml::CSSStyleSelector *m_styleSelector;
+    KHTMLWidget *view;
 };
 
 class DocumentFragmentImpl : public NodeImpl

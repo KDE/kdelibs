@@ -33,7 +33,6 @@
 class KHTMLParser;
 class HTMLTokenizer;
 class KHTMLWidget;
-class KHTMLCache;
 class HTMLImageRequester;
 
 namespace DOM {
@@ -45,11 +44,13 @@ class HTMLElement;
 
 class DOMString;
 
+class StyleSheetListImpl;
+
 class HTMLDocumentImpl : public DocumentImpl
 {
 public:
     HTMLDocumentImpl();
-    HTMLDocumentImpl(KHTMLWidget *v, KHTMLCache *c);
+    HTMLDocumentImpl(KHTMLWidget *v);
 
     ~HTMLDocumentImpl();
 
@@ -61,8 +62,6 @@ public:
     void setURL(DOMString _url) { url = _url; }
     HTMLElementImpl *body();
 
-    virtual bool isInline() { return false; }
-
     void open (  );
     void close (  );
     void write ( const DOMString &text );
@@ -71,48 +70,35 @@ public:
     ElementImpl *getElementById ( const DOMString &elementId );
     NodeListImpl *getElementsByName ( const DOMString &elementName );
 
+    virtual StyleSheetListImpl *styleSheets();
+
     // internal
     NodeImpl *findElement( int id );
 
-    // for KHTML
-    virtual DOMString requestImage(HTMLImageRequester *, DOMString );
-
     // oeverrides NodeImpl
     virtual NodeImpl *addChild(NodeImpl *newChild);
-    virtual void setAvailableWidth(int w = -1);
 
-    virtual int getWidth() const { return width; }
-    virtual int getHeight() const { return height; }
-    virtual void layout( bool deep = false);
     virtual bool mouseEvent( int x, int y, int button,
 			     DOM::NodeImpl::MouseEventType,
-			     int _tx, int _ty, DOMString &url);
-
-    virtual void getAbsolutePosition(int &xPos, int &yPos)
-	{ xPos = yPos = 0; };
-
-    /** forces the redrawing of the object */
-    virtual void print(NodeImpl *e, bool recursive=false);
-    virtual void updateSize();
-
-    KHTMLWidget *HTMLWidget() { return view; }
+			     int _tx, int _ty, DOMString &url,
+                             NodeImpl *& innerNode, long &offset);
 
     virtual void attach(KHTMLWidget *w);
     virtual void detach();
 
+    virtual void createSelector();
+
+    bool headLoaded();
+
 protected:
     void clear();
 
-    KHTMLWidget *view;
     KHTMLParser *parser;
     HTMLTokenizer *tokenizer;
-    KHTMLCache *cache;
 
     HTMLElementImpl *bodyElement;
     DOMString url;
 
-    int width;
-    int height;
 };
 
 }; //namespace

@@ -580,7 +580,7 @@ public:
     CSSPrimitiveValue blue() const;
 
     const QColor &color() const { return m_color; }
-    
+
 protected:
     QColor m_color;
 };

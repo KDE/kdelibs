@@ -28,57 +28,15 @@
 #include <qcolor.h>
 #include <qnamespace.h>
 
-#include "html_list.h"
 #include "html_listimpl.h"
 using namespace DOM;
 
-#include "khtmlfont.h"
-#include "khtmlstyle.h"
+#include "css/cssproperties.h"
+#include "rendering/render_list.h"
 
 #include <stdio.h>
 
-QString toRoman( int number, bool upper )
-{
-    QString roman;
-    QChar ldigits[] = { 'i', 'v', 'x', 'l', 'c', 'd', 'm' };
-    QChar udigits[] = { 'I', 'V', 'X', 'L', 'C', 'D', 'M' };
-    QChar *digits = upper ? udigits : ldigits;
-    int i, d = 0;
-
-    do
-    {
-	int num = number % 10;
-
-	if ( num % 5 < 4 )
-	    for ( i = num % 5; i > 0; i-- )
-		roman.insert( 0, digits[ d ] );
-
-	if ( num >= 4 && num <= 8)
-	    roman.insert( 0, digits[ d+1 ] );
-
-	if ( num == 9 )
-	    roman.insert( 0, digits[ d+2 ] );
-
-	if ( num % 5 == 4 )
-	    roman.insert( 0, digits[ d ] );
-
-	number /= 10;
-	d += 2;
-    }
-    while ( number );
-
-    return roman;
-}
-
-HTMLUListElementImpl::HTMLUListElementImpl(DocumentImpl *doc)
-    : HTMLBlockElementImpl(doc)
-{
-    _type = Disc;
-}
-
-HTMLUListElementImpl::~HTMLUListElementImpl()
-{
-}
+using namespace khtml;
 
 const DOMString HTMLUListElementImpl::nodeName() const
 {
@@ -95,150 +53,13 @@ void HTMLUListElementImpl::parseAttribute(Attribute *attr)
     switch(attr->id)
     {
     case ATTR_TYPE:
-	if ( strcasecmp( attr->value(), "disc" ) == 0 )
-	    _type = Disc;
-	else if ( strcasecmp( attr->value(), "circle" ) == 0 )
-	    _type = Circle;
-	else if ( strcasecmp( attr->value(), "square" ) == 0 )
-	    _type = Square;
-	break;
+	addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, attr->value(), false);
     default:
-	HTMLBlockElementImpl::parseAttribute(attr);
+        HTMLElementImpl::parseAttribute(attr);
     }
 }
 
-void HTMLUListElementImpl::layout(bool deep)
-{
-    ascent = 0;
-    descent = LISTSEP;
-
-    width = availableWidth;
-
-#ifdef DEBUG_LAYOUT
-    printf("%s(UList)::layout(%d) width=%d, layouted=%d\n", nodeName().string().ascii(), deep, width, layouted());
-#endif
-
-    NodeImpl *child = firstChild();
-    while( child != 0 )
-    {
-	if(child->id() != ID_LI)
-	{
-	    printf("wrong structured document in HTMLUListElement!\n");
-	}
-	else
-	{
-	    child->setXPos(INDENT);
-	    child->setYPos(descent);
-	    if(deep)
-		child->layout(deep);
-	    descent += child->getHeight();
-	}
-	child = child->nextSibling();
-    }
-    descent += 5;
-    setLayouted();
-}
-
-void HTMLUListElementImpl::print(QPainter *p, int _x, int _y, int _w, int _h,
-		       int _tx, int _ty)
-{
-    _tx += x;
-    _ty += y;
-    // check if we need to do anything at all...
-    if((_ty - ascent > _y + _h) || (_ty + descent < _y)) return;
-
-    printObject(p, _x, _y, _w, _h, _tx, _ty);
-
-    NodeImpl *child;
-
-    child = firstChild();
-    while(child != 0)
-    {
-	child->print(p, _x, _y, _w, _h, _tx, _ty);
-	child = child->nextSibling();
-    }
-}
-
-void HTMLUListElementImpl::printObject(QPainter *, int, int,
-				       int, int, int, int)
-{
-#ifdef DEBUG_LAYOUT
-    printf("%s(UList)::printObject()\n", nodeName().string().ascii());
-#endif
-}
-
-NodeImpl *HTMLUListElementImpl::addChild(NodeImpl *newChild)
-{
-#ifdef DEBUG_LAYOUT
-    printf("%s(UList)::addChild( %s )\n", nodeName().string().ascii(), newChild->nodeName().string().ascii());
-#endif
-
-    if(_last)
-	newChild->setYPos(_last->getYPos() + _last->getDescent());
-    else
-	newChild->setYPos(LISTSEP);
-    newChild->setXPos(INDENT);
-
-    NodeImpl *ret = NodeBaseImpl::addChild(newChild);
-
-    int childWidth = availableWidth - INDENT;
-    if(childWidth < 0) childWidth = 0;
-    newChild->setAvailableWidth(childWidth);
-    static_cast<HTMLLIElementImpl *>(newChild)->setType(_type);
-
-    return ret;
-}
-
-void HTMLUListElementImpl::setAvailableWidth(int w)
-{
-#ifdef DEBUG_LAYOUT
-    printf("%s(UList)::setAvailableWidth(%d)\n", nodeName().string().ascii(), w);
-#endif
-
-    if(w != -1)
-    {
-	availableWidth = w;
-	setLayouted(false);
-    }
-
-    int childWidth;
-    if(availableWidth)
-	childWidth = availableWidth - INDENT;
-    else
-	childWidth = 0;
-
-    NodeImpl *child = firstChild();
-    while(child != 0)
-    {
-    	if (child->getMinWidth() > availableWidth)
-	{
-	    printf("ERROR: %d too narrow availableWidth=%d minWidth=%d\n",
-	    id(), availableWidth, child->getMinWidth());
-	    calcMinMaxWidth();
-	    setLayouted(false);
-	}
-	child->setAvailableWidth(childWidth);
-	child = child->nextSibling();
-    }
-}
-
-void HTMLUListElementImpl::calcMinMaxWidth()
-{
-    HTMLBlockElementImpl::calcMinMaxWidth();
-    minWidth +=INDENT;
-    maxWidth +=INDENT;
-}
 // -------------------------------------------------------------------------
-
-
-HTMLDirectoryElementImpl::HTMLDirectoryElementImpl(DocumentImpl *doc)
-    : HTMLUListElementImpl(doc)
-{
-}
-
-HTMLDirectoryElementImpl::~HTMLDirectoryElementImpl()
-{
-}
 
 const DOMString HTMLDirectoryElementImpl::nodeName() const
 {
@@ -252,15 +73,6 @@ ushort HTMLDirectoryElementImpl::id() const
 
 // -------------------------------------------------------------------------
 
-HTMLMenuElementImpl::HTMLMenuElementImpl(DocumentImpl *doc)
-    : HTMLUListElementImpl(doc)
-{
-}
-
-HTMLMenuElementImpl::~HTMLMenuElementImpl()
-{
-}
-
 const DOMString HTMLMenuElementImpl::nodeName() const
 {
     return "MENU";
@@ -272,16 +84,6 @@ ushort HTMLMenuElementImpl::id() const
 }
 
 // -------------------------------------------------------------------------
-
-HTMLOListElementImpl::HTMLOListElementImpl(DocumentImpl *doc)
-    : HTMLUListElementImpl(doc)
-{
-    _type = Num;
-}
-
-HTMLOListElementImpl::~HTMLOListElementImpl()
-{
-}
 
 const DOMString HTMLOListElementImpl::nodeName() const
 {
@@ -301,6 +103,7 @@ long HTMLOListElementImpl::start() const
 
 void HTMLOListElementImpl::setStart( long )
 {
+    // ###
 }
 
 void HTMLOListElementImpl::parseAttribute(Attribute *attr)
@@ -308,76 +111,23 @@ void HTMLOListElementImpl::parseAttribute(Attribute *attr)
     switch(attr->id)
     {
     case ATTR_TYPE:
-	if ( strcmp( attr->value(), "a" ) == 0 )
-	    _type = LowAlpha;
-	else if ( strcmp( attr->value(), "A" ) == 0 )
-	    _type = UpAlpha;
-	else if ( strcmp( attr->value(), "i" ) == 0 )
-	    _type = LowRoman;
-	else if ( strcmp( attr->value(), "I" ) == 0 )
-	    _type = UpRoman;
-	else if ( strcmp( attr->value(), "1" ) == 0 )
-	    _type = Num;
-	break;
+        if ( strcmp( attr->value(), "a" ) == 0 )
+	    addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "lower-alpha", false);
+        else if ( strcmp( attr->value(), "A" ) == 0 )
+	    addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "upper-alpha", false);
+        else if ( strcmp( attr->value(), "i" ) == 0 )
+	    addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "lower-roman", false);
+        else if ( strcmp( attr->value(), "I" ) == 0 )
+	    addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "upper-roman", false);
+        else if ( strcmp( attr->value(), "1" ) == 0 )
+	    addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "decimal", false);
+        break;
     default:
-	HTMLBlockElementImpl::parseAttribute(attr);
+        HTMLUListElementImpl::parseAttribute(attr);
     }
-}
-
-void HTMLOListElementImpl::layout(bool deep)
-{
-    ascent = 0;
-    descent = 5;
-
-    width = availableWidth;
-
-#ifdef DEBUG_LAYOUT
-    printf("%s(OList)::layout(%d) width=%d, layouted=%d\n", nodeName().string().ascii(), deep, width, layouted());
-#endif
-
-    int num = 1;
-    NodeImpl *child = firstChild();
-    while( child != 0 )
-    {
-	if(child->id() != ID_LI)
-	{
-	    printf("wrong structured document in HTMLUListElement!\n");
-	}
-	else
-	{
-	    HTMLLIElementImpl *i = static_cast<HTMLLIElementImpl *>(child);
-	    num = i->calcListValue(num);
-	    child->setXPos(INDENT);
-	    child->setYPos(descent);
-	    if(deep)
-		child->layout(deep);
-	    descent += child->getDescent();
-	}
-	child = child->nextSibling();
-    }
-    descent += 5;
-    setLayouted();
-}
-
-void HTMLOListElementImpl::calcMinMaxWidth()
-{
-    HTMLBlockElementImpl::calcMinMaxWidth();
-    minWidth +=INDENT;
-    maxWidth +=INDENT;
 }
 
 // -------------------------------------------------------------------------
-
-HTMLLIElementImpl::HTMLLIElementImpl(DocumentImpl *doc)
-    : HTMLBlockElementImpl(doc)
-{
-    predefVal = -1;
-    val = 0;
-}
-
-HTMLLIElementImpl::~HTMLLIElementImpl()
-{
-}
 
 const DOMString HTMLLIElementImpl::nodeName() const
 {
@@ -389,112 +139,27 @@ ushort HTMLLIElementImpl::id() const
     return ID_LI;
 }
 
-int HTMLLIElementImpl::calcListValue( long v )
+long HTMLLIElementImpl::value() const
 {
-// ###
-#if 0
-    DOMString s = attributeMap.valueForId(ATTR_VALUE);
-    if(s != 0)
-	val = s.toInt();
-    else
-#endif
-	val = v;
-    return val+1;
+    if(m_render && m_render->isListItem())
+    {
+	RenderListItem *list = static_cast<RenderListItem *>(m_render);
+	return list->value();
+    }
+    return 0;
 }
 
-void HTMLLIElementImpl::print(QPainter *p, int _x, int _y, int _w, int _h,
-			     int _tx, int _ty)
+void HTMLLIElementImpl::setValue( long v )
 {
-#ifdef DEBUG_LAYOUT
-    printf("%s(LI)::print()\n", nodeName().string().ascii());
-#endif
-    printIcon(p, _tx+x, _ty+y);
-    HTMLBlockElementImpl::print(p, _x, _y, _w, _h, _tx, _ty);
-}
-
-void HTMLLIElementImpl::printIcon(QPainter *p, int _tx, int _ty)
-{
-#ifdef DEBUG_LAYOUT
-    printf("%s(LI)::printObject(%d, %d)\n", nodeName().string().ascii(), _tx, _ty);
-#endif
-
-    // ### this should scale with the font size in the body... possible?
-    int yp = _ty + 4;
-    int xp = _tx - 13;
-
-    QColor color( style()->font.color );
-    p->setPen( QPen( color ) );
-
-   // Just print the item identifier, then do usual BlockElement rendering
-    switch(t)
+    if(m_render && m_render->isListItem())
     {
-    case Disc:
-	p->setBrush( QBrush( color ) );
-	p->drawEllipse( xp, yp, 7, 7 );
-	break;	
-    case Circle:
-	p->setBrush( QBrush( color ) );
-	p->drawArc( xp, yp, 7, 7, 0, 16*360 );
-	break;
-    case Square:
-    {
-	p->setBrush( QBrush( color ) );
-    QCOORD points[] = { xp,yp, xp+7,yp, xp+7,yp+7, xp,yp+7, xp,yp };
-    QPointArray a( 5, points );
-	p->drawPolyline( a );
-	break;
-    }
-    default:
-    {
-	QString item;
-	switch(t)
-	{
-	case LowRoman:
-	    item = toRoman( val, false );
-	    item += ".";
-	    break;
-	case UpRoman:
-	    item = toRoman( val, true );
-	    item += ".";
-	    break;
-	case LowAlpha:
-	    item = (QChar) ((int)('a' + val - 1));
-	    item += ".";
-	    break;
-	case UpAlpha:
-	    item = (QChar) ((int)('A' + val - 1));
-	    item += ".";
-	    break;
-	case Num:
-	    item.sprintf( "%2ld", val );
-	    item += ".";
-	    break;
-	default:
-	    break;
-	}
-	p->drawText(_tx-5, _ty, 0, 0, Qt::AlignRight|Qt::DontClip, item);
-    }
+	RenderListItem *list = static_cast<RenderListItem *>(m_render);
+	list->setValue(v);
     }
 }
-void HTMLLIElementImpl::printObject(QPainter *p, int _x, int _y,
-				    int _w, int _h, int _tx, int _ty)
-{
-    printIcon(p, _tx, _ty);
-    HTMLBlockElementImpl::printObject(p, _x, _y, _w, _h, _tx, _ty);
-}
-
 
 // -------------------------------------------------------------------------
 
-
-HTMLDListElementImpl::HTMLDListElementImpl(DocumentImpl *doc)
-    : HTMLBlockElementImpl(doc)
-{
-}
-
-HTMLDListElementImpl::~HTMLDListElementImpl()
-{
-}
 
 const DOMString HTMLDListElementImpl::nodeName() const
 {
@@ -504,53 +169,5 @@ const DOMString HTMLDListElementImpl::nodeName() const
 ushort HTMLDListElementImpl::id() const
 {
     return ID_DL;
-}
-
-void HTMLDListElementImpl::layout(bool deep)
-{
-    ascent = 0;
-    descent = 5;
-
-    width = availableWidth;
-
-#ifdef DEBUG_LAYOUT
-    printf("%s(DList)::layout(%d) width=%d, layouted=%d\n", nodeName().string().ascii(), deep, width, layouted());
-#endif
-
-    NodeImpl *child = firstChild();
-    while( child != 0 )
-    {
-	if(child->id() == ID_DT)
-	{
-	    child->setYPos(descent);
-	    if(deep)
-		child->layout(deep);
-	    descent += child->getHeight();
-	    child = child->nextSibling();
-	}
-	else if(child->id() == ID_DD)
-	{
-	    child->setXPos(INDENT);
-	    child->setYPos(descent);
-	    if(deep)
-		child->layout(deep);
-	    descent += child->getHeight();
-	    child = child->nextSibling();
-	}
-	else
-	{
-	    printf("wrong structured document in HTMLUListElement!\n");
-	    child = child->nextSibling();
-	}
-    }
-    descent += 5;
-    setLayouted();
-}
-
-void HTMLDListElementImpl::calcMinMaxWidth()
-{
-    HTMLBlockElementImpl::calcMinMaxWidth();
-    minWidth +=INDENT;
-    maxWidth +=INDENT;
 }
 

@@ -28,8 +28,6 @@
 #include "html_elementimpl.h"
 #include "html_imageimpl.h"
 
-class CSSStyle;
-
 namespace DOM {
 
 class DOMString;
@@ -52,11 +50,10 @@ public:
     void blur (  );
     void focus (  );
 
-    virtual void setStyle(CSSStyle *style);
-
     virtual void parseAttribute(Attribute *attr);
     virtual bool mouseEvent( int x, int y, int button, MouseEventType,
-			     int _tx, int _ty, DOMString &url);
+			     int _tx, int _ty, DOMString &url,
+                             NodeImpl *&innerNode, long &offset);
 
     void getAnchorPosition(int &xPos, int &yPos);
 };
@@ -75,18 +72,13 @@ public:
 
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
-    virtual bool isRendered() { return true; }
-    
+
     virtual void parseAttribute(Attribute *attr);
 
     virtual tagStatus startTag() { return BRStartTag; }
     virtual tagStatus endTag() { return BREndTag; }
-    
-    virtual BRClear clear() { return _clear; }
-    
-protected:
-    
-    BRClear _clear; 
+
+    virtual void attach(KHTMLWidget *w);
 };
 
 // -------------------------------------------------------------------------
@@ -105,10 +97,6 @@ public:
     virtual tagStatus endTag() { return FONTEndTag; }
 
     virtual void parseAttribute(Attribute *attr);
-    virtual void setStyle(CSSStyle *currentStyle);
-    virtual void print(QPainter *p, int _x, int _y, int _w, int _h,
-		       int _tx, int _ty);
-
 };
 
 // -------------------------------------------------------------------------

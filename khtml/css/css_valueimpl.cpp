@@ -29,6 +29,10 @@
 #include "dom_string.h"
 #include "dom_stringimpl.h"
 
+#include <stdio.h>
+
+#include "cssvalues.h"
+
 using namespace DOM;
 
 CSSStyleDeclarationImpl::CSSStyleDeclarationImpl(CSSRuleImpl *parent)
@@ -62,6 +66,8 @@ CSSValueImpl *CSSStyleDeclarationImpl::getPropertyCSSValue( const DOMString &pro
 
 CSSValueImpl *CSSStyleDeclarationImpl::getPropertyCSSValue( int propertyID )
 {
+    if(!m_lstValues) return 0;
+
     int i = 0;
     while(i < m_lstValues->count())
     {
@@ -74,7 +80,14 @@ CSSValueImpl *CSSStyleDeclarationImpl::getPropertyCSSValue( int propertyID )
 
 DOMString CSSStyleDeclarationImpl::removeProperty( const DOMString &propertyName )
 {
-    int id = getPropertyID(propertyName.string().ascii(), propertyName.length());
+    int id = getPropertyID(propertyName.string().lower().ascii(), propertyName.length());
+    removeProperty(id);
+}
+
+DOMString CSSStyleDeclarationImpl::removeProperty( int id)
+{
+    if(!m_lstValues) return 0;
+
     int i = 0;
     while(i < m_lstValues->count())
     {
@@ -99,6 +112,8 @@ DOMString CSSStyleDeclarationImpl::getPropertyPriority( const DOMString &propert
 
 bool CSSStyleDeclarationImpl::getPropertyPriority( int propertyID )
 {
+    if(!m_lstValues) return false;
+
     int i = 0;
     while(i < m_lstValues->count())
     {
@@ -108,9 +123,83 @@ bool CSSStyleDeclarationImpl::getPropertyPriority( int propertyID )
     return false;
 }
 
-void CSSStyleDeclarationImpl::setProperty( const DOMString &propertyName, const DOMString &value, const DOMString &priority )
+void CSSStyleDeclarationImpl::setProperty( const DOMString &propName, const DOMString &value, const DOMString &priority )
 {
-    // ###
+    int id = getPropertyID(propName.string().lower().ascii(), propName.length());
+    if (!id) return;
+
+    bool important = false;
+    QString str = priority.string().lower();
+    if(str.contains("important"))
+	important = true;
+
+    setProperty(id, value, important);
+}
+
+void CSSStyleDeclarationImpl::setProperty(int id, const DOMString &value, bool important)
+{
+    if(!m_lstValues)
+    {
+	m_lstValues = new QList<CSSProperty>;
+	m_lstValues->setAutoDelete(true);
+    }
+    parseValue(value.unicode(), value.unicode()+value.length(), id, important, m_lstValues);
+}
+
+void CSSStyleDeclarationImpl::setProperty ( const DOMString &propertyString)
+{
+    QList<CSSProperty> *props = parseProperties(propertyString.unicode(),
+						propertyString.unicode()+propertyString.length());
+    if(!props || !props->count())
+    {
+	printf("no properties returned!\n");
+	return;
+    }
+
+    props->setAutoDelete(false);
+
+    int i = 0;
+    if(!m_lstValues) m_lstValues = new QList<CSSProperty>;
+    while(i < props->count())
+    {
+	//printf("setting property\n");
+	CSSProperty *prop = props->at(i);
+	removeProperty(prop->m_id);
+	m_lstValues->append(prop);
+	i++;
+    }
+    delete props;
+}
+
+void CSSStyleDeclarationImpl::setLengthProperty(int id, const DOMString &value,
+						bool important)
+{
+    if(!m_lstValues)
+    {
+	m_lstValues = new QList<CSSProperty>;
+	m_lstValues->setAutoDelete(true);
+    }
+
+    CSSValueImpl *v = parseUnit(value.unicode(), value.unicode()+value.length(),
+				INTEGER | PERCENT | LENGTH);
+    if(!v)
+    {
+	printf("invalid length\n");
+	return;
+    }
+
+    CSSPrimitiveValueImpl *p = static_cast<CSSPrimitiveValueImpl *>(v);
+    if(p->primitiveType() == CSSPrimitiveValue::CSS_NUMBER)
+    {
+	// set the parsed number in pixels
+	p->setPrimitiveType(CSSPrimitiveValue::CSS_PX);
+    }
+    CSSProperty *prop = new CSSProperty();
+    prop->m_id = id;
+    prop->setValue(v);
+    prop->m_bImportant = important;
+
+    m_lstValues->append(prop);
 }
 
 unsigned long CSSStyleDeclarationImpl::length() const
@@ -184,18 +273,6 @@ CSSValueListImpl::~CSSValueListImpl()
 {
 }
 
-unsigned long CSSValueListImpl::length() const
-{
-  // TODO
-  return 0;
-}
-
-CSSValueImpl *CSSValueListImpl::item( unsigned long index )
-{
-  // TODO
-  return 0;
-}
-
 unsigned short CSSValueListImpl::valueType() const
 {
     return CSSValue::CSS_VALUE_LIST;
@@ -255,10 +332,10 @@ CSSPrimitiveValueImpl::CSSPrimitiveValueImpl(const QColor &color)
 
 CSSPrimitiveValueImpl::~CSSPrimitiveValueImpl()
 {
-    if(m_type < CSSPrimitiveValue::CSS_STRING || m_type != CSSPrimitiveValue::CSS_IDENT)
+    if(m_type < CSSPrimitiveValue::CSS_STRING || m_type == CSSPrimitiveValue::CSS_IDENT)
     { }
     else if(m_type < CSSPrimitiveValue::CSS_COUNTER)
-	m_value.string->deref();
+	if(m_value.string) m_value.string->deref();
     else if(m_type == CSSPrimitiveValue::CSS_COUNTER)
 	delete m_value.counter;
     else if(m_type == CSSPrimitiveValue::CSS_RECT)
@@ -283,8 +360,8 @@ void CSSPrimitiveValueImpl::setFloatValue( unsigned short unitType, float floatV
 
 float CSSPrimitiveValueImpl::getFloatValue( unsigned short unitType )
 {
-    if(m_type > CSSPrimitiveValue::CSS_DIMENSION) throw CSSException(CSSException::SYNTAX_ERR);
-    //if(m_type > CSSPrimitiveValue::CSS_DIMENSION) throw DOMException(DOMException::INVALID_ACCESS_ERR);
+    // ### add unit conversion
+    if(m_type != unitType) throw CSSException(CSSException::SYNTAX_ERR);
     return m_value.num;
 }
 
@@ -348,4 +425,24 @@ int CSSPrimitiveValueImpl::getIdent()
 {
     if(m_type != CSSPrimitiveValue::CSS_IDENT) return 0;
     return m_value.ident;
+}
+
+// -----------------------------------------------------------------
+
+CSSImageValueImpl::CSSImageValueImpl(const DOMString &url, const DOMString &baseurl)
+    : CSSPrimitiveValueImpl(url, CSSPrimitiveValue::CSS_URI)
+{
+    m_image = khtml::Cache::requestImage(url, baseurl);
+    if(m_image) m_image->ref(this);
+}
+
+CSSImageValueImpl::CSSImageValueImpl()
+    : CSSPrimitiveValueImpl(CSS_VAL_NONE)
+{
+    m_image = 0;
+}
+
+CSSImageValueImpl::~CSSImageValueImpl()
+{
+    if(m_image) m_image->deref(this);
 }

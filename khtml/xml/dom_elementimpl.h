@@ -41,7 +41,7 @@ class DocumentImpl;
 QDataStream &operator<<( QDataStream &, const DOM::ElementImpl & );
 QDataStream &operator>>( QDataStream &, DOM::ElementImpl & );
 #endif
-    
+
 class AttrImpl : public NodeImpl
 {
     friend class ElementImpl;
@@ -131,6 +131,8 @@ public:
     DOMString getAttribute ( int id );
     void setAttribute ( int id, const DOMString &value );
     void setAttribute ( AttributeList list );
+
+    virtual void attach(KHTMLWidget *w);
 
 protected: // member variables
 

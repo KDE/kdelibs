@@ -27,6 +27,11 @@
 #include "dom_node.h"
 #include "dom_string.h"
 
+#include "misc/htmlhashes.h"
+#include "html/html_headimpl.h"
+#include "xml/dom_docimpl.h"
+#include "dom/dom_doc.h"
+
 #include <stdio.h>
 
 using namespace DOM;
@@ -126,6 +131,18 @@ CSSStyleSheet::CSSStyleSheet(CSSStyleSheetImpl *impl) : StyleSheet(impl)
 
 CSSStyleSheet &CSSStyleSheet::operator = (const CSSStyleSheet &other)
 {
+    StyleSheet::operator = (other);
+    return *this;
+}
+
+CSSStyleSheet &CSSStyleSheet::operator = (const StyleSheet &other)
+{
+    if(!other.handle()->isCSSStyleSheet())
+    {
+	if(impl) impl->deref();
+	impl = 0;
+	return *this;
+    }
     StyleSheet::operator = (other);
     return *this;
 }
@@ -284,5 +301,98 @@ void MediaList::append( const DOMString &newMedium )
         ((MediaListImpl *)impl)->append( newMedium );
 }
 
+// ----------------------------------------------------------
 
+LinkStyle::LinkStyle()
+{
+    node = 0;
+}
+
+LinkStyle::LinkStyle(const LinkStyle &other)
+{
+    node = other.node;
+    if(node) node->ref();
+}
+
+LinkStyle & LinkStyle::operator = (const LinkStyle &other)
+{
+    if(node) node->deref();
+    node = other.node;
+    if(node) node->ref();
+    return *this;
+}
+
+LinkStyle & LinkStyle::operator = (const Node &other)
+{
+    if(node) node->deref();
+    node = 0;	
+    // ### add processing instructions
+    NodeImpl *n = other.handle();
+    if(!n || !n->isElementNode()) return *this;
+
+    // ### check link is really linking a style sheet
+    if(n->id() != ID_STYLE || n->id() != ID_LINK)
+        return *this;
+
+    node = n;
+    if(node) node->ref();
+
+    return *this;
+}
+
+LinkStyle::~LinkStyle()
+{
+    if(node) node->deref();
+}
+
+StyleSheet LinkStyle::sheet()
+{
+    if(!node) return StyleSheet();
+
+    if(node->id() == ID_STYLE)
+	return static_cast<HTMLStyleElementImpl *>(node)->sheet();
+    else if(node->id() == ID_LINK)
+	return static_cast<HTMLLinkElementImpl *>(node)->sheet();
+    // ### add PI
+    return StyleSheet();
+}
+
+// ----------------------------------------------------------
+
+DocumentStyle::DocumentStyle()
+{
+    doc = 0;
+}
+
+DocumentStyle::DocumentStyle(const DocumentStyle &other)
+{
+    doc = other.doc;
+    if(doc) doc->ref();
+}
+
+DocumentStyle & DocumentStyle::operator = (const DocumentStyle &other)
+{
+    if(doc) doc->deref();
+    doc = other.doc;
+    if(doc) doc->ref();
+    return *this;
+}
+
+DocumentStyle & DocumentStyle::operator = (const Document &other)
+{
+    if(doc) doc->deref();
+    doc = static_cast<DocumentImpl *>(other.handle());
+    if(doc) doc->ref();
+    return *this;
+}
+
+DocumentStyle::~DocumentStyle()
+{
+    if(doc) doc->deref();
+}
+
+StyleSheetList DocumentStyle::styleSheets()
+{
+    return doc->styleSheets();
+}
 

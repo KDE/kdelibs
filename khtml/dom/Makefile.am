@@ -24,9 +24,11 @@ libkhtmldom_la_SOURCES = \
 	dom_misc.cpp        html_block.cpp      html_inline.cpp \
 	css_rule.cpp        dom_node.cpp        html_document.cpp   html_list.cpp \
 	css_stylesheet.cpp  dom_string.cpp      html_element.cpp    html_misc.cpp \
-	css_value.cpp       dom_text.cpp        html_form.cpp       html_object.cpp \
-	dom_doc.cpp         dom_xml.cpp         html_head.cpp       html_table.cpp \
-	dom_element.cpp     html_base.cpp       html_image.cpp
+	css_value.cpp       dom_text.cpp        html_object.cpp \
+	dom_doc.cpp         dom_xml.cpp         html_head.cpp \
+	dom_element.cpp     html_base.cpp       html_image.cpp      html_form.cpp \
+	dom2_range.cpp
+#	html_table.cpp
 #	css_extensions.cpp
 
 libkhtmldom_la_METASOURCES = AUTO
@@ -39,8 +41,9 @@ myinclude_HEADERS = \
 	css_value.h       dom_node.h        html_element.h    html_object.h \
 	dom_core.h        dom_string.h      html_form.h       html_table.h \
 	dom_doc.h         dom_text.h        html_head.h \
-	dom_element.h     dom_xml.h         html_image.h
-#	css_extensions.h  
+	dom_element.h     dom_xml.h         html_image.h \
+	dom2_range.h
+#	css_extensions.h
 
 INCLUDES = -I$(top_srcdir)/kimgio -I$(top_srcdir)/kio -I$(top_srcdir)/dcop \
  -I$(top_srcdir)/khtml -I$(top_srcdir)/khtml/misc -I$(top_srcdir)/khtml/css \

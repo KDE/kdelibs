@@ -28,18 +28,29 @@
 #include "dom_exception.h"
 using namespace DOM;
 
+#include "css/cssstyleselector.h"
+using namespace khtml;
 
 DocumentImpl::DocumentImpl() : NodeBaseImpl(0)
 {
+    m_styleSelector = 0;
+    view = 0;
+}
+
+DocumentImpl::DocumentImpl(KHTMLWidget *v) : NodeBaseImpl(0)
+{
+    m_styleSelector = 0;
+    view = v;
 }
 
 DocumentImpl::~DocumentImpl()
 {
+    delete m_styleSelector;
 }
 
 const DOMString DocumentImpl::nodeName() const
 {
-  return "#document";
+    return "#document";
 }
 
 unsigned short DocumentImpl::nodeType() const
@@ -59,6 +70,21 @@ ElementImpl *DocumentImpl::createElement( const DOMString & )
     // ### this will never get called for HTML
     throw DOMException(DOMException::NOT_SUPPORTED_ERR);
 }
+
+StyleSheetListImpl *DocumentImpl::styleSheets()
+{
+    // ### implement for xml
+    return 0;
+}
+
+
+void DocumentImpl::createSelector()
+{
+    if(m_styleSelector) delete m_styleSelector;
+    m_styleSelector = new CSSStyleSelector(this);
+}
+
+// ------------------------------------------------------------------------
 
 DocumentFragmentImpl *DocumentImpl::createDocumentFragment(  )
 {

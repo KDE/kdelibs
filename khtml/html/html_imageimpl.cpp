@@ -29,10 +29,10 @@
 #include <qstack.h>
 
 #include "htmlhashes.h"
-#include "khtmlio.h"
 
 #include "html_image.h"
 #include "dom_string.h"
+#include "dom_nodeimpl.h"
 #include "html_documentimpl.h"
 
 #include "khtml.h"
@@ -41,10 +41,17 @@
 
 #include <iostream>
 
+#include "rendering/render_image.h"
+#include "css/cssstyleselector.h"
+#include "css/cssproperties.h"
+#include <iostream.h>
+#include <qstring.h>
+#include <qlist.h>
+#include <qpoint.h>
+#include <qregion.h>
 
 using namespace DOM;
-
-#define UNDEFINED -1
+using namespace khtml;
 
 // -------------------------------------------------------------------------
 
@@ -53,15 +60,9 @@ using namespace DOM;
 // -------------------------------------------------------------------------
 
 HTMLImageElementImpl::HTMLImageElementImpl(DocumentImpl *doc)
-    : HTMLPositionedElementImpl(doc), HTMLImageRequester()
+    : HTMLElementImpl(doc)
 {
     ismap = false;
-    valign = Bottom;
-
-    pixmap = 0;
-    bComplete = true;
-    border = 0;
-    imgHeight = 0;
 }
 
 HTMLImageElementImpl::~HTMLImageElementImpl()
@@ -82,31 +83,20 @@ ushort HTMLImageElementImpl::id() const
 }
 
 bool HTMLImageElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType type,
-				  int _tx, int _ty, DOMString &url)
+                                       int _tx, int _ty, DOMString &url,
+                                       NodeImpl *&innerNode, long &offset)
 {
-    //printf("          _x=%d _y=%d _tx=%d, _ty=%d\n", _x, _y, _tx, _ty);
-    //printf("image at: _x=%d _y=%d ascent=%d, descent=%d width=%d\n", x+_tx, y+_ty, ascent, descent, width);
+  //printf("_x=%d _tx=%d _y=%d, _ty=%d\n", _x, _y, _tx, _ty);
     if (usemap.length()>0)
     {
         //cout << "usemap: " << usemap.string() << endl;
         HTMLMapElementImpl* map;
     	if ( (map = HTMLMapElementImpl::getMap(usemap))!=0)
-    	    return map->mapMouseEvent(_x-getXPos()-_tx, _y-getYPos()-_ty+ascent,
-	    	getWidth(), getHeight(), button, type, url);
+            return map->mapMouseEvent(_x-renderer()->xPos()-_tx,
+                                      _y-renderer()->yPos()-_ty,
+                                      renderer()->width(), renderer()->height(), button, type, url);
     }
-    return HTMLPositionedElementImpl::mouseEvent(_x, _y, button, type, _tx, _ty, url);
-}
-
-// other stuff...
-void HTMLImageElementImpl::attach(KHTMLWidget *)
-{
-    printf("Image: Requesting URL=%s\n", imageURL.string().ascii() );
-    imageURL = document->requestImage(this, imageURL);
-}
-
-void HTMLImageElementImpl::detach()
-{
-    KHTMLCache::free(imageURL, this);
+    return HTMLElementImpl::mouseEvent(_x, _y, button, type, _tx, _ty, url, innerNode, offset);
 }
 
 void HTMLImageElementImpl::parseAttribute(Attribute *attr)
@@ -114,49 +104,43 @@ void HTMLImageElementImpl::parseAttribute(Attribute *attr)
     switch (attr->id)
     {
     case ATTR_SRC:
-	if(pixmap)
-	{
-	    // we already loaded an image. so this is some jscript call
-	    KHTMLCache::free(imageURL, this);
-	    imageURL = document->requestImage(this, attr->value());
-	}
-	else
-	    imageURL = attr->value();
+	imageURL = attr->value();
 	break;
     case ATTR_WIDTH:
-	predefinedWidth = attr->val()->toLength();
+	addCSSLength(CSS_PROP_WIDTH, attr->value(), false);
 	break;
     case ATTR_HEIGHT:
-	predefinedHeight = attr->val()->toLength();
+	addCSSLength(CSS_PROP_HEIGHT, attr->value(), false);
 	break;
     case ATTR_BORDER:
-	border = attr->val()->toInt();
+	addCSSLength(CSS_PROP_BORDER_WIDTH, attr->value(), false);
 	break;
     case ATTR_VSPACE:
-	vspace = attr->val()->toLength();
+	addCSSLength(CSS_PROP_MARGIN_TOP, attr->value(), false);
+	addCSSLength(CSS_PROP_MARGIN_BOTTOM, attr->value(), false);
 	break;
     case ATTR_HSPACE:
-	hspace = attr->val()->toLength();
+	addCSSLength(CSS_PROP_MARGIN_LEFT, attr->value(), false);
+	addCSSLength(CSS_PROP_MARGIN_RIGHT, attr->value(), false);
 	break;
     case ATTR_ALIGN:
 	// vertical alignment with respect to the current baseline of the text
 	// right or left means floating images
 	if ( strcasecmp( attr->value(), "left" ) == 0 )
 	{
-	    halign = Left;
-	    valign = Top;
+	    addCSSProperty(CSS_PROP_FLOAT, attr->value(), false);
+	    addCSSProperty(CSS_PROP_VERTICAL_ALIGN, "top", false);
 	}
 	else if ( strcasecmp( attr->value(), "right" ) == 0 )
 	{
-	    halign = Right;
-	    valign = Top;
+	    addCSSProperty(CSS_PROP_FLOAT, attr->value(), false);
+	    addCSSProperty(CSS_PROP_VERTICAL_ALIGN, "top", false);
 	}
-	else if ( strcasecmp( attr->value(), "top" ) == 0 )
-	    valign = Top;
-	else if ( strcasecmp( attr->value(), "middle" ) == 0 )
-	    valign = VCenter;
-	else if ( strcasecmp( attr->value(), "bottom" ) == 0 )
-	    valign = Bottom;
+	else
+	    addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value(), false);
+	break;
+    case ATTR_VALIGN:
+    	    addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value(), false);
 	break;
     case ATTR_USEMAP:
 	if ( attr->value()[0] == '#' )
@@ -175,229 +159,26 @@ void HTMLImageElementImpl::parseAttribute(Attribute *attr)
 	alt = attr->value();
 	break;	
     default:
-	HTMLPositionedElementImpl::parseAttribute(attr);
+	HTMLElementImpl::parseAttribute(attr);
     }
 }
 
-// layout related stuff
-
-void  HTMLImageElementImpl::setPixmap( QPixmap *p )
+void HTMLImageElementImpl::attach(KHTMLWidget *)
 {
-    pixmap = p;
-
-    // Image dimensions have been changed, recalculate layout
-    //printf("Image: recalculating layout\n");
-    calcMinMaxWidth();
-    setLayouted(false);
-    if(_parent) _parent->updateSize();	
-
-    static_cast<HTMLDocumentImpl *>(document)->print(this);
-}
-
-void  HTMLImageElementImpl::pixmapChanged( QPixmap *p )
-{
-    if( p )
-	setPixmap(p);
-}
-
-void HTMLImageElementImpl::print(QPainter *p, int _x, int _y,
-				 int _w, int _h, int _tx, int _ty)
-{
-   _tx += x;
-   _ty += y;
-
-    printObject(p, _x, _y, _w, _h, _tx, _ty);
-}
-
-void HTMLImageElementImpl::printObject(QPainter *p, int, int _y,
-				       int, int _h, int _tx, int _ty)
-{
-//    printf("%s(Image)::printObject()\n", nodeName().string().ascii());
-
-    if((_ty - ascent > _y + _h) || (_ty + descent < _y)) return;
-
-    QRect rect( 0, 0, width - border*2, getHeight() - border*2 );
-
-    if ( pixmap == 0 || pixmap->isNull() )
+    printf("HTMLImageImpl::attach\n");
+    m_style = document->styleSelector()->styleForElement(this);
+    khtml::RenderObject *r = _parent->renderer();
+    if(r)
     {
-	QColorGroup colorGrp( Qt::black, Qt::lightGray, Qt::white, Qt::darkGray, Qt::gray,
-			      Qt::black, Qt::white );
-	qDrawShadePanel( p, _tx+border, _ty - ascent+border, width, getHeight(),
-			 colorGrp, true, 1 );
-	if(!alt.isEmpty())
-	{
-	    QString text = alt.string();  	
-	    p->setFont(*getFont());
-	    p->setPen( getFont()->textColor() );
-	    int ax = _tx+border+5;
-	    int ay = _ty - ascent+border+5;
-	    int ah = getHeight()-border-10;
-	    int aw = width-border-10;
-	    QFontMetrics fm(*getFont());
-	    if (aw>15 && ah>fm.height())
-    	    	p->drawText(ax, ay, aw, ah , Qt::WordBreak, text );
-	}
-    }
-    else
-    {
-#if 0 // ###
-	if ( isSelected() )
-	{
-	    QPainter painter( &pm );
-//	    p.setRasterOp( NotEraseROP );
-//	    p.fillRect( 0, 0, pm.width(), pm.height(), blue );
-	    QBrush b( kapp->palette().normal().highlight(), Qt::Dense4Pattern );
-	    painter.fillRect( 0, 0, pm.width(), pm.height(), b );
-	}
-#endif
-	if ( (width - border*2 != pixmap->width() ||
-	    getHeight() - border != pixmap->height() ) &&
-	    pixmap->width() != 0 && pixmap->height() != 0 )
-	{
-	  //printf("have to scale: width:%d<-->%d height %d<-->%d\n",
-	  //   width - border*2, pixmap->width(),
-	  //   getHeight() - border, pixmap->height() );
-	    if (resizeCache.isNull())
-	    {
-		QWMatrix matrix;
-		matrix.scale( (float)(width-border*2)/pixmap->width(),
-			(float)(getHeight()-border)/pixmap->height() );
-		resizeCache = pixmap->xForm( matrix );
-	    }
-	    p->drawPixmap( QPoint( _tx + border,
-	       _ty - ascent + border ), resizeCache, rect );
+	RenderImage *renderImage = new RenderImage(m_style);
+	renderImage->setAlt(alt);
+	renderImage->setImageUrl(imageURL, static_cast<HTMLDocumentImpl *>(document)->URL());
+	m_render = renderImage;
+	if(m_render) r->addChild(m_render);
 	
-	}
-	else
-	    p->drawPixmap( QPoint( _tx + border,
-				   _ty - ascent + border), *pixmap, rect );
-    }
-
-    if ( border )
-    {
-	QPen pen( QColor("000000"));
-	p->setPen( pen );
-	QBrush brush;
-	p->setBrush( brush );	// null brush
-	for ( int i = 1; i <= border; i++ )
-	    p->drawRect( _tx+border-i, _ty - ascent + border - i,
-		(width - border*2) + i*2, getHeight() - border + i*2 );
     }
 }
 
-void HTMLImageElementImpl::calcMinMaxWidth()
-{
-#ifdef DEBUG_LAYOUT
-    printf("%s(Image)::calcMinMaxWidth() known=%d\n", nodeName().string().ascii(), minMaxKnown());
-#endif
-    setMinMaxKnown();
-
-    switch(predefinedWidth.type)
-    {
-    case Fixed:
-	width = predefinedWidth.value;
-	minWidth = width;
-	break;
-    case Percent:
-    	{
-	int nwidth = predefinedWidth.value*availableWidth/100;
-	if (nwidth!=width)
-	    resizeCache.resize(0,0);
-	width=nwidth;
-	minWidth = 32;	
-	}
-	break;
-    default:
-	// we still don't know the width...
-	if(!pixmap)
-	{
-	    width = 32;
-	    setMinMaxKnown(false);
-	}
-	else if (width!=pixmap->width())
-	{
-	    width = pixmap->width();
-	    setLayouted(false);
-	    // if it doesn't fit... make it fit
-	    // NO! Images don't scale unless told to. Ever.  -AKo
-	    //if(availableWidth < width) width = availableWidth;
-	    minWidth = width;
-	    //printf("IMG Width changed, width=%d\n",width);
-	}
-    }
-    maxWidth = minWidth;
-}
-
-void HTMLImageElementImpl::layout(bool)
-{
-#ifdef DEBUG_LAYOUT
-    printf("%s(Image)::layout(?) width=%d, layouted=%d\n", nodeName().string().ascii(), width, layouted());
-#endif
-
-    calcMinMaxWidth(); // ### just to be sure here...
-
-    ascent = descent = 0;
-
-    switch(predefinedHeight.type)
-    {
-    case Fixed:
-	imgHeight = predefinedHeight.value;
-	break;
-    case Percent:
-	// ### is this correct?
-	{
-	KHTMLWidget *htmlwidget =
-	    static_cast<HTMLDocumentImpl *>(document)->HTMLWidget();
-	int hh = imgHeight;
-	if (_parent->id()==ID_BODY)
-	    hh = predefinedHeight.value*htmlwidget->height()/100;	
-	if (imgHeight != hh)
-	{
-	    resizeCache.resize(0,0);
-	    imgHeight = hh;	
-	}
-	}
-	break;
-    default:
-	// we still don't know the height...
-	if(!pixmap)
-	    imgHeight = 32;
-	else
-	{
-	    if(width == pixmap->width())
-		imgHeight = pixmap->height();
-	    else
-		imgHeight = pixmap->height()*width/pixmap->width();
-	}
-    }
-
-    switch(valign)
-    {
-    case Bottom:
-	ascent = imgHeight;
-	break;
-    case Top:
-	descent = imgHeight;
-	break;
-    case VCenter:
-	ascent = imgHeight/2;
-	descent = imgHeight/2;
-	break;
-    default:
-	break;
-    }
-
-    if(border)
-    {
-	ascent += border;
-	descent += border;
-    }
-
-
-    //printf("HTMLIMage:: layout(): w/a/d = %d/%d/%d", width, ascent, descent);
-
-    setLayouted();
-}
 // -------------------------------------------------------------------------
 
 HTMLMapElementImpl::HTMLMapElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc)
@@ -500,18 +281,6 @@ void HTMLMapElementImpl::parseAttribute(Attribute *attr)
 	HTMLElementImpl::parseAttribute(attr);
     }
 }
-
-
-
-
-/*HTMLMapStore* HTMLMapStore::instance_ = 0L;
-
-HTMLMapStore* HTMLMapStore::instance()
-{
-    if (!instance_)
-    	instance_ = new HTMLMapStore();	
-    return instance_;	
-}*/
 
 // -------------------------------------------------------------------------
 

@@ -33,43 +33,59 @@
 
 #include <stdio.h>
 
-template class QList<DOM::DOMString>;
-template class QList<DOM::StyleBaseImpl>;
-
 using namespace DOM;
-
+using namespace khtml;
 // --------------------------------------------------------------------------------
 
-StyleSheetImpl::StyleSheetImpl(StyleSheetImpl *parentSheet)
+StyleSheetImpl::StyleSheetImpl(StyleSheetImpl *parentSheet, DOMString href)
     : StyleListImpl(parentSheet)
 {
     m_disabled = false;
     m_media = 0;
+    m_parentNode = 0;
+    m_strHref = href;
 }
 
 
-StyleSheetImpl::StyleSheetImpl(DOM::NodeImpl *parentNode)
+StyleSheetImpl::StyleSheetImpl(DOM::NodeImpl *parentNode, DOMString href)
     : StyleListImpl()
 {
     m_parentNode = parentNode;
     m_disabled = false;
     m_media = 0;
+    m_strHref = href;
+    m_cache = 0;
+}
+
+StyleSheetImpl::StyleSheetImpl(StyleBaseImpl *owner, DOMString href)
+    : StyleListImpl(owner)
+{
+    m_disabled = false;
+    m_media = 0;
+    m_parentNode = 0;
+    m_strHref = href;
+    m_cache = 0;
+}
+
+StyleSheetImpl::StyleSheetImpl(CachedCSSStyleSheet *cache, DOMString href)
+    : StyleListImpl()
+{
+    m_disabled = false;
+    m_media = 0;
+    m_parentNode = 0;
+    m_strHref = href;
+    m_cache = cache;
 }
 
 StyleSheetImpl::~StyleSheetImpl()
 {
-    m_media->deref();
+    if(m_media) m_media->deref();
 }
 
 bool StyleSheetImpl::deleteMe()
 {
     if(!m_parent && !m_parentNode && _ref <= 0) return true;
     return false;
-}
-
-DOMString StyleSheetImpl::type() const
-{
-    return m_strType;
 }
 
 bool StyleSheetImpl::disabled() const
@@ -112,18 +128,52 @@ MediaListImpl *StyleSheetImpl::media() const
 // -----------------------------------------------------------------------
 
 
-CSSStyleSheetImpl::CSSStyleSheetImpl(CSSStyleSheetImpl *parentSheet)
-    : StyleSheetImpl(parentSheet)
+CSSStyleSheetImpl::CSSStyleSheetImpl(CSSStyleSheetImpl *parentSheet, DOMString href)
+    : StyleSheetImpl(parentSheet, href)
 {
-    m_strType = "text/css";
     m_lstChildren = new QList<StyleBaseImpl>;
 }
 
-CSSStyleSheetImpl::CSSStyleSheetImpl(DOM::NodeImpl *parentNode)
-    : StyleSheetImpl(parentNode)
+CSSStyleSheetImpl::CSSStyleSheetImpl(DOM::NodeImpl *parentNode, DOMString href)
+    : StyleSheetImpl(parentNode, href)
 {
-    m_strType = "text/css";
     m_lstChildren = new QList<StyleBaseImpl>;
+}
+
+CSSStyleSheetImpl::CSSStyleSheetImpl(CSSRuleImpl *ownerRule, DOMString href)
+    : StyleSheetImpl(ownerRule, href)
+{
+    m_lstChildren = new QList<StyleBaseImpl>;
+}
+
+CSSStyleSheetImpl::CSSStyleSheetImpl(CachedCSSStyleSheet *cached, DOM::DOMString href)
+    : StyleSheetImpl(cached, href)
+{
+    m_lstChildren = new QList<StyleBaseImpl>;
+}
+
+CSSStyleSheetImpl::CSSStyleSheetImpl(DOM::NodeImpl *parentNode, CSSStyleSheetImpl *orig)
+    : StyleSheetImpl(parentNode, orig->m_strHref)
+{
+    m_lstChildren = new QList<StyleBaseImpl>;
+    StyleBaseImpl *rule;
+    for ( rule = orig->m_lstChildren->first(); rule != 0; rule = orig->m_lstChildren->next() )
+    {
+	m_lstChildren->append(rule);
+	rule->ref();
+    }
+}
+
+CSSStyleSheetImpl::CSSStyleSheetImpl(CSSRuleImpl *ownerRule, CSSStyleSheetImpl *orig)
+    : StyleSheetImpl(ownerRule, orig->m_strHref)
+{
+    m_lstChildren = new QList<StyleBaseImpl>;
+    StyleBaseImpl *rule;
+    for ( rule = orig->m_lstChildren->first(); rule != 0; rule = orig->m_lstChildren->next() )
+    {
+	m_lstChildren->append(rule);
+	rule->ref();
+    }
 }
 
 CSSStyleSheetImpl::~CSSStyleSheetImpl()
@@ -168,20 +218,37 @@ void CSSStyleSheetImpl::deleteRule( unsigned long index )
     b->deref();
 }
 
-bool
-CSSStyleSheetImpl::parseString(const DOMString &string)
+bool CSSStyleSheetImpl::parseString(const DOMString &string)
 {
     const QChar *curP = string.unicode();
-    const QChar *endP = string.unicode()+string.length()-1;
+    const QChar *endP = string.unicode()+string.length();
 
-    printf("parsing sheet, len=%d, last char=%d\n", string.length(), endP->unicode());
+    //printf("parsing sheet, len=%d, sheet is %s\n", string.length(), string.string().ascii());
 
     while (curP && (curP < endP))
     {
 	CSSRuleImpl *rule = parseRule(curP, endP);
-	if(rule) m_lstChildren->append(rule);
+	if(rule)
+	{
+	    m_lstChildren->append(rule);
+	    rule->ref();
+	}
     }
     return true;
+}
+
+bool CSSStyleSheetImpl::isLoading()
+{
+    StyleBaseImpl *rule;
+    for ( rule = m_lstChildren->first(); rule != 0; rule = m_lstChildren->next() )
+    {
+	if(rule->isImportRule())
+	{
+	    CSSImportRuleImpl *import = static_cast<CSSImportRuleImpl *>(rule);
+	    if(import->isLoading()) return true;
+	}
+    }
+    return false;
 }
 
 // ---------------------------------------------------------------------------------------------

@@ -30,6 +30,8 @@ namespace DOM {
 
 class StyleSheetImpl;
 class MediaList;
+class NodeImpl;
+class DocumentImpl;
 
 /**
  * The <code> StyleSheet </code> interface is the abstract base
@@ -146,6 +148,10 @@ public:
      */
     MediaList media() const;
 
+    /**
+     * @internal
+     */
+    StyleSheetImpl *handle() const { return impl; }
 protected:
     StyleSheetImpl *impl;
 };
@@ -197,6 +203,7 @@ public:
 public:
 
     CSSStyleSheet & operator = (const CSSStyleSheet &other);
+    CSSStyleSheet & operator = (const StyleSheet &other);
 
     ~CSSStyleSheet();
 
@@ -442,6 +449,45 @@ public:
 
 protected:
     MediaListImpl *impl;
+};
+
+
+class LinkStyle
+{
+public:
+    LinkStyle();
+    LinkStyle(const LinkStyle &other);
+
+    LinkStyle & operator = (const LinkStyle &other);
+    LinkStyle & operator = (const Node &other);
+
+    ~LinkStyle();
+
+    StyleSheet sheet();
+
+    bool isNull() { return (node == 0); }
+
+protected:
+    DOM::NodeImpl *node;
+};
+
+class DocumentStyle
+{
+public:
+    DocumentStyle();
+    DocumentStyle(const DocumentStyle &other);
+
+    DocumentStyle & operator = (const DocumentStyle &other);
+    DocumentStyle & operator = (const Document &other);
+
+    ~DocumentStyle();
+
+    StyleSheetList styleSheets();
+
+    bool isNull() { return (doc == 0); }
+
+protected:
+    DOM::DocumentImpl *doc;
 };
 
 

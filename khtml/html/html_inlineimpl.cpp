@@ -29,7 +29,6 @@
 
 #include <stdio.h>
 
-#include "khtmltext.h"
 #include "dom_textimpl.h"
 #include "dom_string.h"
 #include "html_inline.h"
@@ -37,8 +36,12 @@
 using namespace DOM;
 
 #include "htmlhashes.h"
-#include "khtmlstyle.h"
-#include "htmlhashes.h"
+#include "css/cssproperties.h"
+#include "css/cssstyleselector.h"
+
+#include "rendering/render_br.h"
+
+using namespace khtml;
 
 HTMLAnchorElementImpl::HTMLAnchorElementImpl(DocumentImpl *doc)
 : HTMLAreaElementImpl(doc)
@@ -77,38 +80,31 @@ void HTMLAnchorElementImpl::focus(  )
 {
 }
 
-void HTMLAnchorElementImpl::setStyle(CSSStyle *style)
-{
-#if 0
-    if ( visited )
-	style->font.color = settings->vLinkColor;
-    else
-#endif
-    if( href )
-    {
-	style->font.color = pSettings->linkColor;
-	if ( pSettings->underlineLinks )
-	    style->font.decoration = CSSStyleFont::decUnderline;
-    }
-    _style = new CSSStyle(*style);
-
-}
-
 bool HTMLAnchorElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType type,
-				  int _tx, int _ty, DOMString &_url)
+				  int _tx, int _ty, DOMString &_url,
+                                        NodeImpl *&innerNode, long &offset)
 {
     bool inside = false;
+
+    if(m_render->isInline() && m_render->parent()->isAnonymousBox())
+    {
+	//printf("parent is anonymous!\n");
+	// we need to add the offset of the anonymous box
+	_tx += m_render->parent()->xPos();
+	_ty += m_render->parent()->yPos();
+    }
 
     NodeImpl *child = firstChild();
     while(child != 0)
     {
-	if(child->mouseEvent(_x, _y, button, type, _tx, _ty, _url))
+	if(child->mouseEvent(_x, _y, button, type, _tx, _ty, _url, innerNode, offset))
 	{
 	    inside = true;
+	    break;
 	}
 	child = child->nextSibling();
     }
-    //    printf("Anchor::mouseEvent inside=%d\n", inside);
+    //printf("Anchor::mouseEvent inside=%d\n", inside);
 
     if(inside)
     {
@@ -121,10 +117,11 @@ bool HTMLAnchorElementImpl::mouseEvent( int _x, int _y, int button, MouseEventTy
 	}
 	else
 	    _url = href;
-
-	// dynamic HTML...
-	mouseEventHandler(button, type, inside);
     }
+	
+    // dynamic HTML...
+    if(inside || mouseInside()) mouseEventHandler(button, type, inside);
+	
     return inside;
 }
 
@@ -142,6 +139,7 @@ void HTMLAnchorElementImpl::parseAttribute(Attribute *attr)
 // other way. Lars
 void HTMLAnchorElementImpl::getAnchorPosition(int &xPos, int &yPos)
 {
+#if 0
     if(_parent)
     {
 	_parent->getAbsolutePosition( xPos, yPos );
@@ -198,12 +196,12 @@ void HTMLAnchorElementImpl::getAnchorPosition(int &xPos, int &yPos)
     }
     else
 	xPos = yPos = -1;
+#endif
 }
 // -------------------------------------------------------------------------
 
 HTMLBRElementImpl::HTMLBRElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc)
 {
-    _clear = BRNone;
 }
 
 HTMLBRElementImpl::~HTMLBRElementImpl()
@@ -226,14 +224,27 @@ void HTMLBRElementImpl::parseAttribute(Attribute *attr)
     {
     case ATTR_CLEAR:
 	if ( strcasecmp( attr->value(), "left" ) == 0 )
-	    _clear = BRLeft;
+	    addCSSProperty(CSS_PROP_CLEAR, "left", false);
 	else if ( strcasecmp( attr->value(), "right" ) == 0 )
-	    _clear = BRRight;
+	    addCSSProperty(CSS_PROP_CLEAR, "right", false);
 	else if ( strcasecmp( attr->value(), "all" ) == 0 )
-	    _clear = BRAll;
+	    addCSSProperty(CSS_PROP_CLEAR, "both", false);
 	break;
     default:
     	HTMLElementImpl::parseAttribute(attr);
+    }
+}
+
+void HTMLBRElementImpl::attach(KHTMLWidget *)
+{
+    printf("HTMLBRElementImpl::attach\n");
+    m_style = document->styleSelector()->styleForElement(this);
+    khtml::RenderObject *r = _parent->renderer();
+    if(r)
+    {
+	m_render = new RenderBR(m_style);
+	m_render->ref();
+	r->addChild(m_render);	
     }
 }
 
@@ -264,70 +275,65 @@ void HTMLFontElementImpl::parseAttribute(Attribute *attr)
     switch(attr->id)
     {
     case ATTR_SIZE:
-    case ATTR_COLOR:
+    	{
+	DOMString s = attr->value();
+	if(s != 0)
+	{
+            int num = s.toInt();
+            if ( *s.unicode() == '+')
+	    {
+	    	for (;num>0;num--)		
+		    addCSSProperty(CSS_PROP_FONT_SIZE, "larger", false);
+	    } 
+	    else if ( *s.unicode() == '-')
+	    {
+	    	for (;num<0;num++)		
+		    addCSSProperty(CSS_PROP_FONT_SIZE, "smaller", false);
+	    }        	
+            else
+	    {
+        	switch (num)
+		{
+		    case 0:
+		    	addCSSProperty(CSS_PROP_FONT_SIZE, "xx-small", false);
+			break;
+		    case 1:
+		    	addCSSProperty(CSS_PROP_FONT_SIZE, "x-small", false);
+		    	break;
+		    case 2:
+		    	addCSSProperty(CSS_PROP_FONT_SIZE, "small", false);
+		    	break;
+		    case 3:
+		    	addCSSProperty(CSS_PROP_FONT_SIZE, "medium", false);
+		    	break;
+		    case 4:
+		    	addCSSProperty(CSS_PROP_FONT_SIZE, "large", false);
+		    	break;
+		    case 5:
+		    	addCSSProperty(CSS_PROP_FONT_SIZE, "x-large", false);
+		    	break;
+		    case 6:
+		    	addCSSProperty(CSS_PROP_FONT_SIZE, "xx-large", false);
+		    	break;
+		    default:		    	
+		    	break;
+		
+		}
+		
+	    }
+	}
+	
+	break;
+    	}
+    case ATTR_COLOR:    
+	addCSSProperty(CSS_PROP_COLOR, attr->value(), false);
+	break;
     case ATTR_FACE:
-	// handled in setStyle...
+	addCSSProperty(CSS_PROP_FONT_FAMILY, attr->value(), false);
 	break;
     default:
 	HTMLElementImpl::parseAttribute(attr);
     }
-}
-
-void HTMLFontElementImpl::setStyle(CSSStyle *currentStyle)
-{
-    DOMString s = attributeMap.valueForId(ATTR_SIZE);
-    if(!s.isEmpty())
-    {
-	int num = s.toInt();
-	if ( *s.unicode() == '+' ||
-	     *s.unicode() == '-' )
-	    currentStyle->font.size += num;
-	else
-	    currentStyle->font.size = num;
-	if(currentStyle->font.size > 7) currentStyle->font.size = 7;
-	if(currentStyle->font.size < 1) currentStyle->font.size = 1;
-    }
-    s = attributeMap.valueForId(ATTR_COLOR);
-    if(!s.isEmpty())
-    {
-	khtml::setNamedColor( currentStyle->font.color, s.string() );
-    }
-    s = attributeMap.valueForId(ATTR_FACE);
-    if(!s.isEmpty())
-    {
-      printf("setting face\n");
-	QString str = s.string();
-	str.replace(QRegExp("[ ,]+"), ",");
-	// try to find a matching font in the font list.
-	int index = 0;
-	int index2;
-	while( 1 )
-	{
-	    index2 = str.find(",", index);
-	    QString fname = str.mid(index, index2-index);
-	    fname = fname.lower();
-	    QFont tryFont( fname.data() );
-	    QFontInfo fi( tryFont );
-	    //printf("trying \"%s\": getting %s\n", tryFont.family().ascii(), fi.family().ascii());
-	    if ( ::strcmp( tryFont.family(), fi.family() ) == 0 )
-	    {
-		// we found a matching font
-	      //printf("found mathing face!\n");
-		currentStyle->font.family = fname;
-		break;
-	    }
-	    if(index2 == -1) break;
-	    index = index2 + 1;
-	}	
-    }
-    HTMLElementImpl::setStyle(currentStyle);
-
-}
-
-void HTMLFontElementImpl::print(QPainter *p, int _x, int _y, int _w, int _h,
-				  int _tx, int _ty)
-{
-  HTMLElementImpl::print(p, _x, _y, _w, _h, _tx, _ty);
 }
 
 // -------------------------------------------------------------------------
