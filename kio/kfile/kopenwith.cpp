@@ -588,18 +588,22 @@ void KOpenWithDlg::slotOK()
         KService::Ptr serv = KService::serviceByDesktopName( serviceName );
         ok = !serv; // ok if no such service yet
         // also ok if we find the exact same service (well, "kwrite" == "kwrite %U"
-        if ( serv &&
-             serv->type() == "Application" && ( // only apps
-                 serv->exec() == fullExec ||
-                 serv->exec() == fullExec + " %u" ||
-                 serv->exec() == fullExec + " %U" ||
-                 serv->exec() == fullExec + " %f" ||
-                 serv->exec() == fullExec + " %F"
-                 ) )
+        if ( serv && serv->type() == "Application")
         {
-            ok = true;
-            m_pService = serv;
-            kdDebug(250) << k_funcinfo << "OK, found identical service: " << serv->desktopEntryPath() << endl;
+            QString exec = serv->exec();
+            exec.replace("%u", "", false);
+            exec.replace("%f", "", false);
+            exec.replace("-caption %c", "");
+            exec.replace("-caption \"%c\"", "");
+            exec.replace("%i", "");
+            exec.replace("%m", "");
+            exec = exec.simplifyWhiteSpace();
+            if (exec == fullExec)
+            {
+                ok = true;
+                m_pService = serv;
+                kdDebug(250) << k_funcinfo << "OK, found identical service: " << serv->desktopEntryPath() << endl;
+            }
         }
         if (!ok) // service was found, but it was different -> keep looking
         {
