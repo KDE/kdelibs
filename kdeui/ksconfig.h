@@ -176,9 +176,9 @@ class KSpellConfig : public QWidget
      */
     bool writeGlobalSettings();
 
+    bool readGlobalSettings();
   protected:
     void fillInDialog();
-    bool readGlobalSettings();
 
     /**
      * This takes a dictionary file name (fname) and returns a language
