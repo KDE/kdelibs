@@ -53,6 +53,7 @@ public:
 
     DOMString name() const;
     bool specified() const { return m_specified; }
+    Element ownerElement() const;
 
     virtual DOMString value() const;
     virtual void setValue( const DOMString &v );

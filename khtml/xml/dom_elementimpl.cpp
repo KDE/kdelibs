@@ -126,6 +126,10 @@ unsigned short AttrImpl::nodeType() const
     return Node::ATTRIBUTE_NODE;
 }
 
+Element AttrImpl::ownerElement() const
+{
+    return _element;
+}
 
 DOMString AttrImpl::name() const
 {
