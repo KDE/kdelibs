@@ -155,7 +155,6 @@ void BusManager::removeServer(BusClient *server)
 	
 	for(bi = _busList.begin(); bi != _busList.end(); bi++)
 	{
-		int found = 0;
 		Bus *bus = *bi;
 
 		list<BusClient *>::iterator si;
