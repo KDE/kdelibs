@@ -21,6 +21,7 @@
 #include <qlayout.h>
 #include <qpushbutton.h>
 #include <qgroupbox.h>
+#include <qregexp.h>
 
 #include <klocale.h>
 #include <kdebug.h>
@@ -31,6 +32,29 @@
 #include "addresseedialog.moc"
 
 using namespace KABC;
+
+AddresseeItem::AddresseeItem( QListView *parent, const Addressee &addressee ) :
+  QListViewItem( parent ),
+  mAddressee( addressee )
+{
+  setText( Name, addressee.realName() );
+  setText( Email, addressee.preferredEmail() );
+}
+
+QString AddresseeItem::key( int column, bool ) const
+{
+  if (column == Email) {
+    QString value = text(Email);
+    QRegExp emailRe("<\\S*>");
+    int match = emailRe.search(value);
+    if (match > -1)
+      value = value.mid(match + 1, emailRe.matchedLength() - 2);
+
+    return value.lower();
+  }
+
+  return text(column).lower();
+}
 
 AddresseeDialog::AddresseeDialog( QWidget *parent, bool multiple ) :
   KDialogBase( KDialogBase::Plain, i18n("Select Addressee"),
@@ -78,7 +102,7 @@ AddresseeDialog::AddresseeDialog( QWidget *parent, bool multiple ) :
     QPushButton *unselectButton = new QPushButton( i18n("Unselect"), selectedGroup );
     connect ( unselectButton, SIGNAL( clicked() ), SLOT( removeSelected() ) );
 
-    connect( mAddresseeList, SIGNAL( selectionChanged( QListViewItem * ) ),
+    connect( mAddresseeList, SIGNAL( clicked( QListViewItem * ) ),
              SLOT( addSelected( QListViewItem * ) ) );
   }
 
@@ -134,7 +158,7 @@ void AddresseeDialog::addSelected( QListViewItem *item )
 {
   AddresseeItem *addrItem = dynamic_cast<AddresseeItem *>( item );
   if ( !addrItem ) return;
-  
+
   Addressee a = addrItem->addressee();
   
   QListViewItem *selectedItem = mSelectedDict.find( a.uid() );
@@ -151,39 +175,67 @@ void AddresseeDialog::removeSelected()
   if ( !addrItem ) return;
 
   mSelectedDict.remove( addrItem->addressee().uid() );
-  delete addrItem; 
+  delete addrItem;
+}
+
+Addressee AddresseeDialog::addressee()
+{
+  AddresseeItem *aItem = 0;
+
+  if ( mMultiple )
+    aItem = dynamic_cast<AddresseeItem *>( mSelectedList->firstChild() );
+  else
+    aItem = dynamic_cast<AddresseeItem *>( mAddresseeList->selectedItem() );
+
+  if (aItem) return aItem->addressee();
+  return Addressee();
+}
+
+Addressee::List AddresseeDialog::addressees()
+{
+  Addressee::List al;
+  AddresseeItem *aItem = 0;
+
+  if ( mMultiple ) {
+    QListViewItem *item = mSelectedList->firstChild();
+    while( item ) {
+      aItem = dynamic_cast<AddresseeItem *>( item );
+      if ( aItem ) al.append( aItem->addressee() );
+      item = item->nextSibling();
+    }
+  }
+  else
+  {
+    aItem = dynamic_cast<AddresseeItem *>( mAddresseeList->selectedItem() );
+    if (aItem) al.append( aItem->addressee() );
+  }
+
+  return al;
 }
 
 Addressee AddresseeDialog::getAddressee( QWidget *parent )
 {
   AddresseeDialog *dlg = new AddresseeDialog( parent );
+  Addressee addressee;
   int result = dlg->exec();
+
   if ( result == QDialog::Accepted ) {
-    QListViewItem *item = dlg->mAddresseeList->selectedItem();
-    AddresseeItem *aItem = dynamic_cast<AddresseeItem *>( item );
-    if ( !aItem ) return Addressee();
-    return aItem->addressee();
+    addressee =  dlg->addressee();
   }
 
-  return Addressee();
+  delete dlg;
+  return addressee;
 }
 
 Addressee::List AddresseeDialog::getAddressees( QWidget *parent )
 {
   AddresseeDialog *dlg = new AddresseeDialog( parent, true );
+  Addressee::List addressees;
   int result = dlg->exec();
   if ( result == QDialog::Accepted ) {
-    Addressee::List al;
-
-    QListViewItem *item = dlg->mSelectedList->firstChild();
-    while( item ) {
-      AddresseeItem *aItem = dynamic_cast<AddresseeItem *>( item );
-      if ( aItem ) al.append( aItem->addressee() );
-      item = item->nextSibling();
-    }
-    
-    return al;
+    addressees =  dlg->addressees();
   }
 
-  return Addressee::List();
+  delete dlg;
+  return addressees;
 }

@@ -34,18 +34,13 @@ namespace KABC {
 class AddresseeItem : public QListViewItem
 {
   public:
-    AddresseeItem( QListView *parent, const Addressee &addressee ) :
-      QListViewItem( parent ),
-      mAddressee( addressee )
-    {
-      setText( 0, addressee.realName() );
-      setText( 1, addressee.preferredEmail() );
-    }
+    enum columns { Name = 0, Email = 1 };
 
-    Addressee addressee() const
-    {
-      return mAddressee;
-    }
+    AddresseeItem( QListView *parent, const Addressee &addressee );
+
+    Addressee addressee() const { return mAddressee; }
+
+    virtual QString key( int column, bool ascending ) const;
 
   private:
     Addressee mAddressee;
@@ -74,6 +69,18 @@ class AddresseeDialog : public KDialogBase {
     */
     AddresseeDialog( QWidget *parent=0, bool multiple=false );
     virtual ~AddresseeDialog();
+
+    /**
+      Return the address chosen.
+
+      If it is a multiple select, this will return only the first address chosen
+    */
+    Addressee addressee();
+
+    /**
+      Return the list of addresses chosen
+      */
+    Addressee::List addressees();
 
     /**
       Select a single address book entry.
