@@ -36,6 +36,8 @@
  */
 class KPopupTitle : public QWidget
 {
+    Q_OBJECT
+
 public:
     /**
      * Constructs a title widget with the user specified gradient, pixmap,
@@ -70,6 +72,11 @@ public:
     QPixmap icon() const { return(miniicon); }
 
     QSize sizeHint() const;
+
+public slots:
+    void setText( const QString &text );
+    void setIcon( const QPixmap &pix );
+
 protected:
     void paintEvent(QPaintEvent *ev);
 

@@ -121,8 +121,26 @@ void KPopupTitle::setTitle(const QString &text, const QPixmap *icon)
     }
     else
         miniicon.resize(0, 0);
-    setMinimumSize(miniicon.width()+fontMetrics().width(text)+16,
-                   fontMetrics().height()+8);
+
+    int w = miniicon.width()+fontMetrics().width(titleStr);
+    int h = QMAX( fontMetrics().height(), miniicon.height() );
+    setMinimumSize( w+16, h+8 );
+}
+
+void KPopupTitle::setText( const QString &text )
+{
+    titleStr = text;
+    int w = miniicon.width()+fontMetrics().width(titleStr);
+    int h = QMAX( fontMetrics().height(), miniicon.height() );
+    setMinimumSize( w+16, h+8 );
+}
+
+void KPopupTitle::setIcon( const QPixmap &pix )
+{
+    miniicon = pix;
+    int w = miniicon.width()+fontMetrics().width(titleStr);
+    int h = QMAX( fontMetrics().height(), miniicon.height() );
+    setMinimumSize( w+16, h+8 );
 }
 
 void KPopupTitle::paintEvent(QPaintEvent *)
