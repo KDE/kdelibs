@@ -130,6 +130,11 @@ protected:
     void keyPressEvent( QKeyEvent *_ke );
     void keyReleaseEvent( QKeyEvent *_ke );
 
+    /**
+     * Scroll the view
+     */
+    void doAutoScroll();
+
 private:
     void init();
 

@@ -606,7 +606,15 @@ private slots:
   void slotLoaderRequestDone( const DOM::DOMString &baseURL, khtml::CachedObject *obj );
   void checkCompleted();
 
+  /**
+   * @internal
+   */
+  void slotAutoScroll();
+  
 private:
+  void startAutoScroll();
+  void stopAutoScroll();
+
   void emitSelectionChanged();
 
   void init( KHTMLView *view );

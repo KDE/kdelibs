@@ -208,6 +208,7 @@ public:
   QPoint m_dragStartPos;
 
   QCursor m_linkCursor;
+  QTimer m_scrollTimer;
 
   unsigned long m_loadedImages;
   unsigned long m_totalImageCount;
@@ -733,6 +734,8 @@ void KHTMLPart::checkCompleted()
     return;
 
   d->m_bComplete = true;
+
+  emit setStatusBarText(i18n("Done."));
 
   emit completed();
 }
@@ -2097,6 +2100,7 @@ void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
 	d->m_selectionEnd = DOM::Node();
       }
       emitSelectionChanged();
+      startAutoScroll();
     }
   }
 
@@ -2222,7 +2226,7 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
   {
     // in case we started an autoscroll in MouseMove event
     // ###
-    //stopAutoScrollY();
+    stopAutoScroll();
     //disconnect( this, SLOT( slotUpdateSelectText(int) ) );
   }
 
@@ -2300,10 +2304,32 @@ void KHTMLPart::khtmlDrawContentsEvent( khtml::DrawContentsEvent * )
 void KHTMLPart::slotFind()
 {
   KHTMLFind *findDlg = new KHTMLFind( this, "khtmlfind" );
-
+  
   findDlg->exec();
-
+  
   delete findDlg;
+} 
+
+void KHTMLPart::startAutoScroll()
+{
+   connect(&d->m_scrollTimer, SIGNAL( timeout() ), this, SLOT( slotAutoScroll() ));
+   d->m_scrollTimer.start(100, false);
+}
+
+void KHTMLPart::stopAutoScroll()
+{
+   disconnect(&d->m_scrollTimer, SIGNAL( timeout() ), this, SLOT( slotAutoScroll() ));
+   if (d->m_scrollTimer.isActive())
+       d->m_scrollTimer.stop();
+}
+
+
+void KHTMLPart::slotAutoScroll()
+{
+    if (d->m_view)
+      d->m_view->doAutoScroll(); 
+    else
+      stopAutoScroll(); // Safety
 }
 
 KHTMLPartBrowserExtension::KHTMLPartBrowserExtension( KHTMLPart *parent, const char *name )

@@ -488,6 +488,22 @@ void KHTMLView::drawContents ( QPainter * p, int clipx, int clipy, int clipw, in
   QApplication::sendEvent( m_part, &event );
 }
 
+void KHTMLView::doAutoScroll()
+{
+    QPoint pos = QCursor::pos();
+    pos = viewport()->mapFromGlobal( pos );
+
+    int xm, ym;
+    viewportToContents(pos.x(), pos.y(), xm, ym);
+
+    pos = QPoint(pos.x() - viewport()->x(), pos.y() - viewport()->y());
+    if ( (pos.y() < 0) || (pos.y() > viewport()->height()) ||
+         (pos.x() < 0) || (pos.x() > viewport()->width()))
+    {
+	ensureVisible( xm, ym, 0, 5 );
+    }
+}
+
 
 DOM::NodeImpl *KHTMLView::nodeUnderMouse() const
 {
