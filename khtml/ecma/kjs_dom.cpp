@@ -39,7 +39,6 @@ QPtrDict<DOMNode> nodes(1021);
 QPtrDict<DOMNamedNodeMap> namedNodeMaps;
 QPtrDict<DOMNodeList> nodeLists;
 QPtrDict<DOMDOMImplementation> domImplementations;
-NodePrototype nodePrototype;
 
 // -------------------------------------------------------------------------
 
@@ -792,6 +791,13 @@ KJSO NodePrototype::tryGet(const UString &p) const
 
 KJSO KJS::getNodePrototype()
 {
-  return &nodePrototype;
+    KJSO proto = Global::current().get("[[node.prototype]]");
+    if (proto.isDefined())
+        return proto;
+    else
+    {
+        Object nodeProto( new NodePrototype );
+        Global::current().put("[[node.prototype]]", nodeProto);
+        return nodeProto;
+    }
 }
-
