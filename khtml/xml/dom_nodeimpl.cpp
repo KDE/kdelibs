@@ -278,6 +278,7 @@ QRect NodeImpl::getRect() const
     int _x, _y;
     if(m_render && m_render->absolutePosition(_x, _y))
         return QRect( _x, _y, m_render->width(), m_render->height() );
+
     return QRect();
 }
 
@@ -409,9 +410,9 @@ void NodeImpl::removeEventListener(int id, EventListener *listener, bool useCapt
 }
 
 void NodeImpl::removeEventListener(const DOMString &type, EventListener *listener,
-                                     bool useCapture,int &exceptioncode)
+                                   bool useCapture,int &/*exceptioncode*/)
 {
-    removeEventListener(EventImpl::typeToId(type),listener,useCapture,exceptioncode);
+    removeEventListener(EventImpl::typeToId(type),listener,useCapture);
 }
 
 void NodeImpl::removeHTMLEventListener(int id)
@@ -644,7 +645,7 @@ bool NodeImpl::dispatchSubtreeModifiedEvent()
 	return false;
     int exceptioncode;
     return dispatchEvent(new MutationEventImpl(EventImpl::DOMSUBTREEMODIFIED_EVENT,
-			 true,false,0,0,0,0,0),exceptioncode);
+			 true,false,0,DOMString(),DOMString(),DOMString(),0),exceptioncode);
 }
 
 void NodeImpl::handleLocalEvents(EventImpl *evt, bool useCapture)
@@ -803,12 +804,12 @@ NodeBaseImpl::~NodeBaseImpl()
     NodeImpl *n;
     NodeImpl *next;
 
-    for( n = _first; n != 0; n = next )
-    {
+    for( n = _first; n != 0; n = next ) {
         next = n->nextSibling();
         n->setPreviousSibling(0);
         n->setNextSibling(0);
         n->setParent(0);
+
         if(n->deleteMe())
             delete n;
     }
@@ -992,7 +993,7 @@ NodeImpl *NodeBaseImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
     getDocument()->notifyBeforeNodeRemoval(oldChild); // ### use events instead
     if (getDocument()->hasListenerType(DocumentImpl::DOMNODEREMOVED_LISTENER)) {
 	oldChild->dispatchEvent(new MutationEventImpl(EventImpl::DOMNODEREMOVED_EVENT,
-			     true,false,this,0,0,0,0),exceptioncode);
+			     true,false,this,DOMString(),DOMString(),DOMString(),0),exceptioncode);
 	if (exceptioncode)
 	    return 0;
     }
@@ -1006,7 +1007,7 @@ NodeImpl *NodeBaseImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
 	    NodeImpl *c;
 	    for (c = oldChild; c; c = c->traverseNextNode(oldChild)) {
 		c->dispatchEvent(new MutationEventImpl(EventImpl::DOMNODEREMOVEDFROMDOCUMENT_EVENT,
-				 false,false,0,0,0,0,0),exceptioncode);
+				 false,false,0,DOMString(),DOMString(),DOMString(),0),exceptioncode);
 		if (exceptioncode)
 		    return 0;
 	    }
@@ -1050,7 +1051,6 @@ void NodeBaseImpl::removeChildren()
             delete n;
     }
     _first = _last = 0;
-
 }
 
 
@@ -1297,8 +1297,7 @@ bool NodeBaseImpl::getUpperLeftCorner(int &xPos, int &yPos) const
         return false;
     RenderObject *o = m_render;
     xPos = yPos = 0;
-    if ( !isInline() )
-    {
+    if ( !o->isInline() || o->isReplaced() ) {
         o->absolutePosition( xPos, yPos );
         return true;
     }
@@ -1338,7 +1337,7 @@ bool NodeBaseImpl::getLowerRightCorner(int &xPos, int &yPos) const
 
     RenderObject *o = m_render;
     xPos = yPos = 0;
-    if (!isInline())
+    if (!o->isInline() || o->isReplaced())
     {
         o->absolutePosition( xPos, yPos );
         xPos += o->width();
@@ -1396,6 +1395,9 @@ QRect NodeBaseImpl::getRect() const
         if (yPos==0)
             yPos = yEnd;
     }
+    if ( xEnd <= xPos || yEnd <= yPos )
+        return QRect( QPoint( xPos, yPos ), QSize() );
+
     return QRect(xPos, yPos, xEnd - xPos, yEnd - yPos);
 }
 
@@ -1445,7 +1447,7 @@ void NodeBaseImpl::dispatchChildInsertedEvents( NodeImpl *child, int &exceptionc
 {
     if (getDocument()->hasListenerType(DocumentImpl::DOMNODEINSERTED_LISTENER)) {
 	child->dispatchEvent(new MutationEventImpl(EventImpl::DOMNODEINSERTED_EVENT,
-			     true,false,this,0,0,0,0),exceptioncode);
+			     true,false,this,DOMString(),DOMString(),DOMString(),0),exceptioncode);
 	if (exceptioncode)
 	    return;
     }
@@ -1459,7 +1461,7 @@ void NodeBaseImpl::dispatchChildInsertedEvents( NodeImpl *child, int &exceptionc
 	    NodeImpl *c;
 	    for (c = child; c; c = c->traverseNextNode(child)) {
 		c->dispatchEvent(new MutationEventImpl(EventImpl::DOMNODEINSERTEDINTODOCUMENT_EVENT,
-				 false,false,0,0,0,0,0),exceptioncode);
+				 false,false,0,DOMString(),DOMString(),DOMString(),0),exceptioncode);
 		if (exceptioncode)
 		    return;
 	    }
