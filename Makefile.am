@@ -18,7 +18,7 @@
 #    Boston, MA 02111-1307, USA.
 
 
-SUBDIRS = kdecore kimgio kdeui jscript kfmlib kformula \
+SUBDIRS = kdecore kimgio kdeui jscript kformula \
 	mediatool kspell kdeutils kio kfile kab khtml corba doc toolbar kdetest 
 
 $(top_srcdir)/acinclude.m4: $(top_srcdir)/admin/acinclude.m4.in $(top_srcdir)/admin/libtool.m4.in $(top_srcdir)/libltdl.m4

@@ -155,8 +155,6 @@ LIB_KDEUI='$(top_builddir)/kdeui/libkdeui.la'
 AC_SUBST(LIB_KDEUI)
 LIB_KFORMULA='$(top_builddir)/kformula/libkformula.la'
 AC_SUBST(LIB_KFORMULA)
-LIB_KFM='$(top_builddir)/kfm/libkfm.la'
-AC_SUBST(LIB_KFM)
 LIB_KDEUTIL='$(top_builddir)/kdeutils/libkdeutil.la'
 AC_SUBST(LIB_KDEUTIL)
 LIB_KIO='$(top_builddir)/kio/libkio.la $(LIB_KFILE)'
@@ -256,7 +254,6 @@ AC_OUTPUT(Makefile \
 	corba/tutorials/embedding1/Makefile \
 	corba/tutorials/embedding2/Makefile \
 	corba/tutorials/kded/Makefile \
-	kfmlib/Makefile \
 	mediatool/Makefile \
 	kspell/Makefile \
 	kab/Makefile \
