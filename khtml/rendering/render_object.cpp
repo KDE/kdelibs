@@ -345,7 +345,10 @@ void RenderObject::setLayouted(bool b)
             o = o->m_parent;
         }
 
-        root->scheduleRelayout(clippedObj);
+        //this clipping stuff looks braindamaged...
+        //anyway, it needs new scheduleRelayout() too
+        //root->scheduleRelayout(clippedObj);
+        root->scheduleRelayout(true);
     }
 }
 
