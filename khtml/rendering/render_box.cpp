@@ -511,8 +511,9 @@ void RenderBox::calcWidth()
 	m_marginLeft = 0;
 	m_marginRight = 0;
 	
-        if (isInline() && !isReplaced())
+        if (isInline() && isFlow())
         {
+            // just calculate margins
 	    m_marginLeft = ml.minWidth(cw);
 	    m_marginRight = mr.minWidth(cw);            
             return;
@@ -537,8 +538,8 @@ void RenderBox::calcWidth()
 	    if(m_width < m_minWidth) m_width = m_minWidth;
 	
             calcHorizontalMargins(ml,mr,cw);
-
 	}
+        
 	if (cw != m_width + m_marginLeft + m_marginRight && !isFloating() && !isInline())
 	{
     	    if (style()->direction()==LTR)
