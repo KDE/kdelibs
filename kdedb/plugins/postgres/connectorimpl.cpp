@@ -121,7 +121,7 @@ KDB::Connector *ConnectorImpl::clone()
 
 QStringList ConnectorImpl::databases()
 {
-	KDB::RowList l = resultQuery("SELECT datname FROM pg_database");
+	KDB::RowList l = resultQuery(QString::fromLatin1("SELECT datname FROM pg_database"));
 
 	QStringList lst;
 	KDB::RowList::Iterator it;
@@ -133,7 +133,7 @@ QStringList ConnectorImpl::databases()
 
 QStringList ConnectorImpl::tables()
 {
-	KDB::RowList l = resultQuery("SELECT tablename FROM pg_tables WHERE tablename !~'^pg_'");
+	KDB::RowList l = resultQuery(QString::fromLatin1("SELECT tablename FROM pg_tables WHERE tablename !~'^pg_'"));
 
 	QStringList lst;
 	KDB::RowList::Iterator it;
@@ -144,21 +144,10 @@ QStringList ConnectorImpl::tables()
 	return lst;
 }
 
-KDB::RowList ConnectorImpl::fields(const QString & tableName)
+KDB::RowList ConnectorImpl::fields(const QString &tableName)
 {
-	QString sql(QString::fromLatin1("SELECT a.attname, "));
-	sql += "t.typname, ";
-	sql += "t.typlen, ";
-	sql += "a.atttypmod, ";
-	sql += "a.attnotnull, ";
-	sql += "a.atthasdef, ";
-	sql += "a.attnum ";
-	sql += "FROM pg_class c, pg_attribute a, pg_type t ";
-	sql += QString::fromLatin1("WHERE c.relname = '%1'").arg(tableName);
-	sql += " AND a.attnum > 0 ";
-	sql += " AND a.attrelid = c.oid";
-	sql += " AND a.atttypid = t.oid";
-	sql += " ORDER BY a.attnum";
+	QString sql(QString::fromLatin1("SELECT a.attname, t.typname, t.typlen, a.atttypmod, a.attnotnull, a.atthasdef, a.attnum FROM pg_class c, pg_attribute a, pg_type t %1 AND a.attnum > 0 AND a.attrelid = c.oid AND a.atttypid = t.oid ORDER BY a.attnum"));
+	sql = sql.arg(QString::fromLatin1("WHERE c.relname = '%1'").arg(tableName));
 
 	KDB::RowList lst = resultQuery(sql);
 
@@ -238,7 +227,7 @@ bool ConnectorImpl::setCurrentDatabase(const QString &name)
 
 KDB_ULONG ConnectorImpl::execute(const QString &sql)
 {
-	PGresult *res = PQexec(connection(),sql.latin1());
+	PGresult *res = PQexec(connection(), sql.latin1());
 
 	if (!res){
 		DBENGINE->pushError(new KDB::ServerError(this, PQerrorMessage(connection())));
@@ -258,9 +247,9 @@ KDB_ULONG ConnectorImpl::execute(const QString &sql)
 	return nTuples.toULong();
 }
 
-KDB::Handler *ConnectorImpl::query(const QString &SQL)
+KDB::Handler *ConnectorImpl::query(const QString &sql)
 {
-	PGresult *res = PQexec(connection(), SQL.latin1());
+	PGresult *res = PQexec(connection(), sql.latin1());
 	if (!res){
 		DBENGINE->pushError(new KDB::ServerError(this, PQerrorMessage(connection())));
 		return 0L;
@@ -421,8 +410,6 @@ bool ConnectorImpl::dropTable(const QString & name)
 
 QString ConnectorImpl::oidToTypeName(Oid oid)
 {
-	//    kdDebug(20012) << k_funcinfo << oid << endl;
-    
 	QString *s = m_typeCache.find((long int)oid);
 	if (s) {
 		//    kdDebug(20012) << "Found in cache " << *s << endl;
@@ -446,7 +433,7 @@ QString ConnectorImpl::oidToTypeName(Oid oid)
 								     PQgetlength(res, 0, 0) + 1));
 		//kdDebug(20012) << "Loaded from pg_type " << *newOid << endl;
 
-		if (m_typeCache.insert((long int)oid, newOid)) {
+		if (m_typeCache.insert(static_cast<long int>(oid), newOid)) {
 			return *newOid;
 		} else {
 			delete newOid;
@@ -457,17 +444,17 @@ QString ConnectorImpl::oidToTypeName(Oid oid)
 
 void ConnectorImpl::beginTransaction()
 {
-	execute("BEGIN TRANSACTION");
+	execute(QString::fromLatin1("BEGIN TRANSACTION"));
 }
 
 void ConnectorImpl::commit()
 {
-	execute("COMMIT");
+	execute(QString::fromLatin1("COMMIT"));
 }
 
 void ConnectorImpl::rollback() 
 {
-	execute("ROLLBACK");
+	execute(QString::fromLatin1("ROLLBACK"));
 }
 
 bool ConnectorImpl::appendField(const QString &table, KDB::Field *f)
