@@ -59,10 +59,12 @@
 
 using namespace KIO;
 
+#define REPORT_TIMEOUT 200
+
 #define KIO_ARGS QByteArray packedArgs; QDataStream stream( packedArgs, IO_WriteOnly ); stream
 
-Job::Job(bool showProgressInfo) : QObject(0, "job"), m_error(0), m_percent(0),
-                                  m_progressId(0), m_speedTimer(0)
+Job::Job(bool showProgressInfo) : QObject(0, "job"), m_error(0), m_percent(0)
+   , m_progressId(0), m_speedTimer(0)
 {
     // All jobs delete themselves after emiting 'result'.
 
@@ -430,7 +432,7 @@ SimpleJob *KIO::mkdir( const KURL& url, int permissions )
 
 SimpleJob *KIO::rmdir( const KURL& url )
 {
-    kdDebug(7007) << "rmdir " << url.prettyURL() << endl;
+    //kdDebug(7007) << "rmdir " << url.prettyURL() << endl;
     KIO_ARGS << url << Q_INT8(false); // isFile is false
     return new SimpleJob(url, CMD_DEL, packedArgs, false);
 }
@@ -893,9 +895,9 @@ FileCopyJob::FileCopyJob( const KURL& src, const KURL& dest, int permissions,
       m_permissions(permissions), m_move(move), m_overwrite(overwrite), m_resume(resume),
       m_totalSize(0)
 {
-    if (showProgressInfo && !move)
+   if (showProgressInfo && !move)
       Observer::self()->slotCopying( this, src, dest );
-    if (showProgressInfo && move)
+   else if (showProgressInfo && move)
       Observer::self()->slotMoving( this, src, dest );
 
     kdDebug(7007) << "FileCopyJob::FileCopyJob()" << endl;
@@ -1348,27 +1350,74 @@ CopyJob::CopyJob( const KURL::List& src, const KURL& dest, CopyMode mode, bool a
   : Job(showProgressInfo), m_mode(mode), m_asMethod(asMethod),
     destinationState(DEST_NOT_STATED), state(STATE_STATING),
     m_srcList(src), m_srcListCopy(src), m_bCurrentOperationIsLink(false),
-    m_dest(dest), m_bAutoSkip( false ), m_bOverwriteAll( false )
+m_dest(dest), m_bAutoSkip( false ), m_bOverwriteAll( false )
+,m_observer(0), m_reportTimer(0)
 {
   if ( showProgressInfo ) {
-    connect( this, SIGNAL( totalFiles( KIO::Job*, unsigned long ) ),
-             Observer::self(), SLOT( slotTotalFiles( KIO::Job*, unsigned long ) ) );
-    connect( this, SIGNAL( totalDirs( KIO::Job*, unsigned long ) ),
-             Observer::self(), SLOT( slotTotalDirs( KIO::Job*, unsigned long ) ) );
+     m_observer=Observer::self();
+     connect( this, SIGNAL( totalFiles( KIO::Job*, unsigned long ) ),
+             m_observer, SLOT( slotTotalFiles( KIO::Job*, unsigned long ) ) );
 
-    connect( this, SIGNAL( processedFiles( KIO::Job*, unsigned long ) ),
-             Observer::self(), SLOT( slotProcessedFiles( KIO::Job*, unsigned long ) ) );
+    connect( this, SIGNAL( totalDirs( KIO::Job*, unsigned long ) ),
+             m_observer, SLOT( slotTotalDirs( KIO::Job*, unsigned long ) ) );
+
+    /*connect( this, SIGNAL( processedFiles( KIO::Job*, unsigned long ) ),
+             m_observer, SLOT( slotProcessedFiles( KIO::Job*, unsigned long ) ) );
+
     connect( this, SIGNAL( processedDirs( KIO::Job*, unsigned long ) ),
-             Observer::self(), SLOT( slotProcessedDirs( KIO::Job*, unsigned long ) ) );
+             m_observer, SLOT( slotProcessedDirs( KIO::Job*, unsigned long ) ) );
 
     connect( this, SIGNAL( creatingDir( KIO::Job*, const KURL& ) ),
-             Observer::self(), SLOT( slotCreatingDir( KIO::Job*, const KURL& ) ) );
+             m_observer, SLOT( slotCreatingDir( KIO::Job*, const KURL& ) ) );*/
+
+    m_reportTimer=new QTimer(this);
+
+    connect(m_reportTimer,SIGNAL(timeout()),this,SLOT(slotReport()));
+    //this will update the report dialog with 5 Hz, I think this is fast enough, aleXXX
+    m_reportTimer->start(REPORT_TIMEOUT,false);
   }
     // Stat the dest
     KIO::Job * job = KIO::stat( m_dest, false );
     kdDebug(7007) << "CopyJob:stating the dest " << m_dest.prettyURL() << endl;
     addSubjob(job);
 }
+
+void CopyJob::slotReport()
+{
+   if (m_observer==0)
+      return;
+
+   if ((state==STATE_COPYING_FILES) || (state==STATE_CONFLICT_COPYING_FILES))
+   {
+      emit processedFiles( this, m_processedFiles );
+      m_observer->slotProcessedFiles(this,m_processedFiles);
+      if (m_mode==Move)
+      {
+         m_observer->slotMoving( this, m_currentSrcURL,m_currentDestURL);
+         emit moving( this, m_currentSrcURL, m_currentDestURL);
+      }
+      else if (m_mode==Link)
+      {
+         m_observer->slotCopying( this, m_currentSrcURL, m_currentDestURL );
+         emit linking( this, m_currentSrcURL.path(), m_currentDestURL );
+      }
+      else
+      {
+         m_observer->slotCopying( this, m_currentSrcURL, m_currentDestURL );
+         emit copying( this, m_currentSrcURL, m_currentDestURL );
+      };
+   };
+
+   if ((state==STATE_CREATING_DIRS) || (state==STATE_CONFLICT_CREATING_DIRS))
+   {
+      m_observer->slotProcessedDirs( this, m_processedDirs );
+      m_observer->slotCreatingDir( this,m_currentDestURL);
+      emit creatingDir( this, m_currentDestURL );
+   };
+
+   if (state==STATE_STATING)
+      m_observer->slotCopying( this, m_currentSrcURL, m_currentDestURL );
+};
 
 void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
 {
@@ -1450,11 +1499,13 @@ void CopyJob::startNextJob()
     {
         // First, stat the src
         Job * job = KIO::stat( *it, false );
-        kdDebug(7007) << "KIO::stat on " << (*it).prettyURL() << endl;
+        //kdDebug(7007) << "KIO::stat on " << (*it).prettyURL() << endl;
         state = STATE_STATING;
         addSubjob(job);
-        if ( m_progressId ) // Did we get an ID from the observer ?
-            Observer::self()->slotCopying( this, *it, m_dest ); // show asap
+        m_currentSrcURL=(*it);
+        m_currentDestURL=m_dest;
+        //if ( m_observer ) // Did we get an ID from the observer ?
+            //m_observer->slotCopying( this, *it, m_dest ); // show asap
         // keep src url in the list, just in case we need it later
     } else
     {
@@ -1471,6 +1522,8 @@ void CopyJob::startNextJob()
             allDirNotify.FilesRemoved( m_srcListCopy );
 
         emitResult();
+        if (m_reportTimer!=0)
+           m_reportTimer->stop();
     }
 }
 
@@ -1664,12 +1717,13 @@ void CopyJob::slotResultCreatingDirs( Job * job )
     }
     else // no error : remove from list, to move on to next dir
     {
+       //this is required for the undo feature
         emit copyingDone( this, (*it).uSource, (*it).uDest, true, false );
         dirs.remove( it );
     }
 
     m_processedDirs++;
-    emit processedDirs( this, m_processedDirs );
+    //emit processedDirs( this, m_processedDirs );
     subjobs.remove( job );
     assert ( subjobs.isEmpty() ); // We should have only one job at a time ...
     createNextDir();
@@ -1774,7 +1828,7 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
     }
     state = STATE_CREATING_DIRS;
     m_processedDirs++;
-    emit processedDirs( this, m_processedDirs );
+    //emit processedDirs( this, m_processedDirs );
     createNextDir();
 }
 
@@ -1805,7 +1859,10 @@ void CopyJob::createNextDir()
         // Create the directory - with default permissions so that we can put files into it
         // TODO : change permissions once all is finished
         KIO::Job * newjob = KIO::mkdir( (*it).uDest, -1 );
-        emit creatingDir( this, (*it).uDest );
+
+        //emit creatingDir( this, (*it).uDest );
+        m_currentDestURL=(*it).uDest;
+
         addSubjob(newjob);
         return;
     }
@@ -1878,16 +1935,18 @@ void CopyJob::slotResultCopyingFiles( Job * job )
         if ( m_bCurrentOperationIsLink )
         {
             QString target = ( m_mode == Link ? (*it).uSource.path() : (*it).linkDest );
+            //required for the undo feature
             emit copyingLinkDone( this, (*it).uSource, target, (*it).uDest );
         }
         else
+            //required for the undo feature
             emit copyingDone( this, (*it).uSource, (*it).uDest, false, false );
         // remove from list, to move on to next file
         files.remove( it );
     }
     m_processedFiles++;
-    emit processedFiles( this, m_processedFiles );
-    kdDebug(7007) << files.count() << " files remaining" << endl;
+    //emit processedFiles( this, m_processedFiles );
+    //kdDebug(7007) << files.count() << " files remaining" << endl;
     subjobs.remove( job );
     assert ( subjobs.isEmpty() ); // We should have only one job at a time ...
     copyNextFile();
@@ -1990,13 +2049,13 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
     }
     state = STATE_COPYING_FILES;
     m_processedFiles++;
-    emit processedFiles( this, m_processedFiles );
+    //emit processedFiles( this, m_processedFiles );
     copyNextFile();
 }
 
 void CopyJob::copyNextFile()
 {
-    kdDebug(7007) << "CopyJob::copyNextFile()" << endl;
+    //kdDebug(7007) << "CopyJob::copyNextFile()" << endl;
 
     // clear processed size for last file and add it to overall processed size
     m_processedSize += m_fileProcessedSize;
@@ -2048,9 +2107,14 @@ void CopyJob::copyNextFile()
                 // This is the case of creating a real symlink
                 newjob = KIO::symlink( (*it).uSource.path(), (*it).uDest, bOverwrite, false /*no GUI*/ );
                 kdDebug(7007) << "CopyJob::copyNextFile : Linking target=" << (*it).uSource.path() << " link=" << (*it).uDest.prettyURL() << endl;
-                emit linking( this, (*it).uSource.path(), (*it).uDest );
+                //emit linking( this, (*it).uSource.path(), (*it).uDest );
                 m_bCurrentOperationIsLink = true;
-                Observer::self()->slotCopying( this, (*it).uSource, (*it).uDest ); // should be slotLinking perhaps
+                if (m_observer!=0)
+                {
+                   m_currentSrcURL=(*it).uSource;
+                   m_currentDestURL=(*it).uDest;
+                };
+                //m_observer->slotCopying( this, (*it).uSource, (*it).uDest ); // should be slotLinking perhaps
             } else {
                 kdDebug(7007) << "CopyJob::copyNextFile : Linking URL=" << (*it).uSource.prettyURL() << " link=" << (*it).uDest.prettyURL() << endl;
                 if ( (*it).uDest.isLocalFile() )
@@ -2082,7 +2146,7 @@ void CopyJob::copyNextFile()
                         config.sync();
                         files.remove( it );
                         m_processedFiles++;
-                        emit processedFiles( this, m_processedFiles );
+                        //emit processedFiles( this, m_processedFiles );
                         copyNextFile();
                         return;
                     }
@@ -2112,24 +2176,39 @@ void CopyJob::copyNextFile()
         {
             newjob = KIO::symlink( (*it).linkDest, (*it).uDest, bOverwrite, false /*no GUI*/ );
             kdDebug(7007) << "CopyJob::copyNextFile : Linking target=" << (*it).linkDest << " link=" << (*it).uDest.prettyURL() << endl;
-            emit linking( this, (*it).linkDest, (*it).uDest );
-            Observer::self()->slotCopying( this, (*it).linkDest, (*it).uDest ); // should be slotLinking perhaps
+            //emit linking( this, (*it).linkDest, (*it).uDest );
+            if (m_observer!=0)
+            {
+               m_currentSrcURL=(*it).linkDest;
+               m_currentDestURL=(*it).uDest;
+            };
+            //Observer::self()->slotCopying( this, (*it).linkDest, (*it).uDest ); // should be slotLinking perhaps
             m_bCurrentOperationIsLink = true;
             // NOTE: if we are moving stuff, the deletion of the source will be done in slotResultCopyingFiles
         } else if (m_mode == Move) // Moving a file
         {
             newjob = KIO::file_move( (*it).uSource, (*it).uDest, (*it).permissions, bOverwrite, false, false/*no GUI*/ );
             kdDebug(7007) << "CopyJob::copyNextFile : Moving " << (*it).uSource.prettyURL() << " to " << (*it).uDest.prettyURL() << endl;
-            emit moving( this, (*it).uSource, (*it).uDest );
-            Observer::self()->slotMoving( this, (*it).uSource, (*it).uDest );
+            //emit moving( this, (*it).uSource, (*it).uDest );
+            if (m_observer!=0)
+            {
+               m_currentSrcURL=(*it).uSource;
+               m_currentDestURL=(*it).uDest;
+            };
+            //Observer::self()->slotMoving( this, (*it).uSource, (*it).uDest );
         }
         else // Copying a file
         {
             newjob = KIO::file_copy( (*it).uSource, (*it).uDest, (*it).permissions, bOverwrite, false, false/*no GUI*/ );
             kdDebug(7007) << "CopyJob::copyNextFile : Copying " << (*it).uSource.prettyURL() << " to " << (*it).uDest.prettyURL() << endl;
-            emit copying( this, (*it).uSource, (*it).uDest );
-            if ( m_progressId ) // Did we get an ID from the observer ?
-                Observer::self()->slotCopying( this, (*it).uSource, (*it).uDest );
+            //emit copying( this, (*it).uSource, (*it).uDest );
+            if (m_observer!=0)
+            {
+               m_currentSrcURL=(*it).uSource;
+               m_currentDestURL=(*it).uDest;
+            };
+            //if ( m_progressId ) // Did we get an ID from the observer ?
+                //Observer::self()->slotCopying( this, (*it).uSource, (*it).uDest );
         }
         addSubjob(newjob);
         connect( newjob, SIGNAL( processedSize( KIO::Job*, unsigned long ) ),
@@ -2348,44 +2427,58 @@ DeleteJob::DeleteJob( const KURL::List& src, bool shred, bool showProgressInfo )
 , m_srcList(src)
 , m_srcListCopy(src)
 , m_shred(shred)
-,m_reportTimer(0)
+, m_observer(0)
+, m_reportTimer(0)
 {
   if ( showProgressInfo ) {
-    connect( this, SIGNAL( totalFiles( KIO::Job*, unsigned long ) ),
-             Observer::self(), SLOT( slotTotalFiles( KIO::Job*, unsigned long ) ) );
 
-    connect( this, SIGNAL( totalDirs( KIO::Job*, unsigned long ) ),
-             Observer::self(), SLOT( slotTotalDirs( KIO::Job*, unsigned long ) ) );
+     m_observer=Observer::self();
+     connect( this, SIGNAL( totalFiles( KIO::Job*, unsigned long ) ),
+              m_observer, SLOT( slotTotalFiles( KIO::Job*, unsigned long ) ) );
 
-    connect( this, SIGNAL( processedFiles( KIO::Job*, unsigned long ) ),
-             Observer::self(), SLOT( slotProcessedFiles( KIO::Job*, unsigned long ) ) );
-    connect( this, SIGNAL( processedDirs( KIO::Job*, unsigned long ) ),
-             Observer::self(), SLOT( slotProcessedDirs( KIO::Job*, unsigned long ) ) );
+     connect( this, SIGNAL( totalDirs( KIO::Job*, unsigned long ) ),
+              m_observer, SLOT( slotTotalDirs( KIO::Job*, unsigned long ) ) );
 
-    connect( this, SIGNAL( deleting( KIO::Job*, const KURL& ) ),
-             Observer::self(), SLOT( slotDeleting( KIO::Job*, const KURL& ) ) );
 
-    m_reportTimer=new QTimer(this);
-    connect(m_reportTimer,SIGNAL(timeout()),this,SLOT(slotReport()));
-    //this will update the report dialog with 5 Hz, I think this is fast enough, aleXXX
-    m_reportTimer->start(200,false);
+     /*connect( this, SIGNAL( processedFiles( KIO::Job*, unsigned long ) ),
+      m_observer, SLOT( slotProcessedFiles( KIO::Job*, unsigned long ) ) );
+
+      connect( this, SIGNAL( processedDirs( KIO::Job*, unsigned long ) ),
+      m_observer, SLOT( slotProcessedDirs( KIO::Job*, unsigned long ) ) );
+
+      connect( this, SIGNAL( deleting( KIO::Job*, const KURL& ) ),
+      m_observer, SLOT( slotDeleting( KIO::Job*, const KURL& ) ) );*/
+
+     m_reportTimer=new QTimer(this);
+     connect(m_reportTimer,SIGNAL(timeout()),this,SLOT(slotReport()));
+     //this will update the report dialog with 5 Hz, I think this is fast enough, aleXXX
+     m_reportTimer->start(REPORT_TIMEOUT,false);
   }
 
   startNextJob();
 }
 
+//this is called often, so calling the functions
+//from Observer here directly might improve the performance a little bit
+//aleXXX
 void DeleteJob::slotReport()
 {
+   if (m_observer==0)
+      return;
+
    if (state==STATE_DELETING_DIRS)
    {
       emit processedDirs( this, m_processedDirs );
+      m_observer->slotProcessedDirs(this,m_processedDirs);
       emitPercent( m_processedFiles + m_processedDirs, m_totalFilesDirs );
    };
 
    emit deleting( this, m_currentURL );
+   m_observer->slotDeleting(this,m_currentURL);
 
    if (state==STATE_DELETING_FILES)
    {
+      m_observer->slotProcessedFiles(this,m_processedFiles);
       emit processedFiles( this, m_processedFiles );
       if (!m_shred)
          emitPercent( m_processedFiles, m_totalFilesDirs );
@@ -2690,8 +2783,13 @@ void DeleteJob::slotResult( Job *job )
       emit totalDirs( this, dirs.count() );
       // This is just in case we are job number two (several source URLs)
       // Remove this when we do all in one operation
-      emit processedFiles( this, 0 );
-      emit processedDirs( this, 0 );
+      if (m_observer!=0)
+      {
+         m_observer->slotProcessedDirs(this,0);
+         m_observer->slotProcessedFiles(this,0);
+      };
+      //emit processedFiles( this, 0 );
+      //emit processedDirs( this, 0 );
       m_totalFilesDirs = files.count()+symlinks.count() + dirs.count();
 
       state = STATE_DELETING_FILES;

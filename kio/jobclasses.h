@@ -35,6 +35,7 @@
 
 #include <kio/global.h>
 
+class Observer;
 class QTimer;
 
 namespace KIO {
@@ -745,6 +746,7 @@ namespace KIO {
          */
         void slotTotalSize( KIO::Job*, unsigned long size );
 
+        void slotReport();
     private:
         CopyMode m_mode;
         bool m_asMethod;
@@ -772,6 +774,19 @@ namespace KIO {
         bool m_bAutoSkip;
         bool m_bOverwriteAll;
         int m_conflictError;
+
+        /**
+         if showProgressInfo is true, we store Observer::self() here,
+         so that we can call the functions directly instead of using signals
+
+         calling a function via a signal takes approx. 65 times the time
+         compared to calling it directly ( at least on my machine) aleXXX
+         */
+        Observer *m_observer;
+        QTimer *m_reportTimer;
+        //these both are used for progress dialog reporting
+        KURL m_currentSrcURL;
+        KURL m_currentDestURL;
     };
 
     class DeleteJob : public Job {
@@ -800,16 +815,16 @@ namespace KIO {
     protected slots:
         void slotEntries( KIO::Job*, const KIO::UDSEntryList& list );
         virtual void slotResult( KIO::Job *job );
-        void slotReport();
 
         /**
          * Forward signal from subjob
          */
         void slotProcessedSize( KIO::Job*, unsigned long data_size );
+        void slotReport();
 
     private:
-        enum { STATE_STATING, STATE_LISTING,
-               STATE_DELETING_FILES, STATE_DELETING_DIRS } state;
+       enum { STATE_STATING, STATE_LISTING,
+       STATE_DELETING_FILES, STATE_DELETING_DIRS } state;
         unsigned long m_totalSize;
         unsigned long m_processedSize;
         unsigned long m_fileProcessedSize;
@@ -823,6 +838,14 @@ namespace KIO {
         KURL::List m_srcList; // is emptied while deleting
         KURL::List m_srcListCopy;
         bool m_shred;
+        /**
+         if showProgressInfo is true, we store Observer::self() here,
+         so that we can call the functions directly instead of using signals
+
+         calling a function via a signal takes approx. 65 times the time
+         compared to calling it directly ( at least on my machine) aleXXX
+         */
+        Observer *m_observer;
         QTimer *m_reportTimer;
     };
 
