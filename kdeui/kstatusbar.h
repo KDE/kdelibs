@@ -141,6 +141,8 @@ public:
   void removeItem( int id );
 
   /**
+   *  @since 3.2
+   *
    *  Returns true if an item with @id exists already in KStatusBar,
    *  otherwise returns false.
    *
