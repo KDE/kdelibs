@@ -1031,13 +1031,18 @@ void KCryptoConfig::save()
     item = static_cast<CipherItem *>(item->nextSibling());
   }
 
+  KSSLCertificateCache _cc;
+
   if (mUseSSLv3->isChecked() && ciphercount == 0)
     KMessageBox::information(this, i18n("If you don't select at least one"
                                        " cipher, SSLv3 will not work."),
                                    i18n("SSLv3 Ciphers"));
   // SSL Policies code
   for (OtherCertItem *x = otherCertDelList.first(); x != 0; x = otherCertDelList.next()) {
-     policies->deleteGroup(x->configName());
+     //policies->deleteGroup(x->configName());
+     KSSLX509Map cert(x->configName());
+     QString thisCN = cert.getValue("CN");
+     _cc.removeByCN(thisCN);
      otherCertDelList.remove(x);
   }
   // Go through the non-deleted ones and save them
@@ -1045,10 +1050,14 @@ void KCryptoConfig::save()
         static_cast<OtherCertItem *>(otherSSLBox->firstChild()); 
                                                               x;
              x = static_cast<OtherCertItem *>(x->nextSibling())) {
-     policies->setGroup(x->configName());
-     policies->writeEntry("Policy", x->getPolicy());
-     policies->writeEntry("Expires", x->getExpires());
-     policies->writeEntry("Permanent", x->isPermanent());
+     KSSLX509Map cert(x->configName());
+     QString thisCN = cert.getValue("CN");
+     QDateTime expires = x->getExpires();
+     _cc.modifyByCN(thisCN, (KSSLCertificateCache::KSSLCertificatePolicy)x->getPolicy(), x->isPermanent(), expires);
+     //policies->setGroup(x->configName());
+     //policies->writeEntry("Policy", x->getPolicy());
+     //policies->writeEntry("Expires", x->getExpires());
+     //policies->writeEntry("Permanent", x->isPermanent());
   }
 
   // SSL Personal certificates code
