@@ -182,6 +182,14 @@ public:
      */
     void setRedoLimit(int limit);
 
+    /**
+     * Enable or disable the undo and redo actions.
+     * This isn't usually necessary, but this method can be useful if
+     * you disable all actions (to go to a "readonly" state), and then
+     * want to come back to a readwrite mode.
+     */
+    void updateActions();
+
 public slots:
     /**
      * Undoes the last action.

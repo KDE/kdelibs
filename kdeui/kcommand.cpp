@@ -347,4 +347,13 @@ void KCommandHistory::slotRedoActivated( int pos )
         redo();
 }
 
+void KCommandHistory::updateActions()
+{
+    if ( m_undo && m_redo )
+    {
+        m_undo->setEnabled(m_commands.findRef(d->m_present)!=-1 && m_commands.prev()!=0);
+        m_redo->setEnabled(m_first || (m_commands.findRef(d->m_present)!=-1 && m_commands.next()!=0));
+    }
+}
+
 #include "kcommand.moc"
