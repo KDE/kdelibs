@@ -28,7 +28,7 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kstdaccel.h kwm.h krootprop.h kstring.h kpixmap.h dither.h \
 	kaccel.h kglobalaccel.h kclipboard.h krect.h ksize.h \
 	kpoint.h ltdl.h kprotocolmanager.h kregexp.h kstyle.h \
-	kstddirs.h kglobal.h
+	kstddirs.h kglobal.h ksharedptr.h
 
 noinst_HEADERS = kdebugdialog.h kcharsetsdata.h kckey.h kregpriv.h
 
