@@ -1093,6 +1093,37 @@ BidiIterator RenderFlow::findNextLineBreak(BidiIterator &start)
 	    }
         } else if ( o->isReplaced() ) {
             tmpW += o->width()+o->marginLeft()+o->marginRight();
+
+	    // Non text entities need to wrap too!
+	    if (w + tmpW > width) {
+		goto end;
+	    } else {
+		bool allowWrap = false;
+		if (o->parent()->style()->whiteSpace() != NOWRAP) { 
+		    allowWrap = true;
+		} else {
+		    // See if we are the "left edge" of a nowrap area.
+		    // If so, we should be allowed to wrap if necessary.
+		    RenderObject *wrapEdge = o->parent();
+		    RenderObject *me = o;
+		    while (wrapEdge->firstChild() == me &&
+			   me != this) {
+			if (wrapEdge->parent()->style()->whiteSpace() != NOWRAP) {
+			    allowWrap = true;
+			    break;
+			}
+
+			me = wrapEdge;
+			wrapEdge = wrapEdge->parent();
+		    }
+		}
+		if (allowWrap == true) {
+		    w += tmpW;
+		    tmpW = 0;
+		    lBreak.obj = o;
+		    lBreak.pos = 0;
+		}
+	    }
         } else if ( o->isText() ) {
 	    RenderText *t = static_cast<RenderText *>(o);
 	    int strlen = t->stringLength();
