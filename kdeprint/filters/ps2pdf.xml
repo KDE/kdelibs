@@ -1,22 +1,23 @@
 <!DOCTYPE kprintfilter>
 <kprintfilter name="ps2pdf" >
- <filtercommand data="ps2pdf -sPAPERSIZE=%psl %filterargs %filterinput %filteroutput" />
+ <filtercommand data="gs -q -dSAFER -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=%filteroutput -sPAPERSIZE=%psl %filterargs -c .setpdfwrite -f %filterinput" />
  <filterargs name="__root__" description="ps2pdf" >
   <filtergroup name="general" description="General" >
-   <filterarg format="-dCompatibilityLevel=%value" type="list" name="compatlevel" default="1.2" description="PDF compatibility" >
-    <value name="1.2" description="Acrobat 3+" />
-    <value name="1.3" description="Acrobat 4+" />
-    <value name="1.4" description="Acrobat 5+" />
-   </filterarg>
    <filterarg format="-dPDFSETTINGS=%value" type="list" name="targetdevice" default="/default" description="Target device" >
     <value name="/default" description="Default" />
     <value name="/screen" description="Screen" />
     <value name="/printer" description="Printer" />
     <value name="/prepress" description="Prepress" />
    </filterarg>
-   <filterarg format="-dAutoRotatePages=%value" type="bool" name="autorotate" default="/PageByPage" description="Auto rotate pages" >
+   <filterarg format="-dCompatibilityLevel=%value" type="list" name="compat" default="gs-def" description="Compatibility Level" >
+    <value name="gs-def" description="GhostScript Default Setting" />
+    <value name="1.2" description="Level 1.2" />
+    <value name="1.3" description="Level 1.3" />
+   </filterarg>
+   <filterarg format="-dAutoRotatePages=%value" type="list" name="autorotate" default="/PageByPage" description="Auto rotate pages" >
+    <value name="/None" description="Disabled" />
     <value name="/PageByPage" description="Page by Page" />
-    <value name="/None" description="None" />
+    <value name="/All" description="Dominant orientation" />
    </filterarg>
   </filtergroup>
   <filtergroup name="image" description="Image Options" >
@@ -63,7 +64,7 @@
       <value name="true" description="Enabled" />
       <value name="false" description="Disabled" />
      </filterarg>
-     <filterarg format="-dEncodeGrayImages=%value" type="bool" name="grayencodetype" default="/FlateEncode" description="Manual grayscale image encoding method" >
+     <filterarg format="-dEncodeGrayImages=%value" type="bool" name="grayencodetype" default="/DCTEncode" description="Manual grayscale image encoding method" >
       <value name="/FlateEncode" description="Flate compression" />
       <value name="/DCTEncode" description="JPEG compression" />
      </filterarg>
@@ -121,10 +122,15 @@
    </filtergroup>
   </filtergroup>
   <filtergroup name="fonts" description="Fonts" >
-   <filterarg format="-dEmbedAllFonts=%value" type="bool" name="embedfont" default="true" description="Embed fonts" >
+   <filterarg format="-dEmbedAllFonts=%value" type="bool" name="embedfonts" default="true" description="Embed all fonts" >
     <value name="true" description="Enabled" />
     <value name="false" description="Disabled" />
    </filterarg>
+   <filterarg format="-dSubsetFonts=%value" type="bool" name="fontsubsets" default="true" description="Embed font subsets" >
+    <value name="true" description="Embed subset" />
+    <value name="false" description="Embed complete font" />
+   </filterarg>
+   <filterarg format="-dMaxSubsetPct=%value" type="int" min="0" max="100" name="fontsubsetpct" default="100" description="Maximum font subset percentage" />
    <filterarg format="-r%value" type="list" name="resol" default="300x300" description="Bitmap font resolution" >
     <value name="72x72" description="72 dpi" />
     <value name="144x144" description="144 dpi" />
