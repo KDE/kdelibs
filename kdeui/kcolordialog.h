@@ -19,7 +19,7 @@
 //----------------------------------------------------------------------
 // KDE color selection dialog.
 
-// layout managment added Oct 1997 by Mario Weilguni 
+// layout managment added Oct 1997 by Mario Weilguni
 // <mweilguni@sime.com>
 
 #ifndef __KCOLORDIALOG_H__
@@ -65,7 +65,7 @@ public:
   KHSSelector( QWidget *parent=0, const char *name=0 );
 
   void updateContents();
-    
+
 protected:
   /**
    * Draws the contents of the widget on a pixmap,
@@ -163,8 +163,8 @@ public:
   void setHsv(int _h, int _s, int _v);
   void setRgb(int _r, int _g, int _b);
 
-  void rgb(int *_r, int *_g, int *_b);
-  void hsv(int *_h, int *_s, int *_v);
+  void rgb(int *_r, int *_g, int *_b) const;
+  void hsv(int *_h, int *_s, int *_v) const;
 protected:
   int h;
   int s;
@@ -246,9 +246,9 @@ public:
   {	return numRows() * numCols(); }
 
   void setShading(bool _shade) { shade = _shade; }
-  
+
   void setAcceptDrags(bool _acceptDrags) { acceptDrags = _acceptDrags; }
-	
+
   int getSelected()
   {	return selected; }
 
@@ -291,7 +291,7 @@ protected:
   bool inMouse;
   QPoint mPos;
   int	selected;
-  bool shade;  
+  bool shade;
   bool acceptDrags;
 
 private:
@@ -346,22 +346,22 @@ private:
 
 };
 
-/** 
+/**
  * The KColorDialog provides a dialog for color selection.
  *
  * @sect Features:
- * 
+ *
  * @li Colour selection from a wide range of palettes.
  * @li Colour selection from a palette of H vs S and V selectors (similar to windoze).
  * @li Direct input of HSV or RGB values.
  * @li Saving of custom colors
- * 
+ *
  * In most cases, you will want to use the static method @ref KColorDialog::getColor().
  * This pops up the dialog (with an initial selection provided by you), lets the
  * user choose a color, and returns.
  *
  * Example:
- * 
+ *
  * <pre>
  * 	QColor myColor;
  * 	int result = KColorDialog::getColor( myColor );
@@ -388,7 +388,7 @@ class KColorDialog : public KDialogBase
   Q_OBJECT
 
   public:
-    /** 
+    /**
      * Construct a @ref KColorDialog.
      */
     KColorDialog( QWidget *parent = 0L, const char *name = 0L,
@@ -396,11 +396,11 @@ class KColorDialog : public KDialogBase
 
     ~KColorDialog();
 
-    /** 
-     * Retrieve the currently selected color. 
+    /**
+     * Retrieve the currently selected color.
      **/
     QColor color();
-  
+
     /**
      * Create a modal color dialog, let the user choose a
      * color, and return when the dialog is closed.
@@ -412,18 +412,43 @@ class KColorDialog : public KDialogBase
     static int getColor( QColor &theColor, QWidget *parent=0L );
 
     /**
+     * Create a modal color dialog, let the user choose a
+     * color, and return when the dialog is closed.
+     *
+     * The selected color is returned in the argument @p theColor.
+     *
+     * This version takes a @p defaultColor argument, which sets the color
+     * selected by the "default color" checkbox. When this checkbox is checked,
+     * the invalid color (QColor()) is returned into @p theColor.
+     *
+     * @returns @ref QDialog::result().
+     */
+    static int getColor( QColor &theColor, const QColor& defaultColor, QWidget *parent=0L );
+
+    /**
      * Get the color from the pixel at point p on the screen.
      */
     static QColor grabColor(const QPoint &p);
 
+    /**
+     * Call this to make the dialog show a "Default Color" checkbox.
+     * If this checkbox is selected, the dialog will return an "invalid" color (QColor()).
+     * This can be used to mean "the default text color", for instance,
+     * the one with the KDE text color on screen, but black when printing.
+     */
+    void setDefaultColor( const QColor& defaultCol );
+
+    /** @return the value passed to setDefaultColor */
+    QColor defaultColor() const;
+
   public slots:
-    /** 
+    /**
      * Preselects a color.
      */
     void setColor( const QColor &col );
 
   signals:
-    /** 
+    /**
      * Emitted when a color is selected.
      * Connect to this to monitor the color as it as selected if you are
      * not running modal.
@@ -440,6 +465,7 @@ class KColorDialog : public KDialogBase
     void slotColorSelected( const QColor &col, const QString &name );
     void slotColorPicker();
     void slotAddToCustomColors();
+    void slotDefaultColorClicked();
     /**
      * Write the settings of the dialog to config file.
      **/
@@ -455,6 +481,7 @@ class KColorDialog : public KDialogBase
     void setHsvEdit( void );
     void setHtmlEdit( void );
     void _setColor( const KColor &col, const QString &name=QString::null );
+    void showColor( const KColor &color, const QString &name );
 
   protected:
    /**

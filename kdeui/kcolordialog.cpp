@@ -31,6 +31,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <qcheckbox.h>
 #include <qdrawutil.h>
 #include <qevent.h>
 #include <qfile.h>
@@ -60,6 +61,7 @@
 #include "kcolordrag.h"
 #include "kstaticdeleter.h"
 #include <config.h>
+#include <kdebug.h>
 
 #ifdef Q_WS_X11
 #include <X11/Xlib.h>
@@ -125,19 +127,19 @@ KColor::setRgb(int _r, int _g, int _b)
   r = _r; g = _g; b = _b;
   QColor::setRgb(r, g, b);
   QColor::hsv(&h, &s, &v);
-};
+}
 
 void
-KColor::rgb(int *_r, int *_g, int *_b)
+KColor::rgb(int *_r, int *_g, int *_b) const
 {
   *_r = r; *_g = g; *_b = b;
-};
+}
 
 void
-KColor::hsv(int *_h, int *_s, int *_v)
+KColor::hsv(int *_h, int *_s, int *_v) const
 {
   *_h = h; *_s = s; *_v = v;
-};
+}
 
 
 static QColor *standardPalette = 0;
@@ -844,6 +846,10 @@ public:
     KHSSelector *hsSelector;
     KPalette *palette;
     KValueSelector *valuePal;
+    QVBoxLayout* l_right;
+    QGridLayout* tl_layout;
+    QCheckBox *cbDefaultColor;
+    KColor defaultColor;
     KColor selColor;
     QX11EventFilter oldfilter;
 };
@@ -858,6 +864,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   d->bRecursion = true;
   d->bColorPicking = false;
   d->oldfilter = 0;
+  d->cbDefaultColor = 0L;
   setHelp( QString::fromLatin1("kcolordialog.html"), QString::null );
   connect( this, SIGNAL(okClicked(void)),this,SLOT(slotWriteSettings(void)));
   connect( this, SIGNAL(closeClicked(void)),this,SLOT(slotWriteSettings(void)));
@@ -871,10 +878,11 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   setMainWidget( page );
 
   QGridLayout *tl_layout = new QGridLayout( page, 3, 3, 0, spacingHint() );
+  d->tl_layout = tl_layout;
   tl_layout->addColSpacing( 1, spacingHint() * 2 );
 
   //
-  // the more complicated part: the right side
+  // the more complicated part: the left side
   // add a V-box
   //
   QVBoxLayout *l_left = new QVBoxLayout();
@@ -970,7 +978,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   	SLOT( slotRGBChanged() ) );
 
   //
-  // the entry fields should be wide enought to hold 8888888
+  // the entry fields should be wide enough to hold 8888888
   //
   int w = d->hedit->fontMetrics().width(QString::fromLatin1("8888888"));
   d->hedit->setFixedWidth(w);
@@ -982,16 +990,16 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   d->bedit->setFixedWidth(w);
 
   //
-  // add a layout for left-side (colors)
+  // add a layout for the right side
   //
-  QVBoxLayout *l_right = new QVBoxLayout;
-  tl_layout->addLayout(l_right, 0, 2);
+  d->l_right = new QVBoxLayout;
+  tl_layout->addLayout(d->l_right, 0, 2);
 
   //
   // Add the palette table
   //
   d->table = new KPaletteTable( page );
-  l_right->addWidget(d->table, 10);
+  d->l_right->addWidget(d->table, 10);
 
   connect( d->table, SIGNAL( colorSelected( const QColor &, const QString & ) ),
 	   SLOT( slotColorSelected( const QColor &, const QString & ) ) );
@@ -999,9 +1007,9 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   //
   // a little space between
   //
-  l_right->addSpacing(10);
+  d->l_right->addSpacing(10);
 
-  QHBoxLayout *l_hbox = new QHBoxLayout( l_right );
+  QHBoxLayout *l_hbox = new QHBoxLayout( d->l_right );
 
   //
   // The add to custom colors button
@@ -1024,12 +1032,12 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   //
   // a little space between
   //
-  l_right->addSpacing(10);
+  d->l_right->addSpacing(10);
 
   //
-  // and now the entry fields and the patch
+  // and now the entry fields and the patch (=colored box)
   //
-  QGridLayout *l_grid = new QGridLayout( l_right, 2, 3);
+  QGridLayout *l_grid = new QGridLayout( d->l_right, 2, 3);
 
   l_grid->setColStretch(2, 1);
 
@@ -1080,6 +1088,63 @@ KColorDialog::~KColorDialog()
 }
 
 void
+KColorDialog::setDefaultColor( const QColor& col )
+{
+    if ( !d->cbDefaultColor )
+    {
+        //
+        // a little space between
+        //
+        d->l_right->addSpacing(10);
+
+        //
+        // and the "default color" checkbox, under all items on the right side
+        //
+        d->cbDefaultColor = new QCheckBox( i18n( "Default color" ), mainWidget() );
+        d->l_right->addWidget( d->cbDefaultColor );
+
+        mainWidget()->setMaximumSize( QWIDGETSIZE_MAX, QWIDGETSIZE_MAX ); // cancel setFixedSize()
+        d->tl_layout->activate();
+        mainWidget()->setMinimumSize( mainWidget()->sizeHint() );
+        disableResize();
+
+        connect( d->cbDefaultColor, SIGNAL( clicked() ), SLOT( slotDefaultColorClicked() ) );
+    }
+
+    d->defaultColor = col;
+
+    slotDefaultColorClicked();
+}
+
+QColor KColorDialog::defaultColor() const
+{
+    return d->defaultColor;
+}
+
+void KColorDialog::slotDefaultColorClicked()
+{
+    bool enable;
+    if ( d->cbDefaultColor->isChecked() )
+    {
+        d->selColor = QColor();
+        showColor( d->defaultColor, i18n( "-default-" ) );
+        enable = false;
+    } else
+    {
+        d->selColor = d->defaultColor;
+        enable = true;
+    }
+    d->hedit->setEnabled( enable );
+    d->sedit->setEnabled( enable );
+    d->vedit->setEnabled( enable );
+    d->redit->setEnabled( enable );
+    d->gedit->setEnabled( enable );
+    d->bedit->setEnabled( enable );
+    d->valuePal->setEnabled( enable );
+    d->hsSelector->setEnabled( enable );
+}
+
+void
 KColorDialog::readSettings()
 {
   KConfig* config = KGlobal::config();
@@ -1109,7 +1174,8 @@ KColorDialog::slotWriteSettings()
 QColor
 KColorDialog::color()
 {
-  d->table->addToRecentColors( d->selColor );
+  if ( d->selColor.isValid() )
+    d->table->addToRecentColors( d->selColor );
   return d->selColor;
 }
 
@@ -1136,6 +1202,21 @@ int KColorDialog::getColor( QColor &theColor, QWidget *parent )
   return result;
 }
 
+//
+// static function to display dialog and return color
+//
+int KColorDialog::getColor( QColor &theColor, const QColor& defaultCol, QWidget *parent )
+{
+  KColorDialog dlg( parent, "Color Selector", TRUE );
+  dlg.setDefaultColor( defaultCol );
+  dlg.setColor( theColor );
+  int result = dlg.exec();
+
+  if ( result == Accepted )
+    theColor = dlg.color();
+
+  return result;
+}
 
 void KColorDialog::slotRGBChanged( void )
 {
@@ -1232,22 +1313,31 @@ void KColorDialog::_setColor(const KColor &color, const QString &name)
 {
   if (color == d->selColor) return;
 
-  d->bRecursion = true;
   d->selColor = color;
+
+  showColor( color, name );
+
+  emit colorSelected( d->selColor );
+}
+
+// show but don't set into selColor, nor emit colorSelected
+void KColorDialog::showColor( const KColor &color, const QString &name )
+{
+  d->bRecursion = true;
 
   if (name.isEmpty())
      d->colorName->setText( i18n("-unnamed-"));
   else
      d->colorName->setText( name );
 
-  d->patch->setColor( d->selColor );
+  d->patch->setColor( color );
 
   setRgbEdit();
   setHsvEdit();
   setHtmlEdit();
 
   int h, s, v;
-  d->selColor.hsv( &h, &s, &v );
+  color.hsv( &h, &s, &v );
   d->hsSelector->setValues( h, s );
   d->valuePal->setHue( h );
   d->valuePal->setSaturation( s );
@@ -1255,9 +1345,8 @@ void KColorDialog::_setColor(const KColor &color, const QString &name)
   d->valuePal->repaint( FALSE );
   d->valuePal->setValue( v );
   d->bRecursion = false;
-
-  emit colorSelected( d->selColor );
 }
+
 
 static QWidget *kde_color_dlg_widget = 0;
 

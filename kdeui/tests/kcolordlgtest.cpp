@@ -31,7 +31,7 @@ int main( int argc, char *argv[] )
         aConfig.setGroup( "KColorDialog-test" );
     
 	color = aConfig.readColorEntry( "Chosen" );
-	int nRet = KColorDialog::getColor( color );
+	int nRet = KColorDialog::getColor( color, Qt::red /*testing default color*/ );
 	aConfig.writeEntry( "Chosen", color );
 	
 	return nRet;
