@@ -217,6 +217,10 @@
 			</And>
 		</Include>
 		<Menu>
+			<Name>Terminal</Name>
+			<Directory>kde-internet-terminal.directory</Directory>
+		</Menu>
+		<Menu>
 			<Name>More</Name>
 			<Directory>kde-more.directory</Directory>
 			<Include>
@@ -295,6 +299,10 @@
 			<Name>ScreenSavers</Name>
 			<Directory>kde-system-screensavers.directory</Directory>
 		</Menu>
+		<Menu>
+			<Name>Terminal</Name>
+			<Directory>kde-system-terminal.directory</Directory>
+		</Menu>
 	</Menu>
 	<Menu>
 		<Name>Toys</Name>
@@ -312,6 +320,10 @@
 			<Not><Category>X-KDE-More</Category></Not>
 			</And>
 		</Include>
+		<Menu>
+			<Name>XUtilities</Name>
+			<Directory>kde-utilities-xutils.directory</Directory>
+		</Menu>
 		<Menu>
 			<Name>More</Name>
 			<Directory>kde-more.directory</Directory>
