@@ -1,10 +1,15 @@
 [Misc]
 Name=Pillbox
+Name[af]=Pilhouer
 Name[da]=Pilleboks
+Name[de]=Pillenschachtel
+Name[hu]=Gyógyszeresdoboz
 Comment=Pillbox unthemed style.
+Comment[af]=Pilhouer temalose styl
 Comment[ca]=Estil sense tema Pillbox.
 Comment[da]=Pilleboksstil uden tema
 Comment[de]=Pillenschachtel (kein komplettes Design)
+Comment[hu]=Gyógyszeresdoboz stílus
 Comment[it]=Stile pillbox (senza tema)
 [KDE]
 widgetStyle=pillboxstyle.la
