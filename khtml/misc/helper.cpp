@@ -102,9 +102,11 @@ using namespace khtml;
         map["threedshadow"] = cg.shadow();
 
 	// InfoBackground
+#ifndef QT_NO_TOOLTIP
         map["infobackground"] = QToolTip::palette().inactive().background();
 	// InfoText
         map["infotext"] = QToolTip::palette().inactive().foreground();
+#endif
 
 	globalConfig->setGroup("General");
 	// Menu background
