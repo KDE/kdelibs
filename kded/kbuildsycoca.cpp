@@ -297,7 +297,8 @@ void KBuildSycoca::recreate( KSycocaEntryListList *allEntries, QDict<Q_UINT32> *
   KSaveFile database(path);
   if (database.status() != 0)
   {
-    fprintf(stderr, "Error can't create database!\n");
+    fprintf(stderr, "kbuildsycoca: ERROR creating database '%s'!\n", path.local8Bit().data());
+    fprintf(stderr, "kbuildsycoca: Wrong permissions on directory? Disk full?\n");
     exit(-1);
   }
 
@@ -316,10 +317,13 @@ void KBuildSycoca::recreate( KSycocaEntryListList *allEntries, QDict<Q_UINT32> *
   if( build(allEntries, ctimeDict)) // Parse dirs
   {
     save(); // Save database
+    if (m_str->device()->status())
+      database.abort(); // Error
     m_str = 0L;
     if (!database.close())
     {
-      kdError(7021) << "Error writing database to " << database.name() << endl;
+      fprintf(stderr, "kbuildsycoca: ERROR writing database '%s'!\n", database.name().local8Bit().data());
+      fprintf(stderr, "kbuildsycoca: Disk full?\n");
       return;
     }
   }
@@ -375,6 +379,8 @@ void KBuildSycoca::save()
        factory = m_lstFactories->next())
    {
       factory->save(*m_str);
+      if (m_str->device()->status())
+         return; // error
    }
 
    int endOfData = m_str->device()->at();

@@ -212,8 +212,6 @@ KBuildServiceTypeFactory::savePatternLists(QDataStream &str)
      //kdDebug(7020) << QString("FAST : '%1' '%2'").arg(paddedPattern).arg(dict[(*it)]->name()) << endl;
      str << paddedPattern;
      str << dict[(*it)]->offset();
-     // Check size remains constant
-     assert( !entrySize || ( entrySize == str.device()->at() - start ) );
      entrySize = str.device()->at() - start;
      nrOfEntries++;
    }
