@@ -363,7 +363,7 @@ void RenderImage::updateFromElement()
             image = new_image;
             image->ref(this);
             if(oldimage) oldimage->deref(this);
-        berrorPic = image->isErrorImage();
+            berrorPic = image->isErrorImage();
         }
     }
 
@@ -371,4 +371,11 @@ void RenderImage::updateFromElement()
         alt = static_cast<HTMLInputElementImpl*>(element())->altText();
     else if (element()->id() == ID_IMG)
         alt = static_cast<HTMLImageElementImpl*>(element())->altText();
+}
+
+bool RenderImage::complete() const
+{
+    // "complete" means that the image has been loaded
+    // but also that its width/height (contentWidth(),contentHeight()) have been calculated.
+    return !pix.isNull() && layouted();
 }
