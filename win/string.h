@@ -30,11 +30,11 @@
 extern "C" {
 #endif
 
-KDEWIN32_EXPORT size_t strlcpy(char *dst, const char *src, size_t siz);
-#define HAVE_STRLCPY
+/* implemented in fakes.c */
+KDECORE_EXPORT unsigned long strlcpy(char *dst, const char *src, unsigned long siz);
 
-KDEWIN32_EXPORT size_t strlcat(char *dst, const char *src, size_t siz);
-#define HAVE_STRLCAT
+/* implemented in fakes.c */
+KDECORE_EXPORT unsigned long strlcat(char *dst, const char *src, unsigned long siz);
 
 KDEWIN32_EXPORT char* strndup(const char *src, size_t n);
 

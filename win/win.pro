@@ -33,8 +33,6 @@ uname.c \
 net.c \
 time.c \
 dummy.cpp \
-strlcpy.c \
-strlcat.c \
 strndup.c \
 fsync.c \
 grp.c \
@@ -47,5 +45,7 @@ getenv.c \
 bootstrap.cpp
 
 #mkdir.c
+#strlcpy.c \
+#strlcat.c \
 
 
