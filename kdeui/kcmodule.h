@@ -23,12 +23,8 @@
 #define __KCMODULE_H__
 
 #include <qwidget.h>
-#include <qdialog.h>
 
-class QPushButton;
-class QFrame;
 class KCModulePrivate;
-class KCDialogPrivate;
 
 /**
  * The base class for control center modules.
@@ -75,8 +71,8 @@ public:
   /*
    * Creates a new module.
    */
-  KCModule(QWidget *parent=0, const char *name=0);
-
+  KCModule(QWidget *parent=0, const char *name=0)
+	: QWidget(parent, name), _btn(Help|Default|Reset|Cancel|Apply|Ok) {}
   /**
    * Load the configuration data into the module.
    *
@@ -181,42 +177,5 @@ private:
 
   KCModulePrivate *d;
 };
-
-
-class KCDialog : public QDialog
-{
-  Q_OBJECT
-
-public:
-
-  KCDialog(KCModule *client, const QString &docpath=QString::null, QWidget *parent=0, const char *name=0, bool modal=false, WFlags f=0);
-
-
-protected slots:
-
-  void helpClicked();
-  void defaultClicked();
-  void resetClicked();
-  void cancelClicked();
-  void applyClicked();
-  void okClicked();
-  void clientChanged(bool state);
-
-
-private:
-
-  KCModule    *_client;
-  QPushButton *_help;
-  QPushButton *_default;
-  QPushButton *_reset;
-  QPushButton *_cancel;
-  QPushButton *_apply;
-  QPushButton *_ok;
-  QFrame      *_sep;
-  QString     _docpath;
-
-  KCDialogPrivate *d;
-};
-
 
 #endif

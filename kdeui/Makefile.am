@@ -77,7 +77,7 @@ libkdeui_la_SOURCES = kthemestyle.cpp kurllabel.cpp knuminput.cpp  \
 		kjanuswidget.cpp kaboutdialog.cpp kpixmapeffect.cpp \
 		kauthicon.cpp kmessagebox.cpp kdualcolorbtn.cpp \
 		ktoolbarradiogroup.cpp ktoolbarbutton.cpp ktoolbaritem.cpp \
-		ktextbrowser.cpp kaction.cpp khelpmenu.cpp kcmodule.cpp \
+		ktextbrowser.cpp kaction.cpp khelpmenu.cpp \
 		kcmenumngr.cpp panelmenu.cpp kstdaction.cpp kdrawutil.cpp \
 		kiconview.cpp klistview.cpp klistbox.cpp kbugreport.cpp \
 		kcombobox.cpp kpassdlg.cpp kxmlguiclient.cpp kxmlgui.cpp \
