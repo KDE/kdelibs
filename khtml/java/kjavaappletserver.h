@@ -12,6 +12,9 @@
  * @version $Id$
  * @author Richard J. Moore, rich@kde.org
  */
+
+class KJavaAppletContext;
+
 class KJavaAppletServer : public QObject
 {
 Q_OBJECT
@@ -28,6 +31,7 @@ public:
      * Create an applet context with the specified id.
      */
     void createContext( int contextId );
+    void createContext( int contextId, KJavaAppletContext* context );
 
     /**
      * Destroy the applet context with the specified id. All the applets in the

@@ -1,12 +1,11 @@
-
-//#include <X11/Xlib.h>
-//#include <X11/Xutil.h>
-
 #include "kjavaappletwidget.h"
 
-#include <qtimer.h>
 #include <kwinmodule.h>
 #include <kwin.h>
+
+#include <qtimer.h>
+#include <qapplication.h>
+
 
 // For future expansion
 struct KJavaAppletWidgetPrivate
@@ -20,47 +19,49 @@ KJavaAppletWidget::KJavaAppletWidget( KJavaAppletContext* context,
                                       QWidget* parent, const char* name )
    : QXEmbed( parent, name )
 {
-   applet = new KJavaApplet( this, context );
-   CHECK_PTR( applet );
+    applet = new KJavaApplet( this, context );
+    CHECK_PTR( applet );
 
-   kwm = new KWinModule( this );
-   CHECK_PTR( kwm );
-
-   uniqueTitle();
-   shown = false;
+    init();
 }
 
-KJavaAppletWidget::KJavaAppletWidget( KJavaApplet *applet,
+KJavaAppletWidget::KJavaAppletWidget( KJavaApplet* _applet,
                                       QWidget *parent, const char *name )
    : QXEmbed( parent, name )
 {
-   this->applet = applet;
+    applet = _applet;
 
-   kwm = new KWinModule( this );
-   CHECK_PTR( kwm );
-
-   uniqueTitle();
-   shown = false;
+    init();
 }
 
 KJavaAppletWidget::KJavaAppletWidget( QWidget *parent, const char *name )
    : QXEmbed( parent, name )
 {
-   KJavaAppletContext *context = KJavaAppletContext::getDefaultContext();
+    KJavaAppletContext* context = KJavaAppletContext::getDefaultContext();
 
-   applet = new KJavaApplet( this, context );
-   CHECK_PTR( applet );
+    applet = new KJavaApplet( this, context );
+    CHECK_PTR( applet );
 
-   kwm = new KWinModule( this );
-   CHECK_PTR( kwm );
-
-   uniqueTitle();
-   shown = false;
+    init();
 }
 
 KJavaAppletWidget::~KJavaAppletWidget()
 {
     delete applet;
+}
+
+void KJavaAppletWidget::init()
+{
+    kwm = new KWinModule( this );
+    CHECK_PTR( kwm );
+
+    uniqueTitle();
+    shown = false;
+
+    //remove event filters in qApp, topLevelWidget
+    //this helps keyboard focus sometimes???
+//    qApp->removeEventFilter( this );
+//    topLevelWidget()->removeEventFilter( this );
 }
 
 void KJavaAppletWidget::create()
@@ -170,6 +171,7 @@ void KJavaAppletWidget::setWindow( WId w )
                     this, SLOT( setWindow( WId ) ) );
 
         embed( w );
+        setFocus();
     }
 }
 

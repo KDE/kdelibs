@@ -12,52 +12,58 @@ struct KJavaAppletContextPrivate
     QMap< int, QGuardedPtr<KJavaApplet> > applets;
 };
 
+
+/*  Static Factory Functions
+ *
+ */
+KJavaAppletContext* KJavaAppletContext::getDefaultContext()
+{
+   static KJavaAppletContext* context = 0;
+
+    if ( context == 0 )
+    {
+        context = new KJavaAppletContext();
+        CHECK_PTR( context );
+    }
+
+    return context;
+}
+
+
+/*  Class Implementation
+ */
 KJavaAppletContext::KJavaAppletContext()
     : QObject()
 {
-   d = new KJavaAppletContextPrivate;
+    d = new KJavaAppletContextPrivate;
+    server = KJavaAppletServer::allocateJavaServer();
 
-   server = KJavaAppletServer::allocateJavaServer();
-   connect( server, SIGNAL(receivedCommand(const QString&,const QStringList&)),
-            this, SLOT(received(const QString&,const QStringList&)) );
-   static int contextIdSource = 0;
+    static int contextIdSource = 0;
 
-   setContextId( contextIdSource );
-   server->createContext( contextIdSource );
+    id = contextIdSource;
+    server->createContext( contextIdSource, this );
 
-   contextIdSource++;
+    contextIdSource++;
 }
 
 KJavaAppletContext::~KJavaAppletContext()
 {
-   server->destroyContext( id );
-   KJavaAppletServer::freeJavaServer();
-   delete d;
-}
-
-KJavaAppletContext *KJavaAppletContext::getDefaultContext()
-{
-   static KJavaAppletContext *context = 0;
-
-   if ( context == 0 ) {
-      context = new KJavaAppletContext();
-      CHECK_PTR( context );
-   }
-
-   return context;
+    server->destroyContext( id );
+    KJavaAppletServer::freeJavaServer();
+    delete d;
 }
 
 int KJavaAppletContext::contextId()
 {
-   return id;
+    return id;
 }
 
-void KJavaAppletContext::setContextId( int id )
+void KJavaAppletContext::setContextId( int _id )
 {
-   this->id = id;
+    id = _id;
 }
 
-void KJavaAppletContext::create( KJavaApplet *applet )
+void KJavaAppletContext::create( KJavaApplet* applet )
 {
     static int appletId = 0;
 
@@ -74,36 +80,42 @@ void KJavaAppletContext::create( KJavaApplet *applet )
     appletId++;
 }
 
-void KJavaAppletContext::destroy( KJavaApplet *applet )
+void KJavaAppletContext::destroy( KJavaApplet* applet )
 {
-  int appletId = applet->appletId();
-  d->applets.remove( appletId );
-  server->destroyApplet( id, appletId );
+    int appletId = applet->appletId();
+    d->applets.remove( appletId );
+
+    server->destroyApplet( id, appletId );
 }
 
-void KJavaAppletContext::setParameter( KJavaApplet *applet,
-                                       const QString &name, const QString &value )
+void KJavaAppletContext::setParameter( KJavaApplet* applet,
+                                       const QString& name, const QString& value )
 {
     server->setParameter( id, applet->appletId(),
                           name, value );
 }
 
-void KJavaAppletContext::show( KJavaApplet *applet, const QString &title )
+void KJavaAppletContext::show( KJavaApplet* applet, const QString& title )
 {
     server->showApplet( id, applet->appletId(), title );
 }
 
-void KJavaAppletContext::start( KJavaApplet *applet )
+void KJavaAppletContext::start( KJavaApplet* applet )
 {
     server->startApplet( id, applet->appletId() );
 }
 
-void KJavaAppletContext::stop (KJavaApplet *applet )
+void KJavaAppletContext::stop( KJavaApplet* applet )
 {
     server->stopApplet( id, applet->appletId() );
 }
 
-void KJavaAppletContext::received( const QString &cmd, const QStringList &arg )
+void KJavaAppletContext::processCmd( QString cmd, QStringList args )
+{
+    received( cmd, args );
+}
+
+void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
 {
     kdDebug() << "KJavaAppletContext::received, cmd = >>" << cmd << "<<" << endl;
     kdDebug() << "arg count = " << arg.count() << endl;;

@@ -2,6 +2,7 @@ package org.kde.kjas.server;
 
 import java.io.*;
 
+
 /**
  *  KJAS server recognizes these variablers:
  *    kjas.debug - makes server actions verbose

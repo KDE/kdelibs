@@ -8,6 +8,7 @@
 #include <kdebug.h>
 
 #include <qtimer.h>
+#include <qguardedptr.h>
 
 #include <stdlib.h>
 
@@ -29,7 +30,7 @@
 struct KJavaAppletServerPrivate
 {
    int counter;
-   QDict<KJavaAppletContext> contexts;
+   QMap< int, QGuardedPtr<KJavaAppletContext> > contexts;
 };
 
 static KJavaAppletServer *self = 0;
@@ -153,6 +154,12 @@ void KJavaAppletServer::createContext( int contextId )
     process->send( CREATE_CONTEXT, args );
 }
 
+void KJavaAppletServer::createContext( int contextId, KJavaAppletContext* context )
+{
+    d->contexts.insert( contextId, context );
+    createContext( contextId );
+}
+
 void KJavaAppletServer::destroyContext( int contextId )
 {
     kdDebug() << "destroyContext: " << contextId << endl;
@@ -161,6 +168,8 @@ void KJavaAppletServer::destroyContext( int contextId )
     args.append( QString::number( contextId ) );
 
     process->send( DESTROY_CONTEXT, args );
+
+    d->contexts.remove( contextId );
 }
 
 void KJavaAppletServer::createApplet( int contextId, int appletId,
@@ -352,7 +361,21 @@ void KJavaAppletServer::received( const QByteArray& qb )
             break;
     }
 
-    emit receivedCommand( cmd, args );
+    bool ok;
+    int contextID_num = contextID.toInt( &ok );
+
+    if( !ok )
+    {
+        kdError() << "could not parse out contextID to call command on" << endl;
+        return;
+    }
+
+    KJavaAppletContext* tmp = d->contexts[ contextID_num ];
+    if( tmp )
+        tmp->processCmd( cmd, args );
+
+    else
+        kdError() << "no context object for this id" << endl;
 }
 
 #include "kjavaappletserver.moc"

@@ -166,6 +166,8 @@ private:
     QString swallowTitle;
 
     struct KJavaAppletWidgetPrivate *d;
+
+    void init();
 };
 
 #endif // KJAVAAPPLETWIDGET_H
