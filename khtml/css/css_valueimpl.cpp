@@ -62,8 +62,7 @@ CSSStyleDeclarationImpl::CSSStyleDeclarationImpl(CSSRuleImpl *parent, QPtrList<C
 
 CSSStyleDeclarationImpl&  CSSStyleDeclarationImpl::operator= (const CSSStyleDeclarationImpl& o)
 {
-    // don't attach it to the same node
-    m_node = 0;
+    // don't attach it to the same node, just leave the current m_node value
     delete m_lstValues;
     m_lstValues = 0;
     if (o.m_lstValues) {
