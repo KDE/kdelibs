@@ -20,6 +20,9 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.55  1999/06/19 22:42:56  kulow
+   making Robert's change right
+
    Revision 1.54  1999/06/18 20:23:08  kulow
    some more cleanups of KApplication. the KConfig instance is controlled
    by KGlobal to make it independent from KApplication.
@@ -261,8 +264,11 @@ QPixmap KIconLoader::reloadIcon ( const QString& name, int w, int h )
 
 QPixmap KIconLoader::loadApplicationIcon ( const QString& name, int w, int h )
 {
-        QPixmap result = loadInternal(locate("icon", name), w, h);
-	return result;
+	QString path = locate("icon", name);
+	if (path.isEmpty())
+          return loadInternal(path, w, h);
+	else
+	  return QPixmap();
 }
 
 
@@ -279,7 +285,9 @@ QPixmap KIconLoader::loadApplicationMiniIcon ( const QString& name,
 
 QString KIconLoader::getIconPath( const QString& name, bool always_valid)
 {
-    QString full_path = locate(iconType, name);
+    QString full_path;
+    if (!name.isEmpty())
+       full_path = locate(iconType, name);
     if (full_path.isNull() && always_valid)
 	full_path = locate(iconType, "unknown.xpm");
     
