@@ -20,6 +20,14 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.41  1999/10/23 16:16:24  kulow
+   here comes KInstance - "KApplication light"
+   It's a new KLibGlobal and KGlobal only keeps a pointer to a global
+   instance. KApplication is derived from KInstance - making it possible
+   to move things out of KApplication into KInstance to make Components
+   easier.
+   Needs some testings and I bet some tweaks here and there :)
+
    Revision 1.40  1999/10/09 09:48:42  kalle
    more get killing
    You need to cvs update your libc (joke!)
@@ -270,7 +278,7 @@ public:
   	@param h	The max height of the resulting pixmap. Larger icons
 			are scaled down. The default is no maximum.
 	@param canReturnNull	If this is false, this function will return
-		the "unknown.xpm" icon if the requested icon is not found.
+		the "unknown.png" icon if the requested icon is not found.
 		The default is to return null.
 
 	@return	The loaded icon.
