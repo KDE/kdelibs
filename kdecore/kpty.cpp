@@ -268,12 +268,14 @@ bool KPty::open()
 #if defined(HAVE_GRANTPT)
   grantpt(d->masterFd);
 #else
-  /* Get the group ID of the special `tty' group.  */
-  struct group* p = getgrnam(TTY_GROUP);    /* posix */
-  gid_t gid = p ? p->gr_gid : getgid ();    /* posix */
+  {
+    /* Get the group ID of the special `tty' group.  */
+    struct group* p = getgrnam(TTY_GROUP);    /* posix */
+    gid_t gid = p ? p->gr_gid : getgid ();    /* posix */
 
-  chown(d->ttyName.data(), getuid(), gid);
-  chmod(d->ttyName.data(), S_IRUSR|S_IWUSR|S_IWGRP);
+    chown(d->ttyName.data(), getuid(), gid);
+    chmod(d->ttyName.data(), S_IRUSR|S_IWUSR|S_IWGRP);
+  }
 #endif
  gotpty2:
   struct stat st;
