@@ -246,7 +246,8 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     	     SLOT( slotOk()));
 
     // Get the config object
-    KConfig *kc= KGlobal::config();
+    KSimpleConfig *kc = new KSimpleConfig(QString::fromLatin1("kdeglobals"), 
+                                          false);
     QString oldGroup = kc->group();
     kc->setGroup( ConfigGroup );
     d->showStatusLine = kc->readBoolEntry(ConfigShowStatusLine,
@@ -261,6 +262,7 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     }
     adjustSize();
     readConfig( kc, ConfigGroup );
+    delete kc;
 
     if (d->url.isEmpty())
 	d->url = QDir::currentDirPath();
@@ -358,7 +360,10 @@ void KFileDialog::slotStatResult(KIO::Job* job) {
 void KFileDialog::accept()
 {
     *lastDirectory = ops->url();
-    saveConfig( KGlobal::config(), ConfigGroup );
+    KSimpleConfig *c = new KSimpleConfig(QString::fromLatin1("kdeglobals"), 
+                                         false);
+    saveConfig( c, ConfigGroup );
+    delete c;
 
     KDialogBase::accept();
 }
@@ -672,7 +677,8 @@ void KFileDialog::fillBookmarkMenu( KFileBookmark *parent, QPopupMenu *menu, int
 
 void KFileDialog::toolbarCallback(int i) // SLOT
 {
-    KConfig *c= KGlobal::config();
+    KSimpleConfig *c = new KSimpleConfig(QString::fromLatin1("kdeglobals"), 
+                                         false);
     KConfigGroupSaver cs(c, ConfigGroup);
     QString cmd;
     switch(i) {
@@ -693,8 +699,9 @@ void KFileDialog::toolbarCallback(int i) // SLOT
 	break;
     }
     default:
-	warning("KFileDialog: Unknown toolbar button  (id number %d) pressed\n", i);
+        break;
     }
+	delete c;
 }
 
 
