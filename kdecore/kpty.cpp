@@ -143,6 +143,7 @@ extern "C" {
 // private functions //
 ///////////////////////
 
+#ifdef HAVE_UTEMPTER
 class KProcess_Utmp : public KProcess
 {
 public:
@@ -155,6 +156,7 @@ public:
    }
    int cmdFd;
 };
+#endif
 
 #define BASE_CHOWN "kgrantpty"
 
@@ -496,27 +498,8 @@ bool KPty::chownpty(bool grant)
   if (!d->needGrantPty)
     return true;
 
-  // TODO: change to kprocess?
-  pid_t pid = fork();
-  if (pid == 0)
-  {
-    QString path = locate("exe", BASE_CHOWN);
-    execle(path.ascii(), BASE_CHOWN, grant?"--grant":"--revoke",
-	   QString::number(d->masterFd).ascii(), (void *)0, (void *)0);
-    exit(1); // should not be reached
-  }
-  else if (pid > 0)
-  {
-    int w;
-
-retry:
-    int rc = waitpid(pid, &w, 0);
-    if ((rc == -1) && (errno == EINTR))
-      goto retry;
-
-    return (rc != -1 && WIFEXITED(w) && WEXITSTATUS(w) == 0);
-  }
-
-  return false;
+  KProcess proc;
+  proc << BASE_CHOWN << (grant?"--grant":"--revoke") << QString::number(d->masterFd);
+  return proc.start(KProcess::Block) && proc.normalExit() && !proc.exitStatus();
 }
 
