@@ -407,7 +407,7 @@ void KKeyChooser::buildListView( uint iList )
 			if( pGroupItem && !pGroupItem->firstChild() )
 				delete pGroupItem;
 			pGroupItem = pParentItem = pItem;
-		} else if( !sName.isEmpty() )
+		} else if( !sName.isEmpty() && pList->isConfigurable(iAction) )
 			pItem = new KKeyChooserItem( pParentItem, pItem, pList, iAction );
 	}
 	if( !pProgramItem->firstChild() )
