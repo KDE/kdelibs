@@ -62,7 +62,7 @@ void KRootPixmap::init()
     connect(m_pTimer, SIGNAL(timeout()), SLOT(repaint()));
 
     d->kwin = new KWinModule( this );
-    connect( d->kwin, SIGNAL(currentDesktopChanged(int)), SLOT(desktopChanged(int)) );
+    connect( d->kwin, SIGNAL(windowChanged(WId, unsigned int)), SLOT(desktopChanged(WId, unsigned int)));
 
     d->toplevel = m_pWidget->topLevelWidget();
     d->toplevel->installEventFilter(this);
@@ -158,14 +158,19 @@ bool KRootPixmap::eventFilter(QObject *, QEvent *event)
     return false; // always continue processing
 }
 
-void KRootPixmap::desktopChanged( int )
+void KRootPixmap::desktopChanged( WId window, unsigned int properties )
 {
+    if( (properties & NET::ActionChangeDesktop) == 0 ||
+	(window != m_pWidget->topLevelWidget()->winId()))
+	return;
+
     if( !m_pWidget->isVisible())
         return; // not visible, no need to update
     QWidget* widget = m_pWidget->topLevelWidget();
     if( !widget->testWFlags( WX11BypassWM )
         && !KWin::windowInfo( widget->winId(), NET::WMDesktop ).isOnCurrentDesktop())
         return; // not on current desktop -> not visible, no need to update
+
     repaint(true);
 }
 
