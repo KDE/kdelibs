@@ -1177,6 +1177,10 @@ void KURLCompletion::addMatches( QStringList *matches )
 				pos -= 3;
 			else if ( name.find(".z", -2, false) != -1 )
 				pos -= 2;
+			else if ( name.find(".bz2", -4) != -1 )
+				pos -= 4;
+			else if ( name.find(".bz", -3) != -1 )
+				pos -= 3;
 
 			if ( pos > 0 )
 				pos = name.findRev('.', pos-1);
