@@ -276,9 +276,7 @@ void BrowserRun::simpleSave( const KURL & url, const QString & suggestedFilename
     // no download manager available, let's do it ourself
     KFileDialog *dlg = new KFileDialog( QString::null, QString::null /*all files*/,
                                         0L , "filedialog", true );
-
-    dlg->setKeepLocation( true );
-
+    dlg->setOperationMode( KFileDialog::Saving );
     dlg->setCaption(i18n("Save As"));
 
     dlg->setSelection( suggestedFilename.isEmpty() ? url.fileName() : suggestedFilename );
