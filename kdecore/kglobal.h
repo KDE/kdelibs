@@ -52,7 +52,30 @@ public:
     static QFont                fixedFont();
 
     static  int                 dndEventDelay();
-    
+
+    /**
+     * Returns whether KDE runs in single (default) or double click
+     * mode.
+     *
+     * @return false means single click mode
+     *         true means double click mode
+     *
+     * see @ref http://developer.kde.org/documentation/standards/kde/style/mouse/index.html
+     **/
+    static bool useDoubleClicks();
+  
+    /**
+     * Returns the configured completion mode
+     *
+     * see @ref http://developer.kde.org/documentation/standards/kde/style/keys/completion.html
+     *
+     * @return CompletionNone, completion should be disabled
+     *         CompletionAuto, automatic completion
+     *         CompletionEOL, manual completion at end of line (with Right/End keys)
+     **/
+    enum Completion { CompletionNone=1, CompletionAuto, CompletionEOL };
+    static Completion completionMode();
+  
     static  KInstance           *_instance;
     static  KLocale		*_locale;
     static  KCharsets	        *_charsets;

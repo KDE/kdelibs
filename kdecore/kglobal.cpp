@@ -111,6 +111,39 @@ int KGlobal::dndEventDelay()
     return(delay);
 }
 
+bool KGlobal::useDoubleClicks()
+{
+    static int doubleClicks = -1;
+
+    if(doubleClicks == -1){
+        KConfig *c = KGlobal::config();
+        c->setGroup("General");
+        if (c->readBoolEntry("doubleClicks", false))
+           doubleClicks = 1;
+        else
+           doubleClicks = 0;
+    }
+    return(doubleClicks == 1);
+}
+
+KGlobal::Completion KGlobal::completionMode()
+{
+    static int completion = -1;
+    
+    if (completion == -1)
+    {
+        KConfig *c = KGlobal::config();
+        c->setGroup("General");
+        completion = c->readNumEntry("completionMode", -1);
+        if ((completion < (int) CompletionNone) ||
+            (completion > (int) CompletionEOL))
+        {
+           completion = (int) CompletionEOL; // Default
+        }
+    }
+    return (Completion) completion;
+}
+
 void KGlobal::init()
 {
     if (_instance)
