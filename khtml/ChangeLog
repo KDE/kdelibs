@@ -1,3 +1,8 @@
+2004-10-08  David Faure  <faure@kde.org>
+
+        * ecma/kjs_html.cpp (KJS::HTMLCollection::tryGet): 
+        return Undefined instead of Null for out-of-range indices.
+
 2004-10-07  David Faure  <faure@kde.org>
 
         * xml/dom_nodeimpl.cpp (dispatchWindowEvent): Emit load event for frames
