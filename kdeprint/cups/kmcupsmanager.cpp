@@ -631,7 +631,10 @@ DrMain* KMCupsManager::loadDriverFile(const QString& fname)
 			for (int i=0; i<ppd->num_sizes; i++)
 			{
 				ppd_size_t	*sz = ppd->sizes+i;
-				driver->addPageSize(new DrPageSize(QString::fromLatin1(sz->name),(int)sz->width,(int)sz->length,(int)sz->left,(int)sz->bottom,(int)sz->right,(int)sz->top));
+				//kdDebug( 500 ) << "PageSize " << sz->name << ", " << sz->width << ", " << sz->length << ", " << sz->left << ", "
+				//	<< sz->bottom << ", " << sz->right << ", " << sz->top << endl;
+				driver->addPageSize(new DrPageSize(QString::fromLatin1(sz->name),(int)sz->width,(int)sz->length,(int)( sz->left + 0.5 ),(int)( sz->bottom + 0.5 ),
+							(int)( sz->width - sz->right + 0.5 ),(int)( sz->length - sz->top + 0.5 )));
 			}
 
 			ppdClose(ppd);
