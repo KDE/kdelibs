@@ -29,6 +29,8 @@
 */
 
 #define YY_NO_UNPUT
+#define YY_NEVER_INTERACTIVE 1
+
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
