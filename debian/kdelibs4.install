@@ -29,6 +29,8 @@ debian/tmp/usr/lib/kde3/katepart.la
 debian/tmp/usr/lib/kde3/katepart.so
 debian/tmp/usr/lib/kde3/kbzip2filter.la
 debian/tmp/usr/lib/kde3/kbzip2filter.so
+debian/tmp/usr/lib/kde3/kcm_kabc.la
+debian/tmp/usr/lib/kde3/kcm_kabc.so
 debian/tmp/usr/lib/kde3/kded_kdeprintd.la
 debian/tmp/usr/lib/kde3/kded_kdeprintd.so
 debian/tmp/usr/lib/kde3/kded_kssld.la
@@ -49,10 +51,14 @@ debian/tmp/usr/lib/kde3/khtmlimagepart.la
 debian/tmp/usr/lib/kde3/khtmlimagepart.so
 debian/tmp/usr/lib/kde3/kimg_eps.la
 debian/tmp/usr/lib/kde3/kimg_eps.so
+debian/tmp/usr/lib/kde3/kimg_g3.la
+debian/tmp/usr/lib/kde3/kimg_g3.so
 debian/tmp/usr/lib/kde3/kimg_ico.la
 debian/tmp/usr/lib/kde3/kimg_ico.so
 debian/tmp/usr/lib/kde3/kimg_krl.la
 debian/tmp/usr/lib/kde3/kimg_krl.so
+debian/tmp/usr/lib/kde3/kimg_tiff.la
+debian/tmp/usr/lib/kde3/kimg_tiff.so
 debian/tmp/usr/lib/kde3/kimg_xview.la
 debian/tmp/usr/lib/kde3/kimg_xview.so
 debian/tmp/usr/lib/kde3/kio_file.la
