@@ -1,5 +1,6 @@
-#include <kjavaappletcontext.h>
-#include "kjavaapplet.moc"
+#include "kjavaappletwidget.h"
+#include "kjavaappletcontext.h"
+
 
 typedef QMap<QString, QString> ParamMap;
 
@@ -11,21 +12,37 @@ struct KJavaAppletPrivate
    QString jar;
    QString baseURL;
    QString codeBase;
-   QSize size;  
+   QSize size;
+   KJavaAppletWidget* UIwidget;
 };
 
-KJavaApplet::KJavaApplet( KJavaAppletContext *context )
+KJavaApplet::KJavaApplet( KJavaAppletContext* _context )
     : params()
 {
-  d = new KJavaAppletPrivate;
-  CHECK_PTR( d );
+    d = new KJavaAppletPrivate;
+    CHECK_PTR( d );
 
-  if ( context != 0 )
-    this->context = context;
-  else
-    this->context = KJavaAppletContext::getDefaultContext();
+    if ( context != 0 )
+        context = _context;
+    else
+        context = KJavaAppletContext::getDefaultContext();
   
-  d->reallyExists = false;
+    d->reallyExists = false;
+}
+
+KJavaApplet::KJavaApplet( KJavaAppletWidget* _parent,
+                          KJavaAppletContext* _context )
+{
+    d = new KJavaAppletPrivate;
+
+    d->UIwidget = _parent;
+
+    if( _context )
+        context = _context;
+    else
+        context = KJavaAppletContext::getDefaultContext();
+
+    d->reallyExists = false;
 }
 
 KJavaApplet::~KJavaApplet()
@@ -104,6 +121,12 @@ QSize KJavaApplet::size()
     return d->size;
 }
 
+void KJavaApplet::resizeAppletWidget( int width, int height )
+{
+    if( d->UIwidget )
+        d->UIwidget->resize( width, height );
+}
+
 void KJavaApplet::setAppletName( const QString &name )
 {
     d->appName = name;
@@ -155,4 +178,4 @@ void KJavaApplet::setAppletId( int id )
     this->id = id;
 }
 
-
+#include "kjavaapplet.moc"

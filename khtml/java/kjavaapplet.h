@@ -3,11 +3,13 @@
 #ifndef KJAVAAPPLET_H
 #define KJAVAAPPLET_H
 
-#include <qobject.h>
-#include <qmap.h>
 #include <kurl.h>
 
-class KJavaAppletContext;
+#include <qobject.h>
+#include <qmap.h>
+
+
+
 
 /**
  * @short A Java applet
@@ -15,13 +17,18 @@ class KJavaAppletContext;
  * @version $Id$
  * @author Richard J. Moore, rich@kde.org
  */
+
+class KJavaAppletWidget;
+class KJavaAppletContext;
+
 class KJavaApplet : public QObject
 {
 Q_OBJECT
 
 public:
-  KJavaApplet( KJavaAppletContext *context = 0 );
-  virtual ~KJavaApplet();
+    KJavaApplet( KJavaAppletWidget* _parent, KJavaAppletContext* _context = 0 );
+    KJavaApplet( KJavaAppletContext* context = 0 );
+    virtual ~KJavaApplet();
 
    //
    // Stuff to do with the applet
@@ -62,11 +69,16 @@ public:
    QString &appletName();
  
    /**
-    * Set the URL of the document embedding the applet.
+    * Set the size of the applet
     */
    void setSize( QSize size );
    QSize size();
-  
+
+   /**
+    * Interface for applets to resize themselves
+    */
+   void resizeAppletWidget( int width, int height );
+
    void create();
    bool isCreated();
  
