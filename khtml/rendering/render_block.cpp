@@ -842,8 +842,17 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
         // we want to ensure that we don't artificially increase our height because of
         // a positioned or floating child.
         int fb = floatBottom();
-        if ( child->flowAroundFloats() && style()->width().isFixed() && child->minWidth() > lineWidth( m_height ) ) {
-            if (fb > m_height) {
+        if ( child->flowAroundFloats() && !style()->width().isVariable()) {
+            bool doClear = false;
+            if (child->minWidth() > lineWidth( m_height ))
+                doClear = true;
+            else if (child->style()->width().isPercent()) {
+                int oldw = child->width();
+                child->calcWidth();
+                doClear = (child->width() > lineWidth( m_height ));
+                child->setWidth( oldw );
+            }
+            if (doClear && fb > m_height) {
                 m_height = fb;
                 shouldCollapseChild = false;
                 clearOccurred = true;
@@ -852,7 +861,7 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
         }
 
         // take care in case we inherited floats
-        if (fb > m_height)
+        if (fb > m_height && !child->flowAroundFloats())
             child->setChildNeedsLayout(true);
 
         child->calcVerticalMargins();
