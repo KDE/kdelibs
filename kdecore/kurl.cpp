@@ -19,10 +19,11 @@
 */
 // KURL
 // Reference: RFC 1738 Uniform Resource Locators
-// Syntax?
 
+#include <qdir.h>
 #include "kurl.h"
 #include <qregexp.h>
+#include <stdlib.h>
 
 void KURL::encodeURL( QString& _url ) {
     
@@ -87,54 +88,50 @@ void KURL::decodeURL( QString& _url ) {
 void
 KURL::detach()
 {
-  protocol_part.detach();
-  host_part.detach();
-  path_part.detach();
-  ref_part.detach();
-  /* temporarily removed */
-  // dir_part.detach();
-  user_part.detach();
-  passwd_part.detach();
+    protocol_part.detach();
+    host_part.detach();
+    path_part.detach();
+    ref_part.detach();
+    /* temporarily removed */
+    // dir_part.detach();
+    user_part.detach();
+    passwd_part.detach();
 }
 
 KURL::KURL() 
 { 
-  malformed = true;
-  protocol_part = "";
-  host_part = ""; 
-  path_part = ""; 
-  ref_part = ""; 
+    malformed = true;
+    protocol_part = "";
+    host_part = ""; 
+    path_part = ""; 
+    ref_part = ""; 
+    bNoPath = false;
 }
 
 
 KURL::KURL( KURL & _base_url, const char * _rel_url )
 {
-  malformed = _base_url.malformed;
-  protocol_part = _base_url.protocol_part;
-  host_part = _base_url.host_part;
-  port_number = _base_url.port_number;
-  path_part = _base_url.path_part;
-  ref_part = _base_url.ref_part;
-  dir_part = _base_url.dir_part;
-  user_part = _base_url.user_part;
-  passwd_part = _base_url.passwd_part;
-  detach();
+    malformed = _base_url.malformed;
+    protocol_part = _base_url.protocol_part;
+    host_part = _base_url.host_part;
+    port_number = _base_url.port_number;
+    path_part = _base_url.path_part;
+    ref_part = _base_url.ref_part;
+    dir_part = _base_url.dir_part;
+    user_part = _base_url.user_part;
+    passwd_part = _base_url.passwd_part;
+
+    detach();
     
-  if ( strstr( _rel_url, ":/" ) == 0 )
-	cdPath( _rel_url );
-  else
+    if ( strstr( _rel_url, ":/" ) == 0 )
+	cd( _rel_url );
+    else
 	parse( _rel_url );
 }
 
 KURL::KURL( const char* _url)
 {
-  parse( _url );
-#if 0
-  printf("pr=%s ho=%s pa=%s re=%s di=%s us=%s pa=%s po=%d M=%d\n",
-	 protocol_part.data(), host_part.data(), path_part.data(),
-	 ref_part.data(), dir_part.data(),
-	 user_part.data(), passwd_part.data(), port_number, malformed);
-#endif
+    parse( _url );
 }
 
 void KURL::parse( const char * _url )
@@ -146,7 +143,7 @@ void KURL::parse( const char * _url )
     if ( _url[0] == '/' )
     {
 	// Create a real URL with protocol
-	// encodeURL(url);
+	encodeURL(url);
 	url.insert( 0, "file:");
     }
     
@@ -159,7 +156,7 @@ void KURL::parse( const char * _url )
     }
     protocol_part = url.left( pos );
 
-    if ( protocol_part == "info" || protocol_part == "mailto" || protocol_part == "man" )
+    if ( protocol_part == "info" || protocol_part == "mailto" || protocol_part == "man" || protocol_part == "news" )
     {
 	path_part = url.mid( pos + 1, url.length() );
 	detach();
@@ -234,57 +231,61 @@ void KURL::parse( const char * _url )
 	user_part = "";
     }
   
-  // find a possible port number
-  int p = host_part.find(":");
-  if ( p != -1 )
-  {
-      port_number = host_part.right( host_part.length() - (p + 1) ).toInt();
-      host_part = host_part.left( p );
-  }
-  else
-      port_number = 0;
+    // find a possible port number
+    int p = host_part.find(":");
+    if ( p != -1 )
+    {
+	port_number = host_part.right( host_part.length() - (p + 1) ).toInt();
+	host_part = host_part.left( p );
+    }
+    else
+	port_number = 0;
+    
+    // Find the path
+    if( pos2 < (int)url.length() && pos2 != -1)
+    {
+	QRegExp exp( "[a-zA-Z]+:" );
+	int pos3 = url.findRev( '#' );
+	// Is there a) no reference or b) only a subprotocol like file:/tmp/arch.tgz#tar:/usr/
+	if ( pos3 == -1 || exp.match( url, pos3 + 1 ) != -1 )
+	    path_part = url.mid( pos2, url.length() );
+	else 
+	{
+	    path_part = url.mid( pos2, pos3 - pos2 );
+	    ref_part = url.mid( pos3 + 1, url.length() );
+	    // if (path_part.right(1) == "/")  no filename and a reference
+	    // malformed = true;
+	}
+	bNoPath = false;
+    }
+    else
+    {
+	path_part = "/";
+	// Indicate that we did not see a path originally
+	bNoPath = true;
+	ref_part = "";
+    } 
 
-  // Find the path
-  if( pos2 < (int)url.length() && pos2 != -1)
-  {
-      QRegExp exp( "[a-zA-Z]+:" );
-      int pos3 = url.findRev( '#' );
-      // Is there a) no reference or b) only a subprotocol like file:/tmp/arch.tgz#tar:/usr/
-      if ( pos3 == -1 || exp.match( url, pos3 + 1 ) != -1 )
-	  path_part = url.mid( pos2, url.length() );
-      else 
-      {
-	  path_part = url.mid( pos2, pos3 - pos2 );
-	  ref_part = url.mid( pos3 + 1, url.length() );
-	  if (path_part.right(1) == "/") // no filename and a reference
-	      malformed = true;
-      }
-  }
-  else
-  {
-      path_part = "/";
-      ref_part = "";
-  } 
-  
-  /* ip-schemepart, login, see RFC1738                   */
-  /* Syntax [<user>[":"<password>]"@"]<host>[":"<port>]] */
-  /* Note that both user and password may be encoded.    */
-  // login    -> [userpart@]hostpart 
-  // hostpart -> Host[:Port]
-  // userpart -> User[:Pass]
-  detach();
+    cleanPath();
+    
+    /* ip-schemepart, login, see RFC1738                   */
+    /* Syntax [<user>[":"<password>]"@"]<host>[":"<port>]] */
+    /* Note that both user and password may be encoded.    */
+    // login    -> [userpart@]hostpart 
+    // hostpart -> Host[:Port]
+    // userpart -> User[:Pass]
+    detach();
 }
 
 KURL::KURL( const char* _protocol, const char* _host, 
 			const char* _path, const char* _ref)
 {
-  protocol_part = _protocol;
-  host_part = _host;
-  path_part = _path;
-  ref_part  = _ref;
-  malformed = FALSE;
-  detach();
-  cleanURL();
+    protocol_part = _protocol;
+    host_part = _host;
+    path_part = _path;
+    ref_part  = _ref;
+    malformed = FALSE;
+    detach();
 }     
 
 bool KURL::hasSubProtocol()
@@ -316,60 +317,59 @@ const char* KURL::directory( bool _trailing )
 
 char* KURL::host() const 
 {
-  if (host_part.isNull()) 
-    return "";
-  else 
-    return host_part.data();
+    if (host_part.isNull()) 
+	return "";
+    else 
+	return host_part.data();
 }
 
- 
 char* KURL::path() const 
 { 
   if (path_part.isNull()) 
-    return "";
+      return "";
   else 
-    return path_part.data(); 
+      return path_part.data(); 
 }
 
 char* KURL::reference() const 
 { 
-  if (ref_part.isNull()) 
-    return "";
-  else 
-    return ref_part.data(); 
+    if (ref_part.isNull()) 
+	return "";
+    else 
+	return ref_part.data(); 
 }
 
 const char* KURL::user() 
 { 
-  if (user_part.isNull()) 
-    return "";
-  else 
-    return user_part.data(); 
+    if (user_part.isNull()) 
+	return "";
+    else 
+	return user_part.data(); 
 }
 
 unsigned int KURL::port() const 
 {
-  return port_number;
+    return port_number;
 }
 
 const char* KURL::passwd() 
 { 
-  if (passwd_part.isNull()) 
-    return "";
-  else 
-    return passwd_part.data(); 
+    if (passwd_part.isNull()) 
+	return "";
+    else 
+	return passwd_part.data(); 
 }
 
 void KURL::setPassword( const char *password )
 {
-   passwd_part = password;
+    passwd_part = password;
 }
 
 bool KURL::cdUp( bool zapRef ) 
 {
-  if( zapRef) 
-    setReference("");
-  return cd( "..");
+    if( zapRef) 
+	setReference("");
+    return cd( "..");
 }
 
 bool KURL::operator==( const KURL &_url) const
@@ -399,159 +399,120 @@ const char* KURL::directoryURL( bool _trailing )
     return dir_part.data();
 }
 
-QString
-KURL::url() const
+QString KURL::url() const
 {
-  QString url( protocol_part.data());
-  url.detach();
-  if( !host_part.isNull() && host_part.data()[0] != 0) 
-  {
-    url += "://";   
-    if ( !user_part.isNull() && user_part.data()[0] != 0 )
+    QString url( protocol_part.data());
+    url.detach();
+    if( !host_part.isEmpty() ) 
     {
-      url += user_part.data();
-      if ( !passwd_part.isNull() && passwd_part.data()[0] != 0 )
-      {
-	url += ":";
-	url += passwd_part.data();
-      }      
-      url += "@";
-    }    
-    url += host_part;
-    
-    if ( port_number != 0 )
-    {
-        QString tmp(url.data());
-	url.sprintf("%s:%d",tmp.data(),port_number);
-    }
-  }
-  else
-    url += ":";
+	url += "://";   
+	if ( !user_part.isEmpty() )
+	{
+	    url += user_part.data();
+	    if ( !passwd_part.isEmpty() )
+	    {
+		url += ":";
+		url += passwd_part.data();
+	    }      
+	    url += "@";
+	}    
+	url += host_part;
 	
-  if( !path_part.isNull() && path_part.data()[0] != 0)
-	url += path_part; 
-  if( !ref_part.isNull() && ref_part.data()[0] != 0)
-	url += "#" + ref_part;
-
-  return url;
-}
-
-static inline QString cleanPath( const char* filePath)
-{
-    QString tmp = QDir::cleanDirPath( filePath).copy();
-    if( tmp == "." || tmp == "/")
-	tmp = "";
-    return tmp;
-}
-
-void
-KURL::cleanURL()
-{
-  path_part = cleanPath( path_part);
-  if( path_part.data()[0] != '/')
-      path_part.prepend("/");
-  protocol_part = cleanPath( protocol_part);
-  host_part     = cleanPath( host_part);
-  ref_part      = cleanPath( ref_part);
-}
-
-const char* KURL::filename( bool _isReference )
-{
-  if ( _isReference )
-    {
-	  int pos = ref_part.findRev( "/" );
-	  return ref_part.data() + pos + 1;
+	if ( port_number != 0 )
+	{
+	    QString tmp(url.data());
+	    url.sprintf("%s:%d",tmp.data(),port_number);
+	}
     }
+    else
+	url += ":";
     
-  if ( path_part.isEmpty() )
-	return "";
-
-  if ( path_part.data()[0] == '/' && path_part.data()[1] == 0 )
-	return "";
+    if( !path_part.isEmpty() && hasPath() )
+	url += path_part; 
     
-  int pos = path_part.findRev( "/" );
-  return path_part.data() + pos + 1;
-}
+    if( !ref_part.isEmpty() )
+	url += "#" + ref_part;
     
-bool
-KURL::cdRef( const char* _ref, bool acceptAbsPath)
-{
-  // We cant have a referece if we have no path (other than /)
-  if( path_part.isNull() || path_part.data()[0] == 0
-	  || path_part.data()[0] == '/')
-	return false;
-  if( _ref[0] == '/' && acceptAbsPath) {
-	ref_part  = _ref + 1;
-  } else {
-	if( ref_part.data()[0] != 0 
-		&& ref_part.data()[ref_part.length()] != '/')
-	  ref_part += "/";
-	ref_part += _ref;
-  }
-  cleanURL();
-  return true;
+    return url;
 }
 
-bool KURL::cdPath( const char* _dir, bool acceptAbsPath, bool zapRef)
+const char* KURL::filename()
 {
-  if ( !_dir )
+    if ( path_part.isEmpty() )
+	return "";
+    
+    if ( path_part.data()[0] == '/' && path_part.data()[1] == 0 )
+	return "";
+    
+    int pos = path_part.findRev( "/" );
+    return path_part.data() + pos + 1;
+}
+    
+bool KURL::cd( const char* _dir, bool zapRef)
+{
+    if ( !_dir )
       return FALSE;
     
-  if( _dir[0] == '/' && acceptAbsPath )
-  {
-      path_part = _dir;
-  }
-  else if ( _dir[0] == '~' )
-  {
-      path_part = QDir::homeDirPath();
-      path_part.detach();
-      path_part += _dir + 1;
-  }
-  else
-  {
-      path_part += "/";
-      path_part += _dir;
-  }
-  if( zapRef )
+    // Now we have a path for shure
+    if ( _dir[0] == 0 )
+	bNoPath = true;
+    else
+	bNoPath = false;
+
+    if( _dir[0] == '/' )
+    {
+	path_part = _dir;
+    }
+    else if ( _dir[0] == '~' )
+    {
+	if ( protocol_part != "file" )
+	    return false;
+	
+	path_part = getenv( "HOME" );
+	path_part += "/";
+	path_part += _dir + 1;
+    }
+    else
+    {
+	if ( path_part.right(1) != "/" && _dir[0] != '/' )
+	    path_part += "/";
+	path_part += _dir;
+    }
+
+    if ( zapRef )
 	setReference( "" );
-  cleanURL();
-  return true;
+
+    cleanPath();
+    
+    return true;
 }
 
-bool
-KURL::setReference( const char* _ref)
+bool KURL::setReference( const char* _ref)
 {
-  // We cant have a referece if we have no path (other than /)
-  if( path_part.isNull() || path_part.data()[0] == 0 )
-	return false;
-  ref_part = _ref;
-  return true;
-}
-bool
-KURL::cd( const char* dir, bool acceptAbsPath, bool isReference)
-{
-  if( isReference)
-	return cdRef( dir, acceptAbsPath);
-  else
-	return cdPath( dir, acceptAbsPath);
+    // We cant have a referece if we have no path (other than /)
+    // if( path_part.isNull() || path_part.data()[0] == 0 )
+    // return false;
+    ref_part = _ref;
+    return true;
 }
 
-KURL&
-KURL::operator=( const KURL &u)
+KURL& KURL::operator=( const KURL &u)
 {
   malformed = u.malformed;
   protocol_part = u.protocol_part;
   host_part = u.host_part;
   path_part = u.path_part;
   ref_part = u.ref_part;
+  bNoPath = u.bNoPath;
+  
   detach();
   return *this;
 }
 
 KURL& KURL::operator=( const char *_url )
 {
-  parse( _url );
-  return *this;
+    parse( _url );
+    return *this;
 }
 
 QString KURL::parentURL()
@@ -592,4 +553,23 @@ QString KURL::nestedURL()
     if ( s.isEmpty() )
 	return url();
     return s;
+}
+
+void KURL::cleanPath()
+{
+    if ( path_part.isEmpty() )
+	return;
+
+    // Did we have a trailing '/'
+    int len = path_part.length();
+    bool slash = false;
+    if ( len > 0 && path_part.data()[ len - 1 ] == '/' )
+	slash = true;
+    
+    path_part = QDir::cleanDirPath( path_part );
+
+    // Restore the trailing '/'
+    len = path_part.length();
+    if ( len > 0 && path_part.data()[ len - 1 ] != '/' && slash )
+	path_part += "/";
 }
