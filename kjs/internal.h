@@ -31,7 +31,9 @@
 #include "types.h"
 #include "interpreter.h"
 
+#ifndef I18N_NOOP
 #define I18N_NOOP(s) s
+#endif
 
 namespace KJS {
 

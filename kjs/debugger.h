@@ -31,6 +31,7 @@ namespace KJS {
   class Object;
   class UString;
   class List;
+  class Completion;
 
   /**
    * @internal
@@ -47,6 +48,12 @@ namespace KJS {
    */
   class Debugger {
   public:
+
+    enum CodeType {
+      GlobalCode   = 0,
+      EvalCode     = 1,
+      FunctionCode = 2
+    };
 
     /**
      * Creates a new debugger
@@ -159,49 +166,62 @@ namespace KJS {
      */
     virtual bool atStatement(ExecState *exec, int sourceId, int firstLine,
                              int lastLine);
-    /**
-     * Called on each function call. Use together with @ref #returnEvent
-     * if you want to keep track of the call stack.
-     *
-     * Note: This only gets called for functions that are declared in ECMAScript
-     * source code or passed to eval(), not for internal KJS or
-     * application-supplied functions.
-     *
-     * The default implementation does nothing. Override this method if
-     * you want to process this event.
-     *
-     * @param exec The current execution state
-     * @param sourceId The ID of the source code being executed
-     * @param lineno The line that is about to be executed
-     * @param function The function being called
-     * @param args The arguments that were passed to the function
-     * line is being executed
-     * @return true if execution should be continue, false if it should
-     * be aborted
-     */
-    virtual bool callEvent(ExecState *exec, int sourceId, int lineno,
-			   Object &function, const List &args);
 
     /**
-     * Called on each function exit. The function being returned from is that
-     * which was supplied in the last callEvent().
+     * Called when the interpreter enters a new execution context (stack
+     * frame). This can happen in three situations:
+     * 
+     * <ul>
+     *   <li>A call to Interpreter::evaluate(). This has a codeType of
+     *   GlobalCode, and the sourceId is the id of the code passed to
+     *   evaluate(). The lineno here is always 0 since execution starts at the
+     *   beginning of the script.</li>
+     *   <li>A call to the builtin eval() function. The sourceId corresponds to
+     *   the code passed in to eval. This has a codeType of EvalCode. The
+     *   lineno here is always 0 since execution starts at the beginning of
+     *   the script.</li>
+     *   <li>A function call. This only occurs for functions defined in
+     *   ECMAScript code, whether via the normal function() { ... } syntax or
+     *   a call to the built-in Function() constructor (anonymous functions).
+     *   In the former case, the sourceId and lineno indicate the location at
+     *   which the function was defined. For anonymous functions, the sourceId
+     *   corresponds to the code passed into the Function() constructor.</li>
+     * </ul>
      *
-     * Note: This only gets called for functions that are declared in ECMAScript
-     * source code or passed to eval(), not for internal KJS or
-     * application-supplied functions.
-     *
-     * The default implementation does nothing. Override this method if
-     * you want to process this event.
-     *
-     * @param exec The current execution state
-     * @param sourceId The ID of the source code being executed
-     * @param lineno The line that is about to be executed
-     * @param function The function being called
-     * @return true if execution should be continue, false if it should
-     * be aborted
+     * enterContext() is not called for functions implemented in the native
+     * code, since these do not use an execution context.
+     * 
+     * @param exec The current execution state (corresponding to the new stack
+     * frame)
+     * @param codeType The type of code being executed (GlobalCode, EvalCode or
+     * FunctionCode)
+     * @param sourceId The ID of the source code at which execution in this
+     * context begins (for functions, the location of the function declaration)
+     * @param lineno The line within the specified source at which the code
+     * begins or the function declaration starts
+     * @param thisVal The "this" value of the execution context
+     * @param variable The object holding declared variables in this context
+     * @param function The function object itself. This is only supplied for
+     * FunctionCode.
+     * @param name The function name (if known). This is only supplied for
+     * FunctionCode.
+     * @param args Arguments passed to the function. This is only supplied for
+     * FunctionCode.
      */
-    virtual bool returnEvent(ExecState *exec, int sourceId, int lineno,
-                             Object &function);
+    virtual bool enterContext(ExecState *exec, CodeType codeType, int sourceId,
+			      int lineno, Object &thisVal, Object &variable,
+			      Object &function, const UString &name,
+			      const List &args);
+
+    /**
+     * Called when the inteprreter exits an execution context. This always
+     * corresponds to a previous call to enterContext()
+     *
+     * @param completion The result of execution of the context. Can be used to
+     * inspect exceptions and return values
+     * @param lineno The location of the end of the code being executed
+     */
+    virtual bool exitContext(const Completion &completion, int lineno);
 
   private:
     DebuggerImp *rep;

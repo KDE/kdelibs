@@ -1609,6 +1609,16 @@ Value CommaNode::evaluate(ExecState *exec) const
 
 // ----------------------------- StatListNode ---------------------------------
 
+StatListNode::StatListNode(StatementNode *s) : statement(s), list(0L)
+{
+  setLoc(s->firstLine(),s->lastLine(),s->sourceId());
+}
+
+StatListNode::StatListNode(StatListNode *l, StatementNode *s) : statement(s), list(l)
+{
+  setLoc(l->firstLine(),s->lastLine(),l->sourceId());
+}
+
 void StatListNode::ref()
 {
   Node::ref();
@@ -1819,6 +1829,13 @@ void VarStatementNode::processVarDecls(ExecState *exec)
 }
 
 // ----------------------------- BlockNode ------------------------------------
+
+BlockNode::BlockNode(SourceElementsNode *s) : source(s)
+{
+  if (s)
+    setLoc(s->firstLine(), s->lastLine(), s->sourceId());
+  reverseList();
+}
 
 void BlockNode::reverseList()
 {
@@ -2799,7 +2816,6 @@ Value ParameterNode::evaluate(ExecState */*exec*/) const
 FunctionBodyNode::FunctionBodyNode(SourceElementsNode *s)
   : BlockNode(s)
 {
-  setLoc(-1, -1, -1);
   //fprintf(stderr,"FunctionBodyNode::FunctionBodyNode %p\n",this);
 }
 
@@ -2904,6 +2920,20 @@ Value FuncExprNode::evaluate(ExecState *exec) const
 }
 
 // ----------------------------- SourceElementsNode ---------------------------
+
+SourceElementsNode::SourceElementsNode(StatementNode *s1)
+{
+  element = s1;
+  elements = 0L;
+  setLoc(s1->firstLine(),s1->lastLine(),s1->sourceId());
+}
+
+SourceElementsNode::SourceElementsNode(SourceElementsNode *s1, StatementNode *s2)
+{
+  elements = s1;
+  element = s2;
+  setLoc(s1->firstLine(),s2->lastLine(),s1->sourceId());
+}
 
 void SourceElementsNode::ref()
 {

@@ -432,7 +432,7 @@ Initializer:
 ;
 
 EmptyStatement:
-    ';'                            { $$ = new EmptyStatementNode(); }
+    ';'                            { $$ = new EmptyStatementNode(); DBG($$, @1, @1); }
 ;
 
 ExprStatement:
@@ -515,9 +515,10 @@ ReturnStatement:
                                        $$ = new ReturnNode(0L); DBG($$,@1,@1);
                                      } else
 				       YYABORT; }
-  | RETURN Expr ';'                { $$ = new ReturnNode($2); }
-  | RETURN Expr error              { if (automatic())
-                                       $$ = new ReturnNode($2);
+  | RETURN Expr ';'                { $$ = new ReturnNode($2); DBG($$,@1,@3); }
+  | RETURN Expr error              { if (automatic()) {
+                                       $$ = new ReturnNode($2); DBG($$,@1,@1);
+                                     }
                                      else
 				       YYABORT; }
 ;
@@ -565,21 +566,22 @@ LabelledStatement:
 ;
 
 ThrowStatement:
-    THROW Expr ';'                 { $$ = new ThrowNode($2); }
+    THROW Expr ';'                 { $$ = new ThrowNode($2); DBG($$,@1,@3); }
 ;
 
 TryStatement:
-    TRY Block Catch                { $$ = new TryNode($2, $3); }
-  | TRY Block Finally              { $$ = new TryNode($2, 0L, $3); }
-  | TRY Block Catch Finally        { $$ = new TryNode($2, $3, $4); }
+    TRY Block Catch                { $$ = new TryNode($2, $3); DBG($$,@1,@1); }
+  | TRY Block Finally              { $$ = new TryNode($2, 0L, $3); DBG($$,@1,@1); }
+  | TRY Block Catch Finally        { $$ = new TryNode($2, $3, $4); DBG($$,@1,@1); }
 ;
 
 Catch:
-    CATCH '(' IDENT ')' Block      { $$ = new CatchNode(*$3, $5); delete $3; }
+    CATCH '(' IDENT ')' Block      { CatchNode *c; $$ = c = new CatchNode(*$3, $5);
+				     delete $3; DBG(c,@1,@4); }
 ;
 
 Finally:
-    FINALLY Block                  { $$ = new FinallyNode($2); }
+    FINALLY Block                  { FinallyNode *f; $$ = f = new FinallyNode($2); DBG(f,@1,@1); }
 ;
 
 FunctionDeclaration:
@@ -589,10 +591,10 @@ FunctionDeclaration:
 ;
 
 FunctionDeclarationInternal:
-    FUNCTION IDENT '(' ')' FunctionBody    { $$ = new FuncDeclNode(*$2, 0L, $5);
+    FUNCTION IDENT '(' ')' FunctionBody    { $$ = new FuncDeclNode(*$2, 0L, $5); DBG($$,@1,@4);
                                              delete $2; }
   | FUNCTION IDENT '(' FormalParameterList ')' FunctionBody
-                                   { $$ = new FuncDeclNode(*$2, $4, $6);
+                                   { $$ = new FuncDeclNode(*$2, $4, $6); DBG($$,@1,@5);
                                      delete $2; }
 ;
 

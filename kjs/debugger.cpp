@@ -122,15 +122,15 @@ bool Debugger::atStatement(ExecState */*exec*/, int /*sourceId*/, int /*firstLin
   return true;
 }
 
-bool Debugger::callEvent(ExecState */*exec*/, int /*sourceId*/, int /*lineno*/,
-                         Object &/*function*/, const List &/*args*/)
+bool Debugger::enterContext(ExecState */*exec*/, CodeType /*codeType*/, int /*sourceId*/,
+			    int /*lineno*/, Object &/*thisVal*/, Object &/*variable*/,
+			    Object &/*function*/, const UString &/*name*/,
+			    const List &/*args*/)
 {
   return true;
 }
 
-bool Debugger::returnEvent(ExecState */*exec*/, int /*sourceId*/, int /*lineno*/,
-                           Object &/*function*/)
+bool Debugger::exitContext(const Completion &/*completion*/, int /*lineno*/)
 {
   return true;
 }
-

@@ -636,8 +636,8 @@ namespace KJS {
 
   class StatListNode : public StatementNode {
   public:
-    StatListNode(StatementNode *s) : statement(s), list(0L) { }
-    StatListNode(StatListNode *l, StatementNode *s) : statement(s), list(l) { }
+    StatListNode(StatementNode *s);
+    StatListNode(StatListNode *l, StatementNode *s);
     virtual void ref();
     virtual bool deref();
     virtual Completion execute(ExecState *exec);
@@ -700,7 +700,7 @@ namespace KJS {
 
   class BlockNode : public StatementNode {
   public:
-    BlockNode(SourceElementsNode *s) : source(s) { reverseList(); }
+    BlockNode(SourceElementsNode *s);
     virtual void ref();
     virtual bool deref();
     virtual Completion execute(ExecState *exec);
@@ -1022,9 +1022,8 @@ namespace KJS {
   // A linked list of source element nodes
   class SourceElementsNode : public StatementNode {
   public:
-    SourceElementsNode(StatementNode *s1) { element = s1; elements = 0L; }
-    SourceElementsNode(SourceElementsNode *s1, StatementNode *s2)
-      { elements = s1; element = s2; }
+    SourceElementsNode(StatementNode *s1);
+    SourceElementsNode(SourceElementsNode *s1, StatementNode *s2);
     virtual void ref();
     virtual bool deref();
     Completion execute(ExecState *exec);

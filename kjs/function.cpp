@@ -57,7 +57,7 @@ namespace KJS {
 FunctionImp::FunctionImp(ExecState *exec, const UString &n)
   : InternalFunctionImp(
       static_cast<FunctionPrototypeImp*>(exec->interpreter()->builtinFunctionPrototype().imp())
-      ), param(0L), ident(n), argStack(0)
+      ), param(0L), ident(n), line0(-1), line1(-1), sid(-1), argStack(0)
 {
   Value protect(this);
   argStack = new ListImp();
@@ -93,23 +93,6 @@ Value FunctionImp::call(ExecState *exec, Object &thisObj, const List &args)
 {
   Object globalObj = exec->interpreter()->globalObject();
 
-  Debugger *dbg = exec->interpreter()->imp()->debugger();
-  int sid = -1;
-  int lineno = -1;
-  if (dbg) {
-    if (inherits(&DeclaredFunctionImp::info)) {
-      sid = static_cast<DeclaredFunctionImp*>(this)->body->sourceId();
-      lineno = static_cast<DeclaredFunctionImp*>(this)->body->firstLine();
-    }
-
-    Object func(this);
-    bool cont = dbg->callEvent(exec,sid,lineno,func,args);
-    if (!cont) {
-      dbg->imp()->abort();
-      return Undefined();
-    }
-  }
-
   // enter a new execution context
   ContextImp ctx(globalObj, exec, thisObj, codeType(),
                  exec->context().imp(), this, args);
@@ -132,7 +115,29 @@ Value FunctionImp::call(ExecState *exec, Object &thisObj, const List &args)
   // add variable declarations (initialized to undefined)
   processVarDecls(&newExec);
 
+  Debugger *dbg = exec->interpreter()->imp()->debugger();
+  if (dbg) {
+    Object func(this);
+    Object var(ctx.variableObject());
+    if (!dbg->enterContext(&newExec,Debugger::FunctionCode,sid,line0,thisObj,var,func,ident,args)) {
+      // debugger requested we stop execution
+      dbg->imp()->abort();
+      return Undefined();
+    }
+  }
+
   Completion comp = execute(&newExec);
+
+  if (dbg) {
+    Object func(this);
+    // ### lineno is inaccurate - we really want the end of the function _body_ here
+    // line1 is suppoed to be the end of the function start, just before the body
+    if (!dbg->exitContext(comp,line1)) {
+      // debugger requested we stop execution
+      dbg->imp()->abort();
+      return Undefined();
+    }
+  }
 
   // if an exception occured, propogate it back to the previous execution object
   if (newExec.hadException())
@@ -151,15 +156,6 @@ Value FunctionImp::call(ExecState *exec, Object &thisObj, const List &args)
   } else
     fprintf(stderr, "%s returns: undefined\n", n.c_str());
 #endif
-
-  if (dbg) {
-    Object func(this);
-    int cont = dbg->returnEvent(exec,sid,lineno,func);
-    if (!cont) {
-      dbg->imp()->abort();
-      return Undefined();
-    }
-  }
 
   if (comp.complType() == Throw) {
     exec->setException(comp.value());
@@ -262,6 +258,9 @@ DeclaredFunctionImp::DeclaredFunctionImp(ExecState *exec, const UString &n,
   Value protect(this);
   body->ref();
   setScope(sc.copy());
+  line0 = body->firstLine();
+  line1 = body->lastLine();
+  sid = body->sourceId();
 }
 
 DeclaredFunctionImp::~DeclaredFunctionImp()
@@ -390,6 +389,16 @@ Value GlobalFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
 #endif
       ProgramNode *progNode = Parser::parse(s.data(),s.size(),&sid,&errLine,&errMsg);
 
+      // notify debugger that source has been parsed
+      Debugger *dbg = exec->interpreter()->imp()->debugger();
+      if (dbg) {
+	bool cont = dbg->sourceParsed(exec,sid,s,errLine);
+	if (!cont) {
+	  dbg->imp()->abort();
+	  return Undefined();
+	}
+      }
+
       // no program node means a syntax occurred
       if (!progNode) {
 	Object err = Error::create(exec,SyntaxError,errMsg.ascii(),errLine);
@@ -406,25 +415,49 @@ Value GlobalFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
       ExecState newExec(exec->interpreter(), &ctx);
       newExec.setException(exec->exception()); // could be null
 
+      if (dbg) {
+	Object var(ctx.variableObject());
+	Object thisValue(ctx.thisValue());
+	Object func;
+	List args;
+	if (!dbg->enterContext(&newExec,Debugger::EvalCode,sid,progNode->firstLine(),
+			       thisValue,var,func,UString(),args)) {
+	  // debugger requested we stop execution
+	  dbg->imp()->abort();
+
+	  if (progNode->deref())
+	    delete progNode;
+	  return Undefined();
+	}
+      }
+
       // execute the code
       Completion c = progNode->execute(&newExec);
 
-      // if an exception occured, propogate it back to the previous execution object
-      if (newExec.hadException())
-        exec->setException(newExec.exception());
+      int lastLine = progNode->lastLine();
+      if (progNode->deref())
+	delete progNode;
 
-      if ( progNode->deref() )
-          delete progNode;
-      if (c.complType() == ReturnValue)
-	  return c;
-      // ### setException() on throw?
-      else if (c.complType() == Normal) {
-	  if (c.isValueCompletion())
-	      return c.value();
-	  else
-	      return Undefined();
-      } else {
-	  return c;
+      if (dbg && !dbg->exitContext(c,lastLine)) {
+	// debugger requested we stop execution
+	dbg->imp()->abort();
+	return Undefined();
+      }
+
+      // if an exception occured, propogate it back to the previous execution object
+      if (newExec.hadException()) {
+	exec->setException(newExec.exception());
+	return Undefined();
+      }
+      if (c.complType() == Throw) {
+	exec->setException(c.value());
+	return Undefined();
+      }
+      else if (c.isValueCompletion()) {
+	return c.value();
+      }
+      else {
+	return Undefined();
       }
     }
     break;

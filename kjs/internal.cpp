@@ -1090,7 +1090,28 @@ Completion InterpreterImp::evaluate(const UString &code, const Value &thisV)
     // with optional initializers are executed)
     progNode->processVarDecls(newExec);
 
-    res = progNode->execute(newExec);
+    bool abort = false;
+    if (dbg) {
+      Object thisValue(ctx->thisValue());
+      Object var(ctx->variableObject());
+      Object func;
+      List args;
+      if (!dbg->enterContext(newExec,Debugger::GlobalCode,sid,progNode->firstLine(),
+			     thisValue,var,func,UString(),args)) {
+	// debugger requested we stop execution
+	dbg->imp()->abort();
+	abort = true;
+      }
+    }
+
+    if (!abort) {
+      res = progNode->execute(newExec);
+      if (dbg && !dbg->exitContext(res,progNode->lastLine())) {
+	// debugger requested we stop execution
+	dbg->imp()->abort();
+	res = Completion(ReturnValue,Undefined());
+      }
+    }
 
     delete newExec;
     delete ctx;

@@ -51,12 +51,22 @@ namespace KJS {
 
     virtual Completion execute(ExecState *exec) = 0;
     UString name() const { return ident; }
+    int firstLine() const { return line0; }
+    int lastLine() const { return line1; }
+    int sourceId() const { return sid; }
+
+    void setName(UString name) { ident = name; }
+    void setFirstLine(int firstLine) { line0 = firstLine; }
+    void setLastLine(int lastLine) { line1 = lastLine; }
 
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
   protected:
     Parameter *param;
     UString ident;
+    int line0;
+    int line1;
+    int sid;
 
   private:
     void processParameters(ExecState *exec, const List &);
