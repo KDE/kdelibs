@@ -43,7 +43,7 @@ KFileSimpleView::KFileSimpleView(bool s, QDir::SortSpec sorting,
 
     setCellHeight( fontMetrics().lineSpacing() + 5);
     setCellWidth(0);
-    setTableFlags(Tbl_autoHScrollBar | Tbl_cutCellsV |
+    setTableFlags(Tbl_autoHScrollBar | Tbl_cutCellsV | 
 		  Tbl_smoothHScrolling | Tbl_snapToGrid );
     curCol = curRow = 0;
     // QTableView::setNumCols(0);
@@ -90,7 +90,7 @@ void KFileSimpleView::highlightItem(int row, int col)
 	return;
 
     bool oneColOnly = leftCell() == lastColVisible();
-    
+
     int cx;
     if (!colXPos ( col , &cx ))
 	cx = 0;
@@ -104,20 +104,23 @@ void KFileSimpleView::highlightItem(int row, int col)
     }
 
     edge = lastColVisible();
-    
+
     if ( col > edge ) {
-	if ( !oneColOnly )
+        if ( !oneColOnly )
 	    setLeftCell( leftCell() + col - edge + 1 );
 	else setLeftCell( col );
     }
 
     else if ( col == edge ) {
 	if ( curCol < col ) {
-	    setLeftCell( leftCell() + 1 );
+	    int tmpCol = leftCell() + 1;
+	    // how do I determine  whether a column is completely visible?
+	    // if ( !isCompletelyVisible( tmpCol ) )
+	        setLeftCell( tmpCol );
 	}
     }
-    
-    
+
+
     edge = topCell();
     if ( row < edge ) {
 	setTopCell( edge - 1 );
@@ -187,6 +190,7 @@ void KFileSimpleView::keyPressEvent( QKeyEvent* e )
     int lastItem = 0;
     int jump     = 0;
 
+
     switch( e->key() ) {                        // Look at the key code
     case Key_Left:
 	if( newCol > 0 )
@@ -196,7 +200,7 @@ void KFileSimpleView::keyPressEvent( QKeyEvent* e )
     case Key_Right:                         // Correspondingly...
 	if( newCol < numCols()-1 )
 	    newCol++;
-        else newRow = count() % numRows() - 1;
+        else newRow = (count() % numRows()) - 1;
 	if (newCol * rowsVisible + oldRow >= static_cast<int>(count()))
 	    newRow = count() - rowsVisible * newCol - 1;
 	break;
@@ -270,6 +274,11 @@ void KFileSimpleView::keyPressEvent( QKeyEvent* e )
 	}
 	return;
     }
+
+    // newRow may be -1 when the last column is completely filled with entries
+    // and the user tries to go rightwards (End, RightArrow, PageDown)
+    // the last entry shall be selected, then (numRows()-1)
+    if ( newRow < 0 ) newRow = numRows() - 1;
 
     highlightItem( newRow, newCol );
 
