@@ -29,7 +29,7 @@
  *
  * kspeech - the KDE Text-to-Speech API.
  *
- * @version 1.0 Draft 6
+ * @version 1.0 Draft 7
  *
  * This class defines the DCOP interface for applications desiring to speak text.
  * Applications may speak text by sending DCOP messages to application "kttsd" object "kspeech".
@@ -927,7 +927,7 @@ class kspeech : virtual public DCOPObject {
         * @param text           The message to be spoken.
         * @param jobNum         Job number of the text job.
         *                       If zero, applies to the last job queued by the application,
-        *                       but if no such job, applies to the last job queued by any application.
+        *                       but if no such job, applies to the current job (if any).
         * @return               Part number for the added part.  Parts are numbered starting at 1.
         *
         * The text is parsed into individual sentences.  Call getTextCount to retrieve
@@ -968,7 +968,7 @@ class kspeech : virtual public DCOPObject {
         * Get the number of sentences in a text job.
         * @param jobNum         Job number of the text job.
         *                       If zero, applies to the last job queued by the application,
-        *                       but if no such job, applies to the last job queued by any application.
+        *                       but if no such job, applies to the current job (if any).
         * @return               The number of sentences in the job.  -1 if no such job.
         *
         * The sentences of a job are given sequence numbers from 1 to the number returned by this
@@ -1004,7 +1004,7 @@ class kspeech : virtual public DCOPObject {
         * Get the state of a text job.
         * @param jobNum         Job number of the text job.
         *                       If zero, applies to the last job queued by the application,
-        *                       but if no such job, applies to the last job queued by any application.
+        *                       but if no such job, applies to the current job (if any).
         * @return               State of the job. -1 if invalid job number.
         *
         * @see kttsdJobState
@@ -1015,7 +1015,7 @@ class kspeech : virtual public DCOPObject {
         * Get information about a text job.
         * @param jobNum         Job number of the text job.
         *                       If zero, applies to the last job queued by the application,
-        *                       but if no such job, applies to the last job queued by any application.
+        *                       but if no such job, applies to the current job (if any).
         * @return               A QDataStream containing information about the job.
         *                       Blank if no such job.
         *
@@ -1057,7 +1057,7 @@ class kspeech : virtual public DCOPObject {
         * Return a sentence of a job.
         * @param jobNum         Job number of the text job.
         *                       If zero, applies to the last job queued by the application,
-        *                       but if no such job, applies to the last job queued by any application.
+        *                       but if no such job, applies to the current job (if any).
         * @param seq            Sequence number of the sentence.
         * @return               The specified sentence in the specified job.  If no such
         *                       job or sentence, returns "".
@@ -1074,7 +1074,7 @@ class kspeech : virtual public DCOPObject {
         * Remove a text job from the queue.
         * @param jobNum         Job number of the text job.
         *                       If zero, applies to the last job queued by the application,
-        *                       but if no such job, applies to the last job queued by any application.
+        *                       but if no such job, applies to the current job (if any).
         *
         * The job is deleted from the queue and the @ref textRemoved signal is emitted.
         *
@@ -1087,7 +1087,7 @@ class kspeech : virtual public DCOPObject {
         * Start a text job at the beginning.
         * @param jobNum         Job number of the text job.
         *                       If zero, applies to the last job queued by the application,
-        *                       but if no such job, applies to the last job queued by any application.
+        *                       but if no such job, applies to the current job (if any).
         *
         * Rewinds the job to the beginning.
         *
@@ -1106,13 +1106,17 @@ class kspeech : virtual public DCOPObject {
         * Stop a text job and rewind to the beginning.
         * @param jobNum         Job number of the text job.
         *                       If zero, applies to the last job queued by the application,
-        *                       but if no such job, applies to the last job queued by any application.
+        *                       but if no such job, applies to the current job (if any).
         *
-        * The job is marked not speakable and will not be speakable until @ref startText or @ref resumeText
-        * is called.
+        * The job is marked not speakable and will not be speakable until @ref startText
+        * or @ref resumeText is called.
         *
         * If there are speaking jobs preceeding this one in the queue, they continue speaking.
-        * If the job is currently speaking, the @ref textStopped signal is emitted and the job stops speaking.
+        *
+        * If the job is currently speaking, the @ref textStopped signal is emitted,
+        * the job stops speaking, and if the next job in the queue is speakable, it
+        * begins speaking.
+        *
         * Depending upon the speech engine and plugin used, speeking may not stop immediately
         * (it might finish the current sentence).
         */
@@ -1122,13 +1126,17 @@ class kspeech : virtual public DCOPObject {
         * Pause a text job.
         * @param jobNum         Job number of the text job.
         *                       If zero, applies to the last job queued by the application,
-        *                       but if no such job, applies to the last job queued by any application.
+        *                       but if no such job, applies to the current job (if any).
         *
         * The job is marked as paused and will not be speakable until @ref resumeText or
         * @ref startText is called.
         *
         * If there are speaking jobs preceeding this one in the queue, they continue speaking.
-        * If the job is currently speaking, the @ref textPaused signal is emitted and the job stops speaking.
+        *
+        * If the job is currently speaking, the @ref textPaused signal is emitted and the job
+        * stops speaking.  Note that if the next job in the queue is speakable, it does
+        * not start speaking as long as this job is paused.
+        *
         * Depending upon the speech engine and plugin used, speeking may not stop immediately
         * (it might finish the current sentence).
         *
@@ -1140,14 +1148,15 @@ class kspeech : virtual public DCOPObject {
         * Start or resume a text job where it was paused.
         * @param jobNum         Job number of the text job.
         *                       If zero, applies to the last job queued by the application,
-        *                       but if no such job, applies to the last job queued by any application.
+        *                       but if no such job, applies to the current job (if any).
         *
         * The job is marked speakable.
         *
         * If the job was not paused, it is the same as calling @ref startText.
         *
-        * If there are speaking jobs preceeding this one in the queue, those jobs continue speaking and,
-        * when finished this job will begin speaking where it left off.
+        * If there are speaking jobs preceeding this one in the queue,
+        * those jobs continue speaking and when finished this job will begin
+        * speaking where it left off.
         *
         * The @ref textResumed signal is emitted when the job resumes.
         *
@@ -1168,7 +1177,7 @@ class kspeech : virtual public DCOPObject {
         * Change the talker for a text job.
         * @param jobNum         Job number of the text job.
         *                       If zero, applies to the last job queued by the application,
-        *                       but if no such job, applies to the last job queued by any application.
+        *                       but if no such job, applies to the current job (if any).
         * @param talker         New code for the language to be spoken in.  Example "en".
         *                       If NULL, defaults to the user's default talker.
         *                       If no plugin has been configured for the specified language code,
@@ -1194,7 +1203,7 @@ class kspeech : virtual public DCOPObject {
         * Move a text job down in the queue so that it is spoken later.
         * @param jobNum         Job number of the text job.
         *                       If zero, applies to the last job queued by the application,
-        *                       but if no such job, applies to the last job queued by any application.
+        *                       but if no such job, applies to the current job (if any).
         *
         * If the job is currently speaking, it is paused.
         * If the next job in the queue is speakable, it begins speaking.
@@ -1206,7 +1215,7 @@ class kspeech : virtual public DCOPObject {
         * @param partNum        Part number of the part to jump to.  Parts are numbered starting at 1.
         * @param jobNum         Job number of the text job.
         *                       If zero, applies to the last job queued by the application,
-        *                       but if no such job, applies to the last job queued by any application.
+        *                       but if no such job, applies to the current job (if any).
         * @return               Part number of the part actually jumped to.
         *
         * If partNum is greater than the number of parts in the job, jumps to last part.
@@ -1221,7 +1230,7 @@ class kspeech : virtual public DCOPObject {
         * @param n              Number of sentences to advance (positive) or rewind (negative) in the job.
         * @param jobNum         Job number of the text job.
         *                       If zero, applies to the last job queued by the application,
-        *                       but if no such job, applies to the last job queued by any application.
+        *                       but if no such job, applies to the current job (if any).
         * @return               Sequence number of the sentence actually moved to.  Sequence numbers
         *                       are numbered starting at 1.
         *
