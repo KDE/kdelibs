@@ -75,7 +75,7 @@ void DistributionList::removeEntry( const Addressee &a, const QString &email )
   QValueList<Entry>::Iterator it;
   for( it = mEntries.begin(); it != mEntries.end(); ++it ) {
     if ( (*it).addressee.uid() == a.uid() && (*it).email == email ) {
-      mEntries.remove( it  );
+      mEntries.remove( it );
       return;
     }
   }
@@ -108,10 +108,12 @@ DistributionList::Entry::List DistributionList::entries() const
 DistributionListManager::DistributionListManager( AddressBook *ab ) :
   mAddressBook( ab )
 {
+  mLists.setAutoDelete( true );
 }
 
 DistributionListManager::~DistributionListManager()
 {
+  mLists.clear();
 }
 
 DistributionList *DistributionListManager::list( const QString &name )
@@ -120,12 +122,15 @@ DistributionList *DistributionListManager::list( const QString &name )
   for( list = mLists.first(); list; list = mLists.next() ) {
     if ( list->name() == name ) return list;
   }
-  
+
   return 0;
 }
 
 void DistributionListManager::insert( DistributionList *l )
 {
+  if ( !l )
+    return;
+
   DistributionList *list;
   for( list = mLists.first(); list; list = mLists.next() ) {
     if ( list->name() == l->name() ) {
@@ -138,6 +143,9 @@ void DistributionListManager::insert( DistributionList *l )
 
 void DistributionListManager::remove( DistributionList *l )
 {
+  if ( !l )
+    return;
+
   DistributionList *list;
   for( list = mLists.first(); list; list = mLists.next() ) {
     if ( list->name() == l->name() ) {
@@ -170,6 +178,9 @@ bool DistributionListManager::load()
   }
 
   cfg.setGroup( mAddressBook->identifier() );
+
+  // clear old lists
+  mLists.clear();
 
   QMap<QString,QString>::ConstIterator it;
   for( it = entryMap.begin(); it != entryMap.end(); ++it ) {
@@ -254,4 +265,3 @@ DistributionListWatcher *DistributionListWatcher::self()
 }
 
 #include "distributionlist.moc"
-

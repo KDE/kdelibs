@@ -207,7 +207,7 @@ void DistributionListEditor::newList()
 
 void DistributionListEditor::removeList()
 {
-  delete mManager->list( mNameCombo->currentText() );
+  mManager->remove( mManager->list( mNameCombo->currentText() ) );
   mNameCombo->removeItem( mNameCombo->currentItem() );
   removeButton->setEnabled(!mManager->listNames().isEmpty());
   addEntryButton->setEnabled( !mNameCombo->currentText().isEmpty());

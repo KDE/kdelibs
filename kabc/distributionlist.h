@@ -139,7 +139,7 @@ class DistributionListManager
 
     /**
       Insert distribution list. If a list with this name already exists, nothing
-      happens.
+      happens. The passed object is deleted by the manager.
     */
     void insert( DistributionList * );
 
@@ -172,12 +172,12 @@ class DistributionListManager
 
 /**
   @short Watchdog for distribution lists
- 
+
   This class provides a changed() signal that i emitted when the
   distribution lists has changed in some way.
 
   Exapmle:
-  
+
   \code
   KABC::DistributionListWatcher *watchdog = KABC::DistributionListWatcher::self()
 
@@ -188,13 +188,12 @@ class DistributionListManager
 class DistributionListWatcher : public QObject
 {
   Q_OBJECT
-  
+
   public:
     /**
      * Returns the watcher object.
      */
     static DistributionListWatcher *self();
-    
 
   signals:
     /**

@@ -270,7 +270,7 @@ void DistributionListEditorWidget::removeList()
 
   if ( result != KMessageBox::Continue ) return;
 
-  delete mManager->list( mNameCombo->currentText() );
+  mManager->remove( mManager->list( mNameCombo->currentText() ) );
   mNameCombo->removeItem( mNameCombo->currentItem() );
 
   updateEntryView();
