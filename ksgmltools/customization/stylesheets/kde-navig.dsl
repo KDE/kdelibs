@@ -16,14 +16,6 @@
 	    (empty-sosofo)
 	    (make element gi: "P"
 		  (make sequence 
-		    (if (node-list-empty? next)
-			(gentext-nav-next next)
-			(make sequence 
-			  (make element gi: "A"
-				attributes: (list
-					     (list "HREF" (href-to next)))
-				(gentext-nav-next next))))
-		    (literal " ")
 		    (if (node-list-empty? prev)
 			(gentext-nav-prev prev)
 			(make sequence
@@ -32,7 +24,15 @@
 					     (list "HREF" (href-to prev)))
 				(gentext-nav-prev prev))))
 		    (literal " ")
-		    (kde-nav-toc))))))
+		    (kde-nav-toc)
+		    (literal " ")
+		    (if (node-list-empty? next)
+			(gentext-nav-next next)
+			(make sequence 
+			  (make element gi: "A"
+				attributes: (list
+					     (list "HREF" (href-to next)))
+				(gentext-nav-next next)))))))))
 
 (define %kde-logo% #f)
 
