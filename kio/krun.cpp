@@ -252,14 +252,7 @@ bool KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _n
     while ( ( pos = exec.find( "%U" )) != -1 )
       exec.replace( pos, 2, U );
 
-    pid_t pid = run(exec);
-
-    // App starting notification.
-
-    if (pid == -1)
-      retval = false;
-    else
-      clientStarted(_bin_name, mini_icon, pid);
+    retval = runCommand( exec, _bin_name, mini_icon );
   }
   else
   {
@@ -287,18 +280,25 @@ bool KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _n
       while ( ( pos = e.find( "%u" )) != -1 )
         e.replace( pos, 2, u );
 
-      pid_t pid = run(e);
-
-      // App starting notification.
-
-      if (pid == -1)
-        retval = false;
-      else
-        clientStarted(_bin_name, mini_icon, pid);
+      if ( !runCommand( e, _bin_name, mini_icon ) )
+        retval = false; // should we abort, instead ?
     }
   }
 
   return retval;
+}
+
+bool KRun::runCommand( const QString& cmd, const QString & execName, const QString & iconName )
+{
+  pid_t pid = run( cmd );
+
+  // App starting notification.
+
+  if (pid == -1)
+    return false;
+  else
+    clientStarted(execName, iconName, pid);
+  return true;
 }
 
 pid_t KRun::run( const QString& _cmd )
@@ -337,22 +337,6 @@ bool KRun::runOldApplication( const QString& app, const KURL::List& _urls, bool 
 {
   // find kfmexec in $PATH
   QString kfmexec = KStandardDirs::findExe( "kfmexec" );
-
-  // Hey, did someone forget about the case where the app
-  // is given without any arguments ?? (DA)
-  if( _urls.isEmpty() )
-  {
-    KProcess proc;
-    proc << kfmexec;
-    proc << app;
-    proc.start(KProcess::DontCare);
-    pid_t pid = proc.getPid();
-
-    if ( pid != -1 )
-      clientStarted(app, "" /* mini_icon */, pid);
-
-    return (pid != -1);
-  }
 
   if ( _allow_multiple )
   {

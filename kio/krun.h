@@ -89,15 +89,23 @@ public:
 		   const QString& _mini_icon = QString::null,
 		   const QString& _desktop_file = QString::null );
 
-  static bool runOldApplication( const QString& _exec, const KURL::List& _urls,
-				 bool _allow_multiple );
-
   /**
    * Open the given URL. This function is used after the mime type
    * is found out. It will search for all services which can handle
    * the mime type and call @ref #run afterwards.
    */
   static bool runURL( const KURL& _url, const QString& _mimetype );
+
+  /**
+   * Runs the given command and notifies kicker of the starting
+   * of the application.
+   * Use only when you know the full command line. Otherwise use the other
+   * static methods, or KRun's constructor.
+   * @param cmd the full command line to run, see @run
+   * @param execName the name of the executable (usually the first 'word' of the command)
+   * @param iconName the name of the (mini) icon to show in kicker
+   */
+  static bool runCommand( const QString& cmd, const QString & execName, const QString & iconName );
 
 signals:
   void finished();
@@ -144,6 +152,14 @@ protected:
 
   bool m_bIsLocalFile;
   mode_t m_mode;
+
+  /**
+   * For remote URLs to be opened with apps that don't support
+   * remote URLs. Uses kfmexec.
+   */
+  static bool runOldApplication( const QString& _exec,
+                                 const KURL::List& _urls,
+				 bool _allow_multiple );
 
   /**
    * Runs a shell command.
