@@ -477,7 +477,7 @@ void KBuildSycoca::recreate()
 #ifdef KBUILDSYCOCA_GUI // KBUILDSYCOCA_GUI is used on win32 to build 
                         // GUI version of kbuildsycoca, so-called "kbuildsycocaw".
     if (!silent)
-      KMessageBox::error(0, i18n("ERROR creating database '%1'!\nWrong permissions on directory? Disk full?\n").arg(path.local8Bit().data()), i18n("KBuildSycoca"));
+      KMessageBox::error(0, i18n("Error creating database '%1'.\nCheck that the permissions are correct on the directory and the disk is not full.\n").arg(path.local8Bit().data()), i18n("KBuildSycoca"));
 #endif
     exit(-1);
   }
@@ -704,8 +704,8 @@ static KCmdLineOptions options[] = {
    { "menutest", I18N_NOOP("Perform menu generation test run only"), 0 },
    { "track <menu-id>", I18N_NOOP("Track menu id for debug purposes"), 0 },
 #ifdef KBUILDSYCOCA_GUI
-   { "silent", I18N_NOOP("Silent work without windows and stderr"), 0 },
-   { "showprogress", I18N_NOOP("Show progress information (event if 'silent' mode is on"), 0 },
+   { "silent", I18N_NOOP("Silent - work without windows and stderr"), 0 },
+   { "showprogress", I18N_NOOP("Show progress information (event if 'silent' mode is on)"), 0 },
 #endif
    KCmdLineLastOption
 };
