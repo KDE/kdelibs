@@ -2521,6 +2521,6 @@ void KMdiMainFrm::nextToolViewInDock() {
 	td->nextToolView();
 }
 
-
+#include "kmdimainfrm.moc"
 
 // kate: space-indent on; indent-width 2; replace-tabs on;
