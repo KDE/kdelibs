@@ -320,7 +320,7 @@ void StatJob::slotStatEntry( const KIO::UDSEntry & entry )
 StatJob *KIO::stat(const KURL& url)
 {
     kdDebug(7007) << "stat " << debugString(url.url()) << endl;
-    KIO_ARGS << url.path();
+    KIO_ARGS << url.path() << url.query();
     StatJob * job = new StatJob(url, CMD_STAT, packedArgs );
     return job;
 }
@@ -541,7 +541,7 @@ void MimetypeJob::slotFinished( )
 MimetypeJob *KIO::mimetype(const KURL& url )
 {
     kdDebug(7007) << "mimetype " << debugString(url.url()) << endl;
-    KIO_ARGS << url.path();
+    KIO_ARGS << url.path() << url.query();
     MimetypeJob * job = new MimetypeJob(url, CMD_MIMETYPE, packedArgs);
     return job;
 }
@@ -850,7 +850,8 @@ ListJob::ListJob(const KURL& u, bool showProgressInfo, bool _recursive, QString 
 {
     // We couldn't set the args when calling the parent constructor,
     // so do it now.
-    QDataStream stream( m_packedArgs, IO_WriteOnly ); stream << u.path();
+    QDataStream stream( m_packedArgs, IO_WriteOnly );
+    stream << u.path() << u.query();
 }
 
 void ListJob::slotListEntries( const KIO::UDSEntryList& list )

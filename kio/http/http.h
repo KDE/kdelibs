@@ -113,9 +113,9 @@ public:
    */
   virtual void special( const QByteArray &data);
 
-  virtual void mimetype( const QString& path);
+  virtual void mimetype( const QString& path, const QString& query);
 
-  virtual void stat( const QString& path );
+  virtual void stat( const QString& path, const QString& query );
 
 protected:
 

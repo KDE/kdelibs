@@ -315,17 +315,17 @@ void SlaveBase::openConnection(void)
 { error(  ERR_UNSUPPORTED_ACTION, "open" ); }
 void SlaveBase::closeConnection(void)
 { error(  ERR_UNSUPPORTED_ACTION, "close" ); }
-void SlaveBase::stat(QString const &)
+void SlaveBase::stat(QString const &, const QString&)
 { error(  ERR_UNSUPPORTED_ACTION, "stat" ); }
 void SlaveBase::put(QString const &, int, bool, bool)
 { error(  ERR_UNSUPPORTED_ACTION, "put" ); }
 void SlaveBase::special(QArray<char> const &)
 { error(  ERR_UNSUPPORTED_ACTION, "special" ); }
-void SlaveBase::listDir(QString const &)
+void SlaveBase::listDir(QString const &, const QString&)
 { error(  ERR_UNSUPPORTED_ACTION, "listDir" ); }
 void SlaveBase::get(QString const &, QString const &, bool)
 { error(  ERR_UNSUPPORTED_ACTION, "get" ); }
-void SlaveBase::mimetype(QString const &path)
+void SlaveBase::mimetype(QString const &path, const QString&)
 { get(path, QString::null, false); }
 void SlaveBase::rename(QString const &, QString const &, bool)
 { error(  ERR_UNSUPPORTED_ACTION, "rename" ); }
@@ -440,22 +440,22 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
     }
     break;
     case CMD_STAT:
-	stream >> str1;
-	stat( str1 );
+	stream >> str1 >> str2;
+	stat( str1, str2 );
 	break;
     case CMD_MIMETYPE:
-	stream >> str1;
-	mimetype( str1 );
+	stream >> str1 >> str2;
+	mimetype( str1, str2 );
 	break;
     case CMD_LISTDIR:
-	stream >> str1;
-	listDir( str1 );
+	stream >> str1 >> str2;
+	listDir( str1, str2 );
 	break;
     case CMD_MKDIR:
 	stream >> str1 >> i;
 	mkdir( str1, i );
 	break;
-    case CMD_RENAME:{
+    case CMD_RENAME: {
 	Q_INT8 iOverwrite;
         stream >> str1 >> str2 >> iOverwrite;
         bool overwrite = (iOverwrite != 0);
@@ -470,11 +470,12 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         copy( str1, str2, permissions, overwrite );
     }
     break;
-    case CMD_DEL:
+    case CMD_DEL: {
         Q_INT8 isFile;
         stream >> str1 >> isFile;
 	del( str1, isFile != 0);
-	break;
+    }
+    break;
     case CMD_CHMOD:
         stream >> str1 >> i;
 	chmod( str1, i);

@@ -76,9 +76,9 @@ public:
    */
   virtual void closeConnection();
 
-  virtual void stat( const QString & path );
+  virtual void stat( const QString & path, const QString& query );
 
-  virtual void listDir( const QString & path );
+  virtual void listDir( const QString & path, const QString& query );
   virtual void mkdir( const QString &  path, int permissions );
   virtual void rename( const QString & src, const QString & dst, bool overwrite );
   virtual void del( const QString & path, bool isfile );

@@ -1371,7 +1371,7 @@ void HTTPProtocol::http_closeConnection()
 }
 
 // Returns only the file size, that's all kio_http can guess.
-void HTTPProtocol::stat(const QString& path)
+void HTTPProtocol::stat(const QString& path, const QString& /*query*/)
 {
   if (m_request.hostname.isEmpty())
      error( KIO::ERR_INTERNAL, "stat: No host specified!");
@@ -1556,7 +1556,7 @@ void HTTPProtocol::post( const QString& path, const QString& query)
   finished();
 }
 
-void HTTPProtocol::mimetype( const QString& path )
+void HTTPProtocol::mimetype( const QString& path, const QString& /*query*/ )
 {
   kdDebug(7103) << "http: mimetype(" << path << ")" << endl;
   if (m_request.hostname.isEmpty())

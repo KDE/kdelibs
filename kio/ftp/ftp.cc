@@ -892,7 +892,7 @@ void Ftp::createUDSEntry( const QString & filename, FtpEntry * e, UDSEntry & ent
      entry.append( atom ); */
 }
 
-void Ftp::stat( const QString & path )
+void Ftp::stat( const QString & path, const QString& /*query*/ )
 {
   if (!m_bLoggedOn)
      openConnection();
@@ -995,7 +995,7 @@ void Ftp::stat( const QString & path )
 }
 
 
-void Ftp::listDir( const QString & _path )
+void Ftp::listDir( const QString & _path, const QString& /*query*/ )
 {
   if (!m_bLoggedOn)
      openConnection();

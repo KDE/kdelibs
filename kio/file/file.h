@@ -35,8 +35,8 @@ public:
   virtual void rename( const QString &src, const QString &dest,
                        bool overwrite );
 
-  virtual void stat( const QString& path );
-  virtual void listDir( const QString& path );
+  virtual void stat( const QString& path, const QString& query );
+  virtual void listDir( const QString& path, const QString& query );
   virtual void mkdir( const QString& path, int permissions );
   virtual void chmod( const QString& path, int permissions );
   virtual void del( const QString& path, bool isfile);

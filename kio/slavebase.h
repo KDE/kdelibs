@@ -217,7 +217,7 @@ public:
      * The information returned is the same as what @ref listDir returns,
      * but only for one file or directory.
      */
-    virtual void stat( const QString & );
+    virtual void stat( const QString& path, const QString& query );
 
     /**
      * Finds mimetype for one file or directory.
@@ -231,7 +231,7 @@ public:
      * determining the mimetype on it - this is obviously not a
      * good thing in most cases.
      */
-    virtual void mimetype( const QString& path );
+    virtual void mimetype( const QString& path, const QString& query );
 
     /**
      * Lists the contents of @p path.
@@ -240,7 +240,7 @@ public:
      * It should also emit @ref totalFiles as soon as it knows how many
      * files it will list.
      */
-    virtual void listDir( const QString& path );
+    virtual void listDir( const QString& path, const QString& query );
 
     /**
      * Create a directory

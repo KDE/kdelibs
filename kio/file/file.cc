@@ -635,7 +635,7 @@ void FileProtocol::createUDSEntry( const QString & filename, const QString & pat
 	entry.append( atom );
 }
 
-void FileProtocol::stat( const QString & path )
+void FileProtocol::stat( const QString & path, const QString& /*query*/ )
 {
     struct stat buff;
     if ( ::lstat( path, &buff ) == -1 ) {
@@ -687,7 +687,7 @@ void FileProtocol::stat( const QString & path )
     finished();
 }
 
-void FileProtocol::listDir( const QString& path )
+void FileProtocol::listDir( const QString& path, const QString& /*query*/ )
 {
     kdDebug(7101) << "=============== LIST " << debugString(path) << " ===============" << endl;
 
