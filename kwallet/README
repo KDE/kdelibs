@@ -1,4 +1,9 @@
 
+Please read the paper at http://www.staikos.net/~staikos/papers/2003/
+It has been updated to 10/22/2003.
+
+-----------
+
 This directory consists of two libraries: kwalletbackend and kwalletclient
 
 KWallet::Backend is used inside kded to manage the actual files and
