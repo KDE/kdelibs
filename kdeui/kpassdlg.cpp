@@ -290,8 +290,7 @@ void KPasswordDialog::init()
     QSize size = m_pEdit->sizeHint();
     m_pEdit->setFixedHeight(size.height());
     m_pEdit->setMinimumWidth(size.width());
-    h_lay->addWidget(m_pEdit, 12);
-    h_lay->addStretch(4);
+    h_lay->addWidget(m_pEdit);
 
     // Row 4: Password editor #2 or keep password checkbox
 
@@ -321,8 +320,7 @@ void KPasswordDialog::init()
 	size = m_pEdit2->sizeHint();
 	m_pEdit2->setFixedHeight(size.height());
 	m_pEdit2->setMinimumWidth(size.width());
-	h_lay->addWidget(m_pEdit2, 12);
-	h_lay->addStretch(4);
+	h_lay->addWidget(m_pEdit2);
 
         // Row 5: Label saying whether the passwords match
         m_pGrid->addRowSpacing(10, 10);
