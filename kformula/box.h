@@ -95,12 +95,18 @@ protected:
   QString text; //if a TEXT box, the text
   QFont lastFont; //the last font used
   QRect rect; //its bounding rectangle
-  int relx, rely; //used internally for storing calculated locations
-  int offsx, offsy; //its offset from its parent
+  int relx;
+  int rely; //used internally for storing calculated locations
+  int offsx;
+  int offsy; //its offset from its parent
   int fontsize; //its base fontsize
-  box *b1, *b2; //the children
+  box *b1;
+  box *b2; //the children
   box *parent;  //duh
-  int b1x, b1y, b2x, b2y; //the offsets of the children
+  int b1x;
+  int b1y;
+  int b2x;
+  int b2y; //the offsets of the children
   int dirty; //number of days since last shower.  No--whether it's been
              //changed since calculate was last called on it.
 

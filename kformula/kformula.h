@@ -87,7 +87,8 @@ public:
 
 protected:
   QArray<box *> boxes;
-  int posx, posy;
+  int posx;
+  int posy;
 
 private:
   void parenthesize(QString &temp, int &i, QArray<charinfo> *info);

@@ -28,8 +28,11 @@
 class MatrixDialog : public QDialog
 {
   Q_OBJECT
+
 public:
-  int w, h;
+
+  int w;
+  int h;
   bool zeroFill;
 
   MatrixDialog(QWidget *parent);

@@ -87,9 +87,11 @@ protected:
   int cursorPos;
   QArray<charinfo> info; //where each character of formText
                          //ends up in the formula
-  QStack<QString> undo_stack, redo_stack;  //if there was a "diff" for strings it would
+  QStack<QString> undo_stack;
+  QStack<QString> redo_stack;  //if there was a "diff" for strings it would
                                //save space
-  QTimer t, fast; //t is for the cursor, fast for the cache
+  QTimer t;
+  QTimer fast; //t is for the cursor, fast for the cache
 
   void keyPressEvent(QKeyEvent *e);
   void mousePressEvent(QMouseEvent *e);

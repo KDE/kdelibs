@@ -25,7 +25,8 @@
 class matrixbox : public box
 {
 protected:
-  int width, height; // number of elements in each direction
+  int width;
+  int height; // number of elements in each direction
 
   QArray<box *> elems;
   QPointArray elem_pos; // the relative positions of all the elements
