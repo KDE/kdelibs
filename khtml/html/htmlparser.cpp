@@ -785,7 +785,13 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         popBlock(ID_HEAD);
         if ( inBody && !haveFrameSet) {
             popBlock( ID_BODY );
-            doc()->setBody( 0 );
+            // ### actually for IE document.body returns the now hidden "body" element
+            // we can't implement that behaviour now because it could cause too many
+            // regressions and the headaches are not worth the work as long as there is
+            // no site actually relying on that detail (Dirk)
+            if (static_cast<HTMLDocumentImpl*>(document->document())->body())
+                static_cast<HTMLDocumentImpl*>(document->document())->body()
+                    ->addCSSProperty(CSS_PROP_DISPLAY, "none");
             inBody = false;
             noRealBody = true;
         }
