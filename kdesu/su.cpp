@@ -189,60 +189,62 @@ int SuProcess::ConverseSU(const char *password)
         {
             //////////////////////////////////////////////////////////////////////////
             case WaitForPrompt:
-            // In case no password is needed.
-            if (line == "kdesu_stub")
             {
-                unreadLine(line);
-                return ok;
-            }
+                // In case no password is needed.
+                if (line == "kdesu_stub")
+                {
+                    unreadLine(line);
+                    return ok;
+                }
     
-            while(waitMS(m_Fd,100)>0)
-            {
-                // There is more output available, so the previous line
-                // couldn't have been a password prompt (the definition
-                // of prompt being that  there's a line of output followed 
-                // by a colon, and then the process waits).
-                QCString more = readLine();
-                if (more.isEmpty())
-                    break;
+                while(waitMS(m_Fd,100)>0)
+                {
+                    // There is more output available, so the previous line
+                    // couldn't have been a password prompt (the definition
+                    // of prompt being that  there's a line of output followed 
+                    // by a colon, and then the process waits).
+                    QCString more = readLine();
+                    if (more.isEmpty())
+                        break;
     
-                line = more;
-                kdDebug(900) << k_lineinfo << "Read line <" << more << ">" << endl;
-            }
+                    line = more;
+                    kdDebug(900) << k_lineinfo << "Read line <" << more << ">" << endl;
+                }
     
-            // Match "Password: " with the regex ^[^:]+:[\w]*$.
-            const uint len = line.length();
-            for (i=0,j=0,colon=0; i<len; i++) 
-            {
-                if (line[i] == ':') 
+                // Match "Password: " with the regex ^[^:]+:[\w]*$.
+                const uint len = line.length();
+                for (i=0,j=0,colon=0; i<len; i++) 
                 {
-                    j = i; colon++;
-                    continue;
+                    if (line[i] == ':') 
+                    {
+                        j = i; colon++;
+                        continue;
+                    }
+                    if (!isspace(line[i]))
+                        j++;
                 }
-                if (!isspace(line[i]))
-                    j++;
+                if ((colon == 1) && (line[j] == ':')) 
+                {
+                    if (password == 0L)
+                        return killme;
+                    if (!checkPid(m_Pid))
+                    {
+                        kdError(900) << "su has exited while waiting for pwd." << endl;
+                        return error;
+                    }
+                    if ((WaitSlave() == 0) && checkPid(m_Pid))
+                    {
+                        write(m_Fd, password, strlen(password));
+                        write(m_Fd, "\n", 1);
+                        state=CheckStar;
+                    }
+                    else
+                    {
+                        return error;
+                    }
+                }
+                break;
             }
-            if ((colon == 1) && (line[j] == ':')) 
-            {
-                if (password == 0L)
-                    return killme;
-                if (!checkPid(m_Pid))
-                {
-                    kdError(900) << "su has exited while waiting for pwd." << endl;
-                    return error;
-                }
-                if ((WaitSlave() == 0) && checkPid(m_Pid))
-                {
-                    write(m_Fd, password, strlen(password));
-                    write(m_Fd, "\n", 1);
-                    state=CheckStar;
-                }
-                else
-                {
-                    return error;
-                }
-            }
-            break;
             //////////////////////////////////////////////////////////////////////////
             case CheckStar:
             {
