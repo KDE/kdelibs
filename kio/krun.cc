@@ -146,7 +146,7 @@ bool KRun::run( const char *_exec, QStrList& _urls, const char *_name, const cha
        exec.find( "%D" ) != string::npos )
     b_allow_multiple = true;
 
-  int pos;
+  unsigned int pos;
   
   string name = _name;
   shellQuote( name );
@@ -179,7 +179,7 @@ bool KRun::run( const char *_exec, QStrList& _urls, const char *_name, const cha
   }
   
   if ( b_allow_multiple || _urls.isEmpty() )
-  {	
+  {
     while ( ( pos = exec.find( "%f" )) != string::npos )
       exec.replace( pos, 2, "" );
     while ( ( pos = exec.find( "%n" )) != string::npos )
@@ -225,7 +225,7 @@ bool KRun::run( const char *_exec, QStrList& _urls, const char *_name, const cha
     while ( ( pos = e.find( "%u" )) != string::npos )
       e.replace( pos, 2, u );
 
-    return run( e.c_str() );
+    (void)run( e.c_str() );
   }
   
   return true;
@@ -364,9 +364,9 @@ void KRun::init()
   
   // It may be a directory
   KIOJob* job = new KIOJob();
-  connect( job, SIGNAL( sigIsDirectory( int ) ), this, SLOT( slotIsDirectory() ) );
-  connect( job, SIGNAL( sigIsFile( int ) ), this, SLOT( slotIsFile() ) );
-  connect( job, SIGNAL( sigFinished( int ) ), this, SLOT( slotFinished() ) );
+  connect( job, SIGNAL( sigIsDirectory( int ) ), this, SLOT( slotIsDirectory( int ) ) );
+  connect( job, SIGNAL( sigIsFile( int ) ), this, SLOT( slotIsFile( int ) ) );
+  connect( job, SIGNAL( sigFinished( int ) ), this, SLOT( slotFinished( int ) ) );
   connect( job, SIGNAL( sigError( int, int, const char* ) ),
 	   this, SLOT( slotError( int, int, const char* ) ) );
 
@@ -432,12 +432,12 @@ void KRun::slotTimeout()
   }
 }
 
-void KRun::slotIsDirectory()
+void KRun::slotIsDirectory( int /*_id*/ )
 {
   m_bIsDirectory = true;
 }
 
-void KRun::slotIsFile()
+void KRun::slotIsFile( int /*_id*/ )
 {
   // Ok, when the job is finished we want to scan the file.
   // But we wait until the job is finished => we can reuse the
@@ -445,7 +445,7 @@ void KRun::slotIsFile()
   m_bScanFile = true;
 }
 
-void KRun::slotFinished()
+void KRun::slotFinished( int /*_id*/ )
 {
   cerr << "####### FINISHED" << endl;
 
@@ -468,7 +468,7 @@ void KRun::slotFinished()
     m_timer.start( 0, true );
 }
 
-void KRun::slotError( int, int _errid, const char *_errortext )
+void KRun::slotError( int /*_id*/, int _errid, const char *_errortext )
 {
   cerr << "######## ERROR " << _errid << " " << _errortext << endl;
   // HACK

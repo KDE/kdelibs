@@ -57,12 +57,12 @@ signals:
 
 protected slots:
   void slotTimeout();
-  void slotMimeType( int, const char *_type );
-  void slotPreData( int, const char *_data, int _len );
-  void slotError( int, int _errid, const char *_errortext );
-  void slotIsDirectory();
-  void slotIsFile();
-  void slotFinished();
+  void slotMimeType( int _id, const char *_type );
+  void slotPreData( int _id, const char *_data, int _len );
+  void slotError( int _id, int _errid, const char *_errortext );
+  void slotIsDirectory( int _id );
+  void slotIsFile( int _id );
+  void slotFinished( int _id );
   
 protected:
   virtual void init();

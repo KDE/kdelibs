@@ -169,7 +169,7 @@ void KDirWatch::resetList( bool skippedToo )
 
 void KDirWatch::slotRescan()
 {
-  cerr << "KDirWatch in action" << endl;
+  // cerr << "KDirWatch in action" << endl;
   
   QStrList del;
   
