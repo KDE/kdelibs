@@ -23,9 +23,11 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string>
 #include "core.h"
 
 extern int idl_line_no;
+extern string idl_filename;
 
 extern int yylex();
 extern void mcopidlInitFlex( const char *_code );
@@ -35,7 +37,7 @@ extern void addInterfaceTodo( InterfaceDef *iface );
 
 void yyerror( const char *s )
 {
-	printf( "Error in line %i : %s\n", idl_line_no, s );
+	printf( "%s:%i: %s\n", idl_filename.c_str(), idl_line_no, s );
     exit(1);
 	//   theParser->parse_error( idl_lexFile, s, idl_line_no );
 }

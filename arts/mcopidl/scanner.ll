@@ -113,6 +113,8 @@ static char translate_char( const char *s )
   }
 }
 
+extern void startInclude(const char *line);
+extern void endInclude();
 
 %}
 
@@ -159,8 +161,8 @@ Kidl_Identifier	[_a-zA-Z][a-zA-Z0-9_]*
 
 "//"[^\n]*		;
 
-"#!"[^\n]*		;
-"#"[^\n]*\n     ;
+"#include"[^\n]*    { startInclude(yytext); }
+"#endinclude"[^\n]* { endInclude(); }
 
 
 "{"			return T_LEFT_CURLY_BRACKET;

@@ -26,13 +26,28 @@
 #include <stdio.h>
 #include <vector>
 #include <list>
+#include <stack>
 #include <ctype.h>
 #include "core.h"
 
+int idl_in_include;
 int idl_line_no;
+string idl_filename;
+
+/*
+ * if we start parsing an include file, we push the name of the file
+ * and the line number where we left it on the stack for later usage
+ */
+stack<pair<int,string> > idl_include_stack;
+
 list<EnumDef *> enums;
 list<TypeDef *> structs;
 list<InterfaceDef *> interfaces;
+list<string> includes;		// files to include
+list<string> includePath;	// path for the includes
+
+// names that occur in included files -> no code generation
+list<string> includedNames;
 
 ModuleDef module;
 
@@ -40,26 +55,84 @@ void addEnumTodo( EnumDef *edef )
 {
 	enums.push_back(edef);
 
-	// TODO: memory management? Will be freed twice now?
-	module.enums.push_back(edef);
+	if(idl_in_include)
+	{
+		includedNames.push_back(edef->name);
+	}
+	else
+	{
+		// TODO: memory management? Will be freed twice now?
+		module.enums.push_back(edef);
+	}
 }
 
 void addStructTodo( TypeDef *type )
 {
 	structs.push_back(type);
 
-	// TODO: memory management? Will be freed twice now?
-	module.types.push_back(type);
+	if(idl_in_include)
+	{
+		includedNames.push_back(type->name);
+	}
+	else
+	{
+		// TODO: memory management? Will be freed twice now?
+		module.types.push_back(type);
+	}
 }
 
 void addInterfaceTodo( InterfaceDef *iface )
 {
 	interfaces.push_back(iface);
 
-	// TODO: memory management? Will be freed twice now?
-	module.interfaces.push_back(iface);
+	if(idl_in_include)
+	{
+		includedNames.push_back(iface->name);
+	}
+	else
+	{
+		// TODO: memory management? Will be freed twice now?
+		module.interfaces.push_back(iface);
+	}
 }
 
+bool fromInclude(string name)
+{
+	list<string>::iterator i;
+
+	for(i=includedNames.begin(); i != includedNames.end();i++)
+		if(*i == name) return true;
+
+	return false;
+}
+
+void startInclude( const char *line )
+{
+	const char *file = "*unknown*";
+	char *l = strdup(line);
+	char *a = strtok(l,"<\"");
+	if(a)
+	{
+		char *b = strtok(0,">\"");
+		if(b) file = b;
+	}
+	free(l);
+
+	idl_in_include++;
+	idl_include_stack.push(make_pair(idl_line_no, idl_filename));
+	idl_line_no = 0;
+	idl_filename =  file;
+}
+
+void endInclude()
+{
+	assert(!idl_include_stack.empty());
+	idl_line_no = idl_include_stack.top().first;
+	idl_filename = idl_include_stack.top().second;
+	idl_include_stack.pop();
+
+	idl_in_include--;
+}
 
 bool isStruct( string type )
 {
@@ -437,6 +510,42 @@ void endSource(FILE *source)
 	fclose(source);
 }
 
+bool haveIncluded(string filename)
+{
+	list<string>::iterator i;
+
+	for(i = includes.begin();i != includes.end();i++)
+		if(*i == filename) return true;
+
+	return false;
+}
+
+void doIncludeHeader(FILE *header)
+{
+	list<string>::iterator i;
+	bool done_something = false;
+
+	for(i = includes.begin();i != includes.end();i++)
+	{
+		char *include = strdup((*i).c_str());
+		if(strlen(include) >= 4)
+		{
+			if(strcmp(&include[strlen(include)-4],".idl") == 0)
+			{
+				include[strlen(include)-4] = 0;
+				if(!done_something)
+				{
+					fprintf(header,"// includes of other idl definitions\n");
+					done_something = true;
+				}
+				fprintf(header,"#include \"%s.h\"\n",include);
+			}
+		}
+		free(include);
+	}
+	if(done_something) fprintf(header,"\n");
+}
+
 void doEnumHeader(FILE *header)
 {
 	list<EnumDef *>::iterator edi;
@@ -445,6 +554,8 @@ void doEnumHeader(FILE *header)
 	for(edi = enums.begin();edi != enums.end(); edi++)
 	{
 		EnumDef *ed = *edi;
+
+		if(fromInclude(ed->name)) continue; // should come from the include
 
 		fprintf(header,"enum %s {",ed->name.c_str());
 		int first = 0;
@@ -466,6 +577,8 @@ void doStructHeader(FILE *header)
 	for(csi = structs.begin();csi != structs.end(); csi++)
 	{
 		TypeDef *d = *csi;
+
+		if(fromInclude(d->name)) continue; // should come from the include
 
 		fprintf(header,"class %s : public Type {\n",d->name.c_str());
 		fprintf(header,"public:\n");
@@ -526,6 +639,8 @@ void doStructSource(FILE *source)
 	for(csi = structs.begin();csi != structs.end(); csi++)
 	{
 		TypeDef *d = *csi;
+
+		if(fromInclude(d->name)) continue; // should come from the include
 
 		fprintf(source,"%s::%s()\n{\n}\n\n",d->name.c_str(),d->name.c_str());
 
@@ -692,6 +807,8 @@ void doInterfacesHeader(FILE *header)
 	for(ii = interfaces.begin();ii != interfaces.end(); ii++)
 	{
 		InterfaceDef *d = *ii;
+
+		if(fromInclude(d->name)) continue; // should come from the include
 
 		// create abstract interface
 		inherits = buildInheritanceList(*d,"");
@@ -864,6 +981,8 @@ void doInterfacesSource(FILE *source)
 	for(ii = interfaces.begin();ii != interfaces.end(); ii++)
 	{
 		InterfaceDef *d = *ii;
+
+		if(fromInclude(d->name)) continue; // should come from the include
 
 		// create static functions
 
@@ -1118,15 +1237,165 @@ void exit_usage(char *name)
 }
 extern void mcopidlParse(const char *code);
 
+bool match(vector<char>::iterator start, const char *string)
+{
+	while(*string && *start)
+		if(*string++ != *start++) return false;
+
+	return (*string == 0);
+}
+
+bool fileExists(const char *filename)
+{
+	FILE *test = fopen(filename,"r");
+	if(test)
+	{
+		fclose(test);
+		return true;
+	}
+	return false;
+}
+
+string searchFile(const char *filename,list<string>& path)
+{
+	if(fileExists(filename)) return filename;
+
+	list<string>::iterator i;
+	for(i = path.begin(); i != path.end(); i++)
+	{
+		string location = *i + "/" + filename;
+		if(fileExists(location.c_str())) return location;
+	}
+	fprintf(stderr,"file '%s' not found\n",filename);
+	exit(1);
+}
+
+void append_file_to_vector(const char *filename, vector<char>& v)
+{
+	FILE *f = fopen(filename,"r");
+	if(!f) {
+		fprintf(stderr,"file '%s' not found\n",filename);
+		exit(1);
+	}
+
+	char buffer[1024];
+	long l;
+	while((l = fread(buffer,1,1024,f)) > 0)
+		v.insert(v.end(),buffer, buffer+l);
+	fclose(f);
+}
+
+void append_string_to_vector(const char *string, vector<char>& v)
+{
+	while(*string) v.push_back(*string++);
+}
+
+void preprocess(vector<char>& input, vector<char>& output)
+{
+	bool performInclude = false;
+	string filename;
+	enum { lineStart, idlCode, commentC, filenameFind,
+	            filenameIn1, filenameIn2 } state = lineStart;
+
+	vector<char>::iterator i = input.begin();
+
+	while(i != input.end())
+	{
+		int skip = 1;
+
+		if(match(i,"/*")) // check if that is a comment for some reason
+		{
+			state = commentC;
+		}
+		else if(state == commentC) // leave comment state?
+		{
+			if(match(i,"*/")) state = idlCode;
+		}
+		else if(state == filenameFind)
+		{
+			if(*i != ' ' && *i != '\t')
+			{
+				if(*i == '"')
+				{
+					state = filenameIn1;
+				}
+				else if(*i == '<')
+				{
+					state = filenameIn2;
+				}
+				else
+				{
+					cout << *i << endl;
+					assert(0); // error handling!
+				}
+			}
+		}
+		else if((state == filenameIn1 && *i == '"') || (state == filenameIn2 && *i == '>'))
+		{
+			performInclude = true;
+			state = idlCode;
+		}
+		else if(state == filenameIn1 || state == filenameIn2)
+		{
+			filename += *i;
+		}
+		else if(state == lineStart) // check if we're on lineStart
+		{
+			if(match(i,"#include"))
+			{
+				skip = 8;
+				state = filenameFind;
+				filename = "";
+			}
+			else if(*i != ' ' && *i != '\t') state = idlCode;
+		}
+		if(*i == '\n' && state != commentC) state = lineStart; // newline handling
+		while(skip--) {
+			output.push_back(*i);
+			i++;
+		}
+		if((state == lineStart) && performInclude)
+		{
+			if(!haveIncluded(filename))
+			{
+				includes.push_back(filename);
+
+				string location = searchFile(filename.c_str(),includePath);
+				append_file_to_vector(location.c_str(),output);
+			}
+			append_string_to_vector("#endinclude\n",output);
+			performInclude = false;
+		}
+	}
+}
+
 int main(int argc, char **argv)
 {
-	FILE *f;
-	idl_line_no = 1;
+	/*
+	 * parse command line options
+	 */
+	int c;
+	while((c = getopt(argc, argv, "I:")) != -1)
+	{
+		switch(c)
+		{
+			case 'I': includePath.push_back(optarg);
+				break;
+			default: fprintf(stderr,"unknown option\n");
+					 exit_usage(argv[0]);
+				break;
+		}
+	}
 
-	vector<char> contents;
-	if(argc != 2) exit_usage(argv[0]);
+	if((argc-optind) != 1) exit_usage(argv[0]);
 
-	char *prefix = strdup(argv[1]);
+	const char *inputfile = argv[optind];
+
+	/*
+	 * find out prefix (filename without .idl)
+	 */
+
+	char *prefix = strdup(inputfile);
 
 	if(strlen(prefix) < 4 || strcmp(&prefix[strlen(prefix)-4],".idl")) {
 		fprintf(stderr,"filename must end in .idl");
@@ -1142,29 +1411,37 @@ int main(int argc, char **argv)
 	if(pathless)
 		prefix = pathless+1;
 
-	f = fopen(argv[1],"r");
-	if(!f) {
-		fprintf(stderr,"file not found\n");
-		exit(1);
-	}
+	/*
+	 * load file
+	 */
 
-	char buffer[1024];
-	long l;
-	while((l = fread(buffer,1,1024,f)) > 0)
-		contents.insert(contents.end(),buffer, buffer+l);
-	
+	idl_line_no = 1;
+	idl_in_include = 0;
+	idl_filename = inputfile;
+
+	vector<char> contents;
+	append_file_to_vector(inputfile,contents);
+
 	// trailing zero byte (mcopidlParse wants a C-style string as argument)
 	contents.push_back(0);
 
-	fclose(f);
+	// preprocess (throws includes into contents)
+	vector<char> contentspp;
+	preprocess(contents,contentspp);
+	contents = contentspp;
+
+	// call lex&yacc parser
 	mcopidlParse(&contents[0]);
 
+	// generate code for C++ header file
 	FILE *header = startHeader(prefix);
+	doIncludeHeader(header);
 	doEnumHeader(header);
 	doStructHeader(header);
 	doInterfacesHeader(header);
 	endHeader(header,prefix);
 
+	// generate code for C++ source file
 	FILE *source = startSource(prefix);
 	doStructSource(source);
 	doInterfacesSource(source);

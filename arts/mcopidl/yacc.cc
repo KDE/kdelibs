@@ -39,9 +39,11 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string>
 #include "core.h"
 
 extern int idl_line_no;
+extern string idl_filename;
 
 extern int yylex();
 extern void mcopidlInitFlex( const char *_code );
@@ -51,13 +53,13 @@ extern void addInterfaceTodo( InterfaceDef *iface );
 
 void yyerror( const char *s )
 {
-	printf( "Error in line %i : %s\n", idl_line_no, s );
+	printf( "%s:%i: %s\n", idl_filename.c_str(), idl_line_no, s );
     exit(1);
 	//   theParser->parse_error( idl_lexFile, s, idl_line_no );
 }
 
 
-#line 45 "yacc.yy"
+#line 47 "yacc.yy"
 typedef union
 {
   // generic data types
@@ -171,11 +173,11 @@ static const short yyrhs[] = {    33,
 
 #if YYDEBUG != 0
 static const short yyrline[] = { 0,
-   108,   110,   110,   112,   112,   112,   112,   114,   126,   139,
-   139,   141,   148,   154,   162,   169,   191,   193,   195,   203,
-   207,   212,   218,   220,   234,   236,   239,   259,   261,   262,
-   263,   267,   277,   282,   289,   294,   303,   318,   320,   322,
-   326,   345,   346,   358,   360,   361,   362,   363,   364,   368
+   110,   112,   112,   114,   114,   114,   114,   116,   128,   141,
+   141,   143,   150,   156,   164,   171,   193,   195,   197,   205,
+   209,   214,   220,   222,   236,   238,   241,   261,   263,   264,
+   265,   269,   279,   284,   291,   296,   305,   320,   322,   324,
+   328,   347,   348,   360,   362,   363,   364,   365,   366,   370
 };
 #endif
 
@@ -828,14 +830,14 @@ yyreduce:
   switch (yyn) {
 
 case 8:
-#line 120 "yacc.yy"
+#line 122 "yacc.yy"
 {
 		addStructTodo(new TypeDef(yyvsp[-4]._str,*yyvsp[-2]._typeComponentSeq));
 	    free(yyvsp[-4]._str);
 	  ;
     break;}
 case 9:
-#line 132 "yacc.yy"
+#line 134 "yacc.yy"
 {
 	  	addEnumTodo(new EnumDef(yyvsp[-4]._str,*yyvsp[-2]._enumComponentSeq));
 		free(yyvsp[-4]._str);
@@ -843,15 +845,15 @@ case 9:
 	  ;
     break;}
 case 10:
-#line 139 "yacc.yy"
+#line 141 "yacc.yy"
 { yyval._str = yyvsp[0]._str; ;
     break;}
 case 11:
-#line 139 "yacc.yy"
+#line 141 "yacc.yy"
 { yyval._str = strdup(""); ;
     break;}
 case 12:
-#line 143 "yacc.yy"
+#line 145 "yacc.yy"
 {
 	  	yyval._enumComponentSeq = new vector<EnumComponent *>;
 		yyval._enumComponentSeq->push_back(new EnumComponent(yyvsp[0]._str,0));
@@ -859,7 +861,7 @@ case 12:
 	  ;
     break;}
 case 13:
-#line 149 "yacc.yy"
+#line 151 "yacc.yy"
 {
 	  	yyval._enumComponentSeq = new vector<EnumComponent *>;
 		yyval._enumComponentSeq->push_back(new EnumComponent(yyvsp[-2]._str,yyvsp[0]._int));
@@ -867,7 +869,7 @@ case 13:
 	  ;
     break;}
 case 14:
-#line 155 "yacc.yy"
+#line 157 "yacc.yy"
 {
 	  	EnumComponent *last = (*yyvsp[-2]._enumComponentSeq)[yyvsp[-2]._enumComponentSeq->size()-1];
 
@@ -877,7 +879,7 @@ case 14:
 	  ;
     break;}
 case 15:
-#line 163 "yacc.yy"
+#line 165 "yacc.yy"
 {
 		yyval._enumComponentSeq = yyvsp[-4]._enumComponentSeq;
 		yyval._enumComponentSeq->push_back(new EnumComponent(yyvsp[-2]._str,yyvsp[0]._int));
@@ -885,7 +887,7 @@ case 15:
 	  ;
     break;}
 case 16:
-#line 175 "yacc.yy"
+#line 177 "yacc.yy"
 {
 	    vector<char *>::iterator ii;
 		for(ii=yyvsp[-4]._strs->begin(); ii != yyvsp[-4]._strs->end(); ii++)
@@ -902,35 +904,35 @@ case 16:
 	  ;
     break;}
 case 17:
-#line 192 "yacc.yy"
+#line 194 "yacc.yy"
 { yyval._strs = new vector<char *>; ;
     break;}
 case 18:
-#line 193 "yacc.yy"
+#line 195 "yacc.yy"
 { yyval._strs = yyvsp[0]._strs; ;
     break;}
 case 20:
-#line 204 "yacc.yy"
+#line 206 "yacc.yy"
 {
 	  	yyval._interfaceDef = new InterfaceDef();
 	  ;
     break;}
 case 21:
-#line 208 "yacc.yy"
+#line 210 "yacc.yy"
 {
 		yyval._interfaceDef = yyvsp[0]._interfaceDef;
 		yyval._interfaceDef->methods.insert(yyval._interfaceDef->methods.begin(),yyvsp[-1]._methodDef);
 	  ;
     break;}
 case 22:
-#line 213 "yacc.yy"
+#line 215 "yacc.yy"
 {
 	    yyval._interfaceDef = yyvsp[0]._interfaceDef;
 	    yyval._interfaceDef->attributes.insert(yyval._interfaceDef->attributes.begin(),yyvsp[-1]._attributeDefSeq->begin(),yyvsp[-1]._attributeDefSeq->end());
 	  ;
     break;}
 case 24:
-#line 221 "yacc.yy"
+#line 223 "yacc.yy"
 {
 	    // 16 == attribute
 		vector<char *>::iterator i;
@@ -944,15 +946,15 @@ case 24:
 	  ;
     break;}
 case 25:
-#line 235 "yacc.yy"
+#line 237 "yacc.yy"
 { yyval._int = 1+2; /* in&out (read & write) */ ;
     break;}
 case 26:
-#line 236 "yacc.yy"
+#line 238 "yacc.yy"
 { yyval._int = 2; /* out (readonly) */ ;
     break;}
 case 27:
-#line 240 "yacc.yy"
+#line 242 "yacc.yy"
 {
 	    // 8 == stream
 		vector<char *>::iterator i;
@@ -966,23 +968,23 @@ case 27:
 	  ;
     break;}
 case 28:
-#line 260 "yacc.yy"
+#line 262 "yacc.yy"
 { yyval._int = 1; ;
     break;}
 case 29:
-#line 261 "yacc.yy"
+#line 263 "yacc.yy"
 { yyval._int = 5 ;
     break;}
 case 30:
-#line 262 "yacc.yy"
+#line 264 "yacc.yy"
 { yyval._int = 2; ;
     break;}
 case 31:
-#line 263 "yacc.yy"
+#line 265 "yacc.yy"
 { yyval._int = 6 ;
     break;}
 case 32:
-#line 270 "yacc.yy"
+#line 272 "yacc.yy"
 {
 	  	yyval._methodDef = new MethodDef(yyvsp[-4]._str,yyvsp[-5]._str,0,*yyvsp[-2]._paramDefSeq);
 		free(yyvsp[-4]._str);
@@ -990,26 +992,26 @@ case 32:
 	  ;
     break;}
 case 33:
-#line 279 "yacc.yy"
+#line 281 "yacc.yy"
 {
 	  	yyval._paramDefSeq = new vector<ParamDef *>;
 	  ;
     break;}
 case 34:
-#line 283 "yacc.yy"
+#line 285 "yacc.yy"
 {
 	  	yyval._paramDefSeq = yyvsp[0]._paramDefSeq;
 		yyval._paramDefSeq->insert(yyval._paramDefSeq->begin(),yyvsp[-1]._paramDef);
 	  ;
     break;}
 case 35:
-#line 291 "yacc.yy"
+#line 293 "yacc.yy"
 {
 	  	yyval._paramDefSeq = new vector<ParamDef *>;
 	  ;
     break;}
 case 36:
-#line 295 "yacc.yy"
+#line 297 "yacc.yy"
 {
 	  	yyval._paramDefSeq = yyvsp[-2]._paramDefSeq;
 		yyval._paramDefSeq->push_back(yyvsp[0]._paramDef);
@@ -1017,7 +1019,7 @@ case 36:
 	  ;
     break;}
 case 37:
-#line 304 "yacc.yy"
+#line 306 "yacc.yy"
 {
 	  	yyval._paramDef = new ParamDef(string(yyvsp[-1]._str),string(yyvsp[0]._str));
 		free(yyvsp[-1]._str);
@@ -1025,22 +1027,22 @@ case 37:
 	  ;
     break;}
 case 38:
-#line 319 "yacc.yy"
+#line 321 "yacc.yy"
 { yyval._strs = new vector<char *>; yyval._strs->push_back(yyvsp[0]._str); ;
     break;}
 case 39:
-#line 320 "yacc.yy"
+#line 322 "yacc.yy"
 { yyval._strs = yyvsp[-2]._strs; yyval._strs->push_back(yyvsp[0]._str); ;
     break;}
 case 40:
-#line 322 "yacc.yy"
+#line 324 "yacc.yy"
 {
 		// is empty by default
 		yyval._typeComponentSeq = new vector<TypeComponent *>;
 	  ;
     break;}
 case 41:
-#line 326 "yacc.yy"
+#line 328 "yacc.yy"
 {
 	    yyval._typeComponentSeq = yyvsp[0]._typeComponentSeq;
 		vector<char *>::reverse_iterator i;
@@ -1055,7 +1057,7 @@ case 41:
 	  ;
     break;}
 case 43:
-#line 347 "yacc.yy"
+#line 349 "yacc.yy"
 {
 	  	// a sequence<long> is for instance coded as *long
 
@@ -1068,27 +1070,27 @@ case 43:
 	  ;
     break;}
 case 44:
-#line 359 "yacc.yy"
+#line 361 "yacc.yy"
 { yyval._str = strdup("boolean"); ;
     break;}
 case 45:
-#line 360 "yacc.yy"
+#line 362 "yacc.yy"
 { yyval._str = strdup("string"); ;
     break;}
 case 46:
-#line 361 "yacc.yy"
+#line 363 "yacc.yy"
 { yyval._str = strdup("long"); ;
     break;}
 case 47:
-#line 362 "yacc.yy"
+#line 364 "yacc.yy"
 { yyval._str = strdup("object"); ;
     break;}
 case 48:
-#line 363 "yacc.yy"
+#line 365 "yacc.yy"
 { yyval._str = strdup("float"); ;
     break;}
 case 49:
-#line 364 "yacc.yy"
+#line 366 "yacc.yy"
 {
 		yyval._str = yyvsp[0]._str;
 	  ;
@@ -1315,7 +1317,7 @@ yyerrhandle:
     }
   return 1;
 }
-#line 369 "yacc.yy"
+#line 371 "yacc.yy"
 
 
 void mcopidlParse( const char *_code )
