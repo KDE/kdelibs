@@ -23,6 +23,10 @@
     Boston, MA 02111-1307, USA.
 */
 
+#ifdef KDE_USE_FINAL
+#undef Always
+#include <qdockwindow.h>
+#endif
 #include "ktoolbar.h"
 #include "kmainwindow.h"
 
