@@ -160,14 +160,13 @@ int main(int argc, char **argv) {
             cmd += KProcess::quote(file.fileName());
             cmd += " 2>&1";
             FILE *xmllint = popen( QFile::encodeName( cmd ), "r");
+            char buf[ 512 ];
             bool noout = true;
-            while ( !feof( xmllint ) ) {
-                int c;
-                c = fgetc( xmllint );
-                if ( c != EOF ) {
-                    fputc( c, stderr );
-                    noout = false;
-                }
+            unsigned int n;
+            while ( ( n = fread(buf, 1, sizeof( buf ), xmllint ) ) ) {
+                noout = false;
+                buf[ n ] = '\0';
+                fputs( buf, stderr );
             }
             pclose( xmllint );
             chdir( pwd_buffer );
