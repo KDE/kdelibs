@@ -208,7 +208,7 @@ public:
    * as well, of course.)
    * 
    * @return the list of all listed URLs
-   * @since 3.3
+   * @since 3.4
    */
   const KURL::List& directories() const;
 
