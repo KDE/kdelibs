@@ -32,7 +32,7 @@ contains instructions for transferring/converting configuration information
 from one place to another.
 
 Updating the configuration happens automatically, either when KDE gets started
-or when kded detects a new update file in the above mentionmed location.
+or when kded detects a new update file in the above mentioned location.
 
 Update files are seperated into sections. Each section has an Id. When a 
 section describing a configuration change has been applied, the Id will be 
