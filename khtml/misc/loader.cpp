@@ -42,6 +42,7 @@
 #include <qmovie.h>
 #include <qwidget.h>
 
+#include <kapplication.h>
 #include <kio/job.h>
 #include <kio/jobclasses.h>
 #include <kglobal.h>
@@ -970,6 +971,9 @@ CachedScript *DocLoader::requestScript( const DOM::DOMString &url, const QString
 {
     KURL fullURL = m_doc->completeURL( url.string() );
     if ( m_part && m_part->onlyLocalReferences() && fullURL.protocol() != "file") return 0;
+    if ( kapp && m_doc && !kapp->authorizeURLAction("redirect", m_doc->URL(), fullURL.url())) return 0;
+    if ( kapp && m_doc && !kapp->authorizeURLAction("redirect", m_doc->URL(), fullURL.url())) return 0;
+    if ( kapp && m_doc && !kapp->authorizeURLAction("redirect", m_doc->URL(), fullURL.url())) return 0;
 
     bool reload = needReload(fullURL);
 
