@@ -170,13 +170,16 @@ void HTMLAppletElementImpl::attach()
     {
 	QMap<QString, QString> args;
 
-	args.insert( "code", getAttribute(ATTR_CODE).string());
+        DOMString code = getAttribute(ATTR_CODE);
+	args.insert( "code", code.string());
 	DOMString codeBase = getAttribute(ATTR_CODEBASE);
 	if(!codeBase.isNull())
 	    args.insert( "codeBase", codeBase.string() );
 	DOMString name = getDocument()->htmlMode() != DocumentImpl::XHtml ?
 			 getAttribute(ATTR_NAME) : getAttribute(ATTR_ID);
-	if(!name.isNull())
+        if (name.isNull())
+            setAttribute(ATTR_ID, code.string());
+        else
 	    args.insert( "name", name.string() );
 	DOMString archive = getAttribute(ATTR_ARCHIVE);
 	if(!archive.isNull())
