@@ -74,7 +74,9 @@ void KPopupTitle::setIcon( const QPixmap &pix )
 
 void KPopupTitle::calcSize()
 {
-    int w = miniicon.width()+fontMetrics().width(titleStr);
+    QFont f = font();
+    f.setBold(true);
+    int w = miniicon.width()+QFontMetrics(f).width(titleStr);
     int h = QMAX( fontMetrics().height(), miniicon.height() );
     setMinimumSize( w+16, h+8 );
 }
