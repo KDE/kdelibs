@@ -27,105 +27,144 @@
 #include "resource.moc"
 using namespace KRES;
 
-Resource::Resource( const KConfig* config ) :
-  mOpenCount( 0 )
+class Resource::ResourcePrivate {
+  public:
+#ifdef QT_THREAD_SUPPORT
+    QMutex mMutex;
+#endif
+    int mOpenCount;
+    QString mType;
+    QString mIdentifier;
+    bool mReadOnly;
+    QString mName;
+    bool mActive;
+    bool mIsOpen;
+};
+
+Resource::Resource( const KConfig* config )
+  : d( new ResourcePrivate )
 {
+  d->mOpenCount = 0;
+  d->mIsOpen = false;
+
   if ( config ) {
-    mType = config->readEntry( "ResourceType" );
-    mName = config->readEntry( "ResourceName" );
-    mReadOnly = config->readBoolEntry( "ResourceIsReadOnly", false );
-    mActive = config->readBoolEntry( "ResourceIsActive", true );
-    mIdentifier = config->readEntry( "ResourceIdentifier" );
+    d->mType = config->readEntry( "ResourceType" );
+    d->mName = config->readEntry( "ResourceName" );
+    d->mReadOnly = config->readBoolEntry( "ResourceIsReadOnly", false );
+    d->mActive = config->readBoolEntry( "ResourceIsActive", true );
+    d->mIdentifier = config->readEntry( "ResourceIdentifier" );
   } else {
-    mType = "type";
-    mName = "resource-name";
-    mReadOnly = false;
-    mActive = true;
-    mIdentifier = KApplication::randomString( 10 );
+    d->mType = "type";
+    d->mName = "resource-name";
+    d->mReadOnly = false;
+    d->mActive = true;
+    d->mIdentifier = KApplication::randomString( 10 );
   }
 }
 
 Resource::~Resource()
 {
+  delete d;
+  d = 0;
 }
 
 void Resource::writeConfig( KConfig* config )
 {
-  kdDebug() << "Resource::writeConfig()" << endl;
+  kdDebug(5650) << "Resource::writeConfig()" << endl;
 
-  config->writeEntry( "ResourceType", mType );
-  config->writeEntry( "ResourceName", mName );
-  config->writeEntry( "ResourceIsReadOnly", mReadOnly );
-  config->writeEntry( "ResourceIsActive", mActive );
-  config->writeEntry( "ResourceIdentifier", mIdentifier );
+  config->writeEntry( "ResourceType", d->mType );
+  config->writeEntry( "ResourceName", d->mName );
+  config->writeEntry( "ResourceIsReadOnly", d->mReadOnly );
+  config->writeEntry( "ResourceIsActive", d->mActive );
+  config->writeEntry( "ResourceIdentifier", d->mIdentifier );
 }
 
 bool Resource::open()
 {
-  bool result = true;
+  d->mIsOpen = true;
 #ifdef QT_THREAD_SUPPORT
-  QMutexLocker guard( &mMutex );
+  QMutexLocker guard( &(d->mMutex) );
 #endif
-  if ( ! mOpenCount ) {
+  if ( !d->mOpenCount ) {
     kdDebug(5650) << "Opening resource " << resourceName() << endl;
-    result = doOpen();
+    d->mIsOpen = doOpen();
   }
-  mOpenCount++;
-  return result;
+  d->mOpenCount++;
+  return d->mIsOpen;
 }
 
 void Resource::close()
 {
 #ifdef QT_THREAD_SUPPORT
-  QMutexLocker guard( &mMutex );
+  QMutexLocker guard( &(d->mMutex) );
 #endif
-  if ( ! mOpenCount )
-  {
+  if ( !d->mOpenCount ) {
     kdDebug(5650) << "ERROR: Resource " << resourceName() << " closed more times than previously opened" << endl;
     return;
   }
-  mOpenCount--;
-  if ( ! mOpenCount ) {
+  d->mOpenCount--;
+  if ( !d->mOpenCount ) {
     kdDebug(5650) << "Closing resource " << resourceName() << endl;
     doClose();
+    d->mIsOpen = false;
   } else {
-    kdDebug(5650) << "Not yet closing resource " << resourceName() << ", open count = " << mOpenCount << endl;
+    kdDebug(5650) << "Not yet closing resource " << resourceName() << ", open count = " << d->mOpenCount << endl;
   }
+}
+
+bool Resource::isOpen() const
+{
+  return d->mIsOpen;
+}
+
+void Resource::setIdentifier( const QString& identifier )
+{
+  d->mIdentifier = identifier;
 }
 
 QString Resource::identifier() const
 {
-  return mIdentifier;
+  return d->mIdentifier;
+}
+
+void Resource::setType( const QString& type )
+{
+  d->mType = type;
+}
+
+QString Resource::type() const
+{
+  return d->mType;
 }
 
 void Resource::setReadOnly( bool value )
 {
-  mReadOnly = value;
+  d->mReadOnly = value;
 }
 
 bool Resource::readOnly() const
 {
-  return mReadOnly;
+  return d->mReadOnly;
 }
 
 void Resource::setResourceName( const QString &name )
 {
-  mName = name;
+  d->mName = name;
 }
 
 QString Resource::resourceName() const
 {
-  return mName;
+  return d->mName;
 }
 
 void Resource::setActive( bool value )
 {
-  mActive = value;
+  d->mActive = value;
 }
 
 bool Resource::isActive() const
 {
-  return mActive;
+  return d->mActive;
 }
 
 QString Resource::encryptStr( const QString &str )
@@ -147,10 +186,11 @@ QString Resource::decryptStr( const QString &str )
 void Resource::dump() const
 {
   kdDebug(5650) << "Resource:" << endl;
-  kdDebug(5650) << "  Name: " << mName << endl;
-  kdDebug(5650) << "  Identifier: " << mIdentifier << endl;
-  kdDebug(5650) << "  Type: " << mType << endl;
-  kdDebug(5650) << "  OpenCount: " << mOpenCount << endl;
-  kdDebug(5650) << "  ReadOnly: " << ( mReadOnly ? "yes" : "no" ) << endl;
-  kdDebug(5650) << "  Active: " << ( mActive ? "yes" : "no" ) << endl;
+  kdDebug(5650) << "  Name: " << d->mName << endl;
+  kdDebug(5650) << "  Identifier: " << d->mIdentifier << endl;
+  kdDebug(5650) << "  Type: " << d->mType << endl;
+  kdDebug(5650) << "  OpenCount: " << d->mOpenCount << endl;
+  kdDebug(5650) << "  ReadOnly: " << ( d->mReadOnly ? "yes" : "no" ) << endl;
+  kdDebug(5650) << "  Active: " << ( d->mActive ? "yes" : "no" ) << endl;
+  kdDebug(5650) << "  IsOpen: " << ( d->mIsOpen ? "yes" : "no" ) << endl;
 }

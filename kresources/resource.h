@@ -224,140 +224,142 @@ link_DATA= resourceexample.desktop
    */
 class Resource
 {
-public:
-  typedef QValueList<Resource *> List;
+  public:
+    typedef QValueList<Resource *> List;
 
-  /**
-   * Constructor. Construct resource from config.
-   * @param config Configuration to read persistence information from.
-   *               If config==0, create object using default settings.
-   */
-  Resource( const KConfig* config );
+    /**
+     * Constructor. Construct resource from config.
+     * @param config Configuration to read persistence information from.
+     *               If config==0, create object using default settings.
+     */
+    Resource( const KConfig* config );
 
-  /**
-   * Destructor.
-   */
-  virtual ~Resource();
+    /**
+     * Destructor.
+     */
+    virtual ~Resource();
 
-  /**
-   * Write configuration information for this resource to a configuration
-   * file. If you override this method, remember to call Resource::writeConfig
-   * or Terrible Things(TM) will happen.
-   * @param config Configuration to write persistence information to.
-   */
-  virtual void writeConfig( KConfig* config );
+    /**
+     * Write configuration information for this resource to a configuration
+     * file. If you override this method, remember to call Resource::writeConfig
+     * or Terrible Things(TM) will happen.
+     * @param config Configuration to write persistence information to.
+     */
+    virtual void writeConfig( KConfig* config );
 
-  /**
-   * Open this resource, if it not already open. Increase the open
-   * count of this object, and open the resource by calling @ref doOpen().
-   * This method may block while another thread is concurrently opening
-   * or closing the resource.
-   *
-   * Returns true if the resource was already opened or if it was opened
-   * successfully; returns false if the resource was not opened successfully.
-   */
-  bool open();
+    /**
+     * Open this resource, if it not already open. Increase the open
+     * count of this object, and open the resource by calling @ref doOpen().
+     * This method may block while another thread is concurrently opening
+     * or closing the resource.
+     *
+     * Returns true if the resource was already opened or if it was opened
+     * successfully; returns false if the resource was not opened successfully.
+     */
+    bool open();
 
-  /**
-   * Decrease the open count of this object, and if the count reaches
-   * zero, close this resource by calling @ref doClose().
-   * This method may block while another thread is concurrently closing
-   * or opening the resource.
-   */
-  void close();
+    /**
+     * Decrease the open count of this object, and if the count reaches
+     * zero, close this resource by calling @ref doClose().
+     * This method may block while another thread is concurrently closing
+     * or opening the resource.
+     */
+    void close();
 
-  /**
-   * Returns a unique identifier. The identifier is unique for this resource.
-   * It is created when the resource is first created, and it is retained
-   * in the resource family configuration file for this resource.
-   * @return This resource's identifier
-   */
-  QString identifier() const;
+    /**
+     * Returns whether the resource is open or not.
+     */
+    bool isOpen() const;
 
-  /**
-   * Returns the type of this resource.
-   */
-  QString type() const { return mType; }
+    /**
+     * Returns a unique identifier. The identifier is unique for this resource.
+     * It is created when the resource is first created, and it is retained
+     * in the resource family configuration file for this resource.
+     * @return This resource's identifier
+     */
+    QString identifier() const;
 
-  /**
-   * Mark the resource as read-only. You can override this method,
-   * but also remember to call Resource::setReadOnly().
-   */
-  virtual void setReadOnly( bool value );
+    /**
+     * Returns the type of this resource.
+     */
+    QString type() const;
 
-  /**
-   * Returns, if the resource is read-only.
-   */
-  virtual bool readOnly() const;
+    /**
+     * Mark the resource as read-only. You can override this method,
+     * but also remember to call Resource::setReadOnly().
+     */
+    virtual void setReadOnly( bool value );
 
-  /**
-   * Set the name of resource.You can override this method,
-   * but also remember to call Resource::setResourceName().
-   */
-  virtual void setResourceName( const QString &name );
+    /**
+     * Returns, if the resource is read-only.
+     */
+    virtual bool readOnly() const;
 
-  /**
-   * Returns the name of resource.
-   */
-  virtual QString resourceName() const;
+    /**
+     * Set the name of resource.You can override this method,
+     * but also remember to call Resource::setResourceName().
+     */
+    virtual void setResourceName( const QString &name );
 
-  /**
-    Sets, if the resource is active.
-  */
-  void setActive( bool active );
+    /**
+     * Returns the name of resource.
+     */
+    virtual QString resourceName() const;
 
-  /**
-    Return true, if the resource is active.
-  */
-  bool isActive() const;
+    /**
+      Sets, if the resource is active.
+    */
+    void setActive( bool active );
 
-  /**
-   * This method can be used by all resources to encrypt
-   * their passwords for storing in a config file.
-   */
-  static QString encryptStr( const QString & );
-  /**
-   * This method can be used by all resources to decrypt
-   * their passwords read from a config file.
-   */
-  static QString decryptStr( const QString & );
+    /**
+      Return true, if the resource is active.
+    */
+    bool isActive() const;
 
-  friend class ResourceFactory;
-  friend class ResourceManagerImpl;
+    /**
+     * This method can be used by all resources to encrypt
+     * their passwords for storing in a config file.
+     */
+    static QString encryptStr( const QString & );
 
-  /**
-    Print resource information as debug output.
-  */
-  virtual void dump() const;
+    /**
+     * This method can be used by all resources to decrypt
+     * their passwords read from a config file.
+     */
+    static QString decryptStr( const QString & );
 
-protected:
-  /**
-   * Open this resource. When called, the resource must be in
-   * a closed state.
-   *
-   * Returns true if the resource was opened successfully;
-   * returns false if the resource was not opened successfully.
-   */
-  virtual bool doOpen() { return true; }
-  /**
-   * Close this resource. Pre-condition: resource is open.
-   * Post-condition: resource is closed.
-   */
-  virtual void doClose() {}
+    friend class ResourceFactory;
+    friend class ResourceManagerImpl;
 
-  void setIdentifier( const QString& identifier ) { mIdentifier = identifier; }
-  void setType( const QString& type ) { mType = type; }
+    /**
+      Print resource information as debug output.
+    */
+    virtual void dump() const;
 
-private:
-#ifdef QT_THREAD_SUPPORT
-  QMutex mMutex;
-#endif
-  int mOpenCount;
-  QString mType;
-  QString mIdentifier;
-  bool mReadOnly;
-  QString mName;
-  bool mActive;
+  protected:
+    /**
+     * Open this resource. When called, the resource must be in
+     * a closed state.
+     *
+     * Returns true if the resource was opened successfully;
+     * returns false if the resource was not opened successfully.
+     *
+     * The result of this call can be accessed later by @ref isOpen()
+     */
+    virtual bool doOpen() { return true; }
+
+    /**
+     * Close this resource. Pre-condition: resource is open.
+     * Post-condition: resource is closed.
+     */
+    virtual void doClose() {}
+
+    void setIdentifier( const QString& identifier );
+    void setType( const QString& type );
+
+  private:
+    class ResourcePrivate;
+    ResourcePrivate *d;
 };
 
 }
