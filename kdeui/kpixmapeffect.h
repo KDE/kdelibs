@@ -18,6 +18,10 @@ public:
 			PyramidGradient, RectangleGradient, 
 			PipeCrossGradient, EllipticGradient };
     enum RGBComponent { Red, Green, Blue };
+
+    enum Lighting {NorthLite, NWLite, WestLite, SWLite, 
+		   SouthLite, SELite, EastLite, NELite}; 
+
     /**
      * Draws a vertical, horizontal, diagonal, crossdiagonal,pyramid, 
      * rectangle, pipecross or elliptic gradient from color ca to color cb.
@@ -91,6 +95,20 @@ public:
   static void blend(KPixmap &pixmap, float initial_intensity, 
 		    const QColor &bgnd, GradientType eff,
 		    bool anti_dir=false, int ncols=3);
+
+  /**
+   * Builds a hash on any given QImage
+   * @ Lighting lite - the hash faces the indicated lighting (cardinal poles)
+   * @ int spacing - how many unmodified pixels inbetween hashes
+   */
+  static void hash(QImage &image, Lighting lite=NorthLite, 
+		   unsigned int spacing=0);
+
+  /**
+   * As above, on a KPixmap
+   */
+  static void hash(KPixmap &pixmap, Lighting lite=NorthLite, 
+		   unsigned int spacing=0, int ncols=3);
 };
 
 
@@ -111,5 +129,13 @@ inline void KPixmapEffect::channelIntensity(KPixmap &pixmap, float percent,
     channelIntensity(image, percent, channel, brighten);
     pixmap.convertFromImage(image);
 }
+
+
+/**
+ * Helper function to fast calc some altered (lighten, shaded) colors (CT)
+ *
+ */
+unsigned int lHash(unsigned int c);
+unsigned int uHash(unsigned int c);
 
 #endif

@@ -35,7 +35,7 @@ check_PROGRAMS = kconfigtest kledlamptest kprogresstest \
 		kcharselecttest kstddirstest khtmltest \
 		kopenwithtest kaboutdialogtest kgradienttest \
 		kunbalancedgrdtest kcolortest knuminputtest kblendtest \
-		kdualcolortest kpalettetest kmessageboxtest
+		kdualcolortest kpalettetest kmessageboxtest khashtest
 
 noinst_HEADERS = kdatepicktestdlg.h \
 		ktabctltest.h kiconloadertestmain.h	\
@@ -43,7 +43,7 @@ noinst_HEADERS = kdatepicktestdlg.h \
 		kprocesstest.h kledtest.h kcontainertest.h \
 		klocaletest.h krulertest.h kconfigtest.h kgradienttest.h \
 		kcolortest.h kunbalancedgrdtest.h kblendtest.h \
-		kdualcolortest.h
+		kdualcolortest.h khashtest.h
 
 METASOURCES = kconfigtest.moc \
 	kcontainertest.moc kdatepicktestdlg.moc \
@@ -51,7 +51,8 @@ METASOURCES = kconfigtest.moc \
 	klocaletest.moc knuminputtest.moc \
 	kprocesstest.moc krulertest.moc \
 	kstatusbartest.moc ktabctltest.moc \
-	kwindowtest.moc kunbalancedgrdtest.moc kdualcolortest.moc
+	kwindowtest.moc kunbalancedgrdtest.moc kdualcolortest.moc \
+	khashtest.moc
 
 LDADD =  $(LIB_KDEUI)
 
@@ -93,6 +94,7 @@ khtmltest_SOURCES = khtmltest.cpp
 khtmltest_LDADD = $(LIB_KHTML)
 kcolortest_SOURCES = kcolortest.cpp
 kgradienttest_SOURCES = kgradienttest.cpp
+khashtest_SOURCES = khashtest.cpp
 kunbalancedgrdtest_SOURCES = kunbalancedgrdtest.cpp
 kblendtest_SOURCES = kblendtest.cpp
 kdualcolortest_SOURCES = kdualcolortest.cpp

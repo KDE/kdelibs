@@ -942,8 +942,7 @@ void KPixmapEffect::blend(KPixmap &pixmap, float initial_intensity,
 {
   QImage image = pixmap.convertToImage();
   blend(image, initial_intensity, bgnd, eff, anti_dir);
-  //CT 21Aug1999 - I think we should check for a dithering here, isn't it?
-  //               In that case making this inline will be forbidden. Mosfet?
+
   unsigned int tmp;
 
   if(pixmap.depth() < 15 ) {
@@ -963,3 +962,115 @@ void KPixmapEffect::blend(KPixmap &pixmap, float initial_intensity,
     pixmap.convertFromImage(image);
 }
 
+unsigned int lHash(unsigned int c)
+{
+  unsigned char r = qRed(c), g = qGreen(c), b = qBlue(c), a = qAlpha(c);
+  unsigned char nr, ng, nb;
+  nr =(r >> 1) + (r >> 2); nr = nr > r ? 0 : nr;
+  ng =(g >> 1) + (g >> 2); ng = ng > g ? 0 : ng;
+  nb =(b >> 1) + (b >> 2); nb = nb > b ? 0 : nb;
+  
+  return qRgb(nr, ng, nb) | (uint) ((0xff & a) << 24);
+}
+
+inline unsigned int uHash(unsigned int c) 
+{
+  unsigned char r = qRed(c), g = qGreen(c), b = qBlue(c), a = qAlpha(c);
+  unsigned char nr, ng, nb;
+  nr = r + (r >> 3); nr = nr < r ? ~0 : nr;
+  ng = g + (g >> 3); ng = ng < g ? ~0 : ng;
+  nb = b + (b >> 3); nb = nb < b ? ~0 : nb;
+  
+  return qRgb(nr, ng, nb) | (uint) ((0xff & a) << 24);
+}
+
+void KPixmapEffect::hash(QImage &image, Lighting lite, unsigned int spacing)
+{
+  register int x, y;
+  unsigned int *data =  (unsigned int *)image.bits();
+  unsigned int a, ind;
+
+  //CT no need to do it if not enough space
+  if ((lite == NorthLite ||
+       lite == SouthLite)&&
+      image.height() < 2+spacing) return;
+  if ((lite == EastLite ||
+       lite == WestLite)&&
+      image.height() < 2+spacing) return;
+
+  if (lite == NorthLite || lite == SouthLite) {
+    for (y = 0 ; y < image.height(); y = y + 2 + spacing) {
+      for (x = 0; x < image.width(); x++) {
+	ind = x + image.width() * y;
+	data[ind] = lite==NorthLite?uHash(data[ind]):lHash(data[ind]);
+
+	ind = ind + image.width();
+	data[ind] = lite==NorthLite?lHash(data[ind]):uHash(data[ind]);
+      }
+    }
+  }
+
+  else if (lite == EastLite || lite == WestLite) {
+    for (y = 0 ; y < image.height(); y++) {
+      for (x = 0; x < image.width(); x = x + 2 + spacing) {
+	ind = x + image.width() * y;
+	data[ind] = lite==EastLite?uHash(data[ind]):lHash(data[ind]);
+
+	ind++;
+	data[ind] = lite==EastLite?lHash(data[ind]):uHash(data[ind]);
+      }
+    }
+  }
+    
+  else if (lite == NWLite || lite == SELite) {
+    for (y = 0 ; y < image.height(); y++) {
+      for (x = 0;
+	   x < image.width() - ((y & 1)? 1 : 0) * spacing;
+	   x = x + 2 + spacing) {
+	ind = x + image.width() * y + ((y & 1)? 1 : 0);
+	data[ind] = lite==NWLite?uHash(data[ind]):lHash(data[ind]);
+
+	ind++;
+	data[ind] = lite==NWLite?lHash(data[ind]):uHash(data[ind]);
+      }
+    }
+  }
+
+  else if (lite == SWLite || lite == NELite) {
+    for (y = 0 ; y < image.height(); y++) {
+      for (x = 0  + ((y & 1)? 1 : 0); x < image.width(); x = x + 2 + spacing) {
+	ind = x + image.width() * y - ((y & 1)? 1 : 0);
+	data[ind] = lite==SWLite?uHash(data[ind]):lHash(data[ind]);
+
+	ind++;
+	data[ind] = lite==SWLite?lHash(data[ind]):uHash(data[ind]);
+      }
+    }
+  }
+  
+}
+
+void KPixmapEffect::hash(KPixmap &pixmap, Lighting lite, 
+			 unsigned int spacing, int ncols)
+{
+  QImage image = pixmap.convertToImage();
+  hash(image, lite, spacing);
+
+  unsigned int tmp;
+
+  if(pixmap.depth() < 15 ) {
+    if ( ncols < 2 || ncols > 256 )
+      ncols = 3;
+    QColor *dPal = new QColor[ncols];
+    for (int i=0; i<ncols; i++) {
+      tmp = 0 + 255 * i / ( ncols - 1 );
+      dPal[i].setRgb ( tmp, tmp, tmp );
+    }
+    kFSDither dither(dPal, ncols);
+    image = dither.dither(image);
+    pixmap.convertFromImage(image);
+    delete [] dPal;
+  }
+  else
+    pixmap.convertFromImage(image);
+}
