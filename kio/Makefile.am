@@ -117,7 +117,7 @@ dummy.cpp: uiserver.kidl
 
 kmailservice_SOURCES = kmailservice.cpp
 kmailservice_LDADD = $(LIB_KDECORE)
-kmailservice_LDFLAGS = $(all_libraries)
+kmailservice_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 
 kmailprotocol_DATA = kmailservice.protocol
 kmailprotocoldir = $(kde_servicesdir)
