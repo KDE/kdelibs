@@ -110,6 +110,7 @@ bool Ftp::readresp(char c)
   {
     if ( ftplib_debug > 1)
       fprintf( stderr,"Could not read\n" );
+
     m_error = ERR_COULD_NOT_READ;
     m_errorText = "";
     return false;
@@ -179,13 +180,15 @@ bool Ftp::ftpConnect( const char *_host, int _port, const char *_user, const cha
 {
   m_bPersistent = false; // ProtocolManager::self()->isPersistent();
 
-  if ( m_bLoggedOn && m_bPersistent ) {
-    // this should check whether there is still opened data connection.
-    // is it enough ?  Should we check also the control connection ?
-    if ( ftpOpenDataConnection() )
-      return true;
-  } else
-    assert( !m_bLoggedOn );
+  if ( m_bLoggedOn )
+    if ( m_bPersistent ) {
+      // this should check whether there is still opened data connection.
+      // is it enough ?  Should we check also the control connection ?
+      if ( ftpOpenDataConnection() )
+	return true;
+    } else
+      assert( !m_bLoggedOn );
+    
   
   _path = "";
   
@@ -535,6 +538,27 @@ int Ftp::ftpAcceptConnect(void)
 }
 
 
+bool Ftp::ftpPort()
+{
+  string buf = "type A";
+  
+  if ( !ftpSendCmd( buf.c_str(), '2' ) )
+  {  
+    m_error = ERR_COULD_NOT_CONNECT;
+    m_errorText = "";
+    return false;
+  }  
+  if ( !ftpOpenDataConnection() )
+  {  
+    m_error = ERR_COULD_NOT_CONNECT;
+    m_errorText = "";
+    return false;
+  }
+
+  return true;
+}
+
+
 bool Ftp::ftpOpenCommand( const char *_command, const char *_path, char _mode, unsigned long _offset )
 {
   string buf;
@@ -583,7 +607,6 @@ bool Ftp::ftpOpenCommand( const char *_command, const char *_path, char _mode, u
       return false;
     }
   } else if ( _offset > 0 ) {
-
     // send rest command if offset > 0, this applies to retr and stor commands
     char buf[100];
     sprintf(buf, "rest %ld", _offset);
@@ -598,7 +621,11 @@ bool Ftp::ftpOpenCommand( const char *_command, const char *_path, char _mode, u
   }
   
   tmp = _command;
-  if ( _path != 0L )
+
+  // only add path if it's not a list command
+  // we are changing into this directory anyway, so it's enough just to send "list"
+  // and this also works for symlinks
+  if ( _path != 0L && strcmp( _command, "list" ))
   {      
     tmp += " ";
     tmp += _path;
@@ -624,7 +651,6 @@ bool Ftp::ftpOpenCommand( const char *_command, const char *_path, char _mode, u
 
 bool Ftp::ftpCloseCommand()
 {
-  /** readresp('2') ?? gibt an ob Transmission erfolgreich war! **/
   if( sData != 0 )
   {
     shutdown( sData, 2 );
@@ -721,6 +747,32 @@ bool Ftp::ftpDelete( const char *fnm )
 }
 
 
+/*
+ * ftpChmod - do chmod on a remote file
+ *
+ * return 1 if successful, 0 otherwise
+ */
+bool Ftp::ftpChmod( const char *src, int mode )
+{
+  assert( m_bLoggedOn );
+
+  string cmd;
+  cmd = "SITE CHMOD ";
+
+  char buf[10];
+
+  // we need to do bit AND 777 to get permissions
+  sprintf(buf, "%o ", mode & 511 );
+
+  cmd += buf;
+  cmd += src;
+
+  if ( !ftpSendCmd( cmd.c_str() ,'2' ) )
+    return false;
+  return true;
+}
+
+
 FtpEntry* Ftp::stat( K2URL& _url )
 { 
   string redirect;
@@ -746,6 +798,8 @@ FtpEntry* Ftp::stat( K2URL& _url )
 FtpEntry* Ftp::ftpStat( K2URL& _url )
 {
   static FtpEntry fe;
+
+  cerr << "ftpStat : " << _url.url() << endl;
 
   string path = _url.directory();
 
@@ -999,6 +1053,7 @@ bool Ftp::ftpOpen( K2URL& _url, Ftp::Mode mode, unsigned long offset )
     if ( !ftpOpenCommand( "retr", _url.path(), 'I', offset ) ) {
       if ( ! m_error )
 	{
+	  cerr << "Can't open for reading\n";
 	  m_error = ERR_CANNOT_OPEN_FOR_READING;
 	  m_errorText = _url.url();
 	}
@@ -1044,9 +1099,19 @@ bool Ftp::ftpOpen( K2URL& _url, Ftp::Mode mode, unsigned long offset )
 
 bool Ftp::ftpClose()
 {
-  ftpCloseCommand();
+  cerr << "... closing" << endl;
   
-  return true;
+  // first close, then read response ( should be 226 )
+
+  bool tmp = ftpCloseCommand();
+
+  if ( !readresp( '2' ) )
+    {
+      cerr << "Did not get transfer complete message" << endl;
+      return false;
+    }
+  
+  return tmp;
 }
 
 

@@ -176,11 +176,13 @@ public:
 
   bool ftpOpen( K2URL& _url, Mode mode, unsigned long offset = 0 );
   bool ftpClose();
+  bool ftpPort();
 
   bool ftpRmdir( const char *path );
   bool ftpMkdir( const char *path );
   bool ftpDelete( const char *fnm );
   bool ftpRename( const char *src, const char *dst );
+  bool ftpChmod( const char *path, int mode );
 
   // this will send "rest offset" , use it before ftpOpen()
   bool ftpResume( unsigned long offset );
