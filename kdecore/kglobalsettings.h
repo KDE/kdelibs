@@ -67,8 +67,8 @@ class KGlobalSettings
      *
      *    int delay = KGlobalSettings::dndEventDelay();
      *    QPoint newPos = e->pos();
-     *    if(newPos->x() > mOldPos.x()+delay || newPos->x() < mOldPos.x()-delay ||
-     *       newPos->y() > mOldPos.y()+delay || newPos->y() < mOldPos.y()-delay)
+     *    if(newPos.x() > mOldPos.x()+delay || newPos.x() < mOldPos.x()-delay ||
+     *       newPos.y() > mOldPos.y()+delay || newPos.y() < mOldPos.y()-delay)
      *    {
      *       // Drag color object
      *       int cell = posToCell(mOldPos); // Find color at mOldPos
