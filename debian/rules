@@ -142,7 +142,7 @@ install: build
 	# create system.kdeglobals
 	perl -w admin/debianrules echoglobals > debian/system.kdeglobals
 
-	dh_install
+	dh_install --list-missing
 
 # This single target is used to build all the packages, all at once, or
 # one at a time. So keep in mind: any options passed to commands here will
