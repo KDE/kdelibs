@@ -758,7 +758,7 @@ KBookmarkEditFields::KBookmarkEditFields(QWidget *main, QBoxLayout *vbox, Fields
   m_title = new KLineEdit( main );
   grid->addWidget( m_title, 0, 1 );
   grid->addWidget( new QLabel( m_title, i18n( "Name:" ), main ), 0, 0 );
-
+  m_title->setFocus();
   if (isF)
   {
     m_url = new KLineEdit( main );
