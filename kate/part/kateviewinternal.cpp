@@ -956,6 +956,16 @@ void KateViewInternal::moveEdge( Bias bias, bool sel )
 
 void KateViewInternal::home( bool sel )
 {
+  if (m_view->dynWordWrap() && currentRange().startCol) {
+    // Allow us to go to the real start if we're already at the start of the view line
+    if (cursor.col != currentRange().startCol) {
+      KateTextCursor c(cursor.line, currentRange().startCol);
+      updateSelection( c, sel );
+      updateCursor( c );
+      return;
+    }
+  }
+  
   if( !(m_doc->configFlags() & KateDocument::cfSmartHome) ) {
     moveEdge( left, sel );
     return;
@@ -974,7 +984,20 @@ void KateViewInternal::home( bool sel )
   updateCursor( c );
 }
 
-void KateViewInternal::end( bool sel ) { moveEdge( right, sel ); }
+void KateViewInternal::end( bool sel )
+{
+  if (m_view->dynWordWrap() && currentRange().wrap) {
+    // Allow us to go to the real end if we're already at the end of the view line
+    if (cursor.col < currentRange().endCol - 1) {
+      KateTextCursor c(cursor.line, currentRange().endCol - 1);
+      updateSelection( c, sel );
+      updateCursor( c );
+      return;
+    }
+  }
+
+  moveEdge( right, sel );
+}
 
 LineRange KateViewInternal::range(int realLine, const LineRange* previous)
 {
@@ -1072,7 +1095,7 @@ LineRange KateViewInternal::range(const KateTextCursor& realCursor)
   do {
     thisRange = range(realCursor.line, first ? 0L : &thisRange);
     first = false;
-  } while (thisRange.wrap && !(realCursor.col >= thisRange.startCol && realCursor.col < thisRange.endCol));
+  } while (thisRange.wrap && !(realCursor.col >= thisRange.startCol && realCursor.col < thisRange.endCol) && thisRange.startCol != thisRange.endCol);
   
   return thisRange;
 }
@@ -1087,7 +1110,7 @@ LineRange KateViewInternal::range(uint realLine, int viewLine)
   do {
     thisRange = range(realLine, first ? 0L : &thisRange);
     first = false;
-  } while (thisRange.wrap && viewLine != thisRange.viewLine);
+  } while (thisRange.wrap && viewLine != thisRange.viewLine && thisRange.startCol != thisRange.endCol);
   
   if (viewLine != -1 && viewLine != thisRange.viewLine)
     kdDebug(13030) << "WARNING: viewLine " << viewLine << " of line " << realLine << " does not exist." << endl;
@@ -1112,7 +1135,7 @@ uint KateViewInternal::viewLine(const KateTextCursor& realCursor)
   do {
     thisRange = range(realCursor.line, first ? 0L : &thisRange);
     first = false;
-  } while (thisRange.wrap && !(realCursor.col >= thisRange.startCol && realCursor.col < thisRange.endCol));
+  } while (thisRange.wrap && !(realCursor.col >= thisRange.startCol && realCursor.col < thisRange.endCol) && thisRange.startCol != thisRange.endCol);
   
   return thisRange.viewLine;
 }
@@ -1176,7 +1199,7 @@ uint KateViewInternal::lastViewLine(uint realLine)
   do {
     thisRange = range(realLine, first ? 0L : &thisRange);
     first = false;
-  } while (thisRange.wrap);
+  } while (thisRange.wrap && thisRange.startCol != thisRange.endCol);
   
   return thisRange.viewLine;
 }
