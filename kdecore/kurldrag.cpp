@@ -31,7 +31,7 @@ QUriDrag * KURLDrag::newDrag( const KURL::List &urls, QWidget* dragSource, const
     // form on top of that, .latin1() is fine.
     for ( ; uit != uEnd ; ++uit )
         uris.append( (*uit).url(0, QFont::Unicode).latin1() );
-    return new QUriDrag( uris, dragSource, name );
+    return new KURLDrag( uris, dragSource, name );
 }
 
 bool KURLDrag::decode( const QMimeSource *e, KURL::List &uris )
@@ -42,3 +42,30 @@ bool KURLDrag::decode( const QMimeSource *e, KURL::List &uris )
       uris.append(KURL(*it, QFont::Unicode));
     return ret;
 }
+
+////
+
+const char * KURLDrag::format( int i ) const
+{
+    if ( i == 0 )
+        return "text/uri-list";
+    else if ( i == 1 )
+        return "text/plain";
+    else return 0;
+}
+
+QByteArray KURLDrag::encodedData( const char* mime ) const
+{
+    QByteArray a;
+    QCString mimetype( mime );
+    if ( mimetype == "text/uri-list" )
+        return QUriDrag::encodedData( mime );
+    else if ( mimetype == "text/plain" )
+    {
+        QCString s = QStringList::fromStrList(m_urls).join( "\n" ).latin1();
+        a.resize( s.length() + 1 ); // trailing zero
+        memcpy( a.data(), s.data(), s.length() + 1 );
+    }
+    return a;
+}
+

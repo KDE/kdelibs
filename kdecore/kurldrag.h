@@ -30,14 +30,15 @@ class QMimeSource;
  * The reason is : QUriDrag (and the XDND/W3C standards) expect URLs to
  * be encoded in UTF-8 (unicode), but KURL uses the current locale
  * by default.
+ * The other reason for using this class is that it exports text/plain
+ * (for dropping/pasting into lineedits, mails etc.)
  *
  * To create a drag object, use KURLDrag::newDrag with a list of KURLs.
  * To decode a drop, use KURLDrag::decode or QUriDrag::decodeLocalFiles.
  */
-class KURLDrag
+class KURLDrag : public QUriDrag
 {
 public:
-
   /**
    * Constructs an object to drag the list of URLs in urls.
    * The dragSource and name arguments are passed on to QUriDrag,
@@ -52,6 +53,18 @@ public:
    */
   static bool decode( const QMimeSource *e, KURL::List &urls );
 
+protected:
+  /**
+   * Protected constructor - use @ref newDrag
+   */
+  KURLDrag( const QStrList & urls, QWidget * dragSource, const char* name ) :
+    QUriDrag( urls, dragSource, name ), m_urls( urls ) {}
+
+  virtual const char * format( int i ) const;
+  virtual QByteArray encodedData( const char* mime ) const;
+
+private:
+  QStrList m_urls;
 };
 
 #endif
