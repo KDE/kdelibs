@@ -19,25 +19,26 @@
 
 #include "cupsaddsmb2.h"
 #include "cupsinfos.h"
+#include "sidepixmap.h"
 
 #include <qtimer.h>
-#include <qprogressdialog.h>
+#include <qprogressbar.h>
+#include <qlabel.h>
+#include <qpushbutton.h>
+#include <qlayout.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <qmessagebox.h>
 #include <qfile.h>
-#include <kstaticdeleter.h>
 #include <kio/passdlg.h>
 #include <kdebug.h>
+#include <kseparator.h>
 
 #include <cups/cups.h>
 #include <ctype.h>
 
-CupsAddSmb*	CupsAddSmb::m_self = 0;
-KStaticDeleter<CupsAddSmb>	m_cupsaddsmbsd;
-
-CupsAddSmb::CupsAddSmb(QObject *parent, const char *name)
-: QObject(parent, name)
+CupsAddSmb::CupsAddSmb(QWidget *parent, const char *name)
+: KDialog(parent, name)
 {
 	m_state = None;
 	m_status = false;
@@ -46,18 +47,54 @@ CupsAddSmb::CupsAddSmb(QObject *parent, const char *name)
 	connect(&m_proc, SIGNAL(receivedStderr(KProcess*,char*,int)), SLOT(slotReceived(KProcess*,char*,int)));
 	connect(&m_proc, SIGNAL(processExited(KProcess*)), SLOT(slotProcessExited(KProcess*)));
 
-	m_dlg = new QProgressDialog(0, "Dialog", true);
-	m_dlg->setAutoClose(true);
-	m_dlg->setMinimumDuration(0);
-	connect(m_dlg, SIGNAL(cancelled()), SLOT(slotCancelled()));
+	m_side = new SidePixmap(this);
+	m_doit = new QPushButton(i18n("Export"), this);
+	m_cancel = new QPushButton(i18n("Cancel"), this);
+	m_passbtn = new QPushButton(i18n("Change Login/Password"), this);
+	connect(m_cancel, SIGNAL(clicked()), SLOT(reject()));
+	connect(m_doit, SIGNAL(clicked()), SLOT(slotActionClicked()));
+	connect(m_passbtn, SIGNAL(clicked()), SLOT(slotChangePassword()));
+	m_bar = new QProgressBar(this);
+	m_text = new QLabel(this);
+	QLabel	*m_title = new QLabel(i18n("Export printer driver to Windows clients"), this);
+	setCaption(m_title->text());
+	QFont	f(m_title->font());
+	f.setBold(true);
+	m_title->setFont(f);
+	KSeparator	*m_sep = new KSeparator(Qt::Horizontal, this);
+
+	QHBoxLayout	*l0 = new QHBoxLayout(this, 10, 10);
+	QVBoxLayout	*l1 = new QVBoxLayout(0, 0, 10);
+	l0->addWidget(m_side);
+	l0->addLayout(l1);
+	l1->addWidget(m_title);
+	l1->addWidget(m_sep);
+	l1->addWidget(m_text, 1);
+	l1->addWidget(m_bar);
+	l1->addSpacing(50);
+	QHBoxLayout	*l2 = new QHBoxLayout(0, 0, 10);
+	l1->addLayout(l2);
+	l2->addStretch(1);
+	l2->addWidget(m_passbtn);
+	l2->addWidget(m_doit);
+	l2->addWidget(m_cancel);
 
 	m_login = CupsInfos::self()->realLogin();
 	m_password = CupsInfos::self()->password();
+
+	setMinimumHeight(350);
 }
 
 CupsAddSmb::~CupsAddSmb()
 {
-	delete m_dlg;
+}
+
+void CupsAddSmb::slotActionClicked()
+{
+	if (m_state == None)
+		doExport();
+	else if (m_proc.isRunning())
+		m_proc.kill();
 }
 
 void CupsAddSmb::slotReceived(KProcess*, char *buf, int buflen)
@@ -169,7 +206,7 @@ void CupsAddSmb::doNextAction()
 	if (m_proc.isRunning())
 	{
 		QCString	s = m_actions[m_actionindex++].latin1();
-		m_dlg->setProgress(m_dlg->progress()+1);
+		m_bar->setProgress(m_bar->progress()+1);
 		// kdDebug() << "NEXT ACTION = " << s << endl;
 		if (s == "quit")
 		{
@@ -178,28 +215,28 @@ void CupsAddSmb::doNextAction()
 		else if (s == "mkdir")
 		{
 			m_state = MkDir;
-			m_dlg->setLabelText(i18n("Creating directory %1").arg(m_actions[m_actionindex]));
+			m_text->setText(i18n("Creating directory %1").arg(m_actions[m_actionindex]));
 			s.append(" ").append(m_actions[m_actionindex].latin1());
 			m_actionindex++;
 		}
 		else if (s == "put")
 		{
 			m_state = Copy;
-			m_dlg->setLabelText(i18n("Uploading %1").arg(m_actions[m_actionindex+1]));
+			m_text->setText(i18n("Uploading %1").arg(m_actions[m_actionindex+1]));
 			s.append(" ").append(QFile::encodeName(m_actions[m_actionindex]).data()).append(" ").append(m_actions[m_actionindex+1].latin1());
 			m_actionindex += 2;
 		}
 		else if (s == "adddriver")
 		{
 			m_state = AddDriver;
-			m_dlg->setLabelText(i18n("Installing driver for %1").arg(m_actions[m_actionindex]));
+			m_text->setText(i18n("Installing driver for %1").arg(m_actions[m_actionindex]));
 			s.append(" \"").append(m_actions[m_actionindex].latin1()).append("\" \"").append(m_actions[m_actionindex+1].latin1()).append("\"");
 			m_actionindex += 2;
 		}
 		else if (s == "addprinter")
 		{
 			m_state = AddPrinter;
-			m_dlg->setLabelText(i18n("Installing printer %1").arg(m_actions[m_actionindex]));
+			m_text->setText(i18n("Installing printer %1").arg(m_actions[m_actionindex]));
 			QCString	dest = m_actions[m_actionindex].local8Bit();
 			s.append(" ").append(dest).append(" ").append(dest).append(" \"").append(dest).append("\" \"\"");
 			m_actionindex++;
@@ -225,90 +262,63 @@ void CupsAddSmb::slotProcessExited(KProcess*)
 		// last process went OK. If it was smbclient, then switch to rpcclient
 		if (qstrncmp(m_proc.args()->at(0), "smbclient", 9) == 0)
 		{
-			m_actions.clear();
-			m_actions << "adddriver" << "Windows NT x86" << m_dest+":ADOBEPS5.DLL:"+m_dest+".PPD:ADOBEPSU.DLL:ADOBEPSU.HLP:NULL:RAW:NULL";
-			m_actions << "addprinter" << m_dest;
-			m_actions << "adddriver" << "Windows 4.0" << m_dest+":ADOBEPS4.DRV:"+m_dest+".PPD:NULL:ADOBEPS4.HLP:PSMON.DLL:RAW:ADFONTS.MFM,DEFPRTR2.PPD,ICONLIB.DLL";
-			m_actions << "quit";
-
 			doInstall();
 			return;
 		}
 		else
 		{
-			m_dlg->reset();
-			KMessageBox::information(0, i18n("Driver successfully exported."));
+			m_doit->setEnabled(false);
+			m_passbtn->setEnabled(false);
+			m_cancel->setEnabled(true);
+			m_cancel->setText(i18n("Close"));
+			m_cancel->setDefault(true);
+			m_cancel->setFocus();
+			m_text->setText(i18n("Driver successfully exported."));
 			return;
 		}
 	}
 
-	m_dlg->reset();
 	if (m_proc.normalExit())
 	{
-		if (QMessageBox::critical(0, i18n("Error"),
+		showError(
 				i18n("Operation failed. Possible reasons are: permission denied "
 				     "or invalid samba configuration (see <b>cupsaddsmb</b> manual "
 					 "page for detailed information, needs at least cups-1.1.11). "
-					 "Do you want to try with another login/password?"),
-				QMessageBox::Yes, QMessageBox::Cancel) == QMessageBox::Yes)
-		{
-			int	result = KIO::PasswordDialog::getNameAndPassword(m_login, m_password, 0);
-			if (result == QDialog::Accepted)
-			{
-				// kdDebug() << "RESTARTING LAST PROCESS = " << m_proc.args()->at(0) << endl;
-				if (qstrncmp(m_proc.args()->at(0), "smbclient", 9) == 0)
-					doExport();
-				else
-					doInstall();
-			}
-		}
+					 "You may want to try again with another login/password."));
+
 	}
 	else
 	{
-		KMessageBox::error(0, i18n("Operation aborted."));
+		showError(i18n("Operation aborted (process killed)."));
 	}
 }
 
-void CupsAddSmb::slotCancelled()
+void CupsAddSmb::slotChangePassword()
 {
-	if (m_proc.isRunning())
-		m_proc.kill();
+	KIO::PasswordDialog::getNameAndPassword(m_login, m_password, 0);
+}
+
+void CupsAddSmb::showError(const QString& msg)
+{
+	m_text->setText(i18n("<h1>Operation failed !</h1><p>%1</p>").arg(msg));
+	m_cancel->setEnabled(true);
+	m_passbtn->setEnabled(true);
+	m_doit->setText(i18n("Export"));
+	m_state = None;
 }
 
 bool CupsAddSmb::exportDest(const QString &dest, const QString& datadir)
 {
-	if (!m_self)
-	{
-		m_self = m_cupsaddsmbsd.setObject(m_self, new CupsAddSmb());
-	}
-
-	const char	*ppdfile;
-
-	if ((ppdfile = cupsGetPPD(dest.local8Bit())) == NULL)
-	{
-		KMessageBox::error(0, "Missing files");
-		return false;
-	}
-
-	m_self->m_actions.clear();
-	m_self->m_actions << "mkdir" << "W32X86";
-	m_self->m_actions << "put" << ppdfile << "W32X86/"+dest+".PPD";
-	m_self->m_actions << "put" << datadir+"/drivers/ADOBEPS5.DLL" << "W32X86/ADOBEPS5.DLL";
-	m_self->m_actions << "put" << datadir+"/drivers/ADOBEPSU.DLL" << "W32X86/ADOBEPSU.DLL";
-	m_self->m_actions << "put" << datadir+"/drivers/ADOBEPSU.HLP" << "W32X86/ADOBEPSU.HLP";
-	m_self->m_actions << "mkdir" << "WIN40";
-	m_self->m_actions << "put" << ppdfile << "WIN40/"+dest+".PPD";
-	m_self->m_actions << "put" << datadir+"/drivers/ADFONTS.MFM" << "WIN40/ADFONTS.MFM";
-	m_self->m_actions << "put" << datadir+"/drivers/ADOBEPS4.DRV" << "WIN40/ADOBEPS4.DRV";
-	m_self->m_actions << "put" << datadir+"/drivers/ADOBEPS4.HLP" << "WIN40/ADOBEPS4.HLP";
-	m_self->m_actions << "put" << datadir+"/drivers/DEFPRTR2.PPD" << "WIN40/DEFPRTR2.PPD";
-	m_self->m_actions << "put" << datadir+"/drivers/ICONLIB.DLL" << "WIN40/ICONLIB.DLL";
-	m_self->m_actions << "put" << datadir+"/drivers/PSMON.DLL" << "WIN40/PSMON.DLL";
-	m_self->m_actions << "quit";
-
-	m_self->m_dest = dest;
-
-	return m_self->doExport();
+	CupsAddSmb	dlg;
+	dlg.m_dest = dest;
+	dlg.m_datadir = datadir;
+	dlg.m_text->setText(
+			i18n("You are about to export the <b>%1</b> driver to Windows client "
+				 "through samba. This operation requires Adobe PostScript driver "
+				 "(http://www.adobe.com), version 2.2 of samba and a running SMB service "
+				 "on server <b>%1</b>. Click <b>Export</b> to start operation.").arg(dest).arg(cupsServer()));
+	dlg.exec();
+	return dlg.m_status;
 }
 
 bool CupsAddSmb::doExport()
@@ -316,11 +326,46 @@ bool CupsAddSmb::doExport()
 	m_status = false;
 	m_state = None;
 
-	m_self->m_dlg->setCaption(i18n("Export driver for %1").arg(m_dest));
-	m_dlg->setTotalSteps(18);
-	m_dlg->setLabelText(i18n("Preparing to upload driver files to %1").arg(cupsServer()));
-	m_dlg->resize(350, 100);
-	m_dlg->setProgress(0);
+	if (!QFile::exists(m_datadir+"/drivers/ADOBEPS5.DLL") ||
+	    !QFile::exists(m_datadir+"/drivers/ADOBEPS4.DRV"))
+	{
+		showError(
+			i18n("Some driver files are missing. You can get them on Adobe web site "
+			     "(http://www.adobe.com). See <b>cupsaddsmb</b> manual page for more "
+				 " details (needs at least cups-1.1.11)."));
+		return false;
+	}
+
+	m_bar->setTotalSteps(18);
+	m_bar->setProgress(0);
+	m_text->setText(i18n("<p>Preparing to upload driver to host <b>%1</b>").arg(cupsServer()));
+	m_cancel->setEnabled(false);
+	m_passbtn->setEnabled(false);
+	m_doit->setText(i18n("Abort"));
+
+	const char	*ppdfile;
+
+	if ((ppdfile = cupsGetPPD(m_dest.local8Bit())) == NULL)
+	{
+		showError(i18n("The driver for printer <b>%1</b> could not be found.").arg(m_dest));
+		return false;
+	}
+
+	m_actions.clear();
+	m_actions << "mkdir" << "W32X86";
+	m_actions << "put" << ppdfile << "W32X86/"+m_dest+".PPD";
+	m_actions << "put" << m_datadir+"/drivers/ADOBEPS5.DLL" << "W32X86/ADOBEPS5.DLL";
+	m_actions << "put" << m_datadir+"/drivers/ADOBEPSU.DLL" << "W32X86/ADOBEPSU.DLL";
+	m_actions << "put" << m_datadir+"/drivers/ADOBEPSU.HLP" << "W32X86/ADOBEPSU.HLP";
+	m_actions << "mkdir" << "WIN40";
+	m_actions << "put" << ppdfile << "WIN40/"+m_dest+".PPD";
+	m_actions << "put" << m_datadir+"/drivers/ADFONTS.MFM" << "WIN40/ADFONTS.MFM";
+	m_actions << "put" << m_datadir+"/drivers/ADOBEPS4.DRV" << "WIN40/ADOBEPS4.DRV";
+	m_actions << "put" << m_datadir+"/drivers/ADOBEPS4.HLP" << "WIN40/ADOBEPS4.HLP";
+	m_actions << "put" << m_datadir+"/drivers/DEFPRTR2.PPD" << "WIN40/DEFPRTR2.PPD";
+	m_actions << "put" << m_datadir+"/drivers/ICONLIB.DLL" << "WIN40/ICONLIB.DLL";
+	m_actions << "put" << m_datadir+"/drivers/PSMON.DLL" << "WIN40/PSMON.DLL";
+	m_actions << "quit";
 
 	m_proc.clearArguments();
 	m_proc << "smbclient" << QString::fromLatin1("//")+cupsServer()+"/print$";
@@ -332,7 +377,13 @@ bool CupsAddSmb::doInstall()
 	m_status = false;
 	m_state = None;
 
-	m_dlg->setLabelText(i18n("Preparing to install driver on %1").arg(cupsServer()));
+	m_actions.clear();
+	m_actions << "adddriver" << "Windows NT x86" << m_dest+":ADOBEPS5.DLL:"+m_dest+".PPD:ADOBEPSU.DLL:ADOBEPSU.HLP:NULL:RAW:NULL";
+	m_actions << "addprinter" << m_dest;
+	m_actions << "adddriver" << "Windows 4.0" << m_dest+":ADOBEPS4.DRV:"+m_dest+".PPD:NULL:ADOBEPS4.HLP:PSMON.DLL:RAW:ADFONTS.MFM,DEFPRTR2.PPD,ICONLIB.DLL";
+	m_actions << "quit";
+
+	m_text->setText(i18n("Preparing to install driver on host <b>%1</b>").arg(cupsServer()));
 
 	m_proc.clearArguments();
 	m_proc << "rpcclient" << QString::fromLatin1(cupsServer());

@@ -778,32 +778,12 @@ void KMCupsManager::exportDriver()
 	if (m_currentprinter && m_currentprinter->isLocal() &&
 	    !m_currentprinter->isClass(true) && !m_currentprinter->isSpecial())
 	{
-		if (KMessageBox::warningContinueCancel(0,
-			i18n("You are about to export the <b>%1</b> driver to Windows client "
-				 "through samba. This operation requires Adobe PostScript driver "
-				 "(http://www.adobe.com), version 2.2 of samba and a running SMB service "
-				 "on server <b>%1</b>. Do you want to continue?")
-				 .arg(m_currentprinter->printerName())
-				 .arg(cupsServer())) == KMessageBox::Continue)
-		{
-			QString	path = cupsInstallDir();
-			if (path.isEmpty())
-				path = "/usr/share/cups";
-			else
-				path += "/share/cups";
-			// check that adobe drivers are present (check is made on 2 files)
-			if (!QFile::exists(path+"/drivers/ADOBEPS5.DLL") ||
-			    !QFile::exists(path+"/drivers/ADOBEPS4.DRV"))
-			{
-				KMessageBox::error(0,
-					i18n("Some driver files are missing. You can get them on Adobe web site "
-					     "(http://www.adobe.com). See <b>cupsaddsmb</b> manual page for more "
-						 " details (needs at least cups-1.1.11)."));
-				return;
-			}
-			QCString	dest(m_currentprinter->printerName().local8Bit()), datadir(QFile::encodeName(path));
-			int result = CupsAddSmb::exportDest(m_currentprinter->printerName(), path);
-		}
+		QString	path = cupsInstallDir();
+		if (path.isEmpty())
+			path = "/usr/share/cups";
+		else
+			path += "/share/cups";
+		CupsAddSmb::exportDest(m_currentprinter->printerName(), path);
 	}
 }
 

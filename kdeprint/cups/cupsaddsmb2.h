@@ -23,15 +23,20 @@
 #include <qobject.h>
 #include <qstringlist.h>
 #include <kprocess.h>
+#include <kdialog.h>
 
-class QProgressDialog;
+class QProgressBar;
+class SidePixmap;
+class QPushButton;
+class QLabel;
 
-class CupsAddSmb : public QObject
+class CupsAddSmb : public KDialog
 {
 	Q_OBJECT
+
 public:
 	enum State { None, Start, MkDir, Copy, AddDriver, AddPrinter };
-	CupsAddSmb(QObject *parent = 0, const char *name = 0);
+	CupsAddSmb(QWidget *parent = 0, const char *name = 0);
 	~CupsAddSmb();
 
 	static bool exportDest(const QString& dest, const QString& datadir);
@@ -40,7 +45,8 @@ protected slots:
 	void slotReceived(KProcess*, char*, int);
 	void doNextAction();
 	void slotProcessExited(KProcess*);
-	void slotCancelled();
+	void slotActionClicked();
+	void slotChangePassword();
 
 protected:
 	void checkActionStatus();
@@ -48,6 +54,7 @@ protected:
 	bool startProcess();
 	bool doExport();
 	bool doInstall();
+	void showError(const QString& msg);
 
 private:
 	KProcess	m_proc;
@@ -56,10 +63,12 @@ private:
 	QStringList	m_actions;
 	int			m_actionindex;
 	bool		m_status;
-	QProgressDialog	*m_dlg;
+	QProgressBar	*m_bar;
 	QString		m_login, m_password, m_dest;
-
-	static CupsAddSmb	*m_self;
+	SidePixmap	*m_side;
+	QPushButton	*m_doit, *m_cancel, *m_passbtn;
+	QLabel	*m_text;
+	QString	m_datadir;
 };
 
 #endif

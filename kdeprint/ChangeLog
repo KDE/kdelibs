@@ -135,3 +135,11 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
 09/11/2001 Michael Goffioul <goffioul@imec.be>
   * CUPS plugin: added the possibility to list jobs on remote
     printers. No management is allowed on remote jobs (yet?).
+
+10/11/2001 Michael Goffioul <goffioul@imec.be>
+  * general: use KShellProcess::quote() for any quoting. Normally,
+    all quoting problem should be fixed now.
+    
+12/11/2001 Michael Goffioul <goffioul@imec.be>
+  * CUPS: redesigned the "cups-add-smb" dialog to make it more
+    user-driendly.
