@@ -38,16 +38,62 @@
 #include <kstdaccel.h>
 #include <kstddirs.h>
 
+#include <kaboutdata.h>
+
+class KHelpMenuPrivate
+{
+public:
+    KHelpMenuPrivate()
+    {
+    }
+    ~KHelpMenuPrivate()
+    {
+    }
+
+    const KAboutData *mAboutData;
+};
 
 KHelpMenu::KHelpMenu( QWidget *parent, const QString &aboutAppText,
 		      bool showWhatsThis )
-  : QObject(parent), mMenu(0), mAboutApp(0), mAboutKDE(0), mBugReport(0)
+  : QObject(parent), mMenu(0), mAboutApp(0), mAboutKDE(0), mBugReport(0),
+    d(new KHelpMenuPrivate)
 {
   mParent = parent;
   mAboutAppText = aboutAppText;
   mShowWhatsThis = showWhatsThis;
 }
 
+KHelpMenu::KHelpMenu( QWidget *parent, const KAboutData *aboutData,
+		      bool showWhatsThis )
+  : QObject(parent), mMenu(0), mAboutApp(0), mAboutKDE(0), mBugReport(0),
+    d(new KHelpMenuPrivate)
+{
+  mParent = parent;
+  mShowWhatsThis = showWhatsThis;
+
+  d->mAboutData = aboutData;
+  if (aboutData)
+  {
+    mAboutAppText = aboutData->programName() + " " + aboutData->version() +
+                    "\n" + aboutData->shortDescription();
+
+    if (!aboutData->homepage().isNull())
+      mAboutAppText += "\n" + aboutData->homepage();
+
+    QValueList<KAboutPerson>::ConstIterator it;
+    for (it = aboutData->authors().begin();
+         it != aboutData->authors().end(); ++it)
+    {
+      mAboutAppText += "\n" + (*it).name() + " <"+(*it).emailAddress()+">";
+    }
+
+    if (!aboutData->copyrightStatement().isNull())
+      mAboutAppText += "\n" + aboutData->copyrightStatement();
+    mAboutAppText += "\n";
+  }
+  else
+    mAboutAppText = QString::null;
+}
 
 KHelpMenu::~KHelpMenu( void )
 {
@@ -55,6 +101,7 @@ KHelpMenu::~KHelpMenu( void )
   delete mAboutApp;
   delete mAboutKDE;
   delete mBugReport;
+  delete d;
 }
 
 

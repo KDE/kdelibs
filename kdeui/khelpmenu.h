@@ -30,7 +30,8 @@ class QPopupMenu;
 class QWidget;
 class KAboutDialog;
 class KBugReport;
-
+class KAboutData;
+class KHelpMenuPrivate;
 
 /**
  * This class provides the standard KDE help menu with the default "about"
@@ -145,6 +146,19 @@ class KHelpMenu : public QObject
 	       bool showWhatsThis=true );
 
     /**
+     * Constructor.
+     *
+     * @param parent The parent of the dialog boxes. The boxes are modeless
+     *        and will be centered with respect to the parent.
+     * @param aboutData User and app data used in the About app dialog
+     * @param showWhatsThis Decides whether a "Whats this" entry will be
+     *        added to the dialog.
+     * 
+     */
+    KHelpMenu( QWidget *parent, const KAboutData *aboutData,
+	       bool showWhatsThis=true );
+
+    /**
      * Destructor
      *
      * Destroys dialogs and the menu pointer retuned by @ref menu
@@ -230,6 +244,8 @@ class KHelpMenu : public QObject
     QWidget      *mParent;
 
     bool         mShowWhatsThis;
+
+    KHelpMenuPrivate *d;
 };
 
 
