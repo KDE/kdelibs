@@ -33,7 +33,7 @@ check_PROGRAMS = kconfigtest kledlamptest kprogresstest \
 		kwindowtest klinetest kstatusbartest kspinboxtest	\
 		kprocesstest kpannertest kbuttonboxtest ksimpleconfigtest \
 		kledtest kcontainertest klocaletest krulertest \
-		knotebooktest kwizardtest kquickhelptest kurltest kformulatest \
+		kwizardtest kquickhelptest kurltest kformulatest \
 		kcharselecttest kstddirstest khtmltest
 
 noinst_HEADERS = kdatepicktestdlg.h kmsgboxtest.h ktreelisttest.h \
@@ -68,7 +68,6 @@ klinetest_SOURCES = klinetest.cpp
 klocaletest_SOURCES = klocaletest.cpp
 klocaletest_LDADD = $(LIB_KDECORE)
 kmsgboxtest_SOURCES = kmsgboxtest.cpp
-knotebooktest_SOURCES = knotebooktest.cpp
 kpannertest_SOURCES = kpannertest.cpp
 kpopuptest_SOURCES = kpopuptest.cpp
 kprocesstest_SOURCES = kprocesstest.cpp

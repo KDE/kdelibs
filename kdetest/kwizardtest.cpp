@@ -19,6 +19,7 @@
  */
 
 #include <qlabel.h>
+#include <qlayout.h>
 #include <kapp.h>
 #include <kwizard.h>
 
@@ -26,37 +27,25 @@ int main(int argc, char **argv)
 {
   KApplication a(argc,argv,"kwizardtest");
   KWizard *wiz = new KWizard(0, "kwizardtest", false);
-  // /* remove the "//" comments to compile without bells'n'whistles
-  wiz->setCancelButton();
-  wiz->setOkButton();
-  wiz->setDefaultButton();
-  wiz->setHelpButton();
-  wiz->setEnablePopupMenu(true);
-  wiz->setEnableArrowButtons(true);
-  wiz->setDirectionsReflectsPage(true);
-  QObject::connect( wiz, SIGNAL(okclicked()), &a, SLOT(quit()) );
-  QObject::connect( wiz, SIGNAL(cancelclicked()), &a, SLOT(quit()) );
-
-  // */ remove the "//" comments to compile without bells'n'whistles
+  QObject::connect((QObject*) wiz->cancelButton(), SIGNAL(clicked()),
+		   &a, SLOT(quit()));
+  QObject::connect((QObject*) wiz->finishButton(), SIGNAL(clicked()),
+		   &a, SLOT(quit()));
   for(int i = 1; i < 11; i++)
   {
-    QString msg;
-    msg.sprintf("This is page %d out of 10", i);
-    QLabel *l = new QLabel(wiz);
-    l->setAlignment(Qt::AlignCenter);
-    l->setText(msg);
-    l->setMinimumSize(300, 200);
-    QString title;
-    title.setNum(i);
-    title += ". page";
-    KWizardPage *p = new KWizardPage;
-    p->w = l;
-    p->title = title;
-    p->enabled = true;
-    wiz->addPage(p);
+    QWidget *p = new QWidget;
+    QString msg = QString("This is page %1 out of 10").arg(i);
+    QLabel *label = new QLabel(msg, p);
+    QHBoxLayout *layout = new QHBoxLayout(p, 5);
+    label->setAlignment(Qt::AlignCenter);
+    label->setFixedSize(300, 200);
+    layout->addWidget(l);
+    QString title = QString("%1. page").arg(i);
+    wiz->addPage(p, title);
+    wiz->setFinishEnabled(p, (i==10));
   }
+
   a.setMainWidget(wiz);
-  wiz->adjustSize();
   wiz->show();
   return a.exec();
 }
