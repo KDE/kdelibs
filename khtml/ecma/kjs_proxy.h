@@ -24,6 +24,7 @@
 
 #include <qvariant.h>
 #include <qstring.h>
+#include <sys/time.h>
 
 class KHTMLPart;
 class KJSDebugWin;
@@ -66,6 +67,17 @@ public:
 
   // Helper method, to access the private KHTMLPart::jScript()
   static KJSProxy *proxy( KHTMLPart *part );
+};
+
+class KJSCPUGuard {
+public:
+  KJSCPUGuard() {}
+  void start(unsigned int msec=5000, unsigned int i_msec=10000);
+  void stop();
+private:
+  void (*oldAlarmHandler)(int);
+  static void alarmHandler(int);
+  itimerval oldtv; 
 };
 
 #endif

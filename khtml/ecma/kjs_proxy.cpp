@@ -60,11 +60,6 @@ public:
   void applyUserAgent();
 
 private:
-  static void alarmHandler(int) {
-      kdDebug(6070) << "alarmhandler" << endl;
-      if (KMessageBox::warningYesNo(0L, i18n("A script on this page is causing KHTML to freeze. If it continues to run, other applications may become less responsive.\nDo you want to abort the script?"), "JavaScript", i18n("OK"), i18n("Cancel")) == KMessageBox::Yes)
-          ExecState::requestTerminate();
-  }
   KJS::ScriptInterpreter* m_script;
   bool m_debugEnabled;
 #ifndef NDEBUG
@@ -146,14 +141,10 @@ QVariant KJSProxyImpl::evaluate(QString filename, int baseLine,
 
   UString code( str );
 
-  void (*oldAlarmHandler)(int) = signal(SIGVTALRM, KJSProxyImpl::alarmHandler);
-  itimerval oldtv, tv = { { 10, 0 }, { 5, 0 } };
-  setitimer(ITIMER_VIRTUAL, &tv, &oldtv);
-
+  KJSCPUGuard guard;
+  guard.start();
   Completion comp = m_script->evaluate(code, thisNode);
-
-  setitimer(ITIMER_VIRTUAL, &oldtv, 0L);
-  signal(SIGVTALRM, oldAlarmHandler);
+  guard.stop();
 
   bool success = ( comp.complType() == Normal ) || ( comp.complType() == ReturnValue );
 
@@ -360,4 +351,26 @@ KJSProxy * KJSProxy::proxy( KHTMLPart *part )
 KJSProxy *kjs_html_init(KHTMLPart *khtmlpart)
 {
   return new KJSProxyImpl(khtmlpart);
+}
+
+void KJSCPUGuard::start(unsigned int ms, unsigned int i_ms)
+{
+  oldAlarmHandler = signal(SIGVTALRM, alarmHandler);
+  itimerval tv = { 
+      { i_ms / 1000, (i_ms % 1000) * 1000 }, 
+      { ms / 1000, (ms % 1000) * 1000 }
+  };
+  setitimer(ITIMER_VIRTUAL, &tv, &oldtv);
+}
+
+void KJSCPUGuard::stop()
+{
+  setitimer(ITIMER_VIRTUAL, &oldtv, 0L);
+  signal(SIGVTALRM, oldAlarmHandler);
+}
+
+void KJSCPUGuard::alarmHandler(int) {
+  kdDebug(6070) << "alarmhandler" << endl;
+  if (KMessageBox::warningYesNo(0L, i18n("A script on this page is causing KHTML to freeze. If it continues to run, other applications may become less responsive.\nDo you want to abort the script?"), "JavaScript", i18n("OK"), i18n("Cancel")) == KMessageBox::Yes)
+    ExecState::requestTerminate();
 }

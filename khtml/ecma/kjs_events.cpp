@@ -88,7 +88,10 @@ void JSEventListener::handleEvent(DOM::Event &evt)
     // ... and in the interpreter
     interpreter->setCurrentEvent( &evt );
 
+    KJSCPUGuard guard;
+    guard.start();
     Value retval = listener.call(exec, thisObj, args);
+    guard.stop();
 
     if ( !scope.isEmpty() ) {
       listener.setScope( oldScope );
