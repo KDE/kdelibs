@@ -34,7 +34,7 @@ check_PROGRAMS = kaboutdialogtest kblendtest kbuttonboxtest kcharselecttest \
 	kpopuptest kprogresstest krulertest kseparatortest \
 	kstatusbartest ktabctltest \
 	kunbalancedgrdtest kwindowtest kwizardtest \
-	itemcontainertest kpanelmenutest kedittest kalphaicontest \
+	itemcontainertest kpanelmenutest kedittest \
 	kxmlguitest kaccelgentest ksystemtraytest
 
 noinst_HEADERS = \
@@ -44,14 +44,14 @@ noinst_HEADERS = \
 		kcolortest.h kunbalancedgrdtest.h kblendtest.h \
 		kdualcolortest.h khashtest.h knuminputtest.h \
 		kdockwidgetdemo.h kdocktabctltest.h kdockwidgettest.h \
-		itemcontainertest.h kpanelmenutest.h kalphaicontest.h \
+		itemcontainertest.h kpanelmenutest.h \
 		kcompletiontest.h klineedittest.h
 
 METASOURCES = AUTO
 
 LDADD = ../libkdeui.la
 
-kaboutdialogtest_SOURCES = kaboutdialogtest.cpp
+kaboutdialogtest_SOURCES = drawdemo.cpp
 kblendtest_SOURCES = kblendtest.cpp
 kdesattest_SOURCES = kdesattest.cpp
 kbuttonboxtest_SOURCES = kbuttonboxtest.cpp
@@ -89,7 +89,6 @@ kpanelmenutest_SOURCES = kpanelmenutest.cpp
 kdockwidgetdemo_SOURCES = kdockwidgetdemo.cpp
 kdocktabctltest_SOURCES = kdocktabctltest.cpp
 kdockwidgettest_SOURCES = kdockwidgettest.cpp
-kalphaicontest_SOURCES = kalphaicontest.cpp
 kxmlguitest_SOURCES = kxmlguitest.cpp
 kaccelgentest_SOURCES = kaccelgentest.cpp
 ksystemtraytest_SOURCES = ksystemtraytest.cpp

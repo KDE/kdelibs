@@ -15,7 +15,7 @@ class QSize;
 class QColor;
 
 /**
- * This class includes various @ref QImage based graphical effects. 
+ * This class includes various @ref QImage based graphical effects.
  *
  *Everything is
  * static, so there is no need to create an instance of this class. You can
@@ -100,7 +100,7 @@ public:
 			 GradientType gt, int xf=100, int yf=100);
 
     /**
-     * Blend an image into another one, using a color channel of a 
+     * Blend an image into another one, using a color channel of a
      * third image for the decision of blending from one to another.
      *
      * @param image1 Source 1 and result of blending
@@ -249,16 +249,6 @@ public:
      * @return Returns the @ref image(), provided for convenience.
      */
     static QImage& dither(QImage &img, const QColor *palette, int size);
-
-    /**
-     * Paints (copy) an image @p src over another one (@p tgt) 
-     * at the specified point, x,y relative to tgt.
-     * @p return Returns true if everything was ok, or false
-     * if it couldn't be copied (because they're not 32-bit images).
-     * Note that if you specify x,y outside a reasonable range
-     * (outside the tgt image), then the return value is true.
-     */
-    static bool paint(int x, int y, QImage &tgt, const QImage &src);
 
 private:
 

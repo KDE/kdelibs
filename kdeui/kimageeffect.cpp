@@ -340,13 +340,13 @@ QImage KImageEffect::unbalancedGradient(const QSize &size, const QColor &ca,
 	    dir = _yanti ? y : size.height() - 1 - y;
             p = (uint *) image.scanLine(dir);
             rat =  1 - exp( - (float)y  * ybal );
-	
+
             cRow.setRgb( rcb - (int) ( rDiff * rat ),
                          gcb - (int) ( gDiff * rat ),
                          bcb - (int) ( bDiff * rat ) );
-	
+
             rgbRow = cRow.rgb();
-	
+
             for( x = 0; x < size.width(); x++ ) {
 	      *p = rgbRow;
 	      p++;
@@ -360,16 +360,16 @@ QImage KImageEffect::unbalancedGradient(const QSize &size, const QColor &ca,
 	    {
 	      dir = _xanti ? x : size.width() - 1 - x;
 	      rat = 1 - exp( - (float)x  * xbal );
-	
+
 	      src[dir] = qRgb(rcb - (int) ( rDiff * rat ),
 			    gcb - (int) ( gDiff * rat ),
 			    bcb - (int) ( bDiff * rat ));
 	    }
-	
+
 	  // Believe it or not, manually copying in a for loop is faster
 	  // than calling memcpy for each scanline (on the order of ms...).
 	  // I think this is due to the function call overhead (mosfet).
-	
+
 	  for(y = 1; y < size.height(); ++y)
 	    {
 	      scanline = (unsigned int *)image.scanLine(y);
@@ -401,7 +401,7 @@ QImage KImageEffect::unbalancedGradient(const QSize &size, const QColor &ca,
               xtable[1][dir] = (unsigned char) ( gDiff/2 * rat );
               xtable[2][dir] = (unsigned char) ( bDiff/2 * rat );
           }
-	
+
 	  for (y = 0; y < h; y++) {
               dir = _yanti ? y : h - 1 - y;
               rat =  1 - exp( - (float)y  * ybal );
@@ -410,7 +410,7 @@ QImage KImageEffect::unbalancedGradient(const QSize &size, const QColor &ca,
               ytable[1][dir] = (unsigned char) ( gDiff/2 * rat );
               ytable[2][dir] = (unsigned char) ( bDiff/2 * rat );
           }
-	
+
 	  for (y = 0; y < h; y++) {
               unsigned int *scanline = (unsigned int *)image.scanLine(y);
               for (x = 0; x < w; x++) {
@@ -731,7 +731,7 @@ QImage& KImageEffect::modulate(QImage &image, QImage &modImage, bool reverse,
 	  }
 	  else
 	      color1 = *data1;
-	
+
 	  if (type == Intensity || type == Contrast) {
               r = qRed(color1);
 	      g = qGreen(color1);
@@ -743,7 +743,7 @@ QImage& KImageEffect::modulate(QImage &image, QImage &modImage, bool reverse,
 		    (channel == Gray) ? qGray(color2) : 0;
 	        mod = mod*factor/50;
 	      }
-	
+
 	      if (type == Intensity) {
 	        if (channel == All) {
 	          r += r * factor/50 * qRed(color2)/256;
@@ -754,7 +754,7 @@ QImage& KImageEffect::modulate(QImage &image, QImage &modImage, bool reverse,
 	          r += r * mod/256;
 	          g += g * mod/256;
 	          b += b * mod/256;
-	        }	
+	        }
 	      }
 	      else { // Contrast
 	        if (channel == All) {
@@ -768,7 +768,7 @@ QImage& KImageEffect::modulate(QImage &image, QImage &modImage, bool reverse,
 	          b += (b-128) * mod/128;
 	        }
 	      }
-	
+
 	      if (r<0) r=0; if (r>255) r=255;
 	      if (g<0) g=0; if (g>255) g=255;
 	      if (b<0) b=0; if (b>255) b=255;
@@ -783,7 +783,7 @@ QImage& KImageEffect::modulate(QImage &image, QImage &modImage, bool reverse,
 	    	    (channel == Blue) ? qBlue(color2) :
 		    (channel == Gray) ? qGray(color2) : 0;
 	      mod = mod*factor/50;
-	
+
 	      if (type == Saturation) {
 		  s -= s * mod/256;
 		  if (s<0) s=0; if (s>255) s=255;
@@ -793,11 +793,11 @@ QImage& KImageEffect::modulate(QImage &image, QImage &modImage, bool reverse,
 		while(h<0) h+=360;
 		h %= 360;
 	      }
-	
+
 	      clr.setHsv(h, s, v);
 	      a = qAlpha(*data1);
 	      *data1 = clr.rgb() | ((uint)(a & 0xff) << 24);
-	  }	
+	  }
 	  data1++; data2++; data2b++; x++;
 	  if ( (x%x2) ==0) { data2 -= x2; data2b -= x2; }
         }
@@ -1085,7 +1085,7 @@ QImage& KImageEffect::blend(QImage &image1, QImage &image2,
 
 	  a = qAlpha(data1[ind1]);
 	  data1[ind1] = qRgba(r, g, b, a);
-	
+
 	  ind1++; ind2++; ind3++; x++;
 	  if ( (x%x2) ==0) ind2 -= x2;
 	  if ( (x%x3) ==0) ind3 -= x3;
@@ -1248,7 +1248,7 @@ QImage& KImageEffect::flatten(QImage &img, const QColor &ca,
 		max = QMAX(max, mean);
 	    }
     }
-	
+
     // Conversion factors
     int r, g, b;
     float sr = ((float) r2 - r1) / (max - min);
@@ -1293,7 +1293,7 @@ QImage& KImageEffect::flatten(QImage &img, const QColor &ca,
 
     for (int i=0; i<ncols; i++)
 	pal[i] = QColor(r1 + int(sr*i), g1 + int(sg*i), b1 + int(sb*i));
-	
+
     dither(img, pal, ncols);
 
     delete[] pal;
@@ -1630,8 +1630,8 @@ int KImageEffect::nearestColor( int r, int g, int b, const QColor *palette, int 
 }
 
 bool KImageEffect::blend(
-    const QImage & upper, 
-    const QImage & lower, 
+    const QImage & upper,
+    const QImage & lower,
     QImage & output
 )
 {
@@ -1668,7 +1668,7 @@ bool KImageEffect::blend(
         --col; --col; --col; --col;
       }
 
-      --col; 
+      --col;
       o[col] += ((i[col] - o[col]) * a) >> 8;
 
       --col;
@@ -1687,8 +1687,8 @@ bool KImageEffect::blend(
 #if 0
 // Not yet...
 bool KImageEffect::blend(
-    const QImage & upper, 
-    const QImage & lower, 
+    const QImage & upper,
+    const QImage & lower,
     QImage & output,
     const QRect & destRect
 )
@@ -1701,8 +1701,8 @@ bool KImageEffect::blend(
 
 bool KImageEffect::blend(
     int &x, int &y,
-    const QImage & upper, 
-    const QImage & lower, 
+    const QImage & upper,
+    const QImage & lower,
     QImage & output
 )
 {
@@ -1744,7 +1744,7 @@ bool KImageEffect::blend(
     --b; --i; --o;
     do
     {
-      while ( !(a=qAlpha(*i)) && k>0 ) 
+      while ( !(a=qAlpha(*i)) && k>0 )
       {
         i--;
 //	*o=0;
@@ -1758,14 +1758,14 @@ bool KImageEffect::blend(
                 qBlue(*b) + (((qBlue(*i) - qBlue(*b)) * a) >> 8));
       --i; --o; --b;
     } while (k--);
-  } 
+  }
 
   return true;
 }
 
 bool KImageEffect::blendOnLower(
     int x, int y,
-    const QImage & upper, 
+    const QImage & upper,
     const QImage & lower
 )
 {
@@ -1802,11 +1802,11 @@ bool KImageEffect::blendOnLower(
     --b; --i;
     do
     {
-      while ( !(a=*i) && k>0 ) 
+      while ( !(a=*i) && k>0 )
       {
         i-=4; b-=4; k--;
       };
-    
+
       --i; --b;
       *b += ( ((*i - *b) * a) >> 8 );
       --i; --b;
@@ -1815,78 +1815,7 @@ bool KImageEffect::blendOnLower(
       *b += ( ((*i - *b) * a) >> 8 );
       --i; --b;
     } while (k--);
-  } 
-  
-  return true;
-}
-/*bool KImageEffect::blend(const QPixmap & upper, const QPixmap & lower, QPixmap & output)
-{
-   QImage outputImage;
-   blend(upper.convertToImage(), lower.convertToImage(), outputImage);
-   output.convertFromImage(outputImage);
-}*/
-
-bool KImageEffect::paint(int x, int y, QImage &tgt, const QImage &src)
-{
-  int cx=0, cy=0, cw=src.width(), ch=src.height();
-
-  if (src.depth() != 32 || tgt.depth() != 32 ) return false;
-  if ( src.width() + x > tgt.width()  ||
-      src.height() + y > tgt.height() ||
-      x < 0 || y < 0 )
-  {
-    if ( x > tgt.width() || y > tgt.height() ) return true;
-    if ( src.width()<=0 || src.height() <= 0 ) return true;
-    if ( tgt.width()<=0 || tgt.height() <= 0 ) return true;
-
-    if (x<0) {cx=-x; cw+=x; x=0; };
-    if (cw + x > tgt.width()) { cw=tgt.width()-x; };
-    if (y<0) {cy=-y; ch+=y; y=0; };
-    if (ch + y > tgt.height()) { ch=tgt.height()-y; };
-
-    if ( cx >= src.width() || cy >= src.height() ) return true;
-    if ( cw <= 0 || ch <= 0 ) return true;
   }
 
-  register uchar *i, *b;
-  register int j,k;
-
-  for (j=0; j<ch; j++)
-  {
-    b=&tgt.scanLine(y+j) [ (x+cw) << 2 ];
-    i=&src.scanLine(cy+j)[ (cx+cw) << 2 ];
-
-    k=cw-1;
-    --b; --i;
-    // Now there should be a loop which would include the following
-    // "while" loop and the copying of the pixel, but I've expanded
-    // it so that there's no need for an extra "if" sentence inside
-    // the loop with "if ( k==0 && !(*i)) break;"
-    while ( !(*i) && k>0 ) 
-    {
-      i-=4; b-=4;
-      --k;
-    }
-    if (k) do
-    {
-      --i; --b;
-      *b = *i; --i; --b;
-      *b = *i; --i; --b;
-      *b = *i; --i; --b;
-      k--;
-      while ( !(*i) && k>0 ) 
-      {
-	i-=4; b-=4;
-	--k;
-      }
-    } while (k);
-    if (*i)
-    {
-      --i; --b;
-      *b = *i; --i; --b;
-      *b = *i; --i; --b;
-      *b = *i; --i; --b;
-    }
-  } 
   return true;
 }

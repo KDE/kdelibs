@@ -54,7 +54,7 @@ include_HEADERS = qttableview.h kprogress.h kcolordlg.h kcolordialog.h kselect.h
 		kedittoolbar.h kdockwidget.h kanimwidget.h \
 		krootpixmap.h kaboutkde.h kaboutapplication.h \
 		kpanelapplet.h kpushbutton.h kdcopactionproxy.h kcolorcombo.h \
-		kpanelextension.h kcompletionbox.h kalphapainter.h ksqueezedtextlabel.h \
+		kpanelextension.h kcompletionbox.h ksqueezedtextlabel.h \
 		kcommand.h kwindowlistmenu.h kfontcombo.h kaccelgen.h ktip.h \
 		kdatewidget.h karrowbutton.h
 
@@ -91,7 +91,7 @@ libkdeui_la_SOURCES = \
 		kanimwidget.cpp krootpixmap.cpp kaboutkde.cpp \
 		kaboutapplication.cpp kpanelapplet.cpp kdcopactionproxy.cpp \
 		kcolorcombo.cpp kpushbutton.cpp kpanelextension.cpp \
-		kcompletionbox.cpp kalphapainter.cpp ksqueezedtextlabel.cpp \
+		kcompletionbox.cpp ksqueezedtextlabel.cpp \
 		kcommand.cpp kwindowlistmenu.cpp kfontcombo.cpp ktip.cpp \
 		kdatewidget.cpp karrowbutton.cpp kmainwindowiface.cpp kmainwindowiface.skel
 
