@@ -266,6 +266,7 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, DocumentTypeI
     m_listenerTypes = 0;
     m_styleSheets = new StyleSheetListImpl;
     m_styleSheets->ref();
+    m_windowEventListeners.setAutoDelete(true);
 }
 
 DocumentImpl::~DocumentImpl()
