@@ -47,7 +47,10 @@ class QGridLayout;
 class KX509Item : public KListViewItem {
 	public:
 		KX509Item(KListViewItem *parent, KSSLCertificate *x);
+		KX509Item(KListView *parent, KSSLCertificate *x);
+		void setup(KSSLCertificate *x);
 		~KX509Item();
+		virtual int rtti() const { return 1; }
 	KSSLCertificate *cert;
 	QString _prettyName;
 };

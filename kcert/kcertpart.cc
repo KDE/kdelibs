@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
  *
- * Copyright (C) 2001 George Staikos <staikos@kde.org>
+ * Copyright (C) 2001,2002 George Staikos <staikos@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -54,6 +54,16 @@ K_EXPORT_COMPONENT_FACTORY( libkcertpart, KParts::GenericFactory<KCertPart> )
 KX509Item::KX509Item(KListViewItem *parent, KSSLCertificate *x) :
 			KListViewItem(parent, 0L)
 {
+	setup(x);
+}
+
+KX509Item::KX509Item(KListView *parent, KSSLCertificate *x) :
+			KListViewItem(parent)
+{
+	setup(x);
+}
+
+void KX509Item::setup(KSSLCertificate *x) {
 	cert = x;
 	if (x) {
 		KSSLX509Map xm(x->getSubject());
@@ -125,11 +135,11 @@ KCertPart::KCertPart(QWidget *parentWidget, const char *widgetName,
 
 
  _signers = new KSSLSigners;
- // This is a bit confusing now.  Here's now it works:
- //    We create an _frame and split it left/right
+ // This is a bit confusing now.  Here's how it works:
+ //    We create a _frame and split it left/right
  //    Then we add the ListView to the left and create
  //    a new frame on the right.  We set the main widget
- //    to on the right.
+ //    on the right.
 
  _p12 = NULL;
  _ca = NULL;
@@ -527,7 +537,8 @@ QCString pass;
 	if (xc) {
 		if (xc->x509V3Extensions().certTypeCA())
 			new KX509Item(_parentCA, xc);
-		else delete xc;     // dunno what to do with it?
+		else
+			new KX509Item(_sideList, xc);
 		fclose(fp);
 		return true;
 	}
@@ -551,12 +562,13 @@ QCString pass;
  for (int i = 0; i < sk_X509_INFO_num(sx5i); i++) {
 	X509_INFO* x5i = sk_X509_INFO_value(sx5i, i);
 	if (x5i->x_pkey && x5i->x509) {   // a personal cert (like PKCS12)
-		kdDebug() << "Found a personal certificate..." << endl;
+		KSSLCertificate *xc = KSSLCertificate::fromX509(x5i->x509);
+		new KX509Item(_sideList, xc);
 	} else if (x5i->x509) {   // something else - maybe a CA file
 		KSSLCertificate *xc = KSSLCertificate::fromX509(x5i->x509);
 		if (xc->x509V3Extensions().certTypeCA())
 			new KX509Item(_parentCA, xc);
-		else delete xc;     // dunno what to do with it?
+		else new KX509Item(_sideList, xc);
 	} else if (x5i->crl) {   // a crl
 		kdDebug() << "Found a CRL..." << endl;
 	}
@@ -768,6 +780,15 @@ void KCertPart::slotSelectionChanged(QListViewItem *x) {
 	_ca = dynamic_cast<KX509Item*>(x)->cert;
 	_import->setEnabled(true);
 	_save->setEnabled(true);
+	_curName = dynamic_cast<KX509Item*>(x)->_prettyName;
+	displayCACert(_ca);
+  } else if (x && x->parent() == NULL && x->rtti() == 1) {
+        _blankFrame->hide();
+        _pkcsFrame->hide();
+	_x509Frame->show();
+	_ca = dynamic_cast<KX509Item*>(x)->cert;
+	_import->setEnabled(false);
+	_save->setEnabled(false);
 	_curName = dynamic_cast<KX509Item*>(x)->_prettyName;
 	displayCACert(_ca);
   } else if (x && x->parent() == _parentP12) {
