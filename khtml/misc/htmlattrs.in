@@ -58,6 +58,7 @@ label
 lang
 language
 left
+leftmargin
 link
 longdesc
 marginheight
@@ -124,6 +125,7 @@ target
 text
 title
 top
+topmargin
 type
 unknown
 usemap

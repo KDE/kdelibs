@@ -69,6 +69,7 @@ label, ATTR_LABEL
 lang, ATTR_LANG
 language, ATTR_LANGUAGE
 left, ATTR_LEFT
+leftmargin, ATTR_LEFTMARGIN
 link, ATTR_LINK
 longdesc, ATTR_LONGDESC
 marginheight, ATTR_MARGINHEIGHT
@@ -135,6 +136,7 @@ target, ATTR_TARGET
 text, ATTR_TEXT
 title, ATTR_TITLE
 top, ATTR_TOP
+topmargin, ATTR_TOPMARGIN
 type, ATTR_TYPE
 unknown, ATTR_UNKNOWN
 usemap, ATTR_USEMAP

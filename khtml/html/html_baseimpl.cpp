@@ -83,17 +83,17 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
         break;
     }
     case ATTR_MARGINWIDTH:
-    {
-        addCSSLength(CSS_PROP_MARGIN_LEFT, attr->value() );
         addCSSLength(CSS_PROP_MARGIN_RIGHT, attr->value() );
+        /* nobreak; */
+    case ATTR_LEFTMARGIN:
+        addCSSLength(CSS_PROP_MARGIN_LEFT, attr->value() );
         break;
-    }
     case ATTR_MARGINHEIGHT:
-    {
-        addCSSLength(CSS_PROP_MARGIN_TOP, attr->value());
         addCSSLength(CSS_PROP_MARGIN_BOTTOM, attr->value());
+        /* nobreak */
+    case ATTR_TOPMARGIN:
+        addCSSLength(CSS_PROP_MARGIN_TOP, attr->value());
         break;
-    }
     case ATTR_BGCOLOR:
         bgColor = attr->value();
         addCSSProperty(CSS_PROP_BACKGROUND_COLOR, attr->value());
