@@ -449,13 +449,20 @@ void KFileDialog::slotOk()
 		selectedURL = ops->url();
 	}
 	else // simple filename -> just use the current URL
+        {
 	    selectedURL = ops->url();
+        }
     }
 
     else {
-        QString url = locationEdit->currentText();
-        KURL u( ops->url(), url );
-        selectedURL = u;
+        QString text = locationEdit->currentText();
+        if ( !text.isEmpty() && text[0] == '/' )
+            selectedURL.setPath( text );
+        else
+        {
+            selectedURL = ops->url();
+            selectedURL.addPath( text ); // works for filenames and relative paths
+        }
     }
 
     if ( selectedURL.isMalformed() ) {
@@ -499,7 +506,7 @@ void KFileDialog::slotOk()
 			accept();
 		    }
 		}
-	
+
 		else { // d->url is not a directory,
 		    // maybe we are in File(s) | Directory mode
 		    if ( mode() & KFile::File == KFile::File ||
@@ -971,7 +978,10 @@ void KFileDialog::setSelection(const QString& url)
 
     KURL u;
     if ( KURL::isRelativeURL( url ) ) // perhaps we have a relative path!?
-      u = KURL( ops->url(), url );
+    {
+      u = ops->url();
+      u.addPath( url );
+    }
     else
       u = KURL( url );
 
@@ -1005,7 +1015,8 @@ void KFileDialog::setSelection(const QString& url)
             locationEdit->setEditText( filename );
         }
 
-        d->url = KURL(ops->url(), filename);
+        d->url = ops->url();
+        d->url.addPath(filename);
     }
 }
 
@@ -1292,7 +1303,11 @@ QString KFileDialog::selectedFile() const
     if ( result() == QDialog::Accepted )
     {
        if (d->url.isLocalFile())
-          return d->url.path();
+       {
+           kdDebug() << "KFileDialog::selectedFile d->url=" << d->url.url() << endl;
+           kdDebug() << "                          d->url.path()=" << d->url.path() << endl;
+           return d->url.path();
+       }
     }
     return QString::null;
 }

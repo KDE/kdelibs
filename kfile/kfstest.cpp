@@ -1,7 +1,7 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1997, 1998 Richard Moore <rich@kde.org>
                   1998 Stephan Kulow <coolo@kde.org>
-		
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
@@ -55,6 +55,9 @@ int main(int argc, char **argv)
 	op->show();
 	a.setMainWidget(op);
 	a.exec();
+    } else if (argv1 == QString::fromLatin1("justone")) {
+        QString name = KFileDialog::getOpenFileName();
+        qDebug("filename=%s",name.latin1());
     } else if (argv1 == QString::fromLatin1("preselect")) {
         names = KFileDialog::getOpenFileNames(QString::fromLatin1("/etc/passwd"));
         QStringList::Iterator it = names.begin();
@@ -63,14 +66,14 @@ int main(int argc, char **argv)
             ++it;
         }
 /*
-    } else if (argv1 == QString::fromLatin1("widget")) {
-	KFileWidget *widget = new KFileWidget(KFileWidget::Simple);
-	// widget->setURL(QString::fromLatin1("ftp://localhost"));
-	// widget->setURL(QString::fromLatin1("smb://without.penguinpowered.com/)");
-	// widget->setURL(QString::fromLatin1("smb://redwood203.marin.k12.ca.us"),false);
-	widget->show();
-	a.setMainWidget(widget);
-	a.exec();
+  } else if (argv1 == QString::fromLatin1("widget")) {
+  KFileWidget *widget = new KFileWidget(KFileWidget::Simple);
+  // widget->setURL(QString::fromLatin1("ftp://localhost"));
+  // widget->setURL(QString::fromLatin1("smb://without.penguinpowered.com/)");
+  // widget->setURL(QString::fromLatin1("smb://redwood203.marin.k12.ca.us"),false);
+  widget->show();
+  a.setMainWidget(widget);
+  a.exec();
 */
     } else if (argv1 == QString::fromLatin1("dirs"))
 	name1 = KFileDialog::getExistingDirectory();
@@ -95,33 +98,24 @@ int main(int argc, char **argv)
 	if ( dlg.exec() == QDialog::Accepted ) {
 	    KURL::List list = dlg.selectedURLs();
 	    KURL::List::ConstIterator it = list.begin();
-        qDebug("*** selectedURLs(): ");
+            qDebug("*** selectedURLs(): ");
 	    while ( it != list.end() ) {
 		name1 = (*it).url();
 		qDebug("  -> %s", name1.latin1());
 		++it;
-        }
-qDebug("*** selectedFile: %s", dlg.selectedFile().latin1());
-qDebug("*** selectedURL: %s", dlg.selectedURL().url().latin1());
-qDebug("*** selectedFiles: ");
-QStringList l = dlg.selectedFiles();
-QStringList::Iterator it2 = l.begin();
-while ( it2 != l.end() ) {
-  qDebug("  -> %s", (*it2).latin1());
-  ++it2;
-}
+            }
+            qDebug("*** selectedFile: %s", dlg.selectedFile().latin1());
+            qDebug("*** selectedURL: %s", dlg.selectedURL().url().latin1());
+            qDebug("*** selectedFiles: ");
+            QStringList l = dlg.selectedFiles();
+            QStringList::Iterator it2 = l.begin();
+            while ( it2 != l.end() ) {
+                qDebug("  -> %s", (*it2).latin1());
+                ++it2;
+            }
 	}
     }
 
-
-    	KFileDialog dlg(QString::null,
-			QString::fromLatin1("*|All files\n"
-					    "*.lo *.o *.la|All libtool files"),
-			0, 0, true);
-	dlg.setMode( (KFile::Mode) (KFile::Files | KFile::Directory | KFile::ExistingOnly | KFile::LocalOnly) );
-	dlg.exec();
-
-    
     if (!(name1.isNull()))
 	KMessageBox::information(0, QString::fromLatin1("You selected the file " ) + name1,
 				 QString::fromLatin1("Your Choice"));
