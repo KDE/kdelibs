@@ -259,6 +259,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
 
     updateURL();
     d->submitBugButton->setText( i18n("&Launch Bug Report Wizard") );
+    d->submitBugButton->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
     lay->addWidget( d->submitBugButton );
     lay->addSpacing(10);
 
