@@ -246,7 +246,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
     for(unsigned int i=0; i < m_encCharsetLength; ++i)
         m_encCharset[i] = m_encCharset[i].latin1() == ' ' ? QChar('-') : m_encCharset[i].lower();
 
-    QStringList fileUploads;
+    QStringList fileUploads, fileNotUploads;
 
     for (QPtrListIterator<HTMLGenericFormElementImpl> it(formElements); it.current(); ++it) {
         HTMLGenericFormElementImpl* const current = it.current();
@@ -293,7 +293,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
                         current->renderer())
                     {
                         KURL path;
-                        QString val = static_cast<HTMLInputElementImpl*>(current)->value().string();
+                        QString val = static_cast<HTMLInputElementImpl*>(current)->value().string().stripWhiteSpace();
                         if (!val.isEmpty() &&
                             QDir::isRelativePath(val) && 
                             QFile::exists(KGlobalSettings::documentPath() + val)) {
@@ -303,13 +303,15 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
                         }
 
                         hstr += fixUpfromUnicode(codec, "; filename=\"" + path.fileName() + "\"");
-                        if(path.isValid()) {
+                        if (path.isValid()) {
                             fileUploads << path.prettyURL(0, KURL::StripFileProtocol);
                             const KMimeType::Ptr ptr = KMimeType::findByURL(path);
                             if (!ptr->name().isEmpty()) {
                                 hstr += "\r\nContent-Type: ";
                                 hstr += ptr->name().ascii();
                             }
+                        } else if (!val.isEmpty()) {
+                            fileNotUploads << path.prettyURL(0, KURL::StripFileProtocol);
                         }
                     }
 
@@ -334,6 +336,21 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
 
                 }
             }
+        }
+    }
+
+    if (fileNotUploads.count()) {
+        const int result = KMessageBox::warningContinueCancelList( 0,
+                                                             i18n("The following files will not be uploaded"
+                                                                  " because they could not be found.\n"
+                                                                  "Do you want to continue?"),
+                                                             fileNotUploads,
+                                                             i18n("Submit Confirmation"),KGuiItem(i18n("&Submit Anyway")));
+
+
+        if (result == KMessageBox::Cancel) {
+            ok = false;
+            return QByteArray();
         }
     }
 
