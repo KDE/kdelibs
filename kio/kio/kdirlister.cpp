@@ -1048,6 +1048,10 @@ void KDirListerCache::slotUpdateResult( KIO::Job * j )
 
 // private
 
+// Purpose: there are some listers that are holding lstItems and we need to
+//          delete the unmarked items from this list. If really, then the item
+//          was deleted from the filesystem and needs to be removed from the
+//          cache as well.
 void KDirListerCache::deleteUnmarkedItems( QPtrList<KDirLister> *listers, KFileItemList *lstItems, bool really )
 {
   // Find all unmarked items and delete them
