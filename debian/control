@@ -12,6 +12,14 @@ Description: KDE core libraries (runtime files)
  KDE core libraries.
  You need these files to run kde applications.
 
+Package: kdelibs-doc-cvs
+Architecture: all
+Section: doc
+Depends: kdelibs3-cvs (= ${Source-Version})
+Suggests: kdevelop, kdoc
+Description: KDE core libraries (documentation)
+ KDE library documentation.
+
 Package: kdelibs3-cvs-dev
 Architecture: any
 Section: x11

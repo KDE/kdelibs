@@ -58,8 +58,21 @@ binary-arch:  build
 	echo "dir_html=/$(kde_htmldir)" >> $$debianrc
 
 	perl -w admin/debianrules kdelibs3-cvs
+
+#	if test -f /usr/bin/qt2kdoc; then \
+#	(mkdir -p debian/tmp/usr/share/kdoc/index) ; \
+#	(mkdir -p debian/tmp/usr/doc/kdelibs-cvs-doc/html) ; \
+#	qt2kdoc --url=/usr/doc/qt2-doc/html \
+#	--outdir=`pwd`/debian/tmp/usr/share/kdoc/index \
+#	--compress \
+#	/usr/doc/qt2-doc/html ; \
+#	makekdedoc --libdir=`pwd`/debian/tmp/usr/share/kdoc/index \
+#	--outputdir=`pwd`/debian/tmp/usr/doc/kdelibs-cvs-doc/html ; \
+#	fi
+
 # libraries not starting with lib are modules
 	dh_movefiles -pkdelibs3-cvs-dev $(kde_includedir) $(kde_libdir)/lib*.so $(kde_libdir)/lib*.la $(kde_libdir)/lib*.a
+#	dh_movefiles -pkdelibs-cvs-doc $(kde_htmldir) usr/doc/kdelibs3-cvs usr/share/kdoc usr/doc/kdelibs-cvs-doc
 	dh_installdocs 
 	dh_undocumented
 	dh_installchangelogs
