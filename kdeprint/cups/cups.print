@@ -1,6 +1,9 @@
 [KDE Print Entry]
 PrintSystem=cups
 Comment=CUPS (Common UNIX Print System)
+Comment[cs]=CUPS (Common Unix Print System)
+Comment[pt_BR]=Servidor de Impressão CUPS (Common Unix Print System)
+Comment[sv]=Cups (Common Unix Print System)
 DetectUris=service:/ipp,config:/cups/cupsd.conf
 DetectPrecedence=10
 MimeTypes=application/postscript,application/pdf,image/gif,image/jpeg,image/png,image/x-bmp,image/x-xpm
