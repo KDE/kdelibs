@@ -117,7 +117,7 @@ int FixedTableLayout::calcWidthArray( int tableWidth )
 		    w = grpWidth;
 		int effWidth = -1;
 		if ( w.type == Fixed && w.value > 0 )
-		    effWidth = w.value;
+                    effWidth = w.value;
 		else if ( w.type == Percent && w.value > 0 && tableWidth != 0 )
 		    effWidth = w.value*tableWidth/100;
 #ifdef DEBUG_LAYOUT
@@ -385,15 +385,18 @@ void AutoTableLayout::recalcColumn( int effCol )
 		    case Fixed:
 			// ignore width=0
 			if ( w.value > 0 && (int)l.width.type != Percent ) {
+                            // ### we should use box'es paddings here I guess.
+                            int wval = w.value + table->cellPadding() * 2;
 			    if ( l.width.type == Fixed ) {
-				// the 2nd part of the condition is Nav/IE Quirk, see below
-				if ((l.width.value > w.value) ||
-				    ((l.width.value == w.value) && (maxContributor == cell))) {
-				    l.width = w;
+                                // Nav/IE weirdness
+				if ((wval > l.width.value) ||
+				    ((l.width.value == wval) && (maxContributor == cell))) {
+				    l.width.value = wval;
 				    fixedContributor = cell;
 				}
 			    } else {
-				l.width = w;
+                                l.width.type = Fixed;
+				l.width.value = wval;
 				fixedContributor = cell;
 			    }
 			}
@@ -419,17 +422,14 @@ void AutoTableLayout::recalcColumn( int effCol )
 	child = child->nextSibling();
     }
 
-#if 0
-    // this quirk currently seems to break more than it fixes (anyone knows a place where this is needed?? )
-    // Nav/IE quirk, see the condition above
+    // Nav/IE weirdness
     if ( l.width.type == Fixed ) {
 	if ( table->style()->htmlHacks()
-	     && (l.maxWidth > l.width.value + spacing) && (fixedContributor != maxContributor)) {
+	     && (l.maxWidth > l.width.value) && (fixedContributor != maxContributor)) {
 	    l.width = Length();
 	    fixedContributor = 0;
 	}
     }
-#endif
 
     l.maxWidth = kMax(l.maxWidth, l.minWidth);
 #ifdef DEBUG_LAYOUT
@@ -787,6 +787,7 @@ void AutoTableLayout::layout()
     int numVariable = 0;
     int numFixed = 0;
     int totalVariable = 0;
+    int totalFixed = 0;
     int totalPercent = 0;
     int allocVariable = 0;
 
@@ -795,7 +796,7 @@ void AutoTableLayout::layout()
 	int w = layoutStruct[i].effMinWidth;
 	layoutStruct[i].calcWidth = w;
 	available -= w;
-	Length &width = layoutStruct[i].effWidth;
+	Length& width = layoutStruct[i].effWidth;
         switch( width.type) {
         case Percent:
 	    havePercent = true;
@@ -806,17 +807,16 @@ void AutoTableLayout::layout()
 	    totalRelative += width.value;
             break;
         case Fixed:
-            if (width.value > 0) {
-                numFixed++;
-                break;
-            }
-            // treat as variable
+            numFixed++;
+            totalFixed += layoutStruct[i].effMaxWidth;
+            // fall through
+            break;
         case Variable:
         case Static:
-	    numVariable++;
-	    totalVariable += layoutStruct[i].effMaxWidth;
-	    allocVariable += w;
-	}
+            numVariable++;
+            totalVariable += layoutStruct[i].effMaxWidth;
+            allocVariable += w;
+        }
     }
 
     // then allocate width to percent cols
@@ -862,9 +862,8 @@ void AutoTableLayout::layout()
 	for ( int i = 0; i < nEffCols; ++i ) {
 	    Length &width = layoutStruct[i].effWidth;
 	    if ( width.type == Fixed && width.value > layoutStruct[i].calcWidth ) {
-		int w = width.value;
-		available += layoutStruct[i].calcWidth - w;
-		layoutStruct[i].calcWidth = w;
+		available += layoutStruct[i].calcWidth - width.value;
+		layoutStruct[i].calcWidth = width.value;
             }
 	}
     }
@@ -888,11 +887,12 @@ void AutoTableLayout::layout()
     // now satisfy variable
     if ( available > 0 && numVariable ) {
 	available += allocVariable; // this gets redistributed
-// 	qDebug("redistributing %dpx to %d variable columns. totalVariable=%d",  available,  numVariable,  totalVariable );
+ 	//qDebug("redistributing %dpx to %d variable columns. totalVariable=%d",  available,  numVariable,  totalVariable );
 	for ( int i = 0; i < nEffCols; i++ ) {
 	    Length &width = layoutStruct[i].effWidth;
 	    if ( width.type == Variable && totalVariable != 0 ) {
-		int w = kMax( int ( layoutStruct[i].calcWidth ), available * layoutStruct[i].effMaxWidth / totalVariable );
+		int w = kMax( int ( layoutStruct[i].calcWidth ),
+                              available * layoutStruct[i].effMaxWidth / totalVariable );
 		available -= w;
 		totalVariable -= layoutStruct[i].effMaxWidth;
 		layoutStruct[i].calcWidth = w;
@@ -905,16 +905,18 @@ void AutoTableLayout::layout()
 
     // spread over fixed colums
     if ( available > 0 && numFixed) {
-	// still have some width to spread, distribute to fixed columns
-	for ( int i = 0; i < nEffCols; i++ ) {
+        // still have some width to spread, distribute to fixed columns
+        for ( int i = 0; i < nEffCols; i++ ) {
             Length &width = layoutStruct[i].effWidth;
             if ( width.isFixed() ) {
-		int w = kMax(0, kMin( available, available * (layoutStruct[i].effMaxWidth - layoutStruct[i].effMinWidth) / numFixed ));
+                int w = available * layoutStruct[i].effMaxWidth / totalFixed;
                 available -= w;
+                totalFixed -= layoutStruct[i].effMaxWidth;
                 layoutStruct[i].calcWidth += w;
             }
-	}
+        }
     }
+
 #ifdef DEBUG_LAYOUT
     qDebug("after fixed distribution: available=%d",  available );
 #endif
@@ -923,7 +925,8 @@ void AutoTableLayout::layout()
     if ( available > 0 ) {
         int total = nEffCols;
         // still have some width to spread
-        for ( int i = 0; i < nEffCols; i++ ) {
+        int i = nEffCols;
+        while (  i-- ) {
             int w = available / total;
             available -= w;
             total--;
@@ -975,3 +978,5 @@ void AutoTableLayout::calcPercentages() const
     }
     percentagesDirty = false;
 }
+
+#undef DEBUG_LAYOUT
