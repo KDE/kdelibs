@@ -417,7 +417,7 @@ void DefaultProgress::setDestVisible( bool visible )
 void DefaultProgress::slotClean() {
   if (d->keepOpenChecked) {
     slotPercent(0, 100);
-    d->cancelClose->setText( KStdGuiItem::close().text() );
+    d->cancelClose->setGuiItem( KStdGuiItem::close() );
     d->openFile->setEnabled(true);
     slotProcessedSize(0, m_iTotalSize);
     d->keepOpen->setEnabled(false);
