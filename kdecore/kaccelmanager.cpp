@@ -237,7 +237,8 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
             if (checkChange(contents[cnt]))
                 it->m_widget->setProperty("text", contents[cnt].accelerated());
         } else {
-            if (checkChange(contents[cnt]))
+            tprop = it->m_widget->metaObject()->findProperty("title", true);
+            if (tprop != -1 && checkChange(contents[cnt]))
                 it->m_widget->setProperty("title", contents[cnt].accelerated());
         }
     }
