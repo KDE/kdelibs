@@ -1640,18 +1640,9 @@ void KHTMLPart::htmlError( int errorCode, const QString& text, const KURL& reqUr
   errText += i18n( "Error while loading %1" ).arg( reqUrl.htmlURL() );
   errText += QString::fromLatin1( "</TITLE></HEAD><BODY><P>" );
   errText += i18n( "An error occurred while loading <B>%1</B>:" ).arg( reqUrl.htmlURL() );
-  errText += QString::fromLatin1( "</P><P>" );
-  QString kioErrString = KIO::buildErrorString( errorCode, text );
-
-  kioErrString.replace('&', QString("&amp;"));
-  kioErrString.replace('<', QString("&lt;"));
-  kioErrString.replace('>', QString("&gt;"));
-
-  // In case the error string has '\n' in it, replace with <BR/>
-  kioErrString.replace( '\n', "<BR/>" );
-
-  errText += kioErrString;
-  errText += QString::fromLatin1( "</P></BODY></HTML>" );
+  errText += QString::fromLatin1( "</P>" );
+  errText += QStyleSheet::convertFromPlainText( KIO::buildErrorString( errorCode, text ) );
+  errText += QString::fromLatin1( "</BODY></HTML>" );
   write(errText);
   end();
 
@@ -3538,9 +3529,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
           mailtoMsg += i18n(" - CC: ") + KURL::decode_string((*it).mid(3));
         else if ((*it).startsWith(QString::fromLatin1("bcc=")))
           mailtoMsg += i18n(" - BCC: ") + KURL::decode_string((*it).mid(4));
-      mailtoMsg.replace(QString::fromLatin1("&"), QString("&amp;"));
-      mailtoMsg.replace(QString::fromLatin1("<"), QString("&lt;"));
-      mailtoMsg.replace(QString::fromLatin1(">"), QString("&gt;"));
+      mailtoMsg = QStyleSheet::escape(mailtoMsg);
       mailtoMsg.replace(QRegExp("([\n\r\t]|[ ]{10})"), QString::null);
       setStatusBarText("<qt>"+mailtoMsg, BarHoverText);
       return;
