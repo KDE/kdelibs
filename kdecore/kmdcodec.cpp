@@ -866,7 +866,7 @@ void KMD5::II ( Q_UINT32& a, Q_UINT32 b, Q_UINT32 c, Q_UINT32 d,
 
 void KMD5::encode ( Q_UINT8 *output, Q_UINT32 *in, Q_UINT32 len )
 {
-#if defined(__FreeBSD__) && defined(i386)
+#if !defined(WORDS_BIGENDIAN)
     memcpy(output, in, len);
 #else
     Q_UINT32 i, j;
@@ -884,7 +884,7 @@ void KMD5::encode ( Q_UINT8 *output, Q_UINT32 *in, Q_UINT32 len )
 // multiple of 4.
 void KMD5::decode (Q_UINT32 *output, Q_UINT8 *in, Q_UINT32 len)
 {
-#if defined(__FreeBSD__) && defined(i386)
+#if !defined(WORDS_BIGENDIAN)
     memcpy(output, in, len);
 #else
     Q_UINT32 i, j;
