@@ -1,9 +1,46 @@
-kdelibs (4:2.0-20001006-0) unstable; urgency=low
+kdelibs (4:2.0-20001009-0) unstable; urgency=low
+ 
+  * KDE 2.0
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 09 Oct 2000 00:00:00 -0700
+                                                                                
+kdelibs (4:2.0-20001006-4) unstable; urgency=low
+ 
+  * Fixing startup crashes
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 08 Oct 2000 09:00:00 -0700
+                                                                                
+kdelibs (4:2.0-20001006-3) unstable; urgency=low
  
   * More upstream fixes
-  * More packaging fixes
+  * Fixing preinst applnk problem (Closes: #74195, #74218)
  
- -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 06 Oct 2000 20:30:00 -0700
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 08 Oct 2000 03:00:00 -0700
+                                                                                
+kdelibs (4:2.0-20001006-2) unstable; urgency=low
+ 
+  * More crypto fixes
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 06 Oct 2000 15:30:00 -0700
+                                                                                
+kdelibs (4:2.0-20001006-0) unstable; urgency=low
+   
+  * More upstream fixes
+  * Getting rid of kdelibs-nossl and now providing a kdelibs-crypto package
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 06 Oct 2000 01:30:00 -0700
+                                                                                
+kdelibs-nossl (4:2.0-20001004-2) unstable; urgency=low
+ 
+  * More upstream fixes
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 05 Oct 2000 15:00:00 -0700
+                                                                                
+kdelibs-nossl (4:2.0-20001004-0) unstable; urgency=low
+ 
+  * More upstream fixes
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 04 Oct 2000 23:30:00 -0700
                                                                                 
 kdelibs (4:2.0-20001002-0) unstable; urgency=low
  
