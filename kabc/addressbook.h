@@ -186,6 +186,13 @@ class AddressBook : public QObject
     */
     Addressee findByUid( const QString & );
 
+
+    /**
+      Returns a list of all addressees in the address book. This list can
+      be sorted with @ref KABC::AddresseeList for example.
+    */
+    Addressee::List allAddressees();
+
     /**
       Find all entries with the specified name in the address book. Returns
       an empty list, if no entries couldn't be found.

@@ -365,6 +365,11 @@ Addressee AddressBook::findByUid( const QString &uid )
   return Addressee();
 }
 
+Addressee::List AddressBook::allAddressees()
+{
+  return d->mAddressees;
+}
+
 Addressee::List AddressBook::findByName( const QString &name )
 {
   Addressee::List results;

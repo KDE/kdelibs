@@ -121,6 +121,7 @@ AddresseeList::AddresseeList( const AddresseeList &l )
 AddresseeList::AddresseeList( const QValueList<Addressee> &l )
   : QValueList<Addressee>( l )
 {
+  mReverseSorting = false;
 }
 
 void AddresseeList::dump() const
