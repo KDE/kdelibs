@@ -17,6 +17,8 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
+#include <config.h>
+
 #include <unistd.h>
 #include <string.h>
 #include <stdio.h>
@@ -142,15 +144,15 @@ int main(int argc, char* argv[])
 		switch (c)
 		{
 			case 'P':
-				strncpy(printer, optarg, BUFSIZE);
+				strlcpy(printer, optarg, BUFSIZE);
 				if ((a=strchr(printer, '/')) != NULL)
 					error("This utility doesn't support printer instances");
 				break;
 			case 'J':
-				strncpy(jobname, optarg, BUFSIZE);
+				strlcpy(jobname, optarg, BUFSIZE);
 				break;
 			case 'H':
-				strncpy(host, optarg, BUFSIZE);
+				strlcpy(host, optarg, BUFSIZE);
 				if ((a=strchr(host, ':')) != NULL)
 				{
 					*a = 0;
@@ -160,11 +162,11 @@ int main(int argc, char* argv[])
 				}
 				break;
 			case 'U':
-				strncpy(login, optarg, BUFSIZE2);
+				strlcpy(login, optarg, BUFSIZE2);
 				if ((a=strchr(login, ':')) != NULL)
 				{
 					*a = 0;
-					strncpy(passwd, ++a, BUFSIZE2);
+					strlcpy(passwd, ++a, BUFSIZE2);
 				}
 				break;
 			case 'o':
@@ -188,7 +190,7 @@ int main(int argc, char* argv[])
 	{
 		printer[BUFSIZE-1] = '\0';
 		if (getenv("PRINTER") != NULL)
-			strncpy(printer, getenv("PRINTER"), BUFSIZE-1);
+			strlcpy(printer, getenv("PRINTER"), BUFSIZE-1);
 		else
 			error("No printer specified (and PRINTER variable is empty)");
 	}
