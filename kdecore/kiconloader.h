@@ -81,6 +81,12 @@ public:
     /** Cleanup */
     ~KIconLoader();
 
+    /** Add @em appname to the list of directories to search for "User"
+     * group icons. 
+     * @param appname The bare application name.
+     */ 
+    void addUserDir(QString appname);
+
     /**
      * Load an icon. It will try very hard to find an icon which is
      * suitable. If no exact match is found, the best match is returned.

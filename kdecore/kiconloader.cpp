@@ -152,6 +152,14 @@ KIconLoader::~KIconLoader()
     delete[] mpGroups;
 }
 
+void KIconLoader::addUserDir(QString appname)
+{
+    mpDirs->addResourceType("usricon", KStandardDirs::kde_default("data") +
+		appname + "/pics/");
+    mpDirs->addResourceType("usricon", KStandardDirs::kde_default("data") +
+		appname + "/toolbar/");
+}
+    
 void KIconLoader::addIconTheme(KIconTheme *theme, KIconThemeNode *node)
 {
     node->theme = theme;
@@ -239,12 +247,11 @@ QString KIconLoader::iconPath(QString name, int group_or_size,
     KIcon icon = iconPath2(name, size);
     if (!icon.isValid())
     {
-	if (sci)
-	{
-	    path = iconPath(name, KIcon::User, canReturnNull);
-	    if (!path.isEmpty() || canReturnNull)
-		return path;
-	}
+	// Try "User" group too.
+	path = iconPath(name, KIcon::User, canReturnNull);
+	if (!path.isEmpty() || canReturnNull)
+	    return path;
+
 	if (canReturnNull)
 	    return QString::null;
 	icon = iconPath2("unknown", size);
@@ -364,12 +371,11 @@ QPixmap KIconLoader::loadIcon(QString name, int group_or_size,
     KIcon icon = iconPath2(name, size);
     if (!icon.isValid())
     {
-	if (sci)
-	{
-	    pix = loadIcon(name, KIcon::User, path_store, canReturnNull);
-	    if (!pix.isNull() || canReturnNull)
-		return pix;
-	}
+	// Try "User" icon too.
+	pix = loadIcon(name, KIcon::User, path_store, canReturnNull);
+	if (!pix.isNull() || canReturnNull)
+	    return pix;
+
 	if (canReturnNull)
 	    return pix;
 	icon = iconPath2("unknown", size);
