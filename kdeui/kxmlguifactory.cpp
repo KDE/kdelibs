@@ -519,14 +519,13 @@ void KXMLGUIFactory::configureAction( KAction *action, const QDomAttr &attribute
     static const QString &attrShortcut = KGlobal::staticQString( "shortcut" );
 
     QString attrName = attribute.name();
-
-    QVariant propertyValue;
-
-    QVariant::Type propertyType = action->property( attribute.name().latin1() ).type();
-
     // If the attribute is a deprecated "accel", change to "shortcut".
     if ( attrName.lower() == "accel" )
         attrName = attrShortcut;
+
+    QVariant propertyValue;
+
+    QVariant::Type propertyType = action->property( attrName.latin1() ).type();
 
     if ( propertyType == QVariant::Int )
         propertyValue = QVariant( attribute.value().toInt() );
