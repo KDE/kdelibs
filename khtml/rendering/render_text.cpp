@@ -705,17 +705,10 @@ void RenderText::setText(DOMStringImpl *text)
 
 int RenderText::height() const
 {
-    if(m_lines.count())
-    {
-	kdDebug()<<"RenderText::height(): height will be:"<< (m_lines[m_lines.count()-1]->m_y+m_contentHeight + style()->borderTopWidth() + style()->borderBottomWidth()) << endl;
-	return m_lines[m_lines.count()-1]->m_y+m_contentHeight +
-	    style()->borderTopWidth() + style()->borderBottomWidth();
-    }
-    else
-        return m_contentHeight + style()->borderTopWidth() + style()->borderBottomWidth();
-
-    // ### padding is relative to the _width_ of the containing block
-    //+ style()->paddingTop() + style()->paddingBottom()
+#ifdef DEBUG_LAYOUT
+    kdDebug()<< "RenderText::height()=" << m_contentHeight + style()->borderTopWidth() + style()->borderBottomWidth();
+#endif
+    return m_contentHeight + style()->borderTopWidth() + style()->borderBottomWidth();
 }
 
 int RenderText::bidiHeight() const
