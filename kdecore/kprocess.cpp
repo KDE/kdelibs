@@ -481,13 +481,8 @@ bool KProcess::start(RunMode runmode, Communication comm)
   // vfork() has unclear semantics and is not standardized.
   pid_ = fork();
 
-<<<<<<< kprocess.cpp
-  if (0 == pid_) {
-        if (fd[0] >= 0)
-=======
   if (pid_ == 0) {
         if (fd[0] >= 0)
->>>>>>> 1.100
            close(fd[0]);
 
         // reset all signal handlers
