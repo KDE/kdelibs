@@ -41,8 +41,6 @@ debian/tmp/usr/lib/libkmdi.la
 debian/tmp/usr/lib/libkmdi.so
 debian/tmp/usr/lib/libkmediaplayer.la
 debian/tmp/usr/lib/libkmediaplayer.so
-debian/tmp/usr/lib/libkmdi.la
-debian/tmp/usr/lib/libkmdi.so
 debian/tmp/usr/lib/libkmid.la
 debian/tmp/usr/lib/libkmid.so
 debian/tmp/usr/lib/libkparts.la
