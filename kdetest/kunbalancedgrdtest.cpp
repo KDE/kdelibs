@@ -12,7 +12,7 @@ KGradientWidget::KGradientWidget(QWidget *parent, const char *name)
   :QWidget(parent, name)
 {
   time.start();
-  resize(250 * cols, 250 * rows);
+  setMinimumSize(250 * cols, 250 * rows);
 }
 
 void KGradientWidget::paintEvent(QPaintEvent *ev)
