@@ -134,7 +134,7 @@ KIO::filesize_t Ftp::UnknownSize = (KIO::filesize_t)-1;
 
 using namespace KIO;
 
-extern "C" { int kdemain(int argc, char **argv); }
+extern "C" { KDE_EXPORT int kdemain(int argc, char **argv); }
 
 int kdemain( int argc, char **argv )
 {
