@@ -471,8 +471,6 @@ QString KFileItem::getStatusBarInfo()
   QString myLinkDest = linkDest();
   long mySize = size();
 
-  QString text2 = text.copy();
-
   if ( m_bLink )
   {
       QString tmp;
@@ -487,7 +485,7 @@ QString KFileItem::getStatusBarInfo()
   }
   else if ( S_ISREG( m_fileMode ) )
   {
-      text = QString("%1 (%2)").arg(text2).arg( KIO::convertSize( mySize ) );
+      text += QString(" (%1)").arg( KIO::convertSize( mySize ) );
       text += "  ";
       text += comment;
   }
