@@ -296,7 +296,8 @@ void KJavaAppletServer::received( const QByteArray& qb )
     // we parse out the command and it's meaning here...
     kdDebug() << "begin KJavaAppletServer::received buffer of length = " << qb.count() << endl;
     QString buff;
-    for( int i = 0; i < qb.count(); i++ )
+    int qb_count = (int)qb.count();
+    for( int i = 0; i < qb_count; i++ )
     {
         if( qb[i] == 0 )
             buff += "<SEP>";
