@@ -252,5 +252,6 @@ AC_OUTPUT(Makefile \
 	kstyles/pics/Makefile \
 	kidl/Makefile \
 	kidl2cpp/Makefile \
+	kparts/Makefile \
 	dcop/Makefile )
 
