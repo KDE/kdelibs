@@ -46,7 +46,11 @@ KShred::KShred(QString fileName)
     {
       kdError() << "KShred: cannot open file '" << fileName.local8Bit().data() << "' for writing\n" << endl;
       file = 0L;
+      fileSize = 0;
     }
+    else
+      fileSize = file->size();
+    totalBytes = 0;
   }
 }
 
@@ -81,14 +85,14 @@ KShred::fillbyte(uint byte)
   memset(buff, byte, 4096);
 
   uint n;
-  for (uint todo = file->size(); todo > 0; todo -= n)
+  for (uint todo = fileSize; todo > 0; todo -= n)
   {
     n = (todo > 4096 ? 4096 : todo);
     if (!writeData(buff, n))
       return false;
   }
   file->flush();
-  return true;
+  return file->at(0);
 }
 
 
@@ -99,14 +103,14 @@ KShred::fillpattern(char *data, uint size)
     return false;
 
   uint n;
-  for (uint todo = file->size(); todo > 0; todo -= n)
+  for (uint todo = fileSize; todo > 0; todo -= n)
   {
     n = (todo > size ? size : todo);
     if (!writeData(data, n))
       return false;
   }
   file->flush();
-  return true;
+  return file->at(0);
 }
 
 
@@ -120,7 +124,7 @@ KShred::fillrandom()
   long int buff[4096 / sizeof(long int)];
   uint n;
 
-  for (uint todo = file->size(); todo > 0; todo -= n)
+  for (uint todo = fileSize; todo > 0; todo -= n)
   {
     n = (todo > 4096 ? 4096 : todo);
     // assumes that 4096 is a multipe of sizeof(long int)
@@ -132,7 +136,7 @@ KShred::fillrandom()
       return false;
   }
   file->flush();
-  return true;
+  return file->at(0);
 }
 
 
@@ -152,8 +156,29 @@ KShred::shred(QString fileName)
 bool
 KShred::writeData(char *data, uint size)
 {
+  static uint bytesWritten  = 0;
+  static uint lastSignalled = 0;
+  static uint tbpc          = 0;
+  static uint fspc          = 0;
+
   // write 'data' of size 'size' to the file
-  return (file->writeBlock(data, size) >= 0);
+  int ret = file->writeBlock(data, size);
+  if ((totalBytes > 0) && (ret > 0))
+  {
+    if (tbpc == 0)
+    {
+      tbpc = ((uint) (totalBytes / 100)) == 0 ? 1 : totalBytes / 100;
+      fspc = ((uint) (fileSize / 100)) == 0 ? 1 : fileSize / 100;
+    }
+    bytesWritten += ret;
+    uint pc = (uint) (bytesWritten / tbpc);
+    if (pc > lastSignalled)
+    {
+      emit processedSize((uint) (fspc * pc));
+      lastSignalled = pc;
+    }
+  }
+  return ret >= 0;
 }
 
 
@@ -162,32 +187,31 @@ bool
 KShred::shred()
 {
   kdDebug() << "KShred::shred" << endl;
-  unsigned long size = file->size();
-  emit processedSize( 0 );
+
+  emit processedSize(0);
+
+  // five times writing the entire file size
+  totalBytes = fileSize * 5;
+
   if (!fill0s())
     return false;
   kdDebug() << "KShred::shred 1" << endl;
-  emit processedSize( size/6 );
   if (!fill1s())
     return false;
   kdDebug() << "KShred::shred 2" << endl;
-  emit processedSize( 2*size/6 );
   if (!fillrandom())
     return false;
   kdDebug() << "KShred::shred 3" << endl;
-  emit processedSize( 3*size/6 );
   if (!fillbyte((uint) 0x55))     // '0x55' is 01010101
     return false;
   kdDebug() << "KShred::shred 4" << endl;
-  emit processedSize( 4*size/6 );
   if (!fillbyte((uint) 0xAA))     // '0xAA' is 10101010
     return false;
   kdDebug() << "KShred::shred 5" << endl;
-  emit processedSize( 5*size/6 );
   if (!file->remove())
     return false;
-  emit processedSize( size );
   file = 0L;
+  emit processedSize(fileSize);
   return true;
 }
 

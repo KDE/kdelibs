@@ -38,11 +38,12 @@
 #include <qobject.h>
 
 /**
- * Erase a file in a way that makes recovery impossible.
+ * Erase a file in a way that makes recovery impossible -- well, no guarentee
+ * of that, but at least as difficult as reasonably possible.
  * For this, KShred write several times over the
  * existing file, using different patterns, before deleting it.
  * @author Andreas F. Pour <bugs@mieterra.com>
- * Integrated into KDE by David Faure <faure@kde.org>
+ * @author David Faure <faure@kde.org> (integration into KDE and progress signal)
  */
 class KShred : public QObject {
 
@@ -50,33 +51,92 @@ class KShred : public QObject {
 
     public:
 
+	/**
+	 * Initialize the class using the name of the file to 'shred'.
+	 * @param fileName fully qualified name of the file to shred.
+	 */
         KShred(QString fileName);
 
+	/*
+	 * Destructor for the class.
+	 */
         ~KShred();
 
+	/**
+	 * Writes all 1's over the entire file and flushes the file buffers.
+	 * @return true on success, false on error (invalid filename or write error)
+	 */
+
         bool fill1s();
+	/**
+	 * Writes all 0's over the entire file and flushes the file buffers.
+	 * @return true on success, false on error (invalid filename or write error)
+	 */
         bool fill0s();
+
+	/**
+	 * Writes the specified byte over the entire file and flushes the file buffers.
+	 * @param byte the value to write over every byte of the file
+	 * @return true on success, false on error (invalid filename or write error)
+	 */
         bool fillbyte(uint byte);
+
+	/**
+	 * Writes random bites over the entire file and flushes the file buffers.
+	 * @return true on success, false on error (invalid filename or write error)
+	 */
         bool fillrandom();
+
+	/**
+	 * Writes the specified byte array over the entire file and flushes the file buffers.
+	 * @param pattern the value to write over the entire file
+	 * @param size the length of the 'pattern' byte array
+	 * @return true on success, false on error (invalid filename or write error)
+	 */
         bool fillpattern(char *pattern, uint size);
-        // Does all of the above
+
+	/**
+	 * Shreds a file by writing a series of values over it (uses @ref 
+	 * fill0s, then @ref fill1s, then @ref fillrandom, then @ref fillbyte
+	 * with 0101..., then @ref fillbyte with 1010....
+	 * @return true on success, false on error (invalid filename or write error)
+         */
         bool shred();
 
         /**
-         * The easiest way to shred a file
-         * No need to create an instance of the class
+         * The simplest method to shred a file.
+         * No need to create an instance of the class.
+	 * @param fileName fully qualified name of the file to shred.
          */
         static bool shred(QString fileName);
 
     signals:
         /**
-         * Some progress info
+         * Shows progress of the shredding.
+	 * @param bytes the number of bytes written to the file
          */
-        void processedSize( unsigned long bytes );
+        void processedSize(unsigned long bytes);
 
     private:
+	/**
+	 * @internal write the data to the file
+	 */
         bool writeData(char *data, uint size);
+
+	/**
+	 * @internal structure for the file information
+	 */
         QFile *file;
+
+	/**
+	 * @internal for the size of the file
+	 */
+        unsigned long fileSize;
+
+	/**
+	 * @internal for keeping track of progress
+	 */
+        uint totalBytes;
 };
 
 #endif
