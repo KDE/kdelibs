@@ -134,7 +134,7 @@ void SlaveConfigPrivate::readConfigProtocolHost(const QString &, SlaveConfigProt
 
 
 SlaveConfig *SlaveConfig::_self = 0;
-KStaticDeleter<SlaveConfig> slaveconfigsd;
+static KStaticDeleter<SlaveConfig> slaveconfigsd;
 
 SlaveConfig *SlaveConfig::self()
 {
