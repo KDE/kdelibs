@@ -46,6 +46,7 @@
 class HTTPIOJob;
 class DCOPClient;
 
+
 typedef struct
 {
 	KURL  url;
@@ -54,6 +55,7 @@ typedef struct
 	unsigned long offset;
 	short unsigned int port;
 	bool  do_proxy;
+	QString cef; // Cache Entry File belonging to this URL.
 } HTTPState;
 
 class HTTPProtocol : public KIOProtocol
@@ -166,10 +168,41 @@ protected:
    */
   QString findCookies( const QString &url);
    
+  /**
+   * Do a cache lookup for the current url. (m_state.url)
+   *
+   * @param CEF the Cache Entry File.
+   *
+   * @return a file stream open for reading and at the start of
+   *         the header section when the Cache entry exists and is valid.
+   *         0 if no cache entry could be found, or if the enry is not
+   *         valid (any more).
+   */
+  FILE *checkCacheEntry(QString &CEF);
+
+  /**
+   * Create a cache entry for the current url. (m_state.url)
+   * 
+   * Set the contents type of the cache entry to 'mimetype'.
+   */
+  void createCacheEntry(const QString &mimetype);
+
+  /**
+   * Write data to cache.
+   *
+   * Write 'nbytes' from 'buffer' to the Cache Entry File
+   */
+  void writeCacheEntry( const char *buffer, int nbytes);
+  
+  /**
+   * Close cache entry
+   */
+  void closeCacheEntry();
 
 protected: // Members
   bool m_bEOF;
-  int m_cmd, m_sock;
+  int m_cmd;
+  int m_sock;
   FILE* m_fsocket;
   HTTPState m_state;
   enum HTTP_REV m_HTTPrev;
@@ -179,21 +212,26 @@ protected: // Members
   long m_iBytesLeft; // # of bytes left to receive in this message.
   QByteArray m_bufReceive; // Receive buffer
 
+  // Cache related 
+  bool m_bCached; // Whether the page is to be read from m_fcache.
+  FILE* m_fcache; // File stream of a cache entry
+  QString m_strCacheDir; // Location of the cache. 
+
   // Language/Encoding
   QStack<char> m_qTransferEncodings, m_qContentEncodings;
   QByteArray big_buffer;
-  QString m_sContentMD5, 
-          m_strMimeType,
-          m_strCharsets,
-          m_strLanguages;
+  QString m_sContentMD5;
+  QString m_strMimeType;
+  QString m_strCharsets;
+  QString m_strLanguages;
   
   // Proxy related members
   bool m_bUseProxy;  // Whether we want a proxy
   int m_strProxyPort;
-  QString m_strNoProxyFor,
-          m_strProxyHost,
-          m_strProxyUser,
-          m_strProxyPass;
+  QString m_strNoProxyFor;
+  QString m_strProxyHost;
+  QString m_strProxyUser;
+  QString m_strProxyPass;
   struct sockaddr_in m_proxySockaddr;
 
   // Authentication

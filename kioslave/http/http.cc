@@ -1,4 +1,4 @@
-// $Id$
+
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -12,6 +12,8 @@
 #define DO_SSL
 #define DO_MD5
 #endif
+
+#include <sys/stat.h>
 
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -50,11 +52,15 @@
 #include <ksock.h>
 #include <kurl.h>
 #include <kinstance.h>
+#include <kglobal.h>
+#include <kstddirs.h>
 #include <kdebug.h>
 #include <dcopclient.h>
 
 // Maximum chunk size is 256K
 #define MAX_CHUNK_SIZE (1024*256)
+
+#define MAX_IPC_SIZE (1024*32)
 
 bool open_CriticalDlg( const char *_titel, const char *_message, const char *_but1, const char *_but2 = 0L );
 bool open_PassDlg( const QString& _head, QString& _user, QString& _pass );
@@ -285,6 +291,7 @@ HTTPProtocol::HTTPProtocol( KIOConnection *_conn ) : KIOProtocol( _conn )
   m_cmd = CMD_NONE;
   m_fsocket = 0L;
   m_sock = 0;
+  m_fcache = 0;
   m_bIgnoreJobErrors = false;
   m_bIgnoreErrors = false;
   m_bKeepAlive = false;
@@ -297,6 +304,8 @@ HTTPProtocol::HTTPProtocol( KIOConnection *_conn ) : KIOProtocol( _conn )
   }
 
   m_bCanResume = true; // most of http servers support resuming ?
+
+  m_strCacheDir = KGlobal::dirs()->saveLocation("data", "kio_http/cache");
 
   m_bUseProxy = KProtocolManager::self().useProxy();
 
@@ -537,6 +546,17 @@ bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
   m_state.port = port;
   m_state.do_proxy = do_proxy;
 
+  if (m_state.reload || m_bUseSSL || (m_state.postDataSize > 0))
+     m_fcache = 0;
+  else
+     m_fcache = checkCacheEntry( m_state.cef );
+
+  if (m_fcache)
+  {
+     m_bCached = true;
+     return true;
+  }
+
   // Let's also clear out some things, so bogus values aren't used.
   m_sContentMD5 = "";
   m_HTTPrev = HTTP_Unknown;
@@ -544,6 +564,7 @@ bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
   m_qTransferEncodings.clear(); 
   m_bChunked = false;
   m_iSize = 0;
+  m_bCached = false;
 
   // let's try to open up our socket if we don't have one already.
   if (!m_sock)
@@ -734,6 +755,22 @@ bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
  */
 bool HTTPProtocol::readHeader()
 {
+  // Check 
+  if (m_bCached)
+  {
+     // Read header from cache...
+     char buffer[4097];
+     if (!fgets(buffer, 4096, m_fcache))
+     {
+        // Error, delete cache entry
+        error( ERR_CONNECTION_BROKEN, m_state.url.host() );
+        return false;        
+     }
+     m_strMimeType = QString::fromUtf8( buffer).stripWhiteSpace();
+     mimeType(m_strMimeType);
+     return true;
+  }
+
   // to get rid of those "Open with" dialogs...
   // however at least extensions should be checked
   m_strMimeType = "text/html";
@@ -971,6 +1008,8 @@ bool HTTPProtocol::readHeader()
   // and that we do indeed have a header
   mimeType(m_strMimeType);
 
+  createCacheEntry(m_strMimeType); // Create a cache entry 
+
   return true;
 }
 
@@ -1068,6 +1107,18 @@ void HTTPProtocol::configAuth(const char *p, bool b)
 
 void HTTPProtocol::http_close()
 {
+  if (m_fcache)
+  {
+     fclose(m_fcache);
+     m_fcache = 0;
+     if (!m_bCached)
+     {
+        QString filename = m_state.cef + ".new";
+        kdebug( KDEBUG_INFO, 7103, "deleting cache entry: %s", filename.ascii());
+        unlink( filename.ascii());
+        return;
+     }
+  }
   if (!m_bKeepAlive)
      http_closeConnection();
   else
@@ -1297,7 +1348,7 @@ size_t HTTPProtocol::sendData( HTTPIOJob *job )
   KIOProtocol *ioJob = job ? (KIOProtocol *) job: (KIOProtocol *) this;
 
   size_t sent=0;
-  size_t bufferSize = 2048;
+  size_t bufferSize = MAX_IPC_SIZE;
   size_t sz = big_buffer.size();
   processedSize(sz);
   totalSize(sz);
@@ -1307,6 +1358,12 @@ size_t HTTPProtocol::sendData( HTTPIOJob *job )
   }
   if (sent < sz)
     ioJob->data(big_buffer.data()+sent, (sz-sent));
+
+  if (m_fcache)
+     writeCacheEntry(big_buffer.data(), big_buffer.size());
+
+  if (m_fcache)
+     closeCacheEntry();
 
   ioJob->dataEnd();
   m_cmd = CMD_NONE;
@@ -1790,6 +1847,7 @@ void HTTPProtocol::slotDataEnd( HTTPIOJob *job )
 {
   KIOProtocol *ioJob = job ? (KIOProtocol *) job: (KIOProtocol *) this;
 
+
   // Check if we need to decode the data.
   // If we are in copy mode the use only transfer decoding.
   bool decode = !m_qTransferEncodings.isEmpty() ||
@@ -1806,8 +1864,35 @@ void HTTPProtocol::slotDataEnd( HTTPIOJob *job )
   // speed.
   time_t t_start = time(0L);
   time_t t_last = t_start;
-
   long sz = 0;
+
+  if (m_bCached)
+  {
+     // Jippie! It's already in the cache :-)
+     m_bufReceive.resize(MAX_IPC_SIZE);
+     while (!feof(m_fcache) && !ferror(m_fcache))
+     {
+        int nbytes = fread( m_bufReceive.data(), 1, MAX_IPC_SIZE, m_fcache);
+        if (nbytes > 0)
+        {
+          ioJob->data(m_bufReceive.data(), nbytes); 
+          sz += nbytes;     
+        }
+     }
+     processedSize( sz );
+     // FINALLY, we compute our final speed and let everybody know that we
+     // are done
+     t_last = time(0L);
+     if (t_last - t_start) {
+       speed(sz / (t_last - t_start));
+     } else {
+       speed(0);
+     }
+
+     m_cmd = CMD_NONE;
+     return;
+  }
+
 #ifdef DO_MD5
   MD5_CTX context;
   MD5_Init(&context);
@@ -1848,6 +1933,8 @@ void HTTPProtocol::slotDataEnd( HTTPIOJob *job )
 #endif
         // yep, let the world know that we have some data
         ioJob->data(m_bufReceive.data(), bytesReceived);
+        if (m_fcache)
+           writeCacheEntry(m_bufReceive.data(), bytesReceived);
         sz += bytesReceived;
         processedSize( sz );
         time_t t = time( 0L );
@@ -1933,6 +2020,13 @@ void HTTPProtocol::slotDataEnd( HTTPIOJob *job )
   free(enc_digest);
 #endif
 
+  // Close cache entry
+  if (m_iBytesLeft == 0)
+  {
+     if (m_fcache)
+        closeCacheEntry();
+  }
+
   // FINALLY, we compute our final speed and let everybody know that we
   // are done
   t_last = time(0L);
@@ -2007,13 +2101,146 @@ HTTPProtocol::findCookies( const QString &url)
    return result;
 }
 
+#define CACHE_REVISION "1\n"
+
+FILE *
+HTTPProtocol::checkCacheEntry( QString &CEF)
+{
+   const QChar seperator = '_';
+
+   CEF = m_state.url.path();
+ 
+   int p = CEF.find('/');
+
+   while(p != -1)
+   {
+      CEF[p] = seperator;
+      p = CEF.find('/', p);
+   }
+   
+   QString host = m_state.url.host().lower();
+   CEF = host + CEF + ':';
+
+   QString dir = m_strCacheDir;
+   if (dir[dir.length()-1] != '/')
+      dir += "/";
+
+   int l = host.length();
+   for(int i = 0; i < l; i++)
+   {
+      if (host[i].isLetter() && (host[i] != 'w'))
+      {
+         dir += host[i];
+         break;
+      } 
+   }
+   if (dir[dir.length()-1] == '/')
+      dir += "0";
+
+   unsigned long hash = 0x00000000;
+   QCString u = m_state.url.url().ascii();
+   for(int i = u.length(); i--;)
+   {
+      hash = (hash * 12211 + u[i]) % 2147483563;
+   }
+   
+   QString hashString;
+   hashString.sprintf("%08lx", hash);
+
+   CEF = CEF + hashString;
+
+   CEF = dir + "/" + CEF;
+
+   kdebug( KDEBUG_INFO, 7103, "URL = \"%s\"", u.data() );
+   kdebug( KDEBUG_INFO, 7103, "DIR = \"%s\"", dir.ascii() );
+   kdebug( KDEBUG_INFO, 7103, "CEF = \"%s\"", CEF.ascii() );
+  
+   FILE *fs = fopen( CEF.ascii(), "r");
+   if (!fs)
+      return 0;
+
+   char buffer[5];
+
+   if (!fgets(buffer, 5, fs))
+   {
+      fclose(fs);
+      unlink( CEF.ascii());
+      return 0;
+   }
+   if (strcmp(buffer, CACHE_REVISION) != 0)
+   {
+      fclose(fs);
+      unlink( CEF.ascii());
+      return 0;
+   }
+  
+   return fs;   
+}
+
+void
+HTTPProtocol::createCacheEntry( const QString &mimetype)
+{
+   QString dir = m_state.cef;
+   int p = dir.findRev('/');
+   if (p == -1) return; // Error.
+   dir.truncate(p);
+
+   // Create file
+   int result = ::mkdir( dir.ascii(), 0700 );
+   kdebug( KDEBUG_INFO, 7103, "mkdir %s: result = %d, errno =%d", dir.ascii(), result, errno );
+
+   QString filename = m_state.cef + ".new";  // Create a new cache entry
+
+   m_fcache = fopen( filename.ascii(), "w");
+   if (!m_fcache)
+      return; // Error.
+
+   fputs(CACHE_REVISION, m_fcache);  
+   fputs(mimetype.ascii(), m_fcache);
+   fputc('\n', m_fcache);
+
+   return;  
+}
+
+void
+HTTPProtocol::writeCacheEntry( const char *buffer, int nbytes)
+{
+   if (fwrite( buffer, nbytes, 1, m_fcache) != 1)
+   {
+      kdebug( KDEBUG_WARN, 7103, "writeCacheEntry: writing %d bytes failed.", nbytes );
+      fclose(m_fcache);
+      m_fcache = 0;
+      QString filename = m_state.cef + ".new";
+      unlink( filename.ascii());
+      return;
+   }
+}
+
+void
+HTTPProtocol::closeCacheEntry()
+{
+   QString filename = m_state.cef + ".new";
+   int result = fclose( m_fcache);
+   m_fcache = 0;
+   if (result == 0)
+   {
+      if (rename( filename.ascii(), m_state.cef.ascii()) == 0)
+      {
+         kdebug( KDEBUG_WARN, 7103, "closeCacheEntry: cache written correctly! (%s)", m_state.cef.ascii());
+         return; // Success
+      }
+      kdebug( KDEBUG_WARN, 7103, "closeCacheEntry: error renaming cache entry.");
+   }
+   kdebug( KDEBUG_WARN, 7103, "closeCacheEntry: error closing cache entry.");
+}
+
 
 /*************************************
  *
  * HTTPIOJob
  *
  *************************************/
-
+ 
 
 HTTPIOJob::HTTPIOJob( KIOConnection *_conn, HTTPProtocol *_HTTP ) : KIOJobBase( _conn )
 {
