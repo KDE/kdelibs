@@ -59,12 +59,12 @@ class HighColorStylePlugin : public QStylePlugin
 
 		QStringList keys() const
 		{
-			return QStringList() << "HighColor";
+			return QStringList() << "HighColor" << "Default";
 		}
 
 		QStyle* create( const QString& key )
 		{
-			if ( key == "highcolor" )
+			if ( key == "highcolor" || key == "default" )
 				return new HighColorStyle;
 			return 0;
 		}
