@@ -99,7 +99,10 @@ void test(QDate & date) {
 	kdDebug() << "Day for date " << date.toString() << " is " << KGlobal::locale()->calendar()->day(date) << endl;
 	kdDebug() << "Month for date " << date.toString() << " is " << KGlobal::locale()->calendar()->month(date) << endl;
 	kdDebug() << "Year for date " << date.toString() << " is " << KGlobal::locale()->calendar()->year(date) << endl;
-	kdDebug() << "(Liteal) Year for date " << date.toString() << " is " << KGlobal::locale()->calendar()->yearLiteral(date) << endl;
+
+	kdDebug() << "Day for date " << date.toString() << " as a string is " << KGlobal::locale()->calendar()->dayString(date, true) << endl;
+	kdDebug() << "Month for date " << date.toString() << " as a string is " << KGlobal::locale()->calendar()->monthString(date, true) << endl;
+	kdDebug() << "Year for date " << date.toString() << " as a string is " << KGlobal::locale()->calendar()->yearString(date, true) << endl;
 
 	kdDebug() << "Day of week for date " << date.toString() << " is number " << KGlobal::locale()->calendar()->dayOfWeek(date) << endl;
 	kdDebug() << "Week name for date " << date.toString() << " is " << KGlobal::locale()->calendar()->weekDayName(date) << endl;
