@@ -18,6 +18,8 @@
 #ifndef _KGLOBAL_H
 #define _KGLOBAL_H
 
+#include "kdemacros.h"
+
 class KCharsets;
 class KConfig;
 class KIconLoader;
@@ -186,20 +188,6 @@ inline const T& kMax (const T& a, const T& b) { return b < a ? a : b; }
 
 template<class T>
 inline T kAbs (const T& a) { return a < 0 ? -a : a; }
-
-#if __GNUC__ - 0 > 3 || (__GNUC__ - 0 == 3 && __GNUC_MINOR__ - 0 > 2)
-#define KDE_NO_EXPORT __attribute__ ((visibility("hidden")))
-#define KDE_EXPORT __attribute__ ((visibility("visible")))
-#else
-#define KDE_NO_EXPORT
-#define KDE_EXPORT
-#endif
-
-#if __GNUC__ - 0 > 3 || (__GNUC__ - 0 == 3 && __GNUC_MINOR__ - 0 >= 2)
-# define KDE_DEPRECATED __attribute__ ((deprecated))
-#else
-# define KDE_DEPRECATED
-#endif
 
 /**
  * \mainpage The KDE Core Functionality Library
