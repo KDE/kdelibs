@@ -70,7 +70,7 @@ public:
 		  KDialogBase::DialogType dialogType = KDialogBase::IconList,
 		  bool modal=false);
   /**
-   * Deconstructor, removes name from openDialogs list.
+   * Deconstructor, removes name from openDialogs list.  Deletes private class.
    * @ref exists()
    */ 
   ~KAutoConfigDialog();

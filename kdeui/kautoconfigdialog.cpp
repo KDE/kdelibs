@@ -40,6 +40,7 @@ KAutoConfigDialog::KAutoConfigDialog(QWidget *parent,const char *name,
 
 KAutoConfigDialog::~KAutoConfigDialog(){
   openDialogs.remove(name());
+  delete d;
 }
   
 void KAutoConfigDialog::addPage(QWidget *page,
