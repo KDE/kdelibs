@@ -67,7 +67,6 @@ void KURLComboBox::init( Mode mode )
     myMode    = mode;
     urlAdded  = false;
     myMaximum = 10; // default
-    firstItemIndex = 0;
     itemList.setAutoDelete( true );
     defaultList.setAutoDelete( true );
     setInsertionPolicy( NoInsertion );
@@ -85,7 +84,7 @@ QStringList KURLComboBox::urls() const
     //static const QString &fileProt = KGlobal::staticQString("file:");
     QStringList list;
     QString url;
-    for ( int i = firstItemIndex; i < count(); i++ ) {
+    for ( int i = defaultList.count(); i < count(); i++ ) {
         url = text( i );
         if ( !url.isEmpty() ) {
             //if ( url.at(0) == '/' )
@@ -119,7 +118,6 @@ void KURLComboBox::addDefaultURL( const KURL& url, const QPixmap& pix,
     else
         item->text = text;
 
-    firstItemIndex++;
     defaultList.append( item );
 }
 
@@ -130,7 +128,7 @@ void KURLComboBox::setDefaults()
     itemMapper.clear();
 
     KURLComboItem *item;
-    for ( int id = 0; id < firstItemIndex; id++ ) {
+    for ( int id = 0; id < defaultList.count(); id++ ) {
         item = defaultList.at( id );
         insertURLItem( item );
     }
@@ -158,7 +156,7 @@ void KURLComboBox::setURLs( QStringList urls )
     }
 
     // limit to myMaximum items
-    int overload = urls.count() - myMaximum + firstItemIndex;
+    int overload = urls.count() - myMaximum + defaultList.count();
     if ( overload < 0 )
         overload = 0;
     it = urls.at( overload );
@@ -276,7 +274,7 @@ void KURLComboBox::setMaxItems( int max )
         setDefaults();
 
         QListIterator<KURLComboItem> it( itemList );
-        int overload = itemList.count() - myMaximum + firstItemIndex;
+        int overload = itemList.count() - myMaximum + defaultList.count();
         for ( int i = 0; i <= overload; i++ )
             ++it;
 
