@@ -594,8 +594,8 @@ UIServer::UIServer()
 
   // setup statusbar
   statusBar()->insertItem( i18n(" Files: %1 ").arg( 0 ), ID_TOTAL_FILES);
-  statusBar()->insertItem( i18n(" Size: %1 kB ").arg( "0" ), ID_TOTAL_SIZE);
-  statusBar()->insertItem( i18n(" Time: 00:00:00 "), ID_TOTAL_TIME);
+  statusBar()->insertItem( i18n(" Rem Size: %1 kB ").arg( "0" ), ID_TOTAL_SIZE);
+  statusBar()->insertItem( i18n(" Rem Time: 00:00:00 "), ID_TOTAL_TIME);
   statusBar()->insertItem( i18n(" %1 kB/s ").arg("0"), ID_TOTAL_SPEED);
 
   // setup listview
@@ -1054,7 +1054,7 @@ void UIServer::slotUpdate() {
   }
 
   int iTotalFiles = 0;
-  int iTotalSize = 0;
+  KIO::filesize_t iTotalSize = 0;
   int iTotalSpeed = 0;
   QTime totalRemTime;
 
@@ -1078,9 +1078,9 @@ void UIServer::slotUpdate() {
 
   // update statusbar
   statusBar()->changeItem( i18n( " Files: %1 ").arg( iTotalFiles ), ID_TOTAL_FILES);
-  statusBar()->changeItem( i18n( " Size: %1 ").arg( KIO::convertSize( iTotalSize ) ),
+  statusBar()->changeItem( i18n( " Rem Size: %1 ").arg( KIO::convertSize( iTotalSize ) ),
                            ID_TOTAL_SIZE);
-  statusBar()->changeItem( i18n( " Time: %1 ").arg( totalRemTime.toString() ), ID_TOTAL_TIME);
+  statusBar()->changeItem( i18n( " Rem Time: %1 ").arg( totalRemTime.toString() ), ID_TOTAL_TIME);
   statusBar()->changeItem( i18n( " %1/s ").arg( KIO::convertSize( iTotalSpeed ) ),
                            ID_TOTAL_SPEED);
 
