@@ -44,8 +44,6 @@ MainWindow::MainWindow( const char *name, WFlags f )
   : KTMainWindow( name, f )
 {
   d = new MainWindowPrivate();
-  m_factory = new KXMLGUIFactory( this );
-  setInstance( KGlobal::instance() );
   PartBase::setObject( this );
 }
 
@@ -58,6 +56,8 @@ void MainWindow::createGUI( Part * part )
 {
   kDebugStringArea( 1000, QString("MainWindow::createGUI for %1").arg(part?part->name():"0L"));
 
+  KXMLGUIFactory *factory = guiFactory();
+  
   setUpdatesEnabled( false );
 
   QValueList<KXMLGUIServant *> plugins;
@@ -75,12 +75,12 @@ void MainWindow::createGUI( Part * part )
     pBegin = plugins.begin();
 
     for (; pIt != pBegin ; --pIt )
-      m_factory->removeServant( *pIt );
+      factory->removeServant( *pIt );
 
     if ( pIt != plugins.end() )
-      m_factory->removeServant( *pIt );
+      factory->removeServant( *pIt );
 
-    m_factory->removeServant( d->m_activePart );
+    factory->removeServant( d->m_activePart );
 
     disconnect( d->m_activePart, SIGNAL( setWindowCaption( const QString & ) ),
              this, SLOT( setCaption( const QString & ) ) );
@@ -93,13 +93,13 @@ void MainWindow::createGUI( Part * part )
     GUIActivateEvent ev( true );
     QApplication::sendEvent( this, &ev );
 
-    m_factory->addServant( this );
+    factory->addServant( this );
 
     plugins = Plugin::pluginServants( this );
     pIt = plugins.begin();
     pEnd = plugins.end();
     for (; pIt != pEnd; ++pIt )
-      m_factory->addServant( *pIt );
+      factory->addServant( *pIt );
 
     d->m_bShellGUIActivated = true;
   }
@@ -115,14 +115,14 @@ void MainWindow::createGUI( Part * part )
     GUIActivateEvent ev( true );
     QApplication::sendEvent( part, &ev );
 
-    m_factory->addServant( part );
+    factory->addServant( part );
 
     plugins = Plugin::pluginServants( part );
     pIt = plugins.begin();
     pEnd = plugins.end();
 
     for (; pIt != pEnd; ++pIt )
-      m_factory->addServant( *pIt );
+      factory->addServant( *pIt );
   }
 
   setUpdatesEnabled( true );
