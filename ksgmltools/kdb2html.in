@@ -12,7 +12,6 @@ CATALOG=$ksgmldir/catalog
 DB_STYLESHEET=$ksgmldir/stylesheets/kde.dsl
 
 output=HTML
-TMPDIR=DBTOHTML_OUTPUT_DIR$$
 
 if [ ! $# = 1 ]
 then
@@ -28,7 +27,13 @@ fi
 
 exit_status=0
 
-mkdir $TMPDIR
+if [ -x /bin/mktemp ]; then
+	TMPDIR=`/bin/mktemp -d DBTOHTML_OUTPUT_DIR_XXXXXX`
+else
+	TMPDIR=DBTOHTML_OUTPUT_DIR$$
+	mkdir $TMPDIR
+fi
+
 SAVE_PWD=`pwd`
 (cd $TMPDIR;
   if test -f ../$1; then
