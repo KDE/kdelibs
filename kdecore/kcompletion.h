@@ -184,9 +184,21 @@ public:
 
 
     /**
-     * @returns a list of all items inserted into KCompletion. This is useful
+     * Returns a list of all items inserted into KCompletion. This is useful
      * if you need to save the state of a KCompletion object and restore it
      * later.
+     *
+     * Important note: when order() == Weighted, then every item in the 
+     * stringlist has its weight appended, delimited by a colon. E.g. an item
+     * "carp" might look like "carp:4", where 4 is the weight.
+     *
+     * This is necessary so that you can save the items along with its 
+     * weighting on disk and load them back with @ref setItems(), restoring its
+     * weight as well. If you really don't want the appended weightings, call
+     * setOrder( KCompletion::Insertion )
+     * before calling items().
+     *
+     * @returns a list of all items
      * @see #setItems
      */
     QStringList items() const;
@@ -329,6 +341,15 @@ public slots:
     /**
      * Sets the list of items available for completion. Removes all previous
      * items.
+     *
+     * Notice: when order() == Weighted, then the weighting is looked up for
+     * every item in the stringlist. Every item should have ":number" appended,
+     * where number is an unsigned integer, specifying the weighting.
+     *
+     * If you don't like this, call 
+     * setOrder( KCompletion::Insertion )
+     * before calling setItems().
+     *
      * @see #items
      */
     void setItems( const QStringList& );
@@ -402,12 +423,13 @@ protected:
     virtual void postProcessMatches( QStringList * /*matches*/ ) {}
 
 private:
-    void 		addItemInternal( const QString& );
+    void 		addItemInternal( const QString&, bool weighted=false );
     QString 		findCompletion( const QString& string );
     const QStringList& 	findAllCompletions( const QString& );
     void 		extractStringsFromNode( const KCompTreeNode *,
 						const QString& beginning,
-						QStringList *matches ) const;
+						QStringList *matches,
+						bool addWeight = false ) const;
 
     enum 		BeepMode { NoMatch, PartialMatch, Rotation };
     void 		doBeep( BeepMode );
@@ -454,39 +476,39 @@ class KCompletionBase
 
 public:
 
-	/**
-	 * Constants that represent the items whose short-cut
-	 * key-binding is programmable.  The default key-bindings
-	 * for these items are defined in @ref KStdAccel.
-	 */	
-	enum KeyBindingType {
-		TextCompletion,
-		PrevCompletionMatch,
-		NextCompletionMatch,
-		RotateUp,
-		RotateDown
-	};
+    /**
+     * Constants that represent the items whose short-cut
+     * key-binding is programmable.  The default key-bindings
+     * for these items are defined in @ref KStdAccel.
+     */	
+    enum KeyBindingType {
+	TextCompletion,
+	PrevCompletionMatch,
+	NextCompletionMatch,
+	RotateUp,
+	RotateDown
+    };
 
-	/**
-	 * Constants that represent the ID's of the popup menu
-	 * items that get inserted into the supplied QPopupMenu
-	 */			
-	enum MenuID {
+    /**
+     * Constants that represent the ID's of the popup menu
+     * items that get inserted into the supplied QPopupMenu
+     */			
+    enum MenuID {
         Default=0,
-	    Cut,
-	    Copy,
-	    Paste,
-	    Clear,
+	Cut,
+	Copy,
+	Paste,
+	Clear,
         Unselect,
-	    SelectAll,
-	    NoCompletion,
-	    AutoCompletion,
+	SelectAll,
+	NoCompletion,
+	AutoCompletion,
         ShellCompletion,
-	    SemiAutoCompletion	
-	};
+	SemiAutoCompletion	
+    };
 	
-	// Map for the key binding types mentioned above.
-	typedef QMap<KeyBindingType, int> KeyBindingMap;
+    // Map for the key binding types mentioned above.
+    typedef QMap<KeyBindingType, int> KeyBindingMap;
 
     /**
     * Default constructor.

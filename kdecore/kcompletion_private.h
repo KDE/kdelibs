@@ -80,9 +80,10 @@ public:
     inline int		childrenCount() const { return myChildren.count(); }
 
     // weighting
-    inline void confirm() 	{ myWeight++; }
-    inline void decline() 	{ myWeight--; }
-    inline uint weight() const 	{ return myWeight; }
+    inline void confirm() 	{ myWeight++; 		}
+    inline void confirm(uint w) { myWeight += w;	}
+    inline void decline() 	{ myWeight--; 		}
+    inline uint weight() const 	{ return myWeight; 	}
 
     inline const KCompTreeChildren * children() const {
 	return &myChildren;

@@ -50,16 +50,18 @@ void KCompletion::setItems( const QStringList& items )
     myRotationIndex = 0;
     myLastString = QString::null;
 
+    bool weighted = (myOrder == Weighted);
     QStringList::ConstIterator it;
     for ( it = items.begin(); it != items.end(); ++it )
-        addItemInternal( *it );
+        addItemInternal( *it, weighted );
 }
 
 
 QStringList KCompletion::items() const
 {
     QStringList list;
-    extractStringsFromNode( myTreeRoot, QString::null, &list );
+    bool addWeight = (myOrder == Weighted);
+    extractStringsFromNode( myTreeRoot, QString::null, &list, addWeight );
 
     return list;
 }
@@ -75,18 +77,41 @@ void KCompletion::addItem( const QString& item )
 }
 
 
-void KCompletion::addItemInternal( const QString& item )
+void KCompletion::addItemInternal( const QString& item, bool weighted )
 {
     QChar ch;
     KCompTreeNode *node = myTreeRoot;
+    uint len = item.length();
+    uint weight = 0;
+    
+    // find out the weighting of this item
+    if ( weighted ) {
+	int index = item.findRev(':');
+	if ( index > 0 ) {
+	    bool ok;
+	    weight = item.mid( index + 1 ).toUInt( &ok );
+	    if ( !ok )
+		weight = 0;
 
-    register bool sorted = (myOrder == Sorted);
-    for ( uint i = 0; i < item.length(); i++ ) {
+	    len = index; // only insert until the ':'
+	}
+    }
+    
+    bool sorted = (myOrder == Sorted);
+    bool setWeight = (weighted && weight > 1);
+    // knowing the weight of an item, we simply add this weight to all of its
+    // nodes.
+    
+    for ( uint i = 0; i < len; i++ ) {
         ch = item.at( i );
 	node = node->insert( ch, sorted );
+	if ( setWeight )
+	    node->confirm( weight -1 ); // node->insert() sets weighting to 1
     }
 
-    node->insert( 0x0, true ); // add 0x0-item as delimiter
+    node->insert( 0x0, true ); // add 0x0-item as delimiter with evtl. weight
+    if ( setWeight )
+	node->confirm( weight -1 );
 }
 
 
@@ -362,7 +387,8 @@ const QStringList& KCompletion::findAllCompletions( const QString& string )
 
 void KCompletion::extractStringsFromNode( const KCompTreeNode *node,
 					  const QString& beginning,
-					  QStringList *matches ) const
+					  QStringList *matches, 
+					  bool addWeight ) const
 {
     if ( !node || !matches )
         return;
@@ -385,6 +411,11 @@ void KCompletion::extractStringsFromNode( const KCompTreeNode *node,
 	        string += *node;
 
 	    else { // we found a leaf
+		if ( addWeight ) {
+		    // add ":num" to the string to store the weighting
+		    string += ':';
+		    string += QChar( node->weight() );
+		}
 	        matches->append( string );
 		// debug( " -> found match: %s", debugString( string ));
 	    }
@@ -392,7 +423,7 @@ void KCompletion::extractStringsFromNode( const KCompTreeNode *node,
 
 	// recursively find all other strings.
 	if ( node && node->childrenCount() > 1 )
-	    extractStringsFromNode( node, string, matches );
+	    extractStringsFromNode( node, string, matches, addWeight );
     }
 }
 
