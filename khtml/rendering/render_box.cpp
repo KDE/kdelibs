@@ -219,14 +219,14 @@ void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, i
             sptr = firstChild()->style();
 
         int sx = 0;
-        int sy = 0;        
+        int sy = 0;
 	    int cw,ch;
         int cx,cy;
         int vpab = borderRight() + borderLeft();
         int hpab = borderTop() + borderBottom();
 
         // CSS2 chapter 14.2.1
-        
+
         if (sptr->backgroundAttachment())
         {
             //scroll
@@ -243,7 +243,7 @@ void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, i
                 cx = _tx;
                 sx =  pixw - ((sptr->backgroundXPosition().minWidth(pw-pixw)) % pixw );
             }
-            
+
             cx += borderLeft();
 
             if( (bgr == NO_REPEAT || bgr == REPEAT_X) && h > pixh ) {
@@ -253,17 +253,17 @@ void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, i
                 ch = h-hpab;
                 cy = _ty;
                 sy = pixh - ((sptr->backgroundYPosition().minWidth(ph-pixh)) % pixh );
-            }            
-            
+            }
+
             cy += borderTop();
-        } 
+        }
         else
         {
             //fixed
             QRect vr = viewRect();
-            int pw = vr.width();   
+            int pw = vr.width();
             int ph = vr.height();
-            
+
             int pixw = bg->pixmap_size().width();
             int pixh = bg->pixmap_size().height();
             EBackgroundRepeat bgr = sptr->backgroundRepeat();
@@ -283,19 +283,19 @@ void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, i
                 ch = ph;
                 cy = vr.y();
                 sy = pixh - ((sptr->backgroundYPosition().minWidth(ph-pixh)) % pixh );
-            }              
+            }
 
             QRect fix(cx,cy,cw,ch);
             QRect ele(_tx+borderLeft()+paddingLeft(),_ty+borderTop()+paddingTop(),w-vpab,h-hpab);
             QRect b = fix.intersect(ele);
             sx+=b.x()-cx;
             sy+=b.y()-cy;
-            cx=b.x();cy=b.y();cw=b.width();ch=b.height();        
+            cx=b.x();cy=b.y();cw=b.width();ch=b.height();
         }
 
 
 //        kdDebug() << "cx="<<cx << " cy="<<cy<< " cw="<<cw << " ch="<<ch << " sx="<<sx << " sy="<<sy << endl;
-        
+
         if (cw>0 && ch>0)
             p->drawTiledPixmap(cx, cy, cw, ch, bg->tiled_pixmap(c), sx, sy);
     }
@@ -310,7 +310,7 @@ void RenderBox::outlineBox(QPainter *p, int _tx, int _ty, const char *color)
 
 
 void RenderBox::calcClip(QPainter* p, int tx, int ty, const QRegion& old)
-{    
+{
     int bl=borderLeft(),bt=borderTop(),bb=borderBottom(),br=borderRight();
     int clipx = tx+bl;
     int clipy = ty+bt;
@@ -321,7 +321,7 @@ void RenderBox::calcClip(QPainter* p, int tx, int ty, const QRegion& old)
     {
         int c=style()->clipLeft().width(m_width-bl-br);
         clipx+=c;
-        clipw-=c;  
+        clipw-=c;
     }
     if (!style()->clipRight().isVariable())
     {
@@ -331,21 +331,21 @@ void RenderBox::calcClip(QPainter* p, int tx, int ty, const QRegion& old)
     {
         int c=style()->clipTop().width(m_height-bt-bb);
         clipy+=c;
-        cliph-=c;              
-    } 
+        cliph-=c;
+    }
     if (!style()->clipBottom().isVariable())
     {
         cliph-=style()->clipBottom().width(m_height-bt-bb);
     }
 //    kdDebug( 6040 ) << "setting clip("<<clipx<<","<<clipy<<","<<clipw<<","<<cliph<<")"<<endl;
-            
+
     QRect cr(clipx,clipy,clipw,cliph);
     cr = p->xForm(cr);
     QRegion creg(cr);
     if (!old.isNull())
         creg = old.intersect(creg);
     p->setClipRegion(creg);
-    
+
 }
 
 void RenderBox::close()
@@ -487,9 +487,9 @@ void RenderBox::repaintRectangle(int x, int y, int w, int h, bool f)
 {
     x += m_x;
     y += m_y;
-    
+
     if (style()->position()==FIXED) f=true;
-            
+
     // kdDebug( 6040 ) << "RenderBox(" << renderName() << ")::repaintRectangle (" << x << "/" << y << ") (" << w << "/" << h << ")" << endl;
     RenderObject *o = container();
     if( o ) o->repaintRectangle(x, y, w, h, f);
@@ -672,13 +672,13 @@ void RenderBox::calcHeight()
             if (h.isFixed())
                 fh = h.value + borderTop() + paddingTop() + borderBottom() + paddingBottom();
             else if (h.isPercent()) {
-	            Length ch = containingBlock()->style()->height();
+                Length ch = containingBlock()->style()->height();
                 if (ch.isFixed())
-                    fh = h.width(ch.value) + borderTop() + paddingTop() + borderBottom() + paddingBottom();                
+                    fh = h.width(ch.value) + borderTop() + paddingTop() + borderBottom() + paddingBottom();
             }
             if (fh!=-1)
             {
-                    //containsPositioned needs a less misleading name
+                //containsPositioned needs a less misleading name
                 if (fh<m_height && !containsPositioned() && style()->overflow()==OVISIBLE)
                 {
                     setContainsPositioned(true);
@@ -686,7 +686,6 @@ void RenderBox::calcHeight()
 
                 m_height = fh;
             }
-
         }
     }
 }
@@ -699,7 +698,7 @@ void RenderBox::calcVerticalMargins()
 	m_marginBottom = TABLECELLMARGIN;
 	return;
     }
-	
+
     Length tm = style()->marginTop();
     Length bm = style()->marginBottom();
 
@@ -709,6 +708,12 @@ void RenderBox::calcVerticalMargins()
 
     m_marginTop = tm.minWidth(cw);
     m_marginBottom = bm.minWidth(cw);
+}
+
+bool RenderBox::containsPoint(int _x, int _y, int _tx, int _ty)
+{
+    return ((_y >= _ty) && (_y < _ty + m_height) &&
+	    (_x >= _tx) && (_x < _tx + m_width));
 }
 
 void RenderBox::calcAbsoluteHorizontal()

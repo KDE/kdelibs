@@ -92,6 +92,7 @@ public:
     virtual void calcHeight();
     
     void calcVerticalMargins();
+    virtual bool containsPoint(int _x, int _y, int _tx, int _ty);
 
 protected:
     virtual void printBoxDecorations(QPainter *p,int _x, int _y,

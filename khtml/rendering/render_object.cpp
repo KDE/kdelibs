@@ -780,10 +780,9 @@ void RenderObject::detach()
     delete this;
 }
 
-bool RenderObject::containsPoint(int _x, int _y, int _tx, int _ty)
+bool RenderObject::containsPoint(int /*_x*/, int /*_y*/, int /*_tx*/, int /*_ty*/)
 {
-    return ((_y >= _ty) && (_y < _ty + height()) &&
-	    (_x >= _tx) && (_x < _tx + width()));
+    return false;
 }
 
 short RenderObject::verticalPositionHint( bool firstLine ) const
