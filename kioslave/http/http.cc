@@ -5166,6 +5166,9 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
     info.password = m_state.passwd.latin1();
     p = m_strAuthorization.latin1();
   }
+  if (!p || !*p)
+    return QString::null;
+  
   p += 6; // Skip "Digest"
 
   if ( info.username.isEmpty() || info.password.isEmpty() || !p )
@@ -5432,7 +5435,9 @@ QString HTTPProtocol::proxyAuthenticationHeader()
     // without prompting the user...
     if ( !info.username.isNull() && !info.password.isNull() )
     {
-      if( m_strProxyAuthorization.startsWith("Basic") )
+      if( m_strProxyAuthorization.isEmpty() )
+        ProxyAuthentication = AUTH_None;
+      else if( m_strProxyAuthorization.startsWith("Basic") )
         ProxyAuthentication = AUTH_Basic;
       else
         ProxyAuthentication = AUTH_Digest;
