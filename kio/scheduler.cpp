@@ -785,18 +785,17 @@ Scheduler::slotScheduleCoSlave()
            QString host = url.host();
            int port = url.port();
 
-#if 0
-           QString user = url.user();
-           QString passwd = url.pass();
-
-           if ((slave->host() != host) ||
-               (slave->port() != port) ||
-               (slave->user() != user) ||
-               (slave->passwd() != passwd))
+           if (slave->host() == "<reset>")
            {
+              QString user = url.user();
+              QString passwd = url.pass();
+
+              MetaData configData = slaveConfig->configData(url.protocol(), url.host());
+              slave->setConfig(configData);
+              slave->setProtocol(url.protocol());
               slave->setHost(host, port, user, passwd);
            }
-#endif
+
            assert(slave->protocol() == url.protocol());
            assert(slave->host() == host);
            assert(slave->port() == port);
