@@ -96,10 +96,13 @@ protected:
     /**
      * Start using TLS on the connection.
      *
-     * @return on success, true is returned.
-     *         on failure, true certainly isn't returned.
+     * @return on success, 1 is returned.
+     *         on failure, 0 is returned.
+     *         on TLS init failure, -1 is returned.
+     *         on connect failure, -2 is returned.
+     *         on certificate failure, -3 is returned.
      */
-    bool startTLS();
+    int startTLS();
 
     /**
      * Stop using TLS on the connection.
@@ -128,6 +131,9 @@ protected:
 
     // don't use me!
     void doConstructorStuff();
+
+    // For the certificate verification code
+    int verifyCertificate();
 
 };
 

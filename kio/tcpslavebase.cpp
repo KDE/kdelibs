@@ -14,16 +14,23 @@
 #include "kio/tcpslavebase.h"
 #include "kextsock.h"
 #include <ksocks.h>
+#include <kdebug.h>
+#include <kssl.h>
+#include <ksslcertificate.h>
+#include <ksslcertificatecache.h>
+#include <kmessagebox.h>
+
+#include <klocale.h>
 
 using namespace KIO;
 
-#include <kssl.h>
 
 
 class TCPSlaveBase::TcpSlaveBasePrivate {
 public:
   KSSL *kssl;
   bool usingTLS;
+  KSSLCertificateCache *cc;
 };
 
 
@@ -48,6 +55,7 @@ TCPSlaveBase::TCPSlaveBase(unsigned short int default_port, const QCString &prot
 void TCPSlaveBase::doConstructorStuff()
 {
         d = new TcpSlaveBasePrivate;
+        d->cc = NULL;
         d->usingTLS = false;
 }
 
@@ -79,8 +87,8 @@ ssize_t TCPSlaveBase::ReadLine(char *data, ssize_t len)
 
         if (m_bIsSSL || d->usingTLS) {
            // ugliness alert!!  calling read() so many times can't be good...
-           int clen=0;
-           char *buf=data;
+           int clen = 0;
+           char *buf = data;
            while (clen < len) {
               int rc = d->kssl->read(buf, 1);
               if (rc < 0) return -1;
@@ -88,7 +96,7 @@ ssize_t TCPSlaveBase::ReadLine(char *data, ssize_t len)
               if (*buf++ == '\n')
                  break;
            }
-           *buf=0; 
+           *buf = 0; 
            return clen;
         }
 
@@ -134,12 +142,21 @@ bool TCPSlaveBase::ConnectToHost(const QCString &host, unsigned short int _port)
 	      error( ERR_COULD_NOT_CONNECT, host);
 	    return false;
 	  }
+
 	m_iSock = ks.fd();
 	ks.release();		// KExtendedSocket no longer applicable
+
+        setMetaData("ssl_in_use", "FALSE");
         if (m_bIsSSL) {
            d->kssl->reInitialize();
            int rc = d->kssl->connect(m_iSock);
            if (rc < 0) { 
+              CloseDescriptor();
+              return false;
+           }
+           setMetaData("ssl_in_use", "TRUE");
+           rc = verifyCertificate();
+           if (rc != 1) {
               CloseDescriptor();
               return false;
            }
@@ -153,6 +170,10 @@ bool TCPSlaveBase::ConnectToHost(const QCString &host, unsigned short int _port)
 		return false;
 	}
 	m_iPort=port;
+
+        connected();    // tell the caller that we have connected
+                        // so it can read the metadata and do any preparation
+
 	return true;
 }
 
@@ -184,6 +205,8 @@ bool TCPSlaveBase::InitializeSSL()
 
 void TCPSlaveBase::CleanSSL()
 {
+   delete d->cc;
+
    if (m_bIsSSL) {
       delete d->kssl;
    }
@@ -194,24 +217,31 @@ bool TCPSlaveBase::AtEOF()
 	return feof(fp);
 }
 
-bool TCPSlaveBase::startTLS()
+int TCPSlaveBase::startTLS()
 {
         if (d->usingTLS || m_bIsSSL || !KSSL::doesSSLWork()) return false;
 
         d->kssl = new KSSL(false);
         if (!d->kssl->TLSInit()) {
            delete d->kssl;
-           return false;
+           return -1;
         }
 
         int rc = d->kssl->connect(m_iSock);
         if (rc < 0) {
            delete d->kssl;
-           return false;
+           return -2;
         }
 
         d->usingTLS = true;
-return d->usingTLS;
+        setMetaData("ssl_in_use", "TRUE");
+        rc = verifyCertificate();
+        if (rc != 1) {
+           delete d->kssl;
+           return -3;
+        }
+
+return (d->usingTLS ? 1 : 0);
 }
 
 
@@ -220,6 +250,7 @@ void TCPSlaveBase::stopTLS()
         if (d->usingTLS) {
            delete d->kssl;
            d->usingTLS = false;
+           setMetaData("ssl_in_use", "FALSE");
         }
 }
 
@@ -236,5 +267,132 @@ bool TCPSlaveBase::usingTLS()
 {
         return d->usingTLS;
 }
+
+
+//  Returns 0 for failed verification, -1 for rejected cert and 1 for ok
+int TCPSlaveBase::verifyCertificate()
+{
+int rc = 0;
+
+   if (!d->cc) d->cc = new KSSLCertificateCache;
+
+   KSSLCertificate& pc = d->kssl->peerInfo().getPeerCertificate();
+
+   KSSLCertificate::KSSLValidation ksv = pc.validate();
+
+   /*
+    *     Setting the various bits of meta-info that will be needed.
+    */
+   setMetaData("ssl_peer_cert_subject",
+                                                             pc.getSubject());
+   setMetaData("ssl_peer_cert_issuer", 
+                                                              pc.getIssuer());
+   setMetaData("ssl_cipher",
+                                       d->kssl->connectionInfo().getCipher());
+   setMetaData("ssl_cipher_desc", 
+                            d->kssl->connectionInfo().getCipherDescription());
+   setMetaData("ssl_cipher_version", 
+                                d->kssl->connectionInfo().getCipherVersion());
+   setMetaData("ssl_cipher_used_bits", 
+              QString::number(d->kssl->connectionInfo().getCipherUsedBits()));
+   setMetaData("ssl_cipher_bits", 
+                  QString::number(d->kssl->connectionInfo().getCipherBits()));
+   setMetaData("ssl_peer_ip", 
+                                                            QString("FIXME"));
+   setMetaData("ssl_cert_state", 
+                                                        QString::number(ksv));
+   setMetaData("ssl_good_from", 
+                                                           pc.getNotBefore());
+   setMetaData("ssl_good_until", 
+                                                            pc.getNotAfter());
+
+   if (ksv == KSSLCertificate::Ok) {
+      rc = 1;
+      setMetaData("ssl_action", "accept");
+   }
+
+   if (!hasMetaData("parent_frame") || metaData("parent_frame") == "TRUE") {
+      //  - Read from cache and see if there is a policy for this
+      KSSLCertificateCache::KSSLCertificatePolicy cp = d->cc->getPolicyByCertificate(pc);
+
+      //  - does the IP match?   FIXME
+
+      //  - validation code
+      if (ksv != KSSLCertificate::Ok) {
+         if (cp == KSSLCertificateCache::Unknown || 
+             cp == KSSLCertificateCache::Ambiguous) {
+            // FIXME: obtain the default bad-cert policy -- default to prompt
+            cp = KSSLCertificateCache::Prompt;
+         }
+
+         // Precondition: cp is one of Reject, Accept or Prompt
+         switch (cp) {
+         case KSSLCertificateCache::Accept:
+           rc = 1;
+           setMetaData("ssl_action", "accept");
+          break;
+         case KSSLCertificateCache::Reject:
+           rc = -1;
+           setMetaData("ssl_action", "reject");
+          break;
+         case KSSLCertificateCache::Prompt:
+           {
+           int result = messageBox( WarningYesNo,
+                                    i18n("Certificate verification failed (FIXME)"),
+                                    i18n("Server Authentication"),
+                                    i18n("Continue"),
+                                    i18n("Cancel") );
+           if (result == KMessageBox::Yes) {
+              setMetaData("ssl_action", "accept");
+              rc = 1;
+           } else {
+              setMetaData("ssl_action", "reject");
+              rc = -1;
+           }
+           }
+          break;
+         default:
+          kdDebug() << "TCPSlaveBase/SSL error in cert code.  Please report this to kfm-devel@kde.org." << endl;
+          break;
+         }
+      }
+
+      //  - cache the results
+
+   } else {
+      //  - Read from cache and see if there is a policy for this
+      KSSLCertificateCache::KSSLCertificatePolicy cp = d->cc->getPolicyByCertificate(pc);
+      
+   }
+
+   // Things to check:
+   //  - entering SSL
+   //  - leaving SSL
+   //  - mixed SSL/nonSSL
+   //  - posting unencrypted data  -- elsewhere?
+
+
+
+kdDebug() << "SSL connection information follows:" << endl
+          << "+-----------------------------------------------" << endl
+          << "| Cipher: " << d->kssl->connectionInfo().getCipher() << endl
+          << "| Description: " << d->kssl->connectionInfo().getCipherDescription()
+          << "| Version: " << d->kssl->connectionInfo().getCipherVersion()
+<< endl
+          << "| Strength: " << d->kssl->connectionInfo().getCipherUsedBits()
+          << " of " << d->kssl->connectionInfo().getCipherBits()
+          << " bits used." << endl
+          << "| PEER:" << endl
+          << "| Subject: " << d->kssl->peerInfo().getPeerCertificate().getSubject() << endl
+          << "| Issuer: " << d->kssl->peerInfo().getPeerCertificate().getIssuer() << endl
+          << "| Validation: " << (int)ksv << endl
+          << "+-----------------------------------------------"
+          << endl;
+//          << "| Certificate matches CN: " << matchingCN << endl
+
+   sendMetaData();
+return rc;
+}
+
 
 
