@@ -74,6 +74,7 @@ Scheduler::Scheduler()
     mytimer(this, "Scheduler::mytimer"),
     cleanupTimer(this, "Scheduler::cleanupTimer")
 {
+    slaveOnHold = 0;
     protInfoDict = new ProtocolInfoDict;
     slaveList = new SlaveList;
     idleSlaves = new SlaveList;
@@ -149,14 +150,41 @@ void Scheduler::startStep()
        bool newSlave = false;
 
        // Look for matching slave
-       Slave *slave = idleSlaves->first();
-       for(; slave; slave = idleSlaves->next())
+       Slave *slave = 0;
+       if (!slave)
        {
-           if ((protocol == slave->protocol()) &&
-               (host == slave->host()) &&
-               (port == slave->port()) &&
-               (user == slave->user()))
-              break;
+//WABA:
+// Make somehow sure that the job wants to do a GET.
+          if (slaveOnHold)
+          {
+             if (job->url() == urlOnHold)
+             {
+kdDebug(7006) << "HOLD: Reusing hold slave." << endl;
+                slave = slaveOnHold;
+                protInfo->idleSlaves++; // Will be decreased later on.
+             }
+             else
+             {
+kdDebug(7006) << "HOLD: Discarding hold slave." << endl;
+                slaveOnHold->kill();
+             }
+             slaveOnHold = 0;
+             urlOnHold = KURL();
+          }
+       }
+
+       if (!slave)
+       {
+          for( slave = idleSlaves->first();
+               slave; 
+               slave = idleSlaves->next())
+          {
+             if ((protocol == slave->protocol()) &&
+                  (host == slave->host()) &&
+                  (port == slave->port()) &&
+                  (user == slave->user()))
+                 break;
+          }
        }
 
        if (!slave)
@@ -259,6 +287,11 @@ void Scheduler::_jobFinished(SimpleJob *job, Slave *slave)
 void Scheduler::slotSlaveDied(KIO::Slave *slave)
 {
     ProtocolInfo *protInfo = protInfoDict->get(slave->protocol());
+    if (slave == slaveOnHold)
+    {
+       slaveOnHold = 0;
+       urlOnHold = KURL();
+    }
     if (idleSlaves->removeRef(slave))
     {
        protInfo->idleSlaves--;
@@ -306,6 +339,35 @@ void Scheduler::_scheduleCleanup()
       if (!cleanupTimer.isActive())
          cleanupTimer.start( MAX_SLAVE_IDLE*1000, true );
    }
+}
+
+void Scheduler::_putSlaveOnHold(KIO::SimpleJob *job, const KURL &url)
+{
+   Slave *slave = job->slave();
+   ProtocolInfo *protInfo = protInfoDict->get(slave->protocol());
+   slave->disconnect(job);
+//WABA: 
+// Maybe it's better to count 'slaveOnHold' as an active slave.
+// For now, this is needed to keep the count consistent.
+   protInfo->activeSlaves--;
+
+   if (slaveOnHold)
+   {
+      slaveOnHold->kill();
+   }
+   slaveOnHold = slave;
+   urlOnHold = url;
+   slaveOnHold->suspend();
+}
+
+void Scheduler::_removeSlaveOnHold()
+{
+   if (slaveOnHold)
+   {
+      slaveOnHold->kill();
+   }
+   slaveOnHold = 0;
+   urlOnHold = KURL();
 }
 
 Scheduler* Scheduler::self() {

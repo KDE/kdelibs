@@ -84,6 +84,11 @@ namespace KIO {
          */
         void resume();
 
+        /**
+         * Returns status of connection
+         */
+        bool suspended() const { return m_suspended; }
+
 	void queueOnly(bool queue);
 
     protected slots:

@@ -120,6 +120,11 @@ namespace KIO {
 	static Slave* createSlave( const KURL& url, int& error, QString& error_text );
 
 	void queueOnly(bool queue) { slaveconn.queueOnly(queue); }
+
+        void suspend();
+        void resume();
+        
+        bool suspended();
 	
 	/**
 	 * @return The time this slave has been idle.

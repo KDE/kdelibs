@@ -230,6 +230,15 @@ void SlaveBase::mimeType( const QString &_type)
 {
     KIO_DATA << _type;
     m_pConnection->send( INF_MIME_TYPE, data );
+    int cmd;
+    if ( m_pConnection->read( &cmd, data ) == -1 ) {
+        kdDebug(7007) << "SlaveBase: mimetype: read error" << endl;
+        ::exit(255);
+    }
+// WABA: cmd can be "CMD_NONE" or "CMD_GET" (in which case the slave
+// had been put on hold.)
+// Something else is basically an error
+    kdDebug(7007) << "mimetype: reading " << cmd << endl;
 }
 
 // ?
@@ -376,18 +385,18 @@ bool SlaveBase::openPassDlg( const QString& head, QString& user, QString& pass, 
     m_pConnection->send( INF_NEED_PASSWD, data );
     int cmd;
     if ( m_pConnection->read( &cmd, data ) == -1 ) {
-	return false;
+        return false;
     }
     kdDebug(7007) << "reading " << cmd << endl;
     if (cmd != CMD_USERPASS) {
-	if (cmd != CMD_NONE)
-	    dispatch( cmd, data );
-      return false;
+        if (cmd != CMD_NONE)
+            dispatch( cmd, data );
+        return false;
     } else {
-      QDataStream stream( data, IO_ReadOnly );
-      stream >> user >> pass;
-      kdDebug(7007) << "got " << cmd << " " << user << " " << pass << endl;
-      return true;
+        QDataStream stream( data, IO_ReadOnly );
+        stream >> user >> pass;
+        kdDebug(7007) << "got " << cmd << " " << user << " " << pass << endl;
+        return true;
     }
 }
 
@@ -497,6 +506,9 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
 	break;
     case CMD_SPECIAL:
 	special( data );
+	break;
+    case CMD_NONE:
+	fprintf(stderr, "Got unexpected CMD_NONE!\n");
 	break;
     default:
 	assert( 0 );

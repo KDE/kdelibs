@@ -190,6 +190,17 @@ namespace KIO {
         virtual void kill( bool quietly = false );
 
         /**
+         * Abort job
+         * Suspends slave to be reused by another job for the same request.
+         */
+        virtual void putOnHold();
+
+        /**
+         * Discard suspended slave
+         */
+        static void removeOnHold();
+
+        /**
          * @internal
          * Called by the scheduler when a slave gets to
          * work on this job.
@@ -340,17 +351,24 @@ namespace KIO {
          */
         void redirection( KIO::Job *, const KURL &url );
 
+        /**
+         * Mimetype determined
+         */
+        void mimetype( KIO::Job *, const QString &type );
+
     protected slots:
         virtual void slotRedirection( const KURL &url);
         virtual void slotFinished();
         virtual void slotData( const QByteArray &data);
         virtual void slotDataReq();
+        virtual void slotMimetype( const QString &mimetype );
 
     protected:
         bool m_suspended;
         QByteArray staticData;
         KURL m_redirectionURL;
         KURL::List m_redirectionList;
+        QString m_mimetype;
     };
 
     // Mimetype Job
@@ -373,12 +391,7 @@ namespace KIO {
         virtual void start( Slave *slave );
 
     protected slots:
-        virtual void slotData( const QByteArray &data );
-        void slotMimetype( const QString &mimetype );
         virtual void slotFinished( );
-
-    protected:
-        QString m_mimetype;
     };
 
     /**

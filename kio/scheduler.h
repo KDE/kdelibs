@@ -40,6 +40,12 @@ namespace KIO {
 		{ self()->_cancelJob(job); }
         static void jobFinished(KIO::SimpleJob *job, KIO::Slave *slave)
             	{ self()->_jobFinished(job, slave); }
+            	
+        static void putSlaveOnHold(KIO::SimpleJob *job, const KURL &url)
+        	{ self()->_putSlaveOnHold(job, url); }
+
+        static void removeSlaveOnHold()
+        	{ self()->_removeSlaveOnHold(); }
 
         void debug_info();
 
@@ -68,6 +74,8 @@ namespace KIO {
 	void _cancelJob(SimpleJob *job);
         void _jobFinished(KIO::SimpleJob *job, KIO::Slave *slave);
         void _scheduleCleanup();
+        void _putSlaveOnHold(KIO::SimpleJob *job, const KURL &url);
+        void _removeSlaveOnHold();
 
 	QList<SimpleJob> joblist;
 	QTimer mytimer;
@@ -85,6 +93,9 @@ namespace KIO {
 	SlaveList *idleSlaves;
 	
 	ProtocolInfoDict *protInfoDict;
+	
+	Slave *slaveOnHold;
+	KURL urlOnHold;
     };
 };
 

@@ -150,6 +150,8 @@ void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 	stream >> str1;
 	
 	emit mimeType( str1 );
+        if (!m_pConnection->suspended())
+            m_pConnection->sendnow( CMD_NONE, QByteArray() );		
 	break;
     case INF_WARNING:
 	stream >> str1;
@@ -170,7 +172,7 @@ void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 
 void SlaveInterface::openPassDlg( const QString& head, const QString& user, const QString& pass )
 {
-	openPassDlg( head, user, pass, QString::null );
+    openPassDlg( head, user, pass, QString::null );
 }
 
 void SlaveInterface::openPassDlg( const QString& head, const QString& user, const QString& pass, const QString& key )

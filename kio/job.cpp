@@ -161,6 +161,18 @@ void SimpleJob::kill( bool quietly )
     Job::kill( quietly );
 }
 
+void SimpleJob::putOnHold()
+{
+    Scheduler::putSlaveOnHold(this, m_url);
+    m_slave = 0;
+    kill(true);
+}
+
+void SimpleJob::removeOnHold()
+{
+    Scheduler::removeSlaveOnHold();
+}
+
 SimpleJob::~SimpleJob()
 {
     delete m_speedTimer;
@@ -360,6 +372,8 @@ TransferJob::TransferJob( const KURL& url, int command,
 // Slave sends data
 void TransferJob::slotData( const QByteArray &_data)
 {
+//WABA: The slave _MUST_ emit a mimetype before sending any data!
+//    assert( !m_mimetype.isEmpty());
     if(m_redirectionURL.isEmpty() || m_error)
       emit data( this, _data);
 }
@@ -458,6 +472,13 @@ void TransferJob::slotDataReq()
     m_slave->connection()->send( MSG_DATA, dataForSlave );
 }
 
+void TransferJob::slotMimetype( const QString& type )
+{
+    kdDebug(7007) << "TransferJob::slotMimetype(" << type << ")" << endl;
+    m_mimetype = type;
+    emit mimetype( this, m_mimetype);
+}
+
 void TransferJob::suspend()
 {
     m_suspended = true;
@@ -484,6 +505,16 @@ void TransferJob::start(Slave *slave)
 
     connect( slave, SIGNAL( redirection(const KURL &) ),
 	     SLOT( slotRedirection(const KURL &) ) );
+
+    connect( slave, SIGNAL(mimeType( const QString& ) ),
+             SLOT( slotMimetype( const QString& ) ) );
+
+    if (slave->suspended())
+    {
+       m_mimetype = "unknown";
+       // WABA: The slave was put on hold. Resume operation.
+       slave->resume();
+    }
 
     SimpleJob::start(slave);
     if (m_suspended)
@@ -524,36 +555,12 @@ MimetypeJob::MimetypeJob( const KURL& url, int command,
 {
 }
 
-// Slave sends data
-void MimetypeJob::slotData( const QByteArray &_data)
-{
-    if (m_mimetype.isEmpty())
-    {
-       kdDebug(7007) << "MimetypeJob::slotData() size = " << _data.size() << endl;
-       KMimeMagicResult* result = KMimeMagic::self()->findBufferType( _data );
-
-       // If we still did not find it, we must assume the default mime type
-       if ( !result || result->mimeType().isEmpty())
-          m_mimetype = QString::fromLatin1("application/octet-stream");
-       else
-          m_mimetype = result->mimeType();
-       kdDebug(7007) << "MimetypeJob::slotData() mimetype = " << m_mimetype << endl;
-    }
-}
-
 void MimetypeJob::start(Slave *slave)
 {
     TransferJob::start(slave);
 
-    connect( m_slave, SIGNAL(mimeType( const QString& ) ),
-             SLOT( slotMimetype( const QString& ) ) );
 }
 
-void MimetypeJob::slotMimetype( const QString& mimetype )
-{
-    kdDebug(7007) << "MimetypeJob::slotMimetype(" << mimetype << ")" << endl;
-    m_mimetype = mimetype;
-}
 
 void MimetypeJob::slotFinished( )
 {

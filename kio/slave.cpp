@@ -100,6 +100,22 @@ void Slave::setPID(pid_t pid)
     m_pid = pid;
 }
 
+void Slave::suspend()
+{
+   slaveconn.suspend();
+}
+
+void Slave::resume()
+{
+   slaveconn.resume();
+}
+
+bool Slave::suspended()
+{
+   return slaveconn.suspended();
+}
+
+
 void Slave::gotInput()
 {
     if (!dispatch())
