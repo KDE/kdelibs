@@ -35,6 +35,7 @@ class KSycocaResourceList : public QValueList<KSycocaResource>
 {
 public:
    KSycocaResourceList() { };
+   /* KDE 4.0: Make them const QString & */
    void add(QString resource, QString filter)
    { 
      KSycocaResource res;
