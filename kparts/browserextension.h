@@ -575,7 +575,7 @@ signals:
   void mouseOverInfo( const KFileItem* item );
 
   /**
-   * Ask the hosting applicaiton to add a new HTML (aka Mozilla/Netscape)
+   * Ask the hosting application to add a new HTML (aka Mozilla/Netscape)
    * SideBar entry.
    */
   void addWebSideBar(const KURL &url, const QString& name);
