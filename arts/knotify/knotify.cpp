@@ -301,9 +301,6 @@ bool KNotify::notifyBySound( const QString &sound, const QString &appname )
         while( d->playObjects.count()>5 )
             d->playObjects.remove( d->playObjects.begin() );
 
-        if (d->soundServer.audioDevice() == "null")
-            return false;
-
         Arts::PlayObject player =
             d->playObjectFactory.createPlayObject( QFile::encodeName(soundFile).data() );
 		if (player.isNull())
