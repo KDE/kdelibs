@@ -280,7 +280,15 @@ bool KService::hasServiceType( const QString& _servicetype ) const
 //  for( ; it != m_lstServiceTypes.end(); ++it )
 //    kdDebug(7012) << "    has " << (*it) << endl;
 
-  return ( m_lstServiceTypes.find( _servicetype ) != m_lstServiceTypes.end() );
+  QString servicetype( _servicetype );
+  bool found = true;
+  while ( !m_lstServiceTypes.contains( servicetype ) )
+  {
+      KServiceType::Ptr ptr = KServiceType::serviceType( servicetype );
+      if (!ptr || !ptr->isDerived() ) { found = false; break; }
+      servicetype = ptr->parentServiceType();
+  }
+  return found;
 }
 
 QVariant KService::property( const QString& _name ) const

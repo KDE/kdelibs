@@ -61,6 +61,10 @@ KServiceType::init( KDesktopFile *config)
   m_strComment = config->readComment();
   m_bDeleted = config->readBoolEntry( "Hidden", false );
   m_strIcon = config->readIcon();
+  QString sDerived = config->readEntry( "X-KDE-Derived" );
+  m_bDerived = !sDerived.isEmpty(); // BCI: we'd better store a QString :)
+  if ( m_bDerived )
+    m_mapProps.insert( "X-KDE-Derived", sDerived ); // That's the way we store it to preserve BC
 
   QStringList tmpList = config->groupList();
   QStringList::Iterator gIt = tmpList.begin();
@@ -129,6 +133,12 @@ KServiceType::save( QDataStream& _str )
 
 KServiceType::~KServiceType()
 {
+}
+
+QString KServiceType::parentServiceType() const
+{
+  QVariant v = property("X-KDE-Derived");
+  return v.toString();
 }
 
 QVariant
@@ -223,7 +233,12 @@ KService::List KServiceType::offers( const QString& _servicetype )
   // Normal services associated with this servicetype
   KServiceType * serv = KServiceTypeFactory::self()->findServiceTypeByName( _servicetype );
   if ( serv )
+  {
     lst += KServiceFactory::self()->offers( serv->offset() );
+    // Derived service type -> look for offers relating to parent
+    if ( serv->isDerived() )
+        lst += KServiceType::offers( serv->parentServiceType() );
+  }
   else
     kdWarning(7009) << QString("KServiceType::offers : servicetype %1 not found").arg( _servicetype ) << endl;
   delete serv;

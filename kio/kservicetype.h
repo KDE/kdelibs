@@ -100,6 +100,19 @@ public:
    */
   QString desktopEntryPath() const { return entryPath(); }
 
+  /**
+   * @return true if this service type inherits another one
+   */
+  // This is a temporary measure because parentServiceType()
+  // is a bit slow. To be removed in KDE 3.0
+  bool isDerived() const { return m_bDerived; }
+
+  /**
+   * If this service type inherits from another service type,
+   * return the name of the parent. Otherwise QString::null.
+   */
+  QString parentServiceType() const;
+
   virtual QVariant property( const QString& _name ) const;
   virtual QStringList propertyNames() const;
 
@@ -153,7 +166,8 @@ protected:
   QMap<QString,QVariant> m_mapProps;
   QMap<QString,QVariant::Type> m_mapPropDefs;
 
-  bool m_bValid;
+  bool m_bValid:1;
+  bool m_bDerived:1; // BCI : QString instead
 };
 
 //QDataStream& operator>>( QDataStream& _str, KServiceType& s );
