@@ -155,6 +155,7 @@ KDE_InterceptXMapRequest(Display * d, Window w)
     KDE_mapNotifyEnabled = !atoi(envStr);
   
   envStr = getenv("KDE_APP_START_PID");
+  if (envStr)
     KDE_appStartPid = atoi(envStr);
   
   unsetenv("LD_PRELOAD");
