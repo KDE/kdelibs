@@ -293,20 +293,11 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
 
 		    // reset unsubmittedFormChange flag
                     if (current->id() == ID_INPUT &&
-                        static_cast<HTMLInputElementImpl*>(current)->inputType() == HTMLInputElementImpl::TEXT &&
-                        current->renderer())
-                    {
-                        QString state( static_cast<HTMLInputElementImpl*>(current)->state() );
-			state[state.length()-1]='.';
-			static_cast<HTMLInputElementImpl*>(current)->restoreState(state);
-                    }
+                        static_cast<HTMLInputElementImpl*>(current)->inputType() == HTMLInputElementImpl::TEXT)
+                        static_cast<HTMLInputElementImpl*>(current)->setUnsubmittedFormChange(false);
                 
-                    if (current->id() == ID_TEXTAREA && current->renderer())
-                    {
-                        QString state( static_cast<HTMLTextAreaElementImpl*>(current)->state() );
-			state[state.length()-1]='.';
-			static_cast<HTMLTextAreaElementImpl*>(current)->restoreState(state);
-                    }
+                    if (current->id() == ID_TEXTAREA)
+                        static_cast<HTMLTextAreaElementImpl*>(current)->setUnsubmittedFormChange(false);
 
 		}
             }
