@@ -634,8 +634,8 @@ bool KHTMLPart::openURL( const KURL &url )
     m_url = url;
     emit started( 0L );
 
-    if ( !url.htmlRef().isEmpty() )
-      gotoAnchor( url.htmlRef() );
+    if ( !url.encodedHtmlRef().isEmpty() )
+      gotoAnchor( url.encodedHtmlRef() );
     else
       d->m_view->setContentsPos( 0, 0 );
 
@@ -1475,8 +1475,8 @@ void KHTMLPart::slotFinishedParsing()
 
   d->m_view->restoreScrollBar();
 
-  if ( !m_url.htmlRef().isEmpty() )
-    gotoAnchor( m_url.htmlRef() );
+  if ( !m_url.encodedHtmlRef().isEmpty() )
+    gotoAnchor( m_url.encodedHtmlRef() );
 
   HTMLCollectionImpl imgColl( d->m_doc, HTMLCollectionImpl::DOC_IMAGES );
 
@@ -1603,7 +1603,7 @@ void KHTMLPart::checkCompleted()
           }
   }
 
-  if ( m_url.htmlRef().isEmpty() && d->m_view->contentsY() == 0 ) // check that the view has not been moved by the user
+  if ( m_url.encodedHtmlRef().isEmpty() && d->m_view->contentsY() == 0 ) // check that the view has not been moved by the user
       d->m_view->setContentsPos( d->m_extension->urlArgs().xOffset, d->m_extension->urlArgs().yOffset );
 
   if ( !d->m_redirectURL.isEmpty() )
