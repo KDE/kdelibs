@@ -48,7 +48,7 @@ KMConfigGeneral::KMConfigGeneral(QWidget *parent)
 	m_timer = new KIntNumInput(m_timerbox,"Timer");
 	m_timer->setRange(0,30);
 	m_timer->setSpecialValueText(i18n("Disabled"));
-	QWhatsThis::add(m_timer, i18n("This time controls the refresh rate of various "
+	QWhatsThis::add(m_timer, i18n("This time setting controls the refresh rate of various "
 			              "<b>KDE Print</b> components like the print manager "
 				      "and the job viewer."));
 

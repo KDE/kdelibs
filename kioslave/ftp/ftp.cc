@@ -430,7 +430,7 @@ bool Ftp::ftpLogin()
         if( failedAuth > 0 )
         {
           info.caption = i18n("Login Failure");
-          info.prompt = i18n("I said:\nLogin using username: %1 and "
+          info.prompt = i18n("Message sent:\nLogin using username: %1 and "
                              "password: [hidden]\n\nServer replied:\n%2\n\n"
                              "What do you want to do?").arg(user).arg(rspbuf);
           if( messageBox( WarningContinueCancel, info.prompt,info.caption,
