@@ -22,7 +22,7 @@ class EvolutionFactory : public KRES::PluginFactoryBase
       return new ResourceEvolution( config );
     }
 
-    KRES::ConfigWidget *configWidget( QWidget *parent )
+    KRES::ConfigWidget *configWidget( QWidget * )
     {
       return 0;
     }
@@ -102,17 +102,25 @@ bool ResourceEvolution::save( Ticket* ticket ) {
     delete ticket;
     if (!m_isOpen ) return false;
 
+    // just delete the summary so evolution will regenerate it 
+    // on next start up
+    (void)QFile::remove( QDir::homeDirPath() + "/evolution/local/Contacts/addressbook.db.summary" );
+
+
     AddressBook::Iterator it;
     Addressee::List list;
     for ( it = addressBook()->begin(); it !=addressBook()->end(); ++it ) {
-        if ( (*it).resource() != this || (*it).changed() )
+        if ( (*it).resource() != this || !(*it).changed() )
             continue;
 
+	// remove, convert add set unchanged false
         list.clear();
         mWrap->remove( (*it).uid() );
         VCardTool tool;
         list.append( (*it) );
         mWrap->add( (*it).uid(), tool.createVCards( list,  VCard::v2_1) );
+
+	(*it).setChanged( false );
     }
 
     return true;

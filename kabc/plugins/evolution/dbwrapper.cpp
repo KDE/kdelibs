@@ -66,8 +66,8 @@ QString DBIterator::operator*() {
 }
 DBIterator& DBIterator::operator++() {
     DBT key, val;
-    memset(&key, 0, sizeof(key) );
-    memset(&val, 0, sizeof(val) );
+    ::memset(&key, 0, sizeof(key) );
+    ::memset(&val, 0, sizeof(val) );
     if ( data->cursor )
         if ( data->cursor->c_get(data->cursor, &key, &val,DB_NEXT ) != 0 )
             data->atEnd = true;
@@ -77,8 +77,8 @@ DBIterator& DBIterator::operator++() {
 }
 DBIterator& DBIterator::operator--() {
     DBT key, val;
-    memset(&key, 0, sizeof(key) );
-    memset(&val, 0, sizeof(val) );
+    ::memset(&key, 0, sizeof(key) );
+    ::memset(&val, 0, sizeof(val) );
     if ( data->cursor )
         if ( data->cursor->c_get(data->cursor, &key, &val,DB_PREV ) != 0 )
             data->atEnd = true;
@@ -100,7 +100,7 @@ struct DBWrapper::Data {
 };
 DBWrapper::DBWrapper() {
     data = new Data;
-    int ret = db_create(&data->db, NULL, 0 );
+    (void)db_create(&data->db, NULL, 0 );
     data->only = false;
 }
 DBWrapper::~DBWrapper() {
@@ -125,8 +125,8 @@ DBIterator DBWrapper::begin() {
         return it;
     }
 
-    memset(&key, 0, sizeof(key) );
-    memset(&val, 0, sizeof(val) );
+    ::memset(&key, 0, sizeof(key) );
+    ::memset(&val, 0, sizeof(val) );
     ret = cursor->c_get(cursor, &key, &val, DB_FIRST );
     if (ret ) {
         it.data->atEnd = true;
@@ -147,8 +147,8 @@ DBIterator DBWrapper::end() {
 }
 bool DBWrapper::find( const QString& _key,  QString& _val ) {
     DBT key, val;
-    memset(&key, 0, sizeof(key) );
-    memset(&val, 0, sizeof(val) );
+    ::memset(&key, 0, sizeof(key) );
+    ::memset(&val, 0, sizeof(val) );
 
     QCString db_key = _key.local8Bit();
     key.data = db_key.data();
@@ -166,8 +166,8 @@ bool DBWrapper::add( const QString& _key, const QString& _val ) {
     QCString db_key = _key.local8Bit();
     QCString db_val = _val.local8Bit();
     DBT key, val;
-    memset(&key, 0, sizeof(key) );
-    memset(&val, 0, sizeof(val) );
+    ::memset(&key, 0, sizeof(key) );
+    ::memset(&val, 0, sizeof(val) );
 
     key.data = db_key.data();
     key.size = db_key.size();
