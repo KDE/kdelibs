@@ -4,7 +4,7 @@ kdeinit_wrapper is a program that starts programs via kdeinit.
 
 E.g. You can make a symbolic link from $KDEDIR/bin/konsole to 
 $KDEDIR/bin/kdeinit_wrapper. Typing 'konsole' on the command line 
-will then start 'libkonsole.la' through kdeinit instead.
+will then start 'konsole.la' through kdeinit instead.
 
 
 TODO

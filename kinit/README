@@ -69,7 +69,7 @@ kicker_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 The following lines need to be added to make a library version useable 
 by kdeinit:
 
-lib_LTLIBRARIES = libkicker.la
+lib_LTLIBRARIES = kicker.la
 libkicker_la_LIBADD = $(top_builddir)/libkonq/libkonq.la
 libkicker_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -module                    
 
