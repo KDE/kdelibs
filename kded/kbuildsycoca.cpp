@@ -18,6 +18,7 @@
  **/
 
 #include <qdir.h>
+#include <qeventloop.h>
 
 #include "kbuildsycoca.h"
 #include "kresourcelist.h"
@@ -600,6 +601,12 @@ static KCmdLineOptions options[] = {
 static const char *appName = "kbuildsycoca";
 static const char *appVersion = "1.0";
 
+class WaitForSignal : public QObject
+{
+public:
+   ~WaitForSignal() { kapp->eventLoop()->exitLoop(); }
+};
+
 int main(int argc, char **argv)
 {
    KLocale::setMainCatalogue("kdelibs");
@@ -630,16 +637,31 @@ int main(int argc, char **argv)
 
    DCOPClient *dcopClient = new DCOPClient();
 
-   QCString registeredName = dcopClient->registerAs(appName, false);
-   if (registeredName.isEmpty())
+   while(true)
    {
-     fprintf(stderr, "Warning: %s is unable to register with DCOP.\n", appName);
+     QCString registeredName = dcopClient->registerAs(appName, false);
+     if (registeredName.isEmpty())
+     {
+       fprintf(stderr, "Warning: %s is unable to register with DCOP.\n", appName);
+       break;
+     }
+     else if (registeredName == appName)
+     {
+       break; // Go
+     }
+     fprintf(stderr, "Waiting for already running %s to finish.\n", appName);
+       
+     dcopClient->setNotifications( true );
+     while (dcopClient->isApplicationRegistered(appName))
+     {
+       WaitForSignal *obj = new WaitForSignal;
+       obj->connect(dcopClient, SIGNAL(applicationRemoved(const QCString &)),
+               SLOT(deleteLater()));
+       kapp->eventLoop()->enterLoop();
+     }
+     dcopClient->setNotifications( false );
    }
-   else if (registeredName != appName)
-   {
-     fprintf(stderr, "%s already running!\n", appName);
-     exit(0);
-   }
+   fprintf(stderr, "%s running...\n", appName);
 
    bool incremental = args->isSet("incremental");
    if (incremental)
