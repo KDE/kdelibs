@@ -29,6 +29,7 @@
 #include "html/html_imageimpl.h"
 #include "html/html_miscimpl.h"
 #include "misc/htmlhashes.h"
+#include "xml/dom_docimpl.h"
 
 using namespace DOM;
 
@@ -96,7 +97,8 @@ void HTMLAreaElement::setCoords( const DOMString &value )
 DOMString HTMLAreaElement::href() const
 {
     if(!impl) return DOMString();
-    return ((ElementImpl *)impl)->getAttribute(ATTR_HREF);
+    DOMString href = static_cast<ElementImpl*>(impl)->getAttribute(ATTR_HREF);
+    return href.length() ? impl->getDocument()->completeURL(href.string()) : href;
 }
 
 void HTMLAreaElement::setHref( const DOMString &value )
