@@ -451,7 +451,7 @@ DOMString HTMLInputElement::name() const
 {
     if(!impl) return DOMString();
     DOMString n = static_cast<ElementImpl*>(impl)->getAttribute(ATTR_NAME);
-    if(n.isNull) return DOMString("");
+    if(n.isNull()) return DOMString("");
     return n;
 }
 
