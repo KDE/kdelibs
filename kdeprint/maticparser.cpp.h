@@ -1,3 +1,5 @@
+#ifndef maticparser_cpp_h
+#define maticparser_cpp_h
 typedef union {
 	QString	*string;
 	MHash	*hash;
@@ -10,3 +12,4 @@ typedef union {
 
 
 extern YYSTYPE maticlval;
+#endif

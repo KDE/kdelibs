@@ -59,6 +59,11 @@ config_DATA = kdeprintrc
 parser:
 	bison -d -p matic $(srcdir)/maticparser.yy -o $(srcdir)/maticparser.cpp
 	flex -omaticscanner.cpp -Pmatic $(srcdir)/maticscanner.ll
+	echo "#ifndef maticparser_cpp_h" > $(srcdir)/maticparser.cpp.hh
+	echo "#define maticparser_cpp_h" >> $(srcdir)/maticparser.cpp.hh
+	cat $(srcdir)/maticparser.cpp.h >> $(srcdir)/maticparser.cpp.hh
+	echo "#endif" >> $(srcdir)/maticparser.cpp.hh
+	mv $(srcdir)/maticparser.cpp.hh $(srcdir)/maticparser.cpp.h
 
 noinst_DATA = kdeprint
 
