@@ -105,16 +105,19 @@ KCrash::setCrashHandler (HandlerType handler)
 }
 
 void
-KCrash::defaultCrashHandler (int signal)
+KCrash::defaultCrashHandler (int sig)
 {
   // WABA: Do NOT use kdDebug() in this function because it is much too risky!
   // Handle possible recursions
   static int crashRecursionCounter = 0;
   crashRecursionCounter++; // Nothing before this, please !
 
+  signal(SIGALRM, SIG_DFL);
+  alarm(3); // Kill me... (in case we deadlock in malloc)
+
   if (crashRecursionCounter < 2) {
     if (_emergencySaveFunction) {
-      _emergencySaveFunction (signal);
+      _emergencySaveFunction (sig);
     }
     crashRecursionCounter++; // 
   }
@@ -161,7 +164,7 @@ KCrash::defaultCrashHandler (int signal)
 
         // signal number -- will never be NULL
         QCString tmp;
-        tmp.setNum(signal);
+        tmp.setNum(sig);
         argv[i++] = qstrdup("--signal");
         argv[i++] = qstrdup(tmp.data());
 
@@ -214,6 +217,8 @@ KCrash::defaultCrashHandler (int signal)
         getrlimit(RLIMIT_NOFILE, &rlp);
         for (int i = 0; i < (int)rlp.rlim_cur; i++)
            close(i);
+           
+        alarm(0); // Seems we made it....
 
         // wait for child to exit
         waitpid(pid, NULL, 0);
