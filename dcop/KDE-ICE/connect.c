@@ -218,6 +218,7 @@ char 	   *errorStringRet;
 	strncpy (errorStringRet, "Can't malloc", errorLength);
 	return (NULL);
     }
+    memset (iceConn->inbuf, 0, ICE_INBUFSIZE);
 
     iceConn->inbufmax = iceConn->inbuf + ICE_INBUFSIZE;
 
@@ -228,6 +229,7 @@ char 	   *errorStringRet;
 	strncpy (errorStringRet, "Can't malloc", errorLength);
 	return (NULL);
     }
+    memset (iceConn->outbuf, 0, ICE_OUTBUFSIZE);
 
     iceConn->outbufmax = iceConn->outbuf + ICE_OUTBUFSIZE;
 
