@@ -25,7 +25,6 @@ DOMTreeView::DOMTreeView(QWidget *parent, KHTMLPart *currentpart, const char * n
     setRootIsDecorated(true);
     addColumn("Name");
     addColumn("Value");
-    m_currentItem = 0;
     part = currentpart;
     connect(((const QObject *)part), SIGNAL(sigNodeSelected(const DOM::Node &)), this, SLOT(showTree(const DOM::Node &)));
 }
@@ -36,7 +35,7 @@ DOMTreeView::~DOMTreeView()
 
 void DOMTreeView::setRootNode(const DOM::Node &pNode)
 {
-    node = pNode;
+    document = pNode;
 }
 
 void DOMTreeView::selectNode(DOM::Node pNode)
@@ -49,40 +48,49 @@ void DOMTreeView::selectNode(DOM::Node pNode)
 void DOMTreeView::showTree(const DOM::Node &pNode)
 {
     clear();
-    m_itemdict.clear();
-    DOM::Node nNode = pNode;
-
-    while (!(nNode.ownerDocument().isNull()))
-	nNode = nNode.parentNode();
-    treeWalker(nNode, pNode);
+    if (document.isNull() || document.handle()!=pNode.ownerDocument().handle())
+    {
+	m_itemdict.clear();
+	kdDebug()<<"starting new treeview.\n";
+	if (!pNode.ownerDocument().isNull())
+	    recursive(0, pNode.ownerDocument(), pNode);
+	else
+	    recursive(0, pNode, 0);
+    }
+    else
+    {
+	ensureItemVisible(m_itemdict[pNode.handle()]);
+	m_itemdict[pNode.handle()]->setSelected(true);
+    }
 }
 
-void DOMTreeView::treeWalker(const DOM::Node &pNode, const DOM::Node &sNode)
+void DOMTreeView::recursive(const DOM::Node &pNode, const DOM::Node &node, const DOM::Node &sNode)
 {
-    if(pNode.isNull())
-	return;
-    QListViewItem *t_item = 0;
-    if(m_currentItem == 0)
-	t_item = new QListViewItem((QListView *) this, pNode.nodeName().string(), pNode.nodeValue().string());
-    else
-	t_item = new QListViewItem(m_currentItem, pNode.nodeName().string(), pNode.nodeValue().string());
-
-    if(pNode.childNodes().length() != 0)
-	t_item->setExpandable(true);
-    DOM::Node t_node = pNode;
-    m_itemdict.insert(&t_node, t_item);
-    m_currentItem = t_item;
-    DOM::Node t_child = pNode.firstChild();
-    while(t_child != NULL)
+    kdDebug()<<"recursing into "<<node.nodeName().string()<<endl;
+    QListViewItem *cur_item;
+    if(node.ownerDocument().isNull())
     {
-	treeWalker(t_child, sNode);
-	t_child = t_child.nextSibling();
+	cur_item = new QListViewItem((QListView *) this, node.nodeName().string(), node.nodeValue().string());
+	document = pNode.ownerDocument();
+    }
+    else
+	cur_item = new QListViewItem(m_itemdict[pNode.handle()], node.nodeName().string(), node.nodeValue().string());
+
+    if(node.childNodes().length() != 0)
+	cur_item->setExpandable(true);
+
+    m_itemdict.insert(node.handle(), cur_item);
+
+    DOM::Node cur_child = node.firstChild();
+    while (!cur_child.isNull())
+    {
+	recursive(node, cur_child, sNode);
+	cur_child = cur_child.nextSibling();
     }
 
-    t_item->setOpen(true);
-    if (sNode.handle() == pNode.handle())
-	t_item->setSelected(true);
-    m_currentItem = m_currentItem->parent();
+    cur_item->setOpen(true);
+    if (sNode.handle() == node.handle())
+	cur_item->setSelected(true);
 }
 
 void DOMTreeView::showPartTree()
@@ -94,5 +102,5 @@ void DOMTreeView::updateTree()
 {
     clear();
     m_itemdict.clear();
-    showTree(node);
+    showTree(document);
 }
