@@ -78,11 +78,13 @@ bool HTMLElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType typ
 
     if(!m_render) return false;
 
-    if(m_render->parent() && m_render->parent()->isAnonymousBox()) {
+    RenderObject *p = m_render->parent();
+    while( p && p->isAnonymousBox() ) {
 	//kdDebug( 6030 ) << "parent is anonymous!" << endl;
 	// we need to add the offset of the anonymous box
-	_tx += m_render->parent()->xPos();
-	_ty += m_render->parent()->yPos();
+	_tx += p->xPos();
+	_ty += p->yPos();
+	p = p->parent();
     }
 
     
