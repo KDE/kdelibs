@@ -25,25 +25,6 @@
 #include <ksimpleconfig.h>
 
 #include "kbookmarkimporter_ns.h"
-
-/**
- * A class for importing the previous bookmarks (desktop files)
- * Separated from KBookmarkManager to save memory (we throw this one
- * out once the import is done)
- */
-class KBookmarkImporter
-{
-public:
-    KBookmarkImporter( QDomDocument * doc ) : m_pDoc(doc) {}
-
-    void import( const QString & path );
-
-private:
-    void scanIntern( QDomElement & parentElem, const QString & _path );
-    void parseBookmark( QDomElement & parentElem, QCString _text,
-                        KSimpleConfig& _cfg, const QString &_group );
-    QDomDocument * m_pDoc;
-    QStringList m_lstParsedDirs;
-};
+#include "kbookmarkimporter_kde1.h"
 
 #endif

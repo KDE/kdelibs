@@ -16,22 +16,32 @@
    Boston, MA 02111-1307, USA.
 */
 
-#include "kbookmarkimporter.h"
-#include <kfiledialog.h>
-#include <kstringhandler.h>
-#include <klocale.h>
-#include <kdebug.h>
-#include <kcharsets.h>
-#include <qtextcodec.h>
+#ifndef __kbookmarkimporter_kde1_h
+#define __kbookmarkimporter_kde1_h
 
-#include <sys/types.h>
-#include <stddef.h>
-#include <dirent.h>
-#include <sys/stat.h>
-#include <assert.h>
+#include <qdom.h>
+#include <qcstring.h>
+#include <qstringlist.h>
+#include <ksimpleconfig.h>
 
-////////////////////
+/**
+ * A class for importing the previous bookmarks (desktop files)
+ * Separated from KBookmarkManager to save memory (we throw this one
+ * out once the import is done)
+ */
+class KBookmarkImporter
+{
+public:
+    KBookmarkImporter( QDomDocument * doc ) : m_pDoc(doc) {}
 
-////
+    void import( const QString & path );
 
-#include "kbookmarkimporter.moc"
+private:
+    void scanIntern( QDomElement & parentElem, const QString & _path );
+    void parseBookmark( QDomElement & parentElem, QCString _text,
+                        KSimpleConfig& _cfg, const QString &_group );
+    QDomDocument * m_pDoc;
+    QStringList m_lstParsedDirs;
+};
+
+#endif
