@@ -39,10 +39,6 @@ namespace KABC {
   <pre>
   KABC::AddressBook *ab = KABC::StdAddressBook::self();
  
-  if ( !ab->load() ) {
-    // error
-  }
- 
   KABC::AddressBook::Iterator it;
   for ( it = ab->begin(); it != ab->end(); ++it ) {
     kdDebug() << "UID=" << (*it).uid() << endl;
