@@ -76,11 +76,11 @@
 
 
 KProcess::KProcess()
-	: arguments( true ) // Make deep copies
+        : arguments( true ) // Make deep copies
 {
   if (0 == KProcessController::theKProcessController) {
-	KProcessController::theKProcessController= new KProcessController();
-	CHECK_PTR(KProcessController::theKProcessController);
+        KProcessController::theKProcessController= new KProcessController();
+        CHECK_PTR(KProcessController::theKProcessController);
   }
 
   run_mode = NotifyOnExit;
@@ -158,8 +158,8 @@ bool KProcess::start(RunMode runmode, Communication comm)
   char **arglist;
 
   if (runs || (0 == n)) {
-	return false;  // cannot start a process that is already running
-	// or if no executable has been assigned
+        return false;  // cannot start a process that is already running
+        // or if no executable has been assigned
   }
   run_mode = runmode;
   status = 0;
@@ -198,14 +198,14 @@ bool KProcess::start(RunMode runmode, Communication comm)
            initgroups(pw->pw_name, pw->pw_gid);
 #endif
            setuid(getuid());
-	
-        }
-	// The child process
-	if(!commSetupDoneC())
-	  kdDebug() << "Could not finish comm setup in child!" << endl;
 
-	// Matthias
-	if (run_mode == DontCare)
+        }
+        // The child process
+        if(!commSetupDoneC())
+          kdDebug() << "Could not finish comm setup in child!" << endl;
+
+        // Matthias
+        if (run_mode == DontCare)
           setpgid(0,0);
 
         // restore default SIGPIPE handler (Harri)
@@ -220,26 +220,26 @@ bool KProcess::start(RunMode runmode, Communication comm)
         // Closing of fd[1] indicates that the execvp succeeded!
         if (fd[1])
           fcntl(fd[1], F_SETFD, FD_CLOEXEC);
-	execvp(arglist[0], arglist);
+        execvp(arglist[0], arglist);
         char resultByte = 1;
         if (fd[1])
           write(fd[1], &resultByte, 1);
-	_exit(-1);
+        _exit(-1);
 
   } else if (-1 == pid) {
-	// forking failed
+        // forking failed
 
-	runs = false;
-	free(arglist);
-	return false;
+        runs = false;
+        free(arglist);
+        return false;
   } else {
         if (fd[1])
           close(fd[1]);
-	// the parent continues here
+        // the parent continues here
 
-	// Discard any data for stdin that might still be there
-	input_data = 0;
-        
+        // Discard any data for stdin that might still be there
+        input_data = 0;
+
         // Check whether client could be started.
         if (fd[0]) for(;;)
         {
@@ -251,6 +251,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
                runs = false;
                close(fd[0]);
                free(arglist);
+               pid = 0;
                return false;
            }
            if (n == -1)
@@ -263,21 +264,21 @@ bool KProcess::start(RunMode runmode, Communication comm)
         if (fd[0])
            close(fd[0]);
 
-	if (!commSetupDoneP())  // finish communication socket setup for the parent
-	  kdDebug() << "Could not finish comm setup in parent!" << endl;
+        if (!commSetupDoneP())  // finish communication socket setup for the parent
+          kdDebug() << "Could not finish comm setup in parent!" << endl;
 
-	if (run_mode == Block) {
-	  commClose();
+        if (run_mode == Block) {
+          commClose();
 
-	  // The SIGCHLD handler of the process controller will catch
-	  // the exit and set the status
+          // The SIGCHLD handler of the process controller will catch
+          // the exit and set the status
           while(runs)
           {
              KProcessController::theKProcessController->
-	          slotDoHousekeeping(0);
+                  slotDoHousekeeping(0);
           }
-	  emit processExited(this);
-	}
+          emit processExited(this);
+        }
   }
   free(arglist);
   return true;
@@ -416,7 +417,7 @@ bool KProcess::closeStderr()
 void KProcess::slotChildOutput(int fdno)
 {
   if (!childOutput(fdno))
-     closeStdout();	
+     closeStdout();
 }
 
 
@@ -478,7 +479,7 @@ int KProcess::childOutput(int fdno)
      len = ::read(fdno, buffer, 1024);
 
      if ( 0 < len) {
-   	emit receivedStdout(this, buffer, len);
+        emit receivedStdout(this, buffer, len);
      }
      return len;
   }
@@ -494,7 +495,7 @@ int KProcess::childError(int fdno)
   len = ::read(fdno, buffer, 1024);
 
   if ( 0 < len)
-	emit receivedStderr(this, buffer, len);
+        emit receivedStderr(this, buffer, len);
   return len;
 }
 
@@ -508,13 +509,13 @@ int KProcess::setupCommunication(Communication comm)
 
   ok = 1;
   if (comm & Stdin)
-	ok &= socketpair(AF_UNIX, SOCK_STREAM, 0, in) >= 0;
+        ok &= socketpair(AF_UNIX, SOCK_STREAM, 0, in) >= 0;
 
   if (comm & Stdout)
-	ok &= socketpair(AF_UNIX, SOCK_STREAM, 0, out) >= 0;
+        ok &= socketpair(AF_UNIX, SOCK_STREAM, 0, out) >= 0;
 
   if (comm & Stderr)
-	ok &= socketpair(AF_UNIX, SOCK_STREAM, 0, err) >= 0;
+        ok &= socketpair(AF_UNIX, SOCK_STREAM, 0, err) >= 0;
 
   return ok;
 }
@@ -526,43 +527,43 @@ int KProcess::commSetupDoneP()
   int ok = 1;
 
   if (communication != NoCommunication) {
-	if (communication & Stdin)
-	  close(in[0]);
-	if (communication & Stdout)
-	  close(out[1]);
-	if (communication & Stderr)
-	  close(err[1]);
+        if (communication & Stdin)
+          close(in[0]);
+        if (communication & Stdout)
+          close(out[1]);
+        if (communication & Stderr)
+          close(err[1]);
 
-	// Don't create socket notifiers and set the sockets non-blocking if
-	// blocking is requested.
-	if (run_mode == Block) return ok;
+        // Don't create socket notifiers and set the sockets non-blocking if
+        // blocking is requested.
+        if (run_mode == Block) return ok;
 
-	if (communication & Stdin) {
-//	  ok &= (-1 != fcntl(in[1], F_SETFL, O_NONBLOCK));
-	  innot =  new QSocketNotifier(in[1], QSocketNotifier::Write, this);
-	  CHECK_PTR(innot);
-	  innot->setEnabled(false); // will be enabled when data has to be sent
-	  QObject::connect(innot, SIGNAL(activated(int)),
-					   this, SLOT(slotSendData(int)));
-	}
+        if (communication & Stdin) {
+//        ok &= (-1 != fcntl(in[1], F_SETFL, O_NONBLOCK));
+          innot =  new QSocketNotifier(in[1], QSocketNotifier::Write, this);
+          CHECK_PTR(innot);
+          innot->setEnabled(false); // will be enabled when data has to be sent
+          QObject::connect(innot, SIGNAL(activated(int)),
+                                           this, SLOT(slotSendData(int)));
+        }
 
-	if (communication & Stdout) {
-//	  ok &= (-1 != fcntl(out[0], F_SETFL, O_NONBLOCK));
-	  outnot = new QSocketNotifier(out[0], QSocketNotifier::Read, this);
-	  CHECK_PTR(outnot);
-	  QObject::connect(outnot, SIGNAL(activated(int)),
-					   this, SLOT(slotChildOutput(int)));
+        if (communication & Stdout) {
+//        ok &= (-1 != fcntl(out[0], F_SETFL, O_NONBLOCK));
+          outnot = new QSocketNotifier(out[0], QSocketNotifier::Read, this);
+          CHECK_PTR(outnot);
+          QObject::connect(outnot, SIGNAL(activated(int)),
+                                           this, SLOT(slotChildOutput(int)));
           if (communication & NoRead)
               suspend();
-	}
+        }
 
-	if (communication & Stderr) {
-//	  ok &= (-1 != fcntl(err[0], F_SETFL, O_NONBLOCK));
-	  errnot = new QSocketNotifier(err[0], QSocketNotifier::Read, this );
-	  CHECK_PTR(errnot);
-	  QObject::connect(errnot, SIGNAL(activated(int)),
-					   this, SLOT(slotChildError(int)));
-	}
+        if (communication & Stderr) {
+//        ok &= (-1 != fcntl(err[0], F_SETFL, O_NONBLOCK));
+          errnot = new QSocketNotifier(err[0], QSocketNotifier::Read, this );
+          CHECK_PTR(errnot);
+          QObject::connect(errnot, SIGNAL(activated(int)),
+                                           this, SLOT(slotChildError(int)));
+        }
   }
   return ok;
 }
@@ -575,23 +576,23 @@ int KProcess::commSetupDoneC()
   struct linger so;
 
   if (communication != NoCommunication) {
-	if (communication & Stdin)
-	  close(in[1]);
-	if (communication & Stdout)
-	  close(out[0]);
-	if (communication & Stderr)
-	  close(err[0]);
+        if (communication & Stdin)
+          close(in[1]);
+        if (communication & Stdout)
+          close(out[0]);
+        if (communication & Stderr)
+          close(err[0]);
 
-	if (communication & Stdin)
-	  ok &= dup2(in[0],  STDIN_FILENO) != -1;
-	if (communication & Stdout) {
-	  ok &= dup2(out[1], STDOUT_FILENO) != -1;
-	  ok &= !setsockopt(out[1], SOL_SOCKET, SO_LINGER, (char*)&so, sizeof(so));
-	}
-	if (communication & Stderr) {
-	  ok &= dup2(err[1], STDERR_FILENO) != -1;
-	  ok &= !setsockopt(err[1], SOL_SOCKET, SO_LINGER, (char*)&so, sizeof(so));
-	}
+        if (communication & Stdin)
+          ok &= dup2(in[0],  STDIN_FILENO) != -1;
+        if (communication & Stdout) {
+          ok &= dup2(out[1], STDOUT_FILENO) != -1;
+          ok &= !setsockopt(out[1], SOL_SOCKET, SO_LINGER, (char*)&so, sizeof(so));
+        }
+        if (communication & Stderr) {
+          ok &= dup2(err[1], STDERR_FILENO) != -1;
+          ok &= !setsockopt(err[1], SOL_SOCKET, SO_LINGER, (char*)&so, sizeof(so));
+        }
   }
   return ok;
 }
@@ -604,30 +605,30 @@ void KProcess::commClose()
         bool b_in = (communication & Stdin);
         bool b_out = (communication & Stdout);
         bool b_err = (communication & Stderr);
-	if (b_in)
-		delete innot;
+        if (b_in)
+                delete innot;
 
-	if (b_out || b_err) {
-	  // If both channels are being read we need to make sure that one socket buffer
-	  // doesn't fill up whilst we are waiting for data on the other (causing a deadlock).
-	  // Hence we need to use select.
+        if (b_out || b_err) {
+          // If both channels are being read we need to make sure that one socket buffer
+          // doesn't fill up whilst we are waiting for data on the other (causing a deadlock).
+          // Hence we need to use select.
 
-	  // Once one or other of the channels has reached EOF (or given an error) go back
-	  // to the usual mechanism.
+          // Once one or other of the channels has reached EOF (or given an error) go back
+          // to the usual mechanism.
 
-	  int fds_ready = 1;
-	  fd_set rfds;
+          int fds_ready = 1;
+          fd_set rfds;
 
           int max_fd = 0;
           if (b_out) {
-	    fcntl(out[0], F_SETFL, O_NONBLOCK);
+            fcntl(out[0], F_SETFL, O_NONBLOCK);
             if (out[0] > max_fd)
               max_fd = out[0];
             delete outnot;
             outnot = 0;
           }
           if (b_err) {
-	    fcntl(err[0], F_SETFL, O_NONBLOCK);
+            fcntl(err[0], F_SETFL, O_NONBLOCK);
             if (err[0] > max_fd)
               max_fd = err[0];
             delete errnot;
@@ -635,39 +636,39 @@ void KProcess::commClose()
           }
 
 
-	  while (1) {
-	    FD_ZERO(&rfds);
+          while (1) {
+            FD_ZERO(&rfds);
             if (b_out)
-	      FD_SET(out[0], &rfds);
+              FD_SET(out[0], &rfds);
 
             if (b_err)
-	      FD_SET(err[0], &rfds);
+              FD_SET(err[0], &rfds);
 
-	    fds_ready = select(max_fd+1, &rfds, 0, 0, 0);
-	    if (fds_ready <= 0) break;
+            fds_ready = select(max_fd+1, &rfds, 0, 0, 0);
+            if (fds_ready <= 0) break;
 
-	    if (b_out && FD_ISSET(out[0], &rfds)) {
-	      int ret = 1;
-	      while (ret > 0) ret = childOutput(out[0]);
-	      if ((ret == -1 && errno != EAGAIN) || ret == 0) break;
-	    }
+            if (b_out && FD_ISSET(out[0], &rfds)) {
+              int ret = 1;
+              while (ret > 0) ret = childOutput(out[0]);
+              if ((ret == -1 && errno != EAGAIN) || ret == 0) break;
+            }
 
-	    if (b_err && FD_ISSET(err[0], &rfds)) {
-	      int ret = 1;
-	      while (ret > 0) ret = childError(err[0]);
-	      if ((ret == -1 && errno != EAGAIN) || ret == 0) break;
-	    }
-	  }
-	}
+            if (b_err && FD_ISSET(err[0], &rfds)) {
+              int ret = 1;
+              while (ret > 0) ret = childError(err[0]);
+              if ((ret == -1 && errno != EAGAIN) || ret == 0) break;
+            }
+          }
+        }
 
-	if (b_in)
-	    close(in[1]);
-	if (b_out)
-	    close(out[0]);
-	if (b_err)
-	    close(err[0]);
-	
-	communication = NoCommunication;
+        if (b_in)
+            close(in[1]);
+        if (b_out)
+            close(out[0]);
+        if (b_err)
+            close(err[0]);
+
+        communication = NoCommunication;
   }
 }
 
@@ -696,8 +697,8 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
   QCString cmd;
 
   if (runs || (0 == n)) {
-	return false;  // cannot start a process that is already running
-	// or if no executable has been assigned
+        return false;  // cannot start a process that is already running
+        // or if no executable has been assigned
   }
 
   run_mode = runmode;
@@ -722,7 +723,7 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
 
   runs = true;
 
-  QApplication::flushX();	
+  QApplication::flushX();
 
   // WABA: Note that we use fork() and not vfork() because
   // vfork() has unclear semantics and is not standardized.
@@ -737,9 +738,9 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
            initgroups(pw->pw_name, pw->pw_gid);
 #endif
            setuid(getuid());
-	
+
         }
-	// The child process
+        // The child process
         // CC: Changed the way the parameter was built up
         // CC: Arglist for KShellProcess is now always:
         // CC: <shell> -c <command>
@@ -749,11 +750,11 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
         arglist[2] = cmd.data();
         arglist[3] = 0;
 
-	if(!commSetupDoneC())
-	  kdDebug() << "Could not finish comm setup in child!" << endl;
+        if(!commSetupDoneC())
+          kdDebug() << "Could not finish comm setup in child!" << endl;
 
-	// Matthias
-	if (run_mode == DontCare)
+        // Matthias
+        if (run_mode == DontCare)
           setpgid(0,0);
 
         // restore default SIGPIPE handler (Harri)
@@ -764,39 +765,40 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
         act.sa_flags = 0;
         sigaction(SIGPIPE, &act, 0L);
 
-	execvp(arglist[0], const_cast<char *const *>(arglist));
-	_exit(-1);
+        execvp(arglist[0], const_cast<char *const *>(arglist));
+        _exit(-1);
 
   } else if (-1 == pid) {
-	// forking failed
+        // forking failed
 
-	runs = false;
-	//	free(arglist);
-	return false;
+        runs = false;
+        //      free(arglist);
+        pid = 0;
+        return false;
 
   } else {
-	// the parent continues here
+        // the parent continues here
 
-	if (!commSetupDoneP())  // finish communication socket setup for the parent
-	  kdDebug() << "Could not finish comm setup in parent!" << endl;
+        if (!commSetupDoneP())  // finish communication socket setup for the parent
+          kdDebug() << "Could not finish comm setup in parent!" << endl;
 
-	// Discard any data for stdin that might still be there
-	input_data = 0;
+        // Discard any data for stdin that might still be there
+        input_data = 0;
 
-	if (run_mode == Block) {
-	  commClose();
+        if (run_mode == Block) {
+          commClose();
 
-	  // The SIGCHLD handler of the process controller will catch
-	  // the exit and set the status
+          // The SIGCHLD handler of the process controller will catch
+          // the exit and set the status
           while(runs)
           {
              KProcessController::theKProcessController->
-	          slotDoHousekeeping(0);
+                  slotDoHousekeeping(0);
           }
 
-	  runs = FALSE;
-	  emit processExited(this);
-	}
+          runs = FALSE;
+          emit processExited(this);
+        }
   }
   return true;
 }
@@ -805,7 +807,7 @@ QString KShellProcess::quote(const QString &arg)
 {
     QString res = arg;
     res.replace(QRegExp(QString::fromLatin1("'")),
-		QString::fromLatin1("'\"'\"'"));
+                QString::fromLatin1("'\"'\"'"));
     res.prepend('\'');
     res.append('\'');
     return res;
