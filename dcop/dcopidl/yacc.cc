@@ -1,68 +1,68 @@
 
 /*  A Bison parser, made from yacc.yy
- by  GNU Bison version 1.25
+ by  GNU Bison version 1.27
   */
 
 #define YYBISON 1  /* Identify Bison output.  */
 
-#define	T_CHARACTER_LITERAL	258
-#define	T_DOUBLE_LITERAL	259
-#define	T_IDENTIFIER	260
-#define	T_INTEGER_LITERAL	261
-#define	T_STRING_LITERAL	262
-#define	T_INCLUDE	263
-#define	T_CLASS	264
-#define	T_STRUCT	265
-#define	T_LEFT_CURLY_BRACKET	266
-#define	T_LEFT_PARANTHESIS	267
-#define	T_RIGHT_CURLY_BRACKET	268
-#define	T_RIGHT_PARANTHESIS	269
-#define	T_COLON	270
-#define	T_SEMICOLON	271
-#define	T_PUBLIC	272
-#define	T_PROTECTED	273
-#define	T_TRIPE_DOT	274
-#define	T_PRIVATE	275
-#define	T_VIRTUAL	276
-#define	T_CONST	277
-#define	T_INLINE	278
-#define	T_FRIEND	279
-#define	T_RETURN	280
-#define	T_SIGNAL	281
-#define	T_SLOT	282
-#define	T_TYPEDEF	283
-#define	T_PLUS	284
-#define	T_MINUS	285
-#define	T_COMMA	286
-#define	T_ASTERISK	287
-#define	T_TILDE	288
-#define	T_LESS	289
-#define	T_GREATER	290
-#define	T_AMPERSAND	291
-#define	T_EXTERN	292
-#define	T_ACCESS	293
-#define	T_ENUM	294
-#define	T_NAMESPACE	295
-#define	T_UNKNOWN	296
-#define	T_TRIPLE_DOT	297
-#define	T_TRUE	298
-#define	T_FALSE	299
-#define	T_STATIC	300
-#define	T_EQUAL	301
-#define	T_SCOPE	302
-#define	T_NULL	303
-#define	T_INT	304
-#define	T_ARRAY_OPEN	305
-#define	T_ARRAY_CLOSE	306
-#define	T_CHAR	307
-#define	T_DCOP	308
-#define	T_DCOP_AREA	309
-#define	T_SIGNED	310
-#define	T_UNSIGNED	311
-#define	T_LONG	312
-#define	T_SHORT	313
-#define	T_FUNOPERATOR	314
-#define	T_MISCOPERATOR	315
+#define	T_CHARACTER_LITERAL	257
+#define	T_DOUBLE_LITERAL	258
+#define	T_IDENTIFIER	259
+#define	T_INTEGER_LITERAL	260
+#define	T_STRING_LITERAL	261
+#define	T_INCLUDE	262
+#define	T_CLASS	263
+#define	T_STRUCT	264
+#define	T_LEFT_CURLY_BRACKET	265
+#define	T_LEFT_PARANTHESIS	266
+#define	T_RIGHT_CURLY_BRACKET	267
+#define	T_RIGHT_PARANTHESIS	268
+#define	T_COLON	269
+#define	T_SEMICOLON	270
+#define	T_PUBLIC	271
+#define	T_PROTECTED	272
+#define	T_TRIPE_DOT	273
+#define	T_PRIVATE	274
+#define	T_VIRTUAL	275
+#define	T_CONST	276
+#define	T_INLINE	277
+#define	T_FRIEND	278
+#define	T_RETURN	279
+#define	T_SIGNAL	280
+#define	T_SLOT	281
+#define	T_TYPEDEF	282
+#define	T_PLUS	283
+#define	T_MINUS	284
+#define	T_COMMA	285
+#define	T_ASTERISK	286
+#define	T_TILDE	287
+#define	T_LESS	288
+#define	T_GREATER	289
+#define	T_AMPERSAND	290
+#define	T_EXTERN	291
+#define	T_ACCESS	292
+#define	T_ENUM	293
+#define	T_NAMESPACE	294
+#define	T_UNKNOWN	295
+#define	T_TRIPLE_DOT	296
+#define	T_TRUE	297
+#define	T_FALSE	298
+#define	T_STATIC	299
+#define	T_EQUAL	300
+#define	T_SCOPE	301
+#define	T_NULL	302
+#define	T_INT	303
+#define	T_ARRAY_OPEN	304
+#define	T_ARRAY_CLOSE	305
+#define	T_CHAR	306
+#define	T_DCOP	307
+#define	T_DCOP_AREA	308
+#define	T_SIGNED	309
+#define	T_UNSIGNED	310
+#define	T_LONG	311
+#define	T_SHORT	312
+#define	T_FUNOPERATOR	313
+#define	T_MISCOPERATOR	314
 
 #line 1 "yacc.yy"
 
@@ -124,6 +124,10 @@ typedef union
   unsigned short          _char;
   double _float;
 } YYSTYPE;
+#ifndef YYDEBUG
+#define YYDEBUG 1
+#endif
+
 #include <stdio.h>
 
 #ifndef __cplusplus
@@ -138,7 +142,7 @@ typedef union
 #define	YYFLAG		-32768
 #define	YYNTBASE	61
 
-#define YYTRANSLATE(x) ((unsigned)(x) <= 315 ? yytranslate[x] : 107)
+#define YYTRANSLATE(x) ((unsigned)(x) <= 314 ? yytranslate[x] : 107)
 
 static const char yytranslate[] = {     0,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -166,13 +170,13 @@ static const char yytranslate[] = {     0,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     2,     2,     2,     2,     2,     1,     2,     3,     4,     5,
-     6,     7,     8,     9,    10,    11,    12,    13,    14,    15,
-    16,    17,    18,    19,    20,    21,    22,    23,    24,    25,
-    26,    27,    28,    29,    30,    31,    32,    33,    34,    35,
-    36,    37,    38,    39,    40,    41,    42,    43,    44,    45,
-    46,    47,    48,    49,    50,    51,    52,    53,    54,    55,
-    56,    57,    58,    59,    60
+     2,     2,     2,     2,     2,     1,     3,     4,     5,     6,
+     7,     8,     9,    10,    11,    12,    13,    14,    15,    16,
+    17,    18,    19,    20,    21,    22,    23,    24,    25,    26,
+    27,    28,    29,    30,    31,    32,    33,    34,    35,    36,
+    37,    38,    39,    40,    41,    42,    43,    44,    45,    46,
+    47,    48,    49,    50,    51,    52,    53,    54,    55,    56,
+    57,    58,    59,    60
 };
 
 #if YYDEBUG != 0
@@ -253,18 +257,18 @@ static const short yyrline[] = { 0,
    144,   147,   150,   154,   157,   163,   164,   167,   172,   175,
    178,   181,   184,   187,   190,   193,   196,   199,   202,   207,
    208,   210,   210,   212,   212,   212,   214,   214,   214,   217,
-   221,   227,   233,   236,   241,   249,   253,   260,   264,   272,
-   276,   283,   287,   291,   295,   299,   303,   307,   311,   315,
-   321,   322,   323,   326,   327,   330,   331,   334,   335,   336,
-   337,   338,   341,   342,   345,   355,   362,   366,   373,   374,
-   375,   376,   377,   378,   379,   380,   381,   382,   383,   384,
-   385,   386,   387,   390,   391,   394,   398,   399,   406,   407,
-   408,   409,   410,   415,   423,   428,   435,   440,   445,   450,
-   458,   462,   468,   477,   485,   493,   496,   499,   502,   505,
-   508,   514,   515,   518,   518,   518,   518,   521,   546,   553,
-   556,   557,   560,   563,   564,   567,   571,   575,   579,   585,
-   591,   597,   604,   610,   611,   612,   615,   616,   619,   622,
-   623,   625,   628,   629,   630
+   221,   227,   233,   236,   243,   251,   255,   262,   266,   274,
+   278,   285,   289,   293,   297,   301,   305,   309,   313,   317,
+   323,   324,   325,   328,   329,   332,   333,   336,   337,   338,
+   339,   340,   343,   344,   347,   357,   364,   368,   375,   376,
+   377,   378,   379,   380,   381,   382,   383,   384,   385,   386,
+   387,   388,   389,   392,   393,   396,   400,   401,   408,   409,
+   410,   411,   412,   418,   427,   432,   439,   444,   449,   454,
+   462,   466,   472,   481,   489,   497,   500,   503,   506,   509,
+   512,   518,   519,   522,   522,   522,   522,   525,   550,   557,
+   560,   561,   564,   567,   568,   571,   575,   579,   583,   589,
+   595,   601,   608,   614,   615,   616,   619,   620,   623,   626,
+   627,   629,   632,   633,   634
 };
 #endif
 
@@ -495,7 +499,8 @@ static const short yycheck[] = {     3,
    145,    10,   273,   258,   106,   119
 };
 /* -*-C-*-  Note some compilers choke on comments on `#line' lines.  */
-#line 3 "/usr/share/bison.simple"
+#line 3 "/usr/lib/bison.simple"
+/* This file comes from bison-1.27.  */
 
 /* Skeleton output parser for bison,
    Copyright (C) 1984, 1989, 1990 Free Software Foundation, Inc.
@@ -512,46 +517,66 @@ static const short yycheck[] = {     3,
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
+   Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.  */
 
 /* As a special exception, when this file is copied by Bison into a
    Bison output file, you may use that output file without restriction.
    This special exception was added by the Free Software Foundation
    in version 1.24 of Bison.  */
 
-#ifndef alloca
-#ifdef __GNUC__
-#define alloca __builtin_alloca
-#else /* not GNU C.  */
-#if (!defined (__STDC__) && defined (sparc)) || defined (__sparc__) || defined (__sparc) || defined (__sgi)
-#include <alloca.h>
-#else /* not sparc */
-#if defined (MSDOS) && !defined (__TURBOC__)
-#include <malloc.h>
-#else /* not MSDOS, or __TURBOC__ */
-#if defined(_AIX)
-#include <malloc.h>
- #pragma alloca
-#else /* not MSDOS, __TURBOC__, or _AIX */
-#ifdef __hpux
-#ifdef __cplusplus
-extern "C" {
-void *alloca (unsigned int);
-};
-#else /* not __cplusplus */
-void *alloca ();
-#endif /* not __cplusplus */
-#endif /* __hpux */
-#endif /* not _AIX */
-#endif /* not MSDOS, or __TURBOC__ */
-#endif /* not sparc.  */
-#endif /* not GNU C.  */
-#endif /* alloca not defined.  */
-
 /* This is the parser code that is written into each bison parser
   when the %semantic_parser declaration is not specified in the grammar.
   It was written by Richard Stallman by simplifying the hairy parser
   used when %semantic_parser is specified.  */
+
+#ifndef YYSTACK_USE_ALLOCA
+#ifdef alloca
+#define YYSTACK_USE_ALLOCA
+#else /* alloca not defined */
+#ifdef __GNUC__
+#define YYSTACK_USE_ALLOCA
+#define alloca __builtin_alloca
+#else /* not GNU C.  */
+#if (!defined (__STDC__) && defined (sparc)) || defined (__sparc__) || defined (__sparc) || defined (__sgi) || (defined (__sun) && defined (__i386))
+#define YYSTACK_USE_ALLOCA
+#include <alloca.h>
+#else /* not sparc */
+/* We think this test detects Watcom and Microsoft C.  */
+/* This used to test MSDOS, but that is a bad idea
+   since that symbol is in the user namespace.  */
+#if (defined (_MSDOS) || defined (_MSDOS_)) && !defined (__TURBOC__)
+#if 0 /* No need for malloc.h, which pollutes the namespace;
+	 instead, just don't use alloca.  */
+#include <malloc.h>
+#endif
+#else /* not MSDOS, or __TURBOC__ */
+#if defined(_AIX)
+/* I don't know what this was needed for, but it pollutes the namespace.
+   So I turned it off.   rms, 2 May 1997.  */
+/* #include <malloc.h>  */
+ #pragma alloca
+#define YYSTACK_USE_ALLOCA
+#else /* not MSDOS, or __TURBOC__, or _AIX */
+#if 0
+#ifdef __hpux /* haible@ilog.fr says this works for HPUX 9.05 and up,
+		 and on HPUX 10.  Eventually we can turn this on.  */
+#define YYSTACK_USE_ALLOCA
+#define alloca __builtin_alloca
+#endif /* __hpux */
+#endif
+#endif /* not _AIX */
+#endif /* not MSDOS, or __TURBOC__ */
+#endif /* not sparc */
+#endif /* not GNU C */
+#endif /* alloca not defined */
+#endif /* YYSTACK_USE_ALLOCA not defined */
+
+#ifdef YYSTACK_USE_ALLOCA
+#define YYSTACK_ALLOC alloca
+#else
+#define YYSTACK_ALLOC malloc
+#endif
 
 /* Note: there must be only one dollar sign in this file.
    It is replaced by the list of actions, each action
@@ -561,8 +586,8 @@ void *alloca ();
 #define yyclearin	(yychar = YYEMPTY)
 #define YYEMPTY		-2
 #define YYEOF		0
-#define YYACCEPT	return(0)
-#define YYABORT 	return(1)
+#define YYACCEPT	goto yyacceptlab
+#define YYABORT 	goto yyabortlab
 #define YYERROR		goto yyerrlab1
 /* Like YYERROR except do call yyerror.
    This remains here temporarily to ease the
@@ -643,16 +668,12 @@ int yydebug;			/*  nonzero means print parse trace	*/
 #ifndef YYMAXDEPTH
 #define YYMAXDEPTH 10000
 #endif
-
-#ifndef YYPARSE_RETURN_TYPE
-#define YYPARSE_RETURN_TYPE int
-#endif
-
-/* Prevent warning if -Wstrict-prototypes.  */
-#ifdef __GNUC__
-YYPARSE_RETURN_TYPE yyparse (void);
-#endif
 
+/* Define __yy_memcpy.  Note that the size argument
+   should be passed with type unsigned int, because that is what the non-GCC
+   definitions require.  With GCC, __builtin_memcpy takes an arg
+   of type size_t, but it can handle unsigned int.  */
+
 #if __GNUC__ > 1		/* GNU C and GNU C++ define this.  */
 #define __yy_memcpy(TO,FROM,COUNT)	__builtin_memcpy(TO,FROM,COUNT)
 #else				/* not GNU C or C++ */
@@ -664,7 +685,7 @@ static void
 __yy_memcpy (to, from, count)
      char *to;
      char *from;
-     int count;
+     unsigned int count;
 {
   register char *f = from;
   register char *t = to;
@@ -679,10 +700,10 @@ __yy_memcpy (to, from, count)
 /* This is the most reliable way to avoid incompatibilities
    in available built-in functions on various systems.  */
 static void
-__yy_memcpy (char *to, char *from, int count)
+__yy_memcpy (char *to, char *from, unsigned int count)
 {
-  register char *f = from;
   register char *t = to;
+  register char *f = from;
   register int i = count;
 
   while (i-- > 0)
@@ -692,7 +713,7 @@ __yy_memcpy (char *to, char *from, int count)
 #endif
 #endif
 
-#line 196 "/usr/share/bison.simple"
+#line 216 "/usr/lib/bison.simple"
 
 /* The user can define YYPARSE_PARAM as the name of an argument to be passed
    into yyparse.  The argument should have type void *.
@@ -713,7 +734,16 @@ __yy_memcpy (char *to, char *from, int count)
 #define YYPARSE_PARAM_DECL
 #endif /* not YYPARSE_PARAM */
 
-YYPARSE_RETURN_TYPE
+/* Prevent warning if -Wstrict-prototypes.  */
+#ifdef __GNUC__
+#ifdef YYPARSE_PARAM
+int yyparse (void *);
+#else
+int yyparse (void);
+#endif
+#endif
+
+int
 yyparse(YYPARSE_PARAM_ARG)
      YYPARSE_PARAM_DECL
 {
@@ -741,6 +771,7 @@ yyparse(YYPARSE_PARAM_ARG)
 #endif
 
   int yystacksize = YYINITDEPTH;
+  int yyfree_stacks = 0;
 
 #ifdef YYPURE
   int yychar;
@@ -825,18 +856,32 @@ yynewstate:
       if (yystacksize >= YYMAXDEPTH)
 	{
 	  yyerror("parser stack overflow");
+	  if (yyfree_stacks)
+	    {
+	      free (yyss);
+	      free (yyvs);
+#ifdef YYLSP_NEEDED
+	      free (yyls);
+#endif
+	    }
 	  return 2;
 	}
       yystacksize *= 2;
       if (yystacksize > YYMAXDEPTH)
 	yystacksize = YYMAXDEPTH;
-      yyss = (short *) alloca (yystacksize * sizeof (*yyssp));
-      __yy_memcpy ((char *)yyss, (char *)yyss1, size * sizeof (*yyssp));
-      yyvs = (YYSTYPE *) alloca (yystacksize * sizeof (*yyvsp));
-      __yy_memcpy ((char *)yyvs, (char *)yyvs1, size * sizeof (*yyvsp));
+#ifndef YYSTACK_USE_ALLOCA
+      yyfree_stacks = 1;
+#endif
+      yyss = (short *) YYSTACK_ALLOC (yystacksize * sizeof (*yyssp));
+      __yy_memcpy ((char *)yyss, (char *)yyss1,
+		   size * (unsigned int) sizeof (*yyssp));
+      yyvs = (YYSTYPE *) YYSTACK_ALLOC (yystacksize * sizeof (*yyvsp));
+      __yy_memcpy ((char *)yyvs, (char *)yyvs1,
+		   size * (unsigned int) sizeof (*yyvsp));
 #ifdef YYLSP_NEEDED
-      yyls = (YYLTYPE *) alloca (yystacksize * sizeof (*yylsp));
-      __yy_memcpy ((char *)yyls, (char *)yyls1, size * sizeof (*yylsp));
+      yyls = (YYLTYPE *) YYSTACK_ALLOC (yystacksize * sizeof (*yylsp));
+      __yy_memcpy ((char *)yyls, (char *)yyls1,
+		   size * (unsigned int) sizeof (*yylsp));
 #endif
 #endif /* no yyoverflow */
 
@@ -1114,11 +1159,13 @@ case 33:
 case 34:
 #line 236 "yacc.yy"
 {
-	   yyval._str = new QString( *(yyvsp[-2]._str) + *(yyvsp[0]._str) );
+	   QString* tmp = new QString( "%1::%2" );
+           *tmp = tmp->arg(*(yyvsp[-2]._str)).arg(*(yyvsp[0]._str));
+           yyval._str = tmp;
 	;
     break;}
 case 35:
-#line 242 "yacc.yy"
+#line 244 "yacc.yy"
 {
 		QString* tmp = new QString( "    <SUPER>%1</SUPER>\n" );
 		*tmp = tmp->arg( *(yyvsp[0]._str) );
@@ -1126,134 +1173,134 @@ case 35:
 	  ;
     break;}
 case 36:
-#line 250 "yacc.yy"
+#line 252 "yacc.yy"
 {
 		yyval._str = yyvsp[0]._str;
 	  ;
     break;}
 case 37:
-#line 254 "yacc.yy"
+#line 256 "yacc.yy"
 {
 		yyval._str = yyvsp[0]._str;
 	  ;
     break;}
 case 38:
-#line 261 "yacc.yy"
+#line 263 "yacc.yy"
 {
 		yyval._str = yyvsp[-1]._str;
 	  ;
     break;}
 case 39:
-#line 265 "yacc.yy"
+#line 267 "yacc.yy"
 {
 		/* $$ = $1; */
 		yyval._str = new QString( *(yyvsp[-2]._str) + *(yyvsp[0]._str) );
 	  ;
     break;}
 case 40:
-#line 273 "yacc.yy"
+#line 275 "yacc.yy"
 {
 		yyval._str = yyvsp[0]._str;
 	  ;
     break;}
 case 41:
-#line 277 "yacc.yy"
+#line 279 "yacc.yy"
 {
 		yyval._str = new QString( "" );
 	  ;
     break;}
 case 42:
-#line 284 "yacc.yy"
+#line 286 "yacc.yy"
 {
 		yyval._str = new QString( "" );
 	  ;
     break;}
 case 43:
-#line 288 "yacc.yy"
+#line 290 "yacc.yy"
 {
 		yyval._str = new QString( *(yyvsp[-1]._str) + *(yyvsp[0]._str) );
 	  ;
     break;}
 case 44:
-#line 292 "yacc.yy"
+#line 294 "yacc.yy"
 {
 		yyval._str = new QString( *(yyvsp[-1]._str) + *(yyvsp[0]._str) );
 	  ;
     break;}
 case 45:
-#line 296 "yacc.yy"
+#line 298 "yacc.yy"
 {
 		yyval._str = yyvsp[0]._str;
 	  ;
     break;}
 case 46:
-#line 300 "yacc.yy"
+#line 302 "yacc.yy"
 {
 		yyval._str = yyvsp[0]._str;
 	  ;
     break;}
 case 47:
-#line 304 "yacc.yy"
+#line 306 "yacc.yy"
 {	
 	        yyval._str = yyvsp[0]._str;
 	  ;
     break;}
 case 48:
-#line 308 "yacc.yy"
+#line 310 "yacc.yy"
 {
  	        yyval._str = yyvsp[0]._str;
 	  ;
     break;}
 case 49:
-#line 312 "yacc.yy"
+#line 314 "yacc.yy"
 {
 		yyval._str = yyvsp[0]._str;
 	  ;
     break;}
 case 50:
-#line 316 "yacc.yy"
+#line 318 "yacc.yy"
 {
 		yyval._str = yyvsp[0]._str;
 	  ;
     break;}
 case 56:
-#line 330 "yacc.yy"
+#line 332 "yacc.yy"
 {;
     break;}
 case 57:
-#line 331 "yacc.yy"
+#line 333 "yacc.yy"
 {;
     break;}
 case 58:
-#line 334 "yacc.yy"
-{;
-    break;}
-case 59:
-#line 335 "yacc.yy"
-{;
-    break;}
-case 60:
 #line 336 "yacc.yy"
 {;
     break;}
-case 61:
+case 59:
 #line 337 "yacc.yy"
 {;
     break;}
-case 62:
+case 60:
 #line 338 "yacc.yy"
 {;
     break;}
+case 61:
+#line 339 "yacc.yy"
+{;
+    break;}
+case 62:
+#line 340 "yacc.yy"
+{;
+    break;}
 case 63:
-#line 341 "yacc.yy"
+#line 343 "yacc.yy"
 {;
     break;}
 case 64:
-#line 342 "yacc.yy"
+#line 344 "yacc.yy"
 {;
     break;}
 case 65:
-#line 346 "yacc.yy"
+#line 348 "yacc.yy"
 {
 		if (dcop_area) {
  		  QString* tmp = new QString("<TYPEDEF name=\"%1\" template=\"%2\"><PARAM %3</TYPEDEF>\n");
@@ -1265,134 +1312,136 @@ case 65:
 	  ;
     break;}
 case 66:
-#line 356 "yacc.yy"
+#line 358 "yacc.yy"
 {
 		if (dcop_area)
 		  yyerror("scoped template typedefs are not supported in dcop areas!");
 	  ;
     break;}
 case 67:
-#line 363 "yacc.yy"
+#line 365 "yacc.yy"
 {
 		yyval._int = 0;
 	  ;
     break;}
 case 68:
-#line 367 "yacc.yy"
+#line 369 "yacc.yy"
 {
 		yyval._int = 1;
 	  ;
     break;}
 case 69:
-#line 373 "yacc.yy"
+#line 375 "yacc.yy"
 { yyval._str = new QString("signed int"); ;
     break;}
 case 70:
-#line 374 "yacc.yy"
+#line 376 "yacc.yy"
 { yyval._str = new QString("unsigned int"); ;
     break;}
 case 71:
-#line 375 "yacc.yy"
-{ yyval._str = new QString("signed short int"); ;
-    break;}
-case 72:
-#line 376 "yacc.yy"
-{ yyval._str = new QString("signed long int"); ;
-    break;}
-case 73:
 #line 377 "yacc.yy"
 { yyval._str = new QString("signed short int"); ;
     break;}
-case 74:
+case 72:
 #line 378 "yacc.yy"
-{ yyval._str = new QString("unsigned short int"); ;
+{ yyval._str = new QString("signed long int"); ;
     break;}
-case 75:
+case 73:
 #line 379 "yacc.yy"
-{ yyval._str = new QString("unsigned long int"); ;
+{ yyval._str = new QString("signed short int"); ;
     break;}
-case 76:
+case 74:
 #line 380 "yacc.yy"
 { yyval._str = new QString("unsigned short int"); ;
     break;}
-case 77:
+case 75:
 #line 381 "yacc.yy"
+{ yyval._str = new QString("unsigned long int"); ;
+    break;}
+case 76:
+#line 382 "yacc.yy"
+{ yyval._str = new QString("unsigned short int"); ;
+    break;}
+case 77:
+#line 383 "yacc.yy"
 { yyval._str = new QString("unsigned int"); ;
     break;}
 case 78:
-#line 382 "yacc.yy"
+#line 384 "yacc.yy"
 { yyval._str = new QString("int"); ;
     break;}
 case 79:
-#line 383 "yacc.yy"
+#line 385 "yacc.yy"
 { yyval._str = new QString("long int"); ;
     break;}
 case 80:
-#line 384 "yacc.yy"
+#line 386 "yacc.yy"
 { yyval._str = new QString("short int"); ;
     break;}
 case 81:
-#line 385 "yacc.yy"
+#line 387 "yacc.yy"
 { yyval._str = new QString("char"); ;
     break;}
 case 82:
-#line 386 "yacc.yy"
+#line 388 "yacc.yy"
 { yyval._str = new QString("signed char"); ;
     break;}
 case 83:
-#line 387 "yacc.yy"
+#line 389 "yacc.yy"
 { yyval._str = new QString("unsigned char"); ;
     break;}
 case 86:
-#line 395 "yacc.yy"
+#line 397 "yacc.yy"
 {
 		yyval._str = new QString( "" );
 	  ;
     break;}
 case 88:
-#line 400 "yacc.yy"
+#line 402 "yacc.yy"
 {
 		yyval._str = new QString( *(yyvsp[-2]._str) + *(yyvsp[0]._str) );
 	  ;
     break;}
 case 90:
-#line 407 "yacc.yy"
-{ yyval._str = yyvsp[0]._str; ;
-    break;}
-case 91:
-#line 408 "yacc.yy"
-{ yyval._str = yyvsp[0]._str; ;
-    break;}
-case 92:
 #line 409 "yacc.yy"
 { yyval._str = yyvsp[0]._str; ;
     break;}
-case 93:
+case 91:
 #line 410 "yacc.yy"
+{ yyval._str = yyvsp[0]._str; ;
+    break;}
+case 92:
+#line 411 "yacc.yy"
+{ yyval._str = yyvsp[0]._str; ;
+    break;}
+case 93:
+#line 412 "yacc.yy"
 {
 		QString *tmp = new QString("%1<%2>");
 		tmp->arg(*(yyvsp[-3]._str));
 		tmp->arg(*(yyvsp[-1]._str));
+		yyval._str = tmp;
 	 ;
     break;}
 case 94:
-#line 415 "yacc.yy"
+#line 418 "yacc.yy"
 {
 		QString *tmp = new QString("%1<%2>::%3");
 		tmp->arg(*(yyvsp[-5]._str));
 		tmp->arg(*(yyvsp[-3]._str));
 		tmp->arg(*(yyvsp[0]._str));
+		yyval._str = tmp;
 	 ;
     break;}
 case 95:
-#line 424 "yacc.yy"
+#line 428 "yacc.yy"
 {
 	    if (dcop_area)
 	      yyerror("in dcop areas are no pointers allowed");
 	  ;
     break;}
 case 96:
-#line 428 "yacc.yy"
+#line 432 "yacc.yy"
 {
 	     if (dcop_area) {
 	  	QString* tmp = new QString("<TYPE  qleft=\"const\" qright=\"" AMP_ENTITY "\">%1</TYPE>");
@@ -1402,7 +1451,7 @@ case 96:
 	  ;
     break;}
 case 97:
-#line 435 "yacc.yy"
+#line 439 "yacc.yy"
 {
 		QString* tmp = new QString("<TYPE>%1</TYPE>");
 		*tmp = tmp->arg( *(yyvsp[0]._str) );
@@ -1410,14 +1459,14 @@ case 97:
 	;
     break;}
 case 98:
-#line 440 "yacc.yy"
+#line 444 "yacc.yy"
 {
 	     if (dcop_area)
 		yyerror("in dcop areas are only const references allowed!");
 	  ;
     break;}
 case 99:
-#line 445 "yacc.yy"
+#line 449 "yacc.yy"
 {
 		QString* tmp = new QString("<TYPE>%1</TYPE>");
 		*tmp = tmp->arg( *(yyvsp[0]._str) );
@@ -1425,26 +1474,26 @@ case 99:
 	;
     break;}
 case 100:
-#line 451 "yacc.yy"
+#line 455 "yacc.yy"
 {
 	    if (dcop_area)
 	      yyerror("in dcop areas are no pointers allowed");
 	  ;
     break;}
 case 101:
-#line 459 "yacc.yy"
+#line 463 "yacc.yy"
 {
 	    yyval._str = new QString(*(yyvsp[-2]._str) + "," + *(yyvsp[0]._str));
 	  ;
     break;}
 case 102:
-#line 463 "yacc.yy"
+#line 467 "yacc.yy"
 {
  	    yyval._str = yyvsp[0]._str;
 	  ;
     break;}
 case 103:
-#line 469 "yacc.yy"
+#line 473 "yacc.yy"
 {
 		if (dcop_area) {
 		   QString* tmp = new QString("\n        <ARG>%1<NAME>%2</NAME></ARG>");
@@ -1455,7 +1504,7 @@ case 103:
 	  ;
     break;}
 case 104:
-#line 478 "yacc.yy"
+#line 482 "yacc.yy"
 {
 		if (dcop_area) {
 		   QString* tmp = new QString("\n        <ARG>%1</ARG>");
@@ -1465,7 +1514,7 @@ case 104:
 	  ;
     break;}
 case 105:
-#line 486 "yacc.yy"
+#line 490 "yacc.yy"
 {
 		if (dcop_area)
 			yyerror("variable arguments not supported in dcop area.");
@@ -1473,45 +1522,45 @@ case 105:
 	  ;
     break;}
 case 106:
-#line 494 "yacc.yy"
+#line 498 "yacc.yy"
 {
 	  ;
     break;}
 case 107:
-#line 497 "yacc.yy"
+#line 501 "yacc.yy"
 {
 	  ;
     break;}
 case 108:
-#line 500 "yacc.yy"
+#line 504 "yacc.yy"
 {
 	  ;
     break;}
 case 109:
-#line 503 "yacc.yy"
+#line 507 "yacc.yy"
 {
 	  ;
     break;}
 case 110:
-#line 506 "yacc.yy"
+#line 510 "yacc.yy"
 {
 	  ;
     break;}
 case 111:
-#line 509 "yacc.yy"
+#line 513 "yacc.yy"
 {
 	  ;
     break;}
 case 112:
-#line 514 "yacc.yy"
+#line 518 "yacc.yy"
 { yyval._int = 0; ;
     break;}
 case 113:
-#line 515 "yacc.yy"
+#line 519 "yacc.yy"
 { yyval._int = 1; ;
     break;}
 case 118:
-#line 522 "yacc.yy"
+#line 526 "yacc.yy"
 {
 	     if (dcop_area) {
 		QString* tmp = 0;
@@ -1538,7 +1587,7 @@ case 118:
 	  ;
     break;}
 case 119:
-#line 547 "yacc.yy"
+#line 551 "yacc.yy"
 {
 	     if (dcop_area)
 		yyerror("operators aren't allowed in dcop areas!");
@@ -1546,49 +1595,49 @@ case 119:
 	  ;
     break;}
 case 120:
-#line 553 "yacc.yy"
-{;
-    break;}
-case 121:
-#line 556 "yacc.yy"
-{;
-    break;}
-case 122:
 #line 557 "yacc.yy"
 {;
     break;}
-case 123:
+case 121:
 #line 560 "yacc.yy"
 {;
     break;}
-case 124:
-#line 563 "yacc.yy"
+case 122:
+#line 561 "yacc.yy"
 {;
     break;}
-case 125:
+case 123:
 #line 564 "yacc.yy"
 {;
     break;}
-case 126:
+case 124:
+#line 567 "yacc.yy"
+{;
+    break;}
+case 125:
 #line 568 "yacc.yy"
+{;
+    break;}
+case 126:
+#line 572 "yacc.yy"
 {
 	        yyval._str = yyvsp[-1]._str;
 	  ;
     break;}
 case 127:
-#line 572 "yacc.yy"
+#line 576 "yacc.yy"
 {
 		yyval._str = yyvsp[-3]._str;
 	  ;
     break;}
 case 128:
-#line 576 "yacc.yy"
+#line 580 "yacc.yy"
 {
 		yyval._str = yyvsp[-1]._str;
 	  ;
     break;}
 case 129:
-#line 580 "yacc.yy"
+#line 584 "yacc.yy"
 {
 	      /* The constructor */
 	      assert(!dcop_area);
@@ -1596,7 +1645,7 @@ case 129:
 	  ;
     break;}
 case 130:
-#line 586 "yacc.yy"
+#line 590 "yacc.yy"
 {
 	      /* The constructor */
 	      assert(!dcop_area);
@@ -1604,7 +1653,7 @@ case 130:
 	  ;
     break;}
 case 131:
-#line 592 "yacc.yy"
+#line 596 "yacc.yy"
 {
 	      /* The destructor */
   	      assert(!dcop_area);
@@ -1612,7 +1661,7 @@ case 131:
 	  ;
     break;}
 case 132:
-#line 598 "yacc.yy"
+#line 602 "yacc.yy"
 {
 		if (dcop_area)
 		  yyerror("static is not allowed in dcop area!");
@@ -1620,38 +1669,38 @@ case 132:
 	  ;
     break;}
 case 133:
-#line 605 "yacc.yy"
+#line 609 "yacc.yy"
 {
 		function_mode = 1;
 	;
     break;}
 case 137:
-#line 615 "yacc.yy"
+#line 619 "yacc.yy"
 {;
     break;}
 case 138:
-#line 616 "yacc.yy"
+#line 620 "yacc.yy"
 {;
     break;}
 case 142:
-#line 625 "yacc.yy"
-{;
-    break;}
-case 143:
-#line 628 "yacc.yy"
-{;
-    break;}
-case 144:
 #line 629 "yacc.yy"
 {;
     break;}
+case 143:
+#line 632 "yacc.yy"
+{;
+    break;}
+case 144:
+#line 633 "yacc.yy"
+{;
+    break;}
 case 145:
-#line 630 "yacc.yy"
+#line 634 "yacc.yy"
 {;
     break;}
 }
    /* the action file gets copied in in place of this dollarsign */
-#line 498 "/usr/share/bison.simple"
+#line 542 "/usr/lib/bison.simple"
 
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -1846,8 +1895,32 @@ yyerrhandle:
 
   yystate = yyn;
   goto yynewstate;
+
+ yyacceptlab:
+  /* YYACCEPT comes here.  */
+  if (yyfree_stacks)
+    {
+      free (yyss);
+      free (yyvs);
+#ifdef YYLSP_NEEDED
+      free (yyls);
+#endif
+    }
+  return 0;
+
+ yyabortlab:
+  /* YYABORT comes here.  */
+  if (yyfree_stacks)
+    {
+      free (yyss);
+      free (yyvs);
+#ifdef YYLSP_NEEDED
+      free (yyls);
+#endif
+    }
+  return 1;
 }
-#line 632 "yacc.yy"
+#line 636 "yacc.yy"
 
 
 void dcopidlParse( const char *_code )

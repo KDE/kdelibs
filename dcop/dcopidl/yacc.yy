@@ -234,7 +234,9 @@ Identifier
 	  $$ = $1;
 	}
 	| T_IDENTIFIER T_SCOPE Identifier {
-	   $$ = new QString( *($1) + *($3) );
+	   QString* tmp = new QString( "%1::%2" );
+           *tmp = tmp->arg(*($1)).arg(*($3));
+           $$ = tmp;
 	}
 		
 super_class_name
@@ -411,12 +413,14 @@ type_name
 		QString *tmp = new QString("%1<%2>");
 		tmp->arg(*($1));
 		tmp->arg(*($3));
+		$$ = tmp;
 	 }
 	| Identifier T_LESS type_list T_GREATER T_SCOPE Identifier{
 		QString *tmp = new QString("%1<%2>::%3");
 		tmp->arg(*($1));
 		tmp->arg(*($3));
 		tmp->arg(*($6));
+		$$ = tmp;
 	 }
 
 type
