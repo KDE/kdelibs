@@ -68,6 +68,18 @@ dcop_call(
   char * replyData,
   int replyDataLength
 );
+  
+  char *
+dcop_write_int(char * buf, int i);
+  
+  char *
+dcop_read_int(char * buf, int * i);
+  
+  char *
+dcop_write_string(char * buf, const char * text);
+  
+  char *
+dcop_read_string(char * buf, char * output);
 
   char *
 dcop_write_int(char * buf, int i)
@@ -326,6 +338,8 @@ dcop_register(
   dcop_callback_t callback
 )
 {
+  /* STUB */
+  return False;
 #if 0
   QCString replyType;
   QByteArray data, replyData;
@@ -359,7 +373,7 @@ dcop_process_message(
   char * objId = 0L;
   char * fun = 0L;
   char * pos = 0L;
-  unsigned int dataLength = 0L;
+  int dataLength = 0L;
 
   /* Avoid unused param warnings */
   (void)sizeof(clientObject);
@@ -392,7 +406,7 @@ dcop_process_message(
       pos = dcop_read_int(pos, &dataLength);
 
       /* Run user-provided callback. */
-      dcop_callback(app, objId, fun, pos, dataLength);
+      dcop_callback(app, objId, fun, pos, (unsigned)dataLength);
 
       free(app);
       free(objId);
