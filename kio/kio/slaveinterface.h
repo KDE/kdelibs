@@ -36,7 +36,7 @@ namespace KIO {
 class Connection;
 // better there is one ...
 class SlaveInterfacePrivate;
-        
+
   // Definition of enum Command has been moved to global.h
 
  /**
@@ -84,8 +84,8 @@ class SlaveInterfacePrivate;
  };
 
 /**
- * There are two classes that specifies the protocol between application 
- * (@ref KIO::Job) and kioslave. SlaveInterface is the class to use on the application 
+ * There are two classes that specifies the protocol between application
+ * (@ref KIO::Job) and kioslave. SlaveInterface is the class to use on the application
  * end, SlaveBase is the one to use on the slave end.
  *
  * A call to foo() results in a call to slotFoo() on the other end.
@@ -145,12 +145,12 @@ signals:
     void connectFinished();
 
     /**
-     * @deprecated. Obselete as of 3.1. Replaced by a kpassword, a kded module.
-     */     
+     * @deprecated. Obselete as of 3.1. Replaced by kpassword, a kded module.
+     */
     void authorizationKey( const QCString&, const QCString&, bool );
 
     /**
-     * @deprecated. Obselete as of 3.1. Replaced by a kpassword, a kded module.
+     * @deprecated. Obselete as of 3.1. Replaced by kpassword, a kded module.
      */
     void delAuthorization( const QCString& grpkey );
 
@@ -230,7 +230,7 @@ protected:
 
 protected slots:
     void calcSpeed();
- 
+
 protected:
     Connection * m_pConnection;
 
