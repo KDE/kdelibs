@@ -316,8 +316,12 @@ void KFileIconView::insertItem( KFileItem *i )
     KFileView::insertItem( i );
 
     QIconView* qview = static_cast<QIconView*>( this );
+    // Since creating and initializing an item leads to a repaint, 
+    // we disable updates on the IconView for a while.
+    qview->setUpdatesEnabled( false );
     KFileIconViewItem *item = new KFileIconViewItem( qview, i );
     initItem( item, i, true );
+    qview->setUpdatesEnabled( true );
 
     if ( !i->isMimeTypeKnown() )
         m_resolver->m_lstPendingMimeIconItems.append( item );
@@ -424,7 +428,8 @@ void KFileIconView::updateView( bool b )
                 if ( !item->pixmapSize().isNull() )
                     item->setPixmapSize( QSize( 0, 0 ) );
             }
-            item->setPixmap( (item->fileInfo())->pixmap( myIconSize ) );
+            // recalculate item parameters but avoid an in-place repaint
+            item->setPixmap( (item->fileInfo())->pixmap( myIconSize ), true, false );
             item = static_cast<KFileIconViewItem *>(item->nextItem());
         } while ( item != 0L );
     }
@@ -681,8 +686,6 @@ void KFileIconView::determineIcon( KFileIconViewItem *item )
 
 void KFileIconView::listingCompleted()
 {
-    arrangeItemsInGrid();
-
     // QIconView doesn't set the current item automatically, so we have to do
     // that. We don't want to emit selectionChanged() tho.
     if ( !currentItem() ) {
