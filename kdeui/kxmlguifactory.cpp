@@ -514,10 +514,6 @@ void KXMLGUIFactory::configureAction( KAction *action, const QDomAttr &attribute
 
     QString attrName = attribute.name();
 
-    //don't let someone change the name of the action! (Simon)
-    if ( attribute.name() == d->attrName )
-        return;
-
     QVariant propertyValue;
 
     QVariant::Type propertyType = action->property( attribute.name().latin1() ).type();
