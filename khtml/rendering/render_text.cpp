@@ -702,8 +702,8 @@ int RenderText::minXPos() const
 {
     if (!m_lines.count())
 	return 0;
-    unsigned int retval=6666666;
-    for (int i=0;i < int(m_lines.count());i++)
+    int retval=6666666;
+    for (unsigned i=0;i < m_lines.count(); i++)
     {
 	retval = QMIN ( retval, m_lines[i]->m_x);
     }
