@@ -54,14 +54,14 @@ static int unix_connect(const char *url)
 	struct sockaddr_un *remote_addr = parse_unix_url(url);
 	if(remote_addr == 0)
 	{
-		fprintf(stderr,"couldn't parse url %s\n",url);
+		fprintf(stderr,"unix_connect: couldn't parse url %s\n",url);
 		return 0;
 	}
 
 	int my_socket = socket(AF_UNIX,SOCK_STREAM,0);
 	if(my_socket < 0)
 	{
-		fprintf(stderr,"unable to open socket for read");                     
+		fprintf(stderr,"unix_connect: unable to open socket for read");
 		return 0;
 	}
 
@@ -71,7 +71,8 @@ static int unix_connect(const char *url)
     if ( setsockopt( my_socket, SOL_SOCKET, SO_LINGER,
                      (char*)&lin, sizeof(struct linger) ) < 0 )
     {
-        fprintf(stderr,"Unable to set socket linger value to %d\n",
+        fprintf(stderr,
+				"unix_connect: unable to set socket linger value to %d\n",
                 lin.l_linger);
         return 0;
     }
@@ -80,7 +81,7 @@ static int unix_connect(const char *url)
 	rc=connect(my_socket,(struct sockaddr *)remote_addr, sizeof(*remote_addr));
 	if(rc != 0)
 	{
-		fprintf(stderr,"can't connect to server");
+		fprintf(stderr,"unix_connect: can't connect to server (%s)\n",url);
 		return 0;
 	}
 
