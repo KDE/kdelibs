@@ -58,7 +58,8 @@ public:
 
   KCModuleInfo( const KCModuleInfo &rhs );
   KCModuleInfo &operator=( const KCModuleInfo &rhs );
-  bool operator==( const KCModuleInfo &rhs );
+  bool operator==( const KCModuleInfo &rhs ) const;
+  bool operator!=( const KCModuleInfo &rhs ) const;
   ~KCModuleInfo();
 
   /**
