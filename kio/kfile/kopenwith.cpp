@@ -773,7 +773,7 @@ void KOpenWithDlg::slotOK()
   desktop->writeEntry("InitialPreference", maxPreference + 1);
 
 
-  if (bRemember)
+  if (bRemember || d->saveNewApps)
   {
     QStringList mimeList = desktop->readListEntry("MimeType", ';');
     if (!qServiceType.isEmpty() && !mimeList.contains(qServiceType))
