@@ -1168,6 +1168,7 @@ TransferJob *KIO::http_post( const KURL& url, const QByteArray &postData, bool s
 		valid = true;
     }
 
+
     // if request is not valid, return an invalid transfer job
     if (!valid)
     {
@@ -1176,13 +1177,34 @@ TransferJob *KIO::http_post( const KURL& url, const QByteArray &postData, bool s
         return job;
     }
 
+    bool redirection = false;
+    KURL _url(url);
+    if (_url.path().isEmpty())
+    {
+      redirection = true;
+      _url.setPath("/");
+    }
+
     // Send http post command (1), decoded path and encoded query
-    KIO_ARGS << (int)1 << url;
-    TransferJob * job = new TransferJob( url, CMD_SPECIAL,
+    KIO_ARGS << (int)1 << _url;
+    TransferJob * job = new TransferJob( _url, CMD_SPECIAL,
                                          packedArgs, postData, showProgressInfo );
+
+    if (redirection)
+      QTimer::singleShot(0, job, SLOT(slotPostRedirection()) );
+
     return job;
 }
 
+// http post got redirected from http://host to http://host/ by TransferJob
+// We must do this redirection ourselves because redirections by the
+// slave change post jobs into get jobs.
+void TransferJob::slotPostRedirection()
+{
+    kdDebug(7007) << "TransferJob::slotPostRedirection(" << m_url.prettyURL() << ")" << endl;
+    // Tell the user about the new url.
+    emit redirection(this, m_url);
+}
 
 
 TransferJob *KIO::put( const KURL& url, int permissions,

@@ -864,6 +864,7 @@ namespace KIO {
         virtual void slotSubURLData(KIO::Job*, const QByteArray &);
         void slotErrorPage();
         void slotCanResume( KIO::filesize_t offset );
+        void slotPostRedirection();
 
     protected:
         bool m_suspended;
