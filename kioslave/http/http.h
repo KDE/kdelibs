@@ -76,6 +76,7 @@ public:
     }
     
     QString hostname;
+    QString pretty_hostname;
     short unsigned int port;
     QString user;
     QString passwd;
@@ -121,6 +122,7 @@ public:
     }
     
     QString hostname;
+    QString pretty_hostname;
     short unsigned int port;
     QString user;
     QString passwd;
@@ -238,7 +240,7 @@ public:
 
   void post( const KURL& url );
   void multiGet(const QByteArray &data);
-  bool checkRequestURL( const KURL& );
+  bool checkRequestURL( KURL& );
   void cacheUpdate( const KURL &url, bool nocache, time_t expireDate);
 
 protected slots:

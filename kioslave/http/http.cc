@@ -48,6 +48,7 @@
 #include <qstringlist.h>
 
 #include <kurl.h>
+#include <kidna.h>
 #include <ksocks.h>
 #include <kdebug.h>
 #include <klocale.h>
@@ -199,6 +200,8 @@ void HTTPProtocol::resetSessionSettings()
   // Do not reset the URL on redirection if the proxy
   // URL, username or password has not changed!
   KURL proxy = config()->readEntry("UseProxy");
+  // Normalize host name to ascii
+  proxy.setHost(QString::fromLatin1(KIDNA::toAscii(proxy.host())));
 
   if ( m_strProxyRealm.isEmpty() || !proxy.isValid() ||
        m_proxyURL.host() != proxy.host() ||
@@ -332,16 +335,18 @@ void HTTPProtocol::resetSessionSettings()
   m_bFirstRequest = false;
 }
 
-void HTTPProtocol::setHost( const QString& host, int port,
+void HTTPProtocol::setHost( const QString& _host, int port,
                             const QString& user, const QString& pass )
 {
+  QString host = QString::fromLatin1(KIDNA::toAscii(_host));
   kdDebug(7113) << "(" << m_pid << ") Hostname is now: " << host << endl;
-
+  
   // Reset the webdav-capable flags for this host
   if ( m_request.hostname != host )
     m_davHostOk = m_davHostUnsupported = false;
 
   m_request.hostname = host;
+  m_request.pretty_hostname = KIDNA::toUnicode(_host);
   m_request.port = (port == 0) ? m_iDefaultPort : port;
   m_request.user = user;
   m_request.passwd = pass;
@@ -349,9 +354,11 @@ void HTTPProtocol::setHost( const QString& host, int port,
   m_bIsTunneled = false;
 }
 
-bool HTTPProtocol::checkRequestURL( const KURL& u )
+bool HTTPProtocol::checkRequestURL( KURL& u )
 {
   kdDebug (7113) << "(" << m_pid << ") HTTPProtocol::checkRequestURL:  " << u.url() << endl;
+  // Normalize host name to ascii
+  u.setHost(QString::fromLatin1(KIDNA::toAscii(u.host())));
 
   m_request.url = u;
 
@@ -450,7 +457,7 @@ bool HTTPProtocol::retrieveHeader( bool close_connection )
           if ( !m_request.bErrorPage )
           {
             kdDebug(7113) << "(" << m_pid << ") Sending an error message!" << endl;
-            error( ERR_UNKNOWN_PROXY_HOST, m_proxyURL.host() );
+            error( ERR_UNKNOWN_PROXY_HOST, m_proxyURL.prettyHost() );
             return false;
           }
 
@@ -482,8 +489,9 @@ bool HTTPProtocol::retrieveHeader( bool close_connection )
   return true;
 }
 
-void HTTPProtocol::stat(const KURL& url)
+void HTTPProtocol::stat(const KURL& _url)
 {
+  KURL url(_url);
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::stat " << url.prettyURL()
                 << endl;
 
@@ -514,8 +522,9 @@ void HTTPProtocol::stat(const KURL& url)
   davStatList( url );
 }
 
-void HTTPProtocol::listDir( const KURL& url )
+void HTTPProtocol::listDir( const KURL& _url )
 {
+  KURL url(_url);
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::listDir " << url.url()
                 << endl;
 
@@ -662,8 +671,9 @@ void HTTPProtocol::davStatList( const KURL& url, bool stat )
   }
 }
 
-void HTTPProtocol::davGeneric( const KURL& url, KIO::HTTP_METHOD method )
+void HTTPProtocol::davGeneric( const KURL& _url, KIO::HTTP_METHOD method )
 {
+  KURL url(_url);
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::davGeneric " << url.url()
                 << endl;
 
@@ -1081,8 +1091,9 @@ void HTTPProtocol::davFinished()
   finished();
 }
 
-void HTTPProtocol::mkdir( const KURL& url, int )
+void HTTPProtocol::mkdir( const KURL& _url, int )
 {
+  KURL url(_url);
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::mkdir " << url.url()
                 << endl;
 
@@ -1103,8 +1114,9 @@ void HTTPProtocol::mkdir( const KURL& url, int )
     davError();
 }
 
-void HTTPProtocol::get( const KURL& url )
+void HTTPProtocol::get( const KURL& _url )
 {
+  KURL url(_url);
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::get " << url.url()
                 << endl;
 
@@ -1128,8 +1140,9 @@ void HTTPProtocol::get( const KURL& url )
   retrieveContent();
 }
 
-void HTTPProtocol::put( const KURL &url, int, bool, bool)
+void HTTPProtocol::put( const KURL &_url, int, bool, bool)
 {
+  KURL url(_url);
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::put " << url.prettyURL()
                 << endl;
 
@@ -1145,8 +1158,10 @@ void HTTPProtocol::put( const KURL &url, int, bool, bool)
   retrieveHeader( true );
 }
 
-void HTTPProtocol::copy( const KURL& src, const KURL& dest, int, bool overwrite )
+void HTTPProtocol::copy( const KURL& _src, const KURL& _dest, int, bool overwrite )
 {
+  KURL src(_src);
+  KURL dest(_dest);
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::copy " << src.prettyURL()
                 << " -> " << dest.prettyURL() << endl;
 
@@ -1174,8 +1189,10 @@ void HTTPProtocol::copy( const KURL& src, const KURL& dest, int, bool overwrite 
     davError();
 }
 
-void HTTPProtocol::rename( const KURL& src, const KURL& dest, bool overwrite )
+void HTTPProtocol::rename( const KURL& _src, const KURL& _dest, bool overwrite )
 {
+  KURL src(_src);
+  KURL dest(_dest);
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::rename " << src.prettyURL()
                 << " -> " << dest.prettyURL() << endl;
 
@@ -1183,12 +1200,11 @@ void HTTPProtocol::rename( const KURL& src, const KURL& dest, bool overwrite )
     return;
 
   // destination has to be "http://..."
-  KURL newDest = dest;
-  newDest.setProtocol( "http" );
+  dest.setProtocol( "http" );
 
   m_request.method = DAV_MOVE;
   m_request.path = src.path();
-  m_request.davData.desturl = newDest.url();
+  m_request.davData.desturl = dest.url();
   m_request.davData.overwrite = overwrite;
   m_request.query = QString::null;
   m_request.cache = CC_Reload;
@@ -1202,8 +1218,9 @@ void HTTPProtocol::rename( const KURL& src, const KURL& dest, bool overwrite )
     davError();
 }
 
-void HTTPProtocol::del( const KURL& url, bool )
+void HTTPProtocol::del( const KURL& _url, bool )
 {
+  KURL url(_url);
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::del " << url.prettyURL()
                 << endl;
 
@@ -1226,8 +1243,9 @@ void HTTPProtocol::del( const KURL& url, bool )
     davError();
 }
 
-void HTTPProtocol::post( const KURL& url )
+void HTTPProtocol::post( const KURL& _url )
 {
+  KURL url(_url);
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::post "
                 << url.prettyURL() << endl;
 
@@ -1243,9 +1261,10 @@ void HTTPProtocol::post( const KURL& url )
   retrieveContent();
 }
 
-void HTTPProtocol::davLock( const KURL& url, const QString& scope,
+void HTTPProtocol::davLock( const KURL& _url, const QString& scope,
                             const QString& type, const QString& owner )
 {
+  KURL url(_url);
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::davLock "
                 << url.prettyURL() << endl;
 
@@ -1309,8 +1328,9 @@ void HTTPProtocol::davLock( const KURL& url, const QString& scope,
     davError();
 }
 
-void HTTPProtocol::davUnlock( const KURL& url )
+void HTTPProtocol::davUnlock( const KURL& _url )
 {
+  KURL url(_url);
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::davUnlock "
                 << url.prettyURL() << endl;
 
@@ -1752,6 +1772,7 @@ void HTTPProtocol::httpCheckConnection()
 
   // Let's update our current state
   m_state.hostname = m_request.hostname;
+  m_state.pretty_hostname = m_request.pretty_hostname;
   m_state.port = m_request.port;
   m_state.user = m_request.user;
   m_state.passwd = m_request.passwd;
@@ -1775,7 +1796,7 @@ bool HTTPProtocol::httpOpenConnection()
     kdDebug(7113) << "(" << m_pid << ") Connecting to proxy server: "
                   << proxy_host << ", port: " << proxy_port << endl;
 
-    infoMessage( i18n("Connecting to %1...").arg(m_state.hostname) );
+    infoMessage( i18n("Connecting to %1...").arg(m_state.pretty_hostname) );
 
     setConnectTimeout( m_proxyConnTimeout );
 
@@ -1819,19 +1840,19 @@ bool HTTPProtocol::httpOpenConnection()
       switch ( connectResult() )
       {
         case IO_LookupError:
-          errMsg = m_state.hostname;
+          errMsg = m_state.pretty_hostname;
           errCode = ERR_UNKNOWN_HOST;
           break;
         case IO_TimeOutError:
-          errMsg = i18n("Connection was to %1 at port %2").arg(m_state.hostname).arg(m_state.port);
+          errMsg = i18n("Connection was to %1 at port %2").arg(m_state.pretty_hostname).arg(m_state.port);
           errCode = ERR_SERVER_TIMEOUT;
           break;
         default:
           errCode = ERR_COULD_NOT_CONNECT;
           if (m_state.port != m_iDefaultPort)
-            errMsg = i18n("%1 (port %2)").arg(m_state.hostname).arg(m_state.port);
+            errMsg = i18n("%1 (port %2)").arg(m_state.pretty_hostname).arg(m_state.port);
           else
-            errMsg = m_state.hostname;
+            errMsg = m_state.pretty_hostname;
       }
       error( errCode, errMsg );
       return false;
@@ -2343,7 +2364,7 @@ bool HTTPProtocol::httpOpen()
     {
        kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::httpOpen: sendOk==false."
                         " Connnection broken !" << endl;
-       error( ERR_CONNECTION_BROKEN, m_state.hostname );
+       error( ERR_CONNECTION_BROKEN, m_state.pretty_hostname );
        return false;
     }
   }
@@ -2353,7 +2374,7 @@ bool HTTPProtocol::httpOpen()
   if ( moreData || davData )
     res = sendBody();
 
-  infoMessage(i18n("%1 contacted. Waiting for reply...").arg(m_request.hostname));
+  infoMessage(i18n("%1 contacted. Waiting for reply...").arg(m_request.pretty_hostname));
 
   return res;
 }
@@ -2390,7 +2411,7 @@ bool HTTPProtocol::readHeader()
         // Error, delete cache entry
         kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::readHeader: "
                       << "Could not access cache to obtain mimetype!" << endl;
-        error( ERR_CONNECTION_BROKEN, m_state.hostname );
+        error( ERR_CONNECTION_BROKEN, m_state.pretty_hostname );
         return false;
      }
 
@@ -2404,7 +2425,7 @@ bool HTTPProtocol::readHeader()
         // Error, delete cache entry
         kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::readHeader: "
                       << "Could not access cached data! " << endl;
-        error( ERR_CONNECTION_BROKEN, m_state.hostname );
+        error( ERR_CONNECTION_BROKEN, m_state.pretty_hostname );
         return false;
      }
 
@@ -2466,7 +2487,7 @@ bool HTTPProtocol::readHeader()
   if (!waitForResponse(m_remoteRespTimeout))
   {
      // No response error
-     error( ERR_SERVER_TIMEOUT , m_state.hostname );
+     error( ERR_SERVER_TIMEOUT , m_state.pretty_hostname );
      return false;
   }
 
@@ -2495,7 +2516,7 @@ bool HTTPProtocol::readHeader()
     }
 
     kdDebug(7113) << "HTTPProtocol::readHeader: Connection broken !" << endl;
-    error( ERR_CONNECTION_BROKEN, m_state.hostname );
+    error( ERR_CONNECTION_BROKEN, m_state.pretty_hostname );
     return false;
   }
 
@@ -3529,11 +3550,11 @@ bool HTTPProtocol::sendBody()
 
   if ( result < 0 )
   {
-    error( ERR_ABORTED, m_request.hostname );
+    error( ERR_ABORTED, m_request.pretty_hostname );
     return false;
   }
 
-  infoMessage( i18n( "Sending data to %1" ).arg( m_request.hostname ) );
+  infoMessage( i18n( "Sending data to %1" ).arg( m_request.pretty_hostname ) );
 
   QString size = QString ("Content-Length: %1\r\n\r\n").arg(length);
   kdDebug( 7113 ) << "(" << m_pid << ")" << size << endl;
@@ -3544,7 +3565,7 @@ bool HTTPProtocol::sendBody()
   {
     kdDebug( 7113 ) << "(" << m_pid << ") Connection broken when sending "
                     << "content length: (" << m_state.hostname << ")" << endl;
-    error( ERR_CONNECTION_BROKEN, m_state.hostname );
+    error( ERR_CONNECTION_BROKEN, m_state.pretty_hostname );
     return false;
   }
 
@@ -3555,7 +3576,7 @@ bool HTTPProtocol::sendBody()
   {
     kdDebug(7113) << "(" << m_pid << ") Connection broken when sending message body: ("
                   << m_state.hostname << ")" << endl;
-    error( ERR_CONNECTION_BROKEN, m_state.hostname );
+    error( ERR_CONNECTION_BROKEN, m_state.pretty_hostname );
     return false;
   }
 
@@ -3625,8 +3646,10 @@ void HTTPProtocol::slave_status()
   slaveStatus( m_state.hostname, (m_iSock != -1) );
 }
 
-void HTTPProtocol::mimetype( const KURL& url )
+void HTTPProtocol::mimetype( const KURL& _url )
 {
+  KURL url(_url);
+  
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::mimetype: "
                 << url.prettyURL() << endl;
 
@@ -3875,13 +3898,13 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
     if ( (m_iSize > 0) && (m_iSize != NO_SIZE)) {
        totalSize(m_iSize);
        infoMessage( i18n( "Retrieving %1 from %2...").arg(KIO::convertSize(m_iSize))
-         .arg( m_request.hostname ) );
+         .arg( m_request.pretty_hostname ) );
     }
     else
        totalSize ( 0 );
   }
   else
-    infoMessage( i18n( "Retrieving from %1..." ).arg( m_request.hostname ) );
+    infoMessage( i18n( "Retrieving from %1..." ).arg( m_request.pretty_hostname ) );
 
   if (m_request.bCachedRead)
   {
@@ -4002,7 +4025,7 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
       // Oh well... log an error and bug out
       kdDebug(7113) << "(" << m_pid << ") readBody: bytesReceived==-1 sz=" << (int)sz
                     << " Connnection broken !" << endl;
-      error(ERR_CONNECTION_BROKEN, m_state.hostname);
+      error(ERR_CONNECTION_BROKEN, m_state.pretty_hostname);
       return false;
     }
 
@@ -4202,8 +4225,10 @@ QString HTTPProtocol::findCookies( const QString &url)
 /******************************* CACHING CODE ****************************/
 
 
-void HTTPProtocol::cacheUpdate( const KURL& url, bool no_cache, time_t expireDate)
+void HTTPProtocol::cacheUpdate( const KURL& _url, bool no_cache, time_t expireDate)
 {
+  KURL url(_url);
+
   if ( !checkRequestURL( url ) )
       return;
 
@@ -4696,7 +4721,7 @@ void HTTPProtocol::promptInfo( AuthInfo& info )
       info.verifyPath = false;
       info.digestInfo = m_strAuthorization;
       info.commentLabel = i18n( "Site:" );
-      info.comment = i18n("<b>%1</b> at <b>%2</b>").arg( m_strRealm ).arg( m_request.hostname );
+      info.comment = i18n("<b>%1</b> at <b>%2</b>").arg( m_strRealm ).arg( m_request.pretty_hostname );
     }
   }
   else if ( m_responseCode == 407 )
@@ -4713,7 +4738,7 @@ void HTTPProtocol::promptInfo( AuthInfo& info )
       info.verifyPath = false;
       info.digestInfo = m_strProxyAuthorization;
       info.commentLabel = i18n( "Proxy:" );
-      info.comment = i18n("<b>%1</b> at <b>%2</b>").arg( m_strProxyRealm ).arg( m_proxyURL.host() );
+      info.comment = i18n("<b>%1</b> at <b>%2</b>").arg( m_strProxyRealm ).arg( m_proxyURL.prettyHost() );
     }
   }
 }
@@ -4732,7 +4757,7 @@ bool HTTPProtocol::getAuthorization()
      if (m_request.bErrorPage)
         errorPage();
      else
-        error( ERR_COULD_NOT_LOGIN, i18n("Authentication needed for %1 but authentication is disabled.").arg(m_request.hostname));
+        error( ERR_COULD_NOT_LOGIN, i18n("Authentication needed for %1 but authentication is disabled.").arg(m_request.pretty_hostname));
      return false;
   }
 
