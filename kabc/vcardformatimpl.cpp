@@ -33,12 +33,13 @@ using namespace VCARD;
 
 bool VCardFormatImpl::load( AddressBook *addressBook, const QString &fileName )
 {
-  QCString data;
+  QString data;
 
   QFile f( fileName );
   if ( f.open(IO_ReadOnly) ) {
     QTextStream t( &f );
-    data = t.read().latin1();
+    t.setEncoding(QTextStream::UnicodeUTF8);
+    data = t.read();
     f.close();
   } else {
     return false;
@@ -46,7 +47,7 @@ bool VCardFormatImpl::load( AddressBook *addressBook, const QString &fileName )
   
   addressBook->clear();
 
-  VCardEntity e( data );
+  VCardEntity e( data.local8Bit() );
   
   VCardListIterator it( e.cardList() );
 
@@ -238,7 +239,8 @@ bool VCardFormatImpl::save( AddressBook *addressBook, const QString &fileName )
   QFile f( fileName );
   if ( f.open(IO_WriteOnly) ) {
     QTextStream t( &f );
-    t << vcards.asString();
+    t.setEncoding(QTextStream::UnicodeUTF8);
+    t << QString::fromLocal8Bit(vcards.asString());
     f.close();
   } else {
     return false;
