@@ -394,7 +394,10 @@ bool KNotify::notifyBySound( const QString &sound, const QString &appname )
         KDE::PlayObject *playObject = factory.createPlayObject(soundURL, true);
 
         if (playObject->isNull())
+        {
+            delete playObject;
             return false;
+        }
 
         if ( d->volume != 100 )
         {
