@@ -22,8 +22,6 @@ NotepadPart::NotepadPart( QWidget * parentWidget )
 {
   m_instance = new KInstance( "nodepadpart" );
 
-  m_instance->dirs()->addResourceDir( "appdata", QDir::currentDirPath().append( "/notepadplugins" ).ascii() );
-
   debug("NotepadPart::NotepadPart");
   m_edit = new QMultiLineEdit( parentWidget, "NotepadPart's multiline edit" );
   m_edit->setFocus();
@@ -84,7 +82,7 @@ void NotepadPart::slotSearchReplace()
 
   if ( !factory )
     return;
-  
+
   QListIterator<KParts::XMLGUIServant> it( *pluginServants() );
   for (; it.current(); ++it )
     factory->removeServant( it.current() );
