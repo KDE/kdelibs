@@ -28,7 +28,7 @@ if test ! "$ac_cv_lib_bzip2" = no; then
   LIBBZ2="$ac_cv_lib_bzip2"
   AC_SUBST(LIBBZ2)
 
-  AC_DEFINE(NEED_BZ2_PREFIX, 0, [Define if the libbz2 functions need the BZ2_ prefix]);
+  AC_DEFINE(NEED_BZ2_PREFIX, 0, [Define if the libbz2 functions need the BZ2_ prefix])
 
 else
   
@@ -61,7 +61,7 @@ else
      LIBBZ2="$ac_cv_lib_bzip2_prefix"
      AC_SUBST(LIBBZ2)
 
-     AC_DEFINE(NEED_BZ2_PREFIX, 1, [Define if the libbz2 functions need the BZ2_ prefix]);
+     AC_DEFINE(NEED_BZ2_PREFIX, 1, [Define if the libbz2 functions need the BZ2_ prefix])
    dnl else, we just ignore this
    fi
 
