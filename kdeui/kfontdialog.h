@@ -54,9 +54,8 @@ public:
   /**
    * Constructor.  Creates a new font picker dialog.
    *
-   * @param parent The parent widget of the dialog, if any.
-   * @param name The name of the dialog.
-   * @param modal Specifies whether the dialog is modal or not.
+   * @param parent The parent widget.
+   * @param name The widget name.
    * @param onlyFixedFonts only display fonts which have fixed-width
    *        character sizes.
    * @param fontList a list of fonts to display, in XLFD format.  If
