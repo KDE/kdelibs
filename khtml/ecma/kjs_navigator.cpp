@@ -189,8 +189,7 @@ Value Navigator::getValueProperty(ExecState *exec, int token) const
     return String("KDE");
   case Language:
   case UserLanguage:
-    return String(KGlobal::locale()->language() == "C" ?
-                  QString::fromLatin1("en") : KGlobal::locale()->language());
+    return String(KGlobal::locale()->language());
   case UserAgent:
     return String(userAgent);
   case Platform:
