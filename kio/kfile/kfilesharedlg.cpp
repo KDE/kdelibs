@@ -124,13 +124,13 @@ void KFileSharePropsPlugin::init( QVBox *parentVBox )
                 m_rbUnShare->setChecked(true);
 
             // Some help text
-            QLabel *label = new QLabel( i18n("Sharing this directory makes it available under Linux/Unix (NFS) and Windows (Samba)") , m_widget );
+            QLabel *label = new QLabel( i18n("Sharing this directory makes it available under Linux/Unix (NFS) and Windows (Samba).") , m_widget );
             label->setAlignment( Qt::AlignLeft /*AlignAuto in Qt3 */ | Qt::AlignVCenter | Qt::WordBreak );
             vbox->addWidget( label, 0 );
 
 	    KSeparator* sep=new KSeparator(m_widget);
 	    vbox->addWidget( sep, 0 );
-	    label = new QLabel( i18n("You can also reconfigure file sharing authorisation") , m_widget );
+	    label = new QLabel( i18n("You can also reconfigure file sharing authorization.") , m_widget );
             label->setAlignment( Qt::AlignLeft /*AlignAuto in Qt3 */ | Qt::AlignVCenter | Qt::WordBreak );
 	    vbox->addWidget( label, 0 );
 	    m_pbConfig = new QPushButton( i18n("Configure File Sharing"), m_widget );
@@ -142,13 +142,13 @@ void KFileSharePropsPlugin::init( QVBox *parentVBox )
     }
     break;
     case KFileShare::ErrorNotFound:
-        vbox->addWidget( new QLabel( i18n("Error running `filesharelist'. Check if installed and in $PATH or /usr/sbin."),
+        vbox->addWidget( new QLabel( i18n("Error running 'filesharelist'. Check if installed and in $PATH or /usr/sbin."),
                     m_widget ), 0 );
         break;
     case KFileShare::UserNotAllowed:
     {
         vbox->setSpacing( 10 );
-        vbox->addWidget( new QLabel( i18n("You need to be authorized to share directories"),
+        vbox->addWidget( new QLabel( i18n("You need to be authorized to share directories."),
                     m_widget ), 0 );
         QHBoxLayout* hBox = new QHBoxLayout( (QWidget *)0L );
         vbox->addLayout( hBox, 0 );
