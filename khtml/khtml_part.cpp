@@ -2337,7 +2337,7 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
 void KHTMLPart::slotViewDocumentSource()
 {
   KURL url(m_url);
-  if (KHTMLPageCache::self()->isValid(d->m_cacheId))
+  if (!(url.isLocalFile()) && KHTMLPageCache::self()->isValid(d->m_cacheId))
   {
      KTempFile sourceFile(QString::null, QString::fromLatin1(".html"));
      if (sourceFile.status() == 0)
