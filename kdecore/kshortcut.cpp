@@ -223,6 +223,7 @@ void KKeySequence::clear()
 bool KKeySequence::init( const QKeySequence& seq )
 {
 	clear();
+#if QT_VERSION >= 0x030100
 	if( !seq.isEmpty() ) {
 		for( uint i = 0; i < seq.count(); i++ ) {	
 			m_rgvar[i].init( seq[i] );
@@ -232,6 +233,15 @@ bool KKeySequence::init( const QKeySequence& seq )
 		m_nKeys = seq.count();
 		m_bTriggerOnRelease = false;
 	}
+#else // Qt 3.0.x
+	if( seq ) {
+		m_rgvar[ 0 ].init(  seq );
+		if( !m_rgvar[ 0 ].isNull() ) {
+			m_nKeys = 1;
+			m_bTriggerOnRelease = false;
+		}
+	}
+#endif
 	return true;
 }
 
@@ -346,8 +356,13 @@ QKeySequence KKeySequence::qt() const
 	
 	for( uint i = 0; i < count(); i++ )
 		k[i] = KKeyNative(key(i)).keyCodeQt();
-
+#if QT_VERSION >= 0x030100
 	QKeySequence seq( k[0], k[1], k[2], k[3] );
+#else // Qt-3.0.x
+	QKeySequence seq;
+	if(  count() == 1 )
+		seq = KKeyNative( key( 0 ) ).keyCodeQt();
+#endif
 	return seq;
 }
 
