@@ -63,8 +63,6 @@
 using namespace DOM;
 using namespace khtml;
 
-//template class QList<khtml::RenderFormElement>;
-
 HTMLFormElementImpl::HTMLFormElementImpl(DocumentPtr *doc)
     : HTMLElementImpl(doc)
 {
