@@ -43,11 +43,9 @@ KPluginFactory::~KPluginFactory()
   delete s_instance;
 }
 
-QObject* KPluginFactory::create( QObject* parent, const char* name, const char*, const QStringList & )
+QObject* KPluginFactory::createObject( QObject* parent, const char* name, const char*, const QStringList & )
 {
-    QObject *obj = new PluginSpellCheck( parent, name );
-    emit objectCreated( obj );
-    return obj;
+    return new PluginSpellCheck( parent, name );
 }
 
 extern "C"
