@@ -20,6 +20,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.122.4.1  1999/04/13 00:20:22  dmuell
+// don't create /.kde/share/config for kdm.
+//
 // Revision 1.122  1999/01/18 10:56:12  kulow
 // .moc files are back in kdelibs. Built fine here using automake 1.3
 //
@@ -647,7 +650,7 @@ void KApplication::aboutKDE()
 "free software development.\n\n"
 "Visit http://www.kde.org for more information on the KDE\n"
 "Project. Please consider joining and supporting KDE.\n\n"
-"Please report bugs at http://buglist.kde.org.\n"
+"Please report bugs at http://bugs.kde.org.\n"
 ));
 }
 
