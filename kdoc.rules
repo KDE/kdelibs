@@ -53,7 +53,7 @@ kssl_PATH = kio/kssl
 kssl_LIBS = -lkdeui -lkdefx -ldcop -lqt
 
 kparts_FILES = *.h
-kparts_LIBS = -lkdeui -lkdefx -lkdecore -lqt
+kparts_LIBS = -lkio -lkdeui -lkdefx -lkdecore -lqt
 
 kdeprint_FILES = kprinter.h kprintdialogpage.h kpreloadobject.h
 kdeprint_LIBS = -lkdefx -lkdeui -lkdecore -lqt
