@@ -24,6 +24,7 @@
 #include "keditlistbox.h"
 #include "kfontdialog.h"
 #include "kfontcombo.h"
+#include "kfontrequester.h"
 #include "kselect.h"
 #include "kcolordialog.h"
 #include "kcombobox.h"
@@ -225,6 +226,14 @@ KDEWidgetsPlugin::KDEWidgetsPlugin()
 	widget.whatsThis = "KFontChooser";
 	widget.isContainer = false;
 	m_widgets.insert("KFontChooser", widget);
+
+	widget.group = "Input (KDE)";
+	widget.iconSet = QString::null;
+	widget.includeFile = "kfontrequester.h";
+	widget.toolTip = "Font Requester (KDE)";
+	widget.whatsThis = "KFontRequester";
+	widget.isContainer = false;
+	m_widgets.insert("KFontRequester", widget);
 
 	widget.group = "Input (KDE)";
 	widget.iconSet = "kfontcombo.png";
@@ -459,6 +468,8 @@ QWidget *KDEWidgetsPlugin::create(const QString &key, QWidget *parent, const cha
 		return new KFontChooser(parent, name);
 	if (key == "KFontCombo")
 		return new KFontCombo(parent, name);
+	if (key == "KFontRequester")
+		return new KFontRequester(parent, name);
 	if (key == "KGradientSelector")
 		return new KGradientSelector(parent, name);
 	if (key == "KHSSelector")
