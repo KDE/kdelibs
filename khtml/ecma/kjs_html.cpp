@@ -105,6 +105,15 @@ Value KJS::HTMLDocFunction::tryCall(ExecState *exec, Object &thisObj, const List
   }
   case HTMLDocument::GetElementsByName:
     return getDOMNodeList(exec,doc.getElementsByName(args[0].toString(exec).string()));
+  case HTMLDocument::GetSelection: {
+    // NS4 and Mozilla specific. IE uses document.selection.createRange()
+    // http://docs.sun.com/source/816-6408-10/document.htm#1195981
+    KHTMLView *view = static_cast<DOM::DocumentImpl*>(doc.handle())->view();
+    if ( view && view->part() )
+       return String(view->part()->selectedText());
+    else 
+       return Undefined();
+  }
   case HTMLDocument::CaptureEvents:
   case HTMLDocument::ReleaseEvents:
     // Do nothing for now. These are NS-specific legacy calls.
@@ -138,6 +147,7 @@ const ClassInfo KJS::HTMLDocument::info =
   write			HTMLDocument::Write		DontDelete|Function 1
   writeln		HTMLDocument::WriteLn		DontDelete|Function 1
   getElementsByName	HTMLDocument::GetElementsByName	DontDelete|Function 1
+  getSelection	HTMLDocument::GetSelection	DontDelete|Function 1
   captureEvents		HTMLDocument::CaptureEvents	DontDelete|Function 0
   releaseEvents		HTMLDocument::ReleaseEvents	DontDelete|Function 0
   bgColor		HTMLDocument::BgColor		DontDelete
@@ -326,6 +336,7 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
     case Write:
     case WriteLn:
     case GetElementsByName:
+    case GetSelection:
     case CaptureEvents:
     case ReleaseEvents:
       return lookupOrCreateFunction<HTMLDocFunction>( exec, propertyName, this, entry->value, entry->params, entry->attr );
