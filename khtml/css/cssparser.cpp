@@ -763,7 +763,7 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
     case CSS_PROP_VOICE_FAMILY:
     case CSS_PROP_VOLUME:
     case CSS_PROP_WHITE_SPACE:
-    case CSS_PROP_WORD_SPACING:    
+    case CSS_PROP_WORD_SPACING:
     case CSS_PROP_Z_INDEX:
     case CSS_PROP_WIDTH:
     case CSS_PROP_LEFT:
@@ -1139,11 +1139,11 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
 	    const QChar *nextP = curP;
 	    while(*nextP != ' ' && *nextP != ';')
 	    {
+                nextP++;
 		if(nextP >= endP) {
                     last = true;
                     break;
                 }
-		nextP++;
 	    }
 	    bool found;
 #ifdef CSS_DEBUG
@@ -1267,11 +1267,11 @@ bool StyleBaseImpl::parse4Values(const QChar *curP, const QChar *endP, const int
 	const QChar *nextP = curP;
 	while(*nextP != ' ' && *nextP != ';')
 	{
+            nextP++;
 	    if(nextP >= endP) {
                 last = true;
                 break;
             }
-	    nextP++;
 	}
 	list.append(curP);
 	list.append(nextP);
@@ -1342,7 +1342,7 @@ StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits
 
     bool isInt = false;
     if(s.find('.') == -1) isInt = true;
- 
+
     bool ok;
     float value = s.toFloat(&ok);
     if(!ok) return 0;
