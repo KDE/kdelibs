@@ -59,6 +59,9 @@ Lexer::Lexer()
     size8(128), size16(128),
     stackToken(-1), pos(0),
     code(0), length(0),
+#ifndef KJS_PURE_ECMA
+    bol(true),
+#endif
     current(0), next1(0), next2(0), next3(0)
 {
   // allocate space for read buffers
@@ -87,6 +90,9 @@ void Lexer::setCode(const UChar *c, unsigned int len)
   pos = 0;
   code = c;
   length = len;
+#ifndef KJS_PURE_ECMA
+  bol = true;
+#endif
 
   // read first characters
   current = (length > 0) ? code[0].unicode() : 0;
@@ -137,10 +143,6 @@ int Lexer::lex()
       } else if (current == '/' && next1 == '/') {
 	shift(1);
 	state = InSingleLineComment;
-	// <!-- marks the beginning of a line comment (for www usage)
-      } else if (current == '<' && next1 == '!' && next2 == '-' && next3 == '-') {
-	shift(3);
-	state = InSingleLineComment;
       } else if (current == '/' && next1 == '*') {
 	shift(1);
 	state = InMultiLineComment;
@@ -154,6 +156,9 @@ int Lexer::lex()
 	  setDone(Eof);
       } else if (isLineTerminator()) {
 	yylineno++;
+#ifndef KJS_PURE_ECMA
+	bol = true;
+#endif
 	terminator = true;
 	if (restrKeyword) {
 	  token = ';';
@@ -174,6 +179,17 @@ int Lexer::lex()
       } else if (current == '.' && isDecimalDigit(next1)) {
 	record8(current);
 	state = InDecimal;
+#ifndef KJS_PURE_ECMA
+	// <!-- marks the beginning of a line comment (for www usage)
+      } else if (bol && current == '<' && next1 == '!' &&
+		 next2 == '-' && next3 == '-') {
+	shift(3);
+	state = InSingleLineComment;
+	// same of -->
+      } else if (bol && current == '-' && next1 == '-' &&  next2 == '>') {
+	shift(2);
+	state = InSingleLineComment;
+#endif
       } else {
 	token = matchPunctuator(current, next1, next2, next3);
 	if (token != -1) {
@@ -256,6 +272,9 @@ int Lexer::lex()
       if (isLineTerminator()) {
 	yylineno++;
 	terminator = true;
+#ifndef KJS_PURE_ECMA
+	bol = true;
+#endif
 	if (restrKeyword) {
 	  token = ';';
 	  setDone(Other);
@@ -353,9 +372,12 @@ int Lexer::lex()
     }
 
     // move on to the next character
-    if (!done) {
+    if (!done)
       shift(1);
-    }
+#ifndef KJS_PURE_ECMA
+    if (state != Start && state != InSingleLineComment)
+      bol = false;
+#endif
   }
 
   // no identifiers allowed directly after numeric literal, e.g. "3in" is bad

@@ -111,6 +111,9 @@ namespace KJS {
     const UChar *code;
     unsigned int length;
     int yycolumn;
+#ifndef KJS_PURE_ECMA
+    int bol;     // begin of line
+#endif
 
     // current and following unicode characters
     unsigned short current, next1, next2, next3;
