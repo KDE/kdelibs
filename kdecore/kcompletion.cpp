@@ -27,7 +27,7 @@ KCompletion::KCompletion()
 {
     myCompletionMode = KGlobalSettings::completionMode();
     myTreeRoot = new KCompTreeNode;
-    mySorting    = true; // don't sort the items by default (FIXME, -> false)
+    mySorting    = false;
     myBeep       = true;
     myIgnoreCase = false;
     myRotationIndex = 0;
@@ -115,6 +115,7 @@ QString KCompletion::makeCompletion( const QString& string )
     myMatches.clear();
     myRotationIndex = 0;
     myHasMultipleMatches = false;
+    myLastMatch = myCurrentMatch;
 
     // in Shell-completion-mode, emit all matches when we get the same
     // complete-string twice
@@ -130,6 +131,7 @@ QString KCompletion::makeCompletion( const QString& string )
         emit multipleMatches();
 
     myLastString = string;
+    myCurrentMatch = completion;
 
     if ( !string.isEmpty() ) { // only emit match when string != ""
 	debug("KCompletion: Match: %s", debugString( completion ));
@@ -159,15 +161,19 @@ void KCompletion::setCompletionMode( KGlobalSettings::Completion mode )
 QString KCompletion::nextMatch()
 {
     QString completion;
+    myLastMatch = myCurrentMatch;
+    
     if ( myMatches.isEmpty() ) {
 	myMatches = findAllCompletions( myLastString );
 	completion = myMatches.first();
+	myCurrentMatch = completion;
 	postProcessMatch( &completion );
 	emit match( completion );
 	return completion;
     }
 
-    myRotationIndex++;
+    myLastMatch = myMatches[ myRotationIndex++ ];
+    
     if ( myRotationIndex == myMatches.count() -1 )
 	doBeep(); // indicate last matching item -> rotating
 
@@ -175,6 +181,7 @@ QString KCompletion::nextMatch()
 	myRotationIndex = 0;
 
     completion = myMatches[ myRotationIndex ];
+    myCurrentMatch = completion;
     postProcessMatch( &completion );
     emit match( completion );
     return completion;
@@ -185,14 +192,18 @@ QString KCompletion::nextMatch()
 QString KCompletion::previousMatch()
 {
     QString completion;
+    myLastMatch = myCurrentMatch;
+    
     if ( myMatches.isEmpty() ) {
 	myMatches = findAllCompletions( myLastString );
 	completion = myMatches.last();
+	myCurrentMatch = completion;
 	postProcessMatch( &completion );
 	emit match( completion );
 	return completion;
     }
 
+    myLastMatch = myMatches[ myRotationIndex ];
     if ( myRotationIndex == 1 )
 	doBeep(); // indicate first item -> rotating
 
@@ -202,6 +213,7 @@ QString KCompletion::previousMatch()
     myRotationIndex--;
 
     completion = myMatches[ myRotationIndex ];
+    myCurrentMatch = completion;
     postProcessMatch( &completion );
     emit match( completion );
     return completion;
@@ -385,7 +397,7 @@ KCompTreeNode * KCompTreeNode::insert( const QChar& ch, bool sorted )
     if ( !child ) {
         child = new KCompTreeNode( ch );
 
-	// FIXME, first (slow) sorted insertion
+	// FIXME, first (slow) sorted insertion implementation
 	if ( sorted ) {
 	    KCompTreeChildren::Iterator it = myChildren.begin();
 	    while ( it != myChildren.end() ) {

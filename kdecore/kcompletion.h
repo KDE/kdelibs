@@ -173,7 +173,7 @@ public:
      * a completion is different from the last one.
      * QString::null is returned when there is no last match.
      */
-    const QString& lastMatch() const { return myLastMatch; } // FIXME
+    virtual const QString& lastMatch() const { return myLastMatch; }
 
 
     /**
@@ -400,6 +400,7 @@ private:
 
     QString             myLastString;
     QString 		myLastMatch;
+    QString 		myCurrentMatch;
     KCompTreeNode *     myTreeRoot;
     QStringList 	myRotations;
     bool                mySorting;
