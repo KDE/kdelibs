@@ -25,6 +25,7 @@
 #include <qgroupbox.h>
 #include <qcheckbox.h>
 #include "kfiledialogconf.h"
+#include "config-kfile.h"
 #include <kapp.h>
 
 enum Buttons { B_STATUSLINE=10, B_FILTER, B_SINGLECLICK, B_HIDDEN, 
@@ -56,7 +57,7 @@ KFileDialogConfigureDlg::KFileDialogConfigureDlg(QWidget *parent,
   addTab(label, i18n("About"));
 
   setCancelButton(i18n("Cancel"));
-  setApplyButton(i18n("Apply"));
+  // setApplyButton(i18n("Apply"));
   setOKButton(i18n("OK"));
   connect( this, SIGNAL(applyButtonPressed()), kfdc, SLOT(saveConfiguration()) );
 };
@@ -172,18 +173,23 @@ KFileDialogConfigure::KFileDialogConfigure(QWidget *parent,
   oldgroup= c->group();
   c->setGroup("KFileDialog Settings");
 
-  QString currentViewStyle = c->readEntry("ViewStyle","SimpleView");
+  QString currentViewStyle = c->readEntry("ViewStyle", DefaultViewStyle);
   if ( currentViewStyle == "DetailView" )
     myDetailView->setChecked(true);
   else
     myShortView->setChecked(true);
-  myShowHidden->setChecked(c->readBoolEntry("ShowHidden", false));
-  myShowFilter->setChecked(c->readBoolEntry("ShowFilter", true));
-  myShowListLabels->setChecked(c->readBoolEntry("ShowListLabels", true));
-  useSingleClick->setChecked(c->readBoolEntry("SingleClick", true));
-  myShowStatusLine->setChecked(c->readBoolEntry("ShowStatusLine", true));
-  myMixDirsAndFiles->setChecked(c->readBoolEntry("MixDirsAndFiles", false));
-  myKeepDirsFirst->setChecked(c->readBoolEntry("KeepDirsFirst", true));
+  myShowHidden->setChecked(c->readBoolEntry("ShowHidden", DefaultShowHidden));
+  myShowFilter->setChecked(c->readBoolEntry("ShowFilter", DefaultShowFilter));
+  myShowListLabels->setChecked(c->readBoolEntry("ShowListLabels", 
+						DefaultShowListLabels));
+  useSingleClick->setChecked(c->readBoolEntry("SingleClick", 
+					      DefaultSingleClick));
+  myShowStatusLine->setChecked(c->readBoolEntry("ShowStatusLine", 
+						DefaultShowStatusLine));
+  myMixDirsAndFiles->setChecked(c->readBoolEntry("MixDirsAndFiles", 
+						 DefaultMixDirsAndFiles));
+  myKeepDirsFirst->setChecked(c->readBoolEntry("KeepDirsFirst", 
+					       DefaultKeepDirsFirst));
 
   // Restore the old config group
   c->setGroup(oldgroup);

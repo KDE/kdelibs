@@ -25,7 +25,7 @@
 #include "kfiledetaillist.h"
 #include "kfileinfo.h"
 #include "kfilesimpleview.h"
-#include "debug.h"
+#include "config-kfile.h"
 
 #include <qpainter.h>
 #include <qlistbox.h>
@@ -74,7 +74,8 @@ KCombiView::KCombiView(  FileView dirs,  FileView files,
     }
 
     bool showListLabels =  
-	(kapp->getConfig()->readNumEntry("ShowListLabels", 1) != 0);
+	kapp->getConfig()->readBoolEntry("ShowListLabels", 
+					 DefaultShowListLabels);
     
     if (showListLabels) {
 	setLabels(i18n("Folders:"),
@@ -82,14 +83,16 @@ KCombiView::KCombiView(  FileView dirs,  FileView files,
 	showLabels(showListLabels);
     }
     
-    bool dirsLeft = kapp->getConfig()->readNumEntry("ShowDirsLeft", 1);
+    bool dirsLeft = kapp->getConfig()->readBoolEntry("ShowDirsLeft", 
+						     DefaultShowDirsLeft);
 
     if (dirsLeft)
 	activate(dirList->widget(), fileList->widget());
     else
 	activate(fileList->widget(), dirList->widget());
 
-    int pan = kapp->getConfig()->readNumEntry("PannerPosition", 30);
+    int pan = kapp->getConfig()->readNumEntry("PannerPosition", 
+					      DefaultPannerPosition);
     setSeparatorPos(pan);
 
     dirList->connectDirSelected(this, SLOT(dirActivated(KFileInfo*)));

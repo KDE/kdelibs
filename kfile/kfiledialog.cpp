@@ -29,7 +29,7 @@
 #include "kfiledialog.h"
 #include "kfiledetaillist.h"
 #include "kfilesimpleview.h"
-#include "debug.h"
+#include "config-kfile.h"
 #include "kfilepreview.h"
 
 #include "kcombiview.h"
@@ -111,8 +111,8 @@ void KFileBaseDialog::init()
     w = c->readNumEntry("Width", w);
     h = c->readNumEntry("Height", h);
 
-    showHidden = (c->readNumEntry("ShowHidden", 0) != 0);
-    showStatusLine = (c->readNumEntry("ShowStatusLine", 1) != 0);
+    showHidden = c->readBoolEntry("ShowHidden", DefaultShowHidden);
+    showStatusLine = c->readBoolEntry("ShowStatusLine", DefaultShowStatusLine);
 
     toolbar= new KToolBar(wrapper, "fileDialogToolbar");
 
@@ -183,7 +183,7 @@ void KFileBaseDialog::init()
     toolbar->adjustSize();
     setMinimumWidth(toolbar->width());
 
-    if ( c->readBoolEntry("KeepDirsFirst", true) )
+    if ( c->readBoolEntry("KeepDirsFirst", DefaultKeepDirsFirst) )
         dir->setSorting( QDir::Name | QDir::DirsFirst);
     else
         dir->setSorting( QDir::Name );
@@ -201,7 +201,7 @@ void KFileBaseDialog::init()
     locationEdit->adjustSize();
     locationLabel->setMinimumSize(locationLabel->width(),
 				  locationEdit->height());
-    locationEdit->setMinimumHeight(locationLabel->height() + 8);
+    locationEdit->setFixedHeight(locationLabel->height());
 
     connect(locationEdit, SIGNAL(activated(const char*)),
 	    SLOT(locationChanged(const char*)));
@@ -377,7 +377,7 @@ void KFileBaseDialog::help() // SLOT
 
 bool KFileDialog::getShowFilter()
 {
-    return (kapp->getConfig()->readNumEntry("ShowFilter", 1) != 0);
+    return kapp->getConfig()->readBoolEntry("ShowFilter", DefaultShowFilter);
 }
 
 void KFileBaseDialog::filterChanged() // SLOT
@@ -814,7 +814,7 @@ void KFileBaseDialog::toolbarCallback(int i) // SLOT
 	break;
     case FIND_BUTTON: {
 	KShellProcess proc;
-	proc << c->readEntry(QString("FindCommandPath"), "kfind");
+	proc << c->readEntry("FindCommandPath", DefaultFindCommand);
 	proc.start(KShellProcess::DontCare);
 	break;
     }
@@ -1051,21 +1051,23 @@ KFileInfoContents *KFileDialog::initFileList( QWidget *parent )
 {
 
     bool mixDirsAndFiles =
-	kapp->getConfig()->readBoolEntry("MixDirsAndFiles", false);
+	kapp->getConfig()->readBoolEntry("MixDirsAndFiles", 
+					 DefaultMixDirsAndFiles);
 
     bool showDetails =
 	(kapp->getConfig()->readEntry("ViewStyle",
-				      "SimpleView") == "DetailView");
+				      DefaultViewStyle) == "DetailView");
 
     bool useSingleClick =
-	kapp->getConfig()->readBoolEntry("SingleClick",true);
+	kapp->getConfig()->readBoolEntry("SingleClick", DefaultSingleClick);
 
     QDir::SortSpec sort = static_cast<QDir::SortSpec>(dir->sorting() &
                                                       QDir::SortByMask);
 
-    if (kapp->getConfig()->readBoolEntry("KeepDirsFirst", true))
+    if (kapp->getConfig()->readBoolEntry("KeepDirsFirst", 
+					 DefaultKeepDirsFirst))
         sort = static_cast<QDir::SortSpec>(sort | QDir::DirsFirst);
-
+    
     dir->setSorting(sort);
 
     if (!mixDirsAndFiles)
@@ -1222,7 +1224,7 @@ KDirDialog::KDirDialog(const char *url, QWidget *parent, const char *name)
 KFileInfoContents *KDirDialog::initFileList( QWidget *parent )
 {
     bool useSingleClick =
-	kapp->getConfig()->readNumEntry("SingleClick",1);
+	kapp->getConfig()->readBoolEntry("SingleClick", DefaultSingleClick);
     return new KDirListBox( useSingleClick, dir->sorting(), parent, "_dirs" );
 }
 
@@ -1338,12 +1340,13 @@ KFilePreviewDialog::KFilePreviewDialog(const char *dirName, const char *filter,
 KFileInfoContents *KFilePreviewDialog::initFileList( QWidget *parent )
 {
     bool useSingleClick =
-	kapp->getConfig()->readNumEntry("SingleClick",1);
+	kapp->getConfig()->readBoolEntry("SingleClick", DefaultSingleClick);
 
     QDir::SortSpec sort = static_cast<QDir::SortSpec>(dir->sorting() &
                                                       QDir::SortByMask);
 
-    if (kapp->getConfig()->readBoolEntry("KeepDirsFirst", true))
+    if (kapp->getConfig()->readBoolEntry("KeepDirsFirst", 
+					 DefaultKeepDirsFirst))
         sort = static_cast<QDir::SortSpec>(sort | QDir::DirsFirst);
 
     dir->setSorting(sort);
@@ -1425,10 +1428,11 @@ QString KFilePreviewDialog::getSaveFileURL(const char *url, const char *filter,
 
 bool KFilePreviewDialog::getShowFilter()
 {
-    return (kapp->getConfig()->readNumEntry("ShowFilter", 1) != 0);
+    return kapp->getConfig()->readBoolEntry("ShowFilter", DefaultShowFilter);
 }
 
-void KFilePreviewDialog::registerPreviewModule( const char * format, PreviewHandler readPreview,
+void KFilePreviewDialog::registerPreviewModule( const char * format, 
+						PreviewHandler readPreview,
                                                 PreviewType inType)
 {
     KPreview::registerPreviewModule( format, readPreview, inType );

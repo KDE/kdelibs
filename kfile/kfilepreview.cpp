@@ -27,7 +27,7 @@
 #include "kfilesimpleview.h"
 #include "kpreview.h"
 #include "kfilepreview.h"
-#include "debug.h"
+#include "config-kfile.h"
 
 #include <qpainter.h>
 #include <qlistbox.h>
@@ -53,7 +53,8 @@ KFilePreview::KFilePreview(
 
     activate(fileList->widget(), myPreview);
 
-    int pan = kapp->getConfig()->readNumEntry("PannerPosition", 50);
+    int pan = kapp->getConfig()->readNumEntry("PannerPosition", 
+					      DefaultPannerPosition);
     setSeparatorPos(pan);
 
     fileList->connectDirSelected(this, SLOT(dirActivated(KFileInfo *)));

@@ -31,7 +31,7 @@ include_HEADERS = kfiledialog.h kfileinfo.h kfilebookmark.h  \
 	booktoken.h kfiledetaillist.h kcombiview.h kpreview.h kfilepreview.h \
 	xview.h kfilesimpleview.h kfilefilter.h
 
-noinst_HEADERS = kfiledialogconf.h kfilefilter.h debug.h
+noinst_HEADERS = kfiledialogconf.h kfilefilter.h config-kfile.h
 
 kfstest_SOURCES =  kfstest.cpp
 libkfile_la_SOURCES = kfilebookmark.cpp kfiledialogconf.cpp kcombiview.cpp \

@@ -1,3 +1,10 @@
+1999-01-14  Stephan Kulow  <coolo@kde.org>
+
+	* kfiledialog.cpp: fixed some GUI problems and moved all default
+	configurations into config-kfile.h. 
+	Changed some default values, so that users that never looked into
+	the config dialog gets a nice suprise with 1.1 ;-)
+
 Thu Jan  7 23:14:39 1999  Carsten Pfeiffer  <pfeiffer@kde.org>
 
 	* kfilesimpleview.cpp (keyPressEvent): fixed segfault on keypress,

@@ -22,7 +22,7 @@
 #include <qpixmap.h>
 #include <qsignal.h>
 #include <kapp.h>
-#include "debug.h"
+#include "config-kfile.h"
 #include <stdlib.h>
 
 #ifdef Unsorted // the "I hate X.h" modus
