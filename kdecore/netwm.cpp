@@ -447,11 +447,9 @@ fprintf(stderr, "NETWM: Warning readIcon() needs buffer adjustment!\n");
 
 template <class Z>
 NETRArray<Z>::NETRArray()
-  : sz( 2 )
+  : sz(0),  capacity(2)
 {
-    // new/delete and malloc/free are not compatible
-    d = (Z*) malloc(sizeof(Z)*sz); // allocate 2 elts
-    memset( (void*) d, 0, sizeof(Z)*sz );
+    d = (Z*) calloc(capacity, sizeof(Z)); // allocate 2 elts and set to zero
 }
 
 
@@ -463,23 +461,26 @@ NETRArray<Z>::~NETRArray() {
 
 template <class Z>
 void NETRArray<Z>::reset() {
-    sz = 2;
-    d = (Z*) realloc(d, sizeof(Z)*sz);
-    memset( (void*) d, 0, sizeof(Z)*sz );
+    sz = 0;
+    capacity = 2;
+    d = (Z*) realloc(d, sizeof(Z)*capacity);
+    memset( (void*) d, 0, sizeof(Z)*capacity );
 }
 
 template <class Z>
 Z &NETRArray<Z>::operator[](int index) {
-    if (index >= sz) {
+    if (index >= capacity) {
 	// allocate space for the new data
 	// open table has amortized O(1) access time
 	// when N elements appended consecutively -- exa
-        int newsize = max(2*sz,  index+1);
+        int newcapacity = max(2*capacity,  index+1);
 	// copy into new larger memory block using realloc
-        d = (Z*) realloc(d, sizeof(Z)*newsize);
-        memset( (void*) &d[sz], 0, sizeof(Z)*(newsize-sz) );
-	sz = newsize;
+        d = (Z*) realloc(d, sizeof(Z)*newcapacity);
+        memset( (void*) &d[capacity], 0, sizeof(Z)*(newcapacity-capacity) );
+	capacity = newcapacity;
     }
+    if (index >= sz)            // at this point capacity>index
+        sz = index;
 
     return d[index];
 }

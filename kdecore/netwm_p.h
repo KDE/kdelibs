@@ -69,6 +69,7 @@ public:
 
 private:
     int sz;
+    int capacity;
     Z *d;
 };
 
