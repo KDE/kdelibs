@@ -672,15 +672,10 @@ void KHTMLPart::enableJScript( bool enable )
 {
   d->m_bJScriptForce = enable;
   d->m_bJScriptOverride = true;
-  qDebug("KHTMLPart::enableJScript(%d)", enable);
-
 }
 
 bool KHTMLPart::jScriptEnabled() const
 {
-    qDebug("::jScriptEnabled: so: %d, sf: %d, se: %d",
-           d->m_bJScriptOverride, d->m_bJScriptForce, d->m_bJScriptEnabled);
-
   if ( d->m_bJScriptOverride )
       return d->m_bJScriptForce;
   return d->m_bJScriptEnabled;
@@ -946,7 +941,7 @@ void KHTMLPart::clear()
 
   delete d->m_javaContext;
   d->m_javaContext = 0;
-  
+
   d->m_baseURL = KURL();
   d->m_baseTarget = QString::null;
   d->m_delayRedirect = 0;
@@ -1033,9 +1028,7 @@ void KHTMLPart::slotData( KIO::Job*, const QByteArray &data )
     QString charset = d->m_job->queryMetaData("charset");
     if ( !charset.isEmpty() && !d->m_haveEncoding ) // only use information if the user didn't override the settings
     {
-       QFont f(settings()->stdFontName());
-       KGlobal::charsets()->setQFont(f, KGlobal::charsets()->charsetForEncoding(charset) );
-       d->m_charset = f.charSet();
+       d->m_charset = KGlobal::charsets()->charsetForEncoding(charset);
        d->m_settings->setCharset( d->m_charset );
        d->m_haveCharset = true;
        d->m_encoding = charset;
@@ -3281,10 +3274,13 @@ void KHTMLPart::guiActivateEvent( KParts::GUIActivateEvent *event )
 
 void KHTMLPart::slotFind()
 {
-  KHTMLPart *part = this;
+  KHTMLPart *part = 0;
 
   if ( d->m_frames.count() > 0 )
     part = static_cast<KHTMLPart *>( partManager()->activePart() );
+
+  if(!part)
+      part = this;
 
   assert( part->inherits( "KHTMLPart" ) );
 
