@@ -563,7 +563,7 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
 		     << " (for " << sub_entry->path << ")" << endl;
 #ifdef HAVE_DNOTIFY
        Entry* e = &(*it);
-       if( e->dn_fd > 0 ) {
+       if( (e->m_mode == DNotifyMode) && (e->dn_fd > 0) ) {
          int mask = DN_DELETE|DN_CREATE|DN_RENAME|DN_MULTISHOT;
          // if dependant is a file watch, we check for MODIFY & ATTRIB too
          for(Entry* dep=e->m_entries.first();dep;dep=e->m_entries.next())
