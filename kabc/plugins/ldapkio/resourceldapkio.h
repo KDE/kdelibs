@@ -34,10 +34,11 @@ class ResourceLDAPKIO : public Resource
 
   public:
     ResourceLDAPKIO( const KConfig* );
-    ResourceLDAPKIO( const QString &user, const QString &passwd,
-                     const QString &dn, const QString &host,
-                     int port, const QString &filter, bool anonymous,
-                     const QMap<QString, QString> &attributes );
+
+    /**
+      Call this after you used one of the set... methods 
+     */
+    virtual void init();
 
     virtual void writeConfig( KConfig* );
 
@@ -79,12 +80,6 @@ class ResourceLDAPKIO : public Resource
 
     void setAttributes( const QMap<QString, QString> &attributes );
     QMap<QString, QString> attributes() const;
-
-  protected:
-    void init( const QString &user, const QString &passwd,
-               const QString &dn, const QString &host,
-               int port, const QString &filter, bool anonymous,
-               const QMap<QString, QString> &attributes );
 
   protected slots:
     void entries( KIO::Job*, const KIO::UDSEntryList& );

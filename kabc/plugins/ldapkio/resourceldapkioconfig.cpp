@@ -132,6 +132,7 @@ void ResourceLDAPKIOConfig::saveSettings( KRES::Resource *res )
   resource->setFilter( mFilter->text() );
   resource->setIsAnonymous( mAnonymous->isChecked() );
   resource->setAttributes( mAttributes );
+  resource->init();
 }
 
 void ResourceLDAPKIOConfig::editAttributes()
@@ -191,6 +192,8 @@ AttributesDialog::AttributesDialog( const QMap<QString, QString> &attributes,
   QMap<QString, QString>::ConstIterator it;
   int i;
   for ( i = 1, it = attributes.begin(); it != attributes.end(); ++it, ++i ) {
+    if ( mNameDict[ it.key() ] == 0 )
+      continue;
     label = new QLabel( *mNameDict[ it.key() ] + ":", page );
     KLineEdit *lineedit = new KLineEdit( page );
     mLineEditDict.insert( it.key(), lineedit );

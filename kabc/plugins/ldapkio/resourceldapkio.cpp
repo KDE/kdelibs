@@ -41,50 +41,35 @@ ResourceLDAPKIO::ResourceLDAPKIO( const KConfig *config )
     QMap<QString, QString> attrList;
     QStringList attributes = config->readListEntry( "LdapAttributes" );
     for ( uint pos = 0; pos < attributes.count(); pos += 2 )
-      attrList.insert( attributes[ pos ], attributes[ pos + 1 ] );
+      mAttributes.insert( attributes[ pos ], attributes[ pos + 1 ] );
 
-    init( config->readEntry( "LdapUser" ),
-          KStringHandler::obscure( config->readEntry( "LdapPassword" ) ),
-          config->readEntry( "LdapDn" ),
-          config->readEntry( "LdapHost" ),
-          config->readNumEntry( "LdapPort", 389 ),
-          config->readEntry( "LdapFilter" ),
-          config->readBoolEntry( "LdapAnonymous" ),
-          attrList );
+    mUser = config->readEntry( "LdapUser" );
+    mPassword = KStringHandler::obscure( config->readEntry( "LdapPassword" ) );
+    mDn = config->readEntry( "LdapDn" );
+    mHost = config->readEntry( "LdapHost" );
+    mPort = config->readNumEntry( "LdapPort", 389 );
+    mFilter = config->readEntry( "LdapFilter" );
+    mAnonymous = config->readBoolEntry( "LdapAnonymous" );
   } else {
-    init( "", "", "", "", 389, "", true, QMap<QString, QString>() );
+    mPort = 389;
+    mAnonymous = true;
   }
+
+  init();
 }
 
-ResourceLDAPKIO::ResourceLDAPKIO( const QString &user, const QString &passwd,
-                            const QString &dn, const QString &host,
-                            int port, const QString &filter, bool anonymous,
-                            const QMap<QString, QString> &attributes )
-  : Resource( 0 ), mGetCounter( 0 ), mErrorOccured( false )
+void ResourceLDAPKIO::init()
 {
-  init( user, passwd, dn, host, port, filter, anonymous, attributes );
-}
-
-void ResourceLDAPKIO::init( const QString &user, const QString &passwd,
-                         const QString &dn, const QString &host,
-                         int port, const QString &filter, bool anonymous,
-                         const QMap<QString, QString> &attributes )
-{
-  mUser = user;
-  mPassword = passwd;
-  mDn = dn;
-  mHost = host;
-  mPort = port;
-  mFilter = filter;
-  mAnonymous = anonymous;
-
   /**
     If you want to add new attributes, append them here, add a
     translation string in the ctor of AttributesDialog and
     handle them in the load() method below.
     These are the default values
    */
-  if ( attributes.count() == 0 ) {
+  if ( mPort == 0 ) mPort = 389;
+  if ( mUser.isEmpty() && mPassword.isEmpty() ) mAnonymous = true;
+
+  if ( mAttributes.count() == 0 ) {
     mAttributes.insert( "commonName", "cn" );
     mAttributes.insert( "formattedName", "displayName" );
     mAttributes.insert( "familyName", "sn" );
@@ -93,8 +78,6 @@ void ResourceLDAPKIO::init( const QString &user, const QString &passwd,
     mAttributes.insert( "mailAlias", "" );
     mAttributes.insert( "phoneNumber", "telephoneNumber" );
     mAttributes.insert( "uid", "uid" );
-  } else {
-    mAttributes = attributes;
   }
 
   mLDAPUrl.setProtocol( "ldap" );
@@ -104,8 +87,13 @@ void ResourceLDAPKIO::init( const QString &user, const QString &passwd,
   }
   mLDAPUrl.setHost( mHost );
   mLDAPUrl.setPort( mPort );
-  mLDAPUrl.setPath( mDn );
-  mLDAPUrl.setQuery( "?dn?sub" );  // how to set filters?
+  mLDAPUrl.setPath( "/" + mDn );
+
+  QString query = "?dn?sub";
+  if ( !mFilter.isEmpty() )
+    query += "?" + mFilter;
+
+  mLDAPUrl.setQuery( query );
 }
 
 void ResourceLDAPKIO::writeConfig( KConfig *config )
@@ -131,7 +119,7 @@ void ResourceLDAPKIO::writeConfig( KConfig *config )
 Ticket *ResourceLDAPKIO::requestSaveTicket()
 {
   if ( !addressBook() ) {
-	  kdDebug(5700) << "no addressbook" << endl;
+    kdDebug(5700) << "no addressbook" << endl;
     return 0;
   }
 
@@ -160,7 +148,7 @@ bool ResourceLDAPKIO::load()
 bool ResourceLDAPKIO::asyncLoad()
 {
   KIO::Job *job = KIO::listDir( mLDAPUrl, false, false );
-  
+
   connect( job, SIGNAL( entries( KIO::Job*, const KIO::UDSEntryList& ) ),
            this, SLOT( entries( KIO::Job*, const KIO::UDSEntryList& ) ) );
 
