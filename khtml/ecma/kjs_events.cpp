@@ -141,6 +141,10 @@ DOMEvent::~DOMEvent()
 
 KJSO DOMEvent::tryGet(const UString &p) const
 {
+#ifdef KJS_VERBOSE
+  kdDebug() << "KJS::Event::tryGet " << p.qstring() << endl;
+#endif
+
   if (p == "type")
     return String(event.type());
   else if (p == "target")
