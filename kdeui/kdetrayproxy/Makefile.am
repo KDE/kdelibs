@@ -1,0 +1,13 @@
+kde_module_LTLIBRARIES = kded_kdetrayproxy.la
+
+INCLUDES=  $(all_includes)
+kded_kdetrayproxy_la_SOURCES = kdetrayproxy.cpp module.cpp module.skel
+kded_kdetrayproxy_la_LDFLAGS = $(all_libraries) -module -avoid-version
+kded_kdetrayproxy_la_LIBADD = $(LIB_KDECORE)
+
+METASOURCES = AUTO
+
+noinst_HEADERS = kdetrayproxy.h module.h
+
+servicesdir = $(kde_servicesdir)/kded
+services_DATA = kdetrayproxy.desktop

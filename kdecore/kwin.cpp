@@ -44,6 +44,7 @@
 #include <kdatastream.h>
 #include <klocale.h>
 #include <dcopclient.h>
+#include <dcopref.h>
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
 #include <kstartupinfo.h> 
 #include <kxerrorhandler.h> 
@@ -200,6 +201,12 @@ void KWin::setSystemTrayWindowFor( WId trayWin, WId forWin )
     if ( !forWin )
 	forWin = qt_xrootwin();
     info.setKDESystemTrayWinFor( forWin );
+    NETRootInfo rootinfo( qt_xdisplay(), NET::Supported );
+    if( !rootinfo.isSupported( NET::WMKDESystemTrayWinFor )) {
+        DCOPRef ref( "kded", "kded" );
+        if( !ref.send( "loadModule", QCString( "kdetrayproxy" )))
+            kdWarning( 176 ) << "Loading of kdetrayproxy failed." << endl;
+    }
 #endif
 }
 
