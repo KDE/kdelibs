@@ -1158,7 +1158,7 @@ void KCryptoConfig::save()
         static_cast<HostAuthItem *>(hostAuthList->firstChild());
                                                               x;
              x = static_cast<HostAuthItem *>(x->nextSibling())) {
-     if (x->originalName() != QString::null)
+     if (!x->originalName().isNull())
         authcfg->deleteGroup(x->originalName());
   }
 

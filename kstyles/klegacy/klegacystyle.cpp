@@ -777,9 +777,9 @@ KLegacyImageData *GtkObject::getImageData(KLegacyImageDataKey key, const QString
 		  (imagedata->key.data.gapSide == key.data.gapSide)) ||
 		 (imagedata->key.data.gapSide == 0)) &&
 
-		(((imagedata->detail != QString::null) &&
+		(((!imagedata->detail.isNull()) &&
 		  (detail == imagedata->detail)) ||
-		 (imagedata->detail == QString::null))) {
+		 (imagedata->detail.isNull()))) {
 		// we have a winner
 		break;
 	    }

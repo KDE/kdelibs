@@ -312,7 +312,7 @@ void RenderListMarker::paintObject(QPainter *p, int, int _y,
     case LNONE:
         return;
     default:
-        if (m_item != QString::null) {
+        if (!m_item.isNull()) {
        	    //_ty += fm.ascent() - fm.height()/2 + 1;
             if(style()->listStylePosition() == INSIDE) {
             	if(style()->direction() == LTR)

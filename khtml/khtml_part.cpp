@@ -1215,7 +1215,7 @@ void KHTMLPart::htmlError( int errorCode, const QString& text, const KURL& reqUr
   doc += QString::fromLatin1( "</h1><h2>" );
   doc += errorName;
   doc += QString::fromLatin1( "</h2>" );
-  if ( techName != QString::null ) {
+  if ( !techName.isNull() ) {
     doc += QString::fromLatin1( "<h2>" );
     doc += i18n( "Technical Reason: " );
     doc += techName;
@@ -1226,7 +1226,7 @@ void KHTMLPart::htmlError( int errorCode, const QString& text, const KURL& reqUr
   doc += QString::fromLatin1( "</h3><ul><li>" );
   doc += i18n( "URL: %1" ).arg( url );
   doc += QString::fromLatin1( "</li><li>" );
-  if ( protocol != QString::null ) {
+  if ( !protocol.isNull() ) {
     // uncomment for 3.1... i18n change
     // doc += i18n( "Protocol: %1" ).arg( protocol ).arg( protocol );
     doc += QString::fromLatin1( "</li><li>" );

@@ -447,7 +447,7 @@ void KJanusWidget::addPageWidget( QFrame *page, const QStringList &items,
     // Make sure the title label is sufficiently wide
     //
     QString lastName = items.last();
-    const QString &title = (header != QString::null ? header : lastName);
+    const QString &title = (!header.isNull() ? header : lastName);
     QRect r = mTitleLabel->fontMetrics().boundingRect( title );
     if( mTitleLabel->minimumWidth() < r.width() )
     {

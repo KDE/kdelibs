@@ -253,7 +253,7 @@ KEMailSettings::KEMailSettings()
 
 	p->m_pConfig->setGroup("Defaults");
 	p->m_sDefaultProfile=p->m_pConfig->readEntry("Profile", i18n("Default"));
-	if (p->m_sDefaultProfile != QString::null) {
+	if (!p->m_sDefaultProfile.isNull()) {
 		if (!p->m_pConfig->hasGroup(QString("PROFILE_")+p->m_sDefaultProfile))
 			setDefault(i18n("Default"));
 		else

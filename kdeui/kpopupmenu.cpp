@@ -307,7 +307,7 @@ void KPopupMenu::keyPressEvent(QKeyEvent* e)
 
     // check to see if the user wants to remove a key from the sequence (backspace)
     // or clear the sequence (delete)
-    if (d->keySeq != QString::null) {
+    if (!d->keySeq.isNull()) {
 
         if (key == Key_Backspace) {
 

@@ -360,7 +360,7 @@ bool KJavaProcess::invokeJVM()
 
     *javaProcess << d->mainClass;
 
-    if ( d->classArgs != QString::null )
+    if ( !d->classArgs.isNull() )
         *javaProcess << d->classArgs;
 
     kdDebug(6100) << "Invoking JVM now...with arguments = " << endl;

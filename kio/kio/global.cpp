@@ -407,11 +407,11 @@ QStringList KIO::Job::detailedErrorStrings( const KURL *reqUrl /*= 0L*/,
          QString::fromLatin1( "</b></p><p>" ) + description +
          QString::fromLatin1( "</p>" );
   ret2 = QString::fromLatin1( "<qt><p>" );
-  if ( techName != QString::null )
+  if ( !techName.isNull() )
     ret2 += i18n( "<b>Technical Reason</b>: " ) + techName + QString::fromLatin1( "</p>" );
   ret2 += i18n( "</p><p><b>Details of the Request</b>:" );
   ret2 += i18n( "</p><ul><li>URL: %1</li>" ).arg( url );
-  if ( protocol != QString::null ) {
+  if ( !protocol.isNull() ) {
     ret2 += i18n( "<li>Protocol: %1</li>" ).arg( protocol );
   }
   ret2 += i18n( "<li>Date and Time: %1</li>" ).arg( datetime );
@@ -794,7 +794,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
         "<strong>L</strong>ocator (URL) that you entered did not refer to "
         "a valid mechanism of accessing the specific resource, "
         "<strong>%1%2</strong>." )
-        .arg( host != QString::null ? host + '/' : QString::null ).arg( dir );
+        .arg( !host.isNull() ? host + '/' : QString::null ).arg( dir );
       causes << i18n( "KDE is able to communicate through a protocol within a "
         "protocol. This request specified a protocol be used as such, however "
         "this protocol is not capable of such an action. This is a rare event, "
@@ -1742,14 +1742,14 @@ bool KIO::manually_mounted(const QString& filename)
 {
   MountState isautofs = Unseen, isslow = Unseen, ismanual = Unseen;
   QString mountPoint = get_mount_info(filename, isautofs, isslow, ismanual);
-  return (mountPoint != QString::null) && (ismanual == Right);
+  return !mountPoint.isNull() && (ismanual == Right);
 }
 
 bool KIO::probably_slow_mounted(const QString& filename)
 {
   MountState isautofs = Unseen, isslow = Unseen, ismanual = Wrong;
   QString mountPoint = get_mount_info(filename, isautofs, isslow, ismanual);
-  return (mountPoint != QString::null) && (isslow == Right);
+  return !mountPoint.isNull() && (isslow == Right);
 }
 
 KIO::CacheControl KIO::parseCacheControl(const QString &cacheControl)

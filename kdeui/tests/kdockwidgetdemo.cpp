@@ -83,7 +83,7 @@ SFileDialog::SFileDialog( QString initially, const QStringList& filter, const ch
 {
   KConfig* config = kapp->config();
   config->setGroup( QString::fromLatin1("SFileDialogData:") + name );
-  if ( initially == QString::null ){
+  if ( initially.isNull() ){
     initially = config->readEntry( "InitiallyDir", QDir::currentDirPath() );
   }
 
@@ -199,7 +199,7 @@ QString SFileDialog::getOpenFileName( QString initially,
                                       const QString caption, const char* name )
 {
   SFileDialog* fd = new SFileDialog( initially, filter, name );
-  if ( caption != QString::null ) fd->setCaption( caption );
+  if ( !caption.isNull() ) fd->setCaption( caption );
   QString result = ( fd->exec() == QDialog::Accepted ) ? fd->fd->selectedFile():QString::null;
   delete fd;
 
@@ -211,7 +211,7 @@ QStringList SFileDialog::getOpenFileNames( QString initially,
                                       const QString caption, const char* name )
 {
   SFileDialog* fd = new SFileDialog( initially, filter, name );
-  if ( caption != QString::null ) fd->setCaption( caption );
+  if ( !caption.isNull() ) fd->setCaption( caption );
 
   fd->fd->setMode( QFileDialog::ExistingFiles );
   fd->d_preview->undock();
