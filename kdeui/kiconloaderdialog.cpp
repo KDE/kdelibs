@@ -111,9 +111,6 @@ void KIconLoaderCanvas::slotLoadDir()
 	    item->setDragEnabled( FALSE );
 	    item->setDropEnabled( FALSE );
 	    item->setSelectable( FALSE );
-	    
-	    if ( i == 30 )
-		slotUpdate();
 	}
 	QApplication::restoreOverrideCursor();
 	emit finished();
