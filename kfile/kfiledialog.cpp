@@ -464,7 +464,9 @@ QString KFileBaseDialog::selectedFile()
       return 0;
 
     KURL u = filename_.data();
-    return u.path();
+    QString path = u.path();
+    KURL::decodeURL(path);
+    return path;
 }
 
 QString KFileBaseDialog::dirPath()

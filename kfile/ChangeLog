@@ -5,6 +5,9 @@
 	Changed some default values, so that users that never looked into
 	the config dialog gets a nice suprise with 1.1 ;-)
 
+	* kfiledialog.cpp: changed selectedFile to return decoded path instead
+	of encoded one
+
 Thu Jan  7 23:14:39 1999  Carsten Pfeiffer  <pfeiffer@kde.org>
 
 	* kfilesimpleview.cpp (keyPressEvent): fixed segfault on keypress,
