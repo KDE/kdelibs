@@ -15,4 +15,4 @@ the name of the DCOP object that is implemented by the module.
 The desktop file needs to define the library in which the module is 
 implemented. The name of the library always starts with libkded_.
 
-The kdelibs/kio/kded/test/ directory contains a sample implementation.
+The kdelibs/kded/test/ directory contains a sample implementation.

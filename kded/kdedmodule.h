@@ -46,7 +46,7 @@ class KDEDModulePrivate;
  *   }
  * </pre>
  *
- * See kkdelibs/kio/kded/HOWTO for more detailed documentation.
+ * See kdelibs/kded/HOWTO for more detailed documentation.
  *
  * @author Waldo Bastian <bastian@kde.org>
  */
