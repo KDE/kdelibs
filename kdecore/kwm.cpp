@@ -1095,7 +1095,11 @@ void KWM::lower(Window w){
 
 void KWM::prepareForSwallowing(Window w){
   XWithdrawWindow(qt_xdisplay(), w, qt_xscreen());
-  while (windowState(w) != KWin::WithdrawnState);
+  //FIXME:
+  //For some reason, egcs 1.1.2 doesn't like the following :/
+  //while (windowState(w) != KWin::WithdrawnState);
+  //this does the same, but is not as nice:
+  while(windowState(w) != 0);
 }
 
 void KWM::doNotManage(const QString& title){
@@ -1223,7 +1227,11 @@ int KWM::windowState(Window w){
   static Atom a = 0;
   if (!a)
     a = XInternAtom(qt_xdisplay(), "WM_STATE", False);
-  long result = KWin::WithdrawnState;
+  //FIXME:
+  //For some reason, egcs 1.1.2 doesn't like the following :/
+  //long result = KWin::WithdrawnState;
+  //this does the same, but is not as nice:
+  long result = 0;
   KWM_getSimpleProperty(w, a, result);
   return (int) result;
 }
