@@ -50,7 +50,7 @@ QString encode( const QString& segment )
     // according to RFC 1738,
     // 2.2. URL Character Encoding Issues (pp. 3-4)
     // WABA: Added non-ascii
-    unsigned int character = utf8[i];
+    unsigned char character = utf8[i];
     if ( (character <= 32) || (character >= 127) ||
          strchr("<>#@\"&%$:,;?={}|^~[]\'`\\", character) )
     {
