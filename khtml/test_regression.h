@@ -104,7 +104,7 @@ public:
     bool implementsCall() const;
     KJS::Value call(KJS::ExecState *exec, KJS::Object &thisObj, const KJS::List &args);
 
-    enum { OpenPage, OpenPageAsUrl, Begin, Write, End, ExecuteScript };
+    enum { OpenPage, OpenPageAsUrl, Begin, Write, End, ExecuteScript, ProcessEvents };
 private:
     KHTMLPart *m_part;
     int id;
@@ -144,6 +144,10 @@ public:
     int m_errors;
 
     static RegressionTest *curr;
+
+private slots:
+  void slotOpenURL(const KURL &url, const KParts::URLArgs &args);
+
 };
 
 #endif

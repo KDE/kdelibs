@@ -145,7 +145,9 @@ Value RegTestFunction::call(ExecState *exec, Object &/*thisObj*/, const List &ar
         }
 	case CheckOutput: {
             QString filename = args[0].toString(exec).qstring();
-            result = Boolean(m_regTest->checkOutput(filename+"-dom"));
+	    QString fullName = RegressionTest::curr->m_currentCategory+"/"+filename+"-dom";
+            m_regTest->reportResult(m_regTest->checkOutput(fullName),
+				    "Output match for script-generated " + filename);
             break;
         }
     }
@@ -164,6 +166,7 @@ KHTMLPartObject::KHTMLPartObject(ExecState *exec, KHTMLPart *_part)
     put(exec, "write",    Object(new KHTMLPartFunction(exec,m_part,KHTMLPartFunction::Write,1)), DontEnum);
     put(exec, "end",    Object(new KHTMLPartFunction(exec,m_part,KHTMLPartFunction::End,0)), DontEnum);
     put(exec, "executeScript", Object(new KHTMLPartFunction(exec,m_part,KHTMLPartFunction::ExecuteScript,0)), DontEnum);
+    put(exec, "processEvents", Object(new KHTMLPartFunction(exec,m_part,KHTMLPartFunction::ProcessEvents,0)), DontEnum);
 }
 
 Value KHTMLPartObject::get(ExecState *exec, const UString &propertyName) const
@@ -207,6 +210,7 @@ Value KHTMLPartFunction::call(ExecState *exec, Object &/*thisObj*/, const List &
             PartMonitor pm(m_part);
             m_part->openURL(url);
             pm.waitForCompletion();
+	    kapp->processEvents(60000);
             break;
         }
 	case OpenPageAsUrl: {
@@ -243,6 +247,7 @@ Value KHTMLPartFunction::call(ExecState *exec, Object &/*thisObj*/, const List &
 		m_part->end();
 		pm.waitForCompletion();
 	    }
+	    kapp->processEvents(60000);
 	    break;
 	}
 	case Begin: {
@@ -257,6 +262,7 @@ Value KHTMLPartFunction::call(ExecState *exec, Object &/*thisObj*/, const List &
         }
         case End: {
             m_part->end();
+	    kapp->processEvents(60000);
             break;
         }
 	case ExecuteScript: {
@@ -266,6 +272,11 @@ Value KHTMLPartFunction::call(ExecState *exec, Object &/*thisObj*/, const List &
 	    proxy->evaluate("",0,code,0,&comp);
 	    if (comp.complType() == Throw)
 		exec->setException(comp.value());
+	    kapp->processEvents(60000);
+	    break;
+	}
+	case ProcessEvents: {
+	    kapp->processEvents(60000);
 	    break;
 	}
     }
@@ -332,6 +343,8 @@ int main(int argc, char *argv[])
     // run the tests
     RegressionTest *regressionTest = new RegressionTest(part,args->arg(0),
 							args->arg(1),args->isSet("genoutput"));
+    QObject::connect(part->browserExtension(), SIGNAL(openURLRequest(const KURL &, const KParts::URLArgs &)),
+		     regressionTest, SLOT(slotOpenURL(const KURL&, const KParts::URLArgs &)));
 
     bool result;
     if (!args->getOption("test").isNull())
@@ -412,11 +425,29 @@ bool RegressionTest::runTests(QString relPath, bool mustExist)
 
     if (info.isDir()) {
 
+	// Read ignore file for this directory
+	QString ignoreFilename = m_sourceFilesDir+"/"+relPath+"/ignore";
+	QFileInfo ignoreInfo(ignoreFilename);
+	QStringList ignoreFiles;
+	if (ignoreInfo.exists()) {
+	    QFile ignoreFile(ignoreFilename);
+	    if (!ignoreFile.open(IO_ReadOnly)) {
+		fprintf(stderr,"Can't open %s\n",ignoreFilename.latin1());
+		exit(1);
+	    }
+	    QTextStream ignoreStream(&ignoreFile);
+	    QString line;
+	    while (!(line = ignoreStream.readLine()).isNull())
+		ignoreFiles.append(line);
+	    ignoreFile.close();
+	}
+
+	// Run each test in this directory, recusively
 	QDir sourceDir(m_sourceFilesDir+"/"+relPath);
 	for (uint fileno = 0; fileno < sourceDir.count(); fileno++) {
 	    QString filename = sourceDir[fileno];
 	    QString relFilename = relPath == "" ? filename : relPath+"/"+filename;
-	    if (filename != "." && filename != "..")
+	    if (filename != "." && filename != ".." && !ignoreFiles.contains(filename))
 		runTests(relFilename,false);
 	}
 
@@ -427,7 +458,7 @@ bool RegressionTest::runTests(QString relPath, bool mustExist)
 	m_currentBase = m_sourceFilesDir+"/"+relativeDir;
 	m_currentCategory = relativeDir;
 	m_currentTest = filename;
-	if (filename.endsWith(".html") && !filename.endsWith("-js.html")){
+	if (filename.endsWith(".html")) {
 	    testStaticFile(relPath);
 	}
 	else if (filename.endsWith(".js")) {
@@ -692,6 +723,15 @@ void RegressionTest::createMissingDirs(QString path)
 	    exit(1);
 	}
     }
+}
+
+void RegressionTest::slotOpenURL(const KURL &url, const KParts::URLArgs &args)
+{
+    m_part->browserExtension()->setURLArgs( args );
+
+    PartMonitor pm(m_part);
+    m_part->openURL(url);
+    pm.waitForCompletion();
 }
 
 #include "test_regression.moc"
