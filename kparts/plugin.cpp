@@ -56,16 +56,6 @@ Plugin::~Plugin()
   delete d; 
 }
 
-void Plugin::setDocument( QDomDocument doc )
-{
-  m_doc = doc;
-}
-
-QDomDocument Plugin::document() const
-{
-  return m_doc;
-}
-
 //static
 const QValueList<QDomDocument> Plugin::pluginDocuments( const KInstance * instance )
 {

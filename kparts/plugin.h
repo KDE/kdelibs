@@ -52,15 +52,6 @@ public:
     ~Plugin();
 
     /**
-     * Set the @ref QDomDocument describing the part.
-     **/
-    virtual void setDocument( QDomDocument doc );
-    /**
-     * Retrieve the @ref QDomDocument describing the part.
-     **/
-    virtual QDomDocument document() const;
-
-    /**
      * Load the plugin libraries from the directories appropriate
      * to @p instance.
      */
@@ -87,8 +78,6 @@ protected:
     static Plugin* loadPlugin( QObject * parent, const char* libname );
 
 private:
-    QDomDocument m_doc;
-
     class PluginPrivate;
     PluginPrivate *d;
 };
