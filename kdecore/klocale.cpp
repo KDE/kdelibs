@@ -528,7 +528,7 @@ QString KLocale::WeekDayName (int i) const
       case 1:  return translate("Monday");
       case 2:  return translate("Tuesday");
       case 3:  return translate("Wednesday");
-      case 4:  return translate("Thuesday");
+      case 4:  return translate("Thursday");
       case 5:  return translate("Friday");
       case 6:  return translate("Saturday");
       case 7:  return translate("Sunday");
