@@ -344,6 +344,9 @@ void RenderBox::absolutePosition(int &xPos, int &yPos, bool f)
         o->absolutePosition(xPos, yPos, f);
         if((!isInline() || isReplaced()) && xPos != -1)
             xPos += m_x, yPos += m_y;
+
+        if(isRelPositioned())
+            relativePositionOffset(xPos, yPos);
     }
     else
         xPos = yPos = -1;

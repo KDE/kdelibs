@@ -40,8 +40,6 @@
 #include "css_stylesheetimpl.h"
 #include "css/cssproperties.h"
 
-#include <stdlib.h> // using atoi
-
 #include <kdebug.h>
 
 using namespace DOM;
@@ -55,7 +53,7 @@ HTMLElementImpl::HTMLElementImpl(DocumentImpl *doc) : ElementImpl(doc)
     DOMString indexstring = getAttribute(ATTR_TABINDEX);
     if (indexstring.length()) {
 	has_tabindex=true;
-	tabindex=atoi(indexstring.string().latin1());
+	tabindex=indexstring.string().toInt();
     } else {
 	has_tabindex=false;
 	tabindex=0;
@@ -85,23 +83,16 @@ bool HTMLElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType typ
 
     RenderObject *p = m_render->parent();
     while( p && p->isAnonymousBox() ) {
-	//kdDebug( 6030 ) << "parent is anonymous!" << endl;
+// 	kdDebug( 6030 ) << "parent is anonymous!" << endl;
 	// we need to add the offset of the anonymous box
 	_tx += p->xPos();
 	_ty += p->yPos();
 	p = p->parent();
     }
 
-
-    if(!m_render->isInline() || !m_render->firstChild() || m_render->isFloating() ) {
-	EPosition pos = m_render->style()->position();
-	if ( pos == FIXED || pos == ABSOLUTE ) {
-	    m_render->absolutePosition( _tx, _ty );
-	    //kdDebug() << "positioned element at " << _tx << "/" << _ty << endl;
-	} else {
-	    _tx += m_render->xPos();
-	    _ty += m_render->yPos();
-	}
+    if(!m_render->isInline() || !m_render->firstChild() || m_render->isFloating() )
+    {
+        m_render->absolutePosition(_tx, _ty);
 
 	inside = true;
 	if( (_y < _ty ) || (_y >= _ty + m_render->height() ) ||
@@ -229,7 +220,7 @@ void HTMLElementImpl::parseAttribute(AttrImpl *attr)
         indexstring=getAttribute(ATTR_TABINDEX);
         if (indexstring.length()) {
 	  has_tabindex=true;
-	  tabindex=atoi(indexstring.string().latin1());
+	  tabindex=indexstring.string().toInt();
 	} else {
 	  has_tabindex=false;
 	  tabindex=0;
