@@ -908,6 +908,10 @@ public:
 
     enum Diff { Equal, NonVisible = Equal, Visible, Position, Layout, CbLayout };
     Diff diff( const RenderStyle *other ) const;
+
+#ifndef NDEBUG
+    QString createDiff( const RenderStyle &parent ) const;
+#endif
 };
 
 

@@ -119,7 +119,7 @@ public:
 						     SelPointState & );
 
 #ifndef NDEBUG
-    virtual void dump(QTextStream *stream, QString ind = "") const;
+    virtual void dump(QTextStream &stream, const QString &ind) const;
 #endif
     struct ColumnStruct {
 	enum {
@@ -220,7 +220,7 @@ public:
 						     SelPointState & );
 
 #ifndef NDEBUG
-    virtual void dump(QTextStream *stream, QString ind = "") const;
+    virtual void dump(QTextStream &stream, const QString &ind) const;
 #endif
 
     void addCell( RenderTableCell *cell );
@@ -302,7 +302,7 @@ public:
     RenderTableSection *section() const { return static_cast<RenderTableSection *>(parent()); }
 
 #ifndef NDEBUG
-    virtual void dump(QTextStream *stream, QString ind = "") const;
+    virtual void dump(QTextStream &stream, const QString& ind) const;
 #endif
 };
 
@@ -362,7 +362,7 @@ public:
     RenderTableSection *section() const { return static_cast<RenderTableSection *>(parent()->parent()); }
 
 #ifndef NDEBUG
-    virtual void dump(QTextStream *stream, QString ind = "") const;
+    virtual void dump(QTextStream &stream, const QString &ind) const;
 #endif
 
     bool widthChanged() {
@@ -416,7 +416,7 @@ public:
     virtual void updateFromElement();
 
 #ifndef NDEBUG
-    virtual void dump(QTextStream *stream, QString ind = "") const;
+    virtual void dump(QTextStream &stream, const QString& ind) const;
 #endif
 
 protected:

@@ -114,6 +114,10 @@ public:
     static void paintWidget(QPainter *p, QWidget *widget, int x, int y, int w, int h, int tx, int ty);
     virtual bool handleEvent(const DOM::EventImpl& ev);
 
+#ifndef NDEBUG
+    virtual void dump(QTextStream &stream, const QString &ind) const;
+#endif
+
 public slots:
     void slotWidgetDestructed();
 

@@ -536,3 +536,42 @@ void ContentData::clearContent()
             ;
     }
 }
+
+#ifndef NDEBUG
+
+static QString describeFont( const QFont &f)
+{
+    QString res = "'" + f.family() + "' ";
+
+    if ( f.pointSize() > 0)
+        res += QString::number( f.pointSize() ) + "pt";
+    else
+        res += QString::number( f.pixelSize() ) + "px";
+
+    if ( f.bold() )
+        res += " bold";
+    if ( f.italic() )
+        res += " italic";
+    if ( f.underline() )
+        res += " underline";
+    if ( f.overline() )
+        res += " overline";
+    if ( f.strikeOut() )
+        res += " strikeout";
+    return res;
+}
+
+QString RenderStyle::createDiff( const RenderStyle &parent ) const
+{
+    QString res;
+      if ( parent.color() != color() )
+        res += " [color=" + color().name() + "]";
+    if ( parent.backgroundColor() != backgroundColor() )
+        res += " [bgcolor=" + backgroundColor().name() + "]";
+    if ( parent.font() != font() )
+        res += " [font=" + describeFont( font() ) + "]";
+
+    return res;
+}
+
+#endif

@@ -488,19 +488,18 @@ bool RenderFrameSet::canResize( int _x, int _y )
 }
 
 #ifndef NDEBUG
-void RenderFrameSet::dump(QTextStream *stream, QString ind) const
+void RenderFrameSet::dump(QTextStream &stream, const QString &ind) const
 {
-  *stream << " totalrows=" << element()->totalRows();
-  *stream << " totalcols=" << element()->totalCols();
+    RenderBox::dump(stream,ind);
+    stream << " totalrows=" << element()->totalRows();
+    stream << " totalcols=" << element()->totalCols();
 
-  uint i;
-  for (i = 0; i < (uint)element()->totalRows(); i++)
-    *stream << " hSplitvar(" << i << ")=" << m_hSplitVar[i];
+    uint i;
+    for (i = 0; i < (uint)element()->totalRows(); i++)
+        stream << " hSplitvar(" << i << ")=" << m_hSplitVar[i];
 
-  for (i = 0; i < (uint)element()->totalCols(); i++)
-    *stream << " vSplitvar(" << i << ")=" << m_vSplitVar[i];
-
-  RenderBox::dump(stream,ind);
+    for (i = 0; i < (uint)element()->totalCols(); i++)
+        stream << " vSplitvar(" << i << ")=" << m_vSplitVar[i];
 }
 #endif
 

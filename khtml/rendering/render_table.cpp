@@ -628,22 +628,23 @@ RenderObject* RenderTable::removeChildNode(RenderObject* child)
 
 
 #ifndef NDEBUG
-void RenderTable::dump(QTextStream *stream, QString ind) const
+void RenderTable::dump(QTextStream &stream, const QString &ind) const
 {
+    RenderBlock::dump(stream, ind);
+
     if (tCaption)
-	*stream << " tCaption";
+	stream << " tCaption";
     if (head)
-	*stream << " head";
+	stream << " head";
     if (foot)
-	*stream << " foot";
+	stream << " foot";
 
-    *stream << endl << ind << "cspans:";
+    stream << " [cspans:";
     for ( unsigned int i = 0; i < columns.size(); i++ )
-	*stream << " " << columns[i].span;
-    *stream << endl << ind;
-
-    RenderBlock::dump(stream,ind);
+	stream << " " << columns[i].span;
+    stream << "]";
 }
+
 #endif
 
 FindSelectionResult RenderTable::checkSelectionPoint( int _x, int _y, int _tx, int _ty, DOM::NodeImpl*& node, int & offset, SelPointState &state )
@@ -1297,20 +1298,20 @@ RenderObject* RenderTableSection::removeChildNode(RenderObject* child)
 }
 
 #ifndef NDEBUG
-void RenderTableSection::dump(QTextStream *stream, QString ind) const
+void RenderTableSection::dump(QTextStream &stream, const QString &ind) const
 {
-    *stream << endl << ind << "grid=(" << grid.size() << "," << table()->numEffCols() << ")" << endl << ind;
+    RenderContainer::dump(stream,ind);
+
+    stream << " grid=(" << grid.size() << "," << table()->numEffCols() << ")";
     for ( unsigned int r = 0; r < grid.size(); r++ ) {
 	for ( int c = 0; c < table()->numEffCols(); c++ ) {
 	    if ( cellAt( r,  c ) && cellAt( r, c ) != (RenderTableCell *)-1 )
-		*stream << "(" << cellAt( r, c )->row() << "," << cellAt( r, c )->col() << ","
-			<< cellAt(r, c)->rowSpan() << "," << cellAt(r, c)->colSpan() << ") ";
+		stream << " (" << cellAt( r, c )->row() << "," << cellAt( r, c )->col() << ","
+                       << cellAt(r, c)->rowSpan() << "," << cellAt(r, c)->colSpan() << ") ";
 	    else
-		*stream << cellAt( r, c ) << "null cell ";
+		stream << " null cell";
 	}
-	*stream << endl << ind;
     }
-    RenderContainer::dump(stream,ind);
 }
 #endif
 
@@ -1511,7 +1512,7 @@ RenderObject* RenderTableRow::removeChildNode(RenderObject* child)
 }
 
 #ifndef NDEBUG
-void RenderTableRow::dump(QTextStream *stream, QString ind) const
+void RenderTableRow::dump(QTextStream &stream, const QString &ind) const
 {
     RenderContainer::dump(stream,ind);
 }
@@ -1769,15 +1770,14 @@ void RenderTableCell::paintBoxDecorations(QPainter *p,int, int _y,
 
 
 #ifndef NDEBUG
-void RenderTableCell::dump(QTextStream *stream, QString ind) const
+void RenderTableCell::dump(QTextStream &stream, const QString &ind) const
 {
-    *stream << " row=" << _row;
-    *stream << " col=" << _col;
-    *stream << " rSpan=" << rSpan;
-    *stream << " cSpan=" << cSpan;
-//    *stream << " nWrap=" << nWrap;
-
     RenderFlow::dump(stream,ind);
+    stream << " row=" << _row;
+    stream << " col=" << _col;
+    stream << " rSpan=" << rSpan;
+    stream << " cSpan=" << cSpan;
+//    *stream << " nWrap=" << nWrap;
 }
 #endif
 
@@ -1817,10 +1817,10 @@ void RenderTableCol::addChild(RenderObject *child, RenderObject *beforeChild)
 }
 
 #ifndef NDEBUG
-void RenderTableCol::dump(QTextStream *stream, QString ind) const
+void RenderTableCol::dump(QTextStream &stream, const QString &ind) const
 {
-    *stream << " _span=" << _span;
     RenderContainer::dump(stream,ind);
+    stream << " _span=" << _span;
 }
 #endif
 

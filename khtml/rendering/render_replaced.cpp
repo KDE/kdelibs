@@ -645,5 +645,17 @@ FindSelectionResult RenderReplaced::checkSelectionPoint(int _x, int _y, int _tx,
     return SelectionPointInside;
 }
 
+#ifndef NDEBUG
+void RenderWidget::dump(QTextStream &stream, const QString &ind) const
+{
+    RenderReplaced::dump(stream,ind);
+    if ( widget() )
+        stream << " color=" << widget()->foregroundColor().name()
+               << " bg=" << widget()->backgroundColor().name();
+    else
+        stream << " null widget";
+}
+#endif
+
 #include "render_replaced.moc"
 

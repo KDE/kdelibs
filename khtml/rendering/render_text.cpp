@@ -1590,5 +1590,49 @@ void RenderText::paintTextOutline(QPainter *p, int tx, int ty, const QRect &last
 		 true);
 }
 
+#ifndef NDEBUG
+
+static QString quoteAndEscapeNonPrintables(const QString &s)
+{
+    QString result;
+    result += '"';
+    for (uint i = 0; i != s.length(); ++i) {
+        QChar c = s.at(i);
+        if (c == '\\') {
+            result += "\\\\";
+        } else if (c == '"') {
+            result += "\\\"";
+        } else {
+            ushort u = c.unicode();
+            if (u >= 0x20 && u < 0x7F) {
+                result += c;
+            } else {
+                QString hex;
+                hex.sprintf("\\x{%X}", u);
+                result += hex;
+            }
+        }
+    }
+    result += '"';
+    return result;
+}
+
+static void writeTextRun(QTextStream &ts, const RenderText &o, const InlineTextBox &run)
+{
+    ts << "text run at (" << run.m_x << "," << run.m_y << ") width " << run.m_width << ": "
+       << quoteAndEscapeNonPrintables(o.data().string().mid(run.m_start, run.m_len));
+}
+
+void RenderText::dump(QTextStream &stream, const QString &ind) const
+{
+    RenderObject::dump( stream, ind );
+
+    for (unsigned int i = 0; i < m_lines.count(); i++) {
+        stream << endl << ind << "   ";
+        writeTextRun(stream, *this, *m_lines[i]);
+    }
+}
+#endif
+
 #undef BIDI_DEBUG
 #undef DEBUG_LAYOUT

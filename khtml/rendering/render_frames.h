@@ -70,7 +70,7 @@ public:
     { return static_cast<DOM::HTMLFrameSetElementImpl*>(RenderObject::element()); }
 
 #ifndef NDEBUG
-    virtual void dump(QTextStream *stream, QString ind = "") const;
+    virtual void dump(QTextStream &stream, const QString &ind) const;
 #endif
 
 private:

@@ -170,7 +170,7 @@ public:
 
 #ifndef NDEBUG
     virtual void printTree(int indent=0) const;
-    virtual void dump(QTextStream *stream, QString ind = "") const;
+    virtual void dump(QTextStream &stream, const QString &ind) const;
 #endif
 
 protected:

@@ -2416,31 +2416,31 @@ void RenderBlock::printTree(int indent) const
     }
 }
 
-void RenderBlock::dump(QTextStream *stream, QString ind) const
+void RenderBlock::dump(QTextStream &stream, const QString &ind) const
 {
-    if (m_childrenInline) { *stream << " childrenInline"; }
-    if (m_pre) { *stream << " pre"; }
-    if (m_firstLine) { *stream << " firstLine"; }
+    RenderFlow::dump(stream,ind);
+
+    if (m_childrenInline) { stream << " childrenInline"; }
+    if (m_pre) { stream << " pre"; }
+    if (m_firstLine) { stream << " firstLine"; }
 
     if (m_floatingObjects && !m_floatingObjects->isEmpty())
     {
-        *stream << " special(";
+        stream << " special(";
         QPtrListIterator<FloatingObject> it(*m_floatingObjects);
         FloatingObject *r;
         bool first = true;
         for ( ; (r = it.current()); ++it )
         {
             if (!first)
-                *stream << ",";
-            *stream << r->node->renderName();
+                stream << ",";
+            stream << r->node->renderName();
             first = false;
         }
-        *stream << ")";
+        stream << ")";
     }
 
     // ### EClear m_clearStatus
-
-    RenderFlow::dump(stream,ind);
 }
 #endif
 

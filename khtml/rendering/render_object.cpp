@@ -33,9 +33,11 @@
 #include "rendering/render_line.h"
 #include "rendering/render_inline.h"
 #include "rendering/render_text.h"
+#include "rendering/render_replaced.h"
 
 #include "xml/dom_elementimpl.h"
 #include "xml/dom_docimpl.h"
+#include "dom/dom_doc.h"
 #include "misc/htmlhashes.h"
 #include "misc/loader.h"
 
@@ -43,6 +45,7 @@
 #include <kglobal.h>
 #include <qpainter.h>
 #include "khtmlview.h"
+#include <khtml_part.h>
 
 #include <assert.h>
 using namespace DOM;
@@ -866,28 +869,114 @@ void RenderObject::printTree(int indent) const
     }
 }
 
-void RenderObject::dump(QTextStream *stream, QString ind) const
-{
-    if (isAnonymous()) { *stream << " anonymousBox"; }
-    if (isFloating()) { *stream << " floating"; }
-    if (isPositioned()) { *stream << " positioned"; }
-    if (isRelPositioned()) { *stream << " relPositioned"; }
-    if (isText()) { *stream << " text"; }
-    if (isInline()) { *stream << " inline"; }
-    if (isReplaced()) { *stream << " replaced"; }
-    if (shouldPaintBackgroundOrBorder()) { *stream << " paintBackground"; }
-    if (layouted()) { *stream << " layouted"; }
-    if (minMaxKnown()) { *stream << " minMaxKnown"; }
-    if (overhangingContents()) { *stream << " overhangingContents"; }
-    if (hasFirstLine()) { *stream << " hasFirstLine"; }
-    *stream << endl;
+// static void writeLayers(QTextStream &ts, const RenderObject &o, int indent = 0);
 
-    RenderObject *child = firstChild();
-    while( child != 0 )
-    {
-        *stream << ind << child->renderName() << ": ";
-        child->dump(stream,ind+"  ");
-        child = child->nextSibling();
+static QTextStream &operator<<(QTextStream &ts, const QRect &r)
+{
+    return ts << "at (" << r.x() << "," << r.y() << ") size " << r.width() << "x" << r.height();
+}
+
+#if 0
+static void write(QTextStream &ts, const RenderLayerElement &e, int indent = 0)
+{
+    RenderLayer &l = *e.layer;
+
+    writeIndent(ts, indent);
+
+    ts << "layer";
+
+    QRect r(e.absBounds);
+
+    ts << " " << r;
+
+    if (r != r.intersect(e.backgroundClipRect)) {
+        ts << " backgroundClip " << e.backgroundClipRect;
+    }
+    if (r != r.intersect(e.clipRect)) {
+        ts << " clip " << e.clipRect;
+    }
+
+    if (e.layerElementType == RenderLayerElement::Background)
+        ts << " layerType: background only";
+    else if (e.layerElementType == RenderLayerElement::Foreground)
+        ts << " layerType: foreground only";
+
+    ts << "\n";
+
+    if (e.layerElementType != RenderLayerElement::Background)
+        write(ts, *l.renderer(), indent + 1);
+}
+
+static void writeLayers(QTextStream &ts, const RenderObject &o, int indent)
+{
+    RenderZTreeNode *node;
+    QPtrVector<RenderLayerElement> list = o.layer()->elementList(node);
+    for (unsigned i = 0; i != list.count(); ++i) {
+        write(ts, *list[i], indent);
+    }
+    if (node) {
+        node->detach(o.renderArena());
+    }
+}
+#endif
+
+static void write( QTextStream &ts, const RenderObject &o, const QString &ind )
+{
+    o.dump( ts, ind);
+    for (RenderObject *child = o.firstChild(); child; child = child->nextSibling()) {
+        if (child->layer()) {
+            // continue;
+        }
+        write( ts, *child, ind + "   " );
+    }
+}
+
+void RenderObject::dump(QTextStream &ts, const QString &ind) const
+{
+    if ( document()->renderer() != this ) {
+        ts << endl;
+    }
+
+    ts << ind;
+
+    ts << renderName();
+
+    if (style() && style()->zIndex()) {
+        ts << " zI: " << style()->zIndex();
+    }
+
+    if (element()) {
+        QString tagName(getTagName(element()->id()).string());
+        if (!tagName.isEmpty()) {
+            ts << " {" << tagName << "}";
+        }
+    }
+
+    QRect r(xPos(), yPos(), width(), height());
+    ts << " " << r;
+
+    if ( parent() )
+        ts << style()->createDiff( *parent()->style() );
+
+    if (isAnonymous()) { ts << " anonymousBox"; }
+    if (isFloating()) { ts << " floating"; }
+    if (isPositioned()) { ts << " positioned"; }
+    if (isRelPositioned()) { ts << " relPositioned"; }
+    if (isText()) { ts << " text"; }
+    if (isInline()) { ts << " inline"; }
+    if (isReplaced()) { ts << " replaced"; }
+    if (shouldPaintBackgroundOrBorder()) { ts << " paintBackground"; }
+    if (layouted()) { ts << " layouted"; }
+    if (minMaxKnown()) { ts << " minMaxKnown"; }
+    if (overhangingContents()) { ts << " overhangingContents"; }
+    if (hasFirstLine()) { ts << " hasFirstLine"; }
+
+    if ( document()->renderer() == this ) {
+        // I'm root
+        for (RenderObject *child = firstChild(); child; child = child->nextSibling()) {
+            // if (child->layer()) continue;
+            write( ts, *child, ind + "   ");
+        }
     }
 }
 #endif

@@ -269,6 +269,10 @@ public:
      */
     unsigned inlineTextBoxCount() const { return m_lines.count(); }
 
+#ifndef NDEBUG
+    virtual void dump(QTextStream &stream, const QString &ind) const;
+#endif
+
 protected:
     void paintTextOutline(QPainter *p, int tx, int ty, const QRect &prevLine, const QRect &thisLine, const QRect &nextLine);
 

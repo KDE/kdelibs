@@ -1,3 +1,10 @@
+2003-11-17  Stephan Kulow  <coolo@kde.org>
+
+	* rendering/render_*.cpp: changing the output of dump to
+	get a more comprehensive renderer tree output - as inspired
+	by Safari's kwqDebugTree. This allows for a change in 
+	test_regression to check layouts
+
 2003-11-15  Zack Rusin  <zack@kde.org>
 
 	* rendering/render_box.cpp (calcHeight): correctly compute the
