@@ -866,6 +866,7 @@ void KDirOperator::connectView(KFileView *view)
         KFileItem *oldCurrentItem = m_fileView->currentFileItem();
         if ( oldCurrentItem ) {
             view->setCurrentItem( oldCurrentItem );
+            view->setSelected( oldCurrentItem, false );
 	    view->ensureItemVisible( oldCurrentItem );
         }
 
