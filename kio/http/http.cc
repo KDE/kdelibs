@@ -1768,6 +1768,13 @@ bool HTTPProtocol::readHeader()
   else if (m_strMimeType == "application/rtf")
      m_strMimeType = QString::fromLatin1("text/rtf");
 
+  // Crypto ones....
+  else if (m_strMimeType == "application/pkix-cert" ||
+           m_strMimeType == "application/binary-certificate")
+  {
+	  m_strMimeType = QString::fromLatin1("application/x-x509-ca-cert");
+  }
+
   // Prefer application/x-tgz over application/x-gzip
   else if (m_strMimeType == "application/x-gzip")
   {
@@ -1781,6 +1788,8 @@ bool HTTPProtocol::readHeader()
   {
      if (m_request.url.path().right(4) == ".bz2")
         m_strMimeType = QString::fromLatin1("application/x-bzip2");
+     else if (m_request.url.path().right(4).upper() == ".PEM")
+        m_strMimeType = QString::fromLatin1("application/x-x509-ca-cert");
   }
 #if 0
   // Even if we can't rely on content-length, it seems that we should
