@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.67  1998/05/19 14:10:05  radej
+// Bugfixes: Unhighlighting a handle and catching the fast click
+//
 // Revision 1.66  1998/05/13 09:56:31  radej
 // Changelog order
 //
@@ -285,6 +288,9 @@ void KToolBarButton::setPixmap( const QPixmap &pixmap )
 
 void KToolBarButton::makeDisabledPixmap()
 {
+  if (ImASeparator())
+    return;             // No pixmaps for separators
+
   QPalette pal = palette();
   QColorGroup g = pal.disabled();
 
