@@ -118,8 +118,8 @@ XMLGUIServant::XMLGUIServant()
 XMLGUIServant::~XMLGUIServant()
 {
   kDebugArea( 1000, "XMLGUIServant::~XMLGUIServant()");
-  if ( d->m_factory )
-    d->m_factory->removeServant( this );
+  //  if ( d->m_factory )
+  //   d->m_factory->removeServant( this );
 
   delete d;
 }
@@ -335,7 +335,7 @@ void XMLGUIFactory::buildRecursive( const QDomElement &element, XMLGUIContainerN
     {
       if ( e.tagName() == "Separator" && e.attribute( attrName ).isEmpty() )
         e.setAttribute( attrName, generateName() );
-    
+
       /*
        * No Action or Merge tag? That most likely means that we want to create a new container.
        * But first we have to check if there's already a existing (child) container of the same type in our
@@ -462,7 +462,7 @@ bool XMLGUIFactory::removeRecursive( XMLGUIContainerNode *node )
       }
       else
         ++clientIt;
-  
+
   if ( node->clients.count() == 0 && node->children.count() == 0 && node->container &&
        node->servant == m_servant )
   {
@@ -520,8 +520,8 @@ bool XMLGUIFactory::removeRecursive( XMLGUIContainerNode *node )
 
 QString XMLGUIFactory::generateName()
 {
-  return QString( d->m_servantName ).append( QString::number( d->m_genId++ ) ); 
-} 
+  return QString( d->m_servantName ).append( QString::number( d->m_genId++ ) );
+}
 
 XMLGUIContainerNode *XMLGUIFactory::findContainer( XMLGUIContainerNode *node, const QDomElement &element, const QList<QObject> &excludeList )
 {
