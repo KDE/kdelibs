@@ -51,6 +51,7 @@
 #ifdef DO_SSL
 #include <openssl/ssl.h>
 #include <openssl/err.h>
+#include <kmessagebox.h>
 #endif
 
 #ifdef DO_MD5
