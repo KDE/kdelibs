@@ -187,6 +187,12 @@ void KXMLGUIClient::setXMLFile( const QString& _file, bool merge, bool setXMLDoc
       // this might or might not be an error.  for the time being,
       // let's treat this as if it isn't a problem and the user just
       // wants the global standards file
+
+      // however if a non-empty file gets passed and we can't find it we might
+      // inform the developer using some debug output
+      if ( !_file.isEmpty() )
+          kdWarning() << "KXMLGUIClient::setXMLFile: cannot find .rc file " << _file << endl;
+
       setXML( QString::null, true );
       return;
     }
