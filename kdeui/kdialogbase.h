@@ -109,6 +109,7 @@ class KDialogBaseTile : public QObject
  * copy/paste examples as well a screenshots on how to use this class.
  *
  * @sect Standard buttons (action buttons):
+ *
  * You select which buttons should be displayed, but you do not choose the 
  * order in which they are displayed. This ensures a standard interface in 
  * KDE. The button order can be changed, but this ability is only available
@@ -125,6 +126,7 @@ class KDialogBaseTile : public QObject
  * constructor.
  *
  * @sect Dialog shapes:
+ *
  * You can either use one of the prebuilt, easy to use, faces or define 
  * your own main widget. The dialog provides ready to use TreeList,  
  * Tabbed, Plain and Swallow faces. For the first two you then add pages 
@@ -136,12 +138,14 @@ class KDialogBaseTile : public QObject
  * size.
  *
  * @sect Layout:
+ *
  * The dialog consists of a help area on top (becomes visible if you define
  * a help path and use @ref enableLinkedHelp()), the built-in dialog face or
  * your own widget in the middle, and the button row at the bottom. You can
  * also specify a separator to be shown above the button row.
  *
  * @sect Standard compliance:
+ *
  * The class is derived form @ref KDialog(), so you get automatic access to
  * the @ref KDialog::marginHint(), @ref KDialog::spacingHint() and the 
  * extended @ref KDialog::setCaption() method. NOTE: The main widget you 
@@ -198,6 +202,22 @@ class KDialogBase : public KDialog
   Q_OBJECT
 
   public:
+
+    /**
+     *  @li @p Help    Show Help-button.
+     *  @li @p Default Show Default-button.
+     *  @li @p Ok      Show Ok-button.
+     *  @li @p Apply   Show Apply-button.
+     *  @li @p Try     Show Try-button.
+     *  @li @p Cancel  Show Cancel-button.
+     *  @li @p Close   Show Close-button.
+     *  @li @p User1   Show User define-button 1.
+     *  @li @p User2   Show User define-button 2.
+     *  @li @p User3   Show User define-button 3.
+     *  @li @p No      Show No-button.
+     *  @li @p Yes     Show Yes-button.
+     *  @li @p Stretch Don't know what this means. ???
+     */
     enum ButtonCode
     {
       Help    = 0x00000001,
@@ -225,6 +245,15 @@ class KDialogBase : public KDialog
       ActionStyleMAX
     };
 
+    /**
+     *  @li @p TreeList A dialog with a tree on the left side
+     *                  and a representation of the contents on thr right side.
+     *  @li @p Tabbed   A dialog using a @ref QTabWidget.
+     *  @li @p Plain    A normal dialog.
+     *  @li @p Swallow  
+     *  @li @p IconList A dialog with an iconlist on the left side
+     *                  and a representation of the contents on the right side.
+     */
     enum DialogType
     {
       TreeList  = KJanusWidget::TreeList,
