@@ -61,8 +61,6 @@
 
 #include <kdebug.h>
 
-#define KJS_VERBOSE
-
 using namespace KJS;
 
 IMPLEMENT_PROTOFUNC_DOM(HTMLDocFunction)
