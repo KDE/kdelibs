@@ -196,19 +196,19 @@ class KDEUI_EXPORT KDialogBase : public KDialog
   public:
 
     /**
-     *  @li @p Help -    Show Help-button.
-     *  @li @p Default - Show Default-button.
-     *  @li @p Details - Show Details-button.
-     *  @li @p Ok -      Show Ok-button.
-     *  @li @p Apply -   Show Apply-button.
-     *  @li @p Try -     Show Try-button.
-     *  @li @p Cancel -  Show Cancel-button.
-     *  @li @p Close -   Show Close-button.
-     *  @li @p User1 -   Show User define-button 1.
-     *  @li @p User2 -   Show User define-button 2.
-     *  @li @p User3 -   Show User define-button 3.
-     *  @li @p No -      Show No-button.
-     *  @li @p Yes -     Show Yes-button.
+     *  @li @p Help -    Show Help button.
+     *  @li @p Default - Show Default button.
+     *  @li @p Details - Show Details button.
+     *  @li @p Ok -      Show Ok button.
+     *  @li @p Apply -   Show Apply button.
+     *  @li @p Try -     Show Try button.
+     *  @li @p Cancel -  Show Cancel button.
+     *  @li @p Close -   Show Close button.
+     *  @li @p User1 -   Show User-defined button 1.
+     *  @li @p User2 -   Show User-defined button 2.
+     *  @li @p User3 -   Show User-defined button 3.
+     *  @li @p No -      Show No button.
+     *  @li @p Yes -     Show Yes button.
      *  @li @p Stretch - Used internally. Ignored when used in a constructor.
      *  @li @p Filler  - Used internally. Ignored when used in a constructor.
      *  @li @p NoDefault - Used when specifying a default button; indicates that
