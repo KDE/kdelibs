@@ -281,8 +281,10 @@ void RenderTable::layout()
 	// just force the first body to the height needed
 	// ### FIXME This should take height constraints on all table sections into account and distribute
 	// accordingly. For now this should be good enough
-	firstBody->calcRowHeight();
-	firstBody->layoutRows( th - calculatedHeight );
+        if (firstBody) {
+            firstBody->calcRowHeight();
+            firstBody->layoutRows( th - calculatedHeight );
+        }
     }
     int bl = borderLeft();
 
