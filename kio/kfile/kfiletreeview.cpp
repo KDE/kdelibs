@@ -85,7 +85,7 @@ KFileTreeView::KFileTreeView( QWidget *parent, const char *name )
 KFileTreeView::~KFileTreeView()
 {
    // we must make sure that the KFileTreeViewItems are deleted _before_ the
-   // branches are deleted. Otherwise, the KFileItems would be destroyed 
+   // branches are deleted. Otherwise, the KFileItems would be destroyed
    // and the KFileTreeViewItems had dangling pointers to them.
    hide();
    clear();
@@ -529,7 +529,7 @@ void KFileTreeView::stopAnimation( KFileTreeViewItem * item )
    MapCurrentOpeningFolders::Iterator it = m_mapCurrentOpeningFolders.find(item);
    if ( it != m_mapCurrentOpeningFolders.end() )
    {
-      if( item->isDir() && isOpen(static_cast<QListViewItem*>(item)))
+      if( item->isDir() && isOpen( item) )
       {
 	 kdDebug(250) << "Setting folder open pixmap !" << endl;
 	 item->setPixmap( 0, itemIcon( item ));
@@ -570,11 +570,11 @@ void KFileTreeView::slotOnItem( QListViewItem *item )
     KFileTreeViewItem *i = static_cast<KFileTreeViewItem *>( item );
     if( i )
     {
-       const KURL& url = i->url();
+       const KURL url = i->url();
        if ( url.isLocalFile() )
-	  emit( onItem( url.path() ));
+	  emit onItem( url.path() );
        else
-	  emit( onItem( url.prettyURL()));
+	  emit onItem( url.prettyURL() );
     }
 }
 
