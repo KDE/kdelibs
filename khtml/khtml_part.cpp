@@ -3974,6 +3974,9 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
     }
     child->m_liveconnect = KParts::LiveConnectExtension::childObject( part );
   }
+  else if ( child->m_frame && child->m_part && 
+            child->m_frame->widget() != child->m_part->widget() )
+    child->m_frame->setWidget( child->m_part->widget() );
 
   checkEmitLoadEvent();
   // Some JS code in the load event may have destroyed the part
