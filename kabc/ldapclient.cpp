@@ -222,7 +222,7 @@ void LdapClient::parseLDIF( const QByteArray& data )
         mCurrentObject.attrs[ name ].append( value );
         break;
      case LDIF::EndEntry:
-        mCurrentObject.dn = d->ldif.Dn();
+        mCurrentObject.dn = d->ldif.dn();
         emit result( mCurrentObject );
         mCurrentObject.clear();
         break;

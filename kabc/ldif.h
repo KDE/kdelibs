@@ -99,7 +99,7 @@ namespace KABC {
     /**
      * Returns the Distinguished Name of the current entry.
      */
-    QString Dn() { return mDn; };
+    QString dn() { return mDn; };
     /**
      * Returns the new Relative Distinguished Name if modType() returned Entry_Modrdn.
      */
