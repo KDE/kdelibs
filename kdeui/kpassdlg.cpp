@@ -372,14 +372,12 @@ void KPasswordDialog::addLine(QString key, QString value)
 	return;
 
     QLabel *lbl = new QLabel(key, m_pMain);
-    lbl->setAlignment(AlignTop);
-    lbl->setIndent(5);
+    lbl->setAlignment(AlignLeft|AlignTop);
     lbl->setFixedSize(lbl->sizeHint());
     m_pGrid->addWidget(lbl, m_Row+2, 0, AlignLeft);
 
     lbl = new QLabel(value, m_pMain);
     lbl->setAlignment(AlignTop|WordBreak);
-    lbl->setIndent(5);
     lbl->setFixedSize(275, lbl->heightForWidth(275));
     m_pGrid->addWidget(lbl, m_Row+2, 2, AlignLeft);
     m_Row++;
