@@ -171,7 +171,9 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
 KJanusWidget::~KJanusWidget()
 {
   delete mPageList;
+  mPageList = 0;
   delete mTitleList;
+  mTitleList = 0;
 }
 
 
@@ -220,11 +222,11 @@ QFrame *KJanusWidget::addPage( const QStringList &items, const QString &header,
 void KJanusWidget::pageGone()
 {
   const QWidget *page=static_cast<const QWidget*>(QObject::sender());
- 
-  if (!mPageList->containsRef(page))
+
+  if (!mPageList || !mPageList->containsRef(page))
     return;
   mPageList->removeRef(page);
-  
+
   if ( mFace == TreeList )
   {
     QMap<QListViewItem*, QWidget *>::Iterator i;
@@ -251,7 +253,7 @@ void KJanusWidget::pageGone()
   {
 
   }
-	
+
 
 }
 
