@@ -216,17 +216,22 @@ void KNotify::notify(const QString &event, const QString &fromApp,
             present = eventsFile->readNumEntry( "default_presentation", 0 );
 
         // get sound file name
-        sound = configFile->readEntry( "soundfile" );
-        if ( sound.length()==0 )
-            sound = eventsFile->readEntry( "default_sound" );
+        if( present & KNotifyClient::Sound ) {
+            sound = configFile->readEntry( "soundfile" );
+            if ( sound.length()==0 )
+                sound = eventsFile->readEntry( "default_sound" );
+        }
 
         // get log file name
-        file = configFile->readEntry( "logfile" );
-        if ( file.length()==0 )
-            file = eventsFile->readEntry( "default_logfile" );
+        if( present & KNotifyClient::Logfile ) {
+            file = configFile->readEntry( "logfile" );
+            if ( file.length()==0 )
+                file = eventsFile->readEntry( "default_logfile" );
+        }
 
         // get default event level
-        level = eventsFile->readNumEntry( "level", 0 );
+        if( present & KNotifyClient::Messagebox )
+            level = eventsFile->readNumEntry( "level", 0 );
     }
 
     // emit event
