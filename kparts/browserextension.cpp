@@ -43,20 +43,31 @@ URLArgs::URLArgs()
 
 URLArgs::URLArgs( const URLArgs &args )
 {
+  d = 0;
+  (*this) = args;
+}
+
+URLArgs &URLArgs::operator=(const URLArgs &args)
+{
+  if (this == &args) return *this;
+
+  delete d; d= 0;
+
   reload = args.reload;
   xOffset = args.xOffset;
   yOffset = args.yOffset;
   serviceType = args.serviceType;
   postData = args.postData;
   frameName = args.frameName;
-  d = 0;
 
   if ( args.d )
   {
      d = new URLArgsPrivate;
      d->docState  = args.d->docState;
   }
-}
+  return *this;
+}  
+
 
 URLArgs::URLArgs( bool _reload, int _xOffset, int _yOffset, const QString &_serviceType )
 {
@@ -69,8 +80,7 @@ URLArgs::URLArgs( bool _reload, int _xOffset, int _yOffset, const QString &_serv
 
 URLArgs::~URLArgs()
 {
-  if ( d )
-    delete d;
+  delete d; d = 0;
 }
 
 void URLArgs::setDocState(const QStringList &state)
