@@ -58,7 +58,7 @@ libkab_la_LDFLAGS = -version-info 2:0 $(X_LDFLAGS) $(QT_LDFLAGS)
 libkab_la_LIBADD  = -lXext $(LIB_QT)
 
 # just to make sure, automake makes them 
-BUILTSOURCES =	addressbook.moc widgets.moc widget.moc \
+libkab_la_METASOURCES =	addressbook.moc widgets.moc widget.moc \
 		AssertDialog.moc AssertDialogData.moc \
 		DialogBase.moc DialogBaseData.moc \
 		SearchDialog.moc searchresults.moc \
@@ -70,10 +70,7 @@ BUILTSOURCES =	addressbook.moc widgets.moc widget.moc \
 		SearchDialogMainWidget.moc \
 		SearchDialogMainWidgetData.moc
 
-
-# if you "make distclean", this files get removed. If you want to remove
-# them while "make clean", use CLEANFILES
-DISTCLEANFILES = $(BUILTSOURCES)
+DISTCLEANFILES = $(libkab_la_METASOURCES)
 
 picsdir = $(kde_datadir)/kab/pics
 pics_DATA = dialog_background.jpg background_1.jpg

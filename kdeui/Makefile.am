@@ -61,7 +61,7 @@ SRC_META = kledlamp.moc kprogress.moc kpanner.moc kcolordlg.moc\
 		kiconloaderdialog.moc kwmmapp.moc kbuttonbox.moc \
 		ktablistbox.moc knewpanner.moc kcontrol.moc keditcl.moc \
 	  	ktoolboxmgr.moc kled.moc kdbtn.moc knotebook.moc kwizard.moc \
-		ktabbar.moc kurllabel.moc kruler.moc kquickhelp.moc
+		ktabbar.moc kurllabel.moc kruler.moc kquickhelp.moc kkeydata.moc
 
 
 kledlamp.cpp:kledlamp.moc
