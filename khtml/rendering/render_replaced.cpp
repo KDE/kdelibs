@@ -477,6 +477,13 @@ bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
     return filtered;
 }
 
+class EventPropagator : public QWidget {
+public:
+    void sendEvent(QEvent *e) {
+	event(e);
+    }
+};
+
 void RenderWidget::handleEvent(const DOM::MouseEventImpl& ev)
 {
     allowWidgetMouseEvents = false;
@@ -488,27 +495,37 @@ void RenderWidget::handleEvent(const DOM::MouseEventImpl& ev)
 
     QPoint p(ev.clientX()-absx, ev.clientY()-absy);
     QMouseEvent::Type type;
-    int button;
+    int button = NoButton;
 
     switch(ev.id())  {
     case EventImpl::MOUSEDOWN_EVENT:
         type = QMouseEvent::MouseButtonPress;
-        button = Qt::LeftButton; // ###
         break;
     case EventImpl::MOUSEUP_EVENT:
         type = QMouseEvent::MouseButtonRelease;
-        button = Qt::LeftButton; // ###
         break;
     case EventImpl::MOUSEMOVE_EVENT:
     default:
         type = QMouseEvent::MouseMove;
-        button = Qt::NoButton;
         break;
     }
+    switch (ev.button()) {
+    case 0:
+	button = LeftButton;
+	break;
+    case 1:
+	button = MidButton;
+	break;
+    case 2:
+	button = RightButton;
+	break;
+    default:
+	break;
+    }
 
+//     kdDebug(6000) << "sending event to widget " << m_widget << endl;
     QMouseEvent e(type, p, button, button);
-    QApplication::sendEvent(m_widget, &e);
-
+    static_cast<EventPropagator *>(m_widget)->sendEvent(&e);
     allowWidgetMouseEvents = true;
 }
 

@@ -946,7 +946,6 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 	}
     }
     if (r && r->isWidget()) {
-// 	static_cast<RenderWidget *>(r)->widget()->setCursor(c);
 	_mouse->ignore();
     }
 
@@ -971,12 +970,6 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 
     DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MouseRelease );
     m_part->xmlDocImpl()->prepareMouseEvent( false, xm, ym, &mev );
-
-//     // Qt bug: sometimes Qt sends us events that should be sent
-//     // to the widget instead
-//     if ( mev.innerNode.handle() && mev.innerNode.handle()->renderer() &&
-//          mev.innerNode.handle()->renderer()->isWidget() )
-//         return;
 
     bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEUP_EVENT,mev.innerNode.handle(),true,
                                            d->clickCount,_mouse,false,DOM::NodeImpl::MouseRelease);
@@ -1329,8 +1322,8 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 		    else
 			viewportMouseDoubleClickEvent(&me2);
 		    //block = me2.isAccepted();
+		    block = true;
                 }
-                block = true;
 		break;
 	    }
 	    default:
@@ -1343,6 +1336,7 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 	}
     }
 
+//     kdDebug(6000) <<"passing event on to sv event filter " << o << endl;
     return QScrollView::eventFilter(o, e);
 }
 
