@@ -1,6 +1,7 @@
 
 #include "khtml_ext.h"
 #include "khtmlview.h"
+#include "khtml_pagecache.h"
 
 #include <qapplication.h>
 #include <qclipboard.h>
