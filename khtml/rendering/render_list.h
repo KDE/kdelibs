@@ -54,6 +54,7 @@ public:
 //    long value() const { return m_marker->m_value; }
     void setValue( long v ) { predefVal = v; }
     void calcListValue();
+    void calcListTotal();
 
     virtual void layout( );
     virtual void detach( );
@@ -109,7 +110,8 @@ protected:
 
     QString m_item;
     CachedImage *m_listImage;
-    long m_value;
+    int m_value;
+    int m_total;
     RenderListItem* m_listItem;
 };
 

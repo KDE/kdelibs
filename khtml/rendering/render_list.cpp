@@ -117,6 +117,21 @@ static QString toHebrew( int number ) {
     return letter;
 }
 
+static QString toNumeric( int number, int base ) {
+    QString letter = QString::number(number);
+    for(int i = 0; i < letter.length(); i++) {
+        letter[i] = QChar(letter[i].digitValue()+base);
+    }
+}
+
+inline static QString toArabicIndic( int number ) {
+    return toNumeric(number, 0x660);
+}
+
+inline static QString toPersianUrdu( int number ) {
+    return toNumeric(number, 0x6F0);
+}
+
 // -------------------------------------------------------------------------
 
 RenderListItem::RenderListItem(DOM::NodeImpl* node)
@@ -272,10 +287,44 @@ void RenderListItem::calcListValue()
     }
 }
 
+void RenderListItem::calcListTotal()
+{
+    // only called from the marker so..
+    KHTMLAssert(m_marker);
+
+    // first see if our siblings have already counted the total
+    RenderObject *o = previousSibling();
+    while ( o && (!o->isListItem() || o->style()->listStyleType() == LNONE) )
+        o = o->previousSibling();
+    if( o && o->isListItem() && o->style()->listStyleType() != LNONE ) {
+        RenderListItem *item = static_cast<RenderListItem *>(o);
+        m_marker->m_total = item->m_marker->m_total;
+    }
+    else {
+        // count total number of sibling items
+        const RenderObject* o = parent();
+        while ( o && o->isAnonymous() )
+            o = o->parent();
+
+        unsigned int count;
+        if (o->element() && o->element()->id() == ID_OL)
+            count = static_cast<DOM::HTMLOListElementImpl*>(o->element())->start() - 1;
+        else
+            count = 0;
+
+        o = o->firstChild();
+        while (o) {
+            if (o->isListItem()) count++;
+            o = o->nextSibling();
+        }
+        m_marker->m_total = count;
+    }
+}
+
 // -----------------------------------------------------------
 
 RenderListMarker::RenderListMarker(DOM::DocumentImpl* node)
-    : RenderBox(node), m_listImage(0), m_value(-1)
+    : RenderBox(node), m_listImage(0), m_value(-1), m_total(-1)
 {
     // init RenderObject attributes
     setInline(true);   // our object is Inline
@@ -497,11 +546,25 @@ void RenderListMarker::calcMinMaxWidth()
     case KATAKANA:
     case HIRAGANA_IROHA:
     case KATAKANA_IROHA:
-    case DECIMAL_LEADING_ZERO:
         // ### unsupported, we use decimal instead
     case LDECIMAL:
-        m_item.sprintf( "%2ld", m_value );
+        m_item.setNum ( m_value );
         break;
+    case DECIMAL_LEADING_ZERO: {
+        if (m_total < 0)
+            m_listItem->calcListTotal();
+        int decimals = 2;
+        int t = m_total/100;
+        while (t>0) {
+            t = t/10;
+            decimals++;
+        }
+        decimals = kMax(decimals, 2);
+        QString num = QString::number(m_value);
+        m_item.fill('0',decimals-num.length());
+        m_item.append(num);
+        break;
+    }
     case LOWER_ROMAN:
         m_item = toRoman( m_value, false );
         break;
