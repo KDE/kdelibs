@@ -39,16 +39,22 @@
 * It add share/apps/kstyle/themes as "themerc",
 *    share/apps/kstyle/pixmaps "themepixmap"
 */
-namespace KStyleDirs
+class KStyleDirs: public KStandardDirs
 {
-    void init();
-
-    inline KStandardDirs* dirs()
+public:
+    static KStyleDirs* dirs()
     {
-      init();
-      return KGlobal::dirs();
+        if ( !instance)
+            instance = new KStyleDirs;
+        return instance;
     }
-    
+
+    static void release()
+    {
+        delete instance;
+        instance = 0;
+    }
+
     /**
     Adds all of KDE directories of type type to the seach path of q.
 
@@ -59,7 +65,18 @@ namespace KStyleDirs
 
     The one can do settings.readEntry("kstyle/KDE/WidgetStyle") to access a settings in kstylerc.
     */
-    void addToSearch( const char* type, QSettings& q); //Better name?
+    void addToSearch( const char* type, QSettings& q) const; //Better name?
+
+protected:
+    static KStyleDirs* instance;
+    /**
+    Creates an instance of the class, and calculates the path information.
+    */
+    KStyleDirs();
+    KStyleDirs(const KStyleDirs&) {}
+    KStyleDirs& operator= (const KStyleDirs&) {}
+
+    virtual ~KStyleDirs();
 };
 
 #endif

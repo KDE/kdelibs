@@ -124,7 +124,7 @@ public:
     QStringList keys() const
     {
         QSettings cfg;
-        KStyleDirs::addToSearch( "config", cfg );
+        KStyleDirs::dirs()->addToSearch( "config", cfg );
 
         QStringList keys;
         bool ok;
@@ -142,7 +142,7 @@ public:
     QStyle* create( const QString& key )
     {
         QSettings cfg;
-        KStyleDirs::addToSearch( "config", cfg );
+        KStyleDirs::dirs()->addToSearch( "config", cfg );
 
         QString file = cfg.readEntry( "/kthemestyle/" + key + "/file" );
         if ( !key.isEmpty() )
@@ -1022,7 +1022,6 @@ void KThemeStyle::drawPrimitive ( PrimitiveElement pe, QPainter * p, const QRect
             }
         case PE_ScrollBarSubLine:
             {
-		//   bool active = ( flags & Style_Active ) || ( flags & Style_Down ); //activeControl == QStyle::AddLine;
                 bool horizontal = ( flags & Style_Horizontal );
                 drawBaseButton( p, r.x(), r.y(), r.width(), r.height(),
                                 *colorGroup( g, down ? ScrollButtonDown : ScrollButton ),
@@ -1113,7 +1112,7 @@ void KThemeStyle::drawControl( ControlElement element,
                                const QStyleOption& opt ) const
 {
     bool handled = false;
-    //    bool sunken = ( how & Style_Sunken );
+    bool sunken = ( how & Style_Sunken );
     int x, y, w, h;
     r.rect( &x, &y, &w, &h );
 
@@ -1382,8 +1381,8 @@ void KThemeStyle::drawControl( ControlElement element,
                 QMenuBar *mb = ( QMenuBar* ) widget;
                 QRect pr = mb->rect();
                 bool active = how & Style_Active;
-                // bool focused = how & Style_HasFocus;
-		const QColorGroup *g = colorGroup( cg, active ? MenuBarItem : MenuBar );
+                //bool focused = how & Style_HasFocus;
+                const QColorGroup *g = colorGroup( cg, active ? MenuBarItem : MenuBar );
                 QColor btext = g->buttonText();
 
                 QPixmap* cache = makeMenuBarCache(pr.width(), pr.height());
@@ -1434,7 +1433,8 @@ void KThemeStyle::drawControl( ControlElement element,
                 bool reverse = QApplication::reverseLayout();
 
                 const QColorGroup& cg_ours = *colorGroup( cg, active ? MenuItemDown : MenuItem );
-                // QColor btext = cg_ours.buttonText();
+                //QColor btext = cg_ours.buttonText();
+
 
                 if ( checkable )
                     checkcol = QMAX( checkcol, 20 );
@@ -1671,7 +1671,8 @@ void KThemeStyle::drawControl( ControlElement element,
             {
                 bool reverse = QApplication::reverseLayout();
                 const QProgressBar* br = ( const QProgressBar* ) widget;
-                // QRect cr = subRect( SR_ProgressBarContents, widget );
+                QRect cr = subRect( SR_ProgressBarContents, widget );
+                cr.rect(&x,&y,&w,&h);
                 float prog = 1.0;
                 if ( br->totalSteps() )
                     prog = ( float ) br->progress() / br->totalSteps();
@@ -1924,7 +1925,6 @@ void KThemeStyle::drawComplexControl ( ComplexControl control, QPainter * p, con
     bool handled = false;
     int x, y, w, h;
     r.rect( &x, &y, &w, &h );
-    // bool sunken = ( how & Style_Sunken );
     bool down = how & Style_Down;
     bool on = how & Style_On;
 
@@ -2357,31 +2357,6 @@ int KThemeStyle::popupMenuItemHeight( bool /*checkable*/, QMenuItem *mi,
     return ( h );
 }
 
-
-
-void KThemeStyle::drawTabMask( QPainter* , const QTabBar* , QTab* ,
-                               bool /* selected */ )
-{
-    /*
-        QRect r(t->r);
-
-        if(tb->shape() == QTabBar::RoundedAbove){
-            if(!selected)
-                r.setTop(r.top()+2);
-            p->drawLine(r.left()+1, r.top(), r.right()-1, r.top());
-            QBrush b(color1, SolidPattern);
-            p->fillRect(r.left(), r.top()+1, r.width(), r.height()-1, b);
-        }
-        else if(tb->shape()  == QTabBar::RoundedBelow){
-            if(!selected)
-                r.setBottom(r.bottom()-2);
-            p->drawLine(r.left()+1, r.bottom(), r.right()-1, r.bottom());
-            QBrush b(color1, SolidPattern);
-            p->fillRect(r.left(), r.top(), r.width(), r.height()-1, b);
-        } else
-            QCommonStyle::drawTabMask(p, tb, t, selected );
-    */
-}
 
 
 

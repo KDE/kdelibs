@@ -189,7 +189,6 @@ public:
     int popupMenuItemHeight( bool checkable, QMenuItem *mi,
                              const QFontMetrics &fm );
 
-    virtual void drawTabMask( QPainter*, const QTabBar*, QTab*, bool selected );
 protected:
     QPalette oldPalette, popupPalette, indiPalette, exIndiPalette;
     bool paletteSaved;
