@@ -33,8 +33,9 @@
 #include <qcheckbox.h>
 
 #include <kapp.h>
-#include <kdesktopfile.h>
 #include <kbuttonbox.h>
+#include <kdesktopfile.h>
+#include <kdialog.h>
 #include <kglobal.h>
 #include <klined.h>
 #include <klocale.h>
@@ -333,12 +334,13 @@ KOpenWithDlg::KOpenWithDlg( const QStringList& _url, const QString&_text,
   
   setCaption(_url.first());
   
-  QBoxLayout* topLayout = new QVBoxLayout(this, 15, 10);
+  QBoxLayout* topLayout = new QVBoxLayout(this, KDialog::marginHint(),
+					  KDialog::spacingHint());
   
   label = new QLabel( _text , this );
   topLayout->addWidget(label);
   
-  QBoxLayout* l = new QHBoxLayout(topLayout, 10);    
+  QBoxLayout* l = new QHBoxLayout(topLayout);
   edit = new KLineEdit( this, 0L );
   edit->setMinimumWidth(200);
   l->addWidget(edit);
