@@ -67,7 +67,7 @@ public:
 
     long length() const;
 
-    QByteArray formData( );
+    QByteArray formData(bool& ok);
 
     DOMString enctype() const { return m_enctype; }
     void setEnctype( const DOMString & );
