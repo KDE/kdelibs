@@ -25,9 +25,9 @@
 #define HTML_OBJECTIMPL_H
 
 #include "html_elementimpl.h"
+#include "xml/dom_stringimpl.h"
 
 #include <qstringlist.h>
-//#include "misc/khtmllayout.h"
 
 class KHTMLView;
 
@@ -54,8 +54,6 @@ public:
 
     virtual void attach(KHTMLView *w);
     virtual void detach();
-
-//    virtual khtml::VAlign vAlign() const { return valign; }
 
 protected:
     DOMStringImpl *codeBase;
