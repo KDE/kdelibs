@@ -26,17 +26,10 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-#undef HAVE_SSL
 
 #include <sys/types.h>
 
 #include <stdio.h>
-
-#ifdef HAVE_SSL
-extern "C" {
-	#include <openssl/ssl.h>
-}
-#endif
 
 #include "kio/slavebase.h"
 
@@ -101,12 +94,6 @@ protected:
     class TcpSlaveBasePrivate;
     TcpSlaveBasePrivate *d;
 
-#ifdef HAVE_SSL
-    SSL_CTX *ssl_context;
-    SSL *ssl;
-    X509 *server_cert;
-    SSL_METHOD *meth;
-#endif
 };
 
 };

@@ -4,20 +4,12 @@
 #include <config.h>
 #endif
 
-#undef HAVE_SSL
-
 #include <sys/types.h>
 #include <sys/uio.h>
 
 #include <netinet/in.h>
 #include <netdb.h>
 #include <unistd.h>
-
-#ifdef HAVE_SSL
-extern "C" {
-	#include <openssl/ssl.h>
-};
-#endif
 
 #include "kio/tcpslavebase.h"
 #include "kextsock.h"
@@ -38,52 +30,17 @@ TCPSlaveBase::~TCPSlaveBase()
 
 ssize_t TCPSlaveBase::Write(const void *data, ssize_t len)
 {
-#ifdef HAVE_SSL
-	if (m_bIsSSL) {
-		return SSL_write(ssl, static_cast<const char *>(data), len);
-	} else
-#endif
-	{
-		return KSocks::self()->write(m_iSock, data, len);
-	}
+	return KSocks::self()->write(m_iSock, data, len);
 }
 
 ssize_t TCPSlaveBase::Read(void *data, ssize_t len)
 {
-#ifdef HAVE_SSL
-	if (m_bIsSSL) {
-		return SSL_read(ssl, static_cast<char *>(data), len);
-	} else
-#endif
-	{
-		return KSocks::self()->read(m_iSock, data, len);
-	}
+	return KSocks::self()->read(m_iSock, data, len);
 }
 
 ssize_t TCPSlaveBase::ReadLine(char *data, ssize_t len)
 {
 	memset(data, 0, len);
-#ifdef HAVE_SSL
-	if (m_bIsSSL) {
-		int c = 0, rc;
-		char x;
-		for (c = 0; c < len-1; c++) {
-			rc = SSL_read(ssl, &x, 1);
-			if (rc <= 0)
-				return 0;
-			data[c] = x;
-			if (x == '\n') {
-				data[c+1] = 0;
-				break;
-			}
-		}
-		if (c != len-1)
-			c++;
-		if (c <= 0)
-			return 0;
-		data[c]=0;
-	} else
-#endif
 	fgets(data, len, fp);
 	return strlen(data);
 }
@@ -156,34 +113,6 @@ bool TCPSlaveBase::ConnectToHost(const QCString &host, unsigned short int _port)
 		CloseDescriptor();
 		return false;
 	}
-#ifdef HAVE_SSL
-	if (m_bIsSSL) {
-		ssl = SSL_new(ssl_context);
-		if (!ssl) {
-			error( ERR_COULD_NOT_CONNECT, host);
-			CloseDescriptor();
-			return false;
-		}
-		SSL_set_fd(ssl, m_iSock);
-		if (SSL_connect(ssl) == -1) {
-			error( ERR_COULD_NOT_CONNECT, host);
-			CloseDescriptor();
-			SSL_shutdown(ssl);
-			SSL_free(ssl);
-      			return false;
-		}
-		server_cert = SSL_get_peer_certificate(ssl);
-		if (!server_cert) {
-			error( ERR_COULD_NOT_CONNECT, host );
-			CloseDescriptor();
-			SSL_shutdown(ssl);
-			SSL_free(ssl);
-			return false;
-		}
-		// we should verify the certificate here
-		X509_free(server_cert);
-	}
-#endif
 	m_iPort=port;
 	return true;
 }
@@ -204,34 +133,14 @@ void TCPSlaveBase::CloseDescriptor()
 
 bool TCPSlaveBase::InitializeSSL()
 {
-#ifdef HAVE_SSL
-  ssl = 0;
-  SSLeay_add_ssl_algorithms();
-  meth = SSLv23_client_method();
-  SSL_load_error_strings();
-  ssl_context = SSL_CTX_new(meth);
-  return true;
-#else
-  return true;
-#endif
+return false;
 }
 
 void TCPSlaveBase::CleanSSL()
 {
-#ifdef HAVE_SSL
-	SSL_shutdown(ssl);
-	SSL_free(ssl);
-	SSL_CTX_free(ssl_context);
-	ssl=0;
-#endif
 }
 
 bool TCPSlaveBase::AtEOF()
 {
-#ifdef HAVE_SSL
-	if (m_bIsSSL) {
-		return SSL_pending(ssl);
-	}
-#endif
 	return feof(fp);
 }
