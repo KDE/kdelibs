@@ -390,11 +390,11 @@ to some new functionality.
 ////////////////////////////////////////////////////////////////////////
 // * KPixmap::gradientFill
 
-Use
+Instead of old KPixmap::gradientFill, use:
 
 KPixmapEffect::gradient(KPixmap&, QColor, QColor, enum KPixmapEffect::GradientType, int)
 
-instead. Hence:
+ Hence:
 
 pix.gradientFill(ca, cb, direction, ncols)
 
@@ -416,9 +416,9 @@ KPixmapEffect:: [Vertical,
 Gradients. See kdelibs/kdetest/kgradienttest && kunbalancedgradienttest for
 information on how they actually look.
 
-The code in KPixmap::gradientFill() is replaced with warnings. It isn't
-possible to make this old method call the new functionalities in kdeui because
-we can't link-compile kdecore to kdeui.
+Look further in this document for other info about pixmap effect code 
+reorganization (essentially, all effects are now in libkdeui.so: gradient(), 
+unbalancedGradient(), hash(), desaturate(), pattern(), fade(), blend() etc.
 
 ////////////////////////////////////////////////////////////////////////
 // * KTabListBox
