@@ -20,8 +20,8 @@ INCLUDES = $(all_includes)
 
 noinst_LTLIBRARIES = libqk.la
 
-include_HEADERS = qaction.h qdom.h qxml.h qiconview.h 
-libqk_la_SOURCES = qaction.cpp qdom.cpp qxml.cpp moc_qiconview.cpp 
+include_HEADERS = qaction.h qdom.h qxml.h qiconview.h qcanvas.h
+libqk_la_SOURCES = qaction.cpp qdom.cpp qxml.cpp qcanvas.cpp moc_qiconview.cpp 
 
 METASOURCES = AUTO
 
