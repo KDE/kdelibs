@@ -1,19 +1,3 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR Free Software Foundation, Inc.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
-#, fuzzy
-msgid ""
-msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2002-02-26 15:17-0800\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: 8bit\n"
-
 #: sql/qsqlmanager_p.cpp:883
 msgid "Delete this record?"
 msgstr ""
@@ -32,8 +16,7 @@ msgstr ""
 msgid "Save edits?"
 msgstr ""
 
-#: dialogs/qfontdialog.cpp:300 dialogs/qwizard.cpp:183
-#: sql/qsqlmanager_p.cpp:892
+#: dialogs/qfontdialog.cpp:300 sql/qsqlmanager_p.cpp:892
 msgid "Cancel"
 msgstr ""
 
@@ -81,20 +64,24 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
+#: dialogs/qwizard.cpp:183
+msgid "&Cancel"
+msgstr ""
+
 #: dialogs/qwizard.cpp:184
-msgid "< Back"
+msgid "< &Back"
 msgstr ""
 
 #: dialogs/qwizard.cpp:185
-msgid "Next >"
+msgid "&Next >"
 msgstr ""
 
 #: dialogs/qwizard.cpp:186
-msgid "Finish"
+msgid "&Finish"
 msgstr ""
 
 #: dialogs/qwizard.cpp:187
-msgid "Help"
+msgid "&Help"
 msgstr ""
 
 #: dialogs/qdialog.cpp:428

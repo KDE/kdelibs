@@ -90,7 +90,7 @@ qtmessages:
 	cd $(top_srcdir)/../qt-copy/src ;\
 	find . -name "*.cpp" | grep -v moc_ > list ;\
 	for file in qfiledialog qcolordialog qprintdialog \
-		qurloperator qftp qhttp qlocal qwizard qtabdialog \
+		qurloperator qftp qhttp qlocal qtabdialog \
 		qprogressdialog qinputdialog qerrormessage; do \
 		grep -v $$file list > list.new && mv list.new list ;\
 	done ;\
