@@ -358,7 +358,7 @@ signals:
    * (@p mode: S_IFREG, S_IFDIR...)
    */
   void popupMenu( const QPoint &global, const KURL &url,
-                  const QString &mimeType, mode_t mode = -1 );
+                  const QString &mimeType, mode_t mode = (mode_t)-1 );
 
   /**
    * Emit this to make the browser show a standard popup menu
@@ -371,7 +371,7 @@ signals:
    */
   void popupMenu( KXMLGUIClient *client,
                   const QPoint &global, const KURL &url,
-                  const QString &mimeType, mode_t mode = -1 );
+                  const QString &mimeType, mode_t mode = (mode_t)-1 );
 
   void selectionInfo( const KFileItemList &items );
   void selectionInfo( const QString &text );
