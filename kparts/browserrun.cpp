@@ -21,6 +21,7 @@
 #include <kfiledialog.h>
 #include <kio/job.h>
 #include <klocale.h>
+#include <kprocess.h>
 #include <kstringhandler.h>
 #include <kuserprofile.h>
 #include <ktempfile.h>
@@ -241,7 +242,7 @@ void BrowserRun::save( const KURL & url, const QString & suggestedFilename )
     QString downloadManger=cfg->readEntry("DownloadManager");
     if (!downloadManger.isEmpty())
     {
-        // then find the download manager location 
+        // then find the download manager location
         kdDebug(1000) << "Using: "<<downloadManger <<" as Download Manager" <<endl;
         QString cmd=KStandardDirs::findExe(downloadManger);
         if (cmd.isEmpty())
@@ -254,7 +255,7 @@ void BrowserRun::save( const KURL & url, const QString & suggestedFilename )
         }
         else
         {
-	     cmd+=" " + url.url(); 
+	     cmd += " " + KProcess::quote(url.url());
             kdDebug(1000) << "Calling command  "<<cmd<<endl;
             KRun::runCommand(cmd);
         }
