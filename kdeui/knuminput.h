@@ -38,7 +38,7 @@ class KIntSpinBox;
 /* ------------------------------------------------------------------------ */
 
 /**
- * KIntNumInput combines a QSpinbox and optionally a QSlider
+ * KIntNumInput combines a @ref QSpinbox and optionally a @ref QSlider
  * with a label to make an easy to use control for setting some integer
  * parameter. This is especially nice for configuration dialogs,
  * which can have many such combinated controls.
@@ -49,9 +49,12 @@ class KIntSpinBox;
  * QSpinBox (the remaining portion is used by the slider). This makes
  * it very simple to have all the sliders in a column be the same size.
  *
- * It uses KIntValidator validator class. KIntNumInput enforces the
+ * It uses @ref KIntValidator validator class. KIntNumInput enforces the
  * value to be in the given range, and can display it in any base
  * between 2 and 36.
+ * 
+ * @short Easy integer parameter entry, with spin and slider.
+ * @version $Id$
  */
 
 class KIntNumInput : public QWidget

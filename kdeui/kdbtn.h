@@ -29,7 +29,8 @@ class QWidget;
 /**
 * KDirectionButton is a helper class for KTabBar and KWizard. It provides the buttons
 * used to scroll the tab bar and to change pages in KWizard.
-* @short KDirectionButton
+* @short Direction buttons for page flipping in @ref KWizard.
+* @internal
 * @author Thomas Tanghus <tanghus@earthling.net>
 * @version 0.1
 */

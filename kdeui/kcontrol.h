@@ -32,9 +32,8 @@
 class KControlApplication;
 
 /** 
- * KControlDialog is a QTabDialog that is internally used by KControl
- * Applications.
- *
+ *  Tab dialog used internally by control-center apps.
+ *  @internal
  *  @see KConfigWidget, KControlApplication 
  */
 class KControlDialog : public QTabDialog

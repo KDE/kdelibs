@@ -26,6 +26,7 @@ class QHBoxLayout;
  * authChanged(bool) to setEnabled(bool) for a widget to turn it on and
  * off depending on the status of whatever it is you are monitoring.
  *
+ * @short ABC for authorization icon widgets
  * @see KRootPermsIcon, KWritePermsIcon
  * @author Preston Brown <pbrown@kde.org>
  */

@@ -29,7 +29,6 @@
 #include <qlineedit.h>
 #include <qpixmap.h>
 
-/// 2D value selector.
 /** 2D value selector.
   The contents of the selector are drawn by derived class.
   */
@@ -78,7 +77,6 @@ protected:
   QPixmap store;
 };
 
-/// 1D value selector
 /** 1D value selector with contents drawn by derived class.
   See KColorDialog for example.
  */
@@ -128,6 +126,9 @@ protected:
 
 //-----------------------------------------------------------------------------
 
+/**
+ Two-colour gradient selector widget.
+*/
 class KGradientSelector : public KSelector
 {
   Q_OBJECT

@@ -827,6 +827,10 @@ class KDialogBase : public KDialog
 
 
 
+/**
+* Used internally by @ref KDialog.
+* @internal
+*/
 class KDialogBaseTile : public QObject
 {
   Q_OBJECT

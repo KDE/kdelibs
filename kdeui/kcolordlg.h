@@ -133,7 +133,7 @@ protected:
 };
 
 /**
- * 
+ * Displays and signals a single colour selection.
  */
 class KColorPatch : public QFrame
 {
@@ -161,7 +161,7 @@ private:
 };
 
 /** 
- * KDE Color Selection dialog
+ * Color selection dialog
  *
 Features:
 

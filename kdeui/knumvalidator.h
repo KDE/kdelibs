@@ -26,11 +26,11 @@
 #include <qvalidator.h>
 
 /**
-  KIntValidator - see QValidator for more details.
-  Extend the QValidator class to properly validate integer data.
-  This can be used by QLineEdit or subclass to provide validated text entry.
-  Can be provided with a base value (default is 10), to allow the proper entry
-  of hexadecimal, octal, or any other base numeric data.
+  @ref QValidator for integers.
+
+  This can be used by @ref QLineEdit or subclass to provide validated
+  text entry.  Can be provided with a base value (default is 10), to allow
+  the proper entry of hexadecimal, octal, or any other base numeric data.
 
   @author Glen Parker <glenebob@nwlink.com>
   @version 0.0.1
@@ -87,9 +87,10 @@ class KIntValidator : public QValidator {
 };
 
 /**
-  KFloatValidator - see QValidator for more details.
+  @ref QValidator for floating point entry.
   Extends the QValidator class to properly validate double numeric data.
-  This can be used by QLineEdit or subclass to provide validated text entry.
+  This can be used by @ref QLineEdit or subclass to provide validated
+  text entry.
 
   @author Glen Parker <glenebob@nwlink.com>
   @version 0.0.1

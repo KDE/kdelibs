@@ -56,13 +56,20 @@ class QToolButton;
 class KDateValidator;
 class KDateTable;
 
-/** KDatePicker is a widget for selecting dates. Differently from the
+/** Widget for selecting dates. 
+
+    Different from the
     previous versions, it now emits two types of signals, either
     dateSelected() or dateEntered() (see documentation for both
     signals). 
+
     A line edit has been added in the newer versions to allow the user 
     to select a date directly by entering numbers like 19990101
-    or 990101. */
+    or 990101. 
+
+    @version $Id$
+    @author Tim Gilman, Mirko Sucker
+*/
 class KDatePicker: public QFrame {
   Q_OBJECT
 public:

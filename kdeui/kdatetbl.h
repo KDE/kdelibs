@@ -41,8 +41,12 @@
 #include <qdatetime.h>
 #include <qsize.h>
 
-/** This class defines a table containing all month names. 
-    It is used to pick a month directly. */
+/**
+* A table containing month names. It is used to pick a month directly.
+* @internal
+* @version $Id$
+* @author Tim Gilman, Mirko Sucker
+*/
 class KDateInternalMonthPicker : public QTableView
 {
   Q_OBJECT
@@ -74,7 +78,11 @@ protected:
   void mousePressEvent(QMouseEvent *e);
 };
 
-/** This class implements a widget to select a year by entering it. */
+/** Year selection widget. 
+* @internal
+* @version $Id$
+* @author Tim Gilman, Mirko Sucker
+*/
 class KDateInternalYearSelector : public QLineEdit
 {
   Q_OBJECT
@@ -93,8 +101,11 @@ public:
   void setYear(int year);
 };
 
-/** This class implements a frame that behaves like a popup menu
-    and shows the main widget in its client rectangle. */
+/**
+ Frame with popup menu behaviour.
+ @author Tim Gilman, Mirko Sucker
+ @version $Id$
+*/
 class QPopupFrame : public QFrame
 {
   Q_OBJECT
@@ -127,8 +138,9 @@ public:
   int exec(int x, int y);
 };
 
-/** KDateValidator validates the values entered into the line 
-    edit. */
+/**
+* Validates user-entered dates.
+*/
 class KDateValidator : public QValidator
 {
 public:
@@ -137,6 +149,12 @@ public:
   State date(const QString&, QDate&) const;
 };
 
+/**
+ Date selection table.
+ @internal
+ @version $Id$
+ @author Tim Gilman, Mirko Sucker
+*/
 class KDateTable : public QTableView
 {
   Q_OBJECT
