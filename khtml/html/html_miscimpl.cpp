@@ -126,6 +126,10 @@ unsigned long HTMLCollectionImpl::calcLength(NodeImpl *current) const
             case DOC_ALL:      // "all" elements
                 len++;
                 break;
+            case NODE_CHILDREN: // first-level children
+                len++;
+                deep = false;
+                break;
             default:
                 kdDebug( 6030 ) << "Error in HTMLCollection, wrong tagId!" << endl;
             }
@@ -207,6 +211,10 @@ NodeImpl *HTMLCollectionImpl::getItem(NodeImpl *current, int index, int &len) co
                 break;
             case DOC_ALL:
                 len++;
+                break;
+            case NODE_CHILDREN:
+                len++;
+                deep = false;
                 break;
             default:
                 kdDebug( 6030 ) << "Error in HTMLCollection, wrong tagId!" << endl;
@@ -329,6 +337,10 @@ NodeImpl *HTMLCollectionImpl::getNamedItem( NodeImpl *current, int attr_id,
                 break;
             case DOC_ALL:
                 check = true;
+                break;
+            case NODE_CHILDREN:
+                check = true;
+                deep = false;
                 break;
             default:
                 kdDebug( 6030 ) << "Error in HTMLCollection, wrong tagId!" << endl;

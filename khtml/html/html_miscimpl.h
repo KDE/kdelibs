@@ -64,7 +64,8 @@ public:
         SELECT_OPTIONS,
         // from HTMLMap
         MAP_AREAS,
-        DOC_ALL        // "all" elements
+        DOC_ALL,        // "all" elements (IE)
+        NODE_CHILDREN   // first-level children (IE)
     };
 
     HTMLCollectionImpl(NodeImpl *_base, int _tagId);
