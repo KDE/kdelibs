@@ -4,5 +4,6 @@ commondir = $(kde_htmldir)/en/common
 common_DATA = caution.png home.png important.png logotp3.png next.png \
 	note.png prev.png tip.png toc-blank.png toc-minus.png \
 	toc-plus.png up.png warning.png \
-	gpl-licence.html gpl-notice.html
-
+	gpl-licence.html gpl-licence gpl-notice gpl-notice.docbook \
+	lgpl-licence.html lgpl-licence lgpl-notice lgpl-notice.docbook \
+	kde-common.css kde-default.css kde-localised.css.template
