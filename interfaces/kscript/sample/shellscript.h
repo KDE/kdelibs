@@ -18,7 +18,8 @@
 */
 #ifndef __shellscript_h__
 #define __shellscript_h__
-#include <scriptinterface.h>
+
+#include <kscript/scriptinterface.h>
 #include <kprocess.h>
 
 class ShellScript : public KScriptInterface

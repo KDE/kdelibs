@@ -1,4 +1,4 @@
-INCLUDES = -I$(top_srcdir)/kio -I$(top_srcdir)/interfaces $(all_includes)
+INCLUDES = -I$(top_srcdir)/kio -I$(top_srcdir)/interfaces -I$(srcdir) $(all_includes)
 
 lib_LTLIBRARIES = libshellscript.la
 
