@@ -198,7 +198,7 @@ QSize KURLBarItem::sizeHint() const
         wmin = QMAX( wmin, lb->viewport()->sizeHint().width() );
     else
         hmin = QMAX( hmin, lb->viewport()->sizeHint().height() );
-    
+
     return QSize( wmin, hmin );
 }
 
@@ -231,11 +231,11 @@ KURLBar::KURLBar( bool useGlobalItems, QWidget *parent, const char *name, WFlags
       m_iconSize( KIcon::SizeMedium )
 {
     setListBox( 0L );
-    setSizePolicy( QSizePolicy( isVertical() ? 
-                                QSizePolicy::Maximum : 
+    setSizePolicy( QSizePolicy( isVertical() ?
+                                QSizePolicy::Maximum :
                                 QSizePolicy::Preferred,
-                                isVertical() ? 
-                                QSizePolicy::Preferred : 
+                                isVertical() ?
+                                QSizePolicy::Preferred :
                                 QSizePolicy::Maximum ));
 }
 
@@ -256,11 +256,11 @@ KURLBarItem * KURLBar::insertItem(const KURL& url, const QString& description,
 void KURLBar::setOrientation( Qt::Orientation orient )
 {
     m_listBox->setOrientation( orient );
-    setSizePolicy( QSizePolicy( isVertical() ? 
-                                QSizePolicy::Maximum : 
+    setSizePolicy( QSizePolicy( isVertical() ?
+                                QSizePolicy::Maximum :
                                 QSizePolicy::Preferred,
-                                isVertical() ? 
-                                QSizePolicy::Preferred : 
+                                isVertical() ?
+                                QSizePolicy::Preferred :
                                 QSizePolicy::Maximum ));
 }
 
@@ -342,11 +342,11 @@ QSize KURLBar::sizeHint() const
     bool vertical = isVertical();
 
     for ( item = static_cast<KURLBarItem*>( m_listBox->firstItem() );
-          item; 
+          item;
           item = static_cast<KURLBarItem*>( item->next() ) ) {
 
         QSize sh = item->sizeHint();
-        
+
         if ( vertical ) {
             w = QMAX( w, sh.width() );
             h += sh.height();
@@ -378,18 +378,20 @@ QSize KURLBar::minimumSizeHint() const
 
 void KURLBar::slotSelected( int button, QListBoxItem *item )
 {
-    if (button != Qt::LeftButton) 
+    if ( button != Qt::LeftButton )
         return;
 
-    slotSelected(item);
+    slotSelected( item );
 }
 
 void KURLBar::slotSelected( QListBoxItem *item )
 {
-    if ( item && item != m_activeItem ) {
-        KURLBarItem *it = static_cast<KURLBarItem*>( item );
-        m_activeItem = it;
-        emit activated( it->url() );
+    if ( item && item != m_activeItem )
+        m_activeItem = static_cast<KURLBarItem*>( item );
+    
+    if ( m_activeItem ) {
+        m_listBox->setCurrentItem( m_activeItem );
+        emit activated( m_activeItem->url() );
     }
 }
 
@@ -404,7 +406,9 @@ void KURLBar::setCurrentItem( const KURL& url )
     QListBoxItem *item = m_listBox->firstItem();
     while ( item ) {
         if ( static_cast<KURLBarItem*>( item )->url().url(-1) == u ) {
+            m_activeItem = static_cast<KURLBarItem*>( item );
             m_listBox->setCurrentItem( item );
+            m_listBox->setSelected( item, true );
             hasURL = true;
             break;
         }
@@ -412,8 +416,8 @@ void KURLBar::setCurrentItem( const KURL& url )
     }
 
     if ( !hasURL ) {
-        m_listBox->clearSelection();
         m_activeItem = 0L;
+        m_listBox->clearSelection();
     }
 }
 

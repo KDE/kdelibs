@@ -393,7 +393,7 @@ protected slots:
      * signal.
      */
     virtual void slotSelected( QListBoxItem * );
-    
+
     /**
      * Called when a url was dropped onto the bar to show a
      * @ref KURLBarItemDialog.
@@ -459,7 +459,7 @@ public:
     Qt::Orientation orientation() const { return m_orientation; }
 
     bool isVertical() const { return m_orientation == Qt::Vertical; }
-    
+
 signals:
     /**
      * Emitted when a drop-event happened.
