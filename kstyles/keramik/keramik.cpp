@@ -366,7 +366,7 @@ void KeramikStyle::unPolish(QWidget* widget)
 
 void KeramikStyle::polish( QPalette& palette )
 {
-//	Keramik::PixmapLoader::the().setColor( red);//palette.color( QPalette::Normal, QColorGroup::Button ) );
+//	Keramik::PixmapLoader::the().setColor( palette.color( QPalette::Normal, QColorGroup::Button ) );
 }
 
 // This function draws primitive elements as well as their masks.
@@ -1365,37 +1365,19 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 				drawPrimitive( PE_ScrollBarSubLine, p, subline, cg,
 				               flags | ( ( active & SC_ScrollBarSubLine ) ? Style_Down : 0 ) );
 
-			QRect sliderClip = slider;
-			if ( horizontal )
-				sliderClip.setWidth( addpage.right() - slider.x() + 1 );
-			else sliderClip.setHeight( addpage.bottom() - slider.y() + 1 );
-
 			QRegion clip;
 			if ( controls & SC_ScrollBarSubPage ) clip |= subpage;
 			if ( controls & SC_ScrollBarAddPage ) clip |= addpage;
-			if ( controls & SC_ScrollBarSlider )
-			{
-				if ( horizontal )
-				{
-					int width = loader.pixmap( "scrollbar-hbar-slider1" ).width();
-					clip |= QRect( slider.x(), slider.y(), width, slider.height() ) & sliderClip;
-					width = loader.pixmap( "scrollbar-hbar-slider3" ).width();
-					clip |= QRect( slider.right() - width, slider.y(), width, slider.height() ) & sliderClip;
-				}
-				else
-				{
-					int height = loader.pixmap( "scrollbar-hbar-slider1" ).height();
-					clip |= QRect( slider.x(), slider.y(), slider.width(), height ) & sliderClip;
-					height = loader.pixmap( "scrollbar-hbar-slider3" ).height();
-					clip |= QRect( slider.x(), slider.bottom() - height, slider.width(), height ) & sliderClip;
-				}
-			}
+
 			p->setClipRegion( clip );
 			Keramik::ScrollBarPainter( "groove", 2, horizontal ).draw( p, slider | subpage | addpage );
 
 			if ( controls & SC_ScrollBarSlider )
 			{
-				p->setClipRect( sliderClip );
+				if ( horizontal )
+					p->setClipRect( slider.x(), slider.y(), addpage.right() - slider.x() + 1, slider.height() );
+				else
+					p->setClipRect( slider.x(), slider.y(), slider.width(), addpage.bottom() - slider.y() + 1 );
 				drawPrimitive( PE_ScrollBarSlider, p, slider, cg, flags );
 			}
 			p->setClipping( false );
