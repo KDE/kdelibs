@@ -223,7 +223,19 @@ void KLineEdit::makeCompletion( const QString& text )
 void KLineEdit::keyPressEvent( QKeyEvent *e )
 {
     KKey key( e );
-    if ( KStdAccel::deleteWordBack().contains( key ) )
+    int keyQt = key.keyCodeQt();
+
+    if ( KStdAccel::copy().contains( key ) )
+        copy();
+    else if ( KStdAccel::paste().contains( key ) )
+        paste();
+    else if ( KStdAccel::cut().contains( key ) )
+        cut();
+    else if ( KStdAccel::undo().contains( key ) )
+        undo();
+    else if ( KStdAccel::redo().contains( key ) )
+        redo();
+    else if ( KStdAccel::deleteWordBack().contains( key ) )
     {
         cursorWordBackward(TRUE);
         if ( hasSelectedText() )
@@ -264,7 +276,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                 QLineEdit::keyPressEvent ( e );
                 int cPosition=cursorPosition();
                 validateAndSet(old_txt, cPosition, cPosition, old_txt.length());
-	
+
                 d->disableRestoreSelection=false;
                 return;
             }
@@ -286,7 +298,6 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
 
 	}
 
-
         if ( (mode == KGlobalSettings::CompletionAuto ||
               mode == KGlobalSettings::CompletionMan) && noModifier )
         {
@@ -295,7 +306,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
             {
                 bool hasUserSelection=d->userSelection;
                 bool hadSelection=hasSelectedText();
-	
+
                 QLineEdit::keyPressEvent ( e );
                 QString txt = text();
                 int len = txt.length();
@@ -313,7 +324,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                         if ( !d->backspacePerformsCompletion || !len )
                             d->autoSuggest = false;
                     }
-		
+
 		    if (e->key() == Key_Delete )
                         d->autoSuggest=false;
 
@@ -342,10 +353,10 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
             uint selectedLength=selectedText().length();
 
             QLineEdit::keyPressEvent ( e );
-		
+
             if (( selectedLength != selectedText().length() ) && !hasUserSelection )
                 slotRestoreSelectionColors(); // and set userSelection to true
-	
+
             QString txt = text();
             int len = txt.length();
             QString keycode = e->text();
