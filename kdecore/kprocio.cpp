@@ -169,7 +169,6 @@ void KProcIO::sent(KProcess *)
 
   if (outbuffer.count()==0)
   {
-     kdDebug(174) << "Empty" << endl;
      writeready=true;
   }
   else
@@ -177,12 +176,10 @@ void KProcIO::sent(KProcess *)
      QByteArray *b = outbuffer.first();
      if (!b)
      {
-        kdDebug(174) << "Closing" << endl;
         closeStdin();
      }
      else
      {
-        kdDebug(174) << "Sending [" << b->size() << "]" << endl;
         KProcess::writeStdin(b->data(), b->size());
      }
   }
