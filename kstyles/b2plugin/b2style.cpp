@@ -609,6 +609,7 @@ void B2Style::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
     p->drawLine(x2, y+2, x2, y2-3);
 
     p->drawPoint(x2-1, y2-2);
+    p->setPen(g.text());
     if(sunken)
         p->fillRect(x+2, y+3, w-4, h-6, g.brush(QColorGroup::Midlight));
     
