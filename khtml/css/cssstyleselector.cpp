@@ -231,7 +231,7 @@ void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s)
 
 	// Collect only quirks-mode rules.
 	defaultQuirksStyle = new CSSStyleSelectorList();
-	defaultQuirksStyle->append( defaultSheet, "screen" );
+	defaultQuirksStyle->append( quirksSheet, "screen" );
     }
 
     //kdDebug() << "CSSStyleSelector: default style has " << defaultStyle->count() << " elements"<< endl;
