@@ -58,7 +58,7 @@ class ResourceManager : private ManagerImplListener
   public:
     class Iterator
     {
-        friend ResourceManager;
+        friend class ResourceManager;
       public:
         Iterator() {};
         Iterator( const Iterator &it ) { mIt = it.mIt; }
