@@ -40,6 +40,10 @@
 #include "kfileiconview.h"
 #include "config-kfile.h"
 
+#define DEFAULT_PREVIEW_SIZE 60
+#define DEFAULT_SHOW_PREVIEWS false
+#define DEFAULT_VIEW_MODE "SmallColumns"
+
 KFileIconViewItem::~KFileIconViewItem()
 {
     fileInfo()->removeExtraData( iconView() );
@@ -185,10 +189,10 @@ void KFileIconView::readConfig( KConfig *kc, const QString& group )
     QString gr = group.isEmpty() ? QString("KFileIconView") : group;
     KConfigGroupSaver cs( kc, gr );
     QString small = QString::fromLatin1("SmallColumns");
-    d->previewIconSize = kc->readNumEntry( "Preview Size", 60 );
-    d->previews->setChecked( kc->readBoolEntry( "ShowPreviews", false ) );
+    d->previewIconSize = kc->readNumEntry( "Preview Size", DEFAULT_PREVIEW_SIZE );
+    d->previews->setChecked( kc->readBoolEntry( "ShowPreviews", DEFAULT_SHOW_PREVIEWS ) );
 
-    if ( kc->readEntry("ViewMode", small ) == small ) {
+    if ( kc->readEntry("ViewMode", DEFAULT_VIEW_MODE ) == small ) {
 	d->smallColumns->setChecked( true );
 	slotSmallColumns();
     }
@@ -205,11 +209,26 @@ void KFileIconView::writeConfig( KConfig *kc, const QString& group )
 {
     QString gr = group.isEmpty() ? QString("KFileIconView") : group;
     KConfigGroupSaver cs( kc, gr );
-    kc->writeEntry( "ViewMode", d->smallColumns->isChecked() ?
-		    QString::fromLatin1("SmallColumns") :
-		    QString::fromLatin1("LargeRows") );
-    kc->writeEntry( "Preview Size", d->previewIconSize );
-    kc->writeEntry( "ShowPreviews", d->previews->isChecked() );
+
+    QString viewMode =  d->smallColumns->isChecked() ?
+        QString::fromLatin1("SmallColumns") :
+        QString::fromLatin1("LargeRows");
+    if(!kc->hasDefault( "ViewMode" ) && viewMode == DEFAULT_VIEW_MODE )
+        kc->revertToDefault( "ViewMode" );
+    else
+        kc->writeEntry( "ViewMode", viewMode );
+
+    int previewsIconSize = d->previewIconSize;
+    if(!kc->hasDefault( "Preview Size" ) && previewsIconSize == DEFAULT_PREVIEW_SIZE )
+        kc->revertToDefault( "Preview Size" );
+    else
+        kc->writeEntry( "Preview Size", previewsIconSize );
+    
+    bool showPreviews = d->previews->isChecked();
+    if(!kc->hasDefault( "ShowPreviews" ) && showPreviews == DEFAULT_SHOW_PREVIEWS )
+        kc->revertToDefault( "ShowPreviews" );
+    else
+        kc->writeEntry( "ShowPreviews", showPreviews );
 }
 
 void KFileIconView::removeToolTip()
