@@ -36,7 +36,7 @@ kbuildsycoca_la_SOURCES = kbuildsycoca.cpp kbuildservicetypefactory.cpp \
 				kbuildprotocolinfofactory.cpp \
 				kctimefactory.cpp
 
-bin_PROGRAMS = kded kbuildsycoca
+bin_PROGRAMS = kded kbuildsycoca kdontchangethehostname
 
 kded_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 kded_LDADD = $(LIB_KSYCOCA) kded.la
@@ -45,6 +45,10 @@ kded_SOURCES = dummy.cpp
 kbuildsycoca_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 kbuildsycoca_LDADD = $(LIB_KSYCOCA) kbuildsycoca.la
 kbuildsycoca_SOURCES = dummy.cpp
+
+kdontchangethehostname_LDFLAGS = $(all_libraries) $(KDE_RPATH)
+kdontchangethehostname_LDADD =  $(LIB_KDECORE)
+kdontchangethehostname_SOURCES = khostname.cpp
 
 METASOURCES = AUTO
 
