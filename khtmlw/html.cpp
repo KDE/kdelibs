@@ -4798,7 +4798,6 @@ const char *KHTMLWidget::parseInput( const char *attr )
 	if ( strncasecmp( token, "type=", 5 ) == 0 )
 	{
 	    p = token + 5;
-	    if ( *p == '"' ) p++;
 	    if ( strncasecmp( p, "checkbox", 8 ) == 0 )
 		type = CheckBox;
 	    else if ( strncasecmp( p, "password", 8 ) == 0 )
@@ -4820,19 +4819,11 @@ const char *KHTMLWidget::parseInput( const char *attr )
 	}
 	else if ( strncasecmp( token, "name=", 5 ) == 0 )
 	{
-	    p = token + 5;
-	    if ( *p == '"' ) p++;
-	    name = p;
-	    if ( name[ name.length() - 1 ] == '"' )
-		name.truncate( name.length() - 1 );
+	    name = token + 5;
 	}
 	else if ( strncasecmp( token, "value=", 6 ) == 0 )
 	{
-	    p = token + 6;
-	    if ( *p == '"' ) p++;
-	    value = p;
-	    if ( value[ value.length() - 1 ] == '"' )
-		value.truncate( value.length() - 1 );
+	    value = token + 6;
 	}
 	else if ( strncasecmp( token, "size=", 5 ) == 0 )
 	{
@@ -4853,11 +4844,7 @@ const char *KHTMLWidget::parseInput( const char *attr )
 	else if ( strncasecmp( token, "onClick=", 8 ) == 0 )
 	{
 	    QString code;
-	    p = token + 8;
-	    if ( *p == '"' ) p++;
-	    code = p;
-	    if ( code[ code.length() - 1 ] == '"' )
-		code.truncate( value.length() - 1 );
+	    code = token + 8;
 	    if ( handlers == 0 )
 	    {
 		handlers = new QList<JSEventHandler>;
