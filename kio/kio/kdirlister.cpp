@@ -631,11 +631,15 @@ void KDirListerCache::FilesRemoved( const KURL::List &fileList )
           kdl->emitDeleteItem( fileitem );
     }
 
-    // in case of a dir, check if we have any known children, there's much to do in that case
-    // (stopping jobs, removing dirs from cache etc.)
-    deleteDir( *it );
+    // If we found a fileitem, we can test if it's a dir. If not, we'll go to deleteDir just in case.
+    if ( !fileitem || fileitem->isDir() )
+    {
+      // in case of a dir, check if we have any known children, there's much to do in that case
+      // (stopping jobs, removing dirs from cache etc.)
+      deleteDir( *it );
+    }
 
-    // now remove the (dir)item itself
+    // now remove the item itself
     delete fileitem;
   }
 }
@@ -1281,7 +1285,8 @@ void KDirListerCache::deleteUnmarkedItems( QPtrList<KDirLister> *listers, KFileI
       for ( KDirLister *kdl = listers->first(); kdl; kdl = listers->next() )
         kdl->emitDeleteItem( item );
 
-      deleteDir( item->url() );
+      if ( item->isDir() )
+        deleteDir( item->url() );
 
       // finally actually delete the item
       lstItems->take();
