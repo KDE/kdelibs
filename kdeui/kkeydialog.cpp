@@ -304,12 +304,18 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
   clearSearch->setTextLabel(i18n("Clear Search"), true);
   clearSearch->setIconSet(SmallIconSet("locationbar_erase"));
   searchLayout->addWidget(clearSearch);
-  searchLayout->addWidget(new QLabel(i18n("&Search:"), this));
+  QLabel* slbl = new QLabel(i18n("&Search:"), this);
+  searchLayout->addWidget(slbl);
   KListViewSearchLine* listViewSearch = new KListViewSearchLine(this);
   searchLayout->addWidget(listViewSearch);
-
+  slbl->setBuddy(listViewSearch);
   connect(clearSearch, SIGNAL(pressed()), listViewSearch, SLOT(clear()));
 
+  QString wtstr = i18n("Search interactively for shortcut names (e.g. Copy) "
+                       "or combination of keys (e.g. Ctrl+C) by typing them here.");
+
+  QWhatsThis::add(slbl, wtstr);
+  QWhatsThis::add(listViewSearch, wtstr);
 
   //
   // CREATE SPLIT LIST BOX
@@ -326,7 +332,7 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
 
   stackLayout->addMultiCellWidget( d->pList, 1, 1, 0, 1 );
 
-  QString wtstr = i18n("Here you can see a list of key bindings, "
+  wtstr = i18n("Here you can see a list of key bindings, "
                        "i.e. associations between actions (e.g. 'Copy') "
                        "shown in the left column and keys or combination "
                        "of keys (e.g. Ctrl+V) shown in the right column.");
