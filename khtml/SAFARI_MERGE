@@ -108,8 +108,6 @@ done so far:
 
 - renamed print methods to paint
 
-- added render_layer, but don't use up to now.
-
 changes that need to be merged:
 
 - bidi.h/cpp: lot's of changes to white space handling and others.
