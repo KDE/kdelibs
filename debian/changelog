@@ -16,6 +16,10 @@ kdelibs (4:2.2.2-1) unstable; urgency=low
   * Update build-depends
   * Fix overwrite issues (Closes: #118802)
   * Updates to take care of changes in Qt 2.3.2 (Closes: #118868)
+  * Do away with /etc/kderc and provide a link from /etc/kde2 to
+    /usr/share/kde2/config.  Hardcode the config dir to /usr/share/kde2/config
+    instead of /usr/share/config.  Can't hardcode it to /etc/kde2 since 
+    the /usr part of it all is pulled from the prefix.  This will work tho
 
  -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 09 Nov 2001 10:39:00 -0700
 
