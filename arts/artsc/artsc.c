@@ -96,6 +96,9 @@ int arts_init()
 	arts_backend_ref();
 	if(backend.available) rc = backend.init();
 
+	/* init failed: the user may not call other arts_xxx functions now */
+	if(rc < 0) arts_backend_release();
+
 	return rc;
 }
 

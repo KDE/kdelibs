@@ -174,7 +174,7 @@ protected:
 	Dispatcher dispatcher;
 	SimpleSoundServer server;
 
-	ArtsCApi() : server(Reference("global:Arts_SimpleSoundServer"))
+	ArtsCApi() : refcnt(1), server(Reference("global:Arts_SimpleSoundServer"))
 	{
 		//
 	}
@@ -255,7 +255,12 @@ extern "C" int arts_backend_init()
 {
 	arts_backend_debug("arts_backend_init");
 	ArtsCApi::ref();
-	return ArtsCApi::the()->init();
+
+	// if init fails, don't expect free, and don't expect that the user
+	// continues using other API functions
+	int rc = ArtsCApi::the()->init();
+	if(rc < 0) ArtsCApi::release();
+	return rc;
 }
 
 extern "C" void arts_backend_free()
