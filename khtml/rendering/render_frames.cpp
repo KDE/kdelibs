@@ -468,7 +468,7 @@ void RenderPartObject::close()
 {
   QString url;
   QString serviceType;
-  
+
   QStringList params;
 
   if(m_obj->id() == ID_OBJECT) {
@@ -518,7 +518,7 @@ void RenderPartObject::close()
       static_cast<KHTMLView *>(m_view)->part()->requestObject( this, url, serviceType, params );
   } else {
       assert(m_obj->id() == ID_IFRAME);
-      HTMLIFrameElementImpl *o = static_cast<HTMLIFrameElementImpl *>(o);
+      HTMLIFrameElementImpl *o = static_cast<HTMLIFrameElementImpl *>(m_obj);
       url = o->url;
       if( url.isEmpty()) return;
       static_cast<KHTMLView *>(m_view)->part()->requestFrame( this, url, o->name );
