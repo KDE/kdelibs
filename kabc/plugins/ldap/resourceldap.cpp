@@ -94,13 +94,13 @@ bool ResourceLDAP::open()
 
     mLdap = ldap_init( mHost.latin1(), mPort.toInt() );
     if ( !mLdap ) {
-	addressBook()->error( i18n( "Can't connect to server '%1' on port '%2'" ).arg( mHost ).arg( mPort ) );
+	addressBook()->error( i18n( "Unable to connect to server '%1' on port '%2'" ).arg( mHost ).arg( mPort ) );
 	return false;
     }
 
     if ( !mUser.isEmpty() ) {
 	if ( ldap_simple_bind_s( mLdap, mUser.latin1(), mPassword.latin1() ) != LDAP_SUCCESS ) {
-	    addressBook()->error( i18n( "Can't bind to server '%1'" ).arg( mHost ) );
+	    addressBook()->error( i18n( "Unable to bind to server '%1'" ).arg( mHost ) );
 	    return false;
 	}
 	kdDebug(5700) << "ResourceLDAP: bind to server successfully" << endl;
@@ -147,7 +147,7 @@ bool ResourceLDAP::load()
 
     if ( ldap_search_s( mLdap, mDn.latin1(), LDAP_SCOPE_SUBTREE, QString( "(%1)" ).arg( mFilter ).latin1(),
 	    (char **)LdapSearchAttr, 0, &res ) != LDAP_SUCCESS ) {
-        addressBook()->error( i18n( "Can't search on server '%1'" ).arg( mHost ) );
+        addressBook()->error( i18n( "Unable to search on server '%1'" ).arg( mHost ) );
 	return false;
     }
 
@@ -214,7 +214,7 @@ bool ResourceLDAP::save( Ticket * )
 
 	    int retval;
 	    if ( (retval = ldap_add_s( mLdap, dn.latin1(), mods )) != LDAP_SUCCESS )
-                addressBook()->error( i18n( "Can't modify '%1' on server '%2'" ).arg( (*it).uid() ).arg( mHost ) );
+                addressBook()->error( i18n( "Unable to modify '%1' on server '%2'" ).arg( (*it).uid() ).arg( mHost ) );
 
 	    ldap_mods_free( mods, 1 );
 
@@ -243,7 +243,7 @@ void ResourceLDAP::removeAddressee( const Addressee &addr )
 	char *dn = ldap_get_dn( mLdap, msg );
 	kdDebug(5700) << "found " << dn << endl;
 	if ( ldap_delete_s( mLdap, dn ) != LDAP_SUCCESS )
-            addressBook()->error( i18n( "Can't delete '%1' on server '%2'" ).arg( dn ).arg( mHost ) );
+            addressBook()->error( i18n( "Unable to delete '%1' on server '%2'" ).arg( dn ).arg( mHost ) );
 	ldap_memfree( dn );
     }
 
