@@ -28,10 +28,10 @@ check_PROGRAMS = kconfigtest klocaletest kprocesstest ksimpleconfigtest \
 	cplusplustest kiconloadertest kresolvertest kmdcodectest knotifytest \
 	ksortablevaluelisttest krfcdatetest testqtargs kprociotest \
 	kcharsetstest kcalendartest kmacroexpandertest kshelltest \
-	kxerrorhandlertest startserviceby
+	kxerrorhandlertest startserviceby kstdacceltest
 
-check: kurltest
-	./kurltest
+check: kurltest kstdacceltest
+	./kurltest && ./kstdacceltest
 
 noinst_HEADERS = kconfigtest.h klocaletest.h kprocesstest.h KIDLTest.h \
 		kipctest.h kprociotest.h
@@ -76,3 +76,4 @@ kmacroexpandertest_SOURCES = kmacroexpandertest.cpp
 kshelltest_SOURCES = kshelltest.cpp
 kxerrorhandlertest_SOURCES = kxerrorhandlertest.cpp
 startserviceby_SOURCES = startserviceby.cpp
+kstdacceltest_SOURCES = kstdacceltest.cpp

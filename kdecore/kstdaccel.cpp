@@ -69,6 +69,8 @@ static KStdAccelInfo g_infoStdAccel[] =
 	{AccelNone,            "Group:Navigation", I18N_NOOP("Navigation"), 0, 0, 0, 0, KShortcut(), false },
 	{ Home,                I18N_NOOP("Home"), 0,     Qt::CTRL+Qt::Key_Home, 0, 0, 0, KShortcut(), false },
 	{ End,                 I18N_NOOP("End"), 0,      Qt::CTRL+Qt::Key_End, 0, 0, 0, KShortcut(), false },
+	{ BeginningOfLine,     "BeginningOfLine", I18N_NOOP("Beginning of Line"), Qt::Key_Home, 0, 0, 0, KShortcut(), false},
+	{ EndOfLine,           "EndOfLine", I18N_NOOP("End of Line"), Qt::Key_End, 0, 0, 0, KShortcut(), false},
 	{ Prior,               I18N_NOOP("Prior"), 0,    Qt::Key_Prior, 0, 0, 0, KShortcut(), false },
 	{ Next,                I18N_NOOP("Next"), 0,     Qt::Key_Next, 0, 0, 0, KShortcut(), false },
 	{ GotoLine,            "GotoLine", I18N_NOOP("Go to Line"), Qt::CTRL+Qt::Key_G, 0, 0, 0, KShortcut(), false },
@@ -81,6 +83,8 @@ static KStdAccelInfo g_infoStdAccel[] =
 	{ Reload,              I18N_NOOP("Reload"), 0,   Qt::Key_F5, 0, 0, 0, KShortcut(), false },
 	{ PopupMenuContext,    "PopupMenuContext", I18N_NOOP("Popup Menu Context"), Qt::Key_Menu, 0, 0, 0, KShortcut(), false },
 	{ ShowMenubar,         "ShowMenubar", I18N_NOOP("Show Menu Bar"), Qt::CTRL+Qt::Key_M, 0, 0, 0, KShortcut(), false },
+	{ BackwardWord,        "BackwardWord", I18N_NOOP("Backward Word"), Qt::CTRL+Qt::Key_Left, 0, 0, 0, KShortcut(), false },
+	{ ForwardWord,         "ForwardWord", I18N_NOOP("Forward Word"), Qt::CTRL+Qt::Key_Right, 0, 0, 0, KShortcut(), false },
 	{ TabNext,             I18N_NOOP("Activate Next Tab"), 0,  Qt::CTRL+Qt::Key_Period, 0, Qt::CTRL+Qt::Key_BracketRight, 0, KShortcut(), false },
 	{ TabPrev,             I18N_NOOP("Activate Previous Tab"), 0,   Qt::CTRL+Qt::Key_Comma, 0, Qt::CTRL+Qt::Key_BracketLeft, 0, KShortcut(), false },
 	{ FullScreen,          "FullScreen", I18N_NOOP("Full Screen Mode"), Qt::CTRL+Qt::SHIFT+Qt::Key_F, 0, 0, 0, KShortcut(), false },
@@ -100,6 +104,9 @@ static KStdAccelInfo g_infoStdAccel[] =
 static KStdAccelInfo* infoPtr( StdAccel id )
 {
 	if( id != AccelNone ) {
+		// Linear search. Changing the data structure doesn't seem possible
+		// (since we need groups for the config stuff), but maybe a little
+		// additional hashtable wouldn't hurt.
 		for( uint i = 0; g_infoStdAccel[i].psName != 0; i++ ) {
 			if( g_infoStdAccel[i].id == id )
 				return &g_infoStdAccel[i];
@@ -230,6 +237,7 @@ KShortcut shortcutDefault4( StdAccel id )
 	return cut;
 }
 
+#if 0 // unused
 void createAccelActions( KAccelActions& actions )
 {
 	actions.clear();
@@ -248,6 +256,7 @@ void createAccelActions( KAccelActions& actions )
 			actions.insert( pInfo->psName, i18n(pInfo->psDesc) );
 	}
 }
+#endif
 
 const KShortcut& open()                  { return shortcut( Open ); }
 const KShortcut& openNew()               { return shortcut( New ); }
@@ -268,8 +277,12 @@ const KShortcut& findPrev()              { return shortcut( FindPrev ); }
 const KShortcut& replace()               { return shortcut( Replace ); }
 const KShortcut& home()                  { return shortcut( Home ); }
 const KShortcut& end()                   { return shortcut( End ); }
+const KShortcut& beginningOfLine()       { return shortcut( BeginningOfLine ); }
+const KShortcut& endOfLine()             { return shortcut( EndOfLine ); }
 const KShortcut& prior()                 { return shortcut( Prior ); }
 const KShortcut& next()                  { return shortcut( Next ); }
+const KShortcut& backwardWord()          { return shortcut( BackwardWord ); }
+const KShortcut& forwardWord()           { return shortcut( ForwardWord ); }
 const KShortcut& gotoLine()              { return shortcut( GotoLine ); }
 const KShortcut& addBookmark()           { return shortcut( AddBookmark ); }
 const KShortcut& tabNext()               { return shortcut( TabNext ); }

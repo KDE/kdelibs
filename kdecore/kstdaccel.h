@@ -65,8 +65,12 @@ namespace KStdAccel
 
     // Tabular navigation since 3.2
     TabNext, TabPrev,
+
     // Full screen mode since 3.2
-    FullScreen
+    FullScreen,
+
+    // Text Navigation since 3.3
+    BackwardWord, ForwardWord, BeginningOfLine, EndOfLine
 
 #ifndef KDE_NO_COMPAT
     , WhatThis = WhatsThis
@@ -259,16 +263,30 @@ namespace KStdAccel
   const KShortcut& insert();
 
   /**
-   * Goto beginning of current line. Default: Home
+   * Goto beginning of the document. Default: Ctrl-Home
    * @return the shortcut of the standard accelerator
    */
   const KShortcut& home();
 
   /**
-   * Goto end of current line. Default: End
+   * Goto end of the document. Default: Ctrl-End
    * @return the shortcut of the standard accelerator
    */
   const KShortcut& end();
+
+  /**
+   * Goto beginning of current line. Default: Home
+   * @return the shortcut of the standard accelerator
+   * @since 3.3
+   */
+  const KShortcut& beginningOfLine();
+
+  /**
+   * Goto end of current line. Default: End
+   * @return the shortcut of the standard accelerator
+   * @since 3.3
+   */
+  const KShortcut& endOfLine();
 
   /**
    * Scroll up one page. Default: Prior
@@ -395,6 +413,20 @@ namespace KStdAccel
    * @return the shortcut of the standard accelerator
    */
   const KShortcut& forward();
+
+  /**
+   * BackwardWord. Default: Ctrl+Left
+   * @return the shortcut of the standard accelerator
+   * @since 3.3
+   */
+  const KShortcut& backwardWord();
+
+  /**
+   * ForwardWord. Default: Ctrl+Right
+   * @return the shortcut of the standard accelerator
+   * @since 3.3
+   */
+  const KShortcut& forwardWord();
 
   /**
    * Show Menu Bar.  Default: Ctrl-M
