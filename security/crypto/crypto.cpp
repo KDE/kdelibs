@@ -763,10 +763,10 @@ void KCryptoConfig::load()
     j->setPassCache("");
   }
 
-#endif
-
   slotOtherCertSelect();
   slotYourCertSelect();
+#endif
+
   emit changed(false);
 }
 
