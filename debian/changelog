@@ -1,8 +1,10 @@
 kdelibs (4:2.2.1-10) unstable; urgency=low
 
   * Hopefully fix both the AA problem and the kicker crash problem
+  * Clean up lintian overrides
+  * Sync with upstream
 
- -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 11 Sep 2001 12:14:00 -0700
+ -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 12 Oct 2001 10:18:00 -0700
 
 kdelibs (4:2.2.1-9) unstable; urgency=low
 
