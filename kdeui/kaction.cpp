@@ -3125,10 +3125,9 @@ void KWidgetAction::unplug( QWidget *w )
   if( !m_widget )
     return;
 
-  KAction::unplug( w );
+  m_widget->reparent( 0L, QPoint(), false /*showIt*/ );
 
-  m_widget->hide();
-  m_widget->reparent( 0L, QPoint() );
+  KAction::unplug( w );
 }
 
 ////////
