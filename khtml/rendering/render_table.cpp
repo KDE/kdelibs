@@ -968,8 +968,9 @@ void RenderTable::calcColMinMax()
 	        m_maxWidth = maxPercent*100/tot;
         if (tot<100)
             m_maxWidth = KMAX( short((maxVar+maxRel)*100/(100-tot)), m_maxWidth );
-        else 
-            m_maxWidth = 10000;
+	// the next two lines completely break eg. www.konqueror.org. What are they supposed to fix?
+//         else 
+//             m_maxWidth = 10000;
     }
 
 
