@@ -2651,6 +2651,20 @@ bool HTTPProtocol::readHeader()
     while( *buf == ' ' )
         buf++;
 
+
+    if (buf[0] == '<')
+    {
+      // We get XML / HTTP without a proper header
+      // put string back
+      kdDebug(7103) << "kio_http: No valid HTTP header found! Document starts with XML/HTML tag" << endl;
+
+      // Document starts with a tag, assume html instead of text/plain
+      m_strMimeType = "text/html";
+
+      rewind();
+      break;
+    }
+
     // Store the the headers so they can be passed to the
     // calling application later
     m_responseHeader << QString::fromLatin1(buf);
@@ -3212,14 +3226,6 @@ bool HTTPProtocol::readHeader()
       m_bKeepAlive = false;
       break;
     }
-    else if (buf[0] == '<')
-    {
-      // We get XML / HTTP without a proper header
-      // put string back
-      rewind();
-      break;
-    }
-
     setRewindMarker();
 
     // Clear out our buffer for further use.
