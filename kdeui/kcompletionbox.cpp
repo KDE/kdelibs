@@ -71,78 +71,65 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
 {
     int type = e->type();
 
-    if ( o==m_parent ) {
-
+    if ( o == m_parent ) {
         if ( isVisible() ) {
-
-            if (  e->type() == QEvent::KeyPress ) {
-
+            if ( type == QEvent::KeyPress ) {
                 QKeyEvent *ev = static_cast<QKeyEvent *>( e );
-
                 switch ( ev->key() ) {
                 case Key_Tab:
                     if ( ev->state() & ShiftButton )
                         up();
-                    else
-                        down();
+                    else if ( !ev->state() )
+                        down(); // Only on TAB!!
                     ev->accept();
                     return true;
-
                 case Key_Down:
                     down();
                     ev->accept();
                     return true;
-
                 case Key_Up:
                     up();
                     ev->accept();
                     return true;
-
                 case Key_Prior:
                     pageUp();
                     ev->accept();
                     return true;
-
                 case Key_Next:
                     pageDown();
                     ev->accept();
                     return true;
-
-		case Key_Home:
-		    home();
-		    ev->accept();
-		    return true;
-		
-		case Key_End:
-		    end();
-		    ev->accept();
-		    return true;
-
+                case Key_Home:
+                    home();
+                    ev->accept();
+                    return true;
+                case Key_End:
+                    end();
+                    ev->accept();
+                    return true;
                 case  Key_Escape:
                     hide();
                     ev->accept();
                     return true;
-
                 default:
                     break;
                 }
-
             }
-
         }
-
-    } else {
+    }
+    else {
         switch( type ) {
         case QEvent::Show:
-            move( m_parent->mapToGlobal( QPoint(0, m_parent->height())) );
+            if ( m_parent ) {
+                move( m_parent->mapToGlobal( QPoint(0, m_parent->height())) );
+                m_parent->installEventFilter( this );
+            }
             resize( sizeHint() );
-	    m_parent->installEventFilter( this );
             break;
-
         case QEvent::Hide:
-	    m_parent->removeEventFilter( this );
+            if ( m_parent )
+                m_parent->removeEventFilter( this );
             break;
-
         case QEvent::MouseButtonPress: {
             QMouseEvent *me = static_cast<QMouseEvent*>(e);
             QPoint pos = mapFromGlobal( me->globalPos() );
@@ -152,12 +139,10 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                 return FALSE;
             }
         }
-
         default:
             break;
         }
     }
-
     return KListBox::eventFilter( o, e );
 }
 
@@ -179,7 +164,8 @@ QSize KCompletionBox::sizeHint() const
     int h = QMIN( 10 * ih, (int) count() * ih ) +1;
     h = QMAX( h, KListBox::minimumSizeHint().height() );
 
-    int w = QMAX( KListBox::sizeHint().width(), m_parent->width() );
+    int w = (m_parent) ? m_parent->width() : KListBox::minimumSizeHint().width();
+    w = QMAX( KListBox::sizeHint().width(), w );
     return QSize( w, h );
 }
 
