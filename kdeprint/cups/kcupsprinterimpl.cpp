@@ -48,14 +48,14 @@ bool KCupsPrinterImpl::setupCommand(QString& cmd, KPrinter *printer)
 	// check printer object
 	if (!printer) return false;
 
-	cmd = QString::fromLatin1("cupsdoprint -P '%1' -J '%4' -H '%2:%3'").arg(printer->printerName()).arg(CupsInfos::self()->host()).arg(CupsInfos::self()->port()).arg(printer->docName());
+	QString	hoststr = QString::fromLatin1("%1:%2").arg(CupsInfos::self()->host()).arg(CupsInfos::self()->port());
+	cmd = QString::fromLatin1("cupsdoprint -P %1 -J %3 -H %2").arg(quote(printer->printerName())).arg(quote(hoststr)).arg(quote(printer->docName()));
 	if (!CupsInfos::self()->login().isEmpty())
 	{
-		QString	s(" -U '"+CupsInfos::self()->login());
+		QString	userstr(CupsInfos::self()->login());
 		if (!CupsInfos::self()->password().isEmpty())
-			s += (":"+CupsInfos::self()->password());
-		s.append('\'');
-		cmd.append(s);
+			userstr += (":" + CupsInfos::self()->password());
+		cmd.append(" -U ").append(quote(userstr));
 	}
 	mapToCupsOptions(printer->options(),cmd);
 	return true;

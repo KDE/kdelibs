@@ -44,7 +44,7 @@ bool KFoomaticPrinterImpl::setupCommand(QString& cmd, KPrinter *printer)
 	QString		exe = executable();
 	if (!exe.isEmpty())
 	{
-		cmd = exe + QString::fromLatin1(" -P '%1' -# %2").arg(printer->printerName()).arg(printer->numCopies());
+		cmd = exe + QString::fromLatin1(" -P %1 -# %2").arg(quote(printer->printerName())).arg(printer->numCopies());
 		return true;
 	}
 	else

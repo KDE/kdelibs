@@ -51,6 +51,7 @@ public:
 	void saveOptions(const QMap<QString,QString>& opts)	{ m_options = opts; }
 	const QMap<QString,QString>& loadOptions() const 	{ return m_options; }
 	QString tempFile();
+	QString quote(const QString&);
 
 protected:
 	bool startPrinting(const QString& cmd, KPrinter *printer, const QStringList& files, bool removeflag = false);

@@ -158,7 +158,7 @@ bool KPrinterImpl::startPrinting(const QString& cmd, KPrinter *printer, const QS
 		if (QFile::exists(*it))
 		{
 			// quote and encode filenames
-			filestr.append("'").append(QFile::encodeName(*it)).append("' ");
+			filestr.append(quote(QFile::encodeName(*it))).append(" ");;
 			printfiles.append(*it);
 		}
 		else
@@ -271,8 +271,8 @@ int KPrinterImpl::doFilterFiles(KPrinter *printer, QStringList& files, const QSt
 	{
 		QString	tmpfile = tempFile();
 		QString	cmd(filtercmd);
-		cmd.replace(rin,*it);
-		cmd.replace(rout,tmpfile);
+		cmd.replace(rin,quote(*it));
+		cmd.replace(rout,quote(tmpfile));
 		cmd.replace(rps,ps.lower());
 		if (system(cmd.latin1()) != 0)
 		{
@@ -356,9 +356,13 @@ bool KPrinterImpl::setupSpecialCommand(QString& cmd, KPrinter *p, const QStringL
 		p->setErrorMessage("Empty command.");
 		return false;
 	}
-	s.replace(QRegExp("%out"),p->outputFileName());
-	s.replace(QRegExp("%psl"),QString::fromLatin1(pageSizeToPageName(p->pageSize())).lower());
+	s.replace(QRegExp("%out"), quote(p->outputFileName()));
+	s.replace(QRegExp("%psl"), QString::fromLatin1(pageSizeToPageName(p->pageSize())).lower());
 	cmd = s;
 	return true;
 }
+
+QString KPrinterImpl::quote(const QString& s)
+{ return KShellProcess::quote(s); }
+
 #include "kprinterimpl.moc"
