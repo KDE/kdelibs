@@ -1,9 +1,10 @@
-<!DOCTYPE book PUBLIC  "-//KDE//DTD DocBook V3.1-Based Variant V1.0//EN" "dtd/kde.dtd" [
+<?xml version="1.0" ?>
+<!DOCTYPE book PUBLIC "-//KDE//DTD DocBook XML V4.1-Based Variant V1.0//EN" "dtd/kdex.dtd" [
   <!ENTITY kappname "&kapp;"><!-- replace kapp here -->
   <!ENTITY % addindex "IGNORE">
   <!ENTITY % English "INCLUDE"><!-- change language only here -->
-  <!ENTITY % ents PUBLIC "-//KDE//ENTITIES Documentation V2.0//EN" "entities/kde-prologue.entities">
-  %ents;
+  
+  
   <!-- Do not define any other entities; instead, use the entities
        from kde-genent.entities and $LANG/user.entities. -->
 ]>
@@ -135,10 +136,10 @@ patent issues. -->
 <screeninfo>Here's a screenshot of &kapp;</screeninfo>
 	<mediaobject>
 	  <imageobject>
-	    <imagedata fileref="screenshot.png" format="PNG">
+	    <imagedata fileref="screenshot.png" format="PNG"/>
 	  </imageobject>
 	  <imageobject>
-	    <imagedata fileref="screenshot.eps" format="EPS">
+	    <imagedata fileref="screenshot.eps" format="EPS"/>
 	  </imageobject>
 	  <textobject>
 	    <phrase>Screenshot</phrase>
@@ -155,10 +156,10 @@ patent issues. -->
 <para>
 The Squiggle Tool <guiicon><inlinemediaobject>
 	  <imageobject>
-	    <imagedata fileref="squiggle.png" format="PNG">
+	    <imagedata fileref="squiggle.png" format="PNG"/>
 	  </imageobject>
 	  <imageobject>
-	    <imagedata fileref="squiggle.eps" format="EPS">
+	    <imagedata fileref="squiggle.eps" format="EPS"/>
 	  </imageobject>
 	  <textobject>
 	    <phrase>Squiggle</phrase>
@@ -542,3 +543,4 @@ sgml-minimize-attributes: nil
 sgml-general-insert-case: lower
 End:
 -->
+
