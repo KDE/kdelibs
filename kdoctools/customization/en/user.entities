@@ -6,9 +6,13 @@
      names (which if they occur will cost you a _lot_ of time)
  -->
 
+<!ENTITY Alt	"<keycap>Alt</keycap>">
+<!ENTITY Backspace	"<keycap>Backspace</keycap>">
 <!ENTITY cdrom	'<hardware>CD-ROM drive</hardware>'>
+<!ENTITY Ctrl	"<keycap>Ctrl</keycap>">
 <!ENTITY dpi	'<acronym>dpi</acronym>'>
 <!ENTITY eg     "<abbrev>e.g.</abbrev>">
+<!ENTITY Esc	"<keycap>Esc</keycap>">
 <!ENTITY etc    "<abbrev>etc.</abbrev>">
 <!ENTITY FAQ	'<acronym>FAQ</acronym>'>
 <!ENTITY ie     "<abbrev>i.e.</abbrev>">
@@ -17,11 +21,4 @@
 <!ENTITY MMB    "<mousebutton>middle</mousebutton> mouse button">
 <!ENTITY OS	"operating system"><!-- <acronym>OS</acronym>-->
 <!ENTITY RMB    "<mousebutton>right</mousebutton> mouse button">
-
-<!-- Remove comments when entities are removed from general.entities
 <!ENTITY Shift	"<keycap>Shift</keycap>">
-<!ENTITY Alt	"<keycap>Alt</keycap>">
-<!ENTITY Backspace	"<keycap>Backspace</keycap>">
-<!ENTITY Ctrl	"<keycap>Ctrl</keycap>">
-<!ENTITY Esc	"<keycap>Esc</keycap>">
--->
