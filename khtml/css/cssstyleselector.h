@@ -242,8 +242,10 @@ namespace khtml
 	}
 
 	bool operator < ( const CSSOrderedProperty &other ) const {
-	    int diff =  priority - other.priority;
-	    return (diff ? diff : position - other.position) > 0;
+             if (priority < other.priority) return true;
+             if (priority > other.priority) return false;
+             if (position < other.position) return true;
+             return false;
 	}
 
 	DOM::CSSProperty *prop;

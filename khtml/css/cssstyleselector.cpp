@@ -246,36 +246,24 @@ void CSSStyleSelector::computeFontSizes(QPaintDeviceMetrics* paintDeviceMetrics,
 
 #undef MAXFONTSIZES
 
-static inline void swap( CSSOrderedProperty **_value1, CSSOrderedProperty **_value2 )
-{
-    CSSOrderedProperty *tmp = *_value1;
-    *_value1 = *_value2;
-    *_value2 = tmp;
-}
-
-
 static inline void bubbleSort( CSSOrderedProperty **b, CSSOrderedProperty **e )
 {
-    // Goto last element;
-    CSSOrderedProperty ** last = e - 1;
-
-    // So we have at least two elements in here
-    while( b < last ) {
+    while( b < e ) {
 	bool swapped = FALSE;
+        CSSOrderedProperty **y = e+1;
 	CSSOrderedProperty **x = e;
-	CSSOrderedProperty **y = x;
-	--y;
+        CSSOrderedProperty **swappedPos;
 	do {
-	    --x;
-	    --y;
-	    if ( !((**x) < (**y)) ) {
+	    if ( !((**(--x)) < (**(--y))) ) {
 		swapped = TRUE;
-		swap( x, y );
+                swappedPos = x;
+                CSSOrderedProperty *tmp = *y;
+                *y = *x;
+                *x = tmp;
 	    }
-	} while( y != b );
-	if ( !swapped )
-	    return;
-	b++;
+	} while( x != b );
+	if ( !swapped ) break;
+        b = swappedPos + 1;
     }
 }
 
@@ -349,12 +337,8 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
     if(e->m_styleDecls)
 	numPropsToApply = addInlineDeclarations( e->m_styleDecls, numPropsToApply );
 
-    if ( numPropsToApply > 1 ) {
-	bubbleSort( propsToApply, propsToApply+numPropsToApply-1 );
-    }
-    if ( numPseudoProps > 1 ) {
-	bubbleSort( pseudoProps, pseudoProps+numPseudoProps-1 );
-    }
+    bubbleSort( propsToApply, propsToApply+numPropsToApply-1 );
+    bubbleSort( pseudoProps, pseudoProps+numPseudoProps-1 );
 
     RenderStyle *style = new RenderStyle();
     if( parentStyle )
@@ -371,7 +355,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
 
         if (numPropsToApply ) {
             CSSStyleSelector::style = style;
-            for (int i = 0; i < numPropsToApply; ++i) {
+            for (unsigned int i = 0; i < numPropsToApply; ++i) {
 		if ( fontDirty && propsToApply[i]->priority >= (1 << 30) ) {
 		    // we are past the font properties, time to update to the
 		    // correct font
@@ -387,7 +371,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
         if ( numPseudoProps ) {
 	    fontDirty = false;
             //qDebug("%d applying %d pseudo props", e->cssTagId(), pseudoProps->count() );
-            for (int i = 0; i < numPseudoProps; ++i) {
+            for (unsigned int i = 0; i < numPseudoProps; ++i) {
 		if ( fontDirty && pseudoProps[i]->priority >= (1 << 30) ) {
 		    // we are past the font properties, time to update to the
 		    // correct font
