@@ -113,7 +113,7 @@ KPropertiesDialog::KPropertiesDialog (KFileItem* item,
   : KDialogBase (KDialogBase::Tabbed, i18n( "Properties for %1" ).arg(item->url().fileName()),
                  KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
                  parent, name, modal),
-  
+
   m_singleUrl( item->url() ), m_bMustDestroyItems( false )
 {
   d = new KPropertiesDialogPrivate;
@@ -130,11 +130,11 @@ KPropertiesDialog::KPropertiesDialog (const QString& title,
   : KDialogBase (KDialogBase::Tabbed, i18n ("Properties for %1").arg(title),
                  KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
                  parent, name, modal),
-  
+
   m_bMustDestroyItems (false)
 {
   d = new KPropertiesDialogPrivate;
-  
+
   init (modal, false);
 }
 
@@ -260,6 +260,21 @@ void KPropertiesDialog::slotApply()
 {
   KPropsDlgPlugin *page;
   d->m_aborted = false;
+
+  KFilePropsPlugin * filePropsPlugin = 0L;
+  if ( m_pageList.first()->isA("KFilePropsPlugin") )
+    filePropsPlugin = static_cast<KFilePropsPlugin *>(m_pageList.first());
+
+  // If any page is dirty, then set the main one (KFilePropsPlugin) as
+  // dirty too. This is what makes it possible to save changes to a global
+  // desktop file into a local one. In other cases, it doesn't hurt.
+  for ( page = m_pageList.first(); page != 0L; page = m_pageList.next() )
+    if ( page->isDirty() && filePropsPlugin )
+    {
+        filePropsPlugin->setDirty();
+        break;
+    }
+
   // Apply the changes in the _normal_ order of the tabs now
   // This is because in case of renaming a file, KFilePropsPlugin will call
   // KPropertiesDialog::rename, so other tab will be ok with whatever order
@@ -267,15 +282,15 @@ void KPropertiesDialog::slotApply()
   for ( page = m_pageList.first(); page != 0L && !d->m_aborted; page = m_pageList.next() )
     if ( page->isDirty() )
     {
-      kdDebug( 1202 ) << "applying changes for " << page->className() << endl;
+      kdDebug( 250 ) << "applying changes for " << page->className() << endl;
       page->applyChanges();
       // applyChanges may change d->m_aborted.
     }
     else
-      kdDebug( 1202 ) << "skipping page " << page->className() << endl;
+      kdDebug( 250 ) << "skipping page " << page->className() << endl;
 
-  if ( !d->m_aborted && m_pageList.first()->isA("KFilePropsPlugin") )
-    static_cast<KFilePropsPlugin *>(m_pageList.first())->postApplyChanges();
+  if ( !d->m_aborted && filePropsPlugin )
+    filePropsPlugin->postApplyChanges();
 
   if ( !d->m_aborted )
     emit applied();
@@ -489,7 +504,7 @@ bool KPropsDlgPlugin::isDirty() const
 
 void KPropsDlgPlugin::applyChanges()
 {
-  kdWarning(1202) << "applyChanges() not implemented in page !" << endl;
+  kdWarning(250) << "applyChanges() not implemented in page !" << endl;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -571,12 +586,12 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     for ( ; it != dirs.end() && m_sRelativePath.isEmpty(); ++it ) {
       // might need canonicalPath() ...
       if ( path.find( *it ) == 0 ) // path is dirs + relativePath
-	m_sRelativePath = path.mid( (*it).length() ); // skip appsdirs
+        m_sRelativePath = path.mid( (*it).length() ); // skip appsdirs
     }
     if ( m_sRelativePath.isEmpty() )
     {
       if (KBindingPropsPlugin::supports(properties->items()))
-        kdWarning(1202) << "Warning : editing a mimetype file out of the mimetype dirs!" << endl;
+        kdWarning(250) << "Warning : editing a mimetype file out of the mimetype dirs!" << endl;
       // for Application desktop files, no problem : we can editing a .desktop file anywhere...
     } else
       while ( m_sRelativePath.left( 1 ).at(0) == '/' ) m_sRelativePath.remove( 0, 1 );
@@ -585,7 +600,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   d->m_frame = properties->dialog()->addPage (i18n("&General"));
 
   QVBoxLayout *vbl = new QVBoxLayout( d->m_frame, KDialog::marginHint(),
-				     KDialog::spacingHint(), "vbl");
+                                     KDialog::spacingHint(), "vbl");
   QGridLayout *grid = new QGridLayout(0, 3); // unknown rows
   grid->setColStretch(2, 1);
   grid->addColSpacing(1, KDialog::spacingHint());
@@ -601,7 +616,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     // This works for everything except Device icons on unmounted devices
     // So we have to really open .desktop files
     QString iconStr = KMimeType::findByURL( properties->kurl(),
-					item->mode() )->icon( properties->kurl(),
+                                        item->mode() )->icon( properties->kurl(),
                                                               properties->kurl().isLocalFile() );
     if ( bDesktopFile && properties->kurl().isLocalFile() )
     {
@@ -612,12 +627,12 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     iconButton->setIcon(iconStr);
     iconArea = iconButton;
     connect( iconButton, SIGNAL( iconChanged(QString) ),
-	     this, SIGNAL( changed() ) );
+             this, SIGNAL( changed() ) );
   } else {
     QLabel *iconLabel = new QLabel( d->m_frame );
     iconLabel->setFixedSize(50, 50);
     iconLabel->setPixmap(KMimeType::pixmapForURL(properties->kurl(),
-	    item->mode(), KIcon::Desktop));
+            item->mode(), KIcon::Desktop));
     iconArea = iconLabel;
   }
   grid->addWidget(iconArea, curRow, 0, AlignLeft);
@@ -631,7 +646,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     nameArea = lined;
     lined->setFocus();
     connect( lined, SIGNAL( textChanged( const QString & ) ),
-	     this, SIGNAL( changed() ) );
+             this, SIGNAL( changed() ) );
   }
 
   grid->addWidget(nameArea, curRow++, 2);
@@ -806,6 +821,7 @@ void qt_leave_modal( QWidget *widget );
 
 void KFilePropsPlugin::applyChanges()
 {
+  kdDebug(250) << "KFilePropsPlugin::applyChanges" << endl;
   QString fname = properties->kurl().fileName();
   QString n;
   if (nameArea->isA("QLabel"))
@@ -819,8 +835,8 @@ void KFilePropsPlugin::applyChanges()
     KURL oldurl = properties->kurl();
     // Tell properties. Warning, this changes the result of properties->kurl() !
     properties->rename( n );
-    kdDebug(1202) << "New URL = " << properties->kurl().url() << endl;
-    kdDebug(1202) << "old = " << oldurl.url() << endl;
+    kdDebug(250) << "New URL = " << properties->kurl().url() << endl;
+    kdDebug(250) << "old = " << oldurl.url() << endl;
 
     // Don't remove the template !!
     if ( !m_bFromTemplate ) // (normal renaming)
@@ -853,9 +869,9 @@ void KFilePropsPlugin::slotCopyFinished( KIO::Job * job )
     qApp->exit_loop();
     if ( job->error() )
     {
-	job->showErrorDialog( d->m_frame );
+        job->showErrorDialog( d->m_frame );
         properties->abortApplying(); // Don't apply the changes to the wrong file !
-	return;
+        return;
     }
   }
 
@@ -870,7 +886,9 @@ void KFilePropsPlugin::slotCopyFinished( KIO::Job * job )
   }
   else if (KExecPropsPlugin::supports(properties->items()) && !m_sRelativePath.isEmpty())
   {
+    kdDebug(250) << "KFilePropsPlugin::slotCopyFinished " << m_sRelativePath << endl;
     QString path = locateLocal("apps", m_sRelativePath);
+    kdDebug(250) << "KFilePropsPlugin::slotCopyFinished path=" << path << endl;
     properties->updateUrl( KURL( path ) );
   }
 
@@ -889,10 +907,10 @@ void KFilePropsPlugin::slotCopyFinished( KIO::Job * job )
     else
       path = properties->kurl().path();
 
-    kdDebug(1202) << "**" << path << "**" << endl;
+    kdDebug(250) << "**" << path << "**" << endl;
     QFile f( path );
     if ( !f.open( IO_ReadWrite ) ) {
-	KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not have sufficient access to write to <b>%1</b>.</qt>").arg(path));
+        KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not have sufficient access to write to <b>%1</b>.</qt>").arg(path));
       return;
     }
     f.close();
@@ -900,14 +918,14 @@ void KFilePropsPlugin::slotCopyFinished( KIO::Job * job )
     KDesktopFile cfg(path);
     // Get the default image
     QString str = KMimeType::findByURL( properties->kurl(),
-					properties->item()->mode(),
-					true )->KServiceType::icon();
+                                        properties->item()->mode(),
+                                        true )->KServiceType::icon();
     // Is it another one than the default ?
     QString sIcon;
     if ( str != iconButton->icon() )
       sIcon = iconButton->icon();
-    kdDebug(1203) << "sIcon = " << (sIcon) << endl;
-    kdDebug(1203) << "str = " << (str) << endl;
+    kdDebug(250) << "sIcon = " << (sIcon) << endl;
+    kdDebug(250) << "str = " << (str) << endl;
     // (otherwise write empty value)
     cfg.writeEntry( QString::fromLatin1("Icon"), sIcon );
     cfg.sync();
@@ -1059,7 +1077,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
       permBox[row][col] = cb;
       gl->addWidget (permBox[row][col], row+2, col+1);
       connect( cb, SIGNAL( toggled( bool ) ),
-	       this, SIGNAL( changed() ) );
+               this, SIGNAL( changed() ) );
     }
   }
   gl->setColStretch(6, 10);
@@ -1095,11 +1113,11 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
       kcom->addItem(QString::fromLatin1(user->pw_name));
     endpwent();
     usrEdit->setCompletionMode((i < maxEntries) ? KGlobalSettings::CompletionAuto :
-	  KGlobalSettings::CompletionNone);
+          KGlobalSettings::CompletionNone);
     usrEdit->setText(strOwner);
     gl->addWidget(usrEdit, 1, 1);
     connect( usrEdit, SIGNAL( textChanged( const QString & ) ),
-	     this, SIGNAL( changed() ) );
+             this, SIGNAL( changed() ) );
   }
   else
   {
@@ -1121,19 +1139,19 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
     for (i=0; ((ge = getgrent()) != 0L) && (i < maxEntries); i++)
     {
       if (IamRoot)
-	groupList += QString::fromLatin1(ge->gr_name);
+        groupList += QString::fromLatin1(ge->gr_name);
       else
       {
-	/* pick just the groups the user can change the file to */
-	char ** members = ge->gr_mem;
-	char * member;
-	while ((member = *members) != 0L) {
-	  if (strUser == member) {
-	    groupList += QString::fromLatin1(ge->gr_name);
-	    break;
-	  }
-	  ++members;
-	}
+        /* pick just the groups the user can change the file to */
+        char ** members = ge->gr_mem;
+        char * member;
+        while ((member = *members) != 0L) {
+          if (strUser == member) {
+            groupList += QString::fromLatin1(ge->gr_name);
+            break;
+          }
+          ++members;
+        }
       }
     }
     endgrent();
@@ -1143,9 +1161,9 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
     if (ge) {
       QString name = QString::fromLatin1(ge->gr_name);
       if (name.isEmpty())
-	name.setNum(ge->gr_gid);
+        name.setNum(ge->gr_gid);
       if (groupList.find(name) == groupList.end())
-	groupList += name;
+        groupList += name;
     }
 
     /* add the group the file currently belongs to ..
@@ -1174,7 +1192,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
     grpEdit->setText(strGroup);
     gl->addWidget(grpEdit, 2, 1);
     connect( grpEdit, SIGNAL( textChanged( const QString & ) ),
-	     this, SIGNAL( changed() ) );
+             this, SIGNAL( changed() ) );
   }
   else if ((groupList.count() > 1) && isMyFile && isLocal)
   {
@@ -1183,7 +1201,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
     grpCombo->setCurrentItem(groupList.findIndex(strGroup));
     gl->addWidget(grpCombo, 2, 1);
     connect( grpCombo, SIGNAL( activated( int ) ),
-	     this, SIGNAL( changed() ) );
+             this, SIGNAL( changed() ) );
   }
   else
   {
@@ -1223,7 +1241,7 @@ void KFilePermissionsPropsPlugin::applyChanges()
   for (int row = 0;row < 3; ++row)
     for (int col = 0; col < 4; ++col)
       if (permBox[row][col]->isChecked())
-	p |= fperm[row][col];
+        p |= fperm[row][col];
 
   QString owner, group;
   if (usrEdit)
@@ -1244,11 +1262,11 @@ void KFilePermissionsPropsPlugin::applyChanges()
     struct passwd* pw = getpwnam(QFile::encodeName(owner));
     struct group* g = getgrnam(QFile::encodeName(group));
     if ( pw == 0L ) {
-      kdError(1202) << " ERROR: No user " << owner << endl;
+      kdError(250) << " ERROR: No user " << owner << endl;
       return;
     }
     if ( g == 0L ) {
-      kdError(1202) << " ERROR: No group " << group << endl;
+      kdError(250) << " ERROR: No group " << group << endl;
       return;
     }
     QString path = properties->kurl().path();
@@ -1256,9 +1274,9 @@ void KFilePermissionsPropsPlugin::applyChanges()
       KMessageBox::sorry( 0, i18n( "<qt>Could not modify the ownership of file <b>%1</b>.You have insufficient access to the file to perform the change.</qt>" ).arg(path));
   }
 
-  kdDebug(1203) << "old permissions : " << permissions << endl;
-  kdDebug(1203) << "new permissions : " << p << endl;
-  kdDebug(1203) << "url : " << properties->kurl().url() << endl;
+  kdDebug(250) << "old permissions : " << permissions << endl;
+  kdDebug(250) << "new permissions : " << p << endl;
+  kdDebug(250) << "url : " << properties->kurl().url() << endl;
   if ( permissions != p )
   {
     KIO::Job * job = KIO::chmod( properties->kurl(), p );
@@ -1274,7 +1292,7 @@ void KFilePermissionsPropsPlugin::applyChanges()
 
 void KFilePermissionsPropsPlugin::slotChmodResult( KIO::Job * job )
 {
-  kdDebug(1203) << "KFilePermissionsPropsPlugin::slotChmodResult" << endl;
+  kdDebug(250) << "KFilePermissionsPropsPlugin::slotChmodResult" << endl;
   if (job->error())
     job->showErrorDialog( d->m_frame );
   else
@@ -1457,19 +1475,19 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
   }
 
   connect( swallowExecEdit, SIGNAL( textChanged( const QString & ) ),
-	   this, SIGNAL( changed() ) );
+           this, SIGNAL( changed() ) );
   connect( swallowTitleEdit, SIGNAL( textChanged( const QString & ) ),
-	   this, SIGNAL( changed() ) );
+           this, SIGNAL( changed() ) );
   connect( execEdit, SIGNAL( textChanged( const QString & ) ),
-	   this, SIGNAL( changed() ) );
+           this, SIGNAL( changed() ) );
   connect( terminalEdit, SIGNAL( textChanged( const QString & ) ),
-	   this, SIGNAL( changed() ) );
+           this, SIGNAL( changed() ) );
   connect( terminalCheck, SIGNAL( toggled( bool ) ),
-	   this, SIGNAL( changed() ) );
+           this, SIGNAL( changed() ) );
   connect( suidCheck, SIGNAL( toggled( bool ) ),
-	   this, SIGNAL( changed() ) );
+           this, SIGNAL( changed() ) );
   connect( suidEdit, SIGNAL( textChanged( const QString & ) ),
-	   this, SIGNAL( changed() ) );
+           this, SIGNAL( changed() ) );
 
   connect( execBrowse, SIGNAL( clicked() ), this, SLOT( slotBrowseExec() ) );
   connect( terminalCheck, SIGNAL( clicked() ), this,  SLOT( enableCheckedEdit() ) );
@@ -1510,6 +1528,7 @@ bool KExecPropsPlugin::supports( KFileItemList _items )
 
 void KExecPropsPlugin::applyChanges()
 {
+  kdDebug(250) << "KExecPropsPlugin::applyChanges" << endl;
   QString path = properties->kurl().path();
 
   QFile f( path );
@@ -1536,13 +1555,13 @@ void KExecPropsPlugin::applyChanges()
 void KExecPropsPlugin::slotBrowseExec()
 {
     KURL f = KFileDialog::getOpenURL( QString::null,
-				      QString::null, d->m_frame );
+                                      QString::null, d->m_frame );
     if ( f.isEmpty() )
-	return;
+        return;
 
     if ( !f.isLocalFile()) {
-	KMessageBox::sorry(d->m_frame, i18n("Sorry, but only executables of the local file systems are supported."));
-	return;
+        KMessageBox::sorry(d->m_frame, i18n("Sorry, but only executables of the local file systems are supported."));
+        return;
     }
 
     execEdit->setText( f.path() );
@@ -1591,7 +1610,7 @@ KURLPropsPlugin::KURLPropsPlugin( KPropertiesDialog *_props )
     URLEdit->setText( URLStr );
 
   connect( URLEdit, SIGNAL( textChanged( const QString & ) ),
-	   this, SIGNAL( changed() ) );
+           this, SIGNAL( changed() ) );
 
   layout->addStretch (1);
 }
@@ -1696,10 +1715,10 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
 
   grid->addWidget(addExtensionButton, 1, 1);
   connect( addExtensionButton, SIGNAL( pressed() ),
-	   this, SLOT( slotAddExtension() ) );
+           this, SLOT( slotAddExtension() ) );
   grid->addWidget(delExtensionButton, 2, 1);
   connect( delExtensionButton, SIGNAL( pressed() ),
-	   this, SLOT( slotDelExtension() ) );
+           this, SLOT( slotDelExtension() ) );
   grid->addMultiCellWidget(availableExtensionsList, 0, 3, 2, 2);
 
   QString path = properties->kurl().path() ;
@@ -1738,17 +1757,17 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
     addMimeType ( (*it2)->name() );
 
   connect( availableExtensionsList, SIGNAL( selected( int ) ),
-	   this, SIGNAL( changed() ) );
+           this, SIGNAL( changed() ) );
   connect( addExtensionButton, SIGNAL( pressed() ),
-	   this, SIGNAL( changed() ) );
+           this, SIGNAL( changed() ) );
   connect( delExtensionButton, SIGNAL( pressed() ),
-	   this, SIGNAL( changed() ) );
+           this, SIGNAL( changed() ) );
   connect( nameEdit, SIGNAL( textChanged( const QString & ) ),
-	   this, SIGNAL( changed() ) );
+           this, SIGNAL( changed() ) );
   connect( commentEdit, SIGNAL( textChanged( const QString & ) ),
-	   this, SIGNAL( changed() ) );
+           this, SIGNAL( changed() ) );
   connect( extensionsList, SIGNAL( selected( int ) ),
-	   this, SIGNAL( changed() ) );
+           this, SIGNAL( changed() ) );
 }
 
 KApplicationPropsPlugin::~KApplicationPropsPlugin()
@@ -1936,13 +1955,13 @@ KBindingPropsPlugin::KBindingPropsPlugin( KPropertiesDialog *_props ) : KPropsDl
       cbAutoEmbed->setNoChange();
 
   connect( patternEdit, SIGNAL( textChanged( const QString & ) ),
-	   this, SIGNAL( changed() ) );
+           this, SIGNAL( changed() ) );
   connect( commentEdit, SIGNAL( textChanged( const QString & ) ),
-	   this, SIGNAL( changed() ) );
+           this, SIGNAL( changed() ) );
   connect( mimeEdit, SIGNAL( textChanged( const QString & ) ),
-	   this, SIGNAL( changed() ) );
+           this, SIGNAL( changed() ) );
   connect( cbAutoEmbed, SIGNAL( toggled( bool ) ),
-	   this, SIGNAL( changed() ) );
+           this, SIGNAL( changed() ) );
 }
 
 KBindingPropsPlugin::~KBindingPropsPlugin()
@@ -2061,7 +2080,7 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
 
 
   QGridLayout *layout = new QGridLayout( d->m_frame, 0, 3, KDialog::marginHint(),
-					KDialog::spacingHint());
+                                        KDialog::spacingHint());
   layout->setColStretch(1, 1);
 
   QLabel* label;
@@ -2135,7 +2154,7 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
           it != m_devicelist.end(); ++it, ++index ) {
       // WARNING : this works only if indexDevice == 0
       if ( (*it).left( deviceStr.length() ) == deviceStr ) {
-        //kdDebug() << "found it " << index << endl;
+        //kdDebug(250) << "found it " << index << endl;
         slotActivated( index );
         break;
       }
@@ -2156,15 +2175,15 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
   unmounted->setIcon( unmountedStr );
 
   connect( device, SIGNAL( activated( int ) ),
-	   this, SIGNAL( changed() ) );
+           this, SIGNAL( changed() ) );
   connect( readonly, SIGNAL( toggled( bool ) ),
-	   this, SIGNAL( changed() ) );
+           this, SIGNAL( changed() ) );
   connect( mountpoint, SIGNAL( textChanged( const QString & ) ),
-	   this, SIGNAL( changed() ) );
+           this, SIGNAL( changed() ) );
   connect( fstype, SIGNAL( textChanged( const QString & ) ),
-	   this, SIGNAL( changed() ) );
+           this, SIGNAL( changed() ) );
   connect( unmounted, SIGNAL( iconChanged( QString ) ),
-	   this, SIGNAL( changed() ) );
+           this, SIGNAL( changed() ) );
 }
 
 KDevicePropsPlugin::~KDevicePropsPlugin()
@@ -2216,7 +2235,7 @@ void KDevicePropsPlugin::applyChanges()
   config.writeEntry( QString::fromLatin1("FSType"), fstype->text() );
 
   config.writeEntry( QString::fromLatin1("UnmountIcon"), unmounted->icon() );
-  kdDebug(1203) << "unmounted->icon() = " << unmounted->icon() << endl;
+  kdDebug(250) << "unmounted->icon() = " << unmounted->icon() << endl;
 
   config.writeEntry( QString::fromLatin1("ReadOnly"), readonly->isChecked() );
 
