@@ -28,6 +28,14 @@
 
 #include <assert.h>
 
+#define KWALLET_VERSION_MAJOR		0
+#define KWALLET_VERSION_MINOR		0
+
+#define KWALLET_CIPHER_BLOWFISH		0
+#define KWALLET_CIPHER_3DES		1 // unsupported
+
+#define KWALLET_HASH_SHA1		0
+#define KWALLET_HASH_MD5		1 // unsupported
 
 
 using namespace KWallet;
@@ -215,16 +223,23 @@ int Backend::open(const QByteArray& password) {
 		return -3;         // bad magic
 	}
 
-	db.readBlock(magicBuf, 2);
+	db.readBlock(magicBuf, 4);
 
 	// First byte is major version, second byte is minor version
-	//    OUR VERSION: 0.0
-	if (magicBuf[0] != 0) {
+	if (magicBuf[0] != KWALLET_VERSION_MAJOR) {
 		return -4;         // unknown version
 	}
 
-	if (magicBuf[1] != 0) {
+	if (magicBuf[1] != KWALLET_VERSION_MINOR) {
 		return -4;	   // unknown version
+	}
+
+	if (magicBuf[2] != KWALLET_CIPHER_BLOWFISH) {
+		return -44;	   // unknown cipher
+	}
+
+	if (magicBuf[3] != KWALLET_HASH_SHA1) {
+		return -44;	   // unknown hash
 	}
 
 	QByteArray encrypted = db.readAll();
@@ -359,11 +374,14 @@ int Backend::close(const QByteArray& password) {
 	qf.writeBlock(KWMAGIC, KWMAGIC_LEN);
 
 	// Write the version number
-	QByteArray version(1);
-	version[0] = 0;
-	qf.writeBlock(version, 1);
-	qf.writeBlock(version, 1);
+	QByteArray version(4);
+	version[0] = KWALLET_VERSION_MAJOR;
+	version[1] = KWALLET_VERSION_MINOR;
+	version[2] = KWALLET_CIPHER_BLOWFISH;
+	version[3] = KWALLET_HASH_SHA1;
+	qf.writeBlock(version, 4);
 
+	// Holds decrypted data prior to encryption
 	QByteArray decrypted;
 
 	// populate decrypted
@@ -372,12 +390,12 @@ int Backend::close(const QByteArray& password) {
 		dStream << i.key();
 		dStream << i.data().count();
 		for (EntryMap::ConstIterator j = i.data().begin(); j != i.data().end(); ++j) {
-			dStream << j.key();
-			dStream << static_cast<long>(j.data()->type());
 			switch (j.data()->type()) {
 			case KWallet::Wallet::Password:
 			case KWallet::Wallet::Stream:
 			case KWallet::Wallet::Map:
+				dStream << j.key();
+				dStream << static_cast<long>(j.data()->type());
 				dStream << j.data()->value();
 				break;
 			default:
