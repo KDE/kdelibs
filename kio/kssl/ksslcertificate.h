@@ -39,6 +39,7 @@
 #include <qvaluelist.h>
 
 class QString;
+class QStringList;
 class QCString;
 class KSSL;
 class KSSLCertificatePrivate;
@@ -305,6 +306,18 @@ public:
 	 *  @return true if this is a signer certificate
 	 */
 	bool isSigner();
+
+	/**
+	 *  FIXME: document
+	 */
+	void getEmails(QStringList &to) const;
+
+	/**
+	 * FIXME: document
+	 * result of getKDEKey might change and should not be used for
+	 * persistant storage
+	 */
+	QString getKDEKey() const;
 
 private:
 	KSSLCertificatePrivate *d;

@@ -338,6 +338,48 @@ return false;
 }
 
 
+QStringList KSSLCertificateCache::getKDEKeyByEmail(const QString &email) {
+     QByteArray data, retval;
+     QCString rettype;
+     QDataStream arg(data, IO_WriteOnly);
+     arg << email;
+     bool rc = d->dcc->call("kded", "kssld",
+                            "getKDEKeyByEmail(QString)",
+                            data, rettype, retval);
+
+     if (rc && rettype == "QStringList") {
+        QDataStream retStream(retval, IO_ReadOnly);
+        QStringList drc;
+        retStream >> drc;
+        return drc;
+     }
+
+     return QStringList();
+}     
+
+
+KSSLCertificate *KSSLCertificateCache::getCertByKDEKey(const QString &key) {
+     QByteArray data, retval;
+     QCString rettype;
+     QDataStream arg(data, IO_WriteOnly);
+     arg << key;
+     bool rc = d->dcc->call("kded", "kssld",
+                            "getCertByKDEKey(QString)",
+                            data, rettype, retval);
+
+     if (rc && rettype == "KSSLCertificate") {
+        QDataStream retStream(retval, IO_ReadOnly);
+        KSSLCertificate *drc = new KSSLCertificate;
+        retStream >> *drc;
+	if (drc->getCert())
+             return drc; 
+	delete drc; // should not happen too often if used in conjunction with getKDEKeyByEmail
+     }
+
+     return 0L;
+}     
+
+
 QDataStream& operator<<(QDataStream& s, const KSSLCertificateCache::KSSLCertificatePolicy& p) {
   s << (Q_UINT32)p;
 return s;

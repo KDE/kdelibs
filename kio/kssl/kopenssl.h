@@ -759,6 +759,10 @@ public:
    /* for testing */
    int i2d_X509_REQ_fp(FILE *fp, X509_REQ *x);
 
+   /* SMime support */
+   STACK *X509_get1_email(X509 *x);
+   void X509_email_free(STACK *sk);
+
 
    /* clear the current error  - use this often*/
    void ERR_clear_error();

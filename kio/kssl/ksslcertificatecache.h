@@ -80,6 +80,10 @@ enum KSSLCertificatePolicy { Unknown, Reject, Accept, Prompt, Ambiguous };
   bool addHost(KSSLCertificate& cert, QString& host);
   bool removeHost(KSSLCertificate& cert, QString& host);
 
+  // SMIME
+  QStringList getKDEKeyByEmail(const QString &email);
+  KSSLCertificate *getCertByKDEKey(const QString &key);
+
   void reload();
 
   // You shouldn't need to call this but in some weird circumstances

@@ -27,6 +27,7 @@
 
 #include <unistd.h>
 #include <qstring.h>
+#include <qstringlist.h>
 #include <qfile.h>
 
 #include "kssldefs.h"
@@ -215,6 +216,26 @@ int n, i;
 #endif
 
 return rc;
+}
+
+
+void KSSLCertificate::getEmails(QStringList &to) const {
+	to.clear();
+#ifdef KSSL_HAVE_SSL
+	if (!d->m_cert) return;
+	
+	STACK *s = d->kossl->X509_get1_email(d->m_cert);
+	if (s) {
+		for(int n=0; n < s->num; n++) {
+			to.append(d->kossl->sk_value(s,n));
+		}
+	}
+#endif	
+}	
+
+
+QString KSSLCertificate::getKDEKey() const {
+	return getSubject() + " " + getMD5DigestText();
 }
 
 

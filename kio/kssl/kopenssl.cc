@@ -168,7 +168,9 @@ static SSL_SESSION* (*K_SSL_get1_session)(SSL*) = 0L;
 static void (*K_SSL_SESSION_free)(SSL_SESSION*) = 0L;
 static int (*K_SSL_set_session)(SSL*,SSL_SESSION*) = 0L;
 static SSL_SESSION* (*K_d2i_SSL_SESSION)(SSL_SESSION**,unsigned char**, long) = 0L;
-static int (*K_i2d_SSL_SESSION)(SSL_SESSION*,unsigned char**);
+static int (*K_i2d_SSL_SESSION)(SSL_SESSION*,unsigned char**) = 0L;
+static STACK *(*K_X509_get1_email)(X509 *x) = 0L;
+static void (*K_X509_email_free)(STACK *sk) = 0L;
 #endif
 };
 
@@ -421,6 +423,9 @@ KConfig *cfg;
       K_i2d_X509_REQ_fp = (int (*)(FILE *, X509_REQ *)) _cryptoLib->symbol("i2d_X509_REQ_fp");
       K_ERR_clear_error = (void (*)()) _cryptoLib->symbol("ERR_clear_error");
       K_ERR_print_errors_fp = (void (*)(FILE*)) _cryptoLib->symbol("ERR_print_errors_fp");
+      K_X509_get1_email = (STACK *(*)(X509 *x)) _cryptoLib->symbol("X509_get1_email");
+      K_X509_email_free = (void (*)(STACK *sk)) _cryptoLib->symbol("X509_email_free");
+
 #endif
    }
 
@@ -1253,6 +1258,15 @@ RSA* KOpenSSLProxy::RSA_generate_key(int bits, unsigned long e, void
    else return 0L;
 }
 
+STACK *KOpenSSLProxy::X509_get1_email(X509 *x) {
+   if (K_X509_get1_email) return (K_X509_get1_email)(x);
+   else return 0L;
+}
+
+
+void KOpenSSLProxy::X509_email_free(STACK *sk) {
+   if (K_X509_email_free) (K_X509_email_free)(sk);
+}
 
 int KOpenSSLProxy::i2d_X509_REQ_fp(FILE *fp, X509_REQ *x) {
    if (K_i2d_X509_REQ_fp) return (K_i2d_X509_REQ_fp)(fp,x);
