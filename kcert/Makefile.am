@@ -1,4 +1,4 @@
-INCLUDES=$(all_includes) $(SSL_INCLUDES) -I$(top_srcdir)/kfile -I$(top_srcdir)/kio -I$(top_srcdir)
+INCLUDES= $(SSL_INCLUDES) -I$(top_srcdir)/kfile -I$(top_srcdir)/kio -I$(top_srcdir) $(all_includes)
 
 lib_LTLIBRARIES = libkcertpart.la
 KCERTPARTVERSION=	2.2.0
