@@ -37,8 +37,19 @@ int main( int argc, char** argv )
     return 1;
   }
 
-  // A huge filename (first in order to debug with od -c :)
-  tar.writeFile( "/tmp/kprjap_ok.kpr/mnt/devel/kde/intervention_conference_Linux_Expo/img/dir/subdir/yetanothersubdir/ifyouwantanotherhereitis/whydoyoureadthisanyway/okthatsit/seeyousoon/david/f", "dfaure", "doesitwork", 1, "y" );
+  /*
+  // Generate long filenames of each possible length bigger than 98...
+  for (int i = 98; i < 500 ; i++ )
+  {
+    QString str, num;
+    str.fill( 'a', i-10 );
+    num.setNum( i );
+    num = num.rightJustify( 10, '0' );
+    tar.writeFile( str+num, "testu", "testg", 3, "hum" );
+  }
+  // Result of this test : it fails at 484 (instead of 154 previously).
+  // Ok, I think we can do with that :)
+  */
 
   tar.writeFile( "test1", "weis", "users", 5, "Hallo" );
   tar.writeFile( "test2", "weis", "users", 8, "Hallo Du" );
