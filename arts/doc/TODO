@@ -44,7 +44,6 @@ currently mostly done. Remaining issues are:
 
   must be written instead of
 
-        ByteSoundProducer sender = prod->sender();
         if(bsp._isEqual(prod->sender()))
 
 - check why
