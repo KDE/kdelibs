@@ -86,7 +86,7 @@ public:
     * @internal
     * Load ourselves from the database. Don't call the parent class!
     */
-   virtual void load(QDataStream &) = 0L;
+   virtual void load(QDataStream &) = 0;
 
 private:
    int mOffset;

@@ -63,7 +63,7 @@ public:
     * Construct an entry from a config file.
     * To be implemented in the real factories.
     */
-   virtual KSycocaEntry *createEntry(const QString &file) = 0L;
+   virtual KSycocaEntry *createEntry(const QString &file) = 0;
 
    /**
     * Add an entry
