@@ -174,6 +174,12 @@ protected:
    * Quotes a string for the shell
    */
   static void shellQuote( QString &_str );
+
+private:
+
+  static QString libmapnotify();
+  static QString libkmapnotify;
+
 };
 
 

@@ -39,6 +39,8 @@
 #include <kprocess.h>
 #include <dcopclient.h>
 #include <qfile.h>
+#include <qtextstream.h>
+
 
 KFileManager * KFileManager::pFileManager = 0L;
 KOpenWithHandler * KOpenWithHandler::pOpenWithHandler = 0L;
@@ -309,7 +311,16 @@ pid_t KRun::run( const QString& _cmd )
   kdDebug(7010) << "Running " << _cmd << endl;
 
   KShellProcess proc;
-  proc << "LD_PRELOAD=${KDEDIR}/lib/libkmapnotify.so" << _cmd;
+
+  // if we have the notify lib somewhere, use it
+  QString lib = libmapnotify();
+  if (!lib.isEmpty())
+    {
+      proc << QString("LD_PRELOAD=%1").arg(lib);
+      kdDebug(7010) << "LD_PRELOAD=" << lib << endl;
+    }
+
+  proc << _cmd;
   proc.start(KShellProcess::DontCare);
 
   return proc.getPid();
@@ -374,6 +385,54 @@ KRun::KRun( const KURL& _url, mode_t _mode, bool _is_local_file, bool _auto_dele
   m_bInit = true;
   connect( &m_timer, SIGNAL( timeout() ), this, SLOT( slotTimeout() ) );
   m_timer.start( 0, true );
+
+}
+
+
+QString KRun::libkmapnotify("(none)");
+
+
+QString KRun::libmapnotify()
+{
+  if (libkmapnotify != "(none)")
+    return libkmapnotify;
+
+  // Look for the libkmapnotify by searching through the .la file
+  QString lib = "";
+  QString la_file = locate("lib", "libkmapnotify.la");
+  if (!la_file.isEmpty())
+    {
+      QFile la(la_file);
+      if (la.open(IO_ReadOnly))
+	{
+	  QTextStream is(&la);
+	  
+	  QString line;
+	  while (!is.atEnd())
+	    {
+	      line = is.readLine();
+	      if (line.left(15) == "library_names='")
+		{
+		  lib = line.mid(15);
+		  int pos = lib.find(" ");
+		  if (pos > 0)
+		    lib = lib.left(pos);
+		}
+	    }
+
+	  la.close();
+	}
+
+      // look up the path
+      if (!lib.isEmpty())
+	lib = locate("lib", lib);
+    }
+  kdDebug(7010) << "Found libkmapnotify at: " << lib << endl;
+  
+  if (!lib.isEmpty())
+    libkmapnotify = lib;
+
+  return lib;
 }
 
 void KRun::init()
