@@ -72,8 +72,6 @@ Arts::SoundServerV2 KArtsServer::server(void)
 
 	X11CommConfig.sync();
 
-	proc << QFile::encodeName(KStandardDirs::findExe(QString::fromLatin1("kdeinit_wrapper")));
-
 	if(rt)
 		proc << QFile::encodeName(KStandardDirs::findExe(QString::fromLatin1("artswrapper")));
 	else
