@@ -46,7 +46,7 @@ KAboutKDE::KAboutKDE( QWidget *parent, const char *name, bool modal )
     "something does not work as expected or could be done better.<br><br>"
     "The K Desktop Environment has a bug tracking system. Visit "
     "<A HREF=\"http://bugs.kde.org/\">http://bugs.kde.org/</A> or "
-    "use the \"Report Bug\" dialog to report bugs.<br><br>"
+    "use the \"Report Bug\" dialog from the \"Help\" menu to report bugs.<br><br>"
     "If you have a suggestion for improvement then you are welcome to use "
     "the bug tracking system to register your wish. Make sure you use the "
     "Severity called \"Wishlist\"." );
@@ -63,7 +63,7 @@ KAboutKDE::KAboutKDE( QWidget *parent, const char *name, bool modal )
     "<br><br>"
     "If you need more information or documentation, then a visit to "
     "<A HREF=\"http://developer.kde.org/\">http://developer.kde.org/</A> "
-    "will provide with what you need.");
+    "will provide you with what you need.");
 
   setHelp( QString::fromLatin1("khelpcenter/main.html"), QString::null );
   setTitle(i18n("K Desktop Environment. Release %1").
