@@ -26,6 +26,7 @@
 #include <dom_xml.h>
 #include <xml/dom_nodeimpl.h>
 #include <rendering/render_object.h>
+#include <htmltags.h>
 
 #include "kjs_text.h"
 #include "kjs_dom.h"
@@ -148,16 +149,44 @@ void DOMNode::tryPut(const UString &p, const KJSO& v)
 
 KJSO DOMNode::toPrimitive(Type preferred) const
 {
-  if (preferred == HostType) {
-    if (node.isNull())
-      return Null();
-    else
-      // ### this was used for comparisons, but not anymore - return object name or something?
-      // (check if spec says anything about this)
-      return Number((int)node.handle());
+  if (node.isNull())
+    return Null();
+
+  return toString();
+}
+
+String DOMNode::toString() const
+{
+  if (node.isNull())
+    return String("null");
+  const char *s = "DOMNode"; // fallback
+
+  static const struct ElementName {
+	int id;
+	const char *name;
+  } elementNames[] = {
+      { ID_A,		"HTMLAnchorElement" },
+      { ID_BODY, 	"HTMLBodyElement" },
+      { ID_OBJECT,	"HTMLObjectElement" },
+      // ### other >90 elements from htmltags.h. and put this into khtml.
+      { -1, 		0 }
+  };
+
+  if (node.nodeType() == DOM::Node::ELEMENT_NODE) {
+    int id = static_cast<DOM::Element>(node).elementId();
+    ElementName *eln = elementNames;
+    while (eln->id != -1) {
+      if (eln->id == id) {
+	s = eln->name;
+	break;
+      }
+      eln++;
+    }
+  } else {
+      s = typeInfo()->name;
   }
 
-  return String("");
+  return String("[object " + UString(s) + "]");
 }
 
 Completion DOMNodeFunc::tryExecute(const List &args)

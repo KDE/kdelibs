@@ -45,6 +45,7 @@ namespace KJS {
     static const TypeInfo info;
 
     virtual KJSO toPrimitive(Type preferred = UndefinedType) const;
+    virtual String toString() const;
 
   protected:
     DOM::Node node;
