@@ -179,7 +179,8 @@ class KFileMetaInfo::Data : public QShared
 public:
     Data(const QString& path)
         : QShared(),
-          path(path)
+          path(path),
+          supportsVariableKeys(false)
     {}
 
     QString                           path;
