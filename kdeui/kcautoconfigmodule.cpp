@@ -89,7 +89,7 @@ void KCAutoConfigModule::defaults()
 
 void KCAutoConfigModule::slotWidgetModified()
 {
-	setChanged(d->kautoconfig->hasChanged());
+    emit changed(d->kautoconfig->hasChanged());
 }
 
 KAutoConfig *KCAutoConfigModule::autoConfig()
