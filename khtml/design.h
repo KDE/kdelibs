@@ -23,7 +23,7 @@
 
 
 /**
- * @libdoc KDE HTML widget
+ * \mainpage KDE HTML widget
  *
  * This library provides a full-featured HTML parser and widget. It is
  * used for rendering in all KDE applications which allow HTML viewing,

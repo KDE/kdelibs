@@ -203,7 +203,7 @@ inline T kAbs (const T& a) { return a < 0 ? -a : a; }
 #endif
 
 /**
- * @libdoc The KDE Core Functionality Library
+ * \mainpage The KDE Core Functionality Library
  *
  * All KDE programs use this library to provide basic functionality such
  * as the configuration system, IPC, internationalization and locale
