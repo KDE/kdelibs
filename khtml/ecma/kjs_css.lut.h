@@ -139,7 +139,7 @@ const struct HashTable DOMCSSRuleTable = { 2, 6, DOMCSSRuleTableEntries, 4 };
 namespace KJS {
 
 const struct HashEntry DOMCSSStyleRuleTableEntries[] = {
-   { "selectorText", DOMCSSRule::Style_SelectorText, DontDelete|ReadOnly, 0, 0 },
+   { "selectorText", DOMCSSRule::Style_SelectorText, DontDelete, 0, 0 },
    { "style", DOMCSSRule::Style_Style, DontDelete|ReadOnly, 0, 0 }
 };
 
@@ -174,7 +174,7 @@ const struct HashTable DOMCSSFontFaceRuleTable = { 2, 1, DOMCSSFontFaceRuleTable
 namespace KJS {
 
 const struct HashEntry DOMCSSPageRuleTableEntries[] = {
-   { "selectorText", DOMCSSRule::Page_SelectorText, DontDelete|ReadOnly, 0, 0 },
+   { "selectorText", DOMCSSRule::Page_SelectorText, DontDelete, 0, 0 },
    { "style", DOMCSSRule::Page_Style, DontDelete|ReadOnly, 0, 0 }
 };
 
@@ -198,7 +198,7 @@ const struct HashTable DOMCSSImportRuleTable = { 2, 4, DOMCSSImportRuleTableEntr
 namespace KJS {
 
 const struct HashEntry DOMCSSCharsetRuleTableEntries[] = {
-   { "encoding", DOMCSSRule::Charset_Encoding, DontDelete|ReadOnly, 0, 0 }
+   { "encoding", DOMCSSRule::Charset_Encoding, DontDelete, 0, 0 }
 };
 
 const struct HashTable DOMCSSCharsetRuleTable = { 2, 1, DOMCSSCharsetRuleTableEntries, 1 };
