@@ -7,7 +7,6 @@
  -->
 
 <!ENTITY Alt    "<keycap>Alt</keycap>">
-<!ENTITY artsbuilder "construtor arts">
 <!ENTITY Backspace "<keycap>Esc</keycap>">
 <!ENTITY cdrom  "<hardware>CD-ROM</hardware>">
 <!ENTITY Ctrl   "<keycap>Ctrl</keycap>">
@@ -16,9 +15,7 @@
 <!ENTITY Enter	"<keycap>Enter</keycap>">
 <!ENTITY Esc   "<keycap>Esc</keycap>">
 <!ENTITY etc     "<abbrev>etc</abbrev>">
-<!ENTITY ex     "<abbrev>por exemplo</abbrev>">
 <!ENTITY FAQ     "Perguntas Mais Freqüentes (do inglês <acronym>FAQ</acronym>)">
-<!ENTITY HTML	'<acronym>HTML</acronym>'>
 <!ENTITY ie     "isto é">
 <!ENTITY infocenter	"<application>Centro de Informações</application>">
 <!ENTITY kcontrolcenter "<application>Centro de Controle do &kde;</application>">
