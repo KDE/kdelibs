@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Service
+Exec=blahfoo
+Name=Informix
+Comment=kdbcore database plugin for Informix
+MimeType=inode/directory
+ServiceTypes=KDB/DBPlugin
+X-KDE-Library=libkdb_informix

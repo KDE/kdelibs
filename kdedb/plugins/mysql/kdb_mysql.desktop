@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Service
+Exec=blahfoo
+Name=MySQL
+Comment=kdbcore database plugin for MySQL
+MimeType=inode/directory
+ServiceTypes=KDB/DBPlugin
+X-KDE-Library=libkdb_mysql

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Service
+Exec=blahfoo
+Name=KDBPluginPostgres
+Comment=kdbcore database plugin for Postgres
+MimeType=inode/directory
+ServiceTypes=KDB/DBPlugin
+X-KDE-Library=libkdb_postgres
+

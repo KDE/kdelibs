@@ -1,0 +1,15 @@
+dnl define some useful vars
+
+LIB_KDBUI="-lkdbui"
+AC_SUBST(LIB_KDBUI)
+
+LIB_KDBCORE="-lkdbcore"
+AC_SUBST(LIB_KDBCORE)
+
+LIB_KDB="$LIB_KDBUI $LIB_KDBCORE"
+AC_SUBST(LIB_KDB)
+
+
+dnl avoid compilation of kdedb for now.
+
+DO_NOT_COMPILE="$DO_NOT_COMPILE kdedb"

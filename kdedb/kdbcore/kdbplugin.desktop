@@ -1,0 +1,4 @@
+[Desktop Entry]
+Type=ServiceType
+X-KDE-ServiceType=KDB/DBPlugin
+Comment=Kdbcore Database Plugin
