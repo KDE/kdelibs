@@ -2,7 +2,7 @@
 #ifndef __notepad_h__
 #define __notepad_h__
 
-#include <part.h>
+#include <kparts/part.h>
 
 class QMultiLineEdit;
 

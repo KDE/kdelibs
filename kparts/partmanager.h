@@ -129,12 +129,6 @@ public:
   virtual QWidget *selectedWidget() const;
 
   /**
-   * Set the window caption.
-   **/
-  virtual void setWindowCaption( const QString & caption )
-  { ((QWidget *)parent())->setCaption( caption ); }
-
-  /**
    * Retrieve a list of parts managed being managed.
    **/
   const QList<Part> *parts() const;

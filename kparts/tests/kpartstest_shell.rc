@@ -24,4 +24,5 @@
 <ToolBar name="mainToolBar">
  <Action name="shell_quit"/>
 </ToolBar>
+<StatusBar/>
 </kpartgui>

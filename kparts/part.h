@@ -106,6 +106,18 @@ public:
     virtual void setSelectable( bool selectable );
     virtual bool isSelectable() const;
 
+signals:
+    /**
+     * Emitted by the part, to set the caption of the window(s)
+     * hosting this part
+     */
+    void setWindowCaption( const QString & caption );
+    /**
+     * Emited by the part, to set a text in the statusbar of the window(s)
+     * hosting this part
+     */
+    void setStatusBarText( const QString & text );
+
 protected:
     /**
      * Set the instance (@ref KInstance) for this part.
@@ -243,6 +255,18 @@ protected:
    * @internal
    */
   void abortLoad();
+
+  /**
+   * Reimplemented from Part, so that the window caption is set to
+   * the current url (decoded) when the part is activated
+   * This is the usual behaviour in 99% of the apps
+   * Reimplement if you don't like it - test for event->activated() !
+   *
+   * Technical note : this is done with GUIActivateEvent and not with 
+   * PartActivateEvent because it's handled by the mainwindow
+   * (which gets the even after the PartActivateEvent events have been sent)
+   */
+  virtual void guiActivateEvent( GUIActivateEvent *event );
 
   /**
    * Remote (or local) url - the one displayed to the user.

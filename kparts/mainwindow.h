@@ -108,9 +108,12 @@ protected slots:
    */
   virtual void createGUI( KParts::Part * part );
 
-protected:
-//should be obsolete (Simon)
-//  virtual void clearGUI();
+  /**
+   * Called when the active part wants to change the statusbar message
+   * Reimplement if your mainwindow has a complex statusbar
+   * (with several items)
+   */
+  virtual void slotSetStatusBarText( const QString & );
 
 private:
   QActionCollection m_actionCollection;

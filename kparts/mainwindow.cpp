@@ -205,16 +205,8 @@ QObject *MainWindow::createContainer( QWidget *parent, int index, const QDomElem
 
   if ( element.tagName() == "StatusBar" )
   {
-    if ( d->m_statusBar )
-      delete d->m_statusBar;
-
-    d->m_statusBar = new KStatusBar( this );
-
-    setStatusBar( d->m_statusBar );
-
-    d->m_statusBar->show();
-
-    return d->m_statusBar;
+    enableStatusBar( KStatusBar::Show );
+    return statusBar();
   }
 
   return 0L;
@@ -249,11 +241,9 @@ QByteArray MainWindow::removeContainer( QObject *container, QWidget *parent, int
     stream << (int)((KToolBar *)container)->barPos() << (int)((KToolBar *)container)->iconText();
     delete (KToolBar *)container;
   }
-  else if ( container->inherits( "KStatusBar" ) && d->m_statusBar )
+  else if ( container->inherits( "KStatusBar" ) )
   {
-    delete d->m_statusBar;
-    d->m_statusBar = 0;
-    setStatusBar( 0 );
+    enableStatusBar( KStatusBar::Hide );
   }
   /*
   if ( !isUpdatesEnabled() )
@@ -318,6 +308,11 @@ void MainWindow::createGUI( Part * part )
       m_factory->removeServant( *pIt );
 
     m_factory->removeServant( d->m_activePart );
+
+    disconnect( d->m_activePart, SIGNAL( setWindowCaption( const QString & ) ),
+             this, SLOT( setCaption( const QString & ) ) );
+    disconnect( d->m_activePart, SIGNAL( setStatusBarText( const QString & ) ),
+             this, SLOT( slotSetStatusBarText( const QString & ) ) );
   }
 
   if ( !d->m_bShellGUIActivated )
@@ -338,6 +333,12 @@ void MainWindow::createGUI( Part * part )
 
   if ( part )
   {
+    // do this before sending the activate event
+    connect( part, SIGNAL( setWindowCaption( const QString & ) ),
+             this, SLOT( setCaption( const QString & ) ) );
+    connect( part, SIGNAL( setStatusBarText( const QString & ) ),
+             this, SLOT( slotSetStatusBarText( const QString & ) ) );
+
     GUIActivateEvent ev( true );
     QApplication::sendEvent( part, &ev );
 
@@ -357,30 +358,9 @@ void MainWindow::createGUI( Part * part )
   d->m_activePart = part;
 }
 
-/* should be obsolete (Simon)
-void KPartsMainWindow::clearGUI()
+void MainWindow::slotSetStatusBarText( const QString & text )
 {
-  // this is for actionmenus -- they must not be destroyed, but instead unplugged properly.
-  const QObjectList *children = menuBar()->children();
-  if ( children )
-  {
-    QObjectListIt it( *children );
-    for (; it.current(); ++it )
-      if ( it.current()->inherits( "QAction" ) )
-	((QAction *)it.current())->unplug( menuBar() );
-  }
-
-  menuBar()->clear();
-
-  if ( d->m_statusBar )
-    {
-      delete d->m_statusBar;
-      d->m_statusBar = 0;
-      setStatusBar( 0 );
-    }
-
-  toolbars.clear();
+  statusBar()->message( text );
 }
-*/
 
 #include "mainwindow.moc"

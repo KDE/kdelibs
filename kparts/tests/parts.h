@@ -2,9 +2,12 @@
 #ifndef __parts_h__
 #define __parts_h__
 
-#include <part.h>
+#include <kparts/part.h>
 
 class QMultiLineEdit;
+namespace KParts {
+class PartActivateEvent;
+};
 
 class Part1 : public KParts::ReadOnlyPart
 {
@@ -29,7 +32,11 @@ public:
   virtual ~Part2();
 
 protected:
-
+  // This is not mandatory - only if you care about setting the
+  // part caption when the part is used in a multi-part environment
+  // (i.e. in a part manager)
+  // There is a default impl for ReadOnlyPart...
+  virtual void partActivateEvent( KParts::PartActivateEvent * );
   KInstance *m_instance;
 };
 

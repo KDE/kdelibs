@@ -1,6 +1,7 @@
-#include "parts.h"
 
-#include <partmanager.h>
+#include <kparts/partmanager.h>
+
+#include "parts.h"
 
 #include <qcheckbox.h>
 #include <qfile.h>
@@ -50,10 +51,8 @@ bool Part1::openFile()
     return false;
   m_edit->setText(s);
 
-  if (manager())
-    manager()->setWindowCaption( m_url.url() );
-  //See comments
-  //manager()->statusBar()->message( m_url.url() );
+  emit setWindowCaption( m_url.decodedURL() );
+  emit setStatusBarText( m_url.decodedURL() );
 
   return true;
 }
@@ -81,6 +80,12 @@ Part2::Part2( QObject *parent, QWidget * parentWidget )
 Part2::~Part2()
 {
   delete m_instance;
+}
+
+void Part2::partActivateEvent( KParts::PartActivateEvent * event )
+{
+  if (event->activated())
+    emit setWindowCaption("[part2 activated]");
 }
 
 #include "parts.moc"

@@ -2,7 +2,7 @@
 #ifndef __normalktm_h__
 #define __normalktm_h__
 
-#include <part.h>
+#include <kparts/part.h>
 #include <ktmainwindow.h>
 
 class KAction;

@@ -339,6 +339,15 @@ void ReadOnlyPart::slotJobError( int, int, const char * text )
   emit canceled( QString(text) );
 }
 
+void ReadOnlyPart::guiActivateEvent( GUIActivateEvent * event )
+{
+  if (event->activated())
+  {
+    kDebugInfo( 1000, "ReadOnlyPart::guiActivateEvent -> %s", m_url.decodedURL().ascii() );
+    emit setWindowCaption( m_url.decodedURL() );
+  }
+}
+
 //////////////////////////////////////////////////
 
 ReadWritePart::ReadWritePart( QObject *parent, const char *name )

@@ -1,7 +1,7 @@
 
 #include "notepad.h"
-#include <partmanager.h>
-#include <mainwindow.h>
+#include <kparts/partmanager.h>
+#include <kparts/mainwindow.h>
 
 #include <qsplitter.h>
 #include <qfile.h>
@@ -60,10 +60,8 @@ bool NotepadPart::openFile()
   }
   m_edit->setText(s);
 
-  if (manager())
-    manager()->setWindowCaption( m_url.url() );
-  // see comments
-  //manager()->statusBar()->message( m_url.url() );
+  emit setWindowCaption( m_url.decodedURL() );
+  emit setStatusBarText( m_url.decodedURL() );
 
   return true;
 }
