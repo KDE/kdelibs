@@ -2,6 +2,9 @@
 //
 // $Log$
 //
+// Revision 1.13  1997/12/18 20:51:28  kalle
+// Some patches by Alex and me
+//
 // Revision 1.12  1997/10/21 20:44:44  kulow
 // removed all NULLs and replaced it with 0L or "".
 // There are some left in mediatool, but this is not C++
@@ -56,8 +59,8 @@
 
 KConfigBase::KConfigBase()
 {
-									  KGroupDict* pWriteBackDict,
-									  bool bGlobal = false )
+  pData = new KConfigBaseData();
+				      bool bGlobal = false )
   // setup a group entry for the default group
   KEntryDict* pDefGroup = new KEntryDict( 37, false );
   pDefGroup->setAutoDelete( true );
@@ -148,7 +151,7 @@ void KConfigBase::parseOneConfigFile( QFile& rFile,
 		aCurrentLine.right( aCurrentLine.length()-nEqualsPos-1 ).stripWhiteSpace(); 
 	  pEntry->bDirty = false;
 	  pEntry->bGlobal = bGlobal;
-									const char* pDefault = NULL ) const
+	  pEntry->bNLS = false;
 
   if( !data()->bLocaleInitialized && kapp->localeConstructed() )
 	const_cast<KConfigBase*>(this)->setLocale();
@@ -219,7 +222,7 @@ const QString KConfigBase::readEntry( const char* pKey,
 
   while( nDollarPos != -1 && nDollarPos+1 < aValue.length())
 	{
-								char sep = ',' ) const
+	  // there is at least one $
  	  if( (aValue)[nDollarPos+1] != '$' )
 	    {
 	      uint nEndPos = nDollarPos;
@@ -251,7 +254,7 @@ int KConfigBase::readListEntry( const char* pKey, QStrList &list,
 {
   if( !hasKey( pKey ) )
     return 0;
-int KConfigBase::readNumEntry( const char* pKey, int nDefault = 0 ) const
+  QString str_list, value;
   str_list = readEntry( pKey );
   if( str_list.isEmpty() )
     return 0; 
@@ -268,7 +271,7 @@ int KConfigBase::readNumEntry( const char* pKey, int nDefault = 0 ) const
 	}
       if( str_list[i] == '\\' )
 	{
-								  const QFont* pDefault = NULL ) const
+	  i++;
 	  value += str_list[i];
 	  continue;
 	}
@@ -334,7 +337,7 @@ QFont KConfigBase::readFontEntry( const char* pKey,
 									   nIndex-nOldIndex-1 ).toUInt() );
 
 	  // find fifth part (weight)
-									const QColor* pDefault = NULL ) const
+	  nOldIndex = nIndex;
 	  nIndex = aValue.find( ',', nOldIndex+1 );
 	  if( nIndex == -1 )
 		return aRetFont;
@@ -370,9 +373,9 @@ QColor KConfigBase::readColorEntry( const char* pKey,
   QString aValue = readEntry( pKey );
   if( !aValue.isNull() )
 	{
-									 bool bPersistent = true, 
-									 bool bGlobal = false,
-									 bool bNLS = false )
+bool bOK;
+	  // find first part (red)
+	  int nIndex = aValue.find( ',' );
 	  if( nIndex == -1 )
   if( !data()->bLocaleInitialized && kapp->localeConstructed() )
 	const_cast<KConfigBase*>(this)->setLocale();
@@ -433,8 +436,8 @@ const char* KConfigBase::writeEntry( const char* pKey, const char* pValue,
 	  // there already is such a key
 	  aValue = pEntryData->aValue; // save old key as return value
 	  pEntryData->aValue = pValue; // set new value
-							   char sep = ',', bool bPersistent = true, 
-							   bool bGlobal = false, bool bNLS = false )
+	  pEntryData->bGlobal = bGlobal;
+	  pEntryData->bNLS = bNLS;
 	  if( bPersistent )
 		pEntryData->bDirty = TRUE;
 	}
@@ -460,9 +463,9 @@ const char* KConfigBase::writeEntry( const char* pKey, const char* pValue,
 }
 
 
-									 bool bPersistent = true, 
-									 bool bGlobal = false,
-									 bool bNLS = false )
+void KConfigBase::writeEntry ( const char* pKey, QStrList &list, 
+			       char sep , bool bPersistent, 
+			       bool bGlobal, bool bNLS )
 {
   if( list.isEmpty() )
     {
@@ -473,9 +476,9 @@ const char* KConfigBase::writeEntry( const char* pKey, const char* pValue,
   int i;
   for( value = list.first(); !value.isNull() ; value = list.next() )
     {
-									 bool bPersistent = true, 
-									 bool bGlobal = false,
-									 bool bNLS = false )
+      for( i = 0; i < (int) value.length(); i++ )
+	{
+	  if( value[i] == sep || value[i] == '\\' )
 	    str_list += '\\';
 	  str_list += value[i];
 	}
@@ -500,9 +503,9 @@ const char* KConfigBase::writeEntry( const char* pKey, int nValue,
 }
 
 
-									 bool bPersistent = true, 
-									 bool bGlobal = false,
-									 bool bNLS = false )
+const char* KConfigBase::writeEntry( const char* pKey, const QFont& rFont, 
+				     bool bPersistent, 
+				     bool bGlobal,
 				     bool bNLS )
 {
   QString aValue;
@@ -511,7 +514,7 @@ const char* KConfigBase::writeEntry( const char* pKey, int nValue,
   if( rFont.italic() )
 	nFontBits = nFontBits | 0x01;
   if( rFont.underline() )
-void KConfigBase::rollback( bool bDeep = true )
+	nFontBits = nFontBits | 0x02;
   if( rFont.strikeOut() )
 	nFontBits = nFontBits | 0x04;
   if( rFont.fixedPitch() )
