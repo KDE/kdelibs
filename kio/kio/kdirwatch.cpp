@@ -221,6 +221,8 @@ KDirWatchPrivate::KDirWatchPrivate()
     pipe(mPipe);
     fcntl(mPipe[0], F_SETFD, FD_CLOEXEC);
     fcntl(mPipe[1], F_SETFD, FD_CLOEXEC);
+    fcntl(mPipe[0], F_SETFL, O_NONBLOCK | fcntl(mPipe[0], F_GETFL));
+    fcntl(mPipe[1], F_SETFL, O_NONBLOCK | fcntl(mPipe[1], F_GETFL));
     mSn = new QSocketNotifier( mPipe[0], QSocketNotifier::Read, this);
     connect(mSn, SIGNAL(activated(int)), this, SLOT(slotActivated()));
     // Install the signal handler only once
@@ -274,8 +276,8 @@ KDirWatchPrivate::~KDirWatchPrivate()
 void KDirWatchPrivate::slotActivated()
 {
 #ifdef HAVE_DNOTIFY
-   char dummy_buf[100];
-   read(mPipe[0], &dummy_buf, 100);
+   char dummy_buf[4096];
+   read(mPipe[0], &dummy_buf, 4096);
 
    if (!rescan_timer.isActive())
       rescan_timer.start(m_PollInterval, true);
