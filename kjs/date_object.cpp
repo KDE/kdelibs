@@ -823,6 +823,17 @@ double KJS::KRFCDate_parseDate(const UString &_date)
      }
 #endif
 
+     if (!have_time && !have_tz) {
+       // fall back to midnight, local timezone
+       struct tm t;
+       memset(&t, 0, sizeof(tm));
+       t.tm_mday = day;
+       t.tm_mon = month;
+       t.tm_year = year - 1900;
+       t.tm_isdst = -1;
+       return mktime(&t);
+     }
+
      if(!have_tz)
        offset = local_timeoffset();
      else
@@ -834,8 +845,7 @@ double KJS::KRFCDate_parseDate(const UString &_date)
      if ((offset > 0) && (offset > result))
         offset = 0;
 
-     if ( have_time ) // don't apply offset if no time was specified, it might change the date!
-       result -= offset;
+     result -= offset;
 
      // If epoch 0 return epoch +1 which is Thu, 01-Jan-70 00:00:01 GMT
      // This is so that parse error and valid epoch 0 return values won't
