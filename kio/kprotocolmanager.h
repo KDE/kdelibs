@@ -1,5 +1,7 @@
 /* This file is part of the KDE libraries
    Copyright (C) 1999 Torben Weis <weis@kde.org>
+   Copyright (C) 2000- Waldo Bastain <bastain@kde.org>
+   Copyright (C) 2000- Dawit Alemayehu <adawit@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -232,6 +234,12 @@ public:
   static bool useProxy();
 
   /**
+   * Returns whether or not the the proxy server
+   * lookup should be reversed or not.
+   */
+  static bool useReverseProxy();
+
+  /**
    * Types of proxy configuration
    * @li NoProxy     - No proxy is used
    * @li ManualProxy - Proxies are manually configured
@@ -252,6 +260,25 @@ public:
    * Returns the type of proxy configuration that is used.
    */
   static ProxyType proxyType();
+
+  /**
+   * Proxy authorization modes.
+   *
+   * @li Prompt     - Ask for authorization as needed
+   * @li Automatic  - Use auto login as defined in kionetrc files.
+   */
+  enum ProxyAuthMode
+  {
+      Prompt,
+      Automatic
+  };
+
+  /**
+   * Returns the way proxy authorization should be handled.
+   *
+   * @see ProxyAuthMode
+   */
+  static ProxyAuthMode proxyAuthMode();
 
   /*
    * This method has been deprecated, please
@@ -310,12 +337,33 @@ public:
    * @deprecated
    */
   static void setUseProxy( bool _mode );
+
+  /**
+   * Sets the proxy exception lookup to be reversed
+   * and only URLs matching addresses in that list
+   * use proxy servers.
+   *
+   * Note that this flag only applies if the chosen
+   * proxy configuration type is either ManualProxy
+   * or EnvVarProxy. See @ref ProxyType.
+   *
+   * @param if true do a reverse proxy lookup.
+   */
+  static void setUseReverseProxy( bool _mode );
+
   /**
    * Set the type of proxy configuration to use.
    *
    * @param type the @ref ProxyType to use.
    */
   static void setProxyType( ProxyType type );
+
+  /**
+   * Sets the proxy authorization mode to use.
+   *
+   * @param mode @ref ProxyAuthMode
+   */
+  static void setProxyAuthMode( ProxyAuthMode mode );
 
   /**
    * Set the proxy for FTP transfer.
@@ -353,8 +401,11 @@ public:
   static void setProxyFor( const QString& /* protocol */, const QString& /* _proxy */ );
 
   /**
-   * Set the URLs for which we should not use the proxy.
+   * Set the URLs for which we should or should not use
+   * a proxy server.
    *
+   * In reverse lookup mode only the URL matching addresses
+   * in this list are allowed to use proxy servers.
    */
   static void setNoProxyFor( const QString& _noproxy );
 

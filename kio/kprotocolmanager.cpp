@@ -1,5 +1,7 @@
 /* This file is part of the KDE libraries
    Copyright (C) 1999 Torben Weis <weis@kde.org>
+   Copyright (C) 2000- Waldo Bastain <bastain@kde.org>
+   Copyright (C) 2000- Dawit Alemayehu <adawit@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -224,11 +226,25 @@ bool KProtocolManager::useProxy()
   return proxyType() != NoProxy;
 }
 
+bool KProtocolManager::useReverseProxy()
+{
+  KConfig *cfg = config();
+  cfg->setGroup( "Proxy Settings" );
+  return cfg->readBoolEntry("ReversedException", false);
+}
+
 KProtocolManager::ProxyType KProtocolManager::proxyType()
 {
   KConfig *cfg = config();
   cfg->setGroup( "Proxy Settings" );
   return static_cast<ProxyType>(cfg->readNumEntry( "ProxyType" ));
+}
+
+KProtocolManager::ProxyAuthMode KProtocolManager::proxyAuthMode()
+{
+  KConfig *cfg = config();
+  cfg->setGroup( "Proxy Settings" );
+  return static_cast<ProxyAuthMode>(cfg->readNumEntry( "AuthMode" ));
 }
 
 bool KProtocolManager::useCache()
@@ -306,8 +322,11 @@ QString KProtocolManager::proxyForURL( const KURL &url )
           proxy = QString::fromLocal8Bit(getenv(proxyFor(url.protocol()).local8Bit()));
           break;
       case ManualProxy:
+          proxy = proxyFor( url.protocol() );
+          break;
+      case NoProxy:
       default:
-        proxy = proxyFor( url.protocol() );
+          break;
   }
 
   return (proxy.isEmpty() ? QString::fromLatin1("DIRECT") : proxy);
@@ -321,8 +340,13 @@ void KProtocolManager::badProxy( const QString &proxy )
 
 QString KProtocolManager::slaveProtocol( const QString & protocol )
 {
-  return ( useProxy() && !proxyFor(protocol).isEmpty() )
-           ? QString::fromLatin1("http") : protocol;
+  if ( useProxy() )
+  {
+    KURL u = proxyFor(protocol);
+    if ( u.isValid() )
+      return u.protocol();
+  }
+  return protocol;
 }
 
 /*
@@ -487,11 +511,26 @@ void KProtocolManager::setUseProxy( bool _mode )
   setProxyType( _mode ? ManualProxy : NoProxy );
 }
 
+void KProtocolManager::setUseReverseProxy( bool mode )
+{
+  KConfig *cfg = config();
+  cfg->setGroup( "Proxy Settings" );
+  cfg->writeEntry("ReversedException", mode);
+}
+
 void KProtocolManager::setProxyType(ProxyType type)
 {
   KConfig *cfg = config();
   cfg->setGroup( "Proxy Settings" );
   cfg->writeEntry( "ProxyType", static_cast<int>(type) );
+  cfg->sync();
+}
+
+void KProtocolManager::setProxyAuthMode(ProxyAuthMode mode)
+{
+  KConfig *cfg = config();
+  cfg->setGroup( "Proxy Settings" );
+  cfg->writeEntry( "AuthMode", static_cast<int>(mode) );
   cfg->sync();
 }
 
