@@ -5,6 +5,7 @@ Type=MimeType
 MimeType=image/x-vnd.adobe.photoshop
 Patterns=*.psd;*.PSD;
 Comment=Adobe Photoshop Image
+Comment[ar]=صورة أدوبي فوتوشوب
 Comment[az]=Adobe Photoshop Rəsmi
 Comment[be]=Малюнак Adobe Photoshop
 Comment[bg]=Изображение на Adobe Photoshop

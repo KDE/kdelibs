@@ -1789,6 +1789,7 @@ Name[zh_TW]=荷蘭語
 Name[zu]=Isi-Danishi
 [dz]
 Name=Dzongkha
+Name[ar]=الجونغا
 Name[az]=Dzunqxaca
 Name[bg]=Джонга
 Name[bn]=জঙখা
@@ -2247,6 +2248,7 @@ Name[zh_TW]=法語
 Name[zu]=Isi-Frentshi
 [fy]
 Name=Frisian
+Name[ar]=الفريزية
 Name[az]=Friscə
 Name[be]=Фрызская
 Name[bg]=Фарси
@@ -2568,6 +2570,7 @@ Name[zh_TW]=愛爾蘭語
 Name[zu]=Isi-Irishi
 [gl]
 Name=Gallegan
+Name[ar]=الغاليغية
 Name[az]=Qalleqanca
 Name[bg]=Галедански
 Name[bn]=গালিগান
@@ -2803,6 +2806,7 @@ Name[zh_TW]=古吉拉特語
 Name[zu]=Isi-Gujarati
 [ha]
 Name=Hausa
+Name[ar]=الهاوسا
 Name[bg]=Хауса
 Name[bn]=হাউসা
 Name[de]=Haussa-Sprache
@@ -2903,6 +2907,7 @@ Name[zh_TW]=希伯來語
 Name[zu]=Isi-Hebheru
 [hz]
 Name=Herero
+Name[ar]=الهيريرو
 Name[bg]=Хереро
 Name[bn]=হেরেরো
 Name[cy]=Hausa
@@ -2971,6 +2976,7 @@ Name[zh_TW]=北印度語
 Name[zu]=Isi-Hindi
 [ho]
 Name=Hiri Motu
+Name[ar]=الهيري-موتو
 Name[bg]=Хири Мото
 Name[bn]=হিরি মোটু
 Name[de]=Hiri-Motu
@@ -3146,6 +3152,7 @@ Name[zh_TW]=冰島語
 Name[zu]=isi-Icelandic
 [io]
 Name=Ido
+Name[ar]=الإيدو
 Name[bg]=Идо
 Name[bn]=ইডো
 Name[fa]=ایدو
@@ -3173,6 +3180,7 @@ Name[zh_TW]=伊多語
 Name[zu]=Isi-Ido
 [iu]
 Name=Inuktitut
+Name[ar]=الإنكتيتوت
 Name[bg]=Иниктитут
 Name[bn]=ইনাক্টিটুট
 Name[fa]=اینوکتیتوت
@@ -3202,6 +3210,7 @@ Name[zh_TW]=Inuktitut語
 Name[zu]=Isi-Inuktitut
 [ie]
 Name=Interlingue
+Name[ar]=الإنترلينغوي
 Name[bg]=Интерлингуе
 Name[bn]=ইন্টারলিং
 Name[de]=Interlingua
@@ -3231,6 +3240,7 @@ Name[zh_TW]=Interlingue語
 Name[zu]=Izilimi ezifanayo
 [ia]
 Name=Interlingua
+Name[ar]=الإنترلينغوا
 Name[az]=İnterlinqua
 Name[bg]=Интерлингуа
 Name[bn]=ইন্টারলিঙ্গুয়া
@@ -3329,6 +3339,7 @@ Name[zh_TW]=印尼語
 Name[zu]=Indoneshiya
 [ik]
 Name=Inupiaq
+Name[ar]=الإنوبياك
 Name[az]=İnupiaqca
 Name[bg]=Инупия
 Name[bn]=ইনুপিয়াক
@@ -3566,6 +3577,7 @@ Name[zh_TW]=日語
 Name[zu]=Isi-Jaliphani
 [kl]
 Name=Kalaallisut
+Name[ar]=الكالاليسوت
 Name[az]=Kalaallisutca
 Name[bg]=Калисути
 Name[bn]=কালালিসুট
@@ -3597,6 +3609,7 @@ Name[zh_TW]=Kalaallisut語
 Name[zu]=Isi-Kalaallisut
 [kn]
 Name=Kannada
+Name[ar]=الكانادا
 Name[az]=Kannadaca
 Name[be]=Каннада
 Name[bg]=Каннада
@@ -3765,6 +3778,7 @@ Name[zh_TW]=高棉語
 Name[zu]=Isi-Khmer
 [ki]
 Name=Kikuyu
+Name[ar]=الكيكويو
 Name[az]=Kikuyuca
 Name[bg]=Кикю
 Name[bn]=কিকুয়ু
@@ -3796,6 +3810,7 @@ Name[zh_TW]=吉庫猶語
 Name[zu]=Isi-Kikuyu
 [rw]
 Name=Kinyarwanda
+Name[ar]=الكينارواندا
 Name[az]=Kinyarvandaca
 Name[bg]=Кинарванда
 Name[bn]=কিন্যারওয়াণ্ডা
@@ -3883,6 +3898,7 @@ Name[zh_TW]=吉爾吉斯語
 Name[zu]=Isi-Kirghizi
 [kv]
 Name=Komi
+Name[ar]=الكومي
 Name[az]=Komicə
 Name[be]=Комі
 Name[bg]=Коми
@@ -4213,6 +4229,7 @@ Name[zh_TW]=拉脫維亞語
 Name[zu]=Isi-Latvian
 [li]
 Name=Limburgan
+Name[ar]=الليمبورغية
 Name[az]=Limburqca
 Name[bg]=Лимбургански
 Name[bn]=লিমবার্গান
@@ -4263,6 +4280,7 @@ Name[zh_TW]=Limburgan語
 Name[zu]=Isi-Lumburgan
 [ln]
 Name=Lingala
+Name[ar]=اللينغالا
 Name[az]=Linqalaca
 Name[bg]=Лингалски
 Name[bn]=লিঙ্গালা
@@ -4492,6 +4510,7 @@ Name[zh_TW]=馬其頓語
 Name[zu]=Isi-Makhedoniya
 [mh]
 Name=Marshallese
+Name[ar]=المارشالية
 Name[az]=Marşallca
 Name[bg]=Маршалски
 Name[bn]=মার্শালিস
@@ -4545,6 +4564,7 @@ Name[zh_TW]=馬紹爾語
 Name[zu]=Isi-Marshallese
 [ml]
 Name=Malayalam
+Name[ar]=المالايالام
 Name[az]=Malayamca
 Name[bg]=Малаялам
 Name[bn]=মালয়লম
@@ -4635,6 +4655,7 @@ Name[zh_TW]=毛利語
 Name[zu]=Isi-Maori
 [mr]
 Name=Marathi
+Name[ar]=الماراثي
 Name[az]=Maraticə
 Name[bg]=Маратхи
 Name[bn]=মরাঠী
@@ -4964,6 +4985,7 @@ Name[zh_TW]=蒙古語
 Name[zu]=Isi-Mongolian
 [na]
 Name=Nauru
+Name[ar]=الناورو
 Name[az]=Nauruca
 Name[bg]=Науру
 Name[bn]=নাউরু
@@ -4998,6 +5020,7 @@ Name[zh_TW]=諾魯語
 Name[zu]=Isi-Nauru
 [nso]
 Name=Northern Sotho
+Name[ar]=السوتو الشمالية
 Name[az]=Şimali Sotho
 Name[bg]=Северен Лесото
 Name[bn]=উত্তর সোথো
@@ -5047,6 +5070,7 @@ Name[xx]=xxNorthern Sothoxx
 Name[zh_CN]=北部梭托语
 [nv]
 Name=Navajo
+Name[ar]=النافاجو
 Name[az]=Navayoca
 Name[bg]=Наважо
 Name[bn]=নাভায়ো
@@ -5084,6 +5108,7 @@ Name[zh_TW]=納瓦伙語
 Name[zu]=Isi-Navajo
 [nr]
 Name=Ndebele, South
+Name[ar]=النديبيلي الجنوبية
 Name[az]=Ndebele, Cənub
 Name[bg]=Южен Ндебеле
 Name[bs]=Ndebele, Južni
@@ -5142,6 +5167,7 @@ Name[zh_TW]=Ndebele語，南部
 Name[zu]=Isi-Ndebele, Sase-Mzansi
 [nd]
 Name=Ndebele, North
+Name[ar]=النديبيلي الشمالية
 Name[az]=Ndebele, Şimal
 Name[bg]=Северен Ндебеле
 Name[bs]=Ndebele, Sjeverni
@@ -5200,6 +5226,7 @@ Name[zh_TW]=Ndebele語，北部
 Name[zu]=Isi-Ndebele, Sase-Ntshonalanga
 [ng]
 Name=Ndonga
+Name[ar]=الندونغا
 Name[bg]=Нгонда
 Name[bn]=নডোঙ্গা
 Name[fa]=ان‌دونگایی
@@ -5470,6 +5497,7 @@ Name[zh_CN]=挪威语 (博克马尔语)
 Name[zu]=Isi-Norwegian Bokmaal
 [ny]
 Name=Chichewa
+Name[ar]=التشيشيوا
 Name[az]=Çiçeva
 Name[bg]=Чичева
 Name[bn]=চিচেওয়া
@@ -5597,6 +5625,7 @@ Name[zh_TW]=Oriya語
 Name[zu]=Isi-Oriya
 [om]
 Name=Oromo
+Name[ar]=الأورومو
 Name[az]=Oromoca
 Name[bg]=Оромо
 Name[bn]=ওরোমো
@@ -5627,6 +5656,7 @@ Name[zh_TW]=Oromo語
 Name[zu]=Isi-Oromo
 [os]
 Name=Ossetian
+Name[ar]=الأوسيتية
 Name[az]=Osetiyaca
 Name[be]=Асецінская
 Name[bg]=Осетски
@@ -5770,6 +5800,7 @@ Name[wa]=Farsi
 Name[zh_CN]=波斯语
 [pi]
 Name=Pali
+Name[ar]=البالي
 Name[az]=Palicə
 Name[bg]=Палски
 Name[bn]=পালি
@@ -6040,6 +6071,7 @@ Name[zh_TW]=普什圖語
 Name[zu]=Dudula ku
 [qu]
 Name=Quechua
+Name[ar]=الكويتشيوا
 Name[az]=Kveçcə
 Name[bg]=Ячуа
 Name[bn]=কেচুয়া
@@ -6247,6 +6279,7 @@ Name[zh_TW]=俄語
 Name[zu]=Isi-Rashiya
 [sg]
 Name=Sango
+Name[ar]=السانغو
 Name[az]=Sagno
 Name[bg]=Санго
 Name[bn]=সাংগো
@@ -6457,6 +6490,7 @@ Name[zh_TW]=克羅埃西亞語
 Name[zu]=Isi-Croatian
 [si]
 Name=Sinhalese
+Name[ar]=السينهالية
 Name[az]=Sinhalca
 Name[bg]=Синхалски
 Name[bn]=সিংহলী
@@ -6576,6 +6610,7 @@ Name[zh_TW]=斯洛維尼亞語
 Name[zu]=Isi-Slovenian
 [se]
 Name=Northern Sami
+Name[ar]=السامي الشمالية
 Name[az]=Şimali Sami
 Name[be]=Паўночная Саамская
 Name[bg]=Северен Сами
@@ -6699,6 +6734,7 @@ Name[zh_CN]=斯洛伐克语
 Name[zu]=Isi-Silovaki
 [sm]
 Name=Samoan
+Name[ar]=الساموية
 Name[bg]=Самоански
 Name[bn]=সামোয়ান
 Name[bs]=Samoanski
@@ -6754,6 +6790,7 @@ Name[zh_TW]=薩摩牙語
 Name[zu]=Isi-Samoan
 [sn]
 Name=Shona
+Name[ar]=الشونا
 Name[bg]=Шонски
 Name[bn]=শোনা
 Name[eo]=Ŝona
@@ -6864,6 +6901,7 @@ Name[zh_TW]=索馬利語
 Name[zu]=Isi-Somali
 [st]
 Name=Sotho, Southern
+Name[ar]=السوتو الشمالية
 Name[az]=Sotho, Cənubi
 Name[bg]=Южен Лесото
 Name[bn]=সোথো, দক্ষিণ
@@ -6993,6 +7031,7 @@ Name[zh_TW]=西班牙語
 Name[zu]=Isi-Penishi
 [sc]
 Name=Sardinian
+Name[ar]=الساردينية
 Name[bg]=Сардински
 Name[bn]=সার্ডিনিয়ান
 Name[bs]=Sardinijski
@@ -7048,6 +7087,7 @@ Name[zh_TW]=薩丁尼亞語
 Name[zu]=Isi-Sardinian
 [ss]
 Name=Swati
+Name[ar]=السواتي
 Name[az]=Svati
 Name[bg]=Свати
 Name[bn]=সোয়াতি
@@ -7400,6 +7440,7 @@ Name[zh_TW]=韃靼語
 Name[zu]=Isi-Tatar
 [te]
 Name=Telugu
+Name[ar]=التيلوغو
 Name[az]=Teluguca
 Name[be]=Тэлугу
 Name[bg]=Телугу
@@ -7603,6 +7644,7 @@ Name[zh_TW]=藏語
 Name[zu]=Isi-Tibetan
 [ti]
 Name=Tigrinya
+Name[ar]=التيغرينيا
 Name[az]=Tigrinyaca
 Name[bg]=Тигрински
 Name[bn]=টিগ্রিন্যা
@@ -7671,6 +7713,7 @@ Name[zh_TW]=東加語
 Name[zu]=Isi-Tonga
 [tn]
 Name=Tswana
+Name[ar]=التسوانا
 Name[az]=Tsvanaca
 Name[bg]=Тсвана
 Name[bn]=তসওয়ানা
@@ -7705,6 +7748,7 @@ Name[zh_TW]=班圖語
 Name[zu]=Isi-Tswana
 [ts]
 Name=Tsonga
+Name[ar]=التسونغا
 Name[az]=Tsongaca
 Name[bg]=Тсонга
 Name[bn]=তসংগা
@@ -7860,6 +7904,7 @@ Name[zh_TW]=土耳其語
 Name[zu]=Isi-Thekishi
 [tw]
 Name=Twi
+Name[ar]=التوي
 Name[az]=Tvicə
 Name[bg]=Туи
 Name[de]=Akan-Sprache
@@ -7887,6 +7932,7 @@ Name[zh_TW]=契維語
 Name[zu]=Isi-Twi
 [ug]
 Name=Uighur
+Name[ar]=الأويغورية
 Name[az]=Uyğurca
 Name[bg]=Югхур
 Name[bn]=উইঘুর
@@ -8173,6 +8219,7 @@ Name[zh_TW]=越南語
 Name[zu]=Isi-Vietnamese
 [vo]
 Name=Volapük
+Name[ar]=الفولابوك
 Name[az]=Volapükcə
 Name[bg]=Воларски
 Name[bn]=ভোলাপুক
@@ -8330,6 +8377,7 @@ Name[zh_TW]=華隆語
 Name[zu]=Isi-Walloon
 [wo]
 Name=Wolof
+Name[ar]=الوولوف
 Name[az]=Volofca
 Name[bg]=Воловски
 Name[bn]=ওয়োলফ
@@ -8397,6 +8445,7 @@ Name[zh_TW]=科薩語
 Name[zu]=Isi-Xhosa
 [yi]
 Name=Yiddish
+Name[ar]=اليديش
 Name[az]=Yiddişcə
 Name[be]=Ідыш
 Name[bg]=Идиш
@@ -8442,6 +8491,7 @@ Name[zh_TW]=意第緒語
 Name[zu]=Isi-Yidishi
 [yo]
 Name=Yoruba
+Name[ar]=اليوروبا
 Name[az]=Yorubaca
 Name[bg]=Йориба
 Name[bn]=য়োরুবা
@@ -8477,6 +8527,7 @@ Name[zh_TW]=優魯巴語
 Name[zu]=Isi-Yoruba
 [za]
 Name=Zhuang
+Name[ar]=الزهوانغ
 Name[az]=Zhuangca
 Name[bg]=Жуанг
 Name[bn]=ঝুয়াং

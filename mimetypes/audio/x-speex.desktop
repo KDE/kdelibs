@@ -5,6 +5,7 @@ MimeType=audio/x-speex
 Icon=sound
 Patterns=*.spx;*.SPX;
 Comment=Speex Audio
+Comment[ar]=ملف Speex صوتي
 Comment[be]=Speex аўдыё
 Comment[bg]=Аудиофайл Speex
 Comment[bn]=স্পীক্স অডিও

@@ -4,6 +4,7 @@ Type=MimeType
 MimeType=image/x-xcursor
 Icon=cursor
 Comment=X11 Mouse Cursor
+Comment[ar]=مؤشر فأرة
 Comment[az]=X11 Siçan Kursoru
 Comment[bg]=Показалец на мишката
 Comment[bn]=X11 মাউস কার্সর

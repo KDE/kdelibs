@@ -6,6 +6,7 @@ Icon=video
 Patterns=*.ogm;*.OGM;
 X-KDE-IsAlso=application/ogg
 Comment=Ogg/Ogm Video
+Comment[ar]=ملف فيديو Ogg/Ogm
 Comment[be]=Ogg/Ogm відэа
 Comment[bg]=Видеофайл Ogg/Ogm
 Comment[bn]=অগ/ও-জি-এম ভিডিও

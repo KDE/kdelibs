@@ -5,6 +5,7 @@ MimeType=audio/aac
 Icon=sound
 Patterns=*.aac;*.AAC;
 Comment=AAC Sound
+Comment[ar]=ملف AAC صوتي
 Comment[az]=AAC Səsi
 Comment[be]=AAC аўдыё
 Comment[bg]=Аудиофайл AAC

@@ -5,6 +5,7 @@ MimeType=image/x-bmp
 Icon=image
 Patterns=*.bmp;*.BMP;
 Comment=BMP Image
+Comment[ar]=صورة BMP
 Comment[az]=BMP Rəsmi
 Comment[be]=Малюнак BMP
 Comment[bg]=Изображение BMP

@@ -6,6 +6,7 @@ Icon=sound
 Patterns=*.ra;*.ram;*.RA;*.RAM;
 X-KDE-IsAlso=audio/x-pn-realaudio
 Comment=RealAudio File
+Comment[ar]=ملف Real Audio
 Comment[az]=RealAudio Faylı
 Comment[be]=Файл RealAudio
 Comment[bg]=Файл на RealAudio

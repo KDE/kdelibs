@@ -21,6 +21,7 @@ Name[uz]=Керамика
 Name[xx]=xxKeramikxx
 ConfigPage=kstyle_keramik_config
 Comment=The default style using alphablending
+Comment[ar]=المظهر الإفتراضي باستعمال alphablending
 Comment[az]=Alfa şəffaflıq işlədən ön qurğulu tərz
 Comment[bg]=Стандартния стил, използващ алфа сливане
 Comment[bn]= ডিফল্ট ধরন,স্টাইল

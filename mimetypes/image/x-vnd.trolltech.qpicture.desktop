@@ -5,6 +5,7 @@ Type=MimeType
 MimeType=image/x-vnd.trolltech.qpicture
 Patterns=*.qpic;
 Comment=QPicture Metafile
+Comment[ar]=ملف QPicture
 Comment[az]=QPicture Meta Faylı
 Comment[bg]=Мета файл на QPicture
 Comment[bs]=QPicture metadatoteka

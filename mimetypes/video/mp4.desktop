@@ -5,6 +5,7 @@ MimeType=video/mp4
 Icon=video
 Patterns=*.mp4;*.MP4;*.m4v;*.M4V;
 Comment=MPEG-4 Video
+Comment[ar]=ملف فيديو MPEG-4
 Comment[be]=MPEG-4 відэа
 Comment[bg]=Видеофайл MPEG-4
 Comment[bn]=এমপেগ-৪ ভিডিও

@@ -5,6 +5,7 @@ MimeType=audio/x-vorbis
 Icon=sound
 X-KDE-IsAlso=application/ogg
 Comment=Ogg Vorbis Audio
+Comment[ar]=ملف Ogg Vorbis صوتي
 Comment[be]=Ogg Vorbis аўдыё
 Comment[bg]=Аудиофайл Ogg Vorbis
 Comment[bn]=অগ ভরবিস অডিও

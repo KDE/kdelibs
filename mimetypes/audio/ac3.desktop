@@ -5,6 +5,7 @@ MimeType=audio/ac3
 Icon=sound
 Patterns=*.ac3;*.AC3;
 Comment=Dolby AC3 Sound
+Comment[ar]=ملف صوتي Dolby AC3
 Comment[az]=Dolby AC3 Səsi
 Comment[be]=Dolby AC3 аўдыё
 Comment[bg]=Долби аудио AC3

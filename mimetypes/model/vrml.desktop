@@ -3,6 +3,7 @@ Encoding=UTF-8
 Type=MimeType
 MimeType=model/vrml
 Comment=VRML Model
+Comment[ar]=نمودج VRML
 Comment[az]=VRML Modeli
 Comment[be]=VRML мадэль
 Comment[bg]=Модел VRML

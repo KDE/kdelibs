@@ -5,6 +5,7 @@ MimeType=application/x-msaccess
 Icon=database
 Patterns=*.mdb;*.MDB;*.mda;*.MDA;*.mde;*.MDE;
 Comment=Microsoft Access Database
+Comment[ar]=قاعدة بيانات مايكروسوفت أكسيس
 Comment[az]=Microsoft Access Databeyzi
 Comment[be]=База дадзеных Microsoft Access
 Comment[bg]=Документ на Microsoft Access

@@ -5,6 +5,7 @@ MimeType=application/x-vnd.kde.kugar.mixed
 Icon=kugar_kud
 Patterns=*.kug
 Comment=Kugar Archive File
+Comment[ar]=ملف أرشيف كوغار
 Comment[az]=Kugar Arxiv Faylı
 Comment[be]=Архіўны файл Kugar
 Comment[bg]=Архивен файл на Kugar

@@ -5,6 +5,7 @@ MimeType=application/x-linguist
 Icon=gettext
 Patterns=*.ts;
 Comment=Qt Translation Source File
+Comment[ar]=ملف ترجمة QT مصدري
 Comment[az]=Qt Tərcümə Mənbəsi Faylı
 Comment[bg]=Файл със съобщения за превод на Qt
 Comment[bs]=Qt izvorna datoteka za prijevod

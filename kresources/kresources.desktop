@@ -11,6 +11,7 @@ X-KDE-FactoryName=kresources
 X-KDE-HasReadOnlyMode=false
 
 Name=KDE Resources Configuration
+Name[ar]=إعدادت مصادر كيدي
 Name[az]=KDE Ehtiyatlar Qurğuları
 Name[bg]=Конфигуриране на ресурсите в КДЕ
 Name[bs]=KDE podešavanje resursa

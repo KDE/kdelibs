@@ -5,6 +5,7 @@ MimeType=image/jp2
 Icon=image
 Patterns=*.jp2;*.JP2
 Comment=JPEG 2000 Image
+Comment[ar]=صورة JPEG 2000
 Comment[az]=JPEG 2000 Rəsmi
 Comment[be]=Малюнак JPEG 2000
 Comment[bg]=Изображение JPEG 2000

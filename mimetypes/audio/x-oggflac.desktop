@@ -5,6 +5,7 @@ MimeType=audio/x-oggflac
 Icon=sound
 X-KDE-IsAlso=application/ogg
 Comment=Ogg FLAC Audio
+Comment[ar]=ملف Ogg FLAC صوتي
 Comment[be]=Ogg FLAC аўдыё
 Comment[bg]=Аудиофайл Ogg FLAC
 Comment[bn]=অগ এফ-এল-এ-সি (FLAC) অডিও

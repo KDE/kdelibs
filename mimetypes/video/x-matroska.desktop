@@ -5,6 +5,7 @@ MimeType=video/x-matroska
 Icon=video
 Patterns=*.mkv;*.MKV;
 Comment=Matroska Video
+Comment[ar]=ملف فيديو ماتروسكا
 Comment[be]=Матрошка відэа
 Comment[bg]=Видеофайл Matroska
 Comment[bn]=মাত্রোস্কা ভিডিও

@@ -5,6 +5,7 @@ MimeType=application/mspowerpoint
 Icon=presentation
 Patterns=*.ppz;*.PPZ;*.ppt;*.PPT;*.pps;*.PPS;
 Comment=Microsoft PowerPoint Presentation
+Comment[ar]=مستند مايكروسوفت باوربوينت
 Comment[az]=Microsoft PowerPoint Sənədi
 Comment[be]=Прэзэнтацыя Microsoft PowerPoint
 Comment[bg]=Документ на Microsoft PowerPoint

@@ -3,6 +3,7 @@ Encoding=UTF-8
 Type=ServiceType
 X-KDE-ServiceType=KPluginInfo
 Name=KDE Plugin Information
+Name[ar]=معلومات ملحقات كيدي
 Name[az]=KDE Əlavə Mə'lumatı
 Name[be]=Інфармацыя аб дапаўненьні KDE
 Name[bg]=Информация за приставките в КДЕ

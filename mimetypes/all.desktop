@@ -3,6 +3,7 @@ Encoding=UTF-8
 Type=MimeType
 MimeType=all/all
 Comment=All Files and Folders
+Comment[ar]=كل الملفات واﻷدلة
 Comment[az]=Bütün Fayl və Qovluqlar
 Comment[be]=Усе файлы і тэчкі
 Comment[bg]=Всички файлове и директории

@@ -4,6 +4,7 @@ Type=MimeType
 MimeType=audio/x-pn-realaudio
 Icon=sound
 Comment=RealAudio File
+Comment[ar]=ملف Real Audio
 Comment[az]=RealAudio Faylı
 Comment[be]=Файл RealAudio
 Comment[bg]=Файл на RealAudio
