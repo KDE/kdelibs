@@ -63,7 +63,6 @@
   
 #include <kapp.h>
 #include <kfontdialog.h>
-#include <kfiledialog.h>
 
 ///
 class KIntLineEdit : public QLineEdit
@@ -492,7 +491,7 @@ protected:
     int 	doReplace(QString s_pattern, bool case_sensitive, 
 			  bool regex, bool forward,int line, int col,bool replace);
 
-
+    QFileDialog* getFileDialog(const char* captiontext);
 
 
 protected:
@@ -515,13 +514,13 @@ private:
 
     QString	killbufferstring;
     QWidget     *p_parent;
-    KFileDialog *fbox;
+    QFileDialog *fbox;
     KEdSrch 	*srchdialog;
     KEdReplace 	*replace_dialog;
     KEdGotoLine *gotodialog;
     QPopupMenu  *rb_popup;
     KApplication* mykapp;
-    KFileDialog *file_dialog;
+    QFileDialog *file_dialog;
     QStrList	par;
 
     QString 	filename;

@@ -350,24 +350,23 @@ int KEdit::loadFile(QString name, int mode){
 
 int KEdit::insertFile(){
 
+    QFileDialog *box;
     QString file_to_insert;
 
+    box = getFileDialog(klocale->translate("Select Document to Insert"));
 
-    // static QString getOpenFileName(const char *dir= 0, const char *filter= 0,
-    //			   QWidget *parent= 0, const char *name= 0);
-
-    QString d;
-    if ( !filename.isEmpty() )
-      d.sprintf( QFileInfo( filename ).dirPath() );
-    else
-      d.sprintf( QDir::currentDirPath() );
-
-    file_to_insert = KFileDialog::getOpenFileName(d.data(),"*");
-    file_to_insert.detach();
+    box->show();
     
-    if (file_to_insert.isEmpty()) {
+    if (!box->result()) {
       return KEDIT_USER_CANCEL;
     }
+    
+    if(box->selectedFile().isEmpty()) {  /* no selection */
+      return KEDIT_USER_CANCEL;
+    }
+    
+    file_to_insert = box->selectedFile();
+    file_to_insert.detach();
     
     
     int result = loadFile(file_to_insert, OPEN_INSERT);
@@ -383,7 +382,7 @@ int KEdit::insertFile(){
 int KEdit::openFile(int mode)
 {
     QString fname;
-
+    QFileDialog *box;
 
   int result;
 
@@ -442,21 +441,18 @@ int KEdit::openFile(int mode)
 
 	}
     }
-
-    QString d;
-
-    if ( !filename.isEmpty() )
-      d.sprintf( QFileInfo( filename ).dirPath() );
-    else
-      d.sprintf( QDir::currentDirPath() );
-
-    fname = KFileDialog::getOpenFileName(d.data(),"*");
-    fname.detach();
+            
+    box = getFileDialog(klocale->translate("Select Document to Open"));
     
-    if (fname.isEmpty()) {
+    box->show();
+    
+    if (!box->result())   /* cancelled */
+      return KEDIT_USER_CANCEL;
+    if(box->selectedFile().isEmpty()) {  /* no selection */
       return KEDIT_USER_CANCEL;
     }
-
+    
+    fname =  box->selectedFile();
     
     int result2 =  loadFile(fname, mode);
     
@@ -815,7 +811,7 @@ void KEdit::keyPressEvent ( QKeyEvent *e){
 	  if(y1 == -1)
 	    y1 = 0;
 
-	  //	  if(y2 == -1)
+	  if(y2 == -1)
 	    y2 = this->height();
 
 	  repaint(0,y1,this->width(),y2);
@@ -1583,35 +1579,50 @@ void KEdit::saveasfile(char* name){
 
 }
 
+QFileDialog* KEdit::getFileDialog(const char* captiontext){
 
+  if(!file_dialog){
+
+    file_dialog = new QFileDialog(current_directory.data(),"*",this,"file_dialog",TRUE);
+  }
+
+  file_dialog->setCaption(captiontext);
+  file_dialog->rereadDir();
+
+  return file_dialog;
+}
 
 int KEdit::saveAs(){
     
+  QFileDialog *box;
 
   QFileInfo info;
   QString tmpfilename;
-  QString tmpfilename2;
-  QString d;
-
   int result;
   
+  box = getFileDialog(klocale->translate("Save Document As"));
 
+  QPoint point = this->mapToGlobal (QPoint (0,0));
+
+  QRect pos = this->geometry();
+  box->setGeometry(point.x() + pos.width()/2  - box->width()/2,
+		   point.y() + pos.height()/2 - box->height()/2, 
+		   box->width(),box->height());
 try_again:
 
 
-    if ( !filename.isEmpty() )
-      d.sprintf( QFileInfo( filename ).dirPath() );
-    else
-      d.sprintf( QDir::currentDirPath() );
-
-    tmpfilename2 = KFileDialog::getSaveFileName(d.data(),"*");
-    tmpfilename2.detach();
-    
-    if (tmpfilename2.isEmpty()) {
+  box->show();
+  
+  if (!box->result())
+    {
       return KEDIT_USER_CANCEL;
     }
-
-  info.setFile(tmpfilename2.data());
+  
+  if(box->selectedFile().isEmpty()){
+    return KEDIT_USER_CANCEL;
+  }
+  
+  info.setFile(box->selectedFile());
   
   if(info.exists()){
 
@@ -1637,8 +1648,7 @@ try_again:
   
   tmpfilename = filename;
   
-  filename = tmpfilename2;
-  filename.detach();
+  filename = box->selectedFile();
   
   // we need this for saveFile();
   modified = TRUE; 
