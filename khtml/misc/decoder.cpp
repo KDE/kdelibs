@@ -41,8 +41,9 @@ using namespace khtml;
 
 Decoder::Decoder()
 {
-    m_codec = QTextCodec::codecForName("ISO 8859-1");
-    m_decoder = 0;
+    // latin1
+    m_codec = QTextCodec::codecForMib(4);
+    m_decoder = m_codec->makeDecoder();
     enc = 0;
     body = false;
     beginning = true;
@@ -83,6 +84,8 @@ void Decoder::setEncoding(const char *_encoding, bool force)
     }
     if( !b ) // in case the codec didn't exist, we keep the old one (fixes some sites specifying invalid codecs)
 	m_codec = old;
+    delete m_decoder;
+    m_decoder = m_codec->makeDecoder();
 #ifdef DECODE_DEBUG
     kdDebug() << "*Decoder::encoding used is" << m_codec->name() << endl;
 #endif
@@ -225,11 +228,13 @@ QString Decoder::decode(const char *data, int len)
             m_codec = QTextCodec::codecForMib(4);
             enc = "iso8859-1";
         }
+        delete m_decoder;
+        m_decoder = m_codec->makeDecoder();
     }
     QString out;
 
     if(!buffer.isEmpty() && enc != "ISO-10646-UCS-2") {
-        out = m_codec->toUnicode(buffer);
+        out = m_decoder->toUnicode(buffer, buffer.length());
         buffer = "";
     } else {
         if(m_codec->mibEnum() != 1000) // utf16
@@ -242,10 +247,8 @@ QString Decoder::decode(const char *data, int len)
                 if(*(d+i) == 0) *(d+i) = ' ';
                 i--;
             }
-            out = m_codec->toUnicode(data, len);
         }
-        else
-            out = m_decoder->toUnicode(data, len);
+        out = m_decoder->toUnicode(data, len);
     }
 
     // the hell knows, why the output does sometimes have a QChar::null at
@@ -257,7 +260,7 @@ QString Decoder::decode(const char *data, int len)
 
 QString Decoder::flush()
 {
-    return m_codec->toUnicode(buffer);
+    return m_decoder->toUnicode(buffer, buffer.length());
 }
 
 // -----------------------------------------------------------------------------
