@@ -324,6 +324,7 @@ int KWalletD::internalOpen(const QCString& appid, const QString& wallet, bool is
 				int rc = b->open(QByteArray().duplicate(p, strlen(p)));
 				if (!b->isOpen()) {
 					kpd->setPrompt(i18n("Invalid password for wallet '%1'. Please try again. (Error code %2)").arg(wallet).arg(rc));
+					kpd->clearPassword();
 				}
 			} else {
 				break;
