@@ -163,6 +163,7 @@ void KLibLoader::cleanUp()
     return;
   
   delete s_self;
+  s_self = 0;
 } 
 
 KLibLoader::KLibLoader( QObject* parent, const char* name )
