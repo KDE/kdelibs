@@ -1,0 +1,212 @@
+<HTML>
+<TITLE>
+Why aRts isn't using DCOP
+</TITLE>
+<BODY bgcolor="#FFFFFF">
+<h3>Why aRts isn't using DCOP</h3>
+<p>
+<h4>Introduction</h4>
+<p>
+Since KDE dropped CORBA completely, and is using DCOP everywhere instead,
+naturally the question arises why aRts isn't doing so. After all, DCOP support
+is in KApplication, is well-maintained, supposed to integrate greatly with
+libICE, and whatever else.
+<p>
+Since there will be (potentially) a lot of people asking whether this is
+really necessary, here is the answer.
+<p>
+First, you need to understand what exactly DCOP was written for. It was
+intended to be a quick-two-days hack at the KDE-TWO meeting, to have a
+"lightweight" communication protocol. So of course, there was no time to
+define a marshalling concept for instance. Or communication protocol.
+Instead, most of the thing bases around the Qt serialization(streaming)
+operator and libICE.
+<p>
+It is, as I see it, a hack which perfectly enables applications to send
+primitive messages like "open a window pointing to http://www.kde.org" or
+"your configuration data has changed".
+<p>
+However, inside aRts the focus lies on other things.
+<p>
+<p>
+<h4>So, why not DCOP?</h4>
+<p>
+<hr>
+<p>
+<table>
+<tr><td><b>type concept</b><td>
+The idea is, that little plugins in aRts will talk involving such data
+structures as "midi events" and "songposition pointers" and "flow graphs".
+<p>
+These are complex data types, which must be sent between different objects,
+and be passed as streams, or parameters. With DCOP, the only way to achieve
+this would be to define new classes for them, supporting the Qt streaming
+operator.
+<p>
+But that way, they would be inaccessible to everything but direct C++
+coding. Specifically, you could not design a scripting language, that would
+know all types plugins may ever expose, as they are not self describing.
+<p>
+<hr>
+<tr><td><b>interfaces of objects</b><td>
+About the same argumentation is valid for interfaces as well. DCOP objects
+don't expose their relationships, inheritance hierarchies, etc. - if you
+were to write an object browser which shows you "what attributes has this
+object got", you'd fail.
+<p>
+If you have an object reference, there is no way you could figure out, which
+methods you could invoke on that object.
+<p>
+This seriously breaks applications like aRtsbuilder. But remember: DCOP was
+intended to replace kwincom, and not CORBA or some "real middleware".
+<p>
+<hr>
+<tr><td><b>integration of streaming&nbsp;&nbsp;&nbsp;</b><td>
+Why MCOP even exists is: it should work fine with streams between objects.
+<p>
+aRts makes heavily use of small plugins, which interconnect themselves with
+streams. The CORBA version of aRts had to introduce a very annoying split
+between "the SynthModule objects", which were the internal work modules that
+did do the streaming, and "the CORBA interface", which was something external.
+<p>
+Much code cared about making interaction between "the SynthModule objects"
+and "the CORBA interface" look natural, but it didn't, because CORBA knew
+nothing at all about streams.
+<p>
+MCOP does. Look at the code (something like simplesoundserver_impl.cc). Way
+better! Streams can be declared in the interface of modules, and implemented
+in a natural looking way.
+<p>
+<hr>
+<tr><td><b>speed I: protocol</b><td>
+One can't deny it. One of the reasons why I wrote MCOP was speed. Here some
+arguments why MCOP will definitely be faster than DCOP (even without giving
+figures).
+<p>
+An invocation in MCOP will have a six-"long"-header. That is
+<ul>
+<li>magic "MCOP"
+<li>message type (invocation)
+<li>size of the request in bytes
+<li>request ID
+<li>target object ID
+<li>target method ID
+</ul>
+After that, the parameters follow. Note that the demarshalling of this is
+extremely fast. You can use table lookups to find the object and the method
+demarshalling function, which means that complexity is O(1) [ it will take
+the same amount of time, no matter how many objects are alive, or how many
+functions are there ].
+<p>
+Comparing this to DCOP, you'll see, that there are at least
+<ul>
+<li>a string for the target object - something like "myCalculator"
+<li>a string like "addNumber(int,int)" to specify the method
+<li>several more protocol info added by libICE, and other DCOP specifics
+  I don't know
+</ul>
+These are much more painful to demarshall, as you'll need to parse the string,
+search for the function, etc.
+<p>
+<hr>
+<tr><td><b>speed II: connections</b><td>
+<p>
+In DCOP, all requests are running through a server (DCOPServer). That means,
+the process of a synchronous invocation looks like that:
+<p>
+<ul>
+<li>client process sends invocation
+<li>dcopserver (man-in-the-middle) receives invocation and looks where it
+    needs to go, and sends it to the "real" server
+<li>server process receives invocation, performs request and sends result
+<li>dcopserver (man-in-the-middle) receives result and ... sends it to the
+    client
+<li>client decodes reply
+</ul>
+<p>
+In MCOP, the same invocation looks like that:
+<p>
+<ul>
+<li>client process sends invocation
+<li>server process receives invocation, performs request and sends result
+<li>client decodes reply
+</ul>
+<p>
+Say both were implemented correctly, MCOPs peer-to-peer strategy should be
+faster by a factor of two, than DCOPs man-in-the-middle strategy. Note
+however that there were of course reasons to choose the DCOP strategy, which
+is namely: if you have 20 applications running, and each app is talking to
+each app, you need 20 connections in DCOP, and 200 with MCOP. However in
+the multimedia case, this is not supposed to be the usual setting.
+<p>
+<hr>
+<tr><td><b>transparency</b><td>
+<p>
+CORBA had the nice feature that you could use objects you implemented once,
+as "seperate server process", or as "library". You could use the same code
+to do so, and CORBA would transparently descide what to do.
+<p>
+With DCOP, that is not really intended, and as far as I know not really
+possible.
+<p>
+MCOP on the other hand should support that from the beginning. So you can
+run an effect inside artsd. But if you are a wave editor, you can choose
+to run the same effect inside your process space as well.
+<p>
+<hr>
+<tr><td><b>QoS, stream transfer</b><td>
+<p>
+Although MCOP does not currently do so, the possibilities are open to
+implement quality of service features. Something like "that midi event
+is really really important, compared to this invocation". Or something
+like "needs to be there in time".
+<p>
+On the other hand, stream transfer can be integrated in the MCOP protocol
+nicely, and combined with QoS stuff. Given that the protocol may be changed,
+MCOP stream transfer should not really get slower than conventional TCP
+streaming, but: it will be easier and more consistent to use.
+<p>
+<hr>
+<tr><td><b>MCOP doesn't use Qt</b><td>
+<p>
+There is no need to base a middleware for multimedia on Qt. Deciding so,
+and using all that nice Qt-streaming and stuff, will easily lead to the
+middleware becoming a Qt-only (or rather KDE-only) thing. I mean: as soon
+as I'll see the Gnomes using DCOP, too, or somthing like that, I am
+certainly proven wrong.
+<p>
+Well, whatever. aRts was always intended to work with or without KDE, with
+or without Qt, with or without X11, and maybe even with or without Linux
+(and I have even no problems with people who port it on popular non-free
+operating systems).
+<p>
+It is my position that non-GUI-components should be written non-GUI-dependant,
+to make sharing those among wider amounts of developers (and users) possible.
+<p>
+</table>
+<hr>
+<p>
+<h4>Conclusion</h4>
+<p>
+I see that using two IPC protocols may cause inconveniences. Even more, if
+they are both non-standard. However, for the reasons given above, switching
+to DCOP is no option. If there is significant interest to find a way to unite
+the two, okay, we can try. We could even try to make MCOP speak IIOP, then
+we'd have a CORBA ORB ;).
+<p>
+My favourite two solutions would be:
+<ul>
+<li>write an MCOP - DCOP gateway (which should be possible, and would make
+    interoperation possible)
+<li>integrate everything DCOP users expect into MCOP, and try to only do
+    MCOP - one could add an "man-in-the-middle-option" to MCOP, too ;)
+</ul>
+<p>
+However, it may not be the worst possibility to use each protocol for
+everything it was intended for (there are some big differences in the
+design goals), and don't try to merge them into one.
+<p>
+<hr>
+<a href=index.html>back to index</a>
+</body>
+</html>
