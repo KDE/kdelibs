@@ -54,11 +54,19 @@
 #include <kapp.h>
 #define XK_XKB_KEYS
 #define XK_MISCELLANY
-#include <X11/X.h> // For #define KeyPress
 #include <X11/Xlib.h>	// For x11Event()
 #include <X11/keysymdef.h> // For XK_...
+
+#ifdef KeyPress
+const int XFocusOut = FocusOut;
+const int XFocusIn = FocusIn;
 const int XKeyPress = KeyPress;
+const int XKeyRelease = KeyRelease;
+#undef KeyRelease
 #undef KeyPress
+#undef FocusOut
+#undef FocusIn
+#endif
 
 class KKeyChooserPrivate {
 public:
@@ -151,7 +159,7 @@ bool KKeyButton::x11Event( XEvent *pEvent )
 		//kdDebug() << "x11Event: type: " << pEvent->type << " window: " << pEvent->xany.window << endl;
 		switch( pEvent->type ) {
 			case XKeyPress:
-			case KeyRelease:
+			case XKeyRelease:
 				keyPressEventX( pEvent );
 				return true;
 			case ButtonPress:
@@ -910,7 +918,7 @@ QDict<int>* KKeyChooser::globalDict()
     {
     return d->globalDict;
     }
-    
+
 QDict<int>* KKeyChooser::stdDict()
     {
     return d->stdDict;

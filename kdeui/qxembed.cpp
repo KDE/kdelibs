@@ -39,6 +39,10 @@
 #endif
 const int XFocusOut = FocusOut;
 const int XFocusIn = FocusIn;
+const int XKeyPress = KeyPress;
+const int XKeyRelease = KeyRelease;
+#undef KeyRelease
+#undef KeyPress
 #undef FocusOut
 #undef FocusIn
 
@@ -176,7 +180,7 @@ bool QXEmbedAppFilter::eventFilter( QObject *o, QEvent * e)
 static int qxembed_x11_event_filter( XEvent* e)
 {
     switch ( e->type ) {
-    case KeyPress: {
+    case XKeyPress: {
         int kc = XKeycodeToKeysym(qt_xdisplay(), e->xkey.keycode, 0);
         if ( kc == XK_Tab || kc == XK_ISO_Left_Tab ) {
             tabForward = (e->xkey.state & ShiftMask) == 0;
@@ -202,7 +206,7 @@ static int qxembed_x11_event_filter( XEvent* e)
             last_key_event = e->xkey;
     }
     // FALL THROUGH
-    case KeyRelease: {
+    case XKeyRelease: {
         last_key_event = e->xkey;
         break;
     }
