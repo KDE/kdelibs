@@ -36,21 +36,11 @@ libjscript_la_LIBADD =
 
 include_HEADERS = bison2cpp.h jstree.h jsexec.h jserror.h builtin.h
 
-t1.c: t1.y
+grammarfiles: t1.y t2.l
 	$(YACC) $(YFLAGS) t1.y $< && mv y.tab.c $@
 	if test -f y.tab.h; then \
 	if cmp -s y.tab.h $*.h; then rm -f y.tab.h; \
 	else mv y.tab.h $*.h; fi \
 	else :; fi
-
-t1.h: t1.y
-	$(YACC) $(YFLAGS) t1.y $< && mv y.tab.c $@
-	if test -f y.tab.h; then \
-	if cmp -s y.tab.h $*.h; then rm -f y.tab.h; \
-	else mv y.tab.h $*.h; fi \
-	else :; fi
-
-t2.c: t2.l
 	$(LEX) $< && mv lex.yy.c $@
 
-t2.c: t1.h
