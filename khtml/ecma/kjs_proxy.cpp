@@ -140,7 +140,8 @@ KJSProxy *kjs_html_init(KHTMLPart *khtmlpart)
   {
     script->clear();
     Window *win = Window::retrieveWindow(part);
-    win->clear();
+    if (win)
+        win->clear();
     //    delete script;
   }
   // for later extensions.
