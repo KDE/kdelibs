@@ -246,7 +246,7 @@ public:
      * Given an double, convert that to a numeric string containing
      * the localized monetary equivalent.
      *
-     * e.g. given 123456, return "$123,456".
+     * e.g. given 123456, return "$ 123,456.00".
      *
      * @param num The number we want to format
      * @param currency The currency symbol you want.
@@ -271,7 +271,7 @@ public:
      * the localized numeric equivalent.
      *
      * e.g. given 123456.78, return "123,456.78" (for some European country).
-     * If precision isn't specified, fracDigits is used.
+     * If precision isn't specified, 2 is used.
      *
      * @param num The number to convert
      * @param precision Number of fractinal digits used.
@@ -314,7 +314,7 @@ public:
     QString formatTime(const QTime &pTime, bool includeSecs = false) const;
 
     /**
-     * Use this to determine if the user wants a 12 clock.
+     * Use this to determine if the user wants a 12 hour clock.
      *
      * @return If the user wants 12h clock
      */
