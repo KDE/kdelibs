@@ -310,8 +310,8 @@ void B2Style::drawComboButton(QPainter *p, int x, int y, int w, int h,
     int y2 = y+h-1;
     p->setPen(g.dark());
     p->drawRect(x, y, w, h);
-    if(fill)
-        p->fillRect(x+2, y+2, w-4, h-4, *fill);
+    p->fillRect(x+2, y+2, w-4, h-4, fill ? *fill :
+                g.brush(QColorGroup::Background));
 
     p->setPen(sunken? g.light() : g.mid());
     p->drawLine(x2-1, y+2, x2-1, y2-1);
