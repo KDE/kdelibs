@@ -1517,6 +1517,36 @@ void doInterfacesHeader(FILE *header)
 		}
 		if(haveAsyncStreams) fprintf(header,"\n");
 
+		bool haveChangeNotifications = false;
+
+		for(ai = d.attributes.begin();ai != d.attributes.end();ai++)
+		{
+			AttributeDef& ad = *ai;
+
+			if((ad.flags & attributeAttribute) && (ad.flags & streamOut)
+			&& (ad.type == "byte" || ad.type == "float" || ad.type == "long"
+			||  ad.type == "string"
+			||  ad.type == "*byte" || ad.type == "*float" || ad.type == "*long"
+			||  ad.type == "*string"))
+			{
+				if(!haveChangeNotifications)
+				{
+					fprintf(header,"protected:\n");
+					fprintf(header,"\t// emitters for change notifications\n");
+					haveChangeNotifications = true;
+				}
+
+				string pc = createTypeCode(ad.type,"newValue",MODEL_ARG);
+
+				fprintf(header,"\tinline void %s_changed(%s) {\n",
+										ad.name.c_str(),pc.c_str());
+				fprintf(header,"\t\t_emit_changed(\"%s_changed\",newValue);\n",
+										ad.name.c_str());
+				fprintf(header,"\t}\n");
+			}
+		}
+		if(haveChangeNotifications) fprintf(header,"\n");
+
 		fprintf(header,"public:\n");
 		fprintf(header,"\t%s_skel();\n\n",iname.c_str());
 

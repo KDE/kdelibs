@@ -1,5 +1,4 @@
 #include "value.h"
-#include "anyref.h"
 
 class FloatValue_impl : virtual public FloatValue_skel {
 private:
@@ -11,7 +10,7 @@ public:
 		if(newvalue != _value)
 		{
 			_value = newvalue;
-			_emit_changed("value_changed",_value);
+			value_changed(_value);
 		}
 	}
 	float value() { return _value; }
@@ -29,7 +28,7 @@ public:
 		if(newvalue != _value)
 		{
 			_value = newvalue;
-			_emit_changed("value_changed",_value);
+			value_changed(_value);
 		}
 	}
 	string value() { return _value; }

@@ -32,6 +32,7 @@
 #include "idlfilereg.h"
 #include "asyncstream.h"
 #include "mcoputils.h"
+#include "anyref.h"
 
 /*
  * BC - Status (2000-09-30): Read/WriteObject(Seq)
