@@ -1,4 +1,3 @@
-debian/kdelibs4.overrides  usr/share/lintian/overrides/kdelibs4
 debian/tmp/usr/lib/kde3/kabc_dir.la
 debian/tmp/usr/lib/kde3/kabc_dir.so
 debian/tmp/usr/lib/kde3/kabc_file.la
@@ -23,8 +22,6 @@ debian/tmp/usr/lib/kde3/kded_kssld.la
 debian/tmp/usr/lib/kde3/kded_kssld.so
 debian/tmp/usr/lib/kde3/kded_proxyscout.la
 debian/tmp/usr/lib/kde3/kded_proxyscout.so
-debian/tmp/usr/lib/kde3/kded_proxyscout.so.0
-debian/tmp/usr/lib/kde3/kded_proxyscout.so.0.0.0
 debian/tmp/usr/lib/kde3/kdeprint_cups.la
 debian/tmp/usr/lib/kde3/kdeprint_cups.so
 debian/tmp/usr/lib/kde3/kdeprint_ext.la
@@ -48,7 +45,7 @@ debian/tmp/usr/lib/kde3/kimg_ico.so
 debian/tmp/usr/lib/kde3/kimg_krl.la
 debian/tmp/usr/lib/kde3/kimg_krl.so
 debian/tmp/usr/lib/kde3/kimg_pcx.la
-debian/tmp/usr/lib/kde3/kimg_pcx.so 
+debian/tmp/usr/lib/kde3/kimg_pcx.so
 debian/tmp/usr/lib/kde3/kimg_tga.la
 debian/tmp/usr/lib/kde3/kimg_tga.so
 debian/tmp/usr/lib/kde3/kimg_tiff.la
@@ -89,21 +86,23 @@ debian/tmp/usr/lib/kde3/plugins/styles/kthemestyle.la
 debian/tmp/usr/lib/kde3/plugins/styles/kthemestyle.so
 debian/tmp/usr/lib/kde3/plugins/styles/light.la
 debian/tmp/usr/lib/kde3/plugins/styles/light.so
-debian/tmp/usr/lib/libcupsdconf.la
-debian/tmp/usr/lib/libcupsdconf.so
 debian/tmp/usr/lib/libDCOP.so.*
 debian/tmp/usr/lib/libartskde.so.*
+debian/tmp/usr/lib/libcupsdconf.la
+debian/tmp/usr/lib/libcupsdconf.so
 debian/tmp/usr/lib/libkabc.so.*
 debian/tmp/usr/lib/libkatepartinterfaces.so.*
 debian/tmp/usr/lib/libkdecore.so.*
+debian/tmp/usr/lib/libkdefakes.so.*
 debian/tmp/usr/lib/libkdefx.so.*
 debian/tmp/usr/lib/libkdeprint.so.*
+debian/tmp/usr/lib/libkdeprint_management.la
 debian/tmp/usr/lib/libkdeprint_management.so.*
+debian/tmp/usr/lib/libkderesources.so.*
 debian/tmp/usr/lib/libkdesasl.so.*
 debian/tmp/usr/lib/libkdesu.so.*
 debian/tmp/usr/lib/libkdeui.so.*
 debian/tmp/usr/lib/libkhtml.la
-debian/tmp/usr/lib/libkhtml.so
 debian/tmp/usr/lib/libkhtml.so.*
 debian/tmp/usr/lib/libkio.so.*
 debian/tmp/usr/lib/libkjava.so.*
@@ -111,7 +110,6 @@ debian/tmp/usr/lib/libkjs.so.*
 debian/tmp/usr/lib/libkmediaplayer.so.*
 debian/tmp/usr/lib/libkmid.so.*
 debian/tmp/usr/lib/libkparts.so.*
-debian/tmp/usr/lib/libkderesources.so.*
 debian/tmp/usr/lib/libkscreensaver.so.*
 debian/tmp/usr/lib/libkscript.so.*
 debian/tmp/usr/lib/libkspell.so.*
