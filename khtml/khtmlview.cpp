@@ -1640,8 +1640,8 @@ void KHTMLView::print(bool quick)
         m_part->xmlDocImpl()->styleSelector()->computeFontSizes(&metrics, 100);
         m_part->xmlDocImpl()->updateStyleSelector();
         root->setPrintImages( printer->option("app-khtml-printimages") == "true");
-        root->setLayouted( false );
         root->setMinMaxKnown( false );
+        root->setLayouted( false );
         root->layout();
 
         bool printHeader = (printer->option("app-khtml-printheader") == "true");
