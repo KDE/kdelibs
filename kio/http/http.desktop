@@ -5,5 +5,5 @@ input=none
 output=filesystem
 reading=true
 mimetypesExcludedFromFastMode=application/x-executable,application/x-perl,application/x-python,application/x-python-bytecode,application/x-shellscript
-patternsExcludedFromFastMode=*.stm
+patternsExcludedFromFastMode=*.stm,*.rpm
 
