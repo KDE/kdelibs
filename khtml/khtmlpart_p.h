@@ -245,6 +245,7 @@ public:
   KWallet::Wallet* m_wallet;
   KLibrary *m_kjs_lib;
   int m_runningScripts;
+  bool m_bOpenMiddleClick :1;
   bool m_bBackRightClick :1;
   bool m_bJScriptEnabled :1;
   bool m_bJScriptDebugEnabled :1;

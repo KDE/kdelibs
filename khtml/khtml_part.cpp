@@ -350,6 +350,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
       d->m_paToggleCaretMode->setShortcut(KShortcut()); // avoid clashes
 
   // set the default java(script) flags according to the current host.
+  d->m_bOpenMiddleClick = d->m_settings->isOpenMiddleClickEnabled();
   d->m_bBackRightClick = d->m_settings->isBackRightClickEnabled();
   d->m_bJScriptEnabled = d->m_settings->isJavaScriptEnabled();
   setDebugScript( d->m_settings->isJavaScriptDebugEnabled() );
@@ -5115,6 +5116,7 @@ void KHTMLPart::reparseConfiguration()
   if (d->m_doc)
      d->m_doc->docLoader()->setShowAnimations( settings->showAnimations() );
 
+  d->m_bOpenMiddleClick = settings->isOpenMiddleClickEnabled();
   d->m_bBackRightClick = settings->isBackRightClickEnabled();
   d->m_bJScriptEnabled = settings->isJavaScriptEnabled(m_url.host());
   setDebugScript( settings->isJavaScriptDebugEnabled() );
@@ -5788,9 +5790,14 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
   }
 #ifndef QT_NO_CLIPBOARD
   if ((d->m_guiProfile == BrowserViewGUI) && (_mouse->button() == MidButton) && (event->url().isNull())) {
+    kdDebug( 6050 ) << "KHTMLPart::khtmlMouseReleaseEvent() MMB shouldOpen="
+                    << d->m_bOpenMiddleClick << endl;
+
+    if (d->m_bOpenMiddleClick) {
     KHTMLPart *p = this;
     while (p->parentPart()) p = p->parentPart();
     p->d->m_extension->pasteRequest();
+  }
   }
 #endif
 

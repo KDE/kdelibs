@@ -150,6 +150,7 @@ public:
     // Autoload images
     bool autoLoadImages() const;
 
+    bool isOpenMiddleClickEnabled();
     bool isBackRightClickEnabled();
 
     // Java and JavaScript

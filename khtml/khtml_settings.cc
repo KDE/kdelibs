@@ -64,6 +64,7 @@ class KHTMLSettingsPrivate
 {
 public:
     bool m_bChangeCursor : 1;
+    bool m_bOpenMiddleClick : 1;
     bool m_bBackRightClick : 1;
     bool m_underlineLink : 1;
     bool m_hoverLink : 1;
@@ -290,6 +291,10 @@ void KHTMLSettings::init( KConfig * config, bool reset )
   if (reset || config->hasGroup("MainView Settings"))
   {
     config->setGroup( "MainView Settings" );
+
+    if ( reset || config->hasKey( "OpenMiddleClick" ) )
+        d->m_bOpenMiddleClick = config->readBoolEntry( "OpenMiddleClick", true );
+
     if ( reset || config->hasKey( "BackRightClick" ) )
         d->m_bBackRightClick = config->readBoolEntry( "BackRightClick", false );
   }
@@ -594,6 +599,11 @@ static const KPerDomainSettings &lookup_hostname_policy(
   d->global.dump("global");
 #endif
   return d->global;
+}
+
+bool KHTMLSettings::isOpenMiddleClickEnabled()
+{
+  return d->m_bOpenMiddleClick;
 }
 
 bool KHTMLSettings::isBackRightClickEnabled()
