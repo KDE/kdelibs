@@ -288,8 +288,10 @@ public:
     KURLBarPrivate()
     {
         currentURL.setPath( QDir::homeDirPath() );
+        defaultIconSize = 0;
     }
 
+    int defaultIconSize;
     KURL currentURL;
 };
 
@@ -539,6 +541,7 @@ void KURLBar::readConfig( KConfig *appConfig, const QString& itemGroup )
 {
     m_isImmutable = appConfig->groupIsImmutable( itemGroup );
     KConfigGroupSaver cs( appConfig, itemGroup );
+    d->defaultIconSize = m_iconSize;
     m_iconSize = appConfig->readNumEntry( "Speedbar IconSize", m_iconSize );
 
     if ( m_useGlobal ) { // read global items
@@ -575,7 +578,10 @@ void KURLBar::readItem( int i, KConfig *config, bool applicationLocal )
 void KURLBar::writeConfig( KConfig *config, const QString& itemGroup )
 {
     KConfigGroupSaver cs1( config, itemGroup );
-    config->writeEntry( "Speedbar IconSize", m_iconSize );
+    if(!config->hasDefault("Speedbar IconSize") && m_iconSize == d->defaultIconSize )
+        config->revertToDefault("Speedbar IconSize");
+    else
+        config->writeEntry( "Speedbar IconSize", m_iconSize );
 
     if ( !m_isModified )
         return;
