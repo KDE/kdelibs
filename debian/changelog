@@ -8,8 +8,9 @@ kdelibs (4:2.2.1-1) unstable; urgency=low
   * Fix ctrl+s (Closes: #110694)
   * Don't need to build with gcc3 for alpha anymore, however we still
     need to build with -O0
+  * Fixes printing (Closes: #108301, #111388, #109930)
  
- -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 03 Sep 2001 12:10:00 -0700
+ -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 07 Sep 2001 12:10:00 -0700
 
 kdelibs (4:2.2.0-final-3) unstable; urgency=low
  
