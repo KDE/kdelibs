@@ -394,7 +394,7 @@ void KBookmarkManager::setShowNSBookmarks( bool show )
     info.type = "netscape";
     info.location = KNSBookmarkImporter::netscapeBookmarksFile();
     info.show = show;
-    info.name = QString::null;
+    info.name = i18n("Netscape Bookmarks");
     setDynamicBookmarks(info.type, info);
 }
 
