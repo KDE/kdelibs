@@ -22,7 +22,7 @@
 #define _KDE_FILE_H_
 
 /**
- * This file defines portable defines for file support.
+ * This file provides portable defines for file support.
  * Use the KDE_xxx defines instead of the normal C
  * functions and structures.
  */
@@ -34,7 +34,7 @@
  
 #ifdef _LFS64_LARGEFILE
 /**
- * This section defines portable defines for large file support.
+ * This section provides portable defines for large file support.
  * To use this you must compile your code with _LARGEFILE64_SOURCE 
  * defined and use the KDE_xxx defines instead of the normal
  * C functions and structures.
@@ -55,6 +55,10 @@
 #define KDE_fstat		::fstat64
 #define KDE_open		::open64
 #define KDE_lseek		::lseek64
+#define KDE_fseek		::fseek64
+#define KDE_ftell		::ftell64
+#define KDE_fgetpos		::fgetpos64
+#define KDE_fsetpos		::fsetpos64
 #define KDE_readdir		::readdir64
 #define KDE_sendfile	::sendfile64
 #define KDE_struct_stat 	struct stat64
@@ -78,6 +82,10 @@
 
 #define KDE_fstat		::fstat
 #define KDE_lseek		::lseek
+#define KDE_fseek		::fseek
+#define KDE_ftell		::ftell
+#define KDE_fgetpos		::fgetpos
+#define KDE_fsetpos		::fsetpos
 #define KDE_readdir		::readdir
 #define KDE_sendfile	::sendfile
 #define KDE_struct_stat 	struct stat
