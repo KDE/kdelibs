@@ -654,7 +654,7 @@ public:
 
   /**
    * Returns whether a frame with the specified name is exists or not.
-   * In contrary to the @findFrame method this one also returns true
+   * In contrary to the @ref findFrame method this one also returns true
    * if the frame is defined but no displaying component has been
    * found/loaded, yet.
    */
