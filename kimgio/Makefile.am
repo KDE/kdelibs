@@ -71,7 +71,7 @@ include_HEADERS = kimgio.h
 
 noinst_HEADERS= jpeg.h xview.h eps.h tiffr.h krl.h
 
-INCLUDES = -I$(top_srcdir)/libltdl -I$(top_srcdir)/dcop $(all_includes) -I$(top_srcdir)/kio
+INCLUDES = -I$(top_srcdir)/kio -I$(top_srcdir)/dcop $(all_includes) -I$(top_srcdir)/kio
 
 EXTRA_DIST = netpbm.cpp netpbm.h
 
