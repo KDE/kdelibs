@@ -18,7 +18,7 @@
 */
 
 #ifndef _KDEBUG_H
-#define _KDEBUG_H "$Id"
+#define _KDEBUG_H "$Id$"
 
 /**
   * kdebug provides and advanced mechanism for displaying debugging

@@ -17,6 +17,8 @@
     Boston, MA 02111-1307, USA.
 */
 
+// $Id$
+
 #include "kdebugdialog.h"
 #include "kdebug.h"
 #include "kapp.h"
@@ -35,6 +37,10 @@
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
+#endif
+
+#ifdef kdebug
+#undef kdebug
 #endif
 
 class KDebugEntry
