@@ -85,6 +85,24 @@ static void transformToMsDos(const QDateTime& dt, char* buffer)
     }
 }
 
+static time_t transformFromMsDos(const char* buffer)
+{
+    Q_UINT16 time = (uchar)buffer[0] | ( (uchar)buffer[1] << 8 );
+    int h = time >> 11;
+    int m = ( time & 0x7ff ) >> 5;
+    int s = ( time & 0x1f ) * 2 ;
+    QTime qt(h, m, s);
+
+    Q_UINT16 date = (uchar)buffer[2] | ( (uchar)buffer[3] << 8 );
+    int y = ( date >> 9 ) + 1980;
+    int o = ( date & 0x1ff ) >> 5;
+    int d = ( date & 0x1f );
+    QDate qd(y, o, d);
+
+    QDateTime dt( qd, qt );
+    return dt.toTime_t();
+}
+
 // == parsing routines for zip headers
 
 /** all relevant information about parsing file information */
@@ -128,16 +146,18 @@ static bool parseExtTimestamp(const char *buffer, int size, bool islocal,
   }/*end if*/
   int flags = *buffer;		// read flags
   buffer += 1;
+  size -= 1;
 
   if (flags & 1) {		// contains modification time
-    if (size < 5) {
+    if (size < 4) {
       kdDebug(7040) << "premature end of extended timestamp (#2)" << endl;
       return false;
     }/*end if*/
     pfi.mtime = time_t((uchar)buffer[0] | (uchar)buffer[1] << 8
     			| (uchar)buffer[2] << 16 | (uchar)buffer[3] << 24);
+    buffer += 4;
+    size -= 4;
   }/*end if*/
-  buffer += 4;
   // central extended field cannot contain more than the modification time
   // even if other flags are set
   if (!islocal) {
@@ -146,24 +166,25 @@ static bool parseExtTimestamp(const char *buffer, int size, bool islocal,
   }/*end if*/
 
   if (flags & 2) {		// contains last access time
-    if (size < 9) {
+    if (size < 4) {
       kdDebug(7040) << "premature end of extended timestamp (#3)" << endl;
-      return false;
+      return true;
     }/*end if*/
     pfi.atime = time_t((uchar)buffer[0] | (uchar)buffer[1] << 8
     			| (uchar)buffer[2] << 16 | (uchar)buffer[3] << 24);
+    buffer += 4;
+    size -= 4;
   }/*end if*/
-  buffer += 4;
 
   if (flags & 4) {		// contains creation time
-    if (size < 13) {
+    if (size < 4) {
       kdDebug(7040) << "premature end of extended timestamp (#4)" << endl;
-      return false;
+      return true;
     }/*end if*/
     pfi.ctime = time_t((uchar)buffer[0] | (uchar)buffer[1] << 8
     			| (uchar)buffer[2] << 16 | (uchar)buffer[3] << 24);
+    buffer += 4;
   }/*end if*/
-  buffer += 4;
 
   pfi.exttimestamp_seen = true;
   return true;
@@ -433,6 +454,8 @@ kdDebug(7040) << "dev->at() now : " << dev->at() << endl;
 
 	    int gpf = (uchar)buffer[0];	// "general purpose flag" not "general protection fault" ;-)
 	    int compression_mode = (uchar)buffer[2] | (uchar)buffer[3] << 8;
+	    time_t mtime = transformFromMsDos( buffer+4 );
+	    
 	    Q_LONG compr_size = (uchar)buffer[12] | (uchar)buffer[13] << 8
 	    			| (uchar)buffer[14] << 16 | (uchar)buffer[15] << 24;
 	    Q_LONG uncomp_size = (uchar)buffer[16] | (uchar)buffer[17] << 8
@@ -456,6 +479,7 @@ kdDebug(7040) << "dev->at() now : " << dev->at() << endl;
 	    }
 
 	    ParseFileInfo *pfi = new ParseFileInfo();
+	    pfi->mtime = mtime;
 	    pfi_map.insert(filename.data(), pfi);
 
             // read and parse the beginning of the extra field,
