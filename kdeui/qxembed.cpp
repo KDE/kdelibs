@@ -596,10 +596,15 @@ bool QXEmbed::eventFilter( QObject *o, QEvent * e)
         break;
     case QEvent::Move:
         {
-            QPoint globalPos = mapToGlobal(QPoint(0,0));
-            if (globalPos != d->lastPos) {
-                d->lastPos = globalPos;
-                sendSyntheticConfigureNotifyEvent();
+            QWidget* pos = this;
+            while( pos != o && pos != topLevelWidget())
+                pos = pos->parentWidget();
+            if( pos == o ) {
+                QPoint globalPos = mapToGlobal(QPoint(0,0));
+                if (globalPos != d->lastPos) {
+                    d->lastPos = globalPos;
+                    sendSyntheticConfigureNotifyEvent();
+                }
             }
         }                    
         break;
