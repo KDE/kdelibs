@@ -1,7 +1,9 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1997 Stephan Kulow (coolo@kde.org)
-              (C) 1997 Sven Radej (sven.radej@iname.com)
-
+              (C) 1997 Sven Radej (sven@exp.univie.ac.at)
+              (C) 1997 Mark Donohoe (donohoe@kde.org)
+              (C) 1997 Matthias Ettrich (ettrich@kde.org)
+              
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
@@ -115,7 +117,8 @@ class KToolBarButton : public KButton
    Q_OBJECT
 
  public:
-   KToolBarButton(const QPixmap& pixmap,int ID, QWidget *parent, const char *name=0L, int item_size = 26);
+   KToolBarButton(const QPixmap& pixmap,int ID, QWidget *parent,
+                  const char *name=0L, int item_size = 26);
    KToolBarButton(QWidget *parent=0L, const char *name=0L);
    void enable(bool enable);
    void makeDisabledPixmap();
@@ -150,36 +153,38 @@ class KToolBarButton : public KButton
      void pressed(int);
      void released(int);
      void toggled(int);
-
  };
 
 /**
- *
  * KToolBar is a self resizing, floatable widget.
  * It is usually managed from KTopLevelWidget, but can be
  * used even if you don't use KTopLevelWidget. If you want
  * to handle this without or with subclassed KTopLevelWidget,
- * see @ref #updateRects.
- * KToolBar can contain buttons (see @ref #insertButton ), Line inputs
- * (see @ref #insertKLined ), Combo Boxes, (see @ref #insertCombo ) and frames
- * (see @ref #insertFrame ). Combos, Frames and Lineds can
- * be autosized to full width. Items can be right aligned.
+ * see @ref #updateRects .<BR>
+ * KToolBar can contain buttons ( @ref #insertButton ), Line inputs
+ * ( @ref #insertLined ), Combo Boxes, ( @ref #insertCombo )  and frames
+ * ( @ref #insertFrame ). Combos, Frames and Lineds can
+ * be autosized to full width. Items can be right aligned, and
+ * buttons can be toggle buttons ( @ref #setToggle ). Item height is
+ * adjustable on constructor invocation.
  * Toolbar can float, and autoresizes itself. This may lead to
  * some flickering, but there is no way to solve it (as far as I
- * know).
- * You normaly use toolbar from subclassed KTopLevelWidget. When
+ * know). <BR>
+ * If you want to bind popups to buttons, see @ref #setButton .
+ * You normaly use toolbar from subclassed @ref KTopLevelWidget. When
  * you create toolbar object, insert items that you want to be in it.
- * Items can be inserted or removed (see @ref #removeItem ) later, when toolbar
+ * Items can be inserted or removed ( @ref #removeItem ) later, when toolbar
  * is displayed. It will updte itself.
- * Then set their propperties (see @ref #alignItemRight, @ref #setItemAutoSized,
- * @ref #setToggle ...) After that set the toolbar itself (see @ref #setFullWidth,
- * @ref #enable, @ref #setBarPos ...). Then simply do addToolbar (toolbar),
- * and you're on. See how it's done in testtoolbar.
+ * Then set their propperties ( @ref #alignItemRight , @ref #setItemAutoSized ,
+ * @ref #setToggle ...) After that set the toolbar itself ( @ref #setFullWidth ,
+ * @ref #enable , @ref #setBarPos ...). Then simply do addToolbar (toolbar),
+ * and you're on. See how it's done in kwindowtest.
  * @short KDE Toolbar widget
  * @author Maintained by Sven Radej <a9509961@unet.univie.ac.at> 
  */
  class KToolBar : public QFrame
   {
+
   Q_OBJECT
 
 public:
@@ -187,7 +192,12 @@ public:
   enum BarPosition{Top, Left, Bottom, Right, Floating};
 
   /**
-   * Constructor
+   * Constructor. If you want to pass a height other than default you must do this:
+   * <pre>
+   * toolbar = new KToolBar (this, 0, 50);
+   * </pre>
+   * Currently, pixmaps in buttons are not resized, becouse it looks ugly.
+   * On-the-fly changing of toolbar height will be added later.
    */
   KToolBar(QWidget *parent=0L, const char *name=0L, int _item_size = 26);
 
@@ -199,41 +209,44 @@ public:
 
   /**
    * Inserts KButton with pixmap. You should connect to one or more signals in
-   * KToolBar: @ref #clicked, @ref #pressed, @ref #released, and
-   * if toolbar is toggle button (@ref setToggle ) @ref toggled. Those
+   * KToolBar: @ref #clicked , @ref #pressed , @ref #released , and
+   * if toolbar is toggle button (@ref #setToggle ) @ref #toggled . Those
    * signals have id of a button that caused the signal.
+   * If you want to bound an popup to button, see  @ref #setButton
    * @param index the position of the button. (-1 = at end).
    * @return Returns item index
    */
-  int insertButton(const QPixmap& pixmap, int ID, bool enabled = TRUE,
+  int insertButton(const QPixmap& pixmap, int ID, bool enabled = true,
                    const char *ToolTipText = 0L, int index=-1 );
   /**
    * This is the same as above, but with specified signals and
    * slots to which this button will be connected. KButton emits
    * signals pressed, clicked and released, and
-   * if toolbar is toggle button (@ref setToggle ) @ref toggled.
-   * You can add more signals with @ref #addConnection.
+   * if toolbar is toggle button (@ref #setToggle ) @ref #toggled .
+   * You can add more signals with @ref #addConnection .
+   * If you want to bound an popup to button  @ref #setButton
    * @return Returns item index
    */
   int insertButton(const QPixmap& pixmap, int ID, const char *signal,
                    const QObject *receiver, const char *slot,
-                   bool enabled = TRUE,
+                   bool enabled = true,
                    const char *tooltiptext = 0L, int index=-1 );
   /**
    * Inserts a KLined. You have to specify signals and slots to
    * which KLined will be connected. KLined has all slots QLineEdit
-   * has, plus signals @ref #completion and @ref #rotation
+   * has, plus signals @ref KLined::completion and @ref KLined::rotation
    * KLined can be set to autoresize itself to full free width
    * in toolbar, that is to last right aligned item. For that,
    * toolbar must be set to full width.
    * @see #setFullWidth
    * @see #setItemAutoSized
+   * @see KLined
    * @return Returns item index
    */
   int insertLined (const char *text, int ID,
                    const char *signal,
                    const QObject *receiver, const char *slot,
-                   bool enabled = TRUE,
+                   bool enabled = true,
                    const char *toolTipText = 0L, int size = 70, int index =-1);
 
   /**
@@ -247,7 +260,7 @@ public:
    */
   int insertCombo (QStrList *list, int id, bool writable,
                    const char *signal, QObject *recevier,
-                   const char *slot, bool enabled=TRUE,
+                   const char *slot, bool enabled=true,
                    const char *tooltiptext=0L,
                    int size=70, int index=-1,
                    KCombo::Policy policy = KCombo::AtBottom);
@@ -260,7 +273,7 @@ public:
    */
   int insertCombo (const char *text, int id, bool writable,
                    const char *signal, QObject *recevier,
-                   const char *slot, bool enabled=TRUE,
+                   const char *slot, bool enabled=true,
                    const char *tooltiptext=0L,
                    int size=70, int index=-1,
                    KCombo::Policy policy = KCombo::AtBottom);
@@ -272,7 +285,7 @@ public:
   /**
    * Inserts frame with specified width. You can get pointer
    * to this frame with @ref #getFrame
-   * Frame can be autosized.
+   * Frame can be autosized to full width.
    * @see #setItemAutoSized
    * @return Returns item index
    */
@@ -296,9 +309,9 @@ public:
   void setButtonPixmap( int id, const QPixmap& _pixmap );
 
   /**
-   * Makes button a toggle button if flag is TRUE
+   * Makes button a toggle button if flag is true
    */
-  void setToggle (int id, bool flag = TRUE);
+  void setToggle (int id, bool flag = true);
 
   /**
    * If button is toggle (@ref #setToggle must be called first)
@@ -312,15 +325,34 @@ public:
   /**
    * If button is toggle (@ref #setToggle must be called first)
    * this will set him to state flag. This will also emit signal
-   * #ref toggled.
+   * #ref toggled. <BR>
+   * If button is not toggle, calling with flag = false will
+   * unhighlight this button.
+   * You will want to do this if you want buttons to have popups.
+   * This is what you do: <BR>
+   * - Connect to signal @ref #pressed <BR>
+   * - In slot, before you activate popup, call setButton(id, false); <BR>
+   * - activate your popup <BR>
+   * Example:
+   * <pre>
+   * toolbar->insertButton(pixmap, 1, SIGNAL(pressed()),
+   *                this, SLOT(slotPopup()), true,
+   *                "Press this to popup");
+   * ...
+   * class::slotPopup()
+   * {
+   *  toolbar->setButton(1, false)  // this turns the button off
+   *  myPopupMenu->show();
+   * }
+   * </pre>
    * @see #setToggle
    */
   void setButton (int id, bool flag);
 
   /**
-   * Returns TRUE if button is on, FALSE if button is off.
+   * Returns true if button is on, false if button is off.
    * If button is not a toggle button, or not button at all
-   * returns FALSE
+   * returns false
    * @see #setToggle
    */
   bool isButtonOn (int id);
@@ -376,28 +408,35 @@ public:
   const char *getComboItem (int id, int index=-1);
 
   /**
-   * This returns pointer to Combo. Use it as
+   * This returns pointer to Combo. Example:
+   * <pre>
    * KCombo *combo = toolbar->getCombo(combo_id);
+   * </pre>
    * That way you can get access to other public methods
-   * that KCombo provides. KCombo is the same thing
-   * as QComboBox plus two signals
+   * that @ref KCombo provides. @ref KCombo is KDE enhancement
+   * of @ref QComboBox plus two signals
+   *
    */
   KToolBarCombo * getCombo(int id);
   
   /**
-   * This returns pointer to KToolBarLined. Use it as
-   * KToolBarLined * lined = toolbar->getKTollBarLined(lined_id);
+   * This returns pointer to KToolBarLined. Example:
+   * <pre>
+   * KLined * lined = toolbar->getKTollBarLined(lined_id);
+   * </pre>
    * That way you can get access to other public methods
-   * that KToolBarLined provides. KTollBarLined is the same thing
-   * as KToolBarLined plus completion signals
+   * that @ref KLined provides. @ref KLined is the same thing
+   * as @ref QLineEdit plus completion signals.
    */  
   KToolBarLined * getLined (int id);
 
   /**
-   * This returns a pointer to KToolBarButton. Use it as
-   * KToolBarButton * button = toolbar->getButton(button_id);
+   * This returns a pointer to KToolBarButton. Example:
+   * <pre>
+   * KButton * button = toolbar->getButton(button_id);
+   * </pre>
    * That way you can get access to other public methods
-   * that KToolBarButton provides.
+   * that @ref KButton provides.
    */  
   KToolBarButton * getButton (int id);
 
@@ -406,7 +445,7 @@ public:
    * This works only if toolbar is set to full width.
    * @see #setFullWidth
    */
-  void alignItemRight (int id, bool right = TRUE);
+  void alignItemRight (int id, bool right = true);
 
   /**
    * Sets item autosized. This works only if toolbar is set to full width.
@@ -419,16 +458,19 @@ public:
    * @see #setFullWidth
    * @see #alignItemRight
    */
-  void setItemAutoSized (int id, bool yes = TRUE);
+  void setItemAutoSized (int id, bool yes = true);
 
   /**
    * Returns pointer to inserted frame, or 0 if id is wrong, or
    * if item id is not a frame, or if there is no frame inserted.
-   * You can use QFrame *frame = toolbar->getframe (frameid);
-   * to get frame. You can do with this frame whatever you want,
-   * except changing its height (hardcoded 24). If you change its width
-   * you will probbably have to call toolbar->@ref #updateRects (TRUE)
-   * @see QFrame::QFrame
+   * Example:
+   * <pre>
+   * QFrame *frame = toolbar->getframe (frameid);
+   * </pre>
+   * You can do with this frame whatever you want,
+   * except changing its height (hardcoded). If you change its width
+   * you will probbably have to call toolbar->@ref #updateRects (true)
+   * @see QFrame
    * @see #updateRects
    */
   KToolBarFrame * getFrame (int id);
@@ -442,16 +484,17 @@ public:
   /**
    * Sets toolbar to full parent width (or to value set by setMaxWidth).
    * You have to call this function if you want to have right aligned items or
-   * autosized item.
+   * autosized item. <BR>
+   * The toolbar is set to full width by default.
    * @see #alignItemRight
    * @see #setItemAutoSized
    */
-  void setFullWidth(bool flag = TRUE);    // Top and Bottom pos only
+  void setFullWidth(bool flag = true);    // Top and Bottom pos only
 
   /**
    * Enables or disables moving of toolbar.
    */
-  void enableMoving(bool flag = TRUE);
+  void enableMoving(bool flag = true);
 
   /**
    * Sets position of toolbar
@@ -473,8 +516,10 @@ public:
 
   /**
    * Sets maximal height of vertical (Right or Left) toolbar. You normaly
-   * do not have to call it, since it's called from @ref KTopLevelWidget::updateRects
-   * If you reimplement @ref KTopLevelWidget::resizeEvent or updateRects,
+   * do not have to call it, since it's called from
+   * @ref KTopLevelWidget#updateRects
+   * If you reimplement @ref KTopLevelWidget#resizeEvent or
+   * KTopLevelWidget#updateRects,
    * be sure to call this function with maximal height toolbar can have.
    * @see #updateRects
    */
@@ -497,40 +542,42 @@ public:
    * Enables or disables floating.
    * Floating is enabled by default.
    * This only disables menu entry Floating in popup menu, so
-   * toolbar can still be moved by @ref #setBarPos
+   * toolbar can still be moved by @ref #setBarPos or by dragging.
+   * This function is obsolete and do not use it. If you want to make
+   * toolbar static use @ref enableMoving
    */
   void enableFloating (bool arrrrrrgh);
 
   /**
-   * Redraw toolbar and resize it if resize is TRUE.
+   * Redraw toolbar and resize it if resize is true.
    * You normaly don't have to call it, since it's called from
-   * @ref KTopLevelWidget::updateRects. You can call it if you manualy
-   * change width of inserted frame, or if you wish to force toolbar to
-   * recalculate itself.
-   *
-   * KtopLevelWidget is changed a bit to work with this toolbar. Interface
-   * to KTopLevelWidget is same as before. If you want to subclass
-   * KTopLevelWidget to change its resize policy, hear this:
-   *
-   * resizeEvent () in KTopLevelWidget just calls updateRects, which handles
-   * children sizes. Call updateRects when you're done with your things.
-   *
-   * If you want to handle everything yourself:
-   *
-   * KToolBar manages itself by calling toolbar->@ref #updateRects (TRUE).
-   * It will autosize itself, but won't move itself. You have to do the moving.
-   *
+   * @ref KTopLevelWidget#updateRects or from resizeEvent. You can call it
+   * if you manualy change width of inserted frame, or if you wish to force
+   * toolbar to recalculate itself. <BR>
+   * You don't want to fiddle with this.
+   * @ref KtopLevelWidget works closely with toolbar. If you want to
+   * subclass KTopLevelWidget to change its resize policy, hear this: <BR>
+   * <BR>
+   * resizeEvent() in KTopLevelWidget just calls updateRects, which handles
+   * children sizes. Call updateRects when you're done with your things. <BR>
+   * <BR>
+   * If you want to handle everything yourself:<BR>
+   * <BR>
+   * KToolBar manages itself by calling toolbar->@ref #updateRects (true).
+   * It will autosize itself, but won't move itself.
+   * You have to do the moving. <BR>
    * First setup & move anything that is above toolbars (menus...). Then
    * setup statusbars and other horizontal things on bottom. Then loop through
-   * all HORIZONTAL toolbars, call their updateRects(TRUE), _then_ take their
+   * all HORIZONTAL toolbars, call their updateRects(true), _then_ take their
    * size, an move them (note that they size themselves according to parent
    * width()). After  you have looped through HORIZONTAL toolbars, calculate
    * the maximum height that vertical toolbars may have (this is your free
    * area height). Then loop through vertical toolbars,
    * @ref #setMaxHeight (calculated_max_height) on them,
-   * call their updateRects(TRUE), and _then_ move them to their locations.
+   * call their updateRects(true), and _then_ move them to their locations.
+   * @see KtopLevelWidget#updateRects
    */
-  void updateRects(bool resize = FALSE);
+  void updateRects(bool resize = false);
   
   // OLD  INTERFACE
   
@@ -539,7 +586,7 @@ public:
    * a warning, and calls @ref #InsertButton
    *
    */
-  int insertItem(const QPixmap& pixmap, int ID, bool enabled = TRUE,
+  int insertItem(const QPixmap& pixmap, int ID, bool enabled = true,
                char *ToolTipText = 0L, int index=-1 );
 
   /**
@@ -548,7 +595,7 @@ public:
    */
   int insertItem(const QPixmap& pixmap, int ID, const char *signal,
                const QObject *receiver, const char *slot,
-               bool enabled = TRUE,
+               bool enabled = true,
                char *tooltiptext = 0L, int index=-1 );
 
   /**
@@ -557,20 +604,20 @@ public:
    */
   void setItemPixmap( int id, const QPixmap& _pixmap );
 
-
 signals:
     /**
-     * Emits when button id is clicked
+     * Emits when button id is clicked.
      */
     void clicked(int id);
 
     /**
-     * Emits when button id is pressed
+     * Emits when button id is pressed. See @ref setButton for binding
+     * popups to buttons.
      */
     void pressed(int);
 
     /**
-     * Emits when button id is pressed
+     * Emits when button id is released.
      */
     void released(int);
 
@@ -579,7 +626,7 @@ signals:
      * Emits also if you change state
      * with @ref #setButton or @ref #toggleButton
      * If you make a button normal again, with
-     * @ref #setToggle (FALSE), this signal won't
+     * @ref #setToggle (false), this signal won't
      * be emited.
      */
     void toggled(int);
@@ -620,10 +667,13 @@ private:
   int max_width;
   int max_height;
   
-  BarPosition lastPosition;
+  BarPosition lastPosition; // Where was I last time I was?
 
-  bool mouseEntered;
-  bool horizontal;
+  bool mouseEntered;  // Did the mouse touch the cheese?
+  bool horizontal;    // Do I stand tall?
+  bool localResize;   // Am I trying to understand recursion?
+  bool wasFullWidth;  // Was I loong when I was?
+  bool haveAutoSized; // Do I have a problem?
   
 protected:
   QPopupMenu *context;
@@ -654,6 +704,5 @@ private:
    QPoint pointerOffset;
    QPoint parentOffset;
    int item_size;
-
 };
 #endif
