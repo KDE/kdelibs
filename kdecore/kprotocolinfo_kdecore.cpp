@@ -103,13 +103,15 @@ KProtocolInfo::KProtocolInfo(const QString &path)
 
   d->showPreviews = config.readBoolEntry( "ShowPreviews", d->protClass == ":local" );
 
-  tmp = config.readEntry( "URIMode", QString::null );
+  tmp = config.readEntry( "URIMode", QString::null ).lower();
   if (tmp == "rawuri")
      d->uriMode = KURL::RawURI;
   else if (tmp == "mailto")
      d->uriMode = KURL::Mailto;
-  else 
+  else if (tmp == "url"
      d->uriMode = KURL::URL;
+  else 
+     d->uriMode = KURL::Auto;
 }
 
 KProtocolInfo::KProtocolInfo( QDataStream& _str, int offset) :
