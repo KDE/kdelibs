@@ -563,7 +563,7 @@ int getaddrinfo(const char *name, const char *serv,
     return EAI_SOCKTYPE;
 
   // Treat hostname of "*" as NULL, which means localhost
-  if (name != NULL && (*name == '*' && name[1] == '\0') || *name == '\0')
+  if (name != NULL && ((*name == '*' && name[1] == '\0') || *name == '\0'))
     name = NULL;
   // Treat service of "*" as NULL, which I guess means no port (0)
   if (serv != NULL && (*serv == '*' && serv[1] == '\0') || *serv == '\0')
@@ -721,7 +721,7 @@ int getnameinfo(const struct sockaddr *sa, ksocklen_t salen,
 
       if (servlen && serv != NULL)
 	*serv = '\0';
-      if (host == NULL || hostlen < strlen(s.s_sun->sun_path))
+      if (host == NULL || hostlen < strlen(s._sun->sun_path))
 	strcpy(host, s._sun->sun_path);
 
       return 0;
