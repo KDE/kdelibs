@@ -50,7 +50,9 @@ Name[da]=Tekstcompletering: rotation
 Name[eo]=KKompletigo: rotacio
 Name[hu]=Szövegkiegészítés:forgatás
 Name[nl]=Tekstcompletering: rotatie
+Name[no_NY]=Tekstfullføring: rotering
 Name[pt]=Completação de texto: dei a volta
+Name[sl]=Dopolnjevanje: vrtenje
 Comment=The end of the list of matches has been reached.
 Comment[ca]=S'ha arribat al final de la llista de coincidències.
 Comment[cs]=Dosaženo konce seznamu odpovídajích položek.
@@ -87,14 +89,18 @@ Name[eo]=KKompletigo: neniu trovaĵo
 Name[hu]=Szövegkiegészítés: nincs találat
 Name[it]=Textcompletion: nessuna corrispondenza
 Name[nl]=Tekstcompletering - geen overeenkomsten
+Name[no_NY]=Tekstfullføring: ingen treff
 Name[pt]=Completação de texto: nenhuma encontrada
+Name[sl]=Dopolnjevanje: ni ujemanja
 Comment=No matching completion was found.
 Comment[ca]=No s'ha trobat cap coincidència completable.
 Comment[da]=Ingen passende komplettering fundet.
 Comment[eo]=Ne troviĝis konvena kompletigo.
 Comment[hu]=Nem található megfelelő kiegészítés.
 Comment[nl]=Er werd geen overeenkomstige completering gevonden.
+Comment[no_NY]=Ingen passande fullføring funne.
 Comment[pt]=Não foi escontrada qualquer completação.
+Comment[sl]=Ni najti ujemajočih se zadetkov.
 default_presentation=1
 
 [Textcompletion: partial match]
@@ -105,7 +111,9 @@ Name[eo]=KKompletigo: parta trovaĵo
 Name[hu]=Szövegkiegészítés: részleges találat
 Name[it]=Textcompletion: corrispondenza parziale
 Name[nl]=Tekstcompletering - gedeeltelijke overeenkomsten
+Name[no_NY]=Tekstfullføring: delvis treff
 Name[pt]=Completação de texto: parcial
+Name[sl]=Dopolnjevanje: delno ujemanje
 Comment=There is more than one possible match.
 Comment[ca]=Hi ha més d'una possible coincidència.
 Comment[cs]=Existuje více vhodných odpovídajících položek.
@@ -242,18 +250,24 @@ level=4
 
 [notification]
 Name=Notification
+Name[hu]=Rendszerfigyelmeztetések
 Comment=Something Special Happened in the Program
+Comment[hu]=Valami különleges történt a programmal
 default_presentation=2
 level=1
 
 [warning]
 Name=Warning
+Name[hu]=Figyelmeztetés
 Comment=There was an error in the program which may cause problems.
+Comment[hu]=Olyan hiba történt a programban, mely további problémákat okozhat.
 default_presentation=2
 level=2
 
 [catastrophe]
 Name=Catastrophe
+Name[hu]=Katasztrófa
 Comment=A very serious error occured, at least causing the program to exit
+Comment[hu]=Súlyos hiba történt, a program futása félbeszakad.
 default_presentation=2
 level=8
