@@ -157,7 +157,7 @@ namespace KJS {
     Value();
     explicit Value(ValueImp *v);
     Value(const Value &v);
-    virtual ~Value();
+    virtual ~Value(); 		// TODO: virtual makes no sense. just slower.
 
     Value& operator=(const Value &v);
     /**

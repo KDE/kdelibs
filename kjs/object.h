@@ -78,11 +78,11 @@ namespace KJS {
     Object();
     explicit Object(ObjectImp *v);
     Object(const Object &v);
-    virtual ~Object();
+    virtual ~Object();		// TODO: make non-virtual
 
     Object& operator=(const Object &v);
 
-    virtual const ClassInfo *classInfo() const;
+    virtual const ClassInfo *classInfo() const; // TODO: make non-virtual
     bool inherits(const ClassInfo *cinfo) const;
 
     /**
