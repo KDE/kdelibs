@@ -3,22 +3,22 @@
 #include <qpainter.h>
 #include <qdrawutl.h>
 
-KButton::KButton( QWidget *_parent, char *_name )
-    : QButton( _parent, _name )
+KButton::KButton( QWidget *_parent, char *name )
+    : QButton( _parent , name)
 {
     raised = 0;
     connect( this, SIGNAL( pressed() ), this, SLOT( slotPressed () ) );
     connect( this, SIGNAL( released() ), this, SLOT( slotReleased () ) );
 }
 
-void KButton::enterEvent( QEvent *_ev )
+void KButton::enterEvent( QEvent * )
 {
     if ( isEnabled() )
 	raised = 1;
     repaint();
 }
 
-void KButton::leaveEvent( QEvent *_ev )
+void KButton::leaveEvent( QEvent * )
 {
     raised = 0;
     repaint();
@@ -36,21 +36,23 @@ void KButton::drawButtonLabel( QPainter *_painter )
 
 void KButton::paint( QPainter *painter )
 {
-    static QColorGroup g( black, white, white, darkGray, lightGray, black, black );
-    if ( raised == 1 )
-	{
-		if ( style() == WindowsStyle )
-			qDrawWinButton( painter, 0, 0, width(), height(), g, FALSE );
-		else
-			qDrawShadePanel( painter, 0, 0, width(), height(), g, FALSE, 2, 0L );
-	}
+//    static QColorGroup g( black, white, white, darkGray, lightGray, black, black );
+
+   if ( raised == 1 )
+     {
+        if ( style() == WindowsStyle )
+             qDrawWinButton( painter, 0, 0, width(), height(), colorGroup(), FALSE );
+        else
+             qDrawShadePanel( painter, 0, 0, width(), height(), colorGroup(), FALSE, 2, 0L );
+    }
     else if ( raised == -1 )
-	{
-		if ( style() == WindowsStyle )
-			qDrawWinButton( painter, 0, 0, width(), height(), g, TRUE );
-		else
-    		qDrawShadePanel( painter, 0, 0, width(), height(), g, TRUE, 2, 0L );
-	}
+      {
+       if ( style() == WindowsStyle )
+          qDrawWinButton( painter, 0, 0, width(), height(), colorGroup(), TRUE );
+        else
+          qDrawShadePanel( painter, 0, 0, width(), height(), colorGroup(), TRUE, 2, 0L );
+        }
+ 
 
     if ( pixmap() )
     {

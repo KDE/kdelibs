@@ -2,6 +2,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.1.1.1  1997/04/13 14:42:43  cvsuser
+ * Source imported
+ *
  * Revision 1.1.1.1  1997/04/09 00:28:08  cvsuser
  * Sources imported
  *
@@ -71,8 +74,7 @@ KPanner::~KPanner() {
 
 void KPanner::resizeEvent(QResizeEvent *rev)
 {
-    int abs_coord, max_value, old_max;
-    float p11;
+    int max_value, old_max = 0;
 
     max_value = getMaxValue();
     
@@ -251,6 +253,7 @@ int KPanner::getMaxValue()
         pos = divider->y();
         return height();
     }
+   return 0;
 }
 
 bool KPanner::checkRange(int & value)

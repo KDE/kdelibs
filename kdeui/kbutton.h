@@ -8,7 +8,7 @@ class KButton : public QButton
 {
     Q_OBJECT
 public:
-    KButton( QWidget *_parent, char *_name );
+    KButton( QWidget *_parent = 0L, char *name = 0L );
     ~KButton();
 
 public slots:
