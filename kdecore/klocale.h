@@ -44,6 +44,14 @@ class KLocalePrivate;
 QString i18n(const char *text);
 
 /**
+ *  If the string is too ambigious to be translated well to a non-english
+ *  language, use this form of i18n to separate lookup string and english
+ *  text
+ *  @see translate
+ **/
+QString i18n(const char *index, const char *text);
+
+/**
   *
   * KLocale provides support for country specific stuff like
   * the national language.
@@ -93,6 +101,33 @@ public:
       * @param index The lookup text and default text, if not found.
       */
     QString translate( const char *index ) const;
+
+    /**
+     * Translate the string into the corresponding string in the
+     * national language, if available.
+     *
+     * The real contents of the string is in the argument fallback,
+     * but the meaning of it is coded into the argument index.
+     * In some cases you'll need this function, when english is
+     * too ambigious to express it.
+     *
+     * Most of the times the translators will tell you if it can't
+     * be translated as it, but think of cases as "New", where the
+     * translations differs depending on what is New.
+     * Or simple cases as "Open", that can be used to express something
+     * is open or it can be used to express that you want something to
+     * open... There are tons of such examples.
+     *
+     * If translate("Open") is not enough to translate it well, use
+     * translate("To Open", "Open") or translate("Is Open", "Open").
+     * The english user will see "Open" in both cases, but the translated
+     * version may vary. Of course you can also use i18n()
+     *
+     * @param index The lookup text
+     * @param fallback the default text, if not found
+     * @return translation
+     */
+    QString translate( const char *index, const char *fallback) const;
 
     /**
      * Allows programs such as kcmlocale to choose which translation to use.
@@ -229,7 +264,7 @@ public:
      * a QString as the argument for convenience.
      *
      * @param numStr The string you want to reformat.
-     * 
+     *
      * @return The number of money as a localized string
      */
     QString formatMoney(const QString &numStr) const;
@@ -470,7 +505,7 @@ public:
      * circumstances - when the circumstances do not fit for initialization
      * - it will just delay the initialization til you call initLanguage
      *
-     * @return Returns true if locale is inited. 
+     * @return Returns true if locale is inited.
      */
     bool inited() const { return _inited; }
 
@@ -521,6 +556,10 @@ protected:
     KLocale& operator= ( const KLocale& );
 
     static void initInstance();
+    /**
+     * @internal function used by the two translate versions
+     */
+    QString translate_priv(const char *index, const char *text) const;
 
     KLocalePrivate *d;
 };

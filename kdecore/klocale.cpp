@@ -426,7 +426,7 @@ KLocale::~KLocale()
     delete catalogues;
 }
 
-QString KLocale::translate(const char* msgid) const
+QString KLocale::translate_priv(const char *msgid, const char *fallback) const
 {
     ASSERT(_inited);
 
@@ -436,18 +436,31 @@ QString KLocale::translate(const char* msgid) const
 	return QString::null;
     }
 
-    const char *text = msgid;
-
     for (const char* catalogue = catalogues->first(); catalogue;
 	 catalogue = catalogues->next())
     {
-	text = k_dcgettext( catalogue, msgid, lang.ascii());
+	const char *text = k_dcgettext( catalogue, msgid, lang.ascii());
 	if ( text != msgid) // we found it
 	    return _codec->toUnicode( text );
     }
 
     // Always use UTF-8 if the string was not found
-    return QString::fromUtf8( text );
+    return QString::fromUtf8( fallback );
+}
+
+QString KLocale::translate(const char* msgid) const
+{
+  return translate_priv(msgid, msgid);
+}
+
+QString KLocale::translate( const char *index, const char *fallback) const {
+    char *newstring = new char[strlen(index) + strlen(fallback) + 5];
+    sprintf(newstring, "_: %s\n%s", index, fallback);
+    // as copying QString is very fast, it looks slower as it is ;/
+    QString r = translate_priv(newstring, fallback);
+    delete [] newstring;
+    return r;
+
 }
 
 QString KLocale::decimalSymbol() const {
@@ -939,7 +952,7 @@ QString KLocale::formatMoney(double num, const QString &symbol, int digits) cons
 {
   QString str = QString::number( num, 'f', digits==-1?2:digits );
   if (!symbol.isNull())
-    str.prepend(symbol);  
+    str.prepend(symbol);
 
   return str;
 }
