@@ -133,6 +133,9 @@ protected:
 	mutable TitleBarMode titleBarMode; //Set when passing back CC_TilteBar modes to handle
 	//PE_ButtonTool properly for them, as well as when handling CC_ToolButton from
 	//The maximized window controls.
+	
+	mutable bool flatMode; //Set when calling PE_PushButton or PE_ButtonDefault
+	// on a flat button.
 
 	
 	bool eventFilter( QObject* object, QEvent* event );

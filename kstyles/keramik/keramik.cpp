@@ -245,7 +245,7 @@ QPixmap KeramikStyle::stylePixmap(StylePixmap stylepixmap,
 
 KeramikStyle::KeramikStyle()
 	:KStyle( AllowMenuTransparency | FilledFrameWorkaround /*| DisableMenuBlend*/, ThreeButtonScrollBar ), maskMode(false),
-		toolbarBlendWidget(0), titleBarMode(None), kickerMode(false)
+		toolbarBlendWidget(0), titleBarMode(None), flatMode(false), kickerMode(false)
 {
 	hoverWidget = 0;
 }
@@ -459,10 +459,7 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			if (flags & Style_MouseOver && name == keramik_pushbutton )
 				name = keramik_pushbutton_hov;
 
-
-
-			//p->fillRect( r, cg.background() );
-			if (toolbarBlendWidget)
+			if (toolbarBlendWidget && !flatMode )
 			{
 				// Draw a gradient background for custom widgets in the toolbar
 				// that have specified a "kde toolbar widget" name.
@@ -495,8 +492,11 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 
 
 			}
+			else if (!flatMode)
+				Keramik::RectTilePainter( name, false ).draw(p, r, cg.button(), cg.background(), disabled, pmode() );
 			else
-				Keramik::RectTilePainter( name, false ).draw(p, r, cg.button(), cg.background(), disabled, pmode()  );
+				Keramik::ScaledPainter( name + KeramikTileCC, Keramik::ScaledPainter::Vertical).draw(
+					p, r, cg.button(), cg.background(), disabled, pmode() );
 
 			break;
 
@@ -1086,11 +1086,18 @@ void KeramikStyle::drawControl( ControlElement element,
 		// PUSHBUTTON
 		// -------------------------------------------------------------------
 		case CE_PushButton:
+		{
+			const QPushButton* btn = static_cast< const QPushButton* >( widget );
 			if ( widget == hoverWidget )
 				flags |= Style_MouseOver;
 
-			if ( static_cast< const QPushButton* >( widget )->isDefault( ) )
+			if ( btn->isFlat( ) )
+				flatMode = true;
+			
+			if ( btn->isDefault( ) && !flatMode )
+			{
 				drawPrimitive( PE_ButtonDefault, p, r, cg, flags );
+			}
 			else
 			{
 				if (widget->parent() && widget->parent()->inherits("QToolBar"))
@@ -1100,8 +1107,11 @@ void KeramikStyle::drawControl( ControlElement element,
 
 				toolbarBlendWidget = 0;
 			}
+			
+			flatMode = false;
 
 			break;
+		}
 
 
 		// PUSHBUTTON LABEL
