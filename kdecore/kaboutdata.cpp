@@ -55,8 +55,8 @@ KAboutPerson::webAddress() const
 }
 
 
-KAboutTranslator::KAboutTranslator(const QString name
-                , const QString emailAddress)
+KAboutTranslator::KAboutTranslator(const QString & name,
+                const QString & emailAddress)
 {
     mName=name;
     mEmail=emailAddress;
