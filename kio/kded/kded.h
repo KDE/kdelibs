@@ -123,4 +123,37 @@ protected:
    QList<KDEDModule> m_modules;
 };
 
+class KUpdateD : public QObject
+{
+   Q_OBJECT
+public:
+   KUpdateD(int pollInterval, int NFSPollInterval);
+   ~KUpdateD();
+   
+public slots:
+   void runKonfUpdate();
+   void slotNewUpdateFile();
+
+private:
+   /**
+    * Pointer to the dirwatch class which tells us, when some directories
+    * changed.
+    */
+   KDirWatch* m_pDirWatch;
+   /*
+    * A dirwatch used for remote file systems
+    */
+   KDirWatch* m_pDirWatchNfs;
+
+   int m_PollInterval;
+   int m_NFSPollInterval;
+
+   /**
+    * When a desktop file is updated, a timer is started (5 sec)
+    * before rebuilding the binary - so that multiple updates result
+    * in only one rebuilding.
+    */
+   QTimer* m_pTimer;
+};
+
 #endif

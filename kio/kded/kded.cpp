@@ -55,6 +55,11 @@ static void runBuildSycoca()
    KApplication::kdeinitExecWait( "kbuildsycoca", args );
 }
 
+static void runKonfUpdate()
+{
+   KApplication::kdeinitExecWait( "kconf_update");
+}
+
 class KBuildSycoca : public KSycoca
 {
 public:
@@ -331,6 +336,51 @@ static void sighandler(int /*sig*/)
     kapp->quit();
 }
 
+KUpdateD::KUpdateD(int pollInterval, int NFSPollInterval) :
+    m_PollInterval(pollInterval), 
+    m_NFSPollInterval(NFSPollInterval)
+{
+    m_pDirWatch = new KDirWatch(m_PollInterval);
+    m_pDirWatchNfs = new KDirWatch(m_NFSPollInterval);
+    m_pTimer = new QTimer;
+    connect(m_pTimer, SIGNAL(timeout()), this, SLOT(runKonfUpdate()));
+    QObject::connect( m_pDirWatch, SIGNAL(dirty(const QString&)),
+           this, SLOT(slotNewUpdateFile()));
+    QObject::connect( m_pDirWatchNfs, SIGNAL(dirty(const QString&)),
+           this, SLOT(slotNewUpdateFile()));
+
+    QStringList dirs = KGlobal::dirs()->findDirs("data", "kconf_update");
+    for( QStringList::ConstIterator it = dirs.begin();
+         it != dirs.end();
+         ++it )
+    {
+       QString path = *it;
+       if (path[path.length()-1] != '/')
+          path += "/";
+       KDirWatch *dirWatch = KIO::probably_slow_mounted(path) ? m_pDirWatchNfs : m_pDirWatch;
+
+       if (!dirWatch->contains(path))
+          dirWatch->addDir(path);
+    }
+}
+
+KUpdateD::~KUpdateD()
+{
+    delete m_pDirWatch;
+    delete m_pDirWatchNfs;
+    delete m_pTimer;
+}
+
+void KUpdateD::runKonfUpdate()
+{
+    ::runKonfUpdate();    
+}
+
+void KUpdateD::slotNewUpdateFile()
+{
+    m_pTimer->start( 500, true /* single shot */ );
+}
+
 static KCmdLineOptions options[] =
 {
   { "check", I18N_NOOP("Check sycoca database only once."), 0 },
@@ -380,6 +430,7 @@ int main(int argc, char *argv[])
      if (args->isSet("check"))
      {
         runBuildSycoca();
+        runKonfUpdate();
         exit(0);
      }
 
@@ -399,6 +450,8 @@ int main(int argc, char *argv[])
 
      signal(SIGTERM, sighandler);
      KDEDApplication k;
+
+     KUpdateD updateD(PollInterval, NFSPollInterval); // Watch for updates
 
      DCOPClient *client = kapp->dcopClient();
      QObject::connect(client, SIGNAL(applicationRemoved(const QCString&)),
