@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
  *
- * Copyright (C) 2001 George Staikos <staikos@kde.org>
+ * Copyright (C) 2001,2002 George Staikos <staikos@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -32,12 +32,14 @@
 
 class KWalletBackend {
 	public:
-		KWalletBackend(QString name = "kdewallet");
+		KWalletBackend(const QString& name = "kdewallet");
 		~KWalletBackend();
 		
-		int unlock(QByteArray& password);
+		// Open and unlock the wallet
+		int open(const QByteArray& password);
 		
-		int lock(QByteArray& password);
+		// Close and lock the wallet
+		int close(const QByteArray& password);
 
 		// Returns true if the current wallet is open
 		bool isOpen() const;
@@ -47,13 +49,13 @@ class KWalletBackend {
 
 		// Changes to a new wallet "name"
 		// returns false if it cannot change (ie another wallet is open)
-		bool changeWallet(QString name);
+		bool changeWallet(const QString& name);
 
 		// add
 		// remove
 
 		//
-		const QPtrList<KWalletEntry>& getEntriesByApp(QString app) const;
+		const QPtrList<KWalletEntry>& getEntriesByApp(const QString& app) const;
 
 		const QStringList getAppList() const;
 

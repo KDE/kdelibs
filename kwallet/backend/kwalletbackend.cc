@@ -33,7 +33,7 @@
 #define KWMAGIC "KWALLET\n\0"
 #define KWMAGIC_LEN 9
 
-KWalletBackend::KWalletBackend(QString name) : _name(name) {
+KWalletBackend::KWalletBackend(const QString& name) : _name(name) {
 	KGlobal::dirs()->addResourceType("kwallet", "share/apps/kwallet");
 	_open = false;
 }
@@ -41,7 +41,7 @@ KWalletBackend::KWalletBackend(QString name) : _name(name) {
 
 KWalletBackend::~KWalletBackend() {
 	if (_open) {
-		// Discard changes
+		// FIXME: Discard changes
 	}
 }
 
@@ -153,7 +153,7 @@ static int password2hash(const QByteArray& password, QByteArray& hash) {
 }
 
 
-int KWalletBackend::unlock(QByteArray& password) {
+int KWalletBackend::open(const QByteArray& password) {
 
 	if (_open)
 		return -255;  // already open
@@ -272,7 +272,7 @@ int KWalletBackend::unlock(QByteArray& password) {
 }
 
 	
-int KWalletBackend::lock(QByteArray& password) {
+int KWalletBackend::close(const QByteArray& password) {
 	if (!_open)
 		return -255;  // not open yet
 
@@ -384,7 +384,7 @@ bool KWalletBackend::isOpen() const {
 }
 
 
-bool KWalletBackend::changeWallet(QString name) {
+bool KWalletBackend::changeWallet(const QString& name) {
 	if (_open)
 		return false;
 
@@ -393,7 +393,7 @@ bool KWalletBackend::changeWallet(QString name) {
 }
 
 
-const QPtrList<KWalletEntry>& KWalletBackend::getEntriesByApp(QString app) const {
+const QPtrList<KWalletEntry>& KWalletBackend::getEntriesByApp(const QString& app) const {
 	return _entries[app];
 }
 
