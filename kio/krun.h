@@ -20,8 +20,6 @@
 #ifndef __k_run_h__
 #define __k_run_h__
 
-class KService;
-
 #include <sys/stat.h>
 #include <sys/types.h>
 

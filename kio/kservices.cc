@@ -1,3 +1,5 @@
+#include <kregistry.h>
+#include <kregfactories.h> 
 #include "kservices.h"
 #include "kservicetype.h"
 #include "kuserprofile.h"
@@ -250,4 +252,15 @@ QDataStream& operator<<( QDataStream& _str, const KService& s )
 {
   s.save( _str );
   return _str;
+}
+
+const QList<KService>& KService::services()
+{
+  if ( !s_lstServices)
+  {
+    initStatic();
+    KRegistry::self()->addFactory( new KServiceFactory );
+    KRegistry::self()->load();
+  }
+  return *s_lstServices; 
 }

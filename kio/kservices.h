@@ -33,19 +33,24 @@
 
 #include "ktypecode.h"
 
-/** Represents a service, i.e. an application bound to one or several mimetypes
+/**
+ * Represents a service, i.e. an application bound to one or several mimetypes
  * as written in its desktop entry file.
  *
- * IMPORTANT : to use the public static methods of this class, you must do 
+ * To use the public static methods of this class, you must do 
  * the following registry initialisation (in main() for instance)
  * <pre>
  * #include <kregistry.h>
  * #include <kregfactories.h> 
  *
- * KRegistry registry;
- * registry.addFactory( new KServiceFactory );
- * registry.load();
+ * KRegistry::self()->addFactory( new KServiceTypeFactory );
+ * KRegistry::self()->addFactory( new KServiceFactory );
+ * KRegistry::self()->load();
  * </pre>
+ *
+ * The ServiceTypeFactory is more or less mandatory, but if you don't want to
+ * keep all the services in your application's memory (and you probably don't),
+ * see KTraderServiceProvider in corba/kded/ktrader.h
  */
 class KService : public KShared
 {
@@ -161,8 +166,10 @@ public:
   /**
    * @return the whole list of services. Useful for being able to
    * to display them in a list box, for example.
+   * Creates a KServiceFactory if it currently knows
+   * nothing about services.
    */
-  static const QList<KService>& services() { return *s_lstServices; }
+  static const QList<KService>& services();
 
 private:
   static void initStatic();
