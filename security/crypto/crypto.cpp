@@ -839,7 +839,7 @@ KCryptoConfig::~KCryptoConfig()
 
 void KCryptoConfig::configChanged()
 {
-    setChanged(true);
+    emit changed(true);
 }
 
 
@@ -1001,7 +1001,7 @@ void KCryptoConfig::load()
   slotYourCertSelect();
 #endif
 
-  setChanged(false);
+  emit changed(false);
 }
 
 void KCryptoConfig::save()
@@ -1197,7 +1197,7 @@ void KCryptoConfig::save()
   if (!cfgName.isEmpty())
     ::chmod(QFile::encodeName(cfgName), 0600);
 
-  setChanged(false);
+  emit changed(false);
 }
 
 void KCryptoConfig::defaults()
@@ -1241,7 +1241,7 @@ void KCryptoConfig::defaults()
   defCertBG->setButton(defCertBG->id(defDont));
 #endif
 
-  setChanged(true);
+  emit changed(true);
 }
 
 QString KCryptoConfig::quickHelp() const
