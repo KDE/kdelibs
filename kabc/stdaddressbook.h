@@ -117,19 +117,18 @@ class StdAddressBook : public AddressBook
     static bool automaticSave();
 
     /**
-      Returns the uid of the contact, that is associated with the owner
-      of the address book. This contact should be used by other programs
-      to store user specific data.
+      Returns the contact, that is associated with the owner of the
+      address book. This contact should be used by other programs
+      to access user specific data.
      */
-    static QString usersContact();
+    Addressee whoAmI();
 
     /**
-      Sets the uid of the users contact. See @ref userContact() for more
-      information.
+      Sets the users contact. See @ref whoAmI() for more information.
 
-      @param uid The uid of the users Addressee object.
+      @param uid The uid of the users contact.
      */
-    static void setUsersContact( const QString &uid );
+    void setWhoAmI( const Addressee &addr );
 
   protected:
     StdAddressBook();

@@ -167,18 +167,19 @@ bool StdAddressBook::automaticSave()
   return mAutomaticSave;
 }
 
-QString StdAddressBook::usersContact()
+// should get const for 4.X
+Addressee StdAddressBook::whoAmI()
 {
   KConfig config( "kabcrc" );
   config.setGroup( "General" );
 
-  return config.readEntry( "UsersContact" );
+  return findByUid( config.readEntry( "WhoAmI" ) );
 }
 
-void StdAddressBook::setUsersContact( const QString &uid )
+void StdAddressBook::setWhoAmI( const Addressee &addr )
 {
   KConfig config( "kabcrc" );
   config.setGroup( "General" );
 
-  config.writeEntry( "UsersContact", uid );
+  config.writeEntry( "WhoAmI", addr.uid() );
 }
