@@ -528,7 +528,7 @@ public:
     void createStandardStatusBarAction();
 
     /**
-     * @see createStandardWindow()
+     * @see setupGUI()
      */
     enum StandardWindowOptions
     {
