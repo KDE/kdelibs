@@ -354,7 +354,6 @@ QSize KCharSelect::sizeHint() const
 void KCharSelect::setFont( const QString &_font )
 {
     QValueList<QString>::Iterator it = fontList.find( _font );
-
     if ( it != fontList.end() ) {
 	QValueList<QString>::Iterator it2 = fontList.begin();
 	int pos = 0;
@@ -387,6 +386,7 @@ void KCharSelect::fillFontCombo()
 	qAddPostRoutine( cleanupFontDatabase );
     }
     fontCombo->insertStringList( fontDataBase->families() );
+    fontList=fontDataBase->families();
 }
 
 //==================================================================
