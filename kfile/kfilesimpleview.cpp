@@ -43,10 +43,10 @@ KFileSimpleView::KFileSimpleView(bool s, QDir::SortSpec sorting,
 
     setCellHeight( fontMetrics().lineSpacing() + 5);
     setCellWidth(0);
-    setTableFlags(Tbl_autoHScrollBar |
+    setTableFlags(Tbl_autoHScrollBar | Tbl_cutCellsV |
 		  Tbl_smoothHScrolling);
     curCol = curRow = 0;
-    QTableView::setNumCols(0);
+    // QTableView::setNumCols(0);
     QTableView::setNumRows(1);
     
     setBackgroundMode( PaletteBase );
@@ -221,8 +221,7 @@ void KFileSimpleView::keyPressEvent( QKeyEvent* e )
         } else newCol = curCol - jump;
         break;
     case Key_PageDown:
-//        jump = lastColVisible() - curCol + 1; // num of cols we want to jump
-          jump = lastColVisible() - leftCell();
+	jump = lastColVisible() - leftCell();
         lastItem = count() % numRows() - 1;   // last item in last col
 
         if ( curCol + jump >= numCols() ) { // too far, just go to last col
@@ -230,8 +229,10 @@ void KFileSimpleView::keyPressEvent( QKeyEvent* e )
           newRow = lastItem; 
         } else {
           newCol += jump; 
-          if ( newCol == numCols()-1 && curRow > lastItem ) newRow = lastItem;
-          else newRow = curRow;
+          if ( newCol == numCols()-1 && curRow > lastItem ) 
+	      newRow = lastItem;
+          else 
+	      newRow = curRow;
         }
         break;
     case Key_Enter:
@@ -279,11 +280,7 @@ bool KFileSimpleView::insertItem(const KFileInfo *i, int index)
 	    pixmaps.insert(index, locked_file);
     }
     
-    int curCol;
-    if (rowsVisible > 0)
-	curCol = index / rowsVisible;
-    else
-	curCol = 0;
+    int curCol = index / rowsVisible;
 
     for (int j = curCol; j < numCols(); j++)
       cellWidths[ j ] = -1; // reset values
@@ -300,11 +297,13 @@ int KFileSimpleView::cellWidth ( int col )
 	// debugC("not cached %d", col);
 	int offset = col * rowsVisible;
 	int width = 100;
-	for (int j = 0; offset + j < width_length && j < rowsVisible; j++) {
-	    int w = width_array[offset + j];
-	    if (width < w)
-		width = w;
-	}
+	for (int j = 0; offset + j < static_cast<int>(width_length) 
+		 && j < rowsVisible; j++) 
+	    {
+		int w = width_array[offset + j];
+		if (width < w)
+		    width = w;
+	    }
 	cellWidths[col] = width + file_pixmap->width() + 9; 
     }
     // debugC("cellWidth %d %d", col, cellWidths[col]);
@@ -314,17 +313,15 @@ int KFileSimpleView::cellWidth ( int col )
 void KFileSimpleView::resizeEvent ( QResizeEvent *e )
 {
     QTableView::resizeEvent(e);
-    rowsVisible = lastRowVisible();
+    rowsVisible = viewHeight() / cellHeight();
+    if (!rowIsVisible(rowsVisible))
+	rowsVisible--;
     
     int cols;
-    if (rowsVisible > 0) {
-	setNumRows(rowsVisible);
-	cols = count() / rowsVisible + 1;
-    } else {
-	if (rowsVisible < 0)
-	    rowsVisible = 0;
-	cols = 0;
-    }
+    if (rowsVisible <= 0) 
+	rowsVisible = 1;
+    setNumRows(rowsVisible);
+    cols = count() / rowsVisible + 1;
     setNumCols(cols);
     QTableView::repaint(true);
 }

@@ -216,6 +216,7 @@ void KDir::updateFiltered()
 	    startLoading();
     } else {
 	for (KFileInfo *i= myEntries.first(); i; i=myEntries.next()) {
+
 	    if (filterEntry(i)) {
 		KFileInfo *fi= new KFileInfo(*i);
 		CHECK_PTR(fi);
@@ -260,7 +261,7 @@ void KDir::getEntries() {
 		break;
 	    i = new KFileInfo(path, dp->d_name);
 	    CHECK_PTR(i);
-	    if (!i->fileName()) {
+	    if (!i->fileName() || !i->fileName()[0]) {
 		delete i;
 		continue;
 	    }
@@ -269,7 +270,7 @@ void KDir::getEntries() {
 	    /* if we just increase readFiles, if we found a file, it may
 	     * be, that we die on the wrong filter */
 	    readFiles++;
-	    
+
 	    if (filterEntry(i)) {
 		KFileInfo *fi= new KFileInfo(*i);
 		CHECK_PTR(fi);
@@ -333,20 +334,19 @@ bool KDir::filterEntry(KFileInfo *i)
 
     if (!(myFilterSpec & QDir::Hidden) && i->fileName()[0] == '.')
 	return false;
-    
+
     if (myNameFilter.isEmpty())
 	return true;
 
-    if ( !(myFilterSpec & QDir::Dirs) && i->isDir()) {
+    if ( !(myFilterSpec & QDir::Dirs) && i->isDir())
 	return false;
-    }
 
     if (matchAllDirs() && i->isDir()) 
-      return true;
-    
+	return true;
+
     if (match(myNameFilter, i->fileName()))
 	return true;
-    
+
     return false;
 }
 

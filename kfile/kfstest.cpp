@@ -93,7 +93,7 @@ int main(int argc, char **argv)
     case Normal: {
 	KFileDialog dlg(0, 0, 0, 0, true);
 	dlg.setSelection("../hello");
-	dlg.setFilter("*.*|All files");
+	dlg.setFilter("*|All files");
 	dlg.exec();
 	name1 = dlg.selectedFile();
     }

@@ -236,7 +236,13 @@ void KFileBaseDialog::init()
 	myStatusLine->setMinimumSize( myStatusLine->sizeHint() );
     } else
 	myStatusLine = 0L;
-        
+   
+    bHelp= new QPushButton(i18n("Help"), this, "_help");
+    bHelp->adjustSize();
+    bHelp->setMinimumWidth(bHelp->width());
+    bHelp->setFixedHeight(bHelp->height());
+    connect(bHelp, SIGNAL(clicked()), SLOT(help()));
+    
     bOk= new QPushButton(i18n("OK"), this, "_ok");
     bOk->adjustSize();
     bOk->setMinimumWidth(bOk->width());
@@ -248,12 +254,6 @@ void KFileBaseDialog::init()
     bCancel->setMinimumWidth(bCancel->width());
     bCancel->setFixedHeight(bCancel->height());
     connect(bCancel, SIGNAL(clicked()), SLOT(reject()));
-    
-    bHelp= new QPushButton(i18n("Help"), this, "_help");
-    bHelp->adjustSize();
-    bHelp->setMinimumWidth(bHelp->width());
-    bHelp->setFixedHeight(bHelp->height());
-    connect(bHelp, SIGNAL(clicked()), SLOT(help()));
 
     // filename_ is remembered as the dirName argument for the constructor
     setSelection(filename_);
