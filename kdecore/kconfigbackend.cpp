@@ -31,6 +31,7 @@
 #include <sys/stat.h>
 #endif
 #include <fcntl.h>
+#include <signal.h>
 
 #undef Unsorted
 #include <qdir.h>
@@ -276,10 +277,25 @@ bool KConfigINIBackEnd::parseConfigFiles()
   return true;
 }
 
+#ifdef HAVE_MMAP
+#ifdef SIGBUS
+static const char **mmap_pEof;
+
+static void mmap_sigbus_handler(int)
+{
+   *mmap_pEof = 0;
+   write(2, "SIGBUS\n", 7);
+   signal(SIGBUS, mmap_sigbus_handler);
+}
+#endif
+#endif
+
 void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
 					      KEntryMap *pWriteBackMap,
 					      bool bGlobal, bool bDefault)
 {
+   void (*old_sighandler)(int) = 0;
+
    if (!rFile.isOpen()) // come back, if you have real work for us ;->
       return;
 
@@ -303,6 +319,11 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
    {
       s = map;
       eof = s + rFile.size();
+
+#ifdef SIGBUS      
+      mmap_pEof = &eof;
+      old_sighandler = signal(SIGBUS, mmap_sigbus_handler);
+#endif
    }
    else
 #endif
@@ -521,7 +542,12 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
 
 #ifdef HAVE_MMAP
    if (map)
+   {
       munmap(( char* )map, rFile.size());
+#ifdef SIGBUS      
+      signal(SIGBUS, old_sighandler);
+#endif
+   }
 #endif
 }
 
