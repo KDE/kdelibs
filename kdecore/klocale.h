@@ -198,7 +198,7 @@ public:
      *
      * @return The number of money as a localized string
      */
-    QString formatMoney(double num) const;
+    QString formatMoney(double num, const QString &currency = QString::null, int digits = -1) const;
 
     /**
      * This function differs from the above only in that it can take

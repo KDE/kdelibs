@@ -495,23 +495,28 @@ KLocale::SignPosition KLocale::negativeMonetarySignPosition() const
   return _negativeMonetarySignPosition;
 }
 
-
-QString KLocale::formatMoney(double num) const
+QString KLocale::formatMoney(double num, const QString &symbol, int digits) const
 {
+    // some defaults
+    QString currency = symbol.isNull()
+        ? currencySymbol()
+        : symbol;
+    if(digits < 0) digits = fracDigits();
+    else if(digits > 80) digits = 80; // do not crash Qt...
+
     // the number itself
     bool neg = num < 0;
-    // QString craches if fracDigits() > 80...
-    QString res = QString::number(neg?-num:num, 'f', fracDigits()>80?80:fracDigits());
+    QString res = QString::number(neg?-num:num, 'f', digits);
     int pos = res.find('.');
     if (pos == -1) pos = res.length();
     else res.replace(pos, 1, monetaryDecimalSymbol());
+
     while (0 < (pos -= 3))
         res.insert(pos, monetaryThousandsSeparator()); // thousend sep
 
     // set some variables we need later
     int signpos = neg?negativeMonetarySignPosition():positiveMonetarySignPosition();
     QString sign = neg?negativeSign():positiveSign();
-    QString currency = currencySymbol();
 
     switch (signpos)
     {
