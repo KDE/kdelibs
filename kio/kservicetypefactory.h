@@ -105,7 +105,7 @@ private:
 protected:
   int m_fastPatternOffset;
   int m_otherPatternOffset;
-  QDict<int> m_propertyTypeDict; 
+  QMap<QString,int> m_propertyTypeDict;
 };
 
 #endif

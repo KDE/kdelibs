@@ -49,7 +49,7 @@ KServiceTypeFactory::KServiceTypeFactory()
       for(;n;n--)
       {
          (*m_str) >> str >> i;
-         m_propertyTypeDict.insert(str, (int*) i);
+         m_propertyTypeDict.insert(str, i);
       }
    }
 }
@@ -93,11 +93,10 @@ QVariant::Type KServiceTypeFactory::findPropertyTypeByName(const QString &_name)
 
    assert (!KSycoca::self()->isBuilding());
 
-   // We store 'value+1' as the pointer value. It's a waste to allocate
-   // seporate memory for each int.
-   int t = (int) m_propertyTypeDict.find(_name);
-   if (t) 
-     return (QVariant::Type) (t-1);
+   QMapConstIterator<QString,int> it = m_propertyTypeDict.find(_name);
+   if (it != m_propertyTypeDict.end()) {
+     return (QVariant::Type)it.data();
+   }
 
    return QVariant::Invalid;
 }
