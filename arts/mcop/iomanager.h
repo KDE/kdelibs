@@ -30,6 +30,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <list>
+#include <stack>
 
 // constants:
 
@@ -122,6 +123,7 @@ class StdIOManager : public IOManager {
 protected:
 	list<IOWatchFD *> fdList;
 	list<TimeWatcher *> timeList;
+	stack< pair<IOWatchFD *,int> > notifyStack;
 
 	bool terminated;
 

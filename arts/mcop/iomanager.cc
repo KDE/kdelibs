@@ -24,7 +24,6 @@
     */
 
 #include "iomanager.h"
-#include <stack>
 
 IOWatchFD::IOWatchFD(int fd, int types, IONotify *notify)
 {
@@ -115,7 +114,7 @@ void StdIOManager::processOneEvent(bool blocking)
 		 * of "notifications to do" and send them as soon as we looked up
 		 * in the list what to send
 		 */
-		stack< pair<IOWatchFD *,int> > notifyStack;
+		long tonotify = 0;
 
 		list<IOWatchFD *>::iterator i;
 		for(i = fdList.begin(); i != fdList.end(); i++) {
@@ -131,10 +130,13 @@ void StdIOManager::processOneEvent(bool blocking)
 			if(FD_ISSET(w->fd(),&efd) && (w->types() & IOType::except))
 				match |= IOType::except;
 
-			if(match) notifyStack.push(make_pair(w,match));
+			if(match) {
+				tonotify++;
+				notifyStack.push(make_pair(w,match));
+			}
 		}
 		
-		while(!notifyStack.empty())
+		while(tonotify != 0)
 		{
 			IOWatchFD *w = notifyStack.top().first;
 			int match = notifyStack.top().second;
@@ -142,6 +144,7 @@ void StdIOManager::processOneEvent(bool blocking)
 			w->notify()->notifyIO(w->fd(),match);
 
 			notifyStack.pop();
+			tonotify--;
 		}
 	}
 	/* handle timers */
