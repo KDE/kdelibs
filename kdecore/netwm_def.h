@@ -558,7 +558,8 @@ public:
         WM2AllowedActions      = 1<<4,
         WM2RestackWindow       = 1<<5,
         WM2MoveResizeWindow    = 1<<6,
-        WM2ExtendedStrut       = 1<<7
+        WM2ExtendedStrut       = 1<<7,
+        WM2TakeActivity        = 1<<8
     };
 
     /**
@@ -572,15 +573,13 @@ public:
        Source of the request.
        @li FromApplication the request comes from a normal application
        @li FromTool the request comes from pager or similar tool
-       @li FromActivity the request comes as a result of the _NET_WM_TAKE_ACTIVITY_PROTOCOL
        @since 3.2
     **/
     // must match the values for data.l[0] field in _NET_ACTIVE_WINDOW message
     enum RequestSource {
         FromUnknown, // internal
         FromApplication,
-        FromTool,
-        FromActivity
+        FromTool
     };
 };
 

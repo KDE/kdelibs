@@ -737,6 +737,7 @@ protected:
 private:
     NETRootInfoPrivate *p;
     friend class NETRootInfo2;
+    friend class NETRootInfo3;
 };
 
 /**
@@ -818,6 +819,14 @@ public:
     NETRootInfo3(Display *display, Window supportWindow, const char *wmName,
 		unsigned long properties[], int properties_size,
                 int screen = -1, bool doActivate = true);
+    /**
+       Sends a take activity message with the given timestamp to the window, using
+       the _NET_WM_TAKE_ACTIVITY protocol (see the WM spec for details).
+       @param window the window to which the message should be sent
+       @param timestamp timestamp of the message
+       @param flags arbitrary flags
+    */
+    void takeActivity( Window window, Time timestamp, long flags );
 protected:
     friend class NETRootInfo;
     /**
@@ -834,6 +843,15 @@ protected:
     // virtual void restackWindow(Window window, RequestSource source,
     //        Window above, int detail, Time timestamp) { }
     virtual void restackWindow(Window, RequestSource, Window, int, Time) { }
+    /**
+       A Window Manager should subclass NETRootInfo3 and reimplement this function
+       when it wants to receive replies to the _NET_WM_TAKE_ACTIVITY protocol.
+       @param window the window from which the reply came
+       @param timestamp timestamp of the ping
+       @param flags flags passed in the original message
+     */
+    //virtual void gotTakeActivity(Window, Time timestamp, long flags ) {}
+    virtual void gotTakeActivity(Window, Time, long ) {}
 // no private data, use NETRootInfoPrivate
 };
 

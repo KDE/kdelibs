@@ -90,6 +90,7 @@ static Atom kde_net_wm_window_type_topmenu    = 0;
 // application protocols
 static Atom wm_protocols = 0;
 static Atom net_wm_ping = 0;
+static Atom net_wm_take_activity = 0;
 
 // application window types
 static Atom net_wm_window_type_normal  = 0;
@@ -224,7 +225,7 @@ static int wcmp(const void *a, const void *b) {
 }
 
 
-static const int netAtomCount = 72;
+static const int netAtomCount = 73;
 static void create_atoms(Display *d) {
     static const char * const names[netAtomCount] =
     {
@@ -263,6 +264,7 @@ static void create_atoms(Display *d) {
             "_NET_STARTUP_ID",
             "_NET_WM_ALLOWED_ACTIONS",
 	    "_NET_WM_PING",
+            "_NET_WM_TAKE_ACTIVITY",
 
 	    "_NET_WM_WINDOW_TYPE_NORMAL",
 	    "_NET_WM_WINDOW_TYPE_DESKTOP",
@@ -346,6 +348,7 @@ static void create_atoms(Display *d) {
             &net_startup_id,
             &net_wm_allowed_actions,
 	    &net_wm_ping,
+            &net_wm_take_activity,
 
 	    &net_wm_window_type_normal,
 	    &net_wm_window_type_desktop,
@@ -590,7 +593,7 @@ NETRootInfo::NETRootInfo(Display *display, Window supportWindow, const char *wmN
     p->properties[ PROTOCOLS ] |= ( Supported | SupportingWMCheck );
     p->client_properties[ PROTOCOLS ] = DesktopNames // the only thing that can be changed by clients
 			                | WMPing; // or they can reply to this
-    p->client_properties[ PROTOCOLS2 ] = 0;
+    p->client_properties[ PROTOCOLS2 ] = WM2TakeActivity;
 
     role = WindowManager;
 
@@ -633,7 +636,7 @@ NETRootInfo::NETRootInfo(Display *display, Window supportWindow, const char *wmN
     p->properties[ PROTOCOLS ] |= ( Supported | SupportingWMCheck );
     p->client_properties[ PROTOCOLS ] = DesktopNames // the only thing that can be changed by clients
 			                | WMPing; // or they can reply to this
-    p->client_properties[ PROTOCOLS2 ] = 0;
+    p->client_properties[ PROTOCOLS2 ] = WM2TakeActivity;
 
     role = WindowManager;
 
@@ -1204,6 +1207,9 @@ void NETRootInfo::setSupported() {
     if (p->properties[ PROTOCOLS ] & WMPing)
 	atoms[pnum++] = net_wm_ping;
 
+    if (p->properties[ PROTOCOLS2 ] & WM2TakeActivity)
+	atoms[pnum++] = net_wm_take_activity;
+
     if (p->properties[ PROTOCOLS2 ] & WM2UserTime)
 	atoms[pnum++] = net_wm_user_time;
 
@@ -1411,6 +1417,9 @@ void NETRootInfo::updateSupportedProperties( Atom atom )
 
     else if( atom == net_wm_ping )
         p->properties[ PROTOCOLS ] |= WMPing;
+
+    else if( atom == net_wm_take_activity )
+        p->properties[ PROTOCOLS2 ] |= WM2TakeActivity;
 
     else if( atom == net_wm_user_time )
         p->properties[ PROTOCOLS2 ] |= WM2UserTime;
@@ -1662,6 +1671,28 @@ void NETRootInfo2::sendPing( Window window, Time timestamp )
     XSendEvent(p->display, window, False, 0, &e);
 }
 
+void NETRootInfo3::takeActivity( Window window, Time timestamp, long flags )
+{
+    if (role != WindowManager) return;
+#ifdef   NETWMDEBUG
+    fprintf(stderr, "NETRootInfo2::takeActivity: window 0x%lx, timestamp %lu, flags 0x%lx\n",
+	window, timestamp, flags );
+#endif
+    XEvent e;
+    e.xclient.type = ClientMessage;
+    e.xclient.message_type = wm_protocols;
+    e.xclient.display = p->display;
+    e.xclient.window = window,
+    e.xclient.format = 32;
+    e.xclient.data.l[0] = net_wm_take_activity;
+    e.xclient.data.l[1] = timestamp;
+    e.xclient.data.l[2] = window;
+    e.xclient.data.l[3] = flags;
+    e.xclient.data.l[4] = 0;
+
+    XSendEvent(p->display, window, False, 0, &e);
+}
+
 
 
 // assignment operator
@@ -1834,7 +1865,7 @@ void NETRootInfo::event(XEvent *event, unsigned long* properties, int properties
                 Time timestamp = CurrentTime;
                 // make sure there aren't unknown values
                 if( event->xclient.data.l[0] >= FromUnknown
-                    && event->xclient.data.l[0] <= FromActivity )
+                    && event->xclient.data.l[0] <= FromTool )
                     {
                     src = static_cast< RequestSource >( event->xclient.data.l[0] );
                     timestamp = event->xclient.data.l[3];
@@ -1855,6 +1886,17 @@ void NETRootInfo::event(XEvent *event, unsigned long* properties, int properties
 #endif
 	    if( NETRootInfo2* this2 = dynamic_cast< NETRootInfo2* >( this ))
 		this2->gotPing( event->xclient.data.l[2], event->xclient.data.l[1]);
+	} else if (event->xclient.message_type == wm_protocols
+	    && (Atom)event->xclient.data.l[ 0 ] == net_wm_take_activity) {
+	    dirty2 = WM2TakeActivity;
+
+#ifdef   NETWMDEBUG
+	    fprintf(stderr, "NETRootInfo2::event: gotTakeActivity(0x%lx,%lu,0x%lx)\n",
+		event->xclient.window, event->xclient.data.l[1], event->xclient.data.l[3]);
+#endif
+	    if( NETRootInfo3* this3 = dynamic_cast< NETRootInfo3* >( this ))
+		this3->gotTakeActivity( event->xclient.data.l[2], event->xclient.data.l[1],
+                    event->xclient.data.l[3]);
 	}
     }
 
