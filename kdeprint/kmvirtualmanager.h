@@ -26,10 +26,12 @@
 #include <qptrlist.h>
 #include <qdatetime.h>
 
+#include "kpreloadobject.h"
+
 class KMPrinter;
 class KMManager;
 
-class KMVirtualManager : public QObject
+class KMVirtualManager : public QObject, public KPReloadObject
 {
 public:
 	KMVirtualManager(KMManager *parent = 0, const char *name = 0);
@@ -57,6 +59,8 @@ protected:
 	void saveFile(const QString& filename);
 	void addPrinter(KMPrinter *p);
 	void checkPrinter(KMPrinter*);
+	void reload();
+	void configChanged();
 
 private:
 	KMManager		*m_manager;

@@ -328,3 +328,13 @@ bool KMVirtualManager::testInstance(KMPrinter *p)
 		return (pr.printFiles(testpage));
 	}
 }
+
+void KMVirtualManager::reload()
+{
+	reset();
+}
+
+void KMVirtualManager::configChanged()
+{
+	reset();
+}
