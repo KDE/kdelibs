@@ -57,7 +57,6 @@ public:
   public:
       List() { }
       List(const QStringList &);
-      List(const KURL &);
       QStringList toStringList() const;
   };
   /**

@@ -295,11 +295,6 @@ KURL::List::List(const QStringList &list)
     }
 }
 
-KURL::List::List(const KURL &url)
-{
-    append( url );
-}
-
 QStringList KURL::List::toStringList() const
 {
   QStringList lst;
