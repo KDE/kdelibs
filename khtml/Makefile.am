@@ -68,11 +68,7 @@ srcdoc:
 	kdoc -H -d $(SRCDOC_DEST) kdecore \
 	         $(include_HEADERS) -lqt
 
-khtmltags_DIST = khtmltags.gperf khtmltags.in khtmltags.h khtmltags.c
-kcssprop_DIST = kcssprop.c kcssprop.h kcssprop.in
-
-EXTRA_DIST = $(khtmltags_DIST) makeprop maketags test \
-	CHANGES DESIGN README.HTMLWidget README.tags $(kcssprop_DIST)
+EXTRA_DIST =  CHANGES DESIGN README.HTMLWidget README.tags 
 
 parser:
 	cd $(srcdir) && \

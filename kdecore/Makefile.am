@@ -85,8 +85,7 @@ uninstall-local:
 	-rm -f $(kde_confdir)/charsets
 	-rm -f $(includedir)/ltdl.h
 
-EXTRA_DIST = generate_keys.sh charsets.config $(kdebug_DATA) kdebugareas.txt \
-	Web.colors Royal.colors 40.colors
+EXTRA_DIST = generate_keys.sh charsets.config $(kdebug_DATA) Web.colors Royal.colors 40.colors
 
 parser: kentities.gperf
 	cd $(srcdir) && gperf -a -L "ANSI-C" -C -G -c -o -t -k '*' -NfindEntity -D -Hhash_Entity -Wwordlist_Entity -s 2 kentities.gperf > kentities.c
