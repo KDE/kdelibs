@@ -193,8 +193,7 @@ AddressBook::ErrorCode KabAPI::add(const AddressBook::Entry& entry, KabKey& key,
 AddressBook::ErrorCode KabAPI::remove(const KabKey& key)
 {
   REQUIRE(book!=0);
-  register bool GUARD; GUARD=true;
-  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KabAPI::remove: called.");
+  kDebugInfo(KAB_KDEBUG_AREA, "KabAPI::remove: called.");
   // ############################################################################  
   if(book->AddressBook::remove(key)==AddressBook::NoError)
     {
@@ -223,14 +222,13 @@ AddressBook::ErrorCode KabAPI::getEntryByName(const AddressBook::Entry&,
 
 AddressBook::ErrorCode KabAPI::getEntries(list<AddressBook::Entry>& entries)
 {
-  register bool GUARD; GUARD=true;
   REQUIRE(entries.empty());
   REQUIRE(book!=0);
-  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KabAPI::getEntries: called.");
+  kDebugInfo(KAB_KDEBUG_AREA, "KabAPI::getEntries: called.");
   // ############################################################################  
   if(book->noOfEntries()==0)
     { // ----- database is valid, but empty:
-      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KabAPI::getEntries: no entries.");
+      kDebugInfo(KAB_KDEBUG_AREA, "KabAPI::getEntries: no entries.");
       return AddressBook::NoEntry;
     }
   if(!book->getEntries(entries))
@@ -238,7 +236,7 @@ AddressBook::ErrorCode KabAPI::getEntries(list<AddressBook::Entry>& entries)
       kDebugInfo("KabAPI::getEntries: intern error.");
       return AddressBook::InternError;
     } else {
-      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KabAPI::getEntries: done.");
+      kDebugInfo(KAB_KDEBUG_AREA, "KabAPI::getEntries: done.");
       return AddressBook::NoError;
     }
   // ############################################################################  
