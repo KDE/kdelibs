@@ -43,8 +43,8 @@ namespace KDE
   namespace Network
   {
     class ResolverEntryPrivate;
-    /**
-     * One resolution entry
+    /** @class ResolverEntry resolver.h knetwork/resolver.h
+     *  @brief One resolution entry.
      *
      * This class is one element in the resolution results list.
      * It contains the socket address for connecting, as well as
@@ -59,7 +59,6 @@ namespace KDE
      *
      * @author Thiago Macieira <thiagom@mail.com>
      * @version $Id$
-     * @short resolution entry
      */
     class ResolverEntry
     {
@@ -165,7 +164,8 @@ namespace KDE
 
     class ResolverResultsPrivate;
     /**
-     * Name and service resolution results.
+     * @class ResolverResults resolver.h knetwork/resolver.h
+     * @brief Name and service resolution results.
      *
      * This object contains the results of a name and service resolution, as
      * those performed by @ref Resolver. It is also a descendant of QValueList, so
@@ -181,7 +181,6 @@ namespace KDE
      *
      * @author Thiago Macieira <thiagom@mail.com>
      * @version $Id$
-     * @short name resolution results
      */
     class ResolverResults: public QValueList<ResolverEntry>
     {
@@ -260,7 +259,8 @@ namespace KDE
 
     class ResolverPrivate;
     /**
-     * Name and service resolution class.
+     * @class Resolver resolver.h knetwork/resolver.h
+     * @brief Name and service resolution class.
      *
      * This class provides support for doing name-to-binary resolution
      * for nodenames and service ports. You should use this class if you
@@ -281,7 +281,6 @@ namespace KDE
      *
      * @author Thiago Macieira <thiagom@mail.com>
      * @version $Id$
-     * @short name resolution
      */
     class Resolver: public QObject
     {
@@ -329,7 +328,7 @@ namespace KDE
        * @li Passive: resolve to a passive socket (i.e., one that can be used for
        *		binding to a local interface)
        * @li CanonName: request that the canonical name for the given nodename
-       *		be found and recorded)
+       *		be found and recorded
        * @li NoResolve: request that no external resolution be performed. The given
        *		nodename and servicename will be resolved locally only.
        * @li NoSrv: don't try to use SRV-based name-resolution.
@@ -443,7 +442,7 @@ namespace KDE
        * names and flags using the member functions before starting
        * the name resolution.
        */
-      Resolver(QObject *parent = 0L, const char * name = 0L);
+      Resolver(QObject * = 0L, const char * = 0L);
 
       /**
        * Constructor with host and service names.
@@ -456,7 +455,7 @@ namespace KDE
        * @param servicename	The service name associated, like "http".
        */
       Resolver(const QString& nodename, const QString& servicename = QString::null,
-	       QObject * parent = 0L, const char *name = 0L);
+	       QObject * = 0L, const char * = 0L);
 
       /**
        * Destructor.

@@ -35,7 +35,7 @@ namespace KDE
   namespace Network
   {
 
-    /**
+    /** @internal
      * This class is the base functionality for a resolver worker. That is,
      * the class that does the actual work.
      *
@@ -50,12 +50,15 @@ namespace KDE
      * Also specially note that the run method in this class is called in a
      * thread that is not the program's main thread. So do not do anything there
      * that you shouldn't!
+     *
+     * @class ResolverWorkerBase resolverworkerbase.h knetwork/resolverworkerbase.h
      */
     class ResolverWorkerBase
     {
     private:
       // this will be like our d pointer
       KDE::Internal::Resolver::WorkerThread *th;
+      /// @internal
       friend class KDE::Internal::Resolver::WorkerThread;
 
     protected:
@@ -112,7 +115,7 @@ namespace KDE
        * lookup result was a domain found or not, if we got our answer, we should
        * indicate success. The error itself must be set with @ref setError.
        *
-       * Important: this function gets called in a separate thread!
+       * \b Important: this function gets called in a separate thread!
        * 
        * @return true on success
        */
@@ -142,7 +145,7 @@ namespace KDE
 			     int flags = 0, int families = Resolver::AnyFamily);
     };
 
-    /**
+    /** @internal
      * This class is the base for a worker base that requires post-processing.
      * That is, a class that must do some post-processing after other jobs
      * have finished.
@@ -157,9 +160,11 @@ namespace KDE
      * for such hostnames and return to the caller.
      *
      * You should declare your post-processing worker this way:
-     * <code>
+     * \code
      *   class MyWorker: public ResolverWorkerBase, public PostProcessingWorker
-     * </code>
+     * \endocode
+     *
+     * @class PostProcessingWorker resolverworkerbase.h knetwork/resolverworkerbase.h
      */
     class PostProcessingWorker
     {
@@ -168,7 +173,7 @@ namespace KDE
        * This function gets called during post processing for this class and
        * you must override it.
        *
-       * Important: this function gets called in a separate thread. And it MUST
+       * \b Important: this function gets called in a separate thread. And it MUST
        * NOT block.
        *
        * For each request queued with @ref requestResolution there is one entry
