@@ -21,6 +21,8 @@
 #include "factory.h"
 #include "part.h"
 
+#include <qwidget.h>
+
 #include <klocale.h>
 #include <kglobal.h>
 #include <kinstance.h>
@@ -40,5 +42,5 @@ Factory::~Factory()
 QObject *Factory::create( QObject *parent, const char *name, const char *classname, const QStringList &args )
 {
   assert( parent->isWidgetType() );
-  return createPart( (QWidget *)parent, name, parent, name, classname, args );
+  return createPart( static_cast<QWidget *>( parent ), name, parent, name, classname, args );
 }
