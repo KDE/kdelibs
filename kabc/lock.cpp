@@ -99,8 +99,11 @@ bool Lock::lock()
       kdWarning(5700) << "Removed stale lock file from process '" << app << "'"
                       << endl;
     } else {
+      QString identifier( mIdentifier );
+      identifier.replace( '_', '/' );
+
       mError = i18n("The resource '%1' is locked by application '%2'.")
-               .arg( mIdentifier.replace( '_', '/' ) ).arg( app );
+               .arg( identifier ).arg( app );
       return false;
     }
   }
