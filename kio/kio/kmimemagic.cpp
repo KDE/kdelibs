@@ -1714,12 +1714,12 @@ KMimeMagic::ascmagic(unsigned char *buf, int nbytes)
 	while ((token = strtok((char *) s, " \t\n\r\f,;")) != NULL) {
 		s = NULL;       /* make strtok() keep on tokin' */
 #ifdef DEBUG_MIMEMAGIC
-                kdDebug() << "KMimeMagic::ascmagic token=" << token << endl;
+                //kdDebug(7018) << "KMimeMagic::ascmagic token=" << token << endl;
 #endif
 		for (p = names; p->name ; p++) {
 			if (STREQ(p->name, token)) {
 #ifdef DEBUG_MIMEMAGIC
-                                kdDebug() << "KMimeMagic::ascmagic token matches ! name=" << p->name << " type=" << p->type << endl;
+                                kdDebug(7018) << "KMimeMagic::ascmagic token matches ! name=" << p->name << " type=" << p->type << endl;
 #endif
 			        tokencount++;
 				typeset |= p->type;
@@ -1792,7 +1792,7 @@ KMimeMagic::ascmagic(unsigned char *buf, int nbytes)
 	mostaccurate = -1;
 	maxpct = pctsum = 0.0;
 	for (i = 0; i < (int)NTYPES; i++) {
-	  if (typecount[i]) {
+	  if (typecount[i] > 1) { // one word is not enough, we need at least two
 		pct = (double)typecount[i] / (double)types[i].kwords *
 		    (double)types[i].weight;
 		pcts[i] = pct;
@@ -1807,7 +1807,7 @@ KMimeMagic::ascmagic(unsigned char *buf, int nbytes)
 	  }
 	}
 	if (mostaccurate >= 0) {
-            if ( mostaccurate != P_JAVA || foundClass ) // class mandatory for java
+            if ( mostaccurate != P_JAVA || foundClass ) // 'class' mandatory for java
             {
 		accuracy = (int)(pcts[mostaccurate] / pctsum * 60);
                 //kdDebug(7018) << "mostaccurate=" << mostaccurate << " pcts=" << pcts[mostaccurate] << " pctsum=" << pctsum << " accuracy=" << accuracy << endl;
