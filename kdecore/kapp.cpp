@@ -57,6 +57,8 @@
 #include <kstyle.h>
 #include <qplatinumstyle.h>
 #include <qcdestyle.h>
+#include <qmotifplusstyle.h>
+#include <qsgistyle.h>
 #include <kdestyle.h>
 
 #include <dcopclient.h>
@@ -960,6 +962,16 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
         pKStyle=0;
         styleHandle=0;
         setStyle(new QMotifStyle);
+    }
+    else if(styleStr == "MotifPlus"){
+        pKStyle=0;
+        styleHandle=0;
+        setStyle(new QMotifPlusStyle);
+    }
+    else if(styleStr == "Qt SGI"){
+        pKStyle=0;
+        styleHandle=0;
+        setStyle(new QSGIStyle);
     }
     else if(useStyles){
         if(!dlregistered){
