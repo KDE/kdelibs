@@ -5,6 +5,7 @@
 #include <kinstance.h>
 #include <kstddirs.h>
 #include <kglobal.h>
+#include <kglobalsettings.h>
 #include <stdio.h>
 #include <kaboutdata.h>
 #include <config.h>
@@ -21,6 +22,7 @@ static KCmdLineOptions options[] =
     { "version",   I18N_NOOP("Compiled in version string for KDE libraries"), 0 },
     { "types",     I18N_NOOP("Available KDE resource types"), 0 },
     { "path type", I18N_NOOP("Search path for resource type"), 0 },
+    { "userpath type", I18N_NOOP("User path: desktop|autostart|trash|document"), 0 },
     { "install type", I18N_NOOP("Prefix to install resource files to"), 0},
     { 0,0,0 }
 };
@@ -145,6 +147,22 @@ int main(int argc, char **argv)
     {
         printf("%s\n", KGlobal::dirs()->resourceDirs(type.latin1()).
                join(":").latin1());
+        return 0;
+    }
+
+    type = args->getOption("userpath");
+    if (!type.isEmpty())
+    {
+        if ( type == "desktop" )
+            printf("%s\n", KGlobalSettings::desktopPath().local8Bit().data() );
+        else if ( type == "autostart" )
+            printf("%s\n", KGlobalSettings::autostartPath().local8Bit().data() );
+        else if ( type == "trash" )
+            printf("%s\n", KGlobalSettings::trashPath().local8Bit().data() );
+        else if ( type == "document" )
+            printf("%s\n", KGlobalSettings::documentPath().local8Bit().data() );
+        else
+            printf(i18n("%1 - unknown type of userpath\n").arg(type).local8Bit().data() );
         return 0;
     }
 
