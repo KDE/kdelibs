@@ -139,7 +139,8 @@ private:
     int posx;
     int posy;
     QFont *font;
-    QColor *backColor, *foreColor;
+    QColor *backColor;
+    QColor *foreColor;
 
 private:
     void parenthesize(QString &temp, int &i, QArray<charinfo> *info);

@@ -82,7 +82,8 @@ signals:
 private:
     QValueList<QColor> colors;
     QObject *receiver;
-    char *leftClickSlot, *rightClickSlot;
+    char *leftClickSlot;
+    char *rightClickSlot;
     
 };
 
