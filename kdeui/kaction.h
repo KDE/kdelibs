@@ -1492,20 +1492,20 @@ private:
  Automatically handle toolbars created by the xmlgui framework
  */
 
-class KToolbarMenuAction: public KAction
+class KToolBarMenuAction: public KAction
 {
     Q_OBJECT
 public:
-    KToolbarMenuAction( KMainWindow* parent = 0,
+    KToolBarMenuAction( KMainWindow* parent = 0,
                  const char* name = 0 );
-    virtual ~KToolbarMenuAction();
+    virtual ~KToolBarMenuAction();
     void addToolbar(KToolBar *bar);
     void removeToolbar(KToolBar *bar);
     void clear();
     virtual int plug( QWidget* widget, int index =-1);
 private:
-    class KToolbarMenuActionPrivate;
-    KToolbarMenuActionPrivate *d;
+    class KToolBarMenuActionPrivate;
+    KToolBarMenuActionPrivate *d;
 public slots:
     void internalActivated();
 

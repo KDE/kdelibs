@@ -38,7 +38,7 @@ class KMenuBar;
 class KMWSessionManaged;
 class KMainWindowPrivate;
 class KAccel;
-class KToolbarMenuAction;
+class KToolBarMenuAction;
 
 /**
  * Top level widget that provides toolbars, a status line and a frame.
@@ -455,7 +455,7 @@ public slots:
    /**
     * Returns a pointer to the mainwindows action responsible for the toolbars menu
     */
-    KToolbarMenuAction *toolbarMenuAction();
+    KToolBarMenuAction *toolBarMenuAction();
 
 protected:
     void paintEvent( QPaintEvent* e );

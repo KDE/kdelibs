@@ -59,7 +59,7 @@ public:
     QString autoSaveGroup;
     KAccel * kaccel;
     KMainWindowInterface *m_interface;
-    KToolbarMenuAction *toolbarMenu;
+    KToolBarMenuAction *toolbarMenu;
 };
 
 QPtrList<KMainWindow>* KMainWindow::memberList = 0L;
@@ -186,7 +186,7 @@ KMainWindow::KMainWindow( QWidget* parent, const char *name, WFlags f )
     d->autoSaveSettings = false;
     d->autoSaveWindowSize = true; // for compatibility
     d->kaccel = actionCollection()->kaccel();
-    d->toolbarMenu=new KToolbarMenuAction(this,"toolbars_showhide");
+    d->toolbarMenu=new KToolBarMenuAction(this,"toolbars_showhide");
     if ((d->care_about_geometry = beeing_first)) {
         beeing_first = false;
         if ( kapp->geometryArgument().isNull() ) // if there is no geometry, it doesn't mater
@@ -200,7 +200,7 @@ KMainWindow::KMainWindow( QWidget* parent, const char *name, WFlags f )
 	d->m_interface = new KMainWindowInterface(this);
 }
 
-KToolbarMenuAction *KMainWindow::toolbarMenuAction()
+KToolBarMenuAction *KMainWindow::toolBarMenuAction()
 {
 	return d->toolbarMenu;
 }

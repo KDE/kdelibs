@@ -2727,7 +2727,7 @@ int KActionMenu::plug( QWidget* widget, int index )
 ////////
 
 
-class KToolbarMenuAction::KToolbarMenuActionPrivate
+class KToolBarMenuAction::KToolBarMenuActionPrivate
 {
 	public:
 	KMainWindow *window;
@@ -2736,21 +2736,21 @@ class KToolbarMenuAction::KToolbarMenuActionPrivate
 
 };
 
-KToolbarMenuAction::KToolbarMenuAction( KMainWindow* parent,
+KToolBarMenuAction::KToolBarMenuAction( KMainWindow* parent,
                  const char* name):KAction(parent->actionCollection(),name)
 {
-	d=new KToolbarMenuActionPrivate;
+	d=new KToolBarMenuActionPrivate;
 	d->window=parent;
-        d->popup = new KPopupMenu(parent,"KToolbarMenuAction::KToolbarMenuAction");
+        d->popup = new KPopupMenu(parent,"KToolBarMenuAction::KToolBarMenuAction");
 }
 
-KToolbarMenuAction::~KToolbarMenuAction()
+KToolBarMenuAction::~KToolBarMenuAction()
 {
 	delete d;
  	d=0;
 }   
 
-void KToolbarMenuAction::clear()
+void KToolBarMenuAction::clear()
 {
 	d->popup->clear();
 	for (QMap<KToolBar*,KToggleToolBarAction*>::iterator it=d->toolbarActionMap.begin();it!=d->toolbarActionMap.end();++it)
@@ -2760,7 +2760,7 @@ void KToolbarMenuAction::clear()
 	d->toolbarActionMap.clear();
 }
 
-void KToolbarMenuAction::addToolbar(KToolBar *bar)
+void KToolBarMenuAction::addToolbar(KToolBar *bar)
 {
 	bool oldcount=d->toolbarActionMap.count();
 	KToggleToolBarAction *act;
@@ -2812,13 +2812,13 @@ void KToolbarMenuAction::addToolbar(KToolBar *bar)
 	}
 }
 
-void KToolbarMenuAction::removeToolbar(KToolBar *bar)
+void KToolBarMenuAction::removeToolbar(KToolBar *bar)
 {
 //	d->toolbarActionMap.remove(bar);
 
 }
 
-int KToolbarMenuAction::plug( QWidget* widget, int index )
+int KToolBarMenuAction::plug( QWidget* widget, int index )
 {
 //  return KAction::plug(widget,index);
   if (kapp && !kapp->authorizeKAction(name()))
@@ -2853,7 +2853,7 @@ int KToolbarMenuAction::plug( QWidget* widget, int index )
   } else return -1;
 }
 
-void KToolbarMenuAction::internalActivated()
+void KToolBarMenuAction::internalActivated()
 {
 }
 

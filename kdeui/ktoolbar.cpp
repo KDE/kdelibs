@@ -1889,6 +1889,12 @@ KPopupMenu *KToolBar::contextMenu()
   context->setItemChecked(CONTEXT_ICONS, true);
   context->insertItem( i18n("Icon Size"), size );
 
+  if (mainWindow()->inherits("KMainWindow"))
+  {
+      (static_cast<KMainWindow*>(mainWindow()))->toolBarMenuAction()->plug(context);
+  }
+
+
   connect( context, SIGNAL( aboutToShow() ), this, SLOT( slotContextAboutToShow() ) );
   return context;
 }
