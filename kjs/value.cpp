@@ -169,13 +169,13 @@ void ValueImp::putValue(ExecState *exec, const Value w)
     return;
   }
 
+#ifdef KJS_VERBOSE
+  printInfo(exec,(UString("setting property ")+getPropertyName(exec)).cstring().c_str(),w);
+#endif
   Value o = getBase(exec);
   if (o.type() == NullType)
     exec->interpreter()->globalObject().put(exec,getPropertyName(exec), w);
   else {
-#ifdef KJS_VERBOSE
-    printInfo(exec,(UString("setting property ")+getPropertyName(exec)).cstring().c_str(),w);
-#endif
     static_cast<ObjectImp*>(o.imp())->put(exec,getPropertyName(exec), w);
   }
 
