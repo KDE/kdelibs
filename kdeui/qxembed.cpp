@@ -672,15 +672,17 @@ QXEmbed::~QXEmbed()
     // L1010: Make sure no pointer grab is left.
     if ( d && d->xgrab)
         XUngrabButton( qt_xdisplay(), AnyButton, AnyModifier, winId() );
-    // L1020: Handle the autoDelete property.  See L2600.
-    if ( window && autoDelete() ) 
+    if ( window && ( autoDelete() || !d->xplain ))
         {
-            // L1021: Hide the window and safely reparent it into the root.
+            // L1021: Hide the window and safely reparent it into the root,
+            // otherwise it would be destroyed by X11 together with this QXEmbed's window.
             XUnmapWindow( qt_xdisplay(), window );
             XReparentWindow(qt_xdisplay(), window, qt_xrootwin(), 0, 0);
             XSync(qt_xdisplay(), false);
             // L1022: Send the WM_DELETE_WINDOW message (close button)
-            sendDelete();
+            // Only for XPLAIN, XEMBED apps are supposed to detect when the embedding ends.
+            if( autoDelete() /*&& d->xplain*/ ) 
+                sendDelete();
       }
     
     window = 0;
@@ -954,6 +956,10 @@ void QXEmbed::embed(WId w)
         kdDebug() << QString("> before reparent: parent=0x%1").arg(parent,0,16) << endl;
         for (int i = 0; i < 50; i++) {
             Window parent = 0;
+            // this is done once more when finishing embedding, but it's done also here
+            // just in case we crash before reaching that place
+            if( !d->xplain )
+                XAddToSaveSet( qt_xdisplay(), w );
             XReparentWindow(qt_xdisplay(), w, winId(), 0, 0);
             if (get_parent(w, &parent) && parent == winId()) {
                kdDebug() << QString("> Loop %1: ").arg(i)
@@ -1014,12 +1020,18 @@ bool QXEmbed::x11Event( XEvent* e)
             break; // ignore proxy
         if ( window && e->xreparent.window == window &&
              e->xreparent.parent != winId() ) {
+            if( !d->xplain )
+                XRemoveFromSaveSet( qt_xdisplay(), window );
             // L2010: We lost the window
             window = 0;
             windowChanged( window );
         } else if ( e->xreparent.parent == winId()){
             // L2020: We got a window. Complete the embedding process.
             window = e->xreparent.window;
+            // only XEMBED apps can survive crash,
+            // see http://lists.kde.org/?l=kfm-devel&m=106752026501968&w=2
+            if( !d->xplain )
+                XAddToSaveSet( qt_xdisplay(), window );
             XResizeWindow(qt_xdisplay(), window, width(), height());
             XMapRaised(qt_xdisplay(), window);
             // L2024: see L2900.
