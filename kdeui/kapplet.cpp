@@ -7,11 +7,32 @@
 static Atom kde_applet = 0;
 static Atom kde_applet_command = 0;
 
+//this has to be the same in kicker!
+#define KAPPLET_NEW 0 
+#define KAPPLET_MOVE 1
+#define KAPPLET_REMOVE 2
+
+class KAppletData
+{
+public:
+    KAppletData()
+    {
+	orientation = Qt::Horizontal;
+	applet_panner = 0;
+    };
+    ~KAppletData()
+    {
+    }
+    
+    Qt::Orientation orientation;
+    WId applet_panner;
+};
 
 
 KApplet::KApplet( QWidget* parent, const char* name  )
     : QWidget( parent, name )
 {
+    d = new KAppletData;
     if ( !kde_applet ) {
 	kde_applet =  XInternAtom(qt_xdisplay(), "KDE_APPLET", FALSE);
 	kde_applet_command = XInternAtom(qt_xdisplay(), "KDE_APPLET_COMMAND", FALSE);
@@ -20,6 +41,7 @@ KApplet::KApplet( QWidget* parent, const char* name  )
 
 KApplet::~KApplet()
 {
+    delete d;
 }
 
 void KApplet::setup( int& argc, char ** argv )
@@ -30,7 +52,7 @@ void KApplet::setup( int& argc, char ** argv )
     unsigned long *data;
 
     Orientation orientation = Horizontal;
-    WId applet_panner = 0;
+    d->applet_panner = 0;
     int ideal_width = 42;
     int ideal_height = 42;
     
@@ -42,7 +64,7 @@ void KApplet::setup( int& argc, char ** argv )
 			   False, kde_applet, &actual_type,
 			   &actual_format, &nitems,
 			   &bytesafter, (unsigned char **)&data)==Success) {
-	applet_panner = data[0];
+	d->applet_panner = data[0];
 	ideal_width = data[1];
 	ideal_height = data[2];
 	orientation = (Orientation) data[3];
@@ -52,21 +74,21 @@ void KApplet::setup( int& argc, char ** argv )
 
     init ( orientation, ideal_width, ideal_height );
     
-    if ( applet_panner != 0 ) {
+    if ( d->applet_panner != 0 ) {
 	XEvent ev;
 	long mask;
 	memset(&ev, 0, sizeof(ev));
 	ev.xclient.type = ClientMessage;
-	ev.xclient.window = applet_panner;
+	ev.xclient.window = d->applet_panner;
 	ev.xclient.message_type = kde_applet;
 	ev.xclient.format = 32;
 	ev.xclient.data.l[0] = winId();
-	ev.xclient.data.l[1] = 0;
+	ev.xclient.data.l[1] = KAPPLET_NEW;
 	ev.xclient.data.l[2] = 0;
 	ev.xclient.data.l[3] = 0;
 	ev.xclient.data.l[4] = 0;
 	mask = 0L;
-	XSendEvent(qt_xdisplay(), applet_panner, False, mask, &ev);
+	XSendEvent(qt_xdisplay(), d->applet_panner, False, mask, &ev);
 	XFlush( qt_xdisplay() );
 	int count = 0;
 	while ( !XCheckTypedWindowEvent( qt_xdisplay(), 
@@ -119,11 +141,50 @@ void KApplet::setup( int& argc, char ** argv )
 }
 
 
+void KApplet::removeRequest()
+{
+    if ( d->applet_panner != 0 ) {
+	XEvent ev;
+	long mask;
+	memset(&ev, 0, sizeof(ev));
+	ev.xclient.type = ClientMessage;
+	ev.xclient.window = d->applet_panner;
+	ev.xclient.message_type = kde_applet;
+	ev.xclient.format = 32;
+	ev.xclient.data.l[0] = winId();
+	ev.xclient.data.l[1] = KAPPLET_REMOVE;
+	ev.xclient.data.l[2] = 0;
+	ev.xclient.data.l[3] = 0;
+	ev.xclient.data.l[4] = 0;
+	mask = 0L;
+	XSendEvent(qt_xdisplay(), d->applet_panner, False, mask, &ev);
+    }
+}
+
+void KApplet::moveRequest()
+{
+    if ( d->applet_panner != 0 ) {
+	XEvent ev;
+	long mask;
+	memset(&ev, 0, sizeof(ev));
+	ev.xclient.type = ClientMessage;
+	ev.xclient.window = d->applet_panner;
+	ev.xclient.message_type = kde_applet;
+	ev.xclient.format = 32;
+	ev.xclient.data.l[0] = winId();
+	ev.xclient.data.l[1] = KAPPLET_MOVE;
+	ev.xclient.data.l[2] = 0;
+	ev.xclient.data.l[3] = 0;
+	ev.xclient.data.l[4] = 0;
+	mask = 0L;
+	XSendEvent(qt_xdisplay(), d->applet_panner, False, mask, &ev);
+    }
+}
 
 
 void KApplet::init( Orientation orientation , int width, int height  )
 {
-    orient = orientation;
+    d->orientation = orientation;
     resize(width, height );
 }
 
@@ -131,6 +192,11 @@ void KApplet::init( Orientation orientation , int width, int height  )
 QSize KApplet::sizeHint() const
 {
     return size();
+}
+
+Qt::Orientation KApplet::orientation() const
+{
+    return d->orientation;
 }
 
 

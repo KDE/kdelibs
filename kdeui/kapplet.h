@@ -3,6 +3,9 @@
 
 #include <qwidget.h>
 
+
+class KAppletData;
+
 /**
 * KDE Panel Applet class
 *
@@ -59,15 +62,14 @@ public:
        Returns  the current orientation set by the last KApplet::init() call.
     */
     Orientation orientation() const;
+    
+public slots:
+    void removeRequest();
+    void moveRequest();
 
 private:
-    Orientation orient;
-
+    KAppletData* d;
 };
 
 
-inline Qt::Orientation KApplet::orientation() const
-{
-    return orient;
-}
 #endif
