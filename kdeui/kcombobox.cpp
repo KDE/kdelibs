@@ -255,7 +255,7 @@ void KComboBox::setLineEdit( QLineEdit *edit )
     if ( !editable() && edit && 
          qstrcmp( edit->className(), "QLineEdit" ) == 0 )
     {
-        // uic generates code that creates a read-only QComboBox and then
+        // uic generates code that creates a read-only KComboBox and then
         // calls combo->setEditable( true ), which causes QComboBox to set up
         // a dumb QLineEdit instead of our nice KLineEdit. 
         // As some KComboBox features rely on the KLineEdit, we reject 
