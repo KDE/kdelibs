@@ -15,11 +15,11 @@ while ! dcop | grep -q TestApp; do echo -n '.'; sleep 2; done
 
 echo ' started'
 
-echo '* Running shell mode'
-source shell.generated >shell.returns
-
 echo '* Running driver mode'
 ./driver `dcop 'TestApp-*'` >driver.stdout
+
+echo '* Running shell mode'
+source shell.generated >shell.returns
 
 echo -n '* Comparing ... '
 

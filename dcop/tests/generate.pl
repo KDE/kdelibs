@@ -196,13 +196,13 @@ END
 			output << "$return_type $function_name($argument_types)\\n{\\n";
 			output << "// $comment\\n";
 			output << object->$function_name($cpp_cur) << '\\n';
-			output << "\\n}\\n";
+			output << "}\\n";
 			break;
 		case $i_1:
 			output << "$return_type ${function_name}_virtual($argument_types)\\n{\\n";
 			output << "// $comment\\n";
 			output << object->${function_name}_virtual($cpp_cur) << '\\n';
-			output << "\\n}\\n";
+			output << "}\\n";
 			break;
 END
 	$i += 2;

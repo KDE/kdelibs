@@ -44,7 +44,7 @@ void Driver::test()
 
 int main(int argc, char** argv)
 {
-	if ( argc < 2 ) { return 1; }
+	if ( argc < 2 ) { qWarning("Usage: driver <appid>"); return 1; }
 	const char* appname = strdup( argv[ 1 ] );
 	argv[ 1 ] = 0; // sue me
 	KCmdLineArgs::init( argc, argv, "TestAppDriver", "Tests the dcop familly of tools + libraries", "1.0" ); // FIXME
