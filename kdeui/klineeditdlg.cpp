@@ -48,7 +48,7 @@ KLineEditDlg::KLineEditDlg( const QString&_text, const QString& _value,
   connect( edit, SIGNAL(returnPressed()), SLOT(accept()) );
   topLayout->addWidget( edit, 1 );
 
-  connect( this, SIGNAL(user1Clicked()), edit, SLOT(doClear()) );
+  connect( this, SIGNAL(user1Clicked()), this, SLOT(slotClear()) );
   edit->setText( _value );
   edit->setSelection(0, edit->text().length());
   edit->setFocus();
