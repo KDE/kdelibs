@@ -8,6 +8,8 @@
 #include <stdlib.h>
 
 #include "klocaletest.h"
+#include <kglobal.h>
+#include <klocale.h>
 #include <kapp.h>
 #include <kcharsets.h>
 #include <qlabel.h>
@@ -36,7 +38,7 @@ Test::~Test()
 
 QString Test::showLocale(QString category){
 
-  return category+"="+klocale->getLocale(category)+"\n";
+  return category+"="+KGlobal::locale()->getLocale(category)+"\n";
 }
 
 void Test::createFields()
@@ -44,16 +46,16 @@ void Test::createFields()
   QString string;
   
   string+="Selected languages: ";
-  string+=klocale->languages()+"\n";
+  string+=KGlobal::locale()->languages()+"\n";
 
   // This will show nothing, as there is no klocaletest.mo
   // but you can copy other *.mo file
   string+="Used language: ";
-  string+=klocale->language()+"\n";
+  string+=KGlobal::locale()->language()+"\n";
   string+="Locale charset: ";
-  string+=klocale->charset()+"\n";
+  string+=KGlobal::locale()->charset()+"\n";
 
-  KCharset charset=klocale->charset();
+  KCharset charset=KGlobal::locale()->charset();
   string+="Is it ok?: ";
   string+=charset.ok()?"yes":"no";
   string+="\n";
@@ -87,13 +89,13 @@ void Test::createFields()
   string+=buffer;
   string+="Localized number: ";
   // localization of number representation is off by default
-  klocale->enableNumericLocale(true);
+  KGlobal::locale()->enableNumericLocale(true);
   sprintf(buffer,"%6.4f\n",3.141592);
   string+=buffer;
   // remeber of disabling numeric localization after use
   // in no case localized number may be written to config file
   // or other machine parsed code
-  klocale->enableNumericLocale(false);
+  KGlobal::locale()->enableNumericLocale(false);
   // This will not work
   // but you can copy other *.mo file
   string+="Some localized strings:\n";
@@ -104,7 +106,7 @@ void Test::createFields()
   
   label=new QLabel(string,this,"Label");
   label->setGeometry(10,10,400,400);
-  label->setFont(kapp->generalFont);
+  label->setFont(kapp->generalFont());
   label->show();
 }
 

@@ -7,6 +7,7 @@
 #include <kiconloaderdialog.h>
 
 #include "kiconloadertestmain.h"
+#include <kglobal.h>
 #include "kiconloadertestmain.h"
 
 MyMain::MyMain()
@@ -14,7 +15,7 @@ MyMain::MyMain()
   initMetaObject();
   icon_sel = new KIconLoaderDialog;
   test = new QPushButton("test", this);
-  test->setPixmap(KApplication::getKApplication()->getIconLoader()->loadIcon("exec.xpm"));
+  test->setPixmap(ICON("exec.xpm"));
   test->setGeometry(0,0,50,50);
   connect(test, SIGNAL(clicked()), this, SLOT(changePix()));
   le_dir = new QLineEdit(this);
@@ -37,7 +38,7 @@ void MyMain::changePix()
 
 void MyMain::insertPath()
 {
-  KApplication::getKApplication()->getIconLoader()->insertDirectory(3, le_dir->text() );
+  KGlobal::iconLoader()->insertDirectory(3, le_dir->text() );
   delete icon_sel;
   icon_sel = new KIconLoaderDialog();
 }

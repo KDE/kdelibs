@@ -1,6 +1,9 @@
 /* $Id$
 
  * $Log$
+ * Revision 1.3  1999/02/26 12:57:00  dfaure
+ * '/' after PATH_TMP for SCO
+ *
  * Revision 1.2.4.1  1999/02/26 12:24:18  dfaure
  * *** empty log message ***
  *
@@ -20,6 +23,7 @@
 #include <ksimpleconfig.h>
 #include <kapp.h>
 #include <unistd.h>
+#include <stdio.h>
 
 #ifdef HAVE_PATHS_H
 #include <paths.h>
