@@ -27,6 +27,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <qstring.h>
 #include <kpopupmenu.h>
+#include <kgenericfactory.h>
 
 class KPanelMenuPrivate;
 
@@ -163,5 +164,10 @@ protected:
 private:
     KPanelMenuPrivate *d;
 };
+
+#define K_EXPORT_KICKER_MENUEXT( libname, classname )                       \
+    K_EXPORT_COMPONENT_FACTORY(                                             \
+        kickermenu_##libname,                                               \
+        KGenericFactory<classname>("libkickermenu_" #libname) )
 
 #endif
