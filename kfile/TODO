@@ -4,7 +4,6 @@ TODO-List for the KFileDialog and associated classes (in order of importance)
 - save all properties of KFileDialog in kdeglobals and restore
   (add KDirOperator::saveProperties( KConfig * ) and readProperties())
 - use KComboBox
-- fix file:/ prefix missing by default
 - KFileView::setCurrentItem() / highlight() ?!?!
 - KFileView::setSelected( const QRegExp& )
 - remember directory when entering it, when coming back, set it as current

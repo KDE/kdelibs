@@ -419,6 +419,8 @@ void KFileDialog::locationChanged(const QString& txt)
 {
     QString text = txt; //.stripWhiteSpace();
     QString newText = text.left(locationEdit->cursorPosition() -1);
+    if ( text.at( 0 ) == '/' )
+	text.prepend(QString::fromLatin1("file:"));
 
     KURL url( text );
     // kDebugInfo(kfile_area, "Proto: %s, host: %s, dir: %s", debugString(url.protocol()),
@@ -767,6 +769,8 @@ void KFileDialog::completion() // SLOT
     d->selection = QString::null;
 
     QString text = locationEdit->currentText();
+    if ( text.at( 0 ) == '/' )
+	text.prepend( QString::fromLatin1("file:") );
 
     if ( KURL(text).isMalformed() )
 	return;                         // invalid entry in location
