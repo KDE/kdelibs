@@ -25,12 +25,9 @@
 #include <qtimer.h>
 #include <qmap.h>
 
-#ifdef HAVE_FAM
-#include <fam.h>
-class QSocketNotifier;
-#endif
-
 #define kdirwatch KDirWatch::self()
+
+class KDirWatchPrivate;
 
  /**
   * Class for watching directory changes. It uses stat (2) and
@@ -159,30 +156,8 @@ class KDirWatch : public QObject
    void famEventReceived();
    
  private:
-  struct Entry
-  {
-    time_t m_ctime;
-    int m_clients;    
-#ifdef HAVE_FAM
-    FAMRequest fr;
-#endif
-  };
-  
-  QTimer *timer;
-  QMap<QString,Entry> m_mapDirs;
-
-  int freq;
-  struct stat statbuff;
-
+  KDirWatchPrivate *d;
   static KDirWatch* s_pSelf;
-
-#ifdef HAVE_FAM
-  QSocketNotifier *sn;
-  FAMConnection fc;
-  FAMEvent fe;
-  int use_fam;
-  bool emitEvents;
-#endif
 };
 
 #endif

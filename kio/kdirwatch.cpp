@@ -30,6 +30,41 @@
 
 #include <iostream.h>
 
+#ifdef HAVE_FAM
+#include <fam.h>
+#endif
+
+class KDirWatchPrivate
+{
+public:
+  KDirWatchPrivate() { }
+  ~KDirWatchPrivate() { }
+  struct Entry
+  {
+    time_t m_ctime;
+    int m_clients;    
+#ifdef HAVE_FAM
+    FAMRequest fr;
+#endif
+  };
+
+  typedef QMap<QString,Entry> EntryMap;
+  
+  QTimer *timer;
+  EntryMap m_mapDirs;
+
+  int freq;
+
+  static KDirWatch* s_pSelf;
+
+#ifdef HAVE_FAM
+  QSocketNotifier *sn;
+  FAMConnection fc;
+  bool use_fam;
+  bool emitEvents;
+#endif
+};
+
 #define NO_NOTIFY (time_t) 0
 
 KDirWatch* KDirWatch::s_pSelf = 0L;
@@ -53,40 +88,42 @@ KDirWatch* KDirWatch::self()
 
 KDirWatch::KDirWatch (int _freq)
 {
-  timer = new QTimer(this);
-  connect (timer, SIGNAL(timeout()), this, SLOT(slotRescan()));
+  d = new KDirWatchPrivate;
+  d->timer = new QTimer(this);
+  connect (d->timer, SIGNAL(timeout()), this, SLOT(slotRescan()));
 
-  freq = _freq;
+  d->freq = _freq;
 
 #ifdef HAVE_FAM
   // It's possible that FAM server can't be started
-  if (FAMOpen(&fc) ==0) {
+  if (FAMOpen(&(d->fc)) ==0) {
     kdDebug(7001) << "KDirWatch: Using FAM" << endl;
-    use_fam=1;
-    emitEvents = true;
-    sn = new QSocketNotifier( FAMCONNECTION_GETFD(&fc),
+    d->use_fam=true;
+    d->emitEvents = true;
+    d->sn = new QSocketNotifier( FAMCONNECTION_GETFD(&(d->fc)),
 			      QSocketNotifier::Read, this);
-    connect( sn, SIGNAL(activated(int)),
+    connect( d->sn, SIGNAL(activated(int)),
 	     this, SLOT(famEventReceived()) );
   }
   else {
     kdDebug(7001) << "KDirWatch: Can't use FAM" << endl;
-    use_fam=0;
+    d->use_fam=false;
   }
 #endif
 }
 
 KDirWatch::~KDirWatch()
 {
-  timer->stop();
+  d->timer->stop();
   //  delete timer; timer was created with 'this' as parent!
 
 #ifdef HAVE_FAM
-  if (use_fam) {
-    FAMClose(&fc);
+  if (d->use_fam) {
+    FAMClose(&(d->fc));
     kdDebug(7001) << "KDirWatch deleted (FAM closed)" << endl;
   }
 #endif
+  delete d; d = 0;
 }
 
 void KDirWatch::addDir( const QString& _path )
@@ -96,41 +133,40 @@ void KDirWatch::addDir( const QString& _path )
   if ( path.right(1) == "/" )
     path.truncate( path.length() - 1 );
 
-  QMap<QString,Entry>::Iterator it = m_mapDirs.find( path );
-  if ( it != m_mapDirs.end() )
+  KDirWatchPrivate::EntryMap::Iterator it = d->m_mapDirs.find( path );
+  if ( it != d->m_mapDirs.end() )
   {
     (*it).m_clients++;
     return;
   }
 
+  struct stat statbuff;
   stat( QFile::encodeName(path), &statbuff );
-  Entry e;
+  KDirWatchPrivate::Entry e;
   e.m_clients = 1;
   e.m_ctime = statbuff.st_ctime;
 
 #ifdef HAVE_FAM
-  if (use_fam) {
+  if (d->use_fam) {
     FAMMonitorDirectory(&fc, QFile::encodeName(path), &(e.fr), 0);
     // kdDebug(7001) << "KDirWatch added " <<
     //	  QFile::encodeName(path) << " -> FAMReq " << FAMREQUEST_GETREQNUM(&(e.fr)) << endl;
   }
 #endif
 
-  m_mapDirs.insert( path, e );
-
-
+  d->m_mapDirs.insert( path, e );
 
 #ifdef HAVE_FAM
   // if FAM server can't be used, fall back to good old timer...
-  if (!use_fam)
+  if (!d->use_fam)
 #endif
-  if ( m_mapDirs.count() == 1 ) // if this was first entry (=timer was stopped)
-    timer->start(freq);      // then start the timer
+  if ( d->m_mapDirs.count() == 1 ) // if this was first entry (=timer was stopped)
+    d->timer->start(d->freq);      // then start the timer
 }
 
 time_t KDirWatch::ctime( const QString &_path )
 {
-  if ( m_mapDirs.isEmpty() )
+  if ( d->m_mapDirs.isEmpty() )
     return 0;
 
   QString path = _path;
@@ -138,8 +174,8 @@ time_t KDirWatch::ctime( const QString &_path )
   if ( path.right(1) == "/" )
     path.truncate( path.length() - 1 );
 
-  QMap<QString,Entry>::Iterator it = m_mapDirs.find( path );
-  if ( it == m_mapDirs.end() )
+  KDirWatchPrivate::EntryMap::Iterator it = d->m_mapDirs.find( path );
+  if ( it == d->m_mapDirs.end() )
     return 0;
 
   return (*it).m_ctime;
@@ -147,7 +183,7 @@ time_t KDirWatch::ctime( const QString &_path )
 
 void KDirWatch::removeDir( const QString& _path )
 {
-  if ( m_mapDirs.isEmpty() )
+  if ( d->m_mapDirs.isEmpty() )
     return;
 
   QString path = _path;
@@ -155,8 +191,8 @@ void KDirWatch::removeDir( const QString& _path )
   if ( path.right(1) == "/" )
     path.truncate( path.length() - 1 );
 
-  QMap<QString,Entry>::Iterator it = m_mapDirs.find( path );
-  if ( it == m_mapDirs.end() )
+  KDirWatchPrivate::EntryMap::Iterator it = d->m_mapDirs.find( path );
+  if ( it == d->m_mapDirs.end() )
     return;
 
   (*it).m_clients--;
@@ -164,40 +200,40 @@ void KDirWatch::removeDir( const QString& _path )
     return;
 
 #ifdef HAVE_FAM
-  if (use_fam) {
-    FAMCancelMonitor(&fc, &((*it).fr) );
+  if (d->use_fam) {
+    FAMCancelMonitor(&(d->fc), &((*it).fr) );
     // kdDebug(7001) << "KDirWatch deleted: " <<
     // QFile::encodeName(path) << " (FAMReq " << FAMREQUEST_GETREQNUM(&((*it).fr)) << ")" << endl;
   }
 #endif
 
-  m_mapDirs.remove( it );
+  d->m_mapDirs.remove( it );
 
 #ifdef HAVE_FAM
-  if (!use_fam)
+  if (!d->use_fam)
 #endif
-  if( m_mapDirs.isEmpty() )
-    timer->stop(); // stop timer if list empty
+  if( d->m_mapDirs.isEmpty() )
+    d->timer->stop(); // stop timer if list empty
 }
 
 bool KDirWatch::stopDirScan( const QString& _path )
 {
-  if ( m_mapDirs.isEmpty() )
+  if ( d->m_mapDirs.isEmpty() )
     return false;
 
   QString path = _path;
   if ( path.right(1) == "/" )
     path.truncate( path.length() - 1 );
 
-  QMap<QString,Entry>::Iterator it = m_mapDirs.find( path );
-  if ( it == m_mapDirs.end() )
+  KDirWatchPrivate::EntryMap::Iterator it = d->m_mapDirs.find( path );
+  if ( it == d->m_mapDirs.end() )
     return false;
 
   (*it).m_ctime = NO_NOTIFY;
 
 #ifdef HAVE_FAM
-  if (use_fam) {
-    FAMSuspendMonitor(&fc, &((*it).fr) );
+  if (d->use_fam) {
+    FAMSuspendMonitor(&(d->fc), &((*it).fr) );
   }
 #endif
 
@@ -206,23 +242,24 @@ bool KDirWatch::stopDirScan( const QString& _path )
 
 bool KDirWatch::restartDirScan( const QString& _path )
 {
-  if ( m_mapDirs.isEmpty() )
+  if ( d->m_mapDirs.isEmpty() )
     return false;
 
   QString path = _path;
   if ( path.right(1) == "/" )
     path.truncate( path.length() - 1 );
 
-  QMap<QString,Entry>::Iterator it = m_mapDirs.find( path );
-  if ( it == m_mapDirs.end() )
+  KDirWatchPrivate::EntryMap::Iterator it = d->m_mapDirs.find( path );
+  if ( it == d->m_mapDirs.end() )
     return false;
 
+  struct stat statbuff;
   stat( QFile::encodeName(path), &statbuff );
   (*it).m_ctime = statbuff.st_ctime;
 
 #ifdef HAVE_FAM
-  if (use_fam) {
-    FAMResumeMonitor(&fc, &((*it).fr) );
+  if (d->use_fam) {
+    FAMResumeMonitor(&(d->fc), &((*it).fr) );
   }
 #endif
 
@@ -232,11 +269,11 @@ bool KDirWatch::restartDirScan( const QString& _path )
 void KDirWatch::stopScan()
 {
 #ifdef HAVE_FAM
-  if (use_fam)
-    emitEvents = false;
+  if (d->use_fam)
+    d->emitEvents = false;
   else
 #endif
-  timer->stop();
+  d->timer->stop();
 }
 
 void KDirWatch::startScan( bool notify, bool skippedToo )
@@ -244,25 +281,26 @@ void KDirWatch::startScan( bool notify, bool skippedToo )
   if (!notify)
     resetList(skippedToo);
 #ifdef HAVE_FAM
-  if (use_fam)
-    emitEvents = true;
+  if (d->use_fam)
+    d->emitEvents = true;
   else
 #endif
-  timer->start(freq);
+  d->timer->start(d->freq);
 }
 
 // Protected:
 
 void KDirWatch::resetList( bool skippedToo )
 {
-  if ( m_mapDirs.isEmpty() )
+  if ( d->m_mapDirs.isEmpty() )
     return;
 
-  QMap<QString,Entry>::Iterator it = m_mapDirs.begin();
-  for( ; it != m_mapDirs.end(); ++it )
+  KDirWatchPrivate::EntryMap::Iterator it = d->m_mapDirs.begin();
+  for( ; it != d->m_mapDirs.end(); ++it )
   {
     if ( (*it).m_ctime != NO_NOTIFY || skippedToo )
     {
+      struct stat statbuff;
       stat( QFile::encodeName(it.key()), &statbuff );
       (*it).m_ctime = statbuff.st_ctime;
     }
@@ -273,9 +311,10 @@ void KDirWatch::slotRescan()
 {
   QStringList del;
 
-  QMap<QString,Entry>::Iterator it = m_mapDirs.begin();
-  for( ; it != m_mapDirs.end(); ++it )
+  KDirWatchPrivate::EntryMap::Iterator it = d->m_mapDirs.begin();
+  for( ; it != d->m_mapDirs.end(); ++it )
   {
+    struct stat statbuff;
     if ( stat( QFile::encodeName(it.key()), &statbuff ) == -1 )
     {
       kdDebug(7001) << "KDirWatch emitting deleted " << it.key() << endl;
@@ -294,7 +333,7 @@ void KDirWatch::slotRescan()
 
   QStringList::Iterator it2 = del.begin();
   for( ; it2 != del.end(); ++it2 )
-    m_mapDirs.remove( *it2 );
+    d->m_mapDirs.remove( *it2 );
 }
 
 bool KDirWatch::contains( const QString& _path ) const
@@ -303,7 +342,7 @@ bool KDirWatch::contains( const QString& _path ) const
   if ( path.right(1) == "/" )
     path.truncate( path.length() - 1 );
 
-  return m_mapDirs.contains( path );
+  return d->m_mapDirs.contains( path );
 }
 
 void KDirWatch::setFileDirty( const QString & _file )
@@ -314,14 +353,16 @@ void KDirWatch::setFileDirty( const QString & _file )
 #ifdef HAVE_FAM
 void KDirWatch::famEventReceived()
 {
-  if (!use_fam || !emitEvents) return;
+  if (!d->use_fam || !d->emitEvents) return;
 
-  FAMNextEvent(&fc, &fe);
+  FAMEvent fe;
+
+  FAMNextEvent(&(d->fc), &fe);
 
   int reqNum = FAMREQUEST_GETREQNUM(&(fe.fr));
 
   // Don't be too verbose ;-)
-  if (fe.code == FAMExists || fe.code == FAMEndExist) return;
+  if ((fe.code == FAMExists) || (fe.code == FAMEndExist)) return;
 
   kdDebug(7001) << "KDirWatch processing FAM event ("
                 << ((fe.code == FAMChanged) ? "FAMChanged" :
@@ -336,13 +377,13 @@ void KDirWatch::famEventReceived()
                 << ", " << &(fe.filename[0]) << ", Req " << reqNum << ")" << endl;
 
   if (fe.code == FAMDeleted) {
-    QMap<QString,Entry>::Iterator it = m_mapDirs.begin();
-    for( ; it != m_mapDirs.end(); ++it )
+    KDirWatchPrivate::EntryMap::Iterator it = d->m_mapDirs.begin();
+    for( ; it != d->m_mapDirs.end(); ++it )
       if ( FAMREQUEST_GETREQNUM( &((*it).fr) ) == reqNum ) {
 	if (fe.filename[0] == '/') {
 	  kdDebug(7001) << "KDirWatch emitting deleted " << it.key() << endl;
 	  emit deleted ( it.key() );
-	  m_mapDirs.remove( it.key() );
+	  d->m_mapDirs.remove( it.key() );
 	}
 	else {
           kdDebug(7001) << "KDirWatch emitting dirty " << it.key() << endl;
@@ -351,9 +392,9 @@ void KDirWatch::famEventReceived()
 	return;
       }
   }
-  else if (fe.code == FAMChanged || fe.code == FAMCreated) {
-    QMap<QString,Entry>::Iterator it = m_mapDirs.begin();
-    for( ; it != m_mapDirs.end(); ++it )
+  else if ((fe.code == FAMChanged) || (fe.code == FAMCreated)) {
+    KDirWatchPrivate::EntryMap::Iterator it = d->m_mapDirs.begin();
+    for( ; it != d->m_mapDirs.end(); ++it )
       if ( FAMREQUEST_GETREQNUM( &((*it).fr) ) == reqNum ) {
 	kdDebug(7001) << "KDirWatch emitting dirty " << it.key() << endl;
 	emit dirty( it.key() );
