@@ -27,6 +27,7 @@
 #include "kfilesimpleview.h"
 #include "kpreview.h"
 #include "kfilepreview.h"
+#include "debug.h"
 
 #include <qpainter.h>
 #include <qlistbox.h>
