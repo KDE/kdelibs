@@ -331,7 +331,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element,
       defaultValue = "default" + name;
 
     } else if ( type == "QColor" ) {
-      defaultValue = "QColor( " + defaultValue + " )";
+      defaultValue = "QColor( \"" + defaultValue + "\" )";
 
     } else if ( type == "Enum" && !globalEnums ) {
       if ( values.contains(defaultValue) ) {
