@@ -34,12 +34,18 @@ RenderRoot::RenderRoot(KHTMLView *view)
 
     m_view = view;
     // try to contrain the width to the views width
-    m_minWidth = view->visibleWidth();
+
+    m_minWidth = 0;
+    m_height = 0;
+
     m_width = m_minWidth;
-    m_maxWidth = m_minWidth;
-    m_height = view->visibleHeight();
+    m_maxWidth = m_minWidth;    
+    
+    m_rootWidth=0;
+    m_rootHeight=0;
 
     setPositioned(true); // to 0,0 :)
+    
     m_printingMode = false;
 
     selectionStart = 0;
@@ -58,11 +64,17 @@ RenderRoot::~RenderRoot()
 void RenderRoot::calcWidth()
 {
     // the width gets set by KHTMLView::print when printing to a printer.
-    if(m_printingMode) return;
+    if(m_printingMode || !m_view) 
+    {
+        m_width = m_rootWidth;
+        return;
+    }
 
     m_width = m_view ?
                 m_view->frameWidth() + paddingLeft() + paddingRight() + borderLeft() + borderRight()
                 : m_minWidth;
+    
+    if(m_width < m_minWidth) m_width = m_minWidth;
 
     if (style()->marginLeft().type==Fixed)
         m_marginLeft = style()->marginLeft().value;
@@ -116,6 +128,11 @@ void RenderRoot::layout()
     {
        m_height = m_view->visibleHeight();
        m_width = m_view->visibleWidth();
+    }
+    else if (!m_view)
+    {
+        m_height = m_rootHeight;   
+        m_width = m_rootWidth;  
     }
 
     layoutSpecialObjects();
@@ -213,7 +230,7 @@ void RenderRoot::updateSize()
     //kdDebug( 6040 ) << renderName() << "(RenderRoot)::updateSize()" << endl;
     setMinMaxKnown(false);
     calcMinMaxWidth();
-//    if(m_width < m_minWidth) m_width = m_minWidth;
+    if(m_width < m_minWidth) m_width = m_minWidth;
 
     updateHeight();
 }
@@ -269,7 +286,24 @@ void RenderRoot::updateHeight()
 
 void RenderRoot::close()
 {
-    setParsing(false);
+    RenderObject* o = this;
+    while (o)
+    {
+        if (!o->parsing())
+            break;
+        o->setParsing(false);
+        RenderObject* no;
+        if ( !(no = o->firstChild()) )
+            if ( !(no = o->nextSibling()) )
+            {
+                no = o->parent();
+                while (no && !no->nextSibling())
+                    no = no->parent();
+                if (no)
+                    no = no->nextSibling();
+            }
+        o=no;
+    }
     updateSize();
     if (m_view) m_view->layout(true);
     //printTree();
@@ -367,7 +401,7 @@ QRect RenderRoot::viewRect() const
             m_view->contentsY(),
             m_view->visibleWidth(),
             m_view->visibleHeight());
-    else return QRect();
+    else return QRect(0,0,m_rootWidth,m_rootHeight);
 }
 
 int RenderRoot::docHeight() const

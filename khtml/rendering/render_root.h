@@ -67,6 +67,9 @@ public:
 
     void setPrintingMode(bool print) { m_printingMode = print; }
     bool printingMode() const { return m_printingMode; }
+    
+    virtual void setWidth( int width ) { m_rootWidth = m_width = width; }
+    virtual void setHeight( int height ) { m_rootHeight = m_height = height; }
 
 protected:
 
@@ -82,6 +85,10 @@ protected:
     RenderObject* selectionEnd;
     int selectionStartPos;
     int selectionEndPos;
+
+    int m_rootWidth;
+    int m_rootHeight;
+
     int oldLayoutTime;
     int timeout;
 

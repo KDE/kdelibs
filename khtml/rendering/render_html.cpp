@@ -116,3 +116,11 @@ void RenderHtml::layout()
 
     //kdDebug(0) << "docHeight = " << m_height << endl;
 }
+
+short RenderHtml::containingBlockWidth() const
+{
+    if (root()->view())
+        return root()->view()->visibleWidth();
+    else
+        return RenderFlow::containingBlockWidth();
+}
