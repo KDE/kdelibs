@@ -92,30 +92,34 @@ namespace KIO {
      **/
 
     class Scheduler : public QObject, virtual public DCOPObject {
-	Q_OBJECT
+        Q_OBJECT
 
     public:
-	typedef QList<SimpleJob> JobList;
+        typedef QList<SimpleJob> JobList;
 
-    public: // InfoDict needs Info, so we can't declare it private
-	class ProtocolInfo;
+        // InfoDict needs Info, so we can't declare it private
+        class ProtocolInfo;
+        class JobData;
 
-	~Scheduler();
+        ~Scheduler();
 
-	static void doJob(SimpleJob *job)
-		{ self()->_doJob(job); }
-	static void scheduleJob(SimpleJob *job)
-		{ self()->_scheduleJob(job); }
-	static void cancelJob(SimpleJob *job)
-		{ self()->_cancelJob(job); }
+        static void doJob(SimpleJob *job)
+        { self()->_doJob(job); }
+
+        static void scheduleJob(SimpleJob *job)
+        { self()->_scheduleJob(job); }
+
+        static void cancelJob(SimpleJob *job)
+        { self()->_cancelJob(job); }
+
         static void jobFinished(KIO::SimpleJob *job, KIO::Slave *slave)
-            	{ self()->_jobFinished(job, slave); }
+        { self()->_jobFinished(job, slave); }
 
         static void putSlaveOnHold(KIO::SimpleJob *job, const KURL &url)
-        	{ self()->_putSlaveOnHold(job, url); }
+        { self()->_putSlaveOnHold(job, url); }
 
         static void removeSlaveOnHold()
-        	{ self()->_removeSlaveOnHold(); }
+        { self()->_removeSlaveOnHold(); }
 
         /**
          * Request a slave for use in connection-oriented mode.
@@ -129,7 +133,7 @@ namespace KIO {
          * @see disconnectSlave
          */
         static KIO::Slave *getConnectedSlave(const KURL &url, const KIO::MetaData &config = MetaData() )
-		{ return self()->_getConnectedSlave(url, config); }
+        { return self()->_getConnectedSlave(url, config); }
 
         /*
          * Use @p slave to do @p job.
@@ -149,7 +153,7 @@ namespace KIO {
          * @see slaveError
          */
         static bool assignJobToSlave(KIO::Slave *slave, KIO::SimpleJob *job)
-        	{ return self()->_assignJobToSlave(slave, job); }
+        { return self()->_assignJobToSlave(slave, job); }
 
         /*
          * Disconnect @p slave.
@@ -164,7 +168,7 @@ namespace KIO {
          * @see assignJobToSlave
          */
         static bool disconnectSlave(KIO::Slave *slave)
-        	{ return self()->_disconnectSlave(slave); }
+        { return self()->_disconnectSlave(slave); }
 
         /**
          * Function to connect signals emitted by the scheduler.
@@ -175,34 +179,39 @@ namespace KIO {
 
         static bool connect( const char *signal, const QObject *receiver,
                              const char *member)
-          { return QObject::connect(self(), signal, receiver, member); }
+        { return QObject::connect(self(), signal, receiver, member); }
 
         static bool connect( const QObject* sender, const char* signal,
                              const QObject* receiver, const char* member )
-          { return QObject::connect(sender, signal, receiver, member); }
+        { return QObject::connect(sender, signal, receiver, member); }
 
         static bool disconnect( const QObject* sender, const char* signal,
                                 const QObject* receiver, const char* member )
-          { return QObject::disconnect(sender, signal, receiver, member); }
+        { return QObject::disconnect(sender, signal, receiver, member); }
 
         bool connect( const QObject *sender, const char *signal,
                       const char *member )
-          { return QObject::connect(sender, signal, member); }
+        { return QObject::connect(sender, signal, member); }
 
         void debug_info();
 
         virtual bool process(const QCString &fun, const QByteArray &data,
-		             QCString& replyType, QByteArray &replyData);
+                             QCString& replyType, QByteArray &replyData);
 
         virtual QCStringList functions();
 
     public slots:
         void slotSlaveDied(KIO::Slave *slave);
-	void slotSlaveStatus(pid_t pid, const QCString &protocol,
-	                     const QString &host, bool connected);
+        void slotSlaveStatus(pid_t pid, const QCString &protocol,
+                             const QString &host, bool connected);
     signals:
         void slaveConnected(KIO::Slave *slave);
         void slaveError(KIO::Slave *slave, int error, const QString &errorMsg);
+
+    protected:
+        bool startJobScheduled(ProtocolInfo *protInfo);
+        bool startJobDirect();
+        Scheduler();
 
     protected slots:
         void startStep();
@@ -211,25 +220,16 @@ namespace KIO {
         void slotSlaveError(int error, const QString &errorMsg);
         void slotScheduleCoSlave();
 
-    public:
-	class JobData;
-
-    protected:
-        bool startJobScheduled(ProtocolInfo *protInfo);
-        bool startJobDirect();
-	Scheduler();
-
     private:
         class ProtocolInfoDict;
         class ExtraJobData;
 
-	Scheduler(const Scheduler&);
-
-	static Scheduler *self();
-	static Scheduler *instance;
-	void _doJob(SimpleJob *job);
-	void _scheduleJob(SimpleJob *job);
-	void _cancelJob(SimpleJob *job);
+        Scheduler(const Scheduler&);
+        static Scheduler *self();
+        static Scheduler *instance;
+        void _doJob(SimpleJob *job);
+        void _scheduleJob(SimpleJob *job);
+        void _cancelJob(SimpleJob *job);
         void _jobFinished(KIO::SimpleJob *job, KIO::Slave *slave);
         void _scheduleCleanup();
         void _putSlaveOnHold(KIO::SimpleJob *job, const KURL &url);
@@ -241,25 +241,23 @@ namespace KIO {
         Slave *findIdleSlave(ProtocolInfo *protInfo, SimpleJob *job, bool &exact);
         Slave *createSlave(ProtocolInfo *protInfo, SimpleJob *job, const KURL &url);
 
-	QTimer slaveTimer;
-	QTimer coSlaveTimer;
-	QTimer cleanupTimer;
-	bool busy;
+        QTimer slaveTimer;
+        QTimer coSlaveTimer;
+        QTimer cleanupTimer;
+        bool busy;
 
-	SlaveList *slaveList;
-	SlaveList *idleSlaves;
-	SlaveList *coIdleSlaves;
+        SlaveList *slaveList;
+        SlaveList *idleSlaves;
+        SlaveList *coIdleSlaves;
 
-	ProtocolInfoDict *protInfoDict;
+        ProtocolInfoDict *protInfoDict;
+        Slave *slaveOnHold;
+        KURL urlOnHold;
+        JobList newJobs;
 
-	Slave *slaveOnHold;
-	KURL urlOnHold;
-
-	JobList newJobs;
-
-	QPtrDict<JobList> coSlaves;
-	ExtraJobData *extraJobData;
-	SlaveConfig *slaveConfig;
+        QPtrDict<JobList> coSlaves;
+        ExtraJobData *extraJobData;
+        SlaveConfig *slaveConfig;
         SessionData *sessionData;
 };
 
