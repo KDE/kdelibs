@@ -54,6 +54,8 @@ AC_CREATE_KFSSTND(default)
 AC_SUBST_KFSSTND
 AC_CHECK_LIB(compat, main, [LIBCOMPAT="-lcompat"]) dnl for FreeBSD
 AC_CHECK_LIB(util, main, [LIBUTIL="-lutil"]) dnl for FreeBSD
+AC_CHECK_LIB(c, res_init, ,
+  AC_CHECK_LIB(resolv, res_init, [LIBRESOLV="-lresolv"])) dnl for Sun
 
 dnl Image libraries
 KDE_CREATE_LIBS_ALIASES
@@ -152,6 +154,7 @@ AC_SUBST(x_libraries)
 AC_SUBST(LIBSOCKET)
 AC_SUBST(LIBCOMPAT)
 AC_SUBST(LIBUTIL)
+AC_SUBST(LIBRESOLV)
 AC_SUBST(LIBICE)
 
 LIB_KDECORE='$(top_builddir)/kdecore/libkdecore.la'
