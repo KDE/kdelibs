@@ -24,17 +24,9 @@ AM_CXXFLAGS = -DQT_PLUGIN
 INCLUDES = -I$(top_srcdir)/kfile $(all_includes)
 kde_widget_LTLIBRARIES = kdewidgets.la
 kdewidgets_la_LDFLAGS = $(all_libraries) $(KDE_PLUGIN) -module
-kdewidgets_la_LIBADD = $(LIB_KIO)
-kdewidgets_la_SOURCES = classpreviews.cpp kdewidgets.cpp 
+kdewidgets_la_LIBADD = $(LIB_KIO) -lkdeprint
+kdewidgets_la_SOURCES = classpreviews.cpp kdewidgets.cpp
 
-make-kdewidgets: kde.widgets
-	$(srcdir)/makekdewidgets -o $(srcdir)/kdewidgets.cpp $<
+kdewidgets.cpp: kde.widgets
+	$(srcdir)/makekdewidgets -o kdewidgets.cpp $<
 
-all-local:
-	@if test "$(srcdir)" != "." && test -f ./kdewidgets.cpp; then \
-		pwd=`pwd`;\
-		echo "=========================================================================" ;\
-		echo "remove $$pwd/kdewidgets.cpp - it's most likely outdated!!" ;\
-		echo "=========================================================================" ;\
-		exit 1; \
-	fi
