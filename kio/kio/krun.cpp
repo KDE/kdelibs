@@ -464,7 +464,7 @@ QStringList KRun::processDesktopExec(const KService &_service, const KURL::List&
     else
       result << "kdesu" << "-u";
     result << _service.username() << "-c";
-    KShell::splitArgs(exec, KShell::AbortOnMeta, &err);
+    KShell::splitArgs(exec, KShell::AbortOnMeta | KShell::TildeExpand, &err);
     if (err == KShell::FoundMeta) {
       shellQuote( exec );
       exec.prepend( "/bin/sh -c " );
@@ -476,7 +476,7 @@ QStringList KRun::processDesktopExec(const KService &_service, const KURL::List&
   } else {
     if (has_shell) {
       if (_service.terminal()) {
-        KShell::splitArgs(exec, KShell::AbortOnMeta, &err);
+        KShell::splitArgs(exec, KShell::AbortOnMeta | KShell::TildeExpand, &err);
         if (err == KShell::FoundMeta) {
           shellQuote( exec );
           exec.prepend( "/bin/sh -c " );
@@ -485,7 +485,7 @@ QStringList KRun::processDesktopExec(const KService &_service, const KURL::List&
       }
       result << exec;
     } else {
-      result += KShell::splitArgs(exec, KShell::AbortOnMeta, &err);
+      result += KShell::splitArgs(exec, KShell::AbortOnMeta | KShell::TildeExpand, &err);
       if (err == KShell::FoundMeta)
         result << "/bin/sh" << "-c" << exec;
       else if (err != KShell::NoError)
