@@ -59,7 +59,7 @@ public:
      * Returns the password. The memory is freed in the destructor
      * so you should make a copy.
      */
-    const char *password() { return m_Password; }
+    const char *password() const { return m_Password; }
 
     /** Erase the current password. */
     void erase();
