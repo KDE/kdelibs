@@ -312,7 +312,7 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
       else if (p == "reset")           return new HTMLElementFunction(element,HTMLElementFunction::Reset);
       else {
         KJSO result = DOMElement::tryGet(p);
-        return (result.isA(UndefinedType) ? new HTMLElement(form.elements().namedItem(p.string())) : result);
+        return (result.isA(UndefinedType) ? KJSO(new HTMLElement(form.elements().namedItem(p.string()))) : result);
       }
     }
     break;
