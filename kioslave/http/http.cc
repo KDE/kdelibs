@@ -2500,6 +2500,8 @@ bool HTTPProtocol::readHeader()
           if ( dispositionBuf > bufStart )
           {
             disposition = QString::fromLatin1( bufStart, dispositionBuf-bufStart );
+	    if ( disposition[0] == '"' && disposition[disposition.length()-1] == '"' )
+		    disposition = disposition.mid( 1, disposition.length() - 2 );
             break;
           }
         }
