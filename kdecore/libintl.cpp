@@ -49,6 +49,8 @@ Cambridge, MA 02139, USA.  */
 
 #include <config.h>
 
+#include <qglobal.h>
+
 #include <stdlib.h>
 
 #if defined HAVE_STRING_H
@@ -73,7 +75,7 @@ Cambridge, MA 02139, USA.  */
 # define W(flag, data) ((flag) ? SWAP (data) : (data))
 #endif
 
-typedef u_int32_t nls_uint32;
+typedef Q_UINT32 nls_uint32;
 
 struct loaded_domain
 {
