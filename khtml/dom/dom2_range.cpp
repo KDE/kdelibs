@@ -405,8 +405,8 @@ void Range::detach(  )
 
 bool Range::isDetached() const
 {
-    if (impl) return isDetached();
-    return false;
+    if (impl) return impl->isDetached();
+    return true;
 }
 
 RangeImpl *Range::handle() const
