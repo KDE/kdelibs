@@ -296,16 +296,24 @@ namespace KIO {
      * List the contents of @p url, which is assumed to be a directory.
      *
      * "." and ".." are returned, filter them out if you don't want them.
+     *
+     * pass includeHidden = false to cull out UNIX hidden files/dirs
+     * (whose names start with .)
      */
-    ListJob *listDir( const KURL& url, bool showProgressInfo = true );
+    ListJob *listDir( const KURL& url, bool showProgressInfo = true, 
+                      bool includeHidden = true );
 
     /**
      * The same as the previous method, but recurses subdirectories.
      *
      * "." and ".." are returned but only for the toplevel directory.
      * Filter them out if you don't want them.
+     *
+     * pass includeHidden = false to cull out UNIX hidden files/dirs
+     * (whose names start with .)
      */
-    ListJob *listRecursive( const KURL& url, bool showProgressInfo = true );
+    ListJob *listRecursive( const KURL& url, bool showProgressInfo = true, 
+                            bool includeHidden = true );
 
     /**
      * Copy a file or directory @p src into the destination @dest,

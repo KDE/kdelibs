@@ -948,16 +948,16 @@ TransferJob *KIO::http_post( const KURL& url, const QByteArray &postData, bool s
         556,  // remotefs
         587,  // sendmail
         601,  //
-	989,  // ftps data
-	990,  // ftps
-	992,  // telnets
-	993,  // imap/SSL
-	995,  // pop3/SSL
+        989,  // ftps data
+        990,  // ftps
+        992,  // telnets
+        993,  // imap/SSL
+        995,  // pop3/SSL
         1080, // SOCKS
         2049, // nfs
         4045, // lockd
         6000, // x11
-	6667, // irc
+        6667, // irc
         0};
     for (int cnt=0; bad_ports[cnt]; ++cnt)
         if (url.port() == bad_ports[cnt])
@@ -1399,9 +1399,9 @@ SimpleJob *KIO::file_delete( const KURL& src, bool showProgressInfo)
 
 //////////
 
-ListJob::ListJob(const KURL& u, bool showProgressInfo, bool _recursive, QString _prefix) :
+ListJob::ListJob(const KURL& u, bool showProgressInfo, bool _recursive, QString _prefix, bool _includeHidden) :
     SimpleJob(u, CMD_LISTDIR, QByteArray(), showProgressInfo),
-    recursive(_recursive), prefix(_prefix), m_processedEntries(0)
+    recursive(_recursive), prefix(_prefix), includeHidden(_includeHidden), m_processedEntries(0)
 {
     // We couldn't set the args when calling the parent constructor,
     // so do it now.
@@ -1443,10 +1443,11 @@ void ListJob::slotListEntries( const KIO::UDSEntryList& list )
                 }
             }
             if (isDir && !isLink) {
-                if (filename != ".." && filename != ".") {
+                // skip hidden dirs when listing if requested
+                if (filename != ".." && filename != "." && (includeHidden || filename[0] != '.')) {
                     KURL newone = url();
                     newone.addPath(filename);
-                    ListJob *job = new ListJob(newone, m_progressId!=0, true, prefix + filename + "/");
+                    ListJob *job = new ListJob(newone, m_progressId!=0, true, prefix + filename + "/",includeHidden);
                     Scheduler::scheduleJob(job);
                     connect(job, SIGNAL(entries( KIO::Job *,
                                                  const KIO::UDSEntryList& )),
@@ -1459,33 +1460,36 @@ void ListJob::slotListEntries( const KIO::UDSEntryList& list )
     }
 
     // Not recursive, or top-level of recursive listing : return now (send . and .. as well)
-    if (prefix.isNull()) {
+    // exclusion of hidden files also requires the full sweep, but the case for full-listing 
+    // a single dir is probably common enough to justify the shortcut
+    if (prefix.isNull() && includeHidden) {
         emit entries(this, list);
-        return;
-    }
+    } else {
+        // cull the unwanted hidden dirs and/or parent dir references from the listing, then emit that
+        UDSEntryList newlist;
 
-    UDSEntryList newlist;
-
-    UDSEntryListConstIterator it = list.begin();
-    UDSEntryListConstIterator end = list.end();
-    for (; it != end; ++it) {
-
-        UDSEntry newone = *it;
-        UDSEntry::Iterator it2 = newone.begin();
-        QString filename;
-        for( ; it2 != newone.end(); it2++ ) {
-            if ((*it2).m_uds == UDS_NAME) {
-                filename = (*it2).m_str;
-                (*it2).m_str = prefix + filename;
+        UDSEntryListConstIterator it = list.begin();
+        UDSEntryListConstIterator end = list.end();
+        for (; it != end; ++it) {
+    
+            UDSEntry newone = *it;
+            UDSEntry::Iterator it2 = newone.begin();
+            QString filename;
+            for( ; it2 != newone.end(); it2++ ) {
+                if ((*it2).m_uds == UDS_NAME) {
+                    filename = (*it2).m_str;
+                    (*it2).m_str = prefix + filename;
+                }
             }
+            // Avoid returning entries like subdir/. and subdir/.., but include . and .. for
+            // the the toplevel dir, and skip hidden files/dirs if that was requested
+            if (  (prefix.isNull() || (filename != ".." && filename != ".") ) 
+               && (includeHidden || (filename[0] != '.') )  )
+                newlist.append(newone);
         }
-        // Avoid returning entries like subdir/. and subdir/..
-        if (filename != ".." && filename != ".")
-            newlist.append(newone);
+
+        emit entries(this, newlist);
     }
-
-    emit entries(this, newlist);
-
 }
 
 void ListJob::gotEntries(KIO::Job *, const KIO::UDSEntryList& list )
@@ -1527,15 +1531,15 @@ void ListJob::slotFinished()
     }
 }
 
-ListJob *KIO::listDir( const KURL& url, bool showProgressInfo )
+ListJob *KIO::listDir( const KURL& url, bool showProgressInfo, bool includeHidden )
 {
-    ListJob * job = new ListJob(url, showProgressInfo);
+    ListJob * job = new ListJob(url, showProgressInfo,false,QString::null,includeHidden);
     return job;
 }
 
-ListJob *KIO::listRecursive( const KURL& url, bool showProgressInfo)
+ListJob *KIO::listRecursive( const KURL& url, bool showProgressInfo, bool includeHidden )
 {
-    ListJob * job = new ListJob(url, showProgressInfo, true);
+    ListJob * job = new ListJob(url, showProgressInfo, true,QString::null,includeHidden);
     return job;
 }
 

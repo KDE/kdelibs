@@ -733,7 +733,8 @@ namespace KIO {
 
     public:
         ListJob(const KURL& url, bool showProgressInfo,
-                bool recursive = false, QString prefix = QString::null);
+                bool recursive = false, QString prefix = QString::null, 
+                bool includeHidden = true);
 
         virtual void start( Slave *slave );
 
@@ -763,6 +764,7 @@ namespace KIO {
 
     private:
         bool recursive;
+        bool includeHidden;
         QString prefix;
         unsigned long m_processedEntries;
         KURL m_redirectionURL;
