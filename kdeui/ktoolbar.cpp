@@ -1672,7 +1672,7 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
         static const QString &attrHidden  = KGlobal::staticQString("Hidden");
 
         QString position = config->readEntry(attrPosition, d->PositionDefault);
-        int index = config->readNumEntry(attrIndex, d->IndexDefault);
+        int index = config->readNumEntry(attrIndex, 0);
         int offset = config->readNumEntry(attrOffset, d->OffsetDefault);
         bool newLine = config->readBoolEntry(attrNewLine, d->NewLineDefault);
         bool hidden = config->readBoolEntry(attrHidden, d->HiddenDefault);
@@ -1818,10 +1818,11 @@ void KToolBar::loadState( const QDomElement &element )
         setIconSize( d->IconSizeDefault );
     }
 
+    int index = 0;
     {
         QString attrIndex = element.attribute( "index" ).lower();
         if ( !attrIndex.isEmpty() )
-            d->IndexDefault = attrIndex.toInt();
+            index = attrIndex.toInt();
     }
 
     {
@@ -1842,9 +1843,9 @@ void KToolBar::loadState( const QDomElement &element )
             d->HiddenDefault = attrHidden  == "true";
     }
 
-    d->toolBarInfo = KToolBarPrivate::ToolBarInfo( dock, d->IndexDefault, d->NewLineDefault, d->OffsetDefault );
+    d->toolBarInfo = KToolBarPrivate::ToolBarInfo( dock, index, d->NewLineDefault, d->OffsetDefault );
     mw->addDockWindow( this, dock, d->NewLineDefault );
-    mw->moveDockWindow( this, dock, d->NewLineDefault, d->IndexDefault, d->OffsetDefault );
+    mw->moveDockWindow( this, dock, d->NewLineDefault, index, d->OffsetDefault );
 
     // Apply the highlight button setting
     d->m_highlight = highlightSetting();
@@ -1859,9 +1860,8 @@ void KToolBar::loadState( const QDomElement &element )
     else
         show();
 
-    getAttributes( d->PositionDefault, d->IconTextDefault, d->IndexDefault );
+    getAttributes( d->PositionDefault, d->IconTextDefault, index );
     //kdDebug(220) << name() << " loadState IconTextDefault=" << d->IconTextDefault << endl;
-    //kdDebug(220) << name() << " loadState IndexDefault=" << d->IndexDefault << endl;
 }
 
 int KToolBar::dockWindowIndex()
