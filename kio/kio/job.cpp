@@ -3446,6 +3446,7 @@ void CopyJob::slotResultDeletingDirs( Job * job )
 void CopyJob::slotResultRenaming( Job* job )
 {
     int err = job->error();
+    const QString errText = job->errorText();
     removeSubjob( job, true, false ); // merge metadata
     assert ( subjobs.isEmpty() );
     // Determine dest again
@@ -3603,9 +3604,14 @@ void CopyJob::slotResultRenaming( Job* job )
                     break;
                 }
             }
+        } else if ( err != KIO::ERR_UNSUPPORTED_ACTION ) {
+            kdDebug(7007) << "Couldn't rename " << m_currentSrcURL << " to " << dest << ", aborting" << endl;
+            m_error = err;
+            m_errorText = errText;
+            emitResult();
+            return;
         }
-
-        kdDebug(7007) << "Couldn't rename, reverting to normal way, starting with stat" << endl;
+        kdDebug(7007) << "Couldn't rename " << m_currentSrcURL << " to " << dest << ", reverting to normal way, starting with stat" << endl;
         //kdDebug(7007) << "KIO::stat on " << m_currentSrcURL << endl;
         KIO::Job* job = KIO::stat( m_currentSrcURL, true, 2, false );
         state = STATE_STATING;

@@ -503,8 +503,7 @@ namespace KIO {
      * Delete a file or directory.
      *
      * @param src file to delete
-     * @param shred If true, delete in a way that makes recovery impossible
-     * (only supported for local files currently) // BIC: remove in KDE4
+     * @param shred obsolete (TODO remove in KDE4)
      * @param showProgressInfo true to show progress information
      * @return the job handling the operation
      */
@@ -514,8 +513,7 @@ namespace KIO {
      * Deletes a list of files or directories.
      *
      * @param src the files to delete
-     * @param shred If true, delete in a way that makes recovery impossible
-     * (only supported for local files currently)
+     * @param shred obsolete (TODO remove in KDE4)
      * @param showProgressInfo true to show progress information
      * @return the job handling the operation
      */

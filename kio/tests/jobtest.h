@@ -41,6 +41,12 @@ public:
     void copyFileToOtherPartition();
     void copyDirectoryToOtherPartition();
     void listRecursive();
+    void moveFileToSamePartition();
+    void moveDirectoryToSamePartition();
+    void moveFileToOtherPartition();
+    void moveDirectoryToOtherPartition();
+    void moveFileNoPermissions();
+    void moveDirectoryNoPermissions();
 
 private slots:
     void slotEntries( KIO::Job*, const KIO::UDSEntryList& lst );
@@ -51,6 +57,8 @@ private:
     QString otherTmpDir() const;
     void copyLocalFile( const QString& src, const QString& dest );
     void copyLocalDirectory( const QString& src, const QString& dest );
+    void moveLocalFile( const QString& src, const QString& dest );
+    void moveLocalDirectory( const QString& src, const QString& dest );
 
     int m_result;
     QByteArray m_data;

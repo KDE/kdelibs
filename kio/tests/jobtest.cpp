@@ -99,6 +99,12 @@ void JobTest::runAll()
     copyFileToOtherPartition();
     copyDirectoryToOtherPartition();
     listRecursive();
+    moveFileToSamePartition();
+    moveDirectoryToSamePartition();
+    moveFileToOtherPartition();
+    moveDirectoryToOtherPartition();
+    moveFileNoPermissions();
+    moveDirectoryNoPermissions();
 }
 
 void JobTest::cleanup()
@@ -120,7 +126,7 @@ static void createTestDirectory( const QString& path )
 {
     QDir dir;
     bool ok = dir.mkdir( path );
-    if ( !ok )
+    if ( !ok && !dir.exists() )
         kdFatal() << "couldn't create " << path << endl;
     createTestFile( path + "/testfile" );
 }
@@ -222,6 +228,130 @@ void JobTest::copyDirectoryToOtherPartition()
     const QString dest = homeTmpDir() + "dirFromHome_copied";
     // src is already created by copyDirectoryToSamePartition()
     copyLocalDirectory( src, dest );
+}
+
+void JobTest::moveLocalFile( const QString& src, const QString& dest )
+{
+    assert( QFile::exists( src ) );
+    KURL u;
+    u.setPath( src );
+    KURL d;
+    d.setPath( dest );
+
+    // move the file with file_move
+    bool ok = KIO::NetAccess::file_move( u, d );
+    assert( ok );
+    assert( QFile::exists( dest ) );
+    assert( !QFile::exists( src ) ); // not there anymore
+
+    // move it back with KIO::move()
+    ok = KIO::NetAccess::move( d, u, 0 );
+    assert( ok );
+    assert( !QFile::exists( dest ) );
+    assert( QFile::exists( src ) ); // it's back
+}
+
+void JobTest::moveLocalDirectory( const QString& src, const QString& dest )
+{
+    assert( QFile::exists( src ) );
+    assert( QFileInfo( src ).isDir() );
+    assert( QFileInfo( src + "/testfile" ).isFile() );
+    KURL u;
+    u.setPath( src );
+    KURL d;
+    d.setPath( dest );
+
+    bool ok = KIO::NetAccess::move( u, d, 0 );
+    assert( ok );
+    assert( QFile::exists( dest ) );
+    assert( QFileInfo( dest ).isDir() );
+    assert( QFileInfo( dest + "/testfile" ).isFile() );
+    assert( !QFile::exists( src ) ); // not there anymore
+}
+
+void JobTest::moveFileToSamePartition()
+{
+    kdDebug() << k_funcinfo << endl;
+    const QString filePath = homeTmpDir() + "fileFromHome";
+    const QString dest = homeTmpDir() + "fileFromHome_moved";
+    createTestFile( filePath );
+    moveLocalFile( filePath, dest );
+}
+
+void JobTest::moveDirectoryToSamePartition()
+{
+    kdDebug() << k_funcinfo << endl;
+    const QString src = homeTmpDir() + "dirFromHome";
+    const QString dest = homeTmpDir() + "dirFromHome_moved";
+    createTestDirectory( src );
+    moveLocalDirectory( src, dest );
+}
+
+void JobTest::moveFileToOtherPartition()
+{
+    kdDebug() << k_funcinfo << endl;
+    const QString filePath = homeTmpDir() + "fileFromHome";
+    const QString dest = otherTmpDir() + "fileFromHome_moved";
+    createTestFile( filePath );
+    moveLocalFile( filePath, dest );
+}
+
+void JobTest::moveDirectoryToOtherPartition()
+{
+    kdDebug() << k_funcinfo << endl;
+    const QString src = homeTmpDir() + "dirFromHome";
+    const QString dest = homeTmpDir() + "dirFromHome_moved";
+    createTestDirectory( src );
+    moveLocalDirectory( src, dest );
+}
+
+void JobTest::moveFileNoPermissions()
+{
+    kdDebug() << k_funcinfo << endl;
+    const QString src = "/etc/passwd";
+    const QString dest = homeTmpDir() + "passwd";
+    assert( QFile::exists( src ) );
+    assert( QFileInfo( src ).isFile() );
+    KURL u;
+    u.setPath( src );
+    KURL d;
+    d.setPath( dest );
+
+    KIO::CopyJob* job = KIO::move( u, d, 0 );
+    job->setInteractive( false ); // no skip dialog, thanks
+    QMap<QString, QString> metaData;
+    bool ok = KIO::NetAccess::synchronousRun( job, 0, 0, 0, &metaData );
+    assert( !ok );
+    assert( KIO::NetAccess::lastError() == KIO::ERR_ACCESS_DENIED );
+    // OK this is fishy. Just like mv(1), KIO's behavior depends on whether
+    // a direct rename(2) was used, or a full copy+del. In the first case
+    // there is no destination file created, but in the second case the
+    // destination file remains.
+    // In fact we assume /home is a separate partition, in this test, so:
+    assert( QFile::exists( dest ) );
+    assert( QFile::exists( src ) );
+}
+
+void JobTest::moveDirectoryNoPermissions()
+{
+    kdDebug() << k_funcinfo << endl;
+    const QString src = "/etc";
+    const QString dest = homeTmpDir() + "etc";
+    assert( QFile::exists( src ) );
+    assert( QFileInfo( src ).isDir() );
+    KURL u;
+    u.setPath( src );
+    KURL d;
+    d.setPath( dest );
+
+    KIO::CopyJob* job = KIO::move( u, d, 0 );
+    job->setInteractive( false ); // no skip dialog, thanks
+    QMap<QString, QString> metaData;
+    bool ok = KIO::NetAccess::synchronousRun( job, 0, 0, 0, &metaData );
+    assert( !ok );
+    assert( KIO::NetAccess::lastError() == KIO::ERR_ACCESS_DENIED );
+    assert( QFile::exists( dest ) ); // see moveFileNoPermissions
+    assert( QFile::exists( src ) );
 }
 
 void JobTest::listRecursive()
