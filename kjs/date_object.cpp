@@ -243,8 +243,8 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
     t = localtime(&tv);
 
   // trick gcc. We don't want the Y2K warnings.
-  const char *xFormat = "%x";
-  const char *cFormat = "%c";
+  const char xFormat[] = "%x";
+  const char cFormat[] = "%c";
 
   switch (id) {
   case ToString:
@@ -473,7 +473,7 @@ bool DateObjectImp::implementsCall() const
 }
 
 // ECMA 15.9.2
-Value DateObjectImp::call(ExecState */*exec*/, Object &/*thisObj*/, const List &/*args*/)
+Value DateObjectImp::call(ExecState* /*exec*/, Object &/*thisObj*/, const List &/*args*/)
 {
 #ifdef KJS_VERBOSE
   fprintf(stderr,"DateObjectImp::call - current time\n");
@@ -487,7 +487,7 @@ Value DateObjectImp::call(ExecState */*exec*/, Object &/*thisObj*/, const List &
 
 // ------------------------------ DateObjectFuncImp ----------------------------
 
-DateObjectFuncImp::DateObjectFuncImp(ExecState */*exec*/, FunctionPrototypeImp *funcProto,
+DateObjectFuncImp::DateObjectFuncImp(ExecState* /*exec*/, FunctionPrototypeImp *funcProto,
                                      int i, int len)
   : InternalFunctionImp(funcProto), id(i)
 {
@@ -574,7 +574,7 @@ static const char haystack[37]="janfebmaraprmayjunjulaugsepoctnovdec";
 // we follow the recommendation of rfc2822 to consider all
 // obsolete time zones not listed here equivalent to "-0000"
 static const struct {
-    const char *tzName;
+    const char tzName[4];
     int tzOffset;
 } known_zones[] = {
     { "UT", 0 },
