@@ -61,7 +61,8 @@ public:
     QString kde_version;
     QString appname;
     QString os;
-    KURLLabel *webFormLabel;
+    QPushButton *submitBugButton;
+    KURL url;
 };
 
 KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutData )
@@ -85,12 +86,12 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
                                  : KGlobal::instance()->aboutData() );
   m_process = 0;
   QWidget * parent = plainPage();
-  d->webFormLabel = 0;
+  d->submitBugButton = 0;
 
   if ( m_aboutData->bugAddress() == QString::fromLatin1("submit@bugs.kde.org") )
   {
     // This is a core KDE application -> redirect to the web form
-    d->webFormLabel = new KURLLabel( parent );
+    d->submitBugButton = new QPushButton( parent );
     setButtonCancel( KStdGuiItem::close() );
   }
 
@@ -103,7 +104,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
 
   int row = 0;
 
-  if ( !d->webFormLabel )
+  if ( !d->submitBugButton )
   {
     // From
     QString qwtstr = i18n( "Your email address. If incorrect, use the Configure Email button to change it" );
@@ -179,7 +180,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
       m_strVersion = i18n("no version set (programmer error!)");
   d->kde_version = QString::fromLatin1( KDE_VERSION_STRING );
   d->kde_version += ", " + QString::fromLatin1( KDE_DISTRIBUTION_TEXT );
-  if ( !d->webFormLabel )
+  if ( !d->submitBugButton )
       m_strVersion += " " + d->kde_version;
   m_version = new QLabel( m_strVersion, parent );
   //glay->addWidget( m_version, row, 1 );
@@ -203,7 +204,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
   tmpLabel = new QLabel(QString::fromLatin1(KDE_COMPILER_VERSION), parent);
   glay->addMultiCellWidget( tmpLabel, row, row, 1, 2 );
 
-  if ( !d->webFormLabel )
+  if ( !d->submitBugButton )
   {
     // Severity
     m_bgSeverity = new QHButtonGroup( i18n("Se&verity"), parent );
@@ -248,21 +249,21 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
   } else {
     // Point to the web form
 
-    lay->addSpacing(20);
-    QString text = i18n("To submit a bug report, click on the link below.\n"
+    lay->addSpacing(10);
+    QString text = i18n("To submit a bug report, click on the button below.\n"
                         "This will open a web browser window on http://bugs.kde.org where you'll find a form to fill in.\n"
                         "The information displayed above will be transferred to that server.");
     QLabel * label = new QLabel( text, parent, "label");
     lay->addWidget( label );
-    lay->addSpacing(20);
+    lay->addSpacing(10);
 
     updateURL();
-    d->webFormLabel->setText( "http://bugs.kde.org/wizard.cgi" );
-    lay->addWidget( d->webFormLabel );
-    lay->addSpacing(20);
+    d->submitBugButton->setText( i18n("&Launch bug report wizard...") );
+    lay->addWidget( d->submitBugButton );
+    lay->addSpacing(10);
 
-    connect( d->webFormLabel, SIGNAL(leftClickedURL(const QString &)),
-             this, SLOT(slotUrlClicked(const QString &)));
+    connect( d->submitBugButton, SIGNAL(clicked()),
+             this, SLOT(slotOk()));
   }
 }
 
@@ -280,7 +281,7 @@ void KBugReport::updateURL()
     url.addQueryItem( "appVersion", m_strVersion );
     url.addQueryItem( "package", d->appcombo->currentText() );
     url.addQueryItem( "kbugreport", "1" );
-    d->webFormLabel->setURL( url.url() );
+    d->url = url;
 }
 
 void KBugReport::appChanged(int i)
@@ -296,11 +297,11 @@ void KBugReport::appChanged(int i)
     else
         m_strVersion = i18n("unknown program name", "unknown");
 
-    if ( !d->webFormLabel )
+    if ( !d->submitBugButton )
         m_strVersion += d->kde_version;
 
     m_version->setText(m_strVersion);
-    if ( d->webFormLabel )
+    if ( d->submitBugButton )
         updateURL();
 }
 
@@ -356,15 +357,18 @@ void KBugReport::slotUrlClicked(const QString &urlText)
 
   // When using the web form, a click can also close the window, as there's
   // not much to do. It also gives the user a direct response to his click:
-  if ( d->webFormLabel )
+  if ( d->submitBugButton )
       KDialogBase::slotCancel();
 }
 
 
 void KBugReport::slotOk( void )
 {
-    if ( d->webFormLabel)
+    if ( d->submitBugButton ) {
+        if ( kapp )
+            kapp->invokeBrowser( d->url.url() );
         return;
+    }
 
     if( m_lineedit->text().isEmpty() == true ||
         m_subject->text().isEmpty() == true )
@@ -417,7 +421,7 @@ void KBugReport::slotOk( void )
 
 void KBugReport::slotCancel()
 {
-  if( !d->webFormLabel && ( m_lineedit->edited() || m_subject->edited() ) )
+  if( !d->submitBugButton && ( m_lineedit->edited() || m_subject->edited() ) )
   {
     int rc = KMessageBox::warningYesNo( this,
              i18n( "Close and discard\nedited message?" ),
