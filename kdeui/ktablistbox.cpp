@@ -853,13 +853,14 @@ void KTabListBox::mouseReleaseEvent(QMouseEvent* e)
 //-----------------------------------------------------------------------------
 void KTabListBox::doMouseResizeCol(QMouseEvent* e)
 {
-  int w;
+  int w, x;
 
   if (!mMouseAction) mMouseAction = TRUE;
 
   if (mMouseCol >= 0)
   {
-    w = mMouseColWidth + (e->pos().x() - mMouseColLeft);
+    x = e->pos().x() + lbox.xOffset();
+    w = mMouseColWidth + (x - mMouseColLeft);
     if (w < 2) w = 2;
 
     colList[mMouseCol]->setWidth(w);
