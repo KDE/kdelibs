@@ -165,8 +165,8 @@ protected slots:
   void slotRMBActionInsert( int );
   void slotRMBActionOpen( int );
   void slotRMBActionCopyLocation( int );
-  //void slotRMBActionEdit( int );
   void slotRMBActionEditAt( int );
+  void slotRMBActionProperties( int );
 
   void slotBookmarkSelected();
   void slotAddBookmarksList();

@@ -228,8 +228,6 @@ void KBookmarkMenu::fillContextMenu( QPopupMenu* contextMenu, const QString & ad
     contextMenu->setItemParameter( id, val );
     id = contextMenu->insertItem( i18n( "Open Folder in Bookmark Editor" ), this, SLOT(slotRMBActionEditAt(int)) );
     contextMenu->setItemParameter( id, val );
-    // contextMenu->insertItem( i18n( "Properties" ), this, SLOT(slotRMBActionProperties(int)) );
-    // contextMenu->setItemParameter( id, val );
   } 
   else
   {
@@ -242,6 +240,8 @@ void KBookmarkMenu::fillContextMenu( QPopupMenu* contextMenu, const QString & ad
     id = contextMenu->insertItem( i18n( "Add Bookmark Here" ), this, SLOT(slotRMBActionInsert(int)) );
     contextMenu->setItemParameter( id, val );
   }
+  id = contextMenu->insertItem( i18n( "Properties" ), this, SLOT(slotRMBActionProperties(int)) );
+  contextMenu->setItemParameter( id, val );
 
   emit aboutToShowContextMenu( bookmark, contextMenu );
 }
@@ -255,6 +255,51 @@ void KBookmarkMenu::slotRMBActionEditAt( int val )
   Q_ASSERT(!bookmark.isNull());
 
   emit m_pManager->slotEditBookmarksAtAddress( s_highlightedAddress );
+}
+
+QString makeTextNodeMod(KBookmark bk, const QString &m_nodename, const QString &m_newText) {
+   // DUPLICATED HEAVILY FROM KIO/BOOKMARKS
+   QDomNode subnode = bk.internalElement().namedItem(m_nodename);
+   if (subnode.isNull()) {
+      subnode = bk.internalElement().ownerDocument().createElement(m_nodename);
+      bk.internalElement().appendChild(subnode);
+   }
+
+   if (subnode.firstChild().isNull()) {
+      QDomText domtext = subnode.ownerDocument().createTextNode("");
+      subnode.appendChild(domtext);
+   }
+
+   QDomText domtext = subnode.firstChild().toText();
+
+   QString m_oldText = domtext.data();
+   domtext.setData(m_newText);
+
+   return m_oldText;
+}
+
+void KBookmarkMenu::slotRMBActionProperties( int val )
+{
+  kdDebug(7043) << "KBookmarkMenu::slotRMBActionProperties" << s_highlightedAddress << endl;
+  if (invalid(val)) return;
+
+  KBookmark bookmark = m_pManager->findByAddress( s_highlightedAddress );
+  Q_ASSERT(!bookmark.isNull());
+
+  KBookmarkEditDialog dlg( bookmark.fullText(), bookmark.url().url(), 
+                           m_pManager, KBookmarkEditDialog::InsertionMode );
+  if ( dlg.exec() != KDialogBase::Accepted )
+    return;
+
+  makeTextNodeMod(bookmark, "title", dlg.finalTitle());
+  bookmark.internalElement().setAttribute("href", dlg.finalUrl());
+
+  kdDebug(7043) << "Requested move to " << dlg.finalAddress() << "!" << endl;
+
+  KBookmarkGroup parentBookmark = m_pManager->findByAddress( m_parentAddress ).toGroup();
+  Q_ASSERT(!parentBookmark.isNull());
+
+  m_pManager->emitChanged( parentBookmark );
 }
 
 void KBookmarkMenu::slotRMBActionInsert( int val )
@@ -297,8 +342,14 @@ void KBookmarkMenu::slotRMBActionInsert( int val )
 void KBookmarkMenu::slotRMBActionRemove( int val )
 {
   //kdDebug(7043) << "KBookmarkMenu::slotRMBActionRemove" << s_highlightedAddress << endl;
-  //TODO - "are you sure?" box, with "don't show again" option
   if (invalid(val)) return;
+
+  if (KMessageBox::warningYesNo(
+          m_parentMenu, "Are you sure you wish to remove this bookmark?", 
+          "Bookmark Removal", i18n("Remove"), i18n("Cancel"))
+        != KMessageBox::Yes
+     )
+    return;
 
   KBookmark bookmark = m_pManager->findByAddress( s_highlightedAddress );
   Q_ASSERT(!bookmark.isNull());
