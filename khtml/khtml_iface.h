@@ -192,6 +192,12 @@ k_dcop:
      */
     QString lastModified() const;
 
+    /**
+     * Print the contents of the current html view.
+     * @param quick if true, fully automated printing, without the print dialog.
+     */
+    ASYNC print( bool quick );
+
     void debugRenderTree();
     void viewDocumentSource();
     void viewFrameSource();

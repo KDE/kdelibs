@@ -144,6 +144,12 @@ public:
     void print();
 
     /**
+     * Prints the HTML document.
+     * @param quick if true, fully automated printing, without print dialog
+     */
+    void print( bool quick ); // KDE 4.0: merge with above
+
+    /**
      * ensure the display is up to date
      */
     void layout();

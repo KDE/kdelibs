@@ -1122,7 +1122,11 @@ void KHTMLView::setWidgetVisible(RenderWidget* w, bool vis)
         d->visibleWidgets.remove(w);
 }
 
-void KHTMLView::print()
+void KHTMLView::print() {
+    print( false );
+}
+
+void KHTMLView::print(bool quick)
 {
     if(!m_part->xmlDocImpl()) return;
     khtml::RenderRoot *root = static_cast<khtml::RenderRoot *>(m_part->xmlDocImpl()->renderer());
@@ -1131,7 +1135,7 @@ void KHTMLView::print()
     // this only works on Unix - we assume 72dpi
     KPrinter *printer = new KPrinter(QPrinter::PrinterResolution);
     printer->addDialogPage(new KHTMLPrintSettings());
-    if(printer->setup(this)) {
+    if(quick || printer->setup(this)) {
         viewport()->setCursor( waitCursor ); // only viewport(), no QApplication::, otherwise we get the busy cursor in kdeprint's dialogs
         // set up KPrinter
         printer->setFullPage(false);

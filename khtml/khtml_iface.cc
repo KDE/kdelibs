@@ -183,3 +183,7 @@ void KHTMLPartIface::viewFrameSource()
 QString KHTMLPartIface::evalJS(const QString &script) {
     return part->executeScript(script).toString();
 }
+
+void KHTMLPartIface::print( bool quick ) {
+    part->view()->print( quick );
+}
