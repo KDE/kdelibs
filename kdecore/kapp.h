@@ -78,12 +78,17 @@ class KApplication : public QApplication
 public:
   enum CaptionLayout { CaptionAppLast=1, CaptionAppFirst, CaptionNoApp };
 
-  /**
-   * Constructor. Parses command-line arguments.
-   *
-   */
-  KApplication( int& argc, char** argv,
-		const QCString& rAppName = 0);
+/**
+ * Constructor. Parses command-line arguments.
+ *
+ * @param allowStyles Set to false to disable the loading on plugin based
+ * styles. This is only useful to applications that do not display a GUI
+ * normally. If you do create an application with allowStyles set to false
+ * that normally runs in the background but under special circumstances
+ * displays widgets call enableStyles() before displaying any widgets.
+ */
+  KApplication(int& argc, char** argv,
+              const QCString& rAppName = 0, bool allowStyles=true);
 
   /** Destructor */
   virtual ~KApplication();
@@ -295,6 +300,12 @@ public:
    */
   Display *getDisplay() { return display; }
 
+  /**
+   * Enable style plugins. This is useful only to applications that normally
+   * do not display a GUI and created the KApplication with allowStyles=false.
+   */
+  void enableStyles();
+
 protected:
   /**
    * Used to catch X11 events
@@ -339,6 +350,7 @@ private:
   QPixmap aIconPixmap;
   QPixmap aMiniIconPixmap;
   KStyle *pKStyle; // A KDE style object if available (mosfet)
+  bool useStyles;
   void* styleHandle; // A KDE style dlopen handle, if used
   QWidget *smw;
 
@@ -491,6 +503,13 @@ public:
 #endif
 
 // $Log$
+// Revision 1.115  1999/10/21 22:20:09  espensa
+// helpMenu(), aboutKDE(), aboutApp() and appHelpActivated() has moved to
+// ktmainwindow (kdeui). This will break a lot of code. KDE2PORTING has
+// been updated. NOTE: I have left the old code on kapp for now (ifdef'ed
+// away) in case it is really needed. It will be removed soon so instead
+// of using it, you should convert the code that depends on it.
+//
 // Revision 1.114  1999/10/20 14:30:11  pbrown
 // kuniqueapp moved to its own file.
 //

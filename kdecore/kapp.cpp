@@ -140,9 +140,11 @@ static QString sessionConfigName()
   return aSessionConfigName;
 }
 
-KApplication::KApplication( int& argc, char** argv, const QCString& rAppName ) :
+KApplication::KApplication( int& argc, char** argv, const QCString& rAppName,
+                            bool allowStyles) :
     QApplication( argc, argv )
 {
+    useStyles = allowStyles;
     if (!rAppName.isEmpty())
 	QApplication::setName(rAppName );
 
@@ -668,6 +670,14 @@ bool KApplication::x11EventFilter( XEvent *_event )
   return false;
 }
 
+void KApplication::enableStyles()
+{
+    if(!useStyles){
+        useStyles = true;
+        applyGUIStyle(Qt::WindowsStyle);
+    }
+}
+
 void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
     /* Hey, we actually do stuff here now :)
      * The widgetStyle key is used as a style string. If it matches a
@@ -682,16 +692,15 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
      */
 
     static bool dlregistered = false;
-
     KSimpleConfig pConfig( "kstylerc", true );
     QString oldGroup = pConfig.group();
     pConfig.setGroup("KDE");
     QString styleStr = pConfig.readEntry("widgetStyle", "Platinum");
 
     if(styleHandle){
-      // warning("KApp: Unloading previous style plugin.");
-      lt_dlclose((lt_dlhandle*)styleHandle);
-      styleHandle = 0;
+        // warning("KApp: Unloading previous style plugin.");
+        lt_dlclose((lt_dlhandle*)styleHandle);
+        styleHandle = 0;
     }
 
     if(styleStr == "Platinum"){
@@ -714,27 +723,27 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
         styleHandle=0;
         setStyle(new QMotifStyle);
     }
-    else{
+    else if(useStyles){
         if(!dlregistered){
             dlregistered = true;
             lt_dlinit();
         }
 
         if(!locate("lib", styleStr).isNull()) {
-          styleStr = locate("lib", styleStr);
-          styleHandle = lt_dlopen(styleStr.ascii());
+            styleStr = locate("lib", styleStr);
+            styleHandle = lt_dlopen(styleStr.ascii());
         }
         else {
-          warning("KApp: Unable to find style plugin %s.", styleStr.ascii());
-          pKStyle = 0;
-          styleHandle=0;
-          setStyle(new QPlatinumStyle);
-          return;
+            warning("KApp: Unable to find style plugin %s.", styleStr.ascii());
+            pKStyle = 0;
+            styleHandle=0;
+            setStyle(new QPlatinumStyle);
+            return;
         }
 
         if(!styleHandle){
             warning("KApp: Unable to open style plugin %s (%s).",
-		    styleStr.ascii(), lt_dlerror());
+                    styleStr.ascii(), lt_dlerror());
 
             pKStyle = 0;
             setStyle(new QPlatinumStyle);
@@ -742,30 +751,35 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
         else{
             lt_ptr_t alloc_func = lt_dlsym(styleHandle,
                                            "allocate");
-            if(!alloc_func){
-                warning("KApp: Unable to init style plugin %s (%s).",
-			styleStr.ascii(), lt_dlerror());
-                pKStyle = 0;
-                lt_dlclose(styleHandle);
-                styleHandle = 0;
-                setStyle(new QPlatinumStyle);
-            }
-            else{
-                KStyle* (*alloc_ptr)();
-                alloc_ptr = (KStyle* (*)())alloc_func;
-                pKStyle = alloc_ptr();
-                if(pKStyle){
-                    setStyle(pKStyle);
-                }
-                else{
-                    warning("KApp: Style plugin unable to allocate style.");
+                if(!alloc_func){
+                    warning("KApp: Unable to init style plugin %s (%s).",
+                            styleStr.ascii(), lt_dlerror());
                     pKStyle = 0;
-                    setStyle(new QPlatinumStyle);
                     lt_dlclose(styleHandle);
                     styleHandle = 0;
+                    setStyle(new QPlatinumStyle);
                 }
-            }
+                else{
+                    KStyle* (*alloc_ptr)();
+                    alloc_ptr = (KStyle* (*)())alloc_func;
+                    pKStyle = alloc_ptr();
+                    if(pKStyle){
+                        setStyle(pKStyle);
+                    }
+                    else{
+                        warning("KApp: Style plugin unable to allocate style.");
+                        pKStyle = 0;
+                        setStyle(new QPlatinumStyle);
+                        lt_dlclose(styleHandle);
+                        styleHandle = 0;
+                    }
+                }
         }
+    }
+    else{
+        pKStyle=0;
+        styleHandle=0;
+        setStyle(new QPlatinumStyle);
     }
 }
 
