@@ -585,7 +585,7 @@ int AutoTableLayout::calcEffectiveWidth()
 	if ( !(w.type == Relative) && w.value == 0 )
 	    w = Length(); // make it Variable
 
-	int col = table->effColToCol( cell->col() );
+	int col = table->colToEffCol( cell->col() );
 	unsigned int lastCol = col;
 	int cMinWidth = cell->minWidth();
 	int cMaxWidth = cell->maxWidth();
