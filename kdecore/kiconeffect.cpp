@@ -343,7 +343,7 @@ void KIconEffect::semiTransparent(QImage &img)
 	    }
 	} else
 	{
-	    transColor = img.numColors();
+	    transColor = img.numColors()-1;
 	}
 	img.setColor(transColor, 0);
 
