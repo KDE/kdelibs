@@ -40,10 +40,17 @@ bool MyDCOPObject::process(const QCString &fun, const QByteArray &data,
     replyType = "void";
     return true;
   }
-  if (fun == "canLaunchRockets()") {
-    replyType = "bool";
+  if (fun == "canLaunchRockets(QRect)") {
+    QDataStream args(data, IO_ReadOnly);
+    QRect arg1;
+    args >> arg1;
+
+    printf("Rect x = %d, y = %d, w = %d, h = %d\n", arg1.x(), arg1.y(), arg1.width(), arg1.height());
+
+    replyType = "QRect";
     QDataStream reply( replyData, IO_WriteOnly );
-    reply << (Q_INT8) 1;
+    QRect r(10,20,100,200);
+    reply << r;
     return true;
   }
   if (fun == "isAliveSlot(int)") {
@@ -54,7 +61,14 @@ bool MyDCOPObject::process(const QCString &fun, const QByteArray &data,
     return true;
   }
 
-  return false;
+  return DCOPObject::process(fun, data, replyType, replyData);
+}
+
+QCStringList MyDCOPObject::functions()
+{
+   QCStringList result = DCOPObject::functions();
+   result << "QRect canLaunchRockets(QRect)";
+   return result;
 }
 
 int main(int argc, char **argv)
