@@ -43,7 +43,7 @@ dnl Checks for header files.
 KDE_CHECK_STL
 AC_HEADER_DIRENT
 AC_HEADER_STDC
-AC_CHECK_HEADERS(sys/param.h sys/mman.h sys/time.h sys/cdefs.h fnmatch.h sysent.h strings.h sys/stat.h sys/select.h sys/socket.h linux/socket.h socketbits.h sigaction.h paths.h malloc.h monetary.h limits.h sys/soundcard.h dlfcn.h termios.h)
+AC_CHECK_HEADERS(sys/param.h sys/mman.h sys/time.h sysent.h strings.h sys/stat.h sys/select.h paths.h malloc.h limits.h sys/soundcard.h dlfcn.h termios.h)
 
 DCOPIDL2CPP="compiled"
 DCOPIDL="compiled"
@@ -96,7 +96,6 @@ AC_LANG_RESTORE
 
 dnl check if the compiler has bool
 AC_CHECK_BOOL
-dnl AC_CHECK_GNU_EXTENSIONS
 
 dnl Checks for library functions.
 AC_CHECK_SETENV
@@ -133,19 +132,10 @@ int seteuid(INT32_BASETYPE euid); /* defined in fakes.c */
 #endif
 ])
 
-AC_LANG_SAVE
-AC_LANG_C
-dnl the vfork test in autoconf has a bug with C++ compilers (it declares
-dnl the prototype for sparc_address_test() correctly but calls it without
-dnl arguments), so we switch languages here.
-AC_FUNC_VFORK
-AC_LANG_RESTORE
-
 AC_CHECK_USLEEP
 AC_CHECK_GETHOSTNAME
 AC_CHECK_RANDOM
 AC_CHECK_S_ISSOCK
-dnl AC_CHECK_SOCKLEN_T already in kde_misc_tests
 AC_CHECK_INITGROUPS
 
 AC_MSG_CHECKING([for mount tab file])
