@@ -1,0 +1,5 @@
+[Desktop Entry]
+Type=Service
+Name=GZip Filter
+X-KDE-Library=kgzipfilter
+ServiceTypes=KDECompressionFilter,application/x-gzip,application/x-tgz

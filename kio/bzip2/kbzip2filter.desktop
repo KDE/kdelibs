@@ -1,0 +1,5 @@
+[Desktop Entry]
+Type=Service
+Name=BZip2 Filter
+X-KDE-Library=kbzip2filter
+ServiceTypes=KDECompressionFilter,application/x-bzip2,application/x-tbz
