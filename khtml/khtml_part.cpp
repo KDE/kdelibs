@@ -44,7 +44,9 @@ using namespace DOM;
 #include "ecma/kjs_proxy.h"
 #include "khtml_settings.h"
 
+#include <sys/types.h>
 #include <assert.h>
+#include <unistd.h>
 
 #include <kglobal.h>
 #include <kstddirs.h>
