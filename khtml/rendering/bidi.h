@@ -70,7 +70,7 @@ namespace khtml {
 	    }
 	}
 
-	short vertical;
+	int vertical;
 	short baseline;
 	short height;
 	int width;
