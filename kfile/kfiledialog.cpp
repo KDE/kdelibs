@@ -149,8 +149,12 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
 	lastDirectory = new KURL();
     }
 
+	static QString dot = QString::fromLatin1(".");
     if (!dirName.isEmpty())
-        *lastDirectory = dirName;
+		if ( dirName == dot)
+			*lastDirectory = QDir::currentDirPath();
+		else
+			*lastDirectory = dirName;
     else if (lastDirectory->isEmpty())
         *lastDirectory = QDir::currentDirPath();
 
