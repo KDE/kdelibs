@@ -300,6 +300,8 @@ public:
    */
   QString url( int _trailing ) const;
 
+  bool isEmpty() const;
+
   /**
    * This function is useful to implement the "Up" button in a file manager for example.
    * @ref #cd does never strip a sub protocol. That means: if you are in
@@ -387,6 +389,10 @@ private:
 
   bool m_bIsMalformed;
   unsigned short int m_iPort;
+
+  friend QDataStream & operator<< (QDataStream & s, const KURL & a);
+  friend QDataStream & operator>> (QDataStream & s, KURL & a);
+
 };
 
 /**
@@ -407,5 +413,8 @@ bool urlcmp( const QString& _url1, const QString& _url2 );
  * @param _ignore_ref if true disables comparison of HTML style references.
  */
 bool urlcmp( const QString& _url1, const QString& _url2, bool _ignore_trailing, bool _ignore_ref );
+
+QDataStream & operator<< (QDataStream & s, const KURL & a);
+QDataStream & operator>> (QDataStream & s, KURL & a);
 
 #endif

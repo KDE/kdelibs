@@ -76,6 +76,24 @@ KURL::KURL( const KURL& _u )
   m_iPort = _u.m_iPort;
 }
 
+QDataStream & operator<< (QDataStream & s, const KURL & a)
+{
+    s << a.m_strProtocol << a.m_strUser << a.m_strPass << a.m_strHost
+      << a.m_strPath << a.m_strQuery_encoded << a.m_strRef_encoded
+      << Q_INT8(a.m_bIsMalformed ? 1 : 0) << a.m_iPort;
+    return s;
+}
+
+QDataStream & operator>> (QDataStream & s, KURL & a)
+{
+    Q_INT8 malf;
+    s >> a.m_strProtocol >> a.m_strUser >> a.m_strPass >> a.m_strHost
+      >> a.m_strPath >> a.m_strQuery_encoded >> a.m_strRef_encoded
+      >> malf >> a.m_iPort;
+    a.m_bIsMalformed = (malf != 0);
+    return s;
+}
+
 KURL::KURL( const QUrl &u )
 {
   m_strProtocol = u.protocol();
@@ -135,6 +153,10 @@ void KURL::reset()
   m_iPort = 0;
 }
 
+bool KURL::isEmpty() const
+{
+  return (m_strPath.isEmpty() && m_strProtocol.isEmpty());
+}
 void KURL::parse( const QString& _url )
 {
   if ( _url.isEmpty() )
@@ -160,7 +182,7 @@ void KURL::parse( const QString& _url )
     goto Node9;
   if ( !isalpha( (int)x ) )
     goto NodeErr;
-  
+
   // Node 2: Accept any amount of (alpha|digit|'+'|'-')
   // '.' is not currently accepted, because current KURL may be confused.
   // Proceed with :// :/ or :
@@ -386,7 +408,7 @@ KURL& KURL::operator=( const QUrl & u )
   m_strRef_encoded = u.ref();
   m_bIsMalformed = !u.isValid();
   m_iPort = u.port();
-  
+
   return *this;
 }
 
