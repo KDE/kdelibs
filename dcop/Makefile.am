@@ -38,7 +38,9 @@ noinst_HEADERS = version.h dcopglobal.h dcopserver.h dcop-doc.h testdcop.h dcops
 
 # we don't use AUTO here, because dcop-doc.h would be mocified (it contains
 # Q_OBJECT), and this would give an ugly warning
-METASOURCES = dcopclient.moc dcopserver.moc testdcop.moc
+libDCOP_la_METASOURCES = dcopclient.moc
+dcopserver_la_METASOURCES = dcopserver.moc
+testdcop_METASOURCES = testdcop.moc
 
 # dcopstub needs to go first for --enable-final to work
 libDCOP_la_SOURCES = dcopstub.cpp dcopclient.cpp dcopobject.cpp dcopref.cpp
