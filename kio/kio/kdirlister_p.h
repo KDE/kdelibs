@@ -186,11 +186,15 @@ private:
   void processPendingUpdates();
   void forgetDirInternal( KDirLister *lister, const KURL &_url );
   // common for slotRedirection and FileRenamed
-  void handleRedirection( const KURL &oldUrl, const KURL &url );
+  void renameDir( const KURL &oldUrl, const KURL &url );
   // remove directory from cache (itemsCached), including all child dirs
   void removeDirFromCache( const KURL& dir );
+  // helper for renameDir
+  void emitRedirections( const KURL &oldUrl, const KURL &url );
   void emitRefreshItem( KFileItem* fileitem );
-
+#ifndef NDEBUG
+  void printDebug();
+#endif
   struct DirItem
   {
     DirItem() : rootItem(0), lstItems(new KFileItemList)
@@ -215,6 +219,8 @@ private:
 
     bool complete;
 
+    // KFileItem representing the root of this directory
+    // Remember that this is optional. FTP sites don't return '.' in the list, so they give no root item
     KFileItem* rootItem;
     KFileItemList* lstItems;
   };
