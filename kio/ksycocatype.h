@@ -29,7 +29,7 @@
  */
 enum KSycocaType { KST_KSycocaEntry = 0, KST_KService = 1, KST_KServiceType = 2, KST_KMimeType = 3,
 		 KST_KFolderType = 4, KST_KDEDesktopMimeType = 5, KST_KExecMimeType = 6,
-		 KST_KServiceGroup = 7,
+		 KST_KServiceGroup = 7, KST_KImageIOFormat = 8,
 		 KST_KCustom = 1000 };
 
 #define K_SYCOCATYPE( type, baseclass ) \
@@ -46,7 +46,8 @@ private:
  */
 enum KSycocaFactoryId { KST_KServiceFactory = 1, 
                         KST_KServiceTypeFactory = 2,
-                        KST_KServiceGroupFactory = 3 };
+                        KST_KServiceGroupFactory = 3,
+                        KST_KImageIO = 4 };
 
 #define K_SYCOCAFACTORY( factory_id ) \
 public: \

@@ -39,7 +39,7 @@ libksycoca_la_SOURCES = \
 	kuserprofile.cpp kservicegroupfactory.cpp \
 	kdirwatch.cpp kurifilter.cpp \
 	kautomount.cpp krun.cpp \
-	kfileitem.cpp \
+	kfileitem.cpp kimageio.cpp \
 	yacc.c lex.c
 
 include_HEADERS = ksycoca.h ksycocaentry.h ksycocatype.h \
@@ -47,7 +47,8 @@ include_HEADERS = ksycoca.h ksycocaentry.h ksycocatype.h \
         krun.h kdirwatch.h kautomount.h kuserprofile.h \
 	kshred.h ktar.h ktrader.h kurifilter.h kurlcompletion.h \
 	kshellcompletion.h kfileitem.h kservicegroup.h\
-	progressbase.h defaultprogress.h statusbarprogress.h
+	progressbase.h defaultprogress.h statusbarprogress.h \
+	kimageio.h 
 
 libkio_la_LDFLAGS = -version-info 3:0 -no-undefined $(all_libraries)
 libkio_la_LIBADD = ../kdeui/libkdeui.la $(LIBZ)
@@ -90,7 +91,7 @@ kioinclude_HEADERS = connection.h renamedlg.h \
 noinst_HEADERS = ksycocafactory.h kservicetypefactory.h kservicefactory.h \
 	ksycocadict.h kmessageboxwrapper.h \
 	ktraderparse.h ktraderparsetree.h yacc.h \
-	uiserver.h observer.h
+	uiserver.h observer.h kimageiofactory.h
 
 kde_mime_DATA = magic
 kde_servicetypes_DATA = kurifilterplugin.desktop

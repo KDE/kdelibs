@@ -59,11 +59,8 @@ KBuildServiceFactory::createEntry( const QString& file, const char *resource )
      return 0;
   }
 
-  // Just a backup file ?
-  if ( ( name.right(1) == "~") ||
-       ( name.right(4) == ".bak") ||
-       ( name[0] == '.') ||
-       ( name[0] == '%' && name.right(1) == "%" ) )
+  // Is it a .desktop file?
+  if ((name.right(8) != ".desktop") && (name.right(7) != ".kdelnk"))
       return 0;
 
   KDesktopFile desktopFile(file, true, resource);

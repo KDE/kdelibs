@@ -1,0 +1,147 @@
+/*
+* kimgio.h -- Declaration of interface to the KDE Image IO library.
+* Sirtaj Singh Kang <taj@kde.org>, 23 Sep 1998.
+*
+* $Id$
+*
+* This library is distributed under the conditions of the GNU LGPL.
+*/
+
+#ifndef SSK_KIMGIO_H
+#define SSK_KIMGIO_H
+
+#include <qstringlist.h>
+
+/**
+* Registers all available image format encoders and decoders.
+*/
+void kimgioRegister();
+
+/**
+* Interface to the KDE Image IO plugin architecture.
+*
+* Just call KImageIO::registerFormats() to register all extra
+* image formats.
+*
+* @author Sirtaj Singh Kang <taj@kde.org>
+* @version $Id$
+*/
+class KImageIO
+{
+public:
+  /**
+   * Possible image file access modes.
+   *
+   * Used in various @ref KImageIO static function.
+   **/
+  enum Mode { Reading, Writing };
+
+  /**
+   *  Registers all @ref KImageIO supported formats.
+   */
+  static void registerFormats();
+
+  /**
+   *  Checks if a special type is supported for writing.
+   */
+  static bool canWrite(const QString& type);
+
+  /**
+   *  Checks if a special type is supported for reading.
+   */
+  static bool canRead(const QString& type);
+
+  /**
+   *  Retrieve a list of all @ref KImageIO supported formats. 
+   *
+   * @param mode Tells whether to retrieve modes that can be read or written.
+   */
+  static QStringList types(Mode mode = Writing);
+
+
+  /**
+   * Retrieve a list of patterns of all @ref KImageIO supported formats. 
+   *
+   * These patterns can be passed to @ref KFileDialog::getOpenFileName()
+   * or @ref KFileDialog::getSaveFileName(), for example.
+   *
+   * @param mode Tells whether to retrieve modes that can be read or written.
+   */
+
+  static QString pattern(Mode mode = Reading);
+
+  /**
+   *  Retrieve the suffix of an image type.
+   */
+  static QString suffix(const QString& type);
+
+  /**
+   *  Retrieve the type of given filename.
+   */
+  static QString type(const QString& filename);
+
+  /**
+   *  Retrieve a list of MIME types for all @ref KImageIO supported formats. 
+   *
+   * @param mode Tells whether to retrieve modes that can be read or written.
+   */
+  static QStringList mimeTypes( Mode _mode = Writing );
+  /**
+   * Test to see whether a MIME type is supported to reading/writing.
+   **/
+  static bool isSupported( const QString& _mimeType, Mode _mode = Writing );
+  /**
+   * Return the MIME type of @p _filename.
+   **/
+  static QString mimeType( const QString& _filename );
+};
+
+/**
+ * @libdoc The KDE Image I/O Library
+ *
+ * This library allows KDE applications to read and write images in a
+ * variety of formats, transparently via the @ref QImage and @ref QPixmap load
+ * and save methods.
+ *
+ * The image processing backends are written as image handlers compatible
+ * with the @ref QImageIO handler format. The backends are loaded on demand
+ * when a particular format is requested.
+ * 
+ * @sect Formats
+ *
+ * Currently supported formats include:
+ * @li JPEG    <read>
+ * @li XV      <read> <write>
+ * @li EPS     <read> <write>
+ * @li NETPBM  <incomplete>
+ * @li PNG     <read> <write, only with newer libraries>
+ * @li TIFF    <read>
+ * @li KRL     <read> 
+ *
+ * @sect Usage
+ *
+ * Simply call the @ref KImageIO::registerFormats() static method declared
+ * in kimgio.h, and link libkimgio into your project.
+ * 
+ * @sect Example
+ *
+ * <pre>
+	#include<qpixmap.h>
+ 	#include<kimgio.h>
+
+	int main( int argc, char **argv )
+	{
+		....
+		KImageIO::registerFormats();
+		
+		...	// start main program
+	}
+ * </pre>
+ *
+ * @see KImageIO, QPixmap, QImage, QImageIO
+ * @author Sirtaj Singh Kang
+ * @version $Id$
+ */
+
+#endif
+

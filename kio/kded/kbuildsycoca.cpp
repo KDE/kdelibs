@@ -42,6 +42,7 @@
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
 #include <unistd.h>
+#include <kimageiofactory.h>
 
 #include <stdlib.h>
 
@@ -112,6 +113,7 @@ void KBuildSycoca::recreate()
   KSycocaFactory *stf = new KBuildServiceTypeFactory;
   KBuildServiceGroupFactory *bsgf = new KBuildServiceGroupFactory();
   (void) new KBuildServiceFactory(stf, bsgf);
+  (void) KImageIOFactory::self();
 
   build(); // Parse dirs
   save(); // Save database

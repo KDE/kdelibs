@@ -5,6 +5,7 @@
 #include <assert.h>
 #include <kstddirs.h>
 #include <kservicegroup.h>
+#include <kimageio.h>
 
 #include <kapp.h>
 
@@ -201,6 +202,43 @@ int main(int argc, char *argv[])
          debug("KServiceGroup: Unexpected object in list!");
       }
    }
+
+   KImageIO::registerFormats();
+
+   QStringList types;
+   types = KImageIO::types(KImageIO::Reading);
+   debug("Can read:");
+   for(QStringList::ConstIterator it = types.begin();
+       it != types.end(); ++it)
+      debug("    %s", (*it).ascii());
+
+   types = KImageIO::types(KImageIO::Writing);
+   debug("Can write:");
+   for(QStringList::ConstIterator it = types.begin();
+       it != types.end(); ++it)
+      debug("    %s", (*it).ascii());
+
+   
+   QString rPattern = KImageIO::pattern( KImageIO::Reading );
+   debug("Read pattern:\n%s", rPattern.ascii());
+
+   QString wPattern = KImageIO::pattern( KImageIO::Writing );
+   debug("Write pattern:\n%s", wPattern.ascii());
+
+   QString suffix = KImageIO::suffix("JPEG");
+   debug("Standard suffix for JPEG: %s", suffix.ascii());
+
+   types = KImageIO::mimeTypes(KImageIO::Reading);
+   debug("Can read (mimetypes):");
+   for(QStringList::ConstIterator it = types.begin();
+       it != types.end(); ++it)
+      debug("    %s", (*it).ascii());
+
+   types = KImageIO::mimeTypes(KImageIO::Writing);
+   debug("Can write (mimetypes):");
+   for(QStringList::ConstIterator it = types.begin();
+       it != types.end(); ++it)
+      debug("    %s", (*it).ascii());
 
    debug("done");
    return 0;

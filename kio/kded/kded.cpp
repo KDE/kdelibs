@@ -40,7 +40,7 @@
 #include <kdebug.h>
 #include <kdirwatch.h>
 #include <kstddirs.h>
-
+#include <kimageiofactory.h>
 
 Kded::Kded( bool needUpdate)
   : KSycoca( true )
@@ -86,6 +86,7 @@ void Kded::build()
   KSycocaFactory *stf = new KBuildServiceTypeFactory;
   KBuildServiceGroupFactory *bsgf = new KBuildServiceGroupFactory;
   (void) new KBuildServiceFactory(stf, bsgf);
+  (void) KImageIOFactory::self();
 
   // For each factory
   QListIterator<KSycocaFactory> factit ( *m_lstFactories );
