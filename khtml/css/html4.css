@@ -351,12 +351,12 @@ OL OL {
 
 LI > P { 
 	margin-top: auto; 
-	margin-bottom: auto;
+/*	margin-bottom: auto;*/
 }
       
 LI > DIV { 
 	margin-top: auto; 
-	margin-bottom: auto;
+/*	margin-bottom: auto;*/
 }
 
 /*
