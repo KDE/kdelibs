@@ -42,6 +42,7 @@
 #include <unistd.h>     //for readlink
 #include <dirent.h>
 #include <config.h>
+#include <assert.h>
 
 #ifdef HAVE_LIBART
 #include "svgicons/ksvgiconengine.h"
@@ -390,7 +391,7 @@ QString KIconLoader::removeIconExtension(const QString &name) const
     {
 #ifndef NDEBUG
 	kdDebug(264) << "Application " << KGlobal::instance()->instanceName()
-                     << " loads icon " << name << " with extension.\n";
+                     << " loads icon " << name << " with extension." << endl;
 #endif
 
 	return name.left(name.length() - extensionLength);
@@ -465,7 +466,7 @@ inline QString KIconLoader::unknownIconPath( int size ) const
     if (!icon.isValid())
     {
         kdDebug(264) << "Warning: could not find \"Unknown\" icon for size = "
-                     << size << "\n";
+                     << size << endl;
         return QString::null;
     }
     return icon.path;
@@ -506,7 +507,7 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
     
     if (group_or_size >= KIcon::LastGroup)
     {
-	kdDebug(264) << "Illegal icon group: " << group_or_size << "\n";
+	kdDebug(264) << "Illegal icon group: " << group_or_size << endl;
 	return path;
     }
 
@@ -581,7 +582,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
 	    path = iconPath(str_unknown, KIcon::Small, true);
 	    if (path.isEmpty())
 	    {
-		kdDebug(264) << "Warning: Cannot find \"unknown\" icon.\n";
+		kdDebug(264) << "Warning: Cannot find \"unknown\" icon." << endl;
 		return pix;
 	    }
 	}
@@ -603,7 +604,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
 
     if ((group < -1) || (group >= KIcon::LastGroup))
     {
-	kdDebug(264) << "Illegal icon group: " << group << "\n";
+	kdDebug(264) << "Illegal icon group: " << group << endl;
 	group = KIcon::Desktop;
     }
 
@@ -611,13 +612,13 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
     state &= ~KIcon::OverlayMask;
     if ((state < 0) || (state >= KIcon::LastState))
     {
-	kdDebug(264) << "Illegal icon state: " << state << "\n";
+	kdDebug(264) << "Illegal icon state: " << state << endl;
 	state = KIcon::DefaultState;
     }
 
-    if ((size == 0) && (group < 0))
+    if (size == 0 && group < 0)
     {
-	kdDebug(264) << "Neither size nor group specified!\n";
+	kdDebug(264) << "Neither size nor group specified!" << endl;
 	group = KIcon::Desktop;
     }
 
@@ -634,7 +635,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
     {
 	size = d->mpGroups[group].size;
     }
-    favIconOverlay = favIconOverlay && (size > 22);
+    favIconOverlay = favIconOverlay && size > 22;
 
     // Generate a unique cache key for the icon.
 
@@ -694,7 +695,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
                 {
                     kdDebug(264)
                         << "Warning: could not find \"Unknown\" icon for size = "
-                        << size << "\n";
+                        << size << endl;
                     return pix;
                 }
             }
@@ -772,16 +773,16 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
     }
 
     // Scale the icon and apply effects if necessary
-    if ((iconType == KIcon::Scalable) && (size != img->width()))
+    if (iconType == KIcon::Scalable && size != img->width())
     {
         *img = img->smoothScale(size, size);
     }
-    if ((iconType == KIcon::Threshold) && (size != img->width()))
+    if (iconType == KIcon::Threshold && size != img->width())
     {
 	if ( abs(size-img->width())>iconThreshold )
 	    *img = img->smoothScale(size, size);
     }
-    if ((group >= 0) && d->mpGroups[group].dblPixels)
+    if (group >= 0 && d->mpGroups[group].dblPixels)
     {
 	*img = d->mpEffect.doublePixels(*img);
     }
@@ -832,7 +833,7 @@ QImage *KIconLoader::loadOverlay(const QString &name, int size) const
     KIcon icon = findMatchingIcon(name, size);
     if (!icon.isValid())
     {
-	kdDebug(264) << "Overlay " << name << "not found.\n";
+	kdDebug(264) << "Overlay " << name << "not found." << endl;
 	return 0L;
     }
     image = new QImage(icon.path);
@@ -858,14 +859,14 @@ QString KIconLoader::moviePath(const QString& name, KIcon::Group group, int size
 {
     if (!d->mpGroups) return QString::null;
 
-    if ( ((group < -1) || (group >= KIcon::LastGroup)) && (group != KIcon::User) )
+    if ( (group < -1 || group >= KIcon::LastGroup) && group != KIcon::User )
     {
-	kdDebug(264) << "Illegal icon group: " << group << "\n";
+	kdDebug(264) << "Illegal icon group: " << group << endl;
 	group = KIcon::Desktop;
     }
-    if ((size == 0) && (group < 0))
+    if (size == 0 && group < 0)
     {
-	kdDebug(264) << "Neither size nor group specified!\n";
+	kdDebug(264) << "Neither size nor group specified!" << endl;
 	group = KIcon::Desktop;
     }
 
@@ -900,12 +901,12 @@ QStringList KIconLoader::loadAnimated(const QString& name, KIcon::Group group, i
 
     if ((group < -1) || (group >= KIcon::LastGroup))
     {
-	kdDebug(264) << "Illegal icon group: " << group << "\n";
+	kdDebug(264) << "Illegal icon group: " << group << endl;
 	group = KIcon::Desktop;
     }
     if ((size == 0) && (group < 0))
     {
-	kdDebug(264) << "Neither size nor group specified!\n";
+	kdDebug(264) << "Neither size nor group specified!" << endl;
 	group = KIcon::Desktop;
     }
 
@@ -953,9 +954,9 @@ int KIconLoader::currentSize(KIcon::Group group) const
 {
     if (!d->mpGroups) return -1;
 
-    if ((group < 0) || (group >= KIcon::LastGroup))
+    if (group < 0 || group >= KIcon::LastGroup)
     {
-	kdDebug(264) << "Illegal icon group: " << group << "\n";
+	kdDebug(264) << "Illegal icon group: " << group << endl;
 	return -1;
     }
     return d->mpGroups[group].size;
@@ -978,7 +979,7 @@ QStringList KIconLoader::queryIconsByContext(int group_or_size,
     QStringList result;
     if (group_or_size >= KIcon::LastGroup)
     {
-	kdDebug(264) << "Illegal icon group: " << group_or_size << "\n";
+	kdDebug(264) << "Illegal icon group: " << group_or_size << endl;
 	return result;
     }
     int size;
@@ -1017,7 +1018,7 @@ QStringList KIconLoader::queryIcons(int group_or_size, KIcon::Context context) c
     QStringList result;
     if (group_or_size >= KIcon::LastGroup)
     {
-	kdDebug(264) << "Illegal icon group: " << group_or_size << "\n";
+	kdDebug(264) << "Illegal icon group: " << group_or_size << endl;
 	return result;
     }
     int size;
@@ -1059,9 +1060,9 @@ bool KIconLoader::alphaBlending(KIcon::Group group) const
 {
     if (!d->mpGroups) return -1;
 
-    if ((group < 0) || (group >= KIcon::LastGroup))
+    if (group < 0 || group >= KIcon::LastGroup)
     {
-	kdDebug(264) << "Illegal icon group: " << group << "\n";
+	kdDebug(264) << "Illegal icon group: " << group << endl;
 	return -1;
     }
     return d->mpGroups[group].alphaBlending;
@@ -1089,41 +1090,47 @@ class KIconFactory
     };
 
 
-QIconSet KIconLoader::loadIconSet( const QString& name, KIcon::Group group, int size,
+QIconSet KIconLoader::loadIconSet( const QString& name, KIcon::Group g, int s,
     bool canReturnNull)
 {
     if ( !d->delayedLoading )
-        return loadIconSetNonDelayed( name, group, size, canReturnNull );
+        return loadIconSetNonDelayed( name, g, s, canReturnNull );
+
+    if (g < -1 || g > 6) {
+        kdDebug() << "KIconLoader::loadIconSet " << name << " " << (int)g << " " << s << endl;
+        qDebug("%s", kdBacktrace().latin1());
+        abort();
+    }
 
     if(canReturnNull)
     { // we need to find out if the icon actually exists
-        QPixmap pm = loadIcon( name, group, size, KIcon::DefaultState, NULL, true );
+        QPixmap pm = loadIcon( name, g, s, KIcon::DefaultState, NULL, true );
         if( pm.isNull())
             return QIconSet();
 
         QIconSet ret( pm );
-        ret.installIconFactory( new KIconFactory( name, group, size, this ));
+        ret.installIconFactory( new KIconFactory( name, g, s, this ));
         return ret;
     }
     
     QIconSet ret;
-    ret.installIconFactory( new KIconFactory( name, group, size, this ));
+    ret.installIconFactory( new KIconFactory( name, g, s, this ));
     return ret;
 }
 
 QIconSet KIconLoader::loadIconSetNonDelayed( const QString& name, 
-                                             KIcon::Group group,
-                                             int size, bool canReturnNull )
+                                             KIcon::Group g,
+                                             int s, bool canReturnNull )
 {
     QIconSet iconset;
-    QPixmap tmp = loadIcon(name, group, size, KIcon::ActiveState, NULL, canReturnNull);
+    QPixmap tmp = loadIcon(name, g, s, KIcon::ActiveState, NULL, canReturnNull);
     iconset.setPixmap( tmp, QIconSet::Small, QIconSet::Active );
     // we don't use QIconSet's resizing anyway
     iconset.setPixmap( tmp, QIconSet::Large, QIconSet::Active );
-    tmp = loadIcon(name, group, size, KIcon::DisabledState, NULL, canReturnNull);
+    tmp = loadIcon(name, g, s, KIcon::DisabledState, NULL, canReturnNull);
     iconset.setPixmap( tmp, QIconSet::Small, QIconSet::Disabled );
     iconset.setPixmap( tmp, QIconSet::Large, QIconSet::Disabled );
-    tmp = loadIcon(name, group, size, KIcon::DefaultState, NULL, canReturnNull);
+    tmp = loadIcon(name, g, s, KIcon::DefaultState, NULL, canReturnNull);
     iconset.setPixmap( tmp, QIconSet::Small, QIconSet::Normal );
     iconset.setPixmap( tmp, QIconSet::Large, QIconSet::Normal );
     return iconset;
@@ -1147,7 +1154,7 @@ QPixmap* KIconFactory::createPixmap( const QIconSet&, QIconSet::Size, QIconSet::
     { // active and normal icon are usually the same
 	if( loader->iconEffect()->fingerprint(group, KIcon::ActiveState )
             == loader->iconEffect()->fingerprint(group, KIcon::DefaultState ))
-            return NULL; // so let QIconSet simply duplicate it
+            return 0; // so let QIconSet simply duplicate it
     }
     // ignore passed size
     // ignore passed state (i.e. on/off)
@@ -1261,7 +1268,7 @@ QPixmap KIconLoader::unknown()
     QString path = KGlobal::iconLoader()->iconPath("unknown", KIcon::Small, true);
     if (path.isEmpty())
     {
-	kdDebug(264) << "Warning: Cannot find \"unknown\" icon.\n";
+	kdDebug(264) << "Warning: Cannot find \"unknown\" icon." << endl;
 	pix.resize(32,32);
     } else
     {
