@@ -807,12 +807,12 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     l = new QLabel(i18n("Type:"), d->m_frame );
 
     grid->addWidget(l, curRow, 0);
-    
+
     QHBox *box = new QHBox(d->m_frame);
     l = new QLabel(mimeComment, box );
 
     QPushButton *button = new QPushButton(box);
-    
+
     QIconSet iconSet = SmallIconSet(QString::fromLatin1("configure"));
     QPixmap pixMap = iconSet.pixmap( QIconSet::Small, QIconSet::Normal );
     button->setIconSet( iconSet );
@@ -2504,6 +2504,8 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
      KMountPoint *mp = *it;
      QString mountPoint = mp->mountPoint();
      QString device = mp->mountedFrom();
+     kdDebug()<<"mountPoint :"<<mountPoint<<" device :"<<device<<" mp->mountType() :"<<mp->mountType()<<endl;
+
      if (device.startsWith("/") && (mountPoint != "-") &&
          (mountPoint != "none") && !mountPoint.isEmpty())
      {
@@ -2796,6 +2798,8 @@ void KDesktopPropsPlugin::slotAddFiletype()
 
      connect(mw->listView, SIGNAL(selectionChanged()),
              this, SLOT(slotSelectMimetype()));
+     connect(mw->listView, SIGNAL(doubleClicked( QListViewItem *, const QPoint &, int )),
+             &dlg, SLOT( slotOk()));
 
      QMap<QString,QListViewItem*> majorMap;
      QListViewItem *majorGroup;
