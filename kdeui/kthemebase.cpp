@@ -469,7 +469,7 @@ KPixmap* KThemeBase::gradient(int w, int h, WidgetType widget)
                 pixmaps[widget] = new KPixmap;
                 pixmaps[widget]->resize(w, h);
                 pixmaps[widget]->gradientFill(*grLowColors[widget],
-                                              *grHighColors[widget], true);
+                                              *grHighColors[widget], KPixmap::Vertical);
             }
         }
     }
@@ -491,12 +491,11 @@ KPixmap* KThemeBase::gradient(int w, int h, WidgetType widget)
                 pixmaps[widget]->resize(w, h);
                 pixmaps[widget]->gradientFill(*grHighColors[widget],
                                               *grLowColors[widget],
-                                              false);
+                                              KPixmap::Horizontal);
             }
         }
     }
     else if(gradients[widget] == GrDiagonal){
-        warning("Diagonal gradients not supported yet!");
         if(!pixmaps[widget] || pixmaps[widget]->width() != w ||
            pixmaps[widget]->height() != h){
             KPixmap *cachePix = cache->pixmap(w, h, widget);
@@ -513,9 +512,9 @@ KPixmap* KThemeBase::gradient(int w, int h, WidgetType widget)
                                   widget);
                 pixmaps[widget] = new KPixmap;
                 pixmaps[widget]->resize(w, h);
-                pixmaps[widget]->gradientFill(*grLowColors[widget],
-                                              *grHighColors[widget],
-                                              false);
+                pixmaps[widget]->gradientFill(*grHighColors[widget],
+                                              *grLowColors[widget],
+                                              KPixmap::Diagonal);
             }
         }
     }

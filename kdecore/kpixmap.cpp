@@ -29,6 +29,7 @@
 
 #include <kapp.h>
 #include <dither.h>
+#include <stdlib.h>
 
 #include "kpixmap.h"
 
@@ -187,10 +188,166 @@ static bool kdither_32_to_8( const QImage *src, QImage *dst )
     return true;
 }
 
+void KPixmap::gradientFill(QColor ca, QColor cb, GradientMode direction,
+                           int ncols)
+{
+    QPixmap pmCrop;
+    QColor cRow;
+    int ySize;
+    int rca, gca, bca;
+    int rDiff, gDiff, bDiff;
+    float rat;
+    uint *p;
+    uint rgbRow;
+
+    rca = ca.red();
+    gca = ca.green();
+    bca = ca.blue();
+    rDiff = cb.red() - ca.red();
+    gDiff = cb.green() - ca.green();
+    bDiff = cb.blue() - ca.blue();
+
+    if(direction == Horizontal || direction == Vertical){
+        if( direction == Vertical )
+            ySize = height();
+        else
+            ySize = width();
+
+        pmCrop.resize( 30, ySize );
+        QImage image( 30, ySize, 32 );
+
+        for ( int y = ySize - 1; y >= 0; y-- ) {
+            p = (uint *) image.scanLine( ySize - y - 1 );
+            rat = 1.0 * y / ySize;
+
+            cRow.setRgb( rca + (int) ( rDiff * rat ),
+                         gca + (int) ( gDiff * rat ),
+                         bca + (int) ( bDiff * rat ) );
+
+            rgbRow = cRow.rgb();
+
+            for( int x = 0; x < 30; x++ ) {
+                *p = rgbRow;
+                p++;
+            }
+        }
+
+        if ( depth() <= 16 ) {
+
+            if( depth() == 16 ) ncols = 32;
+            if ( ncols < 2 || ncols > 256 ) ncols = 3;
+
+            QColor *dPal = new QColor[ncols];
+            for ( int i=0; i<ncols; i++) {
+                dPal[i].setRgb ( rca + rDiff * i / ( ncols - 1 ),
+                                 gca + gDiff * i / ( ncols - 1 ),
+                                 bca + bDiff * i / ( ncols - 1 ) );
+            }
+
+            kFSDither dither( dPal, ncols );
+            QImage dImage = dither.dither( image );
+            pmCrop.convertFromImage( dImage );
+
+            delete [] dPal;
+
+        } else
+            pmCrop.convertFromImage( image );
+
+        // Copy the cropped pixmap into the KPixmap.
+        // Extract only a central column from the cropped pixmap
+        // to avoid edge effects.
+
+        int s;
+        int sSize = 20;
+        int sOffset = 5;
+
+        if( direction == Vertical )
+            s = width() / sSize + 1;
+        else
+            s = height() / sSize + 1;
+
+        QPainter paint;
+        paint.begin( this );
+
+        if ( direction == Vertical )
+            for( int i=0; i<s; i++ )
+                paint.drawPixmap( sSize*i, 0, pmCrop, sOffset, 0 , sSize, ySize );
+        else {
+            QWMatrix matrix;
+            matrix.translate( (float) width() - 1.0, 0.0 );
+            matrix.rotate( 90.0 );
+            paint.setWorldMatrix( matrix );
+            for( int i=0; i<s; i++)
+                paint.drawPixmap( sSize*i, 0, pmCrop, sOffset, 0 , sSize, ySize );
+        }
+        paint.end();
+    }
+    else{ // diagonal gradient
+        QImage image(width(), height(), 32);
+        int totColors = width()+height();
+        int rc, gc, bc ;
+        float rInc, gInc, bInc;
+
+        rInc = (float)rDiff/totColors;
+        gInc = (float)gDiff/totColors;
+        bInc = (float)bDiff/totColors;
+        
+        rc = rca;
+        gc = gca;
+        bc = bca;
+        int x, y, offset, startPos;
+        unsigned int *scanline;
+
+        for(startPos=0, offset=0,  y=0; y < height(); ++y, ++startPos){
+            scanline = (unsigned int *)image.scanLine(y);
+            offset = startPos;
+            rc = rca;
+            gc = gca;
+            bc = bca;
+            for(x=0; x < width(); ++x, ++offset){
+                rc = (int)(rca + rInc*offset);
+                gc = (int)(gca + gInc*offset);
+                bc = (int)(bca + bInc*offset);
+                scanline[x] = qRgb(rc, gc, bc);
+            }
+        }
+        if(depth() <= 16 ) {
+            if( depth() == 16 )
+                ncols = 32;
+            if ( ncols < 2 || ncols > 256 )
+                ncols = 3;
+            QColor *dPal = new QColor[ncols];
+            for (int i=0; i<ncols; i++) {
+                dPal[i].setRgb ( rca + rDiff * i / ( ncols - 1 ),
+                                 gca + gDiff * i / ( ncols - 1 ),
+                                 bca + bDiff * i / ( ncols - 1 ) );
+            }
+            kFSDither dither(dPal, ncols);
+            image = dither.dither(image);
+            convertFromImage(image);
+            delete [] dPal;
+        }
+        else
+            convertFromImage(image);
+    }
+}
+
+void KPixmap::gradientFill(QColor ca, QColor cb, bool upDown, int ncols)
+{
+    warning("KPixmap: gradientFill(QColor, QColor, bool, int) is obselete");
+    warning("KPixmap: use gradientFill(QColor, QColor, enum GradientMode, int)");
+    if(upDown)
+        gradientFill(ca, cb, Vertical, ncols);
+    else
+        gradientFill(ca, cb, Horizontal, ncols);
+}
+
+/*
+
 void KPixmap::gradientFill( QColor ca, QColor cb, bool upDown, int ncols )
 {				
-	QPixmap pmCrop;
-	QColor cRow;
+    QPixmap pmCrop;
+    QColor cRow;
     int ySize;
     int rca, gca, bca;
     int rDiff, gDiff, bDiff;
@@ -280,7 +437,8 @@ void KPixmap::gradientFill( QColor ca, QColor cb, bool upDown, int ncols )
 	}
 	
 	paint.end();
-}
+        }
+*/
 
 void KPixmap::patternFill( QColor ca, QColor cb, uint pattern[8] )
 {

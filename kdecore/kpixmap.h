@@ -53,7 +53,8 @@ const int LowOnly	= 0x00000300;
 class KPixmap : public QPixmap
 {
 public:
-	enum ColorMode { Auto, Color, Mono, LowColor, WebColor };
+        enum ColorMode { Auto, Color, Mono, LowColor, WebColor };
+        enum GradientMode { Horizontal, Vertical, Diagonal };
 
 	/**
 	 * Creates a null pixmap
@@ -86,7 +87,21 @@ public:
 	 * longer it takes to make.
 	 */
 	void gradientFill( QColor ca, QColor cb, bool upDown = true, 
-			int ncols = 3 );
+                           int ncols = 3 );
+
+        /**
+         * Fills the pixmap with a gradient running from color ca to
+         * color cb in the specified direction.
+         *
+         * By default, the blend will use 3 colors on 8 bpp displays,
+	 * 32 colors on 16 bpp displays and unlimited colors at higher
+	 * dislay depths. For 8bpp displays ncols specifies an alternative
+	 * number of colors to use. The greater the number of colors
+	 * allocated the better the appearance of the gradient but the
+	 * longer it takes to make.
+         */
+        void gradientFill(QColor ca, QColor cb, GradientMode direction,
+                          int ncols = 3);
 
 	/**
 	 * Fills the pixmap with a two color pattern, specified by the
