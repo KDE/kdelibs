@@ -318,13 +318,15 @@ void HTMLDocumentImpl::close()
             DOM::HTMLDocumentImpl* parentDoc = static_cast<HTMLDocumentImpl*>(elt->getDocument());
             if ( (parentDoc->domain().isNull() ||
                     parentDoc->domain() == domain()) ) {
+                //kdDebug() << "dispatching LOAD_EVENT on element " << elt << " " << elt->tagName() << endl;
                 elt->dispatchWindowEvent(EventImpl::LOAD_EVENT, false, false);
+            } else {
+                kdWarning(6010) << "Load event: access denied to [i]frame " << domain() << " from " << parentDoc->domain() << endl;
             }
-        } else {
-            // normal case (body, frameset)
-            //kdDebug() << "dispatching LOAD_EVENT on document " << getDocument() << " " << (view()?view()->part()->name():0) << endl;
-            getDocument()->dispatchWindowEvent(EventImpl::LOAD_EVENT, false, false);
         }
+
+        //kdDebug() << "dispatching LOAD_EVENT on document " << getDocument() << " " << (view()?view()->part()->name():0) << endl;
+        getDocument()->dispatchWindowEvent(EventImpl::LOAD_EVENT, false, false);
 
         // don't update rendering if we're going to redirect anyway
         if ( view() && ( view()->part()->d->m_redirectURL.isNull() ||
