@@ -735,6 +735,8 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
   d->m_view->resizeContents( 0, 0 );
   connect(d->m_doc,SIGNAL(finishedParsing()),this,SLOT(slotFinishedParsing()));
 
+  emit d->m_extension->enableAction( "print", true );
+  
   d->m_bParsing = true;
 }
 
@@ -2536,7 +2538,10 @@ void KHTMLPart::khtmlDrawContentsEvent( khtml::DrawContentsEvent * )
 void KHTMLPart::guiActivateEvent( KParts::GUIActivateEvent *event )
 {
   if ( event->activated() )
+  {
     emitSelectionChanged();
+    emit d->m_extension->enableAction( "print", d->m_doc != 0 );
+  }
 }
 
 void KHTMLPart::slotFind()
