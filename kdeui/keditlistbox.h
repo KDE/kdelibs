@@ -70,15 +70,11 @@ class KEditListBox : public QGroupBox
 		   int buttons = All );
       virtual ~KEditListBox();
 
-      //do we need this ?
-      //do we need such functions for the other member widgets ?
       /**
        * Return a pointer to the embedded QListBox.
        */
-      QListBox* listBox()     {return m_listBox;}
+      QListBox* listBox() const     {return m_listBox;}
 
-      //do we need these proxy functions ? more of them ?
-      //or only via the listBox() function ?
       /**
        * See @ref QListBox::count()
        */
@@ -120,8 +116,12 @@ class KEditListBox : public QGroupBox
        */
       QString currentText() const  {return m_listBox->currentText();}
 
+      /**
+       * @returns a stringlist of all items in the listbox
+       */
+      QStringList items() const;
+
    signals:
-      //do we need more signals ?
       void changed();
 
    protected slots:
@@ -135,7 +135,7 @@ class KEditListBox : public QGroupBox
 
    protected:
       //should they be private ?
-      //I don't think so, at least not the listbo
+      //I don't think so, at least not the listbox
       QListBox *m_listBox;
       QPushButton *servUpButton, *servDownButton;
       QPushButton *servNewButton, *servRemoveButton;

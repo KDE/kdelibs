@@ -248,7 +248,7 @@ void KEditListBox::enableMoveButtons(int index)
 {
     bool moveEnabled = servUpButton && servDownButton;
 
-   if (moveEnabled ) 
+   if (moveEnabled )
    {
        if (m_listBox->count() <= 1)
        {
@@ -271,7 +271,7 @@ void KEditListBox::enableMoveButtons(int index)
 	   servDownButton->setEnabled(true);
        }
    }
-   
+
    if ( servRemoveButton )
       servRemoveButton->setEnabled(true);
 }
@@ -301,6 +301,15 @@ void KEditListBox::insertStrList(const QStrList& list, int index)
 void KEditListBox::insertStrList(const char ** list, int numStrings, int index)
 {
    m_listBox->insertStrList(list,numStrings,index);
+}
+
+QStringList KEditListBox::items() const
+{
+    QStringList list;
+    for ( uint i = 0; i < m_listBox->count(); i++ )
+	list.append( m_listBox->text( i ));
+
+    return list;
 }
 
 #include "keditlistbox.moc"
