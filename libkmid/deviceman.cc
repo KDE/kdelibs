@@ -127,13 +127,18 @@ DeviceManager::DeviceManager(int def)
   convertrate=10;
   seqfd=-1;
   timerstarted=0;
+  n_midi=0;
+  n_synths=0;
+  n_total=0;
+  midiinfo=0L;
+  synthinfo=0L;
   for (int i=0;i<16;i++) chn2dev[i]=default_dev;
 }
 
 DeviceManager::~DeviceManager(void)
 {
   closeDev();
-  if (device!=0L)
+  if (device)
   {
     for (int i=0;i<n_midi;i++)
       delete device[i];
@@ -183,15 +188,17 @@ int DeviceManager::initManager(void)
   if (!alsa)  // We are using OSS
   {
 #ifdef HAVE_OSS_SUPPORT
+    n_synths=0;
+    n_midi=0;
+    n_total=0;
+
     seqfd = open("/dev/sequencer", O_WRONLY | O_NONBLOCK, 0);
     if (seqfd==-1)
     {
       printf("ERROR: Couldn't open /dev/sequencer to get some information\n");
       _ok=0;
       return -1;
-    };
-    n_synths=0;
-    n_midi=0;
+    }
     ioctl(seqfd,SNDCTL_SEQ_NRSYNTHS,&n_synths);
     ioctl(seqfd,SNDCTL_SEQ_NRMIDIS,&n_midi);
     n_total=n_midi+n_synths;
@@ -380,8 +387,7 @@ void DeviceManager::closeDev(void)
 {
   if (alsa)
   {
-   if (device!=NULL) for (int i=0;i<n_total;i++)
-       device[i]->closeDev();
+   if (device) for (int i=0;i<n_total;i++) device[i]->closeDev();
    return;
   }
 
