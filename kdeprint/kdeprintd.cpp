@@ -27,11 +27,13 @@
 #include <kdebug.h>
 #include <dcopclient.h>
 #include <kio/passdlg.h>
+#include <kio/authinfo.h>
 #include <qlabel.h>
 #include <kpushbutton.h>
 #include <kiconloader.h>
 #include <kwin.h>
 #include <qlayout.h>
+#include <qtimer.h>
 
 #include <unistd.h>
 
@@ -104,6 +106,7 @@ KDEPrintd::KDEPrintd(const QCString& obj)
 	m_processpool.setAutoDelete(true);
 	m_tempfiles.setAutoDelete(true);
 	m_windows.setAutoDelete(false);
+	m_requestsPending.setAutoDelete( true );
 }
 
 KDEPrintd::~KDEPrintd()
@@ -230,6 +233,78 @@ void KDEPrintd::slotClosed()
 	{
 		m_windows.remove(w->pid());
 	}
+}
+
+//******************************************************************************************
+
+class KDEPrintd::Request
+{
+public:
+	DCOPClientTransaction *transaction;
+	QString user;
+	QString uri;
+	int seqNbr;
+};
+
+QString KDEPrintd::requestPassword( const QString& user, const QString& host, int port, int seqNbr )
+{
+	Request *req = new Request;
+	req->user = user;
+	req->uri = "print://" + user + "@" + host + ":" + QString::number(port);
+	req->seqNbr = seqNbr;
+	req->transaction = callingDcopClient()->beginTransaction();
+	m_requestsPending.append( req );
+	if ( m_requestsPending.count() == 1 )
+		QTimer::singleShot( 0, this, SLOT( processRequest() ) );
+	return "::";
+}
+
+void KDEPrintd::processRequest()
+{
+	if ( m_requestsPending.count() == 0 )
+		return;
+
+	Request *req = m_requestsPending.first();
+	KIO::AuthInfo info;
+	QByteArray params, reply;
+	QCString replyType;
+	QString authString( "::" );
+
+	info.username = req->user;
+	info.keepPassword = true;
+	info.url = req->uri;
+	info.comment = i18n( "Printing system" );
+
+	QDataStream input( params, IO_WriteOnly );
+	input << info << i18n( "Authentification failed (user name=%1)" ).arg( info.username ) << 0 << req->seqNbr;
+	if ( callingDcopClient()->call( "kded", "kpasswdserver", "queryAuthInfo(KIO::AuthInfo,QString,long int,long int)",
+				params, replyType, reply ) )
+	{
+		if ( replyType == "KIO::AuthInfo" )
+		{
+			QDataStream output( reply, IO_ReadOnly );
+			KIO::AuthInfo result;
+			int seqNbr;
+			output >> result >> seqNbr;
+
+			if ( result.isModified() )
+				authString = result.username + ":" + result.password + ":" + QString::number( seqNbr );
+		}
+		else
+			kdWarning( 500 ) << "DCOP returned type error, expected KIO::AuthInfo, received " << replyType << endl;
+	}
+	else
+		kdWarning( 500 ) << "Cannot communicate with kded_kpasswdserver" << endl;
+
+	QByteArray outputData;
+	QDataStream output( outputData, IO_WriteOnly );
+	output << authString;
+	replyType = "QString";
+	callingDcopClient()->endTransaction( req->transaction, replyType, outputData );
+
+	m_requestsPending.remove( ( unsigned int )0 );
+	if ( m_requestsPending.count() > 0 )
+		QTimer::singleShot( 0, this, SLOT( processRequest() ) );
 }
 
 #include "kdeprintd.moc"

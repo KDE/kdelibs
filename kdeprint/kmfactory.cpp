@@ -44,6 +44,7 @@
 #include <kstaticdeleter.h>
 #include <kapplication.h>
 #include <dcopclient.h>
+#include <dcopref.h>
 
 #include <unistd.h>
 
@@ -405,6 +406,32 @@ void KMFactory::saveConfig()
 	// normally, the self application should also receive the signal,
 	// anyway the config object has been updated "locally", so ne real
 	// need to reload the config file.
+}
+
+QPair<QString,QString> KMFactory::requestPassword( int& seqNbr, const QString& user, const QString& host, int port )
+{
+	DCOPRef kdeprintd( "kded", "kdeprintd" );
+	/**
+	 * We do not use an internal event loop for 2 potential problems:
+	 *  - the MessageWindow modality (appearing afterwards, it pops up on top
+	 *    of the password dialog)
+	 *  - KMTimer should be stopped, but it's unavailable from this object
+	 */
+	DCOPReply reply = kdeprintd.callExt( "requestPassword", DCOPRef::NoEventLoop, -1, user, host, port, seqNbr );
+	if ( reply.isValid() )
+	{
+		QString replyString = reply;
+		if ( replyString != "::" )
+		{
+			QStringList l = QStringList::split( ':', replyString, true );
+			if ( l.count() == 3 )
+			{
+				seqNbr = l[ 2 ].toInt();
+				return QPair<QString,QString>( l[ 0 ], l[ 1 ] );
+			}
+		}
+	}
+	return QPair<QString,QString>( QString::null, QString::null );
 }
 
 #include "kmfactory.moc"

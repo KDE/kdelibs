@@ -27,6 +27,7 @@
 #include <qstringlist.h>
 #include <qptrlist.h>
 #include <qobject.h>
+#include <qpair.h>
 #include <dcopobject.h>
 
 #include <sys/types.h>
@@ -91,6 +92,8 @@ public:
 		int	pageSize;
 	};
 	Settings* settings() const	{ return m_settings; }
+
+	QPair<QString,QString> requestPassword( int& seqNbr, const QString& user, const QString& host = "localhost", int port = 0 );
 
 k_dcop:
 	ASYNC slot_pluginChanged(pid_t);

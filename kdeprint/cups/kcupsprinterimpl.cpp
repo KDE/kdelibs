@@ -74,8 +74,8 @@ bool KCupsPrinterImpl::setupCommand(QString& cmd, KPrinter *printer)
 	if (!CupsInfos::self()->login().isEmpty())
 	{
 		QString	userstr(CupsInfos::self()->login());
-		if (!CupsInfos::self()->password().isEmpty())
-			userstr += (":" + CupsInfos::self()->password());
+		//if (!CupsInfos::self()->password().isEmpty())
+		//	userstr += (":" + CupsInfos::self()->password());
 		cmd.append(" -U ").append(quote(userstr));
 	}
 	mapToCupsOptions(printer->options(),cmd);

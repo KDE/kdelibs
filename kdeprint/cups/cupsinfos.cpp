@@ -25,8 +25,12 @@
 #include "messagewindow.h"
 
 #include <kio/passdlg.h>
+#include <kio/authinfo.h>
 #include <klocale.h>
 #include <kconfig.h>
+#include <kapplication.h>
+#include <dcopclient.h>
+#include <kdebug.h>
 
 #include <cups/cups.h>
 #include <cups/ipp.h>
@@ -91,27 +95,13 @@ void CupsInfos::setPassword(const QString& s)
 
 const char* CupsInfos::getPasswordCB()
 {
-	if (count_ == 0 && !password_.isEmpty()) return password_.latin1();
-	else
-	{
-		// to avoid focus/modality problem, message windows must be removed
-		MessageWindow::removeAll();
+	QPair<QString,QString> pwd = KMFactory::self()->requestPassword( count_, login_, host_, port_ );
 
-		QString	msg = i18n("<p>The access to the requested resource on the CUPS server running on <b>%1</b> (port <b>%2</b>) requires a password.</p>").arg(host_).arg(port_);
-		bool ok(false);;
-		KIO::PasswordDialog	dlg(msg,login_);
-		count_++;
-		KMTimer::self()->hold();
-		if (dlg.exec())
-		{
-			setLogin(dlg.username());
-			setPassword(dlg.password());
-			ok = true;
-		}
-		KMTimer::self()->release();
-		return (ok ? password_.latin1() : NULL);
-	}
-	return NULL;
+	if ( pwd.first.isEmpty() && pwd.second.isEmpty() )
+		return NULL;
+	setLogin( pwd.first );
+	setPassword( pwd.second );
+	return pwd.second.latin1();
 }
 
 void CupsInfos::load()

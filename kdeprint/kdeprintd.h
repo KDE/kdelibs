@@ -44,10 +44,12 @@ k_dcop:
 	int print(const QString& cmd, const QStringList& files, bool remove);
 	QString openPassDlg(const QString& user);
 	ASYNC statusMessage(const QString& msg, int pid = -1, const QString& appName = QString::null);
+	QString requestPassword( const QString& user, const QString& host, int port, int seqNbr );
 
 protected slots:
 	void slotProcessExited(KProcess*);
 	void slotClosed();
+	void processRequest();
 
 protected:
 	void cleanTempFiles();
@@ -55,9 +57,11 @@ protected:
 	bool checkFiles(QString& cmd, const QStringList& files);
 
 private:
+	class Request;
 	QPtrList<KPrintProcess>	m_processpool;
 	QPtrDict<QStringList>	m_tempfiles;
 	QIntDict<StatusWindow>	m_windows;
+	QPtrList<Request>       m_requestsPending;
 };
 
 #endif

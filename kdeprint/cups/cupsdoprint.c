@@ -83,38 +83,49 @@ static char * shell_quote(const char *s)
 
 const char* getPasswordCB(const char* prompt)
 {
-	if (pwd_asked != 0 || passwd[0] == 0)
-	{
-		int	len = 0;
-		char	buf[256], *c;
-		char*   _cupsUser = shell_quote(cupsUser());
-		FILE	*output;
+	char buf[ 256 ] = {0}, *c;
+	char *_user = shell_quote( cupsUser() ), *_passwd = NULL;
+	FILE *output;
 
-                
-		snprintf(buf, sizeof(buf)-1, "dcop kded kdeprintd openPassDlg %s", _cupsUser);
-		buf[sizeof(buf)-1] = '\0';
-		free (_cupsUser);
-		output = popen(buf, "r");
-		while (fgets(buf, sizeof(buf)-1, output))
+	snprintf( buf, sizeof( buf )-1, "dcop kded kdeprintd requestPassword %s %s %d %d",
+			_user,
+			cupsServer(),
+			ippPort(),
+			pwd_asked );
+	free( _user );
+	_user = NULL;
+	output = popen( buf, "r" );
+	if ( output != NULL )
+	{
+		while ( fgets( buf, sizeof( buf )-1, output ) )
 		{
-			len = strlen(buf);
-			while (len > 0 && isspace(buf[len-1]))
-				buf[--len] = 0;
-			pwd_asked = 1;
-			if (len == 0 || strcmp(buf, "<QString>") == 0)
-				return NULL;
-			passwd[BUFSIZE2-1] = '\0';
-			if ((c=strchr(buf, ':')) != NULL)
+			_user = _passwd = NULL;
+			if ( strcmp( buf, "::" ) != 0 )
 			{
-				*c = 0;
-				cupsSetUser(buf);
-				strncpy(passwd, ++c, BUFSIZE2-1);
+				c = strchr( buf, ':' );
+				if ( c != NULL )
+				{
+					*c = '\0';
+					_user = buf;
+					_passwd = ++c;
+					c = strchr( c, ':' );
+					if ( c != NULL )
+					{
+						*c = '\0';
+						pwd_asked = atoi( ++c );
+						cupsSetUser( _user );
+					}
+					else
+						_passwd = NULL;
+				}
 			}
-			else
-				strncpy(passwd, buf, BUFSIZE2-1);
 		}
+		pclose( output );
 	}
-	return passwd;
+	else
+		return NULL;
+
+	return _passwd;
 }
 
 /* main function */
