@@ -168,7 +168,7 @@ KCModule * KCModuleProxy::realModule() const
 		d->topLayout = new QVBoxLayout( that, 0, 0, "topLayout" );
 
 		d->view = new QScrollView( that, "view" );
-		d->view->setResizePolicy(QScrollView::AutoOneFit);
+		d->view->setResizePolicy(QScrollView::Manual);
 		d->view->setFrameStyle( QScrollView::NoFrame );
 		d->topLayout->addWidget( d->view );
 
@@ -205,6 +205,9 @@ KCModule * KCModuleProxy::realModule() const
 		d->viewBoxLayout->addWidget( d->kcm );
 
 		d->view->addChild( d->kcm );
+		d->kcm->resize(d->kcm->minimumSizeHint());
+		d->view->resize(d->kcm->size());
+		const_cast<KCModuleProxy*>(this)->setMinimumSize(d->view->size());
 
 		if ( !d->rootInfo && /* If it's already done */
 				moduleInfo().needsRootPrivileges() /* root, anyone? */ && 
