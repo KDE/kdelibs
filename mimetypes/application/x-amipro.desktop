@@ -1,0 +1,16 @@
+[Desktop Entry]
+Encoding=UTF-8
+Icon=wordprocessing
+Type=MimeType
+MimeType=application/x-amipro
+Patterns=*.sam;*.SAM;
+Comment=Lotus AmiPro document
+Comment[es]=Documento AmiPro de Lotus
+Comment[he]=מסמך Lotus AmiPro
+Comment[hu]=Lotus AmiPro dokumentum
+Comment[it]=Documento Lotus AmiPro
+Comment[lt]=Lotus AmiPro dokumentas
+Comment[nn]=Lotus AmiPro-dokument
+Comment[pt]=Documento do Lotus AmiPro
+Comment[pt_BR]=Documento do Lotus AmiPro
+Comment[sk]=Lotus AmiPro dokument
