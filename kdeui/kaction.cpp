@@ -51,6 +51,15 @@ static void get_fonts( QStringList &lst )
     lst = fontDataBase->families();
 }
 
+static QValueList<int> get_standard_font_sizes()
+{
+    if ( !fontDataBase ) {
+	fontDataBase = new QFontDatabase();
+	qAddPostRoutine( cleanupFontDatabase );
+    }
+    return fontDataBase->standardSizes();
+}
+
 int KAction::getToolButtonID()
 {
     static int toolbutton_no = -2;
@@ -1732,19 +1741,21 @@ KFontSizeAction::KFontSizeAction( QObject* parent, const char* name )
 
 KFontSizeAction::~KFontSizeAction()
 {
-  delete d; d = 0;
+    delete d; 
+    d = 0;
 }
 
 void KFontSizeAction::init()
 {
-  d = new KFontSizeActionPrivate;
+    d = new KFontSizeActionPrivate;
 
-  setEditable( TRUE );
-  QStringList lst;
-  for ( unsigned int i = 0; i < 100; ++i )
-    lst.append( QString().setNum( i + 1 ) );
-
-  setItems( lst );
+    setEditable( TRUE );
+    QValueList<int> sizes = get_standard_font_sizes();
+    QStringList lst;
+    for ( QValueList<int>::Iterator it = sizes.begin(); it != sizes.end(); ++it ) 
+	lst.append( QString::number( *it ) );
+    
+    setItems( lst );
 }
 
 void KFontSizeAction::setFontSize( int size )
