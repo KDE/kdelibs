@@ -1878,6 +1878,8 @@ KURL::setPass( const QString& _txt )
 void
 KURL::setHost( const QString& _txt )
 {
+  if ( m_iUriMode == Auto )
+    m_iUriMode = URL;
   switch ( m_iUriMode )
   {
   case URL:
