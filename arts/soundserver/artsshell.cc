@@ -1,7 +1,7 @@
 /*
  
-        Copyright (C) 2000 Jeff Tranter
-                           tranter@kde.org
+        Copyright (C) 2000-2001 Jeff Tranter
+                                tranter@kde.org
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -69,6 +69,19 @@ When running artsd over a network connection a large buffer size is
 desirable to avoid dropouts. This command allows increasing the buffer
 size by a factor of <n> from the default.
 
+stereoeffect insert [top|bottom] <module name>
+stereoefect remove <id>
+stereoeffect list
+
+Inserts or removes a stereo effect into the stereo effect stack. The
+list option lists all stereo effects. When inserting, returns an
+identifier that can be used for removing it. It can be installed at
+the top or the bottom (the default).
+
+e.g. stereoeffect insert bottom Arts::Synth_FREEVERB
+     stereoeffect remove 1
+     stereoeffect list
+
 midi (future)
 
 When the MIDI manager functionality is all implemented this would be a
@@ -114,7 +127,10 @@ Commands:\n\
   status              - display sound server status information\n\
   terminate           - terminate sound server (might confuse/kill apps using it)\n\
   autosuspend <secs>  - set autosuspend time\n\
-  networkbuffers <n>  - increase network buffers by a factor of <n>\
+  networkbuffers <n>  - increase network buffers by a factor of <n>\n\
+  stereoeffect insert [top|bottom] <name>  - insert stereo effect\n\
+  stereoefect remove <id>  - remove stereo effect\n\
+  stereoeffect list        - list available effects\
 " << endl;
 	exit(0);
 }
@@ -260,6 +276,7 @@ void terminate(Arts::SoundServer server)
 	}
 }
 
+
 // set autosuspend time
 void autosuspend(Arts::SoundServerV2 server, int secs)
 {
@@ -271,6 +288,104 @@ void networkBuffers(Arts::SoundServerV2 server, int n)
 {
 	if (n > 0)
 		server.bufferSizeMultiplier(n);
+}
+
+
+// stereoeffect command
+void stereoEffect(Arts::SoundServerV2 server, int argc, char **argv)
+{
+	// stereoeffect list
+	if (!strcmp(argv[0], "list"))
+	{
+		Arts::TraderQuery query;
+		query.supports("Interface", "Arts::StereoEffect");
+		vector<Arts::TraderOffer> *offers = query.query();
+		vector<Arts::TraderOffer>::iterator i;
+		for (i = offers->begin(); i != offers->end(); i++)
+			cout << i->interfaceName() << endl;
+		delete offers;
+		return;
+	}
+
+	// stereoeffect insert [top|bottom] <module name>
+	if (!strcmp(argv[0], "insert"))
+	{
+		if (argc < 2 || argc > 3)
+		{
+			cerr << "invalid arguments" << endl;
+			return;
+		}
+
+		bool bottom = true;
+		if (argc == 3)
+		{
+			if (!strcmp(argv[1], "bottom"))
+				bottom = true;
+			else if (!strcmp(argv[1], "top"))
+				bottom = false;
+			else
+			{
+				cerr << "invalid arguments" << endl;
+				return;
+			}
+		}
+
+		char *name;
+		if (argc == 2)
+			name = argv[1];
+		else
+			name = argv[2];
+
+		// first check if the interface exists using the Trader
+		Arts::TraderQuery query;
+		query.supports("Interface", name);
+		vector<Arts::TraderOffer> *offers = query.query();
+		if (offers->empty())
+		{
+			cerr << "no such interface: " << name << endl;
+			delete offers;
+			return;
+		}
+		delete offers;
+
+		Arts::Object obj = (server.createObject(name));
+		if (obj.isNull())
+		{
+			cerr << "unable to create: " << name << endl;
+			return;
+		}
+		Arts::StereoEffect effect = Arts::DynamicCast(obj);
+		if (effect.isNull())
+		{
+			cerr << "unable to load effect: " << name << endl;
+			return;
+		}
+		effect.start();
+		Arts::StereoEffectStack effectstack = server.outstack();
+		long id;
+		if (bottom)
+			id = effectstack.insertBottom(effect, name);
+		else
+			id = effectstack.insertTop(effect, name);
+		cout << id << endl;
+		return;
+	}
+
+	// stereoeffect remove <id>
+	if (!strcmp(argv[0], "remove"))
+	{
+		if (argc != 2)
+		{
+			cerr << "invalid arguments" << endl;
+			return;
+		}
+		Arts::StereoEffectStack effectstack = server.outstack();
+		long id = atoi(argv[1]);
+		effectstack.remove(id);
+		return;
+	}
+
+	cerr << "invalid arguments" << endl;
 }
 
 int main(int argc, char *argv[])
@@ -311,6 +426,11 @@ int main(int argc, char *argv[])
 	if(!strcmp(argv[optind], "networkbuffers") && ((argc - optind) == 2)) {
 		int n = atoi(argv[optind+1]);
 		networkBuffers(server, n);
+		return 0;
+	}
+
+	if(!strcmp(argv[optind], "stereoeffect") && ((argc - optind) >= 2)) {
+		stereoEffect(server, argc-optind-1, &argv[optind+1]);
 		return 0;
 	}
 	
