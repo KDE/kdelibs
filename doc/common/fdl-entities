@@ -1,4 +1,4 @@
-<!-- Entities to fill in slots in FDL -->
+<!-- Entities to fill in slots in docbook version of FDL notice -->
 <!ENTITY % FDLIS "IGNORE">
 <![%FDLIS;[
 <!ENTITY FDLISTitles "LIST THEIR TITLES">
