@@ -1163,20 +1163,25 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 	      if ( end <= pos )
 		  break;
 	      str = str.mid( pos + 1, end - pos - 1 );
+	      str = str.simplifyWhiteSpace();
 	      str += " ";
+	      //qDebug("rect = '%s'", str.latin1() );
+	      
 	      pos = 0;
 	      RectImpl *rect = new RectImpl();
 	      for ( i = 0; i < 4; i++ ) {
-		  int comma;
-		  if ( i < 3 )
-		      comma = str.find( ' ', pos );
-		  else
-		      comma = str.length() - 1;
+		  int space;
+		  space = str.find( ' ', pos );
 		  const QChar *start = str.unicode() + pos;
-		  const QChar *end = str.unicode() + comma;
+		  const QChar *end = str.unicode() + space;
+		  //qDebug("part: from=%d, to=%d", pos, space );
 		  if ( start >= end )
 		      goto cleanup;
-		  CSSPrimitiveValueImpl *length = parseUnit( start, end, LENGTH );
+		  CSSPrimitiveValueImpl *length = 0;
+		  if ( str.find( "auto", pos, FALSE ) == pos ) 
+		      length = new CSSPrimitiveValueImpl(value, CSSPrimitiveValue::CSS_PX);
+		  else
+		      length = parseUnit( start, end, LENGTH );
 		  if ( !length )
 		      goto cleanup;
 		  switch ( i ) {
@@ -1193,7 +1198,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 			  rect->setLeft( length );
 			  break;
 		  }
-		  pos = comma + 1;
+		  pos = space + 1;
 	      }    
 	      parsedValue = new CSSPrimitiveValueImpl( rect );
 	      //qDebug(" passed rectangle parsing");
@@ -2549,9 +2554,7 @@ StyleBaseImpl::parseStyleRule(const QChar *&curP, const QChar *endP)
 CSSRuleImpl *
 StyleBaseImpl::parseRule(const QChar *&curP, const QChar *endP)
 {
-    const char *comment = "<!--";
     const QChar *startP;
-    int count = 0;
 
     curP = parseSpace( curP, endP );
 
