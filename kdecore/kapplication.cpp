@@ -690,6 +690,9 @@ void KApplication::init(bool GUIenabled)
      ::exit(127);
   }
 
+  if( KProcessController::theKProcessController == 0 )
+      (void) new KProcessController();
+  
   QApplication::setDesktopSettingsAware( false );
 
   KApp = this;
@@ -1342,15 +1345,7 @@ KApplication::~KApplication()
   delete s_DCOPClient;
   s_DCOPClient = 0L;
 
-  // Carefully shut down the process controller: It is very likely
-  // that we receive a SIGCHLD while the destructor is running
-  // (since we are in the process of shutting down, an opportunity
-  // at which child process are being killed). So we first mark
-  // the controller deleted (so that the SIGCHLD handler thinks it
-  // is already gone) before we actually delete it.
-  KProcessController* ctrl = KProcessController::theKProcessController;
-  KProcessController::theKProcessController = 0;
-  delete ctrl; // Stephan: "there can be only one" ;)
+  delete KProcessController::theKProcessController;
 
   if ( d->oldIceIOErrorHandler != NULL )
       IceSetIOErrorHandler( d->oldIceIOErrorHandler );

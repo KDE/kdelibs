@@ -44,13 +44,12 @@ template class QPtrList<KProcess>;
 
 KProcessController *KProcessController::theKProcessController = 0;
 
+struct sigaction KProcessController::oldChildHandlerData;
+bool KProcessController::handlerSet = false;
+
 KProcessController::KProcessController()
 {
-  struct sigaction act;
-
-  // initialize theKProcessList
-  processList = new QPtrList<KProcess>();
-  Q_CHECK_PTR(processList);
+  assert( theKProcessController == 0 );
 
   if (0 > pipe(fd))
 	printf(strerror(errno));
@@ -59,7 +58,20 @@ KProcessController::KProcessController()
   notifier->setEnabled(true);
   QObject::connect(notifier, SIGNAL(activated(int)),
 				   this, SLOT(slotDoHousekeeping(int)));
+  connect( &delayedChildrenCleanupTimer, SIGNAL( timeout()),
+      SLOT( delayedChildrenCleanup()));
 
+  theKProcessController = this;
+  
+  setupHandlers();
+}
+
+
+void KProcessController::setupHandlers()
+{
+  if( handlerSet )
+      return;
+  struct sigaction act;
   act.sa_handler=theSigCHLDHandler;
   sigemptyset(&(act.sa_mask));
   sigaddset(&(act.sa_mask), SIGCHLD);
@@ -75,16 +87,49 @@ KProcessController::KProcessController()
   act.sa_flags |= SA_RESTART;
 #endif
 
-  sigaction( SIGCHLD, &act, 0L);
+  sigaction( SIGCHLD, &act, &oldChildHandlerData );
+  
   act.sa_handler=SIG_IGN;
   sigemptyset(&(act.sa_mask));
   sigaddset(&(act.sa_mask), SIGPIPE);
   act.sa_flags = 0;
   sigaction( SIGPIPE, &act, 0L);
+  handlerSet = true;
 }
 
-void KProcessController::theSigCHLDHandler(int )
+void KProcessController::resetHandlers()
 {
+  if( !handlerSet )
+      return;
+  sigaction( SIGCHLD, &oldChildHandlerData, 0 );
+  // there should be no problem with SIGPIPE staying SIG_IGN
+  handlerSet = false;
+}
+
+// block SIGCHLD handler, because it accesses processList
+void KProcessController::addKProcess( KProcess* p )
+{
+  sigset_t newset, oldset;
+  sigemptyset( &newset );
+  sigaddset( &newset, SIGCHLD );
+  sigprocmask( SIG_BLOCK, &newset, &oldset );
+  processList.append( p );
+  sigprocmask( SIG_SETMASK, &oldset, 0 );
+}
+
+void KProcessController::removeKProcess( KProcess* p )
+{
+  sigset_t newset, oldset;
+  sigemptyset( &newset );
+  sigaddset( &newset, SIGCHLD );
+  sigprocmask( SIG_BLOCK, &newset, &oldset );
+  processList.remove( p );
+  sigprocmask( SIG_SETMASK, &oldset, 0 );
+}
+
+void KProcessController::theSigCHLDHandler(int arg)
+{
+    return;
   int status;
   pid_t this_pid;
   int saved_errno;
@@ -93,17 +138,37 @@ void KProcessController::theSigCHLDHandler(int )
   // since waitpid and write change errno, we have to save it and restore it
   // (Richard Stevens, Advanced programming in the Unix Environment)
 
-  // Waba: Check for multiple childs exiting at the same time
-  do
-  {
-    this_pid = waitpid(-1, &status, WNOHANG);
-    // J6t: theKProcessController might be already destroyed
-    if ((this_pid > 0) && (theKProcessController != 0)) {
-      ::write(theKProcessController->fd[1], &this_pid, sizeof(this_pid));
-      ::write(theKProcessController->fd[1], &status, sizeof(status));
-    }
+  bool found = false;
+  if( theKProcessController != 0 ) {
+      // iterating the list doesn't perform any system call
+      for( QValueList<KProcess*>::ConstIterator it = theKProcessController->processList.begin();
+           it != theKProcessController->processList.end();
+           ++it )
+      {
+        if( !(*it)->isRunning())
+            continue;
+        this_pid = waitpid( (*it)->pid(), &status, WNOHANG );
+        if ( this_pid > 0 ) {
+          ::write(theKProcessController->fd[1], &this_pid, sizeof(this_pid));
+          ::write(theKProcessController->fd[1], &status, sizeof(status));
+          found = true;
+        }
+      }
   }
-  while (this_pid > 0);
+  if( !found && oldChildHandlerData.sa_handler != SIG_IGN
+          && oldChildHandlerData.sa_handler != SIG_DFL )
+        oldChildHandlerData.sa_handler( arg ); // call the old handler
+  // handle the rest
+  if( theKProcessController != 0 ) {
+      pid_t dummy_pid = 0; // delayed waitpid()
+      int dummy_status = 0;
+      ::write(theKProcessController->fd[1], &dummy_pid, sizeof(dummy_pid));
+      ::write(theKProcessController->fd[1], &dummy_status, sizeof(dummy_status));
+  } else {
+      int dummy;
+      while( waitpid( -1, &dummy, WNOHANG ) > 0 )
+          ;
+  }
 
   errno = saved_errno;
 }
@@ -112,7 +177,6 @@ void KProcessController::theSigCHLDHandler(int )
 
 void KProcessController::slotDoHousekeeping(int )
 {
-  KProcess *proc;
   int bytes_read = 0;
   pid_t pid;
   int status;
@@ -140,14 +204,17 @@ void KProcessController::slotDoHousekeeping(int )
   }
   pid    = *reinterpret_cast<pid_t *>(buf);
   status = *reinterpret_cast<int *>(buf + sizeof(pid_t));
+  
+  if( pid == 0 ) { // special case, see delayedChildrenCleanup()
+      delayedChildrenCleanupTimer.start( 1000, true );
+      return;
+  }
 
-//   bool found = false;
-
-  proc = processList->first();
-
-  while (0L != proc) {
+  for( QValueList<KProcess*>::ConstIterator it = processList.begin();
+       it != processList.end();
+       ++it ) {
+        KProcess* proc = *it;
 	if (proc->pid() == pid) {
-// 	  found = true;
 	  // process has exited, so do emit the respective events
 	  if (proc->run_mode == KProcess::Block) {
 	    // If the reads are done blocking then set the status in proc
@@ -158,27 +225,45 @@ void KProcessController::slotDoHousekeeping(int )
 	  } else {
 	    proc->processHasExited(status);
 	  }
+        return;
 	}
-	proc = processList->next();
+  }
+}
+
+// this is needed e.g. for popen(), which calls waitpid() checking
+// for its forked child, if we did waitpid() directly in the SIGCHLD
+// handler, popen()'s waitpid() call would fail
+void KProcessController::delayedChildrenCleanup()
+{
+  int status;
+  pid_t pid;
+  while(( pid = waitpid( -1, &status, WNOHANG ) ) > 0 ) {
+      for( QValueList<KProcess*>::ConstIterator it = processList.begin();
+           it != processList.end();
+           ++it )
+      {
+        if( !(*it)->isRunning() || (*it)->pid() != pid )
+            continue;
+        // it's KProcess, handle it
+          ::write(fd[1], &pid, sizeof(pid));
+          ::write(fd[1], &status, sizeof(status));
+        break;
+      }
   }
 }
 
 KProcessController::~KProcessController()
 {
-  struct sigaction act;
-
+  assert( theKProcessController == this );
+  resetHandlers();
+  
   notifier->setEnabled(false);
-
-  // Turn off notification for processes that have exited
-  act.sa_handler=SIG_IGN;
-  sigemptyset(&(act.sa_mask));
-  sigaddset(&(act.sa_mask), SIGCHLD);
-  act.sa_flags = 0;
-  sigaction( SIGCHLD, &act, 0L);
 
   close(fd[0]);
   close(fd[1]);
-  delete processList;
+  
   delete notifier;
+  theKProcessController = 0;
 }
+
 #include "kprocctrl.moc"

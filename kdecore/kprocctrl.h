@@ -28,6 +28,9 @@
 #ifndef __KPROCCTRL_H__
 #define __KPROCCTRL_H__
 
+#include <qvaluelist.h>
+#include <qtimer.h>
+
 #include "kprocess.h"
 
 class KProcessControllerPrivate;
@@ -53,12 +56,6 @@ public:
   ~KProcessController(); 
   //CC: WARNING! Destructor Not virtual (but you don't derive classes from this anyhow...)
 
-  QPtrList<KProcess> *processList;
-
- public slots:
-
- void slotDoHousekeeping(int socket);
-
 public:
  	
   /**
@@ -77,9 +74,38 @@ public:
    */
   static void theSigCHLDHandler(int signal);
   // handler for sigchld
+  
+  /**
+   * @internal
+  */
+  static void setupHandlers();
+  /**
+   * @internal
+  */
+  static void resetHandlers();
+  /**
+   * @internal
+  */
+  void addKProcess( KProcess* );
+  /**
+   * @internal
+  */
+  void removeKProcess( KProcess* );
+ public slots:
+  /**
+   * @internal
+   */
+ void slotDoHousekeeping(int socket);
+
+ private slots:
+ void delayedChildrenCleanup();
 private:
   int fd[2];
   QSocketNotifier *notifier;
+  static struct sigaction oldChildHandlerData;
+  static bool handlerSet;
+  QValueList<KProcess*> processList;
+  QTimer delayedChildrenCleanupTimer;
 
   // Disallow assignment and copy-construction
   KProcessController( const KProcessController& );

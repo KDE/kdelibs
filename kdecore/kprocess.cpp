@@ -93,11 +93,11 @@ KProcess::KProcess()
     input_total(0)
 {
   if (0 == KProcessController::theKProcessController) {
-        KProcessController::theKProcessController= new KProcessController();
+        (void) new KProcessController();
         Q_CHECK_PTR(KProcessController::theKProcessController);
   }
 
-  KProcessController::theKProcessController->processList->append(this);
+  KProcessController::theKProcessController->addKProcess(this);
 }
 
 void
@@ -120,7 +120,7 @@ KProcess::~KProcess()
   // list of valid processes (if the process is not started as
   // "DontCare")
 
-  KProcessController::theKProcessController->processList->remove(this);
+  KProcessController::theKProcessController->removeKProcess(this);
   // this must happen before we kill the child
   // TODO: block the signal while removing the current process from the process list
 
@@ -137,7 +137,7 @@ KProcess::~KProcess()
 
 void KProcess::detach()
 {
-  KProcessController::theKProcessController->processList->remove(this);
+  KProcessController::theKProcessController->removeKProcess(this);
 
   runs = false;
   pid_ = 0;
