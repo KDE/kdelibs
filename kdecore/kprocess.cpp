@@ -897,6 +897,7 @@ int KProcess::commSetupDoneP()
     return 1;
 
   if (communication & Stdin) {
+    fcntl(in[1], F_SETFL, O_NONBLOCK);
     innot =  new QSocketNotifier(in[1], QSocketNotifier::Write, this);
     Q_CHECK_PTR(innot);
     innot->setEnabled(false); // will be enabled when data has to be sent
