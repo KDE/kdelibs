@@ -115,7 +115,7 @@ public:
 				SelfSigned, ErrorReadingRoot, NoSSL,
 				Revoked, Untrusted, SignatureFailed,
 				Rejected, PrivateKeyFailed, InvalidHost, 
-				Irrelevant 
+				Irrelevant, SelfSignedChain 
 				};
 				
 	enum KSSLPurpose {      None=0, SSLServer=1, SSLClient=2, 

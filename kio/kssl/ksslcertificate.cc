@@ -781,10 +781,12 @@ rc = KSSLCertificate::Unknown;
 
 
 	case X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT:
-	case X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN:
 		rc = KSSLCertificate::SelfSigned;
 	break;
 
+	case X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN:
+		rc = KSSLCertificate::SelfSignedChain;
+	break;
 
 	case X509_V_ERR_CERT_REVOKED:
 		rc = KSSLCertificate::Revoked;
@@ -897,6 +899,7 @@ case KSSLCertificate::PathLengthExceeded:
 case KSSLCertificate::ErrorReadingRoot:
 case KSSLCertificate::NoCARoot:
 	return i18n("Certificate signing authority root files could not be found so the certificate is not verified.");
+case KSSLCertificate::SelfSignedChain:
 case KSSLCertificate::InvalidCA:
 	return i18n("Certificate signing authority is unknown or invalid.");
 case KSSLCertificate::SelfSigned:
