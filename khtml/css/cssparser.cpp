@@ -551,15 +551,18 @@ bool CSSParser::parseValue( int propId, bool important )
 
     case CSS_PROP_FONT_WEIGHT:  // normal | bold | bolder | lighter | 100 | 200 | 300 | 400 |
 	// 500 | 600 | 700 | 800 | 900 | inherit
-	if (id >= CSS_VAL_NORMAL && id <= CSS_VAL_LIGHTER) {
+	if (id >= CSS_VAL_NORMAL && id <= CSS_VAL_900) {
 	    // Allready correct id
 	    valid_primitive = true;
-	} else if (id >= CSS_VAL_100 && id <= CSS_VAL_500) {
-	    id = CSS_VAL_NORMAL;
-	    valid_primitive = true;
-	} else if (id >= CSS_VAL_600 && id <= CSS_VAL_900) {
-	    id = CSS_VAL_BOLD;
-	    valid_primitive = true;
+	} else if ( validUnit( value, FInteger|FNonNeg, false ) ) {
+	    int weight = (int)value->fValue;
+	    if ( (weight % 100) )
+		break;
+	    weight /= 100;
+	    if ( weight >= 1 && weight <= 9 ) {
+		id = CSS_VAL_100 + weight - 1;
+		valid_primitive = true;
+	    }
 	}
 	break;
 
@@ -1279,9 +1282,8 @@ bool CSSParser::parseFont( bool important )
     FontValueImpl *font = new FontValueImpl;
     // optional font-style, font-variant and font-weight
     while ( value ) {
-// 	kdDebug( 6080 ) << "got value " << (value->unit == CSSPrimitiveValue::CSS_IDENT ? getValueName( value->iValue ).string() : "")
-// 			<< " / " << (value->unit == CSSPrimitiveValue::CSS_STRING ||
-// 				   value->unit == Value::IdentString ? qString( value->string ) : QString::null )
+// 	kdDebug( 6080 ) << "got value " << value->id << " / " << (value->unit == CSSPrimitiveValue::CSS_STRING ||
+	// 				   value->unit == CSSPrimitiveValue::CSS_IDENT ? qString( value->string ) : QString::null )
 // 			<< endl;
 	int id = value->id;
 	if ( id ) {
@@ -1411,9 +1413,9 @@ CSSValueListImpl *CSSParser::parseFontFamily()
     CSSValueListImpl *list = new CSSValueListImpl;
     Value *value = valueList->current();
     while ( value ) {
-// 	kdDebug( 6080 ) << "got value " << (value->id ? getValueName( value->id ).string() : "")
-// 			<< " / " << (value->unit == CSSPrimitiveValue::CSS_STRING ||
-// 				   value->unit == Value::IdentString ? qString( value->string ) : QString::null )
+// 	kdDebug( 6080 ) << "got value " << value->id << " / "
+// 			<< (value->unit == CSSPrimitiveValue::CSS_STRING ||
+// 			    value->unit == CSSPrimitiveValue::CSS_IDENT ? qString( value->string ) : QString::null )
 // 			<< endl;
 	int id = value->id;
 	if ( id >= CSS_VAL_SERIF && id <= CSS_VAL__KONQ_BODY )
