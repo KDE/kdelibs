@@ -211,6 +211,8 @@ protected slots:
   void weekSelected(int);
 
 signals:
+  // ### KDE 4.0 Make all QDate parameters const references
+
   /** This signal is emitted each time the selected date is changed.
    *  Usually, this does not mean that the date has been entered,
    *  since the date also changes, for example, when another month is

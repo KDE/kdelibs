@@ -362,7 +362,8 @@ KDateTable::setFontSize(int size)
   maxCell.setHeight(0);
   for(count=0; count<7; ++count)
     {
-      rect=metrics.boundingRect(KGlobal::locale()->calendar()->weekDayName(count+1, true));
+      rect=metrics.boundingRect(KGlobal::locale()->calendar()
+                                ->weekDayName(count+1, true));
       maxCell.setWidth(QMAX(maxCell.width(), rect.width()));
       maxCell.setHeight(QMAX(maxCell.height(), rect.height()));
     }
@@ -447,7 +448,9 @@ KDateTable::setDate(const QDate& date_)
     }
   if(date!=date_)
     {
+      emit(dateChanged(date, date_));
       date=date_;
+      emit(dateChanged(date));
       changed=true;
     }
   const KCalendarSystem * calendar = KGlobal::locale()->calendar();
@@ -464,7 +467,6 @@ KDateTable::setDate(const QDate& date_)
     {
       repaintContents(false);
     }
-  emit(dateChanged(date));
   return true;
 }
 

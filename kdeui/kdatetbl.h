@@ -282,6 +282,7 @@ public:
      * Select and display this date.
      */
     bool setDate(const QDate&);
+    // ### 4.0 rename to date()
     const QDate& getDate() const;
 
     /**
@@ -343,6 +344,9 @@ protected:
     virtual void keyPressEvent( QKeyEvent *e );
     virtual void focusInEvent( QFocusEvent *e );
     virtual void focusOutEvent( QFocusEvent *e );
+
+    // ### KDE 4.0 make the following private and mark as members
+    
     /**
      * The font size of the displayed text.
      */
@@ -376,7 +380,15 @@ signals:
     /**
      * The selected date changed.
      */
+    // ### KDE 4.0 make parameter a const reference
     void dateChanged(QDate);
+    /**
+     * This function behaves essentially like the one above.
+     * The selected date changed.
+     * @param cur The current date
+     * @param old The date before the date was changed
+     */
+    void dateChanged(const QDate& cur, const QDate& old);
     /**
      * A date has been selected by clicking on the table.
      */
