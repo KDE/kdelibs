@@ -16,7 +16,7 @@
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
 
-INCLUDES=  -I$(srcdir)/.. -I$(top_srcdir)/libltdl $(all_includes)
+INCLUDES=  -I$(srcdir)/../.. -I$(top_srcdir)/libltdl $(all_includes)
 
 METASOURCES = AUTO
 
@@ -27,6 +27,6 @@ bin_PROGRAMS = kioslave
 
 kioslave_SOURCES = kioslave.cpp slavewrapper.cpp
 kioslave_LDADD = ../libksycoca.la 
-kioslave_LDFLAGS = $(KDE_RPATH) -dlpreopen ../file/kio_file.a -dlpreopen ../ftp/kio_ftp.la ../http/kio_http.la
+kioslave_LDFLAGS = $(KDE_RPATH) -dlpreopen ../file/kio_file.la -dlpreopen ../ftp/kio_ftp.la -dlpreopen ../http/kio_http.la
 
 

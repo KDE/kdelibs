@@ -29,7 +29,7 @@
 #include <kdebug.h>
 #include <ksock.h>
 
-#include "kio/slavewrapper.h"
+#include "slavewrapper.h"
 #include "kio/slavebase.h"
 #include "kio/slaveinterface.h"
 

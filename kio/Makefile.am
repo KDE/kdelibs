@@ -18,7 +18,7 @@
 
 INCLUDES=  -I$(srcdir)/.. -I$(top_srcdir)/libltdl $(all_includes)
 
-SUBDIRS = . klauncher kded file http ftp tests
+SUBDIRS = . klauncher kded file http ftp slave tests
 
 lib_LTLIBRARIES = libkio.la libksycoca.la #libkioslave.la
 #libkioslave_la_LDFLAGS = -version-info 3:0
@@ -76,25 +76,16 @@ kioinclude_HEADERS = connection.h renamedlg.h \
 # Internal
 noinst_HEADERS = ksycocafactory.h kservicetypefactory.h kservicefactory.h \
 	ksycocadict.h kmessageboxwrapper.h \
-	ktraderparse.h ktraderparsetree.h yacc.h \
-	kioslave.h slavewrapper.h
+	ktraderparse.h ktraderparsetree.h yacc.h 
 
 kde_mime_DATA = magic
 
 parserfiles = yacc.y lex.l
 
-service_DATA = kioslave.desktop
-servicedir = $(kde_servicesdir)
-EXTRA_DIST = $(kde_mime_DATA) $(parserfiles) $(service_DATA)
+EXTRA_DIST = $(kde_mime_DATA) $(parserfiles) 
 
 parser: $(parserfiles)
 	cd $(srcdir) ;\
 	flex lex.l && mv lex.yy.c lex.c ;\
 	bison -d yacc.y && mv yacc.tab.c yacc.c; mv yacc.tab.h yacc.h
-
-bin_PROGRAMS = kioslave
-
-kioslave_SOURCES = kioslave.cpp slavewrapper.cpp
-kioslave_LDADD = libksycoca.la libkio.la
-kioslave_LDFLAGS = $(KDE_RPATH)
 

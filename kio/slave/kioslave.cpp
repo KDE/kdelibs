@@ -39,7 +39,7 @@
 
 #include "kio/global.h"
 #include "kio/connection.h"
-#include "kio/slavewrapper.h"
+#include "slavewrapper.h"
 #include "kio/slaveinterface.h"
 
 #include <X11/Xlib.h>
