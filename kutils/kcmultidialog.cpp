@@ -62,7 +62,7 @@ inline void KCMultiDialog::init()
     enableButton(Apply, false);
     connect(this, SIGNAL(aboutToShowPage(QWidget *)), this, SLOT(slotAboutToShow(QWidget *)));
     setInitialSize(QSize(640,480));
-    modulePrefParent.setAutoDelete( true );
+    moduleParentComponents.setAutoDelete( true );
 }
 
 KCMultiDialog::~KCMultiDialog()
@@ -95,7 +95,7 @@ void KCMultiDialog::apply()
         if( m->changed() )
         {
             m->save();
-            QStringList * names = modulePrefParent[ m ];
+            QStringList * names = moduleParentComponents[ m ];
             kdDebug() << k_funcinfo << *names << " saved and added to the list" << endl;
             for( QStringList::ConstIterator it = names->begin(); it != names->end(); ++it )
                 if( updatedModules.find( *it ) == updatedModules.end() )
@@ -232,7 +232,7 @@ void KCMultiDialog::slotAboutToShow(QWidget *page)
     }
 
     kdDebug() << k_funcinfo << "ParentComponents=" << loadInfo->info.parentComponents() << endl;
-    modulePrefParent.insert( module, new QStringList( loadInfo->info.parentComponents() ) );
+    moduleParentComponents.insert( module, new QStringList( loadInfo->info.parentComponents() ) );
     module->reparent(page,0,QPoint(0,0),true);
     connect(module, SIGNAL(changed(bool)), this, SLOT(clientChanged(bool)));
     if( module->changed() )

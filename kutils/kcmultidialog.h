@@ -160,7 +160,7 @@ private:
     };
     QPtrList<KCModule> modules;
     QPtrDict<LoadInfo> moduleDict;
-    QPtrDict<QStringList>  modulePrefParent;
+    QPtrDict<QStringList> moduleParentComponents;
     QString _docPath;
     QString _baseGroup;
     bool createTreeList;
