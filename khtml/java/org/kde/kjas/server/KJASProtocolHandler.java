@@ -53,13 +53,11 @@ public class KJASProtocolHandler
                 try
                 {
                     int cmd_length = readPaddedLength( 8 );
-                    Main.debug( "cmd_length = " + cmd_length );
 
                     byte[] cmd_data = new byte[cmd_length];
                     commands.read( cmd_data, 0, cmd_length );
 
                     //parse the rest of the command and execute it
-                    Main.debug( "processing command" );
                     processCommand( cmd_data );
                 }
                 catch( NumberFormatException e )
@@ -69,12 +67,13 @@ public class KJASProtocolHandler
                 }
                 catch( Throwable t )
                 {
+                    Main.debug( "commandLoop caught a throwable, still going" );
                 }
             }
         }
         catch( Exception i )
         {
-            Main.kjas_err( "exception: ", i );
+            Main.kjas_err( "commandLoop exited on exception: ", i );
             System.exit( 1 );
         }
     }
@@ -227,6 +226,7 @@ public class KJASProtocolHandler
 
             //rest of the command should be the data...
             byte[] data = new byte[ cmd_length - cmd_index ];
+            System.arraycopy( command, cmd_index, data, 0, data.length );
 
             KJASAppletClassLoader loader = KJASAppletClassLoader.getLoader( loaderID );
             if( loader != null )
@@ -410,12 +410,10 @@ public class KJASProtocolHandler
         if( cmd_index > (begin + 1) )
         {
             String rval = new String( command, begin, (cmd_index - begin - 1) );
-            Main.debug( "getArg returning: >" + rval + "<" );
             return rval;
         }
-
-        Main.debug( "getArg returning null" );
-        return null;
+        else
+            return null;
     }
 
     private char[] getPaddedLength( int length )
