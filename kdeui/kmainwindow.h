@@ -404,7 +404,7 @@ public:
      * Only meaningful if setAutoSaveSettings() was called.
      * This can be useful for forcing a save or an apply, e.g. before and after
      * using KEditToolbar.
-     * @since 3.2
+     * @since 3.1
      */
     QString autoSaveGroup() const;
 
