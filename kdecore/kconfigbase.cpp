@@ -148,6 +148,12 @@ QString KConfigBase::readEntry( const QString& aKey,
 QProperty KConfigBase::readPropertyEntry( const QString& aKey,
 					  QProperty::Type type ) const
 { 
+  QValueList<int> intList;
+  QValueList<double> doubleList;
+  QStringList strList;
+  QStringList::ConstIterator it;
+  QStringList::ConstIterator end;
+  
   switch( type )
     {
     case QProperty::Empty:
@@ -157,11 +163,27 @@ QProperty KConfigBase::readPropertyEntry( const QString& aKey,
     case QProperty::StringListType:
       return QProperty( readListEntry( aKey ) );
     case QProperty::IntListType:
-      ASSERT( 0 );
-      return QProperty();
+
+      strList = readListEntry( aKey );
+      
+      it = strList.begin();
+      end = strList.end();
+      
+      for (; it != end; ++it )
+        intList.append( (*it).toInt() );
+
+      return QProperty( intList );
     case QProperty::DoubleListType:
-      ASSERT( 0 );
-      return QProperty();
+
+      strList = readListEntry( aKey );
+      
+      it = strList.begin();
+      end = strList.end();
+      
+      for (; it != end; ++it )
+        doubleList.append( (*it).toDouble() );
+
+      return QProperty( doubleList );
     case QProperty::FontType:
       return QProperty( readFontEntry( aKey ) );
     case QProperty::PixmapType:
@@ -670,6 +692,14 @@ void KConfigBase::writeEntry ( const QString& pKey, const QProperty &prop,
 			       bool bPersistent, 
 			       bool bGlobal, bool bNLS )
 {
+  QValueList<int> intList;
+  QValueList<int>::ConstIterator iIt;
+  QValueList<int>::ConstIterator iEnd;
+  QValueList<double> doubleList;
+  QValueList<double>::ConstIterator dIt;
+  QValueList<double>::ConstIterator dEnd;
+  QStringList strList;
+
   switch( prop.type() )
     {
     case QProperty::Empty:
@@ -682,10 +712,26 @@ void KConfigBase::writeEntry ( const QString& pKey, const QProperty &prop,
       writeEntry( pKey, prop.stringListValue(), ',', bPersistent, bGlobal, bNLS );
       break;
     case QProperty::IntListType:
-      ASSERT( 0 );
+    
+      iIt = prop.intListValue().begin();
+      iEnd = prop.intListValue().end();
+      
+      for (; iIt != iEnd; ++iIt )
+        strList.append( QString().setNum( *iIt ) );
+	
+      writeEntry( pKey, strList, ',', bPersistent, bGlobal, bNLS );
+      
       break;
     case QProperty::DoubleListType:
-      ASSERT( 0 );
+      
+      dIt = prop.doubleListValue().begin();
+      dEnd = prop.doubleListValue().end();
+      
+      for (; dIt != dEnd; ++dIt )
+        strList.append( QString().setNum( *dIt ) );
+	
+      writeEntry( pKey, strList, ',', bPersistent, bGlobal, bNLS );
+      
       break;
     case QProperty::FontType:
       writeEntry( pKey, prop.fontValue(), bPersistent, bGlobal, bNLS );
