@@ -13,9 +13,6 @@ that we would like to make for the next binary incompatible release.
 
 - Remove all methods marked 'deprecated' in KDE 3.x.
 
-- Fix KMainWindow's use of KApplication refcounting in a less error-prone way,
-  probably by using a total refcount of all main windows.
-
 - Make it possible to create a KSystemTray without a KMainWindow and instead lazily
   create the main window on demand.
 
@@ -63,3 +60,14 @@ that we would like to make for the next binary incompatible release.
   QFont/QPoint/QSize is cheap enough to justify a consistent and usable API (IMHO) .
   Keep source compatibility.
 
+- Sort out reference counting of applications and KMainWindows: Add a setRefCountEnabled()
+  function to KApplication; deref()ing the last reference should only quit the application
+  if reference counts are enabled, and the reference count should be disabled by default
+  so apps that don't use a KMainWindow mostly continue to work. Make the KMainWindow
+  constructor call setRefCountEnabled(true), and make each KMainWindow hold its own
+  reference to the application. The KMainWindow should drop its app reference on hide, and
+  regain it on show.
+
+  Make KSysTray also hold a reference to the app. Then apps that use more than one main
+  window and the tray (like KSIrc and Kopete) will quit at the right time without nasty
+  hacks.
