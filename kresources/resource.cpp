@@ -34,11 +34,13 @@ Resource::Resource( const KConfig* config ) :
     mType = config->readEntry( "ResourceType" );
     mName = config->readEntry( "ResourceName" );
     mReadOnly = config->readBoolEntry( "ResourceIsReadOnly" );
+    mActive = config->readBoolEntry( "ResourceIsActive" );
     mIdentifier = config->readEntry( "ResourceIdentifier" );
   } else {
     mType = "type";
     mName = "resource-name";
     mReadOnly = false;
+    mActive = true;
     mIdentifier = KApplication::randomString( 10 );
   }
 }
@@ -54,6 +56,7 @@ void Resource::writeConfig( KConfig* config ) const
   config->writeEntry( "ResourceType", mType );
   config->writeEntry( "ResourceName", mName );
   config->writeEntry( "ResourceIsReadOnly", mReadOnly );
+  config->writeEntry( "ResourceIsActive", mActive );
   config->writeEntry( "ResourceIdentifier", mIdentifier );
 }
 
@@ -145,4 +148,5 @@ void Resource::dump() const
   kdDebug(5650) << "  Type: " << mType << endl;
   kdDebug(5650) << "  OpenCount: " << mOpenCount << endl;
   kdDebug(5650) << "  ReadOnly: " << ( mReadOnly ? "yes" : "no" ) << endl;
+  kdDebug(5650) << "  Active: " << ( mActive ? "yes" : "no" ) << endl;
 }
