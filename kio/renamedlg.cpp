@@ -149,7 +149,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
   m_pLayout->addWidget(lb);
   m_pLineEdit = new QLineEdit( this );
   m_pLayout->addWidget( m_pLineEdit );
-  m_pLineEdit->setText( dest );
+  m_pLineEdit->setText( KURL(dest).fileName() );
   connect(m_pLineEdit, SIGNAL(textChanged(const QString &)),
 	  SLOT(enableRenameButton(const QString &)));
 
@@ -196,93 +196,62 @@ void RenameDlg::enableRenameButton(const QString &newDest)
     b1->setEnabled(false);
 }
 
+KURL RenameDlg::newDestURL()
+{
+  KURL newDest( dest );
+  newDest.setFileName( m_pLineEdit->text() );
+  return newDest;
+}
+
 void RenameDlg::b0Pressed()
 {
-  if ( modal )
-    done( 0 );
-  else
-    emit result( this, 0, src, dest );
+  done( 0 );
 }
 
 // Rename
 void RenameDlg::b1Pressed()
 {
-    if ( m_pLineEdit->text()  == "" )
-	return;
+  if ( m_pLineEdit->text()  == "" )
+    return;
 
-  KURL u( m_pLineEdit->text() );
+  KURL u = newDestURL();
   if ( u.isMalformed() )
   {
-    KMessageBox::error( this, i18n( "Malformed URL\n%1" ).arg(m_pLineEdit->text()));
+    KMessageBox::error( this, i18n( "Malformed URL\n%1" ).arg( u.prettyURL() ) );
     return;
   }
 
-  KURL d( dest );
-  if ( u.protocol() != d.protocol() ) {
-    KMessageBox::error( this, i18n( "You must not change the protocol" ));
-    return;
-  }
-
-  /*
-  if ( dest == m_pLineEdit->text() )
-  {
-    QMessageBox::warning( this, i18n( "KFM Error" ),
-			  i18n( "You did not change the name!\n" ) );
-    return;
-  }
-  */
-  if ( modal )
-    done( 1 );
-  else
-    emit result( this, 1, src, m_pLineEdit->text() );
+  done( 1 );
 }
 
 void RenameDlg::b2Pressed()
 {
-  if ( modal )
-    done( 2 );
-  else
-    emit result( this, 2, src, dest );
+  done( 2 );
 }
 
 void RenameDlg::b3Pressed()
 {
-  if ( modal )
-    done( 3 );
-  else
-    emit result( this, 3, src, dest );
+  done( 3 );
 }
 
 void RenameDlg::b4Pressed()
 {
-  if ( modal )
-    done( 4 );
-  else
-    emit result( this, 4, src, dest );
+  done( 4 );
 }
 
 void RenameDlg::b5Pressed()
 {
-  if ( modal )
-    done( 5 );
-  else
-    emit result( this, 5, src, dest );
+  done( 5 );
 }
 
 void RenameDlg::b6Pressed()
 {
-  if ( modal )
-    done( 6 );
-  else
-    emit result( this, 6, src, dest );
+  done( 6 );
 }
 
 void RenameDlg::b7Pressed()
 {
-  if ( modal )
-    done( 7 );
-  else
-    emit result( this, 7, src, dest );
+  done( 7 );
 }
 
 RenameDlg_Result KIO::open_RenameDlg( const QString & _caption,
@@ -302,7 +271,7 @@ RenameDlg_Result KIO::open_RenameDlg( const QString & _caption,
                  sizeSrc, sizeDest, ctimeSrc, ctimeDest, mtimeSrc, mtimeDest,
                  true /*modal*/ );
   int i = dlg.exec();
-  _new = dlg.newName();
+  _new = dlg.newDestURL().path();
 
   return (RenameDlg_Result)i;
 }

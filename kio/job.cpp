@@ -55,8 +55,6 @@
 #include "scheduler.h"
 #include "kmimemagic.h"
 
-// #include "kio/renamedlg.h"
-// #include "kio/skipdlg.h"
 #include "kio/observer.h"
 
 using namespace KIO;
@@ -905,7 +903,7 @@ bool KIO::link( const QString & linkDest, const KURL & destUrl, bool overwriteEx
                 //  mode = (RenameDlg_Mode) ( mode | M_SINGLE );
                 QString newPath;
                 RenameDlg_Result res = Observer::self()->open_RenameDlg( 0, i18n("File already exists"),
-                                                                         linkDest, destUrl.path(), mode, newPath );
+                                                                         linkDest, destUrl.prettyURL(), mode, newPath );
                 switch ( res ) {
                     case R_CANCEL:
                         cancelAll = true;
@@ -1489,7 +1487,7 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
     QString existingDest = (*it).uDest.path();
     QString newPath;
     RenameDlg_Result r = Observer::self()->open_RenameDlg( this, i18n("Directory already exists"),
-                                         (*it).uSource.prettyURL(), existingDest, mode, newPath,
+                                         (*it).uSource.prettyURL(), (*it).uDest.prettyURL(), mode, newPath,
                                          (*it).size, destsize,
                                          (*it).ctime, destctime,
                                          (*it).mtime, destmtime );
@@ -1682,7 +1680,7 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
             mode = (RenameDlg_Mode) ( mode | M_SINGLE );
         res = Observer::self()->open_RenameDlg( this, m_conflictError == ERR_FILE_ALREADY_EXIST ?
                                 i18n("File already exists") : i18n("Already exists as a directory"),
-                                (*it).uSource.prettyURL(), (*it).uDest.path(), mode, newPath,
+                                (*it).uSource.prettyURL(), (*it).uDest.prettyURL(), mode, newPath,
                               (*it).size, destsize,
                               (*it).ctime, destctime,
                               (*it).mtime, destmtime );

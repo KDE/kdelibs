@@ -21,6 +21,7 @@
 #ifndef __kio_rename_dlg__
 #define __kio_rename_dlg__ "$Id$"
 
+#include <kurl.h>
 #include <qwidget.h>
 #include <qdialog.h>
 #include <qpushbutton.h>
@@ -70,10 +71,10 @@ public:
   ~RenameDlg();
 
   /**
-   * @return the new destination path
+   * @return the new destination
    * valid only if RENAME was chosen
    */
-  QString newName() { return m_pLineEdit->text(); }
+  KURL newDestURL();
 
 protected:
   QPushButton *b0;
@@ -104,9 +105,6 @@ public slots:
 
 protected slots:
   void enableRenameButton(const QString &);
-
-signals:
-  void result( QWidget* widget, int button, const QString & src, const QString & data );
 };
 
   /**
@@ -131,7 +129,7 @@ signals:
    */
 RenameDlg_Result open_RenameDlg( const QString & caption,
                                  const QString& src, const QString & dest,
-                                 RenameDlg_Mode mode, QString& newDest,
+                                 RenameDlg_Mode mode, QString& newDestPath,
                                  unsigned long sizeSrc = (unsigned long) -1,
                                  unsigned long sizeDest = (unsigned long) -1,
                                  time_t ctimeSrc = (time_t) -1,
