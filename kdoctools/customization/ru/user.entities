@@ -12,7 +12,12 @@
 <!ENTITY LMB    "<mousebutton>левая</mousebutton> кнопка мыши">
 <!ENTITY MMB    "<mousebutton>средняя</mousebutton> кнопка мыши">
 <!ENTITY RMB    "<mousebutton>правая</mousebutton> кнопка мыши">
- 
+
 <!ENTITY dpi    '<acronym>dpi</acronym>'>
 <!ENTITY etc    "<abbrev>etc.</abbrev>">
 <!ENTITY FAQ    '<acronym>FAQ</acronym>'>
+
+<! Temporary hack - please translate to Russian: -->
+<!ENTITY Shift  "<keycap>Shift</keycap>">
+<!ENTITY Alt    "<keycap>Alt</keycap>">
+<!ENTITY Ctrl   "<keycap>Ctrl</keycap>">
