@@ -132,12 +132,26 @@ bool ResourceFile::save( Ticket *ticket )
   kdDebug(5700) << "ResourceFile::save()" << endl;
 
   QFile file( mFileName );
+  file.open( IO_ReadOnly );
+
+  QByteArray array = file.readAll();
+  file.close();
+
+  // create backup file
+  QFile backupFile( QString( "%1_%2" ).arg( mFileName )
+                                      .arg( QDate::currentDate().dayOfWeek() ) );
+  if ( backupFile.open( IO_WriteOnly ) ) {
+    backupFile.writeBlock( array );
+    backupFile.close();
+  }
+
   if ( !file.open( IO_WriteOnly ) ) {
     addressBook()->error( i18n( "Unable to open file '%1'." ).arg( mFileName ) );
     return false;
   }
   
   mFormat->saveAll( addressBook(), this, &file );
+  file.close();
 
   delete ticket;
   unlock( mFileName );
