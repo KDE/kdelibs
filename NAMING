@@ -36,8 +36,8 @@ LDFLAGS: -module $(KIMGIO_PLUGIN)
 
 KWin plugin
 ===========
-Name: kwin_<clientname>.la
-Definition: kde_module_LTLIBRARIES = kwin_<clientname>.la
+Name: kwin3_<clientname>.la
+Definition: kde_module_LTLIBRARIES = kwin3_<clientname>.la
 LDFLAGS: -module $(KDE_PLUGIN)
 
 
