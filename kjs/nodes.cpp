@@ -67,7 +67,7 @@ using namespace KJS;
   if (Collector::outOfMemory()) \
     return Undefined(); // will be picked up by KJS_CHECKEXCEPTION
 
-#define KJS_CHECKEXCEPTIONREF \
+#define KJS_CHECKEXCEPTIONREFERENCE \
   if (exec->hadException()) \
     return Reference2(exec->exception()); \
   if (Collector::outOfMemory()) \
@@ -102,36 +102,36 @@ Node::~Node()
 #endif
 }
 
-// fallback for nodes without an evaluate() reimplementation
-Reference2 Node::evaluate(ExecState *exec) const
+// fallback for nodes without an evaluateReference() reimplementation
+Reference2 Node::evaluateReference(ExecState *exec) const
 {
-  //  fprintf(stderr, "%s::evaluate()\n", typeid(*this).name());
-  return Reference2(value(exec));
+  //  fprintf(stderr, "%s::evaluateReference()\n", typeid(*this).name());
+  return Reference2(evaluate(exec));
 }
 
-// fallback for those nodes without a value() reimplementation
-// TODO: reimplemint in each sub class, make Node::value() pure virtual
-Value Node::value(ExecState *exec) const
+// fallback for those nodes without a evaluate() reimplementation
+// TODO: reimplemint in each sub class, make Node::evaluate() pure virtual
+Value Node::evaluate(ExecState *exec) const
 {
-  //  fprintf(stderr, "%s::value()\n", typeid(*this).name());
-  return evaluate(exec).getValue(exec);
+  //  fprintf(stderr, "%s::evaluate()\n", typeid(*this).name());
+  return evaluateReference(exec).getValue(exec);
 }
 
 bool Node::toBoolean(ExecState *exec) const
 {
 //   fprintf(stderr, "Node(%s)::toBoolean()\n", typeid(*this).name());
-  return value(exec).toBoolean(exec);
+  return evaluate(exec).toBoolean(exec);
 }
 
 double Node::toNumber(ExecState *exec) const
 {
 //   fprintf(stderr, "Node(%s)::toNumber()\n", typeid(*this).name());
-  return value(exec).toNumber(exec);
+  return evaluate(exec).toNumber(exec);
 }
 
 UString Node::toString(ExecState *exec) const
 {
-  return value(exec).toString(exec);
+  return evaluate(exec).toString(exec);
 }
 
 #ifdef KJS_DEBUG_MEM
@@ -191,7 +191,7 @@ bool StatementNode::abortStatement(ExecState *exec)
 
 // ----------------------------- NullNode -------------------------------------
 
-Value NullNode::value(ExecState *) const
+Value NullNode::evaluate(ExecState *) const
 {
   return Null();
 }
@@ -213,7 +213,7 @@ UString NullNode::toString(ExecState *) const
 
 // ----------------------------- BooleanNode ----------------------------------
 
-Value BooleanNode::value(ExecState *) const
+Value BooleanNode::evaluate(ExecState *) const
 {
   return Boolean(val);
 }
@@ -235,7 +235,7 @@ UString BooleanNode::toString(ExecState *) const
 
 // ----------------------------- NumberNode -----------------------------------
 
-Value NumberNode::value(ExecState *) const
+Value NumberNode::evaluate(ExecState *) const
 {
   return Number(val);
 }
@@ -257,7 +257,7 @@ UString NumberNode::toString(ExecState *) const
 
 // ----------------------------- StringNode -----------------------------------
 
-Value StringNode::value(ExecState *) const
+Value StringNode::evaluate(ExecState *) const
 {
   return String(val);
 }
@@ -279,7 +279,7 @@ UString StringNode::toString(ExecState *) const
 
 // ----------------------------- RegExpNode -----------------------------------
 
-Value RegExpNode::value(ExecState *exec) const
+Value RegExpNode::evaluate(ExecState *exec) const
 {
   List list;
   String p(pattern);
@@ -299,7 +299,7 @@ bool RegExpNode::toBoolean(ExecState *) const
 // ----------------------------- ThisNode -------------------------------------
 
 // ECMA 11.1.1
-Value ThisNode::value(ExecState *exec) const
+Value ThisNode::evaluate(ExecState *exec) const
 {
   return exec->context().thisValue();
 }
@@ -307,7 +307,7 @@ Value ThisNode::value(ExecState *exec) const
 // ----------------------------- ResolveNode ----------------------------------
 
 // ECMA 11.1.2 & 10.1.4
-Reference2 ResolveNode::evaluate(ExecState *exec) const
+Reference2 ResolveNode::evaluateReference(ExecState *exec) const
 {
   const List chain = exec->context().scopeChain();
   ListIterator scope = chain.begin();
@@ -330,7 +330,7 @@ Reference2 ResolveNode::evaluate(ExecState *exec) const
   return Reference2(Null(), ident);
 }
 
-Value ResolveNode::value(ExecState *exec) const
+Value ResolveNode::evaluate(ExecState *exec) const
 {
   const List chain = exec->context().scopeChain();
   ListIterator scope = chain.begin();
@@ -368,9 +368,9 @@ bool GroupNode::deref()
 }
 
 // ECMA 11.1.6
-Value GroupNode::value(ExecState *exec) const
+Value GroupNode::evaluate(ExecState *exec) const
 {
-  return group->value(exec);
+  return group->evaluate(exec);
 }
 
 // ----------------------------- ElementNode ----------------------------------
@@ -394,7 +394,7 @@ bool ElementNode::deref()
 }
 
 // ECMA 11.1.4
-Value ElementNode::value(ExecState *exec) const
+Value ElementNode::evaluate(ExecState *exec) const
 {
   Object array;
   Value val;
@@ -402,14 +402,14 @@ Value ElementNode::value(ExecState *exec) const
   KJS_CHECKEXCEPTIONVALUE
 
   if (list) {
-    array = Object(static_cast<ObjectImp*>(list->value(exec).imp()));
+    array = Object(static_cast<ObjectImp*>(list->evaluate(exec).imp()));
     KJS_CHECKEXCEPTIONVALUE
-    val = node->value(exec).getValue(exec);
+    val = node->evaluate(exec).getValue(exec);
     length = array.get(exec,"length").toInt32(exec);
   } else {
     Value newArr = exec->interpreter()->builtinArray().construct(exec,List::empty());
     array = Object(static_cast<ObjectImp*>(newArr.imp()));
-    val = node->value(exec).getValue(exec);
+    val = node->evaluate(exec).getValue(exec);
     KJS_CHECKEXCEPTIONVALUE
   }
 
@@ -435,13 +435,13 @@ bool ArrayNode::deref()
 }
 
 // ECMA 11.1.4
-Value ArrayNode::value(ExecState *exec) const
+Value ArrayNode::evaluate(ExecState *exec) const
 {
   Object array;
   int length;
 
   if (element) {
-    array = Object(static_cast<ObjectImp*>(element->value(exec).imp()));
+    array = Object(static_cast<ObjectImp*>(element->evaluate(exec).imp()));
     KJS_CHECKEXCEPTIONVALUE
     length = opt ? array.get(exec,"length").toInt32(exec) : 0;
   } else {
@@ -473,10 +473,10 @@ bool ObjectLiteralNode::deref()
 }
 
 // ECMA 11.1.5
-Value ObjectLiteralNode::value(ExecState *exec) const
+Value ObjectLiteralNode::evaluate(ExecState *exec) const
 {
   if (list)
-    return list->value(exec);
+    return list->evaluate(exec);
 
   return exec->interpreter()->builtinObject().construct(exec,List::empty());
 }
@@ -506,20 +506,20 @@ bool PropertyValueNode::deref()
 }
 
 // ECMA 11.1.5
-Value PropertyValueNode::value(ExecState *exec) const
+Value PropertyValueNode::evaluate(ExecState *exec) const
 {
   Object obj;
   if (list) {
-    obj = Object(static_cast<ObjectImp*>(list->value(exec).imp()));
+    obj = Object(static_cast<ObjectImp*>(list->evaluate(exec).imp()));
     KJS_CHECKEXCEPTIONVALUE
   }
   else {
     Value newObj = exec->interpreter()->builtinObject().construct(exec,List::empty());
     obj = Object(static_cast<ObjectImp*>(newObj.imp()));
   }
-  Value n = name->value(exec);
+  Value n = name->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
-  Value v = assign->value(exec);
+  Value v = assign->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
 
   obj.put(exec,n.toString(exec), v);
@@ -530,7 +530,7 @@ Value PropertyValueNode::value(ExecState *exec) const
 // ----------------------------- PropertyNode ---------------------------------
 
 // ECMA 11.1.5
-Value PropertyNode::value(ExecState */*exec*/) const
+Value PropertyNode::evaluate(ExecState */*exec*/) const
 {
   if (str.isNull()) {
     return String(UString::from(numeric));
@@ -559,12 +559,12 @@ bool AccessorNode1::deref()
 }
 
 // ECMA 11.2.1a
-Reference2 AccessorNode1::evaluate(ExecState *exec) const
+Reference2 AccessorNode1::evaluateReference(ExecState *exec) const
 {
-  Value v1 = expr1->value(exec);
-  KJS_CHECKEXCEPTIONREF
-  Value v2 = expr2->value(exec);
-  KJS_CHECKEXCEPTIONREF
+  Value v1 = expr1->evaluate(exec);
+  KJS_CHECKEXCEPTIONREFERENCE
+  Value v2 = expr2->evaluate(exec);
+  KJS_CHECKEXCEPTIONREFERENCE
   Object o = v1.toObject(exec);
   UString s = v2.toString(exec);
   return Reference2(o, s);
@@ -587,10 +587,10 @@ bool AccessorNode2::deref()
 }
 
 // ECMA 11.2.1b
-Reference2 AccessorNode2::evaluate(ExecState *exec) const
+Reference2 AccessorNode2::evaluateReference(ExecState *exec) const
 {
-  Value v = expr->value(exec);
-  KJS_CHECKEXCEPTIONREF
+  Value v = expr->evaluate(exec);
+  KJS_CHECKEXCEPTIONREFERENCE
   Object o = v.toObject(exec);
   return Reference2(o, ident);
 }
@@ -624,7 +624,7 @@ bool ArgumentListNode::deref()
   return Node::deref();
 }
 
-Value ArgumentListNode::value(ExecState */*exec*/) const
+Value ArgumentListNode::evaluate(ExecState */*exec*/) const
 {
   assert(0);
   return Value(); // dummy, see evaluateList()
@@ -639,7 +639,7 @@ List ArgumentListNode::evaluateList(ExecState *exec) const
     KJS_CHECKEXCEPTIONLIST
   }
 
-  Value v = expr->value(exec);
+  Value v = expr->evaluate(exec);
   KJS_CHECKEXCEPTIONLIST
 
   l.append(v);
@@ -667,7 +667,7 @@ bool ArgumentsNode::deref()
   return Node::deref();
 }
 
-Value ArgumentsNode::value(ExecState */*exec*/) const
+Value ArgumentsNode::evaluate(ExecState */*exec*/) const
 {
   assert(0);
   return Value(); // dummy, see evaluateList()
@@ -704,9 +704,9 @@ bool NewExprNode::deref()
   return Node::deref();
 }
 
-Value NewExprNode::value(ExecState *exec) const
+Value NewExprNode::evaluate(ExecState *exec) const
 {
-  Value v = expr->value(exec);
+  Value v = expr->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
 
   List argList;
@@ -750,9 +750,9 @@ bool FunctionCallNode::deref()
 }
 
 // ECMA 11.2.3
-Value FunctionCallNode::value(ExecState *exec) const
+Value FunctionCallNode::evaluate(ExecState *exec) const
 {
-  Reference2 ref = expr->evaluate(exec);
+  Reference2 ref = expr->evaluateReference(exec);
   KJS_CHECKEXCEPTIONVALUE
 
   List argList = args->evaluateList(exec);
@@ -817,18 +817,18 @@ bool PostfixNode::deref()
 }
 
 // ECMA 11.3
-Value PostfixNode::value(ExecState *exec) const
+Value PostfixNode::evaluate(ExecState *exec) const
 {
-  Reference2 e = expr->evaluate(exec);
+  Reference2 e = expr->evaluateReference(exec);
   KJS_CHECKEXCEPTIONVALUE
   Value v = e.getValue(exec);
-  Number n = v.toNumber(exec);
+  double n = v.toNumber(exec);
 
-  double newValue = (oper == OpPlusPlus) ? n.value() + 1 : n.value() - 1;
+  double newValue = (oper == OpPlusPlus) ? n + 1 : n - 1;
 
   e.putValue(exec, Number(newValue));
 
-  return n;
+  return Number(n);
 }
 
 // ----------------------------- DeleteNode -----------------------------------
@@ -848,9 +848,9 @@ bool DeleteNode::deref()
 }
 
 // ECMA 11.4.1
-Value DeleteNode::value(ExecState *exec) const
+Value DeleteNode::evaluate(ExecState *exec) const
 {
-  Reference2 ref = expr->evaluate(exec);
+  Reference2 ref = expr->evaluateReference(exec);
   KJS_CHECKEXCEPTIONVALUE
   if (!ref.isValid())
     return Boolean(true);
@@ -887,9 +887,9 @@ bool VoidNode::deref()
 }
 
 // ECMA 11.4.2
-Value VoidNode::value(ExecState *exec) const
+Value VoidNode::evaluate(ExecState *exec) const
 {
-  Value dummy1 = expr->value(exec);
+  Value dummy1 = expr->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
 
   return Undefined();
@@ -912,10 +912,10 @@ bool TypeOfNode::deref()
 }
 
 // ECMA 11.4.3
-Value TypeOfNode::value(ExecState *exec) const
+Value TypeOfNode::evaluate(ExecState *exec) const
 {
   const char *s = 0L;
-  Reference2 ref = expr->evaluate(exec);
+  Reference2 ref = expr->evaluateReference(exec);
   KJS_CHECKEXCEPTIONVALUE
   if (ref.isValid()) {
     if (ref.base().type() == NullType)
@@ -967,9 +967,9 @@ bool PrefixNode::deref()
 }
 
 // ECMA 11.4.4 and 11.4.5
-Value PrefixNode::value(ExecState *exec) const
+Value PrefixNode::evaluate(ExecState *exec) const
 {
-  Reference2 ref = expr->evaluate(exec);
+  Reference2 ref = expr->evaluateReference(exec);
   KJS_CHECKEXCEPTION
   Value v = ref.getValue(exec);
   double n = v.toNumber(exec);
@@ -1005,9 +1005,9 @@ double UnaryPlusNode::toNumber(ExecState *exec) const
 }
 
 // could go
-Value UnaryPlusNode::value(ExecState *exec) const
+Value UnaryPlusNode::evaluate(ExecState *exec) const
 {
-  Value v = expr->value(exec);
+  Value v = expr->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
 
   return Number(v.toNumber(exec)); /* TODO: optimize */
@@ -1035,9 +1035,9 @@ double NegateNode::toNumber(ExecState *exec) const
   return -expr->toNumber(exec);
 }
 
-Value NegateNode::value(ExecState *exec) const
+Value NegateNode::evaluate(ExecState *exec) const
 {
-  Value v = expr->value(exec);
+  Value v = expr->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
   double d = -v.toNumber(exec);
 
@@ -1061,9 +1061,9 @@ bool BitwiseNotNode::deref()
 }
 
 // ECMA 11.4.8
-Value BitwiseNotNode::value(ExecState *exec) const
+Value BitwiseNotNode::evaluate(ExecState *exec) const
 {
-  Value v = expr->value(exec);
+  Value v = expr->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
   int i32 = v.toInt32(exec);
 
@@ -1093,7 +1093,7 @@ bool LogicalNotNode::toBoolean(ExecState *exec) const
 }
 
 // could remove this
-Value LogicalNotNode::value(ExecState *exec) const
+Value LogicalNotNode::evaluate(ExecState *exec) const
 {
   bool b = expr->toBoolean(exec);
   KJS_CHECKEXCEPTIONVALUE
@@ -1122,12 +1122,12 @@ bool MultNode::deref()
 }
 
 // ECMA 11.5
-Value MultNode::value(ExecState *exec) const
+Value MultNode::evaluate(ExecState *exec) const
 {
-  Value v1 = term1->value(exec);
+  Value v1 = term1->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
 
-  Value v2 = term2->value(exec);
+  Value v2 = term2->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
 
   return mult(exec,v1, v2, oper);
@@ -1175,12 +1175,12 @@ bool AddNode::deref()
 }
 
 // ECMA 11.6
-Value AddNode::value(ExecState *exec) const
+Value AddNode::evaluate(ExecState *exec) const
 {
-  Value v1 = term1->value(exec);
+  Value v1 = term1->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
 
-  Value v2 = term2->value(exec);
+  Value v2 = term2->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
 
   return add(exec,v1, v2, oper);
@@ -1202,7 +1202,7 @@ bool AppendStringNode::deref()
 }
 
 // ECMA 11.6 (special case of string appending)
-Value AppendStringNode::value(ExecState *exec) const
+Value AppendStringNode::evaluate(ExecState *exec) const
 {
   UString s = term->toString(exec);
   KJS_CHECKEXCEPTIONVALUE;
@@ -1231,11 +1231,11 @@ bool ShiftNode::deref()
 }
 
 // ECMA 11.7
-Value ShiftNode::value(ExecState *exec) const
+Value ShiftNode::evaluate(ExecState *exec) const
 {
-  Value v1 = term1->value(exec);
+  Value v1 = term1->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
-  Value v2 = term2->value(exec);
+  Value v2 = term2->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
   unsigned int i2 = v2.toUInt32(exec);
   i2 &= 0x1f;
@@ -1280,11 +1280,11 @@ bool RelationalNode::deref()
 }
 
 // ECMA 11.8
-Value RelationalNode::value(ExecState *exec) const
+Value RelationalNode::evaluate(ExecState *exec) const
 {
-  Value v1 = expr1->value(exec);
+  Value v1 = expr1->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
-  Value v2 = expr2->value(exec);
+  Value v2 = expr2->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
 
   bool b;
@@ -1349,11 +1349,11 @@ bool EqualNode::deref()
 }
 
 // ECMA 11.9
-Value EqualNode::value(ExecState *exec) const
+Value EqualNode::evaluate(ExecState *exec) const
 {
-  Value v1 = expr1->value(exec);
+  Value v1 = expr1->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
-  Value v2 = expr2->value(exec);
+  Value v2 = expr2->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
 
   bool result;
@@ -1390,11 +1390,11 @@ bool BitOperNode::deref()
 }
 
 // ECMA 11.10
-Value BitOperNode::value(ExecState *exec) const
+Value BitOperNode::evaluate(ExecState *exec) const
 {
-  Value v1 = expr1->value(exec);
+  Value v1 = expr1->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
-  Value v2 = expr2->value(exec);
+  Value v2 = expr2->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
   int i1 = v1.toInt32(exec);
   int i2 = v2.toInt32(exec);
@@ -1430,15 +1430,15 @@ bool BinaryLogicalNode::deref()
 }
 
 // ECMA 11.11
-Value BinaryLogicalNode::value(ExecState *exec) const
+Value BinaryLogicalNode::evaluate(ExecState *exec) const
 {
-  Value v1 = expr1->value(exec);
+  Value v1 = expr1->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE;
   bool b1 = v1.toBoolean(exec);
   if ((!b1 && oper == OpAnd) || (b1 && oper == OpOr))
     return v1;
 
-  Value v2 = expr2->value(exec);
+  Value v2 = expr2->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
 
   return v2;
@@ -1469,16 +1469,12 @@ bool ConditionalNode::deref()
 }
 
 // ECMA 11.12
-Value ConditionalNode::value(ExecState *exec) const
+Value ConditionalNode::evaluate(ExecState *exec) const
 {
   bool b = logical->toBoolean(exec);
   KJS_CHECKEXCEPTIONVALUE
 
-  Value v;
-  if (b)
-    v = expr1->value(exec);
-  else
-    v = expr2->value(exec);
+  Value v = b ? expr1->evaluate(exec) : expr2->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
 
   return v;
@@ -1505,20 +1501,20 @@ bool AssignNode::deref()
 }
 
 // ECMA 11.13
-Value AssignNode::value(ExecState *exec) const
+Value AssignNode::evaluate(ExecState *exec) const
 {
   Reference2 l;
   Value v;
   if (oper == OpEqual) {
-    l = left->evaluate(exec);
+    l = left->evaluateReference(exec);
     KJS_CHECKEXCEPTIONVALUE
-    v = expr->value(exec);
+    v = expr->evaluate(exec);
     KJS_CHECKEXCEPTIONVALUE
   } else {
-    l = left->evaluate(exec);
+    l = left->evaluateReference(exec);
     KJS_CHECKEXCEPTIONVALUE
     Value v1 = l.getValue(exec);
-    Value v2 = expr->value(exec);
+    Value v2 = expr->evaluate(exec);
     KJS_CHECKEXCEPTIONVALUE
     int i1 = v1.toInt32(exec);
     int i2 = v2.toInt32(exec);
@@ -1593,11 +1589,11 @@ bool CommaNode::deref()
 }
 
 // ECMA 11.14
-Value CommaNode::value(ExecState *exec) const
+Value CommaNode::evaluate(ExecState *exec) const
 {
-  (void) expr1->value(exec);  // ignore return value
+  (void) expr1->evaluate(exec);  // ignore return value
   KJS_CHECKEXCEPTIONVALUE
-  Value v = expr2->value(exec);
+  Value v = expr2->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
 
   return v;
@@ -1681,9 +1677,9 @@ bool AssignExprNode::deref()
 }
 
 // ECMA 12.2
-Value AssignExprNode::value(ExecState *exec) const
+Value AssignExprNode::evaluate(ExecState *exec) const
 {
-  return expr->value(exec);
+  return expr->evaluate(exec);
 }
 
 // ----------------------------- VarDeclNode ----------------------------------
@@ -1708,13 +1704,13 @@ bool VarDeclNode::deref()
 }
 
 // ECMA 12.2
-Value VarDeclNode::value(ExecState *exec) const
+Value VarDeclNode::evaluate(ExecState *exec) const
 {
   Object variable = Object::dynamicCast(exec->context().variableObject());
 
   Value val;
   if (init) {
-      val = init->value(exec);
+      val = init->evaluate(exec);
       KJS_CHECKEXCEPTIONVALUE
   } else {
       if ( variable.hasProperty(exec, ident ) ) // already declared ?
@@ -1762,13 +1758,13 @@ bool VarDeclListNode::deref()
 
 
 // ECMA 12.2
-Value VarDeclListNode::value(ExecState *exec) const
+Value VarDeclListNode::evaluate(ExecState *exec) const
 {
   if (list)
-    (void) list->value(exec);
+    (void) list->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
 
-  (void) var->value(exec);
+  (void) var->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
 
   return Undefined();
@@ -1803,7 +1799,7 @@ Completion VarStatementNode::execute(ExecState *exec)
 {
   KJS_BREAKPOINT;
 
-  (void) list->value(exec); // returns 0L
+  (void) list->evaluate(exec); // returns 0L
   KJS_CHECKEXCEPTION
 
   return Completion(Normal);
@@ -1876,7 +1872,7 @@ Completion ExprStatementNode::execute(ExecState *exec)
 {
   KJS_BREAKPOINT;
 
-  Value v = expr->value(exec);
+  Value v = expr->evaluate(exec);
   KJS_CHECKEXCEPTION
 
   return Completion(Normal, v);
@@ -2076,7 +2072,7 @@ Completion ForNode::execute(ExecState *exec)
   Value v, cval;
 
   if (expr1) {
-    v = expr1->value(exec);
+    v = expr1->evaluate(exec);
     KJS_CHECKEXCEPTION
   }
   for (;;) {
@@ -2099,7 +2095,7 @@ Completion ForNode::execute(ExecState *exec)
         return c;
     }
     if (expr3) {
-      v = expr3->value(exec);
+      v = expr3->evaluate(exec);
       KJS_CHECKEXCEPTION
     }
   }
@@ -2165,11 +2161,11 @@ Completion ForInNode::execute(ExecState *exec)
   Completion c;
 
   if ( varDecl ) {
-    varDecl->value(exec);
+    varDecl->evaluate(exec);
     KJS_CHECKEXCEPTION
   }
 
-  Object v = expr->value(exec).toObject(exec);
+  Object v = expr->evaluate(exec).toObject(exec);
   KJS_CHECKEXCEPTION
   List propList = v.propList(exec);
 
@@ -2182,7 +2178,7 @@ Completion ForInNode::execute(ExecState *exec)
       continue;
     }
 
-    Reference2 ref = lexpr->evaluate(exec);
+    Reference2 ref = lexpr->evaluateReference(exec);
     KJS_CHECKEXCEPTION
     ref.putValue(exec, String(name));
 
@@ -2264,7 +2260,7 @@ Completion ReturnNode::execute(ExecState *exec)
   if (!value)
     return Completion(ReturnValue, Undefined());
 
-  Value v = value->value(exec);
+  Value v = value->evaluate(exec);
   KJS_CHECKEXCEPTION
 
   return Completion(ReturnValue, v);
@@ -2295,7 +2291,7 @@ Completion WithNode::execute(ExecState *exec)
 {
   KJS_BREAKPOINT;
 
-  Value v = expr->value(exec);
+  Value v = expr->evaluate(exec);
   KJS_CHECKEXCEPTION
   Object o = v.toObject(exec);
   KJS_CHECKEXCEPTION
@@ -2332,9 +2328,9 @@ bool CaseClauseNode::deref()
 }
 
 // ECMA 12.11
-Value CaseClauseNode::value(ExecState *exec) const
+Value CaseClauseNode::evaluate(ExecState *exec) const
 {
-  Value v = expr->value(exec);
+  Value v = expr->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
 
   return v;
@@ -2375,7 +2371,7 @@ bool ClauseListNode::deref()
   return Node::deref();
 }
 
-Value ClauseListNode::value(ExecState */*exec*/) const
+Value ClauseListNode::evaluate(ExecState */*exec*/) const
 {
   /* should never be called */
   assert(false);
@@ -2425,7 +2421,7 @@ bool CaseBlockNode::deref()
   return Node::deref();
 }
 
-Value CaseBlockNode::value(ExecState */*exec*/) const
+Value CaseBlockNode::evaluate(ExecState */*exec*/) const
 {
   /* should never be called */
   assert(false);
@@ -2443,7 +2439,7 @@ Completion CaseBlockNode::evalBlock(ExecState *exec, const Value& input) const
     while (a) {
       clause = a->clause();
       a = a->next();
-      v = clause->value(exec);
+      v = clause->evaluate(exec);
       KJS_CHECKEXCEPTION
       if (strictEqual(exec, input, v)) {
 	res = clause->evalStatements(exec);
@@ -2462,7 +2458,7 @@ Completion CaseBlockNode::evalBlock(ExecState *exec, const Value& input) const
   while (b) {
     clause = b->clause();
     b = b->next();
-    v = clause->value(exec);
+    v = clause->evaluate(exec);
     KJS_CHECKEXCEPTION
     if (strictEqual(exec, input, v)) {
       res = clause->evalStatements(exec);
@@ -2529,7 +2525,7 @@ Completion SwitchNode::execute(ExecState *exec)
 {
   KJS_BREAKPOINT;
 
-  Value v = expr->value(exec);
+  Value v = expr->evaluate(exec);
   KJS_CHECKEXCEPTION
   Completion res = block->evalBlock(exec,v);
 
@@ -2604,7 +2600,7 @@ Completion ThrowNode::execute(ExecState *exec)
 {
   KJS_BREAKPOINT;
 
-  Value v = expr->value(exec);
+  Value v = expr->evaluate(exec);
   KJS_CHECKEXCEPTION
 
   // bail out on error
@@ -2772,7 +2768,7 @@ ParameterNode* ParameterNode::append(const UString &i)
 }
 
 // ECMA 13
-Value ParameterNode::value(ExecState */*exec*/) const
+Value ParameterNode::evaluate(ExecState */*exec*/) const
 {
   return Undefined();
 }
@@ -2904,7 +2900,7 @@ bool FuncExprNode::deref()
 
 
 // ECMA 13
-Value FuncExprNode::value(ExecState *exec) const
+Value FuncExprNode::evaluate(ExecState *exec) const
 {
   const List sc = exec->context().scopeChain();
   FunctionImp *fimp = new DeclaredFunctionImp(exec, UString::null, body, sc);
