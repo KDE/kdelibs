@@ -1227,6 +1227,7 @@ void KHTMLPart::clear()
 
   d->m_delayRedirect = 0;
   d->m_redirectURL = QString::null;
+  d->m_redirectionTimer.stop();
   d->m_redirectLockHistory = true;
   d->m_bClearing = false;
   d->m_frameNameId = 1;
