@@ -161,6 +161,14 @@ Dispatcher::~Dispatcher()
 
 	StartupManager::shutdown();
 
+	/* drop all open connections */
+	list<Connection *>::iterator ci;
+	for(ci=connections.begin(); ci != connections.end();ci++)
+	{
+		Connection *conn = *ci;
+		conn->drop();
+	}
+
 	/*
 	 * remove signal handler for SIGPIPE
 	 */
