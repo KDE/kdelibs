@@ -293,6 +293,11 @@ void KIconDialog::setStrictIconSize(bool b)
     d->m_bStrictIconSize=b;
 }
 
+bool KIconDialog::strictIconSize() const
+{
+    return d->m_bStrictIconSize;
+}
+
 QString KIconDialog::selectIcon(int group, int context, bool user)
 {
     mGroup = group;
@@ -317,6 +322,17 @@ QString KIconDialog::selectIcon(int group, int context, bool user)
 	return fi.baseName();
     }
     return QString::null;
+}
+
+QString KIconDialog::getIcon(int group=KIcon::Desktop, int context=KIcon::Application,
+                             bool strictIconSize=false, bool user=false,
+                             QWidget *parent=0, const QString &caption=QString::null)
+{
+    KIconDialog dlg(parent, "icon dialog");
+    dlg.setStrictIconSize(strictIconSize);
+    if (!caption.isNull())
+        dlg.setCaption(caption);
+    return dlg.selectIcon(group, context, user);
 }
 
 void KIconDialog::slotButtonClicked(int id)
@@ -429,6 +445,11 @@ KIconButton::~KIconButton()
 void KIconButton::setStrictIconSize(bool b)
 {
     d->m_bStrictIconSize=b;
+}
+
+bool KIconButton::strictIconSize() const
+{
+    return d->m_bStrictIconSize;
 }
 
 void KIconButton::setIconType(int group, int context, bool user)

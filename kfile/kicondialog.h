@@ -76,19 +76,26 @@ private:
 /**
  * Dialog for interactive selection of icons. Use the function
  * selectIcon() let the user select an icon.
+ *
+ * @short An icon selection dialog.
  */
 class KIconDialog: public KDialogBase
 {
     Q_OBJECT
 
 public:
-    /** Construct the iconloader dialog. Uses the global iconloader. */
+    /**
+     * Constructs an icon selection dialog using the global iconloader.
+     */
     KIconDialog(QWidget *parent=0L, const char *name=0L);
-
-    /** Alternate constructor to use a different iconloader. */
+    /**
+     * Constructs an icon selection dialog using a specific iconloader.
+     */
     KIconDialog(KIconLoader *loader, QWidget *parent=0,
 	    const char *name=0);
-
+    /**
+     * Destructs the dialog.
+     */
     ~KIconDialog();
 
     /**
@@ -98,6 +105,16 @@ public:
      * also be selectable.
      */
     void setStrictIconSize(bool b);
+    /**
+     * Returns true if a strict icon size policy is set.
+     */
+    bool strictIconSize() const;
+
+    /**
+     * @deprecated in KDE 3.0, use the static method getIcon instead.
+     */
+    QString selectIcon(int group=KIcon::Desktop, int
+	    context=KIcon::Application, bool user=false);
 
     /**
      * Pops up the dialog an lets the user select an icon.
@@ -107,11 +124,16 @@ public:
      * used outside the dialog.
      * @param context The initial icon context. Initially, the icons having
      * this context are shown in the dialog. The user can change this.
+     * @param strictIconSize When true, only icons of the specified group's size
+     * are shown, otherwise icon not available in the desired group's size
+     * will also be selectable.
      * @param user Begin with the "user icons" instead of "system icons".
      * @return The name of the icon, suitable for loading with KIconLoader.
+     * @version New in 3.0
      */
-    QString selectIcon(int group=KIcon::Desktop, int
-	    context=KIcon::Application, bool user=false);
+    static QString getIcon(int group=KIcon::Desktop, int context=KIcon::Application,
+                           bool strictIconSize=false, bool user=false,
+                           QWidget *parent=0, const QString &caption=QString::null);
 
 private slots:
     void slotButtonClicked(int);
@@ -142,44 +164,65 @@ private:
  * A pushbutton for choosing an icon. Pressing on the button will open a
  * KIconDialog for the user to select an icon. The current icon will be
  * displayed on the button.
+ *
+ * @see KIconDialog
+ * @short A push button that allows selection of an icon.
  */
 class KIconButton: public QPushButton
 {
     Q_OBJECT
 
 public:
-    /** Creates a new KIconButton. Uses the global iconloader. */
+    /**
+     * Constructs a KIconButton using the global iconloader.
+     */
     KIconButton(QWidget *parent=0L, const char *name=0L);
 
-    /** Alternate constructor for use with a different iconloader. */
+    /**
+     * Constructs a KIconButton using a specific KIconLoader.
+     */
     KIconButton(KIconLoader *loader, QWidget *parent, const char *name=0L);
-
+    /**
+     * Destructs the button.
+     */
     ~KIconButton();
 
     /**
-     * Set a strict icon size policy for allowed icons. When true,
+     * Sets a strict icon size policy for allowed icons. When true,
      * only icons of the specified group's size in setIconType are allowed,
      * and only icons of that size will be shown in the icon dialog.
      */
     void setStrictIconSize(bool b);
+    /**
+     * Returns true if a strict icon size policy is set.
+     */
+    bool strictIconSize() const;
 
     /**
-     * Set the icon group and context. Use KIcon::NoGroup if you want to
+     * Sets the icon group and context. Use KIcon::NoGroup if you want to
      * allow icons for any group in the given context.
      */
     void setIconType(int group, int context, bool user=false);
 
-    /** Set the button's initial icon. */
+    /**
+     * Sets the button's initial icon.
+     */
     void setIcon(QString icon);
 
-    /** Reset the icon (reverts to an empty button) */
+    /**
+     * Resets the icon (reverts to an empty button).
+     */
     void resetIcon();
 
-    /** Returns the selected icon name. */
+    /**
+     * Returns the name of the selected icon.
+     */
     QString icon() const { return mIcon; }
 
 signals:
-    /** Emitted when the icon has changed. */
+    /**
+     * Emitted when the icon has changed.
+     */
     void iconChanged(QString icon);
 
 private slots:
