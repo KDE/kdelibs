@@ -42,12 +42,14 @@ class KFileView::KFileViewPrivate
 {
 public:
     KFileViewPrivate() {
-        actions = new KActionCollection();
+        actions = 0;
     }
 
     ~KFileViewPrivate() {
-	actions->clear();
-        delete actions;
+	if( actions ) {
+	    actions->clear();
+	    delete actions;
+	}
     }
 
     KActionCollection *actions;
@@ -348,6 +350,8 @@ void KFileView::removeItem( const KFileItem *item )
 
 KActionCollection * KFileView::actionCollection() const
 {
+    if ( !d->actions )
+    	d->actions = new KActionCollection( widget(), "KFileView::d->actions" );
     return d->actions;
 }
 
