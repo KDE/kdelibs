@@ -905,6 +905,12 @@ KCmdLineArgs::setOption(const QCString &opt, const char *value)
       arg += opt;
       addArgument(arg);
       addArgument(value);
+
+      // Hack coming up!
+      if (arg == "-display")
+      {
+         setenv("DISPLAY", value, true);
+      }
       return;
    }
    if (!parsedOptionList) {
