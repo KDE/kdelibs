@@ -1,7 +1,9 @@
 [Misc]
 Name=HighColor Default
+Name[cs]=Mnohobarevné implicitní
 Name[de]=Standard für 64000 Farben
 Name[eo]=Implicita kun multagaj koloroj
+Name[he]=הובג עבצב לדחמ תרירב
 Name[hu]=Sok-színű alapértelmezett
 Name[it]=Molti colori predefinito
 Name[nl]=Standaard hoge kleuren
@@ -10,8 +12,10 @@ Name[no_NY]=Standard med mange fargar
 Name[sl]=Številne barve privzete
 Name[tr]=Yüksek Renk Öntanýmlý
 Comment=Highcolor version of the default style
+Comment[cs]=Mnohobarevný implicitní styl
 Comment[de]=64000-Farben-Version des Standardstils
 Comment[eo]=Implicita stilo kun multegaj koloroj
+Comment[he]=לדחמה תרירב ןונגסה לש הובג עבצב הסריג
 Comment[hu]=Az alapértelmezett stílus sok-színű változata
 Comment[it]=Versione con molti colori dello stile predefinito
 Comment[nl]=Hoge-kleuren-versie van het standaard-type

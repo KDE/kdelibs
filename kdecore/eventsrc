@@ -1,7 +1,9 @@
 [!Global!]
 Name=KDE Global
+Name[cs]=Globální pro KDE
 Name[de]=KDE allgemein
 Name[eo]=KDE-Malloka
+Name[he]=KDE לש ילבולג
 Name[hu]=KDE globális
 Name[it]=Globale per KDE
 Name[nl]=KDE - Globaal
@@ -9,13 +11,16 @@ Name[no_NY]=KDE global
 Name[sl]=Skupno v KDE
 Name[tr]=KDE Küresel
 Comment=KDE System Notifications
+Comment[he]=KDE לש תכרעמ יעודיי
 Comment[no]=KDE Systemvarsler
 Comment[no_NY]=KDE Systempåminningar
 
 [KCompletion: rotation]
 Name=KCompletion End of Matches
+Name[cs]=Kcompletion konec odpovídajících položek
 Name[de]=KCompletion: Ende der Übereinstimmungen
 Name[eo]=Kompletigo - fino de trovaĵoj
+Name[he]=תומאתהה ףוס KCompletion
 Name[hu]=KKiegészítés nincs több találat
 Name[it]=KCompletion fine delle corrispondenze
 Name[nl]=KCompletion - einde van de overeenkomsten
@@ -24,8 +29,10 @@ Name[no_NY]=KCompletion slutt på treff
 Name[sl]=KCompletion - konec zadetkov
 Name[tr]=KCompletion Eþleþmelerin Sonu
 Comment=The end of the list of matches has been reached.
+Comment[cs]=Dosaženo konce seznamu odpovídajích položek.
 Comment[de]=Das Ende der Übereinstimmungsliste wurde erreicht.
 Comment[eo]=Fino de la listo de trovaĵoj
+Comment[he]=.תומאתהה תמישר ףוסל ועיגה
 Comment[hu]=Az egyező találatok lista végére értem.
 Comment[it]=La fine della lista delle corrispondenze è stata raggiunta.
 Comment[nl]=Het einde van de lijst met overeenkomsten is bereikt.
@@ -37,8 +44,10 @@ default_presentation=0
 
 [KCompletion: no match]
 Name=KCompletion No Match
+Name[cs]=Kcompletion nenalezeny odpovídající položky
 Name[de]=KCompletion: keine Übereinstimmungen
 Name[eo]=Kompletigo - neniu trovaĵo
+Name[he]=המאתה ןיא KCompletion
 Name[hu]=KKiegészítés nincs találat
 Name[it]=KCompletion nessuna corrispondenza
 Name[nl]=KCompletion - geen overeenkomsten
@@ -47,8 +56,10 @@ Name[no_NY]=KCompletion ingen treff
 Name[sl]=KCompletion - ni zadetka
 Name[tr]=KCompletion Eþleþme Yok
 Comment=No matching completion found.
+Comment[cs]=Nenalezena vhodná doplnění.
 Comment[de]=Kein übereinstimmender Abschluss gefunden
 Comment[eo]=Ne troviĝis konvena kompletigo
+Comment[he]=.תמאות המלשה ףא האצמנ אל
 Comment[hu]=Nincs egyező találat.
 Comment[nl]=Geen overeenkomstige completering gevonden.
 Comment[no]=Ingen passende fullføringer funnet.
@@ -59,8 +70,10 @@ default_presentation=0
 
 [KCompletion: partial match]
 Name=KCompletion Partial Match
+Name[cs]=Kcompletion částečná schoda položek
 Name[de]=KCompletion: teilweise Übereinstimmung
 Name[eo]=Kompletigo - parta trovaĵo
+Name[he]=תיקלח המאתה KCompletion
 Name[hu]=KKiegészítés részleges találat
 Name[it]=KCompletion corrispondenza parziale
 Name[nl]=KCompletion - gedeeltelijke overeenkomsten
@@ -69,8 +82,10 @@ Name[no_NY]=KCompletion delvis treff
 Name[sl]=KCompletion - delno ujemanje
 Name[tr]=KCompletion Kýsmi Eþleþme
 Comment=There is more than one possible match.
+Comment[cs]=Existuje více vhodných odpovídajících položek.
 Comment[de]=Es gibt mehr als einen mögliche Übereinstimmung.
 Comment[eo]=Ekzistas pli ol unu konvena trovaĵo.
+Comment[he]=.תחא תירשפא המאתהמ רתוי שי
 Comment[hu]=Több mint egy találat van.
 Comment[it]=C'è più di una corrispondenza possibile.
 Comment[nl]=Er is meer dan één mogelijke overeenkomst.
@@ -82,8 +97,10 @@ default_presentation=0
 
 [cannotopenfile]
 Name=Cannot Open File
+Name[cs]=Není možné otevřít soubor
 Name[de]=Datei lässt sich nicht öffnen
 Name[eo]=Ne eblas malfermi dosieron
+Name[he]=ץבוקה תא חותפל ןתינ אל
 Name[hu]=Nem sikerült megnyitni a fájlt
 Name[it]=Impossibile aprire il file
 Name[nl]=Kan het bestand niet openen
@@ -92,8 +109,10 @@ Name[no_NY]=Kan ikkje opna fil
 Name[sl]=Ni moč odpreti datoteke
 Name[tr]=Dosya Açýlamýyor
 Comment=The selected file cannot be opened for reading or writing
+Comment[cs]=Vybraný soubor není možné otevřít pro čtení nebo zápis
 Comment[de]=Die gewählte Datei kann nicht zum Lesen oder Schreiben geöffnet werden.
 Comment[eo]=La elektita dosiero ne estas malfermebla por legado aŭ skribado
+Comment[he]=הביתכ וא האירקל רחבנה ץבוקה תא חותפל ןתינ אל
 Comment[hu]=A kiválasztott fájlt nem lehet megnyitni írásra vagy olvasásra.
 Comment[it]=Il file selezionato non può essere aperto per la lettura o la scrittura
 Comment[nl]=Het geselecteerde bestand kan niet worden geopend om te lezen of naar te schrijven.
