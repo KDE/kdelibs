@@ -6,10 +6,10 @@
 <H3>The aRts C API</h3>
 <p>
 The aRts plain C API aims at easily writing/porting plain C apps to the
-aRts sound server. What is provided is streaming functionality, in a
-blocking way. So for most apps, you simply remove the few system calls
-that deal with your audio device, and replace them with the appropriate
-aRts calls.
+aRts sound server. What is provided is streaming functionality (sending
+sample streams to artsd), either blocking or non-blocking. So for most
+apps, you simply remove the few system calls that deal with your audio
+device, and replace them with the appropriate aRts calls.
 </p>
 <p>
 I did two ports as proof of concept, that is <b>mpg123</b> and <b>quake</b>.
