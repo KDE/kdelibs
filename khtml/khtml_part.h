@@ -1087,15 +1087,8 @@ public slots:
   void setCaretMode(bool enable);
 
   /**
-   * Makes the document editable.
-   *
-   * Setting this property to @p true makes the document, and its
-   * subdocuments (such as frames, iframes, objects) editable as a whole.
-   * FIXME: insert more information about navigation, features etc. as seen fit
-   *
-   * @param enable @p true to set document editable, @p false to set it
-   *	read-only.
-   * @since 3.2 (pending, do not use)
+   * do not use
+   * @internal
    */
   void setEditable(bool enable);
 
