@@ -34,7 +34,7 @@ class KService;
 namespace KIO {
    class Job;
    class StatJob;
-};
+}
 
 /**
  * To open files with their associated applications in KDE, use KRun.

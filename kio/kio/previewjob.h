@@ -164,6 +164,6 @@ namespace KIO {
      * @see PreviewJob::availablePlugins()
      */
     PreviewJob *filePreview( const KURL::List &items, int width, int height = 0, int iconSize = 0, int iconAlpha = 70, bool scale = true, bool save = true, const QStringList *enabledPlugins = 0 );
-};
+}
 
 #endif

@@ -122,7 +122,7 @@ public:
     QByteArray timeoutData;
 };
 
-};
+}
 
 static SlaveBase *globalSlave;
 long SlaveBase::s_seqNr;
@@ -135,7 +135,7 @@ static void sigalarm_handler(int sigNumber)
    //I don't think we can have the same problem here as in the sigsegv handler
    kdDebug()<<"kioslave : exiting due to alarm signal "<<endl;
    exit(2);
-};
+}
 
 static void genericsig_handler(int sigNumber)
 {
@@ -148,7 +148,7 @@ static void genericsig_handler(int sigNumber)
       globalSlave->setKillFlag();
    signal(SIGALRM,&sigalarm_handler);
    alarm(5);  //generate an alarm signal in 5 seconds, in this time the slave has to exit
-};
+}
 
 //////////////
 
@@ -289,7 +289,7 @@ void SlaveBase::dispatchLoop()
           << (errno==EBADF?"EBADF":errno==EINTR?"EINTR":errno==EINVAL?"EINVAL":errno==ENOMEM?"ENOMEM":"unknown")
           << " (" << errno << ")" << endl;
        return;
-    };
+    }
     //I think we get here when we were killed in dispatch() and not in select()
     if (wasKilled())
     {
@@ -545,7 +545,7 @@ void SlaveBase::mimeType( const QString &_type)
        {
           dispatch( cmd, data );
           continue; // Disguised goto
-       };
+       }
        break;
     }
   }
@@ -1197,12 +1197,12 @@ int SlaveBase::readTimeout()
 bool SlaveBase::wasKilled() const
 {
    return d->wasKilled;
-};
+}
 
 void SlaveBase::setKillFlag()
 {
    d->wasKilled=true;
-};
+}
 
 void SlaveBase::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }

@@ -152,6 +152,6 @@ private:
     PasswordDialogPrivate* d;
 };
 
-};
+}
 
 #endif

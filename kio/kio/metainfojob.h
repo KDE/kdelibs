@@ -115,6 +115,6 @@ namespace KIO {
      * @return the MetaInfoJob to retrieve the items
      */
     MetaInfoJob* fileMetaInfo(const KURL::List& items);
-};
+}
 
 #endif
