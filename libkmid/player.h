@@ -29,6 +29,7 @@
 #include <libkmid/deviceman.h>
 #include <libkmid/track.h>
 #include <libkmid/notearray.h>
+#include <kdemacros.h>
 
 /**
  * This struct stores text, lyrics and change tempo events among others.
@@ -180,7 +181,7 @@ struct PlayerController
    * @deprecated
    * Not used
    */
-  volatile int message; // set one of the following :
+  volatile int message KDE_DEPRECATED; // set one of the following :
 
 #define PLAYER_DOPAUSE	1
 #define PLAYER_DOSTOP	2
