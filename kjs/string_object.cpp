@@ -242,7 +242,15 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
       do {
         int **ovector = regExpObj->registerRegexp( reg, u );
         UString mstr = reg->match(u, lastIndex, &pos, ovector);
+        if (pos == -1)
+          break;
         len = mstr.size();
+        // special case of empty match
+        if (len == 0 && lastIndex > 0) {
+          pos = lastIndex + 1;
+          if (pos > u.size())
+            break;
+        }
         UString rstr(u3);
         bool ok;
         // check if u3 matches $1 or $2 etc
@@ -262,10 +270,9 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
           }
         }
         lastIndex = pos + rstr.size();
-        if ( pos != -1 )
-          u = u.substr(0, pos) + rstr + u.substr(pos + len);
+        u = u.substr(0, pos) + rstr + u.substr(pos + len);
         //fprintf(stderr,"pos=%d,len=%d,lastIndex=%d,u=%s\n",pos,len,lastIndex,u.ascii());
-      } while ( global && pos != -1 );
+      } while (global);
 
       result = String(u);
     } else { // First arg is a string
