@@ -78,6 +78,10 @@ public:
 	 */
 	QString findKey( int key ) const;
 
+	// This is temporary until Friday, when I'll make QAccel
+	//  a parent class of KAccel.
+	QAccel* qaccelPtr();
+
 private:
 	class KAccelPrivate* d;
 };

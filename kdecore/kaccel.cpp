@@ -310,3 +310,6 @@ QString KAccel::findKey( int key ) const
 	else
 		return QString::null;
 }
+
+QAccel* KAccel::qaccelPtr()
+	{ return d->m_pAccel; }
