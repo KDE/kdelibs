@@ -415,9 +415,9 @@ void KMdiDockContainer::tabClicked(int t)
 
   kdDebug(760)<<"Fixed Width:"<<m_tb->width()<<endl;
   if (m_vertical)
-  parentDockWidget()->setForcedFixedWidth(m_tb->width()+2); // strange why it worked before at all
+  parentDockWidget()->setForcedFixedWidth(m_tb->width()); // strange why it worked before at all
   else
-  parentDockWidget()->setForcedFixedHeight(m_tb->height()+2); // strange why it worked before at all
+  parentDockWidget()->setForcedFixedHeight(m_tb->height()); // strange why it worked before at all
    }
   m_tabSwitching=false;
 }
