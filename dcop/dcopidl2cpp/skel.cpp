@@ -59,7 +59,7 @@ struct Function
 };
 
 
-/**
+/*
  * Writes the skeleton
  */
 void generateSkel( const QString& idl, const QString& filename, QDomElement de )

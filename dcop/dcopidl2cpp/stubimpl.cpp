@@ -59,7 +59,7 @@ static bool isIntType( const QString& t )
        || (t == "unsigned char"));
 }
 
-/**
+/*
  * Writes the stub implementation
  */
 void generateStubImpl( const QString& idl, const QString& header, const QString& /*headerBase*/, const QString& filename, QDomElement de )

@@ -33,7 +33,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "main.h"
 #include "type.h"
 
-/**
+/*
  * Writes the stubs header
  */
 void generateStub( const QString& idl, const QString& filename, QDomElement de)

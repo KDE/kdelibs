@@ -28,10 +28,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 class DCOPConnection;
 
-//
-// This requires:
-// DCOPSignalConnectionList * DCOPConnection::signalConnectionList()
-/// @internal
+/** \internal
+  * This requires:
+  * DCOPSignalConnectionList * DCOPConnection::signalConnectionList()
+*/
 class DCOPSignalConnection
 {
 public:
@@ -45,7 +45,7 @@ public:
    QCString slot;        // Function to send to in the object.
 };
 
-/// @internal
+/** \internal */
 class DCOPSignalConnectionList : public QPtrList<DCOPSignalConnection>
 {
 public:

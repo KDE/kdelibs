@@ -81,7 +81,6 @@ public:
    * and has a function dcopTypeName(T). This is true for most
    * basic types.
    * @param t the type will be written here, if successful
-   * @param tname the signature type name
    * @return true if successful, false otherwise
    */
     template <class T> bool get(  T& t ) {
@@ -426,6 +425,11 @@ public:
      * @param useEventLoop if UseEventLoop, the event loop will be started when
      *            the call blocks too long
      * @param timeout timeout for the call in miliseconds, or -1 for no timeout
+     * @param fun the name of the DCOP function. This can be either the
+     *            full function signature (e.g. "setName(QString)") or
+     *            only the function's name (e.g. "setName"). In the
+     *            latter case the exact signature will be guessed from
+     *            the arguments
      * @since 3.2
      */
     DCOPReply callExt( const QCString& fun, EventLoopFlag useEventLoop=NoEventLoop,
@@ -466,6 +470,13 @@ public:
      * @param useEventLoop if UseEventLoop, the event loop will be started when
      *            the call blocks too long
      * @param timeout timeout for the call in miliseconds, or -1 for no timeout
+     * @param fun the name of the DCOP function. This can be either the
+     *            full function signature (e.g. "setName(QString)") or
+     *            only the function's name (e.g. "setName"). In the
+     *            latter case the exact signature will be guessed from
+     *            the arguments
+     * @param t1 the first argument of the function. This can be a
+     *           supported base type or a @ref DCOPArg object.
      * @since 3.2
      */
     template <class T1>
@@ -518,6 +529,15 @@ public:
      * @param useEventLoop if UseEventLoop, the event loop will be started when
      *            the call blocks too long
      * @param timeout timeout for the call in miliseconds, or -1 for no timeout
+     * @param fun the name of the DCOP function. This can be either the
+     *            full function signature (e.g. "setName(QString)") or
+     *            only the function's name (e.g. "setName"). In the
+     *            latter case the exact signature will be guessed from
+     *            the arguments
+     * @param t1 the first argument of the function. This can be a
+     *           supported base type or a @ref DCOPArg object.
+     * @param t2 the second argument of the function. This can be a
+     *           supported base type or a @ref DCOPArg object.
      * @since 3.2
      */
     template <class T1, class T2>
@@ -575,6 +595,17 @@ public:
      * and specifying timeout.
      * @param useEventLoop if UseEventLoop, the event loop will be started when
      *            the call blocks too long
+     * @param fun the name of the DCOP function. This can be either the
+     *            full function signature (e.g. "setName(QString)") or
+     *            only the function's name (e.g. "setName"). In the
+     *            latter case the exact signature will be guessed from
+     *            the arguments
+     * @param t1 the first argument of the function. This can be a
+     *           supported base type or a @ref DCOPArg object.
+     * @param t2 the second argument of the function. This can be a
+     *           supported base type or a @ref DCOPArg object.
+     * @param t3 the third argument of the function. This can be a
+     *           supported base type or a @ref DCOPArg object.
      * @param timeout timeout for the call in miliseconds, or -1 for no timeout
      * @since 3.2
      */
@@ -639,7 +670,20 @@ public:
      * and specifying timeout.
      * @param useEventLoop if UseEventLoop, the event loop will be started when
      *            the call blocks too long
+     * @param fun the name of the DCOP function. This can be either the
+     *            full function signature (e.g. "setName(QString)") or
+     *            only the function's name (e.g. "setName"). In the
+     *            latter case the exact signature will be guessed from
+     *            the arguments
      * @param timeout timeout for the call in miliseconds, or -1 for no timeout
+     * @param t1 the first argument of the function. This can be a
+     *           supported base type or a @ref DCOPArg object.
+     * @param t2 the second argument of the function. This can be a
+     *           supported base type or a @ref DCOPArg object.
+     * @param t3 the third argument of the function. This can be a
+     *           supported base type or a @ref DCOPArg object.
+     * @param t4 the fourth argument of the function. This can be a
+     *           supported base type or a @ref DCOPArg object.
      * @since 3.2
      */
     template <class T1,class T2,class T3,class T4>
@@ -709,7 +753,22 @@ public:
      * and specifying timeout.
      * @param useEventLoop if UseEventLoop, the event loop will be started when
      *            the call blocks too long
+     * @param fun the name of the DCOP function. This can be either the
+     *            full function signature (e.g. "setName(QString)") or
+     *            only the function's name (e.g. "setName"). In the
+     *            latter case the exact signature will be guessed from
+     *            the arguments
      * @param timeout timeout for the call in miliseconds, or -1 for no timeout
+     * @param t1 the first argument of the function. This can be a
+     *           supported base type or a @ref DCOPArg object.
+     * @param t2 the second argument of the function. This can be a
+     *           supported base type or a @ref DCOPArg object.
+     * @param t3 the third argument of the function. This can be a
+     *           supported base type or a @ref DCOPArg object.
+     * @param t4 the fourth argument of the function. This can be a
+     *           supported base type or a @ref DCOPArg object.
+     * @param t5 the fifth argument of the function. This can be a
+     *           supported base type or a @ref DCOPArg object.
      * @since 3.2
      */
     template <class T1,class T2,class T3,class T4,class T5>
@@ -785,7 +844,24 @@ public:
      * and specifying timeout.
      * @param useEventLoop if UseEventLoop, the event loop will be started when
      *            the call blocks too long
+     * @param fun the name of the DCOP function. This can be either the
+     *            full function signature (e.g. "setName(QString)") or
+     *            only the function's name (e.g. "setName"). In the
+     *            latter case the exact signature will be guessed from
+     *            the arguments
      * @param timeout timeout for the call in miliseconds, or -1 for no timeout
+     * @param t1 the first argument of the function. This can be a
+     *           supported base type or a @ref DCOPArg object.
+     * @param t2 the second argument of the function. This can be a
+     *           supported base type or a @ref DCOPArg object.
+     * @param t3 the third argument of the function. This can be a
+     *           supported base type or a @ref DCOPArg object.
+     * @param t4 the fourth argument of the function. This can be a
+     *           supported base type or a @ref DCOPArg object.
+     * @param t5 the fifth argument of the function. This can be a
+     *           supported base type or a @ref DCOPArg object.
+     * @param t6 the sixth argument of the function. This can be a
+     *           supported base type or a @ref DCOPArg object.
      * @since 3.2
      */
     template <class T1,class T2,class T3,class T4,class T5,class T6>
@@ -864,9 +940,28 @@ public:
     /**
      * Like call(), with additional arguments allowing entering the event loop
      * and specifying timeout.
+     * @param fun the name of the DCOP function. This can be either the
+     *            full function signature (e.g. "setName(QString)") or
+     *            only the function's name (e.g. "setName"). In the
+     *            latter case the exact signature will be guessed from
+     *            the arguments
      * @param useEventLoop if UseEventLoop, the event loop will be started when
      *            the call blocks too long
      * @param timeout timeout for the call in miliseconds, or -1 for no timeout
+     * @param t1 the first argument of the function. This can be a
+     *           supported base type or a @ref DCOPArg object.
+     * @param t2 the second argument of the function. This can be a
+     *           supported base type or a @ref DCOPArg object.
+     * @param t3 the third argument of the function. This can be a
+     *           supported base type or a @ref DCOPArg object.
+     * @param t4 the fourth argument of the function. This can be a
+     *           supported base type or a @ref DCOPArg object.
+     * @param t5 the fifth argument of the function. This can be a
+     *           supported base type or a @ref DCOPArg object.
+     * @param t6 the sixth argument of the function. This can be a
+     *           supported base type or a @ref DCOPArg object.
+     * @param t7 the seventh argument of the function. This can be a
+     *           supported base type or a @ref DCOPArg object.
      * @since 3.2
      */
     template <class T1,class T2,class T3,class T4,class T5,class T6,class T7>
@@ -955,6 +1050,27 @@ public:
      * @param useEventLoop if UseEventLoop, the event loop will be started when
      *            the call blocks too long
      * @param timeout timeout for the call in miliseconds, or -1 for no timeout
+     * @param t1 the first argument of the function. This can be a
+     *           supported base type or a @ref DCOPArg object.
+     * @param t2 the second argument of the function. This can be a
+     *           supported base type or a @ref DCOPArg object.
+     * @param t3 the third argument of the function. This can be a
+     *           supported base type or a @ref DCOPArg object.
+     * @param t4 the fourth argument of the function. This can be a
+     *           supported base type or a @ref DCOPArg object.
+     * @param t5 the fifth argument of the function. This can be a
+     *           supported base type or a @ref DCOPArg object.
+     * @param t6 the sixth argument of the function. This can be a
+     *           supported base type or a @ref DCOPArg object.
+     * @param t7 the seventh argument of the function. This can be a
+     *           supported base type or a @ref DCOPArg object.
+     * @param t8 the eigth argument of the function. This can be a
+     *           supported base type or a @ref DCOPArg object.
+     * @param fun the name of the DCOP function. This can be either the
+     *            full function signature (e.g. "setName(QString)") or
+     *            only the function's name (e.g. "setName"). In the
+     *            latter case the exact signature will be guessed from
+     *            the arguments
      * @since 3.2
      */
     template <class T1,class T2,class T3,class T4,class T5,class T6,class T7,class T8>

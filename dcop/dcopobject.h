@@ -377,6 +377,7 @@ public:
      *
      * The object id @p obj may be empty for app-wide function calls no
      * associated with any object.
+	 * @param obj the id of the object
      * @param fun is the normalized function signature.
      *            Such a signature usually looks like
      *            foobar(QString,int). The return type,

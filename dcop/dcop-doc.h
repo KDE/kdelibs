@@ -144,7 +144,7 @@ else {
 \endcode
 
 
-\sect receiving_data Receiving Data via DCOP:
+\section receiving_data Receiving Data via DCOP:
 
 Currently the only real way to receive data from DCOP is to multiply
 inherit from the normal class that you are inheriting (usually some
@@ -182,7 +182,7 @@ bool BarObject::process(const QCString &fun, const QByteArray &data,
 \endcode
 
 
-\sect receiving_calls Receiving Calls and processing them:
+\section receiving_calls Receiving Calls and processing them:
 
 If your applications is able to process incoming function calls
 right away the above code is all you need. When your application
@@ -359,7 +359,7 @@ manually. To use a stub, add MyInterface.stub to the SOURCES list of
 your Makefile.am. The stub class will then be called MyInterface_stub.
 
 
-\sect iuc Inter-user communication:
+\section iuc Inter-user communication:
 
 Sometimes it might be interesting to use DCOP between processes
 belonging to different users, e.g. a frontend process running
@@ -392,7 +392,7 @@ to the user's dcop server.
 NOTE: DCOP communication is not encrypted, so please do not
 pass important information around this way.
 
-@sect DCOP Protocol description:
+\section protocol DCOP Protocol description:
 
 A DCOPSend message does not expect any reply.
 <code>
@@ -445,7 +445,7 @@ QDataStream.
 
 Hopefully this document will get you well on your way into the world of
 inter-process communication with KDE!  Please direct all comments and/or
-suggestions to <a href="mailto:pbrown@kde.org>Preston Brown <pbrown@kde.org></a>
-and <a href="mailto:ettrich@kde.org>Matthias Ettrich <ettrich@kde.org></a>.
+suggestions to <a href="mailto:pbrown@kde.org>Preston Brown \<pbrown\@kde.org\></a>
+and <a href="mailto:ettrich@kde.org>Matthias Ettrich \<ettrich\@kde.org\></a>.
 
 */

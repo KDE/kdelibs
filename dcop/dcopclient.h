@@ -201,7 +201,7 @@ class DCOPClient : public QObject
   /**
    * Returns the current app id or a null string if the application
    * hasn't yet been registered.
-   * @param the application id, or QString::null if not registered
+   * @return the application id, or QString::null if not registered
    */
   QCString appId() const;
 
@@ -471,7 +471,7 @@ class DCOPClient : public QObject
    * If you do not want to reimplement this function for whatever reason,
    * you can also use a default object  or a @ref DCOPObjectProxy.
    *
-   * @param the normalized function signature
+   * @param fun the normalized function signature
    * @param data the received data
    * @param replyType write the reply type in this string
    * @param replyData write the reply data in this array
@@ -528,7 +528,7 @@ class DCOPClient : public QObject
 
   /**
    * Retrieves the list of objects of the remote application @p remApp.
-   * @param tremAPp he id of the application
+   * @param remApp he id of the application
    * @param ok if not null, the function sets @p ok to true if successful
    *           and false if an error occurred
    * @return the list of object ids
@@ -687,9 +687,9 @@ class DCOPClient : public QObject
     * Provides information about the last DCOP call for debugging purposes.
     */
   static const char *postMortemSender();
-  /// @internal
+  /** @internal */
   static const char *postMortemObject();
-  /// @internal
+  /** @internal */
   static const char *postMortemFunction();
 
   /**
