@@ -149,7 +149,8 @@ public:
   void setColor( const QColor & col );
 
   /**
-   * @return The color currently used in the preview (default: black)
+   * @return The color currently used in the preview (default: the text 
+   *         color of the active color group)
    */
   QColor color() const;
 
@@ -159,7 +160,8 @@ public:
   void setBackgroundColor( const QColor & col );
 
   /**
-   * @return The background color currently used in the preview (default: white)
+   * @return The background color currently used in the preview (default: 
+   *         the base color of the active colorgroup)
    */
   QColor backgroundColor() const;
 
