@@ -48,6 +48,7 @@ struct KSycocaPrivate {
         database = 0;
     }
     QFile *database;
+    QStringList changeList;
 };
 
 // Read-only constructor
@@ -187,8 +188,14 @@ void KSycoca::addFactory( KSycocaFactory *factory )
    m_lstFactories->append(factory);
 }
 
-void KSycoca::notifyDatabaseChanged()
+bool KSycoca::isChanged(const char *type)
 {
+    return self()->d->changeList.contains(type);
+}
+
+void KSycoca::notifyDatabaseChanged(const QStringList &changeList)
+{
+    d->changeList = changeList;
     //kdDebug(7011) << "got a notifyDatabaseChanged signal !" << endl;
     // kded tells us the database file changed
     // Close the database and forget all about what we knew

@@ -103,11 +103,18 @@ public:
     */
    static QString determineRelativePath( const QString & _fullpath, const char *_resource );
 
+   /**
+    * When you receive a "databaseChanged" signal, you can query here if
+    * a change has occured in a specific resource type.
+    * @see KStandardDirs for the various resource types.
+    */
+   static bool isChanged(const char *type);
+
 k_dcop:
    /**
     * internal function for receiving kded/kbuildsycoca's signal, when the sycoca file changes
     */
-   void notifyDatabaseChanged();
+   void notifyDatabaseChanged(const QStringList &);
 
 signals:
    /**

@@ -29,6 +29,7 @@
 #include <kbuildimageiofactory.h>
 #include <kbuildprotocolinfofactory.h>
 #include <kctimefactory.h>
+#include <kdatastream.h>
 
 #include <qdatastream.h>
 #include <qfile.h>
@@ -53,6 +54,8 @@
 static Q_UINT32 newTimestamp = 0;
 
 static KBuildServiceFactory *g_bsf = 0;
+
+static QStringList *g_changeList = 0;
 
 KBuildSycoca::KBuildSycoca()
   : KSycoca( true )
@@ -165,6 +168,7 @@ void KBuildSycoca::build(KSycocaEntryListList *allEntries,
        it1 != allResources.end();
        ++it1 )
   {
+     bool changed = false;
      const char *resource = (*it1).ascii();
 
      QStringList relFiles;
@@ -228,10 +232,12 @@ void KBuildSycoca::build(KSycocaEntryListList *allEntries,
                    }
                    else if (oldTimestamp)
                    {
+                      changed = true;
                       kdDebug(7021) << "modified: " << (*it3) << endl;
                    }
                    else 
                    {
+                      changed = true;
                       kdDebug(7021) << "new: " << (*it3) << endl;
                    }
                }
@@ -248,6 +254,8 @@ void KBuildSycoca::build(KSycocaEntryListList *allEntries,
         if ((factory == g_bsf) && (strcmp(resource, "apps") == 0))
            processGnomeVfs();
      }
+     if (changed)
+        g_changeList->append(resource);
   }
 }
 
@@ -408,6 +416,8 @@ int main(int argc, char **argv)
      }
    }
 
+   g_changeList = new QStringList;
+
    KBuildSycoca::KSycocaEntryListList *allEntries = 0;
    QDict<Q_UINT32> *ctimeDict = 0;
    if (incremental)
@@ -448,7 +458,9 @@ int main(int argc, char **argv)
    {
      // Notify ALL applications that have a ksycoca object, using a broadcast
      QByteArray data;
-     dcopClient->send( "*", "ksycoca", "notifyDatabaseChanged()", data );
+     QDataStream stream(data, IO_WriteOnly);
+     stream << *g_changeList;
+     dcopClient->send( "*", "ksycoca", "notifyDatabaseChanged(QStringList)", data );
    }
 }
 
