@@ -24,6 +24,7 @@
 #include <qmap.h>
 
 #include <kdialog.h>
+#include <kdemacros.h>
 
 class KListBox;
 
@@ -35,7 +36,7 @@ class Resource;
 /**
   This class is @deprecated, use KRES::SelectDialog instead. 
  */
-class ResourceSelectDialog : KDialog
+class KDE_DEPRECATED ResourceSelectDialog : KDialog
 {
   Q_OBJECT
 

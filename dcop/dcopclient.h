@@ -28,6 +28,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qvaluelist.h>
 #include <qstring.h>
 #include <kdatastream.h> // needed for proper bool marshalling
+#include <kdemacros.h>
 
 class DCOPObjectProxy;
 class DCOPClientPrivate;
@@ -307,7 +308,7 @@ class DCOPClient : public QObject
   bool call(const QCString &remApp, const QCString &remObj,
 	    const QCString &remFun, const QByteArray &data,
 	    QCString& replyType, QByteArray &replyData,
-	    bool useEventLoop=false);
+	    bool useEventLoop=false) KDE_DEPRECATED;
 
   /**
    * Performs a asynchronous send with receive callback.
@@ -389,7 +390,7 @@ class DCOPClient : public QObject
   bool findObject(const QCString &remApp, const QCString &remObj,
 	    const QCString &remFun, const QByteArray &data,
 	    QCString &foundApp, QCString &foundObj,
-	    bool useEventLoop=false);
+	    bool useEventLoop=false) KDE_DEPRECATED;
 
 
   /**
@@ -433,7 +434,7 @@ class DCOPClient : public QObject
    */
   bool connectDCOPSignal( const QCString &sender, const QCString &signal,
                           const QCString &receiverObj, const QCString &slot,
-                          bool Volatile);
+                          bool Volatile) KDE_DEPRECATED;
 
   /**
    * Disconnects a DCOP signal.
@@ -461,7 +462,7 @@ class DCOPClient : public QObject
    * For backwards compatibility
    */
   bool disconnectDCOPSignal( const QCString &sender, const QCString &signal,
-                          const QCString &receiverObj, const QCString &slot);
+                          const QCString &receiverObj, const QCString &slot) KDE_DEPRECATED;
 
   /**
    * Reimplement this function to handle app-wide function calls unassociated w/an object.
@@ -705,7 +706,7 @@ class DCOPClient : public QObject
    * @deprecated
    * For backwards compatibility with KDE 2.x
    */
-  static QCString dcopServerFileOld(const QCString &hostname=0);
+  static QCString dcopServerFileOld(const QCString &hostname=0) KDE_DEPRECATED;
 
   /**
    * Return the path of iceauth or an empty string if not found.
