@@ -45,10 +45,10 @@ namespace KJS {
   };
 
   enum Attribute { None       = 0,
-		   ReadOnly   = 1 >> 1,
-		   DontEnum   = 1 >> 2,
-		   DontDelete = 1 >> 3,
-		   Internal   = 1 >> 4 };
+		   ReadOnly   = 1 << 1,
+		   DontEnum   = 1 << 2,
+		   DontDelete = 1 << 3,
+		   Internal   = 1 << 4 };
 
   enum Class { UndefClass, ArrayClass, StringClass, BooleanClass, NumberClass,
 	       ObjectClass };
