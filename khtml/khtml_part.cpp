@@ -1947,7 +1947,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target )
     else if ( S_ISREG( buff.st_mode ) )
     {
       if (buff.st_size < 1024)
-        text = i18n("%1 (%2 bytes)").arg(text2).arg((long) buff.st_size);
+        text = i18n("%2 (%1 bytes)").arg((long) buff.st_size).arg(text2); // always put the URL last, in case it contains '%'
       else
       {
         float d = (float) buff.st_size/1024.0;
