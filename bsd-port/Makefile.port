@@ -10,7 +10,7 @@
 PKGNAME=	kdelibs-`date "+%y%m%d"`
 CATEGORIES=	x11 kde
 
-MAINTAINER=	se@freebsd.org
+MAINTAINER=	garbanzo@hooked.net
 
 BUILD_DEPENDS=	moc:${PORTSDIR}/x11/qt
 LIB_DEPENDS=	qt\\.1\\.3[0-9]:${PORTSDIR}/x11/qt \
