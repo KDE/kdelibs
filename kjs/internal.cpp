@@ -506,6 +506,9 @@ FunctionBodyNode *Parser::parse(const UChar *code, unsigned int length, SourceCo
     delete prog;
     return 0;
   }
+#ifdef KJS_VERBOSE
+  fprintf( stderr, "%s\n", prog->toCode().ascii() );
+#endif
 
   return prog;
 }
