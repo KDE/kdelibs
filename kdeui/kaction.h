@@ -197,7 +197,7 @@ public:
      * @param parent This action's parent.
      * @param name An internal name for this action.
      */
-    KAction( const QString& text, QKeySequence accel = QKeySequence(), QObject* parent = 0, const char* name = 0 );
+    KAction( const QString& text, const QKeySequence& accel = QKeySequence(), QObject* parent = 0, const char* name = 0 );
 
     /**
      * Constructs an action with text, potential keyboard
@@ -219,7 +219,7 @@ public:
      * @param parent This action's parent.
      * @param name An internal name for this action.
      */
-    KAction( const QString& text, QKeySequence accel,
+    KAction( const QString& text, const QKeySequence& accel,
              const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
 
     /**
@@ -235,7 +235,7 @@ public:
      * @param parent This action's parent.
      * @param name An internal name for this action.
      */
-    KAction( const QString& text, const QIconSet& pix, QKeySequence accel = QKeySequence(),
+    KAction( const QString& text, const QIconSet& pix, const QKeySequence& accel = QKeySequence(),
              QObject* parent = 0, const char* name = 0 );
 
     /**
@@ -251,7 +251,7 @@ public:
      * @param parent This action's parent.
      * @param name An internal name for this action.
      */
-    KAction( const QString& text, const QString& pix, QKeySequence accel = QKeySequence(),
+    KAction( const QString& text, const QString& pix, const QKeySequence& accel = QKeySequence(),
              QObject* parent = 0, const char* name = 0 );
 
     /**
@@ -273,7 +273,7 @@ public:
      * @param parent This action's parent.
      * @param name An internal name for this action.
      */
-    KAction( const QString& text, const QIconSet& pix, QKeySequence accel,
+    KAction( const QString& text, const QIconSet& pix, const QKeySequence& accel,
              const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
 
     /**
@@ -296,7 +296,7 @@ public:
      * @param parent This action's parent.
      * @param name An internal name for this action.
      */
-    KAction( const QString& text, const QString& pix, QKeySequence accel,
+    KAction( const QString& text, const QString& pix, const QKeySequence& accel,
              const QObject* receiver, const char* slot, QObject* parent,
          const char* name = 0 );
 
@@ -444,7 +444,7 @@ public slots:
     /**
      * Sets the keyboard accelerator associated with this action.
      */
-    virtual void setAccel(QKeySequence key);
+    virtual void setAccel( QKeySequence key);
 
     virtual void updateConnections();
 
@@ -507,7 +507,7 @@ protected:
     void addContainer( QWidget* parent, int id );
     void addContainer( QWidget* parent, QWidget* representative );
 
-    virtual void setAccel( int id, QKeySequence accel );
+    virtual void setAccel( int id, const QKeySequence& accel );
     virtual void setGroup( int id, const QString& grp );
     virtual void setText(int i, const QString &text);
     virtual void setEnabled(int i, bool enable);
@@ -559,7 +559,7 @@ public:
      * @param parent This action's parent.
      * @param name An internal name for this action.
      */
-    KToggleAction( const QString& text, QKeySequence accel = QKeySequence(), QObject* parent = 0, const char* name = 0 );
+    KToggleAction( const QString& text, const QKeySequence& accel = QKeySequence(), QObject* parent = 0, const char* name = 0 );
 
     /**
      *  @param text The text that will be displayed.
@@ -569,7 +569,7 @@ public:
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
-    KToggleAction( const QString& text, QKeySequence accel,
+    KToggleAction( const QString& text, const QKeySequence& accel,
                    const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
 
     /**
@@ -579,7 +579,7 @@ public:
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
-    KToggleAction( const QString& text, const QIconSet& pix, QKeySequence accel = QKeySequence(),
+    KToggleAction( const QString& text, const QIconSet& pix, const QKeySequence& accel = QKeySequence(),
              QObject* parent = 0, const char* name = 0 );
 
     /**
@@ -589,7 +589,7 @@ public:
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
-    KToggleAction( const QString& text, const QString& pix, QKeySequence accel = QKeySequence(),
+    KToggleAction( const QString& text, const QString& pix, const QKeySequence& accel = QKeySequence(),
                    QObject* parent = 0, const char* name = 0 );
 
     /**
@@ -601,7 +601,7 @@ public:
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
-    KToggleAction( const QString& text, const QIconSet& pix, QKeySequence accel,
+    KToggleAction( const QString& text, const QIconSet& pix, const QKeySequence& accel,
                    const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
 
     /**
@@ -613,7 +613,7 @@ public:
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
-    KToggleAction( const QString& text, const QString& pix, QKeySequence accel,
+    KToggleAction( const QString& text, const QString& pix, const QKeySequence& accel,
                    const QObject* receiver, const char* slot,
                    QObject* parent, const char* name = 0 );
 
@@ -700,7 +700,7 @@ public:
      * @param parent This action's parent.
      * @param name An internal name for this action.
      */
-    KRadioAction( const QString& text, QKeySequence accel = QKeySequence(), QObject* parent = 0, const char* name = 0 );
+    KRadioAction( const QString& text, const QKeySequence& accel = QKeySequence(), QObject* parent = 0, const char* name = 0 );
 
     /**
      *  @param text The text that will be displayed.
@@ -710,7 +710,7 @@ public:
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
-    KRadioAction( const QString& text, QKeySequence accel,
+    KRadioAction( const QString& text, const QKeySequence& accel,
                   const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
 
     /**
@@ -720,7 +720,7 @@ public:
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
-    KRadioAction( const QString& text, const QIconSet& pix, QKeySequence accel = QKeySequence(),
+    KRadioAction( const QString& text, const QIconSet& pix, const QKeySequence& accel = QKeySequence(),
                   QObject* parent = 0, const char* name = 0 );
 
     /**
@@ -730,7 +730,7 @@ public:
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
-    KRadioAction( const QString& text, const QString& pix, QKeySequence accel = QKeySequence(),
+    KRadioAction( const QString& text, const QString& pix, const QKeySequence& accel = QKeySequence(),
                   QObject* parent = 0, const char* name = 0 );
 
     /**
@@ -742,7 +742,7 @@ public:
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
-    KRadioAction( const QString& text, const QIconSet& pix, QKeySequence accel,
+    KRadioAction( const QString& text, const QIconSet& pix, const QKeySequence& accel,
                   const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
 
     /**
@@ -754,7 +754,7 @@ public:
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
-    KRadioAction( const QString& text, const QString& pix, QKeySequence accel,
+    KRadioAction( const QString& text, const QString& pix, const QKeySequence& accel,
                   const QObject* receiver, const char* slot,
                   QObject* parent, const char* name = 0 );
 
@@ -803,7 +803,7 @@ public:
      * @param parent This action's parent.
      * @param name An internal name for this action.
      */
-    KSelectAction( const QString& text, QKeySequence accel = QKeySequence(), QObject* parent = 0, const char* name = 0 );
+    KSelectAction( const QString& text, const QKeySequence& accel = QKeySequence(), QObject* parent = 0, const char* name = 0 );
 
     /**
      *  @param text The text that will be displayed.
@@ -813,7 +813,7 @@ public:
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
-    KSelectAction( const QString& text, QKeySequence accel,
+    KSelectAction( const QString& text, const QKeySequence& accel,
                    const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
 
     /**
@@ -823,7 +823,7 @@ public:
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
-    KSelectAction( const QString& text, const QIconSet& pix, QKeySequence accel = QKeySequence(),
+    KSelectAction( const QString& text, const QIconSet& pix, const QKeySequence& accel = QKeySequence(),
              QObject* parent = 0, const char* name = 0 );
 
     /**
@@ -833,7 +833,7 @@ public:
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
-    KSelectAction( const QString& text, const QString& pix, QKeySequence accel = QKeySequence(),
+    KSelectAction( const QString& text, const QString& pix, const QKeySequence& accel = QKeySequence(),
                    QObject* parent = 0, const char* name = 0 );
 
     /**
@@ -845,7 +845,7 @@ public:
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
-    KSelectAction( const QString& text, const QIconSet& pix, QKeySequence accel,
+    KSelectAction( const QString& text, const QIconSet& pix, const QKeySequence& accel,
                    const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
 
     /**
@@ -857,7 +857,7 @@ public:
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
-    KSelectAction( const QString& text, const QString& pix, QKeySequence accel,
+    KSelectAction( const QString& text, const QString& pix, const QKeySequence& accel,
                    const QObject* receiver, const char* slot,
                    QObject* parent, const char* name = 0 );
 
@@ -984,7 +984,7 @@ public:
      * @param parent This action's parent.
      * @param name An internal name for this action.
      */
-    KListAction( const QString& text, QKeySequence accel = QKeySequence(), QObject* parent = 0,
+    KListAction( const QString& text, const QKeySequence& accel = QKeySequence(), QObject* parent = 0,
                   const char* name = 0 );
 
     /**
@@ -995,7 +995,7 @@ public:
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
-    KListAction( const QString& text, QKeySequence accel, const QObject* receiver,
+    KListAction( const QString& text, const QKeySequence& accel, const QObject* receiver,
                   const char* slot, QObject* parent, const char* name = 0 );
 
     /**
@@ -1005,7 +1005,7 @@ public:
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
-    KListAction( const QString& text, const QIconSet& pix, QKeySequence accel = QKeySequence(),
+    KListAction( const QString& text, const QIconSet& pix, const QKeySequence& accel = QKeySequence(),
                       QObject* parent = 0, const char* name = 0 );
 
     /**
@@ -1015,7 +1015,7 @@ public:
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
-    KListAction( const QString& text, const QString& pix, QKeySequence accel = QKeySequence(),
+    KListAction( const QString& text, const QString& pix, const QKeySequence& accel = QKeySequence(),
                       QObject* parent = 0, const char* name = 0 );
 
     /**
@@ -1027,7 +1027,7 @@ public:
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
-    KListAction( const QString& text, const QIconSet& pix, QKeySequence accel,
+    KListAction( const QString& text, const QIconSet& pix, const QKeySequence& accel,
                           const QObject* receiver, const char* slot, QObject* parent,
                   const char* name = 0 );
 
@@ -1040,7 +1040,7 @@ public:
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
-    KListAction( const QString& text, const QString& pix, QKeySequence accel,
+    KListAction( const QString& text, const QString& pix, const QKeySequence& accel,
                  const QObject* receiver, const char* slot, QObject* parent,
                  const char* name = 0 );
 
@@ -1098,7 +1098,7 @@ public:
    *  @param name An internal name for this action.
    *  @param maxItems The maximum number of files to display
    */
-  KRecentFilesAction( const QString& text, QKeySequence accel,
+  KRecentFilesAction( const QString& text, const QKeySequence& accel,
                       QObject* parent, const char* name = 0,
                       uint maxItems = 10 );
 
@@ -1112,7 +1112,7 @@ public:
    *  @param name An internal name for this action.
    *  @param maxItems The maximum number of files to display
    */
-  KRecentFilesAction( const QString& text, QKeySequence accel,
+  KRecentFilesAction( const QString& text, const QKeySequence& accel,
                       const QObject* receiver, const char* slot,
                       QObject* parent, const char* name = 0,
                       uint maxItems = 10 );
@@ -1125,7 +1125,7 @@ public:
    *  @param name An internal name for this action.
    *  @param maxItems The maximum number of files to display
    */
-  KRecentFilesAction( const QString& text, const QIconSet& pix, QKeySequence accel,
+  KRecentFilesAction( const QString& text, const QIconSet& pix, const QKeySequence& accel,
                       QObject* parent, const char* name = 0,
                       uint maxItems = 10 );
 
@@ -1137,7 +1137,7 @@ public:
    *  @param name An internal name for this action.
    *  @param maxItems The maximum number of files to display
    */
-  KRecentFilesAction( const QString& text, const QString& pix, QKeySequence accel,
+  KRecentFilesAction( const QString& text, const QString& pix, const QKeySequence& accel,
                       QObject* parent, const char* name = 0,
                       uint maxItems = 10 );
 
@@ -1152,7 +1152,7 @@ public:
    *  @param name An internal name for this action.
    *  @param maxItems The maximum number of files to display
    */
-  KRecentFilesAction( const QString& text, const QIconSet& pix, QKeySequence accel,
+  KRecentFilesAction( const QString& text, const QIconSet& pix, const QKeySequence& accel,
                       const QObject* receiver, const char* slot,
                       QObject* parent, const char* name = 0,
                       uint maxItems = 10 );
@@ -1168,7 +1168,7 @@ public:
    *  @param name An internal name for this action.
    *  @param maxItems The maximum number of files to display
    */
-  KRecentFilesAction( const QString& text, const QString& pix, QKeySequence accel,
+  KRecentFilesAction( const QString& text, const QString& pix, const QKeySequence& accel,
                       const QObject* receiver, const char* slot,
                       QObject* parent, const char* name = 0,
                       uint maxItems = 10 );
@@ -1265,19 +1265,19 @@ class KFontAction : public KSelectAction
     Q_OBJECT
     Q_PROPERTY( QString font READ font WRITE setFont )
 public:
-    KFontAction( const QString& text, QKeySequence accel = QKeySequence(), QObject* parent = 0,
+    KFontAction( const QString& text, const QKeySequence& accel = QKeySequence(), QObject* parent = 0,
                  const char* name = 0 );
-    KFontAction( const QString& text, QKeySequence accel,
+    KFontAction( const QString& text, const QKeySequence& accel,
                  const QObject* receiver, const char* slot, QObject* parent,
                  const char* name = 0 );
-    KFontAction( const QString& text, const QIconSet& pix, QKeySequence accel = QKeySequence(),
+    KFontAction( const QString& text, const QIconSet& pix, const QKeySequence& accel = QKeySequence(),
                  QObject* parent = 0, const char* name = 0 );
-    KFontAction( const QString& text, const QString& pix, QKeySequence accel = QKeySequence(),
+    KFontAction( const QString& text, const QString& pix, const QKeySequence& accel = QKeySequence(),
                  QObject* parent = 0, const char* name = 0 );
-    KFontAction( const QString& text, const QIconSet& pix, QKeySequence accel,
+    KFontAction( const QString& text, const QIconSet& pix, const QKeySequence& accel,
                  const QObject* receiver, const char* slot, QObject* parent,
                  const char* name = 0 );
-    KFontAction( const QString& text, const QString& pix, QKeySequence accel,
+    KFontAction( const QString& text, const QString& pix, const QKeySequence& accel,
                  const QObject* receiver, const char* slot, QObject* parent,
                  const char* name = 0 );
 
@@ -1303,18 +1303,18 @@ class KFontSizeAction : public KSelectAction
     Q_OBJECT
     Q_PROPERTY( int fontSize READ fontSize WRITE setFontSize )
 public:
-    KFontSizeAction( const QString& text, QKeySequence accel = QKeySequence(), QObject* parent = 0,
+    KFontSizeAction( const QString& text, const QKeySequence& accel = QKeySequence(), QObject* parent = 0,
                      const char* name = 0 );
-    KFontSizeAction( const QString& text, QKeySequence accel, const QObject* receiver,
+    KFontSizeAction( const QString& text, const QKeySequence& accel, const QObject* receiver,
                      const char* slot, QObject* parent, const char* name = 0 );
-    KFontSizeAction( const QString& text, const QIconSet& pix, QKeySequence accel = QKeySequence(),
+    KFontSizeAction( const QString& text, const QIconSet& pix, const QKeySequence& accel = QKeySequence(),
                      QObject* parent = 0, const char* name = 0 );
-    KFontSizeAction( const QString& text, const QString& pix, QKeySequence accel = QKeySequence(),
+    KFontSizeAction( const QString& text, const QString& pix, const QKeySequence& accel = QKeySequence(),
                      QObject* parent = 0, const char* name = 0 );
-    KFontSizeAction( const QString& text, const QIconSet& pix, QKeySequence accel,
+    KFontSizeAction( const QString& text, const QIconSet& pix, const QKeySequence& accel,
                      const QObject* receiver, const char* slot,
                      QObject* parent, const char* name = 0 );
-    KFontSizeAction( const QString& text, const QString& pix, QKeySequence accel,
+    KFontSizeAction( const QString& text, const QString& pix, const QKeySequence& accel,
                      const QObject* receiver, const char* slot,
                      QObject* parent, const char* name = 0 );
     KFontSizeAction( QObject* parent = 0, const char* name = 0 );
@@ -1455,7 +1455,7 @@ public:
      * @param parent This action's parent.
      * @param name An internal name for this action.
      */
-    KToolBarPopupAction( const QString& text, const QString& icon, QKeySequence accel = QKeySequence(),
+    KToolBarPopupAction( const QString& text, const QString& icon, const QKeySequence& accel = QKeySequence(),
                          QObject* parent = 0, const char* name = 0 );
 
     /**
@@ -1473,7 +1473,7 @@ public:
      * @param parent This action's parent.
      * @param name An internal name for this action.
      */
-    KToolBarPopupAction( const QString& text, const QString& icon, QKeySequence accel,
+    KToolBarPopupAction( const QString& text, const QString& icon, const QKeySequence& accel,
                          const QObject* receiver, const char* slot,
                          QObject* parent = 0, const char* name = 0 );
 

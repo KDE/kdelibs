@@ -127,8 +127,8 @@ public:
   QValueList<Container> m_containers;
 };
 
-KAction::KAction( const QString& text, QKeySequence accel, QObject* parent,
-                             const char* name )
+KAction::KAction( const QString& text, const QKeySequence& accel,
+                  QObject* parent, const char* name )
  : QObject( parent, name )
 {
     d = new KActionPrivate;
@@ -143,7 +143,8 @@ KAction::KAction( const QString& text, QKeySequence accel, QObject* parent,
     setText( text );
 }
 
-KAction::KAction( const QString& text, QKeySequence accel, const QObject* receiver,
+KAction::KAction( const QString& text, const QKeySequence& accel,
+                  const QObject* receiver,
                   const char* slot, QObject* parent, const char* name )
  : QObject( parent, name )
 {
@@ -162,7 +163,8 @@ KAction::KAction( const QString& text, QKeySequence accel, const QObject* receiv
     connect( this, SIGNAL( activated() ), receiver, slot );
 }
 
-KAction::KAction( const QString& text, const QIconSet& pix, QKeySequence accel,
+KAction::KAction( const QString& text, const QIconSet& pix,
+                  const QKeySequence& accel,
                   QObject* parent, const char* name )
  : QObject( parent, name )
 {
@@ -179,7 +181,8 @@ KAction::KAction( const QString& text, const QIconSet& pix, QKeySequence accel,
     setIconSet( pix );
 }
 
-KAction::KAction( const QString& text, const QString& pix, QKeySequence accel,
+KAction::KAction( const QString& text, const QString& pix,
+                  const QKeySequence& accel,
                   QObject* parent, const char* name )
 : QObject( parent, name )
 {
@@ -199,7 +202,8 @@ KAction::KAction( const QString& text, const QString& pix, QKeySequence accel,
     d->m_bIconSet=!(pix == "unknown");
 }
 
-KAction::KAction( const QString& text, const QIconSet& pix, QKeySequence accel,
+KAction::KAction( const QString& text, const QIconSet& pix,
+                  const QKeySequence& accel,
                   const QObject* receiver, const char* slot, QObject* parent,
                   const char* name )
  : QObject( parent, name )
@@ -220,7 +224,8 @@ KAction::KAction( const QString& text, const QIconSet& pix, QKeySequence accel,
       connect( this, SIGNAL( activated() ), receiver, slot );
 }
 
-KAction::KAction( const QString& text, const QString& pix, QKeySequence accel,
+KAction::KAction( const QString& text, const QString& pix,
+                  const QKeySequence& accel,
                   const QObject* receiver, const char* slot, QObject* parent,
                   const char* name )
   : QObject( parent, name )
@@ -239,7 +244,7 @@ KAction::KAction( const QString& text, const QString& pix, QKeySequence accel,
     d->setIconName(pix);
     d->m_bIconSetNotYetLoaded=!(pix == "unknown");
     d->m_bIconSet=!(pix == "unknown");
-    
+
     if ( receiver )
       connect( this, SIGNAL( activated() ), receiver, slot );
 }
@@ -301,7 +306,7 @@ bool KAction::isPlugged( const QWidget *container, const QWidget *_representativ
 void KAction::setAccel( QKeySequence qkey )
 {
   // Make sure that we are really
-  //  using the right modifier combination by converting to it's X equivalent
+  //  using the right modifier combination by converting to its X equivalent
   //  and back. Neccessary for punctuation keys on varying layouts.
 #ifdef Q_WS_X11
   uint keySymX, keyModX;
@@ -310,7 +315,6 @@ void KAction::setAccel( QKeySequence qkey )
 #endif
   KAccelShortcuts cuts;
   cuts.init(KKeySequence(qkey));
-
   d->m_accel = qkey;
 
   if ( m_parentCollection )
@@ -331,7 +335,7 @@ void KAction::setAccel( QKeySequence qkey )
     setAccel( i, qkey );
 }
 
-void KAction::setAccel( int i, QKeySequence a )
+void KAction::setAccel( int i, const QKeySequence& a )
 {
   QWidget* w = container( i );
   if ( w->inherits( "QPopupMenu" ) )
@@ -339,8 +343,9 @@ void KAction::setAccel( int i, QKeySequence a )
   else if ( w->inherits( "QMenuBar" ) )
     static_cast<QMenuBar*>(w)->setAccel( a, itemId( i ) );
 
-  if ( !d->m_kaccel && a ) // this case happens after configuring key bindings
+  if ( !d->m_kaccel && a ) {// this case happens after configuring key bindings
       plugMainWindowAccel( w );
+  }
 }
 
 void KAction::updateConnections()
@@ -560,7 +565,7 @@ void KAction::plugAccel(KAccel *kacc, bool configurable)
   d->m_pAccelAction = d->m_kaccel->actions().actionPtr(name());
   connect(d->m_kaccel, SIGNAL(destroyed()), this, SLOT(slotDestroyed()));
   // FIXME: add keycodeChanged() to KAccel
-  connect(d->m_kaccel, SIGNAL(keycodeChanged()), this, SLOT(slotKeycodeChanged()));
+//   connect(d->m_kaccel, SIGNAL(keycodeChanged()), this, SLOT(slotKeycodeChanged()));
 }
 
 void KAction::unplugAccel()
@@ -922,14 +927,15 @@ public:
   QString m_exclusiveGroup;
 };
 
-KToggleAction::KToggleAction( const QString& text, QKeySequence accel, QObject* parent,
+KToggleAction::KToggleAction( const QString& text, const QKeySequence& accel,
+                              QObject* parent,
                               const char* name )
     : KAction( text, accel, parent, name )
 {
   d = new KToggleActionPrivate;
 }
 
-KToggleAction::KToggleAction( const QString& text, QKeySequence accel,
+KToggleAction::KToggleAction( const QString& text, const QKeySequence& accel,
                               const QObject* receiver, const char* slot,
                               QObject* parent, const char* name )
   : KAction( text, accel, receiver, slot, parent, name )
@@ -938,21 +944,24 @@ KToggleAction::KToggleAction( const QString& text, QKeySequence accel,
 }
 
 KToggleAction::KToggleAction( const QString& text, const QIconSet& pix,
-                              QKeySequence accel, QObject* parent, const char* name )
+                              const QKeySequence& accel,
+                              QObject* parent, const char* name )
   : KAction( text, pix, accel, parent, name )
 {
   d = new KToggleActionPrivate;
 }
 
 KToggleAction::KToggleAction( const QString& text, const QString& pix,
-                              QKeySequence accel, QObject* parent, const char* name )
+                              const QKeySequence& accel,
+                              QObject* parent, const char* name )
  : KAction( text, pix, accel, parent, name )
 {
   d = new KToggleActionPrivate;
 }
 
 KToggleAction::KToggleAction( const QString& text, const QIconSet& pix,
-                              QKeySequence accel, const QObject* receiver,
+                              const QKeySequence& accel,
+                              const QObject* receiver,
                               const char* slot, QObject* parent,
                               const char* name )
   : KAction( text, pix, accel, receiver, slot, parent, name )
@@ -961,7 +970,8 @@ KToggleAction::KToggleAction( const QString& text, const QIconSet& pix,
 }
 
 KToggleAction::KToggleAction( const QString& text, const QString& pix,
-                              QKeySequence accel, const QObject* receiver,
+                              const QKeySequence& accel,
+                              const QObject* receiver,
                               const char* slot, QObject* parent,
                               const char* name )
   : KAction( text, pix, accel, receiver, slot, parent, name )
@@ -1072,37 +1082,45 @@ QString KToggleAction::exclusiveGroup() const
 }
 
 
-KRadioAction::KRadioAction( const QString& text, QKeySequence accel, QObject* parent, const char* name )
+KRadioAction::KRadioAction( const QString& text, const QKeySequence& accel,
+                            QObject* parent, const char* name )
 : KToggleAction( text, accel, parent, name )
 {
 }
 
-KRadioAction::KRadioAction( const QString& text, QKeySequence accel,
-                            const QObject* receiver, const char* slot, QObject* parent, const char* name )
+KRadioAction::KRadioAction( const QString& text, const QKeySequence& accel,
+                            const QObject* receiver, const char* slot,
+                            QObject* parent, const char* name )
 : KToggleAction( text, accel, receiver, slot, parent, name )
 {
 }
 
-KRadioAction::KRadioAction( const QString& text, const QIconSet& pix, QKeySequence accel,
+KRadioAction::KRadioAction( const QString& text, const QIconSet& pix,
+                            const QKeySequence& accel,
                             QObject* parent, const char* name )
 : KToggleAction( text, pix, accel, parent, name )
 {
 }
 
-KRadioAction::KRadioAction( const QString& text, const QString& pix, QKeySequence accel,
+KRadioAction::KRadioAction( const QString& text, const QString& pix,
+                            const QKeySequence& accel,
                             QObject* parent, const char* name )
 : KToggleAction( text, pix, accel, parent, name )
 {
 }
 
-KRadioAction::KRadioAction( const QString& text, const QIconSet& pix, QKeySequence accel,
-                            const QObject* receiver, const char* slot, QObject* parent, const char* name )
+KRadioAction::KRadioAction( const QString& text, const QIconSet& pix,
+                            const QKeySequence& accel,
+                            const QObject* receiver, const char* slot,
+                            QObject* parent, const char* name )
 : KToggleAction( text, pix, accel, receiver, slot, parent, name )
 {
 }
 
-KRadioAction::KRadioAction( const QString& text, const QString& pix, QKeySequence accel,
-                            const QObject* receiver, const char* slot, QObject* parent, const char* name )
+KRadioAction::KRadioAction( const QString& text, const QString& pix,
+                            const QKeySequence& accel,
+                            const QObject* receiver, const char* slot,
+                            QObject* parent, const char* name )
 : KToggleAction( text, pix, accel, receiver, slot, parent, name )
 {
 }
@@ -1146,14 +1164,14 @@ public:
   QStringList m_list;
 };
 
-KSelectAction::KSelectAction( const QString& text, QKeySequence accel, QObject* parent,
-                              const char* name )
+KSelectAction::KSelectAction( const QString& text, const QKeySequence& accel,
+                              QObject* parent, const char* name )
   : KAction( text, accel, parent, name )
 {
   d = new KSelectActionPrivate;
 }
 
-KSelectAction::KSelectAction( const QString& text, QKeySequence accel,
+KSelectAction::KSelectAction( const QString& text, const QKeySequence& accel,
                               const QObject* receiver, const char* slot,
                               QObject* parent, const char* name )
   : KAction( text, accel, receiver, slot, parent, name )
@@ -1162,21 +1180,24 @@ KSelectAction::KSelectAction( const QString& text, QKeySequence accel,
 }
 
 KSelectAction::KSelectAction( const QString& text, const QIconSet& pix,
-                              QKeySequence accel, QObject* parent, const char* name )
+                              const QKeySequence& accel,
+                              QObject* parent, const char* name )
   : KAction( text, pix, accel, parent, name )
 {
   d = new KSelectActionPrivate;
 }
 
 KSelectAction::KSelectAction( const QString& text, const QString& pix,
-                              QKeySequence accel, QObject* parent, const char* name )
+                              const QKeySequence& accel,
+                              QObject* parent, const char* name )
   : KAction( text, pix, accel, parent, name )
 {
   d = new KSelectActionPrivate;
 }
 
 KSelectAction::KSelectAction( const QString& text, const QIconSet& pix,
-                              QKeySequence accel, const QObject* receiver,
+                              const QKeySequence& accel,
+                              const QObject* receiver,
                               const char* slot, QObject* parent,
                               const char* name )
   : KAction( text, pix, accel, receiver, slot, parent, name )
@@ -1185,7 +1206,8 @@ KSelectAction::KSelectAction( const QString& text, const QIconSet& pix,
 }
 
 KSelectAction::KSelectAction( const QString& text, const QString& pix,
-                              QKeySequence accel, const QObject* receiver,
+                              const QKeySequence& accel,
+                              const QObject* receiver,
                               const char* slot, QObject* parent,
                               const char* name )
   : KAction( text, pix, accel, receiver, slot, parent, name )
@@ -1532,14 +1554,14 @@ public:
   int m_current;
 };
 
-KListAction::KListAction( const QString& text, QKeySequence accel, QObject* parent,
-                          const char* name )
+KListAction::KListAction( const QString& text, const QKeySequence& accel,
+                          QObject* parent, const char* name )
   : KSelectAction( text, accel, parent, name )
 {
   d = new KListActionPrivate;
 }
 
-KListAction::KListAction( const QString& text, QKeySequence accel,
+KListAction::KListAction( const QString& text, const QKeySequence& accel,
                           const QObject* receiver, const char* slot,
                           QObject* parent, const char* name )
   : KSelectAction( text, accel, parent, name )
@@ -1550,21 +1572,23 @@ KListAction::KListAction( const QString& text, QKeySequence accel,
 }
 
 KListAction::KListAction( const QString& text, const QIconSet& pix,
-                          QKeySequence accel, QObject* parent, const char* name )
+                          const QKeySequence& accel,
+                          QObject* parent, const char* name )
   : KSelectAction( text, pix, accel, parent, name )
 {
   d = new KListActionPrivate;
 }
 
 KListAction::KListAction( const QString& text, const QString& pix,
-                            QKeySequence accel, QObject* parent, const char* name )
+                          const QKeySequence& accel,
+                          QObject* parent, const char* name )
   : KSelectAction( text, pix, accel, parent, name )
 {
   d = new KListActionPrivate;
 }
 
 KListAction::KListAction( const QString& text, const QIconSet& pix,
-                          QKeySequence accel, const QObject* receiver,
+                          const QKeySequence& accel, const QObject* receiver,
                           const char* slot, QObject* parent,
                           const char* name )
   : KSelectAction( text, pix, accel, receiver, slot, parent, name )
@@ -1575,7 +1599,7 @@ KListAction::KListAction( const QString& text, const QIconSet& pix,
 }
 
 KListAction::KListAction( const QString& text, const QString& pix,
-                          QKeySequence accel, const QObject* receiver,
+                          const QKeySequence& accel, const QObject* receiver,
                           const char* slot, QObject* parent,
                           const char* name )
   : KSelectAction( text, pix, accel, receiver, slot, parent, name )
@@ -1629,7 +1653,8 @@ public:
   uint m_maxItems;
 };
 
-KRecentFilesAction::KRecentFilesAction( const QString& text, QKeySequence accel,
+KRecentFilesAction::KRecentFilesAction( const QString& text,
+                                        const QKeySequence& accel,
                                         QObject* parent, const char* name,
                                         unsigned int maxItems )
   : KListAction( text, accel, parent, name)
@@ -1641,7 +1666,8 @@ KRecentFilesAction::KRecentFilesAction( const QString& text, QKeySequence accel,
            this, SLOT( itemSelected( const QString& ) ) );
 }
 
-KRecentFilesAction::KRecentFilesAction( const QString& text, QKeySequence accel,
+KRecentFilesAction::KRecentFilesAction( const QString& text,
+                                        const QKeySequence& accel,
                                         const QObject* receiver,
                                         const char* slot,
                                         QObject* parent, const char* name,
@@ -1660,7 +1686,8 @@ KRecentFilesAction::KRecentFilesAction( const QString& text, QKeySequence accel,
 }
 
 KRecentFilesAction::KRecentFilesAction( const QString& text,
-                                        const QIconSet& pix, QKeySequence accel,
+                                        const QIconSet& pix,
+                                        const QKeySequence& accel,
                                         QObject* parent, const char* name,
                                         uint maxItems )
   : KListAction( text, pix, accel, parent, name)
@@ -1673,7 +1700,8 @@ KRecentFilesAction::KRecentFilesAction( const QString& text,
 }
 
 KRecentFilesAction::KRecentFilesAction( const QString& text,
-                                        const QString& pix, QKeySequence accel,
+                                        const QString& pix,
+                                        const QKeySequence& accel,
                                         QObject* parent, const char* name,
                                         uint maxItems )
   : KListAction( text, pix, accel, parent, name)
@@ -1686,7 +1714,8 @@ KRecentFilesAction::KRecentFilesAction( const QString& text,
 }
 
 KRecentFilesAction::KRecentFilesAction( const QString& text,
-                                        const QIconSet& pix, QKeySequence accel,
+                                        const QIconSet& pix,
+                                        const QKeySequence& accel,
                                         const QObject* receiver,
                                         const char* slot,
                                         QObject* parent, const char* name,
@@ -1705,7 +1734,8 @@ KRecentFilesAction::KRecentFilesAction( const QString& text,
 }
 
 KRecentFilesAction::KRecentFilesAction( const QString& text,
-                                        const QString& pix, QKeySequence accel,
+                                        const QString& pix,
+                                        const QKeySequence& accel,
                                         const QObject* receiver,
                                         const char* slot,
                                         QObject* parent, const char* name,
@@ -1869,7 +1899,8 @@ public:
   QStringList m_fonts;
 };
 
-KFontAction::KFontAction( const QString& text, QKeySequence accel, QObject* parent,
+KFontAction::KFontAction( const QString& text,
+                          const QKeySequence& accel, QObject* parent,
                           const char* name )
   : KSelectAction( text, accel, parent, name )
 {
@@ -1879,7 +1910,7 @@ KFontAction::KFontAction( const QString& text, QKeySequence accel, QObject* pare
     setEditable( TRUE );
 }
 
-KFontAction::KFontAction( const QString& text, QKeySequence accel,
+KFontAction::KFontAction( const QString& text, const QKeySequence& accel,
                           const QObject* receiver, const char* slot,
                           QObject* parent, const char* name )
     : KSelectAction( text, accel, receiver, slot, parent, name )
@@ -1890,7 +1921,8 @@ KFontAction::KFontAction( const QString& text, QKeySequence accel,
     setEditable( TRUE );
 }
 
-KFontAction::KFontAction( const QString& text, const QIconSet& pix, QKeySequence accel,
+KFontAction::KFontAction( const QString& text, const QIconSet& pix,
+                          const QKeySequence& accel,
                           QObject* parent, const char* name )
     : KSelectAction( text, pix, accel, parent, name )
 {
@@ -1900,7 +1932,8 @@ KFontAction::KFontAction( const QString& text, const QIconSet& pix, QKeySequence
     setEditable( TRUE );
 }
 
-KFontAction::KFontAction( const QString& text, const QString& pix, QKeySequence accel,
+KFontAction::KFontAction( const QString& text, const QString& pix,
+                          const QKeySequence& accel,
                           QObject* parent, const char* name )
     : KSelectAction( text, pix, accel, parent, name )
 {
@@ -1910,7 +1943,8 @@ KFontAction::KFontAction( const QString& text, const QString& pix, QKeySequence 
     setEditable( TRUE );
 }
 
-KFontAction::KFontAction( const QString& text, const QIconSet& pix, QKeySequence accel,
+KFontAction::KFontAction( const QString& text, const QIconSet& pix,
+                          const QKeySequence& accel,
                           const QObject* receiver, const char* slot,
                           QObject* parent, const char* name )
     : KSelectAction( text, pix, accel, receiver, slot, parent, name )
@@ -1921,7 +1955,8 @@ KFontAction::KFontAction( const QString& text, const QIconSet& pix, QKeySequence
     setEditable( TRUE );
 }
 
-KFontAction::KFontAction( const QString& text, const QString& pix, QKeySequence accel,
+KFontAction::KFontAction( const QString& text, const QString& pix,
+                          const QKeySequence& accel,
                           const QObject* receiver, const char* slot,
                           QObject* parent, const char* name )
     : KSelectAction( text, pix, accel, receiver, slot, parent, name )
@@ -1992,14 +2027,16 @@ public:
   }
 };
 
-KFontSizeAction::KFontSizeAction( const QString& text, QKeySequence accel,
+KFontSizeAction::KFontSizeAction( const QString& text,
+                                  const QKeySequence& accel,
                                   QObject* parent, const char* name )
   : KSelectAction( text, accel, parent, name )
 {
   init();
 }
 
-KFontSizeAction::KFontSizeAction( const QString& text, QKeySequence accel,
+KFontSizeAction::KFontSizeAction( const QString& text,
+                                  const QKeySequence& accel,
                                   const QObject* receiver, const char* slot,
                                   QObject* parent, const char* name )
   : KSelectAction( text, accel, receiver, slot, parent, name )
@@ -2008,21 +2045,24 @@ KFontSizeAction::KFontSizeAction( const QString& text, QKeySequence accel,
 }
 
 KFontSizeAction::KFontSizeAction( const QString& text, const QIconSet& pix,
-                                  QKeySequence accel, QObject* parent, const char* name )
+                                  const QKeySequence& accel,
+                                  QObject* parent, const char* name )
   : KSelectAction( text, pix, accel, parent, name )
 {
   init();
 }
 
 KFontSizeAction::KFontSizeAction( const QString& text, const QString& pix,
-                                  QKeySequence accel, QObject* parent, const char* name )
+                                  const QKeySequence& accel,
+                                  QObject* parent, const char* name )
   : KSelectAction( text, pix, accel, parent, name )
 {
   init();
 }
 
 KFontSizeAction::KFontSizeAction( const QString& text, const QIconSet& pix,
-                                  QKeySequence accel, const QObject* receiver,
+                                  const QKeySequence& accel,
+                                  const QObject* receiver,
                                   const char* slot, QObject* parent,
                                   const char* name )
     : KSelectAction( text, pix, accel, receiver, slot, parent, name )
@@ -2031,7 +2071,8 @@ KFontSizeAction::KFontSizeAction( const QString& text, const QIconSet& pix,
 }
 
 KFontSizeAction::KFontSizeAction( const QString& text, const QString& pix,
-                                  QKeySequence accel, const QObject* receiver,
+                                  const QKeySequence& accel,
+                                  const QObject* receiver,
                                   const char* slot, QObject* parent,
                                   const char* name )
   : KSelectAction( text, pix, accel, receiver, slot, parent, name )
@@ -2363,7 +2404,10 @@ void KActionMenu::setIconSet( int id, const QIconSet& iconSet )
 
 ////////
 
-KToolBarPopupAction::KToolBarPopupAction( const QString& text, const QString& icon, QKeySequence accel, QObject* parent, const char* name )
+KToolBarPopupAction::KToolBarPopupAction( const QString& text,
+                                          const QString& icon,
+                                          const QKeySequence& accel,
+                                          QObject* parent, const char* name )
   : KAction( text, icon, accel, parent, name )
 {
   m_popup = 0;
@@ -2371,7 +2415,12 @@ KToolBarPopupAction::KToolBarPopupAction( const QString& text, const QString& ic
   m_stickyMenu = true;
 }
 
-KToolBarPopupAction::KToolBarPopupAction( const QString& text, const QString& icon, QKeySequence accel, const QObject* receiver, const char* slot, QObject* parent, const char* name )
+KToolBarPopupAction::KToolBarPopupAction( const QString& text,
+                                          const QString& icon,
+                                          const QKeySequence& accel,
+                                          const QObject* receiver,
+                                          const char* slot, QObject* parent,
+                                          const char* name )
   : KAction( text, icon, accel, receiver, slot, parent, name )
 {
   m_popup = 0;
