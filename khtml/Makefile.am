@@ -20,8 +20,8 @@
 KDE_CXXFLAGS = $(WOVERLOADED_VIRTUAL)
 
 if DOJAVA
-JAVA_SUBDIR="java"
-LIBKJAVA="./java/libkjava.la"
+JAVA_SUBDIR=java
+LIBKJAVA=./java/libkjava.la
 endif
 
 SUBDIRS = misc dom css xml html rendering pics $(JAVA_SUBDIR) . ecma kmultipart
@@ -47,7 +47,6 @@ libkhtml_la_LIBADD = ./xml/libkhtmlxml.la ./html/libkhtmlhtml.la \
 	$(top_builddir)/kio/libkio.la \
 	$(top_builddir)/kparts/libkparts.la \
 	$(top_builddir)/kdeprint/libkdeprint.la 
-libkhtml_la_DEPENDENCIES = $(LIBKJAVA)
 
 khtmlimagepart_la_SOURCES = khtmlimage.cpp
 khtmlimagepart_la_LDFLAGS = -module $(KDE_PLUGIN) $(all_libraries)
