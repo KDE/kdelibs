@@ -16,7 +16,7 @@
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
- */ 
+ */
 
 
 #ifndef _KWALLETBACKEND_H
@@ -35,10 +35,10 @@ class Backend {
 	public:
 		Backend(const QString& name = "kdewallet");
 		~Backend();
-		
+
 		// Open and unlock the wallet.
 		int open(const QByteArray& password);
-		
+
 		// Close and lock the wallet (saving changes).
 		int close(const QByteArray& password);
 

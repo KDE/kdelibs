@@ -16,7 +16,7 @@
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
- */ 
+ */
 
 #include "kwalletbackend.h"
 #include <kglobal.h>
@@ -83,10 +83,10 @@ static int getRandomBlock(QByteArray& randBlock) {
 
 		unsigned int rc = 0;
 		unsigned int cnt = 0;
-		
+
 			do {
-				int rc2 = 
-				       devrand.readBlock(randBlock.data() + rc, 
+				int rc2 =
+				       devrand.readBlock(randBlock.data() + rc,
 							 randBlock.size());
 
 				if (rc2 < 0)
@@ -121,7 +121,7 @@ static int password2hash(const QByteArray& password, QByteArray& hash) {
 	third.resize(password.size()/3);
 
 	// The hash works like this:
-	//     Split the passphrase into thirds and make three hashes 
+	//     Split the passphrase into thirds and make three hashes
 	//     with them.  Concatenate them.
 	for (unsigned int i = 0; i < password.size(); i++) {
 		switch (i % 3) {
@@ -187,7 +187,7 @@ int Backend::open(const QByteArray& password) {
 		return -255;  // already open
 	}
 
-	QString path = KGlobal::dirs()->saveLocation("kwallet") + 
+	QString path = KGlobal::dirs()->saveLocation("kwallet") +
 		       "/"+_name+".kwl";
 
 	QByteArray passhash;
@@ -286,9 +286,9 @@ int Backend::open(const QByteArray& password) {
 			return -8;         // hash error.
 		}
 	}
-	
+
 	sha.reset();
-	
+
 	// chop off the leading blksz+4 bytes
 	QByteArray tmpenc;
 	tmpenc.duplicate(encrypted.data()+blksz+4, fsize);
@@ -341,13 +341,13 @@ int Backend::open(const QByteArray& password) {
 	return 0;
 }
 
-	
+
 int Backend::close(const QByteArray& password) {
 	if (!_open) {
 		return -255;  // not open yet
 	}
 
-	QString path = KGlobal::dirs()->saveLocation("kwallet") + 
+	QString path = KGlobal::dirs()->saveLocation("kwallet") +
 		       "/"+_name+".kwl";
 
 	QFile qf(path);
@@ -396,7 +396,7 @@ int Backend::close(const QByteArray& password) {
 	// prepend and append the random data
 	QByteArray wholeFile;
 	long blksz = bf.blockSize();
-	long newsize = decrypted.size() + 
+	long newsize = decrypted.size() +
 		       blksz            +    // encrypted block
 		       4                +    // file size
 		       20;      // size of the SHA hash
@@ -412,7 +412,7 @@ int Backend::close(const QByteArray& password) {
 		decrypted.fill(0);
 		return -3;		// Fatal error: can't get random
 	}
-	
+
 	for (int i = 0; i < blksz; i++) {
 		wholeFile[i] = randBlock[i];
 	}
@@ -440,7 +440,7 @@ int Backend::close(const QByteArray& password) {
 	// hash the passphrase
 	QByteArray passhash;
 	password2hash(password, passhash);
-	
+
 	// encrypt the data
 	if (!bf.setKey(passhash.data(), passhash.size()*8)) {
 		passhash.fill(0);
