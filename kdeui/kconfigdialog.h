@@ -61,6 +61,9 @@ class KConfigSkeleton;
  * have a loadSettings() type slot to read settings and perform any
  * necessary changes.
  *
+ * Please note that using the setMainWidgetmethod inherited from KDialogBase
+ * currently yields broken behaviour at runtime; use addPage instead.
+ *
  * @see KConfigSkeleton
  * @since 3.2
  */
