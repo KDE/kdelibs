@@ -31,6 +31,12 @@ public:
     QAction* action( const char* name );
     QActionCollection* actionCollection();
 
+    /**
+     * @internal
+     * @return the plugin created from the library @libname
+     */
+    static Plugin* loadPlugin( QObject * parent, const char* libname );
+
 private:
     QActionCollection m_collection;
 };
@@ -39,8 +45,10 @@ private:
  * @internal
  * The @ref XMLGUIServant for a @ref Plugin, providing actions
  * and XML for their layout to the merging engine.
+ *
+ * This is not merged with Plugin, because the Plugin is loaded
+ * only when one of its actions is activated.
  */
-// ###### TODO : merge this with Plugin, no ?
 class PluginGUIServant : public QObject, public XMLGUIServant
 {
   Q_OBJECT

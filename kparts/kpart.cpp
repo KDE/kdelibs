@@ -8,7 +8,6 @@
 #include <qtextstream.h>
 
 #include <kinstance.h>
-#include <klibloader.h>
 #include <kio_job.h>
 #include <kstddirs.h>
 
@@ -169,32 +168,10 @@ QActionCollection* Part::actionCollection()
 
 Plugin* Part::plugin( const char* libname )
 {
-    QObject* ch = child( libname, "KPlugin" );
+    QObject* ch = child( libname, "Plugin" );
     if ( ch )
 	return (Plugin*)ch;
-
-    KLibLoader* loader = KLibLoader::self();
-    if ( !loader )
-    {
-	kDebugError( 1000, "KPart: No library loader installed" );
-	return 0;
-    }
-
-    KLibFactory* f = loader->factory( libname );
-    if ( !f )
-    {
-	kDebugError( 1000, "KPart: Could not initialize library" );
-	return 0;
-    }
-    QObject* obj = f->create( this, libname, "KPlugin" );
-    if ( !obj->inherits("KPlugin" ) )
-    {
-	kDebugError( 1000, "The library does not feature an object of class Plugin" );
-	delete obj;
-	return 0;
-    }
-
-    return (Plugin*)obj;
+    return Plugin::loadPlugin( this, libname );
 }
 
 QAction *Part::action( const QDomElement &element )
