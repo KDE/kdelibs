@@ -1135,10 +1135,6 @@ void KToolBar::mouseMoveEvent ( QMouseEvent *mev)
     }
     mouseEntered = false;
 
-    // if we made it here, then our state has changed
-    d->m_stateChanged = true;
-    saveState();
-
     delete mgr;
     mgr=0;
     repaint (false);
@@ -1157,6 +1153,10 @@ void KToolBar::mouseReleaseEvent ( QMouseEvent *m)
       ((d->m_isHorizontal && m->x()<9) || (!d->m_isHorizontal && m->y()<9)) ) {
     setFlat (d->m_position != Flat);
   }
+  
+  // if we made it here, then our state has changed
+  d->m_stateChanged = true;
+  saveState();
 }
 
 void KToolBar::mousePressEvent ( QMouseEvent *m )
@@ -1246,7 +1246,8 @@ void KToolBar::slotHotSpot(int hs)
   }
   kdDebug() << "slotHotSpot : saving" << endl;
   d->m_stateChanged = true;
-  saveState();
+  // why call saveState() here ? Let's better do it in mouseReleaseEvent to avoid unnecessary disk access (Simon)
+  //  saveState();
 }
 
 void KToolBar::resizeEvent(QResizeEvent*)
