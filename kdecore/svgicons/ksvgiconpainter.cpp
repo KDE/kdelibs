@@ -1711,6 +1711,8 @@ static const char *getCoord(const char *ptr, double &number)
 
 void KSVGIconPainter::drawPath(const QString &data, bool filled)
 {
+	if (!data.isEmpty())
+	{
 	QString value = data;
 
 	QMemArray<ArtBpath> vec;
@@ -2284,6 +2286,7 @@ void KSVGIconPainter::drawPath(const QString &data, bool filled)
 
 	if(render)
 		d->helper->drawBPath(vec.data());
+	}
 }
 
 void KSVGIconPainter::drawImage(double x, double y, QImage &image)
