@@ -978,6 +978,7 @@ private:
  */
 class KListViewItem : public QListViewItem
 {
+  friend class KListView;
 public:
   /**
    * constructors. The semantics remain as in QListViewItem.

@@ -1997,6 +1997,13 @@ void KListView::setSorting(int column, bool ascending)
   d->sortColumn = column;
   d->sortAscending = ascending;
   QListView::setSorting(column, ascending);
+  
+  QListViewItem* item = firstChild();
+  while ( item ) {
+    KListViewItem *kItem = dynamic_cast<KListViewItem*>(item);
+    if (kItem) kItem->m_known = false;
+    item = item->itemBelow();
+  }
 }
 
 int KListView::columnSorted(void) const
