@@ -57,3 +57,4 @@ KWizard::KWizard( QWidget *parent, const char *name, bool modal, WFlags f )
   setTitleFont( font );
 }
 
+#include "kwizard.moc"
