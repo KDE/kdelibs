@@ -284,6 +284,20 @@ class KDECORE_EXPORT KGlobalSettings
     static int contrast();
 
     /**
+     * Returns the button background color
+     * @return the button background color
+     * @since 3.4
+     */
+    static QColor buttonBackground();
+
+    /**
+     * Returns the button text color
+     * @return the button text color
+     * @since 3.4
+     */
+    static QColor buttonTextColor();
+
+    /**
      * Returns the default base (background) color.
      * @return the default base (background) color
      * @see QColorGroup::base()

@@ -209,6 +209,18 @@ int KGlobalSettings::contrast()
     return g.readNumEntry( "contrast", 7 );
 }
 
+QColor KGlobalSettings::buttonBackground()
+{
+    KConfigGroup g( KGlobal::config(), "General" );
+    return g.readColorEntry( "buttonBackground", &Qt::gray );
+}
+
+QColor KGlobalSettings::buttonTextColor()
+{
+    KConfigGroup g( KGlobal::config(), "General" );
+    return g.readColorEntry( "buttonForeground", &Qt::black );
+}
+
 // IMPORTANT:
 //  This function should be get in sync with
 //   KApplication::kdisplaySetPalette()
