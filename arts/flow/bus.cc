@@ -26,9 +26,17 @@
 #include <iostream>
 #include <set>
 
+#ifdef __SUNPRO_CC
+/* SunPRO CC looses to link this when the_BusManager is static, because
+   later a template implementation file references this symbol. */
+#define the_BusManager __internal_aRts_the_BusManager__Bahh__
+#else
+static
+#endif
+  Arts::BusManager *the_BusManager = 0;
+
 using namespace Arts;
 using namespace std;
-static BusManager *the_BusManager = 0;
 
 // shutdown bus manager on termination
 
@@ -39,10 +47,10 @@ namespace Arts {
 		void startup() { };
 		void shutdown()
 		{
-			if(the_BusManager)
+			if(::the_BusManager)
 			{
-				delete the_BusManager;
-				the_BusManager = 0;
+				delete ::the_BusManager;
+				::the_BusManager = 0;
 			}
 		}
 	}	The_BusManagerShutdown;
@@ -55,8 +63,8 @@ BusManager::BusManager()
 
 BusManager *BusManager::the()
 {
-	if(!the_BusManager) the_BusManager = new BusManager;
-	return(the_BusManager);
+	if(!::the_BusManager) ::the_BusManager = new BusManager;
+	return(::the_BusManager);
 }
 
 BusManager::Bus *BusManager::findBus(string name)
