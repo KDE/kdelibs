@@ -305,6 +305,7 @@
 <!ENTITY TrueType	'<trademark class="registered">TrueType</trademark>'>
 <!ENTITY UNIX	'<trademark class="registered">UNIX</trademark>'>
 <!ENTITY URL	"<acronym>URL</acronym>">
+<!ENTITY URI	"<acronym>URI</acronym>">
 <!ENTITY Visor	"<trademark>Visor</trademark>">
 <!ENTITY windowmaker	"<application>Window Maker</application>">
 <!ENTITY Windows	'<trademark class="registered">Windows</trademark>'>
