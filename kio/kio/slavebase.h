@@ -553,11 +553,10 @@ public:
     /**
      * Prompt the user for Authorization info (login & password).
      *
-     * Use this function to request authorization info from the
-     * the end user. You can also pass an errorMsg which explains
-     * why a previous authorisation attempt failed.
-     * For example to open an empty password dialog
-     * using default values:
+     * Use this function to request authorization information from
+     * the end user. You can also pass an error message which explains
+     * why a previous authorization attempt failed. Here is a very
+     * simple example:
      *
      * <pre>
      * KIO::AuthInfo authInfo;
@@ -568,8 +567,8 @@ public:
      * }
      * </pre>
      *
-     * You can also pre-set some values like the username before hand
-     * if it is known as well as the comment and caption to be displayed:
+     * You can also preset some values like the username, caption or
+     * comment as follows:
      *
      * <pre>
      * KIO::AuthInfo authInfo;
@@ -583,9 +582,8 @@ public:
      * }
      * </pre>
      *
-     * NOTE: A call to this function can also fail and result
-     * in a return value of @p false, if the UIServer could not
-     * be started for whatever reason.
+     * NOTE: A call to this function can fail and return @p false, 
+     * if the UIServer could not be started for whatever reason.
      *
      * @param info  See @ref AuthInfo.
      * @param errorMsg Error message to show
@@ -602,8 +600,8 @@ public:
      *
      * Use this function to check if any cached password exists
      * for the URL given by @p info.  If @p AuthInfo::realmValue
-     * is present and/or the @p AuthInfo::verifyPath flag is set,
-     * then they will also be factored in determining the presence
+     * and/or @p AuthInfo::verifyPath flag is specified, then
+     * they will also be factored in determining the presence
      * of a cached password.  Note that @p Auth::url is a required
      * parameter when attempting to check for cached authorization
      * info. Here is a simple example:
@@ -620,26 +618,8 @@ public:
      * }
      * </pre>
      *
-     * If the protocol allows multiple resources within the same
-     * location to be protected by different passwords, then to
-     * determine the correct password and send pre-emtively, i.e.
-     * before the other end requires it, you can use one or both
-     * of the following methods: set the unique identifier using
-     * @p AuthInfo::realmValue or require that a path match be
-     * performed using @p AuthInfo::verifyPath.
-     *
-     * <pre>
-     * info.url = KURL("http://www.foobar.org/foo/bar");
-     * info.verifyPath = true;
-     * info.realmValue = "unique_identifier";
-     * </pre>
-     *
-     * NOTE: A call to this function will fail and return false,
-     * whenever the "kdesud" could not be started for whatever reason
-     * or an invalid URL is supplied.
-     *
      * @param       See @ref AuthInfo.
-     * @return      @p TRUE if cached Authorization is found, false otherwise.
+     * @return      @p true if cached Authorization is found, false otherwise.
      */
     bool checkCachedAuthentication( AuthInfo& info );
 
@@ -648,7 +628,7 @@ public:
      * stores password information automatically, you only need to call
      * this function if you want to store authentication information that
      * is different from the information returned by openPassDlg.
-     */
+     */    
     bool cacheAuthentication( const AuthInfo& info );
 
     /**
@@ -659,7 +639,7 @@ public:
     QString createAuthCacheKey( const KURL& url );
 
     /**
-     * @obsolete
+     * @obsolete as of 3.1
      *
      * Cache authentication information is now stored automatically
      * by openPassDlg.
@@ -667,7 +647,7 @@ public:
     void sendAuthenticationKey( const QCString& gKey, const QCString& key, bool keep );
 
     /**
-     * @obsolete
+     * @obsolete as of 3.1
      *
      * Cache authentication information is now stored automatically
      * by openPassDlg.

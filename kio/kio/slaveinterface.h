@@ -112,8 +112,8 @@ class SlaveInterfacePrivate;
    MSG_NET_DROP,
    MSG_NEED_SUBURL_DATA,
    MSG_CANRESUME,
-   MSG_AUTH_KEY,
-   MSG_DEL_AUTH_KEY
+   MSG_AUTH_KEY, // deprecated.
+   MSG_DEL_AUTH_KEY // deprecated.
    // add new ones here once a release is done, to avoid breaking binary compatibility
  };
 
@@ -179,21 +179,12 @@ signals:
     void connectFinished();
 
     /**
-     * Emitted whenever login (username/password) information
-     * needs to be cached.
-     *
-     * NOTE: this signal is also emitted whenever a
-     * @param key     token under which authorization is stored.
-     * @param grpkey  group token under which authorization is stored.
-     * @param keep    if true, user requested password to be cached for entire KDE session.
-     */
+     * @deprecated. Obselete as of 3.1. Replaced by a kpassword, a kded module.
+     */     
     void authorizationKey( const QCString&, const QCString&, bool );
 
     /**
-     * Emitted when an io-slave requests cached password to be
-     * deleted for the specified group.
-     *
-     * @param grpkey     group token under which authorization is stored.
+     * @deprecated. Obselete as of 3.1. Replaced by a kpassword, a kded module.
      */
     void delAuthorization( const QCString& grpkey );
 
@@ -205,13 +196,13 @@ protected:
     virtual bool dispatch();
     virtual bool dispatch( int _cmd, const QByteArray &data );
 
-    /**
+   /**
     * Prompt the user for authrization info (login & password).
-     *
+    *
     * Use this function to request authorization info from the
     * the end user. For example to open an empty password dialog
     * using default values:
-     *
+    *
     * <pre>
     * KIO::AuthInfo authInfo;
     * bool result = openPassDlg( authInfo );
@@ -247,18 +238,14 @@ protected:
     void openPassDlg( KIO::AuthInfo& info );
 
    /**
-    * Same as above except in the argument it accepts.
-    *
-    * @deprecated.  Use @ref openPassDlg( AuthInfo& ) instead.
+    * @deprecated. Use @ref openPassDlg( AuthInfo& ) instead.
     */
     void openPassDlg( const QString& prompt, const QString& user,
                       const QString& caption, const QString& comment,
                       const QString& label, bool readOnly );
 
    /**
-    * Same as above except in the argument it accepts.
-    *
-    * @deprecated.  Use @ref openPassDlg( AuthInfo& ) instead.
+    * @deprecated. Use @ref openPassDlg( AuthInfo& ) instead.
     */
     void openPassDlg( const QString& prompt, const QString& user, bool readOnly );
 
