@@ -254,25 +254,7 @@ int KSSL::connect(int sock) {
   } else {
     kdDebug(7029) << "KSSL connect failed - rc = " << rc << endl;
     kdDebug(7029) << "                      ERROR = " << d->kossl->SSL_get_error(d->m_ssl, rc) << endl;
-    if (m_cfg->sslv2() && m_cfg->sslv3()) {
-      m_cfg->setSSLv2(true);
-      m_cfg->setSSLv3(false);
-      m_bAutoReconfig = false;
-      m_bInit = false;
-      d->kossl->SSL_CTX_free(d->m_ctx);
-      kdDebug(7029) << "KSSL connecting again" << endl;
-      initialize();
-      rc = KSSL::connect(sock);
-      if (rc == 1) {
-	setConnectionInfo();
-	setPeerInfo(sock);
-      } else {
-	m_cfg->setSSLv3(true);
-	m_bAutoReconfig = true;
-	kdDebug(7029) << "KSSL connect FAILED" << endl;
-	return -1;
-      }
-    } else return -1;
+    return -1;
   }
   return rc;
 #else
