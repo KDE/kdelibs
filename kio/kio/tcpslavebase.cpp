@@ -44,7 +44,9 @@
 #include <ksslall.h>
 #include <ksslcertdlg.h>
 #include <kmessagebox.h>
+#ifndef Q_WS_WIN //temporary
 #include <kresolver.h>
+#endif
 
 #include <klocale.h>
 #include <dcopclient.h>
@@ -794,6 +796,7 @@ int TCPSlaveBase::verifyCertificate()
 
    _IPmatchesCN = d->kssl->peerInfo().certMatchesAddress();
    if (!_IPmatchesCN) {
+#ifndef Q_WS_WIN //temporary
       KNetwork::KResolverResults res = KNetwork::KResolver::resolve(d->kssl->peerInfo().peerHost(), "80", KNetwork::KResolver::CanonName);
       if (!res.isEmpty()) {
          QString old = d->kssl->peerInfo().peerHost();
@@ -803,6 +806,7 @@ int TCPSlaveBase::verifyCertificate()
             d->kssl->peerInfo().setPeerHost(old);
          }
       }
+#endif
       if (!_IPmatchesCN && !d->militantSSL) { // force this if the user wants it
          if (d->cc->getHostList(pc).contains(ourHost)) {
             _IPmatchesCN = true;
