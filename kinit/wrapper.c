@@ -148,7 +148,7 @@ static int openSocket()
 int main(int argc, char **argv)
 {
    int i;
-   long arg_count = argc;
+   long arg_count;
    klauncher_header header;
    char *start, *p, *buffer;
    long size = 0;
@@ -156,13 +156,21 @@ int main(int argc, char **argv)
 
    start = argv[0];
    p = start + strlen(argv[0]);
-   while (p-- > start)
+   while (--p > start)
    {
       if (*p == '/') break;
    }
    if ( p > start)
       p++;
    start = p;
+
+   if (strcmp(start, "kdeinit_wrapper") == 0)
+   {
+      argv++;
+      argc--;
+      start = argv[0];
+   }
+   arg_count = argc;
 
    size += sizeof(long); /* Number of arguments*/
 
