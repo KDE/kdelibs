@@ -211,7 +211,7 @@ void HTMLDocument::setCookie( const DOMString & value )
     fake_header.append("\n");
     stream << URL().string() << fake_header.utf8() << windowId;
     if (!kapp->dcopClient()->send("kcookiejar", "kcookiejar",
-				  "addCookies(QString, QCString, long)", params))
+				  "addCookies(QString,QCString,long int)", params))
     {
 	 kdWarning(6010) << "Can't communicate with cookiejar!" << endl;
     }
