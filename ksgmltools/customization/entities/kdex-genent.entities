@@ -50,7 +50,7 @@
   NDATA linespecific	                                             >
 <!ENTITY GPLNotice	    PUBLIC
   "-//KDE//DOCUMENT GNU General Public License Notice//EN"
-  "../en/entities/ gpl-notice.docbook"><!-- meant for inclusion, so no [CN]DATA SGML (why?) -->
+  "../en/entities/gpl-notice.docbook"><!-- meant for inclusion, so no [CN]DATA SGML (why?) -->
 <!ENTITY LGPL-html	    PUBLIC
   "-//GNU//DOCUMENT GNU Lesser General Public License V2.1 (HTML)//EN"
   "http://www.gnu.org/copyleft/lesser.html"
