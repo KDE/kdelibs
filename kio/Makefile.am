@@ -66,7 +66,7 @@ libkio_la_SOURCES = \
 	slave.cpp \
 	netaccess.cpp paste.cpp \
 	kmimemagic.cpp \
-	slavebase.cpp passdlg.cpp \
+	tcpslavebase.cpp slavebase.cpp passdlg.cpp \
 	progressbase.cpp defaultprogress.cpp \
 	statusbarprogress.cpp \
 	kurlcompletion.cpp kshellcompletion.cpp \
