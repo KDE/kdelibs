@@ -119,7 +119,7 @@ Actions		additional actions possible, see MIME type	string(s)	NO	YES
 Icon		icon to display in file manager, menus, etc.	string		NO	YES
 		the icon MAY specify a specific path to
 		override common search directories
-MiniIcon	small icon for window manager, menus, etc.	string		NO	NO
+MiniIcon	small icon for menus, etc (deprecated).		string		NO	NO
 Hidden		if true, pretend this entry doesn't exist.	boolean		NO	NO
 Path		if entry is type Application, the working	string		NO	YES
 		directory to run the program in	
