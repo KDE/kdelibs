@@ -41,7 +41,6 @@
 #include <qtextstream.h>
 #include <qfile.h>
 #include <kdebug.h>
-#include <kdebugclasses.h>
 
 static void dump_xml(const QDomDocument& doc)
 {

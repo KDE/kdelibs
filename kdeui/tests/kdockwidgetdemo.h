@@ -3,7 +3,6 @@
 
 #include <kdockwidget.h>
 
-#include <qstringlist.h>
 #include <qdialog.h>
 #include <qlistview.h>
 #include <qstring.h>
@@ -16,7 +15,6 @@
 #include <qvbox.h>
 #include <qurl.h>
 #include <qpixmap.h>
-#include <qstringlist.h>
 
 class QMultiLineEdit;
 class QTextView;
