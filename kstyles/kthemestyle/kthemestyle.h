@@ -193,6 +193,7 @@ public:
 protected:
     QPalette oldPalette, popupPalette, indiPalette, exIndiPalette;
     bool paletteSaved;
+    bool polishLock;
     QStyle *mtfstyle;
 
     mutable QPixmap* vsliderBackCache;

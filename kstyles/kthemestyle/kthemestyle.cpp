@@ -64,6 +64,7 @@ Port version 0.9.3
 #include <qmenubar.h>
 #include <qrangecontrol.h>
 #include <qslider.h>
+#include <qtooltip.h>
 #include <qobjectlist.h>
 #include "kstyledirs.h"
 
@@ -110,40 +111,40 @@ class KThemeStylePlugin : public QStylePlugin
 public:
 
     KThemeStylePlugin()
-	{}
+    {}
 
     ~KThemeStylePlugin()
-	{}
+    {}
 
     QStringList keys() const
     {
-		KStyleDirs dirs;
-		QSettings cfg;
-		dirs.addToSearch( cfg, "share/config" );
+        KStyleDirs dirs;
+        QSettings cfg;
+        dirs.addToSearch( cfg, "share/config" );
 
-		QStringList keys;
-		bool ok;
+        QStringList keys;
+        bool ok;
 
-        if (QPixmap::defaultDepth() > 8)
+        if ( QPixmap::defaultDepth() > 8 )
         {
-            keys = cfg.readListEntry("/kthemestyle/themes",&ok);
-            if (!ok)
-                qWarning("KThemeStyle cache seems corrupt!\n");//Too bad one can't i18n this :-(
-   		}
+            keys = cfg.readListEntry( "/kthemestyle/themes", &ok );
+            if ( !ok )
+                qWarning( "KThemeStyle cache seems corrupt!\n" ); //Too bad one can't i18n this :-(
+        }
 
         return keys;
     }
 
     QStyle* create( const QString& key )
     {
-		KStyleDirs dirs;
-		QSettings cfg;
-		dirs.addToSearch( cfg, "share/config" );
+        KStyleDirs dirs;
+        QSettings cfg;
+        dirs.addToSearch( cfg, "share/config" );
 
-		QString file = cfg.readEntry("/kthemestyle/"+key+"/file");
-		if (!key.isEmpty())
+        QString file = cfg.readEntry( "/kthemestyle/" + key + "/file" );
+        if ( !key.isEmpty() )
         {
-			QFileInfo fi(file);
+            QFileInfo fi( file );
             return new KThemeStyle( fi.dirPath(), fi.fileName() );
         }
 
@@ -375,8 +376,8 @@ int KThemeStyle::pixelMetric ( PixelMetric metric, const QWidget * widget ) cons
 
 
 
-KThemeStyle::KThemeStyle( const QString& configDir,const QString &configFile )
-        : KThemeBase( configDir, configFile ), paletteSaved( false ), vsliderCache( 0L ), vsliderBackCache( 0L )
+KThemeStyle::KThemeStyle( const QString& configDir, const QString &configFile )
+        : KThemeBase( configDir, configFile ), paletteSaved( false ), polishLock( false ), vsliderCache( 0L ), vsliderBackCache( 0L )
 {
     mtfstyle = QStyleFactory::create( "Motif" );
     if ( !mtfstyle )
@@ -389,11 +390,20 @@ KThemeStyle::~KThemeStyle()
     delete vsliderBackCache;
 }
 
+
 void KThemeStyle::polish( QApplication * /*app*/ )
 {}
 
+
 void KThemeStyle::polish( QPalette &p )
 {
+    if ( polishLock )
+    {
+        return ; //Palette polishing disabled ...
+    }
+
+
+
     if ( !paletteSaved )
     {
         oldPalette = p;
@@ -430,8 +440,20 @@ void KThemeStyle::unPolish( QApplication *app )
 
 void KThemeStyle::polish( QWidget *w )
 {
+    if ( w->inherits( "QTipLabel" ) )
+    {
+        polishLock = true;
 
-    if ( w->inherits( "KonqIconViewWidget" ) )  //Konqueror background hack/workaround
+        QColorGroup clrGroup( Qt::black, QColor( 255, 255, 220 ),
+                              QColor( 96, 96, 96 ), Qt::black, Qt::black,
+                              Qt::black, QColor( 255, 255, 220 ) );
+        QPalette toolTip ( clrGroup, clrGroup, clrGroup );
+
+        QToolTip::setPalette( toolTip );
+        polishLock = false;
+    }
+
+    if ( w->inherits( "KonqIconViewWidget" ) )   //Konqueror background hack/workaround
     {
         w->setPalette( oldPalette );
         return ;
@@ -439,7 +461,7 @@ void KThemeStyle::polish( QWidget *w )
 
     if ( !w->isTopLevel() )
     {
-        if ( w->inherits( "QGroupBox" ) )  //#### Doing this for TabWidget created problems -- should this one go as well?
+        if ( w->inherits( "QGroupBox" ) )   //#### Doing this for TabWidget created problems -- should this one go as well?
         {
             w->setAutoMask( TRUE );
             return ;
@@ -448,8 +470,8 @@ void KThemeStyle::polish( QWidget *w )
                 || w->inherits( "QSlider" )
                 || w->inherits( "QButton" )
                 || w->inherits( "QProgressBar" )
-				|| w->inherits( "KActiveLabel" )
-				|| w->inherits( "KJanusWidget" )
+                || w->inherits( "KActiveLabel" )
+                || w->inherits( "KJanusWidget" )
            )
         {
             w->setBackgroundOrigin( QWidget::ParentOrigin );
@@ -532,8 +554,8 @@ void KThemeStyle::unPolish( QWidget* w )
                 || w->inherits( "QSlider" )
                 || w->inherits( "QButton" )
                 || w->inherits( "QProgressBar" )
-				|| w->inherits( "KActiveLabel" )
-				|| w->inherits( "KJanusWidget" )
+                || w->inherits( "KActiveLabel" )
+                || w->inherits( "KJanusWidget" )
            )
         {
             w->setBackgroundOrigin( QWidget::WidgetOrigin );
@@ -1410,7 +1432,7 @@ void KThemeStyle::drawControl( ControlElement element,
             }
         case CE_PopupMenuItem:
             {
-                bool separator=false;
+                bool separator = false;
                 int x, y, w, h;
                 r.rect( &x, &y, &w, &h );
 
@@ -1686,7 +1708,7 @@ void KThemeStyle::drawControl( ControlElement element,
                     QPainter p2( &buf );
                     drawBaseButton( &p2, 0, 0, wp, h, *colorGroup( cg, ProgressBar ), false, false, ProgressBar );
                     p2.end();
-		    QPixmap mirroredPix = QPixmap( buf.convertToImage().mirror( true, false ) );
+                    QPixmap mirroredPix = QPixmap( buf.convertToImage().mirror( true, false ) );
                     bitBlt( p->device(), x + ( w - wp ), y, &mirroredPix );
                 }
 
@@ -1883,10 +1905,10 @@ void KThemeStyle::drawKStylePrimitive( KStylePrimitive kpe,
                 handled = true;
                 break;
             }
-        //case KPE_DockWindowHandle:
+            //case KPE_DockWindowHandle:
         case KPE_ToolBarHandle:
         case KPE_GeneralHandle:
-        	{
+            {
                 if ( w > h )
                     drawBaseButton( p, x, y, w, h, *colorGroup( cg, HBarHandle ), false, false,
                                     HBarHandle );
@@ -1894,7 +1916,7 @@ void KThemeStyle::drawKStylePrimitive( KStylePrimitive kpe,
                     drawBaseButton( p, x, y, w, h, *colorGroup( cg, VBarHandle ), false, false,
                                     VBarHandle );
 
-            	handled = true;
+                handled = true;
                 break;
             }
         default:
