@@ -563,7 +563,7 @@ void KPrinter::margins( uint *top, uint *left, uint *bottom, uint *right ) const
 
 int KPrinter::metric(int m) const
 {
-	if (d->m_pagesize != NULL || !option( "kde-printsize" ).isEmpty())
+	if (d->m_pagesize == NULL || !option( "kde-printsize" ).isEmpty())
 		return d->m_wrapper->qprinterMetric(m);
 
 	int	val(0);
