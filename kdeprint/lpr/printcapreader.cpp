@@ -32,47 +32,21 @@ void PrintcapReader::setPrintcapFile(QFile *f)
     }
 }
 
-void PrintcapReader::skipBlankLines()
+bool PrintcapReader::nextLine(QString& line)
 {
-    QString line;
-    while (!m_stream.atEnd() && (line=nextSingleLine().stripWhiteSpace()).isEmpty()) ;
-    if (!line.isEmpty())
-        unputLine(line);
-}
-
-QString PrintcapReader::nextSingleLine()
-{
-    QString line;
-    if (!m_buffer.isEmpty())
-    {
-        line = m_buffer;
-        m_buffer = QString::null;
-    }
-    else
-        line = m_stream.readLine();
-    return line;
-}
-
-QString PrintcapReader::nextLine()
-{
-    QString line;
-    if (!m_buffer.isEmpty())
-    {
-        line = m_buffer;
-        m_buffer = QString::null;
-    }
-    else
-    {
-        if (m_stream.atEnd())
-            return QString::null;
-        else
-            line = m_stream.readLine().stripWhiteSpace();
-    }
-    if (line.right(1) == "\\")
-    {
-        line = line.left(line.length()-1).stripWhiteSpace() + nextLine();
-    }
-    return line;
+	if (m_stream.atEnd() && m_buffer.isEmpty())
+		return false;
+	else if (!m_buffer.isEmpty())
+	{
+		line = m_buffer;
+		m_buffer = QString::null;
+	}
+	else
+		line = m_stream.readLine().stripWhiteSpace();
+	// strip any '\' at the end
+	if (line[line.length()-1] == '\\')
+		line = line.left(line.length()-1).stripWhiteSpace();
+	return true;
 }
 
 void PrintcapReader::unputLine(const QString& s)
@@ -80,52 +54,53 @@ void PrintcapReader::unputLine(const QString& s)
     m_buffer = s;
 }
 
-QString PrintcapReader::lprngLine()
-{
-    QString line = nextLine();
-    while (1)
-    {
-        QString nline = nextLine();
-        if (nline.isEmpty())
-            break;
-        QChar   c = nline[0];
-        if (c == ':' || c == '|')
-            line.append(nline);
-        else if (c != '#')
-        {
-            unputLine(nline);
-            break;
-        }
-    }
-    return line;
-}
-
 PrintcapEntry* PrintcapReader::nextEntry()
 {
     if (!m_stream.device())
         return NULL;
 
-    QString line, comment, name, fields;
+    QString line, comment, name, fields, buf;
     // skip comments, keep last one
-    skipBlankLines();
-    do
+    while (1)
     {
-        line = nextLine();
-        if (m_stream.atEnd())
-            return NULL;
-        else if (line.isEmpty())
-            //return NULL;
-            continue;
-        if (line.startsWith("#"))
-            comment = line;
-        else
-        {
-            unputLine(line);
-            break;
-        }
-    } while (1);
-    // get the rest of the entry
-    QString buf = lprngLine();
+	    if (!nextLine(line))
+		    return NULL;
+	    else if (line.isEmpty())
+		    continue;
+	    else if (line[0] == '#')
+		    comment = line;
+	    else
+	    {
+		    buf = line;
+		    break;
+	    }
+    }
+
+    // look for the complete entry
+    while (1)
+    {
+	    // we found the entry if we reached the end of file or
+	    // found an empty line
+	    if (!nextLine(line) || line.isEmpty())
+		    break;
+	    // just skip comments
+	    else if (line[0] == '#')
+		    continue;
+	    // lines starting with ':' or '|' are appended
+	    else if (line[0] == ':' || line[0] == '|')
+		    buf += line;
+	    // otherwise it's another entry, put it back in the
+	    // buffer
+	    else
+	    {
+		    unputLine(line);
+		    break;
+	    }
+    }
+
+    // now parse the entry
+    kdDebug() << "COMMENT: " << comment << endl;
+    kdDebug() << "LINE: " << buf << endl;
     int p = buf.find(':');
     if (p == -1)
         name = buf;

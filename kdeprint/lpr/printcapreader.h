@@ -36,11 +36,8 @@ private:
     QString m_buffer;
     QTextStream m_stream;
     
-    QString nextLine();
-    QString nextSingleLine();
+    bool nextLine(QString&);
     void unputLine(const QString&);
-    void skipBlankLines();
-    QString lprngLine();
 };
 
 #endif
