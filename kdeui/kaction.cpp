@@ -1851,11 +1851,23 @@ void KFontSizeAction::setFontSize( int size )
 
     int index = items().findIndex( QString::number( size ) );
     if ( index == -1 ) {
-	QStringList lst = items();
-	lst.append( QString::number( size ) );
+        // Insert at the correct position in the list (to keep sorting)
+	QValueList<int> lst;
+        // Convert to list of ints
+        QStringList itemsList = items();
+        for (QStringList::Iterator it = itemsList.begin() ; it != itemsList.end() ; ++it)
+            lst.append( (*it).toInt() );
+        // New size
+	lst.append( size );
+        // Sort the list
 	qHeapSort( lst );
-	KSelectAction::setItems( lst );
-	index = lst.findIndex( QString::number( size ) );
+        // Convert back to string list
+        QStringList strLst;
+        for (QValueList<int>::Iterator it = lst.begin() ; it != lst.end() ; ++it)
+            strLst.append( QString::number(*it) );
+	KSelectAction::setItems( strLst );
+        // Find new current item
+	index = lst.findIndex( size );
 	setCurrentItem( index );
     }
     else
