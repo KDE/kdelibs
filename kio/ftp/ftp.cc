@@ -664,8 +664,16 @@ bool Ftp::ftpOpenPASVDataConnection()
     return false;
   }
 
-  if (sscanf(rspbuf, "%*[^(](%d,%d,%d,%d,%d,%d)",&i[0], &i[1], &i[2], &i[3], &i[4], &i[5]) != 6)
+  // The usual answer is '227 Entering Passive Mode. (160,39,200,55,6,245)'
+  // but anonftpd gives '227 =160,39,200,55,6,245'
+  char *start = strchr(rspbuf,'(');
+  if ( !start )
+    start = strchr(rspbuf,'=');
+  if ( !start ||
+       ( sscanf(start, "(%d,%d,%d,%d,%d,%d)",&i[0], &i[1], &i[2], &i[3], &i[4], &i[5]) != 6 &&
+         sscanf(start, "=%d,%d,%d,%d,%d,%d", &i[0], &i[1], &i[2], &i[3], &i[4], &i[5]) != 6 ) )
   {
+    kdError(7102) << "parsing IP and port numbers failed. String parsed: " << start << endl;
     return false;
   }
 
@@ -732,7 +740,9 @@ bool Ftp::ftpOpenEPSVDataConnection()
       return false;
     }
 
-  if (sscanf(rspbuf, "%*[^|]|||%d|", &portnum) != 1)
+  char *start = strchr(rspbuf,'|');
+  if ( !start ||
+       sscanf(rspbuf, "|||%d|", &portnum) != 1)
     {
       // invalid response?
       return false;
