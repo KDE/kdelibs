@@ -11,7 +11,7 @@ FILTER_sources = kgzipfilter.cpp kbzip2filter.cpp
 kde_module_LTLIBRARIES = kio_help.la
 
 kio_help_la_SOURCES = $(FILTER_sources) kio_help.cpp main.cpp xslt.cpp
-kio_help_la_LIBADD = $(FILTER_LIBS) $(LIBXSLT_LIBS)
+kio_help_la_LIBADD = $(LIBXSLT_LIBS) $(LIBXML_LIBS) $(FILTER_LIBS)
 kio_help_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)
 noinst_HEADERS = kio_help.h
 
