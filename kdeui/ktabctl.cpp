@@ -260,9 +260,16 @@ QRect KTabCtl::getChildRect() const
     return QRect(2, tabs->height() + 1, width() - 4,
 		  height() - tabs->height() - 4);
 }
+
+/*
+ * show a single page, depending on the selected tab
+ * emit tabSelected(new_pagenumber) BEFORE the page is shown
+ */
+
+void KTabCtl::showTab(int i)
 {
     unsigned int j;
-		pages[i]->raise();
+    for (j = 0; j < pages.size(); j++) {
       if (j != (unsigned)i) {
         pages[j]->hide();
       }
