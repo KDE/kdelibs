@@ -387,3 +387,10 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
   * CUPS: added the possibility to edit job attributes on-the-fly using
     a dialog similar to the printer properties dialog. Still the be fixed:
     page ranges (problem with option encoding in CUPS).
+
+15/02/2002 Michael Goffioul <goffioul@imec.be>
+  * general: fixed infinite recursion bug in KIconSelectAction
+  * CUPS: temporarily disabled edition of page-ranges as it seems CUPS is
+    buggy. I should find a workaround.
+  * general (CUPS): enable some actions for jobs on remote hosts. It seems
+    to work OK between my local LM-8.1 and a remote LM-7.2.
