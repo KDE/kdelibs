@@ -142,136 +142,7 @@ KSpellConfig::KSpellConfig( QWidget *parent, const char *name,
   }
   
   fillInDialog();	
-
-  //
-  // 2000-02-19 Espen Sand
-  // What is this? can it be removed?
-  //
-
-  /* not w/o alternate dict.
-     dictgroup=new QButtonGroup ();
-     dictgroup->setFrameStyle (QFrame::NoFrame);
-     //layout->addWidget (dictgroup,rdictgroup,0);
-	  
-     dictlistbutton=new QRadioButton (i18n("Language:"),this);
-     connect (dictlistbutton, SIGNAL (toggled(bool)),
-     this, SLOT (sDictionary(bool)));
-     layout->addWidget (dictlistbutton,rdictlist,0);
-  */
-
-  /* No alternate now -- is this needed?
-     dicteditbutton=new QRadioButton (i18n("Alternate Dictionary"),this);
-     connect (dicteditbutton, SIGNAL (toggled(bool)),
-     this, SLOT (sPathDictionary(bool)));
-     layout->addWidget (dicteditbutton,rdictedit,0);
-	dicteditbutton->setMinimumSize (dicteditbutton->
-	sizeHint();
-  */
-
-  /*
-    dictgroup->insert (dictlistbutton);
-    dictgroup->insert (dicteditbutton);
-  */
-
-
-  /*	
-    tmpQLabel = new QLabel( this, "Label_1" );
-    tmpQLabel->setGeometry( 20, 120, 120, 30 );
-    tmpQLabel->setText( i18n("Language:"));
-    tmpQLabel->setAlignment( 290 );
-    tmpQLabel->setMargin( -1 );
-    layout->addWidget (tmpQLabel, 3, 1);
-  */
-
-  /*  I'll put this back if peple think that it's necessary,
-      but it would need to be supported better. */
-  /*
-    tmpQLabel = new QLabel( this, "Label_2" );
-    //tmpQLabel->setGeometry( 30, 160, 120, 30 );
-    tmpQLabel->setText( i18n("Personal dictionary:") );
-    //	tmpQLabel->setAlignment( 290 );
-    tmpQLabel->setAlignment( AlignLeft );
-    tmpQLabel->setMargin( -1 );
-    layout->addWidget (tmpQLabel, rpersdict, 0);
-    tmpQLabel->setMinimumWidth (tmpQLabel->sizeHint().width());
-  */
-
-
-	
-  /* for alternate dict
-
-     kle1 = new KLineEdit( this, "LineEdit_1" );
-     //	kle1->setGeometry( 150, 120, 290, 30 );
-     kle1->setText( "" );
-     kle1->setMaxLength( 32767 );
-     kle1->setEchoMode( QLineEdit::Normal );
-     kle1->setFrame( TRUE );
-     connect (kle1, SIGNAL (textChanged (const char*)), this, 
-     SLOT (textChanged1 (const char*)));
-     layout->addMultiCellWidget (kle1, rdictedit, rdictedit, 1,4);
-     //	kle1->setMinimumSize (290,30);
-  */
-
-
-  /*
-    browsebutton1=new QPushButton;
-    browsebutton1 = new QPushButton( this, "PushButton_1" );
-    connect( browsebutton1, SIGNAL(clicked()), SLOT(sBrowseDict()) );
-    browsebutton1->setText( i18n("Browse...") );
-    browsebutton1->setAutoRepeat( FALSE );
-    browsebutton1->setAutoResize( FALSE );
-    layout->addWidget (browsebutton1, rdictedit, 6);
-    browsebutton1->setGeometry( 460, 120, 70, 30 );
-    browsebutton1->setMinimumWidth (30);
-  */
-
-
-  /*
-    tmpQPushButton = new QPushButton( this, "PushButton_2" );
-    tmpQPushButton->setGeometry( 460, 160, 70, 30 );
-    tmpQPushButton->setMinimumWidth(tmpQPushButton->sizeHint().width());
-    connect( tmpQPushButton, SIGNAL(clicked()), SLOT(sBrowsePDict()) );
-    tmpQPushButton->setText( i18n("Browse...") );
-    tmpQPushButton->setAutoRepeat( FALSE );
-    tmpQPushButton->setAutoResize( FALSE );
-    layout->addWidget (tmpQPushButton, rpersdict, 6);
-    //	tmpQPushButton->setMinimumSize (tmpQPushButton->sizeHint());
-  */
-
-  /*
-    kle2 = new KLineEdit( this, "LineEdit_2" );
-    //	kle2->setGeometry( 150, 160, 290, 30 );
-    kle2->setText( "" );
-    kle2->setMaxLength( 32767 );
-    kle2->setEchoMode( QLineEdit::Normal );
-    kle2->setFrame( TRUE );
-    connect (kle2, SIGNAL (textChanged (const char*)), this, 
-    SLOT (textChanged2 (const char*)));
-    layout->addMultiCellWidget (kle2, rpersdict,rpersdict,1,4);
-    ///	kle2->setMinimumSize (290,30);
-  */
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 KSpellConfig::~KSpellConfig ()
 {
@@ -293,7 +164,6 @@ KSpellConfig::readGlobalSettings ()
   setRunTogether   (kc->readNumEntry ("KSpell_RunTogether", 0));
   setDictionary    (kc->readEntry ("KSpell_Dictionary", ""));
   setDictFromList  (kc->readNumEntry ("KSpell_DictFromList", FALSE));
-  //  setPersonalDict  (kc->readEntry ("KSpell_PersonalDict", ""));
   setEncoding (kc->readNumEntry ("KSpell_Encoding", KS_E_ASCII));
   setClient (kc->readNumEntry ("KSpell_Client", KS_CLIENT_ISPELL));
 
@@ -308,7 +178,6 @@ KSpellConfig::writeGlobalSettings ()
   kc->writeEntry ("KSpell_RunTogether", (int) runTogether (), TRUE, TRUE);
   kc->writeEntry ("KSpell_Dictionary", dictionary (), TRUE, TRUE);
   kc->writeEntry ("KSpell_DictFromList",(int) dictFromList(), TRUE, TRUE);
-  //  kc->writeEntry ("KSpell_PersonalDict", personalDict (), TRUE,  TRUE);
   kc->writeEntry ("KSpell_Encoding", (int) encoding(),
 		  TRUE, TRUE);
   kc->writeEntry ("KSpell_Client", client(),
@@ -343,51 +212,51 @@ KSpellConfig::interpret (QString &fname, QString &lname,
       fname.remove (fname.length()-4,4);
 
 
-    kdDebug(750) << "KSpellConfig::interpret [" << fname << "]" << endl;
+  kdDebug(750) << "KSpellConfig::interpret [" << fname << "]" << endl;
 
   //These are mostly the ispell-langpack defaults
-  if (fname=="english")
-    {
-      lname="en";
-      hname=i18n("English");
-    }
-
-  else if (fname=="espa~nol")
-    {
-      lname="sp";
-      hname=i18n("Spanish");
-    }
-
-  else if (fname=="deutsch")
-    {
-      lname="de";
-      hname=i18n("German");
-    }
-
-  else if (fname=="portuguesb" ||
-	   fname=="br")
-    {
-      lname="br";
-      hname=i18n("Brazilian Portuguese");
-    }
-
-  else if (fname=="portugues")
-    {
-      lname="pt";
-      hname=i18n("Portuguese");
-    }
-
-  else if (fname=="esperanto")
-    {
-      lname="eo";
-      hname=i18n("Esperanto");
-    }
-  
-  else
-    {
-      lname="";
-      hname=i18n("Unknown");
-    }
+  if (fname=="english") {
+    lname="en"; hname=i18n("English");
+  }
+  else if (fname=="espa~nol" || fname=="espanol") {
+    lname="es"; hname=i18n("Spanish");
+  }
+  else if (fname=="deutsch") {
+    lname="de"; hname=i18n("German");
+  }
+  else if (fname=="german") {
+    lname="de"; hname=i18n("German (new orth.)");
+  }
+  else if (fname=="portuguesb" || fname=="br") {
+    lname="br"; hname=i18n("Brazilian Portuguese");
+  }
+  else if (fname=="portugues") {
+    lname="pt"; hname=i18n("Portuguese");
+  }
+  else if (fname=="esperanto") {
+    lname="eo"; hname=i18n("Esperanto");
+  }
+  else if (fname=="norsk") {
+    lname="no"; hname=i18n("Norwegian");
+  }
+  else if (fname=="polish") {
+    lname="pl"; hname=i18n("Polsih");
+  }
+  else if (fname=="russian") {
+    lname="ru"; hname=i18n("Russian");
+  }
+  else if (fname=="slovensko") {
+    lname="sk"; hname=i18n("Slovak");
+  }
+  else if (fname=="svenska") {
+    lname="sv"; hname=i18n("Swedish");
+  }
+  else if (fname=="swiss") {
+    lname="de"; hname=i18n("Swiss German");
+  }
+  else {
+    lname=""; hname=i18n("Unknown");
+  }
 
   //We have explicitly chosen English as the default here.
   if ( (KGlobal::locale()->language()==QString::fromLatin1("C") && 

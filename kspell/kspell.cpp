@@ -129,6 +129,9 @@ KSpell::KSpell (QWidget *_parent, QString _caption,
 
   kdDebug(750) << __FILE__ << ":" << __LINE__ << " Codec = " << (codec ? codec->name() : "<default>") << endl;
 
+  // copy ignore list from ksconfig
+  ignorelist += ksconfig->ignoreList();
+
   texmode=dlgon=FALSE;
   m_status = Starting;
   dialogsetup = FALSE;
@@ -191,6 +194,10 @@ KSpell::startIspell()
     {
       *proc << "-B";
     }
+  else
+    {
+      *proc << "-C";
+    }    
 
   if (trystart<2)
     {
@@ -381,7 +388,8 @@ KSpell::cleanFputsWord (QString s, bool appendCR)
   for (unsigned int i=0; i<qs.length(); i++)
   {
     //we need some punctuation for ornaments
-    if (qs[i] != '\'' && qs[i] != '\"' && qs[i].isPunct() || qs[i].isSpace())
+    if (qs[i] != '\'' && qs[i] != '\"' && qs[i] != '-' 
+	&& qs[i].isPunct() || qs[i].isSpace())
     {
       qs.remove(i,1);
       i--;
@@ -390,7 +398,7 @@ KSpell::cleanFputsWord (QString s, bool appendCR)
     }
   }
 
-  // don't check empty words, otherwise synchronisation will fail
+  // don't check empty words, otherwise synchronisation will lost
   if (empty) return FALSE;
 
   return proc->fputs("^"+qs, appendCR);
@@ -401,25 +409,9 @@ KSpell::cleanFputs (QString s, bool appendCR)
 {
   QString qs(s);
   unsigned l = qs.length();
-  // bool firstchar = TRUE;
 
-  // Why we need this stuff?
   if (l<MAXLINELENGTH)
     {
-
-      /*
-      for (unsigned int i=0; i<l; i++)
-	{
-	  if ( !qs[i].isLetter() && qs[i] != '\'' && qs[i] != '\"' 
-	       && !qs[i].isSpace() &&
-	    // let hyphens pass, but in the beginning, where ispell would
-	    // interpret it as a control char
-	    (firstchar || qs[i] != '-')) {
-	      qs.replace (i,1," ");
-	    } else firstchar = FALSE; 
-	}
-      */
-
       if (qs.isEmpty())
 	qs="";
 
@@ -427,7 +419,6 @@ KSpell::cleanFputs (QString s, bool appendCR)
     }
   else
     return proc->fputs ("^\n",appendCR);
-
 }
 
 bool KSpell::checkWord (QString buffer, bool _usedialog)
