@@ -3,7 +3,7 @@
     Copyright (c) 2001 Cornelius Schumacher <schumacher@kde.org>
 
     This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Library General Public
+    modify it under the terms of the GNU Library General  Public
     License as published by the Free Software Foundation; either
     version 2 of the License, or (at your option) any later version.
 
@@ -409,7 +409,7 @@ AddressBook::ConstIterator AddressBook::begin() const
 {
   QValueList<Resource*> list;
   KRES::Manager<Resource>::ActiveIterator resIt;
-  for ( resIt = d->mManager->activeBegin(); resIt != d->mManager->activeEnd(); ++resIt ) 
+  for ( resIt = d->mManager->activeBegin(); resIt != d->mManager->activeEnd(); ++resIt )
     list.append( *resIt );
 
   if ( list.count() == 0 )
@@ -436,7 +436,7 @@ AddressBook::Iterator AddressBook::end()
 {
   Resource *res = 0;
   KRES::Manager<Resource>::ActiveIterator resIt;
-  for ( resIt = d->mManager->activeBegin(); resIt != d->mManager->activeEnd(); ++resIt ) 
+  for ( resIt = d->mManager->activeBegin(); resIt != d->mManager->activeEnd(); ++resIt )
     res = (*resIt);
 
   Iterator it = Iterator();
@@ -457,7 +457,7 @@ AddressBook::ConstIterator AddressBook::end() const
 {
   Resource *res = 0;
   KRES::Manager<Resource>::ActiveIterator resIt;
-  for ( resIt = d->mManager->activeBegin(); resIt != d->mManager->activeEnd(); ++resIt ) 
+  for ( resIt = d->mManager->activeBegin(); resIt != d->mManager->activeEnd(); ++resIt )
     res = (*resIt);
 
   Iterator it = Iterator();
@@ -477,7 +477,7 @@ AddressBook::ConstIterator AddressBook::end() const
 void AddressBook::clear()
 {
   KRES::Manager<Resource>::ActiveIterator it;
-  for ( it = d->mManager->activeBegin(); it != d->mManager->activeEnd(); ++it ) 
+  for ( it = d->mManager->activeBegin(); it != d->mManager->activeEnd(); ++it )
     (*it)->clear();
 }
 
@@ -518,26 +518,22 @@ void AddressBook::insertAddressee( const Addressee &a )
     resource = standardResource();
 
   Resource::Iterator it;
-  for ( it = resource->begin(); it != resource->end(); ++it ) {
-    if ( a.uid() == (*it).uid() ) {
-      bool changed = false;
-      Addressee addr = a;
-      if ( addr != (*it) )
-        changed = true;
+  Addressee fAddr = resource->findByUid( a.uid() );
 
-      (*it) = a;
-      (*it).setResource( resource );
-
-      if ( changed ) {
-        (*it).setRevision( QDateTime::currentDateTime() );
-        (*it).setChanged( true ); 
+  Addressee addr( a );
+  if ( !fAddr.isEmpty() ) {
+    if ( fAddr != a )
+      addr.setRevision( QDateTime::currentDateTime() );
+    else {
+      if ( fAddr.resource() == 0 ) {
+        fAddr.setResource( resource );
+        //NOTE: Should we have setChanged( true ) here?
+        resource->insertAddressee( fAddr );
       }
-
       return;
     }
   }
 
-  Addressee addr( a );
   addr.setResource( resource );
   addr.setChanged( true );
   resource->insertAddressee( addr );
@@ -653,15 +649,15 @@ Field::List AddressBook::fields( int category )
   if ( d->mAllFields.isEmpty() ) {
     d->mAllFields = Field::allFields();
   }
-  
+
   if ( category == Field::All ) return d->mAllFields;
-  
+
   Field::List result;
   Field::List::ConstIterator it;
   for( it = d->mAllFields.begin(); it != d->mAllFields.end(); ++it ) {
     if ( (*it)->category() & category ) result.append( *it );
   }
-  
+
   return result;
 }
 
@@ -671,7 +667,7 @@ bool AddressBook::addCustomField( const QString &label, int category,
   if ( d->mAllFields.isEmpty() ) {
     d->mAllFields = Field::allFields();
   }
-  
+
   QString a = app.isNull() ? KGlobal::instance()->instanceName() : app;
   QString k = key.isNull() ? label : key;
 
