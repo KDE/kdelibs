@@ -105,15 +105,15 @@ static bool isCrossDomainRequest( const QString& fqdn, const QString& originURL 
 {
   if (originURL == "true") // Backwards compatibility
      return true;
-     
-  KURL url = originURL;
-    
-  // Document Origin domain              
+
+  KURL url ( originURL );
+
+  // Document Origin domain
   QString a = url.host();
-  
+
   // Current request domain
   QString b = fqdn;
-  
+
   if (a == b)
     return false;
 
@@ -134,7 +134,7 @@ static bool isCrossDomainRequest( const QString& fqdn, const QString& originURL 
       l1.pop_front();
       l2.pop_front();
   }
-  
+
   return true;
 }
 
@@ -230,7 +230,7 @@ void HTTPProtocol::resetSessionSettings()
 {
   // Do not reset the URL on redirection if the proxy
   // URL, username or password has not changed!
-  KURL proxy = config()->readEntry("UseProxy");
+  KURL proxy ( config()->readEntry("UseProxy") );
 
   if ( m_strProxyRealm.isEmpty() || !proxy.isValid() ||
        m_proxyURL.host() != proxy.host() ||
@@ -267,7 +267,7 @@ void HTTPProtocol::resetSessionSettings()
        (m_protocol == "https" || m_protocol == "webdavs" ||
         metaData ("ssl_was_in_use") != "TRUE" ) )
   {
-     KURL referrerURL = metaData("referrer");
+     KURL referrerURL ( metaData("referrer") );
      if (referrerURL.isValid())
      {
         // Sanitize
@@ -691,7 +691,7 @@ void HTTPProtocol::davStatList( const KURL& url, bool stat )
     {
       entry.clear();
 
-      KURL thisURL = href.text();
+      KURL thisURL ( href.text() );
 
       atom.m_uds = KIO::UDS_NAME;
 
@@ -3395,7 +3395,7 @@ bool HTTPProtocol::readHeader()
        (u.protocol() != "ftp") && (u.protocol() != "webdav") &&
        (u.protocol() != "webdavs"))
     {
-      redirection(u.url());
+      redirection(u);
       error(ERR_ACCESS_DENIED, u.url());
       return false;
     }
@@ -3416,7 +3416,7 @@ bool HTTPProtocol::readHeader()
     if (m_protocol == "webdav" || m_protocol == "webdavs")
       u.setProtocol(m_protocol);
 
-    redirection(u.url());
+    redirection(u);
     m_request.bCachedWrite = false; // Turn off caching on re-direction (DA)
     mayCache = false;
   }
@@ -4960,7 +4960,7 @@ bool HTTPProtocol::getAuthorization()
     {
       // Reset cached proxy auth
       m_bProxyAuthValid = false;
-      KURL proxy = config()->readEntry("UseProxy");
+      KURL proxy ( config()->readEntry("UseProxy") );
       m_proxyURL.setUser(proxy.user());
       m_proxyURL.setPass(proxy.pass());
     }
@@ -5385,7 +5385,7 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
 
     for (int i = 0; i < count; i++ )
     {
-      KURL u = info.digestURI.at(i);
+      KURL u ( info.digestURI.at(i) );
 
       send &= (m_request.url.protocol().lower() == u.protocol().lower());
       send &= (m_request.hostname.lower() == u.host().lower());
