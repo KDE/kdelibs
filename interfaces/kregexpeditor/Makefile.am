@@ -2,7 +2,7 @@
 
 INCLUDES = -I$(top_srcdir)/kio -I$(top_srcdir) $(all_includes)
 
-include_HEADERS = terminal_emulation_interface.h
+include_HEADERS = kregexpeditorinterface.h
 
 METASOURCES = AUTO
 
