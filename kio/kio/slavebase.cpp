@@ -192,25 +192,18 @@ SlaveBase::~SlaveBase()
 void SlaveBase::dispatchLoop()
 {
     fd_set rfds;
-    struct timeval tv;
     int retval;
 
     while (true) {
     FD_ZERO(&rfds);
 
-    if (appconn->inited())
-      FD_SET(appconn->fd_from(), &rfds);
+    assert(appconn->inited());
+    FD_SET(appconn->fd_from(), &rfds);
 
-    /* Wait up to 30 seconds. */
-    tv.tv_sec = 30;
-    tv.tv_usec = 0;
-
-    retval = select(appconn->fd_from()+ 1, &rfds, NULL, NULL, &tv);
-    /* Don't rely on the value of tv now! */
-    if (retval > 0)
-    {
-      if (FD_ISSET(appconn->fd_from(), &rfds))
-      { // dispatch application messages
+    retval = select(appconn->fd_from()+ 1, &rfds, NULL, NULL, 0);
+    kdDebug(7019) << "dispatchLoop(): select returned " << retval << endl;
+    if (retval && FD_ISSET(appconn->fd_from(), &rfds))
+    { // dispatch application messages
         int cmd;
         QByteArray data;
         if ( appconn->read(&cmd, data) != -1 )
@@ -232,13 +225,12 @@ void SlaveBase::dispatchLoop()
             return;
           }
         }
-      }
     }
-    else if (retval == -1) // error
+    else
     {
-      kdDebug(7019) << "dispatchLoop(): select returned error "
-                    << (errno==EBADF?"EBADF":errno==EINTR?"EINTR":errno==EINVAL?"EINVAL":errno==ENOMEM?"ENOMEM":"unknown")
-                    << " (" << errno << ")" << endl;
+       kdDebug(7019) << "dispatchLoop(): select returned " << retval << " "
+                     << (errno==EBADF?"EBADF":errno==EINTR?"EINTR":errno==EINVAL?"EINVAL":errno==ENOMEM?"ENOMEM":"unknown")
+                     << " (" << errno << ")" << endl;
        return;
     }
   }
@@ -610,8 +602,11 @@ bool SlaveBase::dispatch()
     int cmd;
     QByteArray data;
     if ( m_pConnection->read( &cmd, data ) == -1 )
+    {
+    kdDebug(7019) << "SlaveBase::dispatch() has read error." << endl;
         return false;
-
+    }
+    
     dispatch( cmd, data );
     return true;
 }
@@ -700,7 +695,10 @@ int SlaveBase::waitForAnswer( int expected1, int expected2, QByteArray & data, i
     {
         result = m_pConnection->read( &cmd, data );
         if ( result == -1 )
+        {
+    kdDebug(7019) << "SlaveBase::waitForAnswer has read error." << endl;
             return -1;
+        }
         if ( cmd == expected1 || cmd == expected2 )
         {
             if ( pCmd ) *pCmd = cmd;
