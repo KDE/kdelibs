@@ -169,6 +169,26 @@ void KLineEdit::makeCompletion( const QString& text )
     }
 }
 
+void KLineEdit::setReadOnly(bool readOnly)
+{
+    QPalette p = palette();
+    if (readOnly)
+    {
+        QColor color = p.color(QPalette::Disabled, QColorGroup::Background);
+        p.setColor(QColorGroup::Base, color);
+        p.setColor(QColorGroup::Background, color);
+    }
+    else
+    {
+        QColor color = p.color(QPalette::Normal, QColorGroup::Base);
+        p.setColor(QColorGroup::Base, color);
+        p.setColor(QColorGroup::Background, color);
+    }
+    setPalette(p);
+
+    QLineEdit::setReadOnly (readOnly);
+}
+
 void KLineEdit::keyPressEvent( QKeyEvent *e )
 {
     KKey key( e );

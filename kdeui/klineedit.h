@@ -333,6 +333,11 @@ signals:
 public slots:
 
     /**
+     * Re-implemented for internal reasons. API not changed.
+     */
+    virtual void setReadOnly(bool);
+
+    /**
      * Iterates through all possible matches of the completed text or
      * the history list.
      *
