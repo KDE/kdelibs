@@ -30,8 +30,16 @@ public:
      * so you can't specify it in the constructor. Because of that, Qt's
      * auto-deletion does not take place, so you have to explicitly delete
      * this widget when you don't need it anymore.
+     *
+     * The parent widget is used to give the focus back when pressing the
+     * up-button on the very first item.
      */
-    KCompletionBox( const char *name = 0 );
+    KCompletionBox( QWidget *parent, const char *name = 0 );
+
+    /**
+     * Destroys the box
+     */
+    ~KCompletionBox();
 
 public slots:
     /**
@@ -60,14 +68,9 @@ signals:
 protected:
     /**
      * Reimplemented from KListBox to get events from the viewport (to hide
-     * this widget on mouse-click.
+     * this widget on mouse-click, Escape-presses, etc.
      */
     virtual bool eventFilter( QObject *, QEvent * );
-
-    /**
-     * Reimplemented to hide() on Escape-keypress
-     */
-    virtual void keyPressEvent( QKeyEvent * );
 
 protected slots:
     /**
@@ -79,6 +82,8 @@ protected slots:
 private slots:
     void slotSetCurrentItem( QListBoxItem *i ) { setCurrentItem( i ); } // grrr
 
+private:
+    QWidget *m_parent; // necessary to set the focus back
 };
 
 

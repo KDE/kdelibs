@@ -5,9 +5,11 @@
 #include "kcompletionbox.h"
 
 
-KCompletionBox::KCompletionBox( const char *name )
-    : KListBox( 0L, name, WType_Popup )
+KCompletionBox::KCompletionBox( QWidget *parent, const char *name )
+    : KListBox( 0L, name, WType_Popup | WStyle_NoBorderEx )
 {
+    m_parent = parent;
+    
     setColumnMode( 1 );
     setLineWidth( 1 );
     setFrameStyle( QFrame::Box | QFrame::Plain );
@@ -25,6 +27,10 @@ KCompletionBox::KCompletionBox( const char *name )
 	     SLOT( slotSetCurrentItem( QListBoxItem * )));
 
     installEventFilter( this );
+}
+
+KCompletionBox::~KCompletionBox()
+{
 }
 
 QStringList KCompletionBox::items() const
@@ -47,19 +53,33 @@ void KCompletionBox::slotActivated( QListBoxItem *item )
 
 bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
 {
-    if ( e->type() == QEvent::MouseButtonPress )
-	hide();
+    int type = e->type();
+    
+    switch( type ) {
+     case QEvent::MouseButtonPress:
+ 	hide();
+ 	break;
+    case QEvent::Show:
+	releaseKeyboard(); // so that we get "dead keys" working
+	break;
+    case QEvent::KeyPress: {
+ 	QKeyEvent *ev = static_cast<QKeyEvent *>( e );
+ 	if ( ev->key() == Key_Escape )
+ 	    hide();
+	else if ( ev->key() == Key_Up && currentItem() == 0 ) {
+	    m_parent->setFocus();
+	    setSelected( 0, false );
+	}
 
+	break;
+    }
+    default:
+	break;
+    }
+    
     return KListBox::eventFilter( o, e );
 }
 
-
-void KCompletionBox::keyPressEvent( QKeyEvent *e )
-{
-    KListBox::keyPressEvent( e );
-    if ( e->key() == Key_Escape )
-	hide();
-}
 
 void KCompletionBox::popup( QWidget *relativeWidget )
 {
