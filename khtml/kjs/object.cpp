@@ -275,7 +275,7 @@ KJSActivation::KJSActivation(KJSFunction *f, KJSList *args)
     put("length", args->size(), DontEnum);
     KJSListIterator arg = args->begin();
     for (int i = 0; arg != args->end(); arg++, i++) {
-      put(CString(i), arg);
+      put(int2String(i), arg);
     }
   }
   /* TODO: solve deleting problem due to circular reference */
@@ -306,7 +306,7 @@ KJSArguments::KJSArguments(KJSFunction *func, KJSArgList *args)
     put("length", iarg, DontEnum);
     arg = args->firstArg();
     for (int i = 0; i < iarg && i < 100; i++) {
-      put(CString(i), arg->object());
+      put(int2String(i), arg->object());
       arg = arg->nextArg();
     }
     /* TODO: length != num. of arguments */

@@ -88,7 +88,6 @@ private:
   KJS::KJSError *err;
   KJS::KJSContext *con;
   KJS::KJSGlobal *glob;
-  static bool ltdlInit;
 };
 
 // callback functions for KJSProxy

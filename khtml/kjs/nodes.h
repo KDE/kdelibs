@@ -110,6 +110,26 @@ private:
   Node *group;
 };
 
+class ElisionNode : public Node {
+public:
+  ElisionNode(ElisionNode *) { /* TODO */ }
+  KJSO *evaluate() { /* TODO */ return 0L; }
+};
+
+class ElementNode : public Node {
+public:
+  ElementNode(ElisionNode *, Node *) { /* TODO */ }
+  ElementNode *append(ElisionNode *, Node *) { /* TODO */ return 0L; }
+  KJSO *evaluate() { /* TODO */ return 0L; }
+};
+
+class ArrayNode : public Node {
+public:
+  ArrayNode(ElisionNode *) { /* TODO */ }
+  ArrayNode(ElementNode *, ElisionNode *) { /* TODO */ }
+  KJSO *evaluate() { /* TODO */ return 0L; }
+};
+
 class AccessorNode1 : public Node {
 public:
   AccessorNode1(Node *e1, Node *e2) : expr1(e1), expr2(e2) {}

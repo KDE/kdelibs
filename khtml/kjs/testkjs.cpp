@@ -26,7 +26,7 @@ extern int kjsyyparse();
 
 int main(int argc, char **argv)
 {
-  const int BufferSize = 20000;
+  const int BufferSize = 100000;
   char code[BufferSize];
 
   if (argc != 2) {
@@ -43,7 +43,7 @@ int main(int argc, char **argv)
   }
   int num = fread(code, 1, BufferSize, f);
   code[num] = '\0';
-  if(num == BufferSize - 1)
+  if(num >= BufferSize)
     fprintf(stderr, "Warning: File may have been too long.\n");
 
   KJScript *kjs = new KJScript();
