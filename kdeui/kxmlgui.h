@@ -25,6 +25,7 @@
 #include <qdom.h>
 #include <qmap.h>
 #include <qlist.h>
+#include <qvaluelist.h>
 
 class KAction;
 class KXMLGUIFactoryPrivate;

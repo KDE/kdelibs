@@ -25,7 +25,8 @@
 
 #include <kapp.h>
 
-class QCursor;
+#include <qcursor.h>
+
 class QWidget;
 
 /**
