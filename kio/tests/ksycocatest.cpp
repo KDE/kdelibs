@@ -181,6 +181,8 @@ int main(int argc, char *argv[])
       }
    }
 
+   if (first)
+   {
    list = first->entries();
    debug("Found %d entries", list.count());
    for( KServiceGroup::List::ConstIterator it = list.begin();
@@ -201,6 +203,7 @@ int main(int argc, char *argv[])
       {
          debug("KServiceGroup: Unexpected object in list!");
       }
+   }
    }
 
    KImageIO::registerFormats();
