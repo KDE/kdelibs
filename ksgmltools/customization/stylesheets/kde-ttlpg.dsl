@@ -47,7 +47,7 @@
       (make sequence
 	(make element gi: "H3"
 	      attributes: (list (list "CLASS" (gi)))
-	      (literal (kde-gentext-author-phrase))
+	      ; (literal (kde-gentext-author-phrase))
 	      (make element gi: "A"
 		    attributes: (list (list "NAME" (element-id)))
 		    (literal author-name)))

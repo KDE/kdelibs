@@ -36,7 +36,7 @@
 (define %kde-gentext-zh-CN-language% "&Chinese;")
 (define %kde-zh-CN-logo% "")
 (define %kde-gentext-zh-CN-date-phrase% "&LastUpdated;: ")
-(define %kde-gentext-zh-CN-author-phrase% "&By; ")
+; (define %kde-gentext-zh-CN-author-phrase% "&by; ")
 (define %kde-gentext-zh-CN-releaseinfo-phrase% "&Version; ") 
 
    </STYLE-SPECIFICATION-BODY>
