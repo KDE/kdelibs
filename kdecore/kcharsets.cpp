@@ -90,6 +90,7 @@ KCharset::KCharset( const KCharset& kc){
 KCharset& KCharset::operator= ( const KCharset& kc){
 
   entry=kc.entry;
+  return *this;
 }
  
 const char * KCharset::name()const{
