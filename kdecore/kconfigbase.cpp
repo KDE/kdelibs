@@ -171,7 +171,7 @@ QVariant KConfigBase::readPropertyEntry( const QString& aKey,
       end = strList.end();
 
       for (; it != end; ++it ) {
-	  tmp.setValue(*it);
+	  tmp = *it;
 	  list.append( tmp );
       }
       return QVariant( list );
