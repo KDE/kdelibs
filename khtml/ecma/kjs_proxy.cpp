@@ -28,6 +28,7 @@
 #include <kprotocolmanager.h>
 #include <kdebug.h>
 #include <kjs/collector.h>
+#include <assert.h>
 
 using namespace KJS;
 
@@ -51,6 +52,7 @@ public:
   virtual void appendSourceFile(QString url, QString code);
 
   void initScript();
+  void applyUserAgent();
 
 private:
   KJS::ScriptInterpreter* m_script;
@@ -168,6 +170,8 @@ void KJSProxyImpl::clear() {
     Window *win = Window::retrieveWindow(m_part);
     if (win)
         win->clear( m_script->globalExec() );
+
+    applyUserAgent();
   }
 }
 
@@ -291,16 +295,31 @@ void KJSProxyImpl::initScript()
   //m_script->enableDebug();
   globalObject.put(m_script->globalExec(),
 		   "debug", Value(new TestFunctionImp()), Internal);
+  applyUserAgent();
+}
 
+void KJSProxyImpl::applyUserAgent()
+{
+  assert( m_script );
   QString userAgent = KProtocolManager::userAgentForHost(m_part->url().host());
   if (userAgent.find(QString::fromLatin1("Microsoft")) >= 0 ||
       userAgent.find(QString::fromLatin1("MSIE")) >= 0)
+  {
     m_script->setCompatMode(Interpreter::IECompat);
+#ifdef KJS_VERBOSE
+    kdDebug() << "Setting IE compat mode" << endl;
+#endif
+  }
   else
     // If we find "Mozilla" but not "(compatible, ...)" we are a real Netscape
     if (userAgent.find(QString::fromLatin1("Mozilla")) >= 0 &&
         userAgent.find(QString::fromLatin1("compatible")) == -1)
+    {
       m_script->setCompatMode(Interpreter::NetscapeCompat);
+#ifdef KJS_VERBOSE
+      kdDebug() << "Setting NS compat mode" << endl;
+#endif
+    }
 }
 
 // Helper method, so that all classes which need jScript() don't need to be added
