@@ -130,7 +130,7 @@ KJSO Screen::get(const UString &p) const
 }
 
 Window::Window(KHTMLPart *p)
-  : part(p), winq(0L)
+  : part(p), winq(0L), openedByJS(false)
 {
 }
 
@@ -567,6 +567,7 @@ Completion WindowFunc::tryExecute(const List &args)
         if (newPart && newPart->inherits("KHTMLPart")) {
 	    Window *win = newWindow(static_cast<KHTMLPart*>(newPart));
 	    win->opener = part;
+	    win->openedByJS = true;
 	    uargs.serviceType = QString::null;
 	    if (uargs.frameName == "_blank")
               uargs.frameName = QString::null;
@@ -676,7 +677,7 @@ Completion WindowFunc::tryExecute(const List &args)
         special case for one-off windows that need to open other windows and
         then dispose of themselves.
         */
-    if (window->opener.isNull()) // ## if the opener window gets deleted, this will incorrectly be null by the GC !
+    if (!window->openedByJS)
     {
         // To conform to the SPEC, we only ask if the window
         // has more than one entry in the history (NS does that too).
