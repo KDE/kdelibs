@@ -456,14 +456,16 @@ public:
    * or forth. If you press them long enough, you get a history-menu.
    * This is exactly what we do here.
    *
-   * You will insert normal a button with connection (or use signals from
+   * You will insert a normal button with connection (or use signals from
    * toolbar):
    * <pre>
    * bar->insertButton(icon, id, SIGNAL(clicked ()), this,
    *                   SLOT (slotClick()), true, "click or wait for popup");
-   * </pre> And then add a delayed popup:
+   * </pre>
+   * And then add a delayed popup:
    * <pre>
-   * bar->setDelayedPopup (id, historyPopup); </pre>
+   * bar->setDelayedPopup (id, historyPopup);
+   * </pre>
    *
    * Don't add delayed popups to buttons which have normal popups.
    *
