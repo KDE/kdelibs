@@ -505,53 +505,62 @@ bool KateBuffer::openFile (const QString &m_file)
   // here we feed the loader with info
   KateBufFileLoader loader (m_file);
 
-  if ( !loader.file.open( IO_ReadOnly ) || !loader.file.isDirectAccess() )
+  if ( !loader.file.open( IO_ReadOnly ) ||
+       (m_file.startsWith("/dev/") && !loader.file.isDirectAccess()) )
   {
     clear();
     return false; // Error
   }
 
-  // detect eol
-  while (true)
+  if (loader.file.isDirectAccess())
   {
-     int ch = loader.file.getch();
+    // detect eol
+    while (true)
+    {
+      int ch = loader.file.getch();
 
-     if (ch == -1)
-       break;
+      if (ch == -1)
+        break;
 
-     if ((ch == '\r'))
-     {
-       ch = loader.file.getch ();
+      if ((ch == '\r'))
+      {
+        ch = loader.file.getch ();
 
-       if (ch == '\n')
-       {
-         m_doc->config()->setEol (KateDocumentConfig::eolDos);
-         break;
-       }
-       else
-       {
-         m_doc->config()->setEol (KateDocumentConfig::eolMac);
-         break;
-       }
-     }
-     else if (ch == '\n')
-     {
-       m_doc->config()->setEol (KateDocumentConfig::eolUnix);
-       break;
-     }
+        if (ch == '\n')
+        {
+          m_doc->config()->setEol (KateDocumentConfig::eolDos);
+          break;
+        }
+        else
+        {
+          m_doc->config()->setEol (KateDocumentConfig::eolMac);
+          break;
+        }
+      }
+      else if (ch == '\n')
+      {
+        m_doc->config()->setEol (KateDocumentConfig::eolUnix);
+        break;
+      }
+    }
+
+    if (loader.file.size () > 0)
+    {
+      loader.file.at (loader.file.size () - 1);
+
+      int ch = loader.file.getch();
+
+      if ((ch == '\n') || (ch == '\r'))
+        loader.lastCharEOL = true;
+    }
+
+    loader.file.reset ();
   }
-
-  if (loader.file.size () > 0)
+  else
   {
-    loader.file.at (loader.file.size () - 1);
-
-    int ch = loader.file.getch();
-
-    if ((ch == '\n') || (ch == '\r'))
-      loader.lastCharEOL = true;
+    loader.lastCharEOL = true;
+    m_doc->config()->setEol (KateDocumentConfig::eolUnix);
   }
-
-  loader.file.reset ();
 
   QTextCodec *codec = m_doc->config()->codec();
   loader.stream.setEncoding(QTextStream::RawUnicode); // disable Unicode headers
