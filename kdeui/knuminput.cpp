@@ -234,8 +234,7 @@ void KIntNumInput::setSteps(int minor, int major)
 
 void KIntNumInput::setValue(int val)
 {
-    if(slider)
-        slider->setValue(val);
+    resetValueField(val);
 }
 
 
