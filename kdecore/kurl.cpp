@@ -54,7 +54,7 @@ static QTextCodec * codecForHint( int encoding_hint /* not 0 ! */ )
 // 2 encode neither @ or /
 static QString encode( const QString& segment, int encoding_offset, int encoding_hint )
 {
-  const char *encode_string = "/@<>#\"&%?={}|^~[]\'\\:+";
+  const char *encode_string = "/@<>#\"&%?={}|^~[]\'`\\:+";
   encode_string += encoding_offset;
 
   QCString local;
