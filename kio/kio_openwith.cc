@@ -301,7 +301,7 @@ void KApplicationTree::slotSelectionChanged(QListViewItem* i)
 void KApplicationTree::resizeEvent( QResizeEvent * e)
 {
 #if QT_VERSION == 210
-    setColumnWidth(0, width()-QApplication::style().scrollBarExtend());
+    setColumnWidth(0, width()-QApplication::style().scrollBarExtent());
 #else
     setColumnWidth(0, width()-20);
 #endif
