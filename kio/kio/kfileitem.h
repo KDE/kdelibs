@@ -94,7 +94,7 @@ public:
   virtual ~KFileItem();
 
   /**
-   * Re-reads information (currently only permissions and mimetype).
+   * Throw away and re-read (for local files) all information about the file.
    * This is called when the _file_ changes.
    */
   void refresh();

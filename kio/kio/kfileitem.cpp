@@ -232,6 +232,7 @@ void KFileItem::refresh()
 {
   m_fileMode = KFileItem::Unknown;
   m_permissions = KFileItem::Unknown;
+  m_pMimeType = 0L;
   m_user = QString::null;
   m_group = QString::null;
   m_access = QString::null;
