@@ -213,13 +213,15 @@ public:
     RenderImageButton(QScrollView *view, HTMLInputElementImpl *element);
     virtual ~RenderImageButton();
 
-    virtual const char *renderName() const { return "RenderSubmitButton"; }
+    virtual const char *renderName() const { return "RenderImageButton"; }
 
     virtual void setValue(const DOMString &value)
         { RenderButton::setValue(value); }
 
     void setImageUrl(DOM::DOMString url, DOM::DOMString baseUrl, DocLoader *docLoader);
     virtual void setPixmap( const QPixmap &, CachedObject *, bool *manualUpdate=0 );
+
+    virtual void layout(bool deep);
 
     CachedObject *image;
 };

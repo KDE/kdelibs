@@ -700,6 +700,13 @@ void HTMLInputElementImpl::parseAttribute(AttrImpl *attr)
 	break;
     case ATTR_NAME:
 	// handled by parent...
+    case ATTR_WIDTH:
+	addCSSProperty(CSS_PROP_WIDTH, attr->value(), false);
+	break;
+    case ATTR_HEIGHT:
+	addCSSProperty(CSS_PROP_HEIGHT, attr->value(), false);
+	break;
+	
     default:
 	HTMLGenericFormElementImpl::parseAttribute(attr);
     }

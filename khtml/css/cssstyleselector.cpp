@@ -1663,6 +1663,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	    DOMStringImpl *str = val->getStringValue();
 	    QString face(str->s, str->l);
 	    face = face.lower();
+	    //kdDebug(0) << "searching for face '" << face << "'" << endl;
 	    const KHTMLSettings *s = e->ownerDocument()->view()->part()->settings();
 	    if(face == "serif")
 		face = s->serifFontName();
@@ -1674,6 +1675,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 		face = s->fantasyFontName();
 	    else if( face == "monospace")
 		face = s->fixedFontName();
+	    //kdDebug(0) << "using face '" << face << "'" << endl;
 	    f.setFamily(face);
 	    QFontInfo fi(f);
 	    //	    if(!strcasecmp(fi.family().ascii(), face.ascii()))
