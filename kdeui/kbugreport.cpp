@@ -284,29 +284,32 @@ QString KBugReport::text()
 
 bool KBugReport::sendBugReport()
 {
-  QString command = KStandardDirs::findExe( QString::fromLatin1("sendmail"), QString::fromLatin1("/sbin:/usr/sbin:/usr/lib") );
   bool needHeaders = true;
 
   QString recipient ( m_aboutData ?
     m_aboutData->bugAddress() :
     QString::fromLatin1("submit@bugs.kde.org") );
 
-  if ( command.isNull() )
+  QString command;
+  command = KStandardDirs::findExe( QString::fromLatin1("sendmail"), QString::fromLatin1("/sbin:/usr/sbin:/usr/lib") );
+  if ( !command.isNull() )
+    command += QString::fromLatin1(" -oi -t");
+  else
   {
-    command = QString::fromLatin1("mail -s \x22");
+    command = KStandardDirs::findExe( QString::fromLatin1("mail") );
+    if ( command.isNull() ) return false; // give up
+    
+    command.append(QString::fromLatin1(" -s \x22"));
     command.append(m_subject->text());
     command.append(QString::fromLatin1("\x22 "));
     command.append(recipient);
     needHeaders = false;
   }
-  else
-  {
-    command += QString::fromLatin1(" -oi -t");
-  }
+
   FILE * fd = popen(command.local8Bit(),"w");
   if (!fd)
   {
-    kdError() << "Unable to open a pipe to " << command.local8Bit().data() << endl;
+    kdError() << "Unable to open a pipe to " << command << endl;
     return false;
   }
 
