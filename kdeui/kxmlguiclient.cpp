@@ -159,12 +159,11 @@ void KXMLGUIClient::setXMLFile( const QString& _file, bool merge, bool setXMLDoc
   QString file = _file;
   if ( file[0] != '/' )
   {
-  //    file = locate( "data", QString(instance()->instanceName())+"/"+file );
     QString doc;
 
     QString filter = QString::fromLatin1( instance()->instanceName() + '/' ) + _file;
 
-    QStringList allFiles = instance()->dirs()->findAllResources( "data", filter );
+    QStringList allFiles = instance()->dirs()->findAllResources( "data", filter ) + instance()->dirs()->findAllResources( "data", _file );
 
     file = findMostRecentXMLFile( allFiles, doc );
 

@@ -334,7 +334,11 @@ QString KXMLGUIFactory::readConfigFile( const QString &filename, bool never_null
     if (filename[0] == '/')
         xml_file = filename;
     else
+    {
         xml_file = locate("data", QString::fromLatin1(instance->instanceName() + '/' ) + filename);
+        if ( !QFile::exists( xml_file ) )
+          xml_file = locate( "data", filename );
+    }
 
     QFile file( xml_file );
     if ( !file.open( IO_ReadOnly ) )

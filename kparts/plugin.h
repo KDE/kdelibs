@@ -78,6 +78,12 @@ public:
     static void loadPlugins( QObject *parent, const QValueList<PluginInfo> &pluginInfos );
 
     /**
+     * Load the plugin libraries specified by the list @p docs, make the
+     * Plugin objects children of @p parent, and use the given @p instance.
+     */
+    static void loadPlugins( QObject *parent, const QValueList<PluginInfo> &pluginInfos, const KInstance * instance );
+
+    /**
      * Returns a list of plugin objects loaded for @p parent. This
      * functions basically calls the @ref queryList method of @ref
      * QObject to retrieve the list of child objects inheritting @ref

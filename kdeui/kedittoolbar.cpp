@@ -125,11 +125,7 @@ public:
     if ( xml_file[0] == '/' )
       raw_xml = KXMLGUIFactory::readConfigFile(xml_file);
     else
-    {
-      QString abs_xml( locate("data", QString(m_instance->instanceName()) +
-                                      "/" + xml_file) );
-      raw_xml = KXMLGUIFactory::readConfigFile(abs_xml);
-    }
+      raw_xml = KXMLGUIFactory::readConfigFile(xml_file, m_instance);
 
     return raw_xml;
   }
@@ -316,7 +312,6 @@ KEditToolbarWidget::KEditToolbarWidget( KXMLGUIFactory* factory,
       data.m_type = XmlData::Shell;
     else
       data.m_type = XmlData::Part;
-//    data.m_document.setContent(d->loadXMLFile(client->xmlFile()));
     data.m_document.setContent( KXMLGUIFactory::readConfigFile( client->xmlFile(), client->instance() ) );
     elem = data.m_document.documentElement().toElement();
     KXMLGUIFactory::removeDOMComments( elem );

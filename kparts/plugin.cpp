@@ -96,7 +96,8 @@ QValueList<Plugin::PluginInfo> Plugin::pluginInfos( const KInstance * instance )
       if ( !info.m_absXMLFileName.isEmpty() )
       {
           kdDebug( 1000 ) << "found Plugin : " << info.m_absXMLFileName << " !" << endl;
-          info.m_relXMLFileName = QString::fromLocal8Bit( instance->instanceName() ) + "/kpartplugins/" + mapIt.key();
+          info.m_relXMLFileName = "kpartplugins/";
+          info.m_relXMLFileName += mapIt.key();
 
           info.m_document.setContent( doc );
           if ( !info.m_document.documentElement().isNull() )
@@ -109,10 +110,10 @@ QValueList<Plugin::PluginInfo> Plugin::pluginInfos( const KInstance * instance )
 
 void Plugin::loadPlugins( QObject *parent, const KInstance *instance )
 {
-  loadPlugins( parent, pluginInfos( instance ) );
+  loadPlugins( parent, pluginInfos( instance ), instance );
 }
 
-void Plugin::loadPlugins( QObject *parent, const QValueList<PluginInfo> &pluginInfos )
+void Plugin::loadPlugins( QObject *parent, const QValueList<PluginInfo> &pluginInfos, const KInstance *instance )
 {
    QValueList<PluginInfo>::ConstIterator pIt = pluginInfos.begin();
    QValueList<PluginInfo>::ConstIterator pEnd = pluginInfos.end();
@@ -127,11 +128,18 @@ void Plugin::loadPlugins( QObject *parent, const QValueList<PluginInfo> &pluginI
 
      if ( plugin )
      {
-       plugin->setXMLFile( (*pIt).m_absXMLFileName, false, false );
-       plugin->setLocalXMLFile( locateLocal( "data", (*pIt).m_relXMLFileName ) );
+       if ( instance )
+         plugin->setInstance( (KInstance*)instance ); 
+       plugin->setXMLFile( (*pIt).m_relXMLFileName, false, false );
        plugin->setDOMDocument( (*pIt).m_document );
      }
    }
+
+}
+
+void Plugin::loadPlugins( QObject *parent, const QValueList<PluginInfo> &pluginInfos )
+{
+   loadPlugins(parent, pluginInfos, 0); 
 }
 
 // static
