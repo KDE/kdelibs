@@ -354,7 +354,7 @@ QString KMimeType::iconForURL( const KURL & _url, mode_t _mode )
     QString i( mt->icon( _url, _url.isLocalFile() ));
 
     // if we don't find an icon, maybe we can use the one for the protocol
-    if ( i == unknown )
+    if ( i == unknown || i.isEmpty() )
 	i = KProtocolInfo::icon( _url.protocol() );
     return i;
 }
