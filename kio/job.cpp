@@ -1818,13 +1818,15 @@ void CopyJob::copyNextFile()
             newjob = KIO::file_move( (*it).uSource, (*it).uDest, (*it).permissions, bOverwrite, false, false/*no GUI*/ );
             kdDebug() << "CopyJob::copyNextFile : Moving " << (*it).uSource.url() << " to " << (*it).uDest.url() << endl;
 	    emit moving( this, (*it).uSource, (*it).uDest );
+            Observer::self()->slotMoving( this, (*it).uSource, (*it).uDest );
         }
         else // Copying a file
         {
             newjob = KIO::file_copy( (*it).uSource, (*it).uDest, (*it).permissions, bOverwrite, false, false/*no GUI*/ );
             kdDebug() << "CopyJob::copyNextFile : Copying " << (*it).uSource.url() << " to " << (*it).uDest.url() << endl;
 	    emit copying( this, (*it).uSource, (*it).uDest );
-        }
+            Observer::self()->slotCopying( this, (*it).uSource, (*it).uDest );
+         }
         addSubjob(newjob);
 	connect( newjob, SIGNAL( processedSize( KIO::Job*, unsigned long ) ),
 		 this, SLOT( slotProcessedSize( KIO::Job*, unsigned long ) ) );
