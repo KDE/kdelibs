@@ -209,7 +209,7 @@ AC_OUTPUT(Makefile \
 	kformula/pics/Makefile \
 	toolbar/Makefile \
 	doc/Makefile \
-	doc/kfile/Makefile \
+	doc/common/Makefile \
 	doc/kdebug/Makefile \
 	doc/kspell/Makefile \
 	mimetypes/Makefile \
