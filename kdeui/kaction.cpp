@@ -727,6 +727,19 @@ int KActionMenu::plug( QWidget* widget, int index )
 
     return containerCount() - 1;
   }
+  else if ( widget->inherits( "KMenuBar" ) )
+  {
+    KMenuBar *bar = (KMenuBar *)widget;
+    
+    int id;
+    
+    id = bar->insertItem( text(), popupMenu(), -1, index );
+    
+    addContainer( bar, id );
+    connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
+    
+    return containerCount() - 1;
+  }
 
   return QActionMenu::plug( widget, index );
 }
@@ -745,6 +758,18 @@ void KActionMenu::unplug( QWidget* widget )
       removeContainer( idx );
     }
 
+    return;
+  }
+  else if ( widget->inherits( "KMenuBar" ) )
+  {
+    KMenuBar *bar = (KMenuBar *)widget;
+    int i = findContainer( bar );
+    if ( i != -1 )
+    {
+      bar->removeItem( menuId( i ) );
+      removeContainer( i );
+    }
+    
     return;
   }
 
