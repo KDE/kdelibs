@@ -21,12 +21,13 @@
 //----------------------------------------------------------------------------
 //
 // KDE HTML Widget -- Cascading Style Sheets / 1
-// $Id:  $
+// $Id$
 
 #ifndef HTMLSTYLE_H
 #define HTMLSTYLE_H
 
 #include <qcolor.h>
+#include <qlist.h>
 #include <qstring.h>
 #include <khtmldata.h>
 #include <khtmlfont.h>
@@ -163,12 +164,20 @@ public:
     int          clear;
 };
 
+
+class CSSProperty;
+typedef QList<CSSProperty> CSSPropList;
+class CSSSelector;
+typedef QList<CSSSelector> CSSSelecList;
+
+
 class CSSStyleSheet
 {
 public:
     CSSStyleSheet(const HTMLSettings *);
     ~CSSStyleSheet();
 
+    void test(void);
     /*
      * newStyle
      *
@@ -190,6 +199,18 @@ public:
 
 protected:
     const HTMLSettings *settings;    
+    
+    const char *parseSpace(const char *curP, const char *endP);
+    const char *parseToChar(const char *curP, const char *endP, 
+                            int c, bool chkws);
+    const char *parseAt(const char *curP, const char *endP);
+    CSSSelector *parseSelector2(const char *curP, const char *endP);
+    CSSSelector *parseSelector1(const char *curP, const char *endP);
+    CSSSelecList *parseSelector(const char *curP, const char *endP);
+    CSSProperty *parseProperty(const char *curP, const char *endP);
+    CSSPropList *parseProperties(const char *curP, const char *endP);
+    const char *parseRule(const char *curP, const char *endP);
+    void parseSheet(const char *src, int len);
 };
 
 #endif // HTMLSTYLE_H

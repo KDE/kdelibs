@@ -245,6 +245,10 @@ KHTMLParser::KHTMLParser( KHTMLWidget *_parent,
     // Style stuff
     
     styleSheet = new CSSStyleSheet(_settings);
+
+#ifdef CSS_TEST
+    styleSheet->test();
+#endif
     
     currentStyle = styleSheet->newStyle(NULL);
 
@@ -288,6 +292,8 @@ KHTMLParser::KHTMLParser( KHTMLWidget *_parent,
 
 KHTMLParser::~KHTMLParser()
 {
+    delete styleSheet;
+
     if ( stringTok )
 	delete stringTok;
 

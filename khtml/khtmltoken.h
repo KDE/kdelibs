@@ -47,6 +47,8 @@ class HTMLTokenizer;
 #include <qstrlist.h>
 #include <qarray.h>
 
+int getTagID(const char *tagStr, int len);
+
 // Every tag as deliverd by HTMLTokenizer starts with TAG_ESCAPE. This way
 // you can devide between tags and words.
 #define TAG_ESCAPE 13

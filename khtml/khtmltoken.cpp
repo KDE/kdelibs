@@ -56,6 +56,16 @@ static const char *scriptEnd = "</script>";
 static const char *styleEnd = "</style>";
 static const char *listingEnd = "</listing>";
 
+
+int getTagID(const char *tagStr, int len)
+{
+    const struct tags *tagPtr = findTag(tagStr, len);
+    if (!tagPtr)
+        return 0;
+    
+    return tagPtr->id;
+}
+
 //-----------------------------------------------------------------------------
 
 HTMLTokenizer::HTMLTokenizer( )
