@@ -2,6 +2,7 @@
 
 	* ecma/kjs_dom.cpp (getValueProperty): add bindings to clientWidth/Height,
 	scrollWidth/height,offsetTop/left,offsetWidth/Height,offsetParent.
+	(getValueProperty): don't map body to canvas (#59676).
 
 	* split up borderSpacing into a horizontal and vertical border spacing so that
 	tables can have assymmetric spacing.

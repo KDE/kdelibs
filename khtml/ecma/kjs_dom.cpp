@@ -273,9 +273,6 @@ Value DOMNode::getValueProperty(ExecState *exec, int token) const
       rend = node.handle() ? node.handle()->renderer() : 0L;
     }
 
-    if (rend && rend->isBody())
-      rend = rend->canvas();
-
     switch (token) {
     case OffsetLeft:
       return rend ? static_cast<Value>( Number( rend->offsetLeft() ) ) : Undefined();
