@@ -377,6 +377,7 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
       else if (p == "alt")             return getString(input.alt());
       else if (p == "checked")         return Boolean(input.checked());
       else if (p == "disabled")        return Boolean(input.disabled());
+      else if (p == "length")          return Number(input.form().getElementsByNameAttr(input.name()).length());
       else if (p == "maxLength")       return Number(input.maxLength());
       else if (p == "name")            return getString(input.name());
       else if (p == "readOnly")        return Boolean(input.readOnly());
@@ -391,6 +392,13 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
       else if (p == "focus")           return new HTMLElementFunction(element,HTMLElementFunction::Focus);
       else if (p == "select")          return new HTMLElementFunction(element,HTMLElementFunction::Select);
       else if (p == "click")           return new HTMLElementFunction(element,HTMLElementFunction::Click);
+      else
+      {
+          // it might be an index
+          bool ok;
+          uint u = p.toULong(&ok);
+          if(ok)  return getDOMNode(input.form().getElementsByNameAttr(input.name()).item(u));
+      }
     }
     break;
     case ID_TEXTAREA: {
@@ -790,27 +798,9 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
     return getString(element.dir());
   else if (p == "className") // ### isn't this "class" in the HTML spec?
     return getString(element.className());
-  else if (p == "length")
-  {
-    DOM::Element parentNode = static_cast<DOM::Element>(element.parentNode());
-    DOM::NodeList nl = parentNode.getElementsByNameAttr(element.getAttribute("name"));
-    return Number(nl.length());
-  }
   // ### what about style? or is this used instead for DOM2 stylesheets?
   else
-  {
-      // it might be a number, with other words an index
-      bool ok;
-      uint u = p.toULong(&ok);
-      if(ok)
-      {
-          // try to find the u'th sibling with the current name
-          DOM::Element parentNode = static_cast<DOM::Element>(element.parentNode());
-          DOM::NodeList nl = parentNode.getElementsByNameAttr(element.getAttribute("name"));
-          return getDOMNode(nl.item(u));
-      }
-      return DOMElement::tryGet(p);
-  }
+    return DOMElement::tryGet(p);
 }
 
 Completion KJS::HTMLElementFunction::tryExecute(const List &args)
