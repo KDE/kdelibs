@@ -84,9 +84,9 @@ public:
      * Create a socket and connect to a host.
      * @param _host	the remote host to which to connect.
      * @param _port	the port on the remote host.
+     * @param timeOut	the number of seconds waiting for connect (default 30)
      */
-    KSocket( const char *_host, unsigned short int _port );
-    KSocket( const char *_host, unsigned short int _port, int timeOut);
+    KSocket( const char *_host, unsigned short int _port, int timeOut = 30);
     
     /** 
      * Connects to a UNIX domain socket.
