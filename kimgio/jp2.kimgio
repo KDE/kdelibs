@@ -1,0 +1,9 @@
+[Image Format]
+Type=jp2
+Header=^\001\001
+Name=JPEG 2000-Pictures
+Read=true
+Write=false
+Suffices=jp2
+Mimetype=image/jp2
+Library=kimg_jp2.la
