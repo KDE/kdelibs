@@ -69,7 +69,7 @@ bool KTarBase::open( int mode )
     struct passwd* pw =  getpwuid( getuid() );
     struct group* grp = getgrgid( getgid() );
     QString username = pw ? QFile::decodeName(pw->pw_name) : QString::number( getuid() );
-    QString groupname = pw ? QFile::decodeName(grp->gr_name) : QString::number( getgid() );
+    QString groupname = grp ? QFile::decodeName(grp->gr_name) : QString::number( getgid() );
 
     m_dir = new KTarDirectory( this, QString::fromLatin1("/"), (int)0666, 0, username, groupname, QString::null );
 
