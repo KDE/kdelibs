@@ -39,6 +39,7 @@ static bool matchBinaryPattern( int value, int pattern );
 
 template <class L>
 static bool listEquals( const QValueList<L>&, const QValueList<L>& );
+static bool emailsEquals( const QStringList&, const QStringList& );
 
 KABC::SortMode *Addressee::mSortMode = 0;
 
@@ -131,7 +132,7 @@ bool Addressee::operator==( const Addressee &a ) const
     kdDebug(5700) << "keys differs" << endl;
     return false;
   }
-  if ( !listEquals( mData->emails, a.mData->emails ) ) {
+  if ( !emailsEquals( mData->emails, a.mData->emails ) ) {
     kdDebug(5700) << "emails differs" << endl;
     return false;
   }
@@ -961,6 +962,21 @@ template <class L>
 bool listEquals( const QValueList<L> &list, const QValueList<L> &pattern )
 {
   if ( list.count() != pattern.count() )
+    return false;
+
+  for ( uint i = 0; i < list.count(); ++i )
+    if ( pattern.find( list[ i ] ) == pattern.end() )
+      return false;
+
+  return true;
+}
+
+bool emailsEquals( const QStringList &list, const QStringList &pattern )
+{
+  if ( list.count() != pattern.count() )
+    return false;
+
+  if ( list.first() != pattern.first() )
     return false;
 
   for ( uint i = 0; i < list.count(); ++i )
