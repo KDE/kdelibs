@@ -36,6 +36,7 @@
 #include <math.h>
 #include <algorithm>
 
+#include <qapplication.h>
 #include <qlabel.h>
 #include <qlineedit.h>
 #include <qsize.h>
@@ -47,6 +48,7 @@
 #include <klocale.h>
 #include <kdebug.h>
 
+#include "kdialog.h"
 #include "knumvalidator.h"
 #include "knuminput.h"
 
@@ -446,17 +448,27 @@ void KIntNumInput::resizeEvent(QResizeEvent* e)
 
     if(m_label && (m_alignment & AlignTop)) {
         m_label->setGeometry(0, 0, e->size().width(), m_sizeLabel.height());
-        h += m_sizeLabel.height() + 4;
+        h += m_sizeLabel.height() + KDialog::spacingHint();
     }
 
     if(m_label && (m_alignment & AlignVCenter))
         m_label->setGeometry(0, 0, w, m_sizeSpin.height());
 
-    m_spin->setGeometry(w, h, m_slider ? m_colw2 : QMAX(m_colw2, e->size().width() - w), m_sizeSpin.height());
-    w += m_colw2 + 8;
+    if (qApp->reverseLayout())
+    {
+        m_spin->setGeometry(w, h, m_slider ? m_colw2 : QMAX(m_colw2, e->size().width() - w), m_sizeSpin.height());
+        w += m_colw2 + 8;
 
-    if(m_slider)
-        m_slider->setGeometry(w, h, e->size().width() - w, m_sizeSpin.height());
+        if(m_slider)
+            m_slider->setGeometry(w, h, e->size().width() - w, m_sizeSpin.height());
+    }
+    else if(m_slider) {
+        m_slider->setGeometry(w, h, e->size().width() - (w + m_colw2 - KDialog::spacingHint()), m_sizeSpin.height());
+        m_spin->setGeometry(w + m_slider->size().width() + KDialog::spacingHint(), h, m_colw2, m_sizeSpin.height());
+    }
+    else {
+        m_spin->setGeometry(w, h, QMAX(m_colw2, e->size().width() - w), m_sizeSpin.height());
+    }
 
     h += m_sizeSpin.height() + 2;
 
@@ -674,12 +686,24 @@ void KDoubleNumInput::resizeEvent(QResizeEvent* e)
     if(m_label && (m_alignment & AlignVCenter))
         m_label->setGeometry(0, 0, w, m_sizeEdit.height());
 
-    d->spin->setGeometry(w, h, m_slider ? m_colw2
-                                          : e->size().width() - w, m_sizeEdit.height());
-    w += m_colw2 + 8;
+    if (qApp->reverseLayout())
+    {
+        d->spin->setGeometry(w, h, m_slider ? m_colw2
+                                            : e->size().width() - w, m_sizeEdit.height());
+        w += m_colw2 + KDialog::spacingHint();
 
-    if(m_slider)
-        m_slider->setGeometry(w, h, e->size().width() - w, m_sizeEdit.height());
+        if(m_slider)
+            m_slider->setGeometry(w, h, e->size().width() - w, m_sizeEdit.height());
+    }
+    else if(m_slider) {
+        int spinWidth = d->spin->sizeHint().width();
+        m_slider->setGeometry(w, h, e->size().width() - (m_colw2 + spinWidth - KDialog::spacingHint()), m_sizeEdit.height());
+        d->spin->setGeometry(w + m_slider->width() + KDialog::spacingHint(), h, 
+                             spinWidth, m_sizeEdit.height());
+    }
+    else {
+        d->spin->setGeometry(w, h, e->size().width() - w, m_sizeEdit.height());
+    }
 
     h += m_sizeEdit.height() + 2;
 
