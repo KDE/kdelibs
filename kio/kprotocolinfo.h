@@ -58,7 +58,7 @@ public:
 
   virtual QString name() const { return m_name; }
 
-  virtual bool isValid() const { return true; }
+  virtual bool isValid() const { return !m_name.isEmpty(); }
 
   /**
    * @internal
