@@ -105,7 +105,7 @@ bool LDIF::splitLine( const QCString &line, QString &fieldname, QByteArray &valu
 {
   int position;
   QByteArray tmp;
-  uint linelen;
+  int linelen;
 
 //  kdDebug(7125) << "splitLine line: " << QString::fromUtf8(line) << endl;
   
