@@ -67,9 +67,9 @@ void CachedObject::finish()
     KURL url(m_url.string());
     if (m_expireDate && url.protocol().startsWith("http"))
     {
-	KIO::http_update_cache(url, false, m_expireDate);
+        KIO::http_update_cache(url, false, m_expireDate);
 #ifdef CACHE_DEBUG
-	kdDebug(6060) << " Setting expire date for image "<<m_url.string()<<" to " << m_expireDate << endl;
+        kdDebug(6060) << " Setting expire date for image "<<m_url.string()<<" to " << m_expireDate << endl;
 #endif
     }
 #ifdef CACHE_DEBUG
@@ -82,7 +82,7 @@ void CachedObject::setExpireDate(int _expireDate)
     // assert(_expireDate);
     if ( _expireDate != m_expireDate && (m_status == Uncacheable || m_status == Cached))
     {
-	finish();
+        finish();
     }
     m_expireDate = _expireDate;
 }
@@ -405,7 +405,9 @@ CachedImage::~CachedImage()
 
 void CachedImage::ref( CachedObjectClient *c )
 {
+#ifdef CACHE_DEBUG
     kdDebug( 6060 ) << this << " CachedImage::ref(" << c << ") " << endl;
+#endif
 
     // make sure we don't get it twice...
     m_clients.remove(c);
@@ -764,7 +766,7 @@ CachedImage *DocLoader::requestImage( const DOM::DOMString &url, const DOM::DOMS
             CachedObject *existing = Cache::cache->find(fullURL);
             if (existing)
                 Cache::removeCacheEntry(existing);
-	    m_reloadedURLs.append(fullURL);
+            m_reloadedURLs.append(fullURL);
             return Cache::requestImage(this, url,baseUrl,true,m_expireDate);
         }
     }
@@ -782,7 +784,7 @@ CachedCSSStyleSheet *DocLoader::requestStyleSheet( const DOM::DOMString &url, co
             CachedObject *existing = Cache::cache->find(fullURL);
             if (existing)
                 Cache::removeCacheEntry(existing);
-	    m_reloadedURLs.append(fullURL);
+            m_reloadedURLs.append(fullURL);
             return Cache::requestStyleSheet(this, url,baseUrl,true,m_expireDate, charset);
         }
     }
@@ -798,7 +800,7 @@ CachedScript *DocLoader::requestScript( const DOM::DOMString &url, const DOM::DO
             CachedObject *existing = Cache::cache->find(fullURL);
             if (existing)
                 Cache::removeCacheEntry(existing);
-	    m_reloadedURLs.append(fullURL);
+            m_reloadedURLs.append(fullURL);
             return Cache::requestScript(this, url,baseUrl,true,m_expireDate, charset);
         }
     }
@@ -1257,7 +1259,7 @@ void Cache::flush(bool force)
 
         if( !o->canDelete() || o->status() == CachedObject::Persistent ) {
                continue; // image is still used or cached permanently
-	       // in this case don't count it for the size of the cache.
+               // in this case don't count it for the size of the cache.
         }
 
         if( o->status() != CachedObject::Uncacheable )
