@@ -95,6 +95,8 @@ public:
   void setAutoUpdate( KDirLister *lister, bool enable );
 
   void forgetDirs( KDirLister *lister );
+  void forgetDirs( KDirLister *lister, const KURL &_url );
+  
   void updateDirectory( const KURL &_dir );
 
   KFileItem* findByName( const KDirLister *lister, const QString &_name ) const;

@@ -69,8 +69,8 @@ KDirListerCache::~KDirListerCache()
   kdirwatch->disconnect( this );
 }
 
-// TODO: hmpf, setting _reload to true will emit the old files and
-//       just then call updateDirectory
+// FIXME: hmpf, setting _reload to true will emit the old files and
+//        just then call updateDirectory
 void KDirListerCache::listDir( KDirLister* lister, const KURL& _u,
                                bool _keep, bool _reload )
 {
@@ -82,7 +82,7 @@ void KDirListerCache::listDir( KDirLister* lister, const KURL& _u,
 
   if ( !_keep )
   {
-    // Stop running jobs for lister, if any
+    // stop any running jobs for lister
     stop( lister );
 
     // clear our internal list for lister
@@ -92,8 +92,14 @@ void KDirListerCache::listDir( KDirLister* lister, const KURL& _u,
   }
   else if ( lister->d->lstDirs.contains( _url ) )
   {
-    updateDirectory( _url ); // for all listers
-    return;
+    // stop the job listing _url for this lister
+    stop( lister, _url );
+
+    // clear _url for lister
+    forgetDirs( lister, _url );
+
+    if ( lister->d->url == _url )
+      lister->d->rootFileItem = 0;
   }
 
   lister->d->lstDirs.append( _url );
@@ -462,7 +468,47 @@ void KDirListerCache::forgetDirs( KDirLister *lister )
   emit lister->clear();
 }
 
-// NOTE: this *never* uses the cache!
+// I *hate* code duplication! :-(
+void KDirListerCache::forgetDirs( KDirLister *lister, const KURL& url )
+{
+  kdDebug(7004) << k_funcinfo << lister << " url: " << url.prettyURL() << endl;
+  
+  QPtrList<KDirLister> *listers = urlsCurrentlyHeld[url.url()];
+  Q_ASSERT( listers );
+  listers->removeRef( lister );
+
+  if ( listers->isEmpty() )
+    urlsCurrentlyHeld.remove( url.url() );
+
+  DirItem *item = itemsInUse[url.url()];
+
+  Q_ASSERT( item );
+  Q_ASSERT( item->count );
+
+  // one lister less holding this dir
+  item->count--;
+
+  if ( lister->d->autoUpdate && --item->autoUpdates == 0 && url.isLocalFile() )
+  {
+    kdDebug(7004) << "removing from kdirwatch " << kdirwatch << " " << url.path() << endl;
+    kdirwatch->removeDir( url.path() );
+  }
+
+  // item not in use anymore -> move into cache if complete
+  if ( item->count == 0 )
+  {
+    itemsInUse.remove( url.url() );
+    if ( item->complete )
+    {
+      kdDebug(7004) << k_funcinfo << lister << " item moved into cache: " << url.prettyURL() << endl;
+      itemsCached.insert( url.url(), item ); // TODO: may return false!!
+    }
+  }
+
+  lister->d->lstDirs.remove( url.url() );
+  emit lister->clear( url );
+}
+
 void KDirListerCache::updateDirectory( const KURL& _dir )
 {
   kdDebug(7004) << k_funcinfo << _dir.prettyURL() << endl;
@@ -823,9 +869,7 @@ void KDirListerCache::slotRedirection( KIO::Job *job, const KURL &url )
     }
     else
     {
-      for ( KFileItem *item = dir->lstItems->first(); item; item = dir->lstItems->next() )
-        emit kdl->deleteItem( item );
-
+      emit kdl->clear( oldUrl );
       emit kdl->redirection( oldUrl, url );
     }
   }
