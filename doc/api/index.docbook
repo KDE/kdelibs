@@ -1,5 +1,8 @@
-<!DOCTYPE book PUBLIC "-//KDE//DTD DocBook V3.1-Based Variant V1.0//EN"[
-<!ENTITY inst SYSTEM "install-dep.entities">]>
+<?xml version="1.0" ?>
+<!DOCTYPE book PUBLIC "-//KDE//DTD DocBook XML V4.1-Based Variant V1.0//EN" "dtd/kdex.dtd" [
+<!ENTITY inst SYSTEM "install-dep.entities">
+]>
+
 <book lang="&language;">
       
    <bookinfo>
@@ -265,9 +268,9 @@ if (!QFileInfo(filename).exists()) {
          <para>
             <programlistingco>
                <areaspec>
-                  <area id="xml.doctype" coords=1>
-                     <area id="xml.rootel" coords=2>
-                        <area id="xml.nestedel" coords=9>
+                  <area id="xml.doctype" coords="1"/>
+                  <area id="xml.rootel" coords="2"/>
+                  <area id="xml.nestedel" coords="9"/>
                </areaspec>
                <programlisting>
 <![CDATA[<!DOCTYPE search>
@@ -330,7 +333,7 @@ if (!QFileInfo(filename).exists()) {
          <para>
             Now let us have a look how such a file is parsed. The easiest way is
             to create a <classname>QDomDocument</classname>. With its constructor
-            <function>QDomDocument(const QString& name)</function>, the filename
+            <function>QDomDocument(const QString&amp; name)</function>, the filename
             with the name <varname>name</varname> will be completely parsed, and
             you can navigate on the file content as a tree structure. As a
             first step, we check if the file has the correct document type:
@@ -475,7 +478,7 @@ while (!childel.isNull()) {
 	 <para>
 	    <variablelist>
 	       <varlistentry>
-		  <term><ulink url="kdecore/KApplication.html">KApplication</ulink</term>
+		  <term><ulink url="kdecore/KApplication.html">KApplication</ulink></term>
 		  <listitem>
 		     <para>
 			Initializes and controls a KDE application.
@@ -511,7 +514,7 @@ while (!childel.isNull()) {
 		  <term><ulink url="kdecore/KConfig.html">KConfig</ulink></term>
 		  <listitem>
 		     <para>
-			Provides access to KDE´s configuration database.
+			Provides access to KDE's configuration database.
 		     </para>
 		  </listitem>
 	       </varlistentry>
@@ -733,37 +736,37 @@ while (!childel.isNull()) {
       <para>
          The <ulink url="kfile/KFileDialog.html">KFileDialog</ulink>:
          <screenshot><mediaobject><imageobject>
-            <imagedata fileref="kfile/kfiledialog.png" format="png">
+            <imagedata fileref="kfile/kfiledialog.png" format="PNG"/>
          </imageobject></mediaobject></screenshot>
       </para>
       <para>
          The <ulink url="kfile/KColorDialog.html">KColorDialog</ulink>:
          <screenshot><mediaobject><imageobject>
-            <imagedata fileref="kdeui/kcolordialog.png" format="png">
+            <imagedata fileref="kdeui/kcolordialog.png" format="PNG"/>
          </imageobject></mediaobject></screenshot>
       </para>
       <para>
          The <ulink url="kfile/KFontDialog.html">KFontDialog</ulink>:
          <screenshot><mediaobject><imageobject>
-            <imagedata fileref="kdeui/kfontdialog.png" format="png">
+            <imagedata fileref="kdeui/kfontdialog.png" format="PNG"/>
          </imageobject></mediaobject></screenshot>
       </para>
       <para>
          The <ulink url="kfile/KEditToolbar.html">KEditToolbar</ulink>:
          <screenshot><mediaobject><imageobject>
-            <imagedata fileref="kdeui/kedittoolbar.png" format="png">
+            <imagedata fileref="kdeui/kedittoolbar.png" format="PNG"/>
          </imageobject></mediaobject></screenshot>
       </para>
       <para>
          The <ulink url="kfile/KKeyDialog.html">KKeyDialog</ulink>:
          <screenshot><mediaobject><imageobject>
-            <imagedata fileref="kdeui/kkeydialog.png" format="png">
+            <imagedata fileref="kdeui/kkeydialog.png" format="PNG"/>
          </imageobject></mediaobject></screenshot>
       </para>
       <para>
          The <ulink url="&QTDOCDIR;/qcolordialog.html">QPrintDialog</ulink>:
          <screenshot><mediaobject><imageobject>
-            <imagedata fileref="&QTDOCDIR;/qprintdlg-m.png" format="png">
+            <imagedata fileref="&QTDOCDIR;/qprintdlg-m.png" format="PNG"/>
          </imageobject></mediaobject></screenshot>
       </para>
       <para>
@@ -872,3 +875,4 @@ compile-command:"test -d HTML && rm -rf HTML ; kdb2html `pwd`/index.docbook.in"
 fill-column:85
 End:
 -->
+
