@@ -31,7 +31,6 @@ class KStringDict;
 class KStaticDeleterBase;
 class KStaticDeleterList;
 #include <kinstance.h>
-#include <kdemacros.h>
 
 /**
  * Access to the KDE global objects.
