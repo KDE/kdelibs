@@ -71,7 +71,7 @@ bool VCardConverter::addresseeToVCard( const Addressee &addr, QString &str, Vers
 
 QString KABC::dateToVCardString( const QDateTime &dateTime )
 {
-  return dateTime.toString("yyyyMMddThhmmss");
+  return dateTime.toString("yyyyMMddThhmmssZ");
 }
 
 QString KABC::dateToVCardString( const QDate &date )

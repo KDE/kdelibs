@@ -198,19 +198,19 @@ class AddressBook : public QObject
 
     /**
       Find all entries with the specified name in the address book. Returns
-      an empty list, if no entries couldn't be found.
+      an empty list, if no entries could be found.
     */
     Addressee::List findByName( const QString & );
 
     /**
       Find all entries with the specified email address  in the address book.
-      Returns an empty list, if no entries couldn't be found.
+      Returns an empty list, if no entries could be found.
     */
     Addressee::List findByEmail( const QString & );
 
     /**
       Find all entries wich have the specified category in the address book.
-      Returns an empty list, if no entries couldn't be found.
+      Returns an empty list, if no entries could be found.
     */
     Addressee::List findByCategory( const QString & );
 

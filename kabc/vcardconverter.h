@@ -86,7 +86,7 @@ private:
 
 /**
   * Converts a QDateTime to a date string as it is used in VCard and LDIF files.
-  * The return value is in the form "yyyyMMddThhmmss" (e.g. "20031201T120000")
+  * The return value is in the form "yyyyMMddThhmmssZ" (e.g. "20031201T120000Z")
   * @param dateTime date and time to be converted 
   * @since 3.2
   */

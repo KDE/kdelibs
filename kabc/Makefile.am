@@ -1,16 +1,17 @@
-SUBDIRS = vcard . vcardparser formats plugins
+SUBDIRS = scripts vcard . vcardparser formats plugins
 
 # Make sure $(all_includes) remains last!
 INCLUDES = -I$(top_builddir)/kabc -I$(srcdir)/vcard/include -I$(srcdir)/vcard/include/generated \
   -I$(top_srcdir)/kabc -I$(top_srcdir)/kab -I$(srcdir)/vcardparser $(all_includes)
 
-addressee.h addressee.cpp field.cpp: $(srcdir)/scripts/makeaddressee \
+
+addressee.h addressee.cpp field.cpp: \
+				$(srcdir)/scripts/makeaddressee \
 				$(srcdir)/scripts/addressee.src.cpp \
 				$(srcdir)/scripts/addressee.src.h \
 				$(srcdir)/scripts/entrylist \
 				$(srcdir)/scripts/field.src.cpp
-	perl $(srcdir)/scripts/makeaddressee
-
+	( cd scripts && $(MAKE) )
 CLEANFILES = addressee.h addressee.cpp field.cpp
 COMPILE_FIRST = addressee.h
 
@@ -27,7 +28,7 @@ libkabc_la_SOURCES = \
   phonenumber.cpp picture.cpp plugin.cpp resource.cpp \
   secrecy.cpp sound.cpp stdaddressbook.cpp \
   timezone.cpp vcard21parser.cpp vcardconverter.cpp vcardformat.cpp \
-  vcardformatimpl.cpp vcardformatplugin.cpp \
+  vcardformatimpl.cpp vcardformatplugin.cpp ldifconverter.cpp \
   addresslineedit.cpp ldapclient.cpp addresseelist.cpp
 
 
@@ -37,7 +38,7 @@ kabcinclude_HEADERS = address.h addressbook.h addressee.h addresseedialog.h \
   errorhandler.h field.h formatfactory.h formatplugin.h geo.h messaging.h key.h \
   phonenumber.h picture.h plugin.h resource.h \
   secrecy.h sound.h stdaddressbook.h timezone.h \
-  vcardconverter.h vcardformat.h vcardformatplugin.h \
+  vcardconverter.h vcardformat.h vcardformatplugin.h ldifconverter.h \
   addresslineedit.h ldapclient.h addresseelist.h
 
 METASOURCES = AUTO

@@ -207,8 +207,8 @@ void LdapClient::endParseLDIF()
 
 void LdapClient::parseLDIF( const QByteArray& data )
 {  
-  //qDebug("%s", data.data());
-  if ( data.isNull() || data.isEmpty() )
+  // qDebug("%s: %s", __FUNCTION__, data.data());
+  if ( data.isEmpty() )
     return;
   mBuf += QCString( data ); // collect data in buffer
   int nl;
