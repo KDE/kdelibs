@@ -191,7 +191,7 @@ if ((m_bIsSSL || d->usingTLS) && !d->useSSLTunneling) {       // SSL CASE
 	if ( d->needSSLHandShake )
 		(void) doSSLHandShake( true );
 
-	while (clen < len) {
+	while (clen < len-1) {
 		rc = d->kssl->pending();
 		if (rc > 0) {   // Read a chunk
 			int bytes = rc;
@@ -211,6 +211,9 @@ if ((m_bIsSSL || d->usingTLS) && !d->useSSLTunneling) {       // SSL CASE
 					break;
 				}
 			}
+
+			if (bytes+clen >= len)   // don't read too much!
+				bytes = len - clen - 1;
 
 			rc = d->kssl->read(buf, bytes);
 			if (rc > 0) {
@@ -237,7 +240,7 @@ if ((m_bIsSSL || d->usingTLS) && !d->useSSLTunneling) {       // SSL CASE
 		}
 	}
 } else {                                                      // NON SSL CASE
-	while (clen < len) {
+	while (clen < len-1) {
 		rc = KSocks::self()->read(m_iSock, buf, 1);
 		if (rc <= 0) {
 			// FIXME: this doesn't cover rc == 0 case
