@@ -283,9 +283,9 @@ bool KIOJob::preget( const char *_url, int _max_size )
 void KIOJob::cont()
 {
   if ( !m_strPreGetMimeType.empty() )
-    emit mimeType( m_strPreGetMimeType.c_str() );
+    emit sigMimeType( m_id, m_strPreGetMimeType.c_str() );
   if ( m_pPreGetBuffer )
-    emit sigData( m_pPreGetBuffer, m_iPreGetBufferSize );
+    emit sigData( m_id, m_pPreGetBuffer, m_iPreGetBufferSize );
 
   if ( m_pNotifier )
     m_pNotifier->setEnabled( true );
@@ -318,12 +318,12 @@ bool KIOJob::listDir( const char *_url )
 
 void KIOJob::slotIsDirectory()
 {
-  emit sigIsDirectory();
+  emit sigIsDirectory( m_id );
 }
 
 void KIOJob::slotIsFile()
 {
-  emit sigIsFile();
+  emit sigIsFile( m_id );
 }
 
 void KIOJob::slotData( void *_p, int _len )
@@ -345,19 +345,19 @@ void KIOJob::slotData( void *_p, int _len )
     {
       if ( m_pNotifier )
 	m_pNotifier->setEnabled( false );
-      emit sigPreData( m_pPreGetBuffer, m_iPreGetBufferSize );
+      emit sigPreData( m_id, m_pPreGetBuffer, m_iPreGetBufferSize );
       m_bPreGet = false;
     }
     
     return;
   }
   
-  emit sigData( (const char*)_p, _len );
+  emit sigData( m_id, (const char*)_p, _len );
 }
 
 void KIOJob::slotListEntry( UDSEntry& _entry )
 {
-  emit sigListEntry( _entry );
+  emit sigListEntry( m_id, _entry );
 }
 
 void KIOJob::slotFinished()
@@ -366,9 +366,9 @@ void KIOJob::slotFinished()
   {
     m_bPreGet = false;
     if ( m_pPreGetBuffer )
-      emit sigPreData( m_pPreGetBuffer, m_iPreGetBufferSize );
+      emit sigPreData( m_id, m_pPreGetBuffer, m_iPreGetBufferSize );
     else
-      emit sigPreData( 0L, 0L );
+      emit sigPreData( m_id, 0L, 0L );
     m_bPreGetFinished = true;
     return;
   }
@@ -380,9 +380,11 @@ void KIOJob::slotFinished()
   // of this function anyway.
   assert( s_mapJobs );
   s_mapJobs->erase( m_id );
+
+  emit sigFinished( m_id );
+
   m_id = 0;
   
-  emit sigFinished();
   
   // Put the slave back to the pool
   if ( m_pSlave )
@@ -419,9 +421,11 @@ void KIOJob::slotError( int _errid, const char *_txt )
   // of this function anyway.
   assert( s_mapJobs );
   s_mapJobs->erase( m_id );
+
+  emit sigError( m_id, _errid, _txt );
+
   m_id = 0;
   
-  emit sigError( _errid, _txt );
 
   // NOTE: This may be dangerous. I really hope that the
   // slaves are still in a good shape after reporting an error.
@@ -454,6 +458,7 @@ void KIOJob::slotTotalSize( unsigned long _bytes )
   if ( ( m_cmd == CMD_COPY || m_cmd == CMD_GET ) && m_pCopyProgressDlg )
     m_pCopyProgressDlg->totalSize( _bytes );
   
+  emit sigTotalSize( m_id, _bytes );
   cerr << "TotalSize " << _bytes << endl;
 }
 
@@ -462,6 +467,7 @@ void KIOJob::slotTotalFiles( unsigned long _files )
   if ( m_cmd == CMD_COPY && m_pCopyProgressDlg )
     m_pCopyProgressDlg->totalFiles( _files );
 
+  emit sigTotalFiles( m_id, _files );
   cerr << "TotalFiles " << _files << endl;
 }
 
@@ -470,6 +476,7 @@ void KIOJob::slotTotalDirs( unsigned long _dirs )
   if ( m_cmd == CMD_COPY && m_pCopyProgressDlg )
     m_pCopyProgressDlg->totalDirs( _dirs );
 
+  emit sigTotalDirs( m_id, _dirs );
   cerr << "TotalDirs " << _dirs << endl;
 }
 
@@ -478,6 +485,7 @@ void KIOJob::slotProcessedSize( unsigned long _bytes )
   if ( ( m_cmd == CMD_COPY || m_cmd == CMD_GET ) && m_pCopyProgressDlg )
     m_pCopyProgressDlg->processedSize( _bytes );
 
+  emit sigProcessedSize( m_id, _bytes );
   cerr << "ProcessedSize " << _bytes << endl;
 }
 
@@ -486,6 +494,7 @@ void KIOJob::slotProcessedFiles( unsigned long _files )
   if ( m_cmd == CMD_COPY && m_pCopyProgressDlg )
     m_pCopyProgressDlg->processedFiles( _files );
 
+  emit sigProcessedFiles( m_id, _files );
   cerr << "ProcessedFiles " << _files << endl;
 }
 
@@ -494,6 +503,7 @@ void KIOJob::slotProcessedDirs( unsigned long _dirs )
   if ( m_cmd == CMD_COPY && m_pCopyProgressDlg )
     m_pCopyProgressDlg->processedDirs( _dirs );
 
+  emit sigProcessedDirs( m_id, _dirs );
   cerr << "ProcessedDirs " << _dirs << endl;
 }
 
@@ -510,6 +520,7 @@ void KIOJob::slotSpeed( unsigned long _bytes_per_second )
   if ( ( m_cmd == CMD_COPY || m_cmd == CMD_GET ) && m_pCopyProgressDlg )
     m_pCopyProgressDlg->speed( _bytes_per_second );
 
+  emit sigSpeed( m_id, _bytes_per_second );
   cerr << "Speed " << _bytes_per_second << endl;
 }
 
@@ -547,13 +558,13 @@ void KIOJob::slotMimeType( const char *_type )
       m_pNotifier->setEnabled( false );
   }
   
-  emit sigMimeType( _type );
+  emit sigMimeType( m_id, _type );
   cerr << "MimeType " << _type << endl;
 }
 
 void KIOJob::slotRedirection( const char *_url )
 {
-  emit sigRedirection( _url );
+  emit sigRedirection( m_id, _url );
 }
 
 void KIOJob::slotCancel()

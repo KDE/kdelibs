@@ -18,8 +18,8 @@ KAutoMount::KAutoMount( bool _readonly, const char *_format, const char *_device
   m_bShowFilemanagerWindow = _show_filemanager_window;
   
   KIOJob* job = new KIOJob();
-  connect( job, SIGNAL( sigFinished() ), this, SLOT( slotFinished() ) );
-  connect( job, SIGNAL( sigError( int, const char* ) ), this, SLOT( slotError( int, const char* ) ) );
+  connect( job, SIGNAL( sigFinished( int ) ), this, SLOT( slotFinished( int ) ) );
+  connect( job, SIGNAL( sigError( int, int, const char* ) ), this, SLOT( slotError( int, int, const char* ) ) );
     
   if ( !_format )
     job->mount( false, 0L, _device, 0L );
@@ -27,7 +27,7 @@ KAutoMount::KAutoMount( bool _readonly, const char *_format, const char *_device
     job->mount( _readonly, _format, _device, _mountpoint );
 }
 
-void KAutoMount::slotFinished()
+void KAutoMount::slotFinished( int )
 {
   QString mp = KIOJob::findDeviceMountPoint( m_strDevice );
 
@@ -40,7 +40,7 @@ void KAutoMount::slotFinished()
   delete this;
 }
 
-void KAutoMount::slotError( int _errid, const char* _errortext )
+void KAutoMount::slotError( int, int _errid, const char* _errortext )
 {
   kioErrorDialog( _errid, _errortext );
 
@@ -50,13 +50,13 @@ void KAutoMount::slotError( int _errid, const char* _errortext )
 KAutoUnmount::KAutoUnmount( const char *_mountpoint )
 {
   KIOJob* job = new KIOJob();
-  connect( job, SIGNAL( sigFinished() ), this, SLOT( slotFinished() ) );
-  connect( job, SIGNAL( sigError( int, const char* ) ), this, SLOT( slotError( int, const char* ) ) );
+  connect( job, SIGNAL( sigFinished( int ) ), this, SLOT( slotFinished( int ) ) );
+  connect( job, SIGNAL( sigError( int, int, const char* ) ), this, SLOT( slotError( int, int, const char* ) ) );
 
   job->unmount( _mountpoint );
 }
 
-void KAutoUnmount::slotFinished()
+void KAutoUnmount::slotFinished( int )
 {
   // TODO: Fake update of window which contains the kdelnk file which is used for
   //       mount/unmount
@@ -64,7 +64,7 @@ void KAutoUnmount::slotFinished()
   delete this;
 }
 
-void KAutoUnmount::slotError( int _errid, const char* _errortext )
+void KAutoUnmount::slotError( int, int _errid, const char* _errortext )
 {
   kioErrorDialog( _errid, _errortext );
 

@@ -12,8 +12,8 @@ public:
 	      bool _show_filemanager_window = true );
     
 public slots:
-  void slotFinished();
-  void slotError( int _id, const char *_text );
+  void slotFinished( int );
+  void slotError( int, int _id, const char *_text );
     
 protected:
   QString m_strDevice;
@@ -27,8 +27,8 @@ public:
   KAutoUnmount( const char *_mountpoint );
     
 public slots:
-  void slotFinished();
-  void slotError( int _id, const char *_text );
+  void slotFinished( int );
+  void slotError( int, int _id, const char *_text );
 };
 
 #endif

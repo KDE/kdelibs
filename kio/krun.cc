@@ -364,11 +364,11 @@ void KRun::init()
   
   // It may be a directory
   KIOJob* job = new KIOJob();
-  connect( job, SIGNAL( sigIsDirectory() ), this, SLOT( slotIsDirectory() ) );
-  connect( job, SIGNAL( sigIsFile() ), this, SLOT( slotIsFile() ) );
-  connect( job, SIGNAL( sigFinished() ), this, SLOT( slotFinished() ) );
-  connect( job, SIGNAL( sigError( int, const char* ) ),
-	   this, SLOT( slotError( int, const char* ) ) );
+  connect( job, SIGNAL( sigIsDirectory( int ) ), this, SLOT( slotIsDirectory() ) );
+  connect( job, SIGNAL( sigIsFile( int ) ), this, SLOT( slotIsFile() ) );
+  connect( job, SIGNAL( sigFinished( int ) ), this, SLOT( slotFinished() ) );
+  connect( job, SIGNAL( sigError( int, int, const char* ) ),
+	   this, SLOT( slotError( int, int, const char* ) ) );
 
   job->setAutoDelete( false );
   m_jobId = job->id();
@@ -387,11 +387,11 @@ void KRun::scanFile()
   cerr << "###### Scanning file " << m_strURL << endl;
   
   KIOJob* job = new KIOJob();
-  connect( job, SIGNAL( sigMimeType( const char* ) ), this, SLOT( slotMimeType( const char* ) ) );
-  connect( job, SIGNAL( sigPreData( const char*, int ) ),
-	   this, SLOT( slotPreData( const char*, int ) ) );
-  connect( job, SIGNAL( sigError( int, const char* ) ),
-	   this, SLOT( slotError( int, const char* ) ) );
+  connect( job, SIGNAL( sigMimeType( int, const char* ) ), this, SLOT( slotMimeType( int, const char* ) ) );
+  connect( job, SIGNAL( sigPreData( int, const char*, int ) ),
+	   this, SLOT( slotPreData( int, const char*, int ) ) );
+  connect( job, SIGNAL( sigError( int, int, const char* ) ),
+	   this, SLOT( slotError( int, int, const char* ) ) );
   job->setAutoDelete( false );
   m_jobId = job->id();
   job->enableGUI( false );
@@ -468,7 +468,7 @@ void KRun::slotFinished()
     m_timer.start( 0, true );
 }
 
-void KRun::slotError( int _errid, const char *_errortext )
+void KRun::slotError( int, int _errid, const char *_errortext )
 {
   cerr << "######## ERROR " << _errid << " " << _errortext << endl;
   // HACK
@@ -479,13 +479,13 @@ void KRun::slotError( int _errid, const char *_errortext )
   // m_timer.start( 0, true ); 
 }
 
-void KRun::slotMimeType( const char *_type )
+void KRun::slotMimeType( int, const char *_type )
 {
   cerr << "######## MIMETYPE " << _type << endl;
   foundMimeType( _type );
 }
 
-void KRun::slotPreData( const char *_data, int _len )
+void KRun::slotPreData( int, const char *_data, int _len )
 {
   cerr << "Got pre data" << endl;
   KMimeMagicResult* result = KMimeMagic::self()->findBufferType( _data, _len );
@@ -533,9 +533,9 @@ void KRun::foundMimeType( const char *_type )
     killJob();
 
     KIOJob* job = new KIOJob();
-    connect( job, SIGNAL( sigMimeType( const char* ) ), this, SLOT( slotMimeType( const char* ) ) );
-    connect( job, SIGNAL( sigPreData( const char*, int ) ),
-	     this, SLOT( slotPreData( const char*, int ) ) );
+    connect( job, SIGNAL( sigMimeType( int, const char* ) ), this, SLOT( slotMimeType( int, const char* ) ) );
+    connect( job, SIGNAL( sigPreData( int, const char*, int ) ),
+	     this, SLOT( slotPreData( int, const char*, int ) ) );
     job->setAutoDelete( false );
     m_jobId = job->id();
     job->enableGUI( false );

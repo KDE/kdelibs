@@ -19,7 +19,11 @@ public:
   bool listing( const char *_protocol, list<string>& _listing );
   bool supportsListing( const char *_protocol );
   
-  static ProtocolManager* self() { return s_pManager; }
+  static ProtocolManager* self() { 
+    if ( ! s_pManager )
+      s_pManager = new ProtocolManager;
+    return s_pManager;
+  }
   
 protected:
   void init();

@@ -701,7 +701,7 @@ void CachedKIOJob::slotTimeout()
     case STEP_REDIRECTION:
       m_step = STEP_DATE;
       if ( !m_pCurrentDoc->redirection().isEmpty() )
-	emit sigRedirection( m_pCurrentDoc->redirection() );
+	emit sigRedirection( m_id, m_pCurrentDoc->redirection() );
       else
       {  
 	slotTimeout();
@@ -717,7 +717,7 @@ void CachedKIOJob::slotTimeout()
     case STEP_MIME:
       m_step = STEP_DATA;
       if ( !m_pCurrentDoc->mimeType().isEmpty() )
-	emit sigMimeType( m_pCurrentDoc->mimeType() );
+	emit sigMimeType( m_id,  m_pCurrentDoc->mimeType() );
       else
       {  
 	slotTimeout();
@@ -727,11 +727,11 @@ void CachedKIOJob::slotTimeout()
     case STEP_DATA:
       m_step = STEP_FINISHED;
       // The trailing 0 does not belong to the data itself => "-1"
-      emit sigData( m_pCurrentDoc->content().data(), m_pCurrentDoc->content().size() - 1 );
+      emit sigData( m_id, m_pCurrentDoc->content().data(), m_pCurrentDoc->content().size() - 1 );
       break;
     case STEP_FINISHED:
       m_step = STEP_NONE;
-      emit sigFinished();
+      emit sigFinished( m_id );
       break;
     default:
       assert( 0 );

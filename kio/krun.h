@@ -57,9 +57,9 @@ signals:
 
 protected slots:
   void slotTimeout();
-  void slotMimeType( const char *_type );
-  void slotPreData( const char *_data, int _len );
-  void slotError( int _errid, const char *_errortext );
+  void slotMimeType( int, const char *_type );
+  void slotPreData( int, const char *_data, int _len );
+  void slotError( int, int _errid, const char *_errortext );
   void slotIsDirectory();
   void slotIsFile();
   void slotFinished();

@@ -95,19 +95,27 @@ public:
   static QString findDeviceMountPoint( const char *_device, const char *_file = "/etc/mtab" );
 
 signals:
-  void sigError( int _errid, const char *_txt );
-  void sigFinished();
-  void sigListEntry( UDSEntry& _entry );
-  void sigMimeType( const char *_mimetype );
+  void sigError( int id, int _errid, const char *_txt );
+  void sigFinished( int id );
+  void sigListEntry( int id, UDSEntry& _entry );
+  void sigMimeType( int id, const char *_mimetype );
   /**
    * @param _data may be 0L if the file has zero size.
    */
-  void sigPreData( const char *_data, int _len );
-  void sigData( const char *_data, int _len );
-  void sigRedirection( const char *_url );
-  void sigIsDirectory();
-  void sigIsFile();
+  void sigPreData( int id, const char *_data, int _len );
+  void sigData( int id, const char *_data, int _len );
+  void sigRedirection( int id, const char *_url );
+  void sigIsDirectory( int id );
+  void sigIsFile( int id );
   
+  void sigSpeed( int id, unsigned long _bytes_per_second );
+  void sigTotalSize( int id, unsigned long _bytes );
+  void sigTotalFiles( int id, unsigned long _files );
+  void sigTotalDirs( int id, unsigned long _dirs );
+  void sigProcessedSize( int id, unsigned long _bytes );
+  void sigProcessedFiles( int id, unsigned long _files );
+  void sigProcessedDirs( int id, unsigned long _dirs );
+
 protected slots:
   /**
    * Connected to the socket notifiere
