@@ -273,7 +273,7 @@ void KIconLoaderDialog::init()
   connect( canvas, SIGNAL(interrupted()), this, SLOT(needReload()) );
   connect( i_filter, SIGNAL(returnPressed()), this, SLOT(filterChanged()) );
   connect( cb_dirs, SIGNAL(activated(const QString&)), this, SLOT(dirChanged(const QString&)) );
-  addIcons(icon_loader->getIconList());
+  changeDirs(icon_loader->getDirList());
 
   resize( 470, 350 );
   setMinimumSize( 470, 250 );
@@ -304,27 +304,6 @@ void KIconLoaderDialog::reject()
 {
   canvas->cancelLoad();
   QDialog::reject();
-}
-
-void KIconLoaderDialog::addIcons( const QStringList &l )
-{ 
-  // sort the given icons and insert the used directories
-  QStringList icons = l;
-  icons.sort();
-  
-  QStringList dirs;
-  QString lastdir, dir;
-  for (QStringList::ConstIterator it = icons.begin();
-       it != icons.end(); it++) 
-  {
-    dir = it->left(it->findRev('/'));
-    if (dir == lastdir) 
-      continue;
-    dirs.append(dir);
-    lastdir = dir;
-  }
-  cb_dirs->clear(); 
-  cb_dirs->insertStringList(dirs); 
 }
 
 void KIconLoaderDialog::needReload()

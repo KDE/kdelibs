@@ -199,13 +199,11 @@ public:
 	void addKDEDefaults();
 
 
- protected:
-	
 	/**
 	 * returns the list of possible directories for the type 
 	 * The functions updates the cache if possible
 	 */
-	QStringList *getCandidates(const QString& type) const;
+	QStringList getResourceDirs(const QString& type) const;
 
  private:
 

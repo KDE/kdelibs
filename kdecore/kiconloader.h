@@ -20,6 +20,12 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.29  1999/05/26 12:29:32  kulow
+   adding getIconList() - the iconloader will find all icons itself. Currently
+   it's just a call to findAllResources("toolbar"), but in this case we urgently
+   need an abstraction layer as KIconLoader may be extended to look for large
+   icons too
+
    Revision 1.28  1999/05/26 08:14:05  dfaure
    Docu improvements. Moved more to the top comment (like the search path) ;
    Added a line about "large/", explain that both constructors keep the default
@@ -221,8 +227,6 @@ public:
 
 
   QStringList getDirList() const { return pixmap_dirs; }
-
-  QStringList getIconList() const;
 
   /** 
 	Get the complete path for an icon name.

@@ -20,6 +20,12 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.41  1999/05/26 12:29:32  kulow
+   adding getIconList() - the iconloader will find all icons itself. Currently
+   it's just a call to findAllResources("toolbar"), but in this case we urgently
+   need an abstraction layer as KIconLoader may be extended to look for large
+   icons too
+
    Revision 1.40  1999/05/25 16:17:24  kulow
    two changes:
      kde_icondir() has been removed. Use locate("icon", pixmap) instead
@@ -169,11 +175,6 @@ KIconLoader::KIconLoader()
 	   }
 	 */
 
-}
-
-QStringList KIconLoader::getIconList() const
-{
-  return KGlobal::dirs()->findAllResources("toolbar");
 }
 
 QPixmap KIconLoader::loadIcon ( const QString& name, int w, 

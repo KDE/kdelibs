@@ -22,6 +22,8 @@ static int tokenize( QStringList& token, const QString& str,
 KStandardDirs::KStandardDirs( const QString& )
 {
     dircache.setAutoDelete(true);
+    relatives.setAutoDelete(true);
+    absolutes.setAutoDelete(true);
 }
 
 KStandardDirs::~KStandardDirs()
@@ -97,10 +99,10 @@ QString KStandardDirs::findResourceDir( const QString& type,
 	return QString::null;
     }
     
-    QStringList *candidates = getCandidates(type);
+    QStringList candidates = getResourceDirs(type);
     QDir testdir;
-    for (QStringList::ConstIterator it = candidates->begin(); 
-	 it != candidates->end(); it++) {
+    for (QStringList::ConstIterator it = candidates.begin(); 
+	 it != candidates.end(); it++) {
 	testdir.setPath(*it);
 	debug("looking for filename " + *it + filename);
 	if (testdir.exists(filename, false))
@@ -115,12 +117,12 @@ QStringList KStandardDirs::findAllResources( const QString& type, bool recursive
 
     QStringList list;
 
-    QStringList *candidates = getCandidates(type);
+    QStringList candidates = getResourceDirs(type);
     QDir testdir;
 
     QStringList entries;
-    for (QStringList::ConstIterator it = candidates->begin(); 
-	 it != candidates->end(); it++) {
+    for (QStringList::ConstIterator it = candidates.begin(); 
+	 it != candidates.end(); it++) {
 	testdir.setPath(*it);
 	entries = testdir.entryList( QDir::Files | QDir::Readable, QDir::Unsorted);
 	for (QStringList::ConstIterator it2 = entries.begin(); 
@@ -131,7 +133,7 @@ QStringList KStandardDirs::findAllResources( const QString& type, bool recursive
     return list;
 }
 
-QStringList *KStandardDirs::getCandidates(const QString& type) const
+QStringList KStandardDirs::getResourceDirs(const QString& type) const
 {
     QStringList *candidates = dircache.find(type);
     if (!candidates) { // filling cache
@@ -163,7 +165,7 @@ QStringList *KStandardDirs::getCandidates(const QString& type) const
 		}
 	dircache.insert(type, candidates);
     }
-    return candidates;
+    return *candidates;
 }
 
 QString KStandardDirs::findExe( const QString& appname, 

@@ -136,15 +136,20 @@ public:
 	 display. For example "*" displays all icons and "mini*" displays only 
 	 those icons which names start with 'mini'.
   */
-  QPixmap selectIcon( QString &name, const QString &filter);
-  void addIcons( const QStringList &l ); 
-  int exec(QString filter);
+    QPixmap selectIcon( QString &name, const QString &filter);
+
+    /**
+     * sets the directories to choose from. By default this are
+     * all directories that keep toolbar icons
+     */
+    void changeDirs( const QStringList &l ); 
+    int exec(QString filter);
 
 protected slots:
-  void filterChanged();
-  void dirChanged(const QString&);
-  void reject();
-  void needReload();
+    void filterChanged();
+    void dirChanged(const QString&);
+    void reject();
+    void needReload();
   
 protected:
   void init();
