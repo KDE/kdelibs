@@ -196,13 +196,13 @@ namespace KDE
   extern void freeaddrinfo(struct addrinfo* ai);
   extern char *gai_strerror(int errorcode);
   extern int getnameinfo(const struct sockaddr *sa,
-			 ksocklen_t salen,
+			 unsigned int salen,
 			 char *host, size_t hostlen,
 			 char *serv, size_t servlen,
 			 int flags);
 }
 
-# define kde_getadddrinfo	KDE::getaddrinfo
+# define kde_getaddrinfo	getaddrinfo
 # define getaddrinfo	KDE::getaddrinfo
 # define freeaddrinfo	KDE::freeaddrinfo
 # define gai_strerror	KDE::gai_strerror
