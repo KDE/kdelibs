@@ -104,13 +104,13 @@ public:
 
     virtual void repaintRectangle(int x, int y, int w, int h);
     virtual void repaintObject(RenderObject *o, int x, int y);
-    
+
     virtual void setPixmap(const QPixmap &);
 
 protected:
     virtual void printBoxDecorations(QPainter *p,int _x, int _y,
 				       int _w, int _h, int _tx, int _ty);
-    void outlineBox(QPainter *p, int _tx, int _ty);
+    void outlineBox(QPainter *p, int _tx, int _ty, const char *color = "red");
 
     virtual int cellTopExtra() { return 0; }
     virtual int cellBottomExtra() { return 0; }

@@ -66,7 +66,7 @@ void TextSlave::printSelection(QPainter *p, int tx, int ty, int startPos, int en
 	_len = endPos;
     }
     _len -= startPos;
-    
+
     QConstString s(m_text+startPos , _len);
 
     if (_len != len)
@@ -168,7 +168,7 @@ void TextSlave::printBoxDecorations(QPainter *pt, RenderText *p, int _tx, int _t
 
 #ifdef BIDI_DEBUG
     int h = m_height + p->paddingTop() + p->paddingBottom() + p->borderTop() + p->borderBottom();
-    c = QColor("#ff0000");
+    c = QColor("#0000ff");
     p->drawBorder(pt, _tx, _ty, _tx, _ty + h, 1,
 		  RenderObject::BSLeft, c, SOLID);
     p->drawBorder(pt, _tx + width, _ty, _tx + width, _ty + h, style->borderRightWidth(),

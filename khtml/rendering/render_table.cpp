@@ -27,6 +27,7 @@
 
 //#define TABLE_DEBUG
 //#define DEBUG_LAYOUT
+//#define BOX_DEBUG
 
 #include "render_table.h"
 
@@ -1303,7 +1304,7 @@ void RenderTable::print( QPainter *p, int _x, int _y,
 {
 
 //    if(!layouted()) return;
-    
+
     _tx += xPos();
     _ty += yPos();
 
@@ -1333,6 +1334,10 @@ void RenderTable::print( QPainter *p, int _x, int _y,
         cell->print( p, _x, _y, _w, _h, _tx, _ty);
     }
     END_FOR_EACH
+
+#ifdef BOX_DEBUG
+    outlineBox(p, _tx, _ty, "blue");
+#endif
 }
 
 void RenderTable::printBorders( QPainter* /*p*/, int, int,

@@ -244,9 +244,9 @@ void RenderBox::printBoxDecorations(QPainter *p,int, int _y,
     }
 }
 
-void RenderBox::outlineBox(QPainter *p, int _tx, int _ty)
+void RenderBox::outlineBox(QPainter *p, int _tx, int _ty, const char *color)
 {
-    p->setPen(QPen(QColor("#ff0000"), 1, Qt::DotLine));
+    p->setPen(QPen(QColor(color), 1, Qt::DotLine));
     p->setBrush( Qt::NoBrush );
     p->drawRect(_tx, _ty, m_width, m_height);
 }
@@ -291,7 +291,7 @@ void RenderBox::updateSize()
 	setLayouted(false);
 	if(containingBlock() != this) containingBlock()->updateSize();
     }
-    else 
+    else
     	updateHeight();
 }
 
@@ -300,14 +300,14 @@ void RenderBox::updateSize()
 void RenderBox::updateHeight()
 {
 //    printf("%s(RenderBox) %x ::updateHeight()\n", renderName(), this);
-    
+
     if (parsing())
     {
     	setLayouted(false);
     	containingBlock()->updateHeight();		
 	return;
     }
-    
+
     if(!isInline() || isReplaced())
     {
 	int oldHeight = m_height;

@@ -60,9 +60,9 @@ static inline int MIN(int a, int b)
 static inline int collapseMargins(int a, int b)
 {
     if(a >= 0 && b >= 0) return (a > b ? a : b );
-    if(a > 0 && b < 0) return a - b;
-    if(a < 0 && b > 0) return b - a;
-    return ( a > b ? -b : -a);
+    if(a > 0 && b < 0) return a + b;
+    if(a < 0 && b > 0) return b + a;
+    return ( a > b ? b : a);
 }
 
 
@@ -316,6 +316,9 @@ void RenderFlow::layoutBlockChildren(bool deep)
 
     RenderObject *child = firstChild();
     int prevMargin = 0;
+    if(isTableCell()) 
+	prevMargin = -firstChild()->marginTop();
+	
     while( child != 0 )
     {
 //    	printf("loop %x, %d, %d\n",child, child->isInline(),child->layouted());
@@ -342,8 +345,9 @@ void RenderFlow::layoutBlockChildren(bool deep)
 	child = child->nextSibling();
     }
 
-    m_height += prevMargin + toAdd;
-
+    if(!isTableCell()) m_height += prevMargin;
+    m_height += toAdd;
+    
     setLayouted(_layouted);
 
     // printf("layouted = %d\n", layouted_);
