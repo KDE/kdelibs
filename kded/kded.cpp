@@ -283,6 +283,9 @@ void Kded::updateDirWatch()
 void Kded::updateResourceList()
 {
   delete KSycoca::self();
+
+  if (!b_checkUpdates) return;
+
   QStringList dirs = KSycoca::self()->allResourceDirs();
   // For each resource 
   for( QStringList::ConstIterator it = dirs.begin();
