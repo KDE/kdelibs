@@ -1,0 +1,19 @@
+# KDE Config File
+[KDE Desktop Entry]
+Comment=C sources
+Comment[es]=Código C
+Comment[de]=C Quelldatei
+Comment[no]=C-kildekode
+Comment[nl]=C bronbestand
+Comment[pl]=¬ród³o C
+Comment[fi]=C lähdekoodi
+Comment[fr]=Fichier source C
+Comment[it]=Sorgenti C
+Comment[sk]=Zdrojový kód v jazyku C
+Comment[pt]=Programa C
+Comment[pt_BR]=Programa C
+Comment[ro]=Sursã C
+Icon=c_src.xpm
+Type=MimeType
+MimeType=text/x-c
+Patterns=
