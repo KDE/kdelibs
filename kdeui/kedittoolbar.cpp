@@ -369,36 +369,39 @@ bool KEditToolbarWidget::save()
 void KEditToolbarWidget::setupLayout()
 {
   // the toolbar name combo
-  QLabel *toolbar_label = new QLabel(i18n("Toolbar:"), this);
+  QLabel *toolbar_label = new QLabel(i18n("&Toolbar:"), this);
   m_toolbarCombo = new QComboBox(this);
   m_toolbarCombo->setEnabled(false);
+  toolbar_label->setBuddy(m_toolbarCombo);
   connect(m_toolbarCombo, SIGNAL(activated(const QString&)),
           this,           SLOT(slotToolbarSelected(const QString&)));
 
-  QPushButton *new_toolbar = new QPushButton(i18n("&New"), this);
-  new_toolbar->setPixmap(BarIcon("filenew", KIcon::SizeSmall));
-  new_toolbar->setEnabled(false); // disabled until implemented
-  QPushButton *del_toolbar = new QPushButton(i18n("&Delete"), this);
-  del_toolbar->setPixmap(BarIcon("editdelete", KIcon::SizeSmall));
-  del_toolbar->setEnabled(false); // disabled until implemented
+//  QPushButton *new_toolbar = new QPushButton(i18n("&New"), this);
+//  new_toolbar->setPixmap(BarIcon("filenew", KIcon::SizeSmall));
+//  new_toolbar->setEnabled(false); // disabled until implemented
+//  QPushButton *del_toolbar = new QPushButton(i18n("&Delete"), this);
+//  del_toolbar->setPixmap(BarIcon("editdelete", KIcon::SizeSmall));
+//  del_toolbar->setEnabled(false); // disabled until implemented
 
   // our list of inactive actions
-  QLabel *inactive_label = new QLabel(i18n("Available actions:"), this);
+  QLabel *inactive_label = new QLabel(i18n("&Available actions:"), this);
   m_inactiveList = new KListView(this);
   m_inactiveList->setAllColumnsShowFocus(true);
   m_inactiveList->header()->hide();
   m_inactiveList->addColumn("");
   m_inactiveList->addColumn("");
+  inactive_label->setBuddy(m_inactiveList);
   connect(m_inactiveList, SIGNAL(selectionChanged(QListViewItem *)),
           this,           SLOT(slotInactiveSelected(QListViewItem *)));
 
   // our list of active actions
-  QLabel *active_label = new QLabel(i18n("Current actions:"), this);
+  QLabel *active_label = new QLabel(i18n("Curr&ent actions:"), this);
   m_activeList = new KListView(this);
   m_activeList->setAllColumnsShowFocus(true);
   m_activeList->header()->hide();
   m_activeList->addColumn("");
   m_activeList->addColumn("");
+  active_label->setBuddy(m_activeList);
   connect(m_activeList, SIGNAL(selectionChanged(QListViewItem *)),
           this,         SLOT(slotActiveSelected(QListViewItem *)));
 
@@ -427,22 +430,24 @@ void KEditToolbarWidget::setupLayout()
           this,         SLOT(slotDownButton()));
 
   // setup the toolbar options
-  QLabel *text_label = new QLabel(i18n("Text position:"), this);
+  QLabel *text_label = new QLabel(i18n("Te&xt position:"), this);
   m_textCombo = new QComboBox(this);
   m_textCombo->insertItem(i18n("No text"));
   m_textCombo->insertItem(i18n("Text aside icon"));
   m_textCombo->insertItem(i18n("Text only"));
   m_textCombo->insertItem(i18n("Text under icon"));
+  text_label->setBuddy(m_textCombo);
   connect(m_textCombo, SIGNAL(highlighted(int)),
           this,        SLOT(slotTextClicked(int)));
 
-  QLabel *icon_label = new QLabel(i18n("Icon size:"), this);
+  QLabel *icon_label = new QLabel(i18n("&Icon size:"), this);
   m_iconCombo = new QComboBox(this);
+  icon_label->setBuddy(m_iconCombo);
   // the sizes are generated later
   connect(m_iconCombo, SIGNAL(highlighted(int)),
           this,        SLOT(slotIconClicked(int)));
 
-  QLabel *pos_label = new QLabel(i18n("Toolbar position:"), this);
+  QLabel *pos_label = new QLabel(i18n("Tool&bar position:"), this);
   m_posCombo = new QComboBox(this);
   m_posCombo->insertItem(i18n("Top (normal)"));
   m_posCombo->insertItem(i18n("Left"));
@@ -450,6 +455,7 @@ void KEditToolbarWidget::setupLayout()
   m_posCombo->insertItem(i18n("Bottom"));
   m_posCombo->insertItem(i18n("Floating"));
   m_posCombo->insertItem(i18n("Flat"));
+  pos_label->setBuddy(m_posCombo);
   connect(m_posCombo, SIGNAL(highlighted(int)),
           this,       SLOT(slotPosClicked(int)));
 
@@ -461,7 +467,7 @@ void KEditToolbarWidget::setupLayout()
   // now start with our layouts
   QVBoxLayout *top_layout = new QVBoxLayout(this, 5);
 
-  QHBoxLayout *name_layout = new QHBoxLayout;
+  QVBoxLayout *name_layout = new QVBoxLayout;
   QHBoxLayout *list_layout = new QHBoxLayout;
 
   QVBoxLayout *inactive_layout = new QVBoxLayout;
@@ -469,12 +475,12 @@ void KEditToolbarWidget::setupLayout()
 
   QGridLayout *button_layout = new QGridLayout(5, 3, 0);
 
-  QGridLayout *options_layout = new QGridLayout(2, 5);
+  QGridLayout *options_layout = new QGridLayout(4, 3);
 
   name_layout->addWidget(toolbar_label);
-  name_layout->addWidget(m_toolbarCombo, 1);
-  name_layout->addWidget(new_toolbar);
-  name_layout->addWidget(del_toolbar);
+  name_layout->addWidget(m_toolbarCombo);
+//  name_layout->addWidget(new_toolbar);
+//  name_layout->addWidget(del_toolbar);
 
   button_layout->addWidget(m_upAction, 1, 1);
   button_layout->addWidget(m_removeAction, 2, 0);
@@ -492,12 +498,12 @@ void KEditToolbarWidget::setupLayout()
   list_layout->addLayout(active_layout);
 
   options_layout->addWidget(text_label, 0, 0);
-  options_layout->addWidget(m_textCombo, 0, 1);
-  options_layout->setColStretch(2, 1);
-  options_layout->addWidget(pos_label, 0, 3);
-  options_layout->addWidget(m_posCombo, 0, 4);
-  options_layout->addWidget(icon_label, 1, 0);
-  options_layout->addWidget(m_iconCombo, 1, 1);
+  options_layout->addWidget(m_textCombo, 1, 0);
+  options_layout->setColStretch(1, 1);
+  options_layout->addWidget(pos_label, 2, 0);
+  options_layout->addWidget(m_posCombo, 2, 0);
+  options_layout->addWidget(icon_label, 0, 2);
+  options_layout->addWidget(m_iconCombo, 1, 2);
 
   top_layout->addLayout(name_layout);
   top_layout->addWidget(new KSeparator(this));
