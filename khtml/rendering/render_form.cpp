@@ -343,7 +343,7 @@ void LineEditWidget::slotSpellCheckReady( KSpell *s )
 void LineEditWidget::slotSpellCheckDone( const QString &s )
 {
     if( s != text() )
-	setText( s );
+        setText( s );
 }
 
 
@@ -361,9 +361,7 @@ QPopupMenu *LineEditWidget::createPopupMenu()
     if (m_input->autoComplete()) {
         popup->insertSeparator();
         int id = popup->insertItem( i18n("Clear &History"), ClearHistory );
-        if (!completionObject()) {
-            popup->setItemEnabled( id, false );
-        }
+        popup->setItemEnabled( id, (compObj() && !compObj()->isEmpty()) );
     }
 
     if (echoMode() == QLineEdit::Normal &&
@@ -384,7 +382,8 @@ void LineEditWidget::extendedMenuActivated( int id)
     {
     case ClearHistory:
         m_view->clearCompletionHistory(m_input->name().string());
-        completionObject()->clear();
+        if (compObj())
+          compObj()->clear();
     default:
         break;
     }
@@ -431,6 +430,7 @@ RenderLineEdit::RenderLineEdit(HTMLInputElementImpl *element)
     LineEditWidget *edit = new LineEditWidget(element, view(), view()->viewport());
     connect(edit,SIGNAL(returnPressed()), this, SLOT(slotReturnPressed()));
     connect(edit,SIGNAL(textChanged(const QString &)),this,SLOT(slotTextChanged(const QString &)));
+    
     if(element->inputType() == HTMLInputElementImpl::PASSWORD)
         edit->setEchoMode( QLineEdit::Password );
 
@@ -473,9 +473,10 @@ void RenderLineEdit::slotReturnPressed()
 {
     // don't submit the form when return was pressed in a completion-popup
     KCompletionBox *box = widget()->completionBox(false);
+
     if ( box && box->isVisible() && box->currentItem() != -1 ) {
-        box->hide();
-        return;
+      box->hide();
+      return;
     }
 
     // Emit onChange if necessary
