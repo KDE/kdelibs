@@ -1316,8 +1316,8 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
         if (beforeChild) {
 	    if ( beforeChild->parent() != this ) {
 		beforeChild = beforeChild->parent();
-		KHTMLAssert(beforeChild->parent()->isAnonymousBox());
-		KHTMLAssert(beforeChild->parent()->parent() == this);
+		KHTMLAssert(beforeChild->isAnonymousBox());
+		KHTMLAssert(beforeChild->parent() == this);
 	    }
         }
     }
