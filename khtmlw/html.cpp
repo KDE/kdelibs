@@ -5535,6 +5535,143 @@ KHTMLWidget::setOverrideCharset(const char *name)
 // FUNCTIONS used for KFM Extension
 //-----------------------------------------------------------
 
+bool KHTMLWidget::setMarker( const char *_url )
+{
+  if ( clue == 0 || parsing )
+    return true;
+  
+  QList<HTMLCellInfo> list;
+  list.setAutoDelete( true );
+  
+  clue->findCells( -x_offset + leftBorder, -y_offset + topBorder, list );
+
+  // A usual HTML page ?
+  if ( list.isEmpty() )
+    return false;
+  
+  HTMLCellInfo *info = 0;
+  HTMLCellInfo *curr = 0;
+  HTMLCellInfo *next = 0;
+  
+  // Find current marker
+  for ( info = list.first(); info && (!curr || !next); info = list.next() )
+  {
+    if ( info->pCell->isMarked() )
+    {
+      curr = info;
+    }
+    if ( !strcmp( info->pCell->getURL(), _url ) )
+    {
+      next = info;
+    }
+  }
+
+  if ( curr && curr != next )
+  {
+    curr->pCell->setMarker( false );
+    paint( curr );
+  }
+
+  if ( next && curr != next )
+  {
+    next->pCell->setMarker( true );
+    paint( next );
+  }
+
+  return true;
+}
+
+bool KHTMLWidget::selectFromMarker( const char *_url )
+{
+  if ( clue == 0 || parsing )
+    return true;
+  
+  QList<HTMLCellInfo> list;
+  list.setAutoDelete( true );
+  
+  clue->findCells( -x_offset + leftBorder, -y_offset + topBorder, list );
+
+  // A usual HTML page ?
+  if ( list.isEmpty() )
+    return false;
+  
+  HTMLCellInfo *info = 0;
+  HTMLCellInfo *first = 0;
+  HTMLCellInfo *last = 0;
+
+  int firstIdx = 0;
+  int lastIdx = 0;
+  
+  // Find current marker
+  for ( info = list.first(); info && (!first || !last); info = list.next() )
+  {
+    if ( info->pCell->isMarked() )
+    {
+      first = info;
+      firstIdx = list.at();
+    }
+    if ( !strcmp( info->pCell->getURL(), _url ) )
+    {
+      last = info;
+      lastIdx = list.at();
+    }
+  }
+
+  if ( !last )
+    return false;
+
+  if ( !first )
+  {
+    first = list.first();
+    firstIdx = -1;
+  }
+
+  QStrList urllist;
+  getSelected( urllist );
+
+  if ( firstIdx < lastIdx )
+  {
+    for (info=list.at(firstIdx+1); info && list.at()<=lastIdx; info=list.next())
+    {
+      if ( info->pCell->getURL() )
+      {
+        bool mode = ( urllist.find( info->pCell->getURL() ) == -1 );
+        selectByURL( 0, info->pCell->getURL(), mode );
+      }
+    }
+  }
+  else if ( firstIdx > lastIdx )
+  {
+    for (info=list.at(lastIdx+1); info && list.at()<=firstIdx; info=list.next())
+    {
+      if ( info->pCell->getURL() )
+      {
+        bool mode = ( urllist.find( info->pCell->getURL() ) == -1 );
+        selectByURL( 0, info->pCell->getURL(), mode );
+      }
+    }
+  }
+  else
+  {
+    if ( first->pCell->getURL() )
+    {
+      bool mode = ( urllist.find( first->pCell->getURL() ) == -1 );
+      selectByURL( 0, first->pCell->getURL(), mode );
+    }
+  }
+
+  if ( first != last )
+  {
+    bool markFirst = last->pCell->isMarked();
+    first->pCell->setMarker( markFirst );
+    last->pCell->setMarker( !markFirst );
+    paint( first );
+    paint( last );
+  }
+
+  return true;
+}
+
 bool KHTMLWidget::cellUp( bool select )
 {
   if ( clue == 0 || parsing )

@@ -642,6 +642,8 @@ public:
     //-----------------------------------------------------------
     // FUNCTIONS used for KFM Extension
     // -----------------------------------------------------------
+    bool setMarker( const char *_url );
+    bool selectFromMarker( const char *_url );
     bool cellDown( bool select );
     bool cellUp( bool select );
     bool cellLeft( bool select );
