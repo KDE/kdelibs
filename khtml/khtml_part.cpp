@@ -695,7 +695,11 @@ bool KHTMLPart::closeURL()
   d->m_workingURL = KURL();
 
   khtml::Cache::loader()->cancelRequests( m_url.url() );
-
+  
+  // Stop any started redirections as well!! (DA)
+  if ( d && d->m_redirectionTimer.isActive() )
+    d->m_redirectionTimer.stop();
+  
   return true;
 }
 
@@ -1103,13 +1107,40 @@ void KHTMLPart::slotData( KIO::Job*, const QByteArray &data )
     d->m_ssl_good_until = d->m_job->queryMetaData("ssl_good_until");
     d->m_ssl_cert_state = d->m_job->queryMetaData("ssl_cert_state");
     //
-    QString charset = d->m_job->queryMetaData("charset");
-    if ( !charset.isEmpty() && !d->m_haveEncoding ) // only use information if the user didn't override the settings
+    QString qData = d->m_job->queryMetaData("charset");
+    if ( !qData.isEmpty() && !d->m_haveEncoding ) // only use information if the user didn't override the settings
     {
-       d->m_charset = KGlobal::charsets()->charsetForEncoding(charset);
+       d->m_charset = KGlobal::charsets()->charsetForEncoding(qData);
        d->m_settings->setCharset( d->m_charset );
        d->m_haveCharset = true;
-       d->m_encoding = charset;
+       d->m_encoding = qData;
+    }    
+
+    // Support for HTTP based meta-refresh
+    qData = d->m_job->queryMetaData("meta-refresh");
+    if( !qData.isEmpty() && d->m_metaRefreshEnabled )
+    {
+        kdDebug(6050) << "HTTP Refresh Request: " << qData << endl;
+        int delay;
+        int pos = qData.find( ';' );
+        if ( pos == -1 )
+            pos = qData.find( ',' );
+        
+        if( pos == -1 )
+        {
+            delay = qData.toInt();
+            if ( delay != -1 )
+                scheduleRedirection( qData.toInt(), m_url.url() );
+        }
+        else
+        {
+            delay = qData.left(pos).toInt();
+            QString refUrl = qData.mid(pos+1).stripWhiteSpace();
+            if ( refUrl.startsWith( "url=" ) )
+                refUrl = refUrl.remove( 0, 4 ).stripWhiteSpace();
+            refUrl = KURL( d->m_baseURL, refUrl ).url();
+            scheduleRedirection( delay, refUrl );
+        }
     }
 
   }
@@ -1482,15 +1513,12 @@ void KHTMLPart::scheduleRedirection( int delay, const QString &url )
     {
         d->m_delayRedirect = delay;
         d->m_redirectURL = url;
-
-        if(d->m_bComplete)
-            d->m_redirectionTimer.start( 1000 * d->m_delayRedirect, true );
     }
 }
 
 void KHTMLPart::slotRedirect()
 {
-    //kdDebug( 6050 ) << "KHTMLPart::slotRedirect()" << endl;
+  kdDebug( 6050 ) << "KHTMLPart::slotRedirect()" << endl;
 
   QString u = d->m_redirectURL;
   d->m_delayRedirect = 0;
@@ -2194,6 +2222,11 @@ void KHTMLPart::updateActions()
     bgURL = static_cast<HTMLDocumentImpl*>(d->m_doc)->body()->getAttribute( ATTR_BACKGROUND ).string();
 
   d->m_paSaveBackground->setEnabled( !bgURL.isEmpty() );
+
+  // Now start the timer if there is supposed to be
+  // a redirection to somewhere else!!
+  if ( !d->m_redirectURL.isEmpty() )
+    d->m_redirectionTimer.start( 1000 * d->m_delayRedirect, true );
 }
 
 bool KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, const QString &frameName,
