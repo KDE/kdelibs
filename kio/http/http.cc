@@ -1,6 +1,6 @@
 // -*- c-basic-offset: 2 -*-
 //
-//  Portions Copyright 2000 George Staikos <staikos@kde.org>
+//  Portions Copyright 2000-2001 George Staikos <staikos@kde.org>
 //  (mostly SSL related)
 //
 
@@ -340,7 +340,7 @@ ssize_t HTTPProtocol::write (const void *buf, size_t nbytes)
 #endif
   int n;
  keeptrying:
-  if ((n = ::write(m_sock, buf, nbytes)) != (int)nbytes)
+  if ((n = KSocks::self()->write(m_sock, buf, nbytes)) != (int)nbytes)
     {
       if (n == -1 && errno == EINTR)
         goto keeptrying;
@@ -379,8 +379,8 @@ ssize_t HTTPProtocol::read (void *b, size_t nbytes)
     return ret;
   }
 #endif
-  // EW, can we use read() here?
-  ret=fread(b, 1, nbytes, m_fsocket);
+  // ret=fread(b, 1, nbytes, m_fsocket);
+  ret = KSocks::self()->read(fileno(m_fsocket), b, nbytes);
   m_bEOF = feof(m_fsocket);
   return ret;
 }
@@ -411,7 +411,7 @@ bool HTTPProtocol::http_isConnected()
     else if ( retval > 0 )
     {
       char buffer[100];
-      retval = recv(m_sock, buffer, 80, MSG_PEEK);
+      retval = KSocks::self()->recv(m_sock, buffer, 80, MSG_PEEK);
       // retval ==  0 ==> Connection clased
       if ( retval == 0 )
         return false;
@@ -521,7 +521,7 @@ static bool waitForHeader( int sock, int maxTimeout )
       timeout.tv_usec = 0;
       timeout.tv_sec = 1; // 1 second
 
-      select(sock + 1, &rd, &wr, (fd_set *)0, &timeout);
+      KSocks::self()->select(sock + 1, &rd, &wr, (fd_set *)0, &timeout);
 
       if (FD_ISSET(sock, &rd))
       {
