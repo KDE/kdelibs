@@ -1007,6 +1007,8 @@ void HTMLInputElementImpl::init()
         addCSSProperty(CSS_PROP_COLOR, "buttontext" );
     case HIDDEN:
     case IMAGE:
+        if (!getAttribute(ATTR_WIDTH).isNull())
+            addCSSLength(CSS_PROP_WIDTH, getAttribute(ATTR_WIDTH));
         break;
     };
     if (m_type != FILE) m_value = getAttribute(ATTR_VALUE);
