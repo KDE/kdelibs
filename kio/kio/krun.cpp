@@ -709,7 +709,7 @@ void KRun::init()
   if ( !m_strURL.isValid() )
   {
     d->m_showingError = true;
-    KMessageBoxWrapper::error( 0L, i18n( "Malformed URL\n%1" ).arg( m_strURL.url() ) );
+    KMessageBoxWrapper::error( d->m_window, i18n( "Malformed URL\n%1" ).arg( m_strURL.url() ) );
     d->m_showingError = false;
     m_bFault = true;
     m_bFinished = true;
@@ -720,7 +720,7 @@ void KRun::init()
   {
     QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, m_strURL.prettyURL());
     d->m_showingError = true;
-    KMessageBoxWrapper::error( 0L, msg );
+    KMessageBoxWrapper::error( d->m_window, msg );
     d->m_showingError = false;
     m_bFault = true;
     m_bFinished = true;
@@ -740,7 +740,7 @@ void KRun::init()
       if ( stat( QFile::encodeName(m_strURL.path()), &buff ) == -1 )
       {
         d->m_showingError = true;
-        KMessageBoxWrapper::error( 0L, i18n( "<qt>Unable to run the command specified. The file or folder <b>%1</b> does not exist.</qt>" ).arg( m_strURL.htmlURL() ) );
+        KMessageBoxWrapper::error( d->m_window, i18n( "<qt>Unable to run the command specified. The file or folder <b>%1</b> does not exist.</qt>" ).arg( m_strURL.htmlURL() ) );
         d->m_showingError = false;
         m_bFault = true;
         m_bFinished = true;
