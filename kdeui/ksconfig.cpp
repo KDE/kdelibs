@@ -382,6 +382,7 @@ KSpellConfig::fillInDialog ()
   {
     langfnames.clear();
     dictcombo->clear();
+    langfnames.append(""); // Default
     dictcombo->insertItem( i18n("Hebrew") );
   }
   else
@@ -610,11 +611,12 @@ KSpellConfig::fillDicts( QComboBox* box, QStringList* dictionaries )
     } else if ( iclient == KS_CLIENT_HSPELL ) {
       box->clear();
       box->insertItem( i18n("Hebrew") );
+      langfnames.append(""); // Default
       sChangeEncoding( KS_E_CP1255 );
     }
     else {
       box->clear();
-
+      langfnames.append(""); // Default
       box->insertItem (i18n("ASpell Default"));
 
       // dictionary path
