@@ -373,10 +373,9 @@ QString KCharsets::languageForEncoding( const QString &encoding )
 
 QString KCharsets::encodingForName( const QString &descriptiveName )
 {
-    QString enc = descriptiveName;
-    enc = enc.replace( QRegExp( "*( ", false, true ), "");
-    return enc.replace( QRegExp( " )*", false, true ), "");
-   
+    int left = descriptiveName.find( "( " );
+    return descriptiveName.mid( left + 2, descriptiveName.find( " )" )
+      - left - 2 );
 }
 
 QStringList KCharsets::descriptiveEncodingNames()
