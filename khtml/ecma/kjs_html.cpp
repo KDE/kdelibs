@@ -168,7 +168,7 @@ const ClassInfo KJS::HTMLDocument::info =
 #IE extension
   frames		HTMLDocument::Frames		DontDelete|ReadOnly
 #NS4 extension
-  layers		HTMLDocument::Layers		DontDelete|ReadOnly
+#  layers		HTMLDocument::Layers		DontDelete|ReadOnly
 #potentially obsolete array properties
 # plugins
 # tags
@@ -297,8 +297,9 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const Identifier &propertyName)
     case Forms:
       return getHTMLCollection(exec,doc.forms());
     case Layers:
+      return Undefined();
       // ### Should not be hidden when we emulate Netscape4
-      return getHTMLCollection(exec,doc.layers(), true);
+      //return getHTMLCollection(exec,doc.layers(), true);
     case Anchors:
       return getHTMLCollection(exec,doc.anchors());
     case Scripts: // TODO (IE-specific)
