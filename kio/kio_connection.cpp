@@ -163,7 +163,6 @@ KIOSlave::KIOSlave( const char *_cmd )
   if( !buildPipe( &recv_in, &send_in ) ) return;
   if( !buildPipe( &recv_out, &send_out ) ) return;
 	
-  QApplication::flushX();
   m_pid = vfork();
   if( m_pid == 0 ) {
     dup2( recv_in, 0 );	fcntl(0, F_SETFD, 0);
