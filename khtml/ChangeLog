@@ -1,5 +1,8 @@
 2004-01-02  Dirk Mueller  <mueller@kde.org>
 
+	* html/htmltokenizer.cpp (notifyFinished): fix null pointer dereference
+	in rare cases.
+
 	* css/cssstyleselector.cpp (reparseConfiguration): implement.
 
 	* khtml_part.cpp (reparseConfiguration): call CSSStyleSelector::reparseConfiguration
