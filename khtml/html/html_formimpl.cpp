@@ -478,8 +478,11 @@ void HTMLFormElementImpl::submitFromKeyboard()
             switch(current->inputType())  {
             case HTMLInputElementImpl::SUBMIT:
             case HTMLInputElementImpl::IMAGE:
-                current->activate();
-                return;
+		if(!current->disabled()) { 
+			current->activate(); 
+			return; 
+		} 
+		break; 
             case HTMLInputElementImpl::TEXT:
             case HTMLInputElementImpl::PASSWORD:
                 ++inputtext;
