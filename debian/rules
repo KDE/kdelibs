@@ -36,6 +36,7 @@ ifeq ($(DEB_BUILD_GNU_TYPE),i386-linux)
   #export CFLAGS=-O3 -march=i686 -ffast-math -finline-functions
   #export CXXFLAGS=-O3 -march=i686 -ffast-math -finline-functions
   XINERAMA=--with-xinerama
+  FAST_MALLOC=--enable-fast-malloc=full
 endif
 
 version=`head -1 debian/changelog | sed -e "s#.*(\([^)]*\)).*#Debian Package \1#"` ;
@@ -72,7 +73,7 @@ configure-stamp:
 	../configure $(configkde) --x-includes=/usr/X11R6/include \
 	--with-distribution="$$version (`cat /etc/debian_version`)" \
 	--enable-mitshm --with-alsa --with-ipv6-lookup=yes \
-	--enable-fast-malloc=full $(XINERAMA)
+	$(FAST_MALLOC) $(XINERAMA)
 
 	touch configure-stamp
 
