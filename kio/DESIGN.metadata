@@ -20,6 +20,7 @@ accept          string          List of mimetypes to accept seperated by a ", ".
 UserAgent       string          The user agent name to send to remote host (read by http)
 
 content-type    string          The content type of the data to be uploaded (read by http)
+media-*         string          Media-Parameter attributes (e.g. media-boundary)
 
 cache           "cache"         Use entry from cache if available.
                 "cacheonly"     Do not do any remote lookups, fail if not in cache. (read by http)
