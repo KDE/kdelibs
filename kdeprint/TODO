@@ -6,6 +6,8 @@ BUGS
 - Allow to view a set of specified printers in the job viewer
   (instead of "one or all").
 
+- implement the number of jobs showing for LPR plugin
+
 
 WISHES
 ------
@@ -51,3 +53,5 @@ WISHES
   to get only printers having a specified capability
 
 - show information from Foomatic DB in some way (comments)
+
+- "Save as new instance" possibility in the print dialog
