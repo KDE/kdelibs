@@ -505,6 +505,7 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP,
         {
             tag = QString( startP, curP - startP );
         }
+	//qDebug("found tag %s", tag.latin1() );
         if(tag == "*")
         {
             //kdDebug( 6080 ) << "found '*' selector" << endl;
@@ -526,6 +527,10 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP,
             }
             else
                 cs->tag = khtml::getTagID(tag.lower().ascii(), tag.length());
+	    if ( cs->tag < 0 ) {
+		delete cs;
+		return 0;
+	    }
         }
    }
 #ifdef CSS_DEBUG
