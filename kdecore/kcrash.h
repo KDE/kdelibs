@@ -33,24 +33,25 @@
 #include <stdlib.h>
 #include <qstring.h>
 
-void defaultCrashHandler (int signal);
-void setCrashHandler (void (*crashHandler)(int));
-void setEmergencySaveFunction (void (*saveFunction)(int));
-void resetCrashRecursion (void);
-
 extern "C" {
  // Taken from signal.h
- typedef void(*kdesignal_t) (int);
+ typedef void(*kdesignal_t) (int);  
 
-const kdesignal_t KDE_CRASH_DEFAULT  = ((kdesignal_t)0x1);
-const kdesignal_t KDE_CRASH_INTERNAL = ((kdesignal_t)0x2);
-const kdesignal_t KDE_SAVE_NONE      = ((kdesignal_t)0x3);
-}
+ void defaultCrashHandler (int signal);
+ void setCrashHandler (kdesignal_t);
+ void setEmergencySaveFunction (kdesignal_t);
+ void resetCrashRecursion (void);
 
-struct kcrashargs {
+ const kdesignal_t KDE_CRASH_DEFAULT  = ((kdesignal_t)0x1);
+ const kdesignal_t KDE_CRASH_INTERNAL = ((kdesignal_t)0x2);
+ const kdesignal_t KDE_SAVE_NONE      = ((kdesignal_t)0x3);
+
+ struct kcrashargs {
  	char *crashObjName;
  	char *crashObjValue;
-};
+ };
+
+}
 
 #endif
 

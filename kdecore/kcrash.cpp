@@ -32,15 +32,15 @@
 
 #include "kcrash.h"
 
-int CrashRecursionCounter;	// If a crash occurs in our crash handler procedure, we can handle it :)
-void (*emergencySaveFunction) (int);
+static int CrashRecursionCounter;	// If a crash occurs in our crash handler procedure, we can handle it :)
+kdesignal_t emergencySaveFunction;
 
 // This function sets the function which should be called when the application crashes and the
 // application is asked to try to save its data.
 void
-setEmergencySaveFunction (void (*saveFunction) (int))
+setEmergencySaveFunction (kdesignal_t saveFunction)
 {
-  if ((kdesignal_t)saveFunction == KDE_SAVE_NONE)
+  if (saveFunction == KDE_SAVE_NONE)
     {
       emergencySaveFunction = KDE_SAVE_NONE;
     }
@@ -53,7 +53,7 @@ setEmergencySaveFunction (void (*saveFunction) (int))
 // Usually, this should be KDE_CRASH_INTERNAL.
 
 void
-setCrashHandler (void (*crashHandler) (int))
+setCrashHandler (kdesignal_t crashHandler)
 {
   printf ("Trying to install kcrash handler...\n");
 
