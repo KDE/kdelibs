@@ -25,41 +25,40 @@ KJavaAppletServer *KJavaAppletServer::getDefaultServer()
 void KJavaAppletServer::createContext( int contextId )
 {
     QString s;
-    s = "createContext!%1\n";
-    s.arg(contextId);
-
+    s.sprintf( "createContext!%d\n", contextId );
     process->send( s );
 }
 
 void KJavaAppletServer::createApplet( int contextId, int appletId,
-				      const QString name, const QString clazzName,
-				      const QString base )
+				      QString name, QString clazzName,
+				      QString base )
 {
     QString s;
-    s = "createApplet!%1!%2!%3!%4!%5\n";
-    s.arg(contextId).arg(appletId).arg(name).arg(clazzName).arg(base);
-
+    s.sprintf( "createApplet!%d!%d!%s!%s!%s\n",
+	       contextId, appletId,
+	       name.data(), clazzName.data(),
+	       base.data() );
     process->send( s );
 
 }
 
 void KJavaAppletServer::setParameter( int contextId, int appletId,
-				      const QString name, const QString value )
+				      QString name, QString value )
 {
     QString s;
-    s = "setParameter!%1!%2!%3!%4\n";
-    s.arg(contextId).arg(appletId).arg(name).arg(value);
-
+    s.sprintf( "setParameter!%d!%d!%s!%s\n",
+	       contextId, appletId,
+	       name.data(), value.data() );
     process->send( s );
 }
 
 void KJavaAppletServer::showApplet( int contextId, int appletId,
-				    const QString title )
+				    QString title )
 {
     QString s;
-    s = "showApplet!%1!%2!%3\n";
-    s.arg(contextId).arg(appletId).arg(title);
-
+    s.sprintf( "showApplet!%d!%d!%s\n",
+	       contextId, appletId,
+	       title.data() );
     process->send( s );
 }
 
