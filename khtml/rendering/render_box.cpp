@@ -63,11 +63,6 @@ void RenderBox::setStyle(RenderStyle *_style)
 {
     RenderObject::setStyle(_style);
 
-    // ### move this into the parser. --> should work. Lars
-    // if only horizontal position was defined, vertical should be 50%
-    //if(!_style->backgroundXPosition().isVariable() && _style->backgroundYPosition().isVariable())
-    //style()->setBackgroundYPosition(Length(50, Percent));
-
     switch(_style->position())
     {
     case ABSOLUTE:
