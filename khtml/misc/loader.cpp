@@ -68,6 +68,12 @@
 #include "khtml_factory.h"
 #include "khtml_part.h"
 
+#ifdef IMAGE_TITLES
+#include <qfile.h>
+#include <kfilemetainfo.h>
+#include <ktempfile.h>
+#endif
+
 #include "html/html_documentimpl.h"
 #include "css/css_stylesheetimpl.h"
 #include "xml/dom_docimpl.h"
@@ -1098,10 +1104,31 @@ void Loader::slotFinished( KIO::Job* job )
       kdDebug(6060) << "Loader::slotFinished, url = " << j->url().url() << endl;
 #endif
       r->object->setExpireDate( expireDate );
-  }
 
-  if ( r->object->type() == CachedObject::Image )
-      static_cast<CachedImage*>( r->object )->setSuggestedFilename( j->queryMetaData( "content-disposition" ) );
+      if ( r->object->type() == CachedObject::Image ) {
+          QString fn = j->queryMetaData("content-disposition");
+          static_cast<CachedImage*>( r->object )->setSuggestedFilename(fn);
+#ifdef IMAGE_TITLES
+          static_cast<CachedImage*>( r->object )->setSuggestedTitle(fn);
+          KTempFile tf;
+          tf.setAutoDelete(true);
+          tf.file()->writeBlock((const char*)r->m_buffer.buffer().data(), r->m_buffer.size());
+          tf.sync();
+          KFileMetaInfo kfmi(tf.name());
+          if (!kfmi.isEmpty()) {
+              KFileMetaInfoItem i = kfmi.item("Name");
+              if (i.isValid()) {
+                  static_cast<CachedImage*>(r->object)->setSuggestedTitle(i.string());
+              } else {
+                  i = kfmi.item("Title");
+                  if (i.isValid()) {
+                      static_cast<CachedImage*>(r->object)->setSuggestedTitle(i.string());
+                  }
+              }
+          }
+#endif
+      }
+  }
 
   r->object->finish();
 

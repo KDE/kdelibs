@@ -265,8 +265,14 @@ namespace khtml
 
         bool isTransparent() const { return isFullyTransparent; }
         bool isErrorImage() const { return m_hadError; }
-        QString suggestedFilename() const { return m_suggestedFilename; }
+        const QString& suggestedFilename() const { return m_suggestedFilename; }
         void setSuggestedFilename( const QString& s ) { m_suggestedFilename = s;  }
+#ifdef IMAGE_TITLES
+        const QString& suggestedTitle() const { return m_suggestedTitle; }
+        void setSuggestedTitle( const QString& s ) { m_suggestedTitle = s;  }
+#else
+        const QString& suggestedTitle() const { return m_suggestedFilename; }
+#endif
 
         void setShowAnimations( KHTMLSettings::KAnimationAdvice );
 
@@ -290,6 +296,9 @@ namespace khtml
         void do_notify(const QPixmap& p, const QRect& r);
 
         QString m_suggestedFilename;
+#ifdef IMAGE_TITLES
+        QString m_suggestedTitle;
+#endif
 	QMovie* m;
         QPixmap* p;
 	QPixmap* bg;

@@ -183,11 +183,20 @@ void KHTMLImage::notifyFinished( khtml::CachedObject *o )
     if ( !m_mimeType.isEmpty() )
         mimeType = KMimeType::mimeType( m_mimeType );
 
-    if ( mimeType )
-        caption = i18n( "%1 - %2x%3 Pixels" ).arg( mimeType->comment() )
-                  .arg( pix.width() ).arg( pix.height() );
-    else
-        caption = i18n( "Image - %1x%2 Pixels" ).arg( pix.width() ).arg( pix.height() );
+    if ( mimeType ) {
+        if (m_image && !m_image->suggestedTitle().isEmpty()) {
+            caption = i18n( "%1 (%2 - %3x%4 Pixels)" ).arg( m_image->suggestedTitle(), mimeType->comment() ).arg( pix.width() ).arg( pix.height() );
+        } else {
+            caption = i18n( "%1 - %2x%3 Pixels" ).arg( mimeType->comment() )
+                .arg( pix.width() ).arg( pix.height() );
+        }
+    } else {
+        if (m_image && !m_image->suggestedTitle().isEmpty()) {
+            caption = i18n( "%1 (%2x%3 Pixels)" ).arg(m_image->suggestedTitle()).arg( pix.width() ).arg( pix.height() );
+        } else {
+            caption = i18n( "Image - %1x%2 Pixels" ).arg( pix.width() ).arg( pix.height() );
+        }
+    }
 
     emit setWindowCaption( caption );
     emit completed();
