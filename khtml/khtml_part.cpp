@@ -84,7 +84,7 @@ using namespace DOM;
 #include <ksslinfodlg.h>
 
 #include <kfileitem.h>
-
+#include <kurifilter.h>
 
 #include <qclipboard.h>
 #include <qfile.h>
@@ -506,7 +506,7 @@ bool KHTMLPart::closeURL()
 
   d->m_bComplete = true; // to avoid emitting completed() in slotFinishedParsing() (David)
   d->m_bLoadEventEmitted = true; // don't want that one either
-  d->m_cachePolicy = KIO::CC_Verify; // Why here?
+  d->m_cachePolicy = KIO::CC_Verify; // reset cache policy
 
   KHTMLPageCache::self()->cancelFetch(this);
   if ( d->m_doc && d->m_doc->parsing() )
@@ -1590,6 +1590,7 @@ void KHTMLPart::checkCompleted()
   // OK, completed.
   // Now do what should be done when we are really completed.
   d->m_bComplete = true;
+  d->m_cachePolicy = KIO::CC_Verify; // reset cache policy
 
   KHTMLPart* p = this;
   while ( p ) {
@@ -1654,6 +1655,17 @@ void KHTMLPart::checkEmitLoadEvent()
     if ( !(*it).m_bCompleted ) // still got a frame running -> too early
       return;
 
+#if 0 // TODO test for side effects
+  // Still waiting for images/scripts from the loader ?
+  // (onload must happen afterwards, #45607)
+  // ## This makes this code very similar to checkCompleted. A brave soul should try merging them.
+  int requests = 0;
+  if ( d->m_doc && d->m_doc->docLoader() )
+    requests = khtml::Cache::loader()->numRequests( d->m_doc->docLoader() );
+
+  if ( requests > 0 )
+    return;
+#endif
 
   d->m_bLoadEventEmitted = true;
   if (d->m_doc)
@@ -4277,8 +4289,11 @@ void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
 
           d->m_selectionStart = node;
           d->m_startOffset = offset;
-          //kdDebug(6005) << "KHTMLPart::khtmlMousePressEvent selectionStart=" << d->m_selectionStart.handle()->renderer()
-          //               << " offset=" << d->m_startOffset << endl;
+          //if ( node )
+          //  kdDebug(6005) << "KHTMLPart::khtmlMousePressEvent selectionStart=" << d->m_selectionStart.handle()->renderer()
+          //                << " offset=" << d->m_startOffset << endl;
+          //else
+          //  kdDebug(6005) << "KHTML::khtmlMousePressEvent selectionStart=(nil)" << endl;
           d->m_selectionEnd = d->m_selectionStart;
           d->m_endOffset = d->m_startOffset;
           d->m_doc->clearSelection();
@@ -4530,11 +4545,9 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
       innerNode.handle()->renderer()->checkSelectionPoint( event->x(), event->y(),
                                                            event->absX()-innerNode.handle()->renderer()->xPos(),
                                                            event->absY()-innerNode.handle()->renderer()->yPos(), node, offset);
-       d->m_selectionEnd = node;
-       d->m_endOffset = offset;
-       //if (d->m_selectionEnd.handle())
-       //   kdDebug( 6000 ) << "setting end of selection to " << d->m_selectionEnd.handle() << "/"
-       //                   << d->m_endOffset << endl;
+      d->m_selectionEnd = node;
+      d->m_endOffset = offset;
+      //kdDebug( 6000 ) << "setting end of selection to " << d->m_selectionEnd.handle() << "/" << d->m_endOffset << endl;
 
       // we have to get to know if end is before start or not...
       DOM::Node n = d->m_selectionStart;
@@ -4613,27 +4626,23 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
     cb->setSelectionMode( true );
     QCString plain("plain");
     QString url = cb->text(plain).stripWhiteSpace();
-    KURL u(url);
-    if ( u.isMalformed() ) {
-      // some half-baked guesses for incomplete urls
-      // (the same code is in libkonq/konq_dirpart.cc)
-      if ( url.startsWith( "ftp." ) )
-      {
-        url.prepend( "ftp://" );
-        u = url;
-      }
-      else
-      {
-        url.prepend( "http://" );
-        u = url;
-      }
-    }
-    if (u.isValid())
+
+    // Check if it's a URL
+    KURIFilterData m_filterData;
+    m_filterData.setData( url );
+    if (KURIFilter::self()->filterURI(m_filterData))
     {
-      QString savedReferrer = d->m_referrer;
-      d->m_referrer = QString::null; // Disable referrer.
-      urlSelected(url, 0,0, "_top");
-      d->m_referrer = savedReferrer; // Restore original referrer.
+      int uriType = m_filterData.uriType();
+      if ( uriType == KURIFilterData::LOCAL_FILE
+           || uriType == KURIFilterData::LOCAL_DIR
+           || uriType == KURIFilterData::NET_PROTOCOL )
+      {
+        KURL u = m_filterData.uri();
+        QString savedReferrer = d->m_referrer;
+        d->m_referrer = QString::null; // Disable referrer.
+        urlSelected(u.url(), 0,0, "_top");
+        d->m_referrer = savedReferrer; // Restore original referrer.
+      }
     }
   }
 #endif
