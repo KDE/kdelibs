@@ -34,6 +34,7 @@
 #include <qcheckbox.h>
 #include <qtooltip.h>
 #include <qstyle.h>
+#include <qwhatsthis.h>
 
 #include <kapplication.h>
 #include <kbuttonbox.h>
@@ -162,7 +163,7 @@ static QPixmap appIcon(const QString &iconName)
 {
     QPixmap normal = KGlobal::iconLoader()->loadIcon(iconName, KIcon::Small, 0, KIcon::DefaultState, 0L, true);
     // make sure they are not larger than 20x20
-    if (normal.width() > 20 || normal.height() > 20) 
+    if (normal.width() > 20 || normal.height() > 20)
     {
        QImage tmp = normal.convertToImage();
        tmp = tmp.smoothScale(20, 20);
@@ -397,6 +398,18 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
   }
 
   edit->setURL( _value );
+  QWhatsThis::add(edit,i18n(
+    "Following the command, you can have several place holders which will be replaced"
+    "with the actual values when the actual program is run:\n"
+    "%f - a single file name\n"
+    "%F - a list of files; use for apps that can open several local files at once\n"
+    "%u - a single URL\n"
+    "%U - a list of URLs\n"
+    "%d - the directory of the file to open\n"
+    "%D - a list of directories\n"
+    "%i - the icon\n"
+    "%m - the mini-icon\n"
+    "%c - the comment"));
 
   hbox->addWidget(edit);
 

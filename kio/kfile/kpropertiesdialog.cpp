@@ -60,6 +60,7 @@ extern "C" {
 #include <qlayout.h>
 #include <qcombobox.h>
 #include <qgroupbox.h>
+#include <qwhatsthis.h>
 
 #include <kapplication.h>
 #include <kdialog.h>
@@ -1642,6 +1643,18 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
   mainlayout->addLayout(hlayout);
 
   execEdit = new KLineEdit( d->m_frame );
+  QWhatsThis::add(execEdit,i18n(
+    "Following the command, you can have several place holders which will be replaced"
+    "with the actual values when the actual program is run:\n"
+    "%f - a single file name\n"
+    "%F - a list of files; use for apps that can open several local files at once\n"
+    "%u - a single URL\n"
+    "%U - a list of URLs\n"
+    "%d - the directory of the file to open\n"
+    "%D - a list of directories\n"
+    "%i - the icon\n"
+    "%m - the mini-icon\n"
+    "%c - the comment"));
   hlayout->addWidget(execEdit, 1);
 
   l->setBuddy( execEdit );
@@ -1691,12 +1704,12 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
   terminalCheck = new QCheckBox( tmpQGroupBox );
   terminalCheck->setText( i18n("&Run in terminal") );
   grid->addMultiCellWidget(terminalCheck, 0, 0, 0, 1);
-  
+
   // check to see if we use konsole if not do not add the nocloseonexit
   // because we don't know how to do this on other terminal applications
   KConfigGroup confGroup( KGlobal::config(), QString::fromLatin1("General") );
   QString preferredTerminal = confGroup.readEntry(QString::fromLatin1("TerminalApplication"), QString::fromLatin1("konsole"));
-  
+
   int posOptions = 1;
   d->nocloseonexitCheck = 0L;
   if (preferredTerminal == "konsole")
@@ -1706,7 +1719,7 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
     d->nocloseonexitCheck->setText( i18n("Do not &close when command exits") );
     grid->addMultiCellWidget(d->nocloseonexitCheck, 1, 1, 0, 1);
   }
-  
+
   terminalLabel = new QLabel( i18n( "&Terminal options:" ), tmpQGroupBox );
   grid->addWidget(terminalLabel, posOptions, 0);
 
