@@ -25,6 +25,7 @@ class KFileInfo;
 class QWidget;
 
 #include <qtablevw.h>
+#include <qpixmap.h>
 #include "kfileinfocontents.h"
 
 class KFileSimpleView : public QTableView, public KFileInfoContents {
