@@ -1,7 +1,28 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 1998, 1999 Christian Tibirna <ctibirna@total.net>
-              (C) 1998, 1999 Daniel M. Duley <mosfet@kde.org>
-              (C) 1998, 1999 Dirk A. Mueller <mueller@kde.org>
+ Copyright (C) 1998, 1999, 2001 Daniel M. Duley <mosfet@interaccess.com>
+ (C) 1998, 1999 Christian Tibirna <ctibirna@total.net>
+ (C) 1998, 1999 Dirk A. Mueller <mueller@kde.org>
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
@@ -17,7 +38,7 @@ class QColor;
 /**
  * This class includes various @ref QImage based graphical effects.
  *
- *Everything is
+ * Everything is
  * static, so there is no need to create an instance of this class. You can
  * just call the static methods. They are encapsulated here merely to provide
  * a common namespace.
@@ -36,6 +57,11 @@ public:
                    SouthLite, SELite, EastLite, NELite};
 
     enum ModulationType { Intensity, Saturation, HueShift, Contrast };
+
+    enum NoiseType { UniformNoise=0, GaussianNoise, MultiplicativeGaussianNoise,
+                     ImpulseNoise, LaplacianNoise, PoissonNoise};
+
+    enum RotateDirection{ Rotate90, Rotate180, Rotate270 };
 
     /**
      * Create a gradient from color a to color b of the specified type.
@@ -144,6 +170,7 @@ public:
     /**
      * Modifies the intensity of a pixmap's RGB channel component.
      *
+     * @author Daniel M. Duley (mosfet)
      * @param image The QImage to process.
      * @param percent Percent value. Use a negative value to dim.
      * @param channel Which channel(s) should be modified
@@ -191,6 +218,7 @@ public:
      * Either brighten or dim the image by a specified percent.
      * For example, .50 will modify the colors by 50%.
      *
+     * @author Daniel M. Duley (mosfet)
      * @param image The QImage to process.
      * @param percent The percent value. Use a negative value to dim.
      * @return Returns The @ref image(), provided for convenience.
@@ -214,6 +242,7 @@ public:
     /**
      * Convert an image to grayscale.
      *
+     * @author Daniel M. Duley (mosfet)
      * @param image The @ref QImage to process.
      * @param fast Set to @p true in order to use a faster but non-photographic
      * quality algorithm. Appropriate for things such as toolbar icons.
@@ -231,8 +260,9 @@ public:
     static QImage& desaturate(QImage &image, float desat = 0.3);
 
     /**
-     * Modifie the contrast of an image.
+     * Fast, but low quality contrast of an image. Also see contrastHSV.
      *
+     * @author Daniel M. Duley (mosfet)
      * @param image The QImage to process.
      * @param c A contrast value between -255 to 255.
      * @return The @ref image(), provided for convenience.
@@ -258,6 +288,219 @@ public:
      */
     static QImage& selectedImage( QImage &img, const QColor &col );
 
+    /**
+     * High quality, expensive HSV contrast. You can do a faster one by just
+     * taking a intensity threshold (ie: 128) and incrementing RGB color
+     * channels above it and decrementing those below it, but this gives much
+     * better results.
+     *
+     * @author Daniel M. Duley (mosfet)
+     * @param img The QImage to process.
+     * @param sharpen If true sharpness is increase, (spiffed). Otherwise
+     * it is decreased, (dulled).
+     */
+    static void contrastHSV(QImage &img, bool sharpen=true);
+
+    /**
+     * Normalizes the pixel values to span the full range of color values.
+     * This is a contrast enhancement technique.
+     * @author Daniel M. Duley (mosfet)
+     */
+    static void normalize(QImage &img);
+
+    /**
+     * Performs histogram equalization on the reference
+     * image.
+     * @author Daniel M. Duley (mosfet)
+     */
+    static void equalize(QImage &img);
+
+    /**
+     * Thresholds the reference image. You can also threshold images by using
+     * ThresholdDither in the various QPixmap/QImage convert methods, but this
+     * lets you specify a threshold value.
+     *
+     * @author Daniel M. Duley (mosfet)
+     * @param img The QImage to process.
+     * @param value The threshold value.
+     */
+    static void threshold(QImage &img, int value=128);
+
+    /**
+     * Produces a 'solarization' effect seen when exposing a photographic
+     * film to light during the development process.
+     *
+     * @author Daniel M. Duley (mosfet)
+     * @param img The QImage to process.
+     * @param factor The extent of the solarization (0-99.9)
+     */
+    static void solarize(QImage &img, double factor=50.0);
+
+    /**
+     * Embosses the source image. This involves highlighting the edges
+     * and applying various other enhancements in order to get a metal
+     * effect.
+     *
+     * @author Daniel M. Duley (mosfet)
+     * @param src The QImage to process.
+     * @return The embossed image. The original is not changed.
+     */
+    static QImage emboss(QImage &src);
+
+    /**
+     * Minimizes speckle noise in the source image using the 8 hull
+     * algorithm.
+     *
+     * @author Daniel M. Duley (mosfet)
+     * @param src The QImage to process.
+     * @return The despeckled image. The original is not changed.
+     */
+    static QImage despeckle(QImage &src);
+
+    /**
+     * Produces a neat little "charcoal" effect.
+     *
+     * @author Daniel M. Duley (mosfet)
+     * @param src The QImage to process.
+     * @param factor The factor for detecting lines (0-99.0).
+     * @return The charcoal image. The original is not changed.
+     */
+    static QImage charcoal(QImage &src, double factor=50.0);
+
+    /**
+     * Rotates the image by the specified amount
+     *
+     * @author Daniel M. Duley (mosfet)
+     * @param src The QImage to process.
+     * @param r The rotate direction.
+     * @return The rotated image. The original is not changed.
+     */
+    static QImage rotate(QImage &src, RotateDirection r);
+
+    /**
+     * Scales an image using simple pixel sampling. This does not produce
+     * nearly as nice a result as QImage::smoothScale(), but has the
+     * advantage of being much faster - only a few milliseconds.
+     *
+     * @author Daniel M. Duley (mosfet)
+     * @param src The QImage to process.
+     * @param w The new width.
+     * @param h The new height.
+     * @return The scaled image. The original is not changed.
+     */
+    static QImage sample(QImage &src, int w, int h);
+
+    /**
+     * Adds noise to an image.
+     *
+     * @author Daniel M. Duley (mosfet)
+     * @param src The QImage to process.
+     * @param type The algorithm used to generate the noise.
+     * @return The image with noise added. The original is not changed.
+     */
+    static QImage addNoise(QImage &src, NoiseType type = GaussianNoise);
+
+    /**
+     * Blurs an image by convolving pixel neighborhoods.
+     *
+     * @author Daniel M. Duley (mosfet)
+     * @param src The QImage to process.
+     * @param factor The percent weight to give to the center pixel.
+     * @return The blurred image. The original is not changed.
+     */
+    static QImage blur(QImage &src, double factor=50.0);
+
+    /**
+     * Detects edges in an image using pixel neighborhoods and an edge
+     * detection mask.
+     *
+     * @author Daniel M. Duley (mosfet)
+     * @param src The QImage to process.
+     * @param factor The percent weight to give to the center pixel.
+     * @return The image with edges detected. The original is not changed.
+     */
+    static QImage edge(QImage &src, double factor=50.0);
+
+    /**
+     * Implodes an image by a specified percent.
+     *
+     * @author Daniel M. Duley (mosfet)
+     * @param src The QImage to process.
+     * @param factor The extent of the implosion.
+     * @param background An RGBA value to use for the background. After the
+     * effect some pixels may be "empty". This value is used for those pixels.
+     * @return The imploded image. The original is not changed.
+     */
+    static QImage implode(QImage &src, double factor=30.0,
+                   unsigned int background = 0xFFFFFFFF);
+    /**
+     * Produces an oil painting effect.
+     *
+     * @author Daniel M. Duley (mosfet)
+     * @param src The QImage to process.
+     * @param radius The radius of the pixel neighborhood used in applying the
+     * effect.
+     * @return The new image. The original is not changed.
+     */
+    static QImage oilPaint(QImage &src, int radius=3);
+
+    /**
+     * Sharpens the pixels in the image using pixel neighborhoods.
+     *
+     * @author Daniel M. Duley (mosfet)
+     * @param src The QImage to process.
+     * @param factor The percent weight to give to the center pixel.
+     * @return The sharpened image. The original is not changed.
+     */
+    static QImage sharpen(QImage &src, double factor=30.0);
+
+    /**
+     * Randomly displaces pixels.
+     *
+     * @author Daniel M. Duley (mosfet)
+     * @param src The QImage to process.
+     * @param amount The vicinity for choosing a random pixel to swap.
+     * @return The image with pixels displaced. The original is not changed.
+     */
+    static QImage spread(QImage &src, unsigned int amount=3);
+
+    /**
+     * Shades the image using a distance light source.
+     *
+     * @author Daniel M. Duley (mosfet)
+     * @param src The QImage to process.
+     * @param color_shading If true do color shading, otherwise do grayscale.
+     * @param azimuth Determines the light source and direction.
+     * @param elevation Determines the light source and direction.
+     * @return The shaded image. The original is not changed.
+     */
+    static QImage shade(QImage &src, bool color_shading=true, double azimuth=30.0,
+                        double elevation=30.0);
+    /**
+     * Swirls the image by a specified amount
+     *
+     * @author Daniel M. Duley (mosfet)
+     * @param src The QImage to process.
+     * @param degrees The tightness of the swirl.
+     * @param background An RGBA value to use for the background. After the
+     * effect some pixels may be "empty". This value is used for those pixels.
+     * @return The swirled image. The original is not changed.
+     */
+     static QImage swirl(QImage &src, double degrees=50.0, unsigned int background =
+                         0xFFFFFFFF);
+
+     /**
+      * Modifies the pixels along a sine wave.
+      *
+      * @author Daniel M. Duley (mosfet)
+      * @param src The QImage to process.
+      * @param amplitude The amplitude of the sine wave.
+      * @param wavelength The frequency of the sine wave.
+      * @return The new image. The original is not changed.
+      */
+     static QImage wave(QImage &src, double amplitude=25.0, double frequency=150.0,
+                        unsigned int background = 0xFFFFFFFF);
+
 private:
 
     /**
@@ -271,6 +514,13 @@ private:
      * Helper function to find the nearest color to the RBG triplet
      */
     static int nearestColor( int r, int g, int b, const QColor *pal, int size );
+
+    static void hull(const int x_offset, const int y_offset, const int polarity,
+                     const unsigned int width, const unsigned int height,
+                     unsigned int *f, unsigned int *g);
+    static unsigned int generateNoise(unsigned int pixel, NoiseType type);
+    static unsigned int interpolateColor(QImage *image, double x, double y,
+                                         unsigned int background);
 };
 
 #endif

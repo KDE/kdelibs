@@ -1,8 +1,29 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 1998, 1999 Christian Tibirna <ctibirna@total.net>
-              (C) 1998, 1999 Daniel M. Duley <mosfet@kde.org>
-              (C) 1998, 1999 Dirk A. Mueller <mueller@kde.org>
-	      (C) 2000       Josef Weidendorfer <weidendo@in.tum.de>
+    Copyright (C) 1998, 1999, 2001 Daniel M. Duley <mosfet@kde.org>
+    (C) 1998, 1999 Christian Tibirna <ctibirna@total.net>
+    (C) 1998, 1999 Dirk A. Mueller <mueller@kde.org>
+    (C) 2000 Josef Weidendorfer <weidendo@in.tum.de>
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
@@ -15,6 +36,17 @@
 #include <iostream.h>
 
 #include "kimageeffect.h"
+
+#define MaxRGB 255L
+#define DegreesToRadians(x) ((x)*M_PI/180.0)
+
+
+inline unsigned int intensityValue(unsigned int color)
+{
+    return((unsigned int)((0.299*qRed(color) +
+                           0.587*qGreen(color) +
+                           0.1140000000000001*qBlue(color))));
+}
 
 //======================================================================
 //
@@ -1901,3 +1933,1800 @@ QImage& KImageEffect::selectedImage( QImage &img, const QColor &col )
     }
     return img;
 }
+
+//
+// ===================================================================
+// Effects originally ported from ImageMagick for PixiePlus, plus a few
+// new ones. (mosfet 12/29/01)
+// ===================================================================
+//
+
+void KImageEffect::normalize(QImage &img)
+{
+    int *histogram, threshold_intensity, intense;
+    int x, y, i;
+
+    unsigned int gray_value;
+    unsigned int *normalize_map;
+    unsigned int high, low;
+
+    // allocate histogram and normalize map
+    histogram = (int *)calloc(MaxRGB+1, sizeof(int));
+    normalize_map = (unsigned int *)malloc((MaxRGB+1)*sizeof(unsigned int));
+    if(!normalize_map || !histogram){
+        qWarning("Unable to allocate normalize histogram and map");
+        free(normalize_map);
+        free(histogram);
+        return;
+    }
+
+    // form histogram
+    if(img.depth() > 8){  // DirectClass
+        unsigned int *data;
+        for(y=0; y < img.height(); ++y){
+            data = (unsigned int *)img.scanLine(y);
+            for(x=0; x < img.width(); ++x){
+                gray_value = intensityValue(data[x]);
+                histogram[gray_value]++;
+            }
+        }
+    }
+    else{ // PsudeoClass
+        unsigned char *data;
+        unsigned int *cTable = img.colorTable();
+        for(y=0; y < img.height(); ++y){
+            data = (unsigned char *)img.scanLine(y);
+            for(x=0; x < img.width(); ++x){
+                gray_value = intensityValue(*(cTable+data[x]));
+                histogram[gray_value]++;
+            }
+        }
+    }
+
+    // find histogram boundaries by locating the 1 percent levels
+    threshold_intensity = (img.width()*img.height())/100;
+    intense = 0;
+    for(low=0; low < MaxRGB; ++low){
+        intense+=histogram[low];
+        if(intense > threshold_intensity)
+            break;
+    }
+    intense=0;
+    for(high=MaxRGB; high != 0; --high){
+        intense+=histogram[high];
+        if(intense > threshold_intensity)
+            break;
+    }
+
+    if (low == high){
+        // Unreasonable contrast;  use zero threshold to determine boundaries.
+        threshold_intensity=0;
+        intense=0;
+        for(low=0; low < MaxRGB; ++low){
+            intense+=histogram[low];
+            if(intense > threshold_intensity)
+                break;
+        }
+        intense=0;
+        for(high=MaxRGB; high != 0; --high)
+        {
+            intense+=histogram[high];
+            if(intense > threshold_intensity)
+                break;
+        }
+        if(low == high)
+            return;  // zero span bound
+    }
+
+    // Stretch the histogram to create the normalized image mapping.
+    for(i=0; i <= MaxRGB; i++){
+        if (i < (int) low)
+            normalize_map[i]=0;
+        else{
+            if(i > (int) high)
+                normalize_map[i]=MaxRGB;
+            else
+                normalize_map[i]=(MaxRGB-1)*(i-low)/(high-low);
+        }
+    }
+    // Normalize
+    if(img.depth() > 8){ // DirectClass
+        unsigned int *data;
+        for(y=0; y < img.height(); ++y){
+            data = (unsigned int *)img.scanLine(y);
+            for(x=0; x < img.width(); ++x){
+                data[x] = qRgba(normalize_map[qRed(data[x])],
+                                normalize_map[qGreen(data[x])],
+                                normalize_map[qBlue(data[x])],
+                                qAlpha(data[x]));
+            }
+        }
+    }
+    else{ // PsudeoClass
+        int colors = img.numColors();
+        unsigned int *cTable = img.colorTable();
+        for(i=0; i < colors; ++i){
+            cTable[i] = qRgba(normalize_map[qRed(cTable[i])],
+                              normalize_map[qGreen(cTable[i])],
+                              normalize_map[qBlue(cTable[i])],
+                              qAlpha(cTable[i]));
+        }
+    }
+    free(histogram);
+    free(normalize_map);
+}
+
+
+void KImageEffect::equalize(QImage &img)
+{
+    int *histogram, *map, *equalize_map;
+    int x, y, i, j;
+
+    unsigned int high, low;
+
+    // allocate histogram and maps
+    histogram = (int *)calloc(MaxRGB+1, sizeof(int));
+    map = (int *)malloc((MaxRGB+1)*sizeof(unsigned int));
+    equalize_map  = (int *)malloc((MaxRGB+1)*sizeof(unsigned int));
+
+    if(!histogram || !map || !equalize_map){
+        qWarning("Unable to allocate equalize histogram and maps");
+        free(histogram);
+        free(map);
+        free(equalize_map);
+        return;
+    }
+    // form histogram
+    if(img.depth() > 8){ // DirectClass
+        unsigned int *data;
+        for(y=0; y < img.height(); ++y){
+            data = (unsigned int *)img.scanLine(y);
+            for(x=0; x < img.width(); ++x){
+                histogram[intensityValue(data[x])]++;
+            }
+        }
+    }
+    else{ // PsudeoClass
+        unsigned char *data;
+        unsigned int *cTable = img.colorTable();
+        for(y=0; y < img.height(); ++y){
+            data = (unsigned char *)img.scanLine(y);
+            for(x=0; x < img.width(); ++x){
+                histogram[intensityValue(*(cTable+data[x]))]++;
+            }
+        }
+    }
+
+    // integrate the histogram to get the equalization map.
+    j=0;
+    for(i=0; i <= MaxRGB; i++){
+        j+=histogram[i];
+        map[i]=j;
+    }
+    free(histogram);
+    if(map[MaxRGB] == 0){
+        free(equalize_map);
+        free(map);
+        return;
+    }
+    // equalize
+    low=map[0];
+    high=map[MaxRGB];
+    for(i=0; i <= MaxRGB; i++)
+        equalize_map[i]=(unsigned int)
+            ((((double) (map[i]-low))*MaxRGB)/QMAX(high-low,1));
+    free(map);
+    // stretch the histogram
+    if(img.depth() > 8){ // DirectClass
+        unsigned int *data;
+        for(y=0; y < img.height(); ++y){
+            data = (unsigned int *)img.scanLine(y);
+            for(x=0; x < img.width(); ++x){
+                data[x] = qRgba(equalize_map[qRed(data[x])],
+                                equalize_map[qGreen(data[x])],
+                                equalize_map[qBlue(data[x])],
+                                qAlpha(data[x]));
+            }
+        }
+    }
+    else{ // PsudeoClass
+        int colors = img.numColors();
+        unsigned int *cTable = img.colorTable();
+        for(i=0; i < colors; ++i){
+            cTable[i] = qRgba(equalize_map[qRed(cTable[i])],
+                              equalize_map[qGreen(cTable[i])],
+                              equalize_map[qBlue(cTable[i])],
+                              qAlpha(cTable[i]));
+        }
+    }
+    free(equalize_map);
+}
+
+QImage KImageEffect::sample(QImage &src, int w, int h)
+{
+    if(w == src.width() && h == src.height())
+        return(src);
+
+    double *x_offset, *y_offset;
+    int j, k, y;
+    register int x;
+    QImage dest(w, h, src.depth());
+
+    x_offset = (double *)malloc(w*sizeof(double));
+    y_offset = (double *)malloc(h*sizeof(double));
+    if(!x_offset || !y_offset){
+        qWarning("Unable to allocate pixels buffer");
+        free(x_offset);
+        free(y_offset);
+        return(src);
+    }
+
+    // init pixel offsets
+    for(x=0; x < w; ++x)
+        x_offset[x] = x*src.width()/((double)w);
+    for(y=0; y < h; ++y)
+        y_offset[y] = y*src.height()/((double)h);
+
+    // sample each row
+    if(src.depth() > 8){ // DirectClass source image
+        unsigned int *srcData, *destData;
+        unsigned int *pixels;
+        pixels = (unsigned int *)malloc(src.width()*sizeof(unsigned int));
+        if(!pixels){
+            qWarning("Unable to allocate pixels buffer");
+            free(pixels);
+            free(x_offset);
+            free(y_offset);
+            return(src);
+        }
+        j = (-1);
+        for(y=0; y < h; ++y){
+            destData = (unsigned int *)dest.scanLine(y);
+            if(j != y_offset[y]){
+                // read a scan line
+                j = (int)(y_offset[y]);
+                srcData = (unsigned int *)src.scanLine(j);
+                (void)memcpy(pixels, srcData, src.width()*sizeof(unsigned int));
+            }
+            // sample each column
+            for(x=0; x < w; ++x){
+                k = (int)(x_offset[x]);
+                destData[x] = pixels[k];
+            }
+        }
+        free(pixels);
+    }
+    else{ // PsudeoClass source image
+        unsigned char *srcData, *destData;
+        unsigned char *pixels;
+        pixels = (unsigned char *)malloc(src.width()*sizeof(unsigned char));
+        if(!pixels){
+            qWarning("Unable to allocate pixels buffer");
+            free(pixels);
+            free(x_offset);
+            free(y_offset);
+            return(src);
+        }
+        // copy colortable
+        dest.setNumColors(src.numColors());
+        (void)memcpy(dest.colorTable(), src.colorTable(),
+                     src.numColors()*sizeof(unsigned int));
+
+        // sample image
+        j = (-1);
+        for(y=0; y < h; ++y){
+            destData = (unsigned char *)dest.scanLine(y);
+            if(j != y_offset[y]){
+                // read a scan line
+                j = (int)(y_offset[y]);
+                srcData = (unsigned char *)src.scanLine(j);
+                (void)memcpy(pixels, srcData, src.width()*sizeof(unsigned char));
+            }
+            // sample each column
+            for(x=0; x < w; ++x){
+                k = (int)(x_offset[x]);
+                destData[x] = pixels[k];
+            }
+        }
+        free(pixels);
+    }
+    free(x_offset);
+    free(y_offset);
+    return(dest);
+}
+
+void KImageEffect::threshold(QImage &img, int threshold)
+{
+    int i, count;
+    unsigned int *data;
+    if(img.depth() > 8){ // DirectClass
+        count = img.width()*img.height();
+        data = (unsigned int *)img.bits();
+    }
+    else{ // PsudeoClass
+        count = img.numColors();
+        data = (unsigned int *)img.colorTable();
+    }
+    for(i=0; i < count; ++i)
+        data[i] = intensityValue(data[i]) < threshold ? Qt::black.rgb() : Qt::white.rgb();
+}
+
+QImage KImageEffect::charcoal(QImage &src, double factor)
+{
+    QImage dest(src);
+    dest.detach();
+    toGray(dest);
+    dest = edge(dest, factor);
+    dest = blur(dest, factor);
+    normalize(dest);
+    dest.invertPixels(false);
+    return(dest);
+}
+
+void KImageEffect::hull(const int x_offset, const int y_offset,
+                        const int polarity, const unsigned int columns,
+                        const unsigned int rows,
+                        unsigned int *f, unsigned int *g)
+{
+    int x, y;
+
+    unsigned int *p, *q, *r, *s;
+    unsigned int v;
+    if(f == NULL || g == NULL)
+        return;
+    p=f+(columns+2);
+    q=g+(columns+2);
+    r=p+(y_offset*(columns+2)+x_offset);
+    for (y=0; y < rows; y++){
+        p++;
+        q++;
+        r++;
+        if(polarity > 0)
+            for (x=0; x < columns; x++){
+                v=(*p);
+                if (*r > v)
+                    v++;
+                *q=v;
+                p++;
+                q++;
+                r++;
+            }
+        else
+            for(x=0; x < columns; x++){
+                v=(*p);
+                if (v > (unsigned int) (*r+1))
+                    v--;
+                *q=v;
+                p++;
+                q++;
+                r++;
+            }
+        p++;
+        q++;
+        r++;
+    }
+    p=f+(columns+2);
+    q=g+(columns+2);
+    r=q+(y_offset*(columns+2)+x_offset);
+    s=q-(y_offset*(columns+2)+x_offset);
+    for(y=0; y < rows; y++){
+        p++;
+        q++;
+        r++;
+        s++;
+        if(polarity > 0)
+            for(x=0; x < (int) columns; x++){
+                v=(*q);
+                if (((unsigned int) (*s+1) > v) && (*r > v))
+                    v++;
+                *p=v;
+                p++;
+                q++;
+                r++;
+                s++;
+            }
+        else
+            for (x=0; x < columns; x++){
+                v=(*q);
+                if (((unsigned int) (*s+1) < v) && (*r < v))
+                    v--;
+                *p=v;
+                p++;
+                q++;
+                r++;
+                s++;
+            }
+        p++;
+        q++;
+        r++;
+        s++;
+    }
+}
+
+QImage KImageEffect::despeckle(QImage &src)
+{
+    int i, j, x, y;
+    unsigned int *blue_channel, *red_channel, *green_channel, *buffer,
+        *alpha_channel, packets;
+    static const int
+    X[4]= {0, 1, 1,-1},
+    Y[4]= {1, 0, 1, 1};
+
+    unsigned int *destData;
+    QImage dest(src.width(), src.height(), 32);
+
+    packets = (src.width()+2)*(src.height()+2);
+    red_channel = (unsigned int *)calloc(packets, sizeof(unsigned int));
+    green_channel = (unsigned int *)calloc(packets, sizeof(unsigned int));
+    blue_channel = (unsigned int *)calloc(packets, sizeof(unsigned int));
+    alpha_channel = (unsigned int *)calloc(packets, sizeof(unsigned int));
+    buffer = (unsigned int *)calloc(packets, sizeof(unsigned int));
+    if(!red_channel || ! green_channel || ! blue_channel || ! alpha_channel ||
+       !buffer){
+        free(red_channel);
+        free(green_channel);
+        free(blue_channel);
+        free(alpha_channel);
+        free(buffer);
+        return(src);
+    }
+
+    // copy image pixels to color component buffers
+    j = src.width()+2;
+    if(src.depth() > 8){ // DirectClass source image
+        unsigned int *srcData;
+        for(y=0; y < src.height(); ++y){
+            srcData = (unsigned int *)src.scanLine(y);
+            ++j;
+            for(x=0; x < src.width(); ++x){
+                red_channel[j] = qRed(srcData[x]);
+                green_channel[j] = qGreen(srcData[x]);
+                blue_channel[j] = qBlue(srcData[x]);
+                alpha_channel[j] = qAlpha(srcData[x]);
+                ++j;
+            }
+            ++j;
+        }
+    }
+    else{ // PsudeoClass source image
+        unsigned char *srcData;
+        unsigned int *cTable = src.colorTable();
+        unsigned int pixel;
+        for(y=0; y < src.height(); ++y){
+            srcData = (unsigned char *)src.scanLine(y);
+            ++j;
+            for(x=0; x < src.width(); ++x){
+                pixel = *(cTable+srcData[x]);
+                red_channel[j] = qRed(pixel);
+                green_channel[j] = qGreen(pixel);
+                blue_channel[j] = qBlue(pixel);
+                alpha_channel[j] = qAlpha(pixel);
+                ++j;
+            }
+            ++j;
+        }
+    }
+    // reduce speckle in red channel
+    for(i=0; i < 4; i++){
+        hull(X[i],Y[i],1,src.width(),src.height(),red_channel,buffer);
+        hull(-X[i],-Y[i],1,src.width(),src.height(),red_channel,buffer);
+        hull(-X[i],-Y[i],-1,src.width(),src.height(),red_channel,buffer);
+        hull(X[i],Y[i],-1,src.width(),src.height(),red_channel,buffer);
+    }
+    // reduce speckle in green channel
+    for (i=0; i < packets; i++)
+        buffer[i]=0;
+    for (i=0; i < 4; i++){
+        hull(X[i],Y[i],1,src.width(),src.height(),green_channel,buffer);
+        hull(-X[i],-Y[i],1,src.width(),src.height(),green_channel,buffer);
+        hull(-X[i],-Y[i],-1,src.width(),src.height(),green_channel,buffer);
+        hull(X[i],Y[i],-1,src.width(),src.height(),green_channel,buffer);
+    }
+    // reduce speckle in blue channel
+    for (i=0; i < packets; i++)
+        buffer[i]=0;
+    for (i=0; i < 4; i++){
+        hull(X[i],Y[i],1,src.width(),src.height(),blue_channel,buffer);
+        hull(-X[i],-Y[i],1,src.width(),src.height(),blue_channel,buffer);
+        hull(-X[i],-Y[i],-1,src.width(),src.height(),blue_channel,buffer);
+        hull(X[i],Y[i],-1,src.width(),src.height(),blue_channel,buffer);
+    }
+    // copy color component buffers to despeckled image
+    j = dest.width()+2;
+    for(y=0; y < dest.height(); ++y)
+    {
+        destData = (unsigned int *)dest.scanLine(y);
+        ++j;
+        for (x=0; x < dest.width(); ++x)
+        {
+            destData[x] = qRgba(red_channel[j], green_channel[j],
+                                blue_channel[j], alpha_channel[j]);
+            ++j;
+        }
+        ++j;
+    }
+    free(buffer);
+    free(red_channel);
+    free(green_channel);
+    free(blue_channel);
+    free(alpha_channel);
+    return(dest);
+}
+
+unsigned int KImageEffect::generateNoise(unsigned int pixel,
+                                         NoiseType noise_type)
+{
+#define NoiseEpsilon  1.0e-5
+#define NoiseMask  0x7fff
+#define SigmaUniform  4.0
+#define SigmaGaussian  4.0
+#define SigmaImpulse  0.10
+#define SigmaLaplacian 10.0
+#define SigmaMultiplicativeGaussian  0.5
+#define SigmaPoisson  0.05
+#define TauGaussian  20.0
+
+    double alpha, beta, sigma, value;
+    alpha=(double) (rand() & NoiseMask)/NoiseMask;
+    if (alpha == 0.0)
+        alpha=1.0;
+    switch(noise_type){
+    case UniformNoise:
+    default:
+        {
+            value=(double) pixel+SigmaUniform*(alpha-0.5);
+            break;
+        }
+    case GaussianNoise:
+        {
+            double tau;
+
+            beta=(double) (rand() & NoiseMask)/NoiseMask;
+            sigma=sqrt(-2.0*log(alpha))*cos(2.0*M_PI*beta);
+            tau=sqrt(-2.0*log(alpha))*sin(2.0*M_PI*beta);
+            value=(double) pixel+
+                (sqrt((double) pixel)*SigmaGaussian*sigma)+(TauGaussian*tau);
+            break;
+        }
+    case MultiplicativeGaussianNoise:
+        {
+            if (alpha <= NoiseEpsilon)
+                sigma=MaxRGB;
+            else
+                sigma=sqrt(-2.0*log(alpha));
+            beta=(rand() & NoiseMask)/NoiseMask;
+            value=(double) pixel+
+                pixel*SigmaMultiplicativeGaussian*sigma*cos(2.0*M_PI*beta);
+            break;
+        }
+    case ImpulseNoise:
+        {
+            if (alpha < (SigmaImpulse/2.0))
+                value=0;
+            else
+                if (alpha >= (1.0-(SigmaImpulse/2.0)))
+                    value=MaxRGB;
+                else
+                    value=pixel;
+            break;
+        }
+    case LaplacianNoise:
+        {
+            if (alpha <= 0.5)
+            {
+                if (alpha <= NoiseEpsilon)
+                    value=(double) pixel-MaxRGB;
+                else
+                    value=(double) pixel+SigmaLaplacian*log(2.0*alpha);
+                break;
+            }
+            beta=1.0-alpha;
+            if (beta <= (0.5*NoiseEpsilon))
+                value=(double) pixel+MaxRGB;
+            else
+                value=(double) pixel-SigmaLaplacian*log(2.0*beta);
+            break;
+        }
+    case PoissonNoise:
+        {
+            register int
+                i;
+
+            for (i=0; alpha > exp(-SigmaPoisson*pixel); i++)
+            {
+                beta=(double) (rand() & NoiseMask)/NoiseMask;
+                alpha=alpha*beta;
+            }
+            value=i/SigmaPoisson;
+            break;
+        }
+    }
+    if(value < 0.0)
+        return(0);
+    if(value > MaxRGB)
+        return(MaxRGB);
+    return((unsigned int) (value+0.5));
+}
+
+QImage KImageEffect::addNoise(QImage &src, NoiseType noise_type)
+{
+    int x, y;
+    QImage dest(src.width(), src.height(), 32);
+    unsigned int *destData;
+
+    if(src.depth() > 8){ // DirectClass source image
+        unsigned int *srcData;
+        for(y=0; y < src.height(); ++y){
+            srcData = (unsigned int *)src.scanLine(y);
+            destData = (unsigned int *)dest.scanLine(y);
+            for(x=0; x < src.width(); ++x){
+                destData[x] = qRgba(generateNoise(qRed(srcData[x]), noise_type),
+                                    generateNoise(qGreen(srcData[x]), noise_type),
+                                    generateNoise(qBlue(srcData[x]), noise_type),
+                                    qAlpha(srcData[x]));
+            }
+        }
+    }
+    else{ // PsudeoClass source image
+        unsigned char *srcData;
+        unsigned int *cTable = src.colorTable();
+        unsigned int pixel;
+        for(y=0; y < src.height(); ++y){
+            srcData = (unsigned char *)src.scanLine(y);
+            destData = (unsigned int *)dest.scanLine(y);
+            for(x=0; x < src.width(); ++x){
+                pixel = *(cTable+srcData[x]);
+                destData[x] = qRgba(generateNoise(qRed(pixel), noise_type),
+                                    generateNoise(qGreen(pixel), noise_type),
+                                    generateNoise(qBlue(pixel), noise_type),
+                                    qAlpha(pixel));
+            }
+        }
+
+    }
+    return(dest);
+}
+
+unsigned int KImageEffect::interpolateColor(QImage *image, double x_offset,
+                                            double y_offset,
+                                            unsigned int background)
+{
+    double alpha, beta;
+    unsigned int p, q, r, s;
+    int x, y;
+
+    x = (int)x_offset;
+    y = (int)y_offset;
+    if((x < -1) || (x >= image->width()) || (y < -1) || (y >= image->height()))
+        return(background);
+    if(image->depth() > 8){
+        if((x >= 0) && (y >= 0) && (x < (image->width()-1)) && (y < (image->height()-1)))    {
+            unsigned int *t = (unsigned int *)image->scanLine(y);
+            p = t[x];
+            q = t[x+1];
+            r = t[x+image->width()];
+            s = t[x+image->width()+1];
+        }
+        else{
+            unsigned int *t = (unsigned int *)image->scanLine(y);
+            p = background;
+            if((x >= 0) && (y >= 0)){
+                p = t[x];
+            }
+            q = background;
+            if(((x+1) < image->width()) && (y >= 0)){
+                q = t[x+1];
+            }
+            r = background;                                    
+            if((x >= 0) && ((y+1) < image->height())){
+                t = (unsigned int *)image->scanLine(y+1);
+                r = t[x+image->width()];
+            }
+            s = background;
+            if(((x+1) < image->width()) && ((y+1) < image->height())){
+                t = (unsigned int *)image->scanLine(y+1);
+                s = t[x+image->width()+1];
+            }
+
+        }
+    }
+    else{
+        unsigned int *colorTable = (unsigned int *)image->colorTable();
+        if((x >= 0) && (y >= 0) && (x < (image->width()-1)) && (y < (image->height()-1)))    {
+            unsigned char *t;
+            t = (unsigned char *)image->scanLine(y);
+            p = *(colorTable+t[x]);
+            q = *(colorTable+t[x+1]);
+            t = (unsigned char *)image->scanLine(y+1);
+            r = *(colorTable+t[x]);
+            s = *(colorTable+t[x+1]);
+        }
+        else{
+            unsigned char *t;
+            p = background;
+            if((x >= 0) && (y >= 0)){
+                t = (unsigned char *)image->scanLine(y);
+                p = *(colorTable+t[x]);
+            }
+            q = background;
+            if(((x+1) < image->width()) && (y >= 0)){
+                t = (unsigned char *)image->scanLine(y);
+                q = *(colorTable+t[x+1]);
+            }
+            r = background;
+            if((x >= 0) && ((y+1) < image->height())){
+                t = (unsigned char *)image->scanLine(y+1);
+                r = *(colorTable+t[x]);
+            }
+            s = background;
+            if(((x+1) < image->width()) && ((y+1) < image->height())){
+                t = (unsigned char *)image->scanLine(y+1);
+                s = *(colorTable+t[x+1]);
+            }
+
+        }
+
+    }
+    x_offset -= floor(x_offset);
+    y_offset -= floor(y_offset);
+    alpha = 1.0-x_offset;
+    beta = 1.0-y_offset;
+
+    return(qRgba((unsigned char)(beta*(alpha*qRed(p)+x_offset*qRed(q))+y_offset*(alpha*qRed(r)+x_offset*qRed(s))),
+                 (unsigned char)(beta*(alpha*qGreen(p)+x_offset*qGreen(q))+y_offset*(alpha*qGreen(r)+x_offset*qGreen(s))),
+                 (unsigned char)(beta*(alpha*qBlue(p)+x_offset*qBlue(q))+y_offset*(alpha*qBlue(r)+x_offset*qBlue(s))),
+                 (unsigned char)(beta*(alpha*qAlpha(p)+x_offset*qAlpha(q))+y_offset*(alpha*qAlpha(r)+x_offset*qAlpha(s)))));
+}
+
+QImage KImageEffect::implode(QImage &src, double factor,
+                             unsigned int background)
+{
+    double amount, distance, radius;
+    double x_center, x_distance, x_scale;
+    double y_center, y_distance, y_scale;
+    unsigned int *destData;
+    int x, y;
+
+    QImage dest(src.width(), src.height(), 32);
+
+    // compute scaling factor
+    x_scale = 1.0;
+    y_scale = 1.0;
+    x_center = (double)0.5*src.width();
+    y_center = (double)0.5*src.height();
+    radius=x_center;
+    if(src.width() > src.height())
+        y_scale = (double)src.width()/src.height();
+    else if(src.width() < src.height()){
+        x_scale = (double) src.height()/src.width();
+        radius = y_center;
+    }
+    amount=factor/10.0;
+    if(amount >= 0)
+        amount/=10.0;
+    if(src.depth() > 8){ // DirectClass source image
+        unsigned int *srcData;
+        for(y=0; y < src.height(); ++y){
+            srcData = (unsigned int *)src.scanLine(y);
+            destData = (unsigned int *)dest.scanLine(y);
+            y_distance=y_scale*(y-y_center);
+            for(x=0; x < src.width(); ++x){
+                destData[x] = srcData[x];
+                x_distance = x_scale*(x-x_center);
+                distance= x_distance*x_distance+y_distance*y_distance;
+                if(distance < (radius*radius)){
+                    double factor;
+                    // Implode the pixel.
+                    factor=1.0;
+                    if(distance > 0.0)
+                        factor=
+                            pow(sin(0.5000000000000001*M_PI*sqrt(distance)/radius),-amount);
+                    destData[x] = interpolateColor(&src, factor*x_distance/x_scale+x_center,
+                                                   factor*y_distance/y_scale+y_center,
+                                                   background);
+                }
+            }
+        }
+    }
+    else{ // PsudeoClass source image
+        unsigned char *srcData;
+        unsigned char idx;
+        unsigned int *cTable = src.colorTable();
+        for(y=0; y < src.height(); ++y){
+            srcData = (unsigned char *)src.scanLine(y);
+            destData = (unsigned int *)dest.scanLine(y);
+            y_distance=y_scale*(y-y_center);
+            for(x=0; x < src.width(); ++x){
+                idx = srcData[x];
+                destData[x] = cTable[idx];
+                x_distance = x_scale*(x-x_center);
+                distance= x_distance*x_distance+y_distance*y_distance;
+                if(distance < (radius*radius)){
+                    double factor;
+                    // Implode the pixel.
+                    factor=1.0;
+                    if(distance > 0.0)
+                        factor=
+                            pow(sin(0.5000000000000001*M_PI*sqrt(distance)/radius),-amount);
+                    destData[x] = interpolateColor(&src, factor*x_distance/x_scale+x_center,
+                                                   factor*y_distance/y_scale+y_center,
+                                                   background);
+                }
+            }
+        }
+
+    }
+    return(dest);
+}
+
+QImage KImageEffect::rotate(QImage &img, RotateDirection r)
+{
+    QImage dest;
+    int x, y;
+    if(img.depth() > 8){
+        unsigned int *srcData, *destData;
+        switch(r){
+        case Rotate90:
+            dest.create(img.height(), img.width(), img.depth());
+            for(y=0; y < img.height(); ++y){
+                srcData = (unsigned int *)img.scanLine(y);
+                for(x=0; x < img.width(); ++x){
+                    destData = (unsigned int *)dest.scanLine(x);
+                    destData[img.height()-y-1] = srcData[x];
+                }
+            }
+            break;
+        case Rotate180:
+            dest.create(img.width(), img.height(), img.depth());
+            for(y=0; y < img.height(); ++y){
+                srcData = (unsigned int *)img.scanLine(y);
+                destData = (unsigned int *)dest.scanLine(img.height()-y-1);
+                for(x=0; x < img.width(); ++x)
+                    destData[img.width()-x-1] = srcData[x];
+            }
+            break;
+        case Rotate270:
+            dest.create(img.height(), img.width(), img.depth());
+            for(y=0; y < img.height(); ++y){
+                srcData = (unsigned int *)img.scanLine(y);
+                for(x=0; x < img.width(); ++x){
+                    destData = (unsigned int *)dest.scanLine(img.width()-x-1);
+                    destData[y] = srcData[x];
+                }
+            }
+            break;
+        default:
+            dest = img;
+            break;
+        }
+    }
+    else{
+        unsigned char *srcData, *destData;
+        unsigned int *srcTable, *destTable;
+        switch(r){
+        case Rotate90:
+            dest.create(img.height(), img.width(), img.depth());
+            dest.setNumColors(img.numColors());
+            srcTable = (unsigned int *)img.colorTable();
+            destTable = (unsigned int *)dest.colorTable();
+            for(x=0; x < img.numColors(); ++x)
+                destTable[x] = srcTable[x];
+            for(y=0; y < img.height(); ++y){
+                srcData = (unsigned char *)img.scanLine(y);
+                for(x=0; x < img.width(); ++x){
+                    destData = (unsigned char *)dest.scanLine(x);
+                    destData[img.height()-y-1] = srcData[x];
+                }
+            }
+            break;
+        case Rotate180:
+            dest.create(img.width(), img.height(), img.depth());
+            dest.setNumColors(img.numColors());
+            srcTable = (unsigned int *)img.colorTable();
+            destTable = (unsigned int *)dest.colorTable();
+            for(x=0; x < img.numColors(); ++x)
+                destTable[x] = srcTable[x];
+            for(y=0; y < img.height(); ++y){
+                srcData = (unsigned char *)img.scanLine(y);
+                destData = (unsigned char *)dest.scanLine(img.height()-y-1);
+                for(x=0; x < img.width(); ++x)
+                    destData[img.width()-x-1] = srcData[x];
+            }
+            break;
+        case Rotate270:
+            dest.create(img.height(), img.width(), img.depth());
+            dest.setNumColors(img.numColors());
+            srcTable = (unsigned int *)img.colorTable();
+            destTable = (unsigned int *)dest.colorTable();
+            for(x=0; x < img.numColors(); ++x)
+                destTable[x] = srcTable[x];
+            for(y=0; y < img.height(); ++y){
+                srcData = (unsigned char *)img.scanLine(y);
+                for(x=0; x < img.width(); ++x){
+                    destData = (unsigned char *)dest.scanLine(img.width()-x-1);
+                    destData[y] = srcData[x];
+                }
+            }
+            break;
+        default:
+            dest = img;
+            break;
+        }
+
+    }
+    return(dest);
+}
+
+void KImageEffect::solarize(QImage &img, double factor)
+{
+    int x, y, i, count;
+    unsigned int threshold;
+    unsigned int *data;
+
+    threshold = (unsigned int)(factor*(MaxRGB+1)/100.0);
+    if(img.depth() < 32){
+        data = (unsigned int *)img.colorTable();
+        count = img.numColors();
+    }
+    else{
+        data = (unsigned int *)img.bits();
+        count = img.width()*img.height();
+    }
+    for(i=0; i < count; ++i){
+        data[i] = qRgba(qRed(data[i]) > threshold ? MaxRGB-qRed(data[i]) : qRed(data[i]),
+                        qGreen(data[i]) > threshold ? MaxRGB-qGreen(data[i]) : qGreen(data[i]),
+                        qBlue(data[i]) > threshold ? MaxRGB-qBlue(data[i]) : qBlue(data[i]),
+                        qAlpha(data[i]));
+    }
+}
+
+QImage KImageEffect::spread(QImage &src, unsigned int amount)
+{
+    int quantum, x, y;
+    int x_distance, y_distance;
+    if(src.width() < 3 || src.height() < 3)
+        return(src);
+    QImage dest(src);
+    dest.detach();
+    quantum=(amount+1) >> 1;
+    if(src.depth() > 8){ // DirectClass source image
+        unsigned int *p, *q;
+        for(y=0; y < src.height(); y++){
+            q = (unsigned int *)dest.scanLine(y);
+            for(x=0; x < src.width(); x++){
+                x_distance = x + ((rand() & (amount+1))-quantum);
+                y_distance = y + ((rand() & (amount+1))-quantum);
+                x_distance = QMIN(x_distance, src.width()-1);
+                y_distance = QMIN(y_distance, src.height()-1);
+                if(x_distance < 0)
+                    x_distance = 0;
+                if(y_distance < 0)
+                    y_distance = 0;
+                p = (unsigned int *)src.scanLine(y_distance);
+                p += x_distance;
+                *q++=(*p);
+            }
+        }
+    }
+    else{ // PsudeoClass source image
+        // just do colortable values
+        unsigned char *p, *q;
+        for(y=0; y < src.height(); y++){
+            q = (unsigned char *)dest.scanLine(y);
+            for(x=0; x < src.width(); x++){
+                x_distance = x + ((rand() & (amount+1))-quantum);
+                y_distance = y + ((rand() & (amount+1))-quantum);
+                x_distance = QMIN(x_distance, src.width()-1);
+                y_distance = QMIN(y_distance, src.height()-1);
+                if(x_distance < 0)
+                    x_distance = 0;
+                if(y_distance < 0)
+                    y_distance = 0;
+                p = (unsigned char *)src.scanLine(y_distance);
+                p += x_distance;
+                *q++=(*p);
+            }
+        }
+    }
+    return(dest);
+}
+
+QImage KImageEffect::swirl(QImage &src, double degrees,
+                           unsigned int background)
+{
+    double cosine, distance, factor, radius, sine, x_center, x_distance,
+        x_scale, y_center, y_distance, y_scale;
+    int x, y;
+    unsigned int *q;
+    QImage dest(src.width(), src.height(), 32);
+
+    // compute scaling factor
+    x_center = src.width()/2.0;
+    y_center = src.height()/2.0;
+    radius = QMAX(x_center,y_center);
+    x_scale=1.0;
+    y_scale=1.0;
+    if(src.width() > src.height())
+        y_scale=(double)src.width()/src.height();
+    else if(src.width() < src.height())
+        x_scale=(double)src.height()/src.width();
+    degrees=DegreesToRadians(degrees);
+    // swirl each row
+    if(src.depth() > 8){ // DirectClass source image
+        unsigned int *p;
+        for(y=0; y < src.height(); y++){
+            p = (unsigned int *)src.scanLine(y);
+            q = (unsigned int *)dest.scanLine(y);
+            y_distance = y_scale*(y-y_center);
+            for(x=0; x < src.width(); x++){
+                // determine if the pixel is within an ellipse
+                *q=(*p);
+                x_distance = x_scale*(x-x_center);
+                distance = x_distance*x_distance+y_distance*y_distance;
+                if (distance < (radius*radius)){
+                    // swirl
+                    factor = 1.0-sqrt(distance)/radius;
+                    sine = sin(degrees*factor*factor);
+                    cosine = cos(degrees*factor*factor);
+                    *q = interpolateColor(&src,
+                                          (cosine*x_distance-sine*y_distance)/x_scale+x_center,
+                                          (sine*x_distance+cosine*y_distance)/y_scale+y_center,
+                                          background);
+                }
+                p++;
+                q++;
+            }
+        }
+    }
+    else{ // PsudeoClass source image
+        unsigned char *p;
+        unsigned int *cTable = (unsigned int *)src.colorTable();
+        for(y=0; y < src.height(); y++){
+            p = (unsigned char *)src.scanLine(y);
+            q = (unsigned int *)dest.scanLine(y);
+            y_distance = y_scale*(y-y_center);
+            for(x=0; x < src.width(); x++){
+                // determine if the pixel is within an ellipse
+                *q = *(cTable+(*p));
+                x_distance = x_scale*(x-x_center);
+                distance = x_distance*x_distance+y_distance*y_distance;
+                if (distance < (radius*radius)){
+                    // swirl
+                    factor = 1.0-sqrt(distance)/radius;
+                    sine = sin(degrees*factor*factor);
+                    cosine = cos(degrees*factor*factor);
+                    *q = interpolateColor(&src,
+                                          (cosine*x_distance-sine*y_distance)/x_scale+x_center,
+                                          (sine*x_distance+cosine*y_distance)/y_scale+y_center,
+                                          background);
+                }
+                p++;
+                q++;
+            }
+        }
+
+    }
+    return(dest);
+}
+
+QImage KImageEffect::wave(QImage &src, double amplitude, double wavelength,
+                          unsigned int background)
+{
+    double *sine_map;
+    int x, y;
+    unsigned int *q;
+
+    QImage dest(src.width(), src.height() + (int)(2*fabs(amplitude)), 32);
+    // allocate sine map
+    sine_map = (double *)malloc(dest.width()*sizeof(double));
+    if(!sine_map)
+        return(src);
+    for(x=0; x < dest.width(); ++x)
+        sine_map[x]=fabs(amplitude)+amplitude*sin((2*M_PI*x)/wavelength);
+    // wave image
+    for(y=0; y < dest.height(); ++y){
+        q = (unsigned int *)dest.scanLine(y);
+        for (x=0; x < dest.width(); x++){
+            *q=interpolateColor(&src, x, (int)(y-sine_map[x]), background);
+            ++q;
+        }
+    }
+    free(sine_map);
+    return(dest);
+}
+
+QImage KImageEffect::oilPaint(QImage &src, int radius)
+{
+    // TODO 8bpp src!
+    if(src.depth() < 32){
+        qWarning("Oil Paint source image < 32bpp. Convert before using!");
+        return(src);
+    }
+    int count, j, k, i, x, y;
+    unsigned int *histogram;
+    unsigned int *s;
+
+    unsigned int *srcData, *destData;
+
+    QImage dest(src);
+    dest.detach();
+    histogram = (unsigned int *) malloc((MaxRGB+1)*sizeof(unsigned int));
+    if(!histogram)
+        return(src);
+    // paint each row
+    k=0;
+    for(y = radius; y < src.height(); ++y){
+        srcData = (unsigned int *)src.scanLine(y-radius);
+        destData = (unsigned int *)dest.scanLine(y);
+        srcData += radius*src.width()+radius;
+        destData += radius;
+        for(x=radius; x < src.width()-radius; ++x){
+            // determine most frequent color
+            count = 0;
+            for(i=0; i < MaxRGB+1; ++i)
+                histogram[i] = 0;
+            for(i=0; i < radius; ++i){
+                s = srcData-(radius-1)*src.width()-i-1;
+                for(j =0; j < (2*i+1); ++j){
+                    k = intensityValue(*s);
+                    histogram[k]++;
+                    if(histogram[k] > count){
+                        *destData = *s;
+                        count = histogram[k];
+                    }
+                    ++s;
+                }
+                s = srcData+(radius-i)*src.width()-i-1;
+                for(j =0; j < (2*i+1); ++j){
+                    k = intensityValue(*s);
+                    histogram[k]++;
+                    if(histogram[k] > count){
+                        *destData = *s;
+                        count = histogram[k];
+                    }
+                    ++s;
+                }
+            }
+            s = srcData-radius;
+            for(j =0; j < (2*i+1); ++j){
+                k = intensityValue(*s);
+                histogram[k]++;
+                if(histogram[k] > count){
+                    *destData = *s;
+                    count = histogram[k];
+                }
+                ++s;
+            }
+            ++srcData;
+            ++destData;
+        }
+    }
+    free(histogram);
+    return(dest);
+}
+
+//
+// The following methods work by computing a value from neighboring pixels
+// (mosfet 12/28/01)
+//
+
+QImage KImageEffect::edge(QImage &src, double factor)
+{
+#define Edge(weight) \
+    total_red+=(weight)*qRed(*s); \
+    total_green+=(weight)*qGreen(*s); \
+    total_blue+=(weight)*qBlue(*s); \
+    total_opacity+=(weight)*qAlpha(*s); \
+    s++;
+
+#define Edge256(weight) \
+    total_red+=(weight)*qRed(*(cTable+(*s))); \
+    total_green+=(weight)*qGreen(*(cTable+(*s))); \
+    total_blue+=(weight)*qBlue(*(cTable+(*s))); \
+    total_opacity+=(weight)*qAlpha(*(cTable+(*s))); \
+    s++;
+
+    if(src.width() < 3 || src.height() < 3)
+        return(src);
+
+    double total_blue, total_green, total_opacity, total_red, weight;
+
+    int x, y;
+
+    unsigned int *q;
+
+    QImage dest(src.width(), src.height(), 32);
+    weight=factor/8.0;
+    if(src.depth() > 8){ // DirectClass source image
+        unsigned int *p, *s;
+        for(y=0; y < src.height(); ++y){
+            p = (unsigned int *)src.scanLine(QMIN(QMAX(y-1,0),src.height()-3));
+            q = (unsigned int *)dest.scanLine(y);
+            // edge detect this row of pixels.
+            *q++=(*(p+src.width()));
+            for(x=1; x < src.width()-1; ++x){
+                // compute weighted average of target pixel color components.
+                total_red=0.0;
+                total_green=0.0;
+                total_blue=0.0;
+                total_opacity=0.0;
+                s=p;
+                Edge(-weight/8); Edge(-weight/8) Edge(-weight/8);
+                s=p+src.width();
+                Edge(-weight/8); Edge(weight); Edge(-weight/8);
+                s=p+2*src.width();
+                Edge(-weight/8); Edge(-weight/8); Edge(-weight/8);
+                *q = qRgba((unsigned char)((total_red < 0) ? 0 : (total_red > MaxRGB) ? MaxRGB : total_red),
+                           (unsigned char)((total_green < 0) ? 0 : (total_green > MaxRGB) ? MaxRGB : total_green),
+                           (unsigned char)((total_blue < 0) ? 0 : (total_blue > MaxRGB) ? MaxRGB : total_blue),
+                           (unsigned char)((total_opacity < 0) ? 0 : (total_opacity > MaxRGB) ? MaxRGB : total_opacity));
+                p++;
+                q++;
+            }
+            p++;
+            *q++=(*p);
+        }
+    }
+    else{ // PsudeoClass source image
+        unsigned char *p, *p2, *p3, *s;
+        unsigned int *cTable = src.colorTable();
+        int scanLineIdx;
+        for(y=0; y < src.height(); ++y){
+            scanLineIdx = QMIN(QMAX(y-1,0),src.height()-3);
+            p = (unsigned char *)src.scanLine(scanLineIdx);
+            p2 = (unsigned char *)src.scanLine(scanLineIdx+1);
+            p3 = (unsigned char *)src.scanLine(scanLineIdx+2);
+            q = (unsigned int *)dest.scanLine(y);
+            // edge detect this row of pixels.
+            *q++=(*(cTable+(*p2)));
+            for(x=1; x < src.width()-1; ++x){
+                // compute weighted average of target pixel color components.
+                total_red=0.0;
+                total_green=0.0;
+                total_blue=0.0;
+                total_opacity=0.0;
+                s=p;
+                Edge256(-weight/8); Edge256(-weight/8) Edge256(-weight/8);
+                s=p2;
+                Edge256(-weight/8); Edge256(weight); Edge256(-weight/8);
+                s=p3;
+                Edge256(-weight/8); Edge256(-weight/8); Edge256(-weight/8);
+                *q = qRgba((unsigned char)((total_red < 0) ? 0 : (total_red > MaxRGB) ? MaxRGB : total_red),
+                           (unsigned char)((total_green < 0) ? 0 : (total_green > MaxRGB) ? MaxRGB : total_green),
+                           (unsigned char)((total_blue < 0) ? 0 : (total_blue > MaxRGB) ? MaxRGB : total_blue),
+                           (unsigned char)((total_opacity < 0) ? 0 : (total_opacity > MaxRGB) ? MaxRGB : total_opacity));
+                p++;
+                p2++;
+                p3++;
+                q++;
+            }
+            p++;
+            *q++=(*(cTable+(*p)));
+        }
+    }
+    return(dest);
+}
+
+QImage KImageEffect::sharpen(QImage &src, double factor)
+{
+#define Sharpen(weight) \
+    total_red+=(weight)*qRed(*s); \
+    total_green+=(weight)*qGreen(*s); \
+    total_blue+=(weight)*qBlue(*s); \
+    total_opacity+=(weight)*qAlpha(*s); \
+    s++;
+
+#define Sharpen256(weight) \
+    total_red+=(weight)*qRed(*(cTable+(*s))); \
+    total_green+=(weight)*qGreen(*(cTable+(*s))); \
+    total_blue+=(weight)*qBlue(*(cTable+(*s))); \
+    total_opacity+=(weight)*qAlpha(*(cTable+(*s))); \
+    s++;
+
+    if(src.width() < 3 || src.height() < 3)
+        return(src);
+
+    double total_blue, total_green, total_opacity, total_red;
+    double quantum, weight;
+    unsigned char r, g, b, a;
+
+    int x, y;
+    unsigned int *q;
+
+    QImage dest(src.width(), src.height(), 32);
+    weight = ((100.0-factor)/2.0+13.0);
+    quantum = QMAX(weight-12.0, 1.0);
+    if(src.depth() > 8){ // DirectClass source image
+        unsigned int *p, *s;
+        for(y=0; y < src.height(); ++y){
+            p = (unsigned int *)src.scanLine(QMIN(QMAX(y-1,0),src.height()-3));
+            q = (unsigned int *)dest.scanLine(y);
+            // sharpen this row of pixels.
+            *q++=(*(p+src.width()));
+            for(x=1; x < src.width()-1; ++x){
+                // compute weighted average of target pixel color components.
+                total_red=0.0;
+                total_green=0.0;
+                total_blue=0.0;
+                total_opacity=0.0;
+                s=p;
+                Sharpen(-1); Sharpen(-2); Sharpen(-1);
+                s=p+src.width();
+                Sharpen(-2); Sharpen(weight); Sharpen(-2);
+                s=p+2*src.width();
+                Sharpen(-1); Sharpen(-2); Sharpen(-1);
+                if(total_red < 0)
+                    r=0;
+                else if(total_red > (int)(MaxRGB*quantum))
+                    r = (unsigned char)MaxRGB;
+                else
+                    r = (unsigned char)((total_red+(quantum/2.0))/quantum);
+
+                if(total_green < 0)
+                    g = 0;
+                else if(total_green > (int)(MaxRGB*quantum))
+                    g = (unsigned char)MaxRGB;
+                else
+                    g = (unsigned char)((total_green+(quantum/2.0))/quantum);
+
+                if(total_blue < 0)
+                    b = 0;
+                else if(total_blue > (int)(MaxRGB*quantum))
+                    b = (unsigned char)MaxRGB;
+                else
+                    b = (unsigned char)((total_blue+(quantum/2.0))/quantum);
+
+                if(total_opacity < 0)
+                    a = 0;
+                else if(total_opacity > (int)(MaxRGB*quantum))
+                    a = (unsigned char)MaxRGB;
+                else
+                    a= (unsigned char)((total_opacity+(quantum/2.0))/quantum);
+
+                *q = qRgba(r, g, b, a);
+
+                p++;
+                q++;
+            }
+            p++;
+            *q++=(*p);
+        }
+    }
+    else{ // PsudeoClass source image
+        unsigned char *p, *p2, *p3, *s;
+        unsigned int *cTable = src.colorTable();
+        int scanLineIdx;
+        for(y=0; y < src.height(); ++y){
+            scanLineIdx = QMIN(QMAX(y-1,0),src.height()-3);
+            p = (unsigned char *)src.scanLine(scanLineIdx);
+            p2 = (unsigned char *)src.scanLine(scanLineIdx+1);
+            p3 = (unsigned char *)src.scanLine(scanLineIdx+2);
+            q = (unsigned int *)dest.scanLine(y);
+            // sharpen this row of pixels.
+            *q++=(*(cTable+(*p2)));
+            for(x=1; x < src.width()-1; ++x){
+                // compute weighted average of target pixel color components.
+                total_red=0.0;
+                total_green=0.0;
+                total_blue=0.0;
+                total_opacity=0.0;
+                s=p;
+                Sharpen256(-1); Sharpen256(-2); Sharpen256(-1);
+                s=p2;
+                Sharpen256(-2); Sharpen256(weight); Sharpen256(-2);
+                s=p3;
+                Sharpen256(-1); Sharpen256(-2); Sharpen256(-1);
+                if(total_red < 0)
+                    r=0;
+                else if(total_red > (int)(MaxRGB*quantum))
+                    r = (unsigned char)MaxRGB;
+                else
+                    r = (unsigned char)((total_red+(quantum/2.0))/quantum);
+
+                if(total_green < 0)
+                    g = 0;
+                else if(total_green > (int)(MaxRGB*quantum))
+                    g = (unsigned char)MaxRGB;
+                else
+                    g = (unsigned char)((total_green+(quantum/2.0))/quantum);
+
+                if(total_blue < 0)
+                    b = 0;
+                else if(total_blue > (int)(MaxRGB*quantum))
+                    b = (unsigned char)MaxRGB;
+                else
+                    b = (unsigned char)((total_blue+(quantum/2.0))/quantum);
+
+                if(total_opacity < 0)
+                    a = 0;
+                else if(total_opacity > (int)(MaxRGB*quantum))
+                    a = (unsigned char)MaxRGB;
+                else
+                    a = (unsigned char)((total_opacity+(quantum/2.0))/quantum);
+
+                *q = qRgba(r, g, b, a);
+
+                p++;
+                p2++;
+                p3++;
+                q++;
+            }
+            p++;
+            *q++=(*(cTable+(*p)));
+        }
+    }
+    return(dest);
+}
+
+QImage KImageEffect::emboss(QImage &src)
+{
+#define Emboss(weight) \
+    total_red+=(weight)*qRed(*s); \
+    total_green+=(weight)*qGreen(*s); \
+    total_blue+=(weight)*qBlue(*s); \
+    s++;
+
+#define Emboss256(weight) \
+    total_red+=(weight)*qRed(*(cTable+(*s))); \
+    total_green+=(weight)*qGreen(*(cTable+(*s))); \
+    total_blue+=(weight)*qBlue(*(cTable+(*s))); \
+    s++;
+
+    if(src.width() < 3 || src.height() < 3)
+        return(src);
+
+    double total_blue, total_green, total_red;
+    int x, y;
+    unsigned int *q;
+
+    QImage dest(src.width(), src.height(), 32);
+    if(src.depth() > 8){ // DirectClass source image
+        unsigned int *p, *s;
+        for(y=0; y < src.height(); ++y){
+            p = (unsigned int *)src.scanLine(QMIN(QMAX(y-1,0),src.height()-3));
+            q = (unsigned int *)dest.scanLine(y);
+            // emboss this row of pixels.
+            *q++=(*(p+src.width()));
+            for(x=1; x < src.width()-1; ++x){
+                // compute weighted average of target pixel color components.
+                total_red=0.0;
+                total_green=0.0;
+                total_blue=0.0;
+                s=p;
+                Emboss(-1); Emboss(-2); Emboss( 0);
+                s=p+src.width();
+                Emboss(-2); Emboss( 0); Emboss( 2);
+                s=p+2*src.width();
+                Emboss( 0); Emboss( 2); Emboss( 1);
+                total_red += (MaxRGB+1)/2;
+                total_green += (MaxRGB+1)/2;
+                total_blue += (MaxRGB+1)/2;
+                *q = qRgba((unsigned char)((total_red < 0) ? 0 : (total_red > MaxRGB) ? MaxRGB : total_red),
+                           (unsigned char)((total_green < 0) ? 0 : (total_green > MaxRGB) ? MaxRGB : total_green),
+                           (unsigned char)((total_blue < 0) ? 0 : (total_blue > MaxRGB) ? MaxRGB : total_blue),
+                           255);
+                p++;
+                q++;
+            }
+            p++;
+            *q++=(*p);
+        }
+    }
+    else{ // PsudeoClass source image
+        unsigned char *p, *p2, *p3, *s;
+        unsigned int *cTable = src.colorTable();
+        int scanLineIdx;
+        for(y=0; y < src.height(); ++y){
+            scanLineIdx = QMIN(QMAX(y-1,0),src.height()-3);
+            p = (unsigned char *)src.scanLine(scanLineIdx);
+            p2 = (unsigned char *)src.scanLine(scanLineIdx+1);
+            p3 = (unsigned char *)src.scanLine(scanLineIdx+2);
+            q = (unsigned int *)dest.scanLine(y);
+            // emboss this row of pixels.
+            *q++=(*(cTable+(*p2)));
+            for(x=1; x < src.width()-1; ++x){
+                // compute weighted average of target pixel color components.
+                total_red=0.0;
+                total_green=0.0;
+                total_blue=0.0;
+                s=p;
+                Emboss256(-1); Emboss256(-2); Emboss256(0);
+                s=p2;
+                Emboss256(-2); Emboss256(0); Emboss256(2);
+                s=p3;
+                Emboss256(0); Emboss256(2); Emboss256(1);
+                total_red += (MaxRGB+1)/2;
+                total_green += (MaxRGB+1)/2;
+                total_blue += (MaxRGB+1)/2;
+                *q = qRgba((unsigned char)((total_red < 0) ? 0 : (total_red > MaxRGB) ? MaxRGB : total_red),
+                           (unsigned char)((total_green < 0) ? 0 : (total_green > MaxRGB) ? MaxRGB : total_green),
+                           (unsigned char)((total_blue < 0) ? 0 : (total_blue > MaxRGB) ? MaxRGB : total_blue),
+                           255);
+                p++;
+                p2++;
+                p3++;
+                q++;
+            }
+            p++;
+            *q++=(*(cTable+(*p)));
+        }
+    }
+    toGray(dest);
+    normalize(dest);
+    return(dest);
+}
+
+QImage KImageEffect::shade(QImage &src, bool color_shading, double azimuth,
+             double elevation)
+{
+    struct PointInfo{
+        double x, y, z;
+    };
+
+    double distance, normal_distance, shade;
+    int x, y;
+
+    struct PointInfo light, normal;
+
+    unsigned int *q;
+
+    QImage dest(src.width(), src.height(), 32);
+
+    azimuth = DegreesToRadians(azimuth);
+    elevation = DegreesToRadians(elevation);
+    light.x = MaxRGB*cos(azimuth)*cos(elevation);
+    light.y = MaxRGB*sin(azimuth)*cos(elevation);
+    light.z = MaxRGB*sin(elevation);
+    normal.z= 2*MaxRGB;  // constant Z of surface normal
+
+    if(src.depth() > 8){ // DirectClass source image
+        unsigned int *p, *s0, *s1, *s2;
+        for(y=0; y < src.height(); ++y){
+            p = (unsigned int *)src.scanLine(QMIN(QMAX(y-1,0),src.height()-3));
+            q = (unsigned int *)dest.scanLine(y);
+            // shade this row of pixels.
+            *q++=(*(p+src.width()));
+            p++;
+            s0 = p;
+            s1 = p + src.width();
+            s2 = p + 2*src.width();
+            for(x=1; x < src.width()-1; ++x){
+                // determine the surface normal and compute shading.
+                normal.x=intensityValue(*(s0-1))+intensityValue(*(s1-1))+intensityValue(*(s2-1))-
+                    (double) intensityValue(*(s0+1))-(double) intensityValue(*(s1+1))-
+                    (double) intensityValue(*(s2+1));
+                normal.y=intensityValue(*(s2-1))+intensityValue(*s2)+intensityValue(*(s2+1))-
+                    (double) intensityValue(*(s0-1))-(double) intensityValue(*s0)-
+                    (double) intensityValue(*(s0+1));
+                if((normal.x == 0) && (normal.y == 0))
+                    shade=light.z;
+                else{
+                    shade=0.0;
+                    distance=normal.x*light.x+normal.y*light.y+normal.z*light.z;
+                    if (distance > 0.0){
+                        normal_distance=
+                            normal.x*normal.x+normal.y*normal.y+normal.z*normal.z;
+                        if(fabs(normal_distance) > 0.0000001)
+                            shade=distance/sqrt(normal_distance);
+                    }
+                }
+                if(!color_shading){
+                    *q = qRgba((unsigned char)(shade),
+                               (unsigned char)(shade),
+                               (unsigned char)(shade),
+                               qAlpha(*s1));
+                }
+                else{
+                    *q = qRgba((unsigned char)((shade*qRed(*s1))/(MaxRGB+1)),
+                               (unsigned char)((shade*qGreen(*s1))/(MaxRGB+1)),
+                               (unsigned char)((shade*qBlue(*s1))/(MaxRGB+1)),
+                               qAlpha(*s1));
+                }
+                ++s0;
+                ++s1;
+                ++s2;
+                q++;
+            }
+            *q++=(*s1);
+        }
+    }
+    else{ // PsudeoClass source image
+        unsigned char *p, *s0, *s1, *s2;
+        int scanLineIdx;
+        unsigned int *cTable = (unsigned int *)src.colorTable();
+        for(y=0; y < src.height(); ++y){
+            scanLineIdx = QMIN(QMAX(y-1,0),src.height()-3);
+            p = (unsigned char *)src.scanLine(scanLineIdx);
+            q = (unsigned int *)dest.scanLine(y);
+            // shade this row of pixels.
+            s0 = p;
+            s1 = (unsigned char *) src.scanLine(scanLineIdx+1);
+            s2 = (unsigned char *) src.scanLine(scanLineIdx+2);
+            *q++=(*(cTable+(*s1)));
+            ++p;
+            ++s0;
+            ++s1;
+            ++s2;
+            for(x=1; x < src.width()-1; ++x){
+                // determine the surface normal and compute shading.
+                normal.x=intensityValue(*(cTable+(*(s0-1))))+intensityValue(*(cTable+(*(s1-1))))+intensityValue(*(cTable+(*(s2-1))))-
+                    (double) intensityValue(*(cTable+(*(s0+1))))-(double) intensityValue(*(cTable+(*(s1+1))))-
+                    (double) intensityValue(*(cTable+(*(s2+1))));
+                normal.y=intensityValue(*(cTable+(*(s2-1))))+intensityValue(*(cTable+(*s2)))+intensityValue(*(cTable+(*(s2+1))))-
+                    (double) intensityValue(*(cTable+(*(s0-1))))-(double) intensityValue(*(cTable+(*s0)))-
+                    (double) intensityValue(*(cTable+(*(s0+1))));
+                if((normal.x == 0) && (normal.y == 0))
+                    shade=light.z;
+                else{
+                    shade=0.0;
+                    distance=normal.x*light.x+normal.y*light.y+normal.z*light.z;
+                    if (distance > 0.0){
+                        normal_distance=
+                            normal.x*normal.x+normal.y*normal.y+normal.z*normal.z;
+                        if(fabs(normal_distance) > 0.0000001)
+                            shade=distance/sqrt(normal_distance);
+                    }
+                }
+                if(!color_shading){
+                    *q = qRgba((unsigned char)(shade),
+                               (unsigned char)(shade),
+                               (unsigned char)(shade),
+                               qAlpha(*(cTable+(*s1))));
+                }
+                else{
+                    *q = qRgba((unsigned char)((shade*qRed(*(cTable+(*s1))))/(MaxRGB+1)),
+                               (unsigned char)((shade*qGreen(*(cTable+(*s1))))/(MaxRGB+1)),
+                               (unsigned char)((shade*qBlue(*(cTable+(*s1))))/(MaxRGB+1)),
+                               qAlpha(*s1));
+                }
+                ++s0;
+                ++s1;
+                ++s2;
+                q++;
+            }
+            *q++=(*(cTable+(*s1)));
+        }
+    }
+    return(dest);
+}
+
+QImage KImageEffect::blur(QImage &src, double factor)
+{
+
+#define Blur(weight) \
+    total_red+=(weight)*qRed(*s); \
+    total_green+=(weight)*qGreen(*s); \
+    total_blue+=(weight)*qBlue(*s); \
+    total_opacity+=(weight)*qAlpha(*s); \
+    s++;
+
+#define Blur256(weight) \
+    total_red+=(weight)*qRed(*(cTable+(*s))); \
+    total_green+=(weight)*qGreen(*(cTable+(*s))); \
+    total_blue+=(weight)*qBlue(*(cTable+(*s))); \
+    total_opacity+=(weight)*qAlpha(*(cTable+(*s))); \
+    s++;
+
+    if(src.width() < 3 || src.height() < 3)
+        return(src);
+
+    double quantum, total_blue, total_green, total_opacity, total_red, weight;
+
+    int x, y;
+    unsigned int *q;
+
+    QImage dest(src.width(), src.height(), 32);
+    weight=((100.0-factor)/2)+1;
+    quantum = QMAX(weight+12.0, 1.0);
+    if(src.depth() > 8){ // DirectClass source image
+        unsigned int *p, *s;
+        for(y=0; y < src.height(); ++y){
+            p = (unsigned int *)src.scanLine(QMIN(QMAX(y-1,0),src.height()-3));
+            q = (unsigned int *)dest.scanLine(y);
+            // blur this row of pixels.
+            *q++=(*(p+src.width()));
+            for(x=1; x < src.width()-1; ++x){
+                // compute weighted average of target pixel color components.
+                total_red=0.0;
+                total_green=0.0;
+                total_blue=0.0;
+                total_opacity=0.0;
+                s=p;
+                Blur(1); Blur(2); Blur(1);
+                s=p+src.width();
+                Blur(2); Blur(weight); Blur(2);
+                s=p+2*src.width();
+                Blur(1); Blur(2); Blur(1);
+                *q = qRgba((unsigned char)((total_red+(quantum/2))/quantum),
+                           (unsigned char)((total_green+(quantum/2))/quantum),
+                           (unsigned char)((total_blue+(quantum/2))/quantum),
+                           (unsigned char)((total_opacity+(quantum/2))/quantum));
+                p++;
+                q++;
+            }
+            p++;
+            *q++=(*p);
+        }
+    }
+    else{ // PsudeoClass source image
+        unsigned char *p, *p2, *p3, *s;
+        unsigned int *cTable = src.colorTable();
+        int scanLineIdx;
+        for(y=0; y < src.height(); ++y){
+            scanLineIdx = QMIN(QMAX(y-1,0),src.height()-3);
+            p = (unsigned char *)src.scanLine(scanLineIdx);
+            p2 = (unsigned char *)src.scanLine(scanLineIdx+1);
+            p3 = (unsigned char *)src.scanLine(scanLineIdx+2);
+            q = (unsigned int *)dest.scanLine(y);
+            // blur this row of pixels.
+            *q++=(*(cTable+(*p2)));
+            for(x=1; x < src.width()-1; ++x){
+                // compute weighted average of target pixel color components.
+                total_red=0.0;
+                total_green=0.0;
+                total_blue=0.0;
+                total_opacity=0.0;
+                s=p;
+                Blur256(1); Blur256(2); Blur256(1);
+                s=p2;
+                Blur256(2); Blur256(weight); Blur256(2);
+                s=p3;
+                Blur256(1); Blur256(2); Blur256(1);
+                *q = qRgba((unsigned char)((total_red+(quantum/2))/quantum),
+                           (unsigned char)((total_green+(quantum/2))/quantum),
+                           (unsigned char)((total_blue+(quantum/2))/quantum),
+                           (unsigned char)((total_opacity+(quantum/2))/quantum));
+                p++;
+                p2++;
+                p3++;
+                q++;
+            }
+            p++;
+            *q++=(*(cTable+(*p)));
+        }
+    }
+    return(dest);
+}
+
+// High quality, expensive HSV contrast. You can do a faster one by just
+// taking a grayscale threshold (ie: 128) and incrementing RGB color
+// channels above it and decrementing those below it, but this gives much
+// better results. (mosfet 12/28/01)
+void KImageEffect::contrastHSV(QImage &img, bool sharpen)
+{
+    int i, sign, r, g, b;
+    unsigned int *data;
+    int count;
+    double brightness, scale, theta;
+    QColor c;
+    int h, s, v;
+
+    sign = sharpen ? 1 : -1;
+    scale=0.5000000000000001;
+    if(img.depth() > 8){
+        count = img.width()*img.height();
+        data = (unsigned int *)img.bits();
+    }
+    else{
+        count = img.numColors();
+        data = (unsigned int *)img.colorTable();
+    }
+    for(i=0; i < count; ++i){
+        c.setRgb(data[i]);
+        c.hsv(&h, &s, &v);
+        brightness = v/255.0;
+        theta=(brightness-0.5)*M_PI;
+        brightness+=scale*(((scale*((sin(theta)+1.0)))-brightness)*sign);
+        if (brightness > 1.0)
+            brightness=1.0;
+        else
+            if (brightness < 0)
+                brightness=0.0;
+        v = (int)(brightness*255);
+        c.setHsv(h, s, v);
+        data[i] = qRgba(c.red(), c.green(), c.blue(), qAlpha(data[i]));
+    }
+}
+
+
+
