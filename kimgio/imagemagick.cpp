@@ -53,7 +53,8 @@ void kimgio_imagemagick_read( QImageIO *io )
   im_image=ReadImage(&image_info);
   if (im_image == (Image *) NULL)
     return;
-  qt_image.create(im_image->columns, im_image->rows, 32);
+  if (!qt_image.create(im_image->columns, im_image->rows, 32))
+    return;
 
   int x, y, i, j;
   unsigned char *pixels, *q;
@@ -62,8 +63,8 @@ void kimgio_imagemagick_read( QImageIO *io )
 
   TransformRGBImage(im_image,RGBColorspace);
   switch (image_info.interlace) {
+  default:
   case NoInterlace: {
-    qDebug("This's where we're at");
     pixels=(unsigned char *)AllocateMemory(im_image->columns*sizeof(RunlengthPacket));
     x=0;
     y=0;
@@ -96,7 +97,7 @@ void kimgio_imagemagick_read( QImageIO *io )
     break;
   }
   }
- 
+  
   io->setImage( qt_image );
   io->setStatus( 0 );
   return;
@@ -112,10 +113,26 @@ extern "C" void kimgio_init_imagemagick() {
 
     QImageIO::defineIOHandler( "PNG", "^.PNG", 0,
 			       kimgio_imagemagick_read, kimgio_imagemagick_write );
-    QImageIO::defineIOHandler( "PIC", "PICSoftware", 0,
+    // I think only XV puts this kinda header on it
+    QImageIO::defineIOHandler( "PICT", "^PICSoftware", 0,
 			       kimgio_imagemagick_read, kimgio_imagemagick_write );
     QImageIO::defineIOHandler( "DCX", "\261h\336", 0,
 			       kimgio_imagemagick_read, kimgio_imagemagick_write );
     QImageIO::defineIOHandler( "PCX", "\xa\x5\x1\x8", 0,
+			       kimgio_imagemagick_read, kimgio_imagemagick_write );
+    // ImageMagick Image File Formt
+    QImageIO::defineIOHandler( "MIF", "^id\=ImageMagick", 0,
+			       kimgio_imagemagick_read, kimgio_imagemagick_write );
+    //Windows BMP/DIB
+    QImageIO::defineIOHandler( "BMP", "^BM", 0,
+			       kimgio_imagemagick_read, kimgio_imagemagick_write );
+    // This should work, but some stupid fucking TIFF handler seems to be eating this.. damnit
+    QImageIO::defineIOHandler( "FITS", "^SIMPLE  =", 0,
+			       kimgio_imagemagick_read, kimgio_imagemagick_write );
+    // Khoros Visualization image file
+    QImageIO::defineIOHandler( "VIFF", "^\xab", 0,
+			       kimgio_imagemagick_read, kimgio_imagemagick_write );
+    // And pgb
+    QImageIO::defineIOHandler( "PNM", "^P[4-6]", 0,
 			       kimgio_imagemagick_read, kimgio_imagemagick_write );
 }
