@@ -376,10 +376,10 @@ void LightStyleV3::drawPrimitive( PrimitiveElement pe,
     case PE_ExclusiveIndicator:
 	{
 	    QRect br = r, // bevel rect
-		  _or = r, // outline rect
+		  lr = r, // outline rect
 		  cr = r, // contents rect
 		  ir = r; // indicator rect
-	    _or.addCoords( 1, 1, -1, -1 );
+	    lr.addCoords( 1, 1, -1, -1 );
 	    cr.addCoords( 2, 2, -2, -2 );
 	    ir.addCoords( 3, 3, -3, -3 );
 
@@ -389,7 +389,7 @@ void LightStyleV3::drawPrimitive( PrimitiveElement pe,
 		       ( flags & Style_Enabled ? cg.base() : cg.background() ) );
 	    p->setBrush( flags & Style_Down ? cg.mid() :
 			 ( flags & Style_Enabled ? cg.base() : cg.background() ) );
-	    p->drawEllipse( _or );
+	    p->drawEllipse( lr );
 
 	    p->setPen( cg.background().dark( 115 ) );
 	    p->drawArc( br, 45*16, 180*16 );
@@ -397,7 +397,7 @@ void LightStyleV3::drawPrimitive( PrimitiveElement pe,
 	    p->drawArc( br, 235*16, 180*16 );
 
 	    p->setPen( cg.dark() );
-	    p->drawArc( _or, 0, 16*360 );
+	    p->drawArc( lr, 0, 16*360 );
 
 	    if ( flags & Style_On ) {
 		p->setPen( flags & Style_Down ? cg.mid() :
