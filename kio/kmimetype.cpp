@@ -447,7 +447,8 @@ QString KDEDesktopMimeType::icon( const KURL& _url, bool _is_local ) const
   QString icon = cfg.readEntry( "Icon" );
   QString type = cfg.readEntry( "Type" );
   
-  if ( type == "FSDevice" )
+  if ( type == "FSDevice" || type == "FSDev") // need to provide FSDev for
+                                              // backwards compatibility
   {
     QString unmount_icon = cfg.readEntry( "UnmountIcon" );
     QString dev = cfg.readEntry( "Dev" );
