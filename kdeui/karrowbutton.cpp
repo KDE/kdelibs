@@ -18,6 +18,8 @@
 
 #include "karrowbutton.h"
 
+#include <qstyle.h>
+
 class KArrowButton::Private
 {
 	public:
@@ -57,8 +59,22 @@ void KArrowButton::drawButton(QPainter *p)
 	const unsigned int arrowSize = 8;
 	const unsigned int margin = 2;
 	
+#if QT_VERSION < 300
 	style().drawPanel(p, 0, 0, width(), height(), colorGroup(),
 			isDown(), 2, &colorGroup().brush(QColorGroup::Background));
+#else
+#if defined(Q_CC_GNU)
+#warning beta3's qstyle API doesn't allow to specify the background fill brush!
+#endif
+	// this is awful.... I dislike the new QStyle API...
+	int lw = 2;
+	void *data[ 1 ];
+	data[ 0 ] = (void *)&lw; 
+	style().drawPrimitive( QStyle::PE_Panel, p, QRect( 0, 0, width(), height() ),
+			       colorGroup(), 
+			       isDown() ? QStyle::Style_Sunken : QStyle::Style_Default,
+			       data );
+#endif
 
 	if (static_cast<unsigned int>(width()) < arrowSize + margin ||
 	    static_cast<unsigned int>(height()) < arrowSize + margin)
@@ -84,8 +100,24 @@ void KArrowButton::drawButton(QPainter *p)
 		y++;
 	}
 
+#if QT_VERSION < 300
 	style().drawArrow(p, arrow(), isDown(), x, y, arrowSize, arrowSize,
 			colorGroup(), true);
+#else
+	QStyle::PrimitiveElement e = QStyle::PE_ArrowLeft;
+	switch( arrow() )
+	{
+		case Qt::LeftArrow: e = QStyle::PE_ArrowLeft; break;
+		case Qt::RightArrow: e = QStyle::PE_ArrowRight; break;
+		case Qt::UpArrow: e = QStyle::PE_ArrowUp; break;
+		case Qt::DownArrow: e = QStyle::PE_ArrowDown; break;
+	}
+	int flags = QStyle::Style_Enabled;
+	if ( isDown() )
+		flags |= QStyle::Style_Down;
+	style().drawPrimitive( e, p, QRect( x, y, arrowSize, arrowSize ),
+			       colorGroup(), flags );
+#endif
 }
 
 void KArrowButton::setArrow(Qt::ArrowType a)

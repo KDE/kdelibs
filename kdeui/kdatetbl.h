@@ -21,7 +21,12 @@
 #define KDATETBL_H
 
 #include <qvalidator.h>
+#if QT_VERSION < 300
 #include <qtableview.h>
+#else
+#include <qttableview.h>
+#define QTableView QtTableView
+#endif
 #include <qlineedit.h>
 #include <qdatetime.h>
 #include <qsize.h>

@@ -289,7 +289,7 @@ void KEdit::replace_slot(){
   getCursorPosition(&line,&col);
 
   insertAt(string,line,col);
-  setModified();
+  setModified(true);
   can_replace = FALSE;
 
   setCursorPosition(line,col);
@@ -519,7 +519,7 @@ int KEdit::doReplace(QString s_pattern, bool case_sensitive,
 	  replace_all_col = replace_all_col + replacement.length();
 	  replace_all_line = line_counter;
 
-	  setModified();
+	  setModified(true);
 	}
 	else{ // interactive
 
@@ -585,7 +585,7 @@ int KEdit::doReplace(QString s_pattern, bool case_sensitive,
 	  replace_all_col = replace_all_col - replacement.length();
 	  replace_all_line = line_counter;
 
-	  setModified();
+	  setModified(true);
 
 	}
 	else{ // interactive
@@ -998,17 +998,25 @@ void KEdit::posToRowCol(unsigned int pos, unsigned int &line, unsigned int &col)
   for (line = 0; line < static_cast<uint>(numLines()) && col <= pos; line++)
   {
     col += lineLength(line);
+#if QT_VERSION < 300
     if( isEndOfParagraph(line) )
     {
       col++;
     }
+#else
+#if defined(Q_CC_GNU)
+#warning FIXME!
+#endif
+#endif
   }
   line--;
   col = pos - col + lineLength(line);
+#if QT_VERSION < 300
   if( isEndOfParagraph(line) )
   {
      col++;
   }
+#endif
 }
 
 void KEdit::spellcheck_stop()

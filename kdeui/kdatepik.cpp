@@ -25,7 +25,12 @@
 #include <kiconloader.h>
 #include <qframe.h>
 #include <qpainter.h>
+#if QT_VERSION < 300
 #include <qtableview.h>
+#else
+#include <qttableview.h>
+#define QTableView QtTableView
+#endif
 #include <qdialog.h>
 #include <qtoolbutton.h>
 #include <qfont.h>

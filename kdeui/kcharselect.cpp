@@ -31,6 +31,7 @@
 #include <qhbox.h>
 #include <qkeycode.h>
 #include <qfontdatabase.h>
+#include <qstyle.h>
 
 #include <klocale.h>
 #include <kdebug.h>
@@ -130,7 +131,12 @@ void KCharSelectTable::paintCell( class QPainter* p, int row, int col )
     }
 
     if ( c == focusItem.unicode() && hasFocus() ) {
+#if QT_VERSION < 300
 	style().drawFocusRect( p, QRect( 2, 2, w - 4, h - 4 ), colorGroup() );
+#else
+	style().drawPrimitive( QStyle::PE_FocusRect, p, QRect( 2, 2, w - 4, h - 4 ), 
+			       colorGroup() );
+#endif
 	focusPos = QPoint( col, row );
     }
 

@@ -30,7 +30,12 @@
 #include <qframe.h>
 #include <qpixmap.h>
 #include <qrangecontrol.h>
+#if QT_VERSION < 300
 #include <qtableview.h>
+#else
+#include <qttableview.h>
+#define QTableView QtTableView
+#endif
 
 #include "kselect.h"
 

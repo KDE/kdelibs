@@ -228,6 +228,7 @@ public:
      */
     void        cleanWhiteSpace();
 
+#if QT_VERSION < 300
     /**
      * @return @p true if the document has been modified.
      */
@@ -240,6 +241,7 @@ public:
      *  This can be used to test whether the document needs to be saved.
      **/
     void 	setModified( bool = true);
+#endif
 
     /**
      * Install a context menu for @ref KEdit.

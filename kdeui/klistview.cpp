@@ -24,6 +24,8 @@
 #include <qcursor.h>
 #include <qstack.h>
 #include <qtooltip.h>
+#include <qstyle.h>
+#include <qpainter.h>
 
 #include <kglobalsettings.h>
 #include <kcursor.h>
@@ -1074,7 +1076,16 @@ QRect KListView::drawItemHighlighter(QPainter *painter, QListViewItem *item)
     r = itemRect(item);
     r.setLeft(r.left()+(item->depth()+1)*treeStepSize());
     if (painter)
+#if QT_VERSION < 300
       style().drawFocusRect(painter, r, colorGroup(), &colorGroup().highlight(), true);
+#else
+    {
+      void *data[1];
+      data[0] = (void *)&colorGroup().highlight();
+      style().drawPrimitive(QStyle::PE_FocusRect, painter, r, colorGroup(), 
+                            QStyle::Style_FocusAtBorder, data);
+    }
+#endif
   }
 
   return r;
@@ -1633,7 +1644,14 @@ void KListView::viewportPaintEvent(QPaintEvent *e)
       QPainter painter(viewport());
 
       // This is where we actually draw the drop-highlighter
+#if QT_VERSION < 300
       style().drawFocusRect(&painter, d->mOldDropHighlighter, colorGroup(), 0, true);
+#else
+      void *data[1];
+      data[0] = (void *)0;
+      style().drawPrimitive(QStyle::PE_FocusRect, &painter, d->mOldDropHighlighter, colorGroup(), 
+                            QStyle::Style_FocusAtBorder, data);
+#endif
     }
 }
 

@@ -23,6 +23,7 @@
 #include <qpainter.h>
 #include <qdrawutil.h>
 #include <qapplication.h>
+#include <qstyle.h>
 #include <kglobalsettings.h>
 #include "kcolordlg.h"
 #include "kcolorbtn.h"
@@ -58,7 +59,12 @@ void KColorButton::setColor( const QColor &c )
 
 void KColorButton::drawButtonLabel( QPainter *painter )
 {
-  QRect r = QApplication::style().buttonRect( 0, 0, width(), height() );
+#if QT_VERSION < 300
+  QRect r = style().buttonRect( 0, 0, width(), height() );
+#else
+  // ### FIXME: correct??
+  QRect r = style().subRect( QStyle::SR_PushButtonContents, this );
+#endif
   int l = r.x();
   int t = r.y();
   int w = r.width();

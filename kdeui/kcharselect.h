@@ -21,7 +21,15 @@
 #ifndef kcharselect_h
 #define kcharselect_h
 
+#include <qglobal.h>
+
+#if QT_VERSION < 300
 #include <qtableview.h>
+#else
+#include <qttableview.h>
+#define QTableView QtTableView
+#endif
+
 #include <qvbox.h>
 #include <qcombobox.h>
 #include <qspinbox.h>
@@ -30,6 +38,7 @@
 #include <qsize.h>
 #include <qpoint.h>
 #include <qstrlist.h>
+#include <qstringlist.h>
 
 class QFontDatabase;
 class QMouseEvent;

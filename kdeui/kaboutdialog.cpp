@@ -482,7 +482,13 @@ QFrame *KAboutContainerBase::addTextPage( const QString &title,
     QMultiLineEdit *lineEdit = new QMultiLineEdit( page, "text" );
     lineEdit->setReadOnly( true );
     lineEdit->setText( text );
+#if QT_VERSION < 300
     lineEdit->setMinimumWidth( lineEdit->maxLineWidth() + 20 );
+#else
+#if defined(Q_CC_GNU)
+#warning is that really necessary?
+#endif
+#endif
     lineEdit->setMinimumHeight( fontMetrics().lineSpacing()*numLines );
     vbox->addWidget( lineEdit );
   }

@@ -89,8 +89,13 @@ KEdit::insertText(QTextStream *stream)
    //   textLine: 2*size rounded up to nearest power of 2 (520Kb -> 1024Kb)
    //   widget:   about (2*size + 60bytes*lines)
    // -> without disabling undo, it often needs almost 8*size
+#if QT_VERSION < 300
    bool oldUndo = isUndoEnabled();
    setUndoEnabled( FALSE );
+#else
+   int oldUndoDepth = undoDepth();
+   setUndoDepth( 0 ); // ### -1?
+#endif
 
    // MS: read everything at once if file <= 1MB,
    // else read in 5000-line chunks to keep memory usage acceptable.
@@ -113,7 +118,11 @@ KEdit::insertText(QTextStream *stream)
         textLine = stream->read(); // Read all !
         insertAt( textLine, line, col);
    }
+#if QT_VERSION < 300
    setUndoEnabled(oldUndo);
+#else
+   setUndoDepth( oldUndoDepth );
+#endif
 
    setCursorPosition(saveline, savecol);
    setAutoUpdate(true);
@@ -347,7 +356,7 @@ void KEdit::keyPressEvent ( QKeyEvent *e){
     killing = true;
 
     QMultiLineEdit::keyPressEvent(e);
-    setModified();
+    setModified(true);
     emit CursorPositionChanged();
     return;
   }
@@ -365,7 +374,7 @@ void KEdit::keyPressEvent ( QKeyEvent *e){
     insertAt(killbufferstring,line,col);
 
     killing = false;
-    setModified();
+    setModified(true);
     emit CursorPositionChanged();
     return;
   }
@@ -379,14 +388,14 @@ void KEdit::keyPressEvent ( QKeyEvent *e){
 
   if ((e->state() & ShiftButton ) && (e->key() == Key_Insert) ){
     paste();
-    setModified();
+    setModified(true);
     emit CursorPositionChanged();
     return;
   }
 
   if ((e->state() & ShiftButton ) && (e->key() == Key_Delete) ){
     cut();
-    setModified();
+    setModified(true);
     emit CursorPositionChanged();
     return;
   }
@@ -403,14 +412,14 @@ void KEdit::keyPressEvent ( QKeyEvent *e){
   if ( KStdAccel::isEqual( e, KStdAccel::deleteWordBack()) ) {
       deleteWordBack();  // to be replaced with QT3 function
       e->accept();
-      setModified();
+      setModified(true);
       emit CursorPositionChanged();
       return;
   }
   else if ( KStdAccel::isEqual( e, KStdAccel::deleteWordForward()) ) {
     deleteWordForward(); // to be replaced with QT3 function
     e->accept();
-    setModified();
+    setModified(true);
     emit CursorPositionChanged();
     return;
   }
@@ -457,6 +466,7 @@ void KEdit::selectFont(){
 
 }
 
+#if QT_VERSION < 300
 void KEdit::setModified(bool _mod){
   setEdited(_mod);
 }
@@ -464,6 +474,7 @@ void KEdit::setModified(bool _mod){
 bool KEdit::isModified(){
     return edited();
 }
+#endif
 
 // ### KDE3: remove!
 bool KEdit::eventFilter(QObject* o, QEvent* ev)
