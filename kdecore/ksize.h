@@ -7,9 +7,7 @@
 class QSize;
 
 /**
- * Class for reperesenting a size by its WIDTH and HEIGHT. It's sorce compatible
- * to the Qt class QSize, but KSize uses 32 bit integers for the width/height.
- * @short Class for representing a size by (width,height)
+ * Represents a size with 32-bit int width and height.
  * @author Reginald Stadlbauer <reggie@kde.org>
  * @version 0.0.1
  */
@@ -62,7 +60,8 @@ public:
   friend KSize operator/(const KSize &_size,float _c);
 
 protected:
-  int wid,hei;
+  int wid;
+  int hei;
 
 };
 

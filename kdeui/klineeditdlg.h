@@ -9,9 +9,10 @@
 #include "kurlcompletion.h"
 
 /**
- * @sort Asking for a single line of text
- * This class can be used to ask for a new filename or for
- * an URL.
+ * Dialog for user to enter a single line of text.
+ * Includes support for URL completion with @ref KURLCompletion.
+ * @version $Id$
+ * @author
  */
 class KLineEditDlg : public QDialog
 {
@@ -35,7 +36,7 @@ public:
     
 public slots:
   /**
-   * The slot for clearing the edit widget
+   * Clears the edit widget
    */
   void slotClear();
 

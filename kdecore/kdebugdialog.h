@@ -27,6 +27,16 @@
 #include <qcheckbox.h>
 #include <qpushbutton.h>
 
+/**
+* Control debug output at runtime.
+*
+* A single instance of this class is used by @ref KApplication to allow
+* control of debugging output for all KDE apps. It can be accessed via
+* the Ctrl-Shift-F12 key combination.
+*
+* @author Kalle Dalheimer (kalle@kde.org)
+* @version $Id$
+*/
 class KDebugDialog : public QDialog
 {
   Q_OBJECT

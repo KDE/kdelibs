@@ -47,17 +47,25 @@ class KCharsets;
 #define kapp KApplication::getKApplication()
 
 /**
-* A base class for all KDE applications.
+* Controls and provides information to all KDE applications.
 *
-* KApplication provides the application with KDE defaults such as
-* accelerators, common menu entries, a KConfig object
-* etc. KApplication installs a signal handler for the SIGCHLD signal
-* in order to avoid zombie children. If you want to catch this signal
-* yourself or don't want it to be caught at all, you have set a new
-* signal handler (or SIG_IGN) after KApplication's constructor has
-* run.
+* Only one object of this class can be instantiated in a single app.
+* This instance is always accessible via the @ref getKApplication method.
 *
-* @short A base class for all KDE applications.
+* This class provides the following services to all KDE applications.
+*
+* @li It controls the event queue (see @ref QApplication ).
+* @li It provides the application with KDE resources such as
+* accelerators, common menu entries, a @ref KConfig object. session
+* management events, help invocation etc.
+* @li Installs a signal handler for the SIGCHLD signal in order to
+* avoid zombie children. If you want to catch this signal yourself or
+* don't want it to be caught at all, you have set a new signal handler
+* (or SIG_IGN) after KApplication's constructor has run.
+* @li	Provides a debugging system for all KDE GUI apps. This can be
+*	invoked via the key combo Ctrl-Shift-F12 in any KDE application.
+*
+* @short Controls and provides information to all KDE applications.
 * @author Matthias Kalle Dalheimer <kalle@kde.org>
 * @version $Id$
 */
@@ -66,6 +74,7 @@ class KApplication : public QApplication
   Q_OBJECT
 public:
   /**
+   * @deprecated
 	* Constructor. Pass command-line arguments.
 	*
 	* A KConfig object is
@@ -79,36 +88,33 @@ public:
   /**
 	* Constructor. Pass command-line arguments.
 	*
-	* A KConfig object is
-	* created that contains an application-specific config file whose
-	* name is "~/." + rAppName + "rc". The state of the application-specific
-	* config file may be queried afterwards with getConfigState().
+	* A KConfig object is created that contains an
+	* application-specific config file whose name is "~/." + rAppName
+	* + "rc". The state of the application-specific config file may
+	* be queried afterwards with getConfigState().
 	*/
   KApplication( int& argc, char** argv, const QString& rAppName );
 
-  /**
-	* Destructor
-	*/
+  /** Destructor */
   virtual ~KApplication();
 
   /** A global event filter for KApplication.
-	* Filters out Ctrl-Alt-F12 for KDebug.
+	* Filters out Ctrl-Shift-F12 for KDebug.
 	*/
   virtual bool eventFilter( QObject*, QEvent* );
 
   /**
 	* Return the current application object.
-	*
-	* This is similar to the global QApplication pointer qApp. It allows access
-	* to the single global KApplication object, since more than one cannot be
-	* created in the same application. It saves the trouble of having to pass
-	* the pointer to it explicitly to every function that may require it.
+
+	* This is similar to the global QApplication pointer qApp. It
+	* allows access to the single global KApplication object, since
+	* more than one cannot be created in the same application. It
+	* saves the trouble of having to pass the pointer to it explicitly
+	* to every function that may require it.
 	*/
   static KApplication* getKApplication() { return KApp; }
 
-  /**
-	* Return the logical application name as set in the constructor.
-	*/
+  /** Return the logical application name as set in the constructor.  */
   const QString appName() const { return aAppName; }
 
   /**
@@ -122,7 +128,8 @@ public:
   /**
 	* Retrieve the application session config object.
 	*
-	* @return a pointer to the application's instance specific KConfig object.
+	* @return A pointer to the application's instance specific
+	* 	KConfig object.
 	* @see KConfig
 	*/
   KConfig* getSessionConfig();
@@ -138,13 +145,13 @@ public:
   bool isRestored() const { return bIsRestored; }
 
   /**
-	* Enable session management
-	*
-	* If userdefined = True then the WmCommand can be defined with setWmCommand.
-	* Note that you do not get an instance specific config object with
-	* @ref #getSessionConfig in this case!
-	*
+	* Enable session management.
 	* Session management will apply to the top widget.
+
+	* @param userdefined  If this is True, the WmCommand can be
+	* defined with @ref #setWmCommand.  Note that you do not get an
+	* instance specific config object with @ref #getSessionConfig
+	* in this case!
 	*/
   void enableSessionManagement(bool userdefined = FALSE);
 
@@ -160,7 +167,7 @@ public:
 
 
   /**
-	* Return a standard help menu
+	* Get the standard help menu.
 	*
 	* @param bAboutQtMenu If true, there is a menu entry for About Qt
 	* @return a standard help menu
@@ -185,7 +192,7 @@ public:
   KLocale* getLocale();
 
   /**
-    * Get a KCharsets object for the application.
+    * Get character set information.
     * @return a pointer to the KCharsets object of the application
     * @see KCharsets
     */
@@ -193,7 +200,7 @@ public:
 	{ return pCharsets; }
 
   /**
-	* Get the icon for the application.
+	* Get the application icon.
 	* @return a QPixmap with the icon.
 	* @see QPixmap
 	*/
@@ -210,7 +217,7 @@ public:
 	{ return aMiniIconPixmap; }
 
 
-  /** Sets the top widget of the application . This widget will
+  /** Sets the top widget of the application. This widget will
     * be used for communication with the session manager.
     * You must not call this function manually if you are using
     * the KTopLevelWidget.
@@ -223,9 +230,14 @@ public:
     }
 
 
-  /*obsolete, will disappear (Matthias) */
+  /**
+  * @deprecated
+  */
   void registerTopWidget();
-  /* obsolete, will disappear (Matthias) */
+
+  /**
+  * @deprecated
+  */
   void unregisterTopWidget();
 
   /**
@@ -253,13 +265,14 @@ public:
   /**
 	* Invoke the kdehelp HTML help viewer.
 	*
-	* @param aFilename	The filename that is to be loaded. Its location
-	*			is computed automatically according to the KFSSTND.
-	*			If aFilename is empty, the logical appname with .html
+	* @param aFilename	The filename that is to be loaded. Its
+	*			location is computed automatically
+	*			according to the KFSSTND.  If aFilename
+	*			is empty, the logical appname with .html
 	*			appended to it is used.
-	* @param aTopic		This allows context-sensitive help. Its value
-	*			will be appended to the filename, prefixed with
-	*			a "#" (hash) character.
+	* @param aTopic		This allows context-sensitive help. Its
+	*			value will be appended to the filename,
+	*			prefixed with a "#" (hash) character.
 	*/
   void invokeHTMLHelp( QString aFilename, QString aTopic ) const;
 
@@ -400,9 +413,9 @@ public:
 
   /**
 	* Get the KDE font list.
-	*
-	* This method allows you to get the KDE font
-	* list which was composed by the user with kfontmanager. Usually you should
+
+	* This method allows you to get the KDE font list which was
+	* composed by the user with kfontmanager. Usually you should
 	* work only with those fonts in your kapplication.
 	*
 	*  @return true on success.
@@ -617,7 +630,8 @@ public:
     GUIStyle applicationStyle();
 
 
-  /** for internal purposes only
+  /** 
+  	@internal
     */
   int xioErrhandler();
 
@@ -707,6 +721,9 @@ private:
 #endif
 
 // $Log$
+// Revision 1.65  1999/03/04 17:49:08  ettrich
+// more fixes for Qt-2.0
+//
 // Revision 1.64  1999/03/02 16:22:18  kulow
 // i18n is no longer a macro, but a function defined in klocale.h. So you
 // don't need to include kapp.h when you want to use i18n. I see klocale->translate

@@ -28,22 +28,24 @@ const int WebOnly 	= 0x00000200;
 const int LowOnly	= 0x00000300;
 
 /**
- * The KPixmap class is an off-screen buffer paint device that extends the
- * features of QPixmap.
- * 
- * KPixmap has two new color modes, WebColor and LowColor, applicable to 8bpp
- * displays.
- *
- * In WebColor mode all images are dithered to the Netscape palette, even when
- * they have their own color table. WebColor is the default mode for KPixmap so
- * that standard applications can share the Netscape palette across the desktop.
- *
- * In LowColor mode images are checked to see if their color table matches the
- * KDE icon palette. If the color tables do not match, the images are dithered
- * to a minimal 3x3x3 color cube. LowColor mode can be used to load icons,
- * background images etc. so that components of the desktop which are always
- * present use no more than 40 colors.
- *
+ * Off-screen paint device with extended features.
+
+ * KPixmap has two new color modes, WebColor and LowColor, applicable
+ * to 8bpp displays.
+
+ * In WebColor mode all images are dithered to the Netscape palette,
+ * even when they have their own color table. WebColor is the default
+ * mode for KPixmap so that standard applications can share the Netscape
+ * palette across the desktop.
+
+ * In LowColor mode images are checked to see if their color table
+ * matches the KDE icon palette. If the color tables do not match, the
+ * images are dithered to a minimal 3x3x3 color cube. LowColor mode can
+ * be used to load icons, background images etc. so that components of
+ * the desktop which are always present use no more than 40 colors.
+
+ * @author Mark Donohoe (donohoe@kde.org)
+ * @version $Id$
  */
 class KPixmap : public QPixmap
 {
@@ -61,24 +63,27 @@ public:
 	~KPixmap() {};
     
 	/**
-	 * Fills the pixmap with a color blend running from color ca to color cb.
-	 *
-	 * If upDown is TRUE the blend will run from the top to the bottom of the
-	 * pixmap. If upDown is FALSE the blend will run from the right to the left
-	 * of the pixmap.
-	 *
+	 * Fills the pixmap with a color blend running from color ca to
+	 * color cb.
+
+	 * If upDown is TRUE the blend will run from the top to the
+	 * bottom of the pixmap. If upDown is FALSE the blend will run
+	 * from the right to the left of the pixmap.
+
 	 * By default, the blend will use 3 colors on 8 bpp displays,
-	 * 32 colors on 16 bpp displays and unlimited colors at higher dislay
-	 * depths. For 8bpp displays ncols specifies an alternative number of colors
-	 * to use. The greater the number of colors allocated the better the
-	 * appearance of the gradient but the longer it takes to make. 
+	 * 32 colors on 16 bpp displays and unlimited colors at higher
+	 * dislay depths. For 8bpp displays ncols specifies an alternative
+	 * number of colors to use. The greater the number of colors
+	 * allocated the better the appearance of the gradient but the
+	 * longer it takes to make.
 	 */
-	void gradientFill( QColor ca, QColor cb, bool upDown = TRUE, int ncols = 3 );
+	void gradientFill( QColor ca, QColor cb, bool upDown = TRUE, 
+			int ncols = 3 );
 	
 	/**
-	 * Fills the pixmap with a two color pattern, specified by the pattern bits
-	 * in pattern[], the color ca to be used for the background and the color cb
-	 * to be used for the foreground.
+	 * Fills the pixmap with a two color pattern, specified by the
+	 * pattern bits in pattern[], the color ca to be used for the
+	 * background and the color cb to be used for the foreground.
 	 */
 	void patternFill( QColor ca, QColor cb, uint pattern[8] );
 	
@@ -93,52 +98,44 @@ public:
 	 *
 	 * Color/Mono preference
 	 *
-	 * <itemize>
-	 * <item>WebColor -  If the image has depth 1 and contains
+	 * @li WebColor -  If the image has depth 1 and contains
 	 * only black and white pixels then the pixmap becomes monochrome. If
 	 * the pixmap has a depth of 8 bits per pixel then the Netscape
 	 * palette is used for the pixmap color table.
-	 * <item>LowColor - If the image has depth 1 and contains only black and
+	 * @li LowColor - If the image has depth 1 and contains only black and
 	 * white pixels then the pixmap becomes monochrome. If the pixmap has a
 	 * depth of 8 bits per pixel and the image does not posess a color table
 	 * that matches the Icon palette a 3x3x3 color cube is used for the
 	 * pixmap color table.
-	 * <item>AutoColor (default) - If the image has depth 1 and contains
+	 * @li AutoColor (default) - If the image has depth 1 and contains
 	 * only black and white pixels, then the pixmap becomes
 	 * monochrome.
-	 * <item>ColorOnly - The pixmap is dithered/converted to the native
+	 * @li ColorOnly - The pixmap is dithered/converted to the native
 	 * display depth.
-	 * <item>MonoOnly - The pixmap becomes monochrome. If necessary, it
+	 * @li MonoOnly - The pixmap becomes monochrome. If necessary, it
 	 * is dithered using the chosen dithering algorithm.
-	 * </itemize>
 	 *
 	 * Dithering mode preference, for RGB channels
 	 *
-	 * <itemize>
-	 * <item>DiffuseDither (default) - a high quality dither
-	 * <item>OrderedDither - a faster more ordered dither
-	 * <item>ThresholdDither - no dithering, closest color is used
-	 * </itemize>
+	 * @li DiffuseDither (default) - a high quality dither
+	 * @li OrderedDither - a faster more ordered dither
+	 * @li ThresholdDither - no dithering, closest color is used
 	 *
 	 * Dithering mode preference, for alpha channel
 	 *
-	 * <itemize>
-	 * <item>DiffuseAlphaDither - a high quality dither
-	 * <item>OrderedAlphaDither - a faster more ordered dither
-	 * <item>ThresholdAlphaDither (default) - no dithering
-	 * </itemize>
+	 * @li DiffuseAlphaDither - a high quality dither
+	 * @li OrderedAlphaDither - a faster more ordered dither
+	 * @li ThresholdAlphaDither (default) - no dithering
 	 *
 	 * Color matching versus dithering preference
 	 * 
-	 * <itemize>
-	 * <item>PreferDither - always dither 32-bit images when the image
+	 * @li PreferDither - always dither 32-bit images when the image
 	 * is being converted to 8-bits. This is the default when
 	 * converting to a pixmap.
-	 * <item>AvoidDither - only dither 32-bit images if the image has
+	 * @li AvoidDither - only dither 32-bit images if the image has
 	 * more than 256 colours and it is being converted to 8-bits.
 	 * This is the default when an image is converted for the
 	 * purpose of saving to a file.
-	 * </itemize>
 	 *
 	 * Passing 0 for conversion_flags gives all the default
 	 * options.
@@ -167,21 +164,23 @@ public:
 	 * The QImageIO documentation lists the supported image
 	 * formats and explains how to add extra formats.
 	 */
-	bool load( const QString& fileName, const QString& format, int conversion_flags );
+	bool load( const QString& fileName, const QString& format, 
+		int conversion_flags );
 	
 	/*
 	 * This is an overloaded member function, provided for
 	 * convenience. It differs from the above function only in
 	 * what argument(s) it accepts.
 	 */
-	bool load( const QString& fileName, const QString& format = QString::null,
+	bool load( const QString& fileName, 
+		const QString& format = QString::null,
 		ColorMode mode = WebColor );
 	/*
-	 * Returns TRUE of the image is posessed of a color table that matches the
-	 * Icon palette or FALSE otherwise.
-	 * 
-	 * An image with one color not found in the Icon
-	 * palette is considered to make a match, since this extra color may be a
+	 * Returns TRUE of the image is posessed of a color table that
+	 * matches the Icon palette or FALSE otherwise.
+
+	 * An image with one color not found in the Icon palette is
+	 * considered to make a match, since this extra color may be a
 	 * transparent background.
 	 */
 	bool checkColorTable(const QImage &image);	

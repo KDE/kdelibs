@@ -322,11 +322,12 @@ KIconLoader* KApplication::getIconLoader()
 
 
 QPopupMenu* KApplication::getHelpMenu( bool /*bAboutQtMenu*/,
-									   const QString& aboutAppText )
+	   const QString& aboutAppText )
 {
+  int id = 0;
   QPopupMenu* pMenu = new QPopupMenu();
 
-  int id = pMenu->insertItem( i18n( "&Contents" ) );
+  id = pMenu->insertItem( i18n( "&Contents" ) );
   pMenu->connectItem( id, this, SLOT( appHelpActivated() ) );
   pMenu->setAccel( Key_F1, id );
 

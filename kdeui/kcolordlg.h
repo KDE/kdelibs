@@ -34,8 +34,15 @@
 #include <qcombobox.h>
 #include "kselect.h"
 
-//-----------------------------------------------------------------------------
-
+/**
+* Widget for Hue/Saturation selection.
+* The actual values can be fetched using the inherited xValue and yValue
+* methods.
+*
+* @see KXYSelector, KValueSelector, KColorDialog
+* @author Martin Jones (mjones@kde.org)
+* @version $Id$
+*/
 class KHSSelector : public KXYSelector
 {
   Q_OBJECT
@@ -53,8 +60,13 @@ protected:
   QPixmap pixmap;
 };
 
-//-----------------------------------------------------------------------------
-
+/**
+* Dialog for colour value selection.
+*
+* @see KHSSelector, KColorDialog
+* @author Martin Jones (mjones@kde.org)
+* @version $Id$
+*/
 class KValueSelector : public KSelector
 {
   Q_OBJECT
@@ -76,8 +88,12 @@ protected:
   QPixmap pixmap;
 };
 
-//-----------------------------------------------------------------------------
 
+/**
+* A table of editable colour cells.
+* @author Martin Jones <mjones@kde.org>
+* @version $Id$
+*/
 class KColorCells : public QTableView
 {
   Q_OBJECT
@@ -106,8 +122,9 @@ protected:
   int	selected;
 };
 
-//-----------------------------------------------------------------------------
-
+/**
+ * 
+ */
 class KColorPatch : public QFrame
 {
   Q_OBJECT
@@ -126,36 +143,35 @@ private:
   int colContext;
 };
 
-//-----------------------------------------------------------------------------
-
-/// KDE Color Selection dialog
-/** KDE Color Selection dialog
+/** 
+ * KDE Color Selection dialog
+ *
 Features:
 
-Colour selection from a standard system palette.
-Colour selection from a Palette of H vs S and V selectors (similar to windoze).
-Direct input of HSV or RGB values.
-Saving of custom colors
+@li Colour selection from a standard system palette.
+@li Colour selection from a Palette of H vs S and V selectors (similar to windoze).
+@li Direct input of HSV or RGB values.
+@li Saving of custom colors
 
-simplest use:
-QColor myColor;
-int result = KColorDialog::getColor( myColor );
+Simplest use:
+
+<pre>
+	QColor myColor;
+	int result = KColorDialog::getColor( myColor );
+</pre>
 
  */
 class KColorDialog : public QDialog
 {
   Q_OBJECT
 public:
-  /// Constructor
   /** Construct a KColorDialog */
   KColorDialog( QWidget *parent = 0L, const char *name = 0L,
 				bool modal = FALSE );
 
-  /// Preselect a color
   /** Preselect a color */
   void setColor( const QColor &col );
 
-  /// Retrieve the currently selected color.
   /** Retrieve the currently selected color. */
   QColor color()	{	return selColor; }
   
@@ -166,19 +182,22 @@ public:
 	*/
   static int getColor( QColor &theColor );
 
- public slots:
+public slots:
+
  void slotOkPressed();
 
-  signals:
- /// Notify when a color is selected.
- /**
-   connect to this to monitor the color as it as selected if you are
-   not running modal.
-   */
+signals:
+
+ /** 
+  * Notify when a color is selected.
+  * Connect to this to monitor the color as it as selected if you are
+  * not running modal.
+  */
  void colorSelected( const QColor &col );
 
- private slots:
- void slotRGBChanged();
+private slots:
+
+  void slotRGBChanged();
   void slotHSVChanged();
   void slotHSChanged( int, int );
   void slotVChanged( int );
@@ -188,12 +207,14 @@ public:
   void getHelp();
 
 private:
+
   void readSettings();
   void writeSettings();
   void setRgbEdit();
   void setHsvEdit();
 
 private:
+
   KColorCells *sysColorCells;
   KColorCells *custColorCells;
   QLineEdit *hedit;
@@ -206,10 +227,12 @@ private:
   KHSSelector *palette;
   KValueSelector *valuePal;
   QColor selColor;
+
 };
 
-//----------------------------------------------------------------------------
-
+/**
+ * Combobox for colours.
+ */
 class KColorCombo : public QComboBox
 {
 	Q_OBJECT

@@ -27,7 +27,7 @@
 #include <qdict.h>
 
 /** 
-* KDE desktop resources stored on the root window.
+* Access to KDE desktop resources stored on the root window.
 *
 * A companion to the KConfig class
 *
@@ -38,8 +38,7 @@
 *
 * @see KConfig::KConfig
 * @author Mark Donohoe (donohe@kde.org)
-* @version 
-* @short KDE Configuration Management class
+* @version $Id$
 */
 class KRootProp
 {

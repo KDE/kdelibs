@@ -34,72 +34,24 @@
 
 
 /**
- * Provides a helpsystem for KDE. It's mainly intended for those parts of the
- * program, where tooltips (@see QToolTip) give too little advice and calling
- * the HTML help viewer is overkill (or just too slow). For example, some 
- * programs have quite complex dialogs, and if you want to provide help you
- * can use a full-blown HTML-helpsystem (and typically nobody really reads it),
- * or tooltips (which provide too less information, and it's nerving to move
- * the mouse over a widget and to wait if a tooltip pops up. The solution to
- * this is QuickHelp (at least for me :-)
- * 
- * Normally, a Quickhelp just looks like a simple QToolTip, but it has some 
- * differences:
- *
- * 1. Tooltips only pop up when you leave the mouse over a widget for a short
- *    period of time. It's not possible to pop up upon request, as it is with
- *    QuickHelp
- *
- * 2. Tooltips do not allow formatting text.
- *
- *
- * Here are the highlights of QuickHelp:
- * o Requires few memory. The amount depends on the length of the help text you
- *   provide, plus a few hundreds of bytes of memory for QuickHelp itself and
- *   a few bytes for each widget you want to use QuickHelp with (8 bytes)
- *
- * o Text formatting: bold, italic, underline, reduce and enlarge font size, basic
- *   colors like red, green... as well as colors provided as RGB values
- *
- * o Hyperlinks, which calls the HTML-viewer to provider more information or 
- *   related information
- *
- * o Shadows. A QuickHelp has a shadow (at least when the underlying X-server 
- *   supports that feature. It is planned to make this configureable.
- *
- * o Font selection: QuickHelp allows to select basic fonts: the default fonts,
- *   the fixed system font currently.
- *
- * o Easy to use: just add a line like this:
- *     QuickHelp::add(myWidget, "text text text");
- *
- * o Web-integration: hyperlinks to ftp:, http:, file:, info:, man: and 
- *   mailto: protokolls are available
- * 
- *
- * 
- * TODO LIST:
- *
- * o make shadow configurable instead of compile time option (easy)
- * o faster painting, avoid to much QFont stuff (fairly easy)
- * o better event handling. Clear the mouse event that closed the
- *   KQuickHelp to avoid the underlaying widgets to get that event.
- * o Maybe all KQuickHelp text in one file?
- * o kdoc compliant documentation
- * o purify
- * 
- */
-
+* @internal
+*/
 struct KQuickTip {
   QWidget *widget;
   QString txt;
 };
 
+/**
+* @internal
+*/
 struct KQuickHelp_Token {
   const char *token;
   int tokenID;
 };
 
+/**
+* @internal
+*/
 class KQuickHelp_Link {
 public:
   QRect area;
@@ -140,6 +92,73 @@ private:
 };
 
 
+/**
+ * Mini-help system (extended tooltips). It's mainly intended for those
+ * parts of the program, where tooltips (@see QToolTip) give too little
+ * advice and calling the HTML help viewer is overkill (or just too
+ * slow). For example, some programs have quite complex dialogs, and
+ * if you want to provide help you can use a full-blown HTML-helpsystem
+ * (and typically nobody really reads it), or tooltips (which provide too
+ * less information, and it's nerving to move the mouse over a widget
+ * and to wait if a tooltip pops up. The solution to this is QuickHelp
+ * (at least for me :-)
+ *
+ * Usage:
+<pre>
+ 	QuickHelp::add(myWidget, "text text text" );
+</pre>
+
+ * Normally, a Quickhelp just looks like a simple QToolTip, but it has some 
+ * differences:
+ *
+ * 1. Tooltips only pop up when you leave the mouse over a widget for a short
+ *    period of time. It's not possible to pop up upon request, as it is with
+ *    QuickHelp.
+ *
+ * 2. Tooltips do not allow formatting text.
+ *
+ * Here are the highlights of QuickHelp:
+ *
+ * @li Requires little memory. The amount depends on the length of the help
+ * text you provide, plus a few hundreds of bytes of memory for QuickHelp
+ * itself and a few bytes for each widget you want to use QuickHelp with
+ * (8 bytes)
+
+ * @li Text formatting: bold, italic, underline, reduce and enlarge font
+ * size, basic colors like red, green... as well as colors provided as
+ * RGB values
+
+ * @li Hyperlinks, which call the HTML-viewer to provide more or
+ * related information.
+
+ * @li Shadows. A QuickHelp has a shadow (at least when the underlying
+ * X-server  supports that feature. It is planned to make this
+ * configureable.
+
+ * @li Font selection: QuickHelp allows to select basic fonts: the default
+ * fonts, the fixed system font currently.
+
+ * @li Easy to use: just add a line like this: 
+ *
+ * @li Web-integration: hyperlinks to ftp:, http:, file:, info:, man: and
+ *   mailto: protokolls are available
+
+
+ * 
+ * TODO LIST:
+ *
+ * @li make shadow configurable instead of compile time option (easy)
+ * @li faster painting, avoid to much QFont stuff (fairly easy)
+ * @li better event handling. Clear the mouse event that closed the
+ *   KQuickHelp to avoid the underlaying widgets to get that event.
+ * @li Maybe all KQuickHelp text in one file?
+ * @li kdoc compliant documentation
+ * @li purify
+ * 
+ * @short Extended tooltip mini-help.
+ * @author Reginald Stadlbauer <reggie@kde.org>
+ * @version $Id$
+ */
 class KQuickHelp : public QObject {
   Q_OBJECT
 public:  

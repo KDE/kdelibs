@@ -39,7 +39,7 @@
 
 
 /**
-  @short KProcess -- A class for invoking Child processes from within KDE applications
+  @short Child process invocation, monitoring and control.
   @author Christian Czezakte e9025461@student.tuwien.ac.at
 
 1) General usage and features
@@ -50,14 +50,14 @@
   Basically, this class distinguishes three different ways of running
   child processes: 
 
-  +) "KProcess::DontCare" -- The child process is invoked and both the child
+  @li "KProcess::DontCare" -- The child process is invoked and both the child
   process and the parent process continue concurrently. 
 
   Starting a "DontCare" child process means that the application is
   not interested in any notification to determine whether the
   child process has already exited or not.
   
-  +) "KProcess::NotifyOnExit" -- The child process is invoked both the
+  @li "KProcess::NotifyOnExit" -- The child process is invoked both the
   child and the parent process run concurrently.
   
   When the child process exits, the KProcess instance
@@ -66,10 +66,9 @@
   Since this signal is _not_ emitted from within a UN*X
   signal handler, arbitrary function calls can be made.
   
-  +) "KProcess::Block" -- The child process starts and the parent
-  process is suspended 
-  until the child process exits. (_Really_ not recommended for programs
-  with a GUI)
+  @li "KProcess::Block" -- The child process starts and the parent process
+  is suspended until the child process exits. (_Really_ not recommended
+  for programs with a GUI)
 
   KProcess also provides several functions for determining the exit status
   and the pid of the child process it represents. 
@@ -81,8 +80,8 @@
   <pre>
   KProcess proc;
 
-  proc &lt;&lt; "my_executable";
-  proc &lt;&lt; "These" &lt;&lt; "are" &lt;&lt; "the" &lt;&lt; "command" &lt;&lt; "line" &lt;&lt; "args";
+  proc << "my_executable";
+  proc << "These" << "are" << "the" << "command" << "line" << "args";
   QApplication::connect(&proc, SIGNAL(processExited(KProcess *)), 
                         pointer_to_my_object, SLOT(my_objects_slot));
   proc.start();
@@ -97,11 +96,10 @@
   KProcess supports communication with the child process through
   stdin/stdout/stderr.
   
-  The following functions are provided for getting data from the child process
-  or sending data to the child's stdin (For more information, have a look at the 
-  documentation of each function):
-  
-  
+  The following functions are provided for getting data from the child
+  process or sending data to the child's stdin (For more information,
+  have a look at the documentation of each function):
+
   bool writeStdin(char *buffer, int buflen);
   -- Transmit data to the child process's stdin.
   
@@ -128,17 +126,19 @@ class KProcess : public QObject
 
 public:
 
-  /** enums for communication channels to open. If communication for more 
-      than one channel is required, the values have to be or'ed together, 
-      for example to get communication with stdout as well as with
-      stdin, you would specify "Stdin | Stdout" 
+  /** 
+   * Modes in which the communication channel can be opened.
+	* If communication for more than one channel is required,
+	* the values have to be or'ed together, for example to get
+	* communication with stdout as well as with stdin, you would
+	* specify "Stdin | Stdout"
   */
   enum Communication { NoCommunication = 0, Stdin = 1, Stdout = 2, Stderr = 4,
 					   AllOutput = 6, All = 7 };
 
-  /** various run--modes for a child process. For more information about the
-      semantics of the run modes have a look at the general description of
-      the @ref KProcess class.
+  /** 
+   * Run-modes for a child process.       
+   * @see KProcess
   */
   enum RunMode { DontCare, NotifyOnExit, Block };
 
@@ -156,30 +156,37 @@ public:
   virtual ~KProcess();
  
   /**
-         The use of this function is now depreciated. -- Please use the
-	 "operator&lt;&lt;" instead of "setExecutable".
+   @deprecated
+
+         The use of this function is now deprecated. -- Please use the
+	 "operator<<" instead of "setExecutable".
 
 	 Sets the executable to be started with this KProcess object.
 	 Returns FALSE if the process is currently running (in that
 	 case the executable remains unchanged.) 
 
+	 @see operator<<
+
   */
   bool setExecutable(const QString& proc);
 
 
-  /** Sets the executable and the command line argument list for this process 
+  /** 
+   * Sets the executable and the command line argument list for this process 
       
       For example, doning a "ls -l /usr/local/bin" can be achieved by:
       <pre>
       KProcoess p;
       ...
-      p &lt;&lt; "ls" &lt;&lt; "-l" &lt;&lt; "/usr/local/bin"
+      p << "ls" << "-l" << "/usr/local/bin"
       </pre>
 
    */
   KProcess &operator<<(const QString& arg);
 
-  /** Clears a command line argument list that has been set by using the "operator&lt;&lt;".
+  /** 
+	Clears a command line argument list that has been set by using
+	the "operator<<".
   */
   void clearArguments();
 
@@ -187,32 +194,32 @@ public:
       various run modes and communication semantics, have a look at the 
       general description of the KProcess class.
 
-      This function returns TRUE if the process was started successfully.
       The following problems could cause KProcess:start" to return FALSE:
 
-	  +) the process is already running
+	  @li the process is already running
+	  @li the command line argument list is empty 
+	  @li  the starting of the process failed (could not fork)
 
-	  +) the command line argument list is empty 
-
-	  +) the starting of the process failed (could not fork)
-
-      The second argument specifies which communication links should be
+      @param comm	 Specifies which communication links should be
       established to the child process. (stdin/stdout/stderr). By default,
-      no communication takes place and the respective communication signals 
-      will never get emitted.
+      no communication takes place and the respective communication
+      signals will never get emitted.
+
+      @return true on success, false on error (see above for error conditions)
   */
-  virtual bool start(RunMode  runmode = NotifyOnExit, Communication comm = NoCommunication);
+  virtual bool start(RunMode  runmode = NotifyOnExit, 
+  	Communication comm = NoCommunication);
 
   /**
-     Stops the process (by sending a SIGTERM to it). -- You may send other
-     signals too of course... ;-) ) 
+     	Stops the process (by sending it a signal).
 
-     Returns TRUE if the signal could be delivered successfully
+	@param signo	The signal to send. The default is SIGTERM.
+	@return true if the signal was delivered successfully.
   */
   virtual bool kill(int signo = SIGTERM);
 
   /**
-     Returns TRUE if the process is (still) considered to be running
+     @return TRUE if the process is (still) considered to be running
   */
   bool isRunning();
 
@@ -226,15 +233,18 @@ public:
   pid_t getPid();
 
 
-  /** Returns TRUE if the process has already finished and has exited
-      "voluntarily", ie: it has not been killed by a signal.
+  /** 
+	@return TRUE if the process has already finished and has exited
+	"voluntarily", ie: it has not been killed by a signal.
   */
   bool normalExit();
 
-  /** Returns the exit status of the process. Please use "KProcess::normalExit" to 
-      check whether the process has exited cleanly (KProcess::normalExit returning
-      TRUE) before calling this function because if the process did not exit
-      normally, it does not have a valid exit status.
+  /** 
+	The exit status of the process. Please use
+	@ref KProcess::normalExit to check whether the process has exited
+	cleanly (KProcess::normalExit returning TRUE) before calling
+	this function because if the process did not exit normally,
+	it does not have a valid exit status.
   */
   int  exitStatus(); 
 
@@ -247,8 +257,8 @@ public:
 
 	 +) Communication to stdin has not been requested in the "start" call
 
-         +) transmission of data to the child process by a previous call to "writeStdin"
-            is still in progress. 
+         +) transmission of data to the child process by a previous call to 
+	 "writeStdin" is still in progress. 
 
 	 Please note that the data is sent to the client asynchronousely,
 	 so when this function returns, the data might not have been
@@ -258,9 +268,9 @@ public:
 	 "wroteStdin" will be emitted. 
 
 	 Please note that you must not free "buffer" or call "writeStdin"
-	 again until either a "wroteStdin" signal indicates that the data has been sent or a
-	 "processHasExited" signal shows that the child process is no
-	 longer alive... 
+	 again until either a "wroteStdin" signal indicates that the
+	 data has been sent or a "processHasExited" signal shows that
+	 the child process is no longer alive...
   */
   bool writeStdin(char *buffer, int buflen);
 
@@ -269,7 +279,8 @@ public:
 	 closed indicating an "EOF" to the child. This function will
 	 return FALSE if:
 
-	 +) No communication to the process's stdin has been specified in the "start" call.
+	 +) No communication to the process's stdin has been specified
+	 in the "start" call.
   */
   bool closeStdin();
 
@@ -436,43 +447,47 @@ protected:
 
 
   /**
-     Immediately called after a process has exited. This function normally calls commClose
-     to close all open communication channels to this process and emits the "processExited"
-     signal (if the process was not running in the "DontCare" mode).
-  */
-  virtual void processHasExited(int state);
+     Immediately called after a process has exited. This function normally
+     calls commClose to close all open communication channels to this
+     process and emits the "processExited" signal (if the process was
+     not running in the "DontCare" mode).
+  */ 
+  virtual void processHasExited(int state); 
+  
   /**
-     Should clean up the communication links to the child after it has exited. Should
-     be called from "processHasExited".
+     Should clean up the communication links to the child after it has
+     exited. Should be called from "processHasExited".
   */
   virtual void commClose();
-  
 
-  int out[2], in[2], err[2];
-  /* the socket descriptors for stdin/stdout/stderr */
-
-  QSocketNotifier *innot, *outnot, *errnot;
-  /* The socket notifiers for the above socket descriptors */
 
   /**
-     Lists the communication links that are activated for the child process.
-     Should not be modified from derived classes.
-  */
-  Communication communication;		
+   * the socket descriptors for stdin/stdout/stderr.
+   */
+  int out[2], in[2], err[2]; 
 
+  /**
+   * The socket notifiers for the above socket descriptors.
+   */
+  QSocketNotifier *innot, *outnot, *errnot; 
 
+  /**
+     Lists the communication links that are activated for the child
+     process.  Should not be modified from derived classes.
+  */ 
+  Communication communication;
 
   /**
      Called by "slotChildOutput" this function copies data arriving from the
      child process's stdout to the respective buffer and emits the signal
-     "receivedStderr"
+     "@ref receivedStderr".
   */
   int childOutput(int fdno);
 
   /**
      Called by "slotChildOutput" this function copies data arriving from the
      child process's stdout to the respective buffer and emits the signal
-     "receivedStderr"
+     "@ref receivedStderr"
   */
   int childError(int fdno);
    
@@ -483,7 +498,7 @@ protected:
   int input_total;   // total length of input_data
 
   /**
-    @ref KProcessController is a friend fo KProcess because it has to have
+    @ref KProcessController is a friend of KProcess because it has to have
     access to various data members.
   */
   friend class KProcessController;
@@ -496,27 +511,33 @@ private:
 };
 
 /**
-  @short A class derived from @ref KProcess to start child processes through a shell
-  @author Christian Czezakte e9025461@student.tuwien.ac.at
+* This class is similar to @ref KProcess. The only difference is that
+* KShellProcess runs the specified executable through a UN*X shell so
+* that standard shell mechanisms like wildcard matching, use of pipes
+* and environment variable expansion will work.
 
-This class is similar to @ref KProcess. The only difference is that KShellProcess runs 
-the specified executable through a UN*X shell so that standard shell mechanisms like
-wildcard matching, use of pipes and environment variable expansion will work.
+* For example, you could run commands like the following through
+* KShellProcess:
 
-For example, you could run commands like the following through KShellProcess:
-<pre>
-  ls ~/HOME/ *.lyx | sort | uniq |wc -l 
-</pre>
+* <pre>
+*   ls ~/HOME/ *.lyx | sort | uniq |wc -l
+* </pre>
 
-KShellProcess tries really hard to find a valid executable shell. Here is the 
-algorithm used for finding an executable shell:
+* KShellProcess tries really hard to find a valid executable shell. Here
+* is the algorithm used for finding an executable shell:
 
-	   +) Try to use executable pointed to by the "SHELL" environment variable
+*    @li Try to use executable pointed to by the "SHELL" environment
+*    variable
 
-	   +) Try the executable pointed to by the "SHELL" environment variable with
-whitespaces stripped off
+*    @li Try the executable pointed to by the "SHELL" environment
+*    variable with whitespaces stripped off
 
-	   +) "/bin/sh" as a last ressort.
+*    @li "/bin/sh" as a last ressort.
+
+*   @short A class derived from @ref KProcess to start child
+*   	processes through a shell.	
+*   @author Christian Czezakte <e9025461@student.tuwien.ac.at> 
+*   @version $Id$
 */
 class KShellProcess: public KProcess
 {
@@ -532,28 +553,33 @@ public:
       description of this class.
   */
   KShellProcess(const QString& shellname=QString::null);
+
+  /**
+   * Descructor.
+   */
   ~KShellProcess();
 
   /** 
     Starts up the process. -- For a detailed description
     have a look at the "start" member function and the detailed
     description of @ref KProcess .
-
   */
-  virtual bool start(RunMode  runmode = NotifyOnExit, Communication comm = NoCommunication);
+  virtual bool start(RunMode  runmode = NotifyOnExit, 
+		  Communication comm = NoCommunication);
 
 private:
 
-  /** searches for a valid shell. See the general description of this class for
-      information on how the search is actually performed.
+  /** 
+   * Searches for a valid shell. See the general description of this
+   * class for information on how the search is actually performed.
   */
   char *searchShell();
 
-  /** used by "searchShell" in order to find out whether the shell found is actually
-      executable at all.
+  /** 
+   * Used by @ref searchShell in order to find out whether the shell found
+   * is actually executable at all.
   */
   bool isExecutable(const QString& fname);
-
 
   char *shell;
 
