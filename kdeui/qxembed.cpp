@@ -1,7 +1,7 @@
 /****************************************************************************
     Implementation of QXEmbed class
 
-   Copyright (C) 1999-2000 Troll Tech AS
+    Copyright (C) 1999-2002 Trolltech AS
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -693,6 +693,10 @@ bool QXEmbed::x11Event( XEvent* e)
                 break;
             }
         }
+	break;
+
+    case MotionNotify: 
+	// fall through, workaround for Qt 3.0 < 3.0.3
     case EnterNotify:
         if ( QWhatsThis::inWhatsThisMode() )
             enterWhatsThisMode();
