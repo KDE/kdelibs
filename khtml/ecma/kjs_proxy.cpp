@@ -77,7 +77,7 @@ extern "C" {
   bool kjs_eval(KJScript *script, const QChar *c, unsigned int len,
 		const DOM::Node &n)
   {
-    return script->evaluate(Object::create(ObjectClass, new DOMNode(n)), c, len);
+    return script->evaluate(KJSO(new DOMNode(n)), c, len);
   }
   // clear resources allocated by the interpreter
   void kjs_clear(KJScript *script)
