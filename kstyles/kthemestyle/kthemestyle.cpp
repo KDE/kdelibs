@@ -1340,7 +1340,6 @@ void KThemeStyle::drawControl( ControlElement element,
 
                 QPixmap* cache = makeMenuBarCache(pr.width(), pr.height());
 
-
                 QPixmap buf( w, pr.height() );
 
                 bitBlt(&buf, 0, 0, cache, x, y, w, pr.height());
@@ -1348,19 +1347,15 @@ void KThemeStyle::drawControl( ControlElement element,
 
                 if ( active )
                 {
-                    drawBaseButton( &p2, 0,  0, w, h, *g, false, false, MenuBarItem );
+                    drawBaseButton( &p2, 0, 0, w, h, *g, false, false, MenuBarItem );
                 }
-
-                drawItem( &p2, QRect(0,0,w,h), AlignCenter | ShowPrefix | DontClip | SingleLine,
-                          *g, mi->isEnabled(), mi->pixmap(), mi->text(),
-                          -1, &btext );
-
-
-
+                
                 p2.end();
                 p->drawPixmap( x, y, buf, 0, 0, w, h );
-
-
+                                
+                drawItem( p, QRect(x,y,w,h), AlignCenter | AlignVCenter | ShowPrefix | DontClip | SingleLine,
+                          *g, mi->isEnabled(), mi->pixmap(), mi->text(),
+                          -1, &btext );
                 handled = true;
                 break;
             }
