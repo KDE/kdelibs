@@ -199,36 +199,6 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, cons
   Authentication = AUTH_None;
   m_HTTPrev = HTTP_Unknown;
 
-#ifdef DO_SSL
-  if (m_protocol == "https")
-  {
-     struct servent *sent = getservbyname("https", "tcp");
-     if (sent) {
-        m_DefaultPort = ntohs(sent->s_port);
-     } else {
-        m_DefaultPort = DEFAULT_HTTPS_PORT;
-     }
-  }
-  else
-#endif
-  if (m_protocol == "ftp")
-  {
-     struct servent *sent = getservbyname("ftp", "tcp");
-     if (sent) {
-        m_DefaultPort = ntohs(sent->s_port);
-     } else {
-        m_DefaultPort = DEFAULT_FTP_PORT;
-     }
-  }
-  else
-  {
-     struct servent *sent = getservbyname("http", "tcp");
-     if (sent) {
-        m_DefaultPort = ntohs(sent->s_port);
-     } else {
-        m_DefaultPort = DEFAULT_HTTP_PORT;
-     }
-  }
   cleanCache();
 }
 
@@ -2154,7 +2124,7 @@ void HTTPProtocol::get( const KURL& url )
 {
   if ( !checkRequestURL( url ) )
     return;
- 
+
   kdDebug(7113) << "HTTPProtocol::get " << url.url() << endl;
 
   m_request.method = HTTP_GET;
@@ -2296,11 +2266,18 @@ bool HTTPProtocol::checkRequestURL( const KURL& u )
      error( KIO::ERR_UNKNOWN_HOST, i18n("No host specified!"));
      return false;
   }
-   
+
   if ( m_request.url.protocol() != u.protocol() )
+  {
+    short unsigned int oldDefaultPort = m_DefaultPort;
+    m_protocol = u.protocol().latin1();
     reparseConfiguration();
- 
-  return true; 
+    if ( m_DefaultPort != oldDefaultPort &&
+         m_request.port == oldDefaultPort )
+      m_request.port = m_DefaultPort;
+  }
+
+  return true;
 }
 
 
@@ -3793,6 +3770,37 @@ void HTTPProtocol::reparseConfiguration()
      }
   }
   delete cookieConfig;
+
+#ifdef DO_SSL
+  if (m_protocol == "https")
+  {
+     struct servent *sent = getservbyname("https", "tcp");
+     if (sent) {
+        m_DefaultPort = ntohs(sent->s_port);
+     } else {
+        m_DefaultPort = DEFAULT_HTTPS_PORT;
+     }
+  }
+  else
+#endif
+  if (m_protocol == "ftp")
+  {
+     struct servent *sent = getservbyname("ftp", "tcp");
+     if (sent) {
+        m_DefaultPort = ntohs(sent->s_port);
+     } else {
+        m_DefaultPort = DEFAULT_FTP_PORT;
+     }
+  }
+  else
+  {
+     struct servent *sent = getservbyname("http", "tcp");
+     if (sent) {
+        m_DefaultPort = ntohs(sent->s_port);
+     } else {
+        m_DefaultPort = DEFAULT_HTTP_PORT;
+     }
+  }
 }
 
 void HTTPProtocol::resetSessionSettings()
