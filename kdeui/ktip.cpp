@@ -1,6 +1,7 @@
 /*****************************************************************
 
 Copyright (c) 2000, 2001 Matthias Hoelzer-Kluepfel
+                         Tobias Koenig <tokoe82@yahoo.de>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,43 +22,41 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ******************************************************************/
 
-
-#include <qfile.h>
-#include <qtextstream.h>
-#include <qlayout.h>
-#include <qlabel.h>
 #include <qcheckbox.h>
+#include <qfile.h>
+#include <qhbox.h>
+#include <qlabel.h>
+#include <qlayout.h>
 #include <qpushbutton.h>
+#include <qtextstream.h>
 
-
+#include <kaboutdata.h>
 #include <kapplication.h>
+#include <kconfig.h>
+#include <kdebug.h>
 #include <kglobal.h>
 #include <kglobalsettings.h>
-#include <klocale.h>
-#include <kconfig.h>
-#include <kstandarddirs.h>
-#include <kaboutdata.h>
-#include <ktextbrowser.h>
 #include <kiconloader.h>
-#include <kseparator.h>
-#include <kstdguiitem.h>
+#include <klocale.h>
 #include <kpushbutton.h>
-
-#include <kdebug.h>
+#include <kseparator.h>
+#include <kstandarddirs.h>
+#include <kstdguiitem.h>
+#include <ktextbrowser.h>
 
 #include "ktip.h"
 
 
 KTipDatabase::KTipDatabase(const QString &_tipFile)
 {
-  QString tipFile = _tipFile;
-  if (tipFile.isEmpty())
-    tipFile = QString::fromLatin1(KGlobal::instance()->aboutData()->appName()) + "/tips";
+    QString tipFile = _tipFile;
+    if (tipFile.isEmpty())
+	tipFile = QString::fromLatin1(KGlobal::instance()->aboutData()->appName()) + "/tips";
 
-  loadTips(tipFile);
+    loadTips(tipFile);
 
-  if (tips.count())
-    current = kapp->random() % tips.count();
+    if (tips.count())
+	current = kapp->random() % tips.count();
 }
 
 
@@ -70,15 +69,15 @@ void KTipDatabase::loadTips(const QString &tipFile)
 
     if (fileName.isEmpty())
     {
-        kdDebug() << "can't find '" << tipFile << "' in standard dirs" << endl;
+	kdDebug() << "can't find '" << tipFile.latin1() << "' in standard dirs" << endl;
         return;
     }
 
     QFile file(fileName);
     if (!file.open(IO_ReadOnly))
     {
-        kdDebug() << "can't open '" << fileName << "' for reading" << endl;
-        return;
+	kdDebug() << "can't open '" << fileName.latin1() << "' for reading" << endl;
+	return;
     }
 
     tips.clear();
@@ -88,42 +87,37 @@ void KTipDatabase::loadTips(const QString &tipFile)
     int pos = -1;
     while ((pos = content.find("<html>", pos + 1, false)) != -1)
     {
-        QString tip = content.mid(pos + 6, content.find("</html>", pos, false) - pos - 6);
-	if (tip.startsWith("\n"))
-	    tip = tip.mid(1);
-        tips.append(tip);
+	QString tip = content.mid(pos + 6, content.find("</html>", pos, false) - pos - 6);
+	tips.append(tip);
     }
 
-    file.close();
+    file.close();    
 }
-
 
 void KTipDatabase::nextTip()
 {
-  if (tips.count() == 0)
-    return ;
-  current += 1;
-  if (current >= (int) tips.count())
-    current = 0;
+    if (tips.count() == 0)
+	return ;
+    current += 1;
+    if (current >= (int) tips.count())
+	current = 0;
 }
 
 
 void KTipDatabase::prevTip()
 {
-  if (tips.count() == 0)
-    return ;
-  current -= 1;
-  if (current < 0)
-    current = tips.count() - 1;
+    if (tips.count() == 0)
+	return ;
+    current -= 1;
+    if (current < 0)
+	current = tips.count() - 1;
 }
 
 
 QString KTipDatabase::tip() const
 {
-  return QString::fromLatin1("<html>%1</html>").arg(i18n(tips[current].utf8()));
+    return i18n(tips[current].latin1());
 }
-
-
 
 KTipDialog *KTipDialog::_instance = 0;
 
@@ -131,116 +125,147 @@ KTipDialog *KTipDialog::_instance = 0;
 KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent, const char *name)
   : KDialog(parent, name)
 {
-  _database = db;
+    _database = db;
 
-  setCaption(i18n("Tip of the Day"));
-  setIcon(KGlobal::iconLoader()->loadIcon("ktip", KIcon::Small));
+    setCaption(i18n("Tip of the Day"));
+    setIcon(KGlobal::iconLoader()->loadIcon("ktip", KIcon::Small));
 
-  QVBoxLayout *vbox = new QVBoxLayout(this, marginHint(), spacingHint());
+    QVBoxLayout *vbox = new QVBoxLayout(this, marginHint(), spacingHint());
 
-  QHBoxLayout *hbox = new QHBoxLayout(vbox, 0, 0);
+    /**
+     * Parent is 0L when TipDialog is used as a mainWidget. This should
+     * be the case only in ktip, so let's use the ktip layout.
+     */
+    bool isTipDialog = (parent != 0);
 
-  QLabel *bulb = new QLabel(this);
-  bulb->setPixmap(locate("data", "kdeui/pics/ktip-bulb.png"));
-  hbox->addWidget(bulb);
+    if (isTipDialog)
+    {
+	QHBoxLayout *pl = new QHBoxLayout(vbox, 0, 0);
 
-  QLabel *titlePane = new QLabel(this);
-  titlePane->setBackgroundPixmap(locate("data", "kdeui/pics/ktip-background.png"));
-  titlePane->setText(i18n("Did you know...?\n"));
-  titlePane->setFont(QFont(KGlobalSettings::generalFont().family(), 20,  QFont::Bold));
-  titlePane->setAlignment(QLabel::AlignCenter);
-  hbox->addWidget(titlePane,100);
+	QLabel *bulb = new QLabel(this);
+        bulb->setPixmap(locate("data", "kdeui/pics/ktip-bulb.png"));
+	pl->addWidget(bulb);
 
-  _tipText = new KTextBrowser(this);
-  vbox->addWidget(_tipText);
-  _tipText->installEventFilter(this);
+        QLabel *titlePane = new QLabel(this);
+	titlePane->setBackgroundPixmap(locate("data", "kdeui/pics/ktip-background.png"));
+        titlePane->setText(i18n("Did you know...?\n"));
+	titlePane->setFont(QFont(KGlobalSettings::generalFont().family(), 20,  QFont::Bold));
+        titlePane->setAlignment(QLabel::AlignCenter);
+	pl->addWidget(titlePane, 100);
+    }
 
-  KSeparator* sep = new KSeparator( KSeparator::HLine, this);
-  vbox->addWidget(sep);
+    QHBox *hbox = new QHBox(this);
+    hbox->setSpacing(0);
+    hbox->setFrameStyle(QFrame::Panel | QFrame::Sunken);
+    vbox->addWidget(hbox);
 
-  hbox = new QHBoxLayout(vbox);
+    QHBox *tl = new QHBox(hbox);
+    tl->setMargin(7);
+    tl->setBackgroundColor(QColor(49, 121, 172));
 
-  _tipOnStart = new QCheckBox(i18n("&Show on start"), this);
-  hbox->addWidget(_tipOnStart);
-  hbox->addStretch();
+    QHBox *topLeft = new QHBox(tl);
+    topLeft->setMargin(15);
+    QColor bgColor(213, 222, 238);
+    topLeft->setBackgroundColor(bgColor);
 
-  QPushButton *next = new QPushButton(i18n("&Next"), this);
-  hbox->addWidget(next);
+    _tipText = new KTextBrowser(topLeft);
+    _tipText->mimeSourceFactory()->addFilePath(KGlobal::dirs()->findResourceDir("data", "kdewizard/pics")+"kdewizard/pics/");
+    _tipText->setFrameStyle(QFrame::NoFrame | QFrame::Plain);
+    _tipText->setHScrollBarMode(QScrollView::AlwaysOff);
+    QStringList icons = KGlobal::dirs()->resourceDirs("icon");
+    QStringList::Iterator it;
+    for (it = icons.begin(); it != icons.end(); ++it)
+        _tipText->mimeSourceFactory()->addFilePath(*it);
 
-  KPushButton *ok = new KPushButton(KStdGuiItem::close(), this);
-  hbox->addWidget(ok);
-  ok->setDefault(true);
+    if (!isTipDialog)
+    {
+        QLabel *l = new QLabel(hbox);
+	l->setPixmap(locate("data", "kdewizard/pics/wizard_small.png"));
+        l->setBackgroundColor(QColor(49, 121, 172));
+	l->setAlignment(Qt::AlignRight | Qt::AlignBottom);
 
-  connect(ok, SIGNAL(clicked()), this, SLOT(accept()));
-  connect(next, SIGNAL(clicked()), this, SLOT(nextTip()));
-  connect(_tipOnStart, SIGNAL(toggled(bool)), this, SLOT(showOnStart(bool)));
+	resize(550, 230);
+        QSize sh = sizeHint();
+	QRect rect = KApplication::desktop()->screenGeometry();
+        move(rect.x() + (rect.width() - sh.width())/2,
+		rect.y() + (rect.height() - sh.height())/2);
+    }
 
-  KConfigGroup config(KGlobal::config(), "TipOfDay");
-  _tipOnStart->setChecked(config.readBoolEntry("RunOnStart", true));
+    KSeparator* sep = new KSeparator( KSeparator::HLine, this);
+    vbox->addWidget(sep);
+
+    QHBoxLayout *hbox2 = new QHBoxLayout(vbox, 4);
+
+    _tipOnStart = new QCheckBox(i18n("&Show Tips on Startup"), this);
+    hbox2->addWidget(_tipOnStart, 1);
+
+    QPushButton *prev = new QPushButton(i18n("&Previous"), this);
+    hbox2->addWidget(prev);
+
+    QPushButton *next = new QPushButton(i18n("&Next"), this);
+    hbox2->addWidget(next);
+
+    QPushButton *ok = new QPushButton(i18n("&Close"), this);
+    ok->setDefault(true);
+    hbox2->addWidget(ok);
+
+    KConfigGroup config(kapp->config(), "TipOfDay");
+    _tipOnStart->setChecked(config.readBoolEntry("RunOnStart", true));
+
+    connect(next, SIGNAL(clicked()), this, SLOT(nextTip()));
+    connect(prev, SIGNAL(clicked()), this, SLOT(prevTip()));
+    connect(ok, SIGNAL(clicked()), this, SLOT(accept()));
+    connect(_tipOnStart, SIGNAL(toggled(bool)), this, SLOT(showOnStart(bool)));
+
+    nextTip();
 }
 
 
 void KTipDialog::showTip(const QString &tipFile, bool force)
 {
-  showTip(qApp->mainWidget(), tipFile, force);
+    showTip(kapp->mainWidget(), tipFile, force);
 }
-
 
 void KTipDialog::showTip(QWidget *parent,const QString &tipFile, bool force)
 {
-  if (!force)
-  {
-    KConfigGroup config(KGlobal::config(), "TipOfDay");
-    if (!config.readBoolEntry("RunOnStart", true))
-      return;
-  }
+    if (!force)
+    {
+	KConfigGroup config(kapp->config(), "TipOfDay");
+	if (!config.readBoolEntry("RunOnStart", true))
+	    return;
+    }
 
-  if (!_instance)
-    _instance = new KTipDialog(new KTipDatabase(tipFile), parent);
+    if (!_instance)
+	_instance = new KTipDialog(new KTipDatabase(tipFile), parent);
 
-  _instance->nextTip();
-  _instance->show();
-  _instance->raise();
+    _instance->nextTip();
+    _instance->show();
+    _instance->raise();
 }
 
+void KTipDialog::prevTip()
+{
+    _database->prevTip();
+    _tipText->setText(QString("<qt bgcolor=\"%1\">%2</qt>").arg(colorGroup().color(QColorGroup::Base).name()).arg(_database->tip()));
+}
 
 void KTipDialog::nextTip()
 {
-  _database->nextTip();
-  _tipText->setText(_database->tip());
+    _database->nextTip();
+    _tipText->setText(QString("<qt bgcolor=\"%1\">%2</qt>").arg(colorGroup().color(QColorGroup::Base).name()).arg(_database->tip()));
 }
-
 
 void KTipDialog::showOnStart(bool on)
 {
-  setShowOnStart(on);
+    setShowOnStart(on);
 }
 
 
 void KTipDialog::setShowOnStart(bool on)
 {
-  KConfigGroup config(KGlobal::config(), "TipOfDay");
-  config.writeEntry("RunOnStart", on);
-  config.sync();
+    KConfigGroup config(kapp->config(), "TipOfDay");
+    config.writeEntry("RunOnStart", on);
+    config.sync();
 }
-
-
-bool KTipDialog::eventFilter(QObject *o, QEvent *e)
-{
-  if ( o == _tipText && e->type()== QEvent::KeyPress &&
-      ( ( (QKeyEvent *)e)->key() == Key_Return ||
-	( (QKeyEvent *)e)->key() == Key_Space ) )
-    accept();
-    
-  // If the user presses Return or Space, we close the dialog as if the
-  // default button was pressed even if the KTextBrowser has the keyboard
-  // focus. This could have the bad side-effect that the user cannot use the
-  // keyboard to open urls in the KTextBrowser, so we just let it handle
-  // the key event _additionally_. (Antonio)
-  return QWidget::eventFilter( o, e );
-}
-
-void KTipDialog::virtual_hook( int id, void* data )
-{ KDialog::virtual_hook( id, data ); }
 
 #include "ktip.moc"
