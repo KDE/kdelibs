@@ -262,6 +262,6 @@ namespace KMacroExpander {
      */
     QString expandMacrosShellQuote( const QString &str, const QMap<QChar,QStringList> &map, QChar c = '%' );
     QString expandMacrosShellQuote( const QString &str, const QMap<QString,QStringList> &map, QChar c = '%' );
-};
+}
 
 #endif /* _KMACROEXPANDER_H */

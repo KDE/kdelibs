@@ -366,6 +366,6 @@ bool isEqual(const QKeyEvent* ev, int keyQt)
 	return key1 == key2;
 }
 
-};
+}
 
 #undef __KSTDACCEL_CPP_

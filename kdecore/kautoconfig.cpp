@@ -60,13 +60,13 @@ KAutoConfig::KAutoConfig(KConfig *kconfig, QObject *parent, const char *name):
 			 QObject(parent, name), config(kconfig) {
   d = new KAutoConfigPrivate();
   d->init();
-};
+}
 
 KAutoConfig::KAutoConfig(QObject *parent, const char *name) :
 			 QObject(parent, name), config(KGlobal::config()) {
   d = new KAutoConfigPrivate();
   d->init();
-};
+}
 
 KAutoConfig::~KAutoConfig(){
   delete d;
