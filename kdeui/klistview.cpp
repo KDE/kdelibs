@@ -1255,6 +1255,7 @@ void KListView::cleanItemHighlighter ()
 
 void KListView::rename(QListViewItem *item, int c)
 {
+  ensureItemVisible(item);
   d->editor->load(item,c);
 }
 
