@@ -20,6 +20,11 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.9  1999/11/11 15:03:41  waba
+ * WABA:
+ * * Uses KDialogBase for implementation
+ * * Some additions according to the KDE Style Guide
+ *
  * Revision 1.8  1999/10/09 00:08:29  kalle
  * The dreaded library cleanup: getConfig() -> config() and friends (see separate mail)
  *
@@ -122,7 +127,7 @@ KMessageBox::warningYesNo(QWidget *parent, const QString &text,
                           const QString &buttonYes,  
                           const QString &buttonNo)
 {
-    KDialogBase dialog(caption.isEmpty() ? i18n("Question") : caption,
+    KDialogBase dialog(caption.isEmpty() ? i18n("Warning") : caption,
                        KDialogBase::Yes | KDialogBase::No,
                        KDialogBase::No, KDialogBase::No,
                        parent, "warningYesNo", true, true,
@@ -162,7 +167,7 @@ KMessageBox::warningContinueCancel(QWidget *parent, const QString &text,
                           const QString &caption,
                           const QString &buttonContinue)
 {
-    KDialogBase dialog(caption.isEmpty() ? i18n("Question") : caption,
+    KDialogBase dialog(caption.isEmpty() ? i18n("Warning") : caption,
                        KDialogBase::Yes | KDialogBase::No,
                        KDialogBase::Yes, KDialogBase::No,
                        parent, "warningYesNo", true, true,
