@@ -149,7 +149,6 @@ namespace KJS {
     // Build a DOMDOMImplementation
     DOMDOMImplementation(ExecState *,DOM::DOMImplementation i);
     ~DOMDOMImplementation();
-    virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     // no put - all functions
     virtual const ClassInfo* classInfo() const { return &info; }
     virtual Boolean toBoolean(ExecState *) const { return Boolean(true); }
