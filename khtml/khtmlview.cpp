@@ -38,6 +38,7 @@
 #include <kcursor.h>
 #include <ksimpleconfig.h>
 #include <kstddirs.h>
+#include <kprinter.h>
 
 #include <qpixmap.h>
 #include <qstring.h>
@@ -45,7 +46,6 @@
 #include <qpalette.h>
 #include <qevent.h>
 #include <qdatetime.h>
-#include <qprinter.h>
 #include <qpaintdevicemetrics.h>
 #include <qtimer.h>
 #include <kapp.h>
@@ -749,7 +749,7 @@ void KHTMLView::print()
     khtml::RenderRoot *root = static_cast<khtml::RenderRoot *>(m_part->xmlDocImpl()->renderer());
     if(!root) return;
 
-    QPrinter *printer = new QPrinter;
+    KPrinter *printer = new KPrinter;
     if(printer->setup(this)) {
         QApplication::setOverrideCursor( waitCursor );
         // set up QPrinter
