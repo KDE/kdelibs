@@ -153,9 +153,9 @@ KJavaApplet* HTMLAppletElementImpl::applet() const
     return static_cast<KJavaAppletWidget*>(static_cast<RenderApplet*>(m_render)->widget())->applet();
 }
 
-void HTMLAppletElementImpl::parseAttribute(AttributeImpl *attr)
+void HTMLAppletElementImpl::parseAttribute(NodeImpl::Id id, DOMStringImpl *value)
 {
-    switch( attr->id() )
+    switch( id )
     {
     case ATTR_CODEBASE:
     case ATTR_ARCHIVE:
@@ -166,16 +166,16 @@ void HTMLAppletElementImpl::parseAttribute(AttributeImpl *attr)
     case ATTR_NAME:
         break;
     case ATTR_WIDTH:
-        addCSSLength(CSS_PROP_WIDTH, attr->value());
+        addCSSLength(CSS_PROP_WIDTH, DOMString(value));
         break;
     case ATTR_HEIGHT:
-        addCSSLength(CSS_PROP_HEIGHT, attr->value());
+        addCSSLength(CSS_PROP_HEIGHT, DOMString(value));
         break;
     case ATTR_ALIGN:
-	addHTMLAlignment( attr->value() );
+	addHTMLAlignment( DOMString(value) );
 	break;
     default:
-        HTMLElementImpl::parseAttribute(attr);
+        HTMLElementImpl::parseAttribute(id,value);
     }
 }
 
@@ -248,14 +248,14 @@ NodeImpl::Id HTMLEmbedElementImpl::id() const
     return ID_EMBED;
 }
 
-void HTMLEmbedElementImpl::parseAttribute(AttributeImpl *attr)
+void HTMLEmbedElementImpl::parseAttribute(NodeImpl::Id id, DOMStringImpl *value)
 {
-  DOM::DOMStringImpl *stringImpl = attr->val();
+  DOM::DOMStringImpl *stringImpl = value;
   QConstString cv( stringImpl->s, stringImpl->l );
   QString val = cv.string();
 
   int pos;
-  switch ( attr->id() )
+  switch ( id )
   {
      case ATTR_TYPE:
         serviceType = val.lower();
@@ -265,34 +265,34 @@ void HTMLEmbedElementImpl::parseAttribute(AttributeImpl *attr)
         break;
      case ATTR_CODE:
      case ATTR_SRC:
-         url = khtml::parseURL(attr->val()).string();
+         url = khtml::parseURL(value).string();
          break;
      case ATTR_WIDTH:
-        addCSSLength( CSS_PROP_WIDTH, attr->value() );
+        addCSSLength( CSS_PROP_WIDTH, DOMString(value) );
         break;
      case ATTR_HEIGHT:
-        addCSSLength( CSS_PROP_HEIGHT, attr->value());
+        addCSSLength( CSS_PROP_HEIGHT, DOMString(value));
         break;
      case ATTR_BORDER:
-        addCSSLength(CSS_PROP_BORDER_WIDTH, attr->value());
+        addCSSLength(CSS_PROP_BORDER_WIDTH, DOMString(value));
         addCSSProperty( CSS_PROP_BORDER_TOP_STYLE, CSS_VAL_SOLID );
         addCSSProperty( CSS_PROP_BORDER_RIGHT_STYLE, CSS_VAL_SOLID );
         addCSSProperty( CSS_PROP_BORDER_BOTTOM_STYLE, CSS_VAL_SOLID );
         addCSSProperty( CSS_PROP_BORDER_LEFT_STYLE, CSS_VAL_SOLID );
         break;
      case ATTR_VSPACE:
-        addCSSLength(CSS_PROP_MARGIN_TOP, attr->value());
-        addCSSLength(CSS_PROP_MARGIN_BOTTOM, attr->value());
+        addCSSLength(CSS_PROP_MARGIN_TOP, DOMString(value));
+        addCSSLength(CSS_PROP_MARGIN_BOTTOM, DOMString(value));
         break;
      case ATTR_HSPACE:
-        addCSSLength(CSS_PROP_MARGIN_LEFT, attr->value());
-        addCSSLength(CSS_PROP_MARGIN_RIGHT, attr->value());
+        addCSSLength(CSS_PROP_MARGIN_LEFT, DOMString(value));
+        addCSSLength(CSS_PROP_MARGIN_RIGHT, DOMString(value));
         break;
      case ATTR_ALIGN:
-	addHTMLAlignment( attr->value() );
+	addHTMLAlignment( DOMString(value) );
 	break;
      case ATTR_VALIGN:
-        addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value());
+        addCSSProperty(CSS_PROP_VERTICAL_ALIGN, DOMString(value));
         break;
      case ATTR_PLUGINPAGE:
      case ATTR_PLUGINSPAGE:
@@ -305,7 +305,7 @@ void HTMLEmbedElementImpl::parseAttribute(AttributeImpl *attr)
            hidden = false;
         break;
      default:
-        HTMLElementImpl::parseAttribute( attr );
+        HTMLElementImpl::parseAttribute( id, value );
   }
 }
 
@@ -355,12 +355,12 @@ HTMLFormElementImpl *HTMLObjectElementImpl::form() const
   return 0;
 }
 
-void HTMLObjectElementImpl::parseAttribute(AttributeImpl *attr)
+void HTMLObjectElementImpl::parseAttribute(NodeImpl::Id id, DOMStringImpl *value)
 {
-  DOM::DOMStringImpl *stringImpl = attr->val();
+  DOM::DOMStringImpl *stringImpl = value;
   QString val = QConstString( stringImpl->s, stringImpl->l ).string();
   int pos;
-  switch ( attr->id() )
+  switch ( id )
   {
     case ATTR_TYPE:
     case ATTR_CODETYPE:
@@ -375,10 +375,10 @@ void HTMLObjectElementImpl::parseAttribute(AttributeImpl *attr)
       needWidgetUpdate = true;
       break;
     case ATTR_WIDTH:
-      addCSSLength( CSS_PROP_WIDTH, attr->value());
+      addCSSLength( CSS_PROP_WIDTH, DOMString(value));
       break;
     case ATTR_HEIGHT:
-      addCSSLength( CSS_PROP_HEIGHT, attr->value());
+      addCSSLength( CSS_PROP_HEIGHT, DOMString(value));
       break;
     case ATTR_CLASSID:
       classId = val;
@@ -386,14 +386,14 @@ void HTMLObjectElementImpl::parseAttribute(AttributeImpl *attr)
       break;
     case ATTR_ONLOAD: // ### support load/unload on object elements
         setHTMLEventListener(EventImpl::LOAD_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(DOMString(value).string()));
         break;
     case ATTR_ONUNLOAD:
         setHTMLEventListener(EventImpl::UNLOAD_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(DOMString(value).string()));
         break;
     default:
-      HTMLElementImpl::parseAttribute( attr );
+      HTMLElementImpl::parseAttribute( id, value );
   }
 }
 
@@ -489,18 +489,18 @@ NodeImpl::Id HTMLParamElementImpl::id() const
     return ID_PARAM;
 }
 
-void HTMLParamElementImpl::parseAttribute(AttributeImpl *attr)
+void HTMLParamElementImpl::parseAttribute(NodeImpl::Id id, DOMStringImpl *value)
 {
-    switch( attr->id() )
+    switch( id )
     {
     case ATTR_ID:
         if (getDocument()->htmlMode() != DocumentImpl::XHtml) break;
         // fall through
     case ATTR_NAME:
-        m_name = attr->value().string();
+        m_name = DOMString(value).string();
         break;
     case ATTR_VALUE:
-        m_value = attr->value().string();
+        m_value = DOMString(value).string();
         break;
     }
 }

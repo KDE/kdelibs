@@ -53,7 +53,7 @@ public:
     DOMString target() const { return m_target; }
 
     virtual Id id() const;
-    virtual void parseAttribute(AttributeImpl *attr);
+    virtual void parseAttribute(NodeImpl::Id id, DOMStringImpl *value);
     virtual void insertedIntoDocument();
     virtual void removedFromDocument();
 
@@ -82,7 +82,7 @@ public:
     StyleSheetImpl* sheet() const { return m_sheet; }
 
     // overload from HTMLElementImpl
-    virtual void parseAttribute(AttributeImpl *attr);
+    virtual void parseAttribute(NodeImpl::Id id, DOMStringImpl *value);
 
     void process();
 
@@ -120,7 +120,7 @@ public:
         : HTMLElementImpl(doc) {}
 
     virtual Id id() const;
-    virtual void parseAttribute(AttributeImpl *attr);
+    virtual void parseAttribute(NodeImpl::Id id, DOMStringImpl *value);
     virtual void insertedIntoDocument();
 
     void process();
@@ -158,7 +158,7 @@ public:
     StyleSheetImpl *sheet() const { return m_sheet; }
 
     // overload from HTMLElementImpl
-    virtual void parseAttribute(AttributeImpl *attr);
+    virtual void parseAttribute(NodeImpl::Id id, DOMStringImpl *value);
     virtual void insertedIntoDocument();
     virtual void removedFromDocument();
     virtual void childrenChanged();

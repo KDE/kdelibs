@@ -66,14 +66,14 @@ NodeImpl::Id HTMLBodyElementImpl::id() const
     return ID_BODY;
 }
 
-void HTMLBodyElementImpl::parseAttribute(AttributeImpl *attr)
+void HTMLBodyElementImpl::parseAttribute(NodeImpl::Id id, DOMStringImpl *value)
 {
-    switch(attr->id())
+    switch(id)
     {
 
     case ATTR_BACKGROUND:
     {
-        QString url = khtml::parseURL( attr->value() ).string();
+        QString url = khtml::parseURL( DOMString(value) ).string();
         if (!url.isEmpty()) {
             url = getDocument()->completeURL( url );
             addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, "url('"+url+"')" );
@@ -86,31 +86,31 @@ void HTMLBodyElementImpl::parseAttribute(AttributeImpl *attr)
     case ATTR_MARGINWIDTH: {
 	KHTMLView* w = getDocument()->view();
 	w->setMarginWidth( -1 ); // unset this, so it doesn't override the setting here
-        addCSSLength(CSS_PROP_MARGIN_RIGHT, attr->value() );
+        addCSSLength(CSS_PROP_MARGIN_RIGHT, DOMString(value) );
     }
         /* nobreak; */
     case ATTR_LEFTMARGIN:
-        addCSSLength(CSS_PROP_MARGIN_LEFT, attr->value() );
+        addCSSLength(CSS_PROP_MARGIN_LEFT, DOMString(value) );
         break;
     case ATTR_MARGINHEIGHT: {
 	KHTMLView* w = getDocument()->view();
 	w->setMarginHeight( -1 ); // unset this, so it doesn't override the setting here
-        addCSSLength(CSS_PROP_MARGIN_BOTTOM, attr->value());
+        addCSSLength(CSS_PROP_MARGIN_BOTTOM, DOMString(value));
     }
         /* nobreak */
     case ATTR_TOPMARGIN:
-        addCSSLength(CSS_PROP_MARGIN_TOP, attr->value());
+        addCSSLength(CSS_PROP_MARGIN_TOP, DOMString(value));
         break;
     case ATTR_BGCOLOR:
-        addHTMLColor(CSS_PROP_BACKGROUND_COLOR, attr->value());
-        m_bgSet = !attr->value().isNull();
+        addHTMLColor(CSS_PROP_BACKGROUND_COLOR, DOMString(value));
+        m_bgSet = !DOMString(value).isNull();
         break;
     case ATTR_TEXT:
-        addHTMLColor(CSS_PROP_COLOR, attr->value());
-        m_fgSet = !attr->value().isNull();
+        addHTMLColor(CSS_PROP_COLOR, DOMString(value));
+        m_fgSet = !DOMString(value).isNull();
         break;
     case ATTR_BGPROPERTIES:
-        if ( strcasecmp( attr->value(), "fixed" ) == 0)
+        if ( strcasecmp( DOMString(value), "fixed" ) == 0)
             addCSSProperty(CSS_PROP_BACKGROUND_ATTACHMENT, CSS_VAL_FIXED);
         break;
     case ATTR_VLINK:
@@ -122,41 +122,41 @@ void HTMLBodyElementImpl::parseAttribute(AttributeImpl *attr)
             m_styleSheet->ref();
         }
         QString aStr;
-	if ( attr->id() == ATTR_LINK )
+	if ( id == ATTR_LINK )
 	    aStr = "a:link";
-	else if ( attr->id() == ATTR_VLINK )
+	else if ( id == ATTR_VLINK )
 	    aStr = "a:visited";
-	else if ( attr->id() == ATTR_ALINK )
+	else if ( id == ATTR_ALINK )
 	    aStr = "a:active";
-	aStr += " { color: " + attr->value().string() + "; }";
+	aStr += " { color: " + DOMString(value).string() + "; }";
         m_styleSheet->parseString(aStr);
         m_styleSheet->setNonCSSHints();
         break;
     }
     case ATTR_ONLOAD:
         getDocument()->setWindowEventListener(EventImpl::LOAD_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(DOMString(value).string()));
         break;
     case ATTR_ONUNLOAD:
         getDocument()->setWindowEventListener(EventImpl::UNLOAD_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(DOMString(value).string()));
         break;
     case ATTR_ONBLUR:
         getDocument()->setWindowEventListener(EventImpl::BLUR_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(DOMString(value).string()));
         break;
     case ATTR_ONFOCUS:
         getDocument()->setWindowEventListener(EventImpl::FOCUS_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(DOMString(value).string()));
         break;
     case ATTR_ONRESIZE:
         getDocument()->setWindowEventListener(EventImpl::RESIZE_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(DOMString(value).string()));
         break;
     case ATTR_NOSAVE:
 	break;
     default:
-        HTMLElementImpl::parseAttribute(attr);
+        HTMLElementImpl::parseAttribute(id,value);
     }
 }
 
@@ -233,33 +233,33 @@ NodeImpl::Id HTMLFrameElementImpl::id() const
     return ID_FRAME;
 }
 
-void HTMLFrameElementImpl::parseAttribute(AttributeImpl *attr)
+void HTMLFrameElementImpl::parseAttribute(NodeImpl::Id id, DOMStringImpl *value)
 {
-    switch(attr->id())
+    switch(id)
     {
     case ATTR_SRC:
-        url = khtml::parseURL(attr->val());
+        url = khtml::parseURL(value);
         setLocation(url);
         break;
     case ATTR_ID:
     case ATTR_NAME:
         // FIXME: if already attached, doesn't change the frame name
         // FIXME: frame name conflicts, no unique frame name anymore
-        name = attr->value();
+        name = DOMString(value);
         break;
     case ATTR_FRAMEBORDER:
     {
-        frameBorder = attr->value().toInt();
-        frameBorderSet = ( attr->val() != 0 );
+        frameBorder = DOMString(value).toInt();
+        frameBorderSet = ( value != 0 );
         // FIXME: when attached, has no effect
     }
     break;
     case ATTR_MARGINWIDTH:
-        marginWidth = attr->val()->toInt();
+        marginWidth = value->toInt();
         // FIXME: when attached, has no effect
         break;
     case ATTR_MARGINHEIGHT:
-        marginHeight = attr->val()->toInt();
+        marginHeight = value->toInt();
         // FIXME: when attached, has no effect
         break;
     case ATTR_NORESIZE:
@@ -267,27 +267,27 @@ void HTMLFrameElementImpl::parseAttribute(AttributeImpl *attr)
         // FIXME: when attached, has no effect
         break;
     case ATTR_SCROLLING:
-        if( strcasecmp( attr->value(), "auto" ) == 0 )
+        if( strcasecmp( DOMString(value), "auto" ) == 0 )
             scrolling = QScrollView::Auto;
-        else if( strcasecmp( attr->value(), "yes" ) == 0 )
+        else if( strcasecmp( DOMString(value), "yes" ) == 0 )
             scrolling = QScrollView::AlwaysOn;
-        else if( strcasecmp( attr->value(), "no" ) == 0 )
+        else if( strcasecmp( DOMString(value), "no" ) == 0 )
             scrolling = QScrollView::AlwaysOff;
         // when attached, has no effect
         break;
     case ATTR_ONLOAD:
         static_cast<HTMLDocumentImpl*>( getDocument() )->body()
               ->setHTMLEventListener(EventImpl::LOAD_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string()));
+            getDocument()->createHTMLEventListener(DOMString(value).string()));
         break;
     case ATTR_ONUNLOAD:
         static_cast<HTMLDocumentImpl*>( getDocument() )->body()
               ->setHTMLEventListener(EventImpl::UNLOAD_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string()));
+            getDocument()->createHTMLEventListener(DOMString(value).string()));
         break;
 
     default:
-        HTMLElementImpl::parseAttribute(attr);
+        HTMLElementImpl::parseAttribute(id,value);
     }
 }
 
@@ -423,25 +423,25 @@ NodeImpl::Id HTMLFrameSetElementImpl::id() const
     return ID_FRAMESET;
 }
 
-void HTMLFrameSetElementImpl::parseAttribute(AttributeImpl *attr)
+void HTMLFrameSetElementImpl::parseAttribute(NodeImpl::Id id, DOMStringImpl *value)
 {
-    switch(attr->id())
+    switch(id)
     {
     case ATTR_ROWS:
-        if (!attr->val()) break;
+        if (!value) break;
         if (m_rows) delete [] m_rows;
-        m_rows = attr->val()->toLengthArray(m_totalRows);
+        m_rows = value->toLengthArray(m_totalRows);
         setChanged();
     break;
     case ATTR_COLS:
-        if (!attr->val()) break;
+        if (!value) break;
         delete [] m_cols;
-        m_cols = attr->val()->toLengthArray(m_totalCols);
+        m_cols = value->toLengthArray(m_totalCols);
         setChanged();
     break;
     case ATTR_FRAMEBORDER:
         // false or "no" or "0"..
-        if ( attr->value().toInt() == 0 ) {
+        if ( DOMString(value).toInt() == 0 ) {
             frameborder = false;
             m_border = 0;
         }
@@ -451,20 +451,20 @@ void HTMLFrameSetElementImpl::parseAttribute(AttributeImpl *attr)
         noresize = true;
         break;
     case ATTR_BORDER:
-        m_border = attr->val()->toInt();
+        m_border = value->toInt();
         if(!m_border)
             frameborder = false;
         break;
     case ATTR_ONLOAD:
         getDocument()->setHTMLEventListener(EventImpl::LOAD_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(DOMString(value).string()));
         break;
     case ATTR_ONUNLOAD:
         getDocument()->setHTMLEventListener(EventImpl::UNLOAD_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(DOMString(value).string()));
         break;
     default:
-        HTMLElementImpl::parseAttribute(attr);
+        HTMLElementImpl::parseAttribute(id,value);
     }
 }
 
@@ -573,22 +573,22 @@ NodeImpl::Id HTMLIFrameElementImpl::id() const
     return ID_IFRAME;
 }
 
-void HTMLIFrameElementImpl::parseAttribute(AttributeImpl *attr )
+void HTMLIFrameElementImpl::parseAttribute(NodeImpl::Id id, DOMStringImpl *value)
 {
-  switch (  attr->id() )
+  switch (  id )
   {
     case ATTR_WIDTH:
-      addCSSLength( CSS_PROP_WIDTH, attr->value());
+      addCSSLength( CSS_PROP_WIDTH, DOMString(value));
       break;
     case ATTR_HEIGHT:
-      addCSSLength( CSS_PROP_HEIGHT, attr->value() );
+      addCSSLength( CSS_PROP_HEIGHT, DOMString(value) );
       break;
     case ATTR_SRC:
       needWidgetUpdate = true; // ### do this for scrolling, margins etc?
-      HTMLFrameElementImpl::parseAttribute( attr );
+      HTMLFrameElementImpl::parseAttribute( id, value );
       break;
     default:
-      HTMLFrameElementImpl::parseAttribute( attr );
+      HTMLFrameElementImpl::parseAttribute( id, value );
   }
 }
 

@@ -448,45 +448,45 @@ void HTMLFormElementImpl::reset(  )
     m_inreset = false;
 }
 
-void HTMLFormElementImpl::parseAttribute(AttributeImpl *attr)
+void HTMLFormElementImpl::parseAttribute(NodeImpl::Id id, DOMStringImpl *value)
 {
-    switch(attr->id())
+    switch(id)
     {
     case ATTR_ACTION:
         break;
     case ATTR_TARGET:
-        m_target = attr->value();
+        m_target = DOMString(value);
         break;
     case ATTR_METHOD:
-        m_post = ( strcasecmp( attr->value(), "post" ) == 0 );
+        m_post = ( strcasecmp( DOMString(value), "post" ) == 0 );
         break;
     case ATTR_ENCTYPE:
-        setEnctype( attr->value() );
+        setEnctype( DOMString(value) );
         break;
     case ATTR_ACCEPT_CHARSET:
         // space separated list of charsets the server
         // accepts - see rfc2045
-        m_acceptcharset = attr->value();
+        m_acceptcharset = DOMString(value);
         break;
     case ATTR_ACCEPT:
         // ignore this one for the moment...
         break;
     case ATTR_AUTOCOMPLETE:
-        m_autocomplete = strcasecmp( attr->value(), "off" );
+        m_autocomplete = strcasecmp( DOMString(value), "off" );
         break;
     case ATTR_ONSUBMIT:
         setHTMLEventListener(EventImpl::SUBMIT_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(DOMString(value).string()));
         break;
     case ATTR_ONRESET:
         setHTMLEventListener(EventImpl::RESET_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(DOMString(value).string()));
         break;
     case ATTR_ID:
     case ATTR_NAME:
 	break;
     default:
-        HTMLElementImpl::parseAttribute(attr);
+        HTMLElementImpl::parseAttribute(id,value);
     }
 }
 
@@ -556,24 +556,24 @@ HTMLGenericFormElementImpl::~HTMLGenericFormElementImpl()
         m_form->removeFormElement(this);
 }
 
-void HTMLGenericFormElementImpl::parseAttribute(AttributeImpl *attr)
+void HTMLGenericFormElementImpl::parseAttribute(NodeImpl::Id id, DOMStringImpl *value)
 {
-    switch(attr->id())
+    switch(id)
     {
     case ATTR_NAME:
         break;
     case ATTR_DISABLED:
-        setDisabled( attr->val() != 0 );
+        setDisabled( value != 0 );
         break;
     case ATTR_READONLY:
     {
         bool m_oldreadOnly = m_readOnly;
-        m_readOnly = attr->val() != 0;
+        m_readOnly = value != 0;
         if (m_oldreadOnly != m_readOnly) setChanged();
         break;
     }
     default:
-        HTMLElementImpl::parseAttribute(attr);
+        HTMLElementImpl::parseAttribute(id,value);
     }
 }
 
@@ -742,34 +742,34 @@ DOMString HTMLButtonElementImpl::type() const
     return getAttribute(ATTR_TYPE);
 }
 
-void HTMLButtonElementImpl::parseAttribute(AttributeImpl *attr)
+void HTMLButtonElementImpl::parseAttribute(NodeImpl::Id id, DOMStringImpl *value)
 {
-    switch(attr->id())
+    switch(id)
     {
     case ATTR_TYPE:
-        if ( strcasecmp( attr->value(), "submit" ) == 0 )
+        if ( strcasecmp( DOMString(value), "submit" ) == 0 )
             m_type = SUBMIT;
-        else if ( strcasecmp( attr->value(), "reset" ) == 0 )
+        else if ( strcasecmp( DOMString(value), "reset" ) == 0 )
             m_type = RESET;
-        else if ( strcasecmp( attr->value(), "button" ) == 0 )
+        else if ( strcasecmp( DOMString(value), "button" ) == 0 )
             m_type = BUTTON;
         break;
     case ATTR_VALUE:
-        m_value = attr->value();
+        m_value = DOMString(value);
         m_currValue = m_value.string();
         break;
     case ATTR_ACCESSKEY:
         break;
     case ATTR_ONFOCUS:
         setHTMLEventListener(EventImpl::FOCUS_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string()));
+            getDocument()->createHTMLEventListener(DOMString(value).string()));
         break;
     case ATTR_ONBLUR:
         setHTMLEventListener(EventImpl::BLUR_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string()));
+            getDocument()->createHTMLEventListener(DOMString(value).string()));
         break;
     default:
-        HTMLGenericFormElementImpl::parseAttribute(attr);
+        HTMLGenericFormElementImpl::parseAttribute(id,value);
     }
 }
 
@@ -867,9 +867,9 @@ NodeImpl *HTMLFieldSetElementImpl::addChild(NodeImpl *child)
     return HTMLGenericFormElementImpl::addChild(child);
 }
 
-void HTMLFieldSetElementImpl::parseAttribute(AttributeImpl *attr)
+void HTMLFieldSetElementImpl::parseAttribute(NodeImpl::Id id, DOMStringImpl *value)
 {
-    HTMLElementImpl::parseAttribute(attr);
+    HTMLElementImpl::parseAttribute(id,value);
 }
 
 // -------------------------------------------------------------------------
@@ -975,12 +975,12 @@ void HTMLInputElementImpl::click(  )
 #endif
 }
 
-void HTMLInputElementImpl::parseAttribute(AttributeImpl *attr)
+void HTMLInputElementImpl::parseAttribute(NodeImpl::Id id, DOMStringImpl *value)
 {
-    switch(attr->id())
+    switch(id)
     {
     case ATTR_AUTOCOMPLETE:
-        m_autocomplete = strcasecmp( attr->value(), "off" );
+        m_autocomplete = strcasecmp( DOMString(value), "off" );
         break;
     case ATTR_TYPE:
         // ignore to avoid that javascript can change a type field to file
@@ -992,9 +992,9 @@ void HTMLInputElementImpl::parseAttribute(AttributeImpl *attr)
     case ATTR_MAXLENGTH:
     {
         m_maxLen = -1;
-        if (!attr->val()) break;
+        if (!value) break;
         bool ok;
-        m_maxLen = attr->val()->toInt(&ok);
+        m_maxLen = value->toInt(&ok);
         if (!ok)
             m_maxLen = -1;
         else if (m_maxLen < 0)
@@ -1003,7 +1003,7 @@ void HTMLInputElementImpl::parseAttribute(AttributeImpl *attr)
     }
     break;
     case ATTR_SIZE:
-        m_size = attr->val() ? attr->val()->toInt() : 20;
+        m_size = value ? value->toInt() : 20;
         break;
     case ATTR_ALT:
     case ATTR_SRC:
@@ -1014,7 +1014,7 @@ void HTMLInputElementImpl::parseAttribute(AttributeImpl *attr)
         // ### ignore for the moment
         break;
     case ATTR_ALIGN:
-        addHTMLAlignment( attr->value() );
+        addHTMLAlignment( DOMString(value) );
         break;
     case ATTR_WIDTH:
         // ignore this attribute,  do _not_ add
@@ -1022,26 +1022,26 @@ void HTMLInputElementImpl::parseAttribute(AttributeImpl *attr)
         // webdesigner are stupid - and IE/NS behave the same ( Dirk )
         break;
     case ATTR_HEIGHT:
-        addCSSLength(CSS_PROP_HEIGHT, attr->value() );
+        addCSSLength(CSS_PROP_HEIGHT, DOMString(value) );
         break;
     case ATTR_ONFOCUS:
         setHTMLEventListener(EventImpl::FOCUS_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string()));
+            getDocument()->createHTMLEventListener(DOMString(value).string()));
         break;
     case ATTR_ONBLUR:
         setHTMLEventListener(EventImpl::BLUR_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string()));
+            getDocument()->createHTMLEventListener(DOMString(value).string()));
         break;
     case ATTR_ONSELECT:
         setHTMLEventListener(EventImpl::SELECT_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string()));
+            getDocument()->createHTMLEventListener(DOMString(value).string()));
         break;
     case ATTR_ONCHANGE:
         setHTMLEventListener(EventImpl::CHANGE_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string()));
+            getDocument()->createHTMLEventListener(DOMString(value).string()));
         break;
     default:
-        HTMLGenericFormElementImpl::parseAttribute(attr);
+        HTMLGenericFormElementImpl::parseAttribute(id,value);
     }
 }
 
@@ -1384,20 +1384,20 @@ NodeImpl::Id HTMLLabelElementImpl::id() const
     return ID_LABEL;
 }
 
-void HTMLLabelElementImpl::parseAttribute(AttributeImpl *attr)
+void HTMLLabelElementImpl::parseAttribute(NodeImpl::Id id, DOMStringImpl *value)
 {
-    switch(attr->id())
+    switch(id)
     {
     case ATTR_ONFOCUS:
         setHTMLEventListener(EventImpl::FOCUS_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string()));
+            getDocument()->createHTMLEventListener(DOMString(value).string()));
         break;
     case ATTR_ONBLUR:
         setHTMLEventListener(EventImpl::BLUR_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string()));
+            getDocument()->createHTMLEventListener(DOMString(value).string()));
         break;
     default:
-        HTMLElementImpl::parseAttribute(attr);
+        HTMLElementImpl::parseAttribute(id,value);
     }
 }
 
@@ -1450,15 +1450,15 @@ void HTMLLegendElementImpl::attach()
     _style->deref();
 }
 
-void HTMLLegendElementImpl::parseAttribute(AttributeImpl *attr)
+void HTMLLegendElementImpl::parseAttribute(NodeImpl::Id id, DOMStringImpl *value)
 {
-    switch(attr->id())
+    switch(id)
     {
     case ATTR_ACCESSKEY:
         // ### ignore for the moment
         break;
     default:
-        HTMLElementImpl::parseAttribute(attr);
+        HTMLElementImpl::parseAttribute(id,value);
     }
 }
 
@@ -1663,36 +1663,36 @@ NodeImpl* HTMLSelectElementImpl::addChild(NodeImpl* newChild)
     return HTMLGenericFormElementImpl::addChild(newChild);
 }
 
-void HTMLSelectElementImpl::parseAttribute(AttributeImpl *attr)
+void HTMLSelectElementImpl::parseAttribute(NodeImpl::Id id, DOMStringImpl *value)
 {
-    switch(attr->id())
+    switch(id)
     {
     case ATTR_SIZE:
-        m_size = QMAX( attr->val()->toInt(), 1 );
+        m_size = QMAX( value->toInt(), 1 );
         break;
     case ATTR_WIDTH:
-        m_minwidth = QMAX( attr->val()->toInt(), 0 );
+        m_minwidth = QMAX( value->toInt(), 0 );
         break;
     case ATTR_MULTIPLE:
-        m_multiple = (attr->val() != 0);
+        m_multiple = (value != 0);
         break;
     case ATTR_ACCESSKEY:
         // ### ignore for the moment
         break;
     case ATTR_ONFOCUS:
         setHTMLEventListener(EventImpl::FOCUS_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string()));
+            getDocument()->createHTMLEventListener(DOMString(value).string()));
         break;
     case ATTR_ONBLUR:
         setHTMLEventListener(EventImpl::BLUR_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string()));
+            getDocument()->createHTMLEventListener(DOMString(value).string()));
         break;
     case ATTR_ONCHANGE:
         setHTMLEventListener(EventImpl::CHANGE_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string()));
+            getDocument()->createHTMLEventListener(DOMString(value).string()));
         break;
     default:
-        HTMLGenericFormElementImpl::parseAttribute(attr);
+        HTMLGenericFormElementImpl::parseAttribute(id,value);
     }
 }
 
@@ -1883,15 +1883,15 @@ NodeImpl::Id HTMLKeygenElementImpl::id() const
     return ID_KEYGEN;
 }
 
-void HTMLKeygenElementImpl::parseAttribute(AttributeImpl* attr)
+void HTMLKeygenElementImpl::parseAttribute(NodeImpl::Id id, DOMStringImpl *value)
 {
-    switch(attr->id())
+    switch(id)
     {
     case ATTR_CHALLENGE:
         break;
     default:
         // skip HTMLSelectElementImpl parsing!
-        HTMLGenericFormElementImpl::parseAttribute(attr);
+        HTMLGenericFormElementImpl::parseAttribute(id,value);
     }
 }
 
@@ -1979,18 +1979,18 @@ void HTMLOptionElementImpl::setIndex( long  )
     // ###
 }
 
-void HTMLOptionElementImpl::parseAttribute(AttributeImpl *attr)
+void HTMLOptionElementImpl::parseAttribute(NodeImpl::Id id, DOMStringImpl *value)
 {
-    switch(attr->id())
+    switch(id)
     {
     case ATTR_SELECTED:
-        m_selected = (attr->val() != 0);
+        m_selected = (value != 0);
         break;
     case ATTR_VALUE:
-        m_value = attr->value();
+        m_value = DOMString(value);
         break;
     default:
-        HTMLGenericFormElementImpl::parseAttribute(attr);
+        HTMLGenericFormElementImpl::parseAttribute(id,value);
     }
 }
 
@@ -2071,26 +2071,26 @@ void HTMLTextAreaElementImpl::select(  )
     onSelect();
 }
 
-void HTMLTextAreaElementImpl::parseAttribute(AttributeImpl *attr)
+void HTMLTextAreaElementImpl::parseAttribute(NodeImpl::Id id, DOMStringImpl *value)
 {
-    switch(attr->id())
+    switch(id)
     {
     case ATTR_ROWS:
-        m_rows = attr->val() ? attr->val()->toInt() : 3;
+        m_rows = value ? value->toInt() : 3;
         break;
     case ATTR_COLS:
-        m_cols = attr->val() ? attr->val()->toInt() : 60;
+        m_cols = value ? value->toInt() : 60;
         break;
     case ATTR_WRAP:
         // virtual / physical is Netscape extension of HTML 3.0, now deprecated
         // soft/ hard / off is recommendation for HTML 4 extension by IE and NS 4
-        if ( strcasecmp( attr->value(), "virtual" ) == 0  || strcasecmp( attr->value(), "soft") == 0)
+        if ( strcasecmp( DOMString(value), "virtual" ) == 0  || strcasecmp( DOMString(value), "soft") == 0)
             m_wrap = ta_Virtual;
-        else if ( strcasecmp ( attr->value(), "physical" ) == 0 || strcasecmp( attr->value(), "hard") == 0)
+        else if ( strcasecmp ( DOMString(value), "physical" ) == 0 || strcasecmp( DOMString(value), "hard") == 0)
             m_wrap = ta_Physical;
-        else if(strcasecmp( attr->value(), "on" ) == 0)
+        else if(strcasecmp( DOMString(value), "on" ) == 0)
             m_wrap = ta_Physical;
-        else if(strcasecmp( attr->value(), "off") == 0)
+        else if(strcasecmp( DOMString(value), "off") == 0)
             m_wrap = ta_NoWrap;
         break;
     case ATTR_ACCESSKEY:
@@ -2098,22 +2098,22 @@ void HTMLTextAreaElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_ONFOCUS:
         setHTMLEventListener(EventImpl::FOCUS_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(DOMString(value).string()));
         break;
     case ATTR_ONBLUR:
         setHTMLEventListener(EventImpl::BLUR_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(DOMString(value).string()));
         break;
     case ATTR_ONSELECT:
         setHTMLEventListener(EventImpl::SELECT_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(DOMString(value).string()));
         break;
     case ATTR_ONCHANGE:
         setHTMLEventListener(EventImpl::CHANGE_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(DOMString(value).string()));
         break;
     default:
-        HTMLGenericFormElementImpl::parseAttribute(attr);
+        HTMLGenericFormElementImpl::parseAttribute(id,value);
     }
 }
 
@@ -2244,11 +2244,11 @@ NodeImpl::Id HTMLIsIndexElementImpl::id() const
     return ID_ISINDEX;
 }
 
-void HTMLIsIndexElementImpl::parseAttribute(AttributeImpl* attr)
+void HTMLIsIndexElementImpl::parseAttribute(NodeImpl::Id id, DOMStringImpl *value)
 {
     // don't call HTMLInputElement::parseAttribute here, as it would
     // accept attributes this element does not support
-    HTMLGenericFormElementImpl::parseAttribute(attr);
+    HTMLGenericFormElementImpl::parseAttribute(id,value);
 }
 
 DOMString HTMLIsIndexElementImpl::prompt() const

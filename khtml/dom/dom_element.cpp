@@ -70,7 +70,7 @@ DOMString Attr::name() const
 {
     if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
     return impl->getDocument()->attrName(
-        static_cast<AttrImpl*>(impl)->attrImpl()->id());
+        static_cast<AttrImpl*>(impl)->attrId());
 }
 
 
@@ -290,7 +290,7 @@ bool Element::hasAttributeNS( const DOMString &namespaceURI,
     if (!id) return false;
 
     if (!static_cast<ElementImpl*>(impl)->attributes(true /*readonly*/)) return false;
-    return static_cast<ElementImpl*>(impl)->attributes(true)->getAttributeItem(id) != 0;
+    return static_cast<ElementImpl*>(impl)->attributes(true)->getValue(id) != 0;
 }
 
 bool Element::isHTMLElement() const

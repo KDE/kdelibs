@@ -39,7 +39,7 @@ public:
 
     virtual bool isSelectable() const { return m_hasAnchor; }
     virtual Id id() const;
-    virtual void parseAttribute(AttributeImpl *attr);
+    virtual void parseAttribute(NodeImpl::Id id, DOMStringImpl *value);
     virtual void defaultEventHandler(EventImpl *evt);
 protected:
     bool m_hasTarget : 1;
@@ -54,7 +54,7 @@ public:
         : HTMLElementImpl(doc) {}
 
     virtual Id id() const;
-    virtual void parseAttribute(AttributeImpl *attr);
+    virtual void parseAttribute(NodeImpl::Id id, DOMStringImpl *value);
     virtual void attach();
 };
 
@@ -67,7 +67,7 @@ public:
         : HTMLElementImpl(doc) {}
 
     virtual Id id() const;
-    virtual void parseAttribute(AttributeImpl *attr);
+    virtual void parseAttribute(NodeImpl::Id id, DOMStringImpl *value);
 };
 
 }; //namespace

@@ -77,7 +77,7 @@ public:
 
     bool autoComplete() const { return m_autocomplete; }
 
-    virtual void parseAttribute(AttributeImpl *attr);
+    virtual void parseAttribute(NodeImpl::Id id, DOMStringImpl *value);
 
     void radioClicked( HTMLGenericFormElementImpl *caller );
 
@@ -123,7 +123,7 @@ public:
 
     HTMLFormElementImpl *form() { return m_form; }
 
-    virtual void parseAttribute(AttributeImpl *attr);
+    virtual void parseAttribute(NodeImpl::Id id, DOMStringImpl *value);
     virtual void attach();
     virtual void reset() {}
 
@@ -185,7 +185,7 @@ public:
     DOMString type() const;
     typeEnum buttonType() const { return m_type; }
     virtual void attach();
-    virtual void parseAttribute(AttributeImpl *attr);
+    virtual void parseAttribute(NodeImpl::Id id, DOMStringImpl *value);
     virtual void defaultEventHandler(EventImpl *evt);
     virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool);
     void activate();
@@ -211,7 +211,7 @@ public:
     virtual Id id() const;
     virtual void attach();
     virtual NodeImpl *addChild(NodeImpl *child);
-    virtual void parseAttribute(AttributeImpl *attr);
+    virtual void parseAttribute(NodeImpl::Id id, DOMStringImpl *value);
 
 protected:
     NodeImpl *m_legend;
@@ -270,7 +270,7 @@ public:
     void select();
     void click();
 
-    virtual void parseAttribute(AttributeImpl *attr);
+    virtual void parseAttribute(NodeImpl::Id id, DOMStringImpl *value);
 
     virtual void attach();
     virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool);
@@ -313,7 +313,7 @@ public:
     virtual ~HTMLLabelElementImpl();
 
     virtual Id id() const;
-    virtual void parseAttribute(AttributeImpl *attr);
+    virtual void parseAttribute(NodeImpl::Id id, DOMStringImpl *value);
     virtual void attach();
 
  private:
@@ -330,7 +330,7 @@ public:
 
     virtual Id id() const;
     virtual void attach();
-    virtual void parseAttribute(AttributeImpl *attr);
+    virtual void parseAttribute(NodeImpl::Id id, DOMStringImpl *value);
 };
 
 
@@ -381,7 +381,7 @@ public:
 
     virtual void childrenChanged();
 
-    virtual void parseAttribute(AttributeImpl *attr);
+    virtual void parseAttribute(NodeImpl::Id id, DOMStringImpl *value);
 
     virtual void attach();
     virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool);
@@ -429,7 +429,7 @@ public:
     // ### this is just a rough guess
     virtual bool isEnumeratable() const { return false; }
 
-    virtual void parseAttribute(AttributeImpl *attr);
+    virtual void parseAttribute(NodeImpl::Id id, DOMStringImpl *value);
     virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool);
 
 };
@@ -462,7 +462,7 @@ public:
 
     long index() const;
     void setIndex( long );
-    virtual void parseAttribute(AttributeImpl *attr);
+    virtual void parseAttribute(NodeImpl::Id id, DOMStringImpl *value);
     DOMString value() const;
     void setValue(DOMStringImpl* value);
 
@@ -511,7 +511,7 @@ public:
 
     void select (  );
 
-    virtual void parseAttribute(AttributeImpl *attr);
+    virtual void parseAttribute(NodeImpl::Id id, DOMStringImpl *value);
     virtual void attach();
     virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool);
     virtual void reset();
@@ -541,7 +541,7 @@ public:
     ~HTMLIsIndexElementImpl();
 
     virtual Id id() const;
-    virtual void parseAttribute(AttributeImpl *attr);
+    virtual void parseAttribute(NodeImpl::Id id, DOMStringImpl *value);
 
     DOMString prompt() const;
     void setPrompt(const DOMString& _value);

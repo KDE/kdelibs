@@ -96,7 +96,7 @@ public:
 
     // overrides
     virtual NodeImpl *addChild(NodeImpl *child);
-    virtual void parseAttribute(AttributeImpl *attr);
+    virtual void parseAttribute(NodeImpl::Id id, DOMStringImpl *value);
     virtual void attach();
 
 protected:
@@ -127,7 +127,7 @@ public:
         : HTMLElementImpl(doc)
         { }
 
-    virtual void parseAttribute(AttributeImpl *attr);
+    virtual void parseAttribute(NodeImpl::Id id, DOMStringImpl *value);
 };
 
 // -------------------------------------------------------------------------
@@ -190,7 +190,7 @@ public:
     int rowSpan() const { return rSpan; }
     
     virtual Id id() const { return _id; }
-    virtual void parseAttribute(AttributeImpl *attr);
+    virtual void parseAttribute(NodeImpl::Id id, DOMStringImpl *value);
     virtual void attach();
 
 protected:
@@ -216,7 +216,7 @@ public:
     void setTable(HTMLTableElementImpl *t) { table = t; }
 
     // overrides
-    virtual void parseAttribute(AttributeImpl *attr);
+    virtual void parseAttribute(NodeImpl::Id id, DOMStringImpl *value);
 
     int span() const { return _span; }
 
@@ -238,7 +238,7 @@ public:
         : HTMLTablePartElementImpl(doc) {}
 
     virtual Id id() const;
-    virtual void parseAttribute(AttributeImpl *attr);
+    virtual void parseAttribute(NodeImpl::Id id, DOMStringImpl *value);
 };
 
 }; //namespace

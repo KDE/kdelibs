@@ -56,24 +56,24 @@ NodeImpl::Id HTMLImageElementImpl::id() const
     return ID_IMG;
 }
 
-void HTMLImageElementImpl::parseAttribute(AttributeImpl *attr)
+void HTMLImageElementImpl::parseAttribute(NodeImpl::Id id, DOMStringImpl *value)
 {
-    switch (attr->id())
+    switch (id)
     {
     case ATTR_ALT:
     case ATTR_SRC:
         setChanged();
         break;
     case ATTR_WIDTH:
-        addCSSLength(CSS_PROP_WIDTH, attr->value());
+        addCSSLength(CSS_PROP_WIDTH, DOMString(value));
         break;
     case ATTR_HEIGHT:
-        addCSSLength(CSS_PROP_HEIGHT, attr->value());
+        addCSSLength(CSS_PROP_HEIGHT, DOMString(value));
         break;
     case ATTR_BORDER:
         // border="noborder" -> border="0"
-        if(attr->value().toInt()) {
-            addCSSLength(CSS_PROP_BORDER_WIDTH, attr->value());
+        if(DOMString(value).toInt()) {
+            addCSSLength(CSS_PROP_BORDER_WIDTH, DOMString(value));
             addCSSProperty( CSS_PROP_BORDER_TOP_STYLE, CSS_VAL_SOLID );
             addCSSProperty( CSS_PROP_BORDER_RIGHT_STYLE, CSS_VAL_SOLID );
             addCSSProperty( CSS_PROP_BORDER_BOTTOM_STYLE, CSS_VAL_SOLID );
@@ -81,49 +81,49 @@ void HTMLImageElementImpl::parseAttribute(AttributeImpl *attr)
         }
         break;
     case ATTR_VSPACE:
-        addCSSLength(CSS_PROP_MARGIN_TOP, attr->value());
-        addCSSLength(CSS_PROP_MARGIN_BOTTOM, attr->value());
+        addCSSLength(CSS_PROP_MARGIN_TOP, DOMString(value));
+        addCSSLength(CSS_PROP_MARGIN_BOTTOM, DOMString(value));
         break;
     case ATTR_HSPACE:
-        addCSSLength(CSS_PROP_MARGIN_LEFT, attr->value());
-        addCSSLength(CSS_PROP_MARGIN_RIGHT, attr->value());
+        addCSSLength(CSS_PROP_MARGIN_LEFT, DOMString(value));
+        addCSSLength(CSS_PROP_MARGIN_RIGHT, DOMString(value));
         break;
     case ATTR_ALIGN:
-	addHTMLAlignment( attr->value() );
+	addHTMLAlignment( DOMString(value) );
 	break;
     case ATTR_VALIGN:
-	addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value());
+	addCSSProperty(CSS_PROP_VERTICAL_ALIGN, DOMString(value));
         break;
     case ATTR_USEMAP:
-        if ( attr->value()[0] == '#' )
-            usemap = attr->value();
+        if ( DOMString(value)[0] == '#' )
+            usemap = DOMString(value);
         else {
-            QString url = getDocument()->completeURL( khtml::parseURL( attr->value() ).string() );
+            QString url = getDocument()->completeURL( khtml::parseURL( DOMString(value) ).string() );
             // ### we remove the part before the anchor and hope
             // the map is on the same html page....
             usemap = url;
         }
-        m_hasAnchor = attr->val() != 0;
+        m_hasAnchor = value != 0;
     case ATTR_ISMAP:
         ismap = true;
         break;
     case ATTR_ONABORT: // ### add support for this
         setHTMLEventListener(EventImpl::ABORT_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(DOMString(value).string()));
         break;
     case ATTR_ONERROR: // ### add support for this
         setHTMLEventListener(EventImpl::ERROR_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(DOMString(value).string()));
         break;
     case ATTR_ONLOAD:
         setHTMLEventListener(EventImpl::LOAD_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(DOMString(value).string()));
         break;
     case ATTR_NAME:
     case ATTR_NOSAVE:
 	break;
     default:
-        HTMLElementImpl::parseAttribute(attr);
+        HTMLElementImpl::parseAttribute(id,value);
     }
 }
 
@@ -274,16 +274,16 @@ HTMLMapElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
     return false;
 }
 
-void HTMLMapElementImpl::parseAttribute(AttributeImpl *attr)
+void HTMLMapElementImpl::parseAttribute(NodeImpl::Id id, DOMStringImpl *value)
 {
-    switch (attr->id())
+    switch (id)
     {
     case ATTR_ID:
         if (getDocument()->htmlMode() != DocumentImpl::XHtml) break;
         // fall through
     case ATTR_NAME:
     {
-        DOMString s = attr->value();
+        DOMString s = DOMString(value);
         if(*s.unicode() == '#')
             name = QString(s.unicode()+1, s.length()-1);
         else
@@ -294,7 +294,7 @@ void HTMLMapElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     }
     default:
-        HTMLElementImpl::parseAttribute(attr);
+        HTMLElementImpl::parseAttribute(id,value);
     }
 }
 
@@ -320,36 +320,36 @@ NodeImpl::Id HTMLAreaElementImpl::id() const
     return ID_AREA;
 }
 
-void HTMLAreaElementImpl::parseAttribute(AttributeImpl *attr)
+void HTMLAreaElementImpl::parseAttribute(NodeImpl::Id id, DOMStringImpl *value)
 {
-    switch (attr->id())
+    switch (id)
     {
     case ATTR_SHAPE:
-        if ( strcasecmp( attr->value(), "default" ) == 0 )
+        if ( strcasecmp( DOMString(value), "default" ) == 0 )
             shape = Default;
-        else if ( strcasecmp( attr->value(), "circle" ) == 0 )
+        else if ( strcasecmp( DOMString(value), "circle" ) == 0 )
             shape = Circle;
-        else if ( strcasecmp( attr->value(), "poly" ) == 0 || strcasecmp( attr->value(),  "polygon" ) == 0 )
+        else if ( strcasecmp( DOMString(value), "poly" ) == 0 || strcasecmp( DOMString(value),  "polygon" ) == 0 )
             shape = Poly;
-        else if ( strcasecmp( attr->value(), "rect" ) == 0 )
+        else if ( strcasecmp( DOMString(value), "rect" ) == 0 )
             shape = Rect;
         break;
     case ATTR_COORDS:
         if (m_coords) delete [] m_coords;
-        m_coords = attr->val()->toLengthArray(m_coordsLen);
+        m_coords = value->toLengthArray(m_coordsLen);
         break;
     case ATTR_NOHREF:
-        nohref = attr->val() != 0;
+        nohref = value != 0;
         break;
     case ATTR_TARGET:
-        m_hasTarget = attr->val() != 0;
+        m_hasTarget = value != 0;
         break;
     case ATTR_ALT:
         break;
     case ATTR_ACCESSKEY:
         break;
     default:
-        HTMLAnchorElementImpl::parseAttribute(attr);
+        HTMLAnchorElementImpl::parseAttribute(id,value);
     }
 }
 

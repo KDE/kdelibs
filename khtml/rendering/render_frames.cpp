@@ -716,8 +716,9 @@ void RenderPartObject::updateWidget()
       NamedAttrMapImpl* a = o->attributes();
       if (a) {
           for (unsigned long i = 0; i < a->length(); ++i) {
-              AttributeImpl* it = a->attributeItem(i);
-              params.append(o->getDocument()->attrName(it->id()).string() + "=\"" + it->value().string() + "\"");
+	      NodeImpl::Id id = a->idAt(i);
+	      DOMString value = a->valueAt(i);
+              params.append(o->getDocument()->attrName(id).string() + "=\"" + value.string() + "\"");
           }
       }
       part->requestObject( this, url, serviceType, params );

@@ -39,7 +39,7 @@ public:
     HTMLDivElementImpl(DocumentPtr *doc, ushort _tagid)
         : HTMLGenericElementImpl(doc, _tagid) {}
 
-    virtual void parseAttribute(AttributeImpl *token);
+    virtual void parseAttribute(NodeImpl::Id id, DOMStringImpl *value);
 };
 
 // -------------------------------------------------------------------------
@@ -51,7 +51,7 @@ public:
         : HTMLElementImpl(doc) {}
 
     virtual NodeImpl::Id id() const;
-    virtual void parseAttribute(AttributeImpl *);
+    virtual void parseAttribute(NodeImpl::Id id, DOMStringImpl *value);
     virtual void attach();
 };
 

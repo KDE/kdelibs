@@ -389,9 +389,10 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
 		    NamedAttrMapImpl *bmap = static_cast<ElementImpl*>(doc()->firstChild())->attributes(false);
 		    bool changed = false;
 		    for (unsigned long l = 0; map && l < map->length(); ++l) {
-			AttributeImpl* it = map->attributeItem(l);
-			changed = !bmap->getAttributeItem(it->id());
-			bmap->insertAttribute(new AttributeImpl(it->id(), it->val()));
+			NodeImpl::Id attrId = map->idAt(l);
+			DOMStringImpl *attrValue = map->valueAt(l);
+			changed = !bmap->getValue(attrId);
+			bmap->setValue(attrId, attrValue);
 		    }
 		    if ( changed )
 			doc()->recalcStyle( NodeImpl::Inherit );
@@ -438,9 +439,10 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
                 NamedAttrMapImpl *bmap = doc()->body()->attributes(false);
                 bool changed = false;
                 for (unsigned long l = 0; map && l < map->length(); ++l) {
-                    AttributeImpl* it = map->attributeItem(l);
-                    changed = !bmap->getAttributeItem(it->id());
-                    bmap->insertAttribute(new AttributeImpl(it->id(), it->val()));
+                    NodeImpl::Id attrId = map->idAt(l);
+                    DOMStringImpl *attrValue = map->valueAt(l);
+                    changed = !bmap->getValue(attrId);
+                    bmap->setValue(attrId, attrValue);
                 }
                 if ( changed )
                     doc()->recalcStyle( NodeImpl::Inherit );
@@ -1241,10 +1243,10 @@ NodeImpl *KHTMLParser::handleIsindex( Token *t )
         n = new HTMLDivElementImpl( document, ID_DIV );
     NodeImpl *child = new HTMLHRElementImpl( document );
     n->addChild( child );
-    AttributeImpl* a = t->attrs ? t->attrs->getAttributeItem(ATTR_PROMPT) : 0;
+    DOMStringImpl* a = t->attrs ? t->attrs->getValue(ATTR_PROMPT) : 0;
     DOMString text = i18n("This is a searchable index. Enter search keywords: ");
     if (a)
-        text = a->value();
+        text = a;
     child = new TextImpl(document, text.implementation());
     n->addChild( child );
     child = new HTMLIsIndexElementImpl(document, myform);

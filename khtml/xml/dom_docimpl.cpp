@@ -382,7 +382,7 @@ ProcessingInstructionImpl *DocumentImpl::createProcessingInstruction ( const DOM
 
 Attr DocumentImpl::createAttribute( NodeImpl::Id id )
 {
-    return new AttrImpl(0, docPtr(), new AttributeImpl(id, DOMString("").implementation()));
+    return new AttrImpl(0, docPtr(), id, DOMString("").implementation(), 0);
 }
 
 EntityReferenceImpl *DocumentImpl::createEntityReference ( const DOMString &name )

@@ -40,55 +40,6 @@ class ElementImpl;
 class DocumentImpl;
 class NamedAttrMapImpl;
 
-// this has no counterpart in DOM, purely internal
-// representation of the nodevalue of an Attr.
-// the actual Attr (AttrImpl) with its value as textchild
-// is only allocated on demand by the DOM bindings.
-// Any use of AttrImpl inside khtml should be avoided.
-class AttributeImpl : public khtml::Shared<AttributeImpl>
-{
-    friend class NamedAttrMapImpl;
-    friend class ElementImpl;
-    friend class AttrImpl;
-
-public:
-    // null value is forbidden !
-    AttributeImpl(NodeImpl::Id _id, DOMStringImpl* value)
-        : m_id(_id), _prefix(0), _value(value), _impl(0)
-        { _value->ref(); };
-    ~AttributeImpl() {
-        if (_prefix) _prefix->deref();
-        if (_value) _value->deref();
-        // assert : _impl == 0
-    }
-
-    DOMString value() const { return _value; }
-    DOMStringImpl* val() const { return _value; }
-    DOMStringImpl* prefix() const { return _prefix; }
-    NodeImpl::Id id() const { return m_id; }
-    AttrImpl* attrImpl() const { return _impl; }
-
-private:
-    // null pointers can never happen here
-    void setValue(DOMStringImpl* value) {
-        _value->deref();
-        _value = value;
-        _value->ref();
-    }
-    void setPrefix(DOMStringImpl* prefix) {
-        if (_prefix) _prefix->deref();
-        _prefix = prefix;
-        if (_prefix) _prefix->ref();
-    }
-    void allocateImpl(ElementImpl* e);
-
-protected:
-    NodeImpl::Id m_id;
-    DOMStringImpl *_prefix;
-    DOMStringImpl *_value;
-    AttrImpl* _impl;
-};
-
 // Attr can have Text and EntityReference children
 // therefore it has to be a fullblown Node. The plan
 // is to dynamically allocate a textchild and store the
@@ -100,7 +51,8 @@ class AttrImpl : public NodeBaseImpl
     friend class NamedAttrMapImpl;
 
 public:
-    AttrImpl(ElementImpl* element, DocumentPtr* docPtr, AttributeImpl* a);
+    AttrImpl(ElementImpl* element, DocumentPtr* docPtr, NodeImpl::Id attrId,
+	     DOMStringImpl *value, DOMStringImpl *prefix);
     ~AttrImpl();
 
 private:
@@ -111,7 +63,7 @@ public:
     // DOM methods & attributes for Attr
     bool specified() const { return m_specified; }
     ElementImpl* ownerElement() const { return m_element; }
-    AttributeImpl* attrImpl() const { return m_attribute; }
+    NodeImpl::Id attrId() const { return m_attrId; }
 
     //DOMString value() const;
     void setValue( const DOMString &v, int &exceptioncode );
@@ -131,9 +83,14 @@ public:
     virtual bool childAllowed( NodeImpl *newChild );
     virtual bool childTypeAllowed( unsigned short type );
 
+    void setElement(ElementImpl *element);
+    DOMStringImpl *val() { return m_value; }
+
 protected:
-    ElementImpl* m_element;
-    AttributeImpl* m_attribute;
+    ElementImpl *m_element;
+    NodeImpl::Id m_attrId;
+    DOMStringImpl *m_value;
+    DOMStringImpl *m_prefix;
 };
 
 
@@ -172,7 +129,7 @@ public:
     }
 
     //This is always called, whenever an attribute changed
-    virtual void parseAttribute(AttributeImpl *) {}
+    virtual void parseAttribute(NodeImpl::Id /*id*/, DOMStringImpl */*value*/) {}
 
     // not part of the DOM
     void setAttributeMap ( NamedAttrMapImpl* list );
@@ -193,8 +150,8 @@ public:
       return m_styleDecls;
     }
 
-    void dispatchAttrRemovalEvent(AttributeImpl *attr);
-    void dispatchAttrAdditionEvent(AttributeImpl *attr);
+    void dispatchAttrRemovalEvent(NodeImpl::Id id, DOMStringImpl *value);
+    void dispatchAttrAdditionEvent(NodeImpl::Id id, DOMStringImpl *value);
 
 protected:
     void createAttributeMap() const;
@@ -235,15 +192,18 @@ protected:
     Id m_id;
 };
 
+class AttributeImpl;
+
 // the map of attributes of an element
 class NamedAttrMapImpl : public NamedNodeMapImpl
 {
     friend class ElementImpl;
 public:
-    NamedAttrMapImpl(ElementImpl *e);
+    NamedAttrMapImpl(ElementImpl *element);
     virtual ~NamedAttrMapImpl();
-    NamedAttrMapImpl(const NamedAttrMapImpl&);
-    NamedAttrMapImpl &operator =(const NamedAttrMapImpl &other);
+
+    // ### are the non-NS methods equivalent to NS methods with a namespace of ""/null, or
+    // should they match attributes in any namespace?
 
     // DOM methods & attributes for NamedNodeMap
     virtual NodeImpl *getNamedItem ( NodeImpl::Id id ) const;
@@ -254,32 +214,20 @@ public:
     virtual unsigned long length(  ) const;
 
     // Other methods (not part of DOM)
-    virtual NodeImpl::Id mapId(const DOMString& namespaceURI,  const DOMString& localName,  bool readonly);
-    AttributeImpl* attributeItem(unsigned long index) const { return attrs ? attrs[index] : 0; }
-    AttributeImpl* getAttributeItem(NodeImpl::Id id) const;
-    virtual bool isReadOnly() { return element ? element->isReadOnly() : false; }
-
-    // used during parsing: only inserts if not already there
-    // no error checking!
-    void insertAttribute(AttributeImpl* newAttribute) {
-        if (!getAttributeItem(newAttribute->id()))
-            addAttribute(newAttribute);
-        else
-            newAttribute->deref();
-    }
-
-private:
-    // this method is internal, does no error checking at all
-    void addAttribute(AttributeImpl* newAttribute);
-    // this method is internal, does no error checking at all
-    void removeAttribute(NodeImpl::Id id);
-    void clearAttributes();
+    virtual bool isReadOnly() { return false; }
+    NodeImpl::Id idAt(unsigned long index) const;
+    DOMStringImpl *valueAt(unsigned long index) const;
+    DOMStringImpl *getValue(NodeImpl::Id id) const;
+    void setValue(NodeImpl::Id id, DOMStringImpl *value);
+    NodeImpl::Id mapId(const DOMString& namespaceURI,  const DOMString& localName,  bool readonly);
+    void copyAttributes(NamedAttrMapImpl *other);
+    void setElement(ElementImpl *element);
     void detachFromElement();
 
 protected:
-    ElementImpl *element;
-    AttributeImpl **attrs;
-    uint len;
+    ElementImpl *m_element;
+    AttributeImpl *m_attrs;
+    unsigned long m_attrCount;
 };
 
 }; //namespace

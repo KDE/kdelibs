@@ -75,19 +75,24 @@ namespace khtml {
         }
         void addAttribute(DocumentImpl* doc, QChar* buffer, const QString& attrName, const DOMString& v)
         {
-            AttributeImpl* a = 0;
-            if(buffer->unicode())
-                a = new AttributeImpl(buffer->unicode(), v.implementation());
-            else if ( !attrName.isEmpty() && attrName != "/" )
-                a = new AttributeImpl(doc->attrId(0, DOMString(attrName).implementation(), false),
-                                      v.implementation());
+            DOMStringImpl *value = 0;
+            NodeImpl::Id id = 0;
+            if(buffer->unicode()) {
+		id = buffer->unicode();
+		value = v.implementation();
+            }
+            else if ( !attrName.isEmpty() && attrName != "/" ) {
+		id = doc->attrId(0, DOMString(attrName).implementation(), false);
+		value = v.implementation();
+            }
 
-            if (a) {
+            if (value) {
                 if(!attrs) {
                     attrs = new DOM::NamedAttrMapImpl(0);
                     attrs->ref();
                 }
-                attrs->insertAttribute(a);
+                if (!attrs->getValue(id))
+		    attrs->setValue(id,value);
             }
         }
         void reset()

@@ -158,7 +158,7 @@ bool XMLHandler::characters( const QString& ch )
         m_currentNode->nodeType() == Node::CDATA_SECTION_NODE ||
         enterText()) {
 
-        unsigned short parentId = m_currentNode->parentNode() ? m_currentNode->parentNode()->id() : 0;
+        NodeImpl::Id parentId = m_currentNode->parentNode() ? m_currentNode->parentNode()->id() : 0;
         if (parentId == ID_SCRIPT || parentId == ID_STYLE || parentId == ID_XMP || parentId == ID_TEXTAREA) {
             // ### hack.. preserve whitespace for script, style, xmp and textarea... is this the correct
             // way of doing this?

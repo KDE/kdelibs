@@ -79,7 +79,7 @@ public:
 
     virtual Id id() const;
 
-    virtual void parseAttribute(AttributeImpl *token);
+    virtual void parseAttribute(NodeImpl::Id id, DOMStringImpl *value);
     virtual void attach();
 
     KJavaApplet* applet() const;
@@ -97,7 +97,7 @@ public:
 
     virtual Id id() const;
 
-    virtual void parseAttribute(AttributeImpl *attr);
+    virtual void parseAttribute(NodeImpl::Id id, DOMStringImpl *value);
     virtual void attach();
 
     QString url;
@@ -119,7 +119,7 @@ public:
 
     HTMLFormElementImpl *form() const;
 
-    virtual void parseAttribute(AttributeImpl *token);
+    virtual void parseAttribute(NodeImpl::Id id, DOMStringImpl *value);
 
     virtual void attach();
     virtual void detach();
@@ -147,7 +147,7 @@ public:
 
     virtual Id id() const;
 
-    virtual void parseAttribute(AttributeImpl *token);
+    virtual void parseAttribute(NodeImpl::Id id, DOMStringImpl *value);
 
     QString name() const { return m_name; }
     QString value() const { return m_value; }

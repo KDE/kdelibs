@@ -341,20 +341,20 @@ NodeImpl *HTMLTableElementImpl::addChild(NodeImpl *child)
     return retval;
 }
 
-void HTMLTableElementImpl::parseAttribute(AttributeImpl *attr)
+void HTMLTableElementImpl::parseAttribute(NodeImpl::Id id, DOMStringImpl *value)
 {
     // ### to CSS!!
-    switch(attr->id())
+    switch(id)
     {
     case ATTR_WIDTH:
-        if (!attr->value().isEmpty())
-            addCSSLength( CSS_PROP_WIDTH, attr->value() );
+        if (!DOMString(value).isEmpty())
+            addCSSLength( CSS_PROP_WIDTH, DOMString(value) );
         else
             removeCSSProperty(CSS_PROP_WIDTH);
         break;
     case ATTR_HEIGHT:
-        if (!attr->value().isEmpty())
-            addCSSLength(CSS_PROP_HEIGHT, attr->value());
+        if (!DOMString(value).isEmpty())
+            addCSSLength(CSS_PROP_HEIGHT, DOMString(value));
         else
             removeCSSProperty(CSS_PROP_HEIGHT);
         break;
@@ -363,12 +363,12 @@ void HTMLTableElementImpl::parseAttribute(AttributeImpl *attr)
         int border;
         // ### this needs more work, as the border value is not only
         //     the border of the box, but also between the cells
-        if(!attr->val())
+        if(!value)
             border = 0;
-        else if(attr->val()->l == 0)
+        else if(value->l == 0)
             border = 1;
         else
-            border = attr->val()->toInt();
+            border = value->toInt();
 #ifdef DEBUG_DRAW_BORDER
         border=1;
 #endif
@@ -385,14 +385,14 @@ void HTMLTableElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     }
     case ATTR_BGCOLOR:
-        if (!attr->value().isEmpty())
-            addHTMLColor(CSS_PROP_BACKGROUND_COLOR, attr->value());
+        if (!DOMString(value).isEmpty())
+            addHTMLColor(CSS_PROP_BACKGROUND_COLOR, DOMString(value));
         else
             removeCSSProperty(CSS_PROP_BACKGROUND_COLOR);
         break;
     case ATTR_BORDERCOLOR:
-        if(!attr->value().isEmpty()) {
-            addHTMLColor(CSS_PROP_BORDER_COLOR, attr->value());
+        if(!DOMString(value).isEmpty()) {
+            addHTMLColor(CSS_PROP_BORDER_COLOR, DOMString(value));
             addCSSProperty(CSS_PROP_BORDER_TOP_STYLE, CSS_VAL_SOLID);
             addCSSProperty(CSS_PROP_BORDER_BOTTOM_STYLE, CSS_VAL_SOLID);
             addCSSProperty(CSS_PROP_BORDER_LEFT_STYLE, CSS_VAL_SOLID);
@@ -402,8 +402,8 @@ void HTMLTableElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_BACKGROUND:
     {
-        if (!attr->value().isEmpty()) {
-            QString url = khtml::parseURL( attr->value() ).string();
+        if (!DOMString(value).isEmpty()) {
+            QString url = khtml::parseURL( DOMString(value) ).string();
             url = getDocument()->completeURL( url );
             addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, "url('"+url+"')" );
         }
@@ -413,53 +413,53 @@ void HTMLTableElementImpl::parseAttribute(AttributeImpl *attr)
     }
     case ATTR_FRAME:
 #if 0
-        if ( strcasecmp( attr->value(), "void" ) == 0 )
+        if ( strcasecmp( DOMString(value), "void" ) == 0 )
             frame = Void;
-        else if ( strcasecmp( attr->value(), "border" ) == 0 )
+        else if ( strcasecmp( DOMString(value), "border" ) == 0 )
             frame = Box;
-        else if ( strcasecmp( attr->value(), "box" ) == 0 )
+        else if ( strcasecmp( DOMString(value), "box" ) == 0 )
             frame = Box;
-        else if ( strcasecmp( attr->value(), "hsides" ) == 0 )
+        else if ( strcasecmp( DOMString(value), "hsides" ) == 0 )
             frame = Hsides;
-        else if ( strcasecmp( attr->value(), "vsides" ) == 0 )
+        else if ( strcasecmp( DOMString(value), "vsides" ) == 0 )
             frame = Vsides;
-        else if ( strcasecmp( attr->value(), "above" ) == 0 )
+        else if ( strcasecmp( DOMString(value), "above" ) == 0 )
             frame = Above;
-        else if ( strcasecmp( attr->value(), "below" ) == 0 )
+        else if ( strcasecmp( DOMString(value), "below" ) == 0 )
             frame = Below;
-        else if ( strcasecmp( attr->value(), "lhs" ) == 0 )
+        else if ( strcasecmp( DOMString(value), "lhs" ) == 0 )
             frame = Lhs;
-        else if ( strcasecmp( attr->value(), "rhs" ) == 0 )
+        else if ( strcasecmp( DOMString(value), "rhs" ) == 0 )
             frame = Rhs;
 #endif
         break;
     case ATTR_RULES:
 #if 0
-        if ( strcasecmp( attr->value(), "none" ) == 0 )
+        if ( strcasecmp( DOMString(value), "none" ) == 0 )
             rules = None;
-        else if ( strcasecmp( attr->value(), "groups" ) == 0 )
+        else if ( strcasecmp( DOMString(value), "groups" ) == 0 )
             rules = Groups;
-        else if ( strcasecmp( attr->value(), "rows" ) == 0 )
+        else if ( strcasecmp( DOMString(value), "rows" ) == 0 )
             rules = Rows;
-        else if ( strcasecmp( attr->value(), "cols" ) == 0 )
+        else if ( strcasecmp( DOMString(value), "cols" ) == 0 )
             rules = Cols;
-        else if ( strcasecmp( attr->value(), "all" ) == 0 )
+        else if ( strcasecmp( DOMString(value), "all" ) == 0 )
             rules = All;
 #endif
         break;
    case ATTR_CELLSPACING:
-        if (!attr->value().isEmpty())
-            addCSSLength(CSS_PROP_BORDER_SPACING, attr->value(), true);
+        if (!DOMString(value).isEmpty())
+            addCSSLength(CSS_PROP_BORDER_SPACING, DOMString(value), true);
         else
             removeCSSProperty(CSS_PROP_BORDER_SPACING);
         break;
     case ATTR_CELLPADDING:
-        if (!attr->value().isEmpty()) {
-            addCSSLength(CSS_PROP_PADDING_TOP, attr->value(), true);
-            addCSSLength(CSS_PROP_PADDING_LEFT, attr->value(), true);
-            addCSSLength(CSS_PROP_PADDING_BOTTOM, attr->value(), true);
-            addCSSLength(CSS_PROP_PADDING_RIGHT, attr->value(), true);
-	    padding = kMax( 0, attr->value().toInt() );
+        if (!DOMString(value).isEmpty()) {
+            addCSSLength(CSS_PROP_PADDING_TOP, DOMString(value), true);
+            addCSSLength(CSS_PROP_PADDING_LEFT, DOMString(value), true);
+            addCSSLength(CSS_PROP_PADDING_BOTTOM, DOMString(value), true);
+            addCSSLength(CSS_PROP_PADDING_RIGHT, DOMString(value), true);
+	    padding = kMax( 0, DOMString(value).toInt() );
         }
         else {
             removeCSSProperty(CSS_PROP_PADDING_TOP);
@@ -474,27 +474,27 @@ void HTMLTableElementImpl::parseAttribute(AttributeImpl *attr)
         // ###
 #if 0
         int c;
-        c = attr->val()->toInt();
+        c = value->toInt();
         addColumns(c-totalCols);
         break;
 #endif
     }
     case ATTR_ALIGN:
-        if (!attr->value().isEmpty())
-            addCSSProperty(CSS_PROP_FLOAT, attr->value());
+        if (!DOMString(value).isEmpty())
+            addCSSProperty(CSS_PROP_FLOAT, DOMString(value));
         else
             removeCSSProperty(CSS_PROP_FLOAT);
         break;
     case ATTR_VALIGN:
-        if (!attr->value().isEmpty())
-            addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value());
+        if (!DOMString(value).isEmpty())
+            addCSSProperty(CSS_PROP_VERTICAL_ALIGN, DOMString(value));
         else
             removeCSSProperty(CSS_PROP_VERTICAL_ALIGN);
         break;
     case ATTR_NOSAVE:
 	break;
     default:
-        HTMLElementImpl::parseAttribute(attr);
+        HTMLElementImpl::parseAttribute(id,value);
     }
 }
 
@@ -515,20 +515,20 @@ void HTMLTableElementImpl::attach()
 
 // --------------------------------------------------------------------------
 
-void HTMLTablePartElementImpl::parseAttribute(AttributeImpl *attr)
+void HTMLTablePartElementImpl::parseAttribute(NodeImpl::Id id, DOMStringImpl *value)
 {
-    switch(attr->id())
+    switch(id)
     {
     case ATTR_BGCOLOR:
-        if (attr->val())
-            addHTMLColor(CSS_PROP_BACKGROUND_COLOR, attr->value() );
+        if (value)
+            addHTMLColor(CSS_PROP_BACKGROUND_COLOR, DOMString(value) );
         else
             removeCSSProperty(CSS_PROP_BACKGROUND_COLOR);
         break;
     case ATTR_BACKGROUND:
     {
-        if (attr->val()) {
-            QString url = khtml::parseURL( attr->value() ).string();
+        if (value) {
+            QString url = khtml::parseURL( DOMString(value) ).string();
             url = getDocument()->completeURL( url );
             addCSSProperty(CSS_PROP_BACKGROUND_IMAGE,  "url('"+url+"')" );
         }
@@ -538,8 +538,8 @@ void HTMLTablePartElementImpl::parseAttribute(AttributeImpl *attr)
     }
     case ATTR_BORDERCOLOR:
     {
-        if(!attr->value().isEmpty()) {
-            addHTMLColor(CSS_PROP_BORDER_COLOR, attr->value());
+        if(!DOMString(value).isEmpty()) {
+            addHTMLColor(CSS_PROP_BORDER_COLOR, DOMString(value));
             addCSSProperty(CSS_PROP_BORDER_TOP_STYLE, CSS_VAL_SOLID);
             addCSSProperty(CSS_PROP_BORDER_BOTTOM_STYLE, CSS_VAL_SOLID);
             addCSSProperty(CSS_PROP_BORDER_LEFT_STYLE, CSS_VAL_SOLID);
@@ -549,22 +549,22 @@ void HTMLTablePartElementImpl::parseAttribute(AttributeImpl *attr)
     }
     case ATTR_VALIGN:
     {
-        if (!attr->value().isEmpty())
-            addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value());
+        if (!DOMString(value).isEmpty())
+            addCSSProperty(CSS_PROP_VERTICAL_ALIGN, DOMString(value));
         else
             removeCSSProperty(CSS_PROP_VERTICAL_ALIGN);
         break;
     }
     case ATTR_HEIGHT:
-        if (!attr->value().isEmpty())
-            addCSSLength(CSS_PROP_HEIGHT, attr->value());
+        if (!DOMString(value).isEmpty())
+            addCSSLength(CSS_PROP_HEIGHT, DOMString(value));
         else
             removeCSSProperty(CSS_PROP_HEIGHT);
         break;
     case ATTR_NOSAVE:
 	break;
     default:
-        HTMLElementImpl::parseAttribute(attr);
+        HTMLElementImpl::parseAttribute(id,value);
     }
 }
 
@@ -755,53 +755,53 @@ HTMLTableCellElementImpl::~HTMLTableCellElementImpl()
 {
 }
 
-void HTMLTableCellElementImpl::parseAttribute(AttributeImpl *attr)
+void HTMLTableCellElementImpl::parseAttribute(NodeImpl::Id id, DOMStringImpl *value)
 {
-    switch(attr->id())
+    switch(id)
     {
     case ATTR_ALIGN:
-        if (attr->val()) {
-            if ( strcasecmp(attr->value(), "middle" ) == 0 ||
-                strcasecmp(attr->value(), "center" ) == 0 )
+        if (value) {
+            if ( strcasecmp(DOMString(value), "middle" ) == 0 ||
+                strcasecmp(DOMString(value), "center" ) == 0 )
                 addCSSProperty( CSS_PROP_TEXT_ALIGN, CSS_VAL__KONQ_CENTER );
             else
-                addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value());
+                addCSSProperty(CSS_PROP_TEXT_ALIGN, DOMString(value));
         }
         else
             removeCSSProperty(CSS_PROP_TEXT_ALIGN);
         break;
     case ATTR_BORDER:
         // euhm? not supported by other browsers as far as I can see (Dirk)
-        //addCSSLength(CSS_PROP_BORDER_WIDTH, attr->value());
+        //addCSSLength(CSS_PROP_BORDER_WIDTH, DOMString(value));
         break;
     case ATTR_ROWSPAN:
         // ###
-        rSpan = attr->val() ? attr->val()->toInt() : 1;
+        rSpan = value ? value->toInt() : 1;
         // limit this to something not causing an overflow with short int
         if(rSpan < 1 || rSpan > 1024) rSpan = 1;
         break;
     case ATTR_COLSPAN:
         // ###
-        cSpan = attr->val() ? attr->val()->toInt() : 1;
+        cSpan = value ? value->toInt() : 1;
         // limit this to something not causing an overflow with short int
         if(cSpan < 1 || cSpan > 1024) cSpan = 1;
         break;
     case ATTR_NOWRAP:
-        if (attr->val() != 0)
+        if (value != 0)
 	    addCSSProperty(CSS_PROP_WHITE_SPACE, CSS_VAL__KONQ_NOWRAP);
         else
 	    removeCSSProperty(CSS_PROP_WHITE_SPACE);
         break;
     case ATTR_WIDTH:
-        if (!attr->value().isEmpty())
-            addCSSLength( CSS_PROP_WIDTH, attr->value() );
+        if (!DOMString(value).isEmpty())
+            addCSSLength( CSS_PROP_WIDTH, DOMString(value) );
         else
             removeCSSProperty(CSS_PROP_WIDTH);
         break;
     case ATTR_NOSAVE:
 	break;
     default:
-        HTMLTablePartElementImpl::parseAttribute(attr);
+        HTMLTablePartElementImpl::parseAttribute(id,value);
     }
 }
 
@@ -847,27 +847,27 @@ NodeImpl::Id HTMLTableColElementImpl::id() const
 }
 
 
-void HTMLTableColElementImpl::parseAttribute(AttributeImpl *attr)
+void HTMLTableColElementImpl::parseAttribute(NodeImpl::Id id, DOMStringImpl *value)
 {
-    switch(attr->id())
+    switch(id)
     {
     case ATTR_SPAN:
-        _span = attr->val() ? attr->val()->toInt() : 1;
+        _span = value ? value->toInt() : 1;
         break;
     case ATTR_WIDTH:
-        if (!attr->value().isEmpty())
-            addCSSLength(CSS_PROP_WIDTH, attr->value(), false, true );
+        if (!DOMString(value).isEmpty())
+            addCSSLength(CSS_PROP_WIDTH, DOMString(value), false, true );
         else
             removeCSSProperty(CSS_PROP_WIDTH);
         break;
     case ATTR_VALIGN:
-        if (!attr->value().isEmpty())
-            addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value());
+        if (!DOMString(value).isEmpty())
+            addCSSProperty(CSS_PROP_VERTICAL_ALIGN, DOMString(value));
         else
             removeCSSProperty(CSS_PROP_VERTICAL_ALIGN);
         break;
     default:
-        HTMLTablePartElementImpl::parseAttribute(attr);
+        HTMLTablePartElementImpl::parseAttribute(id,value);
     }
 
 }
@@ -880,18 +880,18 @@ NodeImpl::Id HTMLTableCaptionElementImpl::id() const
 }
 
 
-void HTMLTableCaptionElementImpl::parseAttribute(AttributeImpl *attr)
+void HTMLTableCaptionElementImpl::parseAttribute(NodeImpl::Id id, DOMStringImpl *value)
 {
-    switch(attr->id())
+    switch(id)
     {
     case ATTR_ALIGN:
-        if (!attr->value().isEmpty())
-            addCSSProperty(CSS_PROP_CAPTION_SIDE, attr->value());
+        if (!DOMString(value).isEmpty())
+            addCSSProperty(CSS_PROP_CAPTION_SIDE, DOMString(value));
         else
             removeCSSProperty(CSS_PROP_CAPTION_SIDE);
         break;
     default:
-        HTMLElementImpl::parseAttribute(attr);
+        HTMLElementImpl::parseAttribute(id,value);
     }
 
 }

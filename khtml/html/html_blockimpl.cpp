@@ -36,20 +36,20 @@
 using namespace khtml;
 using namespace DOM;
 
-void HTMLDivElementImpl::parseAttribute(AttributeImpl *attr)
+void HTMLDivElementImpl::parseAttribute(NodeImpl::Id id, DOMStringImpl *value)
 {
-    switch(attr->id())
+    switch(id)
     {
     case ATTR_ALIGN:
     {
-        DOMString v = attr->value();
-        if ( strcasecmp( attr->value(), "center" ) == 0 )
+        DOMString v = DOMString(value);
+        if ( strcasecmp( DOMString(value), "center" ) == 0 )
             v = "\\2d konq-center";
         addCSSProperty(CSS_PROP_TEXT_ALIGN, v);
         break;
     }
     default:
-        HTMLElementImpl::parseAttribute(attr);
+        HTMLElementImpl::parseAttribute(id,value);
     }
 }
 
@@ -60,35 +60,35 @@ NodeImpl::Id HTMLHRElementImpl::id() const
     return ID_HR;
 }
 
-void HTMLHRElementImpl::parseAttribute(AttributeImpl *attr)
+void HTMLHRElementImpl::parseAttribute(NodeImpl::Id id, DOMStringImpl *value)
 {
-    switch( attr->id() )
+    switch( id )
     {
     case ATTR_ALIGN:
-        if ( strcasecmp( attr->value(), "left") != 0) // _not_ equal
+        if ( strcasecmp( DOMString(value), "left") != 0) // _not_ equal
             addCSSProperty(CSS_PROP_MARGIN_LEFT, CSS_VAL_AUTO);
         else
             addCSSProperty(CSS_PROP_MARGIN_LEFT, "1px");
-        if( strcasecmp( attr->value(), "right") != 0)
+        if( strcasecmp( DOMString(value), "right") != 0)
             addCSSProperty(CSS_PROP_MARGIN_RIGHT, CSS_VAL_AUTO);
         else
             addCSSProperty(CSS_PROP_MARGIN_RIGHT, "1px");
         break;
     case ATTR_WIDTH:
     {
-        if(!attr->val()) break;
+        if(!value) break;
         // cheap hack to cause linebreaks
         // khtmltests/html/strange_hr.html
         bool ok;
-        int v = attr->val()->toInt(&ok);
+        int v = value->toInt(&ok);
         if(ok && !v)
             addCSSLength(CSS_PROP_WIDTH, "1");
         else
-            addCSSLength(CSS_PROP_WIDTH, attr->value());
+            addCSSLength(CSS_PROP_WIDTH, DOMString(value));
     }
     break;
     default:
-        HTMLElementImpl::parseAttribute(attr);
+        HTMLElementImpl::parseAttribute(id,value);
     }
 }
 

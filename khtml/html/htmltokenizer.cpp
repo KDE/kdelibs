@@ -1068,24 +1068,24 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
             if(tagID >= ID_CLOSE_TAG)
                 tagID -= ID_CLOSE_TAG;
             else if ( beginTag && tagID == ID_SCRIPT ) {
-                AttributeImpl* a = 0;
+                DOMStringImpl* a = 0;
                 scriptSrc = scriptSrcCharset = QString::null;
                 if ( currToken.attrs && /* potentially have a ATTR_SRC ? */
                      parser->doc()->view()->part()->jScriptEnabled() && /* jscript allowed at all? */
                      view /* are we a regular tokenizer or just for innerHTML ? */
                     ) {
-                    if ( ( a = currToken.attrs->getAttributeItem( ATTR_SRC ) ) )
-                        scriptSrc = parser->doc()->completeURL(khtml::parseURL( a->value() ).string() );
-                    if ( ( a = currToken.attrs->getAttributeItem( ATTR_CHARSET ) ) )
-                        scriptSrcCharset = a->value().string().stripWhiteSpace();
+                    if ( ( a = currToken.attrs->getValue( ATTR_SRC ) ) )
+                        scriptSrc = parser->doc()->completeURL(khtml::parseURL( DOMString(a) ).string() );
+                    if ( ( a = currToken.attrs->getValue( ATTR_CHARSET ) ) )
+                        scriptSrcCharset = DOMString(a).string().stripWhiteSpace();
                     if ( scriptSrcCharset.isEmpty() )
                         scriptSrcCharset = parser->doc()->view()->part()->encoding();
-                    if (!(a = currToken.attrs->getAttributeItem( ATTR_LANGUAGE )))
-                        a = currToken.attrs->getAttributeItem(ATTR_TYPE);
+                    if (!(a = currToken.attrs->getValue( ATTR_LANGUAGE )))
+                        a = currToken.attrs->getValue(ATTR_TYPE);
                 }
                 javascript = true;
                 if( a ) {
-                    QString lang = a->value().string();
+                    QString lang = DOMString(a).string();
                     lang = lang.lower();
                     if( !lang.contains("javascript") &&
                         !lang.contains("ecmascript") &&
@@ -1561,9 +1561,10 @@ void HTMLTokenizer::processToken()
     if(l) {
         kdDebug( 6036 ) << "Attributes: " << l << endl;
         for (unsigned long i = 0; i < l; ++i) {
-            AttributeImpl* c = currToken.attrs->attributeItem(i);
-            kdDebug( 6036 ) << "    " << c->id() << " " << parser->doc()->getDocument()->attrName(c->id()).string()
-                            << "=\"" << c->value().string() << "\"" << endl;
+            NodeImpl::Id id = currToken.attrs->idAt(i);
+            DOMString value = currToken.attrs->valueAt(i);
+            kdDebug( 6036 ) << "    " << id << " " << parser->doc()->getDocument()->attrName(id).string()
+                            << "=\"" << value.string() << "\"" << endl;
         }
     }
     kdDebug( 6036 ) << endl;

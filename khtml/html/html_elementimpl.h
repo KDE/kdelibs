@@ -45,7 +45,7 @@ public:
 
     virtual Id id() const = 0;
 
-    virtual void parseAttribute(AttributeImpl *token);
+    virtual void parseAttribute(NodeImpl::Id id, DOMStringImpl *value);
 
     void addCSSLength(int id, const DOMString &value, bool numOnly = false, bool multiLength = false);
     void addCSSProperty(int id, const DOMString &value);
