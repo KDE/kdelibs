@@ -20,7 +20,6 @@
 
 #include <qpopupmenu.h>
 
-
 #include <kstdaccel.h>
 #include <kcompletion.h>
 #include <klocale.h>
@@ -29,16 +28,6 @@ KCompletionBase::KCompletionBase()
 {
     // Assign the default completion type to use.
     m_iCompletionMode = KGlobalSettings::completionMode();
-
-    // Initialize the popup menu
-    m_pCompletionMenu = 0;
-
-    // Set completion ID to -1 by default
-    m_iCompletionID = -1;
-
-    // Do not show the mode changer item
-    // by default.
-    m_bShowModeChanger = false;
 
     // By default do not emit signals.  Should be
     // enabled through member functions...
@@ -65,8 +54,7 @@ KCompletionBase::~KCompletionBase()
     if( m_bAutoDelCompObj && m_pCompObj)
     {
         delete m_pCompObj;
-    }
-    delete m_pCompletionMenu;
+    }    
 }
 
 KCompletion* KCompletionBase::completionObject( bool hsig )
@@ -74,8 +62,8 @@ KCompletion* KCompletionBase::completionObject( bool hsig )
     if ( !m_pCompObj )
     {
         setCompletionObject( new KCompletion(), hsig );
-        // Set automatic deletion of completion object to true
-        // since it was internally created...
+        // Set automatic deletion of completion object
+        // to true since it was internally created...
         m_bAutoDelCompObj = true;
     }
     return m_pCompObj;
@@ -132,40 +120,41 @@ void KCompletionBase::useGlobalKeyBindings()
 	m_keyMap.insert( RotateDown, 0 );
 }
 
-void KCompletionBase::insertCompletionItems( QObject* parent, const char* member )
+void KCompletionBase::insertDefaultMenuItems( QPopupMenu* popup ) const
 {
-    if( parent )
-    {
-        m_pCompletionMenu->clear();
-        m_pCompletionMenu->insertItem( i18n("None"), parent, member, 0, KGlobalSettings::CompletionNone );
-        m_pCompletionMenu->setItemChecked( KGlobalSettings::CompletionNone, m_iCompletionMode == KGlobalSettings::CompletionNone );
-        m_pCompletionMenu->insertItem( i18n("Manual"), parent, member, 0, KGlobalSettings::CompletionShell );
-        m_pCompletionMenu->setItemChecked( KGlobalSettings::CompletionShell, m_iCompletionMode == KGlobalSettings::CompletionShell );
-        m_pCompletionMenu->insertItem( i18n("Automatic"), parent, member, 0, KGlobalSettings::CompletionAuto );
-        m_pCompletionMenu->setItemChecked( KGlobalSettings::CompletionAuto, m_iCompletionMode == KGlobalSettings::CompletionAuto );
-        m_pCompletionMenu->insertItem( i18n("Semi-Automatic"), parent, member, 0, KGlobalSettings::CompletionMan );
-        m_pCompletionMenu->setItemChecked( KGlobalSettings::CompletionMan, m_iCompletionMode == KGlobalSettings::CompletionMan );
-        if( m_iCompletionMode != KGlobalSettings::completionMode() )
-        {
-            m_pCompletionMenu->insertSeparator();
-            m_pCompletionMenu->insertItem( i18n("Default"), parent, member, 0, 0 );
-        }
-    }
+        popup->insertItem( i18n( "Cut" ), KCompletionBase::Cut );
+        popup->insertItem( i18n( "Copy" ), KCompletionBase::Copy );
+        popup->insertItem( i18n( "Clear" ), KCompletionBase::Clear );        
+        popup->insertItem( i18n( "Paste" ), KCompletionBase::Paste );     
+        insertCompletionMenuItem( popup );
+        popup->insertSeparator();
+        popup->insertItem( i18n( "Unselect" ), KCompletionBase::Unselect );
+        popup->insertItem( i18n( "Select All" ), KCompletionBase::SelectAll );
 }
 
-void KCompletionBase::insertCompletionMenu( QObject* receiver, const char* member, QPopupMenu* parent, int index )
+void KCompletionBase::insertCompletionMenuItem( QPopupMenu* popup, int index ) const
 {
-    if( m_bShowModeChanger && m_iCompletionID == -1 && parent != 0 && m_pCompObj )
-    {
-        if( m_pCompletionMenu == 0 )
-            m_pCompletionMenu = new QPopupMenu(); //Create the popup menu if not present
-        parent->insertSeparator( index > 0 ? index - 1 : index );
-        m_iCompletionID = parent->insertItem( i18n("Completion"), m_pCompletionMenu, -1, index );
-        QObject::connect( m_pCompletionMenu, SIGNAL( aboutToShow() ), receiver, member );
-    }
-    else if( !m_bShowModeChanger && m_iCompletionID != -1 && parent != 0 )
-    {
-        parent->removeItem( m_iCompletionID );
-        m_iCompletionID = -1;
+    if( index < -1 && index >= (int)popup->count() )
+        return;
+    // Create and insert the completion sub-menu iff
+    // a completion object is present.
+    if( m_pCompObj )
+    {        
+        QPopupMenu* subMenu = new QPopupMenu( popup );
+        subMenu->insertItem( i18n("None"), KCompletionBase::NoCompletion );
+        subMenu->setItemChecked( KCompletionBase::NoCompletion, m_iCompletionMode == KGlobalSettings::CompletionNone );
+        subMenu->insertItem( i18n("Manual"), KCompletionBase::ShellCompletion );
+        subMenu->setItemChecked( KCompletionBase::ShellCompletion, m_iCompletionMode == KGlobalSettings::CompletionShell );
+        subMenu->insertItem( i18n("Automatic"), KCompletionBase::AutoCompletion );
+        subMenu->setItemChecked( KCompletionBase::AutoCompletion, m_iCompletionMode == KGlobalSettings::CompletionAuto );
+        subMenu->insertItem( i18n("Semi-Automatic"), KCompletionBase::SemiAutoCompletion );
+        subMenu->setItemChecked( KCompletionBase::SemiAutoCompletion, m_iCompletionMode == KGlobalSettings::CompletionMan );
+        if( m_iCompletionMode != KGlobalSettings::completionMode() )
+        {
+            subMenu->insertSeparator();
+            subMenu->insertItem( i18n("Default"), KCompletionBase::Default );
+        }
+        int id = popup->insertItem( i18n("Completion"), subMenu, -1, index );
+        popup->insertSeparator( popup->indexOf( id ) );
     }
 }

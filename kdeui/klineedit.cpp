@@ -21,7 +21,7 @@
    Boston, MA 02111-1307, USA.
 */
 
-#include <qobjcoll.h>
+#include <qclipboard.h>
 
 #include <klocale.h>
 #include <kstdaccel.h>
@@ -44,35 +44,12 @@ KLineEdit::KLineEdit( QWidget *parent, const char *name )
 
 KLineEdit::~KLineEdit ()
 {
-    m_pContextMenu = 0; // Reset the pointer to NULL;
 }
 
 void KLineEdit::init()
 {
-    // Hack and recover the built-in popup-menu to add
-    // your own item to it.  What a piece of work :))
-    QObjectList *list = queryList( "QPopupMenu" );
-    QObjectListIt it ( *list );
-    m_pContextMenu = (QPopupMenu*) it.current();
-    delete list;
-
-    m_bEnableMenu = false;
-    setEnableContextMenu( true ); // Enable the context menu by default
-}
-
-void KLineEdit::setEnableContextMenu( bool showMenu )
-{
-    if( !m_bEnableMenu && showMenu )
-    {
-        connect ( m_pContextMenu, SIGNAL( aboutToShow() ), this, SLOT( aboutToShowMenu() ) );
-        showModeChanger();
-    }
-    else if( m_bEnableMenu && !showMenu )
-    {
-        disconnect ( m_pContextMenu, SIGNAL( aboutToShow() ), this, SLOT( aboutToShowMenu() ) );
-        hideModeChanger();
-    }
-    m_bEnableMenu = showMenu;
+    // Enable the context menu by default.
+    setContextMenuEnabled( true );
 }
 
 void KLineEdit::setCompletionMode( KGlobalSettings::Completion mode )
@@ -80,7 +57,7 @@ void KLineEdit::setCompletionMode( KGlobalSettings::Completion mode )
     // If the widgets echo mode is not Normal, no completion
     // feature will be enabled even if one is requested.
     if ( echoMode() != QLineEdit::Normal )
-        mode = KGlobalSettings::CompletionNone; // override the request.
+        mode = KGlobalSettings::CompletionNone; // Override the request.
 
     KCompletionBase::setCompletionMode( mode );
 }
@@ -168,15 +145,6 @@ void KLineEdit::connectSignals( bool handle ) const
     }
 }
 
-void KLineEdit::selectedItem( int id )
-{
-    if( id == 0 )
-    {
-    	id = KGlobalSettings::completionMode();
-    }
-    setCompletionMode( (KGlobalSettings::Completion)id );
-}
-
 void KLineEdit::keyPressEvent( QKeyEvent *e )
 {
     // Trap RETURN/ENTER events.  Let people connect to
@@ -243,8 +211,48 @@ void KLineEdit::mousePressEvent( QMouseEvent* e )
 {
     if( e->button() == Qt::RightButton )
     {
+        // Return if popup menu is not enabled !!
         if( !m_bEnableMenu )
             return;
+            
+        QPopupMenu *popup = new QPopupMenu( this );
+        insertDefaultMenuItems( popup );
+        bool flag = ( echoMode()==QLineEdit::Normal && !isReadOnly() );
+        bool allMarked = ( markedText().length() == text().length() );        
+        popup->setItemEnabled( KCompletionBase::Cut, flag && hasMarkedText() );
+        popup->setItemEnabled( KCompletionBase::Copy, flag && hasMarkedText() );
+        popup->setItemEnabled( KCompletionBase::Clear, flag && (text().length() > 0) );        
+        popup->setItemEnabled( KCompletionBase::Paste, flag &&
+                               (bool)QApplication::clipboard()->text().length() );
+        popup->setItemEnabled( KCompletionBase::Unselect, hasMarkedText() );
+        popup->setItemEnabled( KCompletionBase::SelectAll, flag && hasMarkedText() && !allMarked );
+        
+        int result = popup->exec( e->globalPos() );
+        delete popup;
+                
+        if( result == KCompletionBase::Cut )
+            cut();
+        else if( result == KCompletionBase::Copy )
+            copy();
+        else if( result == KCompletionBase::Paste )
+            paste();
+        else if( result == KCompletionBase::Clear )
+            clear();
+        else if( result == KCompletionBase::Unselect )
+            deselect();
+        else if( result == KCompletionBase::SelectAll )
+            selectAll();
+        else if( result == KCompletionBase::Default )
+            setCompletionMode( KGlobalSettings::completionMode() );            
+        else if( result == KCompletionBase::NoCompletion )
+            setCompletionMode( KGlobalSettings::CompletionNone );
+        else if( result == KCompletionBase::AutoCompletion )
+            setCompletionMode( KGlobalSettings::CompletionAuto );
+        else if( result == KCompletionBase::SemiAutoCompletion )
+            setCompletionMode( KGlobalSettings::CompletionMan );
+        else if( result == KCompletionBase::ShellCompletion )
+            setCompletionMode( KGlobalSettings::CompletionShell );
+        return;      
     }
     QLineEdit::mousePressEvent( e );
 }

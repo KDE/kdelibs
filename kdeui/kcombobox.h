@@ -197,7 +197,7 @@ public:
     * @param showMode if true, show the mode changer.
     */
     // FIXME: For uniformity, this should be setContextMenuEnabled()
-    virtual void setEnableContextMenu( bool showMenu );
+    virtual void setContextMenuEnabled( bool showMenu );
 
     /**
     * Returns true when the context menu is enabled.
@@ -211,7 +211,7 @@ public:
     *
     * @return true if combo is editable.
     */
-    bool isEditable() const { return (m_pEdit!= 0); }
+    bool isEditable() const { return !m_pEdit.isNull() ; }
 
 signals:
     /**
@@ -308,38 +308,7 @@ public slots:
 
 
 protected slots:
-
-    /**
-    *  changes the completion mode.
-    *
-    * This slot sets the completion mode to the one
-    * requested by the end user through the popup
-    * menu.
-    *
-    * @param itemID the completion mode type
-    */
-    virtual void selectedItem( int );
-
-    /**
-    * Populates the sub menu before it is displayed.
-    *
-    * All the items are inserted by the completion base
-    * class.  See @KCompletionBase::insertCompletionItems.
-    * The items then invoke the slot giiven by the
-    */
-    virtual void showCompletionMenu() { insertCompletionItems( this, SLOT( selectedItem( int ) ) ); }
-
-    /**
-    * Inserts the completion menu item as needed.
-    *
-    * Since this widget comes with its own pop-up menu
-    * this slot is needed to invoke the method need to
-    * insert the completion menu.  This method,
-    * @ref KCompletionBase::insetCompeltionMenu, is
-    * defined by the KCompletionBase.
-    */
-    virtual void aboutToShowMenu() { insertCompletionMenu( this, SLOT( showCompletionMenu() ), m_pContextMenu, m_pContextMenu->count() - 1 ); }
-
+   
     /**
     * Deals with highlighting the seleted item when
     * return is pressed in the list box (editable-mode only).
@@ -391,13 +360,14 @@ protected:
     virtual bool eventFilter( QObject *, QEvent * );
 
 private :
+
     // Flag that indicates whether we enable/disable
     // the context (popup) menu.
     bool m_bEnableMenu;
+    
     // Pointer to the line editor.
-    QLineEdit* m_pEdit;
-    // Context Menu items.
-    QPopupMenu *m_pContextMenu;
+    QGuardedPtr<QLineEdit> m_pEdit;
+    
     // Holds the current text on rotation.  Allows us
     // to emulate *nix shell like rotation where you
     // would not loose what you typed even if you rotate

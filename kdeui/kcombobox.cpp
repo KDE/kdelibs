@@ -18,7 +18,7 @@
    Boston, MA 02111-1307, USA.
 */
 
-#include <qobjcoll.h>
+#include <qclipboard.h>
 
 #include <klocale.h>
 #include <kstdaccel.h>
@@ -30,8 +30,6 @@
 KComboBox::KComboBox( QWidget *parent, const char *name )
           :QComboBox( parent, name )
 {
-    m_pEdit = 0;
-    m_pContextMenu = 0;
     init();
 }
 
@@ -42,26 +40,15 @@ KComboBox::KComboBox( bool rw, QWidget *parent, const char *name )
     {
         m_pEdit = QComboBox::lineEdit();
         m_pEdit->installEventFilter( this );
-        QObjectList *list = queryList( "QPopupMenu" );
-        QObjectListIt it ( *list );
-        m_pContextMenu = (QPopupMenu*) it.current();
-        delete list;
-    }
-    else
-    {
-        m_pEdit = 0;
-        m_pContextMenu = 0;
     }
     init();
 }
 
 KComboBox::~KComboBox()
 {
-    m_pContextMenu = 0; // Reset the pointer to NULL
-    if( m_pEdit != 0 )
+    if( !m_pEdit )
     {
         m_pEdit->removeEventFilter( this );
-        m_pEdit = 0; // Reset the pointer to NULL
     }
 }
 
@@ -72,7 +59,7 @@ void KComboBox::init()
 	m_strCurrentText = QString::null;
 	
     // Permanently set some parameters in the parent object.
-    setAutoCompletion( false );
+    QComboBox::setAutoCompletion( false );
 
     // Initialize enable popup menu to false.
     // Below it will be enabled if the widget
@@ -81,7 +68,7 @@ void KComboBox::init()
 
     // Enable context menu by default if widget
     // is editable.
-    setEnableContextMenu( true );
+    setContextMenuEnabled( true );
 
     // Connect the signals and slots.
     connect( listBox(), SIGNAL( returnPressed( QListBoxItem* ) ), this, SLOT( itemSelected( QListBoxItem* ) ) );
@@ -93,27 +80,15 @@ void KComboBox::setAutoCompletion( bool autocomplete )
     setCompletionMode( autocomplete ? KGlobalSettings::CompletionAuto : KGlobalSettings::completionMode() );
 }
 
-void KComboBox::setEnableContextMenu( bool showMenu )
+void KComboBox::setContextMenuEnabled( bool showMenu )
 {
-    if( m_pEdit != 0 )
-    {
-        if( !m_bEnableMenu && showMenu )
-        {
-            connect ( m_pContextMenu, SIGNAL( aboutToShow() ), this, SLOT( aboutToShowMenu() ) );
-            showModeChanger();
-        }
-        else if( m_bEnableMenu && !showMenu )
-        {
-            disconnect ( m_pContextMenu, SIGNAL( aboutToShow() ), this, SLOT( aboutToShowMenu() ) );
-            hideModeChanger();
-        }
+    if( m_pEdit )
         m_bEnableMenu = showMenu;
-    }
 }
 
 void KComboBox::makeCompletion( const QString& text )
 {
-    if( m_pEdit != 0 )
+    if( m_pEdit )
     {
 	    KCompletion *comp = compObj();
 	    // We test for zero length text because for some
@@ -186,7 +161,7 @@ void KComboBox::makeCompletion( const QString& text )
             }
        }       
 	}
-    else if( m_pEdit == 0 )
+    else if( !m_pEdit )
     {
 		if( text.isNull() )
 		{
@@ -203,7 +178,7 @@ void KComboBox::makeCompletion( const QString& text )
 
 void KComboBox::rotateText( KCompletionBase::KeyBindingType type )
 {
-    if( m_pEdit != 0 )
+    if( m_pEdit )
     {
     	// Support for rotating through highlighted text!  This means
 		// that if there are multiple matches for the portion of text
@@ -303,7 +278,7 @@ void KComboBox::rotateText( KCompletionBase::KeyBindingType type )
 
 void KComboBox::itemSelected( QListBoxItem* item )
 {
-    if( item != 0 && m_pEdit != 0 )
+    if( item != 0 && m_pEdit )
     {
 		m_pEdit->setSelection( 0, currentText().length() );
     }
@@ -329,12 +304,6 @@ void KComboBox::connectSignals( bool handle ) const
     }
 }
 
-void KComboBox::selectedItem( int id )
-{
-    if( id == 0 ) id = KGlobalSettings::completionMode();
-    setCompletionMode( (KGlobalSettings::Completion)id );
-}
-
 void KComboBox::keyPressEvent ( QKeyEvent * e )
 {
 	// Disable Qt's hard coded rotate-up key binding!  It is
@@ -345,7 +314,7 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
 		return;
 	}
 
-    if( m_pEdit != 0 && m_pEdit->hasFocus() )
+    if( m_pEdit && m_pEdit->hasFocus() )
     {
         // On Return pressed event, emit both returnPressed( const QString& )
         // and returnPressed() signals
@@ -421,7 +390,7 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
             }
         }
     }
-    else if( m_pEdit == 0 )
+    else if( !m_pEdit )
     {
         QString keycode = e->text();
         if ( !keycode.isNull() && keycode.unicode()->isPrint() )
@@ -439,8 +408,51 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
     if( o == m_pEdit && ev->type() == QEvent::MouseButtonPress )
     {
         QMouseEvent* e = (QMouseEvent*) ev;
-        if( e->button() == Qt::RightButton && !m_bEnableMenu )
+        if( e->button() == Qt::RightButton )       
+        {
+            if( !m_bEnableMenu )
+                return true;
+
+            QPopupMenu *popup = new QPopupMenu( this );
+            insertDefaultMenuItems( popup );
+            bool flag = ( m_pEdit->echoMode()==QLineEdit::Normal && !m_pEdit->isReadOnly() );
+            bool allMarked = ( m_pEdit->markedText().length() == currentText().length() );        
+            popup->setItemEnabled( KCompletionBase::Cut, flag && m_pEdit->hasMarkedText() );
+            popup->setItemEnabled( KCompletionBase::Copy, flag && m_pEdit->hasMarkedText() );
+            popup->setItemEnabled( KCompletionBase::Paste, flag &&
+                                   (bool)QApplication::clipboard()->text().length() );
+            popup->setItemEnabled( KCompletionBase::Clear, flag && ( currentText().length() > 0) );
+            popup->setItemEnabled( KCompletionBase::Unselect, m_pEdit->hasMarkedText() );
+            popup->setItemEnabled( KCompletionBase::SelectAll, flag && m_pEdit->hasMarkedText() && !allMarked );
+        
+            int result = popup->exec( e->globalPos() );
+            delete popup;
+                
+            if( result == KCompletionBase::Cut )
+                m_pEdit->cut();
+            else if( result == KCompletionBase::Copy )
+                m_pEdit->copy();
+            else if( result == KCompletionBase::Paste )
+                m_pEdit->paste();
+            else if( result == KCompletionBase::Clear )
+                m_pEdit->clear();
+            else if( result == KCompletionBase::Unselect )
+                m_pEdit->deselect();
+            else if( result == KCompletionBase::SelectAll )
+                m_pEdit->selectAll();
+            else if( result == KCompletionBase::Default )
+                setCompletionMode( KGlobalSettings::completionMode() );
+            else if( result == KCompletionBase::NoCompletion )
+                setCompletionMode( KGlobalSettings::CompletionNone );
+            else if( result == KCompletionBase::AutoCompletion )
+                setCompletionMode( KGlobalSettings::CompletionAuto );
+            else if( result == KCompletionBase::SemiAutoCompletion )
+                setCompletionMode( KGlobalSettings::CompletionMan );
+            else if( result == KCompletionBase::ShellCompletion )
+                setCompletionMode( KGlobalSettings::CompletionShell );
+                            
             return true;
+        }
     }
     return QComboBox::eventFilter( o, ev );
 }

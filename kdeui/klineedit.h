@@ -190,10 +190,8 @@ public:
     * if you do not want this behaviour.
     *
     * @param showMenu if true, show the context menu.
-    * @param showMode if true, show the mode changer item.
     */
-    // FIXME: For uniformity, this should be setContextMenuEnabled()
-    virtual void setEnableContextMenu( bool showMenu );
+    virtual void setContextMenuEnabled( bool showMenu ) {  m_bEnableMenu = showMenu; }
 
     /**
     * Returns true when the context menu is enabled.
@@ -260,37 +258,6 @@ public slots:
 protected slots:
 
     /**
-    * Accepts the "aboutToShow" signal from the completion
-    * sub-menu inserted by @ref showCompletionMenu.
-    *
-    * This method sets the completion mode to the one
-    * requested by the end user.
-    *
-    * @param itemID the completion mode type
-    */
-    virtual void selectedItem( int );
-
-    /**
-    * Populates the sub menu before it is displayed.
-    *
-    * All the items are inserted by the completion base
-    * class.  See @KCompletionBase::insertCompletionItems.
-    * The items then invoke the slot giiven by the
-    */
-    virtual void showCompletionMenu() { insertCompletionItems( this, SLOT( selectedItem( int ) ) ); }
-
-    /**
-    * Inserts the completion menu item as needed.
-    *
-    * Since this widget's parent class comes with its
-    * own pop-up menu this slot is needed to invoke the
-    * method need to insert the completion menu item.
-    * This method, @ref KCompletionBase::insetCompeltionMenu,
-    * is defined by the KCompletionBase.
-    */
-    virtual void aboutToShowMenu() { insertCompletionMenu( this, SLOT( showCompletionMenu() ), m_pContextMenu, m_pContextMenu->count()-1 ); }
-
-    /**
     * Completes the remaining text with a matching one from
     * a given list.
     */
@@ -327,12 +294,10 @@ protected:
     */
     virtual void mousePressEvent( QMouseEvent * );
 
-private :
-    // Pointers to the context & sub menus.
-    QPopupMenu *m_pContextMenu;
+private:
 
-    // Indicates whether the context menu is enabled
-    // or disabled
+    // Indicates whether the context
+    // menu is enabled or disabled
     bool m_bEnableMenu;
 
     class KLineEditPrivate;

@@ -445,16 +445,34 @@ class KCompletionBase
 public:
 
 	/**
-	* Constants that represent the items whose short-cut
-	* key-binding is programmable.  The default key-bindings
-	* for these items are defined in @ref KStdAccel.
-	*/	
+	 * Constants that represent the items whose short-cut
+	 * key-binding is programmable.  The default key-bindings
+	 * for these items are defined in @ref KStdAccel.
+	 */	
 	enum KeyBindingType {
 		TextCompletion,
 		PrevCompletionMatch,
 		NextCompletionMatch,
 		RotateUp,
 		RotateDown
+	};
+
+	/**
+	 * Constants that represent the ID's of the popup menu
+	 * items that get inserted into the supplied QPopupMenu
+	 */			
+	enum MenuID {
+        Default=0,
+	    Cut,
+	    Copy,
+	    Paste,
+	    Clear,
+        Unselect,
+	    SelectAll,
+	    NoCompletion,
+	    AutoCompletion,
+        ShellCompletion,
+	    SemiAutoCompletion	    
 	};
 	
 	// Map for the key binding types mentioned above.
@@ -682,32 +700,6 @@ public:
     */
     void useGlobalKeyBindings();
 
-    /**
-    * Makes the completion mode changer visible in the context
-    * menu.
-    *
-    * Note that the mode changer item is a sub menu, that allows
-    * the user to select from one of the standard completion modes
-    * described at @ref setCompletionMode. Additionally, if the user
-    * changes the completion mode to something other than the global
-    * setting, a "Default" entry is added at the bottom to allow the
-    * user to revert his/her changes back to the global setting.
-    */
-    void showModeChanger()  { m_bShowModeChanger = true; }
-
-    /**
-    * Hides the completion mode changer in the context menu.
-    */
-    void hideModeChanger() { m_bShowModeChanger = false; }
-
-    /**
-    * Returns true if the mode changer item is visible in
-    * the context menu.
-    *
-    * @return @p true if the mode changer is visible in context menu.
-    */
-    bool isModeChangerVisible() const { return m_bShowModeChanger; }
-
 protected:
 
     /**
@@ -719,65 +711,6 @@ protected:
     * it is left upto each inheriting object to decide.
     */
     virtual void connectSignals( bool handle ) const = 0;
-
-    /**
-    * Inserts completion mode changers items.
-    *
-    * This method is implemented here as a matter of
-    * convience and for the sake of consistency in the
-    * appearance of the completion mode changer items.
-    * It initially inserts four of the standard menu items
-    * labeled: "None", "Manual", "Automatic" and "Semi-Automatic".
-    * and puts a check mark beside the mode that is currently
-    * active.  When the user changes this default mode, another
-    * item labeled "Default" is inserted so that the user can
-    * quickly revert back to the default mode.
-    *
-    * To use this method simply invoke this function from your
-    * implementation of the slot supplied to @ref insertCompletionMenu.
-    * See @ref KLineEdit::showCompletionItems or @ref KComboBox::showCompletionItems
-    * for an example of implementation.
-    *
-    * Note that when this "Default" item, the clicked signal emitted
-    * has its integer argument set to 0.  Thus, you need to make sure
-    * that you replace this value with the one returned by
-    * @ref KGlobalSettings::completionMode().
-    *
-    * @param receiver object that receives the activation of completion items.
-    * @param member method invoked when completion items are clicked.
-    */
-    void insertCompletionItems( QObject* receiver, const char* member );
-
-    /**
-    * Adds a completion menu item to the given popup menu.
-    *
-    * This function adds/removes a completion menu item at the
-    * specified index position in the popup menu.  If index
-    * is a negative value, the menu item is inserted at the end
-    * of the parent popup menu.  Since this function manages the
-    * addition and removal of the completion menu item by itself,
-    * it is intended/designed to be invoked just before you display
-    * your popup menu.
-    *
-    * See @ref KLineEdit::aboutToShow or @ref KComboBox::aboutToShow
-    * for an example implementation.
-    *
-    * @param receiver object that receives the activation of completion items.
-    * @param member method invoked when completion sub-menu is about to be shown.
-    * @param parent if not NULL, add the completion option as its sub-menu.
-    * @param index if non-negative, add the compleiton option at the specified position.
-    */
-    void insertCompletionMenu( QObject* receiver, const char* member, QPopupMenu* parent, int index = -1 );
-
-    /**
-    * Returns true if completion menu item has been
-    * inserted into the popup menu.
-    *
-    * @return true if completion menu is inserted into popup menu.
-    */
-    bool hasBeenInserted() { return m_iCompletionID != -1; }
-
-protected:
 
 	/**
 	 * Returns an instance of the completion object.
@@ -793,21 +726,56 @@ protected:
      KCompletion* compObj() const { return m_pCompObj; }
 
     /**
-    * Returns a key-binding maps
-    *
-    * This method is the same as @ref getKeyBinding except it
-    * returns the whole keymap containing the key-bindings.
-    *
-    * @return the key-binding used for the feature given by @p item.
-    */
+     * Returns a key-binding maps
+     *
+     * This method is the same as @ref getKeyBinding except it
+     * returns the whole keymap containing the key-bindings.
+     *
+     * @return the key-binding used for the feature given by @p item.
+     */
 	KeyBindingMap getKeyBindings() const { return m_keyMap; }
+	
+	/**
+	 * Inserts a set of default menu items in the specified popup menu.
+	 *
+	 * The items inserted are: Cut, Copy, Paste, Completion, Unselect
+	 * and SelectAll.  Each item has its own uniquie id defined by the
+	 * @ref MenuID enumerator which allows any inheriting class to easily
+	 * maniuplate these items.
+	 *
+	 * Note that the the enteries in the @p Completion sub-menu are
+	 * capable of handling themselves and thus require no extra effort
+	 * from except invoking the method you desire when these items are
+	 * selected.  Also the completion menu item will not be added if
+	 * a completion object has not already been created.  Refer to
+	 * @ref completionObject on how to create a completion object.
+	 *
+	 * @param popup popup-menu into which the default items are to be inserted
+	 */
+	void insertDefaultMenuItems( QPopupMenu* /* popup */ ) const;
+	
+	/**
+	 * Inserts only the competion menu item into the specified popup menu.
+	 *
+	 * This method unlike its counterpart @ref insertDefaultMenuItems only
+	 * inserts only the completion menu item into the given popup menu.
+	 * It is provided for those who want to build their own popup menu, but
+	 * do not want to deal with the completion menu item.  It is highly
+	 * encouraged that you use the @ref insertDefaultMenuItems instead of
+	 * this method for the sake of consistency.
+     *	 
+	 * Note that the completion menu item will not be added if a completion
+	 * object has not already been created or the value of the index is not
+	 * valid.  Refer to @ref completionObject on how to create a completion
+	 * object.
+	 *
+	 * @param popup popup-menu into which the completion items are to be inserted
+	 * @param index position at which the menu gets inserted.  Default is to append to current position.
+	 */	
+	void insertCompletionMenuItem( QPopupMenu* /* popup */, int index = -1 ) const;
 
 private:
-    // Stores the completion menu id.  Used to
-    // determine whether the completion menu
-    // has already been inserted or not!!
-    int m_iCompletionID;
-
+    
     // Flag that determined whether the completion object
     // should be deleted when this object is destroyed.
     bool m_bAutoDelCompObj;
@@ -816,20 +784,16 @@ private:
     bool m_bHandleSignals;
     // Determines whether this widget fires rotation signals
     bool m_bEmitSignals;
-    // Determines if completion mode changer
-    // should be visible.
-    bool m_bShowModeChanger;
-
     // Stores the completion mode locally.
     KGlobalSettings::Completion m_iCompletionMode;
     // Pointer to Completion object.
     QGuardedPtr<KCompletion> m_pCompObj;
-    // Pointer to a completion popupmenu.
-    QPopupMenu* m_pCompletionMenu;
-    // Pointer for future binary compatabilty.
-    KCompletionPrivate *d;
     // Keybindings
 	KeyBindingMap m_keyMap;
+	
+    // BCI
+    KCompletionPrivate *d;
+	
 };
 
 #endif // KCOMPLETION_H
