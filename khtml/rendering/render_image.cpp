@@ -294,12 +294,6 @@ void RenderImage::setAlt(DOM::DOMString text)
     alt = text;
 }
 
-int RenderImage::lineHeight() const
-{
-    return height();
-}
-
-
 short RenderImage::intrinsicWidth() const
 {
     return pixSize.width();

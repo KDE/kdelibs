@@ -57,8 +57,6 @@ public:
     void setImageUrl(DOM::DOMString url, DOM::DOMString baseUrl, DocLoader *docLoader);
     void setAlt(DOM::DOMString text);
 
-    virtual int lineHeight() const;
-
     virtual short intrinsicWidth() const;
     virtual int intrinsicHeight() const;
 
