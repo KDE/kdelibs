@@ -5,6 +5,7 @@
 #include <qwidget.h>
 #include <qlist.h>
 #include <qstring.h>
+#include <kurl.h>
 
 #include "kplugin.h"
 
@@ -40,15 +41,27 @@ public:
 
   virtual void init();
 
-  virtual bool openURL( const QString &url ) = 0;
-  virtual QString url() const = 0;
+  // Don't reimplement this one, reimplement openFile
+  virtual bool openURL( const QString &url );
+  virtual const KURL & url() const { return m_url; }
 
 signals:
   // hosting apps will want to know when the process of loading the data is finished, so that they can access the data when everything is loaded
   void started();
   void completed();
   void canceled( const QString &errMsg );
-
+  
+protected slots:
+  void slotJobFinished( int _id );
+    
+protected:
+  // Reimplement this, to open m_file
+  virtual bool openFile() = 0;
+  
+  // Remote url
+  KURL m_url;
+  // Local file
+  QString m_file;
 };
 
 class KReadWritePart : public KReadOnlyPart
@@ -62,6 +75,7 @@ public:
   virtual void setModified( bool modified = true ) = 0;
 
   virtual bool save( const QString &url ) = 0;
+  // to re_upload the file
 };
 
 #endif

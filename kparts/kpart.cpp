@@ -95,6 +95,30 @@ void KReadOnlyPart::init()
 {
 }
 
+bool KReadOnlyPart::openURL( const QString &url )
+{
+  emit started();
+  m_url = url;
+  if ( m_url.isLocalFile() )
+  {
+    m_file = m_url.path();		
+    bool ret = openFile();
+    emit completed();
+    return ret;
+  }
+  else
+  {
+    // TODO use kiojob
+    return true;
+  }  
+}
+
+void KReadOnlyPart::slotJobFinished( int /*_id*/ )
+{
+  openFile();
+  emit completed();
+}
+
 KReadWritePart::KReadWritePart( QWidget *parent, const char *name )
  : KReadOnlyPart( parent, name )
 {

@@ -34,12 +34,11 @@ class Part1 : public KReadOnlyPart
 public:
   Part1();
   virtual ~Part1();
-  virtual bool openURL(const QString & url);
-  virtual QString url() const { return m_url; }
+protected:
+  virtual bool openFile();
 
 protected:
   virtual QString configFile() const;
-  QString m_url;
 };
 
 class Part2 : public KPart

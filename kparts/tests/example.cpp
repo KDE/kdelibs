@@ -65,10 +65,9 @@ Part1::~Part1()
 {
 }
 
-bool Part1::openURL(const QString & url)
+bool Part1::openFile()
 {
-  debug("Part1::openURL(%s)",url.ascii());
-  m_url = url;
+  debug("Part1: opening %s", m_file.ascii());
   return true;
 }
 
