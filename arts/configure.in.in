@@ -310,7 +310,7 @@ if test "$DCOPIDL" = ""; then
 	ARTS_BUILD_KDE=""
 else
 	AC_MSG_RESULT(no)
-	ARTS_BUILD_KDE="x11 qtmcop knotify message"
+	ARTS_BUILD_KDE="x11 qtmcop kde knotify message"
 fi
 AC_SUBST(ARTS_BUILD_KDE)
 
