@@ -14,6 +14,9 @@
 #include <kio/global.h>
 #include <kio/slavebase.h>
 
+// Note that this header file is installed, so think twice
+// before breaking binary compatibility (read: it is forbidden :)
+
 class FileProtocol : public QObject, public KIO::SlaveBase
 {
   Q_OBJECT
@@ -58,6 +61,8 @@ protected:
   QIntDict<QString> usercache;      // maps long ==> QString *
   QIntDict<QString> groupcache;
 
+  class FileProtocolPrivate;
+  FileProtocolPrivate *d;
 };
 
 #endif

@@ -13,6 +13,9 @@ kio_file_la_LIBADD = ../libkio.la
 kio_file_la_LDFLAGS = -module -avoid-version -no-undefined
 noinst_HEADERS = file.h
 
+fileinclude_HEADERS = file.h
+fileincludedir = $(includedir)/kio
+
 METASOURCES = AUTO
 
 kdelnkdir = $(kde_servicesdir)
