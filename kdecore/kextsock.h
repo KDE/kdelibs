@@ -743,7 +743,8 @@ signals:
 
   /**
    * This signal is emitted whenever this socket is ready to accept another
-   * socket. @see accept
+   * socket.
+   * @see accept
    */
   void readyAccept();
 
