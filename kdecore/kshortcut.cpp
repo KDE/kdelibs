@@ -604,12 +604,12 @@ bool KShortcut::append( const KKey& spec )
 bool KShortcut::append( const KShortcut& cut )
 {
 	uint seqs = m_nSeqs, co = cut.count();
-	for( int i=0; i<co; i++ ) {
+	for( uint i=0; i<co; i++ ) {
 	    if (!contains(cut.seq(i))) seqs++;
 	}
 	if( seqs > MAX_SEQUENCES ) return false;
 
-	for( int i=0; i<co; i++ ) {
+	for( uint i=0; i<co; i++ ) {
 		const KKeySequence& seq = cut.seq(i);
 		if(!contains(seq)) {
 			m_rgseq[m_nSeqs] = seq;
