@@ -43,7 +43,7 @@ libkhtml_la_METASOURCES = AUTO
 
 include_HEADERS = khtmlview.h khtml_part.h
 
-noinst_HEADERS = design.h testkhtml.h
+noinst_HEADERS = design.h testkhtml.h testrender.h
 
 libkhtml_la_LDFLAGS = -version-info 3:0 -module -no-undefined
 libkhtml_la_LIBADD = ./xml/libkhtmlxml.la ./html/libkhtmlhtml.la ./rendering/libkhtmlrender.la ./css/libkhtmlcss.la ./misc/libkhtmlmisc.la ./dom/libkhtmldom.la ./java/libkjava.la ../kio/libkio.la $(top_builddir)/kparts/libkparts.la $(top_builddir)/kfile/libkfile.la
@@ -81,11 +81,12 @@ parser:
 	bash scripts/makeprop
 
 ## test program
-check_PROGRAMS 	= testkhtml testcss
+check_PROGRAMS 	= testkhtml testcss testrender
 #testkhtml_SOURCES = testkhtml.cpp $(libkhtml_la_SOURCES)
 #testkhtml_LDADD = -ldmalloc $(LIB_KDEUI) $(libkhtml_la_LIBADD)
 testkhtml_SOURCES = testkhtml.cpp
 testkhtml_LDADD = libkhtml.la
 testcss_SOURCES = testcss.cpp
 testcss_LDADD = libkhtml.la
-
+testrender_SOURCES = testrender.cpp
+testrender_LDADD = libkhtml.la
