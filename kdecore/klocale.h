@@ -44,7 +44,7 @@ class KCatalogue;
  *  language.
  *
  *  The argument must be an UTF-8 encoded string (If you only use 
- *  characters that are not in US-ASCII you're on the safe side. But 
+ *  characters that are in US-ASCII you're on the safe side. But 
  *  for e.g. german umlauts or french accents should be recoded to
  *  UTF-8)
  **/
@@ -132,7 +132,7 @@ public:
    * some phrases for your needs.
    *
    *  The argument must be an UTF-8 encoded string (If you only use 
-   *  characters that are not in US-ASCII you're on the safe side. But 
+   *  characters that are in US-ASCII you're on the safe side. But 
    *  for e.g. german umlauts or french accents should be recoded to
    *  UTF-8)
    *
