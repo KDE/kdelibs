@@ -104,6 +104,9 @@ KProcess::KProcess()
   }
 
   KProcessController::theKProcessController->addKProcess(this);
+  out[0] = out[1] = -1;
+  in[0] = in[1] = -1;
+  err[0] = err[1] = -1;
 }
 
 void
@@ -660,6 +663,7 @@ int KProcess::commSetupDoneC()
 {
   int ok = 1;
   struct linger so;
+  memset(&so, 0, sizeof(so));
 
   if (communication & Stdin)
     close(in[1]);
