@@ -35,6 +35,8 @@
 #include <dcopclient.h>
 #include <kprotocolmanager.h>
 
+#include <unistd.h>
+
 time_t currentDate;
 int m_maxCacheAge;
 int m_maxCacheSize;
