@@ -2596,11 +2596,18 @@ void CopyJob::slotResult( Job *job )
             break;
         case STATE_RENAMING: // We were trying to rename a directory
         {
-            bool err = job->error() != 0;
+            int err = job->error();
             subjobs.remove( job );
             assert ( subjobs.isEmpty() );
             if ( err )
             {
+                // Only try copy+del if the reason for not renaming was "unsupported" (which includes EXDEV)
+                // One case where we really don't want to go to copy+del is renaming 'a' to 'A' on a FAT partition
+                if ( err != KIO::ERR_UNSUPPORTED_ACTION )
+                {
+                    Job::slotResult( job ); // will set the error and emit result(this)
+                    return;
+                }
                 kdDebug(7007) << "Couldn't rename, starting listing, for copy and del" << endl;
                 startListing( *m_currentStatSrc );
             }
