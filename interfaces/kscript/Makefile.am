@@ -10,7 +10,7 @@ lib_LTLIBRARIES = libkscript.la
 
 libkscript_la_SOURCES = scriptmanager.cpp
 libkscript_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -no-undefined
-libkscript_la_LIBADD = $(LIB_KIO)
+libkscript_la_LIBADD = $(top_builddir)/kio/libkio.la
 
 kscriptinclude_HEADERS = scriptinterface.h scriptclientinterface.h scriptmanager.h
 kscriptincludedir = $(includedir)

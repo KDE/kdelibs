@@ -7,7 +7,7 @@ bin_PROGRAMS = kpac_dhcp_helper
 libkpac_la_SOURCES = kproxybindings.cpp kpac_impl.cpp kpac_downloader.cpp \
     kpac_discovery.cpp
 
-libkpac_la_LIBADD = $(LIB_KIO) $(top_builddir)/kjs/libkjs.la
+libkpac_la_LIBADD = $(top_builddir)/kio/libkio.la $(top_builddir)/kjs/libkjs.la
 libkpac_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)
 
 noinst_HEADERS = kproxybindings.h kpac_impl.h kpac_downloader.h \

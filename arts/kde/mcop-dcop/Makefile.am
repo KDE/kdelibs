@@ -5,7 +5,7 @@ bin_PROGRAMS = kmcop
 lib_LTLIBRARIES = kmcop.la
 
 kmcop_la_SOURCES = mcopdcopobject.cpp kmcop.cpp kmcop.skel
-kmcop_la_LIBADD	= ../libartskde.la $(LIB_KDEUI) $(LIB_KDECORE)
+kmcop_la_LIBADD	= ../libartskde.la
 kmcop_la_LDFLAGS = $(all_libraries) -module -avoid-version
 kmcop_la_METASOURCES = AUTO
 

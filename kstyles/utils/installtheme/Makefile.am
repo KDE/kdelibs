@@ -14,5 +14,5 @@ kinstalltheme_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 
 # the libraries to link against. Be aware of the order. First the libraries,
 # that depend on the following ones.
-kinstalltheme_LDADD   = $(LIB_KDEUI)
+kinstalltheme_LDADD   = $(top_builddir)/kdeui/libkdeui.la
 

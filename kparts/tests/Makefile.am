@@ -1,7 +1,7 @@
 
 INCLUDES= -I$(top_srcdir) -I$(top_srcdir)/libltdl -I$(top_srcdir)/kfile -I$(top_srcdir)/kio $(all_includes)
 LDFLAGS	= $(all_libraries)
-LDADD = $(top_builddir)/kparts/libkparts.la $(LIB_KDECORE)
+LDADD = $(top_builddir)/kparts/libkparts.la
 
 check_PROGRAMS = kpartstest normalktmtest ghostviewtest 
 

@@ -53,6 +53,7 @@ kwrapper_LDADD = $(LIBSOCKET)
 
 klauncher_la_LDFLAGS = $(all_libraries) -module -avoid-version
 klauncher_la_LIBADD = $(LIB_KIO)
+klauncher_la_DEPENDENCIES = $(LIB_KIO)
 klauncher_la_SOURCES = klauncher.cpp klauncher_main.cpp autostart.cpp
 
 klauncher_LDFLAGS =  $(all_libraries) $(KDE_RPATH)

@@ -5,7 +5,7 @@ INCLUDES = -I$(srcdir)/vcard/include -I$(srcdir)/vcard/include/generated -I$(top
 
 lib_LTLIBRARIES   = libkabc.la
 libkabc_la_LDFLAGS = $(all_libraries) -no-undefined -version-info 1:0:0 -module
-libkabc_la_LIBADD  = $(top_builddir)/kabc/vcard/libvcard.la $(LIB_KDEUI)
+libkabc_la_LIBADD  = vcard/libvcard.la ../kdeui/libkdeui.la
 
 libkabc_la_SOURCES = \
   addressbook.cpp addressee.cpp phonenumber.cpp simpleformat.cpp \

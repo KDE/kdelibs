@@ -10,6 +10,6 @@ libkab_la_SOURCES	= \
 	qconfigDB.cc 
 
 libkab_la_LDFLAGS = $(KDE_MT_LDFLAGS) -version-info 4:0 -no-undefined
-libkab_la_LIBADD = $(LIB_KDEUI) 
+libkab_la_LIBADD = ../kdeui/libkdeui.la
 
 libkab_la_METASOURCES = AUTO

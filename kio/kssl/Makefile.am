@@ -53,8 +53,5 @@ libkssl_la_SOURCES	= \
 			keygenwizard.ui		  \
 			keygenwizard2.ui
 
-# convenience lib - no _LDFLAGS or _LIBADD
-libkssl_la_DEPENDENCIES = $(LIB_KDEUI)
-
 SUBDIRS = kssl
 

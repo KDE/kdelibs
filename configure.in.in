@@ -142,20 +142,10 @@ AC_SUBST(LIBUTIL)
 AC_SUBST(LIBRESOLV)
 AC_SUBST(LIBICE)
 
-LIB_KDECORE='$(top_builddir)/kdecore/libkdecore.la'
-AC_SUBST(LIB_KDECORE)
-LIB_KDEUI='$(top_builddir)/kdeui/libkdeui.la'
-AC_SUBST(LIB_KDEUI)
-LIB_KFORMULA='$(top_builddir)/kformula/libkformula.la'
-AC_SUBST(LIB_KFORMULA)
 LIB_KIO='$(top_builddir)/kio/libkio.la'
 AC_SUBST(LIB_KIO)
 LIB_KPARTS='$(top_builddir)/kparts/libkparts.la'
 AC_SUBST(LIB_KPARTS)
-LIB_KHTML='$(top_builddir)/khtml/libkhtml.la'
-AC_SUBST(LIB_KHTML)
-LIB_DCOP='$(top_builddir)/dcop/libDCOP.la'
-AC_SUBST(LIB_DCOP)
 
 AC_SUBST(EXTRA_SUBDIRS)
 

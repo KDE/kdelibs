@@ -6,7 +6,8 @@ kde_module_LTLIBRARIES = libkmultipart.la
 
 libkmultipart_la_SOURCES = kmultipart.cpp
 libkmultipart_la_LIBADD = $(LIB_KPARTS)
-libkmultipart_la_LDFLAGS = -L.. $(all_libraries) $(KDE_PLUGIN)
+libkmultipart_la_DEPENDENCIES = $(LIB_KPARTS)
+libkmultipart_la_LDFLAGS = $(all_libraries) $(KDE_PLUGIN)
 
 # Automatically generate moc files
 METASOURCES = AUTO

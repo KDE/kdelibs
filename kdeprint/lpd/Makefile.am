@@ -5,7 +5,7 @@ kde_module_LTLIBRARIES = kdeprint_lpd.la
 kdeprint_lpd_la_SOURCES = kmlpdfactory.cpp kmlpdmanager.cpp klpdprinterimpl.cpp kmlpduimanager.cpp \
 			     lpdtools.cpp gschecker.cpp
 kdeprint_lpd_la_LDFLAGS = $(all_libraries) -module -avoid-version -no-undefined
-kdeprint_lpd_la_LIBADD = $(top_builddir)/kdeprint/management/libkdeprint_management.la $(LIB_KDEUI)
+kdeprint_lpd_la_LIBADD = $(top_builddir)/kdeprint/management/libkdeprint_management.la 
 kdeprint_lpd_la_METASOURCES = AUTO
 
 noinst_HEADERS = kmlpdfactory.h kmlpdmanager.h klpdprinterimpl.h kmlpduimanager.h lpdtools.h gschecker.h

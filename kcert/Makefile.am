@@ -7,8 +7,8 @@ KCERTPARTPATCH=	0
 libkcertpart_la_SOURCES	= kcertpart.cc                   
 
 libkcertpart_la_LDFLAGS = $(all_libraries) -version-info 4:0 -no-undefined $(KDE_PLUGIN)
-libkcertpart_la_LIBADD = $(LIB_KDEUI) $(LIB_KPARTS)
-libkcertpart_la_DEPENDENCIES = $(LIB_KDEUI) $(LIB_KPARTS)
+libkcertpart_la_LIBADD = $(LIB_KPARTS)
+libkcertpart_la_DEPENDENCIES = $(LIB_KPARTS)
 
 libkcertpart_la_METASOURCES = AUTO
 

@@ -28,7 +28,7 @@ check_PROGRAMS = kfstest kurlrequestertest kfiletreeviewtest \
 
 METASOURCES = AUTO
 
-LDADD = $(LIB_KIO)
+LDADD = $(top_builddir)/kio/libkio.la
 kurlrequestertest_SOURCES = kurlrequestertest.cpp
 kfstest_SOURCES = kfstest.cpp
 kfiletreeviewtest_SOURCES = kfiletreeviewtest.cpp
