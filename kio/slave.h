@@ -49,6 +49,8 @@ namespace KIO {
 
 	void setPID(pid_t);
 
+        int slave_pid() { return m_pid; }
+
 	/**
 	 * Force termination
 	 */
@@ -131,9 +133,8 @@ namespace KIO {
         void accept(KSocket *socket);
 	void gotInput();
 	void gotAnswer();
-        //signals:
-        //Not needed anymore
-        //void slaveDied(KIO::Slave *slave);
+    signals:
+        void slaveDied(KIO::Slave *slave);
 	
     private:
         QString m_protocol;

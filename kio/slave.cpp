@@ -98,13 +98,14 @@ void Slave::gotInput()
 {
     if (!dispatch())
     {
+        dead = true;
         QString arg = m_protocol;
         if (!m_host.isEmpty())
             arg += "://"+m_host;
+        // Tell the job about the problem.
         emit error(ERR_SLAVE_DIED, arg);
-        // no need for this, error terminates the job and that in turns
-        // tells the scheduler about the slave to delete
-        // emit slaveDied(this);
+        // Tell the scheduler about the problem.
+        emit slaveDied(this);
     }
 }
 
@@ -138,7 +139,7 @@ void Slave::gotAnswer()
 void Slave::kill()
 {
     dead = true; // OO can be such simple.
-    kdDebug() << "killing slave (" << debugString(m_protocol) << ":\\" << debugString(m_host) << ")" << endl;
+    kdDebug() << "killing slave (" << debugString(m_protocol) << "://" << debugString(m_host) << ")" << endl;
     if (m_pid)
     {
        ::kill(m_pid, SIGTERM);

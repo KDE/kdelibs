@@ -194,13 +194,18 @@ void SimpleJob::start(Slave *slave)
     m_slave->connection()->send( m_command, m_packedArgs );
 }
 
+void SimpleJob::slaveDone()
+{
+   if (!m_slave) return;
+   disconnect(m_slave); // Remove all signals between slave and job
+   Scheduler::jobFinished( this, m_slave );
+   m_slave = 0;
+}
+
 void SimpleJob::slotFinished( )
 {
     // Return slave to the scheduler
-    if(m_slave) {
-        Scheduler::jobFinished( this, m_slave );
-        m_slave = 0;
-    }
+    slaveDone();
 
     if (subjobs.isEmpty())
     {
@@ -401,7 +406,8 @@ void TransferJob::slotFinished()
             }
         }
 
-        m_slave = 0L;
+        // Return slave to the scheduler
+        slaveDone();
         Scheduler::doJob(this);
     }
 }
@@ -524,7 +530,7 @@ void MimetypeJob::slotFinished( )
     kdDebug(7007) << "MimetypeJob::slotFinished()" << endl;
     if ( m_redirectionURL.isEmpty() || m_error )
     {
-        // Return slave to the scheduler
+        // Return slave to the scheduler 
         TransferJob::slotFinished();
     } else {
         kdDebug(7007) << "Redirection to " << m_redirectionURL.url() << endl;
@@ -535,7 +541,9 @@ void MimetypeJob::slotFinished( )
         m_packedArgs.truncate(0);
         QDataStream stream( m_packedArgs, IO_WriteOnly );
         stream << m_url.path();
-        m_slave = 0L;
+
+        // Return slave to the scheduler
+        slaveDone();
         Scheduler::doJob(this);
     }
 }

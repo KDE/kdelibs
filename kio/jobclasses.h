@@ -198,6 +198,12 @@ namespace KIO {
 
         /**
          * @internal
+         * Called to detach a slave from a job.
+         **/
+        void slaveDone();
+
+        /**
+         * @internal
          * Slave in use by this job
          */
         Slave *slave() { return m_slave; }
