@@ -37,7 +37,7 @@ void KMExtManager::listPrinters()
 	if (m_printers.count() == 0)
 	{
 		KMPrinter	*psprinter = new KMPrinter;
-		psprinter->setName(i18n("PS printer"));
+		psprinter->setName(i18n("PS_printer"));
 		psprinter->setPrinterName(psprinter->name());
 		psprinter->setDescription(i18n("PostScript file generator"));
 		psprinter->setState(KMPrinter::Idle);

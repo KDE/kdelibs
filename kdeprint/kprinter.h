@@ -158,7 +158,7 @@ public:
 	QValueList<int> pageList() const;
 
 	KPrinterImpl* implementation() const;
-	bool printFiles(const QStringList&);
+	bool printFiles(const QStringList& files, bool removeafter = false);
 
 	static void addDialogPage(KPrintDialogPage*);
 	static void setPageSelection(PageSelectionType);

@@ -30,7 +30,7 @@ public:
 	KRlprPrinterImpl(QObject *parent = 0, const char *name = 0);
 	~KRlprPrinterImpl();
 
-	bool printFiles(KPrinter*, const QStringList&);
+	bool setupCommand(QString&, KPrinter*);
 };
 
 #endif

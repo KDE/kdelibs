@@ -19,7 +19,6 @@
 
 #include "kextprinterimpl.h"
 #include "kprinter.h"
-#include "kprintprocess.h"
 
 #include <qfile.h>
 #include <kstddirs.h>
@@ -40,17 +39,14 @@ void KExtPrinterImpl::preparePrinting(KPrinter *printer)
 	printer->setOption("kde-qtcopies",QString::number(printer->numCopies()));
 }
 
-bool KExtPrinterImpl::printFiles(KPrinter *printer, const QStringList& files)
+bool KExtPrinterImpl::setupCommand(QString& cmd, KPrinter *printer)
 {
-	QString	cmd = printer->option("kde-printcommand").stripWhiteSpace();
+	cmd = printer->option("kde-printcommand").stripWhiteSpace();
 	if (cmd.isEmpty())
 	{
 		printer->setErrorMessage(i18n("Empty print command."));
 		return false;
 	}
 
-	KPrintProcess	*proc = new KPrintProcess(true);
-	// add command line
-	*proc << cmd;
-	return startPrinting(proc,printer,files);
+	return true;
 }

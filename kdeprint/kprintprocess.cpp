@@ -20,10 +20,9 @@
 #include "kprintprocess.h"
 #include <kapp.h>
 
-KPrintProcess::KPrintProcess(bool useShell)
+KPrintProcess::KPrintProcess()
 : KShellProcess()
 {
-	m_shell = useShell;
 	// redirect everything to a single buffer
 	connect(this,SIGNAL(receivedStdout(KProcess*,char*,int)),SLOT(slotReceivedStderr(KProcess*,char*,int)));
 	connect(this,SIGNAL(receivedStderr(KProcess*,char*,int)),SLOT(slotReceivedStderr(KProcess*,char*,int)));
@@ -41,10 +40,7 @@ QString KPrintProcess::errorMessage() const
 bool KPrintProcess::print()
 {
 	m_buffer = QString::null;
-	if (m_shell)
-		return KShellProcess::start(NotifyOnExit,AllOutput);
-	else
-		return KProcess::start(NotifyOnExit,AllOutput);
+	return start(NotifyOnExit,AllOutput);
 }
 
 void KPrintProcess::slotReceivedStderr(KProcess *proc, char *buf, int len)

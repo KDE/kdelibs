@@ -29,7 +29,7 @@ public:
 	~KExtPrinterImpl();
 
 	void preparePrinting(KPrinter*);
-	bool printFiles(KPrinter*, const QStringList&);
+	bool setupCommand(QString&, KPrinter*);
 };
 
 #endif

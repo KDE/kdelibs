@@ -38,7 +38,7 @@ KRlprPrinterImpl::~KRlprPrinterImpl()
 {
 }
 
-bool KRlprPrinterImpl::printFiles(KPrinter *printer, const QStringList& files)
+bool KRlprPrinterImpl::setupCommand(QString& cmd, KPrinter *printer)
 {
 	// retrieve the KMPrinter object, to get host and queue name
 	KMPrinter	*rpr = KMFactory::self()->manager()->findPrinter(printer->printerName());
@@ -55,9 +55,7 @@ bool KRlprPrinterImpl::printFiles(KPrinter *printer, const QStringList& files)
 			return false;
 		}
 
-		KPrintProcess	*proc = new KPrintProcess;
-		*proc << exestr;
-		*proc << QString::fromLatin1("-H%1").arg(host) << QString::fromLatin1("-P%1").arg(queue) << QString::fromLatin1("-#%1").arg(printer->numCopies());
+		cmd = QString::fromLatin1("%1 -H%2 -P%3 -#%4").arg(exestr).arg(host).arg(queue).arg(printer->numCopies());
 
 		// proxy settings
 		KConfig	*conf = KMFactory::self()->printConfig();
@@ -65,11 +63,11 @@ bool KRlprPrinterImpl::printFiles(KPrinter *printer, const QStringList& files)
 		QString	host = conf->readEntry("ProxyHost",QString::null), port = conf->readEntry("ProxyPort",QString::null);
 		if (!host.isEmpty())
 		{
-			*proc << QString::fromLatin1("-X%1").arg(host);
-			if (!port.isEmpty()) *proc << QString::fromLatin1("--port=%1").arg(port);
+			cmd.append(" -X").append(host);
+			if (!port.isEmpty()) cmd.append(" --port=").append(port);
 		}
 
-		return startPrinting(proc,printer,files);
+		return true;
 	}
 	else
 	{

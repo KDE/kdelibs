@@ -180,7 +180,7 @@ bool KPrinter::cmd(int c, QPainter *painter, QPDevCmdParam *p)
 		if (!outputToFile())
 		{
 			if (option("kde-preview") != "1" || KPrintPreview::preview(m_wrapper->outputFileName()))
-				value = value && printFiles(QStringList(m_wrapper->outputFileName()));
+				value = value && printFiles(QStringList(m_wrapper->outputFileName()),true);
 		}
 		// reset "ready" state
 		finishPrinting();
@@ -201,20 +201,23 @@ void KPrinter::translateQtOptions()
 	m_wrapper->setNumCopies(option("kde-qtcopies").isEmpty() ? 1 : option("kde-qtcopies").toInt());
 }
 
-bool KPrinter::printFiles(const QStringList& l)
+bool KPrinter::printFiles(const QStringList& l, bool flag)
 {
 	// check if printing has been prepared (it may be not prepared if the KPrinter object is not
 	// use as a QPaintDevice object)
 	preparePrinting();
 
-	QString	cmd = QString("kjobviewer -d %1").arg(printerName());
 	bool	status(true);
-	KRun::runCommand(cmd);
-	if (!m_impl->printFiles(this, l))
+	if (!m_impl->printFiles(this, l, flag))
 	{
 		if (!KNotifyClient::event("printerror",i18n("<p><nobr>A print error occured. Error message received from system:</nobr></p><br>%1").arg(errorMessage())))
 			kdDebug() << "could not send notify event" << endl;
 		status = false;
+	}
+	else
+	{
+		QString	cmd = QString("kjobviewer -d %1").arg(printerName());
+		KRun::runCommand(cmd);
 	}
 	finishPrinting();
 	return status;

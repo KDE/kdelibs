@@ -29,7 +29,7 @@
 #include <cups/cups.h>
 #include <stdlib.h>
 
-static int mapToCupsOptions(const QMap<QString,QString>& opts, cups_option_t **options);
+static void mapToCupsOptions(const QMap<QString,QString>& opts, QString& cmd);
 
 //******************************************************************************************************
 
@@ -42,36 +42,14 @@ KCupsPrinterImpl::~KCupsPrinterImpl()
 {
 }
 
-bool KCupsPrinterImpl::printFiles(KPrinter *printer, const QStringList& files)
+bool KCupsPrinterImpl::setupCommand(QString& cmd, KPrinter *printer)
 {
 	// check printer object
 	if (!printer) return false;
 
-	// convert Map to CUPS options
-	cups_option_t	*options(0);
-	int		num_options(0);
-	num_options = mapToCupsOptions(printer->options(), &options);
-
-	// convert QStringList to char array
-	char 	**cfiles = (char**)malloc(sizeof(char*)*files.count());
-	int 		index(0);
-	for (QStringList::ConstIterator it=files.begin(); it!=files.end(); ++it, index++)
-		cfiles[index] = strdup(QFile::encodeName(*it).data());
-
-	// print files
-	QString	jobTitle = printer->docName();
-	if (jobTitle.isEmpty()) jobTitle = "KDE Print System";
-	int 	jobID = cupsPrintFiles(printer->printerName().local8Bit().data(),files.count(),(const char**)cfiles,jobTitle.local8Bit().data(),num_options,options);
-
-	// clear allocated memory
-	for (uint i=0;i<files.count();i++)
-		free(cfiles[i]);
-	free(cfiles);
-
-	// error message and return status
-	if (jobID <= 0)
-		printer->setErrorMessage(ippErrorString(cupsLastError()));
-	return (jobID > 0);
+	cmd = QString::fromLatin1("lpr -P%1 -J '%2'").arg(printer->printerName()).arg(printer->docName());
+	mapToCupsOptions(printer->options(),cmd);
+	return true;
 }
 
 void KCupsPrinterImpl::preparePrinting(KPrinter *printer)
@@ -153,14 +131,19 @@ void KCupsPrinterImpl::broadcastOption(const QString& key, const QString& value)
 
 //******************************************************************************************************
 
-static int mapToCupsOptions(const QMap<QString,QString>& opts, cups_option_t **options)
+static void mapToCupsOptions(const QMap<QString,QString>& opts, QString& cmd)
 {
-	int count(0);
+	QString	optstr;
 	for (QMap<QString,QString>::ConstIterator it=opts.begin(); it!=opts.end(); ++it)
 	{
 		// only encode those options that doesn't start with "kde-" or "app-".
 		if (!it.key().startsWith("kde-") && !it.key().startsWith("app-"))
-			count = cupsAddOption(it.key().latin1(),(it.data().isEmpty() ? "" : it.data().latin1()),count,options);
+		{
+			optstr.append(" ").append(it.key());
+			if (!it.data().isEmpty())
+				optstr.append("=").append(it.data());
+		}
 	}
-	return count;
+	if (!optstr.isEmpty())
+		cmd.append(" -o '").append(optstr).append("'");
 }

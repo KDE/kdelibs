@@ -25,13 +25,13 @@
 #include "kmmanager.h"
 #include "kmthreadjob.h"
 #include "kmprinter.h"
-#include "kprintprocess.h"
 
 #include <qfile.h>
-#include <knotifyclient.h>
 #include <klocale.h>
+#include <dcopclient.h>
 #include <kapp.h>
 #include <kstddirs.h>
+#include <kdatastream.h>
 
 #include <stdlib.h>
 
@@ -56,27 +56,29 @@ KPrinterImpl::KPrinterImpl(QObject *parent, const char *name)
 	m_fileprinter->setDefaultOption("kde-orientation","Portrait");
 	m_fileprinter->setDefaultOption("kde-colormode","Color");
 	m_fileprinter->setDefaultOption("kde-pagesize",QString::number((int)KPrinter::A4));
-
-	// initialize process pool
-	m_processpool.setAutoDelete(true);
 }
 
 KPrinterImpl::~KPrinterImpl()
 {
 	delete m_fileprinter;
-	if (m_processpool.count() > 0)
-		KNotifyClient::event("printerror",i18n("There were still %1 print process(es) running. Printing aborted.").arg(m_processpool.count()));
-	m_processpool.clear();
-	cleanTempFiles();
 }
 
 void KPrinterImpl::preparePrinting(KPrinter*)
 {
 }
 
-bool KPrinterImpl::printFiles(KPrinter*, const QStringList&)
+bool KPrinterImpl::setupCommand(QString&, KPrinter*)
 {
 	return false;
+}
+
+bool KPrinterImpl::printFiles(KPrinter *p, const QStringList& f, bool flag)
+{
+	QString	cmd;
+	if (!setupCommand(cmd,p))
+		return false;
+	else
+		return startPrinting(cmd,p,f,flag);
 }
 
 void KPrinterImpl::broadcastOption(const QString& key, const QString& value)
@@ -98,61 +100,64 @@ void KPrinterImpl::broadcastOption(const QString& key, const QString& value)
 	m_fileprinter->setEditedOption(key,value);
 }
 
-void KPrinterImpl::slotProcessExited(KProcess *proc)
+int KPrinterImpl::dcopPrint(const QString& cmd, const QStringList& files, bool removeflag)
 {
-	KPrintProcess	*pproc = (KPrintProcess*)proc;
-	if (m_processpool.findRef(pproc) == -1)
-		return;
+	int result = 0;
+	DCOPClient	*dclient = kapp->dcopClient();
+	if (!dclient || (!dclient->isAttached() && !dclient->attach()))
+	{
+		return result;
+	}
 
-	QString	msg;
-	if (!proc->normalExit())
-		msg = i18n("<nobr>Abnormal process termination (<b>%1</b>).</nobr>").arg(pproc->args()->first());
-	else if (proc->exitStatus() != 0)
-		msg = i18n("The execution of <b>%1</b> failed with message:<p>%2</p>").arg(pproc->args()->first()).arg(pproc->errorMessage());
-
-	m_processpool.removeRef(pproc);
-	if (!msg.isEmpty())
-		KNotifyClient::event("printerror",i18n("<p><nobr>A print error occured. Error message received from system:</nobr></p><br>%1").arg(msg));
-
-	if (m_processpool.count() == 0)
-		// last child process exited, clean up temporary files
-		cleanTempFiles();
+	QByteArray data, replyData;
+	QCString replyType;
+	QDataStream arg( data, IO_WriteOnly );
+	arg << cmd;
+	arg << files;
+	arg << removeflag;
+	if (dclient->call( "kded", "kdeprintd", "print(QString,QStringList,bool)", data, replyType, replyData ))
+	{
+		if (replyType == "int")
+		{
+			QDataStream _reply_stream( replyData, IO_ReadOnly );
+			_reply_stream >> result;
+		}
+	}
+	return result;
 }
 
-bool KPrinterImpl::startPrintProcess(KPrintProcess *proc, KPrinter *printer)
-{
-	connect(proc,SIGNAL(processExited(KProcess*)),SLOT(slotProcessExited(KProcess*)));
-	if (proc->print())
-	{
-		m_processpool.append(proc);
-		if (printer) KMThreadJob::createJob(proc->pid(),printer->printerName(),printer->docName(),getenv("USER"),0);
-		return true;
-	}
-	else
-	{
-		delete proc;
-		return false;
-	}
-}
-
-bool KPrinterImpl::startPrinting(KPrintProcess *proc, KPrinter *printer, const QStringList& files)
+bool KPrinterImpl::startPrinting(const QString& cmd, KPrinter *printer, const QStringList& files, bool flag)
 {
 	bool	canPrint(false);
+	QString	command(cmd);
 	for (QStringList::ConstIterator it=files.begin(); it!=files.end(); ++it)
 		if (QFile::exists(*it))
 		{
-			*proc << *it;
+			command.append(" ").append(*it);
 			canPrint = true;
 		}
 		else
 			qDebug("File not found: %s",(*it).latin1());
 	if (canPrint)
-		if (!startPrintProcess(proc,printer))
+	{
+		int pid = dcopPrint(command,files,flag);
+		if (pid > 0)
 		{
-			printer->setErrorMessage(i18n("Unable to start child print process."));
+			if (printer)
+				KMThreadJob::createJob(pid,printer->printerName(),printer->docName(),getenv("USER"),0);
+			return true;
+		}
+		else
+		{
+			QString	msg = i18n("Unable to start child print process. ");
+			if (pid == 0)
+				msg += i18n("The KDE print server (<b>kdeprintd</b>) could not be contacted. Check that this server is running.");
+			else
+				msg += i18n("Check the command syntax:\n%1 <files>").arg(cmd);
+			printer->setErrorMessage(msg);
 			return false;
 		}
-		else return true;
+	}
 	else
 	{
 		printer->setErrorMessage(i18n("No valid file was found for printing. Operation aborted."));
@@ -160,16 +165,11 @@ bool KPrinterImpl::startPrinting(KPrintProcess *proc, KPrinter *printer, const Q
 	}
 }
 
-void KPrinterImpl::cleanTempFiles()
-{
-	for (QStringList::Iterator it=m_tempfiles.begin(); it!=m_tempfiles.end();)
-		if (QFile::remove(*it)) it = m_tempfiles.remove(it);
-		else ++it;
-}
-
 QString KPrinterImpl::tempFile()
 {
-	QString	f = locateLocal("tmp","kdeprint_") + KApplication::randomString(8);
+	QString	f;
+	// be sure the file doesn't exist
+	do f = locateLocal("tmp","kdeprint_") + KApplication::randomString(8); while (QFile::exists(f));
 	return f;
 }
 #include "kprinterimpl.moc"

@@ -32,11 +32,11 @@ public:
 	KLpdUnixPrinterImpl(QObject *parent = 0, const char *name = 0);
 	~KLpdUnixPrinterImpl();
 
-	bool printFiles(KPrinter*, const QStringList&);
+	bool setupCommand(QString&, KPrinter*);
 
 protected:
-	void initLpPrint(KProcess*, KPrinter*);
-	void initLprPrint(KProcess*, KPrinter*);
+	void initLpPrint(QString&, KPrinter*);
+	void initLprPrint(QString&, KPrinter*);
 	QString executable();
 };
 

@@ -4,6 +4,13 @@ SUBDIRS = . management lpdunix $(CUPSSUBDIR) lpd rlpr ext pics tests
 
 INCLUDES= -I$(top_srcdir)/kio -I$(top_srcdir)/kfile -I$(top_srcdir) $(all_includes)
 
+kde_module_LTLIBRARIES = libkded_kdeprintd.la
+
+libkded_kdeprintd_la_SOURCES = kdeprintd.skel kdeprintd.cpp kprintprocess.cpp
+libkded_kdeprintd_la_LIBADD = $(LIB_KDEUI) $(LIB_KDECORE)
+libkded_kdeprintd_la_LDFLAGS = $(all_libraries) -module -avoid-version
+#libkded_kdeprintd_la_METASOURCES = AUTO
+
 lib_LTLIBRARIES = libkdeprint.la
 
 libkdeprint_la_SOURCES = kmfactory.cpp kmjob.cpp kmjobmanager.cpp kmmanager.cpp kmprinter.cpp \
@@ -11,7 +18,7 @@ libkdeprint_la_SOURCES = kmfactory.cpp kmjob.cpp kmjobmanager.cpp kmmanager.cpp 
 			 driverview.cpp maticscanner.cpp maticparser.cpp matic.cpp kmdbentry.cpp \
 		         kprintpreview.cpp kprinter.cpp kprinterimpl.cpp kprintdialog.cpp kprintdialogpage.cpp \
 			 kpcopiespage.cpp kpdriverpage.cpp kprinterpropertydialog.cpp kpgeneralpage.cpp kpqtpage.cpp \
-			 kprintprocess.cpp kmthreadjob.cpp kpipeprocess.cpp
+			 kmthreadjob.cpp kpipeprocess.cpp
 libkdeprint_la_LDFLAGS = $(all_libraries) -version 0:1
 libkdeprint_la_LIBADD = $(LIB_KPARTS) $(LIB_KFILE) -lz
 libkdeprint_la_METASOURCES = AUTO
@@ -20,7 +27,7 @@ noinst_HEADERS = kmdbentry.h kmfactory.h kmjob.h kmjobmanager.h kmmanager.h kmob
 		 kmuimanager.h kmvirtualmanager.h driver.h driveritem.h droptionview.h \
 		 driverview.h matic.h kprintpreview.h kprinterimpl.h kprintdialog.h \
 		 kprintdialogpage.h kpcopiespage.h kpdriverpage.h kprinterpropertydialog.h kpgeneralpage.h \
-		 kpqtpage.h kprintprocess.h kmthreadjob.h kpipeprocess.h
+		 kpqtpage.h kprintprocess.h kmthreadjob.h kpipeprocess.h kdeprintd.h
 
 include_HEADERS = kprinter.h
 
@@ -36,6 +43,10 @@ uidatadir = $(kde_confdir)/ui
 # Test page
 printdata_DATA = testprint.ps
 printdatadir = $(kde_datadir)/kdeprint
+
+# Services
+servicesdir = $(kde_servicesdir)/kded
+services_DATA = kdeprintd.desktop
 
 # parser and scanner
 parser:

@@ -29,8 +29,6 @@
 
 class KPrinter;
 class KMPrinter;
-class KProcess;
-class KPrintProcess;
 
 class KPrinterImpl : public QObject
 {
@@ -39,28 +37,23 @@ public:
 	KPrinterImpl(QObject *parent = 0, const char *name = 0);
 	virtual ~KPrinterImpl();
 
-	virtual bool printFiles(KPrinter*, const QStringList&);
+	virtual bool setupCommand(QString& cmd, KPrinter*);
 	virtual void preparePrinting(KPrinter*);
 	virtual void broadcastOption(const QString& key, const QString& value);
 
+	bool printFiles(KPrinter*, const QStringList&, bool removeflag = false);
 	KMPrinter* filePrinter()				{ return m_fileprinter; }
 	void saveOptions(const QMap<QString,QString>& opts)	{ m_options = opts; }
 	const QMap<QString,QString>& loadOptions() const 	{ return m_options; }
 	QString tempFile();
 
-protected slots:
-	void slotProcessExited(KProcess*);
-
 protected:
-	bool startPrintProcess(KPrintProcess*, KPrinter*);
-	bool startPrinting(KPrintProcess*, KPrinter*, const QStringList&);
-	void cleanTempFiles();
+	bool startPrinting(const QString& cmd, KPrinter *printer, const QStringList& files, bool removeflag = false);
+	int dcopPrint(const QString& cmd, const QStringList& files, bool removeflag = false);
 
 protected:
 	KMPrinter		*m_fileprinter;
 	QMap<QString,QString>	m_options;	// use to save current options
-	QList<KPrintProcess>	m_processpool;
-	QStringList		m_tempfiles;
 };
 
 #endif

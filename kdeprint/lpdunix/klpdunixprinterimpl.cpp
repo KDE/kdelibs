@@ -21,7 +21,6 @@
 
 #include "klpdunixprinterimpl.h"
 #include "kprinter.h"
-#include "kprintprocess.h"
 
 #include <qfile.h>
 #include <kstddirs.h>
@@ -36,14 +35,14 @@ KLpdUnixPrinterImpl::~KLpdUnixPrinterImpl()
 {
 }
 
-void KLpdUnixPrinterImpl::initLpPrint(KProcess *proc, KPrinter *printer)
+void KLpdUnixPrinterImpl::initLpPrint(QString& cmd, KPrinter *printer)
 {
-	(*proc) << "-d" << printer->printerName() << QString::fromLatin1("-n%1").arg(printer->numCopies());
+	cmd += QString::fromLatin1(" -d%1 -n%2").arg(printer->printerName()).arg(printer->numCopies());
 }
 
-void KLpdUnixPrinterImpl::initLprPrint(KProcess *proc, KPrinter *printer)
+void KLpdUnixPrinterImpl::initLprPrint(QString& cmd, KPrinter *printer)
 {
-	(*proc) << "-P" << printer->printerName() << QString::fromLatin1("-#%1").arg(printer->numCopies());
+	cmd += QString::fromLatin1(" -P%1 -#%2").arg(printer->printerName()).arg(printer->numCopies());
 }
 
 // look for executable, starting with "lpr"
@@ -55,18 +54,17 @@ QString KLpdUnixPrinterImpl::executable()
 	return exe;
 }
 
-bool KLpdUnixPrinterImpl::printFiles(KPrinter *printer, const QStringList& files)
+bool KLpdUnixPrinterImpl::setupCommand(QString& cmd, KPrinter *printer)
 {
 	QString		exe = executable();
 	if (!exe.isEmpty())
 	{
-		KPrintProcess	*proc = new KPrintProcess;
-		proc->setExecutable(exe);
+		cmd = exe;
 		if (exe.right(3) == "lpr")
-			initLprPrint(proc,printer);
+			initLprPrint(cmd,printer);
 		else
-			initLpPrint(proc,printer);
-		return startPrinting(proc,printer,files);
+			initLpPrint(cmd,printer);
+		return true;
 	}
 	else
 		printer->setErrorMessage(i18n("No valid print executable was found in your path. Check your installation."));

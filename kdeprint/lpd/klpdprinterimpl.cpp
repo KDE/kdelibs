@@ -21,7 +21,6 @@
 
 #include "klpdprinterimpl.h"
 #include "kprinter.h"
-#include "kprintprocess.h"
 
 #include <qfile.h>
 #include <kstddirs.h>
@@ -41,16 +40,14 @@ QString KLpdPrinterImpl::executable()
 	return KStandardDirs::findExe("lpr");
 }
 
-bool KLpdPrinterImpl::printFiles(KPrinter *printer, const QStringList& files)
+bool KLpdPrinterImpl::setupCommand(QString& cmd, KPrinter *printer)
 {
-	KPrintProcess	*proc = new KPrintProcess();
 	QString	exestr = executable();
 	if (exestr.isEmpty())
 	{
 		printer->setErrorMessage(i18n("The <b>%1</b> executable could not be found in your path. Check your installation.").arg("lpr"));
 		return false;
 	}
-	*proc << exestr;
-	*proc << "-P" << printer->printerName() << QString::fromLatin1("-#%1").arg(printer->numCopies());
-	return startPrinting(proc,printer,files);
+	cmd = QString::fromLatin1("%1 -P%2 -#%3").arg(exestr).arg(printer->printerName()).arg(printer->numCopies());
+	return true;
 }
