@@ -334,7 +334,6 @@ KCharSelect::KCharSelect( QWidget *parent, const char *name, const QString &_fon
     : QVBox( parent, name )
 {
     setSpacing( KDialog::spacingHint() );
-    setMargin( KDialog::marginHint() );
     QHBox *bar = new QHBox( this );
     bar->setSpacing( KDialog::spacingHint() );
 
