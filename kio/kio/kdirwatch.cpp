@@ -353,7 +353,7 @@ int KDirWatchPrivate::Entry::clients()
 KDirWatchPrivate::Entry* KDirWatchPrivate::entry(const QString& _path)
 {
 // we only support absolute paths
-  if (!QDir::isRelativePath(_path)) {
+  if (QDir::isRelativePath(_path)) {
     return 0;
   }
 
