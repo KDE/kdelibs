@@ -48,6 +48,7 @@ class KURLComboBox;
 class KFileFilterCombo;
 class KFileView;
 class KFileItem;
+class KPushButton;
 class KToolBar;
 class KPreviewWidgetBase;
 
@@ -611,13 +612,13 @@ public:
      * @returns a pointer to the OK-Button in the filedialog. You may use it
      * e.g. to set a custom text to it.
      */
-    QPushButton *okButton() const;
+    KPushButton *okButton() const;
 
     /**
      * @returns a pointer to the Cancel-Button in the filedialog. You may use
      * it e.g. to set a custom text to it.
      */
-    QPushButton *cancelButton() const;
+    KPushButton *cancelButton() const;
 
 signals:
     /**

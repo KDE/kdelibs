@@ -32,7 +32,6 @@
 #include <qlineedit.h>
 #include <qptrlist.h>
 #include <qpixmap.h>
-#include <qpushbutton.h>
 #include <qtooltip.h>
 #include <qtimer.h>
 
@@ -55,8 +54,10 @@
 #include <kmimetype.h>
 #include <kpopupmenu.h>
 #include <kprotocolinfo.h>
+#include <kpushbutton.h>
 #include <krecentdirs.h>
 #include <kstandarddirs.h>
+#include <kstdguiitem.h>
 #include <kstaticdeleter.h>
 #include <ktoolbar.h>
 #include <ktoolbarbutton.h>
@@ -114,7 +115,7 @@ struct KFileDialogPrivate
     QLabel *locationLabel;
     QLabel *filterLabel;
     KURLComboBox *pathCombo;
-    QPushButton *okButton, *cancelButton;
+    KPushButton *okButton, *cancelButton;
     KURLBar *urlBar;
 
     QPtrList<KIO::StatJob> statJobs;
@@ -166,9 +167,9 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     d->hasView = false;
     d->mainWidget = new QWidget( this, "KFileDialog::mainWidget");
     setMainWidget( d->mainWidget );
-    d->okButton = new QPushButton( i18n("&OK"), d->mainWidget );
+    d->okButton = new KPushButton( KStdGuiItem::ok(), d->mainWidget );
     d->okButton->setDefault( true );
-    d->cancelButton = new QPushButton( i18n("&Cancel"), d->mainWidget );
+    d->cancelButton = new KPushButton( KStdGuiItem::cancel(), d->mainWidget );
     connect( d->okButton, SIGNAL( clicked() ), SLOT( slotOk() ));
     connect( d->cancelButton, SIGNAL( clicked() ), SLOT( slotCancel() ));
     d->urlBar = new KURLBar( true, d->mainWidget, "url bar" );
@@ -1696,12 +1697,12 @@ void KFileDialog::saveRecentFiles( KConfig *kc )
     kc->setGroup( oldGroup );
 }
 
-QPushButton * KFileDialog::okButton() const
+KPushButton * KFileDialog::okButton() const
 {
     return d->okButton;
 }
 
-QPushButton * KFileDialog::cancelButton() const
+KPushButton * KFileDialog::cancelButton() const
 {
     return d->cancelButton;
 }
@@ -1727,7 +1728,7 @@ void KFileDialog::setOperationMode( OperationMode mode )
     d->operationMode = mode;
     d->keepLocation = true;
     filterWidget->setEditable( !d->hasDefaultFilter || mode != Saving );
-    d->okButton->setText( (mode == Saving) ? i18n("&Save") : "&OK" );
+    d->okButton->setGuiItem( (mode == Saving) ? KStdGuiItem::save() : KStdGuiItem::ok() );
 }
 
 KFileDialog::OperationMode KFileDialog::operationMode() const
