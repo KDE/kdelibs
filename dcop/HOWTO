@@ -300,9 +300,6 @@ class MyInterface : virtual public DCOPObject
 As you can see, you're essentially declaring an abstract base class, which
 virtually inherits from DCOPObject.
 
-Note that you must declare names for your parameters and you must
-use pass-by-value: no pointers or references.
-
 If you're using the standard KDE build scripts, then you can simply
 add this file (which you would call MyInterface.h) to your sources
 directory. Then you edit your Makefile.am, adding 'MyInterface.skel'
