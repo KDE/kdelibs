@@ -10,7 +10,7 @@
 class Test2 : public MyPrefs
 {
   public:
-    enum { standardDestination, askDestination, argl1, argl2, argl3, COUNT };
+    enum { standardDestination, askDestination, argl1, argl2, argl3 };
 
     Test2( );
     ~Test2();
@@ -329,4 +329,3 @@ class Test2 : public MyPrefs
 };
 
 #endif
-

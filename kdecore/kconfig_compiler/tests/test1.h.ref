@@ -11,7 +11,7 @@ class Test1 : public KConfigSkeleton
     class EnumListOption
     {
       public:
-      enum { One, Two, Three, COUNT };
+      enum type { One, Two, Three, COUNT };
     };
 
     Test1( const QString &transport, const QString &folder );
@@ -191,4 +191,3 @@ class Test1 : public KConfigSkeleton
 };
 
 #endif
-

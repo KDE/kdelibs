@@ -134,4 +134,3 @@ class Test3 : public KConfigSkeleton
 }
 
 #endif
-

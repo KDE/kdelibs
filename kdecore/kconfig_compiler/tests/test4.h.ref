@@ -11,7 +11,7 @@ class Test4 : public KConfigSkeleton
     class EnumMouseAction
     {
       public:
-      enum { Encrypt, Decrypt, CrashNBurn, PumpNDump, COUNT };
+      enum type { Encrypt, Decrypt, CrashNBurn, PumpNDump, COUNT };
     };
     class EnumButton
     {
@@ -119,4 +119,3 @@ class Test4 : public KConfigSkeleton
 };
 
 #endif
-
