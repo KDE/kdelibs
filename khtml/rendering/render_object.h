@@ -227,6 +227,7 @@ public:
     bool isInline() const { return m_inline; }
     bool mouseInside() const;
     bool isReplaced() const { return m_replaced; }
+    bool isReplacedBlock() const { return isInline() && isReplaced() && isRenderBlock(); }
     bool shouldPaintBackgroundOrBorder() const { return m_paintBackground; }
     bool layouted() const   { return m_layouted; }
     bool minMaxKnown() const{ return m_minMaxKnown; }

@@ -76,6 +76,43 @@ static void appendRun();
 static bool inBidiIteratorDetach;
 #endif
 
+static int getBPMWidth(int childValue, Length cssUnit)
+{
+    if (!cssUnit.isVariable())
+        return (cssUnit.isFixed() ? cssUnit.value() : childValue);
+    return 0;
+}
+
+static int getBorderPaddingMargin(RenderObject* child, bool endOfInline)
+{
+    RenderStyle* cstyle = child->style();
+    int result = 0;
+    bool leftSide = (cstyle->direction() == LTR) ? !endOfInline : endOfInline;
+    result += getBPMWidth((leftSide ? child->marginLeft() : child->marginRight()),
+                          (leftSide ? cstyle->marginLeft() :
+                           cstyle->marginRight()));
+    result += getBPMWidth((leftSide ? child->paddingLeft() : child->paddingRight()),
+                          (leftSide ? cstyle->paddingLeft() :
+                           cstyle->paddingRight()));
+    result += leftSide ? child->borderLeft() : child->borderRight();
+    return result;
+}
+
+static int inlineWidth(RenderObject* child, bool start = true, bool end = true)
+{
+    int extraWidth = 0;
+    RenderObject* parent = child->parent();
+    while (parent->isInline() && !parent->isReplacedBlock()) {
+        if (start && parent->firstChild() == child)
+            extraWidth += getBorderPaddingMargin(parent, false);
+        if (end && parent->lastChild() == child)
+            extraWidth += getBorderPaddingMargin(parent, true);
+        child = parent;
+        parent = child->parent();
+    }
+    return extraWidth;
+}
+
 void BidiIterator::detach(RenderArena* renderArena)
 {
 #ifndef NDEBUG
@@ -1245,33 +1282,36 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start)
 #endif
 
 
-    // eliminate spaces at beginning of line
-    if(!m_pre) {
-	// remove leading spaces
-	while(!start.atEnd() &&
+    // remove leading spaces
+    while(!start.atEnd() && ( start.obj->isInlineFlow() || ( start.obj->style()->whiteSpace() != PRE &&
 #ifndef QT_NO_UNICODETABLES
 	      ( start.direction() == QChar::DirWS || start.obj->isFloatingOrPositioned() )
 #else
 	      ( start.current() == ' ' || start.obj->isFloatingOrPositioned() )
 #endif
-	      ) {
-		RenderObject *o = start.obj;
-		// add to floating objects...
-		if(o->isFloating()) {
-		    insertFloatingObject(o);
-		    // check if it fits in the current line.
-		    // If it does, position it now, otherwise, position
-		    // it after moving to next line (in newLine() func)
-		    if (o->width()+o->marginLeft()+o->marginRight()+w+tmpW <= width) {
-			positionNewFloats();
-			width = lineWidth(m_height);
-		    }
-		}
+          ))) {
+        RenderObject *o = start.obj;
+        // add to floating objects...
+        if(o->isFloating()) {
+            insertFloatingObject(o);
+            positionNewFloats();
+            width = lineWidth(m_height);
+        }
+        else if (o->isPositioned()) {
+// merge me
+#if 0
+            if (o->hasStaticX())
+                o->setStaticX(style()->direction() == LTR ?
+                              borderLeft()+paddingLeft() :
+                              borderRight()+paddingRight());
+            if (o->hasStaticY())
+                o->setStaticY(m_height);
+#endif
+        }
 
-		adjustEmbeddding = true;
-		++start;
-		adjustEmbeddding = false;
-	}
+        adjustEmbeddding = true;
+        ++start;
+        adjustEmbeddding = false;
     }
     if ( start.atEnd() )
         return start;
@@ -1309,6 +1349,8 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start)
 	    int strlen = t->stringLength();
 	    int len = strlen - pos;
 	    QChar *str = t->text();
+            bool appliedStartWidth = ( pos > 0 );
+
             if (style()->whiteSpace() == NOWRAP || t->style()->whiteSpace() == NOWRAP) {
                 tmpW += t->maxWidth();
                 pos = strlen;
@@ -1322,6 +1364,10 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start)
                     if( (isPre && str[pos] == '\n') ||
                         (!isPre && isBreakable( str, pos, strlen ) ) ) {
 		    tmpW += t->width(lastSpace, pos - lastSpace, f);
+                    if ( !appliedStartWidth ) {
+                        tmpW += inlineWidth( o, true, false );
+                        appliedStartWidth = true;
+                    }
 #ifdef DEBUG_LINEBREAKS
 		    kdDebug(6041) << "found space: '" << QString( str, pos ).latin1() << "' +" << tmpW << " -> w = " << w << endl;
 #endif
@@ -1357,6 +1403,9 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start)
                 }
                 // IMPORTANT: pos is > length here!
                 tmpW += t->width(lastSpace, pos - lastSpace, f);
+                if ( !appliedStartWidth )
+                    tmpW += inlineWidth(o, true, false );
+                tmpW += inlineWidth(o, false, true );
                 if (!isPre && w + tmpW < width && pos && str[pos-1] != nbsp)
                     lBreak =  Bidinext( start.par, o );
             }
