@@ -54,7 +54,7 @@ void KSlider::drawShadeLine( QPainter *painter )
 }
 
 
-void KSlider::paintSlider(QPainter *painter, const QRect &rect )
+void KSlider::paintSlider(QPainter *painter, const QRect & )
 {
   QPoint pos;
 
