@@ -193,6 +193,7 @@ public:
    * contacted.
    */
   bool requestShutDown();
+  bool requestShutDown( bool bFast );
 
   /**
    * Propagates the network address of the session manager in the
@@ -836,6 +837,9 @@ private:
 #endif
 
 // $Log$
+// Revision 1.219  2001/06/06 20:47:50  lunakl
+// More work on app startup notification.
+//
 // Revision 1.218  2001/05/31 09:36:46  mueller
 // Xinerama support, based on patch by  Balaji Ramani <balaji@spinnakernet.com>
 //

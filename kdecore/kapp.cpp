@@ -813,10 +813,15 @@ void KApplication::disableSessionManagement() {
 
 bool KApplication::requestShutDown()
 {
+    requestShutDown( false );
+}
+
+bool KApplication::requestShutDown( bool bFast )
+{
     if ( mySmcConnection ) {
         // we already have a connection to the session manager, use it.
         SmcRequestSaveYourself( mySmcConnection, SmSaveBoth, True,
-				SmInteractStyleAny, False, True );
+				SmInteractStyleAny, bFast ? True : False, True );
 
 	// flush the request
 	IceFlush(SmcGetIceConnection(mySmcConnection));
