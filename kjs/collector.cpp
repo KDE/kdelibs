@@ -104,7 +104,7 @@ void* Collector::allocate(size_t s)
 
 #if KJS_MEM_LIMIT != -1
   if (filled >= KJS_MEM_LIMIT) {
-      Context::current()->setError("Out of memory");
+      KJScriptImp::setException("Out of memory");
   }
 #endif
 

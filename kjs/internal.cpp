@@ -233,8 +233,6 @@ RegExpImp::~RegExpImp()
 // ECMA 10.2
 Context::Context(CodeType type, Context *callingContext,
 		 FunctionImp *func, const List *args, Imp *thisV)
-  : err(false),
-    internErrMsg(0)
 {
   Global glob(Global::current());
 
@@ -310,8 +308,6 @@ void Context::mark()
     activation.imp()->mark();
   if (variable.imp() && variable.imp()->refcount == 0)
     variable.imp()->mark();
-  if (errObj.imp() && errObj.imp()->refcount == 0)
-    errObj.imp()->mark();
   /* TODO: scopeChain ? */
 }
 
@@ -323,14 +319,6 @@ Context *Context::current()
 void Context::setCurrent(Context *c)
 {
   KJScriptImp::current()->con = c;
-}
-
-
-KJSO Context::error()
-{
-  if (err && internErrMsg)
-    return Error::create(GeneralError, internErrMsg);
-  return errObj;
 }
 
 void Context::pushScope(const KJSO &s)
@@ -450,10 +438,10 @@ KJScriptImp::KJScriptImp()
 #ifdef KJS_DEBUGGER
     dbg(0L),
 #endif
-    exVal(0L),
     retVal(0L)
 {
   KJScriptImp::curr = this;
+  clearException();
   lex = new Lexer();
 }
 
@@ -489,7 +477,7 @@ void KJScriptImp::init()
 {
   KJScriptImp::curr = this;
 
-  exVal = 0L;
+  clearException();
   retVal = 0L;
 
   if (!initialized) {
@@ -524,7 +512,7 @@ void KJScriptImp::clear()
 
     Node::deleteAllNodes(&firstNode, &progNode);
 
-    exVal = 0L;
+    clearException();
     retVal = 0L;
 
     delete con; con = 0L;
@@ -582,7 +570,7 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, Imp *thisV,
       return true;
 
   Context *context = Context::current();
-  context->clearError();
+  clearException();
 
   if (thisV) {
     context->setThisValue(thisV);
@@ -594,8 +582,8 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, Imp *thisV,
   KJSO res = progNode->evaluate();
   recursion--;
 
-  if (context->hadError()) {
-    KJSO err = context->error();
+  if (hadException()) {
+    KJSO err = exception();
     errType = 99; /* TODO */
     errLine = err.get("line").toInt32();
     errMsg = err.get("name").toString().value() + ". ";
@@ -604,7 +592,7 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, Imp *thisV,
     if (dbg)
       dbg->setSourceId(err.get("sid").toInt32());
 #endif
-    context->clearError();
+    clearException();
   } else {
     errType = 0;
     errLine = -1;
@@ -657,7 +645,38 @@ bool KJScriptImp::call(const UString &func, const List &args)
   ConstructorImp *ctor = static_cast<ConstructorImp*>(v.imp());
   Null nil; /* TODO */
   ctor->executeCall(nil.imp(), &args);
-  return !ctx->hadError();
+  return !hadException();
+}
+
+void KJScriptImp::setException(Imp *e)
+{
+  assert(curr);
+  curr->exVal = e;
+  curr->exMsg = "Exception"; // not very meaningful but we use !0L to test
+}
+
+void KJScriptImp::setException(const char *msg)
+{
+  assert(curr);
+  curr->exVal = 0L;		// will be created later on exception()
+  curr->exMsg = msg;
+}
+
+KJSO KJScriptImp::exception()
+{
+  assert(curr);
+  if (!curr->exMsg)
+    return Undefined();
+  if (curr->exVal)
+    return curr->exVal;
+  return Error::create(GeneralError, curr->exMsg);
+}
+
+void KJScriptImp::clearException()
+{
+  assert(curr);
+  curr->exMsg = 0L;
+  curr->exVal = 0L;
 }
 
 #ifdef KJS_DEBUGGER

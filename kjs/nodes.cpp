@@ -823,10 +823,10 @@ Completion StatListNode::execute()
   if (!list) {
     Completion c = statement->execute();
     KJS_ABORTPOINT
-    Imp *ex = KJScriptImp::exception();
-    if (ex) {
-      KJScriptImp::setException(0L);
-      return Completion(Throw, KJSO(ex));
+    if (KJScriptImp::hadException()) {
+      KJSO ex = KJScriptImp::exception();
+      KJScriptImp::clearException();
+      return Completion(Throw, ex);
     } else
       return c;
   }
@@ -836,11 +836,11 @@ Completion StatListNode::execute()
   if (l.complType() != Normal)
     return l;
   Completion e = statement->execute();
-  KJS_ABORTPOINT
-  Imp *ex = KJScriptImp::exception();
-  if (ex) {
-    KJScriptImp::setException(0L);
-    return Completion(Throw, KJSO(ex));
+  KJS_ABORTPOINT;
+  if (KJScriptImp::hadException()) {
+    KJSO ex = KJScriptImp::exception();
+    KJScriptImp::clearException();
+    return Completion(Throw, ex);
   }
 
   KJSO v = e.isValueCompletion() ? e.value() : l.value();
@@ -901,7 +901,6 @@ Completion ForNode::execute()
 {
   KJSO e, v, cval;
   Boolean b;
-  Context *context = Context::current();
 
   if (expr1) {
     e = expr1->evaluate();
@@ -916,8 +915,8 @@ Completion ForNode::execute()
 	return Completion(Normal, cval);
     }
     // bail out on error
-    if (context->hadError())
-      return Completion(ReturnValue, context->error());
+    if (KJScriptImp::hadException())
+      return Completion(Throw, KJScriptImp::exception());
 
     Completion c = stat->execute();
     if (c.isValueCompletion())
@@ -1024,12 +1023,11 @@ Completion DoWhileNode::execute()
   KJSO be, bv;
   Completion c;
   KJSO value;
-  Context *context = Context::current();
 
   do {
     // bail out on error
-    if (context->hadError())
-      return Completion(ReturnValue, context->error());
+    if (KJScriptImp::hadException())
+      return Completion(Throw, KJScriptImp::exception());
 
     c = statement->execute();
     if (!((c.complType() == Continue) && ls.contains(c.target()))) {
@@ -1054,7 +1052,6 @@ Completion WhileNode::execute()
   Completion c;
   Boolean b(false);
   KJSO value;
-  Context *context = Context::current();
 
   while (1) {
     be = expr->evaluate();
@@ -1062,8 +1059,8 @@ Completion WhileNode::execute()
     b = bv.toBoolean();
 
     // bail out on error
-    if (context->hadError())
-      return Completion(ReturnValue, context->error());
+    if (KJScriptImp::hadException())
+      return Completion(Throw, KJScriptImp::exception());
 
     if (!b.value())
       return Completion(Normal, value);
@@ -1286,11 +1283,8 @@ Completion TryNode::execute()
     return (c2.complType() == Normal) ? c : c2;
   }
 
-  if (c.complType() == Throw) {
-    c2 = _catch->execute(c.value());
-    if (c2.complType() != Normal)
-      c = c2;
-  }
+  if (c.complType() == Throw)
+    c = _catch->execute(c.value());
 
   c2 = _final->execute();
   return (c2.complType() == Normal) ? c : c2;
@@ -1307,7 +1301,7 @@ Completion CatchNode::execute()
 Completion CatchNode::execute(const KJSO &arg)
 {
   /* TODO: correct ? Not part of the spec */
-  KJScriptImp::setException(0L);
+  KJScriptImp::clearException();
 
   Object obj;
   obj.put(ident, arg, DontDelete);
@@ -1388,21 +1382,19 @@ void ProgramNode::deleteStatements()
 // ECMA 14
 KJSO SourceElementsNode::evaluate()
 {
-  Context *context = Context::current();
-
-  if (context->hadError())
-    return Completion(ReturnValue, context->error());
+  if (KJScriptImp::hadException())
+    return Completion(Throw, KJScriptImp::exception());
 
   if (!elements)
     return element->evaluate();
 
   KJSO res1 = elements->evaluate();
-  if (context->hadError())
-    return Completion(ReturnValue, context->error());
+  if (KJScriptImp::hadException())
+    return Completion(Throw, KJScriptImp::exception());
 
   KJSO res2 = element->evaluate();
-  if (context->hadError())
-    return Completion(ReturnValue, context->error());
+  if (KJScriptImp::hadException())
+    return Completion(Throw, KJScriptImp::exception());
 
   if (res2.isA(CompletionType))
     return res2;

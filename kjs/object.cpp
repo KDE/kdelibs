@@ -499,7 +499,7 @@ Object Object::create(Class c, const KJSO& val)
 
   //  KJSO prot = global.get(p).get("prototype");
   KJSO prot = global.get(p);
-  assert(!prot.isA(UndefinedType));
+  assert(prot.isDefined());
 
   obj.setPrototype(prot);
   return obj;
@@ -930,8 +930,8 @@ Object Error::createObject(ErrorType e, const char *m, int l)
 
   Object err = ErrorObject::create(e, m, l);
 
-  if (!context->hadError())
-    context->setError(err);
+  if (!KJScriptImp::hadException())
+    KJScriptImp::setException(err.imp());
 
   const struct ErrorStruct {
       ErrorType e;

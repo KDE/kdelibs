@@ -220,11 +220,6 @@ namespace KJS {
     KJSO variableObject() const { return variable; }
     Imp* thisValue() const { return thisVal; }
     void setThisValue(Imp *t) { thisVal = t; }
-    bool hadError() const { return err; }
-    void setError(const KJSO& e) { errObj = e; err = true; internErrMsg = 0;  }
-    void setError(const char *msg) { err = true; internErrMsg = msg; }
-    void clearError() { err = false; errObj = KJSO(); internErrMsg = 0; }
-    KJSO error();
     LabelStack *seenLabels() { return &ls; }
   private:
     LabelStack ls;
@@ -232,9 +227,6 @@ namespace KJS {
     KJSO activation;
     KJSO variable;
     List *scopeChain;
-    bool err;
-    KJSO errObj;
-    const char *internErrMsg;
   };
 
   class DeclaredFunctionImp : public ConstructorImp {
@@ -275,8 +267,11 @@ namespace KJS {
     ~KJScriptImp();
     void mark();
     static KJScriptImp *current() { return curr; }
-    static void setException(Imp *e) { assert(curr); curr->exVal = e; }
-    static Imp *exception() { assert(curr); return curr->exVal; }
+    static void setException(Imp *e);
+    static void setException(const char *msg);      
+    static bool hadException();
+    static KJSO exception();
+    static void clearException();
 
 #ifdef KJS_DEBUGGER
     /**
@@ -313,11 +308,18 @@ namespace KJS {
     Debugger *dbg;
     int sid;
 #endif
+    const char *exMsg;
     Imp *exVal;
     Imp *retVal;
     int recursion;
   };
 
+  inline bool KJScriptImp::hadException()
+  {
+    assert(curr);
+    return curr->exMsg;
+  }
+  
   /**
    * @short Struct used to return the property names of an object
    */

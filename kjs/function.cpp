@@ -120,10 +120,6 @@ KJSO FunctionImp::executeCall(Imp *thisV, const List *args)
   if (dummyList)
     delete args;
 
-  if (ctx->hadError()) {
-      // propagate errors into calling context. correct ?
-      save->setError(ctx->error());
-  }
   delete ctx;
   Context::setCurrent(save);
 
