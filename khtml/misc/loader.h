@@ -2,6 +2,7 @@
     This file is part of the KDE libraries
 
     Copyright (C) 1998 Lars Knoll (knoll@mpi-hd.mpg.de)
+    Copyright (C) 2001 Dirk Mueller <mueller@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -148,16 +149,17 @@ namespace khtml
         void setAccept(const QString &_accept) { m_accept = _accept; }
 
     protected:
+        QList<CachedObjectClient> m_clients;
+        
 	DOM::DOMString m_url;
+        QString m_accept;
+        Request *m_request;
 	Type m_type;
 	Status m_status;
-	QList<CachedObjectClient> m_clients;
 	int m_size;
+	int m_expireDate;
         bool m_free;
         bool m_reload;
-        Request *m_request;
-        QString m_accept;
-	int m_expireDate;
     };
 
 
@@ -233,10 +235,12 @@ namespace khtml
 	virtual void data( QBuffer &buffer, bool eof );
 	virtual void error( int err, const char *text );
 
-	void load();
+        const DOM::DOMString& baseURL() const { return m_baseURL; }
 
         bool isTransparent() const { return isFullyTransparent; }
         bool isErrorImage() const { return errorOccured; }
+
+        void setShowAnimations( bool );
 
     protected:
 	void clear();
@@ -247,6 +251,7 @@ namespace khtml
 	 */
 	void movieUpdated( const QRect &rect );
         void movieStatus(int);
+        void movieResize(const QSize&);
 
     private:
         void do_notify(const QPixmap& p, const QRect& r);
@@ -287,11 +292,24 @@ namespace khtml
 	CachedCSSStyleSheet *requestStyleSheet( const DOM::DOMString &url, const DOM::DOMString &baseUrl);
 	CachedScript *requestScript( const DOM::DOMString &url, const DOM::DOMString &baseUrl);
 
-	void setExpireDate(int);
+	bool autoloadImages() const { return m_bautoloadImages; }
+        bool reloading() const { return m_reloading; }
+        int expireDate() const { return m_expireDate; }
 
-	bool reloading;
-	QStringList reloadedURLs;
+        void setExpireDate( int );
+        void setAutoloadImages( bool );
+        void setReloading( bool );
+        void setShowAnimations( bool );
+        void removeCachedObject( CachedObject*) const;
+
+    private:
+        friend class Cache;
+        QStringList m_reloadedURLs;
+        mutable QList<CachedObject> m_docObjects;
 	int m_expireDate;
+	bool m_reloading;
+        bool m_bautoloadImages;
+        bool m_showAnimations;
     };
 
     /**
@@ -308,19 +326,17 @@ namespace khtml
 	DOM::DOMString m_baseURL;
     };
 
-
-
     /**
      * @internal
      */
     class Loader : public QObject
     {
 	Q_OBJECT
-
-    public:
+            
+    public:     
 	Loader();
 	~Loader();
-
+        
 	void load(CachedObject *object, const DOM::DOMString &baseURL, bool incremental = true);
 
         int numRequests( const DOM::DOMString &baseURL ) const;
@@ -349,8 +365,7 @@ namespace khtml
 #endif
     };
 
-
-    /**
+        /**
      * @internal
      *
      * Provides a cache/loader for objects needed for displaying the html page.
@@ -370,19 +385,19 @@ namespace khtml
 	 * Ask the cache for some url. Will return a cachedObject, and
 	 * load the requested data in case it's not cahced
 	 */
-	static CachedImage *requestImage( const DOM::DOMString &url, const DOM::DOMString &baseUrl, bool reload=false, int _expireDate=0);
+	static CachedImage *requestImage( const DocLoader* l, const DOM::DOMString &url, const DOM::DOMString &baseUrl, bool reload=false, int _expireDate=0);
 
 	/**
 	 * Ask the cache for some url. Will return a cachedObject, and
 	 * load the requested data in case it's not cahced
 	 */
-	static CachedCSSStyleSheet *requestStyleSheet( const DOM::DOMString &url, const DOM::DOMString &baseUrl, bool reload=false, int _expireDate=0);
+	static CachedCSSStyleSheet *requestStyleSheet( const DocLoader* l, const DOM::DOMString &url, const DOM::DOMString &baseUrl, bool reload=false, int _expireDate=0);
 
 	/**
 	 * Ask the cache for some url. Will return a cachedObject, and
 	 * load the requested data in case it's not cahced
 	 */
-	static CachedScript *requestScript( const DOM::DOMString &url, const DOM::DOMString &baseUrl, bool reload=false, int _expireDate=0);
+	static CachedScript *requestScript( const DocLoader* l, const DOM::DOMString &url, const DOM::DOMString &baseUrl, bool reload=false, int _expireDate=0);
 
 	/**
 	 * sets the size of the cache. This will only hod approximately, since the size some
@@ -414,9 +429,6 @@ namespace khtml
 
         static void removeCacheEntry( CachedObject *object );
 
-        static void autoloadImages( bool enable );
-	static bool autoloadImages() { return s_autoloadImages; }
-
         protected:
 	/*
 	 * @internal
@@ -438,13 +450,12 @@ namespace khtml
 
 	static QDict<CachedObject> *cache;
 	static LRUList *lru;
+        static QList<DocLoader>* docloader;
 
 	static int maxSize;
 	static int flushCount;
 
 	static Loader *m_loader;
-
-        static bool s_autoloadImages;
 
         static unsigned long s_ulRefCnt;
     };
