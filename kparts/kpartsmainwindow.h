@@ -27,7 +27,7 @@ public:
 private:
   static const char *s_strGUIActivateEvent;
   bool m_bActivated;
-}; 
+};
 
 class MainWindowPrivate;
 
@@ -92,6 +92,9 @@ class MainWindow : public KTMainWindow, public XMLGUIBuilder, public XMLGUIServa
 
   // KXMLGUIBuilder interface (internal)
   virtual QByteArray removeContainer( QObject *container, QWidget *parent, int id );
+
+  virtual int insertSeparator( QWidget *parent, int index );
+  virtual void removeSeparator( QWidget *parent, int id );
 
 protected slots:
 

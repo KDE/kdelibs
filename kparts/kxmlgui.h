@@ -70,6 +70,9 @@ class XMLGUIBuilder
    *         the same container is about to be created again later.
    */
   virtual QByteArray removeContainer( QObject *container, QWidget *parent, int id ) = 0;
+
+  virtual int insertSeparator( QWidget *parent, int index ) = 0;
+  virtual void removeSeparator( QWidget *parent, int id ) = 0;
 };
 
 class XMLGUIServantPrivate;
@@ -141,7 +144,8 @@ class XMLGUIFactory
   void buildRecursive( const QDomElement &element, XMLGUIContainerNode *parentNode );
   bool removeRecursive( XMLGUIContainerNode *node );
 
-  QString generateName();
+  bool calcMergingIndex( XMLGUIContainerNode *node, QMap<QString,int>::Iterator &it );
+  void adjustMergingIndices( XMLGUIContainerNode *node, int idx, int val, const QMap<QString,int>::Iterator &it );
 
   static XMLGUIContainerNode *findContainer( XMLGUIContainerNode *node, const QDomElement &element, const QList<QObject> &excludeList );
 

@@ -269,6 +269,28 @@ QByteArray MainWindow::removeContainer( QObject *container, QWidget *parent, int
   return stateBuff;
 }
 
+int MainWindow::insertSeparator( QWidget *parent, int index )
+{
+  if ( parent->inherits( "QPopupMenu" ) )
+    return ((QPopupMenu *)parent)->insertSeparator( index );
+  else if ( parent->inherits( "QMenuBar" ) )
+    return ((QMenuBar *)parent)->insertSeparator( index );
+  else if ( parent->inherits( "KToolBar" ) )
+    return ((KToolBar *)parent)->insertSeparator( index );
+
+  return 0;
+}
+
+void MainWindow::removeSeparator( QWidget *parent, int id )
+{
+  if ( parent->inherits( "QPopupMenu" ) )
+    ((QPopupMenu *)parent)->removeItem( id );
+  else if ( parent->inherits( "QMenuBar" ) )
+    ((QMenuBar *)parent)->removeItem( id );
+  else if ( parent->inherits( "KToolBar" ) )
+    ((KToolBar *)parent)->removeItem( id );
+}
+
 void MainWindow::createGUI( Part * part )
 {
   kDebugStringArea( 1000, QString("MainWindow::createGUI for %1").arg(part?part->name():"0L"));
@@ -284,7 +306,7 @@ void MainWindow::createGUI( Part * part )
 
     GUIActivateEvent ev( false );
     QApplication::sendEvent( d->m_activePart, &ev );
-    
+
     plugins = Plugin::pluginServants( d->m_activePart );
     pIt = plugins.fromLast();
     pBegin = plugins.begin();
@@ -318,7 +340,7 @@ void MainWindow::createGUI( Part * part )
   {
     GUIActivateEvent ev( true );
     QApplication::sendEvent( part, &ev );
-  
+
     m_factory->addServant( part );
 
     plugins = Plugin::pluginServants( part );
