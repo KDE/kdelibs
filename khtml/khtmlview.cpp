@@ -2478,6 +2478,13 @@ bool KHTMLView::placeCaret(InlineBox *hintBox)
   return false;
 }
 
+void KHTMLView::ensureCaretVisible()
+{
+  CaretViewContext *cv = d->m_caretViewContext;
+  if (!cv) return;
+  ensureVisible(cv->x, cv->y, cv->width, cv->height);
+  d->scrollBarMoved = false;
+}
 
 bool KHTMLView::extendSelection(NodeImpl *oldStartSel, long oldStartOfs,
 				NodeImpl *oldEndSel, long oldEndOfs)

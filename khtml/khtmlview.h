@@ -322,6 +322,11 @@ private:
      * focus, and the caret display policy.
      */
     void hideCaret();
+    /** shifts the viewport to ensure that the caret is visible.
+     *
+     * Note: this will also work if the caret is hidden.
+     */
+    void ensureCaretVisible();
 
     /** folds the selection to the current caret position.
      *

@@ -2280,9 +2280,10 @@ void KHTMLPart::setCaretMode(bool enable)
   d->setFlagRecursively(&KHTMLPartPrivate::m_caretMode, enable);
   // FIXME: this won't work on frames as expected
   if (!isEditable()) {
-    if (enable)
+    if (enable) {
       view()->initCaret(true);
-    else
+      view()->ensureCaretVisible();
+    } else
       view()->caretOff();
   }/*end if*/
 #endif // KHTML_NO_CARET
@@ -2300,9 +2301,10 @@ void KHTMLPart::setEditable(bool enable)
   d->setFlagRecursively(&KHTMLPartPrivate::m_designMode, enable);
   // FIXME: this won't work on frames as expected
   if (!isCaretMode()) {
-    if (enable)
+    if (enable) {
       view()->initCaret(true);
-    else
+      view()->ensureCaretVisible();
+    } else
       view()->caretOff();
   }/*end if*/
 #endif // KHTML_NO_CARET
@@ -2318,6 +2320,7 @@ void KHTMLPart::setCaretPosition(DOM::Node node, long offset, bool extendSelecti
 #ifndef KHTML_NO_CARET
   if (view()->moveCaretTo(node.handle(), offset, !extendSelection))
     emitSelectionChanged();
+  view()->ensureCaretVisible();
 #endif // KHTML_NO_CARET
 }
 
