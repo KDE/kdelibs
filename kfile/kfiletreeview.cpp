@@ -295,9 +295,8 @@ void KFileTreeView::slotExpanded( QListViewItem *item )
    if( branch )
    {
       kdDebug(1201 ) << "starting to open " << it->url().prettyURL() << endl;
-      KFileTreeViewItem *currItem = static_cast<KFileTreeViewItem*>(currentItem());
-      startAnimation( currItem );
-      branch->populate( it->url(), currItem);
+      startAnimation( it );
+      branch->populate( it->url(), it );
    }
 
    /* set a pixmap 'open folder' */
@@ -509,6 +508,7 @@ void KFileTreeView::slotCanceled( )
  */
 bool KFileTreeView::checkOnFilter( QString& fi )
 {
+   kdDebug(1201) << "Checking on Filter: " << fi << endl;
    // dummy
    return( true );
 }
@@ -516,6 +516,7 @@ bool KFileTreeView::checkOnFilter( QString& fi )
 QPixmap KFileTreeView::itemIcon( KFileTreeViewItem *item, int gap ) const
 {
    QPixmap pix;
+   kdDebug(1201) << "Setting icon for column " << gap << endl;
    
    if( item )
    {
