@@ -133,6 +133,7 @@ public:
                            int tab, QMenuItem *mi, const QPalette &pal,
                            bool act, bool enabled, int x, int y, int w,
                            int h);
+    int popupMenuItemHeight(bool c, QMenuItem *mi, const QFontMetrics &fm);
     void drawKProgressBlock(QPainter *p, int x, int y, int w, int h,
                             const QColorGroup &g, QBrush *fill);
     void drawFocusRect(QPainter *p, const QRect &r, const QColorGroup &g,

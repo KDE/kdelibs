@@ -998,6 +998,9 @@ void B2Style::drawKMenuItem(QPainter *p, int x, int y, int w, int h,
                             const QColorGroup &g, bool active, QMenuItem *mi,
                             QBrush *)
 {
+    if ( p->font() == KGlobal::generalFont() )
+      p->setFont( KGlobal::menuFont() );
+
     if(active){
         qDrawShadePanel(p, x, y, w, h, g, true, 1,
                         &g.brush(QColorGroup::Midlight));
@@ -1023,12 +1026,15 @@ static const int motifItemHMargin       = 3;
 static const int motifItemVMargin       = 2;
 static const int motifArrowHMargin      = 6;
 static const int windowsRightBorder     = 12;
+    maxpmw = QMAX( maxpmw, 20 );
+
+    if ( p->font() == KGlobal::generalFont() )
+      p->setFont( KGlobal::menuFont() );
+
     if(act){
         bool dis = !enabled;
         QColorGroup itemg = dis ? pal.disabled() : pal.active();
         
-        if (checkable)
-            maxpmw = QMAX( maxpmw, 12 );
         int checkcol = maxpmw;
 
         qDrawShadePanel(p, x, y, w, h, itemg, true, 1,
@@ -1097,6 +1103,28 @@ static const int windowsRightBorder     = 12;
     else
         KStyle::drawPopupMenuItem(p, checkable, maxpmw, tab, mi, pal, act,
                                   enabled, x, y, w, h);
+}
+
+int B2Style::popupMenuItemHeight(bool /*checkable*/, QMenuItem *mi,
+                                 const QFontMetrics &fm)
+{
+    if (mi->isSeparator())
+        return 2;
+
+    int h = 0;
+    if (mi->pixmap())
+        h = mi->pixmap()->height();
+
+    if (mi->iconSet())
+        h = QMAX(mi->iconSet()->
+                 pixmap(QIconSet::Small, QIconSet::Normal).height(), h);
+
+    h = QMAX(fm.height() + 4, h);
+
+    // we want a minimum size of 18
+    h = QMAX(h, 18);
+
+    return h;
 }
 
 void B2Style::drawKProgressBlock(QPainter *p, int x, int y, int w, int h,
