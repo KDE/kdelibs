@@ -157,11 +157,29 @@ public:
     /** Returns a new string built from the list */
     static QString        join( const QStringList &list , const char *sep = " " );
 
-    /** Substitute characters at the beginning/middle/end str by "...".
+    /** Substitute characters at the beginning of a string by "...".
+     * @return the modified string
+     * @param str is the string to modify
+     * @param maxlen is the maximum length the modified string will have
+     * If the original string is shorter than "maxlen", it is returned verbatim
      */
-    static QString        lsqueeze( const QString & str, uint maxlen = 30 );
-    static QString        csqueeze( const QString & str, uint maxlen = 30 );
-    static QString        rsqueeze( const QString & str, uint maxlen = 30 );
+    static QString        lsqueeze( const QString & str, uint maxlen = 40 );
+
+    /** Substitute characters at the middle of a string by "...".
+     * @return the modified string
+     * @param str is the string to modify
+     * @param maxlen is the maximum length the modified string will have
+     * If the original string is shorter than "maxlen", it is returned verbatim
+     */
+    static QString        csqueeze( const QString & str, uint maxlen = 40 );
+
+    /** Substitute characters at the end of a string by "...".
+     * @return the modified string
+     * @param str is the string to modify
+     * @param maxlen is the maximum length the modified string will have
+     * If the original string is shorter than "maxlen", it is returned verbatim
+     */
+    static QString        rsqueeze( const QString & str, uint maxlen = 40 );
 
     /**
      * @return true if the given filename matches the given pattern
