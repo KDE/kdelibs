@@ -511,11 +511,17 @@ void RenderBox::calcWidth()
 	m_marginLeft = 0;
 	m_marginRight = 0;
 	
-        if (isInline() && isFlow())
+        if (isInline())
         {
             // just calculate margins
 	    m_marginLeft = ml.minWidth(cw);
-	    m_marginRight = mr.minWidth(cw);            
+	    m_marginRight = mr.minWidth(cw);
+            if (isReplaced())
+            {
+                m_width = w.width(cw);
+	        m_width += paddingLeft() + paddingRight() + borderLeft() + borderRight();
+            }
+                
             return;
         }
 	else if (w.type == Variable)
