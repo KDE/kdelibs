@@ -162,7 +162,6 @@ binary-arch:  build install
 	dh_movefiles -pkdelibs3-cups --sourcedir=debian/kdelibs3
 	dh_movefiles -plibarts-alsa --sourcedir=debian/alsa-tmp
 	dh_movefiles -plibkmid-alsa --sourcedir=debian/alsa-tmp
-	-rm -rf debian/kdelibs3/usr/share/apps/kssl
 	dh_installchangelogs -a 
 	dh_strip -a
 	dh_perl -a
