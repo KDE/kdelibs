@@ -53,9 +53,6 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() const { return BODYStartTag; }
-    virtual tagStatus endTag() const { return BODYEndTag; }
-
     virtual void parseAttribute(AttrImpl *);
     void attach();
 
@@ -64,11 +61,14 @@ public:
                                     MouseEvent *ev );
 
     CSSStyleSheetImpl *sheet() const { return m_styleSheet; }
-
+    
 protected:
     CSSStyleSheetImpl *m_styleSheet;
     DOMString bgImage;
     DOMString bgColor;
+    
+public:
+    bool m_loaded;
 };
 
 // -------------------------------------------------------------------------
@@ -84,9 +84,6 @@ public:
 
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
-
-    virtual tagStatus startTag() const { return FRAMEStartTag; }
-    virtual tagStatus endTag() const { return FRAMEEndTag; }
 
     virtual void parseAttribute(AttrImpl *);
     virtual void attach();
@@ -105,10 +102,11 @@ protected:
 
     int marginWidth;
     int marginHeight;
+    QScrollView::ScrollBarMode scrolling;
+    
     bool frameBorder : 1;
     bool frameBorderSet : 1;
     bool noresize : 1;
-    QScrollView::ScrollBarMode scrolling;
 };
 
 // -------------------------------------------------------------------------
@@ -123,9 +121,6 @@ public:
 
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
-
-    virtual tagStatus startTag() const { return FRAMESETStartTag; }
-    virtual tagStatus endTag() const { return FRAMESETEndTag; }
 
     virtual void parseAttribute(AttrImpl *);
     virtual void attach();
@@ -153,17 +148,19 @@ protected:
 
     QList<khtml::Length> *m_rows;
     QList<khtml::Length> *m_cols;
+    KHTMLView *view;
 
     int m_totalRows;
     int m_totalCols;
-
     int m_border;
+    
     bool frameborder : 1;
     bool frameBorderSet : 1;
     bool noresize : 1;
     bool m_resizing : 1;  // is the user resizing currently
 
-    KHTMLView *view;
+public:
+    bool m_loaded : 1 ;
 };
 
 // -------------------------------------------------------------------------
@@ -177,9 +174,6 @@ public:
 
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
-
-    virtual tagStatus startTag() const { return HEADStartTag; }
-    virtual tagStatus endTag() const { return HEADEndTag; }
 };
 
 // -------------------------------------------------------------------------
@@ -193,9 +187,6 @@ public:
 
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
-
-    virtual tagStatus startTag() const { return HTMLStartTag; }
-    virtual tagStatus endTag() const { return HTMLEndTag; }
 
     virtual void attach();
 
@@ -213,9 +204,6 @@ public:
 
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
-
-    virtual tagStatus startTag() const { return IFRAMEStartTag; }
-    virtual tagStatus endTag() const { return IFRAMEEndTag; }
 
     virtual void parseAttribute(AttrImpl *attr);
     virtual void attach();

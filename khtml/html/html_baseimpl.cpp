@@ -50,7 +50,7 @@ using namespace DOM;
 using namespace khtml;
 
 HTMLBodyElementImpl::HTMLBodyElementImpl(DocumentPtr *doc)
-    : HTMLElementImpl(doc)
+    : HTMLElementImpl(doc), m_loaded( false )
 {
     m_styleSheet = 0;
 }
@@ -350,6 +350,7 @@ HTMLFrameSetElementImpl::HTMLFrameSetElementImpl(DocumentPtr *doc)
     noresize = false;
 
     m_resizing = false;
+    m_loaded = false;
 
     view = 0;
 }
