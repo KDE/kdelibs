@@ -29,8 +29,6 @@
 
 template QDataStream& operator>> <QString, QVariant>(QDataStream&, QMap<QString, QVariant>&);
 template QDataStream& operator<< <QString, QVariant>(QDataStream&, const QMap<QString, QVariant>&);
-template QDataStream& operator>> <QString, QVariant::Type>(QDataStream&, QMap<QString, QVariant::Type>&);
-template QDataStream& operator<< <QString, QVariant::Type>(QDataStream&, const QMap<QString, QVariant::Type>&);
 
 KServiceType::KServiceType( const QString & _fullpath)
  : KSycocaEntry(_fullpath)

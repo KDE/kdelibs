@@ -42,6 +42,7 @@
 
 using namespace KJS;
 
+/// @internal
 QString UString::qstring() const
 {
     return QString((QChar*) data(), size());

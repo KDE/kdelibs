@@ -678,7 +678,7 @@ void SlaveBase::stat(KURL const &)
 { error(  ERR_UNSUPPORTED_ACTION, i18n("Accessing files is not supported with the protocol %1").arg(mProtocol) ); }
 void SlaveBase::put(KURL const &, int, bool, bool)
 { error(  ERR_UNSUPPORTED_ACTION, i18n("Writing to %1 is not supported").arg(mProtocol) ); }
-void SlaveBase::special(QMemArray<char> const &)
+void SlaveBase::special(const QByteArray &)
 { error(  ERR_UNSUPPORTED_ACTION, i18n("There are no special actions available for protocol %1").arg(mProtocol) ); }
 void SlaveBase::listDir(KURL const &)
 { error(  ERR_UNSUPPORTED_ACTION, i18n("Listing directories is not supported for protocol %1").arg(mProtocol) ); }
@@ -700,7 +700,7 @@ void SlaveBase::chmod(KURL const &, int)
 { error(  ERR_UNSUPPORTED_ACTION, i18n("Changing the attributes of files is not supported with protocol %1").arg(mProtocol) ); }
 void SlaveBase::setSubURL(KURL const &)
 { error(  ERR_UNSUPPORTED_ACTION, i18n("Using sub-URLs with %1 is not supported").arg(mProtocol) ); }
-void SlaveBase::multiGet(QMemArray<char> const &)
+void SlaveBase::multiGet(const QByteArray &)
 { error(  ERR_UNSUPPORTED_ACTION, i18n("Multiple get is not supported with protocol %1").arg(mProtocol) ); }
 
 

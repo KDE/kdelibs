@@ -63,8 +63,7 @@ public:
      * @see exec for the return values.
      */
     static int configure( QWidget *parent = 0, const char *name = 0,
-                          const KAboutData *aboutData =
-                          KGlobal::instance()->aboutData() );
+                          const KAboutData *aboutData = KGlobal::instance()->aboutData() );
 
     virtual void addApplicationEvents( const char *appName, bool show = true );
     virtual void addApplicationEvents( const QString& path, bool show = true );
