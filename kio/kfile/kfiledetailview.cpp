@@ -530,9 +530,9 @@ QDragObject *KFileDetailView::dragObject()
     }
     QPixmap pixmap;
     if( urls.count() > 1 )
-        pixmap = DesktopIcon( "kmultiple", 16 );
+        pixmap = DesktopIcon( "kmultiple", KIcon::SizeSmall );
     if( pixmap.isNull() )
-        pixmap = currentFileItem()->pixmap( 16 );	
+        pixmap = currentFileItem()->pixmap( KIcon::SizeSmall );
 
     QPoint hotspot;
     hotspot.setX( pixmap.width() / 2 );

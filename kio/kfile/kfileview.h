@@ -396,13 +396,13 @@ public:
      */
     static QString sortingKey( KIO::filesize_t value, bool isDir,int sortSpec);
 
-protected:
     /**
      * @internal
      * delay before auto opening a directory
      */
-    int autoOpenDelay();
+    static int autoOpenDelay();
 
+protected:
     /**
      * @internal
      * class to distribute the signals

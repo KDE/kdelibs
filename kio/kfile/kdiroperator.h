@@ -541,6 +541,7 @@ class KDirOperator : public QWidget
      * @see KFileView::DropOptions
      * @since 3.2
      */
+     // ### KDE4: make virtual
     void setDropOptions(int options);
 
 protected:

@@ -24,6 +24,7 @@
 #include <kdirnotify_stub.h>
 #include <kglobalsettings.h>
 #include <kfileitem.h>
+#include <kfileview.h>
 #include <kmimetype.h>
 #include <kstandarddirs.h>
 #include <stdlib.h>
@@ -105,7 +106,7 @@ void KFileTreeView::contentsDragEnterEvent( QDragEnterEvent *ev )
    if( item )
    {
       m_dropItem = item;
-      m_autoOpenTimer->start( (QApplication::startDragTime() * 3) / 2 );
+      m_autoOpenTimer->start( KFileView::autoOpenDelay() );
    }
    else
    {
@@ -137,7 +138,7 @@ void KFileTreeView::contentsDragMoveEvent( QDragMoveEvent *e )
       if( item != m_dropItem ) {
 	 m_autoOpenTimer->stop();
 	 m_dropItem = item;
-	 m_autoOpenTimer->start( (QApplication::startDragTime() * 3) / 2 );
+	 m_autoOpenTimer->start( KFileView::autoOpenDelay() );
       }
    }
    else
