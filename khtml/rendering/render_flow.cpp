@@ -35,7 +35,7 @@
 #include "rendering/render_table.h"
 #include "rendering/render_root.h"
 #include "xml/dom_nodeimpl.h"
-
+#include "khtmlview.h"
 using namespace DOM;
 using namespace khtml;
 
