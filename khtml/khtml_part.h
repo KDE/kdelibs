@@ -392,6 +392,11 @@ public:
   bool findTextNext( const QRegExp &exp );
 
   /**
+   * Find the next occurence of the string.
+   */
+  bool findTextNext( const QString &str );
+
+  /**
    * Get the text the user has marked.
    */
   virtual QString selectedText() const;
@@ -568,6 +573,8 @@ private slots:
    * @internal
    */
   virtual void slotSetEncoding();
+
+  void slotFind(); //BCI: make virtual
 
   void slotIncFontSizes();
   void slotDecFontSizes();

@@ -25,6 +25,7 @@
 #include "khtml_factory.h"
 #include "khtml_run.h"
 #include "khtml_events.h"
+#include "khtml_find.h"
 
 #include "dom/html_document.h"
 #include "dom/dom_node.h"
@@ -55,6 +56,7 @@
 #include <kcharsets.h>
 #include <kmessagebox.h>
 #include <kaction.h>
+#include <kstdaction.h>
 #include <kfiledialog.h>
 #include <klibloader.h>
 #include <ktrader.h>
@@ -172,6 +174,7 @@ public:
   KAction *m_paIncFontSizes;
   KAction *m_paDecFontSizes;
   KAction *m_paLoadImages;
+  KAction *m_paFind;
 
   KParts::PartManager *m_manager;
 
@@ -276,6 +279,8 @@ void KHTMLPart::init( KHTMLView *view )
   d->m_paIncFontSizes = new KAction( i18n( "Increase Font Sizes" ), "viewmag+", 0, this, SLOT( slotIncFontSizes() ), actionCollection(), "incFontSizes" );
   d->m_paDecFontSizes = new KAction( i18n( "Decrease Font Sizes" ), "viewmag-", 0, this, SLOT( slotDecFontSizes() ), actionCollection(), "decFontSizes" );
 
+  d->m_paFind = KStdAction::find( this, SLOT( slotFind() ), actionCollection(), "find" );
+  
   /*
     if ( !autoloadImages() )
       d->m_paLoadImages = new KAction( i18n( "Display Images on Page" ), "image", 0, this, SLOT( slotLoadImages() ), actionCollection(), "loadImages" );
@@ -956,6 +961,42 @@ bool KHTMLPart::findTextNext( const QRegExp &exp )
     }
 }
 
+bool KHTMLPart::findTextNext( const QString &str )
+{
+    if(!d->m_findNode) d->m_findNode = d->m_doc->body();
+
+    if ( !d->m_findNode ||
+	 d->m_findNode->id() == ID_FRAMESET )
+      return false;
+
+    while(1)
+    {
+	if(d->m_findNode->id() == ID_TEXT)
+	{
+	    DOMStringImpl *t = (static_cast<TextImpl *>(d->m_findNode))->string();
+	    QConstString s(t->s, t->l);
+	    d->m_findPos = s.string().find(str, d->m_findPos+1);
+	    if(d->m_findPos != -1)
+	    {
+		int x = 0, y = 0;
+		d->m_findNode->renderer()->absolutePosition(x, y);
+		d->m_view->setContentsPos(x-50, y-50);
+		return true;
+	    }
+	}
+	d->m_findPos = -1;
+	NodeImpl *next = d->m_findNode->firstChild();
+	if(!next) next = d->m_findNode->nextSibling();
+	while(d->m_findNode && !next) {
+	    d->m_findNode = d->m_findNode->parentNode();
+	    if( d->m_findNode ) {
+		next = d->m_findNode->nextSibling();
+            }
+	}
+	d->m_findNode = next;
+	if(!d->m_findNode) return false;
+    }
+}
 
 QString KHTMLPart::selectedText() const
 {
@@ -2202,6 +2243,15 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
 void KHTMLPart::khtmlDrawContentsEvent( khtml::DrawContentsEvent * )
 {
 }
+
+void KHTMLPart::slotFind()
+{
+  KHTMLFind *findDlg = new KHTMLFind( this, "khtmlfind" );
+  
+  findDlg->exec();
+  
+  delete findDlg;
+} 
 
 KHTMLPartBrowserExtension::KHTMLPartBrowserExtension( KHTMLPart *parent, const char *name )
 : KParts::BrowserExtension( parent, name )
