@@ -743,7 +743,7 @@ QString KAccel::keyToString( int keyCombQt, bool bi18n )
 			}
 		}
 
-		keyStr = "Unknown";
+		keyStr = (bi18n) ? i18n("Unknown") : QString("Unknown");
 		// Determine name of primary key.
 		// If printable, non-space unicode character,
 		//  then display it directly instead of by name
@@ -755,8 +755,11 @@ QString KAccel::keyToString( int keyCombQt, bool bi18n )
 		else {
 			for( int i = 0; i < NB_KEYS; i++ ) {
 				if( keySymQt == (uint) KKEYS[i].code ) {
-					keyStr = KKEYS[i].name;
-					break;
+				     if (bi18n) 
+              				keyStr = i18n("QAccel", KKEYS[i].name);
+            			     else
+              				keyStr = KKEYS[i].name;
+			  	     break;
 				}
 			}
 		}

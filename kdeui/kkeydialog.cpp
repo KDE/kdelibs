@@ -124,7 +124,7 @@ void KKeyButton::setKey( uint _key )
 {
 	key = _key;
 	QString keyStr = KAccel::keyToString( key, true );
-	setText( keyStr.isEmpty() ? "None" : keyStr );
+	setText( keyStr.isEmpty() ? i18n("None") : keyStr );
 }
 
 void KKeyButton::setText( const QString& text )
@@ -210,10 +210,10 @@ void KKeyButton::keyPressEventX( XEvent *pEvent )
 		keyModX = pEvent->xkey.state & ~keyModX;
 
 	QString keyModStr;
-	if( keyModX & KAccel::keyModXMeta() )	keyModStr += "Meta+";
-	if( keyModX & KAccel::keyModXAlt() )	keyModStr += "Alt+";
-	if( keyModX & KAccel::keyModXCtrl() )	keyModStr += "Ctrl+";
-	if( keyModX & KAccel::keyModXShift() )	keyModStr += "Shift+";
+	if( keyModX & KAccel::keyModXMeta() )	keyModStr += i18n("Meta") + "+";
+	if( keyModX & KAccel::keyModXAlt() )	keyModStr += i18n("Alt") + "+";
+	if( keyModX & KAccel::keyModXCtrl() )	keyModStr += i18n("Ctrl") + "+";
+	if( keyModX & KAccel::keyModXShift() )	keyModStr += i18n("Shift") + "+";
 
 	// Display currently selected modifiers, or redisplay old key.
 	if( !keyModStr.isEmpty() )
