@@ -82,7 +82,7 @@ void KServiceTypeProfile::initStatic()
           p = new KServiceTypeProfile( type, type2 );
 
         bool allow = config.readBoolEntry( "AllowAsDefault" );
-        //kdDebug(7014) << "KServiceTypeProfile::initStatic adding service " << application << " to profile for " << type << " with preference " << pref << endl;
+        //kdDebug(7014) << "KServiceTypeProfile::initStatic adding service " << application << " to profile for " << type << "," << type2 << " with preference " << pref << endl;
         p->addService( application, pref, allow );
       }
     }
@@ -93,6 +93,7 @@ void KServiceTypeProfile::initStatic()
 KServiceTypeProfile::OfferList KServiceTypeProfile::offers( const QString& _servicetype, const QString& _genericServiceType )
 {
     OfferList offers;
+    QStringList serviceList;
     kdDebug(7014) << "KServiceTypeProfile::offers( " << _servicetype << "," << _genericServiceType << " )" << endl;
 
     // Note that KServiceTypeProfile::offers() calls KServiceType::offers(),
@@ -101,41 +102,61 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers( const QString& _serv
     {
         initStatic();
         // We want all profiles for servicetype, if we have profiles.
+        // ## Slow loop, if profilerc is big. We should use a map instead?
         QPtrListIterator<KServiceTypeProfile> it( *s_lstProfiles );
         for( ; it.current(); ++it )
             if ( it.current()->m_strServiceType == _servicetype )
             {
                 offers += it.current()->offers();
             }
-        if ( !offers.isEmpty() )
-            return offers;
+        //kdDebug(7014) << "Found profile: " << offers.count() << " offers" << endl;
+    }
+    else
+    {
+        KServiceTypeProfile* profile = serviceTypeProfile( _servicetype, _genericServiceType );
+        if ( profile )
+        {
+            //kdDebug(7014) << "Found profile: " << profile->offers().count() << " offers" << endl;
+            offers += profile->offers();
+        }
+        else
+        {
+            // Try the other way round, order is not like size, it doesn't matter.
+            profile = serviceTypeProfile( _genericServiceType, _servicetype );
+            if ( profile )
+            {
+                //kdDebug(7014) << "Found profile after switching: " << profile->offers().count() << " offers" << endl;
+                offers += profile->offers();
+            }
+        }
     }
 
-    KServiceTypeProfile* profile = serviceTypeProfile( _servicetype, _genericServiceType );
-    if ( profile )
-    {
-        kdDebug(7014) << "Found profile, returning " << profile->offers().count() << " offers" << endl;
-        return profile->offers();
-    }
-    // Try the other way round, order is not like size, it doesn't matter.
-    profile = serviceTypeProfile( _genericServiceType, _servicetype );
-    if ( profile )
-    {
-        kdDebug(7014) << "Found profile after switching, returning " << profile->offers().count() << " offers" << endl;
-        return profile->offers();
-    }
+    // Collect services, to make the next loop faster
+    OfferList::Iterator<KServiceOffer> itOffers = offers.begin();
+    for( ; itOffers != offers.end(); ++itOffers )
+        serviceList += (*itOffers).service()->desktopEntryPath(); // this should identify each service uniquely
+    //kdDebug(7014) << "serviceList: " << serviceList.join(",") << endl;
 
+    // Now complete with any other offers that aren't in the profile
+    // This can be because the services have been installed after the profile was written,
+    // but it's also the case for any service that's neither App nor ReadOnlyPart, e.g. RenameDlg/Plugin
     KService::List list = KServiceType::offers( _servicetype );
-    kdDebug(7014) << "No profile, using KServiceType::offers, result: " << list.count() << " offers" << endl;
+    //kdDebug(7014) << "Using KServiceType::offers, result: " << list.count() << " offers" << endl;
     QValueListIterator<KService::Ptr> it = list.begin();
     for( ; it != list.end(); ++it )
     {
         if (_genericServiceType.isEmpty() /*no constraint*/ || (*it)->hasServiceType( _genericServiceType ))
         {
-            bool allow = (*it)->allowAsDefault();
-            KServiceOffer o( (*it), (*it)->initialPreference(), allow );
-            offers.append( o );
-            //kdDebug(7014) << "Appending offer " << (*it)->name() << " allow-as-default=" << allow << endl;
+            // Check that we don't already have it ;)
+            if ( serviceList.find( (*it)->desktopEntryPath() ) == serviceList.end() )
+            {
+                bool allow = (*it)->allowAsDefault();
+                KServiceOffer o( (*it), (*it)->initialPreference(), allow );
+                offers.append( o );
+                //kdDebug(7014) << "Appending offer " << (*it)->name() << " initial preference=" << (*it)->initialPreference() << " allow-as-default=" << allow << endl;
+            }
+            //else
+            //    kdDebug(7014) << "Already having offer " << (*it)->name() << endl;
         }
     }
 
@@ -149,6 +170,7 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers( const QString& _serv
         kdDebug(7014) << (*itOff).service()->name() << " allow-as-default=" << (*itOff).allowAsDefault() << endl;
 #endif
 
+    kdDebug(7014) << "Returning " << offers.count() << " offers" << endl;
     return offers;
 }
 
@@ -204,13 +226,13 @@ KServiceTypeProfile* KServiceTypeProfile::serviceTypeProfile( const QString& _se
 {
   initStatic();
   static const QString& app_str = KGlobal::staticQString("Application");
-  
+
   const QString &_genservicetype  = ((!_genericServiceType.isEmpty()) ? _genericServiceType : app_str);
 
   QPtrListIterator<KServiceTypeProfile> it( *s_lstProfiles );
   for( ; it.current(); ++it )
     if (( it.current()->m_strServiceType == _servicetype ) &&
-        ( it.current()->m_strGenericServiceType == _genservicetype)) 
+        ( it.current()->m_strGenericServiceType == _genservicetype))
       return it.current();
 
   return 0;
