@@ -53,6 +53,7 @@ public:
   public:
       List() { }
       List(const QStringList &);
+      QStringList toStringList() const;
   };
   /**
    * Construct an empty URL.
@@ -61,13 +62,13 @@ public:
   /**
    * Usual constructor, to construct from a string.
    * @param url A URL, not a filename. If the URL does not have a protocol
-   *             part, "file:" is assumed. 
+   *             part, "file:" is assumed.
    *             It is dangerous to feed unix filenames into this function,
    *             this will work most of the time but not always.
    *             For example "/home/Torben%20Weis" will be considered a URL
    *             pointing to the file "/home/Torben Weis" instead of to the
    *             file "/home/Torben%20Weis".
-   *             This means that if you have a usual UNIX like path you 
+   *             This means that if you have a usual UNIX like path you
    *             should not use this constructor.
    *             Instead create an empty url and set the path by using
    *             @ref setPath().
@@ -216,14 +217,14 @@ public:
   /**
    * @param _txt This is considered to be encoded. This has a good reason:
    * The query may contain the 0 character.
-   * 
+   *
    * The query should start with a '?'. If it doesn't '?' is prepended.
    * @param encoding_hint Reserved, should be 0.
    */
   void setQuery( const QString& _txt, int encoding_hint = 0);
 
   /**
-   * @return The encoded query. 
+   * @return The encoded query.
    * This has a good reason: The query may contain the 0 character.
    * If a query is present it always starts with a '?'.
    * A single '?' means an empty query.
@@ -453,7 +454,7 @@ public:
   /**
    * Convenience function
    *
-   * Convert unicoded string to local encoding and use %-style 
+   * Convert unicoded string to local encoding and use %-style
    * encoding for all common delimiters / non-ascii characters.
    * @param str String to encode
    * @param encoding_hint Reserved, should be 0.
@@ -494,17 +495,17 @@ private:
 };
 
 /**
- * Compares URLs. They are parsed, split and compared. 
- * Two malformed URLs with the same string representation 
- * are nevertheless considered to be unequal. 
+ * Compares URLs. They are parsed, split and compared.
+ * Two malformed URLs with the same string representation
+ * are nevertheless considered to be unequal.
  * That means no malformed URL equals anything else.
  */
 bool urlcmp( const QString& _url1, const QString& _url2 );
 
 /**
- * Compares URLs. They are parsed, split and compared. 
- * Two malformed URLs with the same string representation 
- * are nevertheless considered to be unequal. 
+ * Compares URLs. They are parsed, split and compared.
+ * Two malformed URLs with the same string representation
+ * are nevertheless considered to be unequal.
  * That means no malformed URL equals anything else.
  *
  * @param _ignore_trailing Described in @ref KURL::cmp

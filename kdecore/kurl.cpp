@@ -229,6 +229,18 @@ KURL::List::List(const QStringList &list)
    }
 }
 
+QStringList KURL::List::toStringList() const
+{
+  QStringList lst;
+   for( KURL::List::ConstIterator it = begin();
+        it != end();
+        it++)
+   {
+      lst.append( (*it).url() );
+   }
+   return lst;
+}
+
 
 KURL::KURL()
 {
@@ -728,7 +740,7 @@ void KURL::setFileName( const QString& _txt )
   }
 
   path += tmp;
-  setPath( path ); 
+  setPath( path );
   cleanPath();
 }
 
@@ -794,8 +806,8 @@ QString KURL::encodedPathAndQuery( int _trailing, bool _no_empty_path, int ) con
   if (!m_strPath_encoded.isEmpty())
   {
      tmp = trailingSlash( _trailing, m_strPath_encoded);
-  } 
-  else 
+  }
+  else
   {
      tmp = path( _trailing );
      if ( _no_empty_path && tmp.isEmpty() )
