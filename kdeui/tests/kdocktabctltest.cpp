@@ -18,8 +18,8 @@
 #include <ktoolbar.h>
 #include <kmenubar.h>
 
-#include <<qobjectlist.h>
-#include <qobjectdict.h>>
+#include <qobjectlist.h>
+#include <qobjectdict.h>
 #include <qmultilineedit.h>
 #include <qimage.h>
 #include <qbitmap.h>
