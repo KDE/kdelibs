@@ -39,7 +39,7 @@
 #include <kurllabel.h>
 //#include <kstandarddirs.h>
 //#include <krun.h>
-#include <qcombobox.h>
+#include <kcombobox.h>
 #include "ksslcertificate.h"
 #include "ksslcertchain.h"
 
@@ -49,7 +49,7 @@ private:
     friend class KSSLInfoDlg;
     bool m_secCon;
     QGridLayout *m_layout;
-    QComboBox *_chain;
+    KComboBox *_chain;
     KSSLCertificate *_cert;
     bool inQuestion;
 
@@ -173,7 +173,7 @@ void KSSLInfoDlg::setup(KSSLCertificate *cert,
     QGridLayout *layout = new QGridLayout(4, 2, KDialog::spacingHint());
 
     layout->addWidget(new QLabel(i18n("Chain:"), this), 0, 0);
-    d->_chain = new QComboBox(this);
+    d->_chain = new KComboBox(this);
     layout->addMultiCellWidget(d->_chain, 1, 1, 0, 1);
     connect(d->_chain, SIGNAL(activated(int)), this, SLOT(slotChain(int)));
 
