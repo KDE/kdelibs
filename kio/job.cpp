@@ -372,9 +372,7 @@ TransferJob::TransferJob( const KURL& url, int command,
 // Slave sends data
 void TransferJob::slotData( const QByteArray &_data)
 {
-//WABA: The slave _MUST_ emit a mimetype before sending any data!
-//    assert( !m_mimetype.isEmpty());
-    if(m_redirectionURL.isEmpty() || m_error)
+    if(m_redirectionURL.isEmpty() || m_redirectionURL.isMalformed() || m_error)
       emit data( this, _data);
 }
 
@@ -400,7 +398,7 @@ void TransferJob::slotRedirection( const KURL &url)
 
 void TransferJob::slotFinished()
 {
-    if ( m_redirectionURL.isEmpty() || m_error )
+    if (m_redirectionURL.isEmpty() || m_redirectionURL.isMalformed() || m_error )
         SimpleJob::slotFinished();
     else {
         kdDebug(7007) << "TransferJob: Redirection to " << m_redirectionURL.url() << endl;
@@ -565,7 +563,7 @@ void MimetypeJob::start(Slave *slave)
 void MimetypeJob::slotFinished( )
 {
     kdDebug(7007) << "MimetypeJob::slotFinished()" << endl;
-    if ( m_redirectionURL.isEmpty() || m_error )
+    if ( m_redirectionURL.isEmpty() || m_redirectionURL.isMalformed() || m_error )
     {
         // Return slave to the scheduler
         TransferJob::slotFinished();
