@@ -18,6 +18,8 @@
 	Boston, MA 02111-1307, USA.
 
 	*/
+
+#include <kdebug.h>
 #include "kplayobject.moc"
 
 using namespace Arts;
@@ -42,17 +44,23 @@ void KPlayObject::play()
 {
 	if(!m_isStream)
 		object().play();
+	else
+		object().play();
 }
 
 void KPlayObject::seek(Arts::poTime newTime)
 {
 	if(!m_isStream)
 		object().seek(newTime);
+	else
+		kdDebug() << "Seeking in a Stream? huh?" << endl;
 }
 
 void KPlayObject::pause()
 {
 	if(!m_isStream)
+		object().pause();
+	else
 		object().pause();
 }
 
@@ -60,42 +68,38 @@ void KPlayObject::halt()
 {
 	if(!m_isStream)
 		object().halt();
+	else
+		object().halt();
 }
 
 QString KPlayObject::description()
 {
-	if(!m_isStream)
-		return QString::fromLatin1(object().description().c_str());
+	return QString::fromLatin1(object().description().c_str());
 }
 
 Arts::poTime KPlayObject::currentTime()
 {
-	if(!m_isStream)
-		return object().currentTime();
+	return object().currentTime();
 }
 
 Arts::poTime KPlayObject::overallTime()
 {
-	if(!m_isStream)
-		return object().overallTime();
+	return object().overallTime();
 }
 
 Arts::poCapabilities KPlayObject::capabilities()
 {
-	if(!m_isStream)
-		return object().capabilities();
+	return object().capabilities();
 }
 
 QString KPlayObject::mediaName()
 {
-	if(!m_isStream)
-		return QString::fromLatin1(object().mediaName().c_str());
+	return QString::fromLatin1(object().mediaName().c_str());
 }
 
 Arts::poState KPlayObject::state()
 {
-	if(!m_isStream)
-		return object().state();
+	return object().state();
 }
 
 PlayObject KPlayObject::object()
