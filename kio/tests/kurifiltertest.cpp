@@ -122,6 +122,7 @@ int main(int argc, char **argv) {
     filter( "gg:foo bar" );
     filter( "ya:foo bar was here" );
     filter( "gg:www.kde.org" );
+    filter( "av:+rock +sample" );
 
     // Absolute Path tests for kshorturifilter
     filter( "../../index.html", "http://www.kde.org/index.html", "kshorturifilter", "http://www.kde.org/tes1/tes2/" );
