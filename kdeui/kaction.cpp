@@ -502,7 +502,7 @@ bool KAction::updateKAccelShortcut( KAccel* kaccel )
   bool b = true;
 
   if ( !kaccel->actions().actionPtr( name() ) ) {
-    if( d->m_connected && !d->m_cut.isNull() ) {
+    if(!d->m_cut.isNull() ) {
       kdDebug(129) << "Inserting " << name() << ", " << d->text() << ", " << d->plainText() << endl;
       b = kaccel->insert( name(), d->plainText(), QString::null,
           d->m_cut,
