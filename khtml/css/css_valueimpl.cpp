@@ -917,6 +917,38 @@ DOMString FontValueImpl::cssText() const
     return result;
 }
 
+QuotesValueImpl::QuotesValueImpl()
+    : levels(0)
+{
+}
+
+DOMString QuotesValueImpl::cssText() const
+{
+    return "\"" + data.join("\" \"") + "\"";
+}
+
+void QuotesValueImpl::addLevel(const QString& open, const QString& close)
+{
+    data.append(open);
+    data.append(close);
+    levels++;
+}
+
+QString QuotesValueImpl::openQuote(int level) const 
+{
+    if (level > levels) level = levels;
+    level--; // increments are calculated before openQuote is called
+//    kdDebug( 6080 ) << "Open quote level:" << level << endl;
+    return data[level*2];
+}
+
+QString QuotesValueImpl::closeQuote(int level) const 
+{
+    if (level > levels-1) level = levels-1;
+//    kdDebug( 6080 ) << "Close quote level:" << level << endl;
+    return data[level*2+1];
+}
+
 // Used for text-shadow and box-shadow
 ShadowValueImpl::ShadowValueImpl(CSSPrimitiveValueImpl* _x, CSSPrimitiveValueImpl* _y,
                                  CSSPrimitiveValueImpl* _blur, CSSPrimitiveValueImpl* _color)

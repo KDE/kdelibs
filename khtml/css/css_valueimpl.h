@@ -320,6 +320,24 @@ public:
     CSSValueListImpl *family;
 };
 
+// Used for quotes
+class QuotesValueImpl : public CSSValueImpl
+{
+public:
+    QuotesValueImpl();
+//    virtual ~QuotesValueImpl();
+
+    virtual unsigned short cssValueType() const { return CSSValue::CSS_CUSTOM; }
+    virtual DOM::DOMString cssText() const;
+    
+    void addLevel(const QString& open, const QString& close);
+    QString openQuote(int level) const;
+    QString closeQuote(int level) const;
+    
+    int levels;
+    QStringList data;
+};
+
 // Used for text-shadow and box-shadow
 class ShadowValueImpl : public CSSValueImpl
 {

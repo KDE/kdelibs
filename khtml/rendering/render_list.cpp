@@ -554,6 +554,13 @@ void RenderListMarker::calcMinMaxWidth()
     case KATAKANA_IROHA:
         m_item = toKatakanaIroha( m_value );
         break;
+// Quotes:
+    case OPEN_QUOTE:
+        m_item = style()->openQuote( m_value );
+        break;
+    case CLOSE_QUOTE:
+        m_item = style()->closeQuote( m_value );
+        break;
     case LNONE:
         break;
     }

@@ -2,6 +2,7 @@
  * This file is part of the DOM implementation for KDE.
  *
  * Copyright (C) 2003 Lars Knoll (knoll@kde.org)
+ * Copyright (C) 2005 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -459,7 +460,6 @@ bool CSSParser::parseValue( int propId, bool important, int expected )
          */
 
     case CSS_PROP_SIZE:                 // <length>{1,2} | auto | portrait | landscape | inherit
-    case CSS_PROP_QUOTES:               // [<string> <string>]+ | none | inherit
 //     case CSS_PROP_PAGE:                 // <identifier> | auto // ### CHECK
         // ### To be done
         if (id)
@@ -502,6 +502,39 @@ bool CSSParser::parseValue( int propId, bool important, int expected )
             valid_primitive = true;
         break;
 
+    case CSS_PROP_QUOTES:               // [<string> <string>]+ | none | inherit
+        if (id == CSS_VAL_NONE) {
+            valid_primitive = true;
+        } else {
+            QuotesValueImpl *quotes = new QuotesValueImpl;
+            bool is_valid = true;
+            QString open, close;
+            Value *val=valueList->current();
+            while (val) {
+                if (val->unit == CSSPrimitiveValue::CSS_STRING)
+                    open = qString(val->string);
+                else {
+                    is_valid = false;
+                    break;
+                }
+                valueList->next();
+                val=valueList->current();
+                if (val && val->unit == CSSPrimitiveValue::CSS_STRING)
+                    close = qString(val->string);
+                else {
+                    is_valid = false;
+                    break;
+                }
+                quotes->addLevel(open, close);
+                valueList->next();
+                val=valueList->current();
+            }
+            if (is_valid)
+                parsedValue = quotes;
+            //valueList->next();
+        }
+        break;
+        
     case CSS_PROP_CONTENT:              // [ <string> | <uri> | <counter> | attr(X) | open-quote |
         // close-quote | no-open-quote | no-close-quote ]+ | inherit
         return parseContent( propId, important );
@@ -558,7 +591,7 @@ bool CSSParser::parseValue( int propId, bool important, int expected )
         // upper-roman | lower-greek | lower-alpha | lower-latin | upper-alpha |
         // upper-latin | hebrew | armenian | georgian | cjk-ideographic | hiragana |
         // katakana | hiragana-iroha | katakana-iroha | none | inherit
-        if ((id >= CSS_VAL_DISC && id <= CSS_VAL_KATAKANA_IROHA) || id == CSS_VAL_NONE)
+        if ((id >= CSS_VAL_DISC && id <= CSS_VAL__KHTML_CLOSE_QUOTE) || id == CSS_VAL_NONE)
             valid_primitive = true;
         break;
 

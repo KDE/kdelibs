@@ -3289,7 +3289,14 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         break;
     }
     case CSS_PROP_QUOTES:
-        // list of strings or i
+        HANDLE_INHERIT_AND_INITIAL(quotes, Quotes)
+        if(primitiveValue && primitiveValue->getIdent() == CSS_VAL_NONE) {
+            style->setQuotes(0);
+        } else {
+            QuotesValueImpl* quotes = static_cast<QuotesValueImpl *>(value);
+            style->setQuotes(quotes);
+        }
+        break;
     case CSS_PROP_SIZE:
         // ### look up
       break;

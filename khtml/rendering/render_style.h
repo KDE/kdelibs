@@ -61,6 +61,7 @@
 namespace DOM {
     class DOMStringImpl;
     class ShadowValueImpl;
+    class QuotesValueImpl;
 }
 
 namespace khtml {
@@ -566,6 +567,8 @@ public:
     short border_hspacing;
     short border_vspacing;
 
+    DOM::QuotesValueImpl* quotes;
+  
     // Paged media properties.
     short widows;
     short orphans;
@@ -970,6 +973,10 @@ public:
     EPageBreak pageBreakBefore() const { return noninherited_flags.f._page_break_before; }
     EPageBreak pageBreakAfter() const { return noninherited_flags.f._page_break_after; }
 
+    DOM::QuotesValueImpl* quotes() const { return inherited->quotes; }
+    QString openQuote(int level) const;
+    QString closeQuote(int level) const;
+
     // CSS3 Getter Methods
     EBoxSizing boxSizing() const { return box->box_sizing; }
     int outlineOffset() const {
@@ -1118,6 +1125,8 @@ public:
     void setPageBreakInside(EPageBreak b) { SET_VAR(inherited, page_break_inside, b); }
     void setPageBreakBefore(EPageBreak b) { noninherited_flags.f._page_break_before = b; }
     void setPageBreakAfter(EPageBreak b) { noninherited_flags.f._page_break_after = b; }
+    
+    void setQuotes(DOM::QuotesValueImpl* q);
 
     // CSS3 Setters
     void setBoxSizing( EBoxSizing b ) { SET_VAR(box,box_sizing,b); }
@@ -1185,6 +1194,7 @@ public:
     static EPosition initialPosition() { return STATIC; }
     static ETableLayout initialTableLayout() { return TAUTO; }
     static EUnicodeBidi initialUnicodeBidi() { return UBNormal; }
+    static DOM::QuotesValueImpl* initialQuotes() { return 0; }
     static EBoxSizing initialBoxSizing() { return CONTENT_BOX; }
     static ETextTransform initialTextTransform() { return TTNONE; }
     static EVisibility initialVisibility() { return VISIBLE; }

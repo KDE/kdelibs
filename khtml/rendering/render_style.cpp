@@ -25,6 +25,7 @@
 
 #include "xml/dom_stringimpl.h"
 #include "css/cssstyleselector.h"
+#include "css/css_valueimpl.h"
 #include "render_style.h"
 
 #include "kdebug.h"
@@ -220,6 +221,7 @@ StyleInheritedData::StyleInheritedData()
       font(), color( RenderStyle::initialColor() ),
       border_hspacing( RenderStyle::initialBorderHorizontalSpacing() ),
       border_vspacing( RenderStyle::initialBorderVerticalSpacing() ),
+      quotes(0),
       widows( RenderStyle::initialWidows() ), orphans( RenderStyle::initialOrphans() ),
       page_break_inside( RenderStyle::initialPageBreak() )
 {
@@ -227,6 +229,7 @@ StyleInheritedData::StyleInheritedData()
 
 StyleInheritedData::~StyleInheritedData()
 {
+    if (quotes) quotes->deref();
 }
 
 StyleInheritedData::StyleInheritedData(const StyleInheritedData& o )
@@ -237,6 +240,8 @@ StyleInheritedData::StyleInheritedData(const StyleInheritedData& o )
       border_vspacing( o.border_vspacing ),
       widows(o.widows), orphans(o.orphans), page_break_inside(o.page_break_inside)
 {
+    quotes = o.quotes;
+    if (quotes) quotes->ref();
 }
 
 bool StyleInheritedData::operator==(const StyleInheritedData& o) const
@@ -252,6 +257,7 @@ bool StyleInheritedData::operator==(const StyleInheritedData& o) const
 	decoration_color == o.decoration_color &&
         border_hspacing == o.border_hspacing &&
         border_vspacing == o.border_vspacing &&
+        quotes == o.quotes &&
         widows == o.widows &&
         orphans == o.orphans &&
         page_break_inside == o.page_break_inside;
@@ -555,6 +561,30 @@ void RenderStyle::setClip( Length top, Length right, Length bottom, Length left 
     data->clip.right = right;
     data->clip.bottom = bottom;
     data->clip.left = left;
+}
+
+void RenderStyle::setQuotes(DOM::QuotesValueImpl* q)
+{
+    DOM::QuotesValueImpl *t = inherited->quotes;
+    inherited.access()->quotes = q;
+    q->ref();
+    if (t) t->deref();
+}
+
+QString RenderStyle::openQuote(int level) const
+{
+    if (inherited->quotes) 
+        return inherited->quotes->openQuote(level);
+    else
+        return "\"";
+}
+
+QString RenderStyle::closeQuote(int level) const
+{
+    if (inherited->quotes) 
+        return inherited->quotes->closeQuote(level);
+    else
+        return "\"";
 }
 
 bool RenderStyle::contentDataEquivalent(RenderStyle* otherStyle)
