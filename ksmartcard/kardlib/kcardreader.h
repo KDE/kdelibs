@@ -37,7 +37,8 @@ public:
 	int cancelTransaction();
 	bool inTransaction();
 	
-	
+	int doCommand(QString command, QString& response);
+
 private:
 	class KCardReaderPrivate;
 	KCardReaderPrivate *d;

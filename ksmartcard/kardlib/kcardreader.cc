@@ -106,4 +106,8 @@ return 0;
 }
 
 
+int KCardReader::doCommand(QString command, QString& response) {
+
+}
+
 

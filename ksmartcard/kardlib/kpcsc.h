@@ -22,13 +22,17 @@
 #ifndef _KPCSC_H
 #define _KPCSC_H
 
+
 #include <qstringlist.h>
+#include <qmemarray.h>
+
+typedef QMemArray<unsigned char> KCardCommand;
+
 class KCardReader;
 
-
 class KPCSC {
-
 public:
+
 	KPCSC(bool autoConnect = true);
 	~KPCSC();
 
@@ -38,13 +42,16 @@ public:
 
 	QStringList listReaders(int *err);
 	KCardReader *getReader(QString x);
-	
+
+	static KCardCommand encodeCommand(const QString command);
+	static QString decodeCommand(const KCardCommand command);
+
 private:
 	class KPCSCPrivate;
 	KPCSCPrivate *d;
 
 	bool _connected;
-	
+
 	// PC/SC specific stuff
 	long _ctx;
 

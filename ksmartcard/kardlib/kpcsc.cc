@@ -124,3 +124,52 @@ return cr;
 }
 
 
+KCardCommand KPCSC::encodeCommand(const QString command) {
+KCardCommand x(0);
+
+	if (command.length() % 2)
+		return x;
+
+	x.resize(command.length()/2 + 1);
+
+	for (unsigned int n = 0, j = 0; j < command.length(); n++, j += 2) {
+		unsigned char Hnib = QChar(command.at(j)).upper();
+		unsigned char Lnib = QChar(command.at(j+1)).upper();
+
+		Hnib -= (Hnib <= 57) ? 48 : 55;
+		Lnib -= (Lnib <= 57) ? 48 : 55;
+
+		if (Hnib <= 0x0f && Lnib <= 0x0f) {
+			x[n] = Hnib;
+			x[n] <<= 4;
+			x[n] |= Lnib;
+		} else {
+			return KCardCommand(0);
+		}
+	}
+
+	x[x.size()-1] = 0;
+	
+return x;
+}
+
+
+QString KPCSC::decodeCommand(const KCardCommand command) {
+QString x;
+
+	for (unsigned int i = 0; i < command.size(); i++) {
+		unsigned short y = command[i] & 0x00ff;
+
+		if (y < 0x0f) {
+			x += "0";
+		}
+
+		x += QString::number(y,16);
+	}
+
+return x;
+}
+
+
+
+
