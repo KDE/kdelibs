@@ -48,9 +48,7 @@ class KDirWatchPrivate;
   * Directories and files can be added/removed from list in any state.
   *
   * The implementation uses the FAM service when available;
-  * the usage of FAM implies the automatic watching of all files in a
-  * watched directory.
-  * If FAM is not available, the DNOTIFY functionality is used on LINUX.
+  * if FAM is not available, the DNOTIFY functionality is used on LINUX.
   * As a last resort, a regular polling for change of modification times
   * is done; note that this is a bad solution when watching NFS mounted
   * directories.
@@ -66,8 +64,9 @@ class KDirWatch : public QObject
    /**
     * Constructor.
     *
-    * Does not begin scanning until @ref startScan()
-    * is called. Default frequency is 500 ms.
+    * Scanning begins immediatly when a dir/file watch
+    * is added.
+    * The default scan frequency is 500 ms.
     */
    KDirWatch ( int freq = 500 );
 

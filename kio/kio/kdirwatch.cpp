@@ -548,7 +548,7 @@ bool KDirWatchPrivate::stopEntryScan( KDirWatch* instance, Entry* e)
   if (stillWatching == 0) {
     // if nobody is interested, we don't watch
     e->m_ctime = QDateTime(); // invalid
-    e->m_status = Normal;
+    //    e->m_status = Normal;
   }
   return true;
 }
