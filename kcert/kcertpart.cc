@@ -522,7 +522,7 @@ QCString pass;
  STACK_OF(X509_INFO) *sx5i = KOSSL::self()->PEM_X509_INFO_read(fp, NULL, KSSLPemCallback, NULL);
 
  if (!sx5i) {
-    KMessageBox::sorry(_frame, i18n("222This file cannot be opened."), i18n("Certificate Import"));
+    KMessageBox::sorry(_frame, i18n("This file cannot be opened."), i18n("Certificate Import"));
     fclose(fp);
     return false;
  }
