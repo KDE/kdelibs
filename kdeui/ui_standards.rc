@@ -27,10 +27,13 @@
   <Menu name="game"><text>&amp;Game</text>
     <Action name="game_new"/>
     <Action name="game_load"/>
+	<MergeLocal name="new_merge"/>
     <Separator/>
     <Action name="game_save"/>
+	<MergeLocal name="save_merge"/>
     <Separator/>
     <Action name="game_highscores"/>
+	<MergeLocal name="misc_merge"/>
     <Separator/>
 	<MergeLocal/>
 	<Separator/>
