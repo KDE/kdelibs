@@ -632,15 +632,11 @@ void KAboutContainerBase::setImage( const QString &fileName )
     return;
   }
 
-  QImage logo( fileName );
-  if( logo.isNull() == false )
-  {
-    QPixmap pix;
-    pix = logo;
-    mImageLabel->setPixmap( pix );
-  }
-  mImageFrame->layout()->activate();
+  QPixmap logo( fileName );
+  if( !logo.isNull() )
+    mImageLabel->setPixmap( logo );
 
+  mImageFrame->layout()->activate();
 }
 
 
