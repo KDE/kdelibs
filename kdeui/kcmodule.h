@@ -20,8 +20,8 @@
 
 */
 
-#ifndef __KCMODULE_H__
-#define __KCMODULE_H__
+#ifndef KCMODULE_H
+#define KCMODULE_H
 
 #include <qwidget.h>
 
@@ -344,5 +344,5 @@ private:
 
 };
 
-#endif //__KCMODULE_H__
+#endif //KCMODULE_H
 
