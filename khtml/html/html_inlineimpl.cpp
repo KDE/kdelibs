@@ -91,13 +91,15 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
 {
     // ### KHTML_CLICK_EVENT??? why that?
     // port to DOMACTIVATE
-    if ( evt->id() ==  EventImpl::KHTML_CLICK_EVENT && evt->isMouseEvent()) {
+    if (evt->id() == EventImpl::KHTML_CLICK_EVENT && evt->isMouseEvent()) {
         MouseEventImpl* e = static_cast<MouseEventImpl*>( evt );
         QString utarget;
         QString url;
 
         if ( ownerDocument() )
             ownerDocument()->setFocusNode( this );
+
+        if ( e->button() == 2 ) return;
 
         if ( href )
             url = QConstString( href->s, href->l ).string();
@@ -115,7 +117,7 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
                 khtml::RenderImage *r = static_cast<khtml::RenderImage *>(img->renderer());
                 if(r)
                 {
-                    int absx, absy, vx, vy;
+                    int absx, absy;
                     r->absolutePosition(absx, absy);
                     int x(e->clientX() - absx), y(e->clientY() - absy);
                     url += QString("?%1,%2").arg( x ).arg( y );
