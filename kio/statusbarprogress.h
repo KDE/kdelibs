@@ -1,5 +1,5 @@
-#ifndef __kio_littleprogress_dlg_h__
-#define __kio_littleprogress_dlg_h__
+#ifndef __statusbarprogress_h__
+#define __statusbarprogress_h__
 
 #include <qlabel.h>
 #include <qpushbutton.h>
@@ -13,7 +13,7 @@ namespace KIO { class Job; }
 /**
 * This is a special IO progress widget.
 *
-* Similarly to @ref #KIOSimpleProgressDlg and @ref #KIOListProgressDlg,
+* Similarly to @ref #DefaultProgress,
 * it's purpose is to show a progress of the IO operation.
 *
 * Instead of creating a separate window, this is only a widget that can be
@@ -27,17 +27,16 @@ namespace KIO { class Job; }
 * statusProgress = new StatusbarProgress( statusBar() );
 * statusBar()->insertWidget( statusProgress, statusProgress->width() , 0 );
 * ...
-* // create KIOJob and set the progress
-* KIOJob* job;
-* job->setGUImode( KIOJob::CUSTOM );
-* job->setProgressDlg( statusProgress );
+* // create job and connect it to the progress
+* CopyJob* job = KIO::copy(...);
+* statusProgress->setJob( job );
 * ...
 * </pre>
 *
 * @short IO progress widget for embedding in a statusbar.
 * @author Matej Koss <koss@miesto.sk>
 */
-class StatusbarProgress : public KIOProgressBase {
+class StatusbarProgress : public ProgressBase {
 
   Q_OBJECT
 
@@ -51,9 +50,9 @@ public:
 
 protected slots:
 
-  virtual void slotTotalSize( int, unsigned long _bytes );
-  virtual void slotPercent( int, unsigned long _bytes );
-  virtual void slotSpeed( int, unsigned long _bytes_per_second );
+  virtual void slotTotalSize( KIO::Job*, unsigned long _bytes );
+  virtual void slotPercent( KIO::Job*, unsigned long _bytes );
+  virtual void slotSpeed( KIO::Job*, unsigned long _bytes_per_second );
 
 protected:
   KProgress* m_pProgressBar;
@@ -73,4 +72,4 @@ protected:
 
 };
 
-#endif
+#endif  //  __statusbarprogress_h__

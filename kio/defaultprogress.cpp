@@ -7,14 +7,13 @@
 #include <kapp.h>
 #include <kdialog.h>
 #include <klocale.h>
-#include <kwin.h>
 
 #include "jobclasses.h"
 #include "defaultprogress.h"
 
 
 DefaultProgress::DefaultProgress()
-  : KIOProgressBase() {
+  : ProgressBase() {
 
   QVBoxLayout *topLayout = new QVBoxLayout( this, KDialog::marginHint(),
 					    KDialog::spacingHint() );
@@ -69,25 +68,25 @@ DefaultProgress::DefaultProgress()
 }
 
 
-void DefaultProgress::slotTotalSize( int, unsigned long _bytes )
+void DefaultProgress::slotTotalSize( KIO::Job*, unsigned long _bytes )
 {
   m_iTotalSize = _bytes;
 }
 
 
-void DefaultProgress::slotTotalFiles( int, unsigned long _files )
+void DefaultProgress::slotTotalFiles( KIO::Job*, unsigned long _files )
 {
   m_iTotalFiles = _files;
 }
 
 
-void DefaultProgress::slotTotalDirs( int, unsigned long _dirs )
+void DefaultProgress::slotTotalDirs( KIO::Job*, unsigned long _dirs )
 {
   m_iTotalDirs = _dirs;
 }
 
 
-void DefaultProgress::slotPercent( int, unsigned long _percent )
+void DefaultProgress::slotPercent( KIO::Job*, unsigned int _percent )
 {
   QString tmp(i18n( "%1% of %2 ").arg( _percent ).arg( KIO::convertSize(m_iTotalSize)));
   m_pProgressBar->setValue( _percent );
@@ -95,17 +94,14 @@ void DefaultProgress::slotPercent( int, unsigned long _percent )
   case Copy:
     tmp.append(i18n(" (Copying)"));
     break;
+  case Move:
+    tmp.append(i18n(" (Moving)"));
+    break;
   case Delete:
     tmp.append(i18n(" (Deleting)"));
     break;
   case Create:
     tmp.append(i18n(" (Creating)"));
-    break;
-  case Scan:
-    tmp.append(i18n(" (Scanning)"));
-    break;
-  case Fetch:
-    tmp.append(i18n(" (Fetching)"));
     break;
   }
 
@@ -113,7 +109,7 @@ void DefaultProgress::slotPercent( int, unsigned long _percent )
 }
 
 
-void DefaultProgress::slotProcessedSize( int, unsigned long _bytes ) {
+void DefaultProgress::slotProcessedSize( KIO::Job*, unsigned long _bytes ) {
   QString tmp;
 
   tmp = i18n( "%1 of %2 ").arg( KIO::convertSize(_bytes) ).arg( KIO::convertSize(m_iTotalSize));
@@ -121,7 +117,7 @@ void DefaultProgress::slotProcessedSize( int, unsigned long _bytes ) {
 }
 
 
-void DefaultProgress::slotProcessedDirs( int, unsigned long _dirs )
+void DefaultProgress::slotProcessedDirs( KIO::Job*, unsigned long _dirs )
 {
   m_iProcessedDirs = _dirs;
 
@@ -132,7 +128,7 @@ void DefaultProgress::slotProcessedDirs( int, unsigned long _dirs )
 }
 
 
-void DefaultProgress::slotProcessedFiles( int, unsigned long _files )
+void DefaultProgress::slotProcessedFiles( KIO::Job*, unsigned long _files )
 {
   m_iProcessedFiles = _files;
 
@@ -145,58 +141,53 @@ void DefaultProgress::slotProcessedFiles( int, unsigned long _files )
 }
 
 
-void DefaultProgress::slotSpeed( int, unsigned long _bytes_per_second )
+void DefaultProgress::slotSpeed( KIO::Job*, unsigned long _bytes_per_second )
 {
   if ( _bytes_per_second == 0 ) {
     speedLabel->setText( i18n( "Stalled") );
   } else {
-      // TODO    speedLabel->setText( i18n( "%1/s %2").arg( KIO::convertSize( _bytes_per_second )).arg( m_pJob->getRemainingTime().toString()) );
+    speedLabel->setText( i18n( "%1/s").arg( KIO::convertSize( _bytes_per_second )) );
   }
 }
 
 
-void DefaultProgress::slotScanningDir( int , const char *_dir)
-{
-  setCaption(i18n("Scanning %1").arg( _dir ) );
-  mode = Scan;
-}
-
-
-void DefaultProgress::slotCopyingFile( int, const char *_from,
-					    const char *_to )
+void DefaultProgress::slotCopyingFile( KIO::Job*, const KURL& _from,
+					    const KURL& _to )
 {
   setCaption(i18n("Copy file(s) progress"));
   mode = Copy;
-  sourceLabel->setText( _from );
-  destLabel->setText( _to );
+  sourceLabel->setText( _from.path() );
+  destLabel->setText( _to.path() );
 }
 
 
-void DefaultProgress::slotMakingDir( int, const char *_dir )
+void DefaultProgress::slotMovingFile( KIO::Job*, const KURL& _from,
+					    const KURL& _to )
+{
+  setCaption(i18n("Move file(s) progress"));
+  mode = Move;
+  sourceLabel->setText( _from.path() );
+  destLabel->setText( _to.path() );
+}
+
+
+void DefaultProgress::slotCreatingDir( KIO::Job*, const KURL& _dir )
 {
   setCaption(i18n("Creating directory"));
   mode = Create;
-  sourceLabel->setText( _dir );
+  sourceLabel->setText( _dir.path() );
 }
 
 
-void DefaultProgress::slotGettingFile( int, const char *_url )
-{
-  setCaption(i18n("Fetch file(s) progress"));
-  mode = Fetch;
-  sourceLabel->setText( _url );
-}
-
-
-void DefaultProgress::slotDeletingFile( int, const char *_url )
+void DefaultProgress::slotDeletingFile( KIO::Job*, const KURL& _url )
 {
   setCaption(i18n("Delete file(s) progress"));
   mode = Delete;
-  sourceLabel->setText( _url );
+  sourceLabel->setText( _url.path() );
 }
 
 
-void DefaultProgress::slotCanResume( int, bool _resume )
+void DefaultProgress::slotCanResume( KIO::Job*, bool _resume )
 {
   if ( _resume ) {
     resumeLabel->setText( i18n("Resumable") );

@@ -1,5 +1,5 @@
-#ifndef __kio_simpleprogress_dlg_h__
-#define __kio_simpleprogress_dlg_h__
+#ifndef __defaultprogress_h__
+#define __defaultprogress_h__
 
 #include <qlabel.h>
 
@@ -7,7 +7,7 @@
 
 #include "progressbase.h"
 
-class DefaultProgress : public KIOProgressBase {
+class DefaultProgress : public ProgressBase {
 
   Q_OBJECT
 
@@ -18,20 +18,23 @@ public:
 
 protected slots:
 
-  virtual void slotTotalSize( int, unsigned long _bytes );
-  virtual void slotTotalFiles( int, unsigned long _files );
-  virtual void slotTotalDirs( int, unsigned long _dirs );
-  virtual void slotPercent( int, unsigned long _bytes );
-  virtual void slotProcessedSize( int, unsigned long _bytes );
-  virtual void slotProcessedFiles( int, unsigned long _files );
-  virtual void slotProcessedDirs( int, unsigned long _dirs );
-  virtual void slotScanningDir( int, const char *_dir );
-  virtual void slotSpeed( int, unsigned long _bytes_per_second );
-  virtual void slotCopyingFile( int, const char *_from, const char *_to );
-  virtual void slotMakingDir( int, const char *_dir );
-  virtual void slotGettingFile( int, const char *_url );
-  virtual void slotDeletingFile( int, const char *_url );
-  virtual void slotCanResume( int, bool );
+  virtual void slotTotalSize( KIO::Job*, unsigned long _bytes );
+  virtual void slotTotalFiles( KIO::Job*, unsigned long _files );
+  virtual void slotTotalDirs( KIO::Job*, unsigned long _dirs );
+
+  virtual void slotProcessedSize( KIO::Job*, unsigned long _bytes );
+  virtual void slotProcessedFiles( KIO::Job*, unsigned long _files );
+  virtual void slotProcessedDirs( KIO::Job*, unsigned long _dirs );
+
+  virtual void slotSpeed( KIO::Job*, unsigned long _bytes_per_second );
+  virtual void slotPercent( KIO::Job*, unsigned int _percent );
+
+  virtual void slotCopyingFile( KIO::Job*, const KURL& _src, const KURL& _dest );
+  virtual void slotMovingFile( KIO::Job*, const KURL& _src, const KURL& _dest );
+  virtual void slotDeletingFile( KIO::Job*, const KURL& _file );
+  virtual void slotCreatingDir( KIO::Job*, const KURL& _dir );
+
+  virtual void slotCanResume( KIO::Job*, bool );
 
 protected:
 
@@ -51,8 +54,8 @@ protected:
   unsigned long m_iProcessedDirs;
   unsigned long m_iProcessedFiles;
 
-  enum ModeType { Copy, Delete, Create, Scan, Fetch };
+  enum ModeType { Copy, Move, Delete, Create };
   ModeType mode;
 };
 
-#endif
+#endif // __defaultprogress_h__

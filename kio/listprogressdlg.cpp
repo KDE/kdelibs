@@ -6,7 +6,7 @@
 #include <kconfig.h>
 #include <kapp.h>
 #include <klocale.h>
-#include <kwm.h>
+#include <kwin.h>
 #include <kiconloader.h>
 #include <kglobal.h>
 #include <ktoolbarbutton.h>

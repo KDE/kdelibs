@@ -9,7 +9,7 @@
 #include "statusbarprogress.h"
 
 StatusbarProgress::StatusbarProgress( QWidget* parent, bool button )
-  : KIOProgressBase( parent ) {
+  : ProgressBase( parent ) {
 
   m_bShowButton = button;
   m_bOnlyClean = true;  // we don't want to delete this widget, only clean
@@ -44,7 +44,7 @@ StatusbarProgress::StatusbarProgress( QWidget* parent, bool button )
 
 
 void StatusbarProgress::setJob( KIO::Job *job ) {
-  KIOProgressBase::setJob( job );
+  ProgressBase::setJob( job );
 
   connect( m_pButton, SIGNAL( clicked() ), this, SLOT( stop() ) );
   mode = Progress;
@@ -91,20 +91,20 @@ void StatusbarProgress::clean() {
 }
 
 
-void StatusbarProgress::slotTotalSize( int, unsigned long _size ) {
+void StatusbarProgress::slotTotalSize( KIO::Job*, unsigned long _size ) {
   m_iTotalSize = _size;
 }
 
-void StatusbarProgress::slotPercent( int, unsigned long _percent ) {
+void StatusbarProgress::slotPercent( KIO::Job*, unsigned long _percent ) {
   m_pProgressBar->setValue( _percent );
 }
 
 
-void StatusbarProgress::slotSpeed( int, unsigned long _bytes_per_second ) {
+void StatusbarProgress::slotSpeed( KIO::Job*, unsigned long _bytes_per_second ) {
   if ( _bytes_per_second == 0 ) {
     m_pLabel->setText( i18n( " Stalled ") );
   } else {
-      // TODO    m_pLabel->setText( i18n( " %1/s %2 ").arg( KIO::convertSize( _bytes_per_second )).arg( m_pJob->getRemainingTime().toString()) );
+    m_pLabel->setText( i18n( " %1/s ").arg( KIO::convertSize( _bytes_per_second )) );
   }
 }
 
