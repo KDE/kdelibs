@@ -598,7 +598,7 @@ TextEventImpl::TextEventImpl(QKeyEvent *key, AbstractViewImpl *view)
 
   // key->state returns enum ButtonState, which is ShiftButton, ControlButton and AltButton or'ed together.
   m_modifier = key->state();
-
+  
   // key->text() returns the unicode sequence as a QString
   m_outputString = DOMString(key->text());
 }
@@ -631,7 +631,7 @@ TextEventImpl::~TextEventImpl()
 
 bool TextEventImpl::checkModifier(unsigned long modifierArg)
 {
-  return ((m_modifier && modifierArg) == modifierArg);
+  return ((m_modifier & modifierArg) == modifierArg);
 }
 
 void TextEventImpl::initTextEvent(const DOMString &typeArg,
