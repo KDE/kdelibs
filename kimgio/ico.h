@@ -10,15 +10,27 @@
 
 // You can use QImageIO::setParameters() to request a specific
 // Icon out of an .ico file:
-// "32:0" will return a hicolor 32x32 icon if available
-// "48:256" will return a 256-color 48x48 icon if available
-// "16:16" will return a 16-color 16x16 icon if available
-// etc.
-// Size takes precendence over depth when a match is searched.
-// If no parameters are given, the default is 32x32 and hicolor
-// if the display supports it or 16-color otherwise.
-// The depth parameter can be omitted to use the default depth but
-// a specific size
+//
+// Options consist of a name=value pair and are separated by a semicolon.
+// Available options are:
+//     size=<size>   select the icon that most closely matches <size> (pixels)
+//                   default: 32
+//     colors=<num>  select the icon that has <num> colors (or comes closest)
+//                   default: 1 << display depth or 0 (RGB) if display depth > 8
+//     index=<index> select the indexth icon from the file. If this option
+//                   is present, the size and colors options will be ignored.
+//                   default: none
+// If both size and colors are given, size takes precedence.
+// 
+// The old format is still supported:
+//     the parameters consist of a single string in the form
+//     "<size>[:<colors>]" which correspond to the options above
+//
+// If an icon was returned (i.e. the file is valid and the index option
+// if present was not out of range), the icon's index within the .ico
+// file is returned in the text tag "X-Index" of the image.
+// If the icon is in fact a cursor, its hotspot coordinates are returned
+// in the text tags "X-HotspotX" and "X-HotspotY".
 
 #ifndef	_ICO_H_
 #define _ICO_H_
