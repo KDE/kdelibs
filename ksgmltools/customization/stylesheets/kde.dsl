@@ -147,8 +147,8 @@
 ;; Call: jade -d kde.dsl#kde-docbook-print
 
 ; These should not be put in the general style sheet, because
-; defaults may become different (although they are currently not) from HTML
-(define %graphic-default-extension% "png")
+; defaults are different from HTML
+(define %graphic-default-extension% "eps")
 (define %graphic-extensions%            ;; default value + png - gif
   '("jpg" "jpeg" "tif" "tiff" "eps" "epsf" "png"))
 
