@@ -41,6 +41,7 @@ class KOpenSSLProxyPrivate;
 #include <openssl/pkcs12.h>
 #include <openssl/evp.h>
 #include <openssl/stack.h>
+#include <openssl/bn.h>
 #undef crypt
 #endif
 
@@ -493,6 +494,14 @@ public:
     *  Check the private key of a PKCS bundle against the X509
     */
    int X509_check_private_key(X509 *x, EVP_PKEY *p);
+
+
+   /*
+    *  Convert a BIGNUM to a hex string
+    */
+   char *BN_bn2hex(const BIGNUM *a);
+
+
 
 #endif
 

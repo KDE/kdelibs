@@ -17,9 +17,14 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+
+
 #ifdef HAVE_CONFIG_H 
 #include <config.h>
 #endif
+
+
+
 #include <unistd.h>
 #include <qstring.h>
 
@@ -147,23 +152,113 @@ return rc;
 }
 
 
-QString KSSLCertificate::getPublicKey() const {
-QString rc = "unimplemented";
+QString KSSLCertificate::getKeyType() const {
+QString rc = "";
 
 #ifdef HAVE_SSL
   EVP_PKEY *pkey = d->kossl->X509_get_pubkey(d->m_cert);
   if (pkey) {
-     unsigned char *ptr;
-     int cnt = d->kossl->i2d_PublicKey(pkey, &ptr);
-     if (cnt > 0) {
-        // FIXME: finish me!
-     }
-     d->kossl->OPENSSL_free(ptr);
-     d->kossl->OPENSSL_free(pkey);
+#ifndef NO_RSA
+  if (pkey->type == EVP_PKEY_RSA)
+    rc = "RSA";
+  else
+#endif
+#ifndef NO_DSA
+  if (pkey->type == EVP_PKEY_DSA)
+    rc = "DSA";
+  else
+#endif
+    rc = "Unknown";
+    d->kossl->EVP_PKEY_free(pkey);
   }
 #endif
+
 return rc;
 }
+
+
+
+QString KSSLCertificate::getPublicKeyText() const {
+QString rc = "";
+char *x = NULL;
+
+#ifdef HAVE_SSL
+  EVP_PKEY *pkey = d->kossl->X509_get_pubkey(d->m_cert);
+  if (pkey) {
+    rc = i18n("Unknown", "Unknown key algorithm");
+#ifndef NO_RSA
+    if (pkey->type == EVP_PKEY_RSA) {
+      rc = i18n("Key type: RSA (%1 bit)") + "\n";
+
+      x = d->kossl->BN_bn2hex(pkey->pkey.rsa->n);
+      rc += i18n("Modulus: ");
+      rc = rc.arg(strlen(x)*4);
+      for (unsigned int i = 0; i < strlen(x); i++) {
+        if (i%60 != 0 && i%2 == 0) rc += ":";
+        else if (i%60 == 0) rc += "\n          ";
+        rc += x[i];
+      }
+      rc += "\n";
+      d->kossl->OPENSSL_free(x);
+
+      x = d->kossl->BN_bn2hex(pkey->pkey.rsa->e);
+      rc += i18n("Exponent: 0x") + x + "\n";
+      d->kossl->OPENSSL_free(x);
+    }
+#endif
+#ifndef NO_DSA
+    if (pkey->type == EVP_PKEY_DSA) {
+      rc = i18n("Key type: DSA (%1 bit)") + "\n";
+
+      x = d->kossl->BN_bn2hex(pkey->pkey.dsa->p);
+      rc += i18n("Prime: ");
+      rc = rc.arg(strlen(x)*4);  // hack - this may not be always accurate
+      for (unsigned int i = 0; i < strlen(x); i++) {
+        if (i%60 != 0 && i%2 == 0) rc += ":";
+        else if (i%60 == 0) rc += "\n          ";
+        rc += x[i];
+      }
+      rc += "\n";
+      d->kossl->OPENSSL_free(x);
+
+      x = d->kossl->BN_bn2hex(pkey->pkey.dsa->q);
+      rc += i18n("160 bit Prime Factor: ");
+      for (unsigned int i = 0; i < strlen(x); i++) {
+        if (i%60 != 0 && i%2 == 0) rc += ":";
+        else if (i%60 == 0) rc += "\n          ";
+        rc += x[i];
+      }
+      rc += "\n";
+      d->kossl->OPENSSL_free(x);
+
+      x = d->kossl->BN_bn2hex(pkey->pkey.dsa->g);
+      rc += QString("g: ");
+      for (unsigned int i = 0; i < strlen(x); i++) {
+        if (i%60 != 0 && i%2 == 0) rc += ":";
+        else if (i%60 == 0) rc += "\n          ";
+        rc += x[i];
+      }
+      rc += "\n";
+      d->kossl->OPENSSL_free(x);
+
+      x = d->kossl->BN_bn2hex(pkey->pkey.dsa->pub_key);
+      rc += i18n("Public Key: ");
+      for (unsigned int i = 0; i < strlen(x); i++) {
+        if (i%60 != 0 && i%2 == 0) rc += ":";
+        else if (i%60 == 0) rc += "\n          ";
+        rc += x[i];
+      }
+      rc += "\n";
+      d->kossl->OPENSSL_free(x);
+    }
+#endif
+    d->kossl->EVP_PKEY_free(pkey);
+  }
+#endif
+
+return rc;
+}
+
 
 
 QString KSSLCertificate::getIssuer() const {

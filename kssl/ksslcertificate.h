@@ -95,8 +95,8 @@ public:
   QString    toText();
 
   QString getSerialNumber() const;
-  // getSignatureType() const;
-  QString getPublicKey() const;
+  QString getKeyType() const;
+  QString getPublicKeyText() const;
 
   bool isValid();
   KSSLValidation validate();

@@ -248,6 +248,7 @@ void KSSLCertBox::setValues(QString certName, QWidget *mailCatcher) {
         }
     }
     addChild(_frame);
+    updateScrollBars();
     _frame->show();
     show();
 }
