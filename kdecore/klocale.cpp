@@ -774,7 +774,7 @@ KLocale::~KLocale()
 
 QString KLocale::translate(const char* msgid) const
 {
-    return msgid;
+    return QString::fromUtf8(msgid);
 }
 
 QString KLocale::decimalSymbol() const {
