@@ -1689,7 +1689,7 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
     applyAppearanceSettings( config, configGroup );
 
     // ...and now the position stuff
-    if ( config->hasGroup(configGroup) )
+//    if ( config->hasGroup(configGroup) )
     {
         KConfigGroupSaver cgs(config, configGroup);
 
