@@ -2735,6 +2735,11 @@ bool HTTPProtocol::readHeader()
     else if (strncasecmp(buf, "Content-length:", 15) == 0) {
       m_iSize = STRTOLL(trimLead(buf + 15), 0, 10);
     }
+    
+    else if (strncasecmp(buf, "Content-location:", 17) == 0) {
+      setMetaData ("content-location",
+                   QString::fromLatin1(trimLead(buf+17)).stripWhiteSpace());
+    }   
 
     // what type of data do we have?
     else if (strncasecmp(buf, "Content-type:", 13) == 0) {
