@@ -113,6 +113,7 @@ QStringList libpaths, libnamesc, libnamess;
    }
 
    if (_cryptoLib) {
+#ifdef HAVE_SSL 
       K_X509_free = (void (*) (X509 *)) _cryptoLib->symbol("X509_free");
       K_RAND_egd = (int (*)(const char *)) _cryptoLib->symbol("RAND_egd");
       K_CRYPTO_free = (void (*) (void *)) _cryptoLib->symbol("CRYPTO_free");
@@ -132,6 +133,7 @@ QStringList libpaths, libnamesc, libnamess;
       K_X509_LOOKUP_ctrl = (int (*)(X509_LOOKUP *, int, const char *, long, char **)) _cryptoLib->symbol("X509_LOOKUP_ctrl");
       K_X509_STORE_CTX_init = (void (*)(X509_STORE_CTX *, X509_STORE *, X509 *, STACK_OF(X509) *)) _cryptoLib->symbol("X509_STORE_CTX_init");
       K_X509_dup = (X509* (*)(X509*)) _cryptoLib->symbol("X509_dup");
+#endif
    }
 
    for (QStringList::Iterator it = libpaths.begin();
@@ -148,6 +150,7 @@ QStringList libpaths, libnamesc, libnamess;
    }
 
    if (_sslLib) {
+#ifdef HAVE_SSL 
       // stand back from your monitor and look at this.  it's fun! :)
       K_SSL_connect = (int (*)(SSL *)) _sslLib->symbol("SSL_connect");
       K_SSL_read = (int (*)(SSL *, void *, int)) _sslLib->symbol("SSL_read");
@@ -178,6 +181,7 @@ QStringList libpaths, libnamesc, libnamess;
       K_SSL_CIPHER_get_version = (char * (*)(SSL_CIPHER *)) _sslLib->symbol("SSL_CIPHER_get_version");
       K_SSL_CIPHER_get_name = (const char * (*)(SSL_CIPHER *)) _sslLib->symbol("SSL_CIPHER_get_name");
       K_SSL_CIPHER_description = (char * (*)(SSL_CIPHER *, char *, int)) _sslLib->symbol("SSL_CIPHER_description");
+#endif
 
 
       // Initialize the library (once only!)
