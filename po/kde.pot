@@ -1,202 +1,463 @@
-# general messages, that are often used
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Free Software Foundation, Inc.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 1998-11-18 11:24+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: ENCODING\n"
+
+#: po/texts.cpp:24
 msgid "Error"
 msgstr ""
 
+#: po/texts.cpp:25
 msgid "Malformed URL"
 msgstr ""
 
+#: po/texts.cpp:26
+msgid "Charset:"
+msgstr ""
+
+#: po/texts.cpp:27
 msgid "Yes"
 msgstr ""
 
+#: po/texts.cpp:28
 msgid "No"
 msgstr ""
 
+#: po/texts.cpp:29
 msgid "Warning"
 msgstr ""
 
-msgid "Open a file"
-msgstr ""
-
+#: po/texts.cpp:30
 msgid "Save a file"
 msgstr ""
 
+#: po/texts.cpp:31
 msgid "Contents"
 msgstr ""
 
+#: po/texts.cpp:32
 msgid "About"
 msgstr ""
 
-msgid "Open"
+#: po/texts.cpp:33
+msgid "A&bout..."
 msgstr ""
 
-msgid "Save"
-msgstr ""
-
-msgid "Save As"
-msgstr ""
-
-msgid "Close"
-msgstr ""
-
-msgid "Quit"
-msgstr ""
-
+#: po/texts.cpp:34
 msgid "Untitled"
 msgstr ""
 
+#: po/texts.cpp:35
 msgid "OK"
 msgstr ""
 
-msgid "Ok"
+#: po/texts.cpp:36
+msgid "&OK"
 msgstr ""
 
+#: po/texts.cpp:37
+msgid "On"
+msgstr ""
+
+#: po/texts.cpp:38
+msgid "Off"
+msgstr ""
+
+#: po/texts.cpp:39
 msgid "Cancel"
 msgstr ""
 
+#: po/texts.cpp:40
+msgid "&Cancel"
+msgstr ""
+
+#: po/texts.cpp:41
 msgid "Apply"
 msgstr ""
 
+#: po/texts.cpp:42
 msgid "File"
 msgstr ""
 
+#: po/texts.cpp:43
+msgid "&File"
+msgstr ""
+
+#: po/texts.cpp:44
 msgid "Help"
 msgstr ""
 
+#: po/texts.cpp:45
+msgid "&Help"
+msgstr ""
+
+#: po/texts.cpp:46
 msgid "Edit"
 msgstr ""
 
-# libkdeui messages
-
-#: kcolordlg.cpp:239
-msgid "Select Color"
+#: po/texts.cpp:47
+msgid "&Edit"
 msgstr ""
 
-#: kcolordlg.cpp:244
-msgid "System Colors"
+#: po/texts.cpp:48
+msgid "&Options"
 msgstr ""
 
-#: kcolordlg.cpp:269
-msgid "Custom Colors"
+#: po/texts.cpp:49
+msgid "View"
 msgstr ""
 
-#: kcolordlg.cpp:345
-msgid "Add to Custom Colors"
+#: po/texts.cpp:50
+msgid "&View"
 msgstr ""
 
-#: kcolordlg.cpp:649 kcolordlg.cpp:699
-msgid "Custom..."
+#: po/texts.cpp:51
+msgid "E&xit"
 msgstr ""
 
-#: kfontdialog.cpp:95
-msgid "Select Font"
+#: po/texts.cpp:52
+msgid "Quit"
 msgstr ""
 
-#: kfontdialog.cpp:99
-msgid "Requested Font"
+#: po/texts.cpp:53
+msgid "&Quit"
 msgstr ""
 
-#: kfontdialog.cpp:104
-msgid "Actual Font"
+#: po/texts.cpp:54
+msgid "Reload"
 msgstr ""
 
-#: kfontdialog.cpp:108 kfontdialog.cpp:112
-msgid "Family:"
+#: po/texts.cpp:55
+msgid "Back"
 msgstr ""
 
-#: kfontdialog.cpp:119 kfontdialog.cpp:124
-msgid "Size:"
+#: po/texts.cpp:56
+msgid "Copy"
 msgstr ""
 
-#: kfontdialog.cpp:133 kfontdialog.cpp:138
-msgid "Weight:"
+#: po/texts.cpp:57
+msgid "&Copy"
 msgstr ""
 
-#: kfontdialog.cpp:147 kfontdialog.cpp:155
-msgid "Style:"
+#: po/texts.cpp:58
+msgid "Paste"
 msgstr ""
 
-#: kfontdialog.cpp:190
-msgid "Size"
+#: po/texts.cpp:59
+msgid "&Paste"
 msgstr ""
 
-#: kfontdialog.cpp:229
-msgid "Weight"
+#: po/texts.cpp:60
+msgid "&New Window..."
 msgstr ""
 
-#: kfontdialog.cpp:230 kfontdialog.cpp:327
-msgid "normal"
+#: po/texts.cpp:61
+msgid "New &Window..."
 msgstr ""
 
-#: kfontdialog.cpp:231 kfontdialog.cpp:329
-msgid "bold"
+#: po/texts.cpp:62
+msgid "&New Window"
 msgstr ""
 
-#: kfontdialog.cpp:240
-msgid "Style"
+#: po/texts.cpp:63
+msgid "New Game"
 msgstr ""
 
-#: kfontdialog.cpp:241 kfontdialog.cpp:340 kfontdialog.cpp:369
-msgid "roman"
+#: po/texts.cpp:64
+msgid "&New Game"
 msgstr ""
 
-#: kfontdialog.cpp:242 kfontdialog.cpp:342 kfontdialog.cpp:367
-msgid "italic"
+#: po/texts.cpp:65
+msgid "Open"
 msgstr ""
 
-#: kfontdialog.cpp:270
-msgid "Dolor Ipse"
+#: po/texts.cpp:66
+msgid "Open a file"
 msgstr ""
 
-#: kfontdialog.cpp:362
-msgid "Bold"
+#: po/texts.cpp:67
+msgid "Open..."
 msgstr ""
 
-#: kfontdialog.cpp:364
-msgid "Normal"
+#: po/texts.cpp:68
+msgid "&Open..."
 msgstr ""
 
-#: kiconloader.cpp:176
-msgid "Select Icon"
+#: po/texts.cpp:69
+msgid "Cut"
 msgstr ""
 
-#: kiconloader.cpp:182
-msgid "Filter:"
+#: po/texts.cpp:70
+msgid "&Cut"
 msgstr ""
 
-#: kiconloader.cpp:337
-#, c-format
-msgid "ERROR: couldn't find icon: %s"
+#: po/texts.cpp:71
+msgid "C&ut"
 msgstr ""
 
-#: kmenubar.cpp:106 ktoolbar.cpp:273
-msgid "Top"
+#: po/texts.cpp:72
+msgid "Font"
 msgstr ""
 
-#: kmenubar.cpp:107 ktoolbar.cpp:275
-msgid "Bottom"
+#: po/texts.cpp:73
+msgid "&Foreground Color"
 msgstr ""
 
-#: kmenubar.cpp:108 ktoolbar.cpp:276
-msgid "Floating"
+#: po/texts.cpp:74
+msgid "&Background Color"
 msgstr ""
 
-#: kmenubar.cpp:182 kmenubar.cpp:223 ktoolbar.cpp:699 ktoolbar.cpp:1208
-msgid "Float"
+#: po/texts.cpp:75
+msgid "Save"
 msgstr ""
 
-#: kmenubar.cpp:213 ktoolbar.cpp:1198
-msgid "UnFloat"
+#: po/texts.cpp:76
+msgid "&Save"
 msgstr ""
 
-#: ktoolbar.cpp:87 ktoolbar.cpp:145
-msgid "KToolBarButton: pixmap is empty, perhaps some missing file"
+#: po/texts.cpp:77
+msgid "Save As"
 msgstr ""
 
-#: ktoolbar.cpp:272
-msgid "Left"
+#: po/texts.cpp:78
+msgid "Save as..."
 msgstr ""
 
-#: ktoolbar.cpp:274
-msgid "Right"
+#: po/texts.cpp:79
+msgid "S&ave as..."
 msgstr ""
 
+#: po/texts.cpp:80
+msgid "Close"
+msgstr ""
+
+#: po/texts.cpp:81
+msgid "&Close"
+msgstr ""
+
+#: po/texts.cpp:82
+msgid "&Print..."
+msgstr ""
+
+#: po/texts.cpp:83
+msgid "Sorry"
+msgstr ""
+
+#: po/texts.cpp:84
+msgid "Options"
+msgstr ""
+
+#: po/texts.cpp:85
+msgid "Remove"
+msgstr ""
+
+#: po/texts.cpp:86
+msgid "Add"
+msgstr ""
+
+#: po/texts.cpp:87
+msgid "Change"
+msgstr ""
+
+#: po/texts.cpp:88
+msgid "Delete"
+msgstr ""
+
+#: po/texts.cpp:89
+msgid "&Delete"
+msgstr ""
+
+#: po/texts.cpp:90
+msgid "Clear"
+msgstr ""
+
+#: po/texts.cpp:91
+msgid "Italic"
+msgstr ""
+
+#: po/texts.cpp:92
+msgid "Roman"
+msgstr ""
+
+#: po/texts.cpp:93
+msgid "Undo"
+msgstr ""
+
+#: po/texts.cpp:94
+msgid "&Undo"
+msgstr ""
+
+#: po/texts.cpp:95
+msgid "Redo"
+msgstr ""
+
+#: po/texts.cpp:96
+msgid "&Redo"
+msgstr ""
+
+#: po/texts.cpp:97
+msgid "&Game"
+msgstr ""
+
+#: po/texts.cpp:98
+msgid "Information"
+msgstr ""
+
+#: po/texts.cpp:99
+msgid "Browse..."
+msgstr ""
+
+#: po/texts.cpp:100
+msgid "Stop"
+msgstr ""
+
+#: po/texts.cpp:101
+msgid "&Remove"
+msgstr ""
+
+#: po/texts.cpp:102
+msgid "&Properties..."
+msgstr ""
+
+#: po/texts.cpp:103
+msgid "Properties"
+msgstr ""
+
+#: po/texts.cpp:104
+msgid "&Start"
+msgstr ""
+
+#: po/texts.cpp:105
+msgid "St&op"
+msgstr ""
+
+#: po/texts.cpp:106
+msgid "Miscellaneous"
+msgstr ""
+
+#: po/texts.cpp:107
+msgid "Font Size"
+msgstr ""
+
+#: po/texts.cpp:108
+msgid "Fonts"
+msgstr ""
+
+#: po/texts.cpp:109
+msgid "&Fonts"
+msgstr ""
+
+#: po/texts.cpp:110
+msgid "&Reload"
+msgstr ""
+
+#: po/texts.cpp:111
+msgid "Files"
+msgstr ""
+
+#: po/texts.cpp:112
+msgid "Continue"
+msgstr ""
+
+#: po/texts.cpp:113
+msgid "Restore"
+msgstr ""
+
+#: po/texts.cpp:114
+msgid "Appearance"
+msgstr ""
+
+#: po/texts.cpp:115
+msgid "Print"
+msgstr ""
+
+#: po/texts.cpp:116
+msgid "Monday"
+msgstr ""
+
+#: po/texts.cpp:117
+msgid "Tuesday"
+msgstr ""
+
+#: po/texts.cpp:118
+msgid "Wednesday"
+msgstr ""
+
+#: po/texts.cpp:119
+msgid "Thursday"
+msgstr ""
+
+#: po/texts.cpp:120
+msgid "Friday"
+msgstr ""
+
+#: po/texts.cpp:121
+msgid "Saturday"
+msgstr ""
+
+#: po/texts.cpp:122
+msgid "Sunday"
+msgstr ""
+
+#: po/texts.cpp:123
+msgid "&Update"
+msgstr ""
+
+#: po/texts.cpp:124
+msgid "Layout"
+msgstr ""
+
+#: po/texts.cpp:125
+msgid "Highscore"
+msgstr ""
+
+#: po/texts.cpp:126
+msgid "&New View"
+msgstr ""
+
+#: po/texts.cpp:127
+msgid "&Insert"
+msgstr ""
+
+#: po/texts.cpp:130
+msgid "&Next >>"
+msgstr ""
+
+#: po/texts.cpp:131
+msgid "<< &Previous"
+msgstr ""
+
+#: po/texts.cpp:133
+msgid "Replace"
+msgstr ""
+
+#: po/texts.cpp:134
+msgid "Insert"
+msgstr ""
+
+#: po/texts.cpp:135
+msgid "Default"
+msgstr ""
+
+#: po/texts.cpp:136
+msgid "&Defaults"
+msgstr ""
+
+#: po/texts.cpp:137
+msgid "&Contents"
+msgstr ""
+
+#: po/texts.cpp:138
+msgid "&About..."
+msgstr ""
