@@ -454,6 +454,12 @@ QString KLocale::translate(const char* msgid) const
 }
 
 QString KLocale::translate( const char *index, const char *fallback) const {
+    if (!index || !index[0] || !fallback || !fallback[0])
+    {
+	kdDebug() << ("KLocale: trying to look up \"\" in catalouge. Fix the program");
+	return QString::null;
+    } 
+
     char *newstring = new char[strlen(index) + strlen(fallback) + 5];
     sprintf(newstring, "_: %s\n%s", index, fallback);
     // as copying QString is very fast, it looks slower as it is ;/
