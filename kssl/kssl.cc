@@ -93,7 +93,8 @@ bool KSSL::initialize() {
   else
     d->m_meth = SSLv2_client_method();
  
-  SSLeay_add_ssl_algorithms();
+  OpenSSL_add_ssl_algorithms();
+  OpenSSL_add_all_algorithms();
   d->m_ctx=SSL_CTX_new(d->m_meth);
   if (d->m_ctx == NULL) {
     return false;
@@ -179,11 +180,16 @@ int rc;
     return -1;
 
   rc = SSL_set_fd(d->m_ssl, sock);
-  if (rc == -1) return rc;
+  if (rc == 0) return rc;
+
   rc = SSL_connect(d->m_ssl);
-  if (rc != -1) {
+  if (rc == 1) {
     setConnectionInfo();
     setPeerInfo();
+    kdDebug() << "KSSL connected OK" << endl;
+  } else {
+    kdDebug() << "KSSL connect FAILED" << endl;
+    return -1;
   }
   return rc;
 #else
@@ -245,7 +251,12 @@ void KSSL::setConnectionInfo() {
 SSL_CIPHER *sc;
 char buf[1024];
 
+  buf[0] = 0;  // for safety.
   sc = SSL_get_current_cipher(d->m_ssl);
+  if (!sc) {
+   kdDebug() << "KSSL get current cipher failed - we're probably gonna crash!" << endl;
+  return;
+  }
   // set the number of bits, bits used
   m_ci.m_iCipherUsedBits = SSL_CIPHER_get_bits(sc, &(m_ci.m_iCipherBits));
   // set the cipher version
