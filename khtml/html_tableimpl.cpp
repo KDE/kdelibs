@@ -88,7 +88,7 @@ HTMLTableElementImpl::HTMLTableElementImpl(DocumentImpl *doc)
   : HTMLBlockElementImpl(doc)
 {
     tCaption = 0;
-    cols = 0;
+    _oldColElem = 0;
     head = 0;
     foot = 0;
     firstBody = 0;
@@ -117,6 +117,8 @@ HTMLTableElementImpl::HTMLTableElementImpl(DocumentImpl *doc)
 
     setBlocking();
     setParsing();
+    
+    _currentCol=0;
 
     columnPos.resize( 2 );
     colMaxWidth.resize( 1 );
@@ -283,12 +285,24 @@ NodeImpl *HTMLTableElementImpl::addChild(NodeImpl *child)
 	break;
     case ID_COL:
     case ID_COLGROUP:
+    	{
 	// these have to come before the table definition!
 	if(head || foot || firstBody)
 	    throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
 	HTMLBlockElementImpl::addChild(child);
-	if(!cols) cols = static_cast<HTMLTableColElementImpl *>(child);
+	HTMLTableColElementImpl* colel = static_cast<HTMLTableColElementImpl *>(child);
+	colel->setTable(this);
+	if (_oldColElem)
+	    _currentCol = _oldColElem->lastCol();
+	_oldColElem = colel;
+	colel->setStartCol(_currentCol);
+	if (child->id() == ID_COL)
+	    _currentCol++;
+	else
+	    _currentCol+=colel->span();
+	addColInfo(colel);	    
 	incremental = true;
+	}
 	return child;
     case ID_THEAD:
 	if(incremental && !columnPos[totalCols]);// calcColWidth();
@@ -537,6 +551,28 @@ void HTMLTableElementImpl::addColumns( int num )
 
     totalCols = newCols;
 
+}
+
+
+void HTMLTableElementImpl::addColInfo(HTMLTableColElementImpl *colel)
+{        
+	
+    int _startCol = colel->col();
+    int span = colel->span();
+    int _minSize=0;
+    int _maxSize=0;
+    Length _width = colel->width();
+    
+    for (int n=0; n<span; ++n)
+    {
+#ifdef TABLE_DEBUG    
+	printf("COL\n");
+	printf("    startCol=%d span=%d\n", _startCol, span);
+	printf("    min=%d max=%d val=%d\n", _minSize, _maxSize,_width.value );    	
+#endif
+        addColInfo(_startCol+n, 1 , _minSize, _maxSize, _width ,0);        
+    }
+    
 }
 
 void HTMLTableElementImpl::addColInfo(HTMLTableCellElementImpl *cell)
@@ -2209,7 +2245,29 @@ const DOMString HTMLTableColElementImpl::nodeName() const
 
 ushort HTMLTableColElementImpl::id() const
 {
-    return ID_COL;
+    return _id;
+}
+
+
+NodeImpl *HTMLTableColElementImpl::addChild(NodeImpl *child)
+{
+#ifdef DEBUG_LAYOUT
+    printf("%s(Table)::addChild( %s )\n", nodeName().string().ascii(), child->nodeName().string().ascii());
+#endif
+
+    switch(child->id())
+    {
+    case ID_COL:
+	// these have to come before the table definition!	
+	HTMLElementImpl::addChild(child);
+	HTMLTableColElementImpl* colel = static_cast<HTMLTableColElementImpl *>(child);
+	colel->setStartCol(_currentCol);
+//	printf("_currentCol=%d\n",_currentCol);
+	table->addColInfo(colel);
+	_currentCol++;
+	return child;
+    }
+
 }
 
 void HTMLTableColElementImpl::parseAttribute(Attribute *attr)

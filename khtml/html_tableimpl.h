@@ -134,6 +134,7 @@ public:
     void addCell( HTMLTableCellElementImpl *cell );
     void endTable();
     void  addColInfo(HTMLTableCellElementImpl *cell);
+    void  addColInfo(HTMLTableColElementImpl *colel);
 
     void addColInfo(int _startCol, int _colSpan, 
 		    int _minSize, int _maxSize, Length _width,
@@ -255,8 +256,7 @@ protected:
     unsigned int totalPercent ;
     unsigned int totalRelative ;
     
-    HTMLTableCaptionElementImpl *tCaption;
-    HTMLTableColElementImpl *cols;
+    HTMLTableCaptionElementImpl *tCaption;    
     HTMLTableSectionElementImpl *head;
     HTMLTableSectionElementImpl *foot;
     HTMLTableSectionElementImpl *firstBody;
@@ -278,6 +278,9 @@ protected:
     Rules rules;
 
     bool incremental;
+    
+    HTMLTableColElementImpl *_oldColElem;
+    int _currentCol; // keeps track of current col for col/colgroup stuff
 };
 
 // -------------------------------------------------------------------------
@@ -496,11 +499,18 @@ public:
 
     virtual tagStatus startTag() { return COLStartTag; }
     virtual tagStatus endTag() { return COLEndTag; }
+    
+    void setTable(HTMLTableElementImpl *t) { table = t; }
+    void setStartCol( int c ) {_startCol = _currentCol = c; }
+    int col() { return _startCol; }
+    int lastCol() { return _currentCol; }
 
     long span() const { return _span; }
     void setSpan( long s ) { _span = s; }
     Length width() { return predefinedWidth; }
 
+    virtual NodeImpl *addChild(NodeImpl *child);
+    
     // overrides
     virtual void parseAttribute(Attribute *attr);
 
@@ -514,6 +524,10 @@ protected:
     ushort _id;
     int _span;
     Length predefinedWidth;
+    HTMLTableElementImpl *table;
+    
+    int _currentCol;
+    int _startCol;
 };
 
 // -------------------------------------------------------------------------
@@ -537,8 +551,10 @@ public:
 inline void
 HTMLTableElementImpl::ColInfo::update()
 {
-    min = minCell->getMinWidth();
-    max = maxCell->getMaxWidth();
+    if (minCell)
+    	min = minCell->getMinWidth();
+    if (maxCell)
+    	max = maxCell->getMaxWidth();
 }
 
 }; //namespace
