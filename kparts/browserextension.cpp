@@ -37,13 +37,13 @@ public:
 OpenURLEvent::OpenURLEvent( ReadOnlyPart *part, const KURL &url, const URLArgs &args )
 : Event( s_strOpenURLEvent ), m_part( part ), m_url( url ), m_args( args )
 {
-//  d = new OpenURLEventPrivate(); 
+//  d = new OpenURLEventPrivate();
 }
 
 OpenURLEvent::~OpenURLEvent()
 {
-//  delete d; 
-} 
+//  delete d;
+}
 
 namespace KParts
 {
@@ -60,6 +60,7 @@ URLArgs::URLArgs()
   reload = false;
   xOffset = 0;
   yOffset = 0;
+  trustedSource = false;
   d = 0;
 }
 
@@ -82,6 +83,7 @@ URLArgs &URLArgs::operator=(const URLArgs &args)
   postData = args.postData;
   frameName = args.frameName;
   docState = args.docState;
+  trustedSource = args.trustedSource;
   /*
   if ( args.d )
   {

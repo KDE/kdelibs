@@ -58,6 +58,8 @@ struct URLArgs
 
   QByteArray postData; //khtml specific stuff
   QString frameName;
+    
+  bool trustedSource;
 
   URLArgsPrivate *d;
 };
