@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "POT-Creation-Date: 1999-04-24 01:02+0200\n"
-"PO-Revision-Date: 1999-02-28 15:46+0200\n"
+"PO-Revision-Date: 1999-04-26 22:01-0500\n"
 "Last-Translator: Logi Ragnarsson <logir@imf.au.dk>\n"
 "Language-Team: is\n"
 
@@ -72,7 +72,7 @@ msgstr "Eftirfarandi skilyrði var ekki uppfyllt:\n"
 # kab/AssertDialog.cpp:141
 #: kab/AssertDialog.cpp:141
 msgid "In file "
-msgstr "Í skánni "
+msgstr "Í skránni "
 
 # kab/AssertDialog.cpp:141
 #: kab/AssertDialog.cpp:141
@@ -100,7 +100,7 @@ msgid ""
 "If you press the OK button, all changes\n"
 "you made will be used to proceed."
 msgstr ""
-"Ef þú ýtir á \"Í lagi\" takkan verða breytingarnar\n"
+"Ef þú ýtir á \"Í lagi\" þá verða breytingarnar\n"
 "sem þú gerðir notaðar í framhaldinu."
 
 # kab/DialogBase.cpp:39
@@ -110,8 +110,8 @@ msgid ""
 "handed over to the program, but the dialog\n"
 "will not be closed.Use this to try different settings."
 msgstr ""
-"Ef þú ýtir á \"Virkja\" takkann verða breytingarnar\n"
-"sem þú gerðir virkjaðar, en valmyndin lokast ekki."
+"Ef þú ýtir á \"Virkja\" þá verða breytingarnar sem\n"
+"þú gerðir virkjaðar en valmyndin lokast ekki."
 
 # kab/DialogBase.cpp:44
 #: kab/DialogBase.cpp:44
@@ -122,9 +122,9 @@ msgid ""
 "The program will be in the state before\n"
 "opening the dialog."
 msgstr ""
-"Ef þú ýtir á \"Hætta við\" takkann verður öllum\n"
+"Ef þú ýtir á \"Hætta við\" takkann þá verður öllum\n"
 "breytingum sem þú hefur gert síðan þú opnaðir\n"
-"valmyndina eða ýttir á \"Virkja\" hent og valmndinni lokað."
+"valmyndina eða ýttir á \"Virkja\" hent og valmyndinni lokað."
 
 # kab/DialogBase.cpp:57 kdeui/kkeydialog.cpp:242 kdeui/knotebook.cpp:247
 # kdeui/kwizard.cpp:228 po/texts.cpp:36
@@ -163,12 +163,12 @@ msgstr "Vinstri jafnaður texti í fæti"
 # kab/SearchDialog.cpp:47
 #: kab/SearchDialog.cpp:47
 msgid "The title"
-msgstr "Titilinn"
+msgstr "Titillinn"
 
 # kab/SearchDialog.cpp:48
 #: kab/SearchDialog.cpp:48
 msgid "The first name"
-msgstr "Nafn"
+msgstr "Fornafnið"
 
 # kab/SearchDialog.cpp:49
 #: kab/SearchDialog.cpp:49
@@ -183,7 +183,7 @@ msgstr "Forskeyti"
 # kab/SearchDialog.cpp:51
 #: kab/SearchDialog.cpp:51
 msgid "The name"
-msgstr "Föðurnafn"
+msgstr "Kenninafnið"
 
 # kab/SearchDialog.cpp:52
 #: kab/SearchDialog.cpp:52
@@ -193,12 +193,12 @@ msgstr "Formaða nafnið"
 # kab/SearchDialog.cpp:53
 #: kab/SearchDialog.cpp:53
 msgid "The address"
-msgstr "Heililisfangið"
+msgstr "Heimilisfangið"
 
 # kab/SearchDialog.cpp:54
 #: kab/SearchDialog.cpp:54
 msgid "The town"
-msgstr "Bæinn"
+msgstr "Bærinn"
 
 # kab/SearchDialog.cpp:55
 #: kab/SearchDialog.cpp:55
@@ -238,7 +238,7 @@ msgstr "Þriðja Netfang"
 # kab/SearchDialog.cpp:62
 #: kab/SearchDialog.cpp:62
 msgid "The telephone number"
-msgstr "Síminn"
+msgstr "Símanúmerið"
 
 # kab/SearchDialog.cpp:63
 #: kab/SearchDialog.cpp:63
@@ -253,12 +253,12 @@ msgstr "Mótaldið"
 # kab/SearchDialog.cpp:65
 #: kab/SearchDialog.cpp:65
 msgid "The homepage URL"
-msgstr "Heimasíðuslóðina"
+msgstr "Heimasíðuslóðin"
 
 # kab/SearchDialog.cpp:66
 #: kab/SearchDialog.cpp:66
 msgid "The comment"
-msgstr "Athugasemdina"
+msgstr "Athugasemdin"
 
 # kab/SearchDialog.cpp:74
 #: kab/SearchDialog.cpp:74
@@ -703,7 +703,7 @@ msgstr "Villa kom upp þegar reynt var að opna þetta skjal"
 # kdeui/keditcl1.cpp:373
 #: kdeui/keditcl1.cpp:373
 msgid "Select Document to Insert"
-msgstr "Veldu Skjal til að stinga inn"
+msgstr "Veldu skjal til að stinga inn"
 
 # kdeui/keditcl1.cpp:409 kdeui/keditcl1.cpp:491 kdeui/keditcl1.cpp:1658
 #: kdeui/keditcl1.cpp:409 kdeui/keditcl1.cpp:491 kdeui/keditcl1.cpp:1658
@@ -1024,7 +1024,7 @@ msgstr "Óskilgreindur hnappur"
 # kdeui/kkeydialog.cpp:999
 #: kdeui/kkeydialog.cpp:999
 msgid "Return to end edition"
-msgstr ""
+msgstr "Aftur til baka"
 
 # kdeui/kkeydialog.cpp:1009
 #: kdeui/kkeydialog.cpp:1009
@@ -1040,7 +1040,7 @@ msgid ""
 "\n"
 "Please choose a unique key combination."
 msgstr ""
-"Hnappasamstningin %s er nú þegar í notkun\n"
+"Hnappasamsetningin %s er nú þegar í notkun\n"
 "í altæku stillingunni %s\n"
 "\n"
 "Veldu ótvíræða samsetningu."
@@ -1059,7 +1059,7 @@ msgid ""
 "\n"
 "Please choose a unique key combination."
 msgstr ""
-"Hnappasamstningin %s er nú þegar í notkun\n"
+"Hnappasamsetningin %s er nú þegar í notkun\n"
 "í staðalstillingunni %s\n"
 "\n"
 "Veldu ótvíræða samsetningu."
@@ -1167,7 +1167,7 @@ msgstr "<!-- Ekki breyta þessari skrá handvirkt -->"
 # kab/addressbook.cc:1055 kfile/kfiledetaillist.cpp:36
 #: kab/addressbook.cc:1112 kfile/kfiledetaillist.cpp:36
 msgid "Name"
-msgstr "Nafn"
+msgstr "Kenninafn"
 
 # kfile/kfiledetaillist.cpp:40
 #: kfile/kfiledetaillist.cpp:40
@@ -1260,8 +1260,8 @@ msgid ""
 "The specified directory is not a local directory\n"
 "But the application accepts just local files."
 msgstr ""
-"Mappan sem þú tiltókst er ekki á þessu\n"
-"skráakerfi, en forritið krefst þess."
+"Mappan sem þú tilgreindir er ekki á þessu\n"
+"skráakerfi en forritið krefst hennar."
 
 # kfile/kfiledialog.cpp:519 kfile/kfiledialog.cpp:624
 #: kfile/kfiledialog.cpp:520 kfile/kfiledialog.cpp:625
@@ -1510,7 +1510,7 @@ msgstr "Des"
 # kab/editentry.cc:64 kfile/kpreview.cpp:187
 #: kab/editentry.cc:64 kfile/kpreview.cpp:187
 msgid "Name:"
-msgstr "Nafn:"
+msgstr "Kenninafn:"
 
 # kfile/kpreview.cpp:205
 #: kfile/kpreview.cpp:205
@@ -1571,7 +1571,7 @@ msgid ""
 "The file %s is corrupted\n"
 "Could not do Authorization"
 msgstr ""
-"Skráin %s er skemmd, svo það\n"
+"Skráin %s er skemmd svo það\n"
 "var ekki hægt að auðkenna"
 
 # kspell/ksconfig.cpp:66
@@ -2211,7 +2211,7 @@ msgstr "Ekki tókst að tæma gagnagrunninn."
 # kab/addressbook.cc:1059
 #: kab/addressbook.cc:1116
 msgid "First name"
-msgstr "Nafn"
+msgstr "Fornafn"
 
 # kab/addressbook.cc:1063
 #: kab/addressbook.cc:1120
@@ -2271,7 +2271,7 @@ msgstr "Talföng"
 # kab/addressbook.cc:1107
 #: kab/addressbook.cc:1164
 msgid "Delivery label"
-msgstr ""
+msgstr "Sendingarmiði"
 
 # kab/addressbook.cc:1111
 #: kab/addressbook.cc:1168
@@ -2346,7 +2346,7 @@ msgstr "(ónefnd færsla)"
 # kab/datepickerdialog.cc:34
 #: kab/datepickerdialog.cc:34
 msgid "Select birthday"
-msgstr "Velja fæðingardag"
+msgstr "Veldu fæðingardag"
 
 # kab/editentry.cc:38
 #: kab/editentry.cc:38
@@ -2456,7 +2456,7 @@ msgstr "Heimasíða:"
 # kab/editentry.cc:200 kab/editentry.cc:418
 #: kab/editentry.cc:200 kab/editentry.cc:418
 msgid "Edit email addresses"
-msgstr "Breyta póstföngum"
+msgstr "Breyta netföngum"
 
 # kab/editentry.cc:206 kab/editentry.cc:400
 #: kab/editentry.cc:206 kab/editentry.cc:400
@@ -2466,7 +2466,7 @@ msgstr "Breyta talföngum"
 # kab/editentry.cc:218
 #: kab/editentry.cc:218
 msgid "&Contact"
-msgstr "Tengiliður"
+msgstr "&Samband"
 
 # kab/editentry.cc:239
 #: kab/editentry.cc:239
@@ -2486,7 +2486,7 @@ msgstr "Tvísmelltu til að stilla dagsetningu"
 # kab/editentry.cc:256
 #: kab/editentry.cc:256
 msgid "O&thers"
-msgstr "&Aðrir"
+msgstr "&Annað"
 
 # kab/kabapi.cc:138
 #: kab/kabapi.cc:138
@@ -2512,8 +2512,8 @@ msgid ""
 "supported."
 msgstr ""
 "Kab tókst ekki að breyta gagnagrunninum í\n"
-"nýlegt form. Hann er nothæfur, en ekki allir\n"
-"eiginlekar forritsins nýtast."
+"nýlegt form. Hann er nothæfur en ekki allir\n"
+"eiginleikar forritsins nýtast."
 
 # kab/widget.cc:163
 #: kab/widget.cc:163
@@ -2592,7 +2592,7 @@ msgid ""
 "entries to make use of it."
 msgstr ""
 "Athugið að kab styður nú ný svið í\n"
-"heimilisföngum.Þau eru:\n"
+"heimilisföngum. Þau eru:\n"
 "° Fylki\n"
 "° Land\n"
 "° Póstnúmer\n"
@@ -2659,7 +2659,7 @@ msgstr "Skipti á fyrstu færslu"
 # kab/widget.cc:560
 #: kab/widget.cc:560
 msgid "Switched to last entry."
-msgstr "Skiti á síðustu færslu"
+msgstr "Skipti á síðustu færslu"
 
 # kab/widget.cc:621 kab/widget.cc:678 kab/widget.cc:860 kab/widget.cc:922
 #: kab/widget.cc:621 kab/widget.cc:678 kab/widget.cc:860 kab/widget.cc:922
@@ -2886,7 +2886,7 @@ msgstr "Yfirlit yfir KDE símaskrána"
 # kab/widget.cc:1805
 #: kab/widget.cc:1829
 msgid "Name-Email-Link (!!)"
-msgstr "Nafna-netfang tenging (!!)"
+msgstr "Nafn (tengt netfangi)"
 
 # kab/widget.cc:1807
 #: kab/widget.cc:1831
@@ -3001,577 +3001,3 @@ msgstr ""
 #: kab/widget.cc:2210
 msgid "Mail program started."
 msgstr "Póstforrit ræst."
-
-# kio/kio_cache.cc:345
-#~ msgid "KIO Cache"
-#~ msgstr "KIO flýtiminni"
-
-# kio/kio_cache.cc:347
-#~ msgid "Contents of the cache"
-#~ msgstr "Innihald flýtiminnis"
-
-# kio/kio_cache.cc:352
-#~ msgid ""
-#~ "Use the icons for drag and drop actions, since they refer to the cache files "
-#~ "on your hard disk, while you should use the textual links for browsing"
-#~ msgstr ""
-#~ "Notaðu táknmyndirnar til að draga og sleppa, því þær tákna skrár í "
-#~ "flýtiminninu á diskinum. Notaðu hinsvergar textatengingarnar til að flakka"
-
-# kio/kio_cache.cc:355
-#~ msgid "Creation Date"
-#~ msgstr "Dagur búið til"
-
-# kio/kio_cache.cc:357
-#~ msgid "Expiration Date"
-#~ msgstr "Úreldingardagur"
-
-# kio/kio_cache.cc:428
-#~ msgid "Never"
-#~ msgstr "Aldrei"
-
-# kio/kio_error.cc:16
-#~ msgid ""
-#~ "Could not read\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Ekki tókst að lesa\n"
-#~ "%s"
-
-# kio/kio_error.cc:19
-#~ msgid ""
-#~ "Could not write to\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Ekki tókst að skrifa í\n"
-#~ "%s"
-
-# kio/kio_error.cc:22
-#~ msgid ""
-#~ "Could not start process\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Ekki tókst að ræsa\n"
-#~ "%s"
-
-# kio/kio_error.cc:25
-#~ msgid ""
-#~ "Internal Error\n"
-#~ "Please send a full bugreport to kde-bugs@kde.org\n"
-#~ "\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Innri villa\n"
-#~ "Vinsamlegast sendu villuskeyti til kde-bugs@kde.org\n"
-#~ "\n"
-#~ "%s"
-
-# kio/kio_error.cc:28
-#~ msgid ""
-#~ "Malformed URL\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Gölluð slóð (URL)\n"
-#~ "%s"
-
-# kio/kio_error.cc:31
-#~ msgid ""
-#~ "The protocol %s\n"
-#~ " is not supported"
-#~ msgstr "%s er ekki þekktur samskiptaháttur."
-
-# kio/kio_error.cc:34
-#~ msgid ""
-#~ "The protocol %s\n"
-#~ "is only a filter protocol.\n"
-#~ msgstr "%s er bara síusamskiptahæattur.\n"
-
-# kio/kio_error.cc:37
-#~ msgid ""
-#~ "Unsupported action\n"
-#~ "%s"
-#~ msgstr ""
-#~ "%s\n"
-#~ "er óþekkt aðgerð"
-
-# kio/kio_error.cc:40
-#~ msgid ""
-#~ "The file or directory\n"
-#~ "%s\n"
-#~ "does not exist"
-#~ msgstr ""
-#~ "Ekki er til skrá eða mappa sem heitir\n"
-#~ "%s"
-
-# kio/kio_error.cc:43
-#~ msgid ""
-#~ "%s\n"
-#~ " is a directory,\n"
-#~ "but a file was expected"
-#~ msgstr ""
-#~ "%s\n"
-#~ "er mappa, en búist var við skrá"
-
-# kio/kio_error.cc:46
-#~ msgid ""
-#~ "Could not make directory\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Ekki tókst að búa til möppuna\n"
-#~ "%s"
-
-# kio/kio_error.cc:49
-#~ msgid ""
-#~ "The file or directory\n"
-#~ "%s\n"
-#~ "does already exist"
-#~ msgstr ""
-#~ "Nú þegar er til skrá eða mappa sem heitir\n"
-#~ "%s"
-
-# kio/kio_error.cc:52
-#~ msgid ""
-#~ "%s\n"
-#~ "Access denied"
-#~ msgstr "Aðgangi hafnað"
-
-# kio/kio_error.cc:55
-#~ msgid ""
-#~ "Could not enter directory\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Ekki tókst að fara í möppuna\n"
-#~ "%s"
-
-# kio/kio_error.cc:58
-#~ msgid ""
-#~ "The protocol %s\n"
-#~ "does not implement a directory service"
-#~ msgstr ""
-#~ "samskiptahátturinn %s\n"
-#~ "leyfir ekki uppflettingar"
-
-# kio/kio_error.cc:61
-#~ msgid ""
-#~ "Found a cyclic link in\n"
-#~ "%s"
-#~ msgstr ""
-#~ "%s\n"
-#~ "bendir í hring"
-
-# kio/kio_error.cc:64
-#~ msgid ""
-#~ "Could not change permissions for\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Ekki tókst að breyta heimildum fyrir\n"
-#~ "%s"
-
-# kio/kio_error.cc:67
-#~ msgid ""
-#~ "Access denied\n"
-#~ "Could not write to\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Ekki tókst að skrifa í\n"
-#~ "%s,\n"
-#~ "því aðgangi var hafnað"
-
-# kio/kio_error.cc:70
-#~ msgid ""
-#~ "Action has been\n"
-#~ "canceled by the user"
-#~ msgstr "Notandi hætti við aðgerð."
-
-# kio/kio_error.cc:73
-#~ msgid ""
-#~ "Found a cyclic link while copying\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Við afritun fannst\n"
-#~ "%s\n"
-#~ "sem bendir í hring"
-
-# kio/kio_error.cc:76
-#~ msgid ""
-#~ "Could not create socket for accessing\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Ekki tókst að búa til sökkul til að tengjast\n"
-#~ "%s"
-
-# kio/kio_error.cc:79
-#~ msgid ""
-#~ "Could not connect to host\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Náði ekki sambandi við vélina\n"
-#~ "%s"
-
-# kio/kio_error.cc:82
-#~ msgid ""
-#~ "Unknown host\n"
-#~ "%s"
-#~ msgstr "Óþekkt vél%s"
-
-# kio/kio_error.cc:85
-#~ msgid ""
-#~ "Connection to host\n"
-#~ "%s\n"
-#~ "is broken"
-#~ msgstr ""
-#~ "Tenging við vélina\n"
-#~ "%s\n"
-#~ "rofnaði"
-
-# kio/kio_error.cc:88
-#~ msgid ""
-#~ "The protocol %s\n"
-#~ "is not a filter protocol"
-#~ msgstr ""
-#~ "Samskiptahátturinn %s\n"
-#~ "er ekki síusamskiptaháttur."
-
-# kio/kio_error.cc:91
-#~ msgid ""
-#~ "%s\n"
-#~ "is a file,\n"
-#~ "but a directory was expected"
-#~ msgstr ""
-#~ "%s\n"
-#~ "er skrá, en búist var við möppu"
-
-# kio/kio_error.cc:94
-#~ msgid ""
-#~ "Could not mount device.\n"
-#~ "The reported error was:\n"
-#~ "\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Tókst ekki að tengja tæki inn í skráarkefrið.\n"
-#~ "Villuboðin voru:\n"
-#~ "\n"
-#~ "%s"
-
-# kio/kio_error.cc:97
-#~ msgid ""
-#~ "Could not unmount device.\n"
-#~ "The reported error was:\n"
-#~ "\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Tókst ekki að aftengja tæki frá skráarkerfinu.\n"
-#~ "Villuboðin voru:\n"
-#~ "\n"
-#~ "%s"
-
-# kio/kio_error.cc:100
-#~ msgid ""
-#~ "The process for the\n"
-#~ "%s protocol\n"
-#~ "died unexpectedly"
-#~ msgstr ""
-#~ "Ferlinu sem meðhöndlar samskiptamátann\n"
-#~ "%s lauk skyndilega"
-
-# kio/kio_error.cc:103
-#~ msgid ""
-#~ "Could not access\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Komst ekki í\n"
-#~ "%s"
-
-# kio/kio_error.cc:106
-#~ msgid ""
-#~ "Unknown error code %i\n"
-#~ "%s\n"
-#~ "\n"
-#~ "Please send a full bugreport to kde-bugs@kde.org"
-#~ msgstr ""
-#~ "Óþekkt villunúmer %i\n"
-#~ "%s\n"
-#~ "\n"
-#~ "Vinsamlegast sendu villuskeyti til kde-bugs@kde.org"
-
-# kio/kio_error.cc:118 kio/kio_linedit_dlg.cc:42 kio/kio_openwith.cc:260
-# kio/kio_pass_dlg.cc:75 kio/kio_paste.cc:48 kio/kio_paste.cc:60
-# kio/kio_paste.cc:76 kio/kio_paste.cc:87 kio/kio_rename_dlg.cc:217
-# kio/kio_rename_dlg.cc:224 kio/kmimetypes.cc:62 kio/kmimetypes.cc:89
-# kio/kmimetypes.cc:135 kio/kmimetypes.cc:488 kio/kmimetypes.cc:506
-# kio/kmimetypes.cc:520 kio/kmimetypes.cc:567 kio/kmimetypes.cc:600
-# kio/kmimetypes.cc:660 kio/kmimetypes.cc:692 kio/kregfactories.cc:75
-# kio/krun.cc:40 kio/krun.cc:105 kio/krun.cc:512 kio/kservices.cc:114
-#~ msgid "Ok"
-#~ msgstr "Í lagi"
-
-# kio/kio_job.cc:138
-#~ msgid "Mounting %s ..."
-#~ msgstr "Tengi %s inn í skráakerfið..."
-
-# kio/kio_job.cc:158
-#~ msgid "Unmounting %s ..."
-#~ msgstr "Aftengi %s frá skrárkerfinu..."
-
-# kio/kio_openwith.cc:133
-#~ msgid "This group is empty!"
-#~ msgstr "Þessi hópur er tómur!"
-
-# kio/kio_openwith.cc:264
-#~ msgid "&Browser"
-#~ msgstr "&Velja"
-
-# kio/kio_pass_dlg.cc:33
-#~ msgid "User"
-#~ msgstr "Notandi"
-
-# kio/kio_pass_dlg.cc:44 kio/kio_pass_dlg.cc:88
-#~ msgid "Password"
-#~ msgstr "Lykilorð"
-
-# kio/kio_paste.cc:48 kio/kio_paste.cc:60
-#~ msgid "The clipboard is empty"
-#~ msgstr "Klemmuspjaldið er tómt"
-
-# kio/kio_paste.cc:75
-#~ msgid ""
-#~ "Pasting clipboard data is only supported on the local hard disk currently"
-#~ msgstr ""
-#~ "Í augnablikinu er bara hægt að líma af klemmuspjaldinu á skráakerfið"
-
-# kio/kio_paste.cc:80
-#~ msgid "Filename for clipboard content:"
-#~ msgstr "Skráarnafn fyrir innihald klemmuspjalds:"
-
-# kio/kio_paste.cc:87
-#~ msgid "You did not enter a filename"
-#~ msgstr "Þú slóst ekki inn skráarnafn"
-
-# kio/kio_paste.cc:97
-#~ msgid "The file %s does already exist. Do you really want to overwrite it ?"
-#~ msgstr "Skráin %s er nú þegar til. Viltu skrifa yfir hana?"
-
-# kio/kio_progress_dlg.cc:92 kio/kio_progress_dlg.cc:108
-#~ msgid "Bytes"
-#~ msgstr "bæti"
-
-# kio/kio_progress_dlg.cc:97 kio/kio_progress_dlg.cc:113
-#~ msgid "Kb"
-#~ msgstr "Kb"
-
-# kio/kio_progress_dlg.cc:102 kio/kio_progress_dlg.cc:118
-#~ msgid "Mb"
-#~ msgstr "Mb"
-
-#~ msgid "of"
-#~ msgstr "af"
-
-# kio/kio_progress_dlg.cc:151 kio/kio_progress_dlg.cc:177
-#~ msgid "Stalled"
-#~ msgstr "Fastur í drullupolli"
-
-# kio/kio_progress_dlg.cc:159
-#~ msgid " Bytes/s"
-#~ msgstr " bæti/s"
-
-# kio/kio_progress_dlg.cc:164
-#~ msgid " Kb/s"
-#~ msgstr " Kb/s"
-
-# kio/kio_progress_dlg.cc:169
-#~ msgid " Mb/s"
-#~ msgstr " Mb/s"
-
-# kio/kio_progress_dlg.cc:184
-#~ msgid "%i seconds"
-#~ msgstr "%i sekúndur"
-
-# kio/kio_progress_dlg.cc:190
-#~ msgid "%i:%i"
-#~ msgstr "%i:%i"
-
-# kio/kio_progress_dlg.cc:197
-#~ msgid "%i:%i:%i"
-#~ msgstr "%i:%i:%i"
-
-# kio/kio_progress_dlg.cc:201
-#~ msgid "%i%s  Remaining time: %s"
-#~ msgstr "%i%s  Tími eftir: %s"
-
-# kio/kio_progress_dlg.cc:207
-#~ msgid "Scanning "
-#~ msgstr "Skoða"
-
-# kio/kio_progress_dlg.cc:222
-#~ msgid "Creating dir "
-#~ msgstr "Bý til möppu "
-
-# kio/kio_progress_dlg.cc:229
-#~ msgid "Fetching file"
-#~ msgstr "Sæki skrá"
-
-# kio/kio_rename_dlg.cc:33
-#~ msgid "Rename"
-#~ msgstr "Endurnefna"
-
-# kio/kio_rename_dlg.cc:38 kio/kio_skip_dlg.cc:23
-#~ msgid "Skip"
-#~ msgstr "Sleppa"
-
-# kio/kio_rename_dlg.cc:41 kio/kio_skip_dlg.cc:28
-#~ msgid "Auto Skip"
-#~ msgstr "Sleppa sjálfkrafa"
-
-# kio/kio_rename_dlg.cc:47
-#~ msgid "Overwrite"
-#~ msgstr "Skrifa yfir"
-
-# kio/kio_rename_dlg.cc:52
-#~ msgid "Overwrite All"
-#~ msgstr "Skrifa yfir allt"
-
-# kio/kio_rename_dlg.cc:59
-#~ msgid "Resume"
-#~ msgstr "Setja aftur í gang"
-
-# kio/kio_rename_dlg.cc:64
-#~ msgid "Resume All"
-#~ msgstr "Setja allt aftur í gang"
-
-# kio/kio_rename_dlg.cc:75
-#~ msgid "You try to overwrite"
-#~ msgstr "Þú reynir að skrifa yfir"
-
-# kio/kio_rename_dlg.cc:96
-#~ msgid "already exists. Overwrite with"
-#~ msgstr "er til nú þegar. Skrifa yfir með"
-
-# kio/kio_rename_dlg.cc:108
-#~ msgid "Or rename to"
-#~ msgstr "Eða endurnefna"
-
-# kio/kio_rename_dlg.cc:119
-#~ msgid "already exists."
-#~ msgstr "er til nú þegar."
-
-# kio/kio_rename_dlg.cc:124
-#~ msgid "Do you want to rename it ?"
-#~ msgstr "Viltu endurnefna?"
-
-# kio/kio_rename_dlg.cc:215
-#~ msgid "Malformed URL\n"
-#~ msgstr "Gölluð slóð (URL)\n"
-
-# kio/kio_rename_dlg.cc:224
-#~ msgid "You must not change the protocol"
-#~ msgstr "Þú mátt ekki breyta samskiptamátanum"
-
-# kio/kio_skip_dlg.cc:35
-#~ msgid "Can not write"
-#~ msgstr "Ekki tókst að skrifa"
-
-# kio/kio_skip_dlg.cc:46
-#~ msgid "Permission denied!"
-#~ msgstr "Leyfi ekki veitt!"
-
-# kio/kmimetypes.cc:62
-#~ msgid "No mime types installed!"
-#~ msgstr "Engin MIME tög sett inn!"
-
-# kio/kmimetypes.cc:86
-#~ msgid "Could not find mime type\n"
-#~ msgstr "Ekki tókst að finna MIME tag\n"
-
-# kio/kmimetypes.cc:132
-#~ msgid "The mime type config file "
-#~ msgstr "Stillingaskráin fyrir MIME tög"
-
-# kio/kmimetypes.cc:134 kio/kregfactories.cc:74
-#~ msgid "does not conatain a MimeType=... entry"
-#~ msgstr "inniheldur ekki MimeType=... færslu"
-
-# kio/kmimetypes.cc:487
-#~ msgid ""
-#~ "The kdelnk file\n"
-#~ "%s\n"
-#~ "has no Type=... entry"
-#~ msgstr ""
-#~ "kdelnk skráinn\n"
-#~ "%s\n"
-#~ "inniheldur ekki Type=... færslu"
-
-# kio/kmimetypes.cc:505
-#~ msgid ""
-#~ "The kdelnk type\n"
-#~ "%s\n"
-#~ "is unknown"
-#~ msgstr ""
-#~ "kdelnk tagið\n"
-#~ "%s\n"
-#~ "er ekki þekkt"
-
-# kio/kmimetypes.cc:519 kio/kmimetypes.cc:599 kio/kmimetypes.cc:691
-#~ msgid ""
-#~ "The kdelnk file\n"
-#~ "%s\n"
-#~ "is of type FSDevice but has no Dev=... entry"
-#~ msgstr ""
-#~ "kdelnk skráin\n"
-#~ "%s\n"
-#~ "er af FSDevice tagi, en inniheldur\n"
-#~ "ekki Dev=... færslu."
-
-# kio/kmimetypes.cc:566
-#~ msgid ""
-#~ "The kdelnk file\n"
-#~ "%s\n"
-#~ "is of type Link but has no URL=... entry"
-#~ msgstr ""
-#~ "Kdelnk skráin\n"
-#~ "%s\n"
-#~ "er af taginu Tengill en hefur enga URL=... færslu"
-
-# kio/kmimetypes.cc:609
-#~ msgid "Mount"
-#~ msgstr "Tengja inn"
-
-# kio/kmimetypes.cc:616
-#~ msgid "Unmount"
-#~ msgstr "Tengja frá"
-
-# kio/kmimetypes.cc:659
-#~ msgid ""
-#~ "The kdelnk file\n"
-#~ "%s\n"
-#~ " has an invalid menu entry\n"
-#~ "%s"
-#~ msgstr ""
-#~ "kdelnk skráin\n"
-#~ "%s\n"
-#~ "er með gallaða valyndafærslu\n"
-#~ "%s"
-
-# kio/kregfactories.cc:72
-#~ msgid "The mime type _cfg file "
-#~ msgstr "_cfg skráin fyrir MIME tög "
-
-# kio/krun.cc:39
-#~ msgid ""
-#~ "Can not enter\n"
-#~ "%s\n"
-#~ "Access denied"
-#~ msgstr ""
-#~ "Ekki tókst að fara í\n"
-#~ "%s,því aðgangi var hafnað."
-
-# kio/kservices.cc:111
-#~ msgid "The application config file\n"
-#~ msgstr "Stillingaskrá forritsins\n"
-
-# kio/kservices.cc:113
-#~ msgid ""
-#~ "\n"
-#~ "does not conatain a Name=... entry"
-#~ msgstr ""
-#~ "\n"
-#~ "inniheldur ekki Name=... færslu"
