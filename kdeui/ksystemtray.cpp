@@ -44,7 +44,7 @@ KSystemTray::KSystemTray( QWidget* parent, const char* name )
     setBackgroundMode(X11ParentRelative);
     hasQuit = 0;
     menu = new KPopupMenu( this );
-    menu->setTitle( kapp->caption() );
+    menu->insertTitle( kapp->miniIcon(), kapp->caption() );
     move( -1000, -1000 );
 }
 
