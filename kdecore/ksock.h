@@ -227,6 +227,8 @@ private:
 
 
 /**
+ * @short Monitors a port for incoming TCP/IP connections.
+ *
  * @deprecated
  * This class is deprecated and will be removed in the future. For new
  * programs, please use KExtendedSocket class.
@@ -241,7 +243,6 @@ private:
  *
  * @author Torben Weis <weis@stud.uni-frankfurt.de>
  * @version $Id$
- * @short Monitors a port for incoming TCP/IP connections.
 */
 class KServerSocket : public QObject
 {

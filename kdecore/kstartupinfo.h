@@ -203,10 +203,10 @@ class KStartupInfo
          */
         static void appStarted();
 	/**
-	 * @li NoMatch    - the window doesn't match any existing startup notification</li>
-	 * @li Match      - the window matches an existing startup notification</li>
+	 * @li NoMatch    - the window doesn't match any existing startup notification
+	 * @li Match      - the window matches an existing startup notification
 	 * @li CantDetect - unable to detect if the window matches any existing
-	 *			startup notification</li>
+	 *			startup notification
 	 */
         enum startup_t { NoMatch, Match, CantDetect };
 	/**
@@ -254,13 +254,13 @@ class KStartupInfo
         void setTimeout( unsigned int secs );
 	/**
 	 * Sets the startup notification window property on the given window.
-	 * @param windows the id of the window
+	 * @param window the id of the window
 	 * @param id the startup notification id
 	 */
         static void setWindowStartupId( WId window, const QCString& id );
 	/**
 	 * Returns startup notification identification of the given window.
-	 * @param windows the id of the window
+	 * @param w the id of the window
 	 * @return the startup notification id. Can be null if not found.
 	 */
         static QCString windowStartupId( WId w );

@@ -46,7 +46,7 @@
  * and decoding input using base64, uu and the quoted-printable
  * specifications.
  *
- * \b Usage:\n
+ * \b Usage:
  *
  * \code
  * QCString input = "Aladdin:open sesame";

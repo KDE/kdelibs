@@ -40,6 +40,8 @@ class KCompletionMatches;
 class QPopupMenu;
 
 /**
+ * @short A generic class for completing QStrings
+ *
  * This class offers easy use of "auto-completion", "manual-completion" or
  * "shell completion" on QString objects. A common use is completing filenames
  * or URLs (see KURLCompletion()).
@@ -101,12 +103,13 @@ class QPopupMenu;
  *
  * cout << completion.makeCompletion( "ca" ).latin1() << endl;
  * \endcode
+ *
  * In shell-completion-mode, this will be "carp"; in auto-completion-
- * mode it will be "carp@cs.tu-berlin.de", as that is alphabetically
+ * mode it will be "carp\@cs.tu-berlin.de", as that is alphabetically
  * smaller.
- * If setOrder was set to Insertion, "carpdjih@sp.zrz.tu-berlin.de"
+ * If setOrder was set to Insertion, "carpdjih\@sp.zrz.tu-berlin.de"
  * would be completed in auto-completion-mode, as that was inserted before
- * "carp@cs.tu-berlin.de".
+ * "carp\@cs.tu-berlin.de".
  *
  * You can dynamically update the completable items by removing and adding them
  * whenever you want.
@@ -124,7 +127,6 @@ class QPopupMenu;
  * not necessary.
  *
  *
- * @short A generic class for completing QStrings
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  * @version $Id$
  */
@@ -295,7 +297,7 @@ public:
 
     /**
      * Setting this to true makes KCompletion behave case insensitively.
-     * E.g. makeCompletion( "CA" ); might return "carp@cs.tu-berlin.de".
+     * E.g. makeCompletion( "CA" ); might return "carp\@cs.tu-berlin.de".
      * Default is false (case sensitive).
      * @param ignoreCase true to ignore the case
      * @see ignoreCase

@@ -140,7 +140,7 @@ public:
      * A system tray window serves as an icon replacement. It's
      * displayed inside the panel's system tray.
      * @param trayWin the id of the system tray window
-     * @param trayWin the id of the window represented by the system
+     * @param forWin the id of the window represented by the system
      *        tray window
      */
     static void setSystemTrayWindowFor( WId trayWin, WId forWin );
@@ -165,14 +165,14 @@ public:
      * Returns the WM_TRANSIENT_FOR property for the given window, i.e. the mainwindow
      * for this window.
      *
-     * @param allow_root_window if false, and the WM_TRANSIENT_FOR property points
-     *    to the root window, no window is returned
+     * @param window the id of the window
      * @since 3.2
      */
     static WId transientFor( WId window );
 
     /**
      * Returns the leader window for the group the given window is in, if any.
+     * @param window the id of the window
      * @since 3.2
      */
     static WId groupLeader( WId window );
@@ -203,7 +203,11 @@ public:
      * @li ClassHint load icon after getting name from the classhint
      * @li XApp load the standard X icon (last fallback)
      */
-    enum IconSource { NETWM = 1, WMHints = 2, ClassHint = 4, XApp = 8 };
+    enum IconSource { NETWM = 1, //!< read from property from the window manager specification
+		      WMHints = 2, //!< read from WMHints property
+		      ClassHint = 4, //!< load icon after getting name from the classhint
+		      XApp = 8 //!<load the standard X icon (last fallback)
+    };
     /**
      * @overload
      *
@@ -211,6 +215,11 @@ public:
      * You should usually prefer the simpler variant which tries all possibilities to get
      * an icon.
      *
+     * @param win the id of the window
+     * @param width the desired width, or -1
+     * @param height the desired height, or -1
+     * @param scale if true the icon will be scaled to the desired size. Otherwise the
+     *        icon will not be modified.
      * @param flags OR-ed flags from the IconSource enum
      */
     static QPixmap icon( WId win, int width, int height, bool scale, int flags );

@@ -378,7 +378,7 @@ protected:
      * the requested classname.
      *
      * It is valid behavior to create different kinds of objects
-     * depending on the requested @p classname. For example a koffice
+     * depending on the requested @p className. For example a koffice
      * library may usually return a pointer to KoDocument.  But
      * if asked for a "QWidget", it could create a wrapper widget,
      * that encapsulates the Koffice specific features.
@@ -386,11 +386,11 @@ protected:
      * This function is called by #create()
      * @param parent the parent of the QObject, 0 for no parent
      * @param name the name of the QObject, 0 for no name
-     * @param classname the name of the class
+     * @param className the name of the class
      * @param args a list of arguments
      */
     virtual QObject* createObject( QObject* parent = 0, const char* name = 0,
-                                   const char* classname = "QObject",
+                                   const char* className = "QObject",
                                    const QStringList &args = QStringList() ) = 0;
 
 

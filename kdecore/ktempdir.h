@@ -58,8 +58,8 @@ public:
     *
     * The default \p directoryPrefix is "$KDEHOME/tmp-$HOST/appname"
     * @param directoryPrefix the prefix of the file name, or
-    * QString::null for the default value 
-    * @param the file permissions,
+    *        QString::null for the default value 
+    * @param mode the file permissions,
     * almost always in octal. The first digit selects permissions for
     * the user who owns the file: read (4), write (2), and execute
     * (1); the second selects permissions for other users in the

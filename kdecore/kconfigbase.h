@@ -765,6 +765,7 @@ public:
    *
    * @param pKey The key to write
    * @param rValue The list to write
+   * @param sep  The list separator (default is ",").
    * @param bPersistent If @p bPersistent is false, the entry's dirty flag
    *                    will not be set and thus the entry will not be
    *                    written to disk at deletion time.
@@ -786,6 +787,7 @@ public:
    *
    * @param pKey The key to write
    * @param rValue The list to write
+   * @param sep  The list separator (default is ",").
    * @param bPersistent If @p bPersistent is false, the entry's dirty flag
    *                    will not be set and thus the entry will not be
    *                    written to disk at deletion time.
@@ -808,6 +810,7 @@ public:
    *
    * @param pKey The key to write
    * @param rValue The list to write
+   * @param sep  The list separator (default is ",").
    * @param bPersistent If @p bPersistent is false, the entry's dirty flag
    *                    will not be set and thus the entry will not be
    *                    written to disk at deletion time.
@@ -829,6 +832,7 @@ public:
    *
    * @param pKey The key to write
    * @param rValue The list to write
+   * @param sep  The list separator (default is ",").
    * @param bPersistent If @p bPersistent is false, the entry's dirty flag
    *                    will not be set and thus the entry will not be
    *                    written to disk at deletion time.
@@ -1443,6 +1447,7 @@ public:
    *
    * @param pKey The key to write
    * @param rValue The list to write
+   * @param sep  The list separator (default is ",").
    * @param bPersistent If @p bPersistent is false, the entry's dirty flag
    *                    will not be set and thus the entry will not be
    *                    written to disk at deletion time.
@@ -1467,6 +1472,7 @@ public:
    *
    * @param pKey The key to write
    * @param rValue The list to write
+   * @param sep  The list separator (default is ",").
    * @param bPersistent If @p bPersistent is false, the entry's dirty flag
    *                    will not be set and thus the entry will not be
    *                    written to disk at deletion time.

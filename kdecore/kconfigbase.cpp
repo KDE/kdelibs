@@ -1805,9 +1805,9 @@ void KConfigGroup::deleteGroup(bool bGlobal)
   mMaster->deleteGroup(KConfigBase::group(), false, bGlobal);
 }
 
-void KConfigGroup::setDirty(bool b)
+void KConfigGroup::setDirty(bool _bDirty)
 {
-  mMaster->setDirty(b);
+  mMaster->setDirty(_bDirty);
 }
 
 void KConfigGroup::putData(const KEntryKey &_key, const KEntry &_data, bool _checkGroup)

@@ -878,6 +878,7 @@ public:
    * representation.
    *
    * @param sock	the socket address
+   * @param len         the length of the socket address
    * @param host	where the hostname will be written
    * @param port	where the service-port will be written
    * @param flags	the same flags as getnameinfo()

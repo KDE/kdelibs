@@ -897,6 +897,8 @@ public:
    * Convenience function
    *
    * Returns a relative path based on @p base_dir that points to @p path.
+   * @param base_dir the base directory to derive from
+   * @param path the new target directory
    * @param isParent A pointer to a boolean which, if provided, will be set to reflect
    * whether @p path has @p base_dir is a parent dir.
    */

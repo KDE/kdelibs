@@ -197,6 +197,10 @@ class KAccel : public QAccel
 	 *
 	 * @param psAction The name AND label of the action.
 	 * @param cutDef The default shortcut for this action.
+	 * @param pObjSlot Pointer to the slot object.
+	 * @param psMethodSlot Pointer to the slot method.
+	 * @param bConfigurable Allow the user to change this shortcut if set to 'true'.
+	 * @param bEnabled The action will be activated by the shortcut if set to 'true'.
 	 */
 	KAccelAction* insert( const char* psAction, const KShortcut& cutDef,
 	                 const QObject* pObjSlot, const char* psMethodSlot,

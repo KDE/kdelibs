@@ -346,7 +346,7 @@ public:
   /**
    * Checks whether a killed process dumped core.
    *
-   * @return true if @ref signalled() returns true and the process
+   * @return true if signalled() returns true and the process
    * dumped core. Note that on systems that don't define the
    * WCOREDUMP macro, the return value is always false.
    *
@@ -366,7 +366,7 @@ public:
    * Returns the signal the process was killed by.
    *
    * @return the signal number that caused the process to exit.
-   * Note that this value is not valid if @ref signalled() returns false.
+   * Note that this value is not valid if signalled() returns false.
    *
    * @since 3.2
    */
@@ -394,9 +394,10 @@ public:
    * Please note that you must not free @p buffer or call writeStdin()
    * again until either a wroteStdin() signal indicates that the
    * data has been sent or a processExited() signal shows that
-   * the child process is no longer alive...
+   * the child process is no longer alive.
    * @param buffer the buffer to write. Do not free or modify it until
-   * you got a wroteStdin() or processExited() signal
+   * you get a wroteStdin() or processExited() signal
+   * @param buflen the length of the buffer
    * @return false if an error has occurred
    **/
   bool writeStdin(const char *buffer, int buflen);

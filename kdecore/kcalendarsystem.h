@@ -213,7 +213,7 @@ public:
   virtual int daysInMonth (const QDate & date) const = 0;
 
   /**
-   * Gets the number of weeks in year
+   * Gets the number of weeks in a specified year
    *
    * @param year the year
    * @return number of weeks in year
@@ -224,6 +224,7 @@ public:
    * Gets specific calendar type week number for a given date
    *
    * @param date gregorian date
+   * @param yearNum The year the date belongs to
    * @return week number
    */
   virtual int weekNumber(const QDate& date, int * yearNum = 0) const = 0;

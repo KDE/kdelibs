@@ -131,7 +131,7 @@ public:
 
     /**
      * Returns the encoding for a string obtained with descriptiveEncodingNames().
-     * @param the descriptive name for the encoding
+     * @param descriptiveName the descriptive name for the encoding
      * @return the name of the encoding
      */
     QString encodingForName( const QString &descriptiveName );

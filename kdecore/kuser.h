@@ -30,7 +30,7 @@ class KUserPrivate;
 struct passwd;
 
 /**
- * An user or account name.
+ * @short Represents a user on your system
  *
  * This class represents a user on your system. You can either get
  * information about the current user, of fetch information about
@@ -38,7 +38,6 @@ struct passwd;
  * so copying objects is very cheap and you can safely pass objects by value.
  *
  * @author Tim Jansen <tim@tjansen.de>
- * @short Represents a user on your system
  * @since 3.2
  */
 class KUser {
@@ -53,7 +52,7 @@ public:
   /**
    * Creates an object that contains information about the current user.
    * (as returned by getuid(2) or geteuid(2)).
-   * @param If @ref UseEffectiveUID is passed the effective user is returned. 
+   * @param mode if @ref UseEffectiveUID is passed the effective user is returned. 
    *        If @ref UseRealUserID is passed the real user will be returned. 
    *        The difference is that when the user uses a command like "su", this 
    *        will change the effective user, but not the real user. Use the 
@@ -78,14 +77,14 @@ public:
   KUser(const QString& name);
 
   /**
-   * Two KUser objects are equal if @ref isValid() and the uid() are
-   * identical.
+   * Two KUser objects are equal if isValid() is true 
+   * and the uid() are identical.
    */
   bool operator ==(const KUser& user) const;
 
   /**
-   * Two KUser objects are not equal if either @ref isValid() or
-   * @ref uid() is not identical.
+   * Two KUser objects are not equal if either isValid() is
+   * not true or uid() are not identical.
    */
   bool operator !=(const KUser &user) const;
 

@@ -105,7 +105,7 @@ class KLocale
   friend class KGlobal; // for initInstance()
 public:
   /**
-   * Constructs a KLocale with the given catalog name.
+   * Constructs a KLocale with the given catalogue name.
    * The constructor looks for an entry Locale/Language in the
    * configuration file.
    * If no config file is specified, it will also look for languages
@@ -117,7 +117,7 @@ public:
    * If you specify a configuration file, it has to be valid until
    * the KLocale object is destroyed.
    *
-   * @param catalog The name of the main language file
+   * @param catalogue The name of the main language file
    * @param config The configuration file to use.
    */
   KLocale( const QString& catalogue, KConfig *config = 0 );
@@ -938,27 +938,27 @@ public:
   void setMeasureSystem(MeasureSystem value);
 
   /**
-   * Adds another catalog to search for translation lookup.
+   * Adds another catalogue to search for translation lookup.
    * This function is useful for extern libraries and/or code,
-   * that provides its own messages.
+   * that provide there own messages.
    *
    * If the catalog does not exist for the chosen language,
    * it will be ignored and en_US will be used.
    *
-   * @param catalog The catalog to add.
+   * @param catalogue The catalog to add.
    */
   void insertCatalogue(const QString& catalogue);
 
   /**
-   * Removes a catalog for translation lookup.
-   * @param catalog The catalog to remove.
+   * Removes a catalogue for translation lookup.
+   * @param catalogue The catalog to remove.
    * @see insertCatalogue()
    */
   void removeCatalogue(const QString &catalogue);
 
   /**
-   * Sets the active catalog for translation lookup.
-   * @param catalog The catalog to activate.
+   * Sets the active catalogue for translation lookup.
+   * @param catalogue The catalog to activate.
    */
   void setActiveCatalogue(const QString &catalogue);
 
@@ -1017,13 +1017,12 @@ public:
 			  QString & charset);
 
   /**
-   * Use this to as main catalog for *all* KLocales, if not the appname
+   * Use this as main catalogue for *all* KLocales, if not the appname
    * will be used. This function is best to be the very first instruction
    * in your program's main function as it only has an effect before the
-   * first KLocale object is created (and this is in common KDE applications
-   * quite early).
+   * first KLocale object is created.
    *
-   * @param catalog Catalogue to override all other main catalogues.
+   * @param catalogue Catalogue to override all other main catalogues.
    */
   static void setMainCatalogue(const char *catalogue);
 
