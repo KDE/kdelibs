@@ -292,6 +292,10 @@ void KMainWindow::parseGeometry(bool parsewidth)
 
 KMainWindow::~KMainWindow()
 {
+    if (d->autoSaveSettings) {
+        saveMainWindowSettings(KGlobal::config(), d->autoSaveGroup);
+    }
+
     delete d->settingsTimer;
     QMenuBar* mb = internalMenuBar();
     delete mb;
@@ -601,7 +605,6 @@ void KMainWindow::savePropertiesInternal( KConfig *config, int number )
 void KMainWindow::saveMainWindowSettings(KConfig *config, const QString &configGroup)
 {
     kdDebug(200) << "KMainWindow::saveMainWindowSettings " << configGroup << endl;
-    QStrList entryList;
     QString oldGroup;
 
     if (!configGroup.isEmpty())
@@ -616,31 +619,26 @@ void KMainWindow::saveMainWindowSettings(KConfig *config, const QString &configG
 
     QStatusBar* sb = internalStatusBar();
     if (sb) {
-        entryList.clear();
-        if ( sb->isHidden() )
+        QStrList entryList;
+        if ( sb->isHidden() ) {
             entryList.append("Disabled");
-        else
+	    config->writeEntry(QString::fromLatin1("StatusBar"), entryList, ';');
+        } else {
             entryList.append("Enabled");
-
-	if(sb->isHidden())
-	  config->writeEntry(QString::fromLatin1("StatusBar"), entryList, ';');
-	else
-	  config->revertToDefault(QString::fromLatin1("StatusBar"));
+	    config->revertToDefault(QString::fromLatin1("StatusBar"));
+        }
     }
 
     QMenuBar* mb = internalMenuBar();
     if (mb) {
-        entryList.clear();
-        if ( mb->isHidden() )
+        QStrList entryList;
+        if ( mb->isHidden() ) {
             entryList.append("Disabled");
-        else
+	    config->writeEntry(QString::fromLatin1("MenuBar"), entryList, ';');
+        } else {
             entryList.append("Enabled");
-
-	// By default we don't hide.
-	if(mb->isHidden())
-	  config->writeEntry(QString::fromLatin1("MenuBar"), entryList, ';');
-	else
-	  config->revertToDefault(QString::fromLatin1("MenuBar"));
+	    config->revertToDefault(QString::fromLatin1("MenuBar"));
+        }
     }
 
     int n = 1; // Toolbar counter. toolbars are counted from 1,
