@@ -373,9 +373,16 @@ void RenderFlow::layoutBlockChildren( bool relayoutChildren )
              (child->isReplaced() && (child->style()->width().isPercent() || child->style()->height().isPercent())))
                 child->setLayouted(false);
 	if ( child->style()->flowAroundFloats() && !child->isFloating() &&
-	     style()->width().isFixed() && child->minWidth() > lineWidth( m_height ) ) {
-	    m_height = QMAX( m_height, floatBottom() );
-	    prevMargin = 0;
+	     style()->width().isFixed() ) {
+	    // flow around floats only flows around the ones on the left side (right side if direction==RTL)
+	    int available = style()->direction() == LTR
+			    ? m_width - leftOffset( m_height )
+			    : rightOffset( m_height );
+	    if ( child->minWidth() > available ) {
+		// ## this might be a little to far.
+		m_height = QMAX( m_height, style()->direction() == LTR ? leftBottom() : rightBottom() );
+		prevMargin = 0;
+	    }
 	}
 
 //         kdDebug( 6040 ) << "   " << child->renderName() << " loop " << child << ", " << child->isInline() << ", " << child->layouted() << endl;
@@ -439,7 +446,7 @@ void RenderFlow::layoutBlockChildren( bool relayoutChildren )
         } else {
             chPos -= child->width() + child->marginLeft() + child->marginRight();
             if ( ( style()->htmlHacks() || child->isTable() ) && child->style()->flowAroundFloats() )
-                chPos -= leftOffset(m_height);
+                chPos = rightOffset(m_height) - child->marginRight() - child->width();
         }
         child->setPos(chPos, child->yPos());
 
