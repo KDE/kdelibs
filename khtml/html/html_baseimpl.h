@@ -194,7 +194,7 @@ public:
     virtual tagStatus startTag() { return IFRAMEStartTag; }
     virtual tagStatus endTag() { return IFRAMEEndTag; }
 
-    //    virtual void parseAttribute(khtml::Attribute *attr);
+    virtual void parseAttribute(khtml::Attribute *attr);
     virtual void attach(KHTMLView *w);
 };
 

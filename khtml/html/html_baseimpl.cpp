@@ -507,7 +507,6 @@ ushort HTMLIFrameElementImpl::id() const
     return ID_IFRAME;
 }
 
-#if 0
 void HTMLIFrameElementImpl::parseAttribute(Attribute *attr )
 {
   DOM::DOMStringImpl *stringImpl = attr->val();
@@ -531,7 +530,6 @@ void HTMLIFrameElementImpl::parseAttribute(Attribute *attr )
       HTMLElementImpl::parseAttribute( attr );
   }
 }
-#endif
 
 void HTMLIFrameElementImpl::attach(KHTMLView *w)
 {
