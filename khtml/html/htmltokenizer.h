@@ -126,7 +126,14 @@ protected:
         if ( (dest - buffer) > size-len )
             enlargeBuffer();
     }
+    inline void checkScriptBuffer(int len = 10)
+    {
+        if ( scriptCodeSize + len >= scriptCodeMaxSize )
+            enlargeScriptBuffer();
+    }
+
     void enlargeBuffer();
+    void enlargeScriptBuffer();
 
     // from CachedObjectClient
     void notifyFinished(khtml::CachedObject *finishedObj);
@@ -148,8 +155,7 @@ protected:
     {
         NoQuote = 0,
         SingleQuote,
-        DoubleQuote,
-        IgnoreQuote
+        DoubleQuote
     } HTMLQuote;
 
     HTMLQuote tquote;

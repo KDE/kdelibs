@@ -47,6 +47,7 @@
 #include "htmlhashes.h"
 #include <kcharsets.h>
 #include <kglobal.h>
+#include <ctype.h>
 #include <assert.h>
 
 #include <kdebug.h>
@@ -72,6 +73,7 @@ HTMLTokenizer::HTMLTokenizer(DOM::HTMLDocumentImpl *_doc, KHTMLView *_view)
     view = _view;
     buffer = 0;
     scriptCode = 0;
+    scriptCodeSize = scriptCodeMaxSize = 0;
     charsets = KGlobal::charsets();
     parser = new KHTMLParser(_view, _doc);
     currToken = 0;
@@ -86,6 +88,7 @@ HTMLTokenizer::HTMLTokenizer(DOM::HTMLDocumentImpl *_doc, DOM::DocumentFragmentI
     view = 0;
     buffer = 0;
     scriptCode = 0;
+    scriptCodeSize = scriptCodeMaxSize = 0;
     charsets = KGlobal::charsets();
     parser = new KHTMLParser( i, _doc );
     currToken = 0;
@@ -110,6 +113,7 @@ void HTMLTokenizer::reset()
     if ( scriptCode )
         QT_DELETE_QCHAR_VEC(scriptCode);
     scriptCode = 0;
+    scriptCodeSize = scriptCodeMaxSize = 0;
 
     delete currToken;
     currToken = 0;
@@ -253,15 +257,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
 
         // Allocate memory to store the script. We will write maximal
         // 10 characers.
-        if ( scriptCodeSize + 10 > scriptCodeMaxSize )
-        {
-            int newsize = QMAX(scriptCodeMaxSize*2, scriptCodeMaxSize+1024);
-            QChar *newbuf = QT_ALLOC_QCHAR_VEC( newsize );
-            memcpy( newbuf, scriptCode, scriptCodeSize*sizeof(QChar) );
-            QT_DELETE_QCHAR_VEC(scriptCode);
-            scriptCode = newbuf;
-            scriptCodeMaxSize = newsize;
-        }
+        checkScriptBuffer();
 
         char ch = src[0].latin1();
         if ( (!script || tquote == NoQuote) && ( ch == '>' ) && ( searchFor[ searchCount ] == '>'))
@@ -328,9 +324,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
                 executingScript = false;
             }
             script = style = listing = comment = textarea = false;
-            if(scriptCode)
-                QT_DELETE_QCHAR_VEC(scriptCode);
-            scriptCode = 0;
+            scriptCodeSize = 0;
 
             addScriptOutput();
 
@@ -435,15 +429,7 @@ void HTMLTokenizer::parseComment(DOMStringIt &src)
 
         // Allocate memory to store the script. We will write maximal
         // 10 characers.
-        if ( scriptCodeSize + 10 > scriptCodeMaxSize )
-        {
-            int newsize = QMAX(scriptCodeMaxSize*2, scriptCodeMaxSize+1024);
-            QChar *newbuf = QT_ALLOC_QCHAR_VEC( newsize );
-            memcpy( newbuf, scriptCode, scriptCodeSize*sizeof(QChar) );
-            QT_DELETE_QCHAR_VEC(scriptCode);
-            scriptCode = newbuf;
-            scriptCodeMaxSize = newsize;
-        }
+        checkScriptBuffer();
 
         char ch = src[0].latin1();
         if (ch == '>' && searchFor[ searchCount ] == '>')
@@ -457,7 +443,7 @@ void HTMLTokenizer::parseComment(DOMStringIt &src)
             currToken->id = ID_COMMENT + ID_CLOSE_TAG;
             processToken();
             script = style = listing = comment = textarea = false;
-            scriptCode = 0;
+            scriptCodeSize = 0;
             return; // Finished parsing comment
         }
         // Find out wether we see an end tag without looking at
@@ -685,6 +671,13 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, QChar *&dest, bool start)
     }
 }
 
+static inline bool isSeparator(char curchar)
+{
+
+  return curchar == '\t' || curchar == '\r' ||
+         curchar == '\n' || curchar == ' ';
+}
+
 void HTMLTokenizer::parseTag(DOMStringIt &src)
 {
     if (charEntity)
@@ -695,72 +688,21 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
         checkBuffer();
         char curchar = src[0].latin1();
 
-        // decide if quoted or not....
-        if ( curchar == '\"' || curchar == '\'' )
-        { // we treat " & ' the same in tags
-            if ( tquote == NoQuote )
-            {
-                // according to HTML4 DTD, we can simplify
-                // strings like "  my \nstring " to "my string"
-                // However some pages require leading white space to be
-                // honored. example is leading whitespace in a
-                // <input type=text value=" > quoted text">
-                // so we eat only lf's at the beginning of quotes
-                discard = LFDiscard; // ignore leading LF`s
-                pending = NonePending;
-                if (curchar == '\'')
-                    tquote = SingleQuote;
-                else
-                    tquote = DoubleQuote;
-            }
-            else if ( (( tquote == SingleQuote )&&( curchar == '\'')) ||
-                      (( tquote == DoubleQuote )&&( curchar == '\"')) )
-            {
-                tquote = IgnoreQuote;
-                discard = NoneDiscard;
-                pending = NonePending; // remove space at the end of value
-            }
-            else if (tquote == IgnoreQuote)
-            {
-                // we remove additional quotes directly following the
-                // end of the quoted section. Helps with bad html as
-                // <tag attr="value"" nextattr="..." ...>
-            }
-            // make sure no quotes get written to the output buffer
-            // if something went wrong already or the tag is unknown
-            else if(tag != SearchEnd)
-            {
-                *dest++ = src[0];
-            }
-            ++src;
-        }
-        else if ( discard == AllDiscard &&
-                ( curchar == ' ' || curchar == '\t' || curchar == '\n' || curchar == '\r' ) )
+        if (( discard == AllDiscard &&
+              ( curchar == ' ' || curchar == '\t' || curchar == '\n' || curchar == '\r' ) ) ||
+            ( discard == SpaceDiscard && ( curchar == ' ' || curchar == '\t') ) ||
+            ( discard == LFDiscard && ( curchar == '\n' || curchar == '\r' ) ))
         {
-            pending = SpacePending;
-            ++src;
-        }
-        else if ( discard == SpaceDiscard && ( curchar == ' ' || curchar == '\t') )
-        {
-            pending = SpacePending;
-            ++src;
-        }
-        else if ( discard == LFDiscard && ( curchar == '\n' || curchar == '\r' ) )
-        {
-            pending = LFPending;
+            pending = (discard == LFDiscard ? LFPending : SpacePending);
             ++src;
         }
         else
         {
-            if (tquote == IgnoreQuote)
-                tquote = NoQuote;
-
-//             int l = 0;
-//             while(l < src.length() && (*(src.current()+l)).latin1() != '>')
-//                 l++;
-//             qDebug("src is now: *%s*, pending: %d, discard: %d, tquote: %d",
-//                    QConstString((QChar*)src.current(), l).string().latin1(), pending, discard, tquote);
-
+//              int l = 0;
+//              while(l < src.length() && (*(src.current()+l)).latin1() != '>')
+//                  l++;
+//              qDebug("src is now: *%s*, pending: %d, discard: %d, tquote: %d",
+//                     QConstString((QChar*)src.current(), l).string().latin1(), pending, discard, tquote);
             switch(tag) {
             case NoTag:
             {
@@ -768,15 +710,6 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
             }
             case TagName:
             {
-                if( tquote )
-                {
-#ifdef TOKEN_DEBUG
-                    kdDebug( 6036 ) << "bad HTML in parseTag: TagName" << endl;
-#endif
-                    searchCount = 0;
-                    ++src;
-                    break;
-                }
                 if (searchCount > 0)
                 {
                     if (src[0] == commentStart[searchCount])
@@ -793,9 +726,6 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                             comment = true;
                             searchCount = 0;
                             searchFor = commentEnd;
-                            scriptCode = QT_ALLOC_QCHAR_VEC( 1024 );
-                            scriptCodeSize = 0;
-                            scriptCodeMaxSize = 1024;
                             tag = NoTag;
                             parseComment(src);
 
@@ -811,14 +741,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                         searchCount = 0; // Stop looking for '<!--' sequence
                     }
                 }
-
-                curchar = src[0].latin1();
-
-                // All these can end a tag.
-                //
-                if( curchar != '\t' && curchar != '\r' &&
-                    curchar != '\n' && curchar != ' ' &&
-                    curchar != '>' )
+                if( !isSeparator(curchar) && curchar != '>')
                 {
                     // this is faster than QChar::lower()
                     if((curchar >= 'A') && (curchar <= 'Z'))
@@ -857,76 +780,35 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                         kdDebug( 6036 ) << "Unknown tag: \"" << tmp.string() << "\"" << endl;
 #endif
                         dest = buffer;
-                        tquote = IgnoreQuote;
-                        tag = SearchEnd; // ignore the tag
+                        discard = NoneDiscard;
                     }
                     else
                     {
 #ifdef TOKEN_DEBUG
-                        kdDebug( 6036 ) << "found tag id=" << tagID << endl;
+                        kdDebug( 6036 ) << "found tag id=" << tagID << ": " << tmp.string() << endl;
 #endif
-
-                        if (beginTag) {
-                            currToken->id = tagID;
-                            tag = SearchAttribute;
-                        }
-                        else
-                        {
-                            currToken->id = tagID + ID_CLOSE_TAG;
-                            tag = SearchEnd;
-                        }
+                        currToken->id = beginTag ? tagID : tagID + ID_CLOSE_TAG;
                         dest = buffer;
                     }
+                    tag = SearchAttribute;
+                    discard = AllDiscard;
                 }
                 break;
             }
             case SearchAttribute:
             {
-                if( tquote )
-                {
-#ifdef TOKEN_DEBUG
-                    kdDebug( 6036 ) << "broken HTML in parseTag: SearchAttribute " << endl;
-#endif
-                    tquote=NoQuote;
-                    ++src;
-                    break;
-                }
-                curchar = src[0].latin1();
                 if( curchar == '>' )
-                {
                     tag = SearchEnd; // we reached the end
-                    break;
-                }
-                if( !curchar ) // we ignore everything that isn't ascii
-                {
-                    ++src;
-                    break;
-                }
-                if( ((curchar >= 'a') && (curchar <= 'z')) ||
-                    ((curchar >= 'A') && (curchar <= 'Z')) ||
-                    ((curchar >= '0') && (curchar <= '9')) ||
-                    curchar == '-' || curchar == '!')
-                {
+                else {
                     tag = AttributeName;
                     discard = NoneDiscard;
-                    break;
                 }
-                ++src; // ignore
                 break;
             }
             case AttributeName:
             {
-                if( tquote == SingleQuote || tquote == DoubleQuote) {
-                    *dest++ = tquote == SingleQuote ? QChar('\'') : QChar('\"');
-                    tquote = NoQuote;
-                    discard = AllDiscard; // stop as soon as possible
-                }
-
-                // allow !ignoreme as attribute name
-                if( (((curchar >= 'a') && (curchar <= 'z')) ||
-                     ((curchar >= 'A') && (curchar <= 'Z')) ||
-                     ((curchar >= '0') && (curchar <= '9')) ||
-                     curchar == '-' || curchar == '!'))
+                discard = NoneDiscard;
+                if(!isSeparator(curchar) && curchar != '=' && curchar != '>')
                 {
                     if((curchar >= 'A') && (curchar <= 'Z'))
                         *dest = curchar + 'a' - 'A';
@@ -950,10 +832,10 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 
 #ifdef TOKEN_DEBUG
                     if (!a || (attrName.length() && attrName[0].latin1() == '!')) {
-                       kdDebug( 6036 ) << "Unknown attribute: \"" << attrName << "\"" << endl;
+                       kdDebug( 6036 ) << "Unknown attribute: " << attrName << endl;
                     } else
                     {
-                       kdDebug( 6036 ) << "Known attribute: \"" << attrName << "\"" << endl;
+                       kdDebug( 6036 ) << "Known attribute: " << attrName << endl;
                     }
 #endif
                     tag = SearchEqual;
@@ -963,26 +845,9 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
             }
             case SearchEqual:
             {
-                if( tquote )
-                {
-#ifdef TOKEN_DEBUG
-                      kdDebug( 6036 ) << "bad HTML in parseTag: SearchEqual" << endl;
-#endif
-                      // this is moslty due to a missing '"' somewhere before..
-                      // so let's start searching for a new tag
-                      tquote = NoQuote;
-
-                      Attribute a;
-                      a.id = *buffer;
-                      if(a.id==0) a.setName( attrName );
-                      a.setValue(0, 0);
-                      currToken->attrs.add(a);
-
-                      dest = buffer;
-                      tag = SearchAttribute;
-                      discard = SpaceDiscard;
-                      pending = NonePending;
-                }
+                if(isSeparator(curchar))
+                    // eat it
+                    ++src;
                 else if( curchar == '=' )
                 {
 #ifdef TOKEN_DEBUG
@@ -1012,13 +877,14 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
             }
             case SearchValue:
             {
-                if(tquote)
-                {
+                if(curchar == '\'' || curchar == '\"') {
+                    tquote = curchar == '\"' ? DoubleQuote : SingleQuote;
                     tag = QuotedValue;
-                }
-                else
-                {
+                    ++src;
+                    discard = LFDiscard;
+                } else {
                     tag = Value;
+                    discard = AllDiscard;
                 }
                 pending = NonePending;
                 break;
@@ -1036,7 +902,8 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                     parseEntity(src, dest, true);
                     break;
                 }
-                else if ( !tquote )
+                else if ( (tquote == SingleQuote && curchar == '\'') ||
+                          (tquote == DoubleQuote && curchar == '\"') )
                 {
                     // end of attribute
                     Attribute a;
@@ -1053,8 +920,10 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 
                     dest = buffer;
                     tag = SearchAttribute;
+                    tquote = NoQuote;
                     discard = AllDiscard;
                     pending = NonePending;
+                    ++src;
                     break;
                 }
                 // eat LFs
@@ -1067,21 +936,10 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
             }
             case Value:
             {
-                // we allow quotes inside nonquoted text
-                // compatible to IE
-                // <tag attr=test/"text" other=..> -> attr='test/"text"'
-                if( tquote == SingleQuote || tquote == DoubleQuote) {
-                    *dest++ = tquote == SingleQuote ? QChar('\'') : QChar('\"');
-                    tquote = NoQuote;
-                    discard = AllDiscard; // stop as soon as possible
-                }
-
                 // parse Entities
                 if ( curchar == '&' )
                 {
                     ++src;
-                    if (pending)
-                        addPending();
                     charEntity = true;
                     parseEntity(src, dest, true);
                     break;
@@ -1090,7 +948,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 // if discard==NoneDiscard at this point, it means
                 // that we passed an empty "" pair. bit hacky, but...
                 // helps with <tag attr=""otherattr="something">
-                if ( pending || curchar == '>' || discard==NoneDiscard)
+                if ( pending || curchar == '>')
                 {
                     // no quotes. Every space means end of value
                     Attribute a;
@@ -1114,9 +972,10 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
             }
             case SearchEnd:
             {
-                if ( tquote != NoQuote || curchar != '>')
+                if ( curchar != '>')
                 {
-                    ++src; // discard everything, until we found the end
+                    // discard everything, until we found the end
+                    ++src;
                     break;
                 }
 
@@ -1208,9 +1067,6 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 			textarea = true;
                         searchCount = 0;
                         searchFor = textareaEnd;
-                        scriptCode = QT_ALLOC_QCHAR_VEC( 1024 );
-                        scriptCodeSize = 0;
-                        scriptCodeMaxSize = 1024;
                         parseListing(src);
                     }
                 }
@@ -1224,9 +1080,6 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                         script = true;
                         searchCount = 0;
                         searchFor = scriptEnd;
-                        scriptCode = QT_ALLOC_QCHAR_VEC( 1024 );
-                        scriptCodeSize = 0;
-                        scriptCodeMaxSize = 1024;
                         tquote = NoQuote;
                         parseScript(src);
 #ifdef TOKEN_DEBUG
@@ -1241,9 +1094,6 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                         style = true;
                         searchCount = 0;
                         searchFor = styleEnd;
-                        scriptCode = QT_ALLOC_QCHAR_VEC( 1024 );
-                        scriptCodeSize = 0;
-                        scriptCodeMaxSize = 1024;
                         parseStyle(src);
                     }
                 }
@@ -1254,9 +1104,6 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                         listing = true;
                         searchCount = 0;
                         searchFor = listingEnd;
-                        scriptCode = QT_ALLOC_QCHAR_VEC( 1024 );
-                        scriptCodeSize = 0;
-                        scriptCodeMaxSize = 1024;
                         parseListing(src);
                     }
                 }
@@ -1598,6 +1445,7 @@ void HTMLTokenizer::end()
         QT_DELETE_QCHAR_VEC(scriptCode);
 
     scriptCode = 0;
+    scriptCodeSize = scriptCodeMaxSize = 0;
     buffer = 0;
     emit finishedParsing();
 }
@@ -1605,7 +1453,7 @@ void HTMLTokenizer::end()
 void HTMLTokenizer::finish()
 {
     // do this as long as we don't find matching comment ends
-    while(comment && scriptCode && scriptCodeSize > 0)
+    while(comment && scriptCode && scriptCodeSize)
     {
         // we've found an unmatched comment start
         scriptCode[ scriptCodeSize ] = 0;
@@ -1705,6 +1553,19 @@ void HTMLTokenizer::enlargeBuffer()
     QT_DELETE_QCHAR_VEC(buffer);
     buffer = newbuf;
     size *= 2;
+}
+
+void HTMLTokenizer::enlargeScriptBuffer()
+{
+    int newsize = QMAX(scriptCodeMaxSize*2, scriptCodeMaxSize+1024);
+    QChar *newbuf = QT_ALLOC_QCHAR_VEC( newsize );
+    if(scriptCodeSize)
+        memcpy( newbuf, scriptCode, scriptCodeSize*sizeof(QChar) );
+    // delete [] is unsafe!
+    if(scriptCode)
+        QT_DELETE_QCHAR_VEC(scriptCode);
+    scriptCode = newbuf;
+    scriptCodeMaxSize = newsize;
 }
 
 void HTMLTokenizer::notifyFinished(CachedObject *finishedObj)
