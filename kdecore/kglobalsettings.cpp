@@ -28,67 +28,50 @@
 
 int KGlobalSettings::dndEventDelay()
 {
-  // Don't cache the value. The point of this method is to
-  // detect changes in the configuration...
-  //static int delay = -1;
-
-  //if(delay == -1){
     KConfig *c = KGlobal::config();
-    c->setGroup("General");
+    KConfigGroupSaver cgs( c, "General" );
     return c->readNumEntry("DndDelay", 2);
-  //}
-  //return(delay);
 }
 
 bool KGlobalSettings::singleClick()
 {
-  // No caching here, too
-  // static int doubleClicks = -1;
-  // if(doubleClicks == -1)
-  //{
     KConfig *c = KGlobal::config();
     KConfigGroupSaver cgs( c, "KDE" );
     return c->readBoolEntry("SingleClick", DEFAULT_SINGLECLICK);
-  //}
-  //return(doubleClicks == 1);
 }
 
 bool KGlobalSettings::changeCursorOverIcon()
 {
-  KConfig *c = KGlobal::config();
-  KConfigGroupSaver cgs( c, "KDE" );
-  return c->readBoolEntry("ChangeCursor", DEFAULT_CHANGECURSOR);
+    KConfig *c = KGlobal::config();
+    KConfigGroupSaver cgs( c, "KDE" );
+    return c->readBoolEntry("ChangeCursor", DEFAULT_CHANGECURSOR);
 }
 
 int KGlobalSettings::autoSelectDelay()
 {
-  KConfig *c = KGlobal::config();
-  KConfigGroupSaver cgs( c, "KDE" );
-  return c->readNumEntry("AutoSelectDelay", DEFAULT_AUTOSELECTDELAY);
+    KConfig *c = KGlobal::config();
+    KConfigGroupSaver cgs( c, "KDE" );
+    return c->readNumEntry("AutoSelectDelay", DEFAULT_AUTOSELECTDELAY);
 }
 
 KGlobalSettings::Completion KGlobalSettings::completionMode()
 {
-  // No caching here, too
-  //static int completion = -1;
-  int completion;
-  //if (completion == -1)
-  //{
+    int completion;
     KConfig *c = KGlobal::config();
-    c->setGroup("General");
+    KConfigGroupSaver cgs( c, "General" );
     completion = c->readNumEntry("completionMode", -1);
     if ((completion < (int) CompletionNone) ||
 	(completion > (int) CompletionShell))
       {
 	completion = (int) CompletionShell; // Default
       }
-  //}
   return (Completion) completion;
 }
 
 bool KGlobalSettings::honorGnome()
 {
     KConfig *c = KGlobal::config();
-    c->setGroup(QString::fromLatin1("General"));
+    KConfigGroupSaver cgs( c, "General" );
     return c->readBoolEntry("honorGnome", false);
 }
+

@@ -100,7 +100,7 @@ public:
               const QCString& rAppName, bool allowStyles=true, bool GUIenabled=true);
 
   /**
-   * This constructor takes aboutData and command line 
+   * This constructor takes aboutData and command line
    *  arguments from @ref KCmdLineArgs.
    *
    * @param allowStyles Set to false to disable the loading on plugin based
@@ -112,13 +112,13 @@ public:
    * @param GUIenabled Set to false to disable all GUI stuff. This implies
    * no styles either.
    */
-  KApplication( bool allowStyles=true, bool GUIenabled=true);        
+  KApplication( bool allowStyles=true, bool GUIenabled=true);
 
   /**
     * Add Qt and KDE command line options to KCmdLineArgs.
     */
   static void addCmdLineOptions();
-  
+
   virtual ~KApplication();
 
   /** Retrieve the number of command line arguments, i. e. the length
@@ -210,7 +210,7 @@ public:
 
   /**
    *   Set the top widget of the application.
-   *   
+   *
    *   @param topWidget A top widget of the application.
    *
    *  This means bascially applying the right window caption and
@@ -268,7 +268,7 @@ public:
    *         this service is available. If empty, the service does
    *         not provide DCOP services.
    * @return On failure, 'error' contains a description of the error
-   *         that occured.   
+   *         that occured.
    */
   static int startServiceByName( const QString& _name, const QString &URL,
                                  QCString &dcopService, QString &error );
@@ -283,9 +283,9 @@ public:
    *         this service is available. If empty, the service does
    *         not provide DCOP services.
    * @return On failure, 'error' contains a description of the error
-   *         that occured.   
+   *         that occured.
    */
-  static int startServiceByDesktopPath( const QString& _name, 
+  static int startServiceByDesktopPath( const QString& _name,
               const QString &URL, QCString &dcopService, QString &error );
 
   /**
@@ -299,9 +299,9 @@ public:
    *         this service is available. If empty, the service does
    *         not provide DCOP services.
    * @return On failure, 'error' contains a description of the error
-   *         that occured.   
+   *         that occured.
    */
-  static int startServiceByDesktopName( const QString& _name, 
+  static int startServiceByDesktopName( const QString& _name,
               const QString &URL, QCString &dcopService, QString &error );
 
   /**
@@ -383,15 +383,15 @@ public:
    * do not display a GUI and create the @ref KApplication with @p allowStyles = @pfalse.
    */
   void enableStyles();
-    
-    
-    
-  /** 
+
+
+
+  /**
    *  Install widget filter as global X11 event filter.
    *
    * The widget
    *  filter receives XEvents in its standard @ref QWidget::x11Event() function.
-   *  
+   *
    *  Warning: Only do this when absolutely necessary. An installed X11 filter
    *  can slow things down.
    **/
@@ -416,6 +416,7 @@ protected:
   Atom KDEChangeGeneral;
   Atom KDEChangeStyle;
   Atom KDEChangeBackground;
+  Atom KDEChangeSettings;
 
   /// Current application object.
   static KApplication *KApp;
@@ -487,46 +488,51 @@ public:
 
   signals:
   /**
-	* KApplication has changed its Palette due to a KDisplay request.
-	*
-	* Normally, widgets will update their palettes automatically, but you
-	* should connect to this to program special behaviour.
-	*/
+   * KApplication has changed its Palette due to a KDisplay request.
+   *
+   * Normally, widgets will update their palettes automatically, but you
+   * should connect to this to program special behaviour.
+   */
   void kdisplayPaletteChanged();
 
   /**
-	* KApplication has changed its GUI Style due to a KDisplay request.
-	*
-	* Normally, widgets will update their styles automatically (as they would
-	* respond to an explicit setGUIStyle() call), but you should connect to
-	* this to program special behaviour.
-	*/
+   * KApplication has changed its GUI Style due to a KDisplay request.
+   *
+   * Normally, widgets will update their styles automatically (as they would
+   * respond to an explicit setGUIStyle() call), but you should connect to
+   * this to program special behaviour.
+   */
   void kdisplayStyleChanged();
 
   /**
-	* KApplication has changed its Font due to a KDisplay request.
-	*
-	* Normally widgets will update their fonts automatically, but you should
-	* connect to this to monitor global font changes, especially if you are
-	* using explicit fonts.
-	*/
+   * KApplication has changed its Font due to a KDisplay request.
+   *
+   * Normally widgets will update their fonts automatically, but you should
+   * connect to this to monitor global font changes, especially if you are
+   * using explicit fonts.
+   */
   void kdisplayFontChanged();
 
   /**
-	* KApplication has changed either its GUI style, its font or its palette
-	* due to a kdisplay request. Normally, widgets will update their styles
-	* automatically, but you should connect to this to program special
-	* behavior. */
+   * KApplication has changed either its GUI style, its font or its palette
+   * due to a kdisplay request. Normally, widgets will update their styles
+   * automatically, but you should connect to this to program special
+   * behavior. */
   void appearanceChanged();
 
   /**
    * The desktop background has been changed by kcmdisplay.
    *
    * @param desk The desktop whose background has changed.
-   *
-   * NOTE: this method should move out of here as soon as DCOP is in place.
    */
   void backgroundChanged(int desk);
+
+  /**
+   * The global settings have been changed - see KGlobalSettings
+   * KApplication takes care of calling reparseConfiguration on KGlobal::config()
+   * so that applications/classes using this only have to re-read the configuration
+   */
+  void settingsChanged();
 
   /**
       Session management asks you to save the state of your application.
@@ -633,6 +639,13 @@ public:
 #endif
 
 // $Log$
+// Revision 1.136  2000/03/13 13:29:49  jansen
+// Fixes for running nonlocal applications. I changed two things:
+// 1. klauncher registers as "klaucher_$host_$uid" now. This name is available
+//    trough KApplication::launcher() (static)
+// 2. The socketname of kdeinit now includes the display as there can be
+//    multiple kdeinit's per user on a certain host.
+//
 // Revision 1.135  2000/02/26 13:53:10  waba
 // WABA: Added some examples to startServiceBy....()
 //

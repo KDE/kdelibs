@@ -47,6 +47,7 @@
 #include <ksimpleconfig.h>
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
+#include <kglobalsettings.h>
 
 #include <kstyle.h>
 #include <qplatinumstyle.h>
@@ -248,6 +249,7 @@ void KApplication::init(bool GUIenabled)
     KDEChangeGeneral = XInternAtom( display, "KDEChangeGeneral", false );
     KDEChangeStyle = XInternAtom( display, "KDEChangeStyle", false);
     KDEChangeBackground = XInternAtom( display, "KDEChangeBackground", false);
+    KDEChangeSettings = XInternAtom( display, "KDEChangeSettings", false);
 
     readSettings(false);
     kdisplaySetStyleAndFont();
@@ -350,7 +352,7 @@ void KApplication::commitData( QSessionManager& sm )
     }
     if ( cancelled )
 	sm.cancel();
-    
+
     if ( sm.allowsInteraction() ) {
 	QWidgetList done;
 	QWidgetList *list = QApplication::topLevelWidgets();
@@ -758,6 +760,13 @@ bool KApplication::x11EventFilter( XEvent *_event )
       {
         int data = cme->data.l[0];
 	emit backgroundChanged(data);
+	return true;
+      }
+
+    if ( cme->message_type == KDEChangeSettings )
+      {
+        KGlobal::config()->reparseConfiguration();
+        emit settingsChanged();
 	return true;
       }
   }
