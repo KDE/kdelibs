@@ -25,6 +25,13 @@
 #include "cupsinfos.h"
 #include "ipprequest.h"
 #include "pluginaction.h"
+#include "kprinter.h"
+#include "kprinterpropertydialog.h"
+#include "kmuimanager.h"
+#include "kmfactory.h"
+#include "kpdriverpage.h"
+#include "kpschedulepage.h"
+#include "kpcopiespage.h"
 
 #include <klocale.h>
 #include <kurl.h>
@@ -228,6 +235,8 @@ bool KMCupsJobManager::doPluginAction(int ID, const QPtrList<KMJob>& jobs)
 			return changePriority(jobs, true);
 		case 2:
 			return changePriority(jobs, false);
+		case 3:
+			return editJobAttributes(jobs.getFirst());
 	}
 	return false;
 }
@@ -263,6 +272,8 @@ QValueList<KAction*> KMCupsJobManager::createPluginActions(KActionCollection *co
 	act->setGroup("plugin");
 	list << (act = new PluginAction(2, i18n("Decrease Priority"), "down", 0, coll, "plugin_priodown"));
 	act->setGroup("plugin");
+	list << (act = new PluginAction(3, i18n("Edit Attributes"), "edit", 0, coll, "plugin_editjob"));
+	act->setGroup("plugin");
 
 	return list;
 }
@@ -281,6 +292,7 @@ void KMCupsJobManager::validatePluginActions(KActionCollection *coll, const QPtr
 	coll->action("plugin_ipp")->setEnabled(joblist.count() == 1);
 	coll->action("plugin_prioup")->setEnabled(flag);
 	coll->action("plugin_priodown")->setEnabled(flag);
+	coll->action("plugin_editjob")->setEnabled(joblist.count() == 1);
 }
 
 bool KMCupsJobManager::changePriority(const QPtrList<KMJob>& jobs, bool up)
@@ -303,6 +315,63 @@ bool KMCupsJobManager::changePriority(const QPtrList<KMJob>& jobs, bool up)
 			KMManager::self()->setErrorMsg(i18n("Unable to change job priority: ")+req.statusMessage());
 	}
 	return result;
+}
+
+bool KMCupsJobManager::editJobAttributes(KMJob *j)
+{
+	IppRequest	req;
+
+	req.setOperation(IPP_GET_JOB_ATTRIBUTES);
+	req.addURI(IPP_TAG_OPERATION, "job-uri", j->uri());
+	if (!j->uri().isEmpty())
+	{
+		KURL	url(j->uri());
+		req.setHost(url.host());
+		req.setPort(url.port());
+	}
+	if (!req.doRequest("/"))
+	{
+		KMManager::self()->setErrorMsg(i18n("Unable to retrieve job information: ")+req.statusMessage());
+		return false;
+	}
+	QMap<QString,QString>	opts = req.toMap(IPP_TAG_JOB);
+	KMPrinter	*prt = KMManager::self()->findPrinter(j->printer());
+	if (!prt)
+	{
+		KMManager::self()->setErrorMsg(i18n("Unable to find printer %1.").arg(j->printer()));
+		return false;
+	}
+	KMManager::self()->completePrinterShort(prt);
+	KPrinter::setApplicationType(KPrinter::StandAlone);
+	KPrinterPropertyDialog	dlg(prt);
+	dlg.setDriver(KMManager::self()->loadPrinterDriver(prt));
+	KMFactory::self()->uiManager()->setupPrinterPropertyDialog(&dlg);
+	if (dlg.driver())
+		dlg.addPage(new KPDriverPage(prt, dlg.driver(), &dlg));
+	//dlg.addPage(new KPCopiesPage(0, &dlg));
+	dlg.addPage(new KPSchedulePage(&dlg));
+	dlg.setOptions(opts);
+	dlg.setDefaultButton(QString::null);
+	dlg.setCaption(i18n("Attributes of job %1 (%2)").arg(j->id()).arg(j->printer()));
+	if (dlg.exec())
+	{
+		opts.clear();
+		// include default values to override non-default values
+		dlg.getOptions(opts, true);
+		req.init();
+		req.setOperation(IPP_SET_JOB_ATTRIBUTES);
+		req.addURI(IPP_TAG_OPERATION, "job-uri", j->uri());
+		req.addName(IPP_TAG_OPERATION, "requesting-user-name", CupsInfos::self()->realLogin());
+		req.setMap(opts);
+		req.dump(1);
+		if (!req.doRequest("/jobs/"))
+		{
+			KMManager::self()->setErrorMsg(i18n("Unable to set job attributes: ")+req.statusMessage());
+			return false;
+		}
+	}
+
+	return true;
 }
 
 #include "kmcupsjobmanager.moc"

@@ -28,6 +28,7 @@
 #include "driver.h"
 
 #include <kmessagebox.h>
+#include <qtabwidget.h>
 #include <klocale.h>
 
 KPrinterPropertyDialog::KPrinterPropertyDialog(KMPrinter *p, QWidget *parent, const char *name)
@@ -37,6 +38,11 @@ KPrinterPropertyDialog::KPrinterPropertyDialog(KMPrinter *p, QWidget *parent, co
 	setOkButton(i18n("&OK"));
 	setCancelButton(i18n("&Cancel"));
 	setDefaultButton(i18n("&Save"));
+	
+	// set a margin
+	QTabWidget	*tw = static_cast<QTabWidget*>(child(NULL, "QTabWidget"));
+	if (tw)
+		tw->setMargin(10);
 
 	if (m_printer)
 		m_options = (m_printer->isEdited() ? m_printer->editedOptions() : m_printer->defaultOptions());

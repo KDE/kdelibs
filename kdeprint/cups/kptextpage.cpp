@@ -103,7 +103,7 @@ KPTextPage::KPTextPage(DrMain *driver, QWidget *parent, const char *name)
 	m_right->setEnabled(false);
 	m_units->setEnabled(false);
 
-	QGridLayout	*l0 = new QGridLayout(this, 2, 2, 10, 10);
+	QGridLayout	*l0 = new QGridLayout(this, 2, 2, 0, 10);
 	l0->addWidget(formatbox, 0, 0);
 	l0->addWidget(prettybox, 0, 1);
 	l0->addMultiCellWidget(marginbox, 1, 1, 0, 1);

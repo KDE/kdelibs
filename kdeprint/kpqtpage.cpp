@@ -138,7 +138,7 @@ void KPQtPage::init()
 	m_nuppix->setAlignment(Qt::AlignCenter);
 
 	// layout creation
-	QGridLayout	*lay0 = new QGridLayout(this, 3, 2, 10, 10);
+	QGridLayout	*lay0 = new QGridLayout(this, 3, 2, 0, 10);
 	lay0->setRowStretch(1,1);
 	lay0->setRowStretch(2,1);
 	lay0->addWidget(m_pagesizelabel,0,0);

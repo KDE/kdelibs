@@ -118,7 +118,7 @@ KPImagePage::KPImagePage(DrMain *driver, QWidget *parent, const char *name)
 	m_horizgrp->setButton(1);
 	slotPositionChanged();
 
-	QGridLayout	*l0 = new QGridLayout(this, 2, 2, 10, 10);
+	QGridLayout	*l0 = new QGridLayout(this, 2, 2, 0, 10);
 	l0->addMultiCellWidget(colorbox, 0, 0, 0, 1);
 	l0->addWidget(sizebox, 1, 0);
 	l0->addWidget(positionbox, 1, 1);

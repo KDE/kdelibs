@@ -74,7 +74,7 @@ KPFilterPage::KPFilterPage(QWidget *parent, const char *name)
 	m_info = new QTextView(this);
 	m_info->setPaper(colorGroup().background());
 
-	QGridLayout	*l1 = new QGridLayout(this, 2, 2, 10, 10);
+	QGridLayout	*l1 = new QGridLayout(this, 2, 2, 0, 10);
 	l1->setColStretch(0, 1);
 	QVBoxLayout	*l2 = new QVBoxLayout(0, 0, 0);
 	l1->addWidget(m_view, 0, 0);

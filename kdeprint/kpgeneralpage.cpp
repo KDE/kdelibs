@@ -163,7 +163,7 @@ KPGeneralPage::KPGeneralPage(KMPrinter *pr, DrMain *dr, QWidget *parent, const c
 	m_endbannerlabel->setBuddy(m_endbanner);
 
 	// layout creation
-	QVBoxLayout	*lay0 = new QVBoxLayout(this, 10, 10);
+	QVBoxLayout	*lay0 = new QVBoxLayout(this, 0, 10);
 	QGridLayout	*lay1 = new QGridLayout(0, 3, 2, 0, 10);
 	QGridLayout	*lay2 = new QGridLayout(0, 2, 2, 0, 10);
 	lay0->addStretch(1);

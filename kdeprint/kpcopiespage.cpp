@@ -79,8 +79,8 @@ KPCopiesPage::KPCopiesPage(KPrinter *prt, QWidget *parent, const char *name)
 	sepline->setMinimumHeight(10);
 
 	// layout creation
-	QGridLayout	*l1 = new QGridLayout(this, 1, 2, 0, 5);
-	l1->setRowStretch(0,1);
+	QGridLayout	*l1 = new QGridLayout(this, 2, 2, 0, 5);
+	l1->setRowStretch(1,1);
 	l1->setColStretch(0,1);
 	l1->setColStretch(1,1);
 	l1->addWidget(m_pagebox,0,0);

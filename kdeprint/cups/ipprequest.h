@@ -25,6 +25,7 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qtextstream.h>
+#include <qmap.h>
 
 #include <cups/ipp.h>
 
@@ -74,6 +75,8 @@ public:
 	bool mime(const QString& name, QString& value);
 	ipp_attribute_t* first();
 	ipp_attribute_t* last();
+	QMap<QString,QString> toMap(int group = -1);
+	void setMap(const QMap<QString,QString>& opts);
 
 	// processing functions
 	bool doRequest(const QString& res);
@@ -81,7 +84,7 @@ public:
 
 	// report functions
 	bool htmlReport(int group, QTextStream& output);
-	
+
 	// debug function
 	void dump(int state);
 

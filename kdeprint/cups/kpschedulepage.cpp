@@ -75,7 +75,7 @@ KPSchedulePage::KPSchedulePage(QWidget *parent, const char *name)
 	KSeparator	*sep0 = new KSeparator(this);
 	sep0->setFixedHeight(10);
 
-	QGridLayout	*l0 = new QGridLayout(this, 5, 2, 10, 7);
+	QGridLayout	*l0 = new QGridLayout(this, 6, 2, 0, 7);
 	l0->addWidget(lab, 0, 0);
 	QHBoxLayout	*l1 = new QHBoxLayout(0, 0, 5);
 	l0->addLayout(l1, 0, 1);
@@ -87,6 +87,7 @@ KPSchedulePage::KPSchedulePage(QWidget *parent, const char *name)
 	l0->addWidget(m_pagelabel, 2, 1);
 	l0->addMultiCellWidget(sep0, 3, 3, 0, 1);
 	l0->addMultiCellWidget(m_priority, 4, 4, 0, 1);
+	l0->setRowStretch(5, 1);
 
 	connect(m_time, SIGNAL(activated(int)), SLOT(slotTimeChanged()));
 }

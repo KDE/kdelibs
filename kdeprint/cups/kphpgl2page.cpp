@@ -39,7 +39,7 @@ KPHpgl2Page::KPHpgl2Page(QWidget *parent, const char *name)
 	m_penwidth->setSuffix(" [um]");
 	m_penwidth->setRange(0, 10000, 100, true);
 
-	QVBoxLayout	*l0 = new QVBoxLayout(this, 10, 10);
+	QVBoxLayout	*l0 = new QVBoxLayout(this, 0, 10);
 	l0->addWidget(box);
 	l0->addStretch(1);
 	QVBoxLayout	*l1 = new QVBoxLayout(box->layout(), 10);
@@ -69,10 +69,14 @@ void KPHpgl2Page::getOptions(QMap<QString,QString>& opts, bool incldef)
 		opts["penwidth"] = QString::number(m_penwidth->value());
 	if (m_blackplot->isChecked())
 		opts["blackplot"] = "true";
+	else if (incldef)
+		opts["blackplot"] = "false";
 	else
 		opts.remove("blackplot");
 	if (m_fitplot->isChecked())
 		opts["fitplot"] = "true";
+	else if (incldef)
+		opts["fitplot"] = "false";
 	else
 		opts.remove("fitplot");
 }

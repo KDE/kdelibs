@@ -44,6 +44,7 @@ public:
 protected:
 	bool jobIppReport(KMJob*);
 	bool changePriority(const QPtrList<KMJob>&, bool);
+	bool editJobAttributes(KMJob*);
 
 protected:
 	bool listJobs(const QString&, JobType);

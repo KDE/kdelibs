@@ -28,6 +28,7 @@
 #include <kglobal.h>
 #include <klocale.h>
 #include <qdatetime.h>
+#include <qregexp.h>
 #include <cups/cups.h>
 
 void dumpRequest(ipp_t *req, bool answer = false, const QString& s = QString::null)
@@ -310,7 +311,7 @@ bool IppRequest::doFileRequest(const QString& res, const QString& filename)
 	{
 		dumpRequest(request_, true);
 	}
-	
+
 	if (!request_ || request_->state == IPP_ERROR || (request_->request.status.status_code & 0x0F00))
 		return false;
 
@@ -398,4 +399,73 @@ bool IppRequest::htmlReport(int group, QTextStream& output)
 	output << "</table>" << endl;
 
 	return true;
+}
+
+QMap<QString,QString> IppRequest::toMap(int group)
+{
+	QMap<QString,QString>	opts;
+	if (request_)
+	{
+		ipp_attribute_t	*attr = first();
+		while (attr)
+		{
+			if (group != -1 && attr->group_tag != group)
+			{
+				attr = attr->next;
+				continue;
+			}
+			QString	value;
+			for (int i=0; i<attr->num_values; i++)
+			{
+				switch (attr->value_tag)
+				{
+					case IPP_TAG_INTEGER:
+					case IPP_TAG_ENUM:
+						value.append(QString::number(attr->values[i].integer)).append(",");
+						break;
+					case IPP_TAG_BOOLEAN:
+						value.append((attr->values[i].boolean ? "true" : "false")).append(",");
+						break;
+					case IPP_TAG_STRING:
+					case IPP_TAG_TEXT:
+					case IPP_TAG_NAME:
+					case IPP_TAG_KEYWORD:
+					case IPP_TAG_URI:
+					case IPP_TAG_MIMETYPE:
+					case IPP_TAG_NAMELANG:
+					case IPP_TAG_TEXTLANG:
+					case IPP_TAG_CHARSET:
+					case IPP_TAG_LANGUAGE:
+						value.append(QString::fromLocal8Bit(attr->values[i].string.text)).append(",");
+						break;
+				}
+			}
+			if (!value.isEmpty())
+				value.truncate(value.length()-1);
+			opts[QString::fromLocal8Bit(attr->name)] = value;
+			attr = attr->next;
+		}
+	}
+	return opts;
+}
+
+void IppRequest::setMap(const QMap<QString,QString>& opts)
+{
+	if (!request_)
+		return;
+
+	// map -> cups_option_t -> ipp_t
+	cups_option_t	*options = 0;
+	int	n = 0;
+	QRegExp	re("^\"|\"$");
+	for (QMap<QString,QString>::ConstIterator it=opts.begin(); it!=opts.end(); ++it)
+	{
+		if (it.key().startsWith("kde-") || it.key().startsWith("app-"))
+			continue;
+		QString	value = it.data().stripWhiteSpace();
+		value.replace(re, "");
+		n = cupsAddOption(it.key().local8Bit(), value.local8Bit(), n, &options);
+	}
+	cupsEncodeOptions(request_, n, options);
+	cupsFreeOptions(n, options);
 }
