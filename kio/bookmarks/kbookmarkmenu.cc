@@ -395,7 +395,10 @@ void RMB::slotRMBActionOpen( int val )
 }
 
 void KBookmarkMenu::fillContextMenu( QPopupMenu* contextMenu, const QString & address, int val )
-{ BEGIN_RMB_ACTION; rmbSelf(this)->fillContextMenu(contextMenu, address, val); }
+{ 
+   BEGIN_RMB_ACTION; rmbSelf(this)->fillContextMenu(contextMenu, address, val);
+   emit aboutToShowContextMenu( rmbSelf(this)->atAddress(address), contextMenu );
+}
 
 void KBookmarkMenu::slotRMBActionEditAt( int val )
 { BEGIN_RMB_ACTION; rmbSelf(this)->slotRMBActionEditAt( val ); }

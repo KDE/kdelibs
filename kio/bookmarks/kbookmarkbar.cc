@@ -410,7 +410,8 @@ bool KBookmarkBar::eventFilter( QObject *, QEvent *e )
 	 
 		BEGIN_RMB_ACTION; 
 		KPopupMenu *pm = new KPopupMenu;
-		rmbSelf(this)->fillContextMenu(pm, s_highlightedAddress, 0);
+		rmbSelf(this)->fillContextMenu( pm, s_highlightedAddress, 0 );
+		emit aboutToShowContextMenu( rmbSelf(this)->atAddress( s_highlightedAddress ), pm );
 		pm->popup( pt );
 	 
 		mev->accept();
