@@ -263,9 +263,9 @@ static void readIcon(NETWinInfoPrivate *p) {
 	return;
     }
 
-    // allocate space after_ret (bytes remaining in property) + 4
-    // (the single 32bit quantity we just read)
-    unsigned long proplen = after_ret + 12;
+    // allocate space after_ret (bytes remaining in property) + 3*sizeof(long)
+    // (the 3 32bit quantities we just read)
+    unsigned long proplen = after_ret + (3 * sizeof(long));
     unsigned char *buffer = new unsigned char[proplen];
     unsigned long offset = 0, buffer_offset = 0;
 
@@ -273,33 +273,34 @@ static void readIcon(NETWinInfoPrivate *p) {
 	XGetWindowProperty(p->display, p->window, net_wm_icon, offset,
 			   (long) BUFSIZE, False, XA_CARDINAL, &type_ret,
 			   &format_ret, &nitems_ret, &after_ret, &data_ret);
-	memcpy((buffer + buffer_offset), data_ret, nitems_ret * 4);
-	buffer_offset += nitems_ret * 4;
+	memcpy((buffer + buffer_offset), data_ret, nitems_ret * sizeof(long));
+	buffer_offset += nitems_ret * sizeof(long);
  	offset += nitems_ret;
 	XFree(data_ret);
     }
 
     unsigned long i, j;
-    CARD32 *d = (CARD32 *) buffer;
+    // CARD32 *d = (CARD32 *) buffer;
+    unsigned long *d = (unsigned long *) buffer;
     for (i = 0, j = 0; i < proplen - 3; i++) {
 	p->icons[j].size.width = *d++;
-	i += 4;
+	i += sizeof(long);
 	p->icons[j].size.height = *d++;
-	i += 4;
+	i += sizeof(long);
 
 	unsigned long s = (p->icons[j].size.width *
-			   p->icons[j].size.height * 4);
+			   p->icons[j].size.height * sizeof(long));
 
 	if ( i + s - 1 > proplen ) {
 	    break;
 	}
 
 	if (p->icons[j].data) delete [] p->icons[j].data;
-	CARD32 *data = new CARD32[s/4];
+	CARD32 *data = new CARD32[s / (sizeof(long))];
 	p->icons[j].data = (unsigned char *) data; // new CARD32[ s/4 ];
 	memcpy(p->icons[j].data, d, s);
 	i += s;
-	d += s/4;
+	d += s / (sizeof(long));
 	j++;
     }
 
@@ -575,7 +576,8 @@ void NETRootInfo::setCurrentDesktop(int desktop) {
 
     if (role == WindowManager) {
 	p->current_desktop = desktop;
-	CARD32 d = p->current_desktop - 1;
+	// CARD32 d = p->current_desktop - 1;
+	long d = p->current_desktop - 1;
 	XChangeProperty(p->display, p->root, net_current_desktop, XA_CARDINAL, 32,
 			PropModeReplace, (unsigned char *) &d, 1);
     } else {
@@ -647,7 +649,8 @@ void NETRootInfo::setDesktopGeometry(int desktop, const NETSize &geometry) {
 
 	int d, i, l;
 	l = p->geometry.size() * 2;
-	CARD32 *data = new CARD32[l];
+	// CARD32 *data = new CARD32[l];
+	long *data = new long[l];
 	for (d = 0, i = 0; d < p->geometry.size(); d++) {
 	    data[i++] = p->geometry[d].width;
 	    data[i++] = p->geometry[d].height;
@@ -690,7 +693,8 @@ void NETRootInfo::setDesktopViewport(int desktop, const NETPoint &viewport) {
 
 	int d, i, l;
 	l = p->viewport.size() * 2;
-	CARD32 *data = new CARD32[l];
+	// CARD32 *data = new CARD32[l];
+	long *data = new long[l];
 	for (d = 0, i = 0; d < p->viewport.size(); d++) {
 	    data[i++] = p->viewport[d].x;
 	    data[i++] = p->viewport[d].y;
@@ -874,7 +878,8 @@ void NETRootInfo::setWorkArea(int desktop, const NETRect &workarea) {
 
     p->workarea[desktop - 1] = workarea;
 
-    CARD32 *wa = new CARD32[p->number_of_desktops * 4];
+    // CARD32 *wa = new CARD32[p->number_of_desktops * 4];
+    long *wa = new long[p->number_of_desktops * 4];
     int i, o;
     for (i = 0, o = 0; i < p->number_of_desktops; i++) {
 	wa[o++] = p->workarea[i].pos.x;
@@ -1297,7 +1302,7 @@ void NETRootInfo::update(unsigned long dirty) {
 			       &nitems_ret, &unused, &data_ret)
 	    == Success) {
 	    if (type_ret == XA_CARDINAL && format_ret == 32 && nitems_ret == 1) {
-		p->number_of_desktops = *((CARD32 *) data_ret);
+		p->number_of_desktops = *((long *) data_ret);
 	    }
 
 #ifdef    NETWMDEBUG
@@ -1316,7 +1321,8 @@ void NETRootInfo::update(unsigned long dirty) {
 	    == Success) {
 	    if (type_ret == XA_CARDINAL && format_ret == 32 &&
 		nitems_ret >= 2) {
-		CARD32 *data = (CARD32 *) data_ret;
+		// CARD32 *data = (CARD32 *) data_ret;
+		long *data = (long *) data_ret;
 
 		int d, i, n;
 		n = nitems_ret / 2;
@@ -1354,7 +1360,8 @@ void NETRootInfo::update(unsigned long dirty) {
 	    == Success) {
 	    if (type_ret == XA_CARDINAL && format_ret == 32 &&
 		nitems_ret == 2) {
-		CARD32 *data = (CARD32 *) data_ret;
+		// CARD32 *data = (CARD32 *) data_ret;
+		long *data = (long *) data_ret;
 
 		int d, i, n;
 		n = nitems_ret / 2;
@@ -1392,7 +1399,7 @@ void NETRootInfo::update(unsigned long dirty) {
 			       &nitems_ret, &unused, &data_ret)
 	    == Success) {
 	    if (type_ret == XA_CARDINAL && format_ret == 32 && nitems_ret == 1) {
-		p->current_desktop = *((CARD32 *) data_ret) + 1;
+		p->current_desktop = *((long *) data_ret) + 1;
 	    }
 
 #ifdef    NETWMDEBUG
@@ -1459,7 +1466,8 @@ void NETRootInfo::update(unsigned long dirty) {
 	    == Success) {
 	    if (type_ret == XA_CARDINAL && format_ret == 32 &&
 		nitems_ret == (unsigned) (p->number_of_desktops * 4)) {
-		CARD32 *d = (CARD32 *) data_ret;
+		// CARD32 *d = (CARD32 *) data_ret;
+		long *d = (long *) data_ret;
 		int i, j;
 		for (i = 0, j = 0; i < p->number_of_desktops; i++) {
 		    p->workarea[i].pos.x       = d[j++];
@@ -1732,9 +1740,10 @@ void NETWinInfo::setIcon(NETIcon icon, Bool replace) {
 
     // do a deep copy, we want to own the data
     NETIcon& ni = p->icons[ p->icon_count - 1 ];
-    CARD32 *d = new CARD32[ ni.size.width * ni.size.height ];
+    // CARD32 *d = new CARD32[ ni.size.width * ni.size.height ];
+    long *d = new long[ni.size.width * ni.size.height];
     ni.data = (unsigned char *) d;
-    (void) memcpy( ni.data, icon.data, ni.size.width * ni.size.height * 4 );
+    (void) memcpy( ni.data, icon.data, ni.size.width * ni.size.height * sizeof(long) );
 
     int proplen, i;
     for (i = 0, proplen = 0; i < p->icon_count; i++) {
@@ -1742,15 +1751,16 @@ void NETWinInfo::setIcon(NETIcon icon, Bool replace) {
 			p->icons[i].size.height);
     }
 
-    CARD32 *prop = new CARD32[proplen], *pprop = prop;
+    // CARD32 *prop = new CARD32[proplen], *pprop = prop;
+    long *prop = new long[proplen], *pprop = prop;
     int sz;
     for (i = 0; i < p->icon_count; i++) {
        	*pprop++ = p->icons[i].size.width;
 	*pprop++ = p->icons[i].size.height;
 	sz = (p->icons[i].size.width *
-	      p->icons[i].size.height * 4);
+	      p->icons[i].size.height * sizeof(long));
 	(void) memcpy(pprop, p->icons[i].data, sz);
-	pprop += sz/4;
+	pprop += sz / sizeof(long);
     }
 
     XChangeProperty(p->display, p->window, net_wm_icon, XA_CARDINAL, 32,
@@ -1765,7 +1775,7 @@ void NETWinInfo::setIconGeometry(NETRect geometry) {
 
     p->icon_geom = geometry;
 
-    CARD32 data[4];
+    long data[4];
     data[0] = geometry.pos.x;
     data[1] = geometry.pos.y;
     data[2] = geometry.size.width;
@@ -1781,7 +1791,7 @@ void NETWinInfo::setStrut(NETStrut strut) {
 
     p->strut = strut;
 
-    CARD32 data[4];
+    long data[4];
     data[0] = strut.left;
     data[1] = strut.right;
     data[2] = strut.top;
@@ -1813,7 +1823,7 @@ void NETWinInfo::setState(unsigned long state, unsigned long mask) {
     } else {
 	p->state &= ~mask;
 	p->state |= state;
-	CARD32 data = p->state;
+        long data = p->state;
 	XChangeProperty(p->display, p->window, net_wm_state, XA_CARDINAL, 32,
 			PropModeReplace, (unsigned char *) &data, 1);
     }
@@ -1823,7 +1833,7 @@ void NETWinInfo::setState(unsigned long state, unsigned long mask) {
 void NETWinInfo::setWindowType(WindowType type) {
     if (role != Client) return;
 
-    CARD32 data = type;
+    long data = type;
     XChangeProperty(p->display, p->window, net_wm_window_type, XA_CARDINAL, 32,
 		    PropModeReplace, (unsigned char *) &data, 1);
 }
@@ -1907,7 +1917,7 @@ void NETWinInfo::setHandledIcons(Bool handled) {
     if (role != Client) return;
 
     p->handled_icons = handled;
-    CARD32 d = handled;
+    long d = handled;
     XChangeProperty(p->display, p->window, net_wm_handled_icons, XA_CARDINAL, 32,
 		    PropModeReplace, (unsigned char *) &d, 1);
 }
@@ -1928,7 +1938,7 @@ void NETWinInfo::setKDEFrameStrut(NETStrut strut) {
 
     p->frame_strut = strut;
 
-    CARD32 d[4];
+    long d[4];
     d[0] = strut.left;
     d[1] = strut.right;
     d[2] = strut.top;
@@ -2083,7 +2093,7 @@ void NETWinInfo::update(unsigned long dirty) {
 	    == Success) {
 	    if (type_ret == xa_wm_state && format_ret == 32 &&
 		nitems_ret == 1) {
-		CARD32 *state = (CARD32 *) data_ret;
+		long *state = (long *) data_ret;
 
 		switch(*state) {
 		case IconicState:
@@ -2114,7 +2124,7 @@ void NETWinInfo::update(unsigned long dirty) {
 			       &nitems_ret, &unused, &data_ret)
 	    == Success) {
 	    if (type_ret == XA_CARDINAL && format_ret == 32 && nitems_ret == 1) {
-		p->state = *((CARD32 *) data_ret);
+		p->state = *((long *) data_ret);
 	    }
 
 	    XFree(data_ret);
@@ -2130,7 +2140,7 @@ void NETWinInfo::update(unsigned long dirty) {
 	    == Success) {
 	    if (type_ret == XA_CARDINAL && format_ret == 32 &&
 		nitems_ret == 1) {
-		p->desktop = *((CARD32 *) data_ret);
+		p->desktop = *((long *) data_ret);
 		if ((signed) p->desktop != OnAllDesktops)
 		    p->desktop++;
 
@@ -2179,7 +2189,7 @@ void NETWinInfo::update(unsigned long dirty) {
 	    == Success) {
 	    if (type_ret == XA_CARDINAL && format_ret == 32 &&
 		nitems_ret == 1)
-		p->type = (WindowType) *((CARD32 *) data_ret);
+		p->type = (WindowType) *((long *) data_ret);
 
 	    XFree(data_ret);
 	}
@@ -2192,7 +2202,7 @@ void NETWinInfo::update(unsigned long dirty) {
 	    == Success) {
 	    if (type_ret == XA_CARDINAL && format_ret == 32 &&
 		nitems_ret == 4) {
-		CARD32 *d = (CARD32 *) data_ret;
+		long *d = (long *) data_ret;
 		p->strut.left   = d[0];
 		p->strut.right  = d[1];
 		p->strut.top    = d[2];
@@ -2210,7 +2220,7 @@ void NETWinInfo::update(unsigned long dirty) {
 	    == Success) {
 	    if (type_ret == XA_CARDINAL && format_ret == 32 &&
 		nitems_ret == 4) {
-		CARD32 *d = (CARD32 *) data_ret;
+		long *d = (long *) data_ret;
 		p->icon_geom.pos.x       = d[0];
 		p->icon_geom.pos.y       = d[1];
 		p->icon_geom.size.width  = d[2];
@@ -2247,7 +2257,7 @@ void NETWinInfo::update(unsigned long dirty) {
 			       0l, 4l, False, XA_CARDINAL, &type_ret, &format_ret,
 			       &nitems_ret, &unused, &data_ret) == Success) {
 	    if (type_ret == XA_CARDINAL && format_ret == 32 && nitems_ret == 4) {
-		CARD32 *d = (CARD32 *) data_ret;
+		long *d = (long *) data_ret;
 
 		p->frame_strut.left   = d[0];
 		p->frame_strut.right  = d[1];
@@ -2265,7 +2275,7 @@ void NETWinInfo::update(unsigned long dirty) {
 			       False, XA_CARDINAL, &type_ret, &format_ret,
 			       &nitems_ret, &unused, &data_ret) == Success) {
 	    if (type_ret == XA_CARDINAL && format_ret == 32 && nitems_ret == 1) {
-		p->pid = *((CARD32 *) data_ret);
+		p->pid = *((long *) data_ret);
 	    }
 
 	    XFree(data_ret);
