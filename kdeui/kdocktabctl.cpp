@@ -24,6 +24,7 @@
 #include <qapplication.h>
 #include <qwmatrix.h>
 #include <qtooltip.h>
+#include <qstyle.h>
 
 #ifndef NO_KDE2
  #include <kdebug.h>
@@ -893,7 +894,11 @@ KDockTabBar::KDockTabBar( QWidget * parent, const char * name )
   QPainter paint;
   paint.begin(left_xpm);
   paint.fillRect (0,0,16,16, QBrush (backgroundColor()));
+#if QT_VERSION < 300
   style().drawArrow(&paint, LeftArrow, false, 0 , 0 ,16, 16, colorGroup(), true);
+#else
+  style().drawPrimitive(QStyle::PE_ArrowLeft, &paint, QRect(0, 0, 16, 16), colorGroup());
+#endif
   paint.end();
 
   QWMatrix m;
