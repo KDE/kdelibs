@@ -23,11 +23,11 @@
 
 #include "nodes.h"
 
-#include <assert.h>
-#include <iostream.h>
+//#include <iostream>
 #include <math.h>
-#include <stdio.h>
 #ifdef KJS_DEBUG_MEM
+#include <assert.h>
+#include <stdio.h>
 #include <typeinfo>
 #endif
 
