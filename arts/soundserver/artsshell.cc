@@ -208,7 +208,7 @@ void status(Arts::SoundServer server)
 }           
 
 // terminate the sound server
-int terminate(Arts::SoundServer server)
+void terminate(Arts::SoundServer server)
 {
 	if(server.terminate())
 	{
