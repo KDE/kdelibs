@@ -20,8 +20,8 @@
  *
  * $Id$
  */
-#define DEBUG_LAYOUT
-#define BIDI_DEBUG
+//#define DEBUG_LAYOUT
+//#define BIDI_DEBUG
 
 #include "render_text.h"
 #include "dom_stringimpl.h"
