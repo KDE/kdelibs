@@ -23,6 +23,18 @@ if test "x$have_ssl" != xyes; then
   all_tests=bad
 fi
 
+if test -z "$LIBART_CONFIG"; then
+  echo ""
+  echo "You're missing libART LGPL, or your version is too old (before 2.3.8)."
+  echo "KDE won't be able to render SVG icons without it, so you should"
+  echo "consider installing or upgrading it."
+  echo "Have a look at http://www.levian.com (official site) or"
+  echo "http://www.kde.org/svg/download.html for sources, or find a binary"
+  echo "package for your platform."
+  echo ""
+  all_tests=bad
+fi
+
 if test -z "$LIBPCRE"; then
   echo ""
   echo "You're missing libpcre."
