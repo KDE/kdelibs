@@ -1544,7 +1544,7 @@ Value Location::get(ExecState *exec, const UString &p) const
   ValueImp * val = ObjectImp::getDirect(p);
   if (val)
     return Value(val);
-  if (entry && entry->value == Replace || entry->value == Reload)
+  if (entry && (entry->value == Replace || entry->value == Reload))
   	return lookupOrCreateFunction<LocationFunc>(exec,p,this,entry->value,entry->params,entry->attr);
 
   return Undefined();
