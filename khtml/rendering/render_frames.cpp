@@ -27,6 +27,7 @@
 #include "render_frames.h"
 #include "html_baseimpl.h"
 #include "html_objectimpl.h"
+#include "misc/htmlattrs.h"
 #include "htmltags.h"
 #include "khtmlview.h"
 #include "khtml_part.h"
