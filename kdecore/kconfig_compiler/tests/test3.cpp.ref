@@ -6,21 +6,21 @@
 using namespace TestNameSpace;
 
 Test3::Test3(  )
-  : KConfigSkeleton( "test3rc" )
+  : KConfigSkeleton( QString::fromLatin1( "test3rc" ) )
 {
-  setCurrentGroup( "General" );
+  setCurrentGroup( QString::fromLatin1( "General" ) );
 
-  mAutoSaveItem = new KConfigSkeleton::ItemBool( currentGroup(), "Auto Save", mAutoSave, false );
-  addItem( mAutoSaveItem, "AutoSave" );
+  mAutoSaveItem = new KConfigSkeleton::ItemBool( currentGroup(), QString::fromLatin1( "Auto Save" ), mAutoSave, false );
+  addItem( mAutoSaveItem, QString::fromLatin1( "AutoSave" ) );
 
-  setCurrentGroup( "Blah" );
+  setCurrentGroup( QString::fromLatin1( "Blah" ) );
 
-  mBlubbItem = new KConfigSkeleton::ItemInt( currentGroup(), "Blubb", mBlubb, 10 );
-  addItem( mBlubbItem );
-  mBlahBlahItem = new KConfigSkeleton::ItemString( currentGroup(), "BlahBlah", mBlahBlah, "a string" );
-  addItem( mBlahBlahItem );
-  mMyPasswordItem = new KConfigSkeleton::ItemPassword( currentGroup(), "MyPassword", mMyPassword );
-  addItem( mMyPasswordItem );
+  mBlubbItem = new KConfigSkeleton::ItemInt( currentGroup(), QString::fromLatin1( "Blubb" ), mBlubb, 10 );
+  addItem( mBlubbItem, QString::fromLatin1( "Blubb" ) );
+  mBlahBlahItem = new KConfigSkeleton::ItemString( currentGroup(), QString::fromLatin1( "BlahBlah" ), mBlahBlah, QString::fromLatin1( "a string" ) );
+  addItem( mBlahBlahItem, QString::fromLatin1( "BlahBlah" ) );
+  mMyPasswordItem = new KConfigSkeleton::ItemPassword( currentGroup(), QString::fromLatin1( "MyPassword" ), mMyPassword );
+  addItem( mMyPasswordItem, QString::fromLatin1( "MyPassword" ) );
 }
 
 Test3::~Test3()

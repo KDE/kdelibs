@@ -2,5 +2,5 @@
 
 int main( int, char ** )
 {
-  Test1 t( "", "" );
+  Test1 t( QString(), QString() );
 }
