@@ -202,6 +202,7 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
     setMouseTracking( true );    
 
     connect( &updateTimer, SIGNAL( timeout() ), SLOT( slotUpdate() ) );
+    connect( &autoScrollYTimer, SIGNAL(timeout()), SLOT( slotAutoScrollY() ) );
 
     if ( !pFontManager )
 	pFontManager = new HTMLFontManager();
@@ -601,6 +602,8 @@ void KHTMLWidget::select( QPainter * _painter, QRect &_rect )
     QRect r = _rect;
     // r.setTop( r.top() + y_offset );
     // r.setLeft( r.left() + x_offset );
+
+    r.moveBy( 0, -y_offset );
     
     int tx = -x_offset + leftBorder;
     int ty = -y_offset + topBorder;
@@ -4093,12 +4096,6 @@ void KHTMLWidget::slotScrollVert( int _val )
 	if ( diff > height() )
 	    diff = height();
 	y_offset = _val;
-	// update region without clearing background
-/*
-	QPaintEvent *e = new QPaintEvent( QRect( 0, height() - diff,
-	    width(), diff ) );
-	QApplication::postEvent( this, e );
-*/
 	repaint( 0, height() - diff, width(), diff, false );
     }
     else
@@ -4107,11 +4104,6 @@ void KHTMLWidget::slotScrollVert( int _val )
 	if ( diff > height() )
 	    diff = height();
 	y_offset = _val;
-	// update region without clearing background
-/*
-	QPaintEvent *e = new QPaintEvent( QRect(0, 0, width(), diff) );
-	QApplication::postEvent( this, e );
-*/
 	repaint( 0, 0, width(), diff, false );
     }
 }
@@ -4227,20 +4219,25 @@ bool KHTMLWidget::gotoAnchor( const char *_name )
 
 void KHTMLWidget::autoScrollY( int _delay, int _dy )
 {
-	if ( clue == 0 )
-		return;
+    if ( clue == 0 )
+	    return;
 
-	if ( !autoScrollYTimer.isActive() )
-	{
-		connect( &autoScrollYTimer, SIGNAL(timeout()), SLOT( slotAutoScrollY() ) );
-		autoScrollYDelay = _delay;
-		autoScrollYTimer.start( _delay, true );
-		autoScrollDY = _dy;
-	}
+    if ( _dy == 0 || ( _dy < 0 && y_offset == 0 ) ||
+	 ( _dy > 0 && y_offset >= docHeight() - height() - 1 ) )
+    {
+	stopAutoScrollY();
+    }
+    else if ( !autoScrollYTimer.isActive() )
+    {
+	autoScrollYDelay = _delay;
+	autoScrollYTimer.start( _delay, true );
+	autoScrollDY = _dy;
+    }
 }
 
 void KHTMLWidget::stopAutoScrollY()
 {
+    if ( autoScrollYTimer.isActive() )
 	autoScrollYTimer.stop();
 }
 
@@ -4267,7 +4264,7 @@ void KHTMLWidget::slotUpdateSelectText( int )
 	if ( pressed )
 	{
 		QPoint point = QCursor::pos();
-		mapFromGlobal( point );
+		point = mapFromGlobal( point );
 		if ( point.y() > height() )
 			point.setY( height() );
 		else if ( point.y() < 0 )

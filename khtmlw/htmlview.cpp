@@ -453,7 +453,7 @@ int KHTMLView::xOffset()
 
 int KHTMLView::yOffset()
 {
-    return view->xOffset();
+    return view->yOffset();
 }
 
 const char* KHTMLView::getURL( QPoint & p )

@@ -24,7 +24,7 @@
 #ifndef HTML_H
 #define HTML_H
 
-#define KHTMLW_VERSION  1212		// 00.12.12
+#define KHTMLW_VERSION  1213		// 00.12.13
 
 #include <qpainter.h>
 #include <qstrlist.h>
@@ -568,13 +568,13 @@ signals:
     void doubleClick( const char * _url, int _button);
 
     /**
-     * Tells the parent, that the widget wants to scroll. This may happen if
+     * Tells the parent, that the widget has scrolled. This may happen if
      * the user selects an <tt>&lt;a href="#anchor"&gt;</tt>.
      */
     void scrollVert( int _y );
 
     /**
-     * Tells the parent, that the widget wants to scroll. This may happen if
+     * Tells the parent, that the widget has scrolled. This may happen if
      * the user selects an &lt;a href="#anchor"&gt;.
      */
     void scrollHorz( int _x );

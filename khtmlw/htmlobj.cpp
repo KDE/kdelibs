@@ -115,12 +115,7 @@ void HTMLObject::selectByURL( QPainter *_painter, const char *_url, bool _select
 	return;
 
     if ( strcmp( _url, u ) == 0 )
-    {
-	setSelected( _select );
-
-	_painter->eraseRect( x + _tx, y - ascent + _ty, width, ascent+descent );
-	print( _painter, _tx, _ty );
-    }
+	select( _painter, _select, _tx, _ty );
 }
 
 void HTMLObject::select( QPainter *_painter, QRegExp& _pattern, bool _select, int _tx, int _ty )
@@ -134,12 +129,7 @@ void HTMLObject::select( QPainter *_painter, QRegExp& _pattern, bool _select, in
     QString filename = ku.filename();
     
     if ( filename.find( _pattern ) != -1 )
-    {
-	setSelected( _select );
-
-	_painter->eraseRect( x + _tx, y - ascent + _ty, width, ascent+descent );
-	print( _painter, _tx, _ty );
-    }	
+	select( _painter, _select, _tx, _ty );
 }
 
 void HTMLObject::select( QPainter *_painter, bool _select, int _tx, int _ty )
