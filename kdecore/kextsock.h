@@ -518,6 +518,10 @@ public:
    *
    * Note that those signals might be emitted before this function returns, so your
    * code should be prepared for that condition.
+   *
+   * You must call cancelAsyncConnect() before you delete the socket if you
+   * call this.  Otherwise you will have crashes.
+   *
    * @return 0 on successful queueing of the connect or -1 on error. 
    *         If this function returns 0, then the @ref connectionSuccess() or the 
    *         @ref connectionFailed() signals will be emitted.
