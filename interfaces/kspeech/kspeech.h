@@ -28,7 +28,7 @@
  *
  * kspeech - the KDE Text-to-speech API.
  *
- * @version 1.0 Draft 2
+ * @version 1.0 Draft 3
  *
  * This class defines the DCOP interface for applications desiring to speak text.
  * Applications may speak text by sending DCOP messages to application "kttsd" object "kspeech".
@@ -40,12 +40,13 @@
  *
  * @section Features
  *
- *   - Priority system for warnings and messages, while still playing regular texts.
- *   - Long text is parsed into sentences.  User may backup by sentence or paragraph,
+ *   - Priority system for Screen Readers, warnings and messages, while still playing regular texts.
+ *   - Long text is parsed into sentences.  User may backup by sentence or part, 
  *     replay, pause, and stop playing.
  *   - Handles multiple speaking applications.  Text messages are treated like print jobs.
  *     Jobs may be created, started, stopped, paused, resumed, and deleted.
  *   - Speak contents of clipboard.
+ *   - Speak KDE notifications.
  *
  * @section Requirements
  *
@@ -53,7 +54,7 @@
  * obtained from 
  * <a href="http://www.cstr.ed.ac.uk/projects/festival/">http://www.cstr.ed.ac.uk/projects/festival/</a>.
  * Festival is distributed with most Linux distros.  Check your distro CDs.  Also works
- * with Hadifax, FreeTTS, or any command that can speak text, such as Festival Lite
+ * with Hadifax (mbrola and txt2pho), FreeTTS, or any command that can speak text, such as Festival Lite
  * (flite).
  *
  * @section goals Design Goals
@@ -140,17 +141,27 @@
  * Click the "jobs" tab.  Click the "Speak File" button and
  * pick a plain text file, then click "Resume" or "Restart" buttons.
  *
- * kttsd maintains three speech queues:
+ * kttsd maintains 4 types of speech output:
+ *   - Screen Reader Output
  *   - Warnings
  *   - Messages
  *   - Text Jobs
  *
- * Methods sayWarning and sayMessage place messages into the Warnings and Messages queues respectively.
-*  Warnings take priority over messages, which take priority over text jobs.
- * setText and startText place text into the text job queue.  When one job finishes, the next
- * job begins.  Within a text job, the application (and user via the kttsmgr GUI), may back up by
- * sentence or paragraph, advance by sentence or paragraph, or rewind to the beginning.
- * Text jobs may be paused and resumed or deleted from the queue.
+ * Method @ref sayScreenReaderOutput speaks Screen Reader output.  It pre-empts any other speech in progress,
+ * including other Screen Reader outputs, i.e., it is not a queue.  This method is reserved for use
+ * by Screen Readers.
+ *
+ * Methods @ref sayWarning and @ref sayMessage place messages into the Warnings and
+ * Messages queues respectively.  Warnings take priority over messages, which take priority
+ * over text jobs.
+ *
+ * @ref setText and @ref startText place text into the text job queue.  When one job finishes, the next
+ * job begins.  Method @ref appendText adds additional parts to a text job.
+ * Within a text job, the application (and user via the kttsmgr GUI), may back up or
+ * advance by sentence or part, or rewind to the beginning.
+ * See @ref jumpToTextPart and @ref moveRelTextSentence.
+ * Text jobs may be paused, stopped, and resumed or deleted from the queue.
+ * See @ref pauseText, @ref stopText, @ref resumeText, and @ref removeText.
  *
  * @section cmdline DCOP Command-line Interface
  *
@@ -348,7 +359,8 @@
  *
  * Note: %Speech Markup is not yet implemented in %KTTSD.
  *
- * Each of the three methods for queueing text to be spoken -- @ref setText, @ref sayMessage, and
+ * Each of the four methods for queueing text to be spoken -- @ref sayScreenReaderOutput,
+ * @ref setText, @ref sayMessage, and
  * @ref sayWarning -- may contain speech markup,
  * provided that the plugin the user has configured supports that markup.  The markup
  * languages currently supported by plugins are:
@@ -375,7 +387,7 @@
  * spoken on the audio device.  The calling application can call the @ref supportsMarkers
  * method to determine if the currently configured plugin supports markers or not.
  *
- * @section sentenceparsing Sentence and Paragraph Parsing
+ * @section sentenceparsing Sentence Parsing
  *
  * Not all speech engines provide robust capabilities for stopping speech that is in progress.
  * To compensate for this, %KTTSD parses text jobs given to it by the @ref setText method into
@@ -391,10 +403,8 @@
  *     semi-colon (;) followed by whitespace (including newline), or
  *   - A newline.
  *
- * %KTTSD treats a blank line as a paragraph delimiter.
- *
  * When given text containing speech markup, %KTTSD automatically determines the markup type
- * and parses based on the sentence and paragraph semantics of the markup language.
+ * and parses based on the sentence semantics of the markup language.
  * TODO: ISSUE: Can this be reasonably done?
  *
  * An application may change the sentence delimiter by calling @ref setSentenceDelimiter
@@ -460,8 +470,9 @@
  *   a voice and the paths to mbrola and txt2pho.
  *
  * @author José Pablo Ezequiel "Pupeno" Fernández <pupeno@kde.org>
- * @author Olaf Schmidt <ojschmidt@kde.org>
  * @author Gary Cramblitt <garycramblitt@comcast.net>
+ * @author Olaf Schmidt <ojschmidt@kde.org>
+ * @author Gunnar Schmi Dt <gunnar@schmi-dt.de>
  */
 
 class kspeech : virtual public DCOPObject {
@@ -518,6 +529,21 @@ class kspeech : virtual public DCOPObject {
         virtual bool supportsMarkers(const QString &talker=NULL) = 0;
         
         /**
+        * Say a message as soon as possible, interrupting any other speech in progress.
+        * IMPORTANT: This method is reserved for use by Screen Readers and should not be used
+        * by any other applications.
+        * @param msg            The message to be spoken.
+        * @param talker         Code for the language to be spoken in.  Example "en".
+        *                       If NULL, defaults to the user's default talker.
+        *                       If no plugin has been configured for the specified language code,
+        *                       defaults to the user's default talker.
+        *
+        * If an existing Screen Reader output is in progress, it is stopped and discarded and
+        * replaced with this new message.
+        */
+        virtual ASYNC sayScreenReaderOutput(const QString &msg, const QString &talker=NULL) = 0;
+        
+        /**
         * Say a warning.  The warning will be spoken when the current sentence
         * stops speaking and takes precedence over Messages and regular text.  Warnings should only
         * be used for high-priority messages requiring immediate user attention, such as
@@ -531,8 +557,9 @@ class kspeech : virtual public DCOPObject {
         virtual ASYNC sayWarning(const QString &warning, const QString &talker=NULL) = 0;
 
         /**
-        * Say a message.  The message will be spoken when the current text paragraph
-        * stops speaking.  Messages should be used for one-shot messages that can't wait for
+        * Say a message.  The message will be spoken when the current sentence stops speaking
+        * but after any warnings have been spoken.
+        * Messages should be used for one-shot messages that can't wait for
         * normal text messages to stop speaking, such as "You have mail.".
         * @param message        The message to be spoken.
         * @param talker         Code for the language to be spoken in.  Example "en".
@@ -581,6 +608,22 @@ class kspeech : virtual public DCOPObject {
         * @see startText
         */
         virtual uint setText(const QString &text, const QString &talker=NULL) = 0;
+        
+        /**
+        * Adds another part to a text job.  Does not start speaking the text.
+        * @param text           The message to be spoken.
+        * @param jobNum         Job number of the text job.
+        *                       If zero, applies to the last job queued by the application,
+        *                       but if no such job, applies to the last job queued by any application.
+        * @return               Part number for the added part.  Parts are numbered starting at 1.
+        *
+        * The text is parsed into individual sentences.  Call getTextCount to retrieve
+        * the sentence count.  Call startText to mark the job as speakable and if the
+        * job is the first speakable job in the queue, speaking will begin.
+        * @see setText.
+        * @see startText.
+        */
+        virtual int appendText(const QString &text, const uint jobNum=0) = 0;
         
         /**
         * Queue a text job from the contents of a file.  Does not start speaking the text.
@@ -661,27 +704,36 @@ class kspeech : virtual public DCOPObject {
         *                       Blank if no such job.
         *
         * The stream contains the following elements:
-        *   - int state         Job state.
-        *   - QCString appId    DCOP senderId of the application that requested the speech job.
-        *   - QString talker    Language code in which to speak the text.
-        *   - int seq           Current sentence being spoken.  Sentences are numbered starting at 1.
-        *   - int sentenceCount Total number of sentences in the job.
+        *   - int state        - Job state.
+        *   - QCString appId   - DCOP senderId of the application that requested the speech job.
+        *   - QString talker   - Language code in which to speak the text.
+        *   - int seq          - Current sentence being spoken.  Sentences are numbered starting at 1.
+        *   - int sentenceCount - Total number of sentences in the job.
+        *   - int partNum      - Current part of the job begin spoken.  Parts are numbered starting at 1.
+        *   - int partCount    - Total number of parts in the job.
+        *
+        * Note that sequence numbers apply to the entire job.  They do not start from 1 at the beginning of
+        * each part.
         *
         * The following sample code will decode the stream:
-          @verbatim
-            QByteArray jobInfo = getTextJobInfo(jobNum);
-            QDataStream stream(jobInfo, IO_ReadOnly);
-            int state;
-            QCString appId;
-            QString talker;
-            int seq;
-            int sentenceCount;
-            stream >> state;
-            stream >> appId;
-            stream >> talker;
-            stream >> seq;
-            stream >> sentenceCount;
-          @endverbatim
+                @verbatim
+                    QByteArray jobInfo = getTextJobInfo(jobNum);
+                    QDataStream stream(jobInfo, IO_ReadOnly);
+                    int state;
+                    QCString appId;
+                    QString talker;
+                    int seq;
+                    int sentenceCount;
+                    int partNum;
+                    int partCount;
+                    stream >> state;
+                    stream >> appId;
+                    stream >> talker;
+                    stream >> seq;
+                    stream >> sentenceCount;
+                    stream >> partNum;
+                    stream >> partCount;
+                @endverbatim
         */
         virtual QByteArray getTextJobInfo(const uint jobNum=0) = 0;
         
@@ -691,7 +743,7 @@ class kspeech : virtual public DCOPObject {
         *                       If zero, applies to the last job queued by the application,
         *                       but if no such job, applies to the last job queued by any application.
         * @param seq            Sequence number of the sentence.
-        * @return               The specified sentence in the specified job.  If not such
+        * @return               The specified sentence in the specified job.  If no such
         *                       job or sentence, returns "".
         */
         virtual QString getTextJobSentence(const uint jobNum=0, const uint seq=0) = 0;
@@ -809,37 +861,35 @@ class kspeech : virtual public DCOPObject {
         virtual ASYNC moveTextLater(const uint jobNum=0) = 0;
 
         /**
-        * Go to the previous paragraph in a text job.
+        * Jump to the first sentence of a specified part of a text job.
+        * @param partNum        Part number of the part to jump to.  Parts are numbered starting at 1.
         * @param jobNum         Job number of the text job.
         *                       If zero, applies to the last job queued by the application,
         *                       but if no such job, applies to the last job queued by any application.
+        * @return               Part number of the part actually jumped to.
+        *
+        * If partNum is greater than the number of parts in the job, jumps to last part.
+        * If partNum is 0, does nothing and returns the current part number.
+        * If no such job, does nothing and returns 0.
+        * Does not affect the current speaking/not-speaking state of the job.
         */
-        virtual ASYNC prevParText(const uint jobNum=0) = 0;
-
-        /**
-        * Go to the previous sentence in the queue.
-        * @param jobNum         Job number of the text job.
-        *                       If zero, applies to the last job queued by the application,
-        *                       but if no such job, applies to the last job queued by any application.
-        */
-        virtual ASYNC prevSenText(const uint jobNum=0) = 0;
-
-        /**
-        * Go to next sentence in a text job.
-        * @param jobNum         Job number of the text job.
-        *                       If zero, applies to the last job queued by the application,
-        *                       but if no such job, applies to the last job queued by any application.
-        */
-        virtual ASYNC nextSenText(const uint jobNum=0) = 0;
-
-        /**
-        * Go to next paragraph in a text job.
-        * @param jobNum         Job number of the text job.
-        *                       If zero, applies to the last job queued by the application,
-        *                       but if no such job, applies to the last job queued by any application.
-        */
-        virtual ASYNC nextParText(const uint jobNum=0) = 0;
+        virtual int jumpToTextPart(const int partNum, const uint jobNum=0) = 0;
         
+        /**
+        * Advance or rewind N sentences in a text job.
+        * @param n              Number of sentences to advance (positive) or rewind (negative) in the job.
+        * @param jobNum         Job number of the text job.
+        *                       If zero, applies to the last job queued by the application,
+        *                       but if no such job, applies to the last job queued by any application.
+        * @return               Sequence number of the sentence actually moved to.  Sequence numbers
+        *                       are numbered starting at 1.
+        *
+        * If no such job, does nothing and returns 0.
+        * If n is zero, returns the current sequence number of the job.
+        * Does not affect the current speaking/not-speaking state of the job.
+        */
+        virtual uint moveRelTextSentence(const int n, const uint jobNum=0) = 0;
+
         /**
         * Add the clipboard contents to the text queue and begin speaking it.
         */
@@ -847,7 +897,7 @@ class kspeech : virtual public DCOPObject {
         
         /**
         * Displays the %KTTS Manager dialog.  In this dialog, the user may backup or skip forward in
-        * any text job by sentence or paragraph, rewind jobs, pause or resume jobs, or
+        * any text job by sentence or part, rewind jobs, pause or resume jobs, or
         * delete jobs.
         */
         virtual void showDialog() = 0;
