@@ -1118,7 +1118,7 @@ void KApplication::invokeHTMLHelp( QString filename, QString topic ) const
 	   */
 	  setuid( getuid() );
 	  setgid( getgid() );
-	  char* shell = "/bin/sh";
+	  const char* shell = "/bin/sh";
 	  if (getenv("SHELL"))
 		shell = getenv("SHELL");
          file.prepend("khelpcenter ");
