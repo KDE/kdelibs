@@ -21,7 +21,7 @@ Package: kdelibs3-doc
 Architecture: all
 Section: doc
 Replaces: kdelibs3-doc-cvs, kdelibs-doc
-Suggests: kdelibs3, kdelibs3-dev, libqt2.2-dev
+Suggests: kdelibs3, kdelibs3-dev, libqt2.2-dev, kdoc, kdevelop
 Provides: kdelibs-doc
 Description: KDE core library documentation
  These are the core documentation created by the kdoc package.  This package
