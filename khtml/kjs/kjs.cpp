@@ -29,7 +29,6 @@ extern int yyparse();
 
 using namespace KJS;
 
-int          KJSWorld::nodeCount = 0;
 KJSLexer*    KJSWorld::lexer     = 0L;
 KJSContext*  KJSWorld::context   = 0L;
 KJSGlobal*   KJSWorld::global    = 0L;
@@ -41,19 +40,18 @@ KJSWorld::KJSWorld(KHTMLWidget *w)
   printf("KJSWorld::KJSWorld()\n");
 
   // due to yacc's C nature the parser isn't reentrant
-  assert(nodeCount == 0);
   assert(lexer == 0);
   assert(context == 0);
   assert(global == 0);
   assert(prog == 0);
 }
 
-void KJSWorld::evaluate(const char *code)
+bool KJSWorld::evaluate(const char *code)
 {
-  evaluate(UString(code).unicode(), strlen(code));
+  return evaluate(UString(code).unicode(), strlen(code));
 }
 
-void KJSWorld::evaluate(const KJS::UnicodeChar *code, unsigned int length)
+bool KJSWorld::evaluate(const KJS::UnicodeChar *code, unsigned int length)
 {
   lexer = new KJSLexer(UString(code, length));
 
@@ -63,27 +61,25 @@ void KJSWorld::evaluate(const KJS::UnicodeChar *code, unsigned int length)
   delete lexer;
   lexer = 0L;
 
-  if (!parseError) {
-    fprintf(stderr, "nodeCount = %d\n", nodeCount);
-
-    global = new KJSGlobal();
-    context = new KJSContext();
-    context->insertScope(global);
-
-    assert(prog);
-    prog->evaluate();
-
-    // TODO: delete context and global
-
-    delete prog;
-    prog = 0L;
-
-    //    assert(KJSWorld::nodeCount == 0);
-    if(KJSWorld::nodeCount != 0)
-      fprintf(stderr, "remain nodeCount = %d. Looks like a leak.\n",
-	      KJSWorld::nodeCount);
-  } else
+  if (parseError) {
     fprintf(stderr, "JavaScript parse error.\n");
+    KJS::Node::deleteAllNodes();
+    return false;
+  }
+
+  global = new KJSGlobal();
+  context = new KJSContext();
+  context->insertScope(global);
+
+  assert(prog);
+  prog->evaluate();
+
+  // TODO: delete context and global
+
+  delete prog;
+  prog = 0L;
+
+  return true;
 }
 
 

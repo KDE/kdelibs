@@ -1,3 +1,8 @@
+1999-10-29  Harri Porten  <porten@kde.org>
+
+	* nodes.cpp: store all syntax nodes in a list. Eases
+	deletion. Especially after syntax errors.
+
 1999-10-24  Harri Porten  <porten@kde.org>
 
 	* KJSContext: "argument" property works now (adopted model

@@ -52,19 +52,18 @@ public:
    * between each call.
    * @param code is a string containing the code to be executed.
    */
-  void evaluate(const char *code);
+  bool evaluate(const char *code);
   /**
    * Same as above. Only differing in the arguments accepted.
    * KJS::UnicodeChar is a data type compatible to XChar2b and QChar.
    * @param code is an Unicode string containing the code to be executed.
    * @param length of the string.
    */
-  void evaluate(const KJS::UnicodeChar *code, unsigned int length);
+  bool evaluate(const KJS::UnicodeChar *code, unsigned int length);
 private:
   KHTMLWidget *htmlw;
 
 public:
-  static int nodeCount;
   static KJS::KJSLexer *lexer;
   static KJS::KJSContext *context;
   static KJS::KJSGlobal *global;

@@ -34,18 +34,38 @@
 
 using namespace KJS;
 
+int   Node::nodeCount = 0;
+Node *Node::firstNode = 0L;
+
 Node::Node()
 {
   assert(KJSWorld::lexer);
   line = KJSWorld::lexer->yylineno;
-  KJSWorld::nodeCount++;
+  nodeCount++;
   //  cout << "Node()" << endl;
+
+  // create a list of allocated objects. Makes
+  // deleting (even after a parse error) quite easy
+  this->nextNode = firstNode;
+  firstNode = this;
 }
 
 Node::~Node()
 {
   //  cout << "~Node()" << endl;
-  KJSWorld::nodeCount--;
+  nodeCount--;
+}
+
+void Node::deleteAllNodes()
+{
+  Node *tmp, *n = firstNode;
+
+  while ((tmp = n)) {
+    n = n->nextNode;
+    delete tmp;
+  }
+  firstNode = 0L;
+  assert(nodeCount == 0);
 }
 
 KJSO *NullNode::evaluate()
