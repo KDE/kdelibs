@@ -172,8 +172,6 @@ private:
    static KCharsetsData *data;
    static KCharsets *charsets;
 
-   KCharset(const KCharset&);
-   KCharset& operator=(const KCharset&);
 };
 
 
