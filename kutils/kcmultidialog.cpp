@@ -122,8 +122,8 @@ void KCMultiDialog::apply()
     for( ModuleList::Iterator it = m_modules.begin(); it != end; ++it )
     {
         KCModuleProxy * m = ( *it ).kcm;
-        kdDebug(710) << k_funcinfo << m->name() << ' ' <<
-            ( m->aboutData() ? m->aboutData()->appName() : "" ) << endl;
+        //kdDebug(710) << k_funcinfo << m->name() << ' ' <<
+        //    ( m->aboutData() ? m->aboutData()->appName() : "" ) << endl;
         if( m->changed() )
         {
             m->save();
