@@ -25,8 +25,8 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/time.h>
 #include <sys/socket.h>
+#include <sys/time.h>
 #include <sys/wait.h>
 #ifdef HAVE_SYS_SELECT_H
 #include <sys/select.h>         // Needed on some systems.
@@ -45,7 +45,6 @@
 #endif
 
 #include <qregexp.h>
-#include <qbuffer.h>
 
 #include <kapp.h>
 #include <klocale.h>
@@ -63,6 +62,7 @@
 #include <kmessagebox.h>
 #include <kconfig.h>
 #include <kdesu/client.h>
+#include <kmimemagic.h>
 #ifdef DO_SSL
 #include <kssl.h>
 #endif
@@ -82,6 +82,9 @@ using namespace KIO;
 #ifndef MAX_CACHE_AGE
 #define MAX_CACHE_AGE 30*60
 #endif
+
+#define DEFAULT_MIME_TYPE                 "text/html"
+#define DEFAULT_ACCEPT_HEADER             "text/html, image/png, image/jpeg, image/gif, */*"
 
 extern "C" {
   void sigalrm_handler(int);
@@ -884,12 +887,6 @@ bool HTTPProtocol::http_open()
      header += "Referer: "+referrer+"\r\n";
   }
 
-  QString acceptHeader = metaData("accept");
-  if (!acceptHeader.isEmpty())
-  {
-     header += "Accept: "+acceptHeader+"\r\n";
-  }
-
   // Adjust the offset value based on the "resume"
   // meta-data.
   QString resumeOffset = metaData("resume");
@@ -914,6 +911,14 @@ bool HTTPProtocol::http_open()
     if (!m_lastModified.isEmpty())
        header += "If-Modified-Since: "+m_lastModified+"\r\n";
   }
+
+  header += "Accept: ";
+  QString acceptHeader = metaData("accept");
+  if (!acceptHeader.isEmpty())
+     header += acceptHeader;
+  else
+     header += DEFAULT_ACCEPT_HEADER;
+  header += "\r\n";
 
 #ifdef DO_GZIP
   // Content negotiation
@@ -1161,8 +1166,6 @@ bool HTTPProtocol::readHeader()
      return true;
   }
 
-  // to get rid of those "Open with" dialogs...
-  m_strMimeType = "text/html";
   m_etag = QString::null;
   m_lastModified = QString::null;
 
@@ -1216,7 +1219,7 @@ bool HTTPProtocol::readHeader()
            // Some web-servers fail to respond properly to a HEAD request.
            // We compensate for their failure to properly implement the HTTP standard
            // by assuming that they will be sending html.
-           mimeType(QString::fromLatin1("text/html"));
+           mimeType(QString::fromLatin1(DEFAULT_MIME_TYPE));
            return true;
         }
         kdDebug(7103) << "readHeader(3): Connnection broken ! " << endl;
@@ -1284,24 +1287,20 @@ bool HTTPProtocol::readHeader()
       // Content-Encoding specified which would then contain
       // the true mime-type for the requested URI i.e. the content
       // type is only applicable to the actual message-body!!
-      QString tmp = QString::fromLatin1(trimLead(buffer + 13)).lower();
-      if ( !tmp.isEmpty() )
-      {
-        m_strMimeType = tmp;
-        kdDebug(7103) << "Content-type: " << m_strMimeType << endl;
-        // This header can be something like "text/html; charset foo-blah"
-        int semicolonPos = m_strMimeType.find( ';' );
-        if ( semicolonPos != -1 )
-        {
-          int equalPos = m_strMimeType.find( '=' );
-          if ( equalPos != -1 )
-          {
-            m_strCharset = m_strMimeType.mid( equalPos+1 );
-            kdDebug(7103) << "Found charset : " << m_strCharset << endl;
-          }
-          m_strMimeType = m_strMimeType.left( semicolonPos );
-        }
-      }
+       m_strMimeType = QString::fromLatin1(trimLead(buffer + 13)).lower();
+       kdDebug(7103) << "Content-type: " << m_strMimeType << endl;
+       // This header can be something like "text/html; charset foo-blah"
+       int semicolonPos = m_strMimeType.find( ';' );
+       if ( semicolonPos != -1 )
+       {
+         int equalPos = m_strMimeType.find( '=' );
+         if ( equalPos != -1 )
+         {
+           m_strCharset = m_strMimeType.mid( equalPos+1 );
+           kdDebug(7103) << "Found charset : " << m_strCharset << endl;
+         }
+         m_strMimeType = m_strMimeType.left( semicolonPos );
+       }
     }
     //
     else if (strncasecmp(buffer, "Date:", 5) == 0) {
@@ -1402,7 +1401,10 @@ bool HTTPProtocol::readHeader()
       }
       // Unauthorized access
       else if (m_responseCode == 401 || m_responseCode == 407) {
-        if ( m_prevResponseCode != m_responseCode )
+        // Double authorization requests, i.e. a proxy auth
+        // request followed immediately by a regular auth request.
+        if ( m_prevResponseCode != m_responseCode &&
+            (m_prevResponseCode == 401 || m_prevResponseCode == 407) )
           saveAuthorization();
 
         m_bUnauthorized = true;
@@ -1685,11 +1687,8 @@ bool HTTPProtocol::readHeader()
 
   // Reset the POST buffer if we do not get an authorization
   // request and the previous action was POST.
-  if ( m_request.method==HTTP_POST && !m_bUnauthorized && !m_bufPOST.isEmpty()  )
-  {
-    m_bufPOST.resetRawData( m_bufPOST.data(), m_bufPOST.size() );
+  if ( m_request.method==HTTP_POST && !m_bUnauthorized )
     m_bufPOST.resize(0);
-  }
 
   // WABA: Correct for tgz files with a gzip-encoding.
   // They really shouldn't put gzip in the Content-Encoding field!
@@ -1757,14 +1756,14 @@ bool HTTPProtocol::readHeader()
      m_iSize = -1;
   }
 
-  // FINALLY, let the world know what kind of data we are getting
-  // and that we do indeed have a header
-  // Do this only if there is no redirection. Buggy server implementations
-  // incorrectly send Content-Type with a redirection response. (DA)
-  if( locationStr.isEmpty() )
+  // Let the app know about the mime-type iff this is not
+  // a redirection and the mime-type string is not empty.
+  if( locationStr.isEmpty() && (!m_strMimeType.isEmpty() ||
+      (m_strMimeType.isEmpty() && m_request.method == HTTP_HEAD) ) )
   {
+
      kdDebug(7103) << "Emitting mimetype " << m_strMimeType << endl;
-     mimeType(m_strMimeType);
+     mimeType( m_strMimeType.isEmpty() ? DEFAULT_MIME_TYPE:m_strMimeType );
   }
 
   // Set charset. Maybe charSet should be a class member, since
@@ -1777,7 +1776,7 @@ bool HTTPProtocol::readHeader()
 
   if( !disposition.isEmpty() )
   {
-     kdDebug(7103) << "Sending Content-Disposition: " << disposition << endl;
+     kdDebug(7103) << "Setting Content-Disposition: " << disposition << endl;
      setMetaData("content-disposition", disposition);
   }
 
@@ -1791,16 +1790,19 @@ bool HTTPProtocol::readHeader()
      setMetaData("no-cache", "true");
 
   // Do we want to cache this request?
-  if (m_bCachedWrite)
+  if ( m_bCachedWrite && !m_strMimeType.isEmpty() )
   {
      // Check...
      createCacheEntry(m_strMimeType, expireDate); // Create a cache entry
      if (!m_fcache)
         m_bCachedWrite = false; // Error creating cache entry.
+     m_expireDate = expireDate;
   }
 
-  if (m_bCachedWrite)
+  if (m_bCachedWrite && !m_strMimeType.isEmpty())
     kdDebug(7113) << "Cache, adding \"" << m_request.url.url() << "\"" << endl;
+  else if (m_bCachedWrite && m_strMimeType.isEmpty())
+    kdDebug(7113) << "Cache, pending \"" << m_request.url.url() << "\"" << endl;
   else
     kdDebug(7113) << "Cache, not adding \"" << m_request.url.url() << "\"" << endl;
   return true;
@@ -1835,7 +1837,7 @@ void HTTPProtocol::addEncoding(QString encoding, QStringList &encs)
 void HTTPProtocol::configAuth( const char *p, bool b )
 {
   HTTP_AUTH f;
-  char *strAuth = 0;
+  const char *strAuth = p;
 
   while( *p == ' ' ) p++;
   if ( strncasecmp( p, "Basic", 5 ) == 0 )
@@ -1847,7 +1849,7 @@ void HTTPProtocol::configAuth( const char *p, bool b )
   {
     p += 6;
     f = AUTH_Digest;
-    strAuth = strdup(p);
+    strAuth = p;
   }
   else if (strncasecmp (p, "NTLM", 4) == 0)
   {
@@ -1894,15 +1896,9 @@ void HTTPProtocol::configAuth( const char *p, bool b )
       p += 7;
       while( p[i] != '"' ) i++;
       if( b )
-      {
-        m_strProxyRealm = p;
-        m_strProxyRealm.truncate( i );
-      }
+        m_strProxyRealm = QString::fromLatin1( p, i );
       else
-      {
-        m_strRealm = p;
-        m_strRealm.truncate( i );
-      }
+        m_strRealm = QString::fromLatin1( p, i );
     }
     p+=(i+1);
   }
@@ -1910,12 +1906,12 @@ void HTTPProtocol::configAuth( const char *p, bool b )
   if( b )
   {
     ProxyAuthentication = f;
-    m_strProxyAuthorization = strAuth;
+    m_strProxyAuthorization = QString::fromLatin1( strAuth, strlen(strAuth) );
   }
   else
   {
     Authentication = f;
-    m_strAuthorization = strAuth;
+    m_strAuthorization = QString::fromLatin1( strAuth, strlen(strAuth) );
   }
 }
 
@@ -1942,24 +1938,21 @@ bool HTTPProtocol::sendBody()
   else
   {
     kdDebug(7113) << "POST'ing live data..." << endl;
-    QBuffer buf ( m_bufPOST );
-    bool okay = buf.open( IO_WriteOnly );
-    if ( !okay )
-      kdDebug(7113) << "Could not open buffer" << endl;
+    m_bufPOST.resize(0);
     QByteArray buffer;
+    int old_size;
     do
     {
       dataReq(); // Request for data
       result = readData( buffer );
       if ( result > 0 )
       {
-        kdDebug(7113) << "POST data read: " << buffer.data() << endl;
-        buf.at(length);
-        int size = buf.writeBlock( buffer.copy().data(), buffer.size() );
-        if ( size != result )
-            kdDebug() << "Unequal read/write size" << endl;
+        kdDebug(7113) << "POST data read: " << QString::fromLatin1(buffer.data(), buffer.size()) << endl;
         length += result;
-        buffer.resetRawData( buffer.data(), buffer.size() );
+        old_size = m_bufPOST.size();
+        m_bufPOST.resize( old_size+result );
+        memcpy( m_bufPOST.data()+ old_size, buffer.data(), buffer.size() );
+        buffer.resize(0);
       }
     } while ( result > 0 );
   }
@@ -1975,7 +1968,7 @@ bool HTTPProtocol::sendBody()
   kdDebug( 7113 ) << c_buffer << endl;
 
   // Debugging code...
-  kdDebug( 7113 ) << "POST'ing Data: " << m_bufPOST.data() << endl;
+  kdDebug( 7113 ) << "POST'ing Data: " << QString::fromLatin1(m_bufPOST.data(), m_bufPOST.size()) << endl;
 
   // Send the content length...
   bool sendOk = (write(c_buffer, strlen(c_buffer)) == (ssize_t) strlen(c_buffer));
@@ -2146,7 +2139,7 @@ void HTTPProtocol::get( const KURL& url )
      return;
   }
 
-  kdDebug(7113) << "HTTPProtocol::get " << url.prettyURL() << endl;
+  kdDebug(7113) << "HTTPProtocol::get " << url.url() << endl;
 
   m_request.method = HTTP_GET;
   m_request.path = url.path();
@@ -2614,8 +2607,11 @@ bool HTTPProtocol::readBody( )
   kdDebug(7113) << "HTTPProtocol::readBody m_iBytesLeft=" << m_iBytesLeft << endl;
 
   // Main incoming loop...  Gather everything while we can...
-  big_buffer.resetRawData(big_buffer.data(), big_buffer.size());
   KMD5 context;
+  int totRxBytes = 0;
+  QByteArray mimeTypeBuffer;
+  big_buffer.resize(0);
+
   while (!eof())
   {
     int bytesReceived;
@@ -2639,6 +2635,44 @@ bool HTTPProtocol::readBody( )
     // won't work with it!
     if (bytesReceived > 0)
     {
+      // If a broken server does not send the mime-type,
+      // we try to id from the content before dealing
+      // with the content itself.
+      if ( m_strMimeType.isEmpty() )
+      {
+        kdDebug(7113) << "Attempting to determine mime-type from content..." << endl;
+        totRxBytes += bytesReceived;
+        int old_size = mimeTypeBuffer.size();
+        if ( totRxBytes <= 1024 || (totRxBytes > 1024 && m_iBytesLeft <= 0 ) )
+        {
+          mimeTypeBuffer.resize( old_size + totRxBytes );
+          memcpy( mimeTypeBuffer.data() + old_size, m_bufReceive.data(), totRxBytes );
+        }
+
+        if ( totRxBytes >= 1024 || m_iBytesLeft <= 0 )
+        {
+           KMimeMagicResult * result = KMimeMagic::self()->findBufferFileType( mimeTypeBuffer, m_request.url.fileName() );
+           if( result )
+             m_strMimeType = result->mimeType();
+
+           kdDebug(7113) << "Mimetype from content:  " <<  m_strMimeType << endl;
+           if ( m_strMimeType.isEmpty() )
+           {
+             m_strMimeType = QString::fromLatin1( DEFAULT_MIME_TYPE );  // if all else fails...
+             kdDebug(7113) << "Using default mimetype:  " <<  m_strMimeType << endl;
+           }
+
+           if ( m_bCachedWrite )
+           {
+             createCacheEntry( m_strMimeType, m_expireDate );
+             if (!m_fcache)
+               m_bCachedWrite = false;
+           }
+           mimeType( m_strMimeType );
+           mimeTypeBuffer.resize(0);
+        }
+      }
+
       // check on the encoding.  can we get away with it as is?
       if ( !decode )
       {
@@ -2675,7 +2709,7 @@ bool HTTPProtocol::readBody( )
       break;
   }
 
-  m_bufReceive.resetRawData( m_bufReceive.data(), m_bufReceive.size() );
+  m_bufReceive.resize(0);
   // if we have something in big_buffer, then we know that we have
   // encoded data.  of course, we need to do something about this
   if (!big_buffer.isNull())
@@ -2727,7 +2761,8 @@ bool HTTPProtocol::readBody( )
     HASH digest;
     context.rawDigest(digest);
     QString enc_digest = KCodecs::base64Encode(QString::fromLatin1(digest,16));
-    // TODO: We need to notify the user if content MD5 check does
+    // TODO: We need to notify the user if content MD5
+    // check does pan out!!
     if ( m_sContentMD5 == enc_digest )
       kdDebug(7103) << "MD5 checksum present, and hey it matched what "
                        "I calculated." << endl;
@@ -3013,7 +3048,7 @@ void HTTPProtocol::createCacheEntry( const QString &mimetype, time_t expireDate)
    // Create file
    (void) ::mkdir( dir.latin1(), 0700 );
 
-   QString filename = m_state.cef + ".new";  // Create a new cache entry
+   QString filename = m_state.cef + ".new";  // Create a new cache entryexpireDate
 
    m_fcache = fopen( filename.latin1(), "w");
    if (!m_fcache)
@@ -3402,26 +3437,55 @@ void HTTPProtocol::saveAuthorization()
     }
 }
 
-QString HTTPProtocol::createDigestAuth ( bool /*isForProxy*/ )
+QString HTTPProtocol::createBasicAuth( bool isForProxy )
 {
+  QString auth;
+  QCString user, passwd;
+  if ( isForProxy )
+  {
+    auth = "Proxy-Authorization: Basic ";
+    user = m_proxyURL.user().latin1();
+    passwd = m_proxyURL.pass().latin1();
+  }
+  else
+  {
+    auth = "Authorization: Basic ";
+    user = m_state.user.latin1();
+    passwd = m_state.passwd.latin1();
+  }
 
+  if ( !user.isEmpty() )
+  {
+    if( !passwd.isEmpty() )
+      auth += KCodecs::base64Encode( (user + ':' + passwd) );
+    else
+      auth += KCodecs::base64Encode( user );
+  }
+  else
+    auth = QString::null;
+
+  return auth;
+}
+
+QString HTTPProtocol::createDigestAuth ( bool /* isForProxy */ )
+{
   QString auth;
 /*
   const char *p;
-  HASHHEX Response;
+  HASHHEX SessionKey, Response;
   QCString opaque = "";
-  KDigestAuth::Info info;
+  DigestAuthInfo info;
 
   if ( isForProxy )
   {
-    auth = "Proxy-Authorization";
+    auth = "Proxy-Authorization: Digest ";
     info.username = m_proxyURL.user().latin1();
     info.password = m_proxyURL.pass().latin1();
     p = m_strProxyAuthorization.latin1();
   }
   else
   {
-    auth = "Authorization";
+    auth = "Authorization: Digest ";
     info.username = m_state.user.latin1();
     info.password = m_state.passwd.latin1();
     p = m_strAuthorization.latin1();
@@ -3436,7 +3500,7 @@ QString HTTPProtocol::createDigestAuth ( bool /*isForProxy*/ )
   info.algorithm = "MD5";
   info.nonce = "";
   info.qop = "";
-  info.digestURI = m_request.path.latin1();
+  info.digestURI.append( m_request.path.latin1() );
   // RIDDLE: Can anyone guess what this value means ??
   info.cnonce = "4477b65d";
   // HACK: Should be fixed according to RFC 2617 section 3.2.2
@@ -3530,9 +3594,9 @@ QString HTTPProtocol::createDigestAuth ( bool /*isForProxy*/ )
                 << "  qop:       " << info.qop << endl;
 
   // Calculate the response...
-  KDigestAuth::calculateResponse( info, Response );
+  //calculateResponse( info, Response );
 
-  auth += ": Digest username=\"";
+  auth += "username=\"";
   auth += info.username;
   auth += "\"";
 
@@ -3575,27 +3639,3 @@ QString HTTPProtocol::createDigestAuth ( bool /*isForProxy*/ )
   return auth;
 }
 
-QString HTTPProtocol::createBasicAuth( bool isForProxy )
-{
-  QString auth;
-  QCString user, passwd;
-  if ( isForProxy )
-  {
-    auth = "Proxy-Authorization";
-    user = m_proxyURL.user().latin1();
-    passwd = m_proxyURL.pass().latin1();
-  }
-  else
-  {
-    auth = "Authorization";
-    user = m_state.user.latin1();
-    passwd = m_state.passwd.latin1();
-  }
-
-  if ( !user.isEmpty() && !passwd.isEmpty() )
-  {
-    auth += ": Basic ";
-    auth += KCodecs::base64Encode( (user + ":" + passwd) );
-  }
-  return auth;
-}

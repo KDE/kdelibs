@@ -23,7 +23,7 @@
 #include <netdb.h>
 
 #include <qstringlist.h>
-#include <qstring.h>
+#include <qstrlist.h>
 
 #include <kio/global.h>
 #include <kio/slavebase.h>
@@ -84,6 +84,21 @@ public:
     KURL url;
     QString window;                 // Window Id this request is related to.
   } HTTPRequest;
+
+  typedef struct
+  {
+    QCString nc;
+    QCString qop;
+    QCString realm;
+    QCString nonce;
+    QCString method;
+    QCString cnonce;
+    QCString username;
+    QCString password;
+    QStrList digestURI;
+    QCString algorithm;
+    QCString entity_body;
+  } DigestAuthInfo;
 
   /**
    * Fills in m_request.url from the rest of the request data.
@@ -266,6 +281,7 @@ protected:
   QString createBasicAuth( bool isForProxy = false );
 
   QString createDigestAuth( bool isForProxy = false );
+
 
 protected:
   HTTPState m_state;
