@@ -22,7 +22,7 @@ SUBDIRS = qk dcop libltdl kdecore kdeui kformula mimetypes \
 	mediatool kspell kio kimgio kfile kab khtml kstyles \
 	kparts doc toolbar interfaces kdetest pics
 
-$(top_srcdir)/acinclude.m4: $(top_srcdir)/admin/acinclude.m4.in $(top_srcdir)/admin/libtool.m4.in 
+$(top_srcdir)/acinclude.m4: $(top_srcdir)/admin/acinclude.m4.in $(top_srcdir)/admin/libtool.m4.in
 	@cd $(top_srcdir) && cat admin/acinclude.m4.in admin/libtool.m4.in > acinclude.m4
 
 AUTOMAKE_OPTIONS = foreign 1.4
@@ -38,3 +38,13 @@ EXTRA_DIST = admin bsd-port debian kdelibs.spec.in kde.pot
 dist-hook:
 	cd $(top_distdir) && perl $(top_srcdir)/admin/am_edit -padmin
 
+cvs-local:
+	@echo "*** preparing libtool library"
+	cd  libltdl && \
+	rm -f acinclude.m4 && \
+	cp ../admin/libtool.m4.in acinclude.m4 && \
+	cat ltdl.m4 >> acinclude.m4 && \
+	aclocal && \
+	autoheader && \
+	automake --gnits --add-missing && \
+	autoconf
