@@ -128,7 +128,12 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
     RenderObject *child;
 
     // check if we need to do anything at all...
-    if(!isInline() && ((_ty > _y + _h) || (_ty + m_height < _y))) return;
+    if(!isInline())
+    {
+	int h = m_height;
+	if(specialObjects && floatBottom() > h) h = floatBottom();
+	if((_ty > _y + _h) || (_ty + h < _y)) return;
+    }
 
     if(m_printSpecial && !isInline())
 	printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
@@ -190,7 +195,9 @@ void RenderFlow::layout( bool deep )
 
     int oldWidth = m_width;
     calcWidth();
-    if(oldWidth == m_width && layouted()) return;
+    // ### does not give correct results for fixed width paragraphs with
+    // floats for some reason
+    //if(oldWidth == m_width && layouted()) return;
 
 #ifdef DEBUG_LAYOUT
     printf("%s(RenderFlow)::layout(%d) width=%d, layouted=%d\n", renderName(), deep, m_width, layouted());
@@ -213,7 +220,9 @@ void RenderFlow::layout( bool deep )
 
     if(floatBottom() > m_height)	
     {
-	if(isTableCell())
+	if(isFloating())
+	    m_height = floatBottom();
+	else if(isTableCell())
 	    m_height = floatBottom();
 	else if( m_next)
 	{
@@ -481,51 +490,57 @@ void RenderFlow::newLine()
 short
 RenderFlow::leftMargin(int y) const
 {
-    int res=0;
+    int left = 0;
 
     if(m_style->hasBorder())
-	res = borderLeft();
+	left = borderLeft();
     if(m_style->hasPadding())
-	res += paddingLeft();
+	left += paddingLeft();
 
-    if(!specialObjects) return res;
+    if(!specialObjects) return left;
 
     SpecialObject* r;	
     QListIterator<SpecialObject> it(*specialObjects);
     for ( ; (r = it.current()); ++it )
     {
-	if (r->startY<=y && r->endY>y && r->type == SpecialObject::FloatLeft)
-	    res+=r->width;
+	if (r->startY <= y && r->endY > y &&
+	    r->type == SpecialObject::FloatLeft &&
+	    r->left + r->width > left)
+	    left = r->left + r->width;
     }
-    //printf("leftMargin(%d) = %d\n", y, res);
-    return res;
+    //printf("leftMargin(%d) = %d\n", y, left);
+    return left;
 }
 
 int
 RenderFlow::rightMargin(int y) const
 {
-    int res=m_width;
+    int right = m_width;
 
     if(m_style->hasBorder())
-	res -= borderRight();
+	right -= borderRight();
     if(m_style->hasPadding())
-	res -= paddingRight();
+	right -= paddingRight();
 
-    if (!specialObjects) return res;
+    if (!specialObjects) return right;
 
     SpecialObject* r;	
     QListIterator<SpecialObject> it(*specialObjects);
     for ( ; (r = it.current()); ++it )
     {
-	if (r->startY<=y && r->endY>y && r->type == SpecialObject::FloatRight)
-	    res-=r->width;
+	if (r->startY <= y && r->endY > y &&
+	    r->type == SpecialObject::FloatRight &&
+	    r->left < right)
+	    right -= r->left;
     }
-    return res;
+    return right;
 }
 
 unsigned short
 RenderFlow::lineWidth(int y) const
 {
+    return rightMargin(y) - leftMargin(y);
+#if 0
     int res = m_width;
     if(m_style->hasBorder())
 	res -= borderLeft() + borderRight();
@@ -541,6 +556,7 @@ RenderFlow::lineWidth(int y) const
 
     if (res<0) res=0;
     return res;
+#endif
 }
 
 int
@@ -627,6 +643,7 @@ RenderFlow::clearFloats()
 
     if(!prev->isFlow()) return;
     RenderFlow * flow = static_cast<RenderFlow *>(prev);
+    if(!flow->specialObjects) return;
     if(flow->floatBottom() > offset)
     {
 #ifdef DEBUG_LAYOUT
