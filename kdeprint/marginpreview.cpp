@@ -283,7 +283,7 @@ void MarginPreview::mouseReleaseEvent(QMouseEvent *e)
 			drawTempLine(&p);
 			if (e)
 			{
-				int	val, st(state_);
+				int	val = 0, st(state_);
 				if (symetric_ && (st == BMoving || st == RMoving))
 					st--;
 				switch (st)
