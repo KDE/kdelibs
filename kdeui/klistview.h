@@ -60,7 +60,7 @@ public:
    * Possible selection modes.
    *
    * The first four correspond directly to @ref QListView::SelectionMode, while
-   * the Konqueror selection mode is defined as follows:
+   * the FileManager selection mode is defined as follows:
    *   @li home: move to the first
    *   @li end: move to the last
    *   @li PgUp/PgDn: move one page up/down
@@ -82,6 +82,9 @@ public:
    *    that if you start selecting something using SHIFT everything selected
    *    before will be deselected first.
    *
+   *    Additionally the current item is always selected automatically when
+   *    navigating using the keyboard, except other items were selected explicitely.
+   *
    *   This way e.g. SHIFT+up/PgUp then SHIFT+down/PgDn leaves no item selected
    */
   enum SelectionModeExt {
@@ -89,7 +92,7 @@ public:
 	Multi = QListView::Multi,
 	Extended = QListView::Extended,
 	NoSelection = QListView::NoSelection,
-	Konqueror
+	FileManager
   };
 
   /**
@@ -749,10 +752,21 @@ protected:
   virtual void viewportPaintEvent(QPaintEvent*);
 
   /**
-   * Only called by konq_listviewwidget to select the current item
-   * after listing. For more information look in konquerorKeyPressEvent().
+   * In FileManager selection mode: explicitely activate the mode
+   * in which the current item is automatically selected.
    */
-  void selectCurrentItemAndEnableSelectedBySimpleMoveMode();
+  void activateAutomaticSelection();
+  /**
+   * In FileManager selection mode: explicitely deactivate the mode
+   * in which the current item is automatically selected.
+   */
+  void deactivateAutomaticSelection();
+  /**
+   * In FileManager selection mode: return whether it is currently in the mode
+   * where the current item is selected automatically.
+   * Returns false if items were selected explicitely, e.g. using the mouse.
+   */
+  bool automaticSelection() const;
 
   /**
    * Reimplemented for setFullWidth()
@@ -825,9 +839,9 @@ protected:
   virtual void findDrop(const QPoint &pos, QListViewItem *&parent, QListViewItem *&after);
 
   /**
-   * A special keyPressEvent (for Konqueror-style selection).
+   * A special keyPressEvent (for FileManager selection mode).
    */
-  void konquerorKeyPressEvent (QKeyEvent*);
+  void fileManagerKeyPressEvent (QKeyEvent*);
 
   /**
    * Convert the depth of an item into its indentation in pixels

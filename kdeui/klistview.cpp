@@ -538,7 +538,7 @@ void KListView::focusInEvent( QFocusEvent *fe )
  //   kdDebug()<<"KListView::focusInEvent()"<<endl;
   QListView::focusInEvent( fe );
   if ((d->selectedBySimpleMove)
-      && (d->selectionMode == Konqueror)
+      && (d->selectionMode == FileManager)
       && (fe->reason()!=QFocusEvent::Popup)
       && (fe->reason()!=QFocusEvent::ActiveWindow)
       && (currentItem()!=0))
@@ -557,7 +557,7 @@ void KListView::focusOutEvent( QFocusEvent *fe )
   d->autoSelect.stop();
 
   if ((d->selectedBySimpleMove)
-      && (d->selectionMode == Konqueror)
+      && (d->selectionMode == FileManager)
       && (fe->reason()!=QFocusEvent::Popup)
       && (fe->reason()!=QFocusEvent::ActiveWindow)
       && (currentItem()!=0))
@@ -596,7 +596,7 @@ void KListView::contentsMousePressEvent( QMouseEvent *e )
 
     blockSignals( block );
   }
-  else if ((selectionModeExt()==Konqueror) && (d->selectedBySimpleMove))
+  else if ((selectionModeExt()==FileManager) && (d->selectedBySimpleMove))
   {
      d->selectedBySimpleMove=false;
      d->selectedUsingMouse=true;
@@ -1215,27 +1215,36 @@ void KListView::keyPressEvent (QKeyEvent* e)
           return;
         }
 
-  if (d->selectionMode != Konqueror)
+  if (d->selectionMode != FileManager)
         QListView::keyPressEvent (e);
   else
-        konquerorKeyPressEvent (e);
+        fileManagerKeyPressEvent (e);
 }
 
-//this one is only called in konq_listviewwidget, aleXXX
-//### KDE 3: do something about it, aleXXX
-void KListView::selectCurrentItemAndEnableSelectedBySimpleMoveMode()
+void KListView::activateAutomaticSelection()
 {
    d->selectedBySimpleMove=true;
    d->selectedUsingMouse=false;
    if (currentItem()!=0)
    {
+      selectAll(false);
       currentItem()->setSelected(true);
       currentItem()->repaint();
       emit selectionChanged();
    };
 }
 
-void KListView::konquerorKeyPressEvent (QKeyEvent* e)
+void KListView::deactivateAutomaticSelection()
+{
+   d->selectedBySimpleMove=false;
+}
+
+bool KListView::automaticSelection() const
+{
+   return d->selectedBySimpleMove;
+};
+
+void KListView::fileManagerKeyPressEvent (QKeyEvent* e)
 {
    //don't care whether it's on the keypad or not
     int e_state=(e->state() & ~Keypad);
@@ -1585,7 +1594,7 @@ void KListView::setSelectionModeExt (SelectionModeExt mode)
         setSelectionMode (static_cast<QListView::SelectionMode>(static_cast<int>(mode)));
         break;
 
-    case Konqueror:
+    case FileManager:
         setSelectionMode (QListView::Extended);
         break;
 
