@@ -24,6 +24,7 @@
 #include <kdcopactionproxy.h>
 #include <kmainwindow.h>
 #include <kaction.h>
+#include <qclipboard.h>
 
 
 KMainWindowInterface::KMainWindowInterface(KMainWindow * mainWindow)
@@ -124,3 +125,80 @@ QMap<QCString,DCOPRef> KMainWindowInterface::actionMap()
 {
 	return m_dcopActionProxy->actionMap();
 }
+
+int KMainWindowInterface::getWinID()
+{
+	return (int) m_MainWindow->winId();
+}
+void KMainWindowInterface::grabWindowToClipBoard()
+{
+	QClipboard *clipboard = QApplication::clipboard();
+	clipboard->setPixmap(QPixmap::grabWindow(m_MainWindow->winId()));
+}
+
+bool KMainWindowInterface::isHidden()
+{
+	return m_MainWindow->isHidden();
+}
+void KMainWindowInterface::hide()
+{
+	m_MainWindow->hide();
+}
+bool KMainWindowInterface::isMaximized()
+{
+	return m_MainWindow->isMaximized();
+}
+void KMainWindowInterface::maximize()
+{
+	m_MainWindow->showMaximized();
+}
+bool KMainWindowInterface::isMinimized()
+{
+	return m_MainWindow->isMinimized();
+}
+void KMainWindowInterface::minimize()
+{
+	m_MainWindow->showMinimized();
+}
+int KMainWindowInterface::width()
+{
+	return m_MainWindow->width();
+}
+int KMainWindowInterface::height()
+{
+	return m_MainWindow->height();
+}
+void KMainWindowInterface::resize(int newX, int newY)
+{
+
+}
+int KMainWindowInterface::Xpos()
+{
+	return m_MainWindow->x();
+}
+int KMainWindowInterface::Ypos()
+{
+	return m_MainWindow->y();
+}
+void KMainWindowInterface::move(int newX, int newY)
+{
+
+}
+void KMainWindowInterface::setGeometry(int newX, int newY, int newWidth, int newHeight)
+{
+
+}
+void KMainWindowInterface::raise()
+{
+	m_MainWindow->raise();
+}
+void KMainWindowInterface::lower()
+{
+	m_MainWindow->lower();
+}
+
+void KMainWindowInterface::reparent(int WindowID)
+{
+
+}
+

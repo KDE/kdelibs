@@ -109,6 +109,34 @@ k_dcop:
 	Returns and action map
 	**/
     	QMap<QCString,DCOPRef> actionMap();
+	/**
+	Returns the ID of the current main window.
+	This is useful for automated screen captures or other evil 
+	widget fun.
+	@return A integer value of the main window's ID.
+	**/
+	int getWinID();
+	/**
+	Copies a pixmap representation of the current main window to
+	the clipboard.
+	**/
+	void grabWindowToClipBoard();
+	bool isHidden();
+	void hide();
+	bool isMaximized();
+	void maximize();
+	bool isMinimized();
+	void minimize();
+	int width();
+	int height();
+	void resize(int newWidth, int newHeight);
+	int Xpos();
+	int Ypos();
+	void move(int newX, int newY);
+	void setGeometry(int newX, int newY, int newWidth, int newHeight);
+	void raise();
+	void lower();
+	void reparent(int WindowID);
 
 private:
 	KMainWindow *m_MainWindow;
