@@ -140,10 +140,11 @@ class KRegFactory
 public:
   virtual KRegEntry* create( KRegistry* _reg, const QString& _file, KSimpleConfig &_cfg ) = 0L;
   virtual KRegEntry* create( KRegistry* _reg, const QString& _file, QDataStream& _str ) = 0L;
-  /**
-   * @return the path for which this factory is responsible.
-   *         A MimeType factory for example would return "/opt/kde/share/mimelnk".
-   *         Please note that the return value may not have a trailing '/'.
+  /** 
+   * @return the path for which this factory is responsible.  A
+   *         MimeType factory for example would return
+   *         "/opt/kde/share/mimelnk".  Please note that the return
+   *         value may not have a trailing '/'.  
    */
   virtual const QStringList & pathList() const = 0L;
 
@@ -174,15 +175,15 @@ protected:
   virtual bool updateIntern() { return false; }
 };
 
-/**
- * <b>KRegistry</b> is a class for keeping a database of ServiceTypes and Services
- * (kdelnks files).<br>
- * Database is internal - no special files are created.
- * The database is self updating - you don't have to notify KRegistry if
- * you or anyone make changes to (local or global) 'applnk' or 'mimelnk'
- * directories. Updating is intelligent; only changed directories are scanned
- * and only changed items (kdelnks) are reread. This makes KRegistry very
- * fast.
+/** 
+ * <b>KRegistry</b> is a class for keeping a database of MimeTypes
+ * and Applications (desktop entries of type 'Application').<br>
+ * Database is internal - no special files are created.  The database
+ * is self updating - you don't have to notify <b>KRegistry</b> if you
+ * or anyone make changes to (local or global) 'applnk' or 'mimelnk
+ * directories'. Updating is inteligent; only changed directories are
+ * scanned and only changed items (desktop entries) are reread. This makes
+ * <b>KRegistry</b> very fast.<br>
  *
  * The Usual way of using this class is to say:
  * <pre>
@@ -191,9 +192,9 @@ protected:
  * reg->load( ... );
  * </pre>
  *
- * @short KRegistry is a database of all kind of kdelnk files.
+ * @short <b>KRegistry</b> is a database of all kind of desktop entry files.
  * @author Sven Radej <sven@lisa.exp.univie.ac.at>
- * @author Torben Weis <weis@kde.org>
+ * @author Torben Weis <weis@kde.org> 
  */
 class KRegistry : public QObject
 {
@@ -214,7 +215,7 @@ public:
 
   /**
    * Adds a new factory. Each factory is responsible for a certain
-   * directory and all of its child-directories and kdelnk files in
+   * directory and all of its child-directories and desktop entry files in
    * them. The registry does now control the lifetime of the factory.
    */
   void addFactory( KRegFactory *_factory );
@@ -234,13 +235,13 @@ public:
    */
   void load( const QString& _dbfile = QString::null );
 
-  /**
+  /** 
    * After a call to @ref #load you can use this function to find out
    * whether the loaded db file was still up to date or whether the
-   * kdelnk files had changed. In the last case the registry would have
-   * been modified after the db file had been loaded. That in turn means
-   * that this function would return TRUE in this case.
-   * Usually you will write code like this:
+   * desktop entry files had changed. In the last case the registry
+   * would have been modified after the db file had been loaded. That
+   * in turn means that this function would return TRUE in this case.
+   * Usually you will write code like this: 
    * <pre>
    * KRegistry registry;
    * registry.addFactory( new KServiceTypeFactory );
@@ -248,8 +249,7 @@ public:
    * registry.load();
    * if ( registry.isModified() )
    *   registry.save();
-   * </pre>
-   */
+   * </pre> */
   bool isModified() const { return m_bModified; }
 
   static KRegistry* self();

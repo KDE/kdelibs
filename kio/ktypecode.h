@@ -26,7 +26,7 @@
  * class definition.
  */
 enum KTypeCode { TC_KService = 1, TC_KServiceType = 2, TC_KMimeType = 3,
-		 TC_KFolderType = 4, TC_KDELnkMimeType = 5, TC_KExecMimeType = 6,
+		 TC_KFolderType = 4, TC_KDEDesktopMimeType = 5, TC_KExecMimeType = 6,
 		 TC_KCustom = 1000 };
 
 #define K_TYPECODE( c ) \

@@ -45,21 +45,24 @@ class KServiceType : public QShared
 public:
   typedef const KSharedPtr<QProperty> PropertyPtr;
 
-  KServiceType( const QString& _name, const QString& _icon, const QString& _comment );
+  KServiceType( const QString& _name, const QString& _icon, 
+		const QString& _comment );
   KServiceType( KSimpleConfig& _cfg );
   KServiceType( QDataStream& _str ) { initStatic(); load( _str ); }
   KServiceType() { initStatic(); m_bValid = false; }
   
   virtual ~KServiceType();
   
-  /**
-   * @return the icon associated with this service type. Some derived classes offer
-   *         special functions which take for example an URL and returns a special icon
-   *         for this URL. An example is @ref KMimeType, @ref KFoldeType and others.
+  /** 
+   * @return the icon associated with this service type. Some
+   *         derived classes offer special functions which take for
+   *         example an URL and returns a special icon for this
+   *         URL. An example is @ref KMimeType, @ref KFoldeType and
+   *         others.  
    */
   virtual QString icon() const { return m_strIcon; }
   /**
-   * @param _url may be 0L
+   * @return the descriptive comment associated, if any.
    */
   virtual QString comment() const { return m_strComment; }
   
@@ -80,13 +83,16 @@ public:
   virtual void load( QDataStream& );
   virtual void save( QDataStream& ) const;
   
-  /**
-   * @return a pointer to the servicetype '_name' or 0L if the service type is unknown.
+  /**  
+   * @return a pointer to the servicetype '_name' or 0L if the
+   *         service type is unknown.  
    */
   static KServiceType* serviceType( const QString& _name );
 
-  /**
-   * Get all the servicetypes dict. Useful for showing the list of available mimetypes.
+  /** 
+   * @return a list of all the supported servicetypes. Useful for 
+   *         showing the list of available mimetypes in a listbox,
+   *         for example.
    */
   static const QList<KServiceType>& serviceTypes() { return *s_lstServiceTypes; }
 

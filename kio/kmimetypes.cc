@@ -74,8 +74,8 @@ void KMimeType::check()
     errorMissingMimeType( "application/x-shellscript" );
   if ( KMimeType::mimeType( "application/x-executable" ) == s_pDefaultType )
     errorMissingMimeType( "application/x-executable" );
-  if ( KMimeType::mimeType( "application/x-kdelnk" ) == s_pDefaultType )
-    errorMissingMimeType( "application/x-kdelnk" );
+  if ( KMimeType::mimeType( "application/x-desktop" ) == s_pDefaultType )
+    errorMissingMimeType( "application/x-desktop" );
 }
 
 void KMimeType::errorMissingMimeType( const QString& _type )
@@ -89,8 +89,8 @@ void KMimeType::errorMissingMimeType( const QString& _type )
   KMimeType *e;
   if ( _type == "inode/directory" )
     e = new KFolderType( _type, "unknown.xpm", "", dummy );
-  else if ( _type == "application/x-kdelnk" )
-    e = new KDELnkMimeType( _type, "unknown.xpm", "", dummy );
+  else if ( _type == "application/x-desktop" )
+    e = new KDEDesktopMimeType( _type, "unknown.xpm", "", dummy);
   else if ( _type == "application/x-executable" || _type == "application/x-shellscript" )
     e = new KExecMimeType( _type, "unknown.xpm", "", dummy );
   else
@@ -161,9 +161,13 @@ KMimeType* KMimeType::findByURL( const KURL& _url, mode_t _mode,
     if ( it.current()->matchFilename( path.data() ) )
       return it.current();
   
-  // Another filename binding, hardcoded, is .kdelnk :
+  // Another filename binding, hardcoded, is .desktop:
+  if ( !strcmp(path.right(8), ".desktop") )
+    return find( "application/x-desktop" );
+  // Another filename binding, hardcoded, is .kdelnk;
+  // this is preserved for backwards compatibility
   if ( !strcmp(path.right(7), ".kdelnk") )
-    return find( "application/x-kdelnk" );
+    return find( "application/x-desktop" );
 
   if ( !_is_local_file || _fast_mode )
   {
@@ -199,7 +203,8 @@ KMimeType::KMimeType( const QString& _type, const QString& _icon, const QString&
 {
   initStatic();
   
-  kdebug( KDEBUG_INFO, 7009, "inserting mimetype in map for _type = '%s'", _type.ascii());
+  assert( s_mapMimeTypes );
+  
   s_mapMimeTypes->insert( _type, this );
   m_lstPatterns = _patterns;
 }
@@ -208,7 +213,7 @@ KMimeType::KMimeType( KSimpleConfig& _cfg ) : KServiceType( _cfg )
 {
   initStatic();
  
-  _cfg.setGroup( "KDE Desktop Entry" ); 
+  _cfg.setDesktopGroup(); 
   m_lstPatterns = _cfg.readListEntry( "Patterns", ';' );
 
   if ( isValid() )
@@ -333,7 +338,7 @@ QString KFolderType::icon( const KURL& _url, bool _is_local ) const
   u.addPath( ".directory" );
   
   KSimpleConfig cfg( u.path(), true );
-  cfg.setGroup( "KDE Desktop Entry" );
+  cfg.setDesktopGroup();
   QString icon = cfg.readEntry( "Icon" );
   QString empty_icon = cfg.readEntry( "EmptyIcon" );
 
@@ -382,7 +387,7 @@ QString KFolderType::comment( const KURL& _url, bool _is_local ) const
   u.addPath( ".directory" );
 
   KSimpleConfig cfg( u.path(), true );
-  cfg.setGroup( "KDE Desktop Entry" );
+  cfg.setDesktopGroup();
   QString comment = cfg.readEntry( "Comment" );
   if ( comment.isEmpty() )
     return KMimeType::comment( _url, _is_local );
@@ -392,17 +397,17 @@ QString KFolderType::comment( const KURL& _url, bool _is_local ) const
 
 /*******************************************************
  *
- * KDELnkMimeType
+ * KDEDesktopMimeType
  *
  ******************************************************/
 
-KDELnkMimeType::KDELnkMimeType( const QString& _type, const QString& _icon, const QString& _comment,
+KDEDesktopMimeType::KDEDesktopMimeType( const QString& _type, const QString& _icon, const QString& _comment,
 				const QStringList& _patterns )
   : KMimeType( _type, _icon, _comment, _patterns )
 {
 }
 
-QString KDELnkMimeType::icon( const QString& _url, bool _is_local ) const
+QString KDEDesktopMimeType::icon( const QString& _url, bool _is_local ) const
 {
   if ( !_is_local || _url.isEmpty() )
     return KMimeType::icon( _url, _is_local );
@@ -411,13 +416,13 @@ QString KDELnkMimeType::icon( const QString& _url, bool _is_local ) const
   return icon( u, _is_local );
 }
 
-QString KDELnkMimeType::icon( const KURL& _url, bool _is_local ) const
+QString KDEDesktopMimeType::icon( const KURL& _url, bool _is_local ) const
 {
   if ( !_is_local )
     return KMimeType::icon( _url, _is_local );
 
   KSimpleConfig cfg( _url.path(), true );
-  cfg.setGroup( "KDE Desktop Entry" );
+  cfg.setDesktopGroup();
   QString icon = cfg.readEntry( "Icon" );
   QString type = cfg.readEntry( "Type" );
 
@@ -440,7 +445,7 @@ QString KDELnkMimeType::icon( const KURL& _url, bool _is_local ) const
   return icon;
 }
 
-QString KDELnkMimeType::comment( const QString& _url, bool _is_local ) const
+QString KDEDesktopMimeType::comment( const QString& _url, bool _is_local ) const
 {
   if ( !_is_local || _url.isEmpty() )
     return KMimeType::comment( _url, _is_local );
@@ -449,13 +454,13 @@ QString KDELnkMimeType::comment( const QString& _url, bool _is_local ) const
   return comment( u, _is_local );
 }
 
-QString KDELnkMimeType::comment( const KURL& _url, bool _is_local ) const
+QString KDEDesktopMimeType::comment( const KURL& _url, bool _is_local ) const
 {
   if ( !_is_local )
     return KMimeType::comment( _url, _is_local );
 
   KSimpleConfig cfg( _url.path(), true );
-  cfg.setGroup( "KDE Desktop Entry" );
+  cfg.setDesktopGroup();
   QString comment = cfg.readEntry( "Comment" );
   if ( comment.isEmpty() )
     return KMimeType::comment( _url, _is_local );
@@ -463,20 +468,21 @@ QString KDELnkMimeType::comment( const KURL& _url, bool _is_local ) const
   return comment;
 }
 
-bool KDELnkMimeType::run( const QString& _url, bool _is_local )
+bool KDEDesktopMimeType::run( const QString& _url, bool _is_local )
 {
-  // It might be a security problem to run external untrusted kdelnk files
+  // It might be a security problem to run external untrusted desktop
+  // entry files
   if ( !_is_local )
     return false;
 
   KURL u( _url );
   
   KSimpleConfig cfg( u.path(), true );
-  cfg.setGroup( "KDE Desktop Entry" );
+  cfg.setDesktopGroup();
   QString type = cfg.readEntry( "Type" );
   if ( type.isEmpty() )
   {
-    QString tmp = i18n("The kdelnk file\n%1\n"
+    QString tmp = i18n("The desktop entry file\n%1\n"
 		       "has no Type=... entry").arg(_url );
     QMessageBox::critical( 0L, i18n("Error"), tmp, i18n( "OK" ) );
     return false;
@@ -494,20 +500,20 @@ bool KDELnkMimeType::run( const QString& _url, bool _is_local )
     return runMimeType( _url, cfg );
   
   
-  QString tmp = i18n("The kdelnk type\n%1\nis unknown").arg( type );
+  QString tmp = i18n("The desktop entry of type\n%1\nis unknown").arg( type );
   QMessageBox::critical( 0L, i18n("Error"), tmp, i18n( "OK" ) );
   
   return false;    
 }
 
-bool KDELnkMimeType::runFSDevice( const QString& _url, KSimpleConfig &cfg )
+bool KDEDesktopMimeType::runFSDevice( const QString& _url, KSimpleConfig &cfg )
 {
   QString point = cfg.readEntry( "MountPoint" );
   QString dev = cfg.readEntry( "Dev" );
 
   if ( dev.isEmpty() )
   {
-    QString tmp = i18n("The kdelnk file\n%1\nis of type FSDevice but has no Dev=... entry").arg( _url );
+    QString tmp = i18n("The desktop entry file\n%1\nis of type FSDevice but has no Dev=... entry").arg( _url );
     QMessageBox::critical( 0L, i18n("Error"), tmp, i18n( "OK" ) );
     return false;
   }
@@ -535,7 +541,7 @@ bool KDELnkMimeType::runFSDevice( const QString& _url, KSimpleConfig &cfg )
   return true;
 }
 
-bool KDELnkMimeType::runApplication( const QString& _url, KSimpleConfig &cfg )
+bool KDEDesktopMimeType::runApplication( const QString& _url, KSimpleConfig &cfg )
 {
   KService s( cfg, false );
   if ( !s.isValid() )
@@ -548,12 +554,12 @@ bool KDELnkMimeType::runApplication( const QString& _url, KSimpleConfig &cfg )
   return res;
 }
 
-bool KDELnkMimeType::runLink( const QString& _url, KSimpleConfig &cfg )
+bool KDEDesktopMimeType::runLink( const QString& _url, KSimpleConfig &cfg )
 {
   QString url = cfg.readEntry( "URL" );
   if ( url.isEmpty() )
   {
-    QString tmp = i18n("The kdelnk file\n%1\nis of type Link but has no URL=... entry").arg( _url );
+    QString tmp = i18n("The desktop entry file\n%1\nis of type Link but has no URL=... entry").arg( _url );
     QMessageBox::critical( 0L, i18n("Error"), tmp, i18n( "OK" ) );
     return false;
   }
@@ -563,13 +569,13 @@ bool KDELnkMimeType::runLink( const QString& _url, KSimpleConfig &cfg )
   return true;
 }
 
-bool KDELnkMimeType::runMimeType( const QString& _url, KSimpleConfig &cfg )
+bool KDEDesktopMimeType::runMimeType( const QString& _url, KSimpleConfig &cfg )
 {
   // HACK: TODO
   return false;
 }
 
-QValueList<KDELnkMimeType::Service> KDELnkMimeType::builtinServices( const KURL& _url )
+QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::builtinServices( const KURL& _url )
 {
   QValueList<Service> result;
   
@@ -577,7 +583,7 @@ QValueList<KDELnkMimeType::Service> KDELnkMimeType::builtinServices( const KURL&
     return result;
   
   KSimpleConfig cfg( _url.path(), true );
-  cfg.setGroup( "KDE Desktop Entry" );
+  cfg.setDesktopGroup();
   QString type = cfg.readEntry( "Type" );
   if ( type.isEmpty() )
     return result;
@@ -587,7 +593,7 @@ QValueList<KDELnkMimeType::Service> KDELnkMimeType::builtinServices( const KURL&
     QString dev = cfg.readEntry( "Dev" );
     if ( dev.isEmpty() )
     {
-      QString tmp = i18n("The kdelnk file\n%1\nis of type FSDevice but has no Dev=... entry").arg( _url.path() );
+      QString tmp = i18n("The desktop entry file\n%1\nis of type FSDevice but has no Dev=... entry").arg( _url.path() );
       QMessageBox::critical( 0L, i18n("Error"), tmp, i18n( "OK" ) );
     }
     else
@@ -619,7 +625,7 @@ QValueList<KDELnkMimeType::Service> KDELnkMimeType::builtinServices( const KURL&
   return result;
 }
 
-QValueList<KDELnkMimeType::Service> KDELnkMimeType::userDefinedServices( const KURL& _url )
+QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices( const KURL& _url )
 {
   QValueList<Service> result;
   
@@ -650,7 +656,7 @@ QValueList<KDELnkMimeType::Service> KDELnkMimeType::userDefinedServices( const K
     }
     else
     {
-      QString tmp = i18n("The kdelnk file\n%1\n has an invalid menu entry\n%2").arg( _url.path()).arg( k );
+      QString tmp = i18n("The desktop entry file\n%1\n has an invalid menu entry\n%2").arg( _url.path()).arg( k );
       QMessageBox::critical( 0L, i18n("Error"), tmp, i18n("OK" ) );
     }
   }
@@ -658,7 +664,7 @@ QValueList<KDELnkMimeType::Service> KDELnkMimeType::userDefinedServices( const K
   return result;
 }
 
-void KDELnkMimeType::executeService( const QString& _url, KDELnkMimeType::Service& _service )
+void KDEDesktopMimeType::executeService( const QString& _url, KDEDesktopMimeType::Service& _service )
 {
   kdebug( KDEBUG_INFO, 7009, "EXECUTING Service %s", _service.m_strName.data() );
   
@@ -679,11 +685,11 @@ void KDELnkMimeType::executeService( const QString& _url, KDELnkMimeType::Servic
     kdebug( KDEBUG_INFO, 7009, "MOUNT&UNMOUNT" );
 
     KSimpleConfig cfg( u.path(), true );
-    cfg.setGroup( "KDE Desktop Entry" );
+    cfg.setDesktopGroup();
     QString dev = cfg.readEntry( "Dev" );
     if ( dev.isEmpty() )
     {
-      QString tmp = i18n("The kdelnk file\n%1\nis of type FSDevice but has no Dev=... entry").arg( u.path() );
+      QString tmp = i18n("The desktop entry file\n%1\nis of type FSDevice but has no Dev=... entry").arg( u.path() );
       QMessageBox::critical( 0L, i18n("Error"), tmp, i18n( "OK" ) );
       return;
     }

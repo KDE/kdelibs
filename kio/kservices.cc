@@ -81,7 +81,7 @@ KService::KService( KSimpleConfig& config, bool _put_in_list )
   if ( _put_in_list )
     s_lstServices->append( this );
 
-  config.setGroup( "KDE Desktop Entry" );
+  config.setDesktopGroup();
   m_strExec = config.readEntry( "Exec" );
   m_strName = config.readEntry( "Name" );
   if ( m_strName.isEmpty() || m_strExec.isEmpty() )

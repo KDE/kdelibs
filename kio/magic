@@ -518,8 +518,10 @@
 0		string			MZ				application/x-dosexec
 #
 # KDE
-0		string	[KDE\ Desktop\ Entry]	application/x-kdelnk
-0		string	\#\ KDE\ Config\ File	application/x-kdelnk
+0		string  [Desktop\ Entry]        application/x-desktop
+0		string	[KDE\ Desktop\ Entry]	application/x-desktop
+0               string  \#\ Config\ File        application/x-desktop
+0		string	\#\ KDE\ Config\ File	application/x-desktop
 # xmcd database file for kscd
 0		string	\#\ xmcd                text/xmcd
 

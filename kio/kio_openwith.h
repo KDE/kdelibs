@@ -95,9 +95,32 @@ class KApplicationTree : public QWidget
 public:
   KApplicationTree( QWidget *parent );
 
-  bool isKdelnkFile( const char *filename );
-  void parseKdelnkFile( QFileInfo *fi, KTreeList *tree, KAppTreeListItem *item );
-  short parseKdelnkDir( QDir d, KTreeList *tree, KAppTreeListItem *item = 0 );
+  bool isDesktopFile( const char *filename );
+  /**
+   * @deprecated
+   * 
+   * Please use @ref #isDesktopFile instead.
+   */
+  bool isKdelnkFile( const char *filename ) { return isDesktopFile(filename); }
+  /**
+   * @deprecated
+   *
+   * Please use @ref #parseDesktopFile instead.
+   */
+  void parseDesktopFile( QFileInfo *fi, KTreeList *tree, KAppTreeListItem *item );
+  /**
+   * @deprecated
+   *
+   * Please use @ref #parseDesktopFile instead.
+   */
+  void parseKdelnkFile( QFileInfo *fi, KTreeList *tree, KAppTreeListItem *item ) { parseDesktopFile(fi,tree,item); }
+  short parseDesktopDir( QDir d, KTreeList *tree, KAppTreeListItem *item = 0 );
+  /**
+   * @deprecated
+   *
+   * Please use @ref #parseDesktopDir instead.
+   */
+  short parseKdelnkDir( QDir d, KTreeList *tree, KAppTreeListItem *item = 0 ) { return parseDesktopDir(d,tree,item); }
   
   KTreeList *tree;
   KAppTreeListItem *it, *it2, *dummy;

@@ -38,38 +38,49 @@ class KMimeType : public KServiceType
   K_TYPECODE( TC_KMimeType );
 
 public:
-  KMimeType( const QString& _type, const QString& _icon, const QString& _comment,
-	     const QStringList& _patterns );
+  KMimeType( const QString& _type, const QString& _icon, 
+	     const QString& _comment, const QStringList& _patterns );
   KMimeType( KSimpleConfig& _cfg );
   KMimeType( QDataStream& _str );
   KMimeType();
   virtual ~KMimeType();
   
   /**
-   * @param _url may be empty
+   * @param _url may be empty.
+   * @returns the path to the icon associated with this MIME type.
    */
   virtual QString icon( const QString& _url, bool _is_local ) const { return m_strIcon; }
+  /**
+   * this function differs from the above only in that a KURL may be
+   * provided instead of a QString for convenience.
+   */
   virtual QString icon( const KURL& _url, bool _is_local ) const { return m_strIcon; }
   /**
    * @param _url may be 0L
+   * @returns the descriptive comment associated with the MIME type, if any.
    */
   virtual QString comment( const QString& _url, bool _is_local ) const { return m_strComment; }
+  /**
+   * this function differs from the above only in that a KURL may be
+   * provided instead of a QString for convenience.
+   */
   virtual QString comment( const KURL& _url, bool _is_local ) const { return m_strComment; }
   /**
-   * @depreciated
-   * 
+   * @deprecated
    * Use @ref KServiceType::name instead.
    */
   virtual QString mimeType() const { return m_strName; }
   
   virtual const QStringList& patterns() const { return m_lstPatterns; }
   
-  /**
-   * Looks whether the given filename matches this mimetypes extension patterns.
+  /** 
+   * Looks whether the given filename matches this mimetypes
+   * extension patterns.
    *
-   * @param _filename is the real decoded filename or the decoded path without trailing '/'.
+   * @param _filename is the real decoded filename or the decoded path
+   *        without trailing '/'.
    *
-   * @see #m_lstPatterns
+   * @see #m_lstPatterns 
    */
   virtual bool matchFilename( const QString&_filename ) const;
 
@@ -83,7 +94,8 @@ public:
    * @return a pointer to the mime type '_name' or a pointer to the default
    *         mime type "application/octet-stream". 0L is NEVER returned.
    *
-   * @deprecated Use @ref #mimeType instead
+   * @deprecated 
+   * Use @ref #mimeType instead 
    */
   static KMimeType* find( const QString& _name ) { return mimeType( _name ); }
   /**
@@ -93,30 +105,35 @@ public:
    * @see KServiceType::serviceType
    */
   static KMimeType* mimeType( const QString& _name );
-  /**
-   * This function looks at mode_t first. If that does not help it looks at the extension. 
-   * This is ok for FTP, FILE, TAR and friends, but is not for
-   * HTTP ( cgi scripts! ). You should use @ref KfmRun instead, but this function returns immediately
-   * while @ref KfmRun is async. If no extension matches, then @ref KMimeMagic is used if the URL a local
-   * file or "application/octet-stream" is returned otherwise.
+  /** 
+   * This function looks at mode_t first. If that does not help it
+   * looks at the extension.  This is ok for FTP, FILE, TAR and
+   * friends, but is not for HTTP ( cgi scripts! ). You should use
+   * @ref KfmRun instead, but this function returns immediately while
+   * @ref KfmRun is async. If no extension matches, then @ref
+   * KMimeMagic is used if the URL a local file or
+   * "application/octet-stream" is returned otherwise.
    *
-   * @param _url is the right most URL with a filesystem protocol. It is up to you to
-   *             find out about that if you have a nested URL.
-   *             For example "http://localhost/mist.gz#gzip:/decompress"
-   *             would have to pass the "http://..." URL part, while
-   *             "file:/tmp/x.tar#tar:/src/test.gz#gzip:/decompress" would have
-   *             to pass the "tar:/..." part of the URL, since gzip is a filter
-   *             protocol and not a filesystem protocol.
-   * @param _fast_mode If set to true no disk access is allowed to find out the mimetype. The result may be suboptimal,
-   *                   but it is FAST.
-   * @return a pointer to the matching mimetype. 0L is NEVER returned.
-   */
+   * @param _url is the right most URL with a filesystem protocol. It
+   *        is up to you to find out about that if you have a nested
+   *        URL.  For example
+   *        "http://localhost/mist.gz#gzip:/decompress" would have to
+   *        pass the "http://..." URL part, while
+   *        "file:/tmp/x.tar#tar:/src/test.gz#gzip:/decompress" would
+   *        have to pass the "tar:/..." part of the URL, since gzip is
+   *        a filter protocol and not a filesystem protocol.
+   *
+   * @param _fast_mode If set to true no disk access is allowed to
+   *        find out the mimetype. The result may be suboptimal, but
+   *        it is * FAST.  * @return a pointer to the matching
+   *        mimetype. 0L is NEVER returned.  */
   static KMimeType* findByURL( const KURL& _url, mode_t _mode = 0,
 			       bool _is_local_file = false, bool _fast_mode = false );
 
-  /**
-   * Get all the mimetypes dict. Useful for showing the list of available mimetypes.
-   * The returned dict contains a subset of the entries returned by @ref KServiceType::serviceTypes
+  /** 
+   * Get all the mimetypes dict. Useful for showing the list of
+   * available mimetypes.  The returned dict contains a subset of the
+   * entries returned by @ref KServiceType::serviceTypes 
    */
   static const QDict<KMimeType>& mimeTypes() { return *s_mapMimeTypes; }
 
@@ -165,9 +182,9 @@ public:
   virtual QString comment( const KURL& _url, bool _is_local ) const;
 };
 
-class KDELnkMimeType : public KMimeType
+class KDEDesktopMimeType : public KMimeType
 {
-  K_TYPECODE( TC_KDELnkMimeType );
+  K_TYPECODE( TC_KDEDesktopMimeType );
 
 public:
   enum ServiceType { ST_MOUNT, ST_UNMOUNT, /* ST_PROPERTIES, */ ST_USER_DEFINED };
@@ -180,11 +197,11 @@ public:
     ServiceType m_type;
   };
   
-  KDELnkMimeType( const QString& _type, const QString& _icon, const QString& _comment,
+  KDEDesktopMimeType( const QString& _type, const QString& _icon, const QString& _comment,
 		  const QStringList& _patterns );
-  KDELnkMimeType( KSimpleConfig& _cfg ) : KMimeType( _cfg ) { }
-  KDELnkMimeType( QDataStream& _str ) : KMimeType( _str ) { }
-  KDELnkMimeType() : KMimeType() { }
+  KDEDesktopMimeType( KSimpleConfig& _cfg ) : KMimeType( _cfg ) { }
+  KDEDesktopMimeType( QDataStream& _str ) : KMimeType( _str ) { }
+  KDEDesktopMimeType() : KMimeType() { }
 
   virtual QString icon( const QString& _url, bool _is_local ) const;
   virtual QString icon( const KURL& _url, bool _is_local ) const;
@@ -194,21 +211,21 @@ public:
   static QValueList<Service> builtinServices( const KURL& _url );
   static QValueList<Service> userDefinedServices( const KURL& _url );
 
-  /**
-   * @param _url is the URL of the kdelnk file. The URL must be local, otherwise
-   *             nothing will happen.
+  /** 
+   * @param _url is the URL of the desktop entry. The URL must be
+   *        local, otherwise nothing will happen.  
    */
-  static void executeService( const QString& _url, KDELnkMimeType::Service& _service );
+  static void executeService( const QString& _url, KDEDesktopMimeType::Service& _service );
 
-  /**
-   * Invokes the default action for the kdelnk file. If the kdelnk file
-   * is not local, then only false is returned. Otherwise we would create
-   * a security problem. Only types Link and Mimetype could be followed.
+  /** 
+   * Invokes the default action for the desktop entry. If the desktop
+   * entry is not local, then only false is returned. Otherwise we
+   * would create a security problem. Only types Link and Mimetype
+   * could be followed.
    *
    * @return true on success and false on failure.
    *
-   * @see KRun::runURL
-   */
+   * @see KRun::runURL */
   static bool run( const QString& _url, bool _is_local );
 
 protected:

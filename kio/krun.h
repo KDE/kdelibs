@@ -29,10 +29,10 @@ class KService;
 #include <qtimer.h>
 #include <qstring.h>
 
-/**
+/** 
  * Implements a generic runner, i.e. the 'exec' functionality of KDE
- * It can execute any kdelnk, as well as any file, using default binding (service)
- * or another bound service.
+ * It can execute any desktop entry, as well as any file, using
+ * default binding (service) or another bound service.
  *
  * IMPORTANT : to use this class, you must do 
  * the following registry initialisation (in main() for instance)
@@ -52,12 +52,17 @@ class KRun : public QObject
   Q_OBJECT
 public:
   /**
-   * @param _mode is the st_mode field of <tt>struct stat</tt>. If you dont know this set it to 0.
-   * @param _is_local_file if this parameter is set to false, then '_url' is examnined to find out
-   *                       whether it is a local URL or not. This flag is just used to improve speed, since
-   *                       the function @ref KURL::isLocalFile is a bit slow.
+   * @param _mode is the st_mode field of <tt>struct stat</tt>. If
+   *        you dont know this set it to 0.  
+   *
+   * @param _is_local_file
+   *        if this * parameter is set to false, then '_url' is
+   *        examnined to find out * whether it is a local URL or
+   *        not. This flag is just used to * improve speed, since the
+   *        function @ref KURL::isLocalFile is a bit slow.  
    */
-  KRun( const QString& _url, mode_t _mode = 0, bool _is_local_file = false, bool _auto_delete = true );
+  KRun( const QString& _url, mode_t _mode = 0, 
+	bool _is_local_file = false, bool _auto_delete = true );
   ~KRun();
   
   bool hasError() { return m_bFault; }
@@ -72,22 +77,25 @@ public:
   /**
    * Opens a list of URLs with a certain service.
    * @param _service
-   * @param _urls the list of URLs, can be empty (app launched without argument)
+   * @param _urls the list of URLs, can be empty (app launched 
+   *        without argument)
    */
   static bool run( const KService& _service, QStringList& _urls );
   /**
    * Opens a list of URLs with.
    *
-   * @param _exec is the name of the executable, for example "/usr/bin/netscape".
-   * @param _name is the logical name of the application, for example "Netscape 4.06"
-   * @param _icon is the icon which should be used by the application
-   * @param _miniicon is the icon which should be used by the application
+   * @param _exec is the name of the executable, for example 
+   *        "/usr/bin/netscape".
+   * @param _name is the logical name of the application, for example
+   *        "Netscape 4.06".
+   * @param _icon is the icon which should be used by the application.
+   * @param _miniicon is the icon which should be used by the application.
    */
   static bool run( const QString& _exec, QStringList& _urls,
 		   const QString& _name = QString::null,
 		   const QString& _icon = QString::null,
 		   const QString& _mini_icon = QString::null,
-		   const QString& _kdelnk_file = QString::null );
+		   const QString& _desktop_file = QString::null );
 
   static bool runOldApplication( const QString& _exec, QStringList& _urls,
 				 bool _allow_multiple );
@@ -126,10 +134,10 @@ protected:
   
   virtual void scanFile();
   
-  /**
-   * Called if the mimetype has been detected. The function checks whether the document
-   * and appends the gzip protocol to the URL. Otherwise @ref #runURL is called to
-   * finish the job.
+  /** 
+   * Called if the mimetype has been detected. The function checks
+   * whether the document and appends the gzip protocol to the
+   * URL. Otherwise @ref #runURL is called to finish the job.  
    */
   virtual void foundMimeType( const char *_type );
   
@@ -168,8 +176,9 @@ protected:
   /**
    * Runs a shell command.
    *
-   * @ref _cmd must be a quoted shell command. You must not append "&" to it, since the
-   *           function will do that for you. An example is "<tt>greet 'Hello Torben'</tt>".
+   * @ref _cmd must be a quoted shell command. You must not append "&"
+   * to it, since the function will do that for you. An example is
+   * "<tt>greet 'Hello Torben'</tt>".  
    */
   static bool run( const QString& _cmd );
   

@@ -15,7 +15,7 @@ KServiceType::KServiceType( KSimpleConfig& _cfg )
 {
   initStatic();
   s_lstServiceTypes->append( this );
-  _cfg.setGroup( "KDE Desktop Entry" );
+  _cfg.setDesktopGroup();
 
   // Is this a bug or an intentionnal change ? Currently mimetype files 
   // contain "MimeType=", not "Name=" !  (David)

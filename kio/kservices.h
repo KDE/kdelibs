@@ -33,9 +33,8 @@
 
 #include "ktypecode.h"
 
-/**
- * Represents a service, i.e. an application bound to one or several mimetypes
- * as written in its kdelnk file.
+/** Represents a service, i.e. an application bound to one or several mimetypes
+ * as written in its desktop entry file.
  *
  * IMPORTANT : to use the public static methods of this class, you must do 
  * the following registry initialisation (in main() for instance)
@@ -56,6 +55,9 @@ public:
   typedef const KSharedPtr<QProperty> PropertyPtr;
 
   /*
+   * Constructor.  You may pass in arguments to create a service with
+   * specific properties, otherwise a null service will be constructed.
+   *
    * @param _put_in_list will add the service to the list of known
    *        services. But sometimes you may just want to create
    *        a service object for internal purposes.
@@ -72,21 +74,48 @@ public:
 
   virtual ~KService();
   
+  /**
+   * @return the name of the service. 
+   */
   QString name() const { return m_strName; }
+  /** 
+   * @return the command that the service executes. 
+   */
   QString exec() const { return m_strExec; }
+  /**
+   * @return the icon associated with the service. 
+   */
   QString icon() const { return m_strIcon; }
+  /** 
+   * @return any options associated with the terminal the service
+   * runs in, if it requires a terminal.  The service must be a
+   * tty-oriented program).
+   */
   QString terminalOptions() const { return m_strTerminalOptions; }
+  /** 
+   * @return the path to the location where the service desktop entry 
+   * is stored. 
+   */
   QString path() const { return m_strPath; }
+  /**
+   * @return the descriptive comment for the service, if there is one. 
+   */
   QString comment() const { return m_strComment; }
   QString activationMode() const { return m_strActivationMode; }
   QStringList repoIds() const { return m_lstRepoIds; }
 
   /**
-   * @return the filename of the kdelnk file responsible for
-   *         this services.
+   * @return the filename of the desktop entry file responsible for
+   *         these services.
    */
   // QString file() const { return m_strFile; };
   QStringList serviceTypes() const { return m_lstServiceTypes; }
+  /** 
+   * @param _service is the name of the service type you are
+   *        interested in determining whether this services supports.
+   *        
+   * @return TRUE if the service you specified is supported,
+   *        otherwise FALSE.  */
   bool hasServiceType( const QString& _service ) const;
   /**
    * @return TRUE if the service may be used as a default setting, for
@@ -119,6 +148,13 @@ public:
   
   /**
    * @return the whole list of services. Useful to display them.
+   */
+  static KService* parseService( const QString& _file, KSimpleConfig &config,
+				 bool _put_in_list = true );
+
+  /**
+   * @return the whole list of services. Useful for being able to
+   * to display them in a list box, for example.
    */
   static const QList<KService>& services() { return *s_lstServices; }
 

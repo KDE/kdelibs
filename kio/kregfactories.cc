@@ -110,8 +110,8 @@ KRegEntry* KServiceTypeFactory::create( KRegistry* _reg, const QString& _file, Q
     case TC_KFolderType:
       e = new KFolderType( _str );
       break;
-    case TC_KDELnkMimeType:
-      e = new KDELnkMimeType( _str );
+    case TC_KDEDesktopMimeType:
+      e = new KDEDesktopMimeType( _str );
       break;
     case TC_KExecMimeType:
       e = new KExecMimeType( _str );
@@ -151,8 +151,8 @@ KRegEntry* KServiceTypeFactory::create( KRegistry* _reg, const QString& _file, K
   
   if ( mime == "inode/directory" )
     e = new KFolderType( _cfg );
-  else if ( mime == "application/x-kdelnk" )
-    e = new KDELnkMimeType( _cfg );
+  else if ( mime == "application/x-desktop" )
+    e = new KDEDesktopMimeType( _cfg );
   else if ( mime == "application/x-executable" || mime == "application/x-shellscript" )
     e = new KExecMimeType( _cfg );
   else if ( !mime.isEmpty() )

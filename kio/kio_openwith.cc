@@ -10,6 +10,7 @@
 #include <ktopwidget.h>
 #include <kiconloader.h>
 #include <kservices.h>
+#include <kmimemagic.h>
 
 #include <string.h>
 #include <stdio.h>
@@ -49,8 +50,8 @@ KApplicationTree::KApplicationTree( QWidget *parent ) : QWidget( parent )
   personal += "/share/applnk";
   QString global   = KApplication::kde_appsdir().data();
   
-  parseKdelnkDir( QDir(personal), tree );
-  parseKdelnkDir( QDir(global), tree );
+  parseDesktopDir( QDir(personal), tree );
+  parseDesktopDir( QDir(global), tree );
   
   tree->show();
   connect( tree, SIGNAL( expanded(int) ), SLOT( expanded(int) ) );
@@ -58,7 +59,7 @@ KApplicationTree::KApplicationTree( QWidget *parent ) : QWidget( parent )
   connect( tree, SIGNAL( selected(int) ), SLOT( selected(int) ) );
 }
 
-bool KApplicationTree::isKdelnkFile( const char* filename )
+bool KApplicationTree::isDesktopFile( const char* filename )
 {
   FILE *f;
   f = fopen( filename, "rb" );
@@ -70,13 +71,17 @@ bool KApplicationTree::isKdelnkFile( const char* filename )
   fgets( buff, 100, f );
   fclose( f );
 	  
-  if ( strncmp( buff, "# KDE Config File", 17 ) != 0L )
+  KMimeMagicResult *result = KMimeMagic::self()->findBufferType( buff, 100 );
+  if (!result)
+    return false;
+
+  if (result->mimeType() != "application/x-desktop")
     return false;
 
   return true;
 }
 
-void KApplicationTree::parseKdelnkFile( QFileInfo *fi, KTreeList *tree, KAppTreeListItem *item )
+void KApplicationTree::parseDesktopFile( QFileInfo *fi, KTreeList *tree, KAppTreeListItem *item )
 {
   QPixmap pixmap;
   QString text_name, pixmap_name, mini_pixmap_name, big_pixmap_name, command_name, comment;
@@ -90,19 +95,26 @@ void KApplicationTree::parseKdelnkFile( QFileInfo *fi, KTreeList *tree, KAppTree
   }
   else
   {
-    int pos = fi->fileName().find( ".kdelnk" );
+    int pos = fi->fileName().find( ".desktop" );
     if( pos >= 0 )
       text_name = fi->fileName().left( pos );
-    else
-      text_name = fi->fileName();
+    else {
+      pos = fi->fileName().find(".kdelnk");
+      if (pos >= 0)
+	text_name = fi->fileName().left(pos);
+      else
+	text_name = fi->fileName();
+    }
   }
+
+  kdebug(KDEBUG_INFO, 7007, "Processing desktop file %s",file.ascii());
 
   QFile config( file );
 
   if( config.exists() )
   {
     KSimpleConfig kconfig( file, true );
-    kconfig.setGroup("KDE Desktop Entry");
+    kconfig.setDesktopGroup();
     command_name      = kconfig.readEntry("Exec");
     mini_pixmap_name  = kconfig.readEntry("MiniIcon");
     big_pixmap_name   = kconfig.readEntry("Icon");
@@ -136,7 +148,7 @@ void KApplicationTree::parseKdelnkFile( QFileInfo *fi, KTreeList *tree, KAppTree
   }
 }
 
-short KApplicationTree::parseKdelnkDir( QDir d, KTreeList *tree, KAppTreeListItem *item)
+short KApplicationTree::parseDesktopDir( QDir d, KTreeList *tree, KAppTreeListItem *item)
 {
   if( !d.exists() )
     return -1;
@@ -160,16 +172,16 @@ short KApplicationTree::parseKdelnkDir( QDir d, KTreeList *tree, KAppTreeListIte
     }
     if( fi->isDir() )
     {
-      parseKdelnkFile( fi, tree, item );
+      parseDesktopFile( fi, tree, item );
     }
     else 
     {
-      if( !isKdelnkFile( fi->absFilePath() ) )
+      if( !isDesktopFile( fi->absFilePath() ) )
       {
 	++it;
 	continue;
       }
-      parseKdelnkFile( fi, tree, item );
+      parseDesktopFile( fi, tree, item );
     } 
     ++it;
   }
@@ -183,7 +195,7 @@ void KApplicationTree::expanded(int index)
 
   if( !item->parsed && !(item->dummy ) )
   {
-     parseKdelnkDir( QDir(item->path), tree, item );
+     parseDesktopDir( QDir(item->path), tree, item );
      item->parsed = true;
      if( item->childCount() > 1 )
         item->removeChild( item->getChild() );

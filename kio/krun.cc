@@ -38,11 +38,11 @@ bool KRun::runURL( const char *_url, const char *_mimetype )
     QMessageBox::critical( 0L, i18n("Error"), tmp, i18n("OK") );
     return false;
   }
-  else if ( strcmp( _mimetype, "application/x-kdelnk" ) == 0 )
+  else if ( strcmp( _mimetype, "application/x-desktop" ) == 0 )
   {
     KURL u( _url );
     if ( u.isLocalFile() )
-      return KDELnkMimeType::run( _url, true );
+      return KDEDesktopMimeType::run( _url, true );
   }
   
   // Get all services for this mime type
@@ -84,7 +84,7 @@ bool KRun::run( const KService& _service, QStringList& _urls )
 }
 
 bool KRun::run( const QString& _exec, QStringList& _urls, const QString& _name,
-		const QString& _icon, const QString& _mini_icon, const QString& _kdelnk_file )
+		const QString& _icon, const QString& _mini_icon, const QString& _desktop_file )
 {
   bool b_local_files = true;
   
@@ -165,7 +165,7 @@ bool KRun::run( const QString& _exec, QStringList& _urls, const QString& _name,
     exec.replace( pos, 2, mini_icon );
 
   while ( ( pos = exec.find( "%k" ) ) != -1 )
-    exec.replace( pos, 2, _kdelnk_file );
+    exec.replace( pos, 2, _desktop_file );
 
   // The application accepts only local files ?
   if ( b_local_app && !b_local_files )

@@ -32,8 +32,8 @@ void KAutoMount::slotFinished( int )
   if ( m_bShowFilemanagerWindow )
     KFileManager::getFileManager()->openFileManagerWindow( mp );
 
-  // TODO: Fake update of window which contains the kdelnk file which is used for
-  //       mount/unmount
+  // TODO: Fake update of window which contains the desktop entry which
+  // is used for mount/unmount
 
   delete this;
 }
@@ -56,8 +56,8 @@ KAutoUnmount::KAutoUnmount( const char *_mountpoint )
 
 void KAutoUnmount::slotFinished( int )
 {
-  // TODO: Fake update of window which contains the kdelnk file which is used for
-  //       mount/unmount
+  // TODO: Fake update of window which contains the desktop entry which is
+  // used for mount/unmount
 
   delete this;
 }

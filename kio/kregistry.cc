@@ -108,89 +108,89 @@ bool KRegistry::readDirectory( const QString& _path, bool _init )
   //                               Reading
   //************************************************************************
  
- unsigned int i;                           // counter and string length.
- unsigned int count = d.count();
- for( i = 0; i < count; i++ )                        // check all entries
- {
-   if (strcmp(d[i],".")==0 || strcmp(d[i],"..")==0 || strcmp(d[i],"magic")==0)
-    continue;                          // discard those ".", "..", "magic"...
+  unsigned int i;                           // counter and string length.
+  unsigned int count = d.count();
+  for( i = 0; i < count; i++ )                        // check all entries
+    {
+      if (strcmp(d[i],".")==0 || strcmp(d[i],"..")==0 || strcmp(d[i],"magic")==0)
+	continue;                          // discard those ".", "..", "magic"...
+      
+      file = path.data();                          // set full path
+      file += d[i];                          // and add the file name.
+      if ( stat( file, &m_statbuff ) == -1 )           // get stat...
+	continue;                                   // no such, continue.
+      
+      if ( S_ISDIR( m_statbuff.st_mode ) )               // isdir?
+	{
+	  if ( _init )                                 // first time?
+	    readDirectory( file, _init );      // yes, dive into it.
+	  else if ( !m_pDirWatch->contains( file ) ) // New dir?
+	    {
+	      readDirectory( file, _init );      // yes, dive into it.
+	      m_pDirWatch->addDir( file );         // and add it to the list
+	    }
+	}
+      else                                         // no, not a dir/no recurse...
+	{
+	  int i2 = -1;                                    // index
+	  i2 = exists( file );                  // find it in list...
+	  if ( i2 != -1 )                              // got it?
+	    {                                         // Yeah!
+	      // kdebug( KDEBUG_INFO, 7011, "Updating %s", file.data() );
+	      KRegEntry *entry = m_lstEntries.at( i2 );
+	      entry->mark();
+	      if ( !entry->update() )                // update it (if needed)
+		{
+		  m_bModified = true;
+		  m_lstEntries.removeRef( entry );
+		  m_lstEntries.append( createEntry( file ) );
+		}
+	    }
+	  else if ( file.right(1) != "~" )         // we don't have this one..
+	    {
+	      // Can we read the file ?
+	      if ( access( file, R_OK ) != -1 )
+		{   
+		  // Create a new entry
+		  m_lstEntries.append( createEntry( file ) );
+		  if ( !_init )
+		    kdebug( KDEBUG_INFO, 7011, "KRegistry: New item %s", file.data() );
+		  m_bModified = true;
+		}
+	    }
+	}                                        // that's all
+    }
+  
+  // Now: what if file was removed from dir? We parsed only those found by
+  // QDir, but we should kick out from the list deleted ones. This is what we
+  // do:
+  // We loop thro' the list to check if all items exist. And we remove those
+  // that do not exist. Since this is recursive function, we use flag
+  // 'inner'. If we're called recursively this flag is true.
+  
+  if ( _init )    // pointless if not top level or if first time
+    return true;
 
-   file = path.data();                          // set full path
-   file += d[i];                          // and add the file name.
-   if ( stat( file, &m_statbuff ) == -1 )           // get stat...
-    continue;                                   // no such, continue.
-
-   if ( S_ISDIR( m_statbuff.st_mode ) )               // isdir?
-   {
-     if ( _init )                                 // first time?
-       readDirectory( file, _init );      // yes, dive into it.
-     else if ( !m_pDirWatch->contains( file ) ) // New dir?
-     {
-       readDirectory( file, _init );      // yes, dive into it.
-       m_pDirWatch->addDir( file );         // and add it to the list
-     }
-   }
-   else                                         // no, not a dir/no recurse...
-   {
-     int i2 = -1;                                    // index
-     i2 = exists( file );                  // find it in list...
-     if ( i2 != -1 )                              // got it?
-     {                                         // Yeah!
-       // kdebug( KDEBUG_INFO, 7011, "Updating %s", file.data() );
-       KRegEntry *entry = m_lstEntries.at( i2 );
-       entry->mark();
-       if ( !entry->update() )                // update it (if needed)
-       {
-	 m_bModified = true;
-	 m_lstEntries.removeRef( entry );
-	 m_lstEntries.append( createEntry( file ) );
-       }
-     }
-     else if ( file.right(1) != "~" )         // we don't have this one..
-     {
-       // Can we read the file ?
-       if ( access( file, R_OK ) != -1 )
-       {   
-	 // Create a new entry
-	 m_lstEntries.append( createEntry( file ) );
-	 if ( !_init )
-	   kdebug( KDEBUG_INFO, 7011, "KRegistry: New item %s", file.data() );
-	 m_bModified = true;
-       }
-     }
-   }                                        // that's all
- }
-
- // Now: what if file was removed from dir? We parsed only those found by
- // QDir, but we should kick out from the list deleted ones. This is what we
- // do:
- // We loop thro' the list to check if all items exist. And we remove those
- // that do not exist. Since this is recursive function, we use flag
- // 'inner'. If we're called recursively this flag is true.
-
- if ( _init )    // pointless if not top level or if first time
-   return true;
-
- //************************************************************************
- //                        Removing deleted from list
- //                                  Sweep
- //************************************************************************
-
- KRegEntry *a = m_lstEntries.first();
- while( a )
- {
-   if ( !a->isMarked() && a->isInDirectory( path ) )
-   {
-     kdebug( KDEBUG_INFO, 7011, "KRegistry: Deleted item %s", a->file().ascii());
-     m_lstEntries.remove( m_lstEntries.at() );
-     a = m_lstEntries.current();
-     m_bModified = true;
-     continue;
-   }
-   a = m_lstEntries.next();
- }
-
- return true;
+  //************************************************************************
+  //                        Removing deleted from list
+  //                                  Sweep
+  //************************************************************************
+  
+  KRegEntry *a = m_lstEntries.first();
+  while( a )
+    {
+      if ( !a->isMarked() && a->isInDirectory( path ) )
+	{
+	  kdebug( KDEBUG_INFO, 7011, "KRegistry: Deleted item %s", a->file().ascii());
+	  m_lstEntries.remove( m_lstEntries.at() );
+	  a = m_lstEntries.current();
+	  m_bModified = true;
+	  continue;
+	}
+      a = m_lstEntries.next();
+    }
+  
+  return true;
 }
 
 int KRegistry::exists( const QString& _file ) const
@@ -337,7 +337,7 @@ KRegEntry* KRegistry::createEntry( const QString& file )
       return new KRegDummy( this, file );
 
   KSimpleConfig cfg( file, true );
-  cfg.setGroup( "KDE Desktop Entry" );
+  cfg.setDesktopGroup();
   QString type = cfg.readEntry( "Type" );
   
   KRegFactory *f;

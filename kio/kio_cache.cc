@@ -217,7 +217,7 @@ bool KIOCache::readCache()
 {
     if (cachePath.isEmpty()) return false;
 
-    KSimpleConfig cacheInfo(cachePath + "index.kdelnk", true);
+    KSimpleConfig cacheInfo(cachePath + "index.desktop", true);
     unsigned long idx;
     QString entryPrefix("Cacheentry ");
     QString entryNum;
@@ -256,7 +256,7 @@ bool KIOCache::storeCache()
 {
     if (!saveCacheEnabled || cachePath.isEmpty()) return false;
 
-    KSimpleConfig cacheInfo(cachePath + "index.kdelnk");
+    KSimpleConfig cacheInfo(cachePath + "index.desktop");
     unsigned long idx;
     QString entryPrefix("Cacheentry ");
     QString entryNum;
