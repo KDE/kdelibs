@@ -1,4 +1,4 @@
-INCLUDES= -I$(top_srcdir)/kdeprint $(all_includes)
+INCLUDES= -I$(top_srcdir) -I$(top_srcdir)/kdeprint $(all_includes)
 
 kde_module_LTLIBRARIES = libkdeprint_lpdunix.la
 
