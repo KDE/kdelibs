@@ -68,13 +68,16 @@ public:
      *  This is guaranteed to produce an xml valid snippet, no matter how crappy the input
      *  html page is.  It will have html and body tags.
      *  
-     *  Any urls in images or links will be expanded to full urls.
+     *  Any urls in images or links will be expanded to full urls <em>with passwords stripped</em>
+     *  for security reasons.
      *
      *  Note: Originally this function didn't have the exceptioncode argument.  I added it
      *  since all the other functions do.  If this is correct, please remove this comment.
      *
      *  @param exceptioncode This will be set if m_detached is true.
      *  @return A string with html tags for this range.
+     *
+     *  @since 3.4
      */
     DOMString toHTML ( int &exceptioncode );
 
