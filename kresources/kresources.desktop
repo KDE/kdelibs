@@ -1,0 +1,13 @@
+[Desktop Entry]
+Encoding=UTF-8
+Exec=kcmshell kresources
+Icon=calendars
+Type=Application
+Terminal=0
+
+X-KDE-ModuleType=Library
+X-KDE-Library=kresources
+X-KDE-FactoryName=kresources
+X-KDE-HasReadOnlyMode=false
+
+Name=KDE Resources Configuration

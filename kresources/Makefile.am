@@ -28,11 +28,21 @@ kresinclude_HEADERS = resource.h \
   configdialog.h \
   configpage.h 
 
+kde_module_LTLIBRARIES = kcm_kresources.la
+
+kcm_kresources_la_SOURCES = kcmkresources.cpp
+kcm_kresources_la_LDFLAGS = $(all_libraries) -module -avoid-version -no-undefined
+kcm_kresources_la_LIBADD = -lkresources
+
+
 check_PROGRAMS = testresources
 
 testresources_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 testresources_LDADD   = libkresources.la
 testresources_SOURCES = testresources.cpp
+
+appsdir = $(kde_appsdir)/Settings/Components
+apps_DATA = kresources.desktop
 
 servicetypedir = $(kde_servicetypesdir)
 servicetype_DATA = kresources_plugin.desktop

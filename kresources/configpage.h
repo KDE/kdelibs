@@ -26,15 +26,23 @@
 #include <qstringlist.h>
 #include <qwidget.h>
 
-#include <kcmodule.h>
-
 #include "manager.h"
 
+class KComboBox;
 class KListView;
-class QPushButton;
+
 class QListViewItem;
+class QPushButton;
+
 
 namespace KRES {
+
+class ResourcePageInfo
+{
+  public:
+    Manager<Resource> *mManager;
+    KConfig *mConfig;
+};
 
 class Resource;
 
@@ -43,10 +51,7 @@ class ConfigPage : public QWidget, public ManagerListener<Resource>
   Q_OBJECT
 
   public:
-    ConfigPage( const QString &family, const QString &config = QString::null,
-                QWidget *parent = 0, const char *name = 0 );
-    ConfigPage( const QString &family, QWidget *parent = 0,
-                const char *name = 0 );
+    ConfigPage( QWidget *parent = 0, const char *name = 0 );
     virtual ~ConfigPage();
 
     void load();
@@ -54,6 +59,7 @@ class ConfigPage : public QWidget, public ManagerListener<Resource>
     virtual void defaults();
 
   public slots:
+    void slotFamilyChanged( int );
     void slotAdd();
     void slotRemove();
     void slotEdit();
@@ -73,12 +79,16 @@ class ConfigPage : public QWidget, public ManagerListener<Resource>
     void changed( bool );
 
   private:
-    void init( const QString &configFile );
+    void saveResourceSettings();
 
-    Manager<Resource>* mManager;
+    Manager<Resource>* mCurrentManager;
+    KConfig* mCurrentConfig;
+    KConfig* mConfig;
     QString mFamily;
-    KConfig *mConfig;
+    QStringList mFamilyMap;
+    QValueList<ResourcePageInfo> mInfoMap;
 
+    KComboBox* mFamilyCombo;
     KListView* mListView;
     QPushButton* mAddButton;
     QPushButton* mRemoveButton;

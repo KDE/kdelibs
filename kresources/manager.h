@@ -260,6 +260,22 @@ class Manager : private ManagerImplListener
       return mFactory->typeNames();
     }
 
+    QStringList resourceTypeDescriptions() const
+    {
+      QStringList typeDescs;
+      QStringList types = mFactory->typeNames();
+
+      for ( QStringList::ConstIterator it = types.begin(); it != types.end(); ++it ) {
+        QString desc = mFactory->typeName( *it );
+        if ( !mFactory->typeDescription( *it ).isEmpty() )
+          desc += " (" + mFactory->typeDescription( *it ) + ")";
+
+        typeDescs.append( desc );
+      }
+
+      return typeDescs;
+    }
+
     void resourceChanged( T *resource )
     { 
       mImpl->resourceChanged( resource ); 

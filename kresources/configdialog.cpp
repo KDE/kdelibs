@@ -70,8 +70,8 @@ ConfigDialog::ConfigDialog( QWidget *parent, const QString& resourceFamily,
 
   QGroupBox *resourceGroupBox = new QGroupBox( 2, Qt::Horizontal,  main );
   resourceGroupBox->layout()->setSpacing( spacingHint() );
-  resourceGroupBox->setTitle( i18n( "Resource Settings" ) );
-
+  resourceGroupBox->setTitle( i18n( "%1 Resource Settings" )
+                              .arg( factory->typeName( resource->type() ) ) );
   mainLayout->addWidget( resourceGroupBox );
 
   mainLayout->addStretch();
