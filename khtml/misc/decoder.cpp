@@ -344,15 +344,12 @@ QString Decoder::decode(const char *data, int len)
             m_decoder = m_codec->makeDecoder();
         } else {
 
-            if(m_codec->mibEnum() != 1000) // utf16
-            {
-                // lets see if QTextCodec is still buggy
-                // ### hack for a bug in QTextCodec. It cut's the input stream
-                // in case there are \0 in it. ZDNET has them inside... :-(
+            if(m_codec->mibEnum() != 1000) {  // utf16
+                // replace '\0' by spaces, for buggy pages
                 char *d = const_cast<char *>(data);
                 int i = len - 1;
                 while(i >= 0) {
-                    if(*(d+i) == 0) assert(0);
+                    if(d[i] == 0) d[i] = ' ';
                     i--;
                 }
             }
@@ -524,7 +521,7 @@ QString Decoder::decode(const char *data, int len)
     // the hell knows, why the output does sometimes have a QChar::null at
     // the end...
     if(out[out.length()-1] == QChar::null)
-        out.truncate(out.length() - 1);
+        assert(0);
     return out;
 }
 
