@@ -16,7 +16,9 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */
+
 #include "shellscript.h"
+
 #include <kgenericfactory.h>
 
 typedef KGenericFactory<ShellScript> ShellScriptFactory;
@@ -61,3 +63,5 @@ void ShellScript::goodExit(KProcess *proc)
 {
 	emit done(proc->exitStatus());
 }
+
+#include "shellscript.moc"
