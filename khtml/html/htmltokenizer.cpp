@@ -1213,7 +1213,9 @@ void HTMLTokenizer::addPending()
 
         case TabPending:
             p = TAB_SIZE - ( prePos % TAB_SIZE );
+#ifdef TOKEN_DEBUG
             qDebug("tab pending, prePos: %d, toadd: %d", prePos, p);
+#endif
 
             for ( int x = 0; x < p; x++ )
                 *dest++ = QChar(' ');
