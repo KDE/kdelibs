@@ -1374,8 +1374,8 @@ void KColorDialog::slotHSChanged( int h, int s )
 {
   int _h, _s, v;
   d->selColor.hsv(&_h, &_s, &v);
-  if (v < 1)
-     v = 1;
+  if (v < 0)
+     v = 0;
   KColor col;
   col.setHsv( h, s, v );
   _setColor( col );
