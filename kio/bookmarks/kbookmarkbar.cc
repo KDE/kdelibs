@@ -221,10 +221,13 @@ void KBookmarkBar::slotBookmarkSelected()
 static KToolBar* sepToolBar = 0;
 static const int sepId = -9999; // fixme with define for num?
 
-static void removeTempSep()
+static void removeTempSep(bool delayed = true)
 {
     if (sepToolBar) {
-        sepToolBar->removeItemDelayed(sepId);
+        if (delayed)
+            sepToolBar->removeItemDelayed(sepId);
+        else
+            sepToolBar->removeItem(sepId);
         sepToolBar = 0; // needed?
     }
 }
@@ -238,7 +241,7 @@ static KAction* findPluggedAction(QPtrList<KAction> actions, KToolBar *tb, int i
     return 0;
 }
 
-static KAction* doFunkySepThing(QPoint pos, QPtrList<KAction> actions)
+static KAction* doFunkySepThing(QPoint pos, QPtrList<KAction> actions, bool &atFirst)
 {
     static int sepIndex;
     KToolBar *tb = dynamic_cast<KToolBar*>(actions.first()->container(0));
@@ -251,15 +254,23 @@ static KAction* doFunkySepThing(QPoint pos, QPtrList<KAction> actions)
     KToolBarButton* b;
     b = dynamic_cast<KToolBarButton*>(tb->childAt(pos)); 
     KAction *a = 0;
+    atFirst = false;
 
     if (b)
     {
         a = findPluggedAction(actions, tb, b->id());
+        kdDebug(7043) << a << endl;
         index = tb->itemIndex(b->id());
         QRect r = b->geometry();
 
+        if (index == 0)
+        {
+            atFirst = true;
+            goto okay_exit;
+        }
+
         // if in 0th position or in second half of button then we are done
-        if (pos.x() > ((r.left() + r.right())/2) || index == 0)
+        if (pos.x() > ((r.left() + r.right())/2))
             goto okay_exit;
      
         // else we jump to the previous index
@@ -290,7 +301,7 @@ static KAction* doFunkySepThing(QPoint pos, QPtrList<KAction> actions)
     index = tb->itemIndex(b->id());
 
 okay_exit:
-    sepIndex = index + 1;
+    sepIndex = index + (atFirst ? 0 : 1);
 
 failure_exit:
     sepToolBar = tb;
@@ -299,10 +310,11 @@ failure_exit:
 }
 
 bool KBookmarkBar::eventFilter( QObject *, QEvent *e ){
+    static bool atFirst = false;
     static KAction* a = 0;
     if ( e->type() == QEvent::DragLeave )
     {
-        removeTempSep();
+        removeTempSep(false);
         a = 0;
     }
     else if ( e->type() == QEvent::Drop )
@@ -310,24 +322,28 @@ bool KBookmarkBar::eventFilter( QObject *, QEvent *e ){
         QDropEvent *dev = (QDropEvent*)e;
         if ( KBookmarkDrag::canDecode( dev ) )
         {
-            removeTempSep();
+            kdDebug(7043) << "removing" << endl;
+            removeTempSep(false);
+            kdDebug(7043) << "done" << endl;
             // ohhh. we got a valid drop, woopeedoo
             QValueList<KBookmark> list = KBookmarkDrag::decode( dev );
-            if (list.count() > 1) {
+            if (list.count() > 1)
                kdWarning(7043) << "Sorry, currently you can only drop one address "
                                   "onto the bookmark bar!" << endl;
-            }
-            QString insertAfter = a->property("address").toString();
-            KBookmark toInsert = list.first();
-            KBookmark bookmark = m_pManager->findByAddress( insertAfter );
+            kdDebug(7043) << a << endl;
+            QString address = a->property("address").toString();
+            kdDebug(7043) << "inserting " 
+                          << QString(atFirst ? "before" : "after")
+                          << " address == " << address << endl;
+            KBookmark bookmark = m_pManager->findByAddress( address );
             Q_ASSERT(!bookmark.isNull());
             KBookmarkGroup parentBookmark = bookmark.parentGroup();
             Q_ASSERT(!parentBookmark.isNull());
-            kdDebug(7043) << "inserting bookmark after " << insertAfter << endl;
-            kdDebug(7043) << "inserted after " << bookmark.address() << endl;
-            KBookmark newBookmark = parentBookmark.addBookmark( m_pManager, toInsert.fullText(),
-                                                                toInsert.url() );
-            parentBookmark.moveItem( newBookmark, bookmark );
+            KBookmark toInsert = list.first();
+            KBookmark newBookmark = parentBookmark.addBookmark( 
+                                          m_pManager, toInsert.fullText(),
+                                          toInsert.url() );
+            parentBookmark.moveItem( newBookmark, atFirst ? KBookmark() : bookmark );
             m_pManager->emitChanged( parentBookmark );
             return true;
         }
@@ -337,8 +353,13 @@ bool KBookmarkBar::eventFilter( QObject *, QEvent *e ){
         QDragMoveEvent *dme = (QDragMoveEvent*)e;
         if (!KBookmarkDrag::canDecode( dme ))
             return false;
-        if (a = doFunkySepThing(dme->pos(), dptr()->m_actions), a)
+        KAction *_a; bool _atFirst;
+        if (_a = doFunkySepThing(dme->pos(), dptr()->m_actions, _atFirst), _a)
+        {
+            a = _a;
+            atFirst = _atFirst;
             dme->accept();
+        }
     }
     return false;
 }
