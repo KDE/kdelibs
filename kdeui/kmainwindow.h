@@ -38,6 +38,7 @@ class KStatusBar;
 class KMenuBar;
 class KMWSessionManaged;
 class KToolBar;
+class KMainWindowPrivate;
 
 /**
  * Top level widget that provides toolbars, a status line and a frame.
@@ -100,7 +101,7 @@ public:
      * Construct a main window.
      *
      * @param the widget parent, usually 0 but may also be the window
-     * group leader. In that case, the KMainWindow becomes sort of a 
+     * group leader. In that case, the KMainWindow becomes sort of a
      * secondary window.
      *
      * @param name The object name. For session management to work
@@ -119,7 +120,7 @@ public:
      *  <pre> KMainWindow *ktmw = new KMainWindow (...</pre>
      **/
     KMainWindow( QWidget* parent, const char *name = 0, WFlags f = WType_TopLevel | WDestructiveClose );
-    
+
     /**
      * Destructor.
      *
@@ -479,7 +480,7 @@ protected:
     bool readPropertiesInternal( KConfig*, int );
 
 protected slots:
-    
+
    /**
     * This slot does nothing. It must be reimplemented if you want
     * to use a custom About Application dialog box. This slot is
@@ -489,14 +490,14 @@ protected slots:
     * Example:
     * <pre>
     *
-    * void MyTopLevel::setupInterface()
+    * void MyMainLevel::setupInterface()
     * {
     *   ..
     *   menuBar()->insertItem( i18n("&Help"), customHelpMenu() );
     *   ..
     * }
     *
-    * void MyTopLevel::showAboutApplication( void )
+    * void MyMainLevel::showAboutApplication( void )
     * {
     *   <activate your custom dialog>
     * }
@@ -519,7 +520,8 @@ private:
     QMap<int, KToolBar*> idBarMap;
     QMap<QCString, KToolBar*> nameBarMap;
     QList<KToolBar> toolbarList;
-
+    KMainWindowPrivate *d;
+    
 };
 
 #define RESTORE(type) { int n = 1;\
