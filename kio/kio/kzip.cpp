@@ -381,6 +381,7 @@ bool KZip::openArchive( int mode )
             if ( d->m_saveFile->status() != 0 ) {
                 kdWarning(7040) << "KSaveFile creation for " << m_filename << " failed, " << strerror( d->m_saveFile->status() ) << endl;
                 delete d->m_saveFile;
+                d->m_saveFile = 0;
                 return false;
             }
             Q_ASSERT( d->m_saveFile->file() );
@@ -438,7 +439,7 @@ kdDebug(7040) << "dev->at() now : " << dev->at() << endl;
 	    kdDebug(7040) << "PK56 found end of archive" << endl;
 	    break;
 	}
-        
+
 	if ( !memcmp( buffer, "PK\3\4", 4 ) ) // local file header
         {
 	    kdDebug(7040) << "PK34 found local file header" << endl;
@@ -455,14 +456,14 @@ kdDebug(7040) << "dev->at() now : " << dev->at() << endl;
 	    int gpf = (uchar)buffer[0];	// "general purpose flag" not "general protection fault" ;-)
 	    int compression_mode = (uchar)buffer[2] | (uchar)buffer[3] << 8;
 	    time_t mtime = transformFromMsDos( buffer+4 );
-	    
+
 	    Q_LONG compr_size = (uchar)buffer[12] | (uchar)buffer[13] << 8
 	    			| (uchar)buffer[14] << 16 | (uchar)buffer[15] << 24;
 	    Q_LONG uncomp_size = (uchar)buffer[16] | (uchar)buffer[17] << 8
 	    			| (uchar)buffer[18] << 16 | (uchar)buffer[19] << 24;
 	    int namelen = (uchar)buffer[20] | (uchar)buffer[21] << 8;
 	    int extralen = (uchar)buffer[22] | (uchar)buffer[23] << 8;
-	    
+
 	    kdDebug(7040) << "general purpose bit flag: " << gpf << endl;
 	    kdDebug(7040) << "compressed size: " << compr_size << endl;
 	    kdDebug(7040) << "uncompressed size: " << uncomp_size << endl;
@@ -487,9 +488,9 @@ kdDebug(7040) << "dev->at() now : " << dev->at() << endl;
             unsigned int extraFieldEnd = dev->at() + extralen;
 	    pfi->extralen = extralen;
 	    int handledextralen = QMIN(extralen, (int)sizeof buffer);
-	    
+
 	    kdDebug(7040) << "handledextralen: " << handledextralen << endl;
-	    
+
 	    n = dev->readBlock(buffer, handledextralen);
 	    // no error msg necessary as we deliberately truncate the extra field
 	    if (!parseExtraField(buffer, handledextralen, true, *pfi))
@@ -534,20 +535,20 @@ kdDebug(7040) << "dev->at() now : " << dev->at() << endl;
 		    // PK34 for the next local header in case there is no data descriptor
 		    // PK12 for the central header in case there is no data descriptor
 		    // PK78 for the data descriptor in case it is following the compressed data
-		    
+
 		    if ( buffer[0] == 'K' && buffer[1] == 7 && buffer[2] == 8 )
                     {
                         foundSignature = true;
                         dev->at( dev->at() + 12 ); // skip the 'data_descriptor'
                     }
-		    
+
 		    if ( ( buffer[0] == 'K' && buffer[1] == 1 && buffer[2] == 2 )
 		         || ( buffer[0] == 'K' && buffer[1] == 3 && buffer[2] == 4 ) )
                     {
                         foundSignature = true;
                         dev->at( dev->at() - 4 ); // go back 4 bytes, so that the magic bytes can be found...
                     }
-		    
+
                 }
             }
             else
@@ -573,7 +574,7 @@ kdDebug(7040) << "dev->at() now : " << dev->at() << endl;
 		    	// here we cannot trust the compressed size, so scan through the compressed
 			// data to find the next header
 			bool foundSignature = false;
-	
+
 			while (!foundSignature)
 			{
 				n = dev->readBlock( buffer, 1 );
@@ -582,33 +583,33 @@ kdDebug(7040) << "dev->at() now : " << dev->at() << endl;
 					kdWarning(7040) << "Invalid ZIP file. Unexpected end of file. (#2)" << endl;
 					return false;
 				}
-		
+
 				if ( buffer[0] != 'P' )
 					continue;
-		
+
 				n = dev->readBlock( buffer, 3 );
 				if (n < 3)
 				{
 					kdWarning(7040) << "Invalid ZIP file. Unexpected end of file. (#3)" << endl;
 					return false;
 				}
-		
+
 				// we have to detect three magic tokens here:
 				// PK34 for the next local header in case there is no data descriptor
 				// PK12 for the central header in case there is no data descriptor
 				// PK78 for the data descriptor in case it is following the compressed data
-				
+
 				if ( buffer[0] == 'K' && buffer[1] == 7 && buffer[2] == 8 )
 				{
 					foundSignature = true;
 					dev->at( dev->at() + 12 ); // skip the 'data_descriptor'
 				}
-				
+
 				if ( ( buffer[0] == 'K' && buffer[1] == 1 && buffer[2] == 2 )
 					|| ( buffer[0] == 'K' && buffer[1] == 3 && buffer[2] == 4 ) )
 				{
 					foundSignature = true;
-					dev->at( dev->at() - 4 ); 
+					dev->at( dev->at() - 4 );
 					// go back 4 bytes, so that the magic bytes can be found
 					// in the next cycle...
 				}
@@ -625,7 +626,7 @@ kdDebug(7040) << "dev->at() now : " << dev->at() << endl;
 			else
 				kdDebug(7040) << "dev->at failed... " << endl;*/
 		    }
-		    
+
 		}
 
 // not needed any more
@@ -640,18 +641,21 @@ kdDebug(7040) << "dev->at() now : " << dev->at() << endl;
 	    kdDebug(7040) << "PK12 found central block" << endl;
 
             // so we reached the central header at the end of the zip file
-		    // here we get all interesting data out of the central header
+            // here we get all interesting data out of the central header
             // of a file
             offset = dev->at() - 4;
 
             //set offset for appending new files
             if ( d->m_offset == 0L ) d->m_offset = offset;
 
-		    n = dev->readBlock( buffer + 4, 42 );
+            n = dev->readBlock( buffer + 4, 42 );
             if (n < 42) {
                 kdWarning(7040) << "Invalid ZIP file, central entry too short" << endl; // not long enough for valid entry
                 return false;
             }
+
+            //int gpf = (uchar)buffer[9] << 8 | (uchar)buffer[10];
+            //kdDebug() << "general purpose flag=" << gpf << endl;
             // length of the filename (well, pathname indeed)
             int namelen = (uchar)buffer[29] << 8 | (uchar)buffer[28];
             QCString bufferName( namelen + 1 );
