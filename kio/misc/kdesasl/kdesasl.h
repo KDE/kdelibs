@@ -36,8 +36,8 @@ class QStrIList;
  * It is not possible with SASL to transfer any other information in an
  * encrypted way. For that purpose OpenPGP or SSL are useful.
  *
- * Currently PLAIN (RFC 2595), LOGIN (not a SASL mechanism, but the
- * native IMAP authentication mechanism), CRAM-MD5 (RFC 2195) and
+ * Currently PLAIN (RFC 2595), LOGIN (not really a SASL mechanism, but
+ * used like that in IMAP and SMTP), CRAM-MD5 (RFC 2195) and
  * DIGEST-MD5 (RFC 2831) authentication are supported.  PLAIN and
  * LOGIN transmit the credentials in the clear (apart from a possible
  * base64 encoding).
