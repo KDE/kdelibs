@@ -15,20 +15,29 @@ if test "$ac_use_cups" = "yes"; then
     AC_MSG_WARN(CUPS library not found. CUPS support disabled)
     ac_use_cups="no"
   fi
-  AC_CHECK_LIB(cups,httpConnectEncrypt,[ac_have_connect_encrypt="yes"],[ac_have_connect_encrypt="no"],$LIBDL $LIBSOCKET)
-  if test "$ac_have_connect_encrypt" = "no"; then
-    AC_MSG_WARN(You should consider upgrading your CUPS library to version >= 1.1.8)
-  else
-    AC_DEFINE(HAVE_CUPS_CONNECT_ENCRYPT, 1, [Does CUPS contain httpConnectEncrypt (>= 1.1.8)])
+  if test "$ac_use_cups" = "yes"; then
+    ac_cups_version=0
+    AC_CHECK_LIB(cups,cupsTempFd,[ac_cups_version=1],[ac_cups_version=0],$LIBDL $LIBSOCKET)
+    if test "$ac_cups_version" = "0"; then
+      AC_MSG_WARN(You need at least cups-1.1.6-2 to use the CUPS module. CUPS support disabled)
+      ac_use_cups="no"
+    else
+      AC_CHECK_LIB(cups,httpConnectEncrypt,[ac_have_connect_encrypt="yes"],[ac_have_connect_encrypt="no"],$LIBDL $LIBSOCKET)
+      if test "$ac_have_connect_encrypt" = "no"; then
+        AC_MSG_WARN(You should consider upgrading your CUPS library to version >= 1.1.8)
+      else
+        AC_DEFINE(HAVE_CUPS_CONNECT_ENCRYPT, 1, [Does CUPS contain httpConnectEncrypt (>= 1.1.8)])
+      fi
+      ac_cups_headers=0
+      AC_CHECK_HEADER(cups/cups.h,[ac_cups_headers=1])
+      if test "$ac_cups_headers" = "0"; then
+        AC_MSG_WARN(CUPS headers not found. CUPS support disabled)
+        ac_use_cups="no"
+      fi
+      LDFLAGS="$ac_LDFLAGS_save"
+      CPPFLAGS="$ac_CPPFLAGS_save"
+    fi
   fi
-  ac_cups_headers=0
-  AC_CHECK_HEADER(cups/cups.h,[ac_cups_headers=1])
-  if test "$ac_cups_headers" = "0"; then
-    AC_MSG_WARN(CUPS headers not found. CUPS support disabled)
-    ac_use_cups="no"
-  fi
-  LDFLAGS="$ac_LDFLAGS_save"
-  CPPFLAGS="$ac_CPPFLAGS_save"
 fi
 if test "$ac_use_cups" = "yes"; then
   CUPSSUBDIR="cups"
