@@ -20,7 +20,15 @@
 #ifndef _BLOWFISH_H
 #define _BLOWFISH_H
 
+#include <config.h>
+
+#ifdef HAVE_STDINT_H
 #include <stdint.h>
+#endif
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+
 #include "blockcipher.h"
 
 
