@@ -26,8 +26,8 @@ libksmartcard_la_SOURCES = \
 				kcardimplementation.cc
 
 libksmartcard_la_LDFLAGS = $(all_libraries) $(PCSC_LDFLAGS) -version-info 1:0 -no-undefined
-libksmartcard_la_LIBADD = $(LIB_KDEUI)
-libksmartcard_la_DEPENDENCIES = $(LIB_KDEUI)
+libksmartcard_la_LIBADD = $(LIB_KDEUI) $(LIB_KIO)
+libksmartcard_la_DEPENDENCIES = $(LIB_KDEUI) $(LIB_KIO)
 
 libksmartcard_la_METASOURCES = AUTO
 

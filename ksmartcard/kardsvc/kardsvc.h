@@ -22,7 +22,7 @@
 #ifndef __KardSvc_H__
 #define __KardSvc_H__
 
-#include <kio/kded/kdedmodule.h>
+#include <kded/kdedmodule.h>
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qmap.h>
