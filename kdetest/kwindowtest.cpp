@@ -15,11 +15,7 @@
 #include "kwindowtest.moc"
 
 #include <kmsgbox.h>
-#ifndef __FreeBSD__
-//#include <dclock.h> // What IS this for?
-// Sorry Coolo, it was a demo widget for inserting into *Bars.
-// But I didn't #ifndef it!
-#endif
+//#include <dclock.h>
 
 /*
  Ok this is a constructor of our top widget. It inherits KTW.
@@ -360,7 +356,7 @@ testWindow::~testWindow ()
   /********************************************************/
 
   delete tb1->getWidget(8);
-  debug ("kwindowtest: deleted clock");
+  //debug ("kwindowtest: deleted clock");
   
   if (toolBar)
     delete toolBar;
@@ -374,13 +370,13 @@ testWindow::~testWindow ()
 
 void testWindow::beFixed()
 {
-    widget->setFixedSize (400, 300);
+    widget->setFixedSize (400, 200);
 }
 
 void testWindow::beYFixed()
 {
-    widget->setMinimumSize(400, 300);
-    widget->setMaximumSize(9999, 300);
+    widget->setMinimumSize(400, 200);
+    widget->setMaximumSize(9999, 200);
 }
 
 void testWindow::slotImportant ()
@@ -495,20 +491,20 @@ void testWindow::slotMakeItem3Current()
 
 int main( int argc, char *argv[] )
 {
-//    int i;
+    int i;
     KApplication *myApp = new KApplication( argc, argv );
 //    testWindow *test = new testWindow;
     testWindow test;
 
     myApp->setMainWidget(&test);
-    /*
+
     i = KMsgBox::yesNoCancel(0, "Select", "Select type of mainwidget",
                              0, "Fixed", "Y-fixed", "Resizable");
     if (i == 1)
-        test->beFixed();
+        test.beFixed();
     else if (i == 2)
-        test->beYFixed();
-    */
+        test.beYFixed();
+
     test.show();
     int ret = myApp->exec();
 
