@@ -27,7 +27,7 @@ class QPopupMenu;
 class QWidget;
 class KAccelAction;
 class KAccelActions;
-class KConfig;
+class KConfigBase;
 
 class KGlobalAccel : public QObject
 {

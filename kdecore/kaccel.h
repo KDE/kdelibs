@@ -28,7 +28,7 @@ class QPopupMenu; // for obsolete insertItem() methods below
 class QWidget;
 class KAccelAction;
 class KAccelActions;
-class KConfig;
+class KConfigBase;
 
 /**
  * Handle shortcuts.
