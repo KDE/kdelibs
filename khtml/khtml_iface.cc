@@ -1,8 +1,10 @@
 
 #include "khtml_iface.h"
 #include "khtml_part.h"
+#include "khtmlview.h"
 #include "khtml_ext.h"
 #include <kio/global.h>
+#include <qapplication.h>
 #include <qvariant.h>
 
 KHTMLPartIface::KHTMLPartIface( KHTMLPart *_part )
@@ -111,6 +113,15 @@ bool KHTMLPartIface::gotoAnchor( const QString &name )
     return part->gotoAnchor(name);
 }
 
+void KHTMLPartIface::activateNode()
+{
+    KParts::ReadOnlyPart* p = part->currentFrame();
+    if ( p && p->widget() ) {
+        QKeyEvent ev( QKeyEvent::KeyPress, Qt::Key_Return, '\n', 0, "\n" );
+        QApplication::sendEvent( p->widget(), &ev );
+    }
+}
+
 void KHTMLPartIface::selectAll()
 {
     part->selectAll();
@@ -150,7 +161,7 @@ void KHTMLPartIface::saveDocument(const QString &destination)
         srcURL.setFileName( "index.html" );
 
     KIO::MetaData metaData;
-    // Referre unknown?
+    // Referrer unknown?
     KHTMLPopupGUIClient::saveURL( srcURL, destination, metaData, part->cacheId() );
 }
 

@@ -172,6 +172,12 @@ k_dcop:
     bool gotoAnchor( const QString &name );
 
     /**
+     * Activate the node that currently has the focus
+     * (emulates pressing Return)
+     */
+    void activateNode();
+
+    /**
      * Returns the text the user has marked.
      */
     QString selectedText() const;
