@@ -580,7 +580,7 @@ bool KDirOperator::isRoot() const
 void KDirOperator::setView( KFile::FileView view )
 {
     bool separateDirs = KFile::isSeparateDirs( view );
-    
+
     if (view == KFile::Default) {
         if ( KFile::isDetailView( (KFile::FileView) defaultView ) )
             view = KFile::Detail;
@@ -672,7 +672,7 @@ void KDirOperator::connectView(KFileView *view)
     if ( reverseAction->isChecked() != fileView->isReversed() )
         fileView->sortReversed();
 
-     if ( myMode & KFile::Directory && 
+     if ( myMode & KFile::Directory &&
 	  (myMode & (KFile::File | KFile::Files) == 0 ))
          fileView->setViewMode(KFileView::Directories);
      else {
@@ -703,7 +703,7 @@ void KDirOperator::setMode(KFile::Mode m)
     myMode = m;
 
     dir->setDirOnlyMode( ( myMode == KFile::Directory ) );
-    
+
     // reset the view with the different mode
     setView( static_cast<KFile::FileView>(viewKind) );
 }
@@ -990,7 +990,7 @@ void KDirOperator::updateViewActions()
 {
     KFile::FileView fv = static_cast<KFile::FileView>( viewKind );
 
-    bool separate = KFile::isSeparateDirs( fv ) && 
+    bool separate = KFile::isSeparateDirs( fv ) &&
                     myMode & KFile::Directory == 0 &&
 		    myMode & KFile::PreviewContents == 0 &&
                     myMode & KFile::PreviewInfo == 0;
@@ -1078,8 +1078,12 @@ void KDirOperator::saveConfig( KConfig *kc, const QString& group )
     kc->writeEntry( QString::fromLatin1("Sort directories first"),
                     dirsFirstAction->isChecked() );
 
-    kc->writeEntry( QString::fromLatin1("Separate Directories"),
-                    separateDirsAction->isChecked() );
+    // don't save the separate dirs mode in combiview or directory mode
+    if ( !(myMode & KFile::Directory == KFile::Directory || 
+	   viewKind & KFile::PreviewInfo || viewKind & KFile::PreviewContents))
+	kc->writeEntry( QString::fromLatin1("Separate Directories"),
+			separateDirsAction->isChecked() );
+
     kc->writeEntry( QString::fromLatin1("Show hidden files"),
                     showHiddenAction->isChecked() );
 
