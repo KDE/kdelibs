@@ -7,23 +7,23 @@
  <group name="browsing" >
   <entry key="DomainList" type="StringList" >
    <label>Additional domains for browsing</label>
+   <whatsthis>List of 'wide-area' (non link-local) domains that should be browsed.</whatsthis>
   </entry>
   <entry key="BrowseLocal" type="Bool" >
    <label>Browse local network</label>
+   <whatsthis>If true .local domain will be browsed. It is always link-local, using multicast DNS.</whatsthis>
    <default>true</default>
   </entry>
   <entry key="Recursive" type="Bool" >
    <label>Recursive search for domains</label>
+   <whatsthis>Specifies that every found domain should be in turn queried for more browsing domains.</whatsthis>
    <default>false</default>
-  </entry>
-  <entry key="PollingInterval" type="UInt" >
-   <label>Time (in seconds) between refreshing list of services found by unicast DNS-SD</label>
-   <default>0</default>
   </entry>
  </group>
  <group name="publishing" >
   <entry key="PublishType" type="Enum" >
    <label>Select publishing in LAN (multicast) or WAN (unicast, needs configured DNS server)</label>
+   <whatsthis>Specifies if publishing should be by default link-local using multicast DNS (LAN) or 'wide-area' using normal DNS server (WAN).</whatsthis>
    <default>LAN</default>
    <choices>
     <choice name="LAN" />
@@ -32,6 +32,8 @@
   </entry>
   <entry key="PublishDomain" type="String" >
    <label>Name of default publishing domain for WAN</label>
+   <whatsthis>Domain name for publishing using 'wide-area' (normal DNS) ZeroConf. This must match domain specified in /etc/mdnsd.conf. This value is used only if PublishType is set to WAN.
+</whatsthis>
   </entry>
  </group>
 </kcfg>
