@@ -38,6 +38,6 @@ kdelnk_DATA = http_cache_cleaner.desktop
 dummy.cpp:
 	echo > dummy.cpp
 
-https.cc:	http.cc
+https.cc:	$(srcdir)/http.cc
 	echo "#define HTTPS" > https.cc
-	cat http.cc >> https.cc
+	cat $(srcdir)/http.cc >> https.cc
