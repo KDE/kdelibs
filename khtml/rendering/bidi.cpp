@@ -633,10 +633,12 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
 #endif
     eor = last;
 
-    if(!(eor < sor))
+    
 #else
     eor = end;
 #endif
+    
+    if(sor < eor)
         appendRun(runs, sor, eor, context, dir);
 
     BidiContext *endEmbed = context;
