@@ -23,6 +23,8 @@
 #include <ktypelist.h>
 #include <kinstance.h>
 #include <kgenericfactory.tcc>
+#include <kglobal.h>
+#include <klocale.h>
 
 /* @internal */
 template <class T>
@@ -143,6 +145,13 @@ protected:
     virtual QObject *createObject( QObject *parent, const char *name,
                                   const char *className, const QStringList &args )
     {   
+        static bool catalogueInitialized = false;
+        if ( !catalogueInitialized )
+        {
+            catalogueInitialized = true;
+            if ( instance() )
+                KGlobal::locale()->insertCatalogue( instance()->instanceName() );
+        }
         return KDEPrivate::ConcreteFactory<T>::create( 0, 0, parent, name, className, args );
     }
 };
@@ -227,6 +236,13 @@ protected:
     virtual QObject *createObject( QObject *parent, const char *name,
                                    const char *className, const QStringList &args )
     {
+        static bool catalogueInitialized = false;
+        if ( !catalogueInitialized )
+        {
+            catalogueInitialized = true;
+            if ( instance() )
+                KGlobal::locale()->insertCatalogue( instance()->instanceName() );
+        }
         return KDEPrivate::MultiFactory< KTypeList< T1, T2 > >::create( 0, 0, parent, name,
                                                                         className, args );
     }
