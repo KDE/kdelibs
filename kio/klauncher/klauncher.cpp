@@ -496,7 +496,9 @@ KLauncher::requestStart(KLaunchRequest *request)
    }
    while (lastRequest != 0);
 
+#ifndef NDEBUG
    qDebug("KLauncher doing clientStarted(`%s')", request->name.data());
+#endif
    QByteArray params;
    QDataStream stream(params, IO_WriteOnly);
    stream << request->name << "" << (int)lastRequest;

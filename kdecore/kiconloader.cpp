@@ -351,8 +351,10 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
 
     if ((ext == ".png") || (ext == ".xpm"))
     {
+#ifndef NDEBUG
 	kdDebug(264) << "Application " << KGlobal::instance()->instanceName()
                      << " loads icon " << name << " with extension.\n";
+#endif
 	name = name.left(name.length() - 4);
     }
 
@@ -472,9 +474,11 @@ QPixmap KIconLoader::loadIcon(const QString& _name, int group, int size,
 	QString ext = name.right(4);
 	if ((ext == ".png") || (ext == ".xpm"))
 	{
+#ifndef NDEBUG
 	    kdDebug(264) << "Application "
 		<< KGlobal::instance()->instanceName()
 		<< " loads icon " << name << " with extension.\n";
+#endif
 	    name = name.left(name.length() - 4);
 	}
     }
