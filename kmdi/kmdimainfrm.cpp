@@ -1626,6 +1626,7 @@ void KMdiMainFrm::setToolviewStyle(int flag)
     setIDEAlModeStyle(flag);
   }
   d->m_toolviewStyle = flag;
+  bool toolviewExists = false;
   QMap<QWidget*,KMdiToolViewAccessor*>::Iterator it;
   for (it = m_pToolViews->begin(); it != m_pToolViews->end(); ++it) {
     KDockWidget *dockWidget = dynamic_cast<KDockWidget*>(it.data()->wrapperWidget());
@@ -1645,10 +1646,13 @@ void KMdiMainFrm::setToolviewStyle(int flag)
         dockWidget->setPixmap(*(it.data()->wrappedWidget()->icon()));
         dockWidget->setTabPageLabel(it.data()->wrappedWidget()->caption());
       }
+      toolviewExists = true;
     }
   }
-  writeDockConfig();
-  readDockConfig();
+  if (toolviewExists) {
+    writeDockConfig();
+    readDockConfig();
+  }
 }
 
 /**
