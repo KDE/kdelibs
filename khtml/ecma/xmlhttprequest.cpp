@@ -207,7 +207,7 @@ void XMLHttpRequest::putValueProperty(ExecState *exec, int token, const Value& v
     if (onLoadListener) onLoadListener->ref();
     break;
   default:
-    kdWarning() << "HTMLDocument::putValue unhandled token " << token << endl;
+    kdWarning() << "XMLHttpRequest::putValue unhandled token " << token << endl;
   }
 }
 
@@ -624,8 +624,9 @@ Value XMLHttpRequestProtoFunc::tryCall(ExecState *exec, Object &thisObj, const L
       QString body;
 
       if (args.size() >= 1) {
-	if (args[0].toObject(exec).inherits(&DOMDocument::info)) {
-	  DOM::Node docNode = static_cast<KJS::DOMDocument *>(args[0].toObject(exec).imp())->toNode();
+	Object obj = Object::dynamicCast(args[0]);
+	if (!obj.isNull() && obj.inherits(&DOMDocument::info)) {
+	  DOM::Node docNode = static_cast<KJS::DOMDocument *>(obj.imp())->toNode();
 	  DOM::DocumentImpl *doc = static_cast<DOM::DocumentImpl *>(docNode.handle());
 
 	  try {
@@ -637,8 +638,6 @@ Value XMLHttpRequestProtoFunc::tryCall(ExecState *exec, Object &thisObj, const L
 	     exec->setException(err);
 	  }
 	} else {
-	  // converting certain values (like null) to object can set an exception
-	  exec->clearException();
 	  body = args[0].toString(exec).qstring();
 	}
       }
