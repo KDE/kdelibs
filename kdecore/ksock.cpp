@@ -49,6 +49,7 @@
 #include <string.h>
 #include <signal.h>
 #include <unistd.h>
+#include <cassert>
 
 #ifdef HAVE_SYSENT_H
 #include <sysent.h>
@@ -191,6 +192,7 @@ bool KSocket::connect( const char *_path )
   if ( domain != PF_UNIX )
     qFatal( "Connecting a PF_INET socket to a PF_UNIX domain socket\n");
 
+  assert(sock == -1);
   sock = ::socket(PF_UNIX,SOCK_STREAM,0);
   if (sock < 0)
 	return false;
