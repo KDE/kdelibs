@@ -92,7 +92,7 @@ typedef int (*orig_open_ptr)(const char *pathname, int flags, ...);
 typedef int (*orig_close_ptr)(int fd);
 typedef int (*orig_ioctl_ptr)(int fd, ioctl_request_t request, ...);
 typedef ssize_t (*orig_write_ptr)(int fd, const void *buf, size_t count);
-typedef caddr_t (*orig_mmap_ptr)(void *start, size_t length, int prot,
+typedef void* (*orig_mmap_ptr)(void *start, size_t length, int prot,
                                  int flags, int fd, off_t offset);
 typedef int (*orig_munmap_ptr)(void *start, size_t length);
 typedef FILE* (*orig_fopen_ptr)(const char *path, const char *mode);
@@ -528,7 +528,7 @@ void *mmap(void  *start,  size_t length, int prot, int flags,
 	}
 	else artsdspdebug ("aRts: /dev/dsp mmap (unsupported, try -m option)...\n");
   }
-  return (caddr_t)-1;
+  return (void *)-1;
 }
         
 int munmap(void *start, size_t length)
