@@ -53,7 +53,7 @@ class QPushButton;
 class KLineEdit;
 
 class KIconButton;
-class PropsPage;
+class KPropsPage;
 
 namespace KIO { class Job; }
 
@@ -64,7 +64,7 @@ namespace KIO { class Job; }
  * This class must be created with (void)new PropertiesDialog(...)
  * It will take care of deleting itself.
  */
-class PropertiesDialog : public QObject
+class KPropertiesDialog : public QObject
 {
   Q_OBJECT
 public:
@@ -80,7 +80,7 @@ public:
    *
    * @param _items file item whose properties should be displayed.
    */
-  PropertiesDialog( KFileItem * item );
+  KPropertiesDialog( KFileItem * item );
 
   /**
    * Bring up a Properties dialog. Normal constructor for
@@ -91,7 +91,7 @@ public:
    * makes it use only the FIRST item in the list
    *
    */
-  PropertiesDialog( KFileItemList _items );
+  KPropertiesDialog( KFileItemList _items );
 
   /**
    * Bring up a Properties dialog. Convenience constructor for
@@ -99,7 +99,7 @@ public:
    *
    * @param _url the URL whose properties should be displayed
    * @param _mode the mode, as returned by stat(). Don't set if unknown.  */
-  PropertiesDialog( const KURL& _url, mode_t _mode = (mode_t) -1 );
+  KPropertiesDialog( const KURL& _url, mode_t _mode = (mode_t) -1 );
 
   /**
    * Create a properties dialog for a new .desktop file (whose name
@@ -109,13 +109,13 @@ public:
    * @param _templUrl template used for reading only
    * @param _currentDir directory where the file will be written to
    * @param _defaultName something to put in the name field, like mimetype.desktop */
-  PropertiesDialog( const KURL& _tempUrl, const KURL& _currentDir,
+  KPropertiesDialog( const KURL& _tempUrl, const KURL& _currentDir,
                     const QString& _defaultName );
 
   /**
    * This looks very much like a destructor :)
    */
-  virtual ~PropertiesDialog();
+  virtual ~KPropertiesDialog();
 
 
   /**
@@ -130,7 +130,7 @@ public:
    *        have been created with the Properties Dialog as its parent.
    * @see PropsPage
    */
-  void addPage(PropsPage *page);
+  void addPage(KPropsPage *page);
 
   /**
    * @return a parsed URL.
@@ -222,7 +222,7 @@ private:
   /**
    * List of all pages inserted ( first one first )
    */
-  QList<PropsPage> pageList;
+  QList<KPropsPage> pageList;
 
   /**
    * The dialog
@@ -232,8 +232,8 @@ private:
 private slots:
   void slotDeleteMyself();
 private:
-  class PropertiesDialogPrivate;
-  PropertiesDialogPrivate *d;
+  class KPropertiesDialogPrivate;
+  KPropertiesDialogPrivate *d;
 };
 
 /**
@@ -241,7 +241,7 @@ private:
  * This is an abstract class. You must inherit from this class
  * to build a new kind of page.
  */
-class PropsPage : public QObject
+class KPropsPage : public QObject
 {
   Q_OBJECT
 public:
@@ -250,8 +250,8 @@ public:
    * To insert tabs into the properties dialog, use the add methods provided by
    * KDialogBase (via props->dialog() )
    */
-  PropsPage( PropertiesDialog *_props );
-  virtual ~PropsPage();
+  KPropsPage( KPropertiesDialog *_props );
+  virtual ~KPropsPage();
 
   /**
    * Apply all changes to the file.
@@ -284,27 +284,27 @@ protected:
   /**
    * Pointer to the dialog
    */
-  PropertiesDialog *properties;
+  KPropertiesDialog *properties;
 
   int fontHeight;
 private:
-  class PropsPagePrivate;
-  PropsPagePrivate *d;
+  class KPropsPagePrivate;
+  KPropsPagePrivate *d;
 };
 
 /**
  * 'General' page
  *  This page displays the name of the file, its size and access times.
  */
-class FilePropsPage : public PropsPage
+class KFilePropsPage : public KPropsPage
 {
   Q_OBJECT
 public:
   /**
    * Constructor
    */
-  FilePropsPage( PropertiesDialog *_props );
-  virtual ~FilePropsPage();
+  KFilePropsPage( KPropertiesDialog *_props );
+  virtual ~KFilePropsPage();
 
   /**
    * Applies all changes made.  'General' must be always the first
@@ -340,8 +340,8 @@ private:
    */
   QString oldName;
 
-  class FilePropsPagePrivate;
-  FilePropsPagePrivate *d;
+  class KFilePropsPagePrivate;
+  KFilePropsPagePrivate *d;
 };
 
 /**
@@ -349,15 +349,15 @@ private:
  * In this page you can modify permissions and change
  * the owner of a file.
  */
-class FilePermissionsPropsPage : public PropsPage
+class KFilePermissionsPropsPage : public KPropsPage
 {
   Q_OBJECT
 public:
   /**
    * Constructor
    */
-  FilePermissionsPropsPage( PropertiesDialog *_props );
-  virtual ~FilePermissionsPropsPage();
+  KFilePermissionsPropsPage( KPropertiesDialog *_props );
+  virtual ~KFilePermissionsPropsPage();
 
   virtual void applyChanges();
 
@@ -394,8 +394,8 @@ private:
    */
   static mode_t fperm[3][4];
 
-  class FilePermissionsPropsPagePrivate;
-  FilePermissionsPropsPagePrivate *d;
+  class KFilePermissionsPropsPagePrivate;
+  KFilePermissionsPropsPagePrivate *d;
 };
 
 /**
@@ -405,15 +405,15 @@ private:
  *
  * Such files are used to represent a program in kpanel and kfm.
  */
-class ExecPropsPage : public PropsPage
+class KExecPropsPage : public KPropsPage
 {
   Q_OBJECT
 public:
   /**
    * Constructor
    */
-  ExecPropsPage( PropertiesDialog *_props );
-  virtual ~ExecPropsPage();
+  KExecPropsPage( KPropertiesDialog *_props );
+  virtual ~KExecPropsPage();
 
   virtual void applyChanges();
 
@@ -445,8 +445,8 @@ private:
     bool suidBool;
     QString suidUserStr;
 
-    class ExecPropsPagePrivate;
-    ExecPropsPagePrivate *d;
+    class KExecPropsPagePrivate;
+    KExecPropsPagePrivate *d;
 };
 
 /**
@@ -456,15 +456,15 @@ private:
  *
  * Such files are used to represent a program in kpanel and kfm.
  */
-class URLPropsPage : public PropsPage
+class KURLPropsPage : public KPropsPage
 {
   Q_OBJECT
 public:
   /**
    * Constructor
    */
-  URLPropsPage( PropertiesDialog *_props );
-  virtual ~URLPropsPage();
+  KURLPropsPage( KPropertiesDialog *_props );
+  virtual ~KURLPropsPage();
 
   virtual void applyChanges();
 
@@ -480,8 +480,8 @@ private:
   QPixmap pixmap;
   QString pixmapFile;
 private:
-  class URLPropsPagePrivate;
-  URLPropsPagePrivate *d;
+  class KURLPropsPagePrivate;
+  KURLPropsPagePrivate *d;
 };
 
 /**
@@ -491,15 +491,15 @@ private:
  *
  * Such files are used to represent a program in kpanel and kfm.
  */
-class ApplicationPropsPage : public PropsPage
+class KApplicationPropsPage : public KPropsPage
 {
   Q_OBJECT
 public:
   /**
    * Constructor
    */
-  ApplicationPropsPage( PropertiesDialog *_props );
-  virtual ~ApplicationPropsPage();
+  KApplicationPropsPage( KPropertiesDialog *_props );
+  virtual ~KApplicationPropsPage();
 
   virtual void applyChanges();
 
@@ -524,8 +524,8 @@ private:
   QStringList extensions;
   QString commentStr;
 
-  class ApplicationPropsPagePrivate;
-  ApplicationPropsPagePrivate *d;
+  class KApplicationPropsPagePrivate;
+  KApplicationPropsPagePrivate *d;
 };
 
 /**
@@ -533,15 +533,15 @@ private:
  * [Desktop Entry]
  * Type=MimeType
  */
-class BindingPropsPage : public PropsPage
+class KBindingPropsPage : public KPropsPage
 {
   Q_OBJECT
 public:
   /**
    * Constructor
    */
-  BindingPropsPage( PropertiesDialog *_props );
-  virtual ~BindingPropsPage();
+  KBindingPropsPage( KPropertiesDialog *_props );
+  virtual ~KBindingPropsPage();
 
   virtual void applyChanges();
 
@@ -556,19 +556,19 @@ private:
 
   QCheckBox * cbAutoEmbed;
 
-  class BindingPropsPagePrivate;
-  BindingPropsPagePrivate *d;
+  class KBindingPropsPagePrivate;
+  KBindingPropsPagePrivate *d;
 };
 
 /**
  * Properties page for device .desktop files
  */
-class DevicePropsPage : public PropsPage
+class KDevicePropsPage : public KPropsPage
 {
   Q_OBJECT
 public:
-  DevicePropsPage( PropertiesDialog *_props );
-  virtual ~DevicePropsPage();
+  KDevicePropsPage( KPropertiesDialog *_props );
+  virtual ~KDevicePropsPage();
 
   virtual void applyChanges();
 
@@ -595,8 +595,8 @@ private:
   QPixmap pixmap;
   QString pixmapFile;
 
-  class DevicePropsPagePrivate;
-  DevicePropsPagePrivate *d;
+  class KDevicePropsPagePrivate;
+  KDevicePropsPagePrivate *d;
 };
 
 #endif
