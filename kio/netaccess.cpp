@@ -99,6 +99,12 @@ bool NetAccess::del( const KURL & url )
   return kioNet.delInternal( url );
 }
 
+bool NetAccess::mkdir( const KURL & url, int permissions )
+{
+  NetAccess kioNet;
+  return kioNet.mkdirInternal( url, permissions );
+}
+
 QStringList* NetAccess::tmpfiles = 0L;
 
 void NetAccess::removeTempFile(const QString& name)
@@ -138,6 +144,16 @@ bool NetAccess::delInternal( const KURL & url )
 {
   bJobOK = true; // success unless further error occurs
   KIO::Job * job = KIO::del( url );
+  connect( job, SIGNAL( result (KIO::Job *) ),
+           this, SLOT( slotResult (KIO::Job *) ) );
+  qApp->enter_loop();
+  return bJobOK;
+}
+
+bool NetAccess::mkdirInternal( const KURL & url, int permissions )
+{
+  bJobOK = true; // success unless further error occurs
+  KIO::Job * job = KIO::mkdir( url, permissions );
   connect( job, SIGNAL( result (KIO::Job *) ),
            this, SLOT( slotResult (KIO::Job *) ) );
   qApp->enter_loop();

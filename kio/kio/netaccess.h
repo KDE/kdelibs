@@ -147,6 +147,16 @@ public:
     static bool del( const KURL & url );
 
     /**
+     * Create a directory in an synchronous way
+     * This is a convenience function for KIO::mkdir
+     * (it saves creating a slot and testing for the job result)
+     * @param url the directory to create
+     * @return true on success, false on failure
+     */
+    static bool mkdir( const KURL & url, int permissions = -1 );
+
+
+    /**
      * Determines the mimetype of a given URL.
      * This is a convenience function for KIO::mimetype.
      * You should call this only when really necessary.
@@ -169,6 +179,7 @@ protected:
     bool statInternal(const KURL & url);
     UDSEntry m_entry;
     bool delInternal(const KURL & url);
+    bool mkdirInternal(const KURL & url, int permissions);
     QString mimetypeInternal(const KURL & url);
     QString m_mimetype;
     /** List of temporary files */
