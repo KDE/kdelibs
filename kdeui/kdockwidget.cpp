@@ -90,6 +90,7 @@ KDockMainWindow::KDockMainWindow( QWidget* parent, const char *name, WFlags f)
 
 KDockMainWindow::~KDockMainWindow()
 {
+	delete dockManager;
 }
 
 void KDockMainWindow::setMainDockWidget( KDockWidget* mdw )
@@ -1003,7 +1004,7 @@ public:
 };
 
 KDockManager::KDockManager( QWidget* mainWindow , const char* name )
-:QObject( mainWindow, name )
+:QObject( 0, name )
   ,main(mainWindow)
   ,currentDragWidget(0L)
   ,currentMoveWidget(0L)
@@ -2136,6 +2137,7 @@ KDockArea::KDockArea( QWidget* parent, const char *name)
 
 KDockArea::~KDockArea()
 {
+	delete dockManager;
 }
 
 KDockWidget* KDockArea::createDockWidget( const QString& name, const QPixmap &pixmap, QWidget* parent, const QString& strCaption, const QString& strTabPageLabel)
