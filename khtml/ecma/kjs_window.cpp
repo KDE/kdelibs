@@ -25,6 +25,7 @@
 #include <kurl.h>
 #include <kmessagebox.h>
 #include <klocale.h>
+#include <kparts/browserextension.h>
 
 #include <kjs/operations.h>
 #include "kjs_window.h"
@@ -205,13 +206,64 @@ Completion WindowFunc::tryExecute(const List &args)
     break;
   case Open:
   {
-    v = args[1];
-    s = v.toString();
-    QString target = s.value().qstring();
-    widget->part()->urlSelected( str, 0, 0, target );
-      // ### add size and other parameters defined in the third argument.
-      // see http://msdn.microsoft.com/workshop/author/dhtml/reference/methods/open_0.asp
-    result = Undefined();
+    int w_left = 0, w_top = 0, w_width = 330, w_height = 400;
+    KParts::WindowArgs winargs;
+
+    // scan feature argument
+    v = args[2];
+    QString features;
+    if (!v.isA(UndefinedType)) {
+	features = v.toString().value().qstring();
+	QStringList flist = QStringList::split(',', features);
+	QStringList::ConstIterator it = flist.begin();
+	while (it != flist.end()) {
+	    int pos = (*it).find('=');
+	    if (pos >= 0) {
+		QString key = (*it).left(pos).stripWhiteSpace().lower();
+		QString val = (*it).mid(pos + 1).stripWhiteSpace().lower();
+		if (key == "left" || key == "screenx")
+		  w_left = val.toInt();
+		else if (key == "top" || key == "screeny")
+		  w_top = val.toInt();
+		else if (key == "height")
+		  w_height = val.toInt();
+		else if (key == "width")
+		  w_width = val.toInt();
+		else if (key == "menubar")
+		  winargs.menuBarVisible = (val == "1" || val == "yes");
+		else if (key == "toolbar")
+		  winargs.toolBarsVisible = (val == "1" || val == "yes");
+		else if (key == "status")
+		  winargs.statusBarVisible = (val == "1" || val == "yes");
+		else if (key == "resizable")
+		  winargs.resizable = (val == "1" || val == "yes");
+		else if (key == "fullscreen")
+		  winargs.fullscreen = (val == "1" || val == "yes");
+	    }
+	    it++;
+	}
+    }
+
+    // prepare arguments
+    KURL url(str);
+    KParts::URLArgs uargs;
+    uargs.frameName = args[1].toString().value().qstring();
+    uargs.serviceType = "text/html";
+    // guarantee minimum size
+    if (w_width < 100)
+      w_width = 100;
+    if (w_height < 100)
+      w_height = 100;
+    winargs.geometry = QRect(w_left, w_top, w_width, w_height);
+    
+    // request new window
+    KParts::ReadOnlyPart *newPart = 0L;
+    emit widget->part()->browserExtension()->createNewWindow(url, uargs,
+							     winargs, newPart);
+    if (newPart && newPart->inherits("KHTMLPart"))
+	result = newWindow(static_cast<KHTMLPart*>(newPart));
+    else
+	result = Undefined();
     break;
   }
   case SetTimeout:
