@@ -60,6 +60,9 @@ int main(int argc, char **argv) {
 
     // URI that should require no filtering
     filter( "http://www.kde.org", "http://www.kde.org" );
+    filter( "http://www.kde.org/developer//index.html", "http://www.kde.org/developer//index.html" );
+    filter( "http://www.myDomain.commyPort/ViewObjectRes//Default:name=hello",
+            "http://www.myDomain.commyPort/ViewObjectRes//Default:name=hello");
 
     // ShortURI tests
     filter( "linuxtoday.com", "http://linuxtoday.com" );
@@ -82,6 +85,7 @@ int main(int argc, char **argv) {
     // IKWS test
     filter( "KDE" );
     filter( "GNOME" );
+    filter( "FTP" );
 
     // Executable tests - No IKWS in minicli
     filter( "kppp", "kppp", minicliFilters );
