@@ -62,14 +62,14 @@
 <!ENTITY % kde-l10n-no "INCLUDE">
 <!ENTITY % kde-l10n-pl "INCLUDE">
 <!ENTITY % kde-l10n-pt "INCLUDE">
-<!ENTITY % kde-l10n-pt-BR "INCLUDE">
+<!ENTITY % kde-l10n-ptbr "INCLUDE">
 <!ENTITY % kde-l10n-ro "INCLUDE">
 <!ENTITY % kde-l10n-ru "INCLUDE">
 <!ENTITY % kde-l10n-sk "INCLUDE">
 <!ENTITY % kde-l10n-sl "INCLUDE">
 <!ENTITY % kde-l10n-sr "INCLUDE">
 <!ENTITY % kde-l10n-sv "INCLUDE">
-<!ENTITY % kde-l10n-zh-CN "INCLUDE">
+<!ENTITY % kde-l10n-zhcn "INCLUDE">
 
 <![%kde-l10n-ca;[
   <!ENTITY kde-l1ca
@@ -225,12 +225,12 @@
   PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Null Localization//EN"
          CDATA DSSSL>
 
-<![%kde-l10n-pt-BR;[
-  <!ENTITY kde-l1pt-BR
+<![%kde-l10n-ptbr;[
+  <!ENTITY kde-l1ptbr
     PUBLIC "-//KDE//DOCUMENT DocBook Stylesheet Localisation//PTBR"
-           "kde-l1pt-BR.dsl" CDATA DSSSL>
+           "kde-l1ptbr.dsl" CDATA DSSSL>
 ]]>
-<!ENTITY kde-l1pt-BR
+<!ENTITY kde-l1ptbr
   PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Null Localization//EN"
          CDATA DSSSL>
 
@@ -288,11 +288,11 @@
   PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Null Localization//EN"
          CDATA DSSSL>
 
-<![%kde-l10n-zh-CN;[
-  <!ENTITY kde-l1zh-CN
+<![%kde-l10n-zhcn;[
+  <!ENTITY kde-l1zhcn
     PUBLIC "-//KDE//DOCUMENT DocBook Stylesheet Localisation//ZHCN"
-           "kde-l1zh-CN.dsl" CDATA DSSSL>
+           "kde-l1zhcn.dsl" CDATA DSSSL>
 ]]>
-<!ENTITY kde-l1zh-CN
+<!ENTITY kde-l1zhcn
   PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Null Localization//EN"
          CDATA DSSSL>

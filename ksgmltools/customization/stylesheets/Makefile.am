@@ -19,7 +19,7 @@ dsl_DATA = kde-anchor.dsl kde-faq.dsl kde-img.dsl kde-search.dsl kde-ttlpg.dsl \
 	   kde-l1nl.dsl kde-l1nl.ent \
 	   kde-l1no.dsl kde-l1no.ent \
 	   kde-l1pl.dsl kde-l1pl.ent \
-	   kde-l1pt-BR.dsl kde-l1pt-BR.ent \
+	   kde-l1ptbr.dsl kde-l1ptbr.ent \
 	   kde-l1pt.dsl kde-l1pt.ent \
 	   kde-l1ro.dsl kde-l1ro.ent \
 	   kde-l1ru.dsl kde-l1ru.ent \
@@ -27,4 +27,4 @@ dsl_DATA = kde-anchor.dsl kde-faq.dsl kde-img.dsl kde-search.dsl kde-ttlpg.dsl \
 	   kde-l1sl.dsl kde-l1sl.ent \
 	   kde-l1sr.dsl kde-l1sr.ent \
 	   kde-l1sv.dsl kde-l1sv.ent \
-	   kde-l1zh-CN.dsl kde-l1zh-CN.ent
+	   kde-l1zhcn.dsl kde-l1zhcn.ent
