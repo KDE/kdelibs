@@ -307,6 +307,8 @@ int KConfigBase::readNumEntry( const QString& pKey, int nDefault) const
     return 1;
   else if( aValue == "on" )
     return 1;
+  else if( aValue == "yes" )
+    return 1;
   else
     {
       rc = aValue.toInt( &ok );
