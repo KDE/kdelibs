@@ -1641,7 +1641,6 @@ void KHTMLPart::checkEmitLoadEvent()
 {
   if ( d->m_bLoadEventEmitted || d->m_bParsing )
     return;
-  kdDebug(6050) << "KHTMLPart::checkEmitLoadEvent " << this << endl;
   ConstFrameIt it = d->m_frames.begin();
   ConstFrameIt end = d->m_frames.end();
   for (; it != end; ++it )
@@ -1653,6 +1652,7 @@ void KHTMLPart::checkEmitLoadEvent()
 void KHTMLPart::emitLoadEvent()
 {
   d->m_bLoadEventEmitted = true;
+  kdDebug(6050) << "KHTMLPart::emitLoadEvent " << this << endl;
 
   if ( d->m_doc && d->m_doc->isHTMLDocument() ) {
     HTMLDocumentImpl* hdoc = static_cast<HTMLDocumentImpl*>( d->m_doc );
@@ -1731,6 +1731,7 @@ void KHTMLPart::slotRedirect()
   QString target;
   u = splitUrlTarget( u, &target );
   KParts::URLArgs args;
+  args.reload = true; 
   args.setLockHistory( true );
   urlSelected( u, 0, 0, target, args );
 }
@@ -3265,7 +3266,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
   Q_INT32 charset;
   long old_cacheId = d->m_cacheId;
   QString encoding;
-  
+
   stream >> u >> xOffset >> yOffset;
 
   // restore link cursor position
@@ -3281,8 +3282,8 @@ void KHTMLPart::restoreState( QDataStream &stream )
   d->m_encoding = encoding;
   if ( d->m_settings ) d->m_settings->setCharset( d->m_charset );
   kdDebug(6050)<<"restoring charset to:"<< charset << endl;
-  
-  
+
+
   stream >> fSizes >> d->m_fontBase;
   // ### odd: this doesn't appear to have any influence on the used font
   // sizes :(
