@@ -237,8 +237,10 @@ KHTMLPart::~KHTMLPart()
 bool KHTMLPart::openURL( const KURL &url )
 {
   static QString http_protocol = QString::fromLatin1( "http" );
+  
+  KParts::URLArgs args = d->m_extension->urlArgs();
 
-  if ( d->m_frames.count() == 0 && urlcmp( url.url(), m_url.url(), true, true ) && d->m_extension->urlArgs().postData.size() == 0 )
+  if ( d->m_frames.count() == 0 && urlcmp( url.url(), m_url.url(), true, true ) && args.postData.size() == 0 && !args.reload )
   {
     m_url = url;
     emit started( 0L );
@@ -258,10 +260,10 @@ bool KHTMLPart::openURL( const KURL &url )
   if ( !closeURL() )
     return false;
 
-  if ( d->m_extension->urlArgs().postData.size() > 0 && url.protocol() == http_protocol )
-      d->m_job = KIO::http_post( url, d->m_extension->urlArgs().postData );
+  if ( args.postData.size() > 0 && url.protocol() == http_protocol )
+      d->m_job = KIO::http_post( url, args.postData );
   else
-      d->m_job = KIO::get( url, d->m_extension->urlArgs().reload );
+      d->m_job = KIO::get( url, args.reload );
 
   connect( d->m_job, SIGNAL( result( KIO::Job * ) ),
            SLOT( slotFinished( KIO::Job * ) ) );
@@ -657,7 +659,7 @@ void KHTMLPart::slotRedirection(const KURL& url)
   kdDebug(300) << "redirection by KIO to " << url.url() << endl;
 
   emit d->m_extension->setLocationBarURL( url.url() );
-  
+
   d->m_workingURL = url;
 }
 
@@ -1218,7 +1220,7 @@ KParts::ReadOnlyPart *KHTMLPart::createPart( QWidget *parentWidget, const char *
   char *className = "KParts::ReadOnlyPart";
   if ( service->serviceTypes().contains( "Browser/View" ) )
     className = "Browser/View";
-  
+
   if ( factory->inherits( "KParts::Factory" ) )
     res = static_cast<KParts::ReadOnlyPart *>(static_cast<KParts::Factory *>( factory )->createPart( parentWidget, widgetName, parent, name, className ));
   else
