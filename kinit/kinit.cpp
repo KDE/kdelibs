@@ -984,21 +984,6 @@ int main(int argc, char **argv, char **envp)
       WaitPid(pid);
    }
 
-   // Make sure to launch kdesktop before kded!
-   for(i = 1; i < argc; i++)
-   {
-      if (strcmp(safe_argv[i], "+kdesktop") == 0)
-      {
-         pid = launch( 2, "kdesktop", "--waitforkded" );
-#ifndef NDEBUG
-      fprintf(stderr, "kdeinit: Launched KDesktop, pid = %ld result = %d\n", (long) pid, d.result);
-#endif
-         WaitPid(pid);
-         safe_argv[i][0] = '-'; // Make it an option so that it won't be launched a second time!
-         break;
-      }
-   }
-
    if (launch_kded)
    {
       pid = launch( 1, "kded", 0 );
