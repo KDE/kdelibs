@@ -33,4 +33,5 @@
 <!ENTITY OS	"operating system"><!-- <acronym>OS</acronym>-->
 <!ENTITY RMB    "<mousebutton>right</mousebutton> mouse button">
 <!ENTITY Shift	"<keycap>Shift</keycap>">
+<!ENTITY systemtray "<application>system tray</application>">
 <!ENTITY Tab	"<keycap>Tab</keycap>">
