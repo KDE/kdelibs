@@ -570,7 +570,7 @@ public:
     *
     * @param complete if true, handle completion & roation internally.
     */
-    void setHandleSignals( bool handle );
+    virtual void setHandleSignals( bool handle );
 
     /**
     * Returns true if the completion object is deleted
