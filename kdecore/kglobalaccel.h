@@ -265,6 +265,25 @@ class KGlobalAccel : public QObject
 	void writeSettings(KConfig* config) const;
         // BCI merge with the one above
 	void writeSettings() const;
+    
+	/**
+	 * Enables or disables raw mode on an accelerator item.
+	 *
+	 * Raw mode means that KGlobalAccel will not ungrab the key
+	 * before emitting the signals. In raw mode, this is the 
+	 * responsibility of the caller. 
+	 *
+	 * Do not use this until you really really really know what you
+	 * are doing.
+	 *
+	 * Arguments:
+	 *
+	 *  @param action is the accelerator item action name.
+	 *	@param activate specifies whether raw mode for the 
+	 *	item should be enabled or disabled.
+	 */
+    	void setItemRawModeEnabled( const QString& action, bool activate );
+
 
 protected:
 	// Attempts to make a passive X server grab/ungrab of the specified key.

@@ -28,6 +28,8 @@
 #include <qdrawutil.h>
 #include <kdebug.h>
 
+#include <qstringlist.h>
+
 #include <kapp.h>
 #include <klocale.h>
 #include <kconfig.h>
@@ -49,10 +51,14 @@ const int XKeyPress = KeyPress;
 class  KGlobalAccelPrivate : public QWidget
 {
 public:
-    KGlobalAccelPrivate( KGlobalAccel* a)
-	:QWidget(), accel( a )
+    KGlobalAccelPrivate( KGlobalAccel* a, bool do_not_grab )
+	:QWidget(), accel( a ), rawModeList( 0 )
     {
-	kapp->installX11EventFilter( this );
+	if ( !do_not_grab )
+	    kapp->installX11EventFilter( this );
+    }
+    ~KGlobalAccelPrivate() {
+	delete rawModeList;
     }
 
 protected:
@@ -65,6 +71,7 @@ protected:
 private:
     KGlobalAccel* accel;
 public:
+    QStringList* rawModeList;
     static bool g_bKeyEventsEnabled;
 };
 
@@ -79,8 +86,7 @@ KGlobalAccel::KGlobalAccel(bool _do_not_grab)
 	aGroup = "Global Keys";
 	do_not_grab =_do_not_grab;
 	d = 0;
-	if ( !do_not_grab )
-	    d = new KGlobalAccelPrivate( this );
+	d = new KGlobalAccelPrivate( this, do_not_grab );
 }
 
 KGlobalAccel::KGlobalAccel(QWidget * parent, const char *name, bool _do_not_grab)
@@ -90,8 +96,7 @@ KGlobalAccel::KGlobalAccel(QWidget * parent, const char *name, bool _do_not_grab
 	aGroup = "Global Keys";
 	do_not_grab =_do_not_grab;
 	d = 0;
-	if ( !do_not_grab )
-	    d = new KGlobalAccelPrivate( this );
+	d = new KGlobalAccelPrivate( this, do_not_grab );
 }
 
 KGlobalAccel::~KGlobalAccel()
@@ -140,8 +145,8 @@ int KGlobalAccel::currentKey( const QString& action ) const
 
 int KGlobalAccel::defaultKey( const QString& action ) const
 {
-	KKeyEntry entry = aKeyMap[ action ];
-        return entry.aDefaultKeyCode;
+  KKeyEntry entry = aKeyMap[ action ];
+  return entry.aDefaultKeyCode;
 }
 
 void KGlobalAccel::disconnectItem( const QString& action,
@@ -511,7 +516,12 @@ bool KGlobalAccel::x11EventFilter( const XEvent *event_ ) {
     }
 
     if ( !QWidget::keyboardGrabber() ) {
-	XUngrabKeyboard(qt_xdisplay(), event_->xkey.time );
+	qDebug("KGlobalAccel:: received action %s", sConfigKey.latin1() );
+	if ( !d->rawModeList || !d->rawModeList->contains( sConfigKey ) ) {
+	    XUngrabKeyboard(qt_xdisplay(), event_->xkey.time );
+	} else {
+	    qDebug("in raw mode !" );
+	}
 	if ( !entry.receiver || !entry.bEnabled ) {
 		kdDebug(125) << "KGlobalAccel::x11EventFilter(): Key has been grabbed (" << KAccel::keySymXToString( keySymX, keyModX, false ) << ") which doesn't have an associated action or was disabled.\n";
 		return false;
@@ -536,6 +546,19 @@ bool KGlobalAccel::x11EventFilter( const XEvent *event_ ) {
     }
 
     return true;
+}
+
+
+void KGlobalAccel::setItemRawModeEnabled( const QString& action, bool activate )
+{
+    if ( !d->rawModeList )
+	d->rawModeList = new QStringList;
+    if ( activate ) {
+	if ( !d->rawModeList->contains( action ) )
+	    d->rawModeList->append( action );
+    } else {
+	d->rawModeList->remove( action );
+    }
 }
 
 /*****************************************************************************/
