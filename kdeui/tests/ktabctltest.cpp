@@ -28,7 +28,6 @@
 
 #include "ktabctl.h"
 #include "ktabctltest.h"
-#include "ktabctltest.h"
 
 QFont default_font("Helvetica", 12);
 

@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include "kpalette.h"
 #include "kledtest.h"
+#include <stdio.h>
 
 #include <qstringlist.h>
 

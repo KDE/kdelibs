@@ -6,7 +6,6 @@
 #include <kiconloader.h>
 #include <kiconloaderdialog.h>
 
-#include "kiconloadertestmain.h"
 #include <kstddirs.h>
 #include <kglobal.h>
 #include "kiconloadertestmain.h"
