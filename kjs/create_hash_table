@@ -98,10 +98,17 @@ sub calcTable() {
 	$size++;
       }
     }
+    #print STDERR "table[$h] = $i\n";
     $table[$h] = $i;
     $i++;
     $maxdepth = $depth if ( $depth > $maxdepth);
   }
+
+  # Ensure table is big enough (in case of undef entries at the end)
+  if ( $#table+1 < $size ) {
+    $#table = $size-1;
+  }
+  #print STDERR "After loop: size=$size table=".($#table+1)."\n";
 
   if ($findSize) {
     my $emptycount = 0;
@@ -110,12 +117,12 @@ sub calcTable() {
     }
     print STDERR "Hashsize: $hashsize  Total Size: $size Empty: $emptycount MaxDepth: $maxdepth Collisions: $collisions\n";
   }
-#  my $i = 0;
+#  my $debugtable = 0;
 #  foreach $entry (@table) {
-#    print "$i " . $entry;
-#    print " -> " . $links[$i] if (defined($links[$i]));
-#    print "\n";
-#    $i++;
+#    print STDERR "$debugtable " . (defined $entry ? $entry : '<undefined>');
+#    print STDERR " -> " . $links[$debugtable] if (defined($links[$debugtable]));
+#    print STDERR "\n";
+#    $debugtable++;
 #  }
 }
 
@@ -141,6 +148,7 @@ sub output() {
   print "\nnamespace KJS {\n";
   print "\nconst struct HashEntry ".$nameEntries."[] = {\n";
   my $i = 0;
+  #print STDERR "writing out table with ".($#table+1)." entries\n";
   foreach $entry (@table) {
     if (defined($entry)) {
       my $key = $keys[$entry];
