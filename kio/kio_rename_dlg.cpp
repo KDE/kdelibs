@@ -76,7 +76,7 @@ KIORenameDlg::KIORenameDlg(QWidget *parent, const char *_src, const char *_dest,
   }  else if ( _mode & M_OVERWRITE ) {
     lb = new QLabel( i18n("%1 named %2 already exists.\nDo you want to replace it with %3,\nor rename it?").arg(srcNewer ? s1 : s2).arg(dest).arg(src), this );
   }  else if ( !(_mode & M_OVERWRITE ) ) {
-    lb = new QLabel( i18n("%1 than %1 already exists.\nDo you want to rename the existing item?").arg(srcNewer ? s1 : s2).arg(src), this );
+    lb = new QLabel( i18n("%1 than %2 already exists.\nDo you want to rename the existing item?").arg(srcNewer ? s1 : s2).arg(src), this );
   } else
     assert( 0 );
   
