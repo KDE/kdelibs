@@ -409,6 +409,7 @@ void KDirListerCache::forgetDirs( KDirLister *lister )
 {
   kdDebug(7004) << k_funcinfo << lister << endl;
 
+  emit lister->clear();
   // clear lister->d->lstDirs before calling forgetDirs(), so that
   // it doesn't contain things that itemsInUse doesn't. When emitting
   // the canceled signals, lstDirs must not contain anything that
@@ -421,8 +422,6 @@ void KDirListerCache::forgetDirs( KDirLister *lister )
   {
     forgetDirs( lister, *it, false );
   }
-
-  emit lister->clear();
 }
 
 void KDirListerCache::forgetDirs( KDirLister *lister, const KURL& _url, bool notify )
@@ -1456,11 +1455,14 @@ void KDirListerCache::deleteDir( const KURL& dirUrl )
           else
           {
             bool treeview = kdl->d->lstDirs.count() > 1;
+            if ( !treeview )
+            {
+              emit kdl->clear();
+            }
             forgetDirs( kdl, deletedUrl, treeview );
             if ( !treeview )
             {
               kdl->d->lstDirs.clear();
-              emit kdl->clear();
             }
           }
         }
