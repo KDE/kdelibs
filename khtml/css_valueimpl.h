@@ -113,31 +113,41 @@ class CSSPrimitiveValueImpl : public CSSValueImpl
 public:
     CSSPrimitiveValueImpl();
     CSSPrimitiveValueImpl(int ident);
-
+    CSSPrimitiveValueImpl(int num, CSSValue::UnitTypes type);
+    CSSPrimitiveValueImpl(const DOMString &str, CSSValue::UnitTypes type);
+    CSSPrimitiveValueImpl(const Counter &c);
+    CSSPrimitiveValueImpl(const Rect &r);
+    CSSPrimitiveValueImpl(const RGBColor &rgb);
+    
     virtual ~CSSPrimitiveValueImpl();
 
     unsigned short primitiveType() const;
     void setFloatValue ( unsigned short unitType, float floatValue );
     float getFloatValue ( unsigned short unitType );
     void setStringValue ( unsigned short stringType, const DOM::DOMString &stringValue );
-    DOM::DOMString getStringValue (  );
-    Counter getCounterValue (  );
-    Rect getRectValue (  );
-    RGBColor getRGBColorValue (  );
+    DOM::DOMStringImpl *getStringValue (  );
+    Counter *getCounterValue (  );
+    Rect *getRectValue (  );
+    RGBColor *getRGBColorValue (  );
 
     virtual bool isPrimitiveValue() { return true; }
     virtual unsigned short valueType() const;
 
-    int getIdent() { return m_ident; }
+    int getIdent();
 
     virtual bool parseString( const DOMString &string );
 
 protected:
-    int m_ident;
     int m_type;
-    DOMString value;
+    union {
+	int ident;
+	float num;
+	DOM::DOMStringImpl *string;
+	Counter *counter;
+	Rect *rect;
+	RGBColor *rgbcolor;
+    } m_value;
 };
-
 // ------------------------------------------------------------------------------
 
 }; // namespace

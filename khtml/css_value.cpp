@@ -250,7 +250,8 @@ void CSSPrimitiveValue::setStringValue( unsigned short stringType, const DOMStri
 
 DOMString CSSPrimitiveValue::getStringValue(  )
 {
-    //if(!impl) return 0;
+    if(!impl) return 0;
+    
     //return ((CSSPrimitiveValueImpl *)impl)->getStringValue(  );
 }
 

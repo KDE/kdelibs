@@ -27,6 +27,7 @@
 #include "css_parser.h"
 #include "dom_exception.h"
 #include "dom_string.h"
+#include "dom_stringimpl.h"
 
 using namespace DOM;
 
@@ -156,51 +157,125 @@ unsigned short CSSValueListImpl::valueType() const
 CSSPrimitiveValueImpl::CSSPrimitiveValueImpl()
     : CSSValueImpl()
 {
-    m_ident = 0;
     m_type = 0;
 }
 
 CSSPrimitiveValueImpl::CSSPrimitiveValueImpl(int ident)
     : CSSValueImpl()
 {
-    m_ident = ident;
+    m_value.ident = ident;
     m_type = CSSPrimitiveValue::CSS_IDENT;
+}
+
+CSSPrimitiveValueImpl::CSSPrimitiveValueImpl(int num, CSSValue::UnitTypes type)
+{
+    m_value.num = num;
+    m_type = type;
+}
+
+CSSPrimitiveValueImpl::CSSPrimitiveValueImpl(const DOMString &str, CSSValue::UnitTypes type)
+{
+    m_value.string = str.implementation();
+    m_value.string->ref();
+    m_type = type;
+}
+
+CSSPrimitiveValueImpl::CSSPrimitiveValueImpl(const Counter &c)
+{
+    m_value.counter = new Counter(c);
+    m_type = CSSPrimitiveValue::CSS_COUNTER;
+}
+
+CSSPrimitiveValueImpl::CSSPrimitiveValueImpl(const Rect &r)
+{
+    m_value.rect = new Rect(r);
+    m_type = CSSPrimitiveValue::CSS_RECT;
+}
+
+CSSPrimitiveValueImpl::CSSPrimitiveValueImpl(const RGBColor &rgb)
+{
+    m_value.rgbcolor = new RGBColor(rgb);
+    m_type = CSSPrimitiveValue::CSS_RGBCOLOR;
 }
 
 CSSPrimitiveValueImpl::~CSSPrimitiveValueImpl()
 {
+    if(m_type < CSSPrimitiveValue::CSS_STRING || m_type != CSSPrimitiveValue::CSS_IDENT)
+    { }
+    else if(m_type < CSSPrimitiveValue::CSS_COUNTER)
+	m_value.string->deref();
+    else if(m_type == CSSPrimitiveValue::CSS_COUNTER)
+	delete m_value.counter;
+    else if(m_type == CSSPrimitiveValue::CSS_RECT)
+	delete m_value.rect;
+    else if(m_type == CSSPrimitiveValue::CSS_RGBCOLOR)
+	delete m_value.rgbcolor;
 }
 
 unsigned short CSSPrimitiveValueImpl::primitiveType() const
 {
+    return m_type;
 }
 
 void CSSPrimitiveValueImpl::setFloatValue( unsigned short unitType, float floatValue )
 {
+    // ### check if property supports this type
+    if(m_type > CSSPrimitiveValue::CSS_DIMENSION) throw CSSException(CSSException::SYNTAX_ERR);
+    //if(m_type > CSSPrimitiveValue::CSS_DIMENSION) throw DOMException(DOMException::INVALID_ACCESS_ERR);
+    m_value.num = floatValue;
+    m_type = unitType;
 }
 
 float CSSPrimitiveValueImpl::getFloatValue( unsigned short unitType )
 {
+    if(m_type > CSSPrimitiveValue::CSS_DIMENSION) throw CSSException(CSSException::SYNTAX_ERR);
+    //if(m_type > CSSPrimitiveValue::CSS_DIMENSION) throw DOMException(DOMException::INVALID_ACCESS_ERR);
+    return m_value.num;
 }
 
 void CSSPrimitiveValueImpl::setStringValue( unsigned short stringType, const DOMString &stringValue )
 {
+    //if(m_type < CSSPrimitiveValue::CSS_STRING) throw DOMException(DOMException::INVALID_ACCESS_ERR);
+    //if(m_type > CSSPrimitiveValue::CSS_ATTR) throw DOMException(DOMException::INVALID_ACCESS_ERR);
+    if(m_type < CSSPrimitiveValue::CSS_STRING) throw CSSException(CSSException::SYNTAX_ERR);
+    if(m_type > CSSPrimitiveValue::CSS_ATTR) throw CSSException(CSSException::SYNTAX_ERR);
+    if(stringType != CSSPrimitiveValue::CSS_IDENT)
+    {
+	m_value.string = stringValue.implementation();
+	m_value.string->ref();
+	m_type = stringType;
+    }
+    // ### parse ident
 }
 
-DOMString CSSPrimitiveValueImpl::getStringValue(  )
+DOMStringImpl *CSSPrimitiveValueImpl::getStringValue(  )
 {
+    if(m_type < CSSPrimitiveValue::CSS_STRING) return 0;
+    if(m_type > CSSPrimitiveValue::CSS_ATTR) return 0;
+    if(m_type == CSSPrimitiveValue::CSS_IDENT)
+    {
+	// ### 
+	return 0;
+    }
+    return m_value.string;
 }
 
-Counter CSSPrimitiveValueImpl::getCounterValue(  )
+Counter *CSSPrimitiveValueImpl::getCounterValue(  )
 {
+    if(m_type != CSSPrimitiveValue::CSS_COUNTER) return 0;
+    return m_value.counter;
 }
 
-Rect CSSPrimitiveValueImpl::getRectValue(  )
+Rect *CSSPrimitiveValueImpl::getRectValue(  )
 {
+    if(m_type != CSSPrimitiveValue::CSS_RECT) return 0;
+    return m_value.rect;
 }
 
-RGBColor CSSPrimitiveValueImpl::getRGBColorValue(  )
+RGBColor *CSSPrimitiveValueImpl::getRGBColorValue(  )
 {
+    if(m_type != CSSPrimitiveValue::CSS_RGBCOLOR) return 0;
+    return m_value.rgbcolor;
 }
 
 unsigned short CSSPrimitiveValueImpl::valueType() const
@@ -210,5 +285,11 @@ unsigned short CSSPrimitiveValueImpl::valueType() const
 
 bool CSSPrimitiveValueImpl::parseString( const DOMString &string )
 {
+    // ###
 }
 
+int CSSPrimitiveValueImpl::getIdent()
+{
+    if(m_type != CSSPrimitiveValue::CSS_IDENT) return 0;
+    return m_value.ident;
+}
