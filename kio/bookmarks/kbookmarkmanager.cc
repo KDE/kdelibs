@@ -145,7 +145,7 @@ KBookmarkManager::KBookmarkManager( const QString & bookmarksFile, bool bImportD
             importDesktopFiles();
         m_docIsLoaded = true;
     }
-    
+
     connectDCOPSignal(0, objId(), "bookmarksChanged(QString)", "notifyChanged(QString)", false);
     connectDCOPSignal(0, objId(), "bookmarkConfigChanged()", "notifyConfigChanged()", false);
 }
@@ -163,7 +163,7 @@ KBookmarkManager::KBookmarkManager( )
     QDomElement topLevel = m_doc.createElement("xbel");
     m_doc.appendChild( topLevel );
     m_doc.insertBefore( m_doc.createProcessingInstruction( "xml", PI_DATA), topLevel );
-    
+
     // TODO - enable this via some sort of api and fix the above DCOPObject script somehow
 #if 0
     connectDCOPSignal(0, objId(), "bookmarksChanged(QString)", "notifyChanged(QString)", false);
@@ -324,7 +324,7 @@ bool KBookmarkManager::saveAs( const QString & filename, bool toolbarCache ) con
 {
     kdDebug(7043) << "KBookmarkManager::save " << filename << endl;
 
-    // Save the bookmark toolbar folder for quick loading 
+    // Save the bookmark toolbar folder for quick loading
     // but only when it will actually make things quicker
     const QString cacheFilename = filename + QString::fromLatin1(".tbcache");
     if(toolbarCache && !root().isToolbarGroup())
@@ -344,9 +344,9 @@ bool KBookmarkManager::saveAs( const QString & filename, bool toolbarCache ) con
     {
         QFile::remove( cacheFilename );
     }
-    
+
     KSaveFile file( filename );
-    if ( file.status() == 0 ) 
+    if ( file.status() == 0 )
     {
         file.backupFile( file.name(), QString::null, ".bak" );
         QCString cstr;
@@ -366,7 +366,7 @@ bool KBookmarkManager::saveAs( const QString & filename, bool toolbarCache ) con
                         .arg(filename).arg(strerror(file.status()));
         if (qApp->type() != QApplication::Tty)
             KMessageBox::error( 0L, error );
-        else 
+        else
             kdError() << error << endl;
     }
     hadSaveError = true;
@@ -456,8 +456,8 @@ KBookmark KBookmarkManager::findByAddress( const QString & address, bool toleran
     return result;
  }
 
-static QString pickUnusedTitle( KBookmarkGroup parentBookmark, 
-                                const QString &title, const QString &url 
+static QString pickUnusedTitle( KBookmarkGroup parentBookmark,
+                                const QString &title, const QString &url
 ) {
     // If this title is already used, we'll try to find something unused.
     KBookmark ch = parentBookmark.first();
@@ -490,9 +490,9 @@ static QString pickUnusedTitle( KBookmarkGroup parentBookmark,
     return uniqueTitle;
 }
 
-KBookmarkGroup KBookmarkManager::addBookmarkDialog( 
+KBookmarkGroup KBookmarkManager::addBookmarkDialog(
                      const QString & _url, const QString & _title,
-                     const QString & _parentBookmarkAddress 
+                     const QString & _parentBookmarkAddress
 ) {
     QString url = _url;
     QString title = _title;
@@ -507,7 +507,7 @@ KBookmarkGroup KBookmarkManager::addBookmarkDialog(
     if ( title.isEmpty() )
         title = url;
 
-    if ( KBookmarkSettings::self()->m_advancedaddbookmark) 
+    if ( KBookmarkSettings::self()->m_advancedaddbookmark)
     {
         KBookmarkEditDialog dlg( title, url, this, KBookmarkEditDialog::InsertionMode );
         if ( dlg.exec() != KDialogBase::Accepted )
@@ -523,7 +523,7 @@ KBookmarkGroup KBookmarkManager::addBookmarkDialog(
 
     QString uniqueTitle = pickUnusedTitle( parentBookmark, title, url );
     if ( !uniqueTitle.isNull() )
-        parentBookmark.addBookmark( this, uniqueTitle, url );
+        parentBookmark.addBookmark( this, uniqueTitle, KURL( url ));
 
     return parentBookmark;
 }
@@ -538,7 +538,7 @@ void KBookmarkManager::emitChanged( KBookmarkGroup & group )
     QByteArray data;
     QDataStream ds( data, IO_WriteOnly );
     ds << group.address();
-            
+
     emitDCOPSignal("bookmarksChanged(QString)", data);
 
     // We do get our own broadcast, so no need for this anymore
@@ -599,7 +599,7 @@ void KBookmarkManager::setShowNSBookmarks( bool show )
     m_showNSBookmarks = show;
     if (this != userBookmarksManager())
        return;
-    KBookmarkMenu::DynMenuInfo info 
+    KBookmarkMenu::DynMenuInfo info
        = KBookmarkMenu::showDynamicBookmarks("netscape");
     info.show = show;
     KBookmarkMenu::setDynamicBookmarks("netscape", info);
@@ -692,7 +692,7 @@ KBookmarkManager* KBookmarkManager::userBookmarksManager()
 
 KBookmarkSettings* KBookmarkSettings::s_self = 0;
 
-void KBookmarkSettings::readSettings() 
+void KBookmarkSettings::readSettings()
 {
    KConfig config("kbookmarkrc", false, false);
    config.setGroup("Bookmarks");
@@ -706,7 +706,7 @@ void KBookmarkSettings::readSettings()
    s_self->m_filteredtoolbar = config.readBoolEntry("FilteredToolbar", false);
 }
 
-KBookmarkSettings *KBookmarkSettings::self() 
+KBookmarkSettings *KBookmarkSettings::self()
 {
    if (!s_self)
    {

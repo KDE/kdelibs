@@ -50,16 +50,16 @@ void KBookmarkDomBuilder::connectImporter(const QObject *importer) {
 void KBookmarkDomBuilder::newBookmark(
    const QString &text, const QCString &url, const QString &additionalInfo
 ) {
-   KBookmark bk = m_stack.top().addBookmark( 
-                                    m_manager, text, 
-                                    QString::fromUtf8(url),
+   KBookmark bk = m_stack.top().addBookmark(
+                                    m_manager, text,
+                                    KURL( QString::fromUtf8(url), 106 /*utf8*/ ),
                                     QString::null, false);
    // store additional info
    bk.internalElement().setAttribute("netscapeinfo", additionalInfo);
 }
 
-void KBookmarkDomBuilder::newFolder( 
-   const QString & text, bool open, const QString & additionalInfo 
+void KBookmarkDomBuilder::newFolder(
+   const QString & text, bool open, const QString & additionalInfo
 ) {
    // we use a qvaluelist so that we keep pointers to valid objects in the stack
    KBookmarkGroup gp = m_stack.top().createNewFolder(m_manager, text, false);
