@@ -930,7 +930,7 @@ int main( int argc, char **argv )
         values.append( (*itChoice).name );
       }
       if ( globalEnums ) {
-        h << "    enum { " << values.join( ", " ) << ", COUNT };" << endl;
+        h << "    enum { " << values.join( ", " ) << " };" << endl;
       } else {
         h << "    class " << enumName(e->name()) << endl;
         h << "    {" << endl;
