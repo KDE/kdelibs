@@ -506,8 +506,8 @@ void RenderPartObject::close()
 	  child = child->nextSibling();
       }
   }
-  if ( url.isEmpty() )
-    return; //ooops (-:
+  //if ( url.isEmpty() )
+  //return; //ooops (-:
 
   static_cast<KHTMLView *>(m_view)->part()->requestObject( this, url, m_obj->serviceType, params );
 
