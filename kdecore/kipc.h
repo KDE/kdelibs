@@ -46,6 +46,10 @@
 class KIPC
 {
 public:
+    /**
+     * A identifier for messages. Messages below UserMessage are system
+     * messages, messages above can be defined by the user.
+     */
     enum Message { PaletteChanged=0, FontChanged, StyleChanged,
                    BackgroundChanged, SettingsChanged, IconChanged, ToolbarStyleChanged,
                    ClipboardConfigChanged,
