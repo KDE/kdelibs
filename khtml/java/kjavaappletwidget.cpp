@@ -188,6 +188,16 @@ void KJavaAppletWidget::swallowWindow( WId w )
    
    KWM::prepareForSwallowing( w );
    
+#warning FIXME, KWin guru! Remove this ugly sleep()
+   
+   // NASTY WORKAROUND:
+   // KWin reparents the window back to the root window if 
+   // we do not sleep this second. Somehow this method is called 
+   // before KWin is done with window mapping. As a result Java 
+   // window ends up being outside of the khtml window.
+   // The problem never happens under KWM.
+   sleep(1);
+
    XReparentWindow( qt_xdisplay(), window, winId(), 0, 0 );
    XMapRaised( qt_xdisplay(), window );
    XSync( qt_xdisplay(), False );

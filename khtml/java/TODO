@@ -1,7 +1,6 @@
 - Use of QGuardedPointer
 - LiveScript support
 - Custom applet types
-- Support for JAR and ZIP files of classes
 - Better support for Java 2
   - Use a factory to create the classloader and security managers
   - Use URLClassLoader
