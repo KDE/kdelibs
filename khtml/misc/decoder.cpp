@@ -261,7 +261,7 @@ QString Decoder::decode(const char *data, int len)
             // we still don't have an encoding, and are in the head
             // the following tags are allowed in <head>:
             // SCRIPT|STYLE|META|LINK|OBJECT|TITLE|BASE
-
+            int invalid = 0; // invalid head tag count
 #ifdef APPLE_CHANGES
             const char *ptr = buffer.latin1();
             const char *pEnd = ptr + buffer.length();
@@ -377,12 +377,23 @@ QString Decoder::decode(const char *data, int len)
                     case 0:
                     case (0 + ID_CLOSE_TAG ):
                         break;
-                    default:
+                    case ID_BODY:
+                    case (ID_HEAD+ID_CLOSE_TAG):
                         body = true;
 #ifdef DECODE_DEBUG
 			kdDebug( 6005 ) << "Decoder: no charset found. Id=" << id << endl;
 #endif
                         goto found;
+                    default:
+                        // Invalid tag in head. Let's be a little tolerant
+                        invalid++;
+                        if (invalid > 2)  {
+                            body = true;
+#ifdef DECODE_DEBUG
+                            kdDebug( 6005 ) << "Decoder: no charset found. Id=" << id << endl;
+#endif
+                            goto found;
+                        }
                     }
                 }
                 else
