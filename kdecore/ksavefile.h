@@ -41,6 +41,11 @@ class KSaveFilePrivate;
 class KSaveFile
 {
 public:
+   /**
+    * Creates a new KSaveFile with the given file name.
+    * @param filename the path of the file
+    * @param mode the mode of the file (see chmod(1))
+    */
    KSaveFile(const QString &filename, int mode = 0666 );
 
    /**
@@ -57,41 +62,54 @@ public:
     *
     * You may check the status after closing the file to verify that
     * the file has indeed been written correctly.
+    * @return the errno status, 0 means ok
     **/
    int status() const
    	{ return mTempFile.status(); }
 
    /**
     * The name of the file as passed to the constructor.
+    * @return The name of the file, or QString::null if opening the
+    *         file has failed
     **/
    QString name() const;
 
    /**
     * An integer file descriptor open for writing to the file.
+    * @return The file descriptor, or a negative number if opening
+    *         the temporary file failed
     **/
    int handle()	const
    	{ return mTempFile.handle(); }
 
    /**
     * A FILE* stream open for writing to the file.
+    * @return FILE* stream open for writing to the file, or 0
+    *         if opening the temporary file failed
     **/
    FILE *fstream()
    	{ return mTempFile.fstream(); }
 
    /**
     * A QFile* open for writing to the file.
+    * @return A QFile open for writing to the file, or 0 if 
+    *         opening the temporary file failed.
     **/
    QFile *file()
    	{ return mTempFile.file(); }
 
    /**
     * A QTextStream* open for writing to the file.
+    * @return A QTextStream that is open for writing to the file, or 0
+    *         if opening the temporary file failed
     **/
    QTextStream *textStream()
    	{ return mTempFile.textStream(); }
 
    /**
     * A QDataStream* open for writing to the file.
+    * @return A QDataStream that is open for writing to the file, or 0 
+    *         if opening the file failed
     **/
    QDataStream *dataStream()
    	{ return mTempFile.dataStream(); }
@@ -106,6 +124,7 @@ public:
     * Closes the file and makes the changes definitive.
     * Returns 'true' is successful, or 'false' if an error has occured.
     * See status() for details about errors.
+    * @return true if successful, or false if an error has occured.
     **/
    bool close();
 private:
