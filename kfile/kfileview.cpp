@@ -38,12 +38,15 @@ QDir::SortSpec KFileView::defaultSortSpec = static_cast<QDir::SortSpec>(QDir::Na
 KFileView::KFileView()
 {
     reversed   = false;        // defaults
+    itemListDirty = true;
     mySortMode = Increasing;
     mySorting  = KFileView::defaultSortSpec;
 
     sig = new KFileViewSignaler();
     sig->setName("view-signaller");
 
+    itemList = 0L;
+    selectedList = 0L;
     filesNumber = 0;
     dirsNumber = 0;
     first = 0;
@@ -57,6 +60,7 @@ KFileView::KFileView()
 KFileView::~KFileView()
 {
     delete sig;
+    delete itemList;
 }
 
 void KFileView::setOperator(QObject *ops)
@@ -190,6 +194,9 @@ void KFileView::insertSorted(KFileViewItem *tfirst, uint counter)
 
 KFileViewItem *KFileView::mergeLists(KFileViewItem *list1, KFileViewItem *list2)
 {
+    // this is the central place where we know that our itemList is dirty
+    itemListDirty = true;
+
     if (!list1)
 	return list2;
 
@@ -266,6 +273,7 @@ void KFileView::clear()
     filesNumber = 0;
     dirsNumber = 0;
     first = 0;
+    itemListDirty = true;
 }
 
 // this implementation is from the jdk demo Sorting
@@ -422,6 +430,47 @@ void KFileView::setCurrentItem(const QString &item,
     }
 
     warning("setCurrentItem: no match found.");
+}
+
+const KFileViewItemList * KFileView::items() const
+{
+    if ( itemListDirty ) {
+	if ( !itemList )
+	    itemList = new KFileViewItemList;
+
+	itemListDirty = false;
+	itemList->clear();
+	if ( first ) {
+	    KFileViewItem *item = 0L;
+	    for (item = first; item; item = item->next())
+		itemList->append( item );
+	}
+    }
+    return itemList;
+}
+
+
+const KFileViewItemList * KFileView::selectedItems() const
+{
+    if ( !selectedList )
+	selectedList = new KFileViewItemList;
+
+    selectedList->clear();
+
+    if ( first ) {
+	KFileViewItem *item = 0L;
+	for (item = first; item; item = item->next())
+	    if ( isSelected( item ) )
+		selectedList->append( item );
+    }
+    return selectedList;
+}
+
+void KFileView::selectAll()
+{
+    KFileViewItem *item = 0L;
+    for (item = first; item; item = item->next())
+	highlightItem( item );
 }
 
 void KFileView::setSelectMode( SelectionMode sm )

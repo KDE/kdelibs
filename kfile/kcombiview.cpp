@@ -141,6 +141,11 @@ void KCombiView::clearSelection()
     right->clearSelection();
 }
 
+bool KCombiView::isSelected( const KFileViewItem *item ) const
+{
+    return left->isSelected( item ) || right->isSelected( item );
+}
+
 void KCombiView::setSelectMode( KFileView::SelectionMode sm )
 {
     left->setSelectMode( sm );

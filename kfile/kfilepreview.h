@@ -59,9 +59,10 @@ public:
 
     virtual void clear();
     virtual void clearSelection();
+    virtual bool isSelected( const KFileViewItem * ) const;
 
     void setPreviewWidget(const QWidget *w, const KURL &u);
-    
+
 signals:
     void showPreview(const KURL &);
 

@@ -48,6 +48,7 @@ public:
 
     virtual void setSelectMode( KFileView::SelectionMode sm );
 
+    virtual bool isSelected( const KFileViewItem * ) const;
     virtual void insertSorted(KFileViewItem *first, uint counter);
     virtual void clear();
     virtual void clearSelection();

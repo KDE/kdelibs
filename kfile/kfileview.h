@@ -112,7 +112,7 @@ public:
 				const KFileViewItem * entry = 0);
 
     /**
-     * clears all lists and calls clear
+     * clears the view and and all item lists
       */
     virtual void clear();
 
@@ -179,17 +179,17 @@ public:
     bool isReversed() const { return reversed; }
 
     /**
-      * returns the number of added files
+      * @returns returns the number of dirs and files
       **/
     uint count() const { return filesNumber + dirsNumber; }
 
     /**
-      * the number of files.
+      * @returns the number of files.
       **/
     uint numFiles() const { return filesNumber; }
 
     /**
-      * the number of directories
+      * @returns the number of directories
       **/
     uint numDirs() const { return dirsNumber; }
 
@@ -205,7 +205,7 @@ public:
      * @see #setViewName
      */
     QString viewName() { return viewname; }
-    
+
     /**
      * Sets the name of the view, which could be displayed somewhere.
      * E.g. "Image Preview".
@@ -232,24 +232,51 @@ public:
      * view.
      */
     virtual void clearSelection() = 0;
+    
+    /**
+     * Selects all items. You may want to override this, if you can implement
+     * it more efficiently than calling highlightItem() with every item.
+     * This works only in Multiselection mode of course.
+     */
+    virtual void selectAll();
 
+    /**
+     * @returns whether the given item is currently selected.
+     * Must be implemented by the view.
+     */
+    virtual bool isSelected( const KFileViewItem * ) const = 0;
+    
+    /**
+     * @returns all currently highlighted items.
+     */
+    const KFileViewItemList * selectedItems() const;
+
+    /**
+     * @returns all items currently available
+     */
+    const KFileViewItemList * items() const;
+    
     virtual void insertSorted(KFileViewItem *first, uint counter);
 
 protected:
 
     /**
-      * set the highlighted item to index. This function must be implemented
-      * by the view
+      * Tells the view that it should highlight the item. 
+      * This function must be implemented by the view
       **/
     virtual void highlightItem(const KFileViewItem *) = 0;
 
     /**
-      * sets the value for the selected file and emits the correct
-      * signal (depending on the type of the entry)
+      * Call this method when an item is selected (depends on single click /
+      * double click configuration). Emits the appropriate signal.
       **/
     void select( const KFileViewItem *entry);
 
-    void highlight( const KFileViewItem *);
+    /**
+     * emits the highlighted signal for item. Call this in your subclass, 
+     * whenever the selection changes.
+     */
+    void highlight( const KFileViewItem *item);
 
     /**
      * compares two items in the current context (sortMode and others)
@@ -298,6 +325,8 @@ private:
     SelectionMode selection_mode;
 
     KFileViewItem *first;
+    mutable KFileViewItemList *itemList, *selectedList;
+    mutable  bool itemListDirty;
 };
 
 #endif // KFILEINFOLISTWIDGET_H

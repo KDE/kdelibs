@@ -123,8 +123,6 @@ void KFileIconView::highlightItem( const KFileViewItem *info )
 
     // we can only hope that this casts works
     KFileIconViewItem *item = (KFileIconViewItem*)info->viewItem( this );
-    if ( !item )
-	return;
 
     if ( item != currentItem() ) {
         QIconView::setCurrentItem( item );
@@ -186,6 +184,14 @@ void KFileIconView::setSelectMode( KFileView::SelectionMode sm )
 	QIconView::setSelectionMode( QIconView::Extended );
 }
 
+bool KFileIconView::isSelected( const KFileViewItem *i ) const
+{
+    if ( !i )
+	return false;
+    KFileIconViewItem *item = (KFileIconViewItem*)i->viewItem( this );
+    return item->isSelected();
+
+}
 
 void KFileIconView::updateView( bool b )
 {
@@ -202,12 +208,10 @@ void KFileIconView::updateView( bool b )
 
 void KFileIconView::updateView( const KFileViewItem *i )
 {
-    KFileViewItem *it = (KFileViewItem*)i->viewItem( this );
-    if ( !it )
+    if ( !i )
 	return;
-    KFileIconViewItem *item = (KFileIconViewItem*)it;
-    if ( item )
-	item ->setPixmap( item->fileInfo()->pixmap( myIconSize ) );
+    KFileIconViewItem *item = (KFileIconViewItem*)i->viewItem( this );
+    item ->setPixmap( item->fileInfo()->pixmap( myIconSize ) );
 }
 
 #include "kfileiconview.moc"

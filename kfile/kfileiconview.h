@@ -68,7 +68,8 @@ public:
 
     virtual void insertItem( KFileViewItem *i );
     virtual void clearSelection();
-    
+    virtual bool isSelected(const KFileViewItem *i) const;
+
     void setIconSize( KIconLoader::Size size );
     KIconLoader::Size iconSize() const { return myIconSize; }
 

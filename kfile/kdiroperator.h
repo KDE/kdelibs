@@ -76,7 +76,6 @@ class KDirOperator : public QWidget {
     int numDirs() const;
     int numFiles() const;
 
-
  protected:
     void setFileReader( KFileReader *reader );
     void resizeEvent( QResizeEvent * );

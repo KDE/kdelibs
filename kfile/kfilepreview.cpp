@@ -105,6 +105,11 @@ void KFilePreview::clearSelection() {
     left->clearSelection();
 }
 
+bool KFilePreview::isSelected( const KFileViewItem *i ) const
+{
+    return left->isSelected( i );
+}
+
 void KFilePreview::setSelectMode(KFileView::SelectionMode sm) {
     left->setSelectMode( sm );
 }

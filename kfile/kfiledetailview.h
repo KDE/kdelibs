@@ -65,6 +65,7 @@ public:
     virtual void updateView( bool );
     virtual void updateView(const KFileViewItem*);
     virtual void clearSelection();
+    virtual bool isSelected(const KFileViewItem *i) const;
 
 protected:
     virtual void highlightItem(const KFileViewItem *);

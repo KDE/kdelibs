@@ -32,7 +32,7 @@ KFileDetailView::KFileDetailView(QWidget *parent, const char *name)
     : KListView(parent, name), KFileView()
 {
     setViewName( i18n("Detailed View") );
-    
+
     addColumn( i18n( "Name" ) );
     addColumn( i18n( "Size" ) );
     addColumn( i18n( "Permissions" ) );
@@ -70,8 +70,6 @@ void KFileDetailView::highlightItem( const KFileViewItem *info )
 
     // we can only hope that this casts works
     KFileListViewItem *item = (KFileListViewItem*)info->viewItem( this );
-    if ( !item )
-	return;
 
     if ( item != currentItem() ) {
         QListView::setCurrentItem( item );
@@ -144,6 +142,15 @@ void KFileDetailView::setSelectMode( KFileView::SelectionMode sm )
     */
 }
 
+bool KFileDetailView::isSelected( const KFileViewItem *i ) const
+{
+    if ( !i )
+	return false;
+    KFileListViewItem *item = (KFileListViewItem*) i->viewItem( this );
+    return item->isSelected();
+}
+
+
 void KFileDetailView::updateView( bool b )
 {
     if ( !b )
@@ -157,15 +164,11 @@ void KFileDetailView::updateView( bool b )
 
 void KFileDetailView::updateView( const KFileViewItem *i )
 {
-    KFileViewItem *it= (KFileViewItem*)i->viewItem( this );
-    if ( !it )
+    if ( !i )
 	return;
-    KFileListViewItem *item = (KFileListViewItem*)it;
-    if ( item ) {
-	item->setPixmap( 0, i->pixmap() );
-	item->setText( 2, i->access() );
-    }
+    KFileListViewItem *item = (KFileListViewItem*) i->viewItem( this );
+    item->setPixmap( 0, i->pixmap() );
+    item->setText( 2, i->access() );
 }
 
 #include "kfiledetailview.moc"
-
