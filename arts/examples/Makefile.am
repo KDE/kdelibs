@@ -73,4 +73,4 @@ aggregation.cc: aggregation.h
 playtofile.cc: playtofile.h
 
 playtofile.h: $(srcdir)/playtofile.idl $(MCOPIDL)
-	$(MCOPIDL) -I$(includedir)/arts $(srcdir)/playtofile.idl
+	$(MCOPIDL) -I$(top_srcdir)/arts/flow $(srcdir)/playtofile.idl
