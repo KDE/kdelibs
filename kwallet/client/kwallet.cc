@@ -24,6 +24,8 @@
 #include <kdeversion.h>
 #include <dcopclient.h>
 #include <dcopref.h>
+#include <qpopupmenu.h>
+#include <qapplication.h>
 
 #include <assert.h>
 
@@ -165,22 +167,19 @@ Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
 		return wallet;
 	}
 
+        // avoid deadlock if the app has some popup open (#65978/#71048)
+        while( QWidget* widget = qApp->activePopupWidget())
+            widget->close();
+
 	bool isPath = ot == Path;
 	DCOPReply r;
 
-#if KDE_IS_VERSION(3,1,90)
-	if (isPath) {
-		r = DCOPRef("kded", "kwalletd").callExt("openPath", DCOPRef::UseEventLoop, -1, name, uint(w));
-	} else {
-		r = DCOPRef("kded", "kwalletd").callExt("open", DCOPRef::UseEventLoop, -1, name, uint(w));
-	}
-#else
 	if (isPath) {
 		r = DCOPRef("kded", "kwalletd").call("openPath", name, uint(w));
 	} else {
 		r = DCOPRef("kded", "kwalletd").call("open", name, uint(w));
 	}
-#endif
+
 	if (r.isValid()) {
 		int drc = -1;
 		r.get(drc);
