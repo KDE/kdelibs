@@ -1,6 +1,9 @@
 /* $Id$
  *
  * $Log$
+ * Revision 1.6  1997/07/18 05:49:15  ssk
+ * Taj: All kdecore doc now in javadoc format (hopefully).
+ *
  * Revision 1.5  1997/05/08 22:53:15  kalle
  * Kalle:
  * KPixmap gone for good
@@ -96,6 +99,7 @@
   */
 // For Offix internal use only
 #define DndEND          8
+  Q_OBJECT
 #define DndURL          128
   /// Constructor
   /**
@@ -243,6 +247,7 @@ signals:
  */
   int acceptType;
 
+/**
 * If 'dndType' is URL, then all URLs in 'dndData' are stored here.
   /// Constructor.
   /** Constructor. */
