@@ -97,7 +97,7 @@ static KService::Ptr locateModule(const QCString& module)
     KService::Ptr service = KService::serviceByStorageId( path );
     if (!service)
     {
-        kdWarning() << "Could not find module '" << module << "'." << endl;
+        kdWarning(780) << "Could not find module '" << module << "'." << endl;
         return 0;
     }
 
@@ -145,7 +145,7 @@ KCMShellMultiDialog::KCMShellMultiDialog( int dialogFace, const QString& caption
 
 void KCMShellMultiDialog::activate( QCString asn_id )
 {
-    kdDebug() << k_funcinfo << endl;
+    kdDebug(780) << k_funcinfo << endl;
 
     KStartupInfo::setNewStartupId( this, asn_id );
 }

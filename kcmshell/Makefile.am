@@ -18,7 +18,7 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 # 
 
-AM_CPPFLAGS = $(all_includes)
+AM_CPPFLAGS = -I$(top_srcdir)/kutils $(all_includes)
 METASOURCES = AUTO
 
 lib_LTLIBRARIES = 
@@ -26,10 +26,10 @@ bin_PROGRAMS =
 kdeinit_LTLIBRARIES = kcmshell.la
 
 kcmshell_la_SOURCES = main.cpp main.skel
-kcmshell_la_LIBADD = $(LIB_KDEUI) $(LIB_KUTILS)
+kcmshell_la_LIBADD = ../kutils/libkutils.la
 kcmshell_la_LDFLAGS = $(all_libraries) -module -avoid-version
 
-noinst_HEADERS=main.h
+noinst_HEADERS = main.h
 
 messages: rc.cpp
 	$(XGETTEXT) *.cpp -o $(podir)/kcmshell.pot
