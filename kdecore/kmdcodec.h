@@ -352,6 +352,7 @@ private:
   static const unsigned int maxQPLineLength;
 };
 
+class KMD5Private;
 /**
  * Provides an easy to use C++ implementation of RSA's
  * MD5 algorithm.
@@ -565,7 +566,6 @@ private:
   Digest m_digest;
   bool m_finalized;
 
-  struct KMD5Private;
   KMD5Private* d;
 };
 #endif

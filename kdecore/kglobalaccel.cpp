@@ -83,4 +83,7 @@ bool KGlobalAccel::writeSettings( KConfigBase* pConfig ) const
 bool KGlobalAccel::useFourModifierKeys()
 	{ return KAccelAction::useFourModifierKeys(); }
 
+void KGlobalAccel::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
 #include <kglobalaccel.moc>

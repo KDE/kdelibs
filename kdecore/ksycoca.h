@@ -140,6 +140,8 @@ protected:
    const char *m_sycoca_mmap;
    Q_UINT32 m_timeStamp;
 
+protected:
+  virtual void virtual_hook( int id, void* data );
 private:
    KSycocaPrivate *d;
 };

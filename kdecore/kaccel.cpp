@@ -409,5 +409,8 @@ QString KAccel::findKey( int key ) const
 }
 #endif // !KDE_NO_COMPAT
 
+void KAccel::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
 #include <kaccel.moc>
 #include <kaccelprivate.moc>

@@ -456,9 +456,12 @@ protected:
 private:
     void update(unsigned long);
     void setSupported(unsigned long);
-
-    NETRootInfoPrivate *p;
     Role role;
+
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
+    NETRootInfoPrivate *p;
 };
 
 
@@ -704,9 +707,12 @@ protected:
 
 private:
     void update(unsigned long);
-
-    NETWinInfoPrivate *p;
     Role role;
+
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
+    NETWinInfoPrivate *p;
 };
 
 

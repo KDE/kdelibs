@@ -25,6 +25,7 @@
 
 #include <qobject.h>
 
+class KAudioPlayerPrivate;
 /**
  * This class provides one-shot-and-forget audio playing. You will never
  * know if what you wanted to play really got played.
@@ -53,9 +54,6 @@
 //REVISED: hausmann
 class KAudioPlayer : public QObject {
 Q_OBJECT
-private:
-	class KAudioPlayerPrivate *d;
-
 public:
 	/**
 	 * Constructor.
@@ -87,6 +85,8 @@ public slots:
 	 * Plays the soundfile given to the constructor.
 	 */
 	void play();
+private:
+	KAudioPlayerPrivate *d;
 };
 
 #endif // __KAUDIOPLAYER_H__

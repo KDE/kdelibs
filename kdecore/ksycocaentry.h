@@ -106,6 +106,8 @@ private:
 protected:
    bool m_bDeleted;
    QString mPath;   
+protected:
+   virtual void virtual_hook( int id, void* data );
 };
 
 #endif

@@ -27,6 +27,7 @@
 #include <qptrlist.h>
 #include "kasyncio.h"
 
+class KBufferedIOPrivate;
 /**
  * This abstract class implements basic functionality for buffered
  * input/output.
@@ -201,10 +202,6 @@ signals:
    */
   void closed(int state);
 
-private:
-  class KBufferedIOPrivate;
-  KBufferedIOPrivate *d;
-
 protected:
   /**
    * For an explanation on how these buffers work, please refer to the comments
@@ -271,6 +268,11 @@ protected:
    * Returns the number of bytes in the write buffer
    */
   virtual unsigned writeBufferSize() const;
+
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
+  KBufferedIOPrivate *d;
 };
 
 #endif // KBUFFEREDIO_H

@@ -190,3 +190,13 @@ bool KAccelShortcutList::setOther( Other, uint, QVariant )
 	{ return false; }
 bool KAccelShortcutList::save() const
 	{ return writeSettings(); }
+
+void KShortcutList::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
+void KAccelShortcutList::virtual_hook( int id, void* data )
+{ KShortcutList::virtual_hook( id, data ); }
+
+void KStdAccel::ShortcutList::virtual_hook( int id, void* data )
+{ KShortcutList::virtual_hook( id, data ); }
+

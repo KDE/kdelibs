@@ -264,6 +264,9 @@ void KConfig::setFileWriteMode(int mode)
   backEnd->setFileWriteMode(mode);
 }
 
+void KConfig::virtual_hook( int id, void* data )
+{ KConfigBase::virtual_hook( id, data ); }
+
 
 
 #include "kconfig.moc"

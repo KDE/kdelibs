@@ -35,6 +35,7 @@ struct sockaddr;
 
 class KExtendedSocket;		// No need to define it fully
 
+class KSocketAddressPrivate;
 /**
  * A socket address.
  *
@@ -173,6 +174,10 @@ public:
   static int fromIanaFamily(int iana);
 
   friend class KExtendedSocket;
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
+  KSocketAddressPrivate* d;
 };
 
 /*
@@ -184,6 +189,7 @@ struct sockaddr_in6;
 struct in_addr;
 struct in6_addr;
 
+class KInetSocketAddressPrivate;
 /**
  * An Inet (IPv4 or IPv6) socket address
  *
@@ -441,8 +447,6 @@ public:
   { setAddress(other); return *this; }
 
 private:
-  class Private;
-  Private *d;
 
   void fromV4();
   void fromV6();
@@ -468,6 +472,10 @@ public:
   static bool stringToAddr(int family, const char *text, void *dest);
 
   friend class KExtendedSocket;
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
+  KInetSocketAddressPrivate* d;
 };
 
 extern const KInetSocketAddress addressAny, addressLoopback;
@@ -477,6 +485,7 @@ extern const KInetSocketAddress addressAny, addressLoopback;
  */
 struct sockaddr_un;
 
+class KUnixSocketAddressPrivate;
 /**
  * A Unix socket address
  *
@@ -562,10 +571,11 @@ public:
 private:
   void init();
 
-  class Private;
-  Private *d;
-
   friend class KExtendedSocket;
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
+  KUnixSocketAddressPrivate* d;
 };
 
 #endif // KSOCKADDR_H

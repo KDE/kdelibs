@@ -207,6 +207,9 @@ private:
   bool bGroupImmutable : 1; // Current group is immutable.
   bool bFileImmutable  : 1; // Current file is immutable.
   bool bForceGlobal    : 1; // Apply everything to kdeglobals.
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
   KConfigPrivate *d;
 };
 

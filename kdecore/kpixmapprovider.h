@@ -42,6 +42,8 @@ public:
      * You may subclass this and return a pixmap of size @p size for @p text.
      */
     virtual QPixmap pixmapFor( const QString& text, int size = 0 ) = 0;
+protected:
+    virtual void virtual_hook( int id, void* data );
 };
 
 

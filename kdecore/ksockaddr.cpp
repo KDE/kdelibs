@@ -236,7 +236,7 @@ int KSocketAddress::fromIanaFamily(int iana)
 /**
  * class KInetSocketAddress
  */
-class KInetSocketAddress::Private
+class KInetSocketAddressPrivate
 {
 public:
   int sockfamily;
@@ -245,7 +245,7 @@ public:
   sockaddr_in6 sin6;
 #endif
 
-  Private() :
+  KInetSocketAddressPrivate() :
     sockfamily(AF_UNSPEC)
   {
     sin.sin_family = AF_INET;
@@ -269,42 +269,42 @@ public:
 };
 
 KInetSocketAddress::KInetSocketAddress() :
-  d(new Private)
+  d(new KInetSocketAddressPrivate)
 {
 }
 
 KInetSocketAddress::KInetSocketAddress(const KInetSocketAddress &other) :
-  KSocketAddress(), d(new Private)
+  KSocketAddress(), d(new KInetSocketAddressPrivate)
 {
   setAddress(other);
 }
 
 KInetSocketAddress::KInetSocketAddress(const sockaddr_in* sin, ksocklen_t len) :
-  d(new Private)
+  d(new KInetSocketAddressPrivate)
 {
   setAddress(sin, len);
 }
 
 KInetSocketAddress::KInetSocketAddress(const sockaddr_in6* sin6, ksocklen_t len) :
-  d(new Private)
+  d(new KInetSocketAddressPrivate)
 {
   setAddress(sin6, len);
 }
 
 KInetSocketAddress::KInetSocketAddress(const in_addr& addr, unsigned short port) :
-  d(new Private)
+  d(new KInetSocketAddressPrivate)
 {
   setAddress(addr, port);
 }
 
 KInetSocketAddress::KInetSocketAddress(const in6_addr& addr, unsigned short port) :
-  d(new Private)
+  d(new KInetSocketAddressPrivate)
 {
   setAddress(addr, port);
 }
 
 KInetSocketAddress::KInetSocketAddress(const QString& addr, unsigned short port, int family) :
-  d(new Private)
+  d(new KInetSocketAddressPrivate)
 {
   setAddress(addr, port, family);
 }
@@ -729,28 +729,28 @@ bool KInetSocketAddress::stringToAddr(int family, const char *text, void *dest)
  * class KUnixSocketAddress
  */
 
-class KUnixSocketAddress::Private
+class KUnixSocketAddressPrivate
 {
 public:
   sockaddr_un *m_sun;
 
-  Private() : m_sun(NULL)
+  KUnixSocketAddressPrivate() : m_sun(NULL)
   { }
 };
 
 KUnixSocketAddress::KUnixSocketAddress() :
-  d(new Private)
+  d(new KUnixSocketAddressPrivate)
 {
 }
 
 KUnixSocketAddress::KUnixSocketAddress(const sockaddr_un* _sun, ksocklen_t size) :
-  d(new Private)
+  d(new KUnixSocketAddressPrivate)
 {
   setAddress(_sun, size);
 }
 
 KUnixSocketAddress::KUnixSocketAddress(QCString pathname) :
-  d(new Private)
+  d(new KUnixSocketAddressPrivate)
 {
   setAddress(pathname);
 }
@@ -880,6 +880,15 @@ bool KUnixSocketAddress::areEqualUnix(const KSocketAddress &s1, const KSocketAdd
 
    return (strcmp(sun1->sun_path, sun2->sun_path) == 0);
 }
+
+void KSocketAddress::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
+void KInetSocketAddress::virtual_hook( int id, void* data )
+{ KSocketAddress::virtual_hook( id, data ); }
+
+void KUnixSocketAddress::virtual_hook( int id, void* data )
+{ KSocketAddress::virtual_hook( id, data ); }
 
 
 #include "ksockaddr.moc"

@@ -24,6 +24,7 @@
 
 typedef union _XEvent XEvent;
 
+class KKeyNativePrivate;
 // Representation of a key in the format native the windowing system (i.e. X11).
 class KKeyNative
 {
@@ -72,7 +73,7 @@ class KKeyNative
 
  private:
 	uint m_code, m_mod, m_sym;
-	class KKeyNativePrivate* d;
+	KKeyNativePrivate* d;
 };
 
 #endif // !__KKEYNATIVE_H

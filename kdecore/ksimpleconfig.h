@@ -72,11 +72,10 @@ private:
   KSimpleConfig( const KSimpleConfig& );
   KSimpleConfig& operator= ( const KSimpleConfig& rConfig );
 
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
   KSimpleConfigPrivate *d;
 };
 
 #endif
-
-
-
-

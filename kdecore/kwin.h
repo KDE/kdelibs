@@ -204,11 +204,13 @@ public:
      */
     static void deIconifyWindow( WId win, bool animation = true );
 
+#ifndef KDE_NO_COMPAT
     /**
      * @deprecated
      * Use @ref KStartupInfo::appStarted
      */
     static void appStarted();
+#endif
 };
 
 #endif

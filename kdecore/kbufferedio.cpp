@@ -282,4 +282,7 @@ unsigned KBufferedIO::writeBufferSize() const
   return count - outBufIndex;
 }
 
+void KBufferedIO::virtual_hook( int id, void* data )
+{ KAsyncIO::virtual_hook( id, data ); }
+
 #include "kbufferedio.moc"

@@ -775,3 +775,9 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
 }
 
 
+void KConfigBackEnd::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
+void KConfigINIBackEnd::virtual_hook( int id, void* data )
+{ KConfigBackEnd::virtual_hook( id, data ); }
+

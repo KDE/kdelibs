@@ -121,6 +121,8 @@ protected:
    KSycocaResourceList *m_resourceList;
    KSycocaEntryDict *m_entryDict;
    KSycocaDict *m_sycocaDict;
+protected:
+   virtual void virtual_hook( int id, void* data );
 };
 
 // This, instead of a typedef, allows to declare "class ..." in header files

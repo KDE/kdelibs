@@ -23,6 +23,7 @@
 #include <qcstring.h>
 #include <qvaluelist.h>
 
+class KDCOPPropertyProxyPrivate;
 /**
  * The KDCOPPropertyProxy class provides an easy way to publish Qt properties of a
  * QObject through DCOP.
@@ -98,7 +99,6 @@ private:
   static bool decodePropertyRequestInternal( const QCString &fun, QObject *object, bool &set,
                                              QCString &propName, QCString &arg );
 
-  class KDCOPPropertyProxyPrivate;
   KDCOPPropertyProxyPrivate *d;
 };
 

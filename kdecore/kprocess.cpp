@@ -984,4 +984,10 @@ bool KShellProcess::isExecutable(const QCString &filename)
   return true;
 }
 
+void KProcess::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
+void KShellProcess::virtual_hook( int id, void* data )
+{ KProcess::virtual_hook( id, data ); }
+
 #include "kprocess.moc"

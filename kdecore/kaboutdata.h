@@ -93,6 +93,7 @@ private:
     KAboutPersonPrivate *d;
 };
 
+class KAboutTranslatorPrivate;
 /**
  * This structure is used to store information about a translator.
  * It can store the translator's name and an email address.
@@ -131,6 +132,7 @@ public:
 private:
     QString mName;
     QString mEmail;
+    KAboutTranslatorPrivate* d;
 };
 
 

@@ -22,6 +22,7 @@
 #include <kprocess.h>
 #include <qstrlist.h>
 
+class KProcIOPrivate;
 /**
  * @version $Id$
  * @author David Sweet
@@ -169,8 +170,9 @@ protected slots:
   void received (KProcess *proc, char *buffer, int buflen);
   void sent (KProcess *);
 
+protected:
+  virtual void virtual_hook( int id, void* data );
 private:
-  class KProcIOPrivate;
   KProcIOPrivate *d;
 };
 

@@ -359,4 +359,10 @@ QString KSycoca::determineRelativePath( const QString & _fullpath, const char *_
 
 KSycoca * KSycoca::_self = 0L;
 
+void KSycoca::virtual_hook( int id, void* data )
+{ DCOPObject::virtual_hook( id, data ); }
+
+void KSycocaEntry::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
 #include "ksycoca.moc"

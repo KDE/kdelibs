@@ -228,6 +228,9 @@ private:
 
     static KLibLoader* s_self;
 
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
     KLibLoaderPrivate *d;
 };
 
@@ -318,6 +321,8 @@ protected:
     virtual QObject* createObject( QObject* parent = 0, const char* name = 0, const char* classname = "QObject", const QStringList &args = QStringList() ) = 0;
 
 
+protected:
+    virtual void virtual_hook( int id, void* data );
 private:
     KLibFactoryPrivate *d;
 };

@@ -787,4 +787,10 @@ void KCompletionMatches::removeDuplicates()
     }
 }
 
+void KCompletion::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
+void KCompletionBase::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
 #include "kcompletion.moc"

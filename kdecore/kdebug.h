@@ -40,6 +40,7 @@ typedef kndbgstream & (*KNDBGFUNC)(kndbgstream &); // manipulator function
 
 #define k_lineinfo "[" << __FILE__ << ":" << __LINE__ << "] "
 
+class kdbgstreamprivate;
 class kdbgstream {
  public:
     kdbgstream(unsigned int _area, unsigned int _level, bool _print = true) :
@@ -137,6 +138,7 @@ class kdbgstream {
     QString output;
     unsigned int area, level;
     bool print;
+    kdbgstreamprivate* d;
 };
 
 inline kdbgstream &endl( kdbgstream &s) { s << "\n"; return s; }

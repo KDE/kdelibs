@@ -1576,6 +1576,11 @@ KConfigBase::ConfigState KConfigBase::getConfigState() const {
     return ReadOnly;
 }
 
+void KConfigBase::rollback( bool /*bDeep = true*/ )
+{
+  bDirty = false;
+}
+
 KConfigGroup::KConfigGroup(KConfigBase *master, const QCString &group)
 {
   mMaster = master;
@@ -1613,6 +1618,11 @@ void KConfigGroup::sync()
   mMaster->sync();
 }
 
+void KConfigBase::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
+void KConfigGroup::virtual_hook( int id, void* data )
+{ KConfigBase::virtual_hook( id, data ); }
 
 #include "kconfigbase.moc"
 

@@ -189,3 +189,7 @@ KMimeSourceFactory* KInstance::mimeSourceFactory () const
 
   return d->mimeSourceFactory;
 }
+
+void KInstance::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+

@@ -60,6 +60,8 @@ class KShortcutList
 	virtual bool writeSettings( const QString& sConfigGroup = QString::null, KConfigBase* pConfig = 0,
 			bool bWriteAll = false, bool bGlobal = false ) const;
 
+ protected:
+        virtual void virtual_hook( int id, void* data );
  private:
 	class KShortcutListPrivate* d;
 };
@@ -99,6 +101,8 @@ class KAccelShortcutList : public KShortcutList
 	KAccelActions& m_actions;
 	bool m_bGlobal;
 
+ protected:
+	virtual void virtual_hook( int id, void* data );
  private:
 	class KAccelShortcutListPrivate* d;
 };
@@ -128,6 +132,8 @@ class ShortcutList : public KShortcutList
 
 	virtual bool save() const;
 
+ protected:
+	virtual void virtual_hook( int id, void* data );
  private:
 	class ShortcutListPrivate* d;
 };

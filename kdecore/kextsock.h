@@ -46,6 +46,7 @@ class QSocketNotifier;
 #define IO_AcceptError		(IO_UnspecifiedError+2)
 #define IO_LookupError		(IO_UnspecifiedError+3)
 
+class KExtendedSocketPrivate;
 /**
  * The extended socket class.
  *
@@ -761,8 +762,6 @@ protected slots:
   void connectionEvent();
 
 private:
-  class KExtendedSocketPrivate;
-  KExtendedSocketPrivate *d;
 
   // protection against accidental use
   KExtendedSocket(KExtendedSocket&);
@@ -849,6 +848,11 @@ public:
    * @param syserr	the system error, as from systemError()
    */
   static QString strError(int code, int syserr);
+
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
+  KExtendedSocketPrivate *d;
 };
 
 class KAddressInfo

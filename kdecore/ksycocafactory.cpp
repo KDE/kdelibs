@@ -176,3 +176,7 @@ KSycocaEntry::List KSycocaFactory::allEntries()
    delete [] offsetList;
    return list;
 }
+
+void KSycocaFactory::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+

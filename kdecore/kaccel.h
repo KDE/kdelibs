@@ -30,6 +30,7 @@ class KAccelAction;
 class KAccelActions;
 class KConfigBase;
 
+class KAccelPrivate;
 /**
  * Handle shortcuts.
  *
@@ -236,6 +237,8 @@ class KAccel : public QAccel
 	QString findKey( int key ) const;
 #endif // !KDE_NO_COMPAT
 
+ protected:
+	virtual void virtual_hook( int id, void* data );
  private:
 	class KAccelPrivate* d;
 	friend class KAccelPrivate;

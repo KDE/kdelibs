@@ -24,7 +24,7 @@
 
 #include "kmimesourcefactory.h"
 
-class KMimeSourceFactory::KMimeSourceFactoryPrivate
+class KMimeSourceFactoryPrivate
 {
 public:
   inline KMimeSourceFactoryPrivate (KIconLoader* loader)
@@ -85,3 +85,7 @@ QString KMimeSourceFactory::makeAbsolute (const QString& absOrRelName, const QSt
   
   return result;
 }
+
+void KMimeSourceFactory::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+

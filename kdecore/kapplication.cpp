@@ -2394,5 +2394,11 @@ bool KApplication::authorizeKAction(const char *action)
    return authorize(action_prefix + action);
 }
 
+void KApplication::virtual_hook( int id, void* data )
+{ KInstance::virtual_hook( id, data ); }
+
+void KSessionManaged::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
 #include "kapplication.moc"
 #define KeyPress XKeyPress

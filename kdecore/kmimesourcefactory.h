@@ -25,6 +25,7 @@
 #include <qmime.h>
 #include <kglobal.h>
 
+class KMimeSourceFactoryPrivate;
 /**
  * An extension to @ref QMimeSourceFactory that uses @ref KIconLoader to
  * find images.
@@ -67,8 +68,9 @@ public:
    */
   virtual QString makeAbsolute (const QString& abs_or_rel_name, const QString& context) const;
 
+protected:
+  virtual void virtual_hook( int id, void* data );
 private:
-  class KMimeSourceFactoryPrivate;
   KMimeSourceFactoryPrivate* d;
 };
 

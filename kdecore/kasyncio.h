@@ -26,6 +26,7 @@
 #include <qobject.h>
 #include <qiodevice.h>
 
+class KAsyncIOPrivate;
 /**
  * Asynchronous I/O Support
  *
@@ -72,6 +73,10 @@ signals:
    * This signal gets sent when the device is ready for writing
    */
   void readyWrite();
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
+  KAsyncIOPrivate* d;
 };
 
 #endif // KASYNCIO_H

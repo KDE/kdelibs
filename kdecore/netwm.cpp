@@ -2849,4 +2849,11 @@ unsigned long NETWinInfo::properties() const {
 NET::MappingState NETWinInfo::mappingState() const {
     return p->mapping_state;
 }
+
+void NETRootInfo::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
+void NETWinInfo::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
 #endif

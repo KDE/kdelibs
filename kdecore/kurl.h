@@ -26,6 +26,7 @@
 class QUrl;
 class QStringList;
 
+class KURLPrivate;
 /**
  * Represents and parses a URL.
  *
@@ -575,6 +576,8 @@ private:
 
   friend QDataStream & operator<< (QDataStream & s, const KURL & a);
   friend QDataStream & operator>> (QDataStream & s, KURL & a);
+private:
+  KURLPrivate* d;
 };
 
 /**

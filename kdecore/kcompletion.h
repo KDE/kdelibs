@@ -540,6 +540,9 @@ private:
     uint 		myRotationIndex;
 
 
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
     KCompletionPrivate *d;
 };
 
@@ -957,6 +960,9 @@ private:
     KCompletionBase *m_delegate;
 	
     // BCI
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
     KCompletionBasePrivate *d;	
 };
 

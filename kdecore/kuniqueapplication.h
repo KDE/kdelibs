@@ -141,6 +141,9 @@ private:
   static bool s_multipleInstances;
   static bool s_uniqueTestDone;
 
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
   KUniqueApplicationPrivate *d;
 };
 

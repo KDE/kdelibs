@@ -39,7 +39,7 @@
 #undef Bool
 #endif
 
-class KDCOPPropertyProxy::KDCOPPropertyProxyPrivate
+class KDCOPPropertyProxyPrivate
 {
 public:
   KDCOPPropertyProxyPrivate()

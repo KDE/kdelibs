@@ -1155,15 +1155,11 @@ protected:
   bool bReadOnly;           // currently only used by KSimpleConfig
   mutable bool bExpand;     // whether dollar expansion is used
 
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
   KConfigBasePrivate *d;
 };
-
-// we put this here instead of in the declaration above to
-// avoid warnings about the unused parameter.
-inline void KConfigBase::rollback( bool /*bDeep = true*/ )
-{
-  bDirty = false;
-}
 
 class KConfigGroupSaverPrivate;
 
@@ -1237,6 +1233,8 @@ private:
   KConfigGroupSaverPrivate *d;
 };
 
+class KConfigGroupPrivate;
+
 class KConfigGroup: public KConfigBase
 {
 public:
@@ -1281,6 +1279,10 @@ private:
    void getConfigState() { }
 
    KConfigBase *mMaster;
+protected:
+   virtual void virtual_hook( int id, void* data );
+private:
+   KConfigGroupPrivate* d;
 };
 
 #endif

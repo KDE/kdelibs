@@ -725,7 +725,6 @@ private slots:
   void x11FilterDestroyed();
 
 private:
-  KApplicationPrivate* d;
   KConfig* pSessionConfig; //instance specific application config object
   static DCOPClient *s_DCOPClient; // app specific application communication client
   static bool s_dcopClientNeedsPostInit;
@@ -894,6 +893,10 @@ private:
 
   KApplication(const KApplication&);
   KApplication& operator=(const KApplication&);
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
+  KApplicationPrivate* d;
 };
 
 
@@ -960,6 +963,8 @@ public:
      */
   virtual bool commitData( QSessionManager& sm );
 
+protected:
+  virtual void virtual_hook( int id, void* data );
 private:
   KSessionManagedPrivate *d;
 };

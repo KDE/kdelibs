@@ -25,6 +25,7 @@
 #include <kurl.h>
 class QMimeSource;
 
+class KURLDragPrivate;
 /**
  * This class is to be used instead of QUriDrag when using KURL.
  * The reason is : QUriDrag (and the XDND/W3C standards) expect URLs to
@@ -115,6 +116,7 @@ private:
   
   QStrList m_urls;
   QMap<QString,QString> m_metaData;
+  KURLDragPrivate* d;
 };
 
 #endif

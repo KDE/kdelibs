@@ -148,6 +148,9 @@ protected:
   KConfigBase::ConfigState mConfigState;
   int mFileMode;
 
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
   KConfigBackEndPrivate *d;
 };
 
@@ -235,6 +238,8 @@ protected:
    */
   bool writeConfigFile(QString filename, bool bGlobal = false, bool bMerge = true);
 
+protected:
+  virtual void virtual_hook( int id, void* data );
 private:
   KConfigINIBackEndPrivate *d;
 };

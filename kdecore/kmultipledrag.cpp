@@ -74,6 +74,9 @@ const char* KMultipleDrag::format( int i ) const
     return 0;
 }
 
+void KMultipleDrag::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
 #include "kmultipledrag.moc"
 
 #endif

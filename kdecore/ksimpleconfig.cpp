@@ -70,5 +70,7 @@ void KSimpleConfig::sync()
      rollback();
 }
 
-#include "ksimpleconfig.moc"
+void KSimpleConfig::virtual_hook( int id, void* data )
+{ KConfig::virtual_hook( id, data ); }
 
+#include "ksimpleconfig.moc"

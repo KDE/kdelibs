@@ -684,6 +684,9 @@ private:
   KProcess( const KProcess& );
   KProcess& operator= ( const KProcess& );
 
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
   KProcessPrivate *d;
 };
 
@@ -774,6 +777,9 @@ private:
   KShellProcess( const KShellProcess& );
   KShellProcess& operator= ( const KShellProcess& );
 
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
   KShellProcessPrivate *d;
 };
 

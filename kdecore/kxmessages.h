@@ -34,6 +34,8 @@ DEALINGS IN THE SOFTWARE.
 #include <X11/X.h>
 
 class QString;
+
+class KXMessagesPrivate;
 /**
  * Sending string messages to other applications using the X Client Messages.
  *
@@ -95,9 +97,7 @@ class KXMessages
         QCString cached_atom_name;
         Atom accept_atom;
         QMap< WId, QCString > incoming_messages;
-
-        class Private;
-        Private* d;
+        KXMessagesPrivate* d;
     };
 
 #endif

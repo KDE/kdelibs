@@ -365,4 +365,8 @@ int KUniqueApplication::newInstance()
   return 0; // do nothing in default implementation
 }
 
+void KUniqueApplication::virtual_hook( int id, void* data )
+{ KApplication::virtual_hook( id, data );
+  DCOPObject::virtual_hook( id, data ); }
+
 #include "kuniqueapplication.moc"

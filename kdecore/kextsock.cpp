@@ -85,7 +85,7 @@
 // Internal class definitions
 //
 
-class KExtendedSocket::KExtendedSocketPrivate
+class KExtendedSocketPrivate
 {
 public:
   int flags;			// socket flags
@@ -2349,6 +2349,9 @@ const char* KAddressInfo::canonname() const
 {
   return ai->ai_canonname;
 }
+
+void KExtendedSocket::virtual_hook( int id, void* data )
+{ KBufferedIO::virtual_hook( id, data ); }
 
 #include "kextsock.moc"
 #include "kextsocklookup.moc"

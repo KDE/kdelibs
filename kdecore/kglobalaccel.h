@@ -29,6 +29,8 @@ class KAccelAction;
 class KAccelActions;
 class KConfigBase;
 
+class KGlobalAccelPrivate;
+
 class KGlobalAccel : public QObject
 {
 	Q_OBJECT
@@ -104,13 +106,16 @@ class KGlobalAccel : public QObject
 	static bool useFourModifierKeys();
 
  private:
-	class KGlobalAccelPrivate* d;
 
 	KAccelActions& actions();
 	const KAccelActions& actions() const;
 
 	friend class KGlobalAccelPrivate;
 	friend class KAccelShortcutList;
+protected:
+	virtual void virtual_hook( int id, void* data );
+private:
+	class KGlobalAccelPrivate* d;
 };
 
 #endif // _KGLOBALACCEL_H_

@@ -25,6 +25,7 @@
 #include <qdragobject.h>
 #include <qvaluelist.h>
 
+class KMultipleDragPrivate;
 /**
  * This class makes it easy for applications to provide a drag object
  * (for drag-n-drop or for clipboard) that has several representations
@@ -65,6 +66,10 @@ protected:
 
     QPtrList<QDragObject> m_dragObjects;
     QValueList<int> m_numberFormats;
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
+    KMultipleDragPrivate* d;
 };
 
 #endif // QT_NO_DRAGANDDROP

@@ -239,3 +239,6 @@ KDesktopFile::sortOrder() const
   return readListEntry("SortOrder");
 }
 
+void KDesktopFile::virtual_hook( int id, void* data )
+{ KConfig::virtual_hook( id, data ); }
+
