@@ -1959,7 +1959,8 @@ void KApplication::installKDEPropertyMap()
     installed = true;
     /**
      * If you are adding a widget that was missing please
-     * make sure to also add it to KAutoConfig's retrieveSettings() function.
+     * make sure to also add it to KConfigDialogManager's retrieveSettings()
+     * function.
      * Thanks.
      */
     // QSqlPropertyMap takes ownership of the new default map.

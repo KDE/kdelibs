@@ -39,10 +39,15 @@ class QSqlPropertyMap;
  * (settings were saved) or modified (the user changes a checkbox 
  * from on to off).
  *
- * KAutoConfig uses the QSqlPropertyMap class to determine if it can do
- * anything to a widget.  Note that KAutoConfig doesn't  require a database,
- * it simply uses the functionality that is built into the QSqlPropertyMap
- * class.  New widgets can be added to the map using  
+ * The names of the widgets to be managed have to correspond to the names of the
+ * configuration entries in the KConfigSkeleton object plus an additional
+ * "kcfg_" prefix. For example a widget named "kcfg_MyOption" would be
+ * associated to the configuration entry "MyOption".
+ *
+ * KConfigDialogManager uses the QSqlPropertyMap class to determine if it can do
+ * anything to a widget.  Note that KConfigDialogManager doesn't  require a
+ * database, it simply uses the functionality that is built into the
+ * QSqlPropertyMap class.  New widgets can be added to the map using  
  * QSqlPropertyMap::installDefaultMap().  Note that you can't just add any
  * class.  The class must have a matching Q_PROPERTY(...) macro defined.
  * 

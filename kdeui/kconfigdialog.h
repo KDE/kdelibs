@@ -36,7 +36,11 @@ class KConfigSkeleton;
  * KConfigDialog handles the enabling and disabling of buttons, creation
  * of the dialog, and deletion of the widgets.  Because of 
  * KConfigDialogManager, this class also manages: restoring 
- * the settings, reseting them to the default values, and saving them.
+ * the settings, reseting them to the default values, and saving them. This
+ * requires that the names of the widgets corresponding to configuration entries
+ * have to have the same name plus an additional "kcfg_" prefix. For example the
+ * widget named "kcfg_MyOption" would be associated with the configuration entry
+ * "MyOption".
  *
  * Here is an example usage of KConfigDialog:
  *
@@ -78,7 +82,7 @@ signals:
   /**
    * One or more of the settings have been permanently changed such as if
    * the user clicked on the Apply or Ok button.
-   * This signal is useful when using kautoconfigdialog to configure
+   * This signal is useful when using KConfigDialog to configure
    * items in a list.  When emits the main class would then know what
    * item in the list was actually changed.
    * @param dialogName the name of the dialog.
@@ -133,7 +137,7 @@ public:
    * @param pixmapName - Name of the pixmap that should be used if needed.
    * @param header - Header text use in the list modes. Ignored in Tabbed
    *        mode. If empty, the itemName text is used when needed.
-   * @param manage - Whether KAutoConfig should manage the page or not.
+   * @param manage - Whether KConfigDialogManager should manage the page or not.
    */
   void addPage( QWidget *page, const QString &itemName,
 		                  const QString &pixmapName,
