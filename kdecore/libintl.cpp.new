@@ -75,6 +75,8 @@ Cambridge, MA 02139, USA.  */
 #endif
 
 #include <sys/types.h>
+#include <fcntl.h>
+#include <sys/stat.h>
 
 #if defined __GNUC__ && !defined alloca
 # define alloca __builtin_alloca
@@ -140,16 +142,10 @@ extern "C" {
 #endif
 #undef __BEGIN_DECLS
 #undef __END_DECLS
-
 #ifdef HAVE_SYS_CDEFS_H
 #include <sys/cdefs.h>
 #endif
-#endif      
-
-extern "C" {
-#include <fcntl.h>
-#include <sys/stat.h>
-}
+#endif
 
 #if (defined HAVE_MMAP && defined HAVE_MUNMAP) 
 # include <sys/mman.h>
