@@ -1,0 +1,57 @@
+
+#include <qlabel.h>
+#include <qlayout.h>
+#include <qpushbutton.h>
+
+#include <kapp.h>
+#include <kdebug.h>
+#include <klineedit.h>
+
+#include <kio/previewjob.h>
+
+#include "previewtest.moc"
+
+PreviewTest::PreviewTest()
+    :QWidget()
+{
+    QGridLayout *layout = new QGridLayout(this, 2, 2);
+    m_url = new KLineEdit(this);
+    m_url->setText("/home/malte/favicons1.cpp");
+    layout->addWidget(m_url, 0, 0);
+    QPushButton *btn = new QPushButton("Generate", this);
+    connect(btn, SIGNAL(clicked()), SLOT(slotGenerate()));
+    layout->addWidget(btn, 0, 1);
+    m_preview = new QLabel(this);
+    m_preview->setMinimumSize(400, 300);
+    layout->addMultiCellWidget(m_preview, 1, 1, 0, 1);
+}
+
+void PreviewTest::slotGenerate()
+{
+    KURL::List urls;
+    urls.append(m_url->text());
+    KIO::PreviewJob *job = KIO::filePreview(urls, m_preview->width(), m_preview->height(), true, 48);
+    connect(job, SIGNAL(result(KIO::Job*)), SLOT(slotResult(KIO::Job*)));
+    connect(job, SIGNAL(gotPreview(const KURL &, const QPixmap &)), SLOT(slotPreview(const KURL &, const QPixmap &)));
+}
+
+void PreviewTest::slotResult(KIO::Job*)
+{
+    kdDebug() << "PreviewTest::slotResult(...)" << endl;
+}
+
+void PreviewTest::slotPreview(const KURL &url, const QPixmap &pix)
+{
+    kdDebug() << "PreviewTest::slotPreview(" << url.url() << ", ...)" << endl;
+    m_preview->setPixmap(pix);
+}
+
+int main(int argc, char **argv)
+{
+    KApplication app(argc, argv, "previewtest");
+    PreviewTest *w = new PreviewTest;
+    w->show();
+    app.setMainWidget(w);
+    return app.exec();
+}
+

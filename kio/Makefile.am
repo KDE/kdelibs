@@ -44,7 +44,7 @@ libksycoca_la_SOURCES = \
 	kautomount.cpp krun.cpp \
 	kfileitem.cpp kdirlister.cpp kimageio.cpp \
 	yacc.c lex.c  \
-	chmodjob.cpp kscan.cpp ktar.cpp 
+	chmodjob.cpp kscan.cpp ktar.cpp previewjob.cpp
 
 #This dependency is needed, cause am_edit does not include it automatically
 #(different programs), but nevertheless kmimetype.cpp includes
@@ -102,7 +102,7 @@ kioinclude_HEADERS = connection.h \
 	renamedlg.h skipdlg.h slave.h \
 	observer.h chmodjob.h \
         kpac.h kmdbase.h authinfo.h \
-	ioslave_defaults.h http_slave_defaults.h
+	ioslave_defaults.h http_slave_defaults.h previewjob.h
 
 # Internal
 noinst_HEADERS = kservicetypefactory.h kservicefactory.h \
