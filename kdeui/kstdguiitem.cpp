@@ -47,6 +47,7 @@ KGuiItem KStdGuiItem::guiItem ( StdItem ui_enum )
   case AdminMode: return adminMode();
   case Reset    : return reset();
   case Delete   : return del();
+  case Insert   : return insert();
   default       : return KGuiItem();
   };
 }
@@ -74,6 +75,7 @@ QString KStdGuiItem::stdItem( StdItem ui_enum )
   case Quit     : return QString::fromLatin1("quit");
   case AdminMode: return QString::fromLatin1("adminMode");
   case Delete   : return QString::fromLatin1("delete");
+  case Insert   : return QString::fromLatin1("insert");
   default       : return QString::null;
   };
 }
@@ -221,6 +223,11 @@ KGuiItem KStdGuiItem::reset()
 {
   return KGuiItem( i18n( "&Reset" ), "undo",
                   i18n( "Reset configuration" ) );
+}
+
+KGuiItem KStdGuiItem::insert()
+{
+  return KGuiItem( i18n( "&Insert"));
 }
 
 // vim: set ts=2 sts=2 sw=2 et:

@@ -48,7 +48,7 @@ public:
     {
         Ok=1, Cancel, Yes, No, Discard, Save, DontSave, SaveAs,
         Apply, Clear, Help, Defaults, Close, Back, Forward, Print,
-        Continue, Open, Quit, AdminMode, Reset, Delete
+        Continue, Open, Quit, AdminMode, Reset, Delete, Insert
     };
     static KGuiItem guiItem ( StdItem ui_enum );
     static QString  stdItem ( StdItem ui_enum );
@@ -56,6 +56,7 @@ public:
     static KGuiItem cancel();
     static KGuiItem yes();
     static KGuiItem no();
+    static KGuiItem insert();
     static KGuiItem discard();
     static KGuiItem save();
     static KGuiItem help();
