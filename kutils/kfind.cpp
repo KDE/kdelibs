@@ -84,7 +84,9 @@ bool KFind::needData() const
     if (m_options & KFindDialog::FindBackwards)
         return m_index < 0;
     else
-        return m_index >= (int)m_text.length() || m_index == INDEX_NOMATCH;
+        // "index over length" test removed: we want to get a nomatch before we set data again
+        // This is important in the "replace with a prompt" case.
+        return m_index == INDEX_NOMATCH;
 }
 
 void KFind::setData( const QString& data, int startPos )

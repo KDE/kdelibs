@@ -21,39 +21,46 @@
 
 #include <kcmdlineargs.h>
 #include <kapplication.h>
+#include <qeventloop.h>
+#include <kpushbutton.h>
 #include "../kreplace.h"
 #include "../kreplacedialog.h"
 
 #include "kreplacetest.h"
 #include <kdebug.h>
+#include <stdlib.h>
 
 void KReplaceTest::replace( const QString &pattern, const QString &replacement, long options )
 {
-   // This creates a replace-next-prompt dialog if needed.
-   m_replace = new KReplace(pattern, replacement, options);
+    m_needEventLoop = false;
+    // This creates a replace-next-prompt dialog if needed.
+    m_replace = new KReplace(pattern, replacement, options);
 
-   // Connect highlight signal to code which handles highlighting
-   // of found text.
-   connect(m_replace, SIGNAL( highlight( const QString &, int, int ) ),
-           this, SLOT( slotHighlight( const QString &, int, int ) ) );
-   // Connect findNext signal - called when pressing the button in the dialog
-   connect(m_replace, SIGNAL( findNext() ),
-           this, SLOT( slotReplaceNext() ) );
-   // Connect replace signal - called when doing a replacement
-   connect(m_replace, SIGNAL( replace(const QString &, int, int, int) ),
-           this, SLOT( slotReplace(const QString &, int, int, int) ) );
+    // Connect highlight signal to code which handles highlighting
+    // of found text.
+    connect(m_replace, SIGNAL( highlight( const QString &, int, int ) ),
+            this, SLOT( slotHighlight( const QString &, int, int ) ) );
+    // Connect findNext signal - called when pressing the button in the dialog
+    connect(m_replace, SIGNAL( findNext() ),
+            this, SLOT( slotReplaceNext() ) );
+    // Connect replace signal - called when doing a replacement
+    connect(m_replace, SIGNAL( replace(const QString &, int, int, int) ),
+            this, SLOT( slotReplace(const QString &, int, int, int) ) );
 
-   // Go to initial position
-   if ( (options & KReplaceDialog::FromCursor) == 0 )
-   {
-       if ( m_replace->options() & KFindDialog::FindBackwards )
-           m_currentPos = m_text.fromLast();
-       else
-           m_currentPos = m_text.begin();
-   }
+    // Go to initial position
+    if ( (options & KReplaceDialog::FromCursor) == 0 )
+    {
+        if ( m_replace->options() & KFindDialog::FindBackwards )
+            m_currentPos = m_text.fromLast();
+        else
+            m_currentPos = m_text.begin();
+    }
 
-   // Launch first replacement
-   slotReplaceNext();
+    // Launch first replacement
+    slotReplaceNext();
+
+    if ( m_needEventLoop )
+        qApp->eventLoop()->enterLoop();
 }
 
 void KReplaceTest::slotHighlight( const QString &str, int matchingIndex, int matchedLength )
@@ -61,6 +68,14 @@ void KReplaceTest::slotHighlight( const QString &str, int matchingIndex, int mat
     kdDebug() << "slotHighlight Index:" << matchingIndex << " Length:" << matchedLength
               << " Substr:" << str.mid(matchingIndex, matchedLength)
               << endl;
+    // Emulate the user saying yes
+    // animateClick triggers a timer, hence the enterloop/exitloop
+    // Calling slotReplace directly would lead to infinite loop anyway (Match never returned,
+    // so slotReplaceNext never returns)
+    if ( m_replace->options() & KReplaceDialog::PromptOnReplace ) {
+        m_replace->replaceNextDialog( false )->actionButton( (KDialogBase::ButtonCode)m_button )->animateClick();
+        m_needEventLoop = true;
+    }
 }
 
 
@@ -72,7 +87,7 @@ void KReplaceTest::slotReplace(const QString &text, int replacementIndex, int re
 
 void KReplaceTest::slotReplaceNext()
 {
-    kdDebug() << k_funcinfo << endl;
+    //kdDebug() << k_funcinfo << endl;
     KFind::Result res = KFind::NoMatch;
     while ( res == KFind::NoMatch && m_currentPos != m_text.end() ) {
         if ( m_replace->needData() )
@@ -99,6 +114,8 @@ void KReplaceTest::slotReplaceNext()
             slotReplaceNext();
         }
 #endif
+    if ( res == KFind::NoMatch && m_needEventLoop )
+        qApp->eventLoop()->exitLoop();
 }
 
 void KReplaceTest::print()
@@ -108,81 +125,108 @@ void KReplaceTest::print()
         kdDebug() << *it << endl;
 }
 
-int main( int argc, char **argv )
+/* button is the button that we emulate pressing, when options includes PromptOnReplace.
+   Valid possibilities are User1 (replace all) and User3 (replace) */
+static void testReplaceSimple( int options, int button = 0 )
 {
-  KCmdLineArgs::init(argc, argv, "kreplacetest", 0, 0);
-  KApplication app;
-
-  {
-    KReplaceTest test( QString( "aaaa" ) );
-    test.replace( "a", "aa", 0 );
-    QStringList textLines = test.textLines();
-    assert( textLines.count() == 1 );
-    if ( textLines[ 0 ] != "aaaaaaaa" ) {
-      kdError() << "ASSERT FAILED: replaced text is '" << textLines[ 0 ] << "' instead of 'aaaaaaaa'" << endl;
-      return 1;
-    }
-  }
-
-  {
-    KReplaceTest test( QString( "aaaa" ) );
-    test.replace( "a", "bb", 0 );
-    QStringList textLines = test.textLines();
-    assert( textLines.count() == 1 );
-    if ( textLines[ 0 ] != "bbbbbbbb" ) {
-      kdError() << "ASSERT FAILED: replaced text is '" << textLines[ 0 ] << "' instead of 'bbbbbbbb'" << endl;
-      return 1;
-    }
-  }
-
-  {
-    KReplaceTest test( QString( "a foo b" ) );
-    test.replace( "foo", "foobar", 0 );
-    QStringList textLines = test.textLines();
-    assert( textLines.count() == 1 );
-    if ( textLines[ 0 ] != "a foobar b" ) {
-      kdError() << "ASSERT FAILED: replaced text is '" << textLines[ 0 ] << "' instead of 'a foobar b'" << endl;
-      return 1;
-    }
-  }
-
-  {
-    KReplaceTest test( QString( "hellohello" ) );
-    test.replace( "hello", "HELLO", 0 );
+    KReplaceTest test( QString( "hellohello" ), button );
+    test.replace( "hello", "HELLO", options );
     QStringList textLines = test.textLines();
     assert( textLines.count() == 1 );
     if ( textLines[ 0 ] != "HELLOHELLO" ) {
-      kdError() << "ASSERT FAILED: replaced text is '" << textLines[ 0 ] << "' instead of 'HELLOHELLO'" << endl;
-      return 1;
+        kdError() << "ASSERT FAILED: replaced text is '" << textLines[ 0 ] << "' instead of 'HELLOHELLO'" << endl;
+        exit(1);
     }
-  }
+}
 
-  QString text = "This file is part of the KDE project.\n"
-"This library is free software; you can redistribute it and/or\n"
-"modify it under the terms of the GNU Library General Public\n"
-"License version 2, as published by the Free Software Foundation.\n"
-"\n"
-"    This library is distributed in the hope that it will be useful,\n"
-"    but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
-"    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU\n"
-"    Library General Public License for more details.\n"
-"\n"
-"    You should have received a copy of the GNU Library General Public License\n"
-"    along with this library; see the file COPYING.LIB.  If not, write to\n"
-"    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,\n"
-"    Boston, MA 02111-1307, USA.\n"
-"More tests:\n"
-"ThisThis This, This. This\n"
-"aGNU\n"
-"free";
-  KReplaceTest test( QStringList::split( '\n', text, true ) );
 
-  test.replace( "GNU", "KDE", /*KReplaceDialog::PromptOnReplace*/ 0 );
-  test.replace( "free", "*free*", 0 );
-  test.replace( "This", "THIS*", KFindDialog::FindBackwards );
+static void testReplaceLonger( int options, int button = 0 )
+{
+    // Standard test of a replacement string longer than the matched string
+    KReplaceTest test( QString( "aaaa" ), button );
+    test.replace( "a", "bb", options );
+    QStringList textLines = test.textLines();
+    assert( textLines.count() == 1 );
+    if ( textLines[ 0 ] != "bbbbbbbb" ) {
+        kdError() << "ASSERT FAILED: replaced text is '" << textLines[ 0 ] << "' instead of 'bbbbbbbb'" << endl;
+        exit(1);
+    }
+}
 
-  test.print();
-  //return app.exec();
-  return 0;
+static void testReplaceLongerInclude( int options, int button = 0 )
+{
+    // Similar test, where the replacement string includes the search string
+    KReplaceTest test( QString( "a foo b" ), button );
+    test.replace( "foo", "foobar", options );
+    QStringList textLines = test.textLines();
+    assert( textLines.count() == 1 );
+    if ( textLines[ 0 ] != "a foobar b" ) {
+        kdError() << "ASSERT FAILED: replaced text is '" << textLines[ 0 ] << "' instead of 'a foobar b'" << endl;
+        exit(1);
+    }
+}
+
+static void testReplaceLongerInclude2( int options, int button = 0 )
+{
+    // Similar test, but with more chances of matches inside the replacement string
+    KReplaceTest test( QString( "aaaa" ), button );
+    test.replace( "a", "aa", options );
+    QStringList textLines = test.textLines();
+    assert( textLines.count() == 1 );
+    if ( textLines[ 0 ] != "aaaaaaaa" ) {
+        kdError() << "ASSERT FAILED: replaced text is '" << textLines[ 0 ] << "' instead of 'aaaaaaaa'" << endl;
+        exit(1);
+    }
+}
+
+int main( int argc, char **argv )
+{
+    KCmdLineArgs::init(argc, argv, "kreplacetest", 0, 0);
+    KApplication app;
+
+    testReplaceSimple( 0 );
+    testReplaceSimple( KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
+    testReplaceSimple( KReplaceDialog::PromptOnReplace, KDialogBase::User1 ); // replace all
+
+    testReplaceLonger( 0 );
+    testReplaceLonger( KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
+    testReplaceLonger( KReplaceDialog::PromptOnReplace, KDialogBase::User1 ); // replace all
+
+    testReplaceLongerInclude( 0 );
+    testReplaceLongerInclude( KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
+    testReplaceLongerInclude( KReplaceDialog::PromptOnReplace, KDialogBase::User1 ); // replace all
+
+    testReplaceLongerInclude2( 0 );
+    testReplaceLongerInclude2( KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
+    testReplaceLongerInclude2( KReplaceDialog::PromptOnReplace, KDialogBase::User1 ); // replace all
+
+
+    QString text = "This file is part of the KDE project.\n"
+                   "This library is free software; you can redistribute it and/or\n"
+                   "modify it under the terms of the GNU Library General Public\n"
+                   "License version 2, as published by the Free Software Foundation.\n"
+                   "\n"
+                   "    This library is distributed in the hope that it will be useful,\n"
+                   "    but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+                   "    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU\n"
+                   "    Library General Public License for more details.\n"
+                   "\n"
+                   "    You should have received a copy of the GNU Library General Public License\n"
+                   "    along with this library; see the file COPYING.LIB.  If not, write to\n"
+                   "    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,\n"
+                   "    Boston, MA 02111-1307, USA.\n"
+                   "More tests:\n"
+                   "ThisThis This, This. This\n"
+                   "aGNU\n"
+                   "free";
+    KReplaceTest test( QStringList::split( '\n', text, true ), 0 );
+
+    test.replace( "GNU", "KDE", 0 );
+    test.replace( "free", "*free*", 0 );
+    test.replace( "This", "THIS*", KFindDialog::FindBackwards );
+
+    test.print();
+    //return app.exec();
+    return 0;
 }
 #include "kreplacetest.moc"

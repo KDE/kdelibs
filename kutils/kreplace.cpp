@@ -107,6 +107,7 @@ KFind::Result KReplace::replace()
 #endif
     Q_ASSERT( m_index != INDEX_NOMATCH );
 
+#if 0 // This was wrong. If there was a match, then slotReplace or slotSkip moves on.
     if ( m_lastResult == Match )
     {
         // Move on before doing a match
@@ -120,6 +121,7 @@ KFind::Result KReplace::replace()
         } else
             m_index++;
     }
+#endif
 
     do // this loop is only because validateMatch can fail
     {
