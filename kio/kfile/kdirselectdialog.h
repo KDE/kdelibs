@@ -102,6 +102,7 @@ private slots:
     void slotComboTextChanged( const QString& text );
     void slotContextMenu( KListView *, QListViewItem *, const QPoint & );
     void slotShowHiddenFoldersToggled();
+    void slotMkdir();
 
 private:
     void readConfig( KConfig *config, const QString& group );

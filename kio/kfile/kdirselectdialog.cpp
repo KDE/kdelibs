@@ -37,6 +37,9 @@
 #include <kurl.h>
 #include <kurlcompletion.h>
 #include <kurlpixmapprovider.h>
+#include <kinputdialog.h>
+#include <kio/netaccess.h>
+#include <kmessagebox.h>
 
 #include "kfiletreeview.h"
 #include "kdirselectdialog.h"
@@ -115,9 +118,11 @@ KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
              SLOT( slotComboTextChanged( const QString& ) ));
 
     m_contextMenu = new QPopupMenu( this );
+    KAction* newFolder = new KAction( i18n("New Folder..."), "folder_new", 0, this, SLOT( slotMkdir() ), this);
+    newFolder->plug(m_contextMenu);
+    m_contextMenu->insertSeparator();
     m_showHiddenFolders = new KToggleAction ( i18n( "Show Hidden Folders" ), 0, this,
                                         SLOT( slotShowHiddenFoldersToggled() ), this);
-//    m_showHiddenFolders->setCheckedState( i18n("Hide Hidden Folders") );
     m_showHiddenFolders->plug(m_contextMenu);
 
     d->startURL = KFileDialog::getStartURL( startDir, d->recentDirClass );
@@ -384,6 +389,45 @@ void KDirSelectDialog::slotComboTextChanged( const QString& text )
 void KDirSelectDialog::slotContextMenu( KListView *, QListViewItem *, const QPoint& pos )
 {
     m_contextMenu->popup( pos );
+}
+
+void KDirSelectDialog::slotMkdir()
+{
+    bool ok;
+    QString where = url().prettyURL( +1, KURL::StripFileProtocol );
+    QString directory = KIO::encodeFileName( KInputDialog::getText( i18n( "New Folder" ),
+                                         i18n( "Create new folder in:\n%1" ).arg( where ),
+                                         i18n("New Folder"), &ok, this));
+    if (!ok)
+      return;
+      
+    bool selectDirectory = true;
+    bool writeOk = false;
+    bool exists = false;
+    KURL url( url() );
+
+    QStringList dirs = QStringList::split( QDir::separator(), directory );
+    QStringList::ConstIterator it = dirs.begin();
+
+    for ( ; it != dirs.end(); ++it )
+    {
+        url.addPath( *it );
+        exists = KIO::NetAccess::exists( url, false, 0 );
+        writeOk = !exists && KIO::NetAccess::mkdir( url, topLevelWidget() );
+    }
+
+    if ( exists ) // url was already existant
+    {
+        QString which = url.isLocalFile() ? url.path() : url.prettyURL();
+        KMessageBox::sorry(this, i18n("A file or folder named %1 already exists.").arg(which));
+        selectDirectory = false;
+    }
+    else if ( !writeOk ) {
+        KMessageBox::sorry(this, i18n("You do not have permission to create that folder." ));
+    }
+    else if ( selectDirectory ) {
+        setCurrentURL( url );
+    }
 }
 
 void KDirSelectDialog::slotShowHiddenFoldersToggled()
