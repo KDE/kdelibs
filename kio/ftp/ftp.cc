@@ -931,10 +931,6 @@ void Ftp::createUDSEntry( const QString & filename, FtpEntry * e, UDSEntry & ent
   atom.m_str = filename;
   entry.append( atom );
 
-  atom.m_uds = UDS_FILE_TYPE;
-  atom.m_long = isDir ? S_IFDIR : e->type;
-  entry.append( atom );
-
   atom.m_uds = UDS_SIZE;
   atom.m_long = e->size;
   entry.append( atom );
@@ -975,8 +971,13 @@ void Ftp::createUDSEntry( const QString & filename, FtpEntry * e, UDSEntry & ent
       atom.m_uds = UDS_GUESSED_MIME_TYPE;
       atom.m_str = "inode/directory";
       entry.append( atom );
+      isDir = true;
     }
   }
+
+  atom.m_uds = UDS_FILE_TYPE;
+  atom.m_long = isDir ? S_IFDIR : e->type;
+  entry.append( atom );
 
   /* atom.m_uds = UDS_ACCESS_TIME;
      atom.m_long = buff.st_atime;
