@@ -212,6 +212,8 @@ KDirWatchPrivate::KDirWatchPrivate()
     available += ", DNotify";
 
     pipe(mPipe);
+    fcntl(mPipe[0], F_SETFD, FD_CLOEXEC);
+    fcntl(mPipe[1], F_SETFD, FD_CLOEXEC);
     mSn = new QSocketNotifier( mPipe[0], QSocketNotifier::Read, this);
     connect(mSn, SIGNAL(activated(int)), this, SLOT(slotActivated()));
     connect(&mTimer, SIGNAL(timeout()), this, SLOT(slotRescan()));
