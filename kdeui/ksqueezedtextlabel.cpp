@@ -58,6 +58,7 @@ void KSqueezedTextLabel::squeezeTextToLabel() {
 
     // estimate how many letters we can add to the dots on both sides
     int letters = fullText.length() * (labelWidth - squeezedWidth) / textWidth / 2;
+    if (labelWidth < squeezedWidth) letters=1;
     squeezedText = fullText.left(letters) + "..." + fullText.right(letters);
     squeezedWidth = fm.width(squeezedText);
 
@@ -78,7 +79,7 @@ void KSqueezedTextLabel::squeezeTextToLabel() {
             letters--;
             squeezedText = fullText.left(letters) + "..." + fullText.right(letters);
             squeezedWidth = fm.width(squeezedText);
-        } while (squeezedWidth > labelWidth);
+        } while (letters && squeezedWidth > labelWidth);
     }
 
     if (letters < 5) {
