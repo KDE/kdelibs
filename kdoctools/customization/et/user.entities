@@ -12,12 +12,28 @@
 <!ENTITY Ctrl        "<keycap>Ctrl</keycap>">
 <!ENTITY Esc         "<keycap>Esc</keycap>">
 
-<!-- YOU CAN LOCALIZE THE NAMES OF THE ENTITIES AS WELL:
-	&LMB; => &HVN;
-	&MMB; => &HKN;
-	&RMB; => &HPN; -->
-<!ENTITY LMB         "hiire <mousebutton>vasak</mousebutton> nupp">
-<!ENTITY MMB         "hiire <mousebutton>keskmine</mousebutton> nupp">
-<!ENTITY RMB         "hiire <mousebutton>parem</mousebutton> nupp">
+<!ENTITY HVN         "hiire <mousebutton>vasak</mousebutton> nupp">
+<!ENTITY HKN         "hiire <mousebutton>keskmine</mousebutton> nupp">
+<!ENTITY HPN         "hiire <mousebutton>parem</mousebutton> nupp">
+<!ENTITY HVNga       "hiire <mousebutton>vasaku</mousebutton> nupuga">
+<!ENTITY HKNga       "hiire <mousebutton>keskmise</mousebutton> nupuga">
+<!ENTITY HPNga       "hiire <mousebutton>parema</mousebutton> nupuga">
+
+<!ENTITY cdrom  '<hardware>CD-ROM</hardware>'>
 
 <!ENTITY nt     "<abbrev>nt.</abbrev>">		<!-- English: &eg; -->
+<!ENTITY st     "<abbrev>st.</abbrev>">         <!-- English: &ie; -->
+<!ENTITY jne    "<abbrev>jne.</abbrev>">        <!-- English: &etc; -->
+
+<!ENTITY infocenter     "<application>Infokeskus</application>">
+<!ENTITY kcontrolcenter "<application>&kde; juhtimiskeskus</application>">
+<!ENTITY kicon  "<guiicon>
+<inlinemediaobject>
+ <objectinfo><title>&kde; K-ikoon</title></objectinfo>
+ <imageobject><imagedata fileref='common/kmenu.png' format='PNG'/></imageobject>
+ <textobject><phrase>K</phrase></textobject>
+</inlinemediaobject>
+</guiicon> icon"><!-- if image is localised, then entityref should be used
+                      instead of fileref -->
+<!ENTITY kmenu  "<guimenu>K</guimenu> menüü">
+
