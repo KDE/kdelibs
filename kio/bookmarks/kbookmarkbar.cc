@@ -460,8 +460,8 @@ bool KBookmarkBar::eventFilter( QObject *, QEvent *e )
         QDragMoveEvent *dme = (QDragMoveEvent*)e;
         if (!KBookmarkDrag::canDecode( dme ))
             return false;
-	if (dptr()->m_actions.count() == 0)
-	    return false;
+        if (dptr()->m_actions.count() == 0)
+            return false;
         bool _atFirst;
         KAction *_a; 
         _a = handleToolbarDragMoveEvent(dme->pos(), dptr()->m_actions, _atFirst, m_pManager);
