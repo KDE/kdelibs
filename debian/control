@@ -1,5 +1,5 @@
 Source: kdelibs
-Build-Depends: automake, libtool, debhelper (>> 3.0.0), gettext, libqt-dev (>= 2:2.3.0), libtiff3g-dev | libtiff-dev, libaudiofile-dev, docbook, docbook-xml, docbook-stylesheets, libasound2-dev, libbz2-dev, libpcre3-dev, libsasl-dev
+Build-Depends: automake, autoconf2.13, libtool, debhelper (>> 3.0.0), gettext, libqt-dev (>= 2:2.3.0), libtiff3g-dev | libtiff-dev, libaudiofile-dev, docbook, docbook-xml, docbook-stylesheets, libasound2-dev, libbz2-dev, libpcre3-dev, libsasl-dev
 Build-Depends-Indep: qt-doc, kdoc
 Section: libs
 Priority: optional

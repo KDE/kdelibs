@@ -3,8 +3,10 @@ kdelibs (4:2.1.2-3) unstable; urgency=low
   * Hopefully fix libtool problems with arm/m68k by adding those to the
     linux arch list (Closes: #94634)
   * Updated Build-Depends and other Dependency cleanups
- 
- -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 23 May 2001 11:17:00 -0700
+  * Build-depend on autoconf2.13 for now
+  * rm bits already in postrm and prerm (Closes: #98910)
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 28 May 2001 16:30:00 -0700
 
 kdelibs (4:2.1.2-2) unstable; urgency=low
  
