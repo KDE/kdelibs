@@ -21,10 +21,14 @@
 #include "khtml_pagecache.h"
 
 #include <kstaticdeleter.h>
+#include <ktempfile.h>
+#include <kstddirs.h>
 
 #include <qintdict.h>
 #include <qtimer.h>
 
+#include <sys/types.h>
+#include <unistd.h>
 #include <assert.h>
 
 // We keep 12 pages in memory.
@@ -32,27 +36,25 @@
 
 class KHTMLPageCacheEntry
 {
+  friend KHTMLPageCache;
 public:
-  KHTMLPageCacheEntry(long id) : m_id(id), m_valid(false) 
-   { }
+  KHTMLPageCacheEntry(long id);
 
-  void addData(const QByteArray &data)
-   { m_data.append( data ); }
+  ~KHTMLPageCacheEntry();
 
-  void endData()
-   { m_valid = true; }
+  void addData(const QByteArray &data);
+
+  void endData();
 
   bool isValid() 
    { return m_valid; }
 
   KHTMLPageCacheDelivery *fetchData(QObject *recvObj, const char *recvSlot);
-
-  void saveData(QDataStream *str);
-
 private:
   long m_id;
   bool m_valid;
   QValueList<QByteArray> m_data;
+  KTempFile *m_file;
 };
 
 class KHTMLPageCachePrivate
@@ -65,24 +67,45 @@ public:
   bool deliveryActive;
 };
 
+KHTMLPageCacheEntry::KHTMLPageCacheEntry(long id) : m_id(id), m_valid(false) 
+{ 
+  QString path = locateLocal("data", "khtml/cache");
+  m_file = new KTempFile(path);
+  m_file->unlink();
+}
+
+KHTMLPageCacheEntry::~KHTMLPageCacheEntry() 
+{ 
+  delete m_file;
+}
+
+
+void 
+KHTMLPageCacheEntry::addData(const QByteArray &data)
+{ 
+  if (m_file->status() == 0)
+     m_file->dataStream()->writeRawBytes(data.data(), data.size());
+}
+
+void 
+KHTMLPageCacheEntry::endData()
+{ 
+  m_valid = true; 
+  m_file->dataStream()->device()->flush();
+  m_file->dataStream()->device()->at(0);
+}
+
 
 KHTMLPageCacheDelivery *
 KHTMLPageCacheEntry::fetchData(QObject *recvObj, const char *recvSlot)
 {
-  KHTMLPageCacheDelivery *delivery = new KHTMLPageCacheDelivery(m_data);
+  // Duplicate fd so that entry can be safely deleted while delivering the data.
+  int fd = dup(m_file->handle()); 
+  lseek(fd, 0, SEEK_SET);
+  KHTMLPageCacheDelivery *delivery = new KHTMLPageCacheDelivery(fd);
   recvObj->connect(delivery, SIGNAL(emitData(const QByteArray&)), recvSlot);
+  delivery->recvObj = recvObj;
   return delivery;
-}
-
-void
-KHTMLPageCacheEntry::saveData(QDataStream *str)
-{
-  for(QValueList<QByteArray>::Iterator it = m_data.begin();
-      it != m_data.end();
-      ++it)
-  {
-     str->writeRawBytes((*it).data(), (*it).size());
-  }
 }
 
 static KStaticDeleter<KHTMLPageCache> pageCacheDeleter;
@@ -175,6 +198,23 @@ KHTMLPageCache::fetchData(long id, QObject *recvObj, const char *recvSlot)
 }
 
 void
+KHTMLPageCache::cancelFetch(QObject *recvObj)
+{
+  KHTMLPageCacheDelivery *next;
+  for(KHTMLPageCacheDelivery* delivery = d->delivery.first();
+      delivery;
+      delivery = next)
+  {
+      next = d->delivery.next();
+      if (delivery->recvObj == recvObj)
+      {
+         d->delivery.removeRef(delivery);
+         delete delivery;
+      }
+  }   
+}
+
+void
 KHTMLPageCache::sendData()
 {
   if (d->delivery.isEmpty())
@@ -185,11 +225,27 @@ KHTMLPageCache::sendData()
   KHTMLPageCacheDelivery *delivery = d->delivery.take(0);
   assert(delivery);
 
-  QValueList<QByteArray>::Iterator it = delivery->data.begin();
-  delivery->emitData(*it);
-  delivery->data.remove(it);  
-  if (!delivery->data.isEmpty())
+  char buf[8192];
+  QByteArray byteArray;
+
+  int n = read(delivery->fd, buf, 8192);
+
+  if ((n < 0) && (errno == EINTR))
   {
+     // try again later
+     d->delivery.append( delivery );
+  } 
+  else if (n <= 0)
+  {
+     // done.
+     delivery->emitData(byteArray); // Empty array
+     delete delivery;
+  }
+  else
+  {
+     byteArray.setRawData(buf, n);
+     delivery->emitData(byteArray);
+     byteArray.resetRawData(buf, n);
      d->delivery.append( delivery );
   }
   QTimer::singleShot(20, this, SLOT(sendData()));
@@ -201,5 +257,33 @@ KHTMLPageCache::saveData(long id, QDataStream *str)
   KHTMLPageCacheEntry *entry = d->dict.find(id);
   assert(entry);
 
-  entry->saveData(str);
+  int fd = entry->m_file->handle();
+
+  char buf[8192];
+
+  while(true) 
+  {
+     int n = read(fd, buf, 8192);
+     if ((n < 0) && (errno == EINTR))
+     {
+        // try again
+        continue;
+     } 
+     else if (n <= 0)
+     {
+        // done.
+        break;
+     }
+     else
+     {
+        str->writeRawBytes(buf, n);
+     }
+  }
 }
+
+KHTMLPageCacheDelivery::~KHTMLPageCacheDelivery() 
+{ 
+  close(fd); 
+}
+
+#include "khtml_pagecache.moc"

@@ -70,6 +70,11 @@ public:
   void fetchData(long id, QObject *recvObj, const char *recvSlot);
 
   /**
+   * Cancel sending data to @p recvObj
+   */
+  void cancelFetch(QObject *recvObj);
+
+  /**
    * Save the data of cache entry @p id to the datastream @p str
    */
   void saveData(long id, QDataStream *str);
@@ -90,16 +95,16 @@ class KHTMLPageCacheDelivery : public QObject
    friend KHTMLPageCache;
 Q_OBJECT
 public:
-   KHTMLPageCacheDelivery(const QValueList<QByteArray> &_data)
-    : data(_data) { }
+   KHTMLPageCacheDelivery(int _fd)
+    : fd(_fd) { }
+   ~KHTMLPageCacheDelivery();
 
 signals:
    void emitData(const QByteArray &data);
 
 public: 
    QObject *recvObj;
-   const char *recvSlot;
-   QValueList<QByteArray> data;      
+   int fd;      
 };
 
 

@@ -397,22 +397,6 @@ KHTMLPart::~KHTMLPart()
   khtml::Cache::deref();
 }
 
-void KHTMLPart::slotRestoreData(const QByteArray &data )
-{
-  kdDebug( 6050 ) << "slotRestoreData: " << data.size() << endl;
-  write( data.data(), data.size() );
-
-  if (data.size() == 0)
-  {
-     kdDebug( 6050 ) << "slotRestoreData: <<end of data>>" << endl;
-     // End of data.
-     if ( d->m_bParsing )
-     {
-        end(); //will emit completed()
-     }
-  }
-}
-
 bool KHTMLPart::restoreURL( const KURL &url )
 {
   QString referrerUrl = m_url.url();
@@ -426,14 +410,11 @@ bool KHTMLPart::restoreURL( const KURL &url )
     return false;
 
   d->m_bComplete = false;
-  d->m_workingURL = KURL();
-
-  kdDebug( 6050 ) << "begin!" << endl;
-  d->m_bParsing = true;
+  d->m_workingURL = url;
 
   KHTMLPageCache::self()->fetchData( d->m_cacheId, this, SLOT(slotRestoreData(const QByteArray &)));
 
-  begin( url, d->m_extension->urlArgs().xOffset, d->m_extension->urlArgs().yOffset );
+  emit started( 0L );
 
   return true;
 }
@@ -519,6 +500,7 @@ bool KHTMLPart::closeURL()
 
   if ( d->m_bParsing )
   {
+    KHTMLPageCache::self()->cancelFetch(this);
     kdDebug( 6050 ) << " was still parsing... calling end " << endl;
     slotFinishedParsing();
     d->m_bParsing = false;
@@ -686,7 +668,7 @@ bool KHTMLPart::autoloadImages() const
 
 void KHTMLPart::clear()
 {
-    kdDebug( 6090 ) << "KHTMLPart::clear()" << endl;
+    kdDebug( 6090 ) << "KHTMLPart::clear() this = " << this << endl;
   if ( d->m_bCleared )
     return;
   d->m_bCleared = true;
@@ -789,6 +771,31 @@ void KHTMLPart::slotData( KIO::Job*, const QByteArray &data )
   KHTMLPageCache::self()->addData(d->m_cacheId, data);
 
   write( data.data(), data.size() );
+}
+
+void KHTMLPart::slotRestoreData(const QByteArray &data )
+{
+  // The first data ?
+  if ( !d->m_workingURL.isEmpty() )
+  {
+     long saveCacheId = d->m_cacheId;
+     begin( d->m_workingURL, d->m_extension->urlArgs().xOffset, d->m_extension->urlArgs().yOffset );
+     d->m_cacheId = saveCacheId;
+     d->m_workingURL = KURL();
+  }
+
+  kdDebug( 6050 ) << "slotRestoreData: " << data.size() << endl;
+  write( data.data(), data.size() );
+
+  if (data.size() == 0)
+  {
+     kdDebug( 6050 ) << "slotRestoreData: <<end of data>>" << endl;
+     // End of data.
+     if ( d->m_bParsing )
+     {
+        end(); //will emit completed()
+     }
+  }
 }
 
 void KHTMLPart::slotFinished( KIO::Job * job )
