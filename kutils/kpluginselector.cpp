@@ -21,14 +21,14 @@
 // ------------------------------
 //
 // - no X-KDE-ParentApp
-// - X-KDE-KCDParents = the (internal) name of the plugin
+// - X-KDE-ParentComponents = the (internal) name of the plugin
 //
 //
 // How does it work:
 // -----------------
 //
 // Plugin config pages are also loaded as KCMs. The KCM's .desktop file's
-// X-KDE-KCDParents equals the name of the plugin. This way the KCM won't be
+// X-KDE-ParentComponents equals the name of the plugin. This way the KCM won't be
 // shown in the main dialog but KPluginSelectionWidget can ask the KTrader for
 // all(? is it allowed to have more than one KCM per plugin?) KCMs. The widget
 // will then be embedded below the plugin selection list.

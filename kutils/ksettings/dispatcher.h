@@ -59,7 +59,7 @@ class KCDDispatcher : public QObject
 		 * that is passed to KGenericFactory (if it is used). You can query
 		 * it with KGenericFactory<YourClassName>::instance().
 		 * instance->instanceName() is also the same name that is put into the
-		 * .desktop file of the KCMs for the X-KDE-KCDParents.
+		 * .desktop file of the KCMs for the X-KDE-ParentComponents.
 		 *
 		 * @param instance     The KInstance object
 		 * @param recv         The object that should receive the signal
@@ -84,7 +84,7 @@ class KCDDispatcher : public QObject
 		 * Call this slot when the configuration belonging to the associated
 		 * instance name has changed. The registered slot will be called.
 		 *
-		 * @param instanceName The value of X-KDE-KCDParents.
+		 * @param instanceName The value of X-KDE-ParentComponents.
 		 */
 		void reparseConfiguration( const QCString & instanceName );
 

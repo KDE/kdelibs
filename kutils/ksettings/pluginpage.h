@@ -55,7 +55,7 @@ class KPluginSelector;
    X-KDE-Library=myapppluginconfig
    X-KDE-FactoryName=MyAppPluginConfigFactory
    X-KDE-ParentApp=myapp
-   X-KDE-KCDParent=myapp
+   X-KDE-ParentComponents=myapp
 
    Name=Plugins
    Comment=Select and configure your plugins:

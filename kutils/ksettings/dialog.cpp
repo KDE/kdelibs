@@ -56,7 +56,7 @@ KConfigureDialog::KConfigureDialog( const QStringList & kcdparents, QObject * pa
 	: QObject( parent, name )
 	, d( new KConfigureDialogPrivate )
 {
-	QValueList<KService::Ptr> services = instanceServices() + KCDParentsServices( kcdparents );
+	QValueList<KService::Ptr> services = instanceServices() + parentComponentsServices( kcdparents );
 	createDialogFromServices( services );
 }
 
@@ -120,10 +120,10 @@ QValueList<KService::Ptr> KConfigureDialog::instanceServices() const
 	return ret;
 }
 
-QValueList<KService::Ptr> KConfigureDialog::KCDParentsServices( const QStringList & kcdparents ) const
+QValueList<KService::Ptr> KConfigureDialog::parentComponentsServices( const QStringList & kcdparents ) const
 {
-	QString constraint = kcdparents.join( "' in [X-KDE-KCDParents]) or ('" );
-	constraint = "('" + constraint + "' in [X-KDE-KCDParents])";
+	QString constraint = kcdparents.join( "' in [X-KDE-ParentComponents]) or ('" );
+	constraint = "('" + constraint + "' in [X-KDE-ParentComponents])";
 
 	kdDebug( 700 ) << "constraint = " << constraint << endl;
 	return KTrader::self()->query( "KCModule", constraint );
@@ -156,7 +156,7 @@ void KConfigureDialog::createDialogFromServices( const QValueList<KService::Ptr>
 	connect( d->dlg, SIGNAL( configCommitted( const QCString & ) ), KCDDispatcher::self(), SLOT( reparseConfiguration( const QCString & ) ) );
 	for( KCModuleInfo * info = d->moduleinfos.first(); info; info = d->moduleinfos.next() )
 	{
-		kdDebug( 700 ) << "add module: " << info->fileName() << " with KCDParents=" << info->KCDParents() << endl;
+		kdDebug( 700 ) << "add module: " << info->fileName() << " with ParentComponents=" << info->parentComponents() << endl;
 		d->dlg->addModule( *info );
 	}
 }

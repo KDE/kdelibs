@@ -87,7 +87,7 @@ class KConfigureDialog : public QObject
 
 	private:
 		QValueList<KService::Ptr> instanceServices() const;
-		QValueList<KService::Ptr> KCDParentsServices( const QStringList & ) const;
+		QValueList<KService::Ptr> parentComponentsServices( const QStringList & ) const;
 		void createDialogFromServices( const QValueList<KService::Ptr> & );
 		class KConfigureDialogPrivate;
 		KConfigureDialogPrivate * d;

@@ -120,7 +120,7 @@ public:
   /**
    * @return the KCD parent
    */
-  const QStringList & KCDParents() const;
+  const QStringList & parentComponents() const;
 
   /**
    * @return whether the module might require root permissions
@@ -144,7 +144,7 @@ protected:
   void setIcon(const QString &icon) { _icon = icon; };
   void setLibrary(const QString &lib) { _lib = lib; };
   void setHandle(const QString &handle) { _handle = handle; };
-  void setKCDParents(const QStringList &kcdparents) { _kcdparents = kcdparents; }
+  void setParentComponents(const QStringList &parentcomponents) { _parentcomponents = parentcomponents; }
   void setNeedsRootPrivileges(bool needsRootPrivileges) { _needsRootPrivileges = needsRootPrivileges; };
   void setIsHiddenByDefault(bool isHiddenByDefault) { _isHiddenByDefault = isHiddenByDefault; };
   void setDocPath(const QString &p) { _doc = p; };
@@ -153,7 +153,7 @@ protected:
 private:
 
   // when adding members, don't forget to take care about them in the assignment operator
-  QStringList _groups, _keywords, _kcdparents;
+  QStringList _groups, _keywords, _parentcomponents;
   QString     _name, _icon, _lib, _handle, _fileName, _doc, _comment;
   bool        _needsRootPrivileges : 1; 
   bool        _isHiddenByDefault : 1;

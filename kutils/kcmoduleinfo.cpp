@@ -87,7 +87,7 @@ KCModuleInfo::KCModuleInfo( KService::Ptr moduleInfo )
 
   // get the groups list
   KDesktopFile desktop(_fileName);
-  setGroups( QStringList::split( ';', desktop.readEntry( "X-KDE-Groups" ) ) );
+  setGroups( desktop.readListEntry( "X-KDE-Groups" ) );
 }
 
 KCModuleInfo::KCModuleInfo( const KCModuleInfo &rhs )
@@ -110,7 +110,7 @@ KCModuleInfo &KCModuleInfo::operator=( const KCModuleInfo &rhs )
     _fileName = rhs._fileName;
     _doc = rhs._doc;
     _comment = rhs._comment;
-    _kcdparents = rhs._kcdparents;
+    _parentcomponents = rhs._parentcomponents;
     _needsRootPrivileges = rhs._needsRootPrivileges;
     _isHiddenByDefault = rhs._isHiddenByDefault;
     _allLoaded = rhs._allLoaded;
@@ -134,7 +134,7 @@ KCModuleInfo::loadAll()
   setHandle(desktop.readEntry("X-KDE-FactoryName"));
 
   // KCD parent
-  setKCDParents(desktop.readListEntry("X-KDE-KCDParents"));
+  setParentComponents(desktop.readListEntry("X-KDE-ParentComponents"));
 
   // does the module need super user privileges?
   setNeedsRootPrivileges(desktop.readBoolEntry("X-KDE-RootOnly", false));
@@ -192,12 +192,12 @@ KCModuleInfo::handle() const
 }
 
 const QStringList &
-KCModuleInfo::KCDParents() const
+KCModuleInfo::parentComponents() const
 {
   if( !_allLoaded )
     const_cast<KCModuleInfo*>( this )->loadAll();
 
-  return _kcdparents;
+  return _parentcomponents;
 }
 
 bool

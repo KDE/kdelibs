@@ -165,7 +165,7 @@ void KCMultiDialog::addModule(const QString& path, bool withfallback)
 
 void KCMultiDialog::addModule(const KCModuleInfo& moduleinfo, bool withfallback)
 {
-    kdDebug(1208) << "KCMultiDialog::addModule " << moduleinfo.moduleName() << " for KCDParents=" << moduleinfo.KCDParents() << endl;
+    kdDebug(1208) << "KCMultiDialog::addModule " << moduleinfo.moduleName() << " for ParentComponents=" << moduleinfo.parentComponents() << endl;
 
     QHBox* page = 0;
     if (!moduleinfo.service()->noDisplay())
@@ -184,7 +184,7 @@ void KCMultiDialog::addModule(const KCModuleInfo& moduleinfo, bool withfallback)
     moduleDict.insert(page, new LoadInfo(moduleinfo, withfallback));
     if (modules.isEmpty())
     {
-        kdDebug() << k_funcinfo << moduleinfo.KCDParents() << endl;
+        kdDebug() << k_funcinfo << moduleinfo.parentComponents() << endl;
         slotAboutToShow(page);
     }
 }
@@ -195,7 +195,7 @@ void KCMultiDialog::slotAboutToShow(QWidget *page)
     if (!loadInfo)
        return;
 
-    kdDebug() << k_funcinfo << loadInfo->info.KCDParents() << endl;
+    kdDebug() << k_funcinfo << loadInfo->info.parentComponents() << endl;
 
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
@@ -203,7 +203,7 @@ void KCMultiDialog::slotAboutToShow(QWidget *page)
 
     KCModule *module = KCModuleLoader::loadModule(loadInfo->info, loadInfo->withfallback);
 
-    kdDebug() << k_funcinfo << loadInfo->info.KCDParents() << endl;
+    kdDebug() << k_funcinfo << loadInfo->info.parentComponents() << endl;
 
     if (!module)
     {
@@ -213,8 +213,8 @@ void KCMultiDialog::slotAboutToShow(QWidget *page)
         return;
     }
 
-    kdDebug() << k_funcinfo << "KCDParents=" << loadInfo->info.KCDParents() << endl;
-    modulePrefParent.insert( module, new QStringList( loadInfo->info.KCDParents() ) );
+    kdDebug() << k_funcinfo << "ParentComponents=" << loadInfo->info.parentComponents() << endl;
+    modulePrefParent.insert( module, new QStringList( loadInfo->info.parentComponents() ) );
     module->reparent(page,0,QPoint(0,0),true);
     connect(module, SIGNAL(changed(bool)), this, SLOT(clientChanged(bool)));
     if( module->changed() )
