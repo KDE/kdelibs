@@ -126,8 +126,13 @@ KCrash::defaultCrashHandler (int sig)
   {
     if (appName) 
     {
-      fprintf(stderr, "KCrash: crashing.... crashRecursionCounter = %d\n", crashRecursionCounter);
+#ifndef NDEBUG
+      fprintf(stderr, "KCrash: crashing... crashRecursionCounter = %d\n", crashRecursionCounter);
       fprintf(stderr, "KCrash: Application Name = %s path = %s pid = %d\n", appName ? appName : "<unknown>" , appPath ? appPath : "<unknown>", getpid());
+#else
+      fprintf(stderr, "KCrash: Application '%s' crashing...\n", appName ? appName : "<unknown>");
+#endif
+
       pid_t pid = fork();
 
       if (pid <= 0) {
@@ -237,7 +242,7 @@ KCrash::defaultCrashHandler (int sig)
    
   if (crashRecursionCounter < 4)
   {
-     fprintf(stderr, "Unable to start dr. konqi\n");
+     fprintf(stderr, "Unable to start Dr. Konqi\n");
   }
   _exit(255);
 }
