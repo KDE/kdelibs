@@ -1,3 +1,4 @@
+##    -*- shell-script -*-
 
 ##    This file is part of the KDE libraries/packages
 ##    Copyright (C) 1997 Janos Farkas (chexum@shadow.banki.hu)
@@ -25,7 +26,7 @@
 ## and that the modified file should be committed to every module.
 ##
 ## Single-module modifications are best placed in configure.in for kdelibs
-## and kdebase and configure.in.1 for the rest. 
+## and kdebase or configure.in.1 if present.
 
 
 ## ------------------------------------------------------------------------
@@ -759,6 +760,28 @@ AC_MSG_RESULT($kde_use_extra_libs)
 
 ])
 
+AC_DEFUN(KDE_CREATE_LIBS_ALIASES,
+[
+   AC_REQUIRE([KDE_MISC_TESTS])
+   AC_REQUIRE([AC_FIND_TIFF])
+   AC_REQUIRE([AC_FIND_JPEG]) 
+
+   LIB_X11='-lX11 $(LIBSOCKET)'
+   AC_SUBST(LIB_X11)
+   LIB_QT='-lqt $(LIB_X11)'
+   AC_SUBST(LIB_QT)
+   LIB_KDECORE='-lkdecore -lXext $(LIB_QT)'
+   AC_SUBST(LIB_KDECORE)
+   LIB_KDEUI='-lkdeui $(LIB_KDECORE)'
+   AC_SUBST(LIB_KDEUI)
+   LIB_KFM='-lkfm $(LIB_KDECORE)'
+   AC_SUBST(LIB_KFM)
+   LIB_KFILE='-lkfile $(LIB_KFM) $(LIB_KDEUI)'
+   AC_SUBST(LIB_KFILE)
+   LIB_KIMGIO='-lkimgio $(LIB_JPEG) $(LIB_TIFF) -lm'
+   AC_SUBST(LIB_KIMGIO)
+])
+
 AC_DEFUN(AC_PATH_KDE,
 [
   AC_BASE_PATH_KDE
@@ -788,7 +811,8 @@ AC_DEFUN(AC_PATH_KDE,
 
   AC_CREATE_KFSSTND($ac_use_path_checking)
 
- AC_SUBST_KFSSTND
+  AC_SUBST_KFSSTND
+  KDE_CREATE_LIBS_ALIASES
 ])
 
 dnl slightly changed version of AC_CHECK_FUNC(setenv)

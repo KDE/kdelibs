@@ -89,8 +89,7 @@ libkab_la_LDFLAGS = @all_libraries@
 
 # Usually I define MS_NANA_LIBS to "-lnana" if DEBUG is defined as a 
 # compiler directive.
-libkab_la_LIBADD   = -lkfm -lkdeui -lkdecore -lqt \
-	-lX11 -lXext @LIBSOCKET@ 
+libkab_la_LIBADD   = $(LIB_KFM) 
 # $(MS_NANA_LIBS)
 
 # this option you can leave out. Just, if you use "make dist", you need it
@@ -111,10 +110,6 @@ BUILTSOURCES =	addressbook.moc widgets.moc widget.moc \
 # if you "make distclean", this files get removed. If you want to remove
 # them while "make clean", use CLEANFILES
 DISTCLEANFILES = $(BUILTSOURCES)
-
-# make messages.po. Move this one to ../po/ and "make merge" in po
-messages:
-	$(XGETTEXT) -C -ktranslate -ki18n -x ../po/kde.pot $(kab_SOURCES)
 
 # just install datas here. Use install-exec-data for scripts and etc.
 # the binary itself is already installed from automake
