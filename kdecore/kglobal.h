@@ -193,6 +193,7 @@ public:
  */
 #define KCLAMP(x,low,high) kClamp(x,low,high)
 
+// XXX KDE4: Make kMin, kMax and kClamp return "T" instead of "const T &"!
 template<class T>
 inline const T& kMin (const T& a, const T& b) { return a < b ? a : b; }
 
