@@ -46,6 +46,7 @@
 #include <kpopupmenu.h>
 #include <kanimwidget.h>
 #include <kipc.h>
+#include <kwin.h>
 #include <kdebug.h>
 
 #include "ktoolbarbutton.h"
@@ -2452,9 +2453,13 @@ void KToolBar::setBarPos(BarPosition bpos)
 
       recreate(0, 0, p, false);
       XSetTransientForHint( qt_xdisplay(), winId(), d->m_parent->topLevelWidget()->winId());
-//###       KWM::setDecoration(winId(), 2);
-//       KWM::moveToDesktop(winId(), KWM::desktop(d->m_parent->winId()));
+//      KWM::setDecoration(winId(), 2);
+//      KWM::moveToDesktop(winId(), KWM::desktop(d->m_parent->winId()));
+      KWin::setType( winId(), NET::Toolbar );
+      // The Dock type seems to make the window sticky :(. (David)
+      KWin::setOnAllDesktops( winId(), false );
       context->changeItem (i18n("UnFloat"), CONTEXT_FLOAT);
+      context->setItemChecked(CONTEXT_FLOAT, false);
       for (int i = CONTEXT_TOP; i <= CONTEXT_BOTTOM; ++i)
         context->setItemEnabled(i, false);
       context->setItemEnabled(CONTEXT_FLAT, false);
@@ -2470,6 +2475,7 @@ void KToolBar::setBarPos(BarPosition bpos)
       recreate(d->m_parent, oldWFlags, QPoint(oldX, oldY), true);
       emit moved (bpos); // another bar::updateRects (damn) No! It's ok.
       context->changeItem (i18n("Float"), CONTEXT_FLOAT);
+      context->setItemChecked(CONTEXT_FLOAT, false);
       for (int i = CONTEXT_TOP; i <= CONTEXT_BOTTOM; ++i)
         context->setItemEnabled(i, true);
       context->setItemEnabled(CONTEXT_FLAT, true);
