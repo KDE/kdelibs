@@ -383,6 +383,7 @@ protected:
     bool m_inline         : 1;
     bool m_replaced       : 1;
     bool m_useJumpTable   : 1;
+    bool m_containsOverhangingFloats : 1;
 };
 
 

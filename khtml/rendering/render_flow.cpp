@@ -546,11 +546,13 @@ void RenderFlow::positionNewFloats()
             fwidth = ro - lo; // Never look for more than what will be available.
         if (o->style()->floating() == FLEFT)
         {
-            int fx = leftRelOffset(y,lo);
-            while (rightRelOffset(y,ro)-fx < fwidth)
+	    int heightRemainingLeft = 1;
+	    int heightRemainingRight = 1;
+            int fx = leftRelOffset(y,lo, &heightRemainingLeft);
+            while (rightRelOffset(y,ro, &heightRemainingRight)-fx < fwidth)
             {
-                y++;
-                fx = leftRelOffset(y,lo);
+                y += QMIN( heightRemainingLeft, heightRemainingRight );
+                fx = leftRelOffset(y,lo, &heightRemainingLeft);
             }
             f->left = fx;
             //kdDebug( 6040 ) << "positioning left aligned float at (" << fx + o->marginLeft()  << "/" << y + o->marginTop() << ")" << endl;
@@ -558,11 +560,13 @@ void RenderFlow::positionNewFloats()
         }
         else
         {
-            int fx = rightRelOffset(y,ro);
-            while (fx - leftRelOffset(y,lo) < fwidth)
+	    int heightRemainingLeft = 1;
+	    int heightRemainingRight = 1;
+            int fx = rightRelOffset(y,ro, &heightRemainingRight);
+            while (fx - leftRelOffset(y,lo, &heightRemainingLeft) < fwidth)
             {
-                y++;
-                fx = rightRelOffset(y,ro);
+                y += QMIN(heightRemainingLeft, heightRemainingRight);
+                fx = rightRelOffset(y,ro, &heightRemainingRight);
             }
             f->left = fx - f->width;
             //kdDebug( 6040 ) << "positioning right aligned float at (" << fx - o->marginRight() - o->width() << "/" << y + o->marginTop() << ")" << endl;
@@ -678,11 +682,12 @@ RenderFlow::leftOffset() const
 }
 
 int
-RenderFlow::leftRelOffset(int y, int fixedOffset) const
+RenderFlow::leftRelOffset(int y, int fixedOffset, int *heightRemaining ) const
 {
     int left = fixedOffset;
     if(!specialObjects) return left;
 
+    if ( heightRemaining ) *heightRemaining = 1;
     SpecialObject* r;
     QListIterator<SpecialObject> it(*specialObjects);
     for ( ; (r = it.current()); ++it )
@@ -690,8 +695,10 @@ RenderFlow::leftRelOffset(int y, int fixedOffset) const
 //      kdDebug( 6040 ) << "left: sy, ey, x, w " << r->startY << "," << r->endY << "," << r->left << "," << r->width << " " << endl;
         if (r->startY <= y && r->endY > y &&
             r->type == SpecialObject::FloatLeft &&
-            r->left + r->width > left)
-            left = r->left + r->width;
+            r->left + r->width > left) {
+	    left = r->left + r->width;
+	    if ( heightRemaining ) *heightRemaining = r->endY - y;
+	}
     }
 //    kdDebug( 6040 ) << "leftOffset(" << y << ") = " << left << endl;
     return left;
@@ -717,12 +724,13 @@ RenderFlow::rightOffset() const
 }
 
 int
-RenderFlow::rightRelOffset(int y, int fixedOffset) const
+RenderFlow::rightRelOffset(int y, int fixedOffset, int *heightRemaining ) const
 {
     int right = fixedOffset;
 
     if (!specialObjects) return right;
 
+    if (heightRemaining) *heightRemaining = 1;
     SpecialObject* r;
     QListIterator<SpecialObject> it(*specialObjects);
     for ( ; (r = it.current()); ++it )
@@ -730,8 +738,10 @@ RenderFlow::rightRelOffset(int y, int fixedOffset) const
 //      kdDebug( 6040 ) << "right: sy, ey, x, w " << //     r->startY << "," << r->endY << "," << r->left << "," << r->width << " " << endl;
         if (r->startY <= y && r->endY > y &&
             r->type == SpecialObject::FloatRight &&
-            r->left < right)
-            right = r->left;
+            r->left < right) {
+	    right = r->left;
+	    if ( heightRemaining ) *heightRemaining = r->endY - y;
+	}
     }
 //    kdDebug( 6040 ) << "rightOffset(" << y << ") = " << right << endl;
     return right;

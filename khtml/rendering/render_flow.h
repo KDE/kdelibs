@@ -83,11 +83,11 @@ public:
     virtual int lowestPosition() const;
 
     int rightOffset() const;
-    int rightRelOffset(int y, int fixedOffset) const;
+    int rightRelOffset(int y, int fixedOffset, int *heightRemaining = 0) const;
     int rightOffset(int y) const { return rightRelOffset(y, rightOffset()); }
 
     int leftOffset() const;
-    int leftRelOffset(int y, int fixedOffset) const;
+    int leftRelOffset(int y, int fixedOffset, int *heightRemaining = 0) const;
     int leftOffset(int y) const { return leftRelOffset(y, leftOffset()); }
 
 protected:

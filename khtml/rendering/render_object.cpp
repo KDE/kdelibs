@@ -118,7 +118,8 @@ RenderObject::RenderObject()
     m_inline = true;
     m_replaced = false;
     m_visible = true;
-
+    m_containsOverhangingFloats = false;
+    
     m_bgImage = 0;
 }
 

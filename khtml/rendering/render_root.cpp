@@ -227,9 +227,6 @@ void RenderRoot::updateHeight()
 
     //kdDebug(0) << "root layout, time used=" << updateTimer.elapsed() << endl;
 
-    if(parsing())
-        updateTimer.start();
-
     int h = docHeight();
     int w = docWidth();
     if(h != oldHeight || h < m_view->visibleHeight())
@@ -239,6 +236,9 @@ void RenderRoot::updateHeight()
         m_view->resizeContents(docWidth(), h);
     }
     m_view->repaintContents( 0, 0, w, h, FALSE );       //sync repaint!
+
+    if(parsing())
+        updateTimer.start();
 }
 
 void RenderRoot::close()

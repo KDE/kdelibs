@@ -783,6 +783,9 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
 
 void RenderFlow::layoutInlineChildren()
 {
+    // ### a hack to make khtml not hang completely on stuff as the seamonkey cvs pages on mozilla.org
+    if( parsing() ) return;
+    
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << "layoutInlineChildren" << endl;
 #endif
