@@ -2499,7 +2499,7 @@ void QIconView::alignItemsInGrid()
 	w += d->spacing;
     else
 	h += d->spacing;
-    
+
     resizeContents( w, h );
     d->dirty = FALSE;
 }
@@ -2826,6 +2826,9 @@ QIconViewItem* QIconView::findFirstVisibleItem() const
 
 void QIconView::clear()
 {
+    blockSignals( TRUE );
+    clearSelection();
+    blockSignals( FALSE );
     resizeContents( visibleWidth() - verticalScrollBar()->width(),
 		    visibleHeight() - horizontalScrollBar()->width() );
     setContentsPos( 0, 0 );
@@ -3180,7 +3183,9 @@ void QIconView::contentsMousePressEvent( QMouseEvent *e )
 {
     QIconViewItem *item = findItem( e->pos() );
     emit mouseButtonPressed( e->button(), item, e->globalPos() );
-
+    emit pressed( item );
+    emit pressed( item, e->globalPos() );
+    
     if ( d->currentItem )
 	d->currentItem->renameItem();
 
@@ -3269,7 +3274,9 @@ void QIconView::contentsMouseReleaseEvent( QMouseEvent *e )
 {
     QIconViewItem *item = findItem( e->pos() );
     emit mouseButtonClicked( e->button(), item, e->globalPos() );
-
+    emit clicked( item );
+    emit clicked( item, e->globalPos() );
+    
     d->mousePressed = FALSE;
     d->startDrag = FALSE;
 
@@ -3716,7 +3723,7 @@ void QIconView::keyPressEvent( QKeyEvent *e )
 	d->currentItem->setSelected( !d->currentItem->isSelected(), TRUE );
     } break;
     case Key_Enter: case Key_Return:
-	emit doubleClicked( d->currentItem );
+	emit returnPressed( d->currentItem );
 	break;
     case Key_Down: {
 	QIconViewItem *item;
@@ -3896,6 +3903,8 @@ void QIconView::selectByRubber( QRect oldRubber )
     }
     emit selectionChanged();
     emit selectionChanged( selected );
+    if ( d->selectionMode == Single )
+	emit selectionChanged( d->currentItem );
 }
 
 /*!
@@ -4035,6 +4044,8 @@ void QIconView::insertInGrid( QIconViewItem *item )
 void QIconView::emitSelectionChanged()
 {
     emit selectionChanged();
+    if ( d->selectionMode == Single )
+	emit selectionChanged( d->currentItem );
     emitNewSelectionNumber();
 }
 

@@ -380,21 +380,30 @@ public slots:
     virtual void setContentsPos( int x, int y );
 
 signals:
-    void dropped( QDropEvent *e );
-    void moved();
-    void doubleClicked( QIconViewItem *item );
-    void itemRightPressed( QIconViewItem *item );
-    void viewportRightPressed();
-    void rightButtonPressed( QIconViewItem* item, const QPoint& pos );
-    void mouseButtonPressed( int button, QIconViewItem* item, const QPoint& pos );
-    void itemRightClicked( QIconViewItem *item );
-    void viewportRightClicked();
-    void rightButtonClicked( QIconViewItem* item, const QPoint& pos );
-    void mouseButtonClicked( int button, QIconViewItem* item, const QPoint& pos );
     void selectionChanged();
     void selectionChanged( int numItems );
+    void selectionChanged( QIconViewItem *item );
     void currentChanged();
     void currentChanged( QIconViewItem *item );
+    void clicked( QIconViewItem * );
+    void clicked( QIconViewItem *, const QPoint & );
+    void pressed( QIconViewItem * );
+    void pressed( QIconViewItem *, const QPoint & );
+    
+    void doubleClicked( QIconViewItem *item );
+    void returnPressed( QIconViewItem *item );
+    void rightButtonClicked( QIconViewItem* item, const QPoint& pos );
+    void rightButtonPressed( QIconViewItem* item, const QPoint& pos );
+    void mouseButtonPressed( int button, QIconViewItem* item, const QPoint& pos );
+    void mouseButtonClicked( int button, QIconViewItem* item, const QPoint& pos );
+
+    void itemRightClicked( QIconViewItem *item );
+    void itemRightPressed( QIconViewItem *item );
+    void viewportRightPressed();
+    void viewportRightClicked();
+    
+    void dropped( QDropEvent *e );
+    void moved();
     void onItem( QIconViewItem *item );
     void onViewport();
     void itemRenamed( QIconViewItem *item, const QString & );
