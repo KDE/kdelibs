@@ -45,3 +45,5 @@ xdg_apps_DATA = kresources.desktop
 
 servicetypedir = $(kde_servicetypesdir)
 servicetype_DATA = kresources_plugin.desktop
+
+include ../admin/Doxyfile.am
