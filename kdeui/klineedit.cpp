@@ -193,8 +193,8 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                     if ( handleSignals() )
                         makeCompletion( txt );
                     e->accept();
-                    return;
                 }
+	       return;
             }
         }
 
@@ -210,8 +210,8 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                 if ( handleSignals() )
                     makeCompletion( curr_txt );
                 e->accept();
-                return;
             }
+	   return;
         }
 
         // Handles completion.
