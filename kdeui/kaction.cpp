@@ -2206,6 +2206,17 @@ void KActionMenu::unplug( QWidget* widget )
     KAction::unplug( widget );
 }
 
+void KActionMenu::setEnabled( bool b )
+{
+  KAction::setEnabled( b );
+}
+
+// To be removed (BCI)
+void KActionMenu::setEnabled( int id, bool b )
+{
+  KAction::setEnabled( id, b );
+}
+
 void KActionMenu::setText( int id, const QString& text )
 {
   QWidget *w = container( id );

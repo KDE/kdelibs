@@ -571,7 +571,7 @@ public:
     virtual void setExclusiveGroup( const QString& name );
     virtual QString exclusiveGroup() const;
 
-public:
+public slots:
     /**
      *  Sets the state of the action.
      */
@@ -1214,7 +1214,9 @@ public:
     virtual int plug( QWidget* widget, int index = -1 );
     virtual void unplug( QWidget* widget );
 
+    virtual void setEnabled( bool b );
 protected:
+    virtual void setEnabled( int i, bool enable );
     virtual void setText( int id, const QString& text );
     virtual void setIconSet( int id, const QIconSet& iconSet );
 
