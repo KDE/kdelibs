@@ -24,6 +24,7 @@
 #include <klocale.h>
 #include <kpixmapprovider.h>
 #include <kstdaccel.h>
+#include <kdebug.h>
 
 #include "kcombobox.h"
 #include "kcombobox.moc"
@@ -100,19 +101,24 @@ void KComboBox::setContextMenuEnabled( bool showMenu )
         m_bEnableMenu = showMenu;
 }
 
-void KComboBox::setCompletedText( const QString& text )
+void KComboBox::setCompletedText( const QString& text, bool marked )
 {
-    KGlobalSettings::Completion mode = completionMode();
     int pos = cursorPosition();
     setEditText( text );
 	// Hightlight the text whenever appropriate.
-    if( (mode == KGlobalSettings::CompletionAuto ||
-	     mode == KGlobalSettings::CompletionMan ) &&
-	     m_pEdit )
+    if( marked && m_pEdit )
 	{
         m_pEdit->setSelection( pos, text.length() );
         m_pEdit->setCursorPosition( pos );
     }    
+}
+
+void KComboBox::setCompletedText( const QString& text )
+{
+    KGlobalSettings::Completion mode = completionMode();
+    bool marked = ( mode == KGlobalSettings::CompletionAuto ||
+                    mode == KGlobalSettings::CompletionMan );
+    setCompletedText( text, marked );
 }
 
 void KComboBox::makeCompletion( const QString& text )
@@ -130,18 +136,20 @@ void KComboBox::makeCompletion( const QString& text )
        }
 
 	QString match = comp->makeCompletion( text );
-
+    KGlobalSettings::Completion mode = completionMode();
         // If no match or the same text, simply return without completing.
         if( match.isNull() || match == text )
         {
        	    // Put the cursor at the end when in semi-automatic
 	    // mode and completion is invoked with the same text.
-    	    if( completionMode() == KGlobalSettings::CompletionMan ) {
+    	    if( mode == KGlobalSettings::CompletionMan ) {
 		m_pEdit->end( false );
 	    }
     	    return;
       	}
-      	setCompletedText( match );
+      	bool marked = ( mode == KGlobalSettings::CompletionAuto ||
+      	                mode == KGlobalSettings::CompletionMan );
+      	setCompletedText( match, marked );
     }
 
     // Read - only combobox
@@ -179,15 +187,7 @@ void KComboBox::rotateText( KCompletionBase::KeyBindingType type )
 	       return;
 
             bool marked = m_pEdit->hasMarkedText(); // See if it had marked text
-            int pos = cursorPosition(); // Note the current cursor position
-	    setEditText( input );
-            // Re-mark the selection if it was
-	    // previously selected
-            if( marked )
-            {
-                m_pEdit->setSelection( pos, input.length() );
-                m_pEdit->setCursorPosition( pos );
-	    }
+            setCompletedText( input, marked );
         }
     }
 }
@@ -365,6 +365,7 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
 
     else if ( (o == this || o == m_pEdit) && ev->type() == QEvent::KeyPress ) {
 	QKeyEvent *e = static_cast<QKeyEvent *>( ev );
+	kdDebug() << "Got a Key event with code: " << e->key() << endl;
 	if ( e->key() == Key_Return || e->key() == Key_Enter) {
 
 	    // On Return pressed event, emit both returnPressed(const QString&)

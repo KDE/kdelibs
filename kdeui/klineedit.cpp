@@ -69,6 +69,25 @@ void KLineEdit::setCompletionMode( KGlobalSettings::Completion mode )
     KCompletionBase::setCompletionMode( mode );
 }
 
+void KLineEdit::setCompletedText( const QString& text, bool marked )
+{
+    int pos = cursorPosition();
+    setText( text );
+    if( marked )
+    {
+        setSelection( pos, text.length() );
+	    setCursorPosition( pos );
+    }
+}
+
+void KLineEdit::setCompletedText( const QString& text )
+{
+    KGlobalSettings::Completion mode = completionMode();
+    bool marked = ( mode == KGlobalSettings::CompletionAuto ||
+                    mode == KGlobalSettings::CompletionMan );
+    setCompletedText( text, marked );
+}
+
 void KLineEdit::rotateText( KCompletionBase::KeyBindingType type )
 {
     KCompletion* comp = compObj();
@@ -82,27 +101,7 @@ void KLineEdit::rotateText( KCompletionBase::KeyBindingType type )
        {
 	  return;
        }
-       bool marked = hasMarkedText(); // Note if current text has been marked
-       int pos = cursorPosition(); // Note the current cursor position
-       setText( input );
-       if( marked )
-       {
-	  setSelection( pos, input.length() );
-	  setCursorPosition( pos );
-       }
-    }
-}
-
-void KLineEdit::setCompletedText( const QString& text )
-{
-    KGlobalSettings::Completion mode = completionMode();
-    int pos = cursorPosition();
-    setText( text );
-    if( mode == KGlobalSettings::CompletionAuto ||
-    	mode == KGlobalSettings::CompletionMan )
-    {
-    	setSelection( pos, text.length() );
-	    setCursorPosition( pos );
+       setCompletedText( input, hasMarkedText() );
     }
 }
 
@@ -119,17 +118,20 @@ void KLineEdit::makeCompletion( const QString& text )
 
     // If no match or the same match, simply return
     // without completing.
+    KGlobalSettings::Completion mode = completionMode();
     if( match.isNull() || match == text )
     {
     	// Put the cursor at the end when in semi-automatic
 	    // mode and completion is invoked with the same text.
-    	if( completionMode() == KGlobalSettings::CompletionMan )
+    	if( mode == KGlobalSettings::CompletionMan )
     	{
 	        end( false );
     	}
         return;
-    }    
-    setCompletedText( match );
+    }
+    bool marked = ( mode == KGlobalSettings::CompletionAuto ||
+                    mode == KGlobalSettings::CompletionMan );
+    setCompletedText( match, marked );
 }
 
 void KLineEdit::connectSignals( bool handle ) const

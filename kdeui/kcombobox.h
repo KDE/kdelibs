@@ -322,6 +322,15 @@ public slots:
     */
     void rotateText( KCompletionBase::KeyBindingType /* type */ );
 
+    /*
+    * Sets the completed text in the line-edit appropriately.
+    *
+    * This function is an implementation for @ref KCompletionBase::setCompletedText.
+    * It is provided to allow outside
+    *
+    */
+    virtual void setCompletedText( const QString& );
+
 protected slots:
 
     /**
@@ -343,11 +352,6 @@ protected slots:
     */
     virtual void makeCompletion( const QString& );
     
-    /*
-    * See @ref KCompletionBase::setCompletionText.
-    */    
-    virtual void setCompletedText( const QString& );    
-
 protected:
 
     /**
@@ -374,6 +378,16 @@ protected:
     * @reimplemented
     */
     virtual bool eventFilter( QObject *, QEvent * );
+
+    /*
+    * This function simply sets the lineedit text and
+    * highlights the text appropriately if the boolean
+    * value is set to true.
+    *
+    * @param
+    * @param
+    */
+    virtual void setCompletedText( const QString& /* */, bool /*marked*/ );
 
 private:
 

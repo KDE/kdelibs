@@ -320,7 +320,17 @@ protected:
     *
     * @reimplemented
     */
-    virtual bool eventFilter( QObject *, QEvent * );    
+    virtual bool eventFilter( QObject *, QEvent * );
+
+    /*
+    * This function simply sets the lineedit text and
+    * highlights the text appropriately if the boolean
+    * value is set to true.
+    *
+    * @param text
+    * @param marked
+    */
+    virtual void setCompletedText( const QString& /*text*/, bool /*marked*/ );
 
 private:
 
