@@ -966,7 +966,7 @@ void KDialogBase::slotNo()
 void KDialogBase::slotCancel()
 {
   emit cancelClicked();
-  done( mMessageBoxMode == true ? Cancel : Rejected );
+  done( mMessageBoxMode == true ? (int)Cancel : (int)Rejected );
 }
 
 
