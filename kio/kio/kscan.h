@@ -26,6 +26,9 @@
 
 class QImage;
 
+// For koffice-1.1.1. Don't use.
+#define KSCANDIALOG_HAS_SETUP 1
+
 /**
  * This is a base class for scanning dialogs. You can derive from this class
  * and implement your own dialog. An implementation is available in
