@@ -542,7 +542,7 @@ protected:
 	    return *((Q_UINT32 *)this) != *((Q_UINT32 *)&other);
 	}
 
-        EDisplay _display : 5;
+        EDisplay _display : 4;
         EBackgroundRepeat _bg_repeat : 2;
         bool _bg_attachment : 1;
         EOverflow _overflow : 4 ;
