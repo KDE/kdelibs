@@ -25,12 +25,94 @@
 #include <qfile.h>
 
 #include <klocale.h>
+#include <kdebug.h>
 #include <kurl.h>
+#include <ktempfile.h>
+
+#include "kio/global.h"
+#include "kio/connection.h"
+#include "kio/slaveinterface.h"
 
 #include "klauncher.h"
 #include "klauncher_cmds.h"
 
+using namespace KIO;
+
 template class QList<KLaunchRequest>;
+template class QList<IdleSlave>;
+
+IdleSlave::IdleSlave(KSocket *socket)
+{
+   mConn.init(socket);
+   mConn.connect(this, SLOT(gotInput()));
+   mConn.send( CMD_SLAVE_STATUS );
+   mPid = 0;
+   // Timeout!
+}
+
+void
+IdleSlave::gotInput()
+{
+   int cmd;
+   QByteArray data;
+   if (mConn.read( &cmd, data) == -1)
+   {
+      // Communication problem with slave. 
+      kDebugInfo(7016, "SlavePool: No communication with slave.");
+      delete this;
+   }
+   else if (cmd == MSG_SLAVE_ACK)
+   {
+      kDebugInfo(7016, "SlavePool: Slave is connecting to app.");
+      delete this;
+   }
+   else if (cmd != MSG_SLAVE_STATUS)
+   {
+      kDebugInfo(7016, "SlavePool: Unexpected data from slave.");
+      delete this;
+   }
+   else 
+   {   
+      QDataStream stream( data, IO_ReadOnly );
+      pid_t pid;
+      QCString protocol;
+      QString host;
+      Q_INT8 b;
+      stream >> pid >> protocol >> host >> b;
+      mPid = pid;
+      mConnected = (b != 0);
+      mProtocol = protocol;
+      mHost = host;
+      kdDebug(7016) << "SlavePool: SlaveStatus = "
+	<< mProtocol << " " << mHost << " " << 
+           (mConnected ? "Connected" : "Not connected") << endl;
+   }
+}
+
+void
+IdleSlave::connect(const QString &app_socket)
+{
+   kdDebug(7016) << "SlavePool: New mission for slave:"
+	<< mProtocol << " " << mHost << " " << 
+	   (mConnected ? "Connected" : "Not connected") << endl;
+
+   QByteArray data;
+   QDataStream stream( data, IO_WriteOnly);
+   stream << app_socket;
+   mConn.send( CMD_SLAVE_CONNECT, data );
+   // Timeout!
+}
+
+bool
+IdleSlave::match(const QString &protocol, const QString &host, bool connected)
+{
+   if (protocol != mProtocol) return false;
+   if (host.isEmpty()) return true;
+   if (host != mHost) return false;
+   if (!connected) return true;
+   if (!mConnected) return false;
+   return true;
+}
 
 KLauncher::KLauncher(int _kdeinitSocket)
   : KUniqueApplication( false, false ), // No Styles, No GUI
@@ -41,12 +123,20 @@ KLauncher::KLauncher(int _kdeinitSocket)
    connect(dcopClient(), SIGNAL( applicationRegistered( const QCString &)),
            this, SLOT( slotAppRegistered( const QCString &)));
 
+   KTempFile domainname(QString::null, QString::fromLatin1(".slave-socket"));
+   mPoolSocketName = domainname.name();
+   mPoolSocket = new KServerSocket(mPoolSocketName);
+   connect(mPoolSocket, SIGNAL(accepted( KSocket *)),
+           SLOT(acceptSlave(KSocket *)));
+
    kdeinitNotifier = new QSocketNotifier(kdeinitSocket, QSocketNotifier::Read);
    connect(kdeinitNotifier, SIGNAL( activated( int )),
            this, SLOT( slotKInitData( int )));
    kdeinitNotifier->setEnabled( true );
    lastRequest = 0;
 }
+
+
 
 bool
 KLauncher::process(const QCString &fun, const QByteArray &data,
@@ -97,6 +187,21 @@ fprintf(stderr, "KLauncher: Got start_service_by_desktop_name('%s', ...)\n", ser
          QDataStream stream2(replyData, IO_WriteOnly);
          stream2 << DCOPresult.result << DCOPresult.dcopName << DCOPresult.error;
       }
+      return true;
+   }
+   else if (fun == "requestSlave(QString,QString,QString)") 
+   {
+      QDataStream stream(data, IO_ReadOnly);
+      QString protocol;
+      QString host;
+      QString app_socket;
+      stream >> protocol >> host >> app_socket;
+fprintf(stderr, "requestSlave %s %s\n", debugString(protocol), debugString(host));
+      replyType = "QString";
+      QString error;
+      pid_t pid = requestSlave(protocol, host, app_socket, error);
+      QDataStream stream2(replyData, IO_WriteOnly);
+      stream2 << pid << error;;
       return true;
    }
    if (KUniqueApplication::process(fun, data, replyType, replyData))
@@ -566,6 +671,90 @@ KLauncher::removeArg( QValueList<QCString> &args, const QCString &target)
          return;
       it = args.remove( it );
    }
+}
+
+///// IO-Slave functions
+
+pid_t
+KLauncher::requestSlave(const QString &protocol, 
+                        const QString &host,
+                        const QString &app_socket, QString &error)
+{
+    IdleSlave *slave;
+    for(slave = mSlaveList.first(); slave; slave = mSlaveList.next())
+    {
+        if (slave->match(protocol, host, true))
+           break;
+    }
+    if (!slave)
+    {
+       for(slave = mSlaveList.first(); slave; slave = mSlaveList.next())
+       {
+          if (slave->match(protocol, host, false))
+             break;
+       }
+    }
+    if (!slave)
+    {
+       for(slave = mSlaveList.first(); slave; slave = mSlaveList.next())
+       {
+          if (slave->match(protocol, QString::null, false))
+             break;
+       }
+    }
+    if (slave)
+    {
+       mSlaveList.removeRef(slave);
+       slave->connect(app_socket);
+       return slave->pid();
+    }
+
+    kdDebug(7016) << "requestSlave( " << protocol << ", " << host << ", " << app_socket << ")\n";
+
+    QCString name = QCString("kio_") + protocol.ascii();
+    QCString arg1 = protocol.ascii();
+    QCString arg2 = QFile::encodeName(mPoolSocketName);
+    QCString arg3 = QFile::encodeName(app_socket);
+    QValueList<QCString> arg_list;
+    arg_list.append(arg1);
+    arg_list.append(arg2);  
+    arg_list.append(arg3);  
+
+    KLaunchRequest *request = new KLaunchRequest;
+    request->name = name;
+    request->arg_list =  arg_list;
+    request->dcop_name = QString::null;
+    request->dcop_service_type = KService::DCOP_None;
+    request->pid = 0;
+    request->status = KLaunchRequest::Launching;
+    request->transaction = 0; // No confirmation is send
+    requestStart(request);
+    pid_t pid = request->pid;
+
+    kdDebug(7016) << "Slave launched, pid = " << pid << "\n";
+
+    // We don't care about this request any longer.... 
+    requestDone(request);
+    requestList.removeRef( request ); 
+    return pid;
+}
+
+void
+KLauncher::acceptSlave(KSocket *slaveSocket)
+{
+    kDebugInfo(7016, "SlavePool: accepSlave(...)");
+    IdleSlave *slave = new IdleSlave(slaveSocket);
+    // Send it a SLAVE_STATUS command.
+    mSlaveList.append(slave);
+    connect(slave, SIGNAL(destroyed()), this, SLOT(slotSlaveGone()));
+}
+
+void
+KLauncher::slotSlaveGone()
+{
+    kDebugInfo(7016, "SlavePool: slotSlaveGone(...)");
+    IdleSlave *slave = (IdleSlave *) sender();
+    mSlaveList.removeRef(slave);
 }
 
 #include "klauncher.moc"

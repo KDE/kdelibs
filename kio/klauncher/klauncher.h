@@ -21,12 +21,38 @@
 #define _KLAUNCHER_H_
 
 #include <sys/types.h>
+#include <unistd.h>
 #include <qstring.h>
 #include <qvaluelist.h>
-#include <kuniqueapp.h>
-#include <dcopclient.h>
 #include <qsocketnotifier.h>
+#include <qlist.h>
+
+#include <dcopclient.h>
+#include <kio/connection.h>
+#include <ksock.h>
+#include <kuniqueapp.h>
+
 #include <kservice.h>
+
+class IdleSlave : public QObject
+{
+   Q_OBJECT
+public:
+   IdleSlave(KSocket *socket);
+   bool match( const QString &protocol, const QString &host, bool connected);
+   void connect( const QString &app_socket);
+   pid_t pid() { return mPid;}
+
+protected slots:
+   void gotInput();      
+
+protected:
+   KIO::Connection mConn;
+   QString mProtocol;
+   QString mHost;
+   bool mConnected;
+   pid_t mPid;
+};
 
 class KLaunchRequest
 {
@@ -78,9 +104,14 @@ protected:
 
    void removeArg( QValueList<QCString> &args, const QCString &target);
 
+   pid_t requestSlave(const QString &protocol, const QString &host,
+                      const QString &app_socket, QString &error);
+
 public slots:
    void slotKInitData(int);
    void slotAppRegistered(const QCString &appId);
+   void acceptSlave( KSocket *);
+   void slotSlaveGone();
 
 protected:
    QList<KLaunchRequest> requestList;
@@ -88,5 +119,8 @@ protected:
    QSocketNotifier *kdeinitNotifier;
    serviceResult DCOPresult;
    KLaunchRequest *lastRequest;
+   QString mPoolSocketName;                         
+   KServerSocket *mPoolSocket;
+   QList<IdleSlave> mSlaveList;
 };
 #endif
