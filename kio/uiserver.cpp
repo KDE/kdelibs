@@ -494,7 +494,7 @@ void UIServer::totalDirs( int id, unsigned long dirs )
 
 void UIServer::processedSize( int id, unsigned long size )
 {
-  kdDebug(7024) << "UIServer::processedSize " << id << " " << (unsigned int) size << endl;
+  //kdDebug(7024) << "UIServer::processedSize " << id << " " << (unsigned int) size << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -504,7 +504,7 @@ void UIServer::processedSize( int id, unsigned long size )
 
 void UIServer::processedFiles( int id, unsigned long files )
 {
-  kdDebug(7024) << "UIServer::processedFiles " << id << " " << (unsigned int) files << endl;
+  //kdDebug(7024) << "UIServer::processedFiles " << id << " " << (unsigned int) files << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -524,7 +524,7 @@ void UIServer::processedDirs( int id, unsigned long dirs )
 
 void UIServer::percent( int id, unsigned long ipercent )
 {
-  kdDebug(7024) << "UIServer::percent " << id << " " << (unsigned int) ipercent << endl;
+  //kdDebug(7024) << "UIServer::percent " << id << " " << (unsigned int) ipercent << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -534,7 +534,7 @@ void UIServer::percent( int id, unsigned long ipercent )
 
 void UIServer::speed( int id, unsigned long bytes_per_second )
 {
-  kdDebug(7024) << "UIServer::speed " << id << " " << (unsigned int) bytes_per_second << endl;
+  //kdDebug(7024) << "UIServer::speed " << id << " " << (unsigned int) bytes_per_second << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -544,7 +544,7 @@ void UIServer::speed( int id, unsigned long bytes_per_second )
 
 void UIServer::infoMessage( int id, const QString & msg )
 {
-  kdDebug(7024) << "UIServer::infoMessage " << id << " " << msg << endl;
+  //kdDebug(7024) << "UIServer::infoMessage " << id << " " << msg << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
