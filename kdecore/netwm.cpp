@@ -1552,7 +1552,7 @@ unsigned long NETWinInfo::event(XEvent *e) {
 	} else if (e->xclient.message_type == net_wm_desktop) {
 	    dirty = WMDesktop;
 
-	    changeDesktop(e->xclient.data.l[0]);
+	    changeDesktop(e->xclient.data.l[0] + 1);
 	}
     }
 
