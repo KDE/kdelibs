@@ -41,20 +41,28 @@ const char *currentTest = noTest;
 		exit(1); \
 	 }
 
-#define testEquals(expr, expr2) 										\
-	{																	\
-		typeof(expr2) val1 = expr, val2 = expr2;						\
-		if(!(val1 == val2))												\
-		{																\
-	 		testCaption();												\
-	 		fprintf (stderr,"   => test assertion failed: (%s == %s)\n",\
-														#expr, #expr2); \
-	 		cerr << "   => expected '" << (val1) << "'" << " got "		\
-			 	 << "'" << (val2) << "'." << endl;						\
-			exit(1);													\
-		}																\
-	}
+template<typename T1, typename T2>
+inline void testEqualsCheck(const T1& expected, const T2& got,
+		 const char *file, int line, const char *expr, const char *expr2)
+{
+	if(! (static_cast<T2>(expected) == got) ) {
+ 		cerr << endl
 
+			 << "  " << currentClass << "::" << currentTest
+			 << " (" << file << ":" << line << ")" << endl
+
+ 			 << "   => test assertion failed:"
+			 << " (" << expr << " == " << expr2 << ")" << endl
+
+ 			 << "   => expected '" << expected << "'" << " got "
+		 	 << "'" << got << "'." << endl;
+		exit(1);
+	}
+}
+
+#define testEquals(expr, expr2) 										\
+	testEqualsCheck(expr, expr2, __FILE__, __LINE__, #expr, #expr2)
+	
 #define TEST(func)													\
 	struct t ## func : TestClass 									\
 	{																\
