@@ -1,4 +1,4 @@
 <!-- requires that packagename is defined in the documentation prologue -->
-<para>&kappname; faz parte do projecto &kde; &kde-http;.</para>
+<para>O &kappname; faz parte do projecto do &kde; &kde-http;.</para>
 
-<para>&kappname; pode ser encontrado no pacote &package; em &kde-ftp;, o servidor principal de &FTP; do projecto &kde;.</para>
+<para>O &kappname; pode ser encontrado no pacote &package; em &kde-ftp;, o 'site' &FTP; principal do projecto do &kde;.</para>

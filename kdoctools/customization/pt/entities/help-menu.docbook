@@ -21,10 +21,7 @@
 <guimenuitem>O que é Isto?</guimenuitem>
 </menuchoice>
 </term>
-<listitem><para><action>Changes the mouse cursor to a combination arrow and
-question mark.</action>  Clicking on items within &kappname; will open a help
-window (if one exists for the particular item) explaining the item's
-function.</para></listitem>
+<listitem><para><action>Muda o cursor do rato para uma mistura de uma seta com um ponto de interrogação.</action>  Ao carregares nos itens do &kappname; irás abrir uma janela de ajuda (se existir alguma para o item em particular) que explica a função do item.</para></listitem>
 </varlistentry>
 
 
@@ -33,8 +30,8 @@ function.</para></listitem>
 <guimenu>Ajuda</guimenu>
 <guimenuitem>Comunicar Erro...</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>Opens the Bug report dialog</action> where you can
-report a bug or request a <quote>wishlist</quote> feature.</para></listitem>
+<listitem><para><action>Abre a janela de Relato de Erros</action> onde podes
+comunicar um erro ou <quote>pedir</quote> uma funcionalidade.</para></listitem>
 </varlistentry>
 
 <varlistentry>
@@ -42,8 +39,7 @@ report a bug or request a <quote>wishlist</quote> feature.</para></listitem>
 <guimenu>Ajuda</guimenu>
 <guimenuitem>Acerca do &kappname;</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>This will display version and author
-information.</action></para></listitem>
+<listitem><para><action>Isto irá mostrar a versão e as informações do autor.</action></para></listitem>
 </varlistentry>
 
 <varlistentry>
@@ -51,7 +47,6 @@ information.</action></para></listitem>
 <guimenu>Ajuda</guimenu>
 <guimenuitem>Acerca do KDE</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>This displays the KDE version and other basic
-information.</action></para></listitem>
+<listitem><para><action>Isto mostra a versão do KDE bem como outras informações básicas.</action></para></listitem>
 </varlistentry>
 </variablelist>
