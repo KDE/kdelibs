@@ -632,7 +632,8 @@ void Scheduler::slotCleanIdleSlaves()
             slave = idleSlaves->next();
             idleSlaves->removeRef(removeSlave);
             slaveList->removeRef(removeSlave);
-            delete removeSlave;
+            removeSlave->connection()->close();
+            removeSlave->deref();
         }
         else
         {
