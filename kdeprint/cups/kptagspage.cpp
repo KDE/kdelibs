@@ -77,7 +77,7 @@ void KPTagsPage::setOptions(const QMap<QString,QString>& opts)
 {
 	int	r(0);
 	QRegExp	re("^\"|\"$");
-	for (QMap<QString,QString>::ConstIterator it=opts.begin(); it!=opts.end() && r<m_tags->numCols(); ++it)
+	for (QMap<QString,QString>::ConstIterator it=opts.begin(); it!=opts.end() && r<m_tags->numRows(); ++it)
 	{
 		if (it.key().startsWith("KDEPrint-"))
 		{
@@ -87,7 +87,7 @@ void KPTagsPage::setOptions(const QMap<QString,QString>& opts)
 			r++;
 		}
 	}
-	for (; r<m_tags->numCols(); r++)
+	for (; r<m_tags->numRows(); r++)
 	{
 		m_tags->setText(r, 0, QString::null);
 		m_tags->setText(r, 1, QString::null);
@@ -96,7 +96,7 @@ void KPTagsPage::setOptions(const QMap<QString,QString>& opts)
 
 void KPTagsPage::getOptions(QMap<QString,QString>& opts, bool)
 {
-	for (int r=0; r<m_tags->numCols(); r++)
+	for (int r=0; r<m_tags->numRows(); r++)
 	{
 		QString	tag(m_tags->text(r, 0)), val(m_tags->text(r, 1));
 		if (!tag.isEmpty())
