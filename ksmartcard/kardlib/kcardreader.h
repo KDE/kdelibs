@@ -22,46 +22,53 @@
 #ifndef _KCARDREADER_H
 #define _KCARDREADER_H
 
+#include <winscard.h>
 #include <kpcsc.h>
 #include <qstring.h>
 
 
 class KCardReader {
-friend class KPCSC;
-public:
-	~KCardReader();
-
-	bool isCardPresent();
-	bool inTransaction();
-
-	
-	QString getReaderName() const { return _name;}
-	
-	int beginTransaction();
-	int endTransaction();
-	int cancelTransaction();
-        int resetCard();
-
-	int doCommand(QString command, QString& response);
-	int doCommand(QString command, QString& response, QString & status);
-	int doCommand(KCardCommand command, KCardCommand& response);
-	int doCommand(KCardCommand command, KCardCommand& response, KCardCommand & status);
-private:
-	class KCardReaderPrivate;
-	KCardReaderPrivate *d;
-
-protected:
-	KCardReader();
-	void setCard(long ctx, QString name, long card, unsigned long protocol);
-
-private:
-	long _ctx;
-	long _card;
-	unsigned long _state;
-	unsigned long _protocol;
-	QString _name;
-	bool _transacting;
-	unsigned long _readerLen, _atrLen;
+  friend class KPCSC;
+ public:
+  
+  
+  ~KCardReader();
+  
+  bool isCardPresent();
+  bool inTransaction();
+  
+  
+  QString getReaderName() const { return _name;}
+  
+  int beginTransaction();
+  int endTransaction();
+  int cancelTransaction();
+  int resetCard();
+  
+  int doCommand(QString command, QString& response);
+  int doCommand(QString command, QString& response, QString & status);
+  int doCommand(KCardCommand command, KCardCommand& response);
+  int doCommand(KCardCommand command, KCardCommand& response, KCardCommand & status);
+  
+  //const KCardReader & operator =(const KCardReader & cr);
+ private:
+  class KCardReaderPrivate;
+  KCardReaderPrivate *d;
+ 
+ protected:
+  
+  KCardReader(); 
+  //KCardReader (const KCardReader & rc);
+  void setCard(unsigned long ctx, QString name,SCARDHANDLE card, unsigned long protocol);
+  
+ private:
+  long _ctx;
+  SCARDHANDLE  _card;
+  unsigned long _state;
+  unsigned long _protocol;
+  QString _name;
+  bool _transacting;
+  unsigned long _readerLen, _atrLen;
 };
 
 

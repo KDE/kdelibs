@@ -20,7 +20,6 @@
 
 
 #include "kcardreader.h"
-#include <winscard.h>
 #include <stdlib.h>
 #include <kdebug.h>
 
@@ -33,6 +32,11 @@ KCardReader::KCardReader() {
 	
 }
 
+// KCardReader::KCardReader (const KCardReader & rc){
+
+//   *this=rc;
+
+// }
 
 KCardReader::~KCardReader() {
 	cancelTransaction();
@@ -50,11 +54,31 @@ int KCardReader::resetCard() {
   return 0;
 }
 
-void KCardReader::setCard(long ctx, QString name, long card, unsigned long protocol) {
+
+// const KCardReader & KCardReader::operator =(const KCardReader & cr){
+  
+//   kdDebug(912) << "COPIANDO" <<  endl;
+//   if (cr._atrLen==0) {
+
+//     _ctx=0;
+//    _name = QString::null;
+//    _card = 0;
+//    _protocol = 0;
+    
+//   }
+  
+//   setCard (cr._ctx,cr._name,cr._card,cr._protocol);
+//   return *this;
+
+// }
+
+
+void KCardReader::setCard(unsigned long ctx, QString name,SCARDHANDLE card, unsigned long protocol) {
    _ctx = ctx;
    _name = name;
    _card = card;
    _protocol = protocol;
+
 }
 
 
@@ -135,7 +159,6 @@ int KCardReader::doCommand(QString command, QString& response, QString & status)
   status=response.right(4);
   response=response.mid(0,response.length()-4);
   
-
   
   return rc;
 }
@@ -167,16 +190,16 @@ int KCardReader::doCommand(KCardCommand command, KCardCommand& response, KCardCo
 }
 
 int KCardReader::doCommand(KCardCommand command, KCardCommand& response) {
-long rc = 0;
-unsigned long resSize = MAX_BUFFER_SIZE*sizeof(unsigned char);
-unsigned char res[MAX_BUFFER_SIZE];
-SCARD_IO_REQUEST _out;        // hmm what to do with this
+  long rc = 0;
+  unsigned long resSize = MAX_BUFFER_SIZE*sizeof(unsigned char);
+  unsigned char res[MAX_BUFFER_SIZE];
+  SCARD_IO_REQUEST _out;        // hmm what to do with this
+  
+  if (command.size() == 0)
+    return -2;
 
-	if (command.size() == 0)
-		return -2;
-
-
-;
+  
+  
 
 	rc = SCardTransmit(_card, 
 			   SCARD_PCI_T0,
@@ -186,17 +209,20 @@ SCARD_IO_REQUEST _out;        // hmm what to do with this
 			   res,
 			   &resSize);
 
-
+	
 	response.duplicate(res, resSize);
+
+	
+
 	kdDebug(912) << "main command " << KPCSC::decodeCommand(command) << endl;
 	kdDebug(912) << "main  resp " << KPCSC::decodeCommand(response) << endl;
-
+	
 	if (rc != SCARD_S_SUCCESS) {
-		response.resize(0);
-		return rc;
+	  response.resize(0);
+	  return rc;
 	}
-
+	
 	response.duplicate(res, resSize);
 	
-return 0;
+	return 0;
 }
