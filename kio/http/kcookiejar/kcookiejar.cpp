@@ -444,7 +444,8 @@ bool KCookieJar::extractDomains(const QString &_fqdn,
     }
 
     QStringList partList = QStringList::split('.', _fqdn, false);
-    partList.remove(partList.begin()); // Remove hostname
+    if (partList.count())
+        partList.remove(partList.begin()); // Remove hostname
     while(partList.count())
     {
        if (partList.count() == 1)
