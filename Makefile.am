@@ -21,7 +21,7 @@
 COMPILE_FIRST = dcop libltdl kdecore kdeui kdesu kssl kjs kio kimgio kfile kparts kdeprint libkmid kconf_update 
 COMPILE_LAST = doc
 
-SUBDIRS = $(COMPILE_FIRST) $(TOPSUBDIRS)
+SUBDIRS = $(COMPILE_FIRST) $(TOPSUBDIRS) $(COMPILE_LAST)
 
 $(top_srcdir)/acinclude.m4: $(top_srcdir)/admin/acinclude.m4.in $(top_srcdir)/admin/libtool.m4.in
 	@cd $(top_srcdir) && cat admin/acinclude.m4.in admin/libtool.m4.in > acinclude.m4
