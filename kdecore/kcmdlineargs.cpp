@@ -338,11 +338,12 @@ static int
 findOption(const KCmdLineOptions *options, QCString &opt,
            const char *&opt_name, const char *&def, bool &enabled)
 {
-   int result = 0;
+   int result;
    bool inverse;
    int len = opt.length();
    while(options && options->name)
    {
+      result = 0;
       inverse = false;
       opt_name = options->name;
       if (opt_name[0] == '!')
