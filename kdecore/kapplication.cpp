@@ -673,9 +673,11 @@ void KApplication::init(bool GUIenabled)
   KConfig* config = KGlobal::config();
   d->actionRestrictions = config->hasGroup("KDE Action Restrictions" );
   // For brain-dead configurations where the user's local config file is not writable.
-  config->setGroup("KDE Action Restrictions");
-  if (config->readBoolEntry("warn_unwritable_config",TRUE))
-    config->checkConfigFilesWritable(TRUE);
+  {
+    KConfigGroupSaver saver(config, "KDE Action Restrictions");
+    if (config->readBoolEntry("warn_unwritable_config",TRUE))
+       config->checkConfigFilesWritable(TRUE);
+  }
 
   if (GUIenabled)
   {
