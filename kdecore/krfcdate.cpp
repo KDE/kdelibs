@@ -152,56 +152,55 @@ KRFCDate::parseDate(const QString &_date)
      if ((year < 1900) || (year > 2500))
      	return result; // Invalid date
 
-     if (!*dateString)
-     	return result;  // Invalid date
+     // Don't fail if the time is missing.
+     if (*dateString)
+     {
+        // ' 23:12:40 GMT'
+        if (!isspace(*dateString++))
+           return result;  // Invalid date
 
-     // ' 23:12:40 GMT'
-     if (!isspace(*dateString++))
-     	return result;  // Invalid date
-
-     hour = strtol(dateString, &newPosStr, 10);
-     dateString = newPosStr;
-
-     if ((hour < 0) || (hour > 23))
-     	return result; // Invalid date
-
-     if (!*dateString)
-     	return result;  // Invalid date
-
-     // ':12:40 GMT'
-     if (*dateString++ != ':')
-     	return result;  // Invalid date
-
-     minute = strtol(dateString, &newPosStr, 10);
-     dateString = newPosStr;
-
-     if ((minute < 0) || (minute > 59))
-     	return result; // Invalid date
-
-     if (!*dateString)
-     	return result;  // Invalid date
-
-     // ':40 GMT'
-     if (*dateString != ':' && !isspace(*dateString))
-     	return result;  // Invalid date
-
-     // seconds are optional in rfc822 + rfc2822
-     if (*dateString ==':') {
-
-        dateString++;
-
-        second = strtol(dateString, &newPosStr, 10);
+        hour = strtol(dateString, &newPosStr, 10);
         dateString = newPosStr;
 
-        if ((second < 0) || (second > 59))
+        if ((hour < 0) || (hour > 23))
            return result; // Invalid date
 
-     } else {
-        dateString++;
-     }
+        if (!*dateString)
+           return result;  // Invalid date
 
-     while(*dateString && isspace(*dateString))
-     	dateString++;
+        // ':12:40 GMT'
+        if (*dateString++ != ':')
+           return result;  // Invalid date
+
+        minute = strtol(dateString, &newPosStr, 10);
+        dateString = newPosStr;
+
+        if ((minute < 0) || (minute > 59))
+           return result; // Invalid date
+
+        if (!*dateString)
+           return result;  // Invalid date
+
+        // ':40 GMT'
+        if (*dateString != ':' && !isspace(*dateString))
+           return result;  // Invalid date
+
+        // seconds are optional in rfc822 + rfc2822
+        if (*dateString ==':') {
+           dateString++;
+
+           second = strtol(dateString, &newPosStr, 10);
+           dateString = newPosStr;
+
+           if ((second < 0) || (second > 59))
+              return result; // Invalid date
+        } else {
+           dateString++;
+        }
+
+        while(*dateString && isspace(*dateString))
+           dateString++;
+     }
 
      // don't fail if the time zone is missing, some
      // broken mail-/news-clients omit the time zone
