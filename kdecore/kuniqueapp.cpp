@@ -94,7 +94,7 @@ KUniqueApplication::start(int& argc, char** argv,
      }
      
      s_DCOPClient = dc;
-     result = 0;
+     result = 1;
      ::write(fd[1], &result, 1);
      ::close(fd[1]);
      return true; // Finished.
@@ -120,7 +120,7 @@ KUniqueApplication::start(int& argc, char** argv,
      ::close(fd[0]);
 
      if (result != 0)
-        ::exit(result); // Error occured in child.
+        ::exit(result); // Error occured in child or app not already running
 
      dc = new DCOPClient();
      if (!dc->attach())
