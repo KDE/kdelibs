@@ -25,6 +25,8 @@
 #include <qlabel.h>
 #include <qwhatsthis.h>
 
+#include <kseparator.h>
+
 #include "cupsdconf.h"
 #include "cupsdoption.h"
 
@@ -35,18 +37,27 @@ CupsdBrowsingGeneralPage::CupsdBrowsingGeneralPage(QWidget *parent, const char *
 	//path_.append(i18n("General"));
 	header_ = i18n("Browsing general configuration");
 
-	for (int i=0;i<3;i++)
+	for (int i=0;i<5;i++)
 		opt_[i] = new CupsdOption(this);
 
 	browsing_ = new QCheckBox(i18n("Enable browsing"), opt_[0]);
 	browseshortnames_ = new QCheckBox(i18n("Use short names when possible"), opt_[1]);
+
+	KSeparator	*sep = new KSeparator(KSeparator::HLine, this);
+	sep->setFixedHeight(25);
+
 	implicitclasses_ = new QCheckBox(i18n("Use implicit classes"), opt_[2]);
+	implicitanyclasses_ = new QCheckBox(i18n("Create \"Any\" implicit classes when needed"), opt_[3]);
+	hideimplicitmembers_ = new QCheckBox(i18n("Hide members of implicit classes"), opt_[4]);
 
 	QVBoxLayout	*main_ = new QVBoxLayout(this, 10, 10);
 	main_->addWidget(deflabel_, 0, Qt::AlignRight|Qt::AlignVCenter);
 	main_->addWidget(opt_[0]);
 	main_->addWidget(opt_[1]);
+	main_->addWidget(sep);
 	main_->addWidget(opt_[2]);
+	main_->addWidget(opt_[3]);
+	main_->addWidget(opt_[4]);
 	main_->addStretch(1);
 }
 
@@ -72,6 +83,16 @@ bool CupsdBrowsingGeneralPage::loadConfig(CupsdConf *conf, QString&)
 		opt_[2]->setDefault(0);
 		implicitclasses_->setChecked(conf->implicitclasses_ == 1);
 	}
+	if (conf->implicitanyclasses_ != -1)
+	{
+		opt_[3]->setDefault(0);
+		implicitanyclasses_->setChecked(conf->implicitanyclasses_ == 1);
+	}
+	if (conf->hideimplicitmembers_ != -1)
+	{
+		opt_[4]->setDefault(0);
+		hideimplicitmembers_->setChecked(conf->hideimplicitmembers_ == 1);
+	}
 	return true;
 }
 
@@ -80,6 +101,8 @@ bool CupsdBrowsingGeneralPage::saveConfig(CupsdConf *conf, QString&)
 	if (!opt_[0]->isDefault()) conf->browsing_ = (browsing_->isChecked() ? 1 : 0);
 	if (!opt_[1]->isDefault()) conf->browseshortnames_ = (browseshortnames_->isChecked() ? 1 : 0);
 	if (!opt_[2]->isDefault()) conf->implicitclasses_ = (implicitclasses_->isChecked() ? 1 : 0);
+	if (!opt_[3]->isDefault()) conf->implicitanyclasses_ = (implicitanyclasses_->isChecked() ? 1 : 0);
+	if (!opt_[4]->isDefault()) conf->hideimplicitmembers_ = (hideimplicitmembers_->isChecked() ? 1 : 0);
 	return true;
 }
 
@@ -88,6 +111,8 @@ void CupsdBrowsingGeneralPage::setDefaults()
 	browsing_->setChecked(true);
 	browseshortnames_->setChecked(true);
 	implicitclasses_->setChecked(true);
+	implicitanyclasses_->setChecked(false);
+	hideimplicitmembers_->setChecked(true);
 }
 
 void CupsdBrowsingGeneralPage::setInfos(CupsdConf *conf)
@@ -95,4 +120,6 @@ void CupsdBrowsingGeneralPage::setInfos(CupsdConf *conf)
         QWhatsThis::add(browsing_, conf->comments_.toolTip(BROWSING_COMM));
         QWhatsThis::add(browseshortnames_, conf->comments_.toolTip(BROWSESHORTNAMES_COMM));
         QWhatsThis::add(implicitclasses_, conf->comments_.toolTip(IMPLICITCLASSES_COMM));
+        QWhatsThis::add(implicitanyclasses_, conf->comments_.toolTip(IMPLICITANYCLASSES_COMM));
+        QWhatsThis::add(hideimplicitmembers_, conf->comments_.toolTip(HIDEIMPLICITMEMBERS_COMM));
 }

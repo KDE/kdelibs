@@ -17,19 +17,21 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#ifndef CUPSDBROWSINGGENERALPAGE_H
-#define CUPSDBROWSINGGENERALPAGE_H
+#ifndef CUPSDSERVERJOBPAGE_H
+#define CUPSDSERVERJOBPAGE_H
 
 #include "cupsdpage.h"
 
+class QLineEdit;
+class QDirLineEdit;
 class QCheckBox;
 class CupsdOption;
 
-class CupsdBrowsingGeneralPage : public CupsdPage
+class CupsdServerJobPage : public CupsdPage
 {
 public:
-	CupsdBrowsingGeneralPage(QWidget *parent = 0, const char *name = 0);
-	~CupsdBrowsingGeneralPage();
+	CupsdServerJobPage(QWidget *parent = 0, const char *name = 0);
+	~CupsdServerJobPage();
 
 	bool loadConfig(CupsdConf *conf, QString& msg);
 	bool saveConfig(CupsdConf *conf, QString& msg);
@@ -37,13 +39,15 @@ public:
         void setInfos(CupsdConf*);
 
 private:
-	QCheckBox	*browsing_;
-	QCheckBox	*browseshortnames_;
-	QCheckBox	*implicitclasses_;
-	QCheckBox	*implicitanyclasses_;
-	QCheckBox	*hideimplicitmembers_;
+	QCheckBox	*preservejobhistory_;
+	QCheckBox	*preservejobfiles_;
+	QCheckBox	*autopurgejobs_;
+	QLineEdit	*maxjobs_;
+	QLineEdit	*filterlimit_;
+	QLineEdit	*classification_;
+	QCheckBox	*classifyoverride_;
 
-	CupsdOption	*opt_[5];
+	CupsdOption	*opt_[7];
 };
 
 #endif

@@ -52,9 +52,13 @@ CupsdConf::CupsdConf()
 	defaultlanguage_ = QString::null;
 	preservejobhistory_ = -1;
 	preservejobfiles_ = -1;
+	autopurgejobs_ = -1;
+	maxjobs_ = -1;
+	filterlimit_ = -1;
+	classification_ = QString::null;
+	classifyoverride_ = -1;
 	printcap_ = QString::null;
 	ripcache_ = QString::null;
-	filterlimit_ = -1;
 	hostnamelookups_ = -1;
 	keepalive_ = -1;
 	keepalivetimeout_ = -1;
@@ -64,6 +68,9 @@ CupsdConf::CupsdConf()
 	browsing_ = -1;
 	browseshortnames_ = -1;
 	implicitclasses_ = -1;
+	implicitanyclasses_ = -1;
+	hideimplicitmembers_ = -1;
+	browseprotocols_ = -1;
 	// browseaddress_
 	browseport_ = -1;
 	// browserelay
@@ -189,12 +196,20 @@ bool CupsdConf::saveToFile(const QString& filename)
 		if (preservejobhistory_ != -1) t << "PreserveJobHistory " << (preservejobhistory_ == 1 ? "Yes" : "No") << endl;
 		t << endl << comments_[PRESERVEJOBFILE_COMM] << endl;
 		if (preservejobfiles_ != -1) t << "PreserveJobFiles " << (preservejobfiles_ == 1 ? "Yes" : "No") << endl;
+		t << endl << comments_[AUTOPURGEJOBS_COMM] << endl;
+		if (autopurgejobs_ != -1) t << "AutoPurgeJobs " << (autopurgejobs_ == 1 ? "Yes" : "No") << endl;
+		t << endl << comments_[MAXJOBS_COMM] << endl;
+		if (maxjobs_ != -1) t << "MaxJobs " << maxjobs_ << endl;
+		t << endl << comments_[FILTERLIMIT_COMM] << endl;
+		if (filterlimit_ != -1) t << "FilterLimit " << filterlimit_ << endl;
+		t << endl << comments_[CLASSIFICATION_COMM] << endl;
+		if (!classification_.isNull()) t << "Classification " << classification_ << endl;
+		t << endl << comments_[CLASSIFYOVERRIDE_COMM] << endl;
+		if (classifyoverride_ != -1) t << "ClassifyOverride " << (classifyoverride_ == 1 ? "On" : "Off") << endl;
 		t << endl << comments_[PRINTCAP_COMM] << endl;
 		if (!printcap_.isNull()) t << "Printcap " << printcap_ << endl;
 		t << endl << comments_[RIPCACHE_COMM] << endl;
 		if (!ripcache_.isNull()) t << "RIPCache " << ripcache_ << endl;
-		t << endl << comments_[FILTERLIMIT_COMM] << endl;
-		if (filterlimit_ != -1) t << "FilterLimit " << filterlimit_ << endl;
 		t << endl << comments_[PORT_COMM] << endl;
 		QValueList<int>::Iterator	it;
 		for (it=port_.begin();it!=port_.end();++it)
@@ -217,6 +232,18 @@ bool CupsdConf::saveToFile(const QString& filename)
 		if (browseshortnames_ != -1) t << "BrowseShortNames " << (browseshortnames_ == 1 ? "Yes" : "No") << endl;
 		t << endl << comments_[IMPLICITCLASSES_COMM] << endl;
 		if (implicitclasses_ != -1) t << "ImplicitClasses " << (implicitclasses_ == 1 ? "On" : "Off") << endl;
+		t << endl << comments_[IMPLICITANYCLASSES_COMM] << endl;
+		if (implicitanyclasses_ != -1) t << "ImplicitAnyClasses " << (implicitanyclasses_ == 1 ? "On" : "Off") << endl;
+		t << endl << comments_[HIDEIMPLICITMEMBERS_COMM] << endl;
+		if (hideimplicitmembers_ != -1) t << "HideImplicitMembers " << (hideimplicitmembers_ == 1 ? "On" : "Off") << endl;
+		t << endl << comments_[BROWSEPROTOCOLS_COMM] << endl;
+		switch (browseprotocols_)
+		{
+			case BROWSE_ALL: t << "BrowseProtocols all" << endl; break;
+			case BROWSE_CUPS: t << "BrowseProtocols cups" << endl; break;
+			case BROWSE_SLP: t << "BrowseProtocols slp" << endl; break;
+			default: break;
+		}
 		t << endl << comments_[BROWSEADDRESS_COMM] << endl;
 		QStringList::Iterator	sit;
 		for (sit=browseaddress_.begin();sit!=browseaddress_.end();++sit)
@@ -369,9 +396,13 @@ kdDebug() << "warning: empty option \"" << (*(wordlist_.at(0))) << "\", adding a
 	else if (opt.lower() == "defaultlanguage") defaultlanguage_ = *(wordlist_.at(1));
 	else if (opt.lower() == "preservejobhistory") preservejobhistory_ = (*(wordlist_.at(1)) == "Yes" ? 1 : 0);
 	else if (opt.lower() == "preservejobfiles") preservejobfiles_ = (*(wordlist_.at(1)) == "Yes" ? 1 : 0);
+	else if (opt.lower() == "autopurgejobs") autopurgejobs_ = (*(wordlist_.at(1)) == "Yes" ? 1 : 0);
+	else if (opt.lower() == "maxjobs") maxjobs_ = (*(wordlist_.at(1))).toInt();
+	else if (opt.lower() == "filterlimit") filterlimit_ = (*(wordlist_.at(1))).toInt();
+	else if (opt.lower() == "classification") classification_ = (*(wordlist_.at(1)));
+	else if (opt.lower() == "classifyoverride") classifyoverride_ = (*(wordlist_.at(1)) == "On" ? 1 : 0);
 	else if (opt.lower() == "printcap") printcap_ = *(wordlist_.at(1));
 	else if (opt.lower() == "ripcache") ripcache_ = *(wordlist_.at(1));
-	else if (opt.lower() == "filterlimit") filterlimit_ = (*(wordlist_.at(1))).toInt();
 	else if (opt.lower() == "port") port_.append((*(wordlist_.at(1))).toInt());
 	else if (opt.lower() == "hostnamelookups") hostnamelookups_ = (*(wordlist_.at(1)) == "On" ? 1 : 0);
 	else if (opt.lower() == "keepalive") keepalive_ = (*(wordlist_.at(1)) == "On" ? 1 : 0);
@@ -382,6 +413,16 @@ kdDebug() << "warning: empty option \"" << (*(wordlist_.at(0))) << "\", adding a
 	else if (opt.lower() == "browsing") browsing_ = (*(wordlist_.at(1)) == "On" ? 1 : 0);
 	else if (opt.lower() == "browseshortnames") browseshortnames_ = (*(wordlist_.at(1)) == "Yes" ? 1 : 0);
 	else if (opt.lower() == "implicitclasses") implicitclasses_ = (*(wordlist_.at(1)) == "On" ? 1 : 0);
+	else if (opt.lower() == "implicitanyclasses") implicitanyclasses_ = (*(wordlist_.at(1)) == "On" ? 1 : 0);
+	else if (opt.lower() == "hideimplicitmembers") hideimplicitmembers_ = (*(wordlist_.at(1)) == "On" ? 1 : 0);
+	else if (opt.lower() == "browseprotocols")
+	{
+		QString	value = *(wordlist_.at(1));
+		if (value.lower() == "all") browseprotocols_ = 0;
+		else if (value.lower() == "cups") browseprotocols_ = 1;
+		else if (value.lower() == "slp") browseprotocols_ = 2;
+		else browseprotocols_ = -1;
+	}
 	else if (opt.lower() == "browseaddress") browseaddress_.append(*(wordlist_.at(1)));
 	else if (opt.lower() == "browseport") browseport_ = (*(wordlist_.at(1))).toInt();
 	else if (opt.lower() == "browserelay")

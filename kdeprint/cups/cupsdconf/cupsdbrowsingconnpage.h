@@ -25,6 +25,7 @@
 class CupsListBox;
 class CupsdOption;
 class QLineEdit;
+class QComboBox;
 
 class CupsdBrowsingConnPage : public CupsdPage
 {
@@ -38,11 +39,12 @@ public:
         void setInfos(CupsdConf*);
 
 private:
+	QComboBox	*browseprotocols_;
 	CupsListBox	*browseaddress_;
 	CupsListBox	*browsepoll_;
 	QLineEdit	*browseport_;
 
-	CupsdOption	*opt_[3];
+	CupsdOption	*opt_[4];
 };
 
 #endif

@@ -640,6 +640,9 @@ $$
 #Order Deny,Allow
 #Deny From All
 #Allow From .mydomain.com
+#
+## Use encryption if requested
+#Encryption IfRequested
 #</Location>
 @@
 
@@ -734,4 +737,95 @@ $$
 # <p>
 # Access permissions for each directory served by the scheduler.
 # Locations are relative to DocumentRoot...</p>
+@@
+
+# <b>AutoPurgeJobs</b>
+# <p>
+# Automatically purge jobs when not needed for quotas.
+# Default is No.</p>
+$$
+#AutoPurgeJobs No
+@@
+
+# <b>BrowseProtocols</b>
+# <p>
+# Which protocols to use for browsing.  Can be
+# any of the following separated by whitespace and/or commas:</p>
+# <ul type=circle>
+#     <li><i>all</i>  - Use all supported protocols.</li>
+#     <li><i>cups</i> - Use the CUPS browse protocol.</li>
+#     <li><i>slp</i>  - Use the SLPv2 protocol.</li>
+# </ul><p>
+# The default is <b>cups</b>.</p>
+# <p>
+# <u>NOTE</u>: If you choose to use SLPv2, it is <b>strongly</b> recommended that
+#       you have at least one SLP Directory Agent (DA) on your
+#       network.  Otherwise, browse updates can take several seconds,
+#       during which the scheduler will not response to client
+#       requests.</p>
+$$
+#BrowseProtocols cups
+@@
+
+# <b>Classification</b>
+# <p>
+# The classification level of the server.  If set, this
+# classification is displayed on all pages, and raw printing is disabled.
+# The default is the empty string.</p>
+# <p>
+# <i>ex</i>: confidential
+$$
+#Classification classified
+@@
+
+# <b>ClassifyOverride</b>
+# <p>
+# Whether to allow users to override the classification
+# on printouts. If enabled, users can limit banner pages to before or
+# after the job, and can change the classification of a job, but cannot
+# completely eliminate the classification or banners.</p>
+# <p>
+# The default is off.</p>
+$$
+#ClassifyOverride off
+@@
+
+# <b>HideImplicitMembers</b>
+# <p>
+# Whether or not to show the members of an
+# implicit class.</p>
+# <p>
+# When HideImplicitMembers is On, any remote printers that are
+# part of an implicit class are hidden from the user, who will
+# then only see a single queue even though many queues will be
+# supporting the implicit class.</p>
+# <p>
+# Enabled by default.</p>
+$$
+#HideImplicitMembers On
+@@
+
+# <b>ImplicitAnyClasses</b>
+# <p>
+# Whether or not to create <b>AnyPrinter</b> implicit
+# classes.</p>
+# <p>
+# When ImplicitAnyClasses is On and a local queue of the same name
+# exists, e.g. "printer", "printer@server1", "printer@server1", then
+# an implicit class called "Anyprinter" is created instead.</p>
+# <p>
+# When ImplicitAnyClasses is Off, implicit classes are not created
+# when there is a local queue of the same name.</p>
+# <p>
+# Disabled by default.</p>
+$$
+#ImplicitAnyCLasses Off
+@@
+
+# <b>MaxJobs</b>
+# <p>
+# Maximum number of jobs to keep in memory (active and completed.)
+# Default is 0 (no limit.)</p>
+$$
+#MaxJobs 0
 @@

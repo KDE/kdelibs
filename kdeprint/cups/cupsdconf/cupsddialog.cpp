@@ -25,6 +25,7 @@
 #include "cupsdserverlogpage.h"
 #include "cupsdserverdirpage.h"
 #include "cupsdserverhttppage.h"
+#include "cupsdserverjobpage.h"
 #include "cupsdservermiscpage.h"
 #include "cupsdbrowsinggeneralpage.h"
 #include "cupsdbrowsingtimeoutpage.h"
@@ -152,6 +153,10 @@ void CupsdDialog::constructDialog()
 	cpage = new CupsdServerMiscPage(0);
 	pagelist_.append(cpage);
         addPage(cpage->pagePath(), cpage->header(), SmallIcon("package_utilities"), cpage);
+
+	cpage = new CupsdServerJobPage(0);
+	pagelist_.append(cpage);
+        addPage(cpage->pagePath(), cpage->header(), SmallIcon("kdeprint_job"), cpage);
 
 	cpage = new CupsdServerEncryptPage(0);
 	pagelist_.append(cpage);

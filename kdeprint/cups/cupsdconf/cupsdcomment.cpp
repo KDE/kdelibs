@@ -100,7 +100,7 @@ bool CupsdComment::loadComments()
 	if (f.exists() && f.open(IO_ReadOnly))
 	{
                 Comment         *comm;
-                while (index <= LOCATIONS_COMM)
+                while (index <= LAST_COMM)
                 {
                         comm = new Comment();
                         if (!comm->load(&f))
@@ -112,7 +112,7 @@ bool CupsdComment::loadComments()
                         }
                 }
 	}
-        if (index != LOCATIONS_COMM+1)
+        if (index != LAST_COMM+1)
         {
                 comments_.clear();
                 qWarning("Problem while loading comment file %s",f.name().latin1());

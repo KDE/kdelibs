@@ -18,7 +18,7 @@ libcupsdconf_la_SOURCES = cupsdconf.cpp cupsddialog.cpp cupsdoption.cpp cupsdpag
 	  qinputbox.cpp cupslist.cpp cupsdsplash.cpp cupsdbrowsingmaskspage.cpp cupsdbrowsingconnpage.cpp \
 	  cupsdnetworkgeneralpage.cpp cupsrelay.cpp cupsdbrowsingrelaypage.cpp cupsdnetworkclientspage.cpp \
 	  cupsdserversecuritypage.cpp cupslocationdialog.cpp cupslocationgeneral.cpp cupslocationaccess.cpp \
-	  cupsdcomment.cpp mydialogbase.cpp cupsdserverencryptpage.cpp
+	  cupsdcomment.cpp mydialogbase.cpp cupsdserverencryptpage.cpp cupsdserverjobpage.cpp
 libcupsdconf_la_METASOURCES = AUTO
 libcupsdconf_la_LDFLAGS = $(all_libraries) -module -avoid-version -no-undefined
 libcupsdconf_la_LIBADD = $(LIB_KFILE) $(LIB_CUPS)
@@ -29,7 +29,7 @@ noinst_HEADERS = cupsdconf.h cupsdoption.h cupsdpage.h cupsdserverdirpage.h cups
 	  cupsdbrowsingmaskspage.h cupsdbrowsingconnpage.h cupsdnetworkgeneralpage.h cupsrelay.h \
 	  cupsdbrowsingrelaypage.h cupsdnetworkclientspage.h cupsdserversecuritypage.h cupslocationdialog.h \
 	  cupslocationgeneral.h cupslocationaccess.h cupsdcomment.h mydialogbase.h cupsdserverencryptpage.h \
-	  cupsddialog.h
+	  cupsddialog.h cupsdserverjobpage.h
 
 # Data
 cupsdconfdata_DATA = kde_logo.png cups_logo.png cupsd.conf.template

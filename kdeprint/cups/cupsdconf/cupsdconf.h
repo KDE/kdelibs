@@ -32,6 +32,7 @@ enum OrderType { ORDER_ALLOW_DENY = 0, ORDER_DENY_ALLOW };
 enum AuthTypeType { AUTHTYPE_NONE = 0, AUTHTYPE_BASIC, AUTHTYPE_DIGEST };
 enum AuthClassType { AUTHCLASS_ANONYMOUS = 0, AUTHCLASS_USER, AUTHCLASS_SYSTEM, AUTHCLASS_GROUP };
 enum EncryptionType { ENCRYPT_ALWAYS = 0, ENCRYPT_NEVER, ENCRYPT_REQUIRED, ENCRYPT_IFREQUESTED };
+enum BrowseProtocolType { BROWSE_ALL = 0, BROWSE_CUPS, BROWSE_SLP };
 
 struct CupsLocation;
 struct CupsResource;
@@ -83,12 +84,18 @@ struct CupsdConf
 	QString	defaultcharset_;
 	QString	defaultlanguage_;
 
-	// Server/Misc
+	// Server/Jobs
 	int	preservejobhistory_;
 	int	preservejobfiles_;
+	int	autopurgejobs_;
+	int	maxjobs_;
+	int	filterlimit_;
+	QString	classification_;
+	int	classifyoverride_;
+
+	// Server/Misc
 	QString	printcap_;
 	QString	ripcache_;
-	int	filterlimit_;
 
 	// Network
 	QValueList<int>	port_;
@@ -101,8 +108,11 @@ struct CupsdConf
 
 	// Browsing/General
 	int	browsing_;
+	int	browseprotocols_;
 	int	browseshortnames_;
 	int	implicitclasses_;
+	int	hideimplicitmembers_;
+	int	implicitanyclasses_;
 
 	// Browsing/Connection
 	QStringList	browseaddress_;

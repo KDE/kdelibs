@@ -24,7 +24,6 @@
 
 class QLineEdit;
 class QDirLineEdit;
-class QCheckBox;
 class CupsdOption;
 
 class CupsdServerMiscPage : public CupsdPage
@@ -39,13 +38,10 @@ public:
         void setInfos(CupsdConf*);
 
 private:
-	QCheckBox	*preservejobhistory_;
-	QCheckBox	*preservejobfiles_;
 	QDirLineEdit	*printcap_;
 	QLineEdit	*ripcache_;
-	QLineEdit	*filterlimit_;
 
-	CupsdOption	*opt_[5];
+	CupsdOption	*opt_[2];
 };
 
 #endif
