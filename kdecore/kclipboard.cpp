@@ -46,7 +46,8 @@ void KClipboard::setClipboard( const QString& text, QMimeSource *data,
     QClipboard *clip = QApplication::clipboard();
     bool oldMode = clip->selectionModeEnabled();
 
-    mode = applyConfig( mode, honorConfiguration );
+    if ( honorConfiguration )
+        mode = applyConfig( mode );
 
     if ( mode & Clipboard )
     {
@@ -69,15 +70,12 @@ void KClipboard::setClipboard( const QString& text, QMimeSource *data,
     clip->setSelectionMode( oldMode );
 }
 
-uint KClipboard::applyConfig( uint mode, bool honorConfiguration )
+uint KClipboard::applyConfig( uint mode )
 {
-    if ( honorConfiguration )
-    {
-        if ( s_sync )
-            mode = Clipboard | Selection;
-        else if ( s_implicitSelection )
-            mode |= Selection;
-    }
+    if ( s_sync )
+        mode = Clipboard | Selection;
+    else if ( s_implicitSelection )
+        mode |= Selection;
 
     return mode;
 }

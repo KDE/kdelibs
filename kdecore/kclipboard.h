@@ -55,7 +55,7 @@ private:
     static void init();
     static void setClipboard( const QString& text, QMimeSource* data,
                               uint mode, bool honorConfiguration );
-    static uint applyConfig( uint mode, bool honorConfiguration );
+    static uint applyConfig( uint mode );
 
     static bool s_sync;
     static bool s_implicitSelection;
