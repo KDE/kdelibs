@@ -2072,7 +2072,7 @@ void KApplication::invokeHelp( const QString& anchor,
    QString error;
    if ( !dcopClient()->isApplicationRegistered("khelpcenter") )
    {
-       if (startServiceByDesktopName("khelpcenter", url, &error, 0, 0, startup_id, true))
+       if (startServiceByDesktopName("khelpcenter", url, &error, 0, 0, startup_id, false))
        {
            kdWarning() << "Could not launch help:\n" << error << endl;
            return;
@@ -2102,7 +2102,7 @@ void KApplication::invokeHTMLHelp( const QString& _filename, const QString& topi
    QString error;
    if ( !dcopClient()->isApplicationRegistered("khelpcenter") )
    {
-       if (startServiceByDesktopName("khelpcenter", url, &error, 0, 0, "", true))
+       if (startServiceByDesktopName("khelpcenter", url, &error, 0, 0, "", false))
        {
            kdWarning() << "Could not launch help:\n" << error << endl;
            return;
