@@ -1,0 +1,168 @@
+/*  This file is part of the KDE libraries
+ *  Copyright (C) 1999 Waldo Bastian <bastian@kde.org>
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Library General Public
+ *  License version 2 as published by the Free Software Foundation;
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Library General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Library General Public License
+ *  along with this library; see the file COPYING.LIB.  If not, write to
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
+ **/
+
+#include "ksycoca.h"
+#include "ksycocatype.h"
+#include "ksycocafactory.h"
+
+#include <qdatastream.h>
+#include <qfile.h>
+
+KSycoca::KSycoca(bool buildDatabase)
+   : factories(0)
+{
+   if (!buildDatabase)
+   {
+      QFile *database = new QFile("/tmp/ksycoca.db"); // Name must be different!
+      if (!database->open( IO_ReadOnly ))
+      {
+         fprintf(stderr, "Error can't open database!\n");
+         exit(-1);
+      }
+      str = new QDataStream(database);
+   }
+   else
+   {
+      QFile *database = new QFile("/tmp/ksycoca.db"); // Name must be different!
+      if (!database->open( IO_ReadWrite ))
+      {
+         fprintf(stderr, "Error can't open database!\n");
+         exit(-1);
+      }
+      str = new QDataStream(database);
+      factories = new KSycocaFactoryList();
+   }
+}
+
+KSycoca::~KSycoca()
+{
+   QIODevice *device = 0;
+   if (str)
+      device = str->device();
+   if (device)
+      device->close();
+
+   delete str;
+   delete device;
+}
+
+void
+KSycoca::addFactory( KSycocaFactory *factory)
+{
+   factories->append(factory);
+}
+
+void 
+KSycoca::save()
+{
+   // Write header (#pass 1)
+   str->device()->at(0);
+
+   for(KSycocaFactory *factory = factories->first();
+       factory;
+       factory = factories->next())
+   {
+      Q_INT32 aId;
+      Q_INT32 aOffset;
+      aId = factory->factoryId();
+      aOffset = factory->offset();
+      (*str) << aId;
+      (*str) << aOffset;
+   }
+   (*str) << (Q_INT32) 0; // No more factories.
+
+   // Write factory data....
+   for(KSycocaFactory *factory = factories->first();
+       factory;
+       factory = factories->next())
+   {
+      factory->save(*str);
+   }
+   int endOfData = str->device()->at();
+
+   // Write header (#pass 2)
+   str->device()->at(0);
+
+   for(KSycocaFactory *factory = factories->first();
+       factory;
+       factory = factories->next())
+   {
+      Q_INT32 aId;
+      Q_INT32 aOffset;
+      aId = factory->factoryId();
+      aOffset = factory->offset();
+      (*str) << aId;
+      (*str) << aOffset;
+   }
+   (*str) << (Q_INT32) 0; // No more factories.
+
+   // Jump to end of database
+   str->device()->at(endOfData);
+}
+
+QDataStream *
+KSycoca::findEntry(int offset, KSycocaType &type)
+{
+   if (!self)
+      self = new KSycoca();
+   return self->_findEntry(offset, type);
+}
+
+QDataStream *
+KSycoca::_findEntry(int offset, KSycocaType &type)
+{
+   str->device()->at(offset);
+   Q_INT32 aType;
+   (*str) >> aType;
+   type = (KSycocaType) aType;
+   return str;
+}
+
+QDataStream *
+KSycoca::registerFactory( KSycocaFactoryId id)
+{
+   if (!self)
+      self = new KSycoca();
+   return self->_registerFactory( id );
+}
+
+QDataStream *
+KSycoca::_registerFactory( KSycocaFactoryId id)
+{
+   str->device()->at(0);
+   Q_INT32 aId;
+   Q_INT32 aOffset;
+   while(true)
+   {
+      (*str) >> aId;
+      if (aId == KST_KSycocaFactory) 
+      {
+fprintf(stderr, "KSycoca: Error, KSycocaFactory (id = %d) not found!\n", id);
+         break;
+      }
+      (*str) >> aOffset;
+      if (aId == id)
+      {
+         str->device()->at(aOffset);
+         return str;
+      }
+   }
+   return 0;
+}
+
+KSycoca * KSycoca::self = 0;
