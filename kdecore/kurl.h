@@ -558,25 +558,37 @@ public:
   bool cd( const QString& _dir );
 
   /**
-   * Returns the URL as string.
-   * @return The complete URL, with all escape sequences intact, encoded
-   * in a given charset.
+   * Returns the URL as string, with all escape sequences intact,
+   * encoded in a given charset.
    * This is used in particular for encoding URLs in UTF-8 before using them
    * in a drag and drop operation.
+   * Please note that the string returned by @ref url() will include
+   * the password of the URL. If you want to show the URL to the 
+   * user, use @ref prettyURL(). 
    *
    * @param _trailing This may be ( -1, 0 +1 ). -1 strips a trailing '/' from the path, +1 adds
    *                  a trailing '/' if there is none yet and 0 returns the
    *                  path unchanged.
    * @param encoding_hint MIB of encoding to use.
+   * @return The complete URL, with all escape sequences intact, encoded
+   * in a given charset.
    * @see QTextCodec::mibEnum()
+   * @see prettyURL()
    */
   QString url( int _trailing = 0, int encoding_hint = 0) const;
 
   /**
    * Returns the URL as string in human-friendly format.
-   * Example: http://localhost:8080/test.cgi?test=hello world&name=fred
+   * Example: 
+   * <pre>
+   * http://localhost:8080/test.cgi?test=hello world&name=fred
+   * </pre>
+   * @param _trailing -1 to strip a trailing '/' from the path, +1 adds
+   *                  a trailing '/' if there is none yet and 0 returns the
+   *                  path unchanged.
    * @return A human readable URL, with no non-necessary encodings/escaped
    * characters. Password will not be shown.
+   * @see url()
    */
   QString prettyURL( int _trailing = 0) const;
 
@@ -591,7 +603,10 @@ public:
 
   /**
    * Returns the URL as string, escaped for HTML.
-   * Example: http://localhost:8080/test.cgi?test=hello world&name=fred
+   * Example: 
+   * <pre>
+   * http://localhost:8080/test.cgi?test=hello world&name=fred
+   * </pre>
    * @return A human readable URL, with no non-necessary encodings/escaped
    * characters. Password will not be shown.
    */
