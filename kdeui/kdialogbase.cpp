@@ -831,31 +831,34 @@ void KDialogBase::setHelpLinkText( const QString &text )
 }
 
 
-QFrame *KDialogBase::addPage( const QString &itemName, const QString &header )
+QFrame *KDialogBase::addPage( const QString &itemName, const QString &header,
+			      const QPixmap &pixmap )
 {
-  return( mJanus == 0 ? 0 : mJanus->addPage( itemName, header ) );
+  return( mJanus == 0 ? 0 : mJanus->addPage( itemName, header, pixmap ) );
 }
 
 
 QVBox *KDialogBase::addVBoxPage( const QString &itemName, 
-				 const QString &header )
+				 const QString &header, const QPixmap &pixmap )
 {
-  return( mJanus == 0 ? 0 : mJanus->addVBoxPage( itemName, header ) );
+  return( mJanus == 0 ? 0 : mJanus->addVBoxPage( itemName, header, pixmap) );
 }
 
 
 QHBox *KDialogBase::addHBoxPage( const QString &itemName, 
-				 const QString &header )
+				 const QString &header,
+				 const QPixmap &pixmap )
 {
-  return( mJanus == 0 ? 0 : mJanus->addHBoxPage( itemName, header ) );
+  return( mJanus == 0 ? 0 : mJanus->addHBoxPage( itemName, header, pixmap ) );
 }
 
 
 QGrid *KDialogBase::addGridPage( int n, QGrid::Direction dir, 
 				 const QString &itemName, 
-				 const QString &header )
+				 const QString &header, const QPixmap &pixmap )
 {
-  return( mJanus == 0 ? 0 : mJanus->addGridPage( n, dir, itemName, header ) );
+  return( mJanus == 0 ? 0 : mJanus->addGridPage( n, dir, itemName, header,
+						 pixmap) );
 }
 
 
