@@ -120,6 +120,11 @@ const DOMString TextImpl::nodeName() const
 {
   return "#text";
 }
+DOMString TextImpl::nodeValue() const
+{
+    return str;
+}
+
 
 unsigned short TextImpl::nodeType() const
 {

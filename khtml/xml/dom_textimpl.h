@@ -69,6 +69,7 @@ public:
     virtual ~TextImpl();
 
     virtual const DOMString nodeName() const;
+    virtual DOMString nodeValue() const;
     virtual unsigned short nodeType() const;
     virtual bool isTextNode() { return true; }
 
