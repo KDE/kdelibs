@@ -83,15 +83,15 @@ public:
   virtual bool isLunisolar() const;
   virtual bool isSolar() const;
 
-private:
+  private:
   /**
    * Gets the number of days in a month for a given date
    *
-   * @param year given year
-   * @param mon month number
+   * @param month month number
+   * @param year given rear
    * @return number of days in month
    */
-  int hndays(int year, int mon) const;
+  int hndays(int month, int year) const;
 
   KCalendarSystemHijriPrivate * d;
 };
