@@ -23,6 +23,7 @@
 
 #include <qlabel.h>
 #include <qobjectlist.h>
+#include <qbuttongroup.h>
 #include <qsqlpropertymap.h>
 
 #include <kapplication.h>
@@ -47,6 +48,7 @@ KConfigDialogManager::KConfigDialogManager(QWidget *parent, KConfigSkeleton *con
   d = new Private();
   
   kapp->installKDEPropertyMap();
+  propertyMap = QSqlPropertyMap::defaultMap();
   
   init(true);
 }
@@ -65,6 +67,7 @@ void KConfigDialogManager::init(bool trackChanges)
     changedMap.insert("QCheckBox", SIGNAL(stateChanged(int)));
     changedMap.insert("QPushButton", SIGNAL(stateChanged(int)));
     changedMap.insert("QRadioButton", SIGNAL(stateChanged(int)));
+    changedMap.insert("QButtonGroup", SIGNAL(clicked(int)));
     changedMap.insert("QComboBox", SIGNAL(activated (int)));
     //qsqlproperty map doesn't store the text, but the value!
     //changedMap.insert("QComboBox", SIGNAL(textChanged(const QString &)));
@@ -148,7 +151,8 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
         }
         else
         {
-          bParseChildren = false;
+          if (!childWidget->isA("QButtonGroup"))
+            bParseChildren = false;
           connect(childWidget, *changedIt,
                   this, SIGNAL(widgetModified()));
         }
@@ -194,7 +198,6 @@ void KConfigDialogManager::updateWidgets()
 {
   bool bSignalsBlocked = signalsBlocked();
   blockSignals(true);
-  QSqlPropertyMap *propertyMap = QSqlPropertyMap::defaultMap();
 
   QWidget *widget;
   for( QDictIterator<QWidget> it( d->knownWidget );
@@ -208,9 +211,9 @@ void KConfigDialogManager::updateWidgets()
      }
 
      QVariant p = item->property();
-     if (p != propertyMap->property(widget))
+     if (p != property(widget))
      {
-        propertyMap->setProperty(widget, p);
+        setProperty(widget, p);
      }
      if (item->isImmutable())
      {
@@ -233,7 +236,6 @@ void KConfigDialogManager::updateWidgetsDefault()
 void KConfigDialogManager::updateSettings()
 {
   bool changed = false;
-  QSqlPropertyMap *propertyMap = QSqlPropertyMap::defaultMap();
 
   QWidget *widget;
   for( QDictIterator<QWidget> it( d->knownWidget );
@@ -246,7 +248,7 @@ void KConfigDialogManager::updateSettings()
         continue;
      }
 
-     QVariant p = propertyMap->property(widget);
+     QVariant p = property(widget);
      if (p != item->property())
      {
         item->setProperty(p);
@@ -260,9 +262,31 @@ void KConfigDialogManager::updateSettings()
   }
 }
 
+void KConfigDialogManager::setProperty(QWidget *w, const QVariant &v)
+{
+  if (w->isA("QButtonGroup"))
+  {
+    QButtonGroup *bg = static_cast<QButtonGroup *>(w);
+    bg->setButton(v.toInt());
+    return;
+  }
+
+  propertyMap->setProperty(w, v);
+}
+
+QVariant KConfigDialogManager::property(QWidget *w)
+{
+  if (w->isA("QButtonGroup"))
+  {
+    QButtonGroup *bg = static_cast<QButtonGroup *>(w);
+    return QVariant(bg->selectedId());
+  }
+
+  return propertyMap->property(w);
+}
+
 bool KConfigDialogManager::hasChanged()
 {
-  QSqlPropertyMap *propertyMap = QSqlPropertyMap::defaultMap();
 
   QWidget *widget;
   for( QDictIterator<QWidget> it( d->knownWidget );
@@ -275,7 +299,7 @@ bool KConfigDialogManager::hasChanged()
         continue;
      }
 
-     QVariant p = propertyMap->property(widget);
+     QVariant p = property(widget);
      if (p != item->property())
      {
         return true;

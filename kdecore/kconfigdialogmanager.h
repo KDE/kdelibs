@@ -26,6 +26,7 @@
 
 class KConfigSkeleton;
 class QWidget;
+class QSqlPropertyMap;
 
 /**
  * @short Provides a means of automatically retrieving, 
@@ -178,6 +179,16 @@ protected:
    */ 
   bool parseChildren(const QWidget *widget, bool trackChanges);
 
+  /**
+   * Set a property
+   */
+  void setProperty(QWidget *w, const QVariant &v);
+
+  /**
+   * Retrieve a property
+   */
+  QVariant property(QWidget *w);
+
 protected:
   /**
    * KConfigSkeleton object used to store settings
@@ -188,6 +199,12 @@ protected:
    * Dialog being managed
    */
   QWidget *m_dialog;
+
+  /**
+   * Pointer to the property map for easy access.
+   */
+  QSqlPropertyMap *propertyMap;
+
   /**
    * Map of the classes and the signals that they emit when changed. 
    */
