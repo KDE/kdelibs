@@ -29,21 +29,21 @@
 <!ENTITY meld.fouten "<para>Op- of aanmerkingen over de vertalingen van de toepassing en haar documentatie kunt u naar &kde.nl.groep; sturen.</para>">
 
 <!-- Entities voor vertalers (voor CREDITS_FOR_TRANSLATORS)-->
-<!ENTITY vertaling.bram    "<para>Dit document is vertaald naar het Nederlands door &Bram.Schoenmakers;.</para>">
-<!ENTITY vertaling.douwe   "<para>Dit document is vertaald naar het Nederlands door &Douwe.vanderSchaaf;.</para>">
-<!ENTITY vertaling.floris  "<para>Dit document is vertaald naar het Nederlands door &Floris.Lambrechts;.</para>">
-<!ENTITY vertaling.frank   "<para>Dit document is vertaald naar het Nederlands door &Frank.Mulder;.</para>">
-<!ENTITY vertaling.jaap    "<para>Dit document is vertaald naar het Nederlands door &Jaap.Woldringh;.</para>">
-<!ENTITY vertaling.jo      "<para>Dit document is vertaald naar het Nederlands door &Jo.Vermeulen;.</para>">
-<!ENTITY vertaling.jogchum "<para>Dit document is vertaald naar het Nederlands door &Jogchum.Reitsma;.</para>">
-<!ENTITY vertaling.michel  "<para>Dit document is vertaald naar het Nederlands door &Michel.Fontes;.</para>">
-<!ENTITY vertaling.niels   "<para>Dit document is vertaald naar het Nederlands door &Niels.Reedijk;.</para>">
-<!ENTITY vertaling.otto    "<para>Dit document is vertaald naar het Nederlands door &Otto.Bruggeman;.</para>">
-<!ENTITY vertaling.richard "<para>Dit document is vertaald naar het Nederlands door &Richard.Voss;.</para>">
-<!ENTITY vertaling.rinse   "<para>Dit document is vertaald naar het Nederlands door &Rinse.Devries;.</para>">
-<!ENTITY vertaling.rob     "<para>Dit document is vertaald naar het Nederlands door &Rob.Lalau;.</para>">
-<!ENTITY vertaling.tijmen  "<para>Dit document is vertaald naar het Nederlands door &Tijmen.Baarda;.</para>">
-<!ENTITY vertaling.tom     "<para>Dit document is vertaald naar het Nederlands door &Tom.Albers;.</para>">
+<!ENTITY vertaling.bram    "<para>Dit document is vertaald in het Nederlands door &Bram.Schoenmakers;.</para>">
+<!ENTITY vertaling.douwe   "<para>Dit document is vertaald in het Nederlands door &Douwe.vanderSchaaf;.</para>">
+<!ENTITY vertaling.floris  "<para>Dit document is vertaald in het Nederlands door &Floris.Lambrechts;.</para>">
+<!ENTITY vertaling.frank   "<para>Dit document is vertaald in het Nederlands door &Frank.Mulder;.</para>">
+<!ENTITY vertaling.jaap    "<para>Dit document is vertaald in het Nederlands door &Jaap.Woldringh;.</para>">
+<!ENTITY vertaling.jo      "<para>Dit document is vertaald in het Nederlands door &Jo.Vermeulen;.</para>">
+<!ENTITY vertaling.jogchum "<para>Dit document is vertaald in het Nederlands door &Jogchum.Reitsma;.</para>">
+<!ENTITY vertaling.michel  "<para>Dit document is vertaald in het Nederlands door &Michel.Fontes;.</para>">
+<!ENTITY vertaling.niels   "<para>Dit document is vertaald in het Nederlands door &Niels.Reedijk;.</para>">
+<!ENTITY vertaling.otto    "<para>Dit document is vertaald in het Nederlands door &Otto.Bruggeman;.</para>">
+<!ENTITY vertaling.richard "<para>Dit document is vertaald in het Nederlands door &Richard.Voss;.</para>">
+<!ENTITY vertaling.rinse   "<para>Dit document is vertaald in het Nederlands door &Rinse.Devries;.</para>">
+<!ENTITY vertaling.rob     "<para>Dit document is vertaald in het Nederlands door &Rob.Lalau;.</para>">
+<!ENTITY vertaling.tijmen  "<para>Dit document is vertaald in het Nederlands door &Tijmen.Baarda;.</para>">
+<!ENTITY vertaling.tom     "<para>Dit document is vertaald in het Nederlands door &Tom.Albers;.</para>">
 
 <!-- Gebruiken als template voor nieuwe vertalers/nalezers
 <!ENTITY xxx '<othercredit role="translator"><firstname>xx</firstname><surname>xxx</surname><affiliation><address><email>xxx@xxx.xxx</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
