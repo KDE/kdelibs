@@ -42,9 +42,18 @@ public:
     SlaveBase( const QCString &protocol, const QCString &pool_socket, const QCString &app_socket);
     virtual ~SlaveBase() { }
 
+    /**
+     * @internal
+     */
     void dispatchLoop();
 
+    /**
+     * @internal
+     */
     void setConnection( Connection* connection ) { m_pConnection = connection; }
+    /**
+     * @internal
+     */
     Connection *connection() const { return m_pConnection; }
 
     ///////////
@@ -60,6 +69,7 @@ public:
 
     /**
      * Emit to ask for data (in put)
+     * @see readData
      */
     void dataReq( );
 
@@ -102,27 +112,62 @@ public:
     /**
      * ???? Is this still necessary?
      */
-    void renamed( const QString &_new );
-
-    /**
-     * ???? Is this still necessary?
-     */
     void canResume( bool _resume );
 
     ///////////
-    // Info Signals to send to the job (most are OLD)
+    // Info Signals to send to the job
     ///////////
 
-    // get (put?)
+    /**
+     * Call this in @ref get and @ref copy, to give the total size
+     * of the file
+     * Call in @ref listDir too, when you know the total number of items.
+     */
     void totalSize( unsigned long _bytes );
+    /**
+     * Call this during @ref get and @ref copy, once in a while,
+     * to give some info about the current state.
+     * Don't emit it in @ref listDir, @ref listEntries speaks for itself.
+     */
     void processedSize( unsigned long _bytes );
-
+    /**
+     * Call this in @ref get and @ref copy, to give the current transfer
+     * speed. Usually worked out as processed_size / ( t - t_start )
+     */
     void speed( unsigned long _bytes_per_second );
+
+    /**
+     * Call this to signal a redirection
+     * The job will take care of going to that url.
+     */
     void redirection( const KURL &_url );
+
+    /**
+     * "Tell that we will only get an error page here." ?  ## FIXME
+     */
     void errorPage();
+
+    /**
+     * Call this in @ref mimetype, when you know the mimetype.
+     * See @ref mimetype about other ways to implement it.
+     */
     void mimeType( const QString &_type );
-    void gettingFile( const QString &_type );
+
+    void gettingFile( const QString &_file ); // probably obsolete ?
+
+    /**
+     * Call to signal a warning.
+     ##### TODO : this is doesn't do anything yet
+     */
     void warning( const QString &msg );
+
+    /**
+     * Call this when requesting for a login and password.
+     * @param head and i18n'ed message to explain the dialog box
+     * @param user user name, in and out
+     * @param pass password, in and out
+     * @return true on ok, false on cancel
+     */
     bool openPassDlg( const QString& head, QString& user, QString& pass );
 
     ///////////
@@ -177,7 +222,7 @@ public:
     /**
      * Finds mimetype for one file or directory.
      *
-     * This method should either emit 'mimetype' or it
+     * This method should either emit 'mimeType' or it
      * should send a block of data big enough to be able
      * to determine the mimetype.
      *
@@ -267,18 +312,24 @@ public:
     // Dispatching (internal)
     ////////////////
 
+    /**
+     * @internal
+     */
     virtual bool dispatch();
+    /**
+     * @internal
+     */
     virtual void dispatch( int command, const QByteArray &data );
 
     /**
-     * Read data send by the job
+     * Read data send by the job, after a @ref dataReq
      *
      * @param buffer buffer where data is stored
      * @return 0 on end of data,
      *         > 0 bytes read
      *         < 0 error
      **/
-    int readData( QByteArray &buffer);
+    int readData( QByteArray &buffer );
 
 protected:
     /**
@@ -287,7 +338,7 @@ protected:
      * when enough of them are there or a certain time
      * frame exceeded (to make sure the app gets some
      * items in time but not too many items one by one
-     * as this will cause a drastic performance penalty
+     * as this will cause a drastic performance penalty)
      */
     void listEntry( const UDSEntry& _entry, bool ready);
 

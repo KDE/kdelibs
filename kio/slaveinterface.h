@@ -87,7 +87,7 @@ class Connection;
    MSG_FINISHED,
    MSG_STAT_ENTRY,
    MSG_LIST_ENTRIES,
-   MSG_RENAMED,
+   MSG_RENAMED, // unused
    MSG_RESUME,
    MSG_SLAVE_STATUS,
    MSG_SLAVE_ACK
@@ -127,8 +127,6 @@ public:
     void listEntries( const KIO::UDSEntryList& );
     void statEntry( const KIO::UDSEntry& );
 
-    // probably obsolete ?
-    void renamed( const QString & ) ;
     void canResume( bool ) ;
 
     ///////////

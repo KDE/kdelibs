@@ -93,11 +93,6 @@ void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 	
 	}
 	break;
-    case MSG_RENAMED:
-	stream >> str1;
-	
-	emit renamed( str1 );
-	break;
     case MSG_RESUME:
 	stream >> b;
 	emit canResume( (bool)b );

@@ -70,8 +70,8 @@ int UIServer::s_jobId = 0;
 
 int UIServer::newJob( QCString observerAppId )
 {
-    kdDebug() << "UIServer::newJob observerAppId=" << observerAppId << "."
-              << "Giving id= " << s_jobId+1 << endl;
+    kdDebug() << "UIServer::newJob observerAppId=" << observerAppId << ". "
+              << "Giving id=" << s_jobId+1 << endl;
     // TODO: store the appid and the job id in a dict or something,
     // so that we know which appid to use for killJob
     // I suppose we create the dialog box here too ?

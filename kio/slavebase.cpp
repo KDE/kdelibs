@@ -172,12 +172,6 @@ void SlaveBase::finished()
     m_pConnection->send( MSG_FINISHED );
 }
 
-void SlaveBase::renamed( const QString &_new )
-{
-    KIO_DATA << _new;
-    m_pConnection->send( MSG_RENAMED, data );
-}
-
 void SlaveBase::slaveStatus( const QString &host, bool connected )
 {
     pid_t pid = getpid();
@@ -285,7 +279,7 @@ void SlaveBase::listEntry( const UDSEntry& entry, bool _ready )
 
 void SlaveBase::listEntries( const UDSEntryList& list )
 {
-    kdDebug(7007) << "listEntries " << list.count() << "d" << endl;
+    kdDebug(7007) << "listEntries " << list.count() << endl;
 
     KIO_DATA << list.count();
     UDSEntryListIterator it(list);
@@ -293,18 +287,6 @@ void SlaveBase::listEntries( const UDSEntryList& list )
 	stream << *it.current();
     m_pConnection->send( MSG_LIST_ENTRIES, data);
 }
-
-/*
-void SlaveBase::isDirectory()
-{
-    m_pConnection->send( MSG_IS_DIRECTORY, QByteArray());
-}
-
-void SlaveBase::isFile()
-{
-    m_pConnection->send( MSG_IS_FILE, QByteArray());
-}
-*/
 
 void SlaveBase::sigsegv_handler (int)
 {
