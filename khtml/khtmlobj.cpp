@@ -1845,8 +1845,8 @@ HTMLObject* HTMLImageMap::checkPoint( int _x, int _y )
 		    }
 		    else
 		    {
-			dynamicURL = 0;
-			dynamicTarget = 0;
+			dynamicURL = QString::null;
+			dynamicTarget = QString::null;
 		    }
 		}
 	    }

@@ -320,7 +320,7 @@ void KHTMLWidget::slotFileLoaded( const char *_url, const char *_filename )
 	if ( strcmp( bgPixmapURL, _url ) == 0 )
 	{
 	    bgPixmap.load( _filename );					
-	    bgPixmapURL = 0;
+	    bgPixmapURL = QString::null;
 	    scheduleUpdate( true );
 	}
     }    
@@ -1258,11 +1258,11 @@ void KHTMLWidget::begin( const char *_url, int _x_offset, int _y_offset )
     
     if ( !bgPixmapURL.isEmpty() )
 	emit cancelFileRequest( bgPixmapURL );
-    bgPixmapURL = 0;
+    bgPixmapURL = QString::null;
     
     stopParser();
     
-    reference = 0;
+    reference = QString::null;
     actualURL = "";
     baseURL = "";
     //charsetName = "";
@@ -1469,7 +1469,7 @@ void KHTMLWidget::timerEvent( QTimerEvent * )
     {
     	if (gotoAnchor())
     	{
-    	    reference = 0;
+    	    reference = QString::null;
     	}
     }
 
@@ -1780,7 +1780,7 @@ bool KHTMLWidget::gotoAnchor( const char *_name )
     
     if (gotoAnchor())
     {
-       reference = 0;
+       reference = QString::null;
        return TRUE;
     }
     return FALSE;

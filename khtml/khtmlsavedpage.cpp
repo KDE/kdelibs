@@ -22,10 +22,8 @@
 
 SavedPage::SavedPage()
 {
-    frameName = 0;
     isFrame = false;
     isFrameSet = false;
-    url = 0;
     xOffset = yOffset = 0;
     frameLayout = 0;
     frames = 0;

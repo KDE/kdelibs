@@ -429,7 +429,7 @@ void HTMLTokenizer::parseEntity( const char * &src)
 	        if (bytesConverted <= 0)
 	        {
 	            bytesConverted = 0;
-	            res = 0;
+	            res = QString::null;
 	        }
 	    }
 	}
@@ -466,7 +466,7 @@ void HTMLTokenizer::parseEntity( const char * &src)
 	    {
 	        // Don't translate entities in tags with a missing ';'
 	        entityValue = 0;
-	        res = 0;
+	        res = QString::null;
 	    }
 	    
 	    if (

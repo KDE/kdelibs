@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// I added some TODOs to the code where I was too lazy to continue.
+// Someone should start a grep for TODO in the code on a regular base ;)
+//
 // Revision 1.109  1999/05/06 04:54:06  warwick
 // myqstring = 0  becomes  myqstring = QString::null, or just remove the
 // line if it's already going to be null (default QString constructor).
@@ -870,7 +873,6 @@ void KToolBarButton::ButtonToggled()
 KToolBar::KToolBar(QWidget *parent, const char *name, int _item_size)
   : QFrame( parent, name )
 {
-  title = 0;
   item_size = _item_size;
   fixed_size =  (item_size > 0);
   if (!fixed_size)

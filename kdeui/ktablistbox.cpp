@@ -866,7 +866,7 @@ const QString& KTabListBox::text(int row, int col) const
 
   if (!item)
   {
-    str = 0L;
+    str = QString::null;
     return str;
   }
   if (col >= 0) return item->text(col);

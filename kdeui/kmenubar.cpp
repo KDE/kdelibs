@@ -43,6 +43,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.69  1999/05/06 04:54:03  warwick
+// myqstring = 0  becomes  myqstring = QString::null, or just remove the
+// line if it's already going to be null (default QString constructor).
 //
 // Revision 1.68  1999/04/23 13:56:18  mosfet
 // KDE theme style classes and some KStyle additions to the bars.
@@ -220,7 +223,6 @@ static QPixmap* miniGo = 0;
 
 /*************************************************************/
 
-  title = 0;
 KMenuBar::KMenuBar(QWidget *parent, const char *name)
   : QFrame( parent, name )
 {

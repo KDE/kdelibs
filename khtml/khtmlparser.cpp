@@ -291,8 +291,6 @@ KHTMLParser::KHTMLParser( KHTMLWidget *_parent,
     baseTarget = 0;
     target = 0;
     url = 0;
-    title = 0;
-    formText = 0;
     inNoframes = false;
 
     flow = 0;

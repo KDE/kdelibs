@@ -217,7 +217,7 @@ bool KGlobalAccel::insertItem(  const QString& descr, const QString& action, uin
 	pEntry->bEnabled = false;
 	pEntry->aAccelId = 0;
 	pEntry->receiver = 0;
-	pEntry->member = 0;
+	pEntry->member = QString::null;
 	pEntry->descr = descr;
 
 	return TRUE;

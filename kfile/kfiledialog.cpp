@@ -424,7 +424,7 @@ void KFileBaseDialog::checkPath(const QString&_txt, bool takeFiles) // SLOT
 	ASSERT(position >= 0); // we already inserted the current dir in case
 	QString filename = text.mid(position + 1, text.length());
 	if (filename != selection)
-	    selection = 0;
+	    selection = QString::null;
     }
 
     KURL u(text); // I have to take care of entered URLs
@@ -480,7 +480,7 @@ QString KFileBaseDialog::dirPath()
 void KFileBaseDialog::setDir(const QString& _pathstr, bool clearforward)
 {
     debugC("setDir %s %ld", _pathstr.ascii(), time(0));
-    filename_ = 0;
+    filename_ = QString::null;
     QString pathstr = _pathstr;
 
     if (pathstr.length() == 0 || pathstr.right(1)[0] != '/')
@@ -1039,7 +1039,7 @@ void KFileBaseDialog::fileActivated(KFileInfo *item)
 void KFileBaseDialog::fileHighlighted(KFileInfo *item)
 {
     // remove the predefined selection
-    selection = 0;
+    selection = QString::null;
 
     const QString& highlighted = item->fileName();
 
@@ -1100,7 +1100,7 @@ void KFileBaseDialog::setSelection(const QString& name)
     debugC("setSelection %s", name.ascii());
 
     if (!name) {
-	selection = 0;
+	selection = QString::null;
 	return;
     }
 
@@ -1147,7 +1147,7 @@ void KFileBaseDialog::completion() // SLOT
 
     // if someone uses completion, he doesn't like the current
     // selection
-    selection = 0;
+    selection = QString::null;
 
     QString text = locationEdit->currentText();
     if ( KURL(text).isMalformed() )
@@ -1213,11 +1213,9 @@ QString KFileDialog::getOpenFileURL(const QString& url, const QString& filter,
 
     if (dlg->exec() == QDialog::Accepted)
 	retval = dlg->selectedFileURL();
-    else
-	retval = 0;
 
     delete dlg;
-    if (!retval.isNull())
+    if (!retval)
 	debugC("getOpenFileURL: returning %s", retval.ascii());
 
     return retval;
@@ -1247,11 +1245,9 @@ QString KFileBaseDialog::getDirectory(const QString& url,
 
     if (dlg->exec() == QDialog::Accepted)
 	retval = dlg->selectedFile();
-    else
-	retval= 0;
 
     delete dlg;
-    if (!retval.isNull())
+    if (!retval)
 	debugC("getDirectory: returning %s", retval.ascii());
 
     return retval;
@@ -1407,11 +1403,9 @@ QString KFilePreviewDialog::getOpenFileURL(const QString& url, const QString& fi
 
     if (dlg->exec() == QDialog::Accepted)
 	retval = dlg->selectedFileURL();
-    else
-	retval= 0;
 
     delete dlg;
-    if (!retval.isNull())
+    if (!retval)
 	debugC("getOpenFileURL: returning %s", retval.ascii());
 
     return retval;
