@@ -481,6 +481,7 @@ void HTMLTokenizer::parseComment(DOMStringIt &src)
 
 void HTMLTokenizer::parseProcessingInstruction(DOMStringIt &src)
 {
+    char oldchar = 0;
     while ( src.length() )
     {
         char chbegin = src->latin1();
@@ -493,7 +494,7 @@ void HTMLTokenizer::parseProcessingInstruction(DOMStringIt &src)
         // Look for '?>'
         // some crappy sites omit the "?" before it, so
         // we look for an unquoted '>' instead. (IE compatible)
-        else if ( !tquote && chbegin == '>' )
+        else if ( chbegin == '>' && ( !tquote || oldchar == '?' ) )
         {
             // We got a '?>' sequence
             processingInstruction = false;
@@ -502,6 +503,7 @@ void HTMLTokenizer::parseProcessingInstruction(DOMStringIt &src)
             return; // Finished parsing comment!
         }
         ++src;
+        oldchar = chbegin;
     }
 }
 
