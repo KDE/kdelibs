@@ -578,22 +578,20 @@ namespace KJS {
     UString toString(ExecState *exec) const;
     Object toObject(ExecState *exec) const;
 
-// fixme
-/*     // This get method only looks at the property map. */
-/*     // A bit like hasProperty(recursive=false), this doesn't go to the prototype. */
-/*     // This is used e.g. by lookupOrCreateFunction (to cache a function, we don't want */
-/*     // to look up in the prototype, it might already exist there) */
-/*     ValueImp *getDirect(const Identifier& propertyName) const */
-/*         { return _prop.get(propertyName); } */
-    ValueImp *getDirect(const Identifier& propertyName) const // delme
-        { return _prop->get(propertyName); }
+    // This get method only looks at the property map.
+    // A bit like hasProperty(recursive=false), this doesn't go to the prototype.
+    // This is used e.g. by lookupOrCreateFunction (to cache a function, we don't want
+    // to look up in the prototype, it might already exist there)
+    ValueImp *getDirect(const Identifier& propertyName) const
+        { return _prop.get(propertyName); }
     void putDirect(const Identifier &propertyName, ValueImp *value, int attr = 0);
     void putDirect(const Identifier &propertyName, int value, int attr = 0);
 
+  protected:
+    PropertyMap _prop;
   private:
     const HashEntry* findPropertyHashEntry( const Identifier& propertyName ) const;
     ObjectImpPrivate *_od;
-    PropertyMap *_prop;
     ValueImp *_proto;
     ValueImp *_internalValue;
     ListImp *_scope;

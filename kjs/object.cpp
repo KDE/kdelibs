@@ -105,28 +105,24 @@ List Object::propList(ExecState *exec, bool recursive)
 // ------------------------------ ObjectImp ------------------------------------
 
 ObjectImp::ObjectImp(const Object &proto)
-  : _prop(0), _proto(static_cast<ObjectImp*>(proto.imp())), _internalValue(0L), _scope(0)
+  : _proto(static_cast<ObjectImp*>(proto.imp())), _internalValue(0L), _scope(0)
 {
   //fprintf(stderr,"ObjectImp::ObjectImp %p\n",(void*)this);
   _scope = ListImp::empty();
-  _prop = new PropertyMap();
 }
 
 ObjectImp::ObjectImp(ObjectImp *proto)
   : _proto(proto), _internalValue(0L)
 {
   _scope = ListImp::empty();
-  _prop = new PropertyMap();
 }
 
 ObjectImp::ObjectImp()
 {
   //fprintf(stderr,"ObjectImp::ObjectImp %p\n",(void*)this);
-  _prop = 0;
   _proto = NullImp::staticNull;
   _internalValue = 0L;
   _scope = ListImp::empty();
-  _prop = new PropertyMap();
 }
 
 ObjectImp::~ObjectImp()
@@ -138,7 +134,6 @@ ObjectImp::~ObjectImp()
     _internalValue->setGcAllowed();
   if (_scope)
     _scope->setGcAllowed();
-  delete _prop;
 }
 
 void ObjectImp::mark()
@@ -149,12 +144,7 @@ void ObjectImp::mark()
   if (_proto && !_proto->marked())
     _proto->mark();
 
-  PropertyMapNode *node = _prop->first();
-  while (node) {
-    if (!node->value->marked())
-      node->value->mark();
-    node = node->next();
-  }
+  _prop.mark();
 
   if (_internalValue && !_internalValue->marked())
     _internalValue->mark();
@@ -256,7 +246,7 @@ void ObjectImp::put(ExecState *exec, const Identifier &propertyName,
     return;
   }
 
-  _prop->put(propertyName,value.imp(),attr);
+  _prop.put(propertyName,value.imp(),attr);
 }
 
 // delme
@@ -269,17 +259,10 @@ void ObjectImp::put(ExecState *exec, unsigned propertyName,
 // ECMA 8.6.2.3
 bool ObjectImp::canPut(ExecState *, const Identifier &propertyName) const
 {
-// delme
-{
-  PropertyMapNode *node = _prop->getNode(propertyName);
-  if (node)
-    return!(node->attr & ReadOnly);
-}
-// fixme
-//   int attributes;
-//   ValueImp *v = _prop.get(propertyName, attributes);
-//   if (v)
-//     return!(attributes & ReadOnly);
+  int attributes;
+  ValueImp *v = _prop.get(propertyName, attributes);
+  if (v)
+    return!(attributes & ReadOnly);
 
   // Look in the static hashtable of properties
   const HashEntry* e = findPropertyHashEntry(propertyName);
@@ -294,7 +277,7 @@ bool ObjectImp::canPut(ExecState *, const Identifier &propertyName) const
 // ECMA 8.6.2.4
 bool ObjectImp::hasProperty(ExecState *exec, const Identifier &propertyName) const
 {
-  if (_prop->get(propertyName))
+  if (_prop.get(propertyName))
     return true;
 
   // Look in the static hashtable of properties
@@ -318,24 +301,14 @@ bool ObjectImp::hasProperty(ExecState *exec, unsigned propertyName) const
 // ECMA 8.6.2.5
 bool ObjectImp::deleteProperty(ExecState */*exec*/, const Identifier &propertyName)
 {
-// delme
-  PropertyMapNode *node = _prop->getNode(propertyName);
-  if (node) {
-    if ((node->attr & DontDelete))
+  int attributes;
+  ValueImp *v = _prop.get(propertyName, attributes);
+  if (v) {
+    if ((attributes & DontDelete))
       return false;
-    _prop->remove(propertyName);
+    _prop.remove(propertyName);
     return true;
   }
-
-// fixme
-//   int attributes;
-//   ValueImp *v = _prop.get(propertyName, attributes);
-//   if (v) {
-//     if ((attributes & DontDelete))
-//       return false;
-//     _prop.remove(propertyName);
-//     return true;
-//   }
 
   // Look in the static hashtable of properties
   const HashEntry* entry = findPropertyHashEntry(propertyName);
@@ -351,7 +324,7 @@ bool ObjectImp::deleteProperty(ExecState *exec, unsigned propertyName)
 
 void ObjectImp::deleteAllProperties( ExecState * )
 {
-  _prop->clear();
+  _prop.clear();
 }
 
 // ECMA 8.6.2.6
@@ -476,12 +449,7 @@ List ObjectImp::propList(ExecState *exec, bool recursive)
     list = static_cast<ObjectImp*>(_proto)->propList(exec,recursive);
 
 
-  PropertyMapNode *node = _prop->first();
-  while (node) {
-    if (!(node->attr & DontEnum))
-      list.append(Reference(Object(this), node->name.ustring()));
-    node = node->next();
-  }
+  _prop.addEnumerablesToReferenceList(list, Object(this));
 
   // Add properties from the static hashtable of properties
   const ClassInfo *info = classInfo();
@@ -567,12 +535,12 @@ Object ObjectImp::toObject(ExecState */*exec*/) const
 void ObjectImp::putDirect(const Identifier &propertyName, ValueImp *value, int attr)
 {
   value->setGcAllowed();
-  _prop->put(propertyName, value, attr);
+  _prop.put(propertyName, value, attr);
 }
 
 void ObjectImp::putDirect(const Identifier &propertyName, int value, int attr)
 {
-  _prop->put(propertyName, NumberImp::create(value), attr);
+  _prop.put(propertyName, NumberImp::create(value), attr);
 }
 
 // ------------------------------ Error ----------------------------------------

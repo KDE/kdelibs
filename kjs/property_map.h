@@ -1,7 +1,7 @@
 // -*- c-basic-offset: 2 -*-
 /*
  *  This file is part of the KDE libraries
- *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
+ *  Copyright (C) 2003 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -20,83 +20,80 @@
  *
  */
 
-
 #ifndef _KJS_PROPERTY_MAP_H_
 #define _KJS_PROPERTY_MAP_H_
 
 #include "identifier.h"
-#include "value.h"
 
 namespace KJS {
 
-  class PropertyMapNode {
-  public:
-    PropertyMapNode(const Identifier &n, ValueImp *v, int att, PropertyMapNode *p)
-      : name(n), value(v), attr(att), left(0), right(0), parent(p), height(1) {}
+    class Object;
+// ###     class ReferenceList;
+    class List;
+    class ValueImp;
+    
+    class SavedProperty;
+    
+    struct PropertyMapHashTable;
+    
+    class SavedProperties {
+    friend class PropertyMap;
+    public:
+        SavedProperties();
+        ~SavedProperties();
+        
+    private:
+        int _count;
+        SavedProperty *_properties;
+        
+        SavedProperties(const SavedProperties&);
+        SavedProperties& operator=(const SavedProperties&);
+    };
+    
+    struct PropertyMapHashTableEntry
+    {
+        PropertyMapHashTableEntry() : key(0) { }
+        UString::Rep *key;
+        ValueImp *value;
+        int attributes;
+    };
 
-    Identifier name;
-    ValueImp *value;
-    int attr;
+    class PropertyMap {
+    public:
+        PropertyMap();
+        ~PropertyMap();
 
-    void setLeft(PropertyMapNode *newLeft);
-    void setRight(PropertyMapNode *newRight);
-    PropertyMapNode *findMax();
-    PropertyMapNode *findMin();
+        void clear();
+        
+        void put(const Identifier &name, ValueImp *value, int attributes);
+        void remove(const Identifier &name);
+        ValueImp *get(const Identifier &name) const;
+        ValueImp *get(const Identifier &name, int &attributes) const;
 
-    PropertyMapNode *next();
+        void mark() const;
+        void addEnumerablesToReferenceList(List &, const Object &) const;
+	void addSparseArrayPropertiesToReferenceList(List &, const Object &) const;
 
-    PropertyMapNode *left;
-    PropertyMapNode *right;
-    PropertyMapNode *parent;
-    int height;
+        void save(SavedProperties &) const;
+        void restore(const SavedProperties &p);
 
-  private:
-    void setParent(PropertyMapNode *newParent);
-  };
+    private:
+        int hash(const UString::Rep *) const;
+        static bool keysMatch(const UString::Rep *, const UString::Rep *);
+        void expand();
+        
+        void insert(UString::Rep *, ValueImp *value, int attributes);
+        
+        void checkConsistency();
+        
+        typedef PropertyMapHashTableEntry Entry;
+        typedef PropertyMapHashTable Table;
 
-  /**
-   * @internal
-   *
-   * Provides a name/value map for storing properties based on Identifier keys. The
-   * map is implemented using an AVL tree, which provides O(log2 n) performance
-   * for insertion and deletion, and retrieval.
-   *
-   * For a description of AVL tree operations, see
-   * http://www.cis.ksu.edu/~howell/300f99/minavl/rotations.html
-   * http://www.cgc.cs.jhu.edu/~jkloss/htmls/structures/avltree.html
-   */
-  class PropertyMap {
-  public:
-    PropertyMap();
-    ~PropertyMap();
+        Table *_table;
+        
+        Entry _singleEntry;
+    };
 
-    void put(const Identifier &name, ValueImp *value, int attr);
-    void remove(const Identifier &name);
-    ValueImp *get(const Identifier &name) const;
-
-    void clear(PropertyMapNode *node = 0);
-    void dump(const PropertyMapNode *node = 0, int indent = 0) const;
-    void checkTree(const PropertyMapNode *node = 0) const;
-
-    PropertyMapNode *getNode(const Identifier &name) const;
-    PropertyMapNode *first() const;
-
-  private:
-
-    PropertyMapNode *remove(PropertyMapNode *node);
-    void balance(PropertyMapNode* node);
-    void updateHeight(PropertyMapNode* &node);
-
-    void rotateRR(PropertyMapNode* &node);
-    void rotateLL(PropertyMapNode* &node);
-    void rotateRL(PropertyMapNode* &node);
-    void rotateLR(PropertyMapNode* &node);
-
-    PropertyMapNode *root;
-  };
-
-  int uscompare(const Identifier &s1, const Identifier &s2);
-
-} // namespace
+}; // namespace
 
 #endif // _KJS_PROPERTY_MAP_H_

@@ -26,6 +26,8 @@
 
 #include <kjs/global.h>
 
+#include <stdint.h>
+
 /**
  * @internal
  */
@@ -194,6 +196,8 @@ namespace KJS {
     friend bool operator==(const UString&, const UString&);
     friend class UCharReference;
     friend class Identifier;
+    friend class PropertyMap;
+    friend class PropertyMapHashTableEntry;
     /**
      * @internal
      */
@@ -385,6 +389,9 @@ _hash; }
      * according to the success.
      */
     unsigned long toULong(bool *ok = 0L) const;
+
+    uint32_t toUInt32(bool *ok = 0L) const;
+
     /**
      * Returns this string converted to lower case characters
      */

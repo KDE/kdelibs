@@ -1,7 +1,6 @@
-// -*- c-basic-offset: 2 -*-
 /*
  *  This file is part of the KDE libraries
- *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
+ *  Copyright (C) 2003 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -20,537 +19,505 @@
  *
  */
 
-
 #include "property_map.h"
 
-#include <string.h>
+#include "object.h"
+// ### #include "reference_list.h"
+
 #include <assert.h>
-#include <stdio.h>
 
-using namespace KJS;
+#define DEBUG_PROPERTIES 0
+#define DO_CONSISTENCY_CHECK 0
+#define DUMP_STATISTICS 0
+#define USE_SINGLE_ENTRY 1
 
-// ------------------------------ PropertyMapNode ------------------------------
+// At the time I added USE_SINGLE_ENTRY, the optimization still gave a 1.5% performance boost so I couldn't remove it.
 
-void PropertyMapNode::setLeft(PropertyMapNode *newLeft)
+#if !DO_CONSISTENCY_CHECK
+#define checkConsistency() ((void)0)
+#endif
+
+namespace KJS {
+
+#if DUMP_STATISTICS
+
+static int numProbes;
+static int numCollisions;
+
+struct PropertyMapStatisticsExitLogger { ~PropertyMapStatisticsExitLogger(); };
+
+static PropertyMapStatisticsExitLogger logger;
+
+PropertyMapStatisticsExitLogger::~PropertyMapStatisticsExitLogger()
 {
-  if (left)
-    left->setParent(0);
-  left = newLeft;
-  if (left)
-    left->setParent(this);
+    printf("\nKJS::PropertyMap statistics\n\n");
+    printf("%d probes\n", numProbes);
+    printf("%d collisions (%.1f%%)\n", numCollisions, 100.0 * numCollisions / numProbes);
 }
 
-void PropertyMapNode::setRight(PropertyMapNode *newRight)
+#endif
+
+struct PropertyMapHashTable
 {
-  if (right)
-    right->setParent(0);
-  right = newRight;
-  if (right)
-    right->setParent(this);
+    int sizeMask;
+    int size;
+    int keyCount;
+    PropertyMapHashTableEntry entries[1];
+};
+
+class SavedProperty {
+public:
+    Identifier key;
+    Value value;
+    int attributes;
+};
+
+SavedProperties::SavedProperties() : _count(0), _properties(0) { }
+
+SavedProperties::~SavedProperties()
+{
+    delete [] _properties;
 }
 
-void PropertyMapNode::setParent(PropertyMapNode *newParent)
+// Algorithm concepts from Algorithms in C++, Sedgewick.
+
+PropertyMap::PropertyMap() : _table(0)
 {
-  if (parent) {
-    //assert(this == parent->left || this == parent->right);
-    if (this == parent->left)
-      parent->left = 0;
-    else
-      parent->right = 0;
-  }
-  parent = newParent;
-}
-
-PropertyMapNode *PropertyMapNode::findMax()
-{
-  PropertyMapNode *max = this;
-  while (max->right)
-    max = max->right;
-  return max;
-}
-
-PropertyMapNode *PropertyMapNode::findMin()
-{
-  PropertyMapNode *min = this;
-  while (min->left)
-    min = min->left;
-  return min;
-}
-
-PropertyMapNode *PropertyMapNode::next()
-{
-  // find the next node, going from lowest name to highest name
-
-  // We have a right node. Starting from our right node, keep going left as far as we can
-  if (right) {
-    PropertyMapNode *n = right;
-    while (n->left)
-      n = n->left;
-    return n;
-  }
-
-  // We have no right node. Keep going up to the left, until we find a node that has a parent
-  // to the right. If we find one, go to it. Otherwise, we have reached the end.
-  PropertyMapNode *n = this;
-  while (n->parent && n->parent->right == n) {
-    // parent is to our left
-    n = n->parent;
-  }
-  if (n->parent && n->parent->left == n) {
-    // parent is to our right
-    return n->parent;
-  }
-
-  return 0;
-}
-
-// ------------------------------ PropertyMap ----------------------------------
-
-int KJS::uscompare(const Identifier &s1, const Identifier &s2)
-{
-  int len1 = s1.size();
-  int len2 = s2.size();
-  if (len1 < len2)
-    return -1;
-  else if (len1 > len2)
-    return 1;
-  else
-    return memcmp(s1.data(), s2.data(), len1*sizeof(UChar));
-}
-
-PropertyMap::PropertyMap()
-{
-  root = 0;
 }
 
 PropertyMap::~PropertyMap()
 {
-  clear();
+    if (!_table) {
+#if USE_SINGLE_ENTRY
+        UString::Rep *key = _singleEntry.key;
+        if (key)
+            key->deref();
+#endif
+        return;
+    }
+    
+    for (int i = 0; i < _table->size; i++) {
+        UString::Rep *key = _table->entries[i].key;
+        if (key)
+	  key->deref();
+    }
+    free(_table);
 }
 
-void PropertyMap::put(const Identifier &name, ValueImp *value, int attr)
+void PropertyMap::clear()
 {
-  // if not root; make the root the new node
-  if (!root) {
-    root = new PropertyMapNode(name, value, attr, 0);
-    return;
-  }
-
-  // try to find the parent node
-  PropertyMapNode *parent = root;
-  int isLeft = false;
-  while (true) {
-    int cmp = uscompare(name, parent->name);
-    if (cmp < 0) {
-      // traverse to left node (if any)
-      isLeft = true;
-      if (!parent->left)
-        break;
-      else
-        parent = parent->left;
+    if (!_table) {
+#if USE_SINGLE_ENTRY
+        UString::Rep *key = _singleEntry.key;
+        if (key) {
+            key->deref();
+            _singleEntry.key = 0;
+        }
+#endif
+        return;
     }
-    else if (cmp > 0) {
-      // traverse to right node (if any)
-      isLeft = false;
-      if (!parent->right)
-        break;
-      else
-        parent = parent->right;
+
+    for (int i = 0; i < _table->size; i++) {
+        UString::Rep *key = _table->entries[i].key;
+        if (key) {
+            key->deref();
+            _table->entries[i].key = 0;
+        }
     }
-    else {
-      // a node with this name already exists; just replace the value
-      parent->value = value;
-      return;
-    }
-  }
-
-  // we found the parent
-  //assert(parent);
-
-  if (isLeft) {
-    //assert(!parent->left);
-    parent->left = new PropertyMapNode(name, value, attr, parent);
-  }
-  else {
-    //assert(!parent->right);
-    parent->right = new PropertyMapNode(name, value, attr, parent);
-  }
-  updateHeight(parent);
-
-
-  PropertyMapNode *node = parent;
-  while (node) {
-    PropertyMapNode *p = node->parent;
-    balance(node); // may change node
-    node = p;
-  }
+    _table->keyCount = 0;
 }
 
-void PropertyMap::remove(const Identifier &name)
+inline int PropertyMap::hash(const UString::Rep *s) const
 {
-  PropertyMapNode *node = getNode(name);
-  if (!node) // name not in tree
-    return;
+    return s->hash() & _table->sizeMask;
+}
 
-  PropertyMapNode *removed = remove(node);
-  if (removed)
-    delete node;
+ValueImp *PropertyMap::get(const Identifier &name, int &attributes) const
+{
+    UString::Rep *rep = name._ustring.rep;
+    
+    if (!_table) {
+#if USE_SINGLE_ENTRY
+        UString::Rep *key = _singleEntry.key;
+        if (rep == key) {
+            attributes = _singleEntry.attributes;
+            return _singleEntry.value;
+        }
+#endif
+        return 0;
+    }
+    
+    int i = hash(rep);
+#if DUMP_STATISTICS
+    ++numProbes;
+    numCollisions += _table->entries[i].key && _table->entries[i].key != rep;
+#endif
+    while (UString::Rep *key = _table->entries[i].key) {
+        if (rep == key) {
+            attributes = _table->entries[i].attributes;
+            return _table->entries[i].value;
+        }
+        i = (i + 1) & _table->sizeMask;
+    }
+    return 0;
 }
 
 ValueImp *PropertyMap::get(const Identifier &name) const
 {
-  const PropertyMapNode *n = getNode(name);
-  return n ? n->value : 0;
+    UString::Rep *rep = name._ustring.rep;
+
+    if (!_table) {
+#if USE_SINGLE_ENTRY
+        UString::Rep *key = _singleEntry.key;
+        if (rep == key)
+            return _singleEntry.value;
+#endif
+        return 0;
+    }
+    
+    int i = hash(rep);
+#if DUMP_STATISTICS
+    ++numProbes;
+    numCollisions += _table->entries[i].key && _table->entries[i].key != rep;
+#endif
+    while (UString::Rep *key = _table->entries[i].key) {
+        if (rep == key)
+            return _table->entries[i].value;
+        i = (i + 1) & _table->sizeMask;
+    }
+    return 0;
 }
 
-void PropertyMap::clear(PropertyMapNode *node)
+#if DEBUG_PROPERTIES
+static void printAttributes(int attributes)
 {
-  if (node == 0)
-    node = root;
-  if (node == 0) // nothing to do
-    return;
-
-  if (node->left)
-    clear(node->left);
-  if (node->right)
-    clear(node->right);
-  if (node == root)
-    root = 0;
-  delete node;
+    if (attributes == 0)
+        printf ("None ");
+    if (attributes & ReadOnly)
+        printf ("ReadOnly ");
+    if (attributes & DontEnum)
+        printf ("DontEnum ");
+    if (attributes & DontDelete)
+        printf ("DontDelete ");
+    if (attributes & Internal)
+        printf ("Internal ");
+    if (attributes & Function)
+        printf ("Function ");
 }
+#endif
 
-void PropertyMap::dump(const PropertyMapNode *node, int indent) const
+void PropertyMap::put(const Identifier &name, ValueImp *value, int attributes)
 {
-  if (!node && indent > 0)
-    return;
-  if (!node)
-    node = root;
-  if (!node)
-    return;
+    checkConsistency();
 
-  assert(!node->right || node->right->parent == node);
-  dump(node->right, indent+1);
-  for (int i = 0; i < indent; i++) {
-    printf("    ");
-  }
-  printf("[%d] %s\n", node->height, node->name.ascii());
-  assert(!node->left || node->left->parent == node);
-  dump(node->left, indent+1);
-}
-
-void PropertyMap::checkTree(const PropertyMapNode *node) const
-{
-  if (!root)
-    return;
-  if (node == 0)
-    node = root;
-  if (node == root) {
-    assert(!node->parent);
-  }
-  assert(!node->right || node->right->parent == node);
-  assert(!node->left || node->left->parent == node);
-  assert(node->left != node);
-  assert(node->right != node);
-  if (node->left && node->right)
-    assert(node->left != node->right);
-
-  PropertyMapNode *n = node->parent;
-  while (n) {
-    assert(n != node);
-    n = n->parent;
-  }
-
-  if (node->right)
-    checkTree(node->right);
-  if (node->left)
-    checkTree(node->left);
-}
-
-PropertyMapNode *PropertyMap::getNode(const Identifier &name) const
-{
-  PropertyMapNode *node = root;
-#if 1 // optimized version of ...
-  int len1 = name.size();
-  int ulen = len1 * sizeof(UChar);
-  const UChar* const data1 = name.data();
-  while (node) {
-    int diff = len1 - node->name.size();
-    if (diff == 0 && (diff = memcmp(data1, node->name.data(), ulen)) == 0)
-	return node;
-    node = diff < 0 ? node->left : node->right;
-  }
-#else // this one
-    while (node) {
-      int cmp = uscompare(name, node->name);
-      if (cmp == 0)
-	return node;
-      node = cmp < 0 ? node->left : node->right;
+    UString::Rep *rep = name._ustring.rep;
+    
+#if DEBUG_PROPERTIES
+    printf ("adding property %s, attributes = 0x%08x (", name.ascii(), attributes);
+    printAttributes(attributes);
+    printf (")\n");
+#endif
+    
+#if USE_SINGLE_ENTRY
+    if (!_table) {
+        UString::Rep *key = _singleEntry.key;
+        if (key) {
+            if (rep == key) {
+                _singleEntry.value = value;
+                return;
+            }
+        } else {
+            rep->ref();
+            _singleEntry.key = rep;
+            _singleEntry.value = value;
+            _singleEntry.attributes = attributes;
+            checkConsistency();
+            return;
+        }
     }
 #endif
-  return 0;
-}
 
-PropertyMapNode *PropertyMap::first() const
-{
-  if (!root)
-    return 0;
-
-  PropertyMapNode *node = root;
-  while (node->left)
-    node = node->left;
-  return node;
-}
-
-PropertyMapNode * PropertyMap::remove(PropertyMapNode *node)
-{
-  PropertyMapNode *parent = node->parent;
-  //assert(!parent || (node == parent->left || node == parent->right));
-  bool isLeft = (parent && node == parent->left);
-
-  PropertyMapNode *replace = 0;
-  if (node->left && node->right) {
-    PropertyMapNode *maxLeft = node->left->findMax();
-    if (maxLeft == node->left) {
-      maxLeft->setRight(node->right);
-      replace = maxLeft;
+    if (!_table || _table->keyCount * 2 >= _table->size)
+        expand();
+    
+    int i = hash(rep);
+#if DUMP_STATISTICS
+    ++numProbes;
+    numCollisions += _table->entries[i].key && _table->entries[i].key != rep;
+#endif
+    while (UString::Rep *key = _table->entries[i].key) {
+        if (rep == key) {
+            // Put a new value in an existing hash table entry.
+            _table->entries[i].value = value;
+            // Attributes are intentionally not updated.
+            return;
+        }
+        i = (i + 1) & _table->sizeMask;
     }
-    else {
-      remove(maxLeft);
+    
+    // Create a new hash table entry.
+    rep->ref();
+    _table->entries[i].key = rep;
+    _table->entries[i].value = value;
+    _table->entries[i].attributes = attributes;
+    ++_table->keyCount;
 
-      maxLeft->setLeft(node->left);
-      maxLeft->setRight(node->right);
-      replace = maxLeft;
+    checkConsistency();
+}
+
+inline void PropertyMap::insert(UString::Rep *key, ValueImp *value, int attributes)
+{
+    assert(_table);
+
+    int i = hash(key);
+#if DUMP_STATISTICS
+    ++numProbes;
+    numCollisions += _table->entries[i].key && _table->entries[i].key != key;
+#endif
+    while (_table->entries[i].key)
+        i = (i + 1) & _table->sizeMask;
+    
+    _table->entries[i].key = key;
+    _table->entries[i].value = value;
+    _table->entries[i].attributes = attributes;
+}
+
+void PropertyMap::expand()
+{
+    checkConsistency();
+    
+    Table *oldTable = _table;
+    int oldTableSize = oldTable ? oldTable->size : 0;
+
+    int newTableSize = oldTableSize ? oldTableSize * 2 : 16;
+    _table = (Table *)calloc(1, sizeof(Table) + (newTableSize - 1) * sizeof(Entry) );
+    _table->size = newTableSize;
+    _table->sizeMask = newTableSize - 1;
+    _table->keyCount = oldTable ? oldTable->keyCount : 0;
+
+#if USE_SINGLE_ENTRY
+    UString::Rep *key = _singleEntry.key;
+    if (key) {
+        insert(key, _singleEntry.value, _singleEntry.attributes);
+	_table->keyCount++;
+        _singleEntry.key = 0;
     }
-    // removing maxLeft could have re-balanced the tree, so recalculate
-    // parent again
-    parent = node->parent;
-    //assert(!parent || (node == parent->left || node == parent->right));
-    isLeft = (parent && node == parent->left);
-  }
-  else if (node->left) {
-    replace = node->left;
-  }
-  else if (node->right) {
-    replace = node->right;
-  }
-  else {
-    replace = 0;
-  }
-
-  if (parent) {
-    if (isLeft)
-      parent->setLeft(replace);
-    else
-      parent->setRight(replace);
-  }
-  else {
-    root = replace;
-    if (replace)
-      replace->parent = 0;
-  }
-
-  if (replace)
-    updateHeight(replace); // will also update parent's height
-  else if (parent)
-    updateHeight(parent);
-  else if (root)
-    updateHeight(root);
-
-
-  // balance the tree
-  PropertyMapNode *bal = parent;
-  while (bal) {
-    PropertyMapNode *p = bal->parent;
-    balance(bal); // may change bal
-    bal = p;
-  }
-
-  return node;
-}
-
-void PropertyMap::balance(PropertyMapNode* node)
-{
-  int lheight = node->left ? node->left->height : 0;
-  int rheight = node->right ? node->right->height : 0;
-
-  int bal = rheight-lheight;
-
-  if (bal < -1) {
-    //assert(node->left);
-    int llheight = node->left->left ? node->left->left->height : 0;
-    int lrheight = node->left->right ? node->left->right->height : 0;
-    int lbal = lrheight - llheight;
-
-    if (lbal < 0) {
-      rotateLL(node); // LL rotation
+#endif
+    
+    for (int i = 0; i != oldTableSize; ++i) {
+        UString::Rep *key = oldTable->entries[i].key;
+        if (key)
+            insert(key, oldTable->entries[i].value, oldTable->entries[i].attributes);
     }
-    else {
-      // lbal >= 0
-      rotateLR(node);
+
+    free(oldTable);
+
+    checkConsistency();
+}
+
+void PropertyMap::remove(const Identifier &name)
+{
+    checkConsistency();
+
+    UString::Rep *rep = name._ustring.rep;
+
+    UString::Rep *key;
+
+    if (!_table) {
+#if USE_SINGLE_ENTRY
+        key = _singleEntry.key;
+        if (rep == key) {
+            key->deref();
+            _singleEntry.key = 0;
+            checkConsistency();
+        }
+#endif
+        return;
     }
-  }
-  else if (bal > 1) {
-    int rlheight = node->right->left ? node->right->left->height : 0;
-    int rrheight = node->right->right ? node->right->right->height : 0;
-    int rbal = rrheight - rlheight;
-    if (rbal < 0) {
-      rotateRL(node);
+
+    // Find the thing to remove.
+    int i = hash(rep);
+#if DUMP_STATISTICS
+    ++numProbes;
+    numCollisions += _table->entries[i].key && _table->entries[i].key != rep;
+#endif
+    while ((key = _table->entries[i].key)) {
+        if (rep == key)
+            break;
+        i = (i + 1) & _table->sizeMask;
     }
-    else {
-      // rbal >= 0
-      rotateRR(node); // RR rotateion
+    if (!key)
+        return;
+    
+    // Remove the one key.
+    key->deref();
+    _table->entries[i].key = 0;
+    assert(_table->keyCount >= 1);
+    --_table->keyCount;
+    
+    // Reinsert all the items to the right in the same cluster.
+    while (1) {
+        i = (i + 1) & _table->sizeMask;
+        key = _table->entries[i].key;
+        if (!key)
+            break;
+        _table->entries[i].key = 0;
+        insert(key, _table->entries[i].value, _table->entries[i].attributes);
     }
-  }
+
+    checkConsistency();
 }
 
-void PropertyMap::updateHeight(PropertyMapNode* &node)
+void PropertyMap::mark() const
 {
-  int lheight = node->left ? node->left->height : 0;
-  int rheight = node->right ? node->right->height : 0;
-  if (lheight > rheight)
-    node->height = lheight+1;
-  else
-    node->height = rheight+1;
-  //assert(node->parent != node);
-  if (node->parent)
-    updateHeight(node->parent);
+    if (!_table) {
+#if USE_SINGLE_ENTRY
+        if (_singleEntry.key) {
+            ValueImp *v = _singleEntry.value;
+            if (!v->marked())
+                v->mark();
+        }
+#endif
+        return;
+    }
+
+    for (int i = 0; i != _table->size; ++i) {
+        if (_table->entries[i].key) {
+            ValueImp *v = _table->entries[i].value;
+            if (!v->marked())
+                v->mark();
+        }
+    }
 }
 
-void PropertyMap::rotateRR(PropertyMapNode* &node)
+void PropertyMap::addEnumerablesToReferenceList(List &list, const Object &base) const
 {
-  /*
-    Perform a RR ("single left") rotation, e.g.
+    if (!_table) {
+#if USE_SINGLE_ENTRY
+        UString::Rep *key = _singleEntry.key;
+        if (key && !(_singleEntry.attributes & DontEnum))
+            list.append(Reference(base, Identifier(key).ustring()));
+#endif
+        return;
+    }
 
-      a                b
-     / \              / \
-    X   b     -->    a   Z
-       / \          / \
-      Y   Z        X   Y
-  */
-
-  // Here, node is initially a, will be replaced with b
-
-  PropertyMapNode *a = node;
-  PropertyMapNode *b = node->right;
-
-  PropertyMapNode *parent = a->parent;
-  //assert(!parent || (a == parent->left || a == parent->right));
-  bool isLeft = (parent && a == parent->left);
-
-  // do the rotation
-  a->setRight(b->left);
-  b->setLeft(a);
-
-  // now node is b
-  node = b;
-  if (parent) {
-    if (isLeft)
-      parent->setLeft(b);
-    else
-      parent->setRight(b);
-  }
-  else {
-    // a was the root node
-    root = b;
-  }
-
-  updateHeight(a);
-  updateHeight(b);
+    for (int i = 0; i != _table->size; ++i) {
+        UString::Rep *key = _table->entries[i].key;
+        if (key && !(_table->entries[i].attributes & DontEnum))
+            list.append(Reference(base, Identifier(key).ustring()));
+    }
 }
 
-
-void PropertyMap::rotateLL(PropertyMapNode* &node)
+void PropertyMap::addSparseArrayPropertiesToReferenceList(List &list, const Object &base) const
 {
-  /*
-    Perform a LL ("single right") rotation, e.g.
+    if (!_table) {
+#if USE_SINGLE_ENTRY
+        UString::Rep *key = _singleEntry.key;
+        if (key) {
+            UString k(key);
+            bool fitsInUInt32;
+            k.toUInt32(&fitsInUInt32);
+            if (fitsInUInt32)
+                list.append(Reference(base, Identifier(key).ustring()));
+        }
+#endif
+        return;
+    }
 
-
-        a              b
-       / \            / \
-      b   Z   -->    X   a
-     / \                / \
-    X   Y              Y   Z
-  */
-
-  // Here, node is initially a, will be replaced with b
-
-  PropertyMapNode *a = node;
-  PropertyMapNode *b = node->left;
-
-  PropertyMapNode *parent = a->parent;
-  //assert(!parent || (a == parent->left || a == parent->right));
-  bool isLeft = (parent && a == parent->left);
-
-  // do the rotation
-  a->setLeft(b->right);
-  b->setRight(a);
-
-  // now node is b
-  node = b;
-  if (parent) {
-    if (isLeft)
-      parent->setLeft(b);
-    else
-      parent->setRight(b);
-  }
-  else {
-    // a was the root node
-    root = b;
-  }
-
-  updateHeight(a);
-  updateHeight(b);
+    for (int i = 0; i != _table->size; ++i) {
+        UString::Rep *key = _table->entries[i].key;
+        if (key) {
+            UString k(key);
+            bool fitsInUInt32;
+            k.toUInt32(&fitsInUInt32);
+            if (fitsInUInt32)
+                list.append(Reference(base, Identifier(key).ustring()));
+        }
+    }
 }
 
-void PropertyMap::rotateRL(PropertyMapNode* &node)
+void PropertyMap::save(SavedProperties &p) const
 {
-  /*
-    Perform a RL ("double left") rotation, e.g.
+    int count = 0;
 
-        a                   a                          b
-      /   \      LL on c  /   \          RR on b     /   \
-     W      c      -->   W      b          -->     a       c
-           / \                 / \                / \     / \
-          b   Z               X   c              W   X   Y   Z
-         / \                     / \
-        X   Y                   Y   Z
+    if (!_table) {
+#if USE_SINGLE_ENTRY
+        if (_singleEntry.key && !(_singleEntry.attributes & (ReadOnly | DontEnum | Function)))
+            ++count;
+#endif
+    } else {
+        for (int i = 0; i != _table->size; ++i)
+            if (_table->entries[i].key && !(_table->entries[i].attributes & (ReadOnly | DontEnum | Function)))
+                ++count;
+    }
 
-  */
+    delete [] p._properties;
 
-  PropertyMapNode *a = node;
-  PropertyMapNode *c = node->right;
-  PropertyMapNode *b = node->right->left;
+    p._count = count;
 
-  rotateLL(c);
-  rotateRR(b);
-
-  updateHeight(a);
-  updateHeight(c);
-  updateHeight(b);
+    if (count == 0) {
+        p._properties = 0;
+        return;
+    }
+    
+    p._properties = new SavedProperty [count];
+    
+    SavedProperty *prop = p._properties;
+    
+    if (!_table) {
+#if USE_SINGLE_ENTRY
+        if (_singleEntry.key && !(_singleEntry.attributes & (ReadOnly | DontEnum | Function))) {
+            prop->key = Identifier(_singleEntry.key);
+            prop->value = Value(_singleEntry.value);
+            prop->attributes = _singleEntry.attributes;
+            ++prop;
+        }
+#endif
+    } else {
+        for (int i = 0; i != _table->size; ++i) {
+            if (_table->entries[i].key && !(_table->entries[i].attributes & (ReadOnly | DontEnum | Function))) {
+                prop->key = Identifier(_table->entries[i].key);
+                prop->value = Value(_table->entries[i].value);
+                prop->attributes = _table->entries[i].attributes;
+                ++prop;
+            }
+        }
+    }
 }
 
-void PropertyMap::rotateLR(PropertyMapNode* &node)
+void PropertyMap::restore(const SavedProperties &p)
 {
-  /*
-    Perform a LR ("double right") rotation, e.g.
-
-          a                         a                      b
-        /   \    RR on c          /   \     LL on a      /   \
-      c       Z    -->          b       Z     -->      c       a
-     / \                       / \                    / \     / \
-    W   b                     c   Y                  W   X   Y   Z
-       / \                   / \
-      X   Y                 W   X
-  */
-
-  PropertyMapNode *a = node;
-  PropertyMapNode *c = node->left;
-  PropertyMapNode *b = node->left->right;
-
-  rotateRR(c);
-  rotateLL(a);
-
-  updateHeight(c);
-  updateHeight(a);
-  updateHeight(b);
+    for (int i = 0; i != p._count; ++i)
+        put(p._properties[i].key, p._properties[i].value.imp(), p._properties[i].attributes);
 }
+
+#if DO_CONSISTENCY_CHECK
+
+void PropertyMap::checkConsistency()
+{
+    if (!_table)
+        return;
+
+    int count = 0;
+    for (int j = 0; j != _table->size; ++j) {
+        UString::Rep *rep = _table->entries[j].key;
+        if (!rep)
+            continue;
+        int i = hash(rep);
+        while (UString::Rep *key = _table->entries[i].key) {
+            if (rep == key)
+                break;
+            i = (i + 1) & _table->sizeMask;
+        }
+        assert(i == j);
+        count++;
+    }
+    assert(count == _table->keyCount);
+    assert(_table->size >= 16);
+    assert(_table->sizeMask);
+    assert(_table->size == _table->sizeMask + 1);
+}
+
+#endif // DO_CONSISTENCY_CHECK
+
+} // namespace KJS
