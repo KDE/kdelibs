@@ -535,6 +535,7 @@ void KURL::parse( const QString& _url, int encoding_hint )
   }
 
   QString port;
+  bool badHostName = false;
   int start = 0;
   uint len = _url.length();
   QChar* buf = new QChar[ len + 1 ];
@@ -595,10 +596,17 @@ void KURL::parse( const QString& _url, int encoding_hint )
       goto Node8;
   // Terminate on / or @ or ? or # or " or ; or <
   x = buf[pos];
-  while( (x != ':') && (x != '@') && (x != '/') && (x != '?') && (x != '#') && (x != '\"') && (x != ';') && (x != '<') && (pos < len) )
-     x = buf[++pos];
+  while( (x != ':') && (x != '@') && (x != '/') && (x != '?') && (x != '#') && (pos < len))
+  {
+     if ((x == '\"') || (x == ';') || (x == '<'))
+        badHostName = true;
+      x = buf[++pos];
+  }
   if ( pos == len )
     {
+      if (badHostName)
+         goto NodeErr;
+
       m_strHost = decode(QString( buf + start, pos - start ), 0, encoding_hint);
       goto NodeOk;
     }
@@ -616,6 +624,9 @@ void KURL::parse( const QString& _url, int encoding_hint )
      } */
   else if ( (x == '/') || (x == '?') || (x == '#'))
     {
+      if (badHostName)
+         goto NodeErr;
+
       m_strHost = decode(QString( buf + start, pos - start ), 0, encoding_hint);
       start = pos;
       goto Node9;
@@ -641,6 +652,8 @@ void KURL::parse( const QString& _url, int encoding_hint )
   if ( (pos == len) || (buf[pos] != '@') )
     {
       // Ok the : was used to separate host and port
+      if (badHostName)
+         goto NodeErr;
       m_strHost = m_strUser;
       m_strUser = QString::null;
       QString tmp( buf + start, pos - start );
@@ -668,7 +681,17 @@ void KURL::parse( const QString& _url, int encoding_hint )
     start = ++pos; // Skip '['
 
     // Node 8b: Read everything until ] or terminate
-    while( buf[pos] != ']' && pos < len ) pos++;
+    badHostName = false;
+    x = buf[pos];
+    while( (x != ']') &&  (pos < len) )
+    {
+       if ((x == '\"') || (x == ';') || (x == '<'))
+          badHostName = true;
+       x = buf[++pos];
+    }
+    if (badHostName)
+       goto NodeErr;
+
     m_strHost = decode(QString( buf + start, pos - start ), 0, encoding_hint);
     if (pos < len) pos++; // Skip ']'
     if (pos == len)
@@ -680,7 +703,16 @@ void KURL::parse( const QString& _url, int encoding_hint )
     start = pos++;
 
     // Node 8b: Read everything until / : or terminate
-    while( buf[pos] != '/' && buf[pos] != ':' && pos < len ) pos++;
+    badHostName = false;
+    x = buf[pos];
+    while( (x != ':') && (x != '@') && (x != '/') && (x != '?') && (x != '#') &&  (pos < len) )
+    {  
+       if ((x == '\"') || (x == ';') || (x == '<'))
+          badHostName = true;
+       x = buf[++pos];
+    }
+    if (badHostName)
+       goto NodeErr;
     if ( pos == len )
     {
        m_strHost = decode(QString( buf + start, pos - start ), 0, encoding_hint);
