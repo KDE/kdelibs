@@ -120,7 +120,7 @@ public:
 /**
 * Destructor
 */
-        KNoteBook::~KNoteBook();
+        ~KNoteBook();
 /**
 * Adds a new tab to the notebook and creates a new @ref KWizard to hold the pages.
 * The tabs are numbered from 0 to n where 0 is the tab first added and n is the
