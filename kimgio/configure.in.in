@@ -20,13 +20,13 @@ AC_CACHE_VAL(ac_cv_libexr,
      if !(`$PKG_CONFIG --exists OpenEXR`) ; then
         AC_MSG_RESULT(no)
         echo "*** pkg-config installed, but no OpenEXR Libraries were found ***"
-	echo "*** Install OpenEXR package (from http:///www.openexr.com)"
+	echo "*** Install OpenEXR package (from http://www.openexr.org)"
  	echo "*** if you want EXR image format support"
      else
         if !(`$PKG_CONFIG --atleast-version="1.1.1" OpenEXR`) ; then
            AC_MSG_RESULT(no)
            echo "*** OpenEXR libraries were found, but at least version 1.1.0 is required ***"
-	   echo "*** Install newer OpenEXR package (from http:///www.openexr.org)"
+	   echo "*** Install newer OpenEXR package (from http://www.openexr.org)"
  	   echo "*** if you want EXR image format support"
         else
            kde_save_LIBS="$LIBS"
