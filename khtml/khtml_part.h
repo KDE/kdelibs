@@ -426,6 +426,11 @@ public:
    */
   const khtml::Settings *settings() const;
 
+  /**
+   * Returns a pointer to the parent KHTMLPart if the part is a frame in a html frameset.
+   * (returns 0L otherwise)
+   */
+  KHTMLPart *parentPart();
 
 signals:
   /**
@@ -590,8 +595,6 @@ private:
   DOM::HTMLDocumentImpl *docImpl() const;
   khtml::ChildFrame *frame( const QObject *obj );
 
-  KHTMLPart *parentPart();
-
   khtml::ChildFrame *recursiveFrameRequest( const KURL &url, const KParts::URLArgs &args, bool callParent = true, bool newWin = true );
 
   KHTMLPartPrivate *d;
@@ -638,6 +641,7 @@ private slots:
   void slotSaveLinkAs();
   void slotSaveImageAs();
   void slotCopyLinkLocation();
+  void slotReloadFrame();
 private:
   class KHTMLPopupGUIClientPrivate;
   KHTMLPopupGUIClientPrivate *d;

@@ -622,7 +622,7 @@ KURL KHTMLPart::completeURL( const QString &url, const QString &target )
   // the current page which contains the form.
   if (url.isEmpty())
   {
-    return m_url; 
+    return m_url;
   }
 
   KURL orig;
@@ -1301,7 +1301,7 @@ void KHTMLPart::popupMenu( const QString &url )
   KURL u( m_url );
   if ( !url.isEmpty() )
     u = KURL( m_url, url );
-
+  /*
   mode_t mode = 0;
   if ( !u.isLocalFile() )
   {
@@ -1311,7 +1311,10 @@ void KHTMLPart::popupMenu( const QString &url )
     if ( i >= 1 && cURL[ i - 1 ] == '/' )
       mode = S_IFDIR;
   }
-
+  */
+  mode_t mode = S_IFDIR; // treat all html documents as "DIR" in order to have the back/fwd/reload 
+                         // buttons in the popupmenu
+  
   KXMLGUIClient *client = new KHTMLPopupGUIClient( this, d->m_popupMenuXML, url.isEmpty() ? KURL() : u );
 
   emit d->m_extension->popupMenu( client, QCursor::pos(), u, QString::fromLatin1( "text/html" ), mode );
@@ -1662,6 +1665,7 @@ public:
   KAction *m_paSaveLinkAs;
   KAction *m_paSaveImageAs;
   KAction *m_paCopyLinkLocation;
+  KAction *m_paReloadFrame;
 };
 
 
@@ -1673,6 +1677,13 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
 
   setInstance( khtml->instance() );
 
+  // frameset? -> add "Reload Frame"
+  if ( khtml->parentPart() )
+  {
+    d->m_paReloadFrame = new KAction( i18n( "Reload Frame" ), 0, this, SLOT( slotReloadFrame() ),
+				      actionCollection(), "reloadframe" );
+  }
+  
   if ( !url.isEmpty() )
   {
     d->m_paSaveLinkAs = new KAction( i18n( "&Save Link As ..." ), 0, this, SLOT( slotSaveLinkAs() ),
@@ -1695,7 +1706,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
   setDocument( QDomDocument(), true ); // ### HACK
 
   QDomElement menu = document().documentElement().namedItem( "Menu" ).toElement();
-  
+
   if ( actionCollection()->count() > 0 )
     menu.insertBefore( document().createElement( "separator" ), menu.firstChild() );
 }
@@ -1721,6 +1732,16 @@ void KHTMLPopupGUIClient::slotSaveImageAs()
 void KHTMLPopupGUIClient::slotCopyLinkLocation()
 {
   QApplication::clipboard()->setText( d->m_url.url() );
+}
+
+void KHTMLPopupGUIClient::slotReloadFrame()
+{
+  KParts::URLArgs args( d->m_khtml->browserExtension()->urlArgs() ); 
+  args.reload = true;
+  // reload document
+  d->m_khtml->closeURL();
+  d->m_khtml->browserExtension()->setURLArgs( args );
+  d->m_khtml->openURL( d->m_khtml->url() );
 } 
 
 void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption, const KURL &url )
