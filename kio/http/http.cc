@@ -1476,7 +1476,8 @@ void HTTPProtocol::mimetype( const QString& path )
 {
   kDebugInfo( 7103, "http: mimetype(%s)", path.ascii());
   if (m_request.hostname.isEmpty())
-     error( KIO::ERR_INTERNAL, "http MIMETYPE: No host specified!");
+     //error( KIO::ERR_INTERNAL, "http MIMETYPE: No host specified!");
+     error( KIO::ERR_UNKNOWN_HOST, "No host specified!");
 
   m_request.method = HTTP_HEAD;
   m_request.path = path;
