@@ -23,23 +23,9 @@
 #include <unistd.h>
 #include <stdio.h>
 
-class KDEDApplication : public KUniqueApplication
-{
-public:
-  KDEDApplication(int& argc, char** argv) :
-    KUniqueApplication(argc,argv, "kded", false /* not GUI */) {}
-
-  virtual ~KDEDApplication() {}
-
-  virtual void newInstance(QValueList<QCString> /*params*/)
-    {
-      fprintf(stderr, "kded is already running.\n");
-    }
-};
-
 int main(int argc, char *argv[])
 {
-     KDEDApplication k(argc,argv);
+     KUniqueApplication k(argc,argv, "kded", false /* not GUI */);
 
      kapp->dcopClient()->attach();
      kapp->dcopClient()->registerAs( kapp->name() );
