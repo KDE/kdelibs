@@ -82,7 +82,7 @@ namespace KJS {
      * Returns the value represented by this node. Always dereferenced.
      */
     virtual Value value(ExecState *exec) const;
-    UString toString() const;
+    UString toCode() const;
     virtual void streamTo(SourceStream &s) const = 0;
     virtual void processVarDecls(ExecState */*exec*/) {}
     int lineNo() const { return line; }

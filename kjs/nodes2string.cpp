@@ -69,7 +69,7 @@ SourceStream& SourceStream::operator<<(Format f)
   return *this;
 }
 
-UString Node::toString() const
+UString Node::toCode() const
 {
   SourceStream str;
   streamTo(str);

@@ -95,7 +95,7 @@ Value FunctionProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &a
        DeclaredFunctionImp *fi = static_cast<DeclaredFunctionImp*>
                                  (thisObj.imp());
        return String("function " + fi->name() + "(" +
-         fi->parameterString() + ") " + fi->body->toString());
+         fi->parameterString() + ") " + fi->body->toCode());
     } else if (thisObj.inherits(&FunctionImp::info) &&
         !static_cast<FunctionImp*>(thisObj.imp())->name().isNull()) {
       result = String("function " + static_cast<FunctionImp*>(thisObj.imp())->name() + "()");
