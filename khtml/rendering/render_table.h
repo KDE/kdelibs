@@ -364,9 +364,9 @@ public:
     bool noWrap() const { return nWrap; }
     void setNoWrap(bool nw) { nWrap = nw; }
 
-    int col() { return _col; }
+    int col() const { return _col; }
     void setCol(int col) { _col = col; }
-    int row() { return _row; }
+    int row() const { return _row; }
     void setRow(int r) { _row = r; }
 
     khtml::LengthType colType();
