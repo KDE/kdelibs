@@ -912,10 +912,11 @@ static char translate_char( const char *s )
 }
 
 
+#define YY_NEVER_INTERACTIVE 1
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
-#line 919 "scanner.cc"
+#line 920 "scanner.cc"
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -1069,7 +1070,7 @@ YY_DECL
 #line 147 "scanner.ll"
 
 
-#line 1073 "scanner.cc"
+#line 1074 "scanner.cc"
 
 	if ( yy_init )
 		{
@@ -1587,7 +1588,7 @@ YY_RULE_SETUP
 #line 281 "scanner.ll"
 ECHO;
 	YY_BREAK
-#line 1591 "scanner.cc"
+#line 1592 "scanner.cc"
 			case YY_STATE_EOF(INITIAL):
 				yyterminate();
 

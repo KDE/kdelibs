@@ -114,7 +114,7 @@ static char translate_char( const char *s )
 %}
 
 %option noyywrap
-
+%option never-interactive
 /*--------------------------------------------------------------------------*/
 
 Digits                  [0-9]+
