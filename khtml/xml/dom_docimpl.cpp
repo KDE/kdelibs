@@ -1859,7 +1859,16 @@ void DocumentImpl::defaultEventHandler(EventImpl *evt)
     for (; it.current(); ++it) {
         if (it.current()->id == evt->id()) {
             evt->setCurrentTarget(this);
-            it.current()->listener->handleEvent(ev);
+            if (evt->id() == EventImpl::LOAD_EVENT) {
+                // document.close can cause a recursion in body.onLoad
+                // since it's fired once, we remove it here
+                EventListener *listener = it.current()->listener;
+                listener->ref();
+                m_windowEventListeners.removeRef(it.current());
+                listener->handleEvent(ev);
+                listener->deref();
+            } else
+                it.current()->listener->handleEvent(ev);
 	    return;
 	}
     }
