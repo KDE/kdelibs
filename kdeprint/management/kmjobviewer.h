@@ -103,7 +103,7 @@ protected:
 	void triggerRefresh();
 	void addToManager();
 	void removeFromManager();
-	void buildPrinterMenu(QPopupMenu *menu, bool use_all = false);
+	void buildPrinterMenu(QPopupMenu *menu, bool use_all = false, bool use_specials = false);
 	void updateCaption();
 	void updateStatusBar();
 

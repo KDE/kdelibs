@@ -390,7 +390,7 @@ bool KPrinter::printFiles(const QStringList& l, bool flag, bool startviewer)
 			}
 			else
 			{
-				if (!outputToFile() && startviewer)
+				if (/* !outputToFile() && */ startviewer)
 				{
 					QStringList args;
 					args << "-d";
