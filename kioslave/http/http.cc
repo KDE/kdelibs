@@ -1727,7 +1727,7 @@ debug("BAH$");
 	else;
 	  speed(0);
 
-	//finished();
+	finished();
 
 	m_cmd = CMD_NONE;
 }
