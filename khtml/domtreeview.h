@@ -22,7 +22,7 @@
 #include <kdebug.h>
 #include <qlistview.h>
 #include <qptrdict.h>
-#include <dom/dom_core.h>
+#include "dom/dom_core.h"
 
 class DOMTreeView : public KListView
 {

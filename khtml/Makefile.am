@@ -59,7 +59,7 @@ dummy.cpp:
 	echo > $@
 
 khtmlimagepart_la_SOURCES = dummy.cpp
-khtmlimagepart_la_LDFLAGS = -module $(KDE_PLUGIN) $(all_libraries)
+khtmlimagepart_la_LDFLAGS = -no-undefined -module $(KDE_PLUGIN) $(all_libraries)
 khtmlimagepart_la_LIBADD = libkhtml.la 
 
 INCLUDES = -I$(top_srcdir)/kjs -I$(top_srcdir)/kimgio \

@@ -39,7 +39,7 @@
 
 #include <kaction.h>
 #include <kcmdlineargs.h>
-#include <khtml_factory.h>
+#include "khtml_factory.h"
 #include <kio/job.h>
 #include <kmainwindow.h>
 
