@@ -224,59 +224,48 @@ void HTMLFontElementImpl::parseAttribute(AttrImpl *attr)
     switch(attr->attrId)
     {
     case ATTR_SIZE:
-    	{
+    {
 	DOMString s = attr->value();
-	if(s != 0)
-	{
-            int num = s.toInt();
-            if ( *s.unicode() == '+')
-	    {
-		// ### Won't work like that!!!! larger will only get applied once
-	    	for (;num>0;num--)		
-		    addCSSProperty(CSS_PROP_FONT_SIZE, "larger", false);
+	if(s != 0) {
+	    int num = s.toInt();
+	    if ( *s.unicode() == '+' || *s.unicode() == '-' ) {
+		num += 3;
 	    }
-	    else if ( *s.unicode() == '-')
+	    switch (num)
 	    {
-	    	for (;num<0;num++)		
-		    addCSSProperty(CSS_PROP_FONT_SIZE, "smaller", false);
-	    }        	
-            else
-	    {
-        	switch (num)
-		{
-		    // size = 3 is the normal size according to html specs
-		    case 1:
-		    	addCSSProperty(CSS_PROP_FONT_SIZE, "x-small", false);
-			break;
-		    case 2:
-		    	addCSSProperty(CSS_PROP_FONT_SIZE, "small", false);
-		    	break;
-		    case 3:
-		    	addCSSProperty(CSS_PROP_FONT_SIZE, "medium", false);
-		    	break;
-		    case 4:
-		    	addCSSProperty(CSS_PROP_FONT_SIZE, "large", false);
-		    	break;
-		    case 5:
-		    	addCSSProperty(CSS_PROP_FONT_SIZE, "x-large", false);
-		    	break;
-		    case 6:
-		    	addCSSProperty(CSS_PROP_FONT_SIZE, "xx-large", false);
-		    	break;
-		    case 7:
-			// ###
-		    	addCSSProperty(CSS_PROP_FONT_SIZE, "xx-large", false);
-		    	break;
-		    default:		    	
-		    	break;
-		
+		// size = 3 is the normal size according to html specs
+		case 1:
+		    addCSSProperty(CSS_PROP_FONT_SIZE, "x-small", false);
+		    break;
+		case 2:
+		    addCSSProperty(CSS_PROP_FONT_SIZE, "small", false);
+		    break;
+		case 3:
+		    addCSSProperty(CSS_PROP_FONT_SIZE, "medium", false);
+		    break;
+		case 4:
+		    addCSSProperty(CSS_PROP_FONT_SIZE, "large", false);
+		    break;
+		case 5:
+		    addCSSProperty(CSS_PROP_FONT_SIZE, "x-large", false);
+		    break;
+		case 6:
+		    addCSSProperty(CSS_PROP_FONT_SIZE, "xx-large", false);
+		    break;
+		case 7:
+		    addCSSProperty(CSS_PROP_FONT_SIZE, "xx-large", false);
+		    break;
+		default:
+		    if (num >= 6) {
+			addCSSProperty(CSS_PROP_FONT_SIZE, "xx-large", false);
+		    } else if (num < 1) {
+			addCSSProperty(CSS_PROP_FONT_SIZE, "xx-small", false);
+		    }
+		    break;
 		}
-		
-	    }
 	}
-	
 	break;
-    	}
+    }
     case ATTR_COLOR:
 	addCSSProperty(CSS_PROP_COLOR, attr->value(), false);
 	// HTML4 compatibility hack
@@ -289,6 +278,32 @@ void HTMLFontElementImpl::parseAttribute(AttrImpl *attr)
 	HTMLElementImpl::parseAttribute(attr);
     }
 }
+
+
+void HTMLFontElementImpl::attach(KHTMLView *w)
+{
+    HTMLElementImpl::attach(w);
+#if 0    
+    // the font element needs special handling because it has to behave like
+    // an inline or block level element depending on context.
+    
+    m_style = document->styleSelector()->styleForElement(this);
+    if(_parent && _parent->renderer())
+    {
+	if(_parent->style()->display() != INLINE)
+	    m_style->setDisplay(BLOCK);
+	m_render = khtml::RenderObject::createObject(this);
+
+	if(m_render)
+	{
+	    _parent->renderer()->addChild(m_render, _next ? _next->renderer() : 0);
+	}
+    }
+
+    NodeBaseImpl::attach(w);
+#endif
+}
+
 
 // -------------------------------------------------------------------------
 
