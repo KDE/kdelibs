@@ -4,5 +4,6 @@ Comment=B2/KDE unthemed style
 Comment[de]=B2/KDE (kein komplettes Design)
 Comment[hu]=B2/KDE téma nélküli stílus
 Comment[no]=B2/KDE-stil uten tema
+Comment[sl]=Netematski slog B2/KDE
 [KDE]
 widgetStyle=b2style.la
