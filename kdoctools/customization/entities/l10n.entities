@@ -17,8 +17,8 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
     
-    Send suggestions, comments, etc. to Frederik Fouvry
-    <fouvry@coli.uni-sb.de>.
+    Send suggestions, comments, etc. to the KDE Docbook mailing list
+    <kde-docbook@kde.org>.
 
 
     This file sets up the mechanism to load the language-specific
@@ -138,6 +138,14 @@
 <![%French;[
 <!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES French Documentation V1.0//FR"
            "../fr/lang.entities">
+%kde.l10n.ents;
+<!ENTITY % kde.i-default "IGNORE">
+]]>
+
+<!ENTITY % Hebrew "IGNORE">
+<![%Hebrew;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Hebrew Documentation V1.0//HE"
+           "../he/lang.entities">
 %kde.l10n.ents;
 <!ENTITY % kde.i-default "IGNORE">
 ]]>
