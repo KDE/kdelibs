@@ -163,6 +163,7 @@ namespace KNotify
     private:
         QString makeRelative( const QString& );
         void addToView( const EventList& events );
+        void widgetChanged( int what, bool on, QWidget *buddy = 0L );
 
         ApplicationList m_apps;
 

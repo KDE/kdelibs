@@ -70,7 +70,7 @@ namespace KNotify
             combo->insertItem( i18n("Passive Windows") );
             combo->insertItem( i18n("Standard Error Output") );
         }
-        
+
         static int type( KComboBox *combo )
         {
             switch( combo->currentItem() )
@@ -88,7 +88,7 @@ namespace KNotify
                 case 5:
                     return KNotifyClient::Stderr;
             }
-            
+
             return KNotifyClient::None;
         }
     };
@@ -113,7 +113,7 @@ KNotifyDialog::KNotifyDialog( QWidget *parent, const char *name, bool modal,
 
     if ( aboutData )
         addApplicationEvents( aboutData->appName() );
-    
+
     connect( this, SIGNAL( okClicked() ), m_notifyWidget, SLOT( save() ));
     connect( this, SIGNAL( applyClicked() ), m_notifyWidget, SLOT( save() ));
 };
@@ -156,7 +156,7 @@ void KNotifyDialog::slotDefault()
 
 
 // simple access to all knotify-handled applications
-KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name, 
+KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
                               bool handleAllApps )
     : KNotifyWidgetBase( parent, name ? name : "KNotifyWidget" )
 {
@@ -170,7 +170,7 @@ KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
 
     SelectionCombo::fill( m_comboEnable );
     SelectionCombo::fill( m_comboDisable );
-    
+
     m_playButton->setPixmap( SmallIcon( "1rightarrow" ) );
     connect( m_playButton, SIGNAL( clicked() ), SLOT( playSound() ));
 
@@ -204,12 +204,12 @@ KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
     connect( m_executePath, SIGNAL( openFileDialog( KURLRequester * )),
              SLOT( openExecDialog( KURLRequester * )));
 
-    connect( m_extension, SIGNAL( clicked() ), 
+    connect( m_extension, SIGNAL( clicked() ),
              SLOT( toggleAdvanced()) );
-    
+
     connect( m_buttonEnable, SIGNAL( clicked() ), SLOT( enableAll() ));
     connect( m_buttonDisable, SIGNAL( clicked() ), SLOT( enableAll() ));
-    
+
     showAdvanced( false );
 }
 
@@ -229,7 +229,7 @@ void KNotifyWidget::showAdvanced( bool show )
     {
         m_extension->setText( i18n("Fewer Op&tions") );
         QToolTip::add( m_extension, i18n("Hide advanced options") );
-        
+
         m_logToFile->show();
         m_logfilePath->show();
         m_execute->show();
@@ -240,7 +240,7 @@ void KNotifyWidget::showAdvanced( bool show )
 
         m_actionsBoxLayout->setSpacing( KDialog::spacingHint() );
     }
-    else 
+    else
     {
         m_extension->setText( i18n("Advanced Op&tions") );
         QToolTip::add( m_extension, i18n("Show advanced options") );
@@ -366,68 +366,47 @@ void KNotifyWidget::addToView( const EventList& events )
     }
 }
 
-void KNotifyWidget::soundToggled( bool on )
+void KNotifyWidget::widgetChanged( int what, bool on, QWidget *buddy )
 {
     if ( signalsBlocked() )
         return;
-    
-    m_soundPath->setEnabled( on );
+
+    if ( buddy )
+        buddy->setEnabled( on );
 
     Event *e = currentEvent();
     if ( on )
     {
-        e->presentation |= KNotifyClient::Sound;
-        m_soundPath->setFocus();
+        e->presentation |= what;
+        if ( buddy )
+            buddy->setFocus();
     }
     else
-        e->presentation &= ~KNotifyClient::Sound;
+        e->presentation &= ~what;
 
     emit changed( true );
+}
+
+void KNotifyWidget::soundToggled( bool on )
+{
+    widgetChanged( KNotifyClient::Sound, on, m_soundPath );
 }
 
 void KNotifyWidget::loggingToggled( bool on )
 {
-    if ( signalsBlocked() )
-        return;
-    
-    m_logfilePath->setEnabled( on );
-
-    Event *e = currentEvent();
-    if ( on )
-    {
-        e->presentation |= KNotifyClient::Logfile;
-        m_logfilePath->setFocus();
-    }
-    else
-        e->presentation &= ~KNotifyClient::Logfile;
-
-    emit changed( true );
+    widgetChanged( KNotifyClient::Logfile, on, m_logfilePath );
 }
 
 void KNotifyWidget::executeToggled( bool on )
 {
-    if ( signalsBlocked() )
-        return;
-    
-    m_executePath->setEnabled( on );
-
-    Event *e = currentEvent();
-    if ( on )
-    {
-        e->presentation |= KNotifyClient::Execute;
-        m_executePath->setFocus();
-    }
-    else
-        e->presentation &= ~KNotifyClient::Execute;
-
-    emit changed( true );
+    widgetChanged( KNotifyClient::Execute, on, m_executePath );
 }
 
 void KNotifyWidget::messageBoxChanged()
 {
     if ( signalsBlocked() )
         return;
-    
+
     m_passivePopup->setEnabled( m_messageBox->isChecked() );
 
     Event *e = currentEvent();
@@ -446,23 +425,14 @@ void KNotifyWidget::messageBoxChanged()
 
 void KNotifyWidget::stderrToggled( bool on )
 {
-    if ( signalsBlocked() )
-        return;
-    
-    Event *e = currentEvent();
-    if ( on )
-        e->presentation |= KNotifyClient::Stderr;
-    else
-        e->presentation &= ~KNotifyClient::Stderr;
-
-    emit changed( true );
+    widgetChanged( KNotifyClient::Stderr, on );
 }
 
 void KNotifyWidget::soundFileChanged( const QString& text )
 {
     if ( signalsBlocked() )
         return;
-    
+
     m_playButton->setEnabled( !text.isEmpty() );
     currentEvent()->soundfile = text;
     emit changed( true );
@@ -472,7 +442,7 @@ void KNotifyWidget::logfileChanged( const QString& text )
 {
     if ( signalsBlocked() )
         return;
-    
+
     currentEvent()->logfile = text;
     emit changed( true );
 }
@@ -481,7 +451,7 @@ void KNotifyWidget::commandlineChanged( const QString& text )
 {
     if ( signalsBlocked() )
         return;
-    
+
     currentEvent()->commandline = text;
     emit changed( true );
 }
@@ -540,14 +510,14 @@ void KNotifyWidget::save()
         (*it)->save();
         ++it;
     }
-    
+
     if ( kapp )
     {
         if ( !kapp->dcopClient()->isAttached() )
             kapp->dcopClient()->attach();
         kapp->dcopClient()->send("knotify", "", "reconfigure()", "");
     }
-    
+
     emit changed( false );
 }
 
@@ -587,7 +557,7 @@ void KNotifyWidget::openSoundDialog( KURLRequester *requester )
     filters << "audio/x-wav" << "audio/x-mp3" << "application/x-ogg"
             << "audio/x-adpcm";
     fileDialog->setMimeFilter( filters );
-    
+
     // find the first "sound"-resource that contains files
     const Application *app = currentEvent()->application();
     QStringList soundDirs =
@@ -616,7 +586,7 @@ void KNotifyWidget::openLogDialog( KURLRequester *requester )
     static bool init = true;
     if ( !init )
         return;
-    
+
     init = false;
 
     KFileDialog *fileDialog = requester->fileDialog();
@@ -631,7 +601,7 @@ void KNotifyWidget::openExecDialog( KURLRequester *requester )
     static bool init = true;
     if ( !init )
         return;
-    
+
     init = false;
 
     KFileDialog *fileDialog = requester->fileDialog();
@@ -669,7 +639,7 @@ void KNotifyWidget::enableAll( int what, bool enable )
                 it.current()->presentation &= ~what;
         }
     }
-    
+
     QListViewItem *item = m_listview->currentItem();
     if ( !item )
         item = m_listview->firstChild();
@@ -786,12 +756,12 @@ void Application::reloadEvents( bool revertToDefaults )
                     e->soundfile = default_soundfile;
                     e->commandline = default_commandline;
                 }
-                
+
                 else
                 {
                     e->presentation = config->readNumEntry("presentation",
                                                            default_rep);
-                    e->logfile = config->readEntry("logfile", 
+                    e->logfile = config->readEntry("logfile",
                                                    default_logfile);
                     e->soundfile = config->readEntry("soundfile",
                                                      default_soundfile);
