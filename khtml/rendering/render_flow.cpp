@@ -1283,8 +1283,11 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
 	if ( m_childrenInline )
 	    makeChildrenNonInline(beforeChild);
         if (beforeChild) {
-            beforeChild = beforeChild->parent();
-            KHTMLAssert(beforeChild->parent() == this);
+	    if ( beforeChild->parent() != this ) {
+		beforeChild = beforeChild->parent();
+		KHTMLAssert(beforeChild->parent()->isAnonymousBox());
+		KHTMLAssert(beforeChild->parent()->parent() == this);
+	    }
         }
     }
     else if (!m_childrenInline)
