@@ -39,6 +39,10 @@
 #include <sys/stream.h>
 #endif
 
+#ifdef HAVE_SYS_SELECT_H
+#include <sys/select.h>		// Needed on some systems.
+#endif
+
 #include <qglobal.h>
 #include <qcstring.h>
 #include <qfile.h>
