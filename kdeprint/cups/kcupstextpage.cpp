@@ -338,3 +338,4 @@ void convertValue(QLineEdit *e, int old_units, int new_units)
 	calcDimStr(uncalcDim(QString(e->text()).toFloat(),old_units),new_units,value);
 	e->setText(value);
 }
+#include "kcupstextpage.moc"

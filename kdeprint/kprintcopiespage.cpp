@@ -101,3 +101,4 @@ void KPrintCopiesPage::rangeEntered()
 {
 	if (!range_->isChecked()) range_->setChecked(true);
 }
+#include "kprintcopiespage.moc"

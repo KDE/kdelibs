@@ -395,3 +395,4 @@ ppd_choice_t* ppdFindOptionChoice(ppd_file_t *ppd, const QString& option, const 
 		return ppdFindChoice(opt,choice.latin1());
 	return NULL;
 }
+#include "kcupsgeneralpage.moc"

@@ -412,3 +412,4 @@ QPixmap iconForType(int type, int state)
 	if (state == KPrinterItem::Stopped) name.append("_stopped");
 	return UserIcon(name);
 }
+#include "kcupsdialogimpl.moc"

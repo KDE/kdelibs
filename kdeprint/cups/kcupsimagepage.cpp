@@ -263,3 +263,4 @@ void KCupsImagePage::horizChanged(int ID)
 	horizpos_ = ID;
 	pospix_->setPosition(horizpos_,vertpos_);
 }
+#include "kcupsimagepage.moc"

@@ -104,3 +104,4 @@ void KPdqOptionView::valueChanged(const QString& txt)
 		aitem->setValue(txt);
 	}
 }
+#include "kpdqoptionview.moc"

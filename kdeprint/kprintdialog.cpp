@@ -284,3 +284,4 @@ void KPrintDialog::optionsClicked()
 		printerSelected(dest_->currentItem());
 	}
 }
+#include "kprintdialog.moc"

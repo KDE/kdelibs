@@ -42,3 +42,4 @@ void ColumnPreview::paintEvent(QPaintEvent *)
 		}
 	}
 }
+#include "columnpreview.moc"

@@ -68,3 +68,4 @@ bool KPdqOptionDlg::configure(QWidget *parent)
 		PdqInfos::self()->setPdqGlobalRcFile(dlg.rcfile_->text());
 	return flag;
 }
+#include "kpdqoptiondlg.moc"

@@ -104,3 +104,4 @@ void KPrinterPropertyDialog::addPage(KPrintDialogPage *p)
 	pages_.append(p);
 	addTab(p,p->pageTitle());
 }
+#include "kprinterpropertydialog.moc"

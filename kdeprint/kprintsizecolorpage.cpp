@@ -145,3 +145,4 @@ void KPrintSizeColorPage::colorChanged(int o)
 	if (o == 0) colorpix_->setPixmap(UserIcon("kdeprint_color"));
 	else colorpix_->setPixmap(UserIcon("kdeprint_grayscale"));
 }
+#include "kprintsizecolorpage.moc"

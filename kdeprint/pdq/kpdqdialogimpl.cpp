@@ -259,3 +259,4 @@ bool KPdqDialogImpl::configure(KPrintDialog *dlg)
 	}
 	return flag;
 }
+#include "kpdqdialogimpl.moc"

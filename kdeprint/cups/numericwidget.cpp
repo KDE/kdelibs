@@ -135,3 +135,4 @@ void NumericWidget::editChanged(const QString& str)
 		edit_->selectAll();
 	}
 }
+#include "numericwidget.moc"

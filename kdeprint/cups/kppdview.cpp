@@ -178,3 +178,4 @@ QString ppdConflictErrorMsg(ppd_file_t *ppd)
 	for (int i=0;i<ppd->num_groups;i++) n += parseGroup(ppd->groups+i,msg);
 	return (n == 0 ? QString("") : msg);
 }
+#include "kppdview.moc"

@@ -147,3 +147,4 @@ void KPPDOptionView::valueChanged(double value)
 			((KPPDNumericalOptionItem*)ppdopt_)->setValue(value);
 	// do not check constraints for numerical options changes.
 }
+#include "kppdoptionview.moc"

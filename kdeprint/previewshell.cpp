@@ -109,3 +109,4 @@ bool PreviewShell::preview(const QString& file)
 	dlg.exec(file);
 	return dlg.status();
 }
+#include "previewshell.moc"
