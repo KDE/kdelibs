@@ -435,6 +435,11 @@ namespace KIO {
         void addMetaData(const QString &key, const QString &value);
 
         /**
+         * Add key/value pairs to the meta data that is sent to the slave
+         */
+        void addMetaData(const QMap<QString,QString> &values);
+
+        /**
          * Get meta data received from the slave.
          * (Valid when first data is received and/or slave is finished)
          */

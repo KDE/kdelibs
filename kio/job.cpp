@@ -670,6 +670,13 @@ void TransferJob::addMetaData( const QString &key, const QString &value)
     m_outgoingMetaData.insert(key, value);
 }
 
+void TransferJob::addMetaData( const QMap<QString,QString> &values)
+{
+    QMapConstIterator<QString,QString> it = values.begin();
+    for(;it != values.end(); ++it)
+      m_outgoingMetaData.insert(it.key(), it.data());
+}
+
 void TransferJob::suspend()
 {
     m_suspended = true;
