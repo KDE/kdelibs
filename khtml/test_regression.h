@@ -110,6 +110,10 @@ private:
     int id;
 };
 
+namespace KJS {
+class ScriptInterpreter;
+};
+
 /**
  * @internal
  */
@@ -147,8 +151,11 @@ public:
 
     static RegressionTest *curr;
 
+private:
+    void evalJS( KJS::ScriptInterpreter &interp, const QString &filename, bool report ); // used by testJS
+
 private slots:
-  void slotOpenURL(const KURL &url, const KParts::URLArgs &args);
+    void slotOpenURL(const KURL &url, const KParts::URLArgs &args);
 
 };
 

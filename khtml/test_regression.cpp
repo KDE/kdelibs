@@ -67,6 +67,7 @@
 #include "xml/dom_docimpl.h"
 #include "dom/dom_doc.h"
 #include "misc/loader.h"
+#include "ecma/kjs_binding.h"
 #include "ecma/kjs_dom.h"
 #include "ecma/kjs_window.h"
 #include "ecma/kjs_binding.h"
@@ -132,7 +133,7 @@ Value RegTestFunction::call(ExecState *exec, Object &/*thisObj*/, const List &ar
     switch (id) {
 	case Print: {
 	    UString str = args[0].toString(exec);
-	    printf("%s\n",str.ascii());
+	    fprintf(stderr, "%s\n",str.ascii());
 	    break;
 	}
 	case ReportResult: {
@@ -597,7 +598,7 @@ void RegressionTest::testStaticFile(const QString & filename)
 
     if ( m_genOutput ) {
         reportResult( checkOutput(filename+"-dom") );
-        reportResult(checkOutput(filename+"-render"));
+        reportResult( checkOutput(filename+"-render") );
     } else {
         // compare with output file
         if ( ::access( QFile::encodeName( m_outputFilesDir + "/" + filename + "-dom" ), R_OK ) ||
@@ -607,19 +608,9 @@ void RegressionTest::testStaticFile(const QString & filename)
     }
 }
 
-void RegressionTest::testJSFile(const QString & filename)
+void RegressionTest::evalJS( ScriptInterpreter &interp, const QString &filename, bool report_result )
 {
-    // create interpreter
-    // note: this is different from the interpreter used by the part,
-    // it contains regression test-specific objects & functions
-    Object global(new ObjectImp());
-    ScriptInterpreter interp(global,m_part);
-    ExecState *exec = interp.globalExec();
-
-    global.put(exec, "part", Object(new KHTMLPartObject(exec,m_part)));
-    global.put(exec, "regtest", Object(new RegTestObject(exec,this)));
-
-    QString fullSourceName = m_sourceFilesDir+"/"+filename;
+    QString fullSourceName = filename;
     QFile sourceFile(fullSourceName);
 
     if (!sourceFile.open(IO_ReadOnly)) {
@@ -627,27 +618,58 @@ void RegressionTest::testJSFile(const QString & filename)
         exit(1);
     }
 
-    QByteArray fileData;
-    QDataStream stream(fileData,IO_WriteOnly);
-
-    char buf[1024];
-    int bytesread;
-
-    while (!sourceFile.atEnd()) {
-	bytesread = sourceFile.readBlock(buf,1024);
-	stream.writeRawBytes(buf,bytesread);
-    }
-
+    QTextStream stream ( &sourceFile );
+    stream.setEncoding( QTextStream::UnicodeUTF8 );
+    QString code = stream.read();
     sourceFile.close();
-    QString code(fileData);
 
-    Completion c = interp.evaluate(code.latin1());
+    Completion c = interp.evaluate(UString( code ) );
 
-    if (c.complType() == Throw) {
-	QString errmsg = c.value().toString(interp.globalExec()).qstring();
-	printf("ERROR: %s:%d (%s)\n",filename.latin1(),interp.globalExec(),errmsg.latin1());
-	m_errors++;
+    if ( report_result ) {
+        if (c.complType() == Throw) {
+            QString errmsg = c.value().toString(interp.globalExec()).qstring();
+            if ( !filename.endsWith( "-n.js" ) ) {
+                printf( "ERROR: %s (%s)\n",filename.latin1(),errmsg.latin1());
+                m_errors++;
+            } else {
+                reportResult( true, QString( "Expected Failure: %1" ).arg( errmsg ) );
+            }
+        } else
+            reportResult( true, "passed" );
     }
+
+}
+
+class GlobalImp : public ObjectImp {
+public:
+  virtual UString className() const { return "global"; }
+};
+
+void RegressionTest::testJSFile(const QString & filename)
+{
+    // create interpreter
+    // note: this is different from the interpreter used by the part,
+    // it contains regression test-specific objects & functions
+    Object global(new GlobalImp());
+    ScriptInterpreter interp(global,m_part);
+    ExecState *exec = interp.globalExec();
+
+    global.put(exec, "part", Object(new KHTMLPartObject(exec,m_part)));
+    global.put(exec, "regtest", Object(new RegTestObject(exec,this)));
+    global.put(exec, "debug", Object(new RegTestFunction(exec,this,RegTestFunction::Print,1) ) );
+    global.put(exec, "print", Object(new RegTestFunction(exec,this,RegTestFunction::Print,1) ) );
+
+    QStringList dirs = QStringList::split( '/', filename );
+    // NOTE: the basename is of little interest here, but the last basedir change
+    // isn't taken in account
+    QString basedir =  m_sourceFilesDir+"/";
+    for ( QStringList::ConstIterator it = dirs.begin(); it != dirs.end(); ++it )
+    {
+        if ( ! ::access( QFile::encodeName( basedir + "shell.js" ), R_OK ) )
+            evalJS( interp, basedir + "shell.js", false );
+        basedir += *it + "/";
+    }
+    evalJS( interp, m_sourceFilesDir + "/"+ filename, true );
 }
 
 bool RegressionTest::checkOutput(const QString &againstFilename)
@@ -708,8 +730,11 @@ bool RegressionTest::reportResult(bool passed, const QString & description)
 
     printf("[%s]",m_currentTest.latin1());
 
-    if (!description.isEmpty())
-	printf(" %s",description.latin1());
+    if (!description.isEmpty()) {
+        QString desc = description;
+        desc.replace( '\n', ' ' );
+	printf(" %s", desc.latin1());
+    }
 
     printf("\n");
     return passed;
