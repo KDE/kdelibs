@@ -1193,7 +1193,7 @@ void KCryptoConfig::defaults()
 {
   mUseTLS->setChecked(true);
   mUseSSLv2->setChecked(true);
-  mUseSSLv3->setChecked(false);  // GS 3/2001 - this seems to be more compatible
+  mUseSSLv3->setChecked(true);
   mWarnOnEnter->setChecked(false);
   mWarnOnLeave->setChecked(true);
   mWarnOnUnencrypted->setChecked(false);
