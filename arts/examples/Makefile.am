@@ -6,7 +6,7 @@ FLOWLIBS = $(LDFLAGS) $(top_builddir)/arts/flow/libartsflow.la
 
 ####### Files
 
-bin_PROGRAMS = helloserver helloclient referenceinfo testflow testdynflow \
+check_PROGRAMS = helloserver helloclient referenceinfo testflow testdynflow \
   irdemo
 
 helloserver_SOURCES = hello.cc helloserver.cc hello_impl.cc
