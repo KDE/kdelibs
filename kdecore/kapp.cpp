@@ -580,7 +580,7 @@ void KApplication::dcopFailure(const QString &msg)
   {
      // Try to launch kdeinit.
      QString srv = KStandardDirs::findExe(QString::fromLatin1("kdeinit"));
-     my_system(srv.latin1());
+     my_system(QFile::encodeName(srv));
      return;
   }
   if (failureCount == 2)
