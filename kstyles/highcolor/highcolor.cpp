@@ -1842,7 +1842,7 @@ QSize HighColorStyle::sizeFromContents( ContentsType contents,
 
 			// Ensure we stick to standard width and heights.
 			if ( button->isDefault() || button->autoDefault() ) {
-				if ( w < 80 && !button->pixmap() )
+				if ( w < 80 && !button->text().isEmpty() )
 					w = 80;
 
 				if ( type != HighColor ) {

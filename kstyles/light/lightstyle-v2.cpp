@@ -1486,7 +1486,7 @@ QSize LightStyleV2::sizeFromContents( ContentsType contents,
 	    int w = ret.width(), h = ret.height();
 
 	    // only expand the button if we are displaying text...
-	    if ( ! button->pixmap() ) {
+	    if ( ! button->text().isEmpty() ) {
 		if ( button->isDefault() || button->autoDefault() ) {
 		    // default button minimum size
 		    if ( w < 80 )

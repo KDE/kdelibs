@@ -1438,7 +1438,7 @@ QSize HighContrastStyle::sizeFromContents( ContentsType contents,
 
 			// Ensure we stick to standard width and heights.
 			if (( button->isDefault() || button->autoDefault() ) && (button->isEnabled())) {
-				if ( w < 80 && !button->pixmap() )
+				if ( w < 80 && !button->text().isEmpty() )
 					w = 80;
 
 				// Compensate for default indicator

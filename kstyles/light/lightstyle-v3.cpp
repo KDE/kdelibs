@@ -1725,7 +1725,7 @@ QSize LightStyleV3::sizeFromContents( ContentsType contents,
 	    int mw = 80 - dbi, mh = 25 - dbi;
 
 	    // only expand the button if we are displaying text...
-	    if ( ! button->pixmap() ) {
+	    if ( ! button->text().isEmpty() ) {
 		// button minimum size
 		if ( w < mw )
 		    w = mw;
