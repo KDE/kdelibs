@@ -45,7 +45,7 @@ StringInstanceImp::StringInstanceImp(const Object &proto)
 }
 
 // ------------------------------ StringPrototypeImp ---------------------------
-const ClassInfo StringPrototypeImp::info = {"StringPrototype", &StringInstanceImp::info, &stringTable, 0};
+const ClassInfo StringPrototypeImp::info = {"String", &StringInstanceImp::info, &stringTable, 0};
 /* Source for string_object.lut.h
 @begin stringTable 26
   toString		StringProtoFuncImp::ToString	DontEnum|Function	0

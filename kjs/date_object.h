@@ -28,13 +28,21 @@
 
 namespace KJS {
 
+  class DateInstanceImp : public ObjectImp {
+  public:
+    DateInstanceImp(const Object &proto);
+
+    virtual const ClassInfo *classInfo() const { return &info; }
+    static const ClassInfo info;
+  };
+
   /**
    * @internal
    *
    * The initial value of Date.prototype (and thus all objects created
    * with the Date constructor
    */
-  class DatePrototypeImp : public ObjectImp {
+  class DatePrototypeImp : public DateInstanceImp {
   public:
     DatePrototypeImp(ExecState *exec, ObjectPrototypeImp *objectProto);
     Value get(ExecState *exec, const UString &p) const;
@@ -108,14 +116,6 @@ namespace KJS {
     enum { Parse, UTC };
   private:
     int id;
-  };
-
-  class DateInstanceImp : public ObjectImp {
-  public:
-    DateInstanceImp(const Object &proto);
-
-    virtual const ClassInfo *classInfo() const { return &info; }
-    static const ClassInfo info;
   };
 
   // helper functions

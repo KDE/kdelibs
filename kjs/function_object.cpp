@@ -93,12 +93,13 @@ Value FunctionProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &a
       exec->setException(err);
       return err;
     }
-    FunctionImp *func = static_cast<FunctionImp*>(thisObj.imp());
-    if (func->classInfo() == &InternalFunctionImp::info ||
-        func->name().isNull())
+    if (thisObj.inherits(&FunctionImp::info) &&
+        !static_cast<FunctionImp*>(thisObj.imp())->name().isNull()) {
+      result = String("function " + static_cast<FunctionImp*>(thisObj.imp())->name() + "()");
+    }
+    else {
       result = String("(Internal function)");
-    else
-      result = String("function " + func->name() + "()");
+    }
     }
     break;
   case Apply: {

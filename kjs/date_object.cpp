@@ -58,10 +58,18 @@
 
 using namespace KJS;
 
+// ------------------------------ DateInstanceImp ------------------------------
+
+const ClassInfo DateInstanceImp::info = {"Date", 0, 0, 0};
+
+DateInstanceImp::DateInstanceImp(const Object &proto)
+  : ObjectImp(proto)
+{
+}
 
 // ------------------------------ DatePrototypeImp -----------------------------
 
-const ClassInfo DatePrototypeImp::info = {"DatePrototype", 0, &dateTable, 0};
+const ClassInfo DatePrototypeImp::info = {"Date", 0, &dateTable, 0};
 
 /* Source for date_object.lut.h
    We use a negative ID to denote the "UTC" variant.
@@ -117,7 +125,7 @@ const ClassInfo DatePrototypeImp::info = {"DatePrototype", 0, &dateTable, 0};
 
 DatePrototypeImp::DatePrototypeImp(ExecState *,
                                    ObjectPrototypeImp *objectProto)
-  : ObjectImp(objectProto)
+  : DateInstanceImp(objectProto)
 {
   Value protect(this);
   setInternalValue(Number(NaN));
@@ -155,6 +163,18 @@ bool DateProtoFuncImp::implementsCall() const
 
 Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
 {
+  if ((id == ToString || id == ValueOf || id == GetTime || id == SetTime) &&
+      !thisObj.inherits(&DateInstanceImp::info)) {
+    // non-generic function called on non-date object
+
+    // ToString and ValueOf are generic according to the spec, but the mozilla
+    // tests suggest otherwise...
+    Object err = Error::create(exec,TypeError);
+    exec->setException(err);
+    return err;
+  }
+
+
   Value result;
   UString s;
   const int bufsize=100;
@@ -209,14 +229,7 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
     result = Number(milli);
     break;
   case GetTime:
-    if (thisObj.inherits(&DateInstanceImp::info)) {
-      result = Number(milli);
-    }
-    else {
-      Object err = Error::create(exec,TypeError);
-      exec->setException(err);
-      result = err;
-    }
+    result = Number(milli);
     break;
   case GetYear:
     result = Number(t->tm_year);
@@ -258,16 +271,9 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
 #endif
     break;
   case SetTime:
-    if (thisObj.inherits(&DateInstanceImp::info)) {
-      milli = roundValue(exec,args[0]);
-      result = Number(milli);
-      thisObj.setInternalValue(result);
-    }
-    else {
-      Object err = Error::create(exec,TypeError);
-      exec->setException(err);
-      result = err;
-    }
+    milli = roundValue(exec,args[0]);
+    result = Number(milli);
+    thisObj.setInternalValue(result);
     break;
   case SetMilliSeconds:
     ms = args[0].toInt32(exec);
@@ -489,11 +495,3 @@ Value KJS::timeClip(const Value &t)
   return t;
 }
 
-// ------------------------------ DateInstanceImp ------------------------------
-
-const ClassInfo DateInstanceImp::info = {"Date", 0, 0, 0};
-
-DateInstanceImp::DateInstanceImp(const Object &proto)
-  : ObjectImp(proto)
-{
-}
