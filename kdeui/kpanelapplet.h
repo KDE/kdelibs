@@ -1,22 +1,22 @@
 /*
-   This file is part of the KDE libraries
+  This file is part of the KDE libraries
 
-   Copyright (c) 2000 Matthias Elter   <elter@kde.org>
-   base on code written 1999 by Matthias Ettrich <ettrich@kde.org>
+  Copyright (c) 2000 Matthias Elter   <elter@kde.org>
+  base on code written 1999 by Matthias Ettrich <ettrich@kde.org>
                  
-   This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
-   License version 2 as published by the Free Software Foundation.
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Library General Public
+  License version 2 as published by the Free Software Foundation.
 
-   This library is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Library General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public License
-   along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.
+  You should have received a copy of the GNU Library General Public License
+  along with this library; see the file COPYING.LIB.  If not, write to
+  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+  Boston, MA 02111-1307, USA.
 */
 
 #ifndef __kpanelapplet_h__
@@ -37,8 +37,8 @@ class KPanelAppletData;
 */
 class KPanelApplet : public QWidget, DCOPObject
 {
-  Q_OBJECT
-
+  Q_OBJECT;
+  
  public:
 
   enum Actions { About = 1, Help = 2, Preferences = 4 };
@@ -49,71 +49,7 @@ class KPanelApplet : public QWidget, DCOPObject
    * Construct a KApplet widget just like any other widget.
    **/
   KPanelApplet( QWidget* parent = 0, const char* name = 0 );
-  
-  /**
-   * Destructor
-   **/
-  virtual ~KPanelApplet() {}
-  
-  /**
-   * Initialize the applet according to the passed command line
-   * parameters. Call this function after instantiating the applet
-   * widget in your main() function.
-   *
-   * Evalutate some command line arguments and get docked by the panel.
-   **/
-  void init( int& argc, char ** argv );
-  
-  /**
-   * Set the applet flags.
-   *
-   * Supported flags:
-   *
-   * Stretch:
-   * --------
-   * Most applets might want to have a fixed size.
-   * Applets like a taskbar however can set the stretch flag to get
-   * all space available on the panel between the two surrounding applets
-   * and/or the panel borders.
-   *
-   * TopLevel:
-   * ---------
-   * Some applets do not want to dock into the panel but map toplevel windows only.
-   * A example is the kasbar applet.
-   *
-   * @see KPanelApplet::flags
-   **/
-  void setFlags(int f);
 
-  /**
-   * @returns int indicating the applet flags.
-   **/
-  bool flags() { return _flags; }
-
-  /**
-   * Set the RMB menu actions supported by the applet
-   *
-   * The panel supports 3 default actions besides 'Move' and 'Remove' in the
-   * applets RMB menu:
-   *
-   * About - Launch about dialog.
-   * Help - Show applet manual/help.
-   * Preferences - Launch preferences dialog.
-   *
-   * Not all of these make sense/are supported by all applets, so you
-   * can use this method to enable the actions supported by your applet.
-   *
-   * Example: setActions( About | Help | Preferences );
-   *
-   * @see KPanelApplet::actions
-   */
-  void setActions( int a);
-
-  /**
-   * @returns a int indicating the supported RMB menu actions.
-   **/
-  int actions() { return _actions; }
-  
   /**
    * @returns A suggested width for a given height.
    *
@@ -154,15 +90,7 @@ class KPanelApplet : public QWidget, DCOPObject
    **/
   virtual int heightForWidth(int width);
 
-  /**
-   * Is called when the applet is removed from the panel.
-   *
-   * The default implementation will simply call "kapp->quit()".
-   * If the KPanelApplet widget is only a part of a bigger application
-   * you might want to reimplement this to avoid the app shutdown and do
-   * something else like simply deleting the applet widget instead.
-   **/
-  virtual void removedFromPanel();
+  bool dock( const QCString appletId );
 
   /**
    * Is called when 'About' is selcted from the applets RMB menu.
@@ -187,6 +115,16 @@ class KPanelApplet : public QWidget, DCOPObject
    * Reimplement this to launch a preferences dialog for your applet.
    **/
   virtual void preferences() {}
+
+  /**
+   * @returns int indicating the applet flags.
+   **/
+  int flags() { return _flags; }
+
+  /**
+   * @returns a int indicating the supported RMB menu actions.
+   **/
+  int actions() { return _actions; }
 
   /**
    * Notify the panel about a new applet layout.
@@ -221,6 +159,47 @@ class KPanelApplet : public QWidget, DCOPObject
   // dcop internal
   bool process(const QCString &fun, const QByteArray &data,
                QCString& replyType, QByteArray &replyData);
+
+ protected:
+  /**
+   * Set the applet flags.
+   *
+   * Supported flags:
+   *
+   * Stretch:
+   * --------
+   * Most applets might want to have a fixed size.
+   * Applets like a taskbar however can set the stretch flag to get
+   * all space available on the panel between the two surrounding applets
+   * and/or the panel borders.
+   *
+   * TopLevel:
+   * ---------
+   * Some applets do not want to dock into the panel but map toplevel windows only.
+   * A example is the kasbar applet.
+   *
+   * @see KPanelApplet::flags
+   **/
+  void setFlags(int f);
+
+  /**
+   * Set the RMB menu actions supported by the applet
+   *
+   * The panel supports 3 default actions besides 'Move' and 'Remove' in the
+   * applets RMB menu:
+   *
+   * About - Launch about dialog.
+   * Help - Show applet manual/help.
+   * Preferences - Launch preferences dialog.
+   *
+   * Not all of these make sense/are supported by all applets, so you
+   * can use this method to enable the actions supported by your applet.
+   *
+   * Example: setActions( About | Help | Preferences );
+   *
+   * @see KPanelApplet::actions
+   */
+  void setActions( int a);
 
  private:
   KPanelAppletData *d;
