@@ -170,6 +170,7 @@ static int cssyylex( YYSTYPE *yylval ) {
 %type <rule> page
 %type <rule> font_face
 %type <rule> invalid_rule
+%type <rule> invalid_at
 %type <rule> rule
 
 %type <string> string_or_uri
@@ -310,32 +311,7 @@ rule:
   | page
   | font_face
   | invalid_rule
-    ;
-
-invalid_rule:
-    error invalid_block {
-	$$ = 0;
-#ifdef CSS_DEBUG
-	kdDebug( 6080 ) << "skipped invalid rule" << endl;
-#endif
-    }
-  | error ';' {
-	$$ = 0;
-#ifdef CSS_DEBUG
-	kdDebug( 6080 ) << "skipped invalid rule" << endl;
-#endif
-    }
-  | error '}' {
-	$$ = 0;
-#ifdef CSS_DEBUG
-	kdDebug( 6080 ) << "skipped invalid rule" << endl;
-#endif
-    }
-    ;
-
-invalid_block:
-    '{' error invalid_block error '}'
-  | '{' error '}'
+  | invalid_at
     ;
 
 import:
@@ -812,6 +788,60 @@ function:
 hexcolor:
   HASH maybe_space { $$ = $1; }
   ;
+
+
+/* error handling rules */
+
+invalid_at:
+    '@' error invalid_block {
+	$$ = 0;
+#ifdef CSS_DEBUG
+	kdDebug( 6080 ) << "skipped invalid @-rule" << endl;
+#endif
+    }
+  | '@' error ';' {
+	$$ = 0;
+#ifdef CSS_DEBUG
+	kdDebug( 6080 ) << "skipped invalid @-rule" << endl;
+#endif
+    }
+    ;
+
+invalid_rule:
+    error invalid_block {
+	$$ = 0;
+#ifdef CSS_DEBUG
+	kdDebug( 6080 ) << "skipped invalid rule" << endl;
+#endif
+    }
+/* 
+  Seems like the two rules below are trying too much and violating
+  http://www.hixie.ch/tests/evil/mixed/csserrorhandling.html
+
+  | error ';' {
+	$$ = 0;
+#ifdef CSS_DEBUG
+	kdDebug( 6080 ) << "skipped invalid rule" << endl;
+#endif
+    }
+  | error '}' {
+	$$ = 0;
+#ifdef CSS_DEBUG
+	kdDebug( 6080 ) << "skipped invalid rule" << endl;
+#endif
+    }
+*/
+    ;
+
+invalid_block:
+    '{' error invalid_block_list '}'
+  | '{' error '}'
+    ;
+
+invalid_block_list:
+    invalid_block error
+  | invalid_block_list invalid_block error
+;
 
 %%
 
