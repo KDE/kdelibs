@@ -438,9 +438,9 @@ void RenderStyle::setContent(CachedObject* o)
 	content = new ContentData;
     else
 	content->clearContent();
-//    o->ref();
+
     content->_content.object = o;
-    content->_contentType = CONTENT_OBJECT;
+    content->_contentType = o ? CONTENT_OBJECT : CONTENT_NONE;
 }
 
 
@@ -466,8 +466,13 @@ void RenderStyle::setContent(DOM::DOMStringImpl* s)
 	content->clearContent();
 
     content->_content.text = s;
-    content->_content.text->ref();
-    content->_contentType = CONTENT_TEXT;
+
+    if (s) {
+        content->_content.text->ref();
+        content->_contentType = CONTENT_TEXT;
+    }
+    else
+        content->_contentType = CONTENT_NONE;
 }
 
 ContentData::~ContentData()
@@ -489,5 +494,4 @@ void ContentData::clearContent()
         default:
             ;
     }
-
 }

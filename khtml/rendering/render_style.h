@@ -461,7 +461,8 @@ enum EFontVariant {
 };
 
 enum ContentType {
-    CONTENT_NONE, CONTENT_OBJECT, CONTENT_TEXT, CONTENT_COUNTER
+    CONTENT_NONE, CONTENT_OBJECT, CONTENT_TEXT,
+    CONTENT_ATTR
 };
 
 struct ContentData {
