@@ -29,7 +29,9 @@
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qpushbutton.h>
+#include <qtoolbutton.h>
 #include <qcheckbox.h>
+#include <qtooltip.h>
 
 #include <kapp.h>
 #include <kbuttonbox.h>
@@ -321,6 +323,13 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
 
   QBoxLayout* l = new QHBoxLayout(topLayout);
 
+  QToolButton *clearButton = new QToolButton( this );
+  clearButton->setIconSet( BarIcon( QString::fromLatin1( "locationbar_erase" ) ) );
+  clearButton->setFixedSize( clearButton->sizeHint() );
+  connect( clearButton, SIGNAL( pressed() ), this, SLOT( slotClear() ) );
+  l->addWidget( clearButton );
+  QToolTip::add( clearButton, i18n( "Clear input field" ) );
+
   // init the history combo and insert it into the URL-Requester
   KHistoryCombo *combo = new KHistoryCombo();
   combo->setDuplicatesEnabled( false );
@@ -365,9 +374,13 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
 
   // Use KButtonBox for the aligning pushbuttons nicely
   KButtonBox* b = new KButtonBox(this);
+  /*
   clear = b->addButton( i18n("C&lear") );
+  */
   b->addStretch(2);
+  /*
   connect( clear, SIGNAL(clicked()), SLOT(slotClear()) );
+  */
 
   ok = b->addButton( i18n ("&OK") );
   ok->setDefault(true);
@@ -398,6 +411,7 @@ KOpenWithDlg::~KOpenWithDlg()
 void KOpenWithDlg::slotClear()
 {
     edit->setURL(QString::null);
+    edit->setFocus();
 }
 
 
