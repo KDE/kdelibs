@@ -3067,7 +3067,7 @@ QDOM_TextPrivate* QDOM_TextPrivate::splitText( int offset )
 
 void QDOM_TextPrivate::save( QTextStream& s ) const
 {
-  s << m_value.utf8();
+  s << encodeAttr( m_value.utf8() );
 }
 
 /**************************************************************
