@@ -10,8 +10,8 @@
 
 #include <string>
 
-enum RenameDlg_Mode { M_OVERWRITE = 1, M_OVERWRITE_ITSELF = 2, M_SKIP = 4, M_SINGLE = 8, M_MULTI = 16 };
-enum RenameDlg_Result { R_OVERWRITE = 4, R_OVERWRITE_ALL = 5, R_SKIP = 2, R_AUTO_SKIP = 3, R_RENAME = 1, R_CANCEL = 0 };
+enum RenameDlg_Mode { M_OVERWRITE = 1, M_OVERWRITE_ITSELF = 2, M_SKIP = 4, M_SINGLE = 8, M_MULTI = 16, M_RESUME = 32 };
+enum RenameDlg_Result { R_RESUME = 6, R_RESUME_ALL = 7, R_OVERWRITE = 4, R_OVERWRITE_ALL = 5, R_SKIP = 2, R_AUTO_SKIP = 3, R_RENAME = 1, R_CANCEL = 0 };
 
 class KIORenameDlg : public QDialog
 {
@@ -21,9 +21,10 @@ public:
   ~KIORenameDlg();
     
   const char* newName() { return m_pLineEdit->text(); }
-  
+  unsigned long getOffset() { return offset; }
+
 protected:
-  QPushButton *b0, *b1, *b2, *b3, *b4, *b5;
+  QPushButton *b0, *b1, *b2, *b3, *b4, *b5, *b6, *b7;
   QLineEdit* m_pLineEdit;
   QVBoxLayout* m_pLayout;
   
@@ -31,7 +32,8 @@ protected:
   string dest;
     
   bool modal;
-    
+  unsigned long offset;
+
 public slots:
   void b0Pressed();
   void b1Pressed();
@@ -39,12 +41,14 @@ public slots:
   void b3Pressed();
   void b4Pressed();
   void b5Pressed();
+  void b6Pressed();
+  void b7Pressed();
 
 signals:
   void result( QWidget* _widget, int _button, const char* _src, const char* _data );
 };
 
-RenameDlg_Result open_RenameDlg( const char* _src, const char *_dest, RenameDlg_Mode _mode, string& _new );
+RenameDlg_Result open_RenameDlg( const char* _src, const char *_dest, RenameDlg_Mode _mode, string& _new, unsigned long& _offset);
 
 #endif
 
