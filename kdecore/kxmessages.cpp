@@ -27,6 +27,9 @@ DEALINGS IN THE SOFTWARE.
 #include "kxmessages.h"
 
 #include <kapp.h>
+
+#ifdef _WS_X11_ // FIXME(E): Figure out what parts we can/should emulate in QT/E
+
 #include <X11/Xlib.h>
 #include <kdebug.h>
 
@@ -164,3 +167,4 @@ bool KXMessages::x11Event( XEvent* ev_P )
 #undef None
 
 #include "kxmessages.moc"
+#endif

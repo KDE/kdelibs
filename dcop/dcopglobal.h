@@ -24,8 +24,10 @@
 #define DCOPGLOBAL_H "$Id$"
 
 #define INT32 QINT32
+#ifdef _WS_X11_
 #include <X11/Xlib.h>
 #include <X11/Xmd.h>
+#endif
 #include <KDE-ICE/ICElib.h>
 
 #ifdef __cplusplus

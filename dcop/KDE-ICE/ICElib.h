@@ -33,7 +33,11 @@ Author: Ralph Mor, X Consortium
 #define _ICELIB_H_
 
 #include <KDE-ICE/ICE.h>
-#include <X11/Xfuncproto.h>
+#include <KDE-ICE/Xfuncproto.h>
+#ifndef SIZEOF
+#define _SIZEOF(x) sz_##x
+#define SIZEOF(x) _SIZEOF(x)
+#endif
 
 #define Bool int
 #define Status int

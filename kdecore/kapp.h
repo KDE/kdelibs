@@ -23,6 +23,8 @@
 #ifndef _KAPP_H
 #define _KAPP_H
 
+#include <config.h>
+
 // Version macros. Never put this further down.
 #define KDE_VERSION 290
 #define KDE_VERSION_STRING "pre-2.9 CVS >= 20010806"
@@ -37,6 +39,9 @@ class DCOPClient;
 class DCOPObject;
 
 typedef unsigned long Atom;
+#ifdef _WS_QWS_
+typedef void Display;
+#endif
 
 #include <qapplication.h>
 #include <qpixmap.h>
@@ -97,6 +102,7 @@ public:
    */
   KApplication( bool allowStyles=true, bool GUIenabled=true);
 
+#ifndef _WS_QWS_
   /**
    * Constructor. Parses command-line arguments. Use this constructor to use KApplication
    * in a Motif or Xt program.
@@ -119,6 +125,7 @@ public:
    */
   KApplication(Display *display, int& argc, char** argv, const QCString& rAppName,
                bool allowStyles=true, bool GUIenabled=true);
+#endif
 
   /**
    * @deprecated
@@ -482,10 +489,12 @@ public:
    */
   QString checkRecoverFile( const QString& pFilename, bool& bRecover ) const;
 
+#ifdef _WS_X11_
   /**
    * Get the X11 display
    */
   Display *getDisplay() { return display; }
+#endif
 
   /**
    * Enable style plugins.
@@ -584,6 +593,7 @@ public slots:
   QString geometryArgument() const;
 
 protected:
+#ifdef _WS_X11_
   /**
    * Used to catch X11 events
    */
@@ -591,6 +601,7 @@ protected:
 
 
   Display *display;
+#endif
   Atom kipcCommAtom;
   int kipcEventMask;
 
@@ -836,6 +847,12 @@ private:
 #endif
 
 // $Log$
+// Revision 1.230  2001/08/08 20:34:41  hausmann
+// - there's no point in returning a const QCString (note the lack of a
+//   reference :)
+// -  const QCString startupId() const;
+// +  QCString startupId() const;
+//
 // Revision 1.229  2001/08/08 14:19:15  hausmann
 // - cleaned up the '### KDE 3.0: merge with above' methods (a
 //   const QCString &startup_id with a default of "" was added to

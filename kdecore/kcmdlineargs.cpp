@@ -43,6 +43,12 @@
 #include <kstringhandler.h>
 #include <kstaticdeleter.h>
 
+#ifdef _WS_X11_
+#define DISPLAY "DISPLAY"
+#elif defined(_WS_QWS_)
+#define DISPLAY "QWS_DISPLAY"
+#endif
+
 template class QAsciiDict<QCString>;
 template class QList<KCmdLineArgs>;
 
@@ -955,7 +961,7 @@ KCmdLineArgs::setOption(const QCString &opt, const char *value)
       // Hack coming up!
       if (arg == "-display")
       {
-         setenv("DISPLAY", value, true);
+         setenv(DISPLAY, value, true);
       }
       return;
    }

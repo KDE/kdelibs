@@ -61,6 +61,8 @@
 static const char vroot_rcsid[] = "#Id: vroot.h,v 1.4 1991/09/30 19:23:16 stolcke Exp stolcke #";
 #endif
 
+#include <qwidget.h>
+#ifdef _WS_X11_
 #include <X11/X.h>
 #include <X11/Xatom.h>
 #include <X11/Xlib.h>
@@ -122,5 +124,6 @@ VirtualRootWindowOfScreen(screen) Screen *screen;
 
 #undef DefaultRootWindow
 #define DefaultRootWindow(dpy) VirtualRootWindowOfScreen(DefaultScreenOfDisplay(dpy))
+#endif
 
 #endif /* _VROOT_H_ */

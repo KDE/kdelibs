@@ -250,12 +250,14 @@ void KThemeBase::readConfig(Qt::GUIStyle /*style*/)
         for(; i < INHERIT_ITEMS*2; ++i){
             if(config.hasGroup(widgetEntries[i]))
                 applyResourceGroup(&config, i);
+#ifndef _WS_QWS_ //FIXME
             else{
                 KRootProp copyProp(widgetEntries[i]);
                 copyProp.writeEntry("CopyWidget",
                                     QString(widgetEntries[i-INHERIT_ITEMS]));
                 copyProp.sync();
             }
+#endif
         }
        for(; i < WIDGETS; ++i)
            applyResourceGroup(&config, i);
@@ -362,12 +364,14 @@ void KThemeBase::applyConfigFile(const QString &file)
     globalConfig->sync();
 
     // delete all properties;
+#ifndef _WS_QWS_ //FIXME
     for(input=0; input < WIDGETS; ++input){
         KRootProp prop(widgetEntries[input]);
         prop.destroy();
     }
     KRootProp misc("Misc");
     misc.destroy();
+#endif
 }
 
 KThemeBase::~KThemeBase()
@@ -808,6 +812,7 @@ QColorGroup* KThemeBase::makeColorGroup(QColor &fg, QColor &bg,
 
 void KThemeBase::applyMiscResourceGroup(KConfig *config)
 {
+#ifndef _WS_QWS_ //FIXME
     KRootProp *tmpProp = new KRootProp("Misc"); // clear the old property
     tmpProp->destroy();
     delete tmpProp;
@@ -850,10 +855,12 @@ void KThemeBase::applyMiscResourceGroup(KConfig *config)
     prop.writeEntry("Cache", config->readNumEntry("Cache", 1024));
     prop.writeEntry("ScrollBarExtent",
                     config->readNumEntry("ScrollBarExtent", 16));
+#endif
 }
 
 void KThemeBase::readMiscResourceGroup()
 {
+#ifndef _WS_QWS_ //FIXME
     KRootProp prop("Misc");
 
     sbPlacement = (SButton)prop.readNumEntry("SButtonPosition",
@@ -864,10 +871,12 @@ void KThemeBase::readMiscResourceGroup()
     defaultFrame = prop.readNumEntry("FrameWidth", 2);
     cacheSize = prop.readNumEntry("Cache", 1024);
     sbExtent = prop.readNumEntry("ScrollBarExtent", 16);
+#endif
 }
 
 void KThemeBase::applyResourceGroup(KConfig *config, int i)
 {
+#ifndef _WS_QWS_ //FIXME
     QString tmpStr;
     int tmpVal;
 
@@ -1011,12 +1020,14 @@ void KThemeBase::applyResourceGroup(KConfig *config, int i)
       else
           prop.writeEntry("Round", 5000);
     }
+#endif
 }
 
 
 void KThemeBase::readResourceGroup(int i, QString *pixnames, QString *brdnames,
                                    bool *loadArray)
 {
+#ifndef _WS_QWS_ //FIXME
     if(loadArray[i] == true){
         return; // already been preloaded.
     }
@@ -1199,6 +1210,7 @@ void KThemeBase::readResourceGroup(int i, QString *pixnames, QString *brdnames,
             roundedButton = tmpVal;
     }
     loadArray[i] = true;
+#endif
 }
 
 

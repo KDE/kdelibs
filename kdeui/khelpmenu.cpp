@@ -260,8 +260,10 @@ void KHelpMenu::contextHelpActivated()
   QWidget* w = QApplication::widgetAt( QCursor::pos(), TRUE );
   while ( w && !w->isTopLevel() && !w->inherits("QXEmbed")  )
       w = w->parentWidget();
+#ifndef _WS_QWS_
    if ( w && w->inherits("QXEmbed") )
 	  (( QXEmbed*) w )->enterWhatsThisMode();
+#endif
 }
 
 

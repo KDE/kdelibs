@@ -102,7 +102,9 @@
 #include <errno.h>
 #include <string.h>
 #include <netdb.h>
+#ifndef _WS_QWS_ //FIXME(E): NetWM should talk to QWS...
 #include <netwm.h>
+#endif
 
 #include "kprocctrl.h"
 
@@ -114,20 +116,30 @@
 #define _PATH_TMP "/tmp/"
 #endif
 
+#ifdef _WS_X11_
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
 #include <X11/SM/SMlib.h>
-#include <X11/ICE/ICElib.h>
+#endif
+#include <KDE-ICE/ICElib.h>
 
 #if QT_VERSION < 300
 static KDesktopWidget *desktopWidget = 0;
 #endif
 
+#ifdef _WS_X11_
 // defined by X11 headers
 const int XKeyPress = KeyPress;
 const int XKeyRelease = KeyRelease;
 #undef KeyPress
+#endif
+
+#ifdef _WS_X11_
+#define DISPLAY "DISPLAY"
+#elif defined(_WS_QWS_)
+#define DISPLAY "QWS_DISPLAY"
+#endif
 
 #include <kipc.h>
 
@@ -138,6 +150,7 @@ bool KApplication::loadedByKdeinit = false;
 
 template class QList<KSessionManaged>;
 
+#ifdef _WS_X11_
 extern "C" {
 static int kde_xio_errhandler( Display * )
 {
@@ -153,6 +166,7 @@ static int kde_x_errhandler( Display *dpy, XErrorEvent *err )
 		<< "\n  Major opcode:  " << err->request_code << endl;
     return 0;
 }
+#endif
 
 static void kde_ice_ioerrorhandler( IceConn conn )
 {
@@ -160,9 +174,6 @@ static void kde_ice_ioerrorhandler( IceConn conn )
         kapp->iceIOErrorHandler( conn );
     // else ignore the error for now
 }
-
-}
-
 
 class KCheckAccelerators : public QObject
 {
@@ -555,14 +566,21 @@ static QString sessionConfigName()
   return aSessionConfigName;
 }
 
+#ifndef _WS_QWS_
 static SmcConn mySmcConnection = 0;
 static SmcConn tmpSmcConnection = 0;
+#else
+// FIXME(E): Implement for Qt Embedded
+// Possibly "steal" XFree86's libSM?
+#endif
 static QTime* smModificationTime = 0;
 
 KApplication::KApplication( int& argc, char** argv, const QCString& rAppName,
                             bool allowStyles, bool GUIenabled ) :
   QApplication( argc, argv, GUIenabled ), KInstance(rAppName),
+#ifdef _WS_X11_
   display(0L),
+#endif
   d (new KApplicationPrivate())
 {
     read_app_startup_id();
@@ -581,7 +599,9 @@ KApplication::KApplication( bool allowStyles, bool GUIenabled ) :
   QApplication( *KCmdLineArgs::qt_argc(), *KCmdLineArgs::qt_argv(),
                 GUIenabled ),
   KInstance( KCmdLineArgs::about),
+#ifdef _WS_X11_
   display(0L),
+#endif
   d (new KApplicationPrivate)
 {
     read_app_startup_id();
@@ -594,6 +614,7 @@ KApplication::KApplication( bool allowStyles, bool GUIenabled ) :
     init(GUIenabled);
 }
 
+#ifdef _WS_X11_
 KApplication::KApplication(Display *display, int& argc, char** argv, const QCString& rAppName,
                            bool allowStyles, bool GUIenabled ) :
   QApplication( display ), KInstance(rAppName),
@@ -612,6 +633,7 @@ KApplication::KApplication(Display *display, int& argc, char** argv, const QCStr
     parseCommandLine( );
     init(GUIenabled);
 }
+#endif
 
 int KApplication::xioErrhandler()
 {
@@ -681,16 +703,20 @@ void KApplication::init(bool GUIenabled)
 
   if (GUIenabled)
   {
+#ifdef _WS_X11_
     // this is important since we fork() to launch the help (Matthias)
     fcntl(ConnectionNumber(qt_xdisplay()), F_SETFD, FD_CLOEXEC);
     // set up the fancy (=robust and error ignoring ) KDE xio error handlers (Matthias)
     XSetErrorHandler( kde_x_errhandler );
     XSetIOErrorHandler( kde_xio_errhandler );
+#endif
 
     connect( this, SIGNAL( aboutToQuit() ), this, SIGNAL( shutDown() ) );
 
+#ifdef _WS_X11_ //FIXME(E)
     display = desktop()->x11Display();
     kipcCommAtom = XInternAtom(display, "KIPC_COMM_ATOM", false);
+#endif
 
     kdisplaySetStyle();
     kdisplaySetFont();
@@ -718,6 +744,7 @@ void KApplication::init(bool GUIenabled)
   pDCOPClient = 0L; // don't instantiate until asked to do so.
   bSessionManagement = true;
 
+#ifdef _WS_X11_
   // register a communication window for desktop changes (Matthias)
   if (GUIenabled && kde_have_kipc )
   {
@@ -727,6 +754,9 @@ void KApplication::init(bool GUIenabled)
     XChangeProperty(qt_xdisplay(), smw->winId(), a, a, 32,
                                         PropModeReplace, (unsigned char *)&data, 1);
   }
+#else
+  // FIXME(E): Implement for Qt Embedded
+#endif
 
   d->oldIceIOErrorHandler = IceSetIOErrorHandler( kde_ice_ioerrorhandler );
 }
@@ -827,6 +857,7 @@ bool KApplication::requestShutDown()
 
 bool KApplication::requestShutDown( bool bFast )
 {
+#ifdef _WS_X11_
     if ( mySmcConnection ) {
         // we already have a connection to the session manager, use it.
         SmcRequestSaveYourself( mySmcConnection, SmSaveBoth, True,
@@ -866,12 +897,16 @@ bool KApplication::requestShutDown( bool bFast )
     // flush the request
     IceFlush(SmcGetIceConnection(tmpSmcConnection));
     return TRUE;
+#else
+    // FIXME(E): Implement for Qt Embedded
+    return false;
+#endif
 }
 
 void KApplication::propagateSessionManager()
 {
     QCString fName = QFile::encodeName(locateLocal("socket", "KSMserver"));
-    QCString display = ::getenv("DISPLAY");
+    QCString display = ::getenv(DISPLAY);
     // strip the screen number from the display
     display.replace(QRegExp("\\.[0-9]+$"), "");
 
@@ -942,6 +977,7 @@ void KApplication::commitData( QSessionManager& sm )
 
 void KApplication::saveState( QSessionManager& sm )
 {
+#ifndef _WS_QWS_
     static bool firstTime = true;
     mySmcConnection = (SmcConn) sm.handle();
 
@@ -979,7 +1015,7 @@ void KApplication::saveState( QSessionManager& sm )
 	// to a different display (ie. if we are in a university lab and try,
 	// try to restore a multihead session, our apps could be started on
 	// someone else's display instead of our own)
-        QCString displayname = getenv("DISPLAY");
+        QCString displayname = getenv(DISPLAY);
         if (! displayname.isNull()) {
             // only store the command if we actually have a DISPLAY
             // environment variable
@@ -1010,6 +1046,9 @@ void KApplication::saveState( QSessionManager& sm )
 
     if ( cancelled )
         sm.cancel();
+#else
+    // FIXME(E): Implement for Qt Embedded
+#endif
 }
 
 void KApplication::startKdeinit()
@@ -1053,7 +1092,12 @@ void KApplication::dcopFailure(const QString &msg)
 
 static const KCmdLineOptions qt_options[] =
 {
+  //FIXME: Check if other options are specific to Qt/X11
+#ifdef _WS_X11_
    { "display <displayname>", I18N_NOOP("Use the X-server display 'displayname'."), 0},
+#else
+   { "display <displayname>", I18N_NOOP("Use the QWS display 'displayname'."), 0},
+#endif
    { "session <sessionId>", I18N_NOOP("Restore the application for the given 'sessionId'."), 0},
    { "cmap", I18N_NOOP("Causes the application to install a private color\nmap on an 8-bit display."), 0},
    { "ncols <count>", I18N_NOOP("Limits the number of colors allocated in the color\ncube on an 8-bit display, if the application is\nusing the QApplication::ManyColor color\nspecification."), 0},
@@ -1070,10 +1114,15 @@ static const KCmdLineOptions qt_options[] =
    { "button <color>", I18N_NOOP("sets the default button color."), 0},
    { "name <name>", I18N_NOOP("sets the application name."), 0},
    { "title <title>", I18N_NOOP("sets the application title (caption)."), 0},
+#ifdef _WS_X11_
    { "visual TrueColor", I18N_NOOP("forces the application to use a TrueColor visual on\nan 8-bit display."), 0},
    { "inputstyle <inputstyle>", I18N_NOOP("sets XIM (X Input Method) input style. Possible\nvalues are onthespot, overthespot, offthespot and\nroot."), 0 },
    { "im <XIM server>", I18N_NOOP("set XIM server."),0},
    { "noxim", I18N_NOOP("disable XIM."), 0 },
+#endif
+#ifdef _WS_QWS_
+   { "qws", I18N_NOOP("forces the application to run as QWS Server."), 0},
+#endif
    { 0, 0, 0 }
 };
 
@@ -1164,6 +1213,7 @@ void KApplication::parseCommandLine( )
         KCrash::setApplicationName(QString(args->appName()));
     }
 
+#ifdef _WS_X11_
     if ( args->isSet( "waitforwm" ) ) {
         Atom a = XInternAtom( qt_xdisplay(), "_NET_SUPPORTED", FALSE  );
         Atom type;
@@ -1181,6 +1231,9 @@ void KApplication::parseCommandLine( )
         if ( data )
             XFree( data );
     }
+#else
+    // FIXME(E): Implement for Qt Embedded
+#endif
 
     if (args->isSet("geometry"))
     {
@@ -1239,6 +1292,7 @@ KApplication::~KApplication()
   delete d;
   KApp = 0;
 
+#ifndef _WS_QWS_
   mySmcConnection = 0;
   delete smModificationTime;
   smModificationTime = 0;
@@ -1248,14 +1302,19 @@ KApplication::~KApplication()
       SmcCloseConnection( tmpSmcConnection, 0, 0 );
       tmpSmcConnection = 0;
   }
+#else
+  // FIXME(E): Implement for Qt Embedded
+#endif
 }
 
 
+#ifdef _WS_X11_
 class KAppX11HackWidget: public QWidget
 {
 public:
     bool publicx11Event( XEvent * e) { return x11Event( e ); }
 };
+#endif
 
 
 
@@ -1266,6 +1325,7 @@ void KApplication::dcopBlockUserInput( bool b )
     kapp_block_user_input = b;
 }
 
+#ifndef _WS_QWS_
 bool KApplication::x11EventFilter( XEvent *_event )
 {
     if ( kapp_block_user_input ) {
@@ -1351,6 +1411,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
 
     return false;
 }
+#endif
 
 void KApplication::addKipcEventMask(int id)
 {
@@ -1921,10 +1982,12 @@ startServiceInternal( const QCString &function,
    QByteArray replyData;
    QCString _launcher = KApplication::launcher();
    QValueList<QCString> envs;
+#ifdef _WS_X11_
    if (qt_xdisplay()) {
        QCString dpystring(XDisplayString(qt_xdisplay()));
        envs.append( QCString("DISPLAY=") + dpystring );
    }
+#endif
    stream << envs;   
    if( !startup_id.isNull()) // not kdeinit_exec
        stream << startup_id;
@@ -2140,11 +2203,14 @@ void KApplication::setTopWidget( QWidget *topWidget )
 {
   if( topWidget != 0 )
   {
+#ifdef _WS_X11_ // FIXME(E): Implement for Qt/Embedded
     Window leader = topWidget->winId();
+#endif
     QCString string_buffer = instanceName().data(); // copies it
 
     char * argv = string_buffer.data();
 
+#ifdef _WS_X11_ // FIXME(E): Implement for Qt/Embedded
     XSetCommand(display, leader, &argv, 1);
 
     XClassHint hint;
@@ -2165,15 +2231,19 @@ void KApplication::setTopWidget( QWidget *topWidget )
 
     // Set the _NET_WM_PID Atom to the pid of this process.
     info.setPid(getpid());
+#endif
 
     // set the specified caption
     if ( !topWidget->inherits("KMainWindow") ) { // KMainWindow does this already for us
         topWidget->setCaption( caption() );
+#ifndef _WS_QWS_ // FIXME(E): Implement for Qt/Embedded
         info.setName( caption().utf8().data() );
+#endif
     }
 
     // set the specified icons
     topWidget->setIcon( icon() ); //standard X11
+#ifdef _WS_X11_ // FIXME(E): Implement for Qt/Embedded
     KWin::setIcons(topWidget->winId(), icon(), miniIcon() ); // NET_WM hints for KWin
 
     // set a short icon text
@@ -2181,6 +2251,7 @@ void KApplication::setTopWidget( QWidget *topWidget )
     
     // set the app startup notification window property
     KStartupInfo::setWindowStartupId( topWidget->winId(), startupId());
+#endif
   }
 }
 
@@ -2201,9 +2272,11 @@ void KApplication::setStartupId( const QCString& startup_id )
 // not to propagate it to processes started from this app
 void KApplication::read_app_startup_id()
 {
+#ifdef _WS_X11_
     KStartupInfoId id = KStartupInfo::currentStartupIdEnv();
     KStartupInfo::resetStartupEnv();
     d->startup_id = id.id();
+#endif
 }
     
 int KApplication::random()

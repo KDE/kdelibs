@@ -123,6 +123,7 @@ void HTMLAppletElementImpl::attach()
   if(r && m_style->display() != NONE) {
       view = ownerDocument()->view();
 
+#ifndef _WS_QWS_ // FIXME(E)? I don't think this is possible with Qt Embedded...
       if( view->part()->javaEnabled() )
       {
           QMap<QString, QString> args;
@@ -140,6 +141,9 @@ void HTMLAppletElementImpl::attach()
       }
       else
           f = new RenderEmptyApplet(view);
+#else
+      f = 0;
+#endif
   }
 
   if(f)

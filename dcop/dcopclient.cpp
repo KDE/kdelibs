@@ -57,8 +57,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <dcopobject.h>
 #include <dcopref.h>
 
-
+#ifdef _WS_X11_
 #include <X11/Xmd.h>
+#endif
 extern "C" {
 #include <KDE-ICE/ICElib.h>
 #include <KDE-ICE/ICEutil.h>
@@ -189,10 +190,18 @@ QCString DCOPClient::dcopServerFile()
       fprintf(stderr, "Aborting. $HOME is not set.\n");
       exit(1);
    }
+#ifdef _WS_X11_
    QCString disp = getenv("DISPLAY");
+#elif defined(_WS_QWS_)
+   QCString disp = getenv("QWS_DISPLAY");
+#endif
    if (disp.isEmpty())
    {
+#ifdef _WS_X11_
       fprintf(stderr, "Aborting. $DISPLAY is not set.\n");
+#elif defined(_WS_QWS_)
+      fprintf(stderr, "Aborting. $QWS_DISPLAY is not set.\n");
+#endif
       exit(1);
    }
    int i;

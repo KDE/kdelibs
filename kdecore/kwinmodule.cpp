@@ -21,6 +21,8 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include <qwidget.h>
+#ifdef _WS_X11_ //FIXME
 #include "kwinmodule.h"
 #include "kwin.h"
 #include <X11/Xatom.h>
@@ -314,4 +316,4 @@ void KWinModule::doNotManage( const QString& title )
 }
 
 #include "kwinmodule.moc"
-
+#endif

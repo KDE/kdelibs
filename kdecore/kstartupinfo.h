@@ -29,6 +29,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include <sys/types.h>
 #include <qobject.h>
+#ifdef _WS_X11_ // FIXME(E): Redo in a less X11-specific way
 #include <qcstring.h>
 #include <qstring.h>
 #include <qvaluelist.h>
@@ -81,11 +82,13 @@ class KStartupInfo
 	 * @see KStartupInfoData
 	 */
         static bool sendStartup( const KStartupInfoId& id, const KStartupInfoData& data );
+#ifdef _WS_X11_
 	/**
 	 * Like @ref sendStartup , uses dpy instead of qt_x11display() for sending the info.
 	 */
         static bool sendStartupX( Display* dpy, const KStartupInfoId& id,
             const KStartupInfoData& data );
+#endif
 	/**
 	 * Sends given notification data about started application
 	 * with the given startup identification. This is used for updating the notification
@@ -94,29 +97,35 @@ class KStartupInfo
 	 * @see KStartupInfoData
 	 */
         static bool sendChange( const KStartupInfoId& id, const KStartupInfoData& data );
+#ifdef _WS_X11_
 	/**
 	 * Like @ref sendChange , uses dpy instead of qt_x11display() for sending the info.
 	 */
         static bool sendChangeX( Display* dpy, const KStartupInfoId& id,
             const KStartupInfoData& data );
+#endif
 	/**
 	 * Ends startup notification with the given identification.
 	 */
         static bool sendFinish( const KStartupInfoId& id );
+#ifdef _WS_X11_
 	/**
 	 * Like @ref sendFinish , uses dpy instead of qt_x11display() for sending the info.
 	 */
         static bool sendFinishX( Display* dpy, const KStartupInfoId& id );
+#endif
 	/**
 	 * Ends startup notification with the given indentification and the given data ( e.g.
 	 * PIDs of processes for this startup notification that exited ).
 	 */
         static bool sendFinish( const KStartupInfoId& id, const KStartupInfoData& data );
+#ifdef _WS_X11_
 	/**
 	 * Like @ref sendFinish , uses dpy instead of qt_x11display() for sending the info.
 	 */
         static bool sendFinishX( Display* dpy, const KStartupInfoId& id,
             const KStartupInfoData& data );
+#endif
 	/**
 	 * Returns the current startup notification identification for the current
 	 * startup notification environment variable. Note that KApplication constructor
@@ -411,4 +420,5 @@ class KStartupInfoData
         KStartupInfoDataPrivate* d;
     };
 
+#endif
 #endif

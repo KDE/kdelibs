@@ -87,6 +87,9 @@ protected:
 
 
 //----------------------------------------------------------------------------
+#ifdef _WS_QWS_
+typedef WId Window;
+#endif
 
 int main(int argc, char *argv[])
 {
@@ -119,10 +122,12 @@ int main(int argc, char *argv[])
         saveWin = atol(args->getOption("window-id"));
     }
 
+#ifdef _WS_X11_ //FIXME
     if (args->isSet("root"))
     {
         saveWin = RootWindow(qt_xdisplay(), qt_xscreen());
     }
+#endif
 
     if (args->isSet("demo"))
     {

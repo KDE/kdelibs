@@ -26,6 +26,7 @@
 #include <qguardedptr.h>
 #include <qwhatsthis.h>
 #include <qfocusdata.h>
+#ifdef _WS_X11_
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -848,3 +849,4 @@ bool QXEmbed::customWhatsThis() const
 
 // for KDE
 #include "qxembed.moc"
+#endif

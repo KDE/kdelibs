@@ -52,6 +52,7 @@
 #include "kkeybutton.h"
 
 #include <kapp.h>
+#ifdef _WS_X11_
 #define XK_XKB_KEYS
 #define XK_MISCELLANY
 #include <X11/Xlib.h>	// For x11Event()
@@ -66,6 +67,7 @@ const int XKeyRelease = KeyRelease;
 #undef KeyPress
 #undef FocusOut
 #undef FocusIn
+#endif
 #endif
 
 class KKeyChooserPrivate {
@@ -110,7 +112,9 @@ KKeyButton::KKeyButton(QWidget *parent, const char *name)
   setFocusPolicy( QWidget::StrongFocus );
   editing = false;
   connect( this, SIGNAL(clicked()), this, SLOT(captureKey()) );
+#ifdef _WS_X11_
   kapp->installX11EventFilter( this );	// Allow button to capture X Key Events.
+#endif
   setKey( 0 );
 }
 
@@ -154,6 +158,7 @@ void KKeyButton::captureKey()
 	captureKey( true );
 }
 
+#ifdef _WS_X11_
 bool KKeyButton::x11Event( XEvent *pEvent )
 {
 	if( editing ) {
@@ -221,6 +226,7 @@ void KKeyButton::keyPressEventX( XEvent *pEvent )
 	else
 		setKey( key );
 }
+#endif
 
 void KKeyButton::drawButton( QPainter *painter )
 {

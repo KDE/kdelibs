@@ -355,7 +355,11 @@ QCString dcopServerFile()
       fprintf(stderr, "Aborting. $HOME is not set.\n");
       exit(1);
    }
+#ifdef _WS_X11_
    QCString disp = getenv("DISPLAY");
+#elif defined(_WS_QWS_)
+   QCString disp = getenv("QWS_DISPLAY");
+#endif
    if (disp.isEmpty())
    {
       fprintf(stderr, "Aborting. $DISPLAY is not set.\n");

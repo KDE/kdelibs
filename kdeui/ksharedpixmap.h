@@ -18,6 +18,7 @@
 #include <qstringlist.h>
 #include <qpixmap.h>
 
+#ifndef _WS_QWS_ // FIXME: Implement for Qt Embedded
 #include <kpixmap.h>
 
 class KSharedPixmapPrivate;
@@ -105,5 +106,9 @@ private:
 
     KSharedPixmapPrivate *d;
 };
+#else
+// Qt Embedded... Let's simply assume KPixmap will do for now. Yes, I know that's broken.
+#define KSharedPixmap KPixmap
+#endif
 
 #endif

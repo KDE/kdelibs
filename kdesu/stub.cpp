@@ -94,7 +94,11 @@ int StubProcess::ConverseStub(int check)
 	} else if (line == "display") {
 	    writeLine(display());
 	} else if (line == "display_auth") {
+#ifdef _WS_X11_
 	    writeLine(displayAuth());
+#else
+	    writeLine("");
+#endif
 	} else if (line == "dcopserver") {
 	    writeLine("no");
 	} else if (line == "dcop_auth") {

@@ -21,6 +21,8 @@
 #include <qwindowdefs.h>
 #include <qwidget.h>
 
+#ifndef _WS_QWS_
+
 #include <kapp.h>
 #include <krootprop.h>
 #include <ksharedpixmap.h>
@@ -215,3 +217,4 @@ bool KSharedPixmap::x11Event(XEvent *event)
 
 
 #include "ksharedpixmap.moc"
+#endif

@@ -40,7 +40,9 @@
 #include "klistview.h"
 #include "klistviewlineedit.h"
 
+#ifdef _WS_X11_
 #include <X11/Xlib.h>
+#endif
 
 class KListView::Tooltip : public QToolTip
 {
@@ -403,16 +405,21 @@ void KListView::slotAutoSelect()
   if( !hasFocus() )
     setFocus();
 
+#ifdef _WS_X11_
+  // FIXME(E): Implement for Qt Embedded
   Window root;
   Window child;
   int root_x, root_y, win_x, win_y;
   uint keybstate;
   XQueryPointer( qt_xdisplay(), qt_xrootwin(), &root, &child,
                                  &root_x, &root_y, &win_x, &win_y, &keybstate );
+#endif
 
   QListViewItem* previousItem = currentItem();
   setCurrentItem( d->pCurrentItem );
 
+#ifndef _WS_QWS_
+  // FIXME(E): Implement for Qt Embedded
   if( d->pCurrentItem ) {
     //Shift pressed?
     if( (keybstate & ShiftMask) ) {
@@ -466,6 +473,7 @@ void KListView::slotAutoSelect()
   }
   else
     kdDebug() << "KListView::slotAutoSelect: That´s not supposed to happen!!!!" << endl;
+#endif
 }
 
 void KListView::emitExecute( QListViewItem *item, const QPoint &pos, int c )
@@ -480,6 +488,8 @@ void KListView::emitExecute( QListViewItem *item, const QPoint &pos, int c )
         }
         else
         {
+#ifndef _WS_QWS_
+	    // FIXME(E): Implement for Qt Embedded
             Window root;
             Window child;
             int root_x, root_y, win_x, win_y;
@@ -494,6 +504,7 @@ void KListView::emitExecute( QListViewItem *item, const QPoint &pos, int c )
                 emit executed( item );
                 emit executed( item, pos, c );
             }
+#endif
         }
     }
 }

@@ -69,8 +69,10 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookie* cookie,
                         int defaultButton, bool showDetails )
            :KDialog( parent, "cookiealert", true )
 {
+#ifndef _WS_QWS_ //FIXME(E): Implement for Qt Embedded
     KWin::setState( winId(), NET::StaysOnTop );
     KWin::setOnDesktop(winId(), KWin::currentDesktop());
+#endif
     setCaption( i18n("Cookie Alert") );
     setIcon( SmallIcon("cookie") );
 

@@ -24,6 +24,9 @@
 
 // #define NETWMDEBUG
 
+#include <qwidget.h>
+#ifdef _WS_X11_ //FIXME
+
 #include "netwm.h"
 
 #include <string.h>
@@ -2840,3 +2843,4 @@ unsigned long NETWinInfo::properties() const {
 NET::MappingState NETWinInfo::mappingState() const {
     return p->mapping_state;
 }
+#endif

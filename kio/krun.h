@@ -312,7 +312,9 @@ class KProcessRunner : public QObject
   public:
 
     static pid_t run(KProcess *, const QString & binName);
+#ifdef _WS_X11_ // We don't have KStartupInfo in Qt/Embedded
     static pid_t run(KProcess *, const QString & binName, const KStartupInfoId& id );
+#endif
 
     virtual ~KProcessRunner();
 
@@ -325,12 +327,16 @@ class KProcessRunner : public QObject
   private:
 
     KProcessRunner(KProcess *, const QString & binName);
+#ifdef _WS_X11_ // We don't have KStartupInfo in Qt/Embedded
     KProcessRunner(KProcess *, const QString & binName, const KStartupInfoId& id );
+#endif
     KProcessRunner();
 
     KProcess * process_;
     QString binName;
+#ifdef _WS_X11_ // We don't have KStartupInfo in Qt/Embedded
     KStartupInfoId id_;
+#endif
 };
 
 #endif

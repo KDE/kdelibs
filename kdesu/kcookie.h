@@ -32,8 +32,10 @@ public:
     /** Returns the X11 display. */
     QCString display() { return m_Display; }
 
+#ifdef _WS_X11_
     /** Returns the X11 magic cookie, if available. */
     QCString displayAuth() { return m_DisplayAuth; }
+#endif
 
     /** Returns a list of netid's where a dcopserver is running */
     QCStringList dcopServer() { return m_DCOPSrv; }
@@ -55,7 +57,10 @@ private:
     void blockSigChild();
     void unblockSigChild();
 
-    QCString m_Display, m_DisplayAuth;
+    QCString m_Display;
+#ifdef _WS_X11_
+    QCString m_DisplayAuth;
+#endif
     QCStringList m_DCOPSrv, m_DCOPAuth, m_ICEAuth;
 
     class KCookiePrivate;

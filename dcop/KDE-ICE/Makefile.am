@@ -13,6 +13,7 @@ noinst_HEADERS =  ICE.h \
 	ICEutil.h \
 	Xtrans.h \
 	Xtransint.h \
+	Xfuncproto.h \
 	globals.h 
 
 libkICE_la_SOURCES = accept.c \

@@ -62,8 +62,10 @@
 #include "ltdl.h"
 #include "klauncher_cmds.h"
 
+#ifdef _WS_X11_
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
+#endif
 
 #ifdef HAVE_DLFCN_H
 # include <dlfcn.h>
@@ -82,14 +84,24 @@
 extern char **environ;
 
 extern int lt_dlopen_flag;
+#ifdef _WS_X11_
 static int X11fd = -1;
 static Display *X11display = 0;
 static int X11_startup_notify_fd = -1;
 static Display *X11_startup_notify_display = 0;
+#endif
 static const KInstance *s_instance = 0;
 #define MAX_SOCK_FILE 255
 static char sock_file[MAX_SOCK_FILE];
 static Atom net_current_desktop;
+
+#ifdef _WS_X11_
+#define DISPLAY "DISPLAY"
+#elif defined(_WS_QWS_)
+#define DISPLAY "QWS_DISPLAY"
+#else
+#error Use QT/X11 or QT/Embedded
+#endif
 
 /* Group data */
 struct {
@@ -142,6 +154,7 @@ static void close_fds()
       close(d.wrapper);
       d.wrapper = 0;
    }
+#ifdef _WS_X11_
    if (X11fd >= 0)
    {
       close(X11fd);
@@ -152,6 +165,7 @@ static void close_fds()
       close(X11_startup_notify_fd);
       X11_startup_notify_fd = -1;
    }
+#endif
 
    signal(SIGCHLD, SIG_DFL);
    signal(SIGPIPE, SIG_DFL);
@@ -197,6 +211,7 @@ static void setup_tty( const char* tty )
 // from kdecore/netwm.cpp
 static int get_current_desktop( Display* disp )
 {
+#ifdef _WS_X11_ // Only X11 supports multiple desktops
     Atom type_ret;
     int format_ret;
     unsigned char *data_ret;
@@ -208,6 +223,7 @@ static int get_current_desktop( Display* disp )
 	if (type_ret == XA_CARDINAL && format_ret == 32 && nitems_ret == 1)
 	    return *((long *) data_ret) + 1;
     }
+#endif
     return 0;
 }
 
@@ -229,10 +245,11 @@ const char* get_env_var( const char* var, int envc, const char* envs )
     return NULL;
 }
 
+#ifdef _WS_X11_ // FIXME(E): Implement for Qt/Embedded
 static void init_startup_info( KStartupInfoId& id, const char* bin,
     int envc, const char* envs )
 {
-    const char* dpy = get_env_var( "DISPLAY=", envc, envs );
+    const char* dpy = get_env_var( DISPLAY"=", envc, envs );
     // this may be called in a child, so it can't use display open using X11display
     // also needed for multihead
     X11_startup_notify_display = XOpenDisplay( dpy );
@@ -259,6 +276,7 @@ static void complete_startup_info( KStartupInfoId& id, pid_t pid )
     X11_startup_notify_display = NULL;
     X11_startup_notify_fd = -1;
 }
+#endif
 
 QCString execpath_avoid_loops( const QCString& exec, int envc, const char* envs, bool avoid_loops )
 {
@@ -343,10 +361,12 @@ static pid_t launch(int argc, const char *_name, const char *args,
     argc = 1;
   }
 
+#ifdef _WS_X11_
   KStartupInfoId startup_id;
   startup_id.initId( startup_id_str );
   if( !startup_id.none())
       init_startup_info( startup_id, name, envc, envs );
+#endif
 
   if (0 > pipe(d.fd))
   {
@@ -395,10 +415,12 @@ static pid_t launch(int argc, const char *_name, const char *args,
         envs++;
      }
 
+#ifdef _WS_X11_
       if( startup_id.none())
           KStartupInfo::resetStartupEnv();
       else
           startup_id.setupStartupEnv();
+#endif
      {
        QCString procTitle( name );
        d.argv = (char **) malloc(sizeof(char *) * (argc+1));
@@ -591,8 +613,10 @@ static pid_t launch(int argc, const char *_name, const char *args,
         d.launcher_pid = d.fork;
      }
   }
+#ifdef _WS_X11_
   if( !startup_id.none())
       complete_startup_info( startup_id, d.fork );
+#endif
   return d.fork;
 }
 
@@ -950,14 +974,14 @@ static void handle_launcher_request(int sock = -1)
      }
 
       // support for the old a bit broken way of setting DISPLAY for multihead
-      QCString olddisplay = getenv("DISPLAY");
+      QCString olddisplay = getenv(DISPLAY);
       QCString kdedisplay = getenv("KDE_DISPLAY");
       bool reset_display = (! olddisplay.isEmpty() &&
                             ! kdedisplay.isEmpty() &&
                             olddisplay != kdedisplay);
 
       if (reset_display)
-          setenv("DISPLAY", kdedisplay, true);
+          setenv(DISPLAY, kdedisplay, true);
 
       pid = launch( argc, name, args, cwd, envc, envs,
           request_header.cmd == LAUNCHER_SHELL || request_header.cmd == LAUNCHER_KWRAPPER,
@@ -965,7 +989,7 @@ static void handle_launcher_request(int sock = -1)
 
       if (reset_display) {
           unsetenv("KDE_DISPLAY");
-          setenv("DISPLAY", olddisplay, true);
+          setenv(DISPLAY, olddisplay, true);
       }
 
       if (pid && (d.result == 0))
@@ -1046,8 +1070,10 @@ static void handle_requests(pid_t waitForPid)
    int max_sock = d.wrapper;
    if (d.launcher_pid && (d.launcher[0] > max_sock))
       max_sock = d.launcher[0];
+#ifdef _WS_X11
    if (X11fd > max_sock)
       max_sock = X11fd;
+#endif
    max_sock++;
 
    while(1)
@@ -1098,7 +1124,9 @@ static void handle_requests(pid_t waitForPid)
       }
       FD_SET(d.wrapper, &rd_set);
       FD_SET(d.deadpipe[0], &rd_set);
+#ifdef _WS_X11_
       if(X11fd >= 0) FD_SET(X11fd, &rd_set);
+#endif
 
       result = select(max_sock, &rd_set, &wr_set, &e_set, 0);
 
@@ -1126,6 +1154,7 @@ static void handle_requests(pid_t waitForPid)
          handle_launcher_request();
       }
 
+#ifdef _WS_X11_
       /* Look for incoming X11 events */
       if((result > 0) && (X11fd >= 0))
       {
@@ -1135,6 +1164,7 @@ static void handle_requests(pid_t waitForPid)
           if (X11display != 0) XNextEvent(X11display, &event_return);
         }
       }
+#endif
    }
 }
 
@@ -1185,10 +1215,10 @@ static void kdeinit_library_path()
    if (!extra_path.isEmpty())
       lt_dlsetsearchpath(extra_path.data());
 
-   QCString display = getenv("DISPLAY");
+   QCString display = getenv(DISPLAY);
    if (display.isEmpty())
    {
-     fprintf(stderr, "kdeinit: Aborting. $DISPLAY is not set.\n");
+     fprintf(stderr, "kdeinit: Aborting. $"DISPLAY" is not set.\n");
      exit(255);
    }
    int i;
@@ -1255,6 +1285,7 @@ int kdeinit_xio_errhandler( Display * )
     return 0;
 }
 
+#ifdef _WS_X11_
 // Borrowed from kdebase/kaudio/kaudioserver.cpp
 static int initXconnection()
 {
@@ -1276,6 +1307,7 @@ static int initXconnection()
 
   return -1;
 }
+#endif
 
 int main(int argc, char **argv, char **envp)
 {
@@ -1390,7 +1422,9 @@ int main(int argc, char **argv, char **envp)
       handle_requests(pid);
    }
 
+#ifdef _WS_X11_
    X11fd = initXconnection();
+#endif
 
    for(i = 1; i < argc; i++)
    {

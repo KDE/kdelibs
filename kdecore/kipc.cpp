@@ -28,17 +28,19 @@
 
 #include <qwindowdefs.h>
 
+#ifdef _WS_X11_
 #include <X11/X.h>
 #include <X11/Xlib.h>
+#endif
 
 #include <kipc.h>
 
 
+#ifndef _WS_QWS_
 static int dropError(Display *, XErrorEvent *)
 {
     return 0;
 }
-
 
 static long getSimpleProperty(Window w, Atom a)
 {
@@ -110,3 +112,6 @@ void KIPC::sendMessageAll(Message msg, int data)
     XSetErrorHandler(defaultHandler);
     XFree((char *) rootwins);
 }
+#else
+	// FIXME(E): Implement in Qt Embedded
+#endif

@@ -51,7 +51,9 @@
 #include <kstddirs.h>
 #include <kdebug.h>
 
+#ifdef _WS_X11_
 #include <X11/Xlib.h>
+#endif
 
 #include "kfontdialog.moc"
 
@@ -483,6 +485,7 @@ void KFontChooser::getFontList( QStringList &list, bool fixed )
 
 void KFontChooser::getFontList( QStringList &list, const char *pattern )
 {
+#ifdef _WS_X11_
   int num;
   char **xFonts = XListFonts( qt_xdisplay(), pattern, 2000, &num );
 
@@ -491,6 +494,11 @@ void KFontChooser::getFontList( QStringList &list, const char *pattern )
     addFont( list, xFonts[i] );
   }
   XFreeFontNames( xFonts );
+#else
+  // FIXME(E): Does Qt return font names the same way addFont treats them?
+  QFontDatabase d;
+  list+=d.families();
+#endif
 }
 
 
@@ -593,6 +601,9 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.65  2001/08/18 15:02:42  hausmann
+* - disable all charset related functionality for qt3
+*
 * Revision 1.64  2001/07/19 10:20:35  faure
 * Don't try to be clever when choosing a charset, it only hurts.
 * -    charsets->setQFont(selFont, chset);

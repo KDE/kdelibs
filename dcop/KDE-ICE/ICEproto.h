@@ -26,7 +26,20 @@ Author: Ralph Mor, X Consortium
 #ifndef _ICEPROTO_H_
 #define _ICEPROTO_H_
 
+#ifdef _WS_X11_
 #include <X11/Xmd.h>
+#else
+#if defined(__alpha__) || defined(__ia64__) || defined(__s390x__)
+typedef unsigned int CARD32;
+#else
+typedef unsigned long CARD32;
+#endif
+typedef unsigned short CARD16;
+typedef unsigned char CARD8;
+#define B32 :32
+#define B16 :16
+#include <unistd.h>
+#endif
 
 typedef struct {
     CARD8	majorOpcode;

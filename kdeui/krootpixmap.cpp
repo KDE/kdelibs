@@ -21,6 +21,7 @@
 #include <qpixmap.h>
 #include <qcstring.h>
 
+#ifndef _WS_QWS_ //FIXME
 #include <kapp.h>
 #include <klocale.h>
 #include <kwin.h>
@@ -226,3 +227,4 @@ void KRootPixmap::slotBackgroundChanged(int desk)
 
 
 #include "krootpixmap.moc"
+#endif

@@ -28,6 +28,7 @@
 
 class KGlobalAccelPrivate;
 
+#ifdef _WS_X11_
 /**
  * Returns the X key modifier for the key code keyCode.
  */	
@@ -37,6 +38,7 @@ uint keyToXMod( int keyCode );
  * Returns the X key sym for the key code keyCode.
  */	
 uint keyToXSym( int keyCode );
+#endif
 
 /**
  * The KGlobalAccel class handles global keyboard accelerators, allowing a
@@ -292,6 +294,7 @@ protected:
 	//  also grabbed.
 	bool grabKey( const QString& action, bool bGrab );
 
+#ifdef _WS_X11_
     	/**
 	 * Filters X11 events ev for key bindings in the accelerator dictionary.
 	 * If a match is found the activated activated is emitted and the function
@@ -300,6 +303,7 @@ protected:
 	 * This is public for compatibility only. You do not need to call it.
 	 */
 	bool x11EventFilter(const XEvent *);
+#endif
 
 
 signals:

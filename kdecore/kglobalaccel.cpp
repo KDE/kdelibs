@@ -36,9 +36,14 @@
 #include <kconfig.h>
 #include <kglobal.h>
 
+#ifdef _WS_X11_
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
+#else
+#define True true
+#define False false
+#endif
 #include <string.h>
 
 #ifdef KeyPress
@@ -70,10 +75,12 @@ public:
     }
 
 protected:
+#ifdef _WS_X11_
     bool x11Event( XEvent * e )
     {
 	return accel->x11EventFilter( e );
     }
+#endif
 
 
 private:
@@ -226,6 +233,7 @@ KKeyEntryMap KGlobalAccel::keyDict() const
 
 void KGlobalAccel::readSettings(KConfig* config)
 {
+#ifdef _WS_X11_ // FIXME(E): Implement for Qt/Embedded
 	kdDebug(125) << "KGlobalAccel::readSettings()\n";
 	QMap<int, QString> aKeysToGrab;
 	int cKeysToGrab = 0;
@@ -268,6 +276,7 @@ void KGlobalAccel::readSettings(KConfig* config)
 	// Grab the changed keys.
 	for( int i = 0; i < cKeysToGrab; i++ )
 		grabKey( aKeysToGrab[i], true );
+#endif
 }
 
 void KGlobalAccel::readSettings()
@@ -311,6 +320,7 @@ void KGlobalAccel::setEnabled( bool activate )
 
 void KGlobalAccel::setItemEnabled( const QString& action, bool activate )
 {
+#ifdef _WS_X11_ // FIXME(E): Implement for Qt/Embedded
     if ( !aKeyMap.contains(action) ) {
 	kdDebug() << QString::fromLatin1("KGlobalAccel : cannot enable action %1 "
 					 "which is not in the object dictionary\n").arg(action);
@@ -323,10 +333,12 @@ void KGlobalAccel::setItemEnabled( const QString& action, bool activate )
         if ( entry.aCurrentKeyCode )
             grabKey( action, activate );
     }
+#endif
 }
 
 bool KGlobalAccel::setKeyDict( const KKeyEntryMap& nKeyMap )
 {
+#ifdef _WS_X11_ // FIXME(E): Implement for Qt/Embedded
     for (KKeyEntryMap::ConstIterator it = aKeyMap.begin();
          it != aKeyMap.end(); ++it) {
 	// ungrab all connected and enabled keys
@@ -354,6 +366,9 @@ bool KGlobalAccel::setKeyDict( const KKeyEntryMap& nKeyMap )
             grabKey( it.key(), true );
     }
     return true;
+#else
+    return false;
+#endif
 }
 
 void KGlobalAccel::writeSettings(KConfig* config) const
@@ -366,6 +381,7 @@ void KGlobalAccel::writeSettings() const
     KAccel::writeKeyMap( aKeyMap, aGroup, NULL );
 }
 
+#ifdef _WS_X11_ // FIXME(E): Implement for Qt/Embedded
 bool grabFailed;
 
 extern "C" {
@@ -406,9 +422,11 @@ static void calculateGrabMasks()
 	//  So we always need to XGrabKey with the bit set to 0.
 	g_keyModMaskXAlwaysOff |= KAccel::keyModXModeSwitch();
 }
+#endif
 
 bool KGlobalAccel::grabKey( const QString &action, bool bGrab )
 {
+#ifdef _WS_X11_ // FIXME(E): Implement for Qt/Embedded
 	if( action.isEmpty() )
 		return false;
 	if( bGrab ) {
@@ -495,8 +513,12 @@ bool KGlobalAccel::grabKey( const QString &action, bool bGrab )
 	XSetErrorHandler(savedErrorHandler);
 
 	return !grabFailed;
+#else
+	return false;
+#endif
 }
 
+#ifdef _WS_X11_
 bool KGlobalAccel::x11EventFilter( const XEvent *event_ ) {
     uint keyModX, keyModX2;
     uint keySymX, keySymX2;
@@ -584,9 +606,11 @@ void KGlobalAccel::setItemRawModeEnabled( const QString& action, bool activate )
 	d->rawModeList->remove( action );
     }
 }
+#endif
 
 /*****************************************************************************/
 
+#ifndef _WS_QWS_
 uint keyToXMod( int keyCode )
 {
 	uint mod = 0;
@@ -611,6 +635,7 @@ uint keyToXSym( int keyCode )
 	KAccel::keyQtToKeyX( keyCode, 0, &keySymX, 0 );
 	return keySymX;
 }
+#endif
 
 #include "kglobalaccel.moc"
 

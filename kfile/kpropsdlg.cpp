@@ -91,9 +91,11 @@ extern "C" {
 
 #include "kpropsdlg.h"
 
+#ifdef _WS_X11_
 extern "C" {
 #include <X11/Xlib.h> // for XSetTransientForHint
 }
+#endif
 
 mode_t KFilePermissionsPropsPlugin::fperm[3][4] = {
         {S_IRUSR, S_IWUSR, S_IXUSR, S_ISUID},
@@ -210,9 +212,11 @@ void KPropertiesDialog::init (bool modal, bool autoShow)
   m_pageList.setAutoDelete( true );
   m_items.setAutoDelete( true );
 
+#ifdef _WS_X11_ // FIXME(E): Can we do something similar for Qt Embedded?
   // Matthias: let the dialog look like a modal dialog
   if (!modal)
     XSetTransientForHint(qt_xdisplay(), winId(), winId());
+#endif
 
   //  resize( 400, 400 ); // not sure what that's for
 

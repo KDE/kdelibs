@@ -29,7 +29,9 @@
 
 KCookie::KCookie()
 {
+#ifdef _WS_X11_
     getXCookie();
+#endif
     //getICECookie(); not needed anymore
 }
 
@@ -70,12 +72,17 @@ void KCookie::getXCookie()
     char buf[1024];
     FILE *f;
 
+#ifdef _WS_X11_
     m_Display = getenv("DISPLAY");
+#else
+    m_Display = getenv("QWS_DISPLAY");
+#endif
     if (m_Display.isEmpty()) 
     {
 	kdError(900) << k_lineinfo << "$DISPLAY is not set.\n";
 	return;
     }
+#ifdef _WS_X11_ // No need to mess with X Auth stuff
     QCString cmd;
     cmd.sprintf("xauth list %s", m_Display.data());
     blockSigChild(); // pclose uses waitpid()
@@ -106,6 +113,7 @@ void KCookie::getXCookie()
 	return;
     }
     m_DisplayAuth = (lst[1] + ' ' + lst[2]);
+#endif
 }
 
 void KCookie::getICECookie()
@@ -122,12 +130,16 @@ void KCookie::getICECookie()
 	    kdWarning(900) << k_lineinfo << "Cannot find DCOP server.\n";
 	    return;
 	}
+#ifdef _WS_X11_
 	QCString disp = getenv("DISPLAY");
 	if (disp.isEmpty())
 	{
 	    kdWarning(900) << k_lineinfo << "Cannot find DCOP server.\n";
 	    return;
         }
+#else
+	QCString disp("QWS");
+#endif
         int i;
         if((i = disp.findRev('.')) > disp.findRev(':') && i >= 0)
             disp.truncate(i);

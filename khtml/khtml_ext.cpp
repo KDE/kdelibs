@@ -216,8 +216,13 @@ void KHTMLPartBrowserExtension::updateEditActions()
     }
 
     // ### duplicated from KonqMainWindow::slotClipboardDataChanged
+#ifndef QT_NO_MIMECLIPBOARD // Handle minimalized versions of Qt Embedded
     QMimeSource *data = QApplication::clipboard()->data();
     enableAction( "paste", data->provides( "text/plain" ) );
+#else
+    QString data=QApplication::clipboard()->text();
+    enableAction( "paste", data.contains("://"));
+#endif
 
     bool hasSelection = false;
 
@@ -348,7 +353,11 @@ void KHTMLPopupGUIClient::slotCopyLinkLocation()
 {
   KURL::List lst;
   lst.append( d->m_url );
+#ifndef QT_NO_MIMECLIPBOARD
   QApplication::clipboard()->setData( KURLDrag::newDrag( lst ) );
+#else
+  QApplication::clipboard()->setText( d->m_url.url() ); //FIXME(E): Handle multiple entries
+#endif
 }
 
 void KHTMLPopupGUIClient::slotStopAnimations()
@@ -360,7 +369,11 @@ void KHTMLPopupGUIClient::slotCopyImageLocation()
 {
   KURL::List lst;
   lst.append( d->m_imageURL );
+#ifndef QT_NO_MIMECLIPBOARD
   QApplication::clipboard()->setData( KURLDrag::newDrag( lst ) );
+#else
+  QApplication::clipboard()->setText(d->m_imageURL.url()); //FIXME(E): Handle multiple entries
+#endif
 }
 
 void KHTMLPopupGUIClient::slotViewImage()

@@ -52,8 +52,10 @@ int main(int argc, char **argv)
 
     KThemeBase::applyConfigFile(args->arg(0));
 
+#ifdef _WS_X11_ // FIXME
     if (apply)
       KIPC::sendMessageAll(KIPC::StyleChanged);
+#endif
 
     return(0);
 }

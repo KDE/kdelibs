@@ -61,6 +61,7 @@
 #include "kstaticdeleter.h"
 #include <config.h>
 
+#ifdef _WS_X11_
 #include <X11/Xlib.h>
 
 // defined in qapplication_x11.cpp
@@ -1357,4 +1358,4 @@ void KColorDialog::setHsvEdit( void )
 }
 
 #include "kcolordialog.moc"
-
+#endif

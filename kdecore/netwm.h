@@ -26,6 +26,8 @@
 #ifndef   __net_wm_h
 #define   __net_wm_h
 
+#include <qwidget.h>
+#ifdef _WS_X11_
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
@@ -708,4 +710,5 @@ private:
 };
 
 
+#endif
 #endif // __net_wm_h

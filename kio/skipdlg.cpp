@@ -42,8 +42,10 @@ SkipDlg::SkipDlg(QWidget *parent, bool _multi, const QString& _error_text, bool 
 
   // Set "StaysOnTop", because this dialog is typically used in kio_uiserver,
   // i.e. in a separate process.
+#ifndef _WS_QWS_ //FIXME(E): Implement for QT Embedded
   if (modal)
     KWin::setState( winId(), NET::StaysOnTop );
+#endif
 
   b0 = b1 = b2 = 0L;
 

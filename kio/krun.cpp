@@ -359,6 +359,7 @@ pid_t KRun::runCommandInternal( KProcess* proc, const QString& binName,
   QString bin = binaryName( binName, false );
   QString execName = execName_P;
   QString iconName = iconName_P;
+#ifdef _WS_X11_ // Startup notification doesn't work with QT/E, service isn't needed without Startup notification
   KStartupInfoId id;
   // Find service, if any
   KService::Ptr service = 0;
@@ -366,7 +367,9 @@ pid_t KRun::runCommandInternal( KProcess* proc, const QString& binName,
       service = new KService( bin );
   else
       service = KService::serviceByDesktopName( bin );
+#endif
   bool startup_notify = false;
+#ifdef _WS_X11_ // Startup notification doesn't work yet on Qt Embedded
   QCString wmclass;
   if( service != NULL )
   {
@@ -411,6 +414,9 @@ pid_t KRun::runCommandInternal( KProcess* proc, const QString& binName,
       KStartupInfo::resetStartupEnv();
   }
   return pid;
+#else
+  return KProcessRunner::run( proc, binaryName( binName, true ) );
+#endif
 }
 
 pid_t KRun::run( const QString& _cmd )
@@ -827,11 +833,13 @@ KProcessRunner::run(KProcess * p, const QString & binName)
   return (new KProcessRunner(p, binName))->pid();
 }
 
+#ifdef _WS_X11_
 pid_t
 KProcessRunner::run(KProcess * p, const QString & binName, const KStartupInfoId& id )
 {
   return (new KProcessRunner(p, binName, id))->pid();
 }
+#endif
 
 KProcessRunner::KProcessRunner(KProcess * p, const QString & _binName )
   : QObject(),
@@ -845,6 +853,7 @@ KProcessRunner::KProcessRunner(KProcess * p, const QString & _binName )
   process_->start();
 }
 
+#ifdef _WS_X11_
 KProcessRunner::KProcessRunner(KProcess * p, const QString & _binName, const KStartupInfoId& id )
   : QObject(),
     process_(p),
@@ -857,6 +866,7 @@ KProcessRunner::KProcessRunner(KProcess * p, const QString & _binName, const KSt
 
   process_->start();
 }
+#endif
 
 KProcessRunner::~KProcessRunner()
 {
@@ -890,6 +900,7 @@ KProcessRunner::slotProcessExited(KProcess * p)
       kapp->deref();
     }
   }
+#ifdef _WS_X11_
   if( !id_.none())
   {
       KStartupInfoData data;
@@ -897,6 +908,7 @@ KProcessRunner::slotProcessExited(KProcess * p)
       data.setHostname();
       KStartupInfo::sendFinish( id_, data );
   }
+#endif
   delete this;
 }
 

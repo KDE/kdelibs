@@ -499,7 +499,11 @@ Slave *Scheduler::findIdleSlave(ProtocolInfo *, SimpleJob *job, bool &exact)
     {
        // Make sure that the job wants to do a GET or a POST, and with no offset
        bool bCanReuse = (job->command() == CMD_GET);
+#ifndef _WS_QWS_
        KIO::TransferJob * tJob = dynamic_cast<KIO::TransferJob *>(job);
+#else //FIXME
+       KIO::TransferJob * tJob = (KIO::TransferJob*)job;
+#endif
        if ( tJob )
        {
           bCanReuse = (job->command() == CMD_GET || job->command() == CMD_SPECIAL);

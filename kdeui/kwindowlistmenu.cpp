@@ -28,7 +28,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <kwinmodule.h>
 #include <klocale.h>
 #include <kstringhandler.h>
+#ifndef _WS_QWS_ //FIXME
 #include <netwm.h>
+#endif
 #include <kapp.h>
 #include <dcopclient.h>
 
@@ -49,6 +51,7 @@ private:
 
 int NameSortedInfoList::compareItems( QCollection::Item s1, QCollection::Item s2 )
 {
+#ifndef _WS_QWS_ //FIXME
     KWin::Info *i1 = static_cast<KWin::Info *>(s1);
     KWin::Info *i2 = static_cast<KWin::Info *>(s2);
     QString title1, title2;
@@ -57,12 +60,15 @@ int NameSortedInfoList::compareItems( QCollection::Item s1, QCollection::Item s2
     if (i2)
         title2 = i2->visibleNameWithState().lower();
     return title1.compare(title2);
+#endif
 }
 
 KWindowListMenu::KWindowListMenu(QWidget *parent, const char *name)
   : QPopupMenu(parent, name)
 {
+#ifndef _WS_QWS_ //FIXME
     kwin_module = new KWinModule(this);
+#endif
 
     connect(this, SIGNAL(activated(int)), SLOT(slotExec(int)));
 }
@@ -77,6 +83,7 @@ void KWindowListMenu::init()
     int i, d;
     i = 0;
 
+#ifndef _WS_QWS_ //FIXME
     int nd = kwin_module->numberOfDesktops();
     int cd = kwin_module->currentDesktop();
     WId active_window = kwin_module->activeWindow();
@@ -127,15 +134,18 @@ void KWindowListMenu::init()
         if (d < nd)
             insertSeparator();
     }
+#endif
     adjustSize();
 }
 
 void KWindowListMenu::slotExec(int id)
 {
+#ifndef _WS_QWS_ //FIXME
     if (id > 1000)
         KWin::setCurrentDesktop(id - 1000);
     else if ( id >= 0 )
 	KWin::setActiveWindow(map[id]);
+#endif
 }
 
 void KWindowListMenu::slotUnclutterWindows()

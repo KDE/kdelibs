@@ -225,7 +225,9 @@ LIBS="$ac_save_LIBS"
 
 AC_CONFIG_SUBDIRS(libltdl)
 
-CXXFLAGS="$CXXFLAGS $USE_RTTI"
+if test "x$kde_use_qt_emb" != "xyes"; then
+   CXXFLAGS="$CXXFLAGS $USE_RTTI"
+fi
 
 rgb_file="$x_libraries/X11/rgb.txt"
 AC_DEFINE_UNQUOTED(X11_RGBFILE, "$rgb_file", [where rgb.txt is in])

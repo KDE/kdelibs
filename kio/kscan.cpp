@@ -41,7 +41,11 @@ KScanDialog * KScanDialog::getScanDialog( QWidget *parent, const char *name,
 
     QObject *res = factory->create( parent, name, "KScanDialog", args );
 
+#ifndef _WS_QWS_
     return dynamic_cast<KScanDialog *>( res );
+#else //FIXME
+    return (KScanDialog*)res;
+#endif
 }
 
 

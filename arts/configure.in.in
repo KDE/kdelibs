@@ -347,7 +347,11 @@ if test "$DCOPIDL" = ""; then
 	AC_SUBST(DCOPIDL2CPP)
 else
 	AC_MSG_RESULT(no)
-	ARTS_BUILD_KDE="x11 qtmcop kde knotify message"
+	if test "x$kde_use_qt_emb" = "xyes"; then
+		ARTS_BUILD_KDE="qtmcop kde knotify message"
+	else
+		ARTS_BUILD_KDE="x11 qtmcop kde knotify message"
+	fi
 fi
 AC_SUBST(ARTS_BUILD_KDE)
 

@@ -42,7 +42,12 @@
 #include <kconfig.h>
 #include "kdebug.h"
 #include "kuniqueapp.h"
+#ifdef _WS_X11_
 #include <X11/Xlib.h>
+#define DISPLAY "DISPLAY"
+#else
+#define DISPLAY "QWS_DISPLAY"
+#endif
 
 DCOPClient *KUniqueApplication::s_DCOPClient = 0;
 bool KUniqueApplication::s_nofork = false;
@@ -148,7 +153,7 @@ KUniqueApplication::start()
         if (regName.isEmpty())
         {
            // Check DISPLAY
-           if (QCString(getenv("DISPLAY")).isEmpty())
+           if (QCString(getenv(DISPLAY)).isEmpty())
            {
               kdError() << "KUniqueApplication: Can't determine DISPLAY. Aborting." << endl;
               result = -1; // Error
@@ -175,6 +180,7 @@ KUniqueApplication::start()
            delete dc;	// Clean up DCOP commmunication
            ::write(fd[1], &result, 1);
            ::close(fd[1]);
+#ifdef _WS_X11_
            // say we're up and running ( probably no new window will appear )
            KStartupInfoId id;
            if( kapp != NULL ) // KApplication constructor unsets the env. variable
@@ -190,11 +196,14 @@ KUniqueApplication::start()
                    XCloseDisplay( disp );
                }
            }
+#else //FIXME(E): implement
+#endif
            return false;
         }
      }
 
      {
+#ifdef _WS_X11_
          KStartupInfoId id;
          if( kapp != NULL ) // KApplication constructor unsets the env. variable
              id.initId( kapp->startupId());
@@ -211,6 +220,8 @@ KUniqueApplication::start()
                XCloseDisplay( disp );
                }
          }
+#else //FIXME(E): Implement
+#endif
      }
      s_DCOPClient = dc;
      result = 0;
@@ -396,8 +407,10 @@ int KUniqueApplication::newInstance()
 {
   if (!d->firstInstance)
   {
+#ifndef _WS_QWS_ // FIXME(E): Implement for Qt/Embedded
      if ( mainWidget() )
         KWin::setActiveWindow(mainWidget()->winId());
+#endif
   }
   d->firstInstance = false;
   return 0; // do nothing in default implementation

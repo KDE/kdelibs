@@ -22,7 +22,11 @@
 #include <qtimer.h>
 #include <kapp.h>
 #include "kscreensaver.h"
+#ifdef _WS_X11_
 #include <X11/Xlib.h>
+#else
+typedef WId Window;
+#endif
 
 #undef KeyPress
 #undef KeyRelease
@@ -50,8 +54,10 @@ KScreenSaver::KScreenSaver( WId id ) : QWidget()
 
     if ( id )
     {
+#ifdef _WS_X11_ //FIXME
         XGetGeometry(qt_xdisplay(), (Drawable)id, &root, &ai, &ai,
             &w, &h, &au, &au); 
+#endif
 
         create( id, FALSE, TRUE );
     }
@@ -69,7 +75,9 @@ KScreenSaver::~KScreenSaver()
 
 void KScreenSaver::embed( QWidget *w )
 {
+#ifdef _WS_X11_ //FIXME
     XReparentWindow(qt_xdisplay(), w->winId(), winId(), 0, 0);
+#endif
     w->resize( width(), height() );
 }
 

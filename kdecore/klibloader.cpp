@@ -27,8 +27,10 @@
 
 #include "ltdl.h"
 
+#ifdef _WS_X11_
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
+#endif
 
 template class QAsciiDict<KLibrary>;
 
@@ -531,6 +533,7 @@ void KLibLoader::close_pending(KLibWrapPrivate *wrap)
 
 //    kdDebug(150) << "try to dlclose " << wrap->name << ": yes, done." << endl;
 
+#ifndef _WS_QWS_
     if ( !deleted_one ) {
       /* Only do the hack once in this loop.
          WABA: *HACK*
@@ -554,6 +557,9 @@ void KLibLoader::close_pending(KLibWrapPrivate *wrap)
         co = widgetlist->next();
       }
     }
+#else
+    // FIXME(E): Implement in Qt Embedded
+#endif
 
     deleted_one = true;
     lt_dlclose(wrap->handle);

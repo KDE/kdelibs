@@ -26,7 +26,9 @@
 #include <kipc.h>
 #include <kcursor.h>
 
+#ifdef _WS_X11_
 #include <X11/Xlib.h>
+#endif
 
 class KIconView::KIconViewPrivate
 {
@@ -164,18 +166,22 @@ void KIconView::slotAutoSelect()
   if( !hasFocus() )
     setFocus();
 
+#ifdef _WS_X11_
+  //FIXME(E): Implement for Qt Embedded
   Window root;
   Window child;
   int root_x, root_y, win_x, win_y;
   uint keybstate;
   XQueryPointer( qt_xdisplay(), qt_xrootwin(), &root, &child,
 		 &root_x, &root_y, &win_x, &win_y, &keybstate );
+#endif
 
   QIconViewItem* previousItem = currentItem();
   setCurrentItem( m_pCurrentItem );
 
   if( m_pCurrentItem ) {
     //Shift pressed?
+#ifdef _WS_X11_ //FIXME
     if( (keybstate & ShiftMask) ) {
       //Temporary implementaion of the selection until QIconView supports it
       bool block = signalsBlocked();
@@ -232,10 +238,13 @@ void KIconView::slotAutoSelect()
     else if( (keybstate & ControlMask) )
       setSelected( m_pCurrentItem, !m_pCurrentItem->isSelected(), true );
     else
+#endif
       setSelected( m_pCurrentItem, true );
   }
+#ifndef _WS_QWS_ //FIXME: Remove #if as soon as the stuff above is implemented
   else
     kdDebug() << "KIconView: That's not supposed to happen!!!!" << endl;
+#endif
 }
 
 void KIconView::emitExecute( QIconViewItem *item, const QPoint &pos )
@@ -246,21 +255,25 @@ void KIconView::emitExecute( QIconViewItem *item, const QPoint &pos )
     return;
   }
 
+#ifdef _WS_X11_ //FIXME
   Window root;
   Window child;
   int root_x, root_y, win_x, win_y;
   uint keybstate;
   XQueryPointer( qt_xdisplay(), qt_xrootwin(), &root, &child,
 		 &root_x, &root_y, &win_x, &win_y, &keybstate );
+#endif
 
   m_pAutoSelect->stop();
 
   //Don´t emit executed if in SC mode and Shift or Ctrl are pressed
+#ifdef _WS_X11_ //FIXME
   if( !( m_bUseSingle && ((keybstate & ShiftMask) || (keybstate & ControlMask)) ) ) {
     setSelected( item, false );
     emit executed( item );
     emit executed( item, pos );
   }
+#endif
 }
 
 void KIconView::focusOutEvent( QFocusEvent *fe )

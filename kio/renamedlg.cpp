@@ -53,8 +53,10 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
   modal = _modal;
   // Set "StaysOnTop", because this dialog is typically used in kio_uiserver,
   // i.e. in a separate process.
+#ifndef _WS_QWS_ //FIXME(E): Implement for QT Embedded
   if (modal)
     KWin::setState( winId(), NET::StaysOnTop );
+#endif
 
   src = _src;
   dest = _dest;

@@ -31,9 +31,11 @@
 #include <klocale.h>
 #include <qfontinfo.h>
 
+#ifdef _WS_X11_
 //#include <X11/X.h>
 #include <X11/Xlib.h>
 //#include <X11/Xutil.h>
+#endif
 
 QString* KGlobalSettings::s_desktopPath = 0;
 QString* KGlobalSettings::s_autostartPath = 0;
@@ -505,6 +507,7 @@ KGlobalSettings::KMouseSettings & KGlobalSettings::mouseSettings()
             s.handed = KMouseSettings::LeftHanded;
         else
         {
+#ifdef _WS_X11_
             // get settings from X server
             // This is a simplified version of the code in input/mouse.cpp
             // Keep in sync !
@@ -528,6 +531,9 @@ KGlobalSettings::KMouseSettings & KGlobalSettings::mouseSettings()
                 default:
                     break;
             }
+#else
+	    // FIXME(E): Implement in Qt Embedded
+#endif
         }
     }
     return *s_mouseSettings;

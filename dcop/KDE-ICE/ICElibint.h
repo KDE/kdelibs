@@ -26,9 +26,14 @@ Author: Ralph Mor, X Consortium
 #ifndef _ICELIBINT_H_
 #define _ICELIBINT_H_
 
+#ifdef _WS_X11_
 #include <X11/Xos.h>
 #include <X11/Xfuncs.h>
 #include <X11/Xmd.h>
+#else
+#define _SIZEOF(x) sz_##x
+#define SIZEOF(x) _SIZEOF(x)
+#endif
 #include <KDE-ICE/ICEproto.h>
 #include <KDE-ICE/ICEconn.h>
 #include <KDE-ICE/ICEmsg.h>

@@ -29,6 +29,8 @@ DEALINGS IN THE SOFTWARE.
 #define KSTARTUPINFO_ALL_DEBUG
 #endif
 
+#include <qwidget.h>
+#ifdef _WS_X11_ // FIXME(E): Re-implement in a less X11 specific way
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -1054,3 +1056,4 @@ static QString escape_str( const QString& str_P )
 #undef None
 
 #include "kstartupinfo.moc"
+#endif

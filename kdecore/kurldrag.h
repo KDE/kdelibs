@@ -53,6 +53,14 @@ public:
    */
   static bool decode( const QMimeSource *e, KURL::List &urls );
 
+#ifdef _WS_QWS_
+  /**
+   * Convenience method that decodes the contents of @p e
+   * into a list of KURLs for Qt versions without a MIME clipboard.
+   */
+  static bool decode( QStringList const &e, KURL::List &uris );
+#endif
+
 protected:
   /**
    * Protected constructor - use @ref newDrag

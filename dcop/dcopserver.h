@@ -34,8 +34,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qapplication.h>
 
 #define INT32 QINT32
+#ifdef _WS_X11_
 #include <X11/Xlib.h>
 #include <X11/Xmd.h>
+#endif
 #include <KDE-ICE/ICElib.h>
 extern "C" {
 #include <KDE-ICE/ICEutil.h>

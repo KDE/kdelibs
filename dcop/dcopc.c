@@ -20,18 +20,20 @@
 #endif
 #endif
 
+#ifdef _WS_X11_
 /* We really don't want to require X11 headers...  */
 #include <X11/Xlib.h>
 #include <X11/X.h>
 #include <X11/Xproto.h>
 #include <X11/Xmd.h>
+#endif
 
-#include <X11/ICE/ICE.h>
-#include <X11/ICE/ICElib.h>
-#include <X11/ICE/ICEutil.h>
-#include <X11/ICE/ICEconn.h>
-#include <X11/ICE/ICEmsg.h>
-#include <X11/ICE/ICEproto.h>
+#include "KDE-ICE/ICE.h"
+#include "KDE-ICE/ICElib.h"
+#include "KDE-ICE/ICEutil.h"
+#include "KDE-ICE/ICEconn.h"
+#include "KDE-ICE/ICEmsg.h"
+#include "KDE-ICE/ICEproto.h"
 
 #include "dcopglobal.h"
 #include "dcopc.h"
@@ -639,7 +641,13 @@ dcop_connect()
   if (NULL == homeDir)
     return False;
 
+#ifdef _WS_X11_
   display = getenv("DISPLAY");
+#elif _WS_QWS_
+	display = getenv("QWS_DISPLAY");
+#else
+#error Use QT/X11 or QT/Embedded
+#endif
   
   if (NULL == display)
     return False;

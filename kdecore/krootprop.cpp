@@ -17,6 +17,8 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include <qwidget.h>
+#ifndef _WS_QWS_
 #include "krootprop.h"
 #include "kglobal.h"
 #include "klocale.h"
@@ -384,3 +386,4 @@ QStringList KRootProp::listEntries() const
 	
     return list;
 }
+#endif

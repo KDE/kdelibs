@@ -19,8 +19,6 @@
     Boston, MA 02111-1307, USA.
 */
 
-#include <config.h>
-
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -34,6 +32,7 @@
 #include <qwhatsthis.h>
 #include <qcstring.h>
 
+#ifndef _WS_QWS_
 #include "kwin.h"
 #include "kapp.h"
 
@@ -466,3 +465,4 @@ void KWin::appStarted()
 
 // Fix for --enable-final. This gets defined at the top of this file.
 #undef	None
+#endif

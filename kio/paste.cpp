@@ -35,11 +35,17 @@
 
 bool KIO::isClipboardEmpty()
 {
+#ifndef QT_NO_MIMECLIPBOARD
   QMimeSource *data = QApplication::clipboard()->data();
-
   if ( data->provides( "text/uri-list" ) && data->encodedData( "text/uri-list" ).size() > 0 )
     return false;
-
+#else
+  // Happens with some versions of Qt Embedded... :/
+  // Guess.
+  QString data = QApplication::clipboard()->text();
+  if(data.contains("://"))
+	  return false;
+#endif
   return true;
 }
 
@@ -50,6 +56,7 @@ KIO::Job *KIO::pasteClipboard( const KURL& dest_url, bool move )
     return 0;
   }
 
+#ifndef QT_NO_MIMECLIPBOARD
   QMimeSource *data = QApplication::clipboard()->data();
 
   KURL::List urls;
@@ -67,9 +74,15 @@ KIO::Job *KIO::pasteClipboard( const KURL& dest_url, bool move )
 
     return res;
   }
+#else
+  QStringList data = QStringList::split("\n", QApplication::clipboard()->text());
+  KURL::List urls;
+  KURLDrag::decode(data, urls);
+#endif
 
   QByteArray ba;
 
+#ifndef QT_NO_MIMECLIPBOARD
   QString text;
   if ( QTextDrag::canDecode( data ) && QTextDrag::decode( data, text ) )
   {
@@ -78,6 +91,11 @@ KIO::Job *KIO::pasteClipboard( const KURL& dest_url, bool move )
   }
   else
       ba = data->encodedData( data->format() );
+#else
+  QTextStream txtStream( ba, IO_WriteOnly );
+  for(QStringList::Iterator it=data.begin(); it!=data.end(); it++)
+      txtStream << *it;
+#endif
 
   if ( ba.size() == 0 )
   {

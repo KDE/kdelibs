@@ -24,8 +24,11 @@
 #include <config.h>
 
 #include "kdesktopwidget.h"
+#include <qapp.h>
 
+#ifdef _WS_X11_
 #include <X11/Xlib.h>
+#endif
 #ifdef HAVE_XINERAMA
 #ifndef Bool
 /* happens only in --enable-final mode */
@@ -67,10 +70,15 @@ KDesktopWidgetPrivate::KDesktopWidgetPrivate()
 	defaultScreen = 0;
     } else
 #endif
+#if _WS_X11_
     {
 	defaultScreen = DefaultScreen(QPaintDevice::x11AppDisplay());
 	screenCount = ScreenCount(QPaintDevice::x11AppDisplay());
     }
+#else
+    defaultScreen = 0;
+    screenCount = 1;
+#endif
 
     // get the geometry of each screen
     rects = new QRect[screenCount];
@@ -89,8 +97,13 @@ KDesktopWidgetPrivate::KDesktopWidgetPrivate()
 	    {
 		x = 0;
 		y = 0;
+#ifdef _WS_X11_
 		w = WidthOfScreen(ScreenOfDisplay(qt_xdisplay(), i));
 		h = HeightOfScreen(ScreenOfDisplay(qt_xdisplay(), i));
+#else
+		w = QApplication::desktop()->width();
+		h = QApplication::desktop()->height();
+#endif
 	    }
 
 	rects[i].setRect(x, y, w, h);

@@ -54,7 +54,9 @@
 #include <unistd.h>
 #include <klocale.h>
 #include <kiconloader.h>
+#ifdef _WS_X11_
 #include <X11/Xlib.h>
+#endif
 
 #include "bitmaps.h"
 
@@ -62,9 +64,13 @@ bool TransMenuHandler::eventFilter(QObject *obj, QEvent *ev)
 {
     QPopupMenu *p = (QPopupMenu *)obj;
     if(ev->type() == QEvent::Show){
+#ifdef _WS_X11_
         QApplication::syncX();
         KPixmap pix = QPixmap::grabWindow(qt_xrootwin(),
                                           p->x(), p->y(), p->width(), p->height());
+#else
+	KPixmap pix = QPixmap::grabWidget(QApplication::desktop(), p->x(), p->y(), p->width(), p->height());
+#endif
         KPixmapEffect::intensity(pix, -0.70);
         p->setBackgroundPixmap(pix);
     }

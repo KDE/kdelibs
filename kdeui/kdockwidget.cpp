@@ -26,8 +26,10 @@
 #include <qcursor.h>
 
 #ifndef NO_KDE2
+#ifdef _WS_X11_
 #include <X11/X.h>
 #include <X11/Xlib.h>
+#endif
 #include <kapp.h>
 #include <kconfig.h>
 #include <ktoolbar.h>
@@ -431,10 +433,12 @@ void KDockWidget::applyToWidget( QWidget* s, const QPoint& p )
     move(p);
 
 #ifndef NO_KDE2
+#ifdef _WS_X11_
     if (d->transient && d->_parent)
       XSetTransientForHint( qt_xdisplay(), winId(), d->_parent->winId() );
 
     KWin::setType( winId(), d->windowType );
+#endif
 #endif
 
   }

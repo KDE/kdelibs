@@ -47,7 +47,11 @@ static char *getDisplay()
    char *result;
    char *screen;
    char *colon;
+#ifdef _WS_X11_
    display = getenv("DISPLAY");
+#else
+   display = getenv("QWS_DISPLAY");
+#endif
    if (!display || !*display)
    {
       display = ":0";

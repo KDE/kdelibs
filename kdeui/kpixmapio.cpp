@@ -27,6 +27,7 @@
 #include <kdebug.h>
 #include "kpixmapio.h"
 
+#ifndef _WS_QWS_
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #ifdef HAVE_MITSHM
@@ -34,6 +35,9 @@
 #endif
 #ifdef __osf__
 extern "C" int XShmQueryExtension(Display *display);
+#endif
+#else
+#undef HAVE_MITSHM
 #endif
 
 // d pointer
@@ -45,9 +49,13 @@ struct KPixmapIOData
     int threshold;
     int bpp;
     int byteorder;
+#ifndef _WS_QWS_
     XImage *ximage;
 #ifdef HAVE_MITSHM
     XShmSegmentInfo *shminfo;
+#endif
+#else
+    void *ximage;
 #endif
 };
 

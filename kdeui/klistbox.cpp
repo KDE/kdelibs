@@ -25,7 +25,9 @@
 
 #include "klistbox.h"
 
+#ifdef _WS_X11_
 #include <X11/Xlib.h>
+#endif
 
 KListBox::KListBox( QWidget *parent, const char *name, WFlags f )
     : QListBox( parent, name, f )
@@ -114,25 +116,31 @@ void KListBox::slotAutoSelect()
   if( !hasFocus() )
     setFocus();
 
+#ifdef _WS_X11_ //FIXME
   Window root;
   Window child;
   int root_x, root_y, win_x, win_y;
   uint keybstate;
   XQueryPointer( qt_xdisplay(), qt_xrootwin(), &root, &child,
 		 &root_x, &root_y, &win_x, &win_y, &keybstate );
+#endif
 
   QListBoxItem* previousItem = item( currentItem() ); 
   setCurrentItem( m_pCurrentItem );
 
   if( m_pCurrentItem ) {
+#ifndef _WS_QWS_ //FIXME
     //Shift pressed?
     if( (keybstate & ShiftMask) ) {
+#endif
       bool block = signalsBlocked();
       blockSignals( true );
 
+#ifndef _WS_QWS_ //FIXME
       //No Ctrl? Then clear before!
       if( !(keybstate & ControlMask) )  
 	clearSelection(); 
+#endif
 
       bool select = !m_pCurrentItem->selected();
       bool update = viewport()->isUpdatesEnabled();
@@ -161,8 +169,10 @@ void KListBox::slotAutoSelect()
       if( selectionMode() == QListBox::Single )
 	emit selectionChanged( m_pCurrentItem );
     }
+#ifndef _WS_QWS_ //FIXME
     else if( (keybstate & ControlMask) )
       setSelected( m_pCurrentItem, !m_pCurrentItem->selected() );
+#endif
     else {
       bool block = signalsBlocked();
       blockSignals( true );
@@ -174,27 +184,35 @@ void KListBox::slotAutoSelect()
 
       setSelected( m_pCurrentItem, true );
     }
+#ifndef _WS_QWS_ //FIXME
   }
   else
     kdDebug() << "That´s not supposed to happen!!!!" << endl;
+#endif
 }
 
 void KListBox::emitExecute( QListBoxItem *item, const QPoint &pos )
 {
+#ifdef _WS_X11_ //FIXME
   Window root;
   Window child;
   int root_x, root_y, win_x, win_y;
   uint keybstate;
   XQueryPointer( qt_xdisplay(), qt_xrootwin(), &root, &child,
 		 &root_x, &root_y, &win_x, &win_y, &keybstate );
+#endif
     
   m_pAutoSelect->stop();
   
+#ifndef _WS_QWS_ //FIXME
   //Don´t emit executed if in SC mode and Shift or Ctrl are pressed
   if( !( m_bUseSingle && ((keybstate & ShiftMask) || (keybstate & ControlMask)) ) ) {
+#endif
     emit executed( item );
     emit executed( item, pos );
+#ifndef _WS_QWS_ //FIXME
   }
+#endif
 }
 
 //

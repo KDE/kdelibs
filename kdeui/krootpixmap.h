@@ -15,6 +15,8 @@
 #include <qobject.h>
 #include <qcolor.h>
 
+#ifndef _WS_QWS_ //FIXME
+
 class QEvent;
 class QRect;
 class QWidget;
@@ -115,5 +117,6 @@ private:
     KRootPixmapData *d;
 };
 
+#endif // ! _WS_QWS_
 #endif // __KRootPixmap_h_Included__
 

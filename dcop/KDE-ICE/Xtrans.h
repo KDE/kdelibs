@@ -50,9 +50,13 @@ from The Open Group.
 #ifndef _XTRANS_H_
 #define _XTRANS_H_
 
+#ifdef _WS_X11_
 #include <X11/Xfuncproto.h>
 #include <X11/Xos.h>
-
+#else
+#include <KDE-ICE/Xfuncproto.h>
+#include <fcntl.h>
+#endif
 
 /*
  * Set the functions names according to where this code is being compiled.

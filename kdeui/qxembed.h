@@ -25,6 +25,8 @@
 #include <qwidget.h>
 #include <qvaluelist.h>
 
+#ifndef _WS_QWS_
+
 /*
   Documentation for this class is in the cpp-file!
  */
@@ -84,4 +86,5 @@ private:
 };
 
 
+#endif
 #endif

@@ -40,7 +40,9 @@
 #include "klauncher.h"
 #include "klauncher_cmds.h"
 
+#ifdef _WS_X11_
 #include <X11/Xlib.h>
+#endif
 
 // Dispose slaves after being idle for SLAVE_MAX_IDLE seconds
 #define SLAVE_MAX_IDLE	30
@@ -783,6 +785,7 @@ QCString
 KLauncher::send_service_startup_info( KService::Ptr service, const QCString& startup_id,
     const QValueList<QCString> &envs )
 {
+#ifdef _WS_X11_ // KStartup* isn't implemented for Qt/Embedded yet
     if( startup_id == "0" )
         return "0";
     QCString wmclass;
@@ -819,6 +822,9 @@ KLauncher::send_service_startup_info( KService::Ptr service, const QCString& sta
     KStartupInfo::sendStartupX( disp, id, data );
     XCloseDisplay( disp );
     return id.id();
+#else
+    return 0;
+#endif
 }
 
 bool
