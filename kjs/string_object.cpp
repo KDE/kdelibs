@@ -54,6 +54,15 @@ Value StringInstanceImp::get(ExecState *exec, const Identifier &propertyName) co
 {
   if (propertyName == lengthPropertyName)
     return Number(internalValue().toString(exec).size());
+
+  bool ok;
+  unsigned index = propertyName.toULong(&ok);
+  if (ok) {
+    UString str = internalValue().toString(exec);
+    if (index < (unsigned)str.size())
+      return String(str.substr(index,1));
+  }
+
   return ObjectImp::get(exec, propertyName);
 }
 
@@ -68,6 +77,12 @@ bool StringInstanceImp::hasProperty(ExecState *exec, const Identifier &propertyN
 {
   if (propertyName == lengthPropertyName)
     return true;
+
+  bool ok;
+  unsigned index = propertyName.toULong(&ok);
+  if (ok && index < (unsigned)internalValue().toString(exec).size())
+    return true;
+
   return ObjectImp::hasProperty(exec, propertyName);
 }
 
@@ -75,7 +90,25 @@ bool StringInstanceImp::deleteProperty(ExecState *exec, const Identifier &proper
 {
   if (propertyName == lengthPropertyName)
     return false;
+
+  bool ok;
+  unsigned index = propertyName.toULong(&ok);
+  if (ok && index < (unsigned)internalValue().toString(exec).size())
+    return false;
+
   return ObjectImp::deleteProperty(exec, propertyName);
+}
+
+ReferenceList StringInstanceImp::propList(ExecState *exec, bool recursive)
+{
+  ReferenceList properties = ObjectImp::propList(exec,recursive);
+
+  UString str = internalValue().toString(exec);
+  for (int i = 0; i < str.size(); i++)
+    if (!ObjectImp::hasProperty(exec,Identifier::from(i)))
+      properties.append(Reference(this, i));
+
+  return properties;
 }
 
 // ------------------------------ StringPrototypeImp ---------------------------

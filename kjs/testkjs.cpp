@@ -21,6 +21,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "value.h"
@@ -106,10 +107,11 @@ int main(int argc, char **argv)
     // add "version" for compatibility with the mozilla js shell 
     global.put(interp.globalExec(), "version", Object(new VersionFunctionImp()));
 
-    const int BufferSize = 200000;
-    char code[BufferSize];
-
     for (int i = 1; i < argc; i++) {
+      int code_len = 0;
+      int code_alloc = 1024;
+      char *code = (char*)malloc(code_alloc);
+
       const char *file = argv[i];
       if (strcmp(file, "-f") == 0)
 	continue;
@@ -118,10 +120,17 @@ int main(int argc, char **argv)
         fprintf(stderr, "Error opening %s.\n", file);
         return 2;
       }
-      int num = fread(code, 1, BufferSize, f);
-      code[num] = '\0';
-      if(num >= BufferSize)
-        fprintf(stderr, "Warning: File may have been too long.\n");
+
+      while (!feof(f) && !ferror(f)) {
+	size_t len = fread(code+code_len,1,code_alloc-code_len,f);
+	code_len += len;
+	if (code_len >= code_alloc) {
+	  code_alloc *= 2;
+	  code = (char*)realloc(code,code_alloc);
+	}
+      }
+      code = (char*)realloc(code,code_len+1);
+      code[code_len] = '\0';
 
       // run
       Completion comp(interp.evaluate(code));
@@ -148,6 +157,8 @@ int main(int argc, char **argv)
         char *msg = comp.value().toString(interp.globalExec()).ascii();
         fprintf(stderr,"Return value: %s\n",msg);
       }
+
+      free(code);
     }
 
   } // end block, so that Interpreter and global get deleted

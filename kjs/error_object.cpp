@@ -98,6 +98,7 @@ ErrorObjectImp::ErrorObjectImp(ExecState */*exec*/, FunctionPrototypeImp *funcPr
   Value protect(this);
   // ECMA 15.11.3.1 Error.prototype
   putDirect(prototypePropertyName, errorProto, DontEnum|DontDelete|ReadOnly);
+  putDirect(lengthPropertyName, NumberImp::one(), DontDelete|ReadOnly|DontEnum);
   //putDirect(namePropertyName, String(n));
 }
 

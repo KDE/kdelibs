@@ -36,6 +36,7 @@ namespace KJS {
     virtual void put(ExecState *exec, const Identifier &propertyName, const Value &value, int attr = None);
     virtual bool hasProperty(ExecState *exec, const Identifier &propertyName) const;
     virtual bool deleteProperty(ExecState *exec, const Identifier &propertyName);
+    virtual ReferenceList propList(ExecState *exec, bool recursive);
 
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;

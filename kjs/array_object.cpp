@@ -221,7 +221,7 @@ ReferenceList ArrayInstanceImp::propList(ExecState *exec, bool recursive)
 
   for (unsigned i = 0; i < storageLength; ++i) {
     ValueImp *imp = storage[i];
-    if (imp && imp != undefined) {
+    if (imp && imp != undefined && !ObjectImp::hasProperty(exec,Identifier::from(i))) {
       properties.append(Reference(this, i));
     }
   }

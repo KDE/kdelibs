@@ -32,7 +32,6 @@
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
-#include <iostream.h>
 
 using namespace KJS;
 

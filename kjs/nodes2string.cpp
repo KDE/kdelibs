@@ -96,6 +96,24 @@ SourceStream& SourceStream::operator<<(Format f)
   return *this;
 }
 
+UString unescapeStr(UString str)
+{
+  UString unescaped = "";
+  int i = 0;
+  int copied = 0;
+  for (i = 0; i <= str.size(); i++) {
+    if (str[i] == '"') {
+      if (copied < i)
+	unescaped += str.substr(copied,i-copied);
+      copied = i+1;
+      unescaped += "\\\"";
+    }
+  }
+  if (copied < i)
+    unescaped += str.substr(copied,i-copied);
+  return unescaped;
+}
+
 UString Node::toCode() const
 {
   SourceStream str;
@@ -115,7 +133,7 @@ void NumberNode::streamTo(SourceStream &s) const { s << UString::from(val); }
 
 void StringNode::streamTo(SourceStream &s) const
 {
-  s << '"' << val << '"';
+  s << '"' << unescapeStr(val) << '"';
 }
 
 void RegExpNode::streamTo(SourceStream &s) const { s <<  pattern; }
@@ -261,7 +279,7 @@ void AddNode::streamTo(SourceStream &s) const
 
 void AppendStringNode::streamTo(SourceStream &s) const
 {
-  s << term << "+" << str;
+  s << term << "+" << '"' << unescapeStr(str) << '"';
 }
 
 void ShiftNode::streamTo(SourceStream &s) const
