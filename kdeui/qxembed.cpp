@@ -616,8 +616,11 @@ QXEmbed::QXEmbed(QWidget *parent, const char *name, WFlags f)
     //        whole embedding application. They compete between themselves and
     //        against Qt (L0690, L0914, L1040, L1310, L1510, L1580). 
     //        This would be much simpler if implemented within Qt.
-    d->focusProxy = new QWidget( this, "xembed_focus" );
+    d->focusProxy = new QWidget( topLevelWidget(), "xembed_focus" );
     d->focusProxy->setGeometry( -1, -1, 1, 1 );
+    d->focusProxy->show();
+    // make sure it's shown - for XSetInputFocus
+    QApplication::sendPostedEvents( d->focusProxy, 0 );
     // L0903: Install the client side event filters
     //        because they also provide services for the embedder side
     //        See L0660, L0671, L0685.
