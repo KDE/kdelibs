@@ -5,7 +5,6 @@
 #include <krecentdocument.h>
 #include <ksimpleconfig.h>
 #include <kstddirs.h>
-#include <kpixmapcache.h>
 #include <kapp.h>
 #include <kurl.h>
 #include <qdir.h>
