@@ -126,7 +126,7 @@ KPopupMenu* KHelpMenu::menu()
       mMenu->insertItem( BarIcon( "contents", KIcon::SizeSmall),
                      i18n( "%1 &Handbook" ).arg( appName) ,menuHelpContents );
       mMenu->connectItem( menuHelpContents, this, SLOT(appHelpActivated()) );
-      mMenu->setAccel( KStdAccel::key(KStdAccel::Help), menuHelpContents );
+      mMenu->setAccel( KStdAccel::shortcut(KStdAccel::Help), menuHelpContents );
       need_separator = true;
     }
 

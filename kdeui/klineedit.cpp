@@ -631,7 +631,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
 
             // Handles next match
             if ( keys[NextCompletionMatch].isNull() )
-                cut = KStdAccel::key(KStdAccel::NextCompletion);
+                cut = KStdAccel::shortcut(KStdAccel::NextCompletion);
             else
                 cut = keys[NextCompletionMatch];
 
