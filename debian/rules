@@ -70,7 +70,7 @@ configure-stamp:
 
 	# run configure with build tree $(objdir)
 	cd $(objdir) && \
-	../configure $(configkde) --x-includes=/usr/X11R6/include \
+	../configure $(configkde) \
 	--with-distribution="$$version (`cat /etc/debian_version`)" \
 	--enable-mitshm --with-alsa --with-ipv6-lookup=yes \
 	$(FAST_MALLOC) $(XINERAMA)
@@ -86,7 +86,7 @@ build-stamp: configure-stamp
 
 	# create documentation for kdelibs4
 	echo Building API Documentation
-	doxygen Doxyfile
+	-doxygen Doxyfile
 
 	touch build-stamp
 
