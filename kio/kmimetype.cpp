@@ -294,21 +294,21 @@ KMimeType::~KMimeType()
 {
 }
 
-QPixmap KMimeType::pixmap( int _group, int _force_size, int _state, 
+QPixmap KMimeType::pixmap( int _group, int _force_size, int _state,
                            QString * _path ) const
 {
-  return KGlobal::iconLoader()->loadIcon( icon( QString::null, false ), 
+  return KGlobal::iconLoader()->loadIcon( icon( QString::null, false ),
 	_group, _force_size, _state, _path, false );
 }
 
-QPixmap KMimeType::pixmap( const KURL& _url, int _group, int _force_size, 
+QPixmap KMimeType::pixmap( const KURL& _url, int _group, int _force_size,
                            int _state, QString * _path ) const
 {
-  return KGlobal::iconLoader()->loadIcon( icon( _url, _url.isLocalFile() ), 
+  return KGlobal::iconLoader()->loadIcon( icon( _url, _url.isLocalFile() ),
 	_group, _force_size, _state, _path, false );
 }
 
-QPixmap KMimeType::pixmapForURL( const KURL & _url, mode_t _mode, int _group, 
+QPixmap KMimeType::pixmapForURL( const KURL & _url, mode_t _mode, int _group,
                                  int _force_size, int _state, QString * _path )
 {
   return KMimeType::findByURL( _url, _mode, _url.isLocalFile(), false /*HACK*/)->
@@ -444,11 +444,11 @@ QString KDEDesktopMimeType::icon( const KURL& _url, bool _is_local ) const
   return icon;
 }
 
-QPixmap KDEDesktopMimeType::pixmap( const KURL& _url, int _group, int _force_size, 
+QPixmap KDEDesktopMimeType::pixmap( const KURL& _url, int _group, int _force_size,
 	                            int _state, QString * _path ) const
 {
   QString _icon = icon( _url, _url.isLocalFile() );
-  QPixmap pix = KGlobal::iconLoader()->loadIcon( _icon, _group, 
+  QPixmap pix = KGlobal::iconLoader()->loadIcon( _icon, _group,
 	_force_size, _state, _path, false );
   return pix;
 }
@@ -558,7 +558,7 @@ bool KDEDesktopMimeType::runApplication( const KURL& , const QString & _serviceF
   QString cmd = s.exec();
   if (s.substituteUid() && !user.isEmpty())
   {
-    if (s.terminal()) 
+    if (s.terminal())
       cmd = QString("konsole %1 -e su -- %2 -c \"%3\"").arg(opts).arg(user).arg(cmd);
     else
       cmd = QString("kdesu -u %1 -- %2").arg(user).arg(cmd);
@@ -566,7 +566,7 @@ bool KDEDesktopMimeType::runApplication( const KURL& , const QString & _serviceF
     cmd = QString("konsole %1 -e /bin/sh -- -c \"%2\"").arg(opts).arg(cmd);
 
   KURL::List empty;
-  bool res = KRun::run( cmd, empty, s.name(), s.icon(), s.icon() );
+  bool res = KRun::run( cmd, empty, s.name(), s.icon(), s.icon(), _serviceFile );
 
   return res;
 }
