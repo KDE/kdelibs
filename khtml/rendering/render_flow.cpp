@@ -212,7 +212,7 @@ void RenderFlow::printSpecialObjects( QPainter *p, int x, int y, int w, int h, i
 	p->save();
 	p->setPen( Qt::magenta );
 	p->setBrush( QPainter::NoBrush );
-	//qDebug("(%p): special object at (%d/%d-%d/%d)", this, r->left, r->startY, r->width, r->endY - r->startY );
+	qDebug("(%p): special object at (%d/%d-%d/%d)", this, r->left, r->startY, r->width, r->endY - r->startY );
 	p->drawRect( QRect( r->left+tx, r->startY+ty, r->width, r->endY - r->startY) );
 	p->restore();
 #endif
@@ -458,6 +458,8 @@ void RenderFlow::layoutBlockChildren( bool relayoutChildren )
 
     if( !isTableCell() && toAdd != 0 )
 	m_height += prevMargin;
+    if ( isPositioned() || isRelPositioned() )
+	m_height = QMAX( m_height,  floatBottom() );
     m_height += toAdd;
 
     setLayouted();
