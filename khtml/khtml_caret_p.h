@@ -664,8 +664,6 @@ protected:
  * actually snap to the cell in the right position, and traverse only
  * upwards/downwards, thus providing a more intuitive navigation.
  *
- * FIXME: This is not implemented yet, and might be superseded by some grandious
- * other idea of mine before it is.
  * @author Leo Savernik
  * @internal
  * @since 3.2
@@ -702,7 +700,7 @@ protected:
   /** determines the topologically next render object.
    * @param oldCell table cell the original object was under.
    * @param newObject object to determine whether and which transition
-   *	between cells is to be handled. It need not be an object in the correct
+   *	between cells is to be handled. It needs not be an object in the correct
    *	topological cell, a simple delivery from an editable line iterator suffices.
    * @param toBegin if @p true, iterate towards the beginning
    */
