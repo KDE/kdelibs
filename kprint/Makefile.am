@@ -23,10 +23,12 @@ INCLUDES= $(all_includes)
 lib_LTLIBRARIES = libkprint.la
 
 libkprint_la_LDFLAGS = -no-undefined -version-info 3:0
-libkprint_la_LIBADD = ../kdeui/libkdeui.la -laps
-libkprint_la_SOURCES = kprintdialog.cpp kprinter.cpp kpapersize.cpp kprintjob.cpp
+libkprint_la_LIBADD = ../kfile/libkfile.la -laps
+libkprint_la_SOURCES = \
+	kprintdialog.cpp kprinter.cpp kpapersize.cpp \
+	kprintjob.cpp kprintertray.cpp
 
-include_HEADERS = kprintdialog.h kprinter.h kpapersize.h kprintjob.h
+include_HEADERS = kprintdialog.h kprinter.h kpapersize.h kprintjob.h kprintertray.h
 
 noinst_HEADERS = 
 

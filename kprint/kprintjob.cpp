@@ -20,10 +20,6 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include "aps.h"
 
 #include "kprinter.h"
@@ -38,6 +34,8 @@ public:
    KPrintJob::Orientation orientation;
    KPrinter::Ptr printer;
    KPaperSize::Ptr paperSize;
+   KPrinterTray::Ptr inputTray;
+   KPrinterTray::Ptr outputTray;
 };
 
 KPrintJob::KPrintJob()
@@ -52,25 +50,25 @@ KPrintJob::~KPrintJob()
 }
 
 void
-KPrintJob::setPrinter( KPrinter *printer)
+KPrintJob::setPrinter( KPrinter::Ptr printer)
 {
    d->printer = printer;
    d->paperSize = KPaperSize::defaultPaperSize(d->printer);
 }
 
-const KPrinter *
+const KPrinter::Ptr
 KPrintJob::printer() const
 {
    return d->printer;
 }
 
 void
-KPrintJob::setPaperSize( KPaperSize *paperSize)
+KPrintJob::setPaperSize( KPaperSize::Ptr paperSize)
 {
    d->paperSize = paperSize;
 }
 
-const KPaperSize *
+const KPaperSize::Ptr
 KPrintJob::paperSize() const 
 {
    return d->paperSize;
@@ -80,6 +78,42 @@ KPaperSize::List
 KPrintJob::allPaperSizes() const
 {
    return KPaperSize::allPaperSizes(d->printer);
+}
+
+void
+KPrintJob::setInputTray( KPrinterTray::Ptr inputTray)
+{
+   d->inputTray = inputTray;
+}
+
+const KPrinterTray::Ptr
+KPrintJob::inputTray() const 
+{
+   return d->inputTray;
+}
+
+KPrinterTray::List
+KPrintJob::allInputTrays() const
+{
+   return KPrinterTray::allInputTrays(d->printer);
+}
+
+void
+KPrintJob::setOutputTray( KPrinterTray::Ptr outputTray)
+{
+   d->outputTray = outputTray;
+}
+
+const KPrinterTray::Ptr
+KPrintJob::outputTray() const 
+{
+   return d->outputTray;
+}
+
+KPrinterTray::List
+KPrintJob::allOutputTrays() const
+{
+   return KPrinterTray::allOutputTrays(d->printer);
 }
 
 void

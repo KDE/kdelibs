@@ -21,6 +21,7 @@
 #define _KPRINTJOB_H_
 
 #include <kpapersize.h>
+#include <kprintertray.h>
 
 class KPrinter;
 class KPrintJobPrivate;
@@ -41,27 +42,57 @@ public:
    /**
     * Set the printer to use for this job.
     */
-   void setPrinter(KPrinter *printer);
+   void setPrinter(KPrinter::Ptr printer);
    
    /**
     * Returns printer to use for this job.
     */
-   const KPrinter *printer() const;
+   const KPrinter::Ptr printer() const;
    
    /**
     * Set the paper size to use for this job.
     */
-   void setPaperSize( KPaperSize *paperSize);
+   void setPaperSize( KPaperSize::Ptr paperSize);
    
    /**
     * Returns the paper size to use for this job.
     */
-   const KPaperSize *paperSize() const;
+   const KPaperSize::Ptr paperSize() const;
 
    /**
     * Returns a list of all possible paper sizes for this job.
     */
    KPaperSize::List allPaperSizes() const;   
+
+   /**
+    * Set the input tray to use for this job
+    */
+   void setInputTray( KPrinterTray::Ptr inputTray);
+   
+   /**
+    * Returns the input tray to use for this job.
+    */
+   const KPrinterTray::Ptr inputTray() const;
+
+   /**
+    * Returns a list of all possible input trays for this job.
+    */
+   KPrinterTray::List allInputTrays() const;   
+
+   /**
+    * Set the output tray to use for this job
+    */
+   void setOutputTray( KPrinterTray::Ptr outputTray);
+   
+   /**
+    * Returns the output tray to use for this job.
+    */
+   const KPrinterTray::Ptr outputTray() const;
+
+   /**
+    * Returns a list of all possible output trays for this job.
+    */
+   KPrinterTray::List allOutputTrays() const;   
 
    enum Orientation { Portrait, Landscape };
   

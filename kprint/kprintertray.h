@@ -17,48 +17,55 @@
    Boston, MA 02111-1307, USA.
 */
 
-#ifndef _KPRINTDIALOG_H_
-#define _KPRINTDIALOG_H_
+#ifndef _KPRINTERTRAY_H_
+#define _KPRINTERTRAY_H_
 
-#include <kdialogbase.h>
+#include <qstring.h>
+#include <qvaluelist.h>
+#include <ksharedptr.h>
 
-class KPrintJob;
-class KPrintDialogPrivate;
+class KPrinter;
 
-class KPrintDialog: public KDialogBase
+class KPrinterTray : public KShared
 {
-   Q_OBJECT
 public:   
-   KPrintDialog(QWidget *parent=0, KPrintJob *job = 0, bool modal = true);
-   ~KPrintDialog();
+   typedef KSharedPtr<KPrinterTray> Ptr;
+   typedef QValueList<Ptr> List;
+   friend Ptr;
 
-#if 0
-   // This looks like a bad interface.
-   void setPrinter( QPrinter * );
-   QPrinter *printer() const;
-#endif
-
-protected:
-   void addGeneralPage();
-   void addPaperPage();
-   void addAdvancedPage();
-   
    /**
-    * Fill the list of available printers
+    * Constructor.
     */
-   void setAvailablePrinters();
-   
+   KPrinterTray( const QCString &id);
+
    /**
-    * Set the settings according to the currently selected printer
+    * The translated name of this print tray
     */
-   void setPrinterSettings();
+   QString name() const;
 
-protected slots:
-   void slotBrowse();
+   /**
+    * The id of this print tray
+    */
+   QCString id() const;   
 
-protected:
-   
-   KPrintDialogPrivate *d;   
+   /**
+    * All possible input trays for printer.
+    */
+   static List allInputTrays(KPrinter *printer);
+
+   /**
+    * All possible output trays for printer.
+    */
+   static List allOutputTrays(KPrinter *printer);
+
+private:
+   /**
+    * Destructor
+    */
+   ~KPrinterTray();
+
+   QString m_name;
+   QCString m_id;
 };
 
 #endif

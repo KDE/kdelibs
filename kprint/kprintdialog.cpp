@@ -20,10 +20,6 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include <qprinter.h>
 #include <qlayout.h>
 #include <qlabel.h>
@@ -36,6 +32,8 @@
 #include <kcombobox.h>
 #include <klineedit.h>
 #include <knuminput.h>
+#include <kfiledialog.h>
+#include <kmessagebox.h>
 
 #include <kprinter.h>
 #include <kprintjob.h>
@@ -48,10 +46,15 @@ public:
    QPrinter *printer;
    KPrintJob *job;
 
+   QString printToFile;
+
    // Widgets
    KListView *printerList;
+   KLineEdit *fileSelection;
    KComboBox *paperSizes;
    KComboBox *paperOrientation;
+   KComboBox *inputTray;
+   KComboBox *outputTray;
 };
 
 KPrintDialog::KPrintDialog(QWidget *parent, KPrintJob *job, bool modal)
@@ -111,13 +114,13 @@ void KPrintDialog::addGeneralPage()
 
    row++;
 
-   KLineEdit *fileSelection;
-   fileSelection = new KLineEdit( printDest);
-   printDestLayout->addWidget( fileSelection, row, 1);
+   d->fileSelection = new KLineEdit( printDest);
+   printDestLayout->addWidget( d->fileSelection, row, 1);
 
    QPushButton *execBrowse;
    execBrowse = new QPushButton( i18n("&Browse..."), printDest );
    printDestLayout->addWidget( execBrowse, row, 2);
+   connect(execBrowse, SIGNAL(clicked()), SLOT(slotBrowse()));
 
    pageLayout->addWidget(printDest, 0, 0);
 
@@ -176,6 +179,30 @@ void KPrintDialog::addPaperPage()
 
    row++;   
 
+   label = new QLabel(i18n("&Input Tray:"), page);
+   label->setAlignment(AlignLeft | AlignTop | ShowPrefix);
+   pageLayout->addWidget(label, row, 0);
+
+   d->inputTray = new KComboBox(page);
+   label->setBuddy(d->inputTray);
+   d->inputTray->insertItem(i18n("Dummy Paper Tray"));
+   d->inputTray->setMinimumSize(d->inputTray->minimumSizeHint());
+   pageLayout->addWidget(d->inputTray, row, 1);
+
+   row++;   
+
+   label = new QLabel(i18n("&Output Tray:"), page);
+   label->setAlignment(AlignLeft | AlignTop | ShowPrefix);
+   pageLayout->addWidget(label, row, 0);
+
+   d->outputTray = new KComboBox(page);
+   label->setBuddy(d->outputTray);
+   d->outputTray->insertItem(i18n("Dummy Paper Tray"));
+   d->outputTray->setMinimumSize(d->outputTray->minimumSizeHint());
+   pageLayout->addWidget(d->outputTray, row, 1);
+
+   row++;
+
    pageLayout->setRowStretch(row, 1); // Keep empty space at bottom 
 }
 
@@ -207,11 +234,53 @@ void KPrintDialog::setPrinterSettings()
    {
       d->paperSizes->insertItem((*it)->name());
    }
+
+   KPrinterTray::List trays;
+
+   d->inputTray->clear();
+   trays = d->job->allInputTrays();
+   for(KPrinterTray::List::ConstIterator it = trays.begin();
+       it != trays.end();
+       ++it)
+   {
+      d->inputTray->insertItem((*it)->name());
+   }
+   d->inputTray->setEnabled( trays.count() > 1);
+
+   d->outputTray->clear();
+   trays = d->job->allOutputTrays();
+   for(KPrinterTray::List::ConstIterator it = trays.begin();
+       it != trays.end();
+       ++it)
+   {
+      d->outputTray->insertItem((*it)->name());
+   }
+   d->outputTray->setEnabled( trays.count() > 1);
 }
 
 KPrintDialog::~KPrintDialog()
 {
    delete d; d = 0;
+}
+
+void
+KPrintDialog::slotBrowse()
+{
+   KFileDialog dlg(d->printToFile, "*", this, "print to file", true);
+   dlg.setCaption(i18n("Print To File"));
+   dlg.exec();
+   KURL url = dlg.selectedURL();
+   if (url.isEmpty())
+      return;
+
+   if (!url.isLocalFile())
+   {
+      KMessageBox::sorry(this, i18n("Only printing to local files is supported.\n"));
+      return;
+   }
+   d->printToFile = url.directory();
+
+   d->fileSelection->setText(url.path());
 }
 
 
