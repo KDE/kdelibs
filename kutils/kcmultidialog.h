@@ -111,6 +111,12 @@ public:
      */
     void removeModule( const KCModuleInfo& moduleinfo );
 
+    /**
+     * @internal
+     * Re-implemented for internal reasons.
+     */
+    void show();
+
 signals:
     void configCommitted( const QCString & instanceName );
 
@@ -122,6 +128,14 @@ protected slots:
      * @note Make sure you call the original implementation!
      **/
     virtual void slotDefault();
+
+    /**
+     * This slot is called when the user presses the "Reset" Button
+     * You can reimplement it if needed.
+     *
+     * @note Make sure you call the original implementation!
+     */
+    virtual void slotUser1();
 
     /**
      * This slot is called when the user presses the "Apply" Button

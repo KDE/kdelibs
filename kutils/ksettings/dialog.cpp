@@ -300,6 +300,7 @@ void Dialog::createDialogFromServices()
 		d->dlg = new KCMultiDialog( KJanusWidget::IconList,
 			i18n( "Preferences" ), d->parentwidget );
 
+	d->dlg->showButton( KDialogBase::User1, true );
 	if( ! d->staticlistview )
 		d->dlg->addButtonBelowList( i18n( "Configure..." ), this,
 			SLOT( configureTree() ) );

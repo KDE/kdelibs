@@ -47,10 +47,12 @@ KCMultiDialog::KCMultiDialog(const QString& baseGroup, QWidget *parent, const ch
 }
 
 KCMultiDialog::KCMultiDialog( int dialogFace, const QString & caption, QWidget * parent, const char * name, bool modal )
-    : KDialogBase( dialogFace, caption, Help | Default | Cancel | Apply | Ok, Ok,
-                   parent, name, modal, true )
+    : KDialogBase( dialogFace, caption, Help | Default | Cancel | Apply | Ok |
+            User1, Ok, parent, name, modal, true,
+            KGuiItem( i18n( "&Reset" ), "undo" ) )
     , createTreeList( false )
 {
+    showButton( User1, false );;
     if( dialogFace == KDialogBase::TreeList )
         createTreeList = true;
     init();
@@ -83,6 +85,22 @@ void KCMultiDialog::slotDefault()
           clientChanged(true);
           return;
        }
+    }
+}
+
+void KCMultiDialog::slotUser1()
+{
+    int curPageIndex = activePageIndex();
+
+    QPtrListIterator<KCModule> it( modules );
+    for( ; it.current(); ++it )
+    {
+        if( pageIndex( ( QWidget* )( *it )->parent() ) == curPageIndex )
+        {
+            ( *it )->load();
+            clientChanged( false );
+            return;
+        }
     }
 }
 
@@ -216,14 +234,36 @@ void KCMultiDialog::removeModule( const KCModuleInfo& moduleinfo )
     }
 }
 
+void KCMultiDialog::show()
+{
+    if( ! isVisible() )
+    {
+        // call load() method of all KCMs
+        for( QPtrListIterator<KCModule> it( modules ); it.current(); ++it )
+            ( *it )->load();
+    }
+    KDialogBase::show();
+}
+
 void KCMultiDialog::slotAboutToShow(QWidget *page)
 {
-    // TODO: honor KCModule::buttons
+    kdDebug( 710 ) << k_funcinfo << endl;
     LoadInfo *loadInfo = moduleDict[page];
     if (!loadInfo)
+    {
+        // honor KCModule::buttons
+        QObject * obj = page->child( 0, "KCModule" );
+        if( ! obj )
+            return;
+        KCModule * module = ( KCModule* )obj->qt_cast( "KCModule" );
+        if( ! module )
+            return;
+        enableButton( KDialogBase::Help,
+                module->buttons() & KCModule::Help );
+        enableButton( KDialogBase::Default,
+                module->buttons() & KCModule::Default );
        return;
-
-    kdDebug(710) << k_funcinfo << endl;
+    }
 
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
@@ -245,8 +285,16 @@ void KCMultiDialog::slotAboutToShow(QWidget *page)
         << endl;
     moduleParentComponents.insert( module,
             new QStringList( parentComponents ) );
-    module->reparent(page,0,QPoint(0,0),true);
+
     connect(module, SIGNAL(changed(bool)), this, SLOT(clientChanged(bool)));
+    module->reparent(page,0,QPoint(0,0),true);
+
+    // honor KCModule::buttons
+    enableButton( KDialogBase::Help,
+            module->buttons() & KCModule::Help );
+    enableButton( KDialogBase::Default,
+            module->buttons() & KCModule::Default );
+
     if( module->changed() )
     {
         kdWarning(710) << "Just loaded a KCModule but it's already changed."
