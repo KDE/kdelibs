@@ -108,6 +108,10 @@ int main()
      KURL waba2( waba1, "relative.html?query=test&name=harry");
      check("http: Relative URL, with query", waba2.url(), "http://www.website.com/directory/relative.html?query=test&name=harry");  
   }
+  {
+     KURL waba2( waba1, "relative.html#with_reference");
+     check("http: Relative URL, with reference", waba2.url(), "http://www.website.com/directory/relative.html#with_reference");  
+  }
  
   KURL umail1 ( "mailto:faure@kde.org" );
   check("mailto: URL, general form", umail1.protocol(), "mailto");
