@@ -17,3 +17,6 @@
  -->
 
 <!ENTITY kcontrolcenter 	"<application>&kde; Control Center</application>">
+<!ENTITY Alt	"<keycap>Alt</keycap>">
+<!ENTITY Ctrl	"<keycap>Ctrl</keycap>">
+<!ENTITY Shift	"<keycap>Shift</keycap>">
