@@ -30,7 +30,10 @@
 #define compose_16le(first,second) \
     (((((second)+128)&0xff) << 8)+(first))
  
-#define conv_16le_float(x) \
+#define compose_16be(first,second) \
+    (((((first)+128)&0xff) << 8)+(second))
+
+#define conv_16_float(x) \
     ((float)((x)-32768)/32768.0)                                                
 
 #define conv_8_float(x) \
@@ -41,6 +44,7 @@ using namespace Arts;
 class Arts::ResamplerPrivate {
 public:
 	bool underrun;	
+	Resampler::Endianness endianness;
 };
 
 Resampler::Resampler(Refiller *refiller) :
@@ -50,6 +54,7 @@ Resampler::Resampler(Refiller *refiller) :
 {
 	d = new ResamplerPrivate();
 	d->underrun = false;
+	d->endianness = littleEndian;
 	updateSampleSize();
 }
 
@@ -85,6 +90,13 @@ void Resampler::setBits(int newBits)
 
 	bits = newBits;
 	updateSampleSize();
+}
+
+void Resampler::setEndianness(Endianness newEndianness)
+{
+	arts_return_if_fail(newEndianness == bigEndian || newEndianness == littleEndian);
+
+	d->endianness = newEndianness;
 }
 
 bool Resampler::underrun()
@@ -160,10 +172,21 @@ void Resampler::ensureRefill()
 		}
 
 		// convert data from incoming
-		while(i<bufferSize+sampleSize-missing)
+		if(d->endianness == littleEndian)
 		{
-			fbuffer[i/2] = conv_16le_float(compose_16le(buffer[i],buffer[i+1]));
-			i += 2;
+			while(i<bufferSize+sampleSize-missing)
+			{
+				fbuffer[i/2] = conv_16_float(compose_16le(buffer[i],buffer[i+1]));
+				i += 2;
+			}
+		}
+		else
+		{
+			while(i<bufferSize+sampleSize-missing)
+			{
+				fbuffer[i/2] = conv_16_float(compose_16be(buffer[i],buffer[i+1]));
+				i += 2;
+			}
 		}
 
 		// fill up missing bytes with zero samples
@@ -275,5 +298,6 @@ Refiller::~Refiller()
 
 #undef RESAMPLER_STEP
 #undef compose_16le
-#undef conv_16le_float
+#undef compose_16be
+#undef conv_16_float
 #undef conv_8_float

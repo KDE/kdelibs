@@ -69,6 +69,10 @@ public:
 	void setStep(double step);
 	void setChannels(int channels);
 	void setBits(int bits);
+
+	enum Endianness { bigEndian, littleEndian };
+	void setEndianness(Endianness endianness);
+
 	void run(float *left, float *right, unsigned long samples);
 
 	bool underrun();
