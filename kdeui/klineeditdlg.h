@@ -23,11 +23,9 @@
 #include <qlineedit.h>
 
 #include <kdialogbase.h>
-#include "kurlcompletion.h"
 
 /**
  * Dialog for user to enter a single line of text.
- * Includes support for URL completion with @ref KURLCompletion.
  *
  * @version $Id$
  * @author David Faure <faure@kde.org>, layout management by Preston Brown <pbrown@kde.org>
@@ -43,12 +41,8 @@ public:
    *
    * @param _text      Text of the label
    * @param _value     Initial value of the inputline
-   * @param _file_mode if set to TRUE, the editor widget will provide command
-   *                   completion ( Ctrl-S and Ctrl-D ), and a browse button
-   *                   for the local file system.
    */
-  KLineEditDlg( const QString& _text, const QString& _value,
-		QWidget *parent, bool _file_mode = FALSE );
+  KLineEditDlg( const QString& _text, const QString& _value, QWidget *parent );
   virtual ~KLineEditDlg();
 
   /**
@@ -73,22 +67,11 @@ public slots:
    */
   void slotClear();
 
-protected slots:
-  /**
-   * use a QFileDialog to find a file to view.
-   */
-  void slotBrowse();
-
 protected:
   /**
    * The line edit widget
    */
   QLineEdit *edit;
-
-  /**
-   * Completion helper ..
-   */
-  KURLCompletion * completion;
 };
 
 #endif

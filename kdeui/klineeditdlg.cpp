@@ -20,6 +20,9 @@
 ****************************************************************************
 *
 * $Log$
+* Revision 1.10  2000/02/20 22:18:53  mueller
+* added a convenience static ::getText function
+*
 * Revision 1.9  2000/01/17 19:07:59  bieker
 * Made it more QT_NO_CAST_ASCII and QT_NO_ASCII_CAST safe (this is not 100 %
 * yet).
@@ -45,40 +48,18 @@
 */
 
 KLineEditDlg::KLineEditDlg( const QString&_text, const QString& _value,
-			    QWidget *parent, bool _file_mode )
+			    QWidget *parent )
   : KDialogBase( Plain, QString::null, Ok|Cancel|User1, Ok, parent, 0L, true,
-		 true, i18n("C&lear") ), completion(0L)
+		 true, i18n("C&lear") )
 {
   QVBoxLayout *topLayout = new QVBoxLayout( plainPage(), 0, spacingHint() );
   QLabel *label = new QLabel(_text, plainPage() );
   topLayout->addWidget( label, 1 );
-
-  QHBoxLayout *hbox = new QHBoxLayout();
-  topLayout->addLayout( hbox );
-  topLayout->addStretch(1);
-
+  
   edit = new KLineEdit( plainPage(), 0L );
   edit->setMinimumWidth(edit->sizeHint().width() * 3);
   connect( edit, SIGNAL(returnPressed()), SLOT(accept()) );
-  hbox->addWidget( edit, 1 );
-
-
-  if( _file_mode == true )
-  {
-    completion = new KURLCompletion();
-    connect(edit, SIGNAL (completion()),
-	     completion, SLOT (make_completion()));
-    connect(edit, SIGNAL (rotation()),
-	     completion, SLOT (make_rotation()));
-    connect(edit, SIGNAL (textChanged(const QString&)),
-	     completion, SLOT (edited(const QString&)));
-    connect(completion, SIGNAL (setText (const QString&)),
-	     edit, SLOT (setText (const QString&)));
-
-    QPushButton *browse = new QPushButton(i18n("&Browse..."), plainPage() );
-    hbox->addWidget( browse );
-    connect( browse, SIGNAL(clicked()), this, SLOT(slotBrowse()) );
-  }
+  topLayout->addWidget( edit, 1 );
 
   connect( this, SIGNAL(user1Clicked()), edit, SLOT(doClear()) );
   edit->setText( _value );
@@ -159,7 +140,6 @@ KLineEditDlg::KLineEditDlg( const QString&_text, const QString& _value,
 
 KLineEditDlg::~KLineEditDlg()
 {
-	delete completion;
 }
 
 void KLineEditDlg::slotClear()
@@ -167,20 +147,11 @@ void KLineEditDlg::slotClear()
     edit->setText(QString::null);
 }
 
-void KLineEditDlg::slotBrowse()
-{
-  QString fn = QFileDialog::getOpenFileName(QString::null, QString::null,
-					    this);
-  if (!fn.isNull())
-    edit->setText(QString::fromLatin1("file://") + fn);
-}
-
-
 QString KLineEditDlg::getText(const QString &_text, const QString& _value,
                               bool *ok, QWidget *parent )
 {
 
-    KLineEditDlg* dlg = new KLineEditDlg(_text, _value, parent, false );
+    KLineEditDlg* dlg = new KLineEditDlg(_text, _value, parent );
 #if 0
     dlg->setCaption( caption );
 
