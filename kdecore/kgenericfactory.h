@@ -53,14 +53,19 @@ protected:
         return new KInstance( m_instanceName );
     }
 
+    virtual void setupTranslations( void )
+    {
+        if ( instance() )
+            KGlobal::locale()->insertCatalogue( instance()->instanceName() );
+    }
+
     void initializeMessageCatalogue()
     {
         static bool catalogueInitialized = false;
         if ( !catalogueInitialized )
         {
             catalogueInitialized = true;
-            if ( instance() )
-                KGlobal::locale()->insertCatalogue( instance()->instanceName() );
+            setupTranslations();
         }
     }
 
