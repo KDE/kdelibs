@@ -1617,12 +1617,6 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 	  parsedValue = new CSSPrimitiveValueImpl(c);
 	  break;
 	}
-      case CSS_PROP_BACKGROUND_IMAGE:     // <uri> | none | inherit
-#ifdef CSS_DEBUG_BCKGR
-	{
-	  kdDebug( 6080 ) << "CSS_PROP_BACKGROUND_IMAGE: " << val << endl;
-	}
-#endif
       case CSS_PROP_CURSOR:
           //  [ auto | crosshair | default | pointer | progress | move | e-resize | ne-resize |
           // nw-resize | // n-resize | se-resize | sw-resize | s-resize | w-resize | text |
@@ -1632,6 +1626,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 	      break;
           }
           break;
+      case CSS_PROP_BACKGROUND_IMAGE:     // <uri> | none | inherit
       case CSS_PROP_LIST_STYLE_IMAGE:     // <uri> | none | inherit
 	{
 	  if (cssval && cssval->id == CSS_VAL_NONE)
