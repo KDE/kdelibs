@@ -101,12 +101,12 @@ public:
     /** @since 3.2
      * @return the fade color.
      */
-    const QColor &fadeColor() const { return m_FadeColor; }
+    const QColor &color() const { return m_FadeColor; }
 
     /** @since 3.2
-     * @return the fade strength.
+     * @return the color opacity.
      */
-    double fadeStrength() const { return m_Fade; }
+    double opacity() const { return m_Fade; }
 
 public slots:
     /**
@@ -124,12 +124,12 @@ public slots:
      *
      * This effect will fade the background to the
      * specified color.
-     * @param strength A value between 0 and 1, indicating the strength
-     * of the fade. A value of 0 will not change the image, a value of 1
-     * will make it the fade color everywhere, and in between.
+     * @param opacity A value between 0 and 1, indicating the opacity
+     * of the color. A value of 0 will not change the image, a value of 1
+     * will use the fade color unchanged.
      * @param color The color to fade to.
      */
-    void setFadeEffect(double strength, const QColor &color);
+    void setFadeEffect(double opacity, const QColor &color);
 
     /**
      * Repaints the widget background. Normally, you shouldn't need this
