@@ -230,7 +230,10 @@ void KDirLister::slotRedirection( KIO::Job *, const KURL & url )
   m_url = url;
   emit redirection( url );
   if ( m_lstDirs.count() == 1 )
+  {
+      kdDebug( 7003 ) << "setting first URL to " << url.url() << endl;
       m_lstDirs.first() = m_url;
+  }
 }
 
 void KDirLister::updateDirectory( const KURL& _dir )
@@ -543,6 +546,7 @@ void KDirLister::FilesRemoved( const KURL::List & fileList )
       {
         if ( (*it).isParentOf(m_lstDirs.first()) )
         {
+            kdDebug( 7003 ) << (*it).prettyURL() << " is a parent of " << m_lstDirs.first().prettyURL() << endl;
           kdDebug(7003) << "emit closeView" << endl;
           stop();
           emit closeView();
@@ -573,6 +577,20 @@ void KDirLister::FilesChanged( const KURL::List & fileList )
       }
     }
   }
+}
+
+void KDirLister::FileRenamed( const KURL &src, const KURL &dst )
+{
+    kdDebug( 7003 ) << "FileRenamed " << src.prettyURL() << " -- " << dst.prettyURL() << endl;
+    if ( m_rootFileItem )
+        kdDebug( 7003 ) << "root url is " << m_rootFileItem->url().prettyURL() << endl;
+
+    if ( m_rootFileItem && m_rootFileItem->url() == src )
+    {
+        m_rootFileItem->setURL( dst );
+        slotRedirection( 0L, dst );
+    }
+
 }
 
 void KDirLister::setAutoUpdate( bool enable )

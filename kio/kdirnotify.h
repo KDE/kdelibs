@@ -58,6 +58,12 @@ k_dcop:
    */
   virtual ASYNC FilesChanged( const KURL::List & fileList ) = 0;
 
+  /**
+   * Notify that a file has been renamed.
+   * Note: this is ASYNC so that it can be used with a broadcast
+   */
+  virtual ASYNC FileRenamed( const KURL &src, const KURL &dst );
+
 private:
   // @internal
   static int s_serial;

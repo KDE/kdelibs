@@ -232,6 +232,8 @@ public:
    */
   virtual void FilesChanged( const KURL::List & fileList );
 
+  virtual void FileRenamed( const KURL &src, const KURL &dst );
+
   /**
    * Returns true if no io operation is currently in progress.
    */

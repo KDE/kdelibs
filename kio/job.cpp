@@ -332,11 +332,26 @@ void SimpleJob::slotFinished( )
 
     if (subjobs.isEmpty())
     {
+        if ( !m_error )
+        {
+            KDirNotify_stub allDirNotify( "*", "KDirNotify*" );
+            if ( m_command == CMD_MKDIR )
+                allDirNotify.FilesAdded( url().directory() );
+            else if ( m_command == CMD_RENAME )
+            {
+                KURL src, dst;
+                QDataStream str( m_packedArgs, IO_ReadOnly );
+                str >> src >> dst;
+                allDirNotify.FileRenamed( src, dst );
+            }
+        }
+        /*
         if ( m_command == CMD_MKDIR && !m_error )
         {
             KDirNotify_stub allDirNotify("*", "KDirNotify*");
             allDirNotify.FilesAdded( url().directory() );
         }
+        */
         emit result(this);
         delete this; // Suicide is painless
     }

@@ -101,6 +101,12 @@ public:
   const KURL & url() const { return m_url; }
 
   /**
+   * Set the item's URL. Do not call unless you know what you are doing!
+   * (used for example when an item got renamed)
+   */
+  void setURL( const KURL &url ) { m_url = url; }
+
+  /**
    * @return the permissions of the file (stat.st_mode containing only permissions)
    */
   mode_t permissions() const { return m_permissions; }

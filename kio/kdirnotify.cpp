@@ -26,3 +26,7 @@ KDirNotify::KDirNotify()
   :  DCOPObject( QCString().sprintf("KDirNotify-%d", ++s_serial) )
 {
 }
+
+void KDirNotify::FileRenamed( const KURL &, const KURL & )
+{
+}
