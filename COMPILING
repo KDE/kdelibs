@@ -26,8 +26,8 @@ Before you start you must decide two things:
 
 1) Where do you want to have Qt installed? Qt is a bit lame in that it 
 basically installs itselfs in its own source-tree, but symlinks are your 
-friend. E.g you could link /usr/local/lib/qt2 to where you keep your Qt 
-source. Qt libs then end up in /usr/local/lib/qt2/lib.
+friend. E.g you could link /usr/local/lib/qt3 to where you keep your Qt 
+source. Qt libs then end up in /usr/local/lib/qt3/lib.
 
 2) Where do you want to have KDE installed. A good candidate is /usr/local/kde
 
@@ -103,7 +103,7 @@ you will get an error like:
 
   Making all in management
   make[3]: Entering directory /home/gregturp/KDE/kdelibs/kdeprint/management'
-  make[3]: *** No rule to make target ll'.  Stop.
+  make[3]: *** No rule to make target ll'.  Stop.
   make[3]: Leaving directory /home/gregturp/KDE/kdelibs/kdeprint/management'
   make[2]: *** [all-recursive] Error 1
   make[2]: Leaving directory /home/gregturp/KDE/kdelibs/kdeprint'
