@@ -42,6 +42,7 @@
 #include <kservicegroup.h>
 #include <kstartupinfo.h>
 #include <kwin.h>
+#include <kglobal.h>
 
 #include "main.h"
 #include "main.moc"
@@ -197,14 +198,16 @@ extern "C" KDE_EXPORT int kdemain(int _argc, char *_argv[])
                           0,
                           I18N_NOOP("A tool to start single KDE control modules"),
                           KAboutData::License_GPL,
-                          "(c) 1999-2004, The KDE Developers");
+                          I18N_NOOP("(c) 1999-2004, The KDE Developers") );
 
-    aboutData.addAuthor("Frans Englich", "Maintainer", "frans.englich@kde.org");
+    aboutData.addAuthor("Frans Englich", I18N_NOOP("Maintainer"), "frans.englich@kde.org");
     aboutData.addAuthor("Daniel Molkentin", 0, "molkentin@kde.org");
     aboutData.addAuthor("Matthias Hoelzer-Kluepfel",0, "hoelzer@kde.org");
     aboutData.addAuthor("Matthias Elter",0, "elter@kde.org");
     aboutData.addAuthor("Matthias Ettrich",0, "ettrich@kde.org");
     aboutData.addAuthor("Waldo Bastian",0, "bastian@kde.org");
+    
+    KGlobal::locale()->setMainCatalogue("kcmshell");
 
     KCmdLineArgs::init(_argc, _argv, &aboutData);
     KCmdLineArgs::addCmdLineOptions( options ); // Add our own options.

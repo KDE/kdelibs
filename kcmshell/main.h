@@ -73,7 +73,7 @@ private:
 
 
 /**
- * @description Essentially a plain KCMultiDialog, but have the 
+ * @description Essentially a plain KCMultiDialog, but has the 
  * additional functionality of allowing it to be told to request
  * windows focus.
  * 
