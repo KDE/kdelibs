@@ -302,6 +302,14 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
 #ifdef PARSER_DEBUG
         kdDebug( 6035 ) << "added " << n->nodeName().string() << " to " << tmp->nodeName().string() << ", new current=" << newNode->nodeName().string() << endl;
 #endif
+
+	// have to do this here (and not when creating the node, as we don't know before where we add the LI element to.
+	if ( id == ID_LI && n->isElementNode() ) {
+	    int cid = current->id();
+	    if ( cid != ID_UL && cid != ID_OL )
+	    static_cast<HTMLElementImpl*>(n)->addCSSProperty(CSS_PROP_LIST_STYLE_POSITION, CSS_VAL_INSIDE);
+	}
+
 	// don't push elements without end tag on the stack
         if(tagPriority[id] != 0 && !flat) {
 #if SPEED_DEBUG < 2
@@ -328,7 +336,6 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
 #endif
 	    if(n->isInline()) m_inline = true;
         }
-
 
 #if SPEED_DEBUG < 1
         if(tagPriority[id] == 0 && n->renderer())
@@ -870,8 +877,6 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         popBlock(ID_LI);
         HTMLElementImpl *e = new HTMLLIElementImpl(document);
         n = e;
-        if( current->id() != ID_UL && current->id() != ID_OL )
-                e->addCSSProperty(CSS_PROP_LIST_STYLE_POSITION, CSS_VAL_INSIDE);
         break;
     }
 // formatting elements (block)

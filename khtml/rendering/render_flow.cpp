@@ -492,18 +492,19 @@ void RenderFlow::layoutBlockChildren( bool relayoutChildren )
 	// really need to fix this after 3.1
 	int owidth = child->width();
 	child->calcWidth();
-        int chPos = xPos + child->marginLeft();
-	child->setWidth( owidth );
+        int chPos = xPos;
 
         if(style()->direction() == LTR) {
             // html blocks flow around floats
             if ( ( style()->htmlHacks() || child->isTable() ) && child->style()->flowAroundFloats() )
-              chPos = leftOffset(m_height) + child->marginLeft();
+		chPos = leftOffset(m_height);
+	    chPos += child->marginLeft();
         } else {
-            chPos -= child->width() + child->marginLeft() + child->marginRight();
             if ( ( style()->htmlHacks() || child->isTable() ) && child->style()->flowAroundFloats() )
-                chPos = rightOffset(m_height) - child->marginRight() - child->width();
+                chPos = rightOffset(m_height);
+            chPos -= child->width() + child->marginRight();
         }
+	child->setWidth( owidth );
         child->setPos(chPos, m_height);
 
 	if ( !child->layouted() )
