@@ -67,6 +67,7 @@ Lexer::~Lexer()
 
 Lexer *Lexer::curr()
 {
+  assert(KJScriptImp::current());
   return KJScriptImp::current()->lex;
 }
 

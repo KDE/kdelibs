@@ -49,7 +49,9 @@ parser: $(srcdir)/grammar.y
 	else :; fi
 
 ## test program
-check_PROGRAMS = testkjs
+check_PROGRAMS = testkjs crash
 testkjs_SOURCES = testkjs.cpp $(libkjs_la_SOURCES)
 testkjs_LDADD =
+
+crash_SOURCES = crash.cpp $(libkjs_la_SOURCES)
 
