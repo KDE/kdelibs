@@ -86,17 +86,6 @@ public:
 
     int minFontSize() const;
 
-    // the charset used to display the current document.
-#if QT_VERSION < 300
-    QFont::CharSet charset() const;
-    void setCharset( QFont::CharSet c );
-    QFont::CharSet script() const;
-    void setScript( QFont::CharSet c );
-    void resetCharset( );
-
-    void setDefaultCharset( QFont::CharSet c, bool b );
-#endif
-
     const QString &encoding() const;
 
     // Color settings
@@ -112,7 +101,6 @@ public:
     bool isJavaScriptEnabled( const QString& hostname = QString::null );
     bool isJavaScriptDebugEnabled( const QString& hostname = QString::null );
     bool isPluginsEnabled( const QString& hostname = QString::null );
-    bool isCSSEnabled( const QString& hostname = QString::null );
 
     // helpers for parsing domain-specific configuration, used in KControl module as well
     static KJavaScriptAdvice strToAdvice(const QString& _str);
@@ -130,16 +118,9 @@ public:
     int maxFormCompletionItems() const;
 
 private:
-#if QT_VERSION < 300
-    void setFont(const QFont::CharSet &charset, int i, const QString &n);
-    QString lookupFont(const QFont::CharSet &charset, int i) const;
-
-    void internalSetCharset( QFont::CharSet c );
-#else
     void setFont(int, int i, const QString &n);
-    QString lookupFont(int , int i) const;
-#endif
-    
+    QString lookupFont(int i) const;
+
     KHTMLSettingsPrivate *d;
 };
 
