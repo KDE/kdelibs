@@ -477,11 +477,13 @@ public:
    * Returns the value of a certain query item.
    *
    * @param _item Item whose value we want
+   * @param encoding_hint MIB of encoding of query.
    *
    * @return the value of the given query item name or QString::null if the
    * specified item does not exist.
    */
   QString queryItem( const QString& _item ) const;
+  QString queryItem( const QString& _item, int encoding_hint ) const;
 
   /**
    * Options for @ref #queryItems. Currently, only one option is
@@ -497,6 +499,7 @@ public:
    * Returns the list of query items as a map mapping keys to values.
    *
    * @param options any of @ref QueryItemsOptions <em>or</or>ed together.
+   * @param encoding_hint MIB of encoding of query.
    *
    * @return the map of query items or the empty map if the url has no
    * query items.
@@ -504,6 +507,7 @@ public:
    * @since 3.1
    */
   QMap< QString, QString > queryItems( int options=0 ) const;
+  QMap< QString, QString > queryItems( int options, int encoding_hint ) const;
 
   /**
    * Add an additional query item.

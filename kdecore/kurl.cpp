@@ -1798,6 +1798,10 @@ bool urlcmp( const QString& _url1, const QString& _url2, bool _ignore_trailing, 
 }
 
 QMap< QString, QString > KURL::queryItems( int options ) const {
+  return queryItems(options, 0);
+}
+
+QMap< QString, QString > KURL::queryItems( int options, int encoding_hint ) const {
   if ( m_strQuery_encoded.isEmpty() )
     return QMap<QString,QString>();
 
@@ -1815,7 +1819,7 @@ QMap< QString, QString > KURL::queryItems( int options ) const {
       else {
 	// ### why is decoding name not neccessary?
 	value.replace( '+', ' ' ); // + in queries means space
-	result.insert( name, decode_string( value ) );
+	result.insert( name, decode_string( value, encoding_hint ) );
       }
     } else if ( equal_pos < 0 ) { // no =
       QString name = (*it);
@@ -1829,6 +1833,11 @@ QMap< QString, QString > KURL::queryItems( int options ) const {
 }
 
 QString KURL::queryItem( const QString& _item ) const
+{
+  return queryItem( _item, 0 );
+}
+
+QString KURL::queryItem( const QString& _item, int encoding_hint ) const
 {
   QString item = _item + '=';
   if ( m_strQuery_encoded.length() <= 1 )
@@ -1844,7 +1853,7 @@ QString KURL::queryItem( const QString& _item ) const
       {
         QString str = (*it).mid( _len );
         str.replace( '+', ' ' ); // + in queries means space.
-        return decode_string( str );
+        return decode_string( str, encoding_hint );
       }
       else // empty value
         return QString::fromLatin1("");
