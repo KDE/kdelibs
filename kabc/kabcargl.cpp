@@ -56,7 +56,7 @@ int main(int argc,char **argv)
   f.close();
   
   text = QString::fromUtf8( text.local8Bit() );
-  text.replace( QRegExp( "\n" ), "\r\n" );
+  text.replace( "\n", "\r\n" );
   
   if ( !f.open( IO_WriteOnly ) ) {
     kdDebug() << "Error opening file '" << filename << "' for writing." << endl;

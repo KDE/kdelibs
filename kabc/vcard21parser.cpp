@@ -345,7 +345,7 @@ KABC::Addressee VCard21Parser::readFromString( const QString &data)
   //set the addressee's delivery label
   tmpStr = mVCard->getValue(VCARD_LABEL);
   if (!tmpStr.isEmpty()) {
-    tmpStr.replace(QRegExp("\\r\\n"),"\n");
+    tmpStr.replace("\r\n","\n");
     Address tmpAddress;
     tmpAddress.setLabel(tmpStr);
     addressee.insertAddress(tmpAddress);
@@ -353,7 +353,7 @@ KABC::Addressee VCard21Parser::readFromString( const QString &data)
 
   //set the addressee's notes
   tmpStr = mVCard->getValue(VCARD_NOTE);
-  tmpStr.replace(QRegExp("\\r\\n"),"\n");
+  tmpStr.replace("\r\n","\n");
   addressee.setNote(tmpStr);
 
   //set the addressee's timezone

@@ -225,8 +225,8 @@ void AddressLineEdit::insert(const QString &t)
     else if (newText.contains(" at "))
     {
        // Anti-spam stuff
-       newText.replace( QRegExp(" at "), "@" );
-       newText.replace( QRegExp(" dot "), "." );
+       newText.replace( " at ", "@" );
+       newText.replace( " dot ", "." );
     }
     else if (newText.contains("(at)"))
     {

@@ -778,10 +778,10 @@ void VCardFormatImpl::addAgentValue( VCARD::VCard *vcard, const Agent &agent )
     Addressee *addr = agent.addressee();
     if ( addr ) {
       writeToString( (*addr), vstr );
-      vstr.replace( QRegExp(":"), "\\:" );
-      vstr.replace( QRegExp(","), "\\," );
-      vstr.replace( QRegExp(";"), "\\;" );
-      vstr.replace( QRegExp("\r\n"), "\\n" );
+      vstr.replace( ":", "\\:" );
+      vstr.replace( ",", "\\," );
+      vstr.replace( ";", "\\;" );
+      vstr.replace( "\r\n", "\\n" );
       cl.setValue( new TextValue( vstr.utf8() ) );
     } else
       return;
@@ -809,10 +809,10 @@ Agent VCardFormatImpl::readAgentValue( VCARD::ContentLine *cl )
 
   if ( isIntern ) {
     QString vstr = QString::fromUtf8( v->asString() );
-    vstr.replace( QRegExp("\\\\n"), "\r\n" );
-    vstr.replace( QRegExp("\\\\:"), ":" );
-    vstr.replace( QRegExp("\\\\,"), "," );
-    vstr.replace( QRegExp("\\\\;"), ";" );
+    vstr.replace( "\\n", "\r\n" );
+    vstr.replace( "\\:", ":" );
+    vstr.replace( "\\,", "," );
+    vstr.replace( "\\;", ";" );
     Addressee *addr = new Addressee;
     readFromString( vstr, *addr );
     agent.setAddressee( addr );
