@@ -61,6 +61,7 @@ namespace KJS {
     HTMLElement(DOM::HTMLElement e) : DOMElement(e) { }
     virtual KJSO tryGet(const UString &p) const;
     virtual void tryPut(const UString &p, const KJSO& v);
+    virtual bool hasProperty(const UString &p, bool recursive = true) const;
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
   };

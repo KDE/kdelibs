@@ -816,6 +816,15 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
     return DOMElement::tryGet(p);
 }
 
+bool KJS::HTMLElement::hasProperty(const UString &p, bool recursive) const
+{
+    fprintf(stderr, "HTMLElement::hasProperty(%s)\n", p.ascii());
+    KJSO tmp = tryGet(p);
+    if (tmp.isDefined())
+	return true;
+    return recursive ? DOMElement::hasProperty(p, true) : false;
+}
+
 Completion KJS::HTMLElementFunction::tryExecute(const List &args)
 {
   KJSO result;
