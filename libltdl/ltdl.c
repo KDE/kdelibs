@@ -889,6 +889,7 @@ lt_dlexit LTDL_PARAMS((void))
 		loader = next;
 	}
 
+	loaders = 0;
 	initialized = 0;
 	return errors;
 }
