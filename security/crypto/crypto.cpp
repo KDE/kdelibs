@@ -335,12 +335,18 @@ QString whatstr;
   //
   //  Settings for the EGD
   //
-  mUseEGD = new QCheckBox(i18n("Use EGD"), tabSSL);
+  QFrame *eFrame = new QFrame(tabSSL);
+  QVBoxLayout *egrid = new QVBoxLayout(eFrame); 
+  mUseEGD = new QCheckBox(i18n("Use EGD"), eFrame);
   connect(mUseEGD, SIGNAL(clicked()), SLOT(slotUseEGD()));
-  grid->addWidget(mUseEGD, 4, 0);
+  mUseEFile = new QCheckBox(i18n("Use Entropy File"), eFrame);
+  connect(mUseEFile, SIGNAL(clicked()), SLOT(slotUseEFile()));
+  grid->addWidget(eFrame, 4, 0);
+  egrid->addWidget(mUseEGD);
+  egrid->addWidget(mUseEFile);
   QFrame *egdframe = new QFrame(tabSSL);
   QGridLayout *grid2 = new QGridLayout(egdframe, 2, 2, KDialog::marginHint(),
-                                                      KDialog::spacingHint() );
+                                                       KDialog::spacingHint());
   mEGDLabel = new QLabel(i18n("Path to EGD:"), egdframe);
   grid2->addWidget(mEGDLabel, 0, 0);
   mEGDPath = new QLineEdit(egdframe);
@@ -353,8 +359,11 @@ QString whatstr;
   whatstr = i18n("If selected, OpenSSL will be asked to use the entropy gathering"
           " daemon (EGD) for initializing the pseudo-random number generator.");
   QWhatsThis::add(mUseEGD, whatstr);
+  whatstr = i18n("If selected, OpenSSL will be asked to use the given file"
+          " as entropy for initializing the pseudo-random number generator.");
+  QWhatsThis::add(mUseEFile, whatstr);
   whatstr = i18n("Enter the path to the socket created by the entropy gathering"
-                " daemon here.");
+                " daemon (or the entropy file) here.");
   QWhatsThis::add(mChooseEGD, whatstr);
   QWhatsThis::add(mEGDPath, whatstr);
   whatstr = i18n("Click here to browse for the EGD socket file.");
@@ -851,10 +860,14 @@ void KCryptoConfig::load()
 #endif
 
   config->setGroup("EGD");
-  mUseEGD->setChecked(config->readBoolEntry("UseEGD", false));
-  mEGDLabel->setEnabled(mUseEGD->isChecked());
-  mChooseEGD->setEnabled(mUseEGD->isChecked());
-  mEGDPath->setEnabled(mUseEGD->isChecked());
+  slotUseEGD();  // set the defaults
+  if (config->readBoolEntry("UseEGD", false)) {
+    mUseEGD->setChecked(true);
+    slotUseEGD();
+  } else if (config->readBoolEntry("UseEFile", false)) {
+    mUseEFile->setChecked(true);
+    slotUseEFile();
+  }
   mEGDPath->setText(config->readEntry("EGDPath", ""));
 
 
@@ -1004,6 +1017,7 @@ void KCryptoConfig::save()
 
   config->setGroup("EGD");
   config->writeEntry("UseEGD", mUseEGD->isChecked());
+  config->writeEntry("UseEFile", mUseEFile->isChecked());
   config->writeEntry("EGDPath", mEGDPath->text());
 
 #if 0  // NOT IMPLEMENTED IN KDE 2.0
@@ -1204,6 +1218,7 @@ void KCryptoConfig::defaults()
     item->setOn( item->bits() >= 56 );
   }
   mUseEGD->setChecked(false);
+  mUseEFile->setChecked(false);
   mEGDLabel->setEnabled(false);
   mChooseEGD->setEnabled(false);
   mEGDPath->setEnabled(false);
@@ -2219,9 +2234,25 @@ if (!KOSSL::self()->hasLibCrypto()) {
 
 
 void KCryptoConfig::slotUseEGD() {
+  if (mUseEGD->isChecked()) {
+    mUseEFile->setChecked(false);
+  }
+  mEGDLabel->setText(i18n("Path to EGD:"));
   mEGDPath->setEnabled(mUseEGD->isChecked());
   mChooseEGD->setEnabled(mUseEGD->isChecked());
   mEGDLabel->setEnabled(mUseEGD->isChecked());
+  configChanged();
+}
+
+
+void KCryptoConfig::slotUseEFile() {
+  if (mUseEFile->isChecked()) {
+    mUseEGD->setChecked(false);
+  }
+  mEGDLabel->setText(i18n("Path to entropy file:"));
+  mEGDPath->setEnabled(mUseEFile->isChecked());
+  mChooseEGD->setEnabled(mUseEFile->isChecked());
+  mEGDLabel->setEnabled(mUseEFile->isChecked());
   configChanged();
 }
 

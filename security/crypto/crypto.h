@@ -238,6 +238,7 @@ public slots:
 
   void slotGeneratePersonal();
   void slotUseEGD();
+  void slotUseEFile();
   void slotChooseEGD();
   void slotChooseOSSL();
   void slotCWcompatible();
@@ -296,6 +297,7 @@ private:
   QLabel    *mEGDLabel;
   QLineEdit *mEGDPath;
   QCheckBox *mUseEGD;
+  QCheckBox *mUseEFile;
 
   /* CipherWizards */
   QPushButton *mCWall, *mCWus, *mCWexp, *mCWcompatible;
