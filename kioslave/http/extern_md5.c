@@ -40,7 +40,6 @@ char* base64_encode_string( const char *_buf, unsigned int len )
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
   bzero(buf, sizeof(buf));
   memcpy(buf, _buf, strlen(_buf));
-  //buf[sizeof(buf) - 1] = buf[sizeof(buf) - 2] = 0;
   ext=(char *)malloc(25 * sizeof(char));
   bzero(ext, (25*sizeof(char)));
   p=ext;
