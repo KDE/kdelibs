@@ -314,7 +314,7 @@ bool KListView::isExecuteArea( int x )
 
 void KListView::slotOnItem( QListViewItem *item )
 {
-  if ( item && (d->autoSelectDelay > -1) && d->bUseSingle ) {
+  if ( item && isExecuteArea( QCursor::pos().x() ) && (d->autoSelectDelay > -1) && d->bUseSingle ) {
     d->autoSelect.start( d->autoSelectDelay, true );
     d->pCurrentItem = item;
   }
