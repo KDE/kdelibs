@@ -141,10 +141,10 @@ KCModuleInfo::loadAll()
   KDesktopFile desktop(_fileName);
 
   // library and factory
-  setHandle(desktop.readEntry("X-KDE-FactoryName"));
+  setHandle(_service->property("X-KDE-FactoryName").toString());
 
   // KCD parent
-  setParentComponents(desktop.readListEntry("X-KDE-ParentComponents"));
+  setParentComponents(_service->property("X-KDE-ParentComponents").toString());
 
   // does the module need super user privileges?
   setNeedsRootPrivileges(desktop.readBoolEntry("X-KDE-RootOnly", false));
