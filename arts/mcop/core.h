@@ -330,21 +330,26 @@ public:
 class InterfaceRepo : virtual public SmartWrapper {
 private:
 	static Object_base* _Creator();
-	inline InterfaceRepo_base *_method_call() const {
+	bool cacheOK;
+	InterfaceRepo_base *cache;
+	inline InterfaceRepo_base *_method_call() {
 		_pool->checkcreate();
-		assert(_pool->base);
-		return dynamic_cast<InterfaceRepo_base *>(_pool->base);
+		cache=dynamic_cast<InterfaceRepo_base *>(_pool->base);
+		assert(cache);
+		cacheOK=true;
+		return cache;
 	}
 
 public:
-	inline InterfaceRepo() : SmartWrapper(_Creator) {}
+	inline InterfaceRepo() : SmartWrapper(_Creator), cacheOK(false) {}
 	inline InterfaceRepo(const SubClass& s) :
-		SmartWrapper(InterfaceRepo_base::_create(s.string())) {}
+		SmartWrapper(InterfaceRepo_base::_create(s.string())), cacheOK(false) {}
 	inline InterfaceRepo(const Reference &r) :
-		SmartWrapper(r.isString()?(InterfaceRepo_base::_fromString(r.string())):(InterfaceRepo_base::_fromReference(r.reference(),true))) {}
-	inline InterfaceRepo(InterfaceRepo_base* b) : SmartWrapper(b) {}
-	inline InterfaceRepo(const InterfaceRepo& target) : SmartWrapper(target._pool) {}
+		SmartWrapper(r.isString()?(InterfaceRepo_base::_fromString(r.string())):(InterfaceRepo_base::_fromReference(r.reference(),true))), cacheOK(false) {}
+	inline InterfaceRepo(InterfaceRepo_base* b) : SmartWrapper(b), cacheOK(false) {}
+	inline InterfaceRepo(const InterfaceRepo& target) : SmartWrapper(target._pool), cacheOK(false) {}
 	inline InterfaceRepo& operator=(const InterfaceRepo& target) {
+		cacheOK=false;
 		InterfaceRepo_base *sav = dynamic_cast<InterfaceRepo_base *>(_pool->base);
 		if (_pool->Dec() && sav) sav->_release();
 		_pool = target._pool;
@@ -357,12 +362,12 @@ public:
 		if (_pool->Dec() && sav) sav->_release();
 		_pool = 0;
 	}
-	inline operator InterfaceRepo_base*() const {return _method_call();}
+	inline operator InterfaceRepo_base*() {return (cacheOK)?cache:_method_call();}
 
-	inline long insertModule(const ModuleDef& newModule) const {return _method_call()->insertModule(newModule);}
-	inline void removeModule(long moduleID) const {return _method_call()->removeModule(moduleID);}
-	inline InterfaceDef* queryInterface(const std::string& name) const {return _method_call()->queryInterface(name);}
-	inline TypeDef* queryType(const std::string& name) const {return _method_call()->queryType(name);}
+	inline long insertModule(const ModuleDef& newModule) {return (cacheOK)?cache->insertModule(newModule):_method_call()->insertModule(newModule);}
+	inline void removeModule(long moduleID) {return (cacheOK)?cache->removeModule(moduleID):_method_call()->removeModule(moduleID);}
+	inline InterfaceDef* queryInterface(const std::string& name) {return (cacheOK)?cache->queryInterface(name):_method_call()->queryInterface(name);}
+	inline TypeDef* queryType(const std::string& name) {return (cacheOK)?cache->queryType(name):_method_call()->queryType(name);}
 };
 
 class FlowSystemSender_base : virtual public Object {
@@ -411,21 +416,26 @@ public:
 class FlowSystemSender : virtual public SmartWrapper {
 private:
 	static Object_base* _Creator();
-	inline FlowSystemSender_base *_method_call() const {
+	bool cacheOK;
+	FlowSystemSender_base *cache;
+	inline FlowSystemSender_base *_method_call() {
 		_pool->checkcreate();
-		assert(_pool->base);
-		return dynamic_cast<FlowSystemSender_base *>(_pool->base);
+		cache=dynamic_cast<FlowSystemSender_base *>(_pool->base);
+		assert(cache);
+		cacheOK=true;
+		return cache;
 	}
 
 public:
-	inline FlowSystemSender() : SmartWrapper(_Creator) {}
+	inline FlowSystemSender() : SmartWrapper(_Creator), cacheOK(false) {}
 	inline FlowSystemSender(const SubClass& s) :
-		SmartWrapper(FlowSystemSender_base::_create(s.string())) {}
+		SmartWrapper(FlowSystemSender_base::_create(s.string())), cacheOK(false) {}
 	inline FlowSystemSender(const Reference &r) :
-		SmartWrapper(r.isString()?(FlowSystemSender_base::_fromString(r.string())):(FlowSystemSender_base::_fromReference(r.reference(),true))) {}
-	inline FlowSystemSender(FlowSystemSender_base* b) : SmartWrapper(b) {}
-	inline FlowSystemSender(const FlowSystemSender& target) : SmartWrapper(target._pool) {}
+		SmartWrapper(r.isString()?(FlowSystemSender_base::_fromString(r.string())):(FlowSystemSender_base::_fromReference(r.reference(),true))), cacheOK(false) {}
+	inline FlowSystemSender(FlowSystemSender_base* b) : SmartWrapper(b), cacheOK(false) {}
+	inline FlowSystemSender(const FlowSystemSender& target) : SmartWrapper(target._pool), cacheOK(false) {}
 	inline FlowSystemSender& operator=(const FlowSystemSender& target) {
+		cacheOK=false;
 		FlowSystemSender_base *sav = dynamic_cast<FlowSystemSender_base *>(_pool->base);
 		if (_pool->Dec() && sav) sav->_release();
 		_pool = target._pool;
@@ -438,9 +448,9 @@ public:
 		if (_pool->Dec() && sav) sav->_release();
 		_pool = 0;
 	}
-	inline operator FlowSystemSender_base*() const {return _method_call();}
+	inline operator FlowSystemSender_base*() {return (cacheOK)?cache:_method_call();}
 
-	inline void processed() const {return _method_call()->processed();}
+	inline void processed() {return (cacheOK)?cache->processed():_method_call()->processed();}
 };
 
 class FlowSystemReceiver_base : virtual public Object {
@@ -489,21 +499,26 @@ public:
 class FlowSystemReceiver : virtual public SmartWrapper {
 private:
 	static Object_base* _Creator();
-	inline FlowSystemReceiver_base *_method_call() const {
+	bool cacheOK;
+	FlowSystemReceiver_base *cache;
+	inline FlowSystemReceiver_base *_method_call() {
 		_pool->checkcreate();
-		assert(_pool->base);
-		return dynamic_cast<FlowSystemReceiver_base *>(_pool->base);
+		cache=dynamic_cast<FlowSystemReceiver_base *>(_pool->base);
+		assert(cache);
+		cacheOK=true;
+		return cache;
 	}
 
 public:
-	inline FlowSystemReceiver() : SmartWrapper(_Creator) {}
+	inline FlowSystemReceiver() : SmartWrapper(_Creator), cacheOK(false) {}
 	inline FlowSystemReceiver(const SubClass& s) :
-		SmartWrapper(FlowSystemReceiver_base::_create(s.string())) {}
+		SmartWrapper(FlowSystemReceiver_base::_create(s.string())), cacheOK(false) {}
 	inline FlowSystemReceiver(const Reference &r) :
-		SmartWrapper(r.isString()?(FlowSystemReceiver_base::_fromString(r.string())):(FlowSystemReceiver_base::_fromReference(r.reference(),true))) {}
-	inline FlowSystemReceiver(FlowSystemReceiver_base* b) : SmartWrapper(b) {}
-	inline FlowSystemReceiver(const FlowSystemReceiver& target) : SmartWrapper(target._pool) {}
+		SmartWrapper(r.isString()?(FlowSystemReceiver_base::_fromString(r.string())):(FlowSystemReceiver_base::_fromReference(r.reference(),true))), cacheOK(false) {}
+	inline FlowSystemReceiver(FlowSystemReceiver_base* b) : SmartWrapper(b), cacheOK(false) {}
+	inline FlowSystemReceiver(const FlowSystemReceiver& target) : SmartWrapper(target._pool), cacheOK(false) {}
 	inline FlowSystemReceiver& operator=(const FlowSystemReceiver& target) {
+		cacheOK=false;
 		FlowSystemReceiver_base *sav = dynamic_cast<FlowSystemReceiver_base *>(_pool->base);
 		if (_pool->Dec() && sav) sav->_release();
 		_pool = target._pool;
@@ -516,9 +531,9 @@ public:
 		if (_pool->Dec() && sav) sav->_release();
 		_pool = 0;
 	}
-	inline operator FlowSystemReceiver_base*() const {return _method_call();}
+	inline operator FlowSystemReceiver_base*() {return (cacheOK)?cache:_method_call();}
 
-	inline long receiveHandlerID() const {return _method_call()->receiveHandlerID();}
+	inline long receiveHandlerID() {return (cacheOK)?cache->receiveHandlerID():_method_call()->receiveHandlerID();}
 };
 
 class FlowSystem_base : virtual public Object {
@@ -577,21 +592,26 @@ public:
 class FlowSystem : virtual public SmartWrapper {
 private:
 	static Object_base* _Creator();
-	inline FlowSystem_base *_method_call() const {
+	bool cacheOK;
+	FlowSystem_base *cache;
+	inline FlowSystem_base *_method_call() {
 		_pool->checkcreate();
-		assert(_pool->base);
-		return dynamic_cast<FlowSystem_base *>(_pool->base);
+		cache=dynamic_cast<FlowSystem_base *>(_pool->base);
+		assert(cache);
+		cacheOK=true;
+		return cache;
 	}
 
 public:
-	inline FlowSystem() : SmartWrapper(_Creator) {}
+	inline FlowSystem() : SmartWrapper(_Creator), cacheOK(false) {}
 	inline FlowSystem(const SubClass& s) :
-		SmartWrapper(FlowSystem_base::_create(s.string())) {}
+		SmartWrapper(FlowSystem_base::_create(s.string())), cacheOK(false) {}
 	inline FlowSystem(const Reference &r) :
-		SmartWrapper(r.isString()?(FlowSystem_base::_fromString(r.string())):(FlowSystem_base::_fromReference(r.reference(),true))) {}
-	inline FlowSystem(FlowSystem_base* b) : SmartWrapper(b) {}
-	inline FlowSystem(const FlowSystem& target) : SmartWrapper(target._pool) {}
+		SmartWrapper(r.isString()?(FlowSystem_base::_fromString(r.string())):(FlowSystem_base::_fromReference(r.reference(),true))), cacheOK(false) {}
+	inline FlowSystem(FlowSystem_base* b) : SmartWrapper(b), cacheOK(false) {}
+	inline FlowSystem(const FlowSystem& target) : SmartWrapper(target._pool), cacheOK(false) {}
 	inline FlowSystem& operator=(const FlowSystem& target) {
+		cacheOK=false;
 		FlowSystem_base *sav = dynamic_cast<FlowSystem_base *>(_pool->base);
 		if (_pool->Dec() && sav) sav->_release();
 		_pool = target._pool;
@@ -604,14 +624,14 @@ public:
 		if (_pool->Dec() && sav) sav->_release();
 		_pool = 0;
 	}
-	inline operator FlowSystem_base*() const {return _method_call();}
+	inline operator FlowSystem_base*() {return (cacheOK)?cache:_method_call();}
 
-	inline void startObject(Object_base * node) const {return _method_call()->startObject(node);}
-	inline void stopObject(Object_base * node) const {return _method_call()->stopObject(node);}
-	inline void connectObject(Object_base * sourceObject, const std::string& sourcePort, Object_base * destObject, const std::string& destPort) const {return _method_call()->connectObject(sourceObject, sourcePort, destObject, destPort);}
-	inline void disconnectObject(Object_base * sourceObject, const std::string& sourcePort, Object_base * destObject, const std::string& destPort) const {return _method_call()->disconnectObject(sourceObject, sourcePort, destObject, destPort);}
-	inline AttributeType queryFlags(Object_base * node, const std::string& port) const {return _method_call()->queryFlags(node, port);}
-	inline FlowSystemReceiver createReceiver(Object_base * destObject, const std::string& destPort, FlowSystemSender sender) const {return _method_call()->createReceiver(destObject, destPort, sender);}
+	inline void startObject(Object_base * node) {return (cacheOK)?cache->startObject(node):_method_call()->startObject(node);}
+	inline void stopObject(Object_base * node) {return (cacheOK)?cache->stopObject(node):_method_call()->stopObject(node);}
+	inline void connectObject(Object_base * sourceObject, const std::string& sourcePort, Object_base * destObject, const std::string& destPort) {return (cacheOK)?cache->connectObject(sourceObject, sourcePort, destObject, destPort):_method_call()->connectObject(sourceObject, sourcePort, destObject, destPort);}
+	inline void disconnectObject(Object_base * sourceObject, const std::string& sourcePort, Object_base * destObject, const std::string& destPort) {return (cacheOK)?cache->disconnectObject(sourceObject, sourcePort, destObject, destPort):_method_call()->disconnectObject(sourceObject, sourcePort, destObject, destPort);}
+	inline AttributeType queryFlags(Object_base * node, const std::string& port) {return (cacheOK)?cache->queryFlags(node, port):_method_call()->queryFlags(node, port);}
+	inline FlowSystemReceiver createReceiver(Object_base * destObject, const std::string& destPort, FlowSystemSender sender) {return (cacheOK)?cache->createReceiver(destObject, destPort, sender):_method_call()->createReceiver(destObject, destPort, sender);}
 };
 
 class GlobalComm_base : virtual public Object {
@@ -664,21 +684,26 @@ public:
 class GlobalComm : virtual public SmartWrapper {
 private:
 	static Object_base* _Creator();
-	inline GlobalComm_base *_method_call() const {
+	bool cacheOK;
+	GlobalComm_base *cache;
+	inline GlobalComm_base *_method_call() {
 		_pool->checkcreate();
-		assert(_pool->base);
-		return dynamic_cast<GlobalComm_base *>(_pool->base);
+		cache=dynamic_cast<GlobalComm_base *>(_pool->base);
+		assert(cache);
+		cacheOK=true;
+		return cache;
 	}
 
 public:
-	inline GlobalComm() : SmartWrapper(_Creator) {}
+	inline GlobalComm() : SmartWrapper(_Creator), cacheOK(false) {}
 	inline GlobalComm(const SubClass& s) :
-		SmartWrapper(GlobalComm_base::_create(s.string())) {}
+		SmartWrapper(GlobalComm_base::_create(s.string())), cacheOK(false) {}
 	inline GlobalComm(const Reference &r) :
-		SmartWrapper(r.isString()?(GlobalComm_base::_fromString(r.string())):(GlobalComm_base::_fromReference(r.reference(),true))) {}
-	inline GlobalComm(GlobalComm_base* b) : SmartWrapper(b) {}
-	inline GlobalComm(const GlobalComm& target) : SmartWrapper(target._pool) {}
+		SmartWrapper(r.isString()?(GlobalComm_base::_fromString(r.string())):(GlobalComm_base::_fromReference(r.reference(),true))), cacheOK(false) {}
+	inline GlobalComm(GlobalComm_base* b) : SmartWrapper(b), cacheOK(false) {}
+	inline GlobalComm(const GlobalComm& target) : SmartWrapper(target._pool), cacheOK(false) {}
 	inline GlobalComm& operator=(const GlobalComm& target) {
+		cacheOK=false;
 		GlobalComm_base *sav = dynamic_cast<GlobalComm_base *>(_pool->base);
 		if (_pool->Dec() && sav) sav->_release();
 		_pool = target._pool;
@@ -691,11 +716,11 @@ public:
 		if (_pool->Dec() && sav) sav->_release();
 		_pool = 0;
 	}
-	inline operator GlobalComm_base*() const {return _method_call();}
+	inline operator GlobalComm_base*() {return (cacheOK)?cache:_method_call();}
 
-	inline bool put(const std::string& variable, const std::string& value) const {return _method_call()->put(variable, value);}
-	inline std::string get(const std::string& variable) const {return _method_call()->get(variable);}
-	inline void erase(const std::string& variable) const {return _method_call()->erase(variable);}
+	inline bool put(const std::string& variable, const std::string& value) {return (cacheOK)?cache->put(variable, value):_method_call()->put(variable, value);}
+	inline std::string get(const std::string& variable) {return (cacheOK)?cache->get(variable):_method_call()->get(variable);}
+	inline void erase(const std::string& variable) {return (cacheOK)?cache->erase(variable):_method_call()->erase(variable);}
 };
 
 class TmpGlobalComm_base : virtual public GlobalComm_base {
@@ -742,21 +767,26 @@ public:
 class TmpGlobalComm : virtual public GlobalComm {
 private:
 	static Object_base* _Creator();
-	inline TmpGlobalComm_base *_method_call() const {
+	bool cacheOK;
+	TmpGlobalComm_base *cache;
+	inline TmpGlobalComm_base *_method_call() {
 		_pool->checkcreate();
-		assert(_pool->base);
-		return dynamic_cast<TmpGlobalComm_base *>(_pool->base);
+		cache=dynamic_cast<TmpGlobalComm_base *>(_pool->base);
+		assert(cache);
+		cacheOK=true;
+		return cache;
 	}
 
 public:
-	inline TmpGlobalComm() : SmartWrapper(_Creator) {}
+	inline TmpGlobalComm() : SmartWrapper(_Creator), cacheOK(false) {}
 	inline TmpGlobalComm(const SubClass& s) :
-		SmartWrapper(TmpGlobalComm_base::_create(s.string())) {}
+		SmartWrapper(TmpGlobalComm_base::_create(s.string())), cacheOK(false) {}
 	inline TmpGlobalComm(const Reference &r) :
-		SmartWrapper(r.isString()?(TmpGlobalComm_base::_fromString(r.string())):(TmpGlobalComm_base::_fromReference(r.reference(),true))) {}
-	inline TmpGlobalComm(TmpGlobalComm_base* b) : SmartWrapper(b) {}
-	inline TmpGlobalComm(const TmpGlobalComm& target) : SmartWrapper(target._pool) {}
+		SmartWrapper(r.isString()?(TmpGlobalComm_base::_fromString(r.string())):(TmpGlobalComm_base::_fromReference(r.reference(),true))), cacheOK(false) {}
+	inline TmpGlobalComm(TmpGlobalComm_base* b) : SmartWrapper(b), cacheOK(false) {}
+	inline TmpGlobalComm(const TmpGlobalComm& target) : SmartWrapper(target._pool), cacheOK(false) {}
 	inline TmpGlobalComm& operator=(const TmpGlobalComm& target) {
+		cacheOK=false;
 		TmpGlobalComm_base *sav = dynamic_cast<TmpGlobalComm_base *>(_pool->base);
 		if (_pool->Dec() && sav) sav->_release();
 		_pool = target._pool;
@@ -769,7 +799,7 @@ public:
 		if (_pool->Dec() && sav) sav->_release();
 		_pool = 0;
 	}
-	inline operator TmpGlobalComm_base*() const {return _method_call();}
+	inline operator TmpGlobalComm_base*() {return (cacheOK)?cache:_method_call();}
 
 };
 

@@ -1235,35 +1235,40 @@ void doInterfacesHeader(FILE *header)
 		fprintf(header,"class %s %s {\n",d->name.c_str(),inherits.c_str());
 		fprintf(header,"private:\n");
 		fprintf(header,"\tstatic Object_base* _Creator();\n");
-		fprintf(header,"\tinline %s_base *_method_call() const {\n",d->name.c_str());
+		fprintf(header,"\tbool cacheOK;\n");
+		fprintf(header,"\t%s_base *cache;\n",d->name.c_str());
+		fprintf(header,"\tinline %s_base *_method_call() {\n",d->name.c_str());
 		fprintf(header,"\t\t_pool->checkcreate();\n");
-		fprintf(header,"\t\tassert(_pool->base);\n");
-		fprintf(header,"\t\treturn dynamic_cast<%s_base *>(_pool->base);\n",d->name.c_str());
+		fprintf(header,"\t\tcache=dynamic_cast<%s_base *>(_pool->base);\n");
+		fprintf(header,"\t\tassert(cache);\n");
+		fprintf(header,"\t\tcacheOK=true;\n");
+		fprintf(header,"\t\treturn cache;\n",d->name.c_str());
 		fprintf(header,"\t}\n");
 
 		fprintf(header,"\npublic:\n");
 
 		// empty constructor: specify creator for create-on-demand
-		fprintf(header,"\tinline %s() : SmartWrapper(_Creator) {}\n",d->name.c_str());
+		fprintf(header,"\tinline %s() : SmartWrapper(_Creator), cacheOK(false) {}\n",d->name.c_str());
 		
 		// constructors from reference and for subclass
 		fprintf(header,"\tinline %s(const SubClass& s) :\n"
-			"\t\tSmartWrapper(%s_base::_create(s.string())) {}\n",
+			"\t\tSmartWrapper(%s_base::_create(s.string())), cacheOK(false) {}\n",
 			d->name.c_str(),d->name.c_str());
 		fprintf(header,"\tinline %s(const Reference &r) :\n"
 			"\t\tSmartWrapper("
 			"r.isString()?(%s_base::_fromString(r.string())):"
-			"(%s_base::_fromReference(r.reference(),true))) {}\n",
+			"(%s_base::_fromReference(r.reference(),true))), cacheOK(false) {}\n",
 			d->name.c_str(),d->name.c_str(), d->name.c_str());
 
 		// copy constructors
-		fprintf(header,"\tinline %s(%s_base* b) : SmartWrapper(b) {}\n",
+		fprintf(header,"\tinline %s(%s_base* b) : SmartWrapper(b), cacheOK(false) {}\n",
 			d->name.c_str(),d->name.c_str());
-		fprintf(header,"\tinline %s(const %s& target) : SmartWrapper(target._pool) {}\n",
+		fprintf(header,"\tinline %s(const %s& target) : SmartWrapper(target._pool), cacheOK(false) {}\n",
 			d->name.c_str(),d->name.c_str());
 		// copy operator. copy from _base* extraneous (uses implicit const object)
 		fprintf(header,"\tinline %s& operator=(const %s& target) {\n",
 			d->name.c_str(),d->name.c_str());
+		fprintf(header,"\t\tcacheOK=false;\n");
 		fprintf(header,"\t\t%s_base *sav = dynamic_cast<%s_base *>(_pool->base);\n",
 			d->name.c_str(),d->name.c_str());
 		fprintf(header,"\t\tif (_pool->Dec() && sav) sav->_release();\n");
@@ -1284,14 +1289,14 @@ void doInterfacesHeader(FILE *header)
 		// conversion to string
 //		fprintf(header,"\tinline std::string toString() const {return _method_call()->_toString();}\n");
 		// conversion to _base* object
-		fprintf(header,"\tinline operator %s_base*() const {return _method_call();}\n",d->name.c_str());
+		fprintf(header,"\tinline operator %s_base*() {return (cacheOK)?cache:_method_call();}\n",d->name.c_str());
 		fprintf(header,"\n");
 
 
 		// start, stop
 		if (haveStreams(d)) {
-			fprintf(header,"\tinline void start() const {return _method_call()->_node()->start();}\n");
-			fprintf(header,"\tinline void stop() const {return _method_call()->_node()->stop();}\n");
+			fprintf(header,"\tinline void start() {return (cacheOK)?cache->_node()->start():_method_call()->_node()->start();}\n");
+			fprintf(header,"\tinline void stop() {return (cacheOK)?cache->_node()->stop():_method_call()->_node()->stop();}\n");
 			fprintf(header,"\n");
 		}
 
@@ -1306,13 +1311,13 @@ void doInterfacesHeader(FILE *header)
 			{
 				if(ad->flags & streamOut)  /* readable from outside */
 				{
-					fprintf(header,"\tinline %s %s() const {return _method_call()->%s();}\n",
-						rc.c_str(), ad->name.c_str(), ad->name.c_str());
+					fprintf(header,"\tinline %s %s() {return (cacheOK)?cache->%s():_method_call()->%s();}\n",
+						rc.c_str(), ad->name.c_str(), ad->name.c_str(), ad->name.c_str());
 				}
 				if(ad->flags & streamIn)  /* writeable from outside */
 				{
-					fprintf(header,"\tinline void %s(%s) const {_method_call()->%s(newValue);}\n",
-						ad->name.c_str(), pc.c_str(), ad->name.c_str());
+					fprintf(header,"\tinline void %s(%s) {(cacheOK)?cache->%s(newValue):_method_call()->%s(newValue);}\n",
+						ad->name.c_str(), pc.c_str(), ad->name.c_str(), ad->name.c_str());
 				}
 			}
 		}
@@ -1329,13 +1334,16 @@ void doInterfacesHeader(FILE *header)
 			if (md->name == "constructor") {
 				fprintf(header,"\tinline %s(%s) : "
 					"SmartWrapper(%s_base::_create()) {\n"
-					"\t\tassert(_pool->base);\n"
-					"\t\tdynamic_cast<%s_base *>(_pool->base)->constructor(%s);\n\t}\n",
+					"\t\tcache=dynamic_cast<%s_base *>(_pool->base);\n"
+					"\t\tassert(cache);\n"
+					"\t\tcacheOK=true;\n"
+					"\t\tcache->constructor(%s);\n\t}\n",
 					d->name.c_str(), params.c_str(), d->name.c_str(),
 					d->name.c_str(), callparams.c_str());
 			} else {
-				fprintf(header,"\tinline %s %s(%s) const {return _method_call()->%s(%s);}\n",
+				fprintf(header,"\tinline %s %s(%s) {return (cacheOK)?cache->%s(%s):_method_call()->%s(%s);}\n",
 					rc.c_str(),	md->name.c_str(), params.c_str(),
+					md->name.c_str(), callparams.c_str(),
 					md->name.c_str(), callparams.c_str());
 			}
 		}

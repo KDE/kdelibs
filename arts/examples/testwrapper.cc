@@ -51,7 +51,7 @@ public:
 
 REGISTER_IMPLEMENTATION(D_impl);
 
-#define CALLS 1000000
+#define CALLS 100000000
 
 void check(const char *name,bool passed)
 {
@@ -105,7 +105,7 @@ void test1()
 
 	float newspeed = (float)CALLS/benchmark(BENCH_END);
 
-	check("speed for calls",(oldspeed * 2.0) < newspeed);
+	check("speed for calls",oldspeed < newspeed * 2.0);
 	cout << "  -> old " << (long)(oldspeed) << " calls/sec" << endl;
 	cout << "  -> new " << (long)(newspeed) << " calls/sec" << endl;
 }
