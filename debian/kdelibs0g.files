@@ -1,7 +1,6 @@
 usr/X11R6/lib/lib*.so.*
 etc/kde/charsets
-usr/doc/kde/HTML/default
-usr/share/apps
-usr/share/locale
+usr/doc/kde
+usr/share
 usr/doc/kdelibs
-usr/share/toolbar
+usr/share
