@@ -1,6 +1,6 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2000 Max Judin <novaprint@mtu-net.ru>
-   Copyright (C) 2000 Falk Brettschneider <gigafalk@yahoo.com>
+   Copyright (C) 2000 Falk Brettschneider <falk@kdevelop.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -20,6 +20,7 @@
 /*
    activities:
    -----------
+   03/2001 - 02/2001       : maintained and enhanced by Falk Brettschneider <falk@kdevelop.org>
    03/2000                 : class documentation added by Falk Brettschneider <gigafalk@yahoo.com>
    10/1999 - 03/2000       : programmed by Max Judin <novaprint@mtu-net.ru>
 
@@ -687,8 +688,6 @@ private:
  *
  * The dockmanager is also often used when a certain dockwidget or a child of such dockwidget must be found.
  *
- * Note: the docking itself is handled by another private class (KDockMoveManager).
- *
  * @author Max Judin (documentation: Falk Brettschneider).
  * @version $Id$
  */
@@ -906,7 +905,7 @@ private:
   QWidget* main;
 
   /**
-   * A special manager just for the dragging of a dockwidget
+   * Dead. Scheduled for removing in 3.0. Do not use.
    */
   KDockMoveManager* mg;
 
@@ -976,21 +975,6 @@ private:
    * An internal list containing data for the menuitems for the visibility popup menu.
    */
   QList<MenuDockData> *menuData;
-
-  /**
-   * This rectangle is used to highlight the current dockposition. It stores global screen coordinates.
-   */
-  QRect dragRect;
-
-  /**
-   * This rectangle is used to erase the previously highlighted dockposition. It stores global screen coordinates.
-   */
-  QRect oldDragRect;
-
-  /**
-   * This flag stores the information if dragging is ready to start. Used between mousePress and mouseMove event.
-   */
-  bool readyToDrag;
 
   class KDockManagerPrivate;
   KDockManagerPrivate *d;

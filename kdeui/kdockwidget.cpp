@@ -895,9 +895,29 @@ bool KDockWidget::isDockBackPossible()
 
 /**************************************************************************************/
 
+class KDockManager::KDockManagerPrivate
+{
+public:
+  /**
+   * This rectangle is used to highlight the current dockposition. It stores global screen coordinates.
+   */
+  QRect dragRect;
+
+  /**
+   * This rectangle is used to erase the previously highlighted dockposition. It stores global screen coordinates.
+   */
+  QRect oldDragRect;
+
+  /**
+   * This flag stores the information if dragging is ready to start. Used between mousePress and mouseMove event.
+   */
+  bool readyToDrag;
+};
+
 KDockManager::KDockManager( QWidget* mainWindow , const char* name )
 :QObject( 0, name )
 {
+  d = new KDockManagerPrivate;
   main = mainWindow;
   main->installEventFilter( this );
 
@@ -934,6 +954,7 @@ KDockManager::~KDockManager()
     delete obj;
   }
   delete childDock;
+  delete d;
 }
 
 void KDockManager::activate()
@@ -989,23 +1010,23 @@ bool KDockManager::eventFilter( QObject *obj, QEvent *event )
             childDockWidgetList->append( curdw );
             findChildDockWidget( curdw, childDockWidgetList );
 
-            oldDragRect = QRect();
-            dragRect = QRect(curdw->geometry());
+            d->oldDragRect = QRect();
+            d->dragRect = QRect(curdw->geometry());
             QPoint p = curdw->mapToGlobal(QPoint(0,0));
-            dragRect.moveTopLeft(p);
+            d->dragRect.moveTopLeft(p);
             drawDragRectangle();
-            readyToDrag = true;
+            d->readyToDrag = true;
           }
         }
         break;
       case QEvent::MouseButtonRelease:
         if ( ((QMouseEvent*)event)->button() == LeftButton ){
-          if (readyToDrag) {
-              readyToDrag = false;
-              oldDragRect = QRect();
-              dragRect = QRect(curdw->geometry());
+          if (d->readyToDrag) {
+              d->readyToDrag = false;
+              d->oldDragRect = QRect();
+              d->dragRect = QRect(curdw->geometry());
               QPoint p = curdw->mapToGlobal(QPoint(0,0));
-              dragRect.moveTopLeft(p);
+              d->dragRect.moveTopLeft(p);
               drawDragRectangle();
               currentDragWidget = 0L;
               delete childDockWidgetList;
@@ -1044,8 +1065,8 @@ bool KDockManager::eventFilter( QObject *obj, QEvent *event )
           }
         } else {
           if ( (((QMouseEvent*)event)->state() == LeftButton) &&  !dropCancel ){
-            if (readyToDrag) {
-              readyToDrag = false;
+            if (d->readyToDrag) {
+              d->readyToDrag = false;
               startDrag( curdw);
             }
           }
@@ -1173,7 +1194,7 @@ void KDockManager::dragMove( KDockWidget* dw, QPoint pos )
   if ( dw->parentTabGroup() ){
     curPos = KDockWidget::DockCenter;
   	if ( oldPos != curPos ) {
-  	  dragRect.setRect( p.x()+2, p.y()+2, r.width()-4, r.height()-4 );
+  	  d->dragRect.setRect( p.x()+2, p.y()+2, r.width()-4, r.height()-4 );
     }  	
     return;
   }
@@ -1206,7 +1227,7 @@ void KDockManager::dragMove( KDockWidget* dw, QPoint pos )
           }
 
   if ( oldPos != curPos ) {
-    dragRect.setRect( p.x(), p.y(), w, h );
+    d->dragRect.setRect( p.x(), p.y(), w, h );
     drawDragRectangle();
   }
 }
@@ -1886,13 +1907,13 @@ KDockWidget* KDockManager::findWidgetParentDock( QWidget* w )
 
 void KDockManager::drawDragRectangle()
 {
-  if (oldDragRect == dragRect)
+  if (d->oldDragRect == d->dragRect)
     return;
 
   int i;
   QRect oldAndNewDragRect[2];
-  oldAndNewDragRect[0] = oldDragRect;
-  oldAndNewDragRect[1] = dragRect;
+  oldAndNewDragRect[0] = d->oldDragRect;
+  oldAndNewDragRect[1] = d->dragRect;
 
   // 2 calls, one for the old and one for the new drag rectangle
   for (i = 0; i <= 1; i++) {
@@ -1938,7 +1959,7 @@ void KDockManager::drawDragRectangle()
   }
 
   // memorize the current rectangle for later removing
-  oldDragRect = dragRect;
+  d->oldDragRect = d->dragRect;
 }
 
 #ifndef NO_INCLUDE_MOCFILES // for Qt-only projects, because tmake doesn't take this name
