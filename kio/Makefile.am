@@ -36,7 +36,7 @@ libkio_la_LIBADD = kssl/libkssl.la kio/libkiocore.la \
 kde_mime_DATA = magic
 kde_servicetypes_DATA = application.desktop kurifilterplugin.desktop \
                         kcomprfilter.desktop kscan.desktop kdatatool.desktop \
-                        kfileplugin.desktop
+                        kfileplugin.desktop kcmodule.desktop
 
 EXTRA_DIST = $(kde_mime_DATA)
 

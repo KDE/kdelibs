@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=ServiceType
+X-KDE-ServiceType=KCModule
+Name=KDE Control Module
+
+[PropertyDef::X-KDE-FactoryName]
+Type=QString
+
+[PropertyDef::X-KDE-RootOnly]
+Type=bool
+
