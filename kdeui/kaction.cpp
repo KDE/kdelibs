@@ -422,7 +422,8 @@ int KAction::plug( QWidget *w, int index )
     }
 
     menu->setItemEnabled( id, d->m_enabled );
-    menu->setWhatsThis( id, d->m_whatsThis );
+    if ( !d->m_whatsThis.isEmpty() )
+        menu->setWhatsThis( id, d->m_whatsThis );
 
     addContainer( menu, id );
     connect( menu, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
@@ -458,9 +459,12 @@ int KAction::plug( QWidget *w, int index )
       bar->getButton( id_ )->setName( QCString("toolbutton_")+name() );
     }
 
-    QWhatsThis::add( bar->getButton(id_), d->m_whatsThis );
+    if ( !d->m_whatsThis.isEmpty() )
+        QWhatsThis::add( bar->getButton(id_), d->m_whatsThis );
+
     if ( !d->m_toolTip.isEmpty() )
       QToolTip::add( bar->getButton(id_), d->m_toolTip );
+
     addContainer( bar, id_ );
 
     connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
@@ -1337,7 +1341,10 @@ int KSelectAction::plug( QWidget *widget, int index )
     }
 
     menu->setItemEnabled( id, isEnabled() );
-    menu->setWhatsThis( id, whatsThis() );
+
+    QString wth = whatsThis();
+    if ( !wth.isEmpty() )
+        menu->setWhatsThis( id, wth );
 
     addContainer( menu, id );
     connect( menu, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
