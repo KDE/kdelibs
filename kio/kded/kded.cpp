@@ -112,8 +112,11 @@ void Kded::build()
 
 void Kded::recreate()
 {
-  system("kbuildsycoca"); // Use KLauncher
-  build();
+   // Using KLauncher here is difficult since we might not have a
+   // database
+
+   system("kbuildsycoca");
+   build();
 }
 
 void Kded::dirDeleted(const QString& /*path*/)
@@ -223,13 +226,24 @@ int main(int argc, char *argv[])
      Kded *kded = new Kded(ksycoca_kfsstnd != current_kfsstnd); // Build data base
 
      kded->build();
-     if (kded->needUpdate())
-        kded->recreate();
 
+     bool needUpdate = kded->needUpdate();
+     if (needUpdate)
+        kded->recreate();
+  
      if (check)
         return 0;
 
      KUniqueApplication k( false, false ); // No styles, no GUI
+
+     if (!needUpdate)
+     {
+        // During startup kdesktop waits for KDED to finish.
+        // Send a databaseChanged signal even if the database hasn't
+        // changed.
+        QByteArray data;
+        kapp->dcopClient()->send( "*", "ksycoca", "databaseChanged()", data );
+     }
 
      return k.exec(); // keep running
 }
