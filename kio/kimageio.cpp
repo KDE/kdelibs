@@ -29,6 +29,9 @@
 
 #include <qimage.h>
 
+void kimgioRegister() {
+  KImageIO::registerFormats();
+}
 
 class KImageIOFormat : public KSycocaEntry
 {
