@@ -799,7 +799,7 @@ void NamedAttrMapImpl::clearAttrs()
 	    if (attrs[i]->deleteMe())
 		delete attrs[i];
 	}
-	delete attrs;
+	delete [] attrs;
 	attrs = 0;
     }
     len = 0;
