@@ -16,7 +16,8 @@
 <!ENTITY etc    "<abbrev>etc.</abbrev>">
 <!ENTITY FAQ	'<acronym>FAQ</acronym>'>
 <!ENTITY ie     "<abbrev>i.e.</abbrev>">
-<!ENTITY kcontrolcenter	"<application>&kde; Control Center</application>">
+<!ENTITY kcontrolcenter	"<application>&kde; Control Centre</application>">
+<!ENTITY khelpcenter    "<application>KHelpCentre</application>">
 <!ENTITY LMB    "<mousebutton>left</mousebutton> mouse button">
 <!ENTITY MMB    "<mousebutton>middle</mousebutton> mouse button">
 <!ENTITY OS	"operating system"><!-- <acronym>OS</acronym>-->

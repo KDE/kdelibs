@@ -34,7 +34,7 @@ function.</para></listitem>
 <guimenu>Help</guimenu>
 <guimenuitem>Report Bug...</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>Opens the Bug report dialog</action> where you can
+<listitem><para><action>Opens the Bug report dialogue</action> where you can
 report a bug or request a <quote>wishlist</quote> feature.</para></listitem>
 </varlistentry>
 
