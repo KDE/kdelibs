@@ -141,11 +141,14 @@ public:
      */
     void stop();
 
+    /**
+     *  For java-side callbacks to resize themselves
+     */
     void resize( int, int );
-  
+
 protected slots:
      //
-     // Stuff to do with swallowing the applets Frame
+     // Stuff to do with swallowing the applet Frame
      //
      void setWindow( WId w );
 

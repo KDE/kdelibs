@@ -48,6 +48,10 @@ public:
                        const QString baseURL, const QString codeBase,
                        const QString jarFile, QSize size );
 
+    void createApplet( int contextId, int appletId,
+                       const QString name, const QString clazzName,
+                       const QString baseURL, const QString codeBase,
+                       const QString jarFile, QSize size, const QMap< QString, QString >& params );
     /**
      * Destroy an applet in the specified context with the specified id.
      */

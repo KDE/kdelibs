@@ -73,7 +73,8 @@ void KJavaAppletContext::create( KJavaApplet* applet )
                           applet->baseURL(),
                           applet->codeBase(),
                           applet->jarFile(),
-                          applet->size() );
+                          applet->size(),
+                          applet->getParams() );
 
     applet->setAppletId( appletId );
     d->applets.insert( appletId, applet );

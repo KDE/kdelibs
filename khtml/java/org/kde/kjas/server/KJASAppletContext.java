@@ -44,7 +44,8 @@ public class KJASAppletContext implements AppletContext
     public void createApplet( String appletID,
                               String className, URL codeBase,
                               URL docBase, String jars,
-                              String name, Dimension size )
+                              String name, Dimension size,
+                              Hashtable params )
     {
         try
         {
@@ -103,7 +104,7 @@ public class KJASAppletContext implements AppletContext
                 Applet app = (Applet) appletClass.newInstance();
                 app.setSize( size );
 
-                KJASAppletStub stub = new KJASAppletStub( this, appletID, app, codeBase, docBase, name );
+                KJASAppletStub stub = new KJASAppletStub( this, appletID, app, codeBase, docBase, name, params );
 
                 appletNames.put( name, app );
                 appletIDs.put( appletID, app );
@@ -172,15 +173,6 @@ public class KJASAppletContext implements AppletContext
         }
     }
 
-    public void setAppletParameter( String appletID, String name, String value )
-    {
-        KJASAppletStub stub = (KJASAppletStub) stubs.get( appletID );
-        if( stub == null )
-            Main.kjas_debug( "could not get applet stub" );
-        else
-            stub.setParameter( name, value );
-    }
-
     public void startApplet( String appletID )
     {
         final Applet app = (Applet) appletIDs.get( appletID );
@@ -234,6 +226,7 @@ public class KJASAppletContext implements AppletContext
 
     public AudioClip getAudioClip( URL url )
     {
+        //needs to be implemented
         return null;
     }
 

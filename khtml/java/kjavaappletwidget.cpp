@@ -50,14 +50,11 @@ void KJavaAppletWidget::init()
 
     uniqueTitle();
     shown = false;
-
-//    qApp->removeEventFilter( this );
-//    topLevelWidget()->removeEventFilter( this );
 }
 
 void KJavaAppletWidget::create()
 {
-    applet->create();
+//    applet->create();
 }
 
 void KJavaAppletWidget::setAppletClass( const QString &clazzName )
@@ -128,6 +125,8 @@ void KJavaAppletWidget::uniqueTitle()
 
 void KJavaAppletWidget::showApplet()
 {
+    //Now we send applet info to the applet server
+
     if ( !applet->isCreated() )
         applet->create();
 

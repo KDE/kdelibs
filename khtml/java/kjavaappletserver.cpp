@@ -106,7 +106,7 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
         QString jPath = config.readEntry( "JavaPath", "/usr/lib/jdk" );
         // Cut off trailing slash if any
         if( jPath[jPath.length()-1] == '/' )
-          jPath.remove(jPath.length()-1, 1);
+            jPath.remove(jPath.length()-1, 1);
 
         p->setJVMPath( jPath + "/bin/java");
     }
@@ -205,6 +205,42 @@ void KJavaAppletServer::createApplet( int contextId, int appletId,
 
     args.append( QString::number( size.width() ) );
     args.append( QString::number( size.height() ) );
+
+    process->send( CREATE_APPLET, args );
+}
+
+void KJavaAppletServer::createApplet( int contextId, int appletId,
+                                      const QString name, const QString clazzName,
+                                      const QString baseURL, const QString codeBase,
+                                      const QString jarFile, QSize size,
+                                      const QMap<QString,QString>& params )
+{
+    QStringList args;
+    args.append( QString::number( contextId ) );
+    args.append( QString::number( appletId ) );
+
+    //it's ok if these are empty strings, I take care of it later...
+    args.append( name );
+    args.append( clazzName );
+    args.append( baseURL );
+    args.append( codeBase );
+    args.append( jarFile );
+
+    args.append( QString::number( size.width() ) );
+    args.append( QString::number( size.height() ) );
+
+    //add on the number of parameter pairs...
+    int num = params.count();
+    QString num_params = QString("%1").arg( num, 8 );
+    args.append( num_params );
+
+    QMap< QString, QString >::ConstIterator it;
+
+    for( it = params.begin(); it != params.end(); ++it )
+    {
+        args.append( it.key() );
+        args.append( it.data() );
+    }
 
     process->send( CREATE_APPLET, args );
 }

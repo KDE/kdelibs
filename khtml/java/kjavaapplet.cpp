@@ -47,10 +47,10 @@ KJavaApplet::KJavaApplet( KJavaAppletWidget* _parent,
 
 KJavaApplet::~KJavaApplet()
 {
-  if ( d->reallyExists )
-    context->destroy( this );
+    if ( d->reallyExists )
+        context->destroy( this );
 
-  delete d;
+    delete d;
 }
 
 bool KJavaApplet::isCreated()
@@ -85,10 +85,12 @@ QString &KJavaApplet::parameter( const QString &name )
 
 void KJavaApplet::setParameter( const QString &name, const QString &value )
 {
-    if ( d->reallyExists )
-	context->setParameter( this, name, value );
-    else
-	params.insert( name, value );
+    params.insert( name, value );
+}
+
+QMap< QString, QString >& KJavaApplet::getParams()
+{
+    return params;
 }
 
 void KJavaApplet::setBaseURL( const QString &baseURL )
@@ -141,16 +143,6 @@ void KJavaApplet::create( )
 {
     context->create( this );
     d->reallyExists = true;
-
-    ParamMap::Iterator it;
-
-    if ( params.count() != 0 )
-    {
-        for ( it = params.begin(); it != params.end(); ++it )
-        {
-            context->setParameter( this, it.key(), it.data() );
-        }
-    }
 }
 
 void KJavaApplet::show( const QString &title )

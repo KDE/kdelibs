@@ -58,7 +58,8 @@ public class Main
 	
         if( bad_jdk )
         {
-            System.err.println("\nERROR: This version of Java is not supported for security reasons.\nERROR: Please use Java version 1.2 or higher.");
+            System.err.println("\nERROR: This version of Java is not supported for security reasons."
+            System.err.println(  "       Please use Java version 1.2 or higher.");
             return;
         }
 

@@ -41,7 +41,8 @@ public class KJASAppletStub implements AppletStub
      * passed applet.
      */
     public KJASAppletStub( KJASAppletContext _context, String _appletID,
-                           Applet _applet, URL _codeBase, URL _docBase, String _name )
+                           Applet _applet, URL _codeBase, URL _docBase, String _name,
+                           Hashtable _params )
     {
         context  = _context;
         applet   = _applet;
@@ -49,17 +50,9 @@ public class KJASAppletStub implements AppletStub
         docBase  = _docBase;
         name     = _name;
         appletID = _appletID;
+        params   = new Hashtable( _params );
 
-        params = new Hashtable();
         applet.setStub( this );
-    }
-
-    public void setParameter( String name, String value )
-    {
-        name = name.toLowerCase();
-
-        if ( ( name != null ) && ( value != null ) )
-            params.put( name, value );
     }
 
     /**
@@ -98,7 +91,15 @@ public class KJASAppletStub implements AppletStub
      */
     public String getParameter( String name )
     {
-        return (String) params.get( name.toLowerCase() );
+        String rval;
+
+        //try same case
+        rval = (String) params.get( name );
+
+        if( rval == null )
+            rval = (String) params.get( name.toLowerCase() );
+
+        return rval;
     }
 
     public boolean isActive()

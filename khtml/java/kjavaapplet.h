@@ -52,6 +52,7 @@ public:
     */
    void setParameter( const QString &name, const QString &value );
    QString &parameter( const QString &name );
+   QMap< QString, QString >& getParams();
 
    /**
     * Set the URL of the document embedding the applet.

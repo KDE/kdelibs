@@ -18,7 +18,7 @@ public class KJASProtocolHandler
     private static final int StartAppletCode    = 5;
     private static final int StopAppletCode     = 6;
     private static final int ShowAppletCode     = 7;
-    private static final int SetParameterCode   = 8;
+
     private static final int ShutdownServerCode = 9;
 
     private static final int ShowDocumentCode   = 12;
@@ -59,20 +59,10 @@ public class KJASProtocolHandler
         while( true )
         {
             Main.kjas_debug( "Start commandLoop" );
-
-            //read in 8 bytes for command length- length will be sent as a padded string
-            char[] length = new char[8];
-            for( int i = 0; i < 8; i++ )
-            {
-                length[i] = (char) commands.read();
-            }
-            String length_str = new String( length );
-
-            //read the whole command now that we know how long it is
-            int cmd_length = 0;
             try
             {
-                cmd_length = Integer.parseInt( length_str.trim() );
+                int cmd_length = readPaddedLength( 8 );
+
                 char[] cmd = new char[cmd_length];
                 for( int i = 0; i < cmd_length; i++ )
                 {
@@ -84,17 +74,8 @@ public class KJASProtocolHandler
             }
             catch( NumberFormatException e )
             {
-                Main.kjas_err( "Could not parse out message length from : " + length_str, e );
-
+                Main.kjas_err( "Could not parse out message length", e );
                 System.exit( 1 );
-
-
-                //read until the next character is a space, try to sync up the protocol
-                char curr = (char)commands.read();
-                while( curr != ' ' )
-                    curr = (char) commands.read();
-
-                commands.unread( curr );
             }
 
         }
@@ -143,6 +124,19 @@ public class KJASProtocolHandler
             String width = getArg( command );
             String height = getArg( command );
 
+            //get the number of parameter pairs...
+            String str_params = getArg( command );
+            int num_params = Integer.parseInt( str_params.trim() );
+
+            Hashtable params = new Hashtable();
+            for( int i = 0; i < num_params; i++ )
+            {
+                String name  = getArg( command );
+                String value = getArg( command );
+
+                params.put( name, value );
+            }
+
             Main.kjas_debug( "createApplet, context = " + contextID + ", applet = " + appletID );
             Main.kjas_debug( "              name = " + appletName + ", classname = " + className );
             Main.kjas_debug( "              baseURL = " + baseURL + ", codeBase = " + codeBase );
@@ -150,7 +144,8 @@ public class KJASProtocolHandler
 
             runner.createApplet( contextID, appletID, appletName, className,
                                  baseURL, codeBase, archives,
-                                 new Dimension( Integer.parseInt(width), Integer.parseInt(height) ) );
+                                 new Dimension( Integer.parseInt(width), Integer.parseInt(height) ),
+                                 params );
         } else
         if( cmd_code_value == DestroyAppletCode )
         {
@@ -192,19 +187,6 @@ public class KJASProtocolHandler
             Main.kjas_debug( "showApplet, context = " + contextID + ", applet = " + appletID );
 
             runner.showApplet( contextID, appletID, title );
-        } else
-        if( cmd_code_value == SetParameterCode )
-        {
-            //4 arguments
-            String contextID = getArg( command );
-            String appletID = getArg( command );
-            String name = getArg( command );
-            String value = getArg( command );
-
-            Main.kjas_debug( "setParameter, context = " + contextID + ", applet = " + appletID );
-            Main.kjas_debug( "              name = " + name + ", value = " + value );
-
-            runner.setParameter( contextID, appletID, name, value );
         } else
         if( cmd_code_value == ShutdownServerCode )
         {
@@ -420,6 +402,20 @@ public class KJASProtocolHandler
         }
 
         return rval.toCharArray();
+    }
+
+    private int readPaddedLength( int string_size )
+        throws IOException
+    {
+            //read in 8 bytes for command length- length will be sent as a padded string
+            char[] length = new char[string_size];
+            for( int i = 0; i < string_size; i++ )
+            {
+                length[i] = (char) commands.read();
+            }
+            String length_str = new String( length );
+
+            return Integer.parseInt( length_str.trim() );
     }
 
 }

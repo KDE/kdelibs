@@ -58,7 +58,8 @@ public class KJASAppletRunner
                               String docBase,
                               String codeBase,
                               String jars,
-                              Dimension size )
+                              Dimension size,
+                              Hashtable params )
         throws IllegalArgumentException
     {
         KJASAppletContext context = (KJASAppletContext) contexts.get( contextId );
@@ -108,7 +109,7 @@ public class KJASAppletRunner
 
         context.createApplet( appletId, className,
                               codeBaseURL, docBaseURL,
-                              jars, name, size );
+                              jars, name, size, params );
     }
 
     public void destroyApplet( String contextId, String appletId )
@@ -155,40 +156,4 @@ public class KJASAppletRunner
         context.stopApplet( appletId );
     }
 
-    public void setParameter( String contextId, String appletId,
-                              String name, String value )
-        throws IllegalArgumentException
-    {
-        KJASAppletContext context = (KJASAppletContext) contexts.get( contextId );
-        if ( context == null)
-            throw new IllegalArgumentException( "Invalid contextId passed to startApplet() "
-                                                + contextId );
-
-        context.setAppletParameter( appletId, name, value );
-    }
-
-    //
-    // Main
-    //
-    /*
-    public static void main( String[] args )
-    {
-        KJASAppletRunner runner = new KJASAppletRunner();
-        runner.createContext( 0 );
-        runner.createApplet( 0, 0, "fred",
-                            "Lake.class",
-                            "http://127.0.0.1/applets/" );
-        runner.setParameter( 0, 0, "image", "logo.gif" );
-        runner.showApplet( 0, 0, "unique_title_one" );
-
-        runner.createContext( 1 );
-        runner.createApplet( 1, 0, "barney",
-                            "Lake.class",
-                            "http://127.0.0.1/applets/" );
-        runner.setParameter( 1, 0, "image", "wolf2.jpg" );
-        runner.showApplet( 1, 0, "unique_title_two" );
-
-        //      runner.destroyContext( 0 );
-    }
-    */
 }
