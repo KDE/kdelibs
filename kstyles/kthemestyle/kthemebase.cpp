@@ -651,6 +651,7 @@ KThemeBase::~KThemeBase()
     delete d;
 }
 
+// KDE 4: Make it const QString &
 QImage* KThemeBase::loadImage( QString &name )
 {
     QImage * image = new QImage;
@@ -663,6 +664,7 @@ QImage* KThemeBase::loadImage( QString &name )
     return ( NULL );
 }
 
+// KDE 4: Make it const QString &
 KThemePixmap* KThemeBase::loadPixmap( QString &name )
 {
     KThemePixmap * pixmap = new KThemePixmap( false );
