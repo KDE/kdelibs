@@ -868,12 +868,12 @@ public:
    QString readEntry( const QString& pKey,
                      const QString& aDefault = QString::null ) const
    {
-	   return group(mGroup).readEntry(pKey, aDefault);
+     return group(mGroup).readEntry(pKey, aDefault);
    }
    QString readEntry( const char *pKey,
                      const QString& aDefault = QString::null ) const
    {
-	   return group(mGroup).readEntry(pKey, aDefault);
+     return group(mGroup).readEntry(pKey, aDefault);
    }
 
   /**
@@ -884,7 +884,7 @@ public:
    */
   QVariant readPropertyEntry( const QString& pKey, QVariant::Type t) const
   {
-	  return group(mGroup).readPropertyEntry(pKey,t);
+    return group(mGroup).readPropertyEntry(pKey,t);
   }
   QVariant readPropertyEntry( const char *pKey, QVariant::Type t) const
   {
@@ -1068,11 +1068,11 @@ public:
    */
   QFont readFontEntry( const QString& pKey, const QFont* pDefault = 0L ) const
   {
-    group(mGroup).readFontEntry( pKey, pDefault);
+    return group(mGroup).readFontEntry( pKey, pDefault);
   }
   QFont readFontEntry( const char *pKey, const QFont* pDefault = 0L ) const
   {
-    group(mGroup).readFontEntry(pKey, pDefault);
+    return group(mGroup).readFontEntry(pKey, pDefault);
   }
 
   /**
@@ -1090,12 +1090,12 @@ public:
    */
   bool readBoolEntry( const QString& pKey, const bool bDefault = false ) const
   {
-    group(mGroup).readBoolEntry(pKey, bDefault);
+    return group(mGroup).readBoolEntry(pKey, bDefault);
   }
   
   bool readBoolEntry( const char *pKey, const bool bDefault = false ) const
   {
-    group(mGroup).readBoolEntry(pKey, bDefault);
+    return group(mGroup).readBoolEntry(pKey, bDefault);
   }
 
   /**
@@ -1112,12 +1112,12 @@ public:
    */
   QRect readRectEntry( const QString& pKey, const QRect* pDefault = 0L ) const
   {
-    group(mGroup).readRectEntry(pKey, pDefault);
+    return group(mGroup).readRectEntry(pKey, pDefault);
   }
   
   QRect readRectEntry( const char *pKey, const QRect* pDefault = 0L ) const
   {
-    group(mGroup).readRectEntry(pKey, pDefault);
+    return group(mGroup).readRectEntry(pKey, pDefault);
   }
 
   /**
@@ -1134,12 +1134,12 @@ public:
    */
   QPoint readPointEntry( const QString& pKey, const QPoint* pDefault = 0L ) const
   {
-    group(mGroup).readPointEntry(pKey, pDefault);
+    return group(mGroup).readPointEntry(pKey, pDefault);
   }
   
   QPoint readPointEntry( const char *pKey, const QPoint* pDefault = 0L ) const
   {
-    group(mGroup).readPointEntry(pKey, pDefault);
+    return group(mGroup).readPointEntry(pKey, pDefault);
   }
 
   /**
@@ -1156,12 +1156,12 @@ public:
    */
   QSize readSizeEntry( const QString& pKey, const QSize* pDefault = 0L ) const
   {
-    group(mGroup).readSizeEntry(pKey, pDefault);
+    return group(mGroup).readSizeEntry(pKey, pDefault);
   }
   
   QSize readSizeEntry( const char *pKey, const QSize* pDefault = 0L ) const
   {
-    group(mGroup).readSizeEntry(pKey, pDefault);
+    return group(mGroup).readSizeEntry(pKey, pDefault);
   }
 
 
@@ -1178,12 +1178,12 @@ public:
    */
   QColor readColorEntry( const QString& pKey, const QColor* pDefault = 0L ) const
   {
-    group(mGroup).readColorEntry(pKey, pDefault);
+    return group(mGroup).readColorEntry(pKey, pDefault);
   }
   
   QColor readColorEntry( const char *pKey, const QColor* pDefault = 0L ) const
   {
-    group(mGroup).readColorEntry(pKey, pDefault);
+    return group(mGroup).readColorEntry(pKey, pDefault);
   }
 
   /**
@@ -1199,12 +1199,12 @@ public:
    */
   QDateTime readDateTimeEntry( const QString& pKey, const QDateTime* pDefault = 0L ) const
   {
-    group(mGroup).readDateTimeEntry(pKey, pDefault);
+    return group(mGroup).readDateTimeEntry(pKey, pDefault);
   }
   
   QDateTime readDateTimeEntry( const char *pKey, const QDateTime* pDefault = 0L ) const
   {
-    group(mGroup).readDateTimeEntry(pKey, pDefault);
+    return group(mGroup).readDateTimeEntry(pKey, pDefault);
   }
 
   /**
@@ -1385,11 +1385,15 @@ public:
   void writeEntry( const QString& pKey, const char *pValue,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false )
-    { writeEntry(pKey, QString::fromLatin1(pValue), bPersistent, bGlobal, bNLS); }
+  {
+    writeEntry(pKey, QString::fromLatin1(pValue), bPersistent, bGlobal, bNLS);
+  }
   void writeEntry( const char *pKey, const char *pValue,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false )
-    { writeEntry(pKey, QString::fromLatin1(pValue), bPersistent, bGlobal, bNLS); }
+  {
+    writeEntry(pKey, QString::fromLatin1(pValue), bPersistent, bGlobal, bNLS);
+  }
 
   /**
    * Write a (key/value) pair.
