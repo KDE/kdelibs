@@ -1,56 +1,49 @@
 #include "kaccelgen.h"
 
-#include <qstring.h>
 #include <qstringlist.h>
 
-#include <kdebug.h>
+#include <iostream>
 
-void print_stringlist(const QStringList& list)
+using std::cout;
+using std::endl;
+
+void check( const QString &what, const QStringList &expected, const QStringList &received )
 {
-    for (QValueListConstIterator<QString> i = list.begin();
-         i != list.end();
-         ++i) {
-        kdDebug() << *i << endl;
+    cout << "Testing " << what.latin1() << ": ";
+    if ( expected == received ) {
+        cout << "ok" << endl;
+    } else {
+        cout << "ERROR!" << endl;
+        cout << "Expected: " << expected.join( "," ).latin1() << endl;
+        cout << "Received: " << received.join( "," ).latin1() << endl;
     }
 }
 
 int main()
 {
-    // Load up initial string list
-    QStringList strlist;
-    strlist.append("foo");
-    strlist.append("bar item");
-    strlist.append("&baz");
-    strlist.append("bif");
-    strlist.append("boz");
-    strlist.append("boz 2");
+    QStringList input;
+    input << "foo" << "bar item" << "&baz" << "bif" << "boz" << "boz 2";
 
-    // Test stringlist -> stringlist generation
-    QStringList target1;
-    
-    kdDebug() << "Testing QStringList value gen: " << endl;
-    KAccelGen::generate(strlist, target1);
-    print_stringlist(target1);
+    QStringList expected;
+    expected << "&foo" << "bar &item" << "&baz" << "bif" << "b&oz" << "boz &2";
 
+    QStringList output;
+    KAccelGen::generate( input, output );
+    check( "QStringList value generation", expected, output );
 
-    // Test map generation
-    QStringList target2, target3;
-
-    // Load up map
     QMap<QString,QString> map;
-    for (QValueListIterator<QString> i = strlist.begin();
-         i != strlist.end();
-         ++i) {
-        map.insert(*i, *i);
+    for (QStringList::ConstIterator it = input.begin(); it != input.end(); ++it) {
+        map.insert(*it, *it);
     }
+    input.sort();
+    expected.clear();
+    KAccelGen::generate( input, expected );
 
-    kdDebug() << "Testing map value gen: " << endl;
-    KAccelGen::generateFromValues(map, target2);
-    print_stringlist(target2);
+    output.clear();
+    KAccelGen::generateFromValues( map, output );
+    check( "map value generation", expected, output );
 
-    kdDebug() << "Testing map key gen: " << endl;
-    KAccelGen::generateFromKeys(map, target3);
-    print_stringlist(target3);
-
-    return 0;
+    output.clear();
+    KAccelGen::generateFromKeys( map, output );
+    check( "map key generation", expected, output );
 }
