@@ -100,6 +100,16 @@ KMdi::FrameDecor KMdiMainFrm::m_frameDecoration = KMdi::KDELook;
 
 //KMdi::MdiMode KMdiMainFrm::m_mdiMode = KMdi::ChildframeMode;
 
+
+class KMdiMainFrmPrivate {
+public:
+	KMdiMainFrmPrivate() {
+		for (int i=0;i<4;i++) activeDockPriority[i]=0;
+	}
+	~KMdiMainFrmPrivate(){}
+	KMdiDockContainer* activeDockPriority[4];
+};
+
 //============ constructor ============//
  KMdiMainFrm::KMdiMainFrm(QWidget* parentWidget, const char* name, KMdi::MdiMode mdiMode,WFlags flags)
 : KParts::DockMainWindow( parentWidget, name, flags)
@@ -139,6 +149,7 @@ KMdi::FrameDecor KMdiMainFrm::m_frameDecoration = KMdi::KDELook;
    ,m_topContainer(0)
    ,m_bottomContainer(0)
    ,m_mdiGUIClient(0)
+   ,d(new KMdiMainFrmPrivate())
 {
    // Create the local lists of windows
    m_pDocumentViews = new QPtrList<KMdiChildView>;
@@ -191,6 +202,12 @@ KMdi::FrameDecor KMdiMainFrm::m_frameDecoration = KMdi::KDELook;
 void KMdiMainFrm::setStandardMDIMenuEnabled() {
   setMenuForSDIModeSysButtons(menuBar());
   m_mdiGUIClient=new KMDIPrivate::KMDIGUIClient(this);
+  connect(m_mdiGUIClient,SIGNAL(toggleTop()),this,SIGNAL(toggleTop()));
+  connect(m_mdiGUIClient,SIGNAL(toggleLeft()),this,SIGNAL(toggleLeft()));
+  connect(m_mdiGUIClient,SIGNAL(toggleRight()),this,SIGNAL(toggleRight()));
+  connect(m_mdiGUIClient,SIGNAL(toggleBottom()),this,SIGNAL(toggleBottom()));
+  connect(m_mdiGUIClient,SIGNAL(toggleBottom()),this,SIGNAL(toggleBottom()));
+  connect(m_mdiGUIClient,SIGNAL(toggleBottom()),this,SIGNAL(toggleBottom()));
   mdiModeHasBeenChangedTo(m_mdiMode);
 }
 
@@ -1670,19 +1687,34 @@ void KMdiMainFrm::setupToolViewsForIDEALMode()
     m_leftContainer->setWidget(tmpDC=new KMdiDockContainer(m_leftContainer, this, KDockWidget::DockLeft));
     m_leftContainer->manualDock(mainDock, KDockWidget::DockLeft,20);
     tmpDC->init();
+    if (m_mdiGUIClient) connect (this,SIGNAL(toggleLeft()),tmpDC,SLOT(toggle()));
     connect(this,SIGNAL(collapseOverlapContainers()),tmpDC,SLOT(collapseOverlapped()));
+    connect(tmpDC,SIGNAL(activated(KMdiDockContainer*)),this,SLOT(setActiveToolDock(KMdiDockContainer*)));
+    connect(tmpDC,SIGNAL(deactivated(KMdiDockContainer*)),this,SLOT(removeFromActiveDockList(KMdiDockContainer*)));
+
     m_rightContainer->setWidget(tmpDC=new KMdiDockContainer(m_rightContainer, this, KDockWidget::DockRight));
     m_rightContainer->manualDock(mainDock, KDockWidget::DockRight,20);
     tmpDC->init();
+    if (m_mdiGUIClient) connect (this,SIGNAL(toggleRight()),tmpDC,SLOT(toggle()));
     connect(this,SIGNAL(collapseOverlapContainers()),tmpDC,SLOT(collapseOverlapped()));
+    connect(tmpDC,SIGNAL(activated(KMdiDockContainer*)),this,SLOT(setActiveToolDock(KMdiDockContainer*)));
+    connect(tmpDC,SIGNAL(deactivated(KMdiDockContainer*)),this,SLOT(removeFromActiveDockList(KMdiDockContainer*)));
+
     m_topContainer->setWidget(tmpDC=new KMdiDockContainer(m_topContainer, this, KDockWidget::DockTop));
     m_topContainer->manualDock(mainDock, KDockWidget::DockTop,20);
     tmpDC->init();
+    if (m_mdiGUIClient) connect (this,SIGNAL(toggleTop()),tmpDC,SLOT(toggle()));
     connect(this,SIGNAL(collapseOverlapContainers()),tmpDC,SLOT(collapseOverlapped()));
+    connect(tmpDC,SIGNAL(activated(KMdiDockContainer*)),this,SLOT(setActiveToolDock(KMdiDockContainer*)));
+    connect(tmpDC,SIGNAL(deactivated(KMdiDockContainer*)),this,SLOT(removeFromActiveDockList(KMdiDockContainer*)));
+
     m_bottomContainer->setWidget(tmpDC=new KMdiDockContainer(m_bottomContainer, this, KDockWidget::DockBottom));
     m_bottomContainer->manualDock(mainDock, KDockWidget::DockBottom,20);
     tmpDC->init();
+    if (m_mdiGUIClient) connect (this,SIGNAL(toggleBottom()),tmpDC,SLOT(toggle()));
     connect(this,SIGNAL(collapseOverlapContainers()),tmpDC,SLOT(collapseOverlapped()));
+    connect(tmpDC,SIGNAL(activated(KMdiDockContainer*)),this,SLOT(setActiveToolDock(KMdiDockContainer*)));
+    connect(tmpDC,SIGNAL(deactivated(KMdiDockContainer*)),this,SLOT(removeFromActiveDockList(KMdiDockContainer*)));
 
     m_leftContainer->setDockSite( KDockWidget::DockCenter );
     m_rightContainer->setDockSite( KDockWidget::DockCenter );
@@ -2432,5 +2464,45 @@ void KMdiMainFrm::setManagedDockPositionModeEnabled(bool enabled)
 {
    m_managedDockPositionMode=enabled;
 }
+
+void KMdiMainFrm::setActiveToolDock(KMdiDockContainer* td) {
+	if (td==d->activeDockPriority[0]) return;
+	if (d->activeDockPriority[0]==0) {
+		d->activeDockPriority[0]=td;
+		return;
+	}
+	int offset=0;
+	for (int dst=3,src=2;src>=0;dst--,src--) {
+		if (d->activeDockPriority[src]==td) src--;
+		if (src<0) break;
+		d->activeDockPriority[dst]=d->activeDockPriority[src];
+	}
+	d->activeDockPriority[0]=td;
+}
+
+void KMdiMainFrm::removeFromActiveDockList(KMdiDockContainer* td) {
+	for (int i=0;i<4;i++) {
+		if (d->activeDockPriority[i]==td) {
+			for (int i2=i;i<3;i++)
+				d->activeDockPriority[i]=d->activeDockPriority[i+1];
+			d->activeDockPriority[3]=0;
+			return;
+		}
+	}
+}
+
+void KMdiMainFrm::prevToolViewInDock() {
+	KMdiDockContainer* td=d->activeDockPriority[0];
+	if (!td) return;
+	td->prevToolView();	
+}
+
+void KMdiMainFrm::nextToolViewInDock() {
+	KMdiDockContainer* td=d->activeDockPriority[0];
+	if (!td) return;
+	td->nextToolView();
+}
+
+
 
 // kate: space-indent on; indent-width 2; replace-tabs on;

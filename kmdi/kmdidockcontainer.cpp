@@ -52,6 +52,7 @@ KMdiDockContainer::KMdiDockContainer(QWidget *parent, QWidget *win, int position
   oldtab=-1;
   mTabCnt=0;
   m_position = position;
+  m_previousTab=-1;
 
   QBoxLayout *l;
   m_vertical=!((position==KDockWidget::DockTop) || (position==KDockWidget::DockBottom));
@@ -93,7 +94,8 @@ KMdiDockContainer::KMdiDockContainer(QWidget *parent, QWidget *win, int position
 }
 
 KMdiDockContainer::~KMdiDockContainer()
-{
+{	
+	deactivated(this);
 }
 
 
@@ -252,16 +254,20 @@ void KMdiDockContainer::tabClicked(int t)
 {
   kdDebug()<<"KMdiDockContainer::tabClicked()"<<endl;
 
+  m_tabSwitching=true;
   if (m_tb->isTabRaised(t))
   {
+
     if (m_ws->isHidden())
     {
        m_ws->show ();
-  parentDockWidget()->restoreFromForcedFixedSize();
+       parentDockWidget()->restoreFromForcedFixedSize();
     }
       if (!m_ws->widget(t))
     {
       m_revMap[t]->manualDock(parentDockWidget(),KDockWidget::DockCenter,20);
+      m_tabSwitching=false;
+      emit activated(this);
       return;
     }
     m_ws->raiseWidget(t);
@@ -274,12 +280,16 @@ void KMdiDockContainer::tabClicked(int t)
       kdDebug()<<"KMdiDockContainer::tabClicked(int): m_ws->widget(t)==0 "<<endl;
 
     if (oldtab!=t) m_tb->setTab(oldtab,false);
+    m_tabSwitching=true;
     oldtab=t;
+    emit activated(this);
   }
   else
   {
+    m_previousTab=t;
 //    oldtab=-1;
     if (m_block) return;
+    emit deactivated(this);
     m_block=true;
     if (m_ws->widget(t))
     {
@@ -293,6 +303,7 @@ void KMdiDockContainer::tabClicked(int t)
   else
   parentDockWidget()->setForcedFixedHeight(m_tb->height()+2); // strange why it worked before at all
    }
+  m_tabSwitching=false;
 }
 
 void KMdiDockContainer::setToolTip (KDockWidget *, QString &s)
@@ -412,6 +423,7 @@ void KMdiDockContainer::delayedRaise()
 
 void KMdiDockContainer::collapseOverlapped()
 {
+  if (m_tabSwitching) return;
   if (isOverlapMode()){
     QPtrList<KMultiTabBarTab>* tl=m_tb->tabs();
           QPtrListIterator<KMultiTabBarTab> it(*tl);
@@ -423,6 +435,41 @@ void KMdiDockContainer::collapseOverlapped()
       }
     }
   }
+}
+
+void KMdiDockContainer::toggle() {
+	kdDebug()<<"DockContainer:activate"<<endl;
+	if (m_tb->isTabRaised(oldtab)) {
+		m_tb->setTab(oldtab,false);
+	    	tabClicked(oldtab);
+	} else {
+		m_tb->setTab(m_previousTab,true);
+	    	tabClicked(m_previousTab);
+	}
+}
+
+void KMdiDockContainer::prevToolView() {
+	QPtrList<KMultiTabBarTab>* tabs=m_tb->tabs();
+	int pos=tabs->findRef(m_tb->tab(oldtab));
+	if (pos==-1) return;
+	pos--;
+	if (pos<0) pos=tabs->count()-1;
+	KMultiTabBarTab *tab=tabs->at(pos);
+	if (!tab) return; //can never happen here, but who knows
+	m_tb->setTab(tab->id(),true);
+	tabClicked(tab->id());
+}
+
+void KMdiDockContainer::nextToolView() {
+	QPtrList<KMultiTabBarTab>* tabs=m_tb->tabs();
+	int pos=tabs->findRef(m_tb->tab(oldtab));
+	if (pos==-1) return;
+	pos++;
+	if (pos>=tabs->count()) pos=0;
+	KMultiTabBarTab *tab=tabs->at(pos);
+	if (!tab) return; //can never happen here, but who knows
+	m_tb->setTab(tab->id(),true);
+	tabClicked(tab->id());
 }
 
 // kate: space-indent on; indent-width 2; replace-tabs on;

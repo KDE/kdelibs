@@ -58,18 +58,20 @@ class KMdiDockContainer: public QWidget, public KDockContainer
   public slots:
     void init();
     void collapseOverlapped();
-
+    void toggle();
+    void nextToolView();
+    void prevToolView();
   protected slots:
     void tabClicked(int);
     void delayedRaise();
     void changeOverlapMode();
-
   private:
     QWidget *m_mainWin;
     QWidgetStack *m_ws;
     KMultiTabBar *m_tb;
     int mTabCnt;
     int oldtab;
+    int m_previousTab;
     int m_position;
     QMap<KDockWidget*,int> m_map;
     QMap<int,KDockWidget*> m_revMap;
@@ -79,6 +81,11 @@ class KMdiDockContainer: public QWidget, public KDockContainer
     int m_delayedRaise;
     bool m_vertical;
     bool m_block;
+    bool m_tabSwitching;
+
+  signals:
+	void activated(KMdiDockContainer*);
+	void deactivated(KMdiDockContainer*);
 };
 
 #endif
