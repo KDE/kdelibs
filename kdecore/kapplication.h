@@ -943,6 +943,16 @@ public:
    */
   unsigned long userTimestamp() const;
 
+  /**
+   * Updates the last user action timestamp in the application registered to DCOP with dcopId
+   * to the given time, or to this application's user time, if 0 is given.
+   * Use before causing user interaction in the remote application, e.g. invoking a dialog
+   * in the application using a DCOP call.
+   * Consult focus stealing prevention section in kdebase/kwin/README.
+   * @since 3.3
+   */
+  void updateRemoteUserTimestamp( const QCString& dcopId, unsigned long time = 0 );
+  
     /**
     * Returns the argument to --geometry if any, so the geometry can be set
     * wherever necessary

@@ -1747,7 +1747,20 @@ void KApplication::updateUserTimestamp( unsigned long time )
 
 unsigned long KApplication::userTimestamp() const
 {
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
     return qt_x_user_time;
+#else
+    return 0;
+#endif
+}
+
+void KApplication::updateRemoteUserTimestamp( const QCString& dcopId, unsigned long time )
+{
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+    if( time == 0 )
+        time = qt_x_user_time;
+    DCOPRef( dcopId, "MainApplication-Interface" ).call( "updateUserTimestamp", time );
+#endif
 }
 
 void KApplication::invokeEditSlot( const char *slot )
