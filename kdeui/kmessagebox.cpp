@@ -20,9 +20,9 @@
  * $Id$
  *
  * $Log$
- * Revision 1.11  1999/11/27 22:20:41  antlarr
+ * Revision 1.11  1999/11/27 21:30:47  antlarr
  * Added a new questionYesNo which displays a "question" dialog with a listbox
- * to show information to the user (see the docs for more info)
+ * to show information to the user (see the mail in kde-core-devel for more info)
  *
  * Revision 1.10  1999/11/14 19:34:22  espensa
  * Changed default title from "Question" to "Warning" so that
@@ -77,6 +77,7 @@
 #include <qcheckbox.h>
 #include <qstringlist.h>
 #include <qlistbox.h>
+#include <qlineedit.h>
 
 #include "kapp.h"
 #include "kconfig.h"
@@ -104,18 +105,21 @@ KMessageBox::questionYesNo(QWidget *parent, const QString &text,
                        parent, "questionYesNo", true, true,
                        buttonYes, buttonNo);
 
-    QHBox *contents = new QHBox(&dialog);
-    contents->setSpacing(KDialog::spacingHint()*2);
-    contents->setMargin(KDialog::marginHint()*2);
+    QWidget *contents = new QWidget(&dialog);
+    QHBoxLayout * lay = new QHBoxLayout(contents);
+    lay->setSpacing(KDialog::spacingHint()*2);
+    lay->setMargin(KDialog::marginHint()*2);
 
+    lay->addStretch(1);
     QLabel *label1 = new QLabel( contents);
     label1->setPixmap(QMessageBox::standardIcon(QMessageBox::Information, kapp->style().guiStyle()));
-
-    new QLabel(text, contents);
+    lay->add( label1 );
+    lay->add( new QLabel(text, contents) );
+    lay->addStretch(1);
 
     dialog.setMainWidget(contents);
     dialog.enableButtonSeparator(false);
-     
+
     int result = dialog.exec();
     
     switch( result )
@@ -147,18 +151,23 @@ KMessageBox::questionYesNo(QWidget *parent, const QString &text,
                        buttonYes, buttonNo);
  
     QVBox *topcontents = new QVBox (&dialog);
-    QHBox *contents = new QHBox(topcontents);
     topcontents->setSpacing(KDialog::spacingHint()*2);
     topcontents->setMargin(KDialog::marginHint()*2);
+    QWidget *contents = new QWidget(topcontents);
+    QHBoxLayout * lay = new QHBoxLayout(contents);
+    lay->setSpacing(KDialog::spacingHint()*2);
  
-    QLabel *label1 = new QLabel( contents);
+    lay->addStretch(1);
+    QLabel *label1 = new QLabel( contents );
     label1->setPixmap(QMessageBox::standardIcon(QMessageBox::Information, kapp->style().guiStyle()));
-    new QLabel(text, contents);
+    lay->add( label1 );
+    lay->add( new QLabel( text, contents ) );
+    lay->addStretch(1);
  
     if (!strlist.isEmpty())
     {
-      QListBox *listbox=new QListBox( topcontents);
-      listbox->insertStringList(strlist);
+      QListBox *listbox=new QListBox( topcontents );
+      listbox->insertStringList( strlist );
     }
  
     dialog.setMainWidget(topcontents);
@@ -193,14 +202,17 @@ KMessageBox::warningYesNo(QWidget *parent, const QString &text,
                        parent, "warningYesNo", true, true,
                        buttonYes, buttonNo);
 
-    QHBox *contents = new QHBox(&dialog);
-    contents->setSpacing(KDialog::spacingHint()*2);
-    contents->setMargin(KDialog::marginHint()*2);
+    QWidget *contents = new QWidget(&dialog);
+    QHBoxLayout * lay = new QHBoxLayout(contents);
+    lay->setSpacing(KDialog::spacingHint()*2);
+    lay->setMargin(KDialog::marginHint()*2);
 
+    lay->addStretch(1);
     QLabel *label1 = new QLabel( contents);
     label1->setPixmap(QMessageBox::standardIcon(QMessageBox::Warning, kapp->style().guiStyle()));
-
-    new QLabel(text, contents);
+    lay->add( label1 );
+    lay->add( new QLabel(text, contents) );
+    lay->addStretch(1);
 
     dialog.setMainWidget(contents);
     dialog.enableButtonSeparator(false);
@@ -233,14 +245,17 @@ KMessageBox::warningContinueCancel(QWidget *parent, const QString &text,
                        parent, "warningYesNo", true, true,
                        buttonContinue, i18n("&Cancel"));
 
-    QHBox *contents = new QHBox(&dialog);
-    contents->setSpacing(KDialog::spacingHint()*2);
-    contents->setMargin(KDialog::marginHint()*2);
+    QWidget *contents = new QWidget(&dialog);
+    QHBoxLayout * lay = new QHBoxLayout(contents);
+    lay->setSpacing(KDialog::spacingHint()*2);
+    lay->setMargin(KDialog::marginHint()*2);
 
+    lay->addStretch(1);
     QLabel *label1 = new QLabel( contents);
     label1->setPixmap(QMessageBox::standardIcon(QMessageBox::Warning, kapp->style().guiStyle()));
-
-    new QLabel(text, contents);
+    lay->add( label1 );
+    lay->add( new QLabel(text, contents) );
+    lay->addStretch(1);
 
     dialog.setMainWidget(contents);
     dialog.enableButtonSeparator(false);
@@ -275,14 +290,17 @@ KMessageBox::warningYesNoCancel(QWidget *parent, const QString &text,
                        parent, "warningYesNoCancel", true, true,
                        buttonYes, buttonNo);
 
-    QHBox *contents = new QHBox(&dialog);
-    contents->setSpacing(KDialog::spacingHint()*2);
-    contents->setMargin(KDialog::marginHint()*2);
+    QWidget *contents = new QWidget(&dialog);
+    QHBoxLayout * lay = new QHBoxLayout(contents);
+    lay->setSpacing(KDialog::spacingHint()*2);
+    lay->setMargin(KDialog::marginHint()*2);
 
+    lay->addStretch(1);
     QLabel *label1 = new QLabel( contents);
     label1->setPixmap(QMessageBox::standardIcon(QMessageBox::Warning, kapp->style().guiStyle()));
-
-    new QLabel(text, contents);
+    lay->add( label1 );
+    lay->add( new QLabel(text, contents) );
+    lay->addStretch(1);
 
     dialog.setMainWidget(contents);
     dialog.enableButtonSeparator(false);
@@ -317,14 +335,17 @@ KMessageBox::error(QWidget *parent,  const QString &text,
                        parent, "error", true, true,
                        i18n("&OK"));
 
-    QHBox *contents = new QHBox(&dialog);
-    contents->setSpacing(KDialog::spacingHint()*2);
-    contents->setMargin(KDialog::marginHint()*2);
+    QWidget *contents = new QWidget(&dialog);
+    QHBoxLayout * lay = new QHBoxLayout(contents);
+    lay->setSpacing(KDialog::spacingHint()*2);
+    lay->setMargin(KDialog::marginHint()*2);
 
+    lay->addStretch(1);
     QLabel *label1 = new QLabel( contents);
     label1->setPixmap(QMessageBox::standardIcon(QMessageBox::Critical, kapp->style().guiStyle()));
-
-    new QLabel(text, contents);
+    lay->add( label1 );
+    lay->add( new QLabel(text, contents) );
+    lay->addStretch(1);
 
     dialog.setMainWidget(contents);
     dialog.enableButtonSeparator(false);
@@ -342,14 +363,17 @@ KMessageBox::sorry(QWidget *parent, const QString &text,
                        parent, "sorry", true, true,
                        i18n("&OK"));
 
-    QHBox *contents = new QHBox(&dialog);
-    contents->setSpacing(KDialog::spacingHint()*2);
-    contents->setMargin(KDialog::marginHint()*2);
+    QWidget *contents = new QWidget(&dialog);
+    QHBoxLayout * lay = new QHBoxLayout(contents);
+    lay->setSpacing(KDialog::spacingHint()*2);
+    lay->setMargin(KDialog::marginHint()*2);
 
+    lay->addStretch(1);
     QLabel *label1 = new QLabel( contents);
     label1->setPixmap(QMessageBox::standardIcon(QMessageBox::Warning, kapp->style().guiStyle()));
-
-    new QLabel(text, contents);
+    lay->add( label1 );
+    lay->add( new QLabel(text, contents) );
+    lay->addStretch(1);
 
     dialog.setMainWidget(contents);
     dialog.enableButtonSeparator(false);
@@ -389,14 +413,17 @@ KMessageBox::information(QWidget *parent,const QString &text,
     contents->setSpacing(KDialog::spacingHint()*2);
     contents->setMargin(KDialog::marginHint()*2);
 
-    QHBox *info = new QHBox(contents);
-    info->setSpacing(KDialog::spacingHint()*2);
-    info->setMargin(0);
+    QWidget *info = new QWidget(contents);
+    QHBoxLayout * lay = new QHBoxLayout(info);
+    lay->setSpacing(KDialog::spacingHint()*2);
+    lay->setMargin(0);
 
+    lay->addStretch(1);
     QLabel *label1 = new QLabel( info);
     label1->setPixmap(QMessageBox::standardIcon(QMessageBox::Information, kapp->style().guiStyle()));
-
-    new QLabel(text, info);
+    lay->add( label1 );
+    lay->add( new QLabel(text, info) );
+    lay->addStretch(1);
 
     if (!dontShowAgainName.isEmpty())
     {
