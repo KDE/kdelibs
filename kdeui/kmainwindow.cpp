@@ -848,6 +848,11 @@ bool KMainWindow::autoSaveSettings() const
     return d->autoSaveSettings;
 }
 
+QString KMainWindow::autoSaveGroup() const
+{
+    return d->autoSaveGroup;
+}
+
 void KMainWindow::resizeEvent( QResizeEvent * )
 {
     if ( d->autoSaveWindowSize )
