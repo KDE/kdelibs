@@ -532,6 +532,9 @@ class LatexHighlight : public GenHighlight {
 class HlManager : public QObject {
     Q_OBJECT
   public:
+    static void incRef();
+    static void decRef();
+
     static HlManager * self() {
      if (!s_hlManager)
        s_hlManager = new HlManager;
@@ -567,6 +570,7 @@ class HlManager : public QObject {
   protected:
     QList<Highlight> hlList;
     static HlManager *  s_hlManager;
+    static unsigned long int s_ulRefCnt;
 };
 
 //--------
@@ -609,11 +613,11 @@ class FontChanger : public QWidget {
 
 #include <kdialogbase.h>
 
-class DefaultsDialog : public KDialogBase 
+class DefaultsDialog : public KDialogBase
 {
   Q_OBJECT
   public:
-    DefaultsDialog(HlManager *, ItemStyleList *, ItemFont *, 
+    DefaultsDialog(HlManager *, ItemStyleList *, ItemFont *,
 		   QWidget *parent=0, const char *name=0, bool modal=true);
   protected slots:
     void changed(int);
@@ -622,11 +626,11 @@ class DefaultsDialog : public KDialogBase
     ItemStyleList *itemStyleList;
 };
 
-class HighlightDialog : public KDialogBase 
+class HighlightDialog : public KDialogBase
 {
     Q_OBJECT
   public:
-    HighlightDialog(HlManager *, HlDataList *, int hlNumber, 
+    HighlightDialog(HlManager *, HlDataList *, int hlNumber,
 		    QWidget *parent=0, const char *name=0, bool modal=true);
 
   protected slots:

@@ -299,7 +299,7 @@ void HlKeyword::addList(const char **list) {
 }
 
 const QChar *HlKeyword::checkHgl(const QChar *s) {
-    
+
   for (QStringList::Iterator it = words.begin(); it != words.end(); ++it) {
     if (memcmp(s, (*it).unicode(), (*it).length()*sizeof(QChar)) == 0) {
       return s + (*it).length();
@@ -420,7 +420,7 @@ const QChar *HlCHex::checkHgl(const QChar *str) {
   }
   return 0L;
 }
- 
+
 HlCFloat::HlCFloat(int attribute, int context)
   : HlFloat(attribute,context) {
 }
@@ -1863,6 +1863,23 @@ void LatexHighlight::makeContextList() {
 
 
 HlManager * HlManager::s_hlManager = 0L;
+unsigned long int HlManager::s_ulRefCnt = 0;
+
+void HlManager::incRef()
+{
+  s_ulRefCnt++;
+}
+
+void HlManager::decRef()
+{
+  s_ulRefCnt--;
+  if ( s_ulRefCnt == 0 )
+  {
+    if ( s_hlManager )
+      delete s_hlManager;
+    s_hlManager = 0;
+  }
+} 
 
 HlManager::HlManager() : QObject(0L) {
 
@@ -2173,8 +2190,8 @@ void getFontList(QStringList &fontList) {
   getXFontList(fontList);
 }
 
-StyleChanger::StyleChanger( QWidget *parent ) 
-  : QWidget(parent) 
+StyleChanger::StyleChanger( QWidget *parent )
+  : QWidget(parent)
 {
   QLabel *label;
 
@@ -2243,7 +2260,7 @@ void StyleChanger::changed() {
 
 
 FontChanger::FontChanger( QWidget *parent )
-  : QWidget(parent) 
+  : QWidget(parent)
 {
   QLabel *label;
   QStringList fontList;
@@ -2349,7 +2366,7 @@ void FontChanger::displayCharsets() {
 
 
 DefaultsDialog::DefaultsDialog(HlManager *hlManager, ItemStyleList *styleList,
-			       ItemFont *font, QWidget *parent, 
+			       ItemFont *font, QWidget *parent,
 			       const char *name, bool modal )
   :KDialogBase(parent, name, modal, i18n("Highlight Defaults"), Ok|Cancel, Ok),
    itemStyleList(styleList) {
@@ -2366,7 +2383,7 @@ DefaultsDialog::DefaultsDialog(HlManager *hlManager, ItemStyleList *styleList,
   for( int i = 0; i < hlManager->defaultStyles(); i++ ) {
     styleCombo->insertItem(i18n(hlManager->defaultStyleName(i)));
   }
-  
+
   QVGroupBox *vbox2 = new QVGroupBox( i18n("Default Font"), page );
   FontChanger *fontChanger = new FontChanger( vbox2 );
   fontChanger->setRef(font);
@@ -2374,7 +2391,7 @@ DefaultsDialog::DefaultsDialog(HlManager *hlManager, ItemStyleList *styleList,
   changed(0);
 }
 
-void DefaultsDialog::changed(int z) 
+void DefaultsDialog::changed(int z)
 {
   styleChanger->setRef(itemStyleList->at(z));
 }
@@ -2382,8 +2399,8 @@ void DefaultsDialog::changed(int z)
 
 
 HighlightDialog::HighlightDialog( HlManager *hlManager,
-				  HlDataList *highlightDataList, 
-				  int hlNumber, QWidget *parent, 
+				  HlDataList *highlightDataList,
+				  int hlNumber, QWidget *parent,
 				  const char *name, bool modal )
   :KDialogBase(parent, name, modal, i18n("Highlight Settings"), Ok|Cancel, Ok),
    hlData(0L) {
@@ -2398,7 +2415,7 @@ HighlightDialog::HighlightDialog( HlManager *hlManager,
   QVGroupBox *vbox2 = new QVGroupBox( i18n("Item Style"), page );
   QVGroupBox *vbox3 = new QVGroupBox( i18n("Highlight Auto Select"), page );
   QVGroupBox *vbox4 = new QVGroupBox( i18n("Item Font"), page );
-  
+
   label = new QLabel( i18n("Highlight:"), vbox1 );
   hlCombo = new QComboBox( false, vbox1 );
   connect( hlCombo, SIGNAL(activated(int)),

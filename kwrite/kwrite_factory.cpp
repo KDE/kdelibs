@@ -6,6 +6,8 @@
 #include <kwrite/kwrite_factory.h>
 #include <kwrite/kwrite_part.h>
 
+#include "highlight.h"
+
 extern "C"
 {
     void* init_libkwrite()
@@ -20,10 +22,12 @@ KAboutData* KWriteFactory::s_about = 0L;
 KWriteFactory::KWriteFactory( QObject* parent, const char* name )
     : KParts::Factory( parent, name )
 {
+  HlManager::incRef(); 
 }
 
 KWriteFactory::~KWriteFactory()
 {
+  HlManager::decRef(); 
   delete s_instance;
   delete s_about;
 }
