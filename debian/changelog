@@ -1,7 +1,7 @@
 kdelibs (4:2.1-20010106-1) unstable; urgency=low
  
    * more upstream bug fixes
-   * Contains both the symlink attack fix for kdesu and the sniff fix
+   * Contains both the symlink/sniff attack fix for kdesu
    * Moving conflicts for task-* packages to kdebase
  
  -- Ivan E. Moore II <rkrusty@debian.org>  Sat, 06 Jan 2001 15:00:00 -0700

@@ -10,7 +10,7 @@ Package: kdelibs3
 Architecture: any
 Section: libs
 Replaces: kdelibs3-cvs, kdelibs3-nossl, kdelibs2g
-Depends: ${shlibs:Depends}, libarts (>= ${Source-Version})
+Depends: ${shlibs:Depends}
 Suggests: kdelibs3-crypto
 Conflicts: kdelibs3-nossl
 Description: KDE core libraries (runtime files)
@@ -37,7 +37,7 @@ Package: libarts-dev
 Architecture: any
 Section: devel
 Replaces: kdelibs3-dev (<= 4:2.1-20001210-0)
-Depends: libarts (>= ${Source-Version}), libc6-dev, libaudiofile-dev
+Depends: libarts (= ${Source-Version}), libc6-dev, libaudiofile-dev
 Suggests: kdelibs3-dev
 Conflicts: kdelibs3-dev (<= 4:2.1-20001210-0)
 Description: aRts Sound system (development files)
@@ -58,7 +58,7 @@ Package: kdelibs3-dev
 Architecture: any
 Section: devel
 Replaces: kdelibs-dev, kdelibs2g-dev, kdelibs3-nossl-dev, kdelibs3 (<< 4:2.0.1-0)
-Depends: kdelibs3 (>= ${Source-Version}), libarts-dev (>= ${Source-Version}), libmng-dev, libqt2.2-dev, libjpeg62-dev, xlibs-dev | xlib6g-dev, libc6-dev, libtiff3g-dev, zlib1g-dev, libaudiofile-dev, jade, sgml-base, docbook, docbook-stylesheets
+Depends: kdelibs3 (= ${Source-Version}), libarts-dev (= ${Source-Version}), libmng-dev, libqt2.2-dev, libjpeg62-dev, xlibs-dev | xlib6g-dev, libc6-dev, libtiff3g-dev, zlib1g-dev, libaudiofile-dev, jade, sgml-base, docbook, docbook-stylesheets
 Conflicts: kdelibs0-dev, kdelibs2g-dev, kdelibs3-nossl-dev
 Suggests: kdelibs3-doc, kdoc
 Provides: kdelibs-dev
