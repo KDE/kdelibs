@@ -63,6 +63,8 @@ right, CSS_VAL_RIGHT
 center, CSS_VAL_CENTER
 justify, CSS_VAL_JUSTIFY
 konq-center, CSS_VAL_KONQ_CENTER
+inside, CSS_VAL_INSIDE
+outside, CSS_VAL_OUTSIDE
 disc, CSS_VAL_DISC
 circle, CSS_VAL_CIRCLE
 square, CSS_VAL_SQUARE
@@ -115,6 +117,13 @@ w-resize, CSS_VAL_W_RESIZE
 text, CSS_VAL_TEXT
 wait, CSS_VAL_WAIT
 help, CSS_VAL_HELP
+ltr, CSS_VAL_LTR
+rtl, CSS_VAL_RTL
+capitalize, CSS_VAL_CAPITALIZE
+uppercase, CSS_VAL_UPPERCASE
+lowercase, CSS_VAL_LOWERCASE
+visible, CSS_VAL_VISIBLE
+collapse, CSS_VAL_COLLAPSE
 above, CSS_VAL_ABOVE
 absolute, CSS_VAL_ABSOLUTE
 always, CSS_VAL_ALWAYS
@@ -123,10 +132,8 @@ below, CSS_VAL_BELOW
 bidi-override, CSS_VAL_BIDI_OVERRIDE
 blink, CSS_VAL_BLINK
 both, CSS_VAL_BOTH
-capitalize, CSS_VAL_CAPITALIZE
 caption, CSS_VAL_CAPTION
 close-quote, CSS_VAL_CLOSE_QUOTE
-collapse, CSS_VAL_COLLAPSE
 condensed, CSS_VAL_CONDENSED
 crop, CSS_VAL_CROP
 cross, CSS_VAL_CROSS
@@ -139,15 +146,12 @@ hand, CSS_VAL_HAND
 hide, CSS_VAL_HIDE
 higher, CSS_VAL_HIGHER
 icon, CSS_VAL_ICON
-inside, CSS_VAL_INSIDE
 invert, CSS_VAL_INVERT
 landscape, CSS_VAL_LANDSCAPE
 level, CSS_VAL_LEVEL
 line-through, CSS_VAL_LINE_THROUGH
 loud, CSS_VAL_LOUD
 lower, CSS_VAL_LOWER
-lowercase, CSS_VAL_LOWERCASE
-ltr, CSS_VAL_LTR
 menu, CSS_VAL_MENU
 message-box, CSS_VAL_MESSAGE_BOX
 mix, CSS_VAL_MIX
@@ -156,12 +160,10 @@ no-close-quote, CSS_VAL_NO_CLOSE_QUOTE
 no-open-quote, CSS_VAL_NO_OPEN_QUOTE
 nowrap, CSS_VAL_NOWRAP
 open-quote, CSS_VAL_OPEN_QUOTE
-outside, CSS_VAL_OUTSIDE
 overline, CSS_VAL_OVERLINE
 portrait, CSS_VAL_PORTRAIT
 pre, CSS_VAL_PRE
 relative, CSS_VAL_RELATIVE
-rtl, CSS_VAL_RTL
 scroll, CSS_VAL_SCROLL
 semi-condensed, CSS_VAL_SEMI_CONDENSED
 semi-expanded, CSS_VAL_SEMI_EXPANDED
@@ -176,7 +178,5 @@ thin, CSS_VAL_THIN
 ultra-condensed, CSS_VAL_ULTRA_CONDENSED
 ultra-expanded, CSS_VAL_ULTRA_EXPANDED
 underline, CSS_VAL_UNDERLINE
-uppercase, CSS_VAL_UPPERCASE
-visible, CSS_VAL_VISIBLE
 wider, CSS_VAL_WIDER
 %%

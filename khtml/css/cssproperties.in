@@ -7,11 +7,15 @@
 # HTML4 compatibilty in the rendering engine.
 #
 #azimuth
-background-attachment
+#
+# CSS_PROP_BACKGROUND_COLOR: 
+#
 background-color
 background-image
-background-position
 background-repeat
+background-attachment
+background-position
+
 border-collapse
 border-spacing
 border-top-color

@@ -156,7 +156,7 @@ namespace khtml
 
         struct SelectorCache {
             SelectorState state;
-            int props_size;
+            unsigned int props_size;
             int *props;
         };
             

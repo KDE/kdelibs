@@ -207,11 +207,11 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
 	    if ( selectorCache[i].state == Applies ) {
 		//qDebug("adding property" );
                 for ( unsigned int p = 0; p < selectorCache[i].props_size; p += 2 )
-                    for ( unsigned int j = 0; j < selectorCache[i].props[p+1]; ++j )
+                    for ( unsigned int j = 0; j < (unsigned int )selectorCache[i].props[p+1]; ++j )
                         static_cast<QList<CSSOrderedProperty>*>(propsToApply)->append( properties[selectorCache[i].props[p]+j] );
 	    } else if ( selectorCache[i].state == AppliesPseudo ) {
                 for ( unsigned int p = 0; p < selectorCache[i].props_size; p += 2 )
-                    for ( unsigned int j = 0; j < selectorCache[i].props[p+1]; ++j )
+                    for ( unsigned int j = 0; j < (unsigned int) selectorCache[i].props[p+1]; ++j )
                         static_cast<QList<CSSOrderedProperty>*>(pseudoProps)->append(  properties[selectorCache[i].props[p]+j] );
             }
         }
@@ -731,7 +731,7 @@ void CSSOrderedPropertyList::append(DOM::CSSStyleDeclarationImpl *decl, uint sel
         case CSS_PROP_FONT_SIZE:
         case CSS_PROP_FONT:
         case CSS_PROP_COLOR:
-	case CSS_PROP_BACKGROUND_IMAGE:
+		case CSS_PROP_BACKGROUND_IMAGE:
             // these have to be applied first, because other properties use the computed
             // values of these porperties.
 	    first = true;
@@ -801,28 +801,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
             return;
         }
         if(!primitiveValue) return;
-
-	/* We can do this because the tokens in cssparser are ordered the
-	 * same way as the enums of EBackgroundRepeat
-	 */
-
-	EBackgroundRepeat r(EBackgroundRepeat(primitiveValue->getIdent() - CSS_VAL_REPEAT));
-
-// 	EBackgroundRepeat r = REPEAT;
-//         switch(primitiveValue->getIdent())
-//         {
-//         case CSS_VAL_REPEAT:
-//             r = REPEAT; break;
-//         case CSS_VAL_REPEAT_X:
-//             r = REPEAT_X; break;
-//         case CSS_VAL_REPEAT_Y:
-//             r = REPEAT_Y; break;
-//         case CSS_VAL_NO_REPEAT:
-//             r = NO_REPEAT; break;
-//         default:
-//             return;
-//         }
-        style->setBackgroundRepeat(r);
+	style->setBackgroundRepeat( (EBackgroundRepeat) (primitiveValue->getIdent() - CSS_VAL_REPEAT) );
         break;
     }
     case CSS_PROP_BORDER_COLLAPSE:
@@ -874,39 +853,8 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
             }
         }
         if(!primitiveValue) return;
+	EBorderStyle s = (EBorderStyle) (primitiveValue->getIdent() - CSS_VAL_NONE);
 
-	/* We can do this because the tokens in cssparser are ordered the
-	 * same way as the enums of EBorderStyle
-	 */
-
-	EBorderStyle s(EBorderStyle(primitiveValue->getIdent() - CSS_VAL_NONE));
-
-//         EBorderStyle s = BNONE;
-//         switch(primitiveValue->getIdent())
-//         {
-//         case CSS_VAL_NONE:
-//             s = BNONE; break;
-//         case CSS_VAL_HIDDEN:
-//             s = BHIDDEN; break;
-//         case CSS_VAL_DOTTED:
-//             s = DOTTED; break;
-//         case CSS_VAL_DASHED:
-//             s = DASHED; break;
-//         case CSS_VAL_SOLID:
-//             s = SOLID; break;
-//         case CSS_VAL_DOUBLE:
-//             s = DOUBLE; break;
-//         case CSS_VAL_GROOVE:
-//             s = GROOVE; break;
-//         case CSS_VAL_RIDGE:
-//             s = RIDGE; break;
-//         case CSS_VAL_INSET:
-//             s = INSET; break;
-//         case CSS_VAL_OUTSET:
-//             s = OUTSET; break;
-//         default:
-//             return;
-//         }
         switch(prop->m_id)
         {
         case CSS_PROP_BORDER_TOP_STYLE:
@@ -983,17 +931,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
             break;
         }
         if(!primitiveValue) break;
-        EDirection d = LTR;
-        switch(primitiveValue->getIdent())
-        {
-        case CSS_VAL_LTR:
-            d = LTR; break;
-        case CSS_VAL_RTL:
-            d = RTL; break;
-        default:
-            return;
-        }
-        style->setDirection(d);
+        style->setDirection( (EDirection) (primitiveValue->getIdent() - CSS_VAL_LTR) );
         return;
     }
     case CSS_PROP_DISPLAY:
@@ -1005,61 +943,17 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
             break;
         }
         if(!primitiveValue) break;
-	    int id = primitiveValue->getIdent();
-	    EDisplay d;
-	    if ( id == CSS_VAL_NONE) {
-	      d = NONE;
-	    } else if ( id == CSS_VAL_RUN_IN || id == CSS_VAL_COMPACT ||
-			id == CSS_VAL_MARKER ) {
-		// these are not supported at the moment, so we just ignore them.
-		return;
-	    } else {
-	      d = EDisplay(primitiveValue->getIdent() - CSS_VAL_INLINE);
-	    }
-//         EDisplay d = INLINE;
-//         switch(primitiveValue->getIdent())
-//         {
-//         case CSS_VAL_INLINE:
-//             break;
-//         case CSS_VAL_BLOCK:
-//             d = BLOCK; break;
-//         case CSS_VAL_LIST_ITEM:
-//             d = LIST_ITEM; break;
-//         case CSS_VAL_RUN_IN:
-//             // ### we don't support run-in and compact so let's completely ignore the vlaues.
-//             return;
-//             d = RUN_IN; break;
-//         case CSS_VAL_COMPACT:
-//             return;
-//             d = COMPACT; break;
-//         case CSS_VAL_MARKER:
-//             return;
-//             d = MARKER; break;
-//         case CSS_VAL_TABLE:
-//             d = TABLE; break;
-//         case CSS_VAL_INLINE_TABLE:
-//             d = INLINE_TABLE; break;
-//         case CSS_VAL_TABLE_ROW_GROUP:
-//             d = TABLE_ROW_GROUP; break;
-//         case CSS_VAL_TABLE_HEADER_GROUP:
-//             d = TABLE_HEADER_GROUP; break;
-//         case CSS_VAL_TABLE_FOOTER_GROUP:
-//             d = TABLE_FOOTER_GROUP; break;
-//         case CSS_VAL_TABLE_ROW:
-//             d = TABLE_ROW; break;
-//         case CSS_VAL_TABLE_COLUMN_GROUP:
-//             d = TABLE_COLUMN_GROUP; break;
-//         case CSS_VAL_TABLE_COLUMN:
-//             d = TABLE_COLUMN; break;
-//         case CSS_VAL_TABLE_CELL:
-//             d = TABLE_CELL; break;
-//         case CSS_VAL_TABLE_CAPTION:
-//             d = TABLE_CAPTION; break;
-//         case CSS_VAL_NONE:
-//             d = NONE; break;
-//         default:
-//             break;
-//         }
+	int id = primitiveValue->getIdent();
+	EDisplay d;
+	if ( id == CSS_VAL_NONE) {
+	    d = NONE;
+	} else if ( id == CSS_VAL_RUN_IN || id == CSS_VAL_COMPACT ||
+		    id == CSS_VAL_MARKER ) {
+	    // these are not supported at the moment, so we just ignore them.
+	    return;
+	} else {
+	    d = EDisplay(primitiveValue->getIdent() - CSS_VAL_INLINE);
+	}
 
         style->setDisplay(d);
         //kdDebug( 6080 ) << "setting display to " << d << endl;
@@ -1181,19 +1075,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         }
         if(!primitiveValue) return;
         if(primitiveValue->getIdent())
-        {
-            EListStylePosition p;
-            switch(primitiveValue->getIdent())
-            {
-            case CSS_VAL_INSIDE:
-                p = INSIDE; break;
-            case CSS_VAL_BOLDER:
-                p = OUTSIDE; break;
-            default:
-                return;
-            }
-            style->setListStylePosition(p);
-        }
+            style->setListStylePosition( (EListStylePosition) (primitiveValue->getIdent() - CSS_VAL_INSIDE) );
         return;
     }
 
@@ -1215,53 +1097,6 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	    } else {
 	      t = EListStyleType(id - CSS_VAL_DISC);
 	    }
-//             switch(primitiveValue->getIdent())
-//             {
-//             case CSS_VAL_DISC:
-//                 t = DISC; break;
-//             case CSS_VAL_CIRCLE:
-//                 t = CIRCLE; break;
-//             case CSS_VAL_SQUARE:
-//                 t = SQUARE; break;
-//             case CSS_VAL_HEBREW:
-//                 t = HEBREW; break;
-//             case CSS_VAL_ARMENIAN:
-//                 t = ARMENIAN; break;
-//             case CSS_VAL_GEORGIAN:
-//                 t = GEORGIAN; break;
-//             case CSS_VAL_CJK_IDEOGRAPHIC:
-//                 t = CJK_IDEOGRAPHIC; break;
-//             case CSS_VAL_HIRAGANA:
-//                 t = HIRAGANA; break;
-//             case CSS_VAL_KATAKANA:
-//                 t = KATAKANA; break;
-//             case CSS_VAL_HIRAGANA_IROHA:
-//                 t = HIRAGANA_IROHA; break;
-//             case CSS_VAL_KATAKANA_IROHA:
-//                 t = KATAKANA_IROHA; break;
-//             case CSS_VAL_DECIMAL_LEADING_ZERO:
-//                 t = DECIMAL_LEADING_ZERO; break;
-//             case CSS_VAL_DECIMAL:
-//                 t = LDECIMAL; break;
-//             case CSS_VAL_LOWER_ROMAN:
-//                 t = LOWER_ROMAN; break;
-//             case CSS_VAL_UPPER_ROMAN:
-//                 t = UPPER_ROMAN; break;
-//             case CSS_VAL_LOWER_GREEK:
-//                 t = LOWER_GREEK; break;
-//             case CSS_VAL_LOWER_ALPHA:
-//                 t = LOWER_ALPHA; break;
-//             case CSS_VAL_LOWER_LATIN:
-//                 t = LOWER_LATIN; break;
-//             case CSS_VAL_UPPER_ALPHA:
-//                 t = UPPER_ALPHA; break;
-//             case CSS_VAL_UPPER_LATIN:
-//                 t = UPPER_LATIN; break;
-//             case CSS_VAL_NONE:
-//                 t = LNONE; break;
-//             default:
-//                 return;
-//             }
             style->setListStyleType(t);
         }
         return;
@@ -1346,23 +1181,18 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
             return;
         }
 
-        if(!primitiveValue->getIdent()) return;
-
-        EVisiblity s;
-        switch(primitiveValue->getIdent()) {
-        case CSS_VAL_VISIBLE:
-            s = VISIBLE;
-            break;
-        case CSS_VAL_HIDDEN:
-            s = HIDDEN;
-            break;
-        case CSS_VAL_COLLAPSE:
-            s = COLLAPSE;
-            break;
-        default:
-            return;
-        }
-        style->setVisiblity(s);
+        int id = primitiveValue->getIdent();
+        if(!id) return;
+	EVisiblity v;
+	// can't use optimization here, as HIDDEN is not in the list.
+	if ( id == CSS_VAL_HIDDEN) {
+	    v = HIDDEN;
+	} else if ( id == CSS_VAL_VISIBLE ) {
+	    v = VISIBLE;
+	} else if ( id == CSS_VAL_COLLAPSE ) {
+	    v = COLLAPSE;
+	}
+        style->setVisiblity(v);
         break;
         }
 
@@ -1447,45 +1277,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
             	kdDebug( 6080 ) << "setting cursor image to " << image->cssText().string() << endl;
             	style->setCursorImage(image->image());
             } else {
-            	ECursor c(ECursor(primitiveValue->getIdent() - CSS_VAL_AUTO));
-//             switch(primitiveValue->getIdent()) {
-//             case CSS_VAL_AUTO:
-//                 break;
-//             case CSS_VAL_DEFAULT:
-//                 c = CURSOR_DEFAULT; break;
-//                 // ### shouldn't that be crosshair????
-//             case CSS_VAL_CROSSHAIR:
-//                 c = CURSOR_CROSS; break;
-//             // IE (?) alias for VAL_POINTER
-//             case CSS_VAL_HAND: if(strictParsing) break;
-//             case CSS_VAL_POINTER:
-//                 c = CURSOR_POINTER; break;
-//             case CSS_VAL_MOVE:
-//                 c = CURSOR_MOVE; break;
-//             case CSS_VAL_E_RESIZE:
-//                 c = CURSOR_E_RESIZE; break;
-//             case CSS_VAL_NE_RESIZE:
-//                 c = CURSOR_NE_RESIZE; break;
-//             case CSS_VAL_NW_RESIZE:
-//                 c = CURSOR_NW_RESIZE; break;
-//             case CSS_VAL_N_RESIZE:
-//                 c = CURSOR_N_RESIZE; break;
-//             case CSS_VAL_SE_RESIZE:
-//                 c = CURSOR_SE_RESIZE; break;
-//             case CSS_VAL_SW_RESIZE:
-//                 c = CURSOR_SW_RESIZE; break;
-//             case CSS_VAL_S_RESIZE:
-//                 c = CURSOR_S_RESIZE; break;
-//             case CSS_VAL_W_RESIZE:
-//                 c = CURSOR_W_RESIZE; break;
-//             case CSS_VAL_TEXT:
-//                 c = CURSOR_TEXT; break;
-//             case CSS_VAL_WAIT:
-//                 c = CURSOR_WAIT; break;
-//             case CSS_VAL_HELP:
-//                 c = CURSOR_HELP; break;
-//             }
-            style->setCursor(c);
+		style->setCursor( (ECursor) (primitiveValue->getIdent() - CSS_VAL_AUTO) );
 	    }
         }
         break;
@@ -1935,29 +1727,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         if(!primitiveValue) return;
         if(primitiveValue->getIdent())
         {
-            EVerticalAlign align(EVerticalAlign(primitiveValue->getIdent() - CSS_VAL_BASELINE));
-//             switch(primitiveValue->getIdent())
-//             {
-//             case CSS_VAL_TOP:
-//                 align = TOP; break;
-//             case CSS_VAL_BOTTOM:
-//                 align = BOTTOM; break;
-//             case CSS_VAL_MIDDLE:
-//                 align = MIDDLE; break;
-//             case CSS_VAL_BASELINE:
-//                 align = BASELINE; break;
-//             case CSS_VAL_TEXT_BOTTOM:
-//                 align = TEXT_BOTTOM; break;
-//             case CSS_VAL_TEXT_TOP:
-//                 align = TEXT_TOP; break;
-//             case CSS_VAL_SUB:
-//                 align = SUB; break;
-//             case CSS_VAL_SUPER:
-//                 align = SUPER; break;
-//             default:
-//                 return;
-//             }
-            style->setVerticalAlign(align);
+            style->setVerticalAlign( (EVerticalAlign) (primitiveValue->getIdent() - CSS_VAL_BASELINE) );
             return;
         }
         break;
@@ -2082,13 +1852,13 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 //    case CSS_PROP_ELEVATION:
 
 // number
-    case CSS_PROP_FONT_SIZE_ADJUST:
-    case CSS_PROP_ORPHANS:
+//     case CSS_PROP_FONT_SIZE_ADJUST:
+//     case CSS_PROP_ORPHANS:
 //     case CSS_PROP_PITCH_RANGE:
 //     case CSS_PROP_RICHNESS:
 //     case CSS_PROP_SPEECH_RATE:
 //     case CSS_PROP_STRESS:
-    case CSS_PROP_WIDOWS:
+//     case CSS_PROP_WIDOWS:
         break;
     case CSS_PROP_Z_INDEX:
     {
@@ -2150,26 +1920,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         if(!primitiveValue) return;
         if(primitiveValue->getIdent())
         {
-	    khtml::ETextAlign align(ETextAlign(primitiveValue->getIdent() - CSS_VAL_LEFT));
-
-//             khtml::ETextAlign align;
-//             switch(primitiveValue->getIdent())
-//             {
-//             case CSS_VAL_LEFT:
-//                 align = LEFT; break;
-//             case CSS_VAL_RIGHT:
-//                 align = RIGHT; break;
-//             case CSS_VAL_CENTER:
-//                 align = CENTER; break;
-//             case CSS_VAL_JUSTIFY:
-//                 align = JUSTIFY; break;
-//             case CSS_VAL_KONQ_CENTER:
-//                 align = KONQ_CENTER; break;
-//             default:
-//                 return;
-//             }
-
-            style->setTextAlign(align);
+            style->setTextAlign( (ETextAlign) (primitiveValue->getIdent() - CSS_VAL_LEFT) );
             return;
         }
     }

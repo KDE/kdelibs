@@ -39,3 +39,20 @@ print "#define CSS_PROP_TOTAL " i \
 }' >> cssproperties.h
 gperf -a -L 'ANSI-C' -E -C -c -o -t -k '*' -NfindProp -Hhash_prop -Wwordlist_prop -D -s 2 cssproperties.gperf > cssproperties.c
 echo -e '#endif\n' >> cssproperties.h
+
+cat cssproperties.strip | awk '{ \
+i=1; \
+print "static const char * propertyList[] = {"; \
+print "\"\","; \
+do { print "\"" $0 "\", "; i = i + 1 } while (getline); \
+print "    0"; \
+print "};"; \
+print "DOMString getPropertyName(unsigned short id)"; \
+print "{"; \
+print "    if(id >= CSS_PROP_TOTAL || id == 0)"; \
+print "      return 0;";\
+print "    else";\
+print "      return DOMString(propertyList[id]);"; \
+print "};"; \
+print ""; \
+}' >> cssproperties.c

@@ -143,11 +143,11 @@ public:
 	bool parseValue(const QChar *curP, const QChar *endP, int propId, 
 			bool important, QList<CSSProperty> *propList);	
 	bool parseFont(const QChar *curP, const QChar *endP);
-	bool parseBackground(const QChar *curP, const QChar *endP);
 	bool parse4Values(const QChar *curP, const QChar *endP, const int *properties);
 	bool parseShortHand(const QChar *curP, const QChar *endP, const int *properties, int num);
 	void setParsedValue(int propId, const CSSValueImpl *parsedValue);
 	QList<QChar> splitShorthandProperties(const QChar *curP, const QChar *endP);
+	bool parseBackgroundPosition(const QChar *curP, const QChar *&nextP, const QChar *endP);
 	
 	/* define CSS_AURAL in cssparser.cpp if you want to parse CSS2 Aural properties */
 	bool parse2Values(const QChar *curP, const QChar *endP, const int *properties);

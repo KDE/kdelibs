@@ -96,6 +96,11 @@ center
 justify
 konq-center
 #
+# CSS_PROP_LIST_STYLE_POSITION: 
+#
+inside
+outside
+#
 # CSS_PROP_LIST_STYLE_TYPE:
 #
 disc
@@ -159,6 +164,24 @@ text
 wait
 help
 #
+# CSS_PROP_DIRECTION:  
+#
+ltr
+rtl
+#
+# CSS_PROP_TEXT_TRANSFORM:  
+#
+capitalize
+uppercase
+lowercase
+#none
+#
+# CSS_PROP_VISIBILITY:
+#
+visible
+#hidden
+collapse
+#
 above
 absolute
 always
@@ -167,10 +190,8 @@ below
 bidi-override
 blink
 both
-capitalize
 caption
 close-quote
-collapse
 condensed
 crop
 cross
@@ -183,15 +204,12 @@ hand
 hide
 higher
 icon
-inside
 invert
 landscape
 level
 line-through
 loud
 lower
-lowercase
-ltr
 menu
 message-box
 mix
@@ -200,12 +218,10 @@ no-close-quote
 no-open-quote
 nowrap
 open-quote
-outside
 overline
 portrait
 pre
 relative
-rtl
 scroll
 semi-condensed
 semi-expanded
@@ -220,8 +236,6 @@ thin
 ultra-condensed
 ultra-expanded
 underline
-uppercase
-visible
 wider
 #
 # Not supported CSS 2 Aural values
