@@ -286,7 +286,8 @@ void KAutoConfig::resetSettings(){
       QVariant defaultValue = d->defaultValues[groupWidget];
       if(defaultValue != propertyMap->property(groupWidget)){
         propertyMap->setProperty(groupWidget, defaultValue);
-        d->changed = true;
+        emit void widgetModified();
+	d->changed = true;
       }
     }
   }
@@ -327,6 +328,7 @@ bool KAutoConfig::parseChildren(const QWidget *widget,
 	if(setting != defaultSetting){
 	  propertyMap->setProperty(childWidget, setting);
 	  valueChanged = true;
+	  if(trackChanges) emit void widgetModified();
         }
 
 	if(trackChanges && changedMap.find(childWidget->className()) != changedMap.end())
