@@ -63,7 +63,7 @@ void PixmapLoader::colorize( QImage &img, const QColor& color )
 		QColor c( *data );
 		int h, s, v;
 		c.hsv( &h, &s, &v );
-		if ( hue >= 0 && h >= 0 ) h = ( h - 216 + hue ) % 360;
+		if ( hue >= 0 && h >= 0 ) h = ( h + 144 + hue ) % 360;
 		if ( s ) s += sat / 2;
 		c.setHsv( h, QMIN( s, 255 ), QMIN( v * val / 228, 255 ) );
 		*data = ( c.rgb() & RGB_MASK ) | ( *data & ~RGB_MASK );
@@ -87,7 +87,7 @@ void PixmapLoader::makeDisabled( QImage &img, const QColor& color )
 		QColor c( *data );
 		int h, s, v;
 		c.hsv( &h, &s, &v );
-		if ( hue >= 0 && h >= 0 ) h = ( h - 216 + hue ) % 360;
+		if ( hue >= 0 && h >= 0 ) h = ( h + 144 + hue ) % 360;
 		if ( s ) s += sat / 5;
 		c.setHsv( h, QMIN( s, 255 ), QMIN( v * val / 255, 255 ) );
 		*data = ( c.rgb() & RGB_MASK ) | ( *data & ~RGB_MASK );
