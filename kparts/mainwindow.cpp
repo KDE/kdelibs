@@ -54,6 +54,13 @@ public:
 };
 };
 
+MainWindow::MainWindow( QWidget* parent,  const char *name, WFlags f )
+    : KMainWindow( parent, name, f )
+{
+  d = new MainWindowPrivate();
+  PartBase::setPartObject( this );
+}
+
 MainWindow::MainWindow( const char *name, WFlags f )
   : KMainWindow( 0L, name, f )
 {
