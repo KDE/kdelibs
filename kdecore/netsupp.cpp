@@ -253,7 +253,7 @@ int kde_getaddrinfo(const char *name, const char *service,
 		strcmp("localhost", name) == 0))
        goto out;		// isn't localhost
 
-     goto unix;
+     goto do_unix;
   }
   
 #if KDE_IPV6_LOOKUP_MODE != 0
@@ -322,7 +322,7 @@ int kde_getaddrinfo(const char *name, const char *service,
 	  goto out;
       }
 
- unix:
+ do_unix:
   // So, give the user a PF_UNIX socket
   p = make_unix(NULL, service);
   if (p == NULL)
