@@ -105,6 +105,8 @@ public:
   bool pendingFocusInEvent;
   bool blockHasUndockedSignal;
   NET::WindowType windowType;
+  QWidget *_parent;
+  bool transient;
 };
 
 #endif

@@ -553,6 +553,13 @@ public:
    */
   void setDockWindowType (NET::WindowType windowType);
 
+ /**
+   * Sets the type of the dock window
+   *
+   * @param windowType is type of dock window
+   */
+  void setDockWindowTransient (bool transientEnabled);
+
 public slots:
   /** Docks a dockwidget back to the dockwidget that was the neighbor widget before the current dock position. */
   void dockBack();

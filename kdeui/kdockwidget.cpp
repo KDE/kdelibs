@@ -25,6 +25,9 @@
 #include <qstrlist.h>
 #include <qcursor.h>
 
+#include <X11/X.h>
+#include <X11/Xlib.h>
+
 #include <kwin.h>
 
 #ifndef NO_KDE2
@@ -306,6 +309,8 @@ KDockWidget::KDockWidget( KDockManager* dockManager, const char* name, const QPi
 {
   d = new KDockWidgetPrivate();  // create private data
 
+  d->_parent = parent;
+
   layout = new QVBoxLayout( this );
   layout->setResizeMode( QLayout::Minimum );
 
@@ -404,10 +409,14 @@ void KDockWidget::applyToWidget( QWidget* s, const QPoint& p )
       setGeometry( QRect(QPoint(0,0), manager->main->geometry().size()) );
   }
 
-  if ( !s ){
+  if ( !s )
+  {
     move(p);
 
-   KWin::setType( winId(), d->windowType );
+    if (d->transient && d->_parent)
+      XSetTransientForHint( qt_xdisplay(), winId(), d->_parent->winId() );
+
+    KWin::setType( winId(), d->windowType );
   }
   updateHeader();
 }
@@ -431,6 +440,13 @@ void KDockWidget::show()
 void KDockWidget::setDockWindowType (NET::WindowType windowType)
 {
   d->windowType = windowType;
+  applyToWidget( parentWidget(), QPoint(0,0) );
+}
+
+void KDockWidget::setDockWindowTransient (bool transientEnabled)
+{
+  d->transient = transientEnabled;
+  applyToWidget( parentWidget(), QPoint(0,0) );
 }
 
 bool KDockWidget::event( QEvent *event )

@@ -282,6 +282,8 @@ KDockWidgetPrivate::KDockWidgetPrivate()
   ,blockHasUndockedSignal(false)
 {
   windowType = NET::Normal;
+  _parent = 0L;
+  transient = false;
 }
 
 KDockWidgetPrivate::~KDockWidgetPrivate()
