@@ -70,3 +70,6 @@ uninstall-local:
 
 EXTRA_DIST = generate_keys.sh charsets.config $(kdebug_DATA) kdebugareas.txt
 
+
+parser: kentities.gperf
+	cd $(srcdir) && gperf -a -L "ANSI-C" -C -G -c -o -t -k '*' -NfindEntity -D -s 2 kentities.gperf > kentities.c
