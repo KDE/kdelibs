@@ -209,14 +209,14 @@ int PtyProcess::exec(QCString command, QCStringList args)
     }
 
     int i;
-    const char *argp[32];
+    const char * argp[32];
     argp[0] = path;
     QCStringList::Iterator it;
     for (i=1, it=args.begin(); it!=args.end() && i<31; it++)
 	argp[i++] = *it;
     argp[i] = 0L;
 	
-    execv(path, argp);
+    execv(path, (char * const *)argp);
     kDebugPError("%s: execv(\"%s\")", ID, path.data());
     _exit(1);
 }
