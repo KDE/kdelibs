@@ -137,9 +137,9 @@ NodeImpl::Id HTMLAppletElementImpl::id() const
 
 KJavaApplet* HTMLAppletElementImpl::applet() const
 {
-    if (!m_render)
+    if (!m_render || !m_render->isApplet())
         return 0L;
-
+    
     return static_cast<KJavaAppletWidget*>(static_cast<RenderApplet*>(m_render)->widget())->applet();
 }
 
