@@ -1,6 +1,6 @@
 %{
 #include <stdlib.h>
-#include "koTraderParse.h"
+#include "ktraderparse.h"
 
 void yyerror(char *s);
 int yylex();
