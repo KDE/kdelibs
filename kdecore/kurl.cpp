@@ -1688,12 +1688,8 @@ void KURL::addPath( const QString& _txt )
 
   int i = 0;
   int len = m_strPath.length();
-  // NB: avoid three '/' when building a new path from nothing
-  if ( len == 0 ) {
-    while( _txt[i] == '/' ) ++i;
-  }
   // Add the trailing '/' if it is missing
-  else if ( _txt[0] != '/' && ( len == 0 || m_strPath[ len - 1 ] != '/' ) )
+  if ( _txt[0] != '/' && ( len == 0 || m_strPath[ len - 1 ] != '/' ) )
     m_strPath += "/";
 
   // No double '/' characters

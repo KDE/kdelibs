@@ -237,6 +237,17 @@ int main(int argc, char *argv[])
       KURL newUrl = tmpurl;
       newUrl.setFileName( "mynewdir" );
   check("KURL::setFileName() special", newUrl.url(), "file:/home/dfaure/mynewdir");
+  // addPath tests
+  newUrl.addPath( "subdir" );
+  check("KURL::addPath(\"subdir\")", newUrl.url(), "file:/home/dfaure/mynewdir/subdir");
+  newUrl.addPath( "/foo/" );
+  check("KURL::addPath(\"/foo/\")", newUrl.url(), "file:/home/dfaure/mynewdir/subdir/foo/");
+  u2 = "http://www.kde.org"; // no path
+  u2.addPath( "subdir" );
+  check("KURL::addPath(\"subdir\")", u2.url(), "http://www.kde.org/subdir");
+  u2.addPath( "" );
+  check("KURL::addPath(\"subdir\")", u2.url(), "http://www.kde.org/subdir"); // unchanged
+
   // even more tricky
   u2 = "print:/specials/Print%20To%20File%20(PDF%2FAcrobat)";
   printf("\n* URL is %s\n",u2.url().ascii());
@@ -273,6 +284,12 @@ int main(int argc, char *argv[])
   check("urlcmp(only hash difference)", urlcmp(ucmp2,ucmp3)?"ko":"ok","ok");
   check("urlcmp(only hash difference, ignore_ref)", urlcmp(ucmp2,ucmp3,false,true)?"ok":"ko","ok");
   check("urlcmp(slash and hash difference, ignore_trailing, ignore_ref)", urlcmp(ucmp2,ucmp3,true,true)?"ok":"ko","ok");
+  check("urlcmp(empty, empty)", urlcmp("","",false,true)?"ok":"ko","ok");
+  check("urlcmp(empty, empty)", urlcmp("","")?"ok":"ko","ok");
+  check("urlcmp(empty, not empty)", urlcmp("",ucmp1)?"ok":"ko","ko");
+  check("urlcmp(empty, not empty)", urlcmp("",ucmp1,false,true)?"ok":"ko","ko");
+  check("urlcmp(malformed, not empty)", urlcmp("file",ucmp1)?"ok":"ko","ko");
+  check("urlcmp(malformed, not empty)", urlcmp("file",ucmp1,false,true)?"ok":"ko","ko");
 
   KURL ftpUrl ( "ftp://ftp.de.kde.org" );
   printf("\n* URL is %s\n",ftpUrl.url().latin1());
@@ -346,9 +363,11 @@ int main(int argc, char *argv[])
      check("http: Relative URL, orig URL had no path", waba2.url(), "http://faure@www.kde.org/filename.html");
   }
   {
-     KURL base( "http://faure@www.kde.org:81?query" );
-     KURL waba2( base, "http://www.yahoo.org");
-     check("http: Relative URL, orig URL had username", waba2.url(), "http://www.yahoo.org");
+     KURL base( "http://faure:pass@www.kde.org:81?query" );
+     KURL rel1( base, "http://www.kde.org/bleh/"); // same host
+     check("http: Relative URL, orig URL had username", rel1.url(), "http://faure:pass@www.kde.org/bleh/");
+     KURL rel2( base, "http://www.yahoo.org"); // different host
+     check("http: Relative URL, orig URL had username", rel2.url(), "http://www.yahoo.org");
   }
 
   waba1 = "http://www.website.com/directory/filename?bla#blub";
@@ -388,6 +407,15 @@ int main(int argc, char *argv[])
   check("http: Set user", waba1.url(), "http://waldo@www.website.com/directory/filename?bla#blub");
   waba1.setUser("waldo/bastian");
   check("http: Set user with slash in it", waba1.url(), "http://waldo%2Fbastian@www.website.com/directory/filename?bla#blub");
+  waba1.setRef( QString::null );
+  waba1.setPass( "pass" );
+  waba1.setDirectory( "/foo" );
+  waba1.setProtocol( "https" );
+  waba1.setHost( "web.com" );
+  waba1.setPort( 881 );
+  check("http: setRef/setPass/setDirectory/setHost/setPort", waba1.url(), "https://waldo%2Fbastian:pass@web.com:881/foo/?bla");
+  waba1.setDirectory( "/foo/" );
+  check("http: setDirectory #2", waba1.url(), "https://waldo%2Fbastian:pass@web.com:881/foo/?bla");
 
   // Empty queries should be preserved!
   waba1 = "http://www.kde.org/cgi/test.cgi?";
@@ -560,7 +588,7 @@ int main(int argc, char *argv[])
   check("Broken stuff #5 valid", broken.isValid()?"VALID":"MALFORMED", "MALFORMED");
   check("Broken stuff #5 path", broken.path(), "");
   broken = "file";
-  check("Broken stuff #5 valid", broken.isValid()?"VALID":"MALFORMED", "MALFORMED");
+  check("Broken stuff #6 valid", broken.isValid()?"VALID":"MALFORMED", "MALFORMED");
 
 #if 0 // BROKEN?
   // UNC like names
@@ -621,6 +649,18 @@ int main(int argc, char *argv[])
   check("UTF8",uloc.url(0, 106),"file:/home/dfaure/konqtests/Mat%C3%A9riel");
   uloc = KURL("file:/home/dfaure/konqtests/Mat%C3%A9riel", 106);
   check("UTF8 path", uloc.path(), "/home/dfaure/konqtests/Matériel");
+
+  // fromPathOrURL tests
+  uloc = KURL::fromPathOrURL( "/home/dfaure/konqtests/Mat%E9riel" );
+  check("fromPathOrURL path", uloc.path(), "/home/dfaure/konqtests/Mat%E9riel");
+  uloc = KURL::fromPathOrURL( "http://www.kde.org" );
+  check("fromPathOrURL url", uloc.url(), "http://www.kde.org");
+  uloc = KURL::fromPathOrURL( "www.kde.org" );
+  check("fromPathOrURL url", uloc.isValid()?"valid":"malformed", "malformed");
+  uloc = KURL::fromPathOrURL( "index.html" );
+  check("fromPathOrURL url", uloc.isValid()?"valid":"malformed", "malformed");
+  uloc = KURL::fromPathOrURL( "" );
+  check("fromPathOrURL url", uloc.isValid()?"valid":"malformed", "malformed");
 
 #if QT_VERSION < 300
   qt_set_locale_codec( KGlobal::charsets()->codecForName( "koi8-r" ) );
@@ -700,6 +740,14 @@ int main(int argc, char *argv[])
   KURL smb("smb://domain;username:password@server/share");
   check("smb.isValid()", smb.isValid() ? "true" : "false", "true");
   check("smb.user()", smb.user(), "domain;username");
+  smb = "smb:/";
+  check("smb:/", smb.isValid()?"VALID":"MALFORMED", "VALID");
+  smb = "smb://"; // kurl.cpp rev 1.106
+  check("smb://", smb.isValid()?"VALID":"MALFORMED", "MALFORMED");
+  smb = "smb://host";
+  check("smb://host", smb.isValid()?"VALID":"MALFORMED", "VALID");
+  smb = "smb:///";
+  check("smb:///", smb.isValid()?"VALID":"MALFORMED", "VALID");
 
   KURL weird;
   weird = "http://strange<hostname>/";
@@ -786,12 +834,14 @@ int main(int argc, char *argv[])
 
   check("relativePath(\"/\", \"/\")", KURL::relativePath("/", "/"), "./");
   check("relativePath(\"/\", \"/home/bastian\")", KURL::relativePath("/", "/home/bastian"), "./home/bastian");
+  check("relativePath(\"\", \"/home/bastian\")", KURL::relativePath("", "/home/bastian"), "/home/bastian");
 
   baseURL = "http://www.kde.org/index.html";
   check("relativeURL(\"http://www.kde.org/index.html\", \"http://www.kde.org/index.html#help\")", KURL::relativeURL(baseURL, "http://www.kde.org/index.html#help"), "#help");
   check("relativeURL(\"http://www.kde.org/index.html\", \"http://www.kde.org/index.html?help=true\")", KURL::relativeURL(baseURL, "http://www.kde.org/index.html?help=true"), "index.html?help=true");
   check("relativeURL(\"http://www.kde.org/index.html\", \"http://www.kde.org/contact.html\")", KURL::relativeURL(baseURL, "http://www.kde.org/contact.html"), "contact.html");
   check("relativeURL(\"http://www.kde.org/index.html\", \"ftp://ftp.kde.org/pub/kde\")", KURL::relativeURL(baseURL, "ftp://ftp.kde.org/pub/kde"), "ftp://ftp.kde.org/pub/kde");
+  check("relativeURL(\"http://www.kde.org/index.html\", \"http://www.kde.org/index.html\")", KURL::relativeURL(baseURL, "http://www.kde.org/index.html"), "./");
 
   baseURL = "http://www.kde.org/info/index.html";
   check("relativeURL(\"http://www.kde.org/info/index.html\", \"http://www.kde.org/bugs/contact.html\")", KURL::relativeURL(baseURL, "http://www.kde.org/bugs/contact.html"), "../bugs/contact.html");
