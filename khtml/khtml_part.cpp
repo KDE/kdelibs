@@ -656,6 +656,8 @@ void KHTMLPart::slotRedirection(const KURL& url)
   // the slave told us that we got redirected
   kdDebug(300) << "redirection by KIO to " << url.url() << endl;
 
+  emit d->m_extension->setLocationBarURL( url.url() );
+  
   d->m_workingURL = url;
 }
 
@@ -1140,7 +1142,7 @@ void KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &url,
 
     if ( child->m_bFrame )
       partManager()->addPart( part );
-    
+
     child->m_part = part;
 
     if ( child->m_bFrame )
@@ -1162,7 +1164,7 @@ void KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &url,
         connect( child->m_extension, SIGNAL( openURLNotify() ),
 	         d->m_extension, SIGNAL( openURLNotify() ) );
       }
-      
+
       connect( child->m_extension, SIGNAL( createNewWindow( const KURL &, const KParts::URLArgs & ) ),
 	       d->m_extension, SIGNAL( createNewWindow( const KURL &, const KParts::URLArgs & ) ) );
 
