@@ -74,7 +74,7 @@ static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon, const 
     label1->setPixmap(QMessageBox::standardIcon(icon));
     lay->addWidget( label1, 0, Qt::AlignCenter );
     lay->addSpacing(KDialog::spacingHint());
-    // Enforce <p>text</p> otherwise the word-wrap doesn't work well 
+    // Enforce <p>text</p> otherwise the word-wrap doesn't work well
     QString qt_text;
     if ( !text.isEmpty() && (text[0] != '<') )
     {
@@ -84,7 +84,7 @@ static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon, const 
            *it = QStyleSheet::convertFromPlainText( *it, QStyleSheetItem::WhiteSpaceNormal );
         }
         qt_text = lines.join(QString::null);
-    } 
+    }
     else
         qt_text = text;
 
@@ -95,7 +95,7 @@ static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon, const 
     {
        QSimpleRichText rt(qt_text, dialog->font());
        int scr = QApplication::desktop()->screenNumber(dialog);
-       
+
        pref_width = QApplication::desktop()->screenGeometry(scr).width() / 3;
        rt.setWidth(pref_width);
        int used_width = rt.widthUsed();
@@ -115,13 +115,13 @@ static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon, const 
           }
           pref_width = used_width;
        }
-       else 
+       else
        {
           if (used_width > (pref_width *2))
              pref_width = pref_width *2;
           else
              pref_width = used_width;
-       } 
+       }
     }
     KActiveLabel *label2 = new KActiveLabel( qt_text, contents );
     if ((options & KMessageBox::AllowLink) == 0)
@@ -167,11 +167,11 @@ static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon, const 
        KDialogQueue::queueDialog(dialog);
        return KMessageBox::Cancel; // We have to return something.
     }
-    
+
     // We use a QGuardedPtr because the dialog may get deleted
     // during exec() if the parent of the dialog gets deleted.
     // In that case the guarded ptr will reset to 0.
-    QGuardedPtr<KDialogBase> guardedDialog = dialog; 
+    QGuardedPtr<KDialogBase> guardedDialog = dialog;
 
     int result = guardedDialog->exec();
     if (checkbox && checkboxReturn)
@@ -297,7 +297,7 @@ KMessageBox::questionYesNoCancel(QWidget *parent,
                        buttonYes, buttonNo);
 
     bool checkboxResult;
-    int result = createKMessageBox(dialog, QMessageBox::Information, 
+    int result = createKMessageBox(dialog, QMessageBox::Information,
                        text, QStringList(),
                        dontAskAgainName.isEmpty() ? QString::null : i18n("&Do not ask again"),
                        &checkboxResult, options);
@@ -736,15 +736,15 @@ int KMessageBox::messageBox( QWidget *parent, DialogType type, const QString &te
         case Information:
             KMessageBox::information( parent,
                                       text, caption, QString::null, options );
-            return KMessageBox::Ok; // whatever
+            return KMessageBox::Ok;
 
         case Error:
             KMessageBox::error( parent, text, caption, options );
-            return KMessageBox::Ok; // whatever
+            return KMessageBox::Ok;
 
         case Sorry:
             KMessageBox::sorry( parent, text, caption, options );
-            return KMessageBox::Ok; // whatever
+            return KMessageBox::Ok;
     }
     return KMessageBox::Cancel;
 }
