@@ -52,7 +52,7 @@
  *   - Speak contents of clipboard.
  *   - Speak KDE notifications.
  *   - Plugin-based text job filtering permits substitution for misspoken words,
- *     abbrebiations, etc., transformation of XML or XHTML to SSML, and automatic
+ *     abbreviations, etc., transformation of XML or XHTML to SSML, and automatic
  *     choice of appropriate synthesis engine.
  *
  * @section Requirements
