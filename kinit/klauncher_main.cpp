@@ -88,5 +88,6 @@ start_launcher(int socket)
 
 int main(/*int argc, char **argv*/)
 {
+   start_launcher(3);
    return 0;
 }

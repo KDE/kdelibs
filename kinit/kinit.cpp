@@ -349,9 +349,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
 
   if (strcmp(_name, "klauncher") == 0) {
      /* klauncher is launched in a special way:
-      * instead of calling 'main(argc, argv)',
-      * we call 'start_launcher(comm_socket)'.
-      * The other end of the socket is d.launcher[0].
+      * It has a communication socket on fd 3
       */
      if (0 > socketpair(AF_UNIX, SOCK_STREAM, 0, d.launcher))
      {
@@ -412,6 +410,19 @@ static pid_t launch(int argc, const char *_name, const char *args,
      /** Child **/
      close(d.fd[0]);
      close_fds();
+     if (launcher)
+     {
+        if (d.fd[1] == 3)
+        {
+          d.fd[1] = dup(d.fd[1]); // Evacuate from fd 3
+        }
+        if (d.launcher[1] != 3)
+        {
+          dup2( d.launcher[1], 3); // Make sure the socket has fd 3
+          close( d.launcher[1] );
+        }
+        
+     }
 
      if (cwd && *cwd)
         chdir(cwd);
@@ -515,62 +526,39 @@ static pid_t launch(int argc, const char *_name, const char *args,
         exit(255);
      }
 
-     if (!launcher)
+     d.sym = lt_dlsym( d.handle, "kdemain");
+     if (!d.sym )
      {
-        d.sym = lt_dlsym( d.handle, "kdemain");
-        if (!d.sym )
-        {
-           d.sym = lt_dlsym( d.handle, "main");
-           if (!d.sym )
-           {
-              const char * ltdlError = lt_dlerror();
-              fprintf(stderr, "Could not find main: %s\n", ltdlError != 0 ? ltdlError : "(null)" );
-              QString errorMsg = i18n("Could not find 'main' in '%1'.\n%2").arg(libpath)
-		.arg(ltdlError ? QFile::decodeName(ltdlError) : i18n("Unknown error"));
-              exitWithErrorMsg(errorMsg);
-           }
-        }
-
-        d.result = 0; // Success
-        write(d.fd[1], &d.result, 1);
-        close(d.fd[1]);
-
-        d.func = (int (*)(int, char *[])) d.sym;
-        if (d.debug_wait)
-        {
-           fprintf(stderr, "kdeinit: Suspending process\n"
-                           "kdeinit: 'gdb kdeinit %d' to debug\n"
-                           "kdeinit: 'kill -SIGCONT %d' to continue\n",
-                           getpid(), getpid());
-           kill(getpid(), SIGSTOP);
-        }
-        else
-            setup_tty( tty );
-
-	exit( d.func(argc, d.argv)); /* Launch! */
-     }
-     else
-     {
-        d.sym = lt_dlsym( d.handle, "start_launcher");
+        d.sym = lt_dlsym( d.handle, "main");
         if (!d.sym )
         {
            const char * ltdlError = lt_dlerror();
-           fprintf(stderr, "Could not find start_launcher: %s\n", ltdlError != 0 ? ltdlError : "(null)" );
-           d.result = 1; // Error
-           write(d.fd[1], &d.result, 1);
-           close(d.fd[1]);
-           exit(255);
+           fprintf(stderr, "Could not find main: %s\n", ltdlError != 0 ? ltdlError : "(null)" );
+           QString errorMsg = i18n("Could not find 'main' in '%1'.\n%2").arg(libpath)
+		.arg(ltdlError ? QFile::decodeName(ltdlError) : i18n("Unknown error"));
+           exitWithErrorMsg(errorMsg);
         }
-
-        d.result = 0; // Success
-        write(d.fd[1], &d.result, 1);
-        close(d.fd[1]);
-
-        d.launcher_func = (int (*)(int)) d.sym;
-        close(d.launcher[0]); // Close non-used socket.
-
-        exit( d.launcher_func( d.launcher[1] )); /* Launch! */
      }
+
+     d.result = 0; // Success
+     write(d.fd[1], &d.result, 1);
+     close(d.fd[1]);
+
+     d.func = (int (*)(int, char *[])) d.sym;
+     if (d.debug_wait)
+     {
+        fprintf(stderr, "kdeinit: Suspending process\n"
+                        "kdeinit: 'gdb kdeinit %d' to debug\n"
+                        "kdeinit: 'kill -SIGCONT %d' to continue\n",
+                        getpid(), getpid());
+        kill(getpid(), SIGSTOP);
+     }
+     else
+     {
+        setup_tty( tty );
+     }
+
+     exit( d.func(argc, d.argv)); /* Launch! */
 
      break;
   default:
