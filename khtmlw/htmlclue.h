@@ -304,8 +304,8 @@ public:
   virtual bool print( QPainter *_painter, int _x, int _y, int _width,
 		      int _height, int _tx, int _ty, bool toPrinter );
 
-  virtual bool isMarked() { return bIsMarked; }
-  virtual void setMarker( QPainter *_painter, int _tx, int _ty, bool _mode );
+  virtual bool isMarked() const { return bIsMarked; }
+  virtual void setMarker( bool _mode ) { bIsMarked = _mode; }
   virtual void findCells( int _tx, int _ty, QList<HTMLCellInfo> &_list );
 
 protected:

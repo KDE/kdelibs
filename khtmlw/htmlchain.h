@@ -29,12 +29,16 @@ class HTMLChain
 public:
     HTMLChain() : chain(30), curr(0), tail(0) {  }
 
+    void clear() { curr = tail = 0; }
+
     void first() { curr = 0; }
     void last()  { curr = tail; }
     void next()  { if (curr < tail) curr++; }
     void prev()  { if (curr > 0) curr--; }
 
     HTMLObject *current() { return chain[curr]; }
+
+    bool isLast() { return curr == tail; }
 
     void push( HTMLObject *obj ) { 
     	if (tail >= (int) chain.size()) 

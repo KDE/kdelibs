@@ -576,6 +576,11 @@ public:
     void paint( HTMLChain *_chain, int x, int y, int w, int h );
 
     /*
+     * Internal function to paint a cell
+     */
+    void paint( HTMLCellInfo * );
+
+    /*
      * Schedule a paint event.  This is used internally to force a paint
      * event when, for example, an image has been loaded and the document
      * has been layed out again.

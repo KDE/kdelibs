@@ -483,8 +483,16 @@ void HTMLClue::print( QPainter *_painter, HTMLChain *_chain, int _x, int _y,
 
     if ( _chain->current() )
     {
-	_chain->current()->print( _painter, _chain, _x - x,
-		_y - (y - getHeight()), _width, _height, _tx, _ty );
+        if ( _chain->isLast() )
+        {
+            // if a clue is the last in the chain, then draw its children too.
+            print( _painter, _tx, _ty );
+        }
+        else
+        {
+            _chain->current()->print( _painter, _chain, _x - x,
+                _y - (y - getHeight()), _width, _height, _tx, _ty );
+        }
     }
 }
 
@@ -1176,14 +1184,11 @@ bool HTMLCell::print( QPainter *_painter, int _x, int _y, int _width, int _heigh
   if ( _y + _height < y - getAscent() || _y > y )
     return rv;
   
-  _tx += x;
-  _ty += y - ascent;
-  
   if ( !toPrinter && bIsMarked )
   {
     QPen pen( _painter->pen() );
     _painter->setPen( black );
-    _painter->drawRect( _tx, _ty, width, ascent + descent );
+    _painter->drawRect( _tx + x, _ty + y - ascent, width, ascent + descent );
     _painter->setPen( pen );
   }
     
@@ -1192,40 +1197,14 @@ bool HTMLCell::print( QPainter *_painter, int _x, int _y, int _width, int _heigh
 
 void HTMLCell::findCells( int _tx, int _ty, QList<HTMLCellInfo> &_list )
 {
-    int old_ty = _ty;
-    int old_tx = _tx;
-  
-    _tx += x;
-    _ty += y - ascent;
-
-    HTMLObject *obj;
-
     HTMLCellInfo *p = new HTMLCellInfo;
     p->pCell = this;
-    p->xAbs = _tx;
-    p->baseAbs = old_ty + y;
-    p->tx = old_tx;
-    p->ty = old_ty;
+    p->xAbs = _tx + x;
+    p->baseAbs = _ty + y;
+    p->tx = _tx;
+    p->ty = _ty;
     
     _list.append( p );
-
-    for ( obj = head; obj != 0; obj = obj->next() )
-	obj->findCells( _tx, _ty, _list );
-}
-
-void HTMLCell::setMarker( QPainter *_painter, int _tx, int _ty, bool _mode )
-{
-  if ( bIsMarked == _mode )
-    return;
- 
-  bIsMarked = _mode;
-  
-  if ( bIsMarked )
-    _painter->setPen( black );
-  else
-    _painter->setPen( _painter->backgroundColor() );
-
-  _painter->drawRect( _tx + x, _ty + y - ascent, width, ascent + descent );
 }
 
 //-----------------------------------------------------------------------------

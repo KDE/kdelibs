@@ -5548,25 +5548,15 @@ bool KHTMLWidget::cellUp()
   
   if ( next == 0 )
     return false;
-  
-  bool new_painter = false;
-  if ( painter == 0 )
-  {
-    new_painter = true;
-    painter = new QPainter;
-    painter->begin( this );
-  }
 
   if ( curr )
-    curr->pCell->setMarker( painter, next->tx, next->ty, false );
-  next->pCell->setMarker( painter, next->tx, next->ty, true );
-
-  if ( new_painter )
   {
-    painter->end();
-    delete painter;
-    painter = 0;
+    curr->pCell->setMarker( false );
+    paint( curr );
   }
+
+  next->pCell->setMarker( true );
+  paint( next );
 
   if ( next->ty + next->pCell->getYPos() - next->pCell->getAscent() < 0 )
     emit scrollVert( y_offset + ( next->ty + next->pCell->getYPos() - next->pCell->getAscent() ) );
@@ -5634,25 +5624,15 @@ bool KHTMLWidget::cellDown()
   
   if ( next == 0 )
     return false;
-  
-  bool new_painter = false;
-  if ( painter == 0 )
-  {
-    new_painter = true;
-    painter = new QPainter;
-    painter->begin( this );
-  }
 
   if ( curr )
-    curr->pCell->setMarker( painter, next->tx, next->ty, false );
-  next->pCell->setMarker( painter, next->tx, next->ty, true );
-
-  if ( new_painter )
   {
-    painter->end();
-    delete painter;
-    painter = 0;
+    curr->pCell->setMarker( false );
+    paint( curr );
   }
+
+  next->pCell->setMarker( true );
+  paint( next );
 
   if ( next->ty + next->pCell->getYPos() + next->pCell->getDescent() > height() )
     emit scrollVert( y_offset + ( next->ty + next->pCell->getYPos() + next->pCell->getDescent() - height() ) );
@@ -5696,25 +5676,15 @@ bool KHTMLWidget::cellLeft()
   
   if ( next == 0 )
     return false;
-  
-  bool new_painter = false;
-  if ( painter == 0 )
-  {
-    new_painter = true;
-    painter = new QPainter;
-    painter->begin( this );
-  }
 
   if ( curr )
-    curr->pCell->setMarker( painter, next->tx, next->ty, false );
-  next->pCell->setMarker( painter, next->tx, next->ty, true );
-
-  if ( new_painter )
   {
-    painter->end();
-    delete painter;
-    painter = 0;
+    curr->pCell->setMarker( false );
+    paint( curr );
   }
+
+  next->pCell->setMarker( true );
+  paint( next );
 
   if ( next->ty + next->pCell->getYPos() - next->pCell->getAscent() < 0 )
     emit scrollVert( y_offset + ( next->ty + next->pCell->getYPos() - next->pCell->getAscent() ) );
@@ -5759,24 +5729,14 @@ bool KHTMLWidget::cellRight()
   if ( next == 0 )
     return false;
   
-  bool new_painter = false;
-  if ( painter == 0 )
-  {
-    new_painter = true;
-    painter = new QPainter;
-    painter->begin( this );
-  }
-
   if ( curr )
-    curr->pCell->setMarker( painter, next->tx, next->ty, false );
-  next->pCell->setMarker( painter, next->tx, next->ty, true );
-
-  if ( new_painter )
   {
-    painter->end();
-    delete painter;
-    painter = 0;
+    curr->pCell->setMarker( false );
+    paint( curr );
   }
+
+  next->pCell->setMarker( true );
+  paint( next );
 
   emit onURL( next->pCell->getURL() );
   
@@ -5952,25 +5912,15 @@ void KHTMLWidget::cellSequenceChanged()
 
   if ( next == 0 )
     return;
-  
-  bool new_painter = false;
-  if ( painter == 0 )
-  {
-    new_painter = true;
-    painter = new QPainter;
-    painter->begin( this );
-  }
-
+   
   if ( curr )
-    curr->pCell->setMarker( painter, next->tx, next->ty, false );
-  next->pCell->setMarker( painter, next->tx, next->ty, true );
-
-  if ( new_painter )
   {
-    painter->end();
-    delete painter;
-    painter = 0;
+    curr->pCell->setMarker( false );
+    paint( curr );
   }
+
+  next->pCell->setMarker( true );
+  paint( next );
 
   if ( next->ty + next->pCell->getYPos() - next->pCell->getAscent() < 0 )
     emit scrollVert( y_offset + ( next->ty + next->pCell->getYPos() - next->pCell->getAscent() ) );
@@ -5980,6 +5930,40 @@ void KHTMLWidget::cellSequenceChanged()
   emit onURL( next->pCell->getURL() );
 
   return ;
+}
+
+void KHTMLWidget::paint( HTMLCellInfo *_cellInfo )
+{
+    bool newPainter = FALSE;
+
+    if ( clue == 0 )
+	return;
+
+	if ( painter == 0 )
+	{
+	    painter = new QPainter;
+	    painter->begin( this );
+	    newPainter = TRUE;
+	}
+
+    HTMLClue *cell = _cellInfo->pCell;
+
+    int x = _cellInfo->tx + cell->getXPos();
+    int y = _cellInfo->ty + cell->getYPos() - cell->getAscent();
+
+	bool db = bDrawBackground;
+	bDrawBackground = true;
+    drawBackground( x_offset,y_offset,x,y,cell->getWidth(),cell->getHeight() );
+	bDrawBackground = db;
+
+    cell->print( painter, _cellInfo->tx, _cellInfo->ty );
+    
+	if ( newPainter )
+	{
+	    painter->end();
+	    delete painter;
+	    painter = 0;
+	}
 }
 
 //-----------------------------------------------------------
