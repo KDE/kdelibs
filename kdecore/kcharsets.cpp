@@ -746,6 +746,9 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
         return codec; // cache hit, return
 
     QCString name = n.lower().latin1();
+    QCString key = name;
+    if (name.right(8) == "_charset")
+       name.truncate(name.length()-8);
 
     if (n.isEmpty()) {
         QString lc = KGlobal::locale()->charset();
@@ -761,7 +764,7 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
     codec = QTextCodec::codecForName(name);
 
     if(codec) {
-        d->codecForNameDict.replace(name, codec);
+        d->codecForNameDict.replace(key, codec);
         return codec;
     }
 
@@ -775,7 +778,7 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
 
     if(codec)
     {
-        d->codecForNameDict.replace(name, codec);
+        d->codecForNameDict.replace(key, codec);
         return codec;
     }
 
@@ -795,7 +798,7 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
     codec = QTextCodec::loadCharmapFile(dir + cname);
 
     if(codec) {
-        d->codecForNameDict.replace(name, codec);
+        d->codecForNameDict.replace(key, codec);
         return codec;
     }
 
@@ -809,7 +812,7 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
         codec = QTextCodec::codecForName(cname.latin1());
 
     if(codec) {
-        d->codecForNameDict.replace(name, codec);
+        d->codecForNameDict.replace(key, codec);
         return codec;
     }
 
