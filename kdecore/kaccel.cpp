@@ -84,6 +84,7 @@ bool KAccelPrivate::connectKey( KAccelAction& action, const KKeyServer::Key& key
 	m_mapIDToKey[nID] = keyQt;
 
 	if( action.objSlotPtr() && action.methodSlotPtr() ) {
+		// TODO: If Simon removes this functionality from KAction::initPrivate(), then remove it from here too
 		if( QRegExp("\\(\\s*int\\s*\\)").search( action.methodSlotPtr() ) == -1 ) {
 			((QAccel*)m_pAccel)->connectItem( nID, action.objSlotPtr(), action.methodSlotPtr() );
 			if( !action.isEnabled() )
@@ -147,6 +148,7 @@ bool KAccelPrivate::disconnectKey( const KKeyServer::Key& key )
 void KAccelPrivate::slotKeyPressed( int id )
 {
 	kdDebug(125) << "KAccelPrivate::slotKeyPressed( " << id << " )" << endl;
+	
 	if( m_mapIDToAction.contains( id ) ) {
 		KAccelAction* pAction = m_mapIDToAction[id];
 		Q_ASSERT( pAction );
@@ -168,7 +170,6 @@ void KAccelPrivate::slotKeyPressed( int id )
 		}
 	} 
 	if( m_mapIDToKey.contains( id ) ) {
-		KAccelAction* pAction = m_mapIDToAction[id];
 		KKey key = m_mapIDToKey[id];
 		KKeySequence seq( key );
 		QPopupMenu* pMenu = createPopupMenu( kapp->mainWidget(), seq );
@@ -178,13 +179,14 @@ void KAccelPrivate::slotKeyPressed( int id )
 		//  then activated it without popping up the menu.
 		// This is needed for when there are multiple actions
 		//  with the same shortcut where all but one is disabled.
-		if( pMenu->count() == 1 && pAction->shortcut().contains( key ) ) {
-			int iAction = pMenu->idAt(0);
+		// pMenu->count() also counts the menu title, so one shortcut will give count = 2.
+		if( pMenu->count() == 2 && pMenu->accel(1).isEmpty() ) {
+			int iAction = pMenu->idAt(1);
 			slotMenuActivated( iAction );
 		} else {
-			connect( pMenu, SIGNAL(activated(int)), this, SLOT(slotMenuActivated(int)));
+			connect( pMenu, SIGNAL(activated(int)), this, SLOT(slotMenuActivated(int)) );
 			pMenu->exec();
-			disconnect( pMenu, SIGNAL(activated(int)), this, SLOT(slotMenuActivated(int)));
+			disconnect( pMenu, SIGNAL(activated(int)), this, SLOT(slotMenuActivated(int)) );
 			delete pMenu;
 		}
 	}
