@@ -2032,6 +2032,8 @@ KListViewItem::~KListViewItem()
 void KListViewItem::init()
 {
   m_known = false;
+  KListView *lv = static_cast<KListView *>(listView());
+  setDragEnabled( dragEnabled() || lv->dragEnabled() );
 }
 
 const QColor &KListViewItem::backgroundColor()
