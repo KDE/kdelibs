@@ -55,11 +55,11 @@ void KMimeType::check()
   s_bChecked = true; // must be done before building mimetypes
 
   // Try to find the default type
-  if ( ( s_pDefaultType = KMimeType::mimeType( "application/octet-stream" ) ) == 0L )
+  if ( ! ( s_pDefaultType = KMimeType::mimeType( "application/octet-stream" )) )
     errorMissingMimeType( "application/octet-stream" );
 
   // No default type ?
-  if ( s_pDefaultType == 0L )
+  if ( !s_pDefaultType )
   {
     QStringList tmp;
     s_pDefaultType = new KMimeType( "application/octet-stream", "unknown.xpm", "", tmp );
