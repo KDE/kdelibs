@@ -332,6 +332,9 @@ protected:
             parent()->removeChild(this);
     }
 
+    void invalidateVerticalPositions();
+    short getVerticalPosition( bool firstLine ) const;
+
 private:
     RenderStyle *m_style;
     RenderObject *m_parent;
@@ -355,6 +358,8 @@ private:
     bool m_containsWidget : 1;
     bool m_containsOverhangingFloats : 1;
     bool m_hasFirstLine : 1;
+
+    short m_verticalPosition;
     
     friend class RenderContainer;
     friend class RenderRoot;
@@ -363,7 +368,8 @@ private:
 
 enum VerticalPositionHint {
     PositionTop = -0x4000,
-    PositionBottom = 0x4000
+    PositionBottom = 0x4000,
+    PositionUndefined = 0x3fff
 };
 
 }; //namespace

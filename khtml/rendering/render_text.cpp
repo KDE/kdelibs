@@ -157,12 +157,12 @@ void TextSlave::printBoxDecorations(QPainter *pt, RenderStyle* style, RenderText
         p->printBorder(pt, _tx, _ty, width, height, style, begin, end);
 
 #ifdef BIDI_DEBUG
-    int h = m_height + p->paddingTop() + p->paddingBottom() + p->borderTop() + p->borderBottom();
+    int h = p->lineHeight( false ) + p->paddingTop() + p->paddingBottom() + p->borderTop() + p->borderBottom();
     QColor c2 = QColor("#0000ff");
     p->drawBorder(pt, _tx, _ty, _tx, _ty + h, 1,
-                  RenderObject::BSLeft, c2, c2, SOLID, false, false);
+                  RenderObject::BSLeft, c2, c2, SOLID, false, false, 0, 0);
     p->drawBorder(pt, _tx + m_width, _ty, _tx + m_width, _ty + h, 1,
-                  RenderObject::BSRight, c2, c2, SOLID, false, false);
+                  RenderObject::BSRight, c2, c2, SOLID, false, false, 0, 0);
 #endif
 }
 

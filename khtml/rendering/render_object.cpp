@@ -124,6 +124,7 @@ RenderObject::RenderObject()
     m_containsWidget = false;
     m_containsOverhangingFloats = false;
     m_hasFirstLine = false;
+    m_verticalPosition = PositionUndefined;
 }
 
 RenderObject::~RenderObject()
@@ -694,46 +695,55 @@ bool RenderObject::containsPoint(int _x, int _y, int _tx, int _ty)
 
 short RenderObject::verticalPositionHint( bool firstLine ) const
 {
-    // vertical align for table cells has a different meaning
-    if ( isTableCell() )
-	return 0;
-
-    EVerticalAlign va = style()->verticalAlign();
-    if ( va == TOP )
-	return PositionTop;
-    if ( va == BOTTOM )
-	return PositionBottom;
-
-    if ( va == LENGTH ) {
-	return -style()->verticalAlignLength().width( lineHeight( firstLine ) );
-    }
-    if ( !parent() || !parent()->childrenInline() )
-	return 0;
-
-    int vpos = parent()->verticalPositionHint( firstLine );
-    // don't allow elements nested inside text-top to have a different valignment.
-    if ( va == BASELINE || vpos == PositionTop || vpos == PositionBottom )
-	return vpos;
-
-    QFont f = parent()->font( firstLine );
-    if ( va == SUB )
-	vpos += f.pixelSize()/5 + 1;
-    else if ( va == SUPER )
-	vpos -= f.pixelSize()/3 + 1;
-    else if ( va == TEXT_TOP ) {
-	vpos += -QFontMetrics(f).ascent() + baselinePosition( firstLine );
-    } else if ( va == MIDDLE ) {
-	QRect b = QFontMetrics(f).boundingRect('x');
-	vpos += -b.height()/2 - lineHeight( firstLine )/2 + baselinePosition( firstLine );
-    } else if ( va == TEXT_BOTTOM ) {
-	vpos += QFontMetrics(f).descent();
-	vpos += -lineHeight( firstLine ) + baselinePosition( firstLine );
-    } else if ( va == BASELINE_MIDDLE )
-	vpos += - lineHeight( firstLine )/2 + baselinePosition( firstLine );
+    short vpos = m_verticalPosition;
+    if ( m_verticalPosition == PositionUndefined || firstLine ) {
+	vpos = getVerticalPosition( firstLine );
+	if ( !firstLine )
+	    const_cast<RenderObject *>(this)->m_verticalPosition = vpos;
+    }	
     return vpos;
+
 }
 
+short RenderObject::getVerticalPosition( bool firstLine ) const
+{
+    // vertical align for table cells has a different meaning
+    int vpos = 0;
+    if ( !isTableCell() ) {
+	EVerticalAlign va = style()->verticalAlign();
+	if ( va == TOP ) {
+	    vpos = PositionTop;
+	} else if ( va == BOTTOM ) {
+	    vpos = PositionBottom;
+	} else if ( va == LENGTH ) {
+	    vpos = -style()->verticalAlignLength().width( lineHeight( firstLine ) );
+	} else if ( parent() && parent()->childrenInline() ) {
+	    vpos = parent()->verticalPositionHint( firstLine );
+	    // don't allow elements nested inside text-top to have a different valignment.
+	    if ( va == BASELINE || vpos == PositionTop || vpos == PositionBottom )
+		return vpos;
 
+	    QFont f = parent()->font( firstLine );
+	    if ( va == SUB )
+		vpos += f.pixelSize()/5 + 1;
+	    else if ( va == SUPER )
+		vpos -= f.pixelSize()/3 + 1;
+	    else if ( va == TEXT_TOP ) {
+		vpos += -QFontMetrics(f).ascent() + baselinePosition( firstLine );
+	    } else if ( va == MIDDLE ) {
+		QRect b = QFontMetrics(f).boundingRect('x');
+		vpos += -b.height()/2 - lineHeight( firstLine )/2 + baselinePosition( firstLine );
+	    } else if ( va == TEXT_BOTTOM ) {
+		vpos += QFontMetrics(f).descent();
+		if ( !isReplaced() )
+		    vpos -= QFontMetrics(font(firstLine)).descent();
+	    } else if ( va == BASELINE_MIDDLE )
+		vpos += - lineHeight( firstLine )/2 + baselinePosition( firstLine );
+	}
+    }
+    return vpos;
+}
+    
 int RenderObject::lineHeight( bool firstLine ) const
 {
     // is this method ever called?
@@ -743,9 +753,9 @@ int RenderObject::lineHeight( bool firstLine ) const
     return style()->lineHeight().width( QFontMetrics( font( firstLine ) ).height() );
 }
 
-short RenderObject::baselinePosition( bool ) const
+short RenderObject::baselinePosition( bool firstLine ) const
 {
-    return contentHeight();
+    return isInline() ? QFontMetrics(font(firstLine)).ascent() : contentHeight();
 }
 
 QFont RenderObject::font(bool firstLine) const
@@ -756,4 +766,14 @@ QFont RenderObject::font(bool firstLine) const
 	    return pseudoStyle->font();
     }
     return style()->font();
+}
+
+void RenderObject::invalidateVerticalPositions()
+{
+    m_verticalPosition = PositionUndefined;
+    RenderObject *child = firstChild();
+    while( child ) {
+	child->invalidateVerticalPositions();
+	child = child->nextSibling();
+    }
 }

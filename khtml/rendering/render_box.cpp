@@ -400,12 +400,6 @@ void RenderBox::position(int x, int y, int, int, int, bool, bool)
     //m_width = width;
 }
 
-int RenderBox::lineHeight( bool ) const
-{
-    return contentHeight();
-}
-
-
 void RenderBox::repaint()
 {
     //kdDebug( 6040 ) << "repaint!" << endl;
