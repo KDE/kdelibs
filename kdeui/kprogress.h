@@ -204,7 +204,7 @@ class KProgressDialog : public KDialogBase
                         bool modal = false);
 
         /**
-         * Desctructor
+         * Destructor
          */
         ~KProgressDialog();
 
