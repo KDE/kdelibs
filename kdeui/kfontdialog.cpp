@@ -79,13 +79,19 @@ static int minimumListHeight( const QListBox *list, int numVisibleEntry )
   return( w * numVisibleEntry + 2 * list->frameWidth() );
 }
 
-
+class KFontChooser::KFontChooserPrivate
+{
+public:
+    KFontChooserPrivate() { m_color = Qt::black; }
+    QColor m_color;
+};
 
 KFontChooser::KFontChooser(QWidget *parent, const char *name,
 			   bool onlyFixed, const QStringList &fontList,
 			   bool makeFrame, int visibleListSize )
   : QWidget(parent, name), usingFixed(onlyFixed)
 {
+  d = new KFontChooserPrivate;
   QVBoxLayout *topLayout = new QVBoxLayout( this, 0, KDialog::spacingHint() );
 
   QWidget *page;
@@ -229,6 +235,23 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   showXLFDArea(config->readBoolEntry(QString::fromLatin1("fontSelectorShowXLFD"), false));
 }
 
+KFontChooser::~KFontChooser()
+{
+  delete d;
+}
+
+void KFontChooser::setColor( const QColor & col )
+{
+  d->m_color = col;
+  QPalette pal = sampleEdit->palette();
+  pal.setColor( QPalette::Active, QColorGroup::Text, col );
+  sampleEdit->setPalette( pal );
+}
+
+QColor KFontChooser::color() const
+{
+  return d->m_color;
+}
 
 QSize KFontChooser::sizeHint( void ) const
 {
@@ -553,6 +576,9 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.61  2001/04/11 14:50:21  haeckel
+* Add the ability to disable the charset combo.
+*
 * Revision 1.60  2001/03/10 15:38:54  faure
 * Don't call kdeFonts(), return all fonts.
 *

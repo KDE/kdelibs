@@ -80,6 +80,8 @@ public:
 	       const QStringList &fontList = QStringList(),
 	       bool makeFrame = true, int visibleListSize=8 );
 
+  virtual ~KFontChooser();
+
   /**
    * Enable or disable a font column in the chooser.
    *
@@ -102,11 +104,20 @@ public:
    */
   void setFont( const QFont &font, bool onlyFixed = false );
 
-
   /**
    * @return The currently selected font in the chooser.
    */
   QFont font() const { return selFont; }
+
+  /**
+   * Set the color to use in the preview
+   */
+  void setColor( const QColor & col );
+
+  /**
+   * @return The color currently used in the preview (default: black)
+   */
+  QColor color() const;
 
   /**
    * Set the currently selected charset in the chooser.
