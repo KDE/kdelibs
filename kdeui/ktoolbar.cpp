@@ -45,6 +45,9 @@
 //-------------------------------------------------------------------------
 // $Id$
 // $Log$
+// Revision 1.54  1998/04/21 20:37:03  radej
+// Added insertWidget and some reorganisation - BINARY INCOMPATIBLE
+//
 // Revision 1.53  1998/04/16 18:47:19  radej
 // Removed some debug text before beta4
 //
@@ -69,7 +72,6 @@
 #include <kapp.h>
 #include <kwm.h>
   default:
-#define TOOLBAR_IS_RAISED
       qDrawArrow (_painter, DownArrow, WindowsStyle, false,
 // Use enums instead of defines. We are C++ and NOT C !
 enum {
@@ -80,6 +82,9 @@ enum {
     CONTEXT_FLOAT = 4
 };
     if ( !isEnabled() )
+// this should be adjustable (in faar future... )
+#define MIN_AUTOSIZE 150
+
 KToolBarItem::KToolBarItem (Item *_item, itemType _type, int _id,
                             bool _myItem)
 {
@@ -108,7 +113,6 @@ KToolBarButton::KToolBarButton( const QPixmap& pixmap, int _id,
   id = _id;
   if (txt)
   btext=txt;
-  modeChange ();
   if ( ! pixmap.isNull() )
     enabledPixmap = pixmap;
   else
@@ -116,6 +120,7 @@ KToolBarButton::KToolBarButton( const QPixmap& pixmap, int _id,
       warning(klocale->translate("KToolBarButton: pixmap is empty, perhaps some missing file"));
       enabledPixmap.resize( item_size-4, item_size-4);
     }
+  modeChange ();
   makeDisabledPixmap();
   setPixmap( enabledPixmap );
   connect (parentWidget, SIGNAL( modechange() ), this, SLOT( modeChange() ));
@@ -282,6 +287,10 @@ void KToolBarButton::paletteChange(const QPalette &)
 
 void KToolBarButton::modeChange()
 {
+  int myWidth;
+  }
+  myWidth = enabledPixmap.width();
+  
   buttonFont.setFamily("Helvetica");
   buttonFont.setPointSize(10);
   buttonFont.setBold(false);
@@ -292,17 +301,20 @@ void KToolBarButton::modeChange()
   
   icontext=parentWidget->icon_text;
   _size=parentWidget->item_size;
+  if (myWidth < _size)
+    myWidth = _size;
+
   highlight=parentWidget->highlight;
   if (icontext) //Calculate my size
   {
     QToolTip::remove(this);
-    resize (fm.width(btext)+_size, _size-2); // +2+_size-2
+    resize (fm.width(btext)+myWidth, _size-2); // +2+_size-2
   }
   else
   {
     QToolTip::remove(this);
     QToolTip::add(this, btext);
-    resize (_size-2, _size-2);
+    resize (myWidth, _size-2);
   }
 }
   int rightOffset;
@@ -491,7 +503,7 @@ void KToolBar::setMaxWidth (int w)
 
 void KToolBar::layoutHorizontal ()
 {
-  int offset=3+9+4;
+  int offset=3+9+4; // = 16
   int rightOffset;
   int yOffset=1;
   KToolBarItem *autoSize = 0;
@@ -506,7 +518,7 @@ void KToolBar::layoutHorizontal ()
       if (haveAutoSized == false)
           mywidth = width();
       else
-          mywidth = (width()>100+offset)?width():100+offset;
+          mywidth = (width()>MIN_AUTOSIZE+offset)?width():MIN_AUTOSIZE+offset;
 
   else
     if (max_width != -1)
@@ -523,8 +535,12 @@ void KToolBar::layoutHorizontal ()
   toolbarHeight= item_size;
     updateRects( true );
   for ( KToolBarItem *b = items.first(); b; b=items.next() )
-   {
-     widest = (b->width()>widest)?b->width():widest;
+  {
+    if (b->isAuto())
+      widest = (MIN_AUTOSIZE>widest)?MIN_AUTOSIZE:widest;
+    else
+      widest = (b->width()>widest)?b->width():widest;
+     
      if (fullWidth == true)
       {
         if (b->isRight() == true)
@@ -544,7 +560,7 @@ void KToolBar::layoutHorizontal ()
            if (b->isAuto() == true)
             {
               autoSize = b;
-              myWidth = 100; // Min width for autosized
+              myWidth = MIN_AUTOSIZE; // Min width for autosized
             }
            else
              myWidth = b->width();
@@ -616,7 +632,7 @@ void KToolBar::layoutVertical ()
         XMoveWindow(qt_xdisplay(), b->winId(), yOffset, offset);
         b->move( yOffset, offset );
         if (b->isAuto() == true)
-          b->resize ((widest>100)?widest:100, b->height());
+          b->resize ((widest>MIN_AUTOSIZE)?widest:MIN_AUTOSIZE, b->height());
         if ((yOffset + b->width()+3) > toolbarWidth) // is item wider than we are
            toolbarWidth = b->width() +yOffset+2;
         if ((b->width() +3) > widest)
@@ -630,7 +646,7 @@ void KToolBar::layoutVertical ()
         XMoveWindow(qt_xdisplay(), b->winId(), yOffset, offset);
         b->move( yOffset, offset );
         if (b->isAuto() == true)
-             b->resize ((widest>100)?widest:100, b->height());
+             b->resize ((widest>MIN_AUTOSIZE)?widest:MIN_AUTOSIZE, b->height());
         if ((yOffset + b->width()+3) > toolbarWidth) // is item wider than we are
            toolbarWidth = b->width() +yOffset+2;
         if ((b->width() +3) > widest)
@@ -668,13 +684,20 @@ void KToolBar::updateRects( bool res )
 
     if (res == true)
     {
-        localResize = true;
-        resize (toolbarWidth, toolbarHeight);
-        kapp->processEvents(); // finaly I can regulate this!!!
-        localResize = false;   // Why didn't I get to this before?
+      localResize = true;
+      resize (toolbarWidth, toolbarHeight);
+      localResize = false;
     }
-    // Or else.
-  
+  /*
+   I needed to call processEvents () to flush pending resizeEvent after
+   doing resize from here so that resizeEvent () sees the semaphore
+   localResize. After examining qt source, I saw that QWidget::resize() calls
+   QApplication::sendEvent() which, as far as I understand, notifies
+   this->resizeEvent() immediatelly, without waiting. Even worse - it seems
+   that it really works. "Worse?", I hear you asking. Yes, even worse indeed
+   it is, because I lost my mind trying to get rid of excess resizes, and now
+   they vanished mysteriously all by itself (all except two)
+   */
 }
 
 void KToolBar::mousePressEvent ( QMouseEvent *m )
@@ -692,11 +715,11 @@ void KToolBar::mousePressEvent ( QMouseEvent *m )
 
 void KToolBar::resizeEvent( QResizeEvent *)
 {
-    /* Newest - sven */
-
-    if (position == Floating)     // are we floating? If yes...
-        if (!localResize)         // call from updateRects? if *_NOT_*...
-            updateRects(true);    // ...update (i.e. WM resized us)
+  /* Newest - sven */
+  
+  if (position == Floating)  // are we floating? If yes...
+    if (!localResize)        // call from updateRects? if *_NOT_*...
+      updateRects(true);     // ...update (i.e. WM resized us)
 }
 
 void KToolBar::paintEvent(QPaintEvent *)
@@ -768,18 +791,12 @@ void KToolBar::paintEvent(QPaintEvent *)
 
     }
   } //endif moving
-  
-#ifdef TOOLBAR_IS_RAISED
 
   if (position != Floating)
-    qDrawShadePanel(paint, 0, 0, width(), height(), g , false, 1);
-
-#else
-
-  if (position != Floating)
-    qDrawShadeRect(paint, 0, 0, width(), height(), g , true, 1);
-
-#endif
+    if ( style() == MotifStyle )
+      qDrawShadePanel(paint, 0, 0, width(), height(), g , false, 1);
+    //else
+      //qDrawShadeRect(paint, 0, 0, width(), height(), g , true, 1);
 
   paint->end();
   delete paint;
@@ -1117,6 +1134,7 @@ void KToolBar::setItemAutoSized ( int id, bool enabled )
     if (b->ID() == id )
     {
       b->autoSize(enabled);
+      haveAutoSized = true;
       if (position == Floating)
         updateRects( true );
       else if (isVisible())
@@ -1420,7 +1438,7 @@ QSize KToolBar::sizeHint ()
   int w=16;
   
   for (KToolBarItem *b = items.first(); b; b=items.next())
-    w+=b->isAuto()?100:b->width();
+    w+=b->isAuto()?MIN_AUTOSIZE:b->width();
   szh.setWidth(w);
 
   return szh;
@@ -1500,7 +1518,7 @@ void KToolBar::mouseMoveEvent(QMouseEvent* mev){
 			CurrentTime ) != GrabSuccess);
     grabMouse(sizeAllCursor);
   }
-  move(QCursor::pos() - pointerOffset);    
+  move(QCursor::pos() - pointerOffset);
   QPoint p = QCursor::pos() - pointerOffset - (Parent->mapToGlobal(QPoint(0,0)) + parentOffset);
 
   if (p.x()*p.x()+p.y()*p.y()<169){
