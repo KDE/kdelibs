@@ -435,7 +435,7 @@ void KPropertiesDialog::insertPages()
   for (; it != end; ++it )
   {
     KPropsDlgPlugin *plugin = KParts::ComponentFactory
-        ::createInstanceFromLibrary<KPropsDlgPlugin>( (*it)->library().local8Bit(),
+        ::createInstanceFromLibrary<KPropsDlgPlugin>( (*it)->library().local8Bit().data(),
                                                       this,
                                                       (*it)->name().latin1() );
     if ( !plugin )
