@@ -25,7 +25,29 @@
 #include <ksortablevaluelist.h>
 
 class KCompTreeNode;
-typedef QValueList<KCompTreeNode *> KCompTreeChildren;
+
+#include <kallocator.h>
+
+class KCompTreeNodeList
+{
+public:
+    KCompTreeNodeList() : first(0), last(0), m_count(0) {}
+    KCompTreeNode *begin() const { return first; }
+    KCompTreeNode *end() const { return last; }
+
+    KCompTreeNode *at(uint index) const;
+    void append(KCompTreeNode *item); 
+    void prepend(KCompTreeNode *item); 
+    void insert(KCompTreeNode *after, KCompTreeNode *item);
+    KCompTreeNode *remove(KCompTreeNode *item);
+    uint count() const { return m_count; }
+
+private:
+    KCompTreeNode *first, *last;
+    uint m_count;
+};
+
+typedef KCompTreeNodeList KCompTreeChildren;
 
 /**
  * A helper class for KCompletion. Implements a tree of QChar.
@@ -65,15 +87,19 @@ public:
           myWeight( weight ) {}
     ~KCompTreeNode();
 
+    void * operator new( size_t s ) {
+      return alloc.allocate( s );
+    }
+    void operator delete( void * s ) {
+      alloc.deallocate( s );
+    }
+
     // Returns a child of this node matching ch, if available.
     // Otherwise, returns 0L
     inline KCompTreeNode * find( const QChar& ch ) const {
-	KCompTreeChildren::ConstIterator it;
-	for ( it = myChildren.begin(); it != myChildren.end(); ++it )
-	    if ( *(*it) == ch )
-		return *it;
-
-	return 0L;
+      KCompTreeNode * cur = myChildren.begin();
+      while (cur && (*cur != ch)) cur = cur->next;
+      return cur;
     }
     KCompTreeNode *	insert( const QChar&, bool sorted );
     void 		remove( const QString& );
@@ -90,20 +116,25 @@ public:
 	return &myChildren;
     }
     inline const KCompTreeNode * childAt(int index) const {
-	return myChildren[index];
+	return myChildren.at(index);
     }
     inline const KCompTreeNode * firstChild() const {
-	return myChildren.first();
+	return myChildren.begin();
     }
     inline const KCompTreeNode * lastChild()  const {
-	return myChildren.last();
+	return myChildren.end();
     }
 
+    /* We want to handle a list of KCompTreeNodes on our own, to not
+       need to use QValueList<>.  And to make it even more fast we don't
+       use an accessor, but just a public member.  */
+    KCompTreeNode *next;
 private:
     uint myWeight;
-    KCompTreeChildren	myChildren;
-
+    KCompTreeNodeList	myChildren;
+    static KZoneAllocator alloc;
 };
+
 
 
 // some more helper stuff

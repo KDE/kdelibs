@@ -546,15 +546,14 @@ void KCompletion::extractStringsFromNode( const KCompTreeNode *node,
         return;
 
     // kDebug() << "Beginning: " << beginning << endl;
-    KCompTreeChildren::ConstIterator it;
     const KCompTreeChildren *list = node->children();
     QString string;
     QString w;
 
     // loop thru all children
-    for ( it = list->begin(); it != list->end(); ++it ) {
+    for ( KCompTreeNode *cur = list->begin(); cur ; cur = cur->next) {
         string = beginning;
-        node = *it;
+	node = cur;
 	if ( !node->isNull() )
 	    string += *node;
 
@@ -660,9 +659,12 @@ void KCompletion::doBeep( BeepMode mode ) const
 KCompTreeNode::~KCompTreeNode()
 {
     // delete all children
-    KCompTreeChildren::Iterator it;
-    for ( it = myChildren.begin(); it != myChildren.end(); ++it )
-        delete *it;
+    KCompTreeNode *cur = myChildren.begin();
+    while (cur) {
+        KCompTreeNode * next = cur->next;
+        delete myChildren.remove(cur);
+        cur = next;
+    }
 }
 
 
@@ -676,14 +678,19 @@ KCompTreeNode * KCompTreeNode::insert( const QChar& ch, bool sorted )
 
 	// FIXME, first (slow) sorted insertion implementation
 	if ( sorted ) {
-	    KCompTreeChildren::Iterator it = myChildren.begin();
-	    while ( it != myChildren.end() ) {
-	        if ( ch > *(*it) )
-		    ++it;
-		else
+	    KCompTreeNode * prev = 0;
+	    KCompTreeNode * cur = myChildren.begin();
+	    while ( cur ) {
+	        if ( ch > *cur ) {
+		    prev = cur;
+		    cur = cur->next;
+		} else
 		    break;
 	    }
-	    myChildren.insert( it, child );
+	    if (prev)
+	        myChildren.insert( prev, child );
+	    else
+	        myChildren.prepend(child);
 	}
 
 	else
@@ -705,8 +712,7 @@ void KCompTreeNode::remove( const QString& string )
 
     if ( string.isEmpty() ) {
         child = find( 0x0 );
-        delete child;
-        myChildren.remove( child );
+        delete myChildren.remove( child );
         return;
     }
 
@@ -715,8 +721,7 @@ void KCompTreeNode::remove( const QString& string )
     if ( child ) {
         child->remove( string.right( string.length() -1 ) );
         if ( child->myChildren.count() == 0 ) {
-            delete child;
-            myChildren.remove( child );
+            delete myChildren.remove( child );
         }
     }
 }
@@ -786,6 +791,79 @@ void KCompletionMatches::removeDuplicates()
         }
     }
 }
+
+void KCompTreeNodeList::append(KCompTreeNode *item)
+{
+    m_count++;
+    if (!last) {
+	last = item;
+	last->next = 0;
+	first = item;
+	return;
+    }
+    last->next = item;
+    item->next = 0;
+    last = item;
+}
+
+void KCompTreeNodeList::prepend(KCompTreeNode *item)
+{
+    m_count++;
+    if (!last) {
+	last = item;
+	last->next = 0;
+	first = item;
+	return;
+    }
+    item->next = first;
+    first = item;
+}
+
+void KCompTreeNodeList::insert(KCompTreeNode *after, KCompTreeNode *item)
+{
+    if (!after) {
+	append(item);
+	return;
+    }
+
+    m_count++;
+
+    item->next = after->next;
+    after->next = item;
+
+    if (after == last)
+	last = item;
+}
+
+KCompTreeNode *KCompTreeNodeList::remove(KCompTreeNode *item)
+{
+    if (!first || !item)
+	return 0;
+    KCompTreeNode *cur = 0;
+
+    if (item == first)
+	first = first->next;
+    else {
+	cur = first;
+	while (cur && cur->next != item) cur = cur->next;
+	if (!cur)
+	    return 0;
+	cur->next = item->next;
+    }
+    if (item == last)
+	last = cur;
+    m_count--;
+    return item;
+}
+
+KCompTreeNode *KCompTreeNodeList::at(uint index) const
+{
+    KCompTreeNode *cur = first;
+    while (index-- && cur) cur = cur->next;
+    return cur;
+}
+
+KZoneAllocator KCompTreeNode::alloc(8192);
 
 void KCompletion::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
