@@ -42,7 +42,7 @@ public:
 
 	KUserPrivate(long _uid,
 		     long _gid,
-		     const QString &_loginname, 
+		     const QString &_loginname,
 		     const QString &_fullname,
 		     const QString &_room,
 		     const QString &_workPhone,
@@ -179,4 +179,6 @@ QString KUser::shell() const {
 }
 
 KUser::~KUser() {
+    delete d;
+    d = 0;
 }
