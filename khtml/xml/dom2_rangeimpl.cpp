@@ -400,18 +400,18 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
     // what is the highest node that partially selects the start of the range?
     NodeImpl *partialStart = 0;
     if (m_startContainer != cmnRoot) {
-    	partialStart = m_startContainer;
-	    while (partialStart->parentNode() != cmnRoot)
-	    	partialStart = partialStart->parentNode();
-	}
+	partialStart = m_startContainer;
+	while (partialStart->parentNode() != cmnRoot)
+	    partialStart = partialStart->parentNode();
+    }
 	
-	// what is the highest node that partially selects the end of the range?
-	NodeImpl *partialEnd = 0;
-	if (m_endContainer != cmnRoot) {
-		partialEnd = m_endContainer;
-		while (partialEnd->parentNode() != cmnRoot)
-			partialEnd = partialEnd->parentNode();
-	}
+    // what is the highest node that partially selects the end of the range?
+    NodeImpl *partialEnd = 0;
+    if (m_endContainer != cmnRoot) {
+	partialEnd = m_endContainer;
+	while (partialEnd->parentNode() != cmnRoot)
+	    partialEnd = partialEnd->parentNode();
+    }
 
     DocumentFragmentImpl *fragment = 0;
     if (action == EXTRACT_CONTENTS || action == CLONE_CONTENTS)
@@ -498,7 +498,7 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
         }
         else {
             if (action == EXTRACT_CONTENTS || action == CLONE_CONTENTS)
-	            leftContents = m_startContainer->parentNode()->cloneNode(false,exceptioncode);
+		leftContents = m_startContainer->cloneNode(false,exceptioncode);
             NodeImpl *n = m_startContainer->firstChild();
             unsigned long i;
             for(i = 0; i < m_startOffset; i++) // skip until m_startOffset
@@ -512,7 +512,8 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
                 else
                     m_startContainer->removeChild(n,exceptioncode);
                 n = next;
-                next = next->nextSibling();
+		if (n)
+		    next = next->nextSibling();
             }
         }
 
@@ -520,10 +521,10 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
         NodeImpl *n = m_startContainer->nextSibling();
         for (; leftParent != cmnRoot; leftParent = leftParent->parentNode()) {
             if (action == EXTRACT_CONTENTS || action == CLONE_CONTENTS) {
-	            NodeImpl *leftContentsParent = leftParent->cloneNode(false,exceptioncode);
-	            leftContentsParent->appendChild(leftContents,exceptioncode);
-	            leftContents = leftContentsParent;
-			}
+		NodeImpl *leftContentsParent = leftParent->cloneNode(false,exceptioncode);
+		leftContentsParent->appendChild(leftContents,exceptioncode);
+		leftContents = leftContentsParent;
+	    }
 
             NodeImpl *next;
             for (; n; n = next ) {
@@ -560,8 +561,8 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
             // rightContents = ...
         }
         else {
-        	if (action == EXTRACT_CONTENTS || action == CLONE_CONTENTS)
-	            rightContents = m_endContainer->parentNode()->cloneNode(false,exceptioncode);
+	    if (action == EXTRACT_CONTENTS || action == CLONE_CONTENTS)
+		rightContents = m_endContainer->cloneNode(false,exceptioncode);
             NodeImpl *n = m_endContainer->firstChild();
             unsigned long i;
             for(i = 0; i+1 < m_endOffset; i++) // skip to m_endOffset
@@ -656,19 +657,19 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
 
     // collapse to the proper position - see spec section 2.6
     if (action == EXTRACT_CONTENTS || action == DELETE_CONTENTS) {
-		if (!partialStart && !partialEnd)
-			collapse(true,exceptioncode);
-		else if (partialStart) {
-			setStartContainer(partialStart->parentNode());
-			setEndContainer(partialStart->parentNode());
-			m_startOffset = m_endOffset = partialStart->nodeIndex()+1;
-		}
-		else if (partialEnd) {
-			setStartContainer(partialEnd->parentNode());
-			setEndContainer(partialEnd->parentNode());
-			m_startOffset = m_endOffset = partialEnd->nodeIndex();
-		}
+	if (!partialStart && !partialEnd)
+	    collapse(true,exceptioncode);
+	else if (partialStart) {
+	    setStartContainer(partialStart->parentNode());
+	    setEndContainer(partialStart->parentNode());
+	    m_startOffset = m_endOffset = partialStart->nodeIndex()+1;
 	}
+	else if (partialEnd) {
+	    setStartContainer(partialEnd->parentNode());
+	    setEndContainer(partialEnd->parentNode());
+	    m_startOffset = m_endOffset = partialEnd->nodeIndex();
+	}
+    }
     return fragment;
 }
 
