@@ -324,6 +324,11 @@ public:
   //    void print(QPainter *, int pageHeight, int pageWidth);
 
   /**
+   * Paints the HTML page to a QPainter. See @ref KHTMLView::paint for details
+   */
+  void paint(QPainter *, const QRect &, int = 0, bool * = 0);
+  
+  /**
    * Mainly used internally.
    *
    * Sets the document's base URL.

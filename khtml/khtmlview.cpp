@@ -787,6 +787,32 @@ void KHTMLView::print()
     delete printer;
 }
 
+void KHTMLView::paint(QPainter *p, const QRect &rc, int yOff, bool *more)
+{
+    if(!m_part->xmlDocImpl()) return;
+    khtml::RenderRoot *root = static_cast<khtml::RenderRoot *>(m_part->xmlDocImpl()->renderer());
+    if(!root) return;
+
+    m_part->xmlDocImpl()->setPaintDevice(p->device());
+    root->setPrintingMode(true);
+    root->setWidth(rc.width());
+
+    p->save();
+    p->setClipRect(rc);
+    p->translate(rc.left(), rc.top());
+    double scale = ((double) rc.width()/(double) root->docWidth());
+    int height = (int) ((double) rc.height() / scale);
+    p->scale(scale, scale);
+
+    root->print(p, 0, yOff, root->docWidth(), height, 0, 0);
+    if (more)
+        *more = yOff + height < root->docHeight();
+    p->restore();
+    
+    root->setPrintingMode(false);
+    m_part->xmlDocImpl()->setPaintDevice( this );
+}
+
 void KHTMLView::toggleActLink(bool actState)
 {
     if ( d->currentNode )

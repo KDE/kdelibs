@@ -1211,6 +1211,13 @@ void KHTMLPart::end()
     d->m_doc->finishParsing();
 }
 
+void KHTMLPart::paint(QPainter *p, const QRect &rc, int yOff, bool *more)
+{
+    if (!d->m_view)
+        return;
+    d->m_view->paint(p, rc, yOff, more);
+}
+
 void KHTMLPart::slotFinishedParsing()
 {
   d->m_bParsing = false;

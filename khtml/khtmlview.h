@@ -142,6 +142,16 @@ public:
      **/
     void print();
 
+    /**
+     * Paint the HTML document to a QPainter.
+     * The document will be scaled to match the width of
+     * rc and clipped to fit in the height.
+     * yOff determines the vertical offset in the document to start with.
+     * more, if nonzero will be set to true if the documents extends
+     * beyond the rc or false if everything below yOff was painted.
+     **/
+    void paint(QPainter *p, const QRect &rc, int yOff = 0, bool *more = 0);
+
     void layout(bool force = false);
 
     static const QList<KHTMLView> *viewList() { return lstViews; }
