@@ -146,6 +146,8 @@ public:
     m_findDialog = 0;
     m_ssl_in_use = false;
     m_javaContext = 0;
+    m_bJScriptForce = false;
+    m_bJavaForce = false;
   }
   ~KHTMLPartPrivate()
   {
@@ -175,6 +177,8 @@ public:
   KLibrary *m_kjs_lib;
   bool m_bJScriptEnabled;
   bool m_bJavaEnabled;
+    bool m_bJScriptForce;
+    bool m_bJavaForce;
   KJavaAppletContext *m_javaContext;
 
   bool keepCharset;
@@ -599,17 +603,19 @@ KHTMLView *KHTMLPart::view() const
 
 void KHTMLPart::enableJScript( bool enable )
 {
-  d->m_bJScriptEnabled = enable;
+  d->m_bJScriptForce = enable;
 }
 
 bool KHTMLPart::jScriptEnabled() const
 {
+  if ( d->m_bJScriptForce )
+      return true;
   return d->m_bJScriptEnabled;
 }
 
 KJSProxy *KHTMLPart::jScript()
 {
-  if ( !d->m_bJScriptEnabled )
+  if ( !d->m_bJScriptEnabled && !d->m_bJScriptForce )
     return 0;
 
   if ( !d->m_jscript )
@@ -678,11 +684,13 @@ bool KHTMLPart::executeScheduledScript()
 
 void KHTMLPart::enableJava( bool enable )
 {
-  d->m_bJavaEnabled = enable;
+  d->m_bJavaForce = enable;
 }
 
 bool KHTMLPart::javaEnabled() const
 {
+  if( d->m_bJavaForce )
+      return true;
   return d->m_bJavaEnabled;
 }
 
@@ -2615,7 +2623,7 @@ void KHTMLPart::reparseConfiguration()
   d->m_bJavaEnabled = settings->isJavaEnabled();
   delete d->m_settings;
   d->m_settings = new KHTMLSettings(*KHTMLFactory::defaultHTMLSettings());
-
+  
   QApplication::setOverrideCursor( waitCursor );
   if(d->m_doc) d->m_doc->applyChanges();
   QApplication::restoreOverrideCursor();
