@@ -382,7 +382,7 @@ struct sockaddr_un;
  */
 class KUnixSocketAddress: public KSocketAddress
 {
-  Q_OBJECT;
+  Q_OBJECT
 public:
   /**
    * Default constructor
