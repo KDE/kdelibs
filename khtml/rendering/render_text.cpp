@@ -300,7 +300,7 @@ void RenderText::cursorPos(int offset, int &_x, int &_y, int &height)
       }
   }   // we are now in the correct text slave
 
-  int pos = (offset > off ? s->len - (off - offset ) : s->len);
+  int pos = (offset > off ? s->len : s->len - (off - offset ));
   _y = s->y;
   height = s->m_height;
 

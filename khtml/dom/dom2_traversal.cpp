@@ -51,6 +51,8 @@ NodeIterator::NodeIterator(Node n, NodeFilter *f)
       whatToShow = 0x0000FFFF;
       filter = f;
     }
+  else
+    throw DOMException(DOMException::NOT_FOUND_ERR); // ### should we go into an invalid state instead?
 }
 
 NodeIterator::NodeIterator(Node n, long _whatToShow , NodeFilter *f)
