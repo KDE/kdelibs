@@ -273,7 +273,7 @@ int KJPEGFormat::decode(QImage& image, QImageConsumer* consumer, const uchar* bu
         qDebug("valid_buffer_len %d", jsrc.valid_buffer_len);
         qDebug("skip_input_bytes %d", jsrc.skip_input_bytes);
 #endif
-        int skipbytes = QMIN(jsrc.valid_buffer_len, jsrc.skip_input_bytes);
+        int skipbytes = QMIN((unsigned) jsrc.valid_buffer_len, jsrc.skip_input_bytes);
 
         if(skipbytes < jsrc.valid_buffer_len)
             memcpy(jsrc.buffer, jsrc.buffer+skipbytes, jsrc.valid_buffer_len - skipbytes);

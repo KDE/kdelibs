@@ -616,7 +616,7 @@ void CachedImage::movieStatus(int status)
     }
 }
 
-void CachedImage::movieResize(const QSize& s)
+void CachedImage::movieResize(const QSize& /*s*/)
 {
 // ### doesn't work fixme
 //    do_notify(m->framePixmap(), QRect());

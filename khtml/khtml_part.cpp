@@ -364,7 +364,7 @@ namespace khtml {
     class PartStyleSheetLoader : public CachedObjectClient
     {
     public:
-        PartStyleSheetLoader(KHTMLPart *part, KHTMLPartPrivate *priv, DOM::DOMString url, DocLoader *docLoader)
+        PartStyleSheetLoader(KHTMLPart *part, KHTMLPartPrivate *priv, DOM::DOMString url, DocLoader */*docLoader*/)
         {
             m_part = part;
             m_priv = priv;
