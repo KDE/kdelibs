@@ -581,7 +581,9 @@ void KComboBox::setCompletedItems( const QStringList& items )
     if ( completionMode() == KGlobalSettings::CompletionPopup ||
          completionMode() == KGlobalSettings::CompletionShell )
     {
-        makeCompletionBox();
+        if ( !d->completionBox )
+            makeCompletionBox();
+
         if ( !items.isEmpty() )
         {
             d->origCursorPos = cursorPosition();

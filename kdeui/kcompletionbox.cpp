@@ -35,7 +35,7 @@ public:
 };
 
 KCompletionBox::KCompletionBox( QWidget *parent, const char *name )
-                       :KListBox( 0L, name, WStyle_Customize | WStyle_Tool )
+    : KListBox( 0L, name, WStyle_Customize | WStyle_Tool )
 {
     d = new KCompletionBoxPrivate;
     d->m_parent = parent;
@@ -57,6 +57,7 @@ KCompletionBox::KCompletionBox( QWidget *parent, const char *name )
 
 KCompletionBox::~KCompletionBox()
 {
+    delete d;
 }
 
 QStringList KCompletionBox::items() const
@@ -86,30 +87,30 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
             if ( type == QEvent::KeyPress ) {
                 QKeyEvent *ev = static_cast<QKeyEvent *>( e );
                 switch ( ev->key() ) {
-                case Qt::Key_Tab:
-                    if ( ev->state() & Qt::ShiftButton )
+                case Key_Tab:
+                    if ( ev->state() & ShiftButton )
                         up();
                     else if ( !ev->state() )
                         down(); // Only on TAB!!
                     ev->accept();
                     return true;
-                case Qt::Key_Down:
+                case Key_Down:
                     down();
                     ev->accept();
                     return true;
-                case Qt::Key_Up:
+                case Key_Up:
                     up();
                     ev->accept();
                     return true;
-                case Qt::Key_Prior:
+                case Key_Prior:
                     pageUp();
                     ev->accept();
                     return true;
-                case Qt::Key_Next:
+                case Key_Next:
                     pageDown();
                     ev->accept();
                     return true;
-                case Qt::Key_Home: {
+                case Key_Home: {
                     // shift/ctrl involved -> let our parent handle that!
                     bool ours = (ev->state() == 0 && currentItem() != -1);
                     if ( ours ) {
@@ -118,7 +119,7 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                     }
                     return ours;
                 }
-                case Qt::Key_End: {
+                case Key_End: {
                     bool ours = (ev->state() == 0 && currentItem() != -1);
                     if ( ours ) {
                         end();
@@ -126,21 +127,20 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                     }
                     return ours;
                 }
-                case  Qt::Key_Escape:
-                    cancelled();
+                case  Key_Escape:
                     ev->accept();
-                    return true;
-                case Qt::Key_Enter:
-                case Qt::Key_Return:
-                    if ( ev->state() && Qt::ShiftButton )
-                    {
+                    if ( ev->state() && ShiftButton ) {
                         hide();
-                        ev->accept();
                         return true;
                     }
-                    break;
+                    cancelled();
+                    return true;
+                case Key_Enter:
+                case Key_Return:
+                    hide();
+                    ev->accept();
+                    return true;
                 default:
-                    //ev->ignore();
                     break;
                 }
             }
@@ -161,6 +161,7 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                 return false;
         }
     }
+
     return KListBox::eventFilter( o, e );
 }
 
@@ -179,10 +180,12 @@ void KCompletionBox::popup()
 
 QSize KCompletionBox::sizeHint() const
 {
+    // int ih = itemHeight();
+    // int h = QMIN( 10 * ih, (int) count() * ih ) +1;
     int cnt = count();
     int ih = fontMetrics().lineSpacing()+2;
     int h = QMIN( 10 * ih, cnt * ih ) +1;
-    //h = QMIN( h, minimumSizeHint().height() );
+    h = QMAX( h, KListBox::minimumSizeHint().height() );
 
     int w = (d->m_parent) ? d->m_parent->width() : KListBox::minimumSizeHint().width();
     w = QMAX( KListBox::sizeHint().width(), w );
@@ -233,14 +236,14 @@ void KCompletionBox::show()
         qApp->installEventFilter( this );
     }
     resize( sizeHint() );
-    QWidget::show();
+    KListBox::show();
 }
 
 void KCompletionBox::hide()
 {
     if ( d->m_parent )
         qApp->removeEventFilter( this );
-    QWidget::hide();
+    KListBox::hide();
 }
 
 void KCompletionBox::setCancelledText( const QString& text )

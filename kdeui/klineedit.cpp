@@ -474,9 +474,11 @@ void KLineEdit::setCompletedItems( const QStringList& items )
     if ( completionMode() == KGlobalSettings::CompletionPopup ||
          completionMode() == KGlobalSettings::CompletionShell )
     {
-        makeCompletionBox();
         if ( !items.isEmpty() )
         {
+            if ( !d->completionBox )
+                makeCompletionBox();
+
             d->origCursorPos = cursorPosition();
             d->completionBox->setCancelledText( text() );
             d->completionBox->clear();
