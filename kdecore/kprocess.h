@@ -400,11 +400,15 @@ signals:
    * Emitted when output from the child process has
    * been received on stdout.
    *
-   *  To actually get
-   * these signals, the respective communications link (stdout/stderr)
-   * has to be turned on in @ref start() and the @p NoRead flag should
-   * have been passed.
+   * To actually get these signals, the respective communications link 
+   * (stdout/stderr) has to be turned on in @ref start() and the 
+   * @p NoRead flag should have been passed.
    *
+   * You will need to explicitly call resume() after your call to start()
+   * to begin processing data from the child process's stdout.  This is
+   * to ensure that this signal is not emitted when no one is connected
+   * to it, otherwise this signal will not be emitted.
+   * 
    * The data still has to be read from file descriptor @p fd.
    **/
   void receivedStdout(int fd, int &len);
