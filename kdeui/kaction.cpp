@@ -22,6 +22,12 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
+
+#ifdef KDE_USE_FINAL
+#undef Always
+#include <qdockwindow.h>
+#endif
+
 #include "kaction.h"
 
 #include <kguiitem.h>
