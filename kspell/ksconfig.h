@@ -33,9 +33,10 @@ enum Encoding {
  *
  *  KSpellConfig's favorite size (when used as a widget) is 
  *   (width, height) = (490x317)
- *  @author David Sweet (GPL 1997)
+ *
+ *  @author David Sweet dsweet@wheatcomputers.com
  *  @short Configuration dialog for KSpell
- *  @version 0.2
+ *  @version $Id$
  *  @see KSpell
  */
 

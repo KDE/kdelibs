@@ -21,10 +21,6 @@
  * 11/  /97 KSpell 0.2.2
  *  9/21/97 KSpell 0.2
  *  9/11/97 KSpell 0.1
- * @short a KDE programmer's interface to International ISpell 3.1  (GPL 1997)
- * @author David Sweet
- * @version $Id$
- * @see KSpellConfig
  * 
  * KSpell offers easy access to International ISpell 3.1 as well as a 
  *  typical spell-checker GUI ("Add", "Replace", etc.).  You can use
@@ -35,6 +31,10 @@
  *
  * KSpellConfig holds configuration information about KSpell as well
  *  as acting as an options-setting dialog.
+ * @short A KDE programmer's interface to International ISpell 3.1  (GPL 1997)
+ * @author David Sweet dsweet@wheatcomputers.com
+ * @version $Id$
+ * @see KSpellConfig
  */
 
 
