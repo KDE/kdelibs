@@ -3333,24 +3333,18 @@ void HTTPProtocol::reparseConfiguration()
   // Get rid of duplicate language entries!!
   QString tmp;
   QStringList languageList = KGlobal::locale()->languageList();
-  QStringList::Iterator it = languageList.begin();
-  do {
-    if ( (*it) == QString::fromLatin1("C") )
-        (*it) = QString::fromLatin1("en");  // Should be user's local language IMHO, but that returns "C" as well!!
-
-    if ( !tmp.isEmpty() && (*it) == tmp )
-    {
-        it = languageList.remove( it );
-    }
+  QStringList::Iterator it = languageList.find( QString::fromLatin1("C") );
+  kdDebug(7103) << "Languages: " << KGlobal::locale()->languages() << endl;
+  if ( it != languageList.end() )
+  {
+    if ( languageList.contains( QString::fromLatin1("en") ) > 0 )
+        languageList.remove( it );
     else
-    {
-        tmp = (*it);
-        ++it;
-    }
-  } while ( it != languageList.end() );
+        (*it) = QString::fromLatin1("en");
+  }
 
   // Use commas not spaces.
-  m_strLanguages = languageList.join( "," );
+  m_strLanguages = languageList.join( ", " );
   kdDebug(7103) << "Languages list set to " << m_strLanguages << endl;
   m_strCharsets = KGlobal::locale()->charset() + QString::fromLatin1(";q=1.0, utf-8;q=0.8, *;q=0.9");
 }
