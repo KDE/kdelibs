@@ -74,7 +74,6 @@ KService::KService( const QString & _name, const QString &_exec, const QString &
 KService::KService( const QString & _fullpath )
  : KSycocaEntry( _fullpath)
 {
-  d = new KServicePrivate;
   KDesktopFile config( _fullpath );
 
   init(&config);
