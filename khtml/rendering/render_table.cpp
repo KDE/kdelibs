@@ -461,9 +461,10 @@ void RenderTable::spreadSpanMinMax(int col, int span, int distmin,
     if (hasUsableCols)
     {
     	// spread span maxWidth evenly
-	c=col;
+	c=col;	
 	while(tmax)
 	{
+//	    printf("tmax remaining %d\n",tmax);
 	    if (colType[c]<=type)
 	    {
 		colMaxWidth[c]+=distmax/span;
@@ -593,8 +594,9 @@ void RenderTable::calcFinalColMax(int c, ColInfo* col)
     }
 
     smax = MAX(smax,oldmin);
-    smax = MIN(smax,m_width);
+//    smax = MIN(smax,m_width);
 
+//    printf("smin %d smax %d span %d\n",smin,smax,span);
     if (span==1)
     {
 //       printf("col (s=1) c=%d,m=%d,x=%d\n",c,smin,smax);
@@ -604,7 +606,7 @@ void RenderTable::calcFinalColMax(int c, ColInfo* col)
     else
     {	
 	int spreadmax = smax-oldmax-(span-1)*spacing;
-//	printf("spreading span %d,%d\n",spreadmin, spreadmax);
+//	printf("spreading span %d\n",spreadmax);
 	spreadSpanMinMax
 	    (c, span, 0, spreadmax, col->type);
     }
@@ -653,7 +655,13 @@ void RenderTable::calcColMinMax()
 #endif	
 
     	    col->update();
+	    	    	    
 	    calcSingleColMinMax(c, col);
+	    
+	    if ( col->span>1 && (col->type==Fixed || col->type==Variable ))
+    	    {
+	    	calcFinalColMax(c, col);
+	    }
 
 	}	
     }
@@ -758,8 +766,7 @@ void RenderTable::calcColMinMax()
 
     m_width = MAX (m_width, m_minWidth);
     	
-//    printf("TABLE width %d\n", width);
-
+//    printf("TABLE width %d\n", m_width);
 
 
     // PHASE 4, calculate maximums for percent and relative columns
@@ -776,9 +783,8 @@ void RenderTable::calcColMinMax()
 
 	    if (!col || col->span==0)
 		continue;
-	    if ((col->type==Fixed || col->type==Variable)
-	    	&& col->span<2)
-	    continue;
+	    if (col->type==Fixed || col->type==Variable)
+	    	continue;
 
 	    calcFinalColMax(c, col);
 
