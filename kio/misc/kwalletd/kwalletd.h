@@ -57,6 +57,9 @@ class KWalletD : public KDEDModule {
 		virtual bool isOpen(const QString& wallet) const;
 		virtual bool isOpen(int handle) const;
 
+		// Change the password of this wallet
+		virtual void changePassword(const QString& wallet);
+
 		// A list of all wallets
 		virtual QStringList wallets() const;
 

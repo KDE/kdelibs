@@ -191,6 +191,65 @@ return -1;
 }
 
 
+void KWalletD::changePassword(const QString& wallet) {
+QIntDictIterator<KWallet::Backend> it(_wallets);
+KWallet::Backend *w = 0L;
+int handle = -1;
+bool reclose = false;
+
+	for (; it.current(); ++it) {
+		if (it.current()->walletName() == wallet) {
+			break;
+		}
+	}
+
+	if (!it.current()) {
+		handle = open(wallet);
+		if (-1 == handle) {
+			KMessageBox::sorry(0, i18n("Unable to open wallet.  The wallet must be opened in order to change the password."), i18n("KDE Wallet Service"));
+			return;
+		}
+
+		w = _wallets.find(handle);
+		reclose = true;
+	} else {
+		handle = it.currentKey();
+		w = it.current();
+	}
+
+	assert(w);
+
+	KPasswordDialog *kpd;
+	kpd = new KPasswordDialog(KPasswordDialog::NewPassword, i18n("Please choose a new password for the wallet '%1'.").arg(wallet), false);
+	kpd->setCaption(i18n("KDE Wallet Service"));
+	if (kpd->exec() == KDialog::Accepted) {
+		const char *p = kpd->password();
+		if (p) {
+			_passwords[wallet] = p;
+			QByteArray pa;
+			pa.duplicate(p, strlen(p));
+			int rc = w->close(pa);
+			if (rc < 0) {
+				KMessageBox::sorry(0, i18n("Error re-encrypting the wallet.  Password was not changed."), i18n("KDE Wallet Service"));
+				reclose = true;
+			} else {
+				rc = w->open(pa);
+				if (rc < 0) {
+					KMessageBox::sorry(0, i18n("Error reopening the wallet.  Data may be lost."), i18n("KDE Wallet Service"));
+					reclose = true;
+				}
+			}
+		}
+	}
+
+	delete kpd;
+	
+	if (reclose) {
+		close(handle, true);
+	}
+}
+
+
 int KWalletD::close(const QString& wallet, bool force) {
 int handle = -1;
 KWallet::Backend *w = 0L;
