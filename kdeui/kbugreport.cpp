@@ -53,6 +53,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal )
                  true // separator
                  )
 {
+  m_aboutData = KGlobal::instance()->aboutData(); // TODO : use the "active" instance
   m_process = 0L;
   QWidget * parent = plainPage();
   QLabel * tmpLabel;
@@ -73,13 +74,15 @@ KBugReport::KBugReport( QWidget * parentw, bool modal )
   // Program name
   tmpLabel = new QLabel( i18n("Application : "), parent );
   glay->addWidget( tmpLabel, 1, 0 );
-  tmpLabel = new QLabel( QString::fromLatin1(kapp->name()), parent );
+  tmpLabel = new QLabel( QString::fromLatin1( m_aboutData
+					      ? m_aboutData->appName()
+					      : kapp->name() ),
+			 parent );
   glay->addWidget( tmpLabel, 1, 1 );
 
   // Version
   tmpLabel = new QLabel( i18n("Version : "), parent );
   glay->addWidget( tmpLabel, 2, 0 );
-  m_aboutData = KGlobal::instance()->aboutData(); // TODO : use the "active" instance
   if (m_aboutData) m_strVersion = m_aboutData->version();
    else m_strVersion = i18n("no version set (programmer error!)");
   m_strVersion += QString::fromLatin1(" (KDE " KDE_VERSION_STRING ")");
@@ -237,6 +240,9 @@ QString KBugReport::text()
     debug(m_bgSeverity->selected()->name());
   // Prepend the pseudo-headers to the contents of the mail
   QString severity = QString::fromLatin1(m_bgSeverity->selected()->name());
+  QString appname = QString::fromLatin1( m_aboutData
+                                         ? m_aboutData->appName()
+                                         : kapp->name());
   if (severity == QString::fromLatin1("i18n"))
     // Case 1 : i18n bug
       return QString::fromLatin1("Package: i18n_") + KGlobal::locale()->language() +
@@ -244,14 +250,14 @@ QString KBugReport::text()
 			    "Application: %1\n"
 			    // not really i18n's version, so better here IMHO
 			    "Version: %2\n"
-	  "\n").arg(QString::fromLatin1(kapp->name())).arg(m_strVersion)+
+	  "\n").arg(appname).arg(m_strVersion)+
 	  m_lineedit->text();
   else
     // Case 2 : normal bug
-    return QString::fromLatin1("Package: ")+QString::fromLatin1(kapp->name())+QString::fromLatin1("\n"
-      "Version: %1\n"
-      "Severity: %2\n"
-      "\n").arg(m_strVersion).arg(severity)+
+    return QString::fromLatin1("Package: %1\n"
+      "Version: %2\n"
+      "Severity: %3\n"
+      "\n").arg(appname).arg(m_strVersion).arg(severity)+
       m_lineedit->text();
 }
 
