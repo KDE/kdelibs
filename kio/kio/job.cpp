@@ -1980,6 +1980,9 @@ void ListJob::start(Slave *slave)
 class CopyJob::CopyJobPrivate
 {
 public:
+    CopyJobPrivate() {
+        m_defaultPermissions = false;
+    }
     // This is the dest URL that was initially given to CopyJob
     // It is copied into m_dest, which can be changed for a given src URL
     // (when using the RENAME dialog in slotResult),
@@ -1987,6 +1990,8 @@ public:
     KURL m_globalDest;
     // The state info about that global dest
     CopyJob::DestinationState m_globalDestinationState;
+    // See setDefaultPermissions
+    bool m_defaultPermissions;
 };
 
 CopyJob::CopyJob( const KURL::List& src, const KURL& dest, CopyMode mode, bool asMethod, bool showProgressInfo )
@@ -2687,7 +2692,7 @@ void CopyJob::createNextDir()
     if ( !udir.isEmpty() ) // any dir to create, finally ?
     {
         // Create the directory - with default permissions so that we can put files into it
-        // TODO : change permissions once all is finished
+        // TODO : change permissions once all is finished; but for stuff coming from CDROM it sucks...
         KIO::SimpleJob *newjob = KIO::mkdir( udir, -1 );
         Scheduler::scheduleJob(newjob);
 
@@ -3097,7 +3102,9 @@ void CopyJob::copyNextFile()
             // If source isn't local and target is local, we ignore the original permissions
             // Otherwise, files downloaded from HTTP end up with -r--r--r--
             bool remoteSource = !KProtocolInfo::supportsListing((*it).uSource);
-            int permissions = ( remoteSource && (*it).uDest.isLocalFile() ) ? -1 : (*it).permissions;
+            int permissions = (*it).permissions;
+            if ( d->m_defaultPermissions || ( remoteSource && (*it).uDest.isLocalFile() ) )
+                permissions = -1;
             KIO::FileCopyJob * copyJob = KIO::file_copy( (*it).uSource, (*it).uDest, permissions, bOverwrite, false, false/*no GUI*/ );
             copyJob->setParentJob( this ); // in case of rename dialog
             copyJob->setSourceSize64( (*it).size );
@@ -3373,6 +3380,11 @@ void CopyJob::slotResult( Job *job )
         default:
             assert( 0 );
     }
+}
+
+void KIO::CopyJob::setDefaultPermissions( bool b )
+{
+    d->m_defaultPermissions = b;
 }
 
 CopyJob *KIO::copy(const KURL& src, const KURL& dest, bool showProgressInfo )
