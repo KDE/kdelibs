@@ -85,7 +85,7 @@ class KDialogBaseTile;
  * while @ref slotOk() will run @ref QDialog::accept(). You define a default
  * button in the constructor.
  *
- * If you don't not want any buttons at all because your dialog is special
+ * If you don't want any buttons at all because your dialog is special
  * in some way, then set the buttonMask argument in the constructor to zero
  * (0). The optional button box separator line should not be enabled
  * in this case. Note that the KDialogBase will animate a button press
@@ -183,7 +183,7 @@ class KDialogBaseTile;
  * and many of KDE core applications use the KDialogBase so for more
  * inspiration you should study the code for these.
  *
- * @short A dialog base class which standard buttons and predefined layouts.
+ * @short A dialog base class with standard buttons and predefined layouts.
  * @author Mirko Boehm (mirko@kde.org) and Espen Sand (espen@kde.org)
  */
 class KDialogBase : public KDialog
