@@ -3,10 +3,6 @@
 
 #include <qdatastream.h>
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 QDataStream & operator << (QDataStream & str, long l);
 
 QDataStream & operator >> (QDataStream & str, long & l);
