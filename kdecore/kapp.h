@@ -501,14 +501,14 @@ public:
 
   /**
    * Generate a uniform random number.
-   * @return A truly unpredictable number in the range [0, MAX_RAND)
+   * @return A truly unpredictable number in the range [0, RAND_MAX)
    */
   static int random();
 
   /**
    * Generate a random string.  It operates in the range [A-Za-z0-9]
    * @param length Generate a string of this length.  If negative, the
-   *               length will be random as well (from 0 to MAX_RAND)
+   *               length will be random as well (from 0 to RAND_MAX)
    */
   static QString randomString(int length=-1);
 
@@ -788,6 +788,9 @@ private:
 #endif
 
 // $Log$
+// Revision 1.197  2000/11/28 19:27:09  mueller
+// touching version number now that 2.0.1 is tagged. ..quickly running away
+//
 // Revision 1.196  2000/11/17 12:22:26  faure
 // If I touch kstddirs.h, I might as well update the date in kapp.h,
 // for dating bug reports better.
