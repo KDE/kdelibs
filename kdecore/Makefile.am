@@ -94,7 +94,7 @@ libkdecore_la_SOURCES = libintl.cpp kapplication.cpp \
 	ksavefile.cpp krandomsequence.cpp kstringhandler.cpp kcompletion.cpp \
 	kcmdlineargs.cpp kaboutdata.cpp kcompletionbase.cpp knotifyclient.cpp \
 	kaudioplayer.cpp kdcoppropertyproxy.cpp \
-	kextsock.cpp ksockaddr.cpp netsupp.cpp kprocio.cpp kbufferedio.cpp \
+	ksockaddr.cpp kextsock.cpp netsupp.cpp kprocio.cpp kbufferedio.cpp \
 	kpixmapprovider.cpp kurldrag.cpp \
 	kmdcodec.cpp ksocks.cpp fakes.c vsnprintf.c \
 	ksycoca.cpp ksycocadict.cpp ksycocafactory.cpp ksycoca.skel \
@@ -176,5 +176,4 @@ DOXYGEN_EXCLUDE = malloc
 
 include ../admin/Doxyfile.am
 
-KDE_OPTIONS = nofinal
 
