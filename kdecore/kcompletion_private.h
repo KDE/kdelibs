@@ -60,8 +60,8 @@ typedef QValueList<KCompTreeNode *> KCompTreeChildren;
 class KCompTreeNode : public QChar
 {
 public:
-    KCompTreeNode() : QChar() {}
-    KCompTreeNode( const QChar& ch ) : QChar( ch ) {}
+    KCompTreeNode() : QChar(), myWeight(0) {}
+    KCompTreeNode( const QChar& ch ) : QChar( ch ), myWeight(0) {}
     ~KCompTreeNode();
 
     // Returns a child of this node matching ch, if available.
@@ -79,6 +79,11 @@ public:
 
     inline int		childrenCount() const { return myChildren.count(); }
 
+    // weighting
+    inline void confirm() 	{ myWeight++; }
+    inline void decline() 	{ myWeight--; }
+    inline uint weight() const 	{ return myWeight; }
+
     inline const KCompTreeChildren * children() const {
 	return &myChildren;
     }
@@ -94,6 +99,7 @@ public:
 
 
 private:
+    uint myWeight;
     KCompTreeChildren	myChildren;
     inline bool isEqual( const KCompTreeNode& node1,
 			 const KCompTreeNode& node2,

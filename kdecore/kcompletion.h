@@ -84,7 +84,7 @@ class QPopupMenu;
  * A short example:
  * <pre>
  * KCompletion completion;
- * completion.setSorted( true );
+ * completion.setOrder( KCompletion::Sorted );
  * completion.addItem( "pfeiffer@kde.org" );
  * completion.addItem( "coolo@kde.org" );
  * completion.addItem( "carpdjih@sp.zrz.tu-berlin.de" );
@@ -95,7 +95,7 @@ class QPopupMenu;
  * In shell-completion-mode, this will be "carp"; in auto-completion-
  * mode it will return "carp@cs.tu-berlin.de", as that is alphabetically
  * smaller.
- * If setSorted was set to false (default), "carpdjih@sp.zrz.tu-berlin.de"
+ * If setOrder was set to Insertion, "carpdjih@sp.zrz.tu-berlin.de"
  * would be completed in auto-completion-mode, as that was inserted before
  * "carp@cs.tu-berlin.de".
  *
@@ -124,6 +124,8 @@ class KCompletion : public QObject
     Q_OBJECT
 
 public:
+    enum CompOrder { Sorted, Insertion, Weighted };
+
     /**
      * Constructor, nothing special here :)
      */
@@ -210,16 +212,31 @@ public:
     KGlobalSettings::Completion completionMode() const { return myCompletionMode; }
 
     /**
-     * Setting this to true makes us go into sorted mode (doh).
-     * Completion will then always return the alphabetically first match.
-     * If set to false, the order is the same as the items were inserted.
-     * Note: this only affects new inserted items, already existing items will
-     * stay in the current order. So you probably want to call setSorted( true )
-     * before inserting items, when you want everything sorted.
-     * Default is false, not sorted.
-     * @see #isSorted
+     * KCompletion offers three different ways in which it offers its items:
+     * @li sorted alphabetically
+     * @li in the order of insertion
+     * @li weighted
+     *
+     * Choosing weighted makes KCompletion perform an implicit weighting based
+     * on how often an item is inserted. Imagine a webbrowser with a location
+     * bar, where the user enters URLs. The more often a URL is entered, the
+     * higher priority it gets.
+     *
+     * Note: Setting the order to sorted only affects new inserted items,
+     * already existing items will stay in the current order. So you probably
+     * want to call setOrder( Sorted ) before inserting items, when you want
+     * everything sorted.
+     *
+     * Default is weighted order
+     * @see #order
      */
-    void setSorted( bool enable ) { mySorting = enable; }
+    void setOrder( CompOrder order ) { myOrder = order; }
+
+    /**
+     * @returns the current completion order.
+     * @see #setOrder
+     */
+    CompOrder order() const { return myOrder; }
 
     /**
      * Setting this to true makes KCompletion behave case insensitively.
@@ -235,13 +252,6 @@ public:
      * @see #setIgnoreCase
      */
     //  bool ignoreCase() const { return myIgnoreCase; }
-
-    /**
-     * @returns true if the completion-items are alphabetically sorted and
-     * false if the order of insertion is used.
-     * @see #setSorted
-     */
-    bool isSorted() const { return mySorting; }
 
     /**
      * @returns a list of all matching items. Might take some time, when you
@@ -405,18 +415,18 @@ private:
     QStringList         myMatches;
     KGlobalSettings::Completion myCompletionMode;
 
+    CompOrder 		myOrder;
     QString             myLastString;
     QString 		myLastMatch;
     QString 		myCurrentMatch;
     KCompTreeNode *     myTreeRoot;
     QStringList 	myRotations;
-    bool                mySorting;
     bool                myBeep;
     bool 		myBackwards;
     bool 		myIgnoreCase;
     bool 		myHasMultipleMatches;
-    int 		myItemIndex; // FIXME
     uint 		myRotationIndex;
+
 
     KCompletionPrivate *d;
 };
@@ -472,7 +482,7 @@ public:
 	    NoCompletion,
 	    AutoCompletion,
         ShellCompletion,
-	    SemiAutoCompletion	    
+	    SemiAutoCompletion	
 	};
 	
 	// Map for the key binding types mentioned above.
@@ -658,16 +668,11 @@ public:
     *
     * @param item the feature whose key-binding needs to be set:
     *
-	*		@li TextCompletion			the manual completion
-	*									key-binding.
-	*		@li PrevCompletionMatch		the previous match key
-	*									for mutiple completion.
-	*		@li	NextCompletionMatch		the next match key for
-	*									for multiple completion.
-	*		@li	RotateUp				the key for rotating up
-	*									in a given list.
-	*		@li	RotateDown				the key for rotating down
-	*									in a given list.
+    * @li TextCompletion	the manual completion key-binding.
+    * @li PrevCompletionMatch	the previous match key for mutiple completion.
+    * @li NextCompletionMatch	the next match key for for multiple completion.
+    * @li RotateUp		the key for rotating up in a given list.
+    * @li RotateDown 		the key for rotating down in a given list.
     *
     * @param key key-binding used to rotate down in a list.
     *
@@ -712,18 +717,18 @@ protected:
     */
     virtual void connectSignals( bool handle ) const = 0;
 
-	/**
-	 * Returns an instance of the completion object.
-	 *
-	 * This method is only different from @ref completionObject
-	 * in that it does not create a new KCompletion object if
-	 * the internal pointer is null.  Use this method to get the
-	 * pointer to a completion object when inheriting from this
-	 * widget so that you will not inadvertantly create it!!
-	 *	
-	 * @ref an instance of the completion object.
-	 */
-     KCompletion* compObj() const { return m_pCompObj; }
+    /**
+     * Returns an instance of the completion object.
+     *
+     * This method is only different from @ref completionObject
+     * in that it does not create a new KCompletion object if
+     * the internal pointer is null.  Use this method to get the
+     * pointer to a completion object when inheriting from this
+     * widget so that you will not inadvertantly create it!!
+     *	
+     * @ref an instance of the completion object.
+     */
+    KCompletion* compObj() const { return m_pCompObj; }
 
     /**
      * Returns a key-binding maps
@@ -735,47 +740,49 @@ protected:
      */
 	KeyBindingMap getKeyBindings() const { return m_keyMap; }
 	
-	/**
-	 * Inserts a set of default menu items in the specified popup menu.
-	 *
-	 * The items inserted are: Cut, Copy, Paste, Completion, Unselect
-	 * and SelectAll.  Each item has its own uniquie id defined by the
-	 * @ref MenuID enumerator which allows any inheriting class to easily
-	 * maniuplate these items.
-	 *
-	 * Note that the the enteries in the @p Completion sub-menu are
-	 * capable of handling themselves and thus require no extra effort
-	 * from except invoking the method you desire when these items are
-	 * selected.  Also the completion menu item will not be added if
-	 * a completion object has not already been created.  Refer to
-	 * @ref completionObject on how to create a completion object.
-	 *
-	 * @param popup popup-menu into which the default items are to be inserted
-	 */
-	void insertDefaultMenuItems( QPopupMenu* /* popup */ ) const;
-	
-	/**
-	 * Inserts only the competion menu item into the specified popup menu.
-	 *
-	 * This method unlike its counterpart @ref insertDefaultMenuItems only
-	 * inserts only the completion menu item into the given popup menu.
-	 * It is provided for those who want to build their own popup menu, but
-	 * do not want to deal with the completion menu item.  It is highly
-	 * encouraged that you use the @ref insertDefaultMenuItems instead of
-	 * this method for the sake of consistency.
-     *	 
-	 * Note that the completion menu item will not be added if a completion
-	 * object has not already been created or the value of the index is not
-	 * valid.  Refer to @ref completionObject on how to create a completion
-	 * object.
-	 *
-	 * @param popup popup-menu into which the completion items are to be inserted
-	 * @param index position at which the menu gets inserted.  Default is to append to current position.
-	 */	
-	void insertCompletionMenuItem( QPopupMenu* /* popup */, int index = -1 ) const;
+    /**
+     * Inserts a set of default menu items in the specified popup menu.
+     *
+     * The items inserted are: Cut, Copy, Paste, Completion, Unselect
+     * and SelectAll.  Each item has its own uniquie id defined by the
+     * @ref MenuID enumerator which allows any inheriting class to easily
+     * maniuplate these items.
+     *
+     * Note that the the enteries in the @p Completion sub-menu are
+     * capable of handling themselves and thus require no extra effort
+     * from except invoking the method you desire when these items are
+     * selected.  Also the completion menu item will not be added if
+     * a completion object has not already been created.  Refer to
+     * @ref completionObject on how to create a completion object.
+     *
+     * @param popup popup-menu into which the default items are to be inserted
+     */
+    void insertDefaultMenuItems( QPopupMenu* /* popup */ ) const;
+
+    /**
+     * Inserts only the competion menu item into the specified popup menu.
+     *
+     * This method unlike its counterpart @ref insertDefaultMenuItems only
+     * inserts only the completion menu item into the given popup menu.
+     * It is provided for those who want to build their own popup menu, but
+     * do not want to deal with the completion menu item.  It is highly
+     * encouraged that you use the @ref insertDefaultMenuItems instead of
+     * this method for the sake of consistency.
+     *	
+     * Note that the completion menu item will not be added if a completion
+     * object has not already been created or the value of the index is not
+     * valid.  Refer to @ref completionObject on how to create a completion
+     * object.
+     *
+     * @param popup popup-menu into which the completion items are to be
+     *              inserted
+     * @param index position at which the menu gets inserted. Default is to
+     *              append to current position.
+     */	
+    void insertCompletionMenuItem( QPopupMenu*, int index = -1 ) const;
 
 private:
-    
+
     // Flag that determined whether the completion object
     // should be deleted when this object is destroyed.
     bool m_bAutoDelCompObj;
@@ -789,7 +796,7 @@ private:
     // Pointer to Completion object.
     QGuardedPtr<KCompletion> m_pCompObj;
     // Keybindings
-	KeyBindingMap m_keyMap;
+    KeyBindingMap m_keyMap;
 	
     // BCI
     KCompletionPrivate *d;

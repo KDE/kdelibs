@@ -31,11 +31,11 @@ KCompletion::KCompletion()
 {
     myCompletionMode = KGlobalSettings::completionMode();
     myTreeRoot = new KCompTreeNode;
-    mySorting    = false;
     myBeep       = true;
     myIgnoreCase = false;
     myHasMultipleMatches = false;
     myRotationIndex = 0;
+    myOrder = Insertion;
 }
 
 KCompletion::~KCompletion()
@@ -80,9 +80,10 @@ void KCompletion::addItemInternal( const QString& item )
     QChar ch;
     KCompTreeNode *node = myTreeRoot;
 
+    register bool sorted = (myOrder == Sorted);
     for ( uint i = 0; i < item.length(); i++ ) {
         ch = item.at( i );
-	node = node->insert( ch, mySorting );
+	node = node->insert( ch, sorted );
     }
 
     node->insert( 0x0, true ); // add 0x0-item as delimiter
@@ -144,7 +145,7 @@ QString KCompletion::makeCompletion( const QString& string )
 	postProcessMatch( &completion );
         emit match( completion );
     }
-	else
+    else
         postProcessMatch( &completion );
 
 
@@ -256,7 +257,6 @@ QString KCompletion::findCompletion( const QString& string )
 	if ( !node->isNull() )
 	    completion += *node;
     }
-
     // if multiple matches and auto-completion mode
     // -> find the first complete match
     if ( node && node->childrenCount() > 1 ) {
@@ -266,11 +266,38 @@ QString KCompletion::findCompletion( const QString& string )
 	     myCompletionMode == KGlobalSettings::CompletionMan ) {
 
 	    myRotationIndex = 1;
-	    while ( (node = node->firstChild()) ) {
-		if ( !node->isNull() )
+	    if (myOrder != Weighted) {
+		while ( (node = node->firstChild()) ) {
+		    if ( !node->isNull() )
+			completion += *node;
+	    	    else
+			break;
+    		}
+	    }
+	    else {
+		// don't just find the "first" match, but the one with the
+		// highest priority
+		
+		const KCompTreeNode* temp_node = 0L;
+		while(1) {
+		    int count = node->childrenCount();
+		    temp_node = node->firstChild();
+		    uint weight = temp_node->weight();
+		    const KCompTreeNode* hit = temp_node;
+		    for( int i = 1; i < count; i++ ) {
+			temp_node = node->childAt(i);
+			if( temp_node->weight() > weight ) {
+			    hit = temp_node;
+			    weight = hit->weight();
+			}
+		    }
+		    // 0x0 has the highest priority -> we have the best match
+		    if ( hit->isNull() )
+			break;
+
+		    node = hit;
 		    completion += *node;
-		else
-		    break;
+    		}
 	    }
 	}
 
@@ -401,6 +428,7 @@ void KCompletion::doBeep( BeepMode mode )
 	KNotifyClient::event( event, text );
 }
 
+
 /////////////////////////////////
 /////////
 
@@ -443,6 +471,12 @@ KCompTreeNode * KCompTreeNode::insert( const QChar& ch, bool sorted )
 	else
 	    myChildren.append( child );
     }
+
+    // implicit weighting: the more often an item is inserted, the higher
+    // priority it gets.
+    child->confirm();
+
+//    printf("Confirming %c %d\n", (char)*child, weight());
 
     return child;
 }
