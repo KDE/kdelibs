@@ -205,14 +205,11 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
         }
         else if ( mode == KGlobalSettings::CompletionPopup )
         {
+            QString old_txt = text();
             QLineEdit::keyPressEvent ( e );
-            QString keycode = e->text();
             QString txt = text();
-            int key = e->key();
 
-            if (((!keycode.isNull() && keycode.unicode()->isPrint())||
-                (key == Qt::Key_Delete || key == Qt::Key_BackSpace)) &&
-                txt != d->prevText)
+            if ( txt != old_txt )
             {
                 kdDebug() << "Popup Completion: " << txt << endl;
                 if ( emitSignals() )
@@ -220,7 +217,6 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                 if ( handleSignals() )
                     makeCompletion(txt);
                 e->accept();
-                d->prevText = txt;
             }
             return;
         }
@@ -496,7 +492,7 @@ void KLineEdit::setCompletedItems( const QStringList& items )
         }
         else
         {
-            if ( d->completionBox->isVisible() )
+            if ( d->completionBox && d->completionBox->isVisible() )
                 hideCompletionBox();
         }
     }
