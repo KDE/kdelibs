@@ -6,6 +6,10 @@
 //
 // Mon Nov 25 10:07:17 1996 -- Steffen Hansen
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <qstring.h>
 #include <qdir.h>
 

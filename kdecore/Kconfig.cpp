@@ -1,6 +1,19 @@
 // $Id$
 //
 /* $Log$
+ * Revision 1.10  1997/07/17 18:43:17  kalle
+ * Kalle: new stopsign.xpm
+ * 			KConfig: environment variables are resolved in readEntry()
+ * 			(meaning you can write() an entry with an environment
+ * 			variable and read it back in, and the value gets properly
+ * 			expanded).
+ * 			Fixed three bugs in ksock.cpp
+ * 			Added KFloater
+ * 			Added KCombo
+ * 			Added KLineEdit
+ * 			New KToolbar
+ * 			New KToplevelWidget
+ *
  * Revision 1.9  1997/06/29 18:26:32  kalle
  * 29.06.97:	KConfig reads and writes string lists
  * 			Torben's patches to ktoolbar.*, kurl.h
@@ -606,11 +619,13 @@ void KConfig::rollback( bool bDeep )
 	return;
   QDictIterator<KEntryDict> aIt( pData->aGroupDict );
   // loop over all the groups
-  while( const char* pCurrentGroup = aIt.currentKey() )
+  const char* pCurrentGroup;
+  while( pCurrentGroup = aIt.currentKey() )
 	{
 	  QDictIterator<KEntryDictEntry> aInnerIt( *aIt.current() );
 	  // loop over all the entries
-	  while( KEntryDictEntry* pCurrentEntry = aInnerIt.current() )
+	  KEntryDictEntry* pCurrentEntry;
+	  while( pCurrentEntry = aInnerIt.current() )
 		{
 		  pCurrentEntry->bDirty = false;
 		  ++aInnerIt;
@@ -685,12 +700,15 @@ void KConfig::writeConfigFile( QFile& rConfigFile )
 
   // augment this structure with the dirty entries from the normal structure
   QDictIterator<KEntryDict> aIt( pData->aGroupDict );
+
   // loop over all the groups
-  while( const char* pCurrentGroup = aIt.currentKey() )
+  const char* pCurrentGroup;
+  while( pCurrentGroup = aIt.currentKey() )
 	{
 	  QDictIterator<KEntryDictEntry> aInnerIt( *aIt.current() );
 	  // loop over all the entries
-	  while( KEntryDictEntry* pCurrentEntry = aInnerIt.current() )
+	  KEntryDictEntry* pCurrentEntry;
+	  while( pCurrentEntry = aInnerIt.current() )
 		{
 		  if( pCurrentEntry->bDirty )
 			{

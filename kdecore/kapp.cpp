@@ -1,6 +1,13 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.13  1997/06/29 18:26:35  kalle
+// 29.06.97:	KConfig reads and writes string lists
+// 			Torben's patches to ktoolbar.*, kurl.h
+//
+// 22.06.97:	KApplications save and restore position and size of their top
+// (unstable)	level widget.
+//
 // Revision 1.12  1997/05/30 20:04:37  kalle
 // Kalle:
 // 30.05.97:	signal handler for reaping zombie help processes reinstalls itself
@@ -187,7 +194,8 @@ void reaper(int)
   pConfigStream = NULL;
 
 #include "kprocctrl.h"
-  if( char* pHome = getenv( "HOME" ) )
+
+  if( pHome = getenv( "HOME" ) )
 
 KApplication* KApplication::KApp = 0L;
 QStrList* KApplication::pSearchPaths;

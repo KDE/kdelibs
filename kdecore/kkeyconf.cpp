@@ -369,7 +369,7 @@ const QString keyToString( uint keyCode )
 		}
 	}
 	
-	return QString((void *)NULL);
+	return QString((char *)NULL);
 }
 
 uint stringToKey(const QString& key )
@@ -516,7 +516,7 @@ KKeyConfigure::KKeyConfigure( QDictIterator<KKeyEntry> *aKeyIt,
 	}
 
 	/* if no keys defined */
-	if ( wList->count==0 ) wList->hide();
+	if ( wList->count() == 0 ) wList->hide();
 	
 	/* adjust the listbox geometry */
 	//  wList->setFont( QFont("Courier", 12, QFont::Normal) );
