@@ -423,12 +423,14 @@ void RenderText::cursorPos(int offset, int &_x, int &_y, int &height)
 
   int absx, absy;
 
-  if (absolutePosition(absx,absy))
+  RenderObject *cb = containingBlock();
+
+  if (cb && cb != this && cb->absolutePosition(absx,absy))
   {
     _x += absx;
     _y += absy;
   } else {
-    // we don't know out absolute position, and there is not point returning
+    // we don't know our absolute position, and there is not point returning
     // just a relative one
     _x = _y = -1;
   }
