@@ -452,6 +452,9 @@ namespace KIO {
         FileCopyJob( const KURL& src, const KURL& dest, int permissions,
                      bool move, bool overwrite, bool resume, bool showProgressInfo);
 
+        KURL srcURL() const { return m_src; }
+        KURL destURL() const { return m_dest; }
+
     public slots:
         void slotData( KIO::Job *, const QByteArray &data);
         void slotDataReq( KIO::Job *, QByteArray &data);
