@@ -273,6 +273,10 @@ void KLocale::initFormat(KConfig *config)
   if (!config)
     return;
 
+  // make sure the config files are read using the correct locale
+  KLocale *lsave = KGlobal::_locale;
+  KGlobal::_locale = this;
+
   KConfigGroupSaver saver(config, QString::fromLatin1("Locale"));
 
   KSimpleConfig entry(locate("locale",
@@ -353,6 +357,8 @@ void KLocale::initFormat(KConfig *config)
 
   m_weekStartsMonday = entry.readBoolEntry(QString::fromLatin1("WeekStartsMonday"), true);
   m_weekStartsMonday = config->readBoolEntry(QString::fromLatin1("WeekStartsMonday"), m_weekStartsMonday);
+
+  KGlobal::_locale = lsave;
 }
 
 void KLocale::setLanguage(const QString &_lang)
