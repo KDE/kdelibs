@@ -34,6 +34,7 @@ class KPluginInfo::KPluginInfoPrivate
             , enabledbydefault( false )
             , pluginenabled( false )
             , config( 0 )
+            , kcmservicesCached( false )
             {}
 
         ~KPluginInfoPrivate()
@@ -62,6 +63,7 @@ class KPluginInfo::KPluginInfoPrivate
         QString configgroup;
         KService::Ptr service;
         QValueList<KService::Ptr> kcmservices;
+        bool kcmservicesCached;
 };
 
 KPluginInfo::KPluginInfo( const QString & filename, const char* resource )
@@ -107,10 +109,6 @@ KPluginInfo::KPluginInfo( const QString & filename, const char* resource )
         d->license = file.readEntry( "License" );
         d->dependencies = file.readListEntry( "Require" );
     }
-    d->kcmservices = KTrader::self()->query( "KCModule", "'" + d->pluginName +
-            "' in [X-KDE-ParentComponents]" );
-    kdDebug( 703 ) << "found " << d->kcmservices.count() << " offers for " <<
-        d->pluginName << endl;
 }
 
 KPluginInfo::KPluginInfo( const KService::Ptr service )
@@ -140,8 +138,6 @@ KPluginInfo::KPluginInfo( const KService::Ptr service )
         service->property( "X-KDE-PluginInfo-Depends" ).toStringList();
     tmp = service->property( "X-KDE-PluginInfo-EnabledByDefault" );
     d->enabledbydefault = tmp.isValid() ? tmp.toBool() : false;
-    d->kcmservices = KTrader::self()->query( "KCModule", "'" + d->pluginName +
-            "' in [X-KDE-ParentComponents]" );
 }
 
 //X KPluginInfo::KPluginInfo()
@@ -278,6 +274,16 @@ KService::Ptr KPluginInfo::service() const
 
 const QValueList<KService::Ptr> & KPluginInfo::kcmServices() const
 {
+    if ( !d->kcmservicesCached )
+    {
+        d->kcmservices = KTrader::self()->query( "KCModule", "'" + d->pluginName +
+            "' in [X-KDE-ParentComponents]" );
+        kdDebug( 703 ) << "found " << d->kcmservices.count() << " offers for " <<
+            d->pluginName << endl;
+
+        d->kcmservicesCached = true;
+    }
+
     return d->kcmservices;
 }
 
