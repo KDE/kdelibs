@@ -14,8 +14,6 @@
 5001    kget
 7001    kiolib (KDirWatch)
 7002    kiolib (KIOCache)
-7003    kiolib (Connection)
-7004    kiolib (Slave)
 7005    kiolib (Filter)
 7006    kiolib (ConnectionSlots::dispatch)
 7007    kiolib (KIOJob)
