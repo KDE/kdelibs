@@ -56,7 +56,7 @@ KInstance::KInstance( const QCString& name)
     if (!KGlobal::_instance)
     {
       KGlobal::_instance = this;
-      KGlobal::_activeInstance = this;
+      KGlobal::setActiveInstance(this);
     }
 
     d = new KInstancePrivate ();
@@ -74,7 +74,7 @@ KInstance::KInstance( const KAboutData * aboutData )
     if (!KGlobal::_instance)
     {
       KGlobal::_instance = this;
-      KGlobal::_activeInstance = this;
+      KGlobal::setActiveInstance(this);
     }
 
     d = new KInstancePrivate ();
@@ -92,7 +92,7 @@ KInstance::KInstance( KInstance* src )
     if (!KGlobal::_instance || KGlobal::_instance == src )
     {
       KGlobal::_instance = this;
-      KGlobal::_activeInstance = this;
+      KGlobal::setActiveInstance(this);
     }
 
     d = new KInstancePrivate ();
@@ -123,8 +123,8 @@ KInstance::~KInstance()
 
     if (KGlobal::_instance == this)
         KGlobal::_instance = 0;
-    if (KGlobal::_activeInstance == this)
-        KGlobal::_activeInstance = 0;
+    if (KGlobal::activeInstance() == this)
+        KGlobal::setActiveInstance(0);
 }
 
 
