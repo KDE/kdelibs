@@ -338,7 +338,8 @@ void PartManager::setActivePart( Part *part, QWidget *widget )
     QObject *parentPart = part->parent(); // ### this relies on people using KParts::Factory!
     if ( parentPart && parentPart->inherits( "KParts::Part" ) )
     {
-      setActivePart( static_cast<KParts::Part *>( parentPart ) );
+      KParts::Part *parPart = static_cast<KParts::Part *>( parentPart );
+      setActivePart( parPart, parPart->widget() );
       return;
     }
   }
