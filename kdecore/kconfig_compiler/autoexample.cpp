@@ -22,8 +22,6 @@
 #include "general_base.h"
 #include "myoptions_base.h"
 
-#include <libkdepim/kprefsdialog.h>
-
 #include <kaboutdata.h>
 #include <kapplication.h>
 #include <kdebug.h>

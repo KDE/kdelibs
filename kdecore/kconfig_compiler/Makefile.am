@@ -1,3 +1,5 @@
+SUBDIRS = tests
+
 AM_CPPFLAGS = -I$(top_srcdir)/kdecore -I$(top_srcdir) $(all_includes)
 
 bin_PROGRAMS = kconfig_compiler
@@ -6,7 +8,7 @@ kconfig_compiler_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 kconfig_compiler_LDADD = $(LIB_KDECORE)
 kconfig_compiler_SOURCES = kconfig_compiler.cpp
 
-check_PROGRAMS = example autoexample
+check_PROGRAMS = example # autoexample
 
 example_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 example_LDADD = $(LIB_KDECORE)
@@ -26,3 +28,10 @@ METASOURCES = AUTO
 
 CLEANFILES = exampleprefs_base.h exampleprefs_base.cpp
 
+TESTFILES = test1.kcfg test2.kcfg
+
+check:
+	for i in $(TESTFILES); \
+	  do perl $(top_srcdir)/kdecore/kconfig_compiler/checkkcfg.pl \
+          $(top_srcdir)/kdecore/kconfig_compiler/tests/$$i; done
+	  
