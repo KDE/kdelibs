@@ -42,13 +42,13 @@
 <!ENTITY Ctrl    "<keycap>Ctrl</keycap>">
 <!ENTITY enz     "<abbrev>enz.</abbrev>">
 <!ENTITY etc     "<abbrev>etc.</abbrev>"> <!-- enz is beter -->
-<!ENTITY kicon	'<guiicon>
+<!ENTITY kicon	"<guiicon>
 <inlinemediaobject>
  <objectinfo><title>&kde;'s K-pictogram</title></objectinfo>
- <imageobject><imagedata fileref="icon-file-to-be-filled-in" format="PNG"/></imageobject>
+ <imageobject><imagedata fileref='icon-file-to-be-filled-in' format='PNG'/></imageobject>
  <textobject><phrase>K</phrase></textobject>
 </inlinemediaobject>
-</guiicon>'><!-- if image is localised, then entityref should be used instead
+</guiicon>"><!-- if image is localised, then entityref should be used instead
                  of fileref -->
 <!ENTITY kmenu  "<guimenu>K</guimenu> menu">
 <!ENTITY LMB     "<mousebutton>LMK</mousebutton>">
