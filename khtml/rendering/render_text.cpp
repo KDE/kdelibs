@@ -589,7 +589,7 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
                     diff = m_lines[si+1]->m_text - s->m_text;
                 else
                     diff = s->m_len;
-#end
+#endif
 
             } while (++si < (int)m_lines.count() && m_lines[si]->checkVerticalPoint(y, ty, h));
         }
