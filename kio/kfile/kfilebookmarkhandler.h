@@ -44,23 +44,12 @@ public:
 signals:
     void openURL( const QString& url );
 
-private slots:
-    // for importing
-    void slotNewBookmark( const QString& text, const QCString& url,
-                          const QString& additionalInfo );
-    void slotNewFolder( const QString& text, bool open,
-                        const QString& additionalInfo );
-    void newSeparator();
-    void endFolder();
-
 private:
-    void importOldBookmarks( const QString& path, const QString& destinationPath );
+    void importOldBookmarks( const QString& path, KBookmarkManager *manager );
 
     KFileDialog *m_dialog;
     KPopupMenu *m_menu;
     KBookmarkMenu *m_bookmarkMenu;
-
-    QTextStream *m_importStream;
 
 protected:
     virtual void virtual_hook( int id, void* data );
