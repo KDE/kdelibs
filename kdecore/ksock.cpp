@@ -358,14 +358,10 @@ bool KSocket::initSockaddr (ksockaddr_in *server_name, const char *hostname, uns
 
 KSocket::~KSocket()
 {
-    if ( readNotifier )
-    {
 	delete readNotifier;
-    }
-    if ( writeNotifier )
 	delete writeNotifier;
-
-    ::close( sock );
+	if (sock != -1)
+      ::close( sock );
 }
 
 
