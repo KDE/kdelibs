@@ -134,7 +134,7 @@ bool KFileMetaInfoItem::setValue( const QVariant& value )
         return false;
     }
 
-    kdDebug(7033) << key() << ".setValue()\n";
+//    kdDebug(7033) << key() << ".setValue()\n";
 
     d->dirty = true;
     d->value = value;
@@ -237,8 +237,8 @@ void KFileMetaInfoItem::deref()
     // null is 0L when it hasn't been initialized and d is never 0L.
     if ((d != Data::null) && d->deref())
     {
-        kdDebug(7033) << "item " << d->key
-                      << " is finally deleted\n";
+//        kdDebug(7033) << "item " << d->key
+//                      << " is finally deleted\n";
         delete d;
     }
 }
@@ -274,7 +274,7 @@ KFileMetaInfo::KFileMetaInfo( const QString& path, const QString& mimeType,
                               uint what )
     : d(new Data( path, what ) )
 {
-    kdDebug(7033) << "KFileMetaInfo( " << path << ", " << mimeType << ", what )\n";
+//    kdDebug(7033) << "KFileMetaInfo( " << path << ", " << mimeType << ", what )\n";
 
     QString mT;
     if (mimeType.isEmpty())
@@ -288,14 +288,14 @@ KFileMetaInfo::KFileMetaInfo( const QString& path, const QString& mimeType,
     d->mimeTypeInfo = KFileMetaInfoProvider::self()->mimeTypeInfo(mT);
     if ( d->mimeTypeInfo )
     {
-        kdDebug(7033) << "Found mimetype info for " << mT << endl;
+//        kdDebug(7033) << "Found mimetype info for " << mT << endl;
         KFilePlugin *p = plugin();
         if (p && !p->readInfo( item, what))
             *this=KFileMetaInfo();
     }
     else
     {
-        kdDebug(7033) << "No mimetype info for " << mimeType << endl;
+//        kdDebug(7033) << "No mimetype info for " << mimeType << endl;
         d = Data::makeNull();
     }
 }
@@ -484,7 +484,7 @@ bool KFileMetaInfo::applyChanges()
 {
     bool doit = false;
 
-    kdDebug(7033) << "KFileMetaInfo::applyChanges()\n";
+//    kdDebug(7033) << "KFileMetaInfo::applyChanges()\n";
 
     // look up if we need to write to the file
     QMapConstIterator<QString, KFileMetaInfoGroup> it;
@@ -510,7 +510,7 @@ bool KFileMetaInfo::applyChanges()
     KFilePlugin* p = plugin();
     if (!p) return false;
 
-    kdDebug(7033) << "Ok, trying to write the info\n";
+//    kdDebug(7033) << "Ok, trying to write the info\n";
 
     return p->writeInfo(*this);
 }
@@ -677,7 +677,7 @@ void KFileMetaInfo::deref()
     // null is 0L when it hasn't been initialized and d is never 0L.
     if ((d != Data::null) && d->deref())
     {
-        kdDebug(7033) << "metainfo object for " << d->path << " is finally deleted\n";
+//        kdDebug(7033) << "metainfo object for " << d->path << " is finally deleted\n";
         delete d;
     }
 
@@ -704,7 +704,7 @@ KFilePlugin::KFilePlugin( QObject *parent, const char *name,
                           const QStringList& /*args*/)
     : QObject( parent, name )
 {
-    kdDebug(7033) << "loaded a plugin for " << name << endl;
+//    kdDebug(7033) << "loaded a plugin for " << name << endl;
 }
 
 KFilePlugin::~KFilePlugin()
@@ -854,18 +854,18 @@ KFilePlugin * KFileMetaInfoProvider::plugin(const QString& mimeType)
 {
     KFilePlugin *p = m_plugins.find( mimeType );
 
-    kdDebug(7033) << "mimetype is " << mimeType << endl;
+//    kdDebug(7033) << "mimetype is " << mimeType << endl;
 
     if ( !p )
     {
-        kdDebug(7033) << "need to look for a plugin to load\n";
+//        kdDebug(7033) << "need to look for a plugin to load\n";
 
         KService::Ptr service =
             KServiceTypeProfile::preferredService( mimeType, "KFilePlugin");
 
         if ( !service || !service->isValid() )
         {
-            kdDebug(7033) << "no valid service found\n";
+//            kdDebug(7033) << "no valid service found\n";
             return 0;
         }
 
@@ -878,18 +878,18 @@ KFilePlugin * KFileMetaInfoProvider::plugin(const QString& mimeType)
             return 0;
         }
 
-        kdDebug(7033) << "found a plugin\n";
+//        kdDebug(7033) << "found a plugin\n";
         m_plugins.insert( mimeType, p );
 
     }
-    else
-        kdDebug(7033) << "plugin already loaded\n";
+//    else
+//        kdDebug(7033) << "plugin already loaded\n";
 
-    kdDebug(7033) << "currently loaded plugins:\n";
+//    kdDebug(7033) << "currently loaded plugins:\n";
 
-    QDictIterator<KFilePlugin> it( m_plugins );
-    for( ; it.current(); ++it )
-        kdDebug(7033) << it.currentKey() << ": " << it.current()->className() << endl;
+//    QDictIterator<KFilePlugin> it( m_plugins );
+//    for( ; it.current(); ++it )
+//        kdDebug(7033) << it.currentKey() << ": " << it.current()->className() << endl;
 
     return p;
 }
@@ -901,7 +901,7 @@ QStringList KFileMetaInfoProvider::preferredKeys( const QString& mimeType ) cons
 
     if ( !service || !service->isValid() )
     {
-        kdDebug(7033) << "no valid service found\n";
+//        kdDebug(7033) << "no valid service found\n";
         return QStringList();
     }
     return service->property("PreferredItems").toStringList();
@@ -914,7 +914,7 @@ QStringList KFileMetaInfoProvider::preferredGroups( const QString& mimeType ) co
 
     if ( !service || !service->isValid() )
     {
-        kdDebug(7033) << "no valid service found\n";
+//        kdDebug(7033) << "no valid service found\n";
         return QStringList();
     }
     return service->property("PreferredGroups").toStringList();
@@ -1097,7 +1097,7 @@ QStringList KFileMetaInfoGroup::keys() const
     for (it = d->items.begin(); it!=d->items.end(); ++it)
     {
         list.append(it.data().key());
-        kdDebug(7033) << "Item " << it.data().key() << endl;
+//        kdDebug(7033) << "Item " << it.data().key() << endl;
     }
     return list;
 }
@@ -1165,8 +1165,8 @@ void KFileMetaInfoGroup::deref()
     // null is 0L when it hasn't been initialized and d is never 0L.
     if ((d != Data::null) && d->deref())
     {
-        kdDebug(7033) << "metainfo group " << d->name
-                      << " is finally deleted\n";
+//        kdDebug(7033) << "metainfo group " << d->name
+//                      << " is finally deleted\n";
         delete d;
     }
 
@@ -1388,7 +1388,7 @@ KFileMimeTypeInfo::ItemInfo* KFileMimeTypeInfo::GroupInfo::addItemInfo(
                   const QString& key, const QString& translatedKey,
                   QVariant::Type type)
 {
-    kdDebug(7034) << key << "(" << translatedKey << ") -> " << QVariant::typeToName(type) << endl;
+//    kdDebug(7034) << key << "(" << translatedKey << ") -> " << QVariant::typeToName(type) << endl;
 
     ItemInfo* item = new ItemInfo(key, translatedKey, type);
     m_supportedKeys.append(key);
