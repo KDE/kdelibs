@@ -32,6 +32,7 @@
 #include <qlineedit.h>
 #include <kcompletion.h>
 
+class KCompletionBox;
 class KURL;
 
 /**
@@ -238,6 +239,14 @@ public:
     * @reimplemented
     */
     virtual bool eventFilter( QObject *, QEvent * );
+
+    /**
+     * @returns the completion-box, that is used in completion mode
+     * @ref KGlobalSettings::CompletionPopup.
+     * This method will create a completion-box by calling
+     * @ref makeCompletionBox, if none is there, yet.
+     */
+    KCompletionBox * completionBox();
 
 signals:
 

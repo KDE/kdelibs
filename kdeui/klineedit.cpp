@@ -403,6 +403,9 @@ void KLineEdit::setURL( const KURL& url )
 
 void KLineEdit::makeCompletionBox()
 {
+    if ( d->completionBox )
+	return;
+    
     d->completionBox = new KCompletionBox( this, "completion box" );
     connect( d->completionBox, SIGNAL( activated( const QString& )),
 	     SLOT( setText( const QString& )));
@@ -430,4 +433,10 @@ void KLineEdit::setCompletedItems( const QStringList& items )
 	if ( !items.isEmpty() ) // fallback
 	    setCompletedText( items.first() );
     }
+}
+
+KCompletionBox * KLineEdit::completionBox()
+{
+    makeCompletionBox();
+    return d->completionBox;
 }

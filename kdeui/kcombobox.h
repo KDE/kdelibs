@@ -29,6 +29,7 @@
 
 class QListBoxItem;
 class QLineEdit;
+class KCompletionBox;
 class KURL;
 
 /**
@@ -301,6 +302,14 @@ public:
     * Re-implemented from @ref KCompletionBase for internal reasons.
     */
     virtual void setCompletionMode( KGlobalSettings::Completion mode );
+
+    /**
+     * @returns the completion-box, that is used in completion mode
+     * @ref KGlobalSettings::CompletionPopup.
+     * This method will create a completion-box by calling 
+     * @ref makeCompletionBox, if none is there, yet.
+     */
+    KCompletionBox * completionBox();
 
 signals:
     /**

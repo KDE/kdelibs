@@ -499,9 +499,14 @@ void KComboBox::changeURL( const QPixmap& pixmap, const KURL& url, int index )
 
 void KComboBox::makeCompletionBox()
 {
+    if ( d->completionBox )
+	return;
+    
     d->completionBox = new KCompletionBox( this, "completion box" );
     connect( d->completionBox, SIGNAL( activated( const QString& )),
 	     SLOT( setEditText( const QString& )));
+    connect( d->completionBox, SIGNAL( activated( const QString& )),
+	     SIGNAL( activated( const QString & )));
 }
 
 // FIXME: make pure virtual in KCompletionBase!
@@ -526,6 +531,12 @@ void KComboBox::setCompletedItems( const QStringList& items )
 	if ( !items.isEmpty() ) // fallback
 	    setCompletedText( items.first() );
     }
+}
+
+KCompletionBox * KComboBox::completionBox()
+{
+    makeCompletionBox();
+    return d->completionBox;
 }
 
 
