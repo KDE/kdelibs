@@ -255,6 +255,7 @@ void KDirOperator::updateSelectionDependentActions()
 {
     bool hasSelection = m_fileView && m_fileView->selectedItems() &&
                         !m_fileView->selectedItems()->isEmpty();
+    myActionCollection->action( "trash" )->setEnabled( hasSelection );
     myActionCollection->action( "delete" )->setEnabled( hasSelection );
     myActionCollection->action( "properties" )->setEnabled( hasSelection );
 }
@@ -477,7 +478,7 @@ KIO::DeleteJob * KDirOperator::del( const KFileItemList& items,
                 i18n("translators: not called for n == 1", "Do you really want to delete these %n items?", items.count() ),
                                                     files,
                                                     i18n("Delete Files"),
-                                                    KGuiItem(i18n("Delete"), "editdelete"), "AskForDelete" );
+                                                    KStdGuiItem::del(), "AskForDelete" );
         doIt = (ret == KMessageBox::Continue);
     }
 
@@ -499,6 +500,69 @@ void KDirOperator::deleteSelected()
     const KFileItemList *list = m_fileView->selectedItems();
     if ( list )
         del( *list );
+}
+
+KIO::CopyJob * KDirOperator::trash( const KFileItemList& items,
+                                    QWidget *parent,
+                                    bool ask, bool showProgress )
+{
+    if ( items.isEmpty() ) {
+        KMessageBox::information( parent,
+                                i18n("You did not select a file to trash."),
+                                i18n("Nothing to Trash") );
+        return 0L;
+    }
+
+    KURL::List urls;
+    QStringList files;
+    KFileItemListIterator it( items );
+
+    for ( ; it.current(); ++it ) {
+        KURL url = (*it)->url();
+        urls.append( url );
+        if ( url.isLocalFile() )
+            files.append( url.path() );
+        else
+            files.append( url.prettyURL() );
+    }
+
+    bool doIt = !ask;
+    if ( ask ) {
+        int ret;
+        if ( items.count() == 1 ) {
+            ret = KMessageBox::warningContinueCancel( parent,
+                i18n( "<qt>Do you really want to trash\n <b>'%1'</b>?</qt>" )
+                .arg( files.first() ),
+                                                      i18n("Trash File"),
+                                                      KGuiItem("&Trash","edittrash"), "AskForTrash" );
+        }
+        else
+            ret = KMessageBox::warningContinueCancelList( parent,
+                i18n("translators: not called for n == 1", "Do you really want to trash these %n items?", items.count() ),
+                                                    files,
+                                                    i18n("Trash Files"),
+                                                    KGuiItem("&Trash","edittrash"), "AskForTrash" );
+        doIt = (ret == KMessageBox::Continue);
+    }
+
+    if ( doIt ) {
+        KIO::CopyJob *job = KIO::trash( urls, showProgress );
+        job->setWindow (topLevelWidget());
+        job->setAutoErrorHandlingEnabled( true, parent );
+        return job;
+    }
+
+    return 0L;
+}
+
+void KDirOperator::trashSelected()
+{
+    if ( !m_fileView )
+        return;
+
+    const KFileItemList *list = m_fileView->selectedItems();
+    if ( list )
+        trash( *list, this );
 }
 
 void KDirOperator::close()
@@ -1188,7 +1252,9 @@ void KDirOperator::setupActions()
                                                    "viewActionSeparator" );
     mkdirAction = new KAction( i18n("New Folder..."), 0,
                                  this, SLOT( mkdir() ), myActionCollection, "mkdir" );
-    new KAction( i18n( "Delete" ), "editdelete", Key_Delete, this,
+    new KAction( i18n( "Move to Trash" ), "edittrash", Key_Delete, this,
+                  SLOT( trashSelected() ), myActionCollection, "trash" );
+    new KAction( i18n( "Delete" ), "editdelete", SHIFT+Key_Delete, this,
                   SLOT( deleteSelected() ), myActionCollection, "delete" );
     mkdirAction->setIcon( QString::fromLatin1("folder_new") );
     reloadAction->setText( i18n("Reload") );
@@ -1300,6 +1366,7 @@ void KDirOperator::setupMenu(int whichActions)
     if (whichActions & FileActions)
     {
         actionMenu->insert( mkdirAction );
+        actionMenu->insert( myActionCollection->action( "trash" ) );
         actionMenu->insert( myActionCollection->action( "delete" ) );
         actionMenu->insert( actionSeparator );
     }

@@ -63,7 +63,7 @@ namespace KIO {
  *
  * Currently, those classes don't support Drag&Drop out of the box -- there
  * you have to use your own view-classes. You can use some DnD-aware views
- * from Björn Sahlström <bjorn@kbear.org> until they will be integrated
+ * from Bjï¿½n Sahlstrï¿½ <bjorn@kbear.org> until they will be integrated
  * into this library. See http://devel-home.kde.org/~pfeiffer/DnD-classes.tar.gz
  *
  * This widget is the one used in the KFileDialog.
@@ -494,6 +494,7 @@ class KIO_EXPORT KDirOperator : public QWidget
     /**
      * Starts and returns a KIO::DeleteJob to delete the given @p items.
      *
+     * @param items the list of items to be deleted
      * @param parent the parent widget used for the confirmation dialog
      * @param ask specifies whether a confirmation dialog should be shown
      * @param showProgress passed to the DeleteJob to show a progress dialog
@@ -559,6 +560,19 @@ class KIO_EXPORT KDirOperator : public QWidget
      // ### KDE4: make virtual
     void setDropOptions(int options);
 
+    /**
+     * Starts and returns a KIO::CopyJob to trash the given @p items.
+     *
+     * @param items the list of items to be trashed
+     * @param parent the parent widget used for the confirmation dialog
+     * @param ask specifies whether a confirmation dialog should be shown
+     * @param showProgress passed to the CopyJob to show a progress dialog
+     * @since 3.4
+     */
+     // ### KDE4: make virtual
+    KIO::CopyJob * trash( const KFileItemList& items, QWidget *parent,
+                       bool ask = true, bool showProgress = true );
+    
 protected:
     /**
      * A view factory for creating predefined fileviews. Called internally by setView
@@ -688,6 +702,13 @@ public slots:
      * Tries to complete the given string (only completes directores).
      */
     QString makeDirCompletion(const QString&);
+
+    /**
+     * Trashes the currently selected files/directories.
+     * @since 3.4
+     */
+	// ### KDE4: make virtual
+    void trashSelected();
 
 protected slots:
     /**
