@@ -5,7 +5,7 @@ libkjava_la_SOURCES = kjavaapplet.cpp kjavaappletcontext.cpp \
 	kjavaappletserver.cpp kjavaappletwidget.cpp kjavaprocess.cpp \
 	kjavadownloader.cpp 
 
-noinst_HEADERS = javaembed.h kjavaappletwidget.h kqeventutil.h kxeventutil.h \
+noinst_HEADERS = kjavaappletwidget.h kqeventutil.h kxeventutil.h \
                  kjavaapplet.h kjavaappletcontext.h \
                  kjavaappletserver.h kjavaprocess.h kjavaappletviewer.h
 
