@@ -151,7 +151,8 @@ class KABC_EXPORT AddresseeList : public QValueList<Addressee>
     /**
      * Sorts this list by a specific sorting mode.
      * @param mode    pointer to the sorting mode object to be sorted by
-     */
+     * @since 3.4
+    */
     void sortByMode( SortMode *mode = 0 );
 
     /**
