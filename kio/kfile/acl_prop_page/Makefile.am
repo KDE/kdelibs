@@ -14,7 +14,7 @@ if USE_POSIX_ACL
 ACL_MODULE = libkacl_prop_page.la
 endif
 
-libkacl_prop_page_la_LIBADD = $(LIB_KFILE) $(LIB_KDEUI) $(LIB_QT) $(LIBPOSIX1E)
+libkacl_prop_page_la_LIBADD = $(top_builddir)/kio/kfile/libkfile.la $(LIB_KDEUI) $(LIB_QT) $(LIBPOSIX1E)
 libkacl_prop_page_la_SOURCES = acl.cpp kaclmanipulation.cpp
 libkacl_prop_page_la_METASOURCES = AUTO
 

@@ -5,8 +5,13 @@ AC_CHECK_FUNC(acl_get_tag_type, [ACL_FUNC=1], [
 			ACL_FUNC="1"
 			LIBPOSIX1E="-lposix1e"
 		], [
-			ACL_FUNC=""
-			LIBPOSIX1E=""
+                       AC_CHECK_LIB(acl, acl_get_tag_type, [
+                               ACL_FUNC="1"
+                               LIBPOSIX1E="-lacl"
+                       ], [
+                               ACL_FUNC=""
+                               LIBPOSIX1E=""
+                       ])
 		])
 	])
 AC_SUBST(LIBPOSIX1E)
