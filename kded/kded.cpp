@@ -583,6 +583,9 @@ int main(int argc, char *argv[])
 
      // WABA: Make sure not to enable session management.
      putenv(strdup("SESSION_MANAGER="));
+     
+     // Parse command line before checking DCOP
+     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
      // Check DCOP communication.
      {
@@ -597,8 +600,6 @@ int main(int argc, char *argv[])
 
      KInstance *instance = new KInstance(&aboutData);
      KConfig *config = instance->config(); // Enable translations.
-
-     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
      if (args->isSet("check"))
      {
