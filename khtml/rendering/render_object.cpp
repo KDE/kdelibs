@@ -443,14 +443,14 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2, int w
         switch(s) {
         case BSTop:
             if(width) {
-//                if(sb1) {
+                if(sb1) {
                     tri.setPoints(3, x1, y1, x1+width, y1, x1+width, y1+width);
                     p->drawPolygon(tri);
-//                }
-//                if(sb2) {
+                }
+                if(sb2) {
                     tri.setPoints(3, x2-width, y2, x2, y2, x2-width, y2+width);
                     p->drawPolygon(tri);
-//                }
+                }
             }
             p->drawRect(x1+(sb1 ? width : 0), y1, x2-x1-(sb1 ? width : 0)-(sb2 ? width : 0), width);
             break;
@@ -526,12 +526,12 @@ void RenderObject::printBorder(QPainter *p, int _tx, int _ty, int w, int h, cons
                    style->borderRightStyle(), render_t && tc != rc, render_b && bc != rc);
 
     if(render_b)
-        drawBorder(p, _tx, _ty, _tx, bottom, style->borderLeftWidth(), BSLeft, bc,
-                   style->borderLeftStyle(), render_l && lc != bc, render_r && rc != bc);
+        drawBorder(p, _tx, bottom, right, bottom, style->borderBottomWidth(), BSBottom, bc,
+                   style->borderBottomStyle(), render_l && lc != bc, render_r && rc != bc);
 
     if(render_l)
-        drawBorder(p, _tx, bottom, right, bottom, style->borderBottomWidth(), BSBottom, lc,
-                   style->borderBottomStyle(), render_t && tc != lc, render_b && bc != lc);
+        drawBorder(p, _tx, _ty, _tx, bottom, style->borderLeftWidth(), BSLeft, lc,
+                   style->borderLeftStyle(), render_t && tc != lc, render_b && bc != lc);
 
     if(render_t)
         drawBorder(p, _tx, _ty, right, _ty, style->borderTopWidth(), BSTop, tc,
