@@ -134,17 +134,18 @@ static double newMoon(long n)
 
 /**
  * @internal
+ * Converts a gregorian date to a julian day.
  */
-static double getJulianDay(long day, long month, long year)
+static int getJulianDay(long day, long month, long year)
 {
   double jy, jm;
 
   if( year == 0 ) {
-    return -1.0;
+    return -1;
   }
 
   if( year == 1582 && month == 10 && day > 4 && day < 15 ) {
-    return -1.0;
+    return -1;
   }
 
   if( month > 2 )
@@ -171,11 +172,12 @@ static double getJulianDay(long day, long month, long year)
     intgr += (long)(2 - ja + (long)(0.25 * ja));
   }
 
-  return (double) intgr;
+  return intgr;
 }
 
 /*
- * compute general hijri date structure from gregorian date
+ * @internal
+ * Compute general hijri date structure from gregorian date
  */
 static SDATE * gregorianToHijri(long day, long month, long year)
 {
@@ -627,14 +629,11 @@ int KCalendarSystemHijri::dayOfYear(const QDate & date) const
 }
 
 // From Calendrical
-static int islamicLeapYear(int year)
+static bool islamicLeapYear(int year)
 {
-// True if year is an Islamic leap year
+  // True if year is an Islamic leap year
 
-  if ((((11 * year) + 14) % 30) < 11)
-    return 1;
-  else
-    return 0;
+  return ((((11 * year) + 14) % 30) < 11);
 }
 
 int KCalendarSystemHijri::daysInMonth(const QDate& date) const
