@@ -158,7 +158,8 @@ static void kDebugBackend( unsigned short nLevel, unsigned short nArea, const ch
     if ( nArea > 0)
       aAreaName = getDescrFromNum(nArea);
     if ((nArea == 0) || aAreaName.isEmpty())
-      aAreaName = KGlobal::instance()->instanceName();
+      if ( KGlobal::_instance )
+        aAreaName = KGlobal::instance()->instanceName();
   }
 
   static short nOutput = 2;
