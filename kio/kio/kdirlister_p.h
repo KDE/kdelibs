@@ -232,10 +232,12 @@ private:
 
     void decAutoUpdate()
     {
-      if ( url.isLocalFile() && --autoUpdates <= 0 )
+      if ( url.isLocalFile() )
       {
-        autoUpdates = 0;
-        kdirwatch->removeDir( url.path() );
+        if ( --autoUpdates == 0 )
+          kdirwatch->removeDir( url.path() );
+        else if ( autoUpdates < 0 )
+          autoUpdates = 0;
       }
     }
 
