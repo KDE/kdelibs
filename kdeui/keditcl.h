@@ -168,7 +168,7 @@ private:
  * @author Bernd Johannes Wuebben <wuebben@math.cornell.edu>, Waldo Bastian <bastian@kde.org>
  **/
 
-class KEdit : public QMultiLineEdit
+class KDE_DEPRECATED KEdit : public QMultiLineEdit
 {
     Q_OBJECT
 

@@ -23,6 +23,7 @@
 #include <qpopupmenu.h>
 #include <kpixmapeffect.h>
 #include <kpixmap.h>
+#include <kdemacros.h>
 
 /**
  * Title widget for use in KPopupMenu.
@@ -50,14 +51,14 @@ public:
      */
     KPopupTitle(KPixmapEffect::GradientType gradient, const QColor &color,
                 const QColor &textColor, QWidget *parent=0,
-                const char *name=0);
+                const char *name=0) KDE_DEPRECATED;
     /**
      * @deprecated
      * Constructs a title widget with the specified pixmap and colors.
      */
     KPopupTitle(const KPixmap &background, const QColor &color,
                 const QColor &textColor, QWidget *parent=0,
-                const char *name=0);
+                const char *name=0) KDE_DEPRECATED;
     /**
      * Sets the title string and optional icon for the title widget.
      *
@@ -188,14 +189,14 @@ public:
      * Obsolete method provided for backwards compatibility only. Use the
      * normal constructor and insertTitle instead.
      */
-    KPopupMenu(const QString &title, QWidget *parent=0, const char *name=0);
+    KPopupMenu(const QString &title, QWidget *parent=0, const char *name=0) KDE_DEPRECATED;
 
     /**
      * @deprecated
      * Obsolete method provided for backwards compatibility only. Use
      * insertTitle and changeTitle instead.
      */
-    void setTitle(const QString &title);
+    void setTitle(const QString &title) KDE_DEPRECATED;
 
     /**
      * Returns the context menu associated with this menu

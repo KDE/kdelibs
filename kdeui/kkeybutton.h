@@ -22,6 +22,7 @@
 
 #include <qpushbutton.h>
 #include <kshortcut.h>
+#include <kdemacros.h>
 
 /**
  * A push button that looks like a keyboard key.
@@ -53,7 +54,7 @@ class KKeyButton: public QPushButton
 	virtual ~KKeyButton();
 
 	/** @deprecated */
-	void setShortcut( const KShortcut& cut );
+	void setShortcut( const KShortcut& cut ) KDE_DEPRECATED;
 	/// @since 3.1
 	void setShortcut( const KShortcut& cut, bool bQtShortcut );
 	const KShortcut& shortcut() const

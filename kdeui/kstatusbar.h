@@ -24,6 +24,7 @@
 #include <qstatusbar.h>
 #include <qintdict.h>
 #include <qlabel.h> 
+#include <kdemacros.h>
 
 class KStatusBar;
 

@@ -24,6 +24,7 @@
 #define _KLED_H_
 
 #include <qwidget.h>
+#include <kdemacros.h>
 
 class QColor;
 /**
@@ -183,7 +184,7 @@ public:
    * @short Toggles LED on->off / off->on.
    * @deprecated, use #toggle() instead.
    */
-  void toggleState();
+  void toggleState() KDE_DEPRECATED;
 
   /**
    * Set the color of the widget.

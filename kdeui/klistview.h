@@ -23,6 +23,7 @@
 #include <qlistview.h>
 
 #include <qptrlist.h>
+#include <kdemacros.h>
 
 class QDragObject;
 class KConfig;
@@ -159,7 +160,7 @@ public:
    *
    * @deprecated
    */
-  void moveItem(QListViewItem *item, QListViewItem *parent, QListViewItem *after);
+  void moveItem(QListViewItem *item, QListViewItem *parent, QListViewItem *after) KDE_DEPRECATED;
 
   /**
    * @return the last item (not child!) of this listview.
@@ -239,7 +240,7 @@ public:
    * Do not use.
    * @deprecated
    */
-  bool createChildren() const;
+  bool createChildren() const KDE_DEPRECATED;
 
   /**
    * @return true if drawing of the drop-highlighter has been enabled.  False by default.
@@ -282,7 +283,7 @@ public:
    * @deprecated
    * @see setFullWidth()
    */
-  void setFullWidth();
+  void setFullWidth() KDE_DEPRECATED;
 
   /**
    * Let the last column fit exactly all the available width.
@@ -622,7 +623,7 @@ public slots:
    * Do not use.
    * @deprecated
    */
-  virtual void setCreateChildren(bool b);
+  virtual void setCreateChildren(bool b) KDE_DEPRECATED;
 
   /**
    * Set the selection mode.

@@ -24,6 +24,7 @@
 #include <qptrlist.h>
 #include <qstring.h>
 #include <qobject.h>
+#include <kdemacros.h>
 
 class KAction;
 class KActionCollection;
@@ -75,7 +76,7 @@ protected:
  * This class mostly exists for compatibility with KDE-2.x
  * It is more memory-efficient to use KCommand and to implement the name() method.
  */
-class KNamedCommand : public KCommand
+class KDE_DEPRECATED KNamedCommand : public KCommand
 {
 protected:
     /**

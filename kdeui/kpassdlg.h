@@ -57,7 +57,7 @@ public:
      * @deprecated, may be removed in KDE 4.0
      * Creates a password input widget using echoMode as "echo mode".
      */
-    KPasswordEdit(QWidget *parent, const char *name, int echoMode);
+    KPasswordEdit(QWidget *parent, const char *name, int echoMode) KDE_DEPRECATED;
     /**
      * Destructs the widget.
      */
@@ -172,7 +172,7 @@ public:
      * possibility to specify a parent. May be removed in KDE 4.0
      */
     KPasswordDialog(int type, QString prompt, bool enableKeep=false,
-	    int extraBttn=0);
+	    int extraBttn=0) KDE_DEPRECATED;
     /**
      * Destructs the password dialog.
      */

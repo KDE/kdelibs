@@ -24,6 +24,7 @@
 
 #include <qdragobject.h>
 #include <qcolor.h>
+#include <kdemacros.h>
 
 class KColorDragPrivate;
 /**
@@ -64,7 +65,7 @@ public:
     /**
      * @deprecated This is equivalent with "new KColorDrag(color, dragsource)".
      */
-    static KColorDrag* makeDrag( const QColor&,QWidget *dragsource);
+    static KColorDrag* makeDrag( const QColor&,QWidget *dragsource) KDE_DEPRECATED;
 
 private:
      QColor m_color; // unused

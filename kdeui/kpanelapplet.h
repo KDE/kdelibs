@@ -28,6 +28,7 @@ class KConfig;
 class QPopupMenu;
 
 #include <qframe.h>
+#include <kdemacros.h>
 
 /**
  * Implement a panel applet.
@@ -331,7 +332,7 @@ protected:
      * @deprecated Reimplement positionChange instead.
      **/
     // FIXME: Remove for KDE 4
-    virtual void orientationChange( Orientation /* orientation*/) {}
+    virtual KDE_DEPRECATED void orientationChange( Orientation /* orientation*/) {}
 
     /**
      * You may need this if you want to popup menus at the right position.
@@ -341,7 +342,7 @@ protected:
      * @deprecated Use position() instead.
      **/
     // FIXME: Remove for KDE 4
-    Direction popupDirection();
+    Direction popupDirection() KDE_DEPRECATED;
 
     /**
      * The popup direction changed to @p direction. Reimplement this
@@ -350,7 +351,7 @@ protected:
      * @deprecated Reimplement positionChange instead.
      **/
     // FIXME: Remove for KDE 4
-    virtual void popupDirectionChange( Direction /*direction*/ ) {}
+    virtual KDE_DEPRECATED void popupDirectionChange( Direction /*direction*/ ) {}
 
 private:
     Type         _type;

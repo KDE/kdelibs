@@ -527,7 +527,7 @@ private:
 /**
  * @deprecated Use KSelectAction instead.
  */
-class KListAction : public KSelectAction
+class KDE_DEPRECATED KListAction : public KSelectAction
 {
     Q_OBJECT
 public:

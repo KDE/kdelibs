@@ -20,6 +20,7 @@
 
 #include <qlabel.h>
 #include "ksystemtray.h"
+#include <kdemacros.h>
 
 #ifndef KDE_NO_COMPAT
 /**
@@ -27,7 +28,7 @@
  * This class is obsolete, it is provided for compatibility only.
  * Use KSystemTray instead.
  */
-class KDockWindow : public KSystemTray
+class KDE_DEPRECATED KDockWindow : public KSystemTray
 {
     Q_OBJECT
 public:

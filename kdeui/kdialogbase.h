@@ -28,6 +28,7 @@
 #include <kguiitem.h>
 #include <kstdguiitem.h>
 #include <qptrlist.h>
+#include <kdemacros.h>
 
 class QPushButton;
 class KSeparator;
@@ -1074,7 +1075,7 @@ class KDialogBase : public KDialog
      * @deprecated
      * Use backgroundTile() instead.
      */
-    static const QPixmap *getBackgroundTile();
+    static const QPixmap *getBackgroundTile() KDE_DEPRECATED;
 
     /**
      * Sets the background tile.
@@ -1103,7 +1104,7 @@ class KDialogBase : public KDialog
      * The results are differences in pixels from the
      * dialogs corners.
      */
-    void  getBorderWidths( int& ulx, int& uly, int& lrx, int& lry ) const;
+    void  getBorderWidths( int& ulx, int& uly, int& lrx, int& lry ) const KDE_DEPRECATED;
 
     /**
      * @deprecated
@@ -1116,7 +1117,7 @@ class KDialogBase : public KDialog
      * If you need the "overhead" the dialog needs for its elements,
      * use getBorderWidths().
      */
-    QRect getContentsRect() const;
+    QRect getContentsRect() const KDE_DEPRECATED;
 
     /**
      * Calculate the size hint for the dialog.
@@ -1341,7 +1342,7 @@ class KDialogBase : public KDialog
      * Do not use this signal. Is is kept for compatibility reasons.
      * @deprecated Use applyClicked() instead.
      */
-    void apply();
+    void apply() KDE_DEPRECATED;
 
     /**
      * The background tile has changed.
@@ -1485,7 +1486,7 @@ class KDialogBase : public KDialog
      * Do not use this slot. Is is kept for compatibility reasons.
      * Activated when the Apply button has been clicked
      */
-    virtual void applyPressed();
+    virtual void applyPressed() KDE_DEPRECATED;
 
     /**
      * Updates the margins and spacings.

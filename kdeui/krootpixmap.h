@@ -13,6 +13,7 @@
 
 #include <qobject.h>
 #include <qcolor.h>
+#include <kdemacros.h>
 
 #ifndef Q_WS_QWS //FIXME
 
@@ -95,7 +96,7 @@ public:
      * Deprecated, use isAvailable() instead.
      * @deprecated
      */
-    bool checkAvailable(bool) { return isAvailable(); }
+    KDE_DEPRECATED bool checkAvailable(bool) { return isAvailable(); }
 #endif
 
     /** @since 3.2

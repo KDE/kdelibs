@@ -28,6 +28,7 @@
 #include <qmainwindow.h>
 #include <qmetaobject.h>
 #include <ktoolbar.h>
+#include <kdemacros.h>
 
 class KPopupMenu;
 class KXMLGUIFactory;
@@ -544,7 +545,7 @@ public:
      * 
      */
     // KDE4 to be removed
-    QSize sizeForCentralWidgetSize(QSize size);
+    QSize sizeForCentralWidgetSize(QSize size) KDE_DEPRECATED;
 
 public slots:
     /**

@@ -23,6 +23,7 @@
 #include <qobject.h>
 #include <qstringlist.h>
 #include <qstring.h>
+#include <kdemacros.h>
 
 class QTextCodec;
 class KProcIO;
@@ -308,7 +309,7 @@ public:
    * Your application's GUI will still be updated, however.
    *
    */
-  static int modalCheck( QString& text );
+  static int modalCheck( QString& text ) KDE_DEPRECATED;
 
   /**
    * Performs a synchronous spellcheck.

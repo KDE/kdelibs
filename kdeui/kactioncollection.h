@@ -126,9 +126,9 @@ public:
   //bool ownsKAccel() const;
 
   /** @deprecated  Deprecated because of ambiguous name.  Use kaccel() */
-  virtual KAccel* accel();
+  virtual KAccel* accel() KDE_DEPRECATED;
   /** @deprecated  Deprecated because of ambiguous name.  Use kaccel() */
-  virtual const KAccel* accel() const;
+  virtual const KAccel* accel() const KDE_DEPRECATED;
 
   /** Returns the KAccel object of the most recently set widget. */
   KAccel* kaccel();
@@ -295,14 +295,14 @@ public:
    * @deprecated Removes an action from the collection and deletes it.
    * @param action The KAction to remove.
    */
-  void remove( KAction* action );
+  void remove( KAction* action ) KDE_DEPRECATED;
 
   /**
    * @deprecated Removes an action from the collection.
    * @return NULL if not found else returns action.
    * @param action the KAction to remove.
    */
-  KAction* take( KAction* action );
+  KAction* take( KAction* action ) KDE_DEPRECATED;
 
   KActionCollection operator+ ( const KActionCollection& ) const;
   KActionCollection& operator= ( const KActionCollection& );

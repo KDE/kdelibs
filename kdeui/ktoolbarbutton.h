@@ -100,7 +100,7 @@ public:
    * @param pixmap The active pixmap
    */
   // this one is from QButton, so #ifdef-ing it out doesn't break BC
-  virtual void setPixmap(const QPixmap &pixmap);
+  virtual void setPixmap(const QPixmap &pixmap) KDE_DEPRECATED;
 
   /**
    * @deprecated
@@ -109,7 +109,7 @@ public:
    *
    * @param pixmap The pixmap to use as the default (normal) one
    */
-  void setDefaultPixmap(const QPixmap& pixmap);
+  void setDefaultPixmap(const QPixmap& pixmap) KDE_DEPRECATED;
 
   /**
    * @deprecated
@@ -118,7 +118,7 @@ public:
    *
    * @param pixmap The pixmap to use when disabled
    */
-  void setDisabledPixmap(const QPixmap& pixmap);
+  void setDisabledPixmap(const QPixmap& pixmap) KDE_DEPRECATED;
 #endif
 
   /**
@@ -161,7 +161,7 @@ public:
    * @param generate If true, then the other icons are automagically
    *                 generated from this one
    */
-  void setIcon(const QString &icon, bool generate ) { Q_UNUSED(generate); setIcon( icon ); }
+  KDE_DEPRECATED void setIcon(const QString &icon, bool generate ) { Q_UNUSED(generate); setIcon( icon ); }
 
   /**
    * @deprecated
@@ -170,7 +170,7 @@ public:
    *
    * @param icon The icon to use as the default (normal) one
    */
-  void setDefaultIcon(const QString& icon);
+  void setDefaultIcon(const QString& icon) KDE_DEPRECATED;
 
   /**
    * @deprecated
@@ -179,7 +179,7 @@ public:
    *
    * @param icon The icon to use when disabled
    */
-  void setDisabledIcon(const QString& icon);
+  void setDisabledIcon(const QString& icon) KDE_DEPRECATED;
 #endif
 
   /**

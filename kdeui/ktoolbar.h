@@ -726,7 +726,7 @@ public:
    * Enable or disable moving of toolbar.
    * @deprecated use setMovingEnabled(bool) instead.
    */
-    void enableMoving(bool flag = true);
+    void enableMoving(bool flag = true) KDE_DEPRECATED;
 
     /**
    * Set position of toolbar.
@@ -748,13 +748,13 @@ public:
    * @see BarStatus
    * @deprecated
    */
-    bool enable(BarStatus stat);
+    bool enable(BarStatus stat) KDE_DEPRECATED;
 
   /**
    * Use setMaximumHeight() instead.
    * @deprecated
    */
-    void setMaxHeight (int h);  // Set max height for vertical toolbars
+    void setMaxHeight (int h) KDE_DEPRECATED;  // Set max height for vertical toolbars
 
   /**
    * Returns the value set with setMaxHeight().
@@ -762,14 +762,14 @@ public:
    * Use maximumHeight() instead.
    * @return the value set with setMaxHeight().
    */
-    int maxHeight();
+    int maxHeight() KDE_DEPRECATED;
 
   /**
    * Use setMaximumWidth() instead.
    * Set maximal width of horizontal (top or bottom) toolbar.
    * @deprecated
    */
-    void setMaxWidth (int dw);
+    void setMaxWidth (int dw) KDE_DEPRECATED;
 
   /**
    * Returns the value set with setMaxWidth().
@@ -777,7 +777,7 @@ public:
    * @return the value set with setMaxWidth().
    * @deprecated
    */
-    int maxWidth();
+    int maxWidth() KDE_DEPRECATED;
 
   /**
    * Set title for toolbar when it floats.
@@ -791,7 +791,7 @@ public:
    * Use setMovingEnabled(bool) instead.
    * @deprecated
    */
-    void enableFloating (bool flag);
+    void enableFloating (bool flag) KDE_DEPRECATED;
 
   /**
    * Set the kind of painting for buttons.

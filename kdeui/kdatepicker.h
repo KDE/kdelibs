@@ -21,6 +21,7 @@
 #define KDATEPICKER_H
 #include <qdatetime.h>
 #include <qframe.h>
+#include <kdemacros.h>
 
 class QLineEdit;
 class QToolButton;
@@ -102,7 +103,7 @@ public:
    * Returns the selected date.
    * @deprecated
    **/
-  const QDate& getDate() const;
+  const QDate& getDate() const KDE_DEPRECATED;
 
   /**
    * @returns the selected date.
@@ -187,7 +188,7 @@ protected slots:
    * @since 3.1
    * @deprecated in 3.2
    */
-  void selectWeekClicked();
+  void selectWeekClicked() KDE_DEPRECATED;
   /**
    * @since 3.1
    */

@@ -318,19 +318,19 @@ public:
 	 * @deprecated Obsolete.
 	 * Please use KKeyDialog::configure instead
 	 */
-	static int configureKeys( KAccel* keys, bool save_settings = true, QWidget* parent = 0 )
+	static KDE_DEPRECATED int configureKeys( KAccel* keys, bool save_settings = true, QWidget* parent = 0 )
 		{ return configure( keys, parent, save_settings ); }
 	/**
 	 * @deprecated Obsolete.
 	 * Please use KKeyDialog::configure instead
 	 */
-	static int configureKeys( KGlobalAccel* keys, bool save_settings = true, QWidget* parent = 0 )
+	static KDE_DEPRECATED int configureKeys( KGlobalAccel* keys, bool save_settings = true, QWidget* parent = 0 )
 		{ return configure( keys, parent, save_settings ); }
 	/**
 	 * @deprecated Obsolete.
 	 * Please use KKeyDialog::configure instead
 	 */
-	static int configureKeys( KActionCollection* coll, const QString& /*xmlfile*/,
+	static KDE_DEPRECATED int configureKeys( KActionCollection* coll, const QString& /*xmlfile*/,
 		bool save_settings = true, QWidget* parent = 0 )
 		{ return configure( coll, parent, save_settings ); }
 

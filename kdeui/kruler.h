@@ -23,6 +23,7 @@
 
 #include <qframe.h>
 #include <qrangecontrol.h>
+#include <kdemacros.h>
 
 /**
  * A ruler widget.
@@ -275,19 +276,19 @@ public:
    * @deprecated
    * This method has no effect other than an update. Do not use.
    **/
-  void setValuePerLittleMark(int);
+  void setValuePerLittleMark(int) KDE_DEPRECATED;
 
   /**
    * @deprecated
    * This method has no effect other than an update. Do not use.
    **/
-  void setValuePerMediumMark(int);
+  void setValuePerMediumMark(int) KDE_DEPRECATED;
 
   /**
    * @deprecated
    * This method has no effect other than an update. Do not use.
    */
-  void setValuePerBigMark(int);
+  void setValuePerBigMark(int) KDE_DEPRECATED;
 
   /**
    * Show/hide number values of the little marks.

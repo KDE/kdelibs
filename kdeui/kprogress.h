@@ -80,7 +80,7 @@ public:
    * @see setValue()
    */
   // ### Remove this KDE 4.0
-  int value() const;
+  int value() const KDE_DEPRECATED;
 
   /**
    * Returns @p true if progress text will be displayed,
@@ -101,13 +101,13 @@ public:
    * Use setTotalSteps() instead
    */
   // ### Remove this KDE 4.0
-  void setRange(int min, int max);
+  void setRange(int min, int max) KDE_DEPRECATED;
 
   /**
    * @deprecated used totalSteps() instead
    */
   // ### Remove this KDE 4.0
-  int maxValue();
+  int maxValue() KDE_DEPRECATED;
 
 public slots:
 
@@ -236,7 +236,7 @@ class KProgressDialog : public KDialogBase
          * @deprecated
          */
         // ### Remove this KDE 4.0
-        QString labelText();
+        QString labelText() KDE_DEPRECATED;
 
         /**
          * Returns the current dialog text
@@ -259,7 +259,7 @@ class KProgressDialog : public KDialogBase
          * @deprecated
          */
         // ### Remove this KDE 4.0
-        bool allowCancel();
+        bool allowCancel() KDE_DEPRECATED;
 
         /**
          * Returns true if the dialog can be canceled, false otherwise
@@ -286,7 +286,7 @@ class KProgressDialog : public KDialogBase
          * @deprecated
          */
         // ### Remove this KDE 4.0
-        bool autoClose();
+        bool autoClose() KDE_DEPRECATED;
 
         /**
          * Returns true if the dialog will close upon completion,
@@ -307,7 +307,7 @@ class KProgressDialog : public KDialogBase
          * @deprecated
          */
         // ### Remove this KDE 4.0
-        bool autoReset();
+        bool autoReset() KDE_DEPRECATED;
 
         /**
          * Returns true if the KProgress widget will be reset
@@ -322,7 +322,7 @@ class KProgressDialog : public KDialogBase
          * @deprecated
          */
         // ### Remove this KDE 4.0
-        bool wasCancelled();
+        bool wasCancelled() KDE_DEPRECATED;
 
         /**
          * Returns true if the dialog was closed or canceled
@@ -341,7 +341,7 @@ class KProgressDialog : public KDialogBase
          * @deprecated
          */
         // ### Remove this KDE 4.0
-        QString buttonText();
+        QString buttonText() KDE_DEPRECATED;
 
         /**
          * Returns the text on the cancel button
@@ -359,7 +359,7 @@ class KProgressDialog : public KDialogBase
          * @deprecated
          */
         // ### Remove this KDE 4.0
-        int  minimumDuration();
+        int  minimumDuration() KDE_DEPRECATED;
 
         /**
          * Returns the wait duration in milliseconds

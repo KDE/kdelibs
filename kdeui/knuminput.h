@@ -29,6 +29,7 @@
 
 #include <qwidget.h>
 #include <qspinbox.h>
+#include <kdemacros.h>
 
 class QLabel;
 class QSlider;
@@ -448,7 +449,7 @@ public:
      * @param parent parent QWidget
      * @param name   internal name for this widget
      */
-    KDoubleNumInput(double value, QWidget *parent=0, const char *name=0);
+    KDoubleNumInput(double value, QWidget *parent=0, const char *name=0) KDE_DEPRECATED;
 
     /**
      * Constructor
@@ -481,7 +482,7 @@ public:
      * @param  parent parent QWidget
      * @param  name   internal name for this widget
      **/
-    KDoubleNumInput(KNumInput* below, double value, QWidget* parent=0, const char* name=0);
+    KDoubleNumInput(KNumInput* below, double value, QWidget* parent=0, const char* name=0) KDE_DEPRECATED;
 
     /**
      * Constructor

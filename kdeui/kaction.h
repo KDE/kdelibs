@@ -34,6 +34,7 @@
 #include <kshortcut.h>
 #include <kstdaction.h>
 #include <kicontheme.h>
+#include <kdemacros.h>
 
 class QMenuBar;
 class QPopupMenu;
@@ -356,7 +357,7 @@ public:
      * the KAccel configuration dialog (this is somehow deprecated since
      * there is now a KAction key configuration dialog).
      */
-    virtual void plugAccel(KAccel *accel, bool configurable = true);
+    virtual void plugAccel(KAccel *accel, bool configurable = true) KDE_DEPRECATED;
 
     /**
      * "Unplug" or remove this action from a given widget.
@@ -376,7 +377,7 @@ public:
      * @deprecated.  Complement method to plugAccel().
      * Disconnect this action from the KAccel.
      */
-    virtual void unplugAccel();
+    virtual void unplugAccel() KDE_DEPRECATED;
 
     /**
      * returns whether the action is plugged into any container widget or not.
@@ -581,7 +582,7 @@ public:
      * @deprecated.  Use shortcut().
      * Get the keyboard accelerator associated with this action.
      */
-    int accel() const;
+    int accel() const KDE_DEPRECATED;
 
     QString statusText() const
         { return toolTip(); }
@@ -590,7 +591,7 @@ public:
      * @deprecated.  Use setShortcut().
      * Sets the keyboard accelerator associated with this action.
      */
-    void setAccel( int key );
+    void setAccel( int key ) KDE_DEPRECATED;
 
     /**
      * @deprecated. Use setToolTip instead (they do the same thing now).
