@@ -22,11 +22,19 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ******************************************************************/
 
+#include <config.h>
+
+// Workaround for a bison issue:
+// bison.simple concludes from _GNU_SOURCE that stpcpy is available,
+// while GNU string.h only exposes it if __USE_GNU is set.
+#ifdef _GNU_SOURCE
+#define __USE_GNU 1
+#endif
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
 
-#include <config.h>
 #include <qstring.h>
 
 #define AMP_ENTITY "&amp;"
@@ -263,6 +271,11 @@ dcop_area_begin
 dcop_signal_area_begin
 	: T_DCOP_SIGNAL_AREA T_COLON
 	{
+	  /*
+	  A dcop signals area needs all dcop area capabilities,
+	  e.g. parsing of function parameters.
+	  */
+	  dcop_area = 1;
 	  dcop_signal_area = 1;
 	}
 
@@ -731,9 +744,9 @@ function
 	  {
               if (dcop_area) {
                  if (dcop_signal_area)
-                     $$ = $2;
+                     yyerror("DCOP signals cannot be static");
                  else
-                     yyerror("static is not allowed in dcop area!");
+                     yyerror("DCOP functions cannot be static");
               } else {
                  $$ = new QString();
               }  
