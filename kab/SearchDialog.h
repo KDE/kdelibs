@@ -38,7 +38,7 @@ protected:
   // ----------------------------------------------------------------------------
 public slots:
   void keySelected(int);
-  void valueChanged(const char*);
+  void valueChanged(const QString&);
   // ############################################################################
 };
 

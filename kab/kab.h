@@ -139,7 +139,7 @@ signals:
   void sizeChanged();
   void enableMail(bool);
   void enableBrowse(bool);
-  void setStatus(const char*);
+  void setStatus(const QString&);
   void statusChanged(int noOfEntries);
   // ############################################################################
 };

@@ -52,10 +52,10 @@ BusinessCard::BusinessCard(QWidget* parent, const char* name)
   urlHome->setLineWidth(0);
   urlHome->setMidLineWidth(0);
   // -----
-  connect(urlEmail, SIGNAL(leftClickedURL(const char*)),
-	  SLOT(mailURLClicked(const char*)));
-  connect(urlHome, SIGNAL(leftClickedURL(const char*)),
-	  SLOT(homeURLClicked(const char*)));
+  connect(urlEmail, SIGNAL(leftClickedURL(const QString&)),
+	  SLOT(mailURLClicked(const QString&)));
+  connect(urlHome, SIGNAL(leftClickedURL(const QString&)),
+	  SLOT(homeURLClicked(const QString&)));
   resize(310, 160);
   // ############################################################################
 }
@@ -324,14 +324,14 @@ void BusinessCard::useTile(bool what)
   // ############################################################################
 }
 
-void BusinessCard::mailURLClicked(const char*)
+void BusinessCard::mailURLClicked(const QString&)
 {
   // ############################################################################
   emit(mailURLActivated());
   // ############################################################################
 }
 
-void BusinessCard::homeURLClicked(const char*)
+void BusinessCard::homeURLClicked(const QString&)
 {
   // ############################################################################
   emit(homeURLActivated());

@@ -49,8 +49,8 @@ public slots:
   string getBackground() { return filename; }
   void setBackground(QPixmap*);
   void setBackground(const string&); // path
-  void mailURLClicked(const char*);
-  void homeURLClicked(const char*);
+  void mailURLClicked(const QString&);
+  void homeURLClicked(const QString&);
   // ----------------------------------------------------------------------------
 signals:
   void mailURLActivated();

@@ -58,7 +58,7 @@ void EditEntryDialog::createTabs()
   {
     QGridLayout *layout;
     int widestString=0;
-    const char* labels[]= { 
+    QString labels[]= { 
       i18n("Title:"), 
       i18n("First name:"), 	    
       i18n("Additional Name:"), 
@@ -100,7 +100,7 @@ void EditEntryDialog::createTabs()
     LG(GUARD, "EditEntryDialog::createTabs: creating address tab.\n");
     QGridLayout *layout;
     int widestString=0;
-    const char* labels[]= { 
+    QString labels[]= { 
       i18n("Address:"),
       i18n("Town/City:"),
       i18n("State:"),
@@ -142,7 +142,7 @@ void EditEntryDialog::createTabs()
   {
     QGridLayout *layout;
     int widestString=0;
-    const char* labels[]= {
+    QString labels[]= {
       i18n("Organization:"),
       i18n("Department:"),
       i18n("Sub-Department:"),
@@ -181,7 +181,7 @@ void EditEntryDialog::createTabs()
   {
     QGridLayout *layout;
     int widestString=0;
-    const char* labels[]= {
+    QString labels[]= {
       i18n("Telephone:"),
       i18n("Fax:"),
       i18n("Modem:"),

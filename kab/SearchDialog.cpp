@@ -82,8 +82,8 @@ SearchDialog::SearchDialog(QWidget* parent, const char* name)
       widget->comboSelector->insertItem(Descriptions[count]);
     }
   connect(widget->comboSelector, SIGNAL(activated(int)), SLOT(keySelected(int)));
-  connect(widget->lePattern, SIGNAL(textChanged(const char*)),
-	  SLOT(valueChanged(const char*)));
+  connect(widget->lePattern, SIGNAL(textChanged(const QString&)),
+	  SLOT(valueChanged(const QString&)));
   connect(widget, SIGNAL(sizeChanged()), SLOT(initializeGeometry()));
   keySelected(0);
   resize(minimumSize());
@@ -107,7 +107,7 @@ void SearchDialog::keySelected(int index)
   // ############################################################################
 }
 
-void SearchDialog::valueChanged(const char* value)
+void SearchDialog::valueChanged(const QString& value)
 {
   // ############################################################################
   L("SearchDialog::valueChanged: new value %s.\n", value);
