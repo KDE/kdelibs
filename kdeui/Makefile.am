@@ -10,7 +10,7 @@ CLEANFILES = *.moc
 SUFFIXES = .moc
 
 lib_LTLIBRARIES = libkdeui.la
-libkdeui_la_LDFLAGS = -version-info 0:10  -rpath $(libdir)
+libkdeui_la_LDFLAGS = -version-info 0:10:1  -rpath $(libdir)
 
 include_HEADERS = kledlamp.h kprogress.h kpanner.h kcolordlg.h kselect.h \
 		dither.h kdatepik.h kdatetbl.h \
@@ -18,23 +18,24 @@ include_HEADERS = kledlamp.h kprogress.h kpanner.h kcolordlg.h kselect.h \
 		ktreelist.h kstatusbar.h ktopwidget.h ktoolbar.h kmenubar.h \
 		kbutton.h kslider.h kseparator.h kiconloader.h	\
 		klined.h kcombo.h krestrictedline.h kintegerline.h	\
-		kspinbox.h kdocktoolbar.h
+		kspinbox.h kdocktoolbar.h kcolorbtn.h
 
 libkdeui_la_SOURCES = kledlamp.cpp kprogress.cpp kpanner.cpp kcolordlg.cpp\
 		kselect.cpp dither.cpp kdatepik.cpp kdatetbl.cpp \
 		kfontdialog.cpp kmsgbox.cpp kpopmenu.cpp ktabctl.cpp\
 		ktreelist.cpp kstatusbar.cpp ktopwidget.cpp kmenubar.cpp \
-		ktoolbar.cpp kbutton.cpp kslider.cpp kseparator.cpp	\
-		kiconloader.cpp klined.cpp kcombo.cpp krestrictedline.cpp	\
-		kintegerline.cpp kspinbox.cpp kdocktoolbar.cpp
+		ktoolbar.cpp kbutton.cpp kslider.cpp kseparator.cpp \
+		kiconloader.cpp klined.cpp kcombo.cpp krestrictedline.cpp \
+		kintegerline.cpp kspinbox.cpp kdocktoolbar.cpp \
+		kcolorbtn.cpp
 
 BUILT_SOURCES = kledlamp.moc kprogress.moc kpanner.moc kcolordlg.moc\
 		kselect.moc ktabctl.moc kdatepik.moc \
 		kmsgbox.moc kpopmenu.moc ktreelist.moc kdatetbl.moc\
 		kfontdialog.moc ktoolbar.moc kstatusbar.moc kmenubar.moc \
-		ktopwidget.moc kbutton.moc kslider.moc kiconloader.moc	\
-		klined.moc kcombo.moc krestrictedline.cpp kintegerline.cpp	\
-		kspinbox.moc kdocktoolbar.moc
+		ktopwidget.moc kbutton.moc kslider.moc kiconloader.moc \
+		klined.moc kcombo.moc krestrictedline.cpp kintegerline.cpp \
+		kspinbox.moc kdocktoolbar.moc kcolorbtn.moc
 
 kledlamp.cpp: kledlamp.moc
 kprogress.cpp: kprogress.moc
@@ -61,6 +62,7 @@ kintegerline.cpp: kintegerline.moc
 krestrictedline.cpp: krestrictedline.moc
 kspinbox.cpp: kspinbox.moc
 kdocktoolbar.cpp: kdocktoolbar.moc
+kcolorbtn.cpp: kcolorbtn.moc
 
 data_DATA = error.xpm exclamation.xpm info.xpm stopsign.xpm
 

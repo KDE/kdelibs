@@ -20,6 +20,7 @@ KPopupMenu, KMessageBox, KEdit widgets.
 
 Martin Jones <mjones@powerup.com.au>
 Bugfixes in KPixmap and KURL, KColorDialog, KSelector
+KColorButton
 
 Keith Brown <kbrown@pdq.net>
 KTreeList class
