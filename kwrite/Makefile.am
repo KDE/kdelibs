@@ -15,7 +15,7 @@ libkwrite_la_SOURCES = kwrite.cpp kwrite_view.cpp highlight.cpp \
 	kwdialog.cpp undohistory.cpp ktextprint.cpp prefdialog.cpp \
 	kwrite_keys.cpp kwrite_misc.cpp
 
-libkwrite_la_LIBADD = $(top_builddir)/kwrite/libktexteditor.la  $(top_builddir)/kspell/libkspell.la
+libkwrite_la_LIBADD = libktexteditor.la  $(top_builddir)/kspell/libkspell.la
 libkwrite_la_LDFLAGS = $(all_libraries) $(KDE_PLUGIN)
 
 METASOURCES = AUTO
