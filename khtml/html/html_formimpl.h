@@ -384,7 +384,7 @@ public:
     void blur();
     void focus();
 
-    DOMString value();
+    DOMString value() const;
     void setValue(DOMStringImpl* value);
 
     virtual bool maintainsState() { return true; }

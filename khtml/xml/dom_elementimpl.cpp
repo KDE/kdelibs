@@ -700,7 +700,7 @@ DOMString ElementImpl::openTagStartToString(bool expandurls) const
 
     return result;
 }
-DOMString ElementImpl::toString(NodeImpl *selectionStart, NodeImpl *selectionEnd, int startOffset, int endOffset, bool &found) const
+DOMString ElementImpl::selectionToString(NodeImpl *selectionStart, NodeImpl *selectionEnd, int startOffset, int endOffset, bool &found) const
 {
     DOMString result = openTagStartToString();
 
@@ -708,7 +708,7 @@ DOMString ElementImpl::toString(NodeImpl *selectionStart, NodeImpl *selectionEnd
 	result += ">";
 
 	for (NodeImpl *child = firstChild(); child != NULL; child = child->nextSibling()) {
-	    result += child->toString(selectionStart, selectionEnd, startOffset, endOffset, found); // this might set found to true
+	    result += child->selectionToString(selectionStart, selectionEnd, startOffset, endOffset, found); // this might set found to true
 	    if(child == selectionEnd) 
 	        found = true;
 	    if(found) break;

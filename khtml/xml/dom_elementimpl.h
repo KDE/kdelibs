@@ -203,7 +203,7 @@ public:
     void dispatchAttrAdditionEvent(NodeImpl::Id id, DOMStringImpl *value);
 
     virtual DOMString toString() const;
-    virtual DOMString toString(NodeImpl *selectionStart, NodeImpl *selectionEnd, int startOffset, int endOffset, bool &found) const;
+    virtual DOMString selectionToString(NodeImpl *selectionStart, NodeImpl *selectionEnd, int startOffset, int endOffset, bool &found) const;
 	    
     virtual bool contentEditable() const;
     void setContentEditable(bool enabled);

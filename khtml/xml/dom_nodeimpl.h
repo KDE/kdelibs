@@ -395,7 +395,7 @@ public:
      * @param found          When this is set to true, don't print anymore but closing tags.
      * @return An html formatted string for this node and its children between the selectionStart and selectionEnd.
      */
-    virtual DOMString toString(NodeImpl * /*selectionStart*/, NodeImpl * /*selectionEnd*/, int /*startOffset*/, int /*endOffset*/, bool &/*found*/) const { return toString(); }
+    virtual DOMString selectionToString(NodeImpl * /*selectionStart*/, NodeImpl * /*selectionEnd*/, int /*startOffset*/, int /*endOffset*/, bool &/*found*/) const { return toString(); }
     
 private: // members
     DocumentPtr *document;

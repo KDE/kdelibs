@@ -3228,6 +3228,15 @@ QString KHTMLPart::selectedText() const
         // This is our simple HTML -> ASCII transformation:
         unsigned short id = n.elementId();
         switch(id) {
+	  case ID_TEXTAREA:
+	    text += static_cast<HTMLTextAreaElementImpl*>(n.handle())->value().string();
+	    break;
+	  case ID_INPUT:
+	    text += static_cast<HTMLInputElementImpl*>(n.handle())->value().string();
+	    break;
+	  case ID_SELECT:
+	    text += static_cast<HTMLSelectElementImpl*>(n.handle())->value().string();
+	    break;
           case ID_BR:
             text += "\n";
             hasNewLine = true;

@@ -1865,7 +1865,8 @@ void HTMLSelectElementImpl::focus()
     getDocument()->setFocusNode(this);
 }
 
-DOMString HTMLSelectElementImpl::value( )
+
+DOMString HTMLSelectElementImpl::value( ) const
 {
     uint i;
     QMemArray<HTMLGenericFormElementImpl*> items = listItems();
