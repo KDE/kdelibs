@@ -185,11 +185,11 @@ const ClassInfo KJS::HTMLDocument::info =
   writeln		HTMLDocument::WriteLn		DontDelete|ReadOnly|Function 1
   getElementById	HTMLDocument::GetElementById	DontDelete|ReadOnly|Function 1
   getElementsByName	HTMLDocument::GetElementsByName	DontDelete|ReadOnly|Function 1
-  bgColor		HTMLDocument::BgColor		DontDelete|ReadOnly
-  fgColor		HTMLDocument::FgColor		DontDelete|ReadOnly
-  alinkColor		HTMLDocument::AlinkColor	DontDelete|ReadOnly
-  linkColor		HTMLDocument::LinkColor		DontDelete|ReadOnly
-  vlinkColor		HTMLDocument::VlinkColor	DontDelete|ReadOnly
+  bgColor		HTMLDocument::BgColor		DontDelete
+  fgColor		HTMLDocument::FgColor		DontDelete
+  alinkColor		HTMLDocument::AlinkColor	DontDelete
+  linkColor		HTMLDocument::LinkColor		DontDelete
+  vlinkColor		HTMLDocument::VlinkColor	DontDelete
   lastModified		HTMLDocument::LastModified	DontDelete|ReadOnly
   height		HTMLDocument::Height		DontDelete|ReadOnly
   width			HTMLDocument::Width		DontDelete|ReadOnly
@@ -310,6 +310,7 @@ void KJS::HTMLDocument::tryPut(ExecState *exec, const UString &propertyName, con
 void KJS::HTMLDocument::putValue(ExecState *exec, int token, const Value& value, int /*attr*/)
 {
   DOM::HTMLDocument doc = static_cast<DOM::HTMLDocument>(node);
+  DOM::HTMLBodyElement body = doc.body();
 
   switch (token) {
   case Title:
@@ -327,6 +328,21 @@ void KJS::HTMLDocument::putValue(ExecState *exec, int token, const Value& value,
     part->scheduleRedirection(0, str);
     break;
   }
+  case BgColor:
+    body.setBgColor(value.toString(exec).string());
+    break;
+  case FgColor:
+    body.setText(value.toString(exec).string());
+    break;
+  case AlinkColor:
+    body.setALink(value.toString(exec).string());
+    break;
+  case LinkColor:
+    body.setLink(value.toString(exec).string());
+    break;
+  case VlinkColor:
+    body.setVLink(value.toString(exec).string());
+    break;
   default:
     kdWarning() << "HTMLDocument::putValue unhandled token " << token << endl;
   }
