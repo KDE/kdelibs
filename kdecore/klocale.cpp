@@ -204,7 +204,7 @@ int KLocale::pluralType( const QString & language )
 
 int KLocale::pluralType( const KCatalogue& catalog )
 {
-    const char* pluralFormString = 	
+    const char* pluralFormString =
     I18N_NOOP("_: Dear translator, please do not translate this string "
       "in any form, but pick the _right_ value out of "
       "NoPlural/TwoForms/French... If not sure what to do mail "
@@ -214,9 +214,8 @@ int KLocale::pluralType( const KCatalogue& catalog )
       "translator of kdelibs.po");
     QString pf (catalog.translate( pluralFormString));
     if ( pf.isEmpty() ) {
-      kdWarning(173) << "found no definition of PluralForm for language " << catalog.language() << endl;
       return -1;
-    } 
+    }
 	else if ( pf == "NoPlural" )
       return 0;
     else if ( pf == "TwoForms" )
@@ -396,15 +395,15 @@ bool KLocale::setLanguage(const QString & language)
   if ( d->languageList.contains( language ) ) {
  	 d->languageList.remove( language );
   }
-  d->languageList.prepend( language ); // let us consider this language to be the most important one 
-  
-  m_language = language; // remember main language for shortcut evaluation
-  
-  // important when called from the outside and harmless when called before populating the 
-  // catalog name list
-  updateCatalogues(); 
+  d->languageList.prepend( language ); // let us consider this language to be the most important one
 
-  d->formatInited = false; 
+  m_language = language; // remember main language for shortcut evaluation
+
+  // important when called from the outside and harmless when called before populating the
+  // catalog name list
+  updateCatalogues();
+
+  d->formatInited = false;
 
   return true; // Maybe the mo-files for this language are empty, but in principle we can speak all languages
 }
@@ -425,18 +424,18 @@ bool KLocale::setLanguage(const QStringList & languages)
   }
 
   if ( languageList.isEmpty() ) {
-	// user picked no language, so we assume he/she speaks English. 
+	// user picked no language, so we assume he/she speaks English.
 	languageList.append( defaultLanguage() );
-  } 
+  }
   m_language = languageList.first(); // keep this for shortcut evaluations
-  
+
   d->languageList = languageList; // keep this new list of languages to use
   d->langTwoAlpha.clear(); // Flush cache
 
-  // important when called from the outside and harmless when called before populating the 
+  // important when called from the outside and harmless when called before populating the
   // catalog name list
-  updateCatalogues(); 
-  
+  updateCatalogues();
+
   return true; // we found something. Maybe it's only English, but we found something
 }
 
@@ -578,21 +577,21 @@ void KLocale::updateCatalogues( )
   // Maybe the language precedence has changed.
   // Maybe we have learned or forgotten some catalog names.
   // Now examine the list of KCatalogue objects and change it according to the new circumstances.
-  
+
   // this could be optimized: try to reuse old KCatalog objects, but remember that the order of
   // catalogs might have changed: e.g. in this fashion
   // 1) move all catalogs into a temporary list
   // 2) iterate over all languages and catalog names
   // 3.1) pick the catalog from the saved list, if it already exists
   // 3.2) else create a new catalog.
-  // but we will do this later. 
-  
+  // but we will do this later.
+
   for ( QValueList<KCatalogue>::Iterator it = d->catalogues.begin();
 	it != d->catalogues.end(); )
   {
      it = d->catalogues.remove(it);
   }
-  
+
   // now iterate over all languages and all wanted catalog names and append or create them in the right order
   // the sequence must be e.g. nds/appname nds/kdelibs nds/kio de/appname de/kdelibs de/kio etc.
   // and not nds/appname de/appname nds/kdelibs de/kdelibs etc. Otherwise we would be in trouble with a language
@@ -667,7 +666,7 @@ QString KLocale::translate_priv(const char *msgid,
 	  if ( (*it).language() == defaultLanguage() ) {
 	  	return QString::fromUtf8( fallback );
 	  }
-	  
+
       const char * text = (*it).translate( msgid );
 
       if ( text )
