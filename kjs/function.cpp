@@ -400,23 +400,17 @@ Value GlobalFuncImp::call(ExecState *exec, Object &/*thisObj*/, const List &args
       // enter a new execution context
       Object glob(exec->interpreter()->globalObject());
       Object thisVal(Object::dynamicCast(exec->context().thisValue()));
-      ContextImp *ctx = new ContextImp(glob,
-                                       exec,
-                                       thisVal,
-                                       EvalCode,
-                                       exec->context().imp());
-
-      ExecState *newExec = new ExecState(exec->interpreter(),ctx);
-      newExec->setException(exec->exception()); // could be null
+      ContextImp ctx(glob, exec, thisVal,
+		     EvalCode, exec->context().imp());
+      ExecState newExec(exec->interpreter(), &ctx);
+      newExec.setException(exec->exception()); // could be null
 
       // execute the code
-      Completion c = progNode->execute(newExec);
+      Completion c = progNode->execute(&newExec);
 
       // if an exception occured, propogate it back to the previous execution object
-      if (newExec->hadException())
-        exec->setException(newExec->exception());
-      delete newExec;
-      delete ctx;
+      if (newExec.hadException())
+        exec->setException(newExec.exception());
 
       if ( progNode->deref() )
           delete progNode;
