@@ -32,9 +32,9 @@
 #include <qinputdialog.h>
 #include <qregexp.h>
 #include <qwhatsthis.h>
+#include <qpushbutton.h>
 #include <kmessagebox.h>
 #include <klistbox.h>
-#include <kaction.h>
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kstandarddirs.h>
@@ -43,22 +43,20 @@
 KMInstancePage::KMInstancePage(QWidget *parent, const char *name)
 : QWidget(parent,name)
 {
-	m_actions = new KActionCollection(this);
 	m_view = new KListBox(this);
-	m_toolbar = new KToolBar(this);
 	m_printer = 0;
 
 	initActions();
-
-	m_toolbar->setOrientation(Qt::Vertical);
-	m_toolbar->setIconText(KToolBar::IconTextRight);
-	m_toolbar->setMovingEnabled(false);
 
 	QHBoxLayout	*main_ = new QHBoxLayout(this, 0, 0);
 	main_->addWidget(m_view);
 	QVBoxLayout	*sub_ = new QVBoxLayout(0, 0, 0);
 	main_->addLayout(sub_);
-	sub_->addWidget(m_toolbar);
+	for (QValueList<QButton*>::Iterator it=m_buttons.begin(); it!=m_buttons.end(); ++it)
+		if (*it)
+			sub_->addWidget(*it);
+		else
+			sub_->addSpacing(10);
 	sub_->addStretch(1);
 
 	QWhatsThis::add(this,
@@ -76,24 +74,26 @@ KMInstancePage::~KMInstancePage()
 {
 }
 
+void KMInstancePage::addButton(const QString& txt, const QString& pixmap, const char *receiver)
+{
+	QPushButton	*btn = new QPushButton(this, 0L);
+	btn->setText(txt);
+	btn->setIconSet(BarIconSet(pixmap));
+	btn->setFlat(true);
+	connect(btn, SIGNAL(clicked()), receiver);
+	m_buttons.append(btn);
+}
+
 void KMInstancePage::initActions()
 {
-	KAction	*act(0);
-
-	act = new KAction(i18n("New"),"filenew",0,this,SLOT(slotNew()),m_actions,"instance_new");
-	act->plug(m_toolbar);
-	act = new KAction(i18n("Copy"),"editcopy",0,this,SLOT(slotCopy()),m_actions,"instance_copy");
-	act->plug(m_toolbar);
-	act = new KAction(i18n("Remove"),"edittrash",0,this,SLOT(slotRemove()),m_actions,"instance_remove");
-	act->plug(m_toolbar);
-	m_toolbar->insertLineSeparator();
-	act = new KAction(i18n("Set as default"),"exec",0,this,SLOT(slotDefault()),m_actions,"instance_default");
-	act->plug(m_toolbar);
-	act = new KAction(i18n("Settings"),"configure",0,this,SLOT(slotSettings()),m_actions,"instance_settings");
-	act->plug(m_toolbar);
-	m_toolbar->insertLineSeparator();
-	act = new KAction(i18n("Test"),"fileprint",0,this,SLOT(slotTest()),m_actions,"instance_test");
-	act->plug(m_toolbar);
+	addButton(i18n("New"), "filenew", SLOT(slotNew()));
+	addButton(i18n("Copy"), "editcopy", SLOT(slotCopy()));
+	addButton(i18n("Remove"), "edittrash", SLOT(slotRemove()));
+	m_buttons.append(0);
+	addButton(i18n("Set as default"), "exec", SLOT(slotDefault()));
+	addButton(i18n("Settings"), "configure", SLOT(slotSettings()));
+	m_buttons.append(0);
+	addButton(i18n("Test"), "fileprint", SLOT(slotTest()));
 }
 
 void KMInstancePage::setPrinter(KMPrinter *p)
@@ -116,9 +116,9 @@ void KMInstancePage::setPrinter(KMPrinter *p)
 		m_view->sort();
 	}
 
-	QValueList<KAction*>	acts = m_actions->actions();
-	for (QValueList<KAction*>::ConstIterator it=acts.begin(); it!=acts.end(); ++it)
-		(*it)->setEnabled(ok);
+	for (QValueList<QButton*>::ConstIterator it=m_buttons.begin(); it!=m_buttons.end(); ++it)
+		if (*it)
+			(*it)->setEnabled(ok);
 
 	if (!oldText.isEmpty())
 	{

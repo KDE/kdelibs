@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -22,13 +22,13 @@
 #ifndef KMINSTANCEPAGE_H
 #define KMINSTANCEPAGE_H
 
-#include <kmainwindow.h>
 #include "kmprinterpage.h"
+#include <qvaluelist.h>
+#include <qwidget.h>
 
 class KListBox;
 class KMPrinter;
-class KActionCollection;
-class KToolBar;
+class QButton;
 
 class KMInstancePage : public QWidget, public KMPrinterPage
 {
@@ -49,11 +49,11 @@ protected slots:
 
 protected:
 	void initActions();
+	void addButton(const QString& text, const QString& pixmap, const char *receiver);
 
 private:
 	KListBox		*m_view;
-	KActionCollection	*m_actions;
-	KToolBar		*m_toolbar;
+	QValueList<QButton*>	m_buttons;
 	KMPrinter		*m_printer;
 };
 
