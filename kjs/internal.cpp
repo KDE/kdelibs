@@ -497,6 +497,9 @@ FunctionBodyNode *Parser::parse(const UChar *code, unsigned int length, SourceCo
       *errLine = eline;
     if (errMsg)
       *errMsg = "Parse error at line " + UString::from(eline);
+#ifdef KJS_VERBOSE
+    fprintf( stderr, "%s\n", UString(code,length).ascii() );
+#endif
 #ifndef NDEBUG
     fprintf(stderr, "KJS: JavaScript parse error at line %d.\n", eline);
 #endif
@@ -1023,6 +1026,8 @@ void KJS::printInfo(ExecState *exec, const char *s, const Value &o, int lineno)
     fprintf(stderr, "KJS: %s: (null)", s);
   else {
     Value v = o;
+    unsigned int arrayLength = 0;
+    bool hadExcep = exec->hadException();
 
     UString name;
     switch ( v.type() ) {
@@ -1044,14 +1049,22 @@ void KJS::printInfo(ExecState *exec, const char *s, const Value &o, int lineno)
     case NumberType:
       name = "Number";
       break;
-    case ObjectType:
-      name = Object::dynamicCast(v).className();
+    case ObjectType: {
+      Object obj = Object::dynamicCast(v);
+      name = obj.className();
       if (name.isNull())
         name = "(unknown class)";
+      if ( obj.inherits(&ArrayInstanceImp::info) )
+        arrayLength = obj.get(exec,lengthPropertyName).toUInt32(exec);
+      }
       break;
     }
-    bool hadExcep = exec->hadException();
-    UString vString = v.toString(exec);
+    UString vString;
+    // Avoid calling toString on a huge array (e.g. 4 billion elements, in mozilla/js/js1_5/Array/array-001.js)
+    if ( arrayLength > 100 )
+      vString = UString( "[ Array with " ) + UString::from( arrayLength ) + " elements ]";
+    else
+      vString = v.toString(exec);
     if ( !hadExcep )
       exec->clearException();
     if ( vString.size() > 50 )
