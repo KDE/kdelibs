@@ -997,7 +997,8 @@ void QIconViewItem::setSelected( bool s, bool cb )
 	else {
 	    if ( view->d->selectionMode == QIconView::Single && view->d->currentItem )
 		view->d->currentItem->setSelected( FALSE );
-	    else if ( view->d->selectionMode == QIconView::Extended && !cb )
+	    if ( ( view->d->selectionMode == QIconView::Extended && !cb ) ||
+		 view->d->selectionMode == QIconView::Single )
 		view->selectAll( FALSE );
 	}
 	selected = s;
@@ -1827,8 +1828,8 @@ void QIconViewItem::calcTmpText()
    screen anymore flow.
 
    <ul>
-   <li> \c East (Items, which don't fit onto the view, go further down (you get a vertical scrollbar)
-   <li> \c South (Items, which don't fit onto the view, go further right (you get a horizontal scrollbar)
+   <li> \c East - Items, which don't fit onto the view, go further down (you get a vertical scrollbar)
+   <li> \c South - Items, which don't fit onto the view, go further right (you get a horizontal scrollbar)
    </ul>
 */
 
@@ -1837,8 +1838,8 @@ void QIconViewItem::calcTmpText()
    This enum type specifies the position of the item text in relation to the icon.
 
    <ul>
-   <li> \c Bottom (The text is drawn at the bottom of the icon)
-   <li> \c Right (The text is drawn at the right of the icon)
+   <li> \c Bottom - The text is drawn at the bottom of the icon)
+   <li> \c Right - The text is drawn at the right of the icon)
    </ul>
 */
 
@@ -1854,6 +1855,11 @@ void QIconViewItem::calcTmpText()
 
 /*! \fn void  QIconView::doubleClicked (QIconViewItem * item)
   This signal is emitted, if the user doubleclicked on the item \a item.
+*/
+
+/*! \fn void  QIconView::returnPressed (QIconViewItem * item)
+  This signal is emitted, if the user pressed the return or enter button.
+  \a item is the item which was current while return or enter was pressed.
 */
 
 /*! \fn void  QIconView::itemRightPressed (QIconViewItem * item)
@@ -1876,12 +1882,20 @@ void QIconViewItem::calcTmpText()
 */
 
 /*! \fn void  QIconView::selectionChanged ()
-  This signal is emitted when the selection has been changed.
+  This signal is emitted when the selection has been changed. It's emitted
+  in each selection mode.
 */
 
 /*! \fn void  QIconView::selectionChanged (int numItems)
   This signal is emitted when the selection has been changed.
-  \a numItems specifies the number of selected items.
+  \a numItems specifies the number of selected items. This
+  signals is only emitted in mult- and extended selection mode.
+*/
+
+/*! \fn void  QIconView::selectionChanged( QIconViewItem *item )
+  This signal is emitted when the selection has been changed. \a item
+  is the new selected item. This signal is only emitted in single
+  selection mode.
 */
 
 /*! \fn void QIconView::currentChanged ()
@@ -1946,6 +1960,34 @@ void QIconViewItem::calcTmpText()
 */
 
 /*!
+  \fn void QIconView::clicked ( QIconViewItem * item, const QPoint & pos)
+  This signal is emitted when the user clicked (pressed + released) with any mouse button on
+  either and item (then \a item is the item under the mouse cursor) or
+  somewhere else (then \a item is NULL). \a pos the position of the mouse cursor.
+*/
+
+/*!
+  \fn void QIconView::pressed ( QIconViewItem * item, const QPoint & pos)
+  This signal is emitted when the user pressed with any mouse button on
+  either and item (then \a item is the item under the mouse cursor) or
+  somewhere else (then \a item is NULL). \a pos the position of the mouse cursor.
+*/
+
+/*!
+  \fn void QIconView::clicked ( QIconViewItem * item )
+  This signal is emitted when the user clicked (pressed + released) with any mouse button on
+  either and item (then \a item is the item under the mouse cursor) or
+  somewhere else (then \a item is NULL).
+*/
+
+/*!
+  \fn void QIconView::pressed ( QIconViewItem * item )
+  This signal is emitted when the user pressed with any mouse button on
+  either and item (then \a item is the item under the mouse cursor) or
+  somewhere else (then \a item is NULL).
+*/
+
+/*!
   Constructs an empty icon view
 */
 
@@ -2004,7 +2046,7 @@ QIconView::QIconView( QWidget *parent, const char *name, WFlags f )
     d->cachedContentsX = d->cachedContentsY = -1;
     d->clearing = FALSE;
     d->fullRedrawTimer = new QTimer( this );
-    
+
     connect( d->adjustTimer, SIGNAL( timeout() ),
 	     this, SLOT( adjustItems() ) );
     connect( d->updateTimer, SIGNAL( timeout() ),
@@ -2133,7 +2175,7 @@ void QIconView::slotUpdate()
 {
     d->updateTimer->stop();
     d->fullRedrawTimer->stop();
-    
+
     // #### remove that ASA insertInGrid uses cached values and is efficient
     if ( d->resortItemsWhenInsert )
 	sort( d->sortDirection );
@@ -3205,60 +3247,61 @@ void QIconView::contentsMousePressEvent( QMouseEvent *e )
     if ( d->currentItem )
 	d->currentItem->renameItem();
 
-    if ( e->button() == LeftButton ) {
-	d->startDrag = FALSE;
+    d->startDrag = FALSE;
 
-	if ( item && item->isSelected() &&
-	     item->textRect( FALSE ).contains( e->pos() ) ) {
+    if ( e->button() == LeftButton && item && item->isSelected() &&
+	 item->textRect( FALSE ).contains( e->pos() ) ) {
 
-	    if ( !item->renameEnabled() )
-		return;
-
-	    ensureItemVisible( item );
-	    setCurrentItem( item );
-	    item->rename();
+	if ( !item->renameEnabled() )
 	    return;
-	}
 
-	if ( item && item->isSelectable() ) {
-	    if ( d->selectionMode == Single )
-		item->setSelected( TRUE, e->state() & ControlButton );
-	    else if ( d->selectionMode == Multi )
-		item->setSelected( !item->isSelected(), e->state() & ControlButton );
-	    else if ( d->selectionMode == Extended ) {
-		if ( e->state() & ShiftButton ) {
-		    QRect r;
-		    bool select = !item->isSelected();
-		    if ( d->currentItem )
-			r = QRect( QMIN( d->currentItem->x(), item->x() ),
-				   QMIN( d->currentItem->y(), item->y() ),
-				   0, 0 );
-		    else
-			r = QRect( 0, 0, 0, 0 );
-		    if ( d->currentItem->x() < item->x() )
-			r.setWidth( item->x() - d->currentItem->x() + item->width() );
-		    else
-			r.setWidth( d->currentItem->x() - item->x() + d->currentItem->width() );
-		    if ( d->currentItem->y() < item->y() )
-			r.setHeight( item->y() - d->currentItem->y() + item->height() );
-		    else
-			r.setHeight( d->currentItem->y() - item->y() + d->currentItem->height() );
-		    r = r.normalize();
-		    for ( QIconViewItem *i = d->firstItem; i; i = i->next ) {
-			if ( r.intersects( i->rect() ) )
-			    i->setSelected( select, TRUE );
-		    }
-		    item->setSelected( select, TRUE );
-		} else if ( e->state() & ControlButton )
-		    item->setSelected( !item->isSelected(), e->state() & ControlButton );
-		else
-		    item->setSelected( TRUE, e->state() & ControlButton );
-	    }
-	} else if ( d->selectionMode == Single || !( e->state() & ControlButton ) )
-	    selectAll( FALSE );
-
+	ensureItemVisible( item );
 	setCurrentItem( item );
+	item->rename();
+	return;
+    }
 
+    if ( item && item->isSelectable() ) {
+	if ( d->selectionMode == Single )
+	    item->setSelected( TRUE, e->state() & ControlButton );
+	else if ( d->selectionMode == Multi )
+	    item->setSelected( !item->isSelected(), e->state() & ControlButton );
+	else if ( d->selectionMode == Extended ) {
+	    if ( e->state() & ShiftButton ) {
+		QRect r;
+		bool select = !item->isSelected();
+		if ( d->currentItem )
+		    r = QRect( QMIN( d->currentItem->x(), item->x() ),
+			       QMIN( d->currentItem->y(), item->y() ),
+			       0, 0 );
+		else
+		    r = QRect( 0, 0, 0, 0 );
+		if ( d->currentItem->x() < item->x() )
+		    r.setWidth( item->x() - d->currentItem->x() + item->width() );
+		else
+		    r.setWidth( d->currentItem->x() - item->x() + d->currentItem->width() );
+		if ( d->currentItem->y() < item->y() )
+		    r.setHeight( item->y() - d->currentItem->y() + item->height() );
+		else
+		    r.setHeight( d->currentItem->y() - item->y() + d->currentItem->height() );
+		r = r.normalize();
+		for ( QIconViewItem *i = d->firstItem; i; i = i->next ) {
+		    if ( r.intersects( i->rect() ) )
+			i->setSelected( select, TRUE );
+		}
+		item->setSelected( select, TRUE );
+	    } else if ( e->state() & ControlButton )
+		item->setSelected( !item->isSelected(), e->state() & ControlButton );
+	    else
+		item->setSelected( TRUE, e->state() & ControlButton );
+	}
+    } else if ( d->selectionMode == Single || !( e->state() & ControlButton ) )
+	selectAll( FALSE );
+
+    setCurrentItem( item );
+
+    if ( e->button() == LeftButton ) {
+	
 	if ( !d->currentItem && ( d->selectionMode == Multi ||
 				  d->selectionMode == Extended ) ) {
 	    if ( d->rubber )
@@ -3271,7 +3314,9 @@ void QIconView::contentsMousePressEvent( QMouseEvent *e )
 	}
 
 	d->mousePressed = TRUE;
-    } else if ( e->button() == RightButton ) {
+    }
+    
+    if ( e->button() == RightButton ) {
 	emit rightButtonPressed( item, e->globalPos() );
 	if ( item )
 	    emit itemRightPressed( item );
@@ -3311,9 +3356,8 @@ void QIconView::contentsMouseReleaseEvent( QMouseEvent *e )
 	d->rubber = 0;
     } else if ( !d->startDrag && d->singleClickMode ) {
 	if ( item && !item->renameBox ) {
-	    selectAll( FALSE );
-	    item->setSelected( TRUE, TRUE );
-	    if ( e->button() == LeftButton )
+	    if ( e->button() == LeftButton && 
+		 !( e->state() & ControlButton ) && !( e->state() & ShiftButton ) )
 		emit doubleClicked( item );
 	}
     }
@@ -4070,14 +4114,17 @@ void QIconView::emitSelectionChanged()
 
 void QIconView::emitNewSelectionNumber()
 {
-    int num = 0;
-    QIconViewItem *item = d->firstItem;
-    for ( ; item; item = item->next )
-	if ( item->isSelected() )
-	    ++num;
+    if ( d->selectionMode != Single ) {
+	int num = 0;
+	QIconViewItem *item = d->firstItem;
+	for ( ; item; item = item->next )
+	    if ( item->isSelected() )
+		++num;
 
-    emit selectionChanged( num );
-    d->numSelectedItems = num;
+	emit selectionChanged( num );
+	d->numSelectedItems = num;
+    } else
+	d->numSelectedItems = 1;
 }
 
 /*!
