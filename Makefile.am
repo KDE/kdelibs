@@ -27,6 +27,7 @@ $(top_srcdir)/acinclude.m4: $(top_srcdir)/admin/acinclude.m4.in $(top_srcdir)/ad
 AUTOMAKE_OPTIONS = foreign 1.4
 
 messages:
+	test -d po
 	rm -rf po.backup
 	mkdir po.backup
 	for i in `ls -1 po/*.pot | sed -e "s#po/##"`; do \
