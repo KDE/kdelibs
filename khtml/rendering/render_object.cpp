@@ -562,31 +562,29 @@ void RenderObject::printTree(int indent) const
 
 void RenderObject::dump(QTextStream *stream, QString ind) const
 {
-    *stream << ind << "m_verticalPosition = " << m_verticalPosition << endl;
-    *stream << ind << "m_layouted = " << m_layouted << endl;
-    *stream << ind << "m_parsing = " << m_parsing << endl;
-    *stream << ind << "m_minMaxKnown = " << m_minMaxKnown << endl;
-    *stream << ind << "m_floating = " << m_floating << endl;
-    *stream << ind << "m_positioned = " << m_positioned << endl;
-    *stream << ind << "m_containsPositioned = " << m_containsPositioned << endl;
-    *stream << ind << "m_relPositioned = " << m_relPositioned << endl;
-    *stream << ind << "m_printSpecial = " << m_printSpecial << endl;
-    *stream << ind << "m_isAnonymous = " << m_isAnonymous << endl;
-    *stream << ind << "m_visible = " << m_visible << endl;
-    *stream << ind << "m_isText = " << m_isText << endl;
-    *stream << ind << "m_inline = " << m_inline << endl;
-    *stream << ind << "m_replaced " << m_replaced << endl;
-    *stream << ind << "m_containsWidget = " << m_containsWidget << endl;
-    *stream << ind << "m_containsOverhangingFloats = " << m_containsOverhangingFloats << endl;
-    *stream << ind << "m_hasFirstLine = " << m_hasFirstLine << endl;
+    if (isAnonymousBox()) { *stream << " anonymousBox"; }
+    if (isFloating()) { *stream << " floating"; }
+    if (isPositioned()) { *stream << " positioned"; }
+    if (isRelPositioned()) { *stream << " relPositioned"; }
+    if (isText()) { *stream << " text"; }
+    if (isInline()) { *stream << " inline"; }
+    if (isReplaced()) { *stream << " replaced"; }
+    if (hasSpecialObjects()) { *stream << " specialObjects"; }
+    if (isVisible()) { *stream << " visible"; }
+    if (layouted()) { *stream << " layouted"; }
+    if (parsing()) { *stream << " parsing"; }
+    if (minMaxKnown()) { *stream << " minMaxKnown"; }
+    if (containsPositioned()) { *stream << " containsPositioned"; }
+    if (containsWidget()) { *stream << " containsWidget"; }
+    if (hasFirstLine()) { *stream << " hasFirstLine"; }
     *stream << endl;
 
     RenderObject *child = firstChild();
     while( child != 0 )
     {
-	*stream << ind << "    *** " << child->renderName() << " *** " << endl;
-        child->dump(stream,ind+"    ");
-        child = child->nextSibling();
+	*stream << ind << child->renderName() << ": ";
+	child->dump(stream,ind+"  ");
+	child = child->nextSibling();
     }
 }
 

@@ -1703,15 +1703,11 @@ void RenderTable::dump(QTextStream *stream, QString ind) const
 // ###    QArray<int> rowBaselines;
 // ###    QArray<int> actColWidth;
 
-    *stream << ind << "totalColInfos = " << totalColInfos << endl;
-    *stream << ind << "col = " << col << endl;
-    *stream << ind << "totalCols = " << totalCols << endl;
-    *stream << ind << "row = " << row << endl;
-    *stream << ind << "totalRows = " << totalRows << endl;
-    *stream << ind << "allocRows = " << allocRows << endl;
-
-    *stream << ind << "totalPercent = " << totalPercent << endl;
-    *stream << ind << "totalRelative = " << totalRelative << endl;
+    *stream << " totalColInfos=" << totalColInfos;
+    *stream << " totalCols=" << totalCols;
+    *stream << " totalRows=" << totalRows;
+    *stream << " totalPercent=" << totalPercent;
+    *stream << " totalRelative=" << totalRelative;
 
 // ###    RenderTableCaption *tCaption;
 // ###    RenderTableSection *head;
@@ -1723,12 +1719,8 @@ void RenderTable::dump(QTextStream *stream, QString ind) const
 
 // ###    RenderTableCol *_oldColElem;
 
-    *stream << ind << "_currentCol = " << _currentCol << endl;
-    *stream << ind << "spacing = " << spacing << endl;
-    *stream << ind << "_lastParentWidth = " << _lastParentWidth << endl;
-    *stream << ind << "incremental = " << incremental << endl;
-    *stream << ind << "collapseBorders = " << collapseBorders << endl;
-    *stream << ind << "needsCellsRecalc = " << needsCellsRecalc << endl;
+    *stream << " spacing=" << spacing;
+    *stream << " collapseBorders=" << collapseBorders;
 
     RenderFlow::dump(stream,ind);
 }
@@ -1740,12 +1732,11 @@ RenderTableSection::RenderTableSection()
 {
     // init RenderObject attributes
     setInline(false);   // our object is not Inline
+    nrows = 0;
 }
 
 RenderTableSection::~RenderTableSection()
 {
-    nrows = 0;
-
     // recalc cell info because RenderTable has unguarded pointers
     // stored that point to this RenderTableSection.
     if (table)
@@ -1791,7 +1782,7 @@ void RenderTableSection::addChild(RenderObject *child, RenderObject *beforeChild
 
 void RenderTableSection::dump(QTextStream *stream, QString ind) const
 {
-    *stream << ind << "nrows = " << nrows << endl;
+    *stream << " nrows=" << nrows;
 
     RenderContainer::dump(stream,ind);
 }
@@ -1805,6 +1796,7 @@ RenderTableRow::RenderTableRow()
     setInline(false);   // our object is not Inline
 
     rIndex = -1;
+    ncols = 0;
 }
 
 RenderTableRow::~RenderTableRow()
@@ -1878,8 +1870,8 @@ void RenderTableRow::repaint()
 
 void RenderTableRow::dump(QTextStream *stream, QString ind) const
 {
-    *stream << ind << "rIndex = " << rIndex << endl;
-    *stream << ind << "ncols = " << ncols << endl;
+    *stream << " rIndex = " << rIndex;
+    *stream << " ncols = " << ncols;
 
     RenderContainer::dump(stream,ind);
 }
@@ -1893,12 +1885,14 @@ RenderTableCell::RenderTableCell()
   _row = -1;
   cSpan = rSpan = 1;
   nWrap = false;
+  _id = 0;
   rowHeight = 0;
   m_table = 0;
   rowimpl = 0;
   setSpecialObjects(true);
   _topExtra = 0;
   _bottomExtra = 0;
+  _implicitCell = false;
 }
 
 RenderTableCell::~RenderTableCell()
@@ -2084,16 +2078,16 @@ void RenderTableCell::repaint()
 
 void RenderTableCell::dump(QTextStream *stream, QString ind) const
 {
-    *stream << ind << "_row = " << _row << endl;
-    *stream << ind << "_col = " << _col << endl;
-    *stream << ind << "rSpan = " << rSpan << endl;
-    *stream << ind << "cSpan = " << cSpan << endl;
-    *stream << ind << "_id = " << _id << endl;
-    *stream << ind << "rowHeight = " << rowHeight << endl;
-    *stream << ind << "_topExtra = " << _topExtra << endl;
-    *stream << ind << "_bottomExtra = " << _bottomExtra << endl;
-    *stream << ind << "nWrap = " << nWrap << endl;
-    *stream << ind << "_implicitCell = " << _implicitCell << endl;
+    *stream << " _row=" << _row;
+    *stream << " _col=" << _col;
+    *stream << " rSpan=" << rSpan;
+    *stream << " cSpan=" << cSpan;
+    *stream << " _id=" << _id;
+    *stream << " rowHeight=" << rowHeight;
+    *stream << " _topExtra=" << _topExtra;
+    *stream << " _bottomExtra=" << _bottomExtra;
+    *stream << " nWrap=" << nWrap;
+    *stream << " _implicitCell=" << _implicitCell;
 
     RenderFlow::dump(stream,ind);
 }
@@ -2145,10 +2139,9 @@ Length RenderTableCol::width()
 
 void RenderTableCol::dump(QTextStream *stream, QString ind) const
 {
-    *stream << ind << "_span = " << _span << endl;
-    *stream << ind << "_currentCol = " << _currentCol << endl;
-    *stream << ind << "_startCol = " << _startCol << endl;
-    *stream << ind << "_id = " << _id << endl;
+    *stream << " _span=" << _span;
+    *stream << " _startCol=" << _startCol;
+    *stream << " _id=" << _id;
 
     RenderContainer::dump(stream,ind);
 }

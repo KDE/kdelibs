@@ -60,6 +60,8 @@ NodeImpl::NodeImpl(DocumentPtr *doc)
       m_styleElement( false ),
       m_regdListeners( 0 )
 {
+    m_hasTabindex=false;
+    m_tabindex=0;
     document->ref();
 }
 
@@ -726,32 +728,30 @@ void NodeImpl::dump(QTextStream *stream, QString ind) const
 {
     // ### implement dump() for all appropriate subclasses
 
-    *stream << ind << "m_complexText = " << m_complexText << endl;
-    *stream << ind << "m_hasEvents = " << m_hasEvents << endl;
-    *stream << ind << "m_hasId = " << m_hasId << endl;
-    *stream << ind << "m_hasClass = " << m_hasClass << endl;
-    *stream << ind << "m_hasStyle = " << m_hasStyle << endl;
-    *stream << ind << "m_pressed = " << m_pressed << endl;
-    *stream << ind << "m_mouseInside = " << m_mouseInside << endl;
-    *stream << ind << "m_attached = " << m_attached << endl;
-    *stream << ind << "m_changed = " << m_changed << endl;
-    *stream << ind << "m_specified = " << m_specified << endl;
-    *stream << ind << "m_focused = " << m_focused << endl;
-    *stream << ind << "m_active = " << m_active << endl;
-    *stream << ind << "m_styleElement = " << m_styleElement << endl;
-    *stream << ind << "has_tabindex = " << has_tabindex << endl;
-    *stream << ind << "tabindex = " << tabindex << endl;
-    *stream << ind << "m_regdListeners = (" << (m_regdListeners ? m_regdListeners->count() : 0) << ")" << endl; // ### more detail
+    if (m_complexText) { *stream << " complexText"; }
+    if (m_hasEvents) { *stream << " hasEvents"; }
+    if (m_hasId) { *stream << " hasId"; }
+    if (m_hasClass) { *stream << " hasClass"; }
+    if (m_hasStyle) { *stream << " hasStyle"; }
+    if (!m_attached) { *stream << " !attached"; }
+    if (m_specified) { *stream << " specified"; }
+    if (m_focused) { *stream << " focused"; }
+    if (m_active) { *stream << " active"; }
+    if (m_styleElement) { *stream << " styleElement"; }
+
+    if (m_hasTabindex)
+	*stream << " tabindex=" << m_tabindex;
+    if (m_regdListeners)
+	*stream << " #regdListeners=" << m_regdListeners->count(); // ### more detail
     *stream << endl;
 
     NodeImpl *child = firstChild();
     while( child != 0 )
     {
-	*stream << ind << "    *** " << child->nodeName().string().ascii() << " *** " << endl;
-        child->dump(stream,ind+"    ");
+	*stream << ind << child->nodeName().string().ascii() << ": ";
+        child->dump(stream,ind+"  ");
         child = child->nextSibling();
     }
-
 }
 
 //--------------------------------------------------------------------

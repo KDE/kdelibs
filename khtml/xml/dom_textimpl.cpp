@@ -190,9 +190,9 @@ void CharacterDataImpl::dispatchModifiedEvent(DOMStringImpl *prevValue)
     dispatchSubtreeModifiedEvent();
 }
 
-void CharacterDataImpl::dump(QTextStream *stream, QString ind = "") const
+void CharacterDataImpl::dump(QTextStream *stream, QString ind) const
 {
-    *stream << ind << "str = \"" << DOMString(str).string().ascii() << "\"" << endl;
+    *stream << " str=\"" << DOMString(str).string().ascii() << "\"";
 
     NodeWParentImpl::dump(stream,ind);
 }

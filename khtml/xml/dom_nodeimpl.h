@@ -318,8 +318,8 @@ protected:
     bool m_styleElement : 1; // contains stylesheet text
 
     // used in elementimpl. Defined here to save a few bytes in the data structures.
-    bool has_tabindex  : 1;
-    short tabindex : 16;
+    bool m_hasTabindex  : 1;
+    short m_tabindex : 16;
 
     QList<RegisteredEventListener> *m_regdListeners;
 };

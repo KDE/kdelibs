@@ -68,6 +68,9 @@ RenderFlow::RenderFlow()
 {
     m_childrenInline = true;
     m_haveAnonymous = false;
+    m_pre = false;
+    firstLine = false;
+    m_clearStatus = CNONE;
 
     specialObjects = 0;
 }
@@ -1522,13 +1525,16 @@ void RenderFlow::printTree(int indent) const
 
 void RenderFlow::dump(QTextStream *stream, QString ind) const
 {
-    *stream << ind << "m_childrenInline = " << m_childrenInline << endl;
-    *stream << ind << "m_haveAnonymous = " << m_haveAnonymous << endl;
-    *stream << ind << "m_pre = " << m_pre << endl;
-    *stream << ind << "firstLine = " << firstLine << endl;
+    if (m_childrenInline) { *stream << " childrenInline"; }
+    if (m_haveAnonymous) { *stream << " haveAnonymous"; }
+    if (m_pre) { *stream << " pre"; }
+    if (firstLine) { *stream << " firstLine"; }
 
+/*
+###
     if(specialObjects)
     {
+	*stream << endl;
         QListIterator<SpecialObject> it(*specialObjects);
         SpecialObject *r;
         for ( ; (r = it.current()); ++it )
@@ -1542,7 +1548,9 @@ void RenderFlow::dump(QTextStream *stream, QString ind) const
             *stream << ind << "    count = " << r->count << endl;
             *stream << ind << "    noPaint = " << r->noPaint << endl;
         }
+	*stream << ind;
     }
+*/
 
     // ### EClear m_clearStatus
 

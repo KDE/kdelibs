@@ -263,9 +263,6 @@ bool AttrImpl::childTypeAllowed( unsigned short type )
 ElementImpl::ElementImpl(DocumentPtr *doc) : NodeBaseImpl(doc)
 {
     namedAttrMap = 0;
-
-    has_tabindex=false;
-    tabindex=0;
     m_styleDecls = 0;
 }
 
@@ -479,16 +476,16 @@ NodeListImpl *ElementImpl::getElementsByTagName( const DOMString &name )
 
 short ElementImpl::tabIndex() const
 {
-  if (has_tabindex)
-    return tabindex;
+  if (m_hasTabindex)
+    return m_tabindex;
   else
     return -1;
 }
 
 void ElementImpl::setTabIndex( short _tabindex )
 {
-  has_tabindex=true;
-  tabindex=_tabindex;
+  m_hasTabindex=true;
+  m_tabindex=_tabindex;
 }
 
 void ElementImpl::normalize( int &exceptioncode )
@@ -820,8 +817,8 @@ void ElementImpl::dump(QTextStream *stream, QString ind) const
     if (namedAttrMap) {
 	for (uint i = 0; i < namedAttrMap->length(); i++) {
 	    AttrImpl *attr = static_cast<AttrImpl*>(namedAttrMap->item(i));
-	    *stream << ind << "attribute \"" << DOMString(attr->name()).string().ascii() << 
-			      "\" = \"" << DOMString(attr->value()).string().ascii() << "\"\n";
+	    *stream << " " << DOMString(attr->name()).string().ascii()
+		    << "=\"" << DOMString(attr->value()).string().ascii() << "\"";
 	}
     }
 

@@ -400,8 +400,8 @@ void RenderRoot::clearSelection()
 
 void RenderRoot::dump(QTextStream *stream, QString ind) const
 {
-    *stream << ind << "m_rootWidth = " << m_rootWidth << endl;
-    *stream << ind << "m_rootHeight = " << m_rootHeight << endl;
+    *stream << " rootWidth=" << m_rootWidth
+	    << " rootHeight=" << m_rootHeight;
 
     RenderFlow::dump(stream,ind);
 }

@@ -953,15 +953,11 @@ QFontMetrics RenderText::metrics(bool firstLine) const
 
 void RenderText::dump(QTextStream *stream, QString ind) const
 {
-    *stream << ind << "str = \"" << DOMString(str).string().ascii() << "\"" << endl;
+    *stream << " str=\"" << DOMString(str).string().ascii() << "\"";
 
-    *stream << ind << "m_lineHeight = " << m_lineHeight << endl;
-    *stream << ind << "m_minWidth = " << m_minWidth << endl;
-    *stream << ind << "m_maxWidth = " << m_maxWidth << endl;
-
-// ###    SelectionState m_selectionState : 3 ;
-    *stream << ind << "m_hasReturn = " << m_hasReturn << endl;
-    *stream << ind << "m_hasBreakableChar = " << m_hasBreakableChar << endl;
+    *stream << " lineHeight=" << m_lineHeight
+	    << " minWidth=" << m_minWidth
+	    << " maxWidth=" << m_maxWidth;
 
     RenderObject::dump(stream,ind);
 }

@@ -569,7 +569,7 @@ void RenderFrameSet::dump(QTextStream *stream, QString ind) const
 // ###  m_rows;
 // ###  m_cols;
 
-
+// ### remove \ns
   if (m_rowHeight)
     *stream << ind << "m_rowHeight = " << *m_rowHeight << endl;
 

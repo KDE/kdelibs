@@ -202,8 +202,8 @@ void RenderReplaced::position(int x, int y, int, int, int, bool, bool)
 
 void RenderReplaced::dump(QTextStream *stream, QString ind) const
 {
-    *stream << ind << "m_intrinsicWidth = " << m_intrinsicWidth << endl;
-    *stream << ind << "m_intrinsicHeight = " << m_intrinsicHeight << endl;
+    *stream << " intrinsicWidth=" << m_intrinsicWidth
+	    << " intrinsicHeight=" << m_intrinsicHeight;
 
     RenderBox::dump(stream,ind);
 }
