@@ -38,6 +38,12 @@
 #ifdef HAVE_TEST
 #include <test.h>
 #endif
+#ifdef HAVE_PATHS_H
+#include <paths.h>
+#endif
+#ifndef _PATH_TMP
+#define _PATH_TMP "/tmp"
+#endif
 
 #include <stdlib.h>
 
@@ -62,7 +68,18 @@ KTempFile::KTempFile(QString filePrefix, QString fileExtension, int mode)
    if (fileExtension.isEmpty())
       fileExtension = ".tmp";
    if (filePrefix.isEmpty())
-      filePrefix = "/tmp/kde";
+   {
+      const char* tmpDir = 0;
+      tmpDir = getenv("KDE_TEMP");
+      filePrefix = tmpDir ? tmpDir : _PATH_TMP;
+      if (filePrefix.right(1) != "/")
+         filePrefix += "/";
+   
+      if (kapp)
+         filePrefix += kapp->name();
+      else
+         filePrefix += "kde";
+   }
    (void) create(filePrefix, fileExtension, mode);
 }
 
