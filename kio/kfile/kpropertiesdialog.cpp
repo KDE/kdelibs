@@ -1044,6 +1044,9 @@ void KFilePropsPlugin::slotSizeStop()
     d->dirSizeJob->kill();
     d->dirSizeJob = 0;
   }
+  if ( d->dirSizeUpdateTimer )
+    d->dirSizeUpdateTimer->stop();
+
   m_sizeStopButton->setEnabled(false);
   m_sizeDetermineButton->setEnabled(true);
 }
