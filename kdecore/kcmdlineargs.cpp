@@ -259,9 +259,6 @@ KCmdLineArgs::loadAppArgs( QDataStream &ds)
    removeArgs("qt");
    removeArgs("kde");
 
-   if (ds.atEnd())
-      return;
-
    KCmdLineArgs *args;
    if ( argsList ) {
       for(args = argsList->first(); args; args = argsList->next())
@@ -269,6 +266,9 @@ KCmdLineArgs::loadAppArgs( QDataStream &ds)
          args->clear();
       }
    }
+
+   if (ds.atEnd())
+      return;
 
    QCString qCwd;
    ds >> qCwd;
