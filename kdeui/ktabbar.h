@@ -45,10 +45,10 @@ public:
     virtual void removeTab( QTab * );
     
     void setTabReorderingEnabled( bool enable );
-    inline bool isTabReorderingEnabled() const;
+    bool isTabReorderingEnabled() const;
 
     void setHoverCloseButton( bool );
-    inline bool hoverCloseButton() const;
+    bool hoverCloseButton() const;
 
 signals:
     void contextMenu( int, const QPoint & );
