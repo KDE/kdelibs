@@ -20,6 +20,10 @@
 #ifndef __KNOTEBOOK_H
 #define __KNOTEBOOK_H
 
+#define KNOTEBOOK_VERSION_MAJOR 0
+#define KNOTEBOOK_VERSION_MINOR 20
+#define KNOTEBOOK_VERSION (KNOTEBOOK_VERSION_MAJOR * 10) + KNOTEBOOK_VERSION_MINOR
+
 #ifndef KDE_KDIRECTIONBUTTON
 #define KDE_KDIRECTIONBUTTON
 #endif
@@ -56,9 +60,9 @@ struct KNoteBookProtected;
 *
 * @short KNoteBook
 * @author Thomas Tanghus <tanghus@earthling.net>
-* @version 0.2
+* @version 0.3
 */
-class KNoteBook : public QWidget
+class KNoteBook : public KDialog
 {
         Q_OBJECT
 public:
@@ -374,6 +378,11 @@ protected:
 * @internal
 */
         void paintEvent(QPaintEvent *);
+/*
+ @internal
+
+        bool eventFilter( QObject *, QEvent * );
+*/
 /**
 * @internal
 */
@@ -391,6 +400,7 @@ protected:
 * @internal
 */
         QList<KWizard> *sections;
+
 };
 
 #endif __KNOTEBOOK_H
