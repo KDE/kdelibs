@@ -69,7 +69,7 @@ public:
 };
 
 //this is our null data
-KFileMetaInfoItem::Data* KFileMetaInfoItem::Data::null = 0L;
+KFileMetaInfoItem::Data* KFileMetaInfoItem::Data::null;
 static KStaticDeleter<KFileMetaInfoItem::Data> sd_KFileMetaInfoItemData;
 
 KFileMetaInfoItem::Data* KFileMetaInfoItem::Data::makeNull()
@@ -844,8 +844,8 @@ void KFilePlugin::appendItem(KFileMetaInfoGroup& group, const QString& key, QVar
 ///////////////////////////////////////////////////////////////////
 
 
-KFileMetaInfoProvider * KFileMetaInfoProvider::s_self = 0;
-KStaticDeleter<KFileMetaInfoProvider> sd;
+static KFileMetaInfoProvider * KFileMetaInfoProvider::s_self;
+static KStaticDeleter<KFileMetaInfoProvider> sd;
 
 KFileMetaInfoProvider * KFileMetaInfoProvider::self()
 {
