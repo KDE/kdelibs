@@ -619,12 +619,11 @@ void RenderBox::calcHeight()
             return;
 
         if (h.isFixed())
-            m_height = QMAX (h.value + borderTop() + paddingTop() + borderBottom() + paddingBottom() , m_height);
+            m_height = h.value + borderTop() + paddingTop() + borderBottom() + paddingBottom();
         else if (h.isPercent()) {
-	    Length ch = containingBlock()->style()->height();
+	        Length ch = containingBlock()->style()->height();
             if (ch.isFixed())
-                m_height = QMAX (h.width(ch.value) + borderTop() + paddingTop()
-                    + borderBottom() + paddingBottom(), m_height);
+                m_height = h.width(ch.value) + borderTop() + paddingTop() + borderBottom() + paddingBottom();
         }
     }
 }
