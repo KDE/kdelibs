@@ -2166,8 +2166,8 @@ void KApplication::invokeHelp( const QString& anchor,
     return invokeHelp( anchor, _appname, "" );
 }
 
-#ifndef Q_WS_WIN 
-// for win32 we're using simple help tools like Qt Assistant, 
+#ifndef Q_WS_WIN
+// for win32 we're using simple help tools like Qt Assistant,
 // see kapplication_win.cpp
 void KApplication::invokeHelp( const QString& anchor,
                                const QString& _appname,
@@ -2303,26 +2303,78 @@ void KApplication::invokeMailer(const QString &to, const QString &cc, const QStr
 // on win32, for invoking browser we're using win32 API
 // see kapplication_win.cpp
 
-static QString simpleRFC2047Encode( const QString &email )
+static QStringList splitEmailAddressList( const QString & aStr )
 {
-  int end = email.findRev( '>' );
+  // This is a copy of KPIM::splitEmailAddrList().
+  // Features:
+  // - always ignores quoted characters
+  // - ignores everything (including parentheses and commas)
+  //   inside quoted strings
+  // - supports nested comments
+  // - ignores everything (including double quotes and commas)
+  //   inside comments
 
-  if ( end == -1 ) // no part to encode
-    return email;
+  QStringList list;
 
-  int index = end - email.length() - 1;
-  int begin = email.findRev( '<', index );
+  if (aStr.isEmpty())
+    return list;
 
-  QString address = email.mid( begin + 1, end - begin - 1 );
-  QString name = email.left( begin ).stripWhiteSpace();
+  QString addr;
+  uint addrstart = 0;
+  int commentlevel = 0;
+  bool insidequote = false;
 
-  QString result = QString( "=?utf8?b?%1?= <%2>" )
-                   .arg( KCodecs::base64Encode( name.utf8(), false ), address );
+  for (uint index=0; index<aStr.length(); index++) {
+    // the following conversion to latin1 is o.k. because
+    // we can safely ignore all non-latin1 characters
+    switch (aStr[index].latin1()) {
+    case '"' : // start or end of quoted string
+      if (commentlevel == 0)
+        insidequote = !insidequote;
+      break;
+    case '(' : // start of comment
+      if (!insidequote)
+        commentlevel++;
+      break;
+    case ')' : // end of comment
+      if (!insidequote) {
+        if (commentlevel > 0)
+          commentlevel--;
+        else {
+          //kdDebug() << "Error in address splitting: Unmatched ')'"
+          //          << endl;
+          return list;
+        }
+      }
+      break;
+    case '\\' : // quoted character
+      index++; // ignore the quoted character
+      break;
+    case ',' :
+      if (!insidequote && (commentlevel == 0)) {
+        addr = aStr.mid(addrstart, index-addrstart);
+        if (!addr.isEmpty())
+          list += addr.simplifyWhiteSpace();
+        addrstart = index+1;
+      }
+      break;
+    }
+  }
+  // append the last address to the list
+  if (!insidequote && (commentlevel == 0)) {
+    addr = aStr.mid(addrstart, aStr.length()-addrstart);
+    if (!addr.isEmpty())
+      list += addr.simplifyWhiteSpace();
+  }
+  //else
+  //  kdDebug() << "Error in address splitting: "
+  //            << "Unexpected end of address list"
+  //            << endl;
 
-  return result;
+  return list;
 }
 
-void KApplication::invokeMailer(const QString &_to, const QString &cc, const QString &bcc,
+void KApplication::invokeMailer(const QString &_to, const QString &_cc, const QString &_bcc,
                                 const QString &subject, const QString &body,
                                 const QString & /*messageFile TODO*/, const QStringList &attachURLs,
                                 const QCString& startup_id )
@@ -2335,22 +2387,29 @@ void KApplication::invokeMailer(const QString &_to, const QString &cc, const QSt
    config.setGroup( QString("PROFILE_%1").arg(group) );
    QString command = config.readPathEntry("EmailClient");
 
-   QString to;
+   QString to, cc, bcc;
    if (command.isEmpty() || command == QString::fromLatin1("kmail")
-       || command.endsWith("/kmail")) {
+       || command.endsWith("/kmail"))
+   {
      command = QString::fromLatin1("kmail --composer -s %s -c %c -b %b --body %B --attach %A -- %t");
-
      if ( !_to.isEmpty() )
      {
-       const QStringList tos = QStringList::split( ',', _to );
-       for (QStringList::ConstIterator it = tos.begin(); it != tos.end(); ++it) {
-         to += simpleRFC2047Encode( *it ) + ", ";
-       }
-
-       to.truncate( to.length() - 2 ); // strip last commata
+       // put the whole address lists into RFC2047 encoded blobs; technically
+       // this isn't correct, but KMail understands it nonetheless
+       to = QString( "=?utf8?b?%1?=" )
+            .arg( KCodecs::base64Encode( _to.utf8(), false ) );
      }
-   } else
-    to = _to;
+     if ( !_cc.isEmpty() )
+       cc = QString( "=?utf8?b?%1?=" )
+            .arg( KCodecs::base64Encode( _cc.utf8(), false ) );
+     if ( !_bcc.isEmpty() )
+       bcc = QString( "=?utf8?b?%1?=" )
+             .arg( KCodecs::base64Encode( _bcc.utf8(), false ) );
+   } else {
+     to = _to;
+     cc = _cc;
+     bcc = _bcc;
+   }
 
    if (config.readBoolEntry("TerminalClient", false))
    {
@@ -2367,16 +2426,16 @@ void KApplication::invokeMailer(const QString &_to, const QString &cc, const QSt
    QStringList qry;
    if (!to.isEmpty())
    {
-     QStringList tos = QStringList::split( ',', to );
+     QStringList tos = splitEmailAddressList( to );
      url.setPath( tos.first() );
      tos.remove( tos.begin() );
      for (QStringList::ConstIterator it = tos.begin(); it != tos.end(); ++it)
        qry.append( "to=" + KURL::encode_string( *it ) );
    }
-   const QStringList ccs = QStringList::split( ',', cc );
+   const QStringList ccs = splitEmailAddressList( cc );
    for (QStringList::ConstIterator it = ccs.begin(); it != ccs.end(); ++it)
       qry.append( "cc=" + KURL::encode_string( *it ) );
-   const QStringList bccs = QStringList::split( ',', bcc );
+   const QStringList bccs = splitEmailAddressList( bcc );
    for (QStringList::ConstIterator it = bccs.begin(); it != bccs.end(); ++it)
       qry.append( "bcc=" + KURL::encode_string( *it ) );
    for (QStringList::ConstIterator it = attachURLs.begin(); it != attachURLs.end(); ++it)
@@ -2386,6 +2445,8 @@ void KApplication::invokeMailer(const QString &_to, const QString &cc, const QSt
    if (!body.isEmpty())
       qry.append( "body=" + KURL::encode_string( body ) );
    url.setQuery( qry.join( "&" ) );
+   if ( ! (to.isEmpty() && qry.isEmpty()) )
+      url.setProtocol("mailto");
 
    QMap<QChar, QString> keyMap;
    keyMap.insert('t', to);
@@ -3101,7 +3162,7 @@ Qt::ButtonState KApplication::keyboardMouseState()
         ret |= AltButton;
     if (GetAsyncKeyState(VK_LWIN) || GetAsyncKeyState(VK_RWIN))
         ret |= MetaButton;
-#else 
+#else
     //TODO: other platforms
 #endif
     return static_cast< ButtonState >( ret );
