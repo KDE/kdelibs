@@ -111,7 +111,7 @@ Value KJS::HTMLDocFunction::tryCall(ExecState *exec, Object &thisObj, const List
     KHTMLView *view = static_cast<DOM::DocumentImpl*>(doc.handle())->view();
     if ( view && view->part() )
        return String(view->part()->selectedText());
-    else 
+    else
        return Undefined();
   }
   case HTMLDocument::CaptureEvents:
@@ -429,7 +429,7 @@ void KJS::HTMLDocument::putValueProperty(ExecState *exec, int token, const Value
   {
     KHTMLView *view = static_cast<DOM::DocumentImpl*>(doc.handle())->view();
     if ( view )
-      Window::retrieveWindow(view->part())->goURL(exec, value.toString(exec).qstring());
+      Window::retrieveWindow(view->part())->goURL(exec, value.toString(exec).qstring(), false /*don't lock history*/);
     break;
   }
   case BgColor:
@@ -1665,7 +1665,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case ObjectBorder:          return getString(object.border());
     case ObjectCodeBase:        return getString(object.codeBase());
     case ObjectCodeType:        return getString(object.codeType());
-    case ObjectContentDocument: return checkNodeSecurity(exec,object.contentDocument()) ? 
+    case ObjectContentDocument: return checkNodeSecurity(exec,object.contentDocument()) ?
 				       getDOMNode(exec, object.contentDocument()) : Undefined();
     case ObjectData:            return getString(object.data());
     case ObjectDeclare:         return Boolean(object.declare());
@@ -1879,7 +1879,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
   case ID_FRAME: {
     DOM::HTMLFrameElement frameElement = element;
     switch (token) {
-    case FrameContentDocument: return checkNodeSecurity(exec,frameElement.contentDocument()) ? 
+    case FrameContentDocument: return checkNodeSecurity(exec,frameElement.contentDocument()) ?
 				      getDOMNode(exec, frameElement.contentDocument()) : Undefined();
     case FrameFrameBorder:     return getString(frameElement.frameBorder());
     case FrameLongDesc:        return getString(frameElement.longDesc());
@@ -1897,7 +1897,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     DOM::HTMLIFrameElement iFrame = element;
     switch (token) {
     case IFrameAlign:           return getString(iFrame.align());
-    case IFrameContentDocument: return checkNodeSecurity(exec,iFrame.contentDocument()) ? 
+    case IFrameContentDocument: return checkNodeSecurity(exec,iFrame.contentDocument()) ?
 				       getDOMNode(exec, iFrame.contentDocument()) : Undefined();
     case IFrameFrameBorder:     return getString(iFrame.frameBorder());
     case IFrameHeight:          return getString(iFrame.height());
@@ -2068,9 +2068,9 @@ void KJS::HTMLElement::pushEventHandlerScope(ExecState *exec, ScopeChain &scope)
 
   // The form is next, searched before the document, but after the element itself.
   DOM::HTMLFormElement formElt;
-  
+
   // First try to obtain the form from the element itself.  We do this to deal with
-  // the malformed case where <form>s aren't in our parent chain (e.g., when they were inside 
+  // the malformed case where <form>s aren't in our parent chain (e.g., when they were inside
   // <table> or <tbody>.
   getForm(&formElt, element);
   if (!formElt.isNull())
@@ -2079,11 +2079,11 @@ void KJS::HTMLElement::pushEventHandlerScope(ExecState *exec, ScopeChain &scope)
     DOM::Node form = element.parentNode();
     while (!form.isNull() && form.elementId() != ID_FORM)
         form = form.parentNode();
-    
+
     if (!form.isNull())
         scope.push(static_cast<ObjectImp *>(getDOMNode(exec, form).imp()));
   }
-  
+
   // The element is on top, searched first.
   scope.push(static_cast<ObjectImp *>(getDOMNode(exec, element).imp()));
 }

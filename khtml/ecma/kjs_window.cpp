@@ -714,7 +714,7 @@ void Window::put(ExecState* exec, const Identifier &propertyName, const Value &v
       return;
     }
     case _Location:
-      goURL(exec, value.toString(exec).qstring());
+      goURL(exec, value.toString(exec).qstring(), false /*don't lock history*/);
       return;
     case Onabort:
       if (isSafeScript(exec))
@@ -1913,7 +1913,7 @@ Value LocationFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
   switch (id) {
   case Location::Assign:
   case Location::Replace:
-    Window::retrieveWindow(part)->goURL(exec, args[0].toString(exec).qstring(), 
+    Window::retrieveWindow(part)->goURL(exec, args[0].toString(exec).qstring(),
             id == Location::Replace);
     break;
   case Location::Reload:
