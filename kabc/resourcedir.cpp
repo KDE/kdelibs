@@ -79,9 +79,9 @@ void ResourceDir::init( const QString &path, Format *format )
     mFormat = format;
   }
 
-  connect( &mDirWatch, SIGNAL( dirty() ), SLOT( pathChanged() ) );
-  connect( &mDirWatch, SIGNAL( created() ), SLOT( pathChanged() ) );
-  connect( &mDirWatch, SIGNAL( deleted() ), SLOT( pathChanged() ) );
+  connect( &mDirWatch, SIGNAL( dirty(const QString&) ), SLOT( pathChanged() ) );
+  connect( &mDirWatch, SIGNAL( created(const QString&) ), SLOT( pathChanged() ) );
+  connect( &mDirWatch, SIGNAL( deleted(const QString&) ), SLOT( pathChanged() ) );
 
   setPath( path );
 }
@@ -260,7 +260,6 @@ QString ResourceDir::path() const
 
 void ResourceDir::pathChanged()
 {
-  kdDebug() << "ResourceDir::pathChanged()" << endl;
   load();
   addressBook()->emitAddressBookChanged();
 }
