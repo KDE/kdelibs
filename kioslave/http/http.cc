@@ -502,8 +502,7 @@ void HTTPProtocol::davStatList( const KURL& url, bool stat )
 
   if ( stat )
   {
-    error( ERR_UNSUPPORTED_ACTION, i18n("Your server did not return a WebDAV "
-                                        "1.0 compliant response.") );
+    error( ERR_DOES_NOT_EXIST, url.prettyURL() );
   }
   else
   {
@@ -826,7 +825,7 @@ QString HTTPProtocol::davProcessLocks()
         response += "<" + metaData( QString("davLockToken%1").arg(i) ) + ">";
       }
     }
-    
+
     if ( bracketsOpen )
       response += ")";
 
