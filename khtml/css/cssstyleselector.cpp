@@ -621,7 +621,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
     if(!e)
         return false;
 
-    qDebug("element: %d", e->id());
+//     qDebug("element: %d", e->id());
 
     sel->print();
 
@@ -718,7 +718,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
         // elements for the moment
 	QConstString cstr( sel->value.implementation()->s, sel->value.implementation()->l );
 	const QString& value = cstr.string();
-	kdDebug() << "CSSOrderedRule::pseudo " << value << endl;
+// 	kdDebug() << "CSSOrderedRule::pseudo " << value << endl;
 	switch( *( value.unicode() ) ) {
 	case 'f':
 	    if(value == "first-child") {
