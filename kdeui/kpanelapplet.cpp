@@ -27,8 +27,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "kpanelapplet.moc"
 
 KPanelApplet::KPanelApplet(const QString& configFile, Type type,
-                           int actions, QWidget *parent, const char *name)
-  : QFrame(parent, name)
+                           int actions, QWidget *parent, const char *name, WFlags f)
+  : QFrame(parent, name, f)
   , _type(type)
   , _orient( Horizontal )
   , _config(0)

@@ -113,7 +113,8 @@ public:
      * @param name A Qt object name for your applet.
      **/
     KPanelApplet(const QString& configFile, Type t = Normal,
-                 int actions = 0, QWidget *parent = 0, const char *name = 0);
+                 int actions = 0, QWidget *parent = 0, const char *name = 0,
+                 WFlags f = 0);
 
     /**
      * Destructor.
