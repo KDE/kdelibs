@@ -58,8 +58,6 @@ void queryFunctions( const char* app, const char* obj )
     bool ok = false;
     QCStringList funcs = dcop->remoteFunctions( app, obj, &ok );
     for ( QCStringList::Iterator it = funcs.begin(); it != funcs.end(); ++it ) {
-	if ( (*it) == "QCStringList functions()" )
-	    continue;
 	fprintf( stdout, "%s\n", (*it).data() );
     }
     if ( !ok )
@@ -96,6 +94,8 @@ void callFunction( const char* app, const char* obj, const char* func, int argc,
 	bool ok = false;
 	QCStringList funcs = dcop->remoteFunctions( app, obj, &ok );
 	QCString realfunc;
+	if ( !ok && argc == 0 )
+	    goto doit;
 	if ( !ok )
 	    qFatal( "object not accessible" );
 	for ( QCStringList::Iterator it = funcs.begin(); it != funcs.end(); ++it ) {
@@ -119,12 +119,31 @@ void callFunction( const char* app, const char* obj, const char* func, int argc,
 	left = f.find( '(' );
 	right = f.find( ')' );
     }
+    
+ doit:
+    if ( left < 0 )
+	f += "()";
 
     QStringList types;
     if ( left >0 && left + 1 < right - 1) {
 	types = QStringList::split( ',', f.mid( left + 1, right - left - 1) );
-	for ( QStringList::Iterator it = types.begin(); it != types.end(); ++it )
+	for ( QStringList::Iterator it = types.begin(); it != types.end(); ++it ) {
 	    (*it).stripWhiteSpace();
+	    int s = (*it).find(' ');
+	    if ( s > 0 )
+		(*it) = (*it).left( s );
+	}
+	QString fc = f.left( left );
+	fc += '(';
+	bool first = TRUE;
+	for ( QStringList::Iterator it = types.begin(); it != types.end(); ++it ) {
+	    if ( !first ) 
+		fc +=",";
+	    first = FALSE;
+	    fc += *it;
+	}
+	fc += ')';
+	f = fc;
     }
 
     if ( (int) types.count() != argc ) {
@@ -193,6 +212,16 @@ void callFunction( const char* app, const char* obj, const char* func, int argc,
 	    QCString r;
 	    reply >> r;
 	    fprintf( stdout, "%s\n", r.data() );
+	} else if (replyType == "QCStringList") {
+	    QCStringList l;
+	    reply >> l;
+	    for ( QCStringList::Iterator it = l.begin(); it != l.end(); ++it )
+		fprintf( stdout, "%s\n", (*it).data() );
+	} else if (replyType == "QStringList") {
+	    QStringList l;
+	    reply >> l;
+	    for ( QStringList::Iterator it = l.begin(); it != l.end(); ++it )
+		fprintf( stdout, "%s\n", (*it).latin1() );
 	}
     }
 }

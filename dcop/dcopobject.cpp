@@ -124,7 +124,12 @@ QCString DCOPObject::objectName( QObject* obj )
 bool DCOPObject::process(const QCString &fun, const QByteArray &data,
 			 QCString& replyType, QByteArray &replyData)
 {
-    if ( fun == "functions()" ) {
+    if ( fun == "interfaces()" ) {
+	replyType = "QCStringList";
+	QDataStream reply( replyData, IO_WriteOnly );
+	reply << interfaces();
+	return TRUE;
+    } else  if ( fun == "functions()" ) {
 	replyType = "QCStringList";
 	QDataStream reply( replyData, IO_WriteOnly );
 	reply << functions();
@@ -138,9 +143,17 @@ bool DCOPObject::processDynamic( const QCString&, const QByteArray&, QCString&, 
     return FALSE;
 }
 
+QCStringList DCOPObject::interfaces()
+{
+    QCStringList result;
+    result << "DCOPObject";
+    return result;
+}
+
 QCStringList DCOPObject::functions()
 {
     QCStringList result;
+    result << "QCStringList interfaces()";
     result << "QCStringList functions()";
     return result;
 }

@@ -733,6 +733,22 @@ QCStringList DCOPClient::remoteObjects( const QCString& remApp, bool *ok )
     return result;
 }
 
+QCStringList DCOPClient::remoteInterfaces( const QCString& remApp, const QCString& remObj, bool *ok  )
+{
+    QCString replyType;
+    QByteArray data, replyData;
+    QCStringList result;
+    if ( ok )
+	*ok = FALSE;
+    if ( call( remApp, remObj, "interfaces()", data, replyType, replyData ) && replyType == "QCStringList") {
+	QDataStream reply( replyData, IO_ReadOnly );
+	reply >> result;
+	if ( ok )
+	    *ok = TRUE;
+    }
+    return result;
+}
+
 QCStringList DCOPClient::remoteFunctions( const QCString& remApp, const QCString& remObj, bool *ok  )
 {
     QCString replyType;

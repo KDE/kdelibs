@@ -38,6 +38,7 @@ typedef QValueList<QCString> QCStringList;
 public:        \
   virtual bool process(const QCString &fun, const QByteArray &data, QCString& replyType, QByteArray &replyData); \
   QCStringList functions(); \
+  QCStringList interfaces(); \
 private:
 
 #define k_dcop public
@@ -119,6 +120,16 @@ public:
 
 
   /** 
+   * Returns the names of the interfaces, specific ones last. The
+   * functions gets reimplemented by the IDL compiler. If you don't
+   * use the IDL compiler, consider implementing this function
+   * manually if you want your object to be easily explorable.
+   *
+   * @see functions()
+   */
+  virtual QCStringList interfaces();
+    
+  /**
    * Returns the list of functions understood by the object. It gets
    * reimplemented by the IDL compiler. If you don't use the IDL
    * compiler, consider implementing this function manually if you

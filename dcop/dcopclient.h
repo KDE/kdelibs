@@ -213,7 +213,7 @@ class DCOPClient : public QObject
 	    bool useEventLoop=false, bool fast=false);
 
   /**
-   * Searche for an object which matches a criteria.
+   * Search for an object which matches a criteria.
    *
    * @param remApp The remote application id.
    * @param remObj The name of the remote object.
@@ -348,7 +348,13 @@ class DCOPClient : public QObject
    */
   QCStringList remoteObjects( const QCString& remApp, bool *ok = 0 );
 
-  /** 
+  /**
+   * Retrieves the list of interfaces of the remote object @remObj
+   * of application @p remApp
+  */
+  QCStringList remoteInterfaces( const QCString& remApp, const QCString& remObj , bool *ok = 0 );
+    
+  /**
    * Retrieves the list of functions of the remote object @remObj
    * of application @p remApp
   */

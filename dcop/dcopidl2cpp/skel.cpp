@@ -50,9 +50,10 @@ static int const primes[] =
 struct Function
 {
     Function(){};
-    Function( const QString& t, const QString& n ) : type( t ), name( n ){}
+    Function( const QString& t, const QString& n, const QString&fn ) : type( t ), name( n ), fullName( fn ){}
     QString type;
     QString name;
+    QString fullName;
 };
 
 
@@ -106,23 +107,44 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 		    ASSERT ( r.tagName() == "NAME" );
 		    QString funcName = r.firstChild().toText().data();
 		    QStringList argtypes;
+		    QStringList argnames;
 		    r = r.nextSibling().toElement();
 		    for( ; !r.isNull(); r = r.nextSibling().toElement() ) {
 			ASSERT( r.tagName() == "ARG" );
 			QDomElement a = r.firstChild().toElement();
 			ASSERT( a.tagName() == "TYPE" );
 			argtypes.append( a.firstChild().toText().data() );
+			a = a.nextSibling().toElement();
+			if ( !a.isNull() ) {
+			    ASSERT( a.tagName() == "NAME" );
+			    argnames.append( a.firstChild().toText().data() );
+			} else {
+			    argnames.append( QString::null );
+			}
 		    }
-		    funcName += "(";
+		    funcName += '(';
+		    QString fullFuncName = funcName;
 		    bool first = TRUE;
-		    for( QStringList::Iterator it = argtypes.begin(); it != argtypes.end(); ++it ){
-			if ( !first )
-			    funcName += ",";
+		    QStringList::Iterator ittype = argtypes.begin();
+		    QStringList::Iterator itname = argnames.begin();
+		    while ( ittype != argtypes.end() && itname != argnames.end() ) {
+			if ( !first ) {
+			    funcName += ',';
+			    fullFuncName += ',';
+			}
 			first = FALSE;
-			funcName += *it;
+			funcName += *ittype;
+			fullFuncName += *ittype;
+			if ( ! (*itname).isEmpty() ) {
+			    fullFuncName += ' ';
+			    fullFuncName += *itname;
+			}
+			++ittype;
+			++itname;
 		    }
-		    funcName += ")";
-		    functions.append( Function( funcType, funcName ) );
+		    funcName += ')';
+		    fullFuncName += ')';
+		    functions.append( Function( funcType, funcName, fullFuncName ) );
 		}
 	    }
 
@@ -143,11 +165,11 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 		str << "#include <qasciidict.h>" << endl;
 		str << "static const int " << className << "_fhash = " << fhash << ";" << endl;
 	    }
-	    str << "static const char* const " << className << "_ftable[" << functions.count() + 1 << "][2] = {" << endl;
+	    str << "static const char* const " << className << "_ftable[" << functions.count() + 1 << "][3] = {" << endl;
 	    for( QValueList<Function>::Iterator it = functions.begin(); it != functions.end(); ++it ){
-		str << "    { \"" << (*it).type << "\", \"" << (*it).name << "\" }," << endl;
+		str << "    { \"" << (*it).type << "\", \"" << (*it).name << "\", \"" << (*it).fullName << "\" }," << endl;
 	    }
-	    str << "    { 0, 0 }" << endl;
+	    str << "    { 0, 0, 0 }" << endl;
 	    str << "};" << endl;
 	
 	    str << endl;
@@ -193,15 +215,15 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 			args.append( QString("arg" ) + QString::number( args.count() ) );
 		    }
 		    QString plainFuncName = funcName;
-		    funcName += "(";
+		    funcName += '(';
 		    bool first = TRUE;
 		    for( QStringList::Iterator argtypes_count = argtypes.begin(); argtypes_count != argtypes.end(); ++argtypes_count ){
 			if ( !first )
-			    funcName += ",";
+			    funcName += ',';
 			first = FALSE;
 			funcName += *argtypes_count;
 		    }
-		    funcName += ")";
+		    funcName += ')';
 			
 		    if ( useHashing ) {
 			str << "    case " << fcount << ": { // " << funcType << " " << funcName << endl;
@@ -216,7 +238,7 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 			QStringList::Iterator ittypes = argtypes.begin();
 			QStringList::Iterator args_count;
 			for( args_count = args.begin(); args_count != args.end(); ++args_count ){
-			    str << "\t"<< *ittypes << " " << *args_count << ";" <<  endl;
+			    str << '\t'<< *ittypes << " " << *args_count << ";" <<  endl;
 			    ++ittypes;
 			}
 			str << "\tQDataStream arg( data, IO_ReadOnly );" << endl;
@@ -227,10 +249,10 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 
 		    str << "\treplyType = " << className << "_ftable[" << fcount++ << "][0]; " << endl;
 		    if ( funcType == "void" ) {
-			str << "\t" << plainFuncName << "(";
+			str << '\t' << plainFuncName << '(';
 		    } else {
 			str << "\tQDataStream _replyStream( replyData, IO_WriteOnly );"  << endl;
-			str << "\t_replyStream << " << plainFuncName << "(";
+			str << "\t_replyStream << " << plainFuncName << '(';
 		    }
 
 		    first = TRUE;
@@ -263,6 +285,19 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	    str << "}" << endl << endl;
 	
 	    str << "QCStringList " << className;
+	    str << "::interfaces()" << endl;
+	    str << "{" << endl;
+	    if (!DCOPParent.isEmpty()) {
+		str << "    QCStringList ifaces = " << DCOPParent << "::interfaces();" << endl;
+	    } else {
+		str << "    QCStringList ifaces;" << endl;
+	    }
+	    str << "    ifaces += \"" << className << "\";" << endl;
+	    str << "    return ifaces;" << endl;
+	    str << "}" << endl << endl;
+	    
+	    
+	    str << "QCStringList " << className;
 	    str << "::functions()" << endl;
 	    str << "{" << endl;
 	    if (!DCOPParent.isEmpty()) {
@@ -270,10 +305,10 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	    } else {
 		str << "    QCStringList funcs;" << endl;
 	    }
-	    str << "    for ( int i = 0; " << className << "_ftable[i][1]; i++ ) {" << endl;
+	    str << "    for ( int i = 0; " << className << "_ftable[i][2]; i++ ) {" << endl;
 	    str << "\tQCString func = " << className << "_ftable[i][0];" << endl;
 	    str << "\tfunc += ' ';" << endl;
-	    str << "\tfunc += " << className << "_ftable[i][1];" << endl;
+	    str << "\tfunc += " << className << "_ftable[i][2];" << endl;
 	    str << "\tfuncs << func;" << endl;
 	    str << "    }" << endl;
 	    str << "    return funcs;" << endl;
