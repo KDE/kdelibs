@@ -1763,3 +1763,24 @@ KHTMLWidget *KHTMLWidget::selectedFrame()
     }
     return 0;
 }
+
+// ####
+bool KHTMLWidget::setCharset(const QString &name, bool /*override*/)
+{
+    // ### hack: FIXME
+    KCharsets *c = KGlobal::charsets();
+    if(!c->isAvailable(name))
+    {
+	printf("charset not available!\n");
+	return false;
+    }
+
+    QFont f;
+    c->setQFont(f, name);
+
+    QFontInfo fi(f);
+    printf("font has charset %d, real %d\n", f.charSet(), fi.charSet());
+
+    defaultSettings->charset = f.charSet();
+    return true;
+}
