@@ -52,6 +52,7 @@
 #include "khtml_factory.h"
 #include "khtml_part.h"
 
+#include "html/html_documentimpl.h"
 #include "css/css_stylesheetimpl.h"
 #include "xml/dom_docimpl.h"
 
@@ -403,6 +404,30 @@ static QString buildAcceptHeader()
     if (result.right(2) == ", ")
         result = result.left(result.length()-2);
     return result;
+}
+
+static bool crossDomain(const QString &a, const QString &b)
+{
+    if (a == b) return false;
+
+    QStringList l1 = QStringList::split('.', a);
+    QStringList l2 = QStringList::split('.', b);
+
+    while(l1.count() > l2.count())
+        l1.pop_front();
+
+    while(l2.count() > l1.count())
+        l2.pop_front();
+
+    while(l2.count() >= 2)
+    {
+        if (l1 == l2)
+           return false;
+
+        l1.pop_front();
+        l2.pop_front();
+    }
+    return true;
 }
 
 // -------------------------------------------------------------------------------------
@@ -977,7 +1002,8 @@ void Loader::servePendingRequests()
   kdDebug( 6060 ) << "starting Loader url=" << req->object->url().string() << endl;
 #endif
 
-  KIO::TransferJob* job = KIO::get( req->object->url().string(), false, false /*no GUI*/);
+  KURL u(req->object->url().string());
+  KIO::TransferJob* job = KIO::get( u, false, false /*no GUI*/);
 
   job->addMetaData("cache", getCacheControlString(req->object->cachePolicy()));
   if (!req->object->accept().isEmpty())
@@ -988,6 +1014,11 @@ void Loader::servePendingRequests()
           r.setPath( "/" );
 
       job->addMetaData("referrer", r.url());
+      QString domain = r.host();
+      if (req->m_docLoader->doc()->isHTMLDocument())
+         domain = static_cast<HTMLDocumentImpl*>(req->m_docLoader->doc())->domain().string();
+      if (crossDomain(u.host(), domain))
+         job->addMetaData("cross-domain", "true");
   }
 
   connect( job, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotFinished( KIO::Job * ) ) );
