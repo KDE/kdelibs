@@ -161,12 +161,22 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
   KHTMLView *view = static_cast<DOM::DocumentImpl*>(doc.handle())->view();
 
   // image and form elements with the name p will be looked up first
-  DOM::HTMLCollection coll = doc.all();
-  DOM::HTMLElement element = coll.namedItem(propertyName.string());
-  if (!element.isNull() &&
-      (element.elementId() == ID_IMG || element.elementId() == ID_FORM))
+  DOM::HTMLCollection allImages = doc.images();
+  DOM::HTMLElement element = allImages.namedItem(propertyName.string());
+  if (!element.isNull())
   {
-    KJS::HTMLCollection htmlcoll(exec,coll,KJS::HTMLCollection::ReturnNode);
+    Q_ASSERT(element.elementId() == ID_IMG);
+    KJS::HTMLCollection htmlcoll(exec, allImages, KJS::HTMLCollection::ReturnNode);
+    return htmlcoll.getNamedItems(exec, propertyName); // Get all the items with the same name
+  }
+
+  // document.myform should only look at forms
+  DOM::HTMLCollection allForms = doc.forms();
+  element = allForms.namedItem(propertyName.string());
+  if (!element.isNull())
+  {
+    Q_ASSERT(element.elementId() == ID_FORM);
+    KJS::HTMLCollection htmlcoll(exec, allForms, KJS::HTMLCollection::ReturnNode);
     return htmlcoll.getNamedItems(exec, propertyName); // Get all the items with the same name
   }
 
@@ -272,6 +282,7 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
   if(!element.isNull())
   {
     /// ### We use the document.all collection here, but in fact in IE:
+    DOM::HTMLCollection coll = doc.all();
     // * document.all('bleh') looks for id=bleh or name=bleh,
     // * document.bleh looks for name=bleh only (!)
     // The other difference is what they return for frames/iframes, but we already take
