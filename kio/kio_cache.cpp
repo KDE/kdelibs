@@ -113,11 +113,11 @@ bool KIOCacheEntry::storeData()
  * KIOCache
  *
  *************************************************/
-static bool kio_cache_initialized = false;
-QString *KIOCache::cachePath = 0;
-QDict<KIOCacheEntry> *KIOCache::cacheDict = 0;
-QStrList *KIOCache::cacheProtocols = 0;
-QStrList *KIOCache::excludeHosts = 0;
+
+QString KIOCache::cachePath;
+QDict<KIOCacheEntry> KIOCache::cacheDict;
+QStrList KIOCache::cacheProtocols;
+QStrList KIOCache::excludeHosts;
 bool KIOCache::cacheEnabled = false;
 bool KIOCache::saveCacheEnabled = false;
 unsigned int KIOCache::maxURLLength = 80;
@@ -152,14 +152,7 @@ QDateTime parseDateTime(const QString &s)
 
 void KIOCache::initStatic()
 {
-    if (!kio_cache_initialized) {
-	kio_cache_initialized = true;
-	KIOCache::cachePath = new QString;
-	KIOCache::cacheDict = new QDict<KIOCacheEntry>;
-	KIOCache::cacheProtocols = new QStrList;
-	KIOCache::excludeHosts = new QStrList;
-    }
-    *cachePath += KGlobal::dirs()->saveLocation("data", "kio/cache", true);
+    cachePath += KGlobal::dirs()->saveLocation("data", "kio/cache", true);
     readConfig( *( KGlobal::config() ) );
 }
 
@@ -168,21 +161,21 @@ void KIOCache::readConfig( KConfig &config )
     KConfigGroupSaver gs(&config, "Cache");
 
     QString path = KGlobal::dirs()->saveLocation("data", "kio/cache");
-    *cachePath = config.readEntry( "CachePath", path );
-    if ( cachePath->right(1).at(1) != '/')
-	*cachePath += "/";
+    cachePath = config.readEntry( "CachePath", path );
+    if ( cachePath.right(1).at(1) != '/')
+	cachePath += "/";
     cacheEnabled = config.readBoolEntry("UseCache", true );
     maxURLLength = config.readNumEntry("maxURLLength", 80 );
     
-    config.readListEntry("ExcludeHosts", *excludeHosts);
+    config.readListEntry("ExcludeHosts", excludeHosts);
     if ( config.hasKey("Protocols") )
     {
-      config.readListEntry("Protocols", *cacheProtocols);
+      config.readListEntry("Protocols", cacheProtocols);
     }
     else
     {
-      cacheProtocols->inSort("cgi");
-      cacheProtocols->inSort("http");
+      cacheProtocols.inSort("cgi");
+      cacheProtocols.inSort("http");
     }
 }
 
@@ -191,11 +184,11 @@ KConfig &KIOCache::storeConfig(KConfig &config)
 {
     KConfigGroupSaver gs(&config, "Cache");
 
-    config.writeEntry("CachePath", *cachePath);
+    config.writeEntry("CachePath", cachePath);
     config.writeEntry("UseCache", cacheEnabled);
     
-    config.writeEntry("ExcludeHosts", *excludeHosts);
-    config.writeEntry("Protocols", *cacheProtocols);
+    config.writeEntry("ExcludeHosts", excludeHosts);
+    config.writeEntry("Protocols", cacheProtocols);
     config.writeEntry("maxURLLength", maxURLLength);
 
     return config;
@@ -203,9 +196,9 @@ KConfig &KIOCache::storeConfig(KConfig &config)
 
 bool KIOCache::readCache()
 {
-    if (cachePath->isEmpty()) return false;
+    if (cachePath.isEmpty()) return false;
 
-    KSimpleConfig cacheInfo(*cachePath + "index.desktop", true);
+    KSimpleConfig cacheInfo(cachePath + "index.desktop", true);
     unsigned long idx;
     QString entryPrefix("Cacheentry ");
     QString entryNum;
@@ -219,7 +212,7 @@ bool KIOCache::readCache()
     entryNum.setNum(idx);
     cacheInfo.setGroup(entryPrefix + entryNum);
     url = cacheInfo.readEntry("URL");
-    cacheDict->setAutoDelete(true);
+    cacheDict.setAutoDelete(true);
     while (!url.isEmpty()) {
 	entry = new KIOCacheEntry(url);
 	entry->setLocalKey(cacheInfo.readEntry("LocalKey"));
@@ -232,7 +225,7 @@ bool KIOCache::readCache()
 	entry->setLastModifiedAt(date);
 	date = parseDateTime(cacheInfo.readEntry("LastAccess"));
 	entry->setLastAccessedAt(date);
-	cacheDict->insert(url, entry);
+	cacheDict.insert(url, entry);
 	entryNum.setNum(++idx);
 	cacheInfo.setGroup(entryPrefix + entryNum);
 	url = cacheInfo.readEntry("URL");
@@ -242,13 +235,13 @@ bool KIOCache::readCache()
 
 bool KIOCache::storeCache()
 {
-    if (!saveCacheEnabled || cachePath->isEmpty()) return false;
+    if (!saveCacheEnabled || cachePath.isEmpty()) return false;
 
-    KSimpleConfig cacheInfo(*cachePath + "index.desktop");
+    KSimpleConfig cacheInfo(cachePath + "index.desktop");
     unsigned long idx;
     QString entryPrefix("Cacheentry ");
     QString entryNum;
-    QDictIterator<KIOCacheEntry> entry(*cacheDict);
+    QDictIterator<KIOCacheEntry> entry(cacheDict);
 
     // Delete all [Cacheentry #] groups
     idx = 1;
@@ -314,14 +307,14 @@ bool KIOCache::clear()
 {
     QStrList todie;
     
-    QDictIterator<KIOCacheEntry> it( *cacheDict );
+    QDictIterator<KIOCacheEntry> it( cacheDict );
     for ( ; it.current() != 0L; ++it )
-	if ( unlink( (*cachePath + it.current()->localKey()).ascii() ) == 0 )
+	if ( unlink( (cachePath + it.current()->localKey()).ascii() ) == 0 )
 	    todie.append( it.current()->url().ascii() );
 
     const char *s;
     for ( s = todie.first(); s != 0L; s = todie.next() )
-	cacheDict->remove( s );
+	cacheDict.remove( s );
     
     return storeCache();
 }
@@ -346,7 +339,7 @@ QString KIOCache::htmlIndex()
     cacheIndex += i18n("Expiration Date");
     cacheIndex += "</b></td></tr>";
 
-    QDictIterator<KIOCacheEntry> it( *cacheDict );
+    QDictIterator<KIOCacheEntry> it( cacheDict );
     // !!! Really should sort the cache list. Just spitting out
     // entries in the order they appear in the dictionary is stupid.
     // Maybe sort by expiration date? 
@@ -380,7 +373,7 @@ QString KIOCache::htmlIndex()
 	      urlText.replace(maxURLLength-3, urlText.length(), "...");
 	    }
 	}
-	QString cachedFile = *cachePath + it.current()->localFile();
+	QString cachedFile = cachePath + it.current()->localFile();
 	KURL::encode( cachedFile );
 	// First table entry is a href to the local file,
 	// displaying a mini icon of the document's mime type.
@@ -442,7 +435,7 @@ const KIOCacheEntry& KIOCache::lookup(const QString &url)
     static const KIOCacheEntry NOTHING;
     KIOCacheEntry *entry;
 
-    entry = (*cacheDict)[trimURL(url)];
+    entry = cacheDict[trimURL(url)];
     return (entry?*entry:NOTHING);
 }
 
@@ -475,7 +468,7 @@ bool KIOCache::insert( KIOCacheEntry *entry )
     KIOCacheEntry oldEntry = lookup( entry->url() );
     if ( !oldEntry.isEmpty() )
     {
-      unlink( (*cachePath + oldEntry.localFile()).ascii() );
+      unlink( (cachePath + oldEntry.localFile()).ascii() );
     }
     
   kdebug( KDEBUG_INFO, 7002, "########### CACHE 4"  );
@@ -491,7 +484,7 @@ bool KIOCache::insert( KIOCacheEntry *entry )
     // there is no cached file before entry->storeData()
     if ( entry->mimeType().isEmpty() )
     {
-      QString file( cachePath->data() );
+      QString file( cachePath.data() );
       file += entry->localFile();
       KURL::encode( file );
       KURL u( file );
@@ -502,7 +495,7 @@ bool KIOCache::insert( KIOCacheEntry *entry )
 
   kdebug( KDEBUG_INFO, 7002, "########### CACHE 6"  );
 
-    cacheDict->replace( trimURL( entry->url() ), entry );
+    cacheDict.replace( trimURL( entry->url() ), entry );
     return true;
 }
 
@@ -514,13 +507,13 @@ bool KIOCache::isCacheable(const QString &_url)
 
     const char *entry;
 
-    for (entry = excludeHosts->first(); entry != 0;
-	 entry = excludeHosts->next()) {
+    for (entry = excludeHosts.first(); entry != 0;
+	 entry = excludeHosts.next()) {
 	if (QString(url.host()).findRev(entry, -1, false) >= 0) return false;
     }
 
-    for (entry = cacheProtocols->first(); entry != 0;
-	 entry = cacheProtocols->next()) {
+    for (entry = cacheProtocols.first(); entry != 0;
+	 entry = cacheProtocols.next()) {
 	if ( entry == url.protocol() ) return true;
     }
     return false;
