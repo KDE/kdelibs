@@ -18,8 +18,8 @@
 
 #ifdef DO_MD5
 #include <md5.h>
-#include "extern_md5.h"
 #endif
+#include "extern_md5.h"
 
 #include "http.h"
 
@@ -28,23 +28,19 @@
 bool open_CriticalDlg( const char *_titel, const char *_message, const char *_but1, const char *_but2 = 0L );
 bool open_PassDlg( const char *_head, string& _user, string& _pass );
 
-void sig_handler( int );
-void sig_handler2( int );
-
 extern "C" {
-#ifdef DO_MD5
-  extern char *encode64_digest(char *);
-#endif
-  char *base64_encode_line( const char *s );
   char *create_basic_auth (const char *header, const char *user, const char *passwd);
-  char *create_digest_auth (const char *header, const char *user, const char *passwd, const char *_realm, 
-			    const char *_nonce, const char *_domain, const char *_opaque);
+  char *create_digest_auth (const char *header, const char *user, const char *passwd, const char *realm, 
+			    const char *auth_str);
+  void sigsegv_handler(int);
+  void sigchld_handler(int);
+  void sigalrm_handler(int);
 };
 
 int main( int argc, char **argv )
 {
-  signal(SIGCHLD,sig_handler);
-  signal(SIGSEGV,sig_handler2);
+  signal(SIGCHLD,sigchld_handler);
+  signal(SIGSEGV,sigsegv_handler);
 
   //ProtocolManager manager;
 
@@ -58,26 +54,23 @@ int main( int argc, char **argv )
   debug( "kio_http : Done" );
 }
 
-void sig_handler2( int )
+void sigsegv_handler(int signo)
 {
-  debug( "kio_http : ###############SEG FILE#############" );
+  debug( "kio_http : ###############SEG FAULT#############" );
   exit(1);
 }
 
-void sig_handler( int )
+void sigchld_handler(int signo)
 {
-  int pid;
-  int status;
+  int pid, status;
     
-  while( 1 )
-  {
-    pid = waitpid( -1, &status, WNOHANG );
-    if ( pid <= 0 )
-    {
+  while(true) {
+    pid = waitpid(-1, &status, WNOHANG);
+    if ( pid <= 0 ) {
       // Reinstall signal handler, since Linux resets to default after
       // the signal occured ( BSD handles it different, but it should do
       // no harm ).
-      signal( SIGCHLD, sig_handler );
+      signal(SIGCHLD, sigchld_handler);
       return;
     }
   }
@@ -88,7 +81,7 @@ void sig_handler( int )
  */
 char sigbreak = 0;
 
-void sig_alarm(int signo)
+void sigalrm_handler(int signo)
 {
   sigbreak = 1;
 }            
@@ -97,59 +90,37 @@ void setup_alarm(unsigned int timeout)
 {
   sigbreak = 0;
   alarm(timeout);
-  signal(SIGALRM, sig_alarm);
+  signal(SIGALRM, sigalrm_handler);
 }
 
-
-/************************** Authorization stuff: copied from wget-source *****/
-
-/* Encode a zero-terminated string in base64.  Returns the malloc-ed
-   encoded line.  This is useful for HTTP only.
-
-   Note that the string may not contain NUL characters.  */
-char* base64_encode_line( const char *s )
+char *create_digest_auth (const char *header, const char *user, const char *passwd, const char *realm,
+			  const char *auth_str)
 {
-   /* Conversion table. */
-   static char tbl[64] = {
-      'A','B','C','D','E','F','G','H',
-      'I','J','K','L','M','N','O','P',
-      'Q','R','S','T','U','V','W','X',
-      'Y','Z','a','b','c','d','e','f',
-      'g','h','i','j','k','l','m','n',
-      'o','p','q','r','s','t','u','v',
-      'w','x','y','z','0','1','2','3',
-      '4','5','6','7','8','9','+','/'
-   };
-   int len, i;
-   char *res;
-   unsigned char *p;
+  string r;
+  const char *p=auth_str;
+  int i;
 
-   len = strlen(s);
-    res = (char *)malloc(4 * ((len + 2) / 3) + 1);
-   p = (unsigned char *)res;
-   /* Transform the 3x8 bits to 4x6 bits, as required by
-      base64.  */
-   for (i = 0; i < len; i += 3)
-   {
-      *p++ = tbl[s[0] >> 2];
-      *p++ = tbl[((s[0] & 3) << 4) + (s[1] >> 4)];
-      *p++ = tbl[((s[1] & 0xf) << 2) + (s[2] >> 6)];
-      *p++ = tbl[s[2] & 0x3f];
-      s += 3;
-   }
-   /* Pad the result if necessary... */
-   if (i == len + 1)
-      *(p - 1) = '=';
-   else if (i == len + 2)
-      *(p - 1) = *(p - 2) = '=';
-   /* ...and zero-teminate it.  */
-   *p = '\0';
-   return res;
-}
-
-char *create_digest_auth (const char *header, const char *user, const char *passwd, const char *_realm,
-			  const char *_nonce, const char *_domain, const char *_opaque)
-{
+  while (*p) {
+    while( (*p == ' ') || (*p == ',') || (*p == '\t'))
+      p++;
+    i = 0;
+    if ( strncasecmp(p, "realm=\"", 7 ) == 0 ) {
+      p += 7;
+      while( p[i] != '"' ) i++;
+      r.assign( p, i );
+      fprintf(stderr, "REAL is :%s:\n", r.c_str());
+    } else if (strncasecmp(p, "algorith=\"", 10)==0) {
+      p+=10;
+      while (p[i] != '"' ) i++;
+      r.assign(p, i);
+      fprintf(stderr, "ALG is :%s:\n", r.c_str());
+    }
+    
+    p+=i;
+    p++;
+  }
+  return "";
+#if 0
   char *wwwauth;
   QString t1;
   if (!user || !header || !passwd)
@@ -190,8 +161,8 @@ char *create_digest_auth (const char *header, const char *user, const char *pass
 
   t1 += "\r\n";
   wwwauth = strdup(t1.data());
-  fprintf(stderr, "Returning: %s\n", wwwauth);
   return wwwauth;
+#endif
 }
 
 char *create_basic_auth (const char *header, const char *user, const char *passwd)
@@ -203,6 +174,7 @@ char *create_basic_auth (const char *header, const char *user, const char *passw
     t1 = (char *)malloc(strlen(user) + 1 + 2 * strlen(passwd) + 1);
     sprintf(t1, "%s:%s", user, passwd);
     t2 = base64_encode_line(t1);
+    fprintf(stderr, "T2 is: %s\n", t2);
     free(t1);
     wwwauth = (char *)malloc(strlen(t2) + strlen(header) + 11); // UPDATE WHEN FORMAT BELOW CHANGES !!!
     sprintf(wwwauth, "%s: Basic %s\r\n", header, t2);
@@ -273,7 +245,6 @@ HTTPProtocol::HTTPProtocol( Connection *_conn ) : IOProtocol( _conn )
     m_strProxyPass = ur.pass();
 
     m_strNoProxyFor = ProtocolManager::self()->getNoProxyFor().data();
-
   }
 
   HTTP = HTTP_Unknown;
@@ -301,10 +272,9 @@ bool HTTPProtocol::http_open( K2URL &_url, const char* _post_data, int _post_dat
   int port = _url.port();
   if ( port == -1 )
     port = 80;
-  
+
   m_sock = ::socket(PF_INET,SOCK_STREAM,0);
-  if ( m_sock < 0 )
-  {
+  if ( m_sock < 0 )  {
     error( ERR_COULD_NOT_CREATE_SOCKET, url.c_str() );
     return false;
   }
@@ -323,32 +293,27 @@ bool HTTPProtocol::http_open( K2URL &_url, const char* _post_data, int _post_dat
 	return false;
       }
 
-    if( ::connect( m_sock, (struct sockaddr*)(&m_proxySockaddr), sizeof( m_proxySockaddr ) ) )
-    {
+    if( ::connect( m_sock, (struct sockaddr*)(&m_proxySockaddr), sizeof( m_proxySockaddr ) ) ) {
       error( ERR_COULD_NOT_CONNECT, m_strProxyHost.c_str() );
       return false;
     }
   }
-  else
-  {
+  else {
     struct sockaddr_in server_name;
 
-    if( !initSockaddr( &server_name, _url.host(), port ) )
-    {
+    if( !initSockaddr( &server_name, _url.host(), port ) ) {
       error( ERR_UNKNOWN_HOST, _url.host() );
       return false;
     }
 
-    if( ::connect( m_sock, (struct sockaddr*)( &server_name ), sizeof( server_name ) ) )    
-    {
+    if( ::connect( m_sock, (struct sockaddr*)( &server_name ), sizeof( server_name ) ) ) {
       error( ERR_COULD_NOT_CONNECT, _url.host() );
       return false;
     }
   }
-  
+
   m_fsocket = fdopen( m_sock, "r+" );
-  if( !m_fsocket )
-  {
+  if( !m_fsocket ) {
     error( ERR_COULD_NOT_CONNECT, _url.host() );
     return false;
   }
@@ -383,18 +348,16 @@ bool HTTPProtocol::http_open( K2URL &_url, const char* _post_data, int _post_dat
   command += getUserAgentString();
   command += "\r\n";
 
-  if ( _offset > 0 )
-  {
+  if ( _offset > 0 ) {
     char buffer[ 64 ];
     sprintf( buffer, "Range: bytes=%li-\r\n", _offset );
     command += buffer;
     debug( "kio_http : Range = %s", buffer );
   }
 
-  if ( _reload ) /* No caching for reload */
-  { 
+  if ( _reload ) /* No caching for reload */ {
     command += "Pragma: no-cache\r\n"; /* for HTTP/1.0 caches */
-    command += "Cache-control: no-cache\r\n"; /* for HTTP/>=1.1 caches */
+    command += "Cache-control: no-cache\r\n"; /* for HTTP >=1.1 caches */
   }
 
   // Charset negotiation:
@@ -405,18 +368,16 @@ bool HTTPProtocol::http_open( K2URL &_url, const char* _post_data, int _post_dat
   if ( !m_strLanguages.empty() )
     command += "Accept-Language: " + m_strLanguages + "\r\n";
   
-  command += "Host: "; /* support for virtual hosts and required by HTTP 1.1*/
+  command += "Host: "; /* support for virtual hosts and required by HTTP 1.1 */
   command += _url.host();
-  if ( _url.port() != 0 )
-  {
+  if (_url.port() != 0) {
     char buffer[ 64 ];
     sprintf( buffer, ":%i", port );
     command += buffer;
   }
   command += "\r\n";
   
-  if ( _post_data )
-  {
+  if (_post_data ) {
     command += "Content-Type: application/x-www-form-urlencoded\r\nContent-Length: ";
     char buffer[ 64 ];
     sprintf( buffer, "%i\r\n", _post_data_size );
@@ -429,11 +390,11 @@ bool HTTPProtocol::http_open( K2URL &_url, const char* _post_data, int _post_dat
       command += create_basic_auth("Authorization", _url.user(), _url.pass());
     }
     else if (Authentication == AUTH_Digest) {
-      command+= create_digest_auth("Authorization", _url.user(), _url.pass(), realm.c_str(), nonce.c_str(), domain.c_str(), opaque.c_str());
+      command+= create_digest_auth("Authorization", _url.user(), _url.pass(), m_strRealm.c_str(), m_strAuthString.c_str());
     }
     command+="\r\n";
   }
-  
+
   if( do_proxy ) {
     debug( "http_open 3");
     if( m_strProxyUser != "" && m_strProxyPass != "" ) {
@@ -489,8 +450,7 @@ repeat2:
     
     else if ( strncmp( buffer, "Content-length: ", 16 ) == 0 || strncmp( buffer, "Content-Length: ", 16 ) == 0 )
       m_iSize = atol( buffer + 16 );
-    else if ( strncmp( buffer, "Content-Type: ", 14 ) == 0 || strncmp( buffer, "Content-type: ", 14 ) == 0 )
-    {
+    else if ( strncmp( buffer, "Content-Type: ", 14 ) == 0 || strncmp( buffer, "Content-type: ", 14 ) == 0 ) {
       // Jacek: We can't send mimeType signal now,
       // because there may be another Content-Type to come
       m_strMimeType = buffer + 14;
@@ -532,7 +492,10 @@ repeat2:
     } else if ( strncmp( buffer, "WWW-Authenticate:", 17 ) == 0 ) {
       configAuth(buffer + 17);  
     } else if (HTTP == HTTP_11) {
-      if ( strncasecmp( buffer, "Transfer-Encoding: ", 19) == 0) {
+      if (strncasecmp(buffer, "Connection: ", 12) == 0) {
+	if (strncasecmp(buffer+12, "Close", 5)==0)
+	  /*m_bPersistant=false*/;
+      } else if (strncasecmp( buffer, "Transfer-Encoding: ", 19) == 0) {
 	// If multiple encodings have been applied to an entity, the transfer-
 	// codings MUST be listed in the order in which they were applied.
 	addEncoding(buffer+19, &m_qTransferEncodings);
@@ -540,7 +503,6 @@ repeat2:
 	addEncoding(buffer+18, &m_qContentEncodings);
       } else if (strncasecmp(buffer, "Content-MD5: ", 13)==0) {
 	m_sContentMD5 = strdup(buffer+13);
-	fprintf(stderr, "Have a content header\n");
       }
     }
   }
@@ -548,9 +510,9 @@ repeat2:
     http_close();
     string user = _url.user();
     string pass = _url.pass();
-    if (realm.empty())
-      realm = _url.host();
-    if ( !open_PassDlg(realm.c_str(), user, pass) )
+    if (m_strRealm.empty())
+      m_strRealm = _url.host();
+    if ( !open_PassDlg(m_strRealm.c_str(), user, pass) )
     {
       string url = _url.url();
       error( ERR_ACCESS_DENIED, url.c_str() );
@@ -596,47 +558,25 @@ void HTTPProtocol::configAuth(const char *p)
   } else if (strncmp (p, "Digest", 6) ==0 ) {
     p += 6;
     Authentication = AUTH_Digest;
+    m_strAuthString = strdup(p);
   } else {
     fprintf(stderr, "Invalid Authorization type requested\n");
     fprintf(stderr, "buffer: %s\n", p);
     fflush(stderr);
     abort();
   }
+  int i;
   while (*p) {
-    while( *p == ' ' )
+    while( (*p == ' ') || (*p == ',') || (*p == '\t'))
       p++;
-    int i = 0;
-    if ( strncmp( p, "realm=\"", 7 ) == 0 ) {
+    i=0;
+    if ( strncasecmp( p, "realm=\"", 7 ) == 0 ) {
       p += 7;
       while( p[i] != '"' ) i++;
-      realm.assign( p, i );
-      fprintf(stderr,"REALM is: %s\n", realm.c_str());
-    } else if (strncmp(p, "opaque=\"", 8)==0) {
-      p+= 8;
-      while( p[i] != '"' ) i++;
-      opaque.assign(p, i);
-    } else if (strncmp(p, "nonce=\"", 7)==0) {
-      p += 7;
-      while( p[i] != '"' ) i++;
-      nonce.assign( p, i );
-    } else if (strncmp(p, "domain=\"", 8)==0) {
-      p += 8;
-      while( p[i] != '"' ) i++;
-      domain.assign( p, i );
-    } else if (strncmp(p, "algorith=\"", 10) == 0) {
-      p += 10;
-      while (p[i] != '"' ) i++;
-      algorith.assign(p, i);
-    } else if (strncmp(p, "algorithm=\"", 11)==0) {
-      p += 11;
-      while (p[i] != '"' ) i++;
-      algorith.assign(p, i);
+      m_strRealm.assign( p, i );
     }
     p+=i;
     p++;
-  }
-  if (Authentication == AUTH_Digest) {
-    fprintf(stderr, "domain: %s\n", domain.c_str());
   }
 }
 
@@ -735,7 +675,6 @@ void HTTPProtocol::slotGet( const char *_url )
   MD5_CTX context;
   MD5Init(&context);
 #endif
-
   while (!feof(m_fsocket)) {
     nbytes = fread(buffer, 1, 2048, m_fsocket);
     if (nbytes > 0) {
@@ -760,7 +699,7 @@ void HTTPProtocol::slotGet( const char *_url )
     }
   }
   
-  http_close();
+  http_close();  // Must we close the connection?
 
   if (!big_buffer.isNull()) {
     const char *enc;
@@ -797,9 +736,12 @@ void HTTPProtocol::slotGet( const char *_url )
 
 #ifdef DO_MD5
   MD5Final(buf, &context); // Wrap everything up
-  enc_digest = encode64_digest(buf);
-  if (strncmp(encode64_digest(buf), m_sContentMD5.c_str(), m_sContentMD5.length())) {
-    fprintf(stderr, "MD5 Checksums don't match.. oops?!\n");
+  enc_digest = base64_encode_string(buf, 18);
+  int f;
+  if ((f=m_sContentMD5.find("="))<=0)
+    f=m_sContentMD5.length();
+  if (strncmp(enc_digest, m_sContentMD5.c_str(), f)) {
+    fprintf(stderr, "MD5 Checksums don't match.. oops?!:%d:%s:%s:\n", f,enc_digest, m_sContentMD5.c_str());
     fflush(stderr);
   }
   free(enc_digest);
