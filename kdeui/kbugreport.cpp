@@ -187,7 +187,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
 
   // Necessary for vertical label and url alignment.
   label->setFixedHeight( fontMetrics().lineSpacing() );
-  url->setFixedHeight( fontMetrics().lineSpacing()-1 );
+  url->setFixedHeight( fontMetrics().lineSpacing());
 
   slotSetFrom();
 }
