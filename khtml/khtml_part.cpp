@@ -2733,23 +2733,12 @@ bool KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, cons
   // Support for <frame src="javascript:string">
   if ( url.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 )
   {
-    if ( url.find( QString::fromLatin1( "javascript:c=" ), 0, false ) != 0 ) {
-        KURL myurl;
-        myurl.setProtocol("javascript");
-        myurl.setPath( url.mid( 13 ) );
-        return processObjectRequest(&(*it), myurl, QString("text/html") );
-    } else {
       QVariant res = executeScript( DOM::Node(frame->element()), url.right( url.length() - 11) );
-      if ( res.type() == QVariant::String ) {
-        KURL myurl;
-        myurl.setProtocol("javascript");
-        myurl.setPath(res.asString());
-        return processObjectRequest(&(*it), myurl, QString("text/html") );
-      }
-      // Error running the script
-      (*it).m_bCompleted = true;
-      return false;
-    } 
+      KURL myurl;
+      myurl.setProtocol("javascript");
+      if ( res.type() == QVariant::String )
+	myurl.setPath(res.asString());
+      return processObjectRequest(&(*it), myurl, QString("text/html") );
   }
   return requestObject( &(*it), completeURL( url ));
 }
