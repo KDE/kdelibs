@@ -1,7 +1,7 @@
 #include "htmlhashes.h"
 
-#include "khtmltags.c"
-#include "khtmlattrs.c"
+#include "htmltags.c"
+#include "htmlattrs.c"
 
 
 int getTagID(const char *tagStr, int len)
