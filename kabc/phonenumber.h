@@ -97,9 +97,14 @@ class PhoneNumber
     int type() const;
 
     /**
-      Return string reprentation for @type
+      Return translated label for phone number depending on its type.
     */
-    QString name() const;
+    QString label() const;
+
+    /**
+      Return translated label for phone number type.
+    */
+    static QString label( int type );
 
   private:
     void init();
