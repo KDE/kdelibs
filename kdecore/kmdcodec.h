@@ -415,6 +415,10 @@ public:
    * @param len    the length of the given message.
    */
   void update(const char* in, int len = -1) { update(reinterpret_cast<const unsigned char*>(in), len); }
+
+  /**
+   * @overload
+   */
   void update(const unsigned char* in, int len = -1);
 
   /**
