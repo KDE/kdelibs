@@ -367,6 +367,9 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
     KConfigGroupSaver ks( kc, QString::fromLatin1("Open-with settings") );
     int max = kc->readNumEntry( QString::fromLatin1("Maximum history"), 15 );
     combo->setMaxCount( max );
+    int mode = kc->readNumEntry(QString::fromLatin1("CompletionMode"),
+				KGlobalSettings::completionMode());
+    combo->setCompletionMode((KGlobalSettings::Completion)mode);
     QStringList list = kc->readListEntry( QString::fromLatin1("History") );
     combo->setHistoryItems( list, true );
     edit = new KURLRequester( combo, this );
@@ -672,6 +675,8 @@ void KOpenWithDlg::accept()
         KConfig *kc = KGlobal::config();
         KConfigGroupSaver ks( kc, QString::fromLatin1("Open-with settings") );
         kc->writeEntry( QString::fromLatin1("History"), combo->historyItems() );
+	kc->writeEntry(QString::fromLatin1("CompletionMode"),
+		       combo->completionMode());
         // don't store the completion-list, as it contains all of KURLCompletion's
         // executables
         kc->sync();
