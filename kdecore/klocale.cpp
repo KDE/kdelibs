@@ -948,9 +948,11 @@ QString KLocale::formatNumber(const QString &numStr) const
   return numStr;
 }
 
-QString KLocale::formatDate(const QDate &pDate) const
+QString KLocale::formatDate(const QDate &pDate, bool shortfmt) const
 {
-  return pDate.toString();
+  QString buf;
+  buf.sprintf("%.2d/%.2d/%.2d", pDate.month(), pDate.day(), pDate.year());
+  return buf;
 }
 
 QString KLocale::formatTime(const QTime &pTime) const
