@@ -4,7 +4,7 @@
     begin                : Mon Nov 8 1999
     copyright            : (C) 1999 by Falk Brettschneider
     email                : falkbr@kdevelop.org
- ***************************************************************  ************/
+ ***************************************************************************/
 
 /***************************************************************************
  *                                                                         *
@@ -20,24 +20,34 @@
 #include <qtoolbar.h>
 #include <qmultilineedit.h>
 #include <qlistview.h>
+#include <qfile.h>
 #include <kmdimainfrm.h>
 #include <kmditoolviewaccessor.h>
 
 #include "mainwidget.h"
 
-MainWidget::MainWidget()
+MainWidget::MainWidget(QDomElement& dockConfig)
 : KMdiMainFrm(0L, "theMDIMainFrm")
+ ,m_dockConfig(dockConfig)
 {
+   dockManager->setReadDockConfigMode(KDockManager::RestoreAllDockwidgets);
    initMenu();
 
+   if (m_dockConfig.hasChildNodes()) {
+        readDockConfig(m_dockConfig);
+   }
+
    QMultiLineEdit* mle = new QMultiLineEdit(0L,"theMultiLineEditWidget");
-   QMultiLineEdit* mle2 = new QMultiLineEdit(0L,"theMultiLineEditWidget2");
-   QMultiLineEdit* mle3 = new QMultiLineEdit(0L,"theMultiLineEditWidget3");
-   QMultiLineEdit* mle4 = new QMultiLineEdit(0L,"theMultiLineEditWidget4");
    mle->setText("This is a QMultiLineEdit widget.");
    addToolWindow( mle, KDockWidget::DockBottom, m_pMdi, 70);
+
+   QMultiLineEdit* mle2 = new QMultiLineEdit(0L,"theMultiLineEditWidget2");
    addToolWindow( mle2, KDockWidget::DockCenter, mle, 70);
+
+   QMultiLineEdit* mle3 = new QMultiLineEdit(0L,"theMultiLineEditWidget3");
    addToolWindow( mle3, KDockWidget::DockCenter, mle, 70);
+
+   QMultiLineEdit* mle4 = new QMultiLineEdit(0L,"theMultiLineEditWidget4");
    addToolWindow( mle4, KDockWidget::DockCenter, mle, 70);
 
    KMdiToolViewAccessor *tva=createToolWindow();
@@ -45,26 +55,41 @@ MainWidget::MainWidget()
    tva->show(KDockWidget::DockCenter,mle,70);   
 
    QListView* lv = new QListView(0L,"theListViewWidget");
-   QListView* lv2 = new QListView(0L,"theListViewWidget2");
-   QListView* lv3 = new QListView(0L,"theListViewWidget3");
 #include "../res/filenew.xpm"
    lv->setIcon(filenew);
-   lv2->setIcon(filenew);
-   lv3->setIcon(filenew);
    lv->addColumn("Test", 50);
    lv->addColumn("KMDI", 70);
    new QListViewItem(lv,QString("test"),QString("test"));
    addToolWindow( lv, KDockWidget::DockLeft, m_pMdi, 35, "1");
+
+   QListView* lv2 = new QListView(0L,"theListViewWidget2");
+   lv2->setIcon(filenew);
    lv2->addColumn("Test2", 50);
    lv2->addColumn("KMDI2", 70);
    new QListViewItem(lv,QString("test2"),QString("test2"));
    addToolWindow( lv2, KDockWidget::DockCenter, lv, 35, "2");
+   
+   QListView* lv3 = new QListView(0L,"theListViewWidget3");
+   lv3->setIcon(filenew);
    lv3->addColumn("Test3", 50);
    lv3->addColumn("KMDI3", 70);
    new QListViewItem(lv,QString("test3"),QString("test3"));
    addToolWindow( lv3, KDockWidget::DockCenter, lv, 35, "3");
 
+   dockManager->finishReadDockConfig();
+
    setMenuForSDIModeSysButtons( menuBar());
+}
+
+MainWidget::~MainWidget()
+{
+    writeDockConfig(m_dockConfig);
+    QDomDocument doc = m_dockConfig.ownerDocument();
+    QString s = doc.toString();
+    QFile f("C:\\dc.txt");
+    f.open(IO_ReadWrite);
+    f.writeBlock(s.latin1(), s.length());
+    f.close();
 }
 
 void MainWidget::initMenu()
@@ -80,6 +105,34 @@ void MainWidget::resizeEvent( QResizeEvent *pRSE)
    setSysButtonsAtMenuPosition();
 }
 
-#ifdef _WINDOWS
-void KDockWidget_Compat::KDockMainWindow::virtual_hook(int,void*) {}
-#endif
+RestartWidget::RestartWidget()
+{
+    QVBoxLayout* bl = new QVBoxLayout(this);
+    QLabel* l = new QLabel("This is for the testing of\nKMdiMainFrm::read/writeDockConfig().\n", this);
+    QCheckBox* b1 = new QCheckBox("KMdiMainFrm close/restart", this);
+    b1->toggle();
+    QObject::connect(b1, SIGNAL(stateChanged(int)), this, SLOT(onStateChanged(int)));
+    bl->add(l);
+    bl->add(b1);
+    bl->setMargin(10);
+    bl->activate();
+    show();
+
+    dockConfig = domDoc.createElement("dockConfig");
+    domDoc.appendChild(dockConfig);
+}
+
+void RestartWidget::onStateChanged(int on)
+{
+    if (on) {
+        MainWidget* mainWdg = new MainWidget(dockConfig);
+        mainWdg->resize(500,500);
+        qApp->setMainWidget( mainWdg );
+        mainWdg->show();
+    }
+    else {
+        MainWidget* mw = dynamic_cast<MainWidget*>(qApp->mainWidget());
+        qApp->setMainWidget(this);
+        mw->close();
+    }
+}

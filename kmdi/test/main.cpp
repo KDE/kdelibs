@@ -26,10 +26,10 @@
 //----------------------------------------------------------------------------
 
 #ifndef NO_KDE
- #include <kapp.h>
+# include <kapp.h>
  KApplication* theApp;
 #else
- #include <qapplication.h>
+# include <qapplication.h>
  QApplication* theApp;
 #endif
 
@@ -37,7 +37,8 @@
 #include "mainwidget.h"
 #include "hello.h"
 
-#define SHOW(v) cout << #v << " -> " << v << endl
+#define SHOW(v) cout << #v << " -> " << v << endl;
+
 int main( int argc, char **argv )
 {
 #ifndef NO_KDE
@@ -47,7 +48,8 @@ int main( int argc, char **argv )
 #endif
    theApp = &a;
 
-   MainWidget* mainWdg = new MainWidget;
+   RestartWidget* restartWidget = new RestartWidget;
+   MainWidget* mainWdg = new MainWidget(restartWidget->dockConfig);
 
    Hello* h1 = new Hello( "Hello1", "Click the right mouse button on the mainframe!", mainWdg);
    h1->setTabCaption("Tab changed");

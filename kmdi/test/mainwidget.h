@@ -18,21 +18,50 @@
 #ifndef MAINWIDGET_H
 #define MAINWIDGET_H
 
+#include <qcheckbox.h>
+#include <qlayout.h>
+#include <qlabel.h>
+#include <qdom.h>
 #include <kmdimainfrm.h>
 
 /**
   *@author Falk Brettschneider
   */
-
 class MainWidget : public KMdiMainFrm
 {
-   Q_OBJECT
+    Q_OBJECT
 public:
-	MainWidget();
-   void initMenu();
+    MainWidget(QDomElement& dockConfig);
+    virtual ~MainWidget();
+    void initMenu();
 
 protected: // Protected methods
-  virtual void resizeEvent( QResizeEvent *pRSE);
+    virtual void resizeEvent( QResizeEvent *pRSE);
+private:
+    QDomElement m_dockConfig;
+};
+
+
+
+/**
+  *@author Falk Brettschneider
+  * This allows me to test KMdiMainFrm::read/writeDockConfig by
+  * closing and restarting the MainWidget via checkbox click.
+  */
+class RestartWidget : public QWidget
+{
+    Q_OBJECT
+// methods
+public:
+    RestartWidget();
+
+private slots:
+    void onStateChanged(int on);
+
+// attributes
+public:
+    QDomDocument domDoc;
+    QDomElement dockConfig;
 };
 
 #endif
