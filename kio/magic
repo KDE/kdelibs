@@ -313,6 +313,14 @@
 0	string		\<!DOCTYPE\ HTML	text/html
 0	string		\<!doctype\ html	text/html
 
+# Extensible markup language (XML), a subset of SGML
+# from Marc Prud'hommeaux (marc@apocalypse.org)
+0       string          \<?xml          text/xml
+0       string          \<?XML          text/xml
+0       string          \<?Xml          text/xml
+
+
+
 #-----------------------------------------------------------------------------
 # troff stuff
 #
@@ -381,6 +389,10 @@
 # JPEG images
 0	beshort		0xffd8		image/jpeg
 
+# PNG images
+0       string          \x89PNG         image/png
+
+
 # PC bitmaps (OS/2, Windoze BMP files)  (Greg Roelofs, newt@uchicago.edu)
 0	string		BM		image/x-bmp
 #>14	byte		12		(OS/2 1.x format)
@@ -427,11 +439,16 @@
 0	string		\376\067\0\043			application/msword
 0	string		\320\317\021\340\241\261	application/msword
 0	string		\333\245-\0\0\0			application/msword
+2080    string		Microsoft\ Word\ 6.0\ Document  application/msword
+
+# excel
+2080    string  Microsoft\ Excel\ 5.0\ Worksheet	application/msexcel
 
 #------------------------------------------------------------------------------
 # word perfect
 
 0	belong		0xff575053c405			application/wordperfect
+1       string		WPC				application/wordperfect
 
 #------------------------------------------------------------------------------
 # printer:  file(1) magic for printer-formatted files
@@ -576,3 +593,35 @@
 0	string		begin:vcalendar	text/x-vcalendar
 0	string		BEGIN:VCARD	text/x-vcard
 0	string		begin:vcard	text/x-vcard
+
+# applix
+#------------------------------------------------------------------------------
+# applix:  file(1) magic for Applixware
+# From: Peter Soos <sp@osb.hu>
+#
+0       string          *BEGIN          application/x-applix
+>7      string          WORDS           application/x-applix
+>7      string          GRAPHICS	application/x-applix
+>7      string          RASTER          application/x-applix
+>7      string          SPREADSHEETS    application/x-applix
+>7      string          MACRO		application/x-applix
+>7      string          BUILDER		application/x-applix
+
+#------------------------------------------------------------------------------
+# diff:  file(1) magic for diff(1) output
+#
+0       string          diff\		text/x-diff
+0       string          ***\		text/x-diff
+0       string          Only\ in\	text/x-diff
+0       string          Common\ subdirectories:\        text/x-diff
+
+
+#------------------------------------------------------------------------------
+# flash:        file(1) magic for Macromedia Flash file format
+#
+# See
+#
+#       http://www.macromedia.com/software/flash/open/
+#
+0       string          FWS             application/x-shockwave-flash
+
