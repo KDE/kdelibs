@@ -2460,7 +2460,7 @@ bool KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, cons
 
   if ( url.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 )
   {
-      khtml::RenderFrame* rf = dynamic_cast<RenderFrame*>(frame);
+      khtml::RenderFrame* rf = dynamic_cast<khtml::RenderFrame*>(frame);
       assert(rf);
       QVariant res = executeScript( DOM::Node(rf->frameImpl()), url.right( url.length() - 11) );
       if ( res.type() == QVariant::String ) {
