@@ -122,7 +122,7 @@
 #endif
 #include <KDE-ICE/ICElib.h>
 
-#ifdef Q_WS_X11
+#if defined(Q_WS_X11)
 // defined by X11 headers
 const int XKeyPress = KeyPress;
 const int XKeyRelease = KeyRelease;
@@ -2322,3 +2322,4 @@ QString KApplication::randomString(int length)
 }
 
 #include "kapplication.moc"
+#define KeyPress XKeyPress
