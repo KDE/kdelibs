@@ -46,6 +46,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qstack.h>
 
 #include <dcopserver.h>
+#include <dcopsignals.h>
 #include <dcopglobal.h>
 
 template class QDict<DCOPConnection>;
@@ -78,7 +79,8 @@ static void registerXSM()
 
 
 
-static DCOPServer* the_server = 0;
+DCOPServer* the_server = 0;
+
 class DCOPListener : public QSocketNotifier
 {
 public:
@@ -92,25 +94,28 @@ public:
     IceListenObj listenObj;
 };
 
-class DCOPConnection : public QSocketNotifier
-{
-public:
-    DCOPConnection( IceConn conn )
+DCOPConnection::DCOPConnection( IceConn conn )
 	: QSocketNotifier( IceConnectionNumber( conn ),
 			   QSocketNotifier::Read, 0, 0 )
 {
     iceConn = conn;
     notifyRegister = false;
     time = 0;
+    _signalConnectionList = 0;
 }
 
-    QCString appId;
-    IceConn iceConn;
-    bool notifyRegister;
-    CARD32 time;
-    QList <_IceConn> waitingForReply;
-    QList <_IceConn> waitingForDelayedReply;
-};
+DCOPConnection::~DCOPConnection()
+{
+    delete _signalConnectionList;
+}
+
+DCOPSignalConnectionList *
+DCOPConnection::signalConnectionList()
+{
+    if (!_signalConnectionList)
+       _signalConnectionList = new DCOPSignalConnectionList;
+    return _signalConnectionList;
+}
 
 IceAuthDataEntry *authDataEntries = 0;
 static char *addAuthFile = 0;
@@ -511,7 +516,6 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
     }
 }
 
-
 IcePaVersionRec DCOPVersions[] = {
     { DCOPVersionMajor, DCOPVersionMinor,  DCOPProcessMessage }
 };
@@ -590,6 +594,7 @@ DCOPServer::DCOPServer()
     : QObject(0,0), appIds(263), clients(263)
 {
     time = 0; // the beginning of time....
+    dcopSignals = new DCOPSignals;
 
     extern int _IceLastMajorOpcode; // from libICE
     if (_IceLastMajorOpcode < 1 )
@@ -665,6 +670,7 @@ DCOPServer::~DCOPServer()
     }
 
     FreeAuthenticationData(numTransports, authDataEntries);
+    delete dcopSignals;
 }
 
 
@@ -719,6 +725,9 @@ void* DCOPServer::watchConnection( IceConn iceConn )
 void DCOPServer::removeConnection( void* data )
 {
     DCOPConnection* conn = static_cast<DCOPConnection*>(data);
+
+    dcopSignals->removeConnections(conn);
+
     clients.remove(conn->iceConn );
 
     // Send DCOPReplyFailed to all in conn->waitingForReply
@@ -784,11 +793,22 @@ void DCOPServer::removeConnection( void* data )
     delete conn;
 }
 
-bool DCOPServer::receive(const QCString &/*app*/, const QCString &/*obj*/,
+bool DCOPServer::receive(const QCString &/*app*/, const QCString &obj,
 			 const QCString &fun, const QByteArray& data,
 			 QCString& replyType, QByteArray &replyData,
 			 IceConn iceConn)
 {
+    if ( obj == "emit")
+    {
+        DCOPConnection* conn = clients.find( iceConn );
+        if (conn)
+        {
+qDebug("DCOPServer: %s emits %s", conn->appId.data(), fun.data());
+           dcopSignals->emitSignal(conn, fun, data, false);
+        }
+        replyType = "void";
+        return true;
+    }
     if ( fun == "registerAs(QCString)" ) {
 	QDataStream args( data, IO_ReadOnly );
 	if (!args.atEnd()) {
@@ -883,9 +903,54 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &/*obj*/,
 	    replyType = "void";
 	    return TRUE;
 	}
-    }
+    } else if ( fun == "connectSignal(QCString,QCString,QCString,QCSQtring,bool)") {
+        DCOPConnection* conn = clients.find( iceConn );
+        if (!conn) return false;
+        QCString sender, signal, receiverObj, slot;
+        Q_INT8 Volatile;
+        QDataStream args(data, IO_ReadOnly );
+        if (args.atEnd()) return false;
+        args >> sender >> signal >> receiverObj >> slot >> Volatile;
+qDebug("DCOPServer: connectSignal(sender = %s signal = %s recvObj = %s slot = %s)", sender.data(), signal.data(), receiverObj.data(), slot.data());
+        bool b = dcopSignals->connectSignal(sender, signal, conn, receiverObj, slot, (Volatile != 0));
+        replyType = "bool";
+        QDataStream reply( replyData, IO_WriteOnly );
+        reply << b;
+        return TRUE;
+    } else if ( fun == "disconnectSignal(QCString,QCString,QCString,QCSQtring)") {
+        DCOPConnection* conn = clients.find( iceConn );
+        if (!conn) return false;
+        QCString sender, signal, receiverObj, slot;
+        QDataStream args(data, IO_ReadOnly );
+        if (args.atEnd()) return false;
+        args >> sender >> signal >> receiverObj >> slot;
+qDebug("DCOPServer: disconnectSignal(sender = %s signal = %s recvObj = %s slot = %s)", sender.data(), signal.data(), receiverObj.data(), slot.data());
+        bool b = dcopSignals->disconnectSignal(sender, signal, conn, receiverObj, slot);
+        replyType = "bool";
+        QDataStream reply( replyData, IO_WriteOnly );
+        reply << b;
+        return TRUE;
+    }   
 
     return FALSE;
+}
+
+void 
+DCOPServer::sendMessage(DCOPConnection *conn, const QCString &sApp, 
+                        const QCString &rApp, const QCString &rObj, 
+                        const QCString &rFun,  const QByteArray &data)
+{
+   QByteArray ba;
+   QDataStream ds( ba, IO_WriteOnly );
+   ds << sApp << rApp << rObj << rFun << data;
+   int datalen = ba.size();
+   DCOPMsg *pMsg = 0;
+
+   IceGetHeader( conn->iceConn, majorOpcode, DCOPSend,
+                 sizeof(DCOPMsg), DCOPMsg, pMsg );
+   pMsg->time = ++time;
+   pMsg->length += datalen;
+   IceSendData(conn->iceConn, datalen, const_cast<char *>(ba.data()));
 }
 
 void IoErrorHandler ( IceConn iceConn)

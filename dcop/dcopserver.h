@@ -42,11 +42,33 @@ extern "C" {
 #include <X11/ICE/ICEproto.h>
 }
 
-
 class DCOPConnection;
 class DCOPListener;
+class DCOPSignalConnectionList;
+class DCOPSignals;
 
 typedef QValueList<QCString> QCStringList;
+
+/**
+ * @internal
+ */
+class DCOPConnection : public QSocketNotifier
+{
+public:
+    DCOPConnection( IceConn conn );
+    ~DCOPConnection();
+    
+    DCOPSignalConnectionList *signalConnectionList();
+
+    QCString appId;
+    IceConn iceConn;
+    bool notifyRegister;
+    CARD32 time;
+    QList <_IceConn> waitingForReply;
+    QList <_IceConn> waitingForDelayedReply;
+    DCOPSignalConnectionList *_signalConnectionList;
+};
+
 
 /**
  * @internal
@@ -67,6 +89,12 @@ public:
 			 const QCString &fun, const QByteArray& data,
 			 QCString& replyType, QByteArray &replyData, IceConn iceConn);
 
+    DCOPConnection *findClient(const QCString &appId) { return appIds.find(appId); }
+
+    void sendMessage(DCOPConnection *conn, const QCString &sApp, 
+                     const QCString &rApp, const QCString &rObj, 
+                     const QCString &rFun, const QByteArray &data);
+
 private slots:
     void newClient( int socket );
     void processData( int socket );
@@ -77,9 +105,9 @@ private:
     QList<DCOPListener> listener;
     QDict<DCOPConnection> appIds;
     QPtrDict<DCOPConnection> clients;
-
-    class DCOPServerPrivate;
-    DCOPServerPrivate *d;
+    DCOPSignals *dcopSignals;
 };
+
+extern DCOPServer* the_server;
 
 #endif

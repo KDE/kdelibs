@@ -34,9 +34,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #endif
 #include <qtextstream.h>
 #include <qfile.h>
+#include <qapp.h>
 #include <qsocketnotifier.h>
 
-#include <dcopserver.h>
+//#include <dcopserver.h>
 #include <dcopglobal.h>
 #include <dcopclient.h>
 #include <dcopobject.h>
