@@ -896,16 +896,16 @@ KURL& KURL::operator=( const KURL& _u )
 bool KURL::operator<( const KURL& _u) const
 {
   int i;
-  if (_u.isMalformed())
+  if (!_u.isValid())
   {
-     if (isMalformed())
+     if (!isValid())
      {
         i = m_strProtocol.compare(_u.m_strProtocol);
         return (i < 0);
      }
      return false;
   }
-  if (isMalformed())
+  if (!isValid())
      return true;
   
   i = m_strProtocol.compare(_u.m_strProtocol);
@@ -936,7 +936,7 @@ bool KURL::operator<( const KURL& _u) const
 
 bool KURL::operator==( const KURL& _u ) const
 {
-  if ( isMalformed() || _u.isMalformed() )
+  if ( !isValid() || !_u.isValid() )
     return false;
 
   if ( m_strProtocol == _u.m_strProtocol &&
@@ -970,7 +970,7 @@ bool KURL::cmp( const KURL &u, bool ignore_trailing ) const
 
 bool KURL::equals( const KURL &_u, bool ignore_trailing ) const
 {
-  if ( isMalformed() || _u.isMalformed() )
+  if ( !isValid() || !_u.isValid() )
     return false;
 
   if ( ignore_trailing )
@@ -997,7 +997,7 @@ bool KURL::equals( const KURL &_u, bool ignore_trailing ) const
 
 bool KURL::isParentOf( const KURL& _u ) const
 {
-  if ( isMalformed() || _u.isMalformed() )
+  if ( !isValid() || !_u.isValid() )
     return false;
 
   if ( m_strProtocol == _u.m_strProtocol &&
