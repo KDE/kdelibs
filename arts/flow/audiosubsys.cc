@@ -334,9 +334,12 @@ int AudioSubSystem::open()
 	 * which will not trigger select()ing the file descriptor unless we have
 	 * written something first.
 	 */
-	char *zbuffer = (char *)calloc(sizeof(char), size);
-	while(::write(audio_fd,zbuffer,size) > 0)
-		/* fills up the audio buffer */;
+	char *zbuffer = (char *)calloc(sizeof(char), _fragmentSize);
+	for(int fill = 0; fill < _fragmentCount; fill++)
+	{
+		int len = ::write(audio_fd,zbuffer,_fragmentSize);
+		assert(len == _fragmentSize);
+	}
 	free(zbuffer);
 
 	/*
