@@ -102,12 +102,12 @@ class KAboutData
      *
      * @param version The program version string.
      *
-     * @param licenseType The license identifier. Use @ref setLicenseText if
-     * you
-     *        use a license not predefined here.
+     * @param shortDescription A short description of what the program does
      *
-     * @param copyrightStatement A copyright statement, that can look like
-     * this:
+     * @param licenseType The license identifier. Use @ref setLicenseText if
+     *        you use a license not predefined here.
+     *
+     * @param copyrightStatement A copyright statement, that can look like this:
      *        "(c) 1999-2000, Name". The string specified here is not modified
      *        in any manner. The author information from @ref addAuthor is not
      *        used.
@@ -124,6 +124,7 @@ class KAboutData
      */
     KAboutData( const QString &programName,
 		const QString &version,
+		const QString &shortDescription,
 		int licenseType = 0,
 		const QString &copyrightStatement = QString::null,
 		const QString &text = QString::null,
@@ -194,6 +195,11 @@ class KAboutData
     QString version() const { return mVersion; }
 
     /**
+     * @return the short description.
+     */
+    QString shortDescription() const { return mShortDescription; }
+
+    /**
      * @return the application homepage URL.
      */
     QString homepage() const { return mHomepageAddress; }
@@ -232,20 +238,10 @@ class KAboutData
      */
     QString copyrightStatement() const { return( mCopyrightStatement ); }
 
-    /**
-     * This function is intended to be used by the KDE libraries to
-     * verify that certain parameters (program name and version number)
-     * have been set. If a parameter is missing, a message will be
-     * printed to stdout.
-     */
-    //void verify() const;
-    // David : I think this depends on where the KAboutData is stored
-    // The main issue is to make sure we have an instance of it.
-    // With the new constructor, we are assured to have name and version anyway
-
   private:
     QString mProgramName;
     QString mVersion;
+    QString mShortDescription;
     int mLicenseKey;
     QString mCopyrightStatement;
     QString mOtherText;

@@ -25,6 +25,7 @@
 
 KAboutData::KAboutData( const QString &programName,
 			const QString &version,
+                        const QString &shortDescription,
 			int licenseType,
 			const QString &copyrightStatement,
 			const QString &text,
@@ -33,6 +34,7 @@ KAboutData::KAboutData( const QString &programName,
 			) :
   mProgramName( programName ),
   mVersion( version ),
+  mShortDescription( shortDescription ),
   mLicenseKey( licenseType ),
   mCopyrightStatement( copyrightStatement ),
   mOtherText( text ),
