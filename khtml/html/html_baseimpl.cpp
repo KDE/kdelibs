@@ -272,7 +272,7 @@ void HTMLFrameElementImpl::attach()
     while ((part = part->parentPart()))
         depth++;
 
-    if (depth > 6 || url.isNull()) {
+    if (depth > 6) {
         style()->setDisplay( NONE );
         return;
     }
@@ -309,7 +309,8 @@ void HTMLFrameElementImpl::attach()
       kdDebug( 6030 ) << "creating frame name: " << name.string() << endl;
     }
 
-    w->part()->requestFrame( renderFrame, url.string(), name.string() );
+    if (!url.isNull())
+        w->part()->requestFrame( renderFrame, url.string(), name.string() );
 
     HTMLElementImpl::attach();
     return;
@@ -577,7 +578,6 @@ ushort HTMLIFrameElementImpl::id() const
 
 void HTMLIFrameElementImpl::parseAttribute(AttrImpl *attr )
 {
-  DOM::DOMStringImpl *stringImpl = attr->value().implementation();
   switch (  attr->attrId )
   {
     case ATTR_WIDTH:
