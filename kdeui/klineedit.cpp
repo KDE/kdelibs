@@ -1045,7 +1045,7 @@ bool KLineEdit::trapReturnKey() const
 
 void KLineEdit::setURL( const KURL& url )
 {
-    QLineEdit::setText( url.prettyURL() );
+    setText( url.prettyURL() );
 }
 
 void KLineEdit::makeCompletionBox()
