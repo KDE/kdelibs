@@ -14,7 +14,7 @@ libmcop_la_SOURCES = buffer.cc connection.cc core.cc dispatcher.cc \
 	 startupmanager.cc md5.c md5auth.cc referenceclean.cc datapacket.cc \
 	 asyncstream.cc notification.cc flowsystem.cc extensionloader.cc \
 	 tmpglobalcomm.cc mcopconfig.cc connect.cc reference.cc type.cc \
-	 trader_impl.cc dynamicrequest.cc anyref.cc loopback.cc
+	 trader_impl.cc dynamicrequest.cc anyref.cc loopback.cc debug.cc
 
 libmcop_la_LIBADD = $(LIBSOCKET) $(LIBPTHREAD) $(USE_THREADS) \
      $(top_builddir)/libltdl/libltdlc.la
@@ -27,7 +27,7 @@ artsinclude_HEADERS = buffer.h common.h connection.h core.h dispatcher.h \
   startupmanager.h tcpconnection.h tcpserver.h type.h unixconnection.h \
   unixserver.h  referenceclean.h datapacket.h asyncstream.h notification.h \
   extensionloader.h mcopconfig.h connect.h reference.h weakreference.h \
-  dynamicrequest.h anyref.h
+  dynamicrequest.h anyref.h debug.h
 
 core: $(srcdir)/core.idl $(MCOPIDL)
 	$(MCOPIDL) -e Arts::Object -I$(srcdir) $(srcdir)/core.idl

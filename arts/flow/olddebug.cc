@@ -20,7 +20,11 @@
 
     */
 
-#include "debug.h"
+/*
+ * BC: this is here for binary compatibility only - new applications should
+ * be recompiled (including new debug.h) and will then not use this any longer
+ */
+
 #include <stdarg.h>
 #include <stdio.h>
 
