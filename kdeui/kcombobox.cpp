@@ -654,7 +654,7 @@ void KComboBox::setCompletedItems( const QStringList& items )
         if ( !txt.isEmpty() )
             d->completionBox->setCancelledText( txt );
         d->completionBox->clear();
-        d->completionBox->insertStringList( items );
+        d->completionBox->insertItems( items );
         d->completionBox->popup();
     }
     else
