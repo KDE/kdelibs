@@ -628,14 +628,19 @@ void KListView::findDrop(const QPoint &pos, QListViewItem *&parent, QListViewIte
   { // get the one closer to me..
     // That is, the space between two listviewitems
     // Since this aims to be user-friendly :)
-    int dropY=mapFromGlobal(p).y();
-    int itemHeight=atpos->height();
-    int topY=mapFromGlobal(itemRect(atpos).topLeft()).y();
+
+    after = 
+      mapFromGlobal(p).y() - mapFromGlobal (itemRect (atpos).topLeft()).y() < (atpos->height()/2) ?
+      atpos->itemAbove() : atpos;
+    
+//     int dropY=mapFromGlobal(p).y();
+//     int itemHeight=atpos->height();
+//     int topY=mapFromGlobal(itemRect(atpos).topLeft()).y();
 		
-     if ((dropY-topY)<itemHeight/2)
-       after=atpos->itemAbove();	
-     else
-       after=atpos;
+//      if ((dropY-topY)<itemHeight/2)
+//        after=atpos->itemAbove();	
+//      else
+//        after=atpos;
   }
   parent=0;
 }
@@ -828,7 +833,7 @@ void KListView::doneEditing(QListViewItem *item, int row)
 
 bool KListView::acceptDrag(QDropEvent* e) const
 {
-  return itemsMovable() && (e->source()==viewport());
+  return acceptDrops() && itemsMovable() && (e->source()==viewport());
 }
 
 void KListView::setCreateChildren(bool b)
