@@ -12,6 +12,10 @@
 
 bool check(QString txt, QString a, QString b)
 {
+  if (a.isEmpty())
+     a = QString::null;
+  if (b.isEmpty())
+     b = QString::null;
   if (a == b) {
     kdDebug() << txt << " : checking '" << a << "' against expected value '" << b << "'... " << "ok" << endl;
   }
@@ -27,24 +31,41 @@ int main(int argc, char *argv[])
   KApplication app(argc,argv,"kurltest",false,false);
   KURL::List lst;
 
-//  char * u1 = "file:/home/dfaure/my tar file.tgz#gzip:/decompress#tar:/";
-  const char * u1 = "tar:/#gzip:/decompress#file:/home/dfaure/my%20tar%20file.tgz";
+  QString u1 = "file:/home/dfaure/my#myref";
   KURL url1(u1);
-  printf("\n* URL to be split is %s\n",u1);
-  //check("KURL::url()", url1.url(), "file:/home/dfaure/my%20tar%20file.tgz#gzip:/decompress#tar:/");
-  check("KURL::url()", url1.url(), "tar:/#gzip:/decompress#file:/home/dfaure/my%20tar%20file.tgz");
-  check("KURL::protocol()", url1.protocol(), "tar");
-  check("KURL::path()", url1.path(), "/");
-  check("KURL::hasPath()", url1.hasPath()  ? "yes" : "no", "yes");
-  check("KURL::host()", url1.host(), QString::null);
-  check("KURL::ref()", url1.ref(), "gzip:/decompress#file:/home/dfaure/my%20tar%20file.tgz");
+  check("KURL::url()", url1.url(), "file:/home/dfaure/my#myref");
+  check("KURL::hasRef()", url1.hasRef() ? "yes" : "no", "yes");
+  check("KURL::hasHTMLRef()", url1.hasHTMLRef() ? "yes" : "no", "yes");
+  check("KURL::htmlRef()", url1.htmlRef(), "myref");
+  check("KURL::hasSubURL()", url1.hasSubURL() ? "yes" : "no", "no");
+  check("KURL::upURL()", url1.upURL().url(), "file:/home/dfaure");
+
+  u1 = "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/#myref";
+  url1 = u1;
+  check("KURL::url()", url1.url(), "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/#myref");
+  check("KURL::hasRef()", url1.hasRef() ? "yes" : "no", "yes");
+  check("KURL::hasHTMLRef()", url1.hasHTMLRef() ? "yes" : "no", "yes");
+  check("KURL::htmlRef()", url1.htmlRef(), "myref");
   check("KURL::hasSubURL()", url1.hasSubURL() ? "yes" : "no", "yes");
-  lst = KURL::split( url1 );
-/*
-  KURL * u = lst.first();
-  for ( ; u ; u = lst.next())
-    printf("---> %s\n",u->url().data());
-*/
+  check("KURL::upURL()", url1.upURL().url(), "file:/home/dfaure");
+
+  u1 = "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/";
+  url1 = u1;
+  check("KURL::url()", url1.url(), "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/");
+  check("KURL::hasRef()", url1.hasRef() ? "yes" : "no", "yes");
+  check("KURL::hasHTMLRef()", url1.hasHTMLRef() ? "yes" : "no", "no");
+  check("KURL::htmlRef()", url1.htmlRef(), "");
+  check("KURL::hasSubURL()", url1.hasSubURL() ? "yes" : "no", "yes");
+  check("KURL::upURL()", url1.upURL().url(), "file:/home/dfaure");
+
+  u1 = "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/README";
+  url1 = u1;
+  check("KURL::url()", url1.url(), "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/README");
+  check("KURL::hasRef()", url1.hasRef() ? "yes" : "no", "yes");
+  check("KURL::hasHTMLRef()", url1.hasHTMLRef() ? "yes" : "no", "no");
+  check("KURL::htmlRef()", url1.htmlRef(), "");
+  check("KURL::hasSubURL()", url1.hasSubURL() ? "yes" : "no", "yes");
+  check("KURL::upURL()", url1.upURL().url(), "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/");
 
   KURL notPretty("http://ferret.lmh.ox.ac.uk/%7Ekdecvs/");
   check("KURL::prettyURL()", notPretty.prettyURL(), "http://ferret.lmh.ox.ac.uk/~kdecvs/");
@@ -92,12 +113,6 @@ int main(int argc, char *argv[])
   check("KURL::upURL()", u2.url(), "ftp://ftp.kde.org/");
   u2 = u1;
   printf("\n* URL is %s\n",u2.url().ascii());
-  u2.cd("dir");
-  check("KURL::cd(\"dir\")", u2.url(), "tar:/dir#gzip:/decompress#file:/home/dfaure/my%20tar%20file.tgz");
-  u2 = u2.upURL();
-  check("KURL::upURL()", u2.url(), "tar:/#gzip:/decompress#file:/home/dfaure/my%20tar%20file.tgz");
-  u2 = u2.upURL();
-  check("KURL::upURL()", u2.url(), "file:/home/dfaure/");
   // setFileName
   u2.setFileName( "myfile.txt" );
   check("KURL::setFileName()", u2.url(), "file:/home/dfaure/myfile.txt");
@@ -210,8 +225,6 @@ int main(int argc, char *argv[])
   check("UNC, with empty host", unc2.path(), "/home/root");
   check("UNC, with empty host", unc2.url(), "file:/home/root");
 
-  QString remoteProtocol( KProtocolManager::self().remoteFileProtocol() );
-  if (remoteProtocol.isEmpty())
   {
      KURL unc3("FILE://remotehost/home/root");
      check("UNC, with remote host", unc3.path(), "//remotehost/home/root");
@@ -220,15 +233,6 @@ int main(int argc, char *argv[])
      check("KURL::host()", url2.path(), "//atlas/dfaure"); // says Waba
      KURL url3("file:////atlas/dfaure");
      check("KURL::host()", url3.path(), "//atlas/dfaure"); // says Waba
-  }
-  else
-  {
-     KURL unc3("FILE://remotehost/home/root");
-     check("UNC, with remote host", unc3.path(), "/home/root");
-     check("UNC, with remote host", unc3.url(), remoteProtocol+"://remotehost/home/root");
-     KURL url2("file://atlas/dfaure");
-     check("KURL::host()", url2.path(), "/dfaure");
-     check("KURL::url()", url2.path(), remoteProtocol+"://atlas/dfaure");
   }
 
   KURL umail1 ( "mailto:faure@kde.org" );
