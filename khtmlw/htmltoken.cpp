@@ -566,7 +566,7 @@ void HTMLTokenizer::write( const char *str )
 	    if ( tag )
 	    {
 		src++;
-		if ( *(dest-1) == '=' )
+		if ( *(dest-1) == '=' && !tquote )
 		{
 		    tquote = true;
 		    *dest = '\"';
