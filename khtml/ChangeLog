@@ -1,3 +1,7 @@
+2004-01-11  Dirk Mueller  <mueller@kde.org>
+
+	* css/css_base.cpp (extractPseudoType): make it case-insensitive (#72159).
+
 2004-01-11  Germain Garand  <germain@ebooksfrance.org>
 
         border/padding/margin issues on inlines (#68394)

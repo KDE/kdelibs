@@ -164,6 +164,7 @@ void CSSSelector::extractPseudoType() const
         return;
     _pseudoType = PseudoOther;
     if (!value.isEmpty()) {
+        value = value.lower();
         switch (value[0]) {
             case 'a':
                 if (value == "active")
@@ -305,8 +306,8 @@ DOMString CSSSelector::selectorText() const
                 str += "=";
                 break;
             case CSSSelector::Set:
-                str += " "; /// ## correct?
-                       break;
+                str += " "; // ## correct?
+                break;
             case CSSSelector::List:
                 str += "~=";
                 break;
