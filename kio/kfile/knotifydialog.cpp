@@ -110,7 +110,7 @@ KNotifyDialog::KNotifyDialog( QWidget *parent, const char *name, bool modal,
     QVBox *box = makeVBoxMainWidget();
 
     m_notifyWidget = new KNotifyWidget( box, "knotify widget" );
-
+    
     if ( aboutData )
         addApplicationEvents( aboutData->appName() );
 
@@ -170,7 +170,10 @@ KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
     layout()->setSpacing( KDialogBase::spacingHint() );
 
     if ( !handleAllApps )
+    {
         m_affectAllApps->hide();
+        m_playerButton->hide();
+    }
 
     SelectionCombo::fill( m_comboEnable );
     SelectionCombo::fill( m_comboDisable );
