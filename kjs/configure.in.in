@@ -18,6 +18,11 @@ AC_DEFUN(AC_CHECK_PCREPOSIX,
   [
     ac_save_libs="$LIBS"
     LIBS="-lpcre -lpcreposix"
+    ac_CPPFLAGS_save="$CPPFLAGS"
+    CPPFLAGS="$CPPFLAGS $all_includes"
+    ac_LDFLAGS_save="$LDFLAGS"
+    LDFLAGS="$LDFLAGS $all_libraries"
+    AC_TRY_LINK(
     AC_TRY_LINK(
       [#include <pcreposix.h>],
       [regfree(0);],
@@ -25,6 +30,8 @@ AC_DEFUN(AC_CHECK_PCREPOSIX,
       [ac_cv_have_pcreposix="no"]
     )
     LIBS="$ac_save_libs"
+    LDFLAGS="$ac_LDFLAGS_save"
+    CPPFLAGS="$ac_CPPFLAGS_save"
   ])
   AC_MSG_RESULT($ac_cv_have_pcreposix)
   if test "$ac_cv_have_pcreposix" = "yes"; then
