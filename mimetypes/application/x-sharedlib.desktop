@@ -34,6 +34,7 @@ Comment[ta]=À¸¢÷ó¾ áÄ¸õ
 Comment[tr]=Ortak kütüphane dosyası
 Comment[uk]=Спільна бібліотека
 Comment[zh_CN.GB2312]=共享库
+Comment[zh_TW.Big5]=共享程式庫
 Icon=exec
 Type=MimeType
 MimeType=application/x-sharedlib

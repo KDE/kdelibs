@@ -1,30 +1,70 @@
-As you all may or may not know, Debian and KDE (and Troll) have been going
-rounds for a while now dealing with licensing.  In the old days of KDE 1.1
-and qt1 we have the non-free license of QT that caused KDE not to be
-included in Debian.  With the invention of QT 2 and the QPL v2 we now
-have a DFSG License'd QT which is good...*BUT* even though the QPL is
-a free license it conflicts with the GPL.  (The GPL is a bit too anal at
-times)  Anyways, in order to get around the GPL one must add an exclusion
-to the GPL license stating it's ok to compile against the QPL.
+KDE NOTICE
+==========
 
-Sound easy enough?  Well the truth is it's not that easy.  In order to change
-the license on a program you must get approval from every single person who
-has ever contributed to the code.  This can at times be impossible.  
+There used to be two versions of kde.deb : one made by debian, and 
+one made by the KDE team. Fortunatly this has changed to the better
+and this package is both: the debian package and the kde package.
 
-The good news is that KDE has been writing a lot of new code.  All that new
-code has been given a proper license. The new code is either LGPL'd (which
-is compatible with the QPL) or GPL'd with the exclusion.  This is at least
-the case for kdelibs.  kdelibs is so far the only KDE core package that can
-officially be a part of Debian.  The rest will soon come either by efforts
-on the KDE camp or by new versions of licenses.  Who knows.  
+Andreas Jellinghaus <aj@debian.org> used to maintain the debian part
+and Stephan Kulow took them over, when he orphaned them.
 
-In the meantime you can either build your own versions of the KDE binaries
-or download them from kde.tdyc.com.
+Since then Ivan Moore has been working on them with Stephan's guidance
+and has just recently taken them over completely.
 
-Anyways, I have verified all the binaries in kdelibs and all meet the
-DFSG.
+---
+INFORMATIONS ABOUT KDE
+======================
 
-(update) Troll has decided to release QT 2.2 under both the QPL and
-the GPL so there will no longer be a confliction.
+Web site 	www.kde.org		(and mirrors)
+ftp site	ftp.kde.org		(and mirrors)
 
-Ivan  <rkrusty@debian.org>
+mailing lists 
+   * kde - for general discussion
+   * kde-announce - announcements of new KDE applications
+   * kde-user - users help each other
+   * kde-devel - for developers (read only)
+   * kde-licensing - discussion of licensing issues
+   * kde-look - discussing "look'n'feel issues"
+
+use www.kde.org to subscribe !
+
+There is also a debian-kde@lists.debian.org mailing list.  See
+http://www.debian.org for more information.
+
+1. About KDEDIR:
+----------------
+
+The debian KDE package has been modified so you do not need to set the
+KDEDIR environment vairable to use it. You don't need to set QTDIR either.
+
+2. Changes to KDE directory structure:
+-------------------------------------
+
+KDE's paths can mainly be organized independently. For Debian's sake,
+I chose the below paths - following Andreas's settings.
+
+/usr			prefix
+/usr/bin		kde binaries (was KDE/bin)
+/usr/lib		kde shared libraries (was KDE/lib)
+/usr/include/kde	kde include files (was KDE/include)
+/usr/lib/cgi-bin	kde cgi binaries (was KDE/cgi-bin)
+/usr/share/doc/kde/HTML kde online documentation (was KDE/share/doc)
+/etc/kde2		kde config files (was KDE/share/config)
+/usr/share/applnk	kde applnk files (original)
+/usr/share/mimelnk	kde mimelink files
+/usr/share/icons	kde icons (and mini icons in .../icons/mini)
+/usr/share/toolbar	kde toolbar icons (can also be used by other apps)
+/usr/share/wallpapers	kde wallpaper icons (can also be used by other apps)
+/usr/share/apps/APP	kde per application directory
+/usr/share/locale	locales
+
+3. Kpanel and menus:
+-------------------
+
+If you have the menu package installed, kpanel will display the debian menus 
+of installed programs. Otherwise, you won't get any menus at all, so I do
+recommend you install the menu package.
+
+Andreas Jellinghaus <aj@debian.org>  Mon, 13 Oct 1997 20:05:57 +0200
+Stephan Kulow <coolo@kde.org> Mon, 10 Mar 1998 23:21:23 +0100
+Ivan E. Moore II <rkrusty@debian.org> Wed, 16 Aug 2000 22:30:00 -0700

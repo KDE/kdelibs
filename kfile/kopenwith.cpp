@@ -43,6 +43,7 @@
 #include <kmimemagic.h>
 #include <krun.h>
 #include <kstddirs.h>
+#include <kuserprofile.h>
 #include <kurlcompletion.h>
 #include <kurlrequester.h>
 #include <dcopclient.h>
@@ -512,10 +513,14 @@ void KOpenWithDlg::slotOK()
     pathName += QString::fromLatin1(".desktop");
   QString path(locateLocal("apps", pathName));
 
+  KServiceTypeProfile::OfferList offerList = KServiceTypeProfile::offers( qServiceType );
+  int maxPreference = offerList.isEmpty() ? 1 : offerList.first().preference();
+
   KDesktopFile desktop(path);
   desktop.writeEntry(QString::fromLatin1("Type"), QString::fromLatin1("Application"));
   desktop.writeEntry(QString::fromLatin1("Name"), m_pService ? m_pService->name() : serviceName);
   desktop.writeEntry(QString::fromLatin1("Exec"), keepExec);
+  desktop.writeEntry(QString::fromLatin1("InitialPreference"), maxPreference + 1);
   if (remember)
     if (remember->isChecked()) {
       QStringList mimeList;

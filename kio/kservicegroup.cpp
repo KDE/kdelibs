@@ -20,6 +20,7 @@
 
 #include <kiconloader.h>
 #include <kglobal.h>
+#include <klocale.h>
 #include <kstddirs.h>
 #include <kdebug.h>
 #include "kservicefactory.h"
@@ -159,29 +160,26 @@ KServiceGroup::entries(bool sort)
     // Sort the list alphabetically.
     // Groups come first, then services.
 
-    QStringList slist;
-    QStringList glist;
+    QMap<QString,SPtr> slist;
+    QMap<QString,SPtr> glist;
     for (List::ConstIterator it(group->m_serviceList.begin()); it != group->m_serviceList.end(); ++it)
         {
-            if ((*it)->isType(KST_KServiceGroup))
-                glist.append((*it)->name());
-            else
-                slist.append((*it)->name());
+        // Choose the right map
+        QMap<QString,SPtr> & map = (*it)->isType(KST_KServiceGroup) ? glist : slist;
+        // Check for duplicates - QMap doesn't like that
+        QString name = (*it)->name();
+        int n = 1;
+        while (map.contains(name))
+           name = (*it)->name()+QString::number(++n); // we append a number to make the entry unique
+        map.insert(name,SPtr(*it));
         }
 
-    glist.sort();
-    slist.sort();
-
+    // Iterating over the QMap returns sorted items
     List lsort;
-    for(QStringList::ConstIterator it = glist.begin(); it != glist.end(); ++it)
-        for (List::Iterator sit(group->m_serviceList.begin()); sit != group->m_serviceList.end(); ++sit)
-            if((*it) == (*sit)->name())
-                lsort.append(*sit);
-
-    for(QStringList::ConstIterator it = slist.begin(); it != slist.end(); ++it)
-        for (List::Iterator sit(group->m_serviceList.begin()); sit != group->m_serviceList.end(); ++sit)
-            if((*it) == (*sit)->name())
-                lsort.append(*sit);
+    for(QMap<QString,SPtr>::ConstIterator it = glist.begin(); it != glist.end(); ++it)
+        lsort.append(it.data());
+    for(QMap<QString,SPtr>::ConstIterator it = slist.begin(); it != slist.end(); ++it)
+        lsort.append(it.data());
 
     // honor the SortOrder Key
 

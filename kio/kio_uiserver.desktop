@@ -38,6 +38,7 @@ Comment[ta]=KDEÂ¢ý Óý§ÉüÈ ¾¸Åø UI §º¨ÅÂ¸õ
 Comment[tr]=KDE'nin İlerleme Bilgisi UI sunucusu
 Comment[uk]=Сервер графічного інтерфейсу інформації про розвиток KDE
 Comment[zh_CN.GB2312]=KDE 的进度信息用户接口服务器
+Comment[zh_TW.Big5]=KDE's 程序資訊 UI 伺服器
 ServiceTypes=
 # It is a server
 X-DCOP-ServiceType=Unique

@@ -30,11 +30,13 @@ Name[ro]=Vizualizare navigator
 Name[ru]=Вид Броузера
 Name[sk]=Prehliadač
 Name[sl]=Pogled brskalnika
+Name[sr]=Pogled za pretragu
 Name[sv]=Surfvy
 Name[ta]=§Á§Ä¡Ê ¸¡ðº¢
 Name[tr]=Tarayıcı Görünümü
 Name[uk]=Веб-вигляд
 Name[zh_CN.GB2312]=浏览器视图
+Name[zh_TW.Big5]=瀏覽檢視
 
 [PropertyDef::X-KDE-BrowserView-Args]
 Type=QString

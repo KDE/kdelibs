@@ -57,7 +57,7 @@ KInstance* NotepadFactory::instance()
 {
   if( !s_instance )
   {
-    s_about = new KAboutData( "notepadpart", I18N_NOOP( "Notepad" ), "2.0pre" );
+    s_about = new KAboutData( "notepadpart", I18N_NOOP( "Notepad" ), "2.0" );
     s_instance = new KInstance( s_about );
   }
   return s_instance;

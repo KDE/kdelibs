@@ -14,31 +14,25 @@
 
 #define QCOORDARRLEN(x) sizeof(x)/(sizeof(QCOORD)*2)
 
-static unsigned char combodeco_bits[] = {
+static const unsigned char combodeco_bits[] = {
     0xff, 0xff, 0x00, 0xff, 0xff, 0x7e, 0x3c, 0x18};
 
-static unsigned char checkfill_bits[] = {
+static const unsigned char checkfill_bits[] = {
     0x00, 0x00, 0x80, 0x01, 0x80, 0x00, 0xc0, 0x00, 0x40, 0x00, 0x60, 0x00,
     0x22, 0x00, 0x36, 0x00, 0x1c, 0x00, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00};
 
-static unsigned char checkoutline_bits[] = {
+static const unsigned char checkoutline_bits[] = {
     0x80, 0x03, 0x40, 0x02, 0x40, 0x01, 0x20, 0x01, 0xa1, 0x00, 0x93, 0x00,
     0x55, 0x00, 0x49, 0x00, 0x22, 0x00, 0x24, 0x00, 0x18, 0x00, 0x10, 0x00};
 
 PillBoxStyle::PillBoxStyle()
     :KStyle()
 {
-    checkOutline = new QBitmap(10, 12, checkoutline_bits, true);
-    checkOutline->setMask(*checkOutline);
-    checkFill = new QBitmap(10, 12, checkfill_bits, true);
-    checkFill->setMask(*checkFill);
     setButtonDefaultIndicatorWidth(0);
 }
 
 PillBoxStyle::~PillBoxStyle()
 {
-    delete checkOutline;
-    delete checkFill;
 }
 
 void PillBoxStyle::polish(QPalette &)
@@ -105,9 +99,11 @@ void PillBoxStyle::drawComboButton(QPainter *p, int x, int y, int w, int h,
                                   const QColorGroup &cg, bool sunken,
                                   bool, bool, const QBrush *fill)
 {
-    static QBitmap comboDeco(8, 8, combodeco_bits, true);
-    if(!comboDeco.mask())
+    if (comboDeco.isNull())
+    {
+        comboDeco = QBitmap(8, 8, combodeco_bits, true);
         comboDeco.setMask(comboDeco);
+    }
     
     p->fillRect(x, y, w, h, cg.brush(QColorGroup::Background));
     p->setPen(Qt::black);
@@ -453,12 +449,19 @@ void PillBoxStyle::drawIndicator(QPainter *p, int x, int y, int w, int h,
                                 const QColorGroup &g, int state, bool down,
                                 bool)
 {
+    if (checkOutline.isNull())
+    {
+       checkOutline = QBitmap(10, 12, checkoutline_bits, true);
+       checkOutline.setMask(checkOutline);
+       checkFill = QBitmap(10, 12, checkfill_bits, true);
+       checkFill.setMask(checkFill);
+    }
     drawButton(p, x, y, w, h, g, down);
     if(state != QButton::Off){
         p->setPen(g.dark());
-        p->drawPixmap(4, 2, *checkFill);
+        p->drawPixmap(4, 2, checkFill);
         p->setPen(Qt::black);
-        p->drawPixmap(4, 2, *checkOutline);
+        p->drawPixmap(4, 2, checkOutline);
     }
 }
 
@@ -471,7 +474,7 @@ void PillBoxStyle::drawExclusiveIndicator(QPainter *p, int x, int y, int w,
                                          int h, const QColorGroup &g, bool on,
                                          bool down, bool)
 {
-    static QCOORD circle_dark[] = {5,1, 6,1, 7,1, 8,1, 9,1, 10,1,
+    static const QCOORD circle_dark[] = {5,1, 6,1, 7,1, 8,1, 9,1, 10,1,
     3,2, 4,2,
     2,3,
     2,4,
@@ -483,7 +486,7 @@ void PillBoxStyle::drawExclusiveIndicator(QPainter *p, int x, int y, int w,
     2,10
     };
 
-    static QCOORD circle_mid[] = {5,0, 6,0, 7,0, 8,0, 9,0,
+    static const QCOORD circle_mid[] = {5,0, 6,0, 7,0, 8,0, 9,0,
     3,1, 4,1, 11,1,
     2,2, 10,2, 12,2,
     1,3, 3,3,
@@ -498,7 +501,7 @@ void PillBoxStyle::drawExclusiveIndicator(QPainter *p, int x, int y, int w,
     2,12
     };
 
-    static QCOORD circle_light[] = {14,5,
+    static const QCOORD circle_light[] = {14,5,
     14,6,
     14,7,
     14,8,
@@ -510,7 +513,7 @@ void PillBoxStyle::drawExclusiveIndicator(QPainter *p, int x, int y, int w,
     5,14, 6,14, 7,14, 8,14, 9,14
     };
 
-    static QCOORD fill_lines[] = {6,3, 9,3, 3,6, 3,9, 12,6, 12,9, 6,12, 9,12};
+    static const QCOORD fill_lines[] = {6,3, 9,3, 3,6, 3,9, 12,6, 12,9, 6,12, 9,12};
 
     QPen oldPen = p->pen();
     p->fillRect( x, y, w, h, g.brush(QColorGroup::Background));
@@ -590,10 +593,10 @@ void PillBoxStyle::drawArrow(QPainter *p, Qt::ArrowType type, bool on, int x,
                             int y, int w, int h, const QColorGroup &g,
                             bool enabled, const QBrush *)
 {
-    static QCOORD u_arrow[]={3,1, 4,1, 2,2, 5,2, 1,3, 6,3, 0,4, 7,4, 0,5, 7,5};
-    static QCOORD d_arrow[]={0,2, 7,2, 0,3, 7,3, 1,4, 6,4, 2,5, 5,5, 3,6, 4,6};
-    static QCOORD l_arrow[]={1,3, 1,4, 2,2, 2,5, 3,1, 3,6, 4,0, 4,7, 5,0, 5,7};
-    static QCOORD r_arrow[]={2,0, 2,7, 3,0, 3,7, 4,1, 4,6, 5,2, 5,5, 6,3, 6,4};
+    static const QCOORD u_arrow[]={3,1, 4,1, 2,2, 5,2, 1,3, 6,3, 0,4, 7,4, 0,5, 7,5};
+    static const QCOORD d_arrow[]={0,2, 7,2, 0,3, 7,3, 1,4, 6,4, 2,5, 5,5, 3,6, 4,6};
+    static const QCOORD l_arrow[]={1,3, 1,4, 2,2, 2,5, 3,1, 3,6, 4,0, 4,7, 5,0, 5,7};
+    static const QCOORD r_arrow[]={2,0, 2,7, 3,0, 3,7, 4,1, 4,6, 5,2, 5,5, 6,3, 6,4};
     
     p->setPen(enabled ? on ? g.light() : Qt::black : g.mid());
     if(w > 8){

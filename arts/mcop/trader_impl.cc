@@ -191,7 +191,7 @@ vector<string>* TraderOffer_impl::getProperty(const string& name)
 
 TraderHelper::TraderHelper()
 {
-	addDirectory(EXTENSION_DIR);
+	addDirectory(TRADER_DIR);
 }
 
 TraderHelper::~TraderHelper()

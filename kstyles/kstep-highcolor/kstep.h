@@ -10,6 +10,7 @@
 #include <qpushbutton.h>
 #include <qscrollbar.h>
 #include <qobjectlist.h>
+#include <qbitmap.h>
 #include <limits.h>
 
 class KStepStyle : public KStyle
@@ -113,6 +114,16 @@ private:
     QColorGroup nextGrp;
     QPalette oldPopupPal;
     KPixmap *vSmall, *vMed, *vLarge, *hMed, *hLarge;
+    QBitmap arrowLightBmp;
+    QBitmap arrowDarkBmp;
+    QBitmap arrowMidBmp;
+    QBitmap upArrow;
+    QBitmap downArrow;
+    QBitmap leftArrow;
+    QBitmap rightArrow;
+    QBitmap paper1;
+    QBitmap paper2;
+    QBitmap paper3;
 };
 
 #endif

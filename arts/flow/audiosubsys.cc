@@ -313,14 +313,24 @@ int AudioSubSystem::open()
 
     /*
 	 * Some soundcards seem to be able to only supply "nearly" the requested
-	 * sampling rate - so allow a tolerance of 2%. This will result in slight
-	 * detuning, but at least it will work.
+	 * sampling rate, especially PAS 16 cards seem to quite radical supplying
+	 * something different than the requested sampling rate ;)
+	 *
+	 * So we have a quite large tolerance here (when requesting 44100 Hz, it
+	 * will accept anything between 38690 Hz and 49510 Hz). Most parts of the
+	 * aRts code will do resampling where appropriate, so it shouldn't affect
+	 * sound quality.
 	 */
-    int tolerance = _samplingRate/50+1;
+    int tolerance = _samplingRate/10+1000;
 
 	if (abs(speed-_samplingRate) > tolerance)
 	{  
 		_error = "can't set requested samplingrate";
+
+		char details[80];
+		sprintf(details," (requested rate %d, got rate %d)",
+			_samplingRate, speed);
+		_error += details;
 
 		close();
 		return -1;

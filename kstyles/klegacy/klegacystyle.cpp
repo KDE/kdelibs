@@ -3040,7 +3040,8 @@ void KLegacyStyle::drawKickerTaskButton(QPainter *p, int x, int y, int w, int h,
 
     QString s(title);
 
-    static QString modStr = QString::fromUtf8("[") + i18n("modified") + QString::fromUtf8("]");
+    static const QString &modStr = KGlobal::staticQString(
+        QString::fromUtf8("[") + i18n("modified") + QString::fromUtf8("]"));
 
     int modStrPos = s.find(modStr);
 

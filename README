@@ -10,7 +10,7 @@ In this file:
 About kdelibs
 -------------
 
-This is the version 2.0 (almost) release of the KDE libraries.  Among this
+This is the version 2.0.1 release of the KDE libraries.  Among this
 collection are twelve (12) libraries that are central to the development
 and execution of a KDE program, internationalization files for these
 libraries, misc HTML documentation, theme modules, and regression tests.  

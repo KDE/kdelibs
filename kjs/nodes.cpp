@@ -783,6 +783,7 @@ Completion ForNode::execute()
 {
   KJSO e, v, cval;
   Boolean b;
+  Context *context = Context::current();
   if (expr1) {
     e = expr1->evaluate();
     v = e.getValue();
@@ -795,6 +796,10 @@ Completion ForNode::execute()
       if (b.value() == false)
 	return Completion(Normal);
     }
+    // bail out on error
+    if (context->hadError())
+      return Completion(ReturnValue, context->error());
+
     Completion c = stat->execute();
     if (c.isValueCompletion())
       cval = c.value();
@@ -889,8 +894,13 @@ Completion DoWhileNode::execute()
   KJSO be, bv;
   Completion c;
   KJSO value;
+  Context *context = Context::current();
 
   do {
+    // bail out on error
+    if (context->hadError())
+      return Completion(ReturnValue, context->error());
+
     c = statement->execute();
     /* TODO */
     if (c.complType() != Normal)
@@ -909,11 +919,16 @@ Completion WhileNode::execute()
   Completion c;
   Boolean b(false);
   KJSO value;
+  Context *context = Context::current();
 
   while (1) {
     be = expr->evaluate();
     bv = be.getValue();
     b = bv.toBoolean();
+
+    // bail out on error
+    if (context->hadError())
+      return Completion(ReturnValue, context->error());
 
     if (!b.value())
       break;

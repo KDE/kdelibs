@@ -53,24 +53,24 @@ static const char * check_xpm[] = {
 "                ",
 "                "};
 
-static unsigned char check_mask[] = {
+static const unsigned char check_mask[] = {
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xf8, 0x00, 0xfe, 0x10, 0x3f, 
   0xb8, 0x07, 0xfc, 0x03, 0xfc, 0x01, 0xf0, 0x01, 0xe0, 0x00, 0x40, 0x00, 
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
-static unsigned char downarrow_bits[] = {
+static const unsigned char downarrow_bits[] = {
  0xff,0x01,0xff,0x01,0xfe,0x00,0xfe,0x00,0x7c,0x00,0x7c,0x00,0x38,0x00,0x38,
  0x00,0x10,0x00};
 
-static unsigned char leftarrow_bits[] = {
+static const unsigned char leftarrow_bits[] = {
  0x80,0x01,0xe0,0x01,0xf8,0x01,0xfe,0x01,0xff,0x01,0xfe,0x01,0xf8,0x01,0xe0,
  0x01,0x80,0x01};
 
-static unsigned char rightarrow_bits[] = {
+static const unsigned char rightarrow_bits[] = {
  0x03,0x00,0x0f,0x00,0x3f,0x00,0xff,0x00,0xff,0x01,0xff,0x00,0x3f,0x00,0x0f,
  0x00,0x03,0x00};
 
-static unsigned char uparrow_bits[] = {
+static const unsigned char uparrow_bits[] = {
   0x10, 0x00, 0x38, 0x00, 0x38, 0x00, 0x7c, 0x00, 0x7c, 0x00, 0xfe, 0x00,
   0xfe, 0x00, 0xff, 0x01, 0xff, 0x01};
 
@@ -86,7 +86,6 @@ KSgiStyle::KSgiStyle()
  	//
 	// set some default sizes
 	//
-	
 	setScrollBarExtent(19, 19);
 	
 }
@@ -153,9 +152,6 @@ KSgiStyle::unPolish(QWidget *w)
 bool
 KSgiStyle::eventFilter(QObject* obj, QEvent* ev)
 {
-
-  static QPalette	palStore;
-	
   if(obj->inherits("QButton") || obj->inherits("QComboBox")){
 	  if (ev->type() == QEvent::Enter) {
     	QWidget *btn = (QWidget *)obj;
@@ -431,14 +427,8 @@ void
 KSgiStyle::drawIndicatorMask(QPainter *p, int x, int y, int w, int h, 
                               int )
 {
-//  static QBitmap checkMask(16, 16, check_mask, true);
-	
-//  p->fillRect(x, y, w, h, Qt::color0);
   p->fillRect(x, y, w, h, Qt::color1);
-
-//  if (state)
-//    p->drawPixmap(x, y, checkMask);
-  }
+}
 
 //--------------------------------------------------------------------
 //
@@ -449,14 +439,13 @@ void
 KSgiStyle::drawCheckMark( QPainter *p, int x, int y, int w, int h,
 			const QColorGroup&, bool, bool)
 {
-  static QPixmap checkPix(check_xpm);
-  static QBitmap checkMask(16, 16, check_mask, true);
-	
   //
   // This should only happen the first time through to set the mask
   //
-  if (!checkPix.mask()) {
-    checkPix.setMask (checkMask);
+  if (checkPix.isNull()) {
+    checkPix = QPixmap(check_xpm);
+    checkMask = QBitmap(16, 16, check_mask, true);
+    checkPix.setMask(checkMask);
   }
 
   p->drawPixmap (x+(w-16)/2, y+(h-16)/2, checkPix);
@@ -482,44 +471,47 @@ void
 KSgiStyle::drawExclusiveIndicator(QPainter *p, int x, int y, int w, int h,
                                const QColorGroup &g, bool on, bool, bool enabled)
 {
-static unsigned char exclusive_outline_bits[] = {
+static const unsigned char exclusive_outline_bits[] = {
   0x80, 0x01, 0x40, 0x02, 0x20, 0x04, 0x10, 0x08, 0x08, 0x10, 0x04, 0x20,
   0x02, 0x40, 0x01, 0x80, 0x01, 0x80, 0x06, 0x60, 0x0c, 0x30, 0x18, 0x18,
   0x30, 0x0c, 0x60, 0x06, 0xc0, 0x03, 0x80, 0x01, };
-static unsigned char exclusive_fill_bits[] = {
+static const unsigned char exclusive_fill_bits[] = {
   0x00, 0x00, 0x80, 0x01, 0x40, 0x02, 0xa0, 0x05, 0xd0, 0x0b, 0xe8, 0x17,
   0xf4, 0x2f, 0xfa, 0x5f, 0xfe, 0x7f, 0xf8, 0x1f, 0xf0, 0x0f, 0xe0, 0x07,
   0xc0, 0x03, 0x80, 0x01, 0x00, 0x00, 0x00, 0x00, };
-static unsigned char exclusive_hilite_bits[] = {
+static const unsigned char exclusive_hilite_bits[] = {
   0x00, 0x00, 0x00, 0x00, 0x80, 0x01, 0x40, 0x02, 0x20, 0x04, 0x10, 0x08,
   0x08, 0x10, 0x04, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, };
-static unsigned char exclusive_arrow_bits[] = {
+static const unsigned char exclusive_arrow_bits[] = {
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x03, 0x00, 0x07,
   0x00, 0x0f, 0x00, 0x0f, 0x00, 0x07, 0x00, 0x03, 0x00, 0x01, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, };
-static unsigned char exclusive_shadow_bits[] = {
+static const unsigned char exclusive_shadow_bits[] = {
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x10, 0x00, 0x08, 0x00, 0x04, 0x00, 0x02, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, };
-static unsigned char exclusive_inactfill_bits[] = {
+static const unsigned char exclusive_inactfill_bits[] = {
   0x00, 0x00, 0x80, 0x01, 0xc0, 0x03, 0xe0, 0x07, 0xf0, 0x0f, 0xf8, 0x1f,
   0xfc, 0x3f, 0xfe, 0x7f, 0xfe, 0x7f, 0xfc, 0x3f, 0xf8, 0x1f, 0xf0, 0x0f,
   0xe0, 0x07, 0xc0, 0x03, 0x80, 0x01, 0x00, 0x00, };
 
-  static QBitmap outlineBitmap (16, 16, exclusive_outline_bits, true);
-  static QBitmap fillBitmap (16, 16, exclusive_fill_bits, true);
-  static QBitmap inactfillBitmap (16, 16, exclusive_inactfill_bits, true);
-  static QBitmap hiliteBitmap (16, 16, exclusive_hilite_bits, true);
-  static QBitmap arrowBitmap (16, 16, exclusive_arrow_bits, true);
-  static QBitmap shadowBitmap (16, 16, exclusive_shadow_bits, true);
-
-  if (!outlineBitmap.mask()) outlineBitmap.setMask(outlineBitmap);
-  if (!fillBitmap.mask()) fillBitmap.setMask(fillBitmap);
-  if (!inactfillBitmap.mask()) inactfillBitmap.setMask(inactfillBitmap);
-  if (!hiliteBitmap.mask()) hiliteBitmap.setMask(hiliteBitmap);
-  if (!arrowBitmap.mask()) arrowBitmap.setMask(arrowBitmap);
-  if (!shadowBitmap.mask()) shadowBitmap.setMask(shadowBitmap);
+  if (outlineBitmap.isNull())
+  {
+     outlineBitmap = QBitmap(16, 16, exclusive_outline_bits, true);
+     fillBitmap = QBitmap(16, 16, exclusive_fill_bits, true);
+     inactfillBitmap = QBitmap(16, 16, exclusive_inactfill_bits, true);
+     hiliteBitmap = QBitmap(16, 16, exclusive_hilite_bits, true);
+     arrowBitmap = QBitmap(16, 16, exclusive_arrow_bits, true);
+     shadowBitmap = QBitmap(16, 16, exclusive_shadow_bits, true);
+     
+     outlineBitmap.setMask(outlineBitmap);
+     fillBitmap.setMask(fillBitmap);
+     inactfillBitmap.setMask(inactfillBitmap);
+     hiliteBitmap.setMask(hiliteBitmap);
+     arrowBitmap.setMask(arrowBitmap);
+     shadowBitmap.setMask(shadowBitmap);
+  }
  
   QPen oldPen = p->pen();
 	
@@ -1075,13 +1067,13 @@ void
 KSgiStyle::drawScrollBarArrow(QPainter *p, Qt::ArrowType type, int x,
                                   int y, const QColorGroup &g)
 {
-  static QBitmap upArrow(9, 9, uparrow_bits, true);
-  static QBitmap downArrow(9, 9, downarrow_bits, true);
-  static QBitmap leftArrow(9, 9, leftarrow_bits, true);
-  static QBitmap rightArrow(9, 9, rightarrow_bits, true);
-
-  if(!upArrow.mask()){
-  	upArrow.setMask(upArrow);
+  if (upArrow.isNull())
+  {
+    upArrow = QBitmap(9, 9, uparrow_bits, true);
+    downArrow = QBitmap(9, 9, downarrow_bits, true);
+    leftArrow = QBitmap(9, 9, leftarrow_bits, true);
+    rightArrow = QBitmap(9, 9, rightarrow_bits, true);
+    upArrow.setMask(upArrow);
     downArrow.setMask(downArrow);
     leftArrow.setMask(leftArrow);
     rightArrow.setMask(rightArrow);

@@ -41,7 +41,7 @@ void BugMailer::slotError(int errornum) {
     }
     fputs(lstr.utf8().data(), stdout);
 
-    ::exit(1);
+    ::exit(42);
 }
 
 void BugMailer::slotSend() {

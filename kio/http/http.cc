@@ -3058,17 +3058,47 @@ HTTPProtocol::checkCacheEntry( bool readWrite)
 void
 HTTPProtocol::updateExpireDate(time_t expireDate)
 {
-   FILE *fs = checkCacheEntry(true);
-   if (fs)
-   {
-      int result = fseek(fs, m_cacheExpireDateOffset, SEEK_SET);
-      QString date;
-      date.setNum( expireDate );
-      date = date.leftJustify(16);
-      fputs(date.latin1(), fs);      // Expire date
-      result = fseek(fs, 0, SEEK_END);
-      fclose(fs);
-   }
+    bool ok = true;
+
+    FILE *fs = checkCacheEntry(true);
+    if (fs)
+    {
+        QString date;
+        if (expireDate>(30*365*24*60*60))
+        {
+            // expire date is a really a big number, it can't be
+            // a relative date.
+            date.setNum( expireDate );
+        }
+        else 
+        {
+            // expireDate before 2000. those values must be 
+            // interpreted as relative expiration dates from
+            // <META http-equiv="Expires"> tags.
+            // so we have to scan the creation time and add
+            // it to the expiryDate
+            char buffer[401];
+            time_t creationDate;
+
+            fseek(fs, 0, SEEK_SET);
+            if (ok && !fgets(buffer, 400, fs))
+                ok = false;
+            if (ok && !fgets(buffer, 400, fs))
+                ok = false;
+            if (ok && !fgets(buffer, 400, fs))
+                ok = false;
+            creationDate = strtoul(buffer, 0, 10);
+            if (!creationDate)
+                ok = false;
+            date.setNum( creationDate + expireDate );
+        }
+        date = date.leftJustify(16);
+        if (!ok || fseek(fs, m_cacheExpireDateOffset, SEEK_SET))
+            return;
+        fputs(date.latin1(), fs);      // Expire date
+        fseek(fs, 0, SEEK_END);
+        fclose(fs);
+    }
 }
 
 void

@@ -29,10 +29,12 @@ Comment[ro]=Listă ShoutCast de fişiere MP3
 Comment[ru]=Список звуковых файлов MP3 из ShoutCast
 Comment[sk]=MP3 ShoutCast zoznam
 Comment[sl]=Seznam za predvajanje MP3 ShoutCast
+Comment[sr]=MP3 ShoutCast playlista
 Comment[sv]=MP3 ShoutCast spellista
 Comment[tr]=MP3 ShoutCast Listesi
 Comment[uk]=Список MP3-ShoutCast
 Comment[zh_CN.GB2312]=MP3 ShoutCast 播放列表
+Comment[zh_TW.Big5]=MP3 ShoutCast 播放清單
 Patterns=*.pls;*.PLS;
 Icon=sound
 

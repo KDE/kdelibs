@@ -55,7 +55,7 @@ void KRecentDocument::add(const QString &openStr, bool isUrl)
 
     // need to change this path, not sure where
     QString path = locateLocal("data", QString::fromLatin1("RecentDocuments/"));
-                 
+
     QString dStr;
     QFileInfo fi(openStr);
     if(!isUrl)
@@ -64,7 +64,7 @@ void KRecentDocument::add(const QString &openStr, bool isUrl)
         KURL url(openStr);
         dStr = path + url.fileName();
     }
-    
+
     QString ddesktop = dStr + QString::fromLatin1(".desktop");
 
     int i=1;
@@ -74,8 +74,8 @@ void KRecentDocument::add(const QString &openStr, bool isUrl)
         KSimpleConfig tmp(ddesktop);
         tmp.setDesktopGroup();
         if(tmp.readEntry(QString::fromLatin1("Exec"), QString::fromLatin1(""))
-	   == QString::fromLatin1(kapp->argv()[0]) + 
-	   QString::fromLatin1(" ") + openStr) 
+	   == QString::fromLatin1(kapp->argv()[0]) +
+	   QString::fromLatin1(" ") + openStr)
 	{
             utime(QFile::encodeName(ddesktop), NULL);
             return;
@@ -105,7 +105,7 @@ void KRecentDocument::add(const QString &openStr, bool isUrl)
     conf.setDesktopGroup();
     conf.writeEntry( QString::fromLatin1("Type"), QString::fromLatin1("Application") );
     conf.writeEntry( QString::fromLatin1("URL"), openStr );
-    conf.writeEntry( QString::fromLatin1("Exec"), QString::fromLatin1(kapp->argv()[0]) + ' ' + openStr );
+    conf.writeEntry( QString::fromLatin1("Exec"), QString::fromLatin1(kapp->argv()[0]) + QString::fromLatin1(" \"") + openStr + '"' );
     conf.writeEntry( QString::fromLatin1("Name"), isUrl ? openStr : fi.fileName() );
     conf.writeEntry( QString::fromLatin1("Icon"), QString::fromLatin1("document") );
 }
@@ -125,5 +125,5 @@ int KRecentDocument::maximumItems()
     KConfigGroupSaver sa(config, QString::fromLatin1("RecentDocuments"));
     return config->readNumEntry(QString::fromLatin1("MaxEntries"), 10);
 }
-    
+
 

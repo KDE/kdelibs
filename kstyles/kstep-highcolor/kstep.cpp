@@ -15,33 +15,33 @@
 #include <qimage.h>
 #include "../highcolor/paperbits.h"
 
-static unsigned char downarrow_bits[] = {
+static const unsigned char downarrow_bits[] = {
  0xff,0x01,0xff,0x01,0xfe,0x00,0xfe,0x00,0x7c,0x00,0x7c,0x00,0x38,0x00,0x38,
  0x00,0x10,0x00};
 
-static unsigned char leftarrow_bits[] = {
+static const unsigned char leftarrow_bits[] = {
  0x80,0x01,0xe0,0x01,0xf8,0x01,0xfe,0x01,0xff,0x01,0xfe,0x01,0xf8,0x01,0xe0,
  0x01,0x80,0x01};
 
-static unsigned char rightarrow_bits[] = {
+static const unsigned char rightarrow_bits[] = {
  0x03,0x00,0x0f,0x00,0x3f,0x00,0xff,0x00,0xff,0x01,0xff,0x00,0x3f,0x00,0x0f,
  0x00,0x03,0x00};
 
-static unsigned char uparrow_bits[] = {
+static const unsigned char uparrow_bits[] = {
   0x10, 0x00, 0x38, 0x00, 0x38, 0x00, 0x7c, 0x00, 0x7c, 0x00, 0xfe, 0x00,
   0xfe, 0x00, 0xff, 0x01, 0xff, 0x01};
 
-static unsigned char arrow_dark_bits[] = {
+static const unsigned char arrow_dark_bits[] = {
  0x30,0x3c,0x08,0x84,0xc4,0x87,0x02,0x80,0x01,0x00,0x02,0x80,0x04,0x80,0x08,
  0x80,0x10,0x00,0x00,0x00,0x50,0x00,0x00,0x00,0x29,0x00,0x00,0x00,0x00,0x00,
  0x00,0x00,0x40,0xf0,0x29,0x40 };
 
-static unsigned char arrow_mid_bits[] = {
+static const unsigned char arrow_mid_bits[] = {
  0x00,0x00,0x20,0x80,0x20,0x80,0x00,0x80,0x00,0x00,0x00,0x80,0x00,0x80,0x00,
  0x80,0x00,0x00,0x00,0x00,0x50,0x00,0x00,0x00,0x31,0x00,0x00,0x00,0x68,0x80,
  0xb2,0x40,0x00,0x00,0x00,0x00 };
 
-static unsigned char arrow_light_bits[] = {
+static const unsigned char arrow_light_bits[] = {
  0x00,0x40,0x00,0xc0,0x00,0xc0,0x00,0xc0,0x00,0x40,0x00,0x40,0xe0,0xff,0x20,
  0x80,0x20,0x00,0x00,0x00,0x50,0x00,0x00,0x00,0x29,0x00,0x00,0x00,0x00,0x00,
  0x00,0x00,0x40,0xf0,0x29,0x40 };
@@ -249,11 +249,11 @@ void KStepStyle::drawPushButtonLabel(QPushButton *btn, QPainter *p)
     int x1, y1, x2, y2;
     btn->rect().coords(&x1, &y1, &x2, &y2);
     bool act = btn->isOn() || btn->isDown();
-    static QBitmap arrowLightBmp(15, 9, arrow_light_bits, true);
-    static QBitmap arrowDarkBmp(15, 9, arrow_dark_bits, true);
-    static QBitmap arrowMidBmp(15, 9, arrow_mid_bits, true);
-
-    if(!arrowLightBmp.mask()){
+    if (arrowLightBmp.isNull())
+    {
+        arrowLightBmp = QBitmap(15, 9, arrow_light_bits, true);
+        arrowDarkBmp = QBitmap(15, 9, arrow_dark_bits, true);
+        arrowMidBmp = QBitmap(15, 9, arrow_mid_bits, true);
         arrowLightBmp.setMask(arrowLightBmp);
         arrowDarkBmp.setMask(arrowDarkBmp);
         arrowMidBmp.setMask(arrowMidBmp);
@@ -543,14 +543,14 @@ QStyle::ScrollControl KStepStyle::scrollBarPointOver(const QScrollBar *sb,
 void KStepStyle::drawStepBarCircle(QPainter *p, int x, int y, int w,
                                    int h, const QColorGroup &g)
 {
-    static QCOORD circle_dark[] = {2,0, 3,0, 4,0,
+    static const QCOORD circle_dark[] = {2,0, 3,0, 4,0,
     1,1,
     0,2,
     0,3,
     0,4
     };
 
-    static QCOORD circle_mid[] = {1,0,
+    static const QCOORD circle_mid[] = {1,0,
     0,1, 2,1, 3,1, 4,1, 5,1,
     1,2, 2,2,
     1,3,
@@ -558,7 +558,7 @@ void KStepStyle::drawStepBarCircle(QPainter *p, int x, int y, int w,
     1,5
     };
 
-    static QCOORD circle_light[] = { 4,3, 5,3,
+    static const QCOORD circle_light[] = { 4,3, 5,3,
     3, 4, 4,4, 5,4,
     3,5, 4,5
     };
@@ -591,7 +591,7 @@ void KStepStyle::drawExclusiveIndicator(QPainter *p, int x, int y, int w,
                                         int h, const QColorGroup &g, bool on,
                                         bool down, bool)
 {
-    static QCOORD circle_dark[] = {5,1, 6,1, 7,1, 8,1, 9,1, 10,1,
+    static const QCOORD circle_dark[] = {5,1, 6,1, 7,1, 8,1, 9,1, 10,1,
     3,2, 4,2,
     2,3,
     2,4,
@@ -603,7 +603,7 @@ void KStepStyle::drawExclusiveIndicator(QPainter *p, int x, int y, int w,
     2,10
     };
 
-    static QCOORD circle_mid[] = {5,0, 6,0, 7,0, 8,0, 9,0,
+    static const QCOORD circle_mid[] = {5,0, 6,0, 7,0, 8,0, 9,0,
     3,1, 4,1, 11,1,
     2,2, 10,2, 12,2,
     1,3, 3,3,
@@ -618,7 +618,7 @@ void KStepStyle::drawExclusiveIndicator(QPainter *p, int x, int y, int w,
     2,12
     };
 
-    static QCOORD circle_light[] = {14,5,
+    static const QCOORD circle_light[] = {14,5,
     14,6,
     14,7,
     14,8,
@@ -630,7 +630,7 @@ void KStepStyle::drawExclusiveIndicator(QPainter *p, int x, int y, int w,
     5,14, 6,14, 7,14, 8,14, 9,14
     };
 
-    static QCOORD fill_lines[] = {6,3, 9,3, 3,6, 3,9, 12,6, 12,9, 6,12, 9,12};
+    static const QCOORD fill_lines[] = {6,3, 9,3, 3,6, 3,9, 12,6, 12,9, 6,12, 9,12};
 
     QPen oldPen = p->pen();
     p->fillRect( x, y, w, h, g.brush(QColorGroup::Background));
@@ -702,12 +702,12 @@ void KStepStyle::drawExclusiveIndicatorMask(QPainter *p, int x, int y, int w,
 void KStepStyle::drawStepBarArrow(QPainter *p, Qt::ArrowType type, int x,
                                   int y, const QColorGroup &g)
 {
-    static QBitmap upArrow(9, 9, uparrow_bits, true);
-    static QBitmap downArrow(9, 9, downarrow_bits, true);
-    static QBitmap leftArrow(9, 9, leftarrow_bits, true);
-    static QBitmap rightArrow(9, 9, rightarrow_bits, true);
-
-    if(!upArrow.mask()){
+    if (upArrow.isNull())
+    {
+        upArrow = QBitmap(9, 9, uparrow_bits, true);
+        downArrow = QBitmap(9, 9, downarrow_bits, true);
+        leftArrow = QBitmap(9, 9, leftarrow_bits, true);
+        rightArrow = QBitmap(9, 9, rightarrow_bits, true);
         upArrow.setMask(upArrow);
         downArrow.setMask(downArrow);
         leftArrow.setMask(leftArrow);
@@ -1132,11 +1132,11 @@ void KStepStyle::drawHGradient(QPainter *p, const QBrush &fill, int x, int y,
 
 void KStepStyle::makeWallpaper(QPixmap &dest, const QColor &base)
 {
-    static QBitmap paper1(45, 45, paper_1_bits, true);
-    static QBitmap paper2(45, 45, paper_2_bits, true);
-    static QBitmap paper3(45, 45, paper_3_bits, true);
-
-    if(!paper1.mask()){
+    if (paper1.isNull())
+    {
+        paper1 = QBitmap(45, 45, paper_1_bits, true);
+        paper2 = QBitmap(45, 45, paper_2_bits, true);
+        paper3 = QBitmap(45, 45, paper_3_bits, true);
         paper1.setMask(paper1);
         paper2.setMask(paper2);
         paper3.setMask(paper3);

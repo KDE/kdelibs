@@ -76,7 +76,7 @@ Object_skel *ObjectManager::create(string name)
 	}
 	mcopclassName += ".mcopclass";
 
-	MCOPConfig config(string(EXTENSION_DIR) + "/" + mcopclassName);
+	MCOPConfig config(string(TRADER_DIR) + "/" + mcopclassName);
 	string library = config.readEntry("Library");
 	if(library != "")
 	{

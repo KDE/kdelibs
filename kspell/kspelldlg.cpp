@@ -28,6 +28,7 @@
 #include <klineedit.h>
 #include <kprogress.h>
 #include <kbuttonbox.h>
+#include <kdebug.h>
 
 #include "kspelldlg.h"
 
@@ -38,7 +39,7 @@ KSpellDlg::KSpellDlg(
   bool _modal
 )
   : KDialogBase(
-      parent, name, _modal, i18n("Check spelling"), Help|Close, Close, true
+      parent, name, _modal, i18n("Check spelling"), Help|Cancel, Cancel, true
     ),
     progressbar(_progressbar)
 {
@@ -142,6 +143,8 @@ KSpellDlg::init(const QString & _word, QStringList * _sugg)
 
   listbox->clear();
   listbox->insertStringList(*sugg);
+
+  kdDebug(750) << "KSpellDlg::init [" << word << "]" << endl; 
 
   emit(ready(true));
 

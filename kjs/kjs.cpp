@@ -30,7 +30,6 @@ using namespace KJS;
 
 KJScript::KJScript()
 {
-  Collector::detach();
   rep = new KJScriptImp();
   rep->init();
 }

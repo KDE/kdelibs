@@ -29,6 +29,7 @@ Comment[ta]=AIFF/Amiga ´Ä¢
 Comment[tr]=AIFF/Amiga sesleri
 Comment[uk]=AIFF/Amiga-аудіо
 Comment[zh_CN.GB2312]=AIFF/Amiga 音频文件
+Comment[zh_TW.Big5]=AIFF/Amiga 音效
 MimeType=audio/x-aiff
 Icon=sound
 Patterns=*.aiff;*.AIFF

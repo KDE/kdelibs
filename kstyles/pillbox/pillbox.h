@@ -84,8 +84,9 @@ public:
                        const QColor *bg, bool f);
 protected:
     bool macMode;
-    QBitmap *checkOutline, *checkFill;
-
+    QBitmap checkOutline;
+    QBitmap checkFill;
+    QBitmap comboDeco;
 };
 
 #endif

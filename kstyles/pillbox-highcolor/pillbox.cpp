@@ -19,36 +19,32 @@
 
 #define QCOORDARRLEN(x) sizeof(x)/(sizeof(QCOORD)*2)
 
-static unsigned char combodeco_bits[] = {
+static const unsigned char combodeco_bits[] = {
     0xff, 0xff, 0x00, 0xff, 0xff, 0x7e, 0x3c, 0x18};
 
-static unsigned char checkfill_bits[] = {
+static const unsigned char checkfill_bits[] = {
     0x00, 0x00, 0x80, 0x01, 0x80, 0x00, 0xc0, 0x00, 0x40, 0x00, 0x60, 0x00,
     0x22, 0x00, 0x36, 0x00, 0x1c, 0x00, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00};
 
-static unsigned char checkoutline_bits[] = {
+static const unsigned char checkoutline_bits[] = {
     0x80, 0x03, 0x40, 0x02, 0x40, 0x01, 0x20, 0x01, 0xa1, 0x00, 0x93, 0x00,
     0x55, 0x00, 0x49, 0x00, 0x22, 0x00, 0x24, 0x00, 0x18, 0x00, 0x10, 0x00};
 
-static unsigned char up_bits[] = {
+static const unsigned char up_bits[] = {
     0x00, 0x18, 0x3c, 0x7e, 0xff, 0xff, 0x00, 0x00};
 
-static unsigned char down_bits[] = {
+static const unsigned char down_bits[] = {
     0x00, 0x00, 0xff, 0xff, 0x7e, 0x3c, 0x18, 0x00};
 
-static unsigned char left_bits[] = {
+static const unsigned char left_bits[] = {
     0x30, 0x38, 0x3c, 0x3e, 0x3e, 0x3c, 0x38, 0x30};
 
-static unsigned char right_bits[] = {
+static const unsigned char right_bits[] = {
     0x0c, 0x1c, 0x3c, 0x7c, 0x7c, 0x3c, 0x1c, 0x0c};
     
 PillBoxStyle::PillBoxStyle()
     :KStyle()
 {
-    checkOutline = new QBitmap(10, 12, checkoutline_bits, true);
-    checkOutline->setMask(*checkOutline);
-    checkFill = new QBitmap(10, 12, checkfill_bits, true);
-    checkFill->setMask(*checkFill);
     setButtonDefaultIndicatorWidth(0);
 
     if(QPixmap::defaultDepth() > 8){
@@ -74,8 +70,6 @@ PillBoxStyle::PillBoxStyle()
 
 PillBoxStyle::~PillBoxStyle()
 {
-    delete checkOutline;
-    delete checkFill;
     if(vSmall){
         delete vSmall;
         delete vMed;
@@ -143,7 +137,7 @@ void PillBoxStyle::polish(QPalette &pal)
                  QBrush(pal.color(QPalette::Active, QColorGroup::Background),
                         wallPaper));
         else
-            warning("Highcolor PillBox: Unable to load wallpaper %s",
+            qWarning("Highcolor PillBox: Unable to load wallpaper %s",
                     tmpStr.latin1());
     }
     else if(config->readBoolEntry("UseWallpaper", true)){
@@ -243,9 +237,11 @@ void PillBoxStyle::drawComboButton(QPainter *p, int x, int y, int w, int h,
                                   const QColorGroup &cg, bool sunken,
                                   bool, bool, const QBrush *)
 {
-    static QBitmap comboDeco(8, 8, combodeco_bits, true);
-    if(!comboDeco.mask())
+    if (comboDeco.isNull())
+    {
+        comboDeco = QBitmap(8, 8, combodeco_bits, true);
         comboDeco.setMask(comboDeco);
+    }
     
     p->setPen(Qt::black);
     int x2 = x+w-1;
@@ -361,9 +357,6 @@ void PillBoxStyle::drawKMenuItem(QPainter *p, int x, int y, int w, int h,
                                 const QColorGroup &g, bool active,
                                 QMenuItem *mi, QBrush *)
 {
-    if ( p->font() == KGlobal::generalFont() )
-      p->setFont( KGlobal::menuFont() );
-
     if(active){
         qDrawShadePanel(p, x, y, w, h, g, true, 1,
                         &g.brush(QColorGroup::Midlight));
@@ -659,12 +652,19 @@ void PillBoxStyle::drawIndicator(QPainter *p, int x, int y, int w, int h,
                                 const QColorGroup &g, int state, bool down,
                                 bool)
 {
+    if (checkOutline.isNull())
+    {
+        checkOutline = QBitmap(10, 12, checkoutline_bits, true);
+        checkFill = QBitmap(10, 12, checkfill_bits, true);
+        checkFill.setMask(checkFill);
+        checkOutline.setMask(checkOutline);
+    }
     drawButton(p, x, y, w, h, g, down);
     if(state != QButton::Off){
         p->setPen(g.dark());
-        p->drawPixmap(4, 2, *checkFill);
+        p->drawPixmap(4, 2, checkFill);
         p->setPen(Qt::black);
-        p->drawPixmap(4, 2, *checkOutline);
+        p->drawPixmap(4, 2, checkOutline);
     }
 }
 
@@ -677,7 +677,7 @@ void PillBoxStyle::drawExclusiveIndicator(QPainter *p, int x, int y, int w,
                                          int h, const QColorGroup &g, bool on,
                                          bool down, bool)
 {
-    static QCOORD circle_dark[] = {5,1, 6,1, 7,1, 8,1, 9,1, 10,1,
+    static const QCOORD circle_dark[] = {5,1, 6,1, 7,1, 8,1, 9,1, 10,1,
     3,2, 4,2,
     2,3,
     2,4,
@@ -689,7 +689,7 @@ void PillBoxStyle::drawExclusiveIndicator(QPainter *p, int x, int y, int w,
     2,10
     };
 
-    static QCOORD circle_mid[] = {5,0, 6,0, 7,0, 8,0, 9,0,
+    static const QCOORD circle_mid[] = {5,0, 6,0, 7,0, 8,0, 9,0,
     3,1, 4,1, 11,1,
     2,2, 10,2, 12,2,
     1,3, 3,3,
@@ -704,7 +704,7 @@ void PillBoxStyle::drawExclusiveIndicator(QPainter *p, int x, int y, int w,
     2,12
     };
 
-    static QCOORD circle_light[] = {14,5,
+    static const QCOORD circle_light[] = {14,5,
     14,6,
     14,7,
     14,8,
@@ -716,7 +716,7 @@ void PillBoxStyle::drawExclusiveIndicator(QPainter *p, int x, int y, int w,
     5,14, 6,14, 7,14, 8,14, 9,14
     };
 
-    static QCOORD fill_lines[] = {6,3, 9,3, 3,6, 3,9, 12,6, 12,9, 6,12, 9,12};
+    static const QCOORD fill_lines[] = {6,3, 9,3, 3,6, 3,9, 12,6, 12,9, 6,12, 9,12};
 
     QPen oldPen = p->pen();
     p->fillRect( x, y, w, h, g.brush(QColorGroup::Background));
@@ -786,12 +786,12 @@ void PillBoxStyle::drawArrow(QPainter *p, Qt::ArrowType type, bool on, int x,
                             int y, int w, int h, const QColorGroup &g,
                             bool enabled, const QBrush *)
 {
-    static QBitmap up(8, 8, up_bits, true);
-    static QBitmap down(8, 8, down_bits, true);
-    static QBitmap left(8, 8, left_bits, true);
-    static QBitmap right(8, 8, right_bits, true);
-
-    if(!up.mask()){
+    if (up.isNull())
+    {
+        up = QBitmap(8, 8, up_bits, true);
+        down = QBitmap(8, 8, down_bits, true);
+        left = QBitmap(8, 8, left_bits, true);
+        right = QBitmap(8, 8, right_bits, true);
         up.setMask(up);
         down.setMask(down);
         left.setMask(left);
@@ -958,11 +958,11 @@ void PillBoxStyle::drawHGradient(QPainter *p, const QBrush &fill, int x, int y,
 
 void PillBoxStyle::makeWallpaper(QPixmap &dest, const QColor &base)
 {
-    static QBitmap paper1(45, 45, paper_1_bits, true);
-    static QBitmap paper2(45, 45, paper_2_bits, true);
-    static QBitmap paper3(45, 45, paper_3_bits, true);
-
-    if(!paper1.mask()){
+    if (paper1.isNull())
+    {
+        paper1  = QBitmap(45, 45, paper_1_bits, true);
+        paper2 = QBitmap(45, 45, paper_2_bits, true);
+        paper3 = QBitmap(45, 45, paper_3_bits, true);
         paper1.setMask(paper1);
         paper2.setMask(paper2);
         paper3.setMask(paper3);

@@ -20,7 +20,7 @@ build-stamp:
 	fi
 	version=`head -1 debian/changelog | sed -e "s#.*(\([^)]*\)).*#Debian Package \1#"` ;\
 	./configure $(configkde) --with-distribution="$$version" \
-	--libdir=$(kde_libdir) --includedir=$(kde_includedir) --without-ssl
+	--includedir=/usr/include/kde --without-ssl
 
 	make
 
@@ -54,7 +54,7 @@ binary-indep:	build
 		--outputdir=`pwd`/debian/kdelibs3-doc/usr/share/doc/kdelibs3-doc/html ; \
 	fi
 	dh_installdocs -pkdelibs3-doc
-	dh_installchangelogs -pkdelibs3-doc
+	dh_installchangelogs -pkdelibs3-doc ChangeLog
 	dh_compress -pkdelibs3-doc
 	dh_fixperms -pkdelibs3-doc
 	dh_installdeb -pkdelibs3-doc
@@ -72,13 +72,17 @@ binary-arch:  build
 	install -d debian/tmp/usr/share/applnk
 	install -d debian/tmp/etc/pam.d
 	install -d debian/tmp/etc/kde2
+	install -d debian/tmp/usr/share/lintian/overrides
 	make DESTDIR=`pwd`/debian/tmp/ install
+	-rm -f debian/tmp/usr/share/doc/kde/HTML/default
+	cp debian/kdelibs3.override debian/tmp/usr/share/lintian/overrides/kdelibs3
 	debianrc=debian/tmp/etc/kde2/system.kdeglobals ;\
 	install -d `dirname $$debianrc` ;\
 	echo "[Directories]" > $$debianrc ;\
 	echo "dir_config=/etc/kde2" >> $$debianrc ;\
 	echo "dir_html=/usr/share/doc/kde/HTML" >> $$debianrc ;\
-	echo "dir_apps=/usr/share/applnk" >> $$debianrc 
+	echo "dir_apps=/usr/share/applnk" >> $$debianrc ;\
+	echo "dir_cgi=/usr/lib/cgi-bin" >> $$debianrc
 	cp debian/tmp/etc/kde2/system.kdeglobals debian/tmp/etc/kderc
 	perl -w admin/debianrules cleanup
 	cp debian/kde.pamd debian/tmp/etc/pam.d/kde
@@ -101,8 +105,7 @@ binary-arch:  build
 	mv debian/tmp/usr/lib/kio_https.la debian/tmp/usr/lib/kio_https-nossl.la
 	mv debian/tmp/usr/lib/libkssl.so.2.0.0 debian/tmp/usr/lib/libkssl-nossl.so.2.0.0
 	mv debian/tmp/usr/lib/libkssl.la debian/tmp/usr/lib/libkssl-nossl.la
-
-	dh_installchangelogs
+	dh_installchangelogs ChangeLog
 	dh_undocumented
 	dh_strip
 	for i in `find debian/ -type l -name "common"`; do \
@@ -113,7 +116,8 @@ binary-arch:  build
 	dh_link
 	dh_compress 
 	dh_fixperms 
-	dh_suidregister 
+	chmod 4755 debian/tmp/usr/bin/artswrapper
+	dh_suidregister usr/bin/artswrapper
 	dh_makeshlibs -V
 	dh_installdeb
 	dh_shlibdeps 

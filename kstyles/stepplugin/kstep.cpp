@@ -11,17 +11,17 @@
 #include <qtabbar.h>
 #include <qpointarray.h>
 
-static unsigned char arrow_dark_bits[] = {
+static const unsigned char arrow_dark_bits[] = {
  0x30,0x3c,0x08,0x84,0xc4,0x87,0x02,0x80,0x01,0x00,0x02,0x80,0x04,0x80,0x08,
  0x80,0x10,0x00,0x00,0x00,0x50,0x00,0x00,0x00,0x29,0x00,0x00,0x00,0x00,0x00,
  0x00,0x00,0x40,0xf0,0x29,0x40 };
 
-static unsigned char arrow_mid_bits[] = {
+static const unsigned char arrow_mid_bits[] = {
  0x00,0x00,0x20,0x80,0x20,0x80,0x00,0x80,0x00,0x00,0x00,0x80,0x00,0x80,0x00,
  0x80,0x00,0x00,0x00,0x00,0x50,0x00,0x00,0x00,0x31,0x00,0x00,0x00,0x68,0x80,
  0xb2,0x40,0x00,0x00,0x00,0x00 };
 
-static unsigned char arrow_light_bits[] = {
+static const unsigned char arrow_light_bits[] = {
  0x00,0x40,0x00,0xc0,0x00,0xc0,0x00,0xc0,0x00,0x40,0x00,0x40,0xe0,0xff,0x20,
  0x80,0x20,0x00,0x00,0x00,0x50,0x00,0x00,0x00,0x29,0x00,0x00,0x00,0x00,0x00,
  0x00,0x00,0x40,0xf0,0x29,0x40 };
@@ -89,11 +89,11 @@ void KStepStyle::drawPushButtonLabel(QPushButton *btn, QPainter *p)
     int x1, y1, x2, y2;
     btn->rect().coords(&x1, &y1, &x2, &y2);
     bool act = btn->isOn() || btn->isDown();
-    static QBitmap arrowLightBmp(15, 9, arrow_light_bits, true);
-    static QBitmap arrowDarkBmp(15, 9, arrow_dark_bits, true);
-    static QBitmap arrowMidBmp(15, 9, arrow_mid_bits, true);
-
-    if(!arrowLightBmp.mask()){
+    if (arrowLightBmp.isNull())
+    {
+        arrowLightBmp = QBitmap(15, 9, arrow_light_bits, true);
+        arrowDarkBmp = QBitmap(15, 9, arrow_dark_bits, true);
+        arrowMidBmp = QBitmap(15, 9, arrow_mid_bits, true);
         arrowLightBmp.setMask(arrowLightBmp);
         arrowDarkBmp.setMask(arrowDarkBmp);
         arrowMidBmp.setMask(arrowMidBmp);
@@ -316,14 +316,14 @@ QStyle::ScrollControl KStepStyle::scrollBarPointOver(const QScrollBar *sb,
 void KStepStyle::drawStepBarCircle(QPainter *p, int x, int y, int w,
                                    int h, const QColorGroup &g)
 {
-    static QCOORD circle_dark[] = {2,0, 3,0, 4,0,
+    static const QCOORD circle_dark[] = {2,0, 3,0, 4,0,
     1,1,
     0,2,
     0,3,
     0,4
     };
 
-    static QCOORD circle_mid[] = {1,0,
+    static const QCOORD circle_mid[] = {1,0,
     0,1, 2,1, 3,1, 4,1, 5,1,
     1,2, 2,2,
     1,3,
@@ -331,7 +331,7 @@ void KStepStyle::drawStepBarCircle(QPainter *p, int x, int y, int w,
     1,5
     };
 
-    static QCOORD circle_light[] = { 4,3, 5,3,
+    static const QCOORD circle_light[] = { 4,3, 5,3,
     3, 4, 4,4, 5,4,
     3,5, 4,5
     };
@@ -364,7 +364,7 @@ void KStepStyle::drawExclusiveIndicator(QPainter *p, int x, int y, int w,
                                         int h, const QColorGroup &g, bool on,
                                         bool down, bool)
 {
-    static QCOORD circle_dark[] = {5,1, 6,1, 7,1, 8,1, 9,1, 10,1,
+    static const QCOORD circle_dark[] = {5,1, 6,1, 7,1, 8,1, 9,1, 10,1,
     3,2, 4,2,
     2,3,
     2,4,
@@ -376,7 +376,7 @@ void KStepStyle::drawExclusiveIndicator(QPainter *p, int x, int y, int w,
     2,10
     };
 
-    static QCOORD circle_mid[] = {5,0, 6,0, 7,0, 8,0, 9,0,
+    static const QCOORD circle_mid[] = {5,0, 6,0, 7,0, 8,0, 9,0,
     3,1, 4,1, 11,1,
     2,2, 10,2, 12,2,
     1,3, 3,3,
@@ -391,7 +391,7 @@ void KStepStyle::drawExclusiveIndicator(QPainter *p, int x, int y, int w,
     2,12
     };
 
-    static QCOORD circle_light[] = {14,5,
+    static const QCOORD circle_light[] = {14,5,
     14,6,
     14,7,
     14,8,
@@ -403,7 +403,7 @@ void KStepStyle::drawExclusiveIndicator(QPainter *p, int x, int y, int w,
     5,14, 6,14, 7,14, 8,14, 9,14
     };
 
-    static QCOORD fill_lines[] = {6,3, 9,3, 3,6, 3,9, 12,6, 12,9, 6,12, 9,12};
+    static const QCOORD fill_lines[] = {6,3, 9,3, 3,6, 3,9, 12,6, 12,9, 6,12, 9,12};
 
     QPen oldPen = p->pen();
     p->fillRect( x, y, w, h, g.brush(QColorGroup::Background));

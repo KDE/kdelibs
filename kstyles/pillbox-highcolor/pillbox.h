@@ -89,7 +89,16 @@ protected:
     void drawHGradient(QPainter *p, const QBrush &fill, int x, int y, int w,
                        int h);
     bool macMode;
-    QBitmap *checkOutline, *checkFill;
+    QBitmap checkOutline;
+    QBitmap checkFill;
+    QBitmap comboDeco;
+    QBitmap up;
+    QBitmap down;
+    QBitmap left;
+    QBitmap right;
+    QBitmap paper1;
+    QBitmap paper2;
+    QBitmap paper3;
     KPixmap *vSmall, *vMed, *vLarge, *hSmall, *hMed, *hLarge;
 };
 

@@ -49,6 +49,7 @@ namespace KJS {
   public:
     GlobalImp();
     virtual ~GlobalImp();
+    virtual void mark(Imp*);
     void init();
     virtual KJSO get(const UString &p) const;
     virtual void put(const UString &p, const KJSO& v);
@@ -192,6 +193,13 @@ void GlobalImp::init()
 }
 
 GlobalImp::~GlobalImp() { }
+
+void GlobalImp::mark(Imp*)
+{
+  ObjectImp::mark();
+  if (filter && filter->refcount == 0)
+    filter->mark();
+}
 
 KJSO GlobalImp::get(const UString &p) const
 {

@@ -2,6 +2,8 @@
 #define SGISTYLE_H
 
 #include <kstyle.h>
+#include <qbitmap.h>
+#include <qpalette.h>
 
 class QPushButton;
 
@@ -109,7 +111,19 @@ class KSgiStyle : public KStyle
                     const QBrush *fill = 0);								
 	
   private:
-		
+    QPalette palStore;
+    QPixmap checkPix;
+    QBitmap checkMask;
+    QBitmap outlineBitmap;
+    QBitmap fillBitmap;
+    QBitmap inactfillBitmap;
+    QBitmap hiliteBitmap;
+    QBitmap arrowBitmap;
+    QBitmap shadowBitmap;
+    QBitmap upArrow;
+    QBitmap downArrow;
+    QBitmap leftArrow;
+    QBitmap rightArrow;
 };
 
 #endif

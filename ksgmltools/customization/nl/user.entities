@@ -4,3 +4,15 @@
      Keep the entities simple, but _always_ provide them with full markup.
  -->
 
+<!-- Adressen en namen -->
+<!ENTITY Niels.Reedijk "Niels Reedijk <email>n.reedijk@planet.nl</email>">
+<!ENTITY Floris.Lambrechts "Floris Lambrechts <email>floris.lambrechts@linuxfocus.org</email>">
+<!ENTITY kde.nl.groep "<email>i18n@kde.nl</email>">
+
+<!-- Tekstschema's -->
+<!ENTITY meld.fouten.vertaling "<para>Op- of aanmerkingen over de vertalingen van de toepassing en haar documentatie kunt u naar &kde.nl.groep; sturen.</para>">
+
+<!-- Entities voor vertalers -->
+<!ENTITY vertaling.niels "&meld.fouten.vertaling; <para>Dit document is vertaald naar het Nederlands door &Niels.Reedijk;.">
+
+<!ENTITY nagelezen.floris "De vertaling werd nagelezen door &Floris.Lambrechts;.</para>">

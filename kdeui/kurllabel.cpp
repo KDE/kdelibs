@@ -18,10 +18,11 @@ public:
       Underline (true),
       LinkColor (KGlobalSettings::linkColor()),
       HighlightedLinkColor (Qt::red),
+      Tip(url),
       Cursor (0L),
       UseTips (false),
       UseCursor (false),
-      Glow (false),
+      Glow (true),
       Float (false),
       RealUnderline (true),
       Timer (new QTimer (label))
@@ -141,6 +142,11 @@ void KURLLabel::setLinkColor (const QColor& col)
 
 void KURLLabel::setURL (const QString& url)
 {
+  if ( d->Tip == d->URL ) { // update the tip as well
+    d->Tip = url;
+    setUseTips( d->UseTips );
+  }
+
   d->URL = url;
 }
 

@@ -120,7 +120,7 @@ signals:
 
 protected:
   QStrList qlist;
-  QString recvbuffer;
+  QCString recvbuffer;
   QTextCodec *codec;
   int rbi;
   bool needreadsignal, readsignalon, writeready;

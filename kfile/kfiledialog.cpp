@@ -1085,7 +1085,7 @@ QString KFileDialog::getOpenFileName(const QString& dir, const QString& filter,
 
     QString filename = dlg.selectedFile();
     if (!filename.isEmpty())
-        KRecentDocument::add(filename, false);
+        KRecentDocument::add(filename);
 
     return filename;
 }
@@ -1103,7 +1103,7 @@ QStringList KFileDialog::getOpenFileNames(const QString& dir,const QString& filt
     QStringList list = dlg.selectedFiles();
     QStringList::Iterator it = list.begin();
     for( ; it != list.end(); ++it )
-        KRecentDocument::add( *it, false );
+        KRecentDocument::add( *it );
 
     return list;
 }
@@ -1118,8 +1118,12 @@ KURL KFileDialog::getOpenURL(const QString& dir, const QString& filter,
     dlg.exec();
 
     const KURL& url = dlg.selectedURL();
-    if (!url.isMalformed())
-        KRecentDocument::add(url.url(-1), false);
+    if (!url.isMalformed()) {
+        if ( url.isLocalFile() )
+            KRecentDocument::add( url.path(-1) );
+        else
+            KRecentDocument::add( url.url(-1), true );
+    }
 
     return url;
 }
@@ -1138,9 +1142,15 @@ KURL::List KFileDialog::getOpenURLs(const QString& dir,
 
     KURL::List list = dlg.selectedURLs();
     KURL::List::ConstIterator it = list.begin();
+    KURL u;
     for( ; it != list.end(); ++it ) {
-        if ( !(*it).isMalformed() )
-            KRecentDocument::add( (*it).url(-1), false );
+        u = *it;
+        if ( !u.isMalformed() ) {
+            if ( u.isLocalFile() )
+                KRecentDocument::add( u.path(-1) );
+            else
+                KRecentDocument::add( u.url(-1), true );
+        }
     }
 
     return list;
@@ -1305,7 +1315,7 @@ QString KFileDialog::getSaveFileName(const QString& dir, const QString& filter,
 
     QString filename = dlg.selectedFile();
     if (!filename.isEmpty())
-        KRecentDocument::add(filename, false);
+        KRecentDocument::add(filename);
 
     return filename;
 }
@@ -1321,8 +1331,12 @@ KURL KFileDialog::getSaveURL(const QString& dir, const QString& filter,
     dlg.exec();
 
     KURL url = dlg.selectedURL();
-    if (!url.isMalformed())
-        KRecentDocument::add(url.url(-1), false);
+    if (!url.isMalformed()) {
+        if ( url.isLocalFile() )
+            KRecentDocument::add( url.path(-1) );
+        else
+            KRecentDocument::add( url.url(-1) );
+    }
 
     return url;
 }

@@ -65,6 +65,8 @@ void KIconEffect::init()
     QString _togamma("togamma");
     QString _none("none");
 
+    KConfigGroupSaver cs(config, "default");
+
     for (it=groups.begin(), i=0; it!=groups.end(); it++, i++)
     {
 	// Default effects

@@ -24,11 +24,11 @@
 #define _KAPP_H
 
 // Version macros. Never put this further down.
-#define KDE_VERSION 200
-#define KDE_VERSION_STRING "2.0"
+#define KDE_VERSION 201
+#define KDE_VERSION_STRING "2.0.1"
 #define KDE_VERSION_MAJOR 2
 #define KDE_VERSION_MINOR 0
-#define KDE_VERSION_RELEASE 0
+#define KDE_VERSION_RELEASE 1
 
 class KConfig;
 class KCharsets;
@@ -785,6 +785,15 @@ private:
 #endif
 
 // $Log$
+// Revision 1.192  2000/10/16 11:27:20  elter
+// #define KDE_VERSION 200
+// #define KDE_VERSION_STRING "2.0"
+// #define KDE_VERSION_MAJOR 2
+// #define KDE_VERSION_MINOR 0
+// #define KDE_VERSION_RELEASE 0
+//
+// Monday Oktober 16 - 1:24am MEST - KDE 2.0 Release :-)
+//
 // Revision 1.191  2000/10/10 11:00:09  elter
 // - #define KDE_VERSION_STRING "2.0 Release Candidate 1"
 // + #define KDE_VERSION_STRING "2.0 Release Candidate 2"

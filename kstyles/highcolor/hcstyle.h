@@ -8,6 +8,8 @@
 #include <qwidget.h>
 #include <qpushbutton.h>
 #include <qscrollbar.h>
+#include <qbitmap.h>
+#include <qintdict.h>
 #include <limits.h>
 
 /*-
@@ -63,6 +65,20 @@ private:
     QWidget *widget;
     int animationDelay;
 };
+
+enum GradientType{VSmall=0, VMed, VLarge, HMed, HLarge};
+
+class GradientSet
+{
+public:
+    GradientSet(const QColor &baseColor);
+    ~GradientSet();
+    KPixmap* gradient(GradientType type);
+    QColor* color(){return(&c);}
+private:
+    KPixmap *gradients[5];
+    QColor c;
+};                   
 
 class HCStyle : public KStyle
 {
@@ -170,20 +186,29 @@ public:
     // for repainting toolbuttons when the toolbar is resized
     bool eventFilter(QObject *obj, QEvent *ev);
 protected:
-    void drawVGradient(QPainter *p, const QBrush &fill, int x, int y, int w,
+    void drawVGradient(QPainter *p, const QColorGroup &g,
+                       QColorGroup::ColorRole type, int x, int y, int w,
                        int h, int sx, int sy, int tw, int th);
-    void drawHGradient(QPainter *p, const QBrush &fill, int x, int y, int w,
+    void drawHGradient(QPainter *p, const QColorGroup &g,
+                       QColorGroup::ColorRole type, int x, int y, int w,
                        int h, int sx, int sy, int tw, int th);
     void drawSBDeco(QPainter *p, const QRect &r, const QColorGroup &g,
                    bool horiz);
     void drawSBButton(QPainter *p, const QRect &r, const QColorGroup &g,
                       bool down=false, bool fast = true);
 private:
+    bool highcolor;
     QColorGroup radioOnGrp;
-    KPixmap *vSmall, *vMed, *vLarge, *hMed, *hLarge, *vDark;
     QColor gradientHight, gradientLow;
     QWidget *highlightWidget;
     QBrush wallpaper;
+    QBitmap lightBmp;
+    QBitmap grayBmp;
+    QBitmap dgrayBmp;
+    QBitmap maskBmp;
+    QBitmap xBmp;
+
+    QIntDict<GradientSet>gDict;
 };
 
 #endif
