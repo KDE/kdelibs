@@ -702,41 +702,6 @@ void KXMLGUIFactory::unplugActionList( KXMLGUIClient *client, const QString &nam
     d->clientName = QString::null;
 }
 
-void KXMLGUIFactory::processStateElement( const QDomElement &element )
-{
-    QString stateName = element.attribute( "name" );
-
-    if ( !stateName || !stateName.length() ) return;
-
-    QDomElement e = element.firstChild().toElement();
-
-    for (; !e.isNull(); e = e.nextSibling().toElement() ) {
-        QString tagName = e.tagName().lower();
-
-        if ( tagName != "enable" && tagName != "disable" )
-            continue;
-    
-        bool processingActionsToEnable = (tagName == "enable");
-
-        // process action names
-        QDomElement actionEl = e.firstChild().toElement();
-
-        for (; !actionEl.isNull(); actionEl = actionEl.nextSibling().toElement() ) {
-            if ( actionEl.tagName().lower() != "action" ) continue;
-
-            QString actionName = actionEl.attribute( "name" );
-            if ( !actionName || !actionName.length() ) return;
-
-            if ( processingActionsToEnable )
-                d->guiClient->addStateActionEnabled( stateName, actionName );
-            else
-                d->guiClient->addStateActionDisabled( stateName, actionName );
-
-        }
-
-    }
-}
-
 void KXMLGUIFactory::applyActionProperties( const QDomElement &actionPropElement )
 {
     static const QString &tagAction = KGlobal::staticQString( "action" );

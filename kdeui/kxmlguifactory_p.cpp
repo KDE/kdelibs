@@ -288,9 +288,7 @@ void BuildHelper::processElement( const QDomElement &e )
     static const QString &tagState = KGlobal::staticQString( "state" );
     static const QString &tagDefineGroup = KGlobal::staticQString( "definegroup" );
     static const QString &tagActionList = KGlobal::staticQString( "actionlist" );
-    static const QString &attrGroup = KGlobal::staticQString( "group" );
     static const QString &attrName = KGlobal::staticQString( "name" );
-    static const QString &defaultMergingName = KGlobal::staticQString( "<default>" );
 
     QString tag( e.tagName().lower() );
     QString currName( e.attribute( attrName ) );
@@ -308,152 +306,11 @@ void BuildHelper::processElement( const QDomElement &e )
      * actionlists, containers, custom elements or even merging indices.
      */
     else if ( tag == tagMerge || tag == tagDefineGroup || tag == tagActionList )
-    {
-        QString mergingName( currName );
-        if ( mergingName.isEmpty() )
-        {
-            if ( tag == tagDefineGroup )
-            {
-                kdError(1000) << "cannot define group without name!" << endl;
-                return;
-            }
-            if ( tag == tagActionList )
-            {
-                kdError(1000) << "cannot define actionlist without name!" << endl;
-                return;
-            }
-            mergingName = defaultMergingName;
-        }
-
-        if ( tag == tagDefineGroup )
-            mergingName.prepend( attrGroup ); //avoid possible name clashes by prepending
-                                              // "group" to group definitions
-        else if ( tag == tagActionList )
-            mergingName.prepend( tagActionList );
-
-        if ( parentNode->findIndex( mergingName ) != parentNode->mergingIndices.end() )
-            return; //do not allow the redefinition of merging indices!
-
-        MergingIndexList::Iterator mIt( parentNode->mergingIndices.end() );
-
-        // calculate the index of the new merging index. Usually this does not need any calculation,
-        // we just want the last available index (i.e. append) . But in case the <Merge> tag appears
-        // "inside" another <Merge> tag from a previously build client, then we have to use the
-        // "parent's" index. That's why we call calcMergingIndex here.
-        MergingIndex newIdx;
-        newIdx.value = m_factory->calcMergingIndex( parentNode,
-                                                    QString::null /* ### allow group for <merge/> ? */ ,
-                                                    mIt, ignoreDefaultMergingIndex );
-        newIdx.mergingName = mergingName;
-        newIdx.clientName = m_state.clientName;
-
-        // if that merging index is "inside" another one, then append it right after the "parent" .
-        if ( mIt != parentNode->mergingIndices.end() )
-            parentNode->mergingIndices.insert( ++mIt, newIdx );
-        else
-            parentNode->mergingIndices.append( newIdx );
-
-        if ( mergingName == defaultMergingName )
-            ignoreDefaultMergingIndex = true;
-
-        // re-calculate the running default and client merging indices.
-        m_state.currentDefaultMergingIt = parentNode->findIndex( defaultMergingName );
-        m_factory->calcMergingIndex( parentNode, QString::null, m_state.currentClientMergingIt,
-                                     ignoreDefaultMergingIndex );
-    }
+        processMergeElement( tag, currName );
     else if ( tag == tagState )
-        m_factory->processStateElement( e );
+        processStateElement( e );
     else if ( containerTags.findIndex( tag ) != -1 )
-    {
-        /*
-         * No Action or Merge tag? That most likely means that we want to create a new container.
-         * But first we have to check if there's already a existing (child) container of the same
-         * type in our tree. However we have to ignore just newly created containers!
-         */
-
-        ContainerNode *matchingContainer = parentNode->findContainer( currName, tag,
-                                                                      &containerList,
-                                                                       m_state.guiClient );
-
-        if ( matchingContainer )
-        {
-            /*
-             * Enter the next level, as the container already exists :)
-             */
-            m_factory->buildRecursive( e, matchingContainer );
-            // re-calculate current default merging indices and client merging indices,
-            // as they have changed in the recursive invocation.
-            m_state.currentDefaultMergingIt = parentNode->findIndex( defaultMergingName );
-            m_factory->calcMergingIndex( parentNode, QString::null, m_state.currentClientMergingIt,
-                                         ignoreDefaultMergingIndex );
-        }
-        else
-        {
-            MergingIndexList::Iterator it( m_state.currentClientMergingIt );
-
-            bool haveGroup = false;
-            QString group( e.attribute( attrGroup ) );
-            if ( !group.isEmpty() )
-            {
-                group.prepend( attrGroup );
-                haveGroup = true;
-            }
-
-            int idx;
-            if ( haveGroup )
-                idx = m_factory->calcMergingIndex( parentNode, group, it, ignoreDefaultMergingIndex );
-            else if ( m_state.currentClientMergingIt == parentNode->mergingIndices.end() )
-                idx = parentNode->index;
-            else
-                idx = (*m_state.currentClientMergingIt).value;
-
-            /*
-             * let the builder create the container
-             */
-
-            int id;
-
-            KXMLGUIBuilder *builder;
-
-            QWidget *container = m_factory->createContainer( parentNode->container, idx, e, id, &builder );
-
-            // no container? (probably some <text> tag or so ;-)
-            if ( !container )
-                return;
-
-            parentNode->adjustMergingIndices( 1, it );
-
-            ContainerNode *containerNode = parentNode->findContainerNode( container );
-
-            if ( !containerNode ) // this should be true all times
-            {
-                containerList.append( container );
-
-                QString mergingName;
-                if ( it != parentNode->mergingIndices.end() )
-                    mergingName = (*it).mergingName;
-
-                QStringList cusTags = m_state.builderCustomTags;
-                QStringList conTags = m_state.builderContainerTags;
-                if ( builder != m_state.builder )
-                {
-                    cusTags = m_state.clientBuilderCustomTags;
-                    conTags = m_state.clientBuilderContainerTags;
-                }
-
-                containerNode = new ContainerNode( container, tag, currName, parentNode,
-                                                   m_state.guiClient, builder, id, mergingName, group,
-                                                   cusTags, conTags );
-            }
-
-            m_factory->buildRecursive( e, containerNode );
-
-            // and re-calculate running values, for better performance
-            m_state.currentDefaultMergingIt = parentNode->findIndex( defaultMergingName );
-            m_factory->calcMergingIndex( parentNode, QString::null, m_state.currentClientMergingIt,
-                                         ignoreDefaultMergingIndex );
-        }
-    }
+        processContainerElement( e, tag, currName );
 }
 
 void BuildHelper::processActionOrCustomElement( const QDomElement &e, bool isActionTag )
@@ -517,6 +374,40 @@ void BuildHelper::processCustomElement( const QDomElement &e, int idx )
         containerClient->customElements.append( id );
 }
 
+void BuildHelper::processStateElement( const QDomElement &element )
+{
+    QString stateName = element.attribute( "name" );
+
+    if ( !stateName || !stateName.length() ) return;
+
+    QDomElement e = element.firstChild().toElement();
+
+    for (; !e.isNull(); e = e.nextSibling().toElement() ) {
+        QString tagName = e.tagName().lower();
+
+        if ( tagName != "enable" && tagName != "disable" )
+            continue;
+    
+        bool processingActionsToEnable = (tagName == "enable");
+
+        // process action names
+        QDomElement actionEl = e.firstChild().toElement();
+
+        for (; !actionEl.isNull(); actionEl = actionEl.nextSibling().toElement() ) {
+            if ( actionEl.tagName().lower() != "action" ) continue;
+
+            QString actionName = actionEl.attribute( "name" );
+            if ( !actionName || !actionName.length() ) return;
+
+            if ( processingActionsToEnable )
+                m_state.guiClient->addStateActionEnabled( stateName, actionName );
+            else
+                m_state.guiClient->addStateActionDisabled( stateName, actionName );
+
+        }
+    }
+}
+
 void BuildHelper::processMergeElement( const QString &tag, const QString &name )
 {
     static const QString &tagDefineGroup = KGlobal::staticQString( "definegroup" );
@@ -569,12 +460,103 @@ void BuildHelper::processMergeElement( const QString &tag, const QString &name )
         parentNode->mergingIndices.append( newIdx );
 
     if ( mergingName == defaultMergingName )
+
         ignoreDefaultMergingIndex = true;
 
     // re-calculate the running default and client merging indices.
     m_state.currentDefaultMergingIt = parentNode->findIndex( defaultMergingName );
     m_factory->calcMergingIndex( parentNode, QString::null, m_state.currentClientMergingIt,
                                  ignoreDefaultMergingIndex );
+}
+
+void BuildHelper::processContainerElement( const QDomElement &e, const QString &tag,
+                                           const QString &name )
+{
+    static const QString &attrGroup = KGlobal::staticQString( "group" );
+    static const QString &defaultMergingName = KGlobal::staticQString( "<default>" );
+
+    ContainerNode *matchingContainer = parentNode->findContainer( name, tag,
+                                                                  &containerList,
+                                                                  m_state.guiClient );
+
+    if ( matchingContainer )
+    {
+        /*
+         * Enter the next level, as the container already exists :)
+         */
+        m_factory->buildRecursive( e, matchingContainer );
+        // re-calculate current default merging indices and client merging indices,
+        // as they have changed in the recursive invocation.
+        m_state.currentDefaultMergingIt = parentNode->findIndex( defaultMergingName );
+        m_factory->calcMergingIndex( parentNode, QString::null, m_state.currentClientMergingIt,
+                                     ignoreDefaultMergingIndex );
+    }
+    else
+    {
+        MergingIndexList::Iterator it( m_state.currentClientMergingIt );
+
+        bool haveGroup = false;
+        QString group( e.attribute( attrGroup ) );
+        if ( !group.isEmpty() )
+        {
+            group.prepend( attrGroup );
+            haveGroup = true;
+        }
+
+        int idx;
+        if ( haveGroup )
+            idx = m_factory->calcMergingIndex( parentNode, group, it, ignoreDefaultMergingIndex );
+            else if ( m_state.currentClientMergingIt == parentNode->mergingIndices.end() )
+                idx = parentNode->index;
+        else
+            idx = (*m_state.currentClientMergingIt).value;
+
+        /*
+         * let the builder create the container
+         */
+
+        int id;
+
+        KXMLGUIBuilder *builder;
+
+        QWidget *container = m_factory->createContainer( parentNode->container, idx, e, id, &builder );
+
+        // no container? (probably some <text> tag or so ;-)
+        if ( !container )
+            return;
+
+        parentNode->adjustMergingIndices( 1, it );
+
+        ContainerNode *containerNode = parentNode->findContainerNode( container );
+
+        if ( !containerNode ) // this should be true all times
+        {
+            containerList.append( container );
+
+            QString mergingName;
+            if ( it != parentNode->mergingIndices.end() )
+                mergingName = (*it).mergingName;
+
+            QStringList cusTags = m_state.builderCustomTags;
+            QStringList conTags = m_state.builderContainerTags;
+            if ( builder != m_state.builder )
+            {
+                cusTags = m_state.clientBuilderCustomTags;
+                conTags = m_state.clientBuilderContainerTags;
+            }
+
+            containerNode = new ContainerNode( container, tag, name, parentNode,
+                                               m_state.guiClient, builder, id, 
+                                               mergingName, group, cusTags, conTags );
+        }
+
+        m_factory->buildRecursive( e, containerNode );
+
+        // and re-calculate running values, for better performance
+        m_state.currentDefaultMergingIt = parentNode->findIndex( defaultMergingName );
+        m_factory->calcMergingIndex( parentNode, QString::null, m_state.currentClientMergingIt,
+                                     ignoreDefaultMergingIndex );
+    }
 }
 
 /* vim: et sw=4

@@ -178,8 +178,6 @@ class KXMLGUIFactory : public QObject
   QWidget *createContainer( QWidget *parent, int index, const QDomElement &element, int &id,
                             KXMLGUIBuilder **builder );
 
-  void processStateElement( const QDomElement &element );
-
   void applyActionProperties( const QDomElement &element );
   void configureAction( KAction *action, const QDomNamedNodeMap &attributes );
   void configureAction( KAction *action, const QDomAttr &attribute );
