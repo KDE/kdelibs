@@ -90,6 +90,8 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name)
 
     paintBuffer = new QPixmap();
 
+    setFocusPolicy(QWidget::WheelFocus);
+
     init();
 
 }
@@ -111,6 +113,8 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, KHTMLWidget *_parent_browser, QString
     setCursor(arrowCursor);
     _isFrame = true;
     _isSelected = false;
+
+    setFocusPolicy(QWidget::WheelFocus);
 
     paintBuffer = new QPixmap();
 
@@ -1193,49 +1197,6 @@ void KHTMLWidget::viewportMousePressEvent( QMouseEvent *_mouse )
     press_y = _mouse->pos().y();
 #endif
 
-#if 0
-    HTMLObject *obj;
-
-    obj = clue->checkPoint( _mouse->pos().x() + contentsX() - leftBorder,
-	    _mouse->pos().y() + contentsY() - topBorder );
-
-    m_strSelectedURL = "";
-    pressedTarget = "";
-
-    if ( obj != 0)
-    {
-	if ( obj->getURL().length() )
-	{
-	    // Save data. Perhaps the user wants to start a drag.
-	    if ( _mouse->button() == LeftButton || _mouse->button() == MidButton )
-	    {
-		m_strSelectedURL = obj->getURL();
-		pressedTarget = obj->getTarget();
-	    }
-	
-	    // Does the parent want to process the event now ?
-	    if ( htmlView )	
-	    {
-		if ( htmlView->mousePressedHook( obj->getURL(), obj->getTarget(),
-						 _mouse, obj->isSelected() ) )
-		    return;
-	    }
-	
-	    if ( _mouse->button() == RightButton )
-	    {
-		emit popupMenu(obj->getURL(),mapToGlobal( _mouse->pos() ));
-		return;
-	    }
-	    return;
-	}
-    }
-
-    if ( htmlView )	
-      if ( htmlView->mousePressedHook( 0, 0L, _mouse, FALSE ) )
-	return;
-    if ( _mouse->button() == RightButton )
-	emit popupMenu( 0, mapToGlobal( _mouse->pos() ) );
-#endif
 }
 
 void KHTMLWidget::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
@@ -1305,90 +1266,6 @@ void KHTMLWidget::viewportMouseMoveEvent( QMouseEvent * _mouse )
 	emit onURL( 0 );
 	overURL = "";
     }
-
-#if 0
-    // debugT(">>>>>>>>>>>>>>>>>>> Move detected <<<<<<<<<<<<<<<<<<<\n");
-
-    // Does the parent want to process the event now ?
-    if ( htmlView )
-    {
-	if ( htmlView->mouseMoveHook( _mouse ) )
-	    return;
-    }
-
-    // text selection
-    if ( pressed && m_strSelectedURL.isEmpty() )
-    {
-	QPoint point = _mouse->pos();
-	if ( point.y() > height() )
-	    point.setY( height() );
-	else if ( point.y() < 0 )
-	    point.setY( 0 );
-	selectPt2.setX( point.x() + contentsX() - leftBorder );
-	selectPt2.setY( point.y() + contentsY() - topBorder );
-	if ( selectPt2.y() < selectPt1.y() )
-	{
-	    selectText( selectPt2.x(), selectPt2.y(),
-		selectPt1.x(), selectPt1.y() );
-	}
-	else
-	{
-	    selectText( selectPt1.x(), selectPt1.y(),
-		selectPt2.x(), selectPt2.y() );
-	}
-
-	// Do we need to scroll because the user has moved the mouse
-	// outside the widget bounds?
-	if ( _mouse->pos().y() > height() )
-	{
-	    autoScrollY( 100, 20 );
-	    connect( this, SIGNAL( scrollVert(int) ),
-		SLOT( slotUpdateSelectText(int) ) );
-	}
-	else if ( _mouse->pos().y() < 0 )
-	{
-	    autoScrollY( 100, -20 );
-	    connect( this, SIGNAL( scrollVert(int) ),
-		SLOT( slotUpdateSelectText(int) ) );
-	}
-	else
-	{
-	    stopAutoScrollY();
-	    disconnect( this, SLOT( slotUpdateSelectText(int) ) );
-	}
-    }
-
-    // Drags are only started with the left mouse button ...
-    // if ( _mouse->button() != LeftButton )
-    // return;
-
-    // debugT("Testing m_strSelectedURL.isEmpty()\n");
-    if ( m_strSelectedURL.isEmpty() )
-	return;
-
-    int x = _mouse->pos().x();
-    int y = _mouse->pos().y();
-
-    // debugT("Testing Drag\n");
-
-    // Did the user start a drag?
-    if ( abs( x - press_x ) > 5 || abs( y - press_y ) > 5 )
-    {
-	// Does the parent want to process the event now ?
-	if ( htmlView )
-        {
-	    if ( htmlView->dndHook( m_strSelectedURL.data() ) )
-		return;
-	}
-	
-	QStrList uris;
-	uris.append(m_strSelectedURL.data());
-
-	QUriDrag *ud = new QUriDrag(uris, this);
-	ud->setPixmap(dndDefaultPixmap);
-	ud->dragCopy();
-    }
-#endif
 }
 
 void KHTMLWidget::viewportMouseReleaseEvent( QMouseEvent * _mouse )
@@ -1415,32 +1292,6 @@ void KHTMLWidget::viewportMouseReleaseEvent( QMouseEvent * _mouse )
     DOMString url;
     document->mouseEvent( xm, ym, _mouse->stateAfter(), DOM::NodeImpl::MouseRelease, 0, 0, url );
 
-#if 0
-    if ( clue->mouseEvent( _mouse->x() + contentsX() - leftBorder,
-	    _mouse->y() + contentsY() - topBorder, _mouse->button(),
-	    _mouse->state() ) )
-	return;
-
-    // Does the parent want to process the event now ?
-    if ( htmlView )
-    {
-      if ( htmlView->mouseReleaseHook( _mouse ) )
-	return;
-    }
-
-    // emit textSelected() if necessary
-    if ( _mouse->button() == LeftButton || _mouse->button() == MidButton )
-    {
-	if ( bIsTextSelected )
-
-	{
-	    debugM( "Text Selected\n" );
-	    emit textSelected( true );
-	}
-    }
-    if ( clue == 0 )
-	return;
-#endif
     if ( m_strSelectedURL.isEmpty() )
 	return;
 
@@ -1461,56 +1312,42 @@ void KHTMLWidget::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 
 void KHTMLWidget::keyPressEvent( QKeyEvent *_ke )
 {
+    int offs = (clipper()->height() < 30) ? clipper()->height() : 30;
     switch ( _ke->key() )
     {
     case Key_Down:
     case Key_J:
 	scrollBy( 0, 10 );
-	flushKeys();
 	break;
 
     case Key_Next:
     case Key_Space:
-	scrollBy( 0, clipper()->height()*8/10 );
-	flushKeys();
+	scrollBy( 0, clipper()->height() - offs );
 	break;
 
     case Key_Up:
     case Key_K:
 	scrollBy( 0, -10 );
-	flushKeys();
 	break;
 
     case Key_Prior:
     case Key_Backspace:
-	scrollBy( 0, -clipper()->height()*8/10 );
-	flushKeys();
+	scrollBy( 0, -clipper()->height() + offs );
 	break;
 
     case Key_Right:
     case Key_L:
 	scrollBy( 10, 0 );
-	flushKeys();
 	break;	
 
     case Key_Left:
     case Key_H:
 	scrollBy( -10, 0 );
-	flushKeys();
 	break;
 
     default:
 	QScrollView::keyPressEvent( _ke );
     }
-}
-
-// Little routine from Alessandro Russo to flush extra keypresses from
-// the event queue
-void KHTMLWidget::flushKeys()
-{
-    XEvent ev_return;
-    Display *dpy = qt_xdisplay();
-    while ( XCheckTypedEvent( dpy, KeyPress, &ev_return ) );
 }
 
 // ---------------------------------- selection ------------------------------------------------
@@ -1619,6 +1456,8 @@ bool KHTMLWidget::findTextNext( const QRegExp &exp )
     return false;
 }
 
+
+// this is used for the save/restore state functions
 #define INFO_NONE (int)0
 #define INFO_FRAMESET (int)1
 #define INFO_FRAME (int)2

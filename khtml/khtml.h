@@ -733,7 +733,6 @@ protected:
     virtual void viewportMouseReleaseEvent(QMouseEvent *);
 
     void keyPressEvent( QKeyEvent *_ke );
-    void flushKeys();
 
     /**
      * This function is hooked into the event processing of the widget.
