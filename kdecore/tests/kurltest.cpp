@@ -3,11 +3,12 @@
 #include <kprotocolmanager.h>
 #include <kapp.h>
 #include <stdlib.h>
+#include <kdebug.h>
 
 bool check(QString txt, QString a, QString b)
 {
   printf("%s : checking '%s' against expected value '%s'... ",
-         txt.data(), a.data(), b.data());
+         debugString(txt), debugString(a), debugString(b));
   if (a == b) 
     printf("ok\n");
   else {
