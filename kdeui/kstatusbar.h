@@ -231,7 +231,7 @@ public:
    *  @li AlignTop Aligns to the top border. 
    *  @li AlignBottom Aligns to the bottom border. 
    *  @li AlignVCenter Aligns vertically centered 
-   *  @li AlignCenter Same as @p AlignHCenter @p | @p AlignVCenter
+   *  @li AlignCenter Same as @p AlignHCenter | @p AlignVCenter
    */
   void setAlignment( int id, int align );
 
