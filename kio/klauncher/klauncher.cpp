@@ -60,6 +60,7 @@ IdleSlave::IdleSlave(KSocket *socket)
    mConn.send( CMD_SLAVE_STATUS );
    mPid = 0;
    mBirthDate = time(0);
+   mOnHold = false;
 }
 
 void
@@ -90,10 +91,20 @@ IdleSlave::gotInput()
       QString host;
       Q_INT8 b;
       stream >> pid >> protocol >> host >> b;
+// Overload with (bool) onHold, (KURL) url.
+      if (!stream.atEnd())
+      {
+         KURL url;
+         stream >> url;
+         mOnHold = true;
+         mUrl = url;
+      }
+
       mPid = pid;
       mConnected = (b != 0);
       mProtocol = protocol;
       mHost = host;
+      emit statusUpdate(this);
    }
 }
 
@@ -116,12 +127,20 @@ IdleSlave::reparseConfiguration()
 bool
 IdleSlave::match(const QString &protocol, const QString &host, bool connected)
 {
+   if (mOnHold) return false;
    if (protocol != mProtocol) return false;
    if (host.isEmpty()) return true;
    if (host != mHost) return false;
    if (!connected) return true;
    if (!mConnected) return false;
    return true;
+}
+
+bool
+IdleSlave::onHold(const KURL &url)
+{
+   if (!mOnHold) return false;
+   return (url == mUrl);
 }
 
 int
@@ -135,6 +154,7 @@ KLauncher::KLauncher(int _kdeinitSocket)
     kdeinitSocket(_kdeinitSocket)
 {
    requestList.setAutoDelete(true);
+   mSlaveWaitRequest.setAutoDelete(true);
    dcopClient()->setNotifications( true );
    connect(dcopClient(), SIGNAL( applicationRegistered( const QCString &)),
            this, SLOT( slotAppRegistered( const QCString &)));
@@ -290,8 +310,30 @@ KLauncher::process(const QCString &fun, const QByteArray &data,
       QString error;
       pid_t pid = requestSlave(protocol, host, app_socket, error);
       QDataStream stream2(replyData, IO_WriteOnly);
-      stream2 << pid << error;;
+      stream2 << pid << error;
       return true;
+   }
+   else if (fun == "requestHoldSlave(KURL,QString)")
+   {
+      QDataStream stream(data, IO_ReadOnly);
+      KURL url;
+      QString app_socket;
+      stream >> url >> app_socket;
+      replyType = "pid";
+      pid_t pid = requestHoldSlave(url, app_socket);
+      QDataStream stream2(replyData, IO_WriteOnly);
+      stream2 << pid;
+      return true;
+   }
+   else if (fun == "waitForSlave(pid_t)")
+   {
+      QDataStream stream(data, IO_ReadOnly);
+      pid_t pid;
+      stream >> pid;
+      waitForSlave(pid);
+      replyType = "void";
+      return true;
+
    }
    else if (fun == "setLaunchEnv(QCString,QCString)")
    {
@@ -1061,15 +1103,35 @@ KLauncher::removeArg( QValueList<QCString> &args, const QCString &target)
 ///// IO-Slave functions
 
 pid_t
-KLauncher::requestSlave(const QString &protocol,
-                        const QString &host,
-                        const QString &app_socket, QString &error)
+KLauncher::requestHoldSlave(const KURL &url, const QString &app_socket) 
 {
     IdleSlave *slave;
     for(slave = mSlaveList.first(); slave; slave = mSlaveList.next())
     {
-        if (slave->match(protocol, host, true))
-           break;
+       if (slave->onHold(url))
+          break;
+    }
+    if (slave)
+    {
+       mSlaveList.removeRef(slave);
+       slave->connect(app_socket);
+       return slave->pid();
+    }
+    return 0;
+}
+
+
+pid_t
+KLauncher::requestSlave(const QString &protocol,
+                        const QString &host,
+                        const QString &app_socket, 
+                        QString &error)
+{
+    IdleSlave *slave;
+    for(slave = mSlaveList.first(); slave; slave = mSlaveList.next())
+    {
+       if (slave->match(protocol, host, true))
+          break;
     }
     if (!slave)
     {
@@ -1143,6 +1205,21 @@ KLauncher::requestSlave(const QString &protocol,
     return pid;
 }
 
+void 
+KLauncher::waitForSlave(pid_t pid)
+{
+    IdleSlave *slave;
+    for(slave = mSlaveList.first(); slave; slave = mSlaveList.next())
+    {
+        if (slave->pid() == pid)
+           return; // Already here.
+    }
+    SlaveWaitRequest *waitRequest = new SlaveWaitRequest;
+    waitRequest->transaction = dcopClient()->beginTransaction();
+    waitRequest->pid = pid;
+    mSlaveWaitRequest.append(waitRequest);    
+}
+
 void
 KLauncher::acceptSlave(KSocket *slaveSocket)
 {
@@ -1150,9 +1227,33 @@ KLauncher::acceptSlave(KSocket *slaveSocket)
     // Send it a SLAVE_STATUS command.
     mSlaveList.append(slave);
     connect(slave, SIGNAL(destroyed()), this, SLOT(slotSlaveGone()));
+    connect(slave, SIGNAL(statusUpdate(IdleSlave *)),
+	    this, SLOT(slotSlaveStatus(IdleSlave *)));
     if (!mTimer.isActive())
     {
        mTimer.start(1000*10);
+    }
+}
+
+void 
+KLauncher::slotSlaveStatus(IdleSlave *slave)
+{
+    for(SlaveWaitRequest *waitRequest=mSlaveWaitRequest.first();
+        waitRequest; waitRequest = mSlaveWaitRequest.next())
+    {
+       if (waitRequest->pid == slave->pid())
+       {
+          QByteArray replyData;
+          QCString replyType;
+          replyType = "void";
+          dcopClient()->endTransaction( waitRequest->transaction, replyType, replyData);
+          mSlaveWaitRequest.removeRef(waitRequest);
+          waitRequest = mSlaveWaitRequest.current();
+       }
+       else
+       {
+          waitRequest = mSlaveWaitRequest.next();
+       }
     }
 }
 

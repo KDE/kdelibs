@@ -32,6 +32,7 @@
 #include <dcopclient.h>
 #include <kio/connection.h>
 #include <ksock.h>
+#include <kurl.h>
 #include <kuniqueapp.h>
 
 #include <kservice.h>
@@ -48,7 +49,11 @@ public:
    pid_t pid() { return mPid;}
    int age(time_t now);
    void reparseConfiguration();
+   bool onHold(const KURL &url);
 
+signals:
+   void statusUpdate(IdleSlave *);
+   
 protected slots:
    void gotInput();
 
@@ -59,6 +64,15 @@ protected:
    bool mConnected;
    pid_t mPid;
    time_t mBirthDate;
+   bool mOnHold;
+   KURL mUrl;
+};
+
+class SlaveWaitRequest
+{
+public:
+   pid_t pid;
+   DCOPClientTransaction *transaction;
 };
 
 class KLaunchRequest
@@ -120,6 +134,8 @@ protected:
        const QValueList<QCString> &envs, const QCString& startup_id = "");
    bool kdeinit_exec(const QString &app, const QStringList &args, const QValueList<QCString> &envs, bool wait);
 
+   void waitForSlave(pid_t pid);
+
    void autoStart();
 
    bool allowMultipleFiles(const KService::Ptr service);
@@ -132,6 +148,7 @@ protected:
 
    void removeArg( QValueList<QCString> &args, const QCString &target);
 
+   pid_t requestHoldSlave(const KURL &url, const QString &app_socket);
    pid_t requestSlave(const QString &protocol, const QString &host,
                       const QString &app_socket, QString &error);
 
@@ -146,6 +163,7 @@ public slots:
    void slotDequeue();
    void slotKDEInitData(int);
    void slotAppRegistered(const QCString &appId);
+   void slotSlaveStatus(IdleSlave *);
    void acceptSlave( KSocket *);
    void slotSlaveGone();
    void idleTimeout();
@@ -157,6 +175,7 @@ protected:
    QSocketNotifier *kdeinitNotifier;
    serviceResult DCOPresult;
    KLaunchRequest *lastRequest;
+   QPtrList<SlaveWaitRequest> mSlaveWaitRequest;
    QString mPoolSocketName;
    KServerSocket *mPoolSocket;
    QPtrList<IdleSlave> mSlaveList;
