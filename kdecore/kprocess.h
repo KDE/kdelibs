@@ -160,6 +160,11 @@ public:
    * If @p NoRead is specified in conjunction with @p Stdout,
    * no data is actually read from @p Stdout but only
    * the signal @ref childOutput(int fd) is emitted.
+   *
+   * When using @ref setUsePty() to enable PTY support the value
+   * for Stderr has no effect. Use Stdout and the signal
+   * @ref receivedStdout() instead to get the output. It is not
+   * possible to distinguish stdout from stderr in this case.
    */
   enum Communication { NoCommunication = 0, Stdin = 1, Stdout = 2, Stderr = 4,
 					   AllOutput = 6, All = 7,
@@ -420,7 +425,7 @@ public:
    * @return true if the process runs privileged
    */
   bool runPrivileged() const;
-  
+
   /**
    * Modifies the environment of the process to be started.
    * This function must be called before starting the process.
@@ -430,7 +435,7 @@ public:
   void setEnvironment(const QString &name, const QString &value);
 
   /**
-   * Changes the current working directory (CWD) of the process 
+   * Changes the current working directory (CWD) of the process
    * to be started.
    * This function must be called before starting the process.
    * @param dir the new directory
@@ -473,19 +478,25 @@ public:
    * Note that the current process remains the parent process of the
    * child process.
    */
-  void detach(); 
+  void detach();
 
   /**
-   * Specify whether to create a pty (pseudo-terminal) for running the 
+   * Specify whether to create a pty (pseudo-terminal) for running the
    * command.
    *
    * @param usePty true if a pty should be created
    * @param addUtmp true if a utmp entry should be created for the pty
    *
-   * This function should be called before starting the process.   
+   * This function should be called before starting the process.
+   *
+   * Note that the PTY uses only single data channel for communication,
+   * so it is no longer possible to distinguish stdout and stderr
+   * anymore. Instead, all stderr output is received in
+   * @ref receivedStdout() when the Communication parameter is set to
+   * contain Stdout (and not Stderr!)
    */
   void setUsePty(bool usePty, bool addUtmp);
-  
+
   /**
    * Set or change the logical (screen) size of the pty.
    * The default is 25 rows by 80 lines.
@@ -494,7 +505,7 @@ public:
    * @param columns the number of columns
    */
   void setPtySize(int lines, int columns);
-  
+
   /**
    * Set whether the pty should honour Xon/Xoff flow control.
    *
@@ -506,14 +517,14 @@ public:
 
   /**
    * @return the name of the master pty device used for this process.
-   * 
+   *
    * This function should only be called after starting the process.
    */
   const char *ptyMasterName();
 
   /**
    * @return the name of the slave pty device used for this process.
-   * 
+   *
    * This function should only be called after starting the process.
    */
   const char *ptySlaveName();
@@ -528,7 +539,7 @@ public:
    * @return the file descriptor of the slave pty
    */
   int ptySlaveFd();
-  
+
 signals:
 
   /**
@@ -563,15 +574,15 @@ signals:
    * Emitted when output from the child process has
    * been received on stdout.
    *
-   * To actually get these signals, the respective communications link 
-   * (stdout/stderr) has to be turned on in @ref start() and the 
+   * To actually get these signals, the respective communications link
+   * (stdout/stderr) has to be turned on in @ref start() and the
    * @p NoRead flag should have been passed.
    *
    * You will need to explicitly call resume() after your call to start()
    * to begin processing data from the child process's stdout.  This is
    * to ensure that this signal is not emitted when no one is connected
    * to it, otherwise this signal will not be emitted.
-   * 
+   *
    * The data still has to be read from file descriptor @p fd.
    * @param fd the file descriptor that provides the data
    * @param len the number of bytes that have been read from fd must be written here
@@ -592,7 +603,12 @@ signals:
    * @param proc a pointer to the process that has received the data
    * @param buffer The data received.
    * @param buflen The number of bytes that are available.
-  */
+   *
+   * Note that this signal is never emitted when @ref setUsePty() is set
+   * to use a PTY for communication. Instead, the output will arrive in
+   * @ref receivedStdout() when the Communication link contains Stdout
+   * (and not Stderr).
+   */
   void receivedStderr(KProcess *proc, char *buffer, int buflen);
 
   /**
@@ -634,7 +650,7 @@ protected slots:
 protected:
 
   /**
-   * Sets up the environment according to the data passed via 
+   * Sets up the environment according to the data passed via
    * setEnvironment(...)
    */
   void setupEnvironment();
@@ -766,7 +782,7 @@ protected:
 
   /**
    * Specify the actual executable that should be started (first argument to execve)
-   * Normally the the first argument is the executable but you can 
+   * Normally the the first argument is the executable but you can
    * override that with this function.
    */
   void setBinaryExecutable(const char *filename);
