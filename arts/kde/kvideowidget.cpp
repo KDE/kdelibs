@@ -304,8 +304,18 @@ int KVideoWidget::heightForWidth( int w ) const
 
 void KVideoWidget::mousePressEvent( QMouseEvent *event )
 {
-    if (event->button() == RightButton)
-	emit rightButtonPressed( mapToGlobal( event->pos() ) );
+	QPoint pos = mapToGlobal( event->pos() );
+
+	emit mouseButtonPressed( event->button(), pos, event->state() );
+
+	// ### Remove in KDE4
+	if ( event->button() == RightButton )
+		emit rightButtonPressed( pos );
+}
+
+void KVideoWidget::mouseDoubleClickEvent( QMouseEvent *event )
+{
+	emit mouseButtonDoubleClick( mapToGlobal( event->pos() ), event->state() );
 }
 
 void KVideoWidget::resizeEvent( QResizeEvent *event )
@@ -371,10 +381,17 @@ void KVideoWidget::fullscreenActivated()
     {
 	fullscreenWidget = new KFullscreenVideoWidget( this );
 
-	// Interconnect right mouse button signals
-	connect( fullscreenWidget, SIGNAL(rightButtonPressed(const QPoint &)),
-		 this, SIGNAL(rightButtonPressed(const QPoint &)) );
+	// Interconnect mouse button signals
+	connect( fullscreenWidget, SIGNAL(mouseButtonPressed( int, const QPoint &, int )),
+		 this, SIGNAL(mouseButtonPressed( int, const QPoint &, int)) );
 
+	connect( fullscreenWidget, SIGNAL(mouseButtonDoubleClick( const QPoint &, int )),
+		 this, SIGNAL(mouseButtonDoubleClick( const QPoint &, int )) );
+
+	// ### Remove in KDE4
+	 connect( fullscreenWidget, SIGNAL(rightButtonPressed(const QPoint &)),
+		this, SIGNAL(rightButtonPressed(const QPoint &)) );
+		 
 	// Leave fullscreen mode with <Escape> key
 	QAccel *a = new QAccel( fullscreenWidget );
 	a->connectItem( a->insertItem( Key_Escape ),

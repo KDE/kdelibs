@@ -42,6 +42,7 @@ public:
 
 protected:
     virtual void mousePressEvent( QMouseEvent *event );
+    virtual void mouseDoubleClickEvent( QMouseEvent *event);
     virtual void resizeEvent( QResizeEvent *event );
     virtual bool x11Event( XEvent *event );
 
@@ -62,8 +63,14 @@ protected slots:
 
 signals:
     void adaptSize( int width, int height );
+    void mouseButtonPressed( int type, const QPoint &, int state );
+    void mouseButtonDoubleClick( const QPoint &, int state );
+    /**
+     * @deprecated
+     * use mouseButtonPressed( int type, const QPoint & ) instead.
+     */
     void rightButtonPressed( const QPoint & );
-
+    
 private:
     void init(void);
     QWidget *fullscreenWidget;
