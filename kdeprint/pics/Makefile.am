@@ -39,5 +39,18 @@ stdicon_ICON = kdeprint_job \
 	       filterstop \
 	       kdeprint_job_completed \
 	       kdeprint_job_cancelled \
-	       package_utilities
+	       package_utilities \
+	       kdeprint_enableprinter \
+	       kdeprint_stopprinter \
+	       kdeprint_addprinter \
+	       kdeprint_addpseudo \
+	       kdeprint_configmgr \
+	       kdeprint_configsrv \
+	       kdeprint_defaulthard \
+	       kdeprint_defaultsoft \
+	       kdeprint_report \
+	       kdeprint_testprinter \
+	       kdeprint_uploadsmb \
+	       kdeprint_restartsrv \
+	       kdeprint_inklevel
 stdicondir = $(kde_datadir)/kdeprint/icons
