@@ -1320,7 +1320,6 @@ void NodeBaseImpl::cloneChildNodes(NodeImpl *clone)
     }
 }
 
-
 // I don't like this way of implementing the method, but I didn't find any
 // other way. Lars
 bool NodeBaseImpl::getUpperLeftCorner(int &xPos, int &yPos) const
@@ -1515,7 +1514,6 @@ unsigned long NodeListImpl::length() const
 unsigned long NodeListImpl::recursiveLength(NodeImpl *start) const
 {
     unsigned long len = 0;
-
     for(NodeImpl *n = start->firstChild(); n != 0; n = n->nextSibling()) {
         if ( n->nodeType() == Node::ELEMENT_NODE ) {
             if (elementMatches(n))
@@ -1627,8 +1625,13 @@ bool TagNodeListImpl::elementMatches( NodeImpl *testNode ) const
     if (m_namespaceAware)
 	return (m_matchAllNamespaces || testNode->namespaceURI() == m_namespaceURI) &&
 	       (m_matchAllNames || testNode->localName() == m_localName);
-    else
-	return (m_id == 0 || m_id == testNode->id());
+    else {
+        NodeImpl::Id testId = testNode->id();
+        //we have to strip the namespaces if we compare in a namespace unaware fashion
+        if ( !m_namespaceAware )
+            testId &= ~NodeImpl_IdNSMask;
+	return (m_id == 0 || m_id == testId);
+    }
 }
 
 NameNodeListImpl::NameNodeListImpl(NodeImpl *n, const DOMString &t )
