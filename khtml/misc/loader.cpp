@@ -61,7 +61,7 @@ void CachedObject::computeStatus()
     if( m_size > MAXCACHEABLE )
     {
         m_status = Uncacheable;
-        Cache::flush(true); // Force flush.
+        //Cache::flush(true); // Force flush.
     }
     else
         m_status = Cached;
@@ -1149,7 +1149,7 @@ void Cache::flush(bool force)
     if (force)
        flushCount = 0;
     // Don't flush for every image.
-    if (!lru || (lru->count() < flushCount))
+    if (!lru || (lru->count() < (uint) flushCount))
        return;
 
     init();
@@ -1167,11 +1167,14 @@ void Cache::flush(bool force)
         --it; // Update iterator, we might delete the current entry later on.
         CachedObject *o = cache->find( url );
 
+        if( !o->canDelete() || o->status() == CachedObject::Persistent ) {
+               continue; // image is still used or cached permanently
+	       // in this case don't count it for the size of the cache.
+        }
+	
         if( o->status() != CachedObject::Uncacheable )
         {
            cacheSize += o->size();
-           if( !o->canDelete() || o->status() == CachedObject::Persistent )
-               continue; // image is still used or cached permanently
 
            if( cacheSize < maxSize )
                continue;

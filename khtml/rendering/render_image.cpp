@@ -275,12 +275,13 @@ void RenderImage::layout()
 
 void RenderImage::setImageUrl(DOMString url, DOMString baseUrl, DocLoader *docLoader)
 {
-    if(image) image->deref(this);
-    image = docLoader->requestImage(url, baseUrl);
-    if(image)
+    CachedImage *new_image = docLoader->requestImage(url, baseUrl);
+    if(new_image && new_image != image)
     {
-        image->ref(this);
-        berrorPic = image->isErrorImage();
+	if(image) image->deref(this);
+	image = new_image;
+	image->ref(this);
+	berrorPic = image->isErrorImage();
     }
 }
 
