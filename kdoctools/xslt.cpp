@@ -89,6 +89,8 @@ QString transform( const QString &pat, const QString& tss)
     }
     xsltFreeStylesheet(style_sheet);
 
+    if (parsed.isEmpty())
+	parsed = " "; // avoid error message
     return parsed;
 }
 
