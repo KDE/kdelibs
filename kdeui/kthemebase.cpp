@@ -281,11 +281,10 @@ KThemeBase::KThemeBase(const QString &)
 
 void KThemeBase::applyConfigFile(const QString &file)
 {
-    // Fix to use KStdDirs
-
     // Do copy ourselves
     QFile src(file);
-    QFile dest(QDir::homeDirPath() + "/.kde/share/config/kstylerc");
+    QFile dest(KGlobal::dirs()->findResource("config", "kstylerc"));
+
     if(!src.open(IO_ReadOnly)){
         warning("Cannot open theme file for reading!");
         return;
