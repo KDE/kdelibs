@@ -1,8 +1,6 @@
 [Misc]
 Name=BeOS
-Name[af]=BEOS
 Comment=Unthemed Beos-like style
-Comment[af]=ONGETEMADE BEOS-TIPE STYL
 Comment[az]=Beos oxşarı örtüsüz tərz
 Comment[bg]=Стил без тема, приличащ на Beos, 
 Comment[br]=Giz BeOS anwisket
@@ -33,8 +31,8 @@ Comment[no]=Beos-lignende stil uten tema
 Comment[no_NY]=BeOS-aktig stil utan tema
 Comment[oc]=Estil del tipus Beos sense temes
 Comment[pl]=Styl podobny do Beosa, bez motywów
-Comment[pt_BR]=Estilo semelhante ao Beos
 Comment[pt]=Estilo tipo BeOS
+Comment[pt_BR]=Estilo semelhante ao Beos
 Comment[ru]=стиль без тем, похожий на Beos, 
 Comment[sk]=Téma ako Beos štýl
 Comment[sl]=Netematski slog, podoben BeOS

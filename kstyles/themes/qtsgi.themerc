@@ -1,6 +1,5 @@
 [Misc]
 Name=Qt SGI
-Name[af]=QT SGI
 Name[br]=QT SGI
 Name[de]=Qt-SGI
 Name[eo]=Qt-SGI
@@ -10,7 +9,6 @@ Name[nl]=QT-SGI
 Name[no_NY]=Qt-SGI
 Name[sk]=QT-SGI
 Comment=Built-in SGI style
-Comment[af]=INGEBOUDE SGI STYL
 Comment[az]=SGI tərzi
 Comment[bg]=Вграден в Qt стил, приличащ на SGI
 Comment[br]=Giz SGI enframmet
@@ -41,8 +39,8 @@ Comment[no]=Innebygget SGI-stil
 Comment[no_NY]=Innebygd SGI-stil
 Comment[oc]=Estil incorporat SGI
 Comment[pl]=Wbudowany styl SGI
-Comment[pt_BR]=Estilo predefinido SGI
 Comment[pt]=Estilo embutido de SGI
+Comment[pt_BR]=Estilo predefinido SGI
 Comment[ru]=встроенный в Qt стиль, похожий на SGI
 Comment[sk]=Zabudovaný SGI štýl
 Comment[sl]=Vgrajeni slog SGI

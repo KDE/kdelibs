@@ -1,6 +1,5 @@
 [Misc]
 Name=Qt Platinum
-Name[af]=QT PLATINUM
 Name[az]=Qt Platin
 Name[ca]=Qt Platí
 Name[da]=Qt Platin
@@ -20,7 +19,6 @@ Name[sl]=Platinasti Qt
 Name[sr]=QT Platinum
 Name[tr]=Qt Platin
 Comment=Built-in unthemed Platinum style
-Comment[af]=INGEBOUDE ONGETEMADE PLATINUM STYL
 Comment[az]=Yerləşmiş, örtüsüz Platin tərzi
 Comment[bg]=Вграден в Qt стил без тема Platinum
 Comment[br]=Giz Platinum enframmet anwisket
@@ -51,8 +49,8 @@ Comment[no]=Innebygget Platinum-stil uten tema
 Comment[no_NY]=Innebygd Platinum-stil utan tema
 Comment[oc]=Estil incorporat Plati sense temes
 Comment[pl]=Wbudowany styl Platyna, bez motywów
-Comment[pt_BR]=Estilo Platinum predefinido
 Comment[pt]=Estilo embutido Platinum
+Comment[pt_BR]=Estilo Platinum predefinido
 Comment[ru]=встроенный в Qt стиль без тем Platinum
 Comment[sk]=Zabudovaný platinový štýl bez témy
 Comment[sl]=Netematski vgrajeni platinasti slog
