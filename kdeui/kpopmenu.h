@@ -106,12 +106,12 @@ public:
      */
     QPixmap titlePixmap(int id);
     /**
-     * Obselete method provided for backwards compatibility only. Use the
+     * Obsolete method provided for backwards compatibility only. Use the
      * normal constructor and insertTitle instead.
      */
     KPopupMenu(const QString &title, QWidget *parent=0, const char *name=0);
     /**
-     * Obselete method provided for backwards compatibility only. Use
+     * Obsolete method provided for backwards compatibility only. Use
      * insertTitle and changeTitle instead.
      */
     void setTitle(const QString &title);
