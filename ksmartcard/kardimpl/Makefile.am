@@ -22,12 +22,13 @@ INCLUDES= -I$(srcdir)/.. -I$(srcdir)/../kardlib -I$(top_srcdir) $(PCSC_INCLUDES)
 lib_LTLIBRARIES = libkscard_gsm.la libkscard_gemsafe.la
 
 
-libkscard_gsm_la_LDFLAGS = $(all_libraries) ../kardlib/libksmartcard.la -module -avoid-version
+libkscard_gsm_la_LDFLAGS = $(all_libraries) -module -avoid-version
 libkscard_gsm_la_SOURCES = kcardgsm_impl.cc
+libkscard_gsm_la_LIBADD  = ../kardlib/libksmartcard.la
 
-
-libkscard_gemsafe_la_LDFLAGS = $(all_libraries) ../kardlib/libksmartcard.la -module -avoid-version
+libkscard_gemsafe_la_LDFLAGS = $(all_libraries) -module -avoid-version
 libkscard_gemsafe_la_SOURCES = kcardgemsafe_impl.cc
+libkscard_gemsafe_la_LIBADD  = ../kardlib/libksmartcard.la
 
 METASOURCES = AUTO
 

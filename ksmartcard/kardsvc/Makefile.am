@@ -20,8 +20,8 @@ INCLUDES= -I$(srcdir)/.. -I$(srcdir)/../kardlib -I$(top_srcdir) $(all_includes) 
 
 lib_LTLIBRARIES = libkded_kardsvc.la
 
-libkded_kardsvc_la_LDFLAGS = $(all_libraries) ../kardlib/libksmartcard.la -module -avoid-version
-libkded_kardsvc_la_LIBADD = $(LIB_KIO)
+libkded_kardsvc_la_LDFLAGS = $(all_libraries) -module -avoid-version
+libkded_kardsvc_la_LIBADD = $(LIB_KIO) ../kardlib/libksmartcard.la
 libkded_kardsvc_la_SOURCES = kardsvc.cpp kardsvc.skel
 
 METASOURCES = AUTO
