@@ -1,5 +1,7 @@
 1998-06-07  Stephan Kulow  <coolo@kde.org>
 
+	* kfilesimpleview.cpp: added a repaint call after a resize
+
 	* kfiledialog.cpp: new experimental button order
 
 	* kfiledialog.cpp: added lastDirectory to remember the last visited

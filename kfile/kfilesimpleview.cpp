@@ -278,6 +278,7 @@ void KFileSimpleView::resizeEvent ( QResizeEvent *e )
     rowsVisible = lastRowVisible();
     setNumRows(rowsVisible);
     setNumCols(count() / rowsVisible + 1);
+    QTableView::repaint(true);
 }
 
 void KFileSimpleView::mousePressEvent( QMouseEvent* e )
