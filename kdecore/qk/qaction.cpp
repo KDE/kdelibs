@@ -94,8 +94,10 @@ int QActionSeparator::plug( QWidget* widget )
     {
 	QPopupMenu* menu = (QPopupMenu*)widget;
 	
-	int id = menu->insertSeparator();
-	
+	// ##############
+	//int id = menu->insertSeparator();
+	// ##############
+	int id = 0;
 	addContainer( menu, id );
 	connect( menu, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
 	
@@ -680,7 +682,8 @@ void QAction::slotActivated()
 {
     emit activated();
 }
-
+// #################
+/*
 QDomElement QAction::configuration( QDomDocument& doc, bool properties ) const
 {
     QDomElement e = QObject::configuration( doc, properties );
@@ -689,6 +692,8 @@ QDomElement QAction::configuration( QDomDocument& doc, bool properties ) const
 
     return e;
 }
+*/
+// ################
 
 /******************************************************
  *
@@ -828,7 +833,8 @@ void QActionMenu::unplug( QWidget* widget )
     else
 	QAction::unplug( widget );
 }
-
+// ################
+/*
 bool QActionMenu::setConfiguration( const QDomElement& element )
 {
     QDomElement i = element.firstChild().toElement();
@@ -870,7 +876,8 @@ bool QActionMenu::setConfiguration( const QDomElement& element )
 
     return QAction::setConfiguration( element );
 }
-
+*/
+// ##############
 /******************************************************
  *
  * QActionCollection
@@ -1007,6 +1014,8 @@ QValueList<QAction*> QActionCollection::actions()
 
     return lst;
 }
+// ###############
+/*
 
 bool QActionCollection::setConfiguration( const QDomElement& element )
 {
@@ -1036,6 +1045,8 @@ QDomElement QActionCollection::configuration( QDomDocument& doc, bool properties
 
     return e;
 }
+*/
+// ##############
 
 /******************************************************
  *

@@ -47,7 +47,7 @@ public:
 
     virtual bool isPlugged() const;
 
-    QDomElement configuration( QDomDocument& doc, bool properties ) const;
+    //QDomElement configuration( QDomDocument& doc, bool properties ) const;
 
     QWidget* container( int index );
     QWidget* representative( int index );
@@ -162,7 +162,7 @@ public:
     QPopupMenu* popupMenu();
     void popup( const QPoint& global );
 
-    virtual bool setConfiguration( const QDomElement& element );
+    //virtual bool setConfiguration( const QDomElement& element );
 
 private:
     QPopupMenu* m_popup;
@@ -311,8 +311,8 @@ public:
     virtual QValueList<QAction*> actions( const QString& group );
     virtual QValueList<QAction*> actions();
 
-    bool setConfiguration( const QDomElement& element );
-    QDomElement configuration( QDomDocument& doc, bool properties ) const;
+    //bool setConfiguration( const QDomElement& element );
+    //QDomElement configuration( QDomDocument& doc, bool properties ) const;
 
 signals:
     void inserted( QAction* );
