@@ -436,12 +436,13 @@ protected slots:
 
 private slots:
   // workaround for compiler bug
-void slotFoundMountPoint( const unsigned long& kBSize, const unsigned long&
+  void slotFoundMountPoint( const unsigned long& kBSize, const unsigned long&
 			  kBUsed, const unsigned long& kBAvail, const QString& mp );
- void nameFileChanged(const QString &text );
-private:
+  void nameFileChanged(const QString &text );
 
+private:
   void determineRelativePath( const QString & path );
+  void applyIconChanges();
 
   QWidget *iconArea;
   QWidget *nameArea;
@@ -478,7 +479,7 @@ public:
     PermissionsOnlyLinks = 2,
     PermissionsMixed = 3
   };
-  
+
   enum PermissionsTarget {
     PermissionsOwner  = 0,
     PermissionsGroup  = 1,
@@ -504,13 +505,13 @@ private slots:
   void slotShowAdvancedPermissions();
 
 private:
-  void setComboContent(QComboBox *combo, PermissionsTarget target, 
+  void setComboContent(QComboBox *combo, PermissionsTarget target,
 		       mode_t permissions, mode_t partial);
   bool isIrregular(mode_t permissions, bool isDir, bool isLink);
   void enableAccessControls(bool enable);
   void updateAccessControls();
-  void getPermissionMasks(mode_t &andFilePermissions, 
-			  mode_t &andDirPermissions, 
+  void getPermissionMasks(mode_t &andFilePermissions,
+			  mode_t &andDirPermissions,
 			  mode_t &orFilePermissions,
 			  mode_t &orDirPermissions);
 

@@ -1200,7 +1200,10 @@ void KFilePropsPlugin::slotCopyFinished( KIO::Job * job )
     kdDebug(250) << "KFilePropsPlugin::slotCopyFinished path=" << newURL.path() << endl;
     properties->updateUrl( newURL );
   }
+}
 
+void KFilePropsPlugin::applyIconChanges()
+{
   // handle icon changes - only local files for now
   // TODO: Use KTempFile and KIO::file_copy with resume = true
   if (!iconArea->isA("QLabel") && properties->kurl().isLocalFile()) {
@@ -1257,6 +1260,9 @@ void KFilePropsPlugin::slotFileRenamed( KIO::Job *, const KURL &, const KURL & n
 
 void KFilePropsPlugin::postApplyChanges()
 {
+  // Save the icon only after applying the permissions changes (#46192)
+  applyIconChanges();
+
   KURL::List lst;
   KFileItemList items = properties->items();
   for ( KFileItemListIterator it( items ); it.current(); ++it )
