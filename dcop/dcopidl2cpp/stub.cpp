@@ -204,7 +204,7 @@ void generateStub( const QString& idl, const QString& filename, QDomElement de)
 
             // needed for inherited stubs
 	    str << "protected:" << endl;
-            str << "    " << className << "() {};" << endl;
+            str << "    " << className << "() : DCOPStub( never_use ) {};" << endl;
 
 	    str << "};" << endl;
 	    str << endl;
