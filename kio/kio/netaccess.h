@@ -87,11 +87,15 @@ public:
      * {
      *   loadFile( tmpFile );
      *   KIO::NetAccess::removeTempFile( tmpFile );
-     *   }
+     * } else {
+     *   KMessageBox::error(this, KIO::NetAccess::lastErrorString() );
+     * }
      * \endcode
      *
      * Of course, your user interface will still process exposure/repaint
      * events during the download.
+     *
+     * If the download fails, lastError() and lastErrorString() will be set.
      *
      * @param src URL Reference to the file to download.
      * @param target String containing the final local location of the
@@ -104,7 +108,10 @@ public:
      *               as needed. If NULL, authentication information will be
      *               cached only for a short duration after which the user will
      *               again be prompted for passwords as needed.
-     * @return true if successful, false for failure
+     * @return true if successful, false for failure.  Use lastErrorString() to
+     *         get the reason it failed.
+     *
+     * @see lastErrorString()
      */
     static bool download(const KURL& src, QString & target, QWidget* window);
 
@@ -432,6 +439,7 @@ public:
 
     /**
      * Returns the error string for the last job, in case it failed.
+     * Note that this is already translated.
      * @return the last error string, or QString::null
      */
     static QString lastErrorString() { return lastErrorMsg ? *lastErrorMsg : QString::null; }
