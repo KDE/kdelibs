@@ -151,6 +151,7 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent, const char *name)
 
   _tipText = new KTextBrowser(this);
   vbox->addWidget(_tipText);
+  _tipText->installEventFilter(this);
 
   KSeparator* sep = new KSeparator( KSeparator::HLine, this);
   vbox->addWidget(sep);
@@ -221,5 +222,20 @@ void KTipDialog::setShowOnStart(bool on)
   config.sync();
 }
 
+
+bool KTipDialog::eventFilter(QObject *o, QEvent *e)
+{
+  if ( o == _tipText && e->type()== QEvent::KeyPress &&
+      ( ( (QKeyEvent *)e)->key() == Key_Return ||
+	( (QKeyEvent *)e)->key() == Key_Space ) )
+    accept();
+    
+  // If the user presses Return or Space, we close the dialog as if the
+  // default button was pressed even if the KTextBrowser has the keyboard
+  // focus. This could have the bad side-effect that the user cannot use the
+  // keyboard to open urls in the KTextBrowser, so we just let it handle
+  // the key event _additionally_. (Antonio)
+  return QWidget::eventFilter( o, e );
+}
 
 #include "ktip.moc"

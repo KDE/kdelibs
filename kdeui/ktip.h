@@ -148,6 +148,7 @@ protected:
 
   KTipDialog(KTipDatabase *db, QWidget *parent=0, const char *name=0);
 
+  bool eventFilter(QObject *, QEvent *);
 
 private slots:
 
