@@ -180,6 +180,7 @@ public:
   bool m_ssl_in_use;
   QString m_ssl_peer_cert_subject,
           m_ssl_peer_cert_issuer,
+          m_ssl_peer_ip,
           m_ssl_cipher,
           m_ssl_cipher_desc,
           m_ssl_cipher_version,
@@ -831,6 +832,7 @@ void KHTMLPart::slotFinished( KIO::Job * job )
   d->m_ssl_in_use = (d->m_job->queryMetaData("ssl_in_use") == "TRUE");
   d->m_ssl_peer_cert_subject = d->m_job->queryMetaData("ssl_peer_cert_subject");
   d->m_ssl_peer_cert_issuer = d->m_job->queryMetaData("ssl_peer_cert_issuer");
+  d->m_ssl_peer_ip = d->m_job->queryMetaData("ssl_peer_ip");
   d->m_ssl_cipher = d->m_job->queryMetaData("ssl_cipher");
   d->m_ssl_cipher_desc = d->m_job->queryMetaData("ssl_cipher_desc");
   d->m_ssl_cipher_version = d->m_job->queryMetaData("ssl_cipher_version");
@@ -1641,8 +1643,7 @@ void KHTMLPart::slotSecurity()
   if (d->m_ssl_in_use) {
     kid->setup(d->m_ssl_peer_cert_subject,
                d->m_ssl_peer_cert_issuer,
-               // FIXME
-               "0.0.0.0", 
+               d->m_ssl_peer_ip,
                m_url.url(),
                d->m_ssl_cipher, 
                d->m_ssl_cipher_desc,
