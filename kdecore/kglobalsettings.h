@@ -150,7 +150,7 @@ class KGlobalSettings
      *                          put into the edit-widget, but into a popup box.
      **/
 
-    enum Completion { CompletionNone=1, CompletionAuto, CompletionMan, 
+    enum Completion { CompletionNone=1, CompletionAuto, CompletionMan,
 		      CompletionShell, CompletionPopup };
 
     static Completion completionMode();
@@ -163,6 +163,17 @@ class KGlobalSettings
      * @return Whether or not KDE should use certain GNOME resources
      */
     static bool honorGnome();
+
+    struct KMouseSettings
+    {
+        enum { RightHanded = 0, LeftHanded = 1 };
+        int handed; // left or right
+    };
+
+    /**
+     * This returns the current mouse settings.
+     */
+    static KMouseSettings & mouseSettings();
 
     /**
      * The path to the desktop directory of the current user.
@@ -216,13 +227,18 @@ private:
      */
     static void initColors();
     /**
-     * drop cached values (called by KApplication)
+     * drop cached values for fonts (called by KApplication)
      */
     static void rereadFontSettings();
     /**
-     * drop cached values (called by KApplication)
+     * drop cached values for paths (called by KApplication)
      */
     static void rereadPathSettings();
+    /**
+     * drop cached values for mouse settings (called by KApplication)
+     */
+    static void rereadMouseSettings();
+
 
     static QString* s_desktopPath;
     static QString* s_autostartPath;
@@ -233,6 +249,7 @@ private:
     static QFont *_menuFont;
     static QColor * kde2Gray;
     static QColor * kde2Blue;
+    static KMouseSettings *s_mouseSettings;
 
     friend class KApplication;
 };

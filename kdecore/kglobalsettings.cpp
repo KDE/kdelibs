@@ -31,6 +31,10 @@
 #include <klocale.h>
 #include <qfontinfo.h>
 
+//#include <X11/X.h>
+#include <X11/Xlib.h>
+//#include <X11/Xutil.h>
+
 QString* KGlobalSettings::s_desktopPath = 0;
 QString* KGlobalSettings::s_autostartPath = 0;
 QString* KGlobalSettings::s_trashPath = 0;
@@ -40,7 +44,7 @@ QFont *KGlobalSettings::_toolBarFont = 0;
 QFont *KGlobalSettings::_menuFont = 0;
 QColor *KGlobalSettings::kde2Blue = 0;
 QColor *KGlobalSettings::kde2Gray = 0;
-
+KGlobalSettings::KMouseSettings *KGlobalSettings::s_mouseSettings = 0;
 
 int KGlobalSettings::dndEventDelay()
 {
@@ -391,3 +395,50 @@ void KGlobalSettings::rereadPathSettings()
     s_desktopPath = 0L;
 }
 
+KGlobalSettings::KMouseSettings & KGlobalSettings::mouseSettings()
+{
+    if ( ! s_mouseSettings )
+    {
+        s_mouseSettings = new KMouseSettings;
+        KMouseSettings & s = *s_mouseSettings; // for convenience
+
+        QString setting = KGlobal::config()->readEntry("MouseButtonMapping");
+        if (setting == "RightHanded")
+            s.handed = KMouseSettings::RightHanded;
+        else if (setting == "LeftHanded")
+            s.handed = KMouseSettings::LeftHanded;
+        else
+        {
+            // get settings from X server
+            // This is a simplified version of the code in input/mouse.cpp
+            // Keep in sync !
+            s.handed = KMouseSettings::RightHanded;
+            unsigned char map[5];
+            switch (XGetPointerMapping(kapp->getDisplay(), map, 5))
+            {
+                case 2:
+                    if ( (int)map[0] == 1 && (int)map[1] == 2 )
+                        s.handed = KMouseSettings::RightHanded;
+                    else if ( (int)map[0] == 2 && (int)map[1] == 1 )
+                        s.handed = KMouseSettings::LeftHanded;
+                    break;
+                case 3:
+                case 5:
+                    if ( (int)map[0] == 1 && (int)map[2] == 3 )
+                        s.handed = KMouseSettings::RightHanded;
+                    else if ( (int)map[0] == 3 && (int)map[2] == 1 )
+                        s.handed = KMouseSettings::LeftHanded;
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+    return *s_mouseSettings;
+}
+
+static void KGlobalSettings::rereadMouseSettings()
+{
+    delete s_mouseSettings;
+    s_mouseSettings = 0L;
+}

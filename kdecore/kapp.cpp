@@ -125,8 +125,6 @@ const int XKeyRelease = KeyRelease;
 KApplication* KApplication::KApp = 0L;
 bool KApplication::loadedByKdeinit = false;
 
-//extern bool bAreaCalculated;
-
 template class QList<KSessionManaged>;
 
 extern "C" {
@@ -1226,6 +1224,8 @@ bool KApplication::x11EventFilter( XEvent *_event )
                 KGlobal::config()->reparseConfiguration();
                 if (arg == SETTINGS_PATHS)
                     KGlobalSettings::rereadPathSettings();
+                else if (arg == SETTINGS_MOUSE)
+                    KGlobalSettings::rereadMouseSettings();
                 propagateSettings((SettingsCategory)arg);
                 break;
 
