@@ -43,7 +43,7 @@ KFileSimpleView::KFileSimpleView(bool s, QDir::SortSpec sorting,
 
     setCellHeight( fontMetrics().lineSpacing() + 5);
     setCellWidth(0);
-    setTableFlags(Tbl_autoHScrollBar | Tbl_cutCellsV | 
+    setTableFlags(Tbl_autoHScrollBar | Tbl_cutCellsV |
 		  Tbl_smoothHScrolling | Tbl_snapToGrid );
     curCol = curRow = 0;
     // QTableView::setNumCols(0);
@@ -110,17 +110,7 @@ void KFileSimpleView::highlightItem(int row, int col)
 	    setLeftCell( leftCell() + col - edge + 1 );
 	else setLeftCell( col );
     }
-
-    else if ( col == edge ) {
-	if ( curCol < col ) {
-	    int tmpCol = leftCell() + 1;
-	    // how do I determine  whether a column is completely visible?
-	    // if ( !isCompletelyVisible( tmpCol ) )
-	        setLeftCell( tmpCol );
-	}
-    }
-
-
+    
     edge = topCell();
     if ( row < edge ) {
 	setTopCell( edge - 1 );
@@ -132,6 +122,12 @@ void KFileSimpleView::highlightItem(int row, int col)
 	setTopCell( topCell() + 1 );
     }
 
+    // make sure, selected column is completely visible
+    while ( col > leftCell() && !isColCompletelyVisible( col ) ) {
+        setLeftCell( leftCell()+1 );
+    }
+    
+
     if (curCol != static_cast<int>(col) ||
 	curRow != static_cast<int>(row))
     {
@@ -142,6 +138,26 @@ void KFileSimpleView::highlightItem(int row, int col)
 	updateCell( row, col );
     }
 }
+
+
+bool KFileSimpleView::isColCompletelyVisible( int col )
+{
+  if ( !colIsVisible(col) ) 		// out of visible area
+      return false;
+  
+  else if ( col < lastColVisible() ) 	// visible and not last column
+      return true;
+  
+  else { 				// last column, may be clipped
+    int tableWidth = 0;
+    for ( int i = leftCell(); i <= lastColVisible(); i++ ) {
+        tableWidth += cellWidth( i );
+    }
+  
+    return ( viewWidth() >= tableWidth );
+  }
+}    
+
 
 void KFileSimpleView::clearView()
 {
@@ -189,8 +205,16 @@ void KFileSimpleView::keyPressEvent( QKeyEvent* e )
     int oldCol = curCol;
     int lastItem = 0;
     int jump     = 0;
+    bool oneColOnly = leftCell() == lastColVisible();
 
+    
+    // if user scrolled current item out of view via scrollbar and then
+    // tries to scroll via keyboard, make item visible before going on
+    if ( !colIsVisible( curCol ) ) {
+        setLeftCell( curCol );
+    }
 
+    
     switch( e->key() ) {                        // Look at the key code
     case Key_Left:
 	if( newCol > 0 )
@@ -219,7 +243,7 @@ void KFileSimpleView::keyPressEvent( QKeyEvent* e )
     case Key_Down:
 	if( newRow <= numRows()-1 ) {
 	    newRow++;
-	    if (newRow >= numRows()) {
+	    if (newRow >= numRows() && curCol < numCols()-1) {
 		newRow = 0;
  	 	newCol++;
 	    }
@@ -234,14 +258,24 @@ void KFileSimpleView::keyPressEvent( QKeyEvent* e )
         newCol = numCols() - 1;
         break;
     case Key_PageUp:
-        jump = lastColVisible() - leftCell(); // num of cols we want to jump
+        if ( oneColOnly )
+	  jump = 1;
+	else
+	  jump = lastColVisible() - leftCell(); // num of cols we want to jump
+	
         if ( curCol - jump < 0 ) {
           newRow = 0;
           newCol = 0;
-        } else newCol = curCol - jump;
+	}
+        else newCol = curCol - jump;
+	
+	if ( curCol == newCol ) newRow = 0;
         break;
     case Key_PageDown:
-	jump = lastColVisible() - leftCell();
+        if ( oneColOnly )
+	  jump = 1;
+	else
+	  jump = lastColVisible() - leftCell();
         lastItem = count() % numRows() - 1;   // last item in last col
 
         if ( curCol + jump >= numCols() ) { // too far, just go to last col
@@ -251,6 +285,7 @@ void KFileSimpleView::keyPressEvent( QKeyEvent* e )
           newCol += jump;
           if ( newCol == numCols()-1 && curRow > lastItem )
 	      newRow = lastItem;
+	  else if ( curCol == newCol ) newRow = lastItem;
           else
 	      newRow = curRow;
         }
@@ -279,12 +314,12 @@ void KFileSimpleView::keyPressEvent( QKeyEvent* e )
     // and the user tries to go rightwards (End, RightArrow, PageDown)
     // the last entry shall be selected, then (numRows()-1)
     if ( newRow < 0 ) newRow = numRows() - 1;
+    if ( newCol >= numCols() ) newCol = numCols() -1;
 
     highlightItem( newRow, newCol );
 
     if ( curRow != oldRow || curCol != oldCol )
-	highlight( curRow + curCol * rowsVisible );
-
+      highlight( curRow + curCol * rowsVisible );
 }
 
 
@@ -337,6 +372,7 @@ int KFileSimpleView::cellWidth ( int col )
 
 void KFileSimpleView::resizeEvent ( QResizeEvent *e )
 {
+    int index = curCol * rowsVisible + curRow;
     QTableView::resizeEvent(e);
     rowsVisible = viewHeight() / cellHeight();
     if (!rowIsVisible(rowsVisible))
@@ -347,8 +383,11 @@ void KFileSimpleView::resizeEvent ( QResizeEvent *e )
 	rowsVisible = 1;
     setNumRows(rowsVisible);
     cols = count() / rowsVisible + 1;
+    if ( static_cast<int>(count()) <= rowsVisible * (cols-1) )
+        cols--; // if last col is completely filled, we calc'ed 1 col too much
     setNumCols(cols);
     QTableView::repaint(true);
+    highlightItem( index );
 }
 
 void KFileSimpleView::mousePressEvent( QMouseEvent* e )

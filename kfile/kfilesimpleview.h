@@ -34,11 +34,11 @@ class KFileSimpleView : public QTableView, public KFileInfoContents {
 public:
     KFileSimpleView(bool s, QDir::SortSpec sorting, QWidget *parent, const char *name);
     virtual ~KFileSimpleView();
-    
+
     virtual QWidget *widget() { return this; }
     virtual void setAutoUpdate(bool);
     virtual void clearView();
-    
+
     virtual bool acceptsFiles() { return true; }
     virtual bool acceptsDirs() { return true; }
 
@@ -55,10 +55,11 @@ protected:
     virtual void focusOutEvent ( QFocusEvent * );
 
     void highlightItem(int row, int col);
+    bool isColCompletelyVisible( int col );
 
     /* own function, which calls QTableView::setNumCols */
     void setNumCols(int i);
-    
+
     int rowsVisible;
     int curCol, curRow;
     int *cellWidths;

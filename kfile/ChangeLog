@@ -1,3 +1,13 @@
+Wed Dec  2 15:59:13 1998  Carsten Pfeiffer  <pfeiffer@kde.org>
+
+	* kfilesimpleview.cpp: Fixed some more keyboard navigation bugs.
+	Added method isColCompletelyVisible( int col ), now you can scroll
+	perfectly to make items completely visible.
+	Moreover, in resizeEvent() the number of columns was not calculated 
+	correctly in a special case.
+	And the currently selected item is rehighlighted correcly after
+	resizing, now.
+
 1998-10-12  Jochen Küpper  <jochen@uni-duesseldorf.de>
 
 	* kfiledialog.cpp (okPressed): Changed okPressed to store the correct
