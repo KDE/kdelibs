@@ -40,7 +40,7 @@ template class QAsciiDict<KLibrary>;
 #if HAVE_DLFCN_H
 #  include <dlfcn.h>
 #endif
- 
+
 #ifdef RTLD_GLOBAL
 #  define LT_GLOBAL             RTLD_GLOBAL
 #else
@@ -334,11 +334,9 @@ KLibLoader::~KLibLoader()
     d = 0L;
 }
 
-//static
-QString KLibLoader::findLibrary( const char * name, const KInstance * instance )
+static inline QCString makeLibName( const char* name )
 {
-    QCString libname( name );
-
+    QCString libname(name);
     // only append ".la" if there is no extension
     // this allows to load non-libtool libraries as well
     // (mhk, 20000228)
@@ -347,12 +345,19 @@ QString KLibLoader::findLibrary( const char * name, const KInstance * instance )
       pos = 0;
     if (libname.find('.', pos) < 0)
       libname += ".la";
+    return libname;
+}
+
+//static
+QString KLibLoader::findLibrary( const char * name, const KInstance * instance )
+{
+    QCString libname = makeLibName( name );
 
     // only look up the file if it is not an absolute filename
     // (mhk, 20000228)
     QString libfile;
     if (libname[0] == '/')
-      libfile = libname;
+      libfile = QFile::decodeName( libname );
     else
     {
       libfile = instance->dirs()->findResource( "module", libname );
@@ -364,15 +369,6 @@ QString KLibLoader::findLibrary( const char * name, const KInstance * instance )
           kdDebug(150) << "library " << libname << " not found under 'module' but under 'lib'" << endl;
 #endif
       }
-      if ( libfile.isEmpty() )
-      {
-#ifndef NDEBUG
-        kdDebug(150) << "library=" << libname << ": No file names " << libname.data() << " found in paths." << endl;
-#endif
-            self()->d->errorMessage = i18n("Library files for \"%1\" not found in paths").arg(libname); 
-      }
-      else
-            self()->d->errorMessage = QString::null;
     }
     return libfile;
 }
@@ -384,7 +380,7 @@ KLibrary *tmp;
 int olt_dlopen_flag = lt_dlopen_flag;
 
    lt_dlopen_flag |= LT_GLOBAL;
-   kdDebug(150) << "Loading the next library global with flag " 
+   kdDebug(150) << "Loading the next library global with flag "
                 << lt_dlopen_flag
                 << "." << endl;
    tmp = library(name);
@@ -424,7 +420,14 @@ KLibrary* KLibLoader::library( const char *name )
     } else {
       QString libfile = findLibrary( name );
       if ( libfile.isEmpty() )
+      {
+        const QCString libname = makeLibName( name );
+#ifndef NDEBUG
+        kdDebug(150) << "library=" << name << ": No file named " << libname << " found in paths." << endl;
+#endif
+        d->errorMessage = i18n("Library files for \"%1\" not found in paths").arg(libname);
         return 0;
+      }
 
       lt_dlhandle handle = lt_dlopen( libfile.latin1() );
       if ( !handle )
