@@ -2150,40 +2150,39 @@ void KHTMLPart::overURL( const QString &url, const QString &target )
       extra = i18n(" (In other frame)");
     }
 
-    if (u.protocol() == "mailto") {
-      QString mailtoMsg = i18n("E-Mail to: ") + KURL::decode_string(u.path());
+    if (u.protocol() == QString::fromLatin1("mailto")) {
+      QString mailtoMsg/* = QString::fromLatin1("<img src=%1>").arg(locate("icon", QString::fromLatin1("locolor/16x16/actions/mail_send.png")))*/;
+      mailtoMsg += i18n("E-Mail to: ") + KURL::decode_string(u.path());
       QStringList queries = QStringList::split('&', u.query().mid(1));
       for (QStringList::Iterator it = queries.begin(); it != queries.end(); ++it)
-        if ((*it).startsWith("subject="))
+        if ((*it).startsWith(QString::fromLatin1("subject=")))
           mailtoMsg += i18n(" - Subject: ") + KURL::decode_string((*it).mid(8));
-        else
-          if ((*it).startsWith("cc="))
-            mailtoMsg += i18n(" - CC: ") + KURL::decode_string((*it).mid(3));
-          else
-            if ((*it).startsWith("bcc="))
-              mailtoMsg += i18n(" - BCC: ") + KURL::decode_string((*it).mid(4));
-      mailtoMsg = "<img src=" + locate("icon", QString::fromLatin1("locolor/16x16/actions/mail_send.png")) + "> " + mailtoMsg;
+        else if ((*it).startsWith(QString::fromLatin1("cc=")))
+          mailtoMsg += i18n(" - CC: ") + KURL::decode_string((*it).mid(3));
+        else if ((*it).startsWith(QString::fromLatin1("bcc=")))
+          mailtoMsg += i18n(" - BCC: ") + KURL::decode_string((*it).mid(4));
       emit setStatusBarText(mailtoMsg);
-    } else
-      if (u.protocol() == "http") {
+			return;
+    } else if (u.protocol() == QString::fromLatin1("http")) {
         DOM::Node hrefNode = nodeUnderMouse().parentNode();
-        while (hrefNode.nodeName().string() != "A" && !hrefNode.isNull())
+        while (hrefNode.nodeName().string() != QString::fromLatin1("A") && !hrefNode.isNull())
           hrefNode = hrefNode.parentNode();
 
-        // Is this check neccessary at all? (Frerich)
+/*        // Is this check neccessary at all? (Frerich)
         if (!hrefNode.isNull()) {
           DOM::Node hreflangNode = hrefNode.attributes().getNamedItem("HREFLANG");
           if (!hreflangNode.isNull()) {
             QString countryCode = hreflangNode.nodeValue().string().lower();
             // Map the language code to an appropriate country code.
-            if (countryCode == "en")
-              countryCode = "gb";
-            QString flagImg = "<img src=" + locate("locale", QString::fromLatin1("l10n/") + countryCode + QString::fromLatin1("/flag.png")) + "> ";
-            emit setStatusBarText( flagImg + u.prettyURL() + extra );
-          } else
-            emit setStatusBarText(u.prettyURL() + extra);
-        } else
-          emit setStatusBarText(u.prettyURL() + extra);
+            if (countryCode == QString::fromLatin1("en"))
+              countryCode = QString::fromLatin1("gb");
+            QString flagImg = QString::fromLatin1("<img src=%1>").arg(
+                locate("locale", QString::fromLatin1("l10n/")
+                + countryCode
+                + QString::fromLatin1("/flag.png")));
+            emit setStatusBarText(flagImg + u.prettyURL() + extra);
+          }
+        }*/
       }
     emit setStatusBarText(u.prettyURL() + extra);
   }
