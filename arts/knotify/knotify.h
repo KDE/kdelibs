@@ -38,11 +38,11 @@ protected:
 k_dcop:
 	void notify(const QString &event, const QString &fromApp,
                          const QString &text, QString sound, QString file,
-                         int present);
+                         int present, int level);
 
 protected:
 	bool notifyBySound(const QString &sound);
-	bool notifyByMessagebox(const QString &text);
+	bool notifyByMessagebox(const QString &text, int level);
 	bool notifyByLogfile(const QString &text, const QString &file);
 	bool notifyByStderr(const QString &text);
 	

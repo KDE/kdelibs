@@ -102,7 +102,7 @@ KNotify::KNotify() : QObject(), DCOPObject("Notify")
 
 void KNotify::notify(const QString &event, const QString &fromApp,
                      const QString &text, QString sound, QString file,
-                     int present)
+                     int present, int level)
 {
 	static bool eventRunning=true;
 	
@@ -136,7 +136,7 @@ void KNotify::notify(const QString &event, const QString &fromApp,
 	if ((present & KNotifyClient::Sound)/* && (QFile(sound).isReadable())*/)
 		notifyBySound(sound);
 	if (present & KNotifyClient::Messagebox)
-		notifyByMessagebox(text);
+		notifyByMessagebox(text,level);
 	if (present & KNotifyClient::Logfile/* && (QFile(file).isWritable())*/)
 		notifyByLogfile(text, file);
 	if (present & KNotifyClient::Stderr)
@@ -156,7 +156,7 @@ bool KNotify::notifyBySound(const QString &sound)
 	return true;
 }
 
-bool KNotify::notifyByMessagebox(const QString &text)
+bool KNotify::notifyByMessagebox(const QString &text, int)
 {
 	if ( text.isEmpty() )
 		return false;
