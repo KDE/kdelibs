@@ -78,12 +78,25 @@ protected slots:
    */
   virtual void slotCancel();
 
-  // app combo changed
+  /**
+   * Application combo selection changed (and was activated)
+   */ 
   void appChanged(int);
+  /**
+   * Update the url to match the current os, compiler, selected app, etc
+   */ 
   void updateURL();
 
 protected:
+  /**
+   * A complete copy of the bug report
+   * @return QString copy of the bug report.
+   */ 
   QString text() const;
+  /**
+   * Attempt to e-mail the bug report.
+   * @return true on success
+   */ 
   bool sendBugReport();
 
   KProcess * m_process;
