@@ -1449,31 +1449,37 @@ void KHTMLWidget::keyPressEvent( QKeyEvent *_ke )
     switch ( _ke->key() )
     {
     case Key_Down:
+    case Key_J:
 	scrollBy( 0, 10 );
 	flushKeys();
 	break;
 
     case Key_Next:
+    case Key_Space:
 	scrollBy( 0, clipper()->height()*8/10 );
 	flushKeys();
 	break;
 
     case Key_Up:
+    case Key_K:
 	scrollBy( 0, -10 );
 	flushKeys();
 	break;
 
     case Key_Prior:
+    case Key_Backspace:
 	scrollBy( 0, -clipper()->height()*8/10 );
 	flushKeys();
 	break;
 
     case Key_Right:
+    case Key_L:
 	scrollBy( 10, 0 );
 	flushKeys();
 	break;	
 
     case Key_Left:
+    case Key_H:
 	scrollBy( -10, 0 );
 	flushKeys();
 	break;
