@@ -599,6 +599,8 @@ KApplication::KApplication( int& argc, char** argv, const QCString& rAppName,
 #endif
   d (new KApplicationPrivate())
 {
+    aIconPixmap.pm.icon = 0L;
+    aIconPixmap.pm.miniIcon = 0L;
     read_app_startup_id();
     if (!GUIenabled)
        allowStyles = false;
@@ -622,6 +624,8 @@ KApplication::KApplication( bool allowStyles, bool GUIenabled ) :
 #endif
   d (new KApplicationPrivate)
 {
+    aIconPixmap.pm.icon = 0L;
+    aIconPixmap.pm.miniIcon = 0L;
     read_app_startup_id();
     if (!GUIenabled)
        allowStyles = false;
@@ -641,6 +645,8 @@ KApplication::KApplication( Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap
                 visual, colormap ),
   KInstance( KCmdLineArgs::about), display(0L), d (new KApplicationPrivate)
 {
+    aIconPixmap.pm.icon = 0L;
+    aIconPixmap.pm.miniIcon = 0L;
     read_app_startup_id();
     useStyles = allowStyles;
     setName( instanceName() );
@@ -656,6 +662,8 @@ KApplication::KApplication( Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap
                 visual, colormap ),
   KInstance( _instance ), display(0L), d (new KApplicationPrivate)
 {
+    aIconPixmap.pm.icon = 0L;
+    aIconPixmap.pm.miniIcon = 0L;
     read_app_startup_id();
     useStyles = allowStyles;
     setName( instanceName() );
@@ -675,6 +683,8 @@ KApplication::KApplication( bool allowStyles, bool GUIenabled, KInstance* _insta
 #endif
   d (new KApplicationPrivate)
 {
+    aIconPixmap.pm.icon = 0L;
+    aIconPixmap.pm.miniIcon = 0L;
     read_app_startup_id();
     if (!GUIenabled)
        allowStyles = false;
@@ -694,6 +704,8 @@ KApplication::KApplication(Display *display, int& argc, char** argv, const QCStr
   display(0L),
   d (new KApplicationPrivate())
 {
+    aIconPixmap.pm.icon = 0L;
+    aIconPixmap.pm.miniIcon = 0L;
     read_app_startup_id();
     if (!GUIenabled)
        allowStyles = false;
@@ -1492,18 +1504,27 @@ void KApplication::parseCommandLine( )
     if (args->isSet("miniicon"))
     {
        const char *tmp = args->getOption("miniicon");
-       aMiniIconPixmap = SmallIcon(tmp);
+       if (!aIconPixmap.pm.miniIcon) {
+         aIconPixmap.pm.miniIcon = new QPixmap;
+       }
+       *aIconPixmap.pm.miniIcon = SmallIcon(tmp);
        aMiniIconName = tmp;
     }
 
     if (args->isSet("icon"))
     {
        const char *tmp = args->getOption("icon");
-       aIconPixmap = DesktopIcon( tmp );
+       if (!aIconPixmap.pm.icon) {
+          aIconPixmap.pm.icon = new QPixmap;
+       }
+       *aIconPixmap.pm.icon = DesktopIcon( tmp );
        aIconName = tmp;
-       if (aMiniIconPixmap.isNull())
+       if (!aIconPixmap.pm.miniIcon) {
+         aIconPixmap.pm.miniIcon = new QPixmap;
+       }
+       if (aIconPixmap.pm.miniIcon->isNull())
        {
-          aMiniIconPixmap = SmallIcon( tmp );
+          *aIconPixmap.pm.miniIcon = SmallIcon( tmp );
           aMiniIconName = tmp;
        }
     }
@@ -1559,11 +1580,13 @@ QString KApplication::geometryArgument() const
 
 QPixmap KApplication::icon() const
 {
-  if( aIconPixmap.isNull()) {
-      KApplication *that = const_cast<KApplication *>(this);
-      that->aIconPixmap = DesktopIcon( instanceName() );
+  if( !aIconPixmap.pm.icon) {
+      aIconPixmap.pm.icon = new QPixmap;
   }
-  return aIconPixmap;
+  if( aIconPixmap.pm.icon->isNull()) {
+      *aIconPixmap.pm.icon = DesktopIcon( instanceName() );
+  }
+  return *aIconPixmap.pm.icon;
 }
 
 QString KApplication::iconName() const
@@ -1573,11 +1596,13 @@ QString KApplication::iconName() const
 
 QPixmap KApplication::miniIcon() const
 {
-  if (aMiniIconPixmap.isNull()) {
-      KApplication *that = const_cast<KApplication *>(this);
-      that->aMiniIconPixmap = SmallIcon( instanceName() );
+  if (!aIconPixmap.pm.miniIcon) {
+      aIconPixmap.pm.miniIcon = new QPixmap;
   }
-  return aMiniIconPixmap;
+  if (aIconPixmap.pm.miniIcon->isNull()) {
+      *aIconPixmap.pm.miniIcon = SmallIcon( instanceName() );
+  }
+  return *aIconPixmap.pm.miniIcon;
 }
 
 QString KApplication::miniIconName() const
@@ -1589,6 +1614,10 @@ extern void kDebugCleanup();
 
 KApplication::~KApplication()
 {
+  delete aIconPixmap.pm.miniIcon;
+  aIconPixmap.pm.miniIcon = 0L;
+  delete aIconPixmap.pm.icon;
+  aIconPixmap.pm.icon = 0L;
   delete d->m_KAppDCOPInterface;
 
   // First call the static deleters and then call KLibLoader::cleanup()
