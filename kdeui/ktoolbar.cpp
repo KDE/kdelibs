@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.87  1998/11/09 00:29:16  radej
+// sven: IconText 3 (text under pixmap)
+//
 // Revision 1.86  1998/11/06 16:48:20  radej
 // sven: nicer docking, some bugfixes
 //
@@ -528,7 +531,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
 
     if (!btext.isNull())
     {
-      int tf = AlignBottom|AlignLeft;
+      int tf = AlignBottom|AlignHCenter;
       if (!isEnabled())
         _painter->setPen(palette().disabled().dark());
       dy= pixmap()->height();
@@ -641,7 +644,7 @@ void KToolBarButton::modeChange()
     
   case 3:
     QToolTip::remove(this);
-    resize (fm.width(btext)+6, _size-2); // +2+_size-2
+    resize ((fm.width(btext)+6>myWidth)?fm.width(btext)+6:myWidth, _size-2);
     break;
   }
 }
