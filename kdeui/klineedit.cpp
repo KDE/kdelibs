@@ -67,8 +67,7 @@ KLineEdit::KLineEdit( QWidget *parent, const char *name )
 
 KLineEdit::~KLineEdit ()
 {
-    if ( d->popupMenu )
-        delete d->popupMenu;
+    delete d->popupMenu;
     delete d->completionBox;
     delete d;
 }
@@ -76,9 +75,12 @@ KLineEdit::~KLineEdit ()
 void KLineEdit::init()
 {
     d = new KLineEditPrivate;
+    d->hasReference = false;
     d->grabReturnKeyEvents = false;
     d->handleURLDrops = true;
-    d->completionBox = 0L;
+    d->completionBox = 0;
+    d->popupMenu = 0;
+    d->subMenu = 0;
 
     // Enable the context menu by default.
     setContextMenuEnabled( true );
@@ -315,8 +317,10 @@ void KLineEdit::mousePressEvent( QMouseEvent* e )
         d->popupMenu->setItemEnabled( SelectAll, flag && !allMarked );
         KGlobalSettings::Completion oldMode = completionMode();
         int result = d->popupMenu->exec( e->globalPos() );
-        if ( !d->hasReference )
+        if ( !d->hasReference ) {
             delete d->popupMenu;
+            d->popupMenu = 0;
+        }
 
         if ( result == Cut )
             cut();
