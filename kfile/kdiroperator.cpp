@@ -392,13 +392,14 @@ void KDirOperator::checkPath(const QString &, bool /*takeFiles*/) // SLOT
 
 void KDirOperator::setURL(const KURL& _newurl, bool clearforward)
 {
-    KURL newurl = _newurl;
+    KURL newurl;
+
+    if ( _newurl.isMalformed() )
+	newurl.setPath( QDir::homeDirPath() );
+    else
+	newurl = _newurl;
 
     QString pathstr = newurl.path(+1);
-
-    // already done by the +1 above
-    //if (pathstr.isEmpty() || pathstr.at(pathstr.length() - 1) != '/')
-    //    pathstr += '/';
     newurl.setPath(pathstr);
 
     if (newurl == dir->url()) // already set

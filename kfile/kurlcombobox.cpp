@@ -28,6 +28,17 @@
 
 #include <kurlcombobox.h>
 
+class KURLComboBox::KURLComboBoxPrivate
+{
+public:
+    KURLComboBoxPrivate() {
+	dirpix = SmallIcon(QString::fromLatin1("folder"));
+    }
+    
+    QPixmap dirpix;
+};
+
+
 KURLComboBox::KURLComboBox( Mode mode, QWidget *parent, const char *name )
     : KComboBox( parent, name )
 {
@@ -45,11 +56,14 @@ KURLComboBox::KURLComboBox( Mode mode, bool rw, QWidget *parent,
 
 KURLComboBox::~KURLComboBox()
 {
+    delete d;
 }
 
 
 void KURLComboBox::init( Mode mode )
 {
+    d = new KURLComboBoxPrivate();
+    
     myMode    = mode;
     urlAdded  = false;
     myMaximum = 10; // default
@@ -296,10 +310,8 @@ void KURLComboBox::removeURL( const KURL& url, bool checkDefaultURLs )
 
 QPixmap KURLComboBox::getPixmap( const KURL& url ) const
 {
-    static QPixmap dirpix = SmallIcon(QString::fromLatin1("folder"));
-
     if ( myMode == Directories )
-        return dirpix;
+        return d->dirpix;
     else
         return KMimeType::pixmapForURL( url, 0, KIcon::Small );
 }
