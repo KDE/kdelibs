@@ -362,6 +362,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, int group, int size,
 	    *path_store = name;
 	key = "$kicoa_";
 	key += name;
+
 	if (QPixmapCache::find(key, pix))
 	    return pix;
 	pix.load(name);
@@ -431,6 +432,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, int group, int size,
     key = "$kico_";
     key += name; key += "_";
     key += QString().setNum(size); key += "_";
+    QString basekey = key;
     if (group >= 0)
     {
 	key += d->mpEffect.fingerprint(group, state);
@@ -465,10 +467,19 @@ QPixmap KIconLoader::loadIcon(const QString& _name, int group, int size,
     if (inCache)
 	return pix;
 
-    QImage img(icon.path);
-    if (img.isNull())
-	return pix;
-
+    QImage img;
+    if (!QPixmapCache::find(basekey, pix)) {
+        img.load(icon.path);
+        if (img.isNull())
+	    return pix;
+        else {
+            pix.convertFromImage( img );
+            QPixmapCache::insert(basekey, pix);
+        }
+    }
+    else
+        img = pix.convertToImage();
+    
     // Scale the icon and apply effects if necessary
     if ((icon.type == KIcon::Scalable) && (size != img.width()))
     {
