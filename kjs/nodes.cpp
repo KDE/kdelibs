@@ -551,8 +551,8 @@ Reference2 AccessorNode1::evaluate(ExecState *exec) const
   Value v2 = expr2->value(exec);
   KJS_CHECKEXCEPTIONREF
   Object o = v1.toObject(exec);
-  String s = v2.toString(exec);
-  return Reference2(o, s.value());
+  UString s = v2.toString(exec);
+  return Reference2(o, s);
 }
 
 // ----------------------------- AccessorNode2 --------------------------------

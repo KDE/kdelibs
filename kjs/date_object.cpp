@@ -395,9 +395,8 @@ Object DateObjectImp::construct(ExecState *exec, const List &args)
   } else {
     struct tm t;
     memset(&t, 0, sizeof(t));
-    Number y = args[0].toNumber(exec);
+    int year = args[0].toInt32(exec);
     // TODO: check for NaN
-    int year = y.toInt32(exec);
     t.tm_year = (year >= 0 && year <= 99) ? year : year - 1900;
     t.tm_mon = args[1].toInt32(exec);
     t.tm_mday = (numArgs >= 3) ? args[2].toInt32(exec) : 1;
@@ -461,9 +460,8 @@ Value DateObjectFuncImp::call(ExecState *exec, Object &/*thisObj*/, const List &
     struct tm t;
     memset(&t, 0, sizeof(t));
     int n = args.size();
-    Number y = args[0].toNumber(exec);
+    int year = args[0].toInt32(exec);
     // TODO: check for NaN
-    int year = y.toInt32(exec);
     t.tm_year = (year >= 0 && year <= 99) ? year : year - 1900;
     t.tm_mon = args[1].toInt32(exec);
     t.tm_mday = (n >= 3) ? args[2].toInt32(exec) : 1;
