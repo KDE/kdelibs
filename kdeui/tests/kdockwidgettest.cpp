@@ -131,6 +131,16 @@ DockApplication::DockApplication( const char* name )
   m_bname->setGeometry(10, 60, 250, 25);
   m_bname->setEnabled( false );
 
+  QPushButton *b3 = new QPushButton(mainW);
+  b3->setGeometry(10,95,250,25);
+  b3->setText("change the icon of the green widget");
+  connect(b3,SIGNAL(clicked()), SLOT(gSetPix1()));
+
+  QPushButton *b4 = new QPushButton(mainW);
+  b4->setGeometry(10,130,250,25);
+  b4->setText("remove icon ");
+  connect(b4,SIGNAL(clicked()), SLOT(gSetPix2()));
+
   setGeometry(200, 100, 500, 300);
 
   qDebug("load config");
@@ -221,6 +231,16 @@ void DockApplication::updateButton()
     m_bname->setText("MainDockWidget is NULL");
 }
 
+void DockApplication::gSetPix1() {
+	dock->setPixmap(SmallIcon("agent"));
+	
+}
+
+void DockApplication::gSetPix2() {
+	dock->setPixmap();
+	
+}
+
 int main(int argc, char* argv[]) {
   KApplication a(argc,argv, "kdockdemoapp1");
   DockApplication* ap = new DockApplication("DockWidget demo");
@@ -229,6 +249,7 @@ int main(int argc, char* argv[]) {
   ap->show();
   return a.exec();
 }
+
 
 #include "kdockwidgettest.moc"
 

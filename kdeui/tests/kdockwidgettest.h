@@ -34,6 +34,8 @@ public slots:
   void greenMain();
   void blueMain();
   void nullMain();
+  void gSetPix1();
+  void gSetPix2();
 
 protected:
   void initMenuBar();

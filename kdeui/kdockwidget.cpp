@@ -475,6 +475,24 @@ KDockWidget::KDockWidget( KDockManager* dockManager, const char* name, const QPi
   applyToWidget( parent, QPoint(0,0) );
 }
 
+void KDockWidget::setPixmap(const QPixmap& pixmap) {
+	delete pix;
+	pix=new QPixmap(pixmap);
+	setIcon(*pix);
+	KDockTabGroup *dtg=parentDockTabGroup();
+	if (dtg) 
+		dtg->changeTab(this,pixmap,dtg->tabLabel(this));
+	 QWidget *contWid=parentDockContainer();
+         if (contWid)
+         	((KDockContainer*)contWid->qt_cast("KDockContainer"))->setPixmap(this,pixmap);
+
+
+}
+
+const QPixmap& KDockWidget::pixmap() const {
+	return *pix;
+}
+
 KDockWidget::~KDockWidget()
 {
   d->pendingDtor = true;
@@ -2848,6 +2866,7 @@ void KDockContainer::removeWidget (KDockWidget *dw){
 //m_children.remove(dw->name());}
 void KDockContainer::undockWidget (KDockWidget *){;}
 void KDockContainer::setToolTip(KDockWidget *, QString &){;}
+void KDockContainer::setPixmap(KDockWidget*,const QPixmap&){;}
 void KDockContainer::load (KConfig*){;}
 void KDockContainer::save (KConfig*){;}
 void KDockContainer::prepareSave(QStringList &names)

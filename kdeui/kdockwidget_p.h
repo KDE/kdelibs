@@ -52,6 +52,7 @@ public:
   virtual void save(KConfig *cfg);
   virtual void load(KConfig *cfg);
   virtual void setToolTip (KDockWidget *, QString &);
+  virtual void  setPixmap(KDockWidget*,const QPixmap&);
   QStringList containedWidgets() const;
 protected:
   friend class KDockManager;
