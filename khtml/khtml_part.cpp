@@ -914,7 +914,7 @@ bool KHTMLPart::openFile()
 DOM::HTMLDocumentImpl *KHTMLPart::docImpl() const
 {
     if ( d )
-	return d->m_doc;
+        return d->m_doc;
     return 0;
 }
 
@@ -1770,7 +1770,7 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
     khtml::ChildFrame *frame = recursiveFrameRequest( cURL, args, false );
     if ( frame )
     {
-	args.metaData()["referrer"]=m_url.url();
+        args.metaData()["referrer"]=m_url.url();
       requestObject( frame, cURL, args );
       return;
     }
@@ -1791,7 +1791,7 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   {
     // New URL.
     if (!m_url.url().isEmpty())
-	args.metaData()["referrer"]=m_url.url();
+        args.metaData()["referrer"]=m_url.url();
     emit d->m_extension->openURLRequest( cURL, args );
   }
 }
@@ -1927,7 +1927,7 @@ void KHTMLPart::updateActions()
 
   if ( frame )
   {
-    QObject *ext = frame->child( 0, "KParts::BrowserExtension" );
+    QObject *ext = KParts::BrowserExtension::childObject( frame );
     if ( ext )
       enablePrintFrame = ext->metaObject()->slotNames().contains( "print()" );
   }
@@ -2074,7 +2074,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
                this, SIGNAL( setStatusBarText( const QString & ) ) );
     }
 
-    child->m_extension = static_cast<KParts::BrowserExtension *>( part->child( 0L, "KParts::BrowserExtension" ) );
+    child->m_extension = KParts::BrowserExtension::childObject( part );
 
     if ( child->m_extension )
     {
@@ -3203,7 +3203,7 @@ void KHTMLPart::slotPrintFrame()
 
   KParts::Part *frame = partManager()->activePart();
 
-  KParts::BrowserExtension *ext = static_cast<KParts::BrowserExtension *>( frame->child( 0, "KParts::BrowserExtension" ) );
+  KParts::BrowserExtension *ext = KParts::BrowserExtension::childObject( frame );
 
   if ( !ext )
     return;
