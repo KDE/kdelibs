@@ -1,3 +1,7 @@
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <qpainter.h>
 #include <qtooltip.h> 
 #include <qdrawutl.h>

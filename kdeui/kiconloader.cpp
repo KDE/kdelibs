@@ -32,7 +32,7 @@
 //----------------------------------------------------------------------
 //---------------  KICONLOADERCANVAS   ---------------------------------
 //----------------------------------------------------------------------
-KIconLoaderCanvas::KIconLoaderCanvas (QWidget *parent=0, const char *name )
+KIconLoaderCanvas::KIconLoaderCanvas (QWidget *parent, const char *name )
   :QTableView( parent, name )
 {
   max_width = 0;
@@ -170,7 +170,7 @@ void KIconLoaderCanvas::resizeEvent( QResizeEvent * e)
 //---------------  KICONLOADERDIALOG   ---------------------------------
 //----------------------------------------------------------------------
 
-KIconLoaderDialog::KIconLoaderDialog ( QWidget *parent=0, const char *name )
+KIconLoaderDialog::KIconLoaderDialog ( QWidget *parent, const char *name )
   : QDialog( parent, name, TRUE )
 {
   setCaption("Select Icon");

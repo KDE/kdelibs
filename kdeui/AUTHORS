@@ -37,10 +37,18 @@ Christoph Neerfeld <Christoph.Neerfeld@mail.bonn.netsurf.de>
 KIconLoader class
 
 Sven Radej <sven.radej@iname.com>
-KLineEdit, KCombo, KToolbar
+KLineEdit, KCombo, KToolbar, KStatusBar
 
 Rainer Bawidamann <Rainer.Bawidamann@wohnheim.uni-ulm.de>
 Rubberbanding in KTreeList
+
+Andre Fornacon <afo@fh-zwickau.de>
+KSpinBox
+
+Michael Wiedmann <mw@miwie.in-berlin.de>
+KRestrictedLine, KIntegerLine
+
+
 
 
 

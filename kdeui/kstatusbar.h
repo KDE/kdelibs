@@ -6,98 +6,148 @@
 #include <qlist.h>
 #include <qlabel.h> 
 
-
+/**
+       * Internal class for use in KStatusBar
+       * @short Internal class for use in KStatusBar
+       */
 class KStatusBarItem : public QLabel {
-	Q_OBJECT
+  Q_OBJECT
 
 public:
-	KStatusBarItem( char *text, int ID, QWidget *parent=NULL,
-		char *name=NULL );
-	int ID();
 
-	/// store width and height of the KStatusBarItem
-	int w,h;
+  KStatusBarItem( char *text, int ID, QWidget *parent=NULL,
+                  char *name=NULL );
+
+  /**
+	* Returns id of item. Internal
+	*/
+  int ID();
+
+  /**
+	* Store width and height of the KStatusBarItem
+	*/
+  int w,h;
   
 protected:
 
-private:
-	int id;
+  /**
+	* Internal. emits signal @ref pressed
+	*/
+  void mousePressEvent(QMouseEvent *);
 
-protected slots:
-  
-signals:
+  /**
+	* Internal. emits signal @ref released
+	*/
+  void mouseReleaseEvent(QMouseEvent *);
+
+private:
+
+  /**
+	* Stores id
+	*/
+  int id;
+
+  signals:
+
+  /**
+	* Internal. Emits when mouse press occures
+	*/
+  void Pressed(int);
+
+  /**
+	* Internal. Emits when mouse press occures
+	*/
+  void Released(int);
 
 };
-
+/**
+           * @short KDE statusbar with signals pressed and released
+           */
 class KStatusBar : public QFrame {
-	Q_OBJECT
+  Q_OBJECT
     
 public:
-	enum BarStatus{ Toggle, Show, Hide };
-	enum Position{Top, Left, Bottom, Right, Floating};
-	enum InsertOrder{LeftToRight, RightToLeft};
+  enum BarStatus{ Toggle, Show, Hide };
+  enum Position{Top, Left, Bottom, Right, Floating};
+  enum InsertOrder{LeftToRight, RightToLeft};
 
-	KStatusBar(QWidget *parent = NULL, char *name = NULL );
-	~KStatusBar();
+  KStatusBar(QWidget *parent = NULL, char *name = NULL );
+  ~KStatusBar();
+
+  /**
+	* Enable disable status bar
+	*/
+  bool enable( BarStatus stat );
 	
-	bool enable( BarStatus stat );
+  /**
+	* Insert field into the status bar. When inserting the item send the
+	* longest text you expect to go into the field as the first argument.
+	* The field is sized to accomodate this text. However, the last field
+	* inserted is always stretched to fit the window width.
+	* @short Insert field into the status bar.
+	*/
+  int insertItem( char *text, int ID );
 	
-	/**
+  /**
+	* Change the text in a status bar field. The field is not resized !!!
+	* @short Change the text in a status bar field.
+	*/
+  void changeItem( char *text, int id );
 
-		Insert field into the status bar. When inserting the item send the
-		longest text you expect to go into the field as the first argument.
-		The field is sized to accomodate this text. However, the last field
-		inserted is always stretched to fit the window width.
-		
-	**/
-	
-	int insertItem( char *text, int ID );
-	
-	/**
-		Change the text in a status bar field. The field is not resized !!!
-	**/
-	
-	void changeItem( char *text, int id );
+  /** 
+	* If order is KStatusBar::LeftToRight the field are inserted from left
+	* to right, in particular the last field ist streched to the right
+	* border of the app. If order is KStatusBar::RightToLeft the fields
+	* are inserted from the right.
+	* @short Sets inserting order
+	*/
+  void setInsertOrder(InsertOrder order);
 
-	/** 
-	        If order is KStatusBar::LeftToRight the field are inserted from left
-                to right, in particular the last field ist streched to the right
-                border of the app. If order is KStatusBar::RightToLeft the fields
-		are inserted from the right.
-	**/
+  /**
+	* Sets the alignment of a field. By default all fields are aligned left.
+	* @short Sets the alignment of a field.
+	*/
+  void setAlignment(int id, int align);
 
-	void setInsertOrder(InsertOrder order);
+  /**
+	* Sets the Height of the StatusBar
+	* @short Sets the Height of the StatusBar
+	*/
+  void setHeight(int);
 
-	/**     Sets the alignment of a field. By default all fields are aligned left.
-	 */
-
-	void setAlignment(int id, int align);
-
-	/**     Sets the Height of the StatusBar
-	 */
-
-	void setHeight(int);
-
-	/**     Sets the border width of the status bar seperators and frame.
-	 */
-
-	void setBorderWidth(int);
+  /**
+	* Sets the border width of the status bar seperators and frame.
+	* @short Sets width of the seperators and frame.
+	*/
+  void setBorderWidth(int);
 
 private:
-	QList <KStatusBarItem> labels;
-	InsertOrder insert_order;
-	int fieldheight, borderwidth;
+  QList <KStatusBarItem> labels;
+  InsertOrder insert_order;
+  int fieldheight, borderwidth;
 
 protected:
-	void drawContents ( QPainter * );
-	void resizeEvent( QResizeEvent* );
-	void init();
-	void updateRects( bool resize = FALSE );
+  void drawContents ( QPainter * );
+  void resizeEvent( QResizeEvent* );
+  void init();
+  void updateRects( bool resize = FALSE );
 
-protected slots:
+ protected slots:
+ void slotPressed(int);
+  void slotReleased(int);
 
-signals:
-  
+  signals:
+  /**
+	* Emits when mouse is pressed over item id. Connect to this signal
+	* if you want to notice mouse press events
+	*/
+  void pressed(int);
+
+  /**
+	* Emits when mouse is released over item id. Conect to
+	* this signal if you want to receive mouse click
+	*/
+  void released(int);
 };
 
 

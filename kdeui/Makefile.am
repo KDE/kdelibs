@@ -17,21 +17,24 @@ include_HEADERS = kledlamp.h kprogress.h kpanner.h kcolordlg.h kselect.h \
 		kfontdialog.h kmsgbox.h kpopmenu.h ktabctl.h\
 		ktreelist.h kstatusbar.h ktopwidget.h ktoolbar.h kmenubar.h \
 		kbutton.h kslider.h kseparator.h kiconloader.h	\
-		klined.h kcombo.h
+		klined.h kcombo.h krestrictedline.h kintegerline.h	\
+		kspinbox.h
 
 libkdeui_la_SOURCES = kledlamp.cpp kprogress.cpp kpanner.cpp kcolordlg.cpp\
 		kselect.cpp dither.cpp kdatepik.cpp kdatetbl.cpp \
 		kfontdialog.cpp kmsgbox.cpp kpopmenu.cpp ktabctl.cpp\
 		ktreelist.cpp kstatusbar.cpp ktopwidget.cpp kmenubar.cpp \
 		ktoolbar.cpp kbutton.cpp kslider.cpp kseparator.cpp	\
-		kiconloader.cpp klined.cpp kcombo.cpp	
+		kiconloader.cpp klined.cpp kcombo.cpp krestrictedline.cpp	\
+		kintegerline.cpp kspinbox.cpp
 
 BUILT_SOURCES = kledlamp.moc kprogress.moc kpanner.moc kcolordlg.moc\
 		kselect.moc ktabctl.moc kdatepik.moc \
 		kmsgbox.moc kpopmenu.moc ktreelist.moc kdatetbl.moc\
 		kfontdialog.moc ktoolbar.moc kstatusbar.moc kmenubar.moc \
 		ktopwidget.moc kbutton.moc kslider.moc kiconloader.moc	\
-		klined.moc kcombo.moc
+		klined.moc kcombo.moc krestrictedline.cpp kintegerline.cpp	\
+		kspinbox.moc
 
 kledlamp.cpp: kledlamp.moc
 kprogress.cpp: kprogress.moc
@@ -54,6 +57,9 @@ kslider.cpp: kslider.moc
 kiconloader.cpp: kiconloader.moc
 klined.cpp: klined.moc
 kcombo.cpp: kcombo.moc
+kintegerline.cpp: kintegerline.moc
+krestrictedline.cpp: krestrictedline.moc
+kspinbox.cpp: kspinbox.moc
 
 data_DATA = error.xpm exclamation.xpm info.xpm stopsign.xpm
 
