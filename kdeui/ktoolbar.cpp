@@ -22,6 +22,12 @@
 
 // $Id$
 // $Log$
+// Revision 1.112  1999/06/04 15:43:54  pbrown
+// improved KLineEdit to have a right popup menu with cut, copy, past, clear
+// etc. like newer windows (heh) applications have.  Renamed class from
+// KLined to KLineEdit for consistency -- provided a #define for backwards
+// comptability, but I am working on stamping the old class name out now.
+//
 // Revision 1.111  1999/05/11 23:16:39  dfaure
 // Added an "emit moved" in KToolBar::enable(...)
 //  -> it's connected to KTMainWindow::updateRects, which gets the thing right.
@@ -222,11 +228,11 @@
 // boolett proofing by Marcin Dalecki 06.03.1998
 // BINARY INCOMPATIBLE CHANGES sven 19.3. 1998:
 //  - optional icons+text, variable size  with reading options from
-//    from ~/.kderc
+//    from ~/.kde/share/config/kdeglobals
 //  - Fixing of bug reported by Antonio Larrosa (Thanks!)
 //  - Optional highlighting of buttons
 //  - added sizeHint()
-//  - sample (default) ~./kderc group for toolbar:
+//  - sample (default) ~/.kde/share/config/kdeglobals group for toolbar:
 //      [Toolbar style]
 //      IconText=0        0=icons, 1=icons+text
 //      Highlighting=1    0=No, 1=yes

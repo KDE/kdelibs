@@ -146,7 +146,7 @@ public:
      * Constructs a new KThemeBase object.
      *
      * @param configFile A KConfig file to use as the theme configuration.
-     * Defaults to ~/.kderc.
+     * Defaults to global config (~/.kde/share/config/kdeglobals).
      */
     KThemeBase(const QString &configFile = QString::null);
     ~KThemeBase();
@@ -298,7 +298,7 @@ public:
     virtual KPixmap *scalePixmap(int w, int h, WidgetType widget);
     /**
      * This method reads a configuration file and applies it to the user's
-     * .kderc file. It does not signal applications to reload via the
+     * kdeglobals file. It does not signal applications to reload via the
      * KDEChangeGeneral atom, if you want to do this you must do so yourself.
      * See kcmdisplay's general.cpp for an example.
      *
@@ -306,7 +306,7 @@ public:
      */
     static void applyConfigFile(const QString &file);
     /**
-     * This writes the current configuration in .kderc to a file.
+     * This writes the current configuration in kdeglobals to a file.
      *
      * @param file The file to write the current configuration to.
      */
