@@ -12,7 +12,7 @@ This library includes cryptographic software written by Eric Young
 
 This set of classes is designed to make SSL easier to integrate in KDE
 applications.  It currently uses OpenSSL and if it is not successfully
-linked with OpenSSL, then it will do virtually nothing.  The SSL settings
+compiled with OpenSSL, then it will do virtually nothing.  The SSL settings
 for a user are shared across applications and managed with the kcontrol
 module "crypto".  If this file is not updated by release, you can contact
 the author for development information.

@@ -26,6 +26,7 @@
 class KSSLCertificate;
 class KSSLPKCS12;
 #include <qstring.h>
+#include <qstringlist.h>
 
 
 class KSSLCertificateHome {
@@ -37,6 +38,7 @@ public:
    *  delete them when you are done.
    */
   static KSSLPKCS12* getCertificateByHost(QString host, QString password);
+  static KSSLPKCS12* getCertificateByName(QString name, QString password);
   static QString getDefaultCertificateName(QString host);
   static QString getDefaultCertificateName();
   static KSSLPKCS12* getDefaultCertificate(QString password);
@@ -57,11 +59,17 @@ public:
 
   /*
    *   These add a certificate to the repository.
-   *   Returns: 0 on success, -1 on file error, -2 on password error
+   *   Returns: true on success, false error
    */
-  static int addCertificate(QString filename, QString password);
-  static void addCertificate(KSSLPKCS12 *cert);
+  static bool addCertificate(QString filename, QString password, bool storePass = false);
+  static void addCertificate(KSSLPKCS12 *cert, QString passToStore = "");
  
+  /*
+   *   Returns the list of certificates available
+   */
+  static QStringList getCertificateList();
+
+
 private:
  
   class KSSLCertificateHomePrivate;

@@ -22,6 +22,80 @@
 #include <ksslcertificate.h>
 #include <ksslpkcs12.h>
 
+#include <ksimpleconfig.h>
+
+
+QStringList KSSLCertificateHome::getCertificateList() {
+KSimpleConfig cfg("ksslcertificates", false);
+QStringList list = cfg.groupList();
+
+list.remove(list.last());  // get rid of "<default>"
+return list;
+}
+
+
+void KSSLCertificateHome::setDefaultCertificate(QString name, QString host) {
+
+}
+
+
+void KSSLCertificateHome::setDefaultCertificate(KSSLPKCS12 *cert, QString host) {
+
+}
+
+
+bool KSSLCertificateHome::addCertificate(QString filename, QString password, bool storePass) {
+KSSLPKCS12 *pkcs = KSSLPKCS12::loadCertFile(filename, password);
+
+  if (!pkcs) return false;
+
+  KSSLCertificateHome::addCertificate(pkcs, storePass?password:QString(""));
+  delete pkcs;
+
+return true;
+}
+
+
+void KSSLCertificateHome::addCertificate(KSSLPKCS12 *cert, QString passToStore) {
+   if (!cert) return;
+
+KSimpleConfig cfg("ksslcertificates", false);
+
+   cfg.setGroup(cert->name());
+   cfg.writeEntry("PKCS12Base64", cert->toString());
+   cfg.writeEntry("Password", passToStore);
+   cfg.sync();
+}
+
+
+KSSLPKCS12* KSSLCertificateHome::getCertificateByName(QString name, QString password) {
+KSimpleConfig cfg("ksslcertificates", false);
+  if (!cfg.hasGroup(name)) return NULL;
+
+  cfg.setGroup(name);
+
+  return KSSLPKCS12::fromString(cfg.readEntry("PKCS12Base64", ""), password);
+}
+
+
+KSSLPKCS12* KSSLCertificateHome::getCertificateByHost(QString host, QString password) {
+   return KSSLCertificateHome::getCertificateByName(KSSLCertificateHome::getDefaultCertificateName(host), password);
+}
+
+
+QString KSSLCertificateHome::getDefaultCertificateName(QString host) {
+
+}
+
+
+QString KSSLCertificateHome::getDefaultCertificateName() {
+
+}
+
+
+KSSLPKCS12* KSSLCertificateHome::getDefaultCertificate(QString password) {
+
+}
 
 
 

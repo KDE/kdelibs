@@ -13,14 +13,10 @@
 
 - Provide an option to not load insecure portions of a secured page
 
-- kcmcrypto certificate managing code is not implemented yet
-
-- Personal, other certificates are not implemented
+- Friend certificates (for S/MIME) are not implemented
 
 - The certificate factory is not done.  This is needed to generate personal
   certificates (self signed) for users.
-
-- The certificate home is not done.  It will manage the user's certificates.
 
 - Document libkssl interface
 
