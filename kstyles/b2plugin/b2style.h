@@ -8,6 +8,7 @@
 #include <qwidget.h>
 #include <qpushbutton.h>
 #include <qscrollbar.h>
+#include <qpixmap.h>
 #include <limits.h>
 
 /*-
