@@ -1,6 +1,8 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2000 David Faure <faure@kde.org>
 
+   $Id$
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
@@ -35,8 +37,6 @@
 #include <kapp.h>
 #include <klocale.h>
 #include <kglobal.h>
-
-using namespace KIO;
 
 QString KIO::convertSize( unsigned long size )
 {
@@ -161,7 +161,7 @@ QString KIO::decodeFileName( const QString & _str )
   return str;
 }
 
-QString Job::errorString()
+QString KIO::Job::errorString()
 {
   QString result;
 
@@ -422,11 +422,12 @@ extern "C" void endvfsent( );
 # endif
 #endif
 
-// There are (at least) three kind of APIs:
+// There are (at least) four kind of APIs:
 // setmntent + getmntent + struct mntent (linux...)
 //             getmntent + struct mnttab
 // mntctl                + struct vmount (AIX)
-// Oh, and getmntinfo (BSD?). This makes four !
+// getmntinfo + struct statfs&flags (BSD 4.4 and friends)
+// getfsent + char* (BSD 4.3 and friends)
 
 #ifdef HAVE_SETMNTENT
 #define SETMNTENT setmntent
@@ -793,4 +794,3 @@ bool KIO::probably_slow_mounted(const QString& filename)
 
     return (isslow == Right);
 }
-
