@@ -584,8 +584,8 @@ QString KFileMetaInfo::mimeType() const
 
 bool KFileMetaInfo::contains(const QString& key) const
 {
-    QStringList groups = preferredGroups();
-    for (QStringList::Iterator it = groups.begin(); it != groups.end(); ++it)
+    QStringList glist = groups();
+    for (QStringList::Iterator it = glist.begin(); it != glist.end(); ++it)
     {
         KFileMetaInfoGroup g = d->groups[*it];
         if (g.contains(key)) return true;
@@ -650,7 +650,6 @@ KFileMetaInfoItem KFileMetaInfo::saveItem( const QString& key,
     QStringList groups = preferredGroups();
 
     KFileMetaInfoItem item;
-    bool ok = false;
 
     QStringList::ConstIterator groupIt = groups.begin();
     for ( ; groupIt != groups.end(); ++groupIt )
@@ -659,8 +658,8 @@ KFileMetaInfoItem KFileMetaInfo::saveItem( const QString& key,
         if ( it != d->groups.end() ) 
         {
             KFileMetaInfoGroup group = it.data();
-            item = findEditableItem( group, key, ok );
-            if ( ok )
+            item = findEditableItem( group, key );
+            if ( item.isValid() )
                 return item;
         }
         else // not existant -- try to create the group
@@ -688,8 +687,7 @@ KFileMetaInfoItem KFileMetaInfo::saveItem( const QString& key,
 }
 
 KFileMetaInfoItem KFileMetaInfo::findEditableItem( KFileMetaInfoGroup& group, 
-                                                   const QString& key, 
-                                                   bool& valid )
+                                                   const QString& key )
 {
     KFileMetaInfoItem item = group.addItem( key );
     if ( item.isValid() && item.isEditable() )
@@ -1511,6 +1509,14 @@ QDataStream& operator >>(QDataStream& s, KFileMetaInfoGroup& group )
 
     group.d->mimeTypeInfo = KFileMetaInfoProvider::self()->mimeTypeInfo(mimeType);
 
+    // we need to set the item info for the items here
+    QMapIterator<QString, KFileMetaInfoItem> it = group.d->items.begin();
+    for ( ; it != group.d->items.end(); ++it)
+    {
+        (*it).d->mimeTypeInfo = group.d->mimeTypeInfo->groupInfo(group.d->name)
+                                  ->itemInfo((*it).key());
+    }
+    
     return s;
 }
 
