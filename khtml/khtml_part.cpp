@@ -1073,12 +1073,12 @@ void KHTMLPart::updateActions()
 
 void KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, const QString &frameName )
 {
-  qDebug( "childRequest( ..., %s, %s )", debugString( url ), debugString( frameName ) );
+  kdDebug(300) << "childRequest( ..., " << debugString( url ) << ", " << debugString( frameName ) << " )" << endl;
   QMap<QString,khtml::ChildFrame>::Iterator it = d->m_frames.find( frameName );
 
   if ( it == d->m_frames.end() )
   {
-    qDebug( "inserting new frame into frame map" );
+    kdDebug(300) << "inserting new frame into frame map" << endl;
     khtml::ChildFrame child;
     child.m_name = frameName;
     it = d->m_frames.insert( frameName, child );
@@ -1130,7 +1130,7 @@ void KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const 
 
 void KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &url, const QString &mimetype )
 {
-  qDebug( "trying to create part for %s", debugString( mimetype ) );
+  kdDebug(300) << "trying to create part for " << debugString( mimetype ) << endl;
 
   if ( !child->m_services.contains( mimetype ) )
   {
@@ -1206,7 +1206,7 @@ void KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &url,
   if ( child->m_extension )
     child->m_extension->setURLArgs( child->m_args );
 
-  qDebug( "opening %s in frame", debugString( url.url() ) );
+  kdDebug(300) << "opening " << debugString( url.url() ) << " in frame" << endl;
   child->m_part->openURL( url );
 }
 
@@ -1638,13 +1638,13 @@ int KHTMLPartBrowserExtension::yOffset()
 
 void KHTMLPartBrowserExtension::saveState( QDataStream &stream )
 {
-  qDebug( "saveState!" );
+  kdDebug(300) << "saveState!" << endl;
   m_part->saveState( stream );
 }
 
 void KHTMLPartBrowserExtension::restoreState( QDataStream &stream )
 {
-  qDebug( "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< restoreState!" );
+  kdDebug(300) << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< restoreState!" << endl;
   m_part->restoreState( stream );
 }
 

@@ -42,8 +42,8 @@
 #include <kapp.h>
 #include <kmimetype.h>
 #include <kimgio.h>
+#include <kdebug.h>
 
-#include <stdio.h>
 #include <qlist.h>
 #include <qrect.h>
 #include <qscrollview.h>
@@ -171,7 +171,7 @@ bool KHTMLView::followsLinks()
 
 void KHTMLView::resizeEvent ( QResizeEvent * event )
 {
-//    printf("resizeEvent\n");
+//    kdDebug(300) << "resizeEvent" << endl;
     layout();
 
     DOM::HTMLDocumentImpl *doc = m_part->docImpl();
@@ -188,8 +188,7 @@ void KHTMLView::viewportPaintEvent ( QPaintEvent* pe  )
 {
     QRect r = pe->rect();
 
-//    printf("viewportPaintEvent r x=%d,y=%d,w=%d,h=%d\n",
-//    	r.x(),r.y(),r.width(),r.height());
+//    kdDebug(300) << "viewportPaintEvent r x=" << //    	r.x() << ",y=" << r.y() << ",w=" << r.width() << ",h=" << r.height() << endl;
 
     NodeImpl *body = 0;
 
@@ -218,7 +217,7 @@ void KHTMLView::viewportPaintEvent ( QPaintEvent* pe  )
 	p.fillRect(r.x(), r.y(), ew, eh, kapp->palette().normal().brush(QColorGroup::Background));
 	return;
     }
-//    printf("viewportPaintEvent x=%d,y=%d,w=%d,h=%d\n",ex,ey,ew,eh);
+//    kdDebug(300) << "viewportPaintEvent x=" << ex << ",y=" << ey << ",w=" << ew << ",h=" << eh << endl;
 
     if ( paintBuffer->width() < width() )
     {
@@ -251,13 +250,13 @@ void KHTMLView::viewportPaintEvent ( QPaintEvent* pe  )
 
 	delete tp;
 
-    	//printf("bitBlt x=%d,y=%d,sw=%d,sh=%d\n",ex,ey+py,ew,ph);
+    	//kdDebug(300) << "bitBlt x=" << ex << ",y=" << ey+py << ",sw=" << ew << ",sh=" << ph << endl;
 	bitBlt(viewport(),r.x(),r.y()+py,paintBuffer,0,0,ew,ph,Qt::CopyROP);
 	
 	py += PAINT_BUFFER_HEIGHT;
     }
 
-    //printf("TIME: print() dt=%d\n",qt.elapsed());
+    //kdDebug(300) << "TIME: print() dt=" << qt.elapsed() << endl;
 }
 
 void KHTMLView::layout(bool force)
@@ -285,7 +284,7 @@ void KHTMLView::layout(bool force)
 //	if(w < _width-5 || w > _width + 5)
     	if (w != _width || force)
 	{
-	    //printf("layouting document\n");
+	    //kdDebug(300) << "layouting document" << endl;
 
 	    _width = w;
 
@@ -295,7 +294,7 @@ void KHTMLView::layout(bool force)
 	    document->renderer()->setMinWidth(_width);
 	    document->renderer()->layout(true);
 	    resizeContents(document->renderer()->width(), document->renderer()->height());
-	    printf("TIME: layout() dt=%d\n",qt.elapsed());
+	    kdDebug(300) << "TIME: layout() dt=" << qt.elapsed() << endl;
 
 	    viewport()->repaint(false);
 	}
@@ -341,7 +340,7 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
     int xm, ym;
     viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
 
-    //printf("\nmousePressEvent: x=%d, y=%d\n", xm, ym);
+    //kdDebug(300) << "\nmousePressEvent: x=" << xm << ", y=" << ym << endl;
 
 
     // Make this frame the active one
@@ -349,7 +348,7 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
     /* ### use PartManager (Simon)
     if ( _isFrame && !_isSelected )
     {
-	printf("activating frame!\n");
+	kdDebug(300) << "activating frame!" << endl;
 	topView()->setFrameSelected(this);
     }*/
 
@@ -358,12 +357,12 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
     long offset=0;
     m_part->docImpl()->mouseEvent( xm, ym, _mouse->stateAfter(), DOM::NodeImpl::MousePress, 0, 0, url, innerNode, offset );
 
-    printf("Her har vi long'n: %d \n", offset);
+    kdDebug(300) << "Her har vi long'n: " << offset << " " << endl;
     if(m_part->mousePressHook(_mouse, xm, ym, url, Node(innerNode), offset)) return;
 
     if(url != 0)
     {
-	//printf("mouseEvent: overURL %s\n", url.string().latin1());
+	//kdDebug(300) << "mouseEvent: overURL " << url.string() << endl;
 	m_strSelectedURL = url.string();
     }
     else
@@ -379,7 +378,7 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
 		d->selectionEnd = innerNode;
 		d->endOffset = offset;
 		m_part->docImpl()->clearSelection();
-		printf("setting start of selection to %p/%d\n", innerNode, offset);
+		kdDebug(300) << "setting start of selection to " << innerNode << "/" << offset << endl;
 	    } else {
 		d->selectionStart = 0;
 		d->selectionEnd = 0;
@@ -408,7 +407,7 @@ void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
     int xm, ym;
     viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
 
-    printf("\nmouseDblClickEvent: x=%d, y=%d\n", xm, ym);
+    kdDebug(300) << "\nmouseDblClickEvent: x=" << xm << ", y=" << ym << endl;
 
     DOMString url;
     NodeImpl *innerNode=0;
@@ -447,7 +446,7 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 	uris.append(u.url().ascii());
 	QDragObject *d = new QUriDrag(uris, this);
 	QPixmap p = KMimeType::pixmapForURL(u, 0, KIconLoader::Medium);
-	if(p.isNull()) printf("null pixmap\n");
+	if(p.isNull()) kdDebug(300) << "null pixmap" << endl;
 	d->setPixmap(p);
 	d->drag();
 
@@ -486,7 +485,7 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
     if( pressed && innerNode->isTextNode()) {
 	d->selectionEnd = innerNode;
 	d->endOffset = offset;
-	printf("setting end of selection to %p/%d\n", innerNode, offset);
+	kdDebug(300) << "setting end of selection to " << innerNode << "/" << offset << endl;
 
 	// we have to get to know if end is before start or not...
 	NodeImpl *n = d->selectionStart;
@@ -525,7 +524,7 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
     int xm, ym;
     viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
 
-    //printf("\nmouseReleaseEvent: x=%d, y=%d\n", xm, ym);
+    //kdDebug(300) << "\nmouseReleaseEvent: x=" << xm << ", y=" << ym << endl;
 
     DOMString url=0;
     NodeImpl *innerNode=0;
@@ -557,14 +556,13 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 	    m_strSelectedURL = u.ref();
 	    pressedTarget = u.host();
 	}	
-	printf("m_strSelectedURL='%s' target=%s\n",m_strSelectedURL.latin1(), pressedTarget.latin1());
+	kdDebug(300) << "m_strSelectedURL='" << m_strSelectedURL << "' target=" << pressedTarget << endl;
 
 	m_part->urlSelected( m_strSelectedURL, _mouse->button(), _mouse->state(), pressedTarget );
    }
 
     if(innerNode->isTextNode()) {
-	printf("final range of selection to %p/%d --> %p/%d\n", d->selectionStart, d->startOffset,
-	       innerNode, offset);
+	kdDebug(300) << "final range of selection to " << d->selectionStart << "/" << d->startOffset << " --> " << innerNode << "/" << offset << endl;
 	d->selectionEnd = innerNode;
 	d->endOffset = offset;
     }
@@ -606,7 +604,7 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 	QString text = selectedText();
 	QClipboard *cb = QApplication::clipboard();
 	cb->setText(text);
-	//printf("selectedText = %s\n",text.latin1());
+	//kdDebug(300) << "selectedText = " << text << endl;
 	emit selectionChanged();
     }
 }
@@ -699,7 +697,7 @@ void KHTMLView::keyReleaseEvent( QKeyEvent *_ke )
 
 bool KHTMLView::focusNextPrevChild( bool next )
 {
-    printf("focusNextPrev %d\n",next);
+    kdDebug(300) << "focusNextPrev " << next << endl;
 //    return true;    // ### temporary fix for qscrollview focus bug
     	    	    // as a side effect, disables tabbing between form elements
 		    // -antti
