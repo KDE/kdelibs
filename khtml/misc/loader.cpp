@@ -406,12 +406,16 @@ void CachedImage::ref( CachedObjectClient *c )
     m_clients.remove(c);
     m_clients.append(c);
 
+    if( m ) {
+        m->unpause();
+        if( m->finished() )
+            m->restart();
+    }
+
     // for mouseovers, dynamic changes
     if( m_status != Pending && !valid_rect().isNull())
         do_notify( pixmap(), valid_rect());
 
-    if( m )
-        m->unpause();
 }
 
 void CachedImage::deref( CachedObjectClient *c )
@@ -1171,7 +1175,7 @@ void Cache::flush(bool force)
                continue; // image is still used or cached permanently
 	       // in this case don't count it for the size of the cache.
         }
-	
+
         if( o->status() != CachedObject::Uncacheable )
         {
            cacheSize += o->size();
