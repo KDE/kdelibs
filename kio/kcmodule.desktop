@@ -5,6 +5,7 @@ X-KDE-ServiceType=KCModule
 Name=KDE Control Module
 Name[ar]=وحدة تحكم كيدي
 Name[be]=Модуль кіраваньня KDED
+Name[bg]=Контролен панел
 Name[bs]=KDE kontrolni modul
 Name[ca]=Mòdul de control del KDE
 Name[cs]=Ovládací modul KDE
@@ -16,10 +17,11 @@ Name[es]=Módulo de control de KDE
 Name[et]=KDE juhtimismoodul
 Name[eu]=KDE Kontrol Moduloa
 Name[fa]=بخش کنترل KDE
-Name[fi]=KDE Ohjauskeskus
-Name[fr]=Module de contrôle KDE
+Name[fi]=KDE:n ohjausmoduuli
+Name[fr]=Module de configuration de KDE
 Name[ga]=Modúl Rialaithe KDE
 Name[he]=מודול תצורה של KDE
+Name[hr]=KDE kontrolni modul
 Name[hu]=KDE beállítómodul
 Name[is]=KDE Stjórneining
 Name[it]=Modulo di controllo KDE
@@ -35,14 +37,16 @@ Name[pt]=Módulo de Controlo do KDE
 Name[pt_BR]=Módulo de Controle do KDE
 Name[ro]=Modul de control KDE
 Name[ru]=Модуль управления KDE
+Name[se]=KDE stivrrenmoduvla
 Name[sk]=Ovládací modul KDE
 Name[sl]=Nadzorni modul KDE
-Name[sr]=KDE Контролни модул
+Name[sr]=KDE-ов контролни модул
 Name[ss]=Sahluko sekulawula se KDE 
 Name[sv]=KDE-inställningsmodul
 Name[ta]=K §Á¨ºî ÝÆø ¸ðÎôÀ¡ðÎì ÜÚ
 Name[tr]=KDE Kontrol Modülü
 Name[uk]=Модуль центра керування KDE
+Name[uz]=KDE бошқариш модули
 Name[ven]=Phanele ndangula ya phirinthara
 Name[wa]=Module di contrôle KDE
 Name[xh]=Ulawulo Lwesicatshulwa we KDE
@@ -57,6 +61,21 @@ Type=QString
 [PropertyDef::X-KDE-RootOnly]
 Type=bool
 
+# a list of all components this KCM belongs to
 [PropertyDef::X-KDE-ParentComponents]
 Type=QStringList
 
+# the id of the parent in the TreeList
+[PropertyDef::X-KDE-CfgDlgHierarchy]
+Type=QString
+
+# sets the order of the modules in the TreeList/IconList
+[PropertyDef::X-KDE-Weight]
+Type=int
+
+[PropertyDef::X-KDE-RootOnly]
+Type=bool
+
+### KDE4 remove - this property is deprecated
+[PropertyDef::X-KDE-IsHiddenByDefault]
+Type=bool
