@@ -57,7 +57,7 @@ SocketConfig::SocketConfig(KMWSocketUtil *util, QWidget *parent, const char *nam
 	QLabel	*portlabel = new QLabel(i18n("&Port:"),this);
 	QLabel	*toutlabel = new QLabel(i18n("&Timeout (ms):"),this);
 	QLineEdit	*mm = new QLineEdit(this);
-	mm->setText(QString::fromLatin1(".[1-254]"));
+	mm->setText(QString::fromLatin1(".[0-255]"));
 	mm->setReadOnly(true);
 	mm->setFixedWidth(fontMetrics().width(mm->text())+10);
 
@@ -167,10 +167,10 @@ bool KMWSocketUtil::scanNetwork(QProgressBar *bar)
 {
 	printerlist_.setAutoDelete(true);
 	printerlist_.clear();
-	int	n(254);
+	int	n(256);
 	if (bar)
 		bar->setTotalSteps(n);
-	for (int i=1; i<n; i++)
+	for (int i=0; i<n; i++)
 	{
 		QString	IPstr = root_ + "." + QString::number(i);
 		QString	hostname;
@@ -212,10 +212,8 @@ QString localRootIP()
 	infos.setAutoDelete(true);
 	if (infos.count() > 0)
 	{
-		QString	IPstr = infos.first()->address()->pretty();
-		int	p = IPstr.find(' ');
-		IPstr.truncate(p);
-		p = IPstr.findRev('.');
+		QString	IPstr = infos.first()->address()->nodeName();
+		int	p = IPstr.findRev('.');
 		IPstr.truncate(p);
 		return IPstr;
 	}
