@@ -127,15 +127,15 @@ KAction* create( StdAction id, const char *name, const QObject *recvr, const cha
 	const KStdActionInfo* pInfo = infoPtr( id );
 	kdDebug(125) << "KStdAction::create( " << id << "=" << (pInfo ? pInfo->psName : (const char*)0) << ", " << parent << ", " << name << " )" << endl; // ellis
 	if( pInfo ) {
-		QString sLabel;
+		QString sLabel, iconName = pInfo->psIconName;
 		switch( id ) {
 		 case Back: sLabel = i18n("go back", "&Back"); break;
 		 case Forward: sLabel = i18n("go forward", "&Forward"); break;
 		 case Home: sLabel = i18n("beginning (of line)", "&Home"); break;
 		 case Help: sLabel = i18n("show help", "&Help"); break;
+		 case AboutApp: iconName = kapp->miniIconName();
 		 case Preferences:
 		 case HelpContents:
-		 case AboutApp:
 			{
 			const KAboutData *aboutData = KGlobal::instance()->aboutData();
 			QString appName = (aboutData) ? aboutData->programName() : QString::fromLatin1(qApp->name());
@@ -163,7 +163,7 @@ KAction* create( StdAction id, const char *name, const QObject *recvr, const cha
 			pAction = ret;
 			break;
 		 default:
-			pAction = new KAction( sLabel, pInfo->psIconName, cut,
+			pAction = new KAction( sLabel, iconName, cut,
 					recvr, slot,
 					parent, (name) ? name : pInfo->psName );
 			break;
