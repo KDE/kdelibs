@@ -461,8 +461,8 @@ static KStaticDeleter<KOpenSSLProxy> med;
 
 
 KOpenSSLProxy::~KOpenSSLProxy() {
-   delete _sslLib;
-   delete _cryptoLib;
+   _sslLib->unload();
+   _cryptoLib->unload();
    med.setObject(0);
 }
 
