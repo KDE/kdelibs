@@ -159,7 +159,7 @@ public:
 	                     bool onlyExe,
 	                     bool onlyDir,
 	                     bool noHidden,
-	                     bool appendSlashToDir) :
+	                     bool appendSlashToDir ) :
 		CompletionThread( receiver ),
 		m_dirList( QDeepCopy<QStringList>( dirList ) ),
 		m_filter( QDeepCopy<QString>( filter ) ),
@@ -197,8 +197,8 @@ void DirectoryListThread::run()
 	DIR *dir = 0;
 
 	for ( QStringList::ConstIterator it = m_dirList.begin();
-		  it != m_dirList.end() && !terminationRequested();
-		  ++it )
+	      it != m_dirList.end() && !terminationRequested();
+	      ++it )
 	{
 		// Open the next directory
 
@@ -222,7 +222,7 @@ void DirectoryListThread::run()
 		struct dirent dirPosition;
 		struct dirent *dirEntry = 0;
 		while ( !terminationRequested() &&
-				::readdir_r( dir, &dirPosition, &dirEntry ) == 0 && dirEntry )
+		        ::readdir_r( dir, &dirPosition, &dirEntry ) == 0 && dirEntry )
 		{
 			// Skip hidden files if m_noHidden is true
 
@@ -231,12 +231,12 @@ void DirectoryListThread::run()
 
 			// Skip "."
 
-			if( dirEntry->d_name[0] == '.' && dirEntry->d_name[1] == '\0' )
+			if ( dirEntry->d_name[0] == '.' && dirEntry->d_name[1] == '\0' )
 				continue;
 
 			// Skip ".."
 
-			if( dirEntry->d_name[0] == '.' && dirEntry->d_name[1] == '.' && dirEntry->d_name[2] == '\0' )
+			if ( dirEntry->d_name[0] == '.' && dirEntry->d_name[1] == '.' && dirEntry->d_name[2] == '\0' )
 				continue;
 
 			QString file = QFile::decodeName( dirEntry->d_name );
