@@ -856,7 +856,7 @@ void InterpreterImp::initGlobalObject()
   b_String = Object(new StringObjectImp(globExec, funcProto, stringProto));
   b_Boolean = Object(new BooleanObjectImp(globExec, funcProto, booleanProto));
   b_Number = Object(new NumberObjectImp(globExec, funcProto, numberProto));
-  b_Date = Object(new DateObjectImp(globExec,funcProto,dateProto));
+  b_Date = Object(new DateObjectImp(globExec, funcProto, dateProto));
   b_RegExp = Object(new RegExpObjectImp(globExec, funcProto, regexpProto));
   b_Error = Object(new ErrorObjectImp(globExec, funcProto, errorProto));
 
@@ -1085,7 +1085,7 @@ void InterpreterImp::setDebugger(Debugger *d)
 const ClassInfo InternalFunctionImp::info = {"Function", 0, 0, 0};
 
 InternalFunctionImp::InternalFunctionImp(FunctionPrototypeImp *funcProto)
-  : ObjectImp(Object(funcProto))
+  : ObjectImp(funcProto)
 {
 }
 

@@ -275,26 +275,6 @@ double Value::toNumber(ExecState *exec) const
   return rep->toNumber(exec);
 }
 
-int Value::toInteger(ExecState *exec) const
-{
-  return rep->toInteger(exec);
-}
-
-int Value::toInt32(ExecState *exec) const
-{
-  return rep->toInt32(exec);
-}
-
-unsigned int Value::toUInt32(ExecState *exec) const
-{
-  return rep->toUInt32(exec);
-}
-
-unsigned short Value::toUInt16(ExecState *exec) const
-{
-  return rep->toUInt16(exec);
-}
-
 UString Value::toString(ExecState *exec) const
 {
   return rep->toString(exec);

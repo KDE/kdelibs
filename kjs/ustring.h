@@ -2,23 +2,23 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2000 Harri Porten (porten@kde.org)
+ *  Copyright (C) 2002 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU Lesser General Public
+ *  modify it under the terms of the GNU Library General Public
  *  License as published by the Free Software Foundation; either
  *  version 2 of the License, or (at your option) any later version.
  *
  *  This library is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  Lesser General Public License for more details.
+ *  Library General Public License for more details.
  *
- *  You should have received a copy of the GNU Lesser General Public License
+ *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
  *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  *  Boston, MA 02111-1307, USA.
  *
- *  $Id$
  */
 
 #ifndef _KJS_USTRING_H_
@@ -72,7 +72,7 @@ namespace KJS {
     /**
      * @return The lower byte of the character.
      */
-    unsigned char low() const { return uc & 0xFF; }
+    unsigned char low() const { return uc; }
     /**
      * @return the 16 bit Unicode value of the character
      */
@@ -90,7 +90,7 @@ namespace KJS {
      * A static instance of UChar(0).
      */
     static UChar null;
-  private:
+//   private:
     friend class UCharReference;
     friend class UString;
     friend bool operator==(const UChar &c1, const UChar &c2);
@@ -137,7 +137,7 @@ namespace KJS {
     /**
      * @return Lower byte.
      */
-    unsigned char low() const { return ref().uc & 0xFF; }
+    unsigned char low() const { return ref().uc; }
     /**
      * @return Higher byte.
      */
@@ -159,6 +159,8 @@ namespace KJS {
     int offset;
   };
 
+  inline UChar::UChar(const UCharReference &c) : uc(c.unicode()) { }
+
   /**
    * @short 8 bit char based string class
    */
@@ -173,7 +175,7 @@ namespace KJS {
     CString &append(const CString &);
     CString &operator=(const char *c);
     CString &operator=(const CString &);
-    CString &operator+=(const CString &);
+    CString &operator+=(const CString &c) { return append(c); }
 
     int size() const;
     const char *c_str() const { return data; }
@@ -197,8 +199,11 @@ namespace KJS {
       inline UChar *data() const { return dat; }
       inline int size() const { return len; }
 
-      inline void ref() { rc++; }
-      inline int deref() { return --rc; }
+      static unsigned computeHash(const UChar *, int length);
+      static unsigned computeHash(const char *);
+
+      void ref() { rc++; }
+      int deref() { return --rc; }
 
       UChar *dat;
       int len;
@@ -234,7 +239,7 @@ namespace KJS {
     /**
      * Copy constructor. Makes a shallow copy only.
      */
-    UString(const UString &);
+    UString(const UString &s) { attach(s.rep); }
     /**
      * Convenience declaration only ! You'll be on your own to write the
      * implementation for a construction from QString.
@@ -307,7 +312,7 @@ namespace KJS {
     /**
      * Appends the specified string.
      */
-    UString &operator+=(const UString &s);
+    UString &operator+=(const UString &s) { return append(s); }
 
     /**
      * @return A pointer to the internal Unicode data.

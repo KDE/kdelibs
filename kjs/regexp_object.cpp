@@ -136,7 +136,7 @@ Value RegExpProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
 const ClassInfo RegExpImp::info = {"RegExp", 0, 0, 0};
 
 RegExpImp::RegExpImp(RegExpPrototypeImp *regexpProto)
-  : ObjectImp(Object(regexpProto)), reg(0L)
+  : ObjectImp(regexpProto), reg(0L)
 {
 }
 

@@ -212,22 +212,22 @@ namespace KJS {
     /**
      * Performs the ToInteger type conversion operation on this value (ECMA 9.4)
      */
-    int toInteger(ExecState *exec) const;
+    int toInteger(ExecState *exec) const { return rep->toInteger(exec); }
 
     /**
      * Performs the ToInt32 type conversion operation on this value (ECMA 9.5)
      */
-    int toInt32(ExecState *exec) const;
+    int toInt32(ExecState *exec) const { return rep->toInt32(exec); }
 
     /**
-     * Performs the ToUint32 type conversion operation on this value (ECMA 9.6)
+     * Performs the ToUInt32 type conversion operation on this value (ECMA 9.6)
      */
-    unsigned int toUInt32(ExecState *exec) const;
+    unsigned int toUInt32(ExecState *exec) const { return rep->toUInt32(exec); }
 
     /**
      * Performs the ToUint16 type conversion operation on this value (ECMA 9.7)
      */
-    unsigned short toUInt16(ExecState *exec) const;
+    unsigned short toUInt16(ExecState *exec) const { return rep->toUInt16(exec); }
 
     /**
      * Performs the ToString type conversion operation on this value (ECMA 9.8)

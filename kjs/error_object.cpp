@@ -35,7 +35,7 @@ using namespace KJS;
 ErrorPrototypeImp::ErrorPrototypeImp(ExecState *exec,
                                      ObjectPrototypeImp *objectProto,
                                      FunctionPrototypeImp *funcProto)
-  : ObjectImp(Object(objectProto))
+  : ObjectImp(objectProto)
 {
   Value protect(this);
   setInternalValue(Undefined());

@@ -103,11 +103,6 @@ CString &CString::operator=(const CString &str)
   return *this;
 }
 
-CString &CString::operator+=(const CString &str)
-{
-  return append(str.c_str());
-}
-
 int CString::size() const
 {
   return strlen(data);
@@ -123,14 +118,9 @@ UString::Rep UString::Rep::null = { 0, 0, 1 };
 UString UString::null;
 static char *statBuffer = 0L;
 
-UChar::UChar(const UCharReference &c)
-    : uc( c.unicode() )
-{
-}
-
 UChar UChar::toLower() const
 {
-  // ### properly supprot unicode tolower
+  // ### properly support unicode tolower
   if (uc >= 256 || islower(uc))
     return *this;
 
@@ -179,6 +169,37 @@ UString::Rep *UString::Rep::create(UChar *d, int l)
   return r;
 }
 
+unsigned UString::Rep::computeHash(const UChar *s, int length)
+{
+    int prefixLength = length < 8 ? length : 8;
+    int suffixPosition = length < 16 ? 8 : length - 8;
+
+    unsigned h = length;
+    for (int i = 0; i < prefixLength; i++)
+        h = 127 * h + s[i].uc;
+    for (int i = suffixPosition; i < length; i++)
+        h = 127 * h + s[i].uc;
+    if (h == 0)
+        h = 0x80000000;
+    return h;
+}
+
+unsigned UString::Rep::computeHash(const char *s)
+{
+    int length = strlen(s);
+    int prefixLength = length < 8 ? length : 8;
+    int suffixPosition = length < 16 ? 8 : length - 8;
+
+    unsigned h = length;
+    for (int i = 0; i < prefixLength; i++)
+        h = 127 * h + (unsigned char)s[i];
+    for (int i = suffixPosition; i < length; i++)
+        h = 127 * h + (unsigned char)s[i];
+    if (h == 0)
+        h = 0x80000000;
+    return h;
+}
+
 UString::UString()
 {
   null.rep = &Rep::null;
@@ -214,11 +235,6 @@ UString::UString(UChar *c, int length, bool copy)
   } else
     d = c;
   rep = Rep::create(d, length);
-}
-
-UString::UString(const UString &b)
-{
-  attach(b.rep);
 }
 
 UString::~UString()
@@ -324,11 +340,6 @@ UString &UString::operator=(const UString &str)
   rep = str.rep;
 
   return *this;
-}
-
-UString &UString::operator+=(const UString &s)
-{
-  return append(s);
 }
 
 bool UString::is8Bit() const

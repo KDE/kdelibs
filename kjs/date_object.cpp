@@ -349,6 +349,7 @@ DateObjectImp::DateObjectImp(ExecState *exec,
   : InternalFunctionImp(funcProto)
 {
   Value protect(this);
+
   // ECMA 15.9.4.1 Date.prototype
   put(exec,"prototype", Object(dateProto), DontEnum|DontDelete|ReadOnly);
 
