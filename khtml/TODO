@@ -1,5 +1,8 @@
 Here's what's still missing (without order):
 
+General:
+	* move all internal classes into namespace khtml
+
 Paragraphs:
 	* BiDi
 	* clean up the calcParagraph code
