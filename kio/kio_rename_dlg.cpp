@@ -13,18 +13,19 @@
 #include <kprotocolmanager.h>
 
 KIORenameDlg::KIORenameDlg(QWidget *parent, const char *_src, const char *_dest,
-			   RenameDlg_Mode _mode, bool _modal ) :
-  QDialog ( parent, "" , _modal )
+			   RenameDlg_Mode _mode, bool _srcNewer, bool _modal) 
+  : QDialog ( parent, "" , _modal )
 {
   modal = _modal;
-    
+  srcNewer = _srcNewer;
+  
   src = _src;
   dest = _dest;
-
+  
   b0 = b1 = b2 = b3 = b4 = b5 = b6 = b7 = 0L;
-    
+  
   setCaption( i18n( "Rename File" ) );
-
+  
   b0 = new QPushButton( i18n( "Cancel" ), this );
   connect(b0, SIGNAL(clicked()), this, SLOT(b0Pressed()));
   
@@ -32,51 +33,50 @@ KIORenameDlg::KIORenameDlg(QWidget *parent, const char *_src, const char *_dest,
   b1->setEnabled(false);
   connect(b1, SIGNAL(clicked()), this, SLOT(b1Pressed()));
   
-  if ( ( _mode & M_MULTI ) && ( _mode & M_SKIP ) )
-  {    
+  if ( ( _mode & M_MULTI ) && ( _mode & M_SKIP ) ) {
     b2 = new QPushButton( i18n( "Skip" ), this );
     connect(b2, SIGNAL(clicked()), this, SLOT(b2Pressed()));
-
+    
     b3 = new QPushButton( i18n( "Auto Skip" ), this );
     connect(b3, SIGNAL(clicked()), this, SLOT(b3Pressed()));
   }
-
-  if ( _mode & M_OVERWRITE )
-  {    
+  
+  if ( _mode & M_OVERWRITE ) {
     b4 = new QPushButton( i18n( "Overwrite" ), this );
     connect(b4, SIGNAL(clicked()), this, SLOT(b4Pressed()));
     
-    if ( _mode & M_MULTI )
-    {
+    if ( _mode & M_MULTI ) {
       b5 = new QPushButton( i18n( "Overwrite All" ), this );
       connect(b5, SIGNAL(clicked()), this, SLOT(b5Pressed()));
     }
   }
   
-  if ( _mode & M_RESUME )
-  {    
+  if ( _mode & M_RESUME ) {
     b6 = new QPushButton( i18n( "Resume" ), this );
     connect(b6, SIGNAL(clicked()), this, SLOT(b6Pressed()));
     
     if ( _mode & M_MULTI )
-    {
-      b7 = new QPushButton( i18n( "Resume All" ), this );
-      connect(b7, SIGNAL(clicked()), this, SLOT(b7Pressed()));
-    }
+      {
+	b7 = new QPushButton( i18n( "Resume All" ), this );
+	connect(b7, SIGNAL(clicked()), this, SLOT(b7Pressed()));
+      }
   }
-
+  
   m_pLayout = new QVBoxLayout( this, KDialog::marginHint(), 
 			       KDialog::spacingHint() );
   m_pLayout->addStrut( 360 );	// makes dlg at least that wide
- 
+  
   // User tries to overwrite a file with itself ?
   QLabel *lb;
+  QString s1 = "An older item";
+  QString s2 = "A newer item";
+
   if ( _mode & M_OVERWRITE_ITSELF ) {
-    lb = new QLabel( i18n("This action would overwrite\n%1\nwith itself. Do you want to rename it?").arg(src), this );
+    lb = new QLabel( i18n("This action would overwrite %1 with itself.\nDo you want to rename it instead?").arg(src), this );
   }  else if ( _mode & M_OVERWRITE ) {
-    lb = new QLabel( i18n("%1 already exists.\nDo you want to overwrite it with %2,\nor rename it?").arg(dest).arg(src), this );
+    lb = new QLabel( i18n("%1 named %2 already exists.\nDo you want to replace it with %3,\nor rename it?").arg(srcNewer ? s1 : s2).arg(dest).arg(src), this );
   }  else if ( !(_mode & M_OVERWRITE ) ) {
-    lb = new QLabel( i18n("%1 already exists.\nDo you want to rename it?").arg(src), this );
+    lb = new QLabel( i18n("%1 than %1 already exists.\nDo you want to rename the existing item?").arg(srcNewer ? s1 : s2).arg(src), this );
   } else
     assert( 0 );
   
@@ -216,7 +216,9 @@ void KIORenameDlg::b7Pressed()
     emit result( this, 7, src.ascii(), dest.ascii() );
 }
 
-RenameDlg_Result open_RenameDlg( const char* _src, const char *_dest, RenameDlg_Mode _mode, QString& _new )
+RenameDlg_Result open_RenameDlg( const char* _src, const char *_dest, 
+				 RenameDlg_Mode _mode, bool _srcNewer,
+				 QString& _new )
 {
   if ( kapp == 0L )
   {
@@ -225,7 +227,7 @@ RenameDlg_Result open_RenameDlg( const char* _src, const char *_dest, RenameDlg_
     (void)new KApplication( b, const_cast<char**>(a), "rename_dlg" );
   }
   
-  KIORenameDlg dlg( 0L, _src, _dest, _mode, true );
+  KIORenameDlg dlg( 0L, _src, _dest, _mode, _srcNewer, true );
   int i = dlg.exec();
   _new = dlg.newName();
 

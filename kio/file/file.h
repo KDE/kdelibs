@@ -56,6 +56,7 @@ protected:
     QString m_strRelDest;
     mode_t m_mode;
     off_t m_size;
+    time_t m_mtime;
   };
 
   struct CopyDir
@@ -64,6 +65,7 @@ protected:
     QString m_strRelDest;
     mode_t m_mode;
     ino_t m_ino;
+    time_t m_mtime;
   };
 
   struct Del

@@ -16,7 +16,7 @@ class KIORenameDlg : public QDialog
 {
   Q_OBJECT
 public:
-  KIORenameDlg( QWidget *parent, const char *_src, const char *_dest, RenameDlg_Mode _mode,  bool _modal = FALSE );
+  KIORenameDlg( QWidget *parent, const char *_src, const char *_dest, RenameDlg_Mode _mode, bool _srcNewer, bool _modal = FALSE );
   ~KIORenameDlg();
     
   const char* newName() { return m_pLineEdit->text().ascii(); }
@@ -36,7 +36,7 @@ protected:
   QString src;
   QString dest;
     
-  bool modal;
+  bool modal, srcNewer;
 
 public slots:
   void b0Pressed();
@@ -55,7 +55,7 @@ signals:
   void result( QWidget* _widget, int _button, const char *_src, const char *_data );
 };
 
-RenameDlg_Result open_RenameDlg( const char* _src, const char *_dest, RenameDlg_Mode _mode, QString& _new );
+RenameDlg_Result open_RenameDlg( const char* _src, const char *_dest, RenameDlg_Mode _mode, bool _srcNewer, QString& _new );
 
 unsigned long getOffset( QString dest );
 

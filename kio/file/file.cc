@@ -405,7 +405,11 @@ void FileProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename
 	  RenameDlg_Mode m = (RenameDlg_Mode)( M_MULTI | M_SKIP | M_OVERWRITE );
 	  QString tmp2 = ud.url();
 	  QString n;
-	  RenameDlg_Result r = open_RenameDlg( (*dir_it).m_strAbsSource, tmp2, m, n );
+	  struct stat buff;
+	  stat( ud.path(), &buff );
+	  bool sn = (*dir_it).m_mtime >= buff.st_mtime;
+	  RenameDlg_Result r = open_RenameDlg( (*dir_it).m_strAbsSource, tmp2,
+					       m, sn, n );
 	  if ( r == R_CANCEL ) {
 	    error( ERR_USER_CANCELED, "" );
 	    m_cmd = CMD_NONE;
@@ -574,7 +578,11 @@ void FileProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename
 
 	  QString tmp2 = ud.url().data();
 	  QString n;
-	  RenameDlg_Result r = open_RenameDlg((*fit).m_strAbsSource, tmp2, m, n );
+	  struct stat buff;
+	  stat( ud.path(), &buff );
+	  bool sn = (*fit).m_mtime >= buff.st_mtime;
+	  RenameDlg_Result r = open_RenameDlg((*fit).m_strAbsSource, tmp2,
+					      m, sn, n );
 
 	  if ( r == R_CANCEL )
 	  {
@@ -1365,6 +1373,7 @@ long FileProtocol::listRecursive( const char *_path, QValueList<Copy>&
       c.m_strRelDest = "Root";
     c.m_ino = buff.st_ino;
     c.m_mode = buff.st_mode;
+    c.m_mtime = buff.st_mtime;
     _dirs.append( c );
 
     return listRecursive2( "/", c.m_strRelDest, _files, _dirs );
@@ -1401,6 +1410,7 @@ long FileProtocol::listRecursive( const char *_path, QValueList<Copy>&
     c.m_strRelDest = fname;
     c.m_mode = buff.st_mode;
     c.m_size = buff.st_size;
+    c.m_mtime = buff.st_mtime;
     _files.append( c );
     return buff.st_size;
   }
@@ -1423,6 +1433,7 @@ long FileProtocol::listRecursive( const char *_path, QValueList<Copy>&
   c.m_strRelDest = tmp2;
   c.m_mode = buff.st_mode;
   c.m_ino = buff.st_ino;
+  c.m_mtime = buff.st_mtime;
   _dirs.append( c );
   kdebug( KDEBUG_INFO, 7101, "########### STARTING RECURSION with %s and %s",tmp1.ascii(), tmp2.ascii() );
 
@@ -1478,6 +1489,7 @@ long FileProtocol::listRecursive2( const char *_abs_path, const char *_rel_path,
       c.m_strRelDest = tmp;
       c.m_mode = buff.st_mode & ( S_ISUID | S_ISGID | S_IFLNK | S_IRWXU | S_IRWXG | S_IRWXO );
       c.m_size = buff.st_size;
+      c.m_mtime = buff.st_mtime;
       _files.append( c );
       size += buff.st_size;
     } else {
@@ -1495,6 +1507,7 @@ long FileProtocol::listRecursive2( const char *_abs_path, const char *_rel_path,
       c.m_strRelDest = tmp;
       c.m_mode = buff.st_mode;
       c.m_ino = buff.st_ino;
+      c.m_mtime = buff.st_mtime;
       _dirs.append( c );
 
       long s;
