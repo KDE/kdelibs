@@ -21,6 +21,7 @@
 
 #include <qfile.h>
 #include <qregexp.h>
+#include <klocale.h>
 #include <kstandarddirs.h>
 
 QString Comment::comment()
@@ -35,7 +36,7 @@ QString Comment::toolTip()
 {
         QString str = comment_;
         str.replace(QRegExp("^#[\\s]*"), "").replace(QRegExp("\n#"), "\n");
-        return str;
+        return i18n(str.utf8());
 }
 
 QString Comment::key()

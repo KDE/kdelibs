@@ -60,9 +60,9 @@ CupsdNetworkPage::CupsdNetworkPage(QWidget *parent, const char *name)
 	clienttimeout_->setSpecialValueText(i18n("Unlimited"));
 	clienttimeout_->setSuffix(i18n(" sec"));
 
-	hostnamelookup_->insertItem("Off");
-	hostnamelookup_->insertItem("On");
-	hostnamelookup_->insertItem("Double");
+	hostnamelookup_->insertItem(i18n("Off"));
+	hostnamelookup_->insertItem(i18n("On"));
+	hostnamelookup_->insertItem(i18n("Double"));
 
 	QLabel *l1 = new QLabel(i18n("Hostname lookups:"), this);
 	QLabel *l2 = new QLabel(i18n("Keep-alive timeout:"), this);

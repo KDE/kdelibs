@@ -28,6 +28,7 @@
 #include <qcombobox.h>
 #include <qlabel.h>
 #include <qlayout.h>
+#include <qmap.h>
 #include <klocale.h>
 
 QStringList defaultBanners()
@@ -49,15 +50,33 @@ QStringList defaultBanners()
 	return bans;
 }
 
-void setComboItem(QComboBox *cb, const QString& txt)
+static struct
 {
-	for (int i=0;i<cb->count();i++)
-		if (cb->text(i) == txt)
-		{
-			cb->setCurrentItem(i);
-			return;
-		}
-	cb->setCurrentItem(0);
+	const char *banner;
+	const char *name;
+} bannermap[] = 
+{
+	{ "none", I18N_NOOP( "No Banner" ) },
+	{ "classified", I18N_NOOP( "Classified" ) },
+	{ "confidential", I18N_NOOP( "Confidential" ) },
+	{ "secret", I18N_NOOP( "Secret" ) },
+	{ "standard", I18N_NOOP( "Standard" ) },
+	{ "topsecret", I18N_NOOP( "Top Secret" ) },
+	{ "unclassified", I18N_NOOP( "Unclassified" ) },
+	{ 0, 0 }
+};
+
+QString mapBanner( const QString& ban )
+{
+	static QMap<QString,QString> map;
+	if ( map.size() == 0 )
+		for ( int i=0; bannermap[ i ].banner; i++ )
+			map[ bannermap[ i ].banner ] = bannermap[ i ].name;
+	QMap<QString,QString>::ConstIterator it = map.find( ban );
+	if ( it == map.end() )
+		return ban;
+	else
+		return it.data();
 }
 
 //**************************************************************************************************************
@@ -100,19 +119,22 @@ void KMWBanners::initPrinter(KMPrinter *p)
 	{
 		if (m_start->count() == 0)
 		{
-			QStringList	bans = QStringList::split(',',p->option("kde-banners-supported"),false);
-			if (bans.count() == 0)
-				bans = defaultBanners();
-			if (bans.find("none") == bans.end())
-				bans.prepend("none");
-			m_start->insertStringList(bans);
-			m_end->insertStringList(bans);
+			m_bans = QStringList::split(',',p->option("kde-banners-supported"),false);
+			if (m_bans.count() == 0)
+				m_bans = defaultBanners();
+			if (m_bans.find("none") == m_bans.end())
+				m_bans.prepend("none");
+			for ( QStringList::Iterator it=m_bans.begin(); it!=m_bans.end(); ++it )
+			{
+				m_start->insertItem( i18n( mapBanner(*it).utf8() ) );
+				m_end->insertItem( i18n( mapBanner(*it).utf8() ) );
+			}
 		}
 		QStringList	l = QStringList::split(',',p->option("kde-banners"),false);
 		while (l.count() < 2)
 			l.append("none");
-		setComboItem(m_start,l[0]);
-		setComboItem(m_end,l[1]);
+		m_start->setCurrentItem(m_bans.findIndex(l[0]));
+		m_end->setCurrentItem(m_bans.findIndex(l[1]));
 	}
 }
 
@@ -120,6 +142,6 @@ void KMWBanners::updatePrinter(KMPrinter *p)
 {
 	if (m_start->count() > 0)
 	{
-		p->setOption("kde-banners",m_start->currentText()+","+m_end->currentText());
+		p->setOption("kde-banners",m_bans[m_start->currentItem()]+","+m_bans[m_end->currentItem()]);
 	}
 }

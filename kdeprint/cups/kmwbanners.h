@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -23,6 +23,7 @@
 #define KMWBANNERS_H
 
 #include "kmwizardpage.h"
+#include <qstringlist.h>
 
 class QComboBox;
 
@@ -36,6 +37,9 @@ public:
 
 private:
 	QComboBox	*m_start, *m_end;
+	QStringList	m_bans;
 };
+
+QString mapBanner( const QString& );
 
 #endif

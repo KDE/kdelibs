@@ -22,6 +22,7 @@
 #include "kmpropbanners.h"
 #include "kmprinter.h"
 #include "kmwizard.h"
+#include "kmwbanners.h"
 
 #include <qlabel.h>
 #include <qlayout.h>
@@ -61,8 +62,10 @@ void KMPropBanners::setPrinter(KMPrinter *p)
 	if (p && p->isPrinter())
 	{
 		QStringList	l = QStringList::split(',',p->option("kde-banners"),false);
-		m_startbanner->setText((l.count() > 0 ? l[0] : QString::fromLatin1("none")));
-		m_stopbanner->setText((l.count() > 1 ? l[1] : QString::fromLatin1("none")));
+		while ( l.count() < 2 )
+			l.append( "none" );
+		m_startbanner->setText(i18n(mapBanner(l[0]).utf8()));
+		m_stopbanner->setText(i18n(mapBanner(l[1]).utf8()));
 		emit enable(true);
 		emit enableChange(p->isLocal());
 	}

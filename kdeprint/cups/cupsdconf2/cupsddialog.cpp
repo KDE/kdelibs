@@ -250,6 +250,7 @@ bool CupsdDialog::configure(const QString& filename, QWidget *parent, QString *m
 	}
 	else
 	{
+		KGlobal::locale()->insertCatalogue("cupsdconf"); // Must be before dialog is created to translate "Short Help..."
 		CupsdDialog	dlg(parent);
 		if (dlg.setConfigFile(fn) && dlg.exec())
 		{

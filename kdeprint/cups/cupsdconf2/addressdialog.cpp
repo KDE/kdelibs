@@ -33,8 +33,8 @@ AddressDialog::AddressDialog(QWidget *parent, const char *name)
 	type_ = new QComboBox(w);
 	address_ = new QLineEdit(w);
 
-	type_->insertItem("Allow");
-	type_->insertItem("Deny");
+	type_->insertItem(i18n("Allow"));
+	type_->insertItem(i18n("Deny"));
 
 	QLabel	*l1 = new QLabel(i18n("Type:"), w);
 	QLabel	*l2 = new QLabel(i18n("Address:"), w);
