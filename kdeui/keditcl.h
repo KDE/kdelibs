@@ -163,7 +163,7 @@ private:
 
 /**
  * A simple text editor for the KDE project.
- * @deprecated. Use KTextEditor::Editor or QTextEdit instead.
+ * @deprecated. Use KTextEditor::Editor or KTextEdit instead.
  *
  * @author Bernd Johannes Wuebben <wuebben@math.cornell.edu>, Waldo Bastian <bastian@kde.org>
  **/
