@@ -1343,9 +1343,16 @@ void KHTMLPart::clear()
   delete d->m_decoder;
   d->m_decoder = 0;
 
+  // We don't want to change between parts if we are going to delete all of them anyway
+  disconnect( partManager(), SIGNAL( activePartChanged( KParts::Part * ) ),
+               this, SLOT( slotActiveFrameChanged( KParts::Part * ) ) );
+
+  if (d->m_frames.count())
   {
-    ConstFrameIt it = d->m_frames.begin();
-    const ConstFrameIt end = d->m_frames.end();
+    KHTMLFrameList frames = d->m_frames;
+    d->m_frames.clear();
+    ConstFrameIt it = frames.begin();
+    const ConstFrameIt end = frames.end();
     for(; it != end; ++it )
     {
       if ( (*it)->m_part )
@@ -1356,15 +1363,21 @@ void KHTMLPart::clear()
       delete *it;
     }
   }
+  
+  if (d->m_objects.count())
   {
-    ConstFrameIt oi = d->m_objects.begin();
-    const ConstFrameIt oiEnd = d->m_objects.end();
+    KHTMLFrameList objects = d->m_objects;
+    d->m_objects.clear();
+    ConstFrameIt oi = objects.begin();
+    const ConstFrameIt oiEnd = objects.end();
 
     for (; oi != oiEnd; ++oi )
       delete *oi;
   }
-  d->m_frames.clear();
-  d->m_objects.clear();
+
+  // Listen to part changes again
+  connect( partManager(), SIGNAL( activePartChanged( KParts::Part * ) ),
+             this, SLOT( slotActiveFrameChanged( KParts::Part * ) ) );
 
   d->m_delayRedirect = 0;
   d->m_redirectURL = QString::null;
@@ -6395,7 +6408,7 @@ void KHTMLPart::slotPartRemoved( KParts::Part *part )
 
 void KHTMLPart::slotActiveFrameChanged( KParts::Part *part )
 {
-//    kdDebug(6050) << "KHTMLPart::slotActiveFrameChanged part=" << part << endl;
+//    kdDebug(6050) << "KHTMLPart::slotActiveFrameChanged this=" << this << "part=" << part << endl;
     if ( part == this )
     {
         kdError(6050) << "strange error! we activated ourselves" << endl;
