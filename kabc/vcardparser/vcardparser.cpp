@@ -102,7 +102,7 @@ VCard::List VCardParser::parseVCards( const QString& text )
           if ( vCardLine.parameter( "charset" ).lower() == "utf-8" ) {
             vCardLine.setValue( QString::fromUtf8( output.data(), output.size() ) );
           } else {
-            vCardLine.setValue( QString::fromAscii( output.data(), output.size() ) );
+            vCardLine.setValue( output );
           }
         } else if ( vCardLine.parameter( "charset" ).lower() == "utf-8" ) {
           vCardLine.setValue( QString::fromUtf8( value.ascii() ) );
