@@ -281,6 +281,8 @@ NodeFilterImpl::NodeFilterImpl()
 
 NodeFilterImpl::~NodeFilterImpl()
 {
+    if (m_customNodeFilter)
+	m_customNodeFilter->deref();
 }
 
 short NodeFilterImpl::acceptNode(const Node &n)
@@ -294,6 +296,8 @@ short NodeFilterImpl::acceptNode(const Node &n)
 void NodeFilterImpl::setCustomNodeFilter(CustomNodeFilter *custom)
 {
     m_customNodeFilter = custom;
+    if (m_customNodeFilter)
+	m_customNodeFilter->ref();
 }
 
 CustomNodeFilter *NodeFilterImpl::customNodeFilter()
