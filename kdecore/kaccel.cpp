@@ -356,7 +356,7 @@ void KAccel::readSettings(KConfig* config)
 	QString s;
 
 	KConfig *pConfig = config?config:kapp->getConfig();
-	pConfig->setGroup( aGroup.data() );
+	pConfig->setGroup( aGroup );
 	
 	QDictIterator<KKeyEntry> aKeyIt( aKeyDict );
 	aKeyIt.toFirst();
@@ -367,7 +367,7 @@ void KAccel::readSettings(KConfig* config)
 		if ( s.isNull() )
 			pE->aConfigKeyCode = pE->aDefaultKeyCode;
 		else
-			pE->aConfigKeyCode = stringToKey( s.data() );
+			pE->aConfigKeyCode = stringToKey( s );
 	
 		pE->aCurrentKeyCode = pE->aConfigKeyCode;
 		if ( pE->aAccelId && pE->aCurrentKeyCode ) {
@@ -573,7 +573,7 @@ void KAccel::setConfigGlobal( bool global )
 
 const QString KAccel::configGroup()
 {
-	return aGroup.data();
+	return aGroup;
 }
 
 bool KAccel::configGlobal()
@@ -584,7 +584,7 @@ bool KAccel::configGlobal()
 void KAccel::writeSettings(KConfig* config)
 {
 	KConfig *pConfig = config?config:kapp->getConfig();
-	pConfig->setGroup( aGroup.data() );
+	pConfig->setGroup( aGroup );
 
 	QDictIterator<KKeyEntry> aKeyIt( aKeyDict );
 	aKeyIt.toFirst();
