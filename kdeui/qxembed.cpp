@@ -649,8 +649,9 @@ QXEmbed::QXEmbed(QWidget *parent, const char *name, WFlags f)
     topLevelWidget()->installEventFilter( this );
     qApp->installEventFilter( this );
 
-    // L0914: start moving the X11 focus on the focus proxy window.
-    if (isActiveWindow())
+    // L0914: Start moving the X11 focus on the focus proxy window.
+    //        See L1581 to know why we do not use isActiveWindow().
+    if ( qApp->activeWindow() == topLevelWidget() )
         if ( !((QPublicWidget*) topLevelWidget())->topData()->embedded )
             XSetInputFocus( qt_xdisplay(), d->focusProxy->winId(), 
                             RevertToParent, qt_x_time );
@@ -833,9 +834,12 @@ void QXEmbed::focusInEvent( QFocusEvent * e ){
     // L1510: This is a good time to set the X11 focus on the focus proxy window.
     //        Except if the the embedding application itself is embedded into another.
     if ( !((QPublicWidget*) topLevelWidget())->topData()->embedded )
-        if( isActiveWindow()) // alter X focus only when this is the active window
-            XSetInputFocus( qt_xdisplay(), d->focusProxy->winId(), 
-                            RevertToParent, qt_x_time );
+      if ( qApp->activeWindow() == topLevelWidget() )
+          // L1511: Alter X focus only when window is active. 
+          //        This is dual safety here because FocusIn implies this.
+          //        But see L1581 for an example where this really matters.
+          XSetInputFocus( qt_xdisplay(), d->focusProxy->winId(), 
+                          RevertToParent, qt_x_time );
     if (d->xplain) {
         // L1520: Qt focus has changed. Grab state might change. See L2800.
         checkGrab();
@@ -877,9 +881,13 @@ void QXEmbed::focusOutEvent( QFocusEvent * ){
     //        the client application might have moved the X11 focus after
     //        receiving the fake focus messages.
     if ( !((QPublicWidget*) topLevelWidget())->topData()->embedded )
-      if ( qApp->activeWindow() == topLevelWidget() )
-        XSetInputFocus( qt_xdisplay(), d->focusProxy->winId(), 
-                        RevertToParent, qt_x_time );
+        if ( qApp->activeWindow() == topLevelWidget() )
+            // L1581: Alter X focus only when window is active.
+            //        The test above is not the same as isActiveWindow().
+            //        Function isActiveWindow() also returns true when a modal
+            //        dialog child of this window is active.
+            XSetInputFocus( qt_xdisplay(), d->focusProxy->winId(), 
+                            RevertToParent, qt_x_time );
 }
 
 
