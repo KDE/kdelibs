@@ -215,6 +215,43 @@ Overall, it is of course a consideration of policy how strictly you try to
 trap communcation errors throughout your application. You might follow the
 "if the server crashes, we need to debug the server until it never crashes
 again" method, which would mean you need not bother about all these problems.
+<p>
+<h1>Internals: the distributed reference counting</h1>
+<p>
+An object, to exist, must be owned by someone. If it isn't, it will cease
+to exist (more or less) immediately. Internally, ownership is indicated by
+calling _copy(), which increments an reference count, and given back by
+calling _release(). As soon as the reference count drops to zero, a delete
+will be done.
+<p>
+As a variation of the theme, remote usage is indicated by _useRemote(), and
+dissolved by _releaseRemote(). These functions lead a list which server has
+invoked them (and thus owns the object). This is used in case this server
+disconnects (i.e. crash, network failure), to remove the references that
+are still on the objects. This is done in _disconnectRemote().
+<p>
+Now there is one problem. Consider a return value. Usually, the return value
+object will not be owned by the calling function any longer. It will however
+also not be owned by the caller, until the message holding the object is
+received. So there is a time of "ownershipless" objects.
+<p>
+Now, when sending an object, one can be reasonable sure that as soon as it is
+received, it will be owned by somebody again, unless, again, the receiver dies.
+However this means that special care needs to be taken about object at least
+while sending, probably also while receiving, so that it doesn't die at once.
+<p>
+The way MCOP does this is by "tagging" objects that are in process of being
+copied across the wire. Before such a copy is started, _copyRemote is called.
+This prevents the object from being freed for a while (5 seconds). Once the
+receiver calls _useRemote(), the tag is removed again. So all objects that
+are send over wire are tagged before transfer.
+<p>
+If the receiver receives an object which is on his server, of course he will
+not _useRemote() it. For this special case, _cancelCopyRemote() exists to
+remove the tag manually. Other than that, there is also timer based tag
+removal, if tagging was done, but the receiver didn't really get the object
+(due to crash, network failure). This is done by the ReferenceClean class.
+<p>
 <hr>
 <a href=index.html>back to index</a>
 </BODY>
