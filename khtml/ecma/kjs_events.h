@@ -72,7 +72,10 @@ namespace KJS {
 
   class DOMEvent : public DOMObject {
   public:
+    // Build a DOMEvent
     DOMEvent(ExecState *exec, DOM::Event e);
+    // Constructor for inherited classes
+    DOMEvent(const Object &proto, DOM::Event e);
     ~DOMEvent();
     virtual Value tryGet(ExecState *exec,const UString &p) const;
     Value getValueProperty(ExecState *, int token) const;
@@ -112,7 +115,10 @@ namespace KJS {
 
   class DOMUIEvent : public DOMEvent {
   public:
-    DOMUIEvent(ExecState *exec, DOM::UIEvent ue) : DOMEvent(exec, ue) {}
+    // Build a DOMUIEvent
+    DOMUIEvent(ExecState *exec, DOM::UIEvent ue);
+    // Constructor for inherited classes
+    DOMUIEvent(const Object &proto, DOM::UIEvent ue);
     ~DOMUIEvent();
     virtual Value tryGet(ExecState *exec,const UString &p) const;
     Value getValueProperty(ExecState *, int token) const;
@@ -125,7 +131,7 @@ namespace KJS {
 
   class DOMMouseEvent : public DOMUIEvent {
   public:
-    DOMMouseEvent(ExecState *exec, DOM::MouseEvent me) : DOMUIEvent(exec, me) {}
+    DOMMouseEvent(ExecState *exec, DOM::MouseEvent me);
     ~DOMMouseEvent();
     virtual Value tryGet(ExecState *exec,const UString &p) const;
     Value getValueProperty(ExecState *, int token) const;
@@ -142,7 +148,7 @@ namespace KJS {
 
   class DOMTextEvent : public DOMUIEvent {
   public:
-    DOMTextEvent(ExecState *exec, DOM::TextEvent ke) : DOMUIEvent(exec, ke) {}
+    DOMTextEvent(ExecState *exec, DOM::TextEvent ke);
     ~DOMTextEvent();
     virtual Value tryGet(ExecState *exec,const UString &p) const;
     Value getValueProperty(ExecState *, int token) const;
@@ -168,7 +174,7 @@ namespace KJS {
 
   class DOMMutationEvent : public DOMEvent {
   public:
-    DOMMutationEvent(ExecState *exec, DOM::MutationEvent me) : DOMEvent(exec, me) {}
+    DOMMutationEvent(ExecState *exec, DOM::MutationEvent me);
     ~DOMMutationEvent();
     virtual Value tryGet(ExecState *exec,const UString &p) const;
     Value getValueProperty(ExecState *, int token) const;

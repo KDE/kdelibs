@@ -212,6 +212,9 @@ IMPLEMENT_PROTOTYPE(DOMEventProto, DOMEventProtoFunc)
 DOMEvent::DOMEvent(ExecState *exec, DOM::Event e)
   : DOMObject(DOMEventProto::self(exec)), event(e) { }
 
+DOMEvent::DOMEvent(const Object &proto, DOM::Event e)
+  : DOMObject(proto), event(e) { }
+
 DOMEvent::~DOMEvent()
 {
   ScriptInterpreter::forgetDOMObject(event.handle());
@@ -378,6 +381,12 @@ DEFINE_PROTOTYPE("DOMUIEvent",DOMUIEventProto)
 IMPLEMENT_PROTOFUNC_DOM(DOMUIEventProtoFunc)
 IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMUIEventProto,DOMUIEventProtoFunc,DOMEventProto)
 
+DOMUIEvent::DOMUIEvent(ExecState *exec, DOM::UIEvent ue) :
+  DOMEvent(DOMUIEventProto::self(exec), ue) {}
+
+DOMUIEvent::DOMUIEvent(const Object &proto, DOM::UIEvent ue) :
+  DOMEvent(proto, ue) {}
+
 DOMUIEvent::~DOMUIEvent()
 {
 }
@@ -470,6 +479,9 @@ const ClassInfo DOMMouseEvent::info = { "MouseEvent", &DOMUIEvent::info, &DOMMou
 DEFINE_PROTOTYPE("DOMMouseEvent",DOMMouseEventProto)
 IMPLEMENT_PROTOFUNC_DOM(DOMMouseEventProtoFunc)
 IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMMouseEventProto,DOMMouseEventProtoFunc,DOMUIEventProto)
+
+DOMMouseEvent::DOMMouseEvent(ExecState *exec, DOM::MouseEvent me) :
+  DOMUIEvent(DOMMouseEventProto::self(exec), me) {}
 
 DOMMouseEvent::~DOMMouseEvent()
 {
@@ -596,6 +608,9 @@ DEFINE_PROTOTYPE("DOMTextEvent",DOMTextEventProto)
 IMPLEMENT_PROTOFUNC_DOM(DOMTextEventProtoFunc)
 IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMTextEventProto,DOMTextEventProtoFunc,DOMUIEventProto)
 
+DOMTextEvent::DOMTextEvent(ExecState *exec, DOM::TextEvent ke) :
+  DOMUIEvent(DOMTextEventProto::self(exec), ke) {}
+
 DOMTextEvent::~DOMTextEvent()
 {
 }
@@ -698,6 +713,9 @@ const ClassInfo DOMMutationEvent::info = { "MutationEvent", &DOMEvent::info, &DO
 DEFINE_PROTOTYPE("DOMMutationEvent",DOMMutationEventProto)
 IMPLEMENT_PROTOFUNC_DOM(DOMMutationEventProtoFunc)
 IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMMutationEventProto,DOMMutationEventProtoFunc,DOMEventProto)
+
+DOMMutationEvent::DOMMutationEvent(ExecState *exec, DOM::MutationEvent me) :
+  DOMEvent(DOMMutationEventProto::self(exec), me) {}
 
 DOMMutationEvent::~DOMMutationEvent()
 {
