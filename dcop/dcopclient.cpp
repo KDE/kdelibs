@@ -44,7 +44,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #endif
 #include <qtextstream.h>
 #include <qfile.h>
-#include <qapp.h>
+#include <qapplication.h>
 #include <qsocketnotifier.h>
 
 #include <dcopglobal.h>
