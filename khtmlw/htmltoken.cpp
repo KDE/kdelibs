@@ -291,7 +291,7 @@ void HTMLTokenizer::write( const char *str )
 		// Special character ?
 		else if ( isalpha( *(src + 1) ) )
 		{
-		     if (!tag && !textarea){
+		     if (!tag && !textarea && !select){
 		       // add currend token
 		       debugM("Not quoted amp-seq: %0.20s\n",src);
 		       *dest=0;
