@@ -255,7 +255,7 @@ void SessionData::reset()
     d->useCookie = cfg->readBoolEntry( "Cookies", true );
     delete cfg;
 
-    const QString & english = KGlobal::staticQString( "en" );
+    static const QString & english = KGlobal::staticQString( "en" );
 
     // Get language settings...
     QStringList languageList = KGlobal::locale()->languagesTwoAlpha();
