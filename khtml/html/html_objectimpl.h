@@ -58,10 +58,11 @@ public:
     virtual khtml::VAlign vAlign() { return valign; }
 
 protected:
-    DOMStringImpl *base;
+    DOMStringImpl *codeBase;
     DOMStringImpl *name;
     DOMStringImpl *code;
-
+    DOMStringImpl *archive;
+    
     KJavaAppletWidget *applet;
     KHTMLView *view;
     khtml::VAlign valign;

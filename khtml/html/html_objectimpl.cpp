@@ -45,16 +45,18 @@ HTMLAppletElementImpl::HTMLAppletElementImpl(DocumentImpl *doc)
   : HTMLElementImpl(doc)
 {
     applet = 0;
-    base = 0;
+    codeBase = 0;
     code = 0;
     name = 0;
+    archive = 0;
 }
 
 HTMLAppletElementImpl::~HTMLAppletElementImpl()
 {
-    if(base) base->deref();
+    if(codeBase) codeBase->deref();
     if(code) code->deref();
     if(name) name->deref();
+    if(archive) archive->deref();    
     if(applet) delete applet;
 }
 
@@ -73,11 +75,13 @@ void HTMLAppletElementImpl::parseAttribute(Attribute *attr)
     switch( attr->id )
     {
     case ATTR_CODEBASE:
-    	base = attr->val();
-	base->ref();
+    	codeBase = attr->val();
+	codeBase->ref();
 	break;	
     case ATTR_ARCHIVE:
-	break;
+        archive = attr->val();
+        archive->ref();
+        break;
     case ATTR_CODE:
 	code = attr->val();
 	code->ref();
@@ -136,8 +140,8 @@ void HTMLAppletElementImpl::attach(KHTMLView *_view)
     //applet->show();
     applet->setBaseURL(view->part()->url().url()); // ### use KURL!
     QString tmp;
-    if(base)
-	tmp = QString(base->s, base->l) + '/';
+    if(codeBase)
+	tmp = QString(codeBase->s, codeBase->l) + '/';
     tmp += QString(code->s, code->l);
     printf("setting applet to %s\n", tmp.ascii());
     applet->setAppletClass(tmp);
