@@ -516,7 +516,7 @@ protected:
      * @param match the match to process
      * @see #postProcessMatches
      */
-    virtual void postProcessMatch( QString *match ) const {}
+    virtual void postProcessMatch( QString *match ) const { Q_UNUSED(match) }
 
     /**
      * This method is called before a list of all available completions is
@@ -528,7 +528,7 @@ protected:
      * @param matches the matches to process
      * @see #postProcessMatch
      */
-    virtual void postProcessMatches( QStringList * matches ) const {}
+    virtual void postProcessMatches( QStringList * matches ) const { Q_UNUSED(matches)}
 
     /**
      * This method is called before a list of all available completions is
@@ -540,7 +540,7 @@ protected:
      * @param matches the matches to process
      * @see #postProcessMatch
      */
-    virtual void postProcessMatches( KCompletionMatches * matches ) const {}
+    virtual void postProcessMatches( KCompletionMatches * matches ) const {Q_UNUSED(matches)}
 
 private:
     void 		addWeightedItem( const QString& );
