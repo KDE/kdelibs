@@ -2208,6 +2208,9 @@ bool HTTPProtocol::readHeader()
      setMetaData("charset", m_strCharset);
      if (!m_lastModified.isEmpty())
          setMetaData("modified", m_lastModified);
+     QString tmp;
+     tmp.setNum(m_expireDate);
+     setMetaData("expire-date", tmp);
      return true;
   }
 
@@ -3005,7 +3008,16 @@ bool HTTPProtocol::readHeader()
     setMetaData("modified", m_lastModified);
 
   if (!mayCache)
+  {
     setMetaData("no-cache", "true");
+    setMetaData("expire-date", "1"); // Expired
+  }
+  else
+  {
+    QString tmp;
+    tmp.setNum(expireDate);
+    setMetaData("expire-date", tmp);
+  }
 
   // Let the app know about the mime-type iff this is not
   // a redirection and the mime-type string is not empty.
