@@ -17,8 +17,9 @@
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include <qfile.h>
+#include <unistd.h>
 
+#include <kmessagebox.h>
 #include <kstddirs.h>
 #include <kuniqueapp.h>
 #include <kaboutdata.h>
@@ -33,6 +34,7 @@
 #include "knotify.h"
 #include "knotify.moc"
 
+#include <qfile.h>
 #include <qmessagebox.h>
 #include <qfileinfo.h>
 #include <qiomanager.h>
@@ -128,6 +130,8 @@ void KNotify::notify(const QString &event, const QString &fromApp,
 		file=eventsfile->readEntry("logfile", 0);
 		if (file.isNull())
 			file=eventsfile->readEntry("default_logfile", "");
+		
+		level=eventsfile->readNumEntry("level", 0);
 			
 		delete eventsfile;
 	}
@@ -156,18 +160,32 @@ bool KNotify::notifyBySound(const QString &sound)
 	return true;
 }
 
-bool KNotify::notifyByMessagebox(const QString &text, int)
+bool KNotify::notifyByMessagebox(const QString &text, int level)
 {
 	if ( text.isEmpty() )
 		return false;
-	QMessageBox *notification;
-	notification = new QMessageBox(i18n("Notification"),
-	                               text,
-	                               QMessageBox::Information,
-	                               QMessageBox::Ok | QMessageBox::Default,
-	                               0, 0, 0, 0, false);
-
-	notification->show();
+		
+	
+	if (!fork())
+	{
+		switch(level)
+		{
+		default:
+		case(KNotifyClient::Notification):
+			KMessageBox::information(0, text, i18n("Notification"), 0, false);
+			break;
+		case(KNotifyClient::Warning):
+			KMessageBox::sorry(0, text, i18n("Warning"), false);
+			break;
+		case(KNotifyClient::Error):
+			KMessageBox::error(0, text, i18n("Error"), false);
+			break;
+		case(KNotifyClient::Catastrophe):
+			KMessageBox::error(0, text, i18n("Catastrophe!"), false);
+		};
+		_exit(0);
+	}
+	
 	return true;
 }
 
