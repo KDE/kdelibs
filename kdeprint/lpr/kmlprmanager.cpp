@@ -134,7 +134,8 @@ void KMLprManager::initHandlers()
 	insertHandler(new MaticHandler(this));
 	insertHandler(new ApsHandler(this));
 	insertHandler(new LPRngToolHandler(this));
-	insertHandler(new SuSEHandler(this));
+	// FIXME: disabled until completion
+	//insertHandler(new SuSEHandler(this));
 
 	// default handler
 	insertHandler(new LprHandler("default", this));
@@ -443,7 +444,8 @@ void KMLprManager::createPluginActions(KActionCollection *coll)
 void KMLprManager::validatePluginActions(KActionCollection *coll, KMPrinter *prt)
 {
 	m_currentprinter = prt;
-	coll->action("plugin_editprintcap")->setEnabled(hasManagement() && prt && !prt->isSpecial());
+	// FIXME: disabled until completion
+	coll->action("plugin_editprintcap")->setEnabled(0 && hasManagement() && prt && !prt->isSpecial());
 }
 
 void KMLprManager::slotEditPrintcap()
