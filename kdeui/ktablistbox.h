@@ -243,6 +243,9 @@ signals:
   /** emitted when the user presses the right mouse button over a line. */
   void popupMenu (int Index, int column);
 
+  /** emitted when the user presses the middle mouse button over a line. */
+  void midClick (int Index, int column);
+
   /** emitted when the user clicks on a column header. */
   void headerClicked (int column);
 

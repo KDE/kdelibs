@@ -988,7 +988,12 @@ void KTabListBoxTable::mousePressEvent(QMouseEvent* e)
     if (row >= 0 && col >= 0) emit owner->popupMenu(row, col);
     return;
   }
-  else if (e->button() == MidButton) return;
+  else if (e->button() == MidButton)
+  {
+    // handle middle click
+    if (row >= 0 && col >= 0) emit owner->midClick(row, col);
+    return;
+  }
 
   // arm for possible dragging
   dragStartPos = e->pos();
