@@ -44,6 +44,10 @@ KCalendarSystem *KCalendarSystemFactory::create( const QString &calType,
 {
   if ( calType == "hijri" )
     return new KCalendarSystemHijri(locale);
+#if 0
+  if ( calType == "hebrew" )
+    return new KCalendarSystemHebrew(locale);
+#endif
 
   // ### HPB: Should it really be a default here?
   //if ( calType == "gregorian" )
@@ -57,6 +61,7 @@ QStringList KCalendarSystemFactory::calendarSystems()
    QStringList lst;
    lst.append("gregorian");
    lst.append("hijri");
+   //lst.append("hebrew");
 
    return lst;
 }
