@@ -69,7 +69,7 @@ void RenderBody::paintBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty)
     _ty -= borderTopExtra();
 
     int my = kMax(_ty, paintInfo.r.y());
-    int end = kMin( paintInfo.r.bottom(), _ty + h );
+    int end = kMin( paintInfo.r.y()+paintInfo.r.height(), _ty + h );
     int mh = end - my;
 
     paintBackground(paintInfo.p, c, bg, my, mh, _tx, _ty, w, h);
