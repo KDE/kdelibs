@@ -539,6 +539,9 @@ class kndbgstream {
     kndbgstream& operator<<( const QColor & ) { return *this; }
     kndbgstream& operator<<( const QPen & ) { return *this; }
     kndbgstream& operator<<( const QBrush & ) { return *this; }
+
+    template <class T>
+    kndbgstream& operator<<( const QValueList<T> & ) { return *this; }
 };
 
 /**
