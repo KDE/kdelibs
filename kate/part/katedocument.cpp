@@ -792,7 +792,7 @@ void KateDocument::editStart (bool withUndo)
 
   if (editSessionNumber > 1)
     return;
-    
+
   buffer->setHlUpdate (false);
 
   editIsRunning = true;
@@ -842,7 +842,7 @@ void KateDocument::editEnd ()
     return;
 
   buffer->setHlUpdate (true);
-  
+
   if (editTagLineStart <= editTagLineEnd)
     updateLines(editTagLineStart, editTagLineEnd);
 
@@ -917,8 +917,16 @@ bool KateDocument::wrapText (uint startLine, uint endLine, uint col)
 
 void KateDocument::editAddUndo (uint type, uint line, uint col, uint len, const QString &text)
 {
-  if (editIsRunning && editWithUndo && editCurrentUndo)
+  if (editIsRunning && editWithUndo && editCurrentUndo) {
     editCurrentUndo->addItem (type, line, col, len, text);
+
+    // Clear redo buffer
+    if (redoItems.count()) {
+      redoItems.setAutoDelete(true);
+      redoItems.clear();
+      redoItems.setAutoDelete(false);
+    }
+  }
 }
 
 void KateDocument::editTagLine (uint line)
@@ -1202,7 +1210,7 @@ bool KateDocument::setSelection( const KateTextCursor& start, const KateTextCurs
 {
   oldSelectStart = selectStart;
   oldSelectEnd = selectEnd;
-  
+
   if (start <= end) {
     selectStart.setPos(start);
     selectEnd.setPos(end);
@@ -1210,10 +1218,10 @@ bool KateDocument::setSelection( const KateTextCursor& start, const KateTextCurs
     selectStart.setPos(end);
     selectEnd.setPos(start);
   }
-  
+
   if (hasSelection() || selectAnchor.line != -1)
     tagSelection();
-  
+
   repaintViews();
 
   emit selectionChanged ();
@@ -1225,7 +1233,7 @@ bool KateDocument::setSelection( uint startLine, uint startCol, uint endLine, ui
 {
   if (hasSelection())
     clearSelection(false);
-  
+
   selectAnchor.line = startLine;
   selectAnchor.col = startCol;
 
@@ -1241,22 +1249,22 @@ bool KateDocument::clearSelection(bool redraw)
 {
   if( !hasSelection() )
     return false;
-  
+
   oldSelectStart = selectStart;
   oldSelectEnd = selectEnd;
-  
+
   selectStart.setPos(-1, -1);
   selectEnd.setPos(-1, -1);
   selectAnchor.setPos(-1, -1);
-  
+
   tagSelection();
-  
+
   oldSelectStart = selectStart;
   oldSelectEnd = selectEnd;
-  
+
   if (redraw)
     repaintViews();
-  
+
   emit selectionChanged();
 
   return true;
@@ -2016,7 +2024,7 @@ bool KateDocument::printDialog ()
      int endCol = 0;
      bool needWrap = true;
      bool pageStarted = true;
-     
+
 //     kdDebug(13020)<<"pdm width: "<<pdmWidth<<endl;
 
      // Text Settings Page
@@ -2323,7 +2331,7 @@ uint _count = 0;
        needWrap = true;
 
 //       kdDebug(13020)<<"Starting real new line "<<lineCount<<endl;
-       
+
        while (needWrap)
        {
          if ( y+printFont.fontHeight >= (uint)(maxHeight) )
@@ -2496,7 +2504,7 @@ kdDebug(13020)<<"Starting new page, "<<_count<<" lines up to now."<<endl;
 //        kdDebug(13020)<<"Calling textWidth( startCol="<<startCol<<", maxWidth="<<maxWidth<<", needWrap="<<needWrap<<")"<<endl;
          endCol = textWidth (buffer->line(lineCount), startCol, maxWidth, 0, PrintFont, &needWrap);
 //         kdDebug(13020)<<"REAL WIDTH: " << pdmWidth << " WIDTH: " << maxWidth <<" line: "<<lineCount<<" start: "<<startCol<<" end: "<<endCol<<" line length: "<< buffer->line(lineCount)->length()<< "; need Wrap: " << needWrap <<" !?"<<endl;
-         
+
          if ( endCol < startCol )
          {
            kdDebug(13020)<<"--- Skipping garbage, line: "<<lineCount<<" start: "<<startCol<<" end: "<<endCol<<" real EndCol; "<< buffer->line(lineCount)->length()<< " !?"<<endl;
@@ -2624,12 +2632,12 @@ bool KateDocument::openFile()
 bool KateDocument::saveFile()
 {
   QString eol ("\n");
-  
+
   if (eolMode == KateDocument::eolDos) eol = QString("\r\n");
   else if (eolMode == KateDocument::eolMacintosh) eol = QString ("\r");
-    
+
   bool success = buffer->saveFile (m_file, KGlobal::charsets()->codecForName(myEncoding), eol);
-  
+
   fileInfo->setFile (m_file);
   setMTime();
 
@@ -2659,7 +2667,7 @@ bool KateDocument::saveFile()
 
     internalSetHlMode(hl);
   }
-  
+
   emit fileNameChanged ();
 
   setDocName  (url().filename());
@@ -2813,14 +2821,14 @@ uint KateDocument::textWidth(const TextLine::Ptr &textLine, int cursorCol, Which
   int width;
   for (int z = 0; z < cursorCol; z++) {
     Attribute *a = attribute(textLine->attribute(z));
-    
+
     if (z < len) {
       width = a->width(fs, textLine->getChar(z));
     } else {
       Q_ASSERT(!(configFlags() & KateDocument::cfWrapCursor));
       width = a->width(fs, QChar (' '));
     }
-    
+
     x += width;
 
     if (textLine->getChar(z) == QChar('\t'))
@@ -2842,7 +2850,7 @@ uint KateDocument::textWidth(const TextLine::Ptr &textLine, uint startcol, uint 
   int lastWhiteSpaceX = -1;
 
   *needWrap = false;
-  
+
   uint z = startcol;
   for (; z < textLine->length(); z++)
   {
@@ -2895,7 +2903,7 @@ uint KateDocument::textWidth(const TextLine::Ptr &textLine, uint startcol, uint 
       break;
     }
   }
-  
+
   if (*needWrap)
   {
     if (endX)
@@ -2934,7 +2942,7 @@ uint KateDocument::textWidth( KateTextCursor &cursor, int xPos,WhichFont wf, uin
   if (cursor.line > (int)lastLine()) cursor.line = lastLine();
   TextLine::Ptr textLine = buffer->line(cursor.line);
   len = textLine->length();
-  
+
   x = oldX = 0;
   int z = startCol;
   while (x < xPos && (!wrapCursor || z < len)) {
@@ -2949,7 +2957,7 @@ uint KateDocument::textWidth( KateTextCursor &cursor, int xPos,WhichFont wf, uin
       width = a->width(fs, textLine->getChar(z));
     else
       width = a->width(fs, QChar (' '));
-    
+
     x += width;
 
     if (textLine->getChar(z) == QChar('\t'))
@@ -2974,7 +2982,7 @@ uint KateDocument::textPos(const TextLine::Ptr &textLine, int xPos,WhichFont wf,
   Q_ASSERT(textLine);
   if (!textLine)
     return 0;
-  
+
   const FontStruct & fs = getFontStruct(wf);
 
   int x, oldX;
@@ -3099,7 +3107,7 @@ void KateDocument::newLine( KateTextCursor& c, KateViewInternal *v )
 
   // temporary hack to get the cursor pos right !!!!!!!!!
   c = v->cursorCache;
-  
+
   if (c.line > (int)lastLine())
    c.line = lastLine();
 
@@ -3315,7 +3323,7 @@ void KateDocument::selectTo( const KateTextCursor& from, const KateTextCursor& t
   if (!hasSelection()) {
     selectAnchor.setPos(from);
   }
-  
+
   setSelection(selectAnchor, to);
 }
 
@@ -3902,7 +3910,7 @@ void KateDocument::tagSelection()
           tagLines(selectEnd, oldSelectEnd);
       }
     }
-        
+
   } else {
     // No more selection, clean up
     tagLines(oldSelectStart, oldSelectEnd);
@@ -4033,7 +4041,7 @@ bool KateDocument::selectBounds(uint line, uint &start, uint &end, uint lineLeng
     end = selectEnd.col;
     hasSel = true;
   }
-  
+
   if (start > end) {
     int temp = end;
     end = start;
