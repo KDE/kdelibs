@@ -1931,6 +1931,8 @@ int HTMLClueFlow::findPageBreak( int _y )
 	}
 	if ( minpos != yp )
 	    return ( minpos + y - ascent );
+	if ( !obj )
+	    return -1;
     }
 
     return -1;
