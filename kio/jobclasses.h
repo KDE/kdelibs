@@ -62,7 +62,7 @@ namespace KIO {
         Job( bool showProgressInfo = true );
 
     public:
-        virtual ~Job() {}
+        virtual ~Job();
 
         /**
         * Abort job
