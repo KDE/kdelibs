@@ -552,10 +552,10 @@ qWarning("SIGBUS while reading %s", rFile.name().latin1());
          KEntry entry = pConfig->lookupData(groupKey);
          groupSkip = entry.bImmutable;
 
-         if (groupSkip)
+         if (groupSkip && !bDefault)
             continue;
 
-         entry.bImmutable = groupOptionImmutable;
+         entry.bImmutable |= groupOptionImmutable;
          pConfig->putData(groupKey, entry, false);
 
          if (pWriteBackMap)
@@ -566,7 +566,7 @@ qWarning("SIGBUS while reading %s", rFile.name().latin1());
 
          continue;
       }
-      if (groupSkip)
+      if (groupSkip && !bDefault)
         goto sktoeol; // Skip entry
 
       bool optionImmutable = groupOptionImmutable;
