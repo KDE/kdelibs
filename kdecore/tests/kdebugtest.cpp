@@ -6,7 +6,7 @@
 
 class TestWidget : public QWidget
 {
-  Q_OBJECT
+
 public:
   TestWidget(QWidget* parent, const char* name)
     : QWidget(parent, name)
@@ -48,4 +48,3 @@ int main(int argc, char** argv)
   return 0;
 }
 
-#include "kdebugtest.moc" // needed for classname
