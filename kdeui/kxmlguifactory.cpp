@@ -361,7 +361,7 @@ void KXMLGUIFactory::reset()
 {
     resetInternal( d->m_rootNode );
 
-    d->m_rootNode->children.clear();
+    d->m_rootNode->clearChildren();
 }
 
 void KXMLGUIFactory::resetContainer( const QString &containerName, bool useTagName )
@@ -380,7 +380,7 @@ void KXMLGUIFactory::resetContainer( const QString &containerName, bool useTagNa
 
     //  resetInternal( container );
 
-    parent->children.removeRef( container );
+    parent->removeChild( container );
 }
 
 void KXMLGUIFactory::resetInternal( KXMLGUI::ContainerNode *node )
@@ -437,7 +437,7 @@ bool KXMLGUIFactory::removeRecursive( QDomElement &element, KXMLGUI::ContainerNo
 
         // removeRecursive returns true in case the container really got deleted
         if ( removeRecursive( child, childNode ) )
-            node->children.removeRef( childNode );
+            node->removeChild( childNode );
         else
             ++childIt;
     }
@@ -486,9 +486,7 @@ bool KXMLGUIFactory::removeRecursive( QDomElement &element, KXMLGUI::ContainerNo
                 ActionListMap::ConstIterator alEnd = clientIt.current()->actionLists.end();
                 for (; alIt != alEnd; ++alIt )
                 {
-                    actionIt = ActionListIt( alIt.data() );
-                    for (; actionIt.current(); ++actionIt )
-                        actionIt.current()->unplug( node->container );
+                    alIt.data().unplug( node->container );
 
                     // construct the merging index key (i.e. like named merging) , find the
                     // corresponding merging index and adjust all indices

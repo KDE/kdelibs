@@ -13,14 +13,14 @@
 
 using namespace KXMLGUI;
 
-void ActionList::plug( QWidget *container, int index )
+void ActionList::plug( QWidget *container, int index ) const
 {
     ActionListIt it( *this );
     for (; it.current(); ++it )
         it.current()->plug( container, index++ );
 }
 
-void ActionList::unplug( QWidget *container )
+void ActionList::unplug( QWidget *container ) const
 {
     ActionListIt it( *this );
     for (; it.current(); ++it )

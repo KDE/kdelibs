@@ -27,8 +27,8 @@ public:
     ActionList &operator=( const QPtrList<KAction> &rhs )
     { QPtrList<KAction>::operator=( rhs ); return *this; }
 
-    void plug( QWidget *container, int index );
-    void unplug( QWidget *container );
+    void plug( QWidget *container, int index ) const;
+    void unplug( QWidget *container ) const;
 };
 
 typedef QPtrListIterator<KAction> ActionListIt;
@@ -118,6 +118,10 @@ struct ContainerNode
     MergingIndexList mergingIndices;
 
     QString mergingName;
+
+    void clearChildren() { children.clear(); }
+    void removeChild( ContainerNode *child )
+    { children.removeRef( child ); }
 
     MergingIndexList::Iterator findIndex( const QString &name );
     ContainerNode *findContainerNode( QWidget *container );
