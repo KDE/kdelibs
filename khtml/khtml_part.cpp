@@ -741,25 +741,43 @@ KURL KHTMLPart::completeURL( const QString &url, const QString &/*target*/ )
     return m_url;
   }
 
-  KURL orig;
-  /* ###
+/* ###  KURL orig;
   if(url[0] == '#' && !target.isEmpty() && findFrame(target))
   {
     orig = KURL(findFrame(target)->url());
   }
-  else */ if( d->m_baseURL.isEmpty())
+  else */
+
+  // Changed the code below so that we do not do
+  // unecessary double parsing in KURL.  Also made
+  // sure we do not take short-cuts when rebuilding
+  // a complete URL from a base URL and a relative
+  // url.  Calling setEncodedPathAndQuery is a big
+  // mistake when rebuilding such URLs because the
+  // query and fragment ( reference ) separators might
+  // get encoded as well!! Always use the relative URL
+  // constructor when re-building relative URLs. (DA)
+  if( d->m_baseURL.isEmpty())
   {
-    orig = m_url;
+    KURL u( m_url, url );
+    return u;
   }
   else
-    orig = d->m_baseURL;
+  {
+    KURL u ( d->m_baseURL, url );
+    return u;
+  }
+
+/*
   if(url[0] != '/')
   {
     KURL u( orig, url );
-    return u;
+    return cURL;
   }	
   orig.setEncodedPathAndQuery( url );
   return orig;
+*/
+
 }
 
 void KHTMLPart::scheduleRedirection( int delay, const KURL &url )
@@ -1078,7 +1096,6 @@ void KHTMLPart::overURL( const QString &url )
 
 void KHTMLPart::urlSelected( const QString &url, int button, int state, const QString &_target )
 {
-  KURL u( url );
   bool hasTarget = false;
 
    QString target = _target;
@@ -1099,9 +1116,10 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
     return;
 
   // Security
-  if ( ::strcmp( u.protocol().latin1(), "cgi" ) == 0 &&
-       ::strcmp( m_url.protocol().latin1(), "file" ) != 0 &&
-       ::strcmp( m_url.protocol().latin1(), "cgi" ) != 0 )
+  KURL u( url );
+  if ( ::strcasecmp( u.protocol().latin1(), "cgi" ) == 0 &&
+       ::strcasecmp( m_url.protocol().latin1(), "file" ) != 0 &&
+       ::strcasecmp( m_url.protocol().latin1(), "cgi" ) != 0 )
   {
     KMessageBox::error( 0,
 			i18n( "This page is untrusted\nbut it contains a link to your local file system."),
