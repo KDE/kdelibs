@@ -23,7 +23,7 @@
 #ifndef ARTS_GIOMANAGER_H
 #define ARTS_GIOMANAGER_H
 
-#include <gmain.h>
+#include <glib.h>
 #include <iomanager.h>
 #include <list>
 #include <stack>
