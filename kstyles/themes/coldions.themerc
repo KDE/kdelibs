@@ -1,11 +1,9 @@
 [Misc]
 Name=Cold Ions
-Name[ca]=Ions freds
 Name[da]=Kolde ioner
 Name[de]=Kalte Ionen
 Name[sl]=Mrzli ioni
 Comment=Cold Ions unthemed style
-Comment[ca]=Estil sense tema "Ions freds".
 Comment[da]=Kolde ioner stil uden tema
 Comment[de]=Kalte Ionen (kein komplettes Design)
 Comment[no_NY]='Cold Ions'-stil utan tema
