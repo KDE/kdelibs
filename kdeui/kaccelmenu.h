@@ -35,7 +35,7 @@ class KAccelMenuPrivate;
  * hit will change the shortcut.
  * The Delete key removes the accelerator associated with the menu item.
  *
- * Previously: The quote key was only required for keys that
+ * Previously: The quote key was required only for keys that
  * are used for menu accelerators.
  *
  * @sect Usage:
@@ -71,7 +71,7 @@ public:
   /**
    *   KAccelMenu constructor.
    *
-   *   @param k the @ref KAccel object associated with this menu
+   *   @param k The @ref KAccel object associated with this menu
    **/
   KAccelMenu(KAccel *k, QWidget * parent=0, const char * name=0 );
 
@@ -120,7 +120,7 @@ public:
    *  @param action The untranslated version of the menu item text.
    *  @param receiver Object with action slot.
    *  @param member Menu item action slot.
-   *  @param accel code for a standard accelerator
+   *  @param accel Code for a standard accelerator
    *
    *  @return Id of the menu item.
    **/

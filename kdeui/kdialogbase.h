@@ -653,9 +653,9 @@ class KDialogBase : public KDialog
 
     /**
      * Makes a main widget. The function will make a @ref QFrame widget
-     * and use @ref #setMainWidget() to register it. You can @em not use this
-     * function more than once, @em not if you have already defined a
-     * main widget with @ref #setMainWidget() and @em not if you have used the
+     * and use @ref #setMainWidget() to register it. You can @tt not use this
+     * function more than once, @tt not if you have already defined a
+     * main widget with @ref #setMainWidget() and @tt not if you have used the
      * constructor where you define the face (Plain, Swallow, Tabbed,
      * TreeList).
      *
@@ -666,9 +666,9 @@ class KDialogBase : public KDialog
 
     /**
      * Makes a main widget. The function will make a @ref QVBox widget
-     * and use @ref #setMainWidget() to register it. You can @em use this
-     * function more than once, @em not if you have already defined a
-     * main widget with @ref #setMainWidget() and @em not if you have used the
+     * and use @ref #setMainWidget() to register it. You can @tt use this
+     * function more than once, @tt not if you have already defined a
+     * main widget with @ref #setMainWidget() and @tt not if you have used the
      * constructor where you define the face (Plain, Swallow, Tabbed,
      * TreeList, IconList).
      *
@@ -679,9 +679,9 @@ class KDialogBase : public KDialog
 
     /**
      * Makes a main widget. The function will make a @ref QHBox widget
-     * and use @ref #setMainWidget() to register it. You can @em not use this
-     * function more than once, @em not if you have already defined a
-     * main widget with @ref #setMainWidget() and @em not if you have used the
+     * and use @ref #setMainWidget() to register it. You can @tt not use this
+     * function more than once, @tt not if you have already defined a
+     * main widget with @ref #setMainWidget() and @tt not if you have used the
      * constructor where you define the face (Plain, Swallow, Tabbed,
      * TreeList, IconList).
      *
@@ -692,9 +692,9 @@ class KDialogBase : public KDialog
 
     /**
      * Makes a main widget. The function will make a @ref QGrid widget
-     * and use @ref #setMainWidget() to register it. You can @em not use this
-     * function more than once, @em not if you have already defined a
-     * main widget with @ref #setMainWidget and @em not if you have used the
+     * and use @ref #setMainWidget() to register it. You can @tt not use this
+     * function more than once, @tt not if you have already defined a
+     * main widget with @ref #setMainWidget and @tt not if you have used the
      * constructor where you define the face (Plain, Swallow, Tabbed,
      * TreeList, IconList).
      *
@@ -1241,7 +1241,7 @@ class KDialogBase : public KDialog
      * This signal is also emitted when you call @ref hide()
      *
      * If you have stored a pointer to the
-     * dialog do @em not try to delete the pointer in the slot that is
+     * dialog do @tt not try to delete the pointer in the slot that is
      * connected to this signal.
      *
      * You should use @ref delayedDestruct() instead.

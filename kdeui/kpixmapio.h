@@ -152,7 +152,7 @@ public:
     /**
      * Pre-allocate shared memory. KPixmapIO will be able to transfer images
      * up to this size without resizing.
-     * @param size The size of the image in @em pixels.
+     * @param size The size of the image in @tt pixels.
      */
     void preAllocShm(int size);
 

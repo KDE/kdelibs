@@ -351,7 +351,7 @@ public:
    * per pixel ;-)
    * For English (inches) it is 9.0, and for centimetres ~2.835 -> 3.0 .
    * If you want to magnify your part of display, you have to
-   * adjust the mark distance @em here.
+   * adjust the mark distance @tt here.
    * Notice: The double type is only supported to give the possibility
    *         of having some double values.
    *         It should be used with care.  Using values below 10.0

@@ -57,7 +57,7 @@ public:
      * applications.  If your app is the only one with a top-level
      * bar, then things might look very... odd.
      *
-     * This is included only for those people that @em do know that
+     * This is included only for those people that @tt do know that
      * they need to use it.
      *
      * @param top_level If set to true, then this menubar will be a

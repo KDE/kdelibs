@@ -163,7 +163,7 @@ class KAboutDialogPrivate;
 /**
  * A @ref KDialogBase with predefined main widget.
  *
- * Being a @ref KDialogBase it uses your application wide settings
+ * As a @ref KDialogBase it uses your application wide settings
  * for @ref KDialogBase
  * objects (base frame tiles, main frame tiles etc).
  * To use it, simply create a @ref KAboutDialog object, set all (or some) of its
@@ -217,7 +217,7 @@ class KAboutDialog : public KDialogBase
     /**
      * The standard Qt constructor (Constructor I).
      *
-     * Add components with the methods:
+     * Add components with the following methods:
      *  @ref setLogo(), @ref setAuthor(), @ref setMaintainer(),
      *   @ref addContributor(), or @ref setVersion().
      * The dialog will be laid out automatically.
@@ -240,7 +240,7 @@ class KAboutDialog : public KDialogBase
     * @param parent Parent of the dialog.
     * @param name Dialog name (for internal use only)
     * @param modal Sets dialog modality. If false, the rest of the
-    *        program interface (example: other dialogs) is accessible while
+    *        program interface (other dialogs, for example) is accessible while
     *        the dialog is open.
     * @param separator If true, a separator line is drawn between the action
     *        buttons an the main widget.
@@ -269,7 +269,7 @@ class KAboutDialog : public KDialogBase
    * Make a modeless (modal = false in constructor) dialog visible.
    *
    * If you reimplement this method make sure you run it
-   * in the new method (i.e., @ref show()). Reimplemented
+   * in the new method (e.g., @ref show()). Reimplemented
    * from @ref KDialogBase.
    */
   virtual void show( void );
@@ -344,7 +344,7 @@ class KAboutDialog : public KDialogBase
    * @param richText Set this to @p true if 'text' is rich text.
    * @param numLines The text area height will be adjusted so that this
    *        is the minimum number of lines of text that are visible.
-   * @return The frame which contains the page.
+   * @return The frame that contains the page.
    */
   QFrame *addTextPage( const QString &title, const QString &text,
                        bool richText=false, int numLines=10 );
@@ -355,9 +355,9 @@ class KAboutDialog : public KDialogBase
    * container.
    *
    * @param title Tab name.
-   * @param childAlignment Specifies how the clildren of the container are
+   * @param childAlignment Specifies how the children of the container are
    *        aligned with respect to the container.
-   * @param innerAlignment Specifies how the clildren are aligned with
+   * @param innerAlignment Specifies how the children are aligned with
    *        respect to each other.
    * @return The new container.
    */
@@ -370,9 +370,9 @@ class KAboutDialog : public KDialogBase
    * and images to a container.
    *
    * @param title Tab name.
-   * @param childAlignment Specifies how the clildren of the container are
+   * @param childAlignment Specifies how the children of the container are
    *        aligned with respect to the container.
-   * @param innerAlignment Specifies how the clildren are aligned with
+   * @param innerAlignment Specifies how the children are aligned with
    *        respect to each other.
    * @return The new container.
    */
@@ -383,9 +383,9 @@ class KAboutDialog : public KDialogBase
    * (Constructor II only)
    * Add a container. You can add text and images to a container.
    *
-   * @param childAlignment Specifies how the clildren of the container are
+   * @param childAlignment Specifies how the children of the container are
    *        aligned with respect to the container.
-   * @param innerAlignment Specifies how the clildren are aligned with
+   * @param innerAlignment Specifies how the children are aligned with
    *        respect to each other.
    * @return The new container.
    */
@@ -435,7 +435,7 @@ class KAboutDialog : public KDialogBase
   void setVersion(const QString& name);
 
   /**
-   * Creates a modal dialog with an image in the upper area with a
+   * Create a modal dialog with an image in the upper area with a
    * URL link below.
    */
   static void imageURL( QWidget *parent, const QString &caption,
@@ -444,7 +444,9 @@ class KAboutDialog : public KDialogBase
 
 signals:
   /**
-   * Send an email to this person. The application must provide the
+   * Send an email to this person.
+   *
+   * The application must provide the
    *  functionality.
    */
   void sendEmail(const QString& name, const QString& email);

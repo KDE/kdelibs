@@ -223,7 +223,7 @@ public:
    * Button will have small
    * triangle. You have to connect to popup's signals. The
    * signals @ref KButton::pressed(), @ref KButton::released(),
-   * @ref KButton::clicked() or @ref KButton::doubleClicked() are @bf not
+   * @ref KButton::clicked() or @ref KButton::doubleClicked() are @tt not
    * emmited by
    * this button (see @ref setDelayedPopup() for that).
    * You can add custom popups which inherit @ref QPopupMenu to get popups
@@ -319,7 +319,7 @@ public:
   int insertLineSeparator(int index=-1);
 
   /**
-   * Insert a user-defined widget.  The widget @em must have this
+   * Insert a user-defined widget.  The widget @tt must have this
    * toolbar as its parent.
    *
    * Widget must have a QWidget for base class.  Widget can be
@@ -588,7 +588,7 @@ public:
    * Set item autosized.
    *
    * This works only if the toolbar is set to full width.
-   * Only @em one item can be autosized, and it has to be
+   * Only @tt one item can be autosized, and it has to be
    * the last left-aligned item. Items that come after this must be right
    * aligned. Items that can be right aligned are Lineds, Frames, Widgets and
    * Combos. An autosized item will resize itself whenever the toolbar geometry

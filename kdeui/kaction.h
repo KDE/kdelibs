@@ -43,20 +43,22 @@ class KPopupMenu;
 struct KKeyEntry;
 
 /**
- * The KAction class (and derived and super classes) provide a way to
+ * The KAction class (and derived and super classes) provides a way to
  * easily encapsulate a "real" user-selected action or event in your
- * program.  For instance, a user may want to "paste" the contents of
- * the clipboard or "scroll down" a document or "quit" the
- * application.  These are all @em actions -- events that the
+ * program.
+ *
+ * For instance, a user may want to @tt paste the contents of
+ * the clipboard or @tt scroll @tt down a document or @ quit the
+ * application.  These are all @tt actions -- events that the
  * user causes to happen.  The KAction class allows the developer to
- * deal with this actions in an easy and intuitive manner.
+ * deal with these actions in an easy and intuitive manner.
  *
  * Specifically, the KAction class encapsulated the various attributes
  * to an event/action.  For instance, an action might have an icon
  * that goes along with it (a clipboard for a "paste" action or
  * scissors for a "cut" action).  The action might have some text to
  * describe the action.  It will certainly have a method or function
- * that actually @em executes the action!  All these attributes
+ * that actually @tt executes the action!  All these attributes
  * are contained within the KAction object.
  *
  * The advantage of dealing with Actions is that you can manipulate
@@ -90,8 +92,8 @@ struct KKeyEntry;
  * @li Decide which attributes you want to associate with a given
  *     action (icons, text, keyboard accelerator, etc)
  * @li Create the action using KAction (or derived or super class).
- * @li "Plug" the Action into whatever GUI element you want.  This is
- *     typically a menu or toolbar.
+ * @li "Plug" the Action into whatever GUI element you want.  Typically,
+ *      this will be a menu or toolbar.
  *
  * @sect Detailed Example:
  *
@@ -255,7 +257,7 @@ public:
      * @p accel param to 0.
      *
      * This is the other common KAction used.  Use it when you
-     * @em do have a corresponding icon.
+     * @tt do have a corresponding icon.
      *
      * @param text The text that will be displayed.
      * @param pix The icon to display.
@@ -278,7 +280,7 @@ public:
      * @p accel param to 0.
      *
      * This is the other common KAction used.  Use it when you
-     * @em do have a corresponding icon.
+     * @tt do have a corresponding icon.
      *
      * @param text The text that will be displayed.
      * @param pix The icon to display.

@@ -26,10 +26,10 @@
 /**
  * Container widget for buttons. 
  * 
- * Uses Qt layout control to place the buttons, can handle both vertical
- * and horizontal button placement.  The default border is now 0 (easier
- * to deal with layouts). The space between buttons is now more Motif
- * compliant.
+ * This class uses Qt layout control to place the buttons; can handle
+ * both vertical and horizontal button placement.  The default border
+ * is now @tt 0 (making it easier to deal with layouts). The space
+ * between buttons is now more Motif compliant.
  *
  * @author Mario Weilguni <mweilguni@sime.com>
  * @version $Id$
@@ -74,9 +74,9 @@ public:
   /**
     * Add a new @ref QPushButton.  
     *
-    * @param noexpand If @p noexpand is @p false, the width
+    * @param noexpand If @p noexpand is @tt false, the width
     * of the button is adjusted to fit the other buttons (the maximum
-    * of all buttons is taken). If @p noexpand @p true, the width of this
+    * of all buttons is taken). If @p noexpand is @tt true, the width of this
     * button will be set to the minimum width needed for the given text).
     *
     * @return A pointer to the new button.
@@ -100,12 +100,13 @@ public:
   /**
     * Add a stretch to the buttonbox. 
     *
-    * Can be used to separate buttons (i.e. if you add the buttons "OK",
-    * "Cancel", add a stretch and then add the button "Help", "OK" and
-    * "Cancel" will be left-aligned (or top-aligned for vertical) while
-    * "Help" will be right-aligned (or bottom-aligned for vertical).
-    * @see QBoxLayout for details.
-    */
+    * Can be used to separate buttons.  That is, if you add the
+    * buttons Ok and Cancel, add a stretch, and then add the button Help,
+    * the buttons Ok and Cancel will be left-aligned (or top-aligned
+    * for vertical) whereas Help will be right-aligned (or
+    * bottom-aligned for vertical).
+    *
+    * @see QBoxLayout */
   void addStretch(int scale = 1);
 
   /**
