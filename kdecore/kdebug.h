@@ -116,7 +116,7 @@ typedef kdbgstream & (*KDBGFUNC)(kdbgstream &); // manipulator function
 typedef kndbgstream & (*KNDBGFUNC)(kndbgstream &); // manipulator function
 
 #ifdef __GNUC__
-#define k_funcinfo "[" << __PRETTY_FUNCTION__ << "]
+#define k_funcinfo "[" << __PRETTY_FUNCTION__ << "] "
 #else
 #define k_funcinfo "[" << __FILE__ << ":" << __LINE__ << "] "
 #endif
