@@ -1,5 +1,10 @@
 Here's what's still missing (without order):
 
+for krash:
+	* fix <meta> redirection
+	* scrolling problems
+	* fix crash of unicode.html
+
 General:
 	* move all internal classes into namespace khtml
 
@@ -11,9 +16,6 @@ Parser:
 	* handle adding of elements better
 
 StyleSheets:
-	* rewrite them. Some ideas:
-	* make one StyleSheet class for every styleSheet downloaded.
-	* add a cache for them and a default styleSheet
 	* every element get's a pointer to a StyleSheetElement, providing
 	  the element with the needed functions setPainter(), restorePainter(),
 	  and probably some hints for layouting()
@@ -26,8 +28,6 @@ DOM:
 	* lots of functions in the Impl classes
 	* fix the set/retrieve functions, which use boolean values
 	  -->> mostly done, still need to fix parseAttribute() calls	
-	* introduce assignment operators HTMLBodyElement b = Node n;
-	  these should just set impl to 0 if the assignment is impossible
 
 misc:
 	* mouse handling
