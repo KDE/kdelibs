@@ -1145,6 +1145,31 @@ mget(union VALUETYPE *p, unsigned char *s, struct magic *m,
      int nbytes)
 {
 	long offset = m->offset;
+        switch ( m->type )
+	{
+	    case BYTE:
+		if ( offset + 1 > nbytes-1 ) // nbytes = (size of file) + 1
+		    return 0;
+		break; 
+	    case SHORT:
+	    case BESHORT:
+	    case LESHORT:
+	       	if ( offset + 2 > nbytes-1 );
+		    return 0;
+		break;
+	    case LONG:
+	    case BELONG:
+	    case LELONG:
+	    case DATE:
+	    case BEDATE:
+	    case LEDATE:
+	       	if ( offset + 4 > nbytes-1 );
+		    return 0;
+		break;
+	    case STRING:
+		break;
+	}
+
 // The file length might be < sizeof(union VALUETYPE) (David)
 // -> pad with zeros (the 'file' command does it this way)
 // Thanks to Stan Covington <stan@calderasystems.com> for detailed report
