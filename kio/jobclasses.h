@@ -235,6 +235,12 @@ namespace KIO {
          */
         void emitSpeed( unsigned long bytes_per_second );
 
+        /**
+         * Utility function to emit the result signal, and suicide this job.
+         * It first tells the observer to hide the progress dialog for this job.
+         */
+        void emitResult();
+
         QList<Job> subjobs;
         int m_error;
         QString m_errorText;

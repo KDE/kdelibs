@@ -89,8 +89,6 @@ Job::Job(bool showProgressInfo) : QObject(0, "job"), m_error(0), m_percent(0),
 
 Job::~Job()
 {
-    if ( m_progressId ) // Did we get an ID from the observer ?
-        Observer::self()->jobFinished( m_progressId );
     delete m_speedTimer;
     kapp->deref();
 }
@@ -116,10 +114,7 @@ void Job::removeSubjob( Job *job )
     kdDebug(7007) << "removeSubjob(" << job << ") this = " << this << "  subjobs = " << subjobs.count() << endl;
     subjobs.remove(job);
     if (subjobs.isEmpty())
-    {
-        emit result(this);
-        delete this; // Suicide is painless
-    }
+        emitResult();
 }
 
 void Job::emitPercent( unsigned long processedSize, unsigned long totalSize )
@@ -150,6 +145,14 @@ void Job::emitSpeed( unsigned long bytes_per_second )
   m_speedTimer->start( 5000 );   // 5 seconds interval should be enough
 }
 
+void Job::emitResult()
+{
+  if ( m_progressId ) // Did we get an ID from the observer ?
+    Observer::self()->jobFinished( m_progressId );
+  emit result(this);
+  delete this;
+}
+
 void Job::kill( bool quietly )
 {
   kdDebug(7007) << "Job::kill this=" << this << endl;
@@ -161,11 +164,10 @@ void Job::kill( bool quietly )
 
   if ( ! quietly ) {
     m_error = ERR_USER_CANCELED;
-    emit result(this);
     emit canceled( this ); // Not very useful (deprecated)
-  }
-
- delete this;
+    emitResult();
+  } else
+    delete this;
 }
 
 void Job::slotResult( Job *job )
@@ -355,8 +357,7 @@ void SimpleJob::slotFinished( )
             allDirNotify.FilesAdded( url().directory() );
         }
         */
-        emit result(this);
-        delete this; // Suicide is painless
+        emitResult();
     }
 }
 
@@ -757,8 +758,7 @@ void TransferJob::slotResult( KIO::Job *job)
       m_error = job->error();
       m_errorText = job->errorText();
 
-      emit result( this );
-      delete this;
+      emitResult();
       return;
    }
 
@@ -1014,8 +1014,7 @@ void FileCopyJob::slotResult( KIO::Job *job)
       m_error = job->error();
       m_errorText = job->errorText();
 
-      emit result( this );
-      delete this;
+      emitResult();
       return;
    }
 
@@ -1364,8 +1363,7 @@ void CopyJob::startNextJob()
         if ( m_mode == Move && !m_srcListCopy.isEmpty() )
             allDirNotify.FilesRemoved( m_srcListCopy );
 
-        emit result(this);
-        delete this;
+        emitResult();
     }
 }
 
@@ -1444,7 +1442,7 @@ void CopyJob::slotResultStating( Job *job )
         else if ( destinationState == DEST_IS_FILE ) // (case 2)
         {
             m_error = ERR_IS_FILE;
-            emit result(this);
+            emitResult();
             return;
         }
         else // (case 3)
@@ -1614,8 +1612,7 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
     switch ( r ) {
         case R_CANCEL:
             m_error = ERR_USER_CANCELED;
-            emit result(this);
-            delete this;
+            emitResult();
             return;
         case R_RENAME:
         {
@@ -1851,8 +1848,7 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
     switch ( res ) {
         case R_CANCEL:
             m_error = ERR_USER_CANCELED;
-            emit result(this);
-            delete this;
+            emitResult();
             return;
         case R_RENAME:
         {
@@ -1983,16 +1979,14 @@ void CopyJob::copyNextFile()
                     {
                         m_error = ERR_CANNOT_OPEN_FOR_WRITING;
                         m_errorText = (*it).uDest.path();
-                        emit result(this);
-                        delete this;
+                        emitResult();
                         return;
                     }
                 } else {
                     // Todo: not show "link" on remote dirs if the src urls are not from the same protocol+host+...
                     m_error = ERR_CANNOT_SYMLINK;
                     m_errorText = (*it).uDest.url();
-                    emit result(this);
-                    delete this;
+                    emitResult();
                     return;
                 }
             }
@@ -2321,8 +2315,7 @@ void DeleteJob::startNextJob()
             KDirNotify_stub allDirNotify("*", "KDirNotify*");
             allDirNotify.FilesRemoved( m_srcListCopy );
         }
-        emit result(this);
-        delete this;
+        emitResult();
     }
 }
 
