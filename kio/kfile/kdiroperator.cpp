@@ -561,6 +561,8 @@ void KDirOperator::setURL(const KURL& _newurl, bool clearforward)
 void KDirOperator::updateDir()
 {
     dir->emitChanges();
+    if ( m_fileView )
+        m_fileView->listingCompleted();
 }
 
 void KDirOperator::rereadDir()
@@ -599,6 +601,7 @@ void KDirOperator::pathChanged()
 
 void KDirOperator::slotRedirected( const KURL& newURL )
 {
+    qDebug("*** REDIRECTED: %s", newURL.url().latin1());
     pendingMimeTypes.clear();
     myCompletion.clear();
     myDirCompletion.clear();
