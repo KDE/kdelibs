@@ -59,7 +59,10 @@ namespace KStdAccel
     Help, WhatsThis,
     // Text completion
     TextCompletion, PrevCompletion, NextCompletion, SubstringCompletion,
-    RotateUp, RotateDown
+    RotateUp, RotateDown,
+
+    // Tabular navigation since 3.2
+    TabNext, TabPrev
 
 #ifndef KDE_NO_COMPAT
     , WhatThis = WhatsThis
@@ -286,6 +289,20 @@ namespace KStdAccel
    * @return the shortcut of the standard accelerator
    */
   const KShortcut& addBookmark();
+
+  /**
+   * Next Tab. Default: Ctrl-<
+   * @return the shortcut of the standard accelerator
+   * @since 3.2
+   */
+  const KShortcut& tabNext();
+
+  /**
+   * Previous Tab. Default: Ctrl->
+   * @return the shortcut of the standard accelerator
+   * @since 3.2
+   */
+  const KShortcut& tabPrev();
 
   /**
    * Help the user in the current situation. Default: F1

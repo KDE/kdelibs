@@ -91,6 +91,8 @@ static KStdAccelInfo g_infoStdAccel[] =
 	{ SubstringCompletion, "SubstringCompletion", I18N_NOOP("Substring Completion"), Qt::CTRL+Qt::Key_T, 0, 0, 0, KShortcut(), false },
 	{ RotateUp,            "RotateUp", I18N_NOOP("Previous Item in List"), Qt::Key_Up, 0, 0, 0, KShortcut(), false },
 	{ RotateDown,          "RotateDown", I18N_NOOP("Next Item in List"), Qt::Key_Down, 0, 0, 0, KShortcut(), false },
+	{ TabNext,             I18N_NOOP("Next Tab"), 0,  Qt::CTRL+Qt::Key_Less, 0, 0, 0, KShortcut(), false },
+	{ TabPrev,             I18N_NOOP("Previous Tab"), 0,   Qt::CTRL+Qt::Key_Greater, 0, 0, 0, KShortcut(), false },
 	{ AccelNone,           0, 0, 0, 0, 0, 0, KShortcut(), false }
 };
 
@@ -197,7 +199,7 @@ KShortcut shortcutDefault3( StdAccel id )
 		// FIXME: if there is no cutDefault, then this we be made the primary
 		//  instead of alternate shortcut.
 		if( pInfo->cutDefault3B )
-			cut.append( QKeySequence(pInfo->cutDefault3B) );
+			cut.append( KKey(pInfo->cutDefault3B) );
 	}
 
 	return cut;
@@ -269,6 +271,8 @@ const KShortcut& prior()                 { return shortcut( Prior ); }
 const KShortcut& next()                  { return shortcut( Next ); }
 const KShortcut& gotoLine()              { return shortcut( GotoLine ); }
 const KShortcut& addBookmark()           { return shortcut( AddBookmark ); }
+const KShortcut& tabNext()               { return shortcut( TabNext ); }
+const KShortcut& tabPrev()               { return shortcut( TabPrev ); }
 const KShortcut& zoomIn()                { return shortcut( ZoomIn ); }
 const KShortcut& zoomOut()               { return shortcut( ZoomOut ); }
 const KShortcut& help()                  { return shortcut( Help ); }
