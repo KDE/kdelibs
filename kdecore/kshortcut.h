@@ -417,7 +417,7 @@ class KKeySequence
 
 	/**
 	 * Sets the @p i'th key of the sequence. You can not introduce gaps
-	 * in a sequence, so you must use an @i <= @ref count(). Also note that
+	 * in a sequence, so you must use an @p i <= @ref count(). Also note that
 	 * the maximum length of a key sequence is @ref MAX_KEYS.
 	 * @param i the position of the new key (<= @ref count(), <= @ref MAX_KEYS)
 	 * @param key the key to set
