@@ -55,6 +55,11 @@ void ArrayInstanceImp::put(ExecState *exec, const UString &propertyName, const V
       Value len = get(exec,"length");
       unsigned int oldLen = len.toUInt32(exec);
       unsigned int newLen = value.toUInt32(exec);
+      if (value.toNumber(exec) != double(newLen)) {
+	Object err = Error::create(exec, RangeError, "Invalid array length.");
+	exec->setException(err);
+	return;
+      }
       // shrink array
       for (unsigned int u = newLen; u < oldLen; u++) {
 	UString p = UString::from(u);
@@ -514,9 +519,14 @@ Object ArrayObjectImp::construct(ExecState *exec, const List &args)
   unsigned int len;
   ListIterator it = args.begin();
   // a single argument might denote the array size
-  if (args.size() == 1 && it->type() == NumberType)
+  if (args.size() == 1 && it->type() == NumberType) {
     len = it->toUInt32(exec);
-  else {
+    if (it->toNumber(exec) != double(len)) {
+      Object err = Error::create(exec, RangeError, "Invalid array length.");
+      exec->setException(err);
+      return err;
+    }
+  } else {
     // initialize array
     len = args.size();
     for (unsigned int u = 0; it != args.end(); it++, u++)
