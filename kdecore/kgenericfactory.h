@@ -144,12 +144,12 @@ KInstance *KGenericFactoryBase<T>::instance()
  *     K_EXPORT_COMPONENT_FACTORY( libmyplugin, KGenericFactory&lt;MyPlugin&gt; );
  * </pre>
  */
-template <class T, class ParentType = QObject>
-class KGenericFactory : public KLibFactory, public KGenericFactoryBase<T>
+template <class Product, class ParentType = QObject>
+class KGenericFactory : public KLibFactory, public KGenericFactoryBase<Product>
 {
 public:
     KGenericFactory( const char *instanceName = 0 )
-        : KGenericFactoryBase<T>( instanceName ) 
+        : KGenericFactoryBase<Product>( instanceName ) 
     {}
 
 protected:
@@ -157,7 +157,7 @@ protected:
                                   const char *className, const QStringList &args )
     {   
         initializeMessageCatalogue();
-        return KDEPrivate::ConcreteFactory<T, ParentType>
+        return KDEPrivate::ConcreteFactory<Product, ParentType>
             ::create( 0, 0, parent, name, className, args );
     }
 };
@@ -229,13 +229,14 @@ protected:
  *     K_EXPORT_COMPONENT_FACTORY( libmyplugin, KGenericFactory&lt;Products&gt; );
  * </pre>
  */
-template <class T1, class T2>
-class KGenericFactory< KTypeList<T1, T2> > : public KLibFactory,
-                                             public KGenericFactoryBase< KTypeList<T1, T2> >
+template <class Product, class ProductListTail>
+class KGenericFactory< KTypeList<Product, ProductListTail> > 
+    : public KLibFactory,
+      public KGenericFactoryBase< KTypeList<Product, ProductListTail> >
 {
 public:
     KGenericFactory( const char *instanceName  = 0 )
-        : KGenericFactoryBase< KTypeList<T1, T2> >( instanceName )
+        : KGenericFactoryBase< KTypeList<Product, ProductListTail> >( instanceName )
     {}
 
 protected:
@@ -243,8 +244,8 @@ protected:
                                    const char *className, const QStringList &args )
     {
         initializeMessageCatalogue();
-        return KDEPrivate::MultiFactory< KTypeList< T1, T2 > >::create( 0, 0, parent, name,
-                                                                        className, args );
+        return KDEPrivate::MultiFactory< KTypeList< Product, ProductListTail > >
+            ::create( 0, 0, parent, name, className, args );
     }
 };
 

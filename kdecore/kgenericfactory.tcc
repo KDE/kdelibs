@@ -108,20 +108,20 @@ namespace KDEPrivate
     // but not least the standard default constructor of parent/name .
     // the choice of the right constructor is done using an ordered inheritance
     // test.
-    template <class T, class ParentType = QObject>
+    template <class Product, class ParentType = QObject>
     class ConcreteFactory
     {
     public:
-        typedef typename If< PartInheritanceTest< T >::Result,
+        typedef typename If< PartInheritanceTest< Product >::Result,
                              KParts::Part,
-                             typename If< QWidgetInheritanceTest< T >::Result,
+                             typename If< QWidgetInheritanceTest< Product >::Result,
                                           QWidget, QObject >::Result >::Result BaseType;
  
-        static inline T *create( QWidget *parentWidget, const char *widgetName,
-                                 QObject *parent, const char *name, const char *className,
-                                 const QStringList &args )
+        static inline Product *create( QWidget *parentWidget, const char *widgetName,
+                                       QObject *parent, const char *name, 
+                                       const char *className, const QStringList &args )
         {
-            QMetaObject *metaObject = T::staticMetaObject();
+            QMetaObject *metaObject = Product::staticMetaObject();
             while ( metaObject )
             {
                 if ( !qstrcmp( className, metaObject->className() ) )
@@ -135,39 +135,39 @@ namespace KDEPrivate
         typedef typename If< QWidgetInheritanceTest<ParentType>::Result,
                              ParentType, QWidget >::Result WidgetParentType;
 
-        static inline T *create( QWidget *parentWidget, const char *widgetName,
-                                 QObject *parent, const char *name,
-                                 const QStringList &args, Type2Type<KParts::Part> )
+        static inline Product *create( QWidget *parentWidget, const char *widgetName,
+                                       QObject *parent, const char *name,
+                                       const QStringList &args, Type2Type<KParts::Part> )
         { 
-            return new T( parentWidget, widgetName, parent, name, args ); 
+            return new Product( parentWidget, widgetName, parent, name, args ); 
         }
 
-        static inline T *create( QWidget *parentWidget, const char *widgetName,
-                                 QObject *parent, const char *name,
-                                 const QStringList &args, Type2Type<QWidget> )
+        static inline Product *create( QWidget *parentWidget, const char *widgetName,
+                                       QObject *parent, const char *name,
+                                       const QStringList &args, Type2Type<QWidget> )
         {
 
             WidgetParentType *p = dynamic_cast<WidgetParentType *>( parent );
             if ( parent && !p ) 
                 return 0;
-            return new T( p, name, args );
+            return new Product( p, name, args );
         }
 
-        static inline T *create( QWidget *parentWidget, const char *widgetName,
-                                 QObject *parent, const char *name,
-                                 const QStringList &args, Type2Type<QObject> )
+        static inline Product *create( QWidget *parentWidget, const char *widgetName,
+                                       QObject *parent, const char *name,
+                                       const QStringList &args, Type2Type<QObject> )
         { 
             ParentType *p = dynamic_cast<ParentType *>( parent );
             if ( parent && !p )
                 return 0;
-            return new T( p, name, args ); 
+            return new Product( p, name, args ); 
         }
     };
 
     // this template is used to iterate through the typelist and call the
     // concrete factory for each type. the specializations of this template
     // are the ones actually being responsible for iterating, in fact.
-    template <class T, class ParentType = QObject>
+    template <class Product, class ParentType = QObject>
     class MultiFactory
     {
     public:
@@ -176,8 +176,9 @@ namespace KDEPrivate
                                        const char *className, 
                                        const QStringList &args )
         {
-            return ConcreteFactory<T, ParentType>::create( parentWidget, widgetName,
-                                                           parent, name, className, args );
+            return ConcreteFactory<Product, ParentType>::create( parentWidget, widgetName,
+                                                                 parent, name, className, 
+                                                                 args );
         }
  
     };
@@ -206,8 +207,8 @@ namespace KDEPrivate
         { return 0; }
     };
  
-    template <class T1, class T2>
-    class MultiFactory< KTypeList<T1, T2> >
+    template <class Product, class ProductListTail>
+    class MultiFactory< KTypeList<Product, ProductListTail> >
     {
     public:
         inline static QObject *create( QWidget *parentWidget, const char *widgetName,
@@ -217,15 +218,14 @@ namespace KDEPrivate
         {
             // try with the head of the typelist first. the head is always
             // a concrete type.
-            QObject *object = MultiFactory<T1>::create( parentWidget, widgetName,
-                                                        parent, name, className, args );
+            QObject *object = MultiFactory<Product>::create( parentWidget, widgetName,
+                                                             parent, name, className, 
+                                                             args );
 
-            // if that failed continue by advancing the typelist, calling this
-            // template specialization recursively (with T2 being a typelist) .
-            // at the end we reach the nulltype specialization.
             if ( !object )
-                object = MultiFactory<T2>::create( parentWidget, widgetName,
-                                                   parent, name, className, args );
+                object = MultiFactory<ProductListTail>::create( parentWidget, widgetName,
+                                                                parent, name, className, 
+                                                                args );
 
             return object;
         }
