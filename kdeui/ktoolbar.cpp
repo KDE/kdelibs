@@ -23,6 +23,11 @@
 
 // $Id$
 // $Log$
+// Revision 1.134  1999/11/24 12:35:33  navindra
+// do not collapse the bars on MidButton press *and* release.  do it only
+// on Mid release, just like is done with the Left button.  i believe the
+// previous behaviour was somewhat confusing and seemed buggy.
+//
 // Revision 1.133  1999/11/14 00:44:10  ettrich
 //
 // do not flicker if not absolutely necessary
@@ -322,6 +327,17 @@ KToolBar::layoutHorizontal(int w)
 	/* First iteration */
 	QListIterator<KToolBarItem> qli(*items);
 	for (; *qli; ++qli)
+    {
+        /* check for the line */
+        Item *item = (*qli)->getItem();
+        if (item->inherits("QFrame"))
+        {
+            QFrame *frame = (QFrame*)item;
+            if (frame->frameShape() == QFrame::HLine)
+                frame->setFrameShape(QFrame::VLine);
+            frame->resize(5, item_size - 2);
+        }
+
 		if (!(*qli)->isRight())
 		{
 			int itemWidth = (*qli)->width();
@@ -355,6 +371,7 @@ KToolBar::layoutHorizontal(int w)
 			if ((*qli)->isAuto())
 				debug("Right aligned toolbar item cannot be auto-sized!");
 		}
+    }
 
 	int newXOffset = w - (3 + (totalRightItemWidth + 3) % w);
 	if (newXOffset < xOffset)
@@ -494,6 +511,18 @@ KToolBar::layoutVertical(int h)
 	QListIterator<KToolBarItem> qli(*items);
 	for (; *qli; ++qli)
 	{
+        /* check for the line */
+        Item *item = (*qli)->getItem();
+        if (item->inherits("QFrame"))
+        {
+            QFrame *frame = (QFrame*)item;
+            if (frame->frameShape() == QFrame::VLine)
+            {
+                frame->setFrameShape(QFrame::HLine);
+                frame->resize(item_size - 2, 5);
+            }
+        }
+
 		if (yOffset + (*qli)->height() + 3 > h)
 		{
 			/* A column has been filled. We need to start a new column */
