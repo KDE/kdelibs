@@ -25,10 +25,12 @@
 #include <kapplication.h>
 #include <kglobal.h>
 #include <kdebug.h>
+#include <kstaticdeleter.h>
 
 #include <qtl.h>
 
 template class QPtrList<KServiceTypeProfile>;
+typedef QPtrList<KServiceTypeProfile> KServiceTypeProfileList;
 
 /*********************************************
  *
@@ -36,7 +38,8 @@ template class QPtrList<KServiceTypeProfile>;
  *
  *********************************************/
 
-QPtrList<KServiceTypeProfile>* KServiceTypeProfile::s_lstProfiles = 0L;
+KServiceTypeProfileList* KServiceTypeProfile::s_lstProfiles = 0L;
+static KStaticDeleter< KServiceTypeProfileList > profileDeleter;
 bool KServiceTypeProfile::s_configurationMode = false;
 
 void KServiceTypeProfile::initStatic()
@@ -47,11 +50,8 @@ void KServiceTypeProfile::initStatic()
   // Make sure that a KServiceTypeFactory gets created.
   (void) KServiceTypeFactory::self();
 
-  // NOTE: This can't use a static deleter because it somehow is interfered
-  // with by kdeinit.  It causes weird, unpredictable crashes.  I think they
-  // only happen when kdeinit is run, but I'm not entirely sure.  Needs more
-  // investigation I think.
-  s_lstProfiles = new QPtrList<KServiceTypeProfile>;
+  profileDeleter.setObject(s_lstProfiles, new KServiceTypeProfileList);
+  s_lstProfiles->setAutoDelete( true );
 
   KConfig config( "profilerc", true, false);
 
@@ -82,8 +82,10 @@ void KServiceTypeProfile::initStatic()
         KServiceTypeProfile* p =
           KServiceTypeProfile::serviceTypeProfile( type, type2 );
 
-        if ( !p )
+        if ( !p ) {
           p = new KServiceTypeProfile( type, type2 );
+          s_lstProfiles->append( p );
+        }
 
         bool allow = config.readBoolEntry( "AllowAsDefault" );
         //kdDebug(7014) << "KServiceTypeProfile::initStatic adding service " << application << " to profile for " << type << "," << type2 << " with preference " << pref << endl;
@@ -184,15 +186,10 @@ KServiceTypeProfile::KServiceTypeProfile( const QString& _servicetype, const QSt
 
   m_strServiceType = _servicetype;
   m_strGenericServiceType = _genericServiceType;
-
-  s_lstProfiles->append( this );
 }
 
 KServiceTypeProfile::~KServiceTypeProfile()
 {
-  Q_ASSERT( s_lstProfiles );
-
-  s_lstProfiles->removeRef( this );
 }
 
 void KServiceTypeProfile::addService( const QString& _service,
