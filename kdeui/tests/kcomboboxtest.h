@@ -4,17 +4,13 @@
 #include <qwidget.h>
 class KComboBox;
 
-class Widget : public QWidget
+class Widget : public QObject
 {
     Q_OBJECT
 public:
     Widget();
-//private slots:
-//    void slotDisplay();
-private:
-    KComboBox * rwc;
-    KComboBox * konqc;
-    KComboBox * soc;
+private slots:
+    void slotActivated( int );
 };
 
 #endif

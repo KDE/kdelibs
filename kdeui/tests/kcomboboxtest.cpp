@@ -12,9 +12,19 @@
 #include <kiconloader.h>
 #include <ksimpleconfig.h>
 
+Widget::Widget() : QObject()
+{
+}
+
+void Widget::slotActivated( int index ) {
+    kdDebug() << "slotActivated combo:" << sender()->name() << " index:" << index << endl;
+}
+
 int main ( int argc, char **argv)
 {
     KApplication a(argc, argv, "kcomboboxtest");
+
+    Widget* obj = new Widget;
 
     // Make a central widget to contain the other widgets
     QWidget * w = new QWidget();
@@ -38,6 +48,7 @@ int main ( int argc, char **argv)
     rwc->insertStringList( list );
     rwc->setEditText( "file:/home/adawit/" );
     // rwc->setCompletionMode( KGlobalSettings::CompletionAuto );
+    QObject::connect( rwc, SIGNAL( activated( int ) ), obj, SLOT( slotActivated( int ) ) );
 
     // Create a read-write combobox and reproduce konqueror's code
     KComboBox *konqc = new KComboBox( true, w, "konqc" );
@@ -54,6 +65,7 @@ int main ( int argc, char **argv)
     konqc->insertItem( pix, "http://www.kde.org" );
     konqc->setCurrentItem( konqc->count()-1 );
     kdDebug() << "setLocationBarURL setCurrentItem " << konqc->count()-1 << endl;
+    QObject::connect( konqc, SIGNAL( activated( int ) ), obj, SLOT( slotActivated( int ) ) );
 
     // Create a read-only widget
     KComboBox *soc = new KComboBox( w, "socombobox" );
@@ -61,6 +73,7 @@ int main ( int argc, char **argv)
     soc->setCompletionMode( KGlobalSettings::CompletionAuto );
     soc->completionObject()->setItems( list );
     soc->insertStringList( list );
+    QObject::connect( soc, SIGNAL( activated( int ) ), obj, SLOT( slotActivated( int ) ) );
 
     // Create an exit button
     QPushButton * push = new QPushButton( "E&xit", w );
@@ -79,7 +92,7 @@ int main ( int argc, char **argv)
     a.setMainWidget(w);
     rwc->setFocus();
     w->show();
-w->setIcon( *(new QPixmap("/opt/kde2/share/icons/hicolor/16x16/apps/samba.png" )));
+    //w->setIcon( *(new QPixmap("/opt/kde2/share/icons/hicolor/16x16/apps/samba.png" )));
     return a.exec();
 }
 #include "kcomboboxtest.moc"
