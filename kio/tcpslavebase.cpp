@@ -348,8 +348,17 @@ int TCPSlaveBase::startTLS()
     d->kssl = new KSSL(false);
     if (!d->kssl->TLSInit()) {
         delete d->kssl;
-				d->kssl = NULL;
+	d->kssl = NULL;
         return -1;
+    }
+
+    if ( !d->realHost.isEmpty() )
+    {
+      kdDebug(7029) << "Setting real hostname: " << d->realHost << endl;
+      d->kssl->setPeerHost(d->realHost);
+    } else {
+      kdDebug(7029) << "Setting real hostname: " << d->host << endl;
+      d->kssl->setPeerHost(d->host);
     }
 
     certificatePrompt();
@@ -1017,12 +1026,6 @@ void TCPSlaveBase::setEnableSSLTunnel( bool enable )
 
 void TCPSlaveBase::setRealHost( const QString& realHost )
 {
-    // Check if we just transitioned from a SSL over
-    // proxy to regular SSL connection! If so tell that
-    // to the SSL module!
-    if ( !d->realHost.isEmpty() && realHost.isEmpty() )
-      d->kssl->setProxy(false, realHost);
-
     d->realHost = realHost;
 }
 
@@ -1030,14 +1033,19 @@ bool TCPSlaveBase::doSSLHandShake( bool sendError )
 {
     kdDebug(7029) << "TCPSlaveBase::doSSLHandShake: " << endl;
 
-    if ( !d->realHost.isNull() )
-    {
-      kdDebug(7029) << "Setting real hostname: " << d->realHost << endl;
-      d->kssl->setProxy(true, d->realHost);
-    }
+    QString msgHost = d->host;
 
     d->kssl->reInitialize();
     certificatePrompt();
+
+    if ( !d->realHost.isEmpty() )
+    {
+      msgHost = d->realHost;
+    }
+
+    kdDebug(7029) << "Setting real hostname: " << msgHost << endl;
+    d->kssl->setPeerHost(msgHost);
+
     d->status = d->kssl->connect(m_iSock);
     if (d->status < 0) {
         CloseDescriptor();

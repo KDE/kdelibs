@@ -33,11 +33,9 @@
 
 class KSSLPeerInfoPrivate {
 public:
-  KSSLPeerInfoPrivate() : host(NULL), proxying(false) {}
-  ~KSSLPeerInfoPrivate() { if (host) delete host; }
-  KInetSocketAddress *host;
-  bool proxying;
-  QString proxyHost;
+  KSSLPeerInfoPrivate() {}
+  ~KSSLPeerInfoPrivate() {  }
+  QString peerHost;
 };
 
 
@@ -54,131 +52,103 @@ KSSLCertificate& KSSLPeerInfo::getPeerCertificate() {
   return m_cert;
 }
 
-void KSSLPeerInfo::setProxying(bool active, QString realHost) {
-	d->proxying = active;
-	d->proxyHost = realHost;
+void KSSLPeerInfo::setProxying(bool , QString ) {
 }
 
-void KSSLPeerInfo::setPeerAddress(KInetSocketAddress& addr) {
-  if (!d->host)
-    d->host = new KInetSocketAddress(addr);
-  else
-    (*d->host) = addr;
+void KSSLPeerInfo::setPeerAddress(KInetSocketAddress& ) {
+}
+
+void KSSLPeerInfo::setPeerHost(QString host) {
+        d->peerHost = host.stripWhiteSpace();
+        while(d->peerHost.right(1) == ".")
+                d->peerHost.truncate(d->peerHost.length()-1);
+
+        d->peerHost = d->peerHost.lower();
 }
 
 
 bool KSSLPeerInfo::certMatchesAddress() {
 #ifdef HAVE_SSL
-  KSSLX509Map certinfo(m_cert.getSubject());
-  QString cn = certinfo.getValue("CN");
+	KSSLX509Map certinfo(m_cert.getSubject());
+	QStringList cns = QStringList::split(QRegExp("[ \n\r]"), certinfo.getValue("CN"));
 
-  if (d->proxying) {
-    QStringList domains;
-
-    kdDebug(7029) << "Matching CN=" << cn << " to " << d->proxyHost << endl;
-
-    extractDomains(d->proxyHost, domains);
-    QStringList::Iterator it = domains.begin();
-    for (; it != domains.end(); it++)
-    {
-      int match = cn.findRev(*it, -1, false);
-      kdDebug(7029) << "Match= " << match << ", CN.length= " << cn.length()
-                    << ", host.length= " << (*it).length() << endl;
-
-      if (match > -1 && ((match + (*it).length()) == cn.length()))
-      {
-        kdDebug(7029) << "Found a match ==> " << (*it) << endl;
-        return true;
-      }
-    }
-    return false;
-  }
-
-
-  if (cn.startsWith("*")) {   // stupid wildcard cn
-     QString host, port;
-     QStringList domains;
-
-     if (KExtendedSocket::resolve(d->host, host, port, NI_NAMEREQD) != 0)
-        host = d->host->nodeName();
-
-     kdDebug(7029) << "Matching CN=" << cn << " to " << host << endl;
-
-     extractDomains( host, domains );
-     QStringList::Iterator it = domains.begin();
-
-     for (; it != domains.end(); it++)
-     {
-        int match = cn.findRev(*it, -1, false);
-        kdDebug(7029) << "Match= " << match << ", CN.length= " << cn.length()
-                      << ", host.length= " << (*it).length() << endl;
-
-        if (match > -1 && ((match + (*it).length()) == cn.length()))
-        {
-          kdDebug(7029) << "Found a match ==> " << (*it) << endl;
-          return true;
-         }
-     }
-
-     return false;
-  } else {
-     int err = 0;
-     QList<KAddressInfo> cns = KExtendedSocket::lookup(cn.latin1(), 0, 0, &err);
-     if (err != 0) {
-       kdDebug(7029) << "Address lookup failed! -- " << err << endl;
-       return false;
-     }
-     cns.setAutoDelete(true);
-
-     kdDebug(7029) << "The original ones were: " << d->host->nodeName()
-                   << " and: " << certinfo.getValue("CN").latin1()
-                   << endl;
-
-     for (KAddressInfo *x = cns.first(); x; x = cns.next()) {
-        if ((*x).address()->isCoreEqual(d->host)) {
-           return true;
-        }
-     }
-     kdDebug(7029) << "Testing failed!" << endl;
-  }
+	for (QStringList::Iterator cn = cns.begin(); cn != cns.end(); ++cn) {
+		if (cnMatchesAddress((*cn).stripWhiteSpace().lower()))
+			return true;
+	}
 
 #endif
-  return false;
+
+	return false;
 }
 
-void KSSLPeerInfo::extractDomains(const QString &fqdn, QStringList &domains)
-{
-    domains.clear();
 
-    // If fqdn is an IP address, then only use
-    // the entire IP address to find a match! (DA)
-    if (fqdn[0] >= '0' && fqdn[0] <= '9') {
-       domains.append(fqdn);
-       return;
-    }
+bool KSSLPeerInfo::cnMatchesAddress(QString cn) {
+#ifdef HAVE_SSL
+	QRegExp rx;
 
-    QStringList partList = QStringList::split('.', fqdn, false);
 
-    if (partList.count())
-        partList.remove(partList.begin()); // Remove hostname
+	kdDebug(7029) << "Matching CN=[" << cn << "] to [" << d->peerHost << "]" << endl;
 
-    while(partList.count()) {
-       if (partList.count() == 1)
-         break; // We only have a TLD left.
+	// Check for invalid characters
+	if (QRegExp("[^a-zA-Z0-9\\.\\*\\-]").match(cn) >= 0) {
+		kdDebug(7029) << "CN contains invalid characters!  Failing." << endl;
+		return false;
+	}
 
-       if (partList.count() == 2) {
-          // If this is a TLD, we should stop. (e.g. co.uk)
-          // We assume this is a TLD if it ends with .xx.yy or .x.yy
-          if (partList[0].length() <= 2 && partList[1].length() == 2)
-             break; // This is a TLD.
-       }
+	// Domains can legally end with '.'s.  We don't need them though.
+	while(cn.right(1) == ".")
+		cn.truncate(cn.length()-1);
 
-       QString domain = partList.join(".");
-       domains.append(domain);
-       partList.remove(partList.begin());
-    }
+	// Do not let empty CN's get by!!
+	if (cn.isEmpty())
+		return false;
 
-    // Add the entire FQDN at the end of the
-    // list for fqdn == CN checks
-    domains.append(fqdn);
+	// Check for IPv4 address
+	rx.setPattern("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}");
+	int tmp;
+	if (rx.match(d->peerHost, 0, &tmp) == 0 && tmp == d->peerHost.length())
+		return d->peerHost == cn;
+
+	// Check for IPv6 address here...
+	rx.setPattern("^\\[.*\\]$");
+	if (rx.match(d->peerHost, 0, &tmp) == 0 && tmp == d->peerHost.length())
+		return d->peerHost == cn;
+
+	if (cn.contains('*')) {
+		// First make sure that there are at least two valid parts
+		// after the wildcard (*).
+		QStringList parts = QStringList::split('.', cn, false);
+
+		while(parts.count() > 2)
+			parts.remove(parts.begin());
+
+		if (parts.count() != 2) {
+			return false;  // we don't allow *.root - that's bad
+		}
+
+		if (parts[0].contains('*') || parts[1].contains('*')) {
+			return false;
+		}
+
+		// RFC2818 says that *.example.com should match against
+		// foo.example.com but not bar.foo.example.com
+		// (ie. they must have the same number of parts)
+		if (QRegExp(cn, false, true).match(d->peerHost, 0, &tmp) == 0 &&
+				tmp == d->peerHost.length() &&
+				QStringList::split('.', cn, false).count() ==
+				QStringList::split('.', d->peerHost, false).count())
+			return true;
+
+		return false;
+	}
+
+	// We must have an exact match in this case (insensitive though)
+	// (note we already did .lower())
+	if (cn == d->peerHost)
+		return true;
+#endif
+	return false;
 }
+
+

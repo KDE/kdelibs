@@ -100,6 +100,8 @@ public:
   KSSLConnectionInfo& connectionInfo();
   KSSLPeerInfo& peerInfo();
 
+  void setPeerHost(QString realHost);
+
 private:
   static bool m_bSSLWorks;
   bool m_bInit;

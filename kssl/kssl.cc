@@ -336,25 +336,19 @@ void KSSL::setConnectionInfo() {
 }
 
 
-void KSSL::setPeerInfo(int sock) {
-#ifdef HAVE_SSL
-  if (!d->proxying) {
-    ksockaddr_in sa;
-    ksocklen_t nl = sizeof(ksockaddr_in);
-    int rc = KSocks::self()->getpeername(sock, (sockaddr *)&sa, &nl);
+void KSSL::setPeerHost(QString realHost) {
+	d->proxyPeer = realHost;
+}
 
-    if (rc != -1) {
-      QString haddr;
-      KInetSocketAddress x(&sa, nl);
-      m_pi.setPeerAddress(x);
-    }
-  } else {
-    m_pi.setProxying(d->proxying, d->proxyPeer);
-  }
-  m_pi.m_cert.setCert(d->kossl->SSL_get_peer_certificate(d->m_ssl));
-  STACK_OF(X509) *xs = d->kossl->SSL_get_peer_cert_chain(d->m_ssl);
-  if (xs) xs = sk_X509_dup(xs);
-  m_pi.m_cert.setChain((void *)xs);
+
+void KSSL::setPeerInfo(int) {
+#ifdef HAVE_SSL
+        m_pi.setPeerHost(d->proxyPeer);
+        m_pi.m_cert.setCert(d->kossl->SSL_get_peer_certificate(d->m_ssl));
+        STACK_OF(X509) *xs = d->kossl->SSL_get_peer_cert_chain(d->m_ssl);
+        if (xs)
+                xs = sk_X509_dup(xs);   // Leak?
+        m_pi.m_cert.setChain((void *)xs);
 #endif
 }
 
@@ -372,9 +366,7 @@ KSSLConnectionInfo& KSSL::connectionInfo() {
 }
 
 
-void KSSL::setProxy(bool active, QString realHost) {
-   d->proxying = active;
-   d->proxyPeer = realHost;
+void KSSL::setProxy(bool, QString) {
 }
 
 void KSSL::setProxyUse(bool, QString, int, QString) {
