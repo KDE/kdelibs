@@ -690,12 +690,14 @@ public:
   /**
    * Creates a KURL object from a QString representing either an absolute path
    * or a real URL. Use this method instead of 
-   * <code>
+   * <pre>
    * QString someDir = ...
    * KURL url = someDir;
-   * </code>
+   * </pre>
    *
    * Otherwise some characters (e.g. the '#') won't be encoded properly.
+   * @param text the string representation of the URL to convert
+   * @return the new KURL
    * @since 3.1
    */
   static KURL fromPathOrURL( const QString& text );
