@@ -23,11 +23,13 @@
 
 #include <kfilterdev.h>
 #include <kdebug.h>
+#include <klocale.h>
 #include <qfile.h>
 #include <math.h>
 
 void kdeprint_ppdscanner_init( QIODevice* );
 void kdeprint_ppdscanner_terminate( bool deleteIt = true );
+int kdeprint_ppdscanner_numberoflines();
 
 static QString processLocaleString( const QString& s )
 {
@@ -162,10 +164,13 @@ DrMain* PPDLoader::readFromFile( const QString& filename )
 	return 0;
 }
 
-DrMain* PPDLoader::loadDriver( const QString& filename )
+DrMain* PPDLoader::loadDriver( const QString& filename, QString* msg )
 {
 	PPDLoader loader;
-	return loader.readFromFile( filename );
+	DrMain *driver = loader.readFromFile( filename );
+	if ( !driver && msg )
+		*msg = filename + i18n( "(line %1): " ).arg( kdeprint_ppdscanner_numberoflines() ) + loader.errorMsg();
+	return driver;
 }
 
 bool PPDLoader::openUi( const QString& name, const QString& desc, const QString& type )
@@ -512,4 +517,14 @@ void PPDLoader::processPageSizes( DrMain *driver )
 					( int )ceil( it.current()->size.height - it.current()->area.top ) ) );
 	}
 	m_ps.clear();
+}
+
+void PPDLoader::setErrorMsg( const QString& msg )
+{
+	m_errormsg = msg;
+}
+
+QString PPDLoader::errorMsg() const
+{
+	return m_errormsg;
 }

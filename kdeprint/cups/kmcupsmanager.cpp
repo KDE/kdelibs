@@ -600,12 +600,15 @@ DrMain* KMCupsManager::loadDriverFile(const QString& fname)
 {
 	if (QFile::exists(fname))
 	{
-		DrMain *driver = PPDLoader::loadDriver( fname );
+		QString msg; /* possible error message */
+		DrMain *driver = PPDLoader::loadDriver( fname, &msg );
 		if ( driver )
 		{
 			driver->set( "template", fname );
 			// FIXME: should fix option in group "install"
 		}
+		else
+			setErrorMsg( msg );
 		return driver;
 	}
 	return NULL;

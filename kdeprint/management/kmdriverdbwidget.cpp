@@ -256,7 +256,7 @@ void KMDriverDbWidget::slotOtherClicked()
 				else
 				{
 					KIO::NetAccess::removeTempFile( filename );
-					KMessageBox::error(this,i18n("Wrong driver format."));
+					KMessageBox::error(this,"<qt>"+i18n("Wrong driver format.")+"<p>"+KMManager::self()->errorMsg()+"</p></qt>");
 				}
 			}
 		}

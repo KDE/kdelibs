@@ -21,15 +21,16 @@
 #define YYSTYPE QStringList
 #define YYPARSE_PARAM ppdloader
 #define YYDEBUG 1
+#define YYERROR_VERBOSE 1
 #include <stdlib.h>
 #include <qstringlist.h>
 
 #include "ppdloader.h"
 
-int yylex();
-void yyerror(const char*) {}
-
 #define builder static_cast<PPDLoader*>( ppdloader )
+
+int kdeprint_ppdlex();
+#define kdeprint_ppderror(msg) static_cast<PPDLoader*>( ppdloader )->setErrorMsg( msg )
 %}
 
 %token TRANSLATION

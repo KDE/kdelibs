@@ -73,7 +73,9 @@ config_DATA = kdeprintrc
 
 # parser and scanner
 fooparser:
+	rm -f fooparser.cpp.h
 	bison -v -d -p kdeprint_foomatic2 $(srcdir)/fooparser.y -o $(srcdir)/fooparser.cpp
+	if test -f "$(srcdir)/fooparser.hpp"; then mv $(srcdir)/fooparser.hpp $(srcdir)/fooparser.cpp.h; fi
 	flex -o$(srcdir)/fooscanner.cpp -Pkdeprint_foomatic2 $(srcdir)/fooscanner.l
 	echo "#ifndef fooparser_cpp_h" > $(srcdir)/fooparser.cpp.hh
 	echo "#define fooparser_cpp_h" >> $(srcdir)/fooparser.cpp.hh
@@ -82,7 +84,9 @@ fooparser:
 	mv $(srcdir)/fooparser.cpp.hh $(srcdir)/fooparser.cpp.h
 
 ppdparser:
+	rm -f ppdparser.cpp.h
 	bison -v -d -p kdeprint_ppd $(srcdir)/ppdparser.y -o $(srcdir)/ppdparser.cpp
+	if test -f "$(srcdir)/ppdparser.hpp"; then mv $(srcdir)/ppdparser.hpp $(srcdir)/ppdparser.cpp.h; fi
 	flex -o$(srcdir)/ppdscanner.cpp -Pkdeprint_ppd $(srcdir)/ppdscanner.l
 	echo "#ifndef ppdparser_cpp_h" > $(srcdir)/ppdparser.cpp.hh
 	echo "#define ppdparser_cpp_h" >> $(srcdir)/ppdparser.cpp.hh

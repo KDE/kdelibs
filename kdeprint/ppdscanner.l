@@ -37,6 +37,7 @@ QIODevice *kdeprint_ppdscanner_device = NULL;
 		else \
 			result = 0; \
 	}
+int kdeprint_ppdscanner_lno = 0;
 
 #if 0
 #define QDEBUG0(s) qDebug(s)
@@ -83,7 +84,7 @@ L        [[:alnum:]]
 	 */
 <option>{WORD3}      { yylval = yytext; QDEBUG1("Option: %s",yytext); return OPTION; }
 <option>":"          { BEGIN(value); return ':'; }
-<option>"\n"         { BEGIN(INITIAL); }
+<option>"\n"         { kdeprint_ppdscanner_lno++; BEGIN(INITIAL); }
 <option>"/"          { BEGIN(translation_1); return '/'; }
 
 	/**
@@ -91,22 +92,22 @@ L        [[:alnum:]]
 	 */
 <translation_1>[^\n:]*  { yylval = yytext; QDEBUG1("Translation: %s",yytext); return TRANSLATION; }
 <translation_1>":"      { BEGIN(value); return ':'; }
-<translation_1>"\n"     { BEGIN(INITIAL); }
+<translation_1>"\n"     { kdeprint_ppdscanner_lno++; BEGIN(INITIAL); }
 
 	/**
 	 * Value state
 	 */
-<value>\"[^\"]*\"    { yylval = yytext; QDEBUG1("Quoted value: %s",yytext); return QUOTED; }
+<value>\"[^\"]*\"    { yylval = yytext; kdeprint_ppdscanner_lno += yylval[0].contains('\n'); QDEBUG1("Quoted value: %s",yytext); return QUOTED; }
 <value>{WORD}        { yylval = yytext; QDEBUG1("String part: %s",yytext); return STRINGPART; }
 <value>"/"           { BEGIN(translation_2); return '/'; }
-<value>"\n"          { BEGIN(INITIAL); }
+<value>"\n"          { kdeprint_ppdscanner_lno++; BEGIN(INITIAL); }
 <value>":"           { /* stay in the same state */ return ':'; }
 
 	/**
 	 * Translation state (2: with colon)
 	 */
 <translation_2>[^\n]*   { yylval = yytext; QDEBUG1("Translation: %s",yytext); return TRANSLATION; }
-<translation_2>"\n"     { BEGIN(INITIAL); }
+<translation_2>"\n"     { kdeprint_ppdscanner_lno++; BEGIN(INITIAL); }
 
 	/**
 	 * Constraint state
@@ -114,16 +115,17 @@ L        [[:alnum:]]
 <constr>":"         { return ':'; }
 <constr>\*{WORD2}   { yylval = yytext+1; QDEBUG1("Constraint keyword: %s",yytext); return KEYWORD; }
 <constr>{WORD2}     { yylval = yytext; QDEBUG1("Constraint option: %s",yytext); return OPTION; }
-<constr>"\n"        { BEGIN(INITIAL); }
+<constr>"\n"        { kdeprint_ppdscanner_lno++; BEGIN(INITIAL); }
 
-"\n" |
-<*>.                 { /* eat up */ }
+"\n"                { kdeprint_ppdscanner_lno++; /* eat up */ }
+<*>.                { /* eat up */ }
 
 %%
 
 void kdeprint_ppdscanner_init(QIODevice *d)
 {
 	kdeprint_ppdscanner_device = d;
+	kdeprint_ppdscanner_lno = 1;
 }
 
 void kdeprint_ppdscanner_terminate( bool deleteIt )
@@ -131,4 +133,9 @@ void kdeprint_ppdscanner_terminate( bool deleteIt )
 	if (deleteIt)
 		delete kdeprint_ppdscanner_device;
 	kdeprint_ppdscanner_device = NULL;
+}
+
+int kdeprint_ppdscanner_numberoflines()
+{
+	return kdeprint_ppdscanner_lno;
 }

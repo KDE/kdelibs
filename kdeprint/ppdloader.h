@@ -52,13 +52,17 @@ public:
 	bool putPaperDimension( const QString& name, const QString& s );
 	bool putImageableArea( const QString& name, const QString& s );
 
-	static DrMain* loadDriver( const QString& filename );
+	void setErrorMsg( const QString& msg );
+	QString errorMsg() const;
+
+	static DrMain* loadDriver( const QString& filename, QString* msg = NULL );
 
 private:
 	QValueStack<DrGroup*> m_groups;
 	DrBase*               m_option;
 	QDict<PS_private>     m_ps;
 	QStringList           m_fonts;
+	QString               m_errormsg;
 
 	friend int kdeprint_ppdparse(void*);
 	DrGroup* findOrCreateGroupForOption( const QString& );

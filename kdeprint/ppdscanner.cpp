@@ -557,6 +557,7 @@ QIODevice *kdeprint_ppdscanner_device = NULL;
 		else \
 			result = 0; \
 	}
+int kdeprint_ppdscanner_lno = 0;
 
 #if 0
 #define QDEBUG0(s) qDebug(s)
@@ -571,7 +572,7 @@ QIODevice *kdeprint_ppdscanner_device = NULL;
 #define translation_2 4
 #define constr 5
 
-#line 575 "./ppdscanner.cpp"
+#line 576 "./ppdscanner.cpp"
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -722,13 +723,13 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
 
-#line 58 "./ppdscanner.l"
+#line 59 "./ppdscanner.l"
 
 
 	/**
 	 * Initial state
 	 */
-#line 732 "./ppdscanner.cpp"
+#line 733 "./ppdscanner.cpp"
 
 	if ( yy_init )
 		{
@@ -812,59 +813,59 @@ do_action:	/* This label is used only to access EOF actions. */
 			goto yy_find_action;
 
 case 1:
-#line 64 "./ppdscanner.l"
+#line 65 "./ppdscanner.l"
 case 2:
 YY_RULE_SETUP
-#line 64 "./ppdscanner.l"
+#line 65 "./ppdscanner.l"
 { QDEBUG0("Open UI"); BEGIN(option); return OPENUI; }
 	YY_BREAK
 case 3:
-#line 66 "./ppdscanner.l"
+#line 67 "./ppdscanner.l"
 case 4:
 YY_RULE_SETUP
-#line 66 "./ppdscanner.l"
+#line 67 "./ppdscanner.l"
 { QDEBUG0("Close UI"); BEGIN(value); return CLOSEUI; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 67 "./ppdscanner.l"
+#line 68 "./ppdscanner.l"
 { QDEBUG0("Open group"); BEGIN(option); return OPENGROUP; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 68 "./ppdscanner.l"
+#line 69 "./ppdscanner.l"
 { QDEBUG0("Close group"); BEGIN(option); return CLOSEGROUP; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 69 "./ppdscanner.l"
+#line 70 "./ppdscanner.l"
 { yylval = yytext+9; BEGIN(option); return DEFAULT; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 70 "./ppdscanner.l"
+#line 71 "./ppdscanner.l"
 { yylval = yytext+8; BEGIN(option); return DEFAULT; }
 	YY_BREAK
 case 9:
-#line 72 "./ppdscanner.l"
+#line 73 "./ppdscanner.l"
 case 10:
 YY_RULE_SETUP
-#line 72 "./ppdscanner.l"
+#line 73 "./ppdscanner.l"
 { BEGIN(constr); return CONSTRAINT; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 73 "./ppdscanner.l"
+#line 74 "./ppdscanner.l"
 { BEGIN(option); return PAPERDIM; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 74 "./ppdscanner.l"
+#line 75 "./ppdscanner.l"
 { BEGIN(option); return IMGAREA; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 75 "./ppdscanner.l"
+#line 76 "./ppdscanner.l"
 { /* eat up */ }
 	YY_BREAK
 case 14:
@@ -872,17 +873,17 @@ case 14:
 yy_c_buf_p = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 77 "./ppdscanner.l"
+#line 78 "./ppdscanner.l"
 { yylval = yytext+12; return FOODATA; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 78 "./ppdscanner.l"
+#line 79 "./ppdscanner.l"
 { QDEBUG0("Comment"); return COMMENT; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 79 "./ppdscanner.l"
+#line 80 "./ppdscanner.l"
 { yylval = yytext+1; QDEBUG1("Main keyword: %s",yytext+1); BEGIN(option); return KEYWORD; }
 	YY_BREAK
 /**
@@ -890,22 +891,22 @@ YY_RULE_SETUP
 	 */
 case 17:
 YY_RULE_SETUP
-#line 84 "./ppdscanner.l"
+#line 85 "./ppdscanner.l"
 { yylval = yytext; QDEBUG1("Option: %s",yytext); return OPTION; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 85 "./ppdscanner.l"
+#line 86 "./ppdscanner.l"
 { BEGIN(value); return ':'; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 86 "./ppdscanner.l"
-{ BEGIN(INITIAL); }
+#line 87 "./ppdscanner.l"
+{ kdeprint_ppdscanner_lno++; BEGIN(INITIAL); }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 87 "./ppdscanner.l"
+#line 88 "./ppdscanner.l"
 { BEGIN(translation_1); return '/'; }
 	YY_BREAK
 /**
@@ -913,45 +914,45 @@ YY_RULE_SETUP
 	 */
 case 21:
 YY_RULE_SETUP
-#line 92 "./ppdscanner.l"
+#line 93 "./ppdscanner.l"
 { yylval = yytext; QDEBUG1("Translation: %s",yytext); return TRANSLATION; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 93 "./ppdscanner.l"
+#line 94 "./ppdscanner.l"
 { BEGIN(value); return ':'; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 94 "./ppdscanner.l"
-{ BEGIN(INITIAL); }
+#line 95 "./ppdscanner.l"
+{ kdeprint_ppdscanner_lno++; BEGIN(INITIAL); }
 	YY_BREAK
 /**
 	 * Value state
 	 */
 case 24:
 YY_RULE_SETUP
-#line 99 "./ppdscanner.l"
-{ yylval = yytext; QDEBUG1("Quoted value: %s",yytext); return QUOTED; }
+#line 100 "./ppdscanner.l"
+{ yylval = yytext; kdeprint_ppdscanner_lno += yylval[0].contains('\n'); QDEBUG1("Quoted value: %s",yytext); return QUOTED; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 100 "./ppdscanner.l"
+#line 101 "./ppdscanner.l"
 { yylval = yytext; QDEBUG1("String part: %s",yytext); return STRINGPART; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 101 "./ppdscanner.l"
+#line 102 "./ppdscanner.l"
 { BEGIN(translation_2); return '/'; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 102 "./ppdscanner.l"
-{ BEGIN(INITIAL); }
+#line 103 "./ppdscanner.l"
+{ kdeprint_ppdscanner_lno++; BEGIN(INITIAL); }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 103 "./ppdscanner.l"
+#line 104 "./ppdscanner.l"
 { /* stay in the same state */ return ':'; }
 	YY_BREAK
 /**
@@ -959,50 +960,53 @@ YY_RULE_SETUP
 	 */
 case 29:
 YY_RULE_SETUP
-#line 108 "./ppdscanner.l"
+#line 109 "./ppdscanner.l"
 { yylval = yytext; QDEBUG1("Translation: %s",yytext); return TRANSLATION; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 109 "./ppdscanner.l"
-{ BEGIN(INITIAL); }
+#line 110 "./ppdscanner.l"
+{ kdeprint_ppdscanner_lno++; BEGIN(INITIAL); }
 	YY_BREAK
 /**
 	 * Constraint state
 	 */
 case 31:
 YY_RULE_SETUP
-#line 114 "./ppdscanner.l"
+#line 115 "./ppdscanner.l"
 { return ':'; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 115 "./ppdscanner.l"
+#line 116 "./ppdscanner.l"
 { yylval = yytext+1; QDEBUG1("Constraint keyword: %s",yytext); return KEYWORD; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 116 "./ppdscanner.l"
+#line 117 "./ppdscanner.l"
 { yylval = yytext; QDEBUG1("Constraint option: %s",yytext); return OPTION; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 117 "./ppdscanner.l"
-{ BEGIN(INITIAL); }
+#line 118 "./ppdscanner.l"
+{ kdeprint_ppdscanner_lno++; BEGIN(INITIAL); }
 	YY_BREAK
 case 35:
-#line 120 "./ppdscanner.l"
-case 36:
 YY_RULE_SETUP
 #line 120 "./ppdscanner.l"
+{ kdeprint_ppdscanner_lno++; /* eat up */ }
+	YY_BREAK
+case 36:
+YY_RULE_SETUP
+#line 121 "./ppdscanner.l"
 { /* eat up */ }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 122 "./ppdscanner.l"
+#line 123 "./ppdscanner.l"
 ECHO;
 	YY_BREAK
-#line 1006 "./ppdscanner.cpp"
+#line 1010 "./ppdscanner.cpp"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(option):
 case YY_STATE_EOF(value):
@@ -1888,12 +1892,13 @@ int main()
 	return 0;
 	}
 #endif
-#line 122 "./ppdscanner.l"
+#line 123 "./ppdscanner.l"
 
 
 void kdeprint_ppdscanner_init(QIODevice *d)
 {
 	kdeprint_ppdscanner_device = d;
+	kdeprint_ppdscanner_lno = 1;
 }
 
 void kdeprint_ppdscanner_terminate( bool deleteIt )
@@ -1901,4 +1906,9 @@ void kdeprint_ppdscanner_terminate( bool deleteIt )
 	if (deleteIt)
 		delete kdeprint_ppdscanner_device;
 	kdeprint_ppdscanner_device = NULL;
+}
+
+int kdeprint_ppdscanner_numberoflines()
+{
+	return kdeprint_ppdscanner_lno;
 }
