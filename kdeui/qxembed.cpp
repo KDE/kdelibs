@@ -689,6 +689,7 @@ void QXEmbed::embed(WId w)
 
     XResizeWindow(qt_xdisplay(), w, width(), height());
     XMapRaised(qt_xdisplay(), window);
+    sendSyntheticConfigureNotifyEvent();
     extraData()->xDndProxy = w;
 
     if ( parent() ) {
