@@ -71,6 +71,7 @@ signals:
 	void changed( const QColor &newColor );
 
 protected slots:
+    void chooseColor();
 
 protected:
 	/**
@@ -93,10 +94,6 @@ protected:
 	 * @reimplemented
 	 */
         virtual void mouseMoveEvent( QMouseEvent *e);
-	/**
-	 * @reimplemented
-	 */
-        virtual void mouseReleaseEvent ( QMouseEvent *e );
 private:
         QColor col;
         QPoint mPos;

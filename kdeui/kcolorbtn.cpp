@@ -35,6 +35,9 @@ KColorButton::KColorButton( QWidget *parent, const char *name )
   // I delay the removal from the header to after 2.0
 
   setAcceptDrops( true);
+  
+  // 2000-10-15 (putzer): fixes broken keyboard usage
+  connect (this, SIGNAL(clicked()), this, SLOT(chooseColor()));
 }
 
 KColorButton::KColorButton( const QColor &c, QWidget *parent,
@@ -42,6 +45,9 @@ KColorButton::KColorButton( const QColor &c, QWidget *parent,
   : QPushButton( parent, name ), col(c), dragFlag(false)
 {
   setAcceptDrops( true);
+
+  // 2000-10-15 (putzer): fixes broken keyboard usage
+  connect (this, SIGNAL(clicked()), this, SLOT(chooseColor()));
 }
 
 void KColorButton::setColor( const QColor &c )
@@ -105,22 +111,15 @@ void KColorButton::mouseMoveEvent( QMouseEvent *e)
   }
 }
 
-void KColorButton::mouseReleaseEvent( QMouseEvent *e )
+void KColorButton::chooseColor()
 {
-  if( !hitButton(e->pos()) )
-  {
-    return;
-  }
-
-  QPushButton::mouseReleaseEvent(e);
   if( KColorDialog::getColor( col, this ) == QDialog::Rejected )
   {
     return;
   }
+
   repaint( false );
   emit changed( col );
 }
 
 #include "kcolorbtn.moc"
-
-
