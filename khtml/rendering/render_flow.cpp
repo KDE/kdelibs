@@ -248,7 +248,7 @@ void RenderFlow::layout()
         kdDebug( 6040 ) << renderName() << ": containingBlock == this" << endl;
 #endif
 
-    if(m_width<=0 && !isPositioned()) {
+    if(m_width<=0 && !isPositioned() && !containsPositioned()) {
         if(m_y < 0) m_y = 0;
         setLayouted();
         return;
