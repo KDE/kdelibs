@@ -88,6 +88,11 @@ public:
     QString label() const;
 
     /**
+     * @return if the num input has a slider.
+     */
+    bool showSlider() const { return m_slider; }
+
+    /**
      * Sets the spacing of tickmarks for the slider.
      *
      * @param minor Minor tickmark separation.

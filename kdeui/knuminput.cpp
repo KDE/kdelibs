@@ -46,16 +46,13 @@
 #include "knuminput.h"
 
 
-// -----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 KNumInput::KNumInput(QWidget* parent, const char* name)
     : QWidget(parent, name)
 {
     init();
 }
-
-
-// -----------------------------------------------------------------------------
 
 KNumInput::KNumInput(KNumInput* below, QWidget* parent, const char* name)
     : QWidget(parent, name)
@@ -71,9 +68,6 @@ KNumInput::KNumInput(KNumInput* below, QWidget* parent, const char* name)
     }
 }
 
-
-// -----------------------------------------------------------------------------
-
 void KNumInput::init()
 {
     m_prev = m_next = 0;
@@ -84,9 +78,6 @@ void KNumInput::init()
     m_alignment = 0;
 }
 
-
-// -----------------------------------------------------------------------------
-
 KNumInput::~KNumInput()
 {
     if(m_prev)
@@ -95,9 +86,6 @@ KNumInput::~KNumInput()
     if(m_next)
         m_next->m_prev = m_prev;
 }
-
-
-// -----------------------------------------------------------------------------
 
 void KNumInput::setLabel(const QString & label, int a)
 {
@@ -125,8 +113,6 @@ QString KNumInput::label() const
     if (m_label) return m_label->text();
     return QString::null;
 }
-
-// -----------------------------------------------------------------------------
 
 void KNumInput::layout(bool deep)
 {
@@ -185,24 +171,15 @@ void KNumInput::layout(bool deep)
 //    kdDebug() << "w1 " << w1 << " w2 " << w2 << endl;
 }
 
-
-// -----------------------------------------------------------------------------
-
 QSizePolicy KNumInput::sizePolicy() const
 {
     return QSizePolicy( QSizePolicy::Minimum, QSizePolicy::Fixed );
 }
 
-
-// -----------------------------------------------------------------------------
-
 QSize KNumInput::sizeHint() const
 {
     return minimumSizeHint();
 }
-
-
-// -----------------------------------------------------------------------------
 
 void KNumInput::setSteps(int minor, int major)
 {
@@ -211,7 +188,7 @@ void KNumInput::setSteps(int minor, int major)
 }
 
 
-// -----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 KIntSpinBox::KIntSpinBox(QWidget *parent, const char *name)
     : QSpinBox(0, 99, 1, parent, name)
@@ -245,24 +222,15 @@ int KIntSpinBox::base() const
     return val_base;
 }
 
-
-// -----------------------------------------------------------------------------
-
 QString KIntSpinBox::mapValueToText(int v)
 {
     return QString::number(v, val_base);
 }
 
-
-// -----------------------------------------------------------------------------
-
 int KIntSpinBox::mapTextToValue(bool* ok)
 {
     return cleanText().toInt(ok, val_base);
 }
-
-
-// -----------------------------------------------------------------------------
 
 void KIntSpinBox::setEditFocus(bool mark)
 {
@@ -272,7 +240,7 @@ void KIntSpinBox::setEditFocus(bool mark)
 }
 
 
-// -----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 KIntNumInput::KIntNumInput(KNumInput* below, int val, QWidget* parent,
                            int _base, const char* name)
@@ -281,15 +249,11 @@ KIntNumInput::KIntNumInput(KNumInput* below, int val, QWidget* parent,
     init(val, _base);
 }
 
-
-// -----------------------------------------------------------------------------
-
 KIntNumInput::KIntNumInput(QWidget *parent, const char *name)
     : KNumInput(parent, name)
 {
     init(0, 10);
 }
-
 
 KIntNumInput::KIntNumInput(int val, QWidget *parent, int _base, const char *name)
     : KNumInput(parent, name)
@@ -297,9 +261,6 @@ KIntNumInput::KIntNumInput(int val, QWidget *parent, int _base, const char *name
     init(val, _base);
 
 }
-
-
-// -----------------------------------------------------------------------------
 
 void KIntNumInput::init(int val, int _base)
 {
@@ -311,9 +272,6 @@ void KIntNumInput::init(int val, int _base)
     layout(true);
 }
 
-
-// -----------------------------------------------------------------------------
-
 void KIntNumInput::spinValueChanged(int val)
 {
     if(m_slider)
@@ -321,9 +279,6 @@ void KIntNumInput::spinValueChanged(int val)
 
     emit valueChanged(val);
 }
-
-
-// -----------------------------------------------------------------------------
 
 void KIntNumInput::setRange(int lower, int upper, int step, bool slider)
 {
@@ -375,9 +330,6 @@ int KIntNumInput::maxValue() const
     return m_spin->maxValue();
 }
 
-
-// -----------------------------------------------------------------------------
-
 void KIntNumInput::setSuffix(const QString &suffix)
 {
     m_spin->setSuffix(suffix);
@@ -385,14 +337,10 @@ void KIntNumInput::setSuffix(const QString &suffix)
     layout(true);
 }
 
-
 QString KIntNumInput::suffix() const
 {
     return m_spin->suffix();
 }
-
-
-// -----------------------------------------------------------------------------
 
 void KIntNumInput::setPrefix(const QString &prefix)
 {
@@ -401,22 +349,15 @@ void KIntNumInput::setPrefix(const QString &prefix)
     layout(true);
 }
 
-
 QString KIntNumInput::prefix() const
 {
     return m_spin->prefix();
 }
 
-
-// -----------------------------------------------------------------------------
-
 void KIntNumInput::setEditFocus(bool mark)
 {
     m_spin->setEditFocus(mark);
 }
-
-
-// -----------------------------------------------------------------------------
 
 QSize KIntNumInput::minimumSizeHint() const
 {
@@ -443,9 +384,6 @@ QSize KIntNumInput::minimumSizeHint() const
     return QSize(w, h);
 }
 
-
-// -----------------------------------------------------------------------------
-
 void KIntNumInput::doLayout()
 {
     m_sizeSpin = m_spin->sizeHint();
@@ -454,9 +392,6 @@ void KIntNumInput::doLayout()
     if (m_label)
         m_label->setBuddy(m_spin);
 }
-
-
-// -----------------------------------------------------------------------------
 
 void KIntNumInput::resizeEvent(QResizeEvent* e)
 {
@@ -483,15 +418,9 @@ void KIntNumInput::resizeEvent(QResizeEvent* e)
         m_label->setGeometry(0, h, m_sizeLabel.width(), m_sizeLabel.height());
 }
 
-
-// -----------------------------------------------------------------------------
-
 KIntNumInput::~KIntNumInput()
 {
 }
-
-
-// -----------------------------------------------------------------------------
 
 void KIntNumInput::setValue(int val)
 {
@@ -499,16 +428,10 @@ void KIntNumInput::setValue(int val)
     // slider value is changed by spinValueChanged
 }
 
-
-// -----------------------------------------------------------------------------
-
 int  KIntNumInput::value() const
 {
     return m_spin->value();
 }
-
-
-// -----------------------------------------------------------------------------
 
 void KIntNumInput::setSpecialValueText(const QString& text)
 {
@@ -516,14 +439,10 @@ void KIntNumInput::setSpecialValueText(const QString& text)
     layout(true);
 };
 
-
 QString KIntNumInput::specialValueText() const
 {
     return m_spin->specialValueText();
 }
-
-
-// -----------------------------------------------------------------------------
 
 void KIntNumInput::setLabel(const QString & label, int a)
 {
@@ -534,8 +453,7 @@ void KIntNumInput::setLabel(const QString & label, int a)
 }
 
 
-// -----------------------------------------------------------------------------
-
+// ----------------------------------------------------------------------------
 /**
  *
  * This is just a small wrapper mainly to enable mouseWheel support
@@ -605,7 +523,7 @@ void KDoubleLine::interpretText()
 }
 
 
-// -----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 KDoubleNumInput::KDoubleNumInput(QWidget *parent, const char *name)
     : KNumInput(parent, name)
@@ -613,15 +531,11 @@ KDoubleNumInput::KDoubleNumInput(QWidget *parent, const char *name)
     init(0.0);
 }
 
-
 KDoubleNumInput::KDoubleNumInput(double value, QWidget *parent, const char *name)
     : KNumInput(parent, name)
 {
     init(value);
 }
-
-
-// -----------------------------------------------------------------------------
 
 KDoubleNumInput::KDoubleNumInput(KNumInput* below, double value, QWidget* parent,
                                  const char* name)
@@ -630,15 +544,9 @@ KDoubleNumInput::KDoubleNumInput(KNumInput* below, double value, QWidget* parent
     init(value);
 }
 
-
-// -----------------------------------------------------------------------------
-
 KDoubleNumInput::~KDoubleNumInput()
 {
 }
-
-
-// -----------------------------------------------------------------------------
 
 void KDoubleNumInput::init(double value)
 {
@@ -660,9 +568,6 @@ void KDoubleNumInput::init(double value)
     resetEditBox();
 }
 
-
-// -----------------------------------------------------------------------------
-
 void KDoubleNumInput::sliderMoved(int val)
 {
     m_value = m_lower + (double)val * (m_upper - m_lower)/m_slider->maxValue();
@@ -670,9 +575,6 @@ void KDoubleNumInput::sliderMoved(int val)
     resetEditBox();
     emit valueChanged(m_value);
 }
-
-
-// -----------------------------------------------------------------------------
 
 QSize KDoubleNumInput::minimumSizeHint() const
 {
@@ -699,9 +601,6 @@ QSize KDoubleNumInput::minimumSizeHint() const
     return QSize(w, h);
 }
 
-
-// -----------------------------------------------------------------------------
-
 void KDoubleNumInput::resizeEvent(QResizeEvent* e)
 {
     int w = m_colw1;
@@ -727,9 +626,6 @@ void KDoubleNumInput::resizeEvent(QResizeEvent* e)
     if(m_label && (m_alignment & AlignBottom))
         m_label->setGeometry(0, h, m_sizeLabel.width(), m_sizeLabel.height());
 }
-
-
-// -----------------------------------------------------------------------------
 
 void KDoubleNumInput::doLayout()
 {
@@ -768,14 +664,11 @@ void KDoubleNumInput::doLayout()
         m_label->setBuddy(edit);
 }
 
-
-// -----------------------------------------------------------------------------
-
 void KDoubleNumInput::setValue(double val)
 {
     double prevVal = m_value;
     m_value = val;
-    
+
     if(m_range) {
       if(m_value < m_lower) m_value = m_lower;
       if(m_upper < m_value) m_value = m_upper;
@@ -794,9 +687,6 @@ void KDoubleNumInput::setValue(double val)
     if ( m_range && fabs(prevVal - m_value) > m_step )
         emit valueChanged(m_value);
 }
-
-
-// -----------------------------------------------------------------------------
 
 void KDoubleNumInput::setRange(double lower, double upper, double step,
                                                            bool slider)
@@ -859,9 +749,6 @@ double KDoubleNumInput::maxValue() const
     return m_upper;
 }
 
-
-// -----------------------------------------------------------------------------
-
 double  KDoubleNumInput::value() const
 {
     if(edit->edited())
@@ -870,20 +757,15 @@ double  KDoubleNumInput::value() const
     return m_value;
 }
 
-
 QString KDoubleNumInput::suffix() const
 {
     return m_suffix;
 }
 
-
 QString KDoubleNumInput::prefix() const
 {
     return m_prefix;
 }
-
-
-// -----------------------------------------------------------------------------
 
 void KDoubleNumInput::setSuffix(const QString &suffix)
 {
@@ -893,8 +775,6 @@ void KDoubleNumInput::setSuffix(const QString &suffix)
     layout(true);
 }
 
-// -----------------------------------------------------------------------------
-
 void KDoubleNumInput::setPrefix(const QString &prefix)
 {
     m_prefix = prefix;
@@ -902,8 +782,6 @@ void KDoubleNumInput::setPrefix(const QString &prefix)
     resetEditBox();
     layout(true);
 }
-
-// -----------------------------------------------------------------------------
 
 void KDoubleNumInput::setPrecision(int precision)
 {
@@ -917,8 +795,6 @@ int KDoubleNumInput::precision() const
 {
     return m_precision;
 }
-
-// -----------------------------------------------------------------------------
 
 void KDoubleNumInput::resetEditBox()
 {
@@ -934,9 +810,6 @@ void KDoubleNumInput::resetEditBox()
     }
 }
 
-
-// -----------------------------------------------------------------------------
-
 void KDoubleNumInput::setSpecialValueText(const QString& text)
 {
     m_specialvalue = text;
@@ -944,9 +817,6 @@ void KDoubleNumInput::setSpecialValueText(const QString& text)
     resetEditBox();
     layout(true);
 };
-
-
-// -----------------------------------------------------------------------------
 
 void KDoubleNumInput::setLabel(const QString & label, int a)
 {
@@ -956,8 +826,6 @@ void KDoubleNumInput::setLabel(const QString & label, int a)
         m_label->setBuddy(edit);
 
 }
-
-// -----------------------------------------------------------------------------
 
 bool KDoubleNumInput::eventFilter( QObject* obj, QEvent* ev )
 {
@@ -995,7 +863,7 @@ bool KDoubleNumInput::eventFilter( QObject* obj, QEvent* ev )
 }
 
 
-// -----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 void KNumInput::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
