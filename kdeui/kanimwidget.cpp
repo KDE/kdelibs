@@ -47,7 +47,7 @@ KAnimWidget::KAnimWidget( const QString& icons, int size, QWidget *parent,
 {
   connect( &d->timer, SIGNAL(timeout()), this, SLOT(slotTimerUpdate()));
 
-  if (parent->inherits( "KToolBar" ))
+  if (parent && parent->inherits( "KToolBar" ))
     connect(parent, SIGNAL(modechange()), this, SLOT(updateIcons()));
 
   d->loadingCompleted = false;
