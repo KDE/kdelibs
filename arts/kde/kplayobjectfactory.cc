@@ -25,6 +25,7 @@
 #include "kplayobjectfactory.h"
 #include "kplayobjectcreator.h"
 #include "kioinputstream_impl.h"
+#include "kartsdispatcher.h"
 
 #include <qfile.h>
 #include <kdebug.h>
@@ -110,6 +111,7 @@ KDE::PlayObject *KDE::PlayObjectFactory::createPlayObject(const KURL& url, const
 
 QStringList KDE::PlayObjectFactory::mimeTypes(void)
 {
+	KArtsDispatcher dispatcher; // we need such a thing, otherwise we crash
 	Arts::TraderQuery query;
 	vector<Arts::TraderOffer> *offers = query.query();
 
