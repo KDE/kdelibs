@@ -1008,6 +1008,16 @@ class KDialogBase : public KDialog
     void unfoldTreeList( bool persist = false );
 
     /**
+     * Add a widget at the bottom of the TreeList/IconList.
+     *
+     * @param widget  The widget to be added. It will be reparented into the
+     *                KJanusWidget, therefor it will be deleted with the
+     *                KJanusWidget, too. To be on the save side just don't keep
+     *                the pointer to this widget.
+     */
+    void addWidgetBelowList( QWidget * widget );
+
+    /**
      * Add a button at the bottom of the TreeList/IconList.
      *
      * @param text     The text on the PushButton.

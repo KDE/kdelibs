@@ -852,6 +852,14 @@ void KJanusWidget::unfoldTreeList( bool persist )
   }
 }
 
+void KJanusWidget::addWidgetBelowList( QWidget * widget )
+{
+  if( ( mFace == TreeList || mFace == IconList ) && d->mListFrame )
+  {
+    widget->reparent( d->mListFrame, QPoint() );
+  }
+}
+
 void KJanusWidget::addButtonBelowList( const QString & text, QObject * recv, const char * slot )
 {
   if( ( mFace == TreeList || mFace == IconList ) && d->mListFrame )
