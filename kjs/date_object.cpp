@@ -168,6 +168,7 @@ Object DateObject::construct(const List &args)
       value = p.toNumber();
   } else {
     struct tm t;
+    memset(&t, 0, sizeof(t));
     Number y = args[0].toNumber();
     /* TODO: check for NaN */
     int year = y.toInt32();
@@ -210,6 +211,7 @@ Completion DateObjectFunc::execute(const List &args)
       result = Undefined();
   else {
     struct tm t;
+    memset(&t, 0, sizeof(t));
     int n = args.size();
     Number y = args[0].toNumber();
     /* TODO: check for NaN */
