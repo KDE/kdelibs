@@ -657,3 +657,9 @@
   <EXTERNAL-SPECIFICATION ID="KDE-ZH-CN" DOCUMENT="kde-l1zh-CN">
 
 </STYLE-SHEET>
+<!--
+Local Variables:
+outline-regexp: " *<STYLE-SPECIFICATION[ >]"
+outline-heading-end-regexp: ">\n"
+End:
+-->
