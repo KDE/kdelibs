@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Service
+
+X-KDE-ModuleType=Library
+X-KDE-Library=test
+X-KDE-FactoryName=test
+
+Name=KDED Test Module
+Comment=A Test Module for KDED
