@@ -1528,7 +1528,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
 	    QWidget* w = activeWindow();
 	    if( w ) {
     		XChangeProperty( qt_xdisplay(), w->winId(), kde_net_wm_user_time, XA_CARDINAL,
-        	    32, PropModeReplace, (unsigned char*)&qt_x_time, 1 );
+        	    32, PropModeReplace, (unsigned char*)&qt_x_last_input_time, 1 );
     		timeval tv;
 		gettimeofday( &tv, NULL );
 		unsigned long now = tv.tv_sec * 10 + tv.tv_usec / 100000;
