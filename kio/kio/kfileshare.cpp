@@ -50,11 +50,13 @@ bool KFileShare::s_sharingEnabled;
 
 KFileSharePrivate::KFileSharePrivate()
 {
-  if (QFile::exists(FILESHARECONF)) {
-        KDirWatch::self()->addFile(FILESHARECONF);
-        connect(KDirWatch::self(), SIGNAL(dirty (const QString&)),this,
-   	        SLOT(slotFileChange(const QString &)));
-  } 
+  KDirWatch::self()->addFile(FILESHARECONF);
+  connect(KDirWatch::self(), SIGNAL(dirty (const QString&)),this,
+          SLOT(slotFileChange(const QString &)));
+  connect(KDirWatch::self(), SIGNAL(created(const QString&)),this,
+          SLOT(slotFileChange(const QString &)));
+  connect(KDirWatch::self(), SIGNAL(deleted(const QString&)),this,
+          SLOT(slotFileChange(const QString &)));
 }
 
 KFileSharePrivate::~KFileSharePrivate()
@@ -80,7 +82,6 @@ void KFileSharePrivate::slotFileChange(const QString &file)
      KFileShare::readShareList();
   }    
 }
-
 
 void KFileShare::readConfig() // static
 {    
