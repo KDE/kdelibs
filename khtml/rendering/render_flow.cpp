@@ -493,12 +493,9 @@ void RenderFlow::layoutBlockChildren( bool relayoutChildren )
                 prevFlow=0;
         }
 
+	child->calcWidth();
+
         int chPos = xPos + child->marginLeft();
-        child->setPos(chPos, m_height);
-	if ( !child->layouted() )
-	    child->layout();
-
-
         if(style()->direction() == LTR) {
             // html blocks flow around floats
             if ( ( style()->htmlHacks() || child->isTable() ) && child->style()->flowAroundFloats() )
@@ -508,7 +505,10 @@ void RenderFlow::layoutBlockChildren( bool relayoutChildren )
             if ( ( style()->htmlHacks() || child->isTable() ) && child->style()->flowAroundFloats() )
                 chPos = rightOffset(m_height) - child->marginRight() - child->width();
         }
-        child->setPos(chPos, child->yPos());
+        child->setPos(chPos, m_height);
+
+	if ( !child->layouted() )
+	    child->layout();
 
         m_height += child->height();
 
