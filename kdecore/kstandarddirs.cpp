@@ -1170,7 +1170,8 @@ bool KStandardDirs::makeDir(const QString& dir, int mode)
               (void)unlink(baseEncoded); // try removing
 
 	  if ( mkdir(baseEncoded, (mode_t) mode) != 0) {
-	    perror("trying to create local folder");
+            baseEncoded.prepend( "trying to create local folder " );
+	    perror(baseEncoded.data());
 	    return false; // Couldn't create it :-(
 	  }
         }
