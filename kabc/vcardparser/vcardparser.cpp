@@ -113,9 +113,15 @@ VCard::List VCardParser::parseVCards( const QString& text )
           if ( vCardLine.parameter( "encoding" ).lower() == "b" ||
                vCardLine.parameter( "encoding" ).lower() == "base64" )
             KCodecs::base64Decode( input, output );
-          else if ( vCardLine.parameter( "encoding" ).lower() == "quoted-printable" )
+          else if ( vCardLine.parameter( "encoding" ).lower() == "quoted-printable" ) {
+            // join any qp-folded lines
+            while ( value.at( value.length() - 1 ) == '=' && it != linesEnd ) {
+              value = value.remove( value.length() - 1, 1 ) + (*it);
+              ++it;
+            }
+            input = value.local8Bit();
             KCodecs::quotedPrintableDecode( input, output );
-
+          }
           if ( vCardLine.parameter( "charset" ).lower() == "utf-8" ) {
             vCardLine.setValue( QString::fromUtf8( output.data(), output.size() ) );
           } else {
