@@ -255,6 +255,7 @@
 <!ENTITY kugar "<application>Kugar</application>">
 <!ENTITY kuser	"<application>Kuser</application>">
 <!ENTITY kview	"<application>KView</application>">
+<!ENTITY kviewshell "<application>KViewshell</application>">
 <!ENTITY kvt	"<application>kvt</application>">
 <!ENTITY kworldwatch  "<application>KWorldWatch</application>">
 <!ENTITY kword "<application>KWord</application>">
