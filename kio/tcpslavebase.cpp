@@ -273,6 +273,7 @@ bool TCPSlaveBase::usingTLS()
 int TCPSlaveBase::verifyCertificate()
 {
 int rc = 0;
+bool permacache = false;
 
    if (!d->cc) d->cc = new KSSLCertificateCache;
 
@@ -323,6 +324,9 @@ int rc = 0;
              cp == KSSLCertificateCache::Ambiguous) {
             // FIXME: obtain the default bad-cert policy -- default to prompt
             cp = KSSLCertificateCache::Prompt;
+         } else {
+            // A policy was already set so let's honour that.
+            permacache = d->cc->isPermanent(pc);
          }
 
          // Precondition: cp is one of Reject, Accept or Prompt
@@ -337,18 +341,25 @@ int rc = 0;
           break;
          case KSSLCertificateCache::Prompt:
            {
+           // We need to get one of the following:
+           //      accept current session  - record a temp record
+           //      accept always           - record a permarecord
+           //      reject current session  - record a temp record
+           //      reject always           - record a permarecord
+           //        - pseudo response of "Display Info"
            int result = messageBox( WarningYesNo,
-                                    i18n("Certificate verification failed (FIXME)"),
-                                    i18n("Server Authentication"),
-                                    i18n("Continue"),
-                                    i18n("Cancel") );
-           if (result == KMessageBox::Yes) {
-              setMetaData("ssl_action", "accept");
-              rc = 1;
-           } else {
-              setMetaData("ssl_action", "reject");
-              rc = -1;
-           }
+                              i18n("Certificate verification failed (FIXME)"),
+                              i18n("Server Authentication"),
+                              i18n("Continue"),
+                              i18n("Cancel") );
+
+             if (result == KMessageBox::Yes) {
+                setMetaData("ssl_action", "accept");
+                rc = 1;
+             } else {
+                setMetaData("ssl_action", "reject");
+                rc = -1;
+             }
            }
           break;
          default:
@@ -358,8 +369,9 @@ int rc = 0;
       }
 
       //  - cache the results
+      d->cc->addCertificate(pc, cp, permacache);
 
-   } else {
+   } else {        // Child frame
       //  - Read from cache and see if there is a policy for this
       KSSLCertificateCache::KSSLCertificatePolicy cp = d->cc->getPolicyByCertificate(pc);
       
