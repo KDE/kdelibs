@@ -23,6 +23,9 @@
 // $Id$
 // $Log$
 //
+// Revision 1.108  1999/04/30 20:43:00  mosfet
+// Added QSplitter and cleaned up some
+//
 // Revision 1.107  1999/04/23 13:56:21  mosfet
 // KDE theme style classes and some KStyle additions to the bars.
 //
@@ -235,6 +238,7 @@
 
 #include "ktoolbar.h"
 #include "klined.h"
+#include "kcombo.h"
 #include "kseparator.h"
 #include <ktopwidget.h>
 #include <klocale.h>
@@ -487,7 +491,15 @@ bool KToolBarButton::eventFilter (QObject *o, QEvent *ev)
   default:
       break;
   }
+  return false;
+        iconType = KStyle::Text;
+        break;
+      raised, isEnabled(), myPopup != NULL, icontext, btext, pixmap(),
+    default:
 
+        iconType = KStyle::IconTextBottom;
+        break;
+    }
     kapp->kstyle()->drawKToolBarButton(_painter, 0, 0, width(), height(),
       isEnabled()? colorGroup() : palette().disabled(), isDown() || isOn(),
       raised, isEnabled(), myPopup != NULL, iconType, btext, pixmap(),
@@ -745,8 +757,8 @@ void KToolBarButton::makeDisabledPixmap()
   QColorGroup g = pal.disabled();
 
   // Prepare the disabledPixmap for drawing
-    mask = new QBitmap(enabledPixmap.createHeuristicMask());
-    allocated = true;
+
+  disabledPixmap.detach(); // prevent flicker
   disabledPixmap.resize(enabledPixmap.width(), enabledPixmap.height());
   disabledPixmap.fill( g.background() );
   const QBitmap *mask = enabledPixmap.mask();
@@ -760,6 +772,9 @@ void KToolBarButton::makeDisabledPixmap()
   bitmap.setMask(*mask);
 
   QPainter p;
+  p.begin( &disabledPixmap );
+  p.setPen( g.light() );
+  p.drawPixmap(1, 1, bitmap);
   p.setPen( g.mid() );
   p.drawPixmap(0, 0, bitmap);
   p.end();
@@ -1457,20 +1472,38 @@ void KToolBar::paintEvent(QPaintEvent *)
   //MD Lots of rewrite
 
   // This code should be shared with the aequivalent in kmenubar!
+  // (Marcin Dalecki).
+
   toolbarHeight = height ();
+  toolbarWidth = width ();
+
+  int stipple_height;
+
+  // Moved around a little to make variables available for KStyle (mosfet).
+  
+  QColorGroup g = QWidget::colorGroup();
+  // Took higlighting handle from kmenubar - sven 040198
   QBrush b;
   if (mouseEntered && highlight)
-                                             colorGroup(), false, &b);
-      }
-    // Took higlighting handle from kmenubar - sven 040198
-    QBrush b;
-    if (mouseEntered && highlight)
       b = colorGroup().highlight(); // this is much more logical then
-                            // the hardwired value used before!!
-    else
+  // the hardwired value used before!!
+  else
       b = QWidget::backgroundColor();
 
+  QPainter *paint = new QPainter();
+  paint->begin( this );
 
+  if(kapp->kstyle()){
+      kapp->kstyle()->drawKToolBar(paint, 0, 0, toolbarWidth, toolbarHeight,
+                                   colorGroup(), position == Floating);
+      if(moving){
+          if(horizontal)
+              kapp->kstyle()->drawKBarHandle(paint, 0, 0, 9, toolbarHeight,
+                                             colorGroup(), true,  &b);
+          else
+              kapp->kstyle()->drawKBarHandle(paint, 0, 0, toolbarWidth, 9,
+                                             colorGroup(), false, &b);
+      }
       paint->end();
       delete paint;
       return;

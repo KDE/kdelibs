@@ -34,6 +34,7 @@
 #include <kwm.h>
 #include <ktoolboxmgr.h>
 #include <kwm.h>
+#include <kstyle.h>
 
 #define CONTEXT_TOP 1
 #define CONTEXT_BOTTOM 2
@@ -42,6 +43,10 @@
 
 // $Id$
 // $Log$
+//
+// Revision 1.68  1999/04/23 13:56:18  mosfet
+// KDE theme style classes and some KStyle additions to the bars.
+//
 // Revision 1.67  1999/03/06 18:03:33  ettrich
 // the nifty "flat" feature of kmenubar/ktoolbar is now more visible:
 // It has its own menu entry and reacts on simple LMP clicks.
@@ -598,6 +603,17 @@ bool KMenuBar::eventFilter(QObject *ob, QEvent *ev){
       int stipple_height;
       if (ev->type() == QEvent::Enter && highlight) // highlight? - sven
         b = colorGroup().highlight();  // this is much more logical then
+                               // the hardwired value used before!!
+
+      int h = handle->height();
+      int w = handle->width();
+
+      if(kapp->kstyle()){
+          if(position == Flat)
+              kapp->kstyle()->drawKBarHandle(&paint, 0, 0, w, 9,
+                                             colorGroup(), false);
+          else
+              kapp->kstyle()->drawKBarHandle(&paint, 0, 0, 9, h,
                                              colorGroup(), true);
 
           return(true);
