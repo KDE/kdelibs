@@ -21,6 +21,7 @@
 #include "html.h"
 #include "htmlview.h"
 
+#include <strings.h>
 #include <stdlib.h>
 
 HTMLFrameSet::HTMLFrameSet( QWidget *_parent, const char *_src )

@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
+#include <strings.h>
 
 // Include Java Script
 #include <jsexec.h>

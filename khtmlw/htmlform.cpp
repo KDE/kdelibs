@@ -31,7 +31,7 @@
 #include <qlined.h>
 #include <qmlined.h>
 #include "htmlform.h"
-
+#include <strings.h>
 #include "htmlform.moc"
 
 //----------------------------------------------------------------------------
