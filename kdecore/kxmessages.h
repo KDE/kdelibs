@@ -53,8 +53,9 @@ class KXMessages
 	/**
 	 * Creates an instance which will receive X messages.
 	 *
-	 * If accept_broadcast is non-NULL,  all broadcast messages with this
-	 * message type will be received.
+	 * @param accept_broadcast if non-NULL, all broadcast messages with 
+	 *                         this message type will be received.
+	 * @param parent the parent of this widget
 	 */
 	// CHECKME accept_broadcast == NULL is useless now
         KXMessages( const char* accept_broadcast = NULL, QWidget* parent = NULL );
@@ -64,24 +65,46 @@ class KXMessages
          * window.
          * 
          * @param w X11 handle for the destination window
+	 * @param msg_type the type of the message
+	 * @param message the message itself
 	 */
         void sendMessage( WId w, const char* msg_type, const QString& message );
 	/**
 	 * Broadcasts the given message with the given message type.
+	 * @param msg_type the type of the message
+	 * @param message the message itself
 	 */
         void broadcastMessage( const char* msg_type, const QString& message );
+
+	/**
+	 * Sends the given message with the given message type only to given
+         * window.
+         * 
+	 * @param disp X11 connection which will be used instead of 
+	 *             qt_x11display()
+         * @param w X11 handle for the destination window
+	 * @param msg_type the type of the message
+	 * @param message the message itself
+	 * @return false when an error occurred, true otherwise
+	 */
         static bool sendMessageX( Display* disp, WId w, const char* msg_type,
             const QString& message );
+
 	/**
 	 * Broadcasts the given message with the given message type.
 	 *
-	 * @param disp X11 connection which will be used instead of qt_x11display()
+	 * @param disp X11 connection which will be used instead of 
+	 *             qt_x11display()
+	 * @param msg_type the type of the message
+	 * @param message the message itself
+	 * @return false when an error occurred, true otherwise
 	 */
         static bool broadcastMessageX( Display* disp, const char* msg_type,
             const QString& message );
     signals:
 	/**
 	 * Emitted when a message was received.
+	 * @param message the message that has been received
 	 */
         void gotMessage( const QString& message );
     protected:
