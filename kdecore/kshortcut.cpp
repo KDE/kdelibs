@@ -225,7 +225,7 @@ bool KKeySequence::init( const QKeySequence& seq )
 	clear();
 #if QT_VERSION >= 0x030100
 	if( !seq.isEmpty() ) {
-		for( uint i = 0; i < seq.count(); i++ ) {	
+		for( uint i = 0; i < seq.count(); i++ ) {
 			m_rgvar[i].init( seq[i] );
 			if( m_rgvar[i].isNull() )
 				return false;
@@ -474,7 +474,7 @@ bool KShortcut::init( const QString& s )
 	bool bRet = true;
 	QStringList rgs = QStringList::split( ';', s );
 
-	if( s == "none" || rgs.size() == 0 ) 
+	if( s == "none" || rgs.size() == 0 )
 		clear();
 	else if( rgs.size() <= MAX_SEQUENCES ) {
 		m_nSeqs = rgs.size();
@@ -548,7 +548,7 @@ bool KShortcut::contains( const KKeyNative& keyNative ) const
 {
 	KKey key = keyNative.key();
 	key.simplify();
-	
+
 	for( uint i = 0; i < count(); i++ ) {
 		if( !m_rgseq[i].isNull()
 		    && m_rgseq[i].count() == 1
@@ -589,6 +589,34 @@ bool KShortcut::append( const KKeySequence& seq )
 		return true;
 	} else
 		return false;
+}
+
+bool KShortcut::append( const KKey& spec )
+{
+	if( m_nSeqs < MAX_SEQUENCES ) {
+		m_rgseq[m_nSeqs].init( spec );
+		m_nSeqs++;
+		return true;
+	} else
+		return false;
+}
+
+bool KShortcut::append( const KShortcut& cut )
+{
+	uint seqs = m_nSeqs, co = cut.count();
+	for( int i=0; i<co; i++ ) {
+	    if (!contains(cut.seq(i))) seqs++;
+	}
+	if( seqs > MAX_SEQUENCES ) return false;
+
+	for( int i=0; i<co; i++ ) {
+		const KKeySequence& seq = cut.seq(i);
+		if(!contains(seq)) {
+			m_rgseq[m_nSeqs] = seq;
+			m_nSeqs++;
+		}
+	}
+	return true;
 }
 
 KShortcut::operator QKeySequence () const

@@ -776,6 +776,25 @@ class KShortcut
 	bool append( const KKeySequence& keySeq );
 
 	/**
+	 * Appends the given key
+	 * @param spec the key to add
+	 * @return true if successful, false otherwise
+	 * @see setSeq()
+	 * @see MAX_SEQUENCES
+	 * @since 3.2
+	*/
+	bool append( const KKey& spec );
+
+	/**
+	 * Appends the sequences from the given shortcut.
+	 * @param cut the shortcut to append
+	 * @return true if successful, false otherwise
+	 * @see MAX_SEQUENCES
+	 * @since 3.2
+	*/
+	bool append( const KShortcut& cut );
+
+	/**
 	 * Converts this shortcut to a key sequence. The first key sequence
 	 * will be taken.
 	 */
