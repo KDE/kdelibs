@@ -30,7 +30,7 @@
 #include <kdebug.h>
 #include <kstaticdeleter.h>
 
-static const char * const daemonName="knotify";
+static const char daemonName[] = "knotify";
 
 static bool sendNotifyEvent(const QString &message, const QString &text,
                             int present, int level, const QString &sound,
@@ -177,8 +177,11 @@ QString KNotifyClient::getDefaultFile(const QString &eventname, int present)
 
 bool KNotifyClient::startDaemon()
 {
-  if (!kapp->dcopClient()->isApplicationRegistered(daemonName))
+  static bool firstTry = true;
+  if (firstTry && !kapp->dcopClient()->isApplicationRegistered(daemonName)) {
+    firstTry = false;
     return KApplication::startServiceByDesktopName(daemonName) == 0;
+  }
   return true;
 }
 
