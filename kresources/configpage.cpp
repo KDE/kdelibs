@@ -22,7 +22,6 @@
 */
 
 #include <qgroupbox.h>
-#include <qinputdialog.h>
 #include <qlabel.h>
 #include <qlayout.h>
 
@@ -37,6 +36,7 @@
 #include <klistview.h>
 #include <kbuttonbox.h>
 #include <ktrader.h>
+#include <kinputdialog.h>
 
 #include "resource.h"
 #include "configdialog.h"
@@ -252,9 +252,9 @@ void ConfigPage::slotAdd()
   QStringList types = mCurrentManager->resourceTypeNames();
   QStringList descs = mCurrentManager->resourceTypeDescriptions();
   bool ok = false;
-  QString desc = QInputDialog::getItem( i18n( "Resource Configuration" ),
-                    i18n( "Please select type of the new resource:" ), descs, 0, 
-                    false, &ok, this );
+  QString desc = KInputDialog::getItem( i18n( "Resource Configuration" ),
+                    i18n( "Please select type of the new resource:" ), descs,
+                    0, false, &ok, this );
   if ( !ok )
     return;
 
