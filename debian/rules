@@ -52,6 +52,7 @@ binary-arch:  build
 	dh_testroot
 	dh_clean 
 	dh_installdirs
+	install -d debian/tmp/etc/kde2/applnk
 	make -C $(BUILDDIR) DESTDIR=`pwd`/debian/tmp/ install
 	debianrc=debian/tmp/$(kde_confdir)/system.kdeglobals ;\
 	install -d `dirname $$debianrc` ;\
@@ -65,15 +66,16 @@ binary-arch:  build
 	  (mkdir -p debian/tmp/usr/share/kdoc/index) ; \
 	  (mkdir -p debian/kdelibs3-doc-cvs/usr/share/doc/kdelibs3-doc-cvs/html/kdoc-reference) ; \
 	  qt2kdoc --url=/usr/share/doc/qt2.1-doc/doc/html \
-	  --outdir=`pwd`/debian/tmp/usr/share/doc/kdelibs3-doc-cvs/html/kdoc-reference \
+	  --outdir=`pwd`/debian/kdelibs3-doc-cvs/usr/share/doc/kdelibs3-doc-cvs/html/kdoc-reference \
 	  --compress \
 	  /usr/share/doc/qt2.1-doc/doc/html ; \
-	  makekdedoc --libdir=`pwd`/debian/tmp/usr/share/doc/kdelibs3-doc-cvs/html/kdoc-reference \
+	  makekdedoc --libdir=`pwd`/debian/kdelibs3-doc-cvs/usr/share/doc/kdelibs3-doc-cvs/html/kdoc-reference \
 	  --outputdir=`pwd`/debian/kdelibs3-doc-cvs/usr/share/doc/kdelibs3-doc-cvs/html ; \
 	fi
 
 # libraries not starting with lib are modules
 	dh_movefiles -pkdelibs3-dev-cvs $(kde_includedir) $(kde_libdir)/lib*.so $(kde_libdir)/lib*.la $(kde_libdir)/lib*.a
+	-mv `find debian/kdelibs3-dev-cvs/$(kde_libdir) -type f -name "*.so"` debian/tmp/$(kde_libdir)/
 	dh_installchangelogs
 	dh_undocumented
 	dh_link

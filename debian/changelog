@@ -1,3 +1,9 @@
+kdelibs-cvs (4:2.0-20000512-1.0) experimental; urgency=low
+
+  * New upstream beta version
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 12 May 2000 20:30:00 -0700
+
 kdelibs-cvs (4:2.0-20000403-1.0) experimental; urgency=low
  
   * More upstream CVS updates
