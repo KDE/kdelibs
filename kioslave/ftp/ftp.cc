@@ -882,7 +882,7 @@ bool Ftp::ftpOpenDataConnection()
   m_bPasv = false;
 
   l = sizeof(sin);
-  if ( getsockname( sControl, &sin.sa, &l ) < 0 )
+  if ( KSocks::self()->getsockname( sControl, &sin.sa, &l ) < 0 )
     return false;
   if (sin.sa.sa_family != PF_INET)
     return false;		// wrong family
@@ -907,7 +907,7 @@ bool Ftp::ftpOpenDataConnection()
   }
 
   sin.in.sin_port = 0;
-  if ( bind( sDatal, &sin.sa, sizeof(sin) ) == -1 )
+  if ( KSocks::self()->bind( sDatal, &sin.sa, sizeof(sin) ) == -1 )
   {
     ::close( sDatal );
     sDatal = 0;
@@ -915,7 +915,7 @@ bool Ftp::ftpOpenDataConnection()
     return false;
   }
 
-  if ( listen( sDatal, 1 ) < 0 )
+  if ( KSocks::self()->listen( sDatal, 1 ) < 0 )
   {
     error( ERR_COULD_NOT_LISTEN, m_host );
     ::close( sDatal );
@@ -923,7 +923,7 @@ bool Ftp::ftpOpenDataConnection()
     return 0;
   }
 
-  if ( getsockname( sDatal, &sin.sa, &l ) < 0 )
+  if ( KSocks::self()->getsockname( sDatal, &sin.sa, &l ) < 0 )
     // error ?
     return false;
 
@@ -955,14 +955,14 @@ int Ftp::ftpAcceptConnect()
 
   if ( m_bPasv )
     return sDatal;
-  if ( select( sDatal + 1, &mask, NULL, NULL, 0L ) == 0)
+  if ( KSocks::self()->select( sDatal + 1, &mask, NULL, NULL, 0L ) == 0)
   {
     ::close( sDatal );
     return -2;
   }
 
   l = sizeof(addr);
-  if ( ( sData = accept( sDatal, &addr, &l ) ) > 0 )
+  if ( ( sData = KSocks::self()->accept( sDatal, &addr, &l ) ) > 0 )
     return sData;
 
   ::close( sDatal );
