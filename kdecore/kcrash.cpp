@@ -69,25 +69,33 @@ KCrash::setEmergencySaveFunction (HandlerType saveFunction)
 
 // This function sets the function which should be responsible for 
 // the application crash handling.
-
 void
 KCrash::setCrashHandler (HandlerType handler)
 {
   if (!handler)
     handler = SIG_DFL;
 
+  sigset_t mask;
+  sigemptyset(&mask);
+
 #ifdef SIGSEGV
   signal (SIGSEGV, handler);
+  sigaddset(&mask, SIGSEGV);
 #endif
 #ifdef SIGFPE
   signal (SIGFPE, handler);
+  sigaddset(&mask, SIGFPE);
 #endif
 #ifdef SIGILL
   signal (SIGILL, handler);
+  sigaddset(&mask, SIGILL);
 #endif
 #ifdef SIGABRT
   signal (SIGABRT, handler);
+  sigaddset(&mask, SIGABRT);
 #endif
+
+  sigprocmask(SIG_UNBLOCK, &mask, 0);
 
   _crashHandler = handler;
 }
