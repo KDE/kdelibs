@@ -302,6 +302,8 @@ void PartManager::removePart( Part *part )
 
   if ( part == d->m_activePart )
     setActivePart( 0 );
+  if ( part == d->m_selectedPart )
+    setSelectedPart( 0 );
 }
 
 void PartManager::replacePart( Part * oldPart, Part * newPart, bool setActive )
