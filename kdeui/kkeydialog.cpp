@@ -703,17 +703,23 @@ bool KKeyChooser::isKeyPresent( const KShortcut& cut, bool bWarnUser )
 		return false;
 	}
 
-	// If editing global shortcuts, check them for conflicts with the stdaccels.
-	if( m_type == ApplicationGlobal || m_type == Global ) {
-                if( checkStandardShortcutsConflict( cut, bWarnUser, this ))
-                    return true;
-	}
-
         bool has_global_chooser = false;
+        bool has_standard_chooser = false;
         for( QValueList< KKeyChooser* >::ConstIterator it = allChoosers->begin();
              it != allChoosers->end();
-             ++it )
+             ++it ) {
             has_global_chooser |= ((*it)->m_type == Global);
+            has_standard_chooser |= ((*it)->m_type == Standard);
+        }
+
+	// If editing global shortcuts, check them for conflicts with the stdaccels.
+	if( m_type == ApplicationGlobal || m_type == Global ) {
+            if( !has_standard_chooser ) {
+                if( checkStandardShortcutsConflict( cut, bWarnUser, this ))
+                    return true;
+            }
+	}
+
         // only check the global keys if one of the keychoosers isn't global
         if( !has_global_chooser ) {
             if( checkGlobalShortcutsConflict( cut, bWarnUser, this, d->mapGlobals,
