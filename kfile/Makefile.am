@@ -17,7 +17,7 @@
 #    Boston, MA 02111-1307, USA.
 
 
-INCLUDES= -I$(top_srcdir)/kfmlib $(all_includes)
+INCLUDES= -I$(top_srcdir)/kio $(all_includes)
 
 lib_LTLIBRARIES  = libkfile.la
 
@@ -29,7 +29,7 @@ libkfile_la_METASOURCES = kcombiview.moc kdir.moc kdirlistbox.moc \
 include_HEADERS = kfiledialog.h kfileinfo.h kfilebookmark.h  \
 	kremotefile.h kdir.h kdirlistbox.h kfileinfocontents.h \
 	booktoken.h kfiledetaillist.h kcombiview.h kpreview.h kfilepreview.h \
-	xview.h kfilesimpleview.h kfilefilter.h
+	kfilesimpleview.h kfilefilter.h
 
 noinst_HEADERS = kfiledialogconf.h kfilefilter.h config-kfile.h
 
@@ -38,7 +38,7 @@ libkfile_la_SOURCES = kfilebookmark.cpp kfiledialogconf.cpp kcombiview.cpp \
 	kdir.cpp kfileinfo.cpp kremotefile.cpp kdirlistbox.cpp \
 	kfiledetaillist.cpp kfiledialog.cpp booktoken.cpp \
 	kfileinfocontents.cpp kfilesimpleview.cpp kpreview.cpp \
-	kfilepreview.cpp xview.cpp kfilefilter.cpp
+	kfilepreview.cpp kfilefilter.cpp
 
 toolbar_DATA = configure.xpm 
 
@@ -53,4 +53,4 @@ libkfile_la_LIBADD =  -lXext  $(LIB_QT)
 
 check_PROGRAMS = kfstest
 kfstest_LDFLAGS = $(LDFLAGS) $(KDE_RPATH)
-kfstest_LDADD = libkfile.la ../kfmlib/libkfm.la ../kdeui/libkdeui.la ../kdecore/libkdecore.la  -lXext  $(LIB_QT)
+kfstest_LDADD = libkfile.la ../kio/libkio.la ../kdeutils/libkdeutil.la ../kdeui/libkdeui.la ../kdecore/libkdecore.la  -lXext  $(LIB_QT)

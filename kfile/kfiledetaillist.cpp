@@ -198,15 +198,9 @@ bool KFileDetailList::insertItem(const KFileInfo *i, int index)
 	else
 	    type = "l_file";
     
-    QString item;
-    item.sprintf("%s\t%s\t%u\t%s\t%s\t%s\t%s",
-                 type,
-                 i->fileName(),
-                 i->size(),
-                 i->access(),
-                 i->date(),
-                 i->owner(),
-                 i->group());
+    QString item = QString("%1\t%2\t%3\t%4\t%5\t%6\t%7").
+	arg(type).arg(i->fileName()).arg(i->size()).arg(i->access()).
+	arg(i->date()).arg(i->owner()).arg(i->group());
 
     KTabListBox::insertItem(item, index);
 

@@ -54,6 +54,8 @@ bool previewTestFile( const KFileInfo *i, const QString inFilename,
 */
 
 
+void openFileManagerWindow(char const *) {}
+
 int main(int argc, char **argv)
 {
 

@@ -27,7 +27,6 @@
 #include <qstring.h>
 
 #include "kpreview.h"
-#include "xview.h"
 
 #include "kdir.h"
 #include <kapp.h>
@@ -159,8 +158,6 @@ KPreview::~KPreview()
 KPreview::KPreview( const KDir *inDir, QWidget *parent, const char *name)
     : QWidget(parent,name), myDir(inDir), showedText(false)
 {
-
-    QImageIO::defineIOHandler( "XV", "^P7 332", 0, read_xv_file, 0L );
 
     if ( !myTextPreviewerStorage )
         initHandlers();

@@ -27,8 +27,9 @@
 #include "kdir.h"
 #include <time.h>
 #include <qtimer.h>
-#include <kfm.h>
 #include "kfileinfo.h"
+#include <kio_job.h>
+#include <config-kfile.h>
 
 /*
 ** KDir - URL aware directory interface
@@ -91,7 +92,7 @@ void KDir::initLists()
 
     myDirtyFlag= true;
     myFilteredDirtyFlag= true;
-    myKfm= 0;
+    myJob= 0;
     myEntries.setAutoDelete(true);
     myFilteredEntries.setAutoDelete(true);
     myFilteredNames.setAutoDelete(true);
@@ -99,7 +100,6 @@ void KDir::initLists()
 
 KDir::~KDir()
 {
-    delete myKfm;
 }
 
 
@@ -354,26 +354,27 @@ bool KDir::filterEntry(KFileInfo *i)
 bool KDir::startLoading()
 {
     // If kfm is not busy
-    if (myKfm == 0) {
+    if (myJob == 0) {
 	// Create a connection to kfm
-	myKfm = new KFM;
+	myJob = new KIOJob("kiojob");
 	
-	CHECK_PTR(myKfm);
+	CHECK_PTR(myJob);
 	
+	/* TODO
 	// Check connection was made
-	if ( !myKfm->isOK() ) {
-	    delete myKfm;
-	    myKfm = 0;
+	if ( !myJob->isOK() ) {
+	    myJob = 0;
 	    readable = false;
 	    emit finished(); // what else can I say? ;)
-	} else {	// If all is well
-	
-	    connect(myKfm, SIGNAL(finished()), SLOT(slotKfmFinished()));
-	    connect(myKfm, SIGNAL(error(int, const QString&)),
-		    SLOT(slotKfmError(int, const QString&)));
-	    connect(myKfm, SIGNAL(dirEntry(KDirEntry&)),
-		    SLOT(slotDirEntry(KDirEntry&)));
-	    myKfm->list(myLocation.url());
+	    } else */
+	{	// If all is well
+	    
+	    connect(myJob, SIGNAL(sigFinished(int)), SLOT(slotKfmFinished()));
+	    connect(myJob, SIGNAL(sigError(int, int, const char * )),
+		    SLOT(slotKfmError(int, int, const char * )));
+	    connect(myJob, SIGNAL(sigListEntry(int, const UDSEntry&)),
+		    SLOT(slotListEntry(int, const UDSEntry&)));
+	    myJob->listDir(myLocation.url());
 	    return true;
 	}
     }
@@ -381,9 +382,9 @@ bool KDir::startLoading()
     return false;
 }
 
-void KDir::slotDirEntry(KDirEntry& entry) // SLOT
+void KDir::slotListEntry(int id, const UDSEntry& entry) // SLOT
 {
-
+    debugC("slotListEntry");
     KFileInfo *i= new KFileInfo(entry);
     CHECK_PTR(i);
     
@@ -391,7 +392,7 @@ void KDir::slotDirEntry(KDirEntry& entry) // SLOT
     
     if (filterEntry(i)) {
 	
-	KFileInfo *fi= new KFileInfo(entry);
+	KFileInfo *fi= new KFileInfo(*i);
 	CHECK_PTR(fi);
 	
 	myFilteredEntries.append(fi);
@@ -408,18 +409,16 @@ void KDir::setBlocking(bool _block)
 
 void KDir::slotKfmFinished() // SLOT
 {
-    delete myKfm;
-    myKfm= 0;
+    myJob= 0;
     
     emit finished();
 }
 
-void KDir::slotKfmError(int kerror, const QString& text) // SLOT
+void KDir::slotKfmError(int, int _errid, const char *_txt )
 {
-    delete myKfm;
-    myKfm= 0;
+    myJob= 0;
     
-    emit error(kerror, text);
+    emit error(_errid, _txt);
 }
 
 void KDir::setMaxReturns(uint max) {

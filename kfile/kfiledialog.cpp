@@ -39,6 +39,7 @@
 #include "kfilebookmark.h"
 #include <kprocess.h>
 #include <kapp.h>
+#include <kio_job.h>
 
 enum Buttons { BACK_BUTTON= 1000, FORWARD_BUTTON, PARENT_BUTTON,
 	       HOME_BUTTON, RELOAD_BUTTON, HOTLIST_BUTTON,
@@ -55,6 +56,8 @@ KFileBaseDialog::KFileBaseDialog(const QString& dirName, const QString& filter,
 			 bool acceptURLs)
     : QDialog(parent, name, modal), boxLayout(0)
 {
+    KIOJob::initStatic();
+
     QAccel *a = new QAccel( this );
     a->connectItem(a->insertItem(Key_T + CTRL), this,
 		   SLOT(completion()));

@@ -36,7 +36,7 @@
 
 #include <kurl.h>
 
-class KFM;
+class KIOJob;
 
 /*
 ** KDir - URL aware directory interface
@@ -143,7 +143,7 @@ public:
     /**
       * Returns true if KFM has finished the operation.
       */
-    bool isFinished() const { return (myKfm == 0); }
+    bool isFinished() const { return (myJob == 0); }
     
     /**
       * Return a list of KFileInfo objects matching the specified filter.
@@ -220,14 +220,14 @@ protected slots:
     /**
       * Called when a directory entry is received.
       */
-    void slotDirEntry(KDirEntry &);
+    void slotListEntry(int id, const UDSEntry&);
     
     /**
       * Called when kfm has finished the current network operation.
       */
     void slotKfmFinished();
     
-    void slotKfmError(int, const QString&);
+    void slotKfmError(int, int _errid, const char *_txt );
 
     void timerEvent();
 
@@ -251,7 +251,7 @@ private:
     QString myNameFilter;
     QDir::SortSpec mySortSpec;
     QDir::FilterSpec myFilterSpec;
-    KFM *myKfm;
+    KIOJob *myJob;
     // Raw entries (we cache these for performance)
     KFileInfoList myEntries;
     bool myDirtyFlag;

@@ -29,7 +29,8 @@
 #include <time.h>
 
 class QFileInfo;
-class KDirEntry;
+
+#include <kio_interface.h>
 
 /**
   * Provides information about a file that has been examined
@@ -44,13 +45,19 @@ public:
     /**
       * Construct a KFileInfo object from a KDirEntry.
       */
-    KFileInfo(const KDirEntry &);
+    KFileInfo(const UDSEntry &);
 
     /**
       * Constructs a KFileInfo object from a QFileInfo.
       * This is only useful for local files
       */
     KFileInfo(const QFileInfo &);
+
+
+    /**
+      * Copy a KFileInfo.
+      */
+    KFileInfo (const KFileInfo &);
 
     /**
       * Constructs a "little" KFileInfo (just for local files)
@@ -67,6 +74,7 @@ public:
       */
     KFileInfo &operator=(const KFileInfo &);
 
+
     /**
       * Returns true if this file is a directory.
       */
@@ -74,8 +82,6 @@ public:
     bool isFile() const { return myIsFile; }
     bool isSymLink() const { return myIsSymLink; }
     QString absURL() const { return myBaseURL; }
-    QString baseURL();
-    QString extension();
 
     /**
       * Returns the name of the file
@@ -89,22 +95,22 @@ public:
     /**
       * Returns the group of the file.
       */
-    const char *date() const { return myDate; }
+    QString date() const { return myDate; }
 
     /**
       * Returns the access permissions for the file as a string.
       */
-    const char *access() const { return myAccess; }
+    QString access() const { return myAccess; }
 
     /**
       * Returns the owner of the file.
       */
-    const char *owner() const { return myOwner; }
+    QString owner() const { return myOwner; }
 
     /**
       * Returns the group of the file.
       */
-    const char *group() const { return myGroup; }
+    QString group() const { return myGroup; }
 
     /**
       * Returns the size of the file.
