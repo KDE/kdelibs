@@ -1250,6 +1250,14 @@ void KApplication::invokeBrowser( const QString &url )
 
 }
 
+#ifndef HAVE_HSTRERROR
+char *hstrerror(int)
+{
+    static char c = '\0';
+    return &c;
+}
+#endif
+
 QCString
 KApplication::launcher()
 {
