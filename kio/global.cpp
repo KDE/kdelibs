@@ -436,28 +436,13 @@ QString KIO::findDeviceMountPoint( const QString& filename )
      * How kinky can you get with a filesystem?
      */
 
-    //unsigned int max = 0;
     STRUCT_MNTENT me;
 
     QString result;
 
     while (GETMNTENT(mtab, me))
     {
-      //unsigned int length = strlen(FSNAME(me));
       //kdDebug( 7007 ) << "read " << FSNAME(me) << endl;
-
-      /*
-      if (!strncmp(FSNAME(me), realname.data(), length)   // mountpoint included in real path
-          && length > max                                 // better than previous matches
-          && realname.length() >= length) {               // real path long enough
-        max = length;
-        if (length == 1 || realname.length() == length || realname[length] == '/' )
-        {
-        */
-
-      /// Hmm, there is a confusion here.
-      /// The input is the DEVICE name, it has to match exactly the mounted device !
-
       if ( realname == FSNAME(me) )
       {
           result = MOUNTPOINT(me);
