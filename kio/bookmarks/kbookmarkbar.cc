@@ -37,39 +37,6 @@
 
 #include "dptrtemplate.h"
 
-#ifndef enable_final_users_suck
-#define enable_final_users_suck
-
-class Settings {
-public:
-    bool m_advanced;
-    bool m_filteredtoolbar;
-    static Settings *s_self;
-    static void readSettings() {
-        KConfig config("kbookmarkrc", false, false);
-        config.setGroup("Bookmarks");
-        s_self->m_advanced = config.readBoolEntry("AdvancedAddBookmark", false);
-        s_self->m_filteredtoolbar = config.readBoolEntry("FilteredToolbar", false);
-    }
-    static Settings *self() {
-        if (!s_self)
-        {
-            s_self = new Settings;
-            readSettings();
-        }
-        return s_self;
-    }
-};
-
-Settings* Settings::s_self = 0;
-
-static bool isAdvanced()
-{
-  return Settings::self()->m_advanced;
-}
-
-#endif
-
 class KBookmarkBarPrivate : public dPtrTemplate<KBookmarkBar, KBookmarkBarPrivate> {
 public:
     QPtrList<KAction> m_actions;
@@ -103,7 +70,7 @@ KBookmarkBar::KBookmarkBar( KBookmarkManager* mgr,
 {
     m_lstSubMenus.setAutoDelete( true );
 
-    if ( isAdvanced() )
+    if ( KBookmarkSettings::self()->m_advanced )
     {
         m_toolBar->setAcceptDrops( true );
         m_toolBar->installEventFilter( this ); // for drops
@@ -116,7 +83,7 @@ KBookmarkBar::KBookmarkBar( KBookmarkManager* mgr,
 
     dptr()->m_filteredMgr = 0;
 
-    if ( Settings::self()->m_filteredtoolbar )
+    if ( KBookmarkSettings::self()->m_filteredtoolbar )
     {
         QString fname = mgr->path() + ".ftbcache";
         dptr()->m_filteredMgr = KBookmarkManager::managerForFile( fname, false );

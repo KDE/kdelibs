@@ -68,53 +68,6 @@
 
 template class QPtrList<KBookmarkMenu>;
 
-#ifndef enable_final_users_suck
-#define enable_final_users_suck
-
-static bool *s_advanced = 0;
-
-static bool isAdvanced()
-{
-  if (!s_advanced) 
-  {
-    s_advanced = new bool;
-    KConfig config("kbookmarkrc", false, false);
-    config.setGroup("Bookmarks");
-    (*s_advanced) = config.readBoolEntry("AdvancedAddBookmark", false);
-  }
-  return (*s_advanced);
-}
-
-#endif
-
-/*
-   change the kbookmarkbar to have a "toolbar items"
-   only mode. this could be via a new importer of
-   the style described above, or via a impl that 
-   uses kbookmark(group)iterator and creates a 
-   temp bookkmarkmanager - which leads to the fact
-   that normal xml includes can be done via a simple
-   dom -> signals conversion.
-
-   remove the tbcache file when its not
-   even used, i.e, only when the kbookmarkbar
-   is the user
-   
-   make the keditbookmarks prefs persistant
-   and make a simple include selector using
-   for example kautoconfig
-
-   make a proper editor dialog for bookmarks         
-   with name and all that crap and allow
-   the removal of all the columns from the
-   keditbookmarks view. give the option for
-   having a always on editor in main window.
-
-   kcm - type of bookmarks menu (safari or old style)
-   which menus to include
-   not enough for a kcm, therefore, keditbookmarks?
-*/
-
 /********************************************************************
  *
  * KBookmarkMenu
@@ -153,7 +106,7 @@ KBookmarkMenu::KBookmarkMenu( KBookmarkManager* mgr,
     connect( _parentMenu, SIGNAL( aboutToShow() ),
              SLOT( slotAboutToShow() ) );
 
-    if ( isAdvanced() ) 
+    if ( KBookmarkSettings::self()->m_advanced ) 
     {
       (void) _parentMenu->contextMenu();
       connect( _parentMenu, SIGNAL( aboutToShowContextMenu(KPopupMenu*, int, QPopupMenu*) ),
@@ -488,7 +441,7 @@ void KBookmarkMenu::fillBookmarkMenu()
 
     addEditBookmarks();
 
-    if ( m_bAddBookmark && !isAdvanced() )
+    if ( m_bAddBookmark && !KBookmarkSettings::self()->m_advanced )
       addNewFolder();
   }
 
@@ -593,7 +546,7 @@ void KBookmarkMenu::fillBookmarkMenu()
     if ( m_parentMenu->count() > 0 )
       m_parentMenu->insertSeparator();
 
-    if (isAdvanced())
+    if ( KBookmarkSettings::self()->m_advanced )
     {
       KActionMenu * actionMenu = new KActionMenu( i18n("Quick Actions"), m_actionCollection, 0L );
       fillContextMenu( actionMenu->popupMenu(), m_parentAddress, 1 );
@@ -622,7 +575,7 @@ void KBookmarkMenu::slotAddBookmark()
 
   KBookmarkGroup parentBookmark;
 
-  if ( !isAdvanced() ) 
+  if ( !KBookmarkSettings::self()->m_advanced ) 
   {
     parentBookmark = m_pManager->findByAddress( m_parentAddress ).toGroup();
     Q_ASSERT(!parentBookmark.isNull());
