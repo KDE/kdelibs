@@ -22,6 +22,7 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 SUBDIRS = . dcopidl dcopidl2cpp client
+KDE_OPTIONS = qtonly
 
 INCLUDES=  $(all_includes)
 LDFLAGS = $(all_libraries)
