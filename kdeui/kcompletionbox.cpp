@@ -103,7 +103,7 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                     return true;
                 case Key_Home: {
 		    // shift/ctrl involved -> let our parent handle that!
-		    bool ours = (ev->state() == 0);
+		    bool ours = (ev->state() == 0 && currentItem() != -1);
 		    if ( ours ) {
 			home();
 			ev->accept();
@@ -111,7 +111,7 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
 		    return ours;
 		}
                 case Key_End: {
-		    bool ours = (ev->state() == 0);
+		    bool ours = (ev->state() == 0 && currentItem() != -1);
 		    if ( ours ) {
 			end();
 			ev->accept();
