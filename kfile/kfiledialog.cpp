@@ -1306,9 +1306,8 @@ KURL KFileDialog::getImageOpenURL( const QString& startDir, QWidget *parent,
 		    parent, "filedialog", true);
     dlg.setCaption( caption.isNull() ? i18n("Open") : caption );
 
-    KImageFilePreview ip( &dlg );
-    ip.show();
-    dlg.setPreviewWidget( &ip );
+    KImageFilePreview *ip = new KImageFilePreview( &dlg );
+    dlg.setPreviewWidget( ip );
     dlg.exec();
 
     return dlg.selectedURL();

@@ -23,13 +23,14 @@
 /**
  * Abstract baseclass for all preview widgets which shall be used via
  * KFileDialog::setPreviewWidget(const KPreviewWidgetBase *).
+ * Ownership will be transferred to KFileDialog, so you have to create
+ * the preview with "new" and let KFileDialog delete it.
  *
  * Just derive your custom preview widget from KPreviewWidgetBase and overload
  * all methods, especially the slot showPreview(const KURL &) which is called
  * every time the file selection changes.
  *
  * @short Abstract baseclass for all preview widgets.
- *
  * @author Frerich Raabe <raabe@kde.org>
  */
 
@@ -60,6 +61,7 @@ public slots:
      * @param url The URL of the currently selected file.
      */
     virtual void showPreview(const KURL &url) = 0;
+
 };
 
 #endif

@@ -274,6 +274,9 @@ public:
      * a slot @ref showPreview(const KURL &); which is called
      * every time the file changes. You may want to look at
      * koffice/lib/kofficecore/koFilterManager.cc for some hints :)
+     *
+     * Ownership is transferred to KFileDialog. You need to create the
+     * preview-widget with "new", i.e. on the heap.
      */
     void setPreviewWidget(const QWidget *w);
 
@@ -282,6 +285,9 @@ public:
      *
      * In this mode the dialog is split and the right part contains your
      * preview widget.
+     *
+     * Ownership is transferred to KFileDialog. You need to create the
+     * preview-widget with "new", i.e. on the heap.
      *
      * @param w The widget to be used for the preview.
      */

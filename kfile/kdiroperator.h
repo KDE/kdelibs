@@ -128,6 +128,11 @@ class KDirOperator : public QWidget
     void setMode( KFile::Mode m );
     KFile::Mode mode() const;
 
+    /**
+     * Sets a preview-widget to be shown next to the file-view.
+     * The ownership of @p w is transferred to KDirOperator, so don't
+     * delete it yourself!
+     */
     void setPreviewWidget(const QWidget *w);
 
     /**
