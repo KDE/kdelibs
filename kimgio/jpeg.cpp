@@ -181,10 +181,10 @@ void kimgio_jpeg_write(QImageIO *iio)
 
 	jpeg_start_compress(&cinfo, TRUE);
 
-	row_pointer[0] = new char[cinfo.image_width*cinfo.input_components];
+	row_pointer[0] = new JSAMPLE[cinfo.image_width*cinfo.input_components];
 	int w = cinfo.image_width;
 	while (cinfo.next_scanline < cinfo.image_height) {
-	    char *row = row_pointer[0];
+	    JSAMPLE *row = row_pointer[0];
 	    switch ( image.depth() ) {
 	      case 1:
 		if (gray) {
