@@ -8,6 +8,7 @@ export DH_COMPAT=3
 
 SHELL=/bin/sh
 
+BUILDDIR = `pwd`
 QTDOCDIR  = usr/share/doc/qt-doc/doc/html
 KDEDOCDIR = usr/share/doc/kdelibs3-doc/html
 export KDB2HTML_UNINSTALLED=$(BUILDDIR)/ksgmltools/customization/
