@@ -33,7 +33,9 @@
 #include <kmessagebox.h>
 
 KFindDialog::KFindDialog(QWidget *parent, const char *name, long options, const QStringList &findStrings, bool hasSelection) :
-    KDialogBase(parent, name, true, i18n("Find Text"), Ok | Cancel, Ok)
+    KDialogBase(parent, name, true, i18n("Find Text"), Ok | Cancel, Ok),
+    m_findExtension (0),
+    m_replaceExtension (0)
 {
     init(false, findStrings, hasSelection);
     setOptions(options);
@@ -50,6 +52,12 @@ KFindDialog::~KFindDialog()
 
 QWidget *KFindDialog::findExtension()
 {
+    if (!m_findExtension)
+    {
+      m_findExtension = new QWidget(m_findGrp);
+      m_findLayout->addMultiCellWidget(m_findExtension, 3, 3, 0, 1);
+    }
+    
     return m_findExtension;
 }
 
@@ -72,11 +80,11 @@ void KFindDialog::init(bool forReplace, const QStringList &findStrings, bool has
     topLayout->setMargin( KDialog::marginHint() );
 
     m_findGrp = new QGroupBox(0, Qt::Vertical, i18n("Find"), page);
-    m_findGrp->layout()->setSpacing(KDialog::spacingHint());
-    m_findGrp->layout()->setMargin(KDialog::marginHint());
+    m_findGrp->layout()->setSpacing( KDialog::spacingHint() );
+   // m_findGrp->layout()->setMargin( KDialog::marginHint() );
     m_findLayout = new QGridLayout(m_findGrp->layout());
     m_findLayout->setSpacing( KDialog::spacingHint() );
-    m_findLayout->setMargin( KDialog::marginHint() );
+   // m_findLayout->setMargin( KDialog::marginHint() );
 
     m_findLabel = new QLabel(i18n("&Text to find:"), m_findGrp);
     m_find = new KHistoryCombo(true, m_findGrp);
@@ -85,21 +93,19 @@ void KFindDialog::init(bool forReplace, const QStringList &findStrings, bool has
     m_regExp = new QCheckBox(i18n("&Use patterns"), m_findGrp);
     m_regExpItem = new QPushButton(i18n("&Insert Pattern"), m_findGrp);
     m_regExpItem->setEnabled(false);
-    m_findExtension = new QWidget(m_findGrp);
 
     m_findLayout->addWidget(m_findLabel, 0, 0);
     m_findLayout->addMultiCellWidget(m_find, 1, 1, 0, 1);
     m_findLayout->addWidget(m_regExp, 2, 0);
     m_findLayout->addWidget(m_regExpItem, 2, 1);
-    m_findLayout->addMultiCellWidget(m_findExtension, 3, 3, 0, 1);
     topLayout->addWidget(m_findGrp);
 
     m_replaceGrp = new QGroupBox(0, Qt::Vertical, i18n("Replace With"), page);
-    m_replaceGrp->layout()->setSpacing(KDialog::spacingHint());
-    m_replaceGrp->layout()->setMargin(KDialog::marginHint());
+    m_replaceGrp->layout()->setSpacing( KDialog::spacingHint() );
+  //  m_replaceGrp->layout()->setMargin( KDialog::marginHint() );
     m_replaceLayout = new QGridLayout(m_replaceGrp->layout());
     m_replaceLayout->setSpacing( KDialog::spacingHint() );
-    m_replaceLayout->setMargin( KDialog::marginHint() );
+//    m_replaceLayout->setMargin( KDialog::marginHint() );
 
     m_replaceLabel = new QLabel(i18n("&Replacement text:"), m_replaceGrp);
     m_replace = new KHistoryCombo(true, m_replaceGrp);
@@ -108,21 +114,19 @@ void KFindDialog::init(bool forReplace, const QStringList &findStrings, bool has
     m_backRef = new QCheckBox(i18n("Us&e placeholders"), m_replaceGrp);
     m_backRefItem = new QPushButton(i18n("Insert Place&holder"), m_replaceGrp);
     m_backRefItem->setEnabled(false);
-    m_replaceExtension = new QWidget(m_replaceGrp);
-
+    
     m_replaceLayout->addWidget(m_replaceLabel, 0, 0);
     m_replaceLayout->addMultiCellWidget(m_replace, 1, 1, 0, 1);
     m_replaceLayout->addWidget(m_backRef, 2, 0);
     m_replaceLayout->addWidget(m_backRefItem, 2, 1);
-    m_replaceLayout->addMultiCellWidget(m_replaceExtension, 3, 3, 0, 1);
     topLayout->addWidget(m_replaceGrp);
 
     m_optionGrp = new QGroupBox(0, Qt::Vertical, i18n("Options"), page);
     m_optionGrp->layout()->setSpacing(KDialog::spacingHint());
-    m_optionGrp->layout()->setMargin(KDialog::marginHint());
+  //  m_optionGrp->layout()->setMargin(KDialog::marginHint());
     optionsLayout = new QGridLayout(m_optionGrp->layout());
     optionsLayout->setSpacing( KDialog::spacingHint() );
-    optionsLayout->setMargin( KDialog::marginHint() );
+   // optionsLayout->setMargin( KDialog::marginHint() );
 
     m_caseSensitive = new QCheckBox(i18n("C&ase sensitive"), m_optionGrp);
     m_wholeWordsOnly = new QCheckBox(i18n("&Whole words only"), m_optionGrp);
@@ -208,6 +212,12 @@ long KFindDialog::options() const
 QString KFindDialog::pattern() const
 {
     return m_find->currentText();
+}
+
+void KFindDialog::setPattern (const QString &pattern)
+{
+    m_find->lineEdit()->setText( pattern );
+    m_find->lineEdit()->selectAll();
 }
 
 void KFindDialog::setFindHistory(const QStringList &strings)

@@ -140,6 +140,11 @@ public:
      * Returns the pattern to find.
      */
     QString pattern() const;
+    
+    /**
+     * Sets the pattern to find
+     */
+    void setPattern ( const QString &pattern );
 
     /**
      * Returns an empty widget which the user may fill with additional UI

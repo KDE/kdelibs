@@ -21,7 +21,9 @@
 #include "kreplacedialog.h"
 
 #include <qcheckbox.h>
+#include <qgroupbox.h>
 #include <qlabel.h>
+#include <qlayout.h>
 #include <kcombobox.h>
 
 KReplaceDialog::KReplaceDialog(QWidget *parent, const char *name, long options, const QStringList &findStrings, const QStringList &replaceStrings, bool hasSelection) :
@@ -50,6 +52,12 @@ long KReplaceDialog::options() const
 
 QWidget *KReplaceDialog::replaceExtension()
 {
+    if (!m_replaceExtension)
+    {
+      m_replaceExtension = new QWidget(m_replaceGrp);
+      m_replaceLayout->addMultiCellWidget(m_replaceExtension, 3, 3, 0, 1);
+    }
+    
     return m_replaceExtension;
 }
 
