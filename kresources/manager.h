@@ -155,7 +155,7 @@ class ResourceManager : private ManagerImplListener
       return it;
     }
 
-    bool isEmpty() { return mManager->resourceList()->isEmpty(); }
+    bool isEmpty() const { return mManager->resourceList()->isEmpty(); }
   
     ResourceManager( const QString& family )
     {
