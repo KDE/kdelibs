@@ -84,7 +84,7 @@ bool DOMImplementationImpl::hasFeature ( const DOMString &feature, const DOMStri
     // ### update when we (fully) support the relevant features
     QString lower = feature.string().lower();
     if ((lower == "html" || lower == "xml") &&
-        (version == "1.0" || version == "" || version.isNull()))
+        (version == "1.0" || version == "null" || version == "" || version.isNull()))
         return true;
     else
         return false;
@@ -283,10 +283,14 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     m_styleSelectorDirty = false;
     m_styleSelector = 0;
     m_windowEventListeners.setAutoDelete(true);
+
+    m_inStyleRecalc = false;
 }
 
 DocumentImpl::~DocumentImpl()
 {
+    assert( !m_render );
+
     if (changedDocuments && m_docChanged)
         changedDocuments->remove(this);
     delete m_tokenizer;
@@ -853,6 +857,11 @@ void DocumentImpl::recalcStyle( StyleChange change )
 //     qDebug("recalcStyle(%p)", this);
 //     QTime qt;
 //     qt.start();
+    if (m_inStyleRecalc)
+        return; // Guard against re-entrancy. -dwh
+
+    m_inStyleRecalc = true;
+
     if( !m_render ) goto bail_out;
 
     if ( change == Force ) {
@@ -912,6 +921,8 @@ bail_out:
     setChanged( false );
     setHasChangedChild( false );
     setDocumentChanged( false );
+
+    m_inStyleRecalc = false;
 }
 
 void DocumentImpl::updateRendering()
@@ -1389,13 +1400,13 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
 	    delay = content.implementation()->toInt(&ok);
             if(ok) v->part()->scheduleRedirection(delay, v->part()->url().url() );
         } else {
-            int delay = 0;
+            double delay = 0;
             int fract = pos;
             bool ok = false;
             if ( (fract = str.find('.') ) < 0 || fract > pos)
                 fract = pos;
 	    DOMStringImpl* s = content.implementation()->substring(0, fract);
-	    delay = s->toInt(&ok);
+	    delay = QConstString(s->s, s->l).string().stripWhiteSpace().toDouble(&ok);
 	    delete s;
 
             pos++;
