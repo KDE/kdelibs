@@ -98,7 +98,7 @@ QString PhoneNumber::typeLabel() const
 
   TypeList::Iterator it;
   for ( it = list.begin(); it != list.end(); ++it ) {
-    if ( type() & (*it) ) {
+    if ( ( type() & (*it) ) && ( (*it) != Pref ) ) {
       label.append( ( first ? "" : "/" ) + typeLabel( *it ) );
       if ( first )
         first = false;

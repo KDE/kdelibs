@@ -110,7 +110,7 @@ QString Address::typeLabel() const
 
   TypeList::Iterator it;
   for ( it = list.begin(); it != list.end(); ++it ) {
-    if ( type() & (*it) ) {
+    if ( ( type() & (*it) ) && ( (*it) != Pref ) ) {
       label.append( ( first ? "" : "/" ) + typeLabel( *it ) );
       if ( first )
         first = false;
@@ -291,7 +291,7 @@ QString Address::typeLabel( int type )
       return i18n("Home Address");
       break;
     case Work:
-      return i18n("Address at Work");
+      return i18n("Work Address");
       break;
     case Pref:
       return i18n("Preferred Address");
