@@ -334,7 +334,7 @@ bool KAccel::insertStdItem( StdAccel id, const QString& descr )
 			break;
         case TextCompletion:
             name=i18n("Text Completion");
-            key = "End";
+            key = "Ctrl+E";
             break;
 		default:
 			return false;
