@@ -464,19 +464,19 @@ void KListView::contentsMousePressEvent( QMouseEvent *e )
     rename(at, 0); // TODO
 
   if (e->button() == LeftButton)
-    {
-        // if the user clicked into the root decoration of the item, don't try to start a drag!
-        if ( !at
-             || p.x() > header()->cellPos( header()->mapToActual( 0 ) ) +
-                treeStepSize() * ( at->depth() + ( rootIsDecorated() ? 1 : 0) ) + itemMargin()
-             || p.x() < header()->cellPos( header()->mapToActual( 0 ) ) )
-        {
-      d->startDragPos = e->pos();
+  {
+      // if the user clicked into the root decoration of the item, don't try to start a drag!
+      if ( !at
+           || p.x() > header()->cellPos( header()->mapToActual( 0 ) ) +
+           treeStepSize() * ( at->depth() + ( rootIsDecorated() ? 1 : 0) ) + itemMargin()
+           || p.x() < header()->cellPos( header()->mapToActual( 0 ) ) )
+      {
+          d->startDragPos = e->pos();
 
-      if (at)
-        d->validDrag = true;
-    }
-    }
+          if (at)
+              d->validDrag = true;
+      }
+  }
 
   QListView::contentsMousePressEvent( e );
 }
