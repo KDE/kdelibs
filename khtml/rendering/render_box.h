@@ -21,8 +21,8 @@
  *
  * $Id$
  */
-#ifndef RENDER_OBJECT_H
-#define RENDER_OBJECT_H
+#ifndef RENDER_BOX_H
+#define RENDER_BOX_H
 
 #include "render_object.h"
 #include "loader.h"
