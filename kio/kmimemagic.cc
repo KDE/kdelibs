@@ -239,10 +239,6 @@ static struct names {
 	char *name;
 	short type;
 } names[] = {
-
-	/* These must be sorted by eye for optimal hit rate */
-	/* Add to this list only after substantial meditation */
-// ?? Order doesn't count, as we do 'best accurate' matching ! (David)
 	{
 		"<html>", L_HTML
 	},
@@ -1017,11 +1013,17 @@ mget(union VALUETYPE *p, unsigned char *s, struct magic *m,
      int nbytes)
 {
 	long offset = m->offset;
+// The file length might be < sizeof(union VALUETYPE) (David)
+// -> pad with zeros (the 'file' command does it this way)
+// Thanks to Stan Covington <stan@calderasystems.com> for detailed report
 	if (offset + (int)sizeof(union VALUETYPE) > nbytes)
-		 return 0;
-
-
-	memcpy(p, s + offset, sizeof(union VALUETYPE));
+	{
+	  int have = nbytes - offset;
+	  memset(p, 0, sizeof(union VALUETYPE));
+	  if (have > 0)
+	    memcpy(p, s + offset, have); 
+	} else
+	  memcpy(p, s + offset, sizeof(union VALUETYPE));
 
 	if (!mconvert(p, m))
 		return 0;
@@ -1292,7 +1294,6 @@ KMimeMagic::process(const char * fn)
 {
 	int fd = 0;
 	unsigned char buf[HOWMANY + 1];	/* one extra for terminating '\0' */
-	struct utimbuf utbuf;
 	struct stat sb;
 	int nbytes = 0;         /* number of bytes read from a datafile */
 
@@ -1329,12 +1330,6 @@ KMimeMagic::process(const char * fn)
 		tryit(buf, nbytes);
 	}
 
-	/*
-	 * Try to restore access, modification times if read it.
-	 */
-	utbuf.actime = sb.st_atime;
-	utbuf.modtime = sb.st_mtime;
-	(void) utime(fn, &utbuf);	/* don't care if loses */
 	(void) close(fd);
 	resultBuf += "\n";
 }
