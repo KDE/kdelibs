@@ -165,6 +165,7 @@ void KCursor::setAutoHideCursor( QWidget *w, bool enable,
     if ( enable ) {
         kp->start();
         w->setMouseTracking( true );
+
 	if ( !customEventFilter )
 	    w->installEventFilter( kp );
 	else // safety
@@ -280,12 +281,12 @@ bool KCursorPrivate::eventFilter( QObject *o, QEvent *e )
 
     // disconnect() and connect() on events for a new widget
     if ( o != hideWidget ) {
-    if ( hideWidget ) {
-	disconnect( hideWidget, SIGNAL( destroyed() ),
-		    this, SLOT( slotWidgetDestroyed()));
-    }
-    connect( o, SIGNAL( destroyed() ),
-	     this, SLOT( slotWidgetDestroyed()));
+        if ( hideWidget ) {
+            disconnect( hideWidget, SIGNAL( destroyed() ),
+                        this, SLOT( slotWidgetDestroyed()));
+        }
+        connect( o, SIGNAL( destroyed() ),
+                 this, SLOT( slotWidgetDestroyed()));
     }
 
     int t = e->type();
@@ -302,9 +303,14 @@ bool KCursorPrivate::eventFilter( QObject *o, QEvent *e )
         return false;
     }
 
+    if ( t == QEvent::Create ) // Qt steals mouseTracking on create()
+        w->setMouseTracking( true );
+
     // don't process events not coming from the focus-window
     // or from widgets that accept focus, but don't have it.
     if ( !w->isActiveWindow() || (w->isFocusEnabled() && !w->hasFocus()) ) {
+        disconnect( hideWidget, SIGNAL( destroyed() ), 
+                    this, SLOT( slotWidgetDestroyed() ));
  	hideWidget = 0L;
  	return false;
     }
