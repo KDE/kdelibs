@@ -180,13 +180,13 @@ void KLineEdit::slotShowSubMenu( int itemID )
     {
         int id;
         subMenu->clear();
-        id = subMenu->insertItem( i18n("None"), this, SLOT(modeNone()) );
+        id = subMenu->insertItem( i18n("None"), this, SLOT(slotModeNone()) );
         subMenu->setItemChecked(id, m_iCompletionMode == KGlobal::CompletionNone );
-        id = subMenu->insertItem( i18n("Manual"), this, SLOT(modeShell()) );
+        id = subMenu->insertItem( i18n("Manual"), this, SLOT(slotModeShell()) );
         subMenu->setItemChecked(id, m_iCompletionMode == KGlobal::CompletionShell );
-        id = subMenu->insertItem( i18n("Automatic"), this, SLOT(modeAuto()) );
+        id = subMenu->insertItem( i18n("Automatic"), this, SLOT(slotModeAuto()) );
         subMenu->setItemChecked(id, m_iCompletionMode == KGlobal::CompletionAuto );
-        id = subMenu->insertItem( i18n("Semi-Automatic"), this, SLOT(modeManual()) );
+        id = subMenu->insertItem( i18n("Semi-Automatic"), this, SLOT(slotModeManual()) );
         subMenu->setItemChecked(id, m_iCompletionMode == KGlobal::CompletionMan );
     }
 }
@@ -197,13 +197,13 @@ void KLineEdit::slotShowContextMenu()
     bool isNotEmpty = ( text().length() != 0 );
     bool isNormal = (echoMode() == QLineEdit::Normal);
     contextMenu->clear();
-    id = contextMenu->insertItem( i18n("Cut"), this, SLOT(doCut()) );
+    id = contextMenu->insertItem( i18n("Cut"), this, SLOT(slotCut()) );
     contextMenu->setItemEnabled( id, hasMarkedText() && isNormal );
-    id = contextMenu->insertItem( i18n("Copy"), this, SLOT(doCopy()) );
+    id = contextMenu->insertItem( i18n("Copy"), this, SLOT(slotCopy()) );
     contextMenu->setItemEnabled( id, hasMarkedText() && isNormal );
-    id = contextMenu->insertItem( i18n("Paste"), this, SLOT(doPaste()) );
+    id = contextMenu->insertItem( i18n("Paste"), this, SLOT(slotPaste()) );
     // contextMenu->setItemEnabled( id, );
-    id = contextMenu->insertItem( i18n("Clear"), this, SLOT(doClear()) );
+    id = contextMenu->insertItem( i18n("Clear"), this, SLOT(slotClear()) );
     contextMenu->setItemEnabled( id, isNotEmpty );
     contextMenu->insertSeparator();
     if( m_bShowModeChanger && comp != 0 )
@@ -216,9 +216,9 @@ void KLineEdit::slotShowContextMenu()
         subMenuID = contextMenu->insertItem( i18n("Completion Mode"), subMenu );
         contextMenu->insertSeparator();
     }
-    id = contextMenu->insertItem( i18n("Select All"), this, SLOT(doSelect()) );
+    id = contextMenu->insertItem( i18n("Select All"), this, SLOT(slotSelect()) );
     contextMenu->setItemEnabled( id, isNotEmpty );
-    id = contextMenu->insertItem( i18n("Unselect"), this, SLOT(doUnselect()) );
+    id = contextMenu->insertItem( i18n("Unselect"), this, SLOT(slotUnselect()) );
     contextMenu->setItemEnabled( id, hasMarkedText() );
 }
 

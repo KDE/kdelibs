@@ -1,5 +1,4 @@
-/*  This file is part
-of the KDE libraries
+/*  This file is part of the KDE libraries
 
     This class was originally inspired by Torben Weis'
     fileentry.cpp for KFM II.
@@ -72,7 +71,7 @@ of the KDE libraries
  * edit->enableCompletion();
  * </pre>
  *
- * To use this widget like it was in KDE 1.1.x simply do not
+ * To use this widget like it was in KDE 1.1.x, simply do not
  * enable the completion object and connect to the necessary
  * signals.
  *
@@ -85,12 +84,30 @@ class KLineEdit : public QLineEdit
 
 public:
 
+    /**
+    * Constructors a KLineEdit object with the given
+    * parameters.
+    *
+    * @param <tt>string</tt> the text to be set in the editor.
+    * @param <tt>parent</tt> the parent object that owns this widget.
+    * @param <tt>name</tt> the name of the widget.
+    * @param <tt>showMenu</tt> determines whether a context menu should be shown.
+    * @param <tt>showChanger</tt> determines whether the mode changer item should be shown.
+    */
     KLineEdit( const QString &string,
                QWidget *parent,
                const char *name = 0,
                bool showMenu = true,
                bool showChanger = true );
-
+    /**
+    * Constructors a KLineEdit object with the given
+    * parameters.
+    *
+    * @param <tt>parent</tt> the parent object that owns this widget.
+    * @param <tt>name</tt> the name of the widget.
+    * @param <tt>showMenu</tt> determines whether a context menu should be shown.
+    * @param <tt>showChanger</tt> determines whether the mode changer item should be shown.
+    */
     KLineEdit ( QWidget *parent=0,
                 const char *name=0,
                 bool showMenu = true,
@@ -382,7 +399,7 @@ protected:
     // Pointer to Completion object.
     KCompletion *comp;
 
-    virtual void initialize( bool showMenu, bool showChanger );
+    virtual void initialize( bool, bool );
     virtual void keyPressEvent( QKeyEvent * );
     virtual void mousePressEvent( QMouseEvent * );
     void rotateText( const QString& );
