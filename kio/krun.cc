@@ -21,6 +21,7 @@
 #include <string.h>
 
 KFileManager * KFileManager::pFileManager = 0L;
+KServiceProvider * KServiceProvider::pServiceProvider = 0L;
 
 bool KRun::runURL( const char *_url, const char *_mimetype )
 {
@@ -49,19 +50,29 @@ bool KRun::runURL( const char *_url, const char *_mimetype )
   }
 
   // Get all services for this mime type
-  KServiceTypeProfile::OfferList offers = KServiceTypeProfile::offers( _mimetype );
-
-  if ( offers.count() == 0 || !(*offers.begin()).allowAsDefault() )
-  {
-    kdebug( KDEBUG_INFO, 7010, "No Offers" );
+//  KServiceTypeProfile::OfferList offers = KServiceTypeProfile::offers( _mimetype );
+//
+//  if ( offers.count() == 0 || !(*offers.begin()).allowAsDefault() )
+//  {
+//    kdebug( KDEBUG_INFO, 7010, "No Offers" );
     // HACK TODO: OpenWith
-    return false;
-  }
-
+//    return false;
+//  }
+//
   QStringList lst;
   lst.append( _url );
   // Choose the first service from the list and do the job
-  return KRun::run( (*offers.begin()).service(), lst );
+//  return KRun::run( (*offers.begin()).service(), lst );
+
+  const KService *offer = KServiceProvider::getServiceProvider()->service( _mimetype );
+  
+  if ( !offer )
+  {
+    //HACK TODO: OpenWith
+    return false;
+  }
+  
+  return KRun::run( offer, lst );
 }
 
 void KRun::shellQuote( QString &_str )
@@ -571,6 +582,19 @@ void KFileManager::openFileManagerWindow( const char *_url )
   QString cmd = "kfmclient openURL ";
   cmd += _url;
   system( cmd.ascii() );
+}
+
+const KService *KServiceProvider::service( const char *mime_type )
+{
+  KServiceTypeProfile::OfferList offers = KServiceTypeProfile::offers( mime_type );
+
+  if ( offers.count() == 0 || !(*offers.begin()).allowAsDefault() )
+  {
+    kdebug( KDEBUG_INFO, 7010, "No Offers" );
+    return 0L;
+  }
+
+  return (*offers.begin()).service();
 }
 
 #include "krun.moc"

@@ -197,4 +197,22 @@ private:
   static KFileManager * pFileManager;
 };
 
+class KServiceProvider
+{
+public:
+  KServiceProvider() { pServiceProvider = this; }
+  virtual ~KServiceProvider() {};
+  
+  virtual const KService *service( const char *mime_type );
+  
+  static KServiceProvider * getServiceProvider() {
+    if (!pServiceProvider)
+      pServiceProvider = new KServiceProvider;
+    return pServiceProvider;
+  }
+
+private:
+  static KServiceProvider * pServiceProvider;
+};
+
 #endif
