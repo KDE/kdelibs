@@ -95,7 +95,7 @@ KSpellDlg::KSpellDlg(
   if (progressbar) {
 
     QVBoxLayout * topLayout =
-      new QVBoxLayout(w, KDialog::marginHint(), KDialog::spacingHint());
+      new QVBoxLayout(w, 0, KDialog::spacingHint());
 
     layout = new QHBoxLayout(topLayout);
     progbar = new KProgress (w);
@@ -104,7 +104,7 @@ KSpellDlg::KSpellDlg(
   } else {
 
     layout =
-      new QHBoxLayout(w, KDialog::marginHint(), KDialog::spacingHint());
+      new QHBoxLayout(w, 0, KDialog::spacingHint());
   }
   
   QGridLayout * leftGrid = new QGridLayout(layout);
