@@ -97,6 +97,7 @@
 #include <signal.h>
 #include <unistd.h>
 #include <time.h>
+#include <sys/time.h>
 #include <errno.h>
 #include <string.h>
 #include <netdb.h>
@@ -145,6 +146,10 @@ KApplication* KApplication::KApp = 0L;
 bool KApplication::loadedByKdeinit = false;
 DCOPClient *KApplication::s_DCOPClient = 0L;
 bool KApplication::s_dcopClientNeedsPostInit = false;
+
+static Atom atom_DesktopWindow;
+static Atom atom_NetSupported;
+static Atom atom_KdeNetUserTime;
 
 template class QPtrList<KSessionManaged>;
 
@@ -702,6 +707,34 @@ void KApplication::init(bool GUIenabled)
 
   KApp = this;
 
+
+#ifdef Q_WS_X11 //FIXME(E)
+  // create all required atoms in _one_ roundtrip to the X server
+  if ( GUIenabled ) {
+      const int max = 20;
+      Atom* atoms[max];
+      char* names[max];
+      Atom atoms_return[max];
+      int n = 0;
+
+      atoms[n] = &kipcCommAtom;
+      names[n++] = (char *) "KIPC_COMM_ATOM";
+
+      atoms[n] = &atom_DesktopWindow;
+      names[n++] = (char *) "KDE_DESKTOP_WINDOW";
+
+      atoms[n] = &atom_NetSupported;
+      names[n++] = (char *) "_NET_SUPPORTED";
+  
+      atoms[n] = &atom_KdeNetUserTime;
+      names[n++] = (char *) "_KDE_NET_USER_TIME";
+
+      XInternAtoms( qt_xdisplay(), names, n, FALSE, atoms_return );
+      for (int i = 0; i < n; i++ )
+	  *atoms[i] = atoms_return[i];
+  }
+#endif
+
   dcopAutoRegistration();
   dcopClientPostInit();
 
@@ -732,7 +765,6 @@ void KApplication::init(bool GUIenabled)
 
 #ifdef Q_WS_X11 //FIXME(E)
     display = desktop()->x11Display();
-    kipcCommAtom = XInternAtom(display, "KIPC_COMM_ATOM", false);
 #endif
 
     {
@@ -783,11 +815,11 @@ void KApplication::init(bool GUIenabled)
   // register a communication window for desktop changes (Matthias)
   if (GUIenabled && kde_have_kipc )
   {
-    Atom a = XInternAtom(qt_xdisplay(), "KDE_DESKTOP_WINDOW", false);
     smw = new QWidget(0,0);
     long data = 1;
-    XChangeProperty(qt_xdisplay(), smw->winId(), a, a, 32,
-                                        PropModeReplace, (unsigned char *)&data, 1);
+    XChangeProperty(qt_xdisplay(), smw->winId(), 
+		    atom_DesktopWindow, XA_WINDOW, 
+		    32, PropModeReplace, (unsigned char *)&data, 1);
   }
 #else
   // FIXME(E): Implement for Qt Embedded
@@ -1310,13 +1342,13 @@ void KApplication::parseCommandLine( )
 
 #ifdef Q_WS_X11
     if ( args->isSet( "waitforwm" ) ) {
-        Atom a = XInternAtom( qt_xdisplay(), "_NET_SUPPORTED", FALSE  );
         Atom type;
         (void) desktop(); // trigger desktop creation, we need PropertyNotify events for the root window
         int format;
         unsigned long length, after;
         unsigned char *data;
-        while ( XGetWindowProperty( qt_xdisplay(), qt_xrootwin(), a, 0, 1, FALSE, AnyPropertyType, &type, &format,
+        while ( XGetWindowProperty( qt_xdisplay(), qt_xrootwin(), atom_NetSupported, 
+				    0, 1, FALSE, AnyPropertyType, &type, &format,
                                     &length, &after, &data ) != Success || !length ) {
             if ( data )
                 XFree( data );
@@ -1431,6 +1463,26 @@ void KApplication::dcopBlockUserInput( bool b )
 #ifndef Q_WS_QWS
 bool KApplication::x11EventFilter( XEvent *_event )
 {
+    if ( activeWindow() ) {
+	switch ( _event->type ) {
+	    case ButtonPress:
+	    case ButtonRelease:
+	    case XKeyPress:
+	    case XKeyRelease:
+	    {
+		timeval tv;
+		gettimeofday( &tv, NULL );
+		unsigned long now = tv.tv_sec * 10 + tv.tv_usec / 100000;
+		XChangeProperty(qt_xdisplay(), activeWindow()->winId(), 
+				atom_KdeNetUserTime, XA_CARDINAL, 
+				32, PropModeReplace, (unsigned char *)&now, 1);
+	    }
+	    break;
+	    default: break;
+	}
+    }
+
+
     if ( kapp_block_user_input ) {
         switch ( _event->type  ) {
         case ButtonPress:
