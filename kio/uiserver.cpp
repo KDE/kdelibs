@@ -71,7 +71,7 @@ ProgressItem::ProgressItem( ListProgress* view, QListViewItem *after, QCString a
   : QListViewItem( view, after ) {
 
   listProgress = view;
-  
+
   m_sAppId = app_id;
   m_iJobId = job_id;
 
@@ -338,14 +338,14 @@ int UIServer::newJob( QCString observerAppId )
 {
   kdDebug(7024) << "UIServer::newJob observerAppId=" << observerAppId << ". "
 	    << "Giving id=" << s_jobId+1 << endl;
-  
+
   QListViewItemIterator it( listProgress );
   for ( ; it.current(); ++it ) {
     if ( it.current()->itemBelow() == 0L ) { // this will find the end of list
       break;
     }
   }
-  
+
   // increment counter
   s_jobId++;
 
@@ -571,7 +571,7 @@ void UIServer::slotUpdate() {
     }
     iTotalFiles += ( item->totalFiles() - item->processedFiles() );
     iTotalSpeed += item->speed();
-    
+
     if ( item->remainingTime() > totalRemTime ) {
       totalRemTime = item->remainingTime();
     }
@@ -611,59 +611,60 @@ void UIServer::slotSelection() {
 
 QByteArray UIServer::authorize( const QString& user, const QString& head, const QString& key )
 {
-	kdDebug( 7024 ) << "User " << user.utf8() << "Header " << head.utf8() << "Key " << key.utf8() << endl;
+    kdDebug( 7024 ) << "User " << user.utf8() << "Header " << head.utf8() << "Key " << key.utf8() << endl;
     QByteArray packedArgs;
-  	QDataStream stream( packedArgs, IO_WriteOnly );
-  	bool isCached = false;
-   	KDEsuClient client;
-  	if( !key.isNull() )
-  	{
+    QDataStream stream( packedArgs, IO_WriteOnly );
+    bool isCached = false;
+    KDEsuClient client;
+    if( !key.isNull() )
+    {
         kdDebug(7024) << "Checking if password is cached for " << key.utf8() << endl;  	
     	int sucess = client.ping();
     	if( sucess == -1 )
     	{
             kdDebug(7024) << "No running kdesu daemon found. Starting one..." << endl;  	    	
             sucess = client.startServer();
-            kdDebug(7024) << "New kdesu daemon sucessfully started..." << endl;
+            if( sucess != -1 )
+                kdDebug(7024) << "New kdesu daemon sucessfully started..." << endl;
         }
     		
-		if( sucess != - 1 )
-		{
+        if( sucess != - 1 )
+        {
             kdDebug(7024) << "Checking for presence of a key named " << (key + "-user").utf8() << endl;   		
-   		    QString u = QString::fromUtf8( client.getVar( (key + "-user").utf8() ) );
+            QString u = QString::fromUtf8( client.getVar( (key + "-user").utf8() ) );
             kdDebug(7024) << "Key check resulted in " << u.utf8() << endl;
-   		    // Re-request the password if the user is supplied and is different!!
-			if( ( !user.isNull() && u == user) || ( user.isNull() && !u.isNull() ) )
-			{
-			    isCached = true;
-	   		    kdDebug(7024) << "Check for the authorization key named " << (key + "-pass").utf8() << endl;
-			    QString p = QString::fromUtf8( client.getVar( (key + "-pass").utf8() ) );
-	            kdDebug(7024) << "Key check resulted in " << p.utf8() << endl;			
-           		stream << Q_UINT8(1) << u << p;
-	   		    kdDebug(7024) << "Success.  Sending back Authorization..." << endl;           		
-           		return packedArgs;
-			}
-		}
-	}
-	if( !isCached )
-	{
+            // Re-request the password if the user is supplied and is different!!
+            if( ( !user.isNull() && u == user) || ( user.isNull() && !u.isNull() ) )
+            {
+                isCached = true;
+                kdDebug(7024) << "Check for the authorization key named " << (key + "-pass").utf8() << endl;
+                QString p = QString::fromUtf8( client.getVar( (key + "-pass").utf8() ) );
+                kdDebug(7024) << "Key check resulted in " << p.utf8() << endl;			
+                stream << Q_UINT8(1) << u << p;
+                kdDebug(7024) << "Success.  Sending back Authorization..." << endl;           		
+                return packedArgs;
+            }
+        }
+    }
+    if( !isCached )
+    {
     	KIO::PassDlg dlg( 0L, 0L, true, 0, head, user, QString::null );
         if ( dlg.exec() )
-	    {
-	    	QString u = dlg.user();
-	    	QString p = dlg.password();
-   		    kdDebug(7024) << "Caching Authorization for " << key.utf8() << endl;
-   		    kdDebug(7024) << "Username: " << u.utf8() << endl;
-   		    kdDebug(7024) << "Password: " << p.utf8() << endl;   		
-			client.setVar( (key + "-user").utf8() , u.utf8() );
-			client.setVar( (key + "-pass").utf8() , p.utf8() );
-       		stream << Q_UINT8(1) << u << p;
-   		    kdDebug(7024) << "Authorization cached sucessfully..." << endl;       		
-       		return packedArgs;			
-		}
-	}
-	stream << Q_UINT8(0) << QString::null << QString::null;
-	return packedArgs;
+        {
+            QString u = dlg.user();
+            QString p = dlg.password();
+            kdDebug(7024) << "Caching Authorization for " << key.utf8() << endl;
+            kdDebug(7024) << "Username: " << u.utf8() << endl;
+            kdDebug(7024) << "Password: " << p.utf8() << endl;   		
+            client.setVar( (key + "-user").utf8() , u.utf8() );
+            client.setVar( (key + "-pass").utf8() , p.utf8() );
+            stream << Q_UINT8(1) << u << p;
+            kdDebug(7024) << "Authorization cached sucessfully..." << endl;       		
+            return packedArgs;			
+        }
+    }
+    stream << Q_UINT8(0) << QString::null << QString::null;
+    return packedArgs;
 }
 
 
@@ -686,7 +687,7 @@ void UIServer::writeSettings() {
 void UIServer::cancelCurrent() {
   QListViewItemIterator it( listProgress );
   ProgressItem *item;
-  
+
   // kill all selected jobs
   while ( it.current() ) {
     if ( it.current()->isSelected() ) {
