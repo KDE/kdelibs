@@ -63,12 +63,12 @@ public:
 
     // Options.
 
-    typedef enum
+    enum Options
     {
         // Should the user be prompted before the replace operation?
         PromptOnReplace = 256,
         BackReference = 512
-    } Options;
+    };
 
     /**
      * Construct a replace dialog.read-only or rather select-only combo box with a

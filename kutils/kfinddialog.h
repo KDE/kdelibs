@@ -67,7 +67,7 @@ public:
 
     // Options.
 
-    typedef enum
+    enum Options
     {
         WholeWordsOnly = 1,     // Match whole words only.
         FromCursor = 2,         // Start from current cursor position.
@@ -77,7 +77,7 @@ public:
         RegularExpression = 32, // Interpret the pattern as a regular expression.
         // User extensions can use boolean options above this value.
         MinimumUserOption = 65536
-    } Options;
+    };
 
     /**
      * Construct a find dialog with a parent object and a name.
