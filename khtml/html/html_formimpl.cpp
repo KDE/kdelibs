@@ -106,13 +106,25 @@ static QCString encodeCString(const QCString& e)
     // http://www.w3.org/TR/html4/interact/forms.html#h-17.13.4.1
     // safe characters like NS handles them for compatibility
     static const char *safe = "-._*";
-    QCString encoded(( e.length()+e.contains( '\n' ) )*3+1);
+    QCString encoded(( e.length()+e.contains( '\n' ) )*3
+                     +e.contains('\r') * 3 + 1);
     int enclen = 0;
+    bool crmissing = false;
+    unsigned char oldc;
+    unsigned char c ='\0';
 
     //QCString orig(e.data(), e.size());
 
     for(unsigned pos = 0; pos < e.length(); pos++) {
-        unsigned char c = e[pos];
+        oldc = c;
+        c = e[pos];
+
+        if (crmissing && c != '\n') {
+            encoded[enclen++] = '%';
+            encoded[enclen++] = '0';
+            encoded[enclen++] = 'D';
+            crmissing = false;
+        }
 
         if ( (( c >= 'A') && ( c <= 'Z')) ||
              (( c >= 'a') && ( c <= 'z')) ||
@@ -130,6 +142,10 @@ static QCString encodeCString(const QCString& e)
             encoded[enclen++] = '%';
             encoded[enclen++] = '0';
             encoded[enclen++] = 'A';
+            crmissing = false;
+        }
+        else if (c == '\r' && oldc != '\n') {
+            crmissing = true;
         }
         else if ( c != '\r' )
         {
@@ -155,24 +171,6 @@ inline static QCString fixUpfromUnicode(const QTextCodec* codec, const QString& 
     str.truncate(str.length());
     return str;
 }
-
-void HTMLFormElementImpl::i18nData()
-{
-    QString foo1 = i18n( "You're about to send data to the Internet "
-                         "via an unencrypted connection. It might be possible "
-                         "for others to see this information.\n"
-                         "Do you want to continue?");
-    QString foo2 = i18n("KDE Web browser");
-    QString foo3 = i18n("When you send a password unencrypted to the Internet, "
-                        "it might be possible for others to capture it as plain text.\n"
-                        "Do you want to continue?");
-    QString foo5 = i18n("Your data submission is redirected to "
-                        "an insecure site. The data is sent unencrypted.\n"
-                        "Do you want to continue?");
-    QString foo6 = i18n("The page contents expired. You can repost the form"
-                        "data by using <a href=\"javascript:go(0);\">Reload</a>");
-}
-
 
 QByteArray HTMLFormElementImpl::formData(bool& ok)
 {
@@ -1229,29 +1227,14 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
             QString local;
             QCString dummy("");
 
+            KURL fileurl(value().string());
+            KIO::UDSEntry filestat;
+
             // can't submit file in www-url-form encoded
-            if (multipart) {
-                if (value().string().stripWhiteSpace().isEmpty())
-                {
-                    encoding += dummy;
-                    return false;
-                }
-            
-                KURL fileurl(value().string());
-                KIO::UDSEntry filestat;
-                
-                if (!KIO::NetAccess::stat(fileurl, filestat)) {
-                    KMessageBox::sorry(0L, i18n("Error fetching file for submission:\n%1").arg(KIO::NetAccess::lastErrorString()));
-                    return false;
-                }
-
+            if (multipart && KIO::NetAccess::stat(fileurl, filestat)) {
                 KFileItem fileitem(filestat, fileurl, true, false);
-                if(fileitem.isDir()) {
-                    encoding += dummy;
-                    return false;
-                }
 
-                if ( KIO::NetAccess::download(KURL(value().string()), local) ) {
+                if ( fileitem.isFile() && KIO::NetAccess::download(KURL(value().string()), local) ) {
                     QFile file(local);
                     if (file.open(IO_ReadOnly)) {
                         QCString filearray(file.size()+1);
@@ -1265,14 +1248,7 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
 
                         return true;
                     }
-                    return false;
                 }
-                else {
-                    KMessageBox::sorry(0L, i18n("Error fetching file for submission:\n%1").arg(KIO::NetAccess::lastErrorString()));
-                    return false;
-                }
-
-                break;
             }
             // else fall through
         }
