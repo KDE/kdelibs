@@ -3,7 +3,6 @@ In this file:
 * About kdelibs
 * Licensing
 * Common Mistakes
-* Debugging
 * Upgrading
 * Compile Problems
 * More Info
@@ -11,14 +10,13 @@ In this file:
 About kdelibs
 -------------
 
-This is the version 2.1 (beta2) release of the KDE libraries.  Among this
-collection are twelve (12) libraries that are central to the development
-and execution of a KDE program, internationalization files for these
-libraries, misc HTML documentation, theme modules, and regression tests.  
-These libraries are:
+This is the version 2.1 (beta2) release of the KDE libraries.  We have
+libraries that are central to the development and execution of a KDE
+program, internationalization files for these libraries, misc HTML
+documentation, theme modules, and regression tests. Here is a list:
 
 * kdecore
-    This is the core collection of KDE stuff.  Non GUI classes reside here.
+    This is the core collection of KDE stuff. Non GUI classes reside here.
 
 * kdeui
     The main collection of misc. user interface classes (widgets).
@@ -28,58 +26,91 @@ These libraries are:
     image formats.
 
 * kfile
-    This library contains the KFileDialog in all its glory.  A reasonably
-    source compatable replacement to QFileDialog.
+    This library contains the KFileDialog in all its glory.
 
 * kspell
     KSpell and related classes are a frontend to ispell for use within a
-    GUI app.  kedit uses them already.
+    GUI app.
 
 * kab
-    The address book library.  See the README for more information.
+    The address book library.
 
 * khtml
     The next generation HTML rendering widget designed for Konqueror
-    (kfm's successor).  This supports HTML 4, CSS, and a variety of other web
+    (kfm's successor). This supports HTML 4, CSS, and a variety of other web
     related standards.
 
 * kio
-    Classes that fetch and decode URLs are contained here.  Previously
-    this functionality was contained in kfmlib, but among other
-    improvments and redesigns, kio does not require KFM to operate.
-    This library also contains "ksycoca", the system configure cache
-    containing services, applications, servicetypes and mimetypes.
+    Classes that fetch and decode URLs are contained here. This library also
+    contains "ksycoca", the system configure cache containing services,
+    applications, servicetypes and mimetypes.
 
 * kjs
-    KDE's implementation of ECMAScript aka JavaScript.
+    KDE's implementation of ECMAScript (aka JavaScript).
 
 * kparts
-    KDE component model. Stay tuned.
+    KDE component model.
 
 * kstyles
-    The theme engine lies within.  It handles nearly anything relating to
+    The theme engine lies within. It handles nearly anything relating to
     customizing the appearance of widgets.
 
 * dcop
-    Something witty and creative about DCOP and it's Davidlyness goes
-    here, David, D, you get it, sure.
+    The desktop communication program allows even shell scripts to communicate
+    with KDE applications. It's also the base for KParts.
 
 * kssl
-    An SSL intergration for KDE. It currently uses OpenSSL. Read kssl/README
-    for up-to-date informations.
+    An SSL intergration for KDE. It currently uses OpenSSL.
 
+* arts
+    ARTS (analog realtime synthesizer) is a environment of small modules
+    that one can plug together to process multimedia data.
+
+* kdesu
+    Library for password entering and handling
+
+* kinit
+    Process launcher, used for fast KDE startup
+
+* ksgmltools
+    Docbook and SGML tools needed to generate documentation for KDE.
+
+* libkmid
+    MIDI file handling and midi mapper (manages output of midi files to
+    various devices).
+
+* interfaces
+    kparts interface for text editors
+
+* kdedb
+    This is work-in-progress and not (yet) part of kdelibs. Basically we
+    have kioslaves for databases as well as database aware dialog widgets.
+
+* kprint
+    This is work-in-progress and not (yet) part of kdelibs. Basically we
+    have a wrapper around sysAPS so that we will be able to print via
+    LPR and CUPS.    
+
+* libtldl
+    System independed dlopen() handler.
+
+* mimetypes
+    Database of mime types.
+
+* pics
+    Database of icons.
 
 Licensing
 ---------
 
 The libraries themselves have been covered (since Saturday, June 21st, 1997)
-by the GNU Library General Public License (LGPL).  Any other programs (such as
-the examples) are covered by the GNU General Public License (GPL).  All the
+by the GNU Library General Public License (LGPL). Any other programs (such as
+the examples) are covered by the GNU General Public License (GPL). All the
 gory details for the LGPL reside in COPYING.LIB, and for the GPL reside in 
 COPYING.
 
 Various parts are also covered under a BSD style license, detailed in
-COPYING.BSD.  Currently, code covered under such license is copyrighted by
+COPYING.BSD. Currently, code covered under such license is copyrighted by
 Theo de Raadt.
 
 When in doubt, check the individual file, they should all have license
@@ -89,7 +120,7 @@ Common Mistakes
 ---------------
 
 If configure claims Qt cannot be found, have a look at http://www.troll.no
-to get a copy of Qt, version 2.2.1 or newer.  If you have peeked there
+to get a copy of Qt, version 2.2.1 or newer. If you have peeked there
 already, grab the CVS module qt-copy from anoncvs.kde.org, or a snapshot
 thereof.
 
@@ -97,19 +128,21 @@ Debugging
 ---------
 
 You can use --enable-debug with the configure script, if you want to have
-debug code in your KDE libs.  If you have the space and can stand code that's
-somewhat slower, this is worth it.  The extra information really
+debug code in your KDE libs. If you have the space and can stand code that's
+somewhat slower, this is worth it. The extra information really
 helps debugging and thus bugfixing.
 
 On the other hand, --disable-debug removes all debug messages, leading
 to a faster and cleaner desktop.
 
+See also the file DEBUG.
+
 Upgrading
 ---------
 
-If you have an older kdebase installed, just copy all your .k*rc files
-from $HOME to $HOME/.kde/share/config. In the other case, default values
-are used for most apps.
+If you have an kdebase older than 2.0 installed, just copy all your .k*rc
+files from $HOME to $HOME/.kde/share/config. In the other case, default
+values are used for most apps.
 
 Compile Problems
 ----------------
@@ -120,8 +153,8 @@ http://www.kde.org/compilationfaq.html for know issues in certain OS
 environments before reporting bugs or going mad :). 
 
 If you are running a FreeBSD system, you will need to make sure that LIBS
-is set to "-Wl,-export-dynamic".  The easiest way to do this is to prefix
-configure with it, i.e.: LIBS="-Wl,-export-dynamic" ./configure.  Thanks to
+is set to "-Wl,-export-dynamic". The easiest way to do this is to prefix
+configure with it, i.e.: LIBS="-Wl,-export-dynamic" ./configure. Thanks to
 Will Andrews <will@FreeBSD.org> and Arun Sharma <adsharma@sharmas.dhs.org>
 for identifying what needed to be done, and how to do it, and such.
 
@@ -144,7 +177,7 @@ pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b
 g_char_traits1ZcZt24__default_al
 
 and you're using egcs, try re-compiling all your C++ libs with -fsquangle,
-and then recompiling whatever you were working on with -fsquangle.  It
+and then recompiling whatever you were working on with -fsquangle. It
 should help, and more information about this is available on the egcs FAQ
 available at http://egcs.cygnus.com
 
