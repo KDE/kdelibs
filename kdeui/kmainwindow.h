@@ -531,7 +531,11 @@ public slots:
 //                           bool reverse); // KDE 4.0: enable this
 
     /**
-     * @internal. Used for the auto-save-settings feature.
+     * Tell the main window that it should save its settings when being closed.
+     * This is part of the auto-save-settings feature.
+     * For everything related to toolbars this happens automatically,
+     * but you have to call setSettingsDirty() in the slot that toggles
+     * the visibility of the statusbar.
      */
     void setSettingsDirty();
 
