@@ -92,7 +92,7 @@ char *xmalloc(size_t);
 char *xrealloc(char *ptr, int size);
 int xsetenv(const char *name, const char *value);
 char *xstrdup(char *src);
-const char **xstrsep(const char *str);
+char **xstrsep(const char *str);
 
 /**
  * Safe malloc functions.
@@ -144,7 +144,7 @@ char *xstrdup(char *src)
 /**
  * Split comma separated list.
  */
-char **xstrsep(char *str)
+char **xstrsep(const char *str)
 {
     int i = 0, size = 10;
     char **list = (char **) xmalloc(size * sizeof(char *));
