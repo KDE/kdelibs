@@ -208,21 +208,31 @@ void KSystemTray::activateOrHide()
 	return;
 
     KWin::WindowInfo info = KWin::windowInfo( pw->winId() );
-    // mapped = not hidden by calling hide()
+    // mapped = visible (but possibly obscured)
     bool mapped = (info.mappingState() != NET::Withdrawn);
-#if QT_VERSION >= 0x030200
-    if( mapped && !pw->isActiveWindow()) // visible not active -> activate
-#else
-    // SELI using !pw->isActiveWindow() should be enough here,
-    // but it doesn't work - e.g. with kscd, the "active" window
-    // is the widget docked in Kicker
-    if ( mapped && ( KWinModule().activeWindow() != pw->winId() ))
-#endif
+//    - not mapped -> show, raise, focus
+//    - mapped
+//        - obscured -> raise, focus
+//        - not obscured -> hide
+    if( !mapped )
+        minimizeRestore( true );
+    else
     {
-        KWin::setActiveWindow( pw->winId() );
-        return;
+        KWinModule module;
+        for( QValueList< WId >::ConstIterator it = module.stackingOrder().fromLast();
+             it != module.stackingOrder().end() && (*it) != pw->winId();
+             --it )
+        {
+            KWin::WindowInfo info = KWin::windowInfo( *it, NET::WMGeometry | NET::XAWMState );
+            if( info.mappingState() == NET::Visible && info.geometry().intersects( pw->geometry()))
+            {
+                pw->raise();
+                KWin::setActiveWindow( pw->winId());
+                return;
+            }
+        }
+        minimizeRestore( false ); // hide
     }
-    minimizeRestore( !mapped );
 }
 
 void KSystemTray::minimizeRestore( bool restore )
@@ -240,6 +250,7 @@ void KSystemTray::minimizeRestore( bool restore )
 	    KWin::setOnDesktop( pw->winId(), KWin::currentDesktop());
         pw->move( info.geometry().topLeft() ); // avoid placement policies
         pw->show();
+        pw->raise();
 	KWin::setActiveWindow( pw->winId() );
 #endif
     } else {
