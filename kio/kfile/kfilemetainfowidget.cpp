@@ -225,7 +225,7 @@ QWidget* KFileMetaInfoWidget::makeStringWidget()
                                                     (m_validator);
         b->insertStringList(val->stringList());
         b->setCurrentText(m_item.value().toString());
-        connect(b, SIGNAL(activated(int)), this, SLOT(slotComboChanged(int)));
+        connect(b, SIGNAL(activated(const QString &)), this, SLOT(slotComboChanged(const QString &)));
         b->setValidator(val);
         reparentValidator(b, val);
         return b;
@@ -303,10 +303,10 @@ void KFileMetaInfoWidget::slotChanged(double value)
     m_dirty = true;
 }
 
-void KFileMetaInfoWidget::slotComboChanged(int /*item*/)
+void KFileMetaInfoWidget::slotComboChanged(const QString &value)
 {
     Q_ASSERT(m_widget->inherits("KComboBox"));
-//    m_value = QVariant(value);
+    m_value = QVariant(value);
     emit valueChanged(m_value);
     m_dirty = true;
 }

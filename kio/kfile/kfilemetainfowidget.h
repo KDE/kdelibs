@@ -65,7 +65,7 @@ private slots:
     void slotChanged(bool value);
     void slotChanged(int value);
     void slotChanged(double value);
-    void slotComboChanged(int item);
+    void slotComboChanged(const QString &value);
     void slotLineEditChanged(const QString& value);
     void slotMultiLineEditChanged();
     void slotDateChanged(const QDate& value);
