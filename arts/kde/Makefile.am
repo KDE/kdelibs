@@ -7,7 +7,7 @@ INCLUDES                    =   $(all_includes) -I$(top_srcdir)/arts \
 lib_LTLIBRARIES  	    =	libartskde.la
 libartskde_la_SOURCES	    =	artskde.cc kioinputstream_impl.cpp kplayobject.cc \
 				kplayobjectfactory.cc kartsfloatwatch.cpp
-libartskde_la_LIBADD        =   $(LIB_KDECORE) $(LIB_KIO) $(LIB_KSYCOCA) $(LIB_QT) -lqtmcop
+libartskde_la_LIBADD        =   $(LIB_KDECORE) $(LIB_KIO) $(LIB_KSYCOCA) $(LIB_QT) -L../qtmcop -lqtmcop
 libartskde_la_LDFLAGS       =   -avoid-version -module $(all_libraries)
 libartskde_la_METASOURCES   =	AUTO
 
