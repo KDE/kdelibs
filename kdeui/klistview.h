@@ -341,6 +341,16 @@ signals:
    */
   void moved();
 
+	/**
+	 * Connect to this signal if you want to do some preprocessing before
+	 * a move is made, for example, to disable sorting
+	 *
+	 * This is sent only once per each groups of moves.  That is, for each
+	 * drop that is a move this will be emitted once, before KListView calls
+	 * @ref moveItem()
+	 **/
+	void aboutToMove();
+  
   /**
    * This signal is emitted when ever the user moves an item in the list via
    * DnD.
@@ -635,6 +645,7 @@ protected:
   /**
    * @return a dragobject encoding the current selection.
    *
+   * A common mistake is to forget the "const" in your reimplementation
    * @see setDragEnabled()
    */
   virtual QDragObject *dragObject() const;
@@ -642,6 +653,7 @@ protected:
   /**
    * @return true if the @p event provides some acceptable
    * format.
+   * A common mistake is to forget the "const" in your reimplementation
    */
   virtual bool acceptDrag (QDropEvent* event) const;
 

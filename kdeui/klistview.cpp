@@ -693,6 +693,7 @@ void KListView::movableDropEvent (QListViewItem* parent, QListViewItem* afterme)
 {
   QList<QListViewItem> items, afterFirsts, afterNows;
   QListViewItem *current=currentItem();
+  bool hasMoved=false;
   for (QListViewItem *i = firstChild(), *iNext=0; i != 0; i = iNext)
   {
     iNext=i->itemBelow();
@@ -707,6 +708,13 @@ void KListView::movableDropEvent (QListViewItem* parent, QListViewItem* afterme)
     i->setSelected(false);
 
     QListViewItem *afterFirst = i->itemAbove();
+
+	if (!hasMoved)
+	{
+		emit aboutToMove();
+		hasMoved=true;
+	}
+	
     moveItem(i, parent, afterme);
 
     // ###### This should include the new parent !!! -> KDE 3.0
