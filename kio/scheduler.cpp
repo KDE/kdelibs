@@ -473,8 +473,6 @@ void Scheduler::slotAuthorizationKey( const QCString& key,
     AuthKey* auth_key = cachedAuthKeys.first();
     for( ; auth_key !=0 ; auth_key=cachedAuthKeys.next() )
     {
-        kdDebug(7006) << "Cached: " << auth_key->key << " :" << endl
-                      << "New: " << key << " :" << endl;
         if( auth_key->isKeyMatch(key) )
             return ;
     }
@@ -515,15 +513,13 @@ bool Scheduler::regCachedAuthKey( const QCString& key, const QCString& group )
         QCString val;
         val.setNum( count+1 );
         kdDebug(7006) << "Setting reference count to: " << val << endl;
-        count = client.setVar( ref_key, val, 0, group);
-        if( count == -1 )
+        if( client.setVar( ref_key, val, 0, group) == -1 )
             kdDebug(7006) << "Unable to increment reference count!" << endl;
     }
     else
     {
         kdDebug(7006) << "Setting reference count to: 1" << endl;
-        count = client.setVar( ref_key, "1", 0, group );
-        if( count == -1 )
+        if( client.setVar( ref_key, "1", 0, group ) == -1 )
             kdDebug(7006) << "Unable to set reference count!" << endl;
     }
     return true;
