@@ -25,7 +25,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qobject.h>
 #include <qstring.h>
 #include <qsocketnotifier.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qvaluelist.h>
 #include <qcstring.h>
 #include <qdict.h>
@@ -87,9 +87,9 @@ public:
      * This allows us to do proper bookkeeping in case client A, client B 
      * or both unregister during the call.
      */
-    QList <_IceConn> waitingOnReply;
-    QList <_IceConn> waitingForReply;
-    QList <_IceConn> waitingForDelayedReply;
+    QPtrList <_IceConn> waitingOnReply;
+    QPtrList <_IceConn> waitingForReply;
+    QPtrList <_IceConn> waitingForDelayedReply;
     DCOPSignalConnectionList *_signalConnectionList;
     bool daemon;
     bool outputBlocked;
@@ -142,11 +142,11 @@ private:
     DCOPSignals *dcopSignals;
     QTimer *m_timer;
     QTimer *m_deadConnectionTimer;
-    QList<DCOPListener> listener;
+    QPtrList<DCOPListener> listener;
     QAsciiDict<DCOPConnection> appIds; // index on app id
     QPtrDict<DCOPConnection> clients; // index on iceConn
     QIntDict<DCOPConnection> fd_clients; // index on fd
-    QList<_IceConn> deadConnections;
+    QPtrList<_IceConn> deadConnections;
 };
 
 extern DCOPServer* the_server;

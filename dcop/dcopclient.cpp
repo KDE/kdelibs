@@ -116,9 +116,9 @@ void unregisterLocalClient( const QCString &_appId )
 }
 /////////////////////////////////////////////////////////
 
-template class QList<DCOPObjectProxy>;
-template class QList<DCOPClientTransaction>;
-template class QList<_IceConn>;
+template class QPtrList<DCOPObjectProxy>;
+template class QPtrList<DCOPClientTransaction>;
+template class QPtrList<_IceConn>;
 
 struct DCOPClientMessage
 {
@@ -146,7 +146,7 @@ public:
     QCString senderId;
 
     QCString defaultObject;
-    QList<DCOPClientTransaction> *transactionList;
+    QPtrList<DCOPClientTransaction> *transactionList;
     bool transaction;
     Q_INT32 transactionId;
     int opcode;
@@ -155,7 +155,7 @@ public:
     CARD32 currentKey;
 
     QTimer postMessageTimer;
-    QList<DCOPClientMessage> messages;
+    QPtrList<DCOPClientMessage> messages;
 };
 
 class DCOPClientTransaction
@@ -315,7 +315,7 @@ void DCOPClient::processPostedMessagesInternal()
 {
     if ( d->messages.isEmpty() )
 	return;
-    QListIterator<DCOPClientMessage> it (d->messages );
+    QPtrListIterator<DCOPClientMessage> it (d->messages );
     DCOPClientMessage* msg ;
     while ( ( msg = it.current() ) ) {
 	++it;
@@ -1142,7 +1142,7 @@ static bool receiveQtObject( const QCString &objId, const QCString &fun, const Q
 	    l << "QVariant property(QCString)";
 	    QStrList lst = o->metaObject()->slotNames( true );
 	    int i = 0;
-	    for ( QListIterator<char> it( lst ); it.current(); ++it ) {
+	    for ( QPtrListIterator<char> it( lst ); it.current(); ++it ) {
 #if QT_VERSION < 300
 		if ( o->metaObject()->slot_access( i++, true ) != QMetaData::Public )
 #else
@@ -1173,7 +1173,7 @@ static bool receiveQtObject( const QCString &objId, const QCString &fun, const Q
 	    QDataStream reply( replyData, IO_WriteOnly );
 	    QCStringList l;
 	    QStrList lst = o->metaObject()->propertyNames( true );
-	    for ( QListIterator<char> it( lst ); it.current(); ++it ) {
+	    for ( QPtrListIterator<char> it( lst ); it.current(); ++it ) {
 #if QT_VERSION < 300
 		const QMetaProperty* p = o->metaObject()->property( it.current(), true );
 #else
@@ -1296,7 +1296,7 @@ bool DCOPClient::receive(const QCString &/*app*/, const QCString &objId,
     if (!objId.isEmpty() && objId[objId.length()-1] == '*') {
 	// handle a multicast to several objects.
 	// doesn't handle proxies currently.  should it?
-	QList<DCOPObject> matchList =
+	QPtrList<DCOPObject> matchList =
 	    DCOPObject::match(objId.left(objId.length()-1));
 	for (DCOPObject *objPtr = matchList.first();
 	     objPtr != 0L; objPtr = matchList.next()) {
@@ -1306,7 +1306,7 @@ bool DCOPClient::receive(const QCString &/*app*/, const QCString &objId,
 	return true;
     } else if (!DCOPObject::hasObject(objId)) {
 	if ( DCOPObjectProxy::proxies ) {
-	    for ( QListIterator<DCOPObjectProxy> it( *DCOPObjectProxy::proxies ); it.current();  ++it ) {
+	    for ( QPtrListIterator<DCOPObjectProxy> it( *DCOPObjectProxy::proxies ); it.current();  ++it ) {
 		if ( it.current()->process( objId, fun, data, replyType, replyData ) )
 		    return true;
 	    }
@@ -1381,7 +1381,7 @@ bool DCOPClient::find(const QCString &app, const QCString &objId,
     else {
 	// handle a multicast to several objects.
 	// doesn't handle proxies currently.  should it?
-	QList<DCOPObject> matchList =
+	QPtrList<DCOPObject> matchList =
 	    DCOPObject::match(objId.left(objId.length()-1));
 	for (DCOPObject *objPtr = matchList.first();
 	     objPtr != 0L; objPtr = matchList.next())
@@ -1543,7 +1543,7 @@ DCOPClient::beginTransaction()
     if (d->opcode == DCOPSend)
        return 0;
     if (!d->transactionList)
-	d->transactionList = new QList<DCOPClientTransaction>;
+	d->transactionList = new QPtrList<DCOPClientTransaction>;
 
     d->transaction = true;
     DCOPClientTransaction *trans = new DCOPClientTransaction();
@@ -1684,7 +1684,7 @@ DCOPClient::disconnectDCOPSignal( const QCString &sender, const QCString &signal
 void
 DCOPClient::emergencyClose()
 {
-    QList<DCOPClient> list;
+    QPtrList<DCOPClient> list;
     client_map_t *map = DCOPClient_CliMap;
     if (!map) return;
     QAsciiDictIterator<DCOPClient> it(*map);

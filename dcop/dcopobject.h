@@ -26,7 +26,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qobject.h>
 #include <qmap.h>
 #include <qstring.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qvaluelist.h>
 
 class DCOPClient;
@@ -220,7 +220,7 @@ public:
    * This function is used for multicasting a DCOP message to
    * several objects inside a single process.
    */
-  static QList<DCOPObject> match(const QCString &partialId);
+  static QPtrList<DCOPObject> match(const QCString &partialId);
 
   /**
    * Creates an object id for the QObject @p obj. This is done
@@ -283,7 +283,7 @@ private:
     void* unused;
     void* unused_too;
     friend class DCOPClient;
-    static QList<DCOPObjectProxy>* proxies;
+    static QPtrList<DCOPObjectProxy>* proxies;
 };
 
 

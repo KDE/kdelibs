@@ -22,7 +22,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <dcopserver.h>
 #include <dcopsignals.h>
 
-template class QList<DCOPSignalConnection>;
+template class QPtrList<DCOPSignalConnection>;
 
 DCOPSignals::DCOPSignals()
 {

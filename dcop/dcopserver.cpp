@@ -63,7 +63,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 template class QDict<DCOPConnection>;
 template class QPtrDict<DCOPConnection>;
-template class QList<DCOPListener>;
+template class QPtrList<DCOPListener>;
 
 #define _DCOPIceSendBegin(x)	\
    int fd = IceConnectionNumber( x );		\

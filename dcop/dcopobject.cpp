@@ -107,9 +107,9 @@ DCOPObject *DCOPObject::find(const QCString &_objId)
     return 0L;
 }
 
-QList<DCOPObject> DCOPObject::match(const QCString &partialId)
+QPtrList<DCOPObject> DCOPObject::match(const QCString &partialId)
 {
-    QList<DCOPObject> mlist;
+    QPtrList<DCOPObject> mlist;
     QMap<QCString, DCOPObject *>::ConstIterator it(objMap()->begin());
     for (; it != objMap()->end(); ++it)
 	if (it.key().left(partialId.length()) == partialId) // found it?
@@ -210,19 +210,19 @@ bool DCOPObject::disconnectDCOPSignal( const QCString &sender, const QCString &s
 }
 
 
-QList<DCOPObjectProxy>* DCOPObjectProxy::proxies = 0;
+QPtrList<DCOPObjectProxy>* DCOPObjectProxy::proxies = 0;
 
 DCOPObjectProxy::DCOPObjectProxy()
 {
     if ( !proxies )
-	proxies = new QList<DCOPObjectProxy>;
+	proxies = new QPtrList<DCOPObjectProxy>;
     proxies->append( this );
 }
 
 DCOPObjectProxy::DCOPObjectProxy( DCOPClient*)
 {
     if ( !proxies )
-	proxies = new QList<DCOPObjectProxy>;
+	proxies = new QPtrList<DCOPObjectProxy>;
     proxies->append( this );
 }
 

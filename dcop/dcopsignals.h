@@ -23,7 +23,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define DCOPSIGNALS_H "$Id$"
 
 #include <qdict.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qstring.h>
 
 class DCOPConnection;
@@ -45,7 +45,7 @@ public:
    QCString slot;        // Function to send to in the object.
 };
 
-class DCOPSignalConnectionList : public QList<DCOPSignalConnection>
+class DCOPSignalConnectionList : public QPtrList<DCOPSignalConnection>
 {
 public:
    DCOPSignalConnectionList() { };
