@@ -59,7 +59,7 @@ NodeImpl::Id HTMLAnchorElementImpl::id() const
 
 void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
 {
-    bool keydown = evt->id() == EventImpl::KHTML_KEYPRESS_EVENT || 
+    bool keydown = evt->id() == EventImpl::KHTML_KEYPRESS_EVENT ||
                    evt->id() == EventImpl::KHTML_KEYDOWN_EVENT;
 
     // React on clicks and on keypresses.
@@ -148,7 +148,6 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
                 state |= Qt::ControlButton;
 	    }
 
-            getDocument()->view()->resetCursor();
             getDocument()->view()->part()->
                 urlSelected( url, button, state, utarget );
         }
