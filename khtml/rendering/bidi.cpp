@@ -415,8 +415,9 @@ static void addWord(BiDiParagraph *par, QList<BiDiWord> &line, const BiDiIterato
     }
     if(o && !o->isHidden())
     {
-	if(!ignoreLast) pos--;
-	w = new BiDiWord(o, pos, it2.pos - pos, level, width);
+	int pos2 = it2.pos;
+	if(!ignoreLast) pos2++;
+	w = new BiDiWord(o, pos, pos2 - pos, level, width);
 	line.append(w);
     }
 }
@@ -438,7 +439,7 @@ void BiDiParagraph::breakLines(int xOff, int yOff)
 	if(r->level < levelLow) levelLow = r->level;
 	if(r->level > levelHigh) levelHigh = r->level;
 	
-	if(r->breaks)
+	if(r->breaks && ! r->breaks->isEmpty())
 	{
 	    QListIterator<BiDiIterator> breakIt(*r->breaks);
 
@@ -475,7 +476,9 @@ void BiDiParagraph::breakLines(int xOff, int yOff)
 		pos = b;
 		//++pos;
 	    }
+	    //++pos;
 	}
+	//++pos;
 	int w = width(this, pos, r->to);
 	if(w > availableWidth)
 	{
