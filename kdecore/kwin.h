@@ -79,7 +79,8 @@ public:
      * @param win the if of the window to make active
      * @param time X server timestamp of the user activity that
      *    caused this request
-    */
+     * @since 3.2
+     */
     static void activateWindow( WId win, long time = 0 );
 
     /**
