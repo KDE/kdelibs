@@ -203,10 +203,13 @@ public:
     /**
      * Set the host
      * @param host
+     * @param port
      * @param user
      * @param pass
      * Called directly by createSlave, this is why there is no equivalent in
      * SlaveInterface, unlike the other methods.
+     *
+     * This method is called whenever a change in host, port or user occurs.
      */
     virtual void setHost(const QString& host, int port, const QString& user, const QString& pass);
 
@@ -222,12 +225,12 @@ public:
 
     /**
      * get, aka read.
-     * @param path the file to retrieve (decoded)
-     * @param query an optionnal query (the part after the '?' in the URL)
+     * @param url the full url for this request. Host, port and user of the URL
+     *        can be assumed to be the same as in the last setHost() call.
      * @param reload if true, make sure to get an up to date version
      * The slave emits the data through @ref data
      */
-    virtual void get( const QString& path, const QString& query, bool reload );
+    virtual void get( const KURL& url, bool reload );
 
     /**
      * put, aka write.
@@ -236,14 +239,14 @@ public:
      * @param overwrite if true, any existing file will be overwritten
      * @param resume
      */
-    virtual void put( const QString& path, int permissions, bool overwrite, bool resume);
+    virtual void put( const KURL& url, int permissions, bool overwrite, bool resume);
 
     /**
      * Finds all details for one file or directory.
      * The information returned is the same as what @ref listDir returns,
      * but only for one file or directory.
      */
-    virtual void stat( const QString& path, const QString& query );
+    virtual void stat( const KURL& url );
 
     /**
      * Finds mimetype for one file or directory.
@@ -257,7 +260,7 @@ public:
      * determining the mimetype on it - this is obviously not a
      * good thing in most cases.
      */
-    virtual void mimetype( const QString& path, const QString& query );
+    virtual void mimetype( const KURL& url );
 
     /**
      * Lists the contents of @p path.
@@ -266,7 +269,7 @@ public:
      * It should also emit @ref totalFiles as soon as it knows how many
      * files it will list.
      */
-    virtual void listDir( const QString& path, const QString& query );
+    virtual void listDir( const KURL& url );
 
     /**
      * Create a directory
@@ -275,7 +278,7 @@ public:
      * (-1 if no permissions to be set)
      * The slave emits ERR_COULD_NOT_MKDIR if failure.
      */
-    virtual void mkdir( const QString& path, int permissions );
+    virtual void mkdir( const KURL&url, int permissions );
 
     /**
      * Rename @p oldname into @p newname.
@@ -285,13 +288,13 @@ public:
      * @param dest where to move the file to (decoded)
      * @param overwrite if true, any existing file will be overwritten
      */
-    virtual void rename( const QString& src, const QString& dest, bool overwrite );
+    virtual void rename( const KURL& src, const KURL& dest, bool overwrite );
 
     /**
      * Change permissions on @p path
      * The slave emits ERR_DOES_NOT_EXIST or ERR_CANNOT_CHMOD
      */
-    virtual void chmod( const QString& path, int permissions );
+    virtual void chmod( const KURL& url, int permissions );
 
     /**
      * Copy @p src into @p dest.
@@ -303,7 +306,7 @@ public:
      * @param overwrite if true, any existing file will be overwritten
      *
      */
-    virtual void copy( const QString &src, const QString &dest, int permissions, bool overwrite );
+    virtual void copy( const KURL &src, const KURL &dest, int permissions, bool overwrite );
 
     /**
      * Delete a file or directory.
@@ -311,7 +314,7 @@ public:
      * @param isfile if true, a file should be deleted.
      *               if false, a directory should be deleted.
      */
-    virtual void del( const QString &path, bool isfile);
+    virtual void del( const KURL &url, bool isfile);
 
     /**
      * Used for any command that is specific to this slave (protocol)

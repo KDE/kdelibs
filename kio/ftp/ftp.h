@@ -76,22 +76,22 @@ public:
    */
   virtual void closeConnection();
 
-  virtual void stat( const QString & path, const QString& query );
+  virtual void stat( const KURL &url );
 
-  virtual void listDir( const QString & path, const QString& query );
-  virtual void mkdir( const QString &  path, int permissions );
-  virtual void rename( const QString & src, const QString & dst, bool overwrite );
-  virtual void del( const QString & path, bool isfile );
-  virtual void chmod( const QString & path, int permissions );
+  virtual void listDir( const KURL & url );
+  virtual void mkdir( const KURL & url, int permissions );
+  virtual void rename( const KURL & src, const KURL & dst, bool overwrite );
+  virtual void del( const KURL & url, bool isfile );
+  virtual void chmod( const KURL & url, int permissions );
 
-  virtual void get( const QString& path, const QString& query, bool reload );
-  virtual void put( const QString& path, int permissions, bool overwrite, bool resume);
-  //virtual void mimetype( const QString& path );
+  virtual void get( const KURL& url, bool reload );
+  virtual void put( const KURL& url, int permissions, bool overwrite, bool resume);
+  //virtual void mimetype( const KURL& url );
 
   virtual void slave_status();
 
   // unsupported, AFAIK
-  // virtual void copy( const QString &src, const QString &dest, int permissions, bool overwrite );
+  // virtual void copy( const KURL &src, const KURL &dest, int permissions, bool overwrite );
 
 private:
 

@@ -747,8 +747,9 @@ bool Ftp::ftpCloseCommand()
   return true;
 }
 
-void Ftp::mkdir( const QString & path, int permissions )
+void Ftp::mkdir( const KURL & url, int permissions )
 {
+  QString path = url.path();
   if (!m_bLoggedOn)
      openConnection();
 
@@ -785,16 +786,16 @@ void Ftp::mkdir( const QString & path, int permissions )
   finished();
 }
 
-void Ftp::rename( const QString & src, const QString & dst, bool overwrite )
+void Ftp::rename( const KURL& src, const KURL& dst, bool overwrite )
 {
   if (!m_bLoggedOn)
      openConnection();
 
   // The actual functionality is in ftpRename because put needs it
-  if ( ftpRename( src, dst, overwrite ) )
+  if ( ftpRename( src.path(), dst.path(), overwrite ) )
     finished();
   else
-    error( ERR_CANNOT_RENAME, src );
+    error( ERR_CANNOT_RENAME, src.path() );
 }
 
 bool Ftp::ftpRename( const QString & src, const QString & dst, bool /* overwrite */ )
@@ -812,8 +813,9 @@ bool Ftp::ftpRename( const QString & src, const QString & dst, bool /* overwrite
   return ftpSendCmd( cmd, '2' );
 }
 
-void Ftp::del( const QString& path, bool isfile )
+void Ftp::del( const KURL& url, bool isfile )
 {
+  QString path = url.path();
   if (!m_bLoggedOn)
      openConnection();
 
@@ -828,8 +830,9 @@ void Ftp::del( const QString& path, bool isfile )
     finished();
 }
 
-void Ftp::chmod( const QString & path, int permissions )
+void Ftp::chmod( const KURL & url, int permissions )
 {
+  QString path = url.path();
   if (!m_bLoggedOn)
      openConnection();
 
@@ -902,8 +905,9 @@ void Ftp::createUDSEntry( const QString & filename, FtpEntry * e, UDSEntry & ent
      entry.append( atom ); */
 }
 
-void Ftp::stat( const QString & path, const QString& /*query*/ )
+void Ftp::stat( const KURL &url)
 {
+  QString path = url.path();
   if (!m_bLoggedOn)
      openConnection();
 
@@ -1008,13 +1012,13 @@ void Ftp::stat( const QString & path, const QString& /*query*/ )
 }
 
 
-void Ftp::listDir( const QString & _path, const QString& /*query*/ )
+void Ftp::listDir( const KURL &url )
 {
-  kdDebug(7102) << "Ftp::listDir " << _path << endl;
+  kdDebug(7102) << "Ftp::listDir " << url.url() << endl;
   if (!m_bLoggedOn)
      openConnection();
 
-  QString path = _path;
+  QString path = url.path();
   // No path specified ?
   if ( path.isEmpty() )
   {
@@ -1308,7 +1312,7 @@ bool Ftp::ftpCloseDir()
 
 //////////// get, put ////////
 
-void Ftp::get( const QString & path, const QString & /*query*/, bool /*reload*/ )
+void Ftp::get( const KURL & url, bool /*reload*/ )
 {
   if (!m_bLoggedOn)
      openConnection();
@@ -1316,12 +1320,12 @@ void Ftp::get( const QString & path, const QString & /*query*/, bool /*reload*/ 
   // Old code used to start by stat'ing, just to make sure it exists
   // Waste of time, I'd say. (David)
 
-  ftpSize( path, 'I' ); // try to find the size of the file
+  ftpSize( url.path(), 'I' ); // try to find the size of the file
 
   unsigned long offset = 0; // looks like this was never set to something else...
   // Don't we want support for getting a file from a certain offset ? Hmm...
 
-  if ( !ftpOpenCommand( "retr", path, 'I', ERR_CANNOT_OPEN_FOR_READING, offset ) ) {
+  if ( !ftpOpenCommand( "retr", url.path(), 'I', ERR_CANNOT_OPEN_FOR_READING, offset ) ) {
     kdWarning(7102) << "Can't open for reading" << endl;
     return;
   }
@@ -1385,12 +1389,12 @@ void Ftp::get( const QString & path, const QString & /*query*/, bool /*reload*/ 
 }
 
 /*
-void Ftp::mimetype( const QString& path )
+void Ftp::mimetype( const KURL& url )
 {
   if (!m_bLoggedOn)
      openConnection();
 
-  if ( !ftpOpenCommand( "retr", path, 'I', ERR_CANNOT_OPEN_FOR_READING, 0 ) ) {
+  if ( !ftpOpenCommand( "retr", url.path(), 'I', ERR_CANNOT_OPEN_FOR_READING, 0 ) ) {
     kdWarning(7102) << "Can't open for reading" << endl;
     return;
   }
@@ -1449,8 +1453,9 @@ void Ftp::ftpAbortTransfer()
 }
 */
 
-void Ftp::put( const QString& dest_orig, int permissions, bool overwrite, bool resume )
+void Ftp::put( const KURL& dest_url, int permissions, bool overwrite, bool resume )
 {
+  QString dest_orig = dest_url.path();
   if (!m_bLoggedOn)
      openConnection();
 

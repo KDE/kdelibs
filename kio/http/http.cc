@@ -849,19 +849,7 @@ bool HTTPProtocol::http_open()
     header += c_buffer;
   }
 
-  // Let the path be "/" if it is empty ( => true )
-  {
-     QString encoded = m_request.path;
-     if (m_request.path.isEmpty())
-        encoded = "/";
-     else
-        encoded = KURL::encode_string(m_request.path);
-
-     encoded += m_request.query;
-
-     header += encoded;
-  }
-
+  header += m_request.url.encodedPathAndQuery();
   header += " HTTP/1.1\r\n"; /* start header */
 
 
@@ -1526,18 +1514,18 @@ void HTTPProtocol::http_closeConnection()
 }
 
 // Returns only the file size, that's all kio_http can guess.
-void HTTPProtocol::stat(const QString& path, const QString& query)
+void HTTPProtocol::stat(const KURL& url)
 {
   if (m_request.hostname.isEmpty())
      error( KIO::ERR_INTERNAL, "stat: No host specified!");
 
   m_request.method = HTTP_HEAD;
-  m_request.path = path;
-  m_request.query = query;
+  m_request.path = url.path();
+  m_request.query = url.query();
   m_request.reload = false; // Use the cache
   m_request.offset = 0;
   m_request.do_proxy = m_bUseProxy;
-  buildURL();
+  m_request.url = url;
 
   if (http_open()) {
 
@@ -1545,10 +1533,8 @@ void HTTPProtocol::stat(const QString& path, const QString& query)
     {
       UDSEntry entry;
       UDSAtom atom;
-      // Extract filename out of path (not very important, I guess...)
-      QString filename = KURL( path ).fileName();
       atom.m_uds = KIO::UDS_NAME;
-      atom.m_str = filename;
+      atom.m_str = url.filename();
       entry.append( atom );
 
       atom.m_uds = KIO::UDS_FILE_TYPE;
@@ -1694,18 +1680,18 @@ void HTTPProtocol::buildURL()
     m_request.url.setQuery( m_request.query );
 }
 
-void HTTPProtocol::get( const QString& path, const QString& query, bool reload )
+void HTTPProtocol::get( const KURL& url, bool reload )
 {
   if (m_request.hostname.isEmpty())
      error( KIO::ERR_INTERNAL, "http GET: No host specified!");
 
   m_request.method = HTTP_GET;
-  m_request.path = path;
-  m_request.query = query;
+  m_request.path = url.path();
+  m_request.query = url.query();
   m_request.reload = reload;
   m_request.offset = 0;
   m_request.do_proxy = m_bUseProxy;
-  buildURL();
+  m_request.url = url;
 
   if (!http_open())
      return;
@@ -1720,18 +1706,18 @@ void HTTPProtocol::get( const QString& path, const QString& query, bool reload )
   finished();
 }
 
-void HTTPProtocol::put( const QString& path, int, bool, bool)
+void HTTPProtocol::put( const KURL &url, int, bool, bool)
 {
   if (m_request.hostname.isEmpty())
      error( KIO::ERR_INTERNAL, "http PUT: No host specified!");
 
   m_request.method = HTTP_PUT;
-  m_request.path = path;
+  m_request.path = url.path();
   m_request.query = QString::null;
   m_request.reload = true;
   m_request.offset = 0;
   m_request.do_proxy = m_bUseProxy;
-  buildURL();
+  m_request.url = url;
 
   if (!http_open())
      return;
@@ -1746,18 +1732,18 @@ void HTTPProtocol::put( const QString& path, int, bool, bool)
   finished();
 }
 
-void HTTPProtocol::post( const QString& path, const QString& query)
+void HTTPProtocol::post( const KURL& url)
 {
   if (m_request.hostname.isEmpty())
      error( KIO::ERR_INTERNAL, "http POST: No host specified!");
 
   m_request.method = HTTP_POST;
-  m_request.path = path;
-  m_request.query = query;
+  m_request.path = url.path();
+  m_request.query = url.query();
   m_request.reload = true;
   m_request.offset = 0;
   m_request.do_proxy = m_bUseProxy;
-  buildURL();
+  m_request.url = url;
 
   if (!http_open())
      return;
@@ -1772,20 +1758,20 @@ void HTTPProtocol::post( const QString& path, const QString& query)
   finished();
 }
 
-void HTTPProtocol::mimetype( const QString& path, const QString& query )
+void HTTPProtocol::mimetype( const KURL& url )
 {
-  kdDebug(7103) << "http: mimetype(" << path << ")" << endl;
+  kdDebug(7103) << "http: mimetype(" << url.url() << ")" << endl;
   if (m_request.hostname.isEmpty())
      //error( KIO::ERR_INTERNAL, "http MIMETYPE: No host specified!");
      error( KIO::ERR_UNKNOWN_HOST, "No host specified!");
 
   m_request.method = HTTP_HEAD;
-  m_request.path = path;
-  m_request.query = query;
+  m_request.path = url.path();
+  m_request.query = url.query();
   m_request.reload = false;
   m_request.offset = 0;
   m_request.do_proxy = m_bUseProxy;
-  buildURL();
+  m_request.url = url;
 
   if (!http_open())
      return;
@@ -1809,10 +1795,9 @@ void HTTPProtocol::special( const QByteArray &data)
     switch (tmp) {
     case 1: // HTTP POST
       {
-	QString path;
-	QString query;
-	stream >> path >> query;
-	post( path, query );
+	KURL url;
+	stream >> url;
+	post( url );
       }
       break;
    default:

@@ -338,7 +338,7 @@ void SimpleJob::slotSpeed( unsigned long bytes_per_second )
 SimpleJob *KIO::mkdir( const KURL& url, int permissions )
 {
     kdDebug(7007) << "mkdir " << url.url() << endl;
-    KIO_ARGS << url.path() << permissions;
+    KIO_ARGS << url << permissions;
     SimpleJob * job = new SimpleJob(url, CMD_MKDIR, packedArgs, false);
     return job;
 }
@@ -346,14 +346,14 @@ SimpleJob *KIO::mkdir( const KURL& url, int permissions )
 SimpleJob *KIO::rmdir( const KURL& url )
 {
     kdDebug(7007) << "rmdir " << url.url() << endl;
-    KIO_ARGS << url.path() << Q_INT8(false); // isFile is false
+    KIO_ARGS << url << Q_INT8(false); // isFile is false
     return new SimpleJob(url, CMD_DEL, packedArgs, false);
 }
 
 SimpleJob *KIO::chmod( const KURL& url, int permissions )
 {
     kdDebug(7007) << "chmod " << url.url() << endl;
-    KIO_ARGS << url.path() << permissions;
+    KIO_ARGS << url << permissions;
     SimpleJob * job = new SimpleJob(url, CMD_CHMOD, packedArgs, false);
     return job;
 }
@@ -403,7 +403,7 @@ void StatJob::slotStatEntry( const KIO::UDSEntry & entry )
 StatJob *KIO::stat(const KURL& url)
 {
     kdDebug(7007) << "stat " << url.url() << endl;
-    KIO_ARGS << url.path() << url.query();
+    KIO_ARGS << url;
     StatJob * job = new StatJob(url, CMD_STAT, packedArgs );
     return job;
 }
@@ -462,23 +462,24 @@ void TransferJob::slotFinished()
         m_redirectionURL = KURL();
         // The very tricky part is the packed arguments business
         QString dummyStr;
+        KURL dummyUrl;
         QDataStream istream( m_packedArgs, IO_ReadOnly );
         switch( m_command ) {
             case CMD_GET: {
                 Q_INT8 iReload;
-                istream >> dummyStr >> dummyStr /*do we keep the query?*/ >> iReload;
+                istream >> dummyUrl >> iReload;
                 m_packedArgs.truncate(0);
                 QDataStream stream( m_packedArgs, IO_WriteOnly );
-                stream << m_url.path() << m_url.query() << iReload;
+                stream << m_url << iReload;
                 break;
             }
             case CMD_PUT: {
                 int permissions;
                 Q_INT8 iOverwrite, iResume;
-                istream >> iOverwrite >> iResume >> permissions >> dummyStr;
+                istream >> dummyUrl >> iOverwrite >> iResume >> permissions;
                 m_packedArgs.truncate(0);
                 QDataStream stream( m_packedArgs, IO_WriteOnly );
-                stream << iOverwrite << iResume << permissions << m_url.path();
+                stream << m_url << iOverwrite << iResume << permissions;
                 break;
             }
             case CMD_SPECIAL: {
@@ -487,11 +488,11 @@ void TransferJob::slotFinished()
                 assert(specialcmd == 1); // you have to switch() here if other cmds are added
                 if (specialcmd == 1) // Assume HTTP POST
                 {
-                   istream >> dummyStr >> dummyStr;
+                   istream >> dummyUrl;
                    Q_INT8 iReload = 1;
                    m_packedArgs.truncate(0);
                    QDataStream stream( m_packedArgs, IO_WriteOnly );
-                   stream << m_url.path() << m_url.query() << iReload;
+                   stream << m_url << iReload;
                    m_command = CMD_GET;
                 }
                 break;
@@ -572,7 +573,7 @@ void TransferJob::start(Slave *slave)
 TransferJob *KIO::get( const KURL& url, bool reload, bool showProgressInfo )
 {
     // Send decoded path and encoded query
-    KIO_ARGS << url.path() << url.query() << Q_INT8( reload ? 1 : 0);
+    KIO_ARGS << url << Q_INT8( reload ? 1 : 0);
     TransferJob * job = new TransferJob( url, CMD_GET, packedArgs, QByteArray(), showProgressInfo );
     return job;
 }
@@ -581,7 +582,7 @@ TransferJob *KIO::http_post( const KURL& url, const QByteArray &postData, bool s
 {
     assert( url.protocol() == "http" );
     // Send http post command (1), decoded path and encoded query
-    KIO_ARGS << (int)1 << url.path() << url.query();
+    KIO_ARGS << (int)1 << url;
     TransferJob * job = new TransferJob( url, CMD_SPECIAL,
                                          packedArgs, postData, showProgressInfo );
     return job;
@@ -590,7 +591,7 @@ TransferJob *KIO::http_post( const KURL& url, const QByteArray &postData, bool s
 TransferJob *KIO::put( const KURL& url, int permissions,
                   bool overwrite, bool resume, bool showProgressInfo )
 {
-    KIO_ARGS << Q_INT8( overwrite ? 1 : 0 ) << Q_INT8( resume ? 1 : 0 ) << permissions << url.path();
+    KIO_ARGS << url << Q_INT8( overwrite ? 1 : 0 ) << Q_INT8( resume ? 1 : 0 ) << permissions;
     TransferJob * job = new TransferJob( url, CMD_PUT, packedArgs, QByteArray(), showProgressInfo );
     return job;
 }
@@ -636,7 +637,7 @@ void MimetypeJob::slotFinished( )
 MimetypeJob *KIO::mimetype(const KURL& url )
 {
     kdDebug(7007) << "mimetype " << url.url() << endl;
-    KIO_ARGS << url.path() << url.query();
+    KIO_ARGS << url;
     MimetypeJob * job = new MimetypeJob(url, CMD_MIMETYPE, packedArgs);
     return job;
 }
@@ -668,7 +669,7 @@ FileCopyJob::FileCopyJob( const KURL& src, const KURL& dest, int permissions,
     {
        if (m_move)
        {
-          KIO_ARGS << src.path() << dest.path() << (Q_INT8) m_overwrite;
+          KIO_ARGS << src << dest << (Q_INT8) m_overwrite;
           m_moveJob = new SimpleJob(src, CMD_RENAME, packedArgs, false);
           addSubjob( m_moveJob );
           connectSubjob( m_moveJob );
@@ -688,7 +689,7 @@ FileCopyJob::FileCopyJob( const KURL& src, const KURL& dest, int permissions,
 void FileCopyJob::startCopyJob()
 {
     kdDebug(7007) << "FileCopyJob::startCopyJob()" << endl;
-    KIO_ARGS << m_src.path() << m_dest.path() << m_permissions << (Q_INT8) m_overwrite;
+    KIO_ARGS << m_src << m_dest << m_permissions << (Q_INT8) m_overwrite;
     m_copyJob = new SimpleJob(m_src, CMD_COPY, packedArgs, false);
     addSubjob( m_copyJob );
     connectSubjob( m_copyJob );
@@ -856,7 +857,7 @@ FileCopyJob *KIO::file_move( const KURL& src, const KURL& dest, int permissions,
 
 SimpleJob *KIO::file_delete( const KURL& src, bool showProgressInfo)
 {
-    KIO_ARGS << src.path() << Q_INT8(true); // isFile
+    KIO_ARGS << src << Q_INT8(true); // isFile
     return new SimpleJob(src, CMD_DEL, packedArgs, showProgressInfo );
 }
 
@@ -1023,7 +1024,7 @@ ListJob::ListJob(const KURL& u, bool showProgressInfo, bool _recursive, QString 
     // We couldn't set the args when calling the parent constructor,
     // so do it now.
     QDataStream stream( m_packedArgs, IO_WriteOnly );
-    stream << u.path() << u.query();
+    stream << u;
 }
 
 void ListJob::slotListEntries( const KIO::UDSEntryList& list )
@@ -1350,7 +1351,7 @@ void CopyJob::slotResultStating( Job *job )
                 (srcurl.pass() == m_currentDest.pass()))
             {
                 kdDebug(7007) << "This seems to be a suitable case for trying to rename the dir before copy+del" << endl;
-                KIO_ARGS << srcurl.path() << m_currentDest.path() << (Q_INT8) false /*m_overwrite*/;
+                KIO_ARGS << srcurl << m_currentDest << (Q_INT8) false /*m_overwrite*/;
                 state = STATE_RENAMING;
                 Job * newJob = new SimpleJob(srcurl, CMD_RENAME, packedArgs, false);
                 addSubjob( newJob );

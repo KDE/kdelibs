@@ -74,31 +74,31 @@ FileProtocol::FileProtocol( const QCString &pool, const QCString &app ) : SlaveB
     groupcache.setAutoDelete( TRUE );
 }
 
-void FileProtocol::chmod( const QString& path, int permissions )
+void FileProtocol::chmod( const KURL& url, int permissions )
 {
-    QCString _path( QFile::encodeName(path));
+    QCString _path( QFile::encodeName(url.path()));
     if ( ::chmod( _path.data(), permissions ) == -1 )
-        error( KIO::ERR_CANNOT_CHMOD, path );
+        error( KIO::ERR_CANNOT_CHMOD, url.path() );
     else
         finished();
 }
 
-void FileProtocol::mkdir( const QString& path, int permissions )
+void FileProtocol::mkdir( const KURL& url, int permissions )
 {
-    QCString _path( QFile::encodeName(path));
+    QCString _path( QFile::encodeName(url.path()));
     struct stat buff;
     if ( ::stat( _path.data(), &buff ) == -1 ) {
 	if ( ::mkdir( _path.data(), S_IRWXU ) != 0 ) {
 	    if ( errno == EACCES ) {
-		error( KIO::ERR_ACCESS_DENIED, path );
+		error( KIO::ERR_ACCESS_DENIED, url.path() );
 		return;
 	    } else {
-		error( KIO::ERR_COULD_NOT_MKDIR, path );
+		error( KIO::ERR_COULD_NOT_MKDIR, url.path() );
 		return;
 	    }
 	} else {
 	    if ( permissions != -1 )
-	        chmod( _path.data(), permissions );
+	        chmod( url, permissions );
 	    else
 	        finished();
 	    return;
@@ -107,33 +107,33 @@ void FileProtocol::mkdir( const QString& path, int permissions )
 
     if ( S_ISDIR( buff.st_mode ) ) {
 	debug("ERR_DIR_ALREADY_EXIST");
-	error( KIO::ERR_DIR_ALREADY_EXIST, path );
+	error( KIO::ERR_DIR_ALREADY_EXIST, url.path() );
 	return;
     }
-    error( KIO::ERR_FILE_ALREADY_EXIST, path );
+    error( KIO::ERR_FILE_ALREADY_EXIST, url.path() );
     return;
 }
 
-void FileProtocol::get( const QString& path, const QString& /*query*/, bool /* reload */)
+void FileProtocol::get( const KURL& url, bool /* reload */)
 {
-    QCString _path( QFile::encodeName(path));
+    QCString _path( QFile::encodeName(url.path()));
     struct stat buff;
     if ( ::stat( _path.data(), &buff ) == -1 ) {
         if ( errno == EACCES )
-           error( KIO::ERR_ACCESS_DENIED, path );
+           error( KIO::ERR_ACCESS_DENIED, url.path() );
         else
-           error( KIO::ERR_DOES_NOT_EXIST, path );
+           error( KIO::ERR_DOES_NOT_EXIST, url.path() );
 	return;
     }
 
     if ( S_ISDIR( buff.st_mode ) ) {
-	error( KIO::ERR_IS_DIRECTORY, path );
+	error( KIO::ERR_IS_DIRECTORY, url.path() );
 	return;
     }
 
     int fd = open( _path.data(), O_RDONLY);
     if ( fd < 0 ) {
-	error( KIO::ERR_CANNOT_OPEN_FOR_READING, path );
+	error( KIO::ERR_CANNOT_OPEN_FOR_READING, url.path() );
 	return;
     }
 
@@ -152,7 +152,7 @@ void FileProtocol::get( const QString& path, const QString& /*query*/, bool /* r
        {
           if (errno == EINTR)
               continue;
-          error( KIO::ERR_COULD_NOT_READ, path);
+          error( KIO::ERR_COULD_NOT_READ, url.path());
           close(fd);
           return;
        }
@@ -203,8 +203,9 @@ write_all(int fd, const char *buf, size_t len)
    return 0;
 }
 
-void FileProtocol::put( const QString& dest_orig, int _mode, bool _overwrite, bool _resume )
+void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resume )
 {
+    QString dest_orig = url.path();
     QCString _dest_orig( QFile::encodeName(dest_orig));
     kdDebug( 7101 ) << "Put " << dest_orig << endl;
     QString dest_part( dest_orig );
@@ -349,22 +350,22 @@ void FileProtocol::put( const QString& dest_orig, int _mode, bool _overwrite, bo
 }
 
 
-void FileProtocol::copy( const QString &src, const QString &dest,
+void FileProtocol::copy( const KURL &src, const KURL &dest,
                          int _mode, bool _overwrite )
 {
-    QCString _src( QFile::encodeName(src));
-    QCString _dest( QFile::encodeName(dest));
+    QCString _src( QFile::encodeName(src.path()));
+    QCString _dest( QFile::encodeName(dest.path()));
     struct stat buff_src;
     if ( ::stat( _src.data(), &buff_src ) == -1 ) {
         if ( errno == EACCES )
-           error( KIO::ERR_ACCESS_DENIED, src );
+           error( KIO::ERR_ACCESS_DENIED, src.path() );
         else
-           error( KIO::ERR_DOES_NOT_EXIST, src );
+           error( KIO::ERR_DOES_NOT_EXIST, src.path() );
 	return;
     }
 
     if ( S_ISDIR( buff_src.st_mode ) ) {
-	error( KIO::ERR_IS_DIRECTORY, src );
+	error( KIO::ERR_IS_DIRECTORY, src.path() );
 	return;
     }
 
@@ -374,20 +375,20 @@ void FileProtocol::copy( const QString &src, const QString &dest,
     {
         if (S_ISDIR(buff_dest.st_mode))
         {
-           error( KIO::ERR_DIR_ALREADY_EXIST, dest );
+           error( KIO::ERR_DIR_ALREADY_EXIST, dest.path() );
            return;
         }
 
         if (!_overwrite)
         {
-           error( KIO::ERR_FILE_ALREADY_EXIST, dest );
+           error( KIO::ERR_FILE_ALREADY_EXIST, dest.path() );
            return;
         }
     }
 
     int src_fd = open( _src.data(), O_RDONLY);
     if ( src_fd < 0 ) {
-	error( KIO::ERR_CANNOT_OPEN_FOR_READING, src );
+	error( KIO::ERR_CANNOT_OPEN_FOR_READING, src.path() );
 	return;
     }
 
@@ -401,11 +402,11 @@ void FileProtocol::copy( const QString &src, const QString &dest,
 
     int dest_fd = open(_dest.data(), O_CREAT | O_TRUNC | O_WRONLY, initialMode);
     if ( dest_fd < 0 ) {
-	kdDebug(7101) << "####################### COULD NOT WRITE " << dest << endl;
+	kdDebug(7101) << "###### COULD NOT WRITE " << dest.url() << endl;
         if ( errno == EACCES ) {
-            error( KIO::ERR_WRITE_ACCESS_DENIED, dest );
+            error( KIO::ERR_WRITE_ACCESS_DENIED, dest.path() );
         } else {
-            error( KIO::ERR_CANNOT_OPEN_FOR_WRITING, dest );
+            error( KIO::ERR_CANNOT_OPEN_FOR_WRITING, dest.path() );
         }
         close(src_fd);
         return;
@@ -426,7 +427,7 @@ void FileProtocol::copy( const QString &src, const QString &dest,
        {
           if (errno == EINTR)
               continue;
-          error( KIO::ERR_COULD_NOT_READ, src);
+          error( KIO::ERR_COULD_NOT_READ, src.path());
           close(src_fd);
           close(dest_fd);
           return;
@@ -436,7 +437,7 @@ void FileProtocol::copy( const QString &src, const QString &dest,
 
        if (write_all( dest_fd, buffer, n))
        {
-          error( KIO::ERR_COULD_NOT_WRITE, dest);
+          error( KIO::ERR_COULD_NOT_WRITE, dest.path());
           close(src_fd);
           close(dest_fd);
           return;
@@ -456,7 +457,7 @@ void FileProtocol::copy( const QString &src, const QString &dest,
 
     if (close( dest_fd))
     {
-        error( KIO::ERR_COULD_NOT_WRITE, dest);
+        error( KIO::ERR_COULD_NOT_WRITE, dest.path());
         return;
     }
 
@@ -465,7 +466,7 @@ void FileProtocol::copy( const QString &src, const QString &dest,
     {
        if (::chmod(_dest.data(), _mode) != 0)
        {
-           error( KIO::ERR_CANNOT_CHMOD, dest );
+           error( KIO::ERR_CANNOT_CHMOD, dest.path() );
            return;
        }
     }
@@ -478,17 +479,17 @@ void FileProtocol::copy( const QString &src, const QString &dest,
     finished();
 }
 
-void FileProtocol::rename( const QString &src, const QString &dest,
+void FileProtocol::rename( const KURL &src, const KURL &dest,
                            bool _overwrite )
 {
-    QCString _src( QFile::encodeName(src));
-    QCString _dest( QFile::encodeName(dest));
+    QCString _src( QFile::encodeName(src.path()));
+    QCString _dest( QFile::encodeName(dest.path()));
     struct stat buff_src;
     if ( ::stat( _src.data(), &buff_src ) == -1 ) {
         if ( errno == EACCES )
-           error( KIO::ERR_ACCESS_DENIED, src );
+           error( KIO::ERR_ACCESS_DENIED, src.path() );
         else
-           error( KIO::ERR_DOES_NOT_EXIST, src );
+           error( KIO::ERR_DOES_NOT_EXIST, src.path() );
 	return;
     }
 
@@ -498,13 +499,13 @@ void FileProtocol::rename( const QString &src, const QString &dest,
     {
         if (S_ISDIR(buff_dest.st_mode))
         {
-           error( KIO::ERR_DIR_ALREADY_EXIST, dest );
+           error( KIO::ERR_DIR_ALREADY_EXIST, dest.path() );
            return;
         }
 
         if (!_overwrite)
         {
-           error( KIO::ERR_FILE_ALREADY_EXIST, dest );
+           error( KIO::ERR_FILE_ALREADY_EXIST, dest.path() );
            return;
         }
     }
@@ -512,13 +513,13 @@ void FileProtocol::rename( const QString &src, const QString &dest,
     if ( ::rename( _src.data(), _dest.data()))
     {
         if (( errno == EACCES ) || (errno == EPERM)) {
-            error( KIO::ERR_ACCESS_DENIED, dest );
+            error( KIO::ERR_ACCESS_DENIED, dest.path() );
         }
         else if (errno == EXDEV) {
-           error( KIO::ERR_UNSUPPORTED_ACTION, "rename");
+           error( KIO::ERR_UNSUPPORTED_ACTION, QString::fromLatin1("rename"));
         }
         else {
-           error( KIO::ERR_CANNOT_RENAME, src );
+           error( KIO::ERR_CANNOT_RENAME, src.path() );
         }
         return;
     }
@@ -527,25 +528,25 @@ void FileProtocol::rename( const QString &src, const QString &dest,
 }
 
 
-void FileProtocol::del( const QString& path, bool isfile)
+void FileProtocol::del( const KURL& url, bool isfile)
 {
-    QCString _path( QFile::encodeName(path));
+    QCString _path( QFile::encodeName(url.path()));
     /*****
      * Delete files
      *****/
 
     if (isfile) {
-	kdDebug( 7101 ) <<  "Deleting file "<< path << endl;
+	kdDebug( 7101 ) <<  "Deleting file "<< url.url() << endl;
 	
 	// TODO deletingFile( source );
 	
 	if ( unlink( _path.data() ) == -1 ) {
             if ((errno == EACCES) || (errno == EPERM))
-               error( KIO::ERR_ACCESS_DENIED, path);
+               error( KIO::ERR_ACCESS_DENIED, url.path());
             else if (errno == EISDIR)
-               error( KIO::ERR_IS_DIRECTORY, path);
+               error( KIO::ERR_IS_DIRECTORY, url.path());
             else
-               error( KIO::ERR_CANNOT_DELETE, path );
+               error( KIO::ERR_CANNOT_DELETE, url.path() );
 	    return;
 	}
     } else {
@@ -554,7 +555,7 @@ void FileProtocol::del( const QString& path, bool isfile)
 	 * Delete empty directory
 	 *****/
 	
-	kdDebug(7101) << "Deleting directory " << path << endl;
+	kdDebug(7101) << "Deleting directory " << url.url() << endl;
 
 	// TODO deletingFile( source );
 	
@@ -563,14 +564,14 @@ void FileProtocol::del( const QString& path, bool isfile)
        * Delete empty directory
        *****/
 	
-      kdDebug( 7101 ) << "Deleting directory " << path << endl;
+      kdDebug( 7101 ) << "Deleting directory " << url.url() << endl;
 
       if ( ::rmdir( _path.data() ) == -1 ) {
 	if ((errno == EACCES) || (errno == EPERM))
-	  error( KIO::ERR_ACCESS_DENIED, path);
+	  error( KIO::ERR_ACCESS_DENIED, url.path());
 	else {
 	  kdDebug( 7101 ) << "could not rmdir " << perror << endl;
-	  error( KIO::ERR_COULD_NOT_RMDIR, path );
+	  error( KIO::ERR_COULD_NOT_RMDIR, url.path() );
 	  return;
 	}
       }
@@ -657,7 +658,7 @@ void FileProtocol::createUDSEntry( const QString & filename, const QString & pat
 	if ( !temp ) {
 	    struct passwd *user = getpwuid( uid );
 	    if ( user ) {
-		usercache.insert( uid, new QString(user->pw_name) );
+		usercache.insert( uid, new QString(QString::fromLatin1(user->pw_name)) );
 		atom.m_str = user->pw_name;
 	    }
 	    else
@@ -673,7 +674,7 @@ void FileProtocol::createUDSEntry( const QString & filename, const QString & pat
 	if ( !temp ) {
 	    struct group *grp = getgrgid( gid );
 	    if ( grp ) {
-		groupcache.insert( gid, new QString(grp->gr_name) );
+		groupcache.insert( gid, new QString(QString::fromLatin1(grp->gr_name)) );
 		atom.m_str = grp->gr_name;
 	    }
 	    else
@@ -692,22 +693,17 @@ void FileProtocol::createUDSEntry( const QString & filename, const QString & pat
 	entry.append( atom );
 }
 
-void FileProtocol::stat( const QString & path, const QString& /*query*/ )
+void FileProtocol::stat( const KURL & url )
 {
-    QCString _path( QFile::encodeName(path));
+    QCString _path( QFile::encodeName(url.path()));
     struct stat buff;
     if ( ::lstat( _path.data(), &buff ) == -1 ) {
-	error( KIO::ERR_DOES_NOT_EXIST, path );
+	error( KIO::ERR_DOES_NOT_EXIST, url.path() );
 	return;
     }
 
-    // Extract filename out of path
-    KURL url;
-    url.setPath(path);
-    QString filename = url.fileName();
-
     UDSEntry entry;
-    createUDSEntry( filename, path, entry );
+    createUDSEntry( url.filename(), url.path(), entry );
 ///////// debug code
 
     KIO::UDSEntry::ConstIterator it = entry.begin();
@@ -747,19 +743,19 @@ void FileProtocol::stat( const QString & path, const QString& /*query*/ )
     finished();
 }
 
-void FileProtocol::listDir( const QString& path, const QString& /*query*/ )
+void FileProtocol::listDir( const KURL& url)
 {
-    QCString _path( QFile::encodeName(path));
-    kdDebug(7101) << "=============== LIST " << path << " ===============" << endl;
+    QCString _path( QFile::encodeName(url.path()));
+    kdDebug(7101) << "========= LIST " << url.url() << " =========" << endl;
 
     struct stat buff;
     if ( ::stat( _path.data(), &buff ) == -1 ) {
-	error( KIO::ERR_DOES_NOT_EXIST, path );
+	error( KIO::ERR_DOES_NOT_EXIST, url.path() );
 	return;
     }
 
     if ( !S_ISDIR( buff.st_mode ) ) {
-	error( KIO::ERR_IS_FILE, path );
+	error( KIO::ERR_IS_FILE, url.path() );
 	return;
     }
 
@@ -768,14 +764,14 @@ void FileProtocol::listDir( const QString& path, const QString& /*query*/ )
 
     dp = opendir( _path.data() );
     if ( dp == 0 ) {
-	error( KIO::ERR_CANNOT_ENTER_DIRECTORY, path );
+	error( KIO::ERR_CANNOT_ENTER_DIRECTORY, url.path() );
 	return;
     }
 
     QStringList entryNames;
 
     while ( ( ep = readdir( dp ) ) != 0L )
-	entryNames.append( ep->d_name );
+	entryNames.append( QFile::decodeName(ep->d_name) );
 
     closedir( dp );
     totalSize( entryNames.count() );
@@ -1016,7 +1012,7 @@ QString testLogFile( const char *_filename )
     FILE * f = fopen( _filename, "rb" );
     if ( f == 0L ) {
 	unlink( _filename );
-	result = i18n("Could not read %1").arg(_filename);
+	result = i18n("Could not read %1").arg(QFile::decodeName(_filename));
 	return result;
     }
 
@@ -1025,7 +1021,7 @@ QString testLogFile( const char *_filename )
     while ( p != 0L ) {
 	p = fgets( buffer, sizeof(buffer)-1, f );
 	if ( p != 0L )
-	    result += buffer;
+	    result += QString::fromLocal8Bit(buffer);
     }
 
     fclose( f );

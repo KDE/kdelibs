@@ -340,27 +340,27 @@ void SlaveBase::openConnection(void)
 { error(  ERR_UNSUPPORTED_ACTION, "open" ); }
 void SlaveBase::closeConnection(void)
 { error(  ERR_UNSUPPORTED_ACTION, "close" ); }
-void SlaveBase::stat(QString const &, const QString&)
+void SlaveBase::stat(KURL const &)
 { error(  ERR_UNSUPPORTED_ACTION, "stat" ); }
-void SlaveBase::put(QString const &, int, bool, bool)
+void SlaveBase::put(KURL const &, int, bool, bool)
 { error(  ERR_UNSUPPORTED_ACTION, "put" ); }
 void SlaveBase::special(QArray<char> const &)
 { error(  ERR_UNSUPPORTED_ACTION, "special" ); }
-void SlaveBase::listDir(QString const &, const QString&)
+void SlaveBase::listDir(KURL const &)
 { error(  ERR_UNSUPPORTED_ACTION, "listDir" ); }
-void SlaveBase::get(QString const &, QString const &, bool)
+void SlaveBase::get(KURL const &, bool)
 { error(  ERR_UNSUPPORTED_ACTION, "get" ); }
-void SlaveBase::mimetype(QString const &path, const QString&)
-{ get(path, QString::null, false); }
-void SlaveBase::rename(QString const &, QString const &, bool)
+void SlaveBase::mimetype(KURL const &url)
+{ get(url, false); }
+void SlaveBase::rename(KURL const &, KURL const &, bool)
 { error(  ERR_UNSUPPORTED_ACTION, "rename" ); }
-void SlaveBase::copy(const QString &, const QString &, int, bool)
+void SlaveBase::copy(KURL const &, KURL const &, int, bool)
 { error(  ERR_UNSUPPORTED_ACTION, "copy" ); }
-void SlaveBase::del(QString const &, bool)
+void SlaveBase::del(KURL const &, bool)
 { error(  ERR_UNSUPPORTED_ACTION, "del" ); }
-void SlaveBase::mkdir(QString const &, int)
+void SlaveBase::mkdir(KURL const &, int)
 { error(  ERR_UNSUPPORTED_ACTION, "mkdir" ); }
-void SlaveBase::chmod(QString const &, int)
+void SlaveBase::chmod(KURL const &, int)
 { error(  ERR_UNSUPPORTED_ACTION, "chmod" ); }
 
 void SlaveBase::slave_status()
@@ -429,6 +429,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
     QDataStream stream( data, IO_ReadOnly );
 
     QString str1, str2;
+    KURL url;
     int i;
 
     switch( command ) {
@@ -450,18 +451,18 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
     case CMD_GET: {
         Q_INT8 iReload;
 
-        stream >> str1 >> str2 >> iReload;
+        stream >> url >> iReload;
 
         bool reload = (iReload != 0);	
 
-	get( str1, str2, reload );
+	get( url, reload );
     }
     break;
     case CMD_PUT: {
 	int permissions;
 	Q_INT8 iOverwrite, iResume;
 	
-	stream >> iOverwrite >> iResume >> permissions >> str1;
+	stream >> url >> iOverwrite >> iResume >> permissions;
 	
 	bool overwrite = ( iOverwrite != 0 );
 	bool resume = ( iResume != 0 );
@@ -470,45 +471,47 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
     }
     break;
     case CMD_STAT:
-	stream >> str1 >> str2;
-	stat( str1, str2 );
+	stream >> url;
+	stat( url );
 	break;
     case CMD_MIMETYPE:
-	stream >> str1 >> str2;
-	mimetype( str1, str2 );
+	stream >> url;
+	mimetype( url );
 	break;
     case CMD_LISTDIR:
-	stream >> str1 >> str2;
-	listDir( str1, str2 );
+	stream >> url;
+	listDir( url );
 	break;
     case CMD_MKDIR:
-	stream >> str1 >> i;
-	mkdir( str1, i );
+	stream >> url >> i;
+	mkdir( url, i );
 	break;
     case CMD_RENAME: {
 	Q_INT8 iOverwrite;
-        stream >> str1 >> str2 >> iOverwrite;
+        KURL url2;
+        stream >> url >> url2 >> iOverwrite;
         bool overwrite = (iOverwrite != 0);
-        rename( str1, str2, overwrite );
+        rename( url, url2, overwrite );
     }
     break;
     case CMD_COPY: {
         int permissions;
         Q_INT8 iOverwrite;
-        stream >> str1 >> str2 >> permissions >> iOverwrite;
+        KURL url2;
+        stream >> url >> url2 >> permissions >> iOverwrite;
         bool overwrite = (iOverwrite != 0);
-        copy( str1, str2, permissions, overwrite );
+        copy( url, url2, permissions, overwrite );
     }
     break;
     case CMD_DEL: {
         Q_INT8 isFile;
-        stream >> str1 >> isFile;
-	del( str1, isFile != 0);
+        stream >> url >> isFile;
+	del( url, isFile != 0);
     }
     break;
     case CMD_CHMOD:
-        stream >> str1 >> i;
-	chmod( str1, i);
+        stream >> url >> i;
+	chmod( url, i);
 	break;
     case CMD_SPECIAL:
 	special( data );

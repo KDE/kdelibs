@@ -21,19 +21,19 @@ public:
   FileProtocol( const QCString &pool, const QCString &app);
   virtual ~FileProtocol() { }
 
-  virtual void get( const QString& path, const QString& query, bool reload );
-  virtual void put( const QString& path, int _mode,
-			bool _overwrite, bool _resume );
-  virtual void copy( const QString &src, const QString &dest,
+  virtual void get( const KURL& url, bool reload );
+  virtual void put( const KURL& url, int _mode,
+		    bool _overwrite, bool _resume );
+  virtual void copy( const KURL &src, const KURL &dest,
                      int mode, bool overwrite );
-  virtual void rename( const QString &src, const QString &dest,
+  virtual void rename( const KURL &src, const KURL &dest,
                        bool overwrite );
 
-  virtual void stat( const QString& path, const QString& query );
-  virtual void listDir( const QString& path, const QString& query );
-  virtual void mkdir( const QString& path, int permissions );
-  virtual void chmod( const QString& path, int permissions );
-  virtual void del( const QString& path, bool isfile);
+  virtual void stat( const KURL& url );
+  virtual void listDir( const KURL& url );
+  virtual void mkdir( const KURL& url, int permissions );
+  virtual void chmod( const KURL& url, int permissions );
+  virtual void del( const KURL& url, bool isfile);
 
   /**
    * Special commands supported by this slave:

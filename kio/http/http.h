@@ -103,9 +103,9 @@ public:
 
   virtual void slave_status();
 
-  virtual void get( const QString& path, const QString& query, bool reload );
-  virtual void put( const QString& path, int _mode, bool _overwrite, bool _resume );
-  void post( const QString& path, const QString& query );
+  virtual void get( const KURL& url, bool reload );
+  virtual void put( const KURL& url, int _mode, bool _overwrite, bool _resume );
+  void post( const KURL& url );
 
   /**
    * Special commands supported by this slave :
@@ -113,9 +113,9 @@ public:
    */
   virtual void special( const QByteArray &data);
 
-  virtual void mimetype( const QString& path, const QString& query);
+  virtual void mimetype( const KURL& url);
 
-  virtual void stat( const QString& path, const QString& query );
+  virtual void stat( const KURL& url );
 
 protected:
 
