@@ -117,7 +117,7 @@ namespace KJS {
     static const ClassInfo info;
     enum { Closed, Crypto, DefaultStatus, Status, Document, Node, EventCtor, Range,
            NodeFilter, DOMException, CSSRule, Frames, _History, _External, Event, InnerHeight,
-           InnerWidth, Length, _Location, Name, _Navigator, _Konqueror, ClientInformation,
+           InnerWidth, Length, _Location, Navigate, Name, _Navigator, _Konqueror, ClientInformation,
            OffscreenBuffering, Opener, OuterHeight, OuterWidth, PageXOffset, PageYOffset,
            Parent, Personalbar, ScreenX, ScreenY, Scrollbars, Scroll, ScrollBy,
            ScreenTop, ScreenLeft,

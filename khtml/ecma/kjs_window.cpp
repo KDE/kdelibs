@@ -272,8 +272,13 @@ const ClassInfo Window::info = { "Window", 0, &WindowTable, 0 };
   print		Window::Print		DontDelete|Function 0
   addEventListener	Window::AddEventListener	DontDelete|Function 3
   removeEventListener	Window::RemoveEventListener	DontDelete|Function 3
+# IE extension
+  navigate	Window::Navigate	DontDelete|Function 1
+# Mozilla extension
   sidebar	Window::SideBar		DontDelete|ReadOnly
+
 # Warning, when adding a function to this object you need to add a case in Window::get
+
 # Event handlers
 # IE also has: onactivate, onbefore/afterprint, onbeforedeactivate/unload, oncontrolselect,
 # ondeactivate, onhelp, onmovestart/end, onresizestart/end, onscroll.
@@ -625,12 +630,18 @@ Value Window::get(ExecState *exec, const Identifier &p) const
     case ReleaseEvents:
     case AddEventListener:
     case RemoveEventListener:
-      return lookupOrCreateFunction<WindowFunc>(exec,p,this,entry->value,entry->params,entry->attr);
     case SetTimeout:
     case ClearTimeout:
     case SetInterval:
     case ClearInterval:
     case Print:
+      return lookupOrCreateFunction<WindowFunc>(exec,p,this,entry->value,entry->params,entry->attr);
+    // IE extension
+    case Navigate:
+      // Disabled in NS-compat mode. Supported by default - can't hurt, unless someone uses
+      // if (navigate) to test for IE (unlikely).
+      if ( exec->interpreter()->compatMode() == Interpreter::NetscapeCompat )
+        return Undefined();
       return lookupOrCreateFunction<WindowFunc>(exec,p,this,entry->value,entry->params,entry->attr);
     case Onabort:
       return getListener(exec,DOM::EventImpl::ABORT_EVENT);
@@ -1324,6 +1335,9 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
         return Null();
   case Window::Open:
     return window->openWindow(exec, args);
+  case Window::Navigate:
+    window->goURL(exec, args[0].toString(exec).qstring(), false /*don't lock history*/);
+    return Undefined();
   case Window::Focus: {
     KHTMLSettings::KJSWindowFocusPolicy policy =
 		part->settings()->windowFocusPolicy(part->url().host());
