@@ -34,6 +34,9 @@
 #include "kmdichildfrm.h"
 #include "kmdichildview.h"
 
+
+class KMdiChildAreaPrivate;
+
 /**
   * @short Internal class.
   *
@@ -244,6 +247,9 @@ class KMdiChildArea : public QFrame
      * Note: Detached MDI views can remain.
      */
      void lastChildFrmClosed();
+
+   private:
+     KMdiChildAreaPrivate *d;
 };
 
 #endif   // _KMDICHILDAREA_H_

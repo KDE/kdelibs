@@ -133,6 +133,8 @@ class KMdiChildFrmResizeEndEvent : public QCustomEvent
     KMdiChildFrmResizeEndEvent( QMouseEvent *e) : QCustomEvent( QEvent::Type(QEvent::User + int(KMdi::EV_ResizeEnd)), e) {};
 };
 
+
+class KMdiChildFrmPrivate;
 //==============================================================================
 /**
   * @short Internal class.
@@ -390,6 +392,9 @@ class KMdiChildFrm : public QFrame
      * or an OR'd variant of them for the corners.
      */
      int getResizeCorner(int ax,int ay);
+
+  private:
+    KMdiChildFrmPrivate *d;
 };
 
 #endif //_KMDICHILDFRM_H_

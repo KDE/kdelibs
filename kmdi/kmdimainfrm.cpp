@@ -362,7 +362,7 @@ KMdiChildView* KMdiMainFrm::createWrapper(QWidget *view, const QString& name, co
   if (wndIcon) {
       pMDICover->setIcon(*wndIcon);
   }
-
+  pMDICover->trackIconAndCaptionChanges(view);
   return pMDICover;
 }
 
@@ -403,6 +403,8 @@ void KMdiMainFrm::addWindow( KMdiChildView* pWnd, int flags)
 //      const QPixmap& wndIcon = pWnd->icon() ? *(pWnd->icon()) : QPixmap();
      
       m_documentTabWidget->addTab(pWnd, pWnd->icon() ? *(pWnd->icon()) : QPixmap(),pWnd->tabCaption());
+	connect(pWnd,SIGNAL(iconOrCaptionUdpated(QWidget*,QPixmap,const QString&)),
+		m_documentTabWidget,SLOT(updateView(QWidget*,QPixmap,const QString&)));
 
 #if 0
       KDockWidget* pCover = createDockWidget( pWnd->name(),
@@ -1598,6 +1600,9 @@ void KMdiMainFrm::setupTabbedDocumentViewSpace() {
       for( ; it4.current(); ++it4) {
         KMdiChildView* pView = it4.current();
         m_documentTabWidget->addTab(pView, pView->icon() ? *(pView->icon()) : QPixmap(),pView->tabCaption());	
+	connect(pView,SIGNAL(iconOrCaptionUdpated(QWidget*,QPixmap,const QString&)),
+		m_documentTabWidget,SLOT(updateView(QWidget*,QPixmap,const QString&)));
+
       }
 
 
