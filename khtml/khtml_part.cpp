@@ -842,9 +842,12 @@ bool KHTMLPart::findTextNext( const QRegExp &/*exp*/ )
 	findPos = -1;
 	NodeImpl *next = findNode->firstChild();
 	if(!next) next = findNode->nextSibling();
-	if(!next) next = findNode->parentNode();
+	while(findNode && !next) {
+	    findNode = findNode->parentNode();
+	    next = findNode->nextSibling();
+	}
+	if(!findNode) return false;
     }
-    return false;
 #endif
     return false;
 }
