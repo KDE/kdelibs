@@ -572,12 +572,6 @@ void KXMLGUIClient::unplugActionList( const QString &name )
   d->m_factory->unplugActionList( this, name );
 }
 
-struct DocStruct
-{
-    QString file;
-    QString data;
-};
-
 QString KXMLGUIClient::findMostRecentXMLFile( const QStringList &files, QString &doc )
 {
 
@@ -595,11 +589,11 @@ QString KXMLGUIClient::findMostRecentXMLFile( const QStringList &files, QString 
     allDocuments.append( d );
   }
 
-  QValueList<DocStruct>::ConstIterator best = allDocuments.end();
+  QValueList<DocStruct>::Iterator best = allDocuments.end();
   uint bestVersion = 0;
 
-  QValueList<DocStruct>::ConstIterator docIt = allDocuments.begin();
-  QValueList<DocStruct>::ConstIterator docEnd = allDocuments.end();
+  QValueList<DocStruct>::Iterator docIt = allDocuments.begin();
+  QValueList<DocStruct>::Iterator docEnd = allDocuments.end();
   for (; docIt != docEnd; ++docIt )
   {
     QString versionStr = findVersionNumber( (*docIt).data );
@@ -624,11 +618,46 @@ QString KXMLGUIClient::findMostRecentXMLFile( const QStringList &files, QString 
   {
     if ( best != allDocuments.begin() )
     {
-      QString f = (*allDocuments.begin()).file;
-      QString backup = f + QString::fromLatin1( ".backup" );
-      QDir dir;
-      dir.rename( f, backup );
-      //kdDebug() << "backup done" << endl;
+      QValueList<DocStruct>::Iterator local = allDocuments.begin();
+
+      // load the local document and extract the action properties
+      QDomDocument document;
+      document.setContent( (*local).data );
+
+      ActionPropertiesMap properties = extractActionProperties( document );
+
+      // in case the document has a ActionProperties section
+      // we must not delete it but copy over the global doc
+      // to the local and insert the ActionProperties section
+      if ( !properties.isEmpty() )
+      {
+          // now load the global one with the higher version number
+          // into memory
+          document.setContent( (*best).data );
+          // and store the properties in there
+          storeActionProperties( document, properties );
+
+          (*local).data = document.toString();
+          // make sure we pick up the new local doc, when we return later
+          best = local;
+
+          // write out the new version of the local document
+          QFile f( (*local).file );
+          if ( f.open( IO_WriteOnly ) )
+          {
+            QTextStream stream( &f );
+            stream.setEncoding( QTextStream::UnicodeUTF8 );
+            stream << (*local).data;
+            f.close();
+          }
+      }
+      else
+      {
+        QString f = (*local).file;
+        QString backup = f + QString::fromLatin1( ".backup" );
+        QDir dir;
+        dir.rename( f, backup );
+      }
     }
     doc = (*best).data;
     return (*best).file;
@@ -647,7 +676,7 @@ QString KXMLGUIClient::findVersionNumber( const QString &_xml )
 {
   QString xml = _xml;
 
-  KRegExp expr( ".*<kpartgui.+version=\"([0-9]+)\".*>.*", "i" );
+  KRegExp versionExpr( ".*<kpartgui.+version=\"([0-9]+)\".*>.*", "i" );
 
   QTextStream stream( xml, IO_ReadOnly );
   stream.setEncoding( QTextStream::UnicodeUTF8 );
@@ -657,12 +686,87 @@ QString KXMLGUIClient::findVersionNumber( const QString &_xml )
     if ( line.isEmpty() )
       continue;
 
-    if ( expr.match( line.local8Bit() ) )
-    {
-    //      kdDebug() << "FOUND VERSION!!!!" << expr.group(1) << endl;
-      return QString::fromLocal8Bit( expr.group(1) );
-    }
+    if ( versionExpr.match( line.local8Bit() ) )
+        return QString::fromLocal8Bit( versionExpr.group(1) );
   }
 
   return QString::null;
+}
+
+KXMLGUIClient::ActionPropertiesMap KXMLGUIClient::extractActionProperties( const QDomDocument &doc )
+{
+  ActionPropertiesMap properties;
+
+  QDomElement actionPropElement = doc.documentElement().namedItem( "ActionProperties" ).toElement();
+
+  if ( actionPropElement.isNull() )
+    return properties;
+
+  QDomNode n = actionPropElement.firstChild();
+  for (; !n.isNull(); n = n.nextSibling() )
+  {
+    QDomElement e = n.toElement();
+    if ( e.isNull() )
+      continue;
+
+    if ( e.tagName().lower() != "action" )
+      continue;
+
+    QString actionName = e.attribute( "name" );
+
+    if ( actionName.isEmpty() )
+      continue;
+
+    QMap<QString, QMap<QString, QString> >::Iterator propIt = properties.find( actionName );
+    if ( propIt == properties.end() )
+      propIt = properties.insert( actionName, QMap<QString, QString>() );
+
+    QDomNamedNodeMap attributes = e.attributes();
+    for ( uint i = 0; i < attributes.length(); ++i )
+    {
+      QDomAttr attr = attributes.item( i ).toAttr();
+
+      if ( attr.isNull() )
+        continue;
+
+      QString name = attr.name();
+
+      if ( name == "name" || name.isEmpty() )
+        continue;
+
+      (*propIt)[ name ] = attr.value();
+    }
+
+  }
+
+  return properties;
+}
+
+void KXMLGUIClient::storeActionProperties( QDomDocument &doc, const ActionPropertiesMap &properties )
+{
+  QDomElement actionPropElement = doc.documentElement().namedItem( "ActionProperties" ).toElement();
+
+  if ( actionPropElement.isNull() )
+  {
+    actionPropElement = doc.createElement( "ActionProperties" );
+    doc.documentElement().appendChild( actionPropElement );
+  }
+
+  while ( !actionPropElement.firstChild().isNull() )
+    actionPropElement.removeChild( actionPropElement.firstChild() );
+
+  ActionPropertiesMap::ConstIterator it = properties.begin();
+  ActionPropertiesMap::ConstIterator end = properties.end();
+  for (; it != end; ++it )
+  {
+    QDomElement action = doc.createElement( "Action" );
+    action.setAttribute( "name", it.key() );
+    actionPropElement.appendChild( action );
+
+    QMap<QString, QString> attributes = (*it);
+    QMap<QString, QString>::ConstIterator attrIt = attributes.begin();
+    QMap<QString, QString>::ConstIterator attrEnd = attributes.end();
+    for (; attrIt != attrEnd; ++attrIt )
+      action.setAttribute( attrIt.key(), attrIt.data() );
+  }
 }

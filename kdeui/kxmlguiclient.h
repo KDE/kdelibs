@@ -231,10 +231,23 @@ protected:
   virtual void conserveMemory();
 
 private:
+  struct DocStruct
+  {
+    QString file;
+    QString data;
+  };
+
   bool mergeXML( QDomElement &base, const QDomElement &additive,
                  KActionCollection *actionCollection );
+
   QDomElement findMatchingElement( const QDomElement &base,
                                    const QDomElement &additive );
+
+  typedef QMap<QString, QMap<QString, QString> > ActionPropertiesMap;
+
+  static ActionPropertiesMap extractActionProperties( const QDomDocument &doc );
+
+  static void storeActionProperties( QDomDocument &doc, const ActionPropertiesMap &properties );
 
   static QString findVersionNumber( const QString &_xml );
 
