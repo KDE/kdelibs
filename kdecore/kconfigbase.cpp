@@ -19,6 +19,10 @@
 // $Id$
 //
 // $Log$
+// Added KCharset class - small changes in interface. I hope it is all source
+// Revision 1.13  1997/12/18 20:51:28  kalle
+// Some patches by Alex and me
+// Revision 1.1.1.3  1997/12/11 07:19:11  jacek
 // Imported sources from KDE CVS
 //
 // Revision 1.1.1.2  1997/12/10 07:08:30  jacek
@@ -284,7 +288,6 @@ const QString KConfigBase::readEntry( const char* pKey,
 }
 
 int KConfigBase::readListEntry( const char* pKey, QStrList &list,  
-  list.append( value );
 				char sep  ) const
 {
   if( !hasKey( pKey ) )

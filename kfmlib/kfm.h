@@ -55,6 +55,7 @@ public:
     bool isOK() { return ok; }
 
     void refreshDesktop();
+    void sortDesktop();
     void openURL();
     void openURL( const char *_url );
     void refreshDirectory( const char *_url );

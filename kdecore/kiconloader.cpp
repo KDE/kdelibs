@@ -29,7 +29,6 @@
 	}
 #include <klocale.h>
 #include <kapp.h>
-#define klocale KApplication::getKApplication()->getLocale()
 }
 //----------------------------------------------------------------------
 //---------------  KICONLOADER   ---------------------------------------
@@ -85,8 +84,12 @@ KIconLoader::~KIconLoader()
 
 QPixmap KIconLoader::loadIcon ( const QString &name, int w, int h ){
   QPixmap result = loadInternal(name, w, h);
+/* Stephan: It's OK to know, how many icons are still missing, but
+       we don't need to tell everybody ;) Perhaps this can be con-
+       verted to a KDEBUG solution, that is more silent? Don't know.
   if (result.isNull())
     warning(klocale->translate("ERROR: couldn't find icon: %s"), (const char *) name);
+*/
   return result;
 }
 
@@ -97,8 +100,10 @@ QPixmap KIconLoader::loadMiniIcon ( const QString &name, int w, int h ){
   }
   if (result.isNull())
     result = loadInternal(name, w, h);
+/* Stephan: See above
   if (result.isNull())
     warning(klocale->translate("ERROR: couldn't find mini icon: %s"), (const char *) name);
+*/
   return result;
 			// Let's be recursive (but just once at most)
 			full_path = getIconPath( "unknown.xpm" , false); 

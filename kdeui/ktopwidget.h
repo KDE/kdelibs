@@ -14,9 +14,11 @@
           * It should be used as a toplevel (parent-less) widget and
           * manages the geometry for all its children, including your
           * main widget (set with @ref setView ).
-          * Normaly, you will inherit from KTopLevelWidget (further: KTW). You have
-          * follow some simple rules. First, @ref updateRects is the function that
-          * calculates the layout of all elements (toolbars, statusbar, main widget, etc).
+	  *
+          * Normaly, you will inherit from KTopLevelWidget (further: KTW). 
+	  * You have to
+          * follow some simple rules. First, @ref ::updateRects is the function 	  * that calculates the layout of all elements (toolbars, statusbar, 
+	  * main widget, etc).
           * It is called from @ref resizeEvent, and signals that indicate chang[5~ing position
           * of toolbars and menubar are connected to it. If you reimplement
           * resizeEvent you have to call this function. KTW now handles fixed-size main views
@@ -163,7 +165,8 @@ public:
 
 
 
-  /* Try to restore the toplevel widget as defined number (1..X)
+  /**
+   * Try to restore the toplevel widget as defined number (1..X)
    * If the session did not contain that high number, the configuration
    * is not changed and False returned.
    * 
@@ -187,7 +190,7 @@ public:
    */
   static bool canBeRestored(int number);
 
-  /* try to restore the specified number. Returns "False" if this
+  /** try to restore the specified number. Returns "False" if this
    * fails, otherwise returns "True" and shows the window
    */
   bool restore(int number);
@@ -223,7 +226,7 @@ protected:
     void focusOutEvent ( QFocusEvent *);
 
 
-  /* save and read your instance specific properties.
+  /** Save your instance-specific properties.
    * You MUST NOT change the group of the kconfig object,
    * since KTW uses one group for each window.
    * Please overload these function in childclasses. 
@@ -234,6 +237,9 @@ protected:
    * (Matthias)
    */ 
   virtual void saveProperties(KConfig*){};
+  /**
+  * Read your instance-specific properties.
+  */
   virtual void readProperties(KConfig*){};
 
 
@@ -299,6 +305,7 @@ private:
 
 
   // Matthias
+protected:
   void savePropertiesInternal (KConfig*, int);
   bool readPropertiesInternal (KConfig*, int);
 };
