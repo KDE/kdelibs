@@ -25,6 +25,7 @@
 #include <qclipboard.h>
 #include <qlistbox.h>
 #include <qpopupmenu.h>
+#include <qapplication.h>
 
 #include <kcompletionbox.h>
 #include <kcursor.h>
@@ -212,34 +213,6 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
         }
     }
 
-
-    // wheel-scrolling changes the current item
-    if ( type == QEvent::Wheel ) 
-    {
-        if ( !listBox() || listBox()->isHidden() ) 
-        {
-            QWheelEvent *e = static_cast<QWheelEvent*>( ev );
-            static const int WHEEL_DELTA = 120;
-            int skipItems = e->delta() / WHEEL_DELTA;
-            if ( e->state() & ControlButton ) // fast skipping
-                skipItems *= 10;
-
-            int newItem = currentItem() - skipItems;
-
-            if ( newItem < 0 )
-                newItem = 0;
-            else if ( newItem >= count() )
-                newItem = count() -1;
-
-            setCurrentItem( newItem );
-            if ( !text( newItem ).isNull() )
-                emit activated( text( newItem ) );
-            emit activated( newItem );
-            e->accept();
-            return true;
-        }
-    }
-
     return QComboBox::eventFilter( o, ev );
 }
 
@@ -297,6 +270,19 @@ void KComboBox::create( WId id, bool initializeWindow, bool destroyOldWindow )
 {
     QComboBox::create( id, initializeWindow, destroyOldWindow );
     KCursor::setAutoHideCursor( lineEdit(), true, true );
+}
+
+void KComboBox::wheelEvent( QWheelEvent *ev )
+{
+    // don't let wheel events change the current item, only let it do so in the
+    // poppable listbox (Simon)
+    QListBox *lb = listBox();
+    if ( lb && lb->isVisible() )
+    {
+        QApplication::sendEvent( lb, ev );
+        return;
+    }
+    ev->ignore();
 }
 
 void KComboBox::setLineEdit( QLineEdit *edit )

@@ -470,6 +470,8 @@ protected:
     virtual void create( WId = 0, bool initializeWindow = true,
                          bool destroyOldWindow = true );
 
+    virtual void wheelEvent( QWheelEvent *ev );
+
 private:
     // Constants that represent the ID's of the popup menu.
     // TODO: See if we can replace this mess with KActionMenu
