@@ -30,24 +30,26 @@ libkhtml_la_SOURCES = khtmlcache.cpp khtmlparser.cpp khtmljscript.cpp \
 	khtmlframe.cpp khtmlview.cpp khtmlclue.cpp debug.cpp \
 	khtmldata.cpp khtmltable.cpp khtmliter.cpp \
 	khtmlsavedpage.cpp khtmlstyle.cpp khtmlembed.cpp khtmldecoder.cpp \
-	khtmlstring.cpp
+	khtmlstring.cpp kbrowser.cpp
 
 libkhtml_la_METASOURCES = khtml.moc khtmlcache.moc khtmlembed.moc \
-	khtmlform.moc khtmlframe.moc khtmlview.moc
+	khtmlform.moc khtmlframe.moc khtmlview.moc kbrowser.moc
 
-include_HEADERS = khtml.h khtmlview.h khtmlsavedpage.h khtmlembed.h khtmlcache.h 
+include_HEADERS = khtml.h khtmlview.h khtmlsavedpage.h khtmlembed.h khtmlcache.h \
+	kbrowser.h
 noinst_HEADERS = khtmlchain.h khtmlparser.h khtmljscript.h \
 	khtmlobj.h khtmlfont.h khtmlform.h khtmltoken.h khtmlframe.h \
 	khtmlclue.h khtmldata.h khtmltable.h khtmliter.h khtmlstyle.h \
 	khtmldecoder.cpp khtmlstring.h
 
 libkhtml_la_LDFLAGS = -version-info 3:0
-libkhtml_la_LIBADD = ../jscript/libjscript.la ../kimgio/libkimgio.la
+libkhtml_la_LIBADD = ../jscript/libjscript.la ../kimgio/libkimgio.la ../kio/libkio.la
 
 data_DATA = khtml_dnd.xpm
 datadir = $(kde_datadir)/khtml/pics
 
-INCLUDES = -I$(top_srcdir)/jscript -I$(top_srcdir)/kimgio $(all_includes)
+INCLUDES = -I$(top_srcdir)/jscript -I$(top_srcdir)/kimgio -I$(top_srcdir)/kio \
+	$(all_includes)
 
 SRCDOC_DEST=$(kde_htmldir)/en/kdelibs/khtml
 
