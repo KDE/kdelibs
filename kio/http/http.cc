@@ -3263,6 +3263,7 @@ bool HTTPProtocol::getAuthorization()
             info.readOnly = !m_request.url.user().isEmpty();
             info.prompt = i18n( "You need to supply a username and a "
                                 "password to access this site." );
+            info.keepPassword = true; // Prompt the user for persistence as well.
             if ( !m_strRealm.isEmpty() )
             {
                 info.realmValue = m_strRealm;
@@ -3281,6 +3282,7 @@ bool HTTPProtocol::getAuthorization()
             info.prompt = i18n( "You need to supply a username and a password for "
                                 "the proxy server listed below before you are "
                                 "allowed to access any sites." );
+            info.keepPassword = true;   // Prompt the user for persistence as well.
             if ( !m_strProxyRealm.isEmpty() )
             {
                 info.realmValue = m_strProxyRealm;
