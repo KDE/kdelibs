@@ -340,14 +340,14 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
 	if ( !action )
 	  continue;
 	
-        action->plug( (QWidget *)parentNode->container, idx );
+        action->plug( parentNode->container, idx );
 
 	containerClient->m_actions.append( action );
       }
       else
       {
         assert( parentNode->builder );
-        int id = parentNode->builder->insertSeparator( (QWidget *)parentNode->container, idx );
+        int id = parentNode->builder->insertSeparator( parentNode->container, idx );
 	containerClient->m_separators.append( id );
       }
 
@@ -445,12 +445,12 @@ bool KXMLGUIFactory::removeRecursive( KXMLGUIContainerNode *node )
         QValueList<int>::ConstIterator sepIt = clientIt.current()->m_separators.begin();
 	QValueList<int>::ConstIterator sepEnd = clientIt.current()->m_separators.end();
 	for (; sepIt != sepEnd; ++sepIt )
-	  node->builder->removeSeparator( (QWidget *)node->container, *sepIt );
+	  node->builder->removeSeparator( node->container, *sepIt );
 
         QListIterator<QAction> actionIt( clientIt.current()->m_actions );
         for (; actionIt.current(); ++actionIt )
         {
-          kdDebug(1002) << "unplugging " << actionIt.current()->name() << " from " << (QWidget *)node->container->name() << endl;
+          kdDebug(1002) << "unplugging " << actionIt.current()->name() << " from " << node->container->name() << endl;
           actionIt.current()->unplug( (QWidget *)node->container );
         }
 	
@@ -482,7 +482,7 @@ bool KXMLGUIFactory::removeRecursive( KXMLGUIContainerNode *node )
 
     if ( node->parent && node->parent->container )
     {
-      parentContainer = (QWidget *)node->parent->container;
+      parentContainer = node->parent->container;
 
       KXMLGUIContainerNode *p = node->parent;
 
