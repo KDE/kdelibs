@@ -388,7 +388,7 @@ bool KSSLD::cacheModifyByCertificate(KSSLCertificate cert,
 
 
 bool KSSLD::caRegenerate() {
-QString path = KGlobal::dirs()->saveLocation("kssl") + "/ca-bundle.crt";
+QString path = KGlobal::dirs()->saveLocation("kssl") + "/caroot/ca-bundle.crt";
 
 QFile out(path);
 
