@@ -385,6 +385,7 @@ void RenderLayer::showScrollbar(Qt::Orientation o, bool show)
         sb = new QScrollBar(o, scrollView);
         scrollView->addChild(sb, 0, -50000);
 	sb->setBackgroundMode(QWidget::NoBackground);
+        sb->setPalette( m_object->style()->palette() );
 	sb->show();
         if (!m_scrollMediator)
             m_scrollMediator = new RenderScrollMediator(this);

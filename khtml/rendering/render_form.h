@@ -446,6 +446,9 @@ public:
 
     virtual const char *renderName() const { return "RenderTextArea"; }
     virtual void calcMinMaxWidth();
+    virtual void layout();
+    virtual void setStyle(RenderStyle *style);
+
     virtual void close ( );
     virtual void updateFromElement();
 
@@ -465,6 +468,8 @@ protected:
     virtual void handleFocusOut();
 
     virtual bool isEditable() const { return true; }
+
+    bool scrollbarsStyled;
 };
 
 // -------------------------------------------------------------------------

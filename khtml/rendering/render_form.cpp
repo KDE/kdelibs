@@ -1601,6 +1601,8 @@ bool TextAreaWidget::event( QEvent *e )
 RenderTextArea::RenderTextArea(HTMLTextAreaElementImpl *element)
     : RenderFormElement(element)
 {
+    scrollbarsStyled = false;
+
     TextAreaWidget *edit = new TextAreaWidget(element->wrap(), view());
     setQWidget(edit);
 
@@ -1643,6 +1645,28 @@ void RenderTextArea::calcMinMaxWidth()
     setIntrinsicHeight( size.height() );
 
     RenderFormElement::calcMinMaxWidth();
+}
+
+void RenderTextArea::setStyle(RenderStyle* _style)
+{
+    RenderFormElement::setStyle(_style);
+
+    scrollbarsStyled = false;
+}
+
+void RenderTextArea::layout()
+{
+    KHTMLAssert( !layouted() );
+
+    RenderFormElement::layout();
+
+    TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
+
+    if (!scrollbarsStyled) {
+        w->horizontalScrollBar()->setPalette(style()->palette());
+        w->verticalScrollBar()->setPalette(style()->palette());
+        scrollbarsStyled=true;
+    }
 }
 
 void RenderTextArea::updateFromElement()

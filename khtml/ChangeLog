@@ -1,5 +1,11 @@
 2003-10-20  Dirk Mueller  <mueller@kde.org>
 
+	* rendering/render_form.cpp (layout): set IE-CSS-extension style palette
+	on <textarea> scrollbars (#56532).
+
+	* rendering/render_layer.cpp (showScrollbar): set IE-CSS-extension styled
+	palette on the overflow=scroll/auto scrollbars.
+	
 	* rendering/render_frames.cpp (close): reorder. updateWidget() might
 	delete this.
 
