@@ -377,11 +377,11 @@ void KStartupInfo::appStarted()
         if( !id.none())
             KStartupInfo::sendFinish( id );
         }
-    else
+    else if( getenv( "DISPLAY" ) != NULL ) // don't rely on qt_xdisplay()
         {
         KStartupInfoId id = KStartupInfo::currentStartupIdEnv();
         if( !id.none())
-            { // no KApplication instance, don't rely on qt_xdisplay()
+            {
             Display* disp = XOpenDisplay( NULL );
             if( disp != NULL )
                 {
