@@ -32,6 +32,7 @@
 // When a date is selected by the user, it emits a signal:
 //      dateSelected(QDate)
 
+#include <kconfig.h>
 #include <kglobal.h>
 #include <kglobalsettings.h>
 #include <kapplication.h>
@@ -869,7 +870,17 @@ void
 KPopupFrame::popup(const QPoint &pos)
 {
   // Make sure the whole popup is visible.
-  QRect d = QApplication::desktop()->screenGeometry(QApplication::desktop()->screenNumber(pos));
+  KConfig gc("kdeglobals", false, false);
+  gc.setGroup("Windows");
+  QRect d;
+  if (QApplication::desktop()->isVirtualDesktop() &&
+      gc.readBoolEntry("XineramaEnabled", true) &&
+      gc.readBoolEntry("XineramaPlacementEnabled", true)) {
+    d = QApplication::desktop()->screenGeometry(QApplication::desktop()->screenNumber(pos));
+  } else {
+    d = QApplication::desktop()->geometry();
+  }
+
   int x = pos.x();
   int y = pos.y();
   int w = width();

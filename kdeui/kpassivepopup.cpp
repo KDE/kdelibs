@@ -4,6 +4,8 @@
  *   email                : rich@kde.org
  */
 
+#include <kconfig.h>
+
 #include <qapplication.h>
 #include <qlabel.h>
 #include <qlayout.h>
@@ -218,7 +220,17 @@ void KPassivePopup::moveNear( QRect target )
     int w = width();
     int h = height();
 
-    QRect r( qApp->desktop()->screenGeometry( QPoint(x+w/2,y+h/2) ) );
+    QRect r; // desktop geometry
+    QDesktopWidget *dw = QApplication::desktop();
+    KConfig gc("kdeglobals", false, false);
+    gc.setGroup("Windows");
+    if (dw->isVirtualDesktop() &&
+        gc.readBoolEntry("XineramaEnabled", true) &&
+        gc.readBoolEntry("XineramaPlacementEnabled", true)) {
+        r = dw->screenGeometry(dw->screenNumber(QPoint(x+w/2,y+h/2)));
+    } else {
+        r = dw->geometry();
+    }
 
     if ( x < ( r.width() / 2 ) )
 	x = x + target.width();

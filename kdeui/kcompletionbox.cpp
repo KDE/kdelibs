@@ -26,6 +26,7 @@
 #include <qstyle.h>
 
 #include <kdebug.h>
+#include <kconfig.h>
 #include <knotifyclient.h>
 
 #include "kcompletionbox.h"
@@ -250,7 +251,17 @@ void KCompletionBox::show()
         // this is probably better, once kde switches to requiring qt3.1
         // QRect screenSize = QApplication::desktop()->availableGeometry(d->m_parent);
         // for now use this since it's qt3.0.x-safe
-        QRect screenSize = QApplication::desktop()->screenGeometry(QApplication::desktop()->screenNumber(d->m_parent));
+        QDesktopWidget *dw = QApplication::desktop();
+        KConfig gc("kdeglobals", false, false);
+        gc.setGroup("Windows");
+        QRect screenSize;
+        if (dw->isVirtualDesktop() &&
+            gc.readBoolEntry("XineramaEnabled", true) &&
+            gc.readBoolEntry("XineramaPlacementEnabled", true)) {
+            screenSize = dw->screenGeometry(dw->screenNumber(d->m_parent));
+        } else {
+            screenSize = dw->geometry();
+        }
 
         QPoint orig = d->m_parent->mapToGlobal( QPoint(0, d->m_parent->height()) );
         int x = orig.x();

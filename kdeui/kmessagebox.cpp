@@ -127,9 +127,20 @@ static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon, const 
     // Calculate a proper size for the text.
     {
        QSimpleRichText rt(qt_text, dialog->font());
-       int scr = QApplication::desktop()->screenNumber(dialog);
 
-       pref_width = QApplication::desktop()->screenGeometry(scr).width() / 3;
+       QDesktopWidget *dw = QApplication::desktop();
+       KConfig gc("kdeglobals", false, false);
+       gc.setGroup("Windows");
+       QRect d;
+       if (dw->isVirtualDesktop() &&
+           gc.readBoolEntry("XineramaEnabled", true) &&
+           gc.readBoolEntry("XineramaPlacementEnabled", true)) {
+           d = dw->screenGeometry(dw->screenNumber(dialog));
+       } else {
+           d = dw->geometry();
+       }
+
+       pref_width = d.width() / 3;
        rt.setWidth(pref_width);
        int used_width = rt.widthUsed();
        pref_height = rt.height();
