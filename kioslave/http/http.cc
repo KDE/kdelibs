@@ -677,15 +677,17 @@ void HTTPProtocol::davStatList( const KURL& url, bool stat )
   QDomDocument multiResponse;
   multiResponse.setContent( m_bufWebDavData, true );
 
-  QDomElement thisResponse = multiResponse.documentElement().firstChild().toElement();
-  if (thisResponse.isNull()) {
-    error( ERR_DOES_NOT_EXIST, url.prettyURL() );
-    return;
-  }
+  bool hasResponse = false;
 
-  for ( ; !thisResponse.isNull();
-        thisResponse = thisResponse.nextSibling().toElement() )
+  for ( QDomNode n = multiResponse.documentElement().firstChild();
+        !n.isNull(); n = n.nextSibling())
   {
+    QDomElement thisResponse = n.toElement();
+    if (thisResponse.isNull())
+      continue;
+  
+    hasResponse = true;
+    
     QDomElement href = thisResponse.namedItem( "href" ).toElement();
     if ( !href.isNull() )
     {
@@ -731,7 +733,7 @@ void HTTPProtocol::davStatList( const KURL& url, bool stat )
     }
   }
 
-  if ( stat )
+  if ( stat || !hasResponse )
   {
     error( ERR_DOES_NOT_EXIST, url.prettyURL() );
   }
@@ -815,10 +817,11 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
       entry.append( atom );
     }
 
-    for ( QDomElement property = prop.firstChild().toElement();
-          !property.isNull();
-          property = property.nextSibling().toElement() )
+    for ( QDomNode n = prop.firstChild(); !n.isNull(); n = n.nextSibling() )
     {
+      QDomElement property = n.toElement();
+      if (property.isNull())
+        continue;
 
       if ( property.namespaceURI() != "DAV:" )
       {
@@ -895,10 +898,9 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
       else if ( property.tagName() == "supportedlock" )
       {
         // Supported locking specifications
-        for ( QDomElement lockEntry = property.firstChild().toElement();
-              !lockEntry.isNull();
-              lockEntry = lockEntry.nextSibling().toElement() )
+        for ( QDomNode n2 = property.firstChild(); !n2.isNull(); n2 = n2.nextSibling() )
         {
+          QDomElement lockEntry = n2.toElement();
           if ( lockEntry.tagName() == "lockentry" )
           {
             QDomElement lockScope = lockEntry.namedItem( "lockscope" ).toElement();
