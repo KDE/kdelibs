@@ -114,17 +114,6 @@ static QString getDescrFromNum(unsigned short _num)
   return "";
 }
 
-static int getNum (const char *key, int _default)
-{
-  return KGlobal::_instance ? KGlobal::config()->readNumEntry(key, _default) : _default;
-}
-
-static QString getString (const char *key, const char * _default)
-{
-  return KGlobal::config()->readEntry(key, _default);
-}
-
-
 // Private
 /* still public for now
 enum DebugLevels {
@@ -137,15 +126,15 @@ enum DebugLevels {
 void kDebugBackend( unsigned short nLevel, unsigned short nArea,
                     const char * pFormat, va_list arguments )
 {
-  // Save old group
-  QString aOldGroup;
-  if (KGlobal::_instance) {
-    aOldGroup = KGlobal::config()->group();
-    KGlobal::config()->setGroup( "KDebug" );
+
+  KConfig * pConfig = 0L;
+  if ( KGlobal::_instance )
+  {
+      pConfig = new KConfig( "kdebugrc", false );
+      pConfig->setGroup( QString::number(nArea) );
   }
 
   /* Determine output */
-  short nOutput = 0;
   int nPriority = 0; // for syslog
   QString aCaption;
   QString aAreaName;
@@ -154,54 +143,58 @@ void kDebugBackend( unsigned short nLevel, unsigned short nArea,
   if (aAreaName.isEmpty() && KGlobal::_instance)
     aAreaName = KGlobal::instance()->instanceName();
 
+  QString key;
   switch( nLevel )
         {
         case KDEBUG_INFO:
-          nOutput = getNum( "InfoOutput", 2 );
+          key = "InfoOutput";
           aCaption = "Info";
           nPriority = LOG_INFO;
           break;
         case KDEBUG_WARN:
-          nOutput = getNum( "WarnOutput", 2 );
+          key = "WarnOutput";
           aCaption = "Warning";
           nPriority = LOG_WARNING;
           break;
         case KDEBUG_FATAL:
-          nOutput = getNum( "FatalOutput", 2 );
+          key = "FatalOutput";
           aCaption = "Fatal Error";
           nPriority = LOG_CRIT;
           break;
         case KDEBUG_ERROR:
         default:
           /* Programmer error, use "Error" as default */
-          nOutput = getNum( "ErrorOutput", 2 );
+          key = "ErrorOutput";
           aCaption = "Error";
           nPriority = LOG_ERR;
           break;
         };
+  short nOutput = pConfig ? pConfig->readNumEntry(key, 2) : 2;
 
   // Output
   switch( nOutput )
         {
         case 0: // File
           {
-                QString aOutputFileName;
+                QString aKey;
                 switch( nLevel )
-                  {
-                  case KDEBUG_INFO:
-                        aOutputFileName = getString( "InfoFilename", "kdebug.dbg" );
+                {
+                    case KDEBUG_INFO:
+                        aKey = "InfoFilename";
                         break;
-                  case KDEBUG_WARN:
-                        aOutputFileName = getString( "WarnFilename", "kdebug.dbg" );
+                    case KDEBUG_WARN:
+                        aKey = "WarnFilename";
                         break;
-                  case KDEBUG_FATAL:
-                        aOutputFileName = getString( "FatalFilename", "kdebug.dbg" );
+                    case KDEBUG_FATAL:
+                        aKey = "FatalFilename";
                         break;
-                  case KDEBUG_ERROR:
-                  default:
-                        aOutputFileName = getString( "ErrorFilename", "kdebug.dbg" );
+                    case KDEBUG_ERROR:
+                    default:
+                        aKey = "ErrorFilename";
                         break;
-                  };
+                }
+                QString aOutputFileName = pConfig->readEntry(aKey, "kdebug.dbg");
+
                 char buf[4096] = "";
                 int nPrefix = 0;
                 if ( !aAreaName.isEmpty() )
@@ -253,13 +246,10 @@ void kDebugBackend( unsigned short nLevel, unsigned short nArea,
         }
 
   // check if we should abort
-  if( ( nLevel == KDEBUG_FATAL ) &&
-          ( getNum( "AbortFatal", 0 ) ) )
+  if( ( nLevel == KDEBUG_FATAL ) && pConfig &&
+          ( pConfig->readNumEntry( "AbortFatal", 0 ) ) )
         abort();
-
-  // restore old group
-  if (KGlobal::_instance)
-    KGlobal::config()->setGroup( aOldGroup );
+  delete pConfig;
 }
 
 
