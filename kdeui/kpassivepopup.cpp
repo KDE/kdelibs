@@ -221,6 +221,9 @@ void KPassivePopup::moveNear( QRect target )
     if ( (y + h) > qApp->desktop()->height() )
 	y = qApp->desktop()->height() - h;
 
+    if ( y < 0 )
+        y = 0;
+
 #ifdef OLD_BITS
     if ( (x - w) >= 0  )
 	x = x - w;
