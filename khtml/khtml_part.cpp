@@ -1119,15 +1119,20 @@ void KHTMLPart::htmlError( int errorCode, const QString& text, const KURL& reqUr
   d->m_bJScriptOverride = true;
   begin();
   QString errText = QString::fromLatin1( "<HTML><HEAD><TITLE>" );
-  errText += i18n( "Error while loading %1" ).arg( reqUrl.prettyURL() );
+  errText += i18n( "Error while loading %1" ).arg( reqUrl.htmlURL() );
   errText += QString::fromLatin1( "</TITLE></HEAD><BODY><P>" );
-  errText += i18n( "An error occured while loading <B>%1</B>:" ).arg( reqUrl.prettyURL() );
+  errText += i18n( "An error occured while loading <B>%1</B>:" ).arg( reqUrl.htmlURL() );
   errText += QString::fromLatin1( "</P><P>" );
   QString kioErrString = KIO::buildErrorString( errorCode, text );
+
   // In case the error string has '\n' in it, replace with <BR/>
   kioErrString.replace( QRegExp("\n"), "<BR/>" );
+  kioErrString.replace(QRegExp("&"), QString("&amp;"));
+  kioErrString.replace(QRegExp("<"), QString("&lt;"));
+  kioErrString.replace(QRegExp(">"), QString("&gt;"));
+
   errText += kioErrString;
-  errText += QString::fromLatin1( "</PRE></P></BODY></HTML>" );
+  errText += QString::fromLatin1( "</P></BODY></HTML>" );
   write(errText);
   end();
 
