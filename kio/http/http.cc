@@ -754,6 +754,7 @@ bool HTTPProtocol::http_open()
   m_bCachedRead = false;
   m_bCachedWrite = false;
   m_bMustRevalidate = false;
+  m_bUnauthorized = false;
   if (m_bUseCache)
   {
      m_fcache = checkCacheEntry( );
@@ -1388,9 +1389,7 @@ bool HTTPProtocol::readHeader()
         if ( m_prevResponseCode != m_responseCode )
           saveAuthorization();
 
-        if ( !m_bUnauthorized )
-          m_bUnauthorized = true;
-
+        m_bUnauthorized = true;
         m_bCachedWrite = false; // Don't put in cache
         mayCache = false;
       }
