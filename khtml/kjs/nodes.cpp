@@ -614,6 +614,8 @@ KJSO *VarDeclNode::evaluate()
       val = new KJSUndefined();
     variable->put(ident, val);
   }
+  // TODO: I added this return to make it compile (Stephan)
+  return 0L;
 }
 
 // ECMA 12.2
@@ -795,6 +797,7 @@ void FuncDeclNode::processFuncDecl()
 KJSO *ParameterNode::evaluate()
 {
   /* TODO */
+  return 0L;
 }
 
 // ECMA 14

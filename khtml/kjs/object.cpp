@@ -530,6 +530,7 @@ KJSO* KJSDeclaredFunction::execute(KJSContext *)
 KJSO* KJSAnonymousFunction::execute(KJSContext *)
 {
  /* TODO */
+  return 0L;
 }
 
 KJSError::KJSError(ErrorCode e, Node *n)
