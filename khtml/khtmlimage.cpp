@@ -209,6 +209,7 @@ void KHTMLImage::updateWindowCaption()
         caption = i18n( "Image - %2x%3 Pixels" ).arg( pix.width() ).arg( pix.height() );
 
     emit setWindowCaption( caption );
+    emit completed();
     emit setStatusBarText(i18n("Done."));
 }
 
