@@ -194,7 +194,7 @@ inline QDataStream & operator << (QDataStream & str, const DCOPArg& arg )
  *
  * <pre>
  *	DCOPRef example( "foo", "example" );
- *	int result = example.call( "doSomething", "Hello World", (float)2.5, true );
+ *	int result = example.call( "doSomething", QString("Hello World"), (float)2.5, true );
  * </pre>
  *
  * If it is important for you to know whether the call succeeded or
@@ -202,12 +202,15 @@ inline QDataStream & operator << (QDataStream & str, const DCOPArg& arg )
  *
  * <pre>
  *	DCOPRef example( "foo", "example" );
- *	DCOPReply reply = example.call( "doSomething", "Hello World", (float)2.5, true );
+ *	DCOPReply reply = example.call( "doSomething", QString("Hello World"), (float)2.5, true );
  *	if ( reply.isValid() ) {
  *	    int result = reply;
  *	    // ...
  *	}
  * </pre>
+ * 
+ * Note that you must pass a QString for the first argument. If you use a 
+ * regular char pointer, it will be converted to a @ref QCString.
  *
  * For curiosity, here is how you would achieve the exactly same
  * functionality by using DCOPClient::call() directly:
