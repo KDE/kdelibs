@@ -1,3 +1,5 @@
+// $Id$
+
 #include "kio_job.h" 
 #include <qtimer.h>
 
@@ -11,119 +13,258 @@
 
 #include "kio_listprogress_dlg.h"
 
-#define SIZE_OPERATION        70
-#define SIZE_LOCAL_FILENAME   160
-#define SIZE_RESUME           40
-#define SIZE_COUNT            60
-#define SIZE_PROGRESS         30
-#define SIZE_TOTAL            65
-#define SIZE_SPEED            70
-#define SIZE_REMAINING_TIME   70
-#define SIZE_ADDRESS          450
+int defaultColumnWidth[] = { 70,  // SIZE_OPERATION
+			     160, // LOCAL_FILENAME
+			     40,  // RESUME
+			     60,  // COUNT
+			     30,  // PROGRESS
+			     65,  // TOTAL
+			     70,  // SPEED
+			     70,  // REMAINING_TIME
+			     450  // URL
+};
 
 #define INIT_MAX_ITEMS 16
 #define ARROW_SPACE 15
 #define BUTTON_SPACE 4
 #define MINIMUM_SPACE 9
 
-KIOListBox::KIOListBox (QWidget *parent, const char *name, 
-			      int columns, WFlags f)
-  : KTabListBox (parent, name, columns, f)
-{
-  setColumn(TB_OPERATION, i18n("Operation"), SIZE_OPERATION);
-  setColumn(TB_LOCAL_FILENAME, i18n("Local Filename"), SIZE_LOCAL_FILENAME);
-  setColumn(TB_RESUME, i18n("Res."), SIZE_RESUME);
-  setColumn(TB_COUNT, i18n("Count"), SIZE_COUNT);
-  setColumn(TB_PROGRESS, i18n("%"), SIZE_PROGRESS);
-  setColumn(TB_TOTAL, i18n("Total"), SIZE_TOTAL);
-  setColumn(TB_SPEED, i18n("Speed"), SIZE_SPEED);
-  setColumn(TB_REMAINING_TIME, i18n("Rem. Time"), SIZE_REMAINING_TIME);
-  setColumn(TB_ADDRESS, i18n("Address ( URL )"), SIZE_ADDRESS);
+#define NUM_COLS  9
+
+KIOListViewItem::KIOListViewItem( KIOListView* view, KIOJob *job )
+  : QListViewItem( view ) {
+
+  listView = view;
+  m_pJob = job;
+  connect( m_pJob, SIGNAL( sigSpeed( int, unsigned long ) ),
+	   SLOT( slotSpeed( int, unsigned long ) ) );
+  connect( m_pJob, SIGNAL( sigTotalSize( int, unsigned long ) ),
+	   SLOT( slotTotalSize( int, unsigned long ) ) );
+  connect( m_pJob, SIGNAL( sigTotalFiles( int, unsigned long ) ),
+	   SLOT( slotTotalFiles( int, unsigned long ) ) );
+  connect( m_pJob, SIGNAL( sigTotalDirs( int, unsigned long ) ),
+	   SLOT( slotTotalDirs( int, unsigned long ) ) );
+  connect( m_pJob, SIGNAL( sigPercent( int, unsigned long ) ),
+	   SLOT( slotPercent( int, unsigned long ) ) );
+  connect( m_pJob, SIGNAL( sigProcessedFiles( int, unsigned long ) ),
+	   SLOT( slotProcessedFiles( int, unsigned long ) ) );
+  connect( m_pJob, SIGNAL( sigProcessedDirs( int, unsigned long ) ),
+	   SLOT( slotProcessedDirs( int, unsigned long ) ) );
+  connect( m_pJob, SIGNAL( sigCopying( int, const char*, const char* ) ),
+	   SLOT( slotCopyingFile( int, const char*, const char* ) ) );
+  connect( m_pJob, SIGNAL( sigCanResume( int, bool ) ),
+ 	   SLOT( slotCanResume( int, bool ) ) );
+  connect( m_pJob, SIGNAL( sigScanningDir( int, const char* ) ),
+	   SLOT( slotScanningDir( int, const char* ) ) );
+  connect( m_pJob, SIGNAL( sigMakingDir( int, const char* ) ),
+	   SLOT( slotMakingDir( int, const char* ) ) );
+  connect( m_pJob, SIGNAL( sigGettingFile( int, const char* ) ),
+	   SLOT( slotGettingFile( int, const char* ) ) );
+  connect( m_pJob, SIGNAL( sigDeletingFile( int, const char* ) ),
+	   SLOT( slotDeletingFile( int, const char* ) ) );
+  connect( m_pJob, SIGNAL( sigRenamed( int, const char* ) ),
+	   SLOT( slotRenamed( int, const char* ) ) );
+}
+
+
+void KIOListViewItem::update() {
+  QString tmps;
+
+  // set operation
+  switch ( m_pJob->m_cmd ) {
+  case CMD_COPY:
+  case CMD_MCOPY:
+    tmps = i18n("Copying");
+    break;
+  case CMD_MOVE:
+  case CMD_MMOVE:
+    tmps = i18n("Moving");
+    break;
+  case CMD_DEL:
+  case CMD_MDEL:
+    tmps = i18n("Deleting");
+    break;
+  case CMD_GET:
+    tmps = i18n("Getting");
+    break;
+  case CMD_MOUNT:
+    tmps = i18n("Mounting");
+    break;
+  case CMD_UNMOUNT:
+    tmps = i18n("Umnounting");
+    break;
+  case CMD_MKDIR:
+    tmps = i18n("New dir");
+    break;
+  }
+  setText( listView->lv_operation, tmps );
+}
+
+
+void KIOListViewItem::slotTotalSize( int, unsigned long _bytes ) {
+  m_iTotalSize = _bytes;
+}
+
+
+void KIOListViewItem::slotTotalFiles( int, unsigned long _files ) {
+  m_iTotalFiles = _files;
+}
+
+
+void KIOListViewItem::slotTotalDirs( int, unsigned long _dirs ) {
+  m_iTotalDirs = _dirs;
+}
+
+
+void KIOListViewItem::slotPercent( int, unsigned long _percent ) {
+  QString tmps = i18n( "%1 % of %2 ").arg( _percent ).arg( KIOJob::convertSize(m_iTotalSize));
+
+  setText( listView->lv_progress, tmps );
+}
+
+
+void KIOListViewItem::slotProcessedFiles( int, unsigned long _files ) {
+  QString tmps;
+  tmps.sprintf( "%lu / %lu\n", _files, m_iTotalFiles );
+  setText( listView->lv_count, tmps );
+}
+
+
+void KIOListViewItem::slotSpeed( int, unsigned long _bytes_per_second ) {
+  QString tmps, tmps2;
+  if ( _bytes_per_second == 0 ) {
+    tmps = i18n( "Stalled");
+    tmps2 = tmps;
+  } else {
+    tmps = i18n( "%1/s %2").arg( KIOJob::convertSize( _bytes_per_second ));
+    tmps2 = m_pJob->getRemainingTime().toString();
+  }
+
+  setText( listView->lv_speed, tmps );
+  setText( listView->lv_remaining, tmps2 );
+}
+
+
+void KIOListViewItem::slotScanningDir( int , const char *_dir) {
+  KURL url( _dir );
+  setText( listView->lv_operation, i18n("Scanning") );
+  setText( listView->lv_url, _dir );
+  setText( listView->lv_filename, url.filename() );
+}
+
+
+void KIOListViewItem::slotCopyingFile( int, const char *_from, const char *_to ) {
+  KURL url( _to );
+  setText( listView->lv_operation, i18n("Copying") );
+  setText( listView->lv_url, _from );
+  setText( listView->lv_filename, url.filename() );
+}
+
+
+void KIOListViewItem::slotRenamed( int, const char *_new_url ) {
+  KURL url( _new_url );
+  setText( listView->lv_filename, url.filename() );
+}
+
+
+void KIOListViewItem::slotMakingDir( int, const char *_dir ) {
+  KURL url( _dir );
+  setText( listView->lv_operation, i18n("Creating") );
+  setText( listView->lv_url, _dir );
+  setText( listView->lv_filename, url.filename() );
+}
+
+
+void KIOListViewItem::slotGettingFile( int, const char *_url ) {
+  KURL url( _url );
+  setText( listView->lv_operation, i18n("Fetching") );
+  setText( listView->lv_url, _url );
+  setText( listView->lv_filename, url.filename() );
+}
+
+
+void KIOListViewItem::slotDeletingFile( int, const char *_url ) {
+  KURL url( _url );
+  setText( listView->lv_operation, i18n("Deleting") );
+  setText( listView->lv_url, _url );
+  setText( listView->lv_filename, url.filename() );
+}
+
+
+void KIOListViewItem::slotCanResume( int, bool _resume ) {
+  QString tmps;
+  // set canResume
+  if ( _resume ) {
+    tmps = i18n("Yes");
+  } else {
+    tmps = i18n("No");
+  }
+  setText( listView->lv_resume, tmps );
+}
+
+
+//-----------------------------------------------------------------------------
+
+KIOListView::KIOListView (QWidget *parent, const char *name)
+  : QListView (parent, name) {
+
+  // enable selection of more than one item
+  setMultiSelection( true );
+
+  setAllColumnsShowFocus( true );
+
+  lv_operation = addColumn( i18n("Operation") );
+  lv_filename = addColumn( i18n("Local Filename") );
+  lv_resume = addColumn( i18n("Res.") );
+  lv_count = addColumn( i18n("Count") );
+  lv_progress = addColumn( i18n("%") );
+  lv_total = addColumn( i18n("Total") );
+  lv_speed = addColumn( i18n("Speed") );
+  lv_remaining = addColumn( i18n("Rem. Time") );
+  lv_url = addColumn( i18n("Address( URL )") );
 
   readConfig();
-
-   if ( columnWidth( TB_OPERATION ) == 100 ) {
-    setColumnWidth( TB_OPERATION, SIZE_OPERATION );
-    setColumnWidth( TB_LOCAL_FILENAME, SIZE_LOCAL_FILENAME );
-    setColumnWidth( TB_RESUME, SIZE_RESUME );
-    setColumnWidth( TB_COUNT, SIZE_COUNT );
-    setColumnWidth( TB_PROGRESS, SIZE_PROGRESS );
-    setColumnWidth( TB_TOTAL, SIZE_TOTAL );
-    setColumnWidth( TB_SPEED, SIZE_SPEED );
-    setColumnWidth( TB_REMAINING_TIME, SIZE_REMAINING_TIME );
-    setColumnWidth( TB_ADDRESS, SIZE_ADDRESS );
-  }
 }
 
 
 
-KIOListBox::~KIOListBox()
-{
+KIOListView::~KIOListView() {
   writeConfig();
 }
 
 
-void KIOListBox::readConfig()
-{
-  KConfig* conf = new KConfig("kioslaverc");
+void KIOListView::readConfig() {
+  KConfig* config = new KConfig("kioslaverc");
 
-  int beg, end, i, w;
-  int cols = numCols(),fixedmin=MINIMUM_SPACE;
-  QString str, substr;
-
-  conf->setGroup(name());
-  str = conf->readEntry("colwidth");
-
-  if (!str.isEmpty())
-    for (i=0, beg=0, end=0; i<cols;)
-  {
-    end = str.find(',', beg);
-    if (end < 0) break;
-    w = str.mid(beg,end-beg).toInt();
-    if (colList[i]->orderType()==ComplexOrder)
-       fixedmin+=ARROW_SPACE+labelHeight-BUTTON_SPACE;
-    else
-       if (colList[i]->orderType()==SimpleOrder)
-          fixedmin+=ARROW_SPACE;
-    if (w < fixedmin) w = fixedmin;
-    colList[i]->setWidth(w);
-    colList[i]->setDefaultWidth(w);
-    i++;
-    beg = end+1;
+  // read listview geometry properties
+  config->setGroup( "ListProgress" );
+  for ( int i = 0; i < NUM_COLS; i++ ) {
+    QString tmps;
+    tmps.sprintf( "Col%d", i );
+    setColumnWidth( i, config->readNumEntry( tmps, defaultColumnWidth[i] ) );
   }
-  else
-   for(i=0;i<cols;i++)
-   {
-     colList[i]->setWidth(60);
-     colList[i]->setDefaultWidth(60);
-   }
 }
 
 
-void KIOListBox::writeConfig()
-{
-  KConfig* conf = new KConfig("kioslaverc");
+void KIOListView::writeConfig() {
+  KConfig* config = new KConfig("kioslaverc");
 
-  int t;
-  QString str;
-
-  conf->setGroup(name());
-  QString tmp;
-  for(t=0;t<numCols();t++) {
-    tmp.setNum(colList[t]->defaultWidth());
-    str += tmp;
+  // write listview geometry properties
+  config->setGroup( "ListProgress" );
+  for ( int i = 0; i < NUM_COLS; i++ ) {
+    QString tmps;
+    tmps.sprintf( "Col%d", i );
+    config->writeEntry( tmps, columnWidth( i ) );
   }
-  conf->writeEntry("colwidth",str);
-  conf->sync();
+
+  config->sync();
 }
 
 
 
 //-----------------------------------------------------------------------------
 
-KIOListProgressDlg::KIOListProgressDlg() : KTMainWindow( "" )
-{
-
+KIOListProgressDlg::KIOListProgressDlg() : KTMainWindow( "" ) {
   readSettings();
 
   if ( properties != "" ) // !!!
@@ -156,17 +297,14 @@ KIOListProgressDlg::KIOListProgressDlg() : KTMainWindow( "" )
 //   updateStatusBar();
 
   // setup listbox
-  myTabListBox = new KIOListBox( this, "kiolist", 9 );
+  myListView = new KIOListView( this, "kiolist" );
 
-  setView( myTabListBox, true);
+  setView( myListView, true);
 
-  connect( myTabListBox, SIGNAL( highlighted( int, int )), 
-	   this, SLOT( slotSelected( int )));
-  connect( myTabListBox, SIGNAL( midClick( int, int )), 
-	   this, SLOT( slotUnselected( int )));
-
-  //
-  jobmap = KIOJob::s_mapJobs;
+  connect( myListView, SIGNAL( selectionChanged() ), 
+	   this, SLOT( slotSelection() ) );
+  connect( myListView, SIGNAL( doubleClicked( QListViewItem* ) ), 
+	   this, SLOT( slotOpenSimple( QListViewItem* ) ) );
 
   // setup animation timer
   updateTimer = new QTimer( this );
@@ -182,7 +320,7 @@ KIOListProgressDlg::KIOListProgressDlg() : KTMainWindow( "" )
 KIOListProgressDlg::~KIOListProgressDlg() {
   updateTimer->stop();
   writeSettings();
-  KIOJob::m_pListProgressDlg = 0L;
+//   KIOJob::m_pListProgressDlg = 0L;
 }
 
 
@@ -192,120 +330,28 @@ KIOListProgressDlg::~KIOListProgressDlg() {
 // }
 
 
-void KIOListProgressDlg::slotUpdate()
-{
+void KIOListProgressDlg::addJob( KIOJob *job ) {
 
-  KIOJob* job;
+  QListViewItemIterator it( myListView );
+  for ( ; it.current(); ++it ) {
+    KIOListViewItem *item = (KIOListViewItem*) it.current();
+    if ( item->id() == job->id() ) {
+      item->update();
+      return;
+    }
+  }
 
+  new KIOListViewItem( myListView, job );
+}
+
+
+void KIOListProgressDlg::slotUpdate() {
   int totalFiles = 0;
   int totalSize = 0;
   int totalSpeed = 0;
   QTime totalRemTime;
 
-  int items = 0;
-
-  myTabListBox->setAutoUpdate( false );
-
   // fill the list with kiojobs
-  QMap<int,KIOJob*>::Iterator it = jobmap->begin();
-  for( ; it != jobmap->end(); ++it ) {
-    job = *it;
-
-    if ( job->m_iGUImode == KIOJob::LIST && job->m_cmd != CMD_NONE ) {
-      QString statusString, tmp;
-
-      items++;
-
-      // operation
-      switch ( job->m_cmd ) {
-      case CMD_COPY:
-      case CMD_MCOPY:
-	statusString += i18n("Copying");
-	break;
-      case CMD_MOVE:
-      case CMD_MMOVE:
-	statusString += i18n("Moving");
-	break;
-      case CMD_DEL:
-      case CMD_MDEL:
-	statusString += i18n("Deleting");
-	break;
-      case CMD_GET:
-	statusString += i18n("Getting");
-	break;
-      case CMD_MOUNT:
-	statusString += i18n("Mounting");
-	break;
-      case CMD_UNMOUNT:
-	statusString += i18n("Umnounting");
-	break;
-      case CMD_MKDIR:
-	statusString += i18n("New dir");
-	break;
-      }
-
-      statusString += "\n";
-
-      // filename
-      if ( ! job->m_strTo.isEmpty() ) {
-	KURL ur( job->m_strTo );
-	statusString += ur.filename();
-	statusString += "\n";
-      }
-      else
-	statusString += " \n";
-
-      // can resume
-      if ( job->m_bCanResume )
-	statusString += i18n("Yes\n");
-      else
-	statusString += i18n("No\n");
-      
-      // files
-      tmp.sprintf( "%lu / %lu\n", job->m_iProcessedFiles, job->m_iTotalFiles );
-      statusString += tmp;
-      totalFiles += ( job->m_iTotalFiles - job->m_iProcessedFiles );
-
-      // progress
-      int percent = 0;
-      if ( job->m_iTotalSize != 0 )
-	percent = (int)(( (float)job->m_iProcessedSize / (float)job->m_iTotalSize ) * 100.0);
-      statusString += i18n( "%1\n").arg( percent );
-
-      // total size
-      statusString += i18n("%1\n").arg( KIOJob::convertSize( job->m_iTotalSize ));
-      totalSize += ( job->m_iTotalSize - job->m_iProcessedSize );
-
-      // speed
-      if ( job->m_bStalled )
-	statusString += i18n("Stalled\n");
-      else {
-	statusString += KIOJob::convertSize( job->m_iSpeed );
-	statusString += "\n";
-      }
-      totalSpeed += job->m_iSpeed;
-      
-      // time
-      statusString += job->m_RemainingTime.toString();
-      statusString += "\n";
-      if ( job->m_RemainingTime > totalRemTime )
-	totalRemTime = job->m_RemainingTime;
-
-      // insert item into the listbox
-      if ( items < myTabListBox->numRows() )
-	myTabListBox->changeItem( statusString, items );
-      else
-	myTabListBox->insertItem( statusString );
-
-    }
-
-    myTabListBox->setNumRows( items );
-  }
-
-  myTabListBox->setAutoUpdate( true );
-
-  if ( this->isVisible() )
-    myTabListBox->repaint();
 
   // update statusbar
   statusBar()->changeItem( i18n( " Files : %1 ").arg( totalFiles ), ID_TOTAL_FILES);
@@ -315,74 +361,71 @@ void KIOListProgressDlg::slotUpdate()
   statusBar()->changeItem( i18n( " %1/s ").arg( KIOJob::convertSize( totalSpeed ) ),
 			   ID_TOTAL_SPEED);
 
-  if ( items > 0 )
-    this->show();
-  else
-    this->hide();
-}
-
-
-void KIOListProgressDlg::slotSelected( int )
-{
-  updateToolBar();
-}
-
-
-void KIOListProgressDlg::slotUnselected( int id )
-{
-  myTabListBox->unmarkItem( id );
-  updateToolBar();
-}
-
-
-void KIOListProgressDlg::updateToolBar()
-{
-  int id;
-
-  int count = myTabListBox->count();
-  if ( count == 0)
-    goto updcln;
-
-  id = myTabListBox->currentItem();
-  if ( id >= count || id < 0)
-    goto updcln;
-
-  if ( myTabListBox->isMarked(id) ){
-    toolBar()->setItemEnabled( TOOL_CANCEL, TRUE);
-    return;
+  if ( myListView->childCount() > 0 ) {
+    show();
+  } else {
+    hide();
   }
-
- updcln:
-  toolBar()->setItemEnabled( TOOL_CANCEL, FALSE); 
-
 }
 
 
-void KIOListProgressDlg::readSettings() {
+void KIOListProgressDlg::slotOpenSimple( QListViewItem *item ) {
+  ((KIOListViewItem*) item )->showSimpleGUI( true );
+}
 
+
+void KIOListProgressDlg::slotSelection() {
+  QListViewItemIterator it( myListView );
+
+  for ( ; it.current(); ++it ) {
+    if ( it.current()->isSelected() ) {
+      toolBar()->setItemEnabled( TOOL_CANCEL, TRUE);
+      return;
+    }
+  }
+  toolBar()->setItemEnabled( TOOL_CANCEL, FALSE); 
+}
+
+
+void KIOListProgressDlg::readSettings() { // finish !!!
   KConfig config("kioslaverc");
   config.setGroup( "ListProgress" );
 }
 
 
-void KIOListProgressDlg::writeSettings() {
-
+void KIOListProgressDlg::writeSettings() { // finish !!!
   KConfig config("kioslaverc");
-
   config.setGroup( "ListProgress" );
 
   config.sync();
-
-  myTabListBox->writeConfig(); // !!!
 }
 
 
 void KIOListProgressDlg::cancelCurrent() {
+  QListViewItemIterator it( myListView );
+
+  while ( it.current() ) {
+    if ( it.current()->isSelected() ) {
+      KIOListViewItem *item = (KIOListViewItem*) it.current();
+      item->remove();
+      delete item;
+    } else {
+      it++; // update counts
+    }
+  }
 }
 
 
 void KIOListProgressDlg::toggleDocking() {
 }
 
+
+void KIOListProgressDlg::showGUI( bool _mode ) {
+  if ( _mode ) {
+    show();
+  } else {
+    hide();
+  }
+}
 
 #include "kio_listprogress_dlg.moc"
