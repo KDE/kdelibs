@@ -40,7 +40,7 @@
 
 #include "webstyle.h"
 
-static const int  _indicatorSize = 14;
+static const int  _indicatorSize = 13;
 static QButton *  _highlightedButton = 0;
 static const int  _scrollBarExtent = 14;
 
@@ -668,13 +668,13 @@ WebStyle::drawIndicator
 
   p->fillRect(x, y, w, h, g.background());
 
-  p->setPen(enabled ? (down ? g.light() : g.dark()) : g.mid());
+  p->setPen(enabled ? (down ? g.highlight() : g.dark()) : g.mid());
 
   p->drawRect(x, y, w, h);
 
   if (state != QButton::Off)
   {
-    p->fillRect(x + 2, y + 2, w - 4, h - 4, g.light());
+    p->fillRect(x + 2, y + 2, w - 4, h - 4, enabled ? g.highlight() : g.mid());
 
     if (state == QButton::NoChange)
     {
@@ -709,17 +709,25 @@ WebStyle::drawExclusiveIndicator
 
   p->fillRect(x, y, w, h, g.background());
 
-  p->setPen(enabled ? (down ? g.light() : g.dark()) : g.mid());
+  p->setPen(enabled ? (down ? g.highlight() : g.dark()) : g.mid());
 
   p->setBrush(g.brush(QColorGroup::Background));
+
+  // Avoid misshapen ellipses. Qt or X bug ? Who knows...
+
+  if (0 == w % 2)
+    --w;
+
+  if (0 == h % 2)
+    --h;
 
   p->drawEllipse(x, y, w, h);
 
   if (on)
   {
-    p->setPen(g.light());
-    p->setBrush(g.light());
-    p->drawEllipse(x + 2, y + 2, w - 4, h - 4);
+    p->setPen(enabled ? g.highlight() : g.mid());
+    p->setBrush(enabled ? g.highlight() : g.mid());
+    p->drawEllipse(x + 3, y + 3, w - 6, h - 6);
   }
 
   p->restore();
@@ -772,6 +780,10 @@ WebStyle::drawComboButton
 {
   p->save();
 
+  p->setPen(NoPen);
+  p->setBrush(0 == fill ? g.brush(QColorGroup::Background) : *fill);
+  p->drawRect(x, y, w, h);
+
   if (enabled)
   {
     if (sunken)
@@ -783,8 +795,6 @@ WebStyle::drawComboButton
   {
     p->setPen(g.mid());
   }
-
-  p->setBrush(0 == fill ? NoBrush : *fill);
 
   drawFunkyRect(p, x, y, w, h, true);
 
@@ -829,7 +839,7 @@ WebStyle::comboButtonFocusRect(int x, int y, int w, int h)
   int
 WebStyle::sliderLength() const
 {
-  return _scrollBarExtent;
+  return 13;
 }
 
   void
@@ -887,11 +897,13 @@ WebStyle::drawSlider
 {
   p->save();
 
-  p->fillRect(x, y, w, h, g.background());
+  p->fillRect(x + 1, y + 1, w - 2, h - 2, g.background());
   p->setPen(g.dark());
   p->setBrush(g.light());
+
   int sl = sliderLength();
-  p->drawEllipse(x, y + h / 2 - sl / 2, w, sl);
+
+  p->drawEllipse(x, y + h / 2 - sl / 2, sl, sl);
 
   p->restore();
 }
