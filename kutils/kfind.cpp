@@ -373,7 +373,10 @@ bool KFind::shouldRestart( bool forceAsking, bool showNumMatches ) const
 
     message += "\n"; // can't be in the i18n() of the first if() because of the plural form.
     // Hope this word puzzle is ok, it's a different sentence
-    message += i18n("Do you want to restart search at the beginning?");
+    message +=
+        ( m_options & KFindDialog::FindBackwards ) ?
+        i18n("Do you want to restart search from the end?")
+        : i18n("Do you want to restart search at the beginning?");
 
     int ret = KMessageBox::questionYesNo( parentWidget(), QString("<qt>")+message+QString("</qt>") );
     bool yes = ( ret == KMessageBox::Yes );

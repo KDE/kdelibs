@@ -275,7 +275,10 @@ bool KReplace::shouldRestart( bool forceAsking, bool showNumMatches ) const
 
     message += "\n";
     // Hope this word puzzle is ok, it's a different sentence
-    message += i18n("Do you want to restart search at the beginning?");
+    message +=
+        ( m_options & KFindDialog::FindBackwards ) ?
+        i18n("Do you want to restart search from the end?")
+        : i18n("Do you want to restart search at the beginning?");
 
     int ret = KMessageBox::questionYesNo( parentWidget(), message );
     return( ret == KMessageBox::Yes );
