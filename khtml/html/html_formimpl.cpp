@@ -52,6 +52,7 @@
 #include <kmessagebox.h>
 #include <kapplication.h>
 #include <klocale.h>
+#include <kwallet.h>
 #include <netaccess.h>
 #include <kfileitem.h>
 #include <qfile.h>
@@ -407,7 +408,44 @@ void HTMLFormElementImpl::submit(  )
     bool ok;
     KHTMLView* view = getDocument()->view();
     QByteArray form_data = formData(ok);
+
     if (ok && view) {
+        // check if we have any password input's
+        QMap<QString, QString> walletMap;
+        bool havePassword = false;
+        bool haveTextarea = false;
+        for (QPtrListIterator<HTMLGenericFormElementImpl> it(formElements); it.current(); ++it)
+            if (it.current()->id() == ID_INPUT)  {
+                HTMLInputElementImpl* c = static_cast<HTMLInputElementImpl*> (it.current());
+                if (c->inputType() == HTMLInputElementImpl::TEXT ||
+                    c->inputType() == HTMLInputElementImpl::PASSWORD)  {
+                    walletMap.insert(c->name().string(), c->value().string());
+                    if (c->inputType() == HTMLInputElementImpl::PASSWORD &&
+                        !c->value().isEmpty())
+                        havePassword = true;
+                }
+            }
+            else if (it.current()->id() == ID_TEXTAREA)
+                haveTextarea = true;
+
+        QString name = getAttribute(ATTR_NAME).string().stripWhiteSpace();
+        if (havePassword && !haveTextarea && !name.isEmpty())  {
+            // ### ask the user if he wants to cache the form data, per domain etc
+
+            KWallet::Wallet* w = view->part()->wallet();
+            if (w)  {
+                KURL k(getDocument()->URL());
+                k.setRef(QString::null);
+                QString key = k.url() + '#' + name;
+                // ensure that we have the user / password inside the url
+                // otherwise we might have a potential security problem
+                // by saving passwords under wrong lookup key.
+
+                w->setFolder(KWallet::Wallet::FormDataFolder);
+                w->writeMap(key, walletMap);
+            }
+        }
+
         DOMString url(khtml::parseURL(getAttribute(ATTR_ACTION)));
         if(m_post) {
             view->part()->submitForm( "post", url.string(), form_data,
@@ -979,12 +1017,16 @@ void HTMLInputElementImpl::select(  )
         static_cast<RenderFileButton*>(m_render)->select();
 }
 
-void HTMLInputElementImpl::click(  )
+void HTMLInputElementImpl::click()
 {
-    // ###
-#ifdef FORMS_DEBUG
-    kdDebug( 6030 ) << " HTMLInputElementImpl::click(  )" << endl;
-#endif
+    QMouseEvent me1(QEvent::MouseButtonPress, QPoint(0,0), Qt::LeftButton, 0);
+    dispatchMouseEvent(&me1,EventImpl::MOUSEDOWN_EVENT, 1);
+
+    QMouseEvent me2(QEvent::MouseButtonRelease, QPoint(0,0),Qt::LeftButton, 0);
+    dispatchMouseEvent(&me2,EventImpl::MOUSEUP_EVENT, 1);
+
+    QMouseEvent me3(QEvent::MouseButtonRelease, QPoint(0,0),Qt::LeftButton, 0);
+    dispatchMouseEvent(&me3,EventImpl::CLICK_EVENT, 1);
 }
 
 void HTMLInputElementImpl::parseAttribute(AttributeImpl *attr)
