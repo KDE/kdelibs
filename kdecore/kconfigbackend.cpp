@@ -243,12 +243,23 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
      {
         if (*(s-1) != ']')
         {
-           fprintf(stderr, "Garbage in group-header: '%-20.20s' file = %s\n", startLine, fileName.latin1());
-           continue;
+          const char *e = s-1;
+          while ((e > startLine) && (*e != ']'))
+            e--;
+          if (e <= startLine)
+          {
+            fprintf(stderr, "Garbage in group-header: '%-20.20s' file = %s\n", startLine, fileName.latin1());
+            continue;
+          }
+          aCurrentGroup = QCString(startLine+1, e - startLine); 
         }
-        // group found; get the group name by taking everything in
-        // between the brackets
-        aCurrentGroup = QCString(startLine+1, s - startLine - 1);
+        else 
+        {
+          // group found; get the group name by taking everything in
+          // between the brackets
+          aCurrentGroup = QCString(startLine+1, s - startLine - 1);
+        }
+
         if (pWriteBackMap) {
 	    // add the special group key indicator
 	    KEntryKey groupKey(aCurrentGroup, 0);
