@@ -40,7 +40,6 @@ namespace KJS {
   class DOMObject : public ObjectImp {
   public:
     DOMObject(const Object &proto) : ObjectImp(proto) {}
-    DOMObject() : ObjectImp() {}
     virtual Value get(ExecState *exec, const UString &propertyName) const;
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const
       { return ObjectImp::get(exec, propertyName); }

@@ -47,7 +47,7 @@ namespace KJS {
   // Constructor for Event - currently only used for some global vars
   class EventConstructor : public DOMObject {
   public:
-    EventConstructor(ExecState *) { }
+    EventConstructor(ExecState *);
     virtual Value tryGet(ExecState *exec,const UString &p) const;
     Value getValueProperty(ExecState *, int token) const;
     // no put - all read-only
@@ -87,7 +87,7 @@ namespace KJS {
   // Constructor object EventException
   class EventExceptionConstructor : public DOMObject {
   public:
-    EventExceptionConstructor(ExecState *) { }
+    EventExceptionConstructor(ExecState *);
     virtual Value tryGet(ExecState *exec,const UString &p) const;
     Value getValueProperty(ExecState *, int token) const;
     // no put - all read-only
@@ -129,7 +129,7 @@ namespace KJS {
   // Constructor object MutationEvent
   class MutationEventConstructor : public DOMObject {
   public:
-    MutationEventConstructor(ExecState *) { }
+    MutationEventConstructor(ExecState *);
     virtual Value tryGet(ExecState *exec,const UString &p) const;
     Value getValueProperty(ExecState *, int token) const;
     // no put - all read-only

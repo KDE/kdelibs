@@ -196,6 +196,10 @@ const ClassInfo RangeConstructor::info = { "RangeConstructor", 0, &RangeConstruc
   END_TO_START		DOM::Range::END_TO_START	DontDelete|ReadOnly
 @end
 */
+
+RangeConstructor::RangeConstructor(ExecState *exec)
+  : DOMObject(exec->interpreter()->builtinObjectPrototype()) { }
+
 Value RangeConstructor::tryGet(ExecState *exec, const UString &p) const
 {
   return DOMObjectLookupGetValue<RangeConstructor,DOMObject>(exec,p,&RangeConstructorTable,this);

@@ -35,6 +35,9 @@ const ClassInfo DOMAbstractView::info = { "AbstractView", 0, &DOMAbstractViewTab
 */
 IMPLEMENT_PROTOFUNC_DOM(DOMAbstractViewFunc)
 
+DOMAbstractView::DOMAbstractView(ExecState *exec, DOM::AbstractView av)
+  : DOMObject(exec->interpreter()->builtinObjectPrototype()), abstractView(av) {}
+
 DOMAbstractView::~DOMAbstractView()
 {
   ScriptInterpreter::forgetDOMObject(abstractView.handle());

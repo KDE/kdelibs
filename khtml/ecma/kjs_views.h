@@ -29,7 +29,7 @@ namespace KJS {
 
   class DOMAbstractView : public DOMObject {
   public:
-    DOMAbstractView(ExecState *, DOM::AbstractView av) : abstractView(av) {}
+    DOMAbstractView(ExecState *, DOM::AbstractView av);
     ~DOMAbstractView();
     virtual Value tryGet(ExecState *exec,const UString &p) const;
     // no put - all read-only

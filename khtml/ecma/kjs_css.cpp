@@ -244,6 +244,11 @@ const ClassInfo DOMStyleSheet::info = { "StyleSheet", 0, &DOMStyleSheetTable, 0 
 @end
 */
 
+DOMStyleSheet::DOMStyleSheet(ExecState* exec, DOM::StyleSheet ss)
+  : DOMObject(exec->interpreter()->builtinObjectPrototype()), styleSheet(ss)
+{
+}
+
 DOMStyleSheet::~DOMStyleSheet()
 {
   ScriptInterpreter::forgetDOMObject(styleSheet.handle());
@@ -316,6 +321,11 @@ const ClassInfo DOMStyleSheetList::info = { "StyleSheetList", 0, &DOMStyleSheetL
 @end
 */
 IMPLEMENT_PROTOFUNC_DOM(DOMStyleSheetListFunc) // not really a proto, but doesn't matter
+
+DOMStyleSheetList::DOMStyleSheetList(ExecState *exec, DOM::StyleSheetList ssl, DOM::Document doc)
+  : DOMObject(exec->interpreter()->builtinObjectPrototype()), styleSheetList(ssl), m_doc(doc)
+{
+}
 
 DOMStyleSheetList::~DOMStyleSheetList()
 {
@@ -551,6 +561,11 @@ const ClassInfo DOMCSSRuleList::info = { "CSSRuleList", 0, &DOMCSSRuleListTable,
 */
 IMPLEMENT_PROTOFUNC_DOM(DOMCSSRuleListFunc) // not really a proto, but doesn't matter
 
+DOMCSSRuleList::DOMCSSRuleList(ExecState* exec, DOM::CSSRuleList rl)
+  : DOMObject(exec->interpreter()->builtinObjectPrototype()), cssRuleList(rl)
+{
+}
+
 DOMCSSRuleList::~DOMCSSRuleList()
 {
   ScriptInterpreter::forgetDOMObject(cssRuleList.handle());
@@ -596,6 +611,11 @@ Value KJS::getDOMCSSRuleList(ExecState *exec, DOM::CSSRuleList rl)
 // -------------------------------------------------------------------------
 
 IMPLEMENT_PROTOFUNC_DOM(DOMCSSRuleFunc) // Not a proto, but doesn't matter
+
+DOMCSSRule::DOMCSSRule(ExecState* exec, DOM::CSSRule r)
+  : DOMObject(exec->interpreter()->builtinObjectPrototype()), cssRule(r)
+{
+}
 
 DOMCSSRule::~DOMCSSRule()
 {
@@ -827,6 +847,11 @@ const ClassInfo CSSRuleConstructor::info = { "CSSRuleConstructor", 0, &CSSRuleCo
 @end
 */
 
+CSSRuleConstructor::CSSRuleConstructor(ExecState *exec)
+  : DOMObject(exec->interpreter()->builtinObjectPrototype())
+{
+}
+
 Value CSSRuleConstructor::tryGet(ExecState *exec, const UString &p) const
 {
   return DOMObjectLookupGetValue<CSSRuleConstructor,DOMObject>(exec,p,&CSSRuleConstructorTable,this);
@@ -868,6 +893,12 @@ const ClassInfo DOMCSSValue::info = { "CSSValue", 0, &DOMCSSValueTable, 0 };
   cssValueType	DOMCSSValue::CssValueType	DontDelete|ReadOnly
 @end
 */
+
+DOMCSSValue::DOMCSSValue(ExecState* exec, DOM::CSSValue val)
+  : DOMObject(exec->interpreter()->builtinObjectPrototype()), cssValue(val)
+{
+}
+
 DOMCSSValue::~DOMCSSValue()
 {
   ScriptInterpreter::forgetDOMObject(cssValue.handle());
@@ -921,6 +952,12 @@ const ClassInfo CSSValueConstructor::info = { "CSSValueConstructor", 0, &CSSValu
   CSS_CUSTOM		CSSValueConstructor::CSS_CUSTOM			DontDelete|ReadOnly
 @end
 */
+
+CSSValueConstructor::CSSValueConstructor(ExecState *exec)
+  : DOMObject(exec->interpreter()->builtinObjectPrototype())
+{
+}
+
 Value CSSValueConstructor::tryGet(ExecState *exec, const UString &p) const
 {
   return DOMObjectLookupGetValue<CSSValueConstructor,DOMObject>(exec,p,&CSSValueConstructorTable,this);
@@ -1118,6 +1155,12 @@ const ClassInfo DOMRGBColor::info = { "RGBColor", 0, &DOMRGBColorTable, 0 };
   blue	DOMRGBColor::Blue	DontDelete|ReadOnly
 @end
 */
+
+DOMRGBColor::DOMRGBColor(ExecState* exec, DOM::RGBColor c)
+  : DOMObject(exec->interpreter()->builtinObjectPrototype()), rgbColor(c)
+{
+}
+
 DOMRGBColor::~DOMRGBColor()
 {
   //rgbColors.remove(rgbColor.handle());
@@ -1144,10 +1187,10 @@ Value DOMRGBColor::getValueProperty(ExecState *exec, int token) const
   }
 }
 
-Value KJS::getDOMRGBColor(ExecState *, DOM::RGBColor c)
+Value KJS::getDOMRGBColor(ExecState *exec, DOM::RGBColor c)
 {
   // ### implement equals for RGBColor since they're not refcounted objects
-  return Value(new DOMRGBColor(c));
+  return Value(new DOMRGBColor(exec, c));
 }
 
 // -------------------------------------------------------------------------
@@ -1161,6 +1204,12 @@ const ClassInfo DOMRect::info = { "Rect", 0, &DOMRectTable, 0 };
   left	DOMRect::Left	DontDelete|ReadOnly
 @end
 */
+
+DOMRect::DOMRect(ExecState *exec, DOM::Rect r)
+  : DOMObject(exec->interpreter()->builtinObjectPrototype()), rect(r)
+{
+}
+
 DOMRect::~DOMRect()
 {
   ScriptInterpreter::forgetDOMObject(rect.handle());
@@ -1203,6 +1252,11 @@ const ClassInfo DOMCounter::info = { "Counter", 0, &DOMCounterTable, 0 };
   separator	DOMCounter::Separator	DontDelete|ReadOnly
 @end
 */
+DOMCounter::DOMCounter(ExecState *exec, DOM::Counter c)
+  : DOMObject(exec->interpreter()->builtinObjectPrototype()), counter(c)
+{
+}
+
 DOMCounter::~DOMCounter()
 {
   ScriptInterpreter::forgetDOMObject(counter.handle());

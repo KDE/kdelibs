@@ -45,7 +45,7 @@ namespace KJS {
   // Constructor object NodeFilter
   class NodeFilterConstructor : public DOMObject {
   public:
-    NodeFilterConstructor(ExecState *) { }
+    NodeFilterConstructor(ExecState *);
     virtual Value tryGet(ExecState *exec,const UString &p) const;
     Value getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only

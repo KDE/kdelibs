@@ -154,6 +154,11 @@ const ClassInfo EventConstructor::info = { "EventConstructor", 0, &EventConstruc
 @end
 */
 
+EventConstructor::EventConstructor(ExecState *exec)
+  : DOMObject(exec->interpreter()->builtinObjectPrototype())
+{
+}
+
 Value EventConstructor::tryGet(ExecState *exec, const UString &p) const
 {
   return DOMObjectLookupGetValue<EventConstructor, DOMObject>(exec,p,&EventConstructorTable,this);
@@ -323,6 +328,11 @@ const ClassInfo EventExceptionConstructor::info = { "EventExceptionConstructor",
   UNSPECIFIED_EVENT_TYPE_ERR    DOM::EventException::UNSPECIFIED_EVENT_TYPE_ERR DontDelete|ReadOnly
 @end
 */
+EventExceptionConstructor::EventExceptionConstructor(ExecState *exec)
+  : DOMObject(exec->interpreter()->builtinObjectPrototype())
+{
+}
+
 Value EventExceptionConstructor::tryGet(ExecState *exec, const UString &p) const
 {
   return DOMObjectLookupGetValue<EventExceptionConstructor, DOMObject>(exec,p,&EventExceptionConstructorTable,this);
@@ -548,6 +558,11 @@ const ClassInfo MutationEventConstructor::info = { "MutationEventConstructor", 0
   REMOVAL	DOM::MutationEvent::REMOVAL		DontDelete|ReadOnly
 @end
 */
+MutationEventConstructor::MutationEventConstructor(ExecState* exec)
+  : DOMObject(exec->interpreter()->builtinObjectPrototype())
+{
+}
+
 Value MutationEventConstructor::tryGet(ExecState *exec, const UString &p) const
 {
   return DOMObjectLookupGetValue<MutationEventConstructor,DOMObject>(exec,p,&MutationEventConstructorTable,this);

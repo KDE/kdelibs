@@ -479,6 +479,9 @@ Value DOMNodeProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &ar
 
 const ClassInfo DOMNodeList::info = { "NodeList", 0, 0, 0 };
 
+DOMNodeList::DOMNodeList(ExecState *exec, DOM::NodeList l)
+ : DOMObject(exec->interpreter()->builtinObjectPrototype()), list(l) { }
+
 DOMNodeList::~DOMNodeList()
 {
   ScriptInterpreter::forgetDOMObject(list.handle());
@@ -1339,6 +1342,12 @@ const ClassInfo NodeConstructor::info = { "NodeConstructor", 0, &NodeConstructor
   NOTATION_NODE		DOM::Node::NOTATION_NODE		DontDelete|ReadOnly
 @end
 */
+
+NodeConstructor::NodeConstructor(ExecState *exec)
+  : DOMObject(exec->interpreter()->builtinObjectPrototype())
+{
+}
+
 Value NodeConstructor::tryGet(ExecState *exec, const UString &propertyName) const
 {
   return DOMObjectLookupGetValue<NodeConstructor, DOMObject>(exec, propertyName, &NodeConstructorTable, this);
@@ -1410,6 +1419,11 @@ const ClassInfo DOMExceptionConstructor::info = { "DOMExceptionConstructor", 0, 
 @end
 */
 
+DOMExceptionConstructor::DOMExceptionConstructor(ExecState* exec)
+  : DOMObject(exec->interpreter()->builtinObjectPrototype())
+{
+}
+
 Value DOMExceptionConstructor::tryGet(ExecState *exec, const UString &propertyName) const
 {
   return DOMObjectLookupGetValue<DOMExceptionConstructor, DOMObject>(exec, propertyName, &DOMExceptionConstructorTable, this);
@@ -1465,17 +1479,22 @@ Object KJS::getDOMExceptionConstructor(ExecState *exec)
 
 // -------------------------------------------------------------------------
 
+const ClassInfo KJS::DOMNamedNodesCollection::info = { "DOMNamedNodesCollection", 0, 0, 0 };
+
 // Such a collection is usually very short-lived, it only exists
 // for constructs like document.forms.<name>[1],
 // so it shouldn't be a problem that it's storing all the nodes (with the same name). (David)
-DOMNamedNodesCollection::DOMNamedNodesCollection(ExecState *, QValueList<DOM::Node>& nodes, int returnType )
-  : DOMObject(), m_nodes(nodes), m_returnType(returnType)
+DOMNamedNodesCollection::DOMNamedNodesCollection(ExecState *exec, QValueList<DOM::Node>& nodes, int returnType )
+  : DOMObject(exec->interpreter()->builtinObjectPrototype()),
+  m_nodes(nodes), m_returnType(returnType)
 {
   // Maybe we should ref (and deref in the dtor) the nodes, though ?
+  kdDebug() << k_funcinfo << endl;
 }
 
 Value DOMNamedNodesCollection::tryGet(ExecState *exec, const UString &propertyName) const
 {
+  kdDebug() << k_funcinfo << propertyName.ascii() << endl;
   if (propertyName == "length")
     return Number(m_nodes.count());
   // index?

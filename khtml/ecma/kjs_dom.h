@@ -72,7 +72,7 @@ namespace KJS {
 
   class DOMNodeList : public DOMObject {
   public:
-    DOMNodeList(ExecState *, DOM::NodeList l) : list(l) { }
+    DOMNodeList(ExecState *, DOM::NodeList l);
     ~DOMNodeList();
     virtual bool hasProperty(ExecState *exec, const UString &p) const;
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
@@ -227,7 +227,7 @@ namespace KJS {
   // Constructor for Node - constructor stuff not implemented yet
   class NodeConstructor : public DOMObject {
   public:
-    NodeConstructor(ExecState *) : DOMObject() { }
+    NodeConstructor(ExecState *);
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     Value getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only
@@ -238,7 +238,7 @@ namespace KJS {
   // Constructor for DOMException - constructor stuff not implemented yet
   class DOMExceptionConstructor : public DOMObject {
   public:
-    DOMExceptionConstructor(ExecState *) : DOMObject() { }
+    DOMExceptionConstructor(ExecState *);
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     Value getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only
@@ -260,6 +260,8 @@ namespace KJS {
   public:
     DOMNamedNodesCollection(ExecState *exec, QValueList<DOM::Node>& nodes, int returnType );
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
   private:
     QValueList<DOM::Node> m_nodes;
     int m_returnType;

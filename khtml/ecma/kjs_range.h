@@ -50,7 +50,7 @@ namespace KJS {
   // Constructor object Range
   class RangeConstructor : public DOMObject {
   public:
-    RangeConstructor(ExecState *) { }
+    RangeConstructor(ExecState *);
     virtual Value tryGet(ExecState *exec,const UString &p) const;
     Value getValueProperty(ExecState *, int token) const;
     // no put - all read-only

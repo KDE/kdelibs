@@ -212,7 +212,7 @@ namespace KJS {
 
   class Image : public DOMObject, public khtml::CachedObjectClient {
   public:
-    Image(const DOM::Document &d) : doc(d), img(0) { }
+    Image(ExecState*, const DOM::Document &d);
     ~Image();
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     Value getValueProperty(ExecState *exec, int token) const;

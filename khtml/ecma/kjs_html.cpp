@@ -3088,11 +3088,11 @@ bool ImageConstructorImp::implementsConstruct() const
   return true;
 }
 
-Object ImageConstructorImp::construct(ExecState *, const List &)
+Object ImageConstructorImp::construct(ExecState *exec, const List &)
 {
   /* TODO: fetch optional height & width from arguments */
 
-  Object result(new Image(doc));
+  Object result(new Image(exec, doc));
   /* TODO: do we need a prototype ? */
 
   return result;
@@ -3106,6 +3106,8 @@ const ClassInfo KJS::Image::info = { "Image", 0, &ImageTable, 0 };
   complete	Image::Complete		DontDelete|ReadOnly
 @end
 */
+Image::Image(ExecState* exec, const DOM::Document &d)
+  : DOMObject(exec->interpreter()->builtinObjectPrototype()), doc(d), img(0) { }
 
 Value Image::tryGet(ExecState *exec, const UString &propertyName) const
 {

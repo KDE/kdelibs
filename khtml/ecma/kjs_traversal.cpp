@@ -129,6 +129,12 @@ const ClassInfo NodeFilterConstructor::info = { "NodeFilterConstructor", 0, &Nod
   SHOW_NOTATION		DOM::NodeFilter::SHOW_NOTATION	DontDelete|ReadOnly
 @end
 */
+
+NodeFilterConstructor::NodeFilterConstructor(ExecState* exec)
+  : DOMObject(exec->interpreter()->builtinObjectPrototype())
+{
+}
+
 Value NodeFilterConstructor::tryGet(ExecState *exec, const UString &p) const
 {
   return DOMObjectLookupGetValue<NodeFilterConstructor,DOMObject>(exec,p,&NodeFilterConstructorTable,this);
