@@ -301,8 +301,6 @@ void KApplication::init(bool GUIenabled)
   pKStyle = 0;
   smw = 0;
 
-  lt_dlinit();
-
   // Initial KIPC event mask.
   kipcEventMask = (1 << KIPC::StyleChanged) | (1 << KIPC::PaletteChanged) |
                   (1 << KIPC::FontChanged) | (1 << KIPC::BackgroundChanged);
@@ -927,6 +925,7 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
      * mosfet@jorsm.com
      */
 
+    static bool dlregistered = false;
     KSimpleConfig pConfig( "kstylerc", true );
     QString oldGroup = pConfig.group();
     pConfig.setGroup("KDE");
@@ -963,6 +962,11 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
         setStyle(new QMotifStyle);
     }
     else if(useStyles){
+        if(!dlregistered){
+            dlregistered = true;
+            lt_dlinit();
+        }
+
         if(!locate("lib", styleStr).isNull()) {
             styleStr = locate("lib", styleStr);
             styleHandle = lt_dlopen(QFile::encodeName(styleStr));
