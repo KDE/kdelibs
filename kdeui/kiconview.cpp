@@ -120,7 +120,7 @@ void KIconView::slotSettingsChanged(int category)
     if ( category != KApplication::SETTINGS_MOUSE )
       return;
     m_bUseSingle = KGlobalSettings::singleClick();
-    kdDebug() << "KIconView::slotSettingsChanged for mouse, usesingle=" << m_bUseSingle << endl;
+    //kdDebug() << "KIconView::slotSettingsChanged for mouse, usesingle=" << m_bUseSingle << endl;
 
     disconnect( this, SIGNAL( mouseButtonClicked( int, QIconViewItem *,
 						  const QPoint & ) ),
@@ -132,7 +132,6 @@ void KIconView::slotSettingsChanged(int category)
 // 					     const QPoint & ) ) );
 
     if( m_bUseSingle ) {
-  kdDebug() << "USESINGLE" << endl;
       connect( this, SIGNAL( mouseButtonClicked( int, QIconViewItem *,
 						 const QPoint & ) ),
 	       this, SLOT( slotMouseButtonClicked( int, QIconViewItem *,
@@ -233,15 +232,14 @@ void KIconView::slotAutoSelect()
       setSelected( m_pCurrentItem, true );
   }
   else
-    kdDebug() << "That´s not supposed to happen!!!!" << endl;
+    kdDebug() << "KIconView: That´s not supposed to happen!!!!" << endl;
 }
 
 void KIconView::emitExecute( QIconViewItem *item, const QPoint &pos )
 {
-  kdDebug() << "KIconView::emitExecute" << endl;
   if ( d->mode != Execute )
   {
-    kdDebug() << "KIconView::emitExecute : NOT IN EXECUTE MODE !" << endl;
+    kdDebug() << "KIconView::emitExecute : not in execute mode !" << endl;
     return;
   }
     
@@ -249,20 +247,15 @@ void KIconView::emitExecute( QIconViewItem *item, const QPoint &pos )
   Window child;
   int root_x, root_y, win_x, win_y;
   uint keybstate;
-  kdDebug() << "XQueryPointer" << endl;
   XQueryPointer( qt_xdisplay(), qt_xrootwin(), &root, &child,
 		 &root_x, &root_y, &win_x, &win_y, &keybstate );
-  kdDebug() << "XQueryPointer done" << endl;
 
   m_pAutoSelect->stop();
 
   //Don´t emit executed if in SC mode and Shift or Ctrl are pressed
   if( !( m_bUseSingle && ((keybstate & ShiftMask) || (keybstate & ControlMask)) ) ) {
-    kdDebug() << "emitExecute: setSelected (false)" << endl;
     setSelected( item, false );
-    kdDebug() << "emitExecute: emitting 1" << endl;
     emit executed( item );
-    kdDebug() << "emitExecute: emitting 2" << endl;
     emit executed( item, pos );
   }
 }
@@ -311,7 +304,7 @@ void KIconView::contentsMouseDoubleClickEvent ( QMouseEvent * e )
 
 void KIconView::slotMouseButtonClicked( int btn, QIconViewItem *item, const QPoint &pos )
 {
-  kdDebug() << " KIconView::slotMouseButtonClicked() item=" << item << endl;
+  //kdDebug() << " KIconView::slotMouseButtonClicked() item=" << item << endl;
   if( (btn == LeftButton) && item )
     emitExecute( item, pos );
 }
