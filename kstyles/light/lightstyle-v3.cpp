@@ -239,8 +239,8 @@ void LightStyleV3::drawPrimitive( PrimitiveElement pe,
 	// draw the header ( just an etching )
 	if ( ! br.isValid() )
 	    break;
-	drawLightEtch( p, br, ( ( flags & Style_Down ) ? 
-                                cg.midlight() : cg.button() ), 
+	drawLightEtch( p, br, ( ( flags & Style_Down ) ?
+                                cg.midlight() : cg.button() ),
                        ( flags & Style_Down ) );
 	br.addCoords( 1, 1, -1, -1 );
 
@@ -835,8 +835,15 @@ void LightStyleV3::drawControl( ControlElement control,
 		p->drawLine( br.topLeft(), br.topRight() );
 		p->setPen( cg.dark() );
 		p->drawLine( br.right(), br.top() + 1, br.right(), br.bottom() );
-		br.addCoords( 1, 1, -1, 0 );
-		p->fillRect( br, cg.brush( QColorGroup::Background ) );
+
+		if ( flags & Style_Selected )
+		{
+                    p->fillRect( br.right() - 3, br.top() + 1, 3, br.height() - 1, cg.brush(QColorGroup::Highlight));
+		    br.addCoords( 1, 1, -4, 0 );
+		}
+		else
+		    br.addCoords( 1, 1, -1, 0 );
+		p->fillRect( br, cg.background() );
 	    } else if ( tb->shape() == QTabBar::RoundedBelow ) {
 		if ( ! ( flags & Style_Selected ) ) {
 		    p->setPen( cg.background() );
@@ -866,7 +873,16 @@ void LightStyleV3::drawControl( ControlElement control,
 		p->drawLine( br.bottomLeft(), br.bottomRight() );
 		p->drawLine( br.right(), br.top(), br.right(), br.bottom() - 1 );
 		br.addCoords( 1, 0, -1, -1 );
-		p->fillRect( br, cg.brush( QColorGroup::Background ) );
+
+		if ( flags & Style_Selected )
+		{
+		    p->fillRect( br.right() - 2, br.top(), 3, br.height(), cg.brush(QColorGroup::Highlight));
+		    br.addCoords( 1, 0, -3, -1 );
+		}
+		else
+		    br.addCoords( 1, 0, -1, -1 );
+
+		p->fillRect( br, cg.background() );
 	    } else
 		QCommonStyle::drawControl( control, p, widget, r, cg, flags, data );
 	    break;
@@ -926,7 +942,7 @@ void LightStyleV3::drawControl( ControlElement control,
 		tr = visualRect( tr, r );
 		ir = visualRect( ir, r );
 	    }
-	    
+
 	    if (mi->isChecked() &&
 		! (flags & Style_Active) &
 		(flags & Style_Enabled))
@@ -1029,7 +1045,7 @@ void LightStyleV3::drawControl( ControlElement control,
 			       p, sr, cg, flags);
 	    break;
 	}
-	
+
     case CE_MenuBarEmptyArea:
 	{
 	    p->fillRect(r, cg.brush(QColorGroup::Button));
@@ -1198,7 +1214,7 @@ void LightStyleV3::drawComplexControl( ComplexControl control,
 					   SC_SpinWidgetFrame, data);
 	    up = spinwidget->upRect();
 	    down = spinwidget->downRect();
-	    
+
 	    if ((controls & SC_SpinWidgetFrame) && frame.isValid())
 		drawPrimitive( PE_Panel, p, frame, cg, flags | Style_Sunken );
 
@@ -1336,9 +1352,9 @@ void LightStyleV3::drawComplexControl( ComplexControl control,
 		QColor grooveColor = cg.midlight();
 		if (!(flags & Style_Enabled))
 		    grooveColor = cg.background();
-            
-            
-		QBrush brush(grooveColor);                            
+
+
+		QBrush brush(grooveColor);
 		drawLightBevel( p, groove, cg,
 				( ( flags | Style_Raised ) ^ Style_Raised ) |
 				( ( flags & Style_Enabled ) ? Style_Sunken :
@@ -1356,10 +1372,10 @@ void LightStyleV3::drawComplexControl( ComplexControl control,
 	    if ((controls & SC_SliderHandle) && handle.isValid()) {
 		QColor sliderColor = cg.highlight();
 		if (!(flags & Style_Enabled))
-		    sliderColor = cg.button();                   
-		
+		    sliderColor = cg.button();
+
 		p->setPen( sliderColor.light() );
-                
+
 		p->drawLine( handle.topLeft(), handle.topRight() );
 		p->drawLine( handle.left(), handle.top() + 1,
 			     handle.left(), handle.bottom() - 1 );
