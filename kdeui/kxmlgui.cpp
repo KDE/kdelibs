@@ -130,7 +130,7 @@ KXMLGUIServant::KXMLGUIServant( KXMLGUIServant *parent )
 
 KXMLGUIServant::~KXMLGUIServant()
 {
-  kDebugArea( 1000, "KXMLGUIServant::~KXMLGUIServant()");
+  //kDebugArea( 1000, "KXMLGUIServant::~KXMLGUIServant()");
 
   if ( d->m_parent )
     d->m_parent->removeChildServant( this );
@@ -256,7 +256,7 @@ KXMLGUIFactory::KXMLGUIFactory( KXMLGUIBuilder *builder )
 
 KXMLGUIFactory::~KXMLGUIFactory()
 {
-  kDebugArea( 1002, "KXMLGUIFactory::~KXMLGUIFactory(), calling removeRecursive" );
+  kDebugInfo( 1002, "KXMLGUIFactory::~KXMLGUIFactory(), calling removeRecursive" );
   delete d;
 }
 
@@ -303,7 +303,7 @@ void KXMLGUIFactory::removeServant( KXMLGUIServant *servant )
       removeServant( childIt.current() );
   }
 
-  kDebugArea( 1002, "KXMLGUIFactory::removeServant, calling removeRecursive" );
+  kDebugInfo( 1002, "KXMLGUIFactory::removeServant, calling removeRecursive" );
   m_servant = servant;
   d->m_servantName = servant->document().documentElement().attribute( "name" );
   d->m_servantBuilder = servant->servantBuilder();
