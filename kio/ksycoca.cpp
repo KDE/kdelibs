@@ -19,6 +19,7 @@
 #include "ksycoca.h"
 #include "ksycocatype.h"
 #include "ksycocafactory.h"
+#include "kuserprofile.h"
 
 #include <qdatastream.h>
 #include <qfile.h>
@@ -107,6 +108,8 @@ bool KSycoca::process(const QCString &fun, const QByteArray &/*data*/,
     // The next call to any public method will recreate
     // everything that's needed.
     delete this;
+    // same for KUserProfile
+    KServiceTypeProfile::clear();
 
     replyType = "void";
     return true;

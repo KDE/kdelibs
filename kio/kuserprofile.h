@@ -99,6 +99,11 @@ public:
   static OfferList offers( const QString& _servicetype );
   
   static const QList<KServiceTypeProfile>& serviceTypeProfiles() { return *s_lstProfiles; }
+
+  /**
+   * Clear all cached information
+   */
+  static void clear() { delete s_lstProfiles; s_lstProfiles = 0L; }
   
 protected:
   /**
