@@ -23,14 +23,15 @@ SUBDIRS = misc dom css xml html rendering pics $(DOJAVA) . ecma
 
 lib_LTLIBRARIES = libkhtml.la libkhtmlimage.la
 libkhtml_la_SOURCES = khtmlview.cpp khtml_part.cpp khtml_run.cpp khtml_factory.cpp khtml_settings.cc \
-		      khtml_events.cpp khtml_find.cpp khtml_ext.cpp khtml_pagecache.cpp khtml_iface.skel khtml_iface.cc
+		      khtml_events.cpp khtml_find.cpp khtml_ext.cpp khtml_pagecache.cpp khtml_iface.skel khtml_iface.cc \
+		      khtml_printsettings.cpp
 
 libkhtml_la_METASOURCES = AUTO
 
 include_HEADERS = khtmlview.h khtml_part.h khtml_events.h khtml_settings.h khtmldefaults.h
 
 noinst_HEADERS = design.h testkhtml.h testrender.h test_regression.h khtml_find.h khtml_ext.h \
-		 khtml_pagecache.h khtmlimage.h khtmlpart_p.h
+		 khtml_pagecache.h khtmlimage.h khtmlpart_p.h khtml_printsettings.h
 
 libkhtml_la_LDFLAGS = -version-info 4:0 -module -no-undefined $(all_libraries)
 libkhtml_la_LIBADD = ./xml/libkhtmlxml.la ./html/libkhtmlhtml.la \

@@ -35,6 +35,7 @@
 #include "misc/htmlhashes.h"
 #include "misc/helper.h"
 #include "khtml_settings.h"
+#include "khtml_printsettings.h"
 
 #include <kcursor.h>
 #include <ksimpleconfig.h>
@@ -979,6 +980,7 @@ void KHTMLView::print()
 
     // this only works on Unix - we assume 72dpi
     KPrinter *printer = new KPrinter(QPrinter::PrinterResolution);
+    printer->addDialogPage(new KHTMLPrintSettings());
     if(printer->setup(this)) {
         viewport()->setCursor( waitCursor ); // only viewport(), no QApplication::, otherwise we get the busy cursor in kdeprint's dialogs
         // set up KPrinter
@@ -995,7 +997,8 @@ void KHTMLView::print()
         m_part->xmlDocImpl()->setPaintDevice( printer );
         QString oldMediaType = mediaType();
         setMediaType( "print" );
-	m_part->xmlDocImpl()->setPrintStyleSheet( printer->colorMode() == KPrinter::GrayScale ? 
+	//m_part->xmlDocImpl()->setPrintStyleSheet( printer->colorMode() == KPrinter::GrayScale ? 
+	m_part->xmlDocImpl()->setPrintStyleSheet( printer->option("kde-khtml-printfriendly") == "true" ? 
 						  "* { background-image: none !important;"
 						  "    background-color: transparent !important;"
 						  "    color: black !important }" :
