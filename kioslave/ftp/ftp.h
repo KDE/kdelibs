@@ -74,6 +74,7 @@ private:
   QString m_errorText;
 
   QString m_host;
+  QString m_user;
 
   struct netbuf
   {

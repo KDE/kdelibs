@@ -191,7 +191,7 @@ bool Ftp::ftpConnect( const char *_host, unsigned short int _port, const char *_
 
   if ( m_bLoggedOn )
     if ( m_bPersistent ) {
-      if ( m_host != _host )
+      if ( m_host != _host || m_user != _user )
         ftpDisconnect( true );
       else
       // this should check whether there is still opened data connection.
@@ -279,6 +279,7 @@ bool Ftp::ftpConnect2( const char *host, unsigned short int _port )
   int on = 1;
 
   m_host = "";
+  m_user = "";
 
   memset( &sin, 0, sizeof( sin ) );
 
@@ -345,12 +346,12 @@ bool Ftp::ftpLogin( const char *_user, const char *_pass, QString& _redirect )
 {
   assert( !m_bLoggedOn );
 
-  QString user = _user;
+  m_user = _user;
   QString pass = _pass;
 
-  if ( !user.isEmpty() ) {
+  if ( !m_user.isEmpty() ) {
     QCString tempbuf = "user ";
-    tempbuf += user;
+    tempbuf += m_user;
 
     rspbuf[0] = '\0';
 
@@ -365,11 +366,11 @@ bool Ftp::ftpLogin( const char *_user, const char *_pass, QString& _redirect )
 
     if ( pass.isEmpty() ) {
       QString tmp;
-      tmp = user;
+      tmp = m_user;
       tmp += "@";
       tmp += m_host;
 
-      if ( !open_PassDlg( tmp, user, pass ) )
+      if ( !open_PassDlg( tmp, m_user, pass ) )
 	return false;
     }
     kdebug( KDEBUG_INFO, 7102, "New pass is '%s'", pass.ascii());
