@@ -609,8 +609,10 @@ void KLocale::setActiveCatalogue(const QString &catalogue)
 
 KLocale::~KLocale()
 {
+  delete d->calendar;
   delete d->languages;
   delete d;
+  d = 0L;
 }
 
 QString KLocale::translate_priv(const char *msgid,
