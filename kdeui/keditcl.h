@@ -309,7 +309,7 @@ signals:
      */
     void 	toggle_overwrite_signal();
 
-private slots:
+protected slots:
       /**
        * @internal
        **/
@@ -318,6 +318,7 @@ private slots:
        * @internal
        **/
     void misspelling (const QString &word, const QStringList &, unsigned int pos);
+private slots:
 
       /**
        * @internal
