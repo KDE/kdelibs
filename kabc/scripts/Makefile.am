@@ -6,5 +6,6 @@
 				$(srcdir)/field.src.cpp
 	perl $(srcdir)/makeaddressee
 
-all-am: ../addressee.h ../addressee.cpp ../field.cpp
+CLEANFILES = ../addressee.h ../addressee.cpp ../field.cpp
+all-local: $(CLEANFILES)
 
