@@ -507,10 +507,13 @@ QString KAccel::keyToString( int keyCode, bool i18_n )
 	int kCode = keyCode & ~(Qt::SHIFT | Qt::CTRL | Qt::ALT);
 
 	for (int i=0; i<NB_KEYS; i++) {
-		if ( kCode == (int)KKEYS[i].code ) {
-			res += KKEYS[i].name;
-			return res;
-		}
+	  if ( kCode == (int)KKEYS[i].code ) {
+	    if (i18_n)
+	      res += i18n("key accelerator", KKEYS[i].name);
+	    else
+	      res += KKEYS[i].name;
+	    return res;
+	  }
 	}
 	
 	return QString::null;
