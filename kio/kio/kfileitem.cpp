@@ -554,9 +554,13 @@ QString KFileItem::getToolTipText(int maxcount)
 {
   // we can return QString::null if no tool tip should be shown
   QString tip;
-
-
   KFileMetaInfo info = metaInfo();
+
+  // the font tags are a workaround for the fact that the tool tip gets
+  // screwed if the color scheme uses white as default text color
+  const char* start = "<tr><td><nobr><font color=\"black\">";
+  const char* mid   = "</font></nobr></td><td><nobr><font color=\"black\">";
+  const char* end   = "</font></nobr></td></tr>";
 
   tip = "<table cellspacing=0 cellpadding=0>";
 
@@ -565,29 +569,28 @@ QString KFileItem::getToolTipText(int maxcount)
   {
     //kdDebug() << "Found no meta info" << endl;
 
-    tip += "<tr><td><nobr>" + i18n("Type:") + "</nobr></td><td><nobr>";
+    tip += start + i18n("Type:") + mid;
 
     QString type = QStyleSheet::escape(determineMimeType()->comment());
     if ( m_bLink )
-      tip += i18n("Link to %1").arg(type) + "</nobr></td></tr><tr><td><nobr>";
+      tip += i18n("Link to %1").arg(type) + end;
     else
-      tip += type + "</nobr></td></tr><tr><td><nobr>";
+      tip += type + end;
 
     if ( !S_ISDIR ( m_fileMode ) )
-      tip += i18n("Size:") + "</nobr></td><td><nobr>" +
-             KIO::convertSize( size() ) + "</nobr></td></tr><tr><td><nobr>";
+      tip += start + i18n("Size:") + mid +
+             KIO::convertSize( size() ) + end;
 
-    tip += i18n("Modified:") + "</nobr></td><td><nobr>" +
-           timeString( KIO::UDS_MODIFICATION_TIME) +
-           "</nobr></td></tr><tr><td><nobr>" +
-           i18n("Permissions:") + "</nobr></td><td><nobr>" +
-           parsePermissions(m_permissions) +
-           "</nobr></td></tr></table>";
+    tip += start + i18n("Modified:") + mid +
+           timeString( KIO::UDS_MODIFICATION_TIME) + end +
+// enable this after 3.0 - it adds an i18n string
+//           start + i18n("Owner:") + mid + user() + " - " + group() + end +
+           start + i18n("Permissions:") + mid +
+           parsePermissions(m_permissions) + end;
   }
   else
   {
-    // first the title in bold and centered
-      QStringList keys = info.preferredKeys();
+    QStringList keys = info.preferredKeys();
 
     // now the rest
     QStringList::Iterator it = keys.begin();
@@ -596,43 +599,15 @@ QString KFileItem::getToolTipText(int maxcount)
       KFileMetaInfoItem item = info.item( *it );
       if ( item.isValid() )
       {
-        QString s;
-        const QVariant& value = item.value();
-        switch ( value.type() ) {
-          case QVariant::Bool:
-            s = value.toBool() ? i18n("Yes") : i18n("No");
-            break;
-          case QVariant::Time:
-            s = KGlobal::locale()->formatTime( value.toTime(), true );
-            break;
-          case QVariant::DateTime:
-            s = KGlobal::locale()->formatDateTime( value.toDateTime(), true, true );
-            break;
-          case QVariant::Date:
-            s = KGlobal::locale()->formatDate( value.toDate(), true );
-            break;
-          case QVariant::Double: {
-            bool ok;
-            double val = value.toDouble( &ok );
-            if ( ok )
-              s = KGlobal::locale()->formatNumber( val );
-            break;
-          }
-          default:
-            if (value.canCast(QVariant::String))
-                s = value.toString();
-            else s = QString();
-            break;
-        }
-
+        QString s = item.string();
         if ( !s.isEmpty() )
         {
           count++;
-          tip += "<tr><td><nobr>" +
-                 QStyleSheet::escape( item.translatedKey() ) +
-                 ":</nobr></td><td><nobr>" +
-                 QStyleSheet::escape( item.prefix() + s + item.suffix() ) +
-                 "</nobr></td></tr>";
+          tip += start +
+                   QStyleSheet::escape( item.translatedKey() ) + ":" +
+                 mid +
+                   QStyleSheet::escape( s ) +
+                 end;
         }
 
       }
