@@ -25,6 +25,7 @@
 
 class QUrl;
 class QStringList;
+template <typename K, typename V> class QMap;
 
 class KURLPrivate;
 /**
@@ -473,6 +474,28 @@ public:
    * specified item does not exist.
    */
   QString queryItem( const QString& _item ) const;
+
+  /**
+   * Options for @ref #queryItems. Currently, only one option is
+   * defined:
+   *
+   * @param CaseInsensitiveKeys normalize query keys to lowercase.
+   *
+   * @since 3.1
+   **/
+  enum QueryItemsOptions { CaseInsensitiveKeys = 1 };
+
+  /**
+   * Returns the list of query items as a map mapping keys to values.
+   *
+   * @param options any of @ref QueryItemsOptions <em>or</or>ed together.
+   *
+   * @return the map of query items or the empty map if the url has no
+   * query items.
+   *
+   * @since 3.1
+   */
+  QMap< QString, QString > queryItems( int options=0 ) const;
 
   /**
    * Add an additional query item.

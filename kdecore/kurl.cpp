@@ -34,7 +34,7 @@
 #include <qstringlist.h>
 #include <qregexp.h>
 #include <qstylesheet.h>
-
+#include <qmap.h>
 #include <qtextcodec.h>
 
 static QTextCodec * codecForHint( int encoding_hint /* not 0 ! */ )
@@ -1764,6 +1764,37 @@ bool urlcmp( const QString& _url1, const QString& _url2, bool _ignore_trailing, 
       return false;
 
   return true;
+}
+
+QMap< QString, QString > KURL::queryItems( int options ) const {
+  if ( m_strQuery_encoded.isEmpty() )
+    return QMap<QString,QString>();
+
+  QMap< QString, QString > result;
+  QStringList items = QStringList::split( '&', m_strQuery_encoded );
+  for ( QStringList::const_iterator it = items.begin() ; it != items.end() ; ++it ) {
+    int equal_pos = (*it).find( '=' );
+    if ( equal_pos > 0 ) { // = is not the first char...
+      QString name = (*it).left( equal_pos );
+      if ( options & CaseInsensitiveKeys )
+	name = name.lower();
+      QString value = (*it).mid( equal_pos + 1 );
+      if ( value.isEmpty() )
+	result.insert( name, QString::fromLatin1("") );
+      else {
+	// ### why is decoding name not neccessary?
+	value.replace( '+', ' ' ); // + in queries means space
+	result.insert( name, decode_string( value ) );
+      }
+    } else if ( equal_pos < 0 ) { // no =
+      QString name = (*it);
+      if ( options & CaseInsensitiveKeys )
+	name = name.lower();
+      result.insert( name, QString::null );
+    }
+  }
+
+  return result;
 }
 
 QString KURL::queryItem( const QString& _item ) const

@@ -519,6 +519,24 @@ int main(int argc, char *argv[])
   check("queryItem (empty item)", theKow.queryItem("empty"), "");
   check("queryItem (item with encoded chars)", theKow.queryItem("test"), "+ :%");
 
+  // checks for queryItems(), which returns a QMap<QString,QString>:
+  KURL queryUrl( "mailto:Marc%20Mutz%20%3cmutz@kde.org%3E?"
+		 "Subject=subscribe+me&"
+		 "body=subscribe+mutz%40kde.org&"
+		 "Cc=majordomo%40lists.kde.org" );
+  check("queryItems (c.s. keys)",
+	QStringList(queryUrl.queryItems().keys()).join(", "),
+	"Cc, Subject, body" );
+  check("queryItems (c.i.s. keys)",
+	QStringList(queryUrl.queryItems(KURL::CaseInsensitiveKeys).keys()).join(", "),
+	"body, cc, subject" );
+  check("queryItems (values; c.s. keys)",
+	QStringList(queryUrl.queryItems().values()).join(", "),
+	"majordomo@lists.kde.org, subscribe me, subscribe mutz@kde.org" );
+  check("queryItems (values; c.i.s. keys)",
+	QStringList(queryUrl.queryItems(KURL::CaseInsensitiveKeys).values()).join(", "),
+	"subscribe mutz@kde.org, majordomo@lists.kde.org, subscribe me" );
+
   KURL umlaut1("http://www.clever-tanken.de/liste.asp?ort=N%FCrnberg&typ=Diesel");
   check("umlaut1.url()", umlaut1.url(), "http://www.clever-tanken.de/liste.asp?ort=N%FCrnberg&typ=Diesel");
 
