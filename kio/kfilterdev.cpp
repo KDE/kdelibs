@@ -22,6 +22,7 @@
 #include <stdio.h> // for EOF
 #include <stdlib.h>
 #include <assert.h>
+#include <qfile.h>
 
 class KFilterDev::KFilterDevPrivate
 {
@@ -48,6 +49,21 @@ KFilterDev::~KFilterDev()
 {
     delete d;
 }
+
+//this one is static
+//we can make neither base nor file const, due to base->setDevice()
+QIODevice* KFilterDev::createFilterDevice(KFilterBase* base, QFile* file)
+{
+   if (file==0)
+      return 0;
+
+   //we don't need a filter
+   if (base==0)
+      return new QFile(file->name());
+
+   base->setDevice(file);
+   return new KFilterDev(base);
+};
 
 bool KFilterDev::open( int mode )
 {

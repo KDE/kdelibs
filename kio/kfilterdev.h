@@ -19,6 +19,8 @@
 #define __kfilterdev_h
 
 #include <qiodevice.h>
+
+class QFile;
 class KFilterBase;
 
 /**
@@ -58,10 +60,19 @@ public:
     virtual int getch();
     virtual int putch( int );
     virtual int ungetch( int );
+
+    /**
+     * Call this to create the appropriate filter device for @base
+     * working on @file . The returned QIODevice has to be deleted
+     * after using.
+     */
+    static QIODevice* createFilterDevice(KFilterBase* base, QFile* file);
+
 private:
     KFilterBase *filter;
     class KFilterDevPrivate;
     KFilterDevPrivate * d;
 };
+
 
 #endif
