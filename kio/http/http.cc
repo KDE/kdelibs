@@ -1450,8 +1450,9 @@ void HTTPProtocol::configAuth(const char *p, bool b)
   } else {
     kdDebug(7103) << "Invalid Authorization type requested" << endl;
     kdDebug(7103) << "buffer: " << p << endl;
-    fflush(stderr);
-    abort();
+    error(ERR_UNSUPPORTED_ACTION,
+          QCString().sprintf("Unknown Authorization method: %s", p).data());
+    return;
   }
 
   while (*p) {
@@ -2669,5 +2670,5 @@ void HTTPProtocol::reparseConfiguration()
      m_strCacheDir = KGlobal::dirs()->saveLocation("data", "kio_http/cache");
      m_maxCacheAge = KProtocolManager::self().maxCacheAge();
   }
-  
+
 }
