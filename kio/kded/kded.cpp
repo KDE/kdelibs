@@ -237,7 +237,7 @@ void Kded::slotKDEDModuleRemoved(KDEDModule *module)
   m_modules.remove(module->objId());
   KLibrary *lib = m_libs.take(module->objId());
   if (lib)
-     KLibLoader::self()->unloadLibrary(lib->name().latin1());
+     lib->unload();
 }
 
 void Kded::slotApplicationRemoved(const QCString &appId)
