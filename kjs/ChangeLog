@@ -1,3 +1,9 @@
+2003-11-17  Harri Porten  <porten@kde.org>
+
+	* string_object.cpp: handle negative slice() arguments correctly 
+
+	* function_object.cpp: fixed bracketing to ensure null check is done
+
 2003-11-17  Harri Porten  <harri@froglogic.com>
 
 	* internal.cpp (evaluate): lexical error means parse error
