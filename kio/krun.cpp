@@ -136,7 +136,7 @@ pid_t KRun::run( const KService& _service, const KURL::List& _urls )
 
       // App-starting notification
       bool compliant = _service.mapNotify();
-      clientStarted(_service.name(), miniicon, pid, _service.exec(), compliant);
+      clientStarted(_service.name(), miniicon, pid, binaryName(_service.exec()), compliant);
 
       return pid;
 
@@ -229,7 +229,7 @@ pid_t KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _
   while ( ( pos = exec.find( "%i" ) ) != -1 )
     exec.replace( pos, 2, icon );
 
-  QString _bin_name = binaryName ( _exec );
+  QString _bin_name = binaryName ( _exec, false /*keep path*/ );
 
   QString mini_icon = _mini_icon;
   shellQuote( mini_icon );
@@ -335,7 +335,7 @@ pid_t KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _
 
 pid_t KRun::runCommand( QString cmd )
 {
-  return KRun::runCommand( cmd, binaryName( cmd ), QString::null /*unused*/);
+  return KRun::runCommand( cmd, binaryName( cmd, false /*keep path*/ ), QString::null /*unused*/);
 }
 
 pid_t KRun::runCommand( const QString& cmd, const QString &execName, const QString &/*iconName*/ )
@@ -403,7 +403,7 @@ pid_t KRun::runOldApplication( const QString& app, const KURL::List& _urls, bool
   }
 }
 
-QString KRun::binaryName( const QString & execLine )
+QString KRun::binaryName( const QString & execLine, bool removePath )
 {
   QString _bin_name = execLine;
 
@@ -414,11 +414,9 @@ QString KRun::binaryName( const QString & execLine )
   if (-1 != firstSpace)
     _bin_name = _bin_name.left(firstSpace);
 
-  // Remove path.
+  // Remove path if wanted
 
-  int lastSlash = _bin_name.findRev('/');
-
-  return _bin_name.mid(lastSlash + 1);
+  return removePath ? _bin_name.mid(_bin_name.findRev('/') + 1) : _bin_name;
 }
 
 KRun::KRun( const KURL& _url, mode_t _mode, bool _is_local_file, bool _showProgressInfo )
@@ -730,7 +728,7 @@ void KRun::clientStarted(
   bool compliant
 )
 {
-  kdDebug(7010) << "clientStarted pid=" << (int)pid << endl;
+  kdDebug(7010) << "clientStarted pid=" << (int)pid << " binaryName=" << binaryName << endl;
 
   QByteArray params;
   QDataStream stream(params, IO_WriteOnly);
@@ -792,7 +790,7 @@ KProcessRunner::slotProcessExited(KProcess * p)
     if ( KStandardDirs::findExe( binName ).isEmpty() )
     {
       kapp->ref();
-      KMessageBox::sorry( 0L, i18n("Couldn't find the program %1").arg( binName ) );
+      KMessageBox::sorry( 0L, i18n("Couldn't find the program '%1'").arg( binName ) );
       kapp->deref();
     }
   }
