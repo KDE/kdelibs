@@ -981,7 +981,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 kdDebug( 6036 ) << "appending Tag: " << tagID << endl;
 #endif
                 bool beginTag = tagID < ID_CLOSE_TAG;
-                if(!(pre || textarea || tagID == ID_PRE || tagID == ID_TEXTAREA)) {
+                if(!(pre || textarea || tagID == ID_PRE)) {
                     // Ignore Space/LF's after a start tag
                     // Don't ignore CR/LF's after a close tag
                     discard = beginTag ? LFDiscard : NoneDiscard;
