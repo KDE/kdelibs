@@ -26,7 +26,7 @@
 #include <render_table.h>
 using namespace khtml;
 
-// #define DEBUG_LAYOUT
+//#define DEBUG_LAYOUT
 
 /*
   The text below is from the CSS 2.1 specs.
@@ -258,7 +258,7 @@ void FixedTableLayout::calcMinMaxWidth()
     table->m_maxWidth = table->m_minWidth;
     if ( !tableWidth ) {
 	bool haveNonFixed = false;
-	for ( int i = 0; i < width.size(); i++ ) {
+	for ( unsigned int i = 0; i < width.size(); i++ ) {
 	    if ( width[i] == -1 ) {
 		haveNonFixed = true;
 		break;
@@ -465,12 +465,11 @@ void AutoTableLayout::fullRecalc()
 		Length w = col->style()->width();
 		if ( w.isVariable() )
 		    w = grpWidth;
-		int effWidth = -1;
 		if ( (w.type == Fixed && w.value == 0) ||
 		     (w.type == Percent && w.value == 0) )
 		    w = Length();
 #ifdef DEBUG_LAYOUT
-		qDebug("    col element %d: Length=%d(%d), span=%d",  cCol, w.width, w.type, span);
+		qDebug("    col element %d: Length=%d(%d), span=%d",  cCol, w.value, w.type, span);
 #endif
 		if ( w.type != Variable && span == 1 ) {
 		    if ( cCol >= nEffCols ) {
@@ -525,7 +524,7 @@ void AutoTableLayout::calcMinMaxWidth()
     int maxPercent = 0;
     int maxNonPercent = 0;
 
-    for ( int i = 0; i < layoutStruct.size(); i++ ) {
+    for ( unsigned int i = 0; i < layoutStruct.size(); i++ ) {
 	minWidth += layoutStruct[i].effMinWidth;
 	maxWidth += layoutStruct[i].effMaxWidth;
 	if ( layoutStruct[i].effWidth.type == Percent ) {
@@ -572,7 +571,7 @@ int AutoTableLayout::calcEffectiveWidth()
 #ifdef DEBUG_LAYOUT
     qDebug("AutoTableLayout::calcEffectiveWidth for %d cols", layoutStruct.size() );
 #endif
-    for ( int i = 0; i < layoutStruct.size(); i++ ) {
+    for ( unsigned int i = 0; i < layoutStruct.size(); i++ ) {
 	layoutStruct[i].effWidth = layoutStruct[i].width;
 	layoutStruct[i].effMinWidth = layoutStruct[i].minWidth;
 	layoutStruct[i].effMaxWidth = layoutStruct[i].maxWidth;
@@ -580,7 +579,7 @@ int AutoTableLayout::calcEffectiveWidth()
 
     int nEffCols = layoutStruct.size();
     QMemArray<RenderTableCell *> spanCells;
-    for ( int i = 0; i < layoutStruct.size(); i++ ) {
+    for ( unsigned int i = 0; i < layoutStruct.size(); i++ ) {
 	if ( layoutStruct[i].hasOriginatingSpan ) {
 	    orderedSpanCells( i, spanCells );
 	    RenderTableCell **cells = spanCells.data();
@@ -712,7 +711,7 @@ void AutoTableLayout::orderedSpanCells( int effCol, QMemArray<RenderTableCell *>
 			memmove( spans.data()+pos+1, spans.data()+pos, (idx-pos)*sizeof( RenderTableCell * ) );
 		    spans[pos] = cell;
 		    idx++;
-		    if ( idx >= spans.size() )
+		    if ( idx >= int(spans.size()) )
 			spans.resize( idx + 10 );
 		    lastCell = cell;
 		}
@@ -732,7 +731,7 @@ void AutoTableLayout::layout()
     int available = tableWidth;
     int nEffCols = layoutStruct.size();
 
-    bool htmlHacks = table->style()->htmlHacks();
+    //bool htmlHacks = table->style()->htmlHacks();
 
 #ifdef DEBUG_LAYOUT
     qDebug("AutoTableLayout::layout()");
@@ -783,6 +782,7 @@ void AutoTableLayout::layout()
             totalFixed += width.value;
             break;
         case Variable:
+        case Static:
 	    numVariable++;
 	    totalVariable += layoutStruct[i].effMaxWidth;
 	    allocVariable += w;
@@ -892,7 +892,6 @@ void AutoTableLayout::layout()
     // spread over fixed colums
     if ( available > 0 && numFixed) {
 	// still have some width to spread, distribute to fixed columns
-	int total = nEffCols;
 	for ( int i = 0; i < nEffCols; i++ ) {
             Length &width = layoutStruct[i].effWidth;
             if ( width.isFixed() ) {
@@ -908,7 +907,6 @@ void AutoTableLayout::layout()
         int total = nEffCols;
         // still have some width to spread
         for ( int i = 0; i < nEffCols; i++ ) {
-            Length &width = layoutStruct[i].effWidth;
             int w = available/total;
             available -= w;
             total--;
@@ -948,7 +946,7 @@ void AutoTableLayout::layout()
 void AutoTableLayout::calcPercentages() const
 {
     total_percent = 0;
-    for ( int i = 0; i < layoutStruct.size(); i++ ) {
+    for ( unsigned int i = 0; i < layoutStruct.size(); i++ ) {
 	if ( layoutStruct[i].width.type == Percent )
 	    total_percent += layoutStruct[i].width.value;
     }
