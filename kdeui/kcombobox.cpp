@@ -670,6 +670,10 @@ void KHistoryCombo::init( bool useCompletion )
     myRotated = false;
     myPixProvider = 0L;
 
+    contextMenu()->insertSeparator();
+    contextMenu()->insertItem( i18n("Empty contents"), this, 
+			       SLOT( slotClear()));
+
     connect( this, SIGNAL( activated(int) ), SLOT( slotReset() ));
     connect( this, SIGNAL( returnPressed(const QString&) ), SLOT(slotReset()));
 }
@@ -883,4 +887,10 @@ void KHistoryCombo::insertItems( const QStringList& items )
         }
         ++it;
     }
+}
+
+void KHistoryCombo::slotClear()
+{
+    clearHistory();
+    emit cleared();
 }

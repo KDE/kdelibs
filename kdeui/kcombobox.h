@@ -704,6 +704,12 @@ public slots:
      * Clears the history and the completion list.
      */
     void clearHistory();
+    
+signals:
+    /**
+     * Emitted when the history was cleared by the entry in the popup menu.
+     */
+    void cleared();
 
 protected:
     /**
@@ -732,6 +738,12 @@ private slots:
      */
     void slotReset();
 
+    /**
+     * called from the popupmenu
+     * calls clearHistory() and emits cleared()
+     */
+    void slotClear();
+    
 private:
     void init( bool useCompletion );
 
