@@ -237,6 +237,8 @@ void KShortcutDialog::x11EventKeyPress( XEvent *pEvent )
 		case XK_Super_L:   case XK_Super_R:   keyModX = KKeyNative::modX(KKey::WIN); break;
 		case XK_Hyper_L:   case XK_Hyper_R:
 		case XK_Mode_switch:
+		case XK_Num_Lock:
+		case XK_Caps_Lock:
 			break;
 		default:
 			if( pEvent->type == XKeyPress && keyNative.sym() ) {
@@ -248,6 +250,12 @@ void KShortcutDialog::x11EventKeyPress( XEvent *pEvent )
 				}
 
 				KKey key = keyNative;
+#ifndef NDEBUG
+				//KKey key2 = key;
+				//key2.simplify();
+				//if( key != key2 )
+				//	kdDebug(125) << key.toStringInternal() << " simplified to " << key2.toStringInternal();
+#endif
 				key.simplify();
 				if( m_bQtShortcut )
 					key = key.keyCodeQt();
