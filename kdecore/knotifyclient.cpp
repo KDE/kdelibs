@@ -67,7 +67,7 @@ bool KNotifyClient::event( StandardEvent type, const QString& text )
 	break;
     case notification: // fall through
     default:
-	message = QString::fromLatin1("notifcation");
+	message = QString::fromLatin1("notification");
 	break;
     }
 
