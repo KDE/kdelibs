@@ -34,6 +34,7 @@
 #include <kwin.h>
 #include <kwinmodule.h>
 #include <kconfig.h>
+#include <assert.h>
 
 #include <kjs/kjs.h>
 #include <kjs/operations.h>
@@ -90,6 +91,18 @@ private:
   QGuardedPtr<KHTMLPart> part;
 };
 
+#ifdef Q_WS_QWS
+class KonquerorFunc : public DOMFunction {
+public:
+  KonquerorFunc(const Konqueror* k, const char* name)
+    : konqueror(k), m_name(name) { }
+  Completion tryExecute(const List &args);
+
+private:
+  const Konqueror* konqueror;
+  QCString m_name;
+};
+#endif
 }; // namespace KJS
 
 ////////////////////// Screen Object ////////////////////////
@@ -258,6 +271,7 @@ bool Window::hasProperty(const UString &/*p*/, bool /*recursive*/) const
     //  p == "event" ||
       p == "innerHeight" ||
       p == "innerWidth" ||
+      p == "konqueror" ||
       p == "length" ||
       p == "location" ||
       p == "name" ||
@@ -415,6 +429,10 @@ KJSO Window::get(const UString &p) const
     return String(m_part->name());
   else if (p == "navigator")
     return KJSO(new Navigator(m_part));
+#ifdef Q_WS_QWS
+  else if (p == "konqueror")
+    return KJSO(new Konqueror(m_part));
+#endif
   else if (p == "offscreenBuffering")
     return Boolean(true);
   else if (p == "opener")
@@ -1427,6 +1445,52 @@ Completion HistoryFunc::tryExecute(const List &args)
 
   return Completion(Normal);
 }
+
+/////////////////////////////////////////////////////////////////////////////
+
+#ifdef Q_WS_QWS
+
+bool Konqueror::hasProperty(const UString &p, bool recursive) const
+{
+  if ( p.qstring().startsWith( "goHistory" ) ) return false;
+
+  return true;
+}
+
+KJSO Konqueror::get(const UString &p) const
+{
+  if ( p == "goHistory" || part->url().protocol() != "http" || part->url().host() != "localhost" )
+    return Undefined();
+
+  return Function( new KonquerorFunc(this, p.qstring().latin1() ) );
+}
+
+Completion KonquerorFunc::tryExecute(const List &args)
+{
+  KParts::BrowserExtension *ext = konqueror->part->browserExtension();
+
+  if(!ext)
+    return Completion(Normal);
+
+  KParts::BrowserInterface *iface = ext->browserInterface();
+
+  if ( !iface )
+    return Completion(Normal);
+
+  QCString n = m_name.data();
+  n += "()";
+  iface->callMethod( n.data(), QVariant() );
+
+  return Completion(Normal);
+}
+
+String Konqueror::toString() const
+{
+  return UString("[object Konqueror]");
+}
+
+#endif
+/////////////////////////////////////////////////////////////////////////////
 
 #include "kjs_window.moc"
 

@@ -155,6 +155,19 @@ namespace KJS {
     QGuardedPtr<KHTMLPart> m_part;
   };
 
+#ifdef Q_WS_QWS  
+  class Konqueror : public HostImp {
+    friend class KonquerorFunc;
+  public:
+    Konqueror(KHTMLPart *p) : part(p) { }
+    virtual KJSO get(const UString &p) const;
+    virtual bool hasProperty(const UString &p, bool recursive) const;
+    virtual String toString() const;
+  private:
+    KHTMLPart *part;
+  };
+#endif
+  
   class LocationFunc : public DOMFunction {
   public:
     LocationFunc(const Location *loc, int i);
