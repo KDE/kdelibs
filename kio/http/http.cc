@@ -1061,19 +1061,19 @@ bool HTTPProtocol::readHeader()
   {
      // Read header from cache...
      char buffer[4097];
-     if (!fgets(buffer, 4096, m_fcache))
+     if (!fgets(buffer, 4096, m_fcache) )
      {
         // Error, delete cache entry
         error( ERR_CONNECTION_BROKEN, m_state.hostname );
         return false;
      }
+     kdDebug(7103) << "readHeader: returning mimetype " << buffer << endl;
      m_strMimeType = QString::fromUtf8( buffer).stripWhiteSpace();
      mimeType(m_strMimeType);
      return true;
   }
 
   // to get rid of those "Open with" dialogs...
-  // however at least extensions should be checked
   m_strMimeType = "text/html";
   m_etag = QString::null;
   m_lastModified = QString::null;
@@ -1289,7 +1289,7 @@ bool HTTPProtocol::readHeader()
         // 307 Temporary Redirect
         if (m_request.method == HTTP_POST)
         {
-           errorPage();	
+           errorPage();
            m_bCachedWrite = false; // Don't put in cache
            noRedirect = true;
         }
@@ -1320,7 +1320,7 @@ bool HTTPProtocol::readHeader()
     else if (strncasecmp(buffer, "WWW-Authenticate:", 17) == 0) {
       configAuth(trimLead(buffer + 17), false);
     }
-		
+
     // check for proxy-based authentication
     else if (strncasecmp(buffer, "Proxy-Authenticate:", 19) == 0) {
       configAuth(trimLead(buffer + 19), true);
@@ -1361,9 +1361,9 @@ bool HTTPProtocol::readHeader()
 #endif
           kdDebug(7103) << "KeepAlive = true" << endl;
 	}
-	
+
       }
-      			
+
       // what kind of encoding do we have?  transfer?
       else if (strncasecmp(buffer, "Transfer-Encoding:", 18) == 0) {
 	// If multiple encodings have been applied to an entity, the
@@ -1767,7 +1767,7 @@ static HTTPProtocol::CacheControl parseCacheControl(const QString &cacheControl)
 void HTTPProtocol::stat(const KURL& url)
 {
   if (m_request.hostname.isEmpty())
-     error( KIO::ERR_INTERNAL, "stat: No host specified!");
+    error( KIO::ERR_INTERNAL, "stat: No host specified!");
 
   m_request.method = HTTP_HEAD;
   m_request.path = url.path();
@@ -1777,39 +1777,34 @@ void HTTPProtocol::stat(const KURL& url)
   m_request.do_proxy = m_bUseProxy;
   m_request.url = url;
 
-  if (http_open()) {
+  if (!http_open())
+    return;
 
-    if (readHeader())
-    {
-      UDSEntry entry;
-      UDSAtom atom;
-      atom.m_uds = KIO::UDS_NAME;
-      atom.m_str = url.fileName();
-      entry.append( atom );
+  if (!readHeader())
+    return;
 
-      atom.m_uds = KIO::UDS_FILE_TYPE;
-      atom.m_long = S_IFREG; // a file
-      entry.append( atom );
+  UDSEntry entry;
+  UDSAtom atom;
+  atom.m_uds = KIO::UDS_NAME;
+  atom.m_str = url.fileName();
+  entry.append( atom );
 
-      atom.m_uds = KIO::UDS_ACCESS;
-      atom.m_long = S_IRUSR | S_IRGRP | S_IROTH; // readable by everybody
-      entry.append( atom );
+  atom.m_uds = KIO::UDS_FILE_TYPE;
+  atom.m_long = S_IFREG; // a file
+  entry.append( atom );
 
-      atom.m_uds = KIO::UDS_SIZE;
-      atom.m_long = m_iSize;
-      entry.append( atom );
+  atom.m_uds = KIO::UDS_ACCESS;
+  atom.m_long = S_IRUSR | S_IRGRP | S_IROTH; // readable by everybody
+  entry.append( atom );
 
-      statEntry( entry );
+  atom.m_uds = KIO::UDS_SIZE;
+  atom.m_long = m_iSize;
+  entry.append( atom );
 
-      http_close();
-      finished();
-    }
-    else {
-      http_close();
-      // error already emitted
-    }
+  statEntry( entry );
 
-  }
+  http_close();
+  finished();
 }
 
 void HTTPProtocol::get( const KURL& url )
@@ -2658,15 +2653,11 @@ HTTPProtocol::createCacheEntry( const QString &mimetype, time_t expireDate)
    fputs(date.latin1(), m_fcache);      // Expire date
    fputc('\n', m_fcache);
 
-   if (m_etag.isEmpty())
-      fputc('\n', m_fcache);
-   else
+   if (!m_etag.isEmpty())
       fputs(m_etag.latin1(), m_fcache);    //ETag
    fputc('\n', m_fcache);
 
-   if (m_lastModified.isEmpty())
-      fputc('\n', m_fcache);
-   else
+   if (!m_lastModified.isEmpty())
       fputs(m_lastModified.latin1(), m_fcache);    // Last modified
    fputc('\n', m_fcache);
 
@@ -2790,6 +2781,6 @@ void HTTPProtocol::reparseConfiguration()
   if ( c != languageList.end() )
     (*c) = QString::fromLatin1("en");
   m_strLanguages = languageList.join( " " );
-  kdDebug() << "Languages list set to " << m_strLanguages << endl;
+  kdDebug(7103) << "Languages list set to " << m_strLanguages << endl;
   m_strCharsets = QString::fromLatin1("utf-8 ") + KGlobal::locale()->charset();
 }
