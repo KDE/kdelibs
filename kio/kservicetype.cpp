@@ -25,7 +25,6 @@
 
 #include <assert.h>
 #include <kdebug.h>
-#include <qsmartptr.h>
 #include <kdesktopfile.h>
 
 template QDataStream& operator>> <QString, QVariant>(QDataStream&, QMap<QString, QVariant>&);
