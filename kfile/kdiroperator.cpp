@@ -37,7 +37,7 @@
 #include <kmessagebox.h>
 #include <kprogress.h>
 #include <kstdaction.h>
-#include <jobclasses.h>
+#include <kio/jobclasses.h>
 
 #include "config-kfile.h"
 #include "kcombiview.h"
