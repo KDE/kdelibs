@@ -35,9 +35,9 @@ class QCheckBox;
 class QPushButton;
 class QLabel;
 
+class KOpenWithDlgPrivate;
 
 /* ------------------------------------------------------------------------- */
-
 /**
  * "Open with" dialog box.
  * Used automatically by KRun, and used by libkonq.
@@ -129,7 +129,7 @@ protected slots:
      * Reimplemented from QDialog::accept() to save history of the combobox
      */
     virtual void accept();
-    
+
 protected:
 
     /**
@@ -160,7 +160,6 @@ protected:
 
     KService::Ptr m_pService;
 
-    class KOpenWithDlgPrivate;
     KOpenWithDlgPrivate *d;
 };
 

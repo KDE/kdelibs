@@ -280,6 +280,12 @@ void KApplicationTree::resizeEvent( QResizeEvent * e)
  * KOpenWithDlg
  *
  ***************************************************************/
+class KOpenWithDlgPrivate
+{
+public:
+    KOpenWithDlgPrivate() {};
+    QPushButton* ok;
+};
 
 KOpenWithDlg::KOpenWithDlg( const KURL::List& _urls, QWidget* parent )
              :QDialog( parent, 0L, true )
@@ -315,7 +321,7 @@ KOpenWithDlg::KOpenWithDlg( const QString &serviceType, const QString& value,
                             QWidget *parent)
              :QDialog( parent, 0L, true )
 {
-  setCaption(i18n("Choose Application for %1").arg(serviceType));
+    setCaption(i18n("Choose Application for %1").arg(serviceType));
   QString text = i18n("<qt>Select the program for the file type: <b>%1</b>. "
                       "If the program is not listed, enter the name or click "
                       "the browse button.</qt>").arg(serviceType);
@@ -331,6 +337,7 @@ KOpenWithDlg::KOpenWithDlg( const QString &serviceType, const QString& value,
 KOpenWithDlg::KOpenWithDlg( QWidget *parent)
              :QDialog( parent, 0L, true )
 {
+    d = new KOpenWithDlgPrivate();
   setCaption(i18n("Choose Application"));
   QString text = i18n("<qt>Select a program. "
                       "If the program is not listed, enter the name or click "
@@ -353,7 +360,8 @@ void KOpenWithDlg::setServiceType( const KURL::List& _urls )
 
 void KOpenWithDlg::init( const QString& _text, const QString& _value )
 {
-  bool bReadOnly = kapp && !kapp->authorize("shell_access");
+    d = new KOpenWithDlgPrivate();
+    bool bReadOnly = kapp && !kapp->authorize("shell_access");
   m_terminaldirty = false;
   m_pTree = 0L;
   m_pService = 0L;
@@ -465,9 +473,9 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
   KButtonBox* b = new KButtonBox( this );
   b->addStretch( 2 );
 
-  QPushButton* ok = b->addButton(  i18n ( "&OK" ) );
-  ok->setDefault( true );
-  connect(  ok, SIGNAL( clicked() ), SLOT( slotOK() ) );
+  d->ok = b->addButton(  i18n ( "&OK" ) );
+  d->ok->setDefault( true );
+  connect(  d->ok, SIGNAL( clicked() ), SLOT( slotOK() ) );
 
   QPushButton* cancel = b->addButton(  i18n( "&Cancel" ) );
   connect(  cancel, SIGNAL( clicked() ), SLOT( reject() ) );
@@ -480,6 +488,7 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
   // Probably due to the resizeEvent handler using width().
   //resize( minimumWidth(), sizeHint().height() );
   edit->setFocus();
+  slotTextChanged();
 }
 
 
@@ -487,6 +496,8 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
 
 KOpenWithDlg::~KOpenWithDlg()
 {
+    delete d;
+    d = 0;
 }
 
 // ----------------------------------------------------------------------
@@ -533,6 +544,7 @@ void KOpenWithDlg::slotTextChanged()
     //kdDebug(250)<<"KOpenWithDlg::slotTextChanged"<<endl;
     // Forget about the service
     m_pService = 0L;
+    d->ok->setEnabled( !edit->url().isEmpty());
 }
 
 // ----------------------------------------------------------------------
