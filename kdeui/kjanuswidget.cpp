@@ -749,11 +749,7 @@ QSize KJanusWidget::minimumSizeHint() const
 
     if( mFace == TreeList )
     {
-#if QT_VERSION < 300
-      s1.rwidth() += style().splitterWidth();
-#else
       s1.rwidth() += style().pixelMetric( QStyle::PM_SplitterWidth );
-#endif
       s2 = mTreeList->minimumSize();
     }
     else
