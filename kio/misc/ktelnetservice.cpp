@@ -40,6 +40,9 @@ int main(int argc, char **argv)
 	KCmdLineArgs::addCmdLineOptions(options);
 
 	KApplication app;
+	
+	if (!app.authorize("shell_access"))
+		return 3;
 
 	KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
