@@ -1418,8 +1418,9 @@ void HTMLLegendElementImpl::parseAttribute(AttributeImpl *attr)
     case ATTR_ACCESSKEY:
         // ### ignore for the moment
         break;
+    default:
+        HTMLElementImpl::parseAttribute(attr);
     }
-    HTMLElementImpl::parseAttribute(attr);
 }
 
 // -------------------------------------------------------------------------
