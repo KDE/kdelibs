@@ -49,7 +49,7 @@ public:
 
   bool 			exists();
 
-
+  virtual QSize 	sizeHint() const;
 
 signals:
   // forwards from LineEdit
@@ -59,7 +59,7 @@ signals:
 
 protected:
   virtual void 		resizeEvent( QResizeEvent * );
-  
+
   QLineEdit *		myEdit;
   QToolButton *		myButton;
 
@@ -77,7 +77,6 @@ private:
 protected slots:
   void 			slotOpenDialog();
   void 			slotTextChanged( const QString& text );
-  void 			slotReturnPressed();
   virtual void 		slotDoVerify();
 
 

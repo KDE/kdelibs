@@ -21,7 +21,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include <qlineedit.h>
+#include <klineedit.h>
 #include <qstring.h>
 #include <qtimer.h>
 #include <qtoolbutton.h>
@@ -58,7 +58,7 @@ void KURLEdit::init()
   myVerifyTimer = 0L;
   myIsDirty     = true;
 
-  myEdit = new QLineEdit( this, "line edit" );
+  myEdit = new KLineEdit( this, "line edit" );
   myButton = new QToolButton( this, "kfile button" );
   myButton->setPixmap(
 	 KGlobal::iconLoader()->loadIcon(QString::fromLatin1("folder"),
@@ -72,7 +72,7 @@ void KURLEdit::init()
   connect( myEdit, SIGNAL( textChanged( const QString& )),
 	   this, SLOT( slotTextChanged( const QString& )));
   connect( myEdit, SIGNAL( returnPressed() ),
-	   this, SLOT( slotReturnPressed() ));
+	   this, SIGNAL( returnPressed() ));
   connect( myButton, SIGNAL( clicked() ),
 	   this, SLOT( slotOpenDialog() ));
 
@@ -88,6 +88,14 @@ void KURLEdit::setURL( const QString& url )
 
   if ( myVerifyTimer )
     slotDoVerify();
+}
+
+QString KURLEdit::url( bool omitProtocol ) const
+{
+    if ( omitProtocol )
+	return myURL.path();
+    else
+	return myURL.url();
 }
 
 
@@ -135,16 +143,15 @@ void KURLEdit::slotDoVerify()
   }
 
   // italic font when not existant?
-  QFont font = myEdit->font();
-  font.setItalic( !myExists );
-  myEdit->setFont( font );
+  //  QFont font = myEdit->font();
+  //  font.setItalic( !myExists );
+  //  myEdit->setFont( font );
 
   myIsDirty = false;
 }
 
 
-// TODO: completion (use KEdit instead of QLineEdit for the signal?)
-// TODO: rewrite kurlcompletion (KCompletion, KFileCompletion, KURLCompletion)
+// TODO: completion (use KEdit instead of KLineEdit for the signal?)
 void KURLEdit::slotTextChanged( const QString& text )
 {
   myURL = text;
@@ -155,15 +162,19 @@ void KURLEdit::slotTextChanged( const QString& text )
 }
 
 
-void KURLEdit::slotReturnPressed()
-{
-  emit returnPressed();
-}
-
-
 void KURLEdit::slotOpenDialog()
 {
 
+}
+
+
+QSize KURLEdit::sizeHint() const
+{
+    QSize s1 = myButton->sizeHint();
+    QSize s2 = myEdit->sizeHint();
+    int w = s1.width() + KDialog::spacingHint() + s2.width();
+    int h = QMAX( s1.height(), s2.height() );
+    return QSize( w, h );
 }
 
 
@@ -172,7 +183,7 @@ void KURLEdit::resizeEvent( QResizeEvent * )
   int s = KDialog::spacingHint();
 
   myEdit->resize( (width() - myButton->width() - s), myEdit->height() );
-  myButton->move( myEdit->x() + s, myButton->y() );
+  myButton->move( myEdit->x() + myEdit->width() + s, myButton->y() );
 }
 
 
