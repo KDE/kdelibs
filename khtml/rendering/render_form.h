@@ -41,7 +41,7 @@ class QListboxItem;
 #include <qradiobutton.h>
 #include <qpushbutton.h>
 #include <klistbox.h>
-#include <qcombobox.h>
+#include <kcombobox.h>
 
 class KHTMLPartBrowserExtension;
 
@@ -396,12 +396,15 @@ protected:
 signals:
     void focused();
     void blurred();
+    void activated(int);
+private slots:
+    void slotPressed(QListBoxItem*);
 };
 
 
 // -------------------------------------------------------------------------
 
-class ComboBoxWidget : public QComboBox
+class ComboBoxWidget : public KComboBox
 {
     Q_OBJECT
 public:
@@ -429,9 +432,6 @@ public:
     virtual void layout();
     virtual void close( );
 
-    virtual QString state();
-    virtual void restoreState(const QString &);
-
     void setOptionsChanged(bool _optionsChanged);
 
     bool selectionChanged() { return m_selectionChanged; }
@@ -445,7 +445,7 @@ protected:
 
     unsigned  m_size;
     bool m_multiple;
-    bool m_listBox;
+    bool m_useListBox;
     bool m_selectionChanged;
     bool m_ignoreSelectEvents;
 

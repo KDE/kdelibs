@@ -1288,30 +1288,22 @@ void HTMLSelectElementImpl::remove( long index )
 
 QString HTMLSelectElementImpl::state( )
 {
-    qDebug("HTMLSelectElementImpl::state()");
-
     QString state;
     QArray<HTMLGenericFormElementImpl*> items = listItems();
 
-    int c = 0;
     int l = items.count();
 
     state.fill('.', l);
-
     for(int i = 0; i < l; i++)
         if(items[i]->id() == ID_OPTION && static_cast<HTMLOptionElementImpl*>(items[i])->selected())
-            state[c++] = 'X';
-
-    qDebug("HTMLSelectElementImpl::state is %s", state.latin1());
-
+            state[i] = 'X';
 
     return state;
 }
 
 void HTMLSelectElementImpl::restoreState(const QString &_state)
 {
-    qDebug("HTMLSelectElementImpl::restoreState");
-//    recalcListItems();
+    recalcListItems();
 
     QString state = _state;
     if(!state.isEmpty() && !state.contains('X') && !m_multiple) {
@@ -1319,27 +1311,16 @@ void HTMLSelectElementImpl::restoreState(const QString &_state)
         state[0] = 'X';
     }
 
-//     static_cast<HTMLSelectElementImpl*>(m_element)->recalcListItems();
-//     layout();
-
-    qDebug("restorestate: %s", state.latin1());
-
     QArray<HTMLGenericFormElementImpl*> items = listItems();
 
-    int c = 0;
     int l = items.count();
-
     for(int i = 0; i < l; i++) {
         if(items[i]->id() == ID_OPTION) {
             HTMLOptionElementImpl* oe = static_cast<HTMLOptionElementImpl*>(items[i]);
-            oe->setSelected(state[c++] == 'X');
-            if(state[c-1] == 'X')
-                qDebug("selected c=%d, i=%d", c-1, i);
+            oe->setSelected(state[i] == 'X');
         }
     }
 
-//     if (m_render)
-//         static_cast<RenderSelect*>(m_render)->restoreState(state);
     setChanged(true);
 }
 
@@ -1402,8 +1383,6 @@ void HTMLSelectElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLSelectElementImpl::attach(KHTMLView *_view)
 {
-    qDebug("HTMLSelectElementImpl::attach");
-
     setStyle(document->styleSelector()->styleForElement(this));
     view = _view;
 
@@ -1492,8 +1471,6 @@ int HTMLSelectElementImpl::listToOptionIndex(int listIndex) const
 
 void HTMLSelectElementImpl::recalcListItems()
 {
-    qDebug("HTMLSelectElementImpl::recalcListItems");
-
     NodeImpl* current = firstChild();
     bool inOptGroup = false;
     m_listItems.resize(0);
@@ -1549,11 +1526,13 @@ void HTMLSelectElementImpl::notifyOptionSelected(HTMLOptionElementImpl *selected
                 static_cast<HTMLOptionElementImpl*>(m_listItems[i])->setSelected(false);
         }
     }
-    if (m_render)
-        static_cast<RenderSelect*>(m_render)->updateSelection();
+    if (m_render && m_render->layouted())
+    {
+        static_cast<RenderSelect*>(m_render)->setSelectionChanged(true);
+        if(m_render->layouted())
+            static_cast<RenderSelect*>(m_render)->updateSelection();
+    }
     setChanged(true);
-
-
 }
 
 // -------------------------------------------------------------------------
@@ -1687,6 +1666,9 @@ void HTMLOptionElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLOptionElementImpl::setSelected(bool _selected)
 {
+    if(m_selected == _selected)
+        return;
+
     m_selected = _selected;
     HTMLSelectElementImpl *select = getSelect();
     if (select)

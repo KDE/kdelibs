@@ -376,7 +376,6 @@ public:
     virtual NodeImpl *removeChild ( NodeImpl *oldChild, int &exceptioncode );
     virtual NodeImpl *appendChild ( NodeImpl *newChild, int &exceptioncode );
 
-
     virtual void parseAttribute(AttrImpl *attr);
 
     virtual void attach(KHTMLView *w);
