@@ -105,6 +105,7 @@ public:
   virtual void get( const KURL& url );
   virtual void put( const KURL& url, int _mode, bool _overwrite, bool _resume );
   void post( const KURL& url );
+  void cache_update( const KURL &url, bool no_cache, time_t expireDate);
 
   /**
    * Special commands supported by this slave :
@@ -192,14 +193,15 @@ protected:
   /**
    * Do a cache lookup for the current url. (m_state.url)
    *
-   * @param CEF the Cache Entry File.
+   * @param readWrite If true, file is opened read/write.
+   *                  If false, file is opened read-only.
    *
    * @return a file stream open for reading and at the start of
    *         the header section when the Cache entry exists and is valid.
-   *         0 if no cache entry could be found, or if the enry is not
+   *         0 if no cache entry could be found, or if the entry is not
    *         valid (any more).
    */
-  FILE *checkCacheEntry(QString &CEF);
+  FILE *checkCacheEntry(bool readWrite = false);
 
   /**
    * Create a cache entry for the current url. (m_state.url)
@@ -219,6 +221,11 @@ protected:
    * Close cache entry
    */
   void closeCacheEntry();
+
+  /**
+   * Update expire time of current cache entry.
+   */
+  void updateExpireDate(time_t expireDate);
 
   /**
    * Quick check whether the cache needs cleaning.
@@ -249,6 +256,9 @@ protected: // Members
   QString m_etag; // ETag header.
   QString m_lastModified; // Last modified.
   bool m_bMustRevalidate; // Cache entry is expired.
+  long m_cacheExpireDateOffset; // Position in the cache entry where the
+                                // 16 byte expire date is stored.
+  time_t m_expireDate;                                
 
   // Language/Encoding
   QStringList m_qTransferEncodings, m_qContentEncodings;

@@ -76,7 +76,7 @@ public:
 
 // !START OF SYNC!
 // Keep the following in sync with the cache code in http.cc
-#define CACHE_REVISION "4\n"
+#define CACHE_REVISION "5\n"
 
 FileInfo *readEntry( const QString &filename)
 {
@@ -153,7 +153,6 @@ FileInfo *readEntry( const QString &filename)
       return info;
    }
 
-fprintf(stderr, "%s: Expired entry %s\n", appName, CEF.data());  
    unlink( CEF.data());
    return 0;
 }
