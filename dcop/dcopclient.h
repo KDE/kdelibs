@@ -402,7 +402,7 @@ class DCOPClient : public QObject
   Q_INT32 transactionId() const;
 
   /**
-   * Checks whether @p remApp is registered with the @ref DCOPServer.
+   * Checks whether @p remApp is registered with the DCOP server.
    * @return @p true if the remote application is registered, otherwise @p false.
    */
   bool isApplicationRegistered( const QCString& remApp);
@@ -570,7 +570,7 @@ signals:
    * Indicates that the application @p appId has been registered with
    * the server we are attached to.
    *
-   * You need to call @ref setNotifications() first, to tell the @ref DCOPServer
+   * You need to call @ref setNotifications() first, to tell the DCOP server
    * that you want to get these events.
    */
   void applicationRegistered( const QCString& appId );
@@ -578,8 +578,8 @@ signals:
    * Indicates that the formerly registered application @p appId has
    * been removed.
    *
-   * You need to call @ref setNotifications() first, to tell the @ref
-   * DCOPServer that you want to get these events.
+   * You need to call @ref setNotifications() first, to tell the 
+   * DCOP server that you want to get these events.
    */
   void applicationRemoved( const QCString& appId );
 

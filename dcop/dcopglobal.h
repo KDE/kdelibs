@@ -55,48 +55,6 @@ extern "C" {
 #define DCOPReplyDelayed 6
 #define DCOPFind 7
 
-/**
- * @libdoc
- *
- * DCOP Protocol description
- * ================
- *
- *
- * A DCOPSend message does not expect any reply.
- * data: << fromId << toId << objId << fun << dataSize + data[dataSize]
- *
- * A DCOPCall message can get a DCOPReply, a DCOPReplyFailed
- * or a DCOPReplyWait message in response.
- * data: << fromId << toId << objId << fun << dataSize + data[dataSize]
- *
- * DCOPReply is the successfull reply to a DCOPCall message
- * data: << fromId << toId << replyType << replyDataSize + replyData[replyDataSize]
- *
- * DCOPReplyFailed indicates failure of a DCOPCall message
- * data: << fromId << toId
- *
- * DCOPReplyWait indicates that a DCOPCall message is succesfully
- * being processed but that response will come later.
- * data: << fromId << toId << transactionId
- *
- * DCOPReplyDelayed is the successfull reply to a DCOPCall message
- * after a DCOPReplyWait message.
- * data: << fromId << toId << transactionId << replyType << replyData
- *
- * DCOPFind is a message much like a "call" message. It can however
- * be send to multiple objects within a client. If a function in a
- * object that is being called returns a boolean with the value "true",
- * a DCOPReply will be send back containing the DCOPRef of the object
- * who returned "true".
- *
- * All c-strings (fromId, toId, objId, fun and replyType), are marshalled with
- * their respective  length as 32 bit unsigned integer first:
- * data: length + string[length]
- * Note: This happens automatically when using QCString on a
- * QDataStream.
- *
- */
-
 #ifdef __cplusplus
 extern "C" {
 #endif

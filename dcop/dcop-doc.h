@@ -189,8 +189,8 @@ needs to do more complex tasks you might want to do the processing
 out of 'process' function call and send the result back later when
 it becomes available.
 
-For this you can ask your DCOPClient for a transactionId. You can 
-then return from the 'process' function and when the result is 
+For this you can ask your DCOPClient for a transactionId. You can
+then return from the 'process' function and when the result is
 available finish the transaction. In the mean time your application
 can receive incoming DCOP function calls from other clients.
 
@@ -205,7 +205,7 @@ bool BarObject::process(const QCString &fun, const QByteArray &data,
     int i; // parameter
     arg >> i;
     QString result = self->doIt(i);
-    
+
     DCOPClientTransaction *myTransaction;
     myTransaction = kapp->dcopClient()->beginTransaction();
 
@@ -223,7 +223,7 @@ bool BarObject::process(const QCString &fun, const QByteArray &data,
 slotProcessingDone(DCOPClientTransaction *myTransaction, const QString &result)
 {
     QCString replyType = "QString";
-    QByteArray replyData;  
+    QByteArray replyData;
     QDataStream reply(replyData, IO_WriteOnly);
     reply << result;
     kapp->dcopClient()->endTransaction( myTransaction, replyType, replyData );
@@ -236,78 +236,78 @@ slotProcessingDone(DCOPClientTransaction *myTransaction, const QString &result)
 dcopidl makes setting up a DCOP server easy. Instead of having to implement
 the process() method and unmarshalling (retrieving from QByteArray) parameters
 manually, you can let dcopidl create the necessary code on your behalf.
- 
+
 This also allows you to describe the interface for your class in a
 single, separate header file.
- 
+
 Writing an IDL file is very similar to writing a normal C++ header. An
 exception is the keyword 'ASYNC'. It indicates that a call to this
 function shall be processed asynchronously. For the C++ compiler, it
 expands to 'void'.
- 
+
 Example:
 
 <pre>
 #ifndef MY_INTERFACE_H
 #define MY_INTERFACE_H
- 
+
 #include <dcopobject.h>
- 
+
 class MyInterface : virtual public DCOPObject
 {
   K_DCOP
-       
+
   k_dcop:
- 
+
     virtual ASYNC myAsynchronousMethod(QString someParameter) = 0;
     virtual QRect mySynchronousMethod() = 0;
 };
- 
+
 #endif
 </pre>
 
 As you can see, you're essentially declaring an abstract base class, which
 virtually inherits from DCOPObject.
- 
+
 If you're using the standard KDE build scripts, then you can simply
 add this file (which you would call MyInterface.h) to your sources
 directory. Then you edit your Makefile.am, adding 'MyInterface.skel'
 to your SOURCES list and MyInterface.h to include_HEADERS.
- 
+
 The build scripts will use dcopidl to parse MyInterface.h, converting
 it to an XML description in MyInterface.kidl. Next, a file called
 MyInterface_skel.cpp will automatically be created, compiled and
 linked with your binary.
- 
+
 The next thing you have to do is to choose which of your classes will
 implement the interface described in MyInterface.h. Alter the inheritance
 of this class such that it virtually inherits from MyInterface. Then
 add declarations to your class interface similar to those on MyInterface.h,
 but virtual, not pure virtual.
- 
+
 Example:
 
 <pre>
 class MyClass: public QObject, virtual public MyInterface
 {
   Q_OBJECT
- 
+
   public:
     MyClass();
     ~MyClass();
- 
+
     ASYNC myAsynchronousMethod(QString someParameter);
     QRect mySynchronousMethod();
 };
 </pre>
 Note: (Qt issue) Remember that if you are inheriting from QObject, you must
 place it first in the list of inherited classes.
- 
+
 In the implementation of your class' ctor, you must explicitly initialize
 those classes from which you are inheriting from. This is, of course, good
 practise, but it is essential here as you need to tell DCOPObject the name of
 the interface which your are implementing.
- 
+
 Example:
 
 <pre>
@@ -319,10 +319,10 @@ MyClass::MyClass()
 }
 </pre>
 
- 
+
 Now you can simply implement the methods you have declared in your interface,
 exactly the same as you would normally.
- 
+
 Example:
 
 <pre>
@@ -331,7 +331,7 @@ void MyClass::myAsynchronousMethod(QString someParameter)
   qDebug("myAsyncMethod called with param `" + someParameter + "'");
 }
 </pre>
- 
+
 It is not necessary (though very clean) to define an interface as an
 abstract class of its own, like we did in the example above. We could
 just as well have defined a k_dcop section directly within MyClass:
@@ -341,11 +341,11 @@ class MyClass: public QObject, virtual public DCOPObject
 {
   Q_OBJECT
   K_DCOP
- 
+
   public:
     MyClass();
     ~MyClass();
- 
+
   k_dcop:
     ASYNC myAsynchronousMethod(QString someParameter);
     QRect mySynchronousMethod();
@@ -391,6 +391,40 @@ to the user's dcop server.
 NOTE: DCOP communication is not encrypted, so please do not
 pass important information around this way.
 
+@sect DCOP Protocol description:
+
+A DCOPSend message does not expect any reply.
+data: << fromId << toId << objId << fun << dataSize + data[dataSize]
+
+A DCOPCall message can get a DCOPReply, a DCOPReplyFailed
+or a DCOPReplyWait message in response.
+data: << fromId << toId << objId << fun << dataSize + data[dataSize]
+
+DCOPReply is the successfull reply to a DCOPCall message
+data: << fromId << toId << replyType << replyDataSize + replyData[replyDataSize]
+
+DCOPReplyFailed indicates failure of a DCOPCall message
+data: << fromId << toId
+
+DCOPReplyWait indicates that a DCOPCall message is succesfully
+being processed but that response will come later.
+data: << fromId << toId << transactionId
+
+DCOPReplyDelayed is the successfull reply to a DCOPCall message
+after a DCOPReplyWait message.
+data: << fromId << toId << transactionId << replyType << replyData
+
+DCOPFind is a message much like a "call" message. It can however
+be send to multiple objects within a client. If a function in a
+object that is being called returns a boolean with the value "true",
+a DCOPReply will be send back containing the DCOPRef of the object
+who returned "true".
+
+All c-strings (fromId, toId, objId, fun and replyType), are marshalled with
+their respective  length as 32 bit unsigned integer first:
+data: length + string[length]
+Note: This happens automatically when using QCString on a
+QDataStream.
 
 @sect Conclusion:
 
