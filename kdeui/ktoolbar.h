@@ -17,8 +17,9 @@ public:
 	int ID();
 	void enable(bool enable);
 	void makeDisabledPixmap();
-  	QPixmap disabledPixmap;
-  	
+        QPixmap disabledPixmap;  	
+        virtual void setPixmap( QPixmap & ); 
+
 protected:
 	void paletteChange(const QPalette &);
 
@@ -59,6 +60,7 @@ public:
 	bool enable(BarStatus stat);
 	
 	void setItemEnabled( int id, bool enabled );
+        void setItemPixmap( int id, QPixmap& _pixmap );
 
 private:
 	QList <KToolBarItem> buttons;

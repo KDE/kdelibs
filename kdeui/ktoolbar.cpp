@@ -28,13 +28,26 @@ KToolBarItem::KToolBarItem( QPixmap& pixmap, int ID,
  	enabledPixmap.resize( 22, 22);
     };
     makeDisabledPixmap();
-    setPixmap( enabledPixmap );
+    KButton::setPixmap( enabledPixmap );
     connect( this, SIGNAL( clicked() ), 
 	    this, SLOT( ButtonClicked() ) );
     connect(this, SIGNAL( pressed() ), this, SLOT( ButtonPressed() ) );
     connect(this, SIGNAL( released() ), this, SLOT( ButtonReleased() ) );
 }
 
+void KToolBarItem::setPixmap( QPixmap &pixmap )
+{
+    if ( ! pixmap.isNull() )
+	enabledPixmap = pixmap;
+    else
+    {
+	warning("KToolBarItem: pixmap is empty, perhaps some missing file");
+	enabledPixmap.resize( 22, 22);
+    }
+    // makeDisabledPixmap();
+    KButton::setPixmap( enabledPixmap );
+ }            
+  icontext=config->readNumEntry("IconText", 0);
 void KToolBarItem::makeDisabledPixmap()
 {
 	QPalette pal = palette();
@@ -76,7 +89,7 @@ void KToolBarItem::paletteChange(const QPalette &)
 	if( ID() != -1 ) {
 		makeDisabledPixmap();
 		if ( !isEnabled() )
-			setPixmap( disabledPixmap );
+			KButton::setPixmap( disabledPixmap );
 		repaint( TRUE );
 	}
 }
@@ -91,7 +104,7 @@ KToolBarItem::KToolBarItem( QWidget *parent, char *name )
 {
 void KToolBarItem::enable( bool enabled )
 {
-	setPixmap( (enabled ? enabledPixmap : disabledPixmap) );
+	KButton::setPixmap( (enabled ? enabledPixmap : disabledPixmap) );
 	setEnabled( enabled );
 }
 {
@@ -381,8 +394,13 @@ void KToolBar::setItemEnabled( int id, bool enabled )
     if ( b->ID() == id )
       b->enable( enabled );
 }
-				
-	
+					
+void KToolBar::setItemPixmap( int id, QPixmap& _pixmap )
+{
+    for ( KToolBarItem *b = buttons.first(); b!=NULL; b=buttons.next() )
+	if ( b->ID() == id )
+       b->setPixmap( _pixmap );
+}                                         
 
 void KToolBar::ItemClicked( int id )
 {

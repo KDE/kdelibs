@@ -154,6 +154,9 @@ public:
 	*/ 
   void setProtocol( const char* newProto) { protocol_part = newProto; }
 
+  /// Set the password.
+  void setPassword( const char *password ) { passwd_part = password; }
+
   /// Set reference.
   /** Set reference. Convenience function to set the reference.
 	A reference may be removed with setRef( ""). The function 
