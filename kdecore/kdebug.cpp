@@ -454,7 +454,7 @@ KDebugDialog::~KDebugDialog()
 void KDebugDialog::showHelp()
 {
   if (kapp)
-    kapp->invokeHTMLHelp( "kdelib/kdebug.html", "" );
+    kapp->invokeHTMLHelp( "kdelibs/kdebug.html", "" );
 }
 
 #include "kdebugdialog.moc"
