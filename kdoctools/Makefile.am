@@ -3,27 +3,30 @@ INCLUDES= -I$(top_srcdir) -I$(top_srcdir)/kioslave -I$(top_srcdir)/kioslave/bzip
 LDFLAGS = $(KDE_RPATH) $(LIBXML_RPATH) $(LIBXSLT_RPATH) $(all_libraries)
 AM_CPPFLAGS = -DSRCDIR="\"$(shell (cd $(top_srcdir)/kdoctools && pwd))\"" 
 
-FILTER_LIBS = $(LIB_KSYCOCA) $(LIBBZ2)
-FILTER_sources = kbzip2filter.cpp
+noinst_LTLIBRARIES = libkbzipfilter_dummy.la
+
+libkbzipfilter_dummy_la_SOURCES = kbzip2filter.cpp
+libkbzipfilter_dummy_la_LIBADD = $(LIB_KSYCOCA) $(LIBBZ2)
+libkbzipfilter_dummy_la_DEPENDENCIES = $(LIB_KSYCOCA)
 
 ####### Files
 
 kde_module_LTLIBRARIES = kio_help.la
 
-kio_help_la_SOURCES = $(FILTER_sources) kio_help.cpp main.cpp xslt.cpp
-kio_help_la_LIBADD = $(LIBXSLT_LIBS) $(LIBXML_LIBS) $(FILTER_LIBS)
-kio_help_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)
+kio_help_la_SOURCES = kio_help.cpp main.cpp xslt.cpp
+kio_help_la_LIBADD = $(LIBXSLT_LIBS) $(LIBXML_LIBS) 
+kio_help_la_LDFLAGS = libkbzipfilter_dummy.la $(all_libraries) -module $(KDE_PLUGIN)
 noinst_HEADERS = kio_help.h
 
 kdelnk_DATA = help.protocol
 kdelnkdir = $(kde_servicesdir)
 
 bin_PROGRAMS = meinproc xml2man
-meinproc_LDADD = xslt_pure.o $(LIBXSLT_LIBS) $(LIBXML_LIBS) $(FILTER_LIBS)
-meinproc_SOURCES = meinproc.cpp $(FILTER_sources)
+meinproc_LDADD = xslt_pure.o libkbzipfilter_dummy.la $(LIBXSLT_LIBS) $(LIBXML_LIBS) 
+meinproc_SOURCES = meinproc.cpp 
 
-xml2man_LDADD = xslt_pure.o $(LIBXSLT_LIBS) $(LIBXML_LIBS) $(FILTER_LIBS)
-xml2man_SOURCES = xml2man.cpp $(FILTER_sources)
+xml2man_LDADD = xslt_pure.o $(LIBXSLT_LIBS) $(LIBXML_LIBS) libkbzipfilter_dummy.la
+xml2man_SOURCES = xml2man.cpp 
 
 xslt_pure.o: xslt.cpp
 	-rm -f xslt_pure.cpp
