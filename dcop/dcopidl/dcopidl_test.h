@@ -39,6 +39,7 @@ public:
     static const int AUDIO_CD = 1 << 6;
 k_dcop:
     virtual QString url();
+    virtual QString constTest() const;
     virtual DCOPRef firstView();
     virtual DCOPRef nextView();
     virtual int getNumObjects();

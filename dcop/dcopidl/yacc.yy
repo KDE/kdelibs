@@ -698,19 +698,10 @@ function_header
                         "     </%5>\n");
 		*tmp = tmp->arg( *($2) );
 		*tmp = tmp->arg( *($1) );
-                if ($6) {
-                   *tmp = tmp->arg( *($4) + " qual=\"const\">" );
-                } else {
-                   *tmp = tmp->arg( *($4) );
-                }
+                *tmp = tmp->arg( *($4) );
                 
-                QString tagname = "";
-                QString attr = "";
-                if (dcop_signal_area) {
-                   tagname = "SIGNAL";
-                } else {
-                   tagname = "FUNC";
-                }
+                QString tagname = (dcop_signal_area) ? "SIGNAL" : "FUNC";
+                QString attr = ($6) ? " qual=\"const\"" : "";
                 *tmp = tmp->arg( QString("%1%2").arg(tagname).arg(attr) );
                 *tmp = tmp->arg( QString("%1").arg(tagname) );
 		$$ = tmp;
