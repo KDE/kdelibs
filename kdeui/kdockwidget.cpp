@@ -25,10 +25,10 @@
 #include <qstrlist.h>
 #include <qcursor.h>
 
-#include <X11/X.h>
-#include <X11/Xlib.h>
 
 #ifndef NO_KDE2
+#include <X11/X.h>
+#include <X11/Xlib.h>
 #include <kapp.h>
 #include <kconfig.h>
 #include <ktoolbar.h>
@@ -430,10 +430,10 @@ void KDockWidget::applyToWidget( QWidget* s, const QPoint& p )
   {
     move(p);
 
+#ifndef NO_KDE2
     if (d->transient && d->_parent)
       XSetTransientForHint( qt_xdisplay(), winId(), d->_parent->winId() );
 
-#ifndef NO_KDE2
     KWin::setType( winId(), d->windowType );
 #endif
 
