@@ -1,0 +1,15 @@
+<!-- Notes for translators:
+ 1. Do not translate `&...;' (unless you know the mechanism).
+ 2. In the strings ("..."), only use characters allowed by the SGML
+    declaration (i.e. no ASCII values >127).  To encode such
+    characters, write them as ISO entities (e.g. &oacute;), slashed
+    ISO names (e.g. \latin-small-letter-o-with-acute;), or \U-XXXX
+    where X is an upper case hexadecimal, and XXXX is the Unicode
+    value for the character (e.g. \U-00F3).
+    Let us know should you know of other encodings that work.
+ -->
+<!ENTITY Default "\U-AE30;\U-BCF8;" --EUC-KR "기본"-->
+<!ENTITY Korean "\U-D55C;\U-AD6D;\U-B9D0;" --EUC-KR "한국말"-->
+<!ENTITY Version "\U-D310; \U-BC88;\U-D638;" --EUC-KR "판 번호"-->
+<!ENTITY LastUpdated "\U-B9C8;\U-C9C0;\U-B9C9;\U-C73C;\U-B85C; \U-ACE0;\U-CE5C; \U-B0A0;" --EUC-KR "마지막으로 고친 날"-->
+<!--ENTITY By "By"-->

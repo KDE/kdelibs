@@ -1,0 +1,103 @@
+<!--
+    Document Type Definition for DocBook as used in the KDE documentation
+    
+    Copyright (C) 1999-2000 Frederik Fouvry
+     
+    This program is free software; you can redistribute it and/or
+    modify it under the terms of the GNU General Public License
+    as published by the Free Software Foundation; either version 2
+    of the License, or (at your option) any later version.
+     
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+     
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+    
+    Send suggestions, comments, etc. to Frederik Fouvry
+    <fouvry@sfs.nphil.uni-tuebingen.de>.
+
+
+    USAGE
+
+    Refer to this DTD as
+
+      "-//KDE//DTD DocBook V3.1-Based Variant V1.0//EN"
+
+    For instance:
+
+      <!DOCTYPE book PUBLIC "-//KDE//DTD DocBook V3.1-Based Variant V1.0//EN">
+
+    and use catalog as the catalogue file.
+-->
+
+
+<!-- ============================================================= -->
+<!--	      Modifications to the original DocBook DTD		   -->
+<!-- ============================================================= -->
+
+<!-- Added notation for images.
+     Request for update of DocBook has been filed (RFE #105)
+     and accepted.
+ -->
+<!ENTITY % local.notation.class
+		       "| PNG"					     >
+<!NOTATION PNG		SYSTEM "PNG"				     >
+
+
+<!ENTITY % kde.compulsory.datereleaseinfo "INCLUDE"		     >
+<!-- Modifications in pool
+     %rdbpool; is called in the DocBook DTD
+ -->
+<!ENTITY % rdbpool	    PUBLIC
+  "-//KDE//ELEMENTS DocBook Pool Redeclarations V1.0//EN"	     >
+<!ENTITY % dbpool.redecl.module "INCLUDE"			     >
+
+<!-- Modifications in hierarchy
+     %rdbhier2; is called in the DocBook DTD
+ -->
+<!ENTITY % rdbhier2	    PUBLIC
+  "-//KDE//ELEMENTS DocBook Hierarchy Redeclarations 2 V1.0//EN"     >
+<!ENTITY % dbhier.redecl2.module "INCLUDE"			     >
+
+<!-- For better synopses (eg OO programming languages)		   
+     See http://nwalsh.com/docbook/edbsyn/index.html		   
+     Included in DocBook 4.0.                                      -->
+<!--ENTITY % edbsyn SYSTEM "edbsyn/edbsyn.dtd"			       >
+%edbsyn; -->
+
+<!-- Temporary solution -->
+<!ENTITY copy  "(c)"--=copyright sign-->
+<!ENTITY trade "[tm]"--=trade mark sign-->
+<!ENTITY reg   "(R)"--/circledR =registered sign-->
+
+<!-- ============================================================= -->
+<!--			 Original DocBook DTD			   -->
+<!-- ============================================================= -->
+
+<!ENTITY % DocBookDTD	    PUBLIC
+  "-//OASIS//DTD DocBook V3.1//EN"				     >
+%DocBookDTD;
+
+
+<!-- ============================================================= -->
+<!--          Modifications to the original DocBook DTD            -->
+<!-- ============================================================= -->
+<!-- ONLY to supply declarations that were switched off in the 
+     first "Modifications" section -->
+
+<!ENTITY % kde.modifications SYSTEM "kde-modifications.elements">
+%kde.modifications;
+
+
+<!-- ============================================================= -->
+<!--		    Extensions to the DocBook DTD		   -->
+<!-- ============================================================= -->
+<!-- Defining extra general entities is allowed.                   -->
+
+<!ENTITY % kde.general.entities	PUBLIC
+  "-//KDE//ENTITIES DocBook General Entity Declarations V1.0//EN"    >
+%kde.general.entities;

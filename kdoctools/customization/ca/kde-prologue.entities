@@ -1,0 +1,40 @@
+<!ENTITY language "ca">
+
+<!-- These entities should be translated, should therefore be stored
+     separately. -->
+<!ENTITY % kde.translated.entities
+                            SYSTEM "strings.entities"                >
+%kde.translated.entities;
+
+<!-- The following entities should only use &kappname; in their 
+     text                                                          -->
+
+<!-- Licence links; see ksgmltools/TODO -->
+<!ENTITY underGPL           SYSTEM
+  "entities/underGPL.docbook"                       ><!-- level: para -->
+<!ENTITY underFDL           SYSTEM
+  "entities/underFDL.docbook"                       ><!-- level: para -->
+<!ENTITY underBSDLicense    SYSTEM
+  "entities/underBSDLicense.docbook"                ><!-- level: para -->
+<!ENTITY underArtisticLicense SYSTEM
+  "entities/underArtisticLicense.docbook"           ><!-- level: para -->
+<!ENTITY underX11License    SYSTEM
+  "entities/underX11License.docbook"                ><!-- level: para -->
+
+<!ENTITY reporting.bugs     SYSTEM
+  "entities/report-bugs.docbook"                       ><!-- level: ? -->
+<!ENTITY updating.documentation SYSTEM
+  "entities/update-doc.docbook"                     ><!-- level: para -->
+
+
+<!-- FDL notice -->
+<!ENTITY FDLNotice PUBLIC "-//KDE//DOCUMENT GNU Free Documentation Notice//CA"
+         "entities/fdl-notice.docbook">
+<!-- meant to be included, so no NDATA or CDATA (why?) -->
+
+<!-- These entities may be extended by the authors and translators.
+     They should therefore be stored separately.  Moreover, they MUST
+     come last, to avoid overriding problems. -->
+<!ENTITY % kde.language.specific
+                            SYSTEM "user.entities"                   >
+%kde.language.specific;

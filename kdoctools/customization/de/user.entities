@@ -1,0 +1,19 @@
+<!-- This file contains entities (only!) to make authoring/translating
+     a document easier.  They are necessarily language-specific.
+     In the case of name clashes, entities in this file always lose.
+     Keep the entities simple, but _always_ provide them with full markup.
+     Please keep the entities sorted on the name: it will avoid duplicate
+     names (which if they occur will cost you a _lot_ of time)
+ -->
+
+<!ENTITY kontrollleiste "<application>Kontrollleiste</application>" -- kicker -->
+<!ENTITY mondphase "<application>Mondphase</application>" -- kmoon -->
+<!ENTITY weltzeit "<application>Weltzeituhr</application>" -- kworldwatch -->
+<!ENTITY Strg "<keycap>Strg</keycap>" -- ctrl -->
+<!ENTITY zb     "<abbrev>z.B.</abbrev>" -- eg -->
+<!ENTITY kde-hilfe "<application>KDE-Hilfe</application>" -- kde help -->
+<!ENTITY khilfezentrum "<application>KDE-Hilfezentrum</application>" -- khelpcenter -->
+<!ENTITY kcc "<application>KDE-Kontrollzentrum</application>" -- kcc -->
+<!ENTITY kde "K-Arbeitsumgebung" -- kde -->
+
+

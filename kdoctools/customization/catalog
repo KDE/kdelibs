@@ -1,0 +1,138 @@
+--
+Recommended catalogue for KDE DocBook
+
+Copyright (C) 1999-2001 Frederik Fouvry
+ 
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+ 
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+ 
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+Send suggestions, comments, etc. to Frederik Fouvry
+<fouvry@coli.uni-sb.de>.
+--
+
+OVERRIDE YES
+SGMLDECL "kde.dcl"
+
+			    -- DocBook --
+
+PUBLIC "-//KDE//DTD DocBook V3.1-Based Variant V1.0//EN"
+       "dtd/kde.dtd"
+PUBLIC "-//KDE//DTD DocBook V4.1-Based Variant V1.0//EN"
+       "dtd/kde-next.dtd"
+PUBLIC "-//KDE//DTD DocBook XML V4.1.2-Based Variant V1.0//EN"
+       "dtd/kdex.dtd"
+-- This is to work round a bug in the docbook tools --
+PUBLIC "-//KDE//DTD DocBook XML V4.1-Based Variant V1.0//EN"
+       "dtd/kdex.dtd"
+-- --
+PUBLIC "+//IDN kde.org//DTD DocBook V4.1-Based Variant V1.0//EN"
+       "dtd/kde-next.dtd"
+PUBLIC "-//KDE//ELEMENTS DocBook Hierarchy Redeclarations 2 V2.0//EN"
+       "dtd/kde-rdbhier2.elements"
+PUBLIC "-//KDE//ELEMENTS DocBook XML Hierarchy Redeclarations 2 V2.0//EN"
+       "dtd/kdex-rdbhier2.elements"
+PUBLIC "-//KDE//ELEMENTS DocBook Hierarchy Redeclarations 2 V1.0//EN"
+       "dtd/kde-rdbhier2.elements"
+PUBLIC "-//KDE//ELEMENTS DocBook Pool Redeclarations V2.0//EN"
+       "dtd/kde-rdbpool.elements"
+PUBLIC "-//KDE//ELEMENTS DocBook XML Pool Redeclarations V2.0//EN"
+       "dtd/kdex-rdbpool.elements"
+PUBLIC "-//KDE//ELEMENTS DocBook Pool Redeclarations V1.0//EN"
+       "dtd/kde-rdbpool.elements"
+PUBLIC "-//KDE//ENTITIES DocBook General Entity Declarations V1.0//EN"
+       "entities/kde-genent.entities"
+PUBLIC "-//KDE//ENTITIES DocBook General Entity Declarations V2.0//EN"
+       "entities/kde-genent.entities"
+PUBLIC "-//KDE//ENTITIES DocBook XML General Entity Declarations V2.0//EN"
+       "entities/kdex-genent.entities"
+PUBLIC "-//KDE//ELEMENTS DocBook XML Modifications V2.0//EN"
+       "dtd/kdex-modifications.elements"
+
+		      -- General KDE Entities --
+
+PUBLIC "-//KDE//ENTITIES Documentation V1.0//EN"
+       "entities/kde-prologue.entities"
+PUBLIC "-//KDE//ENTITIES Documentation V2.0//EN"
+       "entities/kde-prologue.entities"
+PUBLIC "-//KDE//ENTITIES DocBook XML Localisation Entity Declarations V2.0//EN"
+       "entities/kdex-l10n.entities"
+PUBLIC "-//KDE//ENTITIES Application-Variable Entities V1.0//EN"
+       "entities/kde-prologue.entities"
+PUBLIC "-//KDE//ENTITIES Application-Variable Entities V2.0//EN"
+       "entities/kde-prologue.entities"
+
+		  -- DocBook Modular Style Sheets --
+
+PUBLIC "-//KDE//DOCUMENT Style Sheet V1.0//EN"
+       "stylesheets/kde.dsl"
+PUBLIC "-//KDE//ENTITIES Localisation Style Sheet Entities//EN"
+       "stylesheets/kde-l10n.entities"
+
+		     -- Various external files --
+
+-- only DocBook SGML files are in entities, the others are in
+   kdelibs/doc/common or in kdelibs/licenses --
+
+PUBLIC "-//GNU//DOCUMENT GNU General Public License V2//EN"
+       "entities/gpl-license"
+PUBLIC "-//GNU//DOCUMENT GNU General Public License V2 (HTML)//EN"
+       "entities/gpl-license.html"
+PUBLIC "-//GNU//DOCUMENT GNU Lesser General Public License V2.1//EN"
+       "entities/lgpl-license"
+PUBLIC "-//GNU//DOCUMENT GNU Lesser General Public License V2.1 (HTML)//EN"
+       "entities/lgpl-license.html"
+PUBLIC "-//GNU//DOCUMENT GNU Free Documentation License V1.1//EN"
+       "entities/fdl-license"
+PUBLIC "-//GNU//DOCUMENT GNU Free Documentation License V1.1 (HTML)//EN"
+       "entities/fdl-license.html"
+PUBLIC "-//KDE//DOCUMENT X11 License//EN"
+       "entities/x11-license"
+PUBLIC "-//KDE//DOCUMENT X11 License (HTML)//EN"
+       "entities/x11-license.html"
+PUBLIC "-//KDE//DOCUMENT BSD License//EN"
+       "entities/bsd-license"
+PUBLIC "-//KDE//DOCUMENT BSD License (HTML)//EN"
+       "entities/bsd-license.html"
+PUBLIC "-//KDE//DOCUMENT Artistic License//EN"
+       "entities/artistic-license"
+PUBLIC "-//KDE//DOCUMENT Artistic License//EN"
+       "entities/artistic-license.html"
+
+CATALOG ca/catalog
+CATALOG cs/catalog
+CATALOG da/catalog
+CATALOG de/catalog
+CATALOG el/catalog
+CATALOG en/catalog
+CATALOG es/catalog
+CATALOG et/catalog
+CATALOG fi/catalog
+CATALOG fr/catalog
+CATALOG hu/catalog
+CATALOG it/catalog
+CATALOG ja/catalog
+CATALOG ko/catalog
+CATALOG nl/catalog
+CATALOG no/catalog
+CATALOG pl/catalog
+CATALOG pt-BR/catalog
+CATALOG pt/catalog
+CATALOG ro/catalog
+CATALOG ru/catalog
+CATALOG sk/catalog
+CATALOG sl/catalog
+CATALOG sr/catalog
+CATALOG sv/catalog
+CATALOG zh-CN/catalog
+CATALOG zh-TW/catalog

@@ -1,0 +1,121 @@
+<!--
+    Document Type Definition for DocBook XML as used in the KDE documentation
+    
+    Copyright (C) 2001 Frederik Fouvry
+     
+    This program is free software; you can redistribute it and/or
+    modify it under the terms of the GNU General Public License
+    as published by the Free Software Foundation; either version 2
+    of the License, or (at your option) any later version.
+     
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+     
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+    
+    Send suggestions, comments, etc. to Frederik Fouvry
+    <fouvry@coli.uni-sb.de>.
+
+
+    USAGE
+
+TEMPORARY FIX: Do not use a three-place version number in the DOCTYPE
+declarations.  The docbook tools contain a bug such that it cannot
+handle these.  The fix consists of using the version number V4.1
+instead of 4.1.2.  Reverting to 4.1 seems to introduce a pile of
+catalog errors I'd rather stay away from (they're easy to fix though).
+
+    Refer to this DTD as
+
+      "-//KDE//DTD DocBook XML V4.1.2-Based Variant V1.0//EN"
+
+    For instance:
+
+      <!DOCTYPE book PUBLIC "-//KDE//DTD DocBook XML V4.1.2-Based Variant V1.0//EN"
+                     "docbookx.dtd">
+
+    and use catalog as the catalogue file.
+
+    The system identifiers should be relative to the directories the parser
+    searches (for nsgmls for instance, this is $SGML_SEARCH_PATH).  If you have
+    permanent internet access, you can use any URLs (and you don't have to
+    install docbook).
+-->
+
+
+<!-- ============================================================= -->
+<!--	      Modifications to the original DocBook DTD		   -->
+<!-- ============================================================= -->
+<!-- Declarations in this part should only *restrict* the DocBook 
+     DTD                                                           -->
+
+<!-- Modifications in pool
+     %rdbpool; is called in the DocBook DTD
+     NEEDS TO BE CHECKED ON CHANGES
+ -->
+<!ENTITY % rdbpool	    PUBLIC
+  "-//KDE//ELEMENTS DocBook XML Pool Redeclarations V2.0//EN"	     
+  "kdex-rdbpool.elements"                                           >
+<!ENTITY % dbpool.redecl.module "INCLUDE"			     >
+
+<!-- Modifications in hierarchy
+     %rdbhier2; is called in the DocBook DTD
+     NEEDS TO BE CHECKED ON CHANGES
+ -->
+<!ENTITY % rdbhier2	    PUBLIC
+  "-//KDE//ELEMENTS DocBook XML Hierarchy Redeclarations 2 V2.0//EN"     
+  "kdex-rdbhier2.elements"                                          >
+<!ENTITY % dbhier.redecl2.module "INCLUDE"			     >
+
+<!-- For Java-style refentries	   
+     Based on DocBook 4.0.                                         -->
+<!--ENTITY % jrefentry      PUBLIC
+  "-//Norman Walsh//DTD JRefEntry V1.0//EN"                          >
+%jrefentry; -->
+
+<!-- Temporary solution -->
+<!ENTITY copy  "(c)"> <!--=copyright sign-->
+<!ENTITY trade "[tm]"> <!--=trade mark sign-->
+<!ENTITY reg   "(R)"> <!--/circledR =registered sign-->
+
+
+<!-- ============================================================= -->
+<!--			 Original DocBook DTD			   -->
+<!-- ============================================================= -->
+
+<!ENTITY % DocBookDTD	    PUBLIC
+  "-//OASIS//DTD DocBook XML V4.1.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd"         >
+%DocBookDTD;
+
+
+<!-- ============================================================= -->
+<!--          Modifications to the original DocBook DTD            -->
+<!-- ============================================================= -->
+<!-- ONLY to supply declarations that were switched off in the 
+     first "Modifications" section -->
+
+<!ENTITY % kde.modifications PUBLIC
+  "-//KDE//ELEMENTS DocBook XML Modifications V2.0//EN"
+  "kdex-modifications.elements">
+%kde.modifications;
+
+
+<!-- ============================================================= -->
+<!--		    Extensions to the DocBook DTD		   -->
+<!-- ============================================================= -->
+<!-- Is empty, except for what could go in dbgenent.mod            -->
+
+<!ENTITY % kde.general.entities	PUBLIC
+  "-//KDE//ENTITIES DocBook XML General Entity Declarations V2.0//EN"    
+  "../entities/kdex-genent.entities"                                >
+%kde.general.entities;
+
+<!ENTITY % kde.i18n.entities PUBLIC
+  "-//KDE//ENTITIES DocBook XML Localisation Entity Declarations V2.0//EN"
+  "../entities/kdex-l10n.entities">
+%kde.i18n.entities;

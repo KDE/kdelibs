@@ -1,0 +1,322 @@
+<!--
+    Language-independent entities for the KDE documentation
+    
+    Copyright (C) 1999-2001 Frederik Fouvry
+     
+    This program is free software; you can redistribute it and/or
+    modify it under the terms of the GNU General Public License
+    as published by the Free Software Foundation; either version 2
+    of the License, or (at your option) any later version.
+     
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+     
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+    
+    Send suggestions, comments, etc. to Frederik Fouvry
+    <fouvry@coli.uni-sb.de>.
+
+
+    USAGE
+
+    Refer to this file as
+
+      "-//KDE//ENTITIES Documentation V2.0//EN"
+
+    For instance:
+
+     <!DOCTYPE Book PUBLIC "-//KDE//DTD DocBook V3.1-Based Variant V1.0//EN" [
+      <!ENTITY kmouse "<application>KMouse</application>">
+      <!ENTITY kappname "&kmouse;">
+      <!ENTITY % ents "-//KDE//ENTITIES Documentation V2.0//EN">
+      %ents;
+     ]>
+
+    (This example is the smallest possible.)  Call this file in the
+    *SGML prologue* of your document.  If you don't set kappname, it
+    will use the default text "this application".
+
+    Like kde-genent.entities it defines a set of general entities.
+    The difference with kde-genent.entities is that these texts vary
+    with the *application name* (and with *nothing* else).  To that
+    effect, they use an entity &kappname;.  Completely invariant texts
+    go in kde-genent.entities.  Please send requests to the
+    kde-docbook list.
+
+    The entities available for modification are the following (do NOT
+    change any others!):
+
+    . kappname
+    . FDLIS (% - if "INCLUDE", set also FDLISTitles)
+    . FDLFCT (% - if "INCLUDE", set also FDLFCTTitles)
+    . FDLBCT (% - if "INCLUDE", set also FDLBCTTitles)
+    . addindex (%)
+
+    (% indicates parameter entities whose value should be "INCLUDE" if
+    set).  The others are general entities.  The ones that begin with
+    `FDL' should be set according to the guidelines in the GNU Free
+    Documentation License.  %addindex; set to INCLUDE will trigger the
+    inclusion of the index file, which should only be done when the file
+    is present (ideally with `-i addindex').  If there are too many
+    problems with it, I will enforce this ;-)
+
+    Calling these definitions as indicated above will make the
+    following entities available for use in the text:
+    . &license-links;
+    . &FDLNotice;
+-->
+
+<!-- ============================================================= -->
+<!--                Extensions to the DocBook DTD                  -->
+<!-- ============================================================= -->
+
+<!-- No idea why this works: it shouldn't ...; well not here and like this 
+     anyway -->
+<!ENTITY % addindex "IGNORE">
+<![%addindex;[
+<!ENTITY documentation.index SYSTEM "docindex.docbook">
+]]>
+<!ENTITY documentation.index "">
+
+<!-- Entities to fill in slots in docbook version of FDL notice -->
+<!ENTITY % FDLIS "IGNORE">
+<!ENTITY % FDLFCT "IGNORE">
+<!ENTITY % FDLBCT "IGNORE">
+
+
+<!-- All supported languages -->
+<!ENTITY % Catalan "IGNORE">
+<![%Catalan;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Catalan Documentation V1.0//CA"
+           "../ca/kde-prologue.entities">
+%kde.l10n.ents;
+<!ENTITY % kde.i-default "IGNORE">
+]]>
+
+<!ENTITY % Czech "IGNORE">
+<![%Czech;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Czech Documentation V1.0//CS"
+           "../cs/kde-prologue.entities">
+%kde.l10n.ents;
+<!ENTITY % kde.i-default "IGNORE">
+]]>
+
+<!ENTITY % Danish "IGNORE">
+<![%Danish;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Danish Documentation V1.0//DA"
+           "../da/kde-prologue.entities">
+%kde.l10n.ents;
+<!ENTITY % kde.i-default "IGNORE">
+]]>
+
+<!ENTITY % German "IGNORE">
+<![%German;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES German Documentation V1.0//DE"
+           "../de/kde-prologue.entities">
+%kde.l10n.ents;
+<!ENTITY % kde.i-default "IGNORE">
+]]>
+
+<!ENTITY % Greek "IGNORE">
+<![%Greek;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Greek Documentation V1.0//EL"
+           "../el/kde-prologue.entities">
+%kde.l10n.ents;
+<!ENTITY % kde.i-default "IGNORE">
+]]>
+
+<!ENTITY % English "IGNORE">
+<![%English;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES English Documentation V1.0//EN"
+           "../en/kde-prologue.entities">
+%kde.l10n.ents;
+<!ENTITY % kde.i-default "IGNORE">
+]]>
+
+<!ENTITY % Spanish "IGNORE">
+<![%Spanish;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Spanish Documentation V1.0//ES"
+           "../es/kde-prologue.entities">
+%kde.l10n.ents;
+<!ENTITY % kde.i-default "IGNORE">
+]]>
+
+<!ENTITY % Estonian "IGNORE">
+<![%Estonian;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Estonian Documentation V1.0//ET"
+           "../et/kde-prologue.entities">
+%kde.l10n.ents;
+<!ENTITY % kde.i-default "IGNORE">
+]]>
+
+<!ENTITY % Finnish "IGNORE">
+<![%Finnish;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Finnish Documentation V1.0//FI"
+           "../fi/kde-prologue.entities">
+%kde.l10n.ents;
+<!ENTITY % kde.i-default "IGNORE">
+]]>
+
+<!ENTITY % French "IGNORE">
+<![%French;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES French Documentation V1.0//FR"
+           "../fr/kde-prologue.entities">
+%kde.l10n.ents;
+<!ENTITY % kde.i-default "IGNORE">
+]]>
+
+<!ENTITY % Hungarian "IGNORE">
+<![%Hungarian;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Hungarian Documentation V1.0//HU"
+           "../hu/kde-prologue.entities">
+%kde.l10n.ents;
+<!ENTITY % kde.i-default "IGNORE">
+]]>
+
+<!ENTITY % Italian "IGNORE">
+<![%Italian;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Italian Documentation V1.0//IT"
+           "../it/kde-prologue.entities">
+%kde.l10n.ents;
+<!ENTITY % kde.i-default "IGNORE">
+]]>
+
+<!ENTITY % Japanese "IGNORE">
+<![%Japanese;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Japanese Documentation V1.0//JA"
+           "../ja/kde-prologue.entities">
+%kde.l10n.ents;
+<!ENTITY % kde.i-default "IGNORE">
+]]>
+
+<!ENTITY % Korean "IGNORE">
+<![%Korean;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Korean Documentation V1.0//KO"
+           "../ko/kde-prologue.entities">
+%kde.l10n.ents;
+<!ENTITY % kde.i-default "IGNORE">
+]]>
+
+<!ENTITY % Dutch "IGNORE">
+<![%Dutch;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Dutch Documentation V1.0//NL"
+           "../nl/kde-prologue.entities">
+%kde.l10n.ents;
+<!ENTITY % kde.i-default "IGNORE">
+]]>
+
+<!ENTITY % Norwegian "IGNORE">
+<![%Norwegian;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Norwegian Documentation V1.0//NO"
+           "../no/kde-prologue.entities">
+%kde.l10n.ents;
+<!ENTITY % kde.i-default "IGNORE">
+]]>
+
+<!ENTITY % Polish "IGNORE">
+<![%Polish;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Polish Documentation V1.0//PL"
+           "../pl/kde-prologue.entities">
+%kde.l10n.ents;
+<!ENTITY % kde.i-default "IGNORE">
+]]>
+
+<!ENTITY % Portuguese "IGNORE">
+<![%Portuguese;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Portuguese Documentation V1.0//PT"
+           "../pt/kde-prologue.entities">
+%kde.l10n.ents;
+<!ENTITY % kde.i-default "IGNORE">
+]]>
+
+<!ENTITY % Brasilian-Portuguese "IGNORE">
+<![%Brasilian-Portuguese;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Brasilian-Portuguese Documentation V1.0//PTBR"
+           "../pt-BR/kde-prologue.entities">
+%kde.l10n.ents;
+<!ENTITY % kde.i-default "IGNORE">
+]]>
+
+<!ENTITY % Romanian "IGNORE">
+<![%Romanian;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Romanian Documentation V1.0//RO"
+           "../ro/kde-prologue.entities">
+%kde.l10n.ents;
+<!ENTITY % kde.i-default "IGNORE">
+]]>
+
+<!ENTITY % Russian "IGNORE">
+<![%Russian;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Russian Documentation V1.0//RU"
+           "../ru/kde-prologue.entities">
+%kde.l10n.ents;
+<!ENTITY % kde.i-default "IGNORE">
+]]>
+
+<!ENTITY % Slovak "IGNORE">
+<![%Slovak;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Slovak Documentation V1.0//SK"
+           "../sk/kde-prologue.entities">
+%kde.l10n.ents;
+<!ENTITY % kde.i-default "IGNORE">
+]]>
+
+<!ENTITY % Slovenian "IGNORE">
+<![%Slovenian;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Slovenian Documentation V1.0//SL"
+           "../sl/kde-prologue.entities">
+%kde.l10n.ents;
+<!ENTITY % kde.i-default "IGNORE">
+]]>
+
+<!ENTITY % Serbian "IGNORE">
+<![%Serbian;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Serbian Documentation V1.0//SR"
+           "../sr/kde-prologue.entities">
+%kde.l10n.ents;
+<!ENTITY % kde.i-default "IGNORE">
+]]>
+
+<!ENTITY % Swedish "IGNORE">
+<![%Swedish;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Swedish Documentation V1.0//SV"
+           "../sv/kde-prologue.entities">
+%kde.l10n.ents;
+<!ENTITY % kde.i-default "IGNORE">
+]]>
+
+<!ENTITY % Continental-Chinese "IGNORE">
+<![%Continental-Chinese;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Continental-Chinese Documentation V1.0//ZHCN"
+           "../zh-CN/kde-prologue.entities">
+%kde.l10n.ents;
+<!ENTITY % kde.i-default "IGNORE">
+]]>
+
+<!ENTITY % Traditional-Chinese "IGNORE">
+<![%Traditional-Chinese;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Traditional Chinese Documentation V1.0//ZHTW"
+           "../zh-TW/kde-prologue.entities">
+%kde.l10n.ents;
+<!ENTITY % kde.i-default "IGNORE">
+]]>
+
+<!-- Default: English -->
+<!ENTITY % kde.i-default "INCLUDE">
+<![%kde.i-default;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES English Documentation V1.0//EN"
+           "../en/kde-prologue.entities">
+%kde.l10n.ents;
+]]>
+
+<!ENTITY % DBPED1.0 "INCLUDE">
+<![%DBPED1.0;[
+<![%addindex;[
+<!ENTITY kdedocindex SYSTEM "docindex.docbook">
+]]>
+<!ENTITY kdedocindex "">
+]]>
