@@ -44,12 +44,20 @@ IsContainer defaults to false - note, any value except an empty one is
                                 container, just omit this line.
 Group defaults to "KDE"
 
-If you somehow need extra includes in kdewidgets.cpp, add them to the
-[Includes] section, additional code for the plugin constructor goes
-to [Init], code for the destructor to [Destroy]
+There are some global options that you can have.
+
+[Global]
+Init=new InitCode();
+Destroy= delete object;
+PluginName=MyPlugin
+
+PluginName overrides the passed in value at the command line and is optional.
+Init and Destroy are both optional arguments that can be used for custom build
+up and tear down code.
 
 Have fun!
 
 
+Ian Reinhart Geiser <geiseri@kde.org>
 Daniel Molkentin <molkentin@kde.org>
 Malte Starostik <malte@kde.org>

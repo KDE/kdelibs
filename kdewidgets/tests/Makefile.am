@@ -18,23 +18,13 @@
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
 
-SUBDIRS=. pics tests
-AM_CXXFLAGS = -DQT_PLUGIN
+test-local: testwithpixmaps.cpp testkde.cpp
+	md5sum -c $(srcdir)/sums
 
-INCLUDES = -I$(top_srcdir)/kfile $(all_includes)
+testwithpixmaps.cpp: test.widgets
+	../makekdewidgets -o testwithpixmaps.cpp -p $(top_srcdir)/kdewidgets/pics $<
+testkde.cpp: test.widgets
+	../makekdewidgets -o testkde.cpp $<
 
-bin_PROGRAMS = makekdewidgets
-makekdewidgets_SOURCES = makekdewidgets.cpp
-makekdewidgets_LDFLAGS = $(KDE_RPATH) $(all_libraries)
-makekdewidgets_LDADD = $(LIB_QT) ../kdecore/libkdecore.la 
-
-kde_widget_LTLIBRARIES = kdewidgets.la
-kdewidgets_la_LDFLAGS = $(KDE_PLUGIN) -module $(all_libraries)
-kdewidgets_la_LIBADD = $(LIB_KIO) $(LIB_KABC)
-kdewidgets_la_SOURCES = classpreviews.cpp kdewidgets.cpp
-
-kdewidgets.cpp: kde.widgets makekdewidgets
-	./makekdewidgets -o kdewidgets.cpp $<
-
-CLEANFILES = kdewidgets.cpp
+CLEANFILES = testwithpixmaps.cpp testkde.cpp
 
