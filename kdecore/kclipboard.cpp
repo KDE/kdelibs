@@ -426,7 +426,7 @@ const QString KClipboard::text()
     return QString::null;
 
   QByteArray ba = buffer();
-  return ba + m_mimeTypeLen;
+  return ba.data() + m_mimeTypeLen;
 }
 
 void KClipboard::setOctetStream( QByteArray& _arr )
