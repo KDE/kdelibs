@@ -345,7 +345,9 @@ String Window::toString() const
 
 KJSO Window::get(const UString &p) const
 {
-  //kdDebug() << "Window::get " << p.qstring() << endl;
+#ifdef KJS_VERBOSE
+  kdDebug() << "Window::get " << p.qstring() << endl;
+#endif
   if (p == "closed")
     return Boolean(m_part.isNull());
 
@@ -659,6 +661,9 @@ KJSO Window::get(const UString &p) const
 
 void Window::put(const UString &p, const KJSO &v)
 {
+#ifdef KJS_VERBOSE
+  kdDebug() << "Window::put " << p.qstring() << endl;
+#endif
   if (p == "status") {
     String s = v.toString();
     m_part->setJSStatusBarText(s.value().qstring());
@@ -1171,7 +1176,9 @@ void WindowQObject::timeoutClose()
 
 KJSO FrameArray::get(const UString &p) const
 {
-  //kdDebug() << "FrameArray::get " << p.qstring() << " part=" << (void*)part << endl;
+#ifdef KJS_VERBOSE
+  kdDebug() << "FrameArray::get " << p.qstring() << " part=" << (void*)part << endl;
+#endif
   if (part.isNull())
     return Undefined();
 
@@ -1205,7 +1212,9 @@ Location::Location(KHTMLPart *p) : m_part(p) { }
 
 KJSO Location::get(const UString &p) const
 {
-  //kdDebug() << "Location::get " << p.qstring() << " m_part=" << (void*)m_part << endl;
+#ifdef KJS_VERBOSE
+  kdDebug() << "Location::get " << p.qstring() << " m_part=" << (void*)m_part << endl;
+#endif
 
   if (m_part.isNull())
     return Undefined();
@@ -1256,6 +1265,9 @@ KJSO Location::get(const UString &p) const
 
 void Location::put(const UString &p, const KJSO &v)
 {
+#ifdef KJS_VERBOSE
+  kdDebug() << "Location::put " << p.qstring() << " m_part=" << (void*)m_part << endl;
+#endif
   if (m_part.isNull())
     return;
 

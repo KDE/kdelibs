@@ -187,7 +187,9 @@ bool KJS::HTMLDocument::hasProperty(const UString &p, bool recursive) const
 
 KJSO KJS::HTMLDocument::tryGet(const UString &p) const
 {
-  //kdDebug() << "KJS::HTMLDocument::get " << p.qstring() << endl;
+#ifdef KJS_VERBOSE
+  kdDebug() << "KJS::HTMLDocument::get " << p.qstring() << endl;
+#endif
   DOM::HTMLDocument doc = static_cast<DOM::HTMLDocument>(node);
   DOM::HTMLBodyElement body = doc.body();
 
@@ -278,6 +280,9 @@ KJSO KJS::HTMLDocument::tryGet(const UString &p) const
 
 void KJS::HTMLDocument::tryPut(const UString &p, const KJSO& v)
 {
+#ifdef KJS_VERBOSE
+  kdDebug() << "KJS::HTMLDocument::tryPut " << p.qstring() << endl;
+#endif
   DOM::HTMLDocument doc = static_cast<DOM::HTMLDocument>(node);
 
   if (p == "title")
@@ -317,7 +322,9 @@ const TypeInfo KJS::HTMLElement::info = { "HTMLElement", HostType,
 KJSO KJS::HTMLElement::tryGet(const UString &p) const
 {
   DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
-  //kdDebug() << "KJS::HTMLElement::tryGet " << p.qstring() << " id=" << element.elementId() << endl;
+#ifdef KJS_VERBOSE
+  kdDebug() << "KJS::HTMLElement::tryGet " << p.qstring() << " id=" << element.elementId() << endl;
+#endif
 
   switch (element.elementId()) {
     case ID_HTML: {
@@ -1122,7 +1129,9 @@ void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
   DOM::DOMString str = v.isA(NullType) ? DOM::DOMString(0) : v.toString().value().string();
   DOM::Node n = (new DOMNode(KJS::toNode(v)))->toNode();
   DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
-  //kdDebug() << "KJS::HTMLElement::tryPut " << p.qstring() << " id=" << element.elementId() << endl;
+#ifdef KJS_VERBOSE
+  kdDebug() << "KJS::HTMLElement::tryPut " << p.qstring() << " id=" << element.elementId() << endl;
+#endif
 
   switch (element.elementId()) {
     case ID_HTML: {
@@ -1758,7 +1767,9 @@ DOM::Element KJS::HTMLSelectCollection::dummyElement()
 
 void KJS::HTMLSelectCollection::tryPut(const UString &p, const KJSO& v)
 {
-  //kdDebug() << "KJS::HTMLSelectCollection::tryPut " << p.qstring() << endl;
+#ifdef KJS_VERBOSE
+  kdDebug() << "KJS::HTMLSelectCollection::tryPut " << p.qstring() << endl;
+#endif
   // resize ?
   if (p == "length") {
     long newLen = v.toInt32();
