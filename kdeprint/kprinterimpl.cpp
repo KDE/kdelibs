@@ -197,13 +197,12 @@ void KPrinterImpl::statusMessage(const QString& msg, KPrinter *printer)
 		return;
 	}
 
-	QByteArray data, replyData;
-	QCString replyType;
+	QByteArray data;
 	QDataStream arg( data, IO_WriteOnly );
 	arg << message;
 	arg << (int)getpid();
 	arg << kapp->caption();
-	dclient->call( "kded", "kdeprintd", "statusMessage(QString,int,QString)", data, replyType, replyData );
+	dclient->send( "kded", "kdeprintd", "statusMessage(QString,int,QString)", data );
 }
 
 bool KPrinterImpl::startPrinting(const QString& cmd, KPrinter *printer, const QStringList& files, bool flag)
