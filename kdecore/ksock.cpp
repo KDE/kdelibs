@@ -19,6 +19,9 @@
 /*
  * $Id$
  * $Log$
+ * Revision 1.24.4.3  1999/04/18 19:49:23  kulow
+ * fixing bug reported by litsch.iep@t-online.de (Stephan Litsch)
+ *
  * Revision 1.24.4.2  1999/04/01 20:43:44  pbrown
  * socket patch from Dirk A. Mueller <dmuell@gmx.net>, forwarded to kde-devel
  * by Torben, applied.
@@ -368,7 +371,7 @@ bool KSocket::connect( const char *_host, unsigned short int _port )
       switch (ret)
       {
 	  case 0: break; // Timeout
-	  case 1: return(true); // Success
+	  case 1: case 2: return(true); // Success
 	  default: // Error
 	      ::close(sock);
 	      sock = -1;
