@@ -731,13 +731,15 @@ void KPixmapEffect::channelIntensity(QImage &image, float percent,
 
 void KPixmapEffect::blend(QImage &image, float initial_intensity, 
 			  const QColor &bgnd, GradientType eff,
-			  bool anti_dir, int )
+			  bool anti_dir)
 {
     int r_bgnd = bgnd.red(), g_bgnd = bgnd.green(), b_bgnd = bgnd.blue();
     int r, g, b;
     int ind;
 
     unsigned int xi, xf, yi, yf;
+    unsigned int a; // used for saving alpha channel info, 
+                    //    as proposed by Brian Rolfe <brianr@corel.ca>
 
     // check the boundaries of the initial intesity param
     float unaffected = 1;
@@ -789,7 +791,8 @@ void KPixmapEffect::blend(QImage &image, float initial_intensity,
 	  if (r > 255) r = 255; if (r < 0 ) r = 0;
 	  if (g > 255) g = 255; if (g < 0 ) g = 0;
 	  if (b > 255) b = 255; if (b < 0 ) b = 0;
-	  data[ind]=qRgb(r, g, b);
+	  a = qAlpha(data[ind]);
+	  data[ind] = qRgb(r, g, b) | ((uint)(a & 0xff) << 24);
 	}
       }
     }
@@ -823,7 +826,8 @@ void KPixmapEffect::blend(QImage &image, float initial_intensity,
 	  if (r > 255) r = 255; if (r < 0 ) r = 0;
 	  if (g > 255) g = 255; if (g < 0 ) g = 0;
 	  if (b > 255) b = 255; if (b < 0 ) b = 0;
-	  data[ind]=qRgb(r, g, b);
+	  a = qAlpha(data[ind]);
+	  data[ind] = qRgb(r, g, b) | ((uint)(a & 0xff) << 24);
 	}
       }
     }
@@ -843,6 +847,7 @@ void KPixmapEffect::blend(QImage &image, float initial_intensity,
 	    intensity = initial_intensity + sqrt(xvar * xvar + yvar * yvar);
 	  if (intensity > 1) intensity = 1;
 	  if (intensity < 0) intensity = 0;
+
 	  //NW
 	  ind = x + image.width()  * y ;
 	  r = qRed  (data[ind]) + (int)(intensity * 
@@ -854,7 +859,8 @@ void KPixmapEffect::blend(QImage &image, float initial_intensity,
 	  if (r > 255) r = 255; if (r < 0 ) r = 0;
 	  if (g > 255) g = 255; if (g < 0 ) g = 0;
 	  if (b > 255) b = 255; if (b < 0 ) b = 0;
-	  data[ind]=qRgb(r, g, b);
+	  a = qAlpha(data[ind]);
+	  data[ind] = qRgb(r, g, b) | ((uint)(a & 0xff) << 24);
 
 	  //NE
 	  ind = image.width() - x - 1 + image.width()  * y ;
@@ -867,7 +873,8 @@ void KPixmapEffect::blend(QImage &image, float initial_intensity,
 	  if (r > 255) r = 255; if (r < 0 ) r = 0;
 	  if (g > 255) g = 255; if (g < 0 ) g = 0;
 	  if (b > 255) b = 255; if (b < 0 ) b = 0;
-	  data[ind]=qRgb(r, g, b);
+	  a = qAlpha(data[ind]);
+	  data[ind] = qRgb(r, g, b) | ((uint)(a & 0xff) << 24);
 	}
       }
 
@@ -884,6 +891,7 @@ void KPixmapEffect::blend(QImage &image, float initial_intensity,
 	    intensity = initial_intensity + sqrt(xvar * xvar + yvar * yvar);
 	  if (intensity > 1) intensity = 1;
 	  if (intensity < 0) intensity = 0;
+
 	  //SW
 	  ind = x + image.width()  * (image.height() - y -1) ;
 	  r = qRed  (data[ind]) + (int)(intensity * 
@@ -895,7 +903,8 @@ void KPixmapEffect::blend(QImage &image, float initial_intensity,
 	  if (r > 255) r = 255; if (r < 0 ) r = 0;
 	  if (g > 255) g = 255; if (g < 0 ) g = 0;
 	  if (b > 255) b = 255; if (b < 0 ) b = 0;
-	  data[ind]=qRgb(r, g, b);
+	  a = qAlpha(data[ind]);
+	  data[ind] = qRgb(r, g, b) | ((uint)(a & 0xff) << 24);
 
 	  //SE
 	  ind = image.width()-x-1 + image.width() * (image.height() - y - 1) ;
@@ -908,11 +917,12 @@ void KPixmapEffect::blend(QImage &image, float initial_intensity,
 	  if (r > 255) r = 255; if (r < 0 ) r = 0;
 	  if (g > 255) g = 255; if (g < 0 ) g = 0;
 	  if (b > 255) b = 255; if (b < 0 ) b = 0;
-	  data[ind]=qRgb(r, g, b);
+	  a = qAlpha(data[ind]);
+	  data[ind] = qRgb(r, g, b) | ((uint)(a & 0xff) << 24);
 	}
       }
     }
       
-    else debug("not yet implemented");
+    else debug("not implemented");
 }
     

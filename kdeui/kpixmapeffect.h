@@ -83,7 +83,7 @@ public:
    */
   static void blend(QImage &image, float initial_intensity, 
 		    const QColor &bgnd, GradientType eff,
-		    bool anti_dir=false, int ncols=3);
+		    bool anti_dir=false);
 
   /**
    * Blends the provided pixmap (see the other method prototype)
@@ -118,7 +118,9 @@ inline void KPixmapEffect::blend(KPixmap &pixmap,
 					bool anti_dir, int ncols)
 {
   QImage image = pixmap.convertToImage();
-  blend(image, initial_intensity, bgnd, eff, anti_dir, ncols);
+  blend(image, initial_intensity, bgnd, eff, anti_dir);
+  //CT 21Aug1999 - I think we should check for a dithering here, isn't it?
+  //               In that case making this inline will be forbidden. Mosfet?
   pixmap.convertFromImage(image);
 }
 
