@@ -49,7 +49,7 @@ int main( int argc, char **argv )
    theApp = &a;
 
    RestartWidget* restartWidget = new RestartWidget;
-   MainWidget* mainWdg = new MainWidget(restartWidget->dockConfig);
+   MainWidget* mainWdg = new MainWidget(restartWidget->dockConfig,restartWidget->mdimode);
    restartWidget->setWindow(mainWdg);
 
    Hello* h1 = new Hello( "Hello1", "Click the right mouse button on the mainframe!", mainWdg);

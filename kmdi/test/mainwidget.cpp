@@ -26,10 +26,11 @@
 
 #include "mainwidget.h"
 
-MainWidget::MainWidget(QDomElement& dockConfig)
-: KMdiMainFrm(0L, "theMDIMainFrm")
+MainWidget::MainWidget(QDomElement& dockConfig,KMdi::MdiMode mode)
+: KMdiMainFrm(0L, "theMDIMainFrm",mode)
  ,m_dockConfig(dockConfig)
 {
+
    dockManager->setReadDockConfigMode(KDockManager::RestoreAllDockwidgets);
    initMenu();
 
@@ -86,7 +87,7 @@ MainWidget::~MainWidget()
     writeDockConfig(m_dockConfig);
     QDomDocument doc = m_dockConfig.ownerDocument();
     QString s = doc.toString();
-    QFile f("C:\\dc.txt");
+    QFile f("/tmp/dc.txt");
     f.open(IO_ReadWrite);
     f.writeBlock(s.latin1(), s.length());
     f.close();
@@ -107,6 +108,7 @@ void MainWidget::resizeEvent( QResizeEvent *pRSE)
 
 RestartWidget::RestartWidget():KMainWindow()
 {
+    mdimode=KMdi::ChildframeMode;
     QVBoxLayout* bl = new QVBoxLayout(this);
     QLabel* l = new QLabel("This is for the testing of\nKMdiMainFrm::read/writeDockConfig().\n", this);
     QCheckBox* b1 = new QCheckBox("KMdiMainFrm close/restart", this);
@@ -125,11 +127,12 @@ RestartWidget::RestartWidget():KMainWindow()
 void RestartWidget::onStateChanged(int on)
 {
     if (on) {
-        m_w = new MainWidget(dockConfig);
+        m_w = new MainWidget(dockConfig,mdimode);
         m_w->resize(500,500);
         m_w->show();
     }
     else {
+	mdimode=m_w->mdiMode();
         m_w->close();
 	delete m_w;
     }

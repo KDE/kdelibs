@@ -252,6 +252,8 @@ void KMdiMainFrm::setStandardMDIMenuEnabled() {
 //============ ~KMdiMainFrm ============//
 KMdiMainFrm::~KMdiMainFrm()
 {
+   delete d;
+   d=0;
    // safely close the windows so properties are saved...
    KMdiChildView *pWnd = 0L;
    while((pWnd = m_pDocumentViews->first()))closeWindow(pWnd, false); // without re-layout taskbar!
@@ -1667,10 +1669,10 @@ void KMdiMainFrm::findToolViewsDockedToMain(QPtrList<KDockWidget>* list,KDockWid
 
 void KMdiMainFrm::setupToolViewsForIDEALMode()
 {
-    m_leftContainer = createDockWidget("leftDock",SmallIcon("misc"),0L,"Left Dock");
-    m_rightContainer = createDockWidget("rightDock",SmallIcon("misc"),0L,"Right Dock");
-    m_topContainer = createDockWidget("topDock",SmallIcon("misc"),0L,"Top Dock");
-    m_bottomContainer = createDockWidget("bottomDock",SmallIcon("misc"),0L,"Bottom Dock");
+    m_leftContainer = createDockWidget("KMdiDock::leftDock",SmallIcon("misc"),0L,"Left Dock");
+    m_rightContainer = createDockWidget("KMdiDock::rightDock",SmallIcon("misc"),0L,"Right Dock");
+    m_topContainer = createDockWidget("KMdiDock::topDock",SmallIcon("misc"),0L,"Top Dock");
+    m_bottomContainer = createDockWidget("KMdiDock::bottomDock",SmallIcon("misc"),0L,"Bottom Dock");
 
     KDockWidget *mainDock=getMainDockWidget();
     KDockWidget *w=mainDock;

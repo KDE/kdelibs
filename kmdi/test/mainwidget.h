@@ -31,7 +31,7 @@ class MainWidget : public KMdiMainFrm
 {
     Q_OBJECT
 public:
-    MainWidget(QDomElement& dockConfig);
+    MainWidget(QDomElement& dockConfig,KMdi::MdiMode mode);
     virtual ~MainWidget();
     void initMenu();
 
@@ -63,6 +63,7 @@ private slots:
 public:
     QDomDocument domDoc;
     QDomElement dockConfig;
+    KMdi::MdiMode mdimode;
 private:
     MainWidget *m_w;
 };
