@@ -288,7 +288,7 @@ QValueList<PluginInfo> KMFactory::pluginList()
 {
 	QDir	d(locate("data", "kdeprint/plugins/"), "*.print", QDir::Name, QDir::Files);
 	QValueList<PluginInfo>	list;
-	for (int i=0; i<d.count(); i++)
+	for (uint i=0; i<d.count(); i++)
 	{
 		PluginInfo	info(pluginInfo(d.absFilePath(d[i])));
 		if (info.name.isEmpty())
@@ -342,7 +342,7 @@ QString KMFactory::autoDetect()
 {
 	QValueList<PluginInfo>	plugins = pluginList();
 	int	pluginIndex(-1), currentPrecedence(0);
-	for (int i=0;i<plugins.count();i++)
+	for (uint i=0;i<plugins.count();i++)
 	{
 		if (plugins[i].detectUris.count() > 0 && KdeprintChecker::check(plugins[i].detectUris)
 		    && (pluginIndex == -1 || plugins[i].detectPrecedence >= currentPrecedence))
