@@ -140,8 +140,6 @@ public:
     bool readOnly() const { return m_readOnly; }
     void setReadOnly(bool _readOnly) { m_readOnly = _readOnly; }
 
-    virtual void recalcStyle( StyleChange );
-
     DOMString name() const;
     void setName(const DOMString& name);
 

@@ -617,16 +617,6 @@ void HTMLGenericFormElementImpl::setParent(NodeImpl *parent)
     }
 }
 
-void HTMLGenericFormElementImpl::recalcStyle( StyleChange ch )
-{
-    //bool changed = changed();
-    HTMLElementImpl::recalcStyle( ch );
-
-    if (m_render /*&& changed*/)
-        m_render->updateFromElement();
-}
-
-
 bool HTMLGenericFormElementImpl::isSelectable() const
 {
     return  m_render && m_render->isWidget() &&

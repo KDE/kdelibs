@@ -61,9 +61,6 @@ HTMLImageElementImpl::~HTMLImageElementImpl()
 {
 }
 
-
-// DOM related
-
 NodeImpl::Id HTMLImageElementImpl::id() const
 {
     return ID_IMG;
@@ -75,7 +72,8 @@ void HTMLImageElementImpl::parseAttribute(AttributeImpl *attr)
     {
     case ATTR_ALT:
     case ATTR_SRC:
-        if (m_render) m_render->updateFromElement();
+        qDebug("GOT new SRC: %s", attr->value().string().latin1());
+        setChanged();
         break;
     case ATTR_WIDTH:
         addCSSLength(CSS_PROP_WIDTH, attr->value());

@@ -161,6 +161,14 @@ void HTMLElementImpl::parseAttribute(AttributeImpl *attr)
     }
 }
 
+void HTMLElementImpl::recalcStyle( StyleChange ch )
+{
+    ElementImpl::recalcStyle( ch );
+
+    if (m_render /*&& changed*/)
+        m_render->updateFromElement();
+}
+
 void HTMLElementImpl::addCSSProperty(int id, const DOMString &value)
 {
     if(!m_styleDecls) createDecl();

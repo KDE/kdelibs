@@ -49,6 +49,8 @@ public:
     void addCSSProperty(int id, int value);
     void removeCSSProperty(int id);
 
+    virtual void recalcStyle( StyleChange );
+
     DOMString innerHTML() const;
     DOMString innerText() const;
     bool setInnerHTML( const DOMString &html );
