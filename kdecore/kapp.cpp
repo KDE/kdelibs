@@ -2084,9 +2084,7 @@ int KApplication::random()
 
 QString KApplication::randomString(int length)
 {
-   if (!length) return QString::null;
-   if (length<0)
-      length=random();
+   if (length <=0 ) return QString::null;
 
    char *string=new char[length+1];
    string[length] = '\0';

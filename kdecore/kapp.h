@@ -507,10 +507,9 @@ public:
 
   /**
    * Generate a random string.  It operates in the range [A-Za-z0-9]
-   * @param length Generate a string of this length.  If negative, the
-   *               length will be random as well (from 0 to RAND_MAX)
+   * @param length Generate a string of this length.
    */
-  static QString randomString(int length=-1);
+  static QString randomString(int length);
 
   /**
    * Add a message type to the KIPC event mask. You can only add "system
@@ -788,6 +787,9 @@ private:
 #endif
 
 // $Log$
+// Revision 1.198  2000/11/29 19:00:48  mueller
+// docu fix
+//
 // Revision 1.197  2000/11/28 19:27:09  mueller
 // touching version number now that 2.0.1 is tagged. ..quickly running away
 //
