@@ -39,7 +39,8 @@ void KURL::encodeURL( QString& _url ) {
      
     for (int i = 0; i < old_length; i++) 
     {
-        static char *safe = "$-._!*(),"; /* RFC 1738 */
+        static char *safe = "$-._!*(),/"; /* RFC 1738 */
+        // '/' added by David, fix found by Michael Reiher
 
         char t = _url[i];
 
@@ -55,11 +56,11 @@ void KURL::encodeURL( QString& _url ) {
 	{
 	    new_url[ new_length++ ] = '%';
 
-	    char c = _url[ i ] / 16;
+	    unsigned char c = ((unsigned char)_url[ i ]) / 16;
 	    c += (c > 9) ? ('A' - 10) : '0';
 	    new_url[ new_length++ ] = c;
 
-	    c = _url[ i ] % 16;
+	    c = ((unsigned char)_url[ i ]) % 16;
 	    c += (c > 9) ? ('A' - 10) : '0';
 	    new_url[ new_length++ ] = c;
 	    
