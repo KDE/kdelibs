@@ -58,6 +58,7 @@
 #include <kseparator.h>
 #include <kdatepik.h>
 #include <kurllabel.h>
+#include <kmdcodec.h>
 
 #include <qframe.h>
 
@@ -167,10 +168,14 @@ CAItem::CAItem( QListView *view, QString name, QString cert, bool site, bool ema
 {
     m_module = module;
 KSSLX509Map mcert(name);
+QString tmp;
     setText(0, mcert.getValue("O"));
-    QString tmp = mcert.getValue("CN");
+    tmp = mcert.getValue("OU");
     tmp.replace(QRegExp("\n.*"), "");
     setText(1, tmp);
+    tmp = mcert.getValue("CN");
+    tmp.replace(QRegExp("\n.*"), "");
+    setText(2, tmp);
     _name = name;
     _cert = cert;
     _site = site;
@@ -281,7 +286,7 @@ QString whatstr;
   policies = new KSimpleConfig("ksslpolicies", false);
   pcerts = new KSimpleConfig("ksslcertificates", false);
   authcfg = new KSimpleConfig("ksslauthmap", false);
-  cacfg = new KSimpleConfig("ksslcalist", false);
+  cacfg = new KConfig("ksslcalist", false, false);
 
 #ifdef HAVE_SSL
   SSLv3Box = new QListView(tabSSL, "v3ciphers");
@@ -681,6 +686,7 @@ QString whatstr;
   QWhatsThis::add(caList, whatstr);
   grid->addMultiCellWidget(caList, 0, 7, 0, 6);
   caList->addColumn(i18n("Organization"));
+  caList->addColumn(i18n("Organizational Unit"));
   caList->addColumn(i18n("Common Name"));
   connect(caList, SIGNAL(selectionChanged()), SLOT(slotCAItemChanged()));
 
@@ -1762,7 +1768,66 @@ QCString oldpass = "";
 
 
 void KCryptoConfig::slotCAImport() {
+#ifdef HAVE_SSL
+KSSLCertificate *x;
+QString certFile = KFileDialog::getOpenFileName();
+QString name;
+QString certtext;
 
+	if (certFile.isEmpty())
+		return;
+
+	QFile qf(certFile);
+	qf.open(IO_ReadOnly);
+	qf.readLine(certtext, qf.size());
+
+	if (certtext.contains("-----BEGIN CERTIFICATE-----")) {
+		certtext = certtext.replace(QRegExp("-----BEGIN CERTIFICATE-----"), "");
+		certtext = certtext.replace(QRegExp("-----END CERTIFICATE-----"), "");
+		certtext = certtext.stripWhiteSpace();
+	} else {
+		// Must [could?] be DER
+		qf.close();
+		qf.open(IO_ReadOnly);
+		char *cr;
+		cr = new char[qf.size()+1];
+		qf.readBlock(cr, qf.size());
+		QByteArray qba;
+		qba.duplicate(cr, qf.size());
+		certtext = KCodecs::base64Encode(qba);
+		delete cr;
+	}
+	
+	qf.close();
+
+	x = KSSLCertificate::fromString(certtext.local8Bit());
+
+	if (!x) {
+		KMessageBox::sorry(this, 
+			i18n("The certificate file could not be loaded."), 
+			i18n("SSL"));
+		return;
+	}
+
+	name = x->getSubject();
+
+	for (CAItem *i = static_cast<CAItem *>(caList->firstChild());
+                                                                   i;
+                         i = static_cast<CAItem *>(i->nextSibling())) {
+		         if (i->configName() == name) {
+				 KMessageBox::error(this,
+				    i18n("You already have this signer certificate installed."), 
+				    i18n("SSL"));
+				 delete x;
+				 return;
+			 }
+	}
+
+	new CAItem(caList, name, x->toString(), true, true, true, this);
+
+	delete x;
+	configChanged();
+#endif
 }
 
 

@@ -342,7 +342,8 @@ private:
   QCheckBox *caSite, *caEmail, *caCode;
 
   KConfig *config;
-  KSimpleConfig *policies, *pcerts, *authcfg, *cacfg;
+  KSimpleConfig *policies, *pcerts, *authcfg;
+  KConfig *cacfg;
 
   bool ___lehack;       // to hack around a lineedit problem
 };
