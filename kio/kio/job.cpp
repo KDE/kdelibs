@@ -215,7 +215,7 @@ void Job::emitResult()
   if ( m_error && d->m_autoErrorHandling )
     showErrorDialog( d->m_errorParentWidget );
   emit result(this);
-  delete this;
+  deleteLater();
 }
 
 void Job::kill( bool quietly )
@@ -235,7 +235,7 @@ void Job::kill( bool quietly )
   {
     if ( m_progressId ) // in both cases we want to hide the progress window
       Observer::self()->jobFinished( m_progressId );
-    delete this;
+    deleteLater();
   }
 }
 
