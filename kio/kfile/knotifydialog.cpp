@@ -764,7 +764,7 @@ void KNotifyWidget::openSoundDialog( KURLRequester *requester )
     KFileDialog *fileDialog = requester->fileDialog();
     fileDialog->setCaption( i18n("Select Sound File") );
     QStringList filters;
-    filters << "audio/x-wav" << "audio/x-mp3" << "application/x-ogg"
+    filters << "audio/x-wav" << "audio/x-mp3" << "application/ogg"
             << "audio/x-adpcm";
     fileDialog->setMimeFilter( filters );
 
