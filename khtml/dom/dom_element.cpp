@@ -152,7 +152,7 @@ void Element::setAttribute( const DOMString &name, const DOMString &value )
 
 void Element::removeAttribute( const DOMString &name )
 {
-    return removeAttributeNS(DOMString(), name);
+    removeAttributeNS(DOMString(), name);
 }
 
 Attr Element::getAttributeNode( const DOMString &name )
