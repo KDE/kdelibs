@@ -67,18 +67,18 @@
 			("NOSHADE" "NOSHADE")))
     (kde-navigation-links prev next prevm nextm)))
 
-(define ($user-footer-navigation$ #!optional
-				  (prev (empty-node-list))
-				  (next (empty-node-list))
-				  (prevm (empty-node-list))
-				  (nextm (empty-node-list)))
-  (make sequence
-    (kde-navigation-links prev next prevm nextm)
-    (make empty-element gi: "HR"
-	  attributes: '(("WIDTH" "100%")
-			("SIZE" "2")
-			("ALIGN" "CENTER")
-			("NOSHADE" "NOSHADE")))))
+; (define ($user-footer-navigation$ #!optional
+; 				  (prev (empty-node-list))
+; 				  (next (empty-node-list))
+; 				  (prevm (empty-node-list))
+; 				  (nextm (empty-node-list)))
+;   (make sequence
+;     (kde-navigation-links prev next prevm nextm)
+;     (make empty-element gi: "HR"
+; 	  attributes: '(("WIDTH" "100%")
+; 			("SIZE" "2")
+; 			("ALIGN" "CENTER")
+; 			("NOSHADE" "NOSHADE")))))
 
 ; KDE-new
 ; derived from nav-up - can be improved (eg root =/= toc)
