@@ -1,10 +1,11 @@
 This file is meant to be a place to track of medium to large-scale API changes
 that we would like to make for the next binary incompatible release.
 
-- Remove the smart-to-dumb-pointer conversion operator from KSharedPointer
+- Remove the smart-to-dumb-pointer conversion operator from KSharedPtr
   and replace it with a T* Get() member function. An implict conversion is
   far too dangerous.
   See: http://groups.google.com/groups?selm=4ognb0%243cd%40linda.teleport.com&oe=UTF-8&output=gplain
+  Also free the client from the requirement to inherit from KShared.
 
 - Remove all KSocket, KServerSocket, KSocks and KExtendedSocket references
   throughout KDE in favour of libqt-addon's socket implementations.
