@@ -541,6 +541,12 @@ protected:
   }
 
   /**
+   * Reimplemented to reload the alternate background in palette changes.
+   * @internal
+   */
+  virtual bool event( QEvent * ); 
+
+  /**
    * Emit signal @ref execute.
    * @internal
    */

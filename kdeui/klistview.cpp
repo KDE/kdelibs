@@ -541,6 +541,14 @@ void KListView::leaveEvent( QEvent *e )
   QListView::leaveEvent( e );
 }
 
+bool KListView::event( QEvent *e )
+{
+  if (e->type() == QEvent::ApplicationPaletteChange)
+    d->alternateBackground=KGlobalSettings::alternateBackgroundColor();
+  
+  return QListView::event(e);
+}
+
 void KListView::contentsMousePressEvent( QMouseEvent *e )
 {
   if( (selectionModeExt() == Extended) && (e->state() & ShiftButton) && !(e->state() & ControlButton) )
@@ -1741,7 +1749,7 @@ const QColor &KListViewItem::backgroundColor()
     if (d->odd)
       return lv->alternateBackground();
   }
-  return listView()->viewport()->backgroundColor();
+  return listView()->viewport()->colorGroup().base();
 }
 
 void KListViewItem::paintCell(QPainter *p, const QColorGroup &cg, int column, int width, int alignment)
