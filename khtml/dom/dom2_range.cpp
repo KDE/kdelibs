@@ -5,6 +5,7 @@
  * (C) 2000 Gunnstein Lye (gunnstein@netcom.no)
  * (C) 2000 Frederik Holljen (frederik.holljen@hig.no)
  * (C) 2001 Peter Kelly (pmk@post.com)
+ * Copyright (C) 2003 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -347,6 +348,18 @@ DOMString Range::toHTML(  )
 
     return impl->toHTML();
 }
+
+DocumentFragment Range::createContextualFragment( const DOMString &html )
+{
+    if (!impl)
+        throw DOMException(DOMException::INVALID_STATE_ERR);
+
+    int exceptioncode = 0;
+    DocumentFragmentImpl *r = impl->createContextualFragment(html, exceptioncode);
+    throwException(exceptioncode);
+    return r;
+}
+
 
 void Range::detach(  )
 {

@@ -25,9 +25,6 @@ in the khtml sourcecode.
 # dom
 ===========================================================================
 
-- dom2_range.cpp / .h: createContextualFragment, requires merging of the
-  changes xml / html
-
 - dom_doc.cpp / .h: preferred Stylesheet stuff. how does this correlate
   to the changes in css_stylesheet.h / cpp ? <- It's independent (lars).
   requires merging of the impl in xml/html first
@@ -61,7 +58,6 @@ To investigate:
 
 Needs other stuff before it can be applied:
 - Identifier change (needs kjs2) (includes lengthPropertyName change)
-- DOMRange::createContextualFragment
 
 ===========================================================================
 # html

@@ -386,11 +386,11 @@ DOMString HTMLElementImpl::innerText() const
     return text;
 }
 
-bool HTMLElementImpl::setInnerHTML( const DOMString &html )
+DocumentFragmentImpl *HTMLElementImpl::createContextualFragment( const DOMString &html )
 {
     // the following is in accordance with the definition as used by IE
     if( endTag[id()] == FORBIDDEN )
-        return false;
+        return NULL;
     // IE disallows innerHTML on inline elements. I don't see why we should have this restriction, as our
     // dhtml engine can cope with it. Lars
     //if ( isInline() ) return false;
@@ -399,27 +399,74 @@ bool HTMLElementImpl::setInnerHTML( const DOMString &html )
         case ID_COLGROUP:
         case ID_FRAMESET:
         case ID_HEAD:
-        case ID_HTML:
         case ID_STYLE:
         case ID_TABLE:
         case ID_TBODY:
         case ID_TFOOT:
         case ID_THEAD:
         case ID_TITLE:
-        case ID_TR:
-            return false;
+            return NULL;
         default:
             break;
     }
     if ( !getDocument()->isHTMLDocument() )
-        return false;
+        return NULL;
 
     DocumentFragmentImpl *fragment = new DocumentFragmentImpl( docPtr() );
-    HTMLTokenizer *tok = new HTMLTokenizer( docPtr(), fragment );
-    tok->begin();
-    tok->write( html.string(), true );
-    tok->end();
-    delete tok;
+    {
+        HTMLTokenizer tok( docPtr(), fragment );
+        tok.begin();
+        tok.write( html.string(), true );
+        tok.end();
+    }
+
+    // Exceptions are ignored because none ought to happen here.
+    int ignoredExceptionCode;
+
+    // we need to pop <html> and <body> elements and remove <head> to
+    // accomadate folks passing complete HTML documents to make the
+    // child of an element.
+
+    NodeImpl *node = fragment->firstChild(); 
+    while (node != NULL) {
+	if (node->id() == ID_HTML || node->id() == ID_BODY) {
+	    NodeImpl *firstChild = node->firstChild();
+	    NodeImpl *child = firstChild; 
+	    while (child != NULL) {
+		NodeImpl *nextChild = child->nextSibling();
+		fragment->insertBefore(child, node, ignoredExceptionCode);
+                // FIXME: Does node leak here?
+		child = nextChild;
+	    }
+	    if (firstChild == NULL) {
+		NodeImpl *nextNode = node->nextSibling();
+		fragment->removeChild(node, ignoredExceptionCode);
+                // FIXME: Does node leak here?
+                node = nextNode;
+	    } else {
+		fragment->removeChild(node, ignoredExceptionCode);
+                // FIXME: Does node leak here?
+		node = firstChild;
+	    }
+	} else if (node->id() == ID_HEAD) {
+	    NodeImpl *nextNode = node->nextSibling();
+	    fragment->removeChild(node, ignoredExceptionCode);
+            // FIXME: Does node leak here?
+	    node = nextNode;
+	} else {
+	    node = node->nextSibling();
+	}
+    }
+
+    return fragment;
+}
+
+bool HTMLElementImpl::setInnerHTML( const DOMString &html )
+{
+    DocumentFragmentImpl *fragment = createContextualFragment( html );
+    if (fragment == NULL) {
+	return false;
+    }
 
     removeChildren();
     int ec = 0;

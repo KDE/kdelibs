@@ -6,6 +6,7 @@
  * (C) 2000 Gunnstein Lye (gunnstein@netcom.no)
  * (C) 2000 Frederik Holljen (frederik.holljen@hig.no)
  * (C) 2001 Peter Kelly (pmk@post.com)
+ * Copyright (C) 2003 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -848,6 +849,29 @@ DOMString RangeImpl::toHTML(  )
     // ### implement me!!!!
     return DOMString();
 }
+
+DocumentFragmentImpl *RangeImpl::createContextualFragment ( DOMString &html, int &exceptioncode )
+{
+   if (m_detached) {
+        exceptioncode = DOMException::INVALID_STATE_ERR;
+        return NULL;
+    }
+
+    if (! m_startContainer->isHTMLElement()) {
+	exceptioncode = DOMException::NOT_SUPPORTED_ERR;
+	return NULL;
+    }
+
+    HTMLElementImpl *e = static_cast<HTMLElementImpl *>(m_startContainer);
+    DocumentFragmentImpl *fragment = e->createContextualFragment(html);
+    if (!fragment) {
+	exceptioncode = DOMException::NOT_SUPPORTED_ERR;
+	return NULL;
+    }
+
+    return fragment;
+}
+
 
 void RangeImpl::detach( int &exceptioncode )
 {
