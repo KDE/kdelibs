@@ -160,7 +160,10 @@ public:
 		_refCnt++;
 		return this;
 	}
-	
+
+	/* internal: for the dispatcher */
+	inline void _copyInternal() { _refCnt++; }
+		
 	// Default I/O info
 	virtual std::vector<std::string> _defaultPortsIn() const;
 	virtual std::vector<std::string> _defaultPortsOut() const;

@@ -526,8 +526,12 @@ void Dispatcher::handle(Connection *conn, Buffer *buffer, long messageType)
 
 				// write result record (returnCode is written by dispatch)
 				result->writeLong(requestID);
-	
-				objectPool[objectID]->_dispatch(buffer,result,methodID);
+
+				// perform the request
+				Object_skel *object = objectPool[objectID];
+				object->_copyInternal();
+				object->_dispatch(buffer,result,methodID);
+				object->_release();
 
 				assert(!buffer->readError() && !buffer->remaining());
 				delete buffer;
@@ -572,7 +576,11 @@ void Dispatcher::handle(Connection *conn, Buffer *buffer, long messageType)
 				long objectID = buffer->readLong();
 				long methodID = buffer->readLong();
 
-				objectPool[objectID]->_dispatch(buffer,methodID);
+				// perform the request
+				Object_skel *object = objectPool[objectID];
+				object->_copyInternal();
+				object->_dispatch(buffer,methodID);
+				object->_release();
 
 				assert(!buffer->readError() && !buffer->remaining());
 				delete buffer;
