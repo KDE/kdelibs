@@ -1071,6 +1071,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 return;
 
             uint tagID = currToken.id;
+            bool flat = currToken.flat;
 #if defined(TOKEN_DEBUG) && TOKEN_DEBUG > 0
             kdDebug( 6036 ) << "appending Tag: " << tagID << endl;
 #endif
@@ -1121,19 +1122,19 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 pre = beginTag;
                 break;
             case ID_TEXTAREA:
-                if(beginTag)
+                if(beginTag && !flat)
                     parseSpecial(src, textarea = true );
                 break;
             case ID_SCRIPT:
-                if (beginTag)
+                if (beginTag && !flat)
                     parseSpecial(src, script = true);
                 break;
             case ID_STYLE:
-                if (beginTag)
+                if (beginTag && !flat)
                     parseSpecial(src, style = true);
                 break;
             case ID_XMP:
-                if (beginTag)
+                if (beginTag && !flat)
                     parseSpecial(src, xmp = true);
                 break;
             case ID_SELECT:
@@ -1543,6 +1544,8 @@ void HTMLTokenizer::processToken()
         text = QConstString(currToken.text->s, currToken.text->l).string();
 
     kdDebug( 6036 ) << "Token --> " << name << "   id = " << currToken.id << endl;
+    if (currToken.flat)
+        kdDebug( 6036 ) << "Token is FLAT!" << endl;
     if(!text.isNull())
         kdDebug( 6036 ) << "text: \"" << text << "\"" << endl;
     unsigned long l = currToken.attrs ? currToken.attrs->length() : 0;
