@@ -115,7 +115,7 @@
 	<tr>
           <td width="33%" align="left" valign="top" class="navLeft">
             <xsl:if test="count($prev)>0">
-              <a>
+              <a accesskey="p">
                 <xsl:attribute name="href">
                   <xsl:call-template name="href.target">
                     <xsl:with-param name="object" select="$prev"/>
@@ -128,7 +128,7 @@
           <td width="34%" align="center" valign="top" class="navCenter">
             <xsl:choose>
               <xsl:when test="$home != .">
-                <a>
+                <a accesskey="h">
                   <xsl:attribute name="href">
                     <xsl:call-template name="href.target">
                       <xsl:with-param name="object" select="$home"/>
@@ -143,7 +143,7 @@
 
           <td width="33%" align="right" valign="top" class="navRight">
             <xsl:if test="count($next)>0">
-              <a>
+              <a accesskey="n">
                 <xsl:attribute name="href">
                   <xsl:call-template name="href.target">
                     <xsl:with-param name="object" select="$next"/>
@@ -163,7 +163,7 @@
           <td width="34%" align="center" class="navCenter">
             <xsl:choose>
               <xsl:when test="count($up)>0">
-                <a>
+                <a accesskey="u">
                   <xsl:attribute name="href">
                     <xsl:call-template name="href.target">
                       <xsl:with-param name="object" select="$up"/>
