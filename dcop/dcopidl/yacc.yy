@@ -353,6 +353,10 @@ int_type
 	| T_SIGNED T_SHORT { $$ = new QString("signed short int"); }
 	| T_SIGNED T_LONG { $$ = new QString("signed long int"); }
 	| T_SIGNED T_SHORT T_INT { $$ = new QString("signed short int"); }
+	| T_UNSIGNED T_SHORT { $$ = new QString("unsigned short int"); }
+	| T_UNSIGNED T_LONG { $$ = new QString("unsigned long int"); }
+	| T_UNSIGNED T_SHORT T_INT { $$ = new QString("unsigned short int"); }
+	| T_UNSIGNED T_INT { $$ = new QString("unsigned int"); }
 	| T_INT { $$ = new QString("int"); }
 	| T_LONG { $$ = new QString("long int"); }
 	| T_SHORT { $$ = new QString("short int"); }
