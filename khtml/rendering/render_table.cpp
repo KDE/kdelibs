@@ -1085,13 +1085,11 @@ void RenderTable::calcColWidth(void)
 
     /*
      * Some width still left?
-     * Reverse order, variable->relative->percent
      */
-
-    if ( numVar ) toAdd = distributeRest(toAdd,Variable,maxVar);
-    if ( numRel ) toAdd = distributeRest(toAdd,Relative,maxRel);
     if ( numPercent ) toAdd = distributeRest(toAdd,Percent,maxPercent);
     if ( numFixed ) toAdd = distributeRest(toAdd,Fixed,maxFixed);
+    if ( numRel ) toAdd = distributeRest(toAdd,Relative,maxRel);
+    if ( numVar ) toAdd = distributeRest(toAdd,Variable,maxVar);
 
 #ifdef TABLE_DEBUG
     for(int i = 0; i < (int)totalCols; i++)
@@ -1141,12 +1139,14 @@ int RenderTable::distributePercentWidth(int distrib)
             if (totPercent + colValue[c] > 100)
                 percent = KMAX(0, 100-int(totPercent));
 
-            totPercent += percent;
-            int delta = KMIN(tdis, int(percent * distrib / totalPercent) - actColWidth[c]);
-            if (delta==0 && tdis && colMaxWidth[c]>actColWidth[c])
-                delta=1;
-            actColWidth[c]+=delta;
-            tdis -= delta;
+            if (percent) {
+                totPercent += percent;
+                int delta = KMAX(0, KMIN(tdis, int(percent * distrib / totalPercent) - actColWidth[c]));
+                if (delta==0 && tdis && colMaxWidth[c]>actColWidth[c])
+                    delta=1;
+                actColWidth[c]+=delta;
+                tdis -= delta;
+            }
             if (tdis <= 0)
                 break;
         }
@@ -1199,7 +1199,7 @@ int RenderTable::distributeRest(int distrib, LengthType type, int divider )
 #endif
 
     int olddis=0;
-    int c=0;
+    int c=totalCols-1;
 
     int tdis = distrib;
 
@@ -1212,9 +1212,9 @@ int RenderTable::distributeRest(int distrib, LengthType type, int divider )
             actColWidth[c] += delta;
             tdis -= delta;
         }
-        if (++c == (int)totalCols)
+        if (--c < 0)
         {
-            c=0;
+            c=int(totalCols)-1;
             if (olddis==tdis)
                 break;
             olddis=tdis;
