@@ -193,7 +193,7 @@ private:
 	QList<QLayoutItem> list;
 
 	/**
-	 * The following variables store the references to the items that are 
+	 * The following variables store the references to the items that are
 	 * managed by this layout manager.
          */
 	QWidget* topMenuBar;
@@ -234,6 +234,11 @@ public:
 	{
 		list->remove( idx );
 	}
+
+    QLayoutItem *takeCurrent()
+    {
+        return idx < int( list->count() ) ?list->take( idx ) : 0;
+    }
 
 private:
 	int idx;
