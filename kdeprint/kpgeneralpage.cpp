@@ -144,7 +144,7 @@ KPGeneralPage::KPGeneralPage(KMPrinter *pr, DrMain *dr, QWidget *parent, const c
 	m_orientpix = new QLabel(m_orientbox);
 	m_orientpix->setAlignment(Qt::AlignCenter);
 	QRadioButton	*m_dupnone = new QRadioButton(i18n("&None"), m_duplexbox);
-	QRadioButton	*m_duplong = new QRadioButton(i18n("&Long side"), m_duplexbox);
+	QRadioButton	*m_duplong = new QRadioButton(i18n("Lon&g side"), m_duplexbox);
 	QRadioButton	*m_dupshort = new QRadioButton(i18n("S&hort side"), m_duplexbox);
 	m_dupnone->setChecked(true);
 	m_duplexpix = new QLabel(m_duplexbox);
@@ -158,7 +158,7 @@ KPGeneralPage::KPGeneralPage(KMPrinter *pr, DrMain *dr, QWidget *parent, const c
 	m_startbanner = new QComboBox(m_bannerbox);
 	m_endbanner = new QComboBox(m_bannerbox);
 	QLabel	*m_startbannerlabel = new QLabel(i18n("S&tart:"), m_bannerbox);
-	QLabel	*m_endbannerlabel = new QLabel(i18n("&End:"), m_bannerbox);
+	QLabel	*m_endbannerlabel = new QLabel(i18n("En&d:"), m_bannerbox);
 	m_startbannerlabel->setBuddy(m_startbanner);
 	m_endbannerlabel->setBuddy(m_endbanner);
 
