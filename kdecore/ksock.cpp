@@ -32,19 +32,22 @@
 #ifdef HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
+extern "C" {
 #include <netinet/in.h>
 
 #include <arpa/inet.h>
-
+}
 #include "kdebug.h"
 #include "ksock.h"
 
+extern "C" {
 #include <errno.h>
 #include <fcntl.h>
 #include <netdb.h>
 // defines MAXDNAME under Solaris
 #include <arpa/nameser.h>
 #include <resolv.h>
+}
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
