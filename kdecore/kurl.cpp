@@ -1222,9 +1222,7 @@ static QString trailingSlash( int _trailing, const QString &path )
   else if ( _trailing == 1 )
   {
     int len = result.length();
-    if ( len == 0 )
-      result = QString::null;
-    else if ( result[ len - 1 ] != '/' )
+    if ( len == 0 || result[ len - 1 ] != '/' )
       result += "/";
     return result;
   }

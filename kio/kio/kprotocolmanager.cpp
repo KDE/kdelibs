@@ -245,7 +245,8 @@ QString KProtocolManager::proxyForURL( const KURL &url )
           if (!url.host().isEmpty())
           {
             QString p = url.protocol();
-            if ( p.startsWith( "http" ) || p == "ftp" || p == "gopher" )
+            if ( ( p.startsWith( "http" ) || p == "ftp" || p == "gopher" ) &&
+                 ! url.equals( proxyConfigScript(), true ) )
               DCOPRef( "kded", "proxyscout" ).call( "proxyForURL", url ).get( proxy );
           }
           break;
