@@ -39,19 +39,6 @@
 
 // $Id$
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
-#include <sys/time.h>
-#ifdef HAVE_ALLOCA_H
-// explicitly included for systems that don't provide it in stdlib.h
-#include <alloca.h>
-#endif
-
-// and then there are those that have alloca and stdlib :)
-#include <stdlib.h>
-
 #include <qasciidict.h>
 #include <qfile.h>
 #include <qdir.h>
@@ -408,16 +395,15 @@ bool KZip::openArchive( int mode )
 	    int extralen = (uchar)buffer[22] | (uchar)buffer[23] << 8;
 
 	    // read filename
-	    char *filename = (char *)alloca(namelen + 1);
-	    n = dev->readBlock(filename, namelen);
+	    QCString filename(namelen + 1);
+	    n = dev->readBlock(filename.data(), namelen);
             if ( n < namelen ) {
                 kdWarning(7040) << "Invalid ZIP file. Name not completely read (#2)" << endl;
 		return false;
 	    }
-	    filename[namelen] = '\0';
 
 	    ParseFileInfo *pfi = new ParseFileInfo();
-	    pfi_map.insert(filename, pfi);
+	    pfi_map.insert(filename.data(), pfi);
 
 	    // read and parse extra field
 	    pfi->extralen = extralen;
@@ -507,10 +493,8 @@ bool KZip::openArchive( int mode )
                 kdWarning(7040) << "Invalid ZIP file. Name not completely read" << endl;
 
 	    ParseFileInfo *pfi = pfi_map[bufferName];
-	    if (pfi == 0) {	// can that happen?
-		char *b = (char *)alloca(namelen + 1);
-		memcpy(b, (const char *)bufferName, namelen + 1);
-	        pfi_map.insert(b, pfi = new ParseFileInfo());
+	    if (!pfi) {	// can that happen?
+	        pfi_map.insert(bufferName.data(), pfi = new ParseFileInfo());
 	    }
             QString name( QFile::decodeName(bufferName) );
 
