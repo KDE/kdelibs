@@ -41,6 +41,7 @@
 #include "rendering/render_table.h"
 
 #include <kdebug.h>
+#include <kglobal.h>
 
 using namespace khtml;
 using namespace DOM;
@@ -463,7 +464,7 @@ void HTMLTableElementImpl::parseAttribute(AttributeImpl *attr)
             addCSSLength(CSS_PROP_PADDING_LEFT, attr->value(), true);
             addCSSLength(CSS_PROP_PADDING_BOTTOM, attr->value(), true);
             addCSSLength(CSS_PROP_PADDING_RIGHT, attr->value(), true);
-	    padding = QMAX( 0, attr->value().toInt() );
+	    padding = kMax( 0, attr->value().toInt() );
         }
         else {
             removeCSSProperty(CSS_PROP_PADDING_TOP);
