@@ -185,8 +185,8 @@ KDirWatchPrivate::KDirWatchPrivate()
     if( dnotify_signal == 0 )
         dnotify_signal = SIGRTMIN + 8;
     sigaction(dnotify_signal, &act, NULL);
-#endif
   }
+#endif
 
   kdDebug(7001) << "Available methods: " << available << endl;
 }
