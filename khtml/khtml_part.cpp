@@ -2038,7 +2038,7 @@ void KHTMLPart::slotSaveFrame()
     if ( srcURL.fileName(false).isEmpty() )
         srcURL.setFileName( "index.html" );
 
-    KHTMLPopupGUIClient::saveURL( d->m_view, i18n( "Save as" ), srcURL, i18n("HTML files|* *.html *.htm") );
+    KHTMLPopupGUIClient::saveURL( d->m_view, i18n( "Save as" ), srcURL, i18n("HTML files|*.html *.htm") );
 }
 
 void KHTMLPart::slotSetEncoding()
