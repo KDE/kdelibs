@@ -1,3 +1,28 @@
+/**
+ * This file is part of the html renderer for KDE.
+ *
+ * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
+ *           (C) 1999 Antti Koivisto (koivisto@kde.org)
+ *           (C) 2000 Dirk Mueller (mueller@kde.org)
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public License
+ * along with this library; see the file COPYING.LIB.  If not, write to
+ * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ *
+ * $Id$
+ */
+
 #include <font.h>
 #include <qpainter.h>
 #include <qfontdatabase.h>
@@ -57,27 +82,27 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int len,
 int Font::width( QChar *chs, int len ) const
 {
     int w = fm.width( QConstString( chs, len).string(), len );
-    
+
     if ( letterSpacing )
 	w += len*letterSpacing;
-    
+
     if ( wordSpacing ) {
 	// add amount
 	for( int i = 0; i < len; i++ ) {
 	    if( chs[i].isSpace() )
 		w += wordSpacing;
 	}
-    }	
+    }
     return w;
 }
 
 int Font::width( QChar ch ) const
 {
     int w = fm.width( ch );
-    
+
     if ( letterSpacing )
 	w += letterSpacing;
-    
+
     if ( wordSpacing && ch.isSpace() )
 		w += wordSpacing;
     return w;
@@ -89,7 +114,7 @@ void Font::update( QPaintDeviceMetrics *devMetrics ) const
     f.setFamily( fontDef.family );
     f.setItalic( fontDef.italic );
     f.setWeight( fontDef.weight );
-    
+
     QFontDatabase db;
 
     float size = fontDef.size;
@@ -130,7 +155,7 @@ void Font::update( QPaintDeviceMetrics *devMetrics ) const
     }
 
     //qDebug(" -->>> using %f pixel font", size);
-    
+
 //     qDebug("setting font to %s, italic=%d, weight=%d, size=%f", fontDef.family.latin1(), fontDef.italic,
 // 	   fontDef.weight, size );
 
