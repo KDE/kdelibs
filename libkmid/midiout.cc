@@ -48,6 +48,7 @@ lastcount=0.0;
 rate=100;
 convertrate=10;
 #endif
+volumepercentage=100;
 Map=new MidiMapper(NULL);
 if (Map==NULL) {printf("ERROR : midiOut : Map is NULL\n");return;};
 ok=1;
@@ -261,6 +262,11 @@ SEQ_MIDIOUT(device, MIDI_CTL_CHANGE + Map->Channel(chn));
 if (ctl==11) ctl=7;
 #endif
 Map->Controller(chn,ctl,v);
+if ((ctl==11)||(ctl==7))
+    {
+    v=(v*volumepercentage)/100;
+    if (v>127) v=127;
+    };
 SEQ_MIDIOUT(device, ctl);
 SEQ_MIDIOUT(device, v);
 
@@ -399,3 +405,4 @@ switch (devType())
     };
 return "Unknown";
 };
+

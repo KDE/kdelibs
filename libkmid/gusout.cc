@@ -331,6 +331,12 @@ while (i<nvoices)
 
 void gusOut::chnController (uchar chn, uchar ctl, uchar v) 
 {
+if ((ctl==11)||(ctl==7))
+    {
+    v=(v*volumepercentage)/100;
+    if (v>127) v=127;
+    };
+
 int i;
 vm->initSearch();
 while ((i=vm->Search(chn))!=-1)

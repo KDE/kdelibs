@@ -65,13 +65,15 @@ size=0;
 
 int track::power2to(int i)
 {
-int d=1;
+return 1<<i;
+/*int d=1;
 while (i>0)
     {
     d*=2;
     i--;
     };
 return d;
+*/
 };
 
 ulong track::readVariableLengthValue(void)

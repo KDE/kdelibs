@@ -195,6 +195,94 @@ for (int i=0;i<info->ntracks;i++)
     };
 };
 
+NoteArray *player::parseNotes(void)
+{
+#ifdef PLAYERDEBUG
+printf("player::Parsing Notes...\n");
+#endif
+NoteArray *na=new NoteArray();
+int trk;
+int minTrk;
+double minTime=0;
+double maxTime;
+for (int i=0;i<info->ntracks;i++)
+    {
+    tracks[i]->init();
+    }; 
+ulong tempo=1000000;
+ulong tmp;
+Midi_event *ev=new Midi_event;
+//ulong mspass;
+double prevms=0;
+int j;
+int parsing=1;
+while (parsing)
+    {
+    prevms=minTime;
+    trk=0;
+    minTrk=0;
+    maxTime=minTime + 2 * 60000L;
+    minTime=maxTime;
+    while (trk<info->ntracks)
+        {
+        if (tracks[trk]->absMsOfNextEvent()<minTime)
+		{
+		minTrk=trk;
+		minTime=tracks[minTrk]->absMsOfNextEvent();
+		};
+	trk++;
+        };
+    if ((minTime==maxTime))
+	{
+	parsing=0;
+#ifdef PLAYERDEBUG
+	printf("END of parsing\n");
+#endif
+	}
+	else
+	{	
+//	mspass=(ulong)(minTime-prevms);
+	trk=0;
+	while (trk<info->ntracks)
+	    {
+	    tracks[trk]->currentMs(minTime);
+	    trk++;
+	    };
+	};
+    trk=minTrk;
+    tracks[trk]->readEvent(ev);
+    if (ev->command==MIDI_NOTEON)
+    {
+        if (ev->vel==0) na->add((ulong)minTime,ev->chn,0, ev->note);
+        else na->add((ulong)minTime,ev->chn,1,ev->note);
+    }
+    else
+    if (ev->command==MIDI_NOTEOFF) na->add((ulong)minTime,ev->chn,0, ev->note);
+    if (ev->command==MIDI_PGM_CHANGE) na->add((ulong)minTime,ev->chn, 2,ev->patch);
+    if (ev->command==MIDI_SYSTEM_PREFIX)
+        {
+            if (((ev->command|ev->chn)==META_EVENT)&&(ev->d1==ME_SET_TEMPO)&&
+                (tempoToMetronomeTempo(tmp=((ev->data[0]<<16)|(ev->data[1]<<8)|(ev->data[2])))>=8))
+                    {
+                    tempo=tmp;
+                    for (j=0;j<info->ntracks;j++)
+                        {
+                        tracks[j]->changeTempo(tempo);
+                        };
+                    };
+	    };
+
+    };
+    
+delete ev;
+for (int i=0;i<info->ntracks;i++)
+    {
+    tracks[i]->init();
+    };
+return na;
+};
+
+
 void player::play(int calloutput,void output(void))
 {		
 #ifdef PLAYERDEBUG
@@ -310,7 +398,7 @@ while (playing)
 		};
 */	};
     prevms=minTime;
-    ctl->millisecsPlayed=minTime;
+//    ctl->millisecsPlayed=minTime;
     trk=0;
     minTrk=0;
     maxTime=minTime + 120000L /* milliseconds */;
@@ -359,7 +447,7 @@ while (playing)
 	case (MIDI_PITCH_BEND) :
 		midi->chnPitchBender(ev->chn, ev->d1,ev->d2);break;
 	case (MIDI_CTL_CHANGE) :
-		midi->chnController(ev->chn, ev->ctl,ev->d1);break;
+                midi->chnController(ev->chn, ev->ctl,ev->d1);break;
 	case (MIDI_SYSTEM_PREFIX) :
 		if ((ev->command|ev->chn)==META_EVENT)
 			{
@@ -432,7 +520,7 @@ while (likeplaying)
     {
     trk=0;
     minTrk=0;
-    maxTime=minTime+ 2 /*minutes*/ * 60000L;
+    maxTime=minTime + 120000L; /*milliseconds (2 minutes)*/
     minTime=maxTime;
     while (trk<info->ntracks)
         {
@@ -459,7 +547,8 @@ while (likeplaying)
 #ifdef GENERAL_DEBUG_MESSAGES
 		printf("Position reached !! \n");
 #endif
-		}
+                minTime=gotomsec;
+                }
 		else
 		{
 		prevms=minTime;

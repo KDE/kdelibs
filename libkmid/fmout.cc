@@ -258,6 +258,7 @@ if (vel==0)
 
     SEQ_START_NOTE(device, v, note, vel);
     SEQ_CONTROL(device, v, CTL_MAIN_VOLUME, chn_controller[chn][CTL_MAIN_VOLUME]);
+
     SEQ_CHN_PRESSURE(device, v , chn_pressure[chn]);
     };
 
@@ -334,6 +335,11 @@ while (i<nvoices)
 
 void fmOut::chnController (uchar chn, uchar ctl, uchar v) 
 {
+if ((ctl==11)||(ctl==7))
+    {
+    v=(v*volumepercentage)/100;
+    if (v>127) v=127;
+    };
 int i;
 vm->initSearch();
 while ((i=vm->Search(chn))!=-1)

@@ -28,6 +28,7 @@
 #include "midfile.h"
 #include "deviceman.h"
 #include "track.h"
+#include "notearray.h"
 
 struct SpecialEvent
 {
@@ -75,7 +76,13 @@ struct PlayerController
 	
 	volatile int	gm; // if 1 then song is GeneralMidi, if 0 then MT32
 
-	volatile Midi_event	*ev;
+	volatile int	volumepercentage ; //100 is no change, 50 halfs the
+				// volume and 200 doubles it.
+
+        volatile bool forcepgm[16];  // Force to use patch ... or not forced
+        volatile int  pgm[16];       // Patch used at "this" moment
+
+        volatile Midi_event	*ev;
 
 };
 
@@ -110,7 +117,7 @@ void removeSong(void); // Unload the current song, so that everything is empty
 int isSongLoaded(void) {return songLoaded;};
 SpecialEvent *takeSpecialEvents() {return spev;};
 void writeSPEV(void);
-
+NoteArray *parseNotes(void);
 
 void play(int calloutput,void output(void));
 

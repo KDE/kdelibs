@@ -104,7 +104,9 @@ public:
 			// instead of sending it (in fact, this is what
 			// syncronizing really means :-)
 
+  void setVolumePercentage(int i);
 
+      
   int getDefaultDevice(void);
   void setDefaultDevice(int i);
 
@@ -112,7 +114,7 @@ public:
 
   char *getMidiMapFilename(void);
   void setMidiMap(MidiMapper *map);
-
+  
   int numberOfMidiPorts(void) {return n_midi;};
   int numberOfSynthDevices(void) {return n_synths;};
   char *name(int i);

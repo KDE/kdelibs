@@ -57,6 +57,7 @@ friend class DeviceManager;
                   // better used.
                   // The values it can get are defined as KMID_... in midispec.h
 
+    int                 volumepercentage;
     MidiMapper          *Map;
 
     unsigned char	chn_patch	[N_CHANNELS];
@@ -97,7 +98,9 @@ virtual    void chnController	( uchar chn, uchar ctl , uchar v );
 virtual    void sysex		( uchar *data,ulong size);
     void channelSilence		( uchar chn );
     void channelMute    	( uchar chn, int a );
+    void setVolumePercentage    ( int i ) {volumepercentage=i;};
 
+    
     int OK (void) 
     {
         if (seqfd<0) return 0;

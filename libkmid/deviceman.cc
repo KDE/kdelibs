@@ -253,7 +253,7 @@ if (seqfd==-1) return;
 #ifndef HANDLETIMEINDEVICES
 tmrStop();
 #endif
-
+/*
 DEBUGPRINTF("Closing devices : ");
 if (device!=NULL) for (int i=0;i<n_total;i++) 
     {
@@ -263,6 +263,7 @@ if (device!=NULL) for (int i=0;i<n_total;i++)
 //	device[i]->closeDev();
     };
 DEBUGPRINTF("\n");
+*/
 close(seqfd);
 seqfd=-1;
 };
@@ -503,3 +504,13 @@ if ((device[getDefaultDevice()]->devType())==KMID_GUS)
 return 0;
 };
 
+void DeviceManager::setVolumePercentage(int v)
+    {
+    if (device!=NULL)
+        {
+        for (int i=0;i<n_total;i++)
+            {
+            device[i]->setVolumePercentage(v);
+            };
+        };
+};

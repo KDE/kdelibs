@@ -248,6 +248,12 @@ SEQ_MIDIOUT(device, msb);
 
 void synthOut::chnController (uchar chn, uchar ctl, uchar v) 
 {
+if ((ctl==11)||(ctl==7))
+    {
+    v=(v*volumepercentage)/100;
+    if (v>127) v=127;
+    };
+
 #ifdef NEWMACRO
   SEQ_CONTROL(device, Map->Channel(chn), ctl, v);
 #else
