@@ -24,6 +24,22 @@
 #include "kstringhandler.h"
 #include "kglobal.h"
 
+static void parsePythonRange( const QCString &range, uint &start, uint &end )
+{
+    const int colon = range.find( ':' );
+    if ( colon == -1 ) {
+        start = range.toUInt();
+        end = start;
+    } else if ( colon == int( range.length() - 1 ) ) {
+        start = range.left( colon ).toUInt();
+    } else if ( colon == 0 ) {
+        end = range.mid( 1 ).toUInt();
+    } else {
+        start = range.left( colon ).toInt();
+        end = range.mid( colon + 1 ).toInt();
+    }
+}
+
 QString KStringHandler::word( const QString &text , uint pos )
 {
     return text.section( ' ', pos, pos );
@@ -43,40 +59,8 @@ QString KStringHandler::word( const QString &text , const char *range )
     if ( text.isEmpty() )
         return tmp;
 
-    // do stuff here
-    QRegExp reg;
-
-    int at = 0;
-    int pos = 0;
-    int cnt = 0;
-
-    if ( r.find(QRegExp("[0-9]+:[0-9]+")) != -1 )
-    {
-        at  = r.find(":");
-        pos = atoi( r.left(at).ascii() );
-        cnt = atoi( r.remove(0,at+1).ascii() );
-    }
-    else if ( r.find(QRegExp(":+[0-9]+")) != -1 )
-    {
-        at  = r.find(":");
-        pos = 0;
-        cnt = atoi( r.remove(0,at+1).ascii() );
-    }
-    else if ( r.find(QRegExp("[0-9]+:+")) != -1 )
-    {
-        at  = r.find(":");
-        pos = atoi( r.left(at).ascii() );
-        cnt = list.count(); // zero index
-    }
-    else if ( r.find(QRegExp("[0-9]+")) != -1 )
-    {
-        pos = atoi( r.ascii() );
-        cnt = pos;
-    }
-    else
-    {
-        return tmp; // not found/implemented
-    }
+    uint pos = 0, cnt = list.count();
+    parsePythonRange( range, pos, cnt );
 
     //
     // Extract words
@@ -153,40 +137,8 @@ QString KStringHandler::remrange( const QString &text , const char *range )
     if ( text.isEmpty() )
         return tmp;
 
-    // do stuff here
-    QRegExp reg;
-
-    int at = 0;
-    int pos = 0;
-    int cnt = 0;
-
-    if ( r.find(QRegExp("[0-9]+:[0-9]+")) != -1 )
-    {
-        at  = r.find(':');
-        pos = atoi( r.left(at).ascii() );
-        cnt = atoi( r.remove(0,at+1).ascii() );
-    }
-    else if ( r.find(QRegExp(":+[0-9]+")) != -1 )
-    {
-        at  = r.find(':');
-        pos = 0;
-        cnt = atoi( r.remove(0,at+1).ascii() );
-    }
-    else if ( r.find(QRegExp("[0-9]+:+")) != -1 )
-    {
-        at  = r.find(':');
-        pos = atoi( r.left(at).ascii() );
-        cnt = list.count(); // zero index
-    }
-    else if ( r.find(QRegExp("[0-9]+")) != -1 )
-    {
-        pos = atoi( r.ascii() );
-        cnt = pos;
-    }
-    else
-    {
-        return text; // not found/implemented
-    }
+    uint pos = 0, cnt = list.count();
+    parsePythonRange( range, pos, cnt );
 
     //
     // Remove that range of words
