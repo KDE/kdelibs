@@ -83,8 +83,8 @@ using namespace KIO;
 #define MAX_CACHE_AGE 30*60
 #endif
 
-#define DEFAULT_MIME_TYPE                 "text/html"
-#define DEFAULT_ACCEPT_HEADER             "text/html, image/png, image/jpeg, image/gif, */*"
+#define DEFAULT_MIME_TYPE       "text/html"
+#define DEFAULT_ACCEPT_HEADER   "text/*;q=1.0, image/png;q=1.0, image/jpeg;q=1.0, image/gif;q=1.0, image/*;q=0.8, */*;q=0.5"
 
 extern "C" {
   void sigalrm_handler(int);
@@ -1667,15 +1667,17 @@ bool HTTPProtocol::readHeader()
   // We need to do a redirect
   if (!locationStr.isEmpty())
   {
-    kdDebug(7113) << "request.url: " << m_request.url.url() << endl
-                  << "LocationStr: " << locationStr.data() << endl;
-
     KURL u(m_request.url, locationStr);
     if(u.isMalformed() || u.isLocalFile() )
     {
       error(ERR_MALFORMED_URL, u.url());
       return false;
     }
+
+    kdDebug(7113) << "request.url: " << m_request.url.url() << endl
+                  << "LocationStr: " << locationStr.data() << endl;
+    kdDebug(7113) << "Requesting redirection to: " << u.url() << endl;
+
     redirection(u.url());
     m_bCachedWrite = false; // Turn off caching on re-direction (DA)
     mayCache = false;
@@ -1761,9 +1763,10 @@ bool HTTPProtocol::readHeader()
   if( locationStr.isEmpty() && (!m_strMimeType.isEmpty() ||
       (m_strMimeType.isEmpty() && m_request.method == HTTP_HEAD) ) )
   {
-
+     if( m_strMimeType.isEmpty() )
+        m_strMimeType = QString::fromLatin1( DEFAULT_MIME_TYPE );
      kdDebug(7103) << "Emitting mimetype " << m_strMimeType << endl;
-     mimeType( m_strMimeType.isEmpty() ? DEFAULT_MIME_TYPE:m_strMimeType );
+     mimeType( m_strMimeType );
   }
 
   // Set charset. Maybe charSet should be a class member, since
@@ -2691,7 +2694,7 @@ bool HTTPProtocol::readBody( )
         time_t t = time( 0L );
         if ( t - t_last >= 1 )
         {
-          speed( sz / ( t - t_start ) );
+          speed( (sz - m_request.offset) / ( t - t_start ) );
           t_last = t;
         }
       }
@@ -2785,7 +2788,7 @@ bool HTTPProtocol::readBody( )
   // everybody know that we are done...
   t_last = time(0L);
   if (t_last - t_start)
-    speed(sz / (t_last - t_start));
+    speed((sz - m_request.offset) / (t_last - t_start));
   else
     speed(0);
 
@@ -3287,6 +3290,8 @@ bool HTTPProtocol::retrieveHeader( bool close_connection )
     {
         // Do not save authorization if the current response code is
         // 4xx (client error) or 5xx (server error).
+        kdDebug(7113) << "Previous Response: " << m_prevResponseCode << endl
+                      << "Current Response: " << m_responseCode << endl;
         if ( m_responseCode < 400 &&
             (m_prevResponseCode == 401 || m_prevResponseCode == 407) )
             saveAuthorization();
@@ -3416,25 +3421,27 @@ bool HTTPProtocol::getAuthorization()
 
 void HTTPProtocol::saveAuthorization()
 {
-    AuthInfo info;
-    if ( m_prevResponseCode == 407 )
-    {
-        info.url = m_proxyURL;
-        info.username = m_proxyURL.user();
-        info.password = m_proxyURL.pass();
-        info.realmValue = m_strProxyRealm;
-        info.digestInfo = m_strProxyAuthorization;
-        cacheAuthentication( info );
-    }
-    else
-    {
-        info.url = m_request.url;
-        info.username = m_request.user;
-        info.password = m_request.passwd;
-        info.realmValue = m_strRealm;
-        info.digestInfo = m_strAuthorization;
-        cacheAuthentication( info );
-    }
+  AuthInfo info;
+  if ( m_prevResponseCode == 407 )
+  {
+    info.url = m_proxyURL;
+    info.username = m_proxyURL.user();
+    info.password = m_proxyURL.pass();
+    info.realmValue = m_strProxyRealm;
+    if( Authentication == AUTH_Digest )
+      info.digestInfo = m_strProxyAuthorization;
+    cacheAuthentication( info );
+  }
+  else
+  {
+    info.url = m_request.url;
+    info.username = m_request.user;
+    info.password = m_request.passwd;
+    info.realmValue = m_strRealm;
+    if( Authentication == AUTH_Digest )
+      info.digestInfo = m_strAuthorization;
+    cacheAuthentication( info );
+  }
 }
 
 QString HTTPProtocol::createBasicAuth( bool isForProxy )
