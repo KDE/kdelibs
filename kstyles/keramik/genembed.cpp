@@ -32,9 +32,12 @@ DEALINGS IN THE SOFTWARE.
 
 #include <kimageeffect.h>
 
-#include <iostream.h>
 #include <string.h>
 #include <math.h>
+
+#include <iostream>
+using std::cout;
+using std::cerr;
 
 //Force-touch-embedded-revision: 2
 
