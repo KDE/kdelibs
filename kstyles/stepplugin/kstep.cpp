@@ -423,13 +423,11 @@ void KStepStyle::drawExclusiveIndicator(QPainter *p, int x, int y, int w,
     if(on || down){
         if(down)
             p->setPen(nextGrp.mid());
-        else
-            p->setPen(nextGrp.buttonText());
         a.setPoints(QCOORDARRLEN(fill_lines), fill_lines);
         a.translate(x,y);
         p->drawLineSegments(a);
         p->fillRect(4, 4, 8, 8, (down)? g.brush(QColorGroup::Mid) :
-                    nextGrp.brush(QColorGroup::ButtonText));
+                    nextGrp.brush(QColorGroup::Light));
     }
     p->setPen(oldPen);
 }
