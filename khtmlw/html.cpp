@@ -2833,19 +2833,10 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
 	if (!flow)
 	    newFlow(_clue);
 
-	HTMLObject *last = flow->lastChild(); 
-	if (!last || last->isNewline())
-	{
-		// Start of line, add vertical space based on current font.
-		flow->append( new HTMLVSpace( 
-				currentFont()->pointSize(),
-				clear ));
-	}
-	else
-	{
-		// Terminate current line
-		flow->append( new HTMLVSpace(0, clear));
-	}
+	// Start of line, add vertical space based on current font.
+	flow->append( new HTMLVSpace( 
+			currentFont()->pointSize(),
+			clear ));
 
 	vspace_inserted = false;
     }

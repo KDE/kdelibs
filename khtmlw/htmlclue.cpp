@@ -1479,9 +1479,10 @@ void HTMLClueFlow::calcSize( HTMLClue *parent )
 	// line will be aligned, and the next line prepared.
 	if ( obj->isNewline() )
 	{
-	    if ( obj->getAscent() > a )
+// WABA: Only update the height if this line has no height already
+	    if ( !a )
 		a = obj->getAscent();
-	    if ( obj->getDescent() > d )
+	    if ( !a && (obj->getDescent() > d) )
 		d = obj->getDescent();
 	    newLine = true;
 	    HTMLVSpace *vs = (HTMLVSpace *)obj;
