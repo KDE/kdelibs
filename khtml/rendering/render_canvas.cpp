@@ -21,7 +21,7 @@
  */
 
 
-#include "rendering/render_root.h"
+#include "rendering/render_canvas.h"
 #include "rendering/render_layer.h"
 #include "xml/dom_docimpl.h"
 
@@ -33,7 +33,7 @@ using namespace khtml;
 //#define BOX_DEBUG
 //#define SPEED_DEBUG
 
-RenderRoot::RenderRoot(DOM::NodeImpl* node, KHTMLView *view)
+RenderCanvas::RenderCanvas(DOM::NodeImpl* node, KHTMLView *view)
     : RenderFlow(node)
 {
     // init RenderObject attributes
@@ -65,11 +65,11 @@ RenderRoot::RenderRoot(DOM::NodeImpl* node, KHTMLView *view)
     m_layer = new (node->getDocument()->renderArena()) RenderLayer(this);
 }
 
-RenderRoot::~RenderRoot()
+RenderCanvas::~RenderCanvas()
 {
 }
 
-void RenderRoot::calcWidth()
+void RenderCanvas::calcWidth()
 {
     RenderBox::calcWidth();
     return;
@@ -87,7 +87,7 @@ void RenderRoot::calcWidth()
         m_marginRight = 0;
 }
 
-void RenderRoot::calcMinMaxWidth()
+void RenderCanvas::calcMinMaxWidth()
 {
     KHTMLAssert( !minMaxKnown() );
 
@@ -100,7 +100,7 @@ void RenderRoot::calcMinMaxWidth()
 
 //#define SPEED_DEBUG
 
-void RenderRoot::layout()
+void RenderCanvas::layout()
 {
     if (m_printingMode)
        m_minWidth = m_width;
@@ -115,12 +115,12 @@ void RenderRoot::layout()
     if ( recalcMinMax() )
 	recalcMinMaxWidths();
 #ifdef SPEED_DEBUG
-    kdDebug() << "RenderRoot::calcMinMax time used=" << qt.elapsed() << endl;
+    kdDebug() << "RenderCanvas::calcMinMax time used=" << qt.elapsed() << endl;
     qt.start();
 #endif
 
 #ifdef SPEED_DEBUG
-    kdDebug() << "RenderRoot::layout time used=" << qt.elapsed() << endl;
+    kdDebug() << "RenderCanvas::layout time used=" << qt.elapsed() << endl;
     qt.start();
 #endif
     if (!m_printingMode) {
@@ -140,7 +140,7 @@ void RenderRoot::layout()
         m_view->resizeContents(docWidth(), docHeight());
         // be optimistic and say that we never need a vertical
         // scroll bar. fixes ugly cyclic recalculation chains
-        // with QScrollView. 
+        // with QScrollView.
         QSize s = m_view->viewportSize(m_view->contentsWidth(),
                                        0);
         setWidth( m_viewportWidth = s.width() );
@@ -151,7 +151,7 @@ void RenderRoot::layout()
     layoutPositionedObjects( true );
 
 #ifdef SPEED_DEBUG
-    kdDebug() << "RenderRoot::end time used=" << qt.elapsed() << endl;
+    kdDebug() << "RenderCanvas::end time used=" << qt.elapsed() << endl;
 #endif
 
     layer()->setHeight(m_height);
@@ -160,7 +160,7 @@ void RenderRoot::layout()
     setLayouted();
 }
 
-bool RenderRoot::absolutePosition(int &xPos, int &yPos, bool f)
+bool RenderCanvas::absolutePosition(int &xPos, int &yPos, bool f)
 {
     if ( f && m_view) {
 	xPos = m_view->contentsX();
@@ -172,13 +172,13 @@ bool RenderRoot::absolutePosition(int &xPos, int &yPos, bool f)
     return true;
 }
 
-void RenderRoot::paint(QPainter *p, int _x, int _y, int _w, int _h, int _tx, int _ty,
+void RenderCanvas::paint(QPainter *p, int _x, int _y, int _w, int _h, int _tx, int _ty,
 		       PaintAction paintPhase)
 {
     paintObject(p, _x, _y, _w, _h, _tx, _ty, paintPhase);
 }
 
-void RenderRoot::paintObject(QPainter *p, int _x, int _y, int _w, int _h,
+void RenderCanvas::paintObject(QPainter *p, int _x, int _y, int _w, int _h,
 			     int _tx, int _ty,  PaintAction paintPhase)
 {
 #ifdef DEBUG_LAYOUT
@@ -214,7 +214,7 @@ void RenderRoot::paintObject(QPainter *p, int _x, int _y, int _w, int _h,
 }
 
 
-void RenderRoot::repaintRectangle(int x, int y, int w, int h, bool f)
+void RenderCanvas::repaintRectangle(int x, int y, int w, int h, bool f)
 {
     if (m_printingMode) return;
 //    kdDebug( 6040 ) << "updating views contents (" << x << "/" << y << ") (" << w << "/" << h << ")" << endl;
@@ -231,14 +231,14 @@ void RenderRoot::repaintRectangle(int x, int y, int w, int h, bool f)
         if (m_view) m_view->scheduleRepaint(x, y, w, h);
 }
 
-void RenderRoot::repaint()
+void RenderCanvas::repaint()
 {
     if (m_view && !m_printingMode)
         m_view->scheduleRepaint(m_view->contentsX(), m_view->contentsY(),
                                 m_view->visibleWidth(), m_view->visibleHeight());
 }
 
-void RenderRoot::close()
+void RenderCanvas::close()
 {
     setLayouted( false );
     if (m_view) {
@@ -248,16 +248,16 @@ void RenderRoot::close()
     //printTree();
 }
 
-void RenderRoot::setSelection(RenderObject *s, int sp, RenderObject *e, int ep)
+void RenderCanvas::setSelection(RenderObject *s, int sp, RenderObject *e, int ep)
 {
     // Check we got valid renderobjects. www.msnbc.com and clicking
     // around, to find the case where this happened.
     if ( !s || !e )
     {
-        kdWarning(6040) << "RenderRoot::setSelection() called with start=" << s << " end=" << e << endl;
+        kdWarning(6040) << "RenderCanvas::setSelection() called with start=" << s << " end=" << e << endl;
         return;
     }
-//     kdDebug( 6040 ) << "RenderRoot::setSelection(" << s << "," << sp << "," << e << "," << ep << ")" << endl;
+//     kdDebug( 6040 ) << "RenderCanvas::setSelection(" << s << "," << sp << "," << e << "," << ep << ")" << endl;
 
     while (s->firstChild())
         s = s->firstChild();
@@ -319,7 +319,7 @@ void RenderRoot::setSelection(RenderObject *s, int sp, RenderObject *e, int ep)
 }
 
 
-void RenderRoot::clearSelection()
+void RenderCanvas::clearSelection()
 {
     // update selection status of all objects between m_selectionStart and m_selectionEnd
     RenderObject* o = m_selectionStart;
@@ -356,13 +356,13 @@ void RenderRoot::clearSelection()
     m_selectionEndPos = -1;
 }
 
-void RenderRoot::selectionStartEnd(int& spos, int& epos)
+void RenderCanvas::selectionStartEnd(int& spos, int& epos)
 {
     spos = m_selectionStartPos;
     epos = m_selectionEndPos;
 }
 
-QRect RenderRoot::viewRect() const
+QRect RenderCanvas::viewRect() const
 {
     if (m_printingMode)
         return QRect(0,0, m_width, m_height);
@@ -374,7 +374,7 @@ QRect RenderRoot::viewRect() const
     else return QRect(0,0,m_rootWidth,m_rootHeight);
 }
 
-int RenderRoot::docHeight() const
+int RenderCanvas::docHeight() const
 {
     int h;
     if (m_printingMode || !m_view)
@@ -418,7 +418,7 @@ int RenderRoot::docHeight() const
     return h;
 }
 
-int RenderRoot::docWidth() const
+int RenderCanvas::docWidth() const
 {
     int w;
     if (m_printingMode || !m_view)

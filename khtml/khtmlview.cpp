@@ -31,7 +31,7 @@
 #include "html/html_documentimpl.h"
 #include "html/html_inlineimpl.h"
 #include "rendering/render_arena.h"
-#include "rendering/render_root.h"
+#include "rendering/render_canvas.h"
 #include "rendering/render_frames.h"
 #include "rendering/render_replaced.h"
 #include "rendering/render_layer.h"
@@ -651,7 +651,7 @@ void KHTMLView::layout()
     if( m_part && m_part->xmlDocImpl() ) {
         DOM::DocumentImpl *document = m_part->xmlDocImpl();
 
-        khtml::RenderRoot* root = static_cast<khtml::RenderRoot *>(document->renderer());
+        khtml::RenderCanvas* root = static_cast<khtml::RenderCanvas *>(document->renderer());
         if ( !root ) return;
 
          if (document->isHTMLDocument()) {
@@ -1392,7 +1392,7 @@ void KHTMLView::print() {
 void KHTMLView::print(bool quick)
 {
     if(!m_part->xmlDocImpl()) return;
-    khtml::RenderRoot *root = static_cast<khtml::RenderRoot *>(m_part->xmlDocImpl()->renderer());
+    khtml::RenderCanvas *root = static_cast<khtml::RenderCanvas *>(m_part->xmlDocImpl()->renderer());
     if(!root) return;
 
     // this only works on Unix - we assume 72dpi
@@ -1562,7 +1562,7 @@ void KHTMLView::slotPaletteChanged()
     if(!m_part->xmlDocImpl()) return;
     DOM::DocumentImpl *document = m_part->xmlDocImpl();
     if (!document->isHTMLDocument()) return;
-    khtml::RenderRoot *root = static_cast<khtml::RenderRoot *>(document->renderer());
+    khtml::RenderCanvas *root = static_cast<khtml::RenderCanvas *>(document->renderer());
     if(!root) return;
     root->style()->resetPalette();
     NodeImpl *body = static_cast<HTMLDocumentImpl*>(document)->body();
@@ -1574,7 +1574,7 @@ void KHTMLView::slotPaletteChanged()
 void KHTMLView::paint(QPainter *p, const QRect &rc, int yOff, bool *more)
 {
     if(!m_part->xmlDocImpl()) return;
-    khtml::RenderRoot *root = static_cast<khtml::RenderRoot *>(m_part->xmlDocImpl()->renderer());
+    khtml::RenderCanvas *root = static_cast<khtml::RenderCanvas *>(m_part->xmlDocImpl()->renderer());
     if(!root) return;
 
     m_part->xmlDocImpl()->setPaintDevice(p->device());
@@ -1925,7 +1925,7 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
 
     if( m_part->xmlDocImpl() ) {
 	DOM::DocumentImpl *document = m_part->xmlDocImpl();
-	khtml::RenderRoot* root = static_cast<khtml::RenderRoot *>(document->renderer());
+	khtml::RenderCanvas* root = static_cast<khtml::RenderCanvas *>(document->renderer());
 
 	if ( root && !root->layouted() ) {
 	    killTimer(d->repaintTimerId);

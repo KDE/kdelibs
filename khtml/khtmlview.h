@@ -53,7 +53,7 @@ namespace KJS {
 
 namespace khtml {
     class RenderObject;
-    class RenderRoot;
+    class RenderCanvas;
     class RenderStyle;
     class RenderLineEdit;
     class RenderPartObject;
@@ -84,7 +84,7 @@ class KHTMLView : public QScrollView
     friend class DOM::HTMLInputElementImpl;
     friend class DOM::DocumentImpl;
     friend class KHTMLPart;
-    friend class khtml::RenderRoot;
+    friend class khtml::RenderCanvas;
     friend class khtml::RenderObject;
     friend class khtml::RenderLineEdit;
     friend class khtml::RenderPartObject;
@@ -430,11 +430,11 @@ private:
      * @param n number of lines to move caret
      */
     void moveCaretNextLine(int n = 1);
-    
+
     /** moves the caret to the previous page
      */
     void moveCaretPrevPage();
-    
+
     /** moves the caret to the next page
      */
     void moveCaretNextPage();

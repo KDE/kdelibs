@@ -78,7 +78,6 @@ public:
 
     virtual void setStyle(RenderStyle *style);
 
-    virtual bool isRendered() const { return true; }
     virtual bool isTable() const { return true; }
 
     int getColumnPos(int col) const
@@ -160,7 +159,7 @@ public:
     void setNeedSectionRecalc() { needSectionRecalc = true; }
 
     virtual RenderObject* removeChildNode(RenderObject* child);
-    
+
     RenderTableSection *firstBodySection() const { return firstBody; }
 
 protected:

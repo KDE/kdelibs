@@ -66,7 +66,7 @@ void RenderBlock::setStyle(RenderStyle* _style)
 {
     RenderFlow::setStyle(_style);
     setInline(false);
-    
+
     m_pre = false;
     if (_style->whiteSpace() == PRE)
         m_pre = true;
@@ -107,19 +107,19 @@ void RenderBlock::addChildToFlow(RenderObject* newChild, RenderObject* beforeChi
         RenderObject* textChild = newChild;
         while (textChild && !textChild->isText())
             textChild = textChild->firstChild();
-        
+
         if (textChild) {
             RenderObject* firstLetterContainer = textChild->parent();
             if (!firstLetterContainer)
                 firstLetterContainer = this;
-            
+
             RenderText* newTextChild = static_cast<RenderText*>(textChild);
         //kdDebug( 6040 ) << "first letter" << endl;
 
             // Force inline display (except for floating first-letters)
             pseudoStyle->setDisplay( pseudoStyle->isFloating() ? BLOCK : INLINE);
             pseudoStyle->setPosition( STATIC ); // CSS2 says first-letter can't be positioned.
-            
+
             RenderObject* firstLetter = RenderFlow::createFlow(0, pseudoStyle, renderArena()); // anonymous box
             firstLetterContainer->addChild(firstLetter, firstLetterContainer->firstChild());
 
@@ -180,7 +180,7 @@ void RenderBlock::addChildToFlow(RenderObject* newChild, RenderObject* beforeChi
         // This is a block with inline content. Wrap the inline content in anonymous blocks.
         makeChildrenNonInline(beforeChild);
         madeBoxesNonInline = true;
-        
+
         if (beforeChild && beforeChild->parent() != this) {
             beforeChild = beforeChild->parent();
             KHTMLAssert(beforeChild->isAnonymousBox());
@@ -242,7 +242,7 @@ void RenderBlock::addChildToFlow(RenderObject* newChild, RenderObject* beforeChi
 
     newChild->setLayouted( false );
     newChild->setMinMaxKnown( false );
-    
+
     if ( madeBoxesNonInline )
         removeLeftoverAnonymousBoxes();
 }
@@ -555,13 +555,13 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
     // boolean allows us to temporarily treat a compact like a block and lets us know we need
     // to turn the block back into a compact when we're done laying out.
     bool treatCompactAsBlock = false;
-    
+
     // Whether or not we can collapse our own margins with our children.  We don't do this
     // if we had any border/padding (obviously), if we're the root or HTML elements, or if
     // we're positioned, floating, a table cell.
     // For now we only worry about the top border/padding.  We will update the variable's
     // value when it comes time to check against the bottom border/padding.
-    bool canCollapseWithChildren = !isRoot() && !isHtml() && !isPositioned() &&
+    bool canCollapseWithChildren = !isCanvas() && !isRoot() && !isPositioned() &&
         !isFloating() && !isTableCell() && (m_height == 0);
 
     // Whether or not we are a quirky container, i.e., do we collapse away top and bottom
@@ -716,7 +716,7 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
                 continue;
             }
         }
-        
+
         // Note this occurs after the test for positioning and floating above, since
         // we want to ensure that we don't artificially increase our height because of
         // a positioned or floating child.
@@ -938,7 +938,7 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
         }
 
         if (child->isRenderBlock())
-            prevFlow = static_cast<RenderBlock*>(child); 
+            prevFlow = static_cast<RenderBlock*>(child);
 
         if ( child->hasOverhangingFloats() ) {
             // need to add the float to our special objects
@@ -972,7 +972,7 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
             child->style()->setDisplay(COMPACT);
             treatCompactAsBlock = false;
         }
-        
+
         child = child->nextSibling();
     }
 
@@ -1060,7 +1060,7 @@ void RenderBlock::paint(QPainter* p, int _x, int _y, int _w, int _h, int _tx, in
         // overflowHeight(), so we don't need to check that.
         if (m_firstLineBox && m_firstLineBox->topOverflow() < 0)
             yPos += m_firstLineBox->topOverflow();
-        
+
         if( (yPos > _y + _h) || (_ty + h < _y))
             return;
     }
@@ -1078,7 +1078,7 @@ void RenderBlock::paintObject(QPainter *p, int _x, int _y,
 
     // If we're a repositioned run-in, don't paint background/borders.
     bool inlineFlow = isInlineFlow();
-    
+
     // 1. paint background, borders etc
     if (!inlineFlow && paintAction == PaintActionBackground &&
         shouldPaintBackgroundOrBorder() && style()->visibility() == VISIBLE )
@@ -1094,7 +1094,7 @@ void RenderBlock::paintObject(QPainter *p, int _x, int _y,
         child = child->nextSibling();
     }
     paintLineBoxDecorations(p, _x, _y, _w, _h, _tx, _ty, paintAction);
-    
+
     // 3. paint floats.
     if (!inlineFlow && (paintAction == PaintActionFloat || paintAction == PaintActionSelection))
         paintFloats(p, _x, _y, _w, _h, _tx, _ty, paintAction == PaintActionSelection);
@@ -1477,7 +1477,7 @@ RenderBlock::lowestPosition() const
     // render tree as a whole. Instead the focus is on visiting
     // each object once. If we visit an object more than once,
     // then this becomes an exponential algorithm.
-    
+
     // FIXME: Maybe we can use m_overflowHeight instead?
 
     int bottom = RenderFlow::lowestPosition();
@@ -1512,7 +1512,7 @@ int RenderBlock::rightmostPosition() const
     // render tree as a whole. Instead the focus is on visiting
     // each object once. If we visit an object more than once,
     // then this becomes an exponential algorithm.
-    
+
     // FIXME: Maybe we can use m_overflowWidth instead?
 
     int right = RenderFlow::rightmostPosition();
@@ -1576,7 +1576,7 @@ RenderBlock::clearFloats()
         m_floatingObjects->clear();
 
     if (isFloating() || isPositioned()) return;
-    
+
     RenderObject *prev = previousSibling();
 
     // find the element to copy the floats from
@@ -1631,7 +1631,7 @@ void RenderBlock::addOverHangingFloats( RenderBlock *flow, int xoff, int offset,
 #endif
 
     // Prevent floats from being added to the root by <html>.
-    if ( !flow->m_floatingObjects || (child && flow->isHtml()) )
+    if ( !flow->m_floatingObjects || (child && flow->isRoot()) )
         return;
 
     // we have overhanging floats
@@ -1676,7 +1676,7 @@ void RenderBlock::addOverHangingFloats( RenderBlock *flow, int xoff, int offset,
                 else
                     // Only paint if |flow| isn't.
                     floatingObj->noPaint = !r->noPaint;
-                
+
                 floatingObj->width = r->width;
                 floatingObj->node = r->node;
                 m_floatingObjects->append(floatingObj);
@@ -1749,8 +1749,8 @@ bool RenderBlock::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, 
     if (m_floatingObjects) {
         int stx = _tx + xPos();
         int sty = _ty + yPos();
-        if (isRoot()) {
-	    KHTMLView *view = static_cast<RenderRoot*>(this)->view();
+        if (isCanvas()) {
+	    KHTMLView *view = static_cast<RenderCanvas*>(this)->view();
 	    if (view) {
 		stx += view->contentsX();
 		sty += view->contentsY();
@@ -1872,7 +1872,7 @@ RenderObject* InlineMinMaxIterator::next()
             result->isFloating() || result->isReplaced() ||
             result->isInlineFlow())
             break;
-        
+
         current = result;
         result = 0;
     }
@@ -2226,7 +2226,7 @@ InlineFlowBox* RenderBlock::getFirstLineBox()
             return result;
     }
 
-    return 0;    
+    return 0;
 }
 
 const char *RenderBlock::renderName() const

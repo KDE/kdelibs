@@ -44,7 +44,6 @@ public:
 
     virtual const char *renderName() const { return "RenderImage"; }
 
-    virtual bool isRendered() const { return true; }
 
     virtual void paintObject( QPainter *p, int /*x*/, int /*y*/, int /*w*/, int /*h*/, int tx, int ty, PaintAction );
 

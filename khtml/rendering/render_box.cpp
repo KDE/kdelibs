@@ -31,7 +31,7 @@
 
 #include "misc/loader.h"
 #include "rendering/render_replaced.h"
-#include "rendering/render_root.h"
+#include "rendering/render_canvas.h"
 #include "rendering/render_table.h"
 #include "render_layer.h"
 #include "misc/htmlhashes.h"
@@ -89,7 +89,7 @@ void RenderBox::setStyle(RenderStyle *_style)
             m_layer->insertOnlyThisLayer();
         }
     }
-    else if (m_layer && !isHtml() && !isRoot()) {
+    else if (m_layer && !isRoot() && !isCanvas()) {
         m_layer->removeOnlyThisLayer();
         m_layer = 0;
     }
@@ -219,7 +219,7 @@ void RenderBox::paintBackground(QPainter *p, const QColor &c, CachedImage *bg, i
 
         //hacky stuff
         RenderStyle* sptr = style();
-        if ( isHtml() && firstChild() && !style()->backgroundImage() )
+        if ( isRoot() && firstChild() && !style()->backgroundImage() )
             sptr = firstChild()->style();
 
         int sx = 0;
@@ -661,8 +661,8 @@ int RenderBox::availableHeight() const
     if (h.isFixed())
         return h.value();
 
-    if (isRoot())
-        return static_cast<const RenderRoot*>(this)->viewportHeight();
+    if (isCanvas())
+        return static_cast<const RenderCanvas*>(this)->viewportHeight();
 
     // We need to stop here, since we don't want to increase the height of the table
     // artificially.  We're going to rely on this cell getting expanded to some new
@@ -864,7 +864,7 @@ void RenderBox::calcAbsoluteVertical()
     if (hl.isFixed())
         ch = hl.value() + cb->paddingTop() + cb->paddingBottom()
 	     + cb->borderTop() + cb->borderBottom();
-    else if (cb->isHtml())
+    else if (cb->isRoot())
         ch = cb->availableHeight();
     else
         ch = cb->height();
@@ -1028,7 +1028,7 @@ void RenderBox::caretPos(int offset, bool override, int &_x, int &_y, int &width
 	_y = yPos();
 	height = m_height;
 	width = override && offset == 0 ? m_width : 1;
-	
+
 	// If height of box is smaller than font height, use the latter one,
 	// otherwise the caret might become invisible.
 	// FIXME: ignoring :first-line, missing good reason to take care of

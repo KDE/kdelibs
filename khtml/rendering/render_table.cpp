@@ -298,7 +298,7 @@ void RenderTable::layout()
     else if (h.isPercent()) {
         RenderObject* c = containingBlock();
         for ( ;
-            !c->isRoot() && !c->isBody() && !c->isTableCell() &&
+            !c->isCanvas() && !c->isBody() && !c->isTableCell() &&
 		  !c->isPositioned() && c->isFloating();
              c = c->containingBlock()) {
             Length ch = c->style()->height();

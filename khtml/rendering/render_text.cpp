@@ -27,7 +27,7 @@
 //#define BIDI_DEBUG
 
 #include "rendering/render_text.h"
-#include "rendering/render_root.h"
+#include "rendering/render_canvas.h"
 #include "rendering/break_lines.h"
 #include "rendering/render_arena.h"
 #include "xml/dom_nodeimpl.h"
@@ -760,7 +760,7 @@ void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 
                 if (ty+lh+s->m_y > y+h)
                 {
-                   RenderRoot *rootObj = root();
+                   RenderCanvas *rootObj = canvas();
                    if (ty+s->m_y < rootObj->truncatedAt())
                       rootObj->setTruncatedAt(ty+s->m_y);
                    // Let's stop here.

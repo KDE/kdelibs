@@ -21,7 +21,7 @@
 
 #include <khtmlview.h>
 #include "xml/dom2_eventsimpl.h"
-#include "rendering/render_root.h"
+#include "rendering/render_canvas.h"
 #include "xml/dom_nodeimpl.h"
 #include "xml/dom_docimpl.h"
 #include "misc/htmltags.h" // ID_*
@@ -269,7 +269,7 @@ Value DOMNode::getValueProperty(ExecState *exec, int token) const
     }
 
     if (rend && rend->isBody())
-      rend = rend->root();
+      rend = rend->canvas();
 
     switch (token) {
     case OffsetLeft:

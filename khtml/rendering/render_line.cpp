@@ -28,7 +28,7 @@
 #include "rendering/render_flow.h"
 #include "rendering/render_text.h"
 #include "rendering/render_table.h"
-#include "rendering/render_root.h"
+#include "rendering/render_canvas.h"
 #include "xml/dom_nodeimpl.h"
 #include "xml/dom_docimpl.h"
 #include "html/html_formimpl.h"
@@ -91,7 +91,7 @@ int InlineFlowBox::marginRight()
 {
     if (!includeRightEdge())
         return 0;
-    
+
     RenderStyle* cstyle = object()->style();
     Length margin = cstyle->marginRight();
     if (margin.type() != Variable)
@@ -186,7 +186,7 @@ void InlineFlowBox::determineSpacingForFlowBoxes(bool lastLine, RenderObject* en
             else if (!ltr && flow->lastLineBox() == this)
                 includeRightEdge = true;
         }
-    
+
         // In order to determine if the inline ends on this line, we check three things:
         // (1) If we are the last line and we don't have a continuation(), then we can
         // close up.
@@ -207,7 +207,7 @@ void InlineFlowBox::determineSpacingForFlowBoxes(bool lastLine, RenderObject* en
                      prevOnLineExists() || onEndChain(endObject)))
                     includeLeftEdge = true;
             }
-            
+
         }
     }
 
@@ -231,7 +231,7 @@ int InlineFlowBox::placeBoxesHorizontally(int x)
 
     int startX = x;
     x += borderLeft() + paddingLeft();
-    
+
     for (InlineBox* curr = firstChild(); curr; curr = curr->nextOnLine()) {
         if (curr->object()->isText()) {
             InlineTextBox* text = static_cast<InlineTextBox*>(curr);
@@ -296,7 +296,7 @@ void InlineFlowBox::verticallyAlignBoxes(int& heightOfBlock)
     // Shrink boxes with no text children in quirks and almost strict mode.
     if (!strictMode)
         shrinkBoxesWithNoTextChildren(topPosition, bottomPosition);
-    
+
     heightOfBlock += maxHeight;
 #endif
 }
@@ -400,7 +400,7 @@ void InlineFlowBox::placeBoxesVertically(int y, int maxHeight, int maxAscent, bo
                 childAffectsTopBottomPos = false;
             curr->setYPos(curr->yPos() + y + maxAscent - curr->baseline());
         }
-        
+
         int newY = curr->yPos();
         int newHeight = curr->height();
         int newBaseline = curr->baseline();
@@ -414,7 +414,7 @@ void InlineFlowBox::placeBoxesVertically(int y, int maxHeight, int maxAscent, bo
                             curr->object()->borderBottom() + curr->object()->paddingBottom();
                 newY -= curr->object()->borderTop() + curr->object()->paddingTop();
                 newBaseline += curr->object()->borderTop() + curr->object()->paddingTop();
-            }	
+            }
         }
         else {
             newY += curr->object()->marginTop();

@@ -20,8 +20,8 @@
  *
  * $Id$
  */
-#ifndef render_root_h
-#define render_root_h
+#ifndef render_canvas_h
+#define render_canvas_h
 
 #include "render_flow.h"
 
@@ -30,16 +30,15 @@ class QScrollView;
 
 namespace khtml {
 
-class RenderRoot : public RenderFlow
+class RenderCanvas : public RenderFlow
 {
 public:
-    RenderRoot(DOM::NodeImpl* node, KHTMLView *view);
-    virtual ~RenderRoot();
+    RenderCanvas(DOM::NodeImpl* node, KHTMLView *view);
+    virtual ~RenderCanvas();
 
-    virtual const char *renderName() const { return "RenderRoot"; }
+    virtual const char *renderName() const { return "RenderCanvas"; }
 
-    virtual bool isRendered() const { return true; }
-    virtual bool isRoot() const { return true; }
+    virtual bool isCanvas() const { return true; }
 
     virtual void layout();
     virtual void calcWidth();

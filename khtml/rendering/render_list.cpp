@@ -24,7 +24,7 @@
  */
 
 #include "rendering/render_list.h"
-#include "rendering/render_root.h"
+#include "rendering/render_canvas.h"
 #include "html/html_listimpl.h"
 #include "misc/helper.h"
 #include "misc/htmltags.h"
@@ -258,7 +258,7 @@ void RenderListMarker::paintObject(QPainter *p, int, int _y, int, int _h,
         }
         if (_ty + m_height + paddingBottom() + borderBottom() >= _y+_h)
         {
-            RenderRoot *rootObj = root();
+            RenderCanvas *rootObj = canvas();
             if (_ty < rootObj->truncatedAt())
                 rootObj->setTruncatedAt(_ty);
             // Let's paint this on the next page.

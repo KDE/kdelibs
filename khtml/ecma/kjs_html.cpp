@@ -52,7 +52,7 @@
 #include "misc/htmltags.h"
 #include "misc/htmlattrs.h"
 #include "rendering/render_object.h"
-#include "rendering/render_root.h"
+#include "rendering/render_canvas.h"
 
 #include "kmessagebox.h"
 #include <kstringhandler.h>
@@ -1337,8 +1337,8 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
       {
         khtml::RenderObject *rend = body.ownerDocument().handle() ? body.ownerDocument().handle()->renderer() : 0L;
         if (rend) {
-          Q_ASSERT( rend->isRoot() );
-          khtml::RenderRoot* root = static_cast<khtml::RenderRoot*>(rend);
+          Q_ASSERT( rend->isCanvas() );
+          khtml::RenderCanvas* root = static_cast<khtml::RenderCanvas*>(rend);
           return Number( token == ElementScrollWidth ? root->docWidth() : root->docHeight() );
         }
         return Number(0);
@@ -2121,8 +2121,8 @@ Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, const 
     case ID_FORM: {
       DOM::HTMLFormElement form = element;
       if (id == KJS::HTMLElement::FormSubmit) {
-      
-        
+
+
         DOM::HTMLDocument doc = element.ownerDocument();
         KHTMLView *view = static_cast<DOM::DocumentImpl*>(doc.handle())->view();
         KHTMLSettings::KJSWindowOpenPolicy policy = KHTMLSettings::KJSWindowOpenAllow;
@@ -2145,23 +2145,23 @@ Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, const 
             // search all (possibly nested) framesets
             KHTMLPart *currentPart = view->part()->parentPart();
             while( currentPart != 0L ) {
-              if( currentPart->frameExists( form.target().string() ) ) 
+              if( currentPart->frameExists( form.target().string() ) )
                 block = false;
               currentPart = currentPart->parentPart();
             }
           }
 
           if ( block && policy == KHTMLSettings::KJSWindowOpenAsk && view ) {
-       
+
             if ( KMessageBox::questionYesNo(view, form.action().isEmpty() ?
                    i18n( "This site is submitting a form which will open up a new browser "
                          "window via JavaScript.\n"
                          "Do you want to allow the form to be submitted?" ) :
                    i18n( "<qt>This site is submitting a form which will open <p>%1</p> in a new browser window via JavaScript.<br />"
                          "Do you want to allow the form to be submitted?</qt>").arg(KStringHandler::csqueeze(form.action().string(),  100)),
-                   i18n( "Confirmation: JavaScript Popup" ) ) == KMessageBox::Yes ) 
+                   i18n( "Confirmation: JavaScript Popup" ) ) == KMessageBox::Yes )
               block = false;
-	    
+
           } else if ( block && policy == KHTMLSettings::KJSWindowOpenSmart ) {
             if( static_cast<KJS::ScriptInterpreter *>(exec->interpreter())->isWindowOpenAllowed() ) {
               // This submission has been triggered by the user
@@ -2170,7 +2170,7 @@ Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, const 
           }
         }
 
-        if( !block ) 
+        if( !block )
           form.submit();
 
         return Undefined();

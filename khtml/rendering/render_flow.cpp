@@ -36,7 +36,7 @@
 #include "rendering/render_flow.h"
 #include "rendering/render_text.h"
 #include "rendering/render_table.h"
-#include "rendering/render_root.h"
+#include "rendering/render_canvas.h"
 #include "rendering/render_layer.h"
 
 #include "xml/dom_nodeimpl.h"
@@ -556,7 +556,7 @@ void RenderFlow::layoutBlockChildren( bool relayoutChildren )
 	    continue;
         } else if ( child->isReplaced() ) {
             if ( !child->layouted() )
-                child->layout();            
+                child->layout();
 	}
 
         child->calcVerticalMargins();
@@ -894,7 +894,7 @@ RenderFlow::rightRelOffset(int y, int fixedOffset, int *heightRemaining ) const
     return right;
 }
 
-short
+unsigned short
 RenderFlow::lineWidth(int y) const
 {
     //kdDebug( 6040 ) << "lineWidth(" << y << ")=" << rightOffset(y) - leftOffset(y) << endl;
@@ -1875,8 +1875,8 @@ bool RenderFlow::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
 
         if (layer()) {
             // special case - special objects in root are relative to viewport
-	    KHTMLView *view = static_cast<RenderRoot*>(this)->view();
-            if (isRoot() && view) {
+	    KHTMLView *view = static_cast<RenderCanvas*>(this)->view();
+            if (isCanvas() && view) {
                 stx += view->contentsX();
                 sty += view->contentsY();
             }

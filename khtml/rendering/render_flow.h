@@ -56,7 +56,6 @@ public:
     virtual bool isFlow() const { return true; }
     virtual bool childrenInline() const { return m_childrenInline; }
     void setChildrenInline(bool b) { m_childrenInline = b; }
-    virtual bool isRendered() const { return true; }
 
     virtual RenderFlow* continuation() const { return m_continuation; }
     void setContinuation(RenderFlow* c) { m_continuation = c; }
@@ -100,7 +99,7 @@ public:
 
     virtual void addChild(RenderObject *newChild, RenderObject *beforeChild = 0);
 
-    virtual short lineWidth(int y) const;
+    virtual unsigned short lineWidth(int y) const;
 
     virtual int lowestPosition() const;
     virtual int rightmostPosition() const;

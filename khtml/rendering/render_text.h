@@ -92,7 +92,7 @@ public:
      * @return the offset (relative to the RenderText object, not to this run)
      */
     int offsetForPoint(int _x, int &ax) const;
-         
+
     /**
      * calculates the with of the specified chunk in this text box.
      * @param pos zero-based position within the text box up to which
@@ -109,7 +109,7 @@ public:
      * still point to a valid position.
      */
     virtual long maxOffset() const;
-    
+
     /** returns the associated render text
      */
     const RenderText *renderText() const
@@ -158,7 +158,6 @@ public:
 
     virtual void setStyle(RenderStyle *style);
 
-    virtual bool isRendered() const { return true; }
 
     virtual void paint( QPainter *, int x, int y, int w, int h,
                         int tx, int ty, PaintAction paintPhase);

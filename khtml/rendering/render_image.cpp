@@ -25,7 +25,7 @@
 //#define DEBUG_LAYOUT
 
 #include "render_image.h"
-#include "render_root.h"
+#include "render_canvas.h"
 
 #include <qdrawutil.h>
 #include <qpainter.h>
@@ -196,7 +196,7 @@ int /*_h*/, int _tx, int _ty, PaintAction paintPhase)
     int leftPad = paddingLeft();
     int topPad = paddingTop();
 
-    if (khtml::printpainter && !root()->paintImages())
+    if (khtml::printpainter && !canvas()->paintImages())
         return;
 
     //kdDebug( 6040 ) << "    contents (" << contentWidth << "/" << contentHeight << ") border=" << borderLeft() << " padding=" << paddingLeft() << endl;

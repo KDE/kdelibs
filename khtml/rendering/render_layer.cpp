@@ -108,7 +108,7 @@ RenderLayer*
 RenderLayer::enclosingPositionedAncestor()
 {
     RenderLayer* curr = parent();
-    for ( ; curr && !curr->m_object->isRoot() && !curr->m_object->isHtml() &&
+    for ( ; curr && !curr->m_object->isCanvas() && !curr->m_object->isRoot() &&
          !curr->m_object->isPositioned() && !curr->m_object->isRelPositioned();
          curr = curr->parent());
 
@@ -536,7 +536,7 @@ RenderLayer::constructZTree(QRect overflowClipRect, QRect posClipRect,
     // block elements, since inline non-replaced elements have a width of 0 (and
     // thus the layer does too).  We also exclude the root from this test, since
     // the HTML can be much taller than the root (because of scrolling).
-    if (renderer()->isRoot() || renderer()->isHtml() || renderer()->isBody() ||
+    if (renderer()->isCanvas() || renderer()->isRoot() || renderer()->isBody() ||
         renderer()->hasOverhangingFloats() ||
         (renderer()->isInline() && !renderer()->isReplaced()) ||
         (eventProcessing && damageRect.contains(xMousePos,yMousePos)) ||

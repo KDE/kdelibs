@@ -22,7 +22,7 @@
  * $Id$
  */
 #include "rendering/render_html.h"
-#include "rendering/render_root.h"
+#include "rendering/render_canvas.h"
 #include "rendering/render_layer.h"
 #include "html/html_elementimpl.h"
 #include "xml/dom_docimpl.h"
@@ -80,10 +80,11 @@ void RenderHtml::paintBoxDecorations(QPainter *p,int, int _y,
 //    kdDebug(0) << "width = " << w <<endl;
 
     int rw;
-    if (root()->view())
-        rw=root()->view()->contentsWidth();
+    RenderCanvas *canvas = this->canvas();
+    if (canvas->view())
+        rw = canvas->view()->contentsWidth();
     else
-        rw=root()->width();
+        rw = canvas->width();
 
 //    kdDebug(0) << "rw = " << rw <<endl;
 
@@ -132,5 +133,5 @@ void RenderHtml::layout()
 
 short RenderHtml::containingBlockWidth() const
 {
-    return root()->viewportWidth();
+    return canvas()->viewportWidth();
 }

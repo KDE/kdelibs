@@ -25,7 +25,7 @@
 //#define DEBUG_LAYOUT
 
 #include "rendering/render_frames.h"
-#include "rendering/render_root.h"
+#include "rendering/render_canvas.h"
 #include "html/html_baseimpl.h"
 #include "html/html_objectimpl.h"
 #include "html/htmltokenizer.h"
@@ -105,7 +105,7 @@ void RenderFrameSet::layout( )
     KHTMLAssert( minMaxKnown() );
 
     if ( !parent()->isFrameSet() ) {
-        KHTMLView* view = root()->view();
+        KHTMLView* view = canvas()->view();
         m_width = view ? view->visibleWidth() : 0;
         m_height = view ? view->visibleHeight() : 0;
     }
@@ -432,7 +432,7 @@ bool RenderFrameSet::userResize( MouseEventImpl *evt )
     setLayouted(false);
   }
 
-  KHTMLView *view = root()->view();
+  KHTMLView *view = canvas()->view();
   if ((m_resizing || evt->id() == EventImpl::MOUSEUP_EVENT) && view) {
       QPainter paint( view );
       paint.setPen( Qt::gray );

@@ -21,7 +21,7 @@
  * $Id$
  */
 #include "render_body.h"
-#include "render_root.h"
+#include "render_canvas.h"
 #include "html/html_baseimpl.h"
 #include "xml/dom_docimpl.h"
 #include "khtmlview.h"
@@ -93,10 +93,11 @@ void RenderBody::layout()
 
     if (!scrollbarsStyled)
     {
-        if (root()->view())
+	RenderCanvas* canvas = this->canvas();
+        if (canvas->view())
         {
-            root()->view()->horizontalScrollBar()->setPalette(style()->palette());
-            root()->view()->verticalScrollBar()->setPalette(style()->palette());
+            canvas->view()->horizontalScrollBar()->setPalette(style()->palette());
+            canvas->view()->verticalScrollBar()->setPalette(style()->palette());
         }
         scrollbarsStyled=true;
     }

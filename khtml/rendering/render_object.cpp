@@ -26,7 +26,7 @@
 #include "rendering/render_object.h"
 #include "rendering/render_table.h"
 #include "rendering/render_list.h"
-#include "rendering/render_root.h"
+#include "rendering/render_canvas.h"
 #include "xml/dom_elementimpl.h"
 #include "xml/dom_docimpl.h"
 #include "misc/htmlhashes.h"
@@ -179,6 +179,12 @@ RenderObject* RenderObject::objectAbove() const
     }
     return obj;
 }
+
+bool RenderObject::isRoot() const {
+    return element() && element()->renderer() == this &&
+           element()->getDocument()->documentElement() == element();
+}
+
 
 void RenderObject::addChild(RenderObject* , RenderObject *)
 {
@@ -414,11 +420,11 @@ RenderObject *RenderObject::containingBlock() const
 
     RenderObject *o = parent();
     if(m_style->position() == FIXED) {
-        while ( o && !o->isRoot() )
+        while ( o && !o->isCanvas() )
             o = o->parent();
     }
     else if(m_style->position() == ABSOLUTE) {
-        while (o && o->style()->position() == STATIC && !o->isHtml() && !o->isRoot())
+        while (o && o->style()->position() == STATIC && !o->isRoot() && !o->isCanvas())
             o = o->parent();
     } else {
         while(o && o->isInline())
@@ -427,7 +433,7 @@ RenderObject *RenderObject::containingBlock() const
     // this is just to make sure we return a valid element.
     // the case below should never happen...
     if(!o) {
-        if(!isRoot()) {
+        if(!isCanvas()) {
 #ifndef NDEBUG
             kdDebug( 6040 ) << this << ": " << renderName() << "(RenderObject): No containingBlock!" << endl;
             kdDebug( 6040 ) << kdBacktrace() << endl;
@@ -1022,13 +1028,13 @@ int RenderObject::paddingRight() const
     return w;
 }
 
-RenderRoot* RenderObject::root() const
+RenderCanvas* RenderObject::canvas() const
 {
     RenderObject* o = const_cast<RenderObject*>( this );
     while ( o->parent() ) o = o->parent();
 
-    KHTMLAssert( o->isRoot() );
-    return static_cast<RenderRoot*>( o );
+    KHTMLAssert( o->isCanvas() );
+    return static_cast<RenderCanvas*>( o );
 }
 
 RenderObject *RenderObject::container() const
@@ -1036,7 +1042,7 @@ RenderObject *RenderObject::container() const
     EPosition pos = m_style->position();
     RenderObject *o = 0;
     if( pos == FIXED )
-	o = root();
+	o = canvas();
     else if ( pos == ABSOLUTE )
 	o = containingBlock();
     else
@@ -1147,10 +1153,10 @@ bool RenderObject::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
         static_cast<RenderBox*>(this)->relativePositionOffset(tx, ty);
 
     bool checkPoint = style()->visibility() != HIDDEN && (_y >= ty) && (_y < ty + height());
-    bool inside = (checkPoint && (_x >= tx) && (_x < tx + width())) || isBody() || isHtml();
+    bool inside = (checkPoint && (_x >= tx) && (_x < tx + width())) || isBody() || isRoot();
 
     // ### table should have its own, more performant method
-    if (overhangingContents() || isInline() || isRoot() || isTableRow() || isTableSection() || isPositioned() || checkPoint || mouseInside() ) {
+    if (overhangingContents() || isInline() || isCanvas() || isTableRow() || isTableSection() || isPositioned() || checkPoint || mouseInside() ) {
         for (RenderObject* child = lastChild(); child; child = child->previousSibling())
             if (!child->layer() && child->nodeAtPoint(info, _x, _y, tx, ty))
                 inside = true;
@@ -1342,8 +1348,8 @@ void RenderObject::recalcMinMaxWidths()
 
 void RenderObject::scheduleRelayout(bool repaint)
 {
-    if (!isRoot()) return;
-    KHTMLView *view = static_cast<RenderRoot *>(this)->view();
+    if (!isCanvas()) return;
+    KHTMLView *view = static_cast<RenderCanvas *>(this)->view();
     if ( view )
 	view->scheduleRelayout(repaint);
 }

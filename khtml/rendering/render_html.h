@@ -42,7 +42,6 @@ public:
 
     virtual const char *renderName() const { return "RenderHtml"; }
 
-    virtual bool isHtml() const { return true; }
     virtual void setStyle(RenderStyle *style);
     virtual void paint( QPainter *, int x, int y, int w, int h, int tx, int ty,
 			PaintAction paintPhase);

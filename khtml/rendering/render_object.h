@@ -83,7 +83,7 @@ namespace khtml {
     class RenderTable;
     class CachedObject;
     class RenderObject;
-    class RenderRoot;
+    class RenderCanvas;
     class RenderText;
     class RenderFrameSet;
     class RenderArena;
@@ -177,15 +177,14 @@ public:
     RenderArena* renderArena() const;
     virtual RenderFlow* continuation() const { return 0; }
 
+    bool isRoot() const;
     // some helper functions...
     virtual bool childrenInline() const { return false; }
-    virtual bool isRendered() const { return false; }
     virtual bool isFlow() const { return false; }
 
     virtual bool isListItem() const { return false; }
-    virtual bool isRoot() const { return false; }
+    virtual bool isCanvas() const { return false; }
     virtual bool isBR() const { return false; }
-    virtual bool isHtml() const { return false; }
     virtual bool isTableCell() const { return false; }
     virtual bool isTableRow() const { return false; }
     virtual bool isTableSection() const { return false; }
@@ -215,7 +214,7 @@ public:
     bool isSelectionBorder() const { return m_isSelectionBorder; }
     bool recalcMinMax() const { return m_recalcMinMax; }
 
-    RenderRoot* root() const;
+    RenderCanvas* canvas() const;
     // don't even think about making this method virtual!
     DOM::NodeImpl* element() const { return m_node; }
 
@@ -584,7 +583,7 @@ private:
 
     friend class RenderListItem;
     friend class RenderContainer;
-    friend class RenderRoot;
+    friend class RenderCanvas;
 };
 
 
