@@ -3,7 +3,7 @@ PREFIX=`kde-config --prefix`
 LIBDIR=`dirname $0`/../share/apps/dcopidlng
 perl -I$LIBDIR $LIBDIR/kalyptus --allow_k_dcop_accessors -f dcopidl $1 2>/tmp/dcopidlng.stderr.$$
 RET=$?
-if [[ $RET -ne 0 ]]
+if [ $RET -ne 0 ]
 then
    cat /tmp/dcopidlng.stderr.$$ >&2
 fi
