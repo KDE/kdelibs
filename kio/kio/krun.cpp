@@ -236,7 +236,8 @@ KRunMX1::expandEscapedMacro( const QString &str, uint pos, QStringList &ret )
 class KRunMX2 : public KMacroExpanderBase {
 public:
     KRunMX2( const KURL::List &_urls ) :
-        KMacroExpanderBase( '%' ), urls( _urls ) {}
+        KMacroExpanderBase( '%' ), ignFile( false ), urls( _urls ) {}
+    bool ignFile:1;
 
 protected:
     virtual int expandEscapedMacro( const QString &str, uint pos, QStringList &ret );
@@ -281,9 +282,10 @@ KRunMX2::expandEscapedMacro( const QString &str, uint pos, QStringList &ret )
    case 'n':
    case 'd':
    case 'v':
-      if( urls.isEmpty() )
-         kdWarning() << "KRun::processDesktopExec: No URLs supplied to single-URL service " << str << endl;
-      else if( urls.count() > 1 )
+      if( urls.isEmpty() ) {
+         if (!ignFile)
+            kdWarning() << "KRun::processDesktopExec: No URLs supplied to single-URL service " << str << endl;
+      } else if( urls.count() > 1 )
          kdWarning() << "KRun::processDesktopExec: Multiple URLs supplied to single-URL service " << str << endl;
       else
          subst( option, urls.first(), ret );
@@ -340,8 +342,10 @@ QStringList KRun::processDesktopExec(const KService &_service, const KURL::List&
   // Did the user forget to append something like '%f'?
   // If so, then assume that '%f' is the right choice => the application
   // accepts only local files.
-  if( !mx1.hasSpec )
+  if( !mx1.hasSpec ) {
     exec += " %f";
+    mx2.ignFile = true;
+  }
 
   // FIXME: the current way of invoking kfmexec disables term and su use
 
