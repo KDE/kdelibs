@@ -978,7 +978,9 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &propertyName) con
         KHTMLPart* part = doc->view()->part();
         if ( part ) {
           Object globalObject = Window::retrieve( part );
-          if ( globalObject.hasProperty( exec, propertyName ) )
+          // Calling hasProperty on a Window object doesn't work, it always says true.
+          // Hence we need to use getDirect instead.
+          if ( static_cast<ObjectImp *>(globalObject.imp())->getDirect( propertyName ) )
             return globalObject.get( exec, propertyName );
         }
       }
