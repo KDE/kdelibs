@@ -114,6 +114,8 @@ public:
 
 private slots:
     void slotActivated( int );
+protected slots:
+    void slotActivated() { KAction::slotActivated(); }
 private:
     QPopupMenu *m_popup;
     bool m_direction;
