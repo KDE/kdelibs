@@ -86,7 +86,7 @@ KPixmapIO::KPixmapIO()
 	    m_bShm = true;
     }
     if (!m_bShm) {
-	kDebugInfo("%s: MIT-SHM not available!", ID);
+	kdDebug() << "" << ID << ": MIT-SHM not available!" << endl;
 	return;
     }
 
@@ -136,11 +136,9 @@ KPixmapIO::KPixmapIO()
 	d->byteorder = bo8;
     else {
 	m_bShm = false;
-	kDebugWarning("%s: Byte order not supported!", ID);
-	kDebugWarning("%s: red = %x, green = %s, blue = %x", ID, 
-		d->ximage->red_mask, d->ximage->green_mask, 
-		d->ximage->blue_mask);
-	kDebugWarning("%s: Please report to <jansen@kde.org>", ID);
+	kdWarning() << "" << ID << ": Byte order not supported!" << endl;
+	kdWarning() << "" << ID << ": red = " << d->ximage->red_mask << ", green = " << d->ximage->green_mask << ", blue = " << d->ximage->blue_mask << endl;
+	kdWarning() << "" << ID << ": Please report to <jansen@kde.org>" << endl;
     }
 #endif
 }
@@ -316,14 +314,14 @@ void KPixmapIO::createShmSegment(int size)
     destroyShmSegment();
     d->shminfo->shmid = shmget(IPC_PRIVATE, size, IPC_CREAT|0777);
     if (d->shminfo->shmid < 0) {
-	kDebugWarning("%s: Could not get sysv shared memory segment", ID);
+	kdWarning() << "" << ID << ": Could not get sysv shared memory segment" << endl;
 	m_bShm = false;
 	return;
     }
 
     d->shminfo->shmaddr = (char *) shmat(d->shminfo->shmid, 0, 0);
     if (d->shminfo->shmaddr < 0) {
-	kDebugWarning("%s: Could not attach sysv shared memory segment", ID);
+	kdWarning() << "" << ID << ": Could not attach sysv shared memory segment" << endl;
 	m_bShm = false;
 	shmctl(d->shminfo->shmid, IPC_RMID, 0);
 	return;
@@ -331,7 +329,7 @@ void KPixmapIO::createShmSegment(int size)
 
     d->shminfo->readOnly = false;
     if (!XShmAttach(qt_xdisplay(), d->shminfo)) {
-	kDebugWarning("%s: X-Server could not attach shared memory segment", ID);
+	kdWarning() << "" << ID << ": X-Server could not attach shared memory segment" << endl;
 	m_bShm = false;
 	shmdt(d->shminfo->shmaddr);
 	shmctl(d->shminfo->shmid, IPC_RMID, 0);

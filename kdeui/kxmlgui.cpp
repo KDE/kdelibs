@@ -123,7 +123,7 @@ QString KXMLGUIFactory::readConfigFile( const QString &filename )
   QFile file( filename );
   if ( !file.open( IO_ReadOnly ) )
   {
-    kDebugError( 1000, "No such XML file %s", filename.local8Bit().data() );
+    kdError(1000) << "No such XML file " << filename.local8Bit().data() << endl;
     return QString::null;
   }
 
@@ -164,7 +164,7 @@ KXMLGUIFactory::KXMLGUIFactory( KXMLGUIBuilder *builder )
 
 KXMLGUIFactory::~KXMLGUIFactory()
 {
-  kDebugInfo( 1002, "KXMLGUIFactory::~KXMLGUIFactory(), calling removeRecursive" );
+  kdDebug(1002) << "KXMLGUIFactory::~KXMLGUIFactory(), calling removeRecursive" << endl;
   delete d;
 }
 
@@ -211,7 +211,7 @@ void KXMLGUIFactory::removeClient( KXMLGUIClient *client )
       removeClient( childIt.current() );
   }
 
-  kDebugInfo( 1002, "KXMLGUIFactory::removeServant, calling removeRecursive" );
+  kdDebug(1002) << "KXMLGUIFactory::removeServant, calling removeRecursive" << endl;
   m_client = client;
   d->m_clientName = client->document().documentElement().attribute( "name" );
   d->m_clientBuilder = client->clientBuilder();
@@ -283,7 +283,7 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
       {
         if ( tag == tagDefineGroup )
 	{
-          kDebugError( 1000, "cannot define group without name!");
+          kdError(1000) << "cannot define group without name!" << endl;
 	  continue;
 	}
         mergingName = d->m_defaultMergingName;
@@ -450,7 +450,7 @@ bool KXMLGUIFactory::removeRecursive( KXMLGUIContainerNode *node )
         QListIterator<QAction> actionIt( clientIt.current()->m_actions );
         for (; actionIt.current(); ++actionIt )
         {
-          kDebugInfo( 1002, "unplugging %s from %s", actionIt.current()->name(), (QWidget *)node->container->name() );
+          kdDebug(1002) << "unplugging " << actionIt.current()->name() << " from " << (QWidget *)node->container->name() << endl;
           actionIt.current()->unplug( (QWidget *)node->container );
         }
 	
@@ -498,12 +498,12 @@ bool KXMLGUIFactory::removeRecursive( KXMLGUIContainerNode *node )
       adjustMergingIndices( p, idx, -1, mergingIt );
     }
 
-    if ( node == d->m_rootNode ) kDebugInfo( 1002, "root node !" );
-    if ( !node->container ) kDebugInfo( 1002, "no container !" );
+    if ( node == d->m_rootNode ) kdDebug(1002) << "root node !" << endl;
+    if ( !node->container ) kdDebug(1002) << "no container !" << endl;
 
     assert( node->builder );
 
-    kDebugInfo( 1002, "remove/kill stuff : node is %s, container is %s (%s), parent container is %s", node->name.ascii(), node->container->name(), node->container->className(), parentContainer ? parentContainer->name() : 0L );
+    kdDebug(1002) << "remove/kill stuff : node is " << node->name << ", container is " << node->container->name() << " (" << node->container->className() << "), parent container is " << ( parentContainer ? parentContainer->name() : 0L ) << endl;
     //remove/kill the container and give the builder a chance to store abitrary state information of
     //the container in a QByteArray. This information will be re-used for the creation of the same
     //container in case we add the same client again later.

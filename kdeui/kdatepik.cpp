@@ -62,7 +62,7 @@ KDatePicker::KDatePicker(QWidget *parent, QDate dt, const char *name)
   // ----- initialize month names:
   if(KDatePickers==0) // first instance
     {
-      kDebugInfo("KDatePicker::KDatePicker: first instance.");
+      kdDebug() << "KDatePicker::KDatePicker: first instance." << endl;
       for(count=0; count<12; ++count)
 	{
 	  Month[count]=new QString(month[count]);
@@ -94,7 +94,7 @@ KDatePicker::~KDatePicker()
   // -----
   if(KDatePickers==1)
     {
-      kDebugInfo("KDatePicker::~KDatePicker: last instance, cleaning up.");
+      kdDebug() << "KDatePicker::~KDatePicker: last instance, cleaning up." << endl;
       for(count=0; count<12; ++count)
 	{
 	  delete Month[count];
@@ -158,15 +158,14 @@ KDatePicker::resizeEvent(QResizeEvent*)
 void 
 KDatePicker::dateChangedSlot(QDate date)
 {
-  kDebugInfo("KDatePicker::dateChangedSlot: date changed (%i/%i/%i).",
-	date.year(), date.month(), date.day());
+  kdDebug() << "KDatePicker::dateChangedSlot: date changed (" << date.year() << "/" << date.month() << "/" << date.day() << ")." << endl;
   emit(dateChanged(date));
 }
 
 void 
 KDatePicker::tableClickedSlot()
 {
-  kDebugInfo("KDatePicker::tableClickedSlot: table clicked.");
+  kdDebug() << "KDatePicker::tableClickedSlot: table clicked." << endl;
   emit(dateSelected(table->getDate()));
   emit(tableClicked());
 }
@@ -190,7 +189,7 @@ KDatePicker::setDate(const QDate& date)
       selectYear->setText(temp);
       return true;
     } else {
-      kDebugInfo("KDatePicker::setDate: refusing to set invalid date.");
+      kdDebug() << "KDatePicker::setDate: refusing to set invalid date." << endl;
       return false;
     }
 }
@@ -352,11 +351,11 @@ KDatePicker::lineEnterPressed()
   // -----
   if(val->date(line->text(), temp)==QValidator::Acceptable)
     {
-      kDebugInfo("KDatePicker::lineEnterPressed: valid date entered.");
+      kdDebug() << "KDatePicker::lineEnterPressed: valid date entered." << endl;
       emit(dateEntered(temp));
     } else {
       kapp->beep();
-      kDebugInfo("KDatePicker::lineEnterPressed: invalid date entered.");
+      kdDebug() << "KDatePicker::lineEnterPressed: invalid date entered." << endl;
     }
 }
 

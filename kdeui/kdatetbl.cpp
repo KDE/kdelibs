@@ -74,7 +74,7 @@ KDateValidator::date(const QString& text, QDate& d) const
     {
       if(!text.at(count).isDigit())
 	{
-	  kDebugInfo("KDateValidator::validate: non-digit character entered.");
+	  kdDebug() << "KDateValidator::validate: non-digit character entered." << endl;
 	  kapp->beep();
 	  return Invalid;
 	}
@@ -118,7 +118,7 @@ KDateValidator::date(const QString& text, QDate& d) const
     {
       return Acceptable;
     } else {
-      kDebugInfo("KDateValidator::date: invalid date %i/%i/%i.", y, m, day);
+      kdDebug() << "KDateValidator::date: invalid date " << y << "/" << m << "/" << day << "." << endl;
       return Valid;
     }
 }
@@ -130,7 +130,7 @@ KDateTable::KDateTable(QWidget *parent, QDate date_, const char* name, WFlags f)
   setFontSize(10);
   if(!date_.isValid())
     {
-      kDebugInfo("KDateTable ctor: WARNING: Given date is invalid, using current date.");
+      kdDebug() << "KDateTable ctor: WARNING: Given date is invalid, using current date." << endl;
       date_=QDate::currentDate();
     }
   setFrameStyle(QFrame::Panel | QFrame::Sunken);
@@ -313,7 +313,7 @@ KDateTable::setDate(const QDate& date_)
   // -----
   if(!date_.isValid())
     {
-      kDebugInfo("KDateTable::setDate: refusing to set invalid date.");
+      kdDebug() << "KDateTable::setDate: refusing to set invalid date." << endl;
       return false;
     }
   if(date!=date_)
@@ -354,8 +354,7 @@ KDateTable::sizeHint() const
       return QSize(maxCell.width()*numCols()+2*frameWidth(), 
 		   (maxCell.height()+2)*numRows()+2*frameWidth());
     } else {
-      kDebugInfo("KDateTable::sizeHint: obscure failure - "
-	    "constructor not called for this object?");
+      kdDebug() << "KDateTable::sizeHint: obscure failure - " << endl;
       return QSize(-1, -1);
     }
 }
