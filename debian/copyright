@@ -87,5 +87,22 @@ not, write to the Free Software Foundation, Inc, 59 Temple Place -
 Suite 330, Boston, MA 02111-1307, USA.
 
 --
+[kssl]
+ 
+(from kssl/README - George Staikos <staikos@kde.org>)
+ 
+Despite what the files might say, this is entirely licenced under the LGPL
+and will continue to be so licenced.  The files will eventually be updated
+to indicate this.  Please feel free to accept this as the licence.
+ 
+ 
+WARNING:
+  DO NOT USE THIS LIBRARY YET.  IT IS UNDER HEAVY DEVELOPMENT AND MAY
+  CHANGE WITHOUT NOTICE.
+ 
+This library includes cryptographic software written by Eric Young
+(eay@cryptsoft.com).
+
+--
 
 Please see /usr/share/common-licenses/ for each individual license.
