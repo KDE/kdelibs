@@ -42,7 +42,7 @@ QString displayName()
     return d;
 }
 
-KFM::KFM(bool silent)
+KFM::KFM()
 {
     flag = 0;
     ok = FALSE;
@@ -50,7 +50,7 @@ KFM::KFM(bool silent)
     allowRestart = FALSE;
     modal_hack_widget = 0;
 
-    init(silent);
+    init();
 }
 
 KFM::~KFM()
@@ -110,7 +110,7 @@ bool KFM::downloadInternal(const QString & src, QString & target){
 }
 
 
-void KFM::init(bool silent)
+void KFM::init()
 {
     QString file = KApplication::localkdedir() + "/share/apps/kfm/pid";
     file += displayName();
@@ -127,7 +127,7 @@ void KFM::init(bool silent)
 	    // dont try twice
 	    flag = 1;
 	    sleep( 10 );
-	    init(silent);
+	    init();
 	    return;
 	}
 	
@@ -158,7 +158,7 @@ void KFM::init(bool silent)
 	    system( "kfm -d &" );
 	    sleep( 10 );
 	    fclose( f );
-	    init(silent);
+	    init();
 	    return;
 	}
 
@@ -352,7 +352,7 @@ bool KFM::test()
 	ok = FALSE;
 
 	warning( "KFM recovery" );
-	init(false);
+	init();
 	warning( "KFM recovery done" );
     }
 

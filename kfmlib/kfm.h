@@ -52,7 +52,7 @@ public:
      * @arg silent set to true if you don't want error messages on stderr
      *      (useful e.g. to simply test if KFM is running or not)
      */
-    KFM(bool silent = false);
+    KFM();
     ~KFM();
 
     /*  Call setSilent(true) before you create a KFM instance
@@ -141,7 +141,7 @@ public slots:
 		      const char* _group, const char* _date, int _size);
     
 protected:
-    void init(bool silent);
+    void init();
     bool test();
     
     char flag;
