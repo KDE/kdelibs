@@ -102,14 +102,16 @@ KHttpCookie::KHttpCookie(const QString &_host,
                  const QString &_name,
                  const QString &_value,
                  time_t _expireDate,
-                 int _protocolVersion) :
+                 int _protocolVersion,
+                 bool _secure) :
        mHost(_host),
        mDomain(_domain),
        mPath(_path),
        mName(_name),
        mValue(_value),
        mExpireDate(_expireDate),
-       mProtocolVersion(_protocolVersion)
+       mProtocolVersion(_protocolVersion),
+       mSecure(_secure)
 {
     nextCookie = 0;
 }
@@ -230,6 +232,7 @@ QString KCookieJar::findCookies(const QString &_url)
     }
 
     extractDomains(fqdn, domains);
+    bool secureRequest = (_url.find( "https://", 0, false) == 0);
     for(QStringList::ConstIterator it = domains.begin();
         it != domains.end();
         ++it)
@@ -242,6 +245,9 @@ QString KCookieJar::findCookies(const QString &_url)
        for ( cookie=cookieList->first(); cookie != 0; cookie=cookieList->next() )
        {
           if (!cookie->match( domains, path))
+             continue;
+
+          if( cookie->isSecure() && !secureRequest )
              continue;
 
           // Use first cookie to determine protocol version
@@ -570,6 +576,10 @@ KHttpCookiePtr KCookieJar::makeCookies(const QString &_url,
             else if (Name == "version")
             {
                 lastCookie->mProtocolVersion = Value.toInt();
+            }
+            else if (Name == "secure")
+            {
+                lastCookie->mSecure = true;
             }
         }
         // We have to default the path if the server did not
@@ -947,8 +957,8 @@ bool KCookieJar::saveCookies(const QString &_filename)
 
     fprintf(fStream, "# KDE Cookie File\n#\n");
 
-    fprintf(fStream, "%-20s %-20s %-12s %-9s %-4s %-10s %s\n",
-    	"# Host", "Domain", "Path", "Exp.date", "Prot", "Name", "Value");
+    fprintf(fStream, "%-20s %-20s %-12s %-9s %-4s %-10s %s %-4s\n",
+    	"# Host", "Domain", "Path", "Exp.date", "Prot", "Name", "Value", "Secure");
 
     for ( QStringList::Iterator it=domainList.begin();
     	  it != domainList.end();
@@ -983,11 +993,11 @@ bool KCookieJar::saveCookies(const QString &_filename)
                 QString domain("\"");
                 domain += cookie->domain();
                 domain += "\"";
-                fprintf(fStream, "%-20s %-20s %-12s %9lu   %2d %-10s \"%s\"\n",
+                fprintf(fStream, "%-20s %-20s %-12s %9lu   %2d %-10s \"%s\" %-4i\n",
 		    cookie->host().latin1(), domain.latin1(), path.latin1(),
-		    (unsigned long) cookie->expireDate(),
-		    cookie->protocolVersion(),
-		    cookie->name().latin1(), cookie->value().latin1());
+		    (unsigned long) cookie->expireDate(), cookie->protocolVersion(),
+		    cookie->name().latin1(), cookie->value().latin1(),
+		    cookie->isSecure());
 		cookie = cookieList->next();
 	    }
 	    else
@@ -1074,6 +1084,8 @@ bool KCookieJar::loadCookies(const QString &_filename)
 	    int protVer  = (time_t) strtoul(verStr, 0, 10);
 	    const char *name( parseField(line) );
 	    const char *value( parseField(line) );
+	    bool secure = atoi( parseField(line) );
+		
 
 	    // Parse error
 	    if (!value) continue;
@@ -1094,7 +1106,7 @@ bool KCookieJar::loadCookies(const QString &_filename)
 #endif
 
 	    KHttpCookie *cookie = new KHttpCookie(host, domain, path,
-	    	name, value, expDate, protVer);
+	    	name, value, expDate, protVer, secure);
 	    addCookie(cookie);	
     	}
     }

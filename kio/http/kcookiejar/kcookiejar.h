@@ -59,6 +59,7 @@ protected:
     time_t  mExpireDate;
     int     mProtocolVersion;
     long    mWindowId;
+    bool    mSecure;
 
     KHttpCookiePtr nextCookie;
 
@@ -70,7 +71,8 @@ public:
                 const QString &_name=QString::null,
                 const QString &_value=QString::null,
                 time_t _expireDate=0,
-                int _protocolVersion=0);
+                int _protocolVersion=0,
+                bool _secure = false);
 
     QString domain(void) { return mDomain; }
     QString host(void) { return mHost; }
@@ -81,7 +83,7 @@ public:
     void    fixDomain(const QString &domain) { mDomain = domain; }
     time_t  expireDate(void) { return mExpireDate; }
     int     protocolVersion(void) { return mProtocolVersion; }
-
+    bool    isSecure(void) { return mSecure; }
     bool    isExpired(time_t currentDate);
     bool    match(const QStringList &domainList, const QString &path);
 
