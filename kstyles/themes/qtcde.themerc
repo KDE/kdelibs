@@ -1,6 +1,7 @@
 [Misc]
 Name=Qt CDE
 Name[de]=Qt-CDE
+Name[no_NY]=Qt-CDE
 Name[ro]=CDE Qt
 Comment=Built-in unthemed CDE style
 Comment[ca]=Estil incorporat CDE sense temes
