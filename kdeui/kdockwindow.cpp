@@ -30,6 +30,7 @@ KDockWindow::KDockWindow( QWidget* parent, const char* name )
     hasQuit = 0;
     menu = new KPopupMenu( this );
     menu->setTitle( kapp->caption() );
+    move( -1000, -1000 );
 }
 
 KDockWindow::~KDockWindow()
@@ -70,7 +71,7 @@ void KDockWindow::mouseReleaseEvent( QMouseEvent * e)
 {
     if ( !rect().contains( e->pos() ) )
 	return;
-    
+
     switch ( e->button() ) {
     case LeftButton:
 	if ( parentWidget() ){
