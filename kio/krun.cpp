@@ -376,12 +376,7 @@ pid_t KRun::runCommandInternal( KProcess* proc, const QString& binName,
       }
       else // non-compliant app ( .desktop file )
       {
-          if( service->mapNotify()) // for old .desktop files
-          { // ok, wmclass is equal to binary name
-              startup_notify = true;
-              wmclass = "";
-          }
-          else if( service->type() == "Application" )
+          if( service->type() == "Application" )
           {
               startup_notify = true; // doesn't have .desktop entries needed
               wmclass = "0";         // start as non-compliant

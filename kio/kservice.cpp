@@ -161,8 +161,6 @@ KService::init( KDesktopFile *config )
   entryMap.remove("Path");
   m_strComment = config->readEntry( "Comment" );
   entryMap.remove("Comment");
-  m_mapNotify = config->readBoolEntry( "MapNotify", false );
-  entryMap.remove("MapNotify");
   m_lstKeywords = config->readListEntry("Keywords");
   entryMap.remove("Keywords");
   m_strLibrary = config->readEntry( "X-KDE-Library" );
@@ -234,15 +232,21 @@ void KService::load( QDataStream& s )
   Q_INT8 def, term, dummy1, dummy2;
   Q_INT8 dst, initpref;
   QString dummyStr1, dummyStr2;
+  int dummyI1, dummyI2;
+  Q_UINT32 dummyUI32;
 
+  // WARNING: IN KDE 3.x THIS NEEDS TO REMAIN COMPATIBLE WITH KDE 2.x!
+  // !! This data structure should remain binary compatible at all times !!
+  // You may add new fields at the end. Make sure to update the version
+  // number in ksycoca.h
   s >> m_strType >> m_strName >> m_strExec >> m_strIcon
     >> term >> m_strTerminalOptions
     >> m_strPath >> m_strComment >> m_lstServiceTypes >> def >> m_mapProps
-    >> m_strLibrary >> m_libraryMajor >> m_libraryMinor
+    >> m_strLibrary >> dummyI1 >> dummyI2
     >> dst
     >> m_strDesktopEntryName
     >> dummy1 >> dummyStr1 >> initpref >> dummyStr2 >> dummy2
-    >> m_lstKeywords >> m_strInit >> (Q_UINT32 &)m_mapNotify;
+    >> m_lstKeywords >> m_strInit >> dummyUI32;
 
   m_bAllowAsDefault = def;
   m_bTerminal = term;
@@ -260,18 +264,21 @@ void KService::save( QDataStream& s )
   Q_INT8 dst = (Q_INT8) m_DCOPServiceType;
   Q_INT8 dummy1 = 0, dummy2 = 0; // see ::load
   QString dummyStr1, dummyStr2;
+  int dummyI1 = 0, dummyI2 = 0;
+  Q_UINT32 dummyUI32 = 0;
 
+  // WARNING: IN KDE 3.x THIS NEEDS TO REMAIN COMPATIBLE WITH KDE 2.x!
   // !! This data structure should remain binary compatible at all times !!
   // You may add new fields at the end. Make sure to update the version
   // number in ksycoca.h
   s << m_strType << m_strName << m_strExec << m_strIcon
     << term << m_strTerminalOptions
     << m_strPath << m_strComment << m_lstServiceTypes << def << m_mapProps
-    << m_strLibrary << m_libraryMajor << m_libraryMinor
+    << m_strLibrary << dummyI1 << dummyI2
     << dst
     << m_strDesktopEntryName
     << dummy1 << dummyStr1 << initpref << dummyStr2 << dummy2
-    << m_lstKeywords << m_strInit << (Q_UINT32)m_mapNotify;
+    << m_lstKeywords << m_strInit << dummyUI32;
 }
 
 bool KService::hasServiceType( const QString& _servicetype ) const
@@ -360,18 +367,10 @@ QVariant KService::property( const QString& _name ) const
     return QVariant( m_initialPreference );
   else if ( _name == "Library" )
     return QVariant( m_strLibrary );
-  else if ( _name == "LibraryMajor" )
-    return QVariant( m_libraryMajor );
-  else if ( _name == "LibraryMinor" )
-    return QVariant( m_libraryMinor );
-  else if ( _name == "LibraryDependencies" )
-    return QVariant( m_lstLibraryDeps );
   else if ( _name == "DesktopEntryPath" )
     return QVariant( entryPath() );
   else if ( _name == "DesktopEntryName")
     return QVariant( m_strDesktopEntryName );
-  else if ( _name == "MapNotify" )
-    return QVariant( m_mapNotify, 0 ); // use the special bool constructor of QVariant
 
   // Ok we need to convert the property from a QString to its real type.
   // First we need to ask KServiceTypeFactory what the type of this property
@@ -447,12 +446,8 @@ QStringList KService::propertyNames() const
   res.append( "AllowAsDefault" );
   res.append( "InitialPreference" );
   res.append( "Library" );
-  res.append( "LibraryMajor" );
-  res.append( "LibraryMinor" );
-  res.append( "LibraryDependencies" );
   res.append( "DesktopEntryPath" );
   res.append( "DesktopEntryName" );
-  res.append( "MapNotify" );
 
   return res;
 }

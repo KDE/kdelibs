@@ -96,13 +96,6 @@ public:
   QString init() const { return m_strInit; }
 
   /**
-   * @deprecated Will be removed in KDE 3.0
-   */
-  int libraryMajor() const { return m_libraryMajor; }
-  int libraryMinor() const { return m_libraryMinor; }
-  QStringList libraryDependencies() const { return m_lstLibraryDeps; }
-
-  /**
    * Returns the icon associated with the service.
    */
   QString icon() const { return m_strIcon; }
@@ -180,11 +173,6 @@ public:
    * Returns a list of descriptive keywords the service, if there are any.
    */
   QStringList keywords() const { return m_lstKeywords; }
-
-  /**
-   * @deprecated Don't use
-   */
-  bool mapNotify() const { return m_mapNotify; }
 
   /**
    * Returns the service types that this service supports.
@@ -326,9 +314,6 @@ private:
   QString m_strPath;
   QString m_strComment;
   QString m_strLibrary;
-  int m_libraryMajor;
-  int m_libraryMinor;
-  QStringList m_lstLibraryDeps;
   QStringList m_lstServiceTypes;
   bool m_bAllowAsDefault;
   int m_initialPreference;
@@ -343,6 +328,5 @@ private:
   bool m_bValid;
   QStringList m_lstKeywords;
   QString m_strInit;
-  bool m_mapNotify; // obsolete
 };
 #endif
