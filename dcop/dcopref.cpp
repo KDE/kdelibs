@@ -36,6 +36,7 @@ DCOPRef::DCOPRef( const DCOPRef& ref )
 {
     m_app = ref.app();
     m_obj = ref.object();
+    m_type = ref.type();
 }
 
 DCOPRef::DCOPRef( const QCString& _app, const QCString& obj )
