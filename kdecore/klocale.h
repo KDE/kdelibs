@@ -392,7 +392,7 @@ public:
    * regarding dates.
    *
    * @param pDate The date to be formated.
-   * @param shotFormat True for non text dates.
+   * @param shortFormat True for non text dates.
    *
    * @return The date as a string
    */
