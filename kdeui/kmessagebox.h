@@ -113,6 +113,18 @@ public:
                           const QString &dontAskAgainName = QString::null,
                           int options = Notify);
  /**
+  * This function accepts the window id of the parent window, instead
+  * of QWidget*. It should be used only when necessary.
+  * @since 3.2
+  */
+ static int questionYesNoWId(WId parent_id,
+                          const QString &text,
+                          const QString &caption = QString::null,
+                          const KGuiItem &buttonYes = KStdGuiItem::yes(),
+                          const KGuiItem &buttonNo =  KStdGuiItem::no(),
+                          const QString &dontAskAgainName = QString::null,
+                          int options = Notify);
+ /**
   * Display a simple "question" dialog.
   *
   * @param parent  If @p parent is 0, then the message box becomes an
@@ -142,6 +154,19 @@ public:
   */
 
   static int questionYesNoCancel(QWidget *parent,
+                          const QString &text,
+                          const QString &caption = QString::null,
+                          const KGuiItem &buttonYes = KStdGuiItem::yes(),
+                          const KGuiItem &buttonNo  = KStdGuiItem::no(),
+                          const QString &dontAskAgainName = QString::null,
+                          int options = Notify);
+
+ /**
+  * This function accepts the window id of the parent window, instead
+  * of QWidget*. It should be used only when necessary.
+  * @since 3.2
+  */
+  static int questionYesNoCancelWId(WId parent_id,
                           const QString &text,
                           const QString &caption = QString::null,
                           const KGuiItem &buttonYes = KStdGuiItem::yes(),
@@ -188,6 +213,21 @@ public:
                           const KGuiItem &buttonNo = KStdGuiItem::no(),
                           const QString &dontAskAgainName = QString::null,
                           int options = Notify);
+
+ /**
+  * This function accepts the window id of the parent window, instead
+  * of QWidget*. It should be used only when necessary.
+  * @since 3.2
+  */
+ static int questionYesNoListWId(WId parent_id,
+                          const QString &text,
+                          const QStringList &strlist,
+                          const QString &caption = QString::null,
+                          const KGuiItem &buttonYes = KStdGuiItem::yes(),
+                          const KGuiItem &buttonNo = KStdGuiItem::no(),
+                          const QString &dontAskAgainName = QString::null,
+                          int options = Notify);
+
  /**
   * Display a "warning" dialog.
   *
@@ -216,6 +256,19 @@ public:
   * The default button is "No". Pressing "Esc" selects "No".
   */
  static int warningYesNo(QWidget *parent,
+                         const QString &text,
+                         const QString &caption = QString::null,
+                         const KGuiItem &buttonYes = KStdGuiItem::yes(),
+                         const KGuiItem &buttonNo = KStdGuiItem::no(),
+                         const QString &dontAskAgainName = QString::null,
+                         int options = Notify | Dangerous);
+
+ /**
+  * This function accepts the window id of the parent window, instead
+  * of QWidget*. It should be used only when necessary.
+  * @since 3.2
+  */
+ static int warningYesNoWId(WId parent_id,
                          const QString &text,
                          const QString &caption = QString::null,
                          const KGuiItem &buttonYes = KStdGuiItem::yes(),
@@ -262,6 +315,21 @@ public:
                             const KGuiItem &buttonNo = KStdGuiItem::no(),
                             const QString &dontAskAgainName = QString::null,
                             int options = Notify | Dangerous);
+
+ /**
+  * This function accepts the window id of the parent window, instead
+  * of QWidget*. It should be used only when necessary.
+  * @since 3.2
+  */
+ static int warningYesNoListWId(WId parent_id,
+                            const QString &text,
+                            const QStringList &strlist,
+                            const QString &caption = QString::null,
+                            const KGuiItem &buttonYes = KStdGuiItem::yes(),
+                            const KGuiItem &buttonNo = KStdGuiItem::no(),
+                            const QString &dontAskAgainName = QString::null,
+                            int options = Notify | Dangerous);
+
  /**
   * Display a "warning" dialog.
   *
@@ -295,6 +363,17 @@ public:
                          const QString &dontAskAgainName = QString::null,
                          int options = Notify);
 
+ /**
+  * This function accepts the window id of the parent window, instead
+  * of QWidget*. It should be used only when necessary.
+  * @since 3.2
+  */
+ static int warningContinueCancelWId(WId parent_id,
+                         const QString &text,
+                         const QString &caption = QString::null,
+                         const KGuiItem &buttonContinue = KStdGuiItem::cont(),
+                         const QString &dontAskAgainName = QString::null,
+                         int options = Notify);
 
  /**
   * Display a "warning" dialog with a listbox to show information to the user.
@@ -335,6 +414,18 @@ public:
                          const QString &dontAskAgainName = QString::null,
                          int options = Notify);
 
+ /**
+  * This function accepts the window id of the parent window, instead
+  * of QWidget*. It should be used only when necessary.
+  * @since 3.2
+  */
+ static int warningContinueCancelListWId(WId parent_id,
+                         const QString &text,
+                         const QStringList &strlist,
+                         const QString &caption = QString::null,
+                         const KGuiItem &buttonContinue = KStdGuiItem::cont(),
+                         const QString &dontAskAgainName = QString::null,
+                         int options = Notify);
 
  /**
   * Display a Yes/No/Cancel "warning" dialog.
@@ -370,6 +461,19 @@ public:
   */
 
   static int warningYesNoCancel(QWidget *parent,
+                                const QString &text,
+                                const QString &caption = QString::null,
+                                const KGuiItem &buttonYes = KStdGuiItem::yes(),
+                                const KGuiItem &buttonNo = KStdGuiItem::no(),
+                                const QString &dontAskAgainName = QString::null,
+                                int options = Notify);
+
+ /**
+  * This function accepts the window id of the parent window, instead
+  * of QWidget*. It should be used only when necessary.
+  * @since 3.2
+  */
+  static int warningYesNoCancelWId(WId parent_id,
                                 const QString &text,
                                 const QString &caption = QString::null,
                                 const KGuiItem &buttonYes = KStdGuiItem::yes(),
@@ -425,6 +529,20 @@ public:
                                 int options = Notify);
 
  /**
+  * This function accepts the window id of the parent window, instead
+  * of QWidget*. It should be used only when necessary.
+  * @since 3.2
+  */
+  static int warningYesNoCancelListWId(WId parent_id,
+                                const QString &text,
+                                const QStringList &strlist,
+                                const QString &caption = QString::null,
+                                const KGuiItem &buttonYes = KStdGuiItem::yes(),
+                                const KGuiItem &buttonNo = KStdGuiItem::no(),
+                                const QString &dontAskAgainName = QString::null,
+                                int options = Notify);
+
+ /**
   * Display an "Error" dialog.
   *
   * @param parent  If @p parent is 0, then the message box becomes an
@@ -448,6 +566,16 @@ public:
   */
 
   static void error(QWidget *parent,
+                    const QString &text,
+                    const QString &caption = QString::null,
+                    int options = Notify);
+
+ /**
+  * This function accepts the window id of the parent window, instead
+  * of QWidget*. It should be used only when necessary.
+  * @since 3.2
+  */
+  static void errorWId(WId parent_id,
                     const QString &text,
                     const QString &caption = QString::null,
                     int options = Notify);
@@ -484,6 +612,17 @@ public:
                     const QString &caption = QString::null,
                     int options = Notify);
 
+ /**
+  * This function accepts the window id of the parent window, instead
+  * of QWidget*. It should be used only when necessary.
+  * @since 3.2
+  */
+  static void detailedErrorWId(WId parent_id,
+                    const QString &text,
+                    const QString &details,
+                    const QString &caption = QString::null,
+                    int options = Notify);
+
   /**
    * Like detailedError
    *
@@ -495,6 +634,16 @@ public:
    * shown.
    */
   static void queuedDetailedError( QWidget *parent,
+                    const QString &text,
+                    const QString &details,
+                    const QString &caption = QString::null);
+
+ /**
+  * This function accepts the window id of the parent window, instead
+  * of QWidget*. It should be used only when necessary.
+  * @since 3.2
+  */
+  static void queuedDetailedErrorWId( WId parent_id,
                     const QString &text,
                     const QString &details,
                     const QString &caption = QString::null);
@@ -522,6 +671,16 @@ public:
   */
 
   static void sorry(QWidget *parent,
+                    const QString &text,
+                    const QString &caption = QString::null,
+                    int options = Notify);
+
+ /**
+  * This function accepts the window id of the parent window, instead
+  * of QWidget*. It should be used only when necessary.
+  * @since 3.2
+  */
+  static void sorryWId(WId parent_id,
                     const QString &text,
                     const QString &caption = QString::null,
                     int options = Notify);
@@ -561,6 +720,17 @@ public:
                     int options = Notify);
 
  /**
+  * This function accepts the window id of the parent window, instead
+  * of QWidget*. It should be used only when necessary.
+  * @since 3.2
+  */
+  static void detailedSorryWId(WId parent_id,
+                    const QString &text,
+                    const QString &details,
+                    const QString &caption = QString::null,
+                    int options = Notify);
+
+ /**
   * Display an "Information" dialog.
   *
   * @param parent  If @p parent is 0, then the message box becomes an
@@ -587,6 +757,17 @@ public:
   */
 
   static void information(QWidget *parent,
+                          const QString &text,
+                          const QString &caption = QString::null,
+                          const QString &dontShowAgainName = QString::null,
+                          int options = Notify);
+
+ /**
+  * This function accepts the window id of the parent window, instead
+  * of QWidget*. It should be used only when necessary.
+  * @since 3.2
+  */
+  static void informationWId(WId parent_id,
                           const QString &text,
                           const QString &caption = QString::null,
                           const QString &dontShowAgainName = QString::null,
@@ -623,6 +804,18 @@ public:
   */
 
   static void informationList(QWidget *parent,
+			      const QString &text,
+			      const QStringList & strlist,
+			      const QString &caption = QString::null,
+			      const QString &dontShowAgainName = QString::null,
+			      int options = Notify);
+
+ /**
+  * This function accepts the window id of the parent window, instead
+  * of QWidget*. It should be used only when necessary.
+  * @since 3.2
+  */
+  static void informationListWId(WId parent_id,
 			      const QString &text,
 			      const QStringList & strlist,
 			      const QString &caption = QString::null,
@@ -683,6 +876,17 @@ public:
                     const KGuiItem &buttonNo = KStdGuiItem::no(),
                     int options = Notify);
 
+    /**
+     * This function accepts the window id of the parent window, instead
+     * of QWidget*. It should be used only when necessary.
+     * @since 3.2
+     */
+    static int messageBoxWId( WId parent_id, DialogType type, const QString &text,
+                    const QString &caption = QString::null,
+                    const KGuiItem &buttonYes = KStdGuiItem::yes(),
+                    const KGuiItem &buttonNo = KStdGuiItem::no(),
+                    int options = Notify);
+
     /*
      * Like messageBox
      *
@@ -701,12 +905,31 @@ public:
                     int options );
 
     /**
+     * This function accepts the window id of the parent window, instead
+     * of QWidget*. It should be used only when necessary.
+     * @since 3.2
+     */
+    static void queuedMessageBoxWId( WId parent_id,
+                    DialogType type, const QString &text,
+                    const QString &caption,
+                    int options );
+
+    /**
      * @overload
      *
      * This is an overloaded member function, provided for convenience.
      * It behaves essentially like the above function.
      */
     static void queuedMessageBox( QWidget *parent,
+                    DialogType type, const QString &text,
+                    const QString &caption = QString::null );
+
+    /**
+     * This function accepts the window id of the parent window, instead
+     * of QWidget*. It should be used only when necessary.
+     * @since 3.2
+     */
+    static void queuedMessageBoxWId( WId parent_id,
                     DialogType type, const QString &text,
                     const QString &caption = QString::null );
 
