@@ -23,6 +23,13 @@
 
 #include <config.h>
 
+#ifdef _WIN32
+#include <kde_file_win.h>
+#define KDE_open kdewin32_open
+#else
+#define KDE_open open
+#endif
+
 #ifndef HAVE_SETENV
 
 #ifdef HAVE_ALLOCA_H
@@ -32,13 +39,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
-
-#ifdef _WIN32
-#include <kde_file_win.h>
-#define KDE_open kdewin32_open
-#else
-#define KDE_open open
-#endif
 
 KDECORE_EXPORT int setenv(const char *name, const char *value, int overwrite) {
     int i;
@@ -56,7 +56,7 @@ KDECORE_EXPORT int setenv(const char *name, const char *value, int overwrite) {
 
     return putenv(a);
 }
-#endif
+#endif /* !HAVE_SETENV */
 
 #ifndef HAVE_UNSETENV
 
@@ -104,7 +104,7 @@ KDECORE_EXPORT void unsetenv (name)
 
 }
 
-#endif
+#endif /* !HAVE_UNSETENV */
 
 #ifndef HAVE_USLEEP
 
@@ -138,7 +138,7 @@ void usleep(unsigned int usec) {
 }
 #endif
 
-#endif
+#endif /* !HAVE_USLEEP */
 
 #ifndef HAVE_RANDOM
 long int random()
@@ -233,7 +233,7 @@ KDECORE_EXPORT int mkstemps (char* _template, int suffix_len)
   return -1;
 }
 
-#endif
+#endif /* !HAVE_MKSTEMPS */
 
 #ifndef HAVE_MKSTEMP
 KDECORE_EXPORT int mkstemp (char* _template)
@@ -306,7 +306,7 @@ KDECORE_EXPORT char* mkdtemp (char* _template)
     }
     return 0;
 }
-#endif
+#endif /* !HAVE_MKDTEMP */
 
 #ifndef HAVE_REVOKE
 #include <errno.h>
