@@ -410,29 +410,46 @@ static inline int emSqueezeLimit(int delta, int min, int max)
   return delta;
 }
 
-QString KStringHandler::lPixelSqueeze(const QString& name, const QFontMetrics& fontMetrics, uint maxPixels)
+QString KStringHandler::lPixelSqueeze(const QString& s, const QFontMetrics& fm, uint width)
 {
-  uint nameWidth = fontMetrics.width(name);
-
-  if (maxPixels < nameWidth)
-  {
-    QString tmp = name;
-    const uint em = fontMetrics.maxWidth();
-    maxPixels -= fontMetrics.width("...");
-
-    while (maxPixels < nameWidth && !tmp.isEmpty())
-    {
-      int delta = (nameWidth - maxPixels) / em;
-      delta = emSqueezeLimit(delta, 1, delta); // no max
-
-      tmp.remove(0, delta);
-      nameWidth = fontMetrics.width(tmp);
-    }
-
-    return ("..." + tmp);
+  if ( s.isEmpty() || uint( fm.width( s ) ) <= width ) {
+    return s;
   }
 
-  return name;
+  const unsigned int length = s.length();
+  if ( length == 2 ) {
+    return s;
+  }
+
+  const unsigned int maxWidth = width - fm.width( '.' ) * 3;
+  if ( maxWidth <= 0 ) {
+    return "...";
+  }
+
+  unsigned int leftIdx = 0, rightIdx = length;
+  unsigned int leftWidth = fm.width( s[ leftIdx++ ] );
+  unsigned int rightWidth = fm.width( s[ --rightIdx ] );
+  while ( leftWidth + rightWidth < maxWidth ) {
+    while ( leftWidth <= rightWidth && leftWidth + rightWidth < maxWidth ) {
+      leftWidth += fm.width( s[ leftIdx++ ] );
+    }
+    while ( rightWidth <= leftWidth && leftWidth + rightWidth < maxWidth ) {
+      rightWidth += fm.width( s[ --rightIdx ] );
+    }
+  }
+
+  if ( leftWidth > rightWidth ) {
+    --leftIdx;
+  } else {
+    ++rightIdx;
+  }
+
+  rightIdx = length - rightIdx;
+  if ( leftIdx == 0 && rightIdx == 1 || leftIdx == 1 && rightIdx == 0 ) {
+    return "...";
+  }
+
+  return s.left( leftIdx ) + "..." + s.right( rightIdx );
 }
 
 QString KStringHandler::cEmSqueeze(const QString& name, const QFontMetrics& fontMetrics, uint maxlen)
