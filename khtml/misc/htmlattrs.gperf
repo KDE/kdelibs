@@ -28,6 +28,7 @@ bordercolor, ATTR_BORDERCOLOR
 cellpadding, ATTR_CELLPADDING
 cellspacing, ATTR_CELLSPACING
 char, ATTR_CHAR
+challenge, ATTR_CHALLENGE
 charoff, ATTR_CHAROFF
 charset, ATTR_CHARSET
 checked, ATTR_CHECKED
