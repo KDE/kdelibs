@@ -45,6 +45,7 @@
 #include <qmultilineedit.h>
 #include <kparts/browserextension.h>
 #include <kparts/browserinterface.h>
+#include <kio/kservicetypefactory.h>
 
 K_EXPORT_COMPONENT_FACTORY( libkcertpart, KParts::GenericFactory<KCertPart> )
 
@@ -395,9 +396,21 @@ bool KCertPart::openFile() {
  return false;
 #else
 
-  emit completed();
 
-  QString whatType = KMimeType::findByURL(m_url)->name();
+  QString whatType; // = d->browserExtension->urlArgs().serviceType;
+                    //whatType = KMimeType::findByURL(m_url,0,true)->name();
+  whatType = KServiceTypeFactory::self()->findFromPattern(m_file)->name();
+
+  /*
+  QString blah = "file: " + m_file
+	       + "\nurl: " + m_url.url()
+	       + "\nserviceType: " + d->browserExtension->urlArgs().serviceType
+	       + "\nfactory: " + KServiceTypeFactory::self()->findFromPattern(m_file)->name()
+	       + "\nmimeType: " + KMimeType::findByURL(m_url)->name();
+  KMessageBox::information(_frame, blah, "ssl");
+  */
+
+  emit completed();
 
 /////////////////////////////////////////////////////////////////////////////
 //       x-pkcs12 loading
@@ -650,22 +663,25 @@ KShellProcess p;
 void KCertPart::slotSelectionChanged(QListViewItem *x) {
   _p12 = NULL;
   _ca = NULL;
-  _blankFrame->hide();
-  _x509Frame->hide();
-  _pkcsFrame->hide();
   if (x && x->parent() == _parentCA) {
+        _blankFrame->hide();
+        _pkcsFrame->hide();
 	_x509Frame->show();
 	_ca = dynamic_cast<KX509Item*>(x)->cert;
 	_import->setEnabled(isReadWrite());
 	_save->setEnabled(isReadWrite());
 	displayCACert(_ca);
   } else if (x && x->parent() == _parentP12) {
+        _blankFrame->hide();
+        _x509Frame->hide();
 	_pkcsFrame->show();
 	_p12 = dynamic_cast<KPKCS12Item*>(x)->cert;
 	_import->setEnabled(isReadWrite());
 	_save->setEnabled(isReadWrite());
 	displayPKCS12();
   } else {
+        _pkcsFrame->hide();
+        _x509Frame->hide();
 	_blankFrame->show();
         _import->setEnabled(false);
         _save->setEnabled(false);
