@@ -368,7 +368,7 @@ KMessageBox::questionYesNoCancel(QWidget *parent,
 
     if (checkboxResult)
         saveDontShowAgainYesNo(dontAskAgainName, res);
-    return result;
+    return res;
 }
 
 int
