@@ -63,51 +63,6 @@ msgstr ""
 msgid "Select color"
 msgstr ""
 
-#: dialogs/qdeveloper.cpp:132
-msgid "Scope/Key"
-msgstr ""
-
-#: dialogs/qdeveloper.cpp:154 dialogs/qdeveloper.cpp:159
-msgid "Class"
-msgstr ""
-
-#: dialogs/qdeveloper.cpp:158
-msgid "Object"
-msgstr ""
-
-#: dialogs/qdeveloper.cpp:160
-msgid "Address"
-msgstr ""
-
-#: dialogs/qdeveloper.cpp:335 dialogs/qtranslatordialog.cpp:185
-msgid "&File"
-msgstr ""
-
-#: dialogs/qdeveloper.cpp:338
-msgid "&Edit"
-msgstr ""
-
-#: dialogs/qdeveloper.cpp:345
-msgid "&Mode"
-msgstr ""
-
-#: dialogs/qdeveloper.cpp:347
-msgid "&Explorer"
-msgstr ""
-
-#: dialogs/qdeveloper.cpp:348
-msgid "&Translator"
-msgstr ""
-
-#: dialogs/qdeveloper.cpp:354
-msgid "Qt Developer - %1 classes"
-msgstr ""
-
-#: dialogs/qdeveloper.cpp:358
-msgid ""
-"Sorry, your compiler/platform is insufficient for the Qt Developer to operate"
-msgstr ""
-
 #: dialogs/qfiledialog.cpp:1462 dialogs/qfiledialog.cpp:1486
 msgid "All files (*)"
 msgstr ""
@@ -589,24 +544,3 @@ msgstr ""
 msgid "ScrollLock"
 msgstr ""
 
-#: kernel/qurl.cpp:761
-msgid "Error in parsing `%1'"
-msgstr ""
-
-#: kernel/qurl.cpp:1272
-msgid "Could not read directory\n"
-msgstr ""
-
-#: kernel/qurl.cpp:1293 kernel/qurl.cpp:1318 kernel/qurl.cpp:1338
-#: kernel/qurl.cpp:1354 kernel/qurl.cpp:1423 kernel/qurl.cpp:1440
-#: kernel/qurl.cpp:1461
-msgid "The protocol `%1' is not supported"
-msgstr ""
-
-#: kernel/qurl.cpp:1312
-msgid "Could not create directory\n"
-msgstr ""
-
-#: kernel/qurl.cpp:1332
-msgid "Could not delete file\n"
-msgstr ""
