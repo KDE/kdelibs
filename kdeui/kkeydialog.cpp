@@ -977,7 +977,7 @@ bool KKeyChooser::isKeyPresent( int kcode, bool warnuser )
                      "Please choose a unique key combination.").
                 arg(keyName).arg(actionName);
 
-            KMessageBox::sorry( this, i18n("Global key conflict"), str);
+            KMessageBox::sorry( this, str, i18n("Global key conflict"));
 
             return true;
         }
