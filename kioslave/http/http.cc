@@ -124,6 +124,7 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool,
   m_protocol = protocol;
   m_bKeepAlive = false;
   m_bUseCache = true;
+  m_bFirstRequest = false;
   m_bBusy = false;
   m_maxCacheAge = 0;
   m_fcache = 0;
@@ -347,6 +348,15 @@ void HTTPProtocol::retrieveContent( bool dataInternal /* = false */ )
 
 bool HTTPProtocol::retrieveHeader( bool close_connection )
 {
+  // A single request can require multiple exchanges with the remote
+  // server due to authentication challenges or SSL tunneling. 
+  // m_bFirstRequest is a flag that indicates whether we are
+  // still processing the first request. This is important because we
+  // should not force a close of a keep-alive connection in the middle
+  // of the first request.
+  // m_bFirstRequest is set to "true" whenever a new connection is
+  // made in httpOpenConnection()
+  m_bFirstRequest = false;
   while ( 1 )
   {
     if (!httpOpen())
@@ -1556,7 +1566,7 @@ ssize_t HTTPProtocol::read (void *b, size_t nbytes)
 
 void HTTPProtocol::httpCheckConnection()
 {
-  if ( m_iSock != -1 )
+  if ( !m_bFirstRequest && (m_iSock != -1) )
   {
      bool closeDown = false;
      if ( m_request.method != HTTP_GET )
@@ -1691,6 +1701,8 @@ bool HTTPProtocol::httpOpenConnection()
   int on = 1;
   (void) setsockopt( m_iSock, IPPROTO_TCP, TCP_NODELAY, (char*)&on, sizeof(on) );
   kdDebug(7113) << "(" << getpid() << ") Sending connected @ " << time(0L) << endl;
+
+  m_bFirstRequest = true;
 
   connected();
   return true;
