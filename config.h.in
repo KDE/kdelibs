@@ -32,6 +32,10 @@
 /* Define if the C++ compiler supports BOOL */
 #undef HAVE_BOOL
 
+#define VERSION 0.8
+
+#undef PACKAGE kdelibs
+
 /* Define if you have the socket function.  */
 #undef HAVE_SOCKET
 
@@ -55,18 +59,6 @@
 
 /* Define if you have the <unistd.h> header file.  */
 #undef HAVE_UNISTD_H
-
-/* Define if you have the compat library (-lcompat).  */
-#undef HAVE_LIBCOMPAT
-
-/* Define if you have the gif library (-lgif).  */
-#define HAVE_LIBGIF 1
-
-/* Define if you have the jpeg library (-ljpeg).  */
-#define HAVE_LIBJPEG 1
-
-/* Define if you have the qt library (-lqt).  */
-#undef HAVE_LIBQT
 
 #ifndef HAVE_BOOL
 #define HAVE_BOOL
