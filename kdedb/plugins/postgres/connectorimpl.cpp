@@ -59,12 +59,12 @@ ConnectorImpl::~ConnectorImpl()
 
 bool ConnectorImpl::connect()
 {
-	QString connString = QString("host=%1 user=%2 password=%3");
+	QString connString(QString::fromLatin1("host=%1 user=%2 password=%3"));
     
 	connString = connString.arg(host()).arg(user()).arg(password());
 
 	if (port() != 0)
-		connString += QString(" port=%1").arg(port());
+		connString += QString::fromLatin1(" port=%1").arg(port());
 
 	if (m_database.isEmpty()) {
 		// we do not have a database name to connect to
@@ -77,7 +77,7 @@ bool ConnectorImpl::connect()
 
 		QString db;
 		while (numHost--) {
-			QString prefix = QString("%1_").arg(numHost);
+			QString prefix(QString::fromLatin1("%1_").arg(numHost));
 			QString h = conf->readEntry(prefix + "host");
 			if (h == host()) { 
 				db = conf->readEntry(prefix + "db");
@@ -86,11 +86,11 @@ bool ConnectorImpl::connect()
 		}
 
 		if (!db.isEmpty())
-			connString += QString(" dbname=%1").arg(db);
+			connString += QString::fromLatin1(" dbname=%1").arg(db);
 		else // try using the default 'template1', works 99%
-			connString += QString(" dbname=template1");
+			connString += QString::fromLatin1(" dbname=template1");
 	} else {
-		connString += QString(" dbname=%1").arg(m_database);
+		connString += QString::fromLatin1(" dbname=%1").arg(m_database);
 	}
 
 	connRep *c = new connRep;
@@ -145,7 +145,7 @@ QStringList ConnectorImpl::tables()
 
 KDB::RowList ConnectorImpl::fields(const QString & tableName)
 {
-	QString sql = "SELECT a.attname, ";
+	QString sql(QString::fromLatin1("SELECT a.attname, "));
 	sql += "t.typname, ";
 	sql += "t.typlen, ";
 	sql += "a.atttypmod, ";
@@ -153,7 +153,7 @@ KDB::RowList ConnectorImpl::fields(const QString & tableName)
 	sql += "a.atthasdef, ";
 	sql += "a.attnum ";
 	sql += "FROM pg_class c, pg_attribute a, pg_type t ";
-	sql += QString("WHERE c.relname = '%1'").arg(tableName);
+	sql += QString::fromLatin1("WHERE c.relname = '%1'").arg(tableName);
 	sql += " AND a.attnum > 0 ";
 	sql += " AND a.attrelid = c.oid";
 	sql += " AND a.atttypid = t.oid";
@@ -212,7 +212,7 @@ KDB::RowList ConnectorImpl::fields(const QString & tableName)
 
 bool ConnectorImpl::createDatabase(const QString & name)
 {
-	QString sql = QString("Create database %1").arg(name);
+	QString sql(QString::fromLatin1("Create database %1").arg(name));
 	execute(sql);
 	return (!DBENGINE->error());
 }
@@ -252,7 +252,7 @@ KDB_ULONG ConnectorImpl::execute(const QString &sql)
 		return 0;
 	}
 
-	QString nTuples = QString("%1").arg(PQcmdTuples(res));
+	QString nTuples(QString::fromLatin1("%1").arg(PQcmdTuples(res)));
 	PQclear(res);
 	return nTuples.toULong();
 }
@@ -284,7 +284,7 @@ KDB::DataType ConnectorImpl::nativeToKDB(const QString &type)
 
 QString ConnectorImpl::KDBToNative(KDB::DataType type)
 {
-	QString ret = "CHAR";
+	QString ret(QString::fromLatin1("CHAR"));
 	return ret;
 }
 
@@ -295,14 +295,14 @@ bool ConnectorImpl::createTable(const KDB::Table &tab)
 
 bool ConnectorImpl::dropDatabase(const QString & name)
 {
-	QString sql = QString("Drop database %1").arg(name);
+	QString sql(QString::fromLatin1("Drop database %1").arg(name));
 	execute(sql);
 	return (!DBENGINE->error());
 }
 
 bool ConnectorImpl::dropTable(const QString & name)
 {
-	QString sql = QString("Drop table %1").arg(name);
+	QString sql(QString::fromLatin1("Drop table %1").arg(name));
 	execute(sql);
 	return (!DBENGINE->error());
 }
@@ -316,7 +316,7 @@ QString ConnectorImpl::oidToTypeName(Oid oid)
 		//    kdDebug(20012) << "Found in cache " << *s << endl;
 		return *s;
 	} else {
-		QString sql = QString("Select typname from pg_type where oid = %1").arg((unsigned int)oid);
+		QString sql(QString::fromLatin1("Select typname from pg_type where oid = %1").arg((unsigned int)oid));
 
 		// we must do everything here to avoid recursive calls from HandlerImpl
 		PGresult *res = PQexec(connection(), sql.latin1());
