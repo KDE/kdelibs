@@ -456,7 +456,7 @@ public:
    * @param i the day number of the week starting at 1/Monday.
    * @param shortName we will return the short version of the string.
    *
-   * @return The name of the week
+   * @return The name of the day
    */
   QString weekDayName(int i, bool shortName = false) const;
 
