@@ -963,10 +963,14 @@ bool HTTPProtocol::http_open()
     }
   }
 
+  bool res = true;
+  
   if (moreData)
-     return sendBody();
+     res = sendBody();
 
-  return true;
+  infoMessage( i18n( "%1 Contacted. Waiting for reply..." ).arg( m_request.hostname ) );
+  
+  return res;
 }
 
 
@@ -2027,9 +2031,9 @@ bool HTTPProtocol::readBody( )
 #endif
 
   totalSize( m_iSize );
-  
+
   infoMessage( i18n( "Retrieving data from %1" ).arg( m_request.hostname ) );
-  
+
   // get the starting time.  this is used later to compute the transfer
   // speed.
   time_t t_start = time(0L);
