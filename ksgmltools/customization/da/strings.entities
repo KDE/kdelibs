@@ -18,6 +18,6 @@
 <!ENTITY FDLFrontCoverText "no Front-Cover Texts">
 <![%FDLBCT;[
 <!ENTITY FDLBCTTitles "LIST THEIR TITLES" -- keep capitals -->
-<!ENTITY FDLBackCoverText "the Front-Cover Texts being &FDLBCTTitles;">
+<!ENTITY FDLBackCoverText "the Back-Cover Texts being &FDLBCTTitles;">
  ]]>
 <!ENTITY FDLBackCoverText "no Back-Cover Texts">
