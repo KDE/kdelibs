@@ -1,7 +1,30 @@
+    /*
+
+    Copyright (C) 2000-2002 Stefan Westerfeld
+                            stefan@space.twc.de
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+  
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+   
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
+
+    */
+
 #include "core.h"
 #include "debug.h"
 #include <iostream>
 #include <fstream>
+#include <algorithm>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -227,6 +250,34 @@ void TraderHelper::addDirectory(const string& directory, const string& iface,
 	closedir(dir);
 }
 
+static inline int getOfferPreference(TraderOffer offer)
+{
+	int result = 0;
+
+	vector<string> *p = offer.getProperty("Preference");
+	if(!p->empty())
+		result = atoi(p->front().c_str());
+	delete p;
+
+	return result;
+}
+
+static bool traderOfferCmp(TraderOffer offer1, TraderOffer offer2)
+{
+	int p1 = getOfferPreference(offer1);
+	int p2 = getOfferPreference(offer2);
+	
+	if(p1 > p2)
+		return true;
+	if(p1 < p2)
+		return false;
+
+	/* if the Preference= entry doesn't indicate which offer is better,
+	 * sort the offers by name to make the trader results at least
+	 * independant from the order they are read from the file system */
+	return offer1.interfaceName() < offer2.interfaceName();
+}
+
 vector<TraderOffer> *TraderHelper::doQuery(const
 											vector<TraderRestriction>& query)
 {
@@ -242,6 +293,10 @@ vector<TraderOffer> *TraderHelper::doQuery(const
 			result->push_back(TraderOffer::_from_base(offer->_copy()));
 		}
 	}
+
+	/* sort trader query result by Preference= line for more than one result */
+	if(result->size() > 1)
+		sort(result->begin(), result->end(), traderOfferCmp);
 	return result;
 }
 

@@ -1,8 +1,11 @@
 aRts-0.7.0:
+- recording in the C API
 - new interface for video embedding (Arts::VideoPlayObject) via X11 embedding
 - threaded oss audio i/o (-a toss) which works better with some kernel drivers
 - irix audio i/o method (-a sgi)
 - ALSA-0.9.0 support
+- Preference=N lines in .mcopclass files make it possible to to choose one
+  implementation over another if they both implement the same interface
 
 aRts-0.6.1:
 - new artsdsp -s (single threaded) option for compatibility to more programs
