@@ -306,6 +306,7 @@ void KTreeListItem::paint(QPainter *p, const QColorGroup& cg, bool highlighted)
   if(doExpandButton && child) {
     expandButton.setRect(parentLeaderX - 4, cellCenterY - 4,
 			 9, 9);
+    p->setBrush( cg.base () );
     p->drawRect(expandButton);
     if(expanded) 
       p->drawLine(parentLeaderX - 2, cellCenterY, 
@@ -316,7 +317,7 @@ void KTreeListItem::paint(QPainter *p, const QColorGroup& cg, bool highlighted)
       p->drawLine(parentLeaderX, cellCenterY - 2, 
 		  parentLeaderX, cellCenterY + 2);
     }
-    // p->setBrush(NoBrush);
+    p->setBrush(NoBrush);
   }
   
   // now draw the item pixmap and text, if applicable
