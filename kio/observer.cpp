@@ -240,7 +240,7 @@ RenameDlg_Result Observer::open_RenameDlg( KIO::Job * job,
   arg << caption;
   arg << src;
   arg << dest;
-  arg << mode;
+  arg << (int) mode;
   arg << sizeSrc;
   arg << sizeDest;
   arg << (unsigned long) ctimeSrc;
