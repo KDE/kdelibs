@@ -179,10 +179,10 @@
 0       string          #!/usr/local/bin/perl           application/x-perl
 0       string          #!\ /usr/local/bin/perl         application/x-perl
 0       string          eval\ "exec\ /usr/local/bin/perl application/x-perl
-0	string		#!/bin/env perl                 application/x-perl
-0	string		#!\ /bin/env perl               application/x-perl
-0	string		#!/usr/bin/env perl             application/x-perl
-0	string		#!\ /usr/bin/env perl           application/x-perl
+0	string		#!/bin/env\ perl                 application/x-perl
+0	string		#!\ /bin/env\ perl               application/x-perl
+0	string		#!/usr/bin/env\ perl             application/x-perl
+0	string		#!\ /usr/bin/env\ perl           application/x-perl
 
 # python.
 #
@@ -195,17 +195,17 @@
 0       string          #!/usr/local/bin/python           application/x-python
 0       string          #!\ /usr/local/bin/python         application/x-python
 0       string          eval\ "exec\ /usr/local/bin/python application/x-python
-0	string		#!/bin/env python		  application/x-python
-0	string		#!\ /bin/env python		  application/x-python
-0	string		#!/usr/bin/env python		  application/x-python
-0	string		#!\ /usr/bin/env python 	  application/x-python
+0	string		#!/bin/env\ python		  application/x-python
+0	string		#!\ /bin/env\ python		  application/x-python
+0	string		#!/usr/bin/env\ python		  application/x-python
+0	string		#!\ /usr/bin/env\ python 	  application/x-python
 0	belong		0x994e0d0a		application/x-python-bytecode
 
 # ruby
-0	string		#!/bin/env ruby                   application/x-ruby
-0	string		#!\ /bin/env ruby                 application/x-ruby
-0	string		#!/usr/bin/env ruby               application/x-ruby
-0	string		#!\ /usr/bin/env ruby             application/x-ruby
+0	string		#!/bin/env\ ruby                   application/x-ruby
+0	string		#!\ /bin/env\ ruby                 application/x-ruby
+0	string		#!/usr/bin/env\ ruby               application/x-ruby
+0	string		#!\ /usr/bin/env\ ruby             application/x-ruby
 
 #------------------------------------------------------------------------------
 # compress:  file(1) magic for pure-compression formats (no archives)
@@ -753,7 +753,7 @@
 #
 0       string          diff\		text/x-diff
 0       string          ***\		text/x-diff
-0       string          Only\ in\	text/x-diff
+0       string          Only\ in\ 	text/x-diff
 0       string          Common\ subdirectories:\        text/x-diff
 
 
