@@ -47,7 +47,7 @@ myinclude_HEADERS = \
 #	css_extensions.h
 
 INCLUDES = -I$(top_srcdir)/kimgio -I$(top_srcdir)/kio -I$(top_srcdir)/dcop \
- -I$(top_srcdir)/khtml $(all_includes)
+ -I$(top_srcdir)/khtml -I$(top_srcdir) $(all_includes)
 
 SRCDOC_DEST=$(kde_htmldir)/en/kdelibs/khtml
 
