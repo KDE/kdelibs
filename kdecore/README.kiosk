@@ -207,9 +207,10 @@ action/properties
 action/openwith
 action/openintab
 action/openintabfront
+action/kdesktop_rmb // RMB menu
 
-Kicker related: // RMB menu
-action/kicker_rmb
+Kicker related: 
+action/kicker_rmb // RMB menu
 action/menuedit
 
 KWin related:
@@ -284,6 +285,8 @@ Notes:
   if present.
 * action/bookmarks also disables action/bookmark_add and action/bookmark_edit
 * action/help is not yet implemented
+* action/kdesktop_rmb disables the RMB menu but some actions may still be accesible
+  via keyboard shortcuts: cut/copy/rename/trash/delete
 
 
 Applications may use additional actions that they defined themselves.
