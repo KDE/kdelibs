@@ -89,7 +89,7 @@ CSSStyleSelector::CSSStyleSelector(DocumentImpl * doc)
     authorStyle = new CSSStyleSelectorList();
     StyleSheetListImpl* ss = doc->styleSheets();
     for ( QListIterator<StyleSheetImpl> it( ss->styleSheets ); it.current(); ++it )
- 	authorStyle->append( it.current());
+ 	    authorStyle->append( it.current());
 
     buildLists();
 
@@ -1484,6 +1484,8 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
             style->setPaletteColor(QPalette::Inactive, QColorGroup::Dark, col);
             break;
         case CSS_PROP_SCROLLBAR_TRACK_COLOR:
+            style->setPaletteColor(QPalette::Active, QColorGroup::Base, col);
+            style->setPaletteColor(QPalette::Inactive, QColorGroup::Base, col);            
             style->setPaletteColor(QPalette::Active, QColorGroup::Mid, col);
             style->setPaletteColor(QPalette::Inactive, QColorGroup::Mid, col);
             style->setPaletteColor(QPalette::Active, QColorGroup::Background, col);
