@@ -32,18 +32,19 @@ namespace KJS {
 
   class PropertyMapNode {
   public:
-    PropertyMapNode(UString &n, ValueImp *v, PropertyMapNode *p)
-      : name(n), value(v), left(0), right(0), parent(p), height(1) {}
+    PropertyMapNode(UString &n, ValueImp *v, int att, PropertyMapNode *p)
+      : name(n), value(v), attr(att), left(0), right(0), parent(p), height(1) {}
+
     UString name;
     ValueImp *value;
+    int attr;
 
     void setLeft(PropertyMapNode *newLeft);
     void setRight(PropertyMapNode *newRight);
-    void replace(PropertyMapNode *other);
     PropertyMapNode *findMax();
     PropertyMapNode *findMin();
 
-    void remove(PropertyMapNode *node);
+    PropertyMapNode *next();
 
     PropertyMapNode *left;
     PropertyMapNode *right;
@@ -65,26 +66,24 @@ namespace KJS {
    * http://www.cis.ksu.edu/~howell/300f99/minavl/rotations.html
    * http://www.cgc.cs.jhu.edu/~jkloss/htmls/structures/avltree.html
    */
-
-  // ### this class is unfinished - will be renamed to PropertyMap once
-  // complete
-  class PropertyMap2 {
+  class PropertyMap {
   public:
-    PropertyMap2();
-    ~PropertyMap2();
+    PropertyMap();
+    ~PropertyMap();
 
-    void put(UString name,ValueImp *value);
+    void put(UString name, ValueImp *value, int attr);
     void remove(UString name);
-    PropertyMapNode *remove(PropertyMapNode *node);
     ValueImp *get(UString name);
-    void mark();
 
     void dump(PropertyMapNode *node = 0, int indent = 0);
     void checkTree(PropertyMapNode *node = 0);
 
-  private:
     PropertyMapNode *getNode(const UString &name);
+    PropertyMapNode *first();
 
+  private:
+
+    PropertyMapNode *remove(PropertyMapNode *node);
     void balance(PropertyMapNode* node);
     void updateHeight(PropertyMapNode* &node);
 
@@ -95,6 +94,8 @@ namespace KJS {
 
     PropertyMapNode *root;
   };
+
+  int uscompare(const UString &s1, const UString &s2);
 
 }; // namespace
 

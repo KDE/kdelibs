@@ -37,6 +37,7 @@
 #include "operations.h"
 #include "error_object.h"
 #include "nodes.h"
+#include "property_map.h"
 
 using namespace KJS;
 
@@ -179,22 +180,12 @@ void Object::setInternalValue(const Value &v)
 
 // ------------------------------ ObjectImp ------------------------------------
 
-namespace KJS {
-  // ### temp - will be replaced by PropertyMap2
-  class PropertyMap {
-  public:
-    UString name;
-    ValueImp *val;
-    int attribute;
-    PropertyMap *next;
-  };
-}
-
 ObjectImp::ObjectImp(const Object &proto)
   : _prop(0), _proto(static_cast<ObjectImp*>(proto.imp())), _internalValue(0L), _scope(0)
 {
   //fprintf(stderr,"ObjectImp::ObjectImp %p %s\n",(void*)this);
   _scope = ListImp::empty();
+  _prop = new PropertyMap();
 }
 
 ObjectImp::ObjectImp()
@@ -204,6 +195,7 @@ ObjectImp::ObjectImp()
   _proto = NullImp::staticNull;
   _internalValue = 0L;
   _scope = ListImp::empty();
+  _prop = new PropertyMap();
 }
 
 ObjectImp::~ObjectImp()
@@ -215,6 +207,7 @@ ObjectImp::~ObjectImp()
     _internalValue->setGcAllowed();
   if (_scope)
     _scope->setGcAllowed();
+  delete _prop;
 }
 
 void ObjectImp::mark()
@@ -225,11 +218,11 @@ void ObjectImp::mark()
   if (_proto && !_proto->marked())
     _proto->mark();
 
-  struct PropertyMap *p = _prop;
-  while (p) {
-    if (p->val && !p->val->marked())
-      p->val->mark();
-    p = p->next;
+  PropertyMapNode *node = _prop->first();
+  while (node) {
+    if (!node->value->marked())
+      node->value->mark();
+    node = node->next();
   }
 
   if (_internalValue && !_internalValue->marked())
@@ -309,14 +302,7 @@ Value ObjectImp::get(ExecState *exec, const UString &propertyName) const
 // to look up in the prototype, it might already exist there)
 ValueImp* ObjectImp::getDirect(const UString& propertyName) const
 {
-  PropertyMap *pr = _prop;
-  while (pr) {
-    if (pr->name == propertyName) {
-      return pr->val;
-    }
-    pr = pr->next;
-  }
-  return 0L;
+  return _prop->get(propertyName);
 }
 
 // ECMA 8.6.2.2
@@ -343,46 +329,15 @@ void ObjectImp::put(ExecState *exec, const UString &propertyName,
     return;
   }
 
-  PropertyMap *pr;
-  PropertyMap *last = 0;
-
-  if (_prop) {
-    pr = _prop;
-    while (pr) {
-      if (pr->name == propertyName) {
-	// replace old value
-	pr->val = value.imp();
-	pr->attribute = attr;
-	return;
-      }
-      last = pr;
-      pr = pr->next;
-    }
-  }
-
-  // add new property
-  pr = new PropertyMap;
-  pr->name = propertyName;
-  pr->val = value.imp();
-  pr->attribute = attr;
-  pr->next = 0;
-  if (last)
-    last->next = pr;
-  else
-    _prop = pr;
+  _prop->put(propertyName,value.imp(),attr);
 }
 
 // ECMA 8.6.2.3
 bool ObjectImp::canPut(ExecState *exec, const UString &propertyName) const
 {
-  if (_prop) {
-    const PropertyMap *pr = _prop;
-    while (pr) {
-      if (pr->name == propertyName)
-	return !(pr->attribute & ReadOnly);
-      pr = pr->next;
-    }
-  }
+  PropertyMapNode *node = _prop->getNode(propertyName);
+  if (node)
+    return!(node->attr & ReadOnly);
 
   // Look in the static hashtable of properties
   const HashEntry* e = findPropertyHashEntry(propertyName);
@@ -400,12 +355,8 @@ bool ObjectImp::canPut(ExecState *exec, const UString &propertyName) const
 // ECMA 8.6.2.4
 bool ObjectImp::hasProperty(ExecState *exec, const UString &propertyName, bool recursive) const
 {
-  const PropertyMap *pr = _prop;
-  while (pr) {
-    if (pr->name == propertyName)
-      return true;
-    pr = pr->next;
-  }
+  if (_prop->get(propertyName))
+    return true;
 
   // Look in the static hashtable of properties
   if (findPropertyHashEntry(propertyName))
@@ -422,19 +373,13 @@ bool ObjectImp::hasProperty(ExecState *exec, const UString &propertyName, bool r
 // ECMA 8.6.2.5
 bool ObjectImp::deleteProperty(ExecState */*exec*/, const UString &propertyName)
 {
-  PropertyMap *pr = _prop;
-  PropertyMap **prev = &_prop;
-  while (pr) {
-    if (pr->name == propertyName) {
-      if ((pr->attribute & DontDelete))
-	return false;
-      *prev = pr->next;
-      delete pr;
-      return true;
-    }
-    prev = &(pr->next);
-    pr = pr->next;
+  PropertyMapNode *node = _prop->getNode(propertyName);
+  if (node) {
+    if ((node->attr & DontDelete))
+      return false;
+    _prop->remove(propertyName);
   }
+  
   // Look in the static hashtable of properties
   if (findPropertyHashEntry(propertyName))
     return false; // No builtin property can be deleted
@@ -555,11 +500,12 @@ List ObjectImp::propList(ExecState *exec, bool recursive)
   if (_proto && _proto->type() == ObjectType && recursive)
     list = static_cast<ObjectImp*>(_proto)->propList(exec,recursive);
 
-  PropertyMap *pr = _prop;
-  while(pr) {
-    if (!(pr->attribute & DontEnum))
-      list.append(Reference(this,pr->name));
-    pr = pr->next;
+
+  PropertyMapNode *node = _prop->first();
+  while (node) {
+    if (!(node->attr & DontEnum))
+      list.append(Reference(this,node->name));
+    node = node->next();
   }
 
   // Add properties from the static hashtable of properties

@@ -41,7 +41,7 @@ bool testInsertDelete(int numInsert, int numDelete, int delOffset, int randSeed)
 
   assert(numDelete >= 0 && numDelete < numInsert);
   assert(delOffset >= 0 && delOffset+numDelete <= numInsert);
-  PropertyMap2 map;
+  PropertyMap map;
 
   // add some random numbers
   int *nums = (int*)malloc(numInsert*sizeof(int));
@@ -54,7 +54,7 @@ bool testInsertDelete(int numInsert, int numDelete, int delOffset, int randSeed)
     v->ref();
 
     sprintf(str,"%05d-%05d",nums[i],i); // ensure uniqueness
-    map.put(str,v);
+    map.put(str,v,0);
     map.checkTree();
   }
 
@@ -96,6 +96,21 @@ bool testInsertDelete(int numInsert, int numDelete, int delOffset, int randSeed)
     map.checkTree();
   }
 
+  // check that first() and next() work
+  PropertyMapNode *it = map.first();
+  int itcount = 0;
+  while (it) {
+    itcount++;
+    PropertyMapNode *prev = it;
+    it = it->next();
+    if (it) {
+      if (uscompare(prev->name,it->name) >= 0)
+        result = false;
+    }
+  }
+  if (itcount != numInsert-numDelete)
+    result = false;
+
   if (result)
     printf("PASS: Insert %d, delete %d-%d, seed %d\n",numInsert,delOffset,
            delOffset+numDelete-1,randSeed);
@@ -106,9 +121,35 @@ bool testInsertDelete(int numInsert, int numDelete, int delOffset, int randSeed)
   return result;
 }
 
+void testMisc() {
+  PropertyMap *map;
+
+  // test remove() doesn't crash with empty list
+  map = new PropertyMap();
+  map->remove("nonexistant");
+  delete map;
+  printf("PASS: remove() doesn't crash with empty list\n");
+
+  // test get() doesn't crash with empty list
+  map = new PropertyMap();
+  map->get("nonexistant");
+  delete map;
+  printf("PASS: get() doesn't crash with empty list\n");
+
+  // test get() returns 0 on an empty list
+  map = new PropertyMap();
+  if (map->get("nonexistant") == 0)
+    printf("PASS: get() returns 0 on an empty list\n");
+  else
+    printf("FAIL: get() returns 0 on an empty list\n");
+  delete map;
+}
+
 int main()
 {
-  PropertyMap2 map;
+  PropertyMap map;
+
+  testMisc();
 
   int randomSeed = 4;
   int numTests = 100;
