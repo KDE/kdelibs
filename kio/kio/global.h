@@ -317,13 +317,21 @@ namespace KIO
   QString findPathMountPoint( const QString & filename );
 
   /**
-   * Checks if the path belongs to a file system that is probably
+   * Checks if the path belongs to a filesystem that is probably
    * slow. It checks for NFS or for paths belonging to automounted
    * paths not yet mounted
    * @param filename the file name to check
-   * @retur true if the filesystem is probably slow
+   * @return true if the filesystem is probably slow
    */
   bool probably_slow_mounted(const QString& filename);
+
+  /**
+   * Checks if the path belongs to a filesystem that is manually
+   * mounted.
+   * @param filename the file name to check
+   * @return true if the filesystem is manually mounted
+   */
+  bool manually_mounted(const QString& filename);
 
 /************
  *
