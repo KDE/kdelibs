@@ -92,6 +92,14 @@ public:
    */
   virtual ~KRun();
 
+  /**
+   * Abort this KRun. This kills any jobs launched by it,
+   * and leads to deletion if auto-deletion is on.
+   * This is much safer than deleting the KRun (in case it's
+   * currently showing an error dialog box, for instance)
+   */
+  void abort();
+
   bool hasError() const { return m_bFault; }
   bool hasFinished() const { return m_bFinished; }
 

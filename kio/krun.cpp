@@ -49,6 +49,13 @@
 
 KOpenWithHandler * KOpenWithHandler::pOpenWithHandler = 0L;
 
+class KRun::KRunPrivate
+{
+public:
+    KRunPrivate() { m_showingError = false; }
+    bool m_showingError;
+};
+
 pid_t KRun::runURL( const KURL& u, const QString& _mimetype )
 {
 
@@ -503,6 +510,7 @@ KRun::KRun( const KURL& _url, mode_t _mode, bool _is_local_file, bool _showProgr
   m_bIsDirectory = false;
   m_bIsLocalFile = _is_local_file;
   m_mode = _mode;
+  d = new KRunPrivate;
 
   // Start the timer. This means we will return to the event
   // loop and do initialization afterwards.
@@ -518,7 +526,9 @@ void KRun::init()
   kdDebug(7010) << "INIT called" << endl;
   if ( m_strURL.isMalformed() )
   {
+    d->m_showingError = true;
     KMessageBoxWrapper::error( 0L, i18n( "Malformed URL\n%1" ).arg( m_strURL.url() ) );
+    d->m_showingError = false;
     m_bFault = true;
     m_bFinished = true;
     m_timer.start( 0, true );
@@ -536,7 +546,9 @@ void KRun::init()
       struct stat buff;
       if ( stat( QFile::encodeName(m_strURL.path()), &buff ) == -1 )
       {
+        d->m_showingError = true;
         KMessageBoxWrapper::error( 0L, i18n( "<qt>Unable to run the command specified. The file or directory <b>%1</b> does not exist.</qt>" ).arg( m_strURL.prettyURL() ) );
+        d->m_showingError = false;
         m_bFault = true;
         m_bFinished = true;
         m_timer.start( 0, true );
@@ -597,6 +609,7 @@ KRun::~KRun()
   m_timer.stop();
   killJob();
   kdDebug(7010) << "KRun::~KRun() done " << this << endl;
+  delete d;
 }
 
 void KRun::scanFile()
@@ -678,9 +691,11 @@ void KRun::slotStatResult( KIO::Job * job )
   m_job = 0L;
   if (job->error())
   {
+    d->m_showingError = true;
     kdError(7010) << this << " ERROR " << job->error() << " " << job->errorString() << endl;
     job->showErrorDialog();
     kdDebug(7010) << this << " KRun returning from showErrorDialog, starting timer to delete us" << endl;
+    d->m_showingError = false;
 
     m_bFault = true;
     m_bFinished = true;
@@ -804,6 +819,20 @@ void KRun::killJob()
     m_job->kill();
     m_job = 0L;
   }
+}
+
+void KRun::abort()
+{
+  killJob();
+  // If we're showing an error message box, the rest will be done
+  // after closing the msgbox -> don't autodelete nor emit signals now.
+  if ( d->m_showingError )
+    return;
+  m_bFault = true;
+  m_bFinished = true;
+
+  // will emit the error and autodelete this
+  m_timer.start( 0, true );
 }
 
 // obsolete
