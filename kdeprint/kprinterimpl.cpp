@@ -31,8 +31,6 @@
 #include "kprintfilter.h"
 #include "driver.h"
 
-#include "kdeprintd_stub.h"
-
 #include <qfile.h>
 #include <qregexp.h>
 #include <qinputdialog.h>
