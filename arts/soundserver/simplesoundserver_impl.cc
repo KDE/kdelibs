@@ -90,6 +90,7 @@ PlayStreamJob::PlayStreamJob(ByteSoundProducer bsp) : sender(bsp)
 	convert.samplingRate(samplingRate);
 	convert.channels(channels);
 	convert.bits(bits);
+	out.title(sender.title());
 
 	connect(sender,"outdata",convert,"indata");
 	connect(convert,out);
@@ -107,8 +108,6 @@ void PlayStreamJob::detach(const Object& object)
 void PlayStreamJob::terminate()
 {
 	sender = ByteSoundProducer::null();
-	convert.stop();
-	out.stop();
 }
 
 bool PlayStreamJob::done()
@@ -141,11 +140,14 @@ RecordStreamJob::RecordStreamJob(ByteSoundReceiver bsr) : receiver(bsr)
 	convert.samplingRate(samplingRate);
 	convert.channels(channels);
 	convert.bits(bits);
+	//in.title(receiver.title());
+	busin.busname(receiver.title());
 
-	connect(in,convert);
+	connect(busin,convert);
 	connect(convert,"outdata",receiver,"indata");
 
-	in.start();
+	//in.start();
+	busin.start();
 	convert.start();
 }
 
@@ -159,7 +161,8 @@ void RecordStreamJob::terminate()
 {
 	receiver = ByteSoundReceiver::null();
 	convert.stop();
-	in.stop();
+	//in.stop();
+	busin.stop();
 }
 
 bool RecordStreamJob::done()

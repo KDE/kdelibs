@@ -80,6 +80,7 @@ protected:
 	ByteSoundReceiver receiver;
 	AudioToByteStream convert;
 	Synth_AMAN_RECORD in;
+	Synth_BUS_DOWNLINK busin;
 
 public:
 	RecordStreamJob(ByteSoundReceiver bsr);

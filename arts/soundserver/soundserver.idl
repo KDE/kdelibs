@@ -65,6 +65,7 @@ interface ByteSoundProducer : SynthModule
 	readonly attribute long samplingRate;
 	readonly attribute long channels;
 	readonly attribute long bits;
+	readonly attribute string title;
 
 	async out byte stream outdata;
 };
@@ -77,6 +78,7 @@ interface ByteSoundReceiver : SynthModule
 	readonly attribute long samplingRate;
 	readonly attribute long channels;
 	readonly attribute long bits;
+	readonly attribute string title;
 
 	async in byte stream indata;
 };

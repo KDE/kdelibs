@@ -78,6 +78,7 @@ public:
 	long channels()     { return cfgChannels; }
 	long bits()         { return cfgBits; }
 	bool finished()     { return (pfile == 0); }
+	string title()		{ return "artscat"; }
 
 	void streamStart()
 	{

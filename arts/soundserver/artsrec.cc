@@ -81,6 +81,7 @@ public:
 	long channels()     { return cfgChannels; }
 	long bits()         { return cfgBits; }
 	bool finished()     { return (pfile == 0); }
+	string title()		{ return "artsrec"; }
 
 	enum { packetCapacity = 4096 };
 	void process_indata(DataPacket<mcopbyte> *packet)
@@ -149,12 +150,12 @@ int main(int argc, char **argv)
 			case 'c': cfgChannels = atoi(optarg);
 				break;
 			case 'v': 
-				printf("artsdump %s\n",ARTS_VERSION);
+				printf("artsrec %s\n",ARTS_VERSION);
 				exit(0);
 				break;
 			case 'h':
 			default: 
-					exitUsage(argc?argv[0]:"artsdump");
+					exitUsage(argc?argv[0]:"artsrec");
 				break;
 		}
 	}
