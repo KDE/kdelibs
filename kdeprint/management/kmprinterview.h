@@ -38,6 +38,7 @@ public:
 	~KMPrinterView();
 
 	void setPrinterList(QPtrList<KMPrinter> *list);
+	void setPrinter( KMPrinter* );
 	void setViewType(ViewType t);
 	ViewType viewType() const 	{ return m_type; }
 
