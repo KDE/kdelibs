@@ -537,8 +537,8 @@ public:
    * code might be represented by more than one 639-1 code, they will all be
    * listed (but only once).
    *
-   * If the selected languages are "nno, nbo, deu", you will get:
-   * "nn, no, nb, de".
+   * If the selected languages are "nn, nb, pt_BR", you will get:
+   * "nn, no, nb, pt".
    *
    * @return List of langauge codes
    *
