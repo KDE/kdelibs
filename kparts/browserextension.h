@@ -150,8 +150,9 @@ class BrowserExtensionPrivate;
   * The selection-dependent actions are disabled by default and the view should
   * enable them when the selection changes, emitting @ref enableAction().
   *
-  * The normal actions do not depend on the selection. For each slot that is
-  * defined in the second list, the action is automatically enabled.
+  * The normal actions do not depend on the selection.
+  * You need to enable 'print' when printing is possible - you can even do that
+  * in the constructor.
   *
   * A special case is the configuration slots, not connected to any action directly,
   * and having parameters.
