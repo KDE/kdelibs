@@ -140,7 +140,7 @@ P, H1, H2, H3, H4, H5, TD, TH { font-family: Helvetica, Arial, sans-serif;
 
 h1, h2, h3, h4, h5, h6 { color: rgb(82,80,82);
 		   }
-.arg { background-color: rgb(255,255,255);
+.arg, .parameter { background-color: rgb(255,255,255);
 	   color: rgb(0,128,64);
 	   font-style: italic;
 	   }
