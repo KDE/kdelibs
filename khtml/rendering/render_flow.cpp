@@ -1312,7 +1312,12 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
                 RenderObject::addChild(newBox,beforeChild);
                 newBox->addChild(newChild);
                 newBox->setPos(newBox->xPos(), -100000);
-                setHaveAnonymousBox();
+                if (beforeChild)
+                {
+                    newBox->close();
+                    newBox->layout();
+                } else
+                    setHaveAnonymousBox();
                 return;
             }
             else
