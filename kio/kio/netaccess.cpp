@@ -140,6 +140,12 @@ bool NetAccess::mkdir( const KURL & url, int permissions )
   return kioNet.mkdirInternal( url, permissions );
 }
 
+QString NetAccess::mimetype( const KURL& url )
+{
+  NetAccess kioNet;
+  return kioNet.mimetypeInternal( url );
+}
+
 QStringList* NetAccess::tmpfiles = 0L;
 
 void NetAccess::removeTempFile(const QString& name)
