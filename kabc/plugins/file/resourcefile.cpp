@@ -257,6 +257,9 @@ QString ResourceFile::format() const
 
 void ResourceFile::fileChanged()
 {
+  Q_ASSERT(addressBook());
+  if (!addressBook())
+	return;
   load();
   addressBook()->emitAddressBookChanged();
 }
