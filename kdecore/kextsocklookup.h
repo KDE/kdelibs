@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (C) 2001 Thiago Macieira <thiagom@mail.com>
+ *  Copyright (C) 2001,2002 Thiago Macieira <thiagom@mail.com>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -42,7 +42,7 @@ public:
   addrinfo hint;
 
   KExtendedSocketLookup(const QString& hostname, const QString& servname, const addrinfo& hint) :
-    dnsIpv4(hostname, QDns::A), dnsIpv6(hostname, QDns::Aaaa), workingCount(2),
+    dnsIpv4(KIDNA::toAscii(hostname), QDns::A), dnsIpv6(KIDNA::toAscii(hostname), QDns::Aaaa), workingCount(2),
     servname(servname), hint(hint)
   {
     connect(&dnsIpv4, SIGNAL(resultsReady()), this, SLOT(slotResultsReady()));
