@@ -32,6 +32,8 @@
 #include <qfileinfo.h>
 #include <qdatetime.h>
 #include <qstylesheet.h>
+#include <qvgroupbox.h>
+#include <qhbox.h>
 
 #include <iostream.h>
 
@@ -127,76 +129,66 @@ void KFileMetaPropsPlugin::createLayout()
 
     d->m_frame = view->frame();
 
-    QGridLayout *toplayout = new QGridLayout(d->m_frame);
+    QVBoxLayout *toplayout = new QVBoxLayout(d->m_frame);
     toplayout->setSpacing(KDialog::spacingHint());
 
     // now get a list of groups
     KFileMetaInfoProvider* prov = KFileMetaInfoProvider::self();
     QStringList groupList = d->m_info.preferredGroups();
+    const KFileMimeTypeInfo* mtinfo = prov->mimeTypeInfo(d->m_info.mimeType());
+    if (!mtinfo) kdDebug(7034) << "no mimetype info there\n";
 
-    int count = 0;
     for (QStringList::Iterator git=groupList.begin(); git!=groupList.end(); ++git)
     {
         kdDebug(7033) << *git << endl;
-        
-        QLabel* groupLabel = new QLabel(QString("<b><u>" + QStyleSheet::escape(*git)) + "</b></u>", d->m_frame);
-        toplayout->addMultiCellWidget( groupLabel, count, count, 0, 1);
-        count++;
 
         QStringList itemList=d->m_info.group(*git).preferredKeys();
+        if (itemList.isEmpty())
+            continue;
+
+        QGroupBox *groupBox = new QGroupBox(2, Qt::Horizontal, QStyleSheet::escape(*git), d->m_frame);
+
+        toplayout->addWidget(groupBox);
 
         // first create all widgets and add them to the lists
-        QPtrList<KFileMetaInfoWidget> readWidgets;
-        QPtrList<KFileMetaInfoWidget> editWidgets;
+        QValueList<KFileMetaInfoItem> readItems;
+        QValueList<KFileMetaInfoItem> editItems;
 
         for (QStringList::Iterator iit = itemList.begin(); iit!=itemList.end(); ++iit)
         {
             KFileMetaInfoItem item = d->m_info[*git][*iit];
             if ( !item.isValid() ) continue;
 
-            KFileMetaInfoWidget* w = 0L;
             QString valClass;
             bool editable = file_info.isWritable() && item.isEditable();
 
-            const KFileMimeTypeInfo* mtinfo = prov->mimeTypeInfo(d->m_info.mimeType());
-            if (!mtinfo) kdDebug(7034) << "no mimetype info there\n";
-
-            QValidator* val = mtinfo->createValidator(*git, *iit);
-            if (!val) kdDebug(7033) << "didn't get a validator for " << *git << "/" << *iit << endl;
-            w = new KFileMetaInfoWidget(item, val, d->m_frame);
-            connect(w, SIGNAL(valueChanged(const QVariant&)),
-                    this, SIGNAL(changed()));
-
-            // save a mapping between editable info objects and their widgets
             if (editable)
-            {
-                editWidgets.append( w );
-                d->m_editWidgets.append( w );
-            }
+                editItems.append( item );
             else
-                readWidgets.append( w );
+                readItems.append( item );
         }
 
+        KFileMetaInfoWidget* w = 0L;
         // then first add the editable items to the layout
-        for (QPtrListIterator<KFileMetaInfoWidget> wit(editWidgets); *wit; ++wit)
+        for (QValueList<KFileMetaInfoItem>::Iterator iit= editItems.begin(); iit!=editItems.end(); ++iit)
         {
-            toplayout->addWidget( new QLabel(*wit, (*wit)->item().translatedKey() + ":",
-                                             d->m_frame), count, 0);
-            toplayout->addWidget( *wit, count, 1 );
-            count++;
+            (new QLabel((*iit).translatedKey() + ":", groupBox));
+            QValidator* val = mtinfo->createValidator(*git, (*iit).key());
+            if (!val) kdDebug(7033) << "didn't get a validator for " << *git << "/" << (*iit).key() << endl;
+            w = new KFileMetaInfoWidget(*iit, val, groupBox);
+            d->m_editWidgets.append( w );
+            connect(w, SIGNAL(valueChanged(const QVariant&)), this, SIGNAL(changed()));
         }
 
         // and then the read only items
-        for (QPtrListIterator<KFileMetaInfoWidget> wit(readWidgets); *wit; ++wit)
+        for (QValueList<KFileMetaInfoItem>::Iterator iit= readItems.begin(); iit!=readItems.end(); ++iit)
         {
-            toplayout->addWidget( new QLabel(*wit, (*wit)->item().translatedKey() + ":",
-                                                 d->m_frame), count, 0);
-            toplayout->addWidget( *wit, count, 1 );
-            count++;
+            (new QLabel((*iit).translatedKey() + ":", groupBox));
+            (new KFileMetaInfoWidget(*iit, 0L, groupBox));
         }
-
     }
 
+    toplayout->addItem(new QSpacerItem( 20, 20, QSizePolicy::Minimum, QSizePolicy::Expanding ));
     // the add key (disabled until fully implemented)
 /*    d->m_add = new QPushButton(i18n("&Add"), topframe);
     d->m_add->setSizePolicy(QSizePolicy(QSizePolicy::Fixed,
