@@ -3,8 +3,10 @@
 Comment=Bzipped Tar Archives
 Comment[de]=BZip2-Tar-Archive
 Comment[es]=Archivo BZIP
+Comment[fi]=Bzip -paketti
 Comment[fr]=Archives bzip
 Comment[is]=Bzið þjappað tar safn
+Comment[it]=Archivio Tar-bzip
 Comment[no]=Bzippet tar-akriver
 Comment[pl]=Archiwum Zip
 Comment[pt]=Arquivos Zip
