@@ -23,17 +23,12 @@
 // functions inlined to noops (which would then conflict with their definition
 // here).
 
-#ifdef NDEBUG
-#define NODEBUG
-#undef NDEBUG
-#endif
 #include "kdebug.h"
-#ifdef NODEBUG
-#define NDEBUG
-#undef NODEBUG
+
+#ifdef NDEBUG
+#undef kdDebug
 #endif
 
-// Other includes needed by kDebug* functions.
 #include "kapp.h"
 #include "kglobal.h"
 #include "kinstance.h"
@@ -497,3 +492,8 @@ kdbgstream& kdbgstream::operator << (QWidget* widget)
     }
   return *this;
 }
+
+// Needed for --enable-final
+#ifdef NDEBUG
+#define kdDebug kndDebug
+#endif

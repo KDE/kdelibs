@@ -170,20 +170,21 @@ inline kndbgstream &endl( kndbgstream & s) { return s; }
 inline kndbgstream &flush( kndbgstream & s) { return s; }
 inline kndbgstream &perror( kndbgstream & s) { return s; }
 
-#ifndef NDEBUG
 kdbgstream kdDebug(int area = 0);
 kdbgstream kdDebug(bool cond, int area = 0);
-#else
-#define kdDebug kndDebug
 inline kndbgstream kndDebug(int = 0) { return kndbgstream(); }
 inline kndbgstream kndDebug(bool , int  = 0) { return kndbgstream(); }
-#endif
+
 kdbgstream kdWarning(int area = 0);
 kdbgstream kdWarning(bool cond, int area = 0);
 kdbgstream kdError(int area = 0);
 kdbgstream kdError(bool cond, int area = 0);
 kdbgstream kdFatal(int area = 0);
 kdbgstream kdFatal(bool cond, int area = 0);
+
+#ifdef NDEBUG
+#define kdDebug kndDebug
+#endif
 
 #endif
 
