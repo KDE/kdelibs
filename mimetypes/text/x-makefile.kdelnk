@@ -9,6 +9,7 @@ Comment[pl]=Makefile
 Comment[fi]=Makefile
 Comment[fr]=Makefile
 Comment[it]=Makefile
+Comment[sk]=Makefile
 DefaultApp=Kemacs
 Icon=unknown.xpm
 Type=MimeType

@@ -8,6 +8,7 @@ Comment[fi]=Putki
 Comment[fr]=FIFO (canal de communication)
 Comment[pt]=Pipe
 Comment[it]=Pipe
+Comment[sk]=FIFO rúra
 Icon=pipe.xpm
 Type=MimeType
 MimeType=inode/fifo

@@ -9,6 +9,7 @@ Comment[es]=Archivo AR
 Comment[fr]=Archive AR
 Comment[pt]=Arquivo AR
 Comment[it]=Archivio AR
+Comment[sk]=Ar Archívy
 DefaultApp=Zip
 Icon=unzip.xpm
 Type=MimeType

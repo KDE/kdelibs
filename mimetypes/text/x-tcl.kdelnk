@@ -8,6 +8,7 @@ Comment[pl]=Program Tcl
 Comment[fr]=Application TCL
 Comment[fi]=Tcl ohjelma
 Comment[it]=File Tcl
+Comment[sk]=Tcl súbor
 Icon=unknown.xpm
 Type=MimeType
 MimeType=text/x-tcl

@@ -8,6 +8,7 @@ Comment[pl]=Dokument TeX
 Comment[fi]=TeX dokumentti
 Comment[fr]=Document TeX
 Comment[it]=Documento TeX
+Comment[sk]=Dokument sádzacieho systému TeX
 Icon=tex.xpm
 Type=MimeType
 MimeType=text/x-tex

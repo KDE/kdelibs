@@ -9,6 +9,7 @@ Comment[fi]=Tulkin skripti
 Comment[fr]=Script shell
 Comment[pt]=Shell script
 Comment[it]=Script per la Shell
+Comment[sk]=Shellovský skript
 Icon=terminal.xpm
 Type=MimeType
 MimeType=application/x-shellscript

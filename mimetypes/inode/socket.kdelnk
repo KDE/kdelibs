@@ -8,6 +8,7 @@ Comment[fi]=Pistoke
 Comment[fr]=Socket (canal de communication)
 Comment[pt]=Socket
 Comment[it]=Socket
+Comment[sk]=Socket (kanál pre komunikáciu)
 Icon=socket.xpm
 Type=MimeType
 MimeType=inode/socket

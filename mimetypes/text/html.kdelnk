@@ -9,6 +9,7 @@ Comment[fi]=HTML sivu
 Comment[fr]=Page HTML
 Comment[pt]=Página HTML
 Comment[it]=Pagina HTML
+Comment[sk]=HTML stránka
 DefaultApp=KDE Browser
 Icon=html.xpm
 Type=MimeType

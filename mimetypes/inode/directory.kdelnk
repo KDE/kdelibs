@@ -8,6 +8,7 @@ Comment[fi]=Hakemisto
 Comment[fr]=Répertoire
 Comment[pt]=Directoria
 Comment[it]=Cartella (Directory)
+Comment[sk]=Prieèinok
 Icon=folder.xpm
 Type=MimeType
 MimeType=inode/directory

@@ -10,6 +10,7 @@ Comment[fr]=Texte en anglais
 Comment[fi]=Englanninkielinen teksti
 Comment[pt]=Texto em Inglês
 Comment[it]=Testo Inglese
+Comment[sk]=Anglický text
 DefaultApp=Kedit
 Icon=txt.xpm
 Type=MimeType

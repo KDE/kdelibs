@@ -9,6 +9,7 @@ Comment[fi]=Ohjelma
 Comment[fr]=Application
 Comment[it]=Eseguibile
 Comment[pt]=Executavel
+Comment[sk]=Spustiteµný súbor
 Icon=exec.xpm
 Type=MimeType
 MimeType=application/x-executable

@@ -8,6 +8,7 @@ Comment[fi]=Lukittu hakemisto
 Comment[fr]=Répertoire verrouillé
 Comment[pt]=Directoria inacessivel
 Comment[it]=Cartella Bloccata
+Comment[sk]=Uzamknutý prieèinok
 Icon=lockedfolder.xpm
 Type=MimeType
 MimeType=inode/directory-locked

@@ -8,6 +8,7 @@ Comment[es]=Fichero de configuración de KDE
 Comment[fr]=Fichier de configuration de KDE
 Comment[pt]=Ficheiro de configuração KDE
 Comment[it]=File di configurazione KDE
+Comment[sk]=Konfiguraèný súbor KDE
 Icon=kmailion.xpm
 Type=MimeType
 MimeType=application/x-kdelnk

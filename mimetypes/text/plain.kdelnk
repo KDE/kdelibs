@@ -9,6 +9,7 @@ Comment[pl]=Czysty tekst
 Comment[fi]=Puhdas teksti
 Comment[fr]=Texte simple
 Comment[it]=Testo Semplice
+Comment[sk]=Jednoduchý text
 DefaultApp=Kedit
 Icon=txt.xpm
 Type=MimeType

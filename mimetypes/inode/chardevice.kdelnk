@@ -8,6 +8,7 @@ Comment[fi]=Tekstilaite
 Comment[fr]=Périphérique de type Caractère
 Comment[pt]=Dispositivo Caracter
 Comment[it]=Dispositivo caratteri
+Comment[sk]=Znakové zariadenie
 Icon=chardevice.xpm
 Type=MimeType
 MimeType=inode/chardevice

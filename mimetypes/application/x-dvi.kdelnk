@@ -9,6 +9,7 @@ Comment[fi]=TeX DVI tiedosto
 Comment[fr]=Fichier DVI de TeX
 Comment[pt]=Ficheiro TeX DVI
 Comment[it]=File TeX DVI 
+Comment[sk]=TeX DVI -- súbor nezávislý na zariadení
 Icon=dvi.xpm
 Type=MimeType
 MimeType=application/x-dvi

@@ -9,6 +9,7 @@ Comment[fi]=Pakattu kirjasin
 Comment[fr]=Fichier de police de caractères pour TeX (compressé)
 Comment[pt]=Fonte comprimida
 Comment[it]=Set di Caratteri compresso
+Comment[sk]=Skomprimované znakové sady
 Icon=pk.xpm
 Type=MimeType
 MimeType=application/x-tex-pk
