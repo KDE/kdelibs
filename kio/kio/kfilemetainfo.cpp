@@ -141,13 +141,6 @@ bool KFileMetaInfoItem::setValue( const QVariant& value )
     return true;
 }
 
-void KFileMetaInfoItem::remove()
-{
-    d->value.clear();
-    d->dirty = true;
-    d->removed = true;
-}
-
 bool KFileMetaInfoItem::isRemoved() const
 {
     return d->removed;
@@ -268,6 +261,11 @@ uint KFileMetaInfoItem::hint() const
     return d->mimeTypeInfo->hint();
 }
 
+uint KFileMetaInfoItem::attributes() const
+{
+    return d->mimeTypeInfo->attributes();
+}
+
 bool KFileMetaInfoItem::isEditable() const
 {
     return d->mimeTypeInfo->attributes() & KFileMimeTypeInfo::Modifiable;
@@ -324,6 +322,7 @@ public:
     uint                              what;
     QMap<QString, KFileMetaInfoGroup> groups;
     const KFileMimeTypeInfo*          mimeTypeInfo;
+    QStringList                       removedGroups;
 
     static Data* null;
     static Data* makeNull();
@@ -492,9 +491,21 @@ bool KFileMetaInfo::addGroup( const QString& name )
     return false;
 }
 
-void KFileMetaInfo::removeGroup( const QString& name )
+bool KFileMetaInfo::removeGroup( const QString& name )
 {
-    d->groups.remove(name);
+    QMapIterator<QString, KFileMetaInfoGroup> it = d->groups.find(name);
+    if ( (it==d->groups.end()) ||
+        !((*it).attributes() & KFileMimeTypeInfo::Removable))
+        return false;
+
+    d->groups.remove(it);
+    d->removedGroups.append(name);
+    return true;
+}
+
+QStringList KFileMetaInfo::removedGroups()
+{
+    return d->removedGroups;
 }
 
 const KFileMetaInfo& KFileMetaInfo::operator= (const KFileMetaInfo& info )
@@ -979,6 +990,7 @@ public:
     QString                             name;
     QMap<QString, KFileMetaInfoItem>    items;
     const KFileMimeTypeInfo*            mimeTypeInfo;
+    QStringList                         removedItems;
     bool                                dirty   :1;
     bool                                added   :1;
     bool                                removed :1;
@@ -1126,6 +1138,11 @@ QString KFileMetaInfoGroup::name() const
     return d->name;
 }
 
+uint KFileMetaInfoGroup::attributes() const
+{
+    return d->mimeTypeInfo->groupInfo(d->name)->attributes();
+}
+
 void KFileMetaInfoGroup::setAdded()
 {
     d->added = true;
@@ -1184,8 +1201,22 @@ KFileMetaInfoItem KFileMetaInfoGroup::addItem( const QString& key )
     return item;
 }
 
+bool KFileMetaInfoGroup::removeItem( const QString& key )
+{
+    QMapIterator<QString, KFileMetaInfoItem> it = d->items.find(key);
+    
+    if ( (it==d->items.end()) ||
+        !((*it).attributes() & KFileMimeTypeInfo::Removable))
 
-
+    d->items.remove(it);
+    d->removedItems.append(key);
+    return true;
+}
+  
+QStringList KFileMetaInfoGroup::removedItems()
+{
+    return d->removedItems;
+}
 
 KFileMetaInfoItem KFileMetaInfoGroup::appendItem(const QString& key,
                                                  const QVariant& value)

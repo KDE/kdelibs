@@ -349,11 +349,9 @@ class KFileMetaInfoItem
 {
 public:
     class Data;
-
     typedef KFileMimeTypeInfo::Hint Hint;
     typedef KFileMimeTypeInfo::Unit Unit;
     typedef KFileMimeTypeInfo::Attributes Attributes;
-
 
     /**
      * You usually don't need to use this constructor yourself. Let
@@ -425,15 +423,6 @@ public:
     bool isEditable() const;
 
     /**
-     * remove this item from the meta info of the file. @ref remove() doesn't
-     * actually remove the item, but only mark it as removed until
-     * @ref KFileMetaInfo::applyChanges() is called. You cannot query
-     * KFileMetaInfo for a removed object, and if you re-add it, its value
-     * will be cleared
-     */
-    void remove();
-
-    /**
      * @return true if the item was removed, false if not
      */
     bool isRemoved() const;
@@ -465,6 +454,8 @@ public:
      * @return the unit for this item. See @ref Unit
      **/
     uint unit() const;
+    
+    uint attributes() const;
 
     /**
      * @return true if the item is valid, i.e. if it contains data, false
@@ -573,7 +564,20 @@ public:
     **/
     KFileMetaInfoItem addItem( const QString& key );
 
+    /**
+     * remove this item from the meta info of the file. You cannot query
+     * KFileMetaInfo for a removed object, but you can query for a list of
+     * removed items with @ref removedItems() if you need to.
+     * If you re-add it, its value will be cleared
+     */
+    bool removeItem(const QString& key);
+    
+    QStringList removedItems();
+
     QString name() const;
+
+    uint attributes() const;
+    
 
 
 protected:
@@ -612,6 +616,9 @@ protected:
 class KFileMetaInfo
 {
 public:
+    typedef KFileMimeTypeInfo::Hint Hint;
+    typedef KFileMimeTypeInfo::Unit Unit;
+    typedef KFileMimeTypeInfo::Attributes Attributes;
     class Data;
 
     /**
@@ -744,7 +751,9 @@ public:
     * removes all the items in that group, so always ask the user
     * before removing it!
     */
-    void removeGroup( const QString& name );
+    bool removeGroup( const QString& name );
+    
+    QStringList removedGroups();
 
    /**
     * This method writes all pending changes of the meta info back to the file.

@@ -1,28 +1,13 @@
 Bugs:
 =====
 
-- addItem does succeed even if the item is already there (is this ok?)
-
 - remvoveItem doesn't work (at least not with variable items)
+  That's a propblem of the ogg plugin (the only one that has removable items a
+  all)
 
 - after a removeGroup, kfilemetainfo claims to get keys of an invalid
   metainfo object in the non-group-aware kfilemetainfo::preferredKeys()
 
-Fixed:
-======
-
-- addGroup does add the group, but the added items cannot be used. When
-  a file is read again, the items are there, but not before.
-
-- trying to add a key to a not-yet added group results in a crash
-  QGDict::hashKeyString: Invalid null key
-
-
 API enhancements:
 =================
 
-- remove all the added/removed stuff. It doesn't seem to be neccessary any more
-
-- removeGroup doesn't have a return value to check for success.
-- remove() also not. Maybe it should be removedItem() in a group, and not
-  remove() in the item itself
