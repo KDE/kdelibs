@@ -621,7 +621,7 @@ public:
   bool startup;
 };
 
-int main(int argc, char *argv[])
+extern "C" int kdemain(int argc, char *argv[])
 {
      KAboutData aboutData( "kded", I18N_NOOP("KDE Daemon"),
         "$Id$",

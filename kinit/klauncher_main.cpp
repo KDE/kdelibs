@@ -32,9 +32,6 @@
 
 #include "klauncher_cmds.h"
 
-extern "C" { int kdemain(int, char* []); }
-
-
 static void sig_handler(int sig_num)
 {
    // No recursion
@@ -89,14 +86,9 @@ start_launcher(int socket)
    return 0;
 }
 
-int kdemain( int, char** )
+extern "C" int kdemain( int, char** )
 {
    start_launcher(LAUNCHER_FD);
    return 0;
 }
 
-int main( int, char ** )
-{
-   start_launcher(LAUNCHER_FD);
-   return 0;
-}

@@ -673,7 +673,7 @@ public:
    ~WaitForSignal() { kapp->eventLoop()->exitLoop(); }
 };
 
-int main(int argc, char **argv)
+extern "C" int kdemain(int argc, char **argv)
 {
    KLocale::setMainCatalogue("kdelibs");
    KAboutData d(appName, I18N_NOOP("KBuildSycoca"), appVersion,
