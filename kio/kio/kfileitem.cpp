@@ -83,8 +83,8 @@ KFileItem::KFileItem( const KIO::UDSEntry& _entry, const KURL& _url,
   m_entry( _entry ),
   m_url( _url ),
   m_pMimeType( 0 ),
-  m_fileMode( (mode_t)-1 ),
-  m_permissions( (mode_t)-1 ),
+  m_fileMode( KFileItem::Unknown ),
+  m_permissions( KFileItem::Unknown ),
   m_bMarked( false ),
   m_bLink( false ),
   m_bIsLocalURL( _url.isLocalFile() ),
@@ -190,7 +190,7 @@ KFileItem::~KFileItem()
 void KFileItem::init( bool _determineMimeTypeOnDemand )
 {
   // determine mode and/or permissions if unknown
-  if ( m_fileMode == (mode_t) -1 || m_permissions == (mode_t) -1 )
+  if ( m_fileMode == KFileItem::Unknown || m_permissions == KFileItem::Unknown )
   {
     mode_t mode = 0;
     if ( m_url.isLocalFile() )
@@ -217,9 +217,9 @@ void KFileItem::init( bool _determineMimeTypeOnDemand )
         }
       }
     }
-    if ( m_fileMode == (mode_t) -1 )
+    if ( m_fileMode == KFileItem::Unknown )
       m_fileMode = mode & S_IFMT; // extract file type
-    if ( m_permissions == (mode_t) -1 )
+    if ( m_permissions == KFileItem::Unknown )
       m_permissions = mode & 07777; // extract permissions
   }
 
@@ -238,8 +238,8 @@ void KFileItem::init( bool _determineMimeTypeOnDemand )
 
 void KFileItem::refresh()
 {
-  m_fileMode = (mode_t)-1;
-  m_permissions = (mode_t)-1;
+  m_fileMode = KFileItem::Unknown;
+  m_permissions = KFileItem::Unknown;
   m_user = QString::null;
   m_group = QString::null;
   d->refresh();
