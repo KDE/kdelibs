@@ -451,6 +451,11 @@ NodeImpl *NodeBaseImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild )
     checkIsChild(refChild);
     checkNoOwner(newChild);
 
+    // if already in the tree, remove it first!
+    NodeImpl *newParent = newChild->parentNode();
+    if(newParent)
+        newParent->removeChild( newChild );
+    
     // seems ok, lets's insert it.
 
     NodeImpl *prev = refChild->previousSibling();
@@ -477,6 +482,11 @@ NodeImpl *NodeBaseImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild )
     checkIsChild(oldChild);
     checkNoOwner(newChild);
 
+    // if already in the tree, remove it first!
+    NodeImpl *newParent = newChild->parentNode();
+    if(newParent)
+        newParent->removeChild( newChild );
+    
     // seems ok, lets's insert it.
 
     NodeImpl *prev = oldChild->previousSibling();
@@ -531,6 +541,12 @@ NodeImpl *NodeBaseImpl::appendChild ( NodeImpl *newChild )
     checkSameDocument(newChild);
     checkNoOwner(newChild);
 
+    // if already in the tree, remove it first!
+    NodeImpl *newParent = newChild->parentNode();
+    if(newParent)
+        newParent->removeChild( newChild );
+
+    // lets append it
     newChild->setParent(this);
 
     if(_last)
