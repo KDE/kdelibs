@@ -327,62 +327,63 @@ QString KHTMLSettings::settingsToCSS() const
     return str;
 }
 
+QString KHTMLSettings::lookupFont(const QFont::CharSet &charset, int i) const
+{
+    QString font;
+    QStringList &fontList = fontsForCharset[charset];
+    if (fontList.count() > i)
+       font = fontList[i];
+    if (font.isEmpty())
+       font = defaultFonts[i]; 
+    return font;
+}
+
 QString KHTMLSettings::stdFontName() const 
 {
-    QString font = fontsForCharset[m_charset][0];
-    if(font.isEmpty())
-	font = defaultFonts[0];
-    return font;
+    return lookupFont(m_charset,0);
 }
 
 QString KHTMLSettings::fixedFontName() const
 {
-    QString font = fontsForCharset[m_charset][1];
-    if(font.isEmpty())
-	font = defaultFonts[1];
-    return font;
+    return lookupFont(m_charset,1);
 }
 
 QString KHTMLSettings::serifFontName() const
 {
-    QString font = fontsForCharset[m_charset][2];
-    if(font.isEmpty())
-	font = defaultFonts[2];
-    return font;
+    return lookupFont(m_charset,2);
 }
 
 QString KHTMLSettings::sansSerifFontName() const
 {
-    QString font = fontsForCharset[m_charset][3];
-    if(font.isEmpty())
-	font = defaultFonts[3];
-    return font;
+    return lookupFont(m_charset,3);
 }
 
 QString KHTMLSettings::cursiveFontName() const
 {
-    QString font = fontsForCharset[m_charset][4];
-    if(font.isEmpty())
-	font = defaultFonts[4];
-    return font;
+    return lookupFont(m_charset,4);
 }
 
 QString KHTMLSettings::fantasyFontName() const
 {
-    QString font = fontsForCharset[m_charset][5];
-    if(font.isEmpty())
-	font = defaultFonts[5];
-    return font;
+    return lookupFont(m_charset,5);
+}
+
+void KHTMLSettings::setFont(const QFont::CharSet &charset, int i, const QString &n)
+{
+    QStringList fontList = fontsForCharset[charset];
+    while (fontList.count() <= i)
+      fontList.append(QString::null);
+    fontList[i] = n;
 }
 
 void KHTMLSettings::setStdFontName(const QString &n)
 {
-    fontsForCharset[m_charset][0] = n;
+    setFont(m_charset, 0, n);
 }
 
 void KHTMLSettings::setFixedFontName(const QString &n)
 {
-    fontsForCharset[m_charset][1] = n;
+    setFont(m_charset, 1, n);
 }
 
 void KHTMLSettings::setCharset( QFont::CharSet c) 

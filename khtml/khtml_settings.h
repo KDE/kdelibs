@@ -109,6 +109,10 @@ public:
 
     QString settingsToCSS() const;
     QString availableFamilies() const { return availFamilies; }
+
+private:
+    void setFont(const QFont::CharSet &charset, int i, const QString &n);
+    QString lookupFont(const QFont::CharSet &charset, int i) const;
     
 private:
     bool m_bChangeCursor;
