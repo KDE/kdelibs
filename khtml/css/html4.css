@@ -73,22 +73,16 @@
       TH              { font-weight: bolder; text-align: center }
       CAPTION         { text-align: center }
       BODY            { padding: 5px; line-height: 1.05 }
-      H1              { font-size: 2em; margin: .67em 0 }
-      H2              { font-size: 1.5em; margin: .83em 0 }
-      H3              { font-size: 1.17em; margin: 1em 0 }
+      H1              { font-size: 2em; margin: .67em auto }
+      H2              { font-size: 1.5em; margin: .83em auto }
+      H3              { font-size: 1.17em; margin: 1em auto }
       H4, P,
       BLOCKQUOTE, UL,
       FIELDSET, FORM,
       OL, DL, DIR,
-      MENU            { margin: 1.0em 0 }
-	/* for right to left */
-      BLOCKQUOTE *[dir="rtl"], 
-      UL *[dir="rtl"], 
-      FIELDSET *[dir="rtl"],  FORM *[dir="rtl"], 
-      OL *[dir="rtl"],  DL *[dir="rtl"],  DIR *[dir="rtl"], 
-      MENU *[dir="rtl"]           { margin: 1.0em 0 }
-      H5              { font-size: .83em; line-height: 1.17em; margin: 1.67em 0 }
-      H6              { font-size: .67em; margin: 2.33em 0 }
+      MENU            { margin: 1.0em auto }
+      H5              { font-size: .83em; line-height: 1.17em; margin: 1.67em auto }
+      H6              { font-size: .67em; margin: 2.33em auto }
       H1, H2, H3, H4,
       H5, H6, B,
       STRONG          { font-weight: bolder }
@@ -109,17 +103,20 @@
       S, STRIKE, DEL  { text-decoration: line-through }
       HR              { margin-top: 5px; margin-bottom: 5px }
 
-      /* ### I'm wondering how this should work in a Right to left context */
       OL, UL, DIR,
-      MENU, DD        { margin-left: 40px }
+      MENU, DD        { margin-left: 40px }	
+	/* for right to left */
+      UL *[dir="rtl"], 
+      OL *[dir="rtl"],  DIR *[dir="rtl"], 
+      MENU *[dir="rtl"], DD *[dir="rtl"]  { margin-right:40px; margin-left: auto }
       OL              { list-style-type: decimal }
       UL              { list-style-type: disc }
       UL UL           { list-style-type: circle }
       UL UL UL        { list-style-type: square }
       OL UL, UL OL,
-      UL UL, OL OL    { margin-top: 0; margin-bottom: 0 }
-      LI > P          { margin-top: 0; margin-bottom: 0 }
-      LI > DIV        { margin-top: 0; margin-bottom: 0 }
+      UL UL, OL OL    { margin-top: auto; margin-bottom: auto }
+      LI > P          { margin-top: auto; margin-bottom: auto }
+      LI > DIV        { margin-top: auto; margin-bottom: auto }
       U, INS          { text-decoration: underline }
       CENTER          { text-align: center; }
       CENTER > *      { margin-left: auto; margin-right: auto; } /* center all children of CENTER */
