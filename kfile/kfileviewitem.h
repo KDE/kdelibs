@@ -140,7 +140,7 @@ public:
     void setNext(KFileViewItem *n) { myNext = n; }
 
 protected:
-    QString parsePermissions(uint perm) const;
+    QString parsePermissions(mode_t perm) const;
     //    bool testReadable(const QCString& file, struct stat& buf);
 
 private:
