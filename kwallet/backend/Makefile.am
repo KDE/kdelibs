@@ -20,5 +20,6 @@ noinst_HEADERS = blowfishtables.h	\
 		 hashbase.h		\
 		 sha1.h			\
 		 blockcipher.h		\
+		 kwalletbackend.h	\
 		 blowfish.h
 

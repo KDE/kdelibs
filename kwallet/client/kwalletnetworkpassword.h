@@ -26,7 +26,7 @@
 
 namespace KWallet {
 
-class NetworkPassword : public Entry {
+class NetworkPassword : private Entry {
         protected:
 	        // ctor to load a NetworkPassword, used by factory()
 		NetworkPassword(const QString &type,
