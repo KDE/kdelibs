@@ -83,7 +83,7 @@ KCommandHistory::KCommandHistory(KActionCollection * actionCollection, bool with
     d=new KCommandHistoryPrivate();
     if (withMenus)
     {
-        KToolBarPopupAction * undo = new KToolBarPopupAction( i18n("Und&o"), "undo",
+        KToolBarPopupAction * undo = new KToolBarPopupAction( i18n("&Undo"), "undo",
                                           KStdAccel::key(KStdAccel::Undo), this, SLOT( undo() ),
                                           actionCollection, KStdAction::stdName( KStdAction::Undo ) );
         connect( undo->popupMenu(), SIGNAL( aboutToShow() ), this, SLOT( slotUndoAboutToShow() ) );
