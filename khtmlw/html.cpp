@@ -454,8 +454,8 @@ void KHTMLWidget::mouseMoveEvent( QMouseEvent *e )
       scrollBlobType=SCROLL_NONE;
     }
   }
-  KDNDWidget::mouseMoveEvent(e);
 #endif
+  KDNDWidget::mouseMoveEvent(e);
 }
 
 void KHTMLWidget::mousePressEvent( QMouseEvent *_mouse )
@@ -5055,20 +5055,37 @@ HTMLMap *KHTMLWidget::getMap( const char *mapurl )
 }
 
 void KHTMLWidget::drawBackground( int _xval, int _yval, int _x, int _y,
-	int _w, int _h )
+	int _w, int _h, QPainter *p )
 {
-	if ( !bDrawBackground )
+    int xoff = 0;
+    int yoff = 0;
+
+	if ( !bDrawBackground && !p )
 	    return;
+
+    // Attention... I changed the meaning of _xval a bit if QPainter != 0!
+    // Hack, to keep source compatibility, since this function is not private
+    if( !p )
+	// usual case...
+	p = painter;
+    else
+    {
+	xoff = _xval;
+	yoff = _yval;
+	_xval = x_offset;
+	_yval = y_offset;
+    }
+
 
 	if ( bgPixmap.isNull() )
 	{
-		painter->eraseRect( _x, _y, _w, _h );
+		p->eraseRect( _x - xoff, _y - yoff, _w, _h );
 		return;
 	}
 
 	// if the background pixmap is transparent we must erase the bg
 	if ( bgPixmap.mask() )
-	    painter->eraseRect( _x, _y, _w, _h );
+	    p->eraseRect( _x - xoff, _y - yoff, _w, _h );
 
 	int pw = bgPixmap.width();
 	int ph = bgPixmap.height();
@@ -5076,18 +5093,18 @@ void KHTMLWidget::drawBackground( int _xval, int _yval, int _x, int _y,
 	int xOrigin = _x/pw*pw - _xval%pw;
 	int yOrigin = _y/ph*ph - _yval%ph;
 
-	painter->setClipRect( _x, _y, _w, _h );
-	painter->setClipping( TRUE );
+	p->setClipRect( _x - xoff, _y - yoff, _w, _h );
+	p->setClipping( TRUE );
 
 	for ( int yp = yOrigin; yp < _y + _h; yp += ph )
 	{
 		for ( int xp = xOrigin; xp < _x + _w; xp += pw )
 		{
-			painter->drawPixmap( xp, yp, bgPixmap );
+			p->drawPixmap( xp - xoff, yp - yoff, bgPixmap );
 		}
 	}
 
-	painter->setClipping( FALSE );
+	p->setClipping( FALSE );
 }
 
 bool KHTMLWidget::gotoAnchor( )
@@ -5989,12 +6006,21 @@ KHTMLWidget::saveYourself(SavedPage *p)
 {
     if( !p )
 	p = new SavedPage();
-    p->isFrame = bIsFrame;
+    if( bIsFrame && htmlView )
+    {
+	// we need to store the frame info
+	p->isFrame = true;
+	p->scrolling = htmlView->getScrolling();
+	p->frameborder = htmlView->getFrameBorder();
+	p->marginwidth = leftBorder;
+	p->marginheight = topBorder;
+	p->allowresize = htmlView->allowResize();
+    }
     p->url = getDocumentURL().url();
     p->xOffset = x_offset;
     p->yOffset = y_offset;
 
-    if(isFrameSet())
+    if(isFrameSet() && !parsing)
 	buildFrameTree(p, frameSet);
 
     return p;
@@ -6020,8 +6046,8 @@ KHTMLWidget::buildFrameTree(SavedPage *p, HTMLFrameSet *f)
 	if ( w->inherits( "KHTMLView" ) )
 	{
 	    KHTMLView *v = (KHTMLView*)w;
-		SavedPage *s = v->saveYourself();
-		p->frames->append( s );
+	    SavedPage *s = v->saveYourself();
+	    p->frames->append( s );
 	}
 	else if(strcmp(w->className(),"HTMLFrameSet") == 0 )
 	{
@@ -6047,7 +6073,14 @@ KHTMLWidget::restore(SavedPage *p)
 	    htmlView->openURL( p->url );
 	    htmlView->setIsFrame( p->isFrame );
 	    if( p->isFrame )
+	    {
 		htmlView->setFrameName( p->frameName );
+		htmlView->setScrolling( p->scrolling );
+		htmlView->setAllowResize( p->allowresize );
+		htmlView->setFrameBorder( p->frameborder );
+		htmlView->setMarginWidth( p->marginwidth );
+		htmlView->setMarginHeight( p->marginheight );
+	    }
 	    htmlView->restorePosition(p->xOffset, p->yOffset);
 	}
 	else
@@ -6107,11 +6140,32 @@ KHTMLWidget::buildFrameSet(SavedPage *p, QString *s)
 	    buildFrameSet(sp, s);
 	else
 	{
+	    QString tmp;
 	    aStr = "<frame src=\"";
 	    aStr += sp->url;
 	    aStr += "\" name=\"";
 	    aStr += sp->frameName;
-	    aStr += "\">";
+	    aStr += "\"";
+	    if( sp->scrolling == 0 )
+		aStr += " scrolling=no";
+	    if( sp->frameborder )
+	    {
+		tmp.sprintf(" frameborder=%d", sp->frameborder);
+		aStr += tmp;
+	    }
+	    if( !sp->allowresize )
+		aStr += " noresize";
+	    if( sp->marginwidth )
+	    {
+		tmp.sprintf(" marginwidth=%d", sp->marginwidth);
+		aStr += tmp;
+	    }
+	    if( sp->marginheight )
+	    {
+		tmp.sprintf(" marginheight=%d", sp->marginheight);
+		aStr += tmp;
+	    }
+	    aStr += ">";
 	    // FIXME: other options...
 	    aStr += "\n";
 	    *s += aStr;
@@ -6123,6 +6177,11 @@ KHTMLWidget::buildFrameSet(SavedPage *p, QString *s)
 SavedPage::SavedPage()
 {
     frameName = 0;
+    scrolling = 2;
+    frameborder = 0;
+    marginwidth = 0;
+    marginheight = 0;
+    allowresize = true;
     isFrame = false;
     isFrameSet = false;
     url = 0;

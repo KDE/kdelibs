@@ -97,6 +97,11 @@ struct SavedPage
     ~SavedPage();
     QString frameName;
     bool isFrame;
+    int scrolling;
+    int frameborder;
+    int marginwidth;
+    int marginheight;
+    bool allowresize;
     bool isFrameSet;
     QString url;
     QString title;
@@ -1029,11 +1034,14 @@ protected:
      */
     bool insertVSpace( HTMLClueV *_clue, bool _space_inserted );
 
+public:
     /*
      * draw background area
      */
-    void drawBackground( int _xval, int _yval, int _x, int _y, int _w, int _h );
+    void drawBackground( int _xval, int _yval, int _x, int _y, int _w, int _h,
+			 QPainter *p = 0 );
 
+protected:
     /*
      * position form elements (widgets) on the page
      */

@@ -639,6 +639,8 @@ protected:
      * from the internet for example.
      */
     QPixmap *pixmap;
+    QPixmap *movieCache;
+    QRect oldRect;
 
 #ifdef USE_QMOVIE
     QMovie *movie;

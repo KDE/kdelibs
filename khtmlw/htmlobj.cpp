@@ -42,6 +42,7 @@
 #include <qmovie.h>
 #include <qregexp.h>
 #include <qdict.h>
+#include <qbitmap.h>
 
 #include "htmlobj.moc"
 
@@ -1292,6 +1293,7 @@ HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
 	pCache = new QDict<HTMLCachedImage>( 503, true, false );;
 
     pixmap = 0;
+    movieCache = 0;
     movie = 0;
     overlay = 0;
     bComplete = true;
@@ -1626,18 +1628,53 @@ bool HTMLImage::print( QPainter *_painter, int, int _y, int, int _height, int _t
 
 void HTMLImage::print( QPainter *_painter, int _tx, int _ty )
 {
-    const QPixmap *pixptr = pixmap;
+    QPixmap *pixptr = pixmap;
     QRect rect( 0, 0, width - border*2, ascent - border );
 
 #ifdef USE_QMOVIE
     if ( movie && pixmap )
     {
-	pixptr = &movie->framePixmap();
+	// Wow... all this mess, just to get QMovies with transparent
+	// parts working... (Lars 30.11.98)
 	rect = movie->getValidRect();
+	if( ! movieCache )
+	{
+	    movieCache = new QPixmap(width-2*border, ascent-border,
+				     pixmap->depth());
+	    QPainter p;
+	    p.begin(movieCache);
+	    htmlWidget->drawBackground(x + _tx + border, 
+				       y - ascent + _ty + border,
+				       x + _tx + border, 
+				       y - ascent + _ty + border,
+				       width-2*border, ascent-border, &p);
+	    p.drawPixmap(QPoint( rect.x(), rect.y() ), movie->framePixmap(), 
+			 rect);
+	    p.end();
+	}
+	QPixmap pm;
+	pm = movie->framePixmap();
+	QPainter p;
+	p.begin(movieCache);
+	p.drawPixmap(QPoint( rect.x(), rect.y() ), *pixmap, oldRect);
+	p.drawPixmap(QPoint( rect.x(), rect.y() ), movie->framePixmap(), rect);
+	p.end();
+
+	*pixmap = movie->framePixmap();
+	p.begin(pixmap);
+	htmlWidget->drawBackground(x + _tx + border + rect.x(), 
+				   y - ascent + _ty + border + rect.y(),
+				   x + _tx + border + rect.x(), 
+				   y - ascent + _ty + border + rect.y(),
+				   rect.width(), rect.height(), &p);
+	p.end();
+
+	oldRect = rect;
+	pixptr = movieCache;
     }
 #endif
 
-    if ( !movie && pixmap )
+    if ( pixmap )
     {
 	if ( predefinedWidth )
 	    rect.setWidth( pixmap->width() );
@@ -1684,8 +1721,8 @@ void HTMLImage::print( QPainter *_painter, int _tx, int _ty )
 	}
 	else
 	    _painter->drawPixmap( QPoint( x + _tx + border,
-		    y - ascent + _ty + border), pm, rect );
-	
+				  y - ascent + _ty + border), *pixptr, rect );
+
 	if ( overlay )
 	    _painter->drawPixmap( QPoint( x + _tx + border,
 		    y - ascent + _ty + border ), *overlay, rect );
@@ -1727,6 +1764,7 @@ void HTMLImage::movieUpdated( const QRect & )
 	pixmap = new QPixmap;
 	*pixmap = movie->framePixmap();
 	init();
+
 	if ( !predefinedWidth || !predefinedHeight )
 	{
 	    htmlWidget->calcSize();
@@ -1735,7 +1773,7 @@ void HTMLImage::movieUpdated( const QRect & )
 	    return;
 	}
     }
-    
+
     htmlWidget->paintSingleObject( this );
 #endif
 }
