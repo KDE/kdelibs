@@ -91,6 +91,7 @@
 #include "certexport.h"
 #include "kdatetimedlg.h"
 #include <kaboutdata.h>
+#include <kprocess.h>
 
 typedef KGenericFactory<KCryptoConfig, QWidget> KryptoFactory;
 K_EXPORT_COMPONENT_FACTORY( kcm_crypto, KryptoFactory("kcmcrypto") )
@@ -1588,13 +1589,14 @@ QString iss = QString::null;
 
 
 void KCryptoConfig::slotYourImport() {
-#ifdef HAVE_SSL
-KSSLPKCS12 *cert = NULL;
-QCString pass;
 
    QString certFile = KFileDialog::getOpenFileName(QString::null, "application/x-pkcs12");
    if (certFile.isEmpty())
       return;
+
+#ifdef HAVE_SSL
+KSSLPKCS12 *cert = NULL;
+QCString pass;
 
 TryImportPassAgain:
    int rc = KPasswordDialog::getPassword(pass, i18n("Certificate password"));
@@ -1641,6 +1643,8 @@ TryImportPassAgain:
    configChanged();
    delete cert;
 #endif
+
+   offerImportToKMail( certFile );
 }
 
 
@@ -1857,14 +1861,15 @@ QCString oldpass = "";
 
 
 void KCryptoConfig::slotCAImport() {
+    QString certFile = KFileDialog::getOpenFileName(QString::null, "application/x-x509-ca-cert");
+
+    if (certFile.isEmpty())
+        return;
+
 #ifdef HAVE_SSL
 #define sk_free KOSSL::self()->sk_free
 #define sk_num KOSSL::self()->sk_num
 #define sk_value KOSSL::self()->sk_value
-QString certFile = KFileDialog::getOpenFileName(QString::null, "application/x-x509-ca-cert");
-
-	if (certFile.isEmpty())
-		return;
 
 	// First try to load using the OpenSSL method
 	X509_STORE *certStore = KOSSL::self()->X509_STORE_new();
@@ -2023,6 +2028,20 @@ QString certFile = KFileDialog::getOpenFileName(QString::null, "application/x-x5
 #undef sk_num
 #undef sk_value
 #endif
+
+        offerImportToKMail( certFile );
+}
+
+void KCryptoConfig::offerImportToKMail( const QString& certFile )
+{
+    if ( KMessageBox::questionYesNo( this, i18n( "Do you want to make this certificate available to KMail as well?" ) ) == KMessageBox::Yes ) {
+       KProcess proc;
+       proc << "kleopatra";
+       proc << "--import-certificate";
+       proc << certFile;
+       if ( !proc.start( KProcess::DontCare ) )
+           KMessageBox::error( this, i18n( "Couldn't execute kleopatra. You might have to install or update the kdepim package." ) );
+   }
 }
 
 

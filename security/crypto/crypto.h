@@ -282,6 +282,7 @@ protected:
 
 private:
 
+  void offerImportToKMail( const QString& certFile );
   void setAuthCertLists();
   void genCAList();
 
