@@ -1051,6 +1051,21 @@ void KHTMLView::addFormCompletionItem(const QString &name, const QString &value)
 {
     if (!m_part->settings()->isFormCompletionEnabled())
         return;
+    // don't store values that are all numbers or just numbers with
+    // dashes or spaces as those are likely credit card numbers or
+    // something similar
+    bool cc_number(true);
+    for (int i = 0; i < value.length(); ++i)
+    {
+      QChar c(value[i]);
+      if (!c.isNumber() && c != '-' && !c.isSpace())
+      {
+        cc_number = false;
+        break;
+      }
+    }
+    if (cc_number)
+      return;
     QStringList items = formCompletionItems(name);
     if (!items.contains(value))
         items.prepend(value);
