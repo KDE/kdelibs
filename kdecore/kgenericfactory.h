@@ -36,6 +36,7 @@ public:
         : m_instanceName( instanceName ) 
     {
         s_self = this;
+        m_catalogueInitialized = false;
     }
     virtual ~KGenericFactoryBase()
     {
@@ -66,16 +67,16 @@ protected:
 
     void initializeMessageCatalogue()
     {
-        static bool catalogueInitialized = false;
-        if ( !catalogueInitialized )
+        if ( !m_catalogueInitialized )
         {
-            catalogueInitialized = true;
+            m_catalogueInitialized = true;
             setupTranslations();
         }
     }
 
 private:
     QCString m_instanceName;
+    bool m_catalogueInitialized;
 
     static KInstance *s_instance;
     static KGenericFactoryBase<T> *s_self;
