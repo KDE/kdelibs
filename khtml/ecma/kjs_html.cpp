@@ -78,12 +78,12 @@ UString::UString(const DOM::DOMString &d)
 
 DOM::DOMString UString::string() const
 {
-  return DOM::DOMString((QChar*) s, l);
+  return DOM::DOMString((QChar*) data(), size());
 }
 
 QString UString::qstring() const
 {
-  return QString((QChar*) s, l);
+  return QString((QChar*) data(), size());
 }
 
 KJSO *KJS::HTMLDocFunction::get(const CString &p) const
@@ -197,7 +197,7 @@ KJSO *KJS::HTMLDocument::get(const CString &p) const
     if (result->isA(Undefined)) {
       DOM::HTMLElement element;
       DOM::HTMLCollection coll = doc.images(); /* TODO: all() */
-      DOM::Node node = coll.namedItem(DOM::DOMString(p.ascii()));
+      DOM::Node node = coll.namedItem(DOM::DOMString(p.c_str()));
       element = node;
       result = new HTMLElement(element);
     }
@@ -226,9 +226,6 @@ KJSO *KJS::HTMLElement::get(const CString &p) const
   DOM::HTMLLinkElement link;
   DOM::HTMLAnchorElement anchor;
   DOM::HTMLImageElement image;
-
-  fprintf(stderr, "HTMLElement::get(%s) id: %d\n",
-	  p.ascii(), element.elementId());
 
   switch (element.elementId()) {
   case ID_HTML:
@@ -507,11 +504,11 @@ KJSO *KJS::HTMLCollection::get(const CString &p) const
     unsigned long u;
 
     // name or index ?
-    int ret = sscanf(p.ascii(), "%lu", &u);
+    int ret = sscanf(p.c_str(), "%lu", &u);
     if (ret)
       node = collection.item(u);
     else
-      node = collection.namedItem(DOM::DOMString(p.ascii()));
+      node = collection.namedItem(DOM::DOMString(p.c_str()));
 
     element = node;
     result = new HTMLElement(element);
@@ -577,7 +574,7 @@ KJSO *Image::get(const CString &p) const
   KJSO *result;
 
   if (p == "src")
-    result = new KJSString(src.ascii());
+    result = new KJSString(src.c_str());
   else
     result = new KJSUndefined();
 

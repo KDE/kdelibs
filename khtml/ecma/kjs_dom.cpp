@@ -29,8 +29,6 @@ KJSO *DOMNode::get(const CString &p) const
 {
   KJSO *result;
 
-  fprintf(stderr, "DOMNode::get(%s)\n", p.ascii());
-
   if (p == "nodeName")
     result = new KJSString(node.nodeName());
   else if (p == "nodeValue")
@@ -62,8 +60,6 @@ KJSO *DOMNode::get(const CString &p) const
 KJSO *DOMNodeList::get(const CString &p) const
 {
   KJSO *result;
-
-  fprintf(stderr, "DOMNodeList::get(%s)\n", p.ascii());
 
   if (p == "length")
     result = new KJSNumber(list.length());
