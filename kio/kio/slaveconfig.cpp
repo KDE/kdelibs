@@ -87,8 +87,8 @@ SlaveConfigProtocol* SlaveConfigPrivate::readProtocolConfig(const QString &_prot
       protocol.insert(_protocol, scp);
    }
    // Read global stuff...
-   readConfig(scp->configFile, "<default>", &(scp->global));  
-   return scp;   
+   readConfig(scp->configFile, "<default>", &(scp->global));
+   return scp;
 }
 
 SlaveConfigProtocol* SlaveConfigPrivate::findProtocolConfig(const QString &_protocol)
@@ -96,7 +96,7 @@ SlaveConfigProtocol* SlaveConfigPrivate::findProtocolConfig(const QString &_prot
    SlaveConfigProtocol *scp = protocol.find(_protocol);
    if (!scp)
       scp = readProtocolConfig(_protocol);
-   return scp;   
+   return scp;
 }
 
 void SlaveConfigPrivate::readConfigProtocolHost(const QString &, SlaveConfigProtocol *scp, const QString &host)
@@ -107,21 +107,26 @@ void SlaveConfigPrivate::readConfigProtocolHost(const QString &, SlaveConfigProt
    // Read stuff
    // Break host into domains
    QString domain = host;
+
    if (!domain.contains('.'))
    {
       // Host without domain.
       if (scp->configFile->hasGroup("<local>"))
          readConfig(scp->configFile, "<local>", metaData);
    }
-   while (true)
+
+   int pos = 0;
+   while (pos > -1)
    {
+      pos = host.findRev('.', pos-1);
+
+      if (pos < 0)
+        domain = host;
+      else
+        domain = host.mid(pos+1);
+
       if (scp->configFile->hasGroup(domain))
          readConfig(scp->configFile, domain.lower(), metaData);
-
-      int i = domain.find('.');
-      if (i < 0)
-         break;
-      domain = domain.mid(i+1);
    }
 }
 
@@ -209,7 +214,7 @@ QString SlaveConfig::configData(const QString &protocol, const QString &host, co
 
 void SlaveConfig::reset()
 {
-   d->protocol.clear();   
+   d->protocol.clear();
    d->readGlobalConfig();
 }
 
