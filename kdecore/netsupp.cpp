@@ -69,14 +69,18 @@
  * The user could (but shouldn't) test the variable to know what kind of
  * resolution is supported
  */
-#define KRF_USING_OWN_GETADDRINFO	1	/* if present, we are using our own getaddrinfo */
-#define KRF_KNOWS_AF_INET6		2	/* if present, the code knows about AF_INET6 */
-#define KRF_CAN_RESOLVE_IPV6		4	/* if present, the resolver can resolve to IPv6 */
+#define KRF_KNOWS_AF_INET6		0x01	/* if present, the code knows about AF_INET6 */
+#define KRF_USING_OWN_GETADDRINFO	0x02	/* if present, we are using our own getaddrinfo */
+#define KRF_USING_OWN_INET_NTOP		0x04	/* if present, we are using our own inet_ntop */
+#define KRF_USING_OWN_INET_PTON		0x08	/* if present, we are using our own inet_pton */
+#define KRF_CAN_RESOLVE_UNIX		0x100	/* if present, the resolver can resolve Unix sockets */
+#define KRF_CAN_RESOLVE_IPV4		0x200	/* if present, the resolver can resolve to IPv4 */
+#define KRF_CAN_RESOLVE_IPV6		0x400	/* if present, the resolver can resolve to IPv6 */
 
 #ifndef HAVE_GETADDRINFO
 
 #define KRF_getaddrinfo			KRF_USING_OWN_GETADDRINFO
-#define KRF_resolver			0
+#define KRF_resolver			KRF_CAN_RESOLVE_UNIX | KRF_CAN_RESOLVE_IPV4
 
 /*
  * No getaddrinfo() in this system.
@@ -789,6 +793,8 @@ int getnameinfo(const struct sockaddr *sa, ksocklen_t salen,
 
 #ifndef HAVE_INET_NTOP
 
+#define KRF_inet_ntop	KRF_USING_OWN_INET_NTOP
+
 static void add_dwords(char *buf, Q_UINT16 *dw, int count)
 {
   int i = 1;
@@ -799,7 +805,7 @@ static void add_dwords(char *buf, Q_UINT16 *dw, int count)
 
 const char* inet_ntop(int af, const void *cp, char *buf, size_t len)
 {
-  char buf2[sizeof "1234:5678:9abc:def0:1234:5678:255.255.255.255"];
+  char buf2[sizeof "1234:5678:9abc:def0:1234:5678:255.255.255.255" + 1];
   Q_UINT8 *data = (Q_UINT8*)cp;
 
   if (af == AF_INET)
@@ -890,10 +896,15 @@ const char* inet_ntop(int af, const void *cp, char *buf, size_t len)
   return NULL;			// a family we don't know about
 }
 
+#else	// HAVE_INET_NTOP
+
+#define KRF_inet_ntop		0
+
 #endif	// HAVE_INET_NTOP
 
 #ifndef HAVE_INET_PTON
 
+#define KRF_inet_pton		KRF_USING_OWN_INET_PTON
 int inet_pton(int af, const char *cp, void *buf)
 {
   int i;
@@ -988,6 +999,10 @@ int inet_pton(int af, const char *cp, void *buf)
   return -1;			// unknown family
 }
 
+#else  // HAVE_INET_PTON
+
+#define KRF_inet_pton		0
+
 #endif // HAVE_INET_PTON
 
 #ifdef AF_INET6
@@ -998,5 +1013,5 @@ int inet_pton(int af, const char *cp, void *buf)
 
 namespace KDE
 {
-  extern const int resolverFlags = KRF_getaddrinfo | KRF_resolver | KRF_afinet6;
+  extern const int resolverFlags = KRF_getaddrinfo | KRF_resolver | KRF_afinet6 | KRF_inet_ntop | KRF_inet_pton;
 }
