@@ -34,9 +34,9 @@ KJSO Navigator::get(const UString &p) const
   else if (p == "appName")
     return String("Konqueror");
   else if (p == "appVersion")
-    return String("4.0 (X11; Konqueror; Unix)");
+    return String("5.0 (X11; Konqueror; Unix)");
   else if (p == "userAgent")
-    return String("Mozilla/4.0 (X11; Konqueror; Unix)");
+    return String("Mozilla/5.0 (X11; Konqueror; Unix)");
   else
     return Undefined();
 }
