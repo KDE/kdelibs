@@ -29,7 +29,7 @@ noinst_HEADERS = kjs_html.h kjs_dom.h kjs_window.h kjs_navigator.h \
 libkjs_html_la_SOURCES = kjs_binding.cpp kjs_dom.cpp kjs_html.cpp kjs_window.cpp \
 	kjs_navigator.cpp kjs_proxy.cpp \
 	kjs_css.cpp kjs_range.cpp kjs_traversal.cpp kjs_events.cpp \
-	kjs_views.cpp kjs_debugwin.cpp
+	kjs_views.cpp kjs_debugwin.cpp kjs_mozilla.cpp
 #libkjs_html_la_LDFLAGS = -module -avoid-version $(all_libraries)
 libkjs_html_la_LIBADD = $(top_builddir)/kjs/libkjs.la # ../libkhtml.la
 libkjs_html_la_METASOURCES = AUTO
@@ -41,6 +41,7 @@ hashtables:
 	../../kjs/create_hash_table kjs_css.cpp > kjs_css.lut.h; \
 	../../kjs/create_hash_table kjs_events.cpp > kjs_events.lut.h; \
 	../../kjs/create_hash_table kjs_navigator.cpp > kjs_navigator.lut.h; \
+	../../kjs/create_hash_table kjs_mozilla.cpp > kjs_mozilla.lut.h; \
 	../../kjs/create_hash_table kjs_range.cpp > kjs_range.lut.h; \
 	../../kjs/create_hash_table kjs_traversal.cpp > kjs_traversal.lut.h; \
 	../../kjs/create_hash_table kjs_views.cpp > kjs_views.lut.h; \

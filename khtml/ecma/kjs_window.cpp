@@ -40,6 +40,7 @@
 #include "kjs_proxy.h"
 #include "kjs_window.h"
 #include "kjs_navigator.h"
+#include "kjs_mozilla.h"
 #include "kjs_html.h"
 #include "kjs_range.h"
 #include "kjs_traversal.h"
@@ -171,7 +172,7 @@ Value Screen::getValueProperty(ExecState *exec, int token) const
 const ClassInfo Window::info = { "Window", 0, &WindowTable, 0 };
 
 /*
-@begin WindowTable 86
+@begin WindowTable 87
   closed	Window::Closed		DontDelete|ReadOnly
   crypto	Window::Crypto		DontDelete|ReadOnly
   defaultStatus	Window::DefaultStatus	DontDelete
@@ -235,6 +236,7 @@ const ClassInfo Window::info = { "Window", 0, &WindowTable, 0 };
   print		Window::Print		DontDelete|Function 0
   addEventListener	Window::AddEventListener	DontDelete|Function 3
   removeEventListener	Window::RemoveEventListener	DontDelete|Function 3
+  sidebar	Window::SideBar		DontDelete|ReadOnly
 # Warning, when adding a function to this object you need to add a case in Window::get
 # Event handlers
 # IE also has: onactivate, onbefore/afterprint, onbeforedeactivate/unload, oncontrolselect,
@@ -500,6 +502,8 @@ Value Window::get(ExecState *exec, const Identifier &p) const
       return Number(m_part->frames().count());
     case Name:
       return String(m_part->name());
+    case SideBar:
+      return Value(new MozillaSidebarExtension(exec, m_part));
     case _Navigator:
     case ClientInformation: {
       // Store the navigator in the object so we get the same one each time.
