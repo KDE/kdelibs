@@ -772,7 +772,7 @@ void KSpell::checkList3a (KProcIO *)
 		  // inform application
 		  emit corrected (old, *(--wlIt), lastpos); ++wlIt;
 		}
-	      else
+	      else if( usedialog )
 		{
 		  cwword=word;
 		  dlgon=TRUE;
@@ -780,6 +780,10 @@ void KSpell::checkList3a (KProcIO *)
 		  dialog (word, sugg, SLOT (checkList4()));
 		  return;
 		}
+	      else
+		{
+		  emit misspelling (word, sugg, lastpos);
+ 		}
 	    }
 
 	}
