@@ -57,6 +57,47 @@ KBookmarkManagerPrivate* KBookmarkManager::dptr() const {
 QPtrList<KBookmarkManager>* KBookmarkManager::s_pSelf;
 static KStaticDeleter<QPtrList<KBookmarkManager> > sdbm;
 
+class KBookmarkMap : private KBookmarkGroupTraverser {
+public:
+    KBookmarkMap( KBookmarkManager * );
+    void update();
+    QValueList<KBookmark> find( const KURL &url ) const;
+private:
+    virtual void visit(const KBookmark &);
+    virtual void visitEnter(const KBookmarkGroup &) { ; }
+    virtual void visitLeave(const KBookmarkGroup &) { ; }
+private:
+    typedef QValueList<KBookmark> KBookmarkList;
+    QMap<QString, KBookmarkList> m_bk_map;
+    KBookmarkManager *m_manager;
+};
+
+static KBookmarkMap *s_bk_map = 0;
+
+KBookmarkMap::KBookmarkMap( KBookmarkManager *manager ) { 
+    m_manager = manager;
+} 
+
+void KBookmarkMap::update()
+{
+    m_bk_map.clear();
+    KBookmarkGroup root = m_manager->root();
+    traverse(root);
+}
+
+void KBookmarkMap::visit(const KBookmark &bk) {
+    if (!bk.isSeparator()) {
+        // add bookmark to url map
+        m_bk_map[bk.url().url()].append(bk);
+    }
+}
+
+QValueList<KBookmark> KBookmarkMap::find( const KURL &url ) const
+{
+    return m_bk_map.contains(url.url()) 
+         ? m_bk_map[url.url()] : QValueList<KBookmark>();
+}
+
 KBookmarkManager* KBookmarkManager::managerForFile( const QString& bookmarksFile, bool bImportDesktopFiles )
 {
     if ( !s_pSelf ) {
@@ -601,48 +642,6 @@ void KBookmarkOwner::openBookmarkURL( const QString& url )
 
 void KBookmarkOwner::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
-
-
-class KBookmarkMap : private KBookmarkGroupTraverser {
-public:
-    KBookmarkMap( KBookmarkManager * );
-    void update();
-    QValueList<KBookmark> find( const KURL &url ) const;
-private:
-    virtual void visit(const KBookmark &);
-    virtual void visitEnter(const KBookmarkGroup &) { ; }
-    virtual void visitLeave(const KBookmarkGroup &) { ; }
-private:
-    typedef QValueList<KBookmark> KBookmarkList;
-    QMap<QString, KBookmarkList> m_bk_map;
-    KBookmarkManager *m_manager;
-};
-
-static KBookmarkMap *s_bk_map = 0;
-
-KBookmarkMap::KBookmarkMap( KBookmarkManager *manager ) { 
-    m_manager = manager;
-} 
-
-void KBookmarkMap::update()
-{
-    m_bk_map.clear();
-    KBookmarkGroup root = m_manager->root();
-    traverse(root);
-}
-
-void KBookmarkMap::visit(const KBookmark &bk) {
-    if (!bk.isSeparator()) {
-        // add bookmark to url map
-        m_bk_map[bk.url().url()].append(bk);
-    }
-}
-
-QValueList<KBookmark> KBookmarkMap::find( const KURL &url ) const
-{
-    return m_bk_map.contains(url.url()) 
-         ? m_bk_map[url.url()] : QValueList<KBookmark>();
-}
 
 bool KBookmarkManager::updateAccessMetadata( const QString & url, bool emitSignal )
 {
