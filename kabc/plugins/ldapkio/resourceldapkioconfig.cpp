@@ -223,4 +223,3 @@ void AttributesDialog::mapChanged( int pos )
   }
 }
 
-#include "ldapconfigwidget.moc"
