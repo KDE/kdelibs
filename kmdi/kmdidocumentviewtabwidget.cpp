@@ -15,11 +15,7 @@ KMdiDocumentViewTabWidget::KMdiDocumentViewTabWidget( QWidget* parent, const cha
 {
 	m_visibility = KMdi::ShowWhenMoreThanOneTab;
 	tabBar() ->hide();
-#ifndef Q_WS_WIN //todo
-
 	setHoverCloseButton( true );
-#endif
-
 	connect( this, SIGNAL( closeRequest( QWidget* ) ), this, SLOT( closeTab( QWidget* ) ) );
 }
 
