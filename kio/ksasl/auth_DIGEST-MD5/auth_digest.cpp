@@ -15,7 +15,7 @@
 #include <qstringlist.h>
 #include <qmap.h>
 
-#include <kmdbase.h>
+#include "../../kmdcodec.h"
 #include <kdebug.h>
 #include <kurl.h>
 
