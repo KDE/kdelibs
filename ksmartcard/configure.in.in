@@ -13,14 +13,14 @@ ac_pcsc_includes=NO ac_pcsc_libraries=NO
 pcsc_libraries=""
 pcsc_includes=""
 AC_ARG_WITH(pcsc-dir,
-    [  --with-pcsc-dir=DIR      where the root of PC/SC is installed],
+    [  --with-pcsc-dir=DIR     where the root of PC/SC is installed],
     [  ac_pcsc_includes="$withval"/include
        ac_pcsc_libraries="$withval"/lib
     ])
 
 want_pcsc=yes
 AC_ARG_WITH(pcsc,
-    [  --without-pcsc           disable PC/SC checks],
+    [  --without-pcsc          disable PC/SC checks],
     [want_pcsc=$withval])
 
 if test $want_pcsc = yes; then
