@@ -285,5 +285,19 @@ DOMStringImpl *DOMStringImpl::capitalize()
     return c;
 }
 
+int DOMStringImpl::toInt(bool* ok) const
+{
+    // match \s*[+-]?\d*
+    unsigned i = 0;
+    while (i < l && s[i].isSpace())
+        ++i;
+    if (i < l && (s[i] == '+' || s[i] == '-'))
+        ++i;
+    while (i < l && s[i].isDigit())
+        ++i;
+
+    return QConstString(s, i).string().toInt(ok);
+}
+
 
 
