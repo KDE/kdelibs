@@ -231,10 +231,39 @@ void KStyle::drawKickerHandle(QPainter *, int, int, int, int,
     ;
 }
 
-void KStyle::drawKickerAppletHandle(QPainter *, int, int, int, int,
-                                    const QColorGroup &, QBrush *)
+void KStyle::drawKickerAppletHandle(QPainter *p, int x, int y, int w, int h,
+                                    const QColorGroup &g, QBrush *)
 {
-    ;
+    if (h > w){
+        for(y+= 2; y < h - 2; y++)
+        {
+            p->setPen(g.light());
+            p->drawPoint(0, y++);
+            p->setPen(g.dark());
+            p->drawPoint(1, y++);
+            y++;
+            p->setPen(g.light());
+            p->drawPoint(3, y++);
+            p->setPen(g.dark());
+            p->drawPoint(4, y);
+        }
+    }
+    else
+    {
+        for(x+=2; x < w - 2; x++)
+        {
+            p->setPen(g.light());
+            p->drawPoint(x++, 0);
+            p->setPen(g.dark());
+            p->drawPoint(x++, 1);
+            x++;
+            p->setPen(g.light());
+            p->drawPoint(x++, 3);
+            p->setPen(g.dark());
+            p->drawPoint(x, 4);
+        }
+    }
+        
 }
 
 void KStyle::drawKickerTaskButton(QPainter *, int, int, int, int,
