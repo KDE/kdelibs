@@ -11,12 +11,12 @@
 #include <cstring>
 #include <cstdlib>
 #include <algorithm>
-#include <valarray>
 #include <vector>
 
 #include <qimage.h>
 #include <qbitmap.h>
 #include <qapplication.h>
+#include <qmemarray.h>
 #include <qpaintdevicemetrics.h>
 
 #include "ico.h"
@@ -152,7 +152,8 @@ namespace
         if ( icon.isNull() ) return false;
         icon.setAlphaBuffer( true );
 
-        std::valarray< QRgb > colorTable( QRgb( 0 ), 1 << header.biBitCount );
+        QMemArray< QRgb > colorTable( 1 << header.biBitCount );
+        colorTable.fill( QRgb( 0 ) );
         for ( unsigned i = 0; i < colors; ++i )
         {
             unsigned char rgb[ 4 ];
