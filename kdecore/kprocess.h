@@ -501,8 +501,6 @@ public:
    * Xon/Xoff flow control is off by default.
    *
    * @param useXonXoff true if Xon/Xoff flow control should be used.
-   *
-   * This function should be called before starting the process.   
    */
   void setPtyXonXoff(bool useXonXoff);
 
