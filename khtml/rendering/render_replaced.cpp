@@ -556,7 +556,7 @@ bool RenderWidget::eventFilter(QObject* o, QEvent* e)
             
             pt = element()->getDocument()->view()->contentsToViewport(pt);
             
-            kdDebug(6000)<<"mouse event in RenderWidget with coords (" << pt.x()<<"/"<<pt.y()<<")\n";
+            // kdDebug(6000)<<"mouse event in RenderWidget with coords (" << pt.x()<<"/"<<pt.y()<<")\n";
             
             QMouseEvent me2(me->type(), pt, me->button(), me->state());
             
