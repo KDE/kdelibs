@@ -526,7 +526,6 @@ void RenderObject::printTree(int indent) const
     for(RenderObject* c = firstChild(); c; c = c->nextSibling())
         childcount++;
 
-    if (!isInline() )
     kdDebug()    << ind << renderName()
                  << (childcount ?
                      (QString::fromLatin1("[") + QString::number(childcount) + QString::fromLatin1("]"))
@@ -544,15 +543,15 @@ void RenderObject::printTree(int indent) const
                  << " mk=" << (int)minMaxKnown()
                  << " rmm=" << (int)m_recalcMinMax
 		 << " (" << xPos() << "," << yPos() << "," << width() << "," << height() << ")"
-		 << (isTableCell() ? 
-		    ( QString::fromLatin1(" [row=") + 
+		 << (isTableCell() ?
+		    ( QString::fromLatin1(" [row=") +
 		      QString::number( static_cast<const RenderTableCell *>(this)->row() ) +
-		      QString::fromLatin1(" col=") + 
+		      QString::fromLatin1(" col=") +
 		      QString::number( static_cast<const RenderTableCell *>(this)->col() ) +
-		      QString::fromLatin1(" rowspan=") + 
+		      QString::fromLatin1(" rowspan=") +
 		      QString::number( static_cast<const RenderTableCell *>(this)->rowSpan() ) +
-		      QString::fromLatin1(" colspan=") + 
-		      QString::number( static_cast<const RenderTableCell *>(this)->colSpan() ) + 
+		      QString::fromLatin1(" colspan=") +
+		      QString::number( static_cast<const RenderTableCell *>(this)->colSpan() ) +
 		      QString::fromLatin1("]") ) : QString::null )
 		 << endl;
     RenderObject *child = firstChild();
@@ -925,7 +924,7 @@ void RenderObject::recalcMinMaxWidths()
 	child = child->nextSibling();
     }
 
-    // we need to recalculate, if the contains inline children, as the change could have 
+    // we need to recalculate, if the contains inline children, as the change could have
     // happened somewhere deep inside the child tree
     if ( !isInline() && childrenInline() )
 	m_minMaxKnown = false;
