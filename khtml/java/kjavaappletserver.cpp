@@ -68,7 +68,7 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
         if(jPath[jPath.length()-1] == '/')
           jPath.remove(jPath.length()-1, 1);
 
-        p->setJVMPath( jPath + "/java");
+        p->setJVMPath( jPath + "/bin/java");
     }
     QString extraArgs = config.readEntry( "JavaArgs", "" );
 
