@@ -203,7 +203,7 @@ RenderText::RenderText(DOMStringImpl *_str)
     if(str) str->ref();
 
     fm = 0;
-    
+
     m_selectionState = SelectionNone;
 
 #ifdef DEBUG_LAYOUT

@@ -879,14 +879,15 @@ void KHTMLView::print()
 	// pages without caring about the content. We should do better
 	// in the future, but for the moment this is better than no
 	// printing support
-	
+	kdDebug(6000) << "printing: physical page width = " << metrics.width()
+		      << " height = " << metrics.height() << endl;
 	root->setPrintingMode(true);
 	root->setWidth(metrics.width());
 	root->setMinWidth(metrics.width());
 	root->setMaxWidth(metrics.width());
 	QValueList<int> oldSizes = m_part->fontSizes();
 
-	const int printFontSizes[] = { 6, 7, 8, 10, 12, 14, 18, 24, 
+	const int printFontSizes[] = { 6, 7, 8, 10, 12, 14, 18, 24,
 				       28, 34, 40, 48, 56, 68, 82, 100, 0 };
 	QValueList<int> fontSizes;
 	for ( int i = 0; printFontSizes[i] != 0; i++ )
@@ -895,13 +896,22 @@ void KHTMLView::print()
 	m_part->docImpl()->applyChanges();
 
 	// ok. now print the pages.
-	
+	kdDebug(6000) << "printing: html page width = " << root->width()
+		      << " height = " << root->height() << endl;
+	// if the width is too large to fit on the paper we just scale
+	// the whole thing.
+	int pageHeight = metrics.height();
+	if(root->width() > metrics.width()) {
+	    double scale = ((double) root->width())/((double) metrics.width());
+	    p->scale(1./scale, 1./scale);
+	    pageHeight = (int) (pageHeight*scale);
+	}	    
 	int top = 0;
 	while(top < root->height()) {
 	    if(top > 0) printer->newPage();
 	    root->print(p, 0, top, metrics.width(), metrics.height(), 0, 0);
 	    p->translate(0,-metrics.height());
-	    top += metrics.height();
+	    top += pageHeight;
 	}
 
 	p->end();

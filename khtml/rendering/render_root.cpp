@@ -125,15 +125,18 @@ void RenderRoot::repaintObject(RenderObject *o, int x, int y)
 
 void RenderRoot::updateSize()
 {
+    kdDebug( 6040 ) << renderName() << "(RenderRoot)::updateSize()" << endl;
+    setMinMaxKnown(false);
     calcMinMaxWidth();
-
+    if(m_width < m_minWidth) m_width = m_minWidth;
+    
     updateHeight();
 }
 
 
 void RenderRoot::updateHeight()
 {
-//    kdDebug( 6040 ) << renderName() << "(RenderRoot)::updateSize()" << endl;
+    kdDebug( 6040 ) << renderName() << "(RenderRoot)::updateHeight()" << endl;
     //int oldMin = m_minWidth;
     setLayouted(false);
 

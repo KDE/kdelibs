@@ -268,6 +268,7 @@ KHTMLPart::~KHTMLPart()
   {
     d->m_view->hide();
     d->m_view->viewport()->hide();
+    d->m_view->m_part = 0;
   }
   closeURL();
 

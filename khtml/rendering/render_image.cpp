@@ -49,13 +49,14 @@ RenderImage::RenderImage()
 
 RenderImage::~RenderImage()
 {
+    if(image) image->deref(this);
 }
 
 void RenderImage::setPixmap( const QPixmap &p, CachedObject *o )
 {
     if(o != image)
 	RenderReplaced::setPixmap(p, o);
-    
+
     // Image dimensions have been changed, recalculate layout
     //kdDebug( 6040 ) << "Image: setPixmap" << endl;
     if(p.width() != pixmap.width() || p.height() != pixmap.height())
