@@ -34,8 +34,8 @@
 #include <string.h>
 #include <strings.h>
 
+#include <kglobal.h>
 #include <kcharsets.h>
-#include <kapp.h>
 
 //-----------------------------------------------------------------------------
 
@@ -76,7 +76,7 @@ void BookmarkTokenizer::begin()
 
 void BookmarkTokenizer::write( const QString& str )
 {
-    KCharsets *charsets=KApplication::getKApplication()->getCharsets();
+    KCharsets *charsets=KGlobal::charsets();
     
     if ( str == 0L )
 	return;
@@ -163,11 +163,11 @@ void BookmarkTokenizer::write( const QString& str )
 		       // translated here. I hope noone uses non iso-8859-1
 		       // characters here.
 		       int len=0;
-		       const QString res=charsets->convertTag(src,len).copy();
+		       const QChar res=charsets->fromEntity(src, len);
 		       if ( len > 0 )
 		       {
-			   memcpy(dest,res.ascii(),res.length());
-			   dest+=res.length();
+			   // we should check it's ascii...
+			   *dest++ = (res.unicode() & 0xFF);
 			   src+=len;
 		       }
 		       else

@@ -237,10 +237,10 @@ void KFontChooser::fillCharsetsCombo()
   KCharsets *charsets=KGlobal::charsets();
 
   charsetsCombo->clear();
-  QStrList sets=charsets->displayable(selFont.family().ascii());
+  QStringList sets=charsets->availableCharsetNames(selFont.family());
   charsetsCombo->insertItem( i18n("default") );
-  for(QString set=sets.first();!set.isNull();set=sets.next())
-    charsetsCombo->insertItem( set );
+  for ( QStringList::Iterator it = sets.begin(); it != sets.end(); ++it )
+      charsetsCombo->insertItem( *it );
   charsetsCombo->insertItem( i18n("any") );
 
   QString charset=charsets->name(selFont);
@@ -486,6 +486,9 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.38  1999/06/07 18:21:28  pbrown
+* QLineEdit --> KLineEdit, header cleanup.
+*
 * Revision 1.37  1999/05/29 09:44:26  mario
 * Mario: some small fixes, and optimized bloated code
 * 

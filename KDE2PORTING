@@ -68,6 +68,9 @@ khtmlw has been replaced with khtml.
   locate(filetype, filename) where filetype is what * used to be
   the * in kde_*dir(). locate is defined as a macro to
   KGlobal::dirs()->findResource and defined in kstddirs.h
+
+  generalFont() and fixedFont() are deprecated and will be removed soon.
+  Please use KGlobal::generalFont() and KGlobal::fixedFont() instead.
  
 //////////////////////////////////////////////////////////////////////
 // * KDNDIcon, KDNDDropZone, KDNDWidget
@@ -173,4 +176,25 @@ html-documentation for further informations about using.
 
 automoc has been removed from the admin directory. It has been replaced
 by am_edit which provides a lot of additional features.
+
+////////////////////////////////////////////////////////////////////////
+// * kcharsets
+
+The kcharsets class has been completely rewritten, and most of it has
+vanished, since support for it moved to Qt.
+
+Most applications will only need to replace kapp->getKCharsets() with
+KGlobal::charsets().
+
+For conversion of various input formats to QStrings, please have a
+look at QTextCodec and classes derived from it.
+
+Character entities are now  converted from and to QChars. The name has
+changed from convertTag to fromEntity and toEntity.
+
+To get a font, which can display a certain charset (if such a font
+exists), you can use the KCharsets::setQFont methods. Input is a font and
+a charset. Kcharsets tries to find an output font, which matches the
+input font most closely, but can display the given charset.
+
 
