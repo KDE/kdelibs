@@ -1875,6 +1875,7 @@ QString KHTMLPart::selectedText() const
           case ID_DL:
           case ID_DT:
           case ID_PRE:
+          case ID_DIV:
           case ID_BLOCKQUOTE:
             text += "\n";
             break;
