@@ -88,6 +88,13 @@ namespace KJS {
      */
     static void collect();
     int size() const { return count; }
+
+#ifdef KJS_DEBUG_MEM
+    /**
+     * @internal
+     */
+    bool collecting;
+#endif
   private:
     void privateCollect();
   };

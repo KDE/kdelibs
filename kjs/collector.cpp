@@ -57,10 +57,14 @@ CollectorBlock::~CollectorBlock()
 
 Collector* Collector::curr = 0L;
 
+
 Collector::Collector()
   : root(0L),
     count(0)
 {
+#ifdef KJS_DEBUG_MEM
+  collecting = false;
+#endif
 }
 
 Collector::~Collector()
@@ -126,6 +130,7 @@ void Collector::privateCollect()
 {
 #ifdef KJS_DEBUG_MEM
   printf("collecting %d objects total\n", Imp::count);
+  collecting = true;
 #endif
 
   CollectorBlock *block = root;
@@ -154,6 +159,8 @@ void Collector::privateCollect()
   }
 
   root = 0L;
+
+#ifdef KJS_DEBUG_MEM
+  collecting = false;
+#endif
 }
-
-

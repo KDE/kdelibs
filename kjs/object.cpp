@@ -528,6 +528,7 @@ Imp::Imp()
 Imp::~Imp()
 {
 #ifdef KJS_DEBUG_MEM
+  assert(Collector::current() && Collector::current()->collecting);
   count--;
 #endif
 
