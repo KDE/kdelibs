@@ -1002,6 +1002,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 if ( curchar != '>')
                 {
                     ++src; // discard everything, until we found the end
+                    tquote = IgnoreQuote; // make sure that no quotes get written to dest
                     break;
                 }
 
@@ -1014,7 +1015,9 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 if ( currToken->id == 0 ) //stop if tag is unknown
                 {
                     discard = NoneDiscard;
-                    *dest = QChar::null;
+                    // we really don't want to insert a null char into
+                    // the stream do we? (Dirk)
+                    // *dest = QChar::null;
                     return;
                 }
 
