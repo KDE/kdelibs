@@ -28,6 +28,7 @@
 #include <qdir.h>
 #include <qtextstream.h>
 
+#include <kdebug.h>
 #include "kurl.h"
 #include "kconfigbackend.h"
 #include "kapplication.h"
@@ -139,6 +140,8 @@ bool KDesktopFile::isAuthorizedDesktopFile(const QString& path)
      return true;
   if (dirs->relativeLocation("data", path).startsWith("kdesktop/Desktop"))
      return true;
+     
+  kdWarning() << "Access to '" << path << "' denied because of 'run_desktop_files' restriction." << endl;
   return false;
 }
 
