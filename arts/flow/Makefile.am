@@ -12,7 +12,7 @@ lib_LTLIBRARIES = libartsflow_idl.la libartsflow.la
 
 libartsflow_idl_la_SOURCES = artsflow.cc
 libartsflow_idl_la_LDFLAGS = -no-undefined -version-info 1:0
-libartsflow_idl_la_LIBADD = $(top_builddir)/arts/mcop/libmcop.la
+libartsflow_idl_la_LIBADD = $(top_builddir)/arts/mcop/libmcop.la $(LIBPOSIX4)
 
 libartsflow_la_LIBADD = $(top_builddir)/arts/mcop/libmcop.la libartsflow_idl.la $(LIBAUDIOFILE) $(LIBASOUND) $(LIBAUDIOIO) $(LIBOSSAUDIO) $(LIBAUDIONAS) -lm \
   $(top_builddir)/arts/flow/gsl/libgsl.la

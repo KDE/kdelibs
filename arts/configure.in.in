@@ -98,10 +98,7 @@ AC_DEFUN([AC_CHECK_LIBAUDIOFILE],
 dnl Posix realtime scheduling - this is helpful if you want arts to run with
 dnl higher priority than everthing else
 
-AC_DEFUN([AC_CHECK_REALTIME_SCHED],
-[
-AC_MSG_CHECKING([for posix realtime scheduling support])
-AC_CACHE_VAL(ac_cv_realtime_sched,
+AC_DEFUN([ARTS_TRY_LINK_POSIX_REALTIME],
 [
 AC_TRY_LINK([
 #include <sched.h>
@@ -109,11 +106,28 @@ AC_TRY_LINK([
 [
 sched_getscheduler(0);
 ],
-ac_cv_realtime_sched=yes,
-ac_cv_realtime_sched=no)
+arts_realtime_sched=yes,
+arts_realtime_sched=no)
 ])
-AC_MSG_RESULT($ac_cv_realtime_sched)
-if eval "test \"`echo $ac_cv_realtime_sched`\" = yes"; then
+
+AC_DEFUN([AC_CHECK_REALTIME_SCHED],
+[
+AC_MSG_CHECKING([for posix realtime scheduling support])
+save_LIBS="$LIBS"
+LIBPOSIX4=""
+ARTS_TRY_LINK_POSIX_REALTIME
+if text "x$arts_realtime_sched" = "xno"; then
+   LIBS="$LIBS -lposix4"
+   ARTS_TRY_LINK_POSIX_REALTIME
+   if test "x$arts_realtime_sched" = "xyes"; then
+      LIBPOSIX4="-lposix4"
+   fi
+fi
+LIBS="$save_LIBS"
+AC_SUBST(LIBPOSIX4)
+AC_MSG_RESULT($arts_realtime_sched)
+
+if test "x$arts_realtime_sched" = "xyes"; then
   AC_DEFINE(HAVE_REALTIME_SCHED,1,
         [Define if your system supports realtime scheduling])
 fi
@@ -201,7 +215,7 @@ ac_cv_x86_float_int=no)
 AC_LANG_RESTORE
 ])
 AC_MSG_RESULT($ac_cv_x86_float_int)
-if eval "test \"`echo `$ac_cv_x86_float_int\" = yes"; then
+if test "x$ac_cv_x86_float_int" = "xyes"; then
   AC_DEFINE(HAVE_X86_FLOAT_INT,1,
         [Define if you want to use optimized x86 float to int conversion code])
 fi
@@ -225,7 +239,7 @@ ac_cv_x86_sse=yes,
 ac_cv_x86_sse=no)
 ])
 AC_MSG_RESULT($ac_cv_x86_sse)
-if eval "test \"`echo `$ac_cv_x86_sse\" = yes"; then
+if test "x$ac_cv_x86_sse" = "xyes"; then
 	AC_DEFINE(HAVE_X86_SSE,1,
 		[Define if your assembler supports x86 SSE instructions])
 fi
@@ -256,7 +270,7 @@ ac_cv_artsdsp_stdio_emu=no)
 ])
 AC_LANG_RESTORE
 AC_MSG_RESULT($ac_cv_artsdsp_stdio_emu)
-if eval "test \"`echo `$ac_cv_artsdsp_stdio_emu\" = yes"; then
+if test "x$ac_cv_artsdsp_stdio_emu" = "xyes"; then
   AC_DEFINE(HAVE_ARTSDSP_STDIO_EMU,1,
 	[Define if you want to use glibc facilities to emulate stdio accesses in artsdsp])
 fi
