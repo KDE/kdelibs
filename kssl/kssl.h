@@ -95,6 +95,8 @@ public:
   int read(void *buf, int len);
   int write(const void *buf, int len);
 
+  int pending();
+
   KSSLConnectionInfo& connectionInfo();
   KSSLPeerInfo& peerInfo();
 

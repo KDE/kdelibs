@@ -265,6 +265,12 @@ int KSSL::connect(int sock) {
 }
 
 
+int KSSL::pending() {
+  if (!m_bInit) return -1;
+  return d->kossl->SSL_pending(d->m_ssl);
+}
+
+
 int KSSL::read(void *buf, int len) {
 #ifdef HAVE_SSL
   if (!m_bInit) return -1;
