@@ -80,6 +80,8 @@ class QListViewItem;
  * own minimum size. You get the minimum size by using the
  * @ref #minimumSizeHint() or @ref #sizeHint() methods.
  *
+ * Pages that have been added in TreeList, IconList or Tabbed mode can be
+ * removed by simply deleting the page.
  *
  * @short Easy to use widget with many layouts
  * @author Espen Sand (espen@kde.org)

@@ -105,6 +105,10 @@ class KDialogBaseTile;
  * TreeList, Tabbed, Plain, Swallow and IconList faces. KDialogBase uses
  * the @ref KJanusWidget class internally to accomplish this. If you
  * use TreeList, Tabbed or IconList mode, then add pages with @ref addPage().
+ *
+ * Pages that have been added can be removed again by simply deleting 
+ * the page.
+ *
  * If you want complete control of how the dialog contents should look,
  * then you can define a main widget by using @ref setMainWidget(). You
  * only need to set the minimum size of that widget and the dialog will
