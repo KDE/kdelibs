@@ -883,87 +883,41 @@ void KHTMLWidget::parseA( HTMLClueV *_clue, const char *str )
 		vspace_inserted = FALSE;
 		url[0] = '\0';
 		
-		const char *p = str + 3;
-
-		while ( (*p != '\0') && (*p != '>') ) // CC: also recover from missing ">" es 
+		QString s = str + 3;
+		StringTokenizer st( s, " >" );
+		while ( st.hasMoreTokens() )
 		{
+			const char* p = st.nextToken();
+
 			if ( strncasecmp( p, "href=", 5 ) == 0 )
 			{
 				p += 5;
 
-				char buffer[ 1024 ];
-				int j = 0;
-				int i = 0;
-				int quotecntr = 0; 					
-
-				while ( p[i] != '\0' && p[i] !='>' && quotecntr < 2 ) 
-				{
-					if ( p[i] == '\"' )
-					quotecntr++; 
-					else if (( j < 1024 ) && (quotecntr == 1))
-					buffer[ j++ ] = p[ i ];
-					i++;
-				}
-				buffer[j] = 0;
-
-				if ( buffer[0] == '#' )
+				if ( *p == '#' )
 				{// reference
 				    KURL u( actualURL );
-				    u.setReference( buffer + 1 );
+				    u.setReference( p + 1 );
 				    strcpy( url, u.url() );
 				}
-				else if ( strchr( buffer, ':' ) )
+				else if ( strchr( p, ':' ) )
 				{// full URL
-					strcpy( url, buffer );
+					strcpy( url, p );
 				}
 				else
 				{// relative URL
 				    KURL u( baseURL );
-				    KURL u2( baseURL, buffer );
+				    KURL u2( baseURL, p );
 				    strcpy( url, u2.url() );
 				}
-				
-				p += i;
-				if ( *p == ' ' )
-				p++;
 			}
-			if ( strncasecmp( p, "name=", 5 ) == 0 )
+			else if ( strncasecmp( p, "name=", 5 ) == 0 )
 			{
 				p += 5;
 
-				char buffer[ 1024 ];
-				int i = 0;
-				int j = 0;
-				int quotecntr = 0;
-
-				while ( ( p[i] != ' ' && p[i] != '>' ) || (quotecntr == 1) )
-				{
-					if ( p[i] == '\"' )
-					quotecntr++;
-					else if ( j < 1024 )
-					buffer[ j++ ] = p[ i ];
-					i++;
-				}
-				buffer[j] = 0;
-
 				if ( flow == 0 )
-					_clue->append( new HTMLAnchor( buffer ) );
+					_clue->append( new HTMLAnchor( p ) );
 				else
-					flow->append( new HTMLAnchor( buffer ) );
-
-				p += i;
-				if ( *p == ' ' )
-					p++;
-			}
-			else if (*p != '\0')
-			{ 
-				const char *p2 = (const char *)strchr( p, ' ' );
-					// CC: just to avoid a warning in case of broken headers
-				if ( p2 == 0L )
-				    p2 = strchr( p, '>');
-				if (p2 == 0L)
-				    p2 = p+1;
-				p = p2;
+					flow->append( new HTMLAnchor( p ) );
 			}
 		}
 	}

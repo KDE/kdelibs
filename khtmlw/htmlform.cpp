@@ -19,7 +19,11 @@
 
 void HTMLElement::position( int _x, int _y, int , int _height )
 {
-	if ( _y > absY() + ascent || _y + _height < absY() )
+	if ( widget == NULL ) // CC: HTMLHidden does not have a widget...
+		return;
+	
+//	if ( _y > absY() + ascent || _y + _height < absY() )
+	if ( _y > absY() + ascent + descent || _y + _height < absY() )
 	{
 		widget->hide();
 	}
@@ -304,11 +308,14 @@ HTMLHidden::HTMLHidden( const char *n, const char *v )
 
 QString HTMLHidden::encoding()
 {
-	QString _encoding;
+	QString _encoding = "";
 
-	_encoding = encodeString( name() );
-	_encoding += '=';
-	_encoding += encodeString( value() );
+	if ( name().length() )
+	{
+		_encoding = encodeString( name() );
+		_encoding += '=';
+		_encoding += encodeString( value() );
+	}
 	
 	return _encoding;
 }
