@@ -85,7 +85,7 @@ Job::~Job()
 
 void Job::addSubjob(Job *job)
 {
-    kdDebug(7007) << "addSubJob(" << job << ") this = " << this << endl;
+    kdDebug(7007) << "addSubjob(" << job << ") this = " << this << endl;
     subjobs.append(job);
     connect(job, SIGNAL(result(KIO::Job*)),
 	    SLOT(slotResult(KIO::Job*)));
@@ -93,7 +93,7 @@ void Job::addSubjob(Job *job)
 
 void Job::removeSubjob( Job *job )
 {
-    kdDebug(7007) << "removeSubJob(" << job << ") this = " << this << "  subjobs = " << subjobs.count() << endl;
+    kdDebug(7007) << "removeSubjob(" << job << ") this = " << this << "  subjobs = " << subjobs.count() << endl;
     subjobs.remove(job);
     if (subjobs.isEmpty())
     {
@@ -234,6 +234,7 @@ void SimpleJob::slotTotalSize( unsigned long size )
 
 void SimpleJob::slotProcessedSize( unsigned long size )
 {
+  kdDebug(7007) << "SimpleJob::slotProcessedSize " << size << endl;
   emit processedSize( this, size );
 
   // calculate percents
@@ -606,6 +607,7 @@ FileCopyJob::FileCopyJob( const KURL& src, const KURL& dest, int permissions,
           KIO_ARGS << src.path() << dest.path() << (Q_INT8) m_overwrite;
           m_moveJob = new SimpleJob(src, CMD_RENAME, packedArgs, false);
           addSubjob( m_moveJob );
+          connectSubjob( m_moveJob );
        }
        else
        {
@@ -625,17 +627,21 @@ void FileCopyJob::startCopyJob()
     KIO_ARGS << m_src.path() << m_dest.path() << m_permissions << (Q_INT8) m_overwrite;
     m_copyJob = new SimpleJob(m_src, CMD_COPY, packedArgs, false);
     addSubjob( m_copyJob );
+    connectSubjob( m_copyJob );
+}
 
-    connect( m_copyJob, SIGNAL(totalSize( KIO::Job*, unsigned long )),
+void FileCopyJob::connectSubjob( SimpleJob * job )
+{
+    connect( job, SIGNAL(totalSize( KIO::Job*, unsigned long )),
              this, SIGNAL( totalSize(KIO::Job*, unsigned long)) );
 
-    connect( m_copyJob, SIGNAL(processedSize( KIO::Job*, unsigned long )),
+    connect( job, SIGNAL(processedSize( KIO::Job*, unsigned long )),
              this, SIGNAL( processedSize(KIO::Job*, unsigned long)) );
 
-    connect( m_copyJob, SIGNAL(percent( KIO::Job*, unsigned long )),
+    connect( job, SIGNAL(percent( KIO::Job*, unsigned long )),
              this, SIGNAL( percent(KIO::Job*, unsigned long)) );
 
-    connect( m_copyJob, SIGNAL(speed( KIO::Job*, unsigned long )),
+    connect( job, SIGNAL(speed( KIO::Job*, unsigned long )),
              this, SIGNAL( speed(KIO::Job*, unsigned long)) );
 }
 
@@ -648,6 +654,7 @@ void FileCopyJob::startDataPump()
     kdDebug(7007) << "FileCopyJob: m_putJob = " << m_putJob << endl;
     m_putJob->suspend();
     addSubjob( m_getJob );
+    connectSubjob( m_getJob ); // Progress info depends on get
     addSubjob( m_putJob );
     m_getJob->resume(); // Order a beer
 
@@ -657,19 +664,19 @@ void FileCopyJob::startDataPump()
              SLOT( slotDataReq(KIO::Job *, QByteArray&)));
 }
 
-void FileCopyJob::slotData( KIO::Job * job, const QByteArray &data)
+void FileCopyJob::slotData( KIO::Job * , const QByteArray &data)
 {
-   kdDebug(7007) << "FileCopyJob::slotData(" << job << ")" << endl;
-   kdDebug(7007) << " data size : " << data.size() << endl;
+   //kdDebug(7007) << "FileCopyJob::slotData(" << job << ")" << endl;
+   //kdDebug(7007) << " data size : " << data.size() << endl;
    assert(m_putJob);
    m_getJob->suspend();
    m_putJob->resume(); // Drink the beer
    m_buffer = data;
 }
 
-void FileCopyJob::slotDataReq( KIO::Job * job, QByteArray &data)
+void FileCopyJob::slotDataReq( KIO::Job * , QByteArray &data)
 {
-   kdDebug(7007) << "FileCopyJob::slotDataReq(" << job << ")" << endl;
+   //kdDebug(7007) << "FileCopyJob::slotDataReq(" << job << ")" << endl;
    if (m_getJob)
    {
       m_getJob->resume(); // Order more beer

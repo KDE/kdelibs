@@ -416,6 +416,7 @@ namespace KIO {
     protected:
         void startCopyJob();
         void startDataPump();
+        void connectSubjob( SimpleJob * job );
 
         KURL m_src;
         KURL m_dest;
