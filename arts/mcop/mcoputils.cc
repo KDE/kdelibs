@@ -36,12 +36,47 @@
 using namespace std;
 using namespace Arts;
 
+/*
+ * Uglify does the following to strings:
+ *  - keep [A-Za-z0-9-_] characters
+ *  - transform all others in a mime-style hex code, that is for instance
+ *    =3F for a '?' char.
+ *
+ * so uglify("Hello...?") will be "Hello=2E=2E=2E=3F". The resulting name
+ * mangling is compatible with the CSL implementation.
+ */ 
+
+static string uglify(const string& ident)
+{
+	string result;
+
+	for(string::const_iterator p = ident.begin(); p != ident.end(); p++)
+	{
+		if((*p >= 'a' && *p <= 'z') ||
+		   (*p >= 'A' && *p <= 'Z') ||
+		   (*p >= '0' && *p <= '9') ||
+		    *p == '_' || *p == '-')
+		{
+			result += *p;
+		}
+		else
+		{
+			char hex[17] = "0123456789ABCDEF";
+
+			result += '=';
+			result += hex[(*p >> 4) & 0xf];
+			result += hex[*p & 0xf];
+		}
+	}
+	return result;
+}
+
 string MCOPUtils::createFilePath(string name)
 {
 	string logname = "unknown";
 	if(getenv("LOGNAME")) logname = getenv("LOGNAME");
 
-	string tmpdir = "/tmp/mcop-"+logname;
+	string tmpdir = "/tmp/mcop-"+uglify(logname);
 	if(mkdir(tmpdir.c_str(),0700) != 0 && errno != EEXIST)
 		arts_fatal("can't create %s (%s)", tmpdir.c_str(),strerror(errno));
 
