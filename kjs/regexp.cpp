@@ -29,7 +29,7 @@
 using namespace KJS;
 
 RegExp::RegExp(const UString &p, int f)
-  : pattern(p), flgs(f), m_notEmpty(false)
+  : pat(p), flgs(f), m_notEmpty(false)
 {
   // JS regexps can contain Unicode escape sequences (\uxxxx) which
   // are rather uncommon elsewhere. As our regexp libs don't understand

@@ -402,7 +402,7 @@ namespace KIO {
          * @param emitResultIfLast if this was the last subjob, emit result,
          *                         i.e. terminate this job.
          */
-        virtual void removeSubjob( Job *job, bool mergeMetaData, bool emitResultIfLast ); // KDE4: merge with above, with =true to both
+        void removeSubjob( Job *job, bool mergeMetaData, bool emitResultIfLast ); // KDE4: merge with above, with =true to both
 
         /**
          * Utility function for inherited jobs.

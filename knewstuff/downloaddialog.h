@@ -57,6 +57,7 @@ class Engine;
 class KDE_EXPORT DownloadDialog : public KDialogBase
 {
     Q_OBJECT
+    struct Private;
   public:
     /**
       Constructor.
@@ -226,9 +227,8 @@ class KDE_EXPORT DownloadDialog : public KDialogBase
     QMap<KIO::Job*, Provider*> m_jobs;
     QMap<KIO::Job*, QString> m_data;
     QString m_filter;
-    QString m_providerlist;
     Engine *m_engine;
-    QWidget *m_page;
+    Private *d;
 };
 
 }

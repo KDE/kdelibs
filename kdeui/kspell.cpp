@@ -132,8 +132,11 @@ static bool determineASpellV6()
   FILE *fs = popen("aspell -v", "r");
   if (fs)
   {
+    // Close textstream before we close fs
+    {
     QTextStream ts(fs, IO_ReadOnly);
     result = ts.read().stripWhiteSpace();
+    }
     pclose(fs);
   }
 

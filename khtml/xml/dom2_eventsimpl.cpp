@@ -730,16 +730,10 @@ int TextEventImpl::keyCode() const
     if (!m_keyEvent)
         return 0;
 
-    switch(m_virtKeyVal) {
-        // ### probably true for all DOM_VK_* codes
-        case DOM_VK_LEFT:
-        case DOM_VK_RIGHT:
-        case DOM_VK_UP:
-        case DOM_VK_DOWN:
-            return m_virtKeyVal;
-        default:
-            return QChar( charCode() ).upper().unicode();
-    }
+    if (m_virtKeyVal != DOM_VK_UNDEFINED)
+        return m_virtKeyVal;
+    else
+        return QChar( charCode() ).upper().unicode();
 }
 
 int TextEventImpl::charCode() const

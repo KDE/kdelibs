@@ -157,6 +157,7 @@ PlastikStyle::PlastikStyle() : KStyle( AllowMenuTransparency, ThreeButtonScrollB
     flatMode(false)
 {
     hoverWidget = 0;
+    hoverTab = 0;
 
     horizontalDots = 0;
     verticalDots = 0;

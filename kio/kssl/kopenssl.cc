@@ -196,6 +196,7 @@ static int (*K_X509_REQ_sign)(X509_REQ*, EVP_PKEY*, const EVP_MD*) = 0L;
 static int (*K_X509_NAME_add_entry_by_txt)(X509_NAME*, char*, int, unsigned char*, int, int, int) = 0L;
 static X509_NAME *(*K_X509_NAME_new)() = 0L;
 static int (*K_X509_REQ_set_subject_name)(X509_REQ*,X509_NAME*) = 0L;
+static unsigned char *(*K_ASN1_STRING_data)(ASN1_STRING*) = 0L;
 #endif
 }
 
@@ -475,6 +476,7 @@ KConfig *cfg;
       K_X509_NAME_add_entry_by_txt = (int (*)(X509_NAME*, char*, int, unsigned char*, int, int, int)) _cryptoLib->symbol("X509_NAME_add_entry_by_txt");
       K_X509_NAME_new = (X509_NAME *(*)()) _cryptoLib->symbol("X509_NAME_new");
       K_X509_REQ_set_subject_name = (int (*)(X509_REQ*,X509_NAME*)) _cryptoLib->symbol("X509_REQ_set_subject_name");
+      K_ASN1_STRING_data = (unsigned char *(*)(ASN1_STRING*)) _cryptoLib->symbol("ASN1_STRING_data");
 #endif
    }
 
@@ -1499,8 +1501,8 @@ int KOpenSSLProxy::X509_NAME_add_entry_by_txt(X509_NAME *name, char *field,
 
 
 X509_NAME *KOpenSSLProxy::X509_NAME_new() {
-  if (K_X509_NAME_new) return (K_X509_NAME_new)();
-  return 0L;
+   if (K_X509_NAME_new) return (K_X509_NAME_new)();
+   return 0L;
 }
 
 
@@ -1509,6 +1511,11 @@ int KOpenSSLProxy::X509_REQ_set_subject_name(X509_REQ *req,X509_NAME *name) {
    return -1;
 }
 
+
+unsigned char *KOpenSSLProxy::ASN1_STRING_data(ASN1_STRING *x) {
+   if (K_ASN1_STRING_data) return (K_ASN1_STRING_data)(x);
+   return 0L;
+}
 
 #endif
 

@@ -32,7 +32,7 @@
 
 KCModuleProxyIfaceImpl::KCModuleProxyIfaceImpl( const QCString& name, 
 		KCModuleProxy* const client )
-	: QObject( 0, name ), DCOPObject( name ), 
+	: DCOPObject( name ), QObject( 0, name ),
 		p( const_cast<KCModuleProxy *>( client ))
 { 
 	connect( p, SIGNAL( changed(bool)), 

@@ -57,7 +57,7 @@ public:
 
 	/**
 	 *  Determine if the peer's certificate matches the address set with
-	 * setPeerHost().  Note that this is a match in the "https"
+	 *  setPeerHost().  Note that this is a match in the "https"
 	 *  sense, taking into account, for instance,  wildcards.
 	 * 
 	 *  @return true if it matches
@@ -67,7 +67,7 @@ public:
 
 	/**
 	 *  Determine if the given "common name" matches the address set with
-	 * setPeerHost().  Note that this is a match in the "https"
+	 *  setPeerHost().  Note that this is a match in the "https"
 	 *  sense, taking into account, for instance,  wildcards.
 	 * 
 	 *  @return true if it matches

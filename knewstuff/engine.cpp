@@ -39,12 +39,19 @@
 
 using namespace KNS;
 
+struct Engine::Private
+{
+    bool mIgnoreInstallResult;
+    KNewStuff *mNewStuff;
+};
+
 Engine::Engine( KNewStuff *newStuff, const QString &type,
                 QWidget *parentWidget ) :
   mParentWidget( parentWidget ), mDownloadDialog( 0 ),
   mUploadDialog( 0 ), mProviderDialog( 0 ), mUploadProvider( 0 ),
-  mNewStuff( newStuff ), mType( type )
+  d(new Private), mType( type )
 {
+  d->mNewStuff = newStuff;
   mProviderLoader = new ProviderLoader( mParentWidget );
 
   mNewStuffList.setAutoDelete( true );
@@ -55,15 +62,18 @@ Engine::Engine( KNewStuff *newStuff, const QString &type,
                 mParentWidget( parentWidget ),
 		mDownloadDialog( 0 ), mUploadDialog( 0 ),
 		mProviderDialog( 0 ), mUploadProvider( 0 ),
-                mProviderList( providerList ), mNewStuff( newStuff ),
+                mProviderList( providerList ), d(new Private),
 		mType( type )
 {
+  d->mNewStuff = newStuff;
+  d->mIgnoreInstallResult = false;
   mProviderLoader = new ProviderLoader( mParentWidget );
   mNewStuffList.setAutoDelete( true );
 }
 
 Engine::~Engine()
 {
+  delete d;
   delete mProviderLoader;
 
   delete mUploadDialog;
@@ -180,7 +190,7 @@ void Engine::download( Entry *entry )
   kdDebug(5850) << "Engine::download(entry)" << endl;
 
   KURL source = entry->payload();
-  mDownloadDestination = mNewStuff->downloadDestination( entry );
+  mDownloadDestination = d->mNewStuff->downloadDestination( entry );
 
   if ( mDownloadDestination.isEmpty() ) {
     kdDebug(5850) << "Empty downloadDestination. Cancelling download." << endl;
@@ -205,13 +215,13 @@ void Engine::slotDownloadJobResult( KIO::Job *job )
     return;
   }
 
-  if ( mNewStuff->install( mDownloadDestination ) ) {
-    if ( !mIgnoreInstallResult ) {
+  if ( d->mNewStuff->install( mDownloadDestination ) ) {
+    if ( !d->mIgnoreInstallResult ) {
       KMessageBox::information( mParentWidget,
                                 i18n("Successfully installed hot new stuff.") );
     }
   } else 
-    if ( !mIgnoreInstallResult ){
+    if ( !d->mIgnoreInstallResult ){
       KMessageBox::error( mParentWidget,
                           i18n("Failed to install hot new stuff.") );
   }
@@ -266,7 +276,7 @@ void Engine::upload( Entry *entry )
     mUploadFile = entry->fullName();
     mUploadFile = locateLocal( "data", QString(kapp->instanceName()) + "/upload/" + mUploadFile );
 
-    if ( !mNewStuff->createUploadFile( mUploadFile ) ) {
+    if ( !d->mNewStuff->createUploadFile( mUploadFile ) ) {
       KMessageBox::error( mParentWidget, i18n("Unable to create file to upload.") );
       emit uploadFinished( false );
       return;
@@ -415,5 +425,5 @@ void Engine::slotUploadMetaJobResult( KIO::Job *job )
 
 void Engine::ignoreInstallResult(bool ignore)
 {
-  mIgnoreInstallResult = ignore;
+  d->mIgnoreInstallResult = ignore;
 }

@@ -32,6 +32,7 @@
 #include <time.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#include <stdlib.h>
 
 // Qt includes
 #include <qapplication.h>
@@ -281,6 +282,9 @@ void KResolverResults::virtual_hook( int, void* )
 
 ///////////////////////
 // class KResolver
+
+QStringList *KResolver::idnDomains = 0;
+
 
 // default constructor
 KResolver::KResolver(QObject *parent, const char *name)
@@ -866,9 +870,20 @@ static QStringList splitLabels(const QString& unicodeDomain);
 static QCString ToASCII(const QString& label);
 static QString ToUnicode(const QString& label);
 
+static QStringList *KResolver_initIdnDomains()
+{
+  const char *kde_use_idn = getenv("KDE_USE_IDN");
+  if (!kde_use_idn)
+     kde_use_idn = "at:ch:cn:de:dk:kr:jp:li:no:se:tw";
+  return new QStringList(QStringList::split(':', QString::fromLatin1(kde_use_idn).lower()));
+}
+
 // implement the ToAscii function, as described by IDN documents
 QCString KResolver::domainToAscii(const QString& unicodeDomain)
 {
+  if (!idnDomains)
+    idnDomains = KResolver_initIdnDomains();
+
   QCString retval;
   // RFC 3490, section 4 describes the operation:
   // 1) this is a query, so don't allow unassigned
@@ -876,6 +891,10 @@ QCString KResolver::domainToAscii(const QString& unicodeDomain)
   // 2) split the domain into individual labels, without
   // separators.
   QStringList input = splitLabels(unicodeDomain);
+
+  // Do we allow IDN names for this TLD?
+  if (input.count() && !idnDomains->contains(input[input.count()-1].lower()))
+    return unicodeDomain.latin1(); // No IDN allowed for this TLD
 
   // 3) decide whether to enforce the STD3 rules for chars < 0x7F
   // we don't enforce
@@ -908,6 +927,8 @@ QString KResolver::domainToUnicode(const QString& asciiDomain)
 {
   if (asciiDomain.isEmpty())
     return asciiDomain;
+  if (!idnDomains)
+    idnDomains = KResolver_initIdnDomains();
 
   QString retval;
 
@@ -918,6 +939,10 @@ QString KResolver::domainToUnicode(const QString& asciiDomain)
   // 2) split the domain into individual labels, without
   // separators.
   QStringList input = splitLabels(asciiDomain);
+
+  // Do we allow IDN names for this TLD?
+  if (input.count() && !idnDomains->contains(input[input.count()-1].lower()))
+    return asciiDomain; // No TLDs allowed
 
   // 3) decide whether to enforce the STD3 rules for chars < 0x7F
   // we don't enforce

@@ -1,3 +1,10 @@
+2005-02-27  Harri Porten  <porten@kde.org>
+
+        * xml/dom2_eventsimpl.cpp: returning meaningful keyCode() values
+        for "special" keys
+
+        * dom/dom2_events.cpp: make which() equivalent to keyCode() 
+
 2005-02-20  Germain Garand  <germain@ebooksfrance.org>
 
         * html/html_formimpl.cpp (FocusHandleWidget::focusNextPrev): TextEdit

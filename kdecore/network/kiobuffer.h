@@ -25,7 +25,7 @@
 #ifndef KIOBUFFER_H
 #define KIOBUFFER_H
 
-#include <qglobal.h>
+#include <qcstring.h>
 
 #include <kdelibs_export.h>
 

@@ -51,6 +51,7 @@ class ProviderDialog;
 class KDE_EXPORT Engine : public QObject
 {
     Q_OBJECT
+    struct Private;
   public:
     /**
       Constructor.
@@ -177,11 +178,9 @@ class KDE_EXPORT Engine : public QObject
     QString mPreviewFile;
     QString mProviderList;
 
-    KNewStuff *mNewStuff;
+    Private* d;
 
     QString mType;
-    
-    bool mIgnoreInstallResult;
 };
 
 }

@@ -115,7 +115,7 @@ public:
 				SelfSigned, ErrorReadingRoot, NoSSL,
 				Revoked, Untrusted, SignatureFailed,
 				Rejected, PrivateKeyFailed, InvalidHost, 
-				Irrelevant 
+				Irrelevant, SelfSignedChain 
 				};
 				
 	enum KSSLPurpose {      None=0, SSLServer=1, SSLClient=2, 
@@ -231,6 +231,12 @@ public:
 	 *  @return true if it is valid
 	 */
 	bool isValid(KSSLPurpose p);
+
+	/**
+	 *  The alternate subject name.
+	 *  @return string list with subjectAltName
+	 */
+	QStringList subjAltNames() const;
 
 	/**
 	 *  Check if this is a valid certificate.  Will use cached data.

@@ -773,6 +773,8 @@ bool KFileItem::cmp( const KFileItem & item )
 
 void KFileItem::assign( const KFileItem & item )
 {
+    if ( this == &item )
+        return;
     m_entry = item.m_entry;
     m_url = item.m_url;
     m_bIsLocalURL = item.m_bIsLocalURL;
@@ -795,6 +797,7 @@ void KFileItem::assign( const KFileItem & item )
     // note: m_extra is NOT copied, as we'd have no control over who is
     // deleting the data or not.
 
+    delete d; d = 0;
     // We had a mimetype previously (probably), so we need to re-determine it
     determineMimeType();
     if (item.d) {

@@ -926,6 +926,8 @@ private:
   KResolverPrivate* d;
   friend class KResolverResults;
   friend class ::KNetwork::Internal::KResolverManager;
+  
+  static QStringList *idnDomains;
 };
 
 }				// namespace KNetwork
