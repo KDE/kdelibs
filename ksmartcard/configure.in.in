@@ -73,10 +73,10 @@ AC_PATH_PCSC
 if test "$ac_pcsc_includes" = NO || test "$ac_pcsc_libraries" = NO; then
   SMARTCARDDIR=
   AC_SUBST(SMARTCARDDIR)
-  AC_MSG_RESULT([PC/SC was not found.  Smartcard support disabled.])
+  AC_MSG_RESULT([not found.  Smartcard support disabled.])
 else
   SMARTCARDDIR="kardlib kardsvc"
   AC_SUBST(SMARTCARDDIR)
-  AC_MSG_RESULT([Found.  Smartcard support enabled.])
+  AC_MSG_RESULT([found.  Smartcard support enabled.])
 fi
 
