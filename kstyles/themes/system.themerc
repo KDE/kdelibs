@@ -8,10 +8,11 @@ XShift=1
 YShift=1
 
 [PushButtonDown]
-Background=171,171,191
-Gradient=ReverseBevel
-GradientLow=171,171,191
-GradientHigh=233,233,253
+Background=224,212,201
+Gradient=Diagonal
+BackGround=214,192,181
+GradientLow=214,192,181
+GradientHigh=244,232,221
 
 [HScrollGroove]
 Pixmap=darkgraytexture.png
@@ -38,7 +39,7 @@ GradientLow=171,171,171
 #GradientHigh=170,196,234
 #GradientLow=123,139,162
 #Gradient=Vertical
-Background=206,172,148
+Background=214,192,181
 Foreground=0,0,0
 Border=0
 Highlight=0
