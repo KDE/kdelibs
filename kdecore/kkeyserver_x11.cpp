@@ -96,6 +96,16 @@ static const SymName g_rgSymNames[] = {
 	{ XK_Prior,        I18N_NOOP("PageUp") },
 	{ XK_Next,         I18N_NOOP("PageDown") },
 #ifdef sun
+	{ XK_F11,          I18N_NOOP("Stop") },
+	{ XK_F12,          I18N_NOOP("Again") },
+	{ XK_F13,          I18N_NOOP("Props") },
+	{ XK_F14,          I18N_NOOP("Undo") },
+	{ XK_F15,          I18N_NOOP("Front") },
+	{ XK_F16,          I18N_NOOP("Copy") },
+	{ XK_F17,          I18N_NOOP("Open") },
+	{ XK_F18,          I18N_NOOP("Paste") },
+	{ XK_F19,          I18N_NOOP("Find") },
+	{ XK_F20,          I18N_NOOP("Cut") },
 	{ XK_F22,          I18N_NOOP("Print") },
 #endif
 	{ 0, 0 }
@@ -362,6 +372,7 @@ bool Sym::initQt( int keyQt )
 
 bool Sym::init( const QString& s )
 {
+	// If it's a single character, get unicode value.
 	if( s.length() == 1 ) {
 		m_sym = s[0].lower().unicode();
 		return true;
@@ -407,10 +418,10 @@ int Sym::qt() const
 
 QString Sym::toString( bool bUserSpace ) const
 {
-	// If it's a unicode character,
 	if( m_sym == 0 )
 		return QString::null;
 
+	// If it's a unicode character,
 	else if( m_sym < 0x3000 ) {
 		QChar c = QChar(m_sym).upper();
 		// Print all non-space characters directly when output is user-visible.
