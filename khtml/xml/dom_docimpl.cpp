@@ -2090,6 +2090,8 @@ EventImpl *DocumentImpl::createEvent(const DOMString &eventType, int &exceptionc
         return new UIEventImpl();
     else if (eventType == "MouseEvents")
         return new MouseEventImpl();
+    else if (eventType == "TextEvents")
+        return new TextEventImpl();
     else if (eventType == "MutationEvents")
         return new MutationEventImpl();
     else if (eventType == "HTMLEvents" || eventType == "Events")
