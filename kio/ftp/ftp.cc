@@ -825,9 +825,12 @@ void Ftp::createUDSEntry( FtpEntry * e, UDSEntry & entry )
   atom.m_str = e->owner;
   entry.append( atom );
 
-  atom.m_uds = UDS_GROUP;
-  atom.m_str = e->group;
-  entry.append( atom );
+  if ( !e->group.isEmpty() )
+  {
+    atom.m_uds = UDS_GROUP;
+    atom.m_str = e->group;
+    entry.append( atom );
+  }
 
   if ( !e->link.isEmpty() )
   {
@@ -1049,12 +1052,25 @@ FtpEntry* Ftp::ftpParseDir( char* buffer )
 	    if ( strchr( p_size, ',' ) != 0L )
 	      if ((p_size = strtok(NULL," ")) == 0)
 		return 0L;
-	    if ((p_date_1 = strtok(NULL," ")) != 0)
+
+            // Check whether the size we just read was really the size
+            // or a month (this happens when the server lists no group)
+            // Test on sunsite.uio.no, for instance
+            if ( !isdigit( *p_size ) )
+            {
+              p_size = p_group;
+              p_date_1 = p_size;
+              p_group = 0;
+            }
+            else
+              p_date_1 = strtok(NULL," ");
+
+            if ( p_date_1 != 0 )
 	      if ((p_date_2 = strtok(NULL," ")) != 0)
 		if ((p_date_3 = strtok(NULL," ")) != 0)
-		  if ((p_name = strtok(NULL,"\r\n")) != 0)
-		  {
-		    if ( p_access[0] == 'l' )
+                  if ((p_name = strtok(NULL,"\r\n")) != 0)
+                  {
+                    if ( p_access[0] == 'l' )
 		    {
 		      tmp = p_name;
 		      int i = tmp.findRev( " -> " );
@@ -1174,8 +1190,8 @@ FtpEntry* Ftp::ftpParseDir( char* buffer )
                     //kDebugInfo( 7102, asctime( tmptr ) );
                     de.date = mktime( tmptr );
 		    return( &de );
-		  }
-	  }
+                  }
+          }
   return 0L;
 }
 
