@@ -3581,7 +3581,8 @@ QImage KImageEffect::oilPaint(QImage &src, int /*radius*/)
 
 QImage KImageEffect::oilPaintConvolve(QImage &src, double radius)
 {
-    unsigned long count, *histogram;
+    unsigned long count /*,*histogram*/;
+    unsigned long histogram[256];
     unsigned int k;
     int width;
     int x, y, mx, my, sx, sy;
@@ -3598,12 +3599,13 @@ QImage KImageEffect::oilPaintConvolve(QImage &src, double radius)
         qWarning("KImageEffect::oilPaintConvolve(): Image is smaller than radius!");
         return(dest);
     }
+    /*
     histogram = (unsigned long *)malloc(256*sizeof(unsigned long));
     if(!histogram){
         qWarning("KImageEffect::oilPaintColvolve(): Unable to allocate memory!");
         return(dest);
     }
-
+    */
     unsigned int **jumpTable = (unsigned int **)src.jumpTable();
     for(y=0; y < dest.height(); ++y){
         sy = y-(width/2);
@@ -3611,6 +3613,7 @@ QImage KImageEffect::oilPaintConvolve(QImage &src, double radius)
         for(x=0; x < dest.width(); ++x){
             count = 0;
             memset(histogram, 0, 256*sizeof(unsigned long));
+            //memset(histogram, 0, 256);
             sy = y-(width/2);
             for(mcy=0; mcy < width; ++mcy, ++sy){
                 my = sy < 0 ? 0 : sy > src.height()-1 ?
@@ -3636,7 +3639,7 @@ QImage KImageEffect::oilPaintConvolve(QImage &src, double radius)
             *q++ = (*s);
         }
     }
-    liberateMemory((void **)histogram);
+    /* liberateMemory((void **)histogram); */
     return(dest);
 }
 
