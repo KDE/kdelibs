@@ -743,7 +743,7 @@ bool FileProtocol::createUDSEntry( const QString & filename, const QCString & pa
 		atom.m_str = user->pw_name;
 	    }
 	    else
-		atom.m_str = "???";
+		atom.m_str = QString::number( uid );
 	}
 	else
 	    atom.m_str = *temp;
@@ -759,7 +759,7 @@ bool FileProtocol::createUDSEntry( const QString & filename, const QCString & pa
 		atom.m_str = grp->gr_name;
 	    }
 	    else
-		atom.m_str = "???";
+		atom.m_str = QString::number( gid );
 	}
 	else
 	    atom.m_str = *temp;
