@@ -463,18 +463,16 @@ namespace KJS {
     Imp *proto;
     static const TypeInfo info;
 
-    // reserved for memory managment - currently used as flags for garbage collection
-    // (prev != 0) = marked, (next != 0) = created, (next != this) = created and gc allowed
+    // reserved for memory managment
     Imp *prev, *next;
     // for future extensions
     class ImpInternal;
     ImpInternal *internal;
 
-    void setMarked(bool m);
-    void setGcAllowed(bool a);
-    bool gcAllowed() const;
-    void setCreated(bool c);
-    bool created() const;
+    // flags for garbage collection
+    bool gc_created : 1;
+    bool gc_allowed : 1;
+    bool gc_marked : 1;
   };
 
   /**

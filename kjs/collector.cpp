@@ -98,9 +98,8 @@ void* Collector::allocate(size_t s)
   void *m = malloc(s);
 
   // hack to ensure obj is protected from GC before any constructors are run
-  // (prev = marked, next = gcallowed)
-  static_cast<Imp*>(m)->prev = 0;
-  static_cast<Imp*>(m)->next = 0;
+  static_cast<Imp*>(m)->gc_marked = false;
+  static_cast<Imp*>(m)->gc_allowed = false;
 
   if (!root) {
     root = new CollectorBlock(BlockSize);
@@ -160,7 +159,7 @@ void Collector::collect()
     assert(r);
     for (int i = 0; i < block->size; i++, r++)
       if (*r) {
-        (*r)->setMarked(false);
+        (*r)->gc_marked = false;
       }
     block = block->next;
   }
@@ -181,7 +180,7 @@ void Collector::collect()
     Imp **r = (Imp**)block->mem;
     assert(r);
     for (int i = 0; i < block->size; i++, r++)
-      if (*r && (*r)->created() && ((*r)->refcount || !(*r)->gcAllowed()) && !(*r)->marked())
+      if (*r && (*r)->gc_created && ((*r)->refcount || !(*r)->gc_allowed) && !(*r)->gc_marked)
         (*r)->mark();
     block = block->next;
   }
@@ -192,7 +191,7 @@ void Collector::collect()
     Imp **r = (Imp**)block->mem;
     int del = 0;
     for (int i = 0; i < block->size; i++, r++) {
-      if (*r && ((*r)->refcount == 0) && !(*r)->marked() && (*r)->gcAllowed()) {
+      if (*r && ((*r)->refcount == 0) && !(*r)->gc_marked && (*r)->gc_allowed) {
 	// emulate destructing part of 'operator delete()'
 	(*r)->~Imp();
 	free(*r);

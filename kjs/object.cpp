@@ -86,7 +86,7 @@ KJSO::KJSO(Imp *d)
 
   if (rep) {
     rep->ref();
-    rep->setGcAllowed(true);
+    rep->gc_allowed = true;
   }
 }
 
@@ -99,7 +99,7 @@ KJSO::KJSO(const KJSO &o)
   rep = o.rep;
   if (rep) {
     rep->ref();
-    rep->setGcAllowed(true);
+    rep->gc_allowed = true;
   }
 }
 
@@ -110,7 +110,7 @@ KJSO& KJSO::operator=(const KJSO &o)
   rep = o.rep;
   if (rep) {
     rep->ref();
-    rep->setGcAllowed(true);
+    rep->gc_allowed = true;
   }
 
   return *this;
@@ -567,7 +567,7 @@ int List::count = 0;
 Imp::Imp()
   : refcount(0), prop(0), proto(0)
 {
-  setCreated(true);
+  gc_created = true;
 #ifdef KJS_DEBUG_MEM
   count++;
 #endif
@@ -851,7 +851,7 @@ KJSO Imp::defaultValue(Type hint) const
 
 void Imp::mark(Imp*)
 {
-  setMarked(true);
+  gc_marked = true;
 
   if (proto && !proto->marked())
     proto->mark();
@@ -866,7 +866,7 @@ void Imp::mark(Imp*)
 
 bool Imp::marked() const
 {
-  return prev;
+  return gc_marked;
 }
 
 void Imp::setPrototype(const KJSO& p)
@@ -901,33 +901,6 @@ void Imp::operator delete(void*, size_t)
 void Imp::operator delete(void*)
 {
   // Do nothing. So far.
-}
-
-void Imp::setMarked(bool m)
-{
-  prev = m ? this : 0L;
-}
-
-void Imp::setGcAllowed(bool a)
-{
-  next = this;
-  if (a)
-    next++;
-}
-
-bool Imp::gcAllowed() const
-{
-  return (next && next != this);
-}
-
-void Imp::setCreated(bool c)
-{
-  next = c ? this : 0L;
-}
-
-bool Imp::created() const
-{
-  return next;
 }
 
 ObjectImp::ObjectImp(Class c) : cl(c), val(0L) { }
