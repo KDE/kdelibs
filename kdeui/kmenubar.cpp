@@ -32,6 +32,7 @@
 #include <kstyle.h>
 #include <kapp.h>
 #include <kwm.h>
+#include <kwin.h>
 
 // From Qt's spacing
 static const int motifBarFrame          = 2;    // menu bar frame width
@@ -156,6 +157,7 @@ bool KMenuBar::eventFilter(QObject *obj, QEvent *ev)
   if ( obj != d->m_parent )
     return false;
 
+  
   // finally, ensure that this is a Show event
   if ( ev->type() != QEvent::Show )
     return false;
@@ -163,7 +165,8 @@ bool KMenuBar::eventFilter(QObject *obj, QEvent *ev)
   hide();
 
   recreate(0, 0, mapToGlobal(QPoint(0,0)), false);
-
+  XSetTransientForHint( qt_xdisplay(), winId(), d->m_parent->
+                        topLevelWidget()->winId());
   KWM::setDecoration(winId(), KWM::noDecoration | KWM::standaloneMenuBar |
                               KWM::noFocus);
   KWM::moveToDesktop(winId(), KWM::currentDesktop());
@@ -174,12 +177,13 @@ bool KMenuBar::eventFilter(QObject *obj, QEvent *ev)
   setFixedWidth(r.width());
 
   QString title(d->m_parent->caption());
-  title.append(" [menu]");
+  title.append(" [kde-internalmenu]");
   setCaption( title );
 
   setFrameStyle( NoFrame );
 
   show();
+  KWin::setActiveWindow(d->m_parent->winId());
   return false;
 }
 #include "kmenubar.moc"
