@@ -42,7 +42,6 @@
 
 #include <kglobal.h>
 #include <kstddirs.h>
-#include <ltdl.h>
 #include <kio/job.h>
 #include <kmimetype.h>
 #include <kdebug.h>
@@ -115,7 +114,6 @@ public:
   KJSProxy *m_jscript;
   bool m_bJScriptEnabled;
   bool m_bJavaEnabled;
-  bool lt_dl_initialized;
 
   khtml::Settings *m_settings;
 
@@ -182,7 +180,6 @@ KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *pa
 
   d->m_bJScriptEnabled = false;
   d->m_bJavaEnabled = false;
-  d->lt_dl_initialized = false;
 
   d->m_paViewDocument = new KAction( i18n( "View Document Source" ), 0, this, SLOT( slotViewDocumentSource() ), actionCollection(), "viewDocumentSource" );
   d->m_paViewFrame = new KAction( i18n( "View Frame Source" ), 0, this, SLOT( slotViewFrameSource() ), actionCollection(), "viewFrameSource" );
@@ -315,34 +312,13 @@ KJSProxy *KHTMLPart::jScript()
 
   if ( !d->m_jscript )
   {
-    if(!d->lt_dl_initialized)
-    {
-      lt_dlinit();
-      d->lt_dl_initialized = true;
-    }
-    // locate module
-    QString module = KGlobal::dirs()->findResource("lib", "kjs_html.la");
-    if(module.isNull())
-    {
-      kdError(300) << "didn't find kjscript module" << endl;
+    KLibrary *lib = KLibLoader::self()->library("kjs_html");
+    if ( !lib )
       return 0;
-    }
-    // try to obtain a handle on the module
-    lt_dlhandle handle = lt_dlopen(module.ascii());
-    if(!handle)
-    {
-
-      kdError(300) << "error loading jscript module: " << lt_dlerror() << endl;
-      return 0;
-    }
     // look for plain C init function
-    lt_ptr_t sym = lt_dlsym(handle, "kjs_html_init");
-    if (lt_dlerror() != 0L)
-    {
-      kdError(300) << "error finding init symbol: " << lt_dlerror() << endl;
+    void *sym = lib->symbol("kjs_html_init");
+    if ( !sym )
       return 0;
-    }
-
     typedef KJSProxy* (*initFunction)(KHTMLPart *);
     initFunction initSym = (initFunction) sym;
     d->m_jscript = (*initSym)(this);
