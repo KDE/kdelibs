@@ -54,18 +54,6 @@ struct FtpEntry
 //===============================================================================
 
 #ifdef  KIO_FTP_PRIVATE_INCLUDE
-/**
-  * This is the physical size of rspbuf. BUT: only the 1st RESP_BUFFER_SIZE
-  * characters are used to store a server reply. If the server reply is 
-  * longer, it gets silently truncated!
-  */
-#define  RESP_BUFFER_SIZE  2048
-/**
-  * Max number of chars returned from ftpReadline(). If the server
-  * sends more all chars until the next new-line are discarded.
-  */
-#define  RESP_READ_LIMIT   1024
-
 class FtpSocket;
 
 class FtpTextReader
@@ -100,6 +88,22 @@ public:
   * Returns true if the last textRead() got an EOF or an error
   */
   bool  textEOF() const         {  return m_bTextEOF;  }
+
+  enum {
+  
+  /**
+  * This is the physical size of m_szText. Only up to textReadLimit
+  * characters are used to store a server reply. If the server reply 
+  * is longer, the stored line gets truncated - see textTooLong()!
+  */
+    textReadBuffer = 2048,
+    
+/**
+  * Max number of chars returned from textLine(). If the server
+  * sends more all chars until the next new-line are discarded.
+  */
+    textReadLimit = 1024
+  };
   
 private:  
   /**
@@ -115,7 +119,7 @@ private:
   /**
    * textRead() fills this buffer with data
    */
-  char m_szText[RESP_BUFFER_SIZE];
+  char m_szText[textReadBuffer];
   
   /**
    * the number of bytes in the current response line
@@ -232,7 +236,7 @@ private:
 class Ftp : public KIO::SlaveBase
 {
   // Ftp()	{}
-	
+
 public:
   Ftp( const QCString &pool, const QCString &app );
   virtual ~Ftp();
@@ -269,7 +273,7 @@ public:
   /**
    * Handles the case that one side of the job is a local file
    */
-  //virtual void copy( const KURL &src, const KURL &dest, int permissions, bool overwrite );
+  virtual void copy( const KURL &src, const KURL &dest, int permissions, bool overwrite );
 
 private:
   // ------------------------------------------------------------------------
@@ -342,6 +346,11 @@ private:
    * Gets the size into m_size.
    */
   bool ftpSize( const QString & path, char mode );
+  
+  /**
+   * Set the current working directory, but only if not yet current
+   */
+  bool ftpFolder(const QString& path, bool bReportError);
 
   /**
    * Runs a command on the ftp server like "list" or "retr". In contrast to
@@ -367,6 +376,9 @@ private:
   
   /**
    * Send "TYPE I" or "TYPE A" only if required, see m_cDataMode.
+   *
+   * Use 'A' to select ASCII and 'I' to select BINARY mode.  If
+   * cMode is '?' the m_bTextMode flag is used to choose a mode.
    */
   bool ftpDataMode(char cMode);
   
@@ -487,7 +499,7 @@ private:
    * @param sCopyFile   path of the local source file
    * @return 0 for success, -1 for server error, -2 for client error
    */
-  //StatusCode ftpCopyPut(int& iError, int& iCopyFile, QString sCopyFile, const KURL& url, int permissions, bool overwrite);
+  StatusCode ftpCopyPut(int& iError, int& iCopyFile, QString sCopyFile, const KURL& url, int permissions, bool overwrite);
   
   /**
    * helper called from copy() to implement FTP -> FILE transfers
@@ -497,7 +509,7 @@ private:
    * @param sCopyFile   path of the local destination file
    * @return 0 for success, -1 for server error, -2 for client error
    */
-  //StatusCode ftpCopyGet(int& iError, int& iCopyFile, QString sCopyFile, const KURL& url, int permissions, bool overwrite);
+  StatusCode ftpCopyGet(int& iError, int& iCopyFile, QString sCopyFile, const KURL& url, int permissions, bool overwrite);
 
 private: // data members
     
@@ -510,6 +522,11 @@ private: // data members
    */
   QString m_initialPath;
   KURL m_proxyURL;
+  
+ /**
+   * the current working directory - see ftpFolder
+   */
+  QString m_currentPath;
 
   /**
    * the status returned by the FTP protocol, set in ftpResponse()
@@ -531,6 +548,12 @@ private: // data members
    * true if logged on (m_control should also be non-NULL)
    */
   bool m_bLoggedOn;
+
+  /**
+   * true if a "textmode" metadata key was found by ftpLogin(). This
+   * switches the ftp data transfer mode from binary to ASCII.
+   */
+  bool m_bTextMode;
   
   /**
    * true if a data stream is open, used in closeConnection().
@@ -546,8 +569,7 @@ private: // data members
   
   bool m_bPasv;
   bool m_bUseProxy;
-  bool m_bPersistent;
-
+  
   KIO::filesize_t m_size;
   static KIO::filesize_t UnknownSize;
 
