@@ -52,6 +52,8 @@ using namespace khtml;
         map["teal"] = "#008080";
         map["fuchsia"] = "#ff00ff";
         map["aqua"] = "#00ffff";
+	map["crimson"] = "#dc143c";
+	map["indigo"] = "#4b0082";
     };
 };
 
