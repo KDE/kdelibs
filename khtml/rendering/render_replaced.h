@@ -81,7 +81,7 @@ public slots:
     void slotWidgetDestructed();
 
 protected:
-    void setQWidget(QWidget *widget, bool show = true);
+    void setQWidget(QWidget *widget);
     QScrollView *m_view;
 public:
     QWidget *m_widget;

@@ -299,7 +299,7 @@ RenderCheckBox::RenderCheckBox(QScrollView *view,
     b->setAutoMask(true);
     b->setBackgroundColor(element->style()->backgroundColor());
     b->setMouseTracking(true);
-    setQWidget(b, false);
+    setQWidget(b);
     b->installEventFilter(this);
     connect(b,SIGNAL(stateChanged(int)),this,SLOT(slotStateChanged(int)));
 }
@@ -325,7 +325,7 @@ RenderRadioButton::RenderRadioButton(QScrollView *view,
     b->setAutoMask(true);
     b->setMouseTracking(true);
     b->setBackgroundColor(element->style()->backgroundColor());
-    setQWidget(b, false);
+    setQWidget(b);
     b->installEventFilter(this);
     connect(b, SIGNAL(clicked()), this, SLOT(slotClicked()));
 }
@@ -359,7 +359,7 @@ RenderSubmitButton::RenderSubmitButton(QScrollView *view, HTMLInputElementImpl *
     : RenderButton(view, element)
 {
     QPushButton* p = new QPushButton(view->viewport());
-    setQWidget(p, false);
+    setQWidget(p);
      p->setMouseTracking(true);
      p->installEventFilter(this);
     connect(p, SIGNAL(clicked()), this, SLOT(slotClicked()));
@@ -478,7 +478,7 @@ RenderLineEdit::RenderLineEdit(QScrollView *view, HTMLInputElementImpl *element)
         }
     }
 
-    setQWidget(edit, false);
+    setQWidget(edit);
 }
 
 void RenderLineEdit::slotReturnPressed()
@@ -583,7 +583,7 @@ RenderFileButton::RenderFileButton(QScrollView *view, HTMLInputElementImpl *elem
     w->setStretchFactor(m_edit, 2);
     w->setFocusProxy(m_edit);
 
-    setQWidget(w, false);
+    setQWidget(w);
     m_haveFocus = false;
 }
 
@@ -731,9 +731,9 @@ RenderSelect::RenderSelect(QScrollView *view, HTMLSelectElementImpl *element)
     m_useListBox = (m_multiple || m_size > 1);
 
     if(m_useListBox)
-        setQWidget(createListBox(), false);
+        setQWidget(createListBox());
     else
-	setQWidget(createComboBox(), false);
+	setQWidget(createComboBox());
 }
 
 void RenderSelect::layout( )
@@ -763,9 +763,9 @@ void RenderSelect::layout( )
             delete m_widget;
 
             if(m_useListBox)
-                setQWidget(createListBox(), false);
+                setQWidget(createListBox());
             else
-                setQWidget(createComboBox(), false);
+                setQWidget(createComboBox());
         }
 
         if (m_useListBox && oldMultiple != m_multiple) {
@@ -1045,7 +1045,7 @@ RenderTextArea::RenderTextArea(QScrollView *view, HTMLTextAreaElementImpl *eleme
     : RenderFormElement(view, element)
 {
     TextAreaWidget *edit = new TextAreaWidget(element->wrap(), view);
-    setQWidget(edit, false);
+    setQWidget(edit);
     edit->installEventFilter(this);
 
     connect(edit,SIGNAL(textChanged()),this,SLOT(slotTextChanged()));

@@ -202,7 +202,7 @@ RenderWidget::~RenderWidget()
     delete m_widget;
 }
 
-void RenderWidget::setQWidget(QWidget *widget, bool show)
+void RenderWidget::setQWidget(QWidget *widget)
 {
     if (widget != m_widget)
     {
@@ -217,8 +217,6 @@ void RenderWidget::setQWidget(QWidget *widget, bool show)
         connect( m_widget, SIGNAL( destroyed()),
                  this, SLOT( slotWidgetDestructed()));
     }
-    if( show )
-	m_widget->show();
 
     setContainsWidget(widget);
 }

@@ -84,9 +84,9 @@ private:
 
 class RenderPart : public RenderWidget
 {
+    Q_OBJECT
 public:
     RenderPart( QScrollView *view );
-    virtual ~RenderPart();
 
     virtual const char *renderName() const { return "RenderPart"; }
 
@@ -110,17 +110,13 @@ class RenderFrame : public RenderPart
     Q_OBJECT
 public:
     RenderFrame( QScrollView *view, DOM::HTMLFrameElementImpl *frame );
-    virtual ~RenderFrame();
 
     virtual const char *renderName() const { return "RenderFrame"; }
 
     DOM::HTMLFrameElementImpl *frameImpl() const { return m_frame; }
 
-    virtual void setWidget( QWidget *widget );
-
 public slots:
     void slotViewCleared();
-    void slotWidgetDestructed();
 
 private:
     DOM::HTMLFrameElementImpl *m_frame;
@@ -132,13 +128,10 @@ class RenderPartObject : public RenderPart
     Q_OBJECT
 public:
     RenderPartObject( QScrollView *view, DOM::HTMLElementImpl *o );
-    virtual ~RenderPartObject();
 
     virtual const char *renderName() const { return "RenderPartObject"; }
 
     virtual void close();
-
-    virtual void setWidget( QWidget *widget );
 
     virtual void layout( );
     virtual void updateWidget();
@@ -150,7 +143,6 @@ public:
 public slots:
     void slotViewCleared();
     void slotWidgetDestructed();
-
 };
 
 };

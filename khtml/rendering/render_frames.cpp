@@ -573,59 +573,49 @@ bool RenderFrameSet::canResize( int _x, int _y, DOM::NodeImpl::MouseEventType ty
 /**************************************************************************************/
 
 RenderPart::RenderPart( QScrollView *view )
-: RenderWidget( view )
+    : RenderWidget( view )
 {
-  // init RenderObject attributes
+    // init RenderObject attributes
     setInline(false);
 
-  m_view = view;
-}
-
-RenderPart::~RenderPart()
-{
+    m_view = view;
 }
 
 void RenderPart::setWidget( QWidget *widget )
 {
-  setQWidget(widget);
-  if ( m_widget )
-    m_widget->show();
-  layout();
-  repaint();
+#ifdef DEBUG_LAYOUT
+    kdDebug(6031) << "RenderPart::setWidget()" << endl;
+#endif
+    setQWidget( widget );
+    if(widget->inherits("KHTMLView"))
+        connect( widget, SIGNAL( cleared() ), this, SLOT( slotViewCleared() ) );
+
+    setLayouted( false );
+    setMinMaxKnown( false );
+
+    updateSize();
+
+    //slotViewCleared();
 }
 
 void RenderPart::layout( )
 {
     if ( m_widget )
-        m_widget->resize( m_width, m_height );
+        m_widget->resize( QMIN( m_width, 2000 ), QMIN( m_height, 3072 ) );
 }
 
 void RenderPart::partLoadingErrorNotify()
 {
 }
 
+
 /***************************************************************************************/
 
 RenderFrame::RenderFrame( QScrollView *view, DOM::HTMLFrameElementImpl *frame )
-: RenderPart( view )
+    : RenderPart( view ), m_frame( frame )
 {
-  m_frame = frame;
-}
+    setInline( false );
 
-RenderFrame::~RenderFrame()
-{
-}
-
-void RenderFrame::setWidget( QWidget *widget )
-{
-#ifdef DEBUG_LAYOUT
-    kdDebug(6031) << "RenderFrame::setWidget()" << endl;
-#endif
-    RenderPart::setWidget(widget);
-    slotViewCleared();
-
-    if(widget->inherits("KHTMLView"))
-        connect( widget, SIGNAL( cleared() ), this, SLOT( slotViewCleared() ) );
 }
 
 void RenderFrame::slotViewCleared()
@@ -650,24 +640,15 @@ void RenderFrame::slotViewCleared()
     }
 }
 
-void RenderFrame::slotWidgetDestructed()
-{
-    RenderWidget::slotWidgetDestructed();
-}
-
 /****************************************************************************************/
 
 RenderPartObject::RenderPartObject( QScrollView *view, DOM::HTMLElementImpl *o )
-: RenderPart( view )
+    : RenderPart( view )
 {
-  // init RenderObject attributes
+    // init RenderObject attributes
     setInline(true);
 
-  m_obj = o;
-}
-
-RenderPartObject::~RenderPartObject()
-{
+    m_obj = o;
 }
 
 void RenderPartObject::updateWidget()
@@ -765,8 +746,8 @@ void RenderPartObject::updateWidget()
         params.append( QString::fromLatin1("__KHTML__CODEBASE=\"%1\"").arg( static_cast<ElementImpl *>(o)->getAttribute(ATTR_CODEBASE).string() ) );
 
         part->requestObject( this, url, serviceType, params );
-     } else
-     {
+     }
+     else {
         // render embed object
         url = embed->url;
         serviceType = embed->serviceType;
@@ -796,7 +777,8 @@ void RenderPartObject::updateWidget()
            part->requestObject( this, url, serviceType, embed->param );
         }
      }
-  } else if ( m_obj->id() == ID_EMBED ) {
+  }
+  else if ( m_obj->id() == ID_EMBED ) {
 
      HTMLEmbedElementImpl *o = static_cast<HTMLEmbedElementImpl *>(m_obj);
      url = o->url;
@@ -828,12 +810,11 @@ void RenderPartObject::updateWidget()
 
 }
 
+// ugly..
 void RenderPartObject::close()
 {
-  updateWidget();
-  layout();
-
-  RenderPart::close();
+    updateWidget();
+    RenderPart::close();
 }
 
 
@@ -864,26 +845,9 @@ void RenderPartObject::partLoadingErrorNotify()
     }
 }
 
-
-void RenderPartObject::setWidget( QWidget *w )
-{
-    if(w->inherits("KHTMLView"))
-        connect( w, SIGNAL( cleared() ), this, SLOT( slotViewCleared() ) );
-
-    if ( w && m_width == 0 && m_height == 0 ) {
-      QSize hint = w->sizeHint();
-      m_width = hint.width();
-      m_height = hint.height();
-      m_minWidth = m_maxWidth = m_width;
-  }
-
-  RenderPart::setWidget( w );
-  slotViewCleared(); // WABA ??
-}
-
 void RenderPartObject::layout( )
 {
-    if(layouted()) return;
+    if ( layouted() ) return;
 
     calcWidth();
     calcHeight();
@@ -913,7 +877,7 @@ void RenderPartObject::slotViewCleared()
 	  marginw = m_frame->marginWidth;
 	  marginh = m_frame->marginHeight;
       }
-      view->setFrameStyle(QFrame::NoFrame);
+      view->setFrameStyle(frameStyle);
       view->setVScrollBarMode(scroll);
       view->setHScrollBarMode(scroll);
       if(view->inherits("KHTMLView")) {
@@ -929,7 +893,8 @@ void RenderPartObject::slotViewCleared()
 
 void RenderPartObject::slotWidgetDestructed()
 {
-    RenderWidget::slotWidgetDestructed();
+    RenderPart::slotWidgetDestructed();
 }
+
 
 #include "render_frames.moc"
