@@ -109,7 +109,7 @@ void SmbView::slotReceivedStdout(KProcess*, char *buf, int len)
 void SmbView::init()
 {
 	QString	cmd("nmblookup -M - | grep '<01>' | awk '{print $1}' | xargs nmblookup -A | grep '<1d>' | awk '{print $1}'");
-	m_proc->setExecutable(cmd);
+	*m_proc << cmd;
 	startProcess(GroupListing);
 }
 
@@ -121,14 +121,14 @@ void SmbView::setOpen(QListViewItem *item, bool on)
 		{ // opening group
 			m_current = item;
 			QString	cmd = QString("nmblookup -M %1 -S | grep '<20>' | awk '{print $1}' | xargs -iserv_name smbclient -L serv_name -W %2 %3").arg(item->text(0)).arg(item->text(0)).arg(smbPasswordString(m_login,m_password));
-			m_proc->setExecutable(cmd);
+			*m_proc << cmd;
 			startProcess(ServerListing);
 		}
 		else if (item->depth() == 1)
 		{ // opening server
 			m_current = item;
 			QString	cmd = QString("smbclient -L %1 -W %2 %3").arg(item->text(0)).arg(item->parent()->text(0)).arg(smbPasswordString(m_login,m_password));
-			m_proc->setExecutable(cmd);
+			*m_proc << cmd;
 			startProcess(ShareListing);
 		}
 	}
