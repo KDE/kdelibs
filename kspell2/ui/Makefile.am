@@ -13,5 +13,5 @@ libkspell2_la_SOURCES = kspell2ui.ui dialog.cpp \
 	highlighter.cpp configui.ui configdialog.cpp \
 	configwidget.cpp
 
-libkspell2_la_LDFLAGS = -no-undefined  $(all_libraries)
+libkspell2_la_LDFLAGS = -no-undefined -version-info 1:0:0 $(all_libraries)
 libkspell2_la_LIBADD = ../libkspell2base.la
