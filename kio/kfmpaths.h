@@ -20,30 +20,34 @@
 #ifndef _KFMPATHS_H_
 #define _KFMPATHS_H_
 
-/* This is a little service class for konqueror and kdesktop.
-   It contains only static members and it contains the paths
-   that they need. 
-*/
-
 #include <qstring.h>
 
+/**
+ * This is a little service class for konqueror and kdesktop.
+ * It contains only static members and it contains the paths
+ * that they need. 
+ */
 class KfmPaths
 {
 public:
-  // reads in all paths from kfmrc
+  /**
+   * all this paths end with a '/'
+   */
+  static QString desktopPath() { initStatic(); return *s_desktopPath; }
+  static QString templatesPath() { initStatic(); return *s_templatesPath; }
+  static QString autostartPath() { initStatic(); return *s_autostartPath; }
+  static QString trashPath() { initStatic(); return *s_trashPath; }
+
+private:
+  /**
+   * reads in all paths from kfmrc
+   */
   static void initStatic();
 
-  // all this paths end with a '/'
-  static const QString desktopPath() { return s_desktopPath; }
-  static const QString templatesPath() { return s_templatesPath; }
-  static const QString autostartPath() { return s_autostartPath; }
-  static const QString trashPath() { return s_trashPath; }
-
-protected:
-  static QString s_desktopPath;
-  static QString s_templatesPath;
-  static QString s_autostartPath;
-  static QString s_trashPath;
+  static QString* s_desktopPath;
+  static QString* s_templatesPath;
+  static QString* s_autostartPath;
+  static QString* s_trashPath;
 };
 
 #endif

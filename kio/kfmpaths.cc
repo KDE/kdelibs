@@ -24,37 +24,45 @@
 #include <kapp.h>
 #include <qstring.h>
 
-QString KfmPaths::s_desktopPath = QString::null;
-QString KfmPaths::s_templatesPath = QString::null;
-QString KfmPaths::s_autostartPath = QString::null;
-QString KfmPaths::s_trashPath = QString::null;
+QString* KfmPaths::s_desktopPath = 0;
+QString* KfmPaths::s_templatesPath = 0;
+QString* KfmPaths::s_autostartPath = 0;
+QString* KfmPaths::s_trashPath = 0;
 
 void KfmPaths::initStatic() 
 {
+  if ( s_desktopPath != 0 )
+    return;
+  
+  s_desktopPath = new QString();
+  s_templatesPath = new QString();
+  s_autostartPath = new QString();
+  s_trashPath = new QString();
+
   KSimpleConfig *config = new KSimpleConfig(kapp->localconfigdir()+"/kfmrc", true);
   config->setGroup( "Paths" );
 
   // Desktop Path
-  s_desktopPath = QDir::homeDirPath() + "/Desktop/";
-  s_desktopPath = config->readEntry( "Desktop", s_desktopPath);
-  if ( s_desktopPath.right(1) != "/")
-    s_desktopPath += "/";
+  *s_desktopPath = QDir::homeDirPath() + "/Desktop/";
+  *s_desktopPath = config->readEntry( "Desktop", *s_desktopPath);
+  if ( s_desktopPath->right(1) != "/")
+    *s_desktopPath += "/";
   
   // Templates Path
-  s_templatesPath = s_desktopPath + "Templates/";
-  s_templatesPath = config->readEntry( "Templates" , s_templatesPath);
-  if ( s_templatesPath.right(1) != "/")
-    s_templatesPath += "/";
+  *s_templatesPath = *s_desktopPath + "Templates/";
+  *s_templatesPath = config->readEntry( "Templates" , *s_templatesPath);
+  if ( s_templatesPath->right(1) != "/")
+    *s_templatesPath += "/";
 
   // Autostart Path
-  s_autostartPath = s_desktopPath + "Autostart/";
-  s_autostartPath = config->readEntry( "Autostart" , s_autostartPath);
-  if ( s_autostartPath.right(1) != "/")
-    s_autostartPath += "/";
+  *s_autostartPath = *s_desktopPath + "Autostart/";
+  *s_autostartPath = config->readEntry( "Autostart" , *s_autostartPath);
+  if ( s_autostartPath->right(1) != "/")
+    *s_autostartPath += "/";
 
   // Trash Path
-  s_trashPath = s_desktopPath + "Trash/";
-  s_trashPath = config->readEntry( "Trash" , s_trashPath);
-  if ( s_autostartPath.right(1) != "/")
-    s_autostartPath += "/";
+  *s_trashPath = *s_desktopPath + "Trash/";
+  *s_trashPath = config->readEntry( "Trash" , *s_trashPath);
+  if ( s_autostartPath->right(1) != "/")
+    *s_autostartPath += "/";
 }
