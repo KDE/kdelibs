@@ -161,7 +161,8 @@ KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
   main_widget->setMinimumSize( main_widget->sizeHint() );
   setCentralWidget( main_widget );
 
-  slave = KIO::Scheduler::getConnectedSlave(KURL("ftp://ftp.kde.org"));
+  slave = 0;
+//  slave = KIO::Scheduler::getConnectedSlave(KURL("ftp://ftp.kde.org"));
   KIO::Scheduler::connect(SIGNAL(slaveConnected(KIO::Slave*)),
 	this, SLOT(slotSlaveConnected()));
   KIO::Scheduler::connect(SIGNAL(slaveError(KIO::Slave*,int,const QString&)),
