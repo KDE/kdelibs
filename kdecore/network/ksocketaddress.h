@@ -106,7 +106,7 @@ public:
    * integer types. Instead, treat them as a special type, like
    * a KIpAddress or the system's in_addr.
    *
-   * @param ip4Addr		the IPv4 address
+   * @param ip4addr		the IPv4 address
    */
   inline KIpAddress(Q_UINT32 ip4addr)
   { setAddress(&ip4addr, 4); }

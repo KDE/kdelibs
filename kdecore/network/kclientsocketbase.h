@@ -85,6 +85,9 @@ public:
 public:
   /**
    * Default constructor.
+   *
+   * @param parent	the parent QObject object
+   * @param name	the name of this object
    */
   KClientSocketBase(QObject* parent, const char *name);
 
@@ -231,7 +234,7 @@ public:
    *      object) and call @ref lookup to start it.
    *
    * @par
-   *      The implementation should use the @ref lookupFinished
+   *      The implementation should use the @ref hostFound
    *      signal to be notified of the completion of the lookup process and
    *      then proceed to start the connection itself. Care should be taken
    *      regarding the value of @ref blocking flag.
@@ -444,7 +447,7 @@ signals:
    * This socket is emitted when the socket successfully connects
    * to a remote address.
    *
-   * @param peer	the remote address we did connect to
+   * @param remote	the remote address we did connect to
    */
   void connected(const KResolverEntry& remote);
 

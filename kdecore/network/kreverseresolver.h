@@ -55,7 +55,7 @@ public:
   /**
    * Flags for the reverse resolution.
    *
-   * These flags are used by the @ref reverseResolve static functions for
+   * These flags are used by the reverse resolution functions for
    * setting resolution parameters. The possible values are:
    * @li NumericHost: don't try to resolve the host address to a text form.
    *		Instead, convert the address to its numeric textual representation.
@@ -67,7 +67,7 @@ public:
    * @li NumericScope: for those addresses which have the concept of scope,
    *            resolve using the numeric value instead of the proper scope name.
    * @li ResolutionRequired: normally, when resolving, if the name resolution
-   *            fails, the process then converts the numeric address into its
+   *            fails, the process normally converts the numeric address into its
    *            presentation forms. This flag causes the function to return
    *            with error instead.
    */

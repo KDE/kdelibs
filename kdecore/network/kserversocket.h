@@ -64,29 +64,49 @@ class KServerSocket: public QObject, public KPassiveSocketBase
 public:
   /**
    * Default constructor.
-   * When not specified, the service to bind will be left for the operating system
-   * to randomly select.
+   *
+   * If the binding address isn't changed by setAddress, this socket will
+   * bind to all interfaces on this node and the port will be selected by the
+   * operating system.
+   *
+   * @param parent		the parent QObject object
+   * @param name		the name of this object
    */
   KServerSocket(QObject* parent = 0L, const char *name = 0L);
 
   /**
    * Construct this object specifying the service to listen on.
    *
+   * If the binding address isn't changed by setAddress, this socket will
+   * bind to all interfaces and will listen on the port specified by
+   * @p service.
+   *
    * @param service		the service name to listen on
+   * @param parent		the parent QObject object
+   * @param name		the name of this object
    */
   KServerSocket(const QString& service, QObject* parent = 0L, const char *name = 0L);
 
   /**
    * Construct this object specifying the node and service names to listen on.
    *
+   * If the binding address isn't changed by setAddress, this socket will
+   * bind to the interface specified by @p node and the port specified by
+   * @p service.
+   *
    * @param node		the node to bind to
    * @param service		the service port to listen on
+   * @param parent		the parent QObject object
+   * @param name		the name of this object
    */
   KServerSocket(const QString& node, const QString& service,
 		QObject* parent = 0L, const char *name = 0L);
 
   /**
-   * Destructor.
+   * Destructor. This will close the socket, if open.
+   *
+   * Note, however, that accepted sockets do not get closed when this
+   * object closes.
    */
   ~KServerSocket();
 
@@ -137,7 +157,9 @@ public:
   void setFamily(int families);
 
   /**
-   * Sets the address to bind to.
+   * Sets the address on which we will listen. The port to listen on is given by
+   * @p and we will bind to all interfaces. To let the operating system choose a
+   * port, set the service to "0".
    *
    * @param service		the service name to listen on
    */
@@ -145,7 +167,8 @@ public:
 
   /**
    * @overload
-   * Sets the address to bind to.
+   * Sets the address on which we will listen. This will cause the socket to listen
+   * only on the interface given by @p node and on the port given by @p service.
    *
    * @param node		the node to bind to
    * @param service		the service port to listen on

@@ -323,7 +323,7 @@ public:
    * the socket classes are thread-safe by design, but you should be aware of
    * problems regarding socket creation, connection and destruction in
    * multi-threaded programs. The classes are guaranteed to work while
-   * the socket exists, but it's not wise to call @ref connect in multiple
+   * the socket exists, but it's not wise to call connect in multiple
    * threads. 
    *
    * Also, this mutex must be unlocked before the object is destroyed, which

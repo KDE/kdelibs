@@ -77,6 +77,12 @@ public:
    * and other data.
    *
    * The KSocketAddress @p addr parameter will be deep-copied.
+   *
+   * @param addr	the address that was resolved
+   * @param socktype	the socket type of the resolved address
+   * @param protocol	the protocol of the resolved address
+   * @param canonName	the canonical name of the resolved hostname
+   * @param encodedName	the ASCII-compatible encoding of the hostname
    */
   KResolverEntry(const KSocketAddress& addr, int socktype, int protocol,
 		const QString& canonName = QString::null,
@@ -88,8 +94,12 @@ public:
    *
    * This constructor instead creates an internal KSocketAddress object.
    *
-   * @param sa	the sockaddr structure containing the raw address
+   * @param sa		the sockaddr structure containing the raw address
    * @param salen	the length of the sockaddr structure
+   * @param socktype	the socket type of the resolved address
+   * @param protocol	the protocol of the resolved address
+   * @param canonName	the canonical name of the resolved hostname
+   * @param encodedName	the ASCII-compatible encoding of the hostname
    */
   KResolverEntry(const struct sockaddr *sa, Q_UINT16 salen, int socktype,
 		int protocol, const QString& canonName = QString::null,
@@ -171,7 +181,7 @@ class KResolverResultsPrivate;
  * @brief Name and service resolution results.
  *
  * This object contains the results of a name and service resolution, as
- * those performed by @ref Resolver. It is also a descendant of QValueList, so
+ * those performed by @ref KResolver. It is also a descendant of QValueList, so
  * you may use all its member functions here to access the elements.
  *
  * A KResolverResults object is associated with a resolution, so, in addition
@@ -360,7 +370,7 @@ public:
    *		socket type (i.e., a datagram service in a streaming socket).
    * @li UnsupportedSocketType: The requested socket type is not supported.
    * @li UnknownError: An unknown, unexpected error occurred.
-   * @li SystemError: A system error occurred. See @ref sysError.
+   * @li SystemError: A system error occurred. See @ref systemError.
    * @li Canceled: This request was cancelled by the user.
    */
   enum ErrorCodes
@@ -690,7 +700,7 @@ public:
   /**
    * Returns the string representation of this error code.
    *
-   * @param error	the error code. See @ref ErrorCodes.
+   * @param errorcode	the error code. See @ref ErrorCodes.
    * @param syserror	the system error code associated.
    * @return		the string representation. This is already
    *			i18n'ed.
@@ -773,9 +783,9 @@ public:
    * Note that the encoding is illegible and, thus, should not be presented
    * to the user, except if requested.
    *
-   * @param domain	the domain name to be encoded
+   * @param unicodeDomain	the domain name to be encoded
    * @return the ACE-encoded suitable for DNS queries if successful, a null
-   * QCString if failure.
+   *	     QCString if failure.
    */
   static QCString domainToAscii(const QString& unicodeDomain);
 
@@ -887,7 +897,7 @@ public:
    *
    * Note: the returned QStrList operates on deep copies.
    *
-   * @param portnum		the port number, in host byte-order
+   * @param port		the port number, in host byte-order
    * @param protoname		the protocol it is associated with
    * @return all the service names in a list. The first is the "proper"
    *		name.
