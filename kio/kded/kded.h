@@ -26,6 +26,7 @@
 #include <qstring.h>
 
 #include <dcopclient.h>
+#include <dcopobject.h>
 
 #include <ksycoca.h>
 #include <ksycocatype.h>
@@ -33,12 +34,19 @@
 class KDirWatch;
 
 // No need for this in libkio - apps only get readonly access
-class Kded : public KSycoca
+class Kded : public QObject, DCOPObject, DCOPObjectProxy
 {
   Q_OBJECT
 public:
    Kded(int pollInterval, int NFSPollInterval);
    virtual ~Kded();
+
+   /**
+    * Catch calls to unknown objects.
+    */
+   bool process(const QCString &obj, const QCString &fun, 
+                const QByteArray &data, 
+		QCString &replyType, QByteArray &replyData);
 
    /**
     * process DCOP message.  Only calls to "recreate" are supported at
@@ -78,12 +86,6 @@ protected:
     */
    void readDirectory(const QString& dir, KDirWatch *dirWatch );
    
-   /**
-    * @internal
-    * @return true if building (i.e. if a Kded);
-    */
-   virtual bool isBuilding() { return true; }
-
 protected:
 
    /**

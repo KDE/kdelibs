@@ -25,7 +25,7 @@ kded_la_LDFLAGS = $(all_libraries) -module -avoid-version
 kded_la_LIBADD = $(LIB_KSYCOCA)
 kded_la_SOURCES = kded.cpp kbuildservicetypefactory.cpp \
 			kbuildservicefactory.cpp \
-			kbuildservicegroupfactory.cpp 
+			kbuildservicegroupfactory.cpp kdedmodule.cpp
 
 kbuildsycoca_la_LDFLAGS = $(all_libraries) -module -avoid-version
 kbuildsycoca_la_LIBADD = $(LIB_KSYCOCA)
@@ -48,10 +48,15 @@ kbuildsycoca_SOURCES = dummy.cpp
 
 METASOURCES = AUTO
 
+include_HEADERS = kdedmodule.h
+
 noinst_HEADERS = kbuildsycoca.h kbuildservicetypefactory.h \
 		kbuildservicefactory.h kbuildservicegroupfactory.h \
 		kbuildimageiofactory.h kresourcelist.h \
 		kbuildprotocolinfofactory.h
+
+servicetype_DATA = kdedmodule.desktop
+servicetypedir = $(kde_servicetypesdir)
 
 dummy.cpp:
 	echo > dummy.cpp

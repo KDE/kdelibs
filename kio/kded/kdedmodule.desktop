@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=ServiceType
+X-KDE-ServiceType=KDEDModule
+Comment=KDED Module
+[PropertyDef::X-KDE-Factory]
+Type=QString

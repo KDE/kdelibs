@@ -20,6 +20,7 @@
 #include <qdir.h>
 
 #include "kded.h"
+#include "kdedmodule.h"
 
 #include <kbuildservicetypefactory.h>
 #include <kbuildservicefactory.h>
@@ -44,6 +45,7 @@
 #include <kdebug.h>
 #include <kdirwatch.h>
 #include <kstddirs.h>
+#include <klibloader.h>
 #include <kio/global.h>
 
 static void runBuildSycoca()
@@ -53,9 +55,29 @@ static void runBuildSycoca()
    KApplication::kdeinitExecWait( "kbuildsycoca", args );
 }
 
+class KBuildSycoca : public KSycoca
+{
+public:
+   KBuildSycoca() : KSycoca(true) { }
+
+   static KBuildSycoca* createBuildSycoca() 
+   { 
+      if (_self)
+         delete _self;
+      return new KBuildSycoca();
+   }
+
+   KSycocaFactoryList* factoryList() { return m_lstFactories; }
+
+   /**
+    * return true if building
+    */
+   virtual bool isBuilding() { return true; }
+};
+
 
 Kded::Kded(int pollInterval, int NFSPollInterval)
-  : KSycoca( true ), 
+  : DCOPObject("kbuildsycoca"), DCOPObjectProxy(), 
     m_PollInterval(pollInterval), 
     m_NFSPollInterval(NFSPollInterval)
 {
@@ -76,8 +98,58 @@ Kded::~Kded()
   delete m_pDirWatchNfs;
 }
 
+bool Kded::process(const QCString &obj, const QCString &fun, 
+                   const QByteArray &data,
+                   QCString &replyType, QByteArray &replyData)
+{
+  if (obj == "ksycoca") return false; // Ignore this one.
+
+  KService::Ptr s = KService::serviceByDesktopPath("kded/"+obj+".desktop");
+  if (s && !s->library().isEmpty())
+  {
+qWarning("Loading '%s'", s->name().latin1());
+    // get the library loader instance
+ 
+    KLibLoader *loader = KLibLoader::self();
+
+    QVariant v = s->property("X-KDE-Factory");
+    QString factory = v.isValid() ? v.toString() : QString::null;
+    if (factory.isEmpty())
+      factory = s->library();
+
+    factory = "create_" + factory;
+    QString libname = "libkded_"+s->library(); 
+
+qWarning("Opening '%s'", libname.latin1());
+    KLibrary *lib = loader->library(QFile::encodeName(libname));
+    if (lib)
+    {
+      // get the create_ function
+qWarning("Looking up '%s'", factory.latin1());
+      void *create = lib->symbol(QFile::encodeName(factory));
+
+      if (create)
+      {
+        // create the module
+        KDEDModule* (*func)(const QCString &); 
+        func = (KDEDModule* (*)(const QCString &)) create;
+qWarning("Calling '%s'", factory.latin1());
+        KDEDModule *module = func(obj);
+        if (module)
+        {
+qWarning("Forwarding call to new object.");
+          return module->process(fun, data, replyType, replyData);
+        }
+      }
+    }
+  }
+  return false;
+}
+
 void Kded::build()
 {
+  KBuildSycoca* kbs = KBuildSycoca::createBuildSycoca();
+
   delete m_pDirWatch;
   delete m_pDirWatchNfs;
   m_pDirWatch = new KDirWatch(m_PollInterval);
@@ -102,11 +174,13 @@ void Kded::build()
   //(void) KImageIOFactory::self();
   // Same for KBuildProtocolInfoFactory
 
+  KSycocaFactoryList *factoryList = kbs->factoryList();
+
   // For each factory
-  QListIterator<KSycocaFactory> factit ( *m_lstFactories );
-  for (KSycocaFactory *factory = m_lstFactories->first();
+  QListIterator<KSycocaFactory> factit ( *factoryList );
+  for (KSycocaFactory *factory = factoryList->first();
        factory;
-       factory = m_lstFactories->first() )
+       factory = factoryList->first() )
   {
     // For each resource the factory deals with
     for( KSycocaResourceList::ConstIterator it1 = factory->resourceList()->begin();
@@ -128,8 +202,9 @@ void Kded::build()
          }
       }
     }
-    m_lstFactories->removeRef(factory);
+    factoryList->removeRef(factory);
   }
+  delete kbs;
 }
 
 void Kded::recreate()
