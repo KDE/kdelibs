@@ -1,7 +1,8 @@
 /*
 This file is part of KDE
 
-  Copyright (C) 2000 Waldo Bastian (bastian@kde.org)
+  Copyright (C) 2000 Waldo Bastian <bastian@kde.org>
+  Copyright (C) 2000-2001 Dawit Alemayehu <adawit@kde.org>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -46,19 +47,20 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef QT_NO_WHATSTHIS
 #include <qwhatsthis.h>
 #endif
+#include <qlineedit.h>
 #include <qgroupbox.h>
 #include <qdatetime.h>
 #include <qmessagebox.h>
+#include <qpushbutton.h>
 #include <qradiobutton.h>
 #include <qvbuttongroup.h>
 
 #include <kapp.h>
 #include <kwin.h>
-#include <kdebug.h>
 #include <klocale.h>
 #include <kglobal.h>
 #include <kurllabel.h>
-#include <kbuttonbox.h>
+#include <kiconloader.h>
 
 #include "kcookiejar.h"
 #include "kcookiewin.h"
@@ -70,23 +72,19 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookie* cookie,
     KWin::setState( winId(), NET::StaysOnTop );
     KWin::setOnDesktop(winId(), KWin::currentDesktop());
     setCaption( i18n("Cookie Alert") );
+    setIcon( SmallIcon("cookie") );
 
     // Main widget's layout manager...
-    QVBoxLayout* vlayout = new QVBoxLayout( this );
-    vlayout->setMargin( KDialog::marginHint() );
-    vlayout->setSpacing( KDialog::spacingHint() );
+    QVBoxLayout* vlayout = new QVBoxLayout( this, KDialog::marginHint(), KDialog::spacingHint() );
     vlayout->setResizeMode( QLayout::Fixed );
 
     // Cookie image and message to user
     QHBox* hBox = new QHBox( this );
-    hBox->setSpacing( KDialog::marginHint() );
-
-    QVBox* vBox = new QVBox( hBox );
-    vBox->setSpacing( KDialog::marginHint() );
-    QLabel* icon = new QLabel( vBox );
+    hBox->setSpacing( KDialog::spacingHint() );
+    QLabel* icon = new QLabel( hBox );
     icon->setPixmap( QMessageBox::standardIcon(QMessageBox::Warning, kapp->style().guiStyle()) );
     icon->setAlignment( Qt::AlignCenter );
-    icon->setFixedSize( 2 * icon->sizeHint() );
+    icon->setFixedSize( 2*icon->sizeHint() );
 
     int count = 0;
     KHttpCookie* nextCookie = cookie;
@@ -96,7 +94,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookie* cookie,
         nextCookie = nextCookie->next();
     }
 
-    vBox = new QVBox( hBox );
+    QVBox* vBox = new QVBox( hBox );
     QString txt = (count == 1) ? i18n("You received a cookie from"):
                   i18n("You received %1 cookies from").arg(count);
     QLabel* lbl = new QLabel( txt, vBox );
@@ -151,23 +149,25 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookie* cookie,
         m_btnGrp->setButton( 0 );
 
     // Accept/Reject buttons
-    KButtonBox* bbox = new KButtonBox( this );
-    m_button = bbox->addButton( i18n("&Accept"), this, SLOT(accept()), false );
+    hBox = new QHBox( this );
+    hBox->setSpacing( KDialog::spacingHint() );
+    m_button = new QPushButton( i18n("&Accept"), hBox );
     m_button->setDefault( true );
-    m_button = bbox->addButton( i18n("&Reject"), this, SLOT(reject()), false );
-    bbox->addStretch();
+    connect( m_button, SIGNAL(clicked()), SLOT(accept()) );
+    m_button = new QPushButton( i18n("&Reject"), hBox );
+    connect( m_button, SIGNAL(clicked()), SLOT(reject()) );
 #ifndef QT_NO_ACCEL
     QAccel* a = new QAccel( this );
     a->connectItem( a->insertItem(Qt::Key_Escape), m_button, SLOT(animateClick()) );
 #endif
-    m_button = bbox->addButton(m_showDetails ? i18n("&Details <<"):i18n("&Details >>"),
-                                this, SLOT(slotCookieDetails()), false );
+    m_button = new QPushButton( hBox );
+    m_button->setText( m_showDetails ? i18n("&Details <<"):i18n("&Details >>") );
+    connect( m_button, SIGNAL(clicked()), SLOT(slotCookieDetails()) );
+
 #ifndef QT_NO_WHATSTHIS
-    QWhatsThis::add( m_button, i18n("Click this button to show or hide the detailed "
-                                    "cookie information") );
+    QWhatsThis::add( m_button, i18n("Show/Hide detailed cookie information") );
 #endif
-    bbox->layout();
-    vlayout->addWidget( bbox, 0, Qt::AlignCenter );
+    vlayout->addWidget( hBox, 0, Qt::AlignCenter );
     setFixedSize( sizeHint() );
 }
 
@@ -201,7 +201,6 @@ KCookieAdvice KCookieWin::advice( KCookieJar *cookiejar, KHttpCookie* cookie )
     KCookieAdvice advice = (result==QDialog::Accepted) ? KCookieAccept:KCookieReject;
     cookiejar->defaultRadioButton = m_btnGrp->id( m_btnGrp->selected() );
     cookiejar->showCookieDetails = m_showDetails;
-    kdDebug(7104) << "Show cookie details: " << cookiejar->showCookieDetails << endl;
     switch ( cookiejar->defaultRadioButton )
     {
         case 2:
@@ -221,53 +220,79 @@ KCookieDetail::KCookieDetail( KHttpCookie* cookie, int cookieCount,
                               QWidget* parent, const char* name )
               :QGroupBox( parent, name )
 {
-    QVBoxLayout *vlayout = new QVBoxLayout( this );
-    vlayout->addSpacing( 2 * KDialog::marginHint() );
-    vlayout->setSpacing( KDialog::spacingHint() );
-    vlayout->setMargin( 2 * KDialog::marginHint() );
     setTitle( i18n("Cookie details") );
+    QGridLayout* grid = new QGridLayout( this, 8, 2,
+                                         KDialog::spacingHint(),
+                                         KDialog::marginHint() );
+    grid->addRowSpacing( 0, fontMetrics().lineSpacing() );
+    grid->setColStretch( 1, 3 );
 
-    QString val = cookie->value();
-    m_value = new QLabel( this );
-#ifndef QT_NO_TOOLTIP
-    QToolTip::add( m_value, val );
-#endif
-    val.truncate( 40 );
-    m_value->setText( i18n("Value: %1").arg( val ) );
-    vlayout->addWidget( m_value );
+    //Add the value
+    QLabel* label = new QLabel( i18n("Value:"), this );
+    grid->addWidget( label, 1, 0 );
+    m_value = new QLineEdit( this );
+    m_value->setReadOnly( true );
+    m_value->setText( cookie->value() );
+    m_value->setMaximumWidth( fontMetrics().width('W') * 25 );
+    grid->addWidget( m_value, 1, 1);
 
-    val = cookie->domain();
-    m_domain = new QLabel( i18n("Domain: %1").arg(val.isEmpty()?i18n("unspecified domain", "Unspecified"):val), this );
-    vlayout->addWidget( m_domain );
-
-    m_path = new QLabel( i18n("Path: %1").arg(cookie->path()), this );
-    vlayout->addWidget( m_path );
-
+    label = new QLabel( i18n("Expires:"), this );
+    grid->addWidget( label, 2, 0 );
+    m_expires = new QLineEdit( this );
+    m_expires->setReadOnly( true );
     QDateTime cookiedate;
     cookiedate.setTime_t( cookie->expireDate() );
-    QString sdate = i18n("Expires On: %1").arg( cookie->expireDate() ?
-                   KGlobal::locale()->formatDateTime(cookiedate):i18n("unspecified expiration", "Unspecified") );
-    m_expires = new QLabel( sdate, this );
-    vlayout->addWidget( m_expires );
+    if ( cookie->expireDate() )
+      m_expires->setText( KGlobal::locale()->formatDateTime(cookiedate) );
+    else
+      m_expires->setText( i18n("Not specified") );
+    m_expires->setMaximumWidth(fontMetrics().width('W') * 25 );
+    grid->addWidget( m_expires, 2, 1);
 
-    m_protocol = new QLabel( i18n("Protocol Version: %1").arg(cookie->protocolVersion()), this );
-    vlayout->addWidget( m_protocol );
+    label = new QLabel( i18n("Path:"), this );
+    grid->addWidget( label, 3, 0 );
+    m_path = new QLineEdit( this );
+    m_path->setReadOnly( true );
+    m_path->setText( cookie->path() );
+    m_path->setMaximumWidth( fontMetrics().width('W') * 25 );
+    grid->addWidget( m_path, 3, 1);
 
-    m_secure = new QLabel( i18n("Is Secure: %1").arg(cookie->isSecure() ? i18n("True"):i18n("False")), this );
-    vlayout->addWidget( m_secure );
+    label = new QLabel( i18n("Domain:"), this );
+    grid->addWidget( label, 4, 0 );
+    m_domain = new QLineEdit( this );
+    m_domain->setReadOnly( true );
+    QString val = cookie->domain();
+    m_domain->setText( val.isEmpty()?i18n("Not specified"):val );
+    m_domain->setMaximumWidth( fontMetrics().width('W') * 25 );
+    grid->addWidget( m_domain, 4, 1);
+
+    label = new QLabel( i18n("Is Secure:"), this );
+    grid->addWidget( label, 5, 0 );
+    m_secure = new QLineEdit( this );
+    m_secure->setReadOnly( true );
+    m_secure->setText( cookie->isSecure() ? i18n("True"):i18n("False") );
+    m_secure->setMaximumWidth( fontMetrics().width('W') * 25 );
+    grid->addWidget( m_secure, 5, 1 );
+
+    label = new QLabel( i18n("Version:"), this );
+    grid->addWidget( label, 6, 0 );
+    m_protocol = new QLineEdit( this );
+    m_protocol->setReadOnly( true );
+    m_protocol->setText( QString::number(cookie->protocolVersion()) );
+    m_protocol->setMaximumWidth( fontMetrics().width('W') * 25 );
+    grid->addWidget( m_protocol, 6, 1 );
 
     if ( cookieCount > 1 )
     {
-        QPushButton* btnNext = new QPushButton( i18n("&Next >"), this );
+        QPushButton* btnNext = new QPushButton( i18n("&Next >>"), this );
         btnNext->setFlat( true );
         btnNext->setFixedSize( btnNext->sizeHint() );
-#ifndef QT_NO_TOOLTIP
-        QToolTip::add( btnNext, i18n("Click here to see the details for the next cookie") );
-#endif
-        vlayout->addWidget( btnNext, 0, Qt::AlignCenter );
+        grid->addMultiCellWidget( btnNext, 7, 7, 0, 1 );
         connect( btnNext, SIGNAL(clicked()), SLOT(slotNextCookie()) );
+#ifndef QT_NO_TOOLTIP
+        QToolTip::add( btnNext, i18n("Show details of the next cookie") );
+#endif
     }
-
     m_cookie = cookie;
     m_cookie_orig = cookie;
 }
@@ -279,30 +304,25 @@ KCookieDetail::~KCookieDetail()
 void KCookieDetail::slotNextCookie()
 {
     m_cookie = m_cookie->next();
-
     if ( !m_cookie )
         m_cookie = m_cookie_orig;
 
     if ( m_cookie )
     {
-        QString val = m_cookie->value();
-#ifndef QT_NO_TOOLTIP
-        QToolTip::add( m_value, val );
-#endif
-        val.truncate( 40 );
-        m_value->setText( i18n("Value: %1").arg( m_cookie->value() ) );
-
-        val = m_cookie->domain();
-        m_domain->setText( i18n("Domain: %1").arg( val.isEmpty() ? i18n("unspecified domain", "Unspecified"):val ) );
-        m_path->setText( i18n("Path: %1").arg(m_cookie->path()) );
+        m_value->setText( ( m_cookie->value() ) );
+        if ( m_cookie->domain().isEmpty() )
+          m_domain->setText( i18n("Not specified") );
+        else
+          m_domain->setText( m_cookie->domain() );
+        m_path->setText( m_cookie->path() );
         QDateTime cookiedate;
         cookiedate.setTime_t( m_cookie->expireDate() );
-        QString sdate = i18n("Expires On: %1").arg( m_cookie->expireDate() ?
-                        KGlobal::locale()->formatDateTime(cookiedate): i18n("unspecified expiration","Unspecified") );
-
-        m_expires->setText( sdate );
-        m_protocol->setText( i18n("Protocol Version: %1").arg(m_cookie->protocolVersion()) );
-        m_secure->setText( i18n("Is Secure: %1").arg(m_cookie->isSecure() ? i18n("True"):i18n("False")) );
+        if ( m_cookie->expireDate() )
+          m_expires->setText( KGlobal::locale()->formatDateTime(cookiedate) );
+        else
+          m_expires->setText( i18n("Not specified") );
+        m_protocol->setText( QString::number(m_cookie->protocolVersion()) );
+        m_secure->setText( m_cookie->isSecure() ? i18n("True"):i18n("False") );
     }
 }
 
