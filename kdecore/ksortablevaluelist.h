@@ -30,7 +30,7 @@ public:
     KSortableItem( const KSortableItem<T, Key> &rhs ) 
         : QPair<Key,T>( rhs.first, rhs.second ) {}
 
-    KSortableItem() : QPair<Key, T>( 0, Key() ) {}
+    KSortableItem() {}
 
     KSortableItem<T, Key> &operator=( const KSortableItem<T, Key>& i ) {
         first  = i.first;
