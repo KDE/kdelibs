@@ -54,5 +54,5 @@ TABLE[class~=screen] { border-style: none;
 */
 
 /* Temporary patch: browsers break on bad HTML */
-P { font-family: Helvetica, Arial, sans-serif; 
+P H1 H2 H3 H4 H5 TD { font-family: Helvetica, Arial, sans-serif; 
     }
