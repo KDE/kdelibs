@@ -34,8 +34,6 @@
 
 #endif
 
-#include <stdint.h>
-
 #include "ustring.h"
 
 // Primitive data types
@@ -120,9 +118,9 @@ namespace KJS {
     virtual Boolean toBoolean(ExecState *exec) const = 0;
     virtual Number toNumber(ExecState *exec) const = 0;
     virtual Number toInteger(ExecState *exec) const;
-    virtual int32_t toInt32(ExecState *exec) const;
-    virtual uint32_t toUInt32(ExecState *exec) const;
-    virtual uint16_t toUInt16(ExecState *exec) const;
+    virtual int toInt32(ExecState *exec) const;
+    virtual unsigned int toUInt32(ExecState *exec) const;
+    virtual unsigned short toUInt16(ExecState *exec) const;
     virtual String toString(ExecState *exec) const = 0;
     virtual Object toObject(ExecState *exec) const = 0;
 
@@ -141,7 +139,7 @@ namespace KJS {
     }; // VI means VALUEIMPL
 
     ValueImpPrivate *_vd;
-    uint32_t _flags;
+    unsigned int _flags;
   };
 
   /**
@@ -212,17 +210,17 @@ namespace KJS {
     /**
      * Performs the ToInt32 type conversion operation on this value (ECMA 9.5)
      */
-    int32_t toInt32(ExecState *exec) const;
+    int toInt32(ExecState *exec) const;
 
     /**
      * Performs the ToUint32 type conversion operation on this value (ECMA 9.6)
      */
-    uint32_t toUInt32(ExecState *exec) const;
+    uint toUInt32(ExecState *exec) const;
 
     /**
      * Performs the ToUint16 type conversion operation on this value (ECMA 9.7)
      */
-    uint16_t toUInt16(ExecState *exec) const;
+    unsigned short toUInt16(ExecState *exec) const;
 
     /**
      * Performs the ToString type conversion operation on this value (ECMA 9.8)

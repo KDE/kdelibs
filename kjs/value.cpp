@@ -86,7 +86,7 @@ Number ValueImp::toInteger(ExecState *exec) const
   return Number(roundValue(exec,const_cast<ValueImp*>(this)));
 }
 
-int32_t ValueImp::toInt32(ExecState *exec) const
+int ValueImp::toInt32(ExecState *exec) const
 {
   double d = roundValue(exec,const_cast<ValueImp*>(this));
   double d32 = fmod(d, D32);
@@ -94,23 +94,23 @@ int32_t ValueImp::toInt32(ExecState *exec) const
   if (d32 >= D32 / 2.0)
     d32 -= D32;
 
-  return static_cast<int32_t>(d32);
+  return static_cast<int>(d32);
 }
 
-uint32_t ValueImp::toUInt32(ExecState *exec) const
+unsigned int ValueImp::toUInt32(ExecState *exec) const
 {
   double d = roundValue(exec,const_cast<ValueImp*>(this));
   double d32 = fmod(d, D32);
 
-  return static_cast<uint32_t>(d32);
+  return static_cast<unsigned int>(d32);
 }
 
-uint16_t ValueImp::toUInt16(ExecState *exec) const
+unsigned short ValueImp::toUInt16(ExecState *exec) const
 {
   double d = roundValue(exec,const_cast<ValueImp*>(this));
   double d16 = fmod(d, D16);
 
-  return static_cast<uint16_t>(d16);
+  return static_cast<unsigned short>(d16);
 }
 
 // ECMA 8.7.1
@@ -285,17 +285,17 @@ Number Value::toInteger(ExecState *exec) const
   return rep->toInteger(exec);
 }
 
-int32_t Value::toInt32(ExecState *exec) const
+int Value::toInt32(ExecState *exec) const
 {
   return rep->toInt32(exec);
 }
 
-uint32_t Value::toUInt32(ExecState *exec) const
+unsigned int Value::toUInt32(ExecState *exec) const
 {
   return rep->toUInt32(exec);
 }
 
-uint16_t Value::toUInt16(ExecState *exec) const
+unsigned short Value::toUInt16(ExecState *exec) const
 {
   return rep->toUInt16(exec);
 }

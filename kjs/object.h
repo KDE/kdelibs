@@ -551,9 +551,9 @@ namespace KJS {
     Boolean toBoolean(ExecState *exec) const;
     Number toNumber(ExecState *exec) const;
     Number toInteger(ExecState *exec) const;
-    int32_t toInt32(ExecState *exec) const;
-    uint32_t toUInt32(ExecState *exec) const;
-    uint16_t toUInt16(ExecState *exec) const;
+    int toInt32(ExecState *exec) const;
+    unsigned int toUInt32(ExecState *exec) const;
+    unsigned short toUInt16(ExecState *exec) const;
     String toString(ExecState *exec) const;
     Object toObject(ExecState *exec) const;
 

@@ -615,17 +615,17 @@ Number ObjectImp::toInteger(ExecState *exec) const
   return ValueImp::toInteger(exec);
 }
 
-int32_t ObjectImp::toInt32(ExecState *exec) const
+int ObjectImp::toInt32(ExecState *exec) const
 {
   return ValueImp::toInt32(exec);
 }
 
-uint32_t ObjectImp::toUInt32(ExecState *exec) const
+unsigned int ObjectImp::toUInt32(ExecState *exec) const
 {
   return ValueImp::toUInt32(exec);
 }
 
-uint16_t ObjectImp::toUInt16(ExecState *exec) const
+unsigned short ObjectImp::toUInt16(ExecState *exec) const
 {
   return ValueImp::toUInt16(exec);
 }
