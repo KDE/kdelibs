@@ -1,3 +1,8 @@
+2003-11-25  Stephan Kulow  <coolo@kde.org>
+
+	* rendering/render_box.cpp (calcAbsoluteVertical): basically reverting commit 1.218
+	for height calculation. It broke floating images (#67839)
+
 2003-11-25  David Faure  <faure@kde.org>
 
 	* ecma/kjs_window.cpp: Implement hasProperty and get for frames by number in Window,

@@ -764,7 +764,7 @@ void RenderBox::calcHeight()
     else
     {
         Length h;
-        if ( isReplaced() && !isBlockFlow() && isInline())
+        if ( isReplaced() && !isBlockFlow() )
             h = Length( calcReplacedHeight(), Fixed );
         else
             h = style()->height();
