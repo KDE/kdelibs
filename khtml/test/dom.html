@@ -1,0 +1,24 @@
+<HTML>
+
+<HEAD>
+<TITLE>DOM tests</TITLE>
+</HEAD>
+
+<SCRIPT>
+function test()
+{
+  body = document.body;
+  text = document.createTextNode("The DOM is working");
+  br = document.createElement("BR");
+  body.appendChild(text);
+  body.appendChild(br);
+}
+</SCRIPT>
+
+<BODY>
+
+<p onclick="test();">(Click here to run the test)</p>
+
+</BODY>
+
+</HTML>
