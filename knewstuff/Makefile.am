@@ -8,7 +8,7 @@ libknewstuff_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -version-info 1:0
 libknewstuff_la_LIBADD  = $(LIB_KIO)
 libknewstuff_la_SOURCES = engine.cpp entry.cpp downloaddialog.cpp \
   uploaddialog.cpp providerdialog.cpp provider.cpp knewstuff.cpp \
-  knewstuffgeneric.cpp knewstuffbutton.cpp
+  knewstuffgeneric.cpp knewstuffbutton.cpp knewstuffsecure.cpp security.cpp
 
 bin_PROGRAMS = khotnewstuff
 
