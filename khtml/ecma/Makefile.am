@@ -23,7 +23,7 @@ INCLUDES = -I$(top_srcdir) \
 
 KDE_CXXFLAGS = $(USE_EXCEPTIONS)
 
-lib_LTLIBRARIES = kjs_html.la
+kde_module_LTLIBRARIES = kjs_html.la
 
 noinst_HEADERS = kjs_html.h kjs_dom.h kjs_window.h kjs_navigator.h \
 	kjs_text.h kjs_binding.h kjs_proxy.h kjs_css.h kjs_range.h \
