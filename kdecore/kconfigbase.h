@@ -59,6 +59,9 @@ class KConfigGroup;
  * can avoid this feature by having two consecutive $ characters in
  * your config file which get expanded to one.
  *
+ * Note: the '=' char is not allowed in keys and the ']' char is not allowed in
+ * group name.
+ *
  * @author Kalle Dalheimer <kalle@kde.org>, Preston Brown <pbrown@kde.org>
  * @version $Id$
  * @see  KGlobal::config()  KConfig  KSimpleConfig
