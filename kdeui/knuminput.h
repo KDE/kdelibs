@@ -2,7 +2,7 @@
  * knuminput.h
  *
  *  Copyright (c) 1997 Patrick Dowler <dowler@morgul.fsh.uvic.ca>
- *  Copyright (c) 1999 Dirk A. Mueller <dmuell@gmx.net>
+ *  Copyright (c) 1999 Dirk A. Mueller <mueller@kde.org>
  *
  *  Requires the Qt widget libraries, available at no cost at
  *  http://www.troll.no/
@@ -32,8 +32,28 @@
 class QLabel;
 class QSlider;
 class QLineEdit;
+class QLayout;
 
 class KIntSpinBox;
+
+/* ------------------------------------------------------------------------ */
+
+/**
+ * You need to inherit from this class if you want to implement K*NumInput
+ * for a different variable type
+ *
+ */
+
+class KNumInput : public QWidget
+{
+public:
+    KNumInput(QWidget* parent=0, const char* name=0);
+    KNumInput(KNumInput* below, QWidget* parent=0, const char* name=0);
+    ~KNumInput();
+
+protected:
+    KNumInput* m_prev, *m_next;
+};
 
 /* ------------------------------------------------------------------------ */
 
@@ -52,12 +72,12 @@ class KIntSpinBox;
  * It uses @ref KIntValidator validator class. KIntNumInput enforces the
  * value to be in the given range, and can display it in any base
  * between 2 and 36.
- * 
+ *
  * @short Easy integer parameter entry, with spin and slider.
  * @version $Id$
  */
 
-class KIntNumInput : public QWidget
+class KIntNumInput : public KNumInput
 {
     Q_OBJECT
 public:
@@ -86,14 +106,14 @@ public:
     KIntNumInput(int lower, int upper, int step, int value, QWidget* parent=0,
                  const QString& label = QString::null, const QString& units = QString::null,
                  bool slider = true, int base = 10, const char* name = 0);
-    
+
     virtual ~KIntNumInput();
 
     /**
      * This method returns the minimum size necessary to display the
      * control. The minimum size is enough to show all the labels
      * in the current font (font change may invalidate the return value).
-     * 
+     *
      * @return the minimum size necessary to show the control
      */
     virtual QSize minimumSize() const;
@@ -104,12 +124,12 @@ public:
      * @return the preferred size necessary to show the control
      */
     virtual QSize sizeHint() const;
-    
+
     /**
      * @return the current value
      */
     int value();
-    
+
     /**
      * Sets the spacing of tockmarks for the slider.
      *
@@ -117,7 +137,7 @@ public:
      * @param major major tickmark separation
      */
     void setSteps(int minor, int major);
-    
+
     /**
      * Sets the alignment of the main control label. The value label,
      * including the specified units, is always centered under the
@@ -126,7 +146,7 @@ public:
      * @param a one of AlignLeft, AlignCenter, AlignRight
      */
     void setLabelAlignment(int a);
-    
+
     /**
      * Sets the fraction of the controls width taken by the SpinBox.
      * 100-frac is taken by the slider (if exists).
@@ -156,31 +176,33 @@ public slots:
      * Sets the Widget enabled/disabled
      */
     void setEnabled(bool);
-    
+
     /**
      * Sets the value of the control.
      */
     void setValue(int);
-    
+
 signals:
     void valueChanged(int);
 
 protected:
     void init(const QString& label, int lower, int upper, int step, int val,
               const QString& units, int _base, bool use_slider);
-    
+
     void resizeEvent ( QResizeEvent * );
-  
+
     QLabel*      main_label;
     KIntSpinBox* spin;
     QSlider*     slider;
     QSize        spin_size;
-    
+
     int label_align;
     int spin_frac;
     int int_value;
 };
 
+
+/* ------------------------------------------------------------------------ */
 
 /**
  * KDoubleNumInput combines a @ref QSpinBox and optionally a @ref QSlider
@@ -198,7 +220,7 @@ protected:
  * value to be in the given range.
  */
 
-class KDoubleNumInput : public QWidget
+class KDoubleNumInput : public KNumInput
 {
     Q_OBJECT
 public:
@@ -216,24 +238,20 @@ public:
      * @param parent parent QWidget
      * @param name   internal name for this widget
      */
-    KDoubleNumInput(const QString& label, double lower, double upper, double step, double value,
-                 const QString& units, const char* format=0, bool slider = true, QWidget *parent=0, const char *name=0);
+    KDoubleNumInput(double value, QWidget *parent=0, const char *name=0);
 
     /**
-     * overloaded constructor, provided for convenience
+     * adds below after other KDoubleNumInput
      *
-     */
-    KDoubleNumInput(double lower, double upper, double step, double value, QWidget* parent=0,
-                 const QString& label = QString::null, const QString& units = QString::null,
-                 bool slider = true, const char* format=0, const char* name = 0);
-    
-    virtual ~KDoubleNumInput();
+     **/
+
+    KDoubleNumInput(KNumInput* below, double value, QWidget* parent=0, const char* name=0);
 
     /**
      * This method returns the minimum size necessary to display the
      * control. The minimum size is enough to show all the labels
      * in the current font (font change may invalidate the return value).
-     * 
+     *
      * @return the minimum size necessary to show the control
      */
     virtual QSize minimumSize() const;
@@ -244,41 +262,55 @@ public:
      * @return the preferred size necessary to show the control
      */
     virtual QSize sizeHint() const;
-    
+
     /**
      * Sets the value of the control.
      */
     void setValue(double);
-    
+
     /**
      * @return the current value
      */
     double value();
-    
-    /**
-     * Sets the spacing of tockmarks for the slider.
-     *
-     * @param minor minor tickmark separation
-     * @param major major tickmark separation
-     */
-    void setSteps(double minor, double major);
-    
+
     /**
      * Sets the alignment of the main control label. The value label,
      * including the specified units, is always centered under the
      * slider.
      *
-     * @param a one of AlignLeft, AlignCenter, AlignRight
+     * @param label the text of the label (QString::null to remove an existing one)
+     * @param a one of AlignLeft, AlignHCenter, AlignRight and
+     *          AlignTop, AlignVCenter, AlignBottom.
+     *          default is AlignHCenter | AlignTop.
      */
-    void setLabelAlignment(int a);
-    
+    void setLabel(QString label, int a = AlignHCenter | AlignTop);
+
     /**
-     * Sets the fraction of the controls width taken by the LineEdit-Field.
-     * 100-frac is taken by the slider (if exists).
-     *
-     * @param frac fraction (1..100) of width taken by LineEdit
+     * @param lower  lower bound on range
+     * @param upper  upper bound on range
+     * @param step   step size for the QSlider
      */
-    void setEditBoxSize(int frac);
+    void setRange(double lower, double upper, double step, bool slider=true);
+
+    /**
+     * sets the Suffix
+     * @param suffix the suffix that should be used. QString::null to disable
+     */
+    void setSuffix(QString suffix);
+
+    /**
+     * sets the Prefix
+     * @param prefix the prefix that should be used. QString::null to disable
+     */
+    void setPrefix(QString prefix);
+
+    /**
+     * the Format string that should be used to display the double value.
+     *
+     * @param format uses the same format as QString::sprintf().
+     */
+    void setFormat(const char* format);
+
 
     /**
      * Specifies that this widget may stretch horizontally, but is
@@ -294,32 +326,36 @@ public:
      */
     void setSpecialValueText(const QString& text);
 
-    /**
-     * Sets the Widget enabled/disabled
-     */
-    void setEnabled(bool);
-    
 signals:
     void valueChanged(double);
 
 protected slots:
-    void resetValueField(double);
+    void sliderMoved(int);
 
 protected:
-    void init(const QString& label, double lower, double upper, double step, double val,
-              const QString& units, const char* format, bool use_slider);
-    
+    void init(double value);
+    void doLayout();
+
     void resizeEvent ( QResizeEvent * );
+    void resetEditBox();
 
     QLabel*      main_label;
     QLineEdit*   edit;
-    QSlider*     slider;
-    
-    int label_align;
-    int edit_frac;
-    double double_value;
+    QSlider*     m_slider;
+    QLayout*     layout;
+
+    int m_alignment;
+    bool m_range;
+    double    m_value, m_lower, m_upper, m_step;
+    QString   m_units, m_specialvalue, m_prefix, m_suffix, m_format;
+
+    QSize     m_sizeEdit, m_sizeSlider, m_sizeLabel;
+
+    QWidget* m_prev, *m_next;
 };
 
+
+/* ------------------------------------------------------------------------ */
 
 /**
  *  An integer inputline with scrollbar and slider.
@@ -351,7 +387,7 @@ public:
      */
     KIntSpinBox(int lower, int upper, int step, int value, int base = 10,
                 QWidget* parent = 0, const char* name = 0);
-   
+
     /**
      *  Destructor.
      */
@@ -374,6 +410,6 @@ protected:
 
 
 /* --------------------------------------------------------------------------- */
-   
+
 
 #endif // K_NUMINPUT_H

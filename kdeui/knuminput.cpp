@@ -4,7 +4,6 @@
  * Initial implementation:
  *     Copyright (c) 1997 Patrick Dowler <dowler@morgul.fsh.uvic.ca>
  *
- * Enhancements:
  *     Copyright (c) 1999 Dirk A. Mueller <dmuell@gmx.net>
  *
  *  Requires the Qt widget libraries, available at no cost at
@@ -26,6 +25,8 @@
  *  Boston, MA 02111-1307, USA.
  */
 
+#include <math.h>
+
 #include <qlabel.h>
 #include <qlineedit.h>
 #include <qsize.h>
@@ -38,10 +39,45 @@
 
 // -----------------------------------------------------------------------------
 
+KNumInput::KNumInput(QWidget* parent, const char* name)
+    : QWidget(parent, name)
+{
+    m_prev = m_next = 0;
+}
+
+
+KNumInput::KNumInput(KNumInput* below, QWidget* parent, const char* name)
+    : QWidget(parent, name)
+{
+    m_prev = m_next = 0;
+
+    if(below) {
+        m_next = below->m_next;
+        m_prev = below;
+        below->m_next = this;
+        if(m_next)
+            m_next->m_prev = this;
+    }
+}
+
+
+KNumInput::~KNumInput()
+{
+    if(m_prev)
+        m_prev->m_next = m_next;
+
+    if(m_next)
+        m_next->m_prev = m_prev;
+}
+
+
+// -----------------------------------------------------------------------------
+
 KIntSpinBox::KIntSpinBox(int lower, int upper, int step, int value, int base,
                          QWidget* parent, const char* name)
     : QSpinBox(lower, upper, step, parent, name)
 {
+    editor()->setAlignment(AlignRight);
     val_base = base;
     setValue(value);
 }
@@ -70,7 +106,7 @@ int KIntSpinBox::mapTextToValue(bool* ok)
 KIntNumInput::KIntNumInput(const QString& label, int lower, int upper, int step,
                            int val, const QString& units, int _base, bool use_slider,
                            QWidget *parent, const char *name)
-    : QWidget(parent, name)
+    : KNumInput(parent, name)
 {
     init(label, lower, upper, step, val, units, _base, use_slider);
 
@@ -83,7 +119,7 @@ KIntNumInput::KIntNumInput(const QString& label, int lower, int upper, int step,
 KIntNumInput::KIntNumInput(int lower, int upper, int step, int value, QWidget* parent,
                            const QString& label, const QString& units, bool use_slider,
                            int _base, const char* name)
-    : QWidget(parent, name) 
+    : KNumInput(parent, name)
 {
     init(label, lower, upper, step, value, units, _base, use_slider);
 }
@@ -92,7 +128,7 @@ KIntNumInput::KIntNumInput(int lower, int upper, int step, int value, QWidget* p
 // -----------------------------------------------------------------------------
 
 void KIntNumInput::init(const QString& label, int lower, int upper, int step, int val,
-                        const QString& units, int _base, bool use_slider) 
+                        const QString& units, int _base, bool use_slider)
 {
     int_value = val;
 
@@ -101,27 +137,27 @@ void KIntNumInput::init(const QString& label, int lower, int upper, int step, in
     connect(spin, SIGNAL(valueChanged(int)), SLOT(setValue(int)));
 
     main_label = new QLabel( spin, label, this, "KNumInput::QLabel" );
-    
+
 	if ( label.isEmpty() )
 		main_label->hide();
 
     if(!units.isEmpty())
         spin->setSuffix(' ' + units);
-    
+
     if(use_slider) {
         slider = new QSlider(lower, upper, step, int_value, QSlider::Horizontal, this);
         slider->setTickmarks(QSlider::Below);
-        
+
         connect(slider, SIGNAL(valueChanged(int)), SLOT(setValue(int)));
 
         // default values
-        int major = (upper-lower)/_base; 
+        int major = (upper-lower)/_base;
         slider->setSteps( 1, major );
         slider->setTickInterval(major);
     }
     else
         slider = 0;
-    
+
     setLabelAlignment( AlignLeft );
     setSpinBoxSize(33);
     spin_size = spin->sizeHint();
@@ -134,7 +170,7 @@ QSize KIntNumInput::minimumSize() const
 
     main_label->adjustSize();
 //    spin_size = spin->sizeHint();
-    
+
     int w, h;
 
     if(slider) {
@@ -148,10 +184,10 @@ QSize KIntNumInput::minimumSize() const
     }
 
     h += (main_label->text().isEmpty() ? 0 : main_label->height() + 5);
-    
+
     qs.setWidth(w);
     qs.setHeight(h);
-    
+
     return qs;
 }
 
@@ -166,8 +202,8 @@ QSize KIntNumInput::sizeHint() const
 void KIntNumInput::resizeEvent(QResizeEvent* e)
 {
     int left_frac = QMAX(spin_size.width(), (width()*spin_frac)/100);
-    int label_height = (main_label->text().isEmpty() ? 0 : main_label->height() + 5);
-    
+    int label_height = (main_label->text().isEmpty() ? 0 : main_label->height() + 4);
+
     // label gets placed according to alignment and label_frac
     int lx = 0;
     int ly = 0;
@@ -179,23 +215,23 @@ void KIntNumInput::resizeEvent(QResizeEvent* e)
     case AlignRight:
         lx = e->size().width() - main_label->width();
         break;
-        
+
     case AlignLeft:
     default:
         lx = 0;
         break;
     }
-    
+
     main_label->move(lx, ly);
 
     // spinbox stays always the same
     spin->move(0, label_height);
-  
+
     // slider gets stretched horizontally to fill remainder
     if(slider) {
         slider->setGeometry(left_frac + 10, label_height,
                             width() - left_frac - 10, slider->height());
-        
+
         spin->resize(left_frac, spin_size.height());
     }
     else
@@ -263,7 +299,7 @@ void KIntNumInput::setSpinBoxSize(int frac)
 
 // -----------------------------------------------------------------------------
 
-QSizePolicy KIntNumInput::sizePolicy() const 
+QSizePolicy KIntNumInput::sizePolicy() const
 {
     return QSizePolicy( QSizePolicy::Minimum, QSizePolicy::Fixed );
 }
@@ -284,81 +320,63 @@ void KIntNumInput::setEnabled(bool on)
 
 void KIntNumInput::setSpecialValueText(const QString& text)
 {
-    spin->setSpecialValueText(text); 
+    spin->setSpecialValueText(text);
 };
 
 // -----------------------------------------------------------------------------
 
 
-// -----------------------------------------------------------------------------
 
-KDoubleNumInput::KDoubleNumInput(const QString& label, double lower, double upper, double step,
-                           double val, const QString& units, const char* format, bool use_slider,
-                           QWidget *parent, const char *name)
-    : QWidget(parent, name )
-{
-    init(label, lower, upper, step, val, units, format, use_slider);
-
-}
 
 
 
 // -----------------------------------------------------------------------------
 
-KDoubleNumInput::KDoubleNumInput(double lower, double upper, double step, double val, QWidget* parent,
-                           const QString& label, const QString& units, 
-                           bool use_slider, const char* format, const char* name)
-    : QWidget(parent, name) 
+
+KDoubleNumInput::KDoubleNumInput(double value, QWidget *parent, const char *name)
+    : KNumInput(parent, name)
 {
-    init(label, lower, upper, step, val, units, format, use_slider);
+    init(value);
 }
 
 
 // -----------------------------------------------------------------------------
 
-void KDoubleNumInput::init(const QString& label, double lower, double upper, double step, double val,
-                        const QString& units, const char* format, bool use_slider) 
+KDoubleNumInput::KDoubleNumInput(KNumInput* below, double value, QWidget* parent,
+                                 const char* name)
+    : KNumInput(below, parent, name)
 {
-    double_value = val;
-    
-    if(!format)
-        format = "%.2g";
-
-    edit = new QLineEdit(this, "KDoubleNumInput::LineEdit");
-    edit->setValidator(new KFloatValidator(this, "KNumInput::KFloatValidtr"));
-
-    main_label = new QLabel( edit, label, this, "KNumInput::QLabel" );
-    
-//    if(!units.isEmpty())
-//        spin->setSuffix(" " + units);
-    
-    if(use_slider) {
-        slider = new QSlider(lower, upper, step, double_value, QSlider::Horizontal, this);
-        slider->setTickmarks(QSlider::Below);
-        
-        connect(slider, SIGNAL(valueChanged(int)), SLOT(resetValueField(int)));
-//        connect(spin, SIGNAL(valueChanged(int)), slider, SLOT(setValue(int)));
-
-        // default values
-        double major = (upper-lower)/10; 
-        slider->setSteps( 1, major );
-        slider->setTickInterval(major);
-    }
-    else
-        slider = 0;
-    
-    setLabelAlignment( AlignLeft );
-    setEditBoxSize(33);
+    init(value);
 }
 
 
 // -----------------------------------------------------------------------------
 
-void KDoubleNumInput::resetValueField(double val)
+void KDoubleNumInput::init(double value)
 {
-    double_value = val;
-//        spin->setValue(double_value);
-    emit valueChanged(double_value);
+    m_value = value;
+    m_format = "%.02g";
+
+    edit = new QLineEdit(this, "KDoubleNumInput::QLineEdit");
+    edit->setAlignment(AlignRight);
+    edit->setValidator(new KFloatValidator(this, "KDoubleNumInput::KFloatValidator"));
+
+    main_label = 0;
+    m_slider = 0;
+    m_suffix = m_prefix = "";
+
+    resetEditBox();
+}
+
+
+// -----------------------------------------------------------------------------
+
+void KDoubleNumInput::sliderMoved(int val)
+{
+    m_value = m_lower + val*m_step;
+
+    resetEditBox();
+    emit valueChanged(m_value);
 }
 
 
@@ -366,31 +384,30 @@ void KDoubleNumInput::resetValueField(double val)
 
 QSize KDoubleNumInput::minimumSize() const
 {
-    QSize qs;
-    QSize edit_s(edit->sizeHint());
+    int w = 0;
+    int h = 0;
 
-    main_label->adjustSize();
+    // if in extra row, then count it here
+    if(main_label && (m_alignment & (AlignBottom|AlignTop)))
+        h += 4 + m_sizeLabel.height();
+    else
+        // no extra frame space
+        h += m_sizeLabel.height();
 
-    int w, h;
+    h += 2 + QMAX(m_sizeEdit.height(), m_sizeSlider.height());
 
-    if(slider) {
-        w = QMAX((edit_s.width()*(100-edit_frac))/100, main_label->width());
-        h = QMAX(slider->sizeHint().height(), edit_s.height());;
-    }
-    else {
-        w = QMAX(edit_s.width(), main_label->width());
-        h = edit_s.height();
-    }
+    w += m_slider ? m_slider->sizeHint().width() + 8 : 0;
+    w += m_sizeEdit.width();
+    w += main_label && (m_alignment & AlignVCenter) ? m_sizeLabel.width() + 2 : 0;
 
-    h += (main_label->text().isEmpty() ? 0 : main_label->height() + 5);
-    
-    qs.setWidth(w);
-    qs.setHeight(h);
-    
-    return qs;
+    if(m_alignment & (AlignTop|AlignBottom))
+        w = QMAX(w, m_sizeLabel.width() + 4);
+
+    return QSize(w, h);
 }
 
 // -----------------------------------------------------------------------------
+
 QSize KDoubleNumInput::sizeHint() const
 {
     return minimumSize();
@@ -400,58 +417,70 @@ QSize KDoubleNumInput::sizeHint() const
 
 void KDoubleNumInput::resizeEvent(QResizeEvent* e)
 {
-    int left_frac = (width()*edit_frac)/100;
-    int label_height = (main_label->text().isEmpty() ? 0 : main_label->height() + 5);
-    
-    // label gets placed according to alignment and label_frac
-    int lx = 0;
-    int ly = 0;
+    int w = 0;
+    int h = 0;
 
-    switch(label_align) {
-    case AlignCenter:
-        lx = (e->size().width() - main_label->width())/2;
-        break;
-    case AlignRight:
-        lx = e->size().width() - main_label->width();
-        break;
-        
-    case AlignLeft:
-    default:
-        lx = 0;
-        break;
+    if(main_label && (m_alignment & AlignTop)) {
+        main_label->setGeometry(0, 0, e->size().width(), m_sizeLabel.height());
+        h += m_sizeLabel.height() + 4;
     }
-    
-    main_label->move(lx, ly);
 
-    // editbox stays always the same
-    edit->move(0, label_height);
-  
-    // slider gets stretched horizontally to fill remainder
-    if(slider) {
-        slider->setGeometry(left_frac + 10, label_height,
-                            width() - left_frac - 10, slider->height());
-        edit->resize(left_frac, edit->sizeHint().height());
+    if(main_label && (m_alignment & AlignVCenter)) {
+        main_label->setGeometry(0, 0, m_sizeLabel.width(), m_sizeLabel.height());
+        w += m_sizeLabel.width() + 2;
     }
-    else
-        edit->resize(e->size().width(), edit->sizeHint().height());
+
+    edit->setGeometry(w, h, m_slider ? m_sizeEdit.width() : e->size().width(), m_sizeEdit.height());
+    w += m_sizeEdit.width() + 8;
+
+    if(m_slider)
+        m_slider->setGeometry(w, h, e->size().width() - w, m_sizeEdit.height());
+
+    h += m_sizeLabel.height() + 2;
+
+    if(main_label && (m_alignment & AlignBottom))
+        main_label->setGeometry(0, h, m_sizeLabel.width(), m_sizeLabel.height());
 }
 
 
 // -----------------------------------------------------------------------------
 
-KDoubleNumInput::~KDoubleNumInput()
+void KDoubleNumInput::doLayout()
 {
-    delete main_label;
-    delete slider;
-}
+    // edit sizeHint
+    edit->constPolish();
+    QFontMetrics fm( edit->font() );
+    QString s;
+    int h = fm.height();
+    int w  = fm.width(m_prefix) + fm.width(m_suffix);
+    s.sprintf(m_format.latin1(), m_value);
+    w = QMAX(w, QMAX(fm.width(s), fm.width(m_specialvalue)));
+    if(m_range) {
+        s.sprintf(m_format.latin1(), m_lower);
+        w = QMAX(w, fm.width(s));
+        s.sprintf(m_format.latin1(), m_upper);
+        w = QMAX(w, fm.width(s));
+        // something inbetween
+        s.sprintf(m_format.latin1(), m_lower + m_step);
+        w = QMAX(w, fm.width(s));
+    }
 
+    if ( edit->frame() ) {
+        h += 8;
+        if ( edit->style() == WindowsStyle && h < 26 )
+            h = 22;
+        m_sizeEdit.setWidth(w + 8);
+        m_sizeEdit.setHeight(h);
+    } else {
+        m_sizeEdit.setWidth(w + 4);
+        m_sizeEdit.setHeight(h + 4);
+    }
 
-// -----------------------------------------------------------------------------
+    // label sizeHint
+    m_sizeLabel = (main_label ? main_label->sizeHint() : QSize(0,0));
 
-void KDoubleNumInput::setSteps(double minor, double major)
-{
-    if(slider)
-        slider->setSteps( minor, major );
+    // slider sizeHint
+    m_sizeSlider = (m_slider ? m_slider->sizeHint() : QSize(0, 0));
 }
 
 
@@ -459,8 +488,48 @@ void KDoubleNumInput::setSteps(double minor, double major)
 
 void KDoubleNumInput::setValue(double val)
 {
-    if(slider)
-        slider->setValue(val);
+    m_value = val;
+
+    if(m_value < m_lower) m_value = m_lower;
+    if(m_upper < m_value) m_value = m_upper;
+
+    if(m_slider)  m_slider->setValue(val);
+
+    resetEditBox();
+}
+
+
+// -----------------------------------------------------------------------------
+
+void KDoubleNumInput::setRange(double lower, double upper, double step, bool slider)
+{
+    m_lower = lower;
+    m_upper = upper;
+    m_step  = step;
+    m_range = (m_lower < m_upper);
+
+    // bounds checking the values
+    if(m_value < m_lower)  m_value = m_lower;
+    if(m_upper < m_lower)  m_upper = m_value;
+    if(m_upper < m_value)  m_value = m_upper;
+
+    // make m_value a multiple of step
+    m_value = floor(m_value / m_step) * m_step;
+
+    if(slider) {
+        m_slider = new QSlider(0, floor((m_upper - m_lower)/m_step), 1,
+                               floor(m_value/m_step), QSlider::Horizontal, this);
+        m_slider->setTickmarks(QSlider::Below);
+        m_slider->setTickInterval((m_slider->maxValue() - m_slider->minValue()) / 14);
+        connect(m_slider, SIGNAL(valueChanged(int)), SLOT(sliderMoved(int)));
+    }
+    else {
+        delete m_slider;
+        m_slider = 0;
+    }
+
+    resetEditBox();
+    doLayout();
 }
 
 
@@ -468,31 +537,78 @@ void KDoubleNumInput::setValue(double val)
 
 double  KDoubleNumInput::value()
 {
-    return double_value;
+    return m_value;
 }
 
 
 // -----------------------------------------------------------------------------
 
-void KDoubleNumInput::setLabelAlignment(int a)
+void KDoubleNumInput::setLabel(QString label, int a)
 {
-    label_align = a;
+    if(label.isEmpty()) {
+        delete main_label;
+        main_label = 0;
+        m_alignment = 0;
+    }
+    else {
+        main_label = new QLabel(edit, label, this, "KDoubleNumInput::QLabel");
+        main_label->setAlignment((a & (~(AlignTop|AlignBottom|AlignVCenter))) | AlignVCenter);
+        // if no vertical alignment set, use Top alignment
+        if(!(a & (AlignTop|AlignBottom|AlignVCenter)))
+           a |= AlignTop;
+        m_alignment = a;
+    }
+
+    doLayout();
 }
 
 
 // -----------------------------------------------------------------------------
 
-void KDoubleNumInput::setEditBoxSize(int frac)
+void KDoubleNumInput::setSuffix(QString suffix)
 {
-    edit_frac = QMIN(QMAX(frac,1),100);
-    setMinimumSize(minimumSize());
-    
-}
+    m_suffix = suffix;
 
+    resetEditBox();
+    doLayout();
+}
 
 // -----------------------------------------------------------------------------
 
-QSizePolicy KDoubleNumInput::sizePolicy() const 
+void KDoubleNumInput::setPrefix(QString prefix)
+{
+    m_prefix = prefix;
+
+    resetEditBox();
+    doLayout();
+}
+
+// -----------------------------------------------------------------------------
+
+void KDoubleNumInput::setFormat(const char* fmt)
+{
+    m_format = fmt;
+
+    resetEditBox();
+    doLayout();
+}
+
+// -----------------------------------------------------------------------------
+
+void KDoubleNumInput::resetEditBox()
+{
+    if(!m_specialvalue.isEmpty() && (fabs(m_value - m_lower) < 1e-10))
+        edit->setText(m_specialvalue);
+    else {
+        QString s;
+        s.sprintf(m_format.latin1(), m_value);
+        edit->setText(m_prefix + s + m_suffix);
+    }
+}
+
+// -----------------------------------------------------------------------------
+
+QSizePolicy KDoubleNumInput::sizePolicy() const
 {
     return QSizePolicy( QSizePolicy::Minimum, QSizePolicy::Fixed );
 }
@@ -500,20 +616,12 @@ QSizePolicy KDoubleNumInput::sizePolicy() const
 
 // -----------------------------------------------------------------------------
 
-void KDoubleNumInput::setEnabled(bool on)
-{
-    main_label->setEnabled(on);
-    edit->setEnabled(on);
-    if(slider)
-        slider->setEnabled(on);
-}
-
-
-// -----------------------------------------------------------------------------
-
 void KDoubleNumInput::setSpecialValueText(const QString& text)
 {
-//    edit->setSpecialValueText(text); 
+    m_specialvalue = text;
+
+    resetEditBox();
+    doLayout();
 };
 
 
