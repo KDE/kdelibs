@@ -456,7 +456,7 @@ QString RenderLineEdit::encoding()
     return encoding;
 }
 
-void RenderLineEdit::layout(bool deep)
+void RenderLineEdit::layout(bool)
 {
     QFontMetrics fm( m_widget->font() );
     QSize s;
@@ -798,8 +798,6 @@ RenderTextArea::RenderTextArea(int wrap, RenderStyle *style, QScrollView *view,
 
 void RenderTextArea::layout( bool )
 {
-    reset();
-
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
     HTMLTextAreaElementImpl* f = static_cast<HTMLTextAreaElementImpl*>(m_gform);
 
@@ -843,6 +841,9 @@ void RenderTextArea::close( )
 
     if(f->firstChild() && f->firstChild()->id() == ID_TEXT)
         setValue(static_cast<TextImpl*>(f->firstChild())->string());
+
+    reset();
+    layout();
 
     RenderFormElement::close();
 }
