@@ -10,5 +10,10 @@
 //
 //
 
+#ifndef _KTTS_H_
+#define _KTTS_H_
+
 #include "kspeech.h"
 #include "kspeechsink.h"
+
+#endif      // _KTTS_H_
