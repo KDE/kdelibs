@@ -431,7 +431,7 @@ long rc = 0;
 
 	DCOPReply r = _dcopRef->call("entryType", _handle, _folder, key);
 	if (r.isValid()) {
-		r.get(rc);
+		r.get(rc, "long int");
 	}
 
 return static_cast<EntryType>(rc);
