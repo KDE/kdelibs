@@ -608,7 +608,10 @@ bool KHTMLPart::metaRefreshEnabled() const
 // You need to edit khtml/Makefile.am to add ./ecma/libkjs_html.la to LIBADD
 // and to edit khtml/ecma/Makefile.am to s/kjs_html/libkjs_html/, remove libkhtml from LIBADD,
 //        remove LDFLAGS line, and replace kde_module with either lib (shared) or noinst (static)
-//#define DIRECT_LINKAGE_TO_ECMA
+//        Also, change the order of "ecma" and "." in khtml's SUBDIRS line.
+// OK - that's the default now, use the opposite of the above instructions to go back
+// to "dlopening it" - but it breaks exception catching in kjs_binding.cpp
+#define DIRECT_LINKAGE_TO_ECMA
 
 #ifdef DIRECT_LINKAGE_TO_ECMA
 extern "C" { KJSProxy *kjs_html_init(KHTMLPart *khtmlpart); }
