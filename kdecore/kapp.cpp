@@ -1318,13 +1318,17 @@ void KApplication::invokeHTMLHelp( const QString& _filename, const QString& topi
 }
 
 
-void KApplication::invokeMailer(const QString &address,const QString &/*subject*/ )
+void KApplication::invokeMailer(const QString &address,const QString &subject )
 {
-   QString error;
+   KURL url;
+   url.setProtocol("mailto");
+   url.setPath(address);
+   if (!subject.isEmpty())
+      url.setQuery("?subject="+KURL::encode_string(subject));
 
+   QString error;
    QString mailClient( "kmail");
-   //TODO: subject needs to be passed as well!!
-   if (startServiceByDesktopName(mailClient, address, &error))
+   if (startServiceByDesktopName(mailClient, url.url(), &error))
    {
       warning("Could not launch mail client:\n%s\n", error.local8Bit().data());
       return;
