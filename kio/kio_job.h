@@ -1,6 +1,10 @@
 #ifndef __kio_job_h__
 #define __kio_job_h__
 
+#include <map>
+#include <list>
+#include <string>
+                     
 #include "kio_base.h"
 
 #include <kurl.h>
@@ -9,10 +13,6 @@
 #include <qstring.h>
 #include <qstrlist.h>
 #include <qdatetime.h>
-
-#include <map>
-#include <list>
-#include <string>
 
 #include <time.h>
 

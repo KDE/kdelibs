@@ -19,6 +19,9 @@
 /* $Id$
 
  * $Log$
+ * Revision 1.21  1999/05/20 22:21:21  kulow
+ * misc fixes (not related to MICO :)
+ *
  * Revision 1.20  1999/05/19 20:41:20  kulow
  * make it compile
  *
@@ -175,6 +178,7 @@
 #include <qfileinfo.h>
 #include <kdebug.h>
 #include <ksimpleconfig.h>
+#include <config.h>
 
 // Standard Qt widgets
 
@@ -355,7 +359,7 @@ int main( int argc, char **argv )
 {
   KApplication  a( argc, argv );
 
-  KConfigTestView   *w = new KConfigTestView;
+  KConfigTestView   *w = new KConfigTestView();
   a.setMainWidget( w );
   w->show();
 
@@ -388,7 +392,8 @@ int main( int argc, char **argv )
   fprintf( stderr, "point is (%d,%d)\n", point.x(), point.y() );
   
 
-  return a.exec();
+  a.exec();
+  delete w;
 }
 
 #include "kconfigtest.moc"

@@ -1,5 +1,5 @@
-#include "kautomount.h"
 #include "kio_job.h"
+#include "kautomount.h"
 #include "kio_error.h"
 #include "krun.h"
 

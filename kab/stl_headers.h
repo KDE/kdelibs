@@ -18,9 +18,10 @@
 #ifndef MS_STL_HEADERS_H
 #define MS_STL_HEADERS_H
 
-#include <config.h>
 #include <string>
 #include <list>
+
+#include <config.h>
 
 /* The map-header is needed, but declares two global 
  * symbols that are also globally declared in Qt, "red"

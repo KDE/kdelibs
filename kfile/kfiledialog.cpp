@@ -1,3 +1,4 @@
+#include "kfileinfocontents.h"
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -24,7 +25,6 @@
 #include <ktoolbar.h>
 #include <knewpanner.h>
 #include <kiconloader.h>
-#include "kfileinfocontents.h"
 #include "kfiledialogconf.h"
 #include "kfiledialog.h"
 #include "kfiledetaillist.h"

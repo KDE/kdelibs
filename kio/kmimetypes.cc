@@ -1,9 +1,9 @@
+#include "kio_job.h"   
 #include "kmimetypes.h"
 #include "kmimemagic.h"
 #include "kservices.h"
 #include "krun.h"
 #include "kautomount.h"
-#include "kio_job.h"
 #include <unistd.h>
 #include <sys/types.h>
 #include <stddef.h>

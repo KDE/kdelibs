@@ -1,6 +1,8 @@
 #ifndef __kio_cache_h__
 #define __kio_cache_h__
 
+#include "kio_job.h"   
+
 #include <qstring.h>
 #include <qstrlist.h>
 #include <qdict.h>
@@ -11,8 +13,6 @@
 #include <qbuffer.h>
 
 #include <kconfig.h> 
-
-#include "kio_job.h"
 
 #define MAX_JOBS 4
 

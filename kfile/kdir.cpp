@@ -19,6 +19,7 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include "kfileinfo.h"
 #include <qdir.h>
 #include <qfileinfo.h>
 #include <sys/stat.h> 
@@ -27,7 +28,6 @@
 #include "kdir.h"
 #include <time.h>
 #include <qtimer.h>
-#include "kfileinfo.h"
 #include <kio_job.h>
 #include <config-kfile.h>
 

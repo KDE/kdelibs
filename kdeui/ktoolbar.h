@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.53  1999/05/22 20:54:13  ssk
+// Minor doc reformat.
+//
 // Revision 1.52  1999/05/04 04:28:08  ssk
 // Updated KToolBar description.
 //
@@ -99,10 +102,6 @@
 #include <qstringlist.h>
 
 //#include <qiconset.h>
-
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
 
 #include "kcombo.h"
 #include "klined.h"

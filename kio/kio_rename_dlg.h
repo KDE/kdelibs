@@ -1,6 +1,8 @@
 #ifndef __kio_rename_dlg__
 #define __kio_rename_dlg__
 
+#include <string>
+
 #include <qwidget.h>
 #include <qdialog.h>
 #include <qpushbutton.h>
@@ -8,8 +10,6 @@
 #include <qlineedit.h>
 #include <qlayout.h>
 #include <qstring.h>
-
-#include <string>
 
 enum RenameDlg_Mode { M_OVERWRITE = 1, M_OVERWRITE_ITSELF = 2, M_SKIP = 4, M_SINGLE = 8, M_MULTI = 16, M_RESUME = 32 };
 enum RenameDlg_Result { R_RESUME = 6, R_RESUME_ALL = 7, R_OVERWRITE = 4, R_OVERWRITE_ALL = 5, R_SKIP = 2, R_AUTO_SKIP = 3, R_RENAME = 1, R_CANCEL = 0 };

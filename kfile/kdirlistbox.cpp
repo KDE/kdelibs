@@ -20,8 +20,8 @@
     Boston, MA 02111-1307, USA.
 */
 
-#include "kdirlistbox.h"
 #include "kfileinfo.h"
+#include "kdirlistbox.h"
 #include <kapp.h>
 #include <qpainter.h>
 #include <qlistbox.h>

@@ -1,3 +1,4 @@
+#include "kio_job.h" 
 #include <qtimer.h>
 
 #include <kapp.h>
@@ -5,7 +6,6 @@
 #include <kwm.h>
 #include <kiconloader.h>
 
-#include "kio_job.h"
 #include "kio_listprogress_dlg.h"
 
 #define SIZE_OPERATION        70

@@ -23,14 +23,14 @@
 #ifndef KFILEINFO_H
 #define KFILEINFO_H
 
+#include <kio_interface.h>
+
 #include <qstring.h>
 #include <qdatetime.h>
 #include <qlist.h>
 #include <time.h>
 
 class QFileInfo;
-
-#include <kio_interface.h>
 
 /**
   * Provides information about a file that has been examined

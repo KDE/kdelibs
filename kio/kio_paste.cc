@@ -1,7 +1,7 @@
+#include "kio_job.h" 
 #include "kio_paste.h"
 #include "kio_error.h"
 #include "kio_interface.h"
-#include "kio_job.h"
 
 #include <kclipboard.h>
 #include <kurl.h>

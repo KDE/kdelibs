@@ -1,10 +1,10 @@
+#include "kio_job.h"
 #include <qpushbutton.h>
 
 #include <kapp.h>
 #include <klocale.h>
 #include <kwm.h>
 
-#include "kio_job.h"
 #include "kio_simpleprogress_dlg.h"
 
 

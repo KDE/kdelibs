@@ -25,8 +25,8 @@ class KFileInfo;
 class QPixmap;
 class QSignal;
 
+#include "kdir.h" 
 #include <qwidget.h>
-#include "kdir.h"
 
 /**
  * internal class to make easier to use signals possible

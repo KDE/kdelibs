@@ -1,9 +1,10 @@
+
+#include "kio_job.h"
 #include "krun.h"
 #include "kservices.h"
 #include "kuserprofile.h"
 #include "kmimetypes.h"
 #include "kmimemagic.h"
-#include "kio_job.h"
 #include "kio_error.h"
 
 #include <qmessagebox.h>

@@ -20,10 +20,10 @@
 
 // $Id$
 
+#include "kfileinfo.h" 
 #include "kcombiview.h"
 #include "kdirlistbox.h"
 #include "kfiledetaillist.h"
-#include "kfileinfo.h"
 #include "kfilesimpleview.h"
 #include "config-kfile.h"
 
