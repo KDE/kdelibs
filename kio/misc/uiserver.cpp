@@ -19,8 +19,6 @@
 */
 // -*- mode: c++; c-basic-offset: 4 -*-
 
-#include <iostream.h>
-
 #include <qtimer.h>
 
 #include <qregexp.h>
@@ -103,7 +101,7 @@ ProgressItem::ProgressItem( ListProgress* view, QListViewItem *after, QCString a
   defaultProgress->setOnlyClean( true );
   connect ( defaultProgress, SIGNAL( stopped() ), this, SLOT( slotCanceled() ) );
   connect ( &m_showTimer, SIGNAL( timeout() ), this, SLOT(slotShowDefaultProgress()) );
-  
+
   if ( showDefault ) {
     m_showTimer.start( 500, true );
   }
@@ -309,7 +307,7 @@ void ProgressItem::slotShowDefaultProgress() {
     if ( m_visible && m_defaultProgressVisible )
       defaultProgress->show();
     else
-      defaultProgress->hide();      
+      defaultProgress->hide();
   }
 }
 
@@ -344,7 +342,7 @@ void ProgressItem::updateVisibility()
     if ( m_visible && m_defaultProgressVisible )
     {
       m_showTimer.start(250, true); // Show delayed
-    }      
+    }
     else
     {
       m_showTimer.stop();
