@@ -20,7 +20,7 @@ build-stamp:
 	fi
 	version=`head -1 debian/changelog | sed -e "s#.*(\([^)]*\)).*#Debian Package \1#"` ;\
 	./configure $(configkde) --with-distribution="$$version" \
-	--libdir=$(kde_libdir) --includedir=$(kde_includedir) --without-ssl
+	--includedir=$(kde_includedir) --without-ssl
 
 	make
 
