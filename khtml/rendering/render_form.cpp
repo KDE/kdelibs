@@ -3,7 +3,7 @@
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
- *           (C) 2000 Dirk A. Mueller (mueller@kde.org)
+ *           (C) 2000 Dirk Mueller (mueller@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -331,8 +331,7 @@ RenderResetButton::~RenderResetButton()
 void RenderResetButton::slotClicked()
 {
     m_clicked = true;
-
-    // don't call RenderSubmitButton::slotClicked here!
+    // don't call RenderSubmitButton:: here!
     RenderButton::slotClicked();
     if (m_element->form())
         m_element->form()->reset();
@@ -1147,6 +1146,30 @@ void RenderTextArea::select()
     static_cast<TextAreaWidget *>(m_widget)->selectAll();
 }
 
+// ---------------------------------------------------------------------------
+
+RenderHtml4Button::RenderHtml4Button(QScrollView*/*view*/, HTMLGenericFormElementImpl */*element*/)
+    : RenderFlow()
+{
+}
+
+void RenderHtml4Button::printObject( QPainter *p, int /*x*/, int /*y*/,
+                        int /*w*/, int /*h*/, int _tx, int _ty)
+{
+    // add offset for relative positioning
+    if(isRelPositioned())
+        relativePositionOffset(_tx, _ty);
+
+    QColorGroup colorGrp( Qt::black, Qt::lightGray, Qt::white, Qt::darkGray, Qt::gray,
+                          Qt::black, Qt::white );
+    qDrawShadePanel( p, _tx, _ty, contentWidth(), contentHeight(), colorGrp, true, 1 );
+}
+
+
+void RenderHtml4Button::layout()
+{
+    RenderFlow::layout();
+}
 
 // ---------------------------------------------------------------------------
 

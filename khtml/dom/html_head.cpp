@@ -87,58 +87,6 @@ void HTMLBaseElement::setTarget( const DOMString &value )
 
 // --------------------------------------------------------------------------
 
-HTMLIsIndexElement::HTMLIsIndexElement() : HTMLElement()
-{
-}
-
-HTMLIsIndexElement::HTMLIsIndexElement(const HTMLIsIndexElement &other) : HTMLElement(other)
-{
-}
-
-HTMLIsIndexElement::HTMLIsIndexElement(HTMLIsIndexElementImpl *impl) : HTMLElement(impl)
-{
-}
-
-HTMLIsIndexElement &HTMLIsIndexElement::operator = (const Node &other)
-{
-    if(other.elementId() != ID_ISINDEX)
-    {
-	impl = 0;
-	return *this;
-    }
-    Node::operator = (other);
-    return *this;
-}
-
-HTMLIsIndexElement &HTMLIsIndexElement::operator = (const HTMLIsIndexElement &other)
-{
-    HTMLElement::operator = (other);
-    return *this;
-}
-
-HTMLIsIndexElement::~HTMLIsIndexElement()
-{
-}
-
-HTMLFormElement HTMLIsIndexElement::form() const
-{
-    if(!impl) return 0;
-    return ((HTMLIsIndexElementImpl *)impl)->form();
-}
-
-DOMString HTMLIsIndexElement::prompt() const
-{
-    if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute(ATTR_PROMPT);
-}
-
-void HTMLIsIndexElement::setPrompt( const DOMString &value )
-{
-    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_PROMPT, value);
-}
-
-// --------------------------------------------------------------------------
-
 HTMLLinkElement::HTMLLinkElement() : HTMLElement()
 {
 }

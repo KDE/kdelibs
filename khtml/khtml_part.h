@@ -374,6 +374,13 @@ public:
   bool setEncoding( const QString &name, bool override = false );
 
   /**
+   * return the encoding the page currently uses.
+   *
+   * Note that the encoding might be different from the charset.
+   */
+  QString encoding();
+
+  /**
    * Set a user defined style sheet to be used on top of the HTML 4
    * default style sheet.
    *

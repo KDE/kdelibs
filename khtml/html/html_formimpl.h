@@ -3,6 +3,7 @@
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
+ *           (C) 2000 Dirk Mueller (mueller@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -25,7 +26,6 @@
 #define HTML_FORMIMPL_H
 
 #include "html_elementimpl.h"
-//#include "dtd.h"
 #include "html_element.h"
 
 #include <qlist.h>
@@ -33,6 +33,7 @@
 #include <qarray.h>
 
 class KHTMLView;
+class QTextCodec;
 
 namespace khtml
 {
@@ -103,10 +104,11 @@ protected:
     friend class HTMLFormElement;
 
     QList<HTMLGenericFormElementImpl> formElements;
-    DOMString url;
-    DOMString target;
+    DOMString m_url;
+    DOMString m_target;
     DOMString m_enctype;
     DOMString m_boundary;
+    DOMString m_acceptcharset;
     KHTMLView *view;
     bool m_post;
     bool m_multipart;
@@ -154,7 +156,7 @@ public:
      * for submitting
      * return true for a successful control (see 17.13.2)
      */
-    virtual bool encoding(khtml::encodingList&) { return false; }
+    virtual bool encoding(const QTextCodec*, khtml::encodingList&) { return false; }
 
     virtual void blur();
     virtual void focus();
@@ -275,7 +277,7 @@ public:
 
     virtual void attach(KHTMLView *w);
 
-    virtual bool encoding(khtml::encodingList&);
+    virtual bool encoding(const QTextCodec*, khtml::encodingList&);
     typeEnum inputType() { return _type; }
     virtual void reset();
 
@@ -378,7 +380,7 @@ public:
     virtual void parseAttribute(AttrImpl *attr);
 
     virtual void attach(KHTMLView *w);
-    virtual bool encoding(khtml::encodingList&);
+    virtual bool encoding(const QTextCodec*, khtml::encodingList&);
 
     // get the actual listbox index of the optionIndexth option
     int optionToListIndex(int optionIndex) const;
@@ -488,7 +490,7 @@ public:
 
     virtual void parseAttribute(AttrImpl *attr);
     virtual void attach(KHTMLView *w);
-    virtual bool encoding(khtml::encodingList&);
+    virtual bool encoding(const QTextCodec*, khtml::encodingList&);
     virtual void reset();
     DOMString value();
     void setValue(DOMString _value);
@@ -504,6 +506,30 @@ protected:
 
     friend class khtml::RenderTextArea;
 };
+
+// -------------------------------------------------------------------------
+
+class HTMLIsIndexElementImpl : public HTMLInputElementImpl
+{
+public:
+    HTMLIsIndexElementImpl(DocumentImpl *doc);
+    HTMLIsIndexElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f);
+
+    ~HTMLIsIndexElementImpl();
+
+    virtual const DOMString nodeName() const;
+    virtual ushort id() const;
+
+    virtual tagStatus startTag() { return ISINDEXStartTag; }
+    virtual tagStatus endTag() { return ISINDEXEndTag; }
+
+    virtual void parseAttribute(AttrImpl *attr);
+    virtual void attach(KHTMLView *w);
+
+protected:
+    DOMString m_prompt;
+};
+
 
 }; //namespace
 

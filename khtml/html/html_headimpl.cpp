@@ -99,32 +99,6 @@ void HTMLBaseElementImpl::attach(KHTMLView *v)
 
 // -------------------------------------------------------------------------
 
-HTMLIsIndexElementImpl::HTMLIsIndexElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc)
-{
-}
-
-HTMLIsIndexElementImpl::~HTMLIsIndexElementImpl()
-{
-}
-
-const DOMString HTMLIsIndexElementImpl::nodeName() const
-{
-    return "ISINDEX";
-}
-
-ushort HTMLIsIndexElementImpl::id() const
-{
-    return ID_ISINDEX;
-}
-
-HTMLFormElementImpl *HTMLIsIndexElementImpl::form() const
-{
-  // ###
-  return 0;
-}
-
-// -------------------------------------------------------------------------
-
 HTMLLinkElementImpl::HTMLLinkElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc)
 {
     m_sheet = 0;

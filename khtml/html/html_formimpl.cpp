@@ -3,6 +3,7 @@
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
+ *           (C) 2000 Dirk Mueller (mueller@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -43,6 +44,7 @@
 #include <klocale.h>
 #include <netaccess.h>
 #include <qfile.h>
+#include <qtextcodec.h>
 
 using namespace DOM;
 using namespace khtml;
@@ -56,6 +58,7 @@ HTMLFormElementImpl::HTMLFormElementImpl(DocumentImpl *doc)
     m_multipart = false;
     m_enctype = "application/x-www-form-urlencoded";
     m_boundary = "----------0xKhTmLbOuNdArY";
+    m_acceptcharset = "UNKNOWN";
 }
 
 HTMLFormElementImpl::~HTMLFormElementImpl()
@@ -120,10 +123,30 @@ QByteArray HTMLFormElementImpl::formData()
 #ifdef FORMS_DEBUG
     kdDebug( 6030 ) << "form: formData()" << endl;
 #endif
-    
+
     QByteArray form_data(0);
     bool first = true;
     QCString enc_string = ""; // used for non-multipart data
+
+    // find out the QTextcodec to use
+    QStringList charsets = QStringList::split(' ', m_acceptcharset.string());
+    QTextCodec* codec = 0;
+    for ( QStringList::Iterator it = charsets.begin(); it != charsets.end(); ++it )
+    {
+        QString enc = (*it);
+        if(enc.contains("UNKNOWN"))
+        {
+            // use standard document encoding
+            enc = "ISO 8859-1";
+            if(view && view->part())
+                enc = view->part()->encoding();
+        }
+        if((codec = QTextCodec::codecForName(enc.latin1())))
+            break;
+    }
+    if(!codec)
+        codec = QTextCodec::codecForLocale();
+    assert(codec);
 
     HTMLGenericFormElementImpl *current = formElements.first();
     for( ; current; current = formElements.next() )
@@ -134,12 +157,12 @@ QByteArray HTMLFormElementImpl::formData()
         kdDebug(6030) << "checking " << current->name().string() << endl;
 #endif
 
-        if (!current->disabled() && current->encoding(lst)) {
+        if (!current->disabled() && current->encoding(codec, lst)) {
 
 #ifdef FORMS_DEBUG
             kdDebug(6030) << "adding name " << current->name().string() << endl;
 #endif
-	    
+
             khtml::encodingList::Iterator it;
             for( it = lst.begin(); it != lst.end(); ++it )
             {
@@ -147,7 +170,7 @@ QByteArray HTMLFormElementImpl::formData()
 #ifdef FORMS_DEBUG
                 kdDebug(6030) << "found data!" << endl;
 #endif
-		
+
                 if (!m_multipart)
                 {
                     if(!first)
@@ -163,12 +186,12 @@ QByteArray HTMLFormElementImpl::formData()
                         if(i->clickX() != -1)
                         {
                             QCString aStr;
-                            enc_string += HTMLFormElementImpl::encodeByteArray(QString(current->name().string() + ".x").local8Bit());
+                            enc_string += HTMLFormElementImpl::encodeByteArray(codec->fromUnicode(QString(current->name().string() + ".x")));
                             aStr.setNum(i->clickX());
                             enc_string += "=";
                             enc_string += aStr;
                             enc_string += "&";
-                            enc_string += HTMLFormElementImpl::encodeByteArray(QString(current->name().string() + ".y").local8Bit());
+                            enc_string += HTMLFormElementImpl::encodeByteArray(codec->fromUnicode(QString(current->name().string() + ".y")));
                             enc_string += "=";
                             aStr.setNum(i->clickY());
                             enc_string += aStr;
@@ -176,7 +199,7 @@ QByteArray HTMLFormElementImpl::formData()
                     }
                     else
                     {
-                        enc_string += HTMLFormElementImpl::encodeByteArray(current->name().string().local8Bit());
+                        enc_string += HTMLFormElementImpl::encodeByteArray(codec->fromUnicode(current->name().string()));
                         enc_string += "=";
                         enc_string += HTMLFormElementImpl::encodeByteArray(enc);
                     }
@@ -272,14 +295,14 @@ void HTMLFormElementImpl::submit(  )
 
     if(m_post)
     {
-        view->part()->submitForm( "post", url.string(), form_data,
-                                  target.string(),
+        view->part()->submitForm( "post", m_url.string(), form_data,
+                                  m_target.string(),
                                   enctype().string(),
                                   boundary().string() );
     }
     else
-        view->part()->submitForm( "get", url.string(), form_data,
-                                  target.string() );
+        view->part()->submitForm( "get", m_url.string(), form_data,
+                                  m_target.string() );
 }
 
 void HTMLFormElementImpl::reset(  )
@@ -287,7 +310,7 @@ void HTMLFormElementImpl::reset(  )
 #ifdef FORMS_DEBUG
     kdDebug( 6030 ) << "reset pressed!" << endl;
 #endif
-    
+
     DOMString script = getAttribute(ATTR_ONRESET);
     if (!script.isNull() && view->part()->jScriptEnabled())
 	view->part()->executeScript(Node(this), script.string());
@@ -307,10 +330,10 @@ void HTMLFormElementImpl::parseAttribute(AttrImpl *attr)
     switch(attr->attrId)
     {
     case ATTR_ACTION:
-        url = attr->value();
+        m_url = attr->value();
         break;
     case ATTR_TARGET:
-        target = attr->value();
+        m_target = attr->value();
         break;
     case ATTR_METHOD:
         if ( strcasecmp( attr->value(), "post" ) == 0 )
@@ -320,8 +343,12 @@ void HTMLFormElementImpl::parseAttribute(AttrImpl *attr)
         setEnctype( attr->value() );
         break;
     case ATTR_ACCEPT_CHARSET:
+        // space separated list of charsets the server
+        // accepts - see rfc2045
+        m_acceptcharset = attr->value();
+        break;
     case ATTR_ACCEPT:
-        // ignore these for the moment...
+        // ignore this one for the moment...
         break;
     default:
         HTMLElementImpl::parseAttribute(attr);
@@ -581,8 +608,19 @@ void HTMLButtonElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLButtonElementImpl::attach(KHTMLView *_view)
 {
+    m_style = document->styleSelector()->styleForElement(this);
     view = _view;
-    HTMLElementImpl::attach(_view);
+
+    khtml::RenderObject * r = _parent ? _parent->renderer() : 0;
+    if(r)
+    {
+        m_render = new RenderHtml4Button(view, this);
+        m_render->setStyle(m_style);
+
+        r->addChild(m_render, _next ? _next->renderer() : 0);
+    }
+    NodeBaseImpl::attach(_view);
+
 }
 
 // -------------------------------------------------------------------------
@@ -897,23 +935,22 @@ void HTMLInputElementImpl::attach(KHTMLView *_view)
 }
 
 
-bool HTMLInputElementImpl::encoding(khtml::encodingList& encoding)
+bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList& encoding)
 {
     if (_name.isEmpty()) return false;
 
-    // ### local8Bit() is probably wrong here
     switch (_type) {
         case HIDDEN:
         case TEXT:
         case PASSWORD:
             // always successful
-            encoding += m_value.string().local8Bit();
+            encoding += codec->fromUnicode(m_value.string());
             return true;
         case CHECKBOX:
 
             if( checked() )
             {
-                encoding += ( m_value.isNull() ? QCString("on") : m_value.string().local8Bit() );
+                encoding += ( m_value.isNull() ? QCString("on") : codec->fromUnicode(m_value.string()));
                 return true;
             }
             break;
@@ -922,7 +959,7 @@ bool HTMLInputElementImpl::encoding(khtml::encodingList& encoding)
 
             if( checked() )
             {
-                encoding += m_value.string().local8Bit();
+                encoding += codec->fromUnicode(m_value.string());
                 return true;
             }
             break;
@@ -937,7 +974,7 @@ bool HTMLInputElementImpl::encoding(khtml::encodingList& encoding)
             if(_clicked)
             {
                 _clicked = false;
-                encoding += m_value.string().local8Bit();
+                encoding += codec->fromUnicode(m_value.string());
                 return true; // coordinate submit are currently a special case in formData
             }
             break;
@@ -946,15 +983,15 @@ bool HTMLInputElementImpl::encoding(khtml::encodingList& encoding)
 
             if (m_render && static_cast<RenderSubmitButton*>(m_render)->clicked())
             {
-                QCString enc_str = m_value.isNull() ?
-                                   static_cast<RenderSubmitButton*>(m_render)->defaultLabel().local8Bit() : value().string().local8Bit();
+                QString enc_str = m_value.isNull() ?
+                    static_cast<RenderSubmitButton*>(m_render)->defaultLabel() : value().string();
 
                 if (m_render)
                     static_cast<RenderSubmitButton*>(m_render)->setClicked(false);
 
                 if(!enc_str.isEmpty())
                 {
-                    encoding += enc_str;
+                    encoding += codec->fromUnicode(enc_str);
                     return true;
                 }
             }
@@ -1282,7 +1319,7 @@ void HTMLSelectElementImpl::attach(KHTMLView *_view)
 }
 
 
-bool HTMLSelectElementImpl::encoding(khtml::encodingList& encoded_values)
+bool HTMLSelectElementImpl::encoding(const QTextCodec* codec, khtml::encodingList& encoded_values)
 {
     bool successful = false;
 
@@ -1291,10 +1328,11 @@ bool HTMLSelectElementImpl::encoding(khtml::encodingList& encoded_values)
         if (m_listItems[i]->id() == ID_OPTION) {
             HTMLOptionElementImpl *option = static_cast<HTMLOptionElementImpl*>(m_listItems[i]);
             if (option->selected()) {
+                // ### fix this stripWhitespace HACK!
                 if (option->value().isNull())
-                    encoded_values += option->text().string().stripWhiteSpace().local8Bit();
+                    encoded_values += codec->fromUnicode(option->text().string().stripWhiteSpace());
                 else
-                    encoded_values += option->value().string().local8Bit();
+                    encoded_values += codec->fromUnicode(option->value().string());
                 successful = true;
             }
         }
@@ -1306,10 +1344,11 @@ bool HTMLSelectElementImpl::encoding(khtml::encodingList& encoded_values)
     if (!successful && !m_multiple && m_size <= 1 && m_listItems.size() &&
         (m_listItems[0]->id() == ID_OPTION) ) {
         HTMLOptionElementImpl *option = static_cast<HTMLOptionElementImpl*>(m_listItems[0]);
+        // ### fix this stripWhitespace crap!
         if (option->value().isNull())
-            encoded_values += option->text().string().stripWhiteSpace().local8Bit();
+            encoded_values += codec->fromUnicode(option->text().string().stripWhiteSpace());
         else
-            encoded_values += option->value().string().local8Bit();
+            encoded_values += codec->fromUnicode(option->value().string());
         successful = true;
     }
 
@@ -1665,12 +1704,12 @@ void HTMLTextAreaElementImpl::attach(KHTMLView *_view)
     NodeBaseImpl::attach(_view);
 }
 
-bool HTMLTextAreaElementImpl::encoding(khtml::encodingList& encoding)
+bool HTMLTextAreaElementImpl::encoding(const QTextCodec* codec, encodingList& encoding)
 {
     if (_name.isEmpty() || !m_render) return false;
 
     // ### make this work independent of render
-    encoding += value().string().local8Bit();
+    encoding += codec->fromUnicode(value().string());
 
     return true;
 }
@@ -1723,6 +1762,51 @@ void HTMLTextAreaElementImpl::setDefaultValue(DOMString _defaultValue)
 
 // -------------------------------------------------------------------------
 
+HTMLIsIndexElementImpl::HTMLIsIndexElementImpl(DocumentImpl *doc)
+    : HTMLInputElementImpl(doc)
+{
+    _type = TEXT;
+}
 
+HTMLIsIndexElementImpl::HTMLIsIndexElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f)
+    : HTMLInputElementImpl(doc, f)
+{
+    _type = TEXT;
+}
 
+HTMLIsIndexElementImpl::~HTMLIsIndexElementImpl()
+{
+}
+
+const DOMString HTMLIsIndexElementImpl::nodeName() const
+{
+    return "ISINDEX";
+}
+
+ushort HTMLIsIndexElementImpl::id() const
+{
+    return ID_ISINDEX;
+}
+
+void HTMLIsIndexElementImpl::parseAttribute(AttrImpl* attr)
+{
+    switch(attr->attrId)
+    {
+    case ATTR_PROMPT:
+        m_prompt = attr->value();
+    default:
+        // don't call HTMLInputElement::parseAttribute here, as it would
+        // accept attributes this element does not support
+        HTMLGenericFormElementImpl::parseAttribute(attr);
+    }
+}
+
+void HTMLIsIndexElementImpl::attach(KHTMLView* v)
+{
+    HTMLInputElementImpl::attach(v);
+    // ### fix this, this is just a crude hack
+    setValue(m_prompt);
+}
+
+// -------------------------------------------------------------------------
 

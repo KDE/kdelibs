@@ -1344,6 +1344,17 @@ bool KHTMLPart::setEncoding( const QString &name, bool override )
     return true;
 }
 
+QString KHTMLPart::encoding()
+{
+    if(d->m_haveEncoding && !d->m_encoding.isEmpty())
+        return d->m_encoding;
+
+    if(d->m_decoder && d->m_decoder->encoding())
+        return QString(d->m_decoder->encoding());
+
+    return(settings()->encoding());
+}
+
 void KHTMLPart::setUserStyleSheet(const KURL &url)
 {
     d->m_userSheetUrl = DOMString();

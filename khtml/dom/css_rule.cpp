@@ -379,24 +379,24 @@ CSSRuleList::CSSRuleList()
 //    impl = 0;
 }
 
-CSSRuleList::CSSRuleList(const CSSRuleList &other)
+CSSRuleList::CSSRuleList(const CSSRuleList &/*other*/)
 {
 //    impl = other.impl;
 //    if(impl) impl->ref();
 }
 
-CSSRuleList::CSSRuleList(CSSRuleListImpl *i)
+CSSRuleList::CSSRuleList(CSSRuleListImpl */*i*/)
 {
 //    impl = i;
 //    if(impl) impl->ref();
 }
 
-CSSRuleList::CSSRuleList(StyleListImpl *i)
+CSSRuleList::CSSRuleList(StyleListImpl */*i*/)
 {
 //    impl = ?
 }
 
-CSSRuleList &CSSRuleList::operator = (const CSSRuleList &other)
+CSSRuleList &CSSRuleList::operator = (const CSSRuleList &/*other*/)
 {
 //    if(impl) impl->deref();
 //    impl = other.impl;

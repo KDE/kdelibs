@@ -1151,6 +1151,8 @@ public:
     void select (  );
 };
 
+// --------------------------------------------------------------------------
+
 class HTMLOptionElementImpl;
 /**
  * A selectable choice. See the <a
@@ -1266,6 +1268,58 @@ public:
      * see @ref value
      */
     void setValue( const DOMString & );
+};
+
+
+// --------------------------------------------------------------------------
+
+class HTMLIsIndexElementImpl;
+class HTMLFormElement;
+
+/**
+ * This element is used for single-line text input. See the <a
+ * href="http://www.w3.org/TR/REC-html40/interact/forms.html#edef-ISINDEX">
+ * ISINDEX element definition </a> in HTML 4.0. This element is
+ * deprecated in HTML 4.0.
+ *
+ */
+class HTMLIsIndexElement : public HTMLElement
+{
+public:
+    HTMLIsIndexElement();
+    HTMLIsIndexElement(const HTMLIsIndexElement &other);
+    HTMLIsIndexElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
+protected:
+    HTMLIsIndexElement(HTMLIsIndexElementImpl *impl);
+public:
+
+    HTMLIsIndexElement & operator = (const HTMLIsIndexElement &other);
+    HTMLIsIndexElement & operator = (const Node &other);
+
+    ~HTMLIsIndexElement();
+
+    /**
+     * Returns the <code> FORM </code> element containing this
+     * control. Returns null if this control is not within the context
+     * of a form.
+     *
+     */
+    HTMLFormElement form() const;
+
+    /**
+     * The prompt message. See the <a
+     * href="http://www.w3.org/TR/REC-html40/interact/forms.html#adef-prompt">
+     * prompt attribute definition </a> in HTML 4.0. This attribute is
+     * deprecated in HTML 4.0.
+     *
+     */
+    DOMString prompt() const;
+
+    /**
+     * see @ref prompt
+     */
+    void setPrompt( const DOMString & );
 };
 
 }; //namespace

@@ -131,9 +131,6 @@ ElementImpl *DocumentImpl::createElement( const DOMString &name )
     case ID_BASE:
 	n = new HTMLBaseElementImpl(this);
 	break;
-    case ID_ISINDEX:
-	n = new HTMLIsIndexElementImpl(this);
-	break;
     case ID_LINK:
 	n = new HTMLLinkElementImpl(this);
 	break;
@@ -171,6 +168,9 @@ ElementImpl *DocumentImpl::createElement( const DOMString &name )
 	break;
     case ID_INPUT:
             n = new HTMLInputElementImpl(this);
+	break;
+    case ID_ISINDEX:
+	    n = new HTMLIsIndexElementImpl(this);
 	break;
     case ID_LABEL:
             n = new HTMLLabelElementImpl(this);
@@ -310,7 +310,7 @@ ElementImpl *DocumentImpl::createElement( const DOMString &name )
     case ID_TFOOT:
 	n = new HTMLTableSectionElementImpl(this, id);
 	break;
-	
+
 // inline elements
     case ID_BR:
 	n = new HTMLBRElementImpl(this);

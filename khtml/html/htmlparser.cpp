@@ -805,9 +805,6 @@ NodeImpl *KHTMLParser::getElement(Token *t)
     case ID_BASE:
         n = new HTMLBaseElementImpl(document);
         break;
-    case ID_ISINDEX:
-        n = new HTMLIsIndexElementImpl(document);
-        break;
     case ID_LINK:
         n = new HTMLLinkElementImpl(document);
         break;
@@ -853,6 +850,9 @@ NodeImpl *KHTMLParser::getElement(Token *t)
         break;
     case ID_INPUT:
         n = new HTMLInputElementImpl(document, form);
+        break;
+    case ID_ISINDEX:
+        n = new HTMLIsIndexElementImpl(document, form);
         break;
     case ID_LABEL:
         n = new HTMLLabelElementImpl(document, form);

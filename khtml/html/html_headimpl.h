@@ -61,22 +61,7 @@ protected:
     DOMString _target;
 };
 
-// -------------------------------------------------------------------------
 
-class HTMLIsIndexElementImpl : public HTMLElementImpl
-{
-public:
-    HTMLIsIndexElementImpl(DocumentImpl *doc);
-
-    ~HTMLIsIndexElementImpl();
-
-    virtual const DOMString nodeName() const;
-    virtual ushort id() const;
-
-    virtual tagStatus startTag() { return ISINDEXStartTag; }
-    virtual tagStatus endTag() { return ISINDEXEndTag; }
-    HTMLFormElementImpl *form() const;
-};
 
 // -------------------------------------------------------------------------
 

@@ -3,7 +3,7 @@
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
- *           (C) 2000 Dirk A. Mueller (mueller@kde.org)
+ *           (C) 2000 Dirk Mueller (mueller@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -35,6 +35,7 @@
 
 #include "render_replaced.h"
 #include "render_image.h"
+#include "render_flow.h"
 
 class QWidget;
 class QMultiLineEdit;
@@ -105,6 +106,20 @@ public:
 
     virtual const char *renderName() const { return "RenderButton"; }
 
+    virtual void layout();
+};
+
+// -------------------------------------------------------------------------
+
+class RenderHtml4Button : public RenderFlow
+{
+public:
+    RenderHtml4Button(QScrollView* view, HTMLGenericFormElementImpl *element);
+
+    virtual const char* renderName() const { return "RenderHtml4Button"; }
+
+    virtual void printObject( QPainter *p, int /*x*/, int /*y*/,
+                              int /*w*/, int /*h*/, int tx, int ty);
     virtual void layout();
 };
 
