@@ -70,8 +70,16 @@ static const char textareaEnd [] = "</textarea";
 #define KHTML_REALLOC_QCHAR_VEC(P, N ) (QChar*) P = realloc(p, sizeof(QChar)*( N ))
 #define KHTML_DELETE_QCHAR_VEC( P ) free((char*)( P ))
 
-// Partial support for MS Windows Latin-1 extensions
-// full list http://www.bbsinc.com/iso8859.html
+// Partial support for MS Windows Latin-1 extensions.
+//
+// Technically these extensions should be marked "windows-1252" or "cp1252", but
+// in the standard Microsoft way, these extensions infect hundreds of thousands
+// pages marked as something else.
+//
+// See: http://www.microsoft.com/globaldev/reference/WinCP.asp
+//      http://www.bbsinc.com/iso8859.html
+//      http://www.obviously.com/
+//
 // There may be better equivalents
 #define fixUpChar(x) \
             if (!(x).row() ) { \
@@ -95,7 +103,9 @@ static const char textareaEnd [] = "</textarea";
             } \
             else { \
                 switch( (x).unicode() ) { \
+                case 0x2013: (x) = '-'; break; \
                 case 0x2014: (x) = '-'; break; \
+                case 0x2018: (x) = '\''; break; \
                 case 0x2019: (x) = '\''; break; \
                 case 0x201c: (x) = '"'; break; \
                 case 0x201d: (x) = '"'; break; \
