@@ -25,6 +25,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 
+#include <qurl.h>
 #include <qdir.h>
 
 

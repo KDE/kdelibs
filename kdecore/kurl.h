@@ -22,7 +22,8 @@
 
 #include <qstring.h>
 #include <qvaluelist.h>
-#include <qurl.h>
+
+class QUrl;
 
 /**
  * Mention that KURL has some restrictions regarding the path
@@ -299,7 +300,7 @@ public:
   KURL& operator=( const KURL& _u );
   KURL& operator=( const QString& _url );
   KURL& operator=( const QUrl & u );
-    
+
   bool operator==( const KURL& _u ) const;
   bool operator==( const QString& _u ) const;
   bool operator!=( const KURL& _u ) const { return !( *this == _u ); }
