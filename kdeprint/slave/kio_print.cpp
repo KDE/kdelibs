@@ -18,9 +18,8 @@
  **/
 
 #include "kio_print.h"
-#include "kmprinter.h"
-#include "kmmanager.h"
-#include "kmfactory.h"
+#include <kdeprint/kmprinter.h>
+#include <kdeprint/kmmanager.h>
 
 #include <qfile.h>
 #include <qtextstream.h>
@@ -107,7 +106,7 @@ void KIO_Print::listDir(const KURL& url)
 		}
 		else
 			error(KIO::ERR_DOES_NOT_EXIST, url.url());
-		QListIterator<KMPrinter>	it(*(KMFactory::self()->manager()->printerList()));
+		QListIterator<KMPrinter>	it(*(KMManager::self()->printerList()));
 		for (;it.current();++it)
 		{
 			if (!(it.current()->type() & mask) || !it.current()->instanceName().isEmpty())
@@ -201,9 +200,9 @@ void KIO_Print::get(const KURL& url)
 
 	PRINT_DEBUG << "opening " << url.url() << endl;
 
-	KMFactory::self()->manager()->printerList(false);
+	KMManager::self()->printerList(false);
 	if (elems.count() != 2 || (group != "printers" && group != "classes" && group != "specials")
-	    || (mprinter = KMFactory::self()->manager()->findPrinter(printer)) == 0)
+	    || (mprinter = KMManager::self()->findPrinter(printer)) == 0)
 	{
 		error(KIO::ERR_DOES_NOT_EXIST, url.path());
 	}
@@ -219,7 +218,7 @@ void KIO_Print::get(const KURL& url)
 
 void KIO_Print::showPrinterInfo(KMPrinter *printer)
 {
-	if (!KMFactory::self()->manager()->completePrinter(printer))
+	if (!KMManager::self()->completePrinter(printer))
 		error(KIO::ERR_INTERNAL, i18n("Unable to retrieve class informations for %1.").arg(printer->name()));
 	else
 	{
@@ -251,7 +250,7 @@ void KIO_Print::showPrinterInfo(KMPrinter *printer)
 
 void KIO_Print::showClassInfo(KMPrinter *printer)
 {
-	if (!KMFactory::self()->manager()->completePrinter(printer))
+	if (!KMManager::self()->completePrinter(printer))
 		error(KIO::ERR_INTERNAL, i18n("Unable to retrieve class informations for %1.").arg(printer->name()));
 	else
 	{
