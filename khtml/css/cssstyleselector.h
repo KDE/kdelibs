@@ -81,12 +81,12 @@ namespace khtml
     class StyleSelector
     {
     public:
-	StyleSelector() {};
+	StyleSelector() {}
 
 	/* as nobody has implemented a second style selector up to now comment out
 	   the virtual methods until then, so the class has no vptr.
 	*/
-// 	virtual ~StyleSelector() {};
+// 	virtual ~StyleSelector() {}
 // 	virtual RenderStyle *styleForElement(DOM::ElementImpl *e) = 0;
 
 	enum State {

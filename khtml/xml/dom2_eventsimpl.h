@@ -149,7 +149,7 @@ protected:
 class UIEventImpl : public EventImpl
 {
 public:
-    UIEventImpl() : m_view(0), m_detail(0) {};
+    UIEventImpl() : m_view(0), m_detail(0) {}
     UIEventImpl(EventId _id,
 		bool canBubbleArg,
 		bool cancelableArg,
@@ -397,7 +397,7 @@ public:
     RegisteredEventListener(EventImpl::EventId _id, EventListener *_listener, bool _useCapture)
         : id(_id), useCapture(_useCapture), listener(_listener) { listener->ref(); }
 
-    ~RegisteredEventListener() { listener->deref(); }
+    ~RegisteredEventListener() { listener->deref(); listener = 0; }
 
     bool operator==(const RegisteredEventListener &other)
     { return id == other.id && listener == other.listener && useCapture == other.useCapture; }
