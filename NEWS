@@ -1,3 +1,7 @@
+24.07.97:	new KToolBar and stuff(0.6)
+			Rubberbanding for KTreeList by Rainer Bawidamann
+			Patches for SGI by Claus Riemann
+
 17.07.97:	new stopsign.xpm
 			KConfig: environment variables are resolved in readEntry()
 			(meaning you can write() an entry with an environment
