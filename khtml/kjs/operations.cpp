@@ -94,6 +94,8 @@ KJSO *KJS::toNumber(KJSO *obj)
       return obj->ref();
     case String:
       /* TODO */
+      if (sscanf(obj->sVal().ascii(), "%lf", &d) == 0)
+	d = NaN;
       break;
     case Object:
       tmp = toPrimitive(obj, Number);
