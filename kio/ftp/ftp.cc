@@ -22,7 +22,6 @@
 #include "ftp.h"
 
 #include <errno.h>
-#include <config.h>
 #include <assert.h>
 #include <string.h>
 
@@ -33,14 +32,18 @@
 #include <ksock.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 
-#include <netdb.h>
-#include <sys/time.h>
 #include <ctype.h>
+#include <netdb.h>
+#ifdef HAVE_SYS_TIME_H
+#include <sys/time.h>
+#endif
+#if TIME_WITH_SYS_TIME
+#include <time.h>
+#endif
 #ifdef HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
