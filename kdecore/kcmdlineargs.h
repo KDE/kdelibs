@@ -261,7 +261,13 @@ public:
    *     that follows. In this case "option2".
    * @li "+file" specifies an argument. The '+' is removed. If your program
    *     doesn't specify that it can use arguments your program will abort
-   *     when an argument is passed to it.
+   *     when an argument is passed to it. Note that the reverse is not
+   *     true. If required, you must check yourself the number of arguments
+   *     specified by the user:
+   *     <code>
+   *       KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+   *       if (args->count() == 0) KCmdLineArgs::usage(i18n("No file specified!"));
+   *     </code>
    *
    * In BNF:
    * cmd = myapp [options] file
