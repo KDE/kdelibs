@@ -1144,6 +1144,7 @@ AC_MSG_RESULT($USE_RPATH)
 dnl Check for the type of the third argument of getsockname
 AC_DEFUN(AC_CHECK_KSIZE_T,
 [AC_MSG_CHECKING(for the third argument of getsockname)  
+AC_LANG_CPLUSPLUS
 AC_CACHE_VAL(ac_cv_ksize_t_int,
 [AC_TRY_COMPILE([#include <sys/types.h>
 #include <sys/socket.h>],[int a=0; getsockname(0,(struct sockaddr*)0, &a);],
