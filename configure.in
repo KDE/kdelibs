@@ -8,19 +8,13 @@ AC_CANONICAL_SYSTEM
 AC_ARG_PROGRAM
 
 dnl Automake doc recommends to do this only here. (Janos)
-AM_INIT_AUTOMAKE(kdebase, 0.7) dnl searches for some needed programs
+AM_INIT_AUTOMAKE(kdelibs, 0.8) dnl searches for some needed programs
 
 dnl checks, if the debug code is wanted
 AC_CHECK_FLAGS
 
 dnl make $KDEDIR the default for the installation
 AC_PREFIX_DEFAULT(${KDEDIR:-/usr/local/kde})
-
-dnl version and name (not really needed)
-VERSION=0.7
-AC_SUBST(VERSION)
-PACKAGE=kdecore
-AC_SUBST(PACKAGE) 
 
 dnl generate the config header
 AM_CONFIG_HEADER(config.h) dnl at the distribution this done
@@ -62,6 +56,8 @@ AC_CHECK_BOOL
 
 dnl Checks for library functions. MISCOBJS is for kdecore
 AC_CHECK_FUNCS(socket)
+AC_CHECK_SETENV
+AC_CHECK_KSIZE_T
 
 dnl Perform program name transformation
 AC_ARG_PROGRAM
