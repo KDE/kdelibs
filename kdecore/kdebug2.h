@@ -3,6 +3,9 @@
 #include <kdebug.h>
 #include <stdio.h>
 
+extern void kDebugBackend( unsigned short nLevel, unsigned short nArea,
+			   const char * pFormat, va_list arguments );
+
 class kdbgstream;
 
 typedef kdbgstream & (*KDBGFUNC)(kdbgstream &);// manipulator function
@@ -18,7 +21,10 @@ class kdbgstream {
     }
     kdbgstream &operator<<(int i)  { QString tmp; tmp.setNum(i); output += tmp; return *this; }
     void flush() {
-	fprintf(stdout, "%s", output.utf8().data());
+	if (output.isEmpty())
+	    return;
+	output.truncate(output.length() - 1);
+	kDebugBackend( level, area, "%s", output.utf8().data());
 	output = QString::null;
     }
     kdbgstream &operator<<(const QString& string) {
@@ -40,6 +46,7 @@ class kdbgstream {
     unsigned int area, level;
 };
 
-kdbgstream kdbg(int area = 0) { return kdbgstream(area, 0); }
+kdbgstream kdDebug(int area = 0) { return kdbgstream(area, KDEBUG_INFO); }
+kdbgstream kdError(int area = 0) { return kdbgstream(area, KDEBUG_ERROR); }
 kdbgstream &endl( kdbgstream & s) { s << "\n"; return s; }
 kdbgstream &flush( kdbgstream & s) { s.flush(); return s; }

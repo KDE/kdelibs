@@ -1,11 +1,12 @@
 #include <kdebug.h>
 #include <kdebug2.h>
-#include <kinstance.h>
+#include <kapp.h>
 
-int main()
+int main(int argc, char **argv)
 {
-    kdbg() << 17 << endl;
-    kdbg() << 18 << endl;
+    KApplication a(argc, argv, "kdebugtest");
+    kdDebug(150) << 17 << endl;
+    kdDebug() << 18 << endl;
   kDebug("Before instance creation");
   kDebugArea(1202,"Before instance creation");
   KInstance i("kdebugtest");
