@@ -122,8 +122,12 @@ void KShortcutDialog::initGUI()
 	QVBox* pVBox = new QVBox( this );
         
 	// Don't use KStdGuiItem because shown accels would be assigned as shortcut when pressed
-	m_pcmdOK = new KPushButton( KGuiItem(i18n( "OK" ), "button_ok"), pVBox );
-	m_pcmdCancel = new KPushButton( KGuiItem(i18n( "Cancel" ), "button_cancel"), pVBox );
+	KGuiItem ok = KStdGuiItem::ok();
+	ok.setText( i18n( "OK" ) );
+	KGuiItem cancel = KStdGuiItem::cancel();
+	cancel.setText( i18n( "Cancel" ) );
+	m_pcmdOK = new KPushButton( ok, pVBox );
+	m_pcmdCancel = new KPushButton( cancel, pVBox );
 	m_pcbAutoClose = new QCheckBox( i18n("Auto-close"), pVBox );
 	m_pcbAutoClose->setChecked( true );
 	// Disable auto-close if the sequence we're editing is a multi-key shortcut.
