@@ -512,5 +512,5 @@ int main(int argc, char **argv)
       fprintf(stderr, "Unexected response from KInit (response = %ld).\n", header.cmd);
       exit(255);
    }
-   exit(2);
+   exit(0);
 }
