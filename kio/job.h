@@ -92,7 +92,7 @@ namespace KIO {
     /**
      * Finds all details for one file or directory.
      */
-    StatJob * stat( const KURL& url );
+    StatJob * stat( const KURL& url, bool showProgressInfo = true );
 
     /**
      * get, aka read.
@@ -134,7 +134,8 @@ namespace KIO {
     /**
      * Finds mimetype for one file or directory.
      */
-    MimetypeJob * mimetype( const KURL& url );
+    MimetypeJob * mimetype( const KURL& url,
+                            bool showProgressInfo = true );
 
     /**
      * Copies a single file

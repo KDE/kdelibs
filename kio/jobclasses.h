@@ -327,7 +327,7 @@ namespace KIO {
     Q_OBJECT
 
     public:
-        StatJob(const KURL& url, int command, const QByteArray &packedArgs);
+        StatJob(const KURL& url, int command, const QByteArray &packedArgs, bool showProgressInfo);
 
         /**
          * Call this in the slot connected to @ref result,
@@ -424,7 +424,7 @@ namespace KIO {
     Q_OBJECT
 
     public:
-        MimetypeJob(const KURL& url, int command, const QByteArray &packedArgs);
+        MimetypeJob(const KURL& url, int command, const QByteArray &packedArgs, bool showProgressInfo);
 
         /**
          * Call this in the slot connected to @ref result,

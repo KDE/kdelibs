@@ -391,8 +391,8 @@ SimpleJob *KIO::unmount( const QString& point, bool showProgressInfo )
 //////////
 
 StatJob::StatJob( const KURL& url, int command,
-                  const QByteArray &packedArgs )
-    : SimpleJob(url, command, packedArgs, false)
+                  const QByteArray &packedArgs, bool showProgressInfo )
+    : SimpleJob(url, command, packedArgs, showProgressInfo)
 {
 }
 
@@ -410,11 +410,11 @@ void StatJob::slotStatEntry( const KIO::UDSEntry & entry )
     m_statResult = entry;
 }
 
-StatJob *KIO::stat(const KURL& url)
+StatJob *KIO::stat(const KURL& url, bool showProgressInfo)
 {
     kdDebug(7007) << "stat " << url.url() << endl;
     KIO_ARGS << url;
-    StatJob * job = new StatJob(url, CMD_STAT, packedArgs );
+    StatJob * job = new StatJob(url, CMD_STAT, packedArgs, showProgressInfo );
     return job;
 }
 
@@ -620,8 +620,8 @@ TransferJob *KIO::put( const KURL& url, int permissions,
 //////////
 
 MimetypeJob::MimetypeJob( const KURL& url, int command,
-                  const QByteArray &packedArgs )
-    : TransferJob(url, command, packedArgs, QByteArray(), false)
+                  const QByteArray &packedArgs, bool showProgressInfo )
+    : TransferJob(url, command, packedArgs, QByteArray(), showProgressInfo)
 {
 }
 
@@ -655,11 +655,11 @@ void MimetypeJob::slotFinished( )
     }
 }
 
-MimetypeJob *KIO::mimetype(const KURL& url )
+MimetypeJob *KIO::mimetype(const KURL& url, bool showProgressInfo )
 {
     kdDebug(7007) << "mimetype " << url.url() << endl;
     KIO_ARGS << url;
-    MimetypeJob * job = new MimetypeJob(url, CMD_MIMETYPE, packedArgs);
+    MimetypeJob * job = new MimetypeJob(url, CMD_MIMETYPE, packedArgs, showProgressInfo);
     return job;
 }
 
