@@ -52,7 +52,7 @@ public:
   kde_loaded_l10nfile domain;
 };
 
-KCatalogue::KCatalogue(const QString & name, const QString & language = QString::null)
+KCatalogue::KCatalogue(const QString & name, const QString & language )
   : d( new KCataloguePrivate )
 {
   d->name = name;
