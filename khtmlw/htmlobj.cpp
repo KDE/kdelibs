@@ -1053,7 +1053,7 @@ void HTMLMap::fileLoaded( const char *_filename )
 	while ( !file.atEnd() )
 	{
 	    // read in a line
-	    buffer.data()[0] = '\0';
+	    buffer[0] = '\0';
 	    do
 	    {
 		ch = file.getch();
