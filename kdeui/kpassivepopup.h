@@ -198,6 +198,16 @@ protected:
      */
     virtual void mouseReleaseEvent( QMouseEvent *e );
 
+    /**
+     * If no relative window (e.g. taskbar button, system tray window) is
+     * available, use this rectangle (pass it to @ref moveNear()).
+     * Basically KWinModule::workArea() with width and height set to 0
+     * so that moveNear uses the upper-left position.
+     * @return The QRect to be passed to @ref moveNear() ifno other is 
+     * available.
+     */
+    QRect defaultArea() const;
+    
 private:
     void init();
 

@@ -57,7 +57,7 @@ void KPassivePopup::setView( QWidget *child )
 {
     delete msgView;
     msgView = child;
-    
+
     delete layout;
     layout = new QVBoxLayout( this, KDialog::marginHint(), KDialog::spacingHint() );
     layout->addWidget( msgView );
@@ -144,25 +144,48 @@ void KPassivePopup::hideEvent( QHideEvent * )
         deleteLater();
 }
 
+QRect KPassivePopup::defaultArea() const
+{
+    NETRootInfo info( qt_xdisplay(),
+                      NET::NumberOfDesktops |
+                      NET::CurrentDesktop |
+                      NET::WorkArea,
+                      -1, false );
+    info.activate();
+    NETRect workArea = info.workArea( info.currentDesktop() );
+    qDebug("x: %i, y: %i", workArea.pos.x, workArea.pos.y);
+    QRect r;
+    r.setRect( workArea.pos.x, workArea.pos.y, 0, 0 ); // top left
+    return r;
+}
+
 void KPassivePopup::positionSelf()
 {
-    NETWinInfo ni( qt_xdisplay(), window, qt_xrootwin(),
-		   NET::WMIconGeometry | NET::WMKDESystemTrayWinFor );
-
-    // Figure out where to put the popup. Note that we must handle
-    // windows that skip the taskbar cleanly
     QRect target;
-    if ( ni.kdeSystemTrayWinFor() ) {
-	NETRect frame, win;
-	ni.kdeGeometry( frame, win );
-	target.setRect( win.pos.x, win.pos.y, win.size.width, win.size.height );
+
+    if ( window == 0L ) {
+	target = defaultArea();
     }
-    else if ( ni.state() & NET::SkipTaskbar ) {
-	target.setRect( 0, 0, 0, 0 );
-    }
+    
     else {
-	NETRect r = ni.iconGeometry();
-	target.setRect( r.pos.x, r.pos.y, r.size.width, r.size.height );
+        NETWinInfo ni( qt_xdisplay(), window, qt_xrootwin(),
+                       NET::WMIconGeometry | NET::WMKDESystemTrayWinFor );
+
+        // Figure out where to put the popup. Note that we must handle
+        // windows that skip the taskbar cleanly
+        if ( ni.kdeSystemTrayWinFor() ) {
+            NETRect frame, win;
+            ni.kdeGeometry( frame, win );
+            target.setRect( win.pos.x, win.pos.y, 
+                            win.size.width, win.size.height );
+        }
+        else if ( ni.state() & NET::SkipTaskbar ) {
+            target = defaultArea();
+        }
+        else {
+            NETRect r = ni.iconGeometry();
+            target.setRect( r.pos.x, r.pos.y, r.size.width, r.size.height );
+        }
     }
 
     moveNear( target );
