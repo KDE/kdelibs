@@ -149,6 +149,11 @@ KCModule * KCModuleProxy::realModule() const
 	return d->kcm;
 }
 
+KCModuleInfo KCModuleProxy::moduleInfo() const
+{
+  return d->modinfo;
+}
+
 void KCModuleProxy::showEvent( QShowEvent * ev )
 {
 	( void )realModule();

@@ -158,7 +158,18 @@ void KCMultiDialog::slotOk()
 
 void KCMultiDialog::slotHelp()
 {
-    KURL url( KURL("help:/"), _docPath );
+    QString docPath;
+
+    int curPageIndex = activePageIndex();
+    ModuleList::Iterator end = m_modules.end();
+    for( ModuleList::Iterator it = m_modules.begin(); it != end; ++it )
+        if( pageIndex( ( QWidget * )( *it ).kcm->parent() ) == curPageIndex )
+        {
+            docPath = ( *it ).kcm->moduleInfo().docPath();
+            break;
+        }
+
+    KURL url( KURL("help:/"), docPath );
 
     if (url.protocol() == "help" || url.protocol() == "man" || url.protocol() == "info") {
         KProcess process;
@@ -261,10 +272,6 @@ void KCMultiDialog::addModule(const KCModuleInfo& moduleinfo,
                 new QStringList( parentComponents ) );
 
         connect(module, SIGNAL(changed(bool)), this, SLOT(clientChanged(bool)));
-
-        //setHelp( docpath, QString::null );
-        // FIXME: this will break if two KCMs have a different docPath
-        _docPath = moduleinfo.docPath();
 
         if( m_modules.count() == 0 )
             aboutToShowPage( page );
