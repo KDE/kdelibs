@@ -69,6 +69,10 @@ public:
     virtual short calcReplacedWidth() const;
     virtual int   calcReplacedHeight() const;
 
+    virtual SelectionState selectionState() const {return m_selectionState;}
+    virtual void setSelectionState(SelectionState s) {m_selectionState = s; }
+    virtual void cursorPos(int offset, int &_x, int &_y, int &height);
+
 private:
     /*
      * Pointer to the image
@@ -90,6 +94,7 @@ private:
     CachedImage *image;
     bool berrorPic : 1;
     bool loadEventSent : 1;
+    SelectionState m_selectionState : 3; // FIXME: don't forget to enlarge this as the enum grows
 };
 
 

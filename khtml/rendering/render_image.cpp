@@ -32,6 +32,7 @@
 
 #include <kapplication.h>
 #include <kdebug.h>
+#include <kglobalsettings.h>
 
 #include "css/csshelper.h"
 #include "misc/helper.h"
@@ -55,6 +56,7 @@ RenderImage::RenderImage(HTMLElementImpl *_element)
     : RenderReplaced(_element)
 {
     image = 0;
+    m_selectionState = SelectionNone;
     berrorPic = false;
     loadEventSent = false;
 
@@ -181,7 +183,7 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o)
     }
 }
 
-void RenderImage::paintObject(QPainter *p, int /*_x*/, int /*_y*/, int /*_w*/,
+void RenderImage::paintObject(QPainter *p, int /*_x*/, int _y, int /*_w*/,
 int /*_h*/, int _tx, int _ty, PaintAction paintPhase)
 {
     if (paintPhase != PaintActionForeground)
@@ -289,6 +291,15 @@ int /*_h*/, int _tx, int _ty, PaintAction paintPhase)
              p->drawPixmap(offs, pix, rect);
 
         }
+    }
+    // FIXME: consider cursor offset too, but currently it's nowhere saved.
+    if (m_selectionState != SelectionNone) {
+//    kdDebug(6040) << "_tx " << _tx << " _ty " << _ty << " _x " << _x << " _y " << _y << endl;
+    	// setting the brush origin is important for compatibility,
+	// don't touch it unless you know what you're doing
+    	p->setBrushOrigin(_tx, _ty - _y);
+        p->fillRect(_tx, _ty, width(), height(),
+		QBrush(KGlobalSettings::highlightColor(), Qt::Dense4Pattern));
     }
     if(style()->outlineWidth())
         paintOutline(p, _tx, _ty, width(), height(), style());
@@ -417,4 +428,24 @@ int RenderImage::calcReplacedHeight() const
     }
 
     return RenderReplaced::calcReplacedHeight();
+}
+
+void RenderImage::cursorPos(int offset, int &_x, int &_y, int &height) {
+  height = intrinsicHeight();
+  _x = xPos();
+  _y = yPos();
+  if (offset > 0) _x += intrinsicWidth();
+
+  RenderObject *cb = containingBlock();
+                                                  
+  int absx, absy;
+  if (cb && cb != this && cb->absolutePosition(absx,absy))
+  {
+    _x += absx;
+    _y += absy;
+  } else {
+    // we don't know our absolute position, and there is not point returning
+    // just a relative one
+    _x = _y = -1;
+  }
 }
