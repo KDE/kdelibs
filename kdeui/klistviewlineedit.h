@@ -42,6 +42,7 @@ public slots:
 protected:
 	virtual void focusOutEvent(QFocusEvent *);
 	virtual void keyPressEvent(QKeyEvent *e);
+	virtual void paintEvent(QPaintEvent *e);
         void terminate(bool commit);
 	QListViewItem *item;
 	int col;

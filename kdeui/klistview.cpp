@@ -141,6 +141,7 @@ public:
 KListViewLineEdit::KListViewLineEdit(KListView *parent)
         : KLineEdit(parent->viewport()), item(0), col(0), p(parent)
 {
+	setFrame( false );
         hide();
 }
 
@@ -171,7 +172,7 @@ void KListViewLineEdit::load(QListViewItem *i, int c)
 
 void KListViewLineEdit::keyPressEvent(QKeyEvent *e)
 {
-        QLineEdit::keyPressEvent(e);
+        KLineEdit::keyPressEvent(e);
 
         if(e->key() == Qt::Key_Return)
                 terminate(true);
@@ -207,6 +208,18 @@ void KListViewLineEdit::focusOutEvent(QFocusEvent *ev)
     if (focusEv->reason() != QFocusEvent::Popup)
         terminate(true);
 }
+
+void KListViewLineEdit::paintEvent( QPaintEvent *e )
+{
+    KLineEdit::paintEvent( e );
+
+    if ( !frame() ) {
+	QPainter p( this );
+	p.setClipRegion( e->region() );
+	p.drawRect( rect() );
+    }
+}
+
 
 KListView::KListView( QWidget *parent, const char *name )
   : QListView( parent, name ),
