@@ -337,7 +337,7 @@ void StdScheduleNode::accessModule()
 {
 	if(module) return;
 
-	module = (SynthModule_base *)_object->_cast("Arts::SynthModule");
+	module = (SynthModule_base *)_object->_cast(Arts::SynthModule_base::_IID);
 	if(!module)
 		arts_warning("Only SynthModule derived classes should carry streams.");
 }
