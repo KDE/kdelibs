@@ -1,59 +1,120 @@
-Index:
+## MCOP Core Infrastructure
 
-1. KDE2.2
-2. To have more fun
-3. Other suggestions
-
-===============================================================================
-
-1. KDE2.2
-
-- support threading in libmcop
-- export configuration interface from the soundserver (so that you can see
-  and change the autosuspend timeout for instance)
-- add options
-  -N  (to add extra network buffers)
-  -S  (to change the autosuspend timeout)
-- add kmessagebox style output of error messages (often, people don't know
-  why artsd is not running, does not start, doesn't like their soundcard,...)
-- make a generic gui factory, make noatun and artscontrol use it for effect
-  guis
+- threading support (libmcop-mt)                                        *KDE2.2*
+- offer sampleprecise timing
+- resource management (i.e. locate resources like "samples" or "structures"
+  in a similar uniform way KDE does with KStandardDirs)
+- dynamic implementation of classes/attributes
+- recursive scheduling again (with loops & cycles)
 - ensure DynamicCast(<some null object>) == Object::null()
 - implement StdFlowSystem::disconnectObject(...) (in synthschedule.cc)
+- try to fix autoSuspend in conjunction with full duplex
+
+## aRts SoundServer
+
+- add kmessagebox style output of error messages (often, people         *KDE2.2*
+  don't know why artsd is not running, does not start, doesn't like
+  their soundcard,...)
+- add -S option (to change the autosuspend timeout)                     *KDE2.2*
+- export configuration interfaces from the soundserver (so that
+  you can see and change the autosuspend timeout for instance)
+- add -N option (to add extra network buffers)
 - support multiple artsd instances on one computer (like multiple displays),
   and think of a clever way to register them
+- more support for different audio input/output methods (i.e. SDL, NAS, ESD,
+  AIX, Solaris)
+- support channels != 2
+- better defaults (i.e. realtime should be default)
+- complain nicer when realtime rights not there
+- expand capabilities of shell utils (making them eventually as powerful as
+  artscontrol, or better ;)
+
+## KMedia2
+
+- seekable playobjects
+- x11 embedding
+- streaming of data from kioslaves into PlayObjects
+
+## C API / artsdsp
+
+- recording
+- implement an arts_stream_flush for writing half-written data packets
+  (useful for implementing SNDCTL_DSP_POST in artsdsp)
+- move to CSL (CSL a new common sound layer, especially intended to be
+  compatible between Gnome and KDE)
+
+## GUI Support
+
+- make a generic gui factory, make noatun and artscontrol use           *KDE2.2*
+  it for effect guis
+- make it easier to use them as qt widgets (i.e. no extra window)       *KDE2.2*
+- port visual objects (beginnings are in kdemultimedia/arts/gui)
+- hbox, vbox
+- gui generation
+- hints via mcopidl
+
+## aRts Modules / Signal processing
+
+- midi recording for Brahms
 - StereoEffectStack should support reordering (and probably listing) effects
-- StereoEffectStack should remove effects that are not longer referenced
- => some work of this is right now in noatun
-- put streamwise blocking into MCOP, see artscat.cc to read really ugly
-  source which lives without that feature
-- port visual objects
- => beginnings are in kdemultimedia/arts/gui
-- more work on flow graph descriptions (Structure, etc.) -- external interfaces
-- port every object
-- recursive scheduling again (with loops & cycles)
-- reading/writing IEEE Floats needs proper documentation, testing on
-  different architectures and probably different code for some machines
+  (maybe backport noatuns version)
+- hard disc recording
 - allow progressive loading for wave files
 - write blockwise caching (not requiring whole samples to be held in memory)
-- recording, try to fix autoSuspend in conjunction with full duplex
+- akai support
+- better interpolation / resampling
+- the Resampler class should do big endian and float as inputs
+- LADSPA support
 
-2. To have more fun
+## artsbuilder (and runtime)
 
-- tune the transfer protocol (although MCOP theoretically could do 30000+
-  synchronous invocations per second, it can only do 8000+)
+- should be able to put designed structures as modules in structures again
+- allow to give additional parameters (like names for sample files to play)
+  through .arts-map files
+- more examples (instruments, songs and such)
+- gui editing (or should is it better to write a new editor for that)
+- live editing of running structures
+- component bar where you can choose components without going through all
+  these submenus
+- property editor (like in delphi)
+- support pressing "return" in the various dialogs and close them on doing
+  that (rather than always having to click "ok" with the mouse)
+- i18n fixes
 
-  possible tuning operations are
-    * rewrite Buffer not to use vector<char> to store data, but malloc'd
-	  blocks
-    * try to write "zero allocation" invocations, that means, try not to
-	  allocate memory on performing an invocation. For instance Buffers
-	  could be kept in pools, and be reused for further invocations, without
-	  the need to realloc another memory block
-    * try to minimize the amount of copies of data, possibly even using
-	  something like sharedmem to share data between the sending and
-	  receiving buffer
+## artscontrol
 
+- be able to remove midi ports                                          *KDE2.2*
+- add a mixer
+- persistent state (Arts::Environment), so that the environment
+  can be restored on next login (or per song or something like that)
+- edit .arts-map files visually
+
+## Optimization (this section contains various optimization ideas)
+
+- optimize bus rebuilding in bus.cc
+- use no floats for adressing the fractional part in resampling but integers
+  (that will be MUCH faster)
+- use short int for i16le resampling, instead of using a long and adding
+  sign manually (faster at least on athlon)
+- tune the MCOP transfer protocol
+  * rewrite Buffer not to use vector<char> to store data, but malloc'd blocks
+  * try to write "zero allocation" invocations, that means, try not to allocate
+    memory on performing an invocation. For instance Buffers could be kept in
+	pools, and be reused for further invocations, without the need to realloc
+	another memory block
+  * try to minimize the amount of copies of data, possibly even using something
+    like sharedmem to share data between the sending and receiving buffer
+
+## Documentation / Web
+
+- improve kdoc comments everywhere
+- add a section "what runs natively with artsd, faked via artsdsp, and
+  not at all" to the aRts FAQ
+
+## Misc
+
+- put streamwise blocking into MCOP, see artscat.cc to read really ugly
+  source which lives without that feature
 - implement plugins that transfer non-standard datatypes such as midi events,
   video frames, fft packets, oscilloscope views, ... (which was impossible
   with aRts on CORBA)
@@ -65,21 +126,10 @@ Index:
 - when being crazy, implement gatewaying from MCOP to DCOP, CORBA, XMLRPC
   or whatever else might be useful
 
-3. Other suggestions:
+## Interoperability (GNOME/C)
 
-  => Documentation & Web
-
-- make kdoc classtree available online
-- add a section "what runs natively with artsd, faked via artsdsp, and
-  not at all" to the aRts FAQ
-
-  => aRts C API
-
-- implement an arts_stream_flush for writing half-written data packets
-  (useful for implementing SNDCTL_DSP_POST in artsdsp)
-
-  => audio output
-
-- maybe use some code from the XMMS-Solaris plugin for the aRtsd sound output.
-  http://www.scms.rgu.ac.uk/staff/jr/computing/unix/xmms/ (is being worked on)
-- maybe support mono? mmap? ... support other architectures (SDL, NAS, ESD, AIX)
+- glib mainloop integration                                             *KDE2.2*
+- write a gartscontrol (in C) as native Gnome/Gtk app
+- further work on CSL
+- C language binding, based on glib
+- mcopidl code generation for C
