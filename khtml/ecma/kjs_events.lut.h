@@ -150,6 +150,34 @@ using namespace KJS;
 
 namespace KJS {
 
+const struct HashEntry DOMKeyEventTableEntries[] = {
+   { "virtKey", DOMKeyEvent::VirtKey, DontDelete|ReadOnly, 0, &DOMKeyEventTableEntries[2] },
+   { "key", DOMKeyEvent::Key, DontDelete|ReadOnly, 0, &DOMKeyEventTableEntries[3] },
+   { "outputString", DOMKeyEvent::OutputString, DontDelete|ReadOnly, 0, 0 },
+   { "inputGenerated", DOMKeyEvent::InputGenerated, DontDelete|ReadOnly, 0, &DOMKeyEventTableEntries[4] },
+   { "numPad", DOMKeyEvent::NumPad, DontDelete|ReadOnly, 0, 0 }
+};
+
+const struct HashTable DOMKeyEventTable = { 2, 5, DOMKeyEventTableEntries, 2 };
+
+}; // namespace
+
+using namespace KJS;
+
+namespace KJS {
+
+const struct HashEntry DOMKeyEventProtoTableEntries[] = {
+   { "initKeyEvent", DOMKeyEvent::InitKeyEvent, DontDelete|Function, 10, 0 }
+};
+
+const struct HashTable DOMKeyEventProtoTable = { 2, 1, DOMKeyEventProtoTableEntries, 1 };
+
+}; // namespace
+
+using namespace KJS;
+
+namespace KJS {
+
 const struct HashEntry MutationEventConstructorTableEntries[] = {
    { "ADDITION", DOM::MutationEvent::ADDITION, DontDelete|ReadOnly, 0, &MutationEventConstructorTableEntries[3] },
    { "MODIFICATION", DOM::MutationEvent::MODIFICATION, DontDelete|ReadOnly, 0, 0 },

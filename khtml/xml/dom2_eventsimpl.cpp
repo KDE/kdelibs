@@ -524,7 +524,7 @@ KeyEventImpl::KeyEventImpl(QKeyEvent *key, AbstractViewImpl *view)
   m_detail = key->count();
 
   m_numPad = false;
-  m_keyVal = 0;
+  m_keyVal = key->ascii();
   m_virtKeyVal = DOM_VK_UNDEFINED;
   m_inputGenerated = true;
 
@@ -723,12 +723,12 @@ bool KeyEventImpl::checkModifier(unsigned long modifierArg)
   return ((m_modifier && modifierArg) == modifierArg);
 }
 
-void KeyEventImpl::initKeyEvent(DOMString &typeArg,
+void KeyEventImpl::initKeyEvent(const DOMString &typeArg,
 				bool canBubbleArg,
 				bool cancelableArg,
 				const AbstractView &viewArg,
 				long detailArg,
-				DOMString &outputStringArg,
+				const DOMString &outputStringArg,
 				unsigned long keyValArg,
 				unsigned long virtKeyValArg,
 				bool inputGeneratedArg,

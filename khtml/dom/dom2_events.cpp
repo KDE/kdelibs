@@ -415,8 +415,119 @@ void MouseEvent::initMouseEvent(const DOMString &typeArg,
 	relatedTargetArg);
 }
 
+// -----------------------------------------------------------------------------
 
+KeyEvent::KeyEvent() : UIEvent()
+{
+}
 
+KeyEvent::KeyEvent(const KeyEvent &other) : UIEvent(other)
+{
+}
+
+KeyEvent::KeyEvent(const Event &other) : UIEvent()
+{
+    (*this)=other;
+}
+
+KeyEvent::KeyEvent(KeyEventImpl *impl) : UIEvent(impl)
+{
+}
+
+KeyEvent &KeyEvent::operator = (const KeyEvent &other)
+{
+    UIEvent::operator = (other);
+    return *this;
+}
+
+KeyEvent &KeyEvent::operator = (const Event &other)
+{
+    Event e;
+    e = other;
+    if (!e.isNull() && !e.handle()->isKeyEvent()) {
+	if ( impl ) impl->deref();
+	impl = 0;
+    } else
+	UIEvent::operator = (other);
+    return *this;
+}
+
+KeyEvent::~KeyEvent()
+{
+}
+
+void KeyEvent::initKeyEvent(const DOMString &typeArg,
+        bool canBubbleArg,
+        bool cancelableArg,
+        const AbstractView &viewArg,
+        long detailArg,
+        const DOMString &outputStringArg,
+        unsigned long keyValArg,
+        unsigned long virtKeyValArg,
+        bool inputGeneratedArg,
+        bool numPadArg)
+{
+    if (!impl)
+	throw DOMException(DOMException::INVALID_STATE_ERR);
+
+    return static_cast<KeyEventImpl*>(impl)->initKeyEvent(typeArg, canBubbleArg, cancelableArg, viewArg, detailArg, outputStringArg, keyValArg, virtKeyValArg, inputGeneratedArg, numPadArg);
+}
+
+unsigned long KeyEvent::keyVal() const
+{
+    if (!impl)
+	throw DOMException(DOMException::INVALID_STATE_ERR);
+
+    return static_cast<KeyEventImpl*>(impl)->keyVal();
+}
+
+DOMString KeyEvent::outputString() const
+{
+    if (!impl)
+	throw DOMException(DOMException::INVALID_STATE_ERR);
+
+    return static_cast<KeyEventImpl*>(impl)->outputString();
+}
+
+unsigned long KeyEvent::virtKeyVal() const
+{
+    if (!impl)
+	throw DOMException(DOMException::INVALID_STATE_ERR);
+
+    return static_cast<KeyEventImpl*>(impl)->virtKeyVal();
+}
+
+void KeyEvent::initModifier(unsigned long modifierArg, bool valueArg)
+{
+    if (!impl)
+	throw DOMException(DOMException::INVALID_STATE_ERR);
+
+    return static_cast<KeyEventImpl*>(impl)->initModifier(modifierArg,valueArg);
+}
+
+bool KeyEvent::checkModifier(unsigned long modiferArg)
+{
+    if (!impl)
+	throw DOMException(DOMException::INVALID_STATE_ERR);
+
+    return static_cast<KeyEventImpl*>(impl)->checkModifier(modiferArg);
+}
+
+bool KeyEvent::inputGenerated() const
+{
+    if (!impl)
+	throw DOMException(DOMException::INVALID_STATE_ERR);
+
+    return static_cast<KeyEventImpl*>(impl)->inputGenerated();
+}
+
+bool KeyEvent::numPad() const
+{
+    if (!impl)
+	throw DOMException(DOMException::INVALID_STATE_ERR);
+
+    return static_cast<KeyEventImpl*>(impl)->numPad();
+}
 // -----------------------------------------------------------------------------
 
 MutationEvent::MutationEvent() : Event()

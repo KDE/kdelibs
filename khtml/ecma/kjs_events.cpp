@@ -303,6 +303,8 @@ Value KJS::getDOMEvent(ExecState *exec, DOM::Event e)
     ret = new DOMUIEvent(exec, static_cast<DOM::UIEvent>(e));
   else if (module == "MouseEvents")
     ret = new DOMMouseEvent(exec, static_cast<DOM::MouseEvent>(e));
+  else if (module == "KeyEvents")
+    ret = new DOMKeyEvent(exec, static_cast<DOM::KeyEvent>(e));
   else if (module == "MutationEvents")
     ret = new DOMMutationEvent(exec, static_cast<DOM::MutationEvent>(e));
   else
@@ -546,6 +548,83 @@ Value DOMMouseEventProtoFunc::tryCall(ExecState *exec, Object &thisObj, const Li
                                 args[12].toBoolean(exec), // metaKeyArg
                                 args[13].toInteger(exec), // buttonArg
                                 toNode(args[14])); // relatedTargetArg
+      return Undefined();
+  }
+  return Undefined();
+}
+
+// -------------------------------------------------------------------------
+
+const ClassInfo DOMKeyEvent::info = { "KeyEvent", &DOMUIEvent::info, &DOMKeyEventTable, 0 };
+
+/*
+@begin DOMKeyEventTable 2
+  key   	 DOMKeyEvent::Key	     DontDelete|ReadOnly
+  virtKey	 DOMKeyEvent::VirtKey        DontDelete|ReadOnly
+  outputString	 DOMKeyEvent::OutputString   DontDelete|ReadOnly
+  inputGenerated DOMKeyEvent::InputGenerated DontDelete|ReadOnly
+  numPad         DOMKeyEvent::NumPad         DontDelete|ReadOnly
+@end
+@begin DOMKeyEventProtoTable 1
+  initKeyEvent	DOMKeyEvent::InitKeyEvent	DontDelete|Function 10
+@end
+*/
+DEFINE_PROTOTYPE("DOMKeyEvent",DOMKeyEventProto)
+IMPLEMENT_PROTOFUNC_DOM(DOMKeyEventProtoFunc)
+IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMKeyEventProto,DOMKeyEventProtoFunc,DOMUIEventProto)
+
+DOMKeyEvent::~DOMKeyEvent()
+{
+}
+
+Value DOMKeyEvent::tryGet(ExecState *exec, const UString &p) const
+{
+#ifdef KJS_VERBOSE
+  kdDebug(6070) << "DOMKeyEvent::tryGet " << p.qstring() << endl;
+#endif
+  return DOMObjectLookupGetValue<DOMKeyEvent,DOMUIEvent>(exec,p,&DOMKeyEventTable,this);
+}
+
+Value DOMKeyEvent::getValueProperty(ExecState *, int token) const
+{
+  switch (token) {
+  case Key:
+    return Number(static_cast<DOM::KeyEvent>(event).keyVal());
+  case VirtKey:
+    return Number(static_cast<DOM::KeyEvent>(event).virtKeyVal());
+  case OutputString:
+    return String(static_cast<DOM::KeyEvent>(event).outputString());
+  case InputGenerated:
+    return Boolean(static_cast<DOM::KeyEvent>(event).inputGenerated());
+  case NumPad:
+    return Boolean(static_cast<DOM::KeyEvent>(event).numPad());
+  default:
+    kdWarning() << "Unhandled token in DOMKeyEvent::getValueProperty : " << token << endl;
+    return Value();
+  }
+}
+
+Value DOMKeyEventProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
+{
+  if (!thisObj.inherits(&KJS::DOMKeyEvent::info)) {
+    Object err = Error::create(exec,TypeError);
+    exec->setException(err);
+    return err;
+  }
+  DOM::KeyEvent keyEvent = static_cast<DOMKeyEvent *>(thisObj.imp())->toKeyEvent();
+  switch (id) {
+    case DOMKeyEvent::InitKeyEvent:
+      keyEvent.initKeyEvent(args[0].toString(exec).string(), // typeArg
+                            args[1].toBoolean(exec), // canBubbleArg
+                            args[2].toBoolean(exec), // cancelableArg
+                            toAbstractView(args[3]), // viewArg
+                            args[4].toInteger(exec), // detailArg
+                            args[5].toString(exec).string(),  // outputStringArg
+                            args[6].toInteger(exec), // keyValArg
+                            args[7].toInteger(exec), // virtKeyValArg
+                            args[8].toBoolean(exec), // inputGeneratedArg
+                            args[9].toBoolean(exec));// numPadArg
+
       return Undefined();
   }
   return Undefined();

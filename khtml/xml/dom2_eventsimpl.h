@@ -112,6 +112,7 @@ public:
 
     virtual bool isUIEvent() { return false; }
     virtual bool isMouseEvent() { return false; }
+    virtual bool isKeyEvent() { return false; }
     virtual bool isMutationEvent() { return false; }
     virtual DOMString eventModuleName() { return ""; }
 
@@ -230,13 +231,6 @@ protected:
 };
 
 
-// Introduced in DOM Level 3:
-/**
- * DOM::KeyEvent
- * The detail attribute inherited from UIEvent is used to indicate
- * the number of keypresses which have occurred during key repetition.
- * If this information is not available this value should be 0.
- */
 class KeyEventImpl : public UIEventImpl {
 public:
   KeyEventImpl();
@@ -309,178 +303,29 @@ public:
          DOM_VK_F24                     = 0x31
   };
 
- /**
-  *  checkModifier
-  *
-  * Note: the below description does not match the actual behaviour.
-  *       it's extended in a way that you can query multiple modifiers
-  *       at once by logically OR`ing them.
-  *       also, we use the Qt modifier enum instead of the DOM one.
-  *
-  * The CheckModifier method is used to check the status of a single
-  * modifier key associated with a KeyEvent. The identifier of the
-  * modifier in question is passed into the CheckModifier function. If
-  * the modifier is triggered it will return true. If not, it will
-  * return false.  The list of keys below represents the allowable
-  * modifier paramaters for this method:
-  *     DOM_VK_LEFT_ALT
-  *     DOM_VK_RIGHT_ALT
-  *     DOM_VK_LEFT_CONTROL
-  *     DOM_VK_RIGHT_CONTROL
-  *     DOM_VK_LEFT_SHIFT
-  *     DOM_VK_RIGHT_SHIFT
-  *     DOM_VK_META
-  *
-  * Parameters:
-  *
-  * modifer of type unsigned long
-  *   The modifier which the user wishes to query.
-  *
-  * Return Value: boolean
-  *   The status of the modifier represented as a boolean.
-  *
-  * No Exceptions
-  */
- bool checkModifier(unsigned long modiferArg);
+  void initKeyEvent(const DOMString &typeArg,
+                    bool canBubbleArg,
+                    bool cancelableArg,
+                    const AbstractView &viewArg,
+                    long detailArg,
+                    const DOMString &outputStringArg,
+                    unsigned long keyValArg,
+                    unsigned long virtKeyValArg,
+                    bool inputGeneratedArg,
+                    bool numPadArg);
+  void initModifier(unsigned long modifierArg, bool valueArg);
 
- /**
-  * initKeyEvent
-  *
-  * The initKeyEvent method is used to initialize the value of a
-  * MouseEvent created through the DocumentEvent interface. This
-  * method may only be called before the KeyEvent has been dispatched
-  * via the dispatchEvent method, though it may be called multiple
-  * times during that phase if necessary. If called multiple times,
-  * the final invocation takes precedence. This method has no effect
-  * if called after the event has been dispatched.
-  *
-  * Parameters:
-  *
-  * typeArg of type DOMString
-  *   Specifies the event type.
-  * canBubbleArg of type boolean
-  *   Specifies whether or not the event can bubble.
-  * cancelableArg of type boolean
-  *   Specifies whether or not the event's default action can be prevent.
-  * viewArg of type views::AbstractView
-  *   Specifies the KeyEvent's AbstractView.
-  * detailArg of type unsigned short
-  *   Specifies the number of repeated keypresses, if available.
-  * outputStringArg of type DOMString
-  *   Specifies the KeyEvent's outputString attribute
-  * keyValArg of type unsigned long
-  *   Specifies the KeyEvent's keyValattribute
-  * virtKeyValArg of type unsigned long
-  *   Specifies the KeyEvent's virtKeyValattribute
-  * inputGeneratedArg of type boolean
-  *   Specifies the KeyEvent's inputGeneratedattribute
-  * numPadArg of type boolean
-  *   Specifies the KeyEvent's numPadattribute
-  *
-  * No Return Value.
-  * No Exceptions.
-  */
- void initKeyEvent(DOMString &typeArg,
-		   bool canBubbleArg,
-		   bool cancelableArg,
-		   const AbstractView &viewArg,
-		   long detailArg,
-		   DOMString &outputStringArg,
-		   unsigned long keyValArg,
-		   unsigned long virtKeyValArg,
-		   bool inputGeneratedArg,
-		   bool numPadArg);
- /**
-  * initModifier
-  *
-  * The initModifier method is used to initialize the values of any
-  * modifiers associated with a KeyEvent created through the
-  * DocumentEvent interface. This method may only be called before the
-  * KeyEvent has been dispatched via the dispatchEvent method, though
-  * it may be called multiple times during that phase if necessary. If
-  * called multiple times with the same modifier property the final
-  * invocation takes precedence. Unless explicitly give a value of
-  * true, all modifiers have a value of false. This method has no
-  * effect if called after the event has been dispatched.  The list of
-  * keys below represents the allowable modifier paramaters for this
-  * method:
-  *    DOM_VK_LEFT_ALT
-  *    DOM_VK_RIGHT_ALT
-  *    DOM_VK_LEFT_CONTROL
-  *    DOM_VK_RIGHT_CONTROL
-  *    DOM_VK_LEFT_SHIFT
-  *    DOM_VK_RIGHT_SHIFT
-  *    DOM_VK_META
-  *
-  * Parameters:
-  *
-  * modifier of type unsigned long
-  *   The modifier which the user wishes to initialize
-  * value of type boolean
-  *   The new value of the modifier.
-  *
-  * No Return Value
-  * No Exceptions
-  */
- void initModifier(unsigned long modifierArg, bool valueArg);
+  bool checkModifier(unsigned long modiferArg);
 
  //Attributes:
+  bool             inputGenerated() const;
+  unsigned long    keyVal() const;
+  unsigned long    virtKeyVal() const { return m_virtKeyVal; }
+  bool             numPad() const { return m_numPad; }
+  DOMString        outputString() const;
 
- /**
-  * inputGenerated of type boolean
-  *
-  *  The inputGenerated attribute indicates whether the key event will
-  *  normally cause visible output. If the key event does not
-  *  generate any visible output, such as the use of a function key
-  *  or the combination of certain modifier keys used in conjunction
-  *  with another key, then the value will be false. If visible
-  *  output is normally generated by the key event then the value
-  *  will be true.  The value of inputGenerated does not guarantee
-  *  the creation of a character. If a key event causing visible
-  *  output is cancelable it may be prevented from causing
-  *  output. This attribute is intended primarily to differentiate
-  *  between keys events which may or may not produce visible output
-  *  depending on the system state.
-  */
- bool             inputGenerated() const;
-
- /** keyVal of type unsigned long
-  *
-  *  The value of keyVal holds the value of the Unicode character
-  *  associated with the depressed key. If the key has no Unicode
-  *  representation or no Unicode character is available the value is
-  *  0.
-  */
- unsigned long    keyVal() const;
-
- /** numPad of type boolean
-  *
-  *  The numPad attribute indicates whether or not the key event was
-  *  generated on the number pad section of the keyboard. If the number
-  *  pad was used to generate the key event the value is true,
-  *  otherwise the value is false.
-  */
-    bool             numPad() const { return m_numPad; }
-
- /**
-  *outputString of type DOMString
-  *
-  *  outputString holds the value of the output generated by the key
-  *  event. This may be a single Unicode character or it may be a
-  *  string. It may also be null in the case where no output was
-  *  generated by the key event.
-  */
- DOMString        outputString() const;
-
- /** virtKeyVal of type unsigned long
-  *
-  *  When the key associated with a key event is not representable via
-  *  a Unicode character virtKeyVale holds the virtual key code
-  *  associated with the depressed key. If the key has a Unicode
-  *  representation or no virtual code is available the value is
-  *  DOM_VK_UNDEFINED.
-  */
-    unsigned long virtKeyVal() const { return m_virtKeyVal; }
+  virtual DOMString eventModuleName() { return "KeyEvents"; }
+  virtual bool isKeyEvent() { return true; }
 
  QKeyEvent *qKeyEvent;
 

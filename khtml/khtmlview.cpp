@@ -668,14 +668,20 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 {
 
-    if (m_part->xmlDocImpl() && m_part->xmlDocImpl()->focusNode()) {
-        if (m_part->xmlDocImpl()->focusNode()->dispatchKeyEvent(_ke))
-        {
-            _ke->accept();
-            return;
-        }
+    if (m_part->xmlDocImpl()) {
+        if (m_part->xmlDocImpl()->focusNode())
+            if (m_part->xmlDocImpl()->focusNode()->dispatchKeyEvent(_ke))
+            {
+                _ke->accept();
+                return;
+            }
+        if (!_ke->text().isNull() && m_part->xmlDocImpl()->getHTMLEventListener(EventImpl::KHTML_KEYDOWN_EVENT))
+            if (m_part->xmlDocImpl()->documentElement()->dispatchKeyEvent(_ke))
+            {
+                _ke->accept();
+                return;
+            }
     }
-
     int offs = (clipper()->height() < 30) ? clipper()->height() : 30;
     if (_ke->state() & Qt::ShiftButton)
       switch(_ke->key())
