@@ -1,3 +1,14 @@
+Wed Oct 20 15:07:16 1999  Carsten Pfeiffer  <pfeiffer@kde.org>
+
+	* kfileinfo.cpp,h: implemented KFileInfo::filePath() and fixed 
+	KFileInfo::absURL() not being set in some cases
+	
+	* kdir.cpp: fixed a buglet in the path (double slashes)
+
+	* kfiledetaillist.cpp (KFileDetailList): improved selecting files
+	(single click, double click, Return-key)
+	but the mapping from QListViewItem to KFileInfo is still quite broken
+	
 1999-06-09  Woohyun JANG <louis@mizi.co.kr>
 
 	* kdir.cpp: used QString::local8Bit() instead of QString::ascii() 

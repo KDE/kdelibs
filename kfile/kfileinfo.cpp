@@ -37,6 +37,7 @@
 
 #include <kapp.h>
 #include <klocale.h>
+#include <kurl.h>
 #include "config-kfile.h"
 
 KFileInfo::KFileInfo(const KUDSEntry &e)
@@ -49,6 +50,7 @@ KFileInfo::KFileInfo(const KUDSEntry &e)
     myIsReadable = true;
 
     debugC("KFileInfo::KFileInfo");
+    KURL url;
     KUDSEntry::ConstIterator it = e.begin();
     for( ; it != e.end(); it++ ) {
 	switch (( *it ).m_uds) {
@@ -78,14 +80,19 @@ KFileInfo::KFileInfo(const KUDSEntry &e)
 	case UDS_LINK_DEST:
 	    myIsSymLink = (( *it ).m_str.length());
 	    break;
+	case UDS_URL:
+	    url = ( *it ).m_str;
+	    myBaseURL = url.path( 1 ); // we want a trailing "/"
+	    break;
 	default:
 	    debugC("got %ld", ( *it ).m_uds);
 	};
     }
 
     debugC("COMPLETE %s %d %d", myName.ascii(), myIsDir, mySize);
-    myBaseURL = "";
+    //    myBaseURL = "";
     myName.replace( QRegExp("/$"), "" );
+    myFilePath = myBaseURL + myName;
     myIsReadable = true;
 }
 
@@ -93,7 +100,7 @@ KFileInfo::KFileInfo(const QFileInfo &e)
 {
     myName = e.fileName();
     mySize = e.size();
-    myBaseURL = "";
+    myBaseURL = e.dirPath(true);
     myDate= (e.lastModified()).toString();
     myOwner = e.owner();
     myGroup = e.group();
@@ -101,24 +108,30 @@ KFileInfo::KFileInfo(const QFileInfo &e)
     myIsFile = e.isFile();
     myIsSymLink = e.isSymLink();
     myPermissions = 755;
+    if ( myBaseURL.right(1) != "/" )
+        myBaseURL += "/";
+    myFilePath = myBaseURL + myName;
 }
 
 KFileInfo::KFileInfo(const QString& dir, const QString& name)
 {
     myName = name;
     myBaseURL = dir;
+    if ( myBaseURL.right(1) != "/" )
+        myBaseURL += "/";
+
     struct stat buf;
     myIsSymLink = false;
 
-    QString fullname = dir + myName;
+    myFilePath = dir + myName;
 
-    if (lstat(fullname.local8Bit(), &buf) == 0) {
+    if (lstat(myFilePath.local8Bit(), &buf) == 0) {
 	myIsDir = (buf.st_mode & S_IFDIR) != 0;
         // check if this is a symlink to a directory
 	if (S_ISLNK(buf.st_mode)) {
 	  myIsSymLink = true;
 	  struct stat st;
-	  if (stat(fullname.local8Bit(), &st) == 0)
+	  if (stat(myFilePath.local8Bit(), &st) == 0)
 	      myIsDir = S_ISDIR(st.st_mode) != 0;
 	  else
 	      myName = ""; // indicate, that the link is broken
@@ -146,6 +159,8 @@ KFileInfo::KFileInfo(const QString& dir, const QString& name)
 	debug(QString("the file does not exist %1%2").arg(dir)
 	      .arg(name).ascii());
 	myName.insert(0, "?");
+	myBaseURL.insert(0, "?");
+	myFilePath.insert(0, "?");
 	mySize = 0;
 	myIsFile = false;
 	myIsDir = false;
@@ -179,6 +194,7 @@ KFileInfo &KFileInfo::operator=(const KFileInfo &i)
     myPermissions= i.myPermissions;
     mySize= i.mySize;
     myIsReadable = i.myIsReadable;
+    myFilePath = myBaseURL + myName;
     return *this;
 }
 

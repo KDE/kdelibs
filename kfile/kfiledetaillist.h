@@ -3,7 +3,7 @@
     Copyright (C) 1997, 1998 Richard Moore <rich@kde.org>
                   1998 Stephan Kulow <coolo@kde.org>
                   1998 Daniel Grana <grana@ie.iwi.unibe.ch>
-    
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
@@ -30,19 +30,19 @@
 
 class KFileDetailList : protected QListView, public KFileInfoContents {
     Q_OBJECT
-    
+
 public:
     /**
      * Create a file info list widget.
      */
     KFileDetailList(bool s, QDir::SortSpec sorting, QWidget *parent= 0, const char *name= 0);
     virtual ~KFileDetailList();
-    
+
     virtual QWidget *widget() { return this; }
     virtual void setAutoUpdate(bool);
     virtual void clearView();
     virtual void repaint(bool f = true);
-    
+
     virtual bool acceptsFiles() { return true; }
     virtual bool acceptsDirs() { return true; }
 
@@ -53,6 +53,7 @@ protected:
 protected slots:
     void reorderFiles(int inColumn);
     void selected(QListViewItem*);
+    void singleClicked(QListViewItem*);
     void highlighted(int);
 };
 

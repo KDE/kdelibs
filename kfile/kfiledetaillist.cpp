@@ -3,7 +3,7 @@
     Copyright (C) 1998 Richard Moore <rich@kde.org>
                   1998 Stephan Kulow <coolo@kde.org>
                   1998 Daniel Grana <grana@ie.iwi.unibe.ch>
-    
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
@@ -28,30 +28,36 @@
 #include <qdir.h>
 #include <qheader.h>
 
-KFileDetailList::KFileDetailList(bool s, QDir::SortSpec sorting, 
+KFileDetailList::KFileDetailList(bool s, QDir::SortSpec sorting,
 				 QWidget *parent, const char *name)
     : QListView(parent, name), KFileInfoContents(s,sorting)
 {
     QWidget::setFocusPolicy(QWidget::StrongFocus);
     QFontMetrics fm = fontMetrics();
     QString text = i18n("Name");
-    addColumn(text); 
+    addColumn(text);
     text = i18n("Size");
-    addColumn(text); 
+    addColumn(text);
     text = i18n("Permissions");
-    addColumn(text); 
+    addColumn(text);
     text = i18n("Date");
-    addColumn(text); 
+    addColumn(text);
     text = i18n("Owner");
-    addColumn(text); 
+    addColumn(text);
     text = i18n("Group");
     addColumn(text);
 
     QListView::setSorting(-1);
-    
-    connect(this,SIGNAL(selectionChanged(QListViewItem*)), 
-	    SLOT(selected(QListViewItem*)));
-    connect(this, SIGNAL(highlighted(int,int)), SLOT(highlighted(int)));
+
+    //    connect(this,SIGNAL(selectionChanged(QListViewItem*)),
+    //	    SLOT(selected(QListViewItem*)));
+    //    connect(this, SIGNAL(highlighted(int,int)), SLOT(highlighted(int)));
+    connect( this, SIGNAL(returnPressed(QListViewItem *)), 
+	     SLOT(selected(QListViewItem *)) );
+    connect( this, SIGNAL(doubleClicked(QListViewItem *)),
+	     SLOT(selected(QListViewItem *)) );
+    connect( this, SIGNAL(clicked(QListViewItem *)),
+	     SLOT(singleClicked(QListViewItem *)) );
     connect(header(), SIGNAL(sectionClicked(int)), SLOT(reorderFiles(int)));
 }
 
@@ -86,23 +92,23 @@ void KFileDetailList::clearView()
 void KFileDetailList::reorderFiles(int inColumn)
 {
     QDir::SortSpec new_sort;
-    
+
     // QDir::SortSpec oldFlags = sorting() & (~QDir::SortByMask);
 
     switch ( inColumn ) {
     case 0:
 	new_sort = QDir::Name;
 	break;
-    case 1:  
+    case 1:
 	new_sort = QDir::Size;
 	break;
-    case 3:  
+    case 3:
 	new_sort = QDir::Time;
 	break;
-    default: 
+    default:
 	return;
     }
-    
+
     KFileInfoContents::setSorting(new_sort);
 }
 
@@ -123,8 +129,8 @@ bool KFileDetailList::insertItem(const KFileInfo *i, int /* index */)
 	type = *locked_file;
       }
     }
-  
-  QListViewItem *item = new QListViewItem(this, 
+
+  QListViewItem *item = new QListViewItem(this,
 					  i->fileName(),
 					  QString::number(i->size()),
 					  i->access(), i->date(),
@@ -132,7 +138,7 @@ bool KFileDetailList::insertItem(const KFileInfo *i, int /* index */)
   item->setPixmap(0, type);
 // WABA: I was told the following call is redundant
 //  QListView::insertItem(item);
-  
+
   // TODO: find out, if a repaint is really necessary
   return true;
 }
@@ -155,5 +161,12 @@ void KFileDetailList::highlighted(int row)
 }
 
 
+void KFileDetailList::singleClicked( QListViewItem *item )
+{
+  if ( useSingle() )
+     selected( item );
+}
+    
+    
 #include "kfiledetaillist.moc"
 

@@ -90,7 +90,7 @@ public:
       * (broken symlink), it will return 0
       **/
     QString fileName() const { return myName; }
-    QString filePath();
+    QString filePath() const { return myFilePath; }
 
     /**
       * Returns the group of the file.
@@ -134,6 +134,7 @@ protected:
 private:
     QString myName;
     QString myBaseURL;
+    QString myFilePath;
     QString myAccess;
     QString myDate;
     QString myOwner;

@@ -2,7 +2,7 @@
     Copyright (C) 1997, 1998 Richard Moore <rich@kde.org>
                   1998 Stephan Kulow <coolo@kde.org>
                   1998 Daniel Grana <grana@ie.iwi.unibe.ch>
-    
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
@@ -22,7 +22,7 @@
 #include "kfileinfo.h"
 #include <qdir.h>
 #include <qfileinfo.h>
-#include <sys/stat.h> 
+#include <sys/stat.h>
 #include <sys/types.h>
 #include <dirent.h>
 #include "kdir.h"
@@ -77,13 +77,13 @@ KDir::KDir(const QDir &d)
 {
     initLists();
     myNameFilter= d.nameFilter();
-    setPath(d.path());
+    setPath(d.absPath());
     mySortSpec= d.sorting();
     myFilterSpec= d.filter();
     myFilteredDirtyFlag= true;
 }
 
-void KDir::initLists() 
+void KDir::initLists()
 {
     myOpendir = 0;
     readFiles = 0;
@@ -111,7 +111,7 @@ KDir &KDir::operator= (const KDir &d)
 
 KDir &KDir::operator= (const QDir &d)
 {
-    setPath(d.path());
+    setPath(d.absPath());
     return *this;
 }
 
@@ -144,7 +144,7 @@ void KDir::setPath(const QString& url)
 	if (readable) { // further checks
 	    DIR *test;
 	    test = opendir( ts.local8Bit() ); // we do it just to test here
-	    readable = (test != 0); 
+	    readable = (test != 0);
 	    if (test)
 		closedir(test);
 	}
@@ -159,7 +159,7 @@ void KDir::setPath(const QString& url)
 	warning("Malformed url %s\n", (const char *)url.local8Bit());
 
     root = (myLocation.path() == "/");
-    
+
     if (!readable)
 	return;  // nothing more we can do here
 
@@ -198,7 +198,7 @@ uint KDir::count()
 {
     if (myFilteredDirtyFlag)
 	updateFiltered();
-    
+
     return myFilteredNames.count();
 }
 
@@ -240,7 +240,7 @@ void KDir::timerEvent() {
 void KDir::getEntries() {
 
     struct dirent *dp;
-    
+
     if (!myOpendir) {
 	QString ts = myLocation.path();
 	myOpendir = opendir(ts.local8Bit());
@@ -253,9 +253,10 @@ void KDir::getEntries() {
 	
 	KFileInfo *i;
 	QString path = myLocation.path();
-	path += "/";
+	if (path.right(1) != "/")
+	    path += "/";
 
-	do { 
+	do {
 	    dp = readdir(myOpendir);
 	    if (!dp)
 		break;
@@ -266,7 +267,7 @@ void KDir::getEntries() {
 		continue;
 	    }
 	    myEntries.append(i);
-	    
+	
 	    /* if we just increase readFiles, if we found a file, it may
 	     * be, that we die on the wrong filter */
 	    readFiles++;
@@ -289,7 +290,7 @@ void KDir::getEntries() {
 	    emit finished();
 	}
     }
-   
+
     myDirtyFlag= false;
     myFilteredDirtyFlag= false;
 }
@@ -299,10 +300,10 @@ const KFileInfoList *KDir::entryInfoList(int filterSpec,
 {
     setSorting(sortSpec);
     setFilter(filterSpec);
-    
+
     if (myFilteredDirtyFlag)
 	updateFiltered();
-    
+
     if (isBlocking && !myOpendir)
 	emit finished(); // the using class must know, that there are no more
 
@@ -314,7 +315,7 @@ bool KDir::match(const QString& filter, const QString& name)
     // Split on white space
     char *s = qstrdup(filter.ascii());
     char *g = strtok(s, " ");
-    
+
     bool matched = false;
     while (g) {
 	if (QDir::match(QString(g), name)) {
@@ -323,7 +324,7 @@ bool KDir::match(const QString& filter, const QString& name)
 	}
 	g = strtok(0, " ");
     }
-    
+
     delete [] s;
     return matched;
 }
@@ -331,7 +332,7 @@ bool KDir::match(const QString& filter, const QString& name)
 bool KDir::filterEntry(KFileInfo *i)
 {
     if (!strcmp(i->fileName(), ".."))
-	return !root; 
+	return !root;
 
     if (!(myFilterSpec & QDir::Hidden) && i->fileName()[0] == '.')
 	return false;
@@ -342,7 +343,7 @@ bool KDir::filterEntry(KFileInfo *i)
     if ( !(myFilterSpec & QDir::Dirs) && i->isDir())
 	return false;
 
-    if (matchAllDirs() && i->isDir()) 
+    if (matchAllDirs() && i->isDir())
 	return true;
 
     if (match(myNameFilter, i->fileName()))
@@ -368,7 +369,7 @@ bool KDir::startLoading()
 	    emit finished(); // what else can I say? ;)
 	    } else */
 	{	// If all is well
-	    
+	
 	    connect(myJob, SIGNAL(sigFinished(int)), SLOT(slotKfmFinished()));
 	    connect(myJob, SIGNAL(sigError(int, int, const char * )),
 		    SLOT(slotKfmError(int, int, const char * )));
@@ -378,7 +379,7 @@ bool KDir::startLoading()
 	    return true;
 	}
     }
-    
+
     return false;
 }
 
@@ -387,9 +388,9 @@ void KDir::slotListEntry(int, const KUDSEntry& entry) // SLOT
     debugC("slotListEntry");
     KFileInfo *i= new KFileInfo(entry);
     CHECK_PTR(i);
-    
+
     myEntries.append(i);
-    
+
     if (filterEntry(i)) {
 	
 	KFileInfo *fi= new KFileInfo(*i);
@@ -402,7 +403,7 @@ void KDir::slotListEntry(int, const KUDSEntry& entry) // SLOT
     }
 }
 
-void KDir::setBlocking(bool _block) 
+void KDir::setBlocking(bool _block)
 {
     isBlocking = _block;
 }
@@ -410,14 +411,14 @@ void KDir::setBlocking(bool _block)
 void KDir::slotKfmFinished() // SLOT
 {
     myJob= 0;
-    
+
     emit finished();
 }
 
 void KDir::slotKfmError(int, int _errid, const char *_txt )
 {
     myJob= 0;
-    
+
     emit error(_errid, _txt);
 }
 
