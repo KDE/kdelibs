@@ -2,6 +2,9 @@
  * This file is part of the DOM implementation for KDE.
  *
  * Copyright (C) 1999 Antti Koivisto (koivisto@kde.org)
+ * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
+ * Copyright (C) 2002-2003 Dirk Mueller (mueller@kde.org)
+ * Copyright (C) 2002 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -322,9 +325,15 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
     if ( *box.get() != *other->box.get() ||
 	 *visual.get() != *other->visual.get() ||
 	 *surround.get() != *other->surround.get() ||
-	 *inherited.get() != *other->inherited.get()
-	)
-	d = CbLayout;
+         !(inherited->indent == other->inherited->indent) ||
+         !(inherited->line_height == other->inherited->line_height) ||
+         !(inherited->style_image == other->inherited->style_image) ||
+         !(inherited->font == other->inherited->font) ||
+         !(inherited->border_spacing == other->inherited->border_spacing) ||
+         !(inherited_flags._visuallyOrdered == other->inherited_flags._visuallyOrdered) ||
+         !(inherited_flags._htmlHacks == other->inherited_flags._htmlHacks)
+        )
+        d = CbLayout;
 
     if ( d == CbLayout )
 	return d;
@@ -339,9 +348,9 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
 //     EPosition _position : 2;
 //     EFloat _floating : 2;
     if ( ((int)noninherited_flags._display) >= TABLE ) {
-	if ( !(inherited_flags._border_collapse == other->inherited_flags._border_collapse) ||
-	     !(inherited_flags._empty_cells == other->inherited_flags._empty_cells) ||
-	     !(inherited_flags._caption_side == other->inherited_flags._caption_side) ||
+	if ( !(inherited_flags._empty_cells == other->inherited_flags._empty_cells) ||
+             !(inherited_flags._caption_side == other->inherited_flags._caption_side) ||
+             !(inherited_flags._border_collapse == other->inherited_flags._border_collapse) ||
 	     !(noninherited_flags._table_layout == other->noninherited_flags._table_layout) ||
 	     !(noninherited_flags._position == other->noninherited_flags._position) ||
 	     !(noninherited_flags._floating == other->noninherited_flags._floating) )
@@ -396,13 +405,15 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
 //     bool _bg_attachment : 1;
 // 	int _text_decoration : 4;
 //     DataRef<StyleBackgroundData> background;
-    if ( !(inherited_flags._visibility == other->inherited_flags._visibility) ||
-	 !(noninherited_flags._overflow == other->noninherited_flags._overflow) ||
-	 !(noninherited_flags._bg_repeat == other->noninherited_flags._bg_repeat) ||
-	 !(noninherited_flags._bg_attachment == other->noninherited_flags._bg_attachment) ||
-	 !(noninherited_flags._clipSpecified == other->noninherited_flags._clipSpecified) ||
-	 !(inherited_flags._text_decoration == other->inherited_flags._text_decoration) ||
-	 *background.get() != *other->background.get()
+    if (inherited->color != other->inherited->color ||
+        inherited->decoration_color != other->inherited->decoration_color ||
+        !(inherited_flags._visibility == other->inherited_flags._visibility) ||
+        !(noninherited_flags._overflow == other->noninherited_flags._overflow) ||
+        !(noninherited_flags._bg_repeat == other->noninherited_flags._bg_repeat) ||
+        !(noninherited_flags._bg_attachment == other->noninherited_flags._bg_attachment) ||
+        !(noninherited_flags._clipSpecified == other->noninherited_flags._clipSpecified) ||
+        !(inherited_flags._text_decoration == other->inherited_flags._text_decoration) ||
+        *background.get() != *other->background.get()
 	)
 	d = Visible;
 
