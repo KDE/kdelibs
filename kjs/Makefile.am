@@ -26,13 +26,13 @@ libkjs_la_SOURCES =  kjs.cpp grammar.cpp lexer.cpp nodes.cpp object.cpp \
 	internal.cpp regexp.cpp global_object.cpp math_object.cpp \
 	bool_object.cpp object_object.cpp error_object.cpp \
 	array_object.cpp string_object.cpp number_object.cpp \
-	date_object.cpp regexp_object.cpp
+	date_object.cpp regexp_object.cpp collector.cpp
 
 kjsincludedir = $(includedir)/kjs
 kjsinclude_HEADERS = kjs.h object.h operations.h ustring.h \
 	function.h lookup.h types.h
 
-noinst_HEADERS = nodes.h lexer.h regexp.h internal.h \
+noinst_HEADERS = nodes.h lexer.h regexp.h internal.h collector.h \
 	grammar.h object_object.h function_object.h \
 	bool_object.h math_object.h array_object.h string_object.h \
 	number_object.h date_object.h regexp_object.h error_object.h
