@@ -466,6 +466,25 @@ QString KImageIO::suffix(const QString& type)
   return QString::null;
 }
 
+QString KImageIO::typeForMime(const QString& mimeType)
+{
+  KImageIOFormatList *formatList = KImageIOFactory::self()->formatList;
+
+  if(formatList)
+  {
+      for( KImageIOFormatList::ConstIterator it = formatList->begin();
+           it != formatList->end();
+           ++it )
+      {
+          KImageIOFormat *format = (*it);
+          if (format->mMimetype == mimeType)
+              return format->mType;
+      }
+  }
+
+  return QString::null;
+}
+
 QString KImageIO::type(const QString& filename)
 {
   KImageIOFormatList *formatList = KImageIOFactory::self()->formatList;
