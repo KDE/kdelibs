@@ -673,7 +673,7 @@ QSize KThemeStyle::exclusiveIndicatorSize() const
     if(isPixmap(ExIndicatorOn))
         return(uncached(ExIndicatorOn)->size());
     else
-        return(QPlatinumStyle::exclusiveIndicatorSize());
+        return(QWindowsStyle::exclusiveIndicatorSize());
 }
 
 QSize KThemeStyle::indicatorSize() const
@@ -681,7 +681,7 @@ QSize KThemeStyle::indicatorSize() const
     if(isPixmap(IndicatorOn))
         return(uncached(IndicatorOn)->size());
     else
-        return(QPlatinumStyle::indicatorSize());
+        return(QWindowsStyle::indicatorSize());
 }
 
 void KThemeStyle::drawExclusiveIndicator(QPainter* p, int x, int y, int w,
@@ -693,7 +693,7 @@ void KThemeStyle::drawExclusiveIndicator(QPainter* p, int x, int y, int w,
                                      ExIndicatorOff));
     }
     else{
-        QPlatinumStyle::drawExclusiveIndicator(p, x, y, w, h,
+        QWindowsStyle::drawExclusiveIndicator(p, x, y, w, h,
                                                *colorGroup(g, ExIndicatorOn),
                                                on, down, enabled);
     }
@@ -710,7 +710,7 @@ void KThemeStyle::drawIndicator(QPainter* p, int x, int y, int w, int h,
                                      IndicatorOn : IndicatorOff));
     }
     else{
-        QPlatinumStyle::drawIndicator(p, x, y, w, h,
+        QWindowsStyle::drawIndicator(p, x, y, w, h,
                                       *colorGroup(g, IndicatorOn), state,
                                       down, enabled);
     }
@@ -729,7 +729,7 @@ void KThemeStyle::drawExclusiveIndicatorMask(QPainter *p, int x, int y, int w,
             p->fillRect(x, y, w, h, QBrush(color1, SolidPattern));
     }
     else
-        QPlatinumStyle::drawExclusiveIndicatorMask(p, x, y, w, h, on);
+        QWindowsStyle::drawExclusiveIndicatorMask(p, x, y, w, h, on);
 }
 
 void KThemeStyle::drawIndicatorMask(QPainter *p, int x, int y, int w, int h,
@@ -744,7 +744,7 @@ void KThemeStyle::drawIndicatorMask(QPainter *p, int x, int y, int w, int h,
             p->fillRect(x, y, w, h, QBrush(color1, SolidPattern));
     }
     else
-        QPlatinumStyle::drawIndicatorMask(p, x, y, w, h, state);
+        QWindowsStyle::drawIndicatorMask(p, x, y, w, h, state);
 }
 
 void KThemeStyle::drawSliderGroove(QPainter *p, int x, int y, int w, int h,
@@ -752,7 +752,7 @@ void KThemeStyle::drawSliderGroove(QPainter *p, int x, int y, int w, int h,
                                    Orientation orient)
 {
     if(roundSlider())
-        QPlatinumStyle::drawSliderGroove(p, x, y, w, h,
+        QWindowsStyle::drawSliderGroove(p, x, y, w, h,
                                          *colorGroup(g, SliderGroove),
                                          c, orient);
     else
@@ -773,7 +773,7 @@ void KThemeStyle::drawSlider(QPainter *p, int x, int y, int w, int h,
                           y, *uncached(Slider));
     }
     else{
-        QPlatinumStyle::drawSlider(p, x, y, w, h, *colorGroup(g, Slider),
+        QWindowsStyle::drawSlider(p, x, y, w, h, *colorGroup(g, Slider),
                                    orient, tickAbove, tickBelow);
     }
 }
@@ -787,7 +787,7 @@ void KThemeStyle::drawSliderMask(QPainter *p, int x, int y, int w, int h,
     if(isPixmap(Slider))
         p->fillRect(x, y, w, h, QBrush(color1, SolidPattern));
     else
-        QPlatinumStyle::drawSliderMask(p, x, y, w, h, orient, tickAbove,
+        QWindowsStyle::drawSliderMask(p, x, y, w, h, orient, tickAbove,
                                        tickBelow);
 }
 
@@ -843,7 +843,7 @@ void KThemeStyle::drawArrow(QPainter *p, Qt::ArrowType type, bool down, int x,
         QBrush oldBrush = g.brush(QColorGroup::Button);
         QColorGroup tmp(*cg);
         tmp.setBrush(QColorGroup::Button, QBrush(NoBrush));
-        QPlatinumStyle::drawArrow(p, type, false, x, y, w, h,
+        QWindowsStyle::drawArrow(p, type, false, x, y, w, h,
                                   tmp, true);
     }
     else{
@@ -1048,7 +1048,7 @@ void KThemeStyle::drawCheckMark(QPainter *p, int x, int y, int w, int h,
                           *uncached(CheckMark));
     }
     else
-        QPlatinumStyle::drawCheckMark(p, x, y, w, h, *colorGroup(g, CheckMark),
+        QWindowsStyle::drawCheckMark(p, x, y, w, h, *colorGroup(g, CheckMark),
                                       act, dis);
 }
 
@@ -1228,7 +1228,7 @@ void KThemeStyle::drawFocusRect(QPainter *p, const QRect &r,
 {
     p->setPen(g.dark());
     if(!is3DFocus())
-        QPlatinumStyle::drawFocusRect(p, r, g, c, atBorder);
+        QWindowsStyle::drawFocusRect(p, r, g, c, atBorder);
     else{
         int i = focusOffset();
         p->drawLine(r.x()+i, r.y()+1+i, r.x()+i, r.bottom()-1-i);
