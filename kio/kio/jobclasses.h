@@ -926,6 +926,65 @@ namespace KIO {
     };
 
     /**
+     * StoredTransferJob is a TransferJob (for downloading or uploading data) that
+     * also stores a QByteArray with the data, making it simpler to use than the
+     * standard TransferJob.
+     *
+     * For KIO::storedGet it puts the data into the member QByteArray, so the user
+     * of this class can get hold of the whole data at once by calling data()
+     * when the result signal is emitted.
+     * You should only use StoredTransferJob to download data if you cannot
+     * process the data by chunks while it's being downloaded, since storing
+     * everything in a QByteArray can potentially require a lot of memory.
+     *
+     * For KIO::storedPut the user of this class simply provides the bytearray from
+     * the start, and the job takes care of uploading it.
+     * You should only use StoredTransferJob to upload data if you cannot
+     * provide the in chunks while it's being uploaded, since storing
+     * everything in a QByteArray can potentially require a lot of memory.
+     *
+     * @since 3.3
+     */
+    class StoredTransferJob : public KIO::TransferJob {
+        Q_OBJECT
+
+    public:
+       /**
+	* Do not create a StoredTransferJob. Use storedGet() or storedPut()
+	* instead.
+	* @param url the url to get or put
+	* @param command the command to issue
+	* @param packedArgs the arguments
+	* @param _staticData additional data to transmit (e.g. in a HTTP Post)
+	* @param showProgressInfo true to show progress information to the user
+	*/
+        StoredTransferJob(const KURL& url, int command,
+                          const QByteArray &packedArgs,
+                          const QByteArray &_staticData,
+                          bool showProgressInfo);
+
+        /**
+         * Set data to be uploaded. This is for put jobs.
+         * Automatically called by KIO::storedPut(const QByteArray &, ...),
+         * do not call this yourself.
+         */
+        void setData( const QByteArray& arr );
+
+        /**
+         * Get hold of the downloaded data. This is for get jobs.
+         * You're supposed to call this only from the slot connected to the result() signal.
+         */
+        QByteArray data() const { return m_data; }
+
+    private slots:
+        void slotData( KIO::Job *job, const QByteArray &data );
+        void slotDataReq( KIO::Job *job, QByteArray &data );
+    private:
+        QByteArray m_data;
+        int m_uploadOffset;
+    };
+
+    /**
      * The MultiGetJob is a TransferJob that allows you to get
      * several files from a single server. Don't create directly,
      * but use KIO::multi_get() instead.

@@ -1238,6 +1238,78 @@ TransferJob *KIO::put( const KURL& url, int permissions,
 
 //////////
 
+StoredTransferJob::StoredTransferJob(const KURL& url, int command,
+                                     const QByteArray &packedArgs,
+                                     const QByteArray &_staticData,
+                                     bool showProgressInfo)
+    : TransferJob( url, command, packedArgs, _staticData, showProgressInfo ),
+      m_uploadOffset( 0 )
+{
+    connect( this, SIGNAL( data( KIO::Job *, const QByteArray & ) ),
+             SLOT( slotData( KIO::Job *, const QByteArray & ) ) );
+    connect( this, SIGNAL( dataReq( KIO::Job *, QByteArray & ) ),
+             SLOT( slotDataReq( KIO::Job *, QByteArray & ) ) );
+}
+
+void StoredTransferJob::setData( const QByteArray& arr )
+{
+    Q_ASSERT( m_data.isNull() ); // check that we're only called once
+    Q_ASSERT( m_uploadOffset == 0 ); // no upload started yet
+    m_data = arr;
+}
+
+void StoredTransferJob::slotData( KIO::Job *, const QByteArray &data )
+{
+  // check for end-of-data marker:
+  if ( data.size() == 0 )
+    return;
+  unsigned int oldSize = m_data.size();
+  m_data.resize( oldSize + data.size(), QGArray::SpeedOptim );
+  memcpy( m_data.data() + oldSize, data.data(), data.size() );
+}
+
+void StoredTransferJob::slotDataReq( KIO::Job *, QByteArray &data )
+{
+  // Inspired from kmail's KMKernel::byteArrayToRemoteFile
+  // send the data in 64 KB chunks
+  const int MAX_CHUNK_SIZE = 64*1024;
+  int remainingBytes = m_data.size() - m_uploadOffset;
+  if( remainingBytes > MAX_CHUNK_SIZE ) {
+    // send MAX_CHUNK_SIZE bytes to the receiver (deep copy)
+    data.duplicate( m_data.data() + m_uploadOffset, MAX_CHUNK_SIZE );
+    m_uploadOffset += MAX_CHUNK_SIZE;
+    //kdDebug() << "Sending " << MAX_CHUNK_SIZE << " bytes ("
+    //                << remainingBytes - MAX_CHUNK_SIZE << " bytes remain)\n";
+  } else {
+    // send the remaining bytes to the receiver (deep copy)
+    data.duplicate( m_data.data() + m_uploadOffset, remainingBytes );
+    m_data = QByteArray();
+    m_uploadOffset = 0;
+    //kdDebug() << "Sending " << remainingBytes << " bytes\n";
+  }
+}
+
+StoredTransferJob *KIO::storedGet( const KURL& url, bool reload, bool showProgressInfo )
+{
+    // Send decoded path and encoded query
+    KIO_ARGS << url;
+    StoredTransferJob * job = new StoredTransferJob( url, CMD_GET, packedArgs, QByteArray(), showProgressInfo );
+    if (reload)
+       job->addMetaData("cache", "reload");
+    return job;
+}
+
+StoredTransferJob *KIO::storedPut( const QByteArray& arr, const KURL& url, int permissions,
+                                   bool overwrite, bool resume, bool showProgressInfo )
+{
+    KIO_ARGS << url << Q_INT8( overwrite ? 1 : 0 ) << Q_INT8( resume ? 1 : 0 ) << permissions;
+    StoredTransferJob * job = new StoredTransferJob( url, CMD_PUT, packedArgs, QByteArray(), showProgressInfo );
+    job->setData( arr );
+    return job;
+}
+
+//////////
+
 MimetypeJob::MimetypeJob( const KURL& url, int command,
                   const QByteArray &packedArgs, bool showProgressInfo )
     : TransferJob(url, command, packedArgs, QByteArray(), showProgressInfo)
@@ -2428,7 +2500,7 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
     time_t destctime = (time_t)-1;
     KIO::filesize_t destsize = 0;
     QString linkDest;
-    
+
     UDSEntry entry = ((KIO::StatJob*)job)->statResult();
     KIO::UDSEntry::ConstIterator it2 = entry.begin();
     for( ; it2 != entry.end(); it2++ ) {
@@ -2460,7 +2532,7 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
             (*it).uSource.path(-1) == linkDest) )
           mode = (RenameDlg_Mode)( mode | M_OVERWRITE_ITSELF);
         else
-          mode = (RenameDlg_Mode)( mode | M_OVERWRITE );          
+          mode = (RenameDlg_Mode)( mode | M_OVERWRITE );
     }
 
     QString existingDest = (*it).uDest.path();
@@ -2730,11 +2802,11 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
         // Offer overwrite only if the existing thing is a file
         // If src==dest, use "overwrite-itself"
         RenameDlg_Mode mode;
-        
+
         if( m_conflictError == ERR_DIR_ALREADY_EXIST )
             mode = (RenameDlg_Mode) 0;
-        else 
-        {        
+        else
+        {
             if ( (*it).uSource == (*it).uDest  ||
                  ((*it).uSource.protocol() == (*it).uDest.protocol() &&
                  (*it).uSource.path(-1) == linkDest) )
@@ -2742,12 +2814,12 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
             else
                 mode = M_OVERWRITE;
         }
-        
+
         if ( files.count() > 1 ) // Not last one
             mode = (RenameDlg_Mode) ( mode | M_MULTI | M_SKIP );
         else
             mode = (RenameDlg_Mode) ( mode | M_SINGLE );
-        
+
         res = Observer::self()->open_RenameDlg( this, m_conflictError == ERR_FILE_ALREADY_EXIST ?
                                 i18n("File Already Exists") : i18n("Already Exists as Folder"),
                                 (*it).uSource.prettyURL(0, KURL::StripFileProtocol),

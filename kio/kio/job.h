@@ -233,6 +233,34 @@ namespace KIO {
                             bool showProgressInfo = true );
 
     /**
+     * Get (a.k.a. read), into a single QByteArray.
+     * @see StoredTransferJob
+     *
+     * @param url the URL of the file
+     * @param reload true to reload the file, false if it can be taken from the cache
+     * @param showProgressInfo true to show progress information
+     * @return the job handling the operation.
+     * @since 3.3
+     */
+    StoredTransferJob *storedGet( const KURL& url, bool reload=false, bool showProgressInfo = true );
+
+    /**
+     * Put (a.k.a. write) data from a single QByteArray.
+     * @see StoredTransferJob
+     *
+     * @param arr The data to write
+     * @param url Where to write data.
+     * @param permissions May be -1. In this case no special permission mode is set.
+     * @param overwrite If true, any existing file will be overwritten.
+     * @param resume true to resume, false otherwise
+     * @param showProgressInfo true to show progress information
+     * @return the job handling the operation.
+     * @since 3.3
+     */
+    StoredTransferJob *storedPut( const QByteArray& arr, const KURL& url, int permissions,
+                                  bool overwrite, bool resume, bool showProgressInfo = true );
+
+    /**
      * Creates a new mult-get job.
      *
      * @param id the id of the get operation
