@@ -101,6 +101,42 @@ namespace KIO
   QString decodeFileName( const QString & str );
 
   /**
+   * Commands that can be invoked by a job.
+   */
+  enum Command {
+    CMD_HOST = '0', // 48
+    CMD_CONNECT = '1', // 49
+    CMD_DISCONNECT = '2', // 50
+    CMD_SLAVE_STATUS = '3', // 51
+    CMD_SLAVE_CONNECT = '4', // 52
+    CMD_SLAVE_HOLD = '5', // 53
+    CMD_NONE = 'A', // 65
+    CMD_TESTDIR = 'B', // 66
+    CMD_GET = 'C', // 67
+    CMD_PUT = 'D', // 68
+    CMD_STAT = 'E', // 69
+    CMD_MIMETYPE = 'F', // 70
+    CMD_LISTDIR = 'G', // 71
+    CMD_MKDIR = 'H', // 72
+    CMD_RENAME = 'I', // 73
+    CMD_COPY = 'J', // 74
+    CMD_DEL = 'K', // 75
+    CMD_CHMOD = 'L', // 76
+    CMD_SPECIAL = 'M', // 77
+    CMD_USERPASS = 'N', // 78
+    CMD_REPARSECONFIGURATION = 'O', // 79
+    CMD_META_DATA = 'P', // 80
+    CMD_SYMLINK = 'Q', // 81
+    CMD_SUBURL = 'R', // 82  Inform the slave about the url it is streaming on.
+    CMD_MESSAGEBOXANSWER = 'S', // 83
+    CMD_RESUMEANSWER = 'T', // 84
+    CMD_CONFIG = 'U', // 85
+    CMD_MULTI_GET = 'V' // 86
+    // Add new ones here once a release is done, to avoid breaking binary compatibility.
+    // Note that protocol-specific commands shouldn't be added here, but should use special.
+  };
+
+  /**
    * Error codes that can be emitted by KIO.
    */
   enum Error {
@@ -181,7 +217,7 @@ namespace KIO
                                // see job.cpp
   };
 
-  /*
+  /**
    * Returns a translated error message for @p errorCode using the
    * additional error information provided by @p errorText.
    * @param errorCode the error code
@@ -190,7 +226,7 @@ namespace KIO
    */
   QString buildErrorString(int errorCode, const QString &errorText);
 
-  /*
+  /**
    * Returns a translated html error message for @p errorCode using the
    * additional error information provided by @p errorText , @p reqUrl
    * (the request URL), and the ioslave @p method .
@@ -203,7 +239,7 @@ namespace KIO
   QString buildHTMLErrorString(int errorCode, const QString &errorText,
                                 const KURL *reqUrl = 0L, int method = -1 );
 
-  /*
+  /**
    * Returns translated error details for @p errorCode using the
    * additional error information provided by @p errorText , @p reqUrl
    * (the request URL), and the ioslave @p method .
@@ -221,6 +257,16 @@ namespace KIO
    */
   QByteArray rawErrorDetail(int errorCode, const QString &errorText,
                                 const KURL *reqUrl = 0L, int method = -1 );
+
+  /**
+   * Returns an appropriate error message if the given command @p cmd
+   * is an unsupported action (ERR_UNSUPPORTED_ACTION).
+   * @param protocol name of the protocol
+   * @param cmd given command
+   * @see enum Command
+   * @since 3.2
+   */
+  QString KIO::unsupportedActionErrorString(const QString &protocol, int cmd);
 
   /**
    * Constants used to specify the type of a KUDSAtom.

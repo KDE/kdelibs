@@ -380,6 +380,45 @@ QString KIO::buildErrorString(int errorCode, const QString &errorText)
   return result;
 }
 
+QString KIO::unsupportedActionErrorString(const QString &protocol, int cmd) {
+  switch (cmd) {
+    case CMD_CONNECT:
+      return i18n("Opening connections is not supported with the protocol %1" ).arg(protocol);
+    case CMD_DISCONNECT:
+      return i18n("Closing connections is not supported with the protocol %1" ).arg(protocol);
+    case CMD_STAT:
+      return i18n("Accessing files is not supported with the protocol %1").arg(protocol);
+    case CMD_PUT:
+      return i18n("Writing to %1 is not supported").arg(protocol);
+    case CMD_SPECIAL:
+      return i18n("There are no special actions available for protocol %1").arg(protocol);
+    case CMD_LISTDIR:
+      return i18n("Listing directories is not supported for protocol %1").arg(protocol);
+    case CMD_GET:
+      return i18n("Retrieving data from %1 is not supported").arg(protocol);
+    case CMD_MIMETYPE:
+      return i18n("Retrieving mime type information from %1 is not supported").arg(protocol);
+    case CMD_RENAME:
+      return i18n("Renaming or moving files within %1 is not supported").arg(protocol);
+    case CMD_SYMLINK:
+      return i18n("Creating symlinks is not supported with protocol %1").arg(protocol);
+    case CMD_COPY:
+      return i18n("Copying files within %1 is not supported").arg(protocol);
+    case CMD_DEL:
+      return i18n("Deleting files from %1 is not supported").arg(protocol);
+    case CMD_MKDIR:
+      return i18n("Creating directories is not supported with protocol %1").arg(protocol);
+    case CMD_CHMOD:
+      return i18n("Changing the attributes of files is not supported with protocol %1").arg(protocol);
+    case CMD_SUBURL:
+      return i18n("Using sub-URLs with %1 is not supported").arg(protocol);
+    case CMD_MULTI_GET:
+      return i18n("Multiple get is not supported with protocol %1").arg(protocol);
+    default:
+      return i18n("Protocol %1 does not support action %2").arg(protocol).arg(cmd);
+  }/*end switch*/
+}
+
 QStringList KIO::Job::detailedErrorStrings( const KURL *reqUrl /*= 0L*/,
                                             int method /*= -1*/ ) const
 {
