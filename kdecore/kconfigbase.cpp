@@ -1063,7 +1063,7 @@ static bool cleanHomeDirPath( QString &path, const QString &homeDir )
    if (path.length() == len || path[len] == '/') {
         path = path.replace(0, len, QString::fromLatin1("$HOME"));
         return true;
-   } else 
+   } else
         return false;
 }
 
@@ -1090,7 +1090,7 @@ static QString translatePath( QString path )
    QString homeDir0 = QFile::decodeName(getenv("HOME"));
    QString homeDir1 = QDir::homeDirPath();
    QString homeDir2 = QDir(homeDir1).canonicalPath();
-   if (cleanHomeDirPath(path, homeDir0) || 
+   if (cleanHomeDirPath(path, homeDir0) ||
        cleanHomeDirPath(path, homeDir1) ||
        cleanHomeDirPath(path, homeDir2) ) {
      // kdDebug() << "Path was replaced\n";
@@ -1354,6 +1354,7 @@ void KConfigBase::writeEntry ( const char *pKey, const QStringList &list,
       return;
     }
   QString str_list;
+  str_list.reserve( 4096 );
   QStringList::ConstIterator it = list.begin();
   for( ; it != list.end(); ++it )
     {
@@ -1686,11 +1687,11 @@ void KConfigBase::setReadDefaults(bool b)
   {
      if (!b) return;
      d = new KConfigBasePrivate();
-  }   
-     
+  }
+
   d->readDefaults = b;
 }
-  
+
 bool KConfigBase::readDefaults() const
 {
   return (d && d->readDefaults);
@@ -1743,7 +1744,7 @@ bool KConfigBase::hasDefault(const QString &key) const
   if (!entry.mValue.isNull())
      return true;
 
-  return false;  
+  return false;
 }
 
 
