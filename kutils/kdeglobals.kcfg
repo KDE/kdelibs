@@ -365,7 +365,6 @@
   <entry key="WheelScrollLines" type="String" />
   <entry key="colorScheme" type="String" />
   <entry key="contrast" type="String" />
-  <entry key="cursorTheme" type="String" />
  </group>
  <group name="KFileDialog Settings" >
   <entry key="Automatically select filename extension" type="String" name="Automatically select filename extension">
