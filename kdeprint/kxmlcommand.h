@@ -53,6 +53,8 @@ public:
 	void setInputMimeTypes(const QStringList&);
 	QStringList requirements();
 	void setRequirements(const QStringList&);
+	QString comment();
+	void setComment( const QString& );
 	bool isValid();
 
 	QString buildCommand(const QMap<QString,QString>& opts, bool pipein = true, bool pipeout = true);

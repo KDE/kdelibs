@@ -35,6 +35,8 @@
 #include <kdialogbase.h>
 #include <kdebug.h>
 #include <kprocess.h>
+#include <klibloader.h>
+#include <kmessagebox.h>
 
 static void setOptionText(DrBase *opt, const QString& s)
 {
@@ -59,6 +61,7 @@ public:
 	QStringList	m_inputMime;
 	QStringList	m_requirements;
 	bool	m_loaded[2];	// 0 -> Desktop, 1 -> XML
+	QString m_comment;
 };
 
 KXmlCommand::KXmlCommand(const QString& xmlId)
@@ -183,6 +186,17 @@ void KXmlCommand::setRequirements(const QStringList& l)
 	d->m_requirements = l;
 }
 
+QString KXmlCommand::comment()
+{
+	check();
+	return d->m_comment;
+}
+
+void KXmlCommand::setComment( const QString& s )
+{
+	d->m_comment = s;
+}
+
 bool KXmlCommand::isValid()
 {
 	return (!locate("data", "kdeprint/filters/"+name()+".desktop").isEmpty());
@@ -210,6 +224,7 @@ void KXmlCommand::loadDesktop()
 	d->m_outputMime = conf.readEntry("MimeTypeOut");
 	d->m_inputMime = conf.readListEntry("MimeTypeIn");
 	d->m_requirements = conf.readListEntry("Require");
+	d->m_comment = conf.readEntry( "Description" );
 }
 
 void KXmlCommand::saveDesktop()
@@ -220,6 +235,7 @@ void KXmlCommand::saveDesktop()
 	conf.writeEntry("MimeTypeIn", d->m_inputMime);
 	conf.writeEntry("MimeTypeOut", d->m_outputMime);
 	conf.writeEntry("Require", d->m_requirements);
+	conf.writeEntry( "Description", d->m_comment );
 }
 
 void KXmlCommand::loadXml()
@@ -243,7 +259,7 @@ void KXmlCommand::loadXml()
 			d->m_driver = new DrMain;
 			d->m_driver->setName(d->m_name);
 			parseGroup(e, d->m_driver);
-			setOptionText(d->m_driver, d->m_name);
+			setOptionText(d->m_driver, d->m_description);
 		}
 
 		// input/output
@@ -635,11 +651,23 @@ QStringList KXmlCommandManager::commandListWithDescription()
 
 QString KXmlCommandManager::selectCommand(QWidget *parent)
 {
-	QStringList	cmdList = commandList();
-	bool	ok(false);
-
-	QString	cmd = QInputDialog::getItem(i18n("Select Command"), i18n("Select the command to use:"), cmdList, 0, false, &ok, parent);
-	return (ok ? cmd : QString::null);
+	KLibrary *lib = KLibLoader::self()->library( "libkdeprint_management" );
+	if ( !lib )
+	{
+		KMessageBox::error( parent, i18n( "Unable to load KDE print management library: %1" ).arg( KLibLoader::self()->lastErrorMessage() ) );
+		return QString::null;
+	}
+	else
+	{
+		QString ( *func )( QWidget* ) = ( QString( * )( QWidget* ) )lib->symbol( "select_command" );
+		if ( !func )
+		{
+			KMessageBox::error( parent, i18n( "Unable to find wizard object in management library." ) );
+			return QString::null;
+		}
+		else
+			return func( parent );
+	}
 }
 
 KXmlCommand* KXmlCommandManager::command(const QString& xmlId) const
