@@ -385,7 +385,7 @@ QString whatstr;
   QWhatsThis::add(yourSSLBox, whatstr);
   grid->addMultiCellWidget(yourSSLBox, 0, 5, 0, 4);
   yourSSLBox->addColumn(i18n("Common Name"));
-  yourSSLBox->addColumn(i18n("E-Mail Address"));
+  yourSSLBox->addColumn(i18n("Email Address"));
   connect(yourSSLBox, SIGNAL(selectionChanged()), SLOT(slotYourCertSelect()));
 
   yourSSLImport = new QPushButton(i18n("&Import..."), tabYourSSLCert);
