@@ -1057,7 +1057,7 @@ int Ftp::ftpAcceptConnect()
 }
 
 bool Ftp::ftpOpenCommand( const char *_command, const QString & _path, char _mode,
-                          int errorcode, unsigned long _offset )
+                          int errorcode, KIO::fileoffset_t _offset )
 {
   QCString buf = "type ";
   buf += _mode;
@@ -2010,11 +2010,11 @@ void Ftp::get( const KURL & url )
       return;
   }
 
-  unsigned long offset = 0;
+  KIO::fileoffset_t offset = 0;
   QString resumeOffset = metaData(QString::fromLatin1("resume"));
   if ( !resumeOffset.isEmpty() )
   {
-      offset = resumeOffset.toInt();
+      offset = resumeOffset.toLongLong();
       kdDebug(7102) << "Ftp::get got offset from medata : " << offset << endl;
   }
 
@@ -2249,12 +2249,12 @@ void Ftp::put( const KURL& dest_url, int permissions, bool overwrite, bool resum
   } else
     dest = dest_orig;
 
-  unsigned long offset = 0;
+  KIO::fileoffset_t offset = 0;
 
   // set the mode according to offset
   if ( resume ) {
     offset = m_size;
-    kdDebug(7102) << "Offset = " << (unsigned int) offset << "d" << endl;
+    kdDebug(7102) << "Offset = " << offset << "d" << endl;
   }
 
   if (! ftpOpenCommand( "stor", dest, 'I', ERR_COULD_NOT_WRITE, offset ) )
