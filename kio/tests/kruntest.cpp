@@ -89,6 +89,7 @@ int main(int argc, char **argv)
   // TODO check( "binaryName('/path/with/a/sp\\ ace/exe arg1 arg2')", KRun::binaryName("/path/with/a/sp\\ ace/exe arg1 arg2", true), "exe" );
   check( "binaryName('\"progname\" \"arg1\"')", KRun::binaryName("\"progname\" \"arg1\"", true), "progname" );
   check( "binaryName('\'quoted\' \"arg1\"')", KRun::binaryName("'quoted' \"arg1\"", true), "quoted" );
+  check( "binaryName(' \'leading space\'   arg1')", KRun::binaryName(" 'leading space'   arg1", true), "leading space" );
 
   Receiver receiver;
 
