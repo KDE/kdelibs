@@ -151,7 +151,6 @@ void KConfigBase::setGroup( const QString& group )
     mGroup = "<default>";
   else
     mGroup = group.utf8();
-  bCheckGroup = true;
 }
 
 void KConfigBase::setGroup( const char *pGroup )
@@ -165,7 +164,6 @@ void KConfigBase::setGroup( const QCString &group )
     mGroup = "<default>";
   else
     mGroup = group;
-  bCheckGroup = true;
 }
 
 QString KConfigBase::group() const {
@@ -175,6 +173,45 @@ QString KConfigBase::group() const {
 void KConfigBase::setDesktopGroup()
 {
   mGroup = "Desktop Entry";
+}
+
+bool KConfigBase::hasKey(const QString &key) const
+{
+   return hasKey(key.utf8().data());
+}
+
+bool KConfigBase::hasKey(const char *pKey) const
+{
+  KEntryKey aEntryKey(mGroup, 0);
+  aEntryKey.c_key = pKey;
+
+  if (!locale().isNull()) {
+    // try the localized key first
+    aEntryKey.bLocal = true;
+    KEntry entry = lookupData(aEntryKey);
+    if (!entry.mValue.isNull())
+       return true;
+    aEntryKey.bLocal = false;
+  }
+
+  // try the non-localized version
+  KEntry entry = lookupData(aEntryKey);
+  return !entry.mValue.isNull();
+}
+
+bool KConfigBase::hasGroup(const QString &group) const
+{
+  return internalHasGroup( group.utf8());
+}
+
+bool KConfigBase::hasGroup(const char *_pGroup) const
+{
+  return internalHasGroup( QCString(_pGroup));
+}
+
+bool KConfigBase::hasGroup(const QCString &_pGroup) const
+{
+  return internalHasGroup( _pGroup);
 }
 
 QString KConfigBase::readEntry( const QString& pKey,
@@ -927,7 +964,7 @@ void KConfigBase::writeEntry( const char *pKey, const QString& value,
   // from under us before we read. A race condition is still
   // possible but minimized.
   if( bPersistent )
-    bDirty = true;
+    setDirty(true);
 
   if (!bLocaleInitialized && KGlobal::locale())
     setLocale();
@@ -944,8 +981,7 @@ void KConfigBase::writeEntry( const char *pKey, const QString& value,
     aEntryData.bDirty = true;
 
   // rewrite the new value
-  putData(entryKey, aEntryData, bCheckGroup);
-  bCheckGroup = false;
+  putData(entryKey, aEntryData, true);
 }
 
 void KConfigBase::writePathEntry( const QString& pKey, const QString & path,
@@ -986,7 +1022,7 @@ void KConfigBase::deleteEntry( const char *pKey,
   // classes do caching, they won't try and flush the cache out
   // from under us before we read. A race condition is still
   // possible but minimized.
-  bDirty = true;
+  setDirty(true);
 
   if (!bLocaleInitialized && KGlobal::locale())
     setLocale();
@@ -1000,8 +1036,7 @@ void KConfigBase::deleteEntry( const char *pKey,
   aEntryData.bDeleted = true;
 
   // rewrite the new value
-  putData(entryKey, aEntryData, bCheckGroup);
-  bCheckGroup = false;
+  putData(entryKey, aEntryData, true);
 }
 
 bool KConfigBase::deleteGroup( const QString& group, bool bDeep )
@@ -1013,6 +1048,8 @@ bool KConfigBase::deleteGroup( const QString& group, bool bDeep )
     return aEntryMap.isEmpty();
   }
 
+  bool dirty = false;
+  bool checkGroup = true;
   // we want to remove all entries in the group
   KEntryMapIterator aIt;
   for (aIt = aEntryMap.begin(); aIt != aEntryMap.end(); ++aIt)
@@ -1023,11 +1060,13 @@ qWarning("Deleting key = %s", aIt.key().mKey.data());
       (*aIt).bDeleted = true;
       (*aIt).bDirty = true;
       (*aIt).mValue = 0;
-      putData(aIt.key(), *aIt, bCheckGroup);
-      bCheckGroup = false;
-      bDirty = true;
+      putData(aIt.key(), *aIt, checkGroup);
+      checkGroup = false;
+      dirty = true;
     }
   }
+  if (dirty)
+     setDirty(true);
   return true;
 }
 
@@ -1464,6 +1503,38 @@ KConfigBase::ConfigState KConfigBase::getConfigState() const {
     if (backEnd)
        return backEnd->getConfigState();
     return ReadOnly;
+}
+
+KConfigGroup::KConfigGroup(KConfigBase *master, const QCString &group)
+{
+  mMaster = master;
+  backEnd = 0;
+  bLocaleInitialized = true;
+  bReadOnly = mMaster->bReadOnly;
+  bExpand = false;
+  bDirty = false; // Not used
+  mGroup = group;
+  aLocaleString = mMaster->aLocaleString;
+}
+
+void KConfigGroup::deleteGroup()
+{
+  mMaster->deleteGroup(KConfigBase::group());
+}
+
+void KConfigGroup::setDirty(bool b)
+{
+  mMaster->setDirty(b);
+}
+
+void KConfigGroup::putData(const KEntryKey &_key, const KEntry &_data, bool _checkGroup)
+{
+  mMaster->putData(_key, _data, _checkGroup);
+}
+
+KEntry KConfigGroup::lookupData(const KEntryKey &_key) const
+{
+  return mMaster->lookupData(_key);
 }
 
 #include "kconfigbase.moc"

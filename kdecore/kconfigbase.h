@@ -38,6 +38,7 @@
 
 class KConfigBackEnd;
 class KConfigBasePrivate;
+class KConfigGroup;
 
 /**
  * Abstract base class for KDE configuration entries.
@@ -69,6 +70,7 @@ class KConfigBase : public QObject
 
   friend class KConfigBackEnd;
   friend class KConfigINIBackEnd;
+  friend class KConfigGroup;
 
 public:
   /**
@@ -113,7 +115,7 @@ public:
    * @param group The group to search for.
    * @returns Whether the group exists.
    */
-  virtual bool hasGroup(const QString &group) const = 0;
+  bool hasGroup(const QString &group) const;
 
   /**
    * Returns a list of groups that are known about.
@@ -923,7 +925,7 @@ public:
    * @param pKey The key to search for.
    * @return If true, the key is available.
    */
-  virtual bool hasKey( const QString& key ) const = 0;
+  bool hasKey( const QString& key ) const;
 
   /**
    * Returns a map (tree) of entries for all entries in a particular
@@ -1057,6 +1059,8 @@ protected:
    */
   virtual KEntry lookupData(const KEntryKey &_key) const = 0;
 
+  virtual bool internalHasGroup(const QCString &group) const = 0;
+
   /**
    * A back end for loading/saving to disk in a particular format.
    */
@@ -1067,9 +1071,9 @@ public:
    */
   void setGroup( const QCString &pGroup );
   void setGroup( const char *pGroup );
-  virtual bool hasGroup(const QCString &_pGroup) const = 0;
-  virtual bool hasGroup(const char *_pGroup) const = 0;
-  virtual bool hasKey( const char *pKey ) const = 0;
+  bool hasGroup(const QCString &_pGroup) const;
+  bool hasGroup(const char *_pGroup) const;
+  bool hasKey( const char *pKey ) const;
 
 protected:
   QCString readEntryUtf8( const char *pKey) const;
@@ -1090,7 +1094,6 @@ protected:
   bool bLocaleInitialized;
   bool bReadOnly;           // currently only used by KSimpleConfig
   mutable bool bExpand;     // whether dollar expansion is used
-  bool bCheckGroup;         // Flag whether to check group status
 
   KConfigBasePrivate *d;
 };
@@ -1172,6 +1175,49 @@ private:
   KConfigGroupSaver& operator=(const KConfigGroupSaver&);
 
   KConfigGroupSaverPrivate *d;
+};
+
+class KConfigGroup: public KConfigBase
+{
+public:
+   KConfigGroup(KConfigBase *master, const QCString &group);
+   
+   /**
+    * Delete all entries in the entire group
+    */
+   void deleteGroup();
+
+   // The following functions are reimplemented:
+   virtual void setDirty(bool b);
+   virtual void putData(const KEntryKey &_key, const KEntry &_data, bool _checkGroup = true);
+   virtual KEntry lookupData(const KEntryKey &_key) const;
+   
+private:
+   // Hide the following members: 
+   void setGroup() { }
+   void setDesktopGroup() { }
+   void group() { }
+   void hasGroup() { }
+   void setReadOnly(bool) { }
+   void isDirty() { }
+
+   // The following members are not used.
+   virtual QStringList groupList() const { return QStringList(); }
+   virtual void rollback(bool) { } 
+   virtual void sync() { }
+   virtual void reparseConfiguration() { }
+   virtual QMap<QString, QString> entryMap(const QString &) const 
+    { return QMap<QString,QString>(); }
+   virtual KEntryMap internalEntryMap( const QString&) const 
+    { return KEntryMap(); }
+   virtual KEntryMap internalEntryMap() const 
+    { return KEntryMap(); }
+   virtual bool internalHasGroup(const QCString &) const
+    { return false; }
+
+   void getConfigState() { }
+   
+   KConfigBase *mMaster;
 };
 
 #endif

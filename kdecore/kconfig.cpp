@@ -125,32 +125,6 @@ QStringList KConfig::groupList() const
   return retList;
 }
 
-bool KConfig::hasKey(const QString &key) const
-{
-   return KConfig::hasKey(key.utf8().data());
-}
-
-bool KConfig::hasKey(const char *pKey) const
-{
-  KEntryKey aEntryKey(mGroup, 0);
-  aEntryKey.c_key = pKey;
-
-  KEntryMapConstIterator aIt;
-
-  if (!locale().isNull()) {
-    // try the localized key first
-    aEntryKey.bLocal = true;
-    aIt = aEntryMap.find(aEntryKey);
-    if (aIt != aEntryMap.end() && !(*aIt).mValue.isNull() && !(*aIt).bDeleted )
-      return true;
-    aEntryKey.bLocal = false;
-  }
-
-  // try the non-localized version
-  aIt = aEntryMap.find(aEntryKey);
-  return  (aIt != aEntryMap.end() && !(*aIt).mValue.isNull() && !(*aIt).bDeleted );
-}
-
 QMap<QString, QString> KConfig::entryMap(const QString &pGroup) const
 {
   QCString pGroup_utf = pGroup.utf8();
@@ -256,17 +230,7 @@ KEntry KConfig::lookupData(const KEntryKey &_key) const
   }
 }
 
-bool KConfig::hasGroup(const QString &group) const
-{
-  return KConfig::hasGroup( group.utf8());
-}
-
-bool KConfig::hasGroup(const char *_pGroup) const
-{
-  return KConfig::hasGroup( QCString(_pGroup));
-}
-
-bool KConfig::hasGroup(const QCString &group) const
+bool KConfig::internalHasGroup(const QCString &group) const
 {
   KEntryKey groupKey( group, 0);
 

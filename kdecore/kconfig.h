@@ -81,28 +81,11 @@ public:
    */
   virtual void rollback(bool bDeep = true);
 
-  /**
-   * Returns true if the specified group is known.
-   *
-   * @param group The group to search for.
-   * @returns @p true if the group exists.
-   */
-  virtual bool hasGroup(const QString &group) const;
 
   /**
    * Returns a list of groups that are known.
    */
   virtual QStringList groupList() const;
-
-  /*
-   * Checks if the key has an entry in the currently active group. Use
-   * this to determine if a key is not specified for the current group
-   * (@p hasKey returns false). Keys with null data are considered
-   * nonexistent.
-   *
-   * @param key The key to search for.
-   */
-  virtual bool hasKey(const QString &key) const;
 
   /**
    * Returns a map (tree) of entries for all entries in a particular
@@ -124,6 +107,14 @@ public:
   virtual void reparseConfiguration();
 
 protected:
+
+  /**
+   * Returns true if the specified group is known.
+   *
+   * @param group The group to search for.
+   * @returns @p true if the group exists.
+   */
+  virtual bool internalHasGroup(const QCString &group) const;
 
   /**
    * Returns a map (tree) of the entries in the specified group.
@@ -179,15 +170,6 @@ protected:
    * set to QString::null.
    */
   KEntryMap aEntryMap;
-
-
-public:
-  /**
-   * Overloaded public functions.
-   */
-  virtual bool hasGroup(const QCString &group) const;
-  virtual bool hasGroup(const char *_pGroup) const;
-  virtual bool hasKey(const char *pKey) const;
 
 private:
   /**
