@@ -89,8 +89,8 @@ void PluginComboBox::reload()
 void PluginComboBox::configChanged()
 {
         QString whatsThisCurrentConnection = i18n(" <qt><b>Current Connection</b>"
-						" <p>This line shows to which CUPS server your PC"
-						" is currently connected for printing and retrieving"
+						" <p>This line shows which CUPS server your PC is"
+						" currently connected to for printing and retrieving"
 						" printer info. To switch to a different CUPS server,"
 						" click \"System Options\", then select \"Cups server\""
 						" and fill in the required info." 
