@@ -139,6 +139,9 @@ bool KFileMetaInfoItem::setValue( const QVariant& value )
 
 //    kdDebug(7033) << key() << ".setValue()\n";
 
+    if ( d->value == value )
+        return true;
+
     d->dirty = true;
     d->value = value;
     // If we don't cast (and test for canCast in the above if), QVariant is
@@ -496,15 +499,21 @@ bool KFileMetaInfo::applyChanges()
 
     // look up if we need to write to the file
     QMapConstIterator<QString, KFileMetaInfoGroup> it;
-    for (it = d->groups.begin(); it!=d->groups.end(); ++it)
+    for (it = d->groups.begin(); it!=d->groups.end() && !doit; ++it)
     {
-        QStringList keys = it.data().keys();
-        for (QStringList::Iterator it2 = keys.begin(); it2!=keys.end(); ++it)
+        if ( (*it).isModified() )
+            doit = true;
+
+        else
         {
-            if ((*it)[*it2].isModified());
+            QStringList keys = it.data().keys();
+            for (QStringList::Iterator it2 = keys.begin(); it2!=keys.end(); ++it2)
             {
-                doit = true;
-                break;
+                if ( (*it)[*it2].isModified() )
+                {
+                    doit = true;
+                    break;
+                }
             }
         }
     }
@@ -1159,6 +1168,11 @@ uint KFileMetaInfoGroup::attributes() const
 void KFileMetaInfoGroup::setAdded()
 {
     d->added = true;
+}
+
+bool KFileMetaInfoGroup::isModified() const
+{
+    return d->dirty;
 }
 
 void KFileMetaInfoGroup::ref()

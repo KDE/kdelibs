@@ -411,7 +411,7 @@ public:
      * @param key the key of the item
      * @param parent the parent of the QObject, or 0 for a parent-less object
      * @param name the name of the QObject, can be 0
-     * @return the validator. You are resposible for deleting it. 0 if 
+     * @return the validator. You are resposible for deleting it. 0 if
      *         creation failed
      */
     QValidator * createValidator(const QString& group, const QString& key,
@@ -455,7 +455,7 @@ public:
      *
      * @param group the group whose group info should be retrieved
      * @return a pointer to the info. 0 if it does not
-     *         exist. Don't delete this object! 
+     *         exist. Don't delete this object!
      */
     const GroupInfo * groupInfo( const QString& group ) const;
 
@@ -739,6 +739,14 @@ public:
      */
     bool isEmpty() const;
 
+    /**
+     * Returns true if an item as added or removed from the group.
+     * @return true if an item was added or removed from the group, otherwise
+     * false.
+     * @since 3.1
+     */
+    bool isModified() const;
+    
     /**
      * Operator for convenience. It does the same as @ref item(),
      * but you cannot specify a group to search in
@@ -1318,7 +1326,7 @@ public:
 
     QStringList preferredKeys( const QString& mimeType ) const;
     QStringList preferredGroups( const QString& mimeType ) const;
-    
+
     /// @since 3.1
     QStringList supportedMimeTypes() const;
 
