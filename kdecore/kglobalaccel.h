@@ -36,12 +36,6 @@ class KGlobalAccel : public QObject
 	KGlobalAccel( QObject* pParent, const char* psName = 0 );
 	virtual ~KGlobalAccel();
 
-	// Needed by KHotKeys
-	void clear();
-
-	KAccelActions& actions();
-	const KAccelActions& actions() const;
-
 	bool isEnabled();
 	void setEnabled( bool bEnabled );
 
@@ -111,7 +105,12 @@ class KGlobalAccel : public QObject
 
  private:
 	class KGlobalAccelPrivate* d;
+
+	KAccelActions& actions();
+	const KAccelActions& actions() const;
+
 	friend class KGlobalAccelPrivate;
+	friend class KAccelShortcutList;
 };
 
 #endif // _KGLOBALACCEL_H_

@@ -26,9 +26,10 @@ KGlobalAccel::~KGlobalAccel()
 	delete d;
 }
 
+/*
 void KGlobalAccel::clear()
 	{ d->clearActions(); }
-
+*/
 KAccelActions& KGlobalAccel::actions()
 	{ return d->actions(); }
 
@@ -59,7 +60,7 @@ bool KGlobalAccel::updateConnections()
 
 const KShortcut& KGlobalAccel::shortcut( const QString& sAction ) const
 {
-	const KAccelAction* pAction = actions().actionPtr( sAction );
+	const KAccelAction* pAction = d->actions().actionPtr( sAction );
 	return (pAction) ? pAction->shortcut() : KShortcut::null();
 }
 
