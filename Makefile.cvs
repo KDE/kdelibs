@@ -26,3 +26,4 @@ dist:
 	 file2=`echo $$i | sed -e "s#\.po#\.gmo#"`; \
 	 msgfmt -o $$file2 $$i || touch $$file2; \
 	done
+

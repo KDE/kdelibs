@@ -47,10 +47,8 @@ AC_SUBST_KFSSTND
 AC_CHECK_LIB(compat, main, [LIBCOMPAT="-lcompat"]) dnl for FreeBSD
 
 dnl Image libraries
-AC_FIND_JPEG
-AC_FIND_TIFF
-
 KDE_CREATE_LIBS_ALIASES
+KDE_CHECK_KIMGIO
 
 # configure would do this very late. Too late for us!
 test "x$prefix" = xNONE && prefix=$ac_default_prefix
