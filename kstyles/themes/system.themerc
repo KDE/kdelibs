@@ -1,21 +1,21 @@
 #KDE Config File
 [PushButton]
 Background=219,219,219
-Gradient=Diagonal
-GradientHigh=233,233,233
-GradientLow=171,171,171
+Gradient=ReverseBevel
+BevelContrast=1
+GradientLow=233,233,233
+GradientHigh=171,171,171
 XShift=1
 YShift=1
 
 [PushButtonDown]
-Background=171,171,171
-Foreground=255,255,255
-Gradient=Diagonal
-GradientHigh=171,171,191
-GradientLow=233,233,253
+Background=171,171,191
+Gradient=ReverseBevel
+GradientLow=171,171,191
+GradientHigh=233,233,253
 
 [HScrollGroove]
-Pixmap=graytexture.png
+Pixmap=darkgraytexture.png
 PixmapScale=Tile
 Highlight=1
 Border=0
@@ -36,10 +36,10 @@ GradientHigh=233,233,233
 GradientLow=171,171,171
 
 [MenuItem]
-GradientHigh=170,196,234
-GradientLow=123,139,162
-Gradient=Vertical
-Background=170,196,234
+#GradientHigh=170,196,234
+#GradientLow=123,139,162
+#Gradient=Vertical
+Background=206,172,148
 Foreground=0,0,0
 Border=0
 Highlight=0
@@ -85,11 +85,11 @@ GradientLow=171,171,171
 
 [ToolButton]
 Border=0
-Background=154,180,201 
+Background=206,172,148
 
 [ToolButtonDown]
 Border=0
-Background=174,200,221 
+Background=226,192,168
 
 [ScrollButton]
 Border=0
@@ -110,10 +110,9 @@ Highlight=1
 
 [ToolBar]
 Border=0
+Highlight=0
 Background=219,219,219
-Gradient=Vertical
-GradientHigh=233,233,233
-GradientLow=171,171,171
+Pixmap=graytexture.png
 
 [MenuBar]
 CopyWidget=ToolBar
@@ -129,10 +128,10 @@ GradientLow=0,0,128
 Background=200,200,200
 
 [Tab]
-Background=163,182,220
+Background=206,172,148
 Gradient=Vertical
-GradientHigh=182,202,240
-GradientLow=143,162,200
+GradientHigh=186,152,108
+GradientLow=206,172,148
 BottomLine=true
 
 [TabDown]
@@ -143,8 +142,9 @@ GradientHigh=240,240,240
 BottomLine=true
 
 [MenuBarItem]
-GradientHigh=170,196,234
-GradientLow=131,158,173
+Background=206,172,148
+GradientHigh=186,152,128
+GradientLow=226,192,168
 Gradient=Vertical
 Border=0
 Highlight=1
@@ -166,10 +166,10 @@ Pixmap=switch_off.png
 Pixmap=switch_on.png
 
 [Radio]
-Pixmap=elec_off.png
+Pixmap=elec_off.xpm
 
 [RadioDown]
-Pixmap=elec_on.png
+Pixmap=elec_on.xpm
 
 [HScrollDeco]
 Pixmap=sbdeco_elec.png
