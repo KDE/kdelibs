@@ -369,8 +369,9 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
         else if ( searchCount > 0 )
         {
             const QChar& cmp = *src;
-            // be tolerant: skip spaces before the ">", i.e "</script >"
-            if (!escaped && !src.escaped() && cmp.isSpace() && searchFor[searchCount].latin1() == '>')
+            // be tolerant: skip garbage before the ">", i.e "</script foo>"
+            // ### handle quotes!
+            if (searchFor[searchCount].latin1() == '>')
             {
                 ++src;
             }
