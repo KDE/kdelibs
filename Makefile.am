@@ -29,5 +29,5 @@ acinclude.m4: acinclude.m4.in libtool.m4.in
 	cat acinclude.m4.in libtool.m4.in   > acinclude.m4
 
 messages:
-	@XGETTEXT@ -C -ktranslate */*.cpp && mv messages.po po/kde.pot
+	@XGETTEXT@ -C -ktranslate -ki18n */*.cpp && mv messages.po po/kde.pot
 	(cd po && $(MAKE) merge)
