@@ -2861,7 +2861,9 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
       QDragObject *drag = 0;
       if( !d->m_strSelectedURL.isEmpty() ) {
           KURL u( completeURL( splitUrlTarget(d->m_strSelectedURL)) );
-          drag = KURLDrag::newDrag( u, d->m_view->viewport() );
+          KURL::List uris;
+          uris.append(u);
+          drag = KURLDrag::newDrag( uris, d->m_view->viewport() );
           p = KMimeType::pixmapForURL(u, 0, KIcon::SizeMedium);
       } else {
           HTMLImageElementImpl *i = static_cast<HTMLImageElementImpl *>(innerNode.handle());
