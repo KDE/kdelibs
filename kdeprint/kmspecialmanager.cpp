@@ -154,6 +154,7 @@ bool KMSpecialManager::loadDesktopFile(const QString& filename)
 		if (!KdeprintChecker::check(&conf))
 			printer->addType(KMPrinter::Invalid);
 		printer->setState(KMPrinter::Idle);
+		printer->setAcceptJobs(true);
 		m_mgr->addPrinter(printer);
 	}
 
