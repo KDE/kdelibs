@@ -29,15 +29,15 @@ class KDateTable;
 
 /**
  * Provides a widget for calendar date input.
- * 
+ *
  *     Different from the
  *     previous versions, it now emits two types of signals, either
  *     @ref dateSelected() or @ref dateEntered() (see documentation for both
- *     signals). 
- * 
- *     A line edit has been added in the newer versions to allow the user 
+ *     signals).
+ *
+ *     A line edit has been added in the newer versions to allow the user
  *     to select a date directly by entering numbers like 19990101
- *     or 990101. 
+ *     or 990101.
  *
  * @image kdatepicker.png KDatePicker
  *
@@ -51,14 +51,14 @@ class KDatePicker: public QFrame
   Q_OBJECT
 
 public:
-  /** The usual constructor.  The given date will be displayed 
+  /** The usual constructor.  The given date will be displayed
    * initially.
    **/
-  KDatePicker(QWidget *parent=0, 
-	      QDate=QDate::currentDate(), 
+  KDatePicker(QWidget *parent=0,
+	      QDate=QDate::currentDate(),
 	      const char *name=0);
   /**
-   * The destructor. 
+   * The destructor.
    **/
   virtual ~KDatePicker();
 
@@ -68,28 +68,28 @@ public:
    *  size hint, try adding 28 to each of the reported numbers of
    *  pixels.
    **/
-  QSize sizeHint() const; 
+  QSize sizeHint() const;
 
   /**
    * Sets the date.
    *
-   *  @returns @p false and does not change anything 
-   *      if the date given is invalid. 
+   *  @returns @p false and does not change anything
+   *      if the date given is invalid.
    **/
   bool setDate(const QDate&);
 
-  /** 
+  /**
    * Returns the selected date.
    **/
   const QDate& getDate();
 
-  /** 
-   * Enables or disables the widget. 
+  /**
+   * Enables or disables the widget.
    **/
   void setEnabled(bool);
 
-  /** 
-   * Sets the font size of the widgets elements. 
+  /**
+   * Sets the font size of the widgets elements.
    **/
   void setFontSize(int);
   /**
@@ -117,7 +117,7 @@ protected:
   QLineEdit *line;
   /// the validator for the line edit:
   KDateValidator *val;
-  /// the date table 
+  /// the date table
   KDateTable *table;
   /// the size calculated during resize events
     //  QSize sizehint;
@@ -134,24 +134,28 @@ protected slots:
   void selectYearClicked();
   void lineEnterPressed();
 signals:
-  /** This signal is emitted each time the selected date is changed. 
-      Usually, this does not mean that the date has been entered,
-      since the date also changes, for example, when another month is
-      selected. 
-      @see dateSelected  */
+  /** This signal is emitted each time the selected date is changed.
+   *  Usually, this does not mean that the date has been entered,
+   *  since the date also changes, for example, when another month is
+   *  selected.
+   *  @see dateSelected
+   */
   void dateChanged(QDate);
   /** This signal is emitted each time a day has been selected by
-      clicking on the table (hitting a day in the current month). It
-      has the same meaning as dateSelected() in older versions of
-      KDatePicker. */
+   *  clicking on the table (hitting a day in the current month). It
+   *  has the same meaning as dateSelected() in older versions of
+   *  KDatePicker.
+   */
   void dateSelected(QDate);
   /** This signal is emitted when enter is pressed and a VALID date
-      has been entered before into the line edit. Connect to both
-      dateEntered() and dateSelected() to receive all events where the 
-      user really enters a date. */
+   *  has been entered before into the line edit. Connect to both
+   *  dateEntered() and dateSelected() to receive all events where the
+   *  user really enters a date.
+   */
   void dateEntered(QDate);
   /** This signal is emitted when the day has been selected by
-      clicking on it in the table. */
+   *  clicking on it in the table.
+   */
   void tableClicked();
 
 private:
