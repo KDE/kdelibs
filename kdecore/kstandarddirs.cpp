@@ -294,14 +294,26 @@ Q_UINT32 KStandardDirs::calcResourceHash( const char *type,
 QStringList KStandardDirs::findDirs( const char *type,
                                      const QString& reldir ) const
 {
+    QDir testdir;
     QStringList list;
+    if (reldir.startsWith("/"))
+    {
+        testdir.setPath(reldir);
+        if (testdir.exists())
+        {
+            if (reldir.endsWith("/"))
+               list.append(reldir);
+            else
+               list.append(reldir+'/');
+        }
+        return list;
+    }
 
     checkConfig();
 
     if (d && d->restrictionsActive && (strcmp(type, "data")==0))
        applyDataRestrictions(reldir);
     QStringList candidates = resourceDirs(type);
-    QDir testdir;
 
     for (QStringList::ConstIterator it = candidates.begin();
          it != candidates.end(); it++) {
