@@ -397,7 +397,7 @@ DocumentImpl* HTMLFrameElementImpl::contentDocument() const
 
     RenderPart* render = static_cast<RenderPart*>( m_render );
 
-    if(render->widget() && render->widget()->inherits("KHTMLView"))
+    if(render->widget() && ::qt_cast<KHTMLView*>( render->widget()) )
         return static_cast<KHTMLView*>( render->widget() )->part()->xmlDocImpl();
 
     return 0;
