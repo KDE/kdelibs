@@ -835,13 +835,21 @@ int main( int argc, char* argv[] )
     }
   }
 
-  if (fork() > 0)
+  bool nofork = false;
+  for(int i = 1; i < argc; i++)
+     if (strcmp(argv[i], "--nofork") == 0)
+        nofork = true;
+
+  if (!nofork)
+  {
+    if (fork() > 0)
       exit(0); // I am the parent
 
-  setsid();
+    setsid();
 
-   if (fork() > 0)
-       exit(0); // get rid of controlling terminal
+    if (fork() > 0)
+      exit(0); // get rid of controlling terminal
+  }
 
   signal(SIGHUP, sighandler);
   signal(SIGTERM, sighandler);
