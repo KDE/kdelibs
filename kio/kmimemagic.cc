@@ -45,16 +45,7 @@ void KMimeMagic::initStatic()
 /*
  * data structures and related constants
  */
-// Stephan: the CC doesn't support such macros
-/*
 #define MIME_MAGIC_DEBUG  0
-#if MIME_MAGIC_DEBUG
-#define debug(fmt, args...)  debugT(fmt "\n" , ## args)
-#else
-#define debug(fmt, args...)
-#endif
-*/
-#define debug debugT
 
 #define DECLINED 999
 #define ERROR    998
@@ -228,7 +219,7 @@ typedef struct asc_type {
 } asc_type;
 
 static asc_type types[] = {
-	{ "text/html",         10, 1.2 },
+	{ "text/html",          6, 2 }, // 10 items but 6 different words only
 	{ "text/x-c",           9, 1.3 },
 	{ "text/x-makefile",    4, 1.9 },
 	{ "text/x-pli",         1, 3 },
@@ -250,6 +241,7 @@ static struct names {
 
 	/* These must be sorted by eye for optimal hit rate */
 	/* Add to this list only after substantial meditation */
+// ?? Order doesn't count, as we do 'best accurate' matching ! (David)
 	{
 		"<html>", L_HTML
 	},
@@ -1841,7 +1833,8 @@ KMimeMagic::ascmagic(unsigned char *buf, int nbytes)
 	mostaccurate = -1;
 	maxpct = pctsum = 0.0;
 	for (i = 0; i < (int)NTYPES; i++) {
-	 	pct = (double)typecount[i] / (double)types[i].kwords *
+	  if (typecount[i]) {
+		pct = (double)typecount[i] / (double)types[i].kwords *
 		    (double)types[i].weight;
 		pcts[i] = pct;
 		pctsum += pct;
@@ -1850,10 +1843,11 @@ KMimeMagic::ascmagic(unsigned char *buf, int nbytes)
 		    mostaccurate = i;
 		  }
 #if MIME_MAGIC_DEBUG
-		  printf("%s has %d hits, %d kw, %f -> max = %f\n",
-			 types[i].type, typecount[i], types[i].kwords,
+		  printf("%s has %d hits, %d kw, weight %f, %f -> max = %f\n",
+			 types[i].type, typecount[i], types[i].kwords, types[i].weight,
 			 pct, maxpct);
 #endif
+	  }
 	}
 	if (mostaccurate >= 0.0) {
 		accuracy = (int)(pcts[mostaccurate] / pctsum * 60);
