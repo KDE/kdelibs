@@ -882,9 +882,9 @@ void KFileDialog::slotFilterChanged()
     QString filter = filterWidget->currentFilter();
     ops->clearFilter();
 
-    if ( filter.contains( '/' ) ) {
-        QStringList types;
-        types << "inode/directory" << filter;
+    if ( filter.find( '/' ) > -1 ) {
+        QStringList types = QStringList::split( " ", filter );
+        types.prepend( "inode/directory" );
         ops->setMimeFilter( types );
     }
     else
@@ -1233,7 +1233,7 @@ void KFileDialog::updateStatusLine(int dirs, int files)
     d->myStatusLine->setText(lStatusText);
 }
 
-QString KFileDialog::getOpenFileName(const QString& startDir, 
+QString KFileDialog::getOpenFileName(const QString& startDir,
                                      const QString& filter,
                                      QWidget *parent, const QString& caption)
 {
@@ -1245,13 +1245,13 @@ QString KFileDialog::getOpenFileName(const QString& startDir,
 
     dlg.ops->clearHistory();
     dlg.exec();
-    
+
     return dlg.selectedFile();
 }
 
 QStringList KFileDialog::getOpenFileNames(const QString& startDir,
                                           const QString& filter,
-                                          QWidget *parent, 
+                                          QWidget *parent,
                                           const QString& caption)
 {
     KFileDialog dlg(startDir, filter, parent, "filedialog", true);
@@ -1261,7 +1261,7 @@ QStringList KFileDialog::getOpenFileNames(const QString& startDir,
     dlg.setMode(KFile::Files | KFile::LocalOnly);
     dlg.ops->clearHistory();
     dlg.exec();
-        
+
     return dlg.selectedFiles();
 }
 
@@ -1658,14 +1658,14 @@ KFileDialog::OperationMode KFileDialog::operationMode() const
 void KFileDialog::addToRecentDocuments()
 {
     int m = ops->mode();
-    
+
     if ( m & KFile::LocalOnly ) {
         QStringList files = selectedFiles();
         QStringList::ConstIterator it = files.begin();
         for ( ; it != files.end(); ++it )
             KRecentDocument::add( *it );
     }
-        
+
     else { // urls
         KURL::List urls = selectedURLs();
         KURL::List::ConstIterator it = urls.begin();
