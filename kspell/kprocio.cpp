@@ -72,7 +72,8 @@ bool KProcIO::writeStdin (const char *buffer, bool appendnewline)
 
 void KProcIO::sent (KProcess *)
 {
-  kdebug(KDEBUG_INFO, 750, "KP::sent [%s]",qlist.first());
+  if (qlist.first()) 
+    kdebug(KDEBUG_INFO, 750, "KP::sent [%s]",qlist.first());
 
   qlist.removeFirst();
 
