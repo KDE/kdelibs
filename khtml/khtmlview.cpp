@@ -236,6 +236,13 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
         d->tp->translate(-ex, -ey-py);
         d->tp->fillRect(ex, ey+py, ew, ph, palette().normal().brush(QColorGroup::Base));
         m_part->xmlDocImpl()->renderer()->print(d->tp, ex, ey+py, ew, ph, 0, 0);
+#ifdef BOX_DEBUG
+	if (m_part->xmlDocImpl()->focusNode())
+	{
+	    d->tp->setBrush(Qt::NoBrush);
+	    d->tp->drawRect(m_part->xmlDocImpl()->focusNode()->getRect());
+	}
+#endif
         d->tp->end();
 
         p->drawPixmap(ex, ey+py, *d->paintBuffer, 0, 0, ew, ph);
@@ -462,6 +469,9 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
             break;
         case Key_Enter:
         case Key_Return:
+	    // ### FIXME:
+	    // move this code to HTMLAnchorElementImpl::setPressed(false),
+	    // or even better to HTMLAnchorElementImpl::event()
             if (m_part->xmlDocImpl())
 	    {
 		ElementImpl *e = m_part->xmlDocImpl()->focusNode();
@@ -489,6 +499,9 @@ void KHTMLView::keyReleaseEvent( QKeyEvent *_ke )
     {
     case Key_Enter:
     case Key_Return:
+	// ### FIXME:
+	// move this code to HTMLAnchorElementImpl::setPressed(false),
+	// or even better to HTMLAnchorElementImpl::event()
 	if (m_part->xmlDocImpl())
 	{
 	    ElementImpl *e = m_part->xmlDocImpl()->focusNode();
@@ -831,4 +844,21 @@ void KHTMLView::restoreScrollBar ( )
         layout();
         updateContents(contentsX(),contentsY(),visibleWidth(),visibleHeight());
     }
+}
+
+void KHTMLView::toggleActLink(bool pressed)
+{
+    ElementImpl *e = m_part->xmlDocImpl()->focusNode();
+    // ### FIXME:
+    // move this code to HTMLAnchorElementImpl::setPressed(false),
+    // or even better to HTMLAnchorElementImpl::event()
+    if (!pressed && e && e==d->originalNode && (e->id()==ID_A || e->id()==ID_AREA))
+    {
+	HTMLAnchorElementImpl *a = static_cast<HTMLAnchorElementImpl *>(e);
+	emit m_part->urlSelected( a->areaHref().string(),
+				  LeftButton, 0,
+				  a->targetRef().string() );
+    }
+    if (e)
+	e->setActive(pressed);
 }

@@ -87,22 +87,31 @@ public:
     int frameWidth() const { return _width; }
 
     /**
+     * BCI: This function is provided for compatibility reasons only and 
+     * will be removed in KDE3.0.
+     * use sendEvent(view, Key_Tab) instead.
      * Move the view towards the next link and
      * draw a cursor around it
      **/
     bool gotoNextLink();
 
     /**
+     * BCI: This function is provided for compatibility reasons only and 
+     * will be removed in KDE3.0
+     * use sendEvent(view, Key_BackTab) instead.
      * Move the view towards the next link and
      * draw a cursor around it
      **/
     bool gotoPrevLink();
 
     /**
+     * BCI: This function is provided for compatibility reasons only and 
+     * will be removed in KDE3.0
+     * use sendEvent(view, Key_Return) instead.
      * visualize that the item under the cursor
      * has been pressed (true) or released(false)
      */
-    //void toggleActLink(bool);
+    void toggleActLink(bool);
 
     /**
      * Set a margin in x direction.
