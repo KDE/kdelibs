@@ -919,6 +919,16 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
         switch(sel->match)
         {
         case CSSSelector::Exact:
+            /* attribut values are case insensitive in all HTML modes,
+               even in the strict ones */
+            if ( e->getDocument()->htmlMode() != DocumentImpl::XHtml ) {
+                if ( strcasecmp(sel->value, value) )
+                    return false;
+            } else {
+                if ( strcmp(sel->value, value) )
+                    return false;
+            }
+            break;
         case CSSSelector::Id:
 	    if( (strictParsing && strcmp(sel->value, value) ) ||
                 (!strictParsing && strcasecmp(sel->value, value)))

@@ -1,3 +1,8 @@
+2004-10-27  Stephan Kulow  <coolo@kde.org>
+
+        * css/cssstyleselector.cpp (checkOneSelector): match exact matches case sensitive
+        only in XHTML - HTML attributes are all case insensitive 
+
 2004-10-26  Stephan Kulow  <coolo@kde.org>
 
         * html/html_elementimpl.cpp (addCSSProperty): don't add all css properties in 
