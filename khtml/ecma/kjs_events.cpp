@@ -58,7 +58,7 @@ void JSEventListener::handleEvent(DOM::Event &evt)
   KHTMLPart *part = static_cast<Window*>(win.imp())->part();
   if (part && listener.implementsCall()) {
 
-    KJS::Interpreter *interpreter = KJSProxy::proxy( part )->interpreter();
+    KJS::ScriptInterpreter *interpreter = static_cast<KJS::ScriptInterpreter *>(KJSProxy::proxy( part )->interpreter());
     ExecState *exec = interpreter->globalExec();
 
     List args;
@@ -82,6 +82,8 @@ void JSEventListener::handleEvent(DOM::Event &evt)
     Window *window = static_cast<Window*>(win.imp());
     // Set the event we're handling in the Window object
     window->setCurrentEvent( &evt );
+    // ... and in the interpreter
+    interpreter->setCurrentEvent( &evt );
 
     Value retval = listener.call(exec, thisObj, args);
 
@@ -89,12 +91,13 @@ void JSEventListener::handleEvent(DOM::Event &evt)
       listener.setScope( oldScope );
     }
 
+    window->setCurrentEvent( 0 );
+    interpreter->setCurrentEvent( 0 );
     if ( exec->hadException() )
         exec->clearException();
     else
     {
         QVariant ret = ValueToVariant(exec, retval);
-        window->setCurrentEvent( 0 );
         if (ret.type() == QVariant::Bool && ret.toBool() == false)
             evt.preventDefault();
     }

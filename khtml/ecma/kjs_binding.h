@@ -81,7 +81,8 @@ namespace KJS {
   {
   public:
     ScriptInterpreter( const Object &global, KHTMLPart* part )
-      : Interpreter( global ), m_part( part ), m_domObjects(1021)
+      : Interpreter( global ), m_part( part ), m_domObjects(1021),
+        m_evt( 0L ), m_inlineCode(false)
       {}
     virtual ~ScriptInterpreter() {}
 
@@ -94,15 +95,24 @@ namespace KJS {
     bool deleteDOMObject( void* objectHandle ) {
       return m_domObjects.remove( objectHandle );
     }
-    // Static method. Makes all interpreters forget about the object
+    /** Static method. Makes all interpreters forget about the object */
     static void forgetDOMObject( void* objectHandle );
 
-    // Mark objects in the DOMObject cache.
+    /** Mark objects in the DOMObject cache. */
     virtual void mark();
     KHTMLPart* part() const { return m_part; }
+
+    /** Set the event that is triggering the execution of a script, if any */
+    void setCurrentEvent( DOM::Event *evt ) { m_evt = evt; }
+    void setInlineCode( bool inlineCode ) { m_inlineCode = inlineCode; }
+    /** "Smart" window.open policy */
+    bool isWindowOpenAllowed() const;
+
   private:
     KHTMLPart* m_part;
     QPtrDict<DOMObject> m_domObjects;
+    DOM::Event *m_evt;
+    bool m_inlineCode;
   };
   /** Retrieve from cache, or create, a KJS object around a DOM object */
   template<class DOMObj, class KJSDOMObj>

@@ -384,7 +384,7 @@ Value Window::get(ExecState *exec, const UString &p) const
         return getDOMEvent(exec,*m_evt);
       else {
 #ifdef KJS_VERBOSE
-        kdWarning(6070) << "window(" << this <<").event, no event!" << endl;
+        kdWarning(6070) << "window(" << this << "," << m_part->name() << ").event, no event!" << endl;
 #endif
         return Undefined();
       }
@@ -859,11 +859,6 @@ void Window::setCurrentEvent( DOM::Event *evt )
   //kdDebug(6070) << "Window(part=" << m_part << ")::setCurrentEvent m_evt=" << evt << endl;
 }
 
-void Window::setInlineCode( bool inlineCode )
-{
-  m_inlineCode = inlineCode;
-}
-
 Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
   if (!thisObj.inherits(&Window::info)) {
@@ -922,35 +917,9 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     } else if ( policy == 3 ) // smart
     {
       // window.open disabled unless from a key/mouse event
-      if ( window->m_evt )
-      {
-        int id = window->m_evt->handle()->id();
-        bool eventOk = ( // mouse events
-          id == DOM::EventImpl::CLICK_EVENT || id == DOM::EventImpl::MOUSEDOWN_EVENT ||
-          id == DOM::EventImpl::MOUSEUP_EVENT || id == DOM::EventImpl::KHTML_DBLCLICK_EVENT ||
-          id == DOM::EventImpl::KHTML_CLICK_EVENT ||
-          // keyboard events
-          id == DOM::EventImpl::KHTML_KEYDOWN_EVENT || id == DOM::EventImpl::KHTML_KEYPRESS_EVENT ||
-          id == DOM::EventImpl::KHTML_KEYUP_EVENT ||
-          // other accepted events
-          id == DOM::EventImpl::SELECT_EVENT || id == DOM::EventImpl::CHANGE_EVENT ||
-          id == DOM::EventImpl::SUBMIT_EVENT );
-        kdDebug(6070) << "Window.open, smart policy: id=" << id << " eventOk=" << eventOk << endl;
-        if (eventOk)
-          policy = 0;
-      } else // no event
-      {
-        if ( window->m_inlineCode )
-        {
-          // This is the <a href="javascript:window.open('...')> case -> we let it through
-          policy = 0;
-          kdDebug(6070) << "Window.open, smart policy, no event, inline code -> ok" << endl;
-        }
-        else // This is the <script>window.open(...)</script> case -> block it
-          kdDebug(6070) << "Window.open, smart policy, no event, <script> tag -> refused" << endl;
-      }
+      if (static_cast<ScriptInterpreter *>(exec->interpreter())->isWindowOpenAllowed())
+        policy = 0;
     }
-
     if ( policy != 0 ) {
       return Undefined();
     } else {

@@ -26,6 +26,7 @@
 #include <dom2_range.h>
 #include <qvariant.h>
 #include <kdebug.h>
+#include "xml/dom2_eventsimpl.h"
 
 using namespace KJS;
 
@@ -152,6 +153,38 @@ void ScriptInterpreter::mark()
   QPtrDictIterator<DOMObject> it( m_domObjects );
   for( ; it.current(); ++it )
     it.current()->mark();
+}
+
+bool ScriptInterpreter::isWindowOpenAllowed() const
+{
+  if ( m_evt )
+  {
+    int id = m_evt->handle()->id();
+    bool eventOk = ( // mouse events
+      id == DOM::EventImpl::CLICK_EVENT || id == DOM::EventImpl::MOUSEDOWN_EVENT ||
+      id == DOM::EventImpl::MOUSEUP_EVENT || id == DOM::EventImpl::KHTML_DBLCLICK_EVENT ||
+      id == DOM::EventImpl::KHTML_CLICK_EVENT ||
+      // keyboard events
+      id == DOM::EventImpl::KHTML_KEYDOWN_EVENT || id == DOM::EventImpl::KHTML_KEYPRESS_EVENT ||
+      id == DOM::EventImpl::KHTML_KEYUP_EVENT ||
+      // other accepted events
+      id == DOM::EventImpl::SELECT_EVENT || id == DOM::EventImpl::CHANGE_EVENT ||
+      id == DOM::EventImpl::SUBMIT_EVENT );
+    kdDebug(6070) << "Window.open, smart policy: id=" << id << " eventOk=" << eventOk << endl;
+    if (eventOk)
+      return true;
+  } else // no event
+  {
+    if ( m_inlineCode )
+    {
+      // This is the <a href="javascript:window.open('...')> case -> we let it through
+      return true;
+      kdDebug(6070) << "Window.open, smart policy, no event, inline code -> ok" << endl;
+    }
+    else // This is the <script>window.open(...)</script> case -> block it
+      kdDebug(6070) << "Window.open, smart policy, no event, <script> tag -> refused" << endl;
+  }
+  return false;
 }
 
 //////

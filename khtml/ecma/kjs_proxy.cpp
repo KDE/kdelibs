@@ -106,9 +106,8 @@ QVariant KJSProxyImpl::evaluate(QString filename, int baseLine,
   //    KJSDebugWin::instance()->setMode(KJS::Debugger::Step);
 #endif
 
-  Window* window = Window::retrieveWindow( m_part );
-  window->setInlineCode(inlineCode);
-  KJS::Value thisNode = n.isNull() ? Value(window) : getDOMNode(m_script->globalExec(),n);
+  m_script->setInlineCode(inlineCode);
+  KJS::Value thisNode = n.isNull() ? Window::retrieve( m_part ) : getDOMNode(m_script->globalExec(),n);
 
   UString code( str );
   Completion comp = m_script->evaluate(code, thisNode);

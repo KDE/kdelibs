@@ -98,7 +98,6 @@ namespace KJS {
 
     // Set the current "event" object
     void setCurrentEvent( DOM::Event *evt );
-    void setInlineCode( bool inlineCode );
 
     QList<JSEventListener> jsEventListeners;
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -126,7 +125,6 @@ namespace KJS {
     Location *loc;
     WindowQObject *winq;
     DOM::Event *m_evt;
-    bool m_inlineCode;
   };
 
   /**
