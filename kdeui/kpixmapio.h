@@ -19,6 +19,7 @@ class KPixmapIOData;
 /**
  * @short Fast QImage to/from QPixmap conversion.
  * @author Geert Jansen <jansen@kde.org>
+ * @version $Id: $
  *
  * KPixmapIO implements a fast path for QPixmap to/from QImage conversions.
  * It uses the MIT-SHM shared memory extension for this. If this extension is 
