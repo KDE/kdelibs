@@ -1,3 +1,7 @@
+2005-04-05  Lubos Lunak <l.lunak@kde.org>
+
+        * misc/loader_jpeg.cpp: Fix loading of progressive JPEGs.
+
 2005-04-04  Lubos Lunak <l.lunak@kde.org>
 
         * khtmlview.cpp: Don't use keyboard grab for type-ahead find.
