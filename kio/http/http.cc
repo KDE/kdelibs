@@ -2110,7 +2110,7 @@ static HTTPProtocol::CacheControl parseCacheControl(const QString &cacheControl)
   return _default;
 }
 
-// Returns only the file size, that's all kio_http can guess.
+// We just return 'FILE' here.
 void HTTPProtocol::stat(const KURL& url)
 {
   if (m_request.hostname.isEmpty())
@@ -2120,17 +2120,6 @@ void HTTPProtocol::stat(const KURL& url)
   }
 
   kdDebug(7113) << "HTTPProtocol::stat " << url.prettyURL() << endl;
-
-  m_request.method = HTTP_HEAD;
-  m_request.path = url.path();
-  m_request.query = url.query();
-  m_request.cache = parseCacheControl(metaData("cache"));
-  m_request.offset = 0;
-  m_request.do_proxy = m_bUseProxy;
-  m_request.url = url;
-
-  if (!retrieveHeader( false ))
-    return;
 
   UDSEntry entry;
   UDSAtom atom;
@@ -2146,16 +2135,8 @@ void HTTPProtocol::stat(const KURL& url)
   atom.m_long = S_IRUSR | S_IRGRP | S_IROTH; // readable by everybody
   entry.append( atom );
 
-  if ( m_iSize != -1 )
-  {
-    atom.m_uds = KIO::UDS_SIZE;
-    atom.m_long = m_iSize;
-    entry.append( atom );
-  }
-
   statEntry( entry );
 
-  http_close();
   finished();
 }
 
