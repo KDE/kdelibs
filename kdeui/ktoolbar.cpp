@@ -20,6 +20,7 @@
 */
 
 // Solved one-button problem and added handle-highlighting - sven 5.1.1998
+// Some fixes of yesterday fixes - sven 6.1. 1998
 
 #include <qpainter.h>
 #include <qtooltip.h> 
@@ -331,8 +332,6 @@ void KToolBar::init()
   enableFloating (TRUE);
   // To make touch-sensitive handle - sven 040198
   setMouseTracking(true);
-  // To solve one-button problem
-  setMinimumSize (TOOLBARHEIGHT+9+4, TOOLBARHEIGHT); // Smart, eh?
 }
     emit (moved(position));
 void KToolBar::drawContents ( QPainter *)
@@ -460,8 +459,9 @@ void KToolBar::layoutVertical ()
   horizontal=false; // sven - 040198
   
   toolbarHeight = offset;
-
   toolbarWidth= TOOLBARHEIGHT;
+  if (position==Floating)  // sven 060198
+      toolbarWidth += 13; // some lucky number
   widest =  TOOLBARHEIGHT;
   /*
    I have (had) ten thousand problems here. When toplevel shrinked (vert.) it's ok.
@@ -564,8 +564,8 @@ void KToolBar::resizeEvent( QResizeEvent *e )
     if (position == Floating)
     {
         updateRects(FALSE);
-        if (e->size().width() - toolbarWidth > 2 ||
-            e->size().height() - toolbarHeight > 2)
+        if (abs(e->size().width() - toolbarWidth) > 2 ||
+            abs(e->size().height() - toolbarHeight) > 2) // Eh... |a-b|>2 ...
             resize (toolbarWidth, toolbarHeight);
     }
 }
@@ -1313,11 +1313,11 @@ void KToolBar::setBarPos(BarPosition bpos)
 	  setCaption(s);
 	}
         updateRects (TRUE);
-        //show();
         context->changeItem (klocale->translate("UnFloat"), CONTEXT_FLOAT);
         emit moved (bpos);
         setMouseTracking(true);
         mouseEntered=false;
+        setMinimumSize (TOOLBARHEIGHT+9+4, TOOLBARHEIGHT);
         return;
       }
      else if (position == Floating) // was floating
@@ -1325,6 +1325,7 @@ void KToolBar::setBarPos(BarPosition bpos)
         position = bpos;
         hide();
         recreate(Parent, oldWFlags, QPoint(oldX, oldY), TRUE);
+        setMinimumSize (TOOLBARHEIGHT, TOOLBARHEIGHT);
         updateRects (TRUE);
         context->changeItem (klocale->translate("Float"), CONTEXT_FLOAT);
         emit moved (bpos);
