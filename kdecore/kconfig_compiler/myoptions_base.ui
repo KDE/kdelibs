@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.2" stdsetdef="1">
 <class>MyOptionsBase</class>
 <widget class="QWidget">
     <property name="name">
@@ -9,41 +9,30 @@
             <x>0</x>
             <y>0</y>
             <width>600</width>
-            <height>480</height>
+            <height>486</height>
         </rect>
     </property>
     <property name="caption">
         <string>Form1</string>
     </property>
-    <widget class="QLabel">
+    <grid>
         <property name="name">
-            <cstring>textLabel1</cstring>
+            <cstring>unnamed</cstring>
         </property>
-        <property name="geometry">
-            <rect>
-                <x>30</x>
-                <y>180</y>
-                <width>70</width>
-                <height>20</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>MyString:</string>
-        </property>
-    </widget>
-    <widget class="QLineEdit">
-        <property name="name">
-            <cstring>MyString</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>130</x>
-                <y>180</y>
-                <width>123</width>
-                <height>22</height>
-            </rect>
-        </property>
-    </widget>
+        <widget class="QLabel" row="0" column="0">
+            <property name="name">
+                <cstring>textLabel1</cstring>
+            </property>
+            <property name="text">
+                <string>MyString:</string>
+            </property>
+        </widget>
+        <widget class="QLineEdit" row="0" column="1">
+            <property name="name">
+                <cstring>kcfg_MyString</cstring>
+            </property>
+        </widget>
+    </grid>
 </widget>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

@@ -22,6 +22,8 @@
 #include "general_base.h"
 #include "myoptions_base.h"
 
+#include "exampleprefs_base.h"
+
 #include <kaboutdata.h>
 #include <kapplication.h>
 #include <kdebug.h>
@@ -30,7 +32,7 @@
 #include <kglobal.h>
 #include <kconfig.h>
 #include <kstandarddirs.h>
-#include <kautoconfigdialog.h>
+#include <kconfigdialog.h>
 
 #include <qlabel.h>
 
@@ -43,20 +45,18 @@ int main( int argc, char **argv )
 
   KApplication app;
 
-  // Create a new dialog with the same name as the above checking code.
-  KAutoConfigDialog *dialog = new KAutoConfigDialog(0, "settings");
+  ExamplePrefsBase configSkeleton( "dummy1", "dummy2" );
+  configSkeleton.readConfig();
+
+  KConfigDialog *dialog = new KConfigDialog( 0, "settings", &configSkeleton );
   
-  // Add the general page.  Store the settings in the General group and
-  // use the icon package_settings.
   GeneralBase *general = new GeneralBase( 0 );
   dialog->addPage( general, i18n("General"), "General", "" );
 
   MyOptionsBase *myOptions = new MyOptionsBase( 0 );
-
-//  myOptions->show();
   dialog->addPage( myOptions, i18n("MyOptions"), "MyOptions", "" );
 
-//  app.setMainWidget( dialog );
+  app.setMainWidget( dialog );
 
   dialog->show();
     

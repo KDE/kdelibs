@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.2" stdsetdef="1">
 <class>GeneralBase</class>
 <widget class="QWidget">
     <property name="name">
@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>600</width>
-            <height>480</height>
+            <height>486</height>
         </rect>
     </property>
     <property name="caption">
@@ -21,7 +21,7 @@
         </property>
         <widget class="QCheckBox" row="0" column="1">
             <property name="name">
-                <cstring>OneOption</cstring>
+                <cstring>kcfg_OneOption</cstring>
             </property>
             <property name="text">
                 <string>OneOption</string>
@@ -29,7 +29,7 @@
         </widget>
         <widget class="QSpinBox" row="1" column="1">
             <property name="name">
-                <cstring>Another_Option</cstring>
+                <cstring>kcfg_AnotherOption2</cstring>
             </property>
         </widget>
         <widget class="QLabel" row="1" column="0">
