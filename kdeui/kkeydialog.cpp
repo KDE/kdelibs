@@ -465,7 +465,7 @@ void KKeyChooser::updateButtons()
 		d->bChange->setShortcut( pItem->shortcut() );
 		//item->setText( 1, keyStrCfg );
 		pItem->repaint();
-		d->lInfo->setText( i18n("Default Key") + QString(": %1").arg(keyStrDef.isEmpty() ? i18n("None") : keyStrDef) );
+		d->lInfo->setText( i18n("Default key:") + QString(" %1").arg(keyStrDef.isEmpty() ? i18n("None") : keyStrDef) );
 
 		// Select the appropriate radio button.
 		int index = (pItem->shortcut().isNull()) ? NoKey
