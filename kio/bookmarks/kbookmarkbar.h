@@ -25,6 +25,7 @@
 #include <qguardedptr.h>
 #include <qptrlist.h>
 #include <kbookmark.h>
+#include <kaction.h>
 
 class KToolBar;
 class KBookmarkMenu;
@@ -82,6 +83,10 @@ signals:
      * @since 3.2
      */
     void aboutToShowContextMenu( const KBookmark &, QPopupMenu * );
+    /**
+     * @since 3.4
+     */
+    void openBookmark( const QString& url, bool inNewTab );
 
 public slots:
     void clear();
@@ -90,13 +95,23 @@ public slots:
     void slotBookmarkSelected();
 
     /**
-     * all @since 3.2
+     * @since 3.4
      */
+    void slotBookmarkSelected( KAction::ActivationReason reason, Qt::ButtonState state );
+    
+    /// @since 3.2
     void slotRMBActionRemove( int );
+    /// @since 3.2
     void slotRMBActionInsert( int );
+    /// @since 3.2
     void slotRMBActionCopyLocation( int );
+    /// @since 3.2
     void slotRMBActionEditAt( int );
+    /// @since 3.2
     void slotRMBActionProperties( int );
+
+    /// @since 3.4
+    void slotOpenBookmarkURL( const QString& url, bool inNewTab );
 
 protected:
     void fillBookmarkBar( KBookmarkGroup & parent );

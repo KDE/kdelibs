@@ -26,34 +26,27 @@
 #include "kbookmarkimporter_ie.h"
 #include "kbookmarkdrag.h"
 
-#include <qstring.h>
-#include <qlineedit.h>
-#include <qlabel.h>
-#include <kdialogbase.h>
-#include <qlayout.h>
-#include <qpushbutton.h>
-
-#include <qclipboard.h>
-
-#include <klineedit.h>
-
-#include <qfile.h>
-
 #include <kapplication.h>
-#include <kaction.h>
+#include <kconfig.h>
 #include <kdebug.h>
+#include <kdialogbase.h>
+#include <kiconloader.h>
+#include <klineedit.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kpopupmenu.h>
 #include <kstdaccel.h>
 #include <kstdaction.h>
 #include <kstringhandler.h>
-#include <kconfig.h>
 
-#include <qlistview.h>
+#include <qclipboard.h>
+#include <qfile.h>
 #include <qheader.h>
-
-#include <kiconloader.h>
+#include <qlabel.h>
+#include <qlayout.h>
+#include <qlineedit.h>
+#include <qlistview.h>
+#include <qpushbutton.h>
 
 #include <dptrtemplate.h>
 
@@ -616,6 +609,8 @@ void KBookmarkMenu::fillBookmarkMenu()
           new KBookmarkMenu( m_pManager, m_pOwner, actionMenu->popupMenu(),
                              m_actionCollection, false,
                              m_bAddBookmark, QString::null );
+       connect( subMenu, SIGNAL( openBookmark( const QString &, bool ) ),
+                this, SLOT( slotOpenBookmarkURL( const QString &, bool ) ));
        m_lstSubMenus.append(subMenu);
 
        connect(actionMenu->popupMenu(), SIGNAL(aboutToShow()), subMenu, SLOT(slotNSLoad()));
@@ -643,9 +638,9 @@ void KBookmarkMenu::fillBookmarkMenu()
       else
       {
         //kdDebug(7043) << "Creating URL bookmark menu item for " << bm.text() << endl;
-        KAction * action = new KBookmarkAction( text, bm.icon(), 0,
-                                                this, SLOT( slotBookmarkSelected() ),
-                                                m_actionCollection, 0 );
+        KAction * action = new KBookmarkAction( text, bm.icon(), 0, m_actionCollection, 0 );
+        connect(action, SIGNAL( activated ( KAction::ActivationReason, Qt::ButtonState )),
+                this, SLOT( slotBookmarkSelected( KAction::ActivationReason, Qt::ButtonState ) ));
 
         action->setProperty( "url", bm.url().url() );
         action->setProperty( "address", bm.address() );
@@ -670,8 +665,11 @@ void KBookmarkMenu::fillBookmarkMenu()
                                                   m_actionCollection, false,
                                                   m_bAddBookmark,
                                                   bm.address() );
-      connect(subMenu, SIGNAL( aboutToShowContextMenu(const KBookmark &, QPopupMenu * ) ),
-                 this, SIGNAL( aboutToShowContextMenu(const KBookmark &, QPopupMenu * ) ));
+
+      connect(subMenu, SIGNAL( aboutToShowContextMenu( const KBookmark &, QPopupMenu * ) ),
+                 this, SIGNAL( aboutToShowContextMenu( const KBookmark &, QPopupMenu * ) ));
+      connect(subMenu, SIGNAL( openBookmark( const QString &, bool ) ),
+                this, SLOT( slotOpenBookmarkURL( const QString &, bool ) ));
       m_lstSubMenus.append( subMenu );
     }
   }
@@ -745,11 +743,28 @@ void KBookmarkMenu::slotNewFolder()
   }
 }
 
+void KBookmarkMenu::slotBookmarkSelected( KAction::ActivationReason /*reason*/, Qt::ButtonState state )
+{
+  kdDebug(7043) << "KBookmarkMenu::slotBookmarkSelected()" << endl;
+  if ( !m_pOwner ) return; // this view doesn't handle bookmarks...
+  const KAction* action =  dynamic_cast<const KAction *>(sender());
+  if(action)
+  {
+      bool inNewTab = state & Qt::MidButton;
+      const QString& url = sender()->property("url").toString();
+      m_pOwner->openBookmarkURL( url );
+      slotOpenBookmarkURL( url, inNewTab );
+  }
+}
+
 void KBookmarkMenu::slotBookmarkSelected()
 {
-  //kdDebug(7043) << "KBookmarkMenu::slotBookmarkSelected()" << endl;
-  if ( !m_pOwner ) return; // this view doesn't handle bookmarks...
-  m_pOwner->openBookmarkURL( sender()->property("url").toString() );
+    slotBookmarkSelected(KAction::PopupMenuActivation, Qt::NoButton);
+}
+
+void KBookmarkMenu::slotOpenBookmarkURL( const QString & url, bool inNewTab )
+{
+  emit openBookmark( url, inNewTab );
 }
 
 KExtendedBookmarkOwner* KBookmarkMenu::extOwner()
@@ -791,7 +806,7 @@ KBookmarkEditFields::KBookmarkEditFields(QWidget *main, QBoxLayout *vbox, Fields
   {
     m_url = 0;
   }
-  
+
   main->setMinimumSize( 300, 0 );
 }
 
@@ -1048,9 +1063,9 @@ void KBookmarkMenuNSImporter::newBookmark( const QString & text, const QCString 
 {
   QString _text = KStringHandler::csqueeze(text);
   _text.replace( '&', "&&" );
-  KAction * action = new KBookmarkAction(_text, "html", 0,
-                                         m_menu, SLOT( slotBookmarkSelected() ),
-                                         m_actionCollection, 0);
+  KAction * action = new KBookmarkAction(_text, "html", 0, 0, "", m_actionCollection, 0);
+  connect(action, SIGNAL( activated ( KAction::ActivationReason, Qt::ButtonState )),
+          m_menu, SLOT( slotBookmarkSelected( KAction::ActivationReason, Qt::ButtonState ) ));
   action->setProperty( "url", url );
   action->setToolTip( url );
   action->plug( mstack.top()->m_parentMenu );
@@ -1067,6 +1082,8 @@ void KBookmarkMenuNSImporter::newFolder( const QString & text, bool, const QStri
   KBookmarkMenu *subMenu = new KBookmarkMenu( m_pManager, m_menu->m_pOwner, actionMenu->popupMenu(),
                                               m_actionCollection, false,
                                               m_menu->m_bAddBookmark, QString::null );
+  connect( subMenu, SIGNAL( openBookmark( const QString &, bool) ),
+           m_menu, SLOT( slotOpenBookmarkURL( const QString &, bool) ));
   mstack.top()->m_lstSubMenus.append( subMenu );
 
   mstack.push(subMenu);

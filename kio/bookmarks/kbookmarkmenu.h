@@ -31,6 +31,7 @@
 
 #include <kdialogbase.h>
 #include <klocale.h>
+#include <kaction.h>
 
 #include "kbookmark.h"
 #include "kbookmarkmanager.h"
@@ -157,9 +158,14 @@ public:
 
 signals:
   void aboutToShowContextMenu( const KBookmark &, QPopupMenu * );
+  /**
+   * @since 3.4
+   */
+  void openBookmark( const QString& url, bool inNewTab );
 
 public slots: // public for bookmark bar
   void slotBookmarksChanged( const QString & );
+  void slotOpenBookmarkURL(const QString &, bool);
 
 protected slots:
   void slotAboutToShow();
@@ -173,6 +179,10 @@ protected slots:
   void slotRMBActionProperties( int );
 
   void slotBookmarkSelected();
+  /**
+   * @ since 3.4
+   */
+  void slotBookmarkSelected( KAction::ActivationReason reason, Qt::ButtonState state );
   void slotAddBookmarksList();
   void slotAddBookmark();
   void slotNewFolder();
