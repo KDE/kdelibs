@@ -74,7 +74,8 @@ KFileViewItem::KFileViewItem(const KUDSEntry &e)
 	    mySize = ( *it ).m_long;
 	    break;
 	case KIO::UDS_MODIFICATION_TIME:
-	    myDate = dateTime(( *it ).m_long);
+	    myDate_t = ( *it ).m_long;
+	    myDate = dateTime( myDate_t );
 	    break;
 	case KIO::UDS_USER:
 	    myOwner = ( *it ).m_str;
@@ -156,7 +157,7 @@ void KFileViewItem::stat(bool alreadyindir)
     }
 
     if (lstat(local8, &buf) == 0) {
-	myIsDir = (buf.st_mode & S_IFDIR) != 0;
+	myIsDir = S_ISDIR(buf.st_mode) != 0;
         // check if this is a symlink to a directory
 	if (S_ISLNK(buf.st_mode)) {
 	  myIsSymLink = true;
@@ -544,9 +545,8 @@ QString KFileViewItem::group() const
 }
 
 
-// this is a little wrapper around ::access(). We already have a stat-buffer,
-// so we can make some easy tests if the file is readable. This is a little
-// faster than calling ::access()
+// Tests if a file is readable. We don't just call ::access(), because we
+// already have a stat-structure and know about the groups.
 bool KFileViewItem::testReadable( const QCString& file, struct stat& buf )
 {
     if (file.isEmpty())

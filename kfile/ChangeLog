@@ -1,3 +1,48 @@
+Sat Jan 29 15:33:37 2000  Carsten Pfeiffer  <pfeiffer@kde.org>
+
+	Time to add some changelogs again, all the recent hard work of the 
+	restructuring is only in CVS-log...
+
+	* kfileview.cpp (compareItems): 
+	- added support to disable sorting directories first (QDir::DirsFirst)
+	- added support to sort by date and to sort reversed
+	- removed unused findCompletion method
+	- sort case insensitive by default
+	- some optimization for mergeList
+	- fixed infinite loop in mergeLists, when the lists are the same
+	  (I think another one is still there, but I'm tired now)
+	- changed setSortMode stuff: Switching-mode replaced with 
+	  sortReversed(). The enum Switching will be removed, soon.
+	- made setSortMode public
+
+	* kfileviewitem.cpp:
+	- added time_t mTime() to enable sorting by modification time
+	
+	* kdiroperator.cpp:
+	- offer sorting options in popupmenu
+	- use checkAccess before creating directories. I guess this will again
+	  change when the new kio will be used, tho. 
+	- show progress widget at the bottom (otherwise the header of e.g.
+	  the detail-view would be covered).
+	- Added LGPL copyright header
+	
+	* kfilewidget.cpp (connectSignals):
+	- connect to all signals of KDirOperator
+	- directly connect SIGNAL to SIGNAL -> removed slotFileHighlighted etc.
+	- fixed some sorting/merging bugs
+
+	* {kfiledialog,kdiroperator}.{cpp,h};
+	- support for disabling chdir (some apps may not want KFileDialog /
+	  KFileReader change the working directory under their feet)
+	- Added LGPL header in cpp-file
+
+	* kfilereader.cpp (stat):
+	- fixed: some special files were recognized as directories
+
+	* kfstest.cpp:
+	- added test for KFileWidget (widget -> KFileWidget, 
+	  diroperator -> KDirOperator)
+	
 Sun Oct 31 00:56:23 1999  Carsten Pfeiffer  <pfeiffer@kde.org>
 
 	* kfileinfo.cpp (readUserInfo): Don't call getpwnam() and getgrgid()

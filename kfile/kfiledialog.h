@@ -28,8 +28,9 @@
 #include <qlineedit.h>
 #include <qstring.h>
 #include <qobjectlist.h>
-#include <kfileviewitem.h>
 #include <kdialogbase.h>
+#include <kfileviewitem.h>
+#include <kfilereader.h>
 
 class KToolBar;
 class KFileView;
@@ -37,7 +38,6 @@ class QPopupMenu;
 class QCheckBox;
 class KFileBookmarkManager;
 class KFileBookmark;
-class KFileReader;
 class QLabel;
 class QVBoxLayout;
 class QGridLayout;
@@ -52,7 +52,7 @@ struct KFileDialogPrivate;
  * select files.
  *
  * The widget can be used as a drop in replacement for the
- *@ref  QFileDialog widget, but has greater functionality and a nicer GUI.
+ * @ref  QFileDialog widget, but has greater functionality and a nicer GUI.
  *
  * You will usually want to use one of the two static methods
  * @ref getOpenFileName() or @ref getSaveFileName().
@@ -246,6 +246,28 @@ public:
      */
     void setLocationLabel(const QString& text);
 
+    /**
+     * KFileDialog uses chhdir() to change the current working directory to
+     * increase performance. If you don't like this, disable it.
+     *
+     * When using one of the static methods, e.g. @ref getOpenFileName, 
+     * and chdir is enabled, the working directory will be restored when the
+     * dialog is closed.
+     * Default is enabled.
+     * @see #isChdirEnabled
+     */
+    static void setEnableChdir( bool enable ) { 
+	KFileReader::setEnableChdir( enable );
+    }
+
+    /**
+     * @returns whether KFileDialog changes the current working directory
+     * (via chdir()).
+     * @see #setEnableChdir
+     */
+    static bool isChdirEnabled() { return KFileReader::isChdirEnabled(); }
+    
+    
 signals:
     /**
       * Emitted when the user selects a file.

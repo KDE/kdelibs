@@ -1,7 +1,7 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 1999 Carsten Pfeiffer <pfeiffer@kde.org>
+    Copyright (C) 1999,2000 Carsten Pfeiffer <pfeiffer@kde.org>
 
-    library is free software; you can redistribute it and/or
+    This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
     version 2 of the License, or (at your option) any later version.
@@ -31,7 +31,7 @@ KFileWidget::KFileWidget( FileView view, QWidget *parent, const char *name )
 {
   myDirOperator = new KDirOperator;
   setView( view );
-  connectFileReader();
+  connectSignals();
   setFocusPolicy( QWidget::WheelFocus );
 }
 
@@ -49,54 +49,31 @@ void KFileWidget::setDirOperator( KDirOperator *dirOp )
   delete myDirOperator;
   myDirOperator = dirOp;
 
-  connect( dirOp, SIGNAL(fileHighlighted(const KFileViewItem*)),
-	  SLOT( slotFileHighlighted(const KFileViewItem *) ));
-  connect( dirOp, SIGNAL(fileSelected(const KFileViewItem*)),
-	   SLOT( slotFileSelected(const KFileViewItem *) ));
-  connect( dirOp, SIGNAL(dirActivated(const KFileViewItem*)),
-	   SLOT( slotDirSelected(const KFileViewItem *) ));
-
-  connectFileReader();
+  connectSignals();
 }
 
 
-void KFileWidget::connectFileReader()
+void KFileWidget::connectSignals()
 {
+  connect( myDirOperator, SIGNAL( fileHighlighted( const KFileViewItem * )),
+	   SIGNAL( fileHighlighted( const KFileViewItem * )));
+  connect( myDirOperator, SIGNAL( fileSelected( const KFileViewItem * )),
+	   SIGNAL( fileSelected( const KFileViewItem * )));
+  connect( myDirOperator, SIGNAL( dirActivated( const KFileViewItem * )),
+	   SIGNAL( dirSelected( const KFileViewItem * )));
+
   connect( myDirOperator, SIGNAL( urlEntered( const KURL& )),
-	   SLOT( slotURLEntered( const KURL& )));
+	   SIGNAL( urlEntered( const KURL& )));
 
   KFileReader *reader = myDirOperator->fileReader();
 
   //  connect( reader, SIGNAL( finished() ),
   //	   SLOT( slotFinished() ));
   connect( reader, SIGNAL( error(int, const QString& )),
-	   SLOT( slotError(int, const QString&) ));
+	   SIGNAL( error(int, const QString&) ));
 }
 
 ////////////////////////
-
-// slots to emit signals
-
-void KFileWidget::slotFileHighlighted( const KFileViewItem *item )
-{
-  emit fileHighlighted( item );
-}
-
-void KFileWidget::slotFileSelected( const KFileViewItem *item )
-{
-  emit fileSelected( item );
-}
-
-void KFileWidget::slotDirSelected( const KFileViewItem *item )
-{
-  emit dirSelected( item );
-}
-
-void KFileWidget::slotURLEntered( const KURL& url )
-{
-  emit urlEntered( url );
-}
-
 
 /*
 void KFileWidget::slotFinished()
@@ -104,11 +81,6 @@ void KFileWidget::slotFinished()
   emit finished();
 }
 */
-
-void KFileWidget::slotError( int id, const QString& e )
-{
-  emit error( id, e );
-}
 
 
 //////////////////////
@@ -168,7 +140,7 @@ bool KFileWidget::isRoot() const
 void KFileWidget::setView( FileView view )
 {
     KFileView *myFileView;
-    
+
     switch( view ) {
     case Simple: {
 	myFileView = new KFileIconView( this, "simple view" );
@@ -193,7 +165,7 @@ void KFileWidget::setView( FileView view )
     default: // you have asked for nothing, so don't complain :o)
 	myFileView = new KFileIconView( this, "simple view" );
     }
-    
+
     setFocusProxy( myFileView->widget() );
     myDirOperator->setView( myFileView );
 }
@@ -223,7 +195,7 @@ bool KFileWidget::showHiddenFiles() const
 // -------------------
 
 
-// the forwarders to KFileReader (former KDir)
+// the forwarders to KFileReader
 
 uint KFileWidget::count() const
 {

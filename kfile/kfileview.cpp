@@ -32,11 +32,13 @@
 #undef Unsorted
 #endif
 
+QDir::SortSpec KFileView::defaultSortSpec = static_cast<QDir::SortSpec>(QDir::Name | QDir::IgnoreCase | QDir::DirsFirst);
+
 KFileView::KFileView()
 {
     reversed   = false;        // defaults
     mySortMode = Increasing;
-    mySorting  = QDir::Name;
+    mySorting  = KFileView::defaultSortSpec;
 
     sig = new KFileViewSignaler();
     sig->setName("view-signaller");
@@ -48,7 +50,6 @@ KFileView::KFileView()
 
     view_mode = All;
     selection_mode = Single;
-
 }
 
 KFileView::~KFileView()
@@ -146,6 +147,7 @@ void KFileView::insertSorted(KFileViewItem *tfirst, uint counter)
     KFileViewItem **sortedArray = new KFileViewItem*[counter];
     KFileViewItem *it;
     uint index;
+
     for (it = tfirst, index = 0; it; index++, it = it->next())
 	sortedArray[index] = it;
 
@@ -159,16 +161,17 @@ void KFileView::insertSorted(KFileViewItem *tfirst, uint counter)
     for (index = 1; index < counter; index++) {
 	tlast->setNext(sortedArray[index]);
 	tlast = sortedArray[index];
-	sortedArray[index]->setNext(0);
     }
+    if ( counter >= 2 ) // terminate last item
+	tlast->setNext(0);
+    
     delete [] sortedArray;
 
     kDebugInfo(kfile_area, "inserting %ld %p", time(0), first);
 
 #if 0
-      for (it = first; it; it = it->next()) {
+    for (it = first; it; it = it->next())
       removeItem(it);
-      }
 #else
     clearView();
 #endif
@@ -190,6 +193,10 @@ KFileViewItem *KFileView::mergeLists(KFileViewItem *list1, KFileViewItem *list2)
 
     if (!list2)
 	return list1;
+
+    if ( list1 == list2 ) {
+	debug("**** KFileView: FIX this bug (items in mergeLists are equal)");
+    }
 
     KFileViewItem *newlist;
 
@@ -229,25 +236,26 @@ KFileViewItem *KFileView::mergeLists(KFileViewItem *list1, KFileViewItem *list2)
 
 void KFileView::setSorting(QDir::SortSpec new_sort)
 {
-    QDir::SortSpec old_sort =
-	static_cast<QDir::SortSpec>(sorting() & QDir::SortByMask);
-    QDir::SortSpec sortflags =
-	static_cast<QDir::SortSpec>(sorting() & (~QDir::SortByMask));
+    mySorting = new_sort;
 
-    if (mySortMode == Switching) {
-	if (new_sort == old_sort)
-	    reversed = !reversed;
-	else
-	    reversed = false;
-    } else
-	reversed = (mySortMode == Decreasing);
+    if ( count() > 1 ) {
+	KFileViewItem *firstItem = first;
+	first = 0L; // sideeffect - insertSorted would merge 
+	            // firstItem and first, which are actually the same
+	insertSorted(firstItem, count());
+    }
+}
 
-    mySorting = static_cast<QDir::SortSpec>(new_sort | sortflags);
+void KFileView::sortReversed()
+{
+    reversed = !reversed;
 
-    if (count() <= 1) // nothing to do in this case
-	return;
-
-    insertSorted(first, count());
+    if ( count() > 1 ) {
+	KFileViewItem *firstItem = first;
+	first = 0L; // sideeffect - insertSorted would merge 
+	            // firstItem and first, which are actually the same
+	insertSorted(firstItem, count());
+    }
 }
 
 void KFileView::clear()
@@ -319,18 +327,22 @@ void KFileView::QuickSort(KFileViewItem* a[], int lo0, int hi0) const
 int KFileView::compareItems(const KFileViewItem *fi1, const KFileViewItem *fi2) const
 {
     bool bigger = true;
+    bool keepFirst = false;
 
     if (fi1 == fi2)
 	return 0;
-	
-    if (fi1->isDir() != fi2->isDir())
-	bigger = !fi1->isDir();
+
+    bool dirsFirst = ((mySorting & QDir::DirsFirst) == QDir::DirsFirst); 
+    if ( fi1->isDir() != fi2->isDir() && dirsFirst ) {
+	bigger = fi2->isDir();
+	keepFirst = true;
+    }
     else {
 
       QDir::SortSpec sort = static_cast<QDir::SortSpec>(mySorting & QDir::SortByMask);
 
-      if (fi1->isDir())
-	sort = QDir::Name;
+      if (fi1->isDir() || fi2->isDir())
+      sort = static_cast<QDir::SortSpec>(KFileView::defaultSortSpec & QDir::SortByMask);
 
       switch (sort) {
       case QDir::Unsorted:
@@ -339,14 +351,20 @@ int KFileView::compareItems(const KFileViewItem *fi1, const KFileViewItem *fi2) 
       case QDir::Size:
 	bigger = (fi1->size() > fi2->size());
 	break;
+      case QDir::Time:
+	bigger = (fi1->mTime() > fi2->mTime());
+	break;
       case QDir::Name:
       default:
-	bigger = ( fi1->name() > fi2->name() );
+	if ( (mySorting & QDir::IgnoreCase) == QDir::IgnoreCase )
+	  bigger = (fi1->name().lower() > fi2->name().lower());
+	else
+	  bigger = (fi1->name() > fi2->name());
 	break;
       }
     }
 
-    if (reversed)
+    if (reversed && !keepFirst ) // don't reverse dirs to the end!
       bigger = !bigger;
 
     // kDebugInfo(kfile_area, "compare " + fi1->fileName() + " against " +
@@ -403,115 +421,6 @@ void KFileView::setCurrentItem(const QString &item,
 
     warning("setCurrentItem: no match found.");
 }
-
-#if 0
-QString KFileView::findCompletion( const char *base,
-				   bool activateFound )
-{
-
-    if (!nameList) {
-	uint i;
-	
-	nameList = new QStrIList();
-	// prepare an array for quicksort. This is much faster than
-	// calling n times inSort
-	const char **nameArray = new const char*[sorted_length];
-	// fill it
-	for (i = 0; i < sorted_length; i++)
-	    nameArray[i] = sortedArray[i]->fileName().ascii();
-	
-	qsort(nameArray, sorted_length, sizeof(const char*), (int (*)(const void *, const void *)) stricmp);
-	
-	// insert into list. Keeps deep copies
-	for (i = 0; i < sorted_length; i++)
-	    nameList->append(nameArray[i]);
-
-	delete [] nameArray;
-    }
-
-    if ( strlen(base) == 0 ) return QString();
-
-    QString remainder = base;
-    const char *name;
-    for ( name = nameList->first(); name; name = nameList->next() ) {
-	if ( strlen(name) < remainder.length())
-	    continue;
-	if (strncmp(name, remainder.ascii(), remainder.length()) == 0)
-	    break;
-    }
-
-
-    if (name) {
-	
-        QCString body = name;
-        QCString backup = name;
-
-        // get the possible text completions and store the smallest
-	// common denominator in QString body
-
-        unsigned int counter = strlen(base);
-        for ( const char *extra = nameList->next(); extra;
-	      extra = nameList->next() ) {
-	
-            counter = strlen(base);
-            // case insensitive comparison needed because items are stored insensitively
-            // so next instruction stop loop when first letter does no longer match
-            if ( strnicmp( extra, remainder.ascii(), 1 ) != 0 )
-                break;
-            // this is case sensitive again!
-            // goto next item if no completion possible with current item (->extra)
-            if ( strncmp(extra, remainder.ascii(), remainder.length()) != 0 )
-                continue;
-            // get smallest common denominator
-            for ( ; counter <= strlen(extra) ; counter++ ) {
-                if (strncmp( extra, body.data(), counter) != 0)
-                    break;
-            }
-            // truncate body, we have the smalles common denominator so far
-            if ( counter == 1 )
-                body.truncate(counter);
-            else
-            	body.truncate(counter-1);
-            // this is needed because we want to highlight the first item in list
-            // so we separately keep the "smallest" item separate,
-            // we need the biggest in case the list is reversed
-            if ( extra && ( reversed ? (QString::compare(extra, backup) > 0) : (QString::compare( extra, backup ) < 0) ) )
-              backup = extra;
-        }
-	name = backup;
-
-	kDebugInfo(kfile_area, "completion base (%s) name (%s) body (%s)", base, name, body.data());
-
-	bool matchExactly = (name == body);
-
-	if (matchExactly && activateFound)
-	    {
-	      for (uint j = 0; j < sorted_length; j++)
-		{
-		  KFileViewItem *i = sortedArray[j];
-		
-		    if (i->fileName() == name) {
-			if (sortedArray[j]->isDir())
-			    body += "/";
-			highlightItem(i);
-			if (activateFound)
-			    select(i);
-			else
-			    highlight(i);
-			break;
-		    }
-		}
-	    } else
-		setCurrentItem(name); // the first matching name
-
-	return body;
-    } else {
-	kDebugInfo(kfile_area, "no completion for %s", base);
-	return QString();
-    }
-
-}
-#endif
 
 void KFileView::setSelectMode( SelectionMode sm )
 {

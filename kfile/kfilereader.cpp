@@ -1,7 +1,8 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1997, 1998 Richard Moore <rich@kde.org>
-                  1998 Stephan Kulow <coolo@kde.org>
+                  1998,1999,2000 Stephan Kulow <coolo@kde.org>
                   1998 Daniel Grana <grana@ie.iwi.unibe.ch>
+		  1999,2000 Carsten Pfeiffer <pfeiffer@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -74,6 +75,7 @@ template class QList<QRegExp>;
 */
 
 KDirWatch * KFileReader::dirWatch = 0L;
+bool KFileReader::performChdir = true;
 
 KFileReader::KFileReader()
     : QObject(0, "KFileReader")
@@ -134,7 +136,7 @@ void KFileReader::setURL(const KURL& url)
     if (isLocalFile()) { // we can check, if the file is there
 	struct stat buf;
 	QString ts = path(+1);
-	int ret = stat( ts.local8Bit(), &buf);
+	int ret = ::stat( ts.local8Bit(), &buf);
 	readable = (ret == 0);
 	if (readable) { // further checks
 	    DIR *test;
@@ -315,7 +317,7 @@ void KFileReader::statLocalFiles()
     while (!myPendingEntries.isEmpty()) {
 	
 	i = myPendingEntries.take(); // removes it as first item
-	i->stat(true);
+	i->stat(performChdir);
 
 	if (i->name().isEmpty()) {
 	    delete i;

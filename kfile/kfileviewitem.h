@@ -119,10 +119,15 @@ public:
     QPixmap pixmap( KIconLoader::Size size = KIconLoader::Small ) const;
 
     /**
-      * Returns the date of the file.
+      * Returns a string of the date of the file.
       */
     QString date() const;
 
+    /**
+     * Returns the modification time of the file.
+     */
+    time_t mTime() const { return myDate_t; }
+    
     /**
       * Returns the access permissions for the file as a string.
       */

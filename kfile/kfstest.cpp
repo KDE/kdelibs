@@ -46,7 +46,7 @@ int main(int argc, char **argv)
     if (argc > 1)
 	argv1 = QString::fromLatin1(argv[1]);
 
-    if (argv1 == QString::fromLatin1("widget")) {
+    if (argv1 == QString::fromLatin1("diroperator")) {
 	KDirOperator *op = new KDirOperator(QString::null, 0, "operator");
 	op->setView(KDirOperator::Simple, false);
 	op->show();
@@ -60,6 +60,7 @@ int main(int argc, char **argv)
 	// widget->setURL(QString::fromLatin1("smb://without.penguinpowered.com/)");
 	// widget->setURL(QString::fromLatin1("smb://redwood203.marin.k12.ca.us"),false);
 	widget->show();
+	a.setMainWidget(widget);
 	a.exec();
     } else if (argv1 == QString::fromLatin1("dirs"))
 	name1 = KFileDialog::getExistingDirectory();

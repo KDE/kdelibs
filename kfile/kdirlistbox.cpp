@@ -3,7 +3,7 @@
                   1998 Mario Weilguni <mweilguni@sime.com>
                   1998 Stephan Kulow <coolo@kde.org>
                   1998 Daniel Grana <grana@ie.iwi.unibe.ch>
-    
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
@@ -36,18 +36,18 @@ class KFileInfo;
  * Class to allow pixmaps and text in QListBox.
  * Taken from the Qt library documentation.
  */
-class KDirListBoxItem : public QListBoxItem 
+class KDirListBoxItem : public QListBoxItem
 {
 public:
     KDirListBoxItem( const KFileInfo *i);
-    
+
     void setItalic(bool);
     bool isItalic() const;
-    
+
 protected:
-    virtual void paint( QPainter * );        
+    virtual void paint( QPainter * );
     virtual int height( const QListBox * ) const;
-    virtual int width( const QListBox * ) const;        
+    virtual int width( const QListBox * ) const;
     virtual const QPixmap *pixmap() const { return pm; }
 
 private:
@@ -56,7 +56,7 @@ private:
 };
 
 KDirListBoxItem::KDirListBoxItem(const KFileInfo *i)
-    : QListBoxItem() 
+    : QListBoxItem()
 {
     if (i->isDir())
       pm = (i->isReadable()) ? KFileView::folder_pixmap : KFileView::locked_folder;
@@ -79,11 +79,11 @@ void KDirListBoxItem::paint( QPainter *p )
     p->drawPixmap( 3, 2, *pm );
     QFontMetrics fm = p->fontMetrics();
     int yPos;                       // vertical text position
-    if ( (pm->height()) < fm.height() )            
-	yPos = fm.ascent() + fm.leading()/2; 
+    if ( (pm->height()) < fm.height() )
+	yPos = fm.ascent() + fm.leading()/2;
     else
 	yPos = pm->height()/2 - fm.height()/2 + fm.ascent();
-    
+
     yPos= yPos+2;
     p->drawText( pm->width() + 5, yPos, text() );
 
@@ -94,15 +94,15 @@ void KDirListBoxItem::paint( QPainter *p )
 int KDirListBoxItem::height(const QListBox *lb ) const
 {
     int retval;
-    
+
     retval= QMAX( pm->height(), lb->fontMetrics().lineSpacing() + 1);
     retval= retval+2;
     return retval;
-}     
+}
 
-int KDirListBoxItem::width(const QListBox *lb ) const    
+int KDirListBoxItem::width(const QListBox *lb ) const
 {
-    return pm->width() + lb->fontMetrics().width( text() ) + 6;    
+    return pm->width() + lb->fontMetrics().width( text() ) + 6;
 }
 
 void KDirListBoxItem::setItalic(bool b) {
@@ -118,30 +118,30 @@ void KDirListBox::mousePressEvent ( QMouseEvent *inEvent )
     int index = this->findItem(inEvent->pos().y());
     if (index == -1 || inEvent->button() != LeftButton)
         return;
-  
-    if ( useSingle() && isDir(index)) 
+
+    if ( useSingle() && isDir(index))
         select( index );
     else
         highlight( index );
-  
+
 }
 
 KDirListBox::KDirListBox( bool accepts, bool s, QDir::SortSpec sorting,
-                          QWidget * parent , const char * name ) 
+                          QWidget * parent , const char * name )
     : QListBox(parent, name) , KFileView(s,sorting)
 {
     _acceptFiles = accepts;
     setSortMode(Increasing);
-    setSorting(QDir::Name);
+    setSorting(QDir::Name | QDir::IgnoreCase);
 }
 
 KDirListBox::KDirListBox( bool s, QDir::SortSpec sorting,
-                          QWidget * parent , const char * name ) 
+                          QWidget * parent , const char * name )
     : QListBox(parent, name) , KFileView(s,sorting)
 {
    _acceptFiles = false;
     setSortMode(Increasing);
-    setSorting(QDir::Name);
+    setSorting(QDir::Name | QDir::IgnoreCase);
 }
 
 void KDirListBox::mouseDoubleClickEvent ( QMouseEvent *inEvent )
@@ -158,7 +158,7 @@ void KDirListBox::setAutoUpdate(bool f)
     QListBox::setAutoUpdate(f);
 }
 
-bool KDirListBox::insertItem(const KFileInfo *i, int index) 
+bool KDirListBox::insertItem(const KFileInfo *i, int index)
 {
     KDirListBoxItem *li = new KDirListBoxItem(i);
     li->setItalic(i->isSymLink());

@@ -61,6 +61,7 @@ class KDirOperator : public QWidget {
 
     //this also reads the current url(), so you better call this after setURL()
     void setView(KFileView *view);
+    const KFileView * view() const { return fileList; }
     void setView(FileView view, bool separateDirs = false);
 
     bool isRoot() const;
@@ -153,6 +154,12 @@ class KDirOperator : public QWidget {
     void simpleView();
     void toggleHidden();
     void toggleMixDirsAndFiles();
+    void sortByName();
+    void sortBySize();
+    void sortByDate();
+    void sortReversed();
+    void toggleDirsFirst();
+    void toggleIgnoreCase();
 
     void deleteOldView();
 

@@ -1,3 +1,26 @@
+// -*- c++ -*-
+/* This file is part of the KDE libraries
+    Copyright (C) 1997, 1998 Richard Moore <rich@kde.org>
+                  1998 Stephan Kulow <coolo@kde.org>
+                  1998 Daniel Grana <grana@ie.iwi.unibe.ch>
+		  1999,2000 Carsten Pfeiffer <pfeiffer@kde.org>
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
+*/
+
 #include "kfileview.h"
 #include "krecentdocument.h"
 #include <unistd.h>
@@ -35,7 +58,6 @@
 #include "kcombiview.h"
 #include "config-kfile.h"
 #include "kfilefilter.h"
-#include "kfilereader.h"
 #include "kfilebookmark.h"
 #include <kprocess.h>
 #include <kapp.h>
@@ -789,6 +811,7 @@ QString KFileDialog::getOpenFileName(const QString& dir, const QString& filter,
 				     QWidget *parent,
 				     const QString& caption)
 {
+    QString cwd = QDir::currentDirPath();
     KFileDialog dlg(dir, filter, parent, "filedialog", true);
 
     dlg.setCaption(caption.isNull() ? i18n("Open") : caption);
@@ -799,6 +822,9 @@ QString KFileDialog::getOpenFileName(const QString& dir, const QString& filter,
     if (!filename.isEmpty())
         KRecentDocument::add(filename, false);
 
+    if ( isChdirEnabled() )
+	QDir::setCurrent( cwd );
+	
     return filename;
 }
 
@@ -806,6 +832,7 @@ QString KFileDialog::getExistingDirectory(const QString& dir,
 					  QWidget *parent,
 					  const QString& caption)
 {
+    QString cwd = QDir::currentDirPath();
     KFileDialog dlg(dir, QString::null, parent, "filedialog", true);
     dlg.setMode(Directory);
 
@@ -816,6 +843,9 @@ QString KFileDialog::getExistingDirectory(const QString& dir,
     QString filename = dlg.selectedFile();
     if (!filename.isEmpty())
         KRecentDocument::add(filename, false);
+
+    if ( isChdirEnabled() )
+	QDir::setCurrent( cwd );
 
     return filename;
 }
@@ -848,6 +878,7 @@ QString KFileDialog::getSaveFileName(const QString& dir, const QString& filter,
 				     QWidget *parent,
 				     const QString& caption)
 {
+    QString cwd = QDir::currentDirPath();
     KFileDialog dlg(dir, filter, parent, "filedialog", true);
 
     dlg.setCaption(caption.isNull() ? i18n("Save As") : caption);
@@ -857,6 +888,9 @@ QString KFileDialog::getSaveFileName(const QString& dir, const QString& filter,
     QString filename = dlg.selectedFile();
     if (!filename.isEmpty())
         KRecentDocument::add(filename, false);
+
+    if ( isChdirEnabled() )
+	QDir::setCurrent( cwd );
 
     return filename;
 }
@@ -890,7 +924,6 @@ void KFileComboBox::setCompletion(const QString& completion)
     }
     else 	
       	edit->setCursorPosition( completion.length() );
-
 }
 
 bool KFileComboBox::eventFilter( QObject *o, QEvent *ev )
@@ -930,6 +963,4 @@ bool KFileComboBox::eventFilter( QObject *o, QEvent *ev )
 }
 
 
-
 #include "kfiledialog.moc"
-

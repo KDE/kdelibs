@@ -1,3 +1,25 @@
+/* This file is part of the KDE libraries
+    Copyright (C) 1999,2000 Stephan Kulow <coolo@kde.org>
+		  1999,2000 Carsten Pfeiffer <pfeiffer@kde.org>
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
+*/
+
+#include <qdir.h>
+
 #include "kdiroperator.h"
 #include "kfileviewitem.h"
 #include "kfilereader.h"
@@ -13,6 +35,7 @@
 #include <qlayout.h>
 #include <qdialog.h>
 #include <qpushbutton.h>
+#include <kapp.h>
 #include <kcombiview.h>
 #include <kfilepreview.h>
 #include <kfileiconview.h>
@@ -132,6 +155,37 @@ void KDirOperator::activatedMenu( const KFileViewItem *item )
 		      this, SLOT(mkdir()));
 	p->setItemEnabled(id, dir->isLocalFile());
 
+	
+	p->insertSeparator();
+	QDir::SortSpec sorting = fileList->sorting();
+	
+	// grr, who had the idea to set QDir::Name to 0x0?
+	bool byName = (sorting & QDir::Time) != QDir::Time &&
+		      (sorting & QDir::Size) != QDir::Size;
+	
+	QPopupMenu *sortMenu = new QPopupMenu( p );
+	id = sortMenu->insertItem(i18n("By Name"), this, SLOT(sortByName()));
+	sortMenu->setItemChecked( id, byName );
+
+	id = sortMenu->insertItem(i18n("By Date"), this, SLOT(sortByDate()));
+	sortMenu->setItemChecked( id, (sorting & QDir::Time) == QDir::Time );
+
+	id = sortMenu->insertItem(i18n("By Size"), this, SLOT(sortBySize()));
+	sortMenu->setItemChecked( id, (sorting & QDir::Size) == QDir::Size );
+	
+	id = sortMenu->insertItem(i18n("Reverse"), this, SLOT(sortReversed()));
+	sortMenu->setItemChecked( id, fileList->isReversed() );
+
+	sortMenu->insertSeparator();
+	id = sortMenu->insertItem(i18n("Directories first"), this,
+			     SLOT(toggleDirsFirst()));
+	sortMenu->setItemChecked( id, (sorting & QDir::DirsFirst) == QDir::DirsFirst );
+	id = sortMenu->insertItem(i18n("Case insensitive"), this,
+			     SLOT(toggleIgnoreCase()));
+	sortMenu->setItemChecked( id, (sorting & QDir::IgnoreCase) == QDir::IgnoreCase );
+	p->insertItem( i18n("Sorting"), sortMenu );
+	
+	
 	if (viewKind) {
 	    p->insertSeparator();
 
@@ -197,6 +251,47 @@ void KDirOperator::toggleMixDirsAndFiles()
     setView(static_cast<FileView>(viewKind & ~SeparateDirs), (viewKind & SeparateDirs) != SeparateDirs);
 }
 
+void KDirOperator::sortByName()
+{
+    int sorting = (fileList->sorting()) & ~QDir::SortByMask;
+    fileList->setSorting( static_cast<QDir::SortSpec>( sorting | QDir::Name ));
+}
+
+void KDirOperator::sortBySize()
+{
+    int sorting = (fileList->sorting()) & ~QDir::SortByMask;
+    fileList->setSorting( static_cast<QDir::SortSpec>( sorting | QDir::Size ));
+}
+
+void KDirOperator::sortByDate()
+{
+    int sorting = (fileList->sorting()) & ~QDir::SortByMask;
+    fileList->setSorting( static_cast<QDir::SortSpec>( sorting | QDir::Time ));
+}
+
+void KDirOperator::sortReversed()
+{
+    fileList->sortReversed();
+}
+
+void KDirOperator::toggleDirsFirst()
+{
+    QDir::SortSpec sorting = fileList->sorting();
+    if ( (sorting & QDir::DirsFirst) == 0 )
+	fileList->setSorting( static_cast<QDir::SortSpec>( sorting | QDir::DirsFirst ));
+    else
+	fileList->setSorting( static_cast<QDir::SortSpec>( sorting & ~QDir::DirsFirst));
+}
+
+void KDirOperator::toggleIgnoreCase()
+{
+    QDir::SortSpec sorting = fileList->sorting();
+    if ( (sorting & QDir::IgnoreCase) == 0 )
+	fileList->setSorting( static_cast<QDir::SortSpec>( sorting | QDir::IgnoreCase ));
+    else
+	fileList->setSorting( static_cast<QDir::SortSpec>( sorting & ~QDir::IgnoreCase));
+}
+
 void KDirOperator::mkdir()
 {
     if (!dir->isLocalFile())
@@ -257,6 +352,26 @@ void KDirOperator::mkdir()
     lMakeDir->resize( 10, 10);
     ed->grabKeyboard();
     if ( lMakeDir->exec() == QDialog::Accepted ) {
+
+        // check if we are allowed to create directories
+        bool writeOk = false;
+	QString tmp = ed->text();
+	int idx = tmp.findRev(QString::fromLatin1("/"));
+	if ( idx != -1 ) {
+	    QDir dir( url().path() );
+	    if ( dir.cd( tmp.left( idx )) )
+	        writeOk = checkAccess( dir.absPath(), W_OK );
+	}
+	else
+	    writeOk = checkAccess( url().path(), W_OK );
+
+	
+	if ( !writeOk ) {
+	    KMessageBox::sorry(0,
+			       i18n("You don't have permissions to create "
+				    "that directory." ));
+	    return;
+	}
 	if ( QDir(url().path()).mkdir(ed->text()) == true ) {  // !! don't like this move it into KFileReader ??
 	    setURL( KURL(url(), ed->text()), true );
 	}
@@ -657,8 +772,9 @@ void KDirOperator::insertNewFiles(const KFileViewItemList *newone, bool ready)
     } else {
 	if (!progress) {
 	    progress = new KProgress(this, "progress");
+	    progress->adjustSize();
 	    progress->setRange(0, 100);
-	    progress->move(0, 0);
+	    progress->move(2, height() - progress->height() -2);
 	}
 	progress->setValue(ulong(dir->count() * 100)/ dir->dirCount());
 	progress->raise();
@@ -776,7 +892,8 @@ void KDirOperator::resizeEvent( QResizeEvent * )
 {
     if (fileList)
 	fileList->widget()->resize( size() );
+    if ( progress )
+	progress->move(2, height() - progress->height() -2);
 }
 
 #include "kdiroperator.moc"
-

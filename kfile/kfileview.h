@@ -134,13 +134,49 @@ public:
     QDir::SortSpec sorting() const { return mySorting; }
 
     /**
-      * set the sorting of the view. If the sorting is the same as
-      * the current value and sortMode is Switching, it switches the
-      * order in the list.
+      * set the sorting of the view
       *
-      * Default is QDir::Name
+      * Default is QDir::Name | QDir::IgnoreCase | QDir::DirsFirst
+      * Don't use QDir::Reversed, use @ref sortReversed() if you want to
+      * reverse the sort order.
+      * Calling this method keeps the reversed-setting
+      * @see #setSortMode
       **/
     void setSorting(QDir::SortSpec sort); // a little bit complexer
+
+    /**
+      * Increasing means greater indicies means bigger values
+      *
+      * Decrease means greater indicies means smaller values
+      * Switching is deprecated, don't use that anymore!
+      **/
+    enum SortMode { Increasing, Decreasing, Switching };
+
+    /**
+      * set the sorting mode. Default mode is Increasing. Affects only
+      * newly added items.
+      * @see #setSorting
+      **/
+    void setSortMode(SortMode mode) { mySortMode = mode; }
+
+    /**
+     * @returns the current sort mode
+     * @see #setSortMode
+     * @see #setSorting
+     */
+    SortMode sortMode() const { return mySortMode; }
+
+    /**
+     * Toggles the current sort order, i.e. the order is reversed.
+     * @see #isReversed
+     */
+    void sortReversed();
+
+    /**
+     * Tells whether the current items are in reversed order (= contrary to
+     * @ref sortMode).
+     */
+    bool isReversed() const { return reversed; }
 
     /**
       * returns the number of added files
@@ -189,21 +225,6 @@ public:
 protected:
 
     /**
-      * Increasing means greater indicies means bigger values
-      *
-      * Decrease means greater indicies means smaller values
-      *
-      * Switching means, that it should switch between Increasing and
-      * Decreasing
-      **/
-    enum SortMode { Increasing, Decreasing, Switching };
-
-    /**
-      * set the sorting mode. Default mode is Increasing
-      **/
-    void setSortMode(SortMode mode) { mySortMode = mode; }
-
-    /**
       * set the highlighted item to index. This function must be implemented
       * by the view
       **/
@@ -250,6 +271,7 @@ private:
 
     bool reversed;
     QDir::SortSpec mySorting;
+    static QDir::SortSpec defaultSortSpec;
     enum SortMode mySortMode;
 
     /**

@@ -1,9 +1,9 @@
 // -*- c++ -*-
 /* This file is part of the KDE libraries
     Copyright (C) 1997, 1998 Richard Moore <rich@kde.org>
-                  1998 Stephan Kulow <coolo@kde.org>
+                  1998,1999,2000 Stephan Kulow <coolo@kde.org>
                   1998 Daniel Grana <grana@ie.iwi.unibe.ch>
-		  1999 Carsten Pfeiffer <pfeiffer@kde.org>
+		  1999,2000 Carsten Pfeiffer <pfeiffer@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -136,6 +136,21 @@ public:
 
     static bool probably_slow_mounted(const char *filename);
 
+    /**
+     * KFileReader uses chhdir() to change the current working directory to
+     * increase performance. If you don't like this, disable it.
+     * Default is enabled.
+     * @see #isChdirEnabled
+     */
+    static void setEnableChdir( bool enable ) { performChdir = enable; }
+
+    /**
+     * @returns whether KFileReader changes the current working directory
+     * (via chdir()).
+     * @see #setEnableChdir
+     */
+    static bool isChdirEnabled() { return performChdir; }
+
  signals:
     /**
      * Emitted when the url is changed. It is NOT emitted, when you manually
@@ -223,6 +238,7 @@ private:
     DIR *myOpendir;
     bool readable;
     bool showHidden;
+    static bool performChdir;
 
     // for KDirWatch update (async via QTimer)
     DIR *myUpdateDir;

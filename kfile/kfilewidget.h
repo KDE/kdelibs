@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 1999 Carsten Pfeiffer <pfeiffer@kde.org>
+    Copyright (C) 1999,2000 Carsten Pfeiffer <pfeiffer@kde.org>
 
     library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -83,7 +83,7 @@ protected:
 
 
 private:
-  void 		connectFileReader();
+  void 		connectSignals();
 
   KDirOperator 	*myDirOperator;
 
@@ -96,12 +96,7 @@ public slots:
 
 
 protected slots:
-  void 		slotFileHighlighted( const KFileViewItem *);
-  void 		slotFileSelected( const KFileViewItem *);
-  void 		slotDirSelected( const KFileViewItem * );
-  void 		slotURLEntered( const KURL& );
   //  void 		slotFinished();
-  void 		slotError( int, const QString& );
 
 
 signals:
