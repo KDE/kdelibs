@@ -1,5 +1,5 @@
 /* This file is part of the KDE project
-   Copyright (C) 1999 Michael Koch <mkoch@bigfoot.de>
+   Copyright (C) 1999 Michael Koch <m_koch@bigfoot.de>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
