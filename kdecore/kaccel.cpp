@@ -33,7 +33,38 @@
 #include <kglobal.h>
 #include <kdebug.h>
 #include <kckey.h>
-#include "kaccel_private.h"
+
+
+void KKeyEntry::operator=(const KKeyEntry& e) {
+    aCurrentKeyCode = e.aCurrentKeyCode;
+    aDefaultKeyCode = e.aDefaultKeyCode;
+    aConfigKeyCode = e.aConfigKeyCode;
+    bConfigurable = e.bConfigurable;
+    bEnabled = e.bEnabled;
+    aAccelId = e.aAccelId;
+    receiver = e.receiver;
+    member = e.member;
+    descr = e.descr;
+    menuId = e.menuId;
+    menu = e.menu;
+}
+
+KKeyEntry::KKeyEntry() {
+    aCurrentKeyCode = 0;
+    aDefaultKeyCode = 0;
+    aConfigKeyCode = 0;
+    bConfigurable = false;
+    bEnabled = false;
+    aAccelId = 0;
+    receiver = 0;
+    member = 0;
+    menuId = 0;
+    menu = 0;
+}
+
+KKeyEntry::KKeyEntry(const KKeyEntry& e) {
+    *this = e;
+}
 
 KAccel::KAccel( QWidget * parent, const char *name )
     : QAccel(parent, name)
@@ -258,6 +289,7 @@ void KAccel::readSettings(KConfig* config)
 	
             (*it).aCurrentKeyCode = (*it).aConfigKeyCode;
             if ( (*it).aAccelId && (*it).aCurrentKeyCode ) {
+				kdDebug() << "insert " << (*it).descr << endl;
                 QAccel::disconnectItem( (*it).aAccelId, (*it).receiver,
                                         (*it).member );
                 QAccel::removeItem( (*it).aAccelId );

@@ -39,7 +39,6 @@
 #include <kglobalsettings.h>
 #include <kcombobox.h>
 #include <kdebug.h>
-#include "kaccel_private.h"
 
 static QFontDatabase *fontDataBase = 0;
 

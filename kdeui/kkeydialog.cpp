@@ -49,7 +49,6 @@
 #include "kkeydialog.h"
 
 #include <kaction.h>
-#include "kaccel_private.h"
 
 /**
  *  A list box item for KSplitList.It uses two columns to display
@@ -189,88 +188,6 @@ public:
     bool bKeyIntercept;
 
     int kbMode;
-};
-
-/**
- * Configure dictionaries of key/action associations for KAccel and
- * KGlobalAccel.
- *
- * The class takes care of all aspects of configuration, including
- * handling key conflicts internally. Connect to the @ref allDefault()
- * slot if you want to set all configurable keybindings to their
- * default values.
- *
- * @short Widget for configuration of @ref KAccel and @ref KGlobalAccel.
- * @see KKeyDialog
- * @version $Id$
- * @author Nicolas Hadacek <hadacek@via.ecp.fr>
-
- */
-class KKeyChooser : public QWidget
-{
-  Q_OBJECT
-
-public:
-
-  enum { NoKey = 1, DefaultKey, CustomKey };
-	
-  /**
-   * Constructor.
-   *
-   * @param aKeyDict A dictionary (@ref QMap) of key definitons.
-   **/
-  KKeyChooser( KKeyEntryMap *aKeyDict, QWidget* parent = 0,
-	       bool check_against_std_keys = false );
-  ~KKeyChooser();
-	
-  //  QDictIterator<KKeyEntry>* aIt;
-  //  QDictIterator<KKeyEntry>* aKeyIt;
-
-signals:
-  /**
-   * Emitted when a key definition has been changed.
-   **/
-  void keyChange();
-
-public slots:
-
-    /**
-     * Set all keys to their default values (bindings).
-     **/
-  void allDefault();
-  /**
-   * Synchronize the viewed split list with the currently used key codes.
-   **/
-  void listSync();
-
-protected slots:
-
-  void toChange( int _index );
-  void changeKey();
-  void updateAction( int _index );
-  void defaultKey();
-  void noKey();
-  void keyMode( int _mode );
-  void shiftClicked();
-  void ctrlClicked();
-  void altClicked();
-  void editKey();
-  void editEnd();
-  void readGlobalKeys();
-  void readStdKeys();
-
-protected:
-
-  void keyPressEvent( QKeyEvent* _event );
-  void fontChange( const QFont& _font );
-
-protected:
-
-  const QString item( int keyCode, const QString& entryKey );
-  bool isKeyPresent();
-  void setKey( int kCode );
-
-  KKeyChooserPrivate *d;
 };
 
 /*****************************************************************************/
@@ -1134,7 +1051,7 @@ void KKeyChooser::listSync()
 	d->wList->setCurrentItem( 0 );
 }
 
-const QString KKeyChooser::item( int keyCode, const QString& entryKey )
+QString KKeyChooser::item( int keyCode, const QString& entryKey ) const
 {
 	QString str = entryKey;
 	str = str.leftJustify(MAX_FCTN_LENGTH, ' ', TRUE);

@@ -32,6 +32,86 @@ class KActionCollection;
 class KGlobalAccel;
 
 class KKeyDialogPrivate;
+class KKeyChooserPrivate;
+
+/**
+ * Configure dictionaries of key/action associations for KAccel and
+ * KGlobalAccel.
+ *
+ * The class takes care of all aspects of configuration, including
+ * handling key conflicts internally. Connect to the @ref allDefault()
+ * slot if you want to set all configurable keybindings to their
+ * default values.
+ *
+ * @short Widget for configuration of @ref KAccel and @ref KGlobalAccel.
+ * @see KKeyDialog
+ * @version $Id$
+ * @author Nicolas Hadacek <hadacek@via.ecp.fr>
+
+ */
+class KKeyChooser : public QWidget
+{
+    Q_OBJECT
+
+public:
+
+    enum { NoKey = 1, DefaultKey, CustomKey };
+	
+    /**
+     * Constructor.
+     *
+     * @param aKeyDict A dictionary (@ref QMap) of key definitons.
+     **/
+    KKeyChooser( KKeyEntryMap *aKeyDict, QWidget* parent = 0,
+                 bool check_against_std_keys = false );
+    ~KKeyChooser();
+
+signals:
+    /**
+     * Emitted when a key definition has been changed.
+     **/
+    void keyChange();
+
+public slots:
+
+    /**
+     * Set all keys to their default values (bindings).
+     **/
+    void allDefault();
+    /**
+     * Synchronize the viewed split list with the currently used key codes.
+     **/
+    void listSync();
+
+protected slots:
+
+    void toChange( int _index );
+    void changeKey();
+    void updateAction( int _index );
+    void defaultKey();
+    void noKey();
+    void keyMode( int _mode );
+    void shiftClicked();
+    void ctrlClicked();
+    void altClicked();
+    void editKey();
+    void editEnd();
+    void readGlobalKeys();
+    void readStdKeys();
+
+protected:
+
+    void keyPressEvent( QKeyEvent* _event );
+    void fontChange( const QFont& _font );
+
+protected:
+
+    QString item( int keyCode, const QString& entryKey ) const;
+    bool isKeyPresent();
+    void setKey( int kCode );
+
+    KKeyChooserPrivate *d;
+};
 
 /**
  * The KKeyDialog class is used for configuring dictionaries of key/action

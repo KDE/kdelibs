@@ -33,7 +33,32 @@ class QObject;
 class QWidget;
 class KAccelPrivate;
 
-class KKeyEntry;
+
+/**
+ * Accelerator information, similar to an action.
+ *
+ * It is used internally by @ref KAccel.
+ * @internal
+ */
+struct KKeyEntry {
+ public:
+    int aCurrentKeyCode;
+    int aDefaultKeyCode;
+    int aConfigKeyCode;
+    bool bConfigurable;
+    bool bEnabled;
+    int aAccelId;
+    const QObject *receiver;
+    const char *member;
+    QString descr;
+    int menuId;
+    QPopupMenu *menu;
+
+    void operator=(const KKeyEntry& e);
+    KKeyEntry();
+    KKeyEntry(const KKeyEntry& e);
+};
+
 typedef QMap<QString, KKeyEntry> KKeyEntryMap;
 
 /**

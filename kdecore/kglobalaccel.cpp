@@ -38,8 +38,6 @@
 #include <X11/keysym.h>
 #include <string.h>
 
-#include "kaccel_private.h"
-
 // NOTE ABOUT CONFIGURATION CHANGES
 // Test if keys enabled because these keys have made X server grabs
 
