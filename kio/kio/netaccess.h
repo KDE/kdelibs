@@ -1,4 +1,6 @@
-/*  This file is part of the KDE libraries
+/*  $Id:$
+
+    This file is part of the KDE libraries
     Copyright (C) 1997 Torben Weis (weis@kde.org)
  
     This library is free software; you can redistribute it and/or
@@ -83,9 +85,9 @@ class KIONetAccess : public QObject
 
 protected:
     /** Private constructor */
-    KIONetAccess();
+    KIONetAccess() {}
     /** Private destructor */
-    ~KIONetAccess();
+    ~KIONetAccess() {}
     /** Internal method */
     bool downloadInternal(const QString src, QString & target);
     /** List of temporary files */
