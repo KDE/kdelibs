@@ -26,6 +26,34 @@ AC_DEFUN(AC_CHECK_LIBAUDIOIO,
   LDFLAGS="$ac_ldflags_save"
 ])
 
+dnl aRts specific configure tests
+dnl
+dnl Check for libaudio (which can be used to get network audio support)
+AC_DEFUN(AC_CHECK_LIBAUDIONAS,
+[
+  ac_ldflags_save="$LDFLAGS"
+  ac_CPPFLAGS_save="$CPPFLAGS"
+  LDFLAGS="$all_libraries $LDFLAGS"
+  CPPFLAGS="$CPPFLAGS $all_includes"
+  arts_libaudionas_found=no
+  AC_LANG_SAVE
+  AC_LANG_C
+  AC_CHECK_HEADER(audio/audiolib.h,
+  [
+    AC_CHECK_LIB(audio,AuOpenServer,[
+      dnl LDFLAGS in case it's in KDEDIR/lib
+      LIBAUDIONAS="$LDFLAGS -laudio -lXt"
+      AC_DEFINE(HAVE_LIBAUDIONAS, 1,
+        [Define if you have libaudio (required if you want to have NAS support)])
+      arts_libaudionas_found=yes
+    ],[],-lXt)
+  ])
+  AC_SUBST(LIBAUDIONAS)
+  AC_LANG_RESTORE
+  CPPFLAGS="$ac_CPPFLAGS_save"
+  LDFLAGS="$ac_ldflags_save"
+])
+
 dnl libaudiofile is used for loading wave files
 AC_DEFUN(AC_CHECK_LIBAUDIOFILE,
 [
@@ -196,6 +224,7 @@ fi
 
 dnl call the tests
 AC_CHECK_LIBAUDIOIO
+AC_CHECK_LIBAUDIONAS
 AC_CHECK_LIBAUDIOFILE
 AC_CHECK_REALTIME_SCHED
 AC_CHECK_GETDOMAINNAME
@@ -246,10 +275,10 @@ AC_MSG_CHECKING(for GLib-2.0 (at least $GLIB_VERSION))
 
 if test -n "$PKG_CONFIG"; then
 if $PKG_CONFIG $GLIB_PACKAGES --atleast-version $GLIB_VERSION >/dev/null 2>&1 ; then
-        GLIB_CFLAGS=`$PKG_CONFIG --cflags $GLIB_PACKAGES`
-        GLIB_LIBS=`$PKG_CONFIG --libs $GLIB_PACKAGES`
-        GLIB_DEPLIBS=$GLIB_LIBS
-        AC_MSG_RESULT(yes)
+    GLIB_CFLAGS=`$PKG_CONFIG --cflags $GLIB_PACKAGES`
+    GLIB_LIBS=`$PKG_CONFIG --libs $GLIB_PACKAGES`
+    GLIB_DEPLIBS=$GLIB_LIBS
+    AC_MSG_RESULT(yes)
 	ARTS_BUILD_GMCOP="gmcop"
 fi
 fi
