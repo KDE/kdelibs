@@ -288,8 +288,18 @@ void HTMLDocumentImpl::close()
 
     HTMLElementImpl* b = body();
     if (b && doload) {
+        // According to dom the load event must not bubble
+        // but other browsers execute in a frameset document
+        // the first(IE)/last(Moz/Konq) registered onload on a <frame> and the
+        // first(IE)/last(Moz/Konq) registered onload on a <frameset>.
+
+        // The body has the listener for <frame onload>
         b->dispatchWindowEvent(EventImpl::LOAD_EVENT, false, false);
-        if (b->id() == ID_FRAMESET)
+
+        b = body(); // the onload code could have changed it (e.g. document.open/write/close)
+
+        // The document has the listener for <frameset onload>
+        if (b && b->id() == ID_FRAMESET)
             getDocument()->dispatchWindowEvent(EventImpl::LOAD_EVENT, false, false);
 
         updateRendering();
