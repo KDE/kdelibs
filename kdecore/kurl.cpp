@@ -1767,7 +1767,11 @@ QString KURL::queryItem( const QString& _item ) const
     if ( (*it).startsWith( item ) )
     {
       if ( (*it).length() > _len )
-        return decode_string( (*it).mid( _len ) );
+      {
+        QString str = (*it).mid( _len );
+        str.replace( '+', ' ' ); // + in queries means space.
+        return decode_string( str );
+      }
       else // empty value
         return QString::fromLatin1("");
     }
