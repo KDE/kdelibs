@@ -5,8 +5,8 @@
  * This file is part of the KDE project, module kdecore.
  * Copyright (C) 2000 Geert Jansen <jansen@kde.org>
  *
- * This is free software; it comes under the GNU Library General 
- * Public License, version 2. See the file "COPYING.LIB" for the 
+ * This is free software; it comes under the GNU Library General
+ * Public License, version 2. See the file "COPYING.LIB" for the
  * exact licensing terms.
  *
  */
@@ -21,12 +21,7 @@
 class KConfig;
 class KIconThemeDir;
 
-class KIconThemePrivate
-{
-public:
-    QString example;
-    QString screenshot;
-};
+class KIconThemePrivate;
 
 /**
  * One icon as found by KIconTheme.
@@ -37,11 +32,13 @@ public:
     KIcon() { size = 0; }
 
     /** Return true if this icon is valid, false otherwise. */
-    bool isValid() { return size != 0; }
+    bool isValid() const { return size != 0; }
 
     enum Context { Any, Action, Application, Device, FileSystem, MimeType };
     enum Types { Fixed, Scalable };
     enum MatchType { MatchExact, MatchBest };
+    // if you add a group here, make sure to change the config reading in
+    // KIconLoader too
     enum Group { NoGroup=-1, Desktop=0, Toolbar, MainToolbar, Small, LastGroup, User };
     enum StdSizes { SizeSmall=16, SizeMedium=32, SizeLarge=48 };
     enum States { DefaultState, ActiveState, DisabledState, LastState };
@@ -68,56 +65,56 @@ class KIconTheme
 {
 public:
     /** Load an icon theme by name.  */
-    KIconTheme(QString name, QString appName=QString::null);
+    KIconTheme(const QString& name, const QString& appName=QString::null);
     ~KIconTheme();
 
     /** The stylized name of the icont theme. */
-    QString name() { return mName; }
+    QString name() const { return mName; }
 
     /** A description for the icon theme. */
-    QString description() { return mDesc; }
+    QString description() const { return mDesc; }
 
     /** Return the name of the "example" icon. */
-    QString example() { return d->example; }
+    QString example() const;
 
     /** Return the name of the screenshot. */
-    QString screenshot() { return d->screenshot; }
+    QString screenshot() const;
 
     /** Returns the toplevel theme directory. */
-    QString dir() { return mDir; }
+    QString dir() const { return mDir; }
 
     /** The themes this icon theme falls back on. */
-    QStringList inherits() { return mInherits; }
+    QStringList inherits() const { return mInherits; }
 
     /** The icon theme exists? */
-    bool isValid();
+    bool isValid() const;
 
     /** The mimimum display depth required for this theme. This can either
      * be 8 or 32 */
-    int depth() { return mDepth; }
+    int depth() const { return mDepth; }
 
     /** The default size of this theme for a certain icon group.
      * @param group The icon group. See @ref #KIcon::Group.
      * @return The default size in pixels for the given icon group.
      */
-    int defaultSize(int group);
+    int defaultSize(int group) const;
 
     /** Query available sizes for a group. */
-    QValueList<int> querySizes(int group);
+    QValueList<int> querySizes(int group) const;
 
     /** Query available icons for a size and context. */
-    QStringList queryIcons(int size, int context = KIcon::Any); 
+    QStringList queryIcons(int size, int context = KIcon::Any) const;
 
     /** Lookup an icon in the theme.
      * @param name The name of the icon, without extension.
      * @param size The desired size of the icon.
      * @param match The matching mode. KIcon::MatchExact returns an icon
      * only if matches exactly. KIcon::MatchBest returns the best matching
-     * icon. 
+     * icon.
      * @return A KIcon class that describes the icon. If an icon is found,
      * @ref #KIcon::isValid will return true, and false otherwise.
      */
-    KIcon iconPath(QString name, int size, int match);
+    KIcon iconPath(const QString& name, int size, int match) const;
 
     /** List all icon themes installed on the system, global and local. */
     static QStringList list();

@@ -5,8 +5,8 @@
  * This file is part of the KDE project, module kdecore.
  * Copyright (C) 2000 Geert Jansen <jansen@kde.org>
  *
- * This is free software; it comes under the GNU Library General 
- * Public License, version 2. See the file "COPYING.LIB" for the 
+ * This is free software; it comes under the GNU Library General
+ * Public License, version 2. See the file "COPYING.LIB" for the
  * exact licensing terms.
  */
 
@@ -14,8 +14,6 @@
 #define __KIconLoader_h_Included__
 
 #include <qstring.h>
-#include <qlist.h>
-#include <qmap.h>
 #include <qpixmap.h>
 
 #include <kglobal.h>
@@ -33,15 +31,15 @@ class KIconEffect;
 /**
  * Iconloader for KDE.
  *
- * KIconLoader will load the current icon theme and all its base themes. 
- * Icons will be searched in any of these themes. Additionally, it caches 
+ * KIconLoader will load the current icon theme and all its base themes.
+ * Icons will be searched in any of these themes. Additionally, it caches
  * icons and applies effects according the the user's preferences.
  *
- * In KDE, it is encouraged to load icons by "Group". An icon group is a 
- * location on the screen where icons are being used. Standard groups are: 
+ * In KDE, it is encouraged to load icons by "Group". An icon group is a
+ * location on the screen where icons are being used. Standard groups are:
  * Desktop, Toolbar, MainToolbar and Small. Each group has some centrally
- * configured properties bound to it, including the icon size and effects. 
- * This makes it possible to offer a consistent icon look in all KDE 
+ * configured properties bound to it, including the icon size and effects.
+ * This makes it possible to offer a consistent icon look in all KDE
  * applications.
  *
  * The standard groups are defined below.
@@ -55,10 +53,10 @@ class KIconEffect;
  * The icons are stored on disk in an icon theme or in a standalone
  * directory. The icon theme directories contain multiple sizes and/or
  * depths for the same icon. The iconloader will load the correct one based
- * on the icon group and the current theme. Icon themes are stored globally 
+ * on the icon group and the current theme. Icon themes are stored globally
  * in share/icons, or, application specific in share/apps/$appdir/icons.
  *
- * The standalone directories contain just one version of an icon. The 
+ * The standalone directories contain just one version of an icon. The
  * directories that are searched are: $appdir/pics and $appdir/toolbar.
  * Icons in these directories can be loaded by using the special group
  * "User".
@@ -71,41 +69,41 @@ public:
     /**
      * Construct the iconloader.
      * @param appname Add the data directories of this application to the
-     * icon search path for the "User" group. The default argument adds the 
+     * icon search path for the "User" group. The default argument adds the
      * directories of the current application.
      */
-    KIconLoader(QString appname=QString::null);
+    KIconLoader(const QString& appname=QString::null);
 
     /** Cleanup */
     ~KIconLoader();
 
-    /** 
+    /**
      * Add @em appname to the list of application specific directories.
      * @param appname The application name.
-     */ 
-    void addAppDir(QString appname);
+     */
+    void addAppDir(const QString& appname);
 
     /**
      * Load an icon. It will try very hard to find an icon which is
      * suitable. If no exact match is found, a close match is searched.
-     * If neither an exact nor a close match is found, a null pixmap or 
+     * If neither an exact nor a close match is found, a null pixmap or
      * the "unknown" pixmap is returned, depending on the value of the
      * @em canReturnNull parameter.
      *
      * @param name The name of the icon, without extension.
-     * @param group The icon group. This will specify the size of and effects to 
+     * @param group The icon group. This will specify the size of and effects to
      * be applied to the icon.
      * @param size If nonzero, this overrides the size specified by @em group.
-     * @param state The icon state: @em DefaultState, @em ActiveState or 
-     * @em DisabledState. Depending on the user's preferences, the iconloader 
+     * @param state The icon state: @em DefaultState, @em ActiveState or
+     * @em DisabledState. Depending on the user's preferences, the iconloader
      * may apply a visual effect to hint about its state.
      * @param path_store If not null, the path of the icon is stored here.
      * @param canReturnNull Can return a null pixmap? If false, the
      * "unknown" pixmap is returned when no appropriate icon has been found.
      */
-    QPixmap loadIcon(QString name, int group, int size=0, 
-	    int state=KIcon::DefaultState, QString *path_store=0L, 
-	    bool canReturnNull=false);
+    QPixmap loadIcon(const QString& name, int group, int size=0,
+		     int state=KIcon::DefaultState, QString *path_store=0L,
+		     bool canReturnNull=false) const;
 
     /**
      * Returns the path of an icon.
@@ -115,8 +113,8 @@ public:
      * icons whose size is - @em group_or_size.
      * @param canReturnNull Can return a null pixamp?
      */
-    QString iconPath(QString name, int group_or_size, 
-	    bool canReturnNull=false);
+    QString iconPath(const QString& name, int group_or_size,
+		     bool canReturnNull=false) const;
 
     /**
      * Load an animated icon. In the future, this will be replaced by a
@@ -127,7 +125,7 @@ public:
      * @return A QStringList containing the absolute path of all the frames
      * making up the animation.
      */
-    QStringList loadAnimated(QString name, int group, int size=0);
+    QStringList loadAnimated(const QString& name, int group, int size=0) const;
 
     /**
      * Query all available icons for a specific group, having a specific
@@ -135,10 +133,10 @@ public:
      * @param group_or_size The icon group or size. See @ref #iconPath.
      * @param context The icon context.
      */
-    QStringList queryIcons(int group_or_size, int context=KIcon::Any);
+    QStringList queryIcons(int group_or_size, int context=KIcon::Any) const;
 
     /**
-     * Return the current size for an icon group.
+     * @return the current size for an icon group.
      */
     int currentSize(int group);
 
@@ -148,59 +146,55 @@ public:
      */
     KIconTheme *theme();
 
-
 private:
-    KIcon iconPath2(QString name, int size);
-    KIcon iconPath2(QString name, int size, int match, KIconThemeNode *node);
+    KIcon iconPath2(const QString& name, int size) const;
+    KIcon iconPath2(const QString& name, int size,
+		    int match, KIconThemeNode *node) const;
 
     void addIconTheme(KIconTheme *theme, KIconThemeNode *node);
-    void addAppThemes(QString appname);
-    void addIcons(QStringList *lst, int size, int context, KIconThemeNode *node);
-    void printThemeTree(KIconThemeNode *node);
+    void addAppThemes(const QString& appname);
 
-    QString mTheme;
-    QStringList mThemeList, mThemeTree;
-    KIconGroup *mpGroups;
-    KIconThemeNode *mpThemeRoot;
-    KStandardDirs *mpDirs;
-    KIconEffect *mpEffect;
+    // @internal the data object
     KIconLoaderPrivate *d;
 };
 
 /** Load a desktop icon.  */
-QPixmap DesktopIcon(QString name, int size=0, int state=KIcon::DefaultState, 
-	KInstance *instance=KGlobal::instance());
+QPixmap DesktopIcon(const QString& name, int size=0,
+		    int state=KIcon::DefaultState,
+		    KInstance *instance=KGlobal::instance());
 
 /** Load a desktop icon. */
-QPixmap DesktopIcon(QString name, KInstance *instance);
+QPixmap DesktopIcon(const QString& name, KInstance *instance);
 
 /** Load a toolbar icon.  */
-QPixmap BarIcon(QString name, int size=0, int state=KIcon::DefaultState, 
+QPixmap BarIcon(const QString& name, int size=0, int state=KIcon::DefaultState,
 	KInstance *instance=KGlobal::instance());
 
 /** Load a toolbar icon.  */
-QPixmap BarIcon(QString name, KInstance *instance);
+QPixmap BarIcon(const QString& name, KInstance *instance);
 
 /** Load a small icon.  */
-QPixmap SmallIcon(QString name, int size=0, int state=KIcon::DefaultState, 
-	KInstance *instance=KGlobal::instance());
+QPixmap SmallIcon(const QString& name, int size=0,
+		  int state=KIcon::DefaultState,
+		  KInstance *instance=KGlobal::instance());
 
 /** Load a small icon.  */
-QPixmap SmallIcon(QString name, KInstance *instance);
+QPixmap SmallIcon(const QString& name, KInstance *instance);
 
 /** Load a main toolbar icon.  */
-QPixmap MainBarIcon(QString name, int size=0, int state=KIcon::DefaultState, 
-	KInstance *instance=KGlobal::instance());
+QPixmap MainBarIcon(const QString& name, int size=0,
+		    int state=KIcon::DefaultState,
+		    KInstance *instance=KGlobal::instance());
 
 /** Load a main toolbar icon.  */
-QPixmap MainBarIcon(QString name, KInstance *instance);
+QPixmap MainBarIcon(const QString& name, KInstance *instance);
 
 /** Load a user icon. */
-QPixmap UserIcon(QString name, int state=KIcon::DefaultState, 
+QPixmap UserIcon(const QString& name, int state=KIcon::DefaultState,
 	KInstance *instance=KGlobal::instance());
 
 /** Load a user icon. */
-QPixmap UserIcon(QString name, KInstance *instance);
+QPixmap UserIcon(const QString& name, KInstance *instance);
 
 /** Returns the current icon size for a specific group.  */
 int IconSize(int group, KInstance *instance=KGlobal::instance());

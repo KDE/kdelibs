@@ -34,6 +34,12 @@
 
 #include "kicontheme.h"
 
+class KIconThemePrivate
+{
+public:
+    QString example;
+    QString screenshot;
+};
 
 /**
  * A subdirectory in an icon theme.
@@ -41,17 +47,17 @@
 class KIconThemeDir
 {
 public:
-    KIconThemeDir(QString dir, KConfigBase *config);
+    KIconThemeDir(const QString& dir, const KConfigBase *config);
 
-    QString iconPath(QString name);
-    QStringList iconList();
-    QString dir() { return mDir; }
+    QString iconPath(const QString& name) const;
+    QStringList iconList() const;
+    QString dir() const { return mDir; }
 
-    int context() { return mContext; }
-    int type() { return mType; }
-    int size() { return mSize; }
-    int minSize() { return mMinSize; }
-    int maxSize() { return mMaxSize; }
+    int context() const { return mContext; }
+    int type() const { return mType; }
+    int size() const { return mSize; }
+    int minSize() const { return mMinSize; }
+    int maxSize() const { return mMaxSize; }
 
 private:
     bool mbValid;
@@ -64,7 +70,7 @@ private:
 
 /*** KIconTheme ***/
 
-KIconTheme::KIconTheme(QString name, QString appName)
+KIconTheme::KIconTheme(const QString& name, const QString& appName)
 {
     d = new KIconThemePrivate;
     bool isApp = !appName.isEmpty();
@@ -146,7 +152,7 @@ KIconTheme::KIconTheme(QString name, QString appName)
     {
 	mDefSize[i] = cfg->readNumEntry(*it + "Default", 32);
 	QValueList<int> lst = cfg->readIntListEntry(*it + "Sizes"), exp;
-	QValueList<int>::Iterator it2;
+	QValueList<int>::ConstIterator it2;
 	for (it2=lst.begin(); it2!=lst.end(); it2++)
 	{
 	    if (scIcons.contains(*it2))
@@ -165,12 +171,16 @@ KIconTheme::~KIconTheme()
     delete d;
 }
 
-bool KIconTheme::isValid()
+bool KIconTheme::isValid() const
 {
     return !mDirs.isEmpty();
 }
 
-int KIconTheme::defaultSize(int group)
+QString KIconTheme::example() const { return d->example; }
+
+QString KIconTheme::screenshot() const { return d->screenshot; }
+
+int KIconTheme::defaultSize(int group) const
 {
     if ((group < 0) || (group >= KIcon::LastGroup))
     {
@@ -180,7 +190,7 @@ int KIconTheme::defaultSize(int group)
     return mDefSize[group];
 }
 
-QValueList<int> KIconTheme::querySizes(int group)
+QValueList<int> KIconTheme::querySizes(int group) const
 {
     QValueList<int> empty;
     if ((group < 0) || (group >= KIcon::LastGroup))
@@ -191,14 +201,17 @@ QValueList<int> KIconTheme::querySizes(int group)
     return mSizes[group];
 }
 	
-QStringList KIconTheme::queryIcons(int size, int context)
+QStringList KIconTheme::queryIcons(int size, int context) const
 {
     int delta = 1000, dw;
+
+    QListIterator<KIconThemeDir> dirs(mDirs);
     KIconThemeDir *dir;
 
     // Try to find exact match
-    for (dir=mDirs.first(); dir!=0L; dir=mDirs.next())
+    for ( ; dirs.current(); ++dirs)
     {
+	dir = dirs.current();
 	if ((context != KIcon::Any) && (context != dir->context()))
 	    continue;
 	if ((dir->type() == KIcon::Fixed) && (dir->size() == size))
@@ -208,10 +221,13 @@ QStringList KIconTheme::queryIcons(int size, int context)
 	    return dir->iconList();
     }
 
+    dirs.toFirst();
+
     // Find close match
     KIconThemeDir *best = 0L;
-    for (dir=mDirs.first(); dir!=0L; dir=mDirs.next())
+    for ( ; dirs.current(); ++dirs)
     {
+	dir = dirs.current();
 	if ((context != KIcon::Any) && (context != dir->context()))
 	    continue;
 	dw = dir->size() - size;
@@ -222,17 +238,22 @@ QStringList KIconTheme::queryIcons(int size, int context)
     }
     if (best == 0L)
 	return QStringList();
+
     return best->iconList();
 }
 
-KIcon KIconTheme::iconPath(QString name, int size, int match)
+KIcon KIconTheme::iconPath(const QString& name, int size, int match) const
 {
     KIcon icon;
     QString path;
     int delta = 1000;
     KIconThemeDir *dir;
-    for (dir=mDirs.first(); dir!=0L; dir=mDirs.next())
+
+    QListIterator<KIconThemeDir> dirs(mDirs);
+    for ( ; dirs.current(); ++dirs)
     {
+	dir = dirs.current();
+
 	if (match == KIcon::MatchExact)
 	{
 	    if ((dir->type() == KIcon::Fixed) && (dir->size() != size))
@@ -307,7 +328,7 @@ QStringList KIconTheme::list()
 
 /*** KIconThemeDir ***/
 
-KIconThemeDir::KIconThemeDir(QString dir, KConfigBase *config)
+KIconThemeDir::KIconThemeDir(const QString& dir, const KConfigBase *config)
 {
     mbValid = false;
     mDir = dir;
@@ -347,7 +368,7 @@ KIconThemeDir::KIconThemeDir(QString dir, KConfigBase *config)
     mbValid = true;
 }
 
-QString KIconThemeDir::iconPath(QString name)
+QString KIconThemeDir::iconPath(const QString& name) const
 {
     if (!mbValid)
 	return QString::null;
@@ -358,7 +379,7 @@ QString KIconThemeDir::iconPath(QString name)
     return QString::null;
 }
 
-QStringList KIconThemeDir::iconList()
+QStringList KIconThemeDir::iconList() const
 {
     QDir dir(mDir);
     QStringList lst = dir.entryList("*.png;*.xpm", QDir::Files);

@@ -5,8 +5,8 @@
  * This file is part of the KDE project, module kdecore.
  * Copyright (C) 2000 Geert Jansen <jansen@kde.org>
  *
- * This is free software; it comes under the GNU Library General 
- * Public License, version 2. See the file "COPYING.LIB" for the 
+ * This is free software; it comes under the GNU Library General
+ * Public License, version 2. See the file "COPYING.LIB" for the
  * exact licensing terms.
  *
  * kiconloader.cpp: An icon loader for KDE with theming functionality.
@@ -31,7 +31,7 @@
 #include <kicontheme.h>
 #include <kiconloader.h>
 #include <kiconeffect.h>
-
+#include <cassert>
 
 /*
  * A node in the icon theme dependancy tree.
@@ -42,17 +42,19 @@ public:
     KIconThemeNode() { links.setAutoDelete(true); }
     KIconTheme *theme;
     QList<KIconThemeNode> links;
+
+    void queryIcons(QStringList *lst, int size, int context) const;
+
 };
 
-/*
- * d pointer for KIconLoader
- */
-struct KIconLoaderPrivate
+void KIconThemeNode::queryIcons(QStringList *result, int size, int context) const
 {
-    QString dbgString;
-    QStringList appDirs;
-    QStringList extensions;
-};
+  // add the icons of this theme to it
+  *result += theme->queryIcons(size, context);
+  QListIterator<KIconThemeNode> it(links);
+  for (; it.current(); ++it) // recursivly going down
+    it.current()->queryIcons(result, size, context);
+}
 
 /*
  * Icon type description.
@@ -63,124 +65,139 @@ struct KIconGroup
     bool dblPixels;
 };
 
+/*
+ * d pointer for KIconLoader
+ */
+struct KIconLoaderPrivate
+{
+    QStringList extensions;
+
+    QStringList mThemeList, mThemeTree;
+    KIconGroup *mpGroups;
+    KIconThemeNode *mpThemeRoot;
+    KStandardDirs *mpDirs;
+    KIconEffect mpEffect;
+};
+
+// for debugging
+static void printThemeTree(KIconThemeNode *node, QString& dbgString);
 
 /*** KIconLoader: the icon loader ***/
-
-KIconLoader::KIconLoader(QString appname)
+KIconLoader::KIconLoader(const QString& _appname)
 {
     d = new KIconLoaderPrivate;
-    mpEffect = new KIconEffect;
-    mpDirs = KGlobal::dirs();
-    mpGroups = new KIconGroup[8];
-    KConfig *config = KGlobal::config();
 
+    // This is the order we want to look at if no extension is
+    // given. ".xpm" should die soon
     d->extensions += ".png";
     d->extensions += ".xpm";
 
-    QStringList groups;
-    groups += "Desktop";
-    groups += "Toolbar";
-    groups += "MainToolbar";
-    groups += "Small";
+    d->mpDirs = KGlobal::dirs();
 
-    int i;
-    QStringList::ConstIterator it;
-    for (it=groups.begin(), i=0; it!=groups.end(); it++, i++)
+    // get a list of available theme dirs in /icons
+    d->mThemeList = KIconTheme::list();
+    if (!d->mThemeList.contains("hicolor") || !d->mThemeList.contains("locolor"))
     {
-	config->setGroup(*it + "Icons");
-	mpGroups[i].size = config->readNumEntry("Size");
-	mpGroups[i].dblPixels = config->readBoolEntry("DoublePixels");
-    }
-
-    mThemeList = KIconTheme::list();
-    if (!mThemeList.contains("hicolor") || !mThemeList.contains("locolor"))
-    {
-	kdDebug(264) << "Error: standard icon themes: \"locolor\" and "
-	                "hicolor not found!\nBig trouble!\n";
+	// If someone removed locolor/hicolor without replacing them, better
+	// jump out of the program and let him fix that
+	kdFatal(264) << "Error: standard icon themes: \"locolor\" and "
+		     << "hicolor not found!\n"; // passing two lines won't work
 	return;
     }
 
-    mTheme = KIconTheme::current();
-    KIconTheme *root = new KIconTheme(mTheme);
-    if ((root->depth() == 32) && !(QPixmap::defaultDepth() > 8))
-    {
-	kdDebug(264) << "Using theme locolor instead of " << mTheme 
-		     << " because display depth is too small.\n";
-	delete root;
-	mTheme = "locolor";
-	root = new KIconTheme(mTheme);
-    }
+    // get the default theme or the one written to config, e.g. "hicolor"
+    // the default varies depending on the color depth
+    KIconTheme *root = new KIconTheme(KIconTheme::current());
 
     // Add global themes to the theme tree.
-    mpThemeRoot = new KIconThemeNode;
-    mThemeTree += mTheme;
-    addIconTheme(root, mpThemeRoot);
+    d->mpThemeRoot = new KIconThemeNode;
+    d->mThemeTree += root->name();
+    addIconTheme(root, d->mpThemeRoot);
+
+    // this are the (absolute) dirs we're going to look at when we get an unthemed icon
+    // we're looking into everything else first though
+    QStringList dirs = d->mpDirs->resourceDirs("icon") + d->mpDirs->resourceDirs("pixmap");
+    for (QStringList::ConstIterator it = dirs.begin(); it != dirs.end(); it++)
+      d->mpDirs->addResourceDir("appicon", *it);
+
+    QString dbgString = "Theme tree: ";
+    printThemeTree(d->mpThemeRoot, dbgString);
+    kdDebug(264) << dbgString << endl;
+
+    // relying on LastGroup's value becomes dangerous as soon
+    // as someone is changing KIcon's enum to be bases of 10 ;/
+    d->mpGroups = new KIconGroup[KIcon::LastGroup];
+
+    // these are the currently known groups and they have to match the order in
+    // kicontheme.h
+    const char *groups[] = { "Desktop", "Toolbar", "MainToolbar", 0, "Small", 0 };
+    KConfig *config = KGlobal::config();
+    KConfigGroupSaver cs(config, "dummy"); // we need it to reset it later
+
+    // loading config and default sizes
+    bool isnull = false;
+    for (int i = 0; i < KIcon::LastGroup; i++) {
+      assert(!isnull);
+      if (groups[i] == 0) {
+	isnull = true;
+	// we continue here to catch the assert above if
+	// someone added a group in KIcon without adding a group
+	// here
+	continue;
+      }
+      config->setGroup(QString::fromLatin1(groups[i]) + "Icons");
+      d->mpGroups[i].size = config->readNumEntry("Size", 0);
+      if (d->mpGroups[i].size) // no config set
+	  d->mpGroups[i].size = d->mpThemeRoot->theme->defaultSize(i);
+      d->mpGroups[i].dblPixels = config->readBoolEntry("DoublePixels", false);
+    }
+
+    // by now everything should be setup, it's time to do the
+    // real things
+    QString appname = _appname;
 
     // Insert application specific ones at the top.
-    if (appname.isEmpty()) 
+    if (appname.isEmpty())
 	appname = KGlobal::instance()->instanceName();
     addAppDir(appname);
-
-    //d->dbgString = "Theme tree: ";
-    //printThemeTree(mpThemeRoot);
-    //kdDebug(264) << d->dbgString << "\n";
-
-    // Fix default icon sizes
-    for (int i=0; i<KIcon::LastGroup; i++)
-    {
-	if (mpGroups[i].size == 0)
-	    mpGroups[i].size = mpThemeRoot->theme->defaultSize(i);
-    }
 }
 
 KIconLoader::~KIconLoader()
 {
+    // the ...Private destructor could destruct
+    // them too, but then this would be its only task :/
+    delete d->mpThemeRoot;
+    delete[] d->mpGroups;
     delete d;
-    delete mpThemeRoot;
-    delete[] mpGroups;
 }
 
-void KIconLoader::addAppDir(QString appname)
+void KIconLoader::addAppDir(const QString& appname)
 {
-    if (d->appDirs.contains(appname))
-	return;
-    d->appDirs += appname;
-
-    mpDirs->addResourceType("appicon", KStandardDirs::kde_default("data") +
+    d->mpDirs->addResourceType("appicon", KStandardDirs::kde_default("data") +
 		appname + "/pics/");
-    mpDirs->addResourceType("appicon", KStandardDirs::kde_default("data") +
+    d->mpDirs->addResourceType("appicon", KStandardDirs::kde_default("data") +
 		appname + "/toolbar/");
+
     addAppThemes(appname);
 }
-    
+
 void KIconLoader::addIconTheme(KIconTheme *theme, KIconThemeNode *node)
 {
     node->theme = theme;
     QStringList lst = node->theme->inherits();
-    QStringList::Iterator it;
+    QStringList::ConstIterator it;
     for (it=lst.begin(); it!=lst.end(); it++)
     {
-	if (!mThemeList.contains(*it) || mThemeTree.contains(*it))
+	if (!d->mThemeList.contains(*it) || d->mThemeTree.contains(*it))
 	    continue;
 	KIconThemeNode *n = new KIconThemeNode;
-	mThemeTree += *it;
+	d->mThemeTree += *it;
 	addIconTheme(new KIconTheme(*it), n);
 	node->links.append(n);
     }
 }
 
-void KIconLoader::addIcons(QStringList *result, int size, int context,
-	KIconThemeNode *node)
-{
-    *result += node->theme->queryIcons(size, context);
-    KIconThemeNode *n;
-    for (n=node->links.first(); n!=0L; n=node->links.next())
-    {
-	addIcons(result, size, context, n);
-    }
-}
-
-void KIconLoader::addAppThemes(QString appname)
+void KIconLoader::addAppThemes(const QString& appname)
 {
     KIconThemeNode *node = new KIconThemeNode;
     KIconThemeNode *top = node, *tmp;
@@ -211,35 +228,35 @@ void KIconLoader::addAppThemes(QString appname)
 
     if (node->theme != 0L)
     {
-	top->links.append(mpThemeRoot);
-	mpThemeRoot = top;
+	top->links.append(d->mpThemeRoot);
+	d->mpThemeRoot = top;
     }
 }
 
-void KIconLoader::printThemeTree(KIconThemeNode *node)
+static void printThemeTree(KIconThemeNode *node, QString& dbgString)
 {
-    d->dbgString += "(";
-    d->dbgString += node->theme->name();
+    dbgString += "(";
+    dbgString += node->theme->name();
     bool first;
     KIconThemeNode *n;
     for (first=true, n=node->links.first(); n; n=node->links.next(), first=false)
     {
-	if (first) d->dbgString += ": ";
-	else d->dbgString += ", ";
-	printThemeTree(n);
+	if (first) dbgString += ": ";
+	else dbgString += ", ";
+	printThemeTree(n, dbgString);
     }
-    d->dbgString += ")";
+    dbgString += ")";
 }
 
-QString KIconLoader::iconPath(QString name, int group_or_size,
-	bool canReturnNull)
+QString KIconLoader::iconPath(const QString& _name, int group_or_size,
+	bool canReturnNull) const
 {
-    if (name.at(0) == '/')
-	return name;
-    if (mpThemeRoot == 0L)
-	return QString::null;
+    if (_name.at(0) == '/')
+	return _name;
 
+    QString name = _name;
     QString ext = name.right(4);
+
     if ((ext == ".png") || (ext == ".xpm"))
     {
 	kdDebug(264) << "Application " << KGlobal::instance()->instanceName()
@@ -250,9 +267,9 @@ QString KIconLoader::iconPath(QString name, int group_or_size,
     QString path;
     if (group_or_size == KIcon::User)
     {
-	path = mpDirs->findResource("appicon", name + ".png");
+	path = d->mpDirs->findResource("appicon", name + ".png");
 	if (path.isEmpty())
-	     path = mpDirs->findResource("appicon", name + ".xpm");
+	     path = d->mpDirs->findResource("appicon", name + ".xpm");
 	return path;
     }
     if (group_or_size >= KIcon::LastGroup)
@@ -263,7 +280,7 @@ QString KIconLoader::iconPath(QString name, int group_or_size,
 
     int size;
     if (group_or_size >= 0)
-	size = mpGroups[group_or_size].size;
+	size = d->mpGroups[group_or_size].size;
     else
 	size = -group_or_size;
     KIcon icon = iconPath2(name, size);
@@ -287,24 +304,24 @@ QString KIconLoader::iconPath(QString name, int group_or_size,
     return icon.path;
 }
 
-KIcon KIconLoader::iconPath2(QString name, int size)
+KIcon KIconLoader::iconPath2(const QString& name, int size) const
 {
     KIcon icon;
-    QStringList::Iterator it;
+    QStringList::ConstIterator it;
     for (it=d->extensions.begin(); it!=d->extensions.end(); it++)
     {
-	icon = iconPath2(name + *it, size, KIcon::MatchExact, mpThemeRoot);
+	icon = iconPath2(name + *it, size, KIcon::MatchExact, d->mpThemeRoot);
 	if (icon.isValid())
 	    break;
-	icon = iconPath2(name + *it, size, KIcon::MatchBest, mpThemeRoot);
+	icon = iconPath2(name + *it, size, KIcon::MatchBest, d->mpThemeRoot);
 	if (icon.isValid())
 	    break;
     }
     return icon;
 }
 
-KIcon KIconLoader::iconPath2(QString name, int size, 
-	int match, KIconThemeNode *node)
+KIcon KIconLoader::iconPath2(const QString& name, int size,
+			     int match, KIconThemeNode *node) const
 {
     KIcon icon;
     icon = node->theme->iconPath(name, size, match);
@@ -320,14 +337,17 @@ KIcon KIconLoader::iconPath2(QString name, int size,
     return icon;
 }
 
-QPixmap KIconLoader::loadIcon(QString name, int group, int size,
-	int state, QString *path_store, bool canReturnNull)
+QPixmap KIconLoader::loadIcon(const QString& _name, int group, int size,
+	int state, QString *path_store, bool canReturnNull) const
 {
+    QString name = _name;
     QPixmap pix;
-    if (mpThemeRoot == 0L)
-	return pix;
 
     QString key;
+    /** if the name is an absolute path, we know everything
+	and just store it in the cache to have it faster next
+	time it's asked for
+    */
     if (name.at(0) == '/')
     {
 	if (path_store != 0L)
@@ -396,7 +416,7 @@ QPixmap KIconLoader::loadIcon(QString name, int group, int size,
 
     if (size == 0)
     {
-	size = mpGroups[group].size;
+	size = d->mpGroups[group].size;
     }
 
     // Generate a unique cache key for the icon.
@@ -405,8 +425,8 @@ QPixmap KIconLoader::loadIcon(QString name, int group, int size,
     key += QString().setNum(size); key += "_";
     if (group >= 0)
     {
-	key += mpEffect->fingerprint(group, state);
-	if (mpGroups[group].dblPixels)
+	key += d->mpEffect.fingerprint(group, state);
+	if (d->mpGroups[group].dblPixels)
 	    key += QString::fromLatin1(":dblsize");
     } else
 	key += QString::fromLatin1("noeffect");
@@ -446,13 +466,13 @@ QPixmap KIconLoader::loadIcon(QString name, int group, int size,
     {
 	img = img.smoothScale(size, size);
     }
-    if ((group >= 0) && mpGroups[group].dblPixels)
+    if ((group >= 0) && d->mpGroups[group].dblPixels)
     {
-	img = mpEffect->doublePixels(img);
+	img = d->mpEffect.doublePixels(img);
     }
     if (group >= 0)
     {
-	img = mpEffect->apply(img, group, state);
+	img = d->mpEffect.apply(img, group, state);
     }
 
     pix.convertFromImage(img);
@@ -460,11 +480,9 @@ QPixmap KIconLoader::loadIcon(QString name, int group, int size,
     return pix;
 }
 
-QStringList KIconLoader::loadAnimated(QString name, int group, int size)
+QStringList KIconLoader::loadAnimated(const QString& name, int group, int size) const
 {
     QStringList lst;
-    if (mpThemeRoot == 0L)
-	return lst;
 
     if ((group < -1) || (group >= KIcon::LastGroup))
     {
@@ -476,15 +494,15 @@ QStringList KIconLoader::loadAnimated(QString name, int group, int size)
 	kdDebug(264) << "Neither size nor group specified!\n";
 	group = 0;
     }
-    
+
     QString file = name + "/0001";
     if (group == KIcon::User)
     {
-	file = mpDirs->findResource("appicon", file + ".png");
+	file = d->mpDirs->findResource("appicon", file + ".png");
     } else
     {
 	if (size == 0)
-	    size = mpGroups[group].size;
+	    size = d->mpGroups[group].size;
 	KIcon icon = iconPath2(file, size);
 	file = icon.isValid() ? icon.path : QString::null;
     }
@@ -507,11 +525,9 @@ QStringList KIconLoader::loadAnimated(QString name, int group, int size)
 
 KIconTheme *KIconLoader::theme()
 {
-    if (mpThemeRoot == 0L)
-	return 0L;
-    return mpThemeRoot->theme;
+    return d->mpThemeRoot->theme;
 }
-    
+
 int KIconLoader::currentSize(int group)
 {
     if ((group < 0) || (group >= KIcon::LastGroup))
@@ -519,10 +535,10 @@ int KIconLoader::currentSize(int group)
 	kdDebug(264) << "Illegal icon group: " << group << "\n";
 	return -1;
     }
-    return mpGroups[group].size;
+    return d->mpGroups[group].size;
 }
 
-QStringList KIconLoader::queryIcons(int group_or_size, int context)
+QStringList KIconLoader::queryIcons(int group_or_size, int context) const
 {
     QStringList result;
     if (group_or_size >= KIcon::LastGroup)
@@ -532,10 +548,10 @@ QStringList KIconLoader::queryIcons(int group_or_size, int context)
     }
     int size;
     if (group_or_size >= 0)
-	size = mpGroups[group_or_size].size;
+	size = d->mpGroups[group_or_size].size;
     else
 	size = -group_or_size;
-    addIcons(&result, size, context, mpThemeRoot);
+    d->mpThemeRoot->queryIcons(&result, size, context);
 
     // Eliminate duplicate entries (same icon in different directories)
     QString name;
@@ -559,61 +575,61 @@ QStringList KIconLoader::queryIcons(int group_or_size, int context)
 
 // Easy access functions
 
-QPixmap DesktopIcon(QString name, int force_size, int state, 
+QPixmap DesktopIcon(const QString& name, int force_size, int state,
 	KInstance *instace)
 {
     KIconLoader *loader = instace->iconLoader();
     return loader->loadIcon(name, KIcon::Desktop, force_size, state);
 }
 
-QPixmap DesktopIcon(QString name, KInstance *instance)
+QPixmap DesktopIcon(const QString& name, KInstance *instance)
 {
     return DesktopIcon(name, 0, KIcon::DefaultState, instance);
 }
 
-QPixmap BarIcon(QString name, int force_size, int state, 
+QPixmap BarIcon(const QString& name, int force_size, int state,
 	KInstance *instace)
 {
     KIconLoader *loader = instace->iconLoader();
     return loader->loadIcon(name, KIcon::Toolbar, force_size, state);
 }
 
-QPixmap BarIcon(QString name, KInstance *instance)
+QPixmap BarIcon(const QString& name, KInstance *instance)
 {
     return BarIcon(name, 0, KIcon::DefaultState, instance);
 }
 
-QPixmap SmallIcon(QString name, int force_size, int state, 
+QPixmap SmallIcon(const QString& name, int force_size, int state,
 	KInstance *instance)
 {
     KIconLoader *loader = instance->iconLoader();
     return loader->loadIcon(name, KIcon::Small, force_size, state);
 }
 
-QPixmap SmallIcon(QString name, KInstance *instance)
+QPixmap SmallIcon(const QString& name, KInstance *instance)
 {
     return SmallIcon(name, 0, KIcon::DefaultState, instance);
 }
 
-QPixmap MainBarIcon(QString name, int force_size, int state, 
+QPixmap MainBarIcon(const QString& name, int force_size, int state,
 	KInstance *instance)
 {
     KIconLoader *loader = instance->iconLoader();
     return loader->loadIcon(name, KIcon::MainToolbar, force_size, state);
 }
 
-QPixmap MainBarIcon(QString name, KInstance *instance)
+QPixmap MainBarIcon(const QString& name, KInstance *instance)
 {
     return MainBarIcon(name, 0, KIcon::DefaultState, instance);
 }
 
-QPixmap UserIcon(QString name, int state, KInstance *instance)
+QPixmap UserIcon(const QString& name, int state, KInstance *instance)
 {
     KIconLoader *loader = instance->iconLoader();
     return loader->loadIcon(name, KIcon::User, 0, state);
 }
 
-QPixmap UserIcon(QString name, KInstance *instance)
+QPixmap UserIcon(const QString& name, KInstance *instance)
 {
     return UserIcon(name, KIcon::DefaultState, instance);
 }
