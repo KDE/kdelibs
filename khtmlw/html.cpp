@@ -3835,6 +3835,7 @@ const char *KHTMLWidget::parseInput( const char *attr )
     QString value = "";
     bool checked = false;
     int size = 20;
+    int maxLen = -1;
     QList<JSEventHandler> *handlers = 0L;
 
     stringTok->tokenize( attr, " >" );
@@ -3883,6 +3884,10 @@ const char *KHTMLWidget::parseInput( const char *attr )
 	else if ( strncasecmp( token, "size=", 5 ) == 0 )
 	{
 	    size = atoi( token + 5 );
+	}
+	else if ( strncasecmp( token, "maxlength=", 10 ) == 0 )
+	{
+	    maxLen = atoi( token + 10 );
 	}
 	else if ( strncasecmp( token, "checked", 7 ) == 0 )
 	{
@@ -3942,7 +3947,7 @@ const char *KHTMLWidget::parseInput( const char *attr )
 	case Text:
 	case Password:
 	    element = new HTMLTextInput( this, name, value, size,
-		    (type == Password));
+		    maxLen, (type == Password));
 	    connect( element, SIGNAL( submitForm() ),
 		    form, SLOT( slotSubmit() ) );
 	    break;

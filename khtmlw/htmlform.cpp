@@ -505,7 +505,7 @@ void HTMLSubmit::slotClicked()
 //----------------------------------------------------------------------------
 
 HTMLTextInput::HTMLTextInput( QWidget *parent, const char *n, const char *v,
-		int s, bool password )
+		int s, int ml, bool password )
 	: HTMLInput( n, v )
 {
 	_defText = v;
@@ -517,7 +517,8 @@ HTMLTextInput::HTMLTextInput( QWidget *parent, const char *n, const char *v,
 	if ( password )
 	    ((QLineEdit *)widget)->setEchoMode ( QLineEdit::Password );
 
-	((QLineEdit *)widget)->setMaxLength( s );
+	if ( ml > 0 )
+	    ((QLineEdit *)widget)->setMaxLength( ml );
 
 	QSize size( s * 8, 25 );
 	widget->resize( size );
