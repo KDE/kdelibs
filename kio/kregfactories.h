@@ -66,10 +66,6 @@ public:
    */
   KServiceTypeFactory();
   KServiceTypeFactory( const QStringList& _path_list );
-  /**
-   * @param _user_path defaults to _system_path if omitted.
-   */
-  KServiceTypeFactory( const QString& _system_path, const QString& _user_path = QString::null );
   virtual ~KServiceTypeFactory() { };
 
   virtual KRegEntry* create( KRegistry* _reg, const QString& _file, QDataStream& _str );
@@ -125,10 +121,6 @@ public:
    */
   KServiceFactory();
   KServiceFactory( const QStringList& _path_list );
-  /**
-   * @param _user_path defaults to _system_path if omitted.
-   */
-  KServiceFactory( const QString& _system_path, const QString& _user_path = QString::null );
   virtual ~KServiceFactory() { };
   
   virtual KRegEntry* create( KRegistry* _reg, const QString& _file, QDataStream& _str );
