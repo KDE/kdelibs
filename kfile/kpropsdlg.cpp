@@ -59,6 +59,7 @@
 #include <qpainter.h>
 #include <qlayout.h>
 #include <qcombobox.h>
+#include <qmap.h>
 
 #include <kdialog.h>
 #include <kdirsize.h>
@@ -108,6 +109,8 @@ public:
   {
   }
   bool m_aborted;
+
+  QMap<QString, int> m_pageIndex;
 };
 
 KPropertiesDialog::KPropertiesDialog( KFileItem * item ) :
@@ -249,10 +252,15 @@ void KPropertiesDialog::slotDeleteMyself()
 
 void KPropertiesDialog::addPage(KPropsPage *page)
 {
+  static int i = 0;
+
   connect (page, SIGNAL (changed ()),
            page, SLOT (setDirty ()));
 
   m_pageList.append (page);
+  d->m_pageIndex[page->tabName()] = i;
+
+  ++i;
 }
 
 bool KPropertiesDialog::canDisplay( KFileItemList _items )
@@ -309,43 +317,43 @@ void KPropertiesDialog::insertPages()
   if ( KFilePropsPage::supports( m_items ) )
   {
     KPropsPage *p = new KFilePropsPage( this );
-    m_pageList.append( p );
+    addPage (p);
   }
 
   if ( KFilePermissionsPropsPage::supports( m_items ) )
   {
     KPropsPage *p = new KFilePermissionsPropsPage( this );
-    m_pageList.append( p );
+    addPage (p);
   }
 
   if ( KExecPropsPage::supports( m_items ) )
   {
     KPropsPage *p = new KExecPropsPage( this );
-    m_pageList.append( p );
+    addPage (p);
   }
 
   if ( KApplicationPropsPage::supports( m_items ) )
   {
     KPropsPage *p = new KApplicationPropsPage( this );
-    m_pageList.append( p );
+    addPage (p);
   }
 
   if ( KBindingPropsPage::supports( m_items ) )
   {
     KPropsPage *p = new KBindingPropsPage( this );
-    m_pageList.append( p );
+    addPage (p);
   }
 
   if ( KURLPropsPage::supports( m_items ) )
   {
     KPropsPage *p = new KURLPropsPage( this );
-    m_pageList.append( p );
+    addPage (p);
   }
 
   if ( KDevicePropsPage::supports( m_items ) )
   {
     KPropsPage *p = new KDevicePropsPage( this );
-    m_pageList.append( p );
+    addPage (p);
   }
 
   //plugins
@@ -395,14 +403,19 @@ void KPropertiesDialog::insertPages()
       continue;
     }
 
-    KPropsPage *page = static_cast<KPropsPage *>( obj );
-    m_pageList.append( page );
+    addPage (static_cast<KPropsPage *>( obj ));
   }
 
-  KPropsPage *page;
-  for (page = m_pageList.first(); page != 0L; page = m_pageList.next() )
-    connect( page, SIGNAL( changed() ),
-	     page, SLOT( setDirty() ) );
+  // this is already done in addPage
+//   KPropsPage *page;
+//   for (page = m_pageList.first(); page != 0L; page = m_pageList.next() )
+//     connect( page, SIGNAL( changed() ),
+// 	     page, SLOT( setDirty() ) );
+}
+
+int KPropertiesDialog::pageIndex (const QString& tabName)
+{
+  return d->m_pageIndex[tabName];
 }
 
 void KPropertiesDialog::updateUrl( const KURL& _newUrl )
@@ -760,6 +773,11 @@ KFilePropsPage::KFilePropsPage( KPropertiesDialog *_props )
   }
 
   vbl->addStretch(1);
+}
+
+QString KFilePropsPage::tabName () const
+{
+  return i18n ("&General");
 }
 
 void KFilePropsPage::slotDirSizeFinished( KIO::Job * job )
@@ -1202,6 +1220,11 @@ KFilePermissionsPropsPage::KFilePermissionsPropsPage( KPropertiesDialog *_props 
     cl[2]->setText(i18n("<b>Others</b>"));
 }
 
+QString KFilePermissionsPropsPage::tabName () const
+{
+  return i18n ("&Permissions");
+}
+
 KFilePermissionsPropsPage::~KFilePermissionsPropsPage()
 {
   delete d;
@@ -1474,6 +1497,11 @@ KExecPropsPage::~KExecPropsPage()
   delete d;
 }
 
+QString KExecPropsPage::tabName () const
+{
+  return i18n ("E&xecute");
+}
+
 void KExecPropsPage::enableCheckedEdit()
 {
   terminalEdit->setEnabled(terminalCheck->isChecked());
@@ -1586,6 +1614,11 @@ KURLPropsPage::KURLPropsPage( KPropertiesDialog *_props )
 KURLPropsPage::~KURLPropsPage()
 {
   delete d;
+}
+
+QString KURLPropsPage::tabName () const
+{
+  return i18n ("U&RL");
 }
 
 bool KURLPropsPage::supports( KFileItemList _items )
@@ -1734,6 +1767,11 @@ KApplicationPropsPage::KApplicationPropsPage( KPropertiesDialog *_props )
 KApplicationPropsPage::~KApplicationPropsPage()
 {
   delete d;
+}
+
+QString KApplicationPropsPage::tabName () const
+{
+  return i18n ("&Application");
 }
 
 void KApplicationPropsPage::addMimeType( const QString & name )
@@ -1918,6 +1956,11 @@ KBindingPropsPage::KBindingPropsPage( KPropertiesDialog *_props ) : KPropsPage( 
 KBindingPropsPage::~KBindingPropsPage()
 {
   delete d;
+}
+
+QString KBindingPropsPage::tabName () const
+{
+  return i18n ("A&ssociation");
 }
 
 bool KBindingPropsPage::supports( KFileItemList _items )
@@ -2135,6 +2178,11 @@ KDevicePropsPage::KDevicePropsPage( KPropertiesDialog *_props ) : KPropsPage( _p
 KDevicePropsPage::~KDevicePropsPage()
 {
   delete d;
+}
+
+QString KDevicePropsPage::tabName () const
+{
+  return i18n ("De&vice");
 }
 
 void KDevicePropsPage::slotActivated( int index )

@@ -155,6 +155,13 @@ public:
   void addPage(KPropsPage *page);
 
   /**
+   * @return the page index of the page named @a tabName.
+   *
+   * @param tabName is the name of page.
+   */
+  int pageIndex (const QString& tabName);
+
+  /**
    * @return a parsed URL.
    * Valid only if dialog shown for one file/url.
    */
@@ -347,6 +354,8 @@ public:
    */
   virtual void applyChanges();
 
+  virtual QString tabName() const;
+
   /**
    * Tests whether the files specified by _items need a 'General' page.
    */
@@ -401,6 +410,8 @@ public:
   virtual ~KFilePermissionsPropsPage();
 
   virtual void applyChanges();
+
+  virtual QString tabName() const;
 
   /**
    * Tests whether the file specified by _items needs a 'Permissions' page.
@@ -458,6 +469,7 @@ public:
   virtual ~KExecPropsPage();
 
   virtual void applyChanges();
+  virtual QString tabName() const;
 
   static bool supports( KFileItemList _items );
 
@@ -510,7 +522,8 @@ public:
   virtual ~KURLPropsPage();
 
   virtual void applyChanges();
-
+  virtual QString tabName() const;
+  
   static bool supports( KFileItemList _items );
 
 private:
@@ -546,6 +559,7 @@ public:
   virtual ~KApplicationPropsPage();
 
   virtual void applyChanges();
+  virtual QString tabName() const;
 
   static bool supports( KFileItemList _items );
 
@@ -589,7 +603,7 @@ public:
   virtual ~KBindingPropsPage();
 
   virtual void applyChanges();
-
+  virtual QString tabName() const;
   static bool supports( KFileItemList _items );
 
 private:
@@ -617,6 +631,7 @@ public:
   virtual ~KDevicePropsPage();
 
   virtual void applyChanges();
+  virtual QString tabName() const;
 
   static bool supports( KFileItemList _items );
 
