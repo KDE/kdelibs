@@ -570,3 +570,9 @@
 0       string          Article         message/news
 0       string          BABYL           message/x-gnu-rmail
 0       string          Received:       message/rfc822
+
+# vcard / vcalendar
+0	string		BEGIN:VCALENDAR	text/x-vcalendar
+0	string		begin:vcalendar	text/x-vcalendar
+0	string		BEGIN:VCARD	text/x-vcard
+0	string		begin:vcard	text/x-vcard
