@@ -25,28 +25,27 @@
 #include <config.h>
 #endif
 
-#include <kcmodule.h>
+#include <qcheckbox.h>
+#include <qdatetime.h>
+#include <qlineedit.h>
+#include <qlistview.h>
+#include <qptrlist.h>
+#include <qtabwidget.h>
+#include <qvbuttongroup.h>
 
+#include <kcmodule.h>
 #include <ksimpleconfig.h>
 
-#include <qtabwidget.h>
-#include <qcheckbox.h>
-#include <qvbuttongroup.h>
-#include <qlistview.h>
-#include <qlineedit.h>
-// #include <qvaluelist.h>
-#include <qptrlist.h>
-#include <qdatetime.h>
+class QGridLayout;
+class QVButtonGroup;
 
+class KComboBox;
+class KCryptoConfig;
+class KPushButton;
+class KSSLCertBox;
+class KSSLSigners;
 class KURLLabel;
 class KURLRequester;
-class KCryptoConfig;
-class QGridLayout;
-class KSSLCertBox;
-class QVButtonGroup;
-class KComboBox;
-class KSSLSigners;
-class KPushButton;
 
 class CipherItem : public QCheckListItem
 {
@@ -225,9 +224,6 @@ public:
   void load();
   void save();
   void defaults();
-
-  int buttons();
-  QString quickHelp() const;
 
 #ifdef HAVE_SSL
   bool loadCiphers();

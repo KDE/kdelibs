@@ -31,44 +31,41 @@
 #include <pwd.h>
 #include <unistd.h>
 
-#include <qfile.h>
-#include <qlayout.h>
-#include <qvbox.h>
-#include <qvgroupbox.h>
-#include <qlabel.h>
-#include <qbuttongroup.h>
-#include <qhgroupbox.h>
-#include <qhbuttongroup.h>
-#include <qvbuttongroup.h>
-#include <qradiobutton.h>
-#include <qwhatsthis.h>
-#include <qpushbutton.h>
-#include <qfileinfo.h>
-#include <qcheckbox.h>
 #include <kcombobox.h>
+#include <qbuttongroup.h>
+#include <qcheckbox.h>
+#include <qfile.h>
+#include <qfileinfo.h>
+#include <qframe.h>
+#include <qhbuttongroup.h>
+#include <qhgroupbox.h>
+#include <qlabel.h>
+#include <qlayout.h>
+#include <qpushbutton.h>
+#include <qradiobutton.h>
 #include <qregexp.h>
+#include <qvbox.h>
+#include <qvbuttongroup.h>
+#include <qvgroupbox.h>
+#include <qwhatsthis.h>
 
-#include <kfiledialog.h>
-#include <klineedit.h>
 #include <kconfig.h>
-#include <kglobal.h>
-#include <kstandarddirs.h>
-#include <klocale.h>
+#include <kdatepicker.h>
+#include <kdebug.h>
 #include <kdialog.h>
+#include <kfiledialog.h>
+#include <kgenericfactory.h>
+#include <kglobal.h>
+#include <klineedit.h>
+#include <klocale.h>
+#include <kmdcodec.h>
 #include <kmessagebox.h>
 #include <kpassdlg.h>
-#include <kseparator.h>
-#include <kdatepicker.h>
-#include <kurllabel.h>
-#include <kmdcodec.h>
-#include <kgenericfactory.h>
-#include <kurlrequester.h>
 #include <kpushbutton.h>
-
-#include <qframe.h>
-
-
-#include <kdebug.h>
+#include <kseparator.h>
+#include <kstandarddirs.h>
+#include <kurllabel.h>
+#include <kurlrequester.h>
 
 #include <config.h>
 #ifdef HAVE_SSL
@@ -222,6 +219,10 @@ KCryptoConfig::KCryptoConfig(QWidget *parent, const char *name, const QStringLis
 QGridLayout *grid;
 QBoxLayout *top = new QVBoxLayout(this);
 QString whatstr;
+
+  setQuickHelp( i18n("<h1>Crypto</h1> This module allows you to configure SSL for"
+     " use with most KDE applications, as well as manage your personal"
+     " certificates and the known certificate authorities."));
 
   ___lehack = false;
   otherCertDelList.setAutoDelete(true);
@@ -1253,14 +1254,6 @@ void KCryptoConfig::defaults()
 
   emit changed(true);
 }
-
-QString KCryptoConfig::quickHelp() const
-{
-  return i18n("<h1>Crypto</h1> This module allows you to configure SSL for"
-     " use with most KDE applications, as well as manage your personal"
-     " certificates and the known certificate authorities.");
-}
-
 
 void KCryptoConfig::genCAList() {
 
