@@ -1,7 +1,7 @@
 /*
     This file is part of the KDE libraries
 
-    Copyright (c) 2002 Oswald Buddenhagen <ossi@kde.org>
+    Copyright (c) 2002-2003 Oswald Buddenhagen <ossi@kde.org>
     Copyright (c) 2003 Waldo Bastian <bastian@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -313,8 +313,7 @@ bool
 KSelfDelimitingMacroMapExpander::expandPlainMacro( const QString &str, uint pos, uint &len, QString &ret )
 {
     QMapConstIterator<QChar,QString> it = macromap.find(str[pos]);
-    if (it != macromap.end())
-    {
+    if (it != macromap.end()) {
        len = 1;
        ret = it.data();
        return true;
@@ -332,8 +331,7 @@ KSelfDelimitingMacroMapExpander::expandEscapedMacro( const QString &str, uint po
     }
 
     QMapConstIterator<QChar,QString> it = macromap.find(str[pos+1]);
-    if (it != macromap.end())
-    {
+    if (it != macromap.end()) {
        len = 2;
        ret = it.data();
        return true;
@@ -358,16 +356,12 @@ KHandDelimitedMacroMapExpander::expandPlainMacro( const QString &str, uint pos, 
     for (sl = 0; isIdentifier( str[pos + sl].unicode() ); sl++);
     if (!sl)
         return false;
-    QMapConstIterator<QString,QString> it, ite = macromap.end();
-    for (it = macromap.begin(); it != ite; ++it) {
-        if (sl == it.key().length() &&
-            !memcmp (str.unicode() + pos, 
-		     it.key().unicode(), sl * sizeof(QChar)))
-	{
-            len = sl;
-            ret = it.data();
-            return true;
-        }
+    QMapConstIterator<QString,QString> it =
+        macromap.find( QConstString( str.unicode() + pos, sl ).string() );
+    if (it != macromap.end()) {
+        len = sl;
+        ret = it.data();
+        return true;
     }
     return false;
 }
@@ -392,16 +386,12 @@ KHandDelimitedMacroMapExpander::expandEscapedMacro( const QString &str, uint pos
     }
     if (!sl)
         return false;
-    QMapConstIterator<QString,QString> it, ite = macromap.end();
-    for (it = macromap.begin(); it != ite; ++it) {
-        if (sl == it.key().length() &&
-            !memcmp (str.unicode() + rpos, 
-		     it.key().unicode(), sl * sizeof(QChar)))
-	{
-            len = rsl;
-            ret = it.data();
-            return true;
-        }
+    QMapConstIterator<QString,QString> it =
+        macromap.find( QConstString( str.unicode() + rpos, sl ).string() );
+    if (it != macromap.end()) {
+        len = rsl;
+        ret = it.data();
+        return true;
     }
     return false;
 }
