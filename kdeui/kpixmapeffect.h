@@ -13,14 +13,16 @@
 class KPixmapEffect
 {
 public:
-    enum GradientType { PyramidGradient, RectangleGradient, 
+    enum GradientType { VerticalGradient, HorizontalGradient,
+			DiagonalGradient, CrossDiagonalGradient,
+			PyramidGradient, RectangleGradient, 
 			PipeCrossGradient, EllipticGradient };
     enum RGBComponent { Red, Green, Blue };
     /**
-     * Draws a pyramid, rectangle, pipecross or elliptic gradient 
-     * from color ca to color cb.
+     * Draws a vertical, horizontal, diagonal, crossdiagonal,pyramid, 
+     * rectangle, pipecross or elliptic gradient from color ca to color cb.
      */
-    static void advancedGradient(KPixmap &pixmap, const QColor &ca,
+    static void gradient(KPixmap &pixmap, const QColor &ca,
                                  const QColor &cb, GradientType type,
                                  int ncols=3);
     /**
