@@ -124,6 +124,9 @@ binary-arch:  build
 	  echo "$$i.1" >> debian/undocumented ; \
 	done
 	dh_installdocs -a
+	install -d debian/tmp/usr/share/doc/kdelibs-dev/dh-make/
+	-cp debian/dh-make/* debian/tmp/usr/share/doc/kdelibs-dev/dh-make/
+	-cp admin/debianrules debian/tmp/usr/share/doc/kdelibs-dev/dh-make/
 	dh_undocumented
 	dh_movefiles -a
 	-rm -rf debian/tmp/usr/share/apps/kssl

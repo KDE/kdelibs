@@ -9,6 +9,19 @@ up KDE based applications.
 
 ------------------------------------------------------------------------
 
+=======
+dh-make
+=======
+
+You can now find a dh-make template for a single binary package under
+
+    /usr/share/doc/kdelibs-dev/dh-make/
+
+Refer to the dh-make man package for information on how to use these templates.
+These templates include the bits mentioned in this file.
+
+
+======================
 Debian/KDE Menu System
 ======================
 
