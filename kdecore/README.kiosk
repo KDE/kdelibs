@@ -80,9 +80,26 @@ Example:
 [MyGroup][$i]
 someKey=42
 
-- On a file by file basis. [Not yet implemented]
+- On a file by file basis by starting the file with [$i].
+
+Example:
+[$i]
+[MyGroup]
+someKey=42
+[MyOtherGroup]
+someOtherKey=11
 
 - On a directory basis. [Not yet implemented]
+
+- The filesystem can also be used to mark files immutable. If KDE does not 
+have write-access to the user's version of a configuration file, the file
+will be automatically considered immutable.
+
+Example:
+chown root.root /home/user/.kde/share/config/kickerrc
+chmod 644 /home/user/.kde/share/config/kickerrc
+
+
 
 
 KDE3 Kiosk Application API
@@ -93,7 +110,6 @@ Two new methods will be added to KApplication:
 - bool authorize(QString action);
 
 - bool authorizeURLAction(QString, referringURL, destinationURL)
-
 
 .desktop files can have an additional field "X-KDE-AuthorizeAction". If this
 field is present the .desktop file is only considered if the action mentioned
@@ -117,4 +133,17 @@ create .desktop files at e.g. the desktop. The second way would be to ignore,
 at the KDE level, any .desktop files that are found under the users home
 directory.
 
+
+In addition KConfigBase (the baseclass of KConfig) has functions to query whether 
+config options/groups or files are immutable. This can be used in applications to
+disable configuration options when such options can't be changed anyway.
+
+
+
+
+The following applications currently have support for this:
+
+
+* kicker - By marking the kickerrc config file as immutable, the panel will be 
+"locked down" and it will not be possible to make any changes to it.
 
