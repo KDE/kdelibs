@@ -28,9 +28,13 @@
 #include <qstring.h>
 #include <qdatetime.h>
 #include <qlist.h>
+#include <qmap.h>
 #include <time.h>
 
 class QFileInfo;
+
+typedef QMap<uid_t,char *>  PasswdMapper;
+typedef QMap<gid_t,char *>  GroupMapper;
 
 /**
   * Provides information about a file that has been examined
@@ -123,11 +127,18 @@ public:
     // overriding QFileInfo's function
     bool isReadable() const ;
 
+    /**
+     * frees the static allocated ressources (user information from 
+     * /etc/passwd and /etc/group)
+     */
+    static void cleanup();
+  
     static QString dateTime(time_t secsSince1Jan1970UTC);
 
 protected:
     void parsePermissions(const char *perms);
     void parsePermissions(uint perm);
+    void readUserInfo();
 
 private:
     QString myName;
@@ -143,6 +154,10 @@ private:
     uint myPermissions;
     int mySize;
     bool myIsReadable;
+    
+    // cache for passwd and group entries
+    static PasswdMapper *passwdMap;
+    static GroupMapper 	*groupMap;
 };
 
 typedef QList<KFileInfo> KFileInfoList;

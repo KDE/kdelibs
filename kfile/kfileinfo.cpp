@@ -36,9 +36,13 @@
 #include <qregexp.h>
 
 #include <kapp.h>
+#include <kglobal.h>
 #include <klocale.h>
 #include <kurl.h>
 #include "config-kfile.h"
+
+PasswdMapper *KFileInfo::passwdMap = 0L;
+GroupMapper  *KFileInfo::groupMap  = 0L;
 
 KFileInfo::KFileInfo(const KUDSEntry &e)
 {
@@ -120,6 +124,12 @@ KFileInfo::KFileInfo(const QString& dir, const QString& name)
     if ( myBaseURL.right(1) != "/" )
         myBaseURL += "/";
 
+    if (!passwdMap) {
+      passwdMap = new PasswdMapper;
+      groupMap = new GroupMapper;
+      readUserInfo();
+    }
+
     struct stat buf;
     myIsSymLink = false;
 
@@ -140,6 +150,8 @@ KFileInfo::KFileInfo(const QString& dir, const QString& name)
 	myDate = dateTime(buf.st_mtime);
 	mySize = buf.st_size;
 	myIsFile = !myIsDir;
+	
+	/* // old, slow reading
 	struct passwd *pw = getpwuid(buf.st_uid);
 	struct group * ge = getgrgid( buf.st_gid );
 	if (pw)
@@ -150,9 +162,21 @@ KFileInfo::KFileInfo(const QString& dir, const QString& name)
 	    myGroup = ge->gr_name;
 	else
 	    myGroup = i18n("unknown");
+	*/
+
+	PasswdMapper::Iterator it = passwdMap->find(buf.st_uid);
+	if (it != passwdMap->end())
+	  myOwner = it.data();
+	else
+	  myOwner = i18n("unknown");
+	GroupMapper::Iterator it2 = groupMap->find(buf.st_gid);
+	if (it2 != groupMap->end())
+	  myGroup = it2.data();
+	else
+	  myGroup = i18n("unknown");
+	
 	myPermissions = buf.st_mode;
 	parsePermissions(myPermissions);
-	// myDate = buf.st_mtime;
 	
     } else {
 	// default
@@ -281,6 +305,7 @@ void KFileInfo::parsePermissions(uint perm)
 static QString *months[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 QString KFileInfo::dateTime(time_t _time) {
+
     if (!months[0]) {
 	months[ 0] = new QString(i18n("Jan"));
 	months[ 1] = new QString(i18n("Feb"));
@@ -310,5 +335,45 @@ QString KFileInfo::dateTime(time_t _time) {
       arg(months[t.date().month() - 1]->left(3), 3).
       arg(t.date().day(), 2).arg(sTime);
 
+   /* hmm... supposed to be in KLocale after Beta4, huh? :D
+    QDateTime t;
+    t.setTime_t(_time);
+    return KGlobal::locale()->formatDateTime( t );
+  */
     return text;
+}
+
+
+void KFileInfo::readUserInfo()
+{
+  struct passwd *pass;
+  while ( (pass = getpwent()) != 0L ) {
+    passwdMap->insert(pass->pw_uid, qstrdup(pass->pw_name));
+  }
+  delete pass;
+  endpwent();
+
+  struct group *gr;
+  while( (gr = getgrent()) != 0L ) {
+    groupMap->insert(gr->gr_gid, qstrdup(gr->gr_name));
+  }
+  delete gr;
+  endgrent();
+}
+
+
+void KFileInfo::cleanup()
+{
+  PasswdMapper::Iterator it;
+  for( it = passwdMap->begin(); it != passwdMap->end(); ++it )
+    delete it.data();
+
+  GroupMapper::Iterator it2;
+  for( it2 = groupMap->begin(); it2 != groupMap->end(); ++it2 )
+    delete it.data();
+
+  delete passwdMap;
+  passwdMap = 0L;
+  delete groupMap;
+  groupMap = 0L;
 }

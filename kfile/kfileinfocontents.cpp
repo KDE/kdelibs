@@ -129,10 +129,7 @@ void KFileInfoContents::setSorting(QDir::SortSpec new_sort)
     QuickSort(sortedArray, 0, sorted_length - 1);
     debugC("qsort %ld", time(0));
     for (uint i = 0; i < sorted_length; i++)
-        // why insert all items with index -1?
-        // insertItem(sortedArray[i], -1); 
-	insertItem(sortedArray[i], i);
-#warning (pfeiffer) coolo, is this ok?
+        insertItem(sortedArray[i], i);
     debugC("qsort %ld", time(0));
     setAutoUpdate(true);
     repaint(true);

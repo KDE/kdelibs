@@ -1,3 +1,14 @@
+Sun Oct 31 00:56:23 1999  Carsten Pfeiffer  <pfeiffer@kde.org>
+
+	* kfileinfo.cpp (readUserInfo): Don't call getpwnam() and getgrgid()
+	all the time over and over again! This opens and parses /etc/passwd
+	or /etc/group with every call!
+	Now we load /etc/passwd and /etc/group once and store the interesting 
+	stuff in static QMaps, which need to be freed with KFileInfo::cleanup()
+	cleanup() is called from KFileBaseDialog's destructor.
+	
+	This speeds up KFileDialog a LOT!
+
 Sat Oct 23 01:55:00 1999  Carsten Pfeiffer  <pfeiffer@kde.org>
 
 	* kfiledetaillist.cpp (key): hopefully implemented correct mapping

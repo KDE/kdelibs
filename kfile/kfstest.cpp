@@ -1,7 +1,7 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1997, 1998 Richard Moore <rich@kde.org>
                   1998 Stephan Kulow <coolo@kde.org>
-		  
+		
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
@@ -24,7 +24,8 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <qdir.h>
-#include <qfiledialog.h> 
+#include <qfiledialog.h>
+#include <qwidget.h>
 
 #include "kfiledialog.h"
 #include <kmessagebox.h>
@@ -59,14 +60,14 @@ int main(int argc, char **argv)
 
     KApplication a(argc, argv, "kfstest");
     QString name1;
-    
+
     if (argc != 2) {
 	warning("usage: %s {dirs, filter, preselect, normal, preview}", argv[0]);
 	return 1;
     }
-    
+
     enum { Dirs, Filter, Preselect, Normal, Preview } mode;
-    
+
     if (QString(argv[1]) == "dirs")
 	mode = Dirs;
     else if (QString(argv[1]) == "filter")
@@ -82,7 +83,7 @@ int main(int argc, char **argv)
 	name1 = KFileDialog::getDirectory(QString::null);
 	break;
     case Filter:
-	name1 = KFileDialog::getOpenFileURL(QString::null, 
+	name1 = KFileDialog::getOpenFileURL(QString::null,
 					   "*.cpp|C++-Files (*.cpp)\n"
 					   "*.h|Header-Files (*.h)\n"
 					   "*.o *.a *.lo *.la|Object-Files");
@@ -100,12 +101,12 @@ int main(int argc, char **argv)
     break;
     case Preview:
         // this is how you activate the new preview module
-        // 
+        //
         // KFilePreviewDialog::registerPreviewModule( "TEST", previewTestFile, PreviewPixmap );
         KFilePreviewDialog::getOpenFileURL(QString::null,"*.cpp|C++-Files (*.cpp)\n""*|All Files");
         break;
     }
-    
+
     if (!(name1.isNull()))
 	KMessageBox::information(0, "You selected the file "+ name1, "Your Choice");
     return 0;

@@ -371,6 +371,7 @@ void KFileBaseDialog::initGUI()
 
 KFileBaseDialog::~KFileBaseDialog()
 {
+    KFileInfo::cleanup();
     backStack.clear();
     delete bookmarks;
     delete visitedDirs;
