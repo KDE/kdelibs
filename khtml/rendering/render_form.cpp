@@ -30,8 +30,6 @@
 #include <kapp.h>
 
 #include <qcombobox.h>
-#include <qstack.h>
-#include <qlayout.h>
 #include "misc/helper.h"
 
 #include "dom_nodeimpl.h"
@@ -553,6 +551,12 @@ RenderFieldset::~RenderFieldset()
 {
 }
 
+// -----------------------------------------------------------------------------
+
+FileHBoxWidget::FileHBoxWidget(QWidget* parent)
+    : QHBox(parent)
+{
+}
 
 // -------------------------------------------------------------------------
 
@@ -560,8 +564,7 @@ RenderFieldset::~RenderFieldset()
 RenderFileButton::RenderFileButton(QScrollView *view, HTMLInputElementImpl *element)
     : RenderFormElement(view, element)
 {
-    QWidget *w = new QWidget(view->viewport());
-    QHBoxLayout *layout = new QHBoxLayout(w);
+    QHBox *w = new FileHBoxWidget(view->viewport());
 
     m_edit = new LineEditWidget(w);
     connect(m_edit, SIGNAL(returnPressed()), this, SLOT(slotReturnPressed()));
@@ -569,14 +572,18 @@ RenderFileButton::RenderFileButton(QScrollView *view, HTMLInputElementImpl *elem
     connect(m_edit,SIGNAL(focused()),this,SLOT(slotFocused()));
     connect(m_edit,SIGNAL(blurred()),this,SLOT(slotBlurred()));
     m_button = new PushButtonWidget(i18n("Browse..."), w);
-    connect(m_button, SIGNAL(clicked()), this, SLOT(slotClicked()));
-    connect(m_button,SIGNAL(focused()),this,SLOT(slotFocused()));
-    connect(m_button,SIGNAL(blurred()),this,SLOT(slotBlurred()));
+
+    connect(m_button,SIGNAL(clicked()),w,SIGNAL(clicked()));
+    connect(m_button,SIGNAL(focused()),w,SIGNAL(focused()));
+    connect(m_button,SIGNAL(blurred()),w,SIGNAL(blurred()));
+    connect(w,SIGNAL(clicked()),this,SLOT(slotClicked()));
+    connect(w,SIGNAL(focused()),this,SLOT(slotFocused()));
+    connect(w,SIGNAL(blurred()),this,SLOT(slotBlurred()));
 
     if (element->maxLength() > 0) m_edit->setMaxLength(element->maxLength());
 
-    layout->addWidget(m_edit);
-    layout->addWidget(m_button);
+    w->setStretchFactor(m_edit, 2);
+    w->setFocusProxy(m_edit);
 
     setQWidget(w, false);
     m_haveFocus = false;

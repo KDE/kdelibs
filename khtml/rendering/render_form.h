@@ -40,6 +40,7 @@ class QListboxItem;
 #include <qcheckbox.h>
 #include <qradiobutton.h>
 #include <qpushbutton.h>
+#include <qhbox.h>
 #include <klistbox.h>
 #include <kcombobox.h>
 
@@ -417,6 +418,18 @@ protected:
 signals:
     virtual void focused();
     virtual void blurred();
+};
+
+class FileHBoxWidget : public QHBox
+{
+    Q_OBJECT
+public:
+    FileHBoxWidget(QWidget* parent);
+
+signals:
+    void focused();
+    void blurred();
+    void clicked();
 };
 
 // -------------------------------------------------------------------------
