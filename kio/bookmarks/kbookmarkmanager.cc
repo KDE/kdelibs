@@ -249,22 +249,23 @@ bool KBookmarkManager::saveAs( const QString & filename, bool toolbarCache ) con
     {
         QFile::remove( cacheFilename );
     }
+    
+    QCString cstr;
 
     KSaveFile file( filename );
-
     if ( file.status() != 0 )
-    {
-        KMessageBox::error( 0L, i18n("Couldn't save bookmarks in %1. %2").arg(filename).arg(strerror(file.status())) );
-        return false;
-    }
-    QCString cstr = internalDocument().toCString(); // is in UTF8
+        goto failure;
+
+    cstr = internalDocument().toCString(); // is in UTF8
     file.file()->writeBlock( cstr.data(), cstr.length() );
     if (!file.close())
-    {
-        KMessageBox::error( 0L, i18n("Couldn't save bookmarks in %1. %2").arg(filename).arg(strerror(file.status())) );
-        return false;
-    }
+        goto failure;
+
     return true;
+
+failure:
+    KMessageBox::error( 0L, i18n("Couldn't save bookmarks in %1. %2").arg(filename).arg(strerror(file.status())) );
+    return false;
 }
 
 KBookmarkGroup KBookmarkManager::root() const
