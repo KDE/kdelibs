@@ -272,7 +272,7 @@ int Lexer::lex()
 	record8(current);
 	state = InOctal;
       } else {
-	setDone(Int);
+	setDone(Number);
       }
       break;
     case InHex:
@@ -298,7 +298,7 @@ int Lexer::lex()
 	record8(current);
 	state = InExponentIndicator;
       } else
-	setDone(Int);
+	setDone(Number);
       break;
     case InDecimal:
       if (isDecimalDigit(current)) {
@@ -307,7 +307,7 @@ int Lexer::lex()
 	record8(current);
 	state = InExponentIndicator;
       } else
-	setDone(Decimal);
+	setDone(Number);
       break;
     case InExponentIndicator:
       if (current == '+' || current == '-') {
@@ -322,7 +322,7 @@ int Lexer::lex()
       if (isDecimalDigit(current)) {
 	record8(current);
       } else
-	setDone(Decimal);
+	setDone(Number);
       break;
     default:
       assert(!"Unhandled state in switch statement");
@@ -335,7 +335,7 @@ int Lexer::lex()
   }
 
   // no identifiers allowed directly after numeric literal, e.g. "3in" is bad
-  if ((state == Int || state == Decimal || state == Octal || state == Hex)
+  if ((state == Number || state == Octal || state == Hex)
       && isIdentLetter())
     state = Bad;
 
@@ -348,18 +348,19 @@ int Lexer::lex()
   fprintf(stderr, "%s ", buffer8);
 #endif
 
-  int i;
-  // scan integer and hex numbers
-  if (state == Int || state == Hex) {
+  double dval;
+  if (state == Number) {
+    dval = strtod(buffer8, 0L);
+  } else if (state == Hex) { // scan hex numbers
+    int i;
     sscanf(buffer8, "%i", &i);
-    state = Int;
-  }
-  // scan octal number
-  if (state == Octal) {
+    dval = i;
+    state = Number;
+  } else if (state == Octal) {   // scan octal number
     unsigned int ui;
     sscanf(buffer8, "%o", &ui);
-    i = ui;
-    state = Int;
+    dval = ui;
+    state = Number;
   }
 
 #ifdef KJS_DEBUG_LEX
@@ -376,11 +377,8 @@ int Lexer::lex()
   case String:
     printf("(String)\n");
     break;
-  case Int:
-    printf("(Int)\n");
-    break;
-  case Decimal:
-    printf("(Decimal)\n");
+  case Number:
+    printf("(Number)\n");
     break;
   default:
     printf("(unknown)");
@@ -409,10 +407,9 @@ int Lexer::lex()
     return token;
   case String:
     kjsyylval.ustr = new UString(buffer16, pos16); return STRING;
-  case Int:
-    kjsyylval.ival = i; return INTEGER;
-  case Decimal:
-    kjsyylval.dval = strtod(buffer8, 0L); return DOUBLE;
+  case Number:
+    kjsyylval.dval = dval;
+    return DOUBLE;
   case Bad:
     fprintf(stderr, "yylex: ERROR.\n");
     return -1;
