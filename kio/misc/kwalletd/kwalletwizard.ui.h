@@ -7,6 +7,7 @@
 ** place of a destructor.
 *****************************************************************************/
 
+#include <klocale.h>
 
 void KWalletWizard::passwordPageUpdate()
 {
@@ -22,12 +23,12 @@ void KWalletWizard::passwordPageUpdate()
     if (_useWallet->isChecked()) {
 	if (_pass1->text() == _pass2->text()) {
             if (_pass1->text().isEmpty()) {
-                _matchLabel->setText(tr("Password is empty."));
+                _matchLabel->setText(i18n("Password is empty."));
             } else {
-                _matchLabel->setText(tr("Passwords match."));
+                _matchLabel->setText(i18n("Passwords match."));
             }
 	} else {
-	    _matchLabel->setText(tr("Passwords do not match."));
+	    _matchLabel->setText(i18n("Passwords do not match."));
 	}
     } else {
 	_matchLabel->setText(QString::null);
