@@ -638,21 +638,6 @@ bool SlaveBase::dispatch()
     return true;
 }
 
-bool SlaveBase::openPassDlg( const QString& msg, QString& user, QString& passwd, bool lock )
-{
-    AuthInfo info;
-    info.prompt = msg;
-    info.username = user;
-    info.readOnly = lock;
-    bool result = openPassDlg( info );
-    if ( result )
-    {
-        user = info.username;
-        passwd = info.password;
-    }
-    return result;
-}
-
 bool SlaveBase::openPassDlg( AuthInfo& info )
 {
     kdDebug(7019) << "SlaveBase::OpenPassDlg User= " << info.username << endl;
@@ -841,7 +826,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         stream >> url >> i;
         mkdir( url, i );
         break;
-    case CMD_RENAME: 
+    case CMD_RENAME:
     {
         Q_INT8 iOverwrite;
         KURL url2;
@@ -849,7 +834,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         bool overwrite = (iOverwrite != 0);
         rename( url, url2, overwrite );
     } break;
-    case CMD_SYMLINK: 
+    case CMD_SYMLINK:
     {
         Q_INT8 iOverwrite;
         QString target;
@@ -857,7 +842,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         bool overwrite = (iOverwrite != 0);
         symlink( target, url, overwrite );
     } break;
-    case CMD_COPY:  
+    case CMD_COPY:
     {
         int permissions;
         Q_INT8 iOverwrite;
@@ -866,7 +851,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         bool overwrite = (iOverwrite != 0);
         copy( url, url2, permissions, overwrite );
     } break;
-    case CMD_DEL: 
+    case CMD_DEL:
     {
         Q_INT8 isFile;
         stream >> url >> isFile;
@@ -934,33 +919,6 @@ bool SlaveBase::pingCacheDaemon() const
         kdDebug(7019) << "Sucessfully started new cache deamon!!" << endl;
     }
     return true;
-}
-
-bool SlaveBase::checkCachedAuthentication( const KURL& url, QString& user,
-                                           QString& passwd )
-{
-    AuthInfo info;
-    info.url = url;
-    info.username = user;
-    info.password = passwd;
-    return checkCachedAuthentication( info );
-}
-
-bool SlaveBase::checkCachedAuthentication( const KURL& url,
-                                           QString& user,
-                                           QString& passwd,
-                                           QString& realm,
-                                           QString& extra,
-                                           bool verify )
-{
-    AuthInfo info;
-    info.url = url;
-    info.username = user;
-    info.password = passwd;
-    info.realmValue = realm;
-    info.digestInfo = extra;
-    info.verifyPath = verify;
-    return checkCachedAuthentication( info );
 }
 
 bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
@@ -1185,21 +1143,6 @@ bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
         }
     }
     return false;
-}
-
-bool SlaveBase::cacheAuthentication( const KURL& url,
-                                     const QString& user,
-                                     const QString& passwd,
-                                     const QString& realm,
-                                     const QString& extra )
-{
-    AuthInfo info;
-    info.url = url;
-    info.username = user;
-    info.password = passwd;
-    info.realmValue = realm;
-    info.digestInfo = extra;
-    return cacheAuthentication( info );
 }
 
 bool SlaveBase::storeAuthInfo( const QCString& key, const QCString& group,

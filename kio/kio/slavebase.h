@@ -558,18 +558,6 @@ protected:
     bool openPassDlg( KIO::AuthInfo& info );
 
     /**
-     * Same as above except in the arguments it accepts.
-     *
-     * @deprecated.  Use @ref openPassDlg( AuthInfo& ) instead.
-     *
-     * @param msg     i18n'ed message to explain the dialog box
-     * @param user    user name, in and out
-     * @param pass    password, in and out
-     * @param lock    flag used to make the username field read-only.
-     */
-    bool openPassDlg( const QString& msg, QString& user,
-                      QString& passwd, bool lock = false );
-    /**
      * Checks for cached authentication based on paramters
      * given by @p info.
      *
@@ -618,38 +606,6 @@ protected:
 
 
     /**
-     * Same as above except in the number of arguments it accepts.
-     *
-     * @deprecated.  Use @checkCachedAuthentication( AuthInfo& ) instead.
-     *
-     * @param url           url for which to check cached Authentication.
-     * @param user          cached user name.
-     * @param passw         cached password.
-     * @param realm         unique key to distinguish protection spaces (ex: HTTP Realm values)
-     * @param extra         extra info to store (ex: Authentication strings in Digest Authentication )
-     * @param verify    if true, check new url contains cached url (== same protection space)
-     */
-    bool checkCachedAuthentication( const KURL& url,
-                                    QString& user,
-                                    QString& passwd,
-                                    QString& realm,
-                                    QString& extra,
-                                    bool verify = true );
-
-    /**
-     * Same as above except in the number of arguments it takes.
-     *
-     * @deprecated.  Use @checkCachedAuthentication( AuthInfo& ) instead.
-     *
-     * @param url           url for which to check cached Authentication.
-     * @param user          cached user name.
-     * @param passw         cached password.
-     */
-    bool checkCachedAuthentication( const KURL& url,
-                                    QString& user,
-                                    QString& passwd);
-
-    /**
      * Caches authentication information in the "kdesud" deamon.
      *
      * Use this function to cache correct authorization information
@@ -685,24 +641,6 @@ protected:
      */
     bool cacheAuthentication( const AuthInfo& info );
 
-    /**
-     * Same as above except in the number of arguments it takes.
-     *
-     * @deprecated.  Use @cacheAuthentication( AuthInfo& ) instead.
-     *
-     * @param url       url for which Authentication is to be cached.
-     * @param user      user name to be cached.
-     * @param passw     password to be cached.
-     * @param realm     unique key to distinguish protection spaces (ex: HTTP Realm values)
-     * @param extra     extra info to store (ex: Authentication strings in Digest Authentication )
-     *
-     * @return          @p true if Authentication was sucessfully cached
-     */
-    bool cacheAuthentication( const KURL& url,
-                              const QString& user,
-                              const QString& passwd,
-                              const QString& realm = QString::null,
-                              const QString& extra = QString::null );
 
     /**
      * Creates a basic key to be used to cache the password.
