@@ -53,11 +53,10 @@ void KOperaBookmarkImporter::parseOperaBookmarks( )
       if ( line[line.length()-1] != '\n' || lineno <= 2 )
           continue;
     
-      QString currentLine = line.stripWhiteSpace();
-      QString currentLine_utf8 = codec->toUnicode(line);
+      QString currentLine = codec->toUnicode(line).stripWhiteSpace();
     
-      // end of data block
       if (currentLine.isEmpty()) {
+         // end of data block
          if (type.isNull())
             continue;
          else if ( type == "URL")
@@ -69,19 +68,19 @@ void KOperaBookmarkImporter::parseOperaBookmarks( )
          name = QString::null;
          url = QString::null;
          
-      // end of folder
       } else if (currentLine == "-") {
+         // end of folder
          emit endFolder();
     
-      // data block line
       } else {
+         // data block line
          QString tag;
          if ( tag = "#", currentLine.startsWith( tag ) )
             type = currentLine.remove( 0, tag.length() );
          else if ( tag = "NAME=", currentLine.startsWith( tag ) )
-            name = currentLine_utf8.remove(0, tag.length());
+            name = currentLine.remove(0, tag.length());
          else if ( tag = "URL=", currentLine.startsWith( tag ) )
-            url = currentLine_utf8.remove(0, tag.length());
+            url = currentLine.remove(0, tag.length());
       }
    }
 
