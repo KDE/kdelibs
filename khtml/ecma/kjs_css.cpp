@@ -92,6 +92,9 @@ bool DOMCSSStyleDeclaration::hasProperty(const UString &p,
 
 KJSO DOMCSSStyleDeclaration::tryGet(const UString &p) const
 {
+#ifdef KJS_VERBOSE
+  kdDebug(6070) << "DOMCSSStyleDeclaration::tryGet " << p.qstring() << endl;
+#endif
   if (p == "cssText" )
     return getString(styleDecl.cssText());
   else if (p == "getPropertyValue")
@@ -116,6 +119,9 @@ KJSO DOMCSSStyleDeclaration::tryGet(const UString &p) const
     if (ok)
       return getString(DOM::CSSStyleDeclaration(styleDecl).item(u));
 
+#ifdef KJS_VERBOSE
+  kdDebug(6070) << "DOMCSSStyleDeclaration: converting to css property name: " << jsNameToProp(p) << endl;
+#endif
     DOM::CSSStyleDeclaration styleDecl2 = styleDecl;
     DOM::DOMString v = styleDecl2.getPropertyValue(DOM::DOMString(jsNameToProp(p)));
     if (!v.isNull())
@@ -127,6 +133,9 @@ KJSO DOMCSSStyleDeclaration::tryGet(const UString &p) const
 
 void DOMCSSStyleDeclaration::tryPut(const UString &p, const KJSO& v)
 {
+#ifdef KJS_VERBOSE
+  kdDebug(6070) << "DOMCSSStyleDeclaration::tryPut " << p.qstring() << endl;
+#endif
   if (p == "cssText") {
     styleDecl.setCssText(v.toString().value().string());
   }
@@ -136,12 +145,17 @@ void DOMCSSStyleDeclaration::tryPut(const UString &p, const KJSO& v)
 
     if(prop.left(4) == "css-")
       prop = prop.mid(4);
+    if(prop.left(4) == "pos-")
+      prop = prop.mid(4);
 
     if(prop.left(6) == "pixel-")
     {
       prop = prop.mid(6); // cut it away
       propvalue += "px";
     }
+#ifdef KJS_VERBOSE
+    kdDebug(6070) << "DOMCSSStyleDeclaration: prop=" << prop << " propvalue=" << propvalue << endl;
+#endif
     styleDecl.removeProperty(prop);
     if(!propvalue.isEmpty())
       styleDecl.setProperty(prop,DOM::DOMString(propvalue),""); // ### is "" ok for priority?
