@@ -269,16 +269,13 @@ void HTMLEmbedElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLEmbedElementImpl::attach(KHTMLView *w)
 {
-    kdDebug() << "HTMLEmbedElementImpl::attach 1" << endl;
    khtml::RenderObject *r = _parent->renderer();
    if ( !r )
       return;
 
-   kdDebug() << "HTMLEmbedElementImpl::attach 2" << endl;
    m_style = document->styleSelector()->styleForElement( this );
    if ( _parent->id()!=ID_OBJECT )
    {
-       kdDebug() << "HTMLEmbedElementImpl::attach 2.5" << endl;
       RenderPartObject *p = new RenderPartObject( w, this );
       m_render = p;
       m_render->setStyle(m_style);
@@ -286,7 +283,6 @@ void HTMLEmbedElementImpl::attach(KHTMLView *w)
    } else
       r->setStyle(m_style);
 
-   kdDebug() << "HTMLEmbedElementImpl::attach 3" << endl;
   NodeBaseImpl::attach( w );
 }
 

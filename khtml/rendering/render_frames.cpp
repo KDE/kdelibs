@@ -510,7 +510,6 @@ void RenderFrame::slotWidgetDestructed()
 RenderPartObject::RenderPartObject( QScrollView *view, DOM::HTMLElementImpl *o )
 : RenderPart( view )
 {
-    kdDebug() << "RenderPartObject::RenderPartObject" << endl;
   // init RenderObject attributes
   m_inline = true;   // our object is Inline
 
@@ -526,12 +525,9 @@ void RenderPartObject::close()
   QString url;
   QString serviceType;
 
-  kdDebug() << "RenderPartObject::close() 0" << endl;
-
   if(m_obj->id() == ID_OBJECT) {
-      kdDebug() << "RenderPartObject::close() 1" << endl;
 
-     // check for embed child object
+      // check for embed child object
      HTMLObjectElementImpl *o = static_cast<HTMLObjectElementImpl *>(m_obj);
      HTMLEmbedElementImpl *embed = 0;
      NodeImpl *child = o->firstChild();
@@ -544,7 +540,6 @@ void RenderPartObject::close()
 
      if ( !embed )
      {
-         kdDebug() << "RenderPartObject::close() 2" << endl;
         url = o->url;
         serviceType = o->serviceType;
         if(serviceType.isEmpty() || serviceType.isNull()) {
@@ -598,7 +593,6 @@ void RenderPartObject::close()
         static_cast<KHTMLView *>(m_view)->part()->requestObject( this, url, serviceType, params );
      } else
      {
-         kdDebug() << "RenderPartObject::close() 2" << endl;
         // render embed object
         url = embed->url;
         serviceType = embed->serviceType;
@@ -618,7 +612,6 @@ void RenderPartObject::close()
         }
      }
   } else if ( m_obj->id() == ID_EMBED ) {
-      kdDebug() << "RenderPartObject::close() 3" << endl;
      HTMLEmbedElementImpl *o = static_cast<HTMLEmbedElementImpl *>(m_obj);
      url = o->url;
      serviceType = o->serviceType;
