@@ -71,6 +71,7 @@ KXmlCommandSelector::KXmlCommandSelector(bool canBeNull, QWidget *parent, const 
 	m_helpbtn->setPixmap( SmallIcon( "help" ) );
 	connect( m_helpbtn, SIGNAL( clicked() ), SLOT( slotHelpCommand() ) );
 	QToolTip::add( m_helpbtn, i18n( "Information" ) );
+        m_helpbtn->setEnabled( false );
 
 	m_line = 0;
 	m_usefilter = 0;
