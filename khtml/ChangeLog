@@ -1,5 +1,9 @@
 2003-10-20  Dirk Mueller  <dmuell@gmx.net>
 
+	* html/html_formimpl.cpp (value): return the DOM "defaultValue" when we have
+	no renderer.
+	(encoding): submit textarea even if display=none (#49829)
+
 	* ecma/kjs_dom.cpp (getValueProperty): add bindings to clientWidth/Height,
 	scrollWidth/height,offsetTop/left,offsetWidth/Height,offsetParent.
 	(getValueProperty): don't map body to canvas (#59676).

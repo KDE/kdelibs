@@ -2255,7 +2255,7 @@ void HTMLTextAreaElementImpl::attach()
 
 bool HTMLTextAreaElementImpl::encoding(const QTextCodec* codec, encodingList& encoding, bool)
 {
-    if (name().isEmpty() || !m_render) return false;
+    if (name().isEmpty()) return false;
 
     encoding += fixUpfromUnicode(codec, name().string());
     encoding += fixUpfromUnicode(codec, value().string());
@@ -2271,7 +2271,11 @@ void HTMLTextAreaElementImpl::reset()
 DOMString HTMLTextAreaElementImpl::value()
 {
     if ( m_dirtyvalue) {
-        if ( m_render )  m_value = static_cast<RenderTextArea*>( m_render )->text();
+        if ( m_render )
+            m_value = static_cast<RenderTextArea*>( m_render )->text();
+        else
+            m_value = defaultValue().string();
+
         m_dirtyvalue = false;
     }
 
@@ -2284,7 +2288,7 @@ void HTMLTextAreaElementImpl::setValue(DOMString _value)
 {
     // \r\n -> \n, \r -> \n
     QString str = _value.string().replace( "\r\n", "\n" );
-    m_value = str.replace( "\r", "\n" );
+    m_value = str.replace( '\r', '\n' );
     m_dirtyvalue = false;
     setChanged(true);
 }
