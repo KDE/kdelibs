@@ -23,7 +23,7 @@
 #ifndef _DOM_ELEMENT_h_
 #define _DOM_ELEMENT_h_
 
-#include <dom_node.h>
+#include <dom/dom_node.h>
 
 namespace DOM {
 

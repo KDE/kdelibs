@@ -23,7 +23,7 @@
 #ifndef HTML_ELEMENT_H
 #define HTML_ELEMENT_H
 
-#include <dom_element.h>
+#include <dom/dom_element.h>
 class KHTMLWidget;
 
 namespace DOM {

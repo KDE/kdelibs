@@ -23,7 +23,7 @@
 #ifndef HTML_IMAGE_H
 #define HTML_IMAGE_H
 
-#include <html_element.h>
+#include <dom/html_element.h>
 
 namespace DOM {
 

@@ -45,7 +45,7 @@ class QMovie;
 #include <qstring.h>
 #include <qlist.h>
 
-#include "dom_string.h"
+#include "dom/dom_string.h"
 
 class KHTMLWidget;
 

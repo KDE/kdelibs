@@ -23,12 +23,12 @@
 #ifndef _DOM_CORE_H_
 #define _DOM_CORE_H_
 
-#include <dom_doc.h>
-#include <dom_element.h>
-#include <dom_misc.h>
-#include <dom_exception.h>
-#include <dom_node.h>
-#include <dom_string.h>
-#include <dom_xml.h>
+#include <dom/dom_doc.h>
+#include <dom/dom_element.h>
+#include <dom/dom_misc.h>
+#include <dom/dom_exception.h>
+#include <dom/dom_node.h>
+#include <dom/dom_string.h>
+#include <dom/dom_xml.h>
 
 #endif

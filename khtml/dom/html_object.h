@@ -26,8 +26,8 @@
 #ifndef HTML_OBJECT_H
 #define HTML_OBJECT_H
 
-#include <html_element.h>
-#include <html_form.h>
+#include <dom/html_element.h>
+#include <dom/html_form.h>
 
 namespace DOM {
 

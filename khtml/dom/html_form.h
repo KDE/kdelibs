@@ -24,8 +24,8 @@
 #define HTML_FORM_H
 
 // --------------------------------------------------------------------------
-#include <html_element.h>
-#include <html_misc.h>
+#include <dom/html_element.h>
+#include <dom/html_misc.h>
 
 namespace DOM {
 

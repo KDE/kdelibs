@@ -23,7 +23,7 @@
 #ifndef _DOM_XML_h
 #define _DOM_XML_h
 
-#include <dom_text.h>
+#include <dom/dom_text.h>
 
 namespace DOM {
 

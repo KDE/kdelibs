@@ -23,18 +23,18 @@
 #ifndef DOM_HTML_H
 #define DOM_HTML_H
 
-#include <dom_core.h>
+#include <dom/dom_core.h>
 
-#include <html_base.h>
-#include <html_block.h>
-#include <html_document.h>
-#include <html_element.h>
-#include <html_form.h>
-#include <html_head.h>
-#include <html_image.h>
-#include <html_inline.h>
-#include <html_list.h>
-#include <html_misc.h>
-#include <html_table.h>
+#include <dom/html_base.h>
+#include <dom/html_block.h>
+#include <dom/html_document.h>
+#include <dom/html_element.h>
+#include <dom/html_form.h>
+#include <dom/html_head.h>
+#include <dom/html_image.h>
+#include <dom/html_inline.h>
+#include <dom/html_list.h>
+#include <dom/html_misc.h>
+#include <dom/html_table.h>
 
 #endif

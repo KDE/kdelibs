@@ -23,7 +23,7 @@
 #ifndef HTML_HEAD_H
 #define HTML_HEAD_H
 
-#include <html_element.h>
+#include <dom/html_element.h>
 
 namespace DOM {
 

@@ -39,7 +39,7 @@
 class QPainter;
 
 // khtml includes and classes
-#include "html_document.h"
+#include "dom/html_document.h"
 
 // ### FIXME: get rid of this include
 #include "khtmlio.h"

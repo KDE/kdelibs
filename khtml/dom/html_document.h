@@ -24,8 +24,8 @@
 #ifndef HTML_DOCUMENT_H
 #define HTML_DOCUMENT_H
 
-#include <dom_doc.h>
-#include <dom_string.h>
+#include <dom/dom_doc.h>
+#include <dom/dom_string.h>
 
 class KHTMLWidget;
 class KHTMLCache;

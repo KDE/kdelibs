@@ -24,7 +24,7 @@
 #define _CSS_css_extensions_h_
 
 #include <css_value.h>
-#include <dom_string.h>
+#include <dom/dom_string.h>
 
 namespace DOM {
 

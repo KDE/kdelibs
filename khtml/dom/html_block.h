@@ -21,7 +21,7 @@
  * $Id$
  */
 // --------------------------------------------------------------------------
-#include <html_element.h>
+#include <dom/html_element.h>
 
 namespace DOM {
 
