@@ -31,11 +31,13 @@
 #undef crypt
 #endif
 class QString;
+class QDateTime;
 
 
 #ifdef HAVE_SSL
 // This functionality is missing in OpenSSL
 QString ASN1_UTCTIME_QString(ASN1_UTCTIME *tm);
+QDateTime ASN1_UTCTIME_QDateTime(ASN1_UTCTIME *tm, int *isGmt);
 #endif
 
 

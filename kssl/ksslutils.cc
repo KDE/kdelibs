@@ -29,16 +29,14 @@
 #ifdef HAVE_SSL
 // This code is mostly taken from OpenSSL v0.9.5a
 // by Eric Young
-QString ASN1_UTCTIME_QString(ASN1_UTCTIME *tm) {
-QString qstr;
+QDateTime ASN1_UTCTIME_QDateTime(ASN1_UTCTIME *tm, int *isGmt) {
+QDateTime qdt;
 char *v;
 int gmt=0;
 int i;
 int y=0,M=0,d=0,h=0,m=0,s=0;
-KLocale kl;
 QDate qdate;
 QTime qtime;
-QDateTime qdt;
  
   i = tm->length;
   v = (char *)tm->data;
@@ -62,14 +60,23 @@ QDateTime qdt;
   qdate.setYMD(y+1900, M, d);
   qtime.setHMS(h,m,s);
   qdt.setDate(qdate); qdt.setTime(qtime);
+  auq_err:
+  if (isGmt) *isGmt = gmt;
+return qdt;
+}
+
+
+QString ASN1_UTCTIME_QString(ASN1_UTCTIME *tm) {
+KLocale kl;
+QString qstr;
+int gmt;
+QDateTime qdt = ASN1_UTCTIME_QDateTime(tm, &gmt);
+
   qstr = kl.formatDateTime(qdt, false, true);
   if (gmt) { 
     qstr += " ";
     qstr += /*TODO? i18n*/ ("GMT");
   }
-  return qstr;
-auq_err:
-  qstr = /*TODO i18n*/ ("(Bad time value)");
   return qstr;
 }
 #endif
