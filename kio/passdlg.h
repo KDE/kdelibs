@@ -36,6 +36,7 @@ namespace KIO {
  * KIO-Slave authors are encouraged to use @ref SlaveBase::openPassDlg
  * instead of directly instantiating this dialog.
  */
+// ### inherit KDialogBase instead of KDialog in 3.0
 class PasswordDialog : public KDialog
 {
     Q_OBJECT
