@@ -261,7 +261,13 @@ void KTMainWindow::setPlainCaption( const QString &caption )
   QWidget::setCaption( caption );
 }
 
+QSize KTMainWindow::sizeHint() const
+{
+	if (layoutMgr)
+		return layoutMgr->sizeHint();
 
+	return (QSize(-1, -1));
+}
 
 QRect KTMainWindow::mainViewGeometry() const
 {
@@ -270,8 +276,9 @@ QRect KTMainWindow::mainViewGeometry() const
 
 void KTMainWindow::updateRects()
 {
-    if ( !isUpdatesEnabled() )
-	return;
+	if (!isUpdatesEnabled())
+		return;
+
 	delete layoutMgr;
 
 	layoutMgr = new KTMLayout(this);
@@ -335,14 +342,6 @@ void KTMainWindow::updateRects()
 		layoutMgr->addStatusBar(kstatusbar);
 
 	layoutMgr->activate();
-
-	/* Changing the layout can affect the size of the window if the
-	 * main widget has size constrains. So we call resize() with the
-	 * current size.  This does not hurt if there are no constraints
-	 * (I hope Qt is intelligent enough) and causes the size to change
-	 * to the correct size in case of any constraints. */
-	if ( isVisible() )
-	    resize(size());
 }
 
 void KTMainWindow::saveGlobalProperties(KConfig*)
@@ -637,25 +636,30 @@ bool KTMainWindow::event(QEvent* ev)
     return QWidget::event(ev);
 }
 
-void KTMainWindow::resizeEvent(QResizeEvent *)
+void KTMainWindow::resizeEvent(QResizeEvent* ev)
 {
-    
-// 	/* This is an ugly hack to work around a Qt layout management
-// 	 * problem.  If the minimum or maximum size changes during the
-// 	 * execution of resizeEvent() functions this new size is not
-// 	 * honored. Unfortunately due to the multiple resizeEvents() this
-// 	 * flickers like hell in opaque resize mode. CS */
-// 	if (width() < minimumWidth())
-// 		resize(minimumWidth(), height());
-// 	if (maximumWidth() > 0 && width() > maximumWidth())
-// 		resize(maximumWidth(), height());
+	/* This is an ugly hack to work around a Qt layout management
+	 * problem.  If the minimum or maximum size changes during the
+	 * execution of resizeEvent() functions this new size is not
+	 * honored. Unfortunately due to the multiple resizeEvents() this
+	 * flickers a lot in opaque resize mode when using kwm. No
+	 * flickering with kwin, yeah!
+	 *
+	 * To avoid endless recursions we make sure that we only call resize
+	 * once. I arbitrarily favored height adjustment over width adjustment
+	 * since it fits into our height for width dominated widget world. CS */
+	if (height() < minimumHeight())
+		resize(width(), minimumHeight());
+	else if (maximumHeight() > 0 && height() > maximumHeight())
+		resize(width(), maximumHeight());
+	else if (width() < minimumWidth())
+		resize(minimumWidth(), height());
+	else if (maximumWidth() > 0 && width() > maximumWidth())
+		resize(maximumWidth(), height());
 
-// 	if (height() < minimumHeight())
-// 		resize(width(), minimumHeight());
-// 	if (maximumHeight() > 0 && height() > maximumHeight())
-// 		resize(width(), maximumHeight());
-    
-    // We cannot do that. It can lead into situtions where it loops endlessly (Matthias )
+	/* Matthias believes that this may lead to endless loops, but I think
+	 * it's save, though I have no proof. I did some heavy testing on
+	 * both slow and fast machines without problems. CS */
 }
 
 KStatusBar *KTMainWindow::statusBar()

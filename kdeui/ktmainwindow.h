@@ -253,6 +253,11 @@ public:
      */
     virtual void show ();
 
+	/**
+	 * Returns the minimum size of the main window.
+	 */
+	QSize sizeHint() const;
+
     /**
      * Returns the geometry of the main view widget. This function is provided
 	 * for legacy reasons. Do not use it! It might be removed.
