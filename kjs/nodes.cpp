@@ -829,7 +829,7 @@ Value FunctionCallNode::evaluate(ExecState *exec) const
   KJS_CHECKEXCEPTIONVALUE
 
   if (v.type() != ObjectType) {
-    return throwError(exec, TypeError, "Value %s (result of expression %s) is not object. Cannot be called.", v, expr);
+    return throwError(exec, TypeError, "Value %s (result of expression %s) is not an object. Cannot be called.", v, expr);
   }
 
   Object func = Object(static_cast<ObjectImp*>(v.imp()));
