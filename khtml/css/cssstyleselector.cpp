@@ -49,7 +49,6 @@ using namespace DOM;
 #include <kcharsets.h>
 #include <kglobal.h>
 #include <qfile.h>
-#include <qtextstream.h>
 #include <qfontdatabase.h>
 #include <qfontinfo.h>
 #include <qvaluelist.h>
@@ -146,11 +145,13 @@ void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s)
     QFile f(locate( "data", "khtml/css/html4.css" ) );
     f.open(IO_ReadOnly);
 
-    QTextStream t( &f );
-    QString style = t.read();
-    if(s) {
+    QCString file( f.size() );
+    f.readBlock( file.data(), file.size() );
+    f.close();
+
+    QString style = QString::fromLatin1( file.data() );
+    if(s)
 	style += s->settingsToCSS();
-    }
     DOMString str(style);
 
     defaultSheet = new DOM::CSSStyleSheetImpl((DOM::CSSStyleSheetImpl *)0);
