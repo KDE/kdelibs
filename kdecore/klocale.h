@@ -73,7 +73,7 @@ QString i18n(const char *singular, const char *plural, unsigned long n);
   */
 class KLocale
 {
-  friend KGlobal; // for initInstance()
+  friend class KGlobal; // for initInstance()
 public:
   /**
    * Create a KLocale with the given catalogue name.
