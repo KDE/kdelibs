@@ -141,6 +141,24 @@ case 19:
   i = KMessageBox::Ok;
   KMessageBox::information(0, "Return of the annoying popup message.", QString::null, "Enable_Menubar");
   break;
+case 20:
+  {
+  QStringList strlist;
+  strlist << "/dev/hda" << "/etc/inittab" << "/usr/somefile" << "/some/really/"
+   "long/file/name/which/is/in/a/really/deep/directory/in/a/really/large/"
+   "hard/disk/of/your/system" << "/and/another/one" ;
+  i = KMessageBox::questionYesNo(0, "Do you want to delete the following files ?",strlist);
+  }
+  break;
+case 21:
+  {
+  QStringList strlist;
+  printf("Filling StringList...\n");  
+  for (int j=1;j<=6000;j++) strlist.append(QString("/tmp/tmp.%1").arg(j));
+  printf("Completed...\n");  
+  i = KMessageBox::questionYesNo(0, "Do you want to delete the following files ?",strlist);
+  }
+  break;
 
 default:
   return 0;
