@@ -904,20 +904,6 @@ int TCPSlaveBase::verifyCertificate()
       } while (result != KMessageBox::No);
    }
 
-   #if 0
-   // This will probably go to khtml_part
-   //  - mixed SSL/nonSSL
-        // I assert that if any two portions of a loaded document are of
-        // opposite SSL status then either one of them must be different
-        // than the parent.  Therefore we can only compare each child
-        // against the parent both here and in non-SSL mode.
-        // The problem which remains is how to have this notification
-        // appear only once per page.
-   if ( isChild && d->kssl->settings()->warnOnMixed() &&
-        metaData("ssl_was_in_use") != "TRUE") {
-      // FIXME: do something!
-   }
-   #endif
    }   // if ssl_activate_warnings
 
 
