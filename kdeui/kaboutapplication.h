@@ -39,7 +39,6 @@
  * KMainWindow::helpMenu() function.
  *
  * @author Waldo Bastian (bastian@kde.org) and Espen Sand (espen@kde.org)
- * @version $Id
  */
 
 class KDEUI_EXPORT KAboutApplication : public KAboutDialog
