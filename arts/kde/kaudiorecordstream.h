@@ -26,6 +26,7 @@
 #include <qobject.h>
 
 class KArtsServer;
+namespace Arts { class StereoEffectStack; }
 
 class KAudioRecordStream : public QObject
 {
@@ -38,8 +39,7 @@ class KAudioRecordStream : public QObject
 		 * @param parent You probably want to pass the KArtsServer as parent so
 		 * that the stream will be deleted before the Arts server disappears
 		 */
-		KAudioRecordStream( KArtsServer *, int samplingrate, int bits, int channels, QString title,
-				QObject * parent = 0, const char * name = 0 );
+		KAudioRecordStream( KArtsServer * server, const QString & title, QObject * parent = 0, const char * name = 0 );
 
 		~KAudioRecordStream();
 
@@ -85,6 +85,11 @@ class KAudioRecordStream : public QObject
 		 */
 		bool polling() const;
 
+		/**
+		 * @return The Effect Stack right after the Synth_AMAN_RECORD.
+		 */
+		Arts::StereoEffectStack effectStack() const;
+
 	public slots:
 		/**
 		 * detaches the stream from the soundserver
@@ -95,8 +100,15 @@ class KAudioRecordStream : public QObject
 		 * Attach to the soundserver and start getting data to read. This method
 		 * must be called as soon as you want to receive data. In any case you have
 		 * to call start() before @ref read()
+		 *
+		 * @param samplingRate  The sampling rate the stream should be resampled to. Use
+		 *                      a number between 500 and 2000000.
+		 * @param bits          The number of bits the stream should have. Only 8 and
+		 *                      16 Bits are supported.
+		 * @param channels      The number of channels (mono/stereo). Only 1 and 2 are
+		 *                      supported.
 		 */
-		void start();
+		void start( int samplingRate, int bits, int channels );
 
 		/**
 		 * flush input buffer

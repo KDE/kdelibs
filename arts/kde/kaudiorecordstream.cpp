@@ -24,6 +24,9 @@
 #include "kaudiorecordstream_p.h"
 #include "kartsserver.h"
 
+#include <arts/artsflow.h>
+#include <arts/soundserver.h>
+
 #include <kglobal.h>
 #include <kdebug.h>
 
@@ -35,6 +38,9 @@
 
 struct KAudioRecordStream::Data
 {
+	Arts::Synth_AMAN_RECORD in;
+	Arts::AudioToByteStream convert;
+	Arts::StereoEffectStack effectStack;
 	Arts::ByteSoundReceiver receiver;
 	KByteSoundReceiver * receiver_base;
 	KArtsServer * kserver;
@@ -43,24 +49,37 @@ struct KAudioRecordStream::Data
 	bool polling;
 	unsigned int pos;
 	QPtrQueue<QByteArray> inqueue;
+	QString title;
 };
 
-KAudioRecordStream::KAudioRecordStream( KArtsServer * kserver, int samplingrate, int bits, int channels, QString title, QObject * parent, const char * name )
+KAudioRecordStream::KAudioRecordStream( KArtsServer * kserver, const QString & title, QObject * parent, const char * name )
 	: QObject( parent, name )
 	, d( new Data )
 {
-	d->receiver_base = new KByteSoundReceiver( samplingrate, bits, channels, title.local8Bit() );
-	d->receiver = Arts::ByteSoundReceiver::_from_base( d->receiver_base );
 	d->kserver = kserver;
 	d->attached = false;
 	d->blocking = true;
 	d->polling = false;
 	d->pos = 0;
 	d->inqueue.setAutoDelete( true );
+	d->title = title;
 
 	connect( d->kserver, SIGNAL( restartedServer() ), SLOT( slotRestartedServer() ) );
-	connect( d->receiver_base, SIGNAL( data( const char *, unsigned int ) ),
-			SLOT( slotData( const char *, unsigned int ) ) );
+
+	d->in = Arts::DynamicCast( d->kserver->server().createObject( "Arts::Synth_AMAN_RECORD" ) );
+	d->effectStack = Arts::DynamicCast( d->kserver->server().createObject( "Arts::StereoEffectStack" ) );
+	d->convert = Arts::DynamicCast( d->kserver->server().createObject( "Arts::AudioToByteStream" ) );
+	if( d->in.isNull() )
+		kdFatal( 400 ) << "couldn't create a Synth_AMAN_RECORD on the aRts server\n";
+	if( d->effectStack.isNull() )
+		kdFatal( 400 ) << "couldn't create a StereoEffectStack on the aRts server\n";
+	if( d->convert.isNull() )
+		kdFatal( 400 ) << "couldn't create a AudioToByteStream on the aRts server\n";
+
+	d->in.title( ( const char * ) d->title.local8Bit() );
+	Arts::connect( d->in, d->effectStack );
+	d->in.start();
+	d->effectStack.start();
 }
 
 KAudioRecordStream::~KAudioRecordStream()
@@ -68,6 +87,7 @@ KAudioRecordStream::~KAudioRecordStream()
 	d->receiver = Arts::ByteSoundReceiver::null();
 	// don't delete receiver_base because aRts takes care of that (in the line
 	// above)
+	d->receiver_base = 0;
 	delete d;
 }
 
@@ -124,28 +144,61 @@ bool KAudioRecordStream::polling() const
 	return d->polling;
 }
 
+Arts::StereoEffectStack KAudioRecordStream::effectStack() const
+{
+	return d->effectStack;
+}
+
 void KAudioRecordStream::stop()
 {
 	kdDebug( 400 ) << k_funcinfo << endl;
 	if( d->attached )
 	{
-		d->kserver->server().detachRecorder( d->receiver );
 		d->receiver.stop();
+		d->convert.stop();
+
+		Arts::disconnect( d->convert, d->receiver );
+		d->receiver = Arts::ByteSoundReceiver::null();
+		d->receiver_base = 0;
+
+		Arts::disconnect( d->effectStack, d->convert );
+
 		d->attached = false;
 	}
 }
 
-void KAudioRecordStream::start()
+void KAudioRecordStream::start( int samplingRate, int bits, int channels )
 {
 	kdDebug( 400 ) << k_funcinfo << endl;
 	if( ! d->attached )
 	{
 		assert( d->kserver );
-		d->kserver->server().attachRecorder( d->receiver );
-		d->receiver.start();
-		//### needed?
-		//Arts::Dispatcher::the()->ioManager()->processOneEvent( false );
-		d->attached = true;
+
+		if( ( samplingRate < 500 || samplingRate > 2000000 )
+				|| ( channels != 1 && channels != 2 ) || ( bits != 8 && bits != 16 ) )
+		{
+			kdWarning( 400 ) << "invalid stream parameters: rate=" << samplingRate << ", " << bits << " bit, " << channels << " channels\n";
+		}
+		else
+		{
+			d->convert.samplingRate( samplingRate );
+			d->convert.channels( channels );
+			d->convert.bits( bits );
+			Arts::connect( d->effectStack, d->convert );
+
+			d->receiver_base = new KByteSoundReceiver( samplingRate, bits, channels, d->title.local8Bit() );
+			d->receiver = Arts::ByteSoundReceiver::_from_base( d->receiver_base );
+			connect( d->receiver_base, SIGNAL( data( const char *, unsigned int ) ),
+					SLOT( slotData( const char *, unsigned int ) ) );
+			Arts::connect( d->convert, "outdata", d->receiver, "indata" );
+
+			d->convert.start();
+			d->receiver.start();
+
+			//### needed?
+			Arts::Dispatcher::the()->ioManager()->processOneEvent( false );
+			d->attached = true;
+		}
 	}
 }
 
@@ -200,6 +253,8 @@ void KByteSoundReceiver::process_indata( Arts::DataPacket<Arts::mcopbyte> * inpa
 	emit data( (char *)inpacket->contents, inpacket->size );
 	inpacket->processed();
 }
+
+// vim:sw=4:ts=4
 
 #include "kaudiorecordstream.moc"
 #include "kaudiorecordstream_p.moc"
