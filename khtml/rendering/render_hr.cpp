@@ -129,11 +129,15 @@ void RenderHR::calcMinMaxWidth()
     {
     case Fixed:
         m_minWidth = m_width;
+        m_maxWidth = m_width;
         break;
     case Percent:
         m_minWidth = 1;
-    default:
         m_maxWidth = m_width;
+        break;
+    default:
+        m_minWidth = 0;
+        m_maxWidth = 0;
     }
 }
 
