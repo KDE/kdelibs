@@ -1144,7 +1144,7 @@ void RenderObject::dump(QTextStream &ts, const QString &ind) const
     if (isInline()) { ts << " inline"; }
     if (isReplaced()) { ts << " replaced"; }
     if (shouldPaintBackgroundOrBorder()) { ts << " paintBackground"; }
-    if (!needsLayout()) { ts << " layouted"; }
+    if (needsLayout()) { ts << " needsLayout"; }
     if (minMaxKnown()) { ts << " minMaxKnown"; }
     if (overhangingContents()) { ts << " overhangingContents"; }
     if (hasFirstLine()) { ts << " hasFirstLine"; }
