@@ -302,8 +302,8 @@ void HTMLTableElementImpl::parseAttribute(AttrImpl *attr)
 	    frame = Lhs;
 	else if ( strcasecmp( attr->value(), "rhs" ) == 0 )
 	    frame = Rhs;
-	break;
 #endif
+	break;
     case ATTR_RULES:
 #if 0
 	if ( strcasecmp( attr->value(), "none" ) == 0 )
@@ -317,7 +317,8 @@ void HTMLTableElementImpl::parseAttribute(AttrImpl *attr)
 	else if ( strcasecmp( attr->value(), "all" ) == 0 )
 	    rules = All;
 #endif
-    case ATTR_CELLSPACING:
+	break;
+   case ATTR_CELLSPACING:
 	if (attr->val())
 	    addCSSLength(CSS_PROP_BORDER_SPACING, attr->value(), false);
 	else

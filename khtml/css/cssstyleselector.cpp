@@ -1900,16 +1900,90 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 
 // shorthand properties
     case CSS_PROP_BACKGROUND:
+        if(value->valueType() != CSSValue::CSS_INHERIT || !e->parentNode()) return;
+        style->setBackgroundColor(e->parentNode()->style()->backgroundColor());
+        style->setBackgroundImage(e->parentNode()->style()->backgroundImage());
+        style->setBackgroundRepeat(e->parentNode()->style()->backgroundRepeat());
+        style->setBackgroundAttachment(e->parentNode()->style()->backgroundAttachment());
+//      style->setBackgroundPosition(e->parentNode()->style()->backgroundPosition());
+
+        break;
     case CSS_PROP_BORDER_COLOR:
+        if(primitiveValue && primitiveValue->getIdent() == CSS_VAL_TRANSPARENT)
+        {
+            style->setBorderTopColor(QColor());
+            style->setBorderBottomColor(QColor());
+            style->setBorderLeftColor(QColor());
+            style->setBorderRightColor(QColor());
+            return;
+        }
     case CSS_PROP_BORDER:
     case CSS_PROP_BORDER_STYLE:
     case CSS_PROP_BORDER_WIDTH:
+        if(value->valueType() != CSSValue::CSS_INHERIT || !e->parentNode()) return;
+
+        if(prop->m_id == CSS_PROP_BORDER || prop->m_id == CSS_PROP_BORDER_COLOR)
+        {
+            style->setBorderTopColor(e->parentNode()->style()->borderTopColor());
+            style->setBorderBottomColor(e->parentNode()->style()->borderBottomColor());
+            style->setBorderLeftColor(e->parentNode()->style()->borderLeftColor());
+            style->setBorderRightColor(e->parentNode()->style()->borderRightColor());
+        }
+        if(prop->m_id == CSS_PROP_BORDER || prop->m_id == CSS_PROP_BORDER_STYLE)
+        {
+            style->setBorderTopStyle(e->parentNode()->style()->borderTopStyle());
+            style->setBorderBottomStyle(e->parentNode()->style()->borderBottomStyle());
+            style->setBorderLeftStyle(e->parentNode()->style()->borderLeftStyle());
+            style->setBorderRightStyle(e->parentNode()->style()->borderRightStyle());
+        }
+        if(prop->m_id == CSS_PROP_BORDER || prop->m_id == CSS_PROP_BORDER_WIDTH)
+        {
+            style->setBorderTopWidth(e->parentNode()->style()->borderTopWidth());
+            style->setBorderBottomWidth(e->parentNode()->style()->borderBottomWidth());
+            style->setBorderLeftWidth(e->parentNode()->style()->borderLeftWidth());
+            style->setBorderRightWidth(e->parentNode()->style()->borderRightWidth());
+        }
+        return;
     case CSS_PROP_BORDER_TOP:
+        if(value->valueType() != CSSValue::CSS_INHERIT || !e->parentNode()) return;
+        style->setBorderTopColor(e->parentNode()->style()->borderTopColor());
+        style->setBorderTopStyle(e->parentNode()->style()->borderTopStyle());
+        style->setBorderTopWidth(e->parentNode()->style()->borderTopWidth());
+        return;
     case CSS_PROP_BORDER_RIGHT:
+        if(value->valueType() != CSSValue::CSS_INHERIT || !e->parentNode()) return;
+        style->setBorderRightColor(e->parentNode()->style()->borderRightColor());
+        style->setBorderRightStyle(e->parentNode()->style()->borderRightStyle());
+        style->setBorderRightWidth(e->parentNode()->style()->borderRightWidth());
+        return;
     case CSS_PROP_BORDER_BOTTOM:
+        if(value->valueType() != CSSValue::CSS_INHERIT || !e->parentNode()) return;
+        style->setBorderBottomColor(e->parentNode()->style()->borderBottomColor());
+        style->setBorderBottomStyle(e->parentNode()->style()->borderBottomStyle());
+        style->setBorderBottomWidth(e->parentNode()->style()->borderBottomWidth());
+        return;
     case CSS_PROP_BORDER_LEFT:
+        if(value->valueType() != CSSValue::CSS_INHERIT || !e->parentNode()) return;
+        style->setBorderLeftColor(e->parentNode()->style()->borderLeftColor());
+        style->setBorderLeftStyle(e->parentNode()->style()->borderLeftStyle());
+        style->setBorderLeftWidth(e->parentNode()->style()->borderLeftWidth());
+        return;
     case CSS_PROP_MARGIN:
+        if(value->valueType() != CSSValue::CSS_INHERIT || !e->parentNode()) return;
+        style->setMarginTop(e->parentNode()->style()->marginTop());
+        style->setMarginBottom(e->parentNode()->style()->marginBottom());
+        style->setMarginLeft(e->parentNode()->style()->marginLeft());
+        style->setMarginRight(e->parentNode()->style()->marginRight());
+        return;
     case CSS_PROP_PADDING:
+        if(value->valueType() != CSSValue::CSS_INHERIT || !e->parentNode()) return;
+        style->setPaddingTop(e->parentNode()->style()->paddingTop());
+        style->setPaddingBottom(e->parentNode()->style()->paddingBottom());
+        style->setPaddingLeft(e->parentNode()->style()->paddingLeft());
+        style->setPaddingRight(e->parentNode()->style()->paddingRight());
+        return;
+
+
     case CSS_PROP_CUE:
     case CSS_PROP_FONT:
     case CSS_PROP_LIST_STYLE:
