@@ -79,9 +79,12 @@ void KPushButton::init( const KGuiItem &item )
     setText( item.text() );
     slotSettingsChanged( 0 );
     
-    connect( kapp, SIGNAL( settingsChanged(int) ),
-             SLOT( slotSettingsChanged(int) ) );
-    kapp->addKipcEventMask( KIPC::SettingsChanged );
+    if (kapp)
+    {
+       connect( kapp, SIGNAL( settingsChanged(int) ),
+               SLOT( slotSettingsChanged(int) ) );
+       kapp->addKipcEventMask( KIPC::SettingsChanged );
+    }
 }
 
 void KPushButton::slotSettingsChanged( int /* category */ )
