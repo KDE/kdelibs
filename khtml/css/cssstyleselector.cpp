@@ -96,7 +96,7 @@ CSSStyleSelector::CSSStyleSelector( DocumentImpl* doc, QString userStyleSheet, S
 	    computeFontSizes(paintDeviceMetrics, view ? view->part()->zoomFactor() : 100);
 
     if ( !userStyleSheet.isEmpty() ) {
-        userSheet = new DOM::CSSStyleSheetImpl((DOM::CSSStyleSheetImpl *)0);
+        userSheet = new DOM::CSSStyleSheetImpl(doc);
         userSheet->parseString( DOMString( userStyleSheet ) );
 
         userStyle = new CSSStyleSelectorList();
