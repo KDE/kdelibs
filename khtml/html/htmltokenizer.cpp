@@ -726,7 +726,9 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 // end of the quoted section. Helps with bad html as
                 // <tag attr="value"" nextattr="..." ...>
             }
-            else
+            // make sure no quotes get written to the output buffer
+            // if something went wrong already or the tag is unknown
+            else if(tag != SearchEnd)
             {
                 *dest++ = src[0];
             }
@@ -1112,10 +1114,9 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
             }
             case SearchEnd:
             {
-                if ( curchar != '>')
+                if ( tquote != NoQuote || curchar != '>')
                 {
                     ++src; // discard everything, until we found the end
-                    tquote = IgnoreQuote; // make sure that no quotes get written to dest
                     break;
                 }
 
