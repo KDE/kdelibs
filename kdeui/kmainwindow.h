@@ -690,8 +690,8 @@ private slots:
     void shuttingDown();
 
 private:
-    QMenuBar *internalMenuBar();
-    QStatusBar *internalStatusBar();
+    KMenuBar *internalMenuBar();
+    KStatusBar *internalStatusBar();
     KHelpMenu *mHelpMenu, *helpMenu2;
     KXMLGUIFactory *factory_;
     QPtrList<KToolBar> toolbarList;

@@ -828,17 +828,25 @@ bool KMainWindow::hasMenuBar()
 
 KMenuBar *KMainWindow::menuBar()
 {
-    KMenuBar * mb = static_cast<KMenuBar *>(internalMenuBar());
-    if ( !mb )
+    KMenuBar * mb = internalMenuBar();
+    if ( !mb ) {
         mb = new KMenuBar( this );
+        // trigger a re-layout and trigger a call to the private
+        // setMenuBar method.
+        QMainWindow::menuBar();
+    }
     return mb;
 }
 
 KStatusBar *KMainWindow::statusBar()
 {
-    KStatusBar * sb = static_cast<KStatusBar *>(internalStatusBar());
-    if ( !sb )
+    KStatusBar * sb = internalStatusBar();
+    if ( !sb ) {
         sb = new KStatusBar( this );
+        // trigger a re-layout and trigger a call to the private
+        // setStatusBar method.
+        QMainWindow::statusBar();
+    }
     return sb;
 }
 
@@ -857,28 +865,28 @@ void KMainWindow::shuttingDown()
     
 }
 
-QMenuBar *KMainWindow::internalMenuBar()
+KMenuBar *KMainWindow::internalMenuBar()
 {
-    QObjectList *l = queryList( "QMenuBar" );
+    QObjectList *l = queryList( "KMenuBar" );
     if ( !l || !l->first() ) {
         delete l;
         return 0;
     }
 
-    QMenuBar *m = (QMenuBar*)l->first();
+    KMenuBar *m = (KMenuBar*)l->first();
     delete l;
     return m;
 }
 
-QStatusBar *KMainWindow::internalStatusBar()
+KStatusBar *KMainWindow::internalStatusBar()
 {
-    QObjectList *l = queryList( "QStatusBar" );
+    QObjectList *l = queryList( "KStatusBar" );
     if ( !l || !l->first() ) {
         delete l;
         return 0;
     }
 
-    QStatusBar *s = (QStatusBar*)l->first();
+    KStatusBar *s = (KStatusBar*)l->first();
     delete l;
     return s;
 }
