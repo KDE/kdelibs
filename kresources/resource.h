@@ -240,7 +240,7 @@ public:
    * or Terrible Things(TM) will happen.
    * @param config Configuration to write persistence information to.
    */
-  virtual void writeConfig( KConfig* config );
+  virtual void writeConfig( KConfig* config ) const;
 
   /**
    * Open this resource, if it not already open. Increase the open
@@ -297,6 +297,16 @@ public:
   virtual QString resourceName() const;
 
   /**
+    Sets, if the resource is active.
+  */
+  void setActive( bool active );
+  
+  /**
+    Return true, if the resource is active.
+  */
+  bool isActive() const;
+
+  /**
    * This method can be used by all resources to encrypt
    * their passwords for storing in a config file.
    */
@@ -309,6 +319,11 @@ public:
 
   friend class ResourceFactory;
   friend class ResourceManagerImpl;
+
+  /**
+    Print resource information as debug output.
+  */
+  void dump() const;
 
 protected:
   /**
@@ -335,6 +350,7 @@ private:
   QString mIdentifier;
   bool mReadOnly;
   QString mName;
+  bool mActive;
 };
 
 }

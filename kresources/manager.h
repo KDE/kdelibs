@@ -54,7 +54,7 @@ template<class T>
 class ResourceManager : private ManagerImplListener
 {
   public:
-    ResourceManager<T>( const QString& family )
+    ResourceManager( const QString& family )
     {
       mFactory = ResourceFactory::self( family );
       // The managerimpl will use the same Factory object as the manager
@@ -64,7 +64,7 @@ class ResourceManager : private ManagerImplListener
       mListeners = new QPtrList<ManagerListener<T> >;
     }
 
-    virtual ~ResourceManager<T>()
+    virtual ~ResourceManager()
     { 
       mManager->setListener( 0 );
       delete mListeners;

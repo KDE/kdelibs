@@ -2,6 +2,7 @@
     This file is part of libkresources.
     Copyright (c) 2002 Tobias Koenig <tokoe@kde.org>
     Copyright (c) 2002 Jan-Pascal van Best <janpascal@vanbest.org>
+    Copyright (c) 2003 Cornelius Schumacher <schumacher@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -34,14 +35,6 @@ namespace KRES {
 
 class Resource;
 class ResourceFactory;
-
-struct ResourceItem
-{
-  Resource *resource;
-//  QString key;
-  bool active : 1;
-  bool standard : 1;
-};
 
 class ManagerImplListener
 {
@@ -78,7 +71,7 @@ class ResourceManagerImpl : public QObject, virtual public ResourceManagerIface
     // Get only active or passive resources
     QPtrList<Resource> resources( bool active );
 
-    QStringList resourceNames() const;
+    QStringList resourceNames();
 
     void setListener( ManagerImplListener *listener )
     {
@@ -97,15 +90,15 @@ class ResourceManagerImpl : public QObject, virtual public ResourceManagerIface
   private:
     void load();
     void save();
-    ResourceItem *loadResource( const QString& identifier, bool checkActive, bool active=false );
-    void saveResource( const ResourceItem *item, bool checkActive );
-    void removeResource( const ResourceItem *item );
-    ResourceItem *getItem( const Resource *resource );
-    ResourceItem *getItem( const QString& identifier );
+    Resource *loadResource( const QString& identifier, bool checkActive, bool active=false );
+    void saveResource( const Resource *item, bool checkActive );
+    void removeResource( const Resource *item );
+    Resource *getResource( const Resource *resource );
+    Resource *getResource( const QString& identifier );
 
-    ResourceItem *mStandard;
+    const Resource *mStandard;
     QString mFamily;
-    QPtrList<ResourceItem> *mResources;
+    QPtrList<Resource> mResources;
     ManagerImplListener *mListener;
     bool mChanged;
     ResourceFactory *mFactory;

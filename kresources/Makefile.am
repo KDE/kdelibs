@@ -27,3 +27,9 @@ kresinclude_HEADERS = resource.h \
   resourceselectdialog.h \
   resourceconfigdlg.h \
   resourcesconfigpage.h 
+
+check_PROGRAMS = testresources
+
+testresources_LDFLAGS = $(all_libraries) $(KDE_RPATH)
+testresources_LDADD   = libkderesources.la
+testresources_SOURCES = testresources.cpp

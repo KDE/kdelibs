@@ -47,7 +47,7 @@ Resource::~Resource()
 {
 }
 
-void Resource::writeConfig( KConfig* config )
+void Resource::writeConfig( KConfig* config ) const
 {
   config->writeEntry( "ResourceType", mType );
   config->writeEntry( "ResourceName", mName );
@@ -109,6 +109,16 @@ QString Resource::resourceName() const
   return mName;
 }
 
+void Resource::setActive( bool value )
+{
+  mActive = value;
+}
+
+bool Resource::isActive() const
+{
+  return mActive;
+}
+
 QString Resource::encryptStr( const QString &str )
 {
   QString result;
@@ -125,3 +135,12 @@ QString Resource::decryptStr( const QString &str )
   return encryptStr( str );
 }
 
+void Resource::dump() const
+{
+  kdDebug() << "Resource:" << endl;
+  kdDebug() << "  Name: " << mName << endl;
+  kdDebug() << "  Identifier: " << mIdentifier << endl;
+  kdDebug() << "  Type: " << mType << endl;
+  kdDebug() << "  OpenCount: " << mOpenCount << endl;
+  kdDebug() << "  ReadOnly: " << ( mReadOnly ? "yes" : "no" ) << endl;
+}
