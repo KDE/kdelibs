@@ -33,7 +33,6 @@
 #include <qdatetime.h>
 #include <qstylesheet.h>
 #include <qvgroupbox.h>
-#include <qhbox.h>
 
 #include <iostream.h>
 
@@ -187,7 +186,7 @@ void KFileMetaPropsPlugin::createLayout()
         }
     }
 
-    toplayout->addItem(new QSpacerItem( 20, 20, QSizePolicy::Minimum, QSizePolicy::Expanding ));
+    toplayout->addStretch(1);
 
     // the add key (disabled until fully implemented)
 /*    d->m_add = new QPushButton(i18n("&Add"), topframe);
