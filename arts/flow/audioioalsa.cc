@@ -109,15 +109,18 @@ AudioIOALSA::AudioIOALSA()
     m_device = snd_defaults_pcm_device(); //!!
     m_format = SND_PCM_SFMT_S16_LE;
     m_bufferMode = block;  //block/stream
-    char* cardname;
-    snd_card_get_name(m_card, &cardname);
 
-	//!! thats not what devicename is intended to do
-	//!! devicename is an input information into
-	//!! the "driver", to select which card to use
-	//!! not an output information
-    param(deviceName) = cardname;
-    free(cardname);
+	if(m_card >= 0) {
+    	char* cardname;
+    	snd_card_get_name(m_card, &cardname);
+
+		//!! thats not what devicename is intended to do
+		//!! devicename is an input information into
+		//!! the "driver", to select which card to use
+		//!! not an output information
+    	paramStr(deviceName) = cardname;
+    	free(cardname);
+	}
 }
 
 bool AudioIOALSA::open()
@@ -324,8 +327,8 @@ int AudioIOALSA::read(void *buffer, int size)
 int AudioIOALSA::write(void *buffer, int size)
 {
     assert(m_bufferMode == block);
-	int x;
-	while((x = snd_pcm_write(m_pcm_handle, buffer, size)) != size) {
+
+	while(snd_pcm_write(m_pcm_handle, buffer, size) != size) {
         snd_pcm_channel_status_t status;
         (void)memset(&status, 0, sizeof(status));
         status.channel = SND_PCM_CHANNEL_PLAYBACK;
@@ -347,6 +350,7 @@ int AudioIOALSA::write(void *buffer, int size)
         	return -1;
         }
     }
+	return size;
 }
 
 int AudioIOALSA::setPcmParams(const int channel)
