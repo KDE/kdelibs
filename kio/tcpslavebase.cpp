@@ -21,6 +21,7 @@ extern "C" {
 
 #include "kio/tcpslavebase.h"
 #include "kextsock.h"
+#include <ksocks.h>
 
 using namespace KIO;
 
@@ -43,7 +44,7 @@ ssize_t TCPSlaveBase::Write(const void *data, ssize_t len)
 	} else
 #endif
 	{
-		return ::write(m_iSock, data, len);
+		return KSocks::self()->write(m_iSock, data, len);
 	}
 }
 
@@ -55,7 +56,7 @@ ssize_t TCPSlaveBase::Read(void *data, ssize_t len)
 	} else
 #endif
 	{
-		return ::read(m_iSock, data, len);
+		return KSocks::self()->read(m_iSock, data, len);
 	}
 }
 
