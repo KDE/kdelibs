@@ -144,7 +144,7 @@ typedef union {
     Value value;
     ValueList *valueList;
 } yystype;
-/* Line 1281 of /usr/share/bison/yacc.c.  */
+/* Line 1281 of /usr/local/share/bison/yacc.c.  */
 #line 149 "parser.tab.h"
 # define YYSTYPE yystype
 #endif
