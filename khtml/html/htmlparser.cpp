@@ -1001,7 +1001,7 @@ void KHTMLParser::processCloseTag(Token *t)
 	{
 	    end = true;
 	    // ### HACK!!!
-	    document->view()->layout(true);
+	    //document->view()->layout(true);
 	}
 	break;
     }
