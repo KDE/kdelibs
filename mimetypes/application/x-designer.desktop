@@ -50,7 +50,6 @@ Comment[zh_CN]=Qt Designer 文件
 Comment[zh_TW]=Qt Designer 檔案
 Comment[zu]=Qt Ifayela Yomdwebi
 Icon=widget_doc
-DefaultApp=designer -client
 Type=MimeType
 MimeType=application/x-designer
 Patterns=*.ui;
