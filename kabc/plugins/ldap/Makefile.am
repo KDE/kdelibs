@@ -14,7 +14,7 @@ kabc_ldap_la_LIBADD	= ../../libkabc.la ../../../kdeui/libkdeui.la
 METASOURCES = AUTO
 
 messages: rc.cpp
-	$(XGETTEXT) resourceldap.cpp resourceldapconfig.cpp -o $(podir)/kabc_ldap.pot
+	$(XGETTEXT) *.cpp -o $(podir)/kabc_ldap.pot
 
 linkdir		= $(kde_datadir)/kabc/
 link_DATA	= ldap.plugin
