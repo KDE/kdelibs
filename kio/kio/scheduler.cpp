@@ -67,6 +67,9 @@ class KIO::SlaveList: public QPtrList<Slave>
 class KIO::Scheduler::JobData
 {
 public:
+    JobData() : checkOnHold(false) { }
+
+public:
     QString protocol;
     QString proxy;
     bool checkOnHold;
