@@ -918,6 +918,7 @@ DCOPServer::DCOPServer(bool _suicide)
     serverKey = 42;
 
     suicide = _suicide;
+    shutdown = false;
 
     dcopSignals = new DCOPSignals;
 
@@ -952,7 +953,7 @@ DCOPServer::DCOPServer(bool _suicide)
 	}
 
     char errormsg[256];
-    int orig_umask = umask(0); /*old libICE's don't reset the umask() they set */
+    int orig_umask = umask(077); /*old libICE's don't reset the umask() they set */
     if (!IceListenForConnections (&numTransports, &listenObjs,
 				  256, errormsg))
 	{
@@ -1210,6 +1211,10 @@ void DCOPServer::removeConnection( void* data )
     {
         m_timer->start( 10000 ); // if within 10 seconds nothing happens, we'll terminate
     }
+    if ( shutdown && appIds.isEmpty())
+    {
+        m_timer->start( 10 ); // Exit now
+    }
 }
 
 void DCOPServer::slotTerminate()
@@ -1228,6 +1233,32 @@ void DCOPServer::slotSuicide()
 {
 #ifndef NDEBUG
     fprintf( stderr, "DCOPServer : slotSuicide() -> exit.\n" );
+#endif
+    exit(0);
+}
+
+void DCOPServer::slotShutdown()
+{
+#ifndef NDEBUG
+    fprintf( stderr, "DCOPServer : slotShutdown() -> waiting for clients to disconnect.\n" );
+#endif
+    char c;
+    read(pipeOfDeath[0], &c, 1);
+    if (!shutdown)
+    {
+       shutdown = true;
+       m_timer->start( 10000 ); // if within 10 seconds nothing happens, we'll terminate
+       disconnect( m_timer, SIGNAL(timeout()), this, SLOT(slotTerminate()) );
+       connect( m_timer, SIGNAL(timeout()), this, SLOT(slotExit()) );
+       if (appIds.isEmpty())
+         slotExit(); // Exit now
+    }
+}
+
+void DCOPServer::slotExit()
+{
+#ifndef NDEBUG
+    fprintf( stderr, "DCOPServer : slotExit() -> exit.\n" );
 #endif
     exit(0);
 }
@@ -1649,11 +1680,11 @@ extern "C" DCOP_EXPORT int kdemain( int argc, char* argv[] )
 
     QApplication a( argc, argv, false );
 
-    QSocketNotifier DEATH(pipeOfDeath[0], QSocketNotifier::Read, 0, 0);
-    a.connect(&DEATH, SIGNAL(activated(int)), SLOT(quit()));
-
     IceSetIOErrorHandler (IoErrorHandler );
     DCOPServer *server = new DCOPServer(suicide); // this sets the_server
+
+    QSocketNotifier DEATH(pipeOfDeath[0], QSocketNotifier::Read, 0, 0);
+    server->connect(&DEATH, SIGNAL(activated(int)), SLOT(slotShutdown()));
 
     int ret = a.exec();
     delete server;

@@ -143,6 +143,8 @@ private slots:
     void processData( int socket );
     void slotTerminate();
     void slotSuicide();
+    void slotShutdown();
+    void slotExit();
     void slotCleanDeadConnections();
     void slotOutputReady(int socket );
 
@@ -150,6 +152,7 @@ private:
     void broadcastApplicationRegistration( DCOPConnection* conn, const QCString type,
         const QString& data );
     bool suicide;
+    bool shutdown;
     int majorOpcode;
     int currentClientNumber;
     CARD32 serverKey;

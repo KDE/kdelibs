@@ -940,6 +940,7 @@ TRANS(SocketUNIXCreateListener) (XtransConnInfo ciptr, char *port)
 #endif
 
     unlink (sockname.sun_path);
+    (void) umask (oldUmask);
 
     if ((status = TRANS(SocketCreateListener) (ciptr,
 	(struct sockaddr *) &sockname, namelen)) < 0)
@@ -947,7 +948,6 @@ TRANS(SocketUNIXCreateListener) (XtransConnInfo ciptr, char *port)
 	PRMSG (1,
     "SocketUNIXCreateListener: ...SocketCreateListener() failed\n",
 	    0, 0, 0);
-	(void) umask (oldUmask);
 	return status;
     }
 
@@ -965,15 +965,12 @@ TRANS(SocketUNIXCreateListener) (XtransConnInfo ciptr, char *port)
         PRMSG (1,
         "SocketUNIXCreateListener: Can't allocate space for the addr\n",
 	    0, 0, 0);
-	(void) umask (oldUmask);
         return TRANS_CREATE_LISTENER_FAILED;
     }
 
     ciptr->family = sockname.sun_family;
     ciptr->addrlen = namelen;
     memcpy (ciptr->addr, &sockname, ciptr->addrlen);
-
-    (void) umask (oldUmask);
 
     return 0;
 }

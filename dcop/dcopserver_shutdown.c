@@ -23,6 +23,8 @@
 #include <config.h>
 #endif
 
+#include <sys/select.h>
+#include <sys/time.h>
 #include <sys/types.h>
 #include <sys/param.h>
 #include <sys/socket.h>
@@ -147,7 +149,7 @@ static void cleanupDCOPsocket(char *buffer)
    system(cmd);
 }
 
-static void cleanupDCOP(int dont_kill_dcop)
+static void cleanupDCOP(int dont_kill_dcop, int wait_for_exit)
 {
    FILE *f;
    char dcop_file[2048+1];
@@ -174,15 +176,25 @@ static void cleanupDCOP(int dont_kill_dcop)
          break;
       cleanupDCOPsocket(buffer);
    }
+   fclose(f);
+
    if (!dont_kill_dcop && pid)
       kill(pid, SIGTERM);
-   fclose(f);
+   
+   while(wait_for_exit && (kill(pid, 0) == 0))
+   {
+      struct timeval tv;
+      tv.tv_sec = 0;
+      tv.tv_usec = 100000;
+      select(0,0,0,0,&tv);
+   }
 }
 
 int main(int argc, char **argv)
 {
    int dont_kill_dcop = (argc == 2) && (strcmp(argv[1], "--nokill") == 0);
+   int wait_for_exit = (argc == 2) && (strcmp(argv[1], "--wait") == 0);
 
-   cleanupDCOP(dont_kill_dcop);
+   cleanupDCOP(dont_kill_dcop, wait_for_exit);
    return 0;
 }
