@@ -31,6 +31,7 @@
 #include <qfile.h>
 
 #include <kapplication.h>
+#include <kactivelabel.h>
 #include <kglobal.h>
 #include <klocale.h>
 #include <kprocess.h>
@@ -220,9 +221,8 @@ void KSSLInfoDlg::setup(KSSLCertificate *cert,
     if (url.length() > 80) {
       urllabel = url.left(80) + " ...";
     } else urllabel = url;
-    KURLLabel *urlLabel = new KURLLabel(url, urllabel, this);
+    KActiveLabel *urlLabel = new KActiveLabel(urllabel, this);
     layout->addWidget(urlLabel, 1, 1);
-    connect(urlLabel, SIGNAL(leftClickedURL(const QString &)), SLOT(urlClicked(const QString &)));
     layout->addWidget(new QLabel(i18n("Certificate state:"), this), 2, 0);
 
     layout->addWidget(d->_csl = new QLabel("", this), 2, 1);
