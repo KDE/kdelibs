@@ -126,9 +126,23 @@ QString Field::value( const KABC::Addressee &a )
     case FieldImpl::Url:
       return a.url().prettyURL();
     case FieldImpl::HomePhone:
-      return a.phoneNumber( PhoneNumber::Home ).number();
+    {
+      PhoneNumber::List list = a.phoneNumbers( PhoneNumber::Home );
+      PhoneNumber::List::Iterator it;
+      for ( it = list.begin(); it != list.end(); ++it )
+        if ( ((*it).type() & ~(PhoneNumber::Pref)) == PhoneNumber::Home )
+          return (*it).number();
+      return QString::null;
+    }
     case FieldImpl::BusinessPhone:
-      return a.phoneNumber( PhoneNumber::Work ).number();
+    {
+      PhoneNumber::List list = a.phoneNumbers( PhoneNumber::Work );
+      PhoneNumber::List::Iterator it;
+      for ( it = list.begin(); it != list.end(); ++it )
+        if ( ((*it).type() & ~(PhoneNumber::Pref)) == PhoneNumber::Work )
+          return (*it).number();
+      return QString::null;
+    }
     case FieldImpl::MobilePhone:
       return a.phoneNumber( PhoneNumber::Cell ).number();
     case FieldImpl::HomeFax:
