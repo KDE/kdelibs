@@ -45,7 +45,7 @@ LDFLAGS: -module $(KDE_PLUGIN)
 
 KControl Module
 ===============
-Name: libkcm_<modulename>.la
+Name: kcm_<modulename>.la
 LDFLAGS: -module $(KDE_PLUGIN)
 
 
