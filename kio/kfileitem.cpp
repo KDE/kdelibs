@@ -377,6 +377,9 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
        && !isReadable())
      _state |= KIcon::LockOverlay;
 
+  if ( m_strName[0] == "." )
+     _state |= KIcon::HiddenOverlay;
+
   KMimeType::Ptr mime;
   // Use guessed mimetype if the main one is clueless
   if ( m_pMimeType->name() == KMimeType::defaultMimeType()
