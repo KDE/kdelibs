@@ -21,15 +21,12 @@
 - decide on swapover date for patches (and make old version available)
 - make script that allows to check if entities are out of date (*.dsl is too
   hard) from English
-- investigate image printing/HTML
 - investigate olinks
 - Add language to link to chunk is that it is different (both in HTML
   and in the visible text)
 
 * DocBook
-+ Add check script for format of languages: lg-CY (RFC1766)
 - write style checker
-- add code for index in prologs and for app-entities
 + ask NW about positioning of qandaset: for customisation (ID cannot be made
   compulsory)
 + Is qandaset isolation a bug?
@@ -54,7 +51,6 @@
 
 * TeX
 - diacritics have to be changed by a script.
-- generate pictures with correct BB
 - Check if the fonts are installed, and don't need too much changing.
 
 * Meaning of characters:

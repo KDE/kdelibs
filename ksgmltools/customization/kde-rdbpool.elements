@@ -51,10 +51,11 @@
 <!ENTITY % lang.attrib
 	--Lang: Indicator of language in which element is written, for
 	translation, character set management, etc.; no default--
-	"Lang		(af|bg|br|ca|cs|da|de|el|en|en-GB|eo|es|et|eu
-                        |fi|fr|ga|he|hr|hu|is|it|ja|ko|lt|mi|mk|nl|no
-                        |no-nynorsk|no-bokmaal|pl|pt|pt-BR|ro|ru|sk|sl
-                        |sr|sv|ta|th|tr|uk|x-wa|zh-CN|zh-TW) #IMPLIED">
+	"Lang		(af|bg|br|ca|cs|da|de|el|en|en-GB|en-US|eo|es
+                        |et|eu|fi|fr|ga|he|hr|hu|is|it|ja|ko|lt|mi|mk
+                        |nl|no|no-nynorsk|no-bokmaal|pl|pt|pt-BR|pt-PT
+                        |ro|ru|sk|sl|sr|sv|ta|th|tr|uk|x-wa|zh-CN
+                        |zh-TW) #IMPLIED">
 <!-- end of KDE languages -->
 
 <!-- DocBook Reference Documentation recommends switching these off

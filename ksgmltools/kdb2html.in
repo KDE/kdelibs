@@ -28,6 +28,11 @@ then
   exit 1
 fi
 
+if test -z "$SP_C_SWITCHES"
+then
+  echo "Warning: No catalogues were found during installation!" >&2
+fi
+
 mkdir $TMPDIR
 SAVE_PWD=`pwd`
 (cd $TMPDIR;
