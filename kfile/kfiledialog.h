@@ -34,6 +34,7 @@
 #include <kfilereader.h>
 #include <kurl.h>
 #include <kurlcombobox.h>
+#include <kmimetype.h>
 
 class QCheckBox;
 class QHBoxLayout;
@@ -178,6 +179,27 @@ public:
      * @see filterChanged()
      */
     QString currentFilter() const;
+
+    /**
+     * Set the filter up to specify the output type.
+     *
+     * @param label the label to use instead of "Filter:"
+     * @param types a list of mimetypes that can be used as output format
+     * @param defaultType the default mimetype to use as output format.
+     *
+     * Do not use in conjunction with @ref setFilter()
+     */
+    void setFilterMimeType(const QString &label, const KMimeType::List &types, const KMimeType::Ptr &defaultType);
+    
+    /**
+     * The mimetype for the desired output format.
+     *
+     * This is only valid if @ref setFilterMimeType() has been called
+     * previously.
+     *
+     * @see setFilterMimeType()
+     */
+    KMimeType::Ptr currentFilterMimeType();
 
     /**
      * Add a preview widget and enter the preview mode.

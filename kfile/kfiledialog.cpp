@@ -125,6 +125,9 @@ struct KFileDialogPrivate
     bool completionLock;
 
     KURL::List urlList; //the list of selected urls
+
+    KMimeType::Ptr defaultType; // the default mimetype to save as
+    KMimeType::List mimetypes; //the list of possible mimetypes to save as
 };
 
 KURL *KFileDialog::lastDirectory; // to set the start path
@@ -333,6 +336,35 @@ void KFileDialog::setFilter(const QString& filter)
 QString KFileDialog::currentFilter() const
 {
     return filterWidget->currentFilter();
+}
+
+void KFileDialog::setFilterMimeType(const QString &label, 
+	const KMimeType::List &types, const KMimeType::Ptr &defaultType)
+{
+    d->mimetypes = types;
+    d->defaultType = defaultType;
+    d->filterLabel->setText(label); 
+
+    QString filter = i18n("*|Default (%1)").arg(defaultType->comment());
+
+    for(KMimeType::List::ConstIterator it = types.begin();
+        it != types.end();
+        ++it)
+    {
+        KMimeType::Ptr type = *it;
+        filter = filter + '\n' + type->patterns().join(QString::fromLatin1(" "))+'|'+type->comment();
+    }
+
+    setFilter(filter);    
+}
+
+KMimeType::Ptr KFileDialog::currentFilterMimeType()
+{
+    int i = d->filterWidget->currentItem()-1;
+
+    if ((i >= 0) && (i < d->mimetypes.count()))
+       return d->mimetypes[i];
+    return d->defaultType;
 }
 
 void KFileDialog::setPreviewWidget(const QWidget *w) {
