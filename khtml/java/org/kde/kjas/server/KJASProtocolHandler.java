@@ -165,14 +165,14 @@ public class KJASProtocolHandler
             final Hashtable params = new Hashtable();
             for( int i = 0; i < num_params; i++ )
             {
-                String name  = getArg( command );
+                String name  = getArg( command ); // note name is in uppercase
                 if( name == null )
                     name = new String();
 
                 String value = getArg( command );
                 if( value == null )
                     value = new String();
-                params.put( name.toUpperCase(), value );
+                params.put( name, value );
                 //Main.debug( "parameter, name = " + name + ", value = " + value );
             }
 

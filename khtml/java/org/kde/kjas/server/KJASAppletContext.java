@@ -103,7 +103,7 @@ public class KJASAppletContext implements AppletContext
     {
         //do kludges to support mess with parameter table and
         //the applet variables
-        String key = new String( "archive" ).toUpperCase();
+        String key = new String( "ARCHIVE" );
         if (params.containsKey(key)) {
             String param_archive = (String)params.get(key);
             if (archives == null) {
@@ -125,19 +125,12 @@ public class KJASAppletContext implements AppletContext
             params.put( key, archives);
         }
         
-        key = new String( "codebase" ).toUpperCase();
         if( codeBase == null )
         {
+            key = new String( "CODEBASE" );
             if( params.containsKey( key ) )
                 codeBase = (String) params.get( key );
         }
-
-        key = new String( "width" ).toUpperCase();
-        if( !params.containsKey( key ) )
-            params.put( key, width );
-        key = new String( "height" ).toUpperCase();
-        if( !params.containsKey( key ) )
-            params.put( key, height );
 
         if (username != null && !username.equals("")) {
             try {
