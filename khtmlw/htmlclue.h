@@ -134,7 +134,7 @@ public:
 	    }
 	}
 	
-    virtual void findFreeArea( int _y, int _width, int _height, int _indent,
+    virtual void findFreeArea( int _y, int, int, int,
                                int *_y_pos, int *_lmargin, int *_rmargin)
         { *_y_pos = _y; *_lmargin = 0; *_rmargin = max_width; }
     // This method tries to find a free rectangular area of _width x _height
@@ -144,7 +144,7 @@ public:
     virtual void appendLeftAligned( HTMLClueAligned * ) { }
     virtual void appendRightAligned( HTMLClueAligned * ) { }
     virtual int  appended(HTMLClueAligned * ) { return 0;}
-    virtual void removeAlignedByParent( HTMLObject *p ) { }
+    virtual void removeAlignedByParent( HTMLObject * ) { }
     virtual int  getLeftMargin( int )
         { return 0; }
     virtual int  getRightMargin( int )
