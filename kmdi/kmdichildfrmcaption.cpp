@@ -97,7 +97,7 @@ void KMdiChildFrmCaption::mousePressEvent( QMouseEvent *e )
 	}
 	else if ( e->button() == RightButton )
 	{
-		m_pParent->systemMenu() ->popup( mapToGlobal( e->pos() ) );
+		m_pParent->systemMenu()->popup( mapToGlobal( e->pos() ) );
 	}
 }
 

@@ -365,7 +365,6 @@ void KMdiDockContainer::hideIfNeeded()
 
 void KMdiDockContainer::removeWidget( KDockWidget* dwdg )
 {
-
 	KDockWidget * w = dwdg;
 	if ( !m_map.contains( w ) )
 		return; //we don't have this widget in our container
