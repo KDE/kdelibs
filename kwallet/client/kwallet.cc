@@ -77,6 +77,26 @@ Wallet::~Wallet() {
 }
 
 
+QStringList Wallet::walletList() {
+DCOPReply r = DCOPRef("kded", "kwalletd").call("walletList");
+QStringList rc;
+	if (r.isValid()) {
+		r.get(rc);
+	}
+return rc;
+}
+
+
+bool Wallet::isOpen(const QString& name) {
+DCOPReply r = DCOPRef("kded", "kwalletd").call("isOpen", name);
+bool rc = false;
+	if (r.isValid()) {
+		r.get(rc);
+	}
+return rc;
+}
+
+
 Wallet *Wallet::openWallet(const QString& name) {
 DCOPReply r = DCOPRef("kded", "kwalletd").call("open", name);
 	if (r.isValid()) {
