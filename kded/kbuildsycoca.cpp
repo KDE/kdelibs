@@ -447,7 +447,6 @@ void KBuildSycoca::createMenu(QString caption, QString name, VFolderMenu::SubMen
      }
      else
      {
-        // TODO: Check if problematic if same sevice is added twice
         g_bsf->addEntry( it.current(), g_resource );
         g_bsgf->addNewEntryTo(name, it.current());
      }

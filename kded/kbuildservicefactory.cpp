@@ -34,6 +34,7 @@ KBuildServiceFactory::KBuildServiceFactory( KSycocaFactory *serviceTypeFactory,
 	KBuildServiceGroupFactory *serviceGroupFactory ) :
   KServiceFactory(),
   m_serviceDict(977),
+  m_dupeDict(977),
   m_serviceTypeFactory( serviceTypeFactory ),
   m_serviceGroupFactory( serviceGroupFactory )
 {
@@ -226,9 +227,13 @@ KBuildServiceFactory::saveInitList(QDataStream &str)
 void
 KBuildServiceFactory::addEntry(KSycocaEntry *newEntry, const char *resource)
 {
+   if (m_dupeDict.find(newEntry))
+      return;
+
    KSycocaFactory::addEntry(newEntry, resource);
 
    KService * service = (KService *) newEntry;
+   m_dupeDict.insert(newEntry, service);
 
    if (!service->isDeleted())
    {

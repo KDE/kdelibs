@@ -21,8 +21,10 @@
 #ifndef __k_build_service_factory_h__
 #define __k_build_service_factory_h__
 
-#include <kservicefactory.h>
+#include <qptrdict.h>
 #include <qstringlist.h>
+
+#include <kservicefactory.h>
 // We export the services to the service group factory!
 #include <kbuildservicegroupfactory.h>
 
@@ -77,6 +79,7 @@ private:
   void saveInitList(QDataStream &str);
 
   QDict<KService> m_serviceDict;
+  QPtrDict<KService> m_dupeDict;
   KSycocaFactory *m_serviceTypeFactory;
   KBuildServiceGroupFactory *m_serviceGroupFactory;
 };
