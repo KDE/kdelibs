@@ -104,14 +104,6 @@ int CString::size() const
   return strlen(data);
 }
 
-UString KJS::int2String(int i)
-{
-  char buf[20];
-  sprintf(buf, "%d", i);
-
-  return UString(buf);
-}
-
 bool KJS::operator==(const KJS::CString& c1, const KJS::CString& c2)
 {
   return (strcmp(c1.c_str(), c2.c_str()) == 0);
@@ -177,6 +169,37 @@ UString::UString(const UString *b)
 UString::~UString()
 {
   release();
+}
+
+UString UString::from(int i)
+{
+  char buf[40];
+  sprintf(buf, "%d", i);
+
+  return UString(buf);
+}
+
+UString UString::from(unsigned int u)
+{
+  char buf[40];
+  sprintf(buf, "%u", u);
+
+  return UString(buf);
+}
+
+UString UString::from(double d)
+{
+  char buf[40];
+  sprintf(buf, "%f", d);
+  // truncate trailing zeros
+  char *z = buf + strlen(buf) - 1;
+  while (*z == '0')
+    *z-- = '\0';
+  // no decimal digits -> no decimal point
+  if (*z == '.')
+    *z = '\0';
+
+  return UString(buf);
 }
 
 UString &UString::append(const UString &t)

@@ -46,7 +46,7 @@ Object* ArrayObject::construct(const List &args)
     // initialize array
     len = args.size();
     for (unsigned int u = 0; it != args.end(); it++, u++)
-      result->put(int2String(u), it);
+      result->put(UString::from(u), it);
   }
 
   // array size

@@ -383,7 +383,7 @@ void KJSO::putArrayElement(const UString &p, KJSO *v)
       unsigned int newLen = toUInt32(v);
       // shrink array
       for (unsigned int u = newLen; u < oldLen; u++) {
-	UString p = int2String(u);
+	UString p = UString::from(u);
 	if (hasProperty(p, false))
 	  deleteProperty(p);
       }

@@ -61,7 +61,7 @@ Activation::Activation(Function *f, const List *args)
     put("length", args->size(), DontEnum);
     ListIterator arg = args->begin();
     for (int i = 0; arg != args->end(); arg++, i++) {
-      put(int2String(i), arg);
+      put(UString::from(i), arg);
     }
   }
   /* TODO: solve deleting problem due to circular reference */

@@ -163,9 +163,8 @@ unsigned short KJS::toUInt16(KJSO *obj)
 // ECMA 9.8
 KJSO *KJS::toString(KJSO *obj)
 {
-  const char *c;
+  UString c;
   double d;
-  char buffer[40];
   Ptr res, tmp;
 
   switch (obj->type())
@@ -181,12 +180,7 @@ KJSO *KJS::toString(KJSO *obj)
       break;
     case NumberType:
       d = obj->doubleVal();
-      // truncate decimal digits on round values
-      if (d != (double)((int)d))
-	sprintf(buffer, "%f", d);
-      else
-	sprintf(buffer, "%d", (int)d);
-      c = buffer;
+      c = UString::from(d);
       break;
     case StringType:
       return obj->ref();

@@ -137,6 +137,10 @@ namespace KJS {
 
     ~UString();
 
+    static UString from(int i);
+    static UString from(unsigned int u);
+    static UString from(double d);
+
     UString &append(const UString &);
 
     // conversions to other string types
@@ -170,8 +174,6 @@ namespace KJS {
   bool operator==(const UString& s1, const UString& s2);
   bool operator==(const CString& s1, const CString& s2);
   UString operator+(const UString& s1, const UString& s2);
-
-  UString int2String(int i);
 
 }; // namespace
 
