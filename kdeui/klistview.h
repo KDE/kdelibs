@@ -111,8 +111,8 @@ private slots:
   void slotMouseButtonClicked( int btn, QListViewItem *item, const QPoint &pos, int c );
 
 private:
-  class KIconViewPrivate;
-  KIconViewPrivate *d;
+  class KListViewPrivate;
+  KListViewPrivate *d;
 };
 
 #endif
