@@ -25,7 +25,7 @@
 #include <qpainter.h>
 #include <qdrawutl.h>
 #include <qevent.h>
-#include "dither.h"
+#include <dither.h>
 #include "kselect.h"
 #include "kselect.moc"
 

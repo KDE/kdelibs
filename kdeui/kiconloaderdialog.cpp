@@ -29,6 +29,7 @@
 #include "kiconloaderdialog.h"
 #include "kiconloaderdialog.moc"
 
+#include <kpixmap.h>
 #include <klocale.h>
 #define klocale KApplication::getKApplication()->getLocale()
 
@@ -57,7 +58,7 @@ void KIconLoaderCanvas::loadDir( QString dir_name, QString filter )
 {
   max_width  = 0;
   max_height = 0;
-  QPixmap *new_xpm;
+  KPixmap *new_xpm = 0;
   QDir d(dir_name);
   name_list.clear();
   pixmap_list.clear();
@@ -74,9 +75,9 @@ void KIconLoaderCanvas::loadDir( QString dir_name, QString filter )
       QApplication::setOverrideCursor( waitCursor );
       for( ; it.current(); ++it )
 	{
-	  new_xpm = new QPixmap;
+	  new_xpm = new KPixmap;
 	  current = it.current();
-	  new_xpm->load( dir_name + '/' + current );
+	  new_xpm->load( dir_name + '/' + current, 0, KPixmap::LowColor );
 	  if( new_xpm->isNull() )
 	    {
 	      delete new_xpm;
@@ -91,7 +92,10 @@ void KIconLoaderCanvas::loadDir( QString dir_name, QString filter )
 	      else
 		scale = 60 / (float) new_xpm->height();
 	      m.scale( scale, scale );
-	      *new_xpm = new_xpm->xForm(m);
+		  QPixmap tmp_xpm = new_xpm->xForm(m);
+		  new_xpm->resize( tmp_xpm.width(), tmp_xpm.height() );
+		  bitBlt( new_xpm, 0, 0, &tmp_xpm );
+		  new_xpm->setMask( *tmp_xpm.mask() );
 	    }
 	  max_width  = ( max_width  > new_xpm->width()  ? max_width  : new_xpm->width() );
 	  max_height = ( max_height > new_xpm->height() ? max_height : new_xpm->height() );

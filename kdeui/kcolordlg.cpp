@@ -32,8 +32,8 @@
 #include <kconfig.h>
 #include "kcolordlg.h"
 #include "kcolordlg.moc"
-#include "dither.h"
 
+#include <dither.h>
 #include <klocale.h>
 #include <kapp.h>
 
