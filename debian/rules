@@ -134,7 +134,7 @@ binary-arch:  build install
 	-cp debian/dh-make/* debian/kdelibs3/usr/share/doc/kdelibs-dev/dh-make/
 	-cp admin/debianrules debian/kdelibs3/usr/share/doc/kdelibs-dev/dh-make/
 	dh_undocumented
-	dh_installman
+	dh_installman -a
 	dh_installmenu -a
 	# music chairs
 	dh_movefiles -plibarts --sourcedir=debian/kdelibs3

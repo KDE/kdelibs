@@ -1,51 +1,28 @@
-kdelibs (4:2.2-alpha1-5) experimental; urgency=low
+kdelibs (4:2.2-cvs20010503-1) experimental; urgency=low
  
-  * More upstream fixes
- 
- -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 30 Apr 2001 14:22:00 -0700
-
-kdelibs (4:2.2-alpha1-4) experimental; urgency=low
- 
-  * More upstream fixes
+  * Moving to -cvs{date] format for entering into experimental
+  * This is a post alpha1 snapshot taken from the HEAD cvs branch.  The
+    date listed in the version number states when the initial pull was made
+    however updates may and most likely will have taken place since that
+    date.  Look at it as a >= cvs{date}
   * More arts cleanup
   * Adding artsbuilder to the suggests for libarts/libarts-alsa
   * Includes /tmp security fix
   * Updated Build-Depends/Depends for docbook stuff
   * More cleanup in debian/rules
- 
- -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 24 Apr 2001 12:20:00 -0700
-
-kdelibs (4:2.2-alpha1-3) experimental; urgency=low
- 
-  * More upstream fixes
   * move artsmessage into libarts package where it belongs
   * Update copyright information
   * more build cleanup...moving to debhelper version 3
- 
- -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 20 Apr 2001 15:14:00 -0700
-
-kdelibs (4:2.2-alpha1-2) experimental; urgency=low
- 
-  * More upstream fixes
-  * And lets list the bug fixes
-         None yet..have to figure them out
   * Move dh_make files into kdelibs-dev package where they were supposed to be
   * Move more includes from kdelibs3 to kdelibs-dev ... new stuff I missed
   * More more cups bits out of kdelibs3 and into kdelibs3-cups
-
- -- Ivan E. Moore II <rkrusty@debian.org>  Sat, 14 Apr 2001 05:35:00 -0700
-
-kdelibs (4:2.2-alpha1-1) experimental; urgency=low
- 
-  * New upstream alpha version.
   * Reseting all lintian overrides
-  * And lets list the bug fixes
-         None yet..have to figure them out
   * Add flex to build-depends as well as other deps
   * Add Debian menu items: cupsdconf
   * New packages: kdelibs3-cups, libkdb-mysql libkdb-postgresql
+  * Moving kdoc and qt-doc into Build-Depends-Indep
 
- -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 11 Apr 2001 12:23:00 -0700
+ -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 03 May 2001 00:15:00 -0700
 
 kdelibs (4:2.1.1-7) unstable; urgency=low
  
