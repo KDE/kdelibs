@@ -24,9 +24,9 @@
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 
-#include <qdict.h>
+#include <qmap.h>
 
-/** 
+/**
 * Access to KDE desktop resources stored on the root window.
 *
 * A companion to the KConfig class
@@ -43,33 +43,44 @@
 class KRootProp
 {
 private:	
-  Display *kde_display;
-  Window root;
-  int screen;
-  Atom at;
-  QDict <QString> propDict;
+  Atom atom;
+  QMap<QString,QString> propDict;
+  QString property_;
+  bool dirty;
 
 protected:
 
 public:
-/** 
-* Construct a KRootProp object. 
+/**
+* Construct a KRootProp object for the property rProp.
 *
 */
-   KRootProp();
-   
-/** 
-* Destructor. 
+   KRootProp( const QString& rProp = QString::null );
+
+/**
+* Destructor.
 *
 * Writes back any dirty configuration entries.
 */
   ~KRootProp();
 
-/** 
+/**
 * Specify the property in which keys will be searched.
 *
 */	
   void setProp(const QString& rProp="");
+
+    
+ /**
+    Returns the property in which keys are searched.
+  */
+  QString prop() const;
+    
+ /**
+    Destroys the property completely. I.e. all entries will be cleared
+    and the property will be removed from the root window.
+ */
+ void destroy();
 
 /**
 * Read the value of an entry specified by rKey in the current property
@@ -79,13 +90,13 @@ public:
 * @return The value for this key or the default if no value
 *	  was found.
 */	
-  QString readEntry( const QString& rKey, 
+  QString readEntry( const QString& rKey,
   	  	  	  	  	  const QString& pDefault = QString::null ) const ;
-					  
+					
 /**
-* Read a numerical value. 
+* Read a numerical value.
 *
-* Read the value of an entry specified by rKey in the current property 
+* Read the value of an entry specified by rKey in the current property
 * and interpret it numerically.
 *
 * @param rKey The key to search for.
@@ -93,36 +104,36 @@ public:
 * @return The value for this key or the default if no value was found.
 */
   int readNumEntry( const QString& rKey, int nDefault = 0 ) const;
-  
-/** 
+
+/**
 * Read a QFont.
 *
-* Read the value of an entry specified by rKey in the current property 
+* Read the value of an entry specified by rKey in the current property
 * and interpret it as a font object.
 *
 * @param rKey		The key to search for.
 * @param pDefault	A default value returned if the key was not found.
 * @return The value for this key or a default font if no value was found.
-*/ 
-  QFont readFontEntry( const QString& rKey, 
+*/
+  QFont readFontEntry( const QString& rKey,
 							  const QFont* pDefault = 0 ) const;
 
-/** 
+/**
 * Read a QColor.
 *
-* Read the value of an entry specified by rKey in the current property 
+* Read the value of an entry specified by rKey in the current property
 * and interpret it as a color.
 *
 * @param rKey		The key to search for.
 * @param pDefault	A default value returned if the key was not found.
 * @return The value for this key or a default color if no value
 * was found.
-*/					  
+*/					
   QColor readColorEntry( const QString& rKey,
 								const QColor* pDefault = 0 ) const;
-							  
+							
 	
-/** 
+/**
 * writeEntry() overridden to accept a const QString& argument.
 *
 * This is stored to the current property when destroying the
@@ -130,37 +141,37 @@ public:
 *
 * @param rKey		The key to write.
 * @param rValue		The value to write.
-* @return The old value for this key. If this key did not exist, 
-*	  a null string is returned.	  
+* @return The old value for this key. If this key did not exist,
+*	  a null string is returned.	
 *
 * @see #writeEntry
 */				
   QString writeEntry( const QString& rKey, const QString& rValue );
-  
+
 /** Write the key value pair.
 * Same as above, but write a numerical value.
 * @param rKey The key to write.
 * @param nValue The value to write.
 * @return The old value for this key. If this key did not
-* exist, a null string is returned.	  
+* exist, a null string is returned.	
 */
   QString writeEntry( const QString& rKey, int nValue );
-  
+
 /** Write the key value pair.
 * Same as above, but write a font
 * @param rKey The key to write.
 * @param rValue The value to write.
 * @return The old value for this key. If this key did not
-* exist, a null string is returned.	  
+* exist, a null string is returned.	
 */
   QString writeEntry( const QString& rKey, const QFont& rFont );
-  
+
 /** Write the key value pair.
 * Same as above, but write a color
 * @param rKey The key to write.
 * @param rValue The value to write.
 * @return The old value for this key. If this key did not
-*  exist, a null string is returned.	  
+*  exist, a null string is returned.	
 */
   QString writeEntry( const QString& rKey, const QColor& rColor );
 

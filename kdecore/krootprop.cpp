@@ -18,13 +18,16 @@
 */
 
 #include "krootprop.h"
+#include "kglobal.h"
+#include "klocale.h"
+#include "kcharsets.h"
+#include <qtextstream.h>
 
-KRootProp::KRootProp()
+KRootProp::KRootProp(const QString& rProp )
 {
-  kde_display = KApplication::desktop()->x11Display();
-  screen = DefaultScreen(kde_display);
-  root = RootWindow(kde_display, screen);
-  at = 0;
+  atom = 0;
+  dirty = FALSE;
+  setProp( rProp );
 }
 
 KRootProp::~KRootProp()
@@ -35,24 +38,26 @@ KRootProp::~KRootProp()
 
 void KRootProp::sync()
 {
-  if ( !propDict.isEmpty() ) 
+  if ( !dirty )
+      return;
+  if ( !propDict.isEmpty() )
   {
-    QDictIterator <QString> it( propDict );
+    QMap<QString,QString>::Iterator it = propDict.begin();
     QString propString;
     QString keyvalue;
 
-    while ( it.current() ) 
+    while ( it != propDict.end() )
     {
-      QString *value = propDict.find( it.currentKey() );
-      keyvalue = QString( "%1=%2\n").arg(it.currentKey()).arg(*value);
+      keyvalue = QString( "%1=%2\n").arg(it.key()).arg(it.data());
       propString += keyvalue;
       ++it;
     }
 
-    XChangeProperty(kde_display, root, at,
+    XChangeProperty( qt_xdisplay(), qt_xrootwin(), atom,
                     XA_STRING, 8, PropModeReplace,
-                    (const unsigned char *)propString.ascii(), 
+                    (const unsigned char *)propString.utf8().data(),
                     propString.length());
+    kapp->flushX();
   }
 }
 
@@ -67,28 +72,29 @@ void KRootProp::setProp( const QString& rProp )
   // If a property has already been opened write
   // the dictionary back to the root window
 	
-  if( at )
+  if( atom )
     sync();
 
-  if( rProp.isEmpty() ) 
+  property_ = rProp;
+  if( rProp.isEmpty() )
     return;
 
-  at = XInternAtom( kde_display, rProp.ascii(), False);
+  atom = XInternAtom( qt_xdisplay(), rProp.utf8(), False);
 		
-  XGetWindowProperty( kde_display, root, at, 0, 256,
+  XGetWindowProperty( qt_xdisplay(), qt_xrootwin(), atom, 0, 256,
                       False, XA_STRING, &type, &format, &nitems, &bytes_after,
                       (unsigned char **)&buf);
 			
   // Parse through the property string stripping out key value pairs
   // and putting them in the dictionary
 		
-  QString s(buf);
+  QString s = QString::fromUtf8(buf);
   QString keypair;
   int i=0;
   QString key;
   QString value;
 		
-  while(s.length() >0 ) 
+  while(s.length() >0 )
   {
     // parse the string for first key-value pair separator '\n'
 
@@ -106,26 +112,38 @@ void KRootProp::setProp( const QString& rProp )
     keypair.simplifyWhiteSpace();
 			
     i = keypair.find( "=" );
-    if( i != -1 ) 
+    if( i != -1 )
     {
       key = keypair.left( i );
       value = keypair.mid( i+1 );
-      propDict.insert( key, new QString( value ) );
+      propDict.insert( key, value );
     }
   }
 }
 
-QString KRootProp::readEntry( const QString& rKey, 
-			    const QString& pDefault ) const 
-{
-  if( !propDict.isEmpty() )
-  {
-    QString *aValue = propDict[ rKey ];
 
-    if (aValue)
-       return *aValue;
-  }
-  return pDefault;
+QString KRootProp::prop() const
+{
+    return property_;
+}
+
+void KRootProp::destroy()
+{
+    dirty = FALSE;
+    propDict.clear();
+    if( atom ) {
+	XDeleteProperty( qt_xdisplay(), qt_xrootwin(), atom );
+	atom = 0;
+    }
+}
+
+QString KRootProp::readEntry( const QString& rKey,
+			    const QString& pDefault ) const
+{
+  if( propDict.contains( rKey ) )
+      return propDict[ rKey ];
+  else
+      return pDefault;
 }
 
 int KRootProp::readNumEntry( const QString& rKey, int nDefault ) const
@@ -137,14 +155,14 @@ int KRootProp::readNumEntry( const QString& rKey, int nDefault ) const
     bool ok;
 
     int rc = aValue.toInt( &ok );
-    if (ok) 
+    if (ok)
       return rc;
   }
   return nDefault;
 }
 
 
-QFont KRootProp::readFontEntry( const QString& rKey, 
+QFont KRootProp::readFontEntry( const QString& rKey,
                                 const QFont* pDefault ) const
 {
   QFont aRetFont;
@@ -163,13 +181,13 @@ QFont KRootProp::readFontEntry( const QString& rKey,
     return aDefFont; // Return default font
 
   aRetFont.setFamily( aValue.left( nIndex ) );
-	  
+	
   // find second part (point size)
   int nOldIndex = nIndex;
   nIndex = aValue.find( ',', nOldIndex+1 );
   if( nIndex == -1 )
     return aDefFont; // Return default font
-  aRetFont.setPointSize( aValue.mid( nOldIndex+1, 
+  aRetFont.setPointSize( aValue.mid( nOldIndex+1,
                          nIndex-nOldIndex-1 ).toUInt() );
 
   // find third part (style hint)
@@ -177,16 +195,33 @@ QFont KRootProp::readFontEntry( const QString& rKey,
   nIndex = aValue.find( ',', nOldIndex+1 );
   if( nIndex == -1 )
     return aDefFont; // Return default font
-  aRetFont.setStyleHint( (QFont::StyleHint)aValue.mid( nOldIndex+1, 
+  aRetFont.setStyleHint( (QFont::StyleHint)aValue.mid( nOldIndex+1,
                          nIndex-nOldIndex-1 ).toUInt() );
 
   // find fourth part (char set)
   nOldIndex = nIndex;
   nIndex = aValue.find( ',', nOldIndex+1 );
-  if( nIndex == -1 )
-    return aDefFont; // Return default font
-  aRetFont.setCharSet( (QFont::CharSet)aValue.mid( nOldIndex+1, 
-                       nIndex-nOldIndex-1 ).toUInt() );
+
+  if( nIndex == -1 ){
+      if( pDefault )
+	  aRetFont = *pDefault;
+      return aRetFont;
+  }
+
+  QString chStr=aValue.mid( nOldIndex+1,
+			    nIndex-nOldIndex-1 );
+  bool chOldEntry;			
+  QFont::CharSet chId=(QFont::CharSet)aValue.mid( nOldIndex+1,
+			  nIndex-nOldIndex-1 ).toUInt(&chOldEntry);
+  if (chOldEntry)
+      aRetFont.setCharSet( chId );
+  else if (kapp) {
+      if (chStr == "default")
+	  if (KGlobal::locale())
+	      chStr = KGlobal::locale()->charset();
+	  else chStr = "iso-8859-1";
+      KGlobal::charsets()->setQFont(aRetFont,chStr);
+  }
   // find fifth part (weight)
   nOldIndex = nIndex;
   nIndex = aValue.find( ',', nOldIndex+1 );
@@ -255,14 +290,16 @@ QColor KRootProp::readColorEntry( const QString& rKey,
 
 QString KRootProp::writeEntry( const QString& rKey, const QString& rValue )
 {
-  QString *aValue = propDict[ rKey ];
-
-  propDict.replace( rKey, new QString( rValue ) );
-	
-  if ( aValue )
-    return *aValue;
-
-  return QString::null;
+    dirty = TRUE;
+    if ( propDict.contains( rKey ) ) {
+	QString aValue = propDict[ rKey ];
+	propDict.replace( rKey, rValue );
+	return aValue;
+    }
+    else {
+	propDict.insert( rKey, rValue );
+	return QString::null;
+    }
 }
 
 QString KRootProp::writeEntry( const QString& rKey, int nValue )
@@ -290,19 +327,20 @@ QString KRootProp::writeEntry( const QString& rKey, const QFont& rFont )
   if( rFont.rawMode() )
     nFontBits = nFontBits | 0x20;
 
-  aValue.sprintf( "%s,%d,%d,%d,%d,%d",
-		   rFont.family().ascii(), 
-		   rFont.pointSize(),
-		   rFont.styleHint(),
-		   rFont.charSet(),
-		   rFont.weight(),
-		   nFontBits );
+  QString aCharset = "default";
+  if( rFont.charSet() != QFont::AnyCharSet )
+      aCharset.setNum( rFont.charSet() );
+  
+  QTextIStream ts( &aValue );
+  ts << rFont.family() << "," << rFont.pointSize() << "," 
+     << rFont.styleHint() << "," << aCharset << "," << rFont.weight() << "," 
+     << nFontBits;
   return writeEntry( rKey, aValue );
 }
 
 QString KRootProp::writeEntry( const QString& rKey, const QColor& rColor )
 {
   QString aValue = QString( "%1,%2,%3").arg(rColor.red()).arg(rColor.green()).arg(rColor.blue() );
-    
+
   return writeEntry( rKey, aValue );
 }
