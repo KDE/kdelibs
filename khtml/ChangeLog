@@ -1,4 +1,10 @@
 2003-10-24  Lars Knoll <knoll@kde.org>
+	* Make the <button> element work correctly
+	* remove lot's of addCSSProperty calls and moved the
+	definitions to the default style sheet. This made
+	it possible to remove quite some code in html_formimpl.cpp
+
+2003-10-24  Lars Knoll <knoll@kde.org>
 	* A few more small fixes to Html event handlers. We can unfortunately not 
 	easily get the events for <select> and <textarea> correct, as they use
 	either modality or QScrollView (but doesn't work in 3.1.x neither).	

@@ -669,14 +669,7 @@ void HTMLGenericFormElementImpl::parseAttribute(AttributeImpl *attr)
 
 void HTMLGenericFormElementImpl::attach()
 {
-    assert(!attached());
-
-    if (m_render) {
-        assert(m_render->style());
-        parentNode()->renderer()->addChild(m_render, nextRenderer());
-    }
-
-    NodeBaseImpl::attach();
+    HTMLElementImpl::attach();
 
     // The call to updateFromElement() needs to go after the call through
     // to the base class's attach() because that can sometimes do a close
@@ -942,31 +935,6 @@ NodeImpl::Id HTMLFieldSetElementImpl::id() const
     return ID_FIELDSET;
 }
 
-void HTMLFieldSetElementImpl::attach()
-{
-    assert(!attached());
-    assert(!m_render);
-    assert(parentNode());
-    addCSSProperty(CSS_PROP_BORDER_TOP_STYLE, CSS_VAL_SOLID);
-    addCSSProperty(CSS_PROP_BORDER_BOTTOM_STYLE, CSS_VAL_SOLID);
-    addCSSProperty(CSS_PROP_BORDER_LEFT_STYLE, CSS_VAL_SOLID);
-    addCSSProperty(CSS_PROP_BORDER_RIGHT_STYLE, CSS_VAL_SOLID);
-    addCSSProperty(CSS_PROP_BORDER_WIDTH, "1px");
-    addCSSProperty(CSS_PROP_PADDING_LEFT, "4px");
-    addCSSProperty(CSS_PROP_PADDING_RIGHT, "4px");
-    addCSSProperty(CSS_PROP_PADDING_BOTTOM, "4px");
-
-
-    RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
-    _style->ref();
-    if (parentNode()->renderer() && _style->display() != NONE) {
-        m_render = new (getDocument()->renderArena()) RenderFieldset(this);
-        m_render->setStyle(_style);
-    }
-    HTMLGenericFormElementImpl::attach();
-    _style->deref();
-}
-
 NodeImpl *HTMLFieldSetElementImpl::addChild(NodeImpl *child)
 {
     if(!m_legend && child->id() == ID_LEGEND) {
@@ -976,11 +944,6 @@ NodeImpl *HTMLFieldSetElementImpl::addChild(NodeImpl *child)
         return r;
     }
     return HTMLGenericFormElementImpl::addChild(child);
-}
-
-void HTMLFieldSetElementImpl::parseAttribute(AttributeImpl *attr)
-{
-    HTMLElementImpl::parseAttribute(attr);
 }
 
 // -------------------------------------------------------------------------
@@ -1243,11 +1206,14 @@ void HTMLInputElementImpl::attach()
         }
     }
 
-    if (m_render)
+    if (m_render) {
         m_render->setStyle(_style);
-
-    HTMLGenericFormElementImpl::attach();
+        m_render->updateFromElement();
+	parentNode()->renderer()->addChild(m_render, nextRenderer());
+    }
     _style->deref();
+
+    NodeImpl::attach();
 }
 
 DOMString HTMLInputElementImpl::altText() const
@@ -1553,23 +1519,6 @@ NodeImpl::Id HTMLLegendElementImpl::id() const
     return ID_LEGEND;
 }
 
-void HTMLLegendElementImpl::attach()
-{
-    assert(!attached());
-    assert(!m_render);
-    assert(parentNode());
-    addCSSProperty(CSS_PROP_PADDING_LEFT, "1px");
-    addCSSProperty(CSS_PROP_PADDING_RIGHT, "1px");
-    RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
-    _style->ref();
-    if (parentNode()->renderer() && _style->display() != NONE) {
-        m_render = new (getDocument()->renderArena()) RenderLegend(this);
-        m_render->setStyle(_style);
-    }
-    HTMLGenericFormElementImpl::attach();
-    _style->deref();
-}
-
 void HTMLLegendElementImpl::parseAttribute(AttributeImpl *attr)
 {
     switch(attr->id())
@@ -1806,25 +1755,6 @@ void HTMLSelectElementImpl::parseAttribute(AttributeImpl *attr)
     default:
         HTMLGenericFormElementImpl::parseAttribute(attr);
     }
-}
-
-void HTMLSelectElementImpl::attach()
-{
-    assert(!attached());
-    assert(parentNode());
-    assert(!renderer());
-
-    addCSSProperty(CSS_PROP_COLOR, CSS_VAL_WINDOWTEXT);
-
-    RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
-    _style->ref();
-    if (parentNode()->renderer() && _style->display() != NONE) {
-        m_render = new (getDocument()->renderArena()) RenderSelect(this);
-        m_render->setStyle(_style);
-    }
-
-    HTMLGenericFormElementImpl::attach();
-    _style->deref();
 }
 
 bool HTMLSelectElementImpl::encoding(const QTextCodec* codec, khtml::encodingList& encoded_values, bool)
@@ -2219,26 +2149,6 @@ void HTMLTextAreaElementImpl::parseAttribute(AttributeImpl *attr)
     default:
         HTMLGenericFormElementImpl::parseAttribute(attr);
     }
-}
-
-void HTMLTextAreaElementImpl::attach()
-{
-    assert(!attached());
-    assert(!m_render);
-    assert(parentNode());
-
-    addCSSProperty(CSS_PROP_COLOR, CSS_VAL_WINDOWTEXT);
-    addCSSProperty(CSS_PROP_FONT_FAMILY, CSS_VAL_MONOSPACE);
-
-    RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
-    _style->ref();
-    if (parentNode()->renderer() && _style->display() != NONE) {
-        m_render = new (getDocument()->renderArena()) RenderTextArea(this);
-        m_render->setStyle(_style);
-    }
-
-    HTMLGenericFormElementImpl::attach();
-    _style->deref();
 }
 
 bool HTMLTextAreaElementImpl::encoding(const QTextCodec* codec, encodingList& encoding, bool)

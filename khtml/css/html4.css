@@ -375,6 +375,7 @@ FIELDSET {
         padding: 0.75em 0.625em;
 	margin: 1.0em auto;
         border: 2px groove ThreeDFace;
+	background-color: 0x808080;
 } 
 
 BUTTON {
@@ -409,7 +410,16 @@ PARAM  {
 	display: none; 
 }
 
-SELECT { display: block; font-size: medium; }
+SELECT { 
+	display: block; 
+	font-size: medium; 
+	color: windowtext; 
+}
+
+TEXTAREA {
+	color: windowtext;
+	font-family: monospace;	
+}
 
 /*
  * inline elements
