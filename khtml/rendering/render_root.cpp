@@ -145,6 +145,7 @@ void RenderRoot::layout()
     kdDebug() << "RenderRoot::end time used=" << qt.elapsed() << endl;
 #endif
 
+    setLayouted();
     //kdDebug(0) << "root: height = " << m_height << endl;
 }
 
