@@ -46,7 +46,7 @@ int KCardGsmImplementation::selectFile (const QString fileID){
   
   QString result,status;
   int rc=0;
-  QString selectGSMfile("A0A40002");
+  QString selectGSMfile("A0A4000002");
   QString getResponse  ("A0C00000");
 
 

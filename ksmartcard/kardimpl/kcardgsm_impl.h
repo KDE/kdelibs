@@ -100,7 +100,8 @@ class KCardGsmImplementation:public KCardImplementation{
   int runGsmAlgorithm(const QString &, QString &);
 
 
-  QString lastErrorMessage () const;
+
+  QString lastErrorMessage () const {return _errorMessage;};
 
  private:
 
