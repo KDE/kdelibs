@@ -22,11 +22,11 @@ KToolBarItem::KToolBarItem( QPixmap& pixmap, int ID,
 {
     resize(24,24);
     id = ID;
-    if ( pixmap.isNull() ) 
+    if ( ! pixmap.isNull() ) 
     	enabledPixmap = pixmap;
     else {
-	warning("KToolBarItem: pixmap is null, perhaps some missing file");
-        enabledPixmap = QPixmap(ToolbarWidth, ToolbarWidth);
+	warning("KToolBarItem: pixmap is empty, perhaps some missing file");
+ 	enabledPixmap.resize( 22, 22);
     };
     makeDisabledPixmap();
     setPixmap( enabledPixmap );
@@ -49,7 +49,8 @@ void KToolBarItem::makeDisabledPixmap()
 	   pmm->setMask( *pmm );
 	   pm = *pmm;
         } else {
-           pm = QPixmap(ToolbarWidth, ToolbarWidth);
+           pm.resize(22 , 22);
+	   enabledPixmap.fill(this, 0, 0);
            warning("KToolBarItem::makeDisabledPixmap: mask is null.");
         };
     else
