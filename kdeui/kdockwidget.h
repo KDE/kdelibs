@@ -600,6 +600,11 @@ private:
    */
   int sDocking;
 
+  /**
+   * Previous side (left,right,top,bottom) where this dockwidget was before a dragging action, none if it wasn't dragged before.
+   */
+  KDockWidget::DockPosition prevSideDockPosBeforeDrag;
+
   // GROUP data
   QString firstName;
   QString lastName;
