@@ -233,7 +233,11 @@ public:
    */
   QListViewItem* itemAtIndex(int index);
 
-
+  /**
+   * Let the column fit exactly all the available width.
+   * Single column listviews only.
+   */
+  void setFullWidth();
 
 signals:
 
@@ -701,6 +705,11 @@ protected:
    * after listing. For more information look in konquerorKeyPressEvent().
    */
   void selectCurrentItemAndEnableSelectedBySimpleMoveMode();
+
+  /**
+   * Reimplemented for setFullWidth()
+   */
+  virtual void resizeEvent(QResizeEvent* e);
 
 protected slots:
   /**

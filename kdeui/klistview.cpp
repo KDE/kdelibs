@@ -85,6 +85,7 @@ public:
       createChildren (true),
       pressedOnSelected (false),
       wasShiftEvent (false),
+      fullWidth (false), 
       selectionDirection(0),
       tooltipColumn (0),
       selectionMode (Single),
@@ -128,6 +129,7 @@ public:
   bool createChildren:1;
   bool pressedOnSelected:1;
   bool wasShiftEvent:1;
+  bool fullWidth:1;
 
   //+1 means downwards (y increases, -1 means upwards, 0 means not selected), aleXXX
   int selectionDirection;
@@ -1624,6 +1626,20 @@ void KListView::viewportPaintEvent(QPaintEvent *e)
       style().drawFocusRect(&painter, d->mOldDropHighlighter, colorGroup(), 0, true);
     }
 }
+
+void KListView::setFullWidth()
+{
+  d->fullWidth = true;
+  header()->setResizeEnabled(false);
+}
+
+void KListView::resizeEvent(QResizeEvent* e)
+{
+  QListView::resizeEvent(e);
+  if (d->fullWidth && columns())
+     setColumnWidth( 0, visibleWidth() - 1 );
+}
+
 
 #include "klistview.moc"
 #include "klistviewlineedit.moc"
