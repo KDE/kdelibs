@@ -28,7 +28,7 @@ class QButtonGroup;
 class QGroupBox;
 class QLabel;
 
-class KPGeneralPage : public KPrintDialogPage
+class KDEPRINT_EXPORT KPGeneralPage : public KPrintDialogPage
 {
 	Q_OBJECT
 public:

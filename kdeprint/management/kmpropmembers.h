@@ -24,7 +24,7 @@
 
 class QTextView;
 
-class KMPropMembers : public KMPropWidget
+class KDEPRINT_EXPORT KMPropMembers : public KMPropWidget
 {
 public:
 	KMPropMembers(QWidget *parent = 0, const char *name = 0);

@@ -26,12 +26,14 @@
 #include <qvariant.h>
 #include <qdict.h>
 
+#include <kdelibs_export.h>
+
 class DrGroup;
 class DrBase;
 class DrMain;
 struct PS_private;
 
-class PPDLoader
+class KDEPRINT_EXPORT PPDLoader
 {
 public:
 	PPDLoader();

@@ -23,7 +23,9 @@
 #include <qframe.h>
 #include <qpixmap.h>
 
-class SidePixmap : public QFrame
+#include <kdelibs_export.h>
+
+class KDEPRINT_EXPORT SidePixmap : public QFrame
 {
 public:
 	SidePixmap(QWidget *parent = 0, const char *name = 0);

@@ -24,7 +24,8 @@
 #include <kdialogbase.h>
 #include <qptrlist.h>
 
-class NetworkScanner : public QWidget
+
+class KDEPRINT_EXPORT NetworkScanner : public QWidget
 {
 	Q_OBJECT
 

@@ -23,12 +23,14 @@
 #include <qwidget.h>
 #include <qvaluevector.h>
 
+#include <kdelibs_export.h>
+
 class MarginValueWidget;
 class MarginPreview;
 class QCheckBox;
 class QComboBox;
 
-class MarginWidget : public QWidget
+class KDEPRINT_EXPORT MarginWidget : public QWidget
 {
 	Q_OBJECT
 public:

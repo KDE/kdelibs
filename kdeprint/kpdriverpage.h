@@ -24,7 +24,7 @@
 
 class DriverView;
 
-class KPDriverPage : public KPrintDialogPage
+class KDEPRINT_EXPORT KPDriverPage : public KPrintDialogPage
 {
 public:
 	KPDriverPage(KMPrinter *p, DrMain *d = 0, QWidget *parent = 0, const char *name = 0);
