@@ -693,7 +693,7 @@ KJavaAppletContext *KHTMLPart::createJavaContext()
 {
 #ifndef Q_WS_QWS
   if ( !d->m_javaContext ) {
-      d->m_javaContext = new KJavaAppletContext(d->m_dcopobject);
+      d->m_javaContext = new KJavaAppletContext();
       connect( d->m_javaContext, SIGNAL(showStatus(const QString&)),
                this, SIGNAL(setStatusBarText(const QString&)) );
       connect( d->m_javaContext, SIGNAL(showDocument(const QString&, const QString&)),

@@ -1,5 +1,4 @@
 #include "kjavaappletcontext.h"
-
 #include <kjavaappletserver.h>
 #include <kjavaapplet.h>
 #include <kdebug.h>
@@ -14,7 +13,6 @@ class KJavaAppletContextPrivate
 friend class KJavaAppletContext;
 private:
     QMap< int, QGuardedPtr<KJavaApplet> > applets;
-    DCOPObject *browser;
 };
 
 
@@ -23,11 +21,10 @@ int KJavaAppletContext::contextCount = 0;
 
 /*  Class Implementation
  */
-KJavaAppletContext::KJavaAppletContext(DCOPObject *object)
+KJavaAppletContext::KJavaAppletContext()
     : QObject()
 {
     d = new KJavaAppletContextPrivate;
-    d->browser = object;
     server = KJavaAppletServer::allocateJavaServer();
 
     id = contextCount;
@@ -151,24 +148,20 @@ void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
     }
 }
 
-bool KJavaAppletContext::getMember(KJavaApplet * applet, const QString & name, JType & type, QString & value) {
-    return server->getMember(id, applet->appletId(), name, type, value);
+bool KJavaAppletContext::getMember(KJavaApplet * applet, const unsigned long objid, const QString & name, int & type, unsigned long & rid, QString & value) {
+    return server->getMember(id, applet->appletId(), objid, name, type, rid, value);
 }
 
-bool KJavaAppletContext::putMember(KJavaApplet * applet, const QString & name, const QString & value) {
-    return server->putMember(id, applet->appletId(), name, value);
+bool KJavaAppletContext::putMember(KJavaApplet * applet, const unsigned long objid, const QString & name, const QString & value) {
+    return server->putMember(id, applet->appletId(), objid, name, value);
 }
 
-bool KJavaAppletContext::callMember(KJavaApplet * applet, const QString & name, const QStringList & args, JType & type, QString & value) {
-    return server->callMember(id, applet->appletId(), name, args, type, value);
+bool KJavaAppletContext::callMember(KJavaApplet * applet, const unsigned long objid, const QString & name, const QStringList & args, int & type, unsigned long & retobjid, QString & value) {
+    return server->callMember(id, applet->appletId(), objid, name, args, type, retobjid, value);
 }
 
-void KJavaAppletContext::derefObject(KJavaApplet * applet,const int jobjid) {
-    server->derefObject(id, applet->appletId(), jobjid);
-}
-
-DCOPObject * KJavaAppletContext::getBrowserObject() {
-    return d->browser;
+void KJavaAppletContext::derefObject(KJavaApplet * applet, unsigned long jid) {
+    server->derefObject(id, applet->appletId(), jid);
 }
 
 #include <kjavaappletcontext.moc>

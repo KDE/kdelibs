@@ -179,54 +179,24 @@ KJavaLiveConnect::KJavaLiveConnect(KJavaAppletContext* c, KJavaApplet* a)
     : KParts::LiveConnectExtension(0), context(c), applet(a) {
 }
 
-/* TODO: unite JType and KParts::LiveConnectExtension::Type
-         make object reference work again
- */
-
-static KParts::LiveConnectExtension::Type convertType(JType type) {
-    switch (type) {
-        case JBoolean:
-            return KParts::LiveConnectExtension::TypeBool;
-        case JFunction:
-            return KParts::LiveConnectExtension::TypeFunction;
-        case JNumber:
-            return KParts::LiveConnectExtension::TypeNumber;
-        case JObject:
-            return KParts::LiveConnectExtension::TypeObject;
-        case JString:
-            return KParts::LiveConnectExtension::TypeString;
-        case JVoid:
-        default:
-            return KParts::LiveConnectExtension::TypeVoid;
-    }
+bool KJavaLiveConnect::get(const unsigned long objid, const QString & field, KParts::LiveConnectExtension::Type & type, unsigned long & rid, QString & value )
+{
+    return context->getMember(applet, objid, field, (int) type, rid, value);
 }
 
-bool KJavaLiveConnect::get(const unsigned long /*objid*/, const QString & field, KParts::LiveConnectExtension::Type & type, unsigned long & /*retobjid*/, QString & value )
+bool KJavaLiveConnect::put(const unsigned long objid, const QString & name, const QString & value)
 {
-    JType jtype;
-    if (!context->getMember(applet, field, jtype, value))
-        return false;
-    type = convertType(jtype);
-    return true;
+    return context->putMember(applet, objid, name, value);
 }
 
-bool KJavaLiveConnect::put(const unsigned long, const QString & name, const QString & value)
+bool KJavaLiveConnect::call( const unsigned long objid, const QString & func, const QStringList & args, KParts::LiveConnectExtension::Type & type, unsigned long & retobjid, QString & value )
 {
-    return context->putMember(applet, name, value);
-}
-
-bool KJavaLiveConnect::call( const unsigned long , const QString & func, const QStringList & args, KParts::LiveConnectExtension::Type & type, unsigned long & /*retobjid*/, QString & value )
-{
-    JType jtype;
-    if (!context->callMember(applet, func, args, jtype, value))
-        return false;
-    type = convertType(jtype);
-    return true;
+    return context->callMember(applet, objid, func, args, (int) type, retobjid, value);
 }
 
 void KJavaLiveConnect::unregister(const unsigned long objid)
 {
-    context->derefObject(applet, (int) objid);
+    context->derefObject(applet, objid);
 }
 
 #include "kjavaapplet.moc"

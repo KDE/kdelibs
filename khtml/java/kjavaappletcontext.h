@@ -42,16 +42,13 @@
 class KJavaAppletServer;
 class KJavaApplet;
 class KJavaAppletContextPrivate;
-class DCOPObject;
-
-enum JType { JError=0, JArray, JBoolean, JFunction, JNull, JNumber, JObject, JString, JVoid };
 
 class KJavaAppletContext : public QObject
 {
 Q_OBJECT
 
 public:
-    KJavaAppletContext(DCOPObject *obj=NULL);
+    KJavaAppletContext();
     ~KJavaAppletContext();
 
     /**
@@ -98,12 +95,11 @@ public:
     /**
      * LiveConnect functions
      */
-    bool getMember(KJavaApplet *, const QString &, JType &, QString &);
-    bool putMember(KJavaApplet *, const QString &, const QString &);
-    bool callMember(KJavaApplet *, const QString &, const QStringList &, JType &, QString &);
-    void derefObject(KJavaApplet *,const int id);
+    bool getMember(KJavaApplet *, const unsigned long, const QString &, int &, unsigned long &, QString &);
+    bool putMember(KJavaApplet *, const unsigned long, const QString &, const QString &);
+    bool callMember(KJavaApplet *, const unsigned long, const QString &, const QStringList &, int &, unsigned long &, QString &);
+    void derefObject(KJavaApplet *, const unsigned long id);
 
-    DCOPObject * getBrowserObject();
 signals:
     /**
      * Signals the KHMTL Part to show this as the status message.

@@ -7,7 +7,7 @@
 #include <kdebug.h>
 #include <kconfig.h>
 #include <klocale.h>
-#include <dcopobject.h>
+#include <kparts/browserextension.h>
 #include <kapplication.h>
 #include <kstandarddirs.h>
 
@@ -447,21 +447,15 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
     }
     else if (cmd_code == KJAS_EVALUATE_JAVASCRIPT)
     {
-        bool ok;
-        int contextID_num = contextID.toInt( &ok );
+        /* TODO: implement accessing JS objects from 
+         *       netscape.javascript.JSObject
+         *       Solution: implement LiveConnectExtension in KHTMLPart
+         */
+        int contextID_num = contextID.toInt();
         KJavaAppletContext * tmp = d->contexts[contextID_num];
 	kdDebug(6100) << "KJavaAppletContext: "<< (void*) tmp << endl;
-        DCOPObject * browser = NULL;
-        if (tmp && (browser = tmp->getBrowserObject())) {
-	    kdDebug(6100) << "BrowserObject: "<< (void*) browser << endl;
-            QByteArray data, retval;
-            QDataStream arg(data, IO_WriteOnly);
-            arg << args[0];
-            QCString rettype;
-            browser->process(QCString("evalJS(QString)"), data, rettype, retval);
-            QDataStream reply_stream(retval, IO_ReadOnly);
-            QString result;
-            reply_stream >> result;
+        if (tmp) {
+            QString result("");
             QStringList sendargs;
             sendargs.append(result);
             process->send(KJAS_EVALUATE_JAVASCRIPT, sendargs);
@@ -485,8 +479,30 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
             kdError(6100) << "no context object for this id" << endl;
     }
 }
+/* TODO: sync JType with KParts::LiveConnect::Type
+ *       make object reference work again
+ */
+static int convertJType(int t) {
+    switch (t) {
+        case 2: // JBoolean  = 2;
+            return (int) KParts::LiveConnectExtension::TypeBool;
+        case 3: // JFunction = 3;
+            return (int) KParts::LiveConnectExtension::TypeFunction;
+        case 5: // JNumber   = 5;
+            return (int) KParts::LiveConnectExtension::TypeNumber;
+        case 1: // JArray    = 1;
+        case 6: // JObject   = 6;
+            return (int) KParts::LiveConnectExtension::TypeObject;
+        case 7: // JString   = 7;
+            return (int) KParts::LiveConnectExtension::TypeString;
+        case 4: // JNull     = 4;
+        case 8: // JVoid     = 8;
+        default:
+            return (int) KParts::LiveConnectExtension::TypeVoid;
+    }
+}
 
-bool KJavaAppletServer::getMember(int contextId, int appletId, const QString & name, JType & type, QString & value) {
+bool KJavaAppletServer::getMember(int contextId, int appletId, const unsigned long /*objid*/, const QString & name, int & type, unsigned long & rid, QString & value) {
     QStringList args;
     args.append( QString::number(contextId) );
     args.append( QString::number(appletId) );
@@ -519,13 +535,14 @@ bool KJavaAppletServer::getMember(int contextId, int appletId, const QString & n
     value = d->wait_args[0];
     bool ok;
     int t = d->wait_args[1].toInt(&ok);
-    if (!ok)
+    if (!ok || !t /*JError*/)
         return false;
-    type = (JType) t;
-    return !!t;
+    type = convertJType(t);
+    rid = 0;
+    return true;
 }
 
-bool KJavaAppletServer::putMember(int contextId, int appletId, const QString & name, const QString & value) {
+bool KJavaAppletServer::putMember(int contextId, int appletId, const unsigned long /*objid*/, const QString & name, const QString & value) {
     QStringList args;
     args.append( QString::number(contextId) );
     args.append( QString::number(appletId) );
@@ -563,7 +580,7 @@ bool KJavaAppletServer::putMember(int contextId, int appletId, const QString & n
     return !!ret;
 }
 
-bool KJavaAppletServer::callMember(int contextId, int appletId, const QString & name, const QStringList & fargs, JType & type, QString & value) {
+bool KJavaAppletServer::callMember(int contextId, int appletId, const unsigned long /*objid*/, const QString & name, const QStringList & fargs, int & type, unsigned long & rid, QString & value) {
     QStringList args;
     args.append( QString::number(contextId) );
     args.append( QString::number(appletId) );
@@ -598,17 +615,18 @@ bool KJavaAppletServer::callMember(int contextId, int appletId, const QString & 
     bool ok;
     kdDebug(6100) << "KJavaAppletServer::getMember: " << d->wait_args.size() << value << endl;
     int t = d->wait_args[1].toInt(&ok);
-    if (!ok)
+    if (!ok || !t /*JError*/)
         return false;
-    type = (JType) t;
-    return !!t;
+    type = convertJType(t);
+    rid = 0;
+    return true;
 }
 
-void KJavaAppletServer::derefObject(int contextId, int appletId, const int id) {
+void KJavaAppletServer::derefObject(int contextId, int appletId, const unsigned long objid) {
     QStringList args;
     args.append( QString::number(contextId) );
     args.append( QString::number(appletId) );
-    args.append( QString::number(id) );
+    args.append( QString::number(objid) );
 
     process->send( KJAS_DEREF_OBJECT, args );
 }

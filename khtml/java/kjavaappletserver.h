@@ -25,7 +25,6 @@
 #define KJAVAAPPLETSERVER_H
 
 #include <kjavaprocess.h>
-#include <kjavaappletcontext.h>
 #include <qobject.h>
 #include <qmap.h>
 
@@ -128,10 +127,10 @@ public:
 
     QString appletLabel();
 
-    bool getMember(int contextId, int appletId, const QString &, JType &, QString &);
-    bool putMember(int contextId, int appletId, const QString &, const QString &);
-    bool callMember(int contextId, int appletId, const QString &, const QStringList &, JType &, QString &);
-    void derefObject(int contextId, int appletId, const int id);
+    bool getMember(int contextId, int appletId, const unsigned long, const QString &, int &, unsigned long &, QString &);
+    bool putMember(int contextId, int appletId, const unsigned long, const QString &, const QString &);
+    bool callMember(int contextId, int appletId, const unsigned long, const QString &, const QStringList &, int &, unsigned long &, QString &);
+    void derefObject(int contextId, int appletId, const unsigned long id);
 protected:
     void setupJava( KJavaProcess* p );
 
