@@ -46,7 +46,7 @@ protected:
   bool sendBugReport();
 
   KProcess * m_process;
-  KAboutData * m_aboutData;
+  const KAboutData * m_aboutData;
 
   QMultiLineEdit * m_lineedit;
   QLineEdit * m_subject;
