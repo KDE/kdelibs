@@ -1,6 +1,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.13  1999/04/08 01:39:45  torben
+// Torben: Corrected API and docu
+//
 // Revision 1.12  1999/03/01 23:33:23  kulow
 // CVS_SILENT ported to Qt 2.0
 //
@@ -54,7 +57,6 @@
 #define _KCONFIGDATA_H
 
 #include <qdict.h> // QDict
-#include <qtextstream.h> // QTextStream
 
 /**
  * Entry-dictionary entry.

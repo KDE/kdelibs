@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.9  1999/04/08 01:39:40  torben
+// Torben: Corrected API and docu
+//
 // Revision 1.8  1999/03/01 23:33:19  kulow
 // CVS_SILENT ported to Qt 2.0
 //
@@ -52,10 +55,6 @@
 
 #ifndef _KCONFIG_H
 #define _KCONFIG_H
-
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
 
 #include <kconfigbase.h>
 

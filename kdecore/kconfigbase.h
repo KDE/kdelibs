@@ -19,6 +19,10 @@
 // $Id$
 //
 // $Log$
+// Revision 1.20  1999/04/10 23:19:08  torben
+// Torben: Added QStringList since it supports unicode. Unfortunately
+// KConfig does not do that right now ...
+//
 // Revision 1.19  1999/04/08 01:39:44  torben
 // Torben: Corrected API and docu
 //
@@ -93,11 +97,6 @@
 
 #ifndef _KCONFIGBASE_H
 #define _KCONFIGBASE_H
-
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 
 // Qt includes
 #include <qcolor.h>

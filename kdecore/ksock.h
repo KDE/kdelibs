@@ -29,10 +29,6 @@
 #ifndef KSOCK_H
 #define KSOCK_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #ifdef NULL
 #undef NULL
 #endif

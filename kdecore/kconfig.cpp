@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.22  1999/03/01 23:33:18  kulow
+// CVS_SILENT ported to Qt 2.0
+//
 // Revision 1.21.2.2  1999/02/14 02:05:39  granroth
 // Converted a lot of 'const char*' to 'QString'.  This compiles... but
 // it's entirely possible that nothing will run linked to it :-P
@@ -109,19 +112,23 @@
 // new KConfig
 //
 
-#include <kconfig.h>
 #include <qfileinfo.h>
 #include <stdlib.h>
 
 #include "kapp.h"
 
 #include "config.h"
+#include <kconfig.h>
+#include <qtextstream.h>
 
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #endif
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif 
+#ifdef HAVE_TEST
+#include <test.h>
 #endif
 
 static const char* aConfigFileName[] = 

@@ -19,6 +19,10 @@
 // $Id$
 //
 // $Log$
+// Revision 1.45  1999/04/10 23:19:07  torben
+// Torben: Added QStringList since it supports unicode. Unfortunately
+// KConfig does not do that right now ...
+//
 // Revision 1.44  1999/04/08 01:39:42  torben
 // Torben: Corrected API and docu
 //
@@ -196,6 +200,7 @@
 //
 
 #include <kconfigbase.h>
+#include <config.h>
 
 // Unix includes
 #include <stdlib.h>

@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.14  1999/03/01 23:33:42  kulow
+// CVS_SILENT ported to Qt 2.0
+//
 // Revision 1.13.2.1  1999/02/14 02:06:04  granroth
 // Converted a lot of 'const char*' to 'QString'.  This compiles... but
 // it's entirely possible that nothing will run linked to it :-P
@@ -70,7 +73,7 @@
 //
 
 #include <ksimpleconfig.h>
-
+#include "config.h"
 #include <qfileinfo.h>
 
 KSimpleConfig::KSimpleConfig( const QString& pFile )

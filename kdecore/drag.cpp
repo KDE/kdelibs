@@ -20,6 +20,9 @@
  * $Id$
  * 
  * $Log$
+ * Revision 1.25  1999/03/01 23:33:03  kulow
+ * CVS_SILENT ported to Qt 2.0
+ *
  * Revision 1.24.2.1  1999/02/21 20:55:19  kulow
  * more porting to Qt 2.0. It compiles and links. Jucheisassa :)
  *
@@ -119,10 +122,7 @@
 
 #include <stdio.h>
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
-
 #include <stdio.h>
 #ifdef STDC_HEADERS
 #include <stdlib.h>

@@ -23,10 +23,6 @@
 
 //#define KCH_DEBUG
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include <qfont.h>
 
 #include <qdict.h>

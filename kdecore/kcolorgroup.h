@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.8  1998/06/16 06:03:20  kalle
+// Implemented copy constructors and assignment operators or disabled them
+//
 // Revision 1.7  1998/01/18 14:38:36  kulow
 // reverted the changes, Jacek commited.
 // Only the RCS comments were affected, but to keep them consistent, I
@@ -55,10 +58,6 @@
 
 #ifndef _KCOLORGROUP_H
 #define _KCOLORGROUP_H
-
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
 
 #ifndef _KCONFIG_H
 #include <kconfig.h>
