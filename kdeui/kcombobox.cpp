@@ -571,10 +571,13 @@ void KHistoryCombo::insertItems( const QStringList& items )
     QString item;
     while ( it != items.end() ) {
 	item = *it;
-	if ( myPixProvider )
-	    insertItem( myPixProvider->pixmapFor( item, KIcon::SizeSmall ), item );
-	else
-	    insertItem( item );
+	if ( !item.isEmpty() ) { // only insert non-empty items
+	    if ( myPixProvider )
+		insertItem( myPixProvider->pixmapFor(item, KIcon::SizeSmall), 
+			    item );
+	    else
+		insertItem( item );
+	}
 	++it;
     }
 }
