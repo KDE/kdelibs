@@ -229,7 +229,7 @@ void KXmlCommand::loadXml()
 		{
 			d->m_driver = new DrMain;
 			parseGroup(e, d->m_driver);
-			d->m_driver->set("text", d->m_name);
+			d->m_driver->set("text", i18n(d->m_name.local8Bit()));
 		}
 
 		// input/output
@@ -261,7 +261,7 @@ DrGroup* KXmlCommand::parseGroup(const QDomElement& e, DrGroup *grp)
 	if (!grp)
 		grp = new DrGroup;
 	grp->setName(e.attribute("name"));
-	grp->set("text", e.attribute("description"));
+	grp->set("text", i18n(e.attribute("description").local8Bit()));
 
 	QDomElement	elem = e.firstChild().toElement();
 	while (!elem.isNull())
@@ -314,7 +314,7 @@ DrBase* KXmlCommand::parseArgument(const QDomElement& e)
 			{
 				DrBase	*choice = new DrBase;
 				choice->setName(elem.attribute("name"));
-				choice->set("text", elem.attribute("description"));
+				choice->set("text", i18n(elem.attribute("description").local8Bit()));
 				lopt->addChoice(choice);
 			}
 			elem = elem.nextSibling().toElement();
@@ -324,7 +324,7 @@ DrBase* KXmlCommand::parseArgument(const QDomElement& e)
 		return 0;
 
 	opt->setName("_kde-" + d->m_name + "-" + e.attribute("name"));
-	opt->set("text", e.attribute("description"));
+	opt->set("text", i18n(e.attribute("description").local8Bit()));
 	opt->set("format", e.attribute("format"));
 	opt->set("default", e.attribute("default"));
 	opt->setValueText(opt->get("default"));
