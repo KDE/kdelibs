@@ -390,7 +390,7 @@ void KThemeBase::writeConfig(KConfigBase &inConfig, KConfigBase &outConfig)
 
 void KThemeBase::applyConfigFile(const QString &file)
 {
-    KSimpleConfig inConfig(file);
+    KSimpleConfig inConfig(file, true);
     KConfig outConfig;
     writeConfig(inConfig, outConfig);
 }
