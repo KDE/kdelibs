@@ -208,6 +208,8 @@ AC_OUTPUT(Makefile \
 	kio/Makefile \
 	kio/file/Makefile \
 	kio/kded/Makefile \
+        kio/klauncher/Makefile \
+        kio/klauncher/tests/Makefile \
 	kio/tests/Makefile \
 	mediatool/Makefile \
 	kspell/Makefile \
