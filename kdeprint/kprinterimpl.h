@@ -46,17 +46,21 @@ public:
 	KMPrinter* filePrinter()				{ return m_fileprinter; }
 	void saveOptions(const QMap<QString,QString>& opts)	{ m_options = opts; }
 	const QMap<QString,QString>& loadOptions() const 	{ return m_options; }
+	QString tempFile();
 
 protected slots:
 	void slotProcessExited(KProcess*);
 
 protected:
 	bool startPrintProcess(KPrintProcess*, KPrinter*);
+	bool startPrinting(KPrintProcess*, KPrinter*, const QStringList&);
+	void cleanTempFiles();
 
 protected:
 	KMPrinter		*m_fileprinter;
 	QMap<QString,QString>	m_options;	// use to save current options
 	QList<KPrintProcess>	m_processpool;
+	QStringList		m_tempfiles;
 };
 
 #endif

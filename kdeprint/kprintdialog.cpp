@@ -53,7 +53,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	setCaption(i18n("Print"));
 
 	// widget creation
-	QGroupBox	*m_pbox = new QGroupBox(i18n("Printer"), this);
+	QGroupBox	*m_pbox = new QGroupBox(0,Qt::Vertical,i18n("Printer"), this);
 	m_type = new QLabel(m_pbox);
 	m_state = new QLabel(m_pbox);
 	m_comment = new QLabel(m_pbox);
@@ -78,6 +78,8 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	m_file->setEnabled(false);
 	m_file->setText(QDir::homeDirPath()+"/print.ps");
 	m_filebrowse->setEnabled(false);
+	m_cmdlabel = new QLabel(i18n("Print command:"), m_pbox);
+	m_cmd = new QLineEdit(m_pbox);
 
 	// layout creation
 	QVBoxLayout	*l1 = new QVBoxLayout(this, 10, 10);
@@ -88,12 +90,11 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	l2->addStretch(1);
 	l2->addWidget(m_ok,0);
 	l2->addWidget(m_cancel,0);
-	QGridLayout	*l3 = new QGridLayout(m_pbox,3,2,10,10);
-	l3->addRowSpacing(0,10);
-	l3->setColStretch(0,1);
-	l3->setRowStretch(1,1);
+	QGridLayout	*l3 = new QGridLayout(m_pbox->layout(),3,3,7);
+	l3->setColStretch(1,1);
+	l3->setRowStretch(0,1);
 	QGridLayout	*l4 = new QGridLayout(0, 5, 2, 0, 5);
-	l3->addLayout(l4,1,0);
+	l3->addMultiCellLayout(l4,0,0,0,1);
 	l4->addWidget(m_printerlabel,0,0);
 	l4->addWidget(m_statelabel,1,0);
 	l4->addWidget(m_typelabel,2,0);
@@ -106,16 +107,18 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	l4->addWidget(m_comment,4,1);
 	l4->setColStretch(1,1);
 	QVBoxLayout	*l5 = new QVBoxLayout(0, 0, 10);
-	l3->addLayout(l5,1,1);
+	l3->addLayout(l5,0,2);
 	l5->addWidget(m_properties,0);
 	l5->addWidget(m_default,0);
 	l5->addWidget(m_preview,0);
 	l5->addStretch(1);
-	QHBoxLayout	*l6 = new QHBoxLayout(0, 0, 10);
-	l3->addLayout(l6,2,0);
-	l6->addWidget(m_printtofile,0);
-	l6->addWidget(m_file,1);
-	l3->addWidget(m_filebrowse,2,1);
+	//***
+	l3->addWidget(m_printtofile,1,0);
+	l3->addWidget(m_file,1,1);
+	l3->addWidget(m_filebrowse,1,2);
+	//***
+	l3->addWidget(m_cmdlabel,2,0);
+	l3->addMultiCellWidget(m_cmd,2,2,1,2);
 
 	// connections
 	connect(m_ok,SIGNAL(clicked()),SLOT(accept()));
@@ -140,6 +143,8 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	connect(m_printtofile,SIGNAL(toggled(bool)),m_filebrowse,SLOT(setEnabled(bool)));
 	connect(m_printtofile,SIGNAL(toggled(bool)),m_file,SLOT(setEnabled(bool)));
 	connect(m_printtofile,SIGNAL(toggled(bool)),this,SLOT(slotFilePrintToggled(bool)));
+	connect(m_printtofile,SIGNAL(toggled(bool)),m_cmd,SLOT(setDisabled(bool)));
+	connect(m_printtofile,SIGNAL(toggled(bool)),m_cmdlabel,SLOT(setDisabled(bool)));
 }
 
 KPrintDialog::~KPrintDialog()
@@ -157,6 +162,11 @@ void KPrintDialog::setFlags(int f)
 		m_printtofile->hide();
 		m_file->hide();
 		m_filebrowse->hide();
+	}
+	if (!(f & KMUiManager::PrintCommand))
+	{
+		m_cmdlabel->hide();
+		m_cmd->hide();
 	}
 }
 
@@ -229,6 +239,7 @@ void KPrintDialog::initialize(KPrinter *printer)
 	// update with KPrinter options
 	if (m_printer->option("kde-preview") == "1")
 		m_preview->setChecked(true);
+	m_cmd->setText(m_printer->option("kde-printcommand"));
 	QListIterator<KPrintDialogPage>	it(m_pages);
 	for (;it.current();++it)
 		it.current()->setOptions(m_printer->options());
@@ -325,6 +336,7 @@ void KPrintDialog::done(int result)
 			m_printer->setPrinterName(prt->printerName());
 			m_printer->setSearchName(prt->name());
 			m_printer->setOutputToFile(false);
+			opts["kde-printcommand"] = m_cmd->text();
 		}
 		opts["kde-preview"] = (m_preview->isChecked() ? "1" : "0");
 

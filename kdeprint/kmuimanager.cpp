@@ -77,6 +77,7 @@ int KMUiManager::copyFlags(KPrinter *pr)
 				fl |= (Range|PageSet|Order);
 		}
 		else fl = CopyAll;
+		if (m_copyflags & NoAutoCollate) fl |= NoAutoCollate;
 	}
 	else fl = m_copyflags;
 	return fl;

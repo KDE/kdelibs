@@ -60,10 +60,10 @@ protected:
 	bool checkOutputFile();
 
 protected:
-	QLabel	*m_type, *m_state, *m_comment, *m_location;
+	QLabel	*m_type, *m_state, *m_comment, *m_location, *m_cmdlabel;
 	QPushButton	*m_properties, *m_default, *m_options, *m_filebrowse, *m_ok;
 	QCheckBox	*m_preview, *m_printtofile;
-	QLineEdit	*m_file;
+	QLineEdit	*m_file, *m_cmd;
 	QComboBox	*m_printers;
 
 	QList<KPrintDialogPage>	m_pages;

@@ -41,14 +41,14 @@ KPCopiesPage::KPCopiesPage(QWidget *parent, const char *name)
 	setId(KPrinter::CopiesPage);
 
 	// widget creation
-	QButtonGroup	*m_pagebox = new QButtonGroup(i18n("Page selection"), this);
+	QButtonGroup	*m_pagebox = new QButtonGroup(0, Qt::Vertical, i18n("Page selection"), this);
 	m_all = new QRadioButton(i18n("All"), m_pagebox);
 	m_current = new QRadioButton(i18n("Current"), m_pagebox);
 	m_range = new QRadioButton(i18n("Range"), m_pagebox);
 	m_rangeedit = new QLineEdit(m_pagebox);
 	QLabel	*m_rangeexpl = new QLabel(m_pagebox);
 	m_rangeexpl->setText(i18n("<p>Enter pages or group of pages to print separated by commas (1,2-5,8).</p>"));
-	QGroupBox	*m_copybox = new QGroupBox(i18n("Copies"), this);
+	QGroupBox	*m_copybox = new QGroupBox(0, Qt::Vertical, i18n("Copies"), this);
 	m_collate = new QCheckBox(i18n("Collate"), m_copybox);
 	m_order = new QCheckBox(i18n("Reverse"), m_copybox);
 	m_collatepix = new QLabel(m_copybox);
@@ -72,8 +72,7 @@ KPCopiesPage::KPCopiesPage(QWidget *parent, const char *name)
 	l1->addLayout(l2,1,1);
 	l2->addWidget(m_pagesetlabel,1);
 	l2->addWidget(m_pageset,1);
-	QVBoxLayout	*l3 = new QVBoxLayout(m_pagebox, 10, 5);
-	l3->addSpacing(10);
+	QVBoxLayout	*l3 = new QVBoxLayout(m_pagebox->layout(), 5);
 	l3->addWidget(m_all);
 	l3->addWidget(m_current);
 	QHBoxLayout	*l4 = new QHBoxLayout(0, 0, 5);
@@ -81,14 +80,13 @@ KPCopiesPage::KPCopiesPage(QWidget *parent, const char *name)
 	l4->addWidget(m_range,0);
 	l4->addWidget(m_rangeedit,1);
 	l3->addWidget(m_rangeexpl);
-	QGridLayout	*l5 = new QGridLayout(m_copybox, 5, 2, 10, 10);
-	l5->addRowSpacing(0,10);
+	QGridLayout	*l5 = new QGridLayout(m_copybox->layout(), 4, 2, 10);
 	l5->setRowStretch(4,1);
-	l5->addWidget(m_copieslabel,1,0);
-	l5->addWidget(m_copies,1,1);
-	l5->addMultiCellWidget(m_collatepix,2,3,0,0);
-	l5->addWidget(m_collate,2,1);
-	l5->addWidget(m_order,3,1);
+	l5->addWidget(m_copieslabel,0,0);
+	l5->addWidget(m_copies,0,1);
+	l5->addMultiCellWidget(m_collatepix,1,2,0,0);
+	l5->addWidget(m_collate,1,1);
+	l5->addWidget(m_order,2,1);
 
 	// some initialization
 	m_all->setChecked(true);
@@ -129,7 +127,7 @@ void KPCopiesPage::setFlags(int f)
 	m_pageset->setEnabled((f & KMUiManager::PageSet));
 
 	// by default, if collate disabled, set it to true
-	m_collate->setChecked(!m_collate->isEnabled());
+	m_collate->setChecked(!(f & KMUiManager::NoAutoCollate));
 	slotCollateClicked();
 }
 

@@ -75,16 +75,12 @@ int KPrinterWrapper::qprinterMetric(int m) const
 KPrinter::KPrinter()
 : QPaintDevice(QInternal::Printer|QInternal::ExternalDevice)
 {
-	// temporary PS file
-	QString	fname = locateLocal("tmp","kdeprint_");
-	fname.append(KApplication::randomString(8));
-	m_tmpbuffer = fname;
-
 	// initialize QPrinter wrapper
 	m_wrapper = new KPrinterWrapper(this);
 
 	// other initialization
 	m_impl = KMFactory::self()->printerImplementation();
+	m_tmpbuffer = m_impl->tempFile();
 	m_ready = false;
 
 	// reload options from implementation (static object)
@@ -93,9 +89,6 @@ KPrinter::KPrinter()
 
 KPrinter::~KPrinter()
 {
-	// remove temporary file
-	QFile::remove(m_tmpbuffer);
-
 	// delete Wrapper object
 	delete m_wrapper;
 
@@ -111,6 +104,8 @@ void KPrinter::loadSettings()
 	KConfig	*conf = KGlobal::config();
 	conf->setGroup("KPrinter Settings");
 	setSearchName(conf->readEntry("Printer",QString::null));
+	// latest used print command
+	setOption("kde-printcommand",conf->readEntry("PrintCommand"));
 }
 
 void KPrinter::saveSettings()
@@ -121,6 +116,8 @@ void KPrinter::saveSettings()
 	KConfig	*conf = KGlobal::config();
 	conf->setGroup("KPrinter Settings");
 	conf->writeEntry("Printer",searchName());
+	// latest used print command
+	conf->writeEntry("PrintCommand",option("kde-printcommand"));
 }
 
 bool KPrinter::setup(QWidget *parent)
@@ -201,6 +198,7 @@ void KPrinter::translateQtOptions()
 	m_wrapper->setPageSize((QPrinter::PageSize)pageSize());
 	m_wrapper->setOutputToFile(true);
 	m_wrapper->setOutputFileName((outputToFile() ? outputFileName() : m_tmpbuffer));
+	m_wrapper->setNumCopies(option("kde-qtcopies").isEmpty() ? 1 : option("kde-qtcopies").toInt());
 }
 
 bool KPrinter::printFiles(const QStringList& l)

@@ -52,25 +52,5 @@ bool KLpdPrinterImpl::printFiles(KPrinter *printer, const QStringList& files)
 	}
 	*proc << exestr;
 	*proc << "-P" << printer->printerName() << QString::fromLatin1("-#%1").arg(printer->numCopies());
-	bool 	canPrint(false);
-	for (QStringList::ConstIterator it=files.begin(); it!=files.end(); ++it)
-		if (QFile::exists(*it))
-		{
-			*proc << *it;
-			canPrint = true;
-		}
-		else
-			qDebug("File not found: %s",(*it).latin1());
-	if (canPrint)
-		if (!startPrintProcess(proc,printer))
-		{
-			printer->setErrorMessage(i18n("Unable to start child print process."));
-			return false;
-		}
-		else return true;
-	else
-	{
-		printer->setErrorMessage(i18n("No valid file was found for printing. Operation aborted."));
-		return false;
-	}
+	return startPrinting(proc,printer,files);
 }

@@ -66,27 +66,7 @@ bool KLpdUnixPrinterImpl::printFiles(KPrinter *printer, const QStringList& files
 			initLprPrint(proc,printer);
 		else
 			initLpPrint(proc,printer);
-		bool 	canPrint(false);
-		for (QStringList::ConstIterator it=files.begin(); it!=files.end(); ++it)
-			if (QFile::exists(*it))
-			{
-				*proc << *it;
-				canPrint = true;
-			}
-			else
-				qDebug("File not found: %s",(*it).latin1());
-		if (canPrint)
-			if (!startPrintProcess(proc,printer))
-			{
-				printer->setErrorMessage(i18n("Unable to start child print process."));
-				return false;
-			}
-			else return true;
-		else
-		{
-			printer->setErrorMessage(i18n("No valid file was found for printing. Operation aborted."));
-			return false;
-		}
+		return startPrinting(proc,printer,files);
 	}
 	else
 		printer->setErrorMessage(i18n("No valid print executable was found in your path. Check your installation."));

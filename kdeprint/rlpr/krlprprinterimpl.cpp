@@ -69,27 +69,7 @@ bool KRlprPrinterImpl::printFiles(KPrinter *printer, const QStringList& files)
 			if (!port.isEmpty()) *proc << QString::fromLatin1("--port=%1").arg(port);
 		}
 
-		bool 	canPrint(false);
-		for (QStringList::ConstIterator it=files.begin(); it!=files.end(); ++it)
-			if (QFile::exists(*it))
-			{
-				*proc << *it;
-				canPrint = true;
-			}
-			else
-				qDebug("File not found: %s",(*it).latin1());
-		if (canPrint)
-			if (!startPrintProcess(proc,printer))
-			{
-				printer->setErrorMessage(i18n("Unable to start child print process."));
-				return false;
-			}
-			else return true;
-		else
-		{
-			printer->setErrorMessage(i18n("No valid file was found for printing. Operation aborted."));
-			return false;
-		}
+		return startPrinting(proc,printer,files);
 	}
 	else
 	{

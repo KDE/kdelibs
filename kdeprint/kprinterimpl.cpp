@@ -27,8 +27,11 @@
 #include "kmprinter.h"
 #include "kprintprocess.h"
 
+#include <qfile.h>
 #include <knotifyclient.h>
 #include <klocale.h>
+#include <kapp.h>
+#include <kstddirs.h>
 
 #include <stdlib.h>
 
@@ -63,6 +66,8 @@ KPrinterImpl::~KPrinterImpl()
 	delete m_fileprinter;
 	if (m_processpool.count() > 0)
 		KNotifyClient::event("printerror",i18n("There were still %1 print process(es) running. Printing aborted.").arg(m_processpool.count()));
+	m_processpool.clear();
+	cleanTempFiles();
 }
 
 void KPrinterImpl::preparePrinting(KPrinter*)
@@ -108,6 +113,10 @@ void KPrinterImpl::slotProcessExited(KProcess *proc)
 	m_processpool.removeRef(pproc);
 	if (!msg.isEmpty())
 		KNotifyClient::event("printerror",i18n("<p><nobr>A print error occured. Error message received from system:</nobr></p><br>%1").arg(msg));
+
+	if (m_processpool.count() == 0)
+		// last child process exited, clean up temporary files
+		cleanTempFiles();
 }
 
 bool KPrinterImpl::startPrintProcess(KPrintProcess *proc, KPrinter *printer)
@@ -124,5 +133,43 @@ bool KPrinterImpl::startPrintProcess(KPrintProcess *proc, KPrinter *printer)
 		delete proc;
 		return false;
 	}
+}
+
+bool KPrinterImpl::startPrinting(KPrintProcess *proc, KPrinter *printer, const QStringList& files)
+{
+	bool	canPrint(false);
+	for (QStringList::ConstIterator it=files.begin(); it!=files.end(); ++it)
+		if (QFile::exists(*it))
+		{
+			*proc << *it;
+			canPrint = true;
+		}
+		else
+			qDebug("File not found: %s",(*it).latin1());
+	if (canPrint)
+		if (!startPrintProcess(proc,printer))
+		{
+			printer->setErrorMessage(i18n("Unable to start child print process."));
+			return false;
+		}
+		else return true;
+	else
+	{
+		printer->setErrorMessage(i18n("No valid file was found for printing. Operation aborted."));
+		return false;
+	}
+}
+
+void KPrinterImpl::cleanTempFiles()
+{
+	for (QStringList::Iterator it=m_tempfiles.begin(); it!=m_tempfiles.end();)
+		if (QFile::remove(*it)) it = m_tempfiles.remove(it);
+		else ++it;
+}
+
+QString KPrinterImpl::tempFile()
+{
+	QString	f = locateLocal("tmp","kdeprint_") + KApplication::randomString(8);
+	return f;
 }
 #include "kprinterimpl.moc"

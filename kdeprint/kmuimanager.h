@@ -44,16 +44,18 @@ public:
 		Preview        = 0x0004,
 		OutputToFile   = 0x0008,
 		Options        = 0x0010,
-		PrintDialogAll = 0x00FF
+		PrintCommand   = 0x0020,
+		PrintDialogAll = 0x00DF
 	};
 	enum CopyFlagType
 	{
-		Current  = 0x01,
-		Range    = 0x02,
-		Collate  = 0x04,
-		Order    = 0x08,
-		PageSet  = 0x10,
-		CopyAll  = 0xFF
+		Current       = 0x001,
+		Range         = 0x002,
+		Collate       = 0x004,
+		Order         = 0x008,
+		PageSet       = 0x010,
+		CopyAll       = 0x0FF,
+		NoAutoCollate = 0x100
 	};
 
 	KMUiManager(QObject *parent = 0, const char *name = 0);
