@@ -125,9 +125,15 @@ void KAnimWidget::leaveEvent( QEvent *e )
 
 void KAnimWidget::mousePressEvent( QMouseEvent *e )
 {
-  emit clicked();
-
   QFrame::mousePressEvent( e );
+}
+
+void KAnimWidget::mouseReleaseEvent( QMouseEvent *e )
+{
+  if ( e->button() == LeftButton )
+    emit clicked();
+
+  QFrame::mouseReleaseEvent( e );
 }
 
 void KAnimWidget::slotTimerUpdate()

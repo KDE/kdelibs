@@ -123,6 +123,7 @@ protected:
   virtual void hideEvent( QHideEvent *e);
   virtual void showEvent( QShowEvent *e);
   virtual void mousePressEvent( QMouseEvent *e );
+  virtual void mouseReleaseEvent( QMouseEvent *e );
 
 protected slots:
   void slotTimerUpdate();
